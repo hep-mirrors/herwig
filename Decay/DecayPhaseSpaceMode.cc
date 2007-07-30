@@ -9,19 +9,16 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/RefVector.h"
-#include "Herwig++/PDT/GenericMassGenerator.h"
 #include "DecayIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/HelicityVertex.h"
 #include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/SpinInfo.h"
 
-namespace Herwig{
-using namespace ThePEG;
-using ThePEG::Helicity::VertexPtr;
-using ThePEG::Helicity::tcSpinfoPtr;
-using ThePEG::Helicity::SpinfoPtr;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 void DecayPhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << _integrator << _channels << _channelwgts << _maxweight << _niter 
@@ -75,8 +72,8 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
     Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
 			     ctheta, phi,part[0],part[1]);
     wgt *= Kinematics::CMMomentum(inmass,mass[1],mass[2])/8./Constants::pi/inmass;
-      outpart[0]->set5Momentum(part[0]);
-      outpart[1]->set5Momentum(part[1]);
+    outpart[0]->set5Momentum(part[0]);
+    outpart[1]->set5Momentum(part[1]);
   }
   else {
     throw DecayIntegratorError() << "DecayPhaseSpaceMode::flatPhaseSpace "
@@ -106,7 +103,6 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
   Energy prewid;
   if(_channels.empty()) {
     double wsum=0.,wsqsum=0.;
-    double wgt;
     Energy m0,mmin(0.*MeV);
     for(unsigned int ix=1;ix<_extpart.size();++ix) {
       mmin+=_extpart[ix]->massMin();
@@ -115,15 +111,13 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       int ichan;
       // set the mass of the decaying particle
       m0 = (inpart->dataPtr())->generateMass();
+      double wgt=0.;
       if(m0>mmin) {
-	inpart->set5Momentum(Lorentz5Momentum(0.0*MeV,0.0*MeV,0.0*MeV,m0,m0));
+	inpart->set5Momentum(Lorentz5Momentum(m0));
 	// compute the prefactor
-	if(_widthgen&&_partial>=0) {
-	  prewid=_widthgen->partialWidth(_partial,inpart->mass());
-	}
-	else {
-	  prewid=(inpart->dataPtr()->width());
-	}
+	prewid = (_widthgen&&_partial>=0) ?
+	  _widthgen->partialWidth(_partial,inpart->mass()) :
+	  inpart->dataPtr()->width();
 	pre = prewid>0.*MeV ? 1./prewid : 1./MeV;
 	// generate the weight for this point
 	try {
@@ -133,37 +127,28 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	  wgt=0.;
 	}
       }
-      else {
-	wgt=0.;
-      }
       if(wgt>_maxweight) _maxweight=wgt;
       wsum=wsum+wgt;
       wsqsum=wsqsum+wgt*wgt;
     }
     wsum=wsum/_npoint;
-    wsqsum=wsqsum/_npoint-wsum*wsum;
+    wsqsum=wsqsum/_npoint-sqr(wsum);
     if(wsqsum<0.) wsqsum=0.;
     wsqsum=sqrt(wsqsum/_npoint);
-    Energy fact;
-    if(_widthgen&&_partial>=0) {
-      fact=_widthgen->partialWidth(_partial,inpart->nominalMass());
-    }
-    else {
-      fact=(inpart->dataPtr()->width());
-    }
+    Energy fact = (_widthgen&&_partial>=0) ? 
+      _widthgen->partialWidth(_partial,inpart->nominalMass()) :
+      inpart->dataPtr()->width();
     if(fact==0.*MeV) fact=MeV;
     // factor for the weight with spin correlations
-    _maxweight*=inpart->dataPtr()->iSpin()*1.1;
+    _maxweight *= inpart->dataPtr()->iSpin()*1.1;
     // ouptut the information on the initialisation
     CurrentGenerator::log() << "Initialized the phase space for the decay " 
 			    << _extpart[0]->PDGName() << " -> ";
     for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
-      {CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";}
+      CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
     CurrentGenerator::log() << "  " << _partial << "\n";
-    if(fact!=MeV) {
-      CurrentGenerator::log() << "The branching ratio is " << wsum 
-			      << " +/- " << wsqsum << "\n";
-    }
+    if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << wsum 
+					  << " +/- " << wsqsum << "\n";
     CurrentGenerator::log() << "The partial width is " << wsum*fact/MeV 
 			    << " +/- " << wsqsum*fact/MeV << " MeV\n";
     CurrentGenerator::log() << "The partial width is " 
@@ -180,22 +165,20 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       vector<double> wsum(_channels.size(),0.),wsqsum(_channels.size(),0.);
       vector<int> nchan(_channels.size(),0);
       totsum = 0.; totsq = 0.;
-      double wgt; Energy m0,mmin(0.*MeV);
+      Energy m0,mmin(0.*MeV);
       for(unsigned int ix=1;ix<_extpart.size();++ix) {
 	mmin+=_extpart[ix]->massMin();
       }
       for(int ix=0;ix<_npoint;++ix) {
 	m0 = (inpart->dataPtr())->generateMass();
+	double wgt=0.; 
 	int ichan;
 	if(m0>mmin) {
 	  inpart->set5Momentum(Lorentz5Momentum(0.0*MeV,0.0*MeV,0.0*MeV,m0,m0));
 	  // compute the prefactor
-	  if(_widthgen&&_partial>=0) {
-	    prewid=_widthgen->partialWidth(_partial,inpart->mass());
-	  }
-	  else {
-	    prewid=(inpart->dataPtr()->width());
-	  }
+	  prewid= (_widthgen&&_partial>=0) ? 
+	    _widthgen->partialWidth(_partial,inpart->mass()) :
+	    inpart->dataPtr()->width();
 	  pre = prewid>0*MeV ? 1./prewid : 1./MeV;
 	  // generate the weight for this point
 	  try {
@@ -205,18 +188,15 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	    wgt=0.;
 	  }
 	}
-	else {
-	  wgt=0.;
-	}
 	if(wgt>_maxweight) _maxweight=wgt;
 	wsum[ichan]=wsum[ichan]+wgt;
 	totsum+=wgt;
-	wsqsum[ichan]=wsqsum[ichan]+wgt*wgt;
+	wsqsum[ichan]=wsqsum[ichan]+sqr(wgt);
 	totsq+=wgt*wgt;
 	++nchan[ichan];
       }
       totsum=totsum/_npoint;
-      totsq=totsq/_npoint-totsum*totsum;
+      totsq=totsq/_npoint-sqr(totsum);
       if(totsq<0.) totsq=0.;
       totsq=sqrt(totsq/_npoint);
       CurrentGenerator::log() << "The branching ratio is " << iy << " " 
@@ -246,23 +226,17 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
     // factor for the weight with spin correlations
     _maxweight*=inpart->dataPtr()->iSpin()*1.1;
     // ouptut the information on the initialisation
-    Energy fact;
-    if(_widthgen&&_partial>=0) {
-      fact=_widthgen->partialWidth(_partial,inpart->nominalMass());
-    }
-    else {
-      fact=(inpart->dataPtr()->width());
-    }
+    Energy fact = (_widthgen&&_partial>=0) ? 
+      _widthgen->partialWidth(_partial,inpart->nominalMass()) :
+      inpart->dataPtr()->width();
     if(fact==0.*MeV) fact=MeV;
     CurrentGenerator::log() << "Initialized the phase space for the decay " 
 			    << _extpart[0]->PDGName() << " -> ";
     for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
-      {CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";}
+      CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
     CurrentGenerator::log() << "\n";
-    if(fact!=MeV) {
-      CurrentGenerator::log() << "The branching ratio is " << totsum 
-			      << " +/- " << totsq << "\n";
-    }
+    if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << totsum 
+					  << " +/- " << totsq << "\n";
     CurrentGenerator::log() << "The partial width is " << totsum*fact/MeV 
 			    << " +/- " << totsq*fact/MeV << " MeV\n";
     CurrentGenerator::log() << "The partial width is " 
@@ -422,7 +396,7 @@ void DecayPhaseSpaceMode::constructVertex(const Particle & inpart,
 }
 
 // output info on the mode
-ostream & operator<<(ostream & os, const DecayPhaseSpaceMode & decay) {
+ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceMode & decay) {
   os << "The mode has " << decay._channels.size() << " channels\n";
   os << "This is a mode for the decay of " << decay._extpart[0]->PDGName() 
      << " to ";
@@ -435,23 +409,6 @@ ostream & operator<<(ostream & os, const DecayPhaseSpaceMode & decay) {
     os << *(decay._channels[ix]);
   }
   return os;
-}
-
-void DecayPhaseSpaceMode::setPartialWidth(int in) {
-  _partial=in;
-}
-
-Energy DecayPhaseSpaceMode::weight(bool vertex,bool cc,int & ichan,
-				   const Particle & inpart,
-				   ParticleVector & particles) const {
-  double mewgt(0.);Energy phwgt(0.*MeV);
-  ichan=0;
-  // generate the phase space point and get the weight
-  if(_channels.size()==0) phwgt = flatPhaseSpace(cc,inpart,particles); 
-  else                    phwgt = channelPhaseSpace(cc,ichan,inpart,particles);
-  // generate the matrix element
-  mewgt = me2(vertex,-1,inpart,particles);
-  return mewgt*phwgt;
 }
 
 void DecayPhaseSpaceMode::doinit() throw(InitException) {
@@ -546,6 +503,4 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
     notdone.erase(notdone.begin()+iloc);
   }
   return mass;
-}
-  
 }

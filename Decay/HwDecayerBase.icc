@@ -9,7 +9,8 @@ namespace Herwig {
 inline HwDecayerBase::HwDecayerBase() : _initialize(false)
 {}
 
-inline bool HwDecayerBase::initialize() const 
-{return _initialize;}
+inline bool HwDecayerBase::initialize() const {
+  return _initialize;
+}
 
 }

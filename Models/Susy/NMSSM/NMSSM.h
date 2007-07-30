@@ -9,7 +9,6 @@
 #include "NMSSM.fh"
 
 namespace Herwig {
-
 using namespace ThePEG;
 
 /**

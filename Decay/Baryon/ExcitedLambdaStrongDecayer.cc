@@ -16,6 +16,7 @@
 #include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/PDT/WidthCalculatorBase.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;

@@ -16,7 +16,7 @@ case "${host}" in
   *-darwin*) 
     if test "x$MACOSX_DEPLOYMENT_TARGET" != "x10.3"; then 
       AC_MSG_ERROR(
-      [Please export the MACOSX_DEPLOYMENT_TARGET variable, set to 10.3]) 
+      [Please add 'MACOSX_DEPLOYMENT_TARGET=10.3' to the configure line.]) 
     fi 
     ;;
 esac
@@ -47,21 +47,20 @@ dnl ####################################
 
 AC_PATH_PROG(PERL, perl)
 
-AC_PDF_PATH
+HERWIG_CHECK_GSL
 
-AC_CHECK_LIB(m,main)
-AC_CHECK_LIB(gslcblas,main)
-AC_CHECK_LIB(gsl,main)
+HERWIG_CHECK_THEPEG
 
-AC_CHECK_CLHEP
-AC_CHECK_HEPMC
+HERWIG_LOOPTOOLS
 
-AC_CHECK_THEPEG
+HERWIG_PDF_PATH
 
-AC_CHECK_KTJET
-AC_CHECK_EVTGEN
 
-AC_LOOPTOOLS
+HERWIG_CHECK_HEPMC
+
+HERWIG_CHECK_KTJET
+
+HERWIG_CHECK_EVTGEN
 
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])

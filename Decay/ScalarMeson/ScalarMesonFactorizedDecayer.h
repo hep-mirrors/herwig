@@ -136,7 +136,7 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -294,7 +294,7 @@ template <>
   /** Return the name of the shared library be loaded to get
    *  access to the ScalarMesonFactorizedDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
+  static string library() { return "HwSMDecay.so"; }
 };
 
 /** @endcond */

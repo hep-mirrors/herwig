@@ -21,7 +21,7 @@ inline void VectorMeson2MesonDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   if(initialize()) {
     for(unsigned int ix=0;ix<_incoming.size();++ix)
-      _maxweight[ix]= mode(ix)->maxWeight();
+      if(mode(ix)) _maxweight[ix]= mode(ix)->maxWeight();
   }
 }
   

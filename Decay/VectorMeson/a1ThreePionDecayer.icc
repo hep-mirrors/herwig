@@ -6,128 +6,84 @@
 
 namespace Herwig {
 using namespace ThePEG;
-  
-inline a1ThreePionDecayer::a1ThreePionDecayer(const a1ThreePionDecayer & x)
-  : DecayIntegrator(x),_rhomass(x._rhomass), _rhowidth(x._rhowidth),
-    _prho(x._prho), _hm2(x._hm2),_rhoD(x._rhoD),_dhdq2m2(x._dhdq2m2),
-    _sigmamass(x._sigmamass),_sigmawidth(x._sigmawidth),
-    _psigma(x._psigma), _mpi(x._mpi),_mpi2(x._mpi2), _lambda2(x._lambda2),
-    _a1mass2(x._a1mass2), _zsigma(x._zsigma),_rhocoupling(x._rhocoupling),
-    _coupling(x._coupling),
-    _localparameters(x._localparameters),
-    _zerowgts(x._zerowgts),_onewgts(x._onewgts),_twowgts(x._twowgts),
-    _threewgts(x._threewgts), _zeromax(x._zeromax), _onemax(x._onemax),
-    _twomax(x._twomax),_threemax(x._threemax)
-{}
 
 inline IBPtr a1ThreePionDecayer::clone() const {
   return new_ptr(*this);
 }
 
-    
 inline IBPtr a1ThreePionDecayer::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void a1ThreePionDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
-  if(initialize())
-    {
-      // get the weights for the different channels
-      for(unsigned int ix=0;ix<_zerowgts.size();++ix)
-	{_zerowgts[ix]=mode(0)->channelWeight(ix);}
-      for(unsigned int ix=0;ix<_onewgts.size();++ix)
-	{_onewgts[ix]=mode(1)->channelWeight(ix);}
-      for(unsigned int ix=0;ix<_twowgts.size();++ix)
-	{_twowgts[ix]=mode(2)->channelWeight(ix);}
-      for(unsigned int ix=0;ix<_threewgts.size();++ix)
-	{_threewgts[ix]=mode(3)->channelWeight(ix);}
-      // get the maximum weight
-      _zeromax  = mode(0)->maxWeight();
-      _onemax   = mode(1)->maxWeight();
-      _twomax   = mode(2)->maxWeight();
-      _threemax = mode(3)->maxWeight();
-    }
-}
-  
+} 
 
 // breit-wigner for the sigma meson
-inline Complex a1ThreePionDecayer::sigmaBreitWigner(Energy2 q2) const
-{
+inline Complex a1ThreePionDecayer::sigmaBreitWigner(Energy2 q2) const {
   Energy q=sqrt(q2);
   Energy width=_sigmawidth*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi)/_psigma;
   Energy2 msigma2=_sigmamass*_sigmamass;
   Complex ii(0.,1.);
-  complex<Energy2> denom;
-  if(q>2.*_mpi)
-    {denom= q2-msigma2+ii*msigma2*width/q;}
-  else
-    {denom= q2-msigma2;}
+  complex<Energy2> denom = q>2.*_mpi ? q2-msigma2+ii*msigma2*width/q :
+    q2-msigma2;
   return msigma2/denom;
 }
 
 // a_1 form factor
-inline double a1ThreePionDecayer::a1FormFactor(Energy2 q2) const
-{
-  double temp=(1.+_a1mass2/_lambda2)/(1.+q2/_lambda2);
-  return temp;
+inline double a1ThreePionDecayer::a1FormFactor(Energy2 q2) const {
+  return (1.+_a1mass2/_lambda2)/(1.+q2/_lambda2);
 }
 
 // the h function in the rho propagator
-inline Energy2 a1ThreePionDecayer::hFunction(const Energy q)const 
-{
-  Energy2 output;
+inline Energy2 a1ThreePionDecayer::hFunction(const Energy q)const  {
   static const Energy2 eps(0.01*MeV2);
   Energy2 q2=q*q;
   double root = sqrt(1.-4.*_mpi2/q2);
-  if(q2>4*_mpi2)
-    {output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;}
-  else if(q2>eps)
-    {output=0.*MeV2;}
-  else
-    {output=-8.*_mpi2/Constants::pi;}
+  Energy2 output;
+  if(q2>4*_mpi2) {
+    output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;
+  }
+  else if(q2>eps) output=0.*MeV2;
+  else            output=-8.*_mpi2/Constants::pi;
   return output;
 }
 
 // the dh/dq2 rho the propagator
-inline double a1ThreePionDecayer::dhdq2Parameter(int ires) const
-{
-  Energy2 mrho2=_rhomass[ires]*_rhomass[ires];
+inline double a1ThreePionDecayer::dhdq2Parameter(int ires) const {
+  Energy2 mrho2(sqr(_rhomass[ires]));
   double root = sqrt(1.-4.*_mpi2/mrho2);
   using Constants::pi;
   return root/pi*(root+(1.+2*_mpi2/mrho2)*log((1+root)/(1-root)));
 }
 
 // the numerator for the rho propagator
-inline Energy2 a1ThreePionDecayer::DParameter(int ires) const 
-{
+inline Energy2 a1ThreePionDecayer::DParameter(int ires) const  {
   Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
   return _rhomass[ires]*_rhomass[ires]+_rhowidth[ires]*_rhomass[ires]*
-    (hFunction(0.*MeV)-_hm2[ires]+_rhomass[ires]*_rhomass[ires]*_dhdq2m2[ires])/grhom;
+    (hFunction(0.*MeV)-_hm2[ires]+sqr(_rhomass[ires])*_dhdq2m2[ires])/grhom;
 }
 
 // the rho Breit-Wigner
-inline Complex a1ThreePionDecayer::rhoBreitWigner(Energy2 q2, int ires) const
-{
+inline Complex a1ThreePionDecayer::rhoBreitWigner(Energy2 q2, int ires) const {
   Energy q=sqrt(q2);
   Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
   complex<Energy2> denom;
   Complex ii(0.,1.);
-  if(q2<4.*_mpi2)
-    {
-      denom=q2-_rhomass[ires]*_rhomass[ires]-_rhowidth[ires]*_rhomass[ires]*
-	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])
-	/grhom;
-    }
-  else
-    {
-      Energy pcm=2.*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
-      Energy2 grho = pcm*pcm*pcm/q;
-      denom=q2-_rhomass[ires]*_rhomass[ires]
-	-_rhowidth[ires]*_rhomass[ires]*
-	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])/grhom
-	+ii*_rhomass[ires]*_rhowidth[ires]*grho/grhom;
-    }
+  if(q2<4.*_mpi2) {
+    denom=q2-_rhomass[ires]*_rhomass[ires]-_rhowidth[ires]*_rhomass[ires]*
+      (hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])
+      /grhom;
+  }
+  else {
+    Energy pcm=2.*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+    Energy2 grho = pcm*pcm*pcm/q;
+    denom=q2-_rhomass[ires]*_rhomass[ires]
+      -_rhowidth[ires]*_rhomass[ires]*
+      (hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])/grhom
+      +ii*_rhomass[ires]*_rhowidth[ires]*grho/grhom;
+  }
   return _rhoD[ires]/denom;
 }
+
+inline Energy4 a1ThreePionDecayer::lambda(Energy2 a, Energy2 b, Energy2 c) const {
+  return sqr(a)+sqr(b)+sqr(c)-2.*a*b-2.*a*c-2.*b*c;
+}
+
 }

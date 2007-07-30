@@ -1,14 +1,48 @@
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig++ read TVT.in
+##################################################
+
+##################################################
+# Switch for soft underlying event.
+#
+# 'set' lines like this can be omitted if the 
+# default value is already okay.
+#
+# Any repository setting can be modified here
+##################################################
 cd /Defaults/Handlers/Hadronization/Cluster
 set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
-#
+
+##################################################
+# Technical parameters for this run
+##################################################
 cd /Defaults/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
-set LHCGenerator:Strategy /Defaults/ThePEGStrategy
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
-#
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
 saverun LHC LHCGenerator
-#run LHC LHCGenerator
+
+##################################################
+# uncomment this section for an example batch run
+# of two repeats with different parameters
+#
+# Note that a separate call of 'Herwig run' 
+# is not required
+##################################################
+# set LHCGenerator:NumberOfEvents 10
+# run LHC-full LHCGenerator
+#
+# set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
+# run LHC-initial LHCGenerator

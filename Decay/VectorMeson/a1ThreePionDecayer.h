@@ -97,25 +97,10 @@ class a1ThreePionDecayer: public DecayIntegrator {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline a1ThreePionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline a1ThreePionDecayer(const a1ThreePionDecayer &);
-
-  /**
-   * Standard ctors and dtor.
-   */
-  virtual ~a1ThreePionDecayer();
-  //@}
-  
-public:
   
   /**
    * Which of the possible decays is required
@@ -134,6 +119,38 @@ public:
    */
   double me2(bool vertex, const int ichan,const Particle & part,
 	     const ParticleVector & decay) const;
+
+  /**
+   * Method to return an object to calculate the 3 body partial width.
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
+   */
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
+
+  /**
+   * The matrix element to be integrated for the three-body decays as a function
+   * of the invariant masses of pairs of the outgoing particles.
+   * @param imode The mode for which the matrix element is needed.
+   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The matrix element
+   */
+  virtual double threeBodyMatrixElement(const int imode , const Energy2 q2,
+					const Energy2 s3, const Energy2 s2,
+					const Energy2 s1, const Energy  m1,
+					const Energy  m2, const Energy m3) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
   
 public:
    
@@ -184,12 +201,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -247,7 +264,12 @@ private:
    * @param q2 The scale, \f$q^2\f$.
    * @return The function \f$h(q^2)\f$.
    */
-  inline Energy2 hFunction(const Energy q2) const ;
+  inline Energy2 hFunction(const Energy q2) const;
+
+  /**
+   *  Momentum Function
+   */
+  inline Energy4 lambda(Energy2 a, Energy2 b, Energy2 c) const;
   
 private:
 

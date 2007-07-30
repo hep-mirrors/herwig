@@ -25,15 +25,10 @@ class HwDecayerBase: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline HwDecayerBase();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -86,7 +81,6 @@ public:
    *  Functions for the Herwig decayer
    */
   //@{
-
   /**
    * Output the setup information for the particle database
    * @param os The stream to output the information to

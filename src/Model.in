@@ -1,10 +1,19 @@
-# this file controls the type of Model to be used.
-# this line selects the model class
-# this should inherit from the Herwig Standard Model class
-# this is for the standard model
+################################################
+# Set up the physics model.
+# 
+# The Standard Model is used by default. 
+#
+# A Randall-Sundrum model can be used instead by
+# uncommenting the marked lines. 
+################################################
+
+
+#######################################################
+# Uncomment either the Standard Model ...
+#######################################################
 create Herwig::StandardModel /Defaults/Model
 create Herwig::ModelGenerator /Defaults/GeneralModel
-insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
+#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/Z0
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/t
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/h0
@@ -20,10 +29,18 @@ set /Defaults/GeneralModel:DecayConstructor /Defaults/DecayConstructor
 create Herwig::TwoBodyDecayConstructor /Defaults/TwoBody
 insert /Defaults/DecayConstructor:NBodyDecayConstructors[0] /Defaults/TwoBody
 
-
-# this is for the Randell-Sundrum model
+#######################################################
+# ... or Randall Sundrum. (You also need to uncomment
+# one more line below!)
+#######################################################
 #create Herwig::RSModel /Defaults/Model HwRSModel.so
 #set /Defaults/Model:Lambda_pi 10000
+
+#
+
+#
+
+#
 
 # set up the Standard Model couplings (this always needs to be done)
 # the strong coupling
@@ -40,10 +57,16 @@ create Herwig::RunningMass /Defaults/RunningMass
 set /Defaults/RunningMass:MaxFlav 6
 set /Defaults/RunningMass:QCDOrder 2
 set /Defaults/Model:RunningMass /Defaults/RunningMass
+
+
 # read in the Standard Model vertices
 cd /Defaults
 mkdir Vertices
 cd Vertices
 read StandardModelVertices.in 
+
+###########################################################
+# also uncomment here to read in the additional RS vertices
+###########################################################
 #read RSModelVertices.in
 cd /

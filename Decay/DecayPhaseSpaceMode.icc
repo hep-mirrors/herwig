@@ -28,12 +28,13 @@ inline IBPtr DecayPhaseSpaceMode::fullclone() const {
 }
 
 // set the maximum weight
-inline void DecayPhaseSpaceMode::setMaxWeight(double wgt) const {_maxweight=wgt;}
+inline void DecayPhaseSpaceMode::setMaxWeight(double wgt) const {
+  _maxweight=wgt;
+}
 
 // add a new channel
 inline void DecayPhaseSpaceMode::
-addChannel(Ptr<Herwig::DecayPhaseSpaceChannel>::pointer in)
-{
+addChannel(Ptr<Herwig::DecayPhaseSpaceChannel>::pointer in) {
   in->init();
   _channels.push_back(in);
 }
@@ -52,22 +53,25 @@ inline void DecayPhaseSpaceMode::resetIntermediate(int ichan, tcPDPtr part,
 
 // select which phase-space channel to use to output the particles
 inline int DecayPhaseSpaceMode::selectChannel(const Particle & inpart,
-					      ParticleVector & particles) const
-{
+					      ParticleVector & particles) const {
   // if using flat phase-space don't need to do this
-  if(_channelwgts.empty()){return 0;}
+  if(_channelwgts.empty()) return 0;
   vector<double> mewgts(_channels.size(),0.0);
   double total=0.;
-  for(unsigned int ix=0,N=_channels.size();ix<N;++ix)
-    {mewgts[ix]=me2(false,ix,inpart,particles);total+=mewgts[ix];}
+  for(unsigned int ix=0,N=_channels.size();ix<N;++ix) {
+    mewgts[ix]=me2(false,ix,inpart,particles);
+    total+=mewgts[ix];
+  }
   // randomly pick a channel
   total*=UseRandom::rnd();
   int ichan=-1;
-  do{++ichan;total-=mewgts[ichan];}
+  do {
+    ++ichan;
+    total-=mewgts[ichan];
+  }
   while(ichan<int(_channels.size())&&total>0.);
   return ichan;
 }
-
 
 // set the weights for the integration channels
 inline void DecayPhaseSpaceMode::setWeights(const vector<double> & in) const {
@@ -91,8 +95,7 @@ inline double DecayPhaseSpaceMode::me2(bool bin,const int ichan ,const Particle 
 }
 
 // set the integration parameter
-inline void DecayPhaseSpaceMode::setIntegrate(int iter,int points,int ntry)
-{
+inline void DecayPhaseSpaceMode::setIntegrate(int iter,int points,int ntry) {
   _niter=iter;
   _npoint=points;
   _ntry=ntry;
@@ -100,17 +103,34 @@ inline void DecayPhaseSpaceMode::setIntegrate(int iter,int points,int ntry)
  
 // reset the properities of all intermediates
 inline void DecayPhaseSpaceMode::resetIntermediate(tcPDPtr part, Energy mass,
-						   Energy width)
-{
+						   Energy width) {
   for(unsigned int ix=0,N=_channels.size();ix<N;++ix)
-    {_channels[ix]->resetIntermediate(part,mass,width);}
+    _channels[ix]->resetIntermediate(part,mass,width);
 }
 
 // get the maximum weight
-inline double DecayPhaseSpaceMode::maxWeight() const {return _maxweight;}
+inline double DecayPhaseSpaceMode::maxWeight() const {
+  return _maxweight;
+}
 
 // get the weight for a channel
 inline double DecayPhaseSpaceMode::channelWeight(unsigned int in) const {
   return _channelwgts[in];
 }
+
+inline Energy DecayPhaseSpaceMode::weight(bool vertex,bool cc,int & ichan,
+					  const Particle & inpart,
+					  ParticleVector & particles) const {
+  // generate the phase space point and get the weight
+  ichan=0;
+  Energy phwgt = (_channels.size()==0) ? 
+    flatPhaseSpace(cc,inpart,particles) : channelPhaseSpace(cc,ichan,inpart,particles);
+  // generate the matrix element
+  return me2(vertex,-1,inpart,particles)*phwgt;
+}
+
+inline void DecayPhaseSpaceMode::setPartialWidth(int in) {
+  _partial=in;
+}
+
 }

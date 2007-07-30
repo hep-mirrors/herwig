@@ -44,11 +44,11 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 	} 
 	else {
 	  if( k == 2 ) break;
-	  first.push_back(-chg[j]);
-	  second.push_back(neu[k]);
+	  first.push_back(-chg[k]);
+	  second.push_back(neu[j]);
 	  third.push_back(37);
-	  first.push_back(chg[j]);
-	  second.push_back(neu[k]);
+	  first.push_back(chg[k]);
+	  second.push_back(neu[j]);
 	  third.push_back(-37);
 	}
       }

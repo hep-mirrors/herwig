@@ -193,14 +193,17 @@ int TensorMeson2PScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 }
 
 void TensorMeson2PScalarDecayer::persistentOutput(PersistentOStream & os) const  {
-  os << _incoming << _outgoing1 << _outgoing2 << _maxweight << ounit(_coupling,1/GeV);
+  os << _incoming << _outgoing1 << _outgoing2 << _maxweight 
+     << ounit(_coupling,1/GeV);
 }
 
 void TensorMeson2PScalarDecayer::persistentInput(PersistentIStream & is, int)  {
-  is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> iunit(_coupling,1/GeV);
+  is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight 
+     >> iunit(_coupling,1/GeV);
 }
 
-ClassDescription<TensorMeson2PScalarDecayer> TensorMeson2PScalarDecayer::initTensorMeson2PScalarDecayer;
+ClassDescription<TensorMeson2PScalarDecayer> 
+TensorMeson2PScalarDecayer::initTensorMeson2PScalarDecayer;
 // Definition of the static class description member.
 
 void TensorMeson2PScalarDecayer::Init() {
@@ -240,7 +243,6 @@ void TensorMeson2PScalarDecayer::Init() {
      0, 0, 0, 0., 100000., false, false, true);
 }
 
-
 // matrix elememt for the process
 double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
 				       const Particle & inpart,
@@ -254,7 +256,8 @@ double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
   for(unsigned int ix=0;ix<decay.size();++ix) {
     // workaround for gcc 3.2.3 bug
     //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+    PPtr mytemp=decay[ix]; 
+    ScalarWaveFunction(mytemp,outgoing,true,vertex);
   }
   // calculate the matrix element
   DecayMatrixElement newME(PDT::Spin2,PDT::Spin0,PDT::Spin0);
@@ -263,6 +266,14 @@ double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
       ((inten[ix]*decay[1]->momentum())*decay[0]->momentum());
   }
   ME(newME);
+//   // test of the answer
+//   double me = newME.contract(rhoin).real();
+//   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+// 					     decay[1]->mass());
+//   double test = Energy4(pow<4,1>(2*pcm))*sqr( _coupling[imode()]/inpart.mass())/120.;
+//   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
+//        << me << " " << test << " " << (me-test)/(me+test) << endl;
   // return the answer
   return newME.contract(rhoin).real();
 }
@@ -340,5 +351,6 @@ void TensorMeson2PScalarDecayer::dataBaseOutput(ofstream & output,
 	     << _maxweight[ix] << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

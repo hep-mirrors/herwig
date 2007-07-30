@@ -7,10 +7,10 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
-#include <ThePEG/Repository/CurrentGenerator.h>
 #include "DecayPhaseSpaceChannel.fh"
 #include "DecayIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "ThePEG/Repository/UseRandom.h"
 #include "DecayPhaseSpaceMode.fh"
 
 namespace Herwig {

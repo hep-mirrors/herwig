@@ -8,6 +8,7 @@
 #include "ThePEG/PDT/Decayer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "MamboDecayer.fh"
+
 namespace Herwig {
   using namespace ThePEG;
   
@@ -88,6 +89,17 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
+  //@}
+
 private:
 
   /**
@@ -111,47 +123,79 @@ private:
      *@return The weight of the configuration
      **/
   double calculateMomentum(vector<Lorentz5Momentum> & mom,
-			   const Energy & comEn) const;
+			   Energy comEn) const;
 
   /**
-   *Bessel function of first kind(n=0)
-   *@param x Argument of Bessel Function 
-   *@return long double
-   **/
-  inline long double BessI0(const long double & x) const;
-  
-  /**
-   *Bessel function of first kind(n=1)
-   *@param x Argument of Bessel Function 
-   *@return long double
-   **/
-  inline long double BessI1(const long double & x) const;
-  
-  /**
-   *Bessel function of second kind(n=0)
-   *@param x Argument of Bessel Function 
-   *@return long double
-   **/
-  inline long double BessK0(const long double & x) const;
-  
-  /**
-   *Bessel function of second kind(n=1)
-   *@param x Argument of Bessel Function 
-   *@return long double
-   **/
-  inline long double BessK1(const long double & x) const;
-  
-  /**
-   * Derivative of ratio K0/K1
-   *@param x Argument of Bessel Function 
-   *@return long double
-   **/
-  inline long double BessKPrime(const long double & x) const;
+   * Set up the colour connections for the decay
+   * @param parent The incoming particle
+   * @param out The decay products
+   */
+  void colourConnections(const Particle & parent, 
+			 ParticleVector & out) const;  
 
+  /** @name Bessel Functions.*/
+  //@{
+  /**
+   * Compute the values \f$K_0(x)/K_1(x)\f$ and it's derivative using
+   * asymptotic expansion for large x values.
+   * @param x The argument
+   * @param f The value of the ratio
+   * @param fp The value of the derivative ratio
+   */
+  inline void BesselFns(const long double x,
+			long double & f, long double & fp) const;
+
+  /**
+   * Compute the values \f$I_0(x)/I_1(x)\f$ and it's derivative using
+   * asymptotic expansion.
+   * @param x The argument
+   * @param f The value of the ratio
+   * @param fp The value of the derivative ratio
+   */
+  inline void BesselIExpand(const long double x,
+			    long double & f, long double & fp) const;
+
+  /**
+   * Modified Bessel function of first kind \f$I_0(x)\f$.
+   *@param x Argument of Bessel Function 
+   **/
+  inline long double BesselI0(const long double x) const;
+  
+  /**
+   *  Modified Bessel function of first kind \f$I_1(x)\f$.
+   *@param x Argument of Bessel Function 
+   **/
+  inline long double BesselI1(const long double x) const;
+  
+  /**
+   * Modified Bessel function of second kind \f$K_0(x)\f$.
+   * @param x Argument of Bessel Function 
+   **/
+  inline long double BesselK0(const long double x) const;
+  
+  /**
+   * Modified Bessel function of second kind \f$K_1(x)\f$.
+   * @param x Argument of Bessel Function 
+   **/
+  inline long double BesselK1(const long double x) const;
+//@}
+
+private:
+  
   /**
    * Maximum weight
    */
   double _maxweight;
+
+  /**
+   * Store coefficents for aysymptotic expansion of \f$\frac{I_0}{I_1}\f$
+   */
+  double _a0[10];
+  /**
+   * Store data for aysymptotic expansion of the first derivative
+   * \f$\frac{I_0}{I_1}\f$.
+   */
+  double _a1[10];
 };
 
 }

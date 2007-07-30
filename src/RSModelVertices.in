@@ -1,3 +1,9 @@
+#################################################
+# Setup of Randall-Sundrum model vertices.
+#
+# End users won't find anything interesting here.
+#################################################
+
 create Herwig::RSModelFFGRVertex FFGRVertex
 set /Defaults/Model:Vertex/FFGR FFGRVertex
 set FFGRVertex:Model /Defaults/Model

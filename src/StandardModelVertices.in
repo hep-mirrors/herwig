@@ -1,3 +1,9 @@
+#################################################
+# Setup of Standard Model vertices.
+#
+# End users won't find anything interesting here.
+#################################################
+
 # create the Standard Model fermion-antifermion Z vertex
 create Herwig::SMFFZVertex FFZVertex
 set /Defaults/Model:Vertex/FFZ FFZVertex

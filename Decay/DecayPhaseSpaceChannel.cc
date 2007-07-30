@@ -17,9 +17,9 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include <ThePEG/Helicity/SpinInfo.h>
+#include <ThePEG/Repository/CurrentGenerator.h>
 
 using namespace Herwig;
-using namespace ThePEG;
 using ThePEG::Helicity::SpinInfo;
   
 DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr in) 
@@ -37,8 +37,8 @@ void DecayPhaseSpaceChannel::persistentInput(PersistentIStream & is, int) {
      >> _intdau1 >> _intdau2 >> _intext >> _mode;
 }
   
-  
-ClassDescription<DecayPhaseSpaceChannel> DecayPhaseSpaceChannel::initDecayPhaseSpaceChannel;
+ClassDescription<DecayPhaseSpaceChannel> 
+DecayPhaseSpaceChannel::initDecayPhaseSpaceChannel;
 // Definition of the static class description member.
 
 void DecayPhaseSpaceChannel::Init() {
@@ -173,8 +173,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
 }
 
 // generate the weight for this channel given a phase space configuration
-double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & output)
-{
+double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & output) {
   using Constants::pi;
   // integers for loops
   unsigned int ix,iy,idau[2],iz;
@@ -183,90 +182,83 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
   // work out the masses of the intermediate particles
   vector<Energy2> intmass2; vector<Energy> intmass;
   Lorentz5Momentum pinter;
-  for(ix=0;ix<_intpart.size();++ix)
-    {
-      pinter=output[_intext[ix][0]];
-      for(iz=1;iz<_intext[ix].size();++iz){pinter+=output[_intext[ix][iz]];}
-      pinter.rescaleMass();
-      intmass.push_back(pinter.mass());
-      intmass2.push_back(intmass[ix]*intmass[ix]);
-    }
+  for(ix=0;ix<_intpart.size();++ix) {
+    pinter=output[_intext[ix][0]];
+    for(iz=1;iz<_intext[ix].size();++iz) pinter+=output[_intext[ix][iz]];
+    pinter.rescaleMass();
+    intmass.push_back(pinter.mass());
+    intmass2.push_back(intmass[ix]*intmass[ix]);
+  }
   Energy2 scale(intmass2[0]);
   // calculate the terms for each of the decays
   Energy lower,upper,lowerb[2];
-  for(ix=0;ix<_intpart.size();++ix)
-    {
-      idau[0] = abs(_intdau1[ix]);
-      idau[1] = abs(_intdau2[ix]);
-      // if both decay products off-shell
-      Energy pcm;
-      if(_intdau1[ix]<0&&_intdau2[ix]<0)
-	{
-	  // lower limits on the masses of the two resonances
-	  for(iy=0;iy<2;++iy)
-	    {
-	      lowerb[iy]=Energy();
-	      for(iz=0;iz<_intext[idau[iy]].size();++iz)
-		{lowerb[iy]+=output[_intext[idau[iy]][iz]].mass();}
-	    }
-	  // undo effect of randomising
-	  // weight for the first order
-	  // contribution of first resonance
-	  upper = intmass[ix]-lowerb[1];
-	  lower = lowerb[0];
-	  InvEnergy2 wgta=massWeight(idau[0],intmass[idau[0]],lower,upper);
-	  // contribution of second resonance
-	  upper = intmass[ix]-intmass[idau[0]];
-	  lower = lowerb[1];
-	  InvEnergy4 wgta2 = wgta*massWeight(idau[1],intmass[idau[1]],lower,upper);
-	  // weight for the second order
-	  upper = intmass[ix]-lowerb[0];
-	  lower = lowerb[1];
-	  InvEnergy2 wgtb=massWeight(idau[1],intmass[idau[1]],lower,upper);
-	  upper = intmass[ix]-intmass[idau[1]];
-	  lower = lowerb[0];
-	  InvEnergy4 wgtb2=wgtb*massWeight(idau[0],intmass[idau[0]],lower,upper);
-	  // weight factor
-	  wgt *=0.5*sqr(scale)*(wgta2+wgtb2);
-	  // factor for the kinematics
-	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
-				       intmass[idau[1]]);
-	  wgt *= intmass[ix]*8.*pi*pi/pcm;
-	}
-      // only first off-shell
-      else if(_intdau1[ix]<0)
-	{
-	  // compute the limits of integration
-	  upper = intmass[ix]-output[idau[1]].mass();
-	  lower = Energy();
-	  for(iy=0;iy<_intext[idau[0]].size();++iy)
-	    {lower+=output[_intext[idau[0]][iy]].mass();}
-	  wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
-	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
-				       output[idau[1]].mass());
-	  wgt *= intmass[ix]*8.*pi*pi/pcm;
-	}
-      // only second off-shell
-      else if(_intdau2[ix]<0)
-	{
-	    // compute the limits of integration
-	  upper = intmass[ix]-output[idau[0]].mass(); 
-	  lower = Energy();
-	  for(iy=0;iy<_intext[idau[1]].size();++iy)
-	    {lower+=output[_intext[idau[1]][iy]].mass();}
-	  wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
-	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[1]],
-				       output[idau[0]].mass());
-	  wgt *=intmass[ix]*8.*pi*pi/pcm;
-	}
-      // both on-shell
-      else
-	{
-	  pcm = Kinematics::CMMomentum(intmass[ix],output[idau[1]].mass(),
-				       output[idau[0]].mass());
-	  wgt *=intmass[ix]*8.*pi*pi/pcm;
-	}
+  for(ix=0;ix<_intpart.size();++ix) {
+    idau[0] = abs(_intdau1[ix]);
+    idau[1] = abs(_intdau2[ix]);
+    // if both decay products off-shell
+    Energy pcm;
+    if(_intdau1[ix]<0&&_intdau2[ix]<0) {
+      // lower limits on the masses of the two resonances
+      for(iy=0;iy<2;++iy) {
+	lowerb[iy]=Energy();
+	for(iz=0;iz<_intext[idau[iy]].size();++iz)
+	  lowerb[iy]+=output[_intext[idau[iy]][iz]].mass();
+      }
+      // undo effect of randomising
+      // weight for the first order
+      // contribution of first resonance
+      upper = intmass[ix]-lowerb[1];
+      lower = lowerb[0];
+      InvEnergy2 wgta=massWeight(idau[0],intmass[idau[0]],lower,upper);
+      // contribution of second resonance
+      upper = intmass[ix]-intmass[idau[0]];
+      lower = lowerb[1];
+      InvEnergy4 wgta2 = wgta*massWeight(idau[1],intmass[idau[1]],lower,upper);
+      // weight for the second order
+      upper = intmass[ix]-lowerb[0];
+      lower = lowerb[1];
+      InvEnergy2 wgtb=massWeight(idau[1],intmass[idau[1]],lower,upper);
+      upper = intmass[ix]-intmass[idau[1]];
+      lower = lowerb[0];
+      InvEnergy4 wgtb2=wgtb*massWeight(idau[0],intmass[idau[0]],lower,upper);
+      // weight factor
+      wgt *=0.5*sqr(scale)*(wgta2+wgtb2);
+      // factor for the kinematics
+      pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
+				   intmass[idau[1]]);
+      wgt *= intmass[ix]*8.*pi*pi/pcm;
     }
+    // only first off-shell
+    else if(_intdau1[ix]<0) {
+      // compute the limits of integration
+      upper = intmass[ix]-output[idau[1]].mass();
+      lower = Energy();
+      for(iy=0;iy<_intext[idau[0]].size();++iy)
+	lower+=output[_intext[idau[0]][iy]].mass();
+      wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
+      pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
+				   output[idau[1]].mass());
+      wgt *= intmass[ix]*8.*pi*pi/pcm;
+    }
+    // only second off-shell
+    else if(_intdau2[ix]<0) {
+      // compute the limits of integration
+      upper = intmass[ix]-output[idau[0]].mass(); 
+      lower = Energy();
+      for(iy=0;iy<_intext[idau[1]].size();++iy)
+	lower+=output[_intext[idau[1]][iy]].mass();
+      wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
+      pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[1]],
+				   output[idau[0]].mass());
+      wgt *=intmass[ix]*8.*pi*pi/pcm;
+    }
+    // both on-shell
+    else {
+      pcm = Kinematics::CMMomentum(intmass[ix],output[idau[1]].mass(),
+				   output[idau[0]].mass());
+      wgt *=intmass[ix]*8.*pi*pi/pcm;
+    }
+  }
   // finally the overall factor
   wgt /= pi;
   // return the answer
@@ -279,26 +271,29 @@ ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceChannel & channe
   os << "Channel for the decay of " << channel._mode->externalParticles(0)->PDGName() 
      << " -> ";
   for(unsigned int ix=1;ix<channel._mode->numberofParticles();++ix)
-    {os << channel._mode->externalParticles(ix)->PDGName() << " ";}
+    os << channel._mode->externalParticles(ix)->PDGName() << " ";
   os << endl;
   os << "Decay proceeds in following steps ";
-  for(unsigned int ix=0;ix<channel._intpart.size();++ix)
-    {
-      os << channel._intpart[ix]->PDGName() << " -> ";
-      if(channel._intdau1[ix]>0)
-	{os << channel._mode->externalParticles(channel._intdau1[ix])->PDGName()  
-	    << "(" << channel._intdau1[ix]<< ") ";}
-      else
-	{os << channel._intpart[-channel._intdau1[ix]]->PDGName() 
-	    << "(" << channel._intdau1[ix]<< ") ";}
-      if(channel._intdau2[ix]>0)
-	{os << channel._mode->externalParticles(channel._intdau2[ix])->PDGName()  
-	    << "(" <<channel._intdau2[ix] << ") ";}
-      else
-	{os << channel._intpart[-channel._intdau2[ix]]->PDGName() 
-	    << "(" <<channel._intdau2[ix] << ") ";}
-      os << endl;
+  for(unsigned int ix=0;ix<channel._intpart.size();++ix) {
+    os << channel._intpart[ix]->PDGName() << " -> ";
+    if(channel._intdau1[ix]>0) {
+      os << channel._mode->externalParticles(channel._intdau1[ix])->PDGName()  
+	 << "(" << channel._intdau1[ix]<< ") ";
     }
+    else {
+      os << channel._intpart[-channel._intdau1[ix]]->PDGName() 
+	 << "(" << channel._intdau1[ix]<< ") ";
+    }
+    if(channel._intdau2[ix]>0) {
+      os << channel._mode->externalParticles(channel._intdau2[ix])->PDGName()  
+	 << "(" <<channel._intdau2[ix] << ") ";
+    }
+    else{
+      os << channel._intpart[-channel._intdau2[ix]]->PDGName() 
+	 << "(" <<channel._intdau2[ix] << ") ";
+    }
+    os << endl;
+  }
   return os;
 }
 
@@ -334,27 +329,25 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
   for(ix=_intpart.size()-1;ix>=0;--ix) {
     temp.clear();
     // add the first daughter
-    if(_intdau1[ix]>=0)
-      {temp.push_back(_intdau1[ix]);}
-    else
-      {
-	iy = -_intdau1[ix];
-	vector<int>::iterator istart=_intext[iy].begin();
-	vector<int>::iterator iend=_intext[iy].end();
-	for(;istart!=iend;++istart)
-	  {temp.push_back(*istart);}
-      }
+    if(_intdau1[ix]>=0) {
+      temp.push_back(_intdau1[ix]);
+    }
+    else {
+      iy = -_intdau1[ix];
+      vector<int>::iterator istart=_intext[iy].begin();
+      vector<int>::iterator iend=_intext[iy].end();
+      for(;istart!=iend;++istart) temp.push_back(*istart);
+    }
     // add the second daughter
-    if(_intdau2[ix]>=0)
-      {temp.push_back(_intdau2[ix]);}
-    else
-      {
-	iy = -_intdau2[ix];
-	vector<int>::iterator istart=_intext[iy].begin();
-	vector<int>::iterator iend=_intext[iy].end();
-	for(;istart!=iend;++istart)
-	  {temp.push_back(*istart);}
-      }
+    if(_intdau2[ix]>=0) {
+      temp.push_back(_intdau2[ix]);
+    }
+    else {
+      iy = -_intdau2[ix];
+      vector<int>::iterator istart=_intext[iy].begin();
+      vector<int>::iterator iend=_intext[iy].end();
+      for(;istart!=iend;++istart) temp.push_back(*istart);
+    }
     _intext[ix]=temp;
   }
 }
@@ -373,6 +366,7 @@ void DecayPhaseSpaceChannel::doinitrun() {
     }
   }
 }
+
 // generate the final-state particles including the intermediate resonances
 void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
 						   ParticleVector & out) {
@@ -383,35 +377,31 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   ParticleVector external;
   external.push_back(const_ptr_cast<tPPtr>(&in));
   // outgoing
-  for(ix=0;ix<out.size();++ix){external.push_back(out[ix]);}
+  for(ix=0;ix<out.size();++ix) external.push_back(out[ix]);
   out.clear();
   // now create the intermediates
   ParticleVector resonance; resonance.push_back(external[0]);
   PPtr respart;
   tcPDPtr parttemp;
   Lorentz5Momentum pinter;
-  for(ix=1;ix<_intpart.size();++ix)
-    {
-      pinter=external[_intext[ix][0]]->momentum();
-      for(iz=1;iz<_intext[ix].size();++iz)
-	{pinter+=external[_intext[ix][iz]]->momentum();}
-      pinter.rescaleMass();
-      if(cc&&_intpart[ix]->CC()){respart=new_ptr(Particle(_intpart[ix]->CC()));}
-      else{respart=new_ptr(Particle(_intpart[ix]));}
-      respart->set5Momentum(pinter);
-      resonance.push_back(respart);
-    }
+  for(ix=1;ix<_intpart.size();++ix) {
+    pinter=external[_intext[ix][0]]->momentum();
+    for(iz=1;iz<_intext[ix].size();++iz) 
+      pinter+=external[_intext[ix][iz]]->momentum();
+    pinter.rescaleMass();
+    respart = (cc&&_intpart[ix]->CC()) ? 
+      new_ptr(Particle(_intpart[ix]->CC())) : new_ptr(Particle(_intpart[ix]));
+    respart->set5Momentum(pinter);
+    resonance.push_back(respart);
+  }
   // set up the mother daughter relations
-  for(ix=1;ix<_intpart.size();++ix)
-    {
-      if(_intdau1[ix]<0){resonance[ix]->addChild(resonance[-_intdau1[ix]]);}
-      else{resonance[ix]->addChild(external[_intdau1[ix]]);}
-      if(_intdau2[ix]<0){resonance[ix]->addChild(resonance[-_intdau2[ix]]);}
-      else{resonance[ix]->addChild(external[_intdau2[ix]]);}
-    }
+  for(ix=1;ix<_intpart.size();++ix) {
+    resonance[ix]->addChild( _intdau1[ix]<0 ? 
+			     resonance[-_intdau1[ix]] : external[_intdau1[ix]]);
+    resonance[ix]->addChild( _intdau2[ix]<0 ? 
+			     resonance[-_intdau2[ix]] : external[_intdau2[ix]]);
+  }
   // construct the output with the particles in the first step
-  if(_intdau1[0]>0){out.push_back(external[_intdau1[0]]);}
-  else{out.push_back(resonance[-_intdau1[0]]);}
-  if(_intdau2[0]>0){out.push_back(external[_intdau2[0]]);}
-  else{out.push_back(resonance[-_intdau2[0]]);}
+  out.push_back( _intdau1[0]>0 ? external[_intdau1[0]] : resonance[-_intdau1[0]]);
+  out.push_back( _intdau2[0]>0 ? external[_intdau2[0]] : resonance[-_intdau2[0]]);
 }

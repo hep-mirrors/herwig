@@ -7,11 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer(const VectorMesonPVectorPScalarDecayer & x)
-  : DecayIntegrator(x), _coupling(x._coupling),_incoming(x._incoming),
-    _outgoingA(x._outgoingA),_outgoingP(x._outgoingP),_maxweight(x._maxweight),
-    _initsize(x._initsize) {}
-
 inline IBPtr VectorMesonPVectorPScalarDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -22,9 +17,10 @@ inline IBPtr VectorMesonPVectorPScalarDecayer::fullclone() const {
 
 inline void VectorMesonPVectorPScalarDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  if(initialize())
-    {for(unsigned int ix=0;ix<_incoming.size();++ix)
-	{_maxweight[ix] = mode(ix)->maxWeight();}}
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
 }
-
+ 
 }

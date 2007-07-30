@@ -12,15 +12,10 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using Helicity::VectorWaveFunction;
-using Helicity::Direction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
-VectorMesonCurrent::VectorMesonCurrent() 
-{
+VectorMesonCurrent::VectorMesonCurrent()  {
   _id.push_back(213);_decay_constant.push_back(0.1764*GeV2);
   addDecayMode(2,-1);
   _id.push_back(113);_decay_constant.push_back(0.1764*GeV2);
@@ -95,11 +90,10 @@ void VectorMesonCurrent::Init() {
 bool VectorMesonCurrent::createMode(int icharge, unsigned int imode,
 				    DecayPhaseSpaceModePtr mode,
 				    unsigned int iloc,unsigned int ires,
-				    DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+				    DecayPhaseSpaceChannelPtr phase,Energy upp) {
   tPDPtr part(getParticleData(_id[imode]));
   // check the mode has the correct charge
-  if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))){return false;}
+  if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))) return false;
   // check if the particle is kinematically allowed
   Energy min=part->massMin();
   if(min>upp) return false;
@@ -111,29 +105,25 @@ bool VectorMesonCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // outgoing particles 
-PDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia)
-{
+PDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia) {
   tPDPtr part(getParticleData(_id[imode]));
   PDVector output;
-  if(icharge==int(part->iCharge()))
-    {
-      if(icharge==0)
-	{
-	  int iqb,iab;
-	  decayModeInfo(imode,iqb,iab);
-	  if(iq==iqb&&ia==iab){output.push_back(part);}
-	  else{output.push_back(part->CC());}
-	}
-      else{output.push_back(part);}
+  if(icharge==int(part->iCharge())) {
+    if(icharge==0) {
+      int iqb,iab;
+      decayModeInfo(imode,iqb,iab);
+      if(iq==iqb&&ia==iab) output.push_back(part);
+      else                 output.push_back(part->CC());
     }
-  else if(icharge==-int(part->iCharge())){output.push_back(part->CC());}
+    else output.push_back(part);
+  }
+  else if(icharge==-int(part->iCharge())) output.push_back(part->CC());
   return output;
 }
 
 vector<LorentzPolarizationVectorE> 
 VectorMesonCurrent::current(bool vertex, const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay) const
-{
+			    Energy & scale,const ParticleVector & decay) const {
   scale=decay[0]->mass();
   // polarization vector
   vector<LorentzPolarizationVector> temp;
@@ -141,11 +131,10 @@ VectorMesonCurrent::current(bool vertex, const int imode, const int,
   // quarks in the current
   int iq,ia;
   decayModeInfo(imode,iq,ia);
-  if(abs(iq)==abs(ia)&&abs(iq)<3)
-    {
-      fact*=(sqrt(0.5));
-      if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1){fact=-fact;}
-    }
+  if(abs(iq)==abs(ia)&&abs(iq)<3) {
+    fact *= sqrt(0.5);
+    if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1) fact=-fact;
+  }
   // set up the spin information for the particle and calculate the wavefunctions
   VectorWaveFunction(temp,decay[0],outgoing,true,false,vertex);
   // normalise the current
@@ -157,29 +146,28 @@ VectorMesonCurrent::current(bool vertex, const int imode, const int,
   return returnval;
 }
 
-bool VectorMesonCurrent::accept(vector<int> id)
-{
-  if(id.size()!=1){return false;}
+bool VectorMesonCurrent::accept(vector<int> id) {
+  if(id.size()!=1) return false;
   int idtemp(abs(id[0]));
-  for(unsigned int ix=0;ix<_id.size();++ix){if(abs(_id[ix])==idtemp){return true;}}
+  for(unsigned int ix=0;ix<_id.size();++ix) {
+    if(abs(_id[ix])==idtemp) return true;
+  }
   return false;
 }
 
-unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
-{
+unsigned int VectorMesonCurrent::decayMode(vector<int> idout) {
   int idtemp(abs(idout[0])); unsigned int ix(0);
   bool found(false);
-  do
-    {
-      if(idtemp==abs(_id[ix])){found=true;}
-      else{++ix;}
-    }
+  do {
+    if(idtemp==abs(_id[ix])) found=true;
+    else                     ++ix;
+  }
   while(!found);
   return ix;
 }
 
-void VectorMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
+void VectorMesonCurrent::dataBaseOutput(ofstream & output,
+					bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::VectorMesonCurrent " << fullName() 
 		    << " HwWeakCurrents.so\n";
@@ -198,7 +186,6 @@ void VectorMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool creat
     }
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

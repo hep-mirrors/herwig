@@ -21,7 +21,8 @@ $(THEPEGLIB) -ldl
 
 if WANT_LOOPTOOLS
 libHerwig_la_LIBADD += \
-$(top_builddir)/Looptools/libHwLooptools.la
+$(top_builddir)/Looptools/libHwLooptools.la \
+$(top_builddir)/Looptools/libHwLooptoolsHelper.la
 endif
 
 all-local: done-all-links

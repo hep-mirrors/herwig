@@ -20,11 +20,6 @@
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
 
 inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
@@ -241,6 +236,25 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
       // resize the duplicate modes to remove them
       for(iy=0;iy<modeloc.size();++iy) particles[modeloc[iy]]=PDVector(0);
       break;
+    }
+  }
+}
+
+void ScalarMesonFactorizedDecayer::doinitrun() {
+  unsigned int ix,iy;
+  for(ix=0;ix<_current.size();++ix) _current[ix]->initrun();
+  for(ix=0;ix<_form.size();++ix)    _form[ix]->initrun();
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    _weights.clear();
+    _wgtloc.clear();
+    _wgtmax.clear();
+    for(ix=0;ix<numberModes();++ix) {
+      _wgtmax.push_back(mode(ix)->maxWeight());
+      _wgtloc.push_back(_weights.size());
+      for(iy=0;iy<mode(ix)->numberChannels();++iy) {
+	_weights.push_back(mode(ix)->channelWeight(iy));
+      }
     }
   }
 }
@@ -521,11 +535,9 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	form.push_back(-ii*msum*A1*vecwave[_formpart[mode][iy]][ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       +2.*V/msum*
-		       Helicity::
-		       epsilon(vecwave[_formpart[mode][iy]][ix],
-			       part.momentum(),
-			       decay[_formpart[mode][iy]]->momentum())); 
+		       +2.*V/msum*epsilon(vecwave[_formpart[mode][iy]][ix],
+					  part.momentum(),
+					  decay[_formpart[mode][iy]]->momentum())); 
       }
     }
     else if(decay[_formpart[mode][iy]]->dataPtr()->iSpin()==5) {
@@ -536,7 +548,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       for(ix=0;ix<5;++ix) {
 	dotv = tenwave[_formpart[mode][iy]][ix]*part.momentum();
 	complex<Energy2> dot = dotv*part.momentum();
-	form.push_back(ii*h*Helicity::epsilon(dotv,sum,q)-k*dotv
+	form.push_back(ii*h*epsilon(dotv,sum,q)-k*dotv
 		       -bp*dot*sum-bm*dot*q);
       }
     }

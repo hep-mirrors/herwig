@@ -12,65 +12,52 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/ConstituentParticleData.h"
 #include "ThePEG/Interface/Switch.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WeakPartonicDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
 bool WeakPartonicDecayer::accept(const DecayMode & dm) const {
   // check we can find the flavours of the quarks in the decaying meson
   long id = dm.parent()->id();
   int flav1, flav2;
-  if((id / 1000)%10) 
-    {
-      flav1 = (id/1000)%10;
-      flav2 = (id/10)%100;
-    } 
-  else 
-    {
-      flav1 = id/100;  
-      flav2 = (id/10)%10;
-    }
+  if((id / 1000)%10) {
+    flav1 = (id/1000)%10;
+    flav2 = (id/10)%100;
+  } 
+  else {
+    flav1 = id/100;  
+    flav2 = (id/10)%10;
+  }
   if(!flav1 || !flav2) return false;
   tcPDPtr prod[4];
   // if two decay products one must be in triplet and one antitriplet
   for(unsigned int ix=0;ix<4&&ix<dm.products().size();++ix)
-    {prod[ix]=dm.orderedProducts()[ix];}
-  if(dm.products().size()==2)
-    {
-      if((prod[0]->iColour()==PDT::Colour3&&prod[1]->iColour()==PDT::Colour3bar)||
-	 (prod[0]->iColour()==PDT::Colour3bar&&prod[1]->iColour()==PDT::Colour3))
-	{return true;}
+    prod[ix]=dm.orderedProducts()[ix];
+  if(dm.products().size()==2) {
+    if((prod[0]->iColour()==PDT::Colour3&&prod[1]->iColour()==PDT::Colour3bar)||
+       (prod[0]->iColour()==PDT::Colour3bar&&prod[1]->iColour()==PDT::Colour3))
+      return true;
+  }
+  else if(dm.products().size()==3) {
+    if(((prod[0]->iColour()==PDT::Colour3   &&prod[2]->iColour()==PDT::Colour3bar)||
+	(prod[0]->iColour()==PDT::Colour3bar&&prod[2]->iColour()==PDT::Colour3))
+       &&prod[1]->iColour()==PDT::Colour8) return true;
+  }
+  else if(dm.products().size()==4) {
+    // first two particles should be leptons or q qbar
+    if((prod[0]->id()>=11&&prod[0]->id()<=16&&prod[1]->id()<=-11&&prod[1]->id()>=-16)||
+       (prod[1]->id()>=11&&prod[1]->id()<=16&&prod[0]->id()<=-11&&prod[0]->id()>=-16)||
+       (prod[0]->iColour()==PDT::Colour3    &&prod[1]->iColour()==PDT::Colour3bar   )||
+       (prod[1]->iColour()==PDT::Colour3    &&prod[0]->iColour()==PDT::Colour3bar   )) {
+      // third particle quark and fourth colour anti-triplet or
+      // thrid particle antiquark and fourth colour triplet
+      if((prod[2]->iColour()==PDT::Colour3bar&&prod[3]->iColour()==PDT::Colour3   )||
+	 (prod[2]->iColour()==PDT::Colour3   &&prod[3]->iColour()==PDT::Colour3bar))
+	return true;
     }
-  else if(dm.products().size()==3)
-    {
-      if(((prod[0]->iColour()==PDT::Colour3   &&prod[2]->iColour()==PDT::Colour3bar)||
-	  (prod[0]->iColour()==PDT::Colour3bar&&prod[2]->iColour()==PDT::Colour3))
-	 &&prod[1]->iColour()==PDT::Colour8)
-	{return true;}
-    }
-  else if(dm.products().size()==4)
-    {
-      // first two particles should be leptons or q qbar
-      if((prod[0]->id()>=11&&prod[0]->id()<=16&&prod[1]->id()<=-11&&prod[1]->id()>=-16)||
-	 (prod[1]->id()>=11&&prod[1]->id()<=16&&prod[0]->id()<=-11&&prod[0]->id()>=-16)||
-	 (prod[0]->iColour()==PDT::Colour3    &&prod[1]->iColour()==PDT::Colour3bar   )||
-	 (prod[1]->iColour()==PDT::Colour3    &&prod[0]->iColour()==PDT::Colour3bar   ))
-	{
-	  // third particle quark and fourth colour anti-triplet or
-	  // thrid particle antiquark and fourth colour triplet
-	  if((prod[2]->iColour()==PDT::Colour3bar&&prod[3]->iColour()==PDT::Colour3   )||
-	     (prod[2]->iColour()==PDT::Colour3   &&prod[3]->iColour()==PDT::Colour3bar))
-	    {return true;}
-	}
-      else{return false;}
-    }
+    else return false;
+  }
   return false;
 }
 
@@ -78,23 +65,22 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
   ParticleVector children = dm.produceProducts();
   // these products have the mass but should have constituent mass
-  for(unsigned int ix=0;ix<children.size();++ix)
-    {
-      Energy cmass=children[ix]->dataPtr()->constituentMass();
-      children[ix]->set5Momentum(Lorentz5Momentum(0.*GeV,0.*GeV,0.*GeV,cmass,cmass));
-    }
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    Energy cmass=children[ix]->dataPtr()->constituentMass();
+    children[ix]->set5Momentum(Lorentz5Momentum(cmass));
+  }
   // 2-body decays
   if(children.size()==2) {
     double ctheta,phi;
     Lorentz5Momentum pout[2];
-    for(unsigned int ix=0;ix<2;++ix){pout[ix].setMass(children[ix]->mass());}
+    for(unsigned int ix=0;ix<2;++ix) pout[ix].setMass(children[ix]->mass());
     Kinematics::generateAngles(ctheta,phi);
     Kinematics::twoBodyDecay(parent.momentum(),pout[0].mass(),pout[1].mass(),
 			     ctheta,phi,pout[0],pout[1]);
     for(unsigned int ix=0; ix<2;++ix) children[ix]->setMomentum(pout[ix]);
     if(children[0]->coloured()) {
-      if(children[0]->id() > 0){children[0]->antiColourNeighbour(children[1]);}
-      else                     {children[0]->    colourNeighbour(children[1]);}
+      if(children[0]->id() > 0) children[0]->antiColourNeighbour(children[1]);
+      else                      children[0]->    colourNeighbour(children[1]);
     }
   }
   // 3-body decays
@@ -214,6 +200,3 @@ void WeakPartonicDecayer::Init() {
 double WeakPartonicDecayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
   return (t1-t0)*(t0-t2)*t3; 
 }
-
-}
-

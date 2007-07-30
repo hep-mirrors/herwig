@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 3:0:0 $(CLHEPLDFLAGS)
-HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(CLHEPINCLUDE)
-HwAnalysis_la_LIBADD = $(CLHEPLIB)
+HwAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
@@ -82,7 +82,11 @@ DDalitzAnalysis.fh DDalitzAnalysis.cc  \
 SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.icc \
 SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc  \
 OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.icc \
-OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc 
+OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc\
+BeamCorrelationAnalysis.h BeamCorrelationAnalysis.icc \
+BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
+a1DecayAnalysis.h a1DecayAnalysis.icc \
+a1DecayAnalysis.fh a1DecayAnalysis.cc 
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET

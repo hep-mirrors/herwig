@@ -242,27 +242,17 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
     }
   }
   ME(newME);
-  /*
-  // testing the matrix element
-  Energy2 m02=inpart.mass()*inpart.mass();
-  Energy2 m12=decay[0]->mass()*decay[0]->mass();
-  Energy2 m22=decay[1]->mass()*decay[1]->mass();
-  double root = inpart.mass()*inpart.mass()*(inpart.mass()*inpart.mass()
-  -2.*decay[0]->mass()*decay[0]->mass()
-  -2.*decay[1]->mass()*decay[1]->mass())
-  +decay[0]->mass()*decay[0]->mass()*(decay[0]->mass()*decay[0]->mass()
-  -2.*decay[1]->mass()*decay[1]->mass())
-  +decay[1]->mass()*decay[1]->mass()*decay[1]->mass()*decay[1]->mass();
-  Energy pcm =0.5*sqrt(root)/inpart.mass();
-  Energy2 pcm2=pcm*pcm;
-  cout << "testing the matrix element VV " 
-  << inpart.PDGName() << " -> " 
-  << decay[0]->PDGName() << "  " 
-  << decay[1]->PDGName() << "  " 
-  << pcm/30./pi/m02/m02*_coupling[imode()]*_coupling[imode()]*
-  (3.*m02*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
-  -5.*(m12-m22)*(m12-m22)*pcm2) << endl;
-  */
+//   // testing the matrix element
+//   double metest = newME.contract(rhoin).real();
+//   Energy2 m02(sqr(inpart.mass())),m12(sqr(decay[0]->mass())),m22(sqr(decay[1]->mass()));
+//   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+// 					     decay[1]->mass());
+//   Energy2 pcm2(sqr(pcm));
+//   double test = 4./15./m02/m02*sqr(_coupling[imode()])*
+//     (3.*m02*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))-5.*(m12-m22)*(m12-m22)*pcm2);
+//   cout << "testing the matrix element VV " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
+//        << metest << " " << test <<  " " << (metest-test)/(metest+test) << endl;
   // return the answer
   return newME.contract(rhoin).real();
 }

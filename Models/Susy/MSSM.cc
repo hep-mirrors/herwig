@@ -34,8 +34,7 @@ void MSSM::Init() {
 }
 
 void MSSM::createMixingMatrices() {
-  map<string,pair<pair<unsigned int,unsigned int>, 
-    vector<MixingElement> > >::const_iterator it;
+  map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
   for(it=mixings().begin();it!=mixings().end();++it) {
     string name=it->first;
     // create the stop, sbottom and stau mixing matrices
@@ -55,7 +54,7 @@ void MSSM::createMixingMatrices() {
   }
   // neutral higgs mixing if not already set
   if(!theHiggsMix) {
-    vector<MixingElement> hmix;
+    MixingVector hmix;
     hmix.push_back(MixingElement(1,1, cos(theAlpha)));
     hmix.push_back(MixingElement(1,2,-sin(theAlpha)));
     hmix.push_back(MixingElement(2,1, sin(theAlpha)));
@@ -106,12 +105,11 @@ void MSSM::adjustMixingMatrix(long id) {
 }
 
 void MSSM::extractParameters(bool checkmodel) {
-  map<string,pair<pair<unsigned int,unsigned int>, 
-    vector<MixingElement> > >::const_iterator it;
+  map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
   // trilinear couplings
   for(it=mixings().begin();it!=mixings().end();++it) {
     string name=it->first;
-    vector<MixingElement>::const_iterator vit;
+    MixingVector::const_iterator vit;
     if(name=="au") {
       theAtop=0.*GeV;
       for(vit=it->second.second.begin();vit!=it->second.second.end();++vit) {

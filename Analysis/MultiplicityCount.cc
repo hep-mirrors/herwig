@@ -10,73 +10,113 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/StandardSelectors.h"
 #include "ThePEG/EventRecord/Event.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MultiplicityCount.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include <iostream>
+#include <fstream>
 
 using namespace Herwig;
 using namespace ThePEG;
 
+string MultiplicityInfo::bargraph(long N)
+{
+  if (obsMultiplicity == 0.0) return "     ?     ";
+  else if (nSigma(N) >= 6.0)  return "-----|---->";
+  else if (nSigma(N) >= 5.0)  return "-----|----*";
+  else if (nSigma(N) >= 4.0)  return "-----|---*-";
+  else if (nSigma(N) >= 3.0)  return "-----|--*--";
+  else if (nSigma(N) >= 2.0)  return "-----|-*---";
+  else if (nSigma(N) >= 1.0)  return "-----|*----";
+  else if (nSigma(N) > -1.0)  return "-----*-----";
+  else if (nSigma(N) > -2.0)  return "----*|-----";
+  else if (nSigma(N) > -3.0)  return "---*-|-----";
+  else if (nSigma(N) > -4.0)  return "--*--|-----";
+  else if (nSigma(N) > -5.0)  return "-*---|-----";
+  else if (nSigma(N) > -6.0)  return "*----|-----";
+  else                        return "<----|-----";
+}
+
 MultiplicityCount::MultiplicityCount() 
 {
-  _data[0]   = MultiplicityInfo(20.924,0.117,lightMeson);
-  _data[22]  = MultiplicityInfo(21.27, 0.60,lightMeson);
-  _data[111] = MultiplicityInfo(9.59,0.33,lightMeson);
-  _data[113] = MultiplicityInfo(1.295,0.125,lightMeson);
-  _data[211] = MultiplicityInfo(17.04,0.25,lightMeson);
-  _data[213] = MultiplicityInfo(2.40,0.43,lightMeson);
-  _data[221] = MultiplicityInfo(0.956,0.049,lightMeson);
-  _data[223] = MultiplicityInfo(1.083,0.088,lightMeson);
-  _data[225] = MultiplicityInfo(0.168,0.021,other);
-  _data[311] = MultiplicityInfo(2.027,0.025,lightMeson);
-  _data[313] = MultiplicityInfo(0.761,0.032,strangeMeson);
-  _data[315] = MultiplicityInfo(0.106,0.060,strangeMeson);
-  _data[321] = MultiplicityInfo(2.319,0.079,strangeMeson);
-  _data[323] = MultiplicityInfo(0.731,0.058,strangeMeson);
-  _data[331] = MultiplicityInfo(0.152,0.030,lightMeson);
-  _data[333] = MultiplicityInfo(0.097,0.007,strangeMeson);
-  _data[335] = MultiplicityInfo(0.020,0.008,other);
-  _data[411] = MultiplicityInfo(0.184,0.018,other);
-  _data[413] = MultiplicityInfo(0.182,0.009,other);
-  _data[421] = MultiplicityInfo(0.473,0.026,other);
-  _data[431] = MultiplicityInfo(0.129,0.013,other);
-  _data[433] = MultiplicityInfo(0.096,0.046,other);
-  _data[443] = MultiplicityInfo(0.00544,0.00029,other);
-  _data[2212] = MultiplicityInfo(0.991,0.054,lightBaryon);
-  _data[2112] = MultiplicityInfo(0.991,0.054,lightBaryon);
-  _data[2224] = MultiplicityInfo(0.088,0.034,lightBaryon);
-  _data[2214] = MultiplicityInfo(0.000,0.000,lightBaryon);
-  _data[2114] = MultiplicityInfo(0.000,0.000,lightBaryon);
-  _data[3112] = MultiplicityInfo(0.083,0.011,lightBaryon);
-  _data[3122] = MultiplicityInfo(0.373,0.008,lightBaryon);
-  _data[3212] = MultiplicityInfo(0.074,0.009,lightBaryon);
-  _data[3222] = MultiplicityInfo(0.099,0.015,lightBaryon);
-  _data[3224] = MultiplicityInfo(0.0471,0.0046,lightBaryon);
-  _data[3312] = MultiplicityInfo(0.0262,0.0010,lightBaryon);
-  _data[3324] = MultiplicityInfo(0.0058,0.0010,lightBaryon);
-  _data[3334] = MultiplicityInfo(0.00125,0.00024,lightBaryon);
-  _data[4122] = MultiplicityInfo(0.077,0.016,other);
-  _data[100443 ] = MultiplicityInfo(0.00229,0.00041,other);
-  _data[9000211] = MultiplicityInfo(0.27,0.11,other);
-  _data[10221  ] = MultiplicityInfo(0.142,0.011,other);
+  // Average particle multiplicities in hadronic Z decay
+  // PDG 2006 with 2007 partial update
+
+  // all charged
+  _data[0] = MultiplicityInfo(20.76, 0.16, lightMeson); // all charged
+  // gamma
+  _data[22] = MultiplicityInfo(20.97, 1.17, lightMeson);
+  // pi+, pi0, eta
+  _data[211] = MultiplicityInfo(17.03, 0.16, lightMeson);
+  _data[111] = MultiplicityInfo( 9.76, 0.26, lightMeson);
+  _data[221] = MultiplicityInfo( 1.01, 0.08, lightMeson);
+  // rho+, rho0, omega, eta'
+  _data[213] = MultiplicityInfo( 2.40, 0.49, lightMeson);
+  _data[113] = MultiplicityInfo( 1.24, 0.10, lightMeson);
+  _data[223] = MultiplicityInfo( 1.02, 0.06, lightMeson);
+  _data[331] = MultiplicityInfo( 0.17, 0.05, lightMeson);
+  // f_0(980), a_0(980), phi
+  _data[10221] = MultiplicityInfo(0.147, 0.011, other);
+  _data[9000211] = MultiplicityInfo(0.27, 0.14, other);
+  _data[333] = MultiplicityInfo(0.098, 0.006, strangeMeson);
+  // f_2(1270), f_1(1285), f_2'(1525), K+, K0
+  _data[225] = MultiplicityInfo(0.169, 0.025, other);
+  _data[20223] = MultiplicityInfo(0.165, 0.051, other);
+  _data[335] = MultiplicityInfo(0.012, 0.006, other);  
+  _data[321] = MultiplicityInfo(2.24, 0.04, strangeMeson);
+  _data[311] = MultiplicityInfo(2.039, 0.025, lightMeson);
+  // K*+(892), K*0(892), K*_2(1430)
+  _data[323] = MultiplicityInfo(0.72, 0.05, strangeMeson);
+  _data[313] = MultiplicityInfo(0.739, 0.022, strangeMeson);
+  _data[315] = MultiplicityInfo(0.073, 0.023, strangeMeson);
+  // D+, D0, D_s+
+  _data[411] = MultiplicityInfo(0.187, 0.020, other);
+  _data[421] = MultiplicityInfo(0.462, 0.026, other);
+  _data[431] = MultiplicityInfo(0.131, 0.028, other);
+  // D*+(2010), J/Psi(1S), Psi(2S)
+  _data[413] = MultiplicityInfo(0.183, 0.008, other);
+  _data[443] = MultiplicityInfo(0.0056, 0.0007, other);
+  _data[100443] = MultiplicityInfo(0.0023, 0.0007, other);
+  // p, Delta++(1232), Lambda, Sigma+, Sigma-, Sigma0
+  _data[2212] = MultiplicityInfo(1.046, 0.026, lightBaryon);
+  _data[2224] = MultiplicityInfo(0.087, 0.033, lightBaryon);
+  _data[3122] = MultiplicityInfo(0.388, 0.009, lightBaryon);
+  _data[3222] = MultiplicityInfo(0.107, 0.010, lightBaryon);
+  _data[3112] = MultiplicityInfo(0.082, 0.007, lightBaryon);
+  _data[3212] = MultiplicityInfo(0.076, 0.010, lightBaryon);
+  // Sigma*+, Sigma*-, Xi-, Xi*0, Omega-
+  _data[3224] = MultiplicityInfo(0.0239, 0.0021, lightBaryon);  
+  _data[3114] = MultiplicityInfo(0.0240, 0.0024, lightBaryon);  
+  _data[3312] = MultiplicityInfo(0.0258, 0.0009, lightBaryon);
+  _data[3324] = MultiplicityInfo(0.0059, 0.0011, lightBaryon);
+  _data[3334] = MultiplicityInfo(0.00164, 0.00028, lightBaryon);
+  // Lambda_c+
+  _data[4122] = MultiplicityInfo(0.078, 0.024, other);
+
+  // old values
+//   _data[433] = MultiplicityInfo(0.096, 0.046, other);
+//   _data[2112] = MultiplicityInfo(0.991, 0.054, lightBaryon);
+//   _data[2214] = MultiplicityInfo(0., 0., lightBaryon);
+//   _data[2114] = MultiplicityInfo(0., 0., lightBaryon);
+
+// values unknown
   // B mesons
-  _data[511] = MultiplicityInfo(0.000,0.000,other); // B0
-  _data[521] = MultiplicityInfo(0.000,0.000,other); // B+
-  _data[531] = MultiplicityInfo(0.000,0.000,other); // B_s
-  _data[541] = MultiplicityInfo(0.000,0.000,other); // B_c
+  // flavour averaged value!
+  //  _data[513] = MultiplicityInfo(0.28, 0.04, other);
+  _data[513] = MultiplicityInfo(0., 0., other);
+  _data[511] = MultiplicityInfo(0., 0., other); // B0
+  _data[521] = MultiplicityInfo(0., 0., other); // B+
+  _data[531] = MultiplicityInfo(0., 0., other); // B_s
+  _data[541] = MultiplicityInfo(0., 0., other); // B_c
   // B baryons
-  _data[5122] = MultiplicityInfo(0.000,0.000,other); // Lambda_b
-  _data[5112] = MultiplicityInfo(0.000,0.000,other); // Sig_b-
-  _data[5212] = MultiplicityInfo(0.000,0.000,other); // Sig_b0
-  _data[5222] = MultiplicityInfo(0.000,0.000,other); // Sig_b+
-  _data[5132] = MultiplicityInfo(0.000,0.000,other); // Xi_b-
-  _data[5232] = MultiplicityInfo(0.000,0.000,other); // Xi_b0
-  _data[5312] = MultiplicityInfo(0.000,0.000,other); // Xi'_b-
-  _data[5322] = MultiplicityInfo(0.000,0.000,other); // Xi'_b0
-  _data[5332] = MultiplicityInfo(0.000,0.000,other); // Omega_b-
+  _data[5122] = MultiplicityInfo(0., 0., other); // Lambda_b
+  _data[5112] = MultiplicityInfo(0., 0., other); // Sig_b-
+  _data[5212] = MultiplicityInfo(0., 0., other); // Sig_b0
+  _data[5222] = MultiplicityInfo(0., 0., other); // Sig_b+
+  _data[5132] = MultiplicityInfo(0., 0., other); // Xi_b-
+  _data[5232] = MultiplicityInfo(0., 0., other); // Xi_b0
+  _data[5312] = MultiplicityInfo(0., 0., other); // Xi'_b-
+  _data[5322] = MultiplicityInfo(0., 0., other); // Xi'_b0
+  _data[5332] = MultiplicityInfo(0., 0., other); // Omega_b-
 }
 
 void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
@@ -139,18 +179,67 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   }
 }
 
-LorentzRotation MultiplicityCount::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
+void MultiplicityCount::analyze(const tPVector & ) {}
+
+void MultiplicityCount::dofinish() {
+  string filename = generator()->filename() + ".mult";
+  ofstream outfile(filename.c_str());
+
+
+
+  outfile << 
+    "\nParticle multiplicities (compared to LEP data):\n"
+    "  ID       Name    simMult     obsMult       obsErr     Sigma\n";
+  for (map<long,MultiplicityInfo>::const_iterator it = _data.begin();
+       it != _data.end();
+       ++it) 
+    {
+      MultiplicityInfo multiplicity = it->second;
+      string name = (it->first==0 ? "All chgd" : 
+		     generator()->getParticleData(it->first)->PDGName() );
+      long N = generator()->currentEventNumber() - 1;
+
+      outfile << std::scientific << std::showpoint
+	      << std::setprecision(3)
+	      << setw(7) << it->first << ' '
+	      << setw(9) << name << ' ' 
+	//	      << setw(10) << multiplicity.actualCount << ' '
+	      << setw(2) << multiplicity.simMultiplicity(N) << " | " 
+	//	      << setw(2) << multiplicity.simError(N) << " | " 
+	      << setw(2) << multiplicity.obsMultiplicity << " +/- " 
+	      << setw(2) << multiplicity.obsError << ' '
+      //      if (multiplicity.serious(N)) 
+	      << std::showpos << std::setprecision(1)
+	      << multiplicity.nSigma(N) << ' ' 
+	      << multiplicity.bargraph(N)
+	      << std::noshowpos;
+
+      outfile << '\n';
+    }
+
+
+
+  outfile << "\nCount of particles involved in hard process:\n";
+  for (map<long,long>::const_iterator it = _collisioncount.begin();
+       it != _collisioncount.end(); ++ it) {
+    string name = generator()->getParticleData(it->first)->PDGName();
+    outfile << name << '\t' << it->second << '\n';
+  }
+
+
+
+  outfile << "\nFinal state particle count:\n";
+  for (map<long,long>::const_iterator it = _finalstatecount.begin();
+       it != _finalstatecount.end(); ++ it) {
+    string name = generator()->getParticleData(it->first)->PDGName();
+    outfile << name << '\t' << it->second << '\n';
+  }
+
+
+
+  outfile.close();
+  AnalysisHandler::dofinish();
 }
-
-void MultiplicityCount::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
-}
-
-void MultiplicityCount::analyze(tPPtr) {}
-
 
 NoPIOClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
 // Definition of the static class description member.

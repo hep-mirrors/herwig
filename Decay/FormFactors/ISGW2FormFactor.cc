@@ -275,13 +275,13 @@ ISGW2FormFactor::ISGW2FormFactor() {
   addFormFactor( 421,-20323,1,-2, 4, 3);
   addFormFactor( 421,-10321,0,-2, 4, 3);
   // D+ to d dbar I=0
-  addFormFactor( 411,-221  ,0,-1, 4, 1);
-  addFormFactor( 411,-331  ,0,-1, 4, 1);
-  addFormFactor( 411,-223  ,1,-1, 4, 1);
-  addFormFactor( 411,-225  ,2,-1, 4, 1);
-  addFormFactor( 411,-10223,1,-1, 4, 1);
-  addFormFactor( 411,-20223,1,-1, 4, 1);
-  addFormFactor( 411,-10221,0,-1, 4, 1);
+  addFormFactor( 411, 221  ,0,-1, 4, 1);
+  addFormFactor( 411, 331  ,0,-1, 4, 1);
+  addFormFactor( 411, 223  ,1,-1, 4, 1);
+  addFormFactor( 411, 225  ,2,-1, 4, 1);
+  addFormFactor( 411, 10223,1,-1, 4, 1);
+  addFormFactor( 411, 20223,1,-1, 4, 1);
+  addFormFactor( 411, 10221,0,-1, 4, 1);
   // D+ to d dbar I=1
   addFormFactor( 411, 111  ,0,-1, 4, 1);
   addFormFactor( 411, 113  ,1,-1, 4, 1);
@@ -909,12 +909,12 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     mbarX=_massPoh[ifl1-1][ifls-1];
   }
   // 1 3/2 P 1 (1 P1)
-  else if(ispin==10&&jspin==1) {
+  else if((ispin==0&&jspin==2)||(ispin==10&&jspin==1)) {
     betaX = _beta1P[ifl1-1][ifls-1];
     mbarX=_massPth[ifl1-1][ifls-1];
   }
   // 1 1/2 P1 ( 3 P1) 
-  else if((ispin==0&&jspin==2)||(ispin==20&&jspin==1)) {
+  else if(ispin==20&&jspin==1) {
     betaX = _beta1P[ifl1-1][ifls-1];
     mbarX=_massPoh[ifl1-1][ifls-1];
   }

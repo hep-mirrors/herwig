@@ -39,12 +39,12 @@ struct MultiplicityInfo
   /**
    *  The observed multiplicity
    */
-  double mult;
+  double obsMultiplicity;
 
   /**
    *  The error on the observed multiplicity
    */
-  double error;
+  double obsError;
 
   /**
    *  The type of particle
@@ -65,19 +65,24 @@ struct MultiplicityInfo
    *  The average number per event
    * @param N The number of events
    */
-  double mean(double N);
+  double simMultiplicity(long N);
 
   /**
    *  The error on the average number per event
    * @param N The number of events 
    */
-  double stderror(double N);
+  double simError(long N);
 
   /**
    *  Is the result more than \f$3\sigma\f$ from the experimental result
    * @param N The number of events
    */
-  bool serious(double N);
+  double nSigma(long N);
+
+  /**
+   * Plot standard error in a simple barchart
+   */
+  string bargraph(long N);
 };
 
 /**
@@ -120,25 +125,11 @@ public:
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
   /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
    * Analyze the given vector of particles. The default version calls
    * analyze(tPPtr) for each of the particles.
    * @param particles the vector of pointers to particles to be analyzed
    */
   virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -176,7 +167,7 @@ protected:
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:

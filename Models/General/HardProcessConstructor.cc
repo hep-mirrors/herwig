@@ -12,11 +12,12 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "Herwig++/MatrixElement/GeneralHardME.h"
+#include "Herwig++/Utilities/HwDebug.h"
 
 using namespace Herwig;
 
 HardProcessConstructor::HardProcessConstructor() : 
-  theNout(0), theNv(0),theProcesses(0), theAllDiagrams(false), 
+  theNout(0), theNv(0),theProcesses(0), theAllDiagrams(true), 
   the33bto33b(4, DVector(4, 0.)),  the33bpto33bp(3, DVector(3, 0.)),
   the33bto88(2, DVector(4, 0.)), the88to88(2, DVector(4, 0.)) {
   //set-up colour factor matrices
@@ -134,25 +135,25 @@ void HardProcessConstructor::Init() {
      "Pointers to incoming particles",
      &HardProcessConstructor::theIncoming, -1, false, false, true, false);
 
- static RefVector<HardProcessConstructor,ThePEG::ParticleData> interfaceOut
+  static RefVector<HardProcessConstructor,ThePEG::ParticleData> interfaceOut
     ("Outgoing",
      "Pointers to incoming particles",
      &HardProcessConstructor::theOutgoing, -1, false, false, true, false);
  
- static Switch<HardProcessConstructor,bool> interfaceIncludeAllDiagrams
-   ("QCDandEW",
-    "Switch to decide which diagrams to include in ME calc.",
-     &HardProcessConstructor::theAllDiagrams, 0, false, false);
- static SwitchOption interfaceIncludeAllDiagramsOff
-   (interfaceIncludeAllDiagrams,
-    "Off",
-    "Do not include all diagrams in ME calc, only those with strong coupling in them",
-    0);
- static SwitchOption interfaceIncludeAllDiagramsOn
+  static Switch<HardProcessConstructor,bool> interfaceIncludeAllDiagrams
+    ("QCDandEW",
+     "Switch to decide which diagrams to include in ME calc.",
+     &HardProcessConstructor::theAllDiagrams, true, false, false);
+  static SwitchOption interfaceIncludeAllDiagramsOff
+    (interfaceIncludeAllDiagrams,
+     "Off",
+     "Only include QCD diagrams",
+     false);
+  static SwitchOption interfaceIncludeAllDiagramsOn
    (interfaceIncludeAllDiagrams,
      "On",
-    "Include all diagrams in the ME calculation",
-    1);
+    "Include EW+QCD.",
+    true);
 }
 
 void HardProcessConstructor::constructDiagrams() {
@@ -591,34 +592,36 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 
 void 
 HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
-  for(HPDVector::size_type d = 0; d < process.size(); ++d) {
-    HPDiagram diag = process[d];
-     cout << getParticleData(diag.incoming.first)->PDGName() << ","
-	 << getParticleData(diag.incoming.second)->PDGName() << "->";
-    if(diag.intermediate)
-      cout << diag.intermediate->PDGName() << "->";
+  if( HwDebug::level == HwDebug::full ) {
+    for(HPDVector::size_type d = 0; d < process.size(); ++d) {
+      HPDiagram diag = process[d];
+   
+      cout << getParticleData(diag.incoming.first)->PDGName() << ","
+	   << getParticleData(diag.incoming.second)->PDGName() << "->";
+      if(diag.intermediate)
+	cout << diag.intermediate->PDGName() << "->";
     
-    cout << getParticleData(diag.outgoing.first)->PDGName() << ","
-	 << getParticleData(diag.outgoing.second)->PDGName()
-	 << "  channel " << diag.channelType;
-    if(diag.channelType == HPDiagram::tChannel) {
-      cout << "  ordering " << diag.ordered.first << " " 
-	   << diag.ordered.second << "   ";
-      for(unsigned int cf = 0; cf < diag.colourFlow.size(); ++cf) 
-	cout << "(" << diag.colourFlow[cf].first << "," 
-	     <<diag.colourFlow[cf].second << ")  ";
-      cout << "\n\n";
-    }
-    else {
-      cout << "   ";
-      for(unsigned int cf = 0; cf < diag.colourFlow.size(); ++cf) 
-	cout << "(" << diag.colourFlow[cf].first << "," 
-	     <<diag.colourFlow[cf].second << ")  ";
-      cout << "\n\n";
+      cout << getParticleData(diag.outgoing.first)->PDGName() << ","
+	   << getParticleData(diag.outgoing.second)->PDGName()
+	   << "  channel " << diag.channelType;
+      if(diag.channelType == HPDiagram::tChannel) {
+	cout << "  ordering " << diag.ordered.first << " " 
+	     << diag.ordered.second << "   ";
+	for(unsigned int cf = 0; cf < diag.colourFlow.size(); ++cf) 
+	  cout << "(" << diag.colourFlow[cf].first << "," 
+	       <<diag.colourFlow[cf].second << ")  ";
+	cout << "\n\n";
+      }
+      else {
+	cout << "   ";
+	for(unsigned int cf = 0; cf < diag.colourFlow.size(); ++cf) 
+	  cout << "(" << diag.colourFlow[cf].first << "," 
+	       <<diag.colourFlow[cf].second << ")  ";
+	cout << "\n\n";
+      }
+      cout << "---------------------------" << endl;  
     }
   }
-  cout << "---------------------------\n";
-  cout << flush;
   tcPDVector extpart(4);
   extpart[0] = getParticleData(process[0].incoming.first);
   extpart[1] = getParticleData(process[0].incoming.second);

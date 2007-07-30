@@ -19,62 +19,50 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::LorentzPolarizationVector;
-using Helicity::VectorWaveFunction;
-using Helicity::ScalarWaveFunction;
-using Helicity::SpinorWaveFunction;
-using Helicity::SpinorBarWaveFunction;
-using Helicity::epsilon;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
-VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() {
-  // intermediates
-  generateIntermediates(true);
-  // reserve the vectors
-  _incoming.reserve(10);_outgoingP.reserve(10);
-  _outgoingf.reserve(10);_outgoinga.reserve(10);
-  _coupling.reserve(10);_maxweight.reserve(10);_weight.reserve(10);
-  _includeVMD.reserve(10);_VMDid.reserve(10);
-  _VMDmass.reserve(10);_VMDwidth.reserve(10);
+VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() 
+  : _coupling(6), _incoming(6), _outgoingP(6), _outgoingf(6), _outgoinga(6), 
+    _maxweight(6), _weight(6), _includeVMD(6), _VMDid(6), _VMDmass(6), 
+    _VMDwidth(6) {
   // omega -> pi e+e- /mu+mu-
-  _incoming.push_back( 223);_outgoingP.push_back( 111);
-  _incoming.push_back( 223);_outgoingP.push_back( 111);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.2096/GeV);_maxweight.push_back(5.);_weight.push_back(0.);
-  _coupling.push_back(0.2096/GeV);_maxweight.push_back(3.4);_weight.push_back(0.);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  _incoming[0] =  223; _outgoingP[0] =  111; 
+  _outgoingf[0] = 11; _outgoinga[0] = -11; 
+  _coupling[0] = 0.2096/GeV; _maxweight[0] = 5.; _weight[0] = 0.; 
+  _includeVMD[0] = 2; _VMDid[0] = 113; 
+  _VMDmass[0] = 0.7758*GeV; _VMDwidth[0] = 0.1503*GeV; 
+  _incoming[1] =  223; _outgoingP[1] =  111; 
+  _outgoingf[1] = 13; _outgoinga[1] = -13; 
+  _coupling[1] = 0.2096/GeV; _maxweight[1] = 3.4; _weight[1] = 0.; 
+  _includeVMD[1] = 2; _VMDid[1] = 113; 
+  _VMDmass[1] = 0.7758*GeV; _VMDwidth[1] = 0.1503*GeV; 
   // phi -> eta e+e-/mu+mu-
-  _incoming.push_back( 333);_outgoingP.push_back( 221);
-  _incoming.push_back( 333);;_outgoingP.push_back( 221);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.0643/GeV);_maxweight.push_back(4.7);_weight.push_back(0.);
-  _coupling.push_back(0.0643/GeV);_maxweight.push_back(3.5);_weight.push_back(0.);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  _incoming[2] =  333; _outgoingP[2] =  221; 
+  _outgoingf[2] = 11; _outgoinga[2] = -11; 
+  _coupling[2] = 0.0643/GeV; _maxweight[2] = 4.7; _weight[2] = 0.; 
+  _includeVMD[2] = 2; _VMDid[2] = 113; 
+  _VMDmass[2] = 0.7758*GeV; _VMDwidth[2] = 0.1503*GeV; 
+  _incoming[3] =  333; ;_outgoingP[3] =  221; 
+  _outgoingf[3] = 13; _outgoinga[3] = -13; 
+  _coupling[3] = 0.0643/GeV; _maxweight[3] = 3.5; _weight[3] = 0.; 
+  _includeVMD[3] = 2; _VMDid[3] = 113; 
+  _VMDmass[3] = 0.7758*GeV; _VMDwidth[3] = 0.1503*GeV; 
   // phi -> pi e+e-/mu+mu-
-  _incoming.push_back( 333);;_outgoingP.push_back( 111);
-  _incoming.push_back( 333);;_outgoingP.push_back( 111);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.0120094/GeV);_maxweight.push_back(6.0);_weight.push_back(0.10);
-  _coupling.push_back(0.0120094/GeV);_maxweight.push_back(4.0);_weight.push_back(0.25);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  _incoming[4] =  333; ;_outgoingP[4] =  111; 
+  _outgoingf[4] = 11; _outgoinga[4] = -11; 
+  _coupling[4] = 0.0120094/GeV; _maxweight[4] = 6.0; _weight[4] = 0.10; 
+  _includeVMD[4] = 2; _VMDid[4] = 113; 
+  _VMDmass[4] = 0.7758*GeV; _VMDwidth[4] = 0.1503*GeV; 
+  _incoming[5] =  333; ;_outgoingP[5] =  111; 
+  _outgoingf[5] = 13; _outgoinga[5] = -13; 
+  _coupling[5] = 0.0120094/GeV; _maxweight[5] = 4.0; _weight[5] = 0.25; 
+  _includeVMD[5] = 2; _VMDid[5] = 113; 
+  _VMDmass[5] = 0.7758*GeV; _VMDwidth[5] = 0.1503*GeV; 
   // the initial size of the arrays
   _initsize=_coupling.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
@@ -85,8 +73,8 @@ void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
      isize!=_outgoinga.size() || isize!=_maxweight.size()|| isize!=_includeVMD.size()||
      isize!=_VMDid.size()     || isize!=_VMDmass.size()  || isize!=_VMDwidth.size()||
      isize!=_weight.size())
-    {throw InitException() << "Inconsistent parameters in VectorMesonPScalar"
-			   << "FermionsDecayer" << Exception::abortnow;}
+    throw InitException() << "Inconsistent parameters in VectorMesonPScalar"
+			  << "FermionsDecayer" << Exception::abortnow;
   // create the integration channel for each mode 
   PDVector extpart(4);
   tPDPtr gamma(getParticleData(ParticleID::gamma)),rho;
@@ -133,15 +121,19 @@ int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit) {
-    if((**pit).iSpin()==PDT::Spin0){ids=(**pit).id();}
-    else{idf[nf]=(**pit).id();++nf;}
+    if((**pit).iSpin()==PDT::Spin0) ids=(**pit).id();
+    else {
+      idf[nf]=(**pit).id();
+      ++nf;
+    }
   }
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
   do {
-    if(_incoming[ix]==id0&&_outgoingP[ix]==ids)
-      {if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	  (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])){imode=ix;}}
+    if(_incoming[ix]==id0&&_outgoingP[ix]==ids) {
+      if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
+	 (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])) imode=ix;
+    }
     ++ix;
   }
   while(imode<0&&ix<_incoming.size());
@@ -151,16 +143,19 @@ int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm
 }
 
 void VectorMesonPScalarFermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_coupling,1/GeV) << _incoming << _outgoingP << _outgoingf << _outgoinga << _maxweight
-     << _weight << _includeVMD << _VMDid << ounit(_VMDmass,GeV) << ounit(_VMDwidth,GeV);
+  os << ounit(_coupling,1/GeV) << _incoming << _outgoingP << _outgoingf << _outgoinga 
+     << _maxweight << _weight << _includeVMD << _VMDid << ounit(_VMDmass,GeV) 
+     << ounit(_VMDwidth,GeV);
 }
 
 void VectorMesonPScalarFermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_coupling,1/GeV) >> _incoming >> _outgoingP >> _outgoingf >> _outgoinga >> _maxweight
-     >> _weight >> _includeVMD >> _VMDid >> iunit(_VMDmass,GeV) >> iunit(_VMDwidth,GeV);
+  is >> iunit(_coupling,1/GeV) >> _incoming >> _outgoingP >> _outgoingf >> _outgoinga 
+     >> _maxweight >> _weight >> _includeVMD >> _VMDid >> iunit(_VMDmass,GeV) 
+     >> iunit(_VMDwidth,GeV);
 }
 
-ClassDescription<VectorMesonPScalarFermionsDecayer> VectorMesonPScalarFermionsDecayer::initVectorMesonPScalarFermionsDecayer;
+ClassDescription<VectorMesonPScalarFermionsDecayer> 
+VectorMesonPScalarFermionsDecayer::initVectorMesonPScalarFermionsDecayer;
 // Definition of the static class description member.
 
 void VectorMesonPScalarFermionsDecayer::Init() {
@@ -430,5 +425,4 @@ void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output,
     }
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
-}
 }

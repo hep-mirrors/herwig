@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BeamCorrelationAnalysis class.
+//
+#ifndef HERWIG_BeamCorrelationAnalysis_FH
+#define HERWIG_BeamCorrelationAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class BeamCorrelationAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::BeamCorrelationAnalysis,BeamCorrelationAnalysisPtr);
+
+}
+
+#endif

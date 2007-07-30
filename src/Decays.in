@@ -1,3 +1,13 @@
+#######################################################
+# Setup of default decay handlers.
+#
+# Nothing interesting for users here. To set up or
+# modify decay modes in your own input files, use 
+# Hw64Decays.in as an example.
+#######################################################
+
+#
+
 # create the DecayHandler
 create Herwig::HwDecayHandler /Defaults/Handlers/DecayHandler
 set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
@@ -10,25 +20,18 @@ library Hw64Decay.so
 create Herwig::Hw64Decayer /Defaults/Decays/DecayME0
 create Herwig::Hw64Decayer /Defaults/Decays/DecayME100
 create Herwig::Hw64Decayer /Defaults/Decays/DecayME101
-create Herwig::Hw64Decayer /Defaults/Decays/DecayME130
 library HwPartonicDecay.so
 create Herwig::HeavyDecayer /Defaults/Decays/HvyDecayME0
 create Herwig::HeavyDecayer /Defaults/Decays/HvyDecayME100
 create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME0
-create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME100
-create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME101
 create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME130
 create Herwig::MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
 #
 set /Defaults/Decays/DecayME0:MECode 0
 set /Defaults/Decays/DecayME100:MECode 100 
-set /Defaults/Decays/DecayME101:MECode 101
-set /Defaults/Decays/DecayME130:MECode 130
 set /Defaults/Decays/HvyDecayME0:MECode 0
 set /Defaults/Decays/HvyDecayME100:MECode 100
 set /Defaults/Decays/QDecayME0:MECode 0
-set /Defaults/Decays/QDecayME100:MECode 100
-set /Defaults/Decays/QDecayME101:MECode 101
 set /Defaults/Decays/QDecayME130:MECode 130
 #
 # create the decays for perturbative particles, i.e. top, W and Z

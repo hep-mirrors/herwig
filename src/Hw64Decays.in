@@ -1,9 +1,12 @@
-################################################################
-# This file contains all the decays from HERWIG 6.4            #
-# It has the same BR's as in 6.4 and the ME with the same code #
-# The format of a decay is:                                    #
-# decaymode mother->daughters; BR isOn MEClass                 #
-################################################################
+###############################################################
+# This file contains all the decays from HERWIG 6.4            
+# It has the same BR's as in 6.4. 
+# 'DecayMEnnn' is the ME with the same code.
+#
+# The format of a decay is: mother->daughters; BR isOn MEClass 
+#
+# Regular users should not need to edit this file.
+###############################################################
 decaymode t->u,dbar,b; 0.334 1 /Defaults/Decays/Top
 decaymode t->c,sbar,b; 0.333 1 /Defaults/Decays/Top
 decaymode t->nu_tau,tau+,b; 0.111 1 /Defaults/Decays/Top

@@ -48,7 +48,16 @@ using namespace ThePEG;
     Complex value;
   };
 
-//@}
+  /**
+   * A vector of mixing elements.
+   */
+  typedef vector<MixingElement> MixingVector;
+
+  /**
+   * The size of the matrix 
+   */
+  typedef pair<unsigned int, unsigned int> MatrixSize;
+  //@}
 
 /**
  * This class is desinged to store the mixing matrices needed for Susy
@@ -159,7 +168,7 @@ public:
   /**
    * Return the size of the mixing matrix
    */
-  inline pair<unsigned int,unsigned int> size() const;
+  inline MatrixSize size() const;
 
   // /**
 //    * Overloaded multiplication operator

@@ -15,33 +15,12 @@ inline IBPtr ScalarScalarScalarDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
-  DecayIntegrator::doinit();
-  // check the parameters arew consistent
-  unsigned int isize(_coupling.size());
-  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
-     isize!=_outgoing2.size() || isize!=_maxweight.size())
-    {throw InitException() << "Inconsistent parameters in ScalarScalarScalarDecayer" 
-			   << Exception::abortnow;}
-  // set up the integration channels
-  vector<double> wgt;
-  DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0] = getParticleData(_incoming[ix]);
-      extpart[1] = getParticleData(_outgoing1[ix]);
-      extpart[2] = getParticleData(_outgoing2[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
-      addMode(mode,_maxweight[ix],wgt);
-    }
-}
-
 inline void ScalarScalarScalarDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  if(initialize())
-    {for(unsigned int ix=0;ix<_incoming.size();++ix)
-	{_maxweight[ix] = mode(ix)->maxWeight();}}
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix) )_maxweight[ix] = mode(ix)->maxWeight();
+  }
 }
 
 }

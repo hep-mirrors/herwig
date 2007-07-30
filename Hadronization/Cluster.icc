@@ -6,6 +6,14 @@
 
 namespace Herwig {
 
+  inline PPtr Cluster::clone() const {
+    return new_ptr(*this);
+  }
+  
+  inline PPtr Cluster::fullclone() const {
+    return clone();
+  }
+
   inline void * Cluster::operator new(size_t) {
     return FixedAllocator<Cluster>::allocate();
   }

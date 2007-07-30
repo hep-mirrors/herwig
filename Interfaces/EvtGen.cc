@@ -34,11 +34,14 @@
 #include <fstream>
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 void EvtGen::doinitrun() {
   Interfaced::doinitrun();
+  std::streambuf *psbuf = generator()->log().rdbuf();
+  std::streambuf *temp[2] = {cout.rdbuf(),cerr.rdbuf()};
+  cout.rdbuf(psbuf);
+  cerr.rdbuf(psbuf);
   // output the EvtGen initialization info to the log file
   generator()->log() << "Initializing EvtGen \n";
   // set up the random number generator for EvtGen
@@ -69,6 +72,8 @@ void EvtGen::doinitrun() {
   }
   // that's the lot
   generator()->log() << "Finished initialisation of EvtGen \n";
+  cout.rdbuf(temp[0]);
+  cerr.rdbuf(temp[1]);
 }
 
 // persistent output
@@ -446,7 +451,7 @@ EvtId EvtGen::EvtGenID(int id, bool exception) const {
   else if((absid>100100&&absid<100600)&&ispin==3) {
     // special for kaons change 2s and 1d
     if((absid%1000)/100==3) output=EvtPDL::evtIdFromStdHep(id);
-    else                    output=EvtPDL::evtIdFromStdHep(isgn*(absid%1000+30000));
+    else                    output=EvtPDL::evtIdFromStdHep(isgn*(absid%1000+100000));
   }
   // 1 3p0 most same but some changes
   else if (absid>10100&&absid<10600&&ispin==1) {
@@ -900,8 +905,12 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
     part->setChannel(imode);
   }
   // must be a decayer
-  if(!decayer) throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
-				 << Exception::runerror;
+  if(!decayer) {
+    cout.rdbuf(temp[0]);
+    cerr.rdbuf(temp[1]);
+    throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
+		      << Exception::runerror;
+  }
   // If there are already daughters, then this step is already done!
   // figure out the masses
   if ( part->getNDaug() == 0 ) {
@@ -944,9 +953,9 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
   string stemp2=stemp.str();
   if(stemp2.length()>0) 
     throw Exception() << "EvtGen report error in EvtGen::decay "
-		      << "killing event\n"
-		      << "Error was " << stemp2 
-		      << Exception::eventerror;
+  		      << "killing event\n"
+  		      << "Error was " << stemp2 
+  		      << Exception::eventerror;
   // return the decay products
   return output;
 }

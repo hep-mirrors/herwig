@@ -334,7 +334,7 @@ struct ClassTraits<Herwig::BaryonFactorizedDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the BaryonFactorizedDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 };
 
 /** @endcond */

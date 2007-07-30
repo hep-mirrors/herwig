@@ -54,6 +54,8 @@ public:
    *  Return the interpolated value
    */
   ValT operator () (ArgT) const;
+  typedef ValT ValType;
+  typedef ArgT ArgType;
 
 public:
 

@@ -17,6 +17,35 @@
 
 using namespace Herwig;
 
+namespace {
+  // debug helper
+  void dumpTable(const HadronSelector::HadronTable & tbl) {
+    typedef HadronSelector::HadronTable::const_iterator TableIter;
+    for (TableIter it = tbl.begin(); it != tbl.end(); ++it) {
+      cerr << it->first.first << ' ' 
+	   << it->first.second << '\n';
+      for (HadronSelector::KupcoData::const_iterator jt = it->second.begin();
+	   jt != it->second.end(); ++jt) {
+	cerr << '\t' << *jt << '\n';
+      }
+    }
+  }
+}
+
+ostream & Herwig::operator<< (ostream & os, 
+		      const HadronSelector::HadronInfo & hi ) {
+  os << std::scientific << std::showpoint
+     << std::setprecision(4)
+     << setw(2)
+     << hi.id << '\t'
+//   << hi.ptrData << ' ' 
+     << hi.swtef << '\t'
+     << hi.wt << '\t'
+     << hi.overallWeight << '\t'
+     << ounit(hi.mass,GeV);
+  return os;
+}
+
 HadronSelector::HadronSelector(unsigned int opt) 
   : _pwtDquark( 1.0 ),_pwtUquark( 1.0 ),_pwtSquark( 1.0 ),_pwtCquark( 1.0 ),
     _pwtBquark( 1.0 ),_pwtDIquark( 1.0 ),
@@ -224,7 +253,7 @@ void HadronSelector::Init() {
     ("21S0Mixing",
      "The mixing angle for the I=0 mesons from the 2 1S0 multiplet,"
      " i.e. eta(1475) and eta(1295).",
-     &HadronSelector::_etamix, idealAngleMix, -180., 180.,
+     &HadronSelector::_eta2Smix, idealAngleMix, -180., 180.,
      false, false, Interface::limited);
 
   static Parameter<HadronSelector,double> interface23S1Mixing
@@ -426,6 +455,9 @@ void HadronSelector::doinit() throw(InitException) {
   }
   // construct the hadron tables
   constructHadronTable();
+
+  // for debugging
+  // dumpTable(table());
 }
 
 void HadronSelector::constructHadronTable() {
@@ -481,7 +513,7 @@ void HadronSelector::constructHadronTable() {
     if(flav1 == flav2 && flav1<=3) {
       // ddbar> uubar> admixture states
       if(flav1==1) {
-	if(_topt != 0) a.overallWeight *= sqrt(0.5)*a.swtef;
+	if(_topt != 0) a.overallWeight *= 0.5*a.swtef;
 	_table[make_pair(1,1)].insert(a);
 	_table[make_pair(2,2)].insert(a);
 	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
@@ -490,11 +522,11 @@ void HadronSelector::constructHadronTable() {
       else {
 	a.wt = mixingStateWeight(it->second->id());
 	a.overallWeight *= a.wt;
-	if(_topt != 0) a.overallWeight *= sqrt(0.5)*a.swtef;
+	if(_topt != 0) a.overallWeight *= a.swtef;
 	_table[make_pair(1,1)].insert(a);
 	_table[make_pair(2,2)].insert(a);
 	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-	a.wt = _topt != 0 ? 1.-sqrt(2.)*a.wt : a.wt = 1-a.wt;
+	a.wt = (_topt != 0) ? 1.- 2.*a.wt : 1 - a.wt;
 	if(a.wt > 0) {
 	  a.overallWeight = a.wt * a.swtef * nj;
 	  _table[make_pair(3,3)].insert(a);
@@ -521,7 +553,7 @@ void HadronSelector::constructHadronTable() {
   }
    // Account for identical combos of diquark/quarks and symmetrical elements
    // e.g. U UD = D UU
-  map<pair<long,long>,KupcoData>::iterator tit;  
+  HadronTable::iterator tit;  
   for(tit=_table.begin();tit!=_table.end();++tit) {
     if(tit->first.first>ParticleID::c) continue;
     if(!DiquarkMatcher::Check(tit->first.second)) continue;
@@ -566,7 +598,7 @@ void HadronSelector::constructHadronTable() {
   }
   // normalise weights to one for first option
   if(_topt == 0) {
-    map<pair<long,long>,KupcoData>::const_iterator tit;
+    HadronTable::const_iterator tit;
     KupcoData::iterator it;
     for(tit=_table.begin();tit!=_table.end();++tit) {
       double weight;

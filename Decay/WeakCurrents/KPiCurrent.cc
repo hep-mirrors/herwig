@@ -344,7 +344,7 @@ bool KPiCurrent::createMode(int icharge,unsigned int imode,
       }
     }
   }
-  return false;
+  return true;
 }
 
 void KPiCurrent::dataBaseOutput(ofstream & output,bool header,

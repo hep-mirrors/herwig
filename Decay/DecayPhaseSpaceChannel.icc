@@ -128,7 +128,7 @@ inline void DecayPhaseSpaceChannel::resetDaughter(int oldp,int newp) {
   }
 }
  
-inline void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,                    
+inline void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
 						 const Energy m1, const Energy m2,
 						 Lorentz5Momentum & p1,
 						 Lorentz5Momentum & p2 ) {

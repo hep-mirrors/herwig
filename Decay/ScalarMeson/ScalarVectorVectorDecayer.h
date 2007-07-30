@@ -17,7 +17,8 @@ using namespace ThePEG;
  * The ScalarVectorVectorDecayer class is designed to perform the decay of 
  * a scalar meson to two spin-1 particles. The matrix element is taken
  * to have the form
- * \f[\mathcal{M} = g \epsilon_1\cdot\epsilon_2\f] 
+ *  \f[\mathcal{M}=g\left[ p_1 \cdot p_2 \epsilon_1 \ cdot \epsilon_2
+ *                        -p_1 \cdot \epsilon_2 p_2 \cdot\epsilon_1\right],\f]
  *  where \f$\epsilon_{1,2}\f$ are the polarzation
  *  vectors of the outgoing vector particles.
  *
@@ -30,25 +31,10 @@ class ScalarVectorVectorDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline ScalarVectorVectorDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline ScalarVectorVectorDecayer(const ScalarVectorVectorDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ScalarVectorVectorDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer and DecayIntegrator classes. */
   //@{
@@ -137,47 +123,17 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -254,7 +210,7 @@ struct ClassTraits<Herwig::ScalarVectorVectorDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the ScalarVectorVectorDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
+  static string library() { return "HwSMDecay.so"; }
 };
 
 /** @endcond */

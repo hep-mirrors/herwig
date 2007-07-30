@@ -1,7 +1,14 @@
+################################################
+# Set up the handler for the underlying event. 
+# 
+# UA5 is currently the only choice; 
+# it requires the default hadronization model.
+################################################
+
 mkdir /Defaults/Handlers/UnderlyingEvent
 cd /Defaults/Handlers/UnderlyingEvent
-#
+
 create Herwig::UA5Handler theUA5 HwUA5.so
-#
+
 set theUA5:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
 set theUA5:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer

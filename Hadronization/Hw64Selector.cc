@@ -56,7 +56,7 @@ pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,
   do {
     idQ=partons()[UseRandom::irnd(partons().size())];
     if(diquark&&DiquarkMatcher::Check(idQ)) continue;
-    KupcoData::iterator it1,it2;
+    KupcoData::const_iterator it1,it2;
     if(pwt()[idQ] <=UseRandom::rnd()) continue;
     pair<long,long> pid(abs(id1),idQ);
     do {

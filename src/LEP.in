@@ -1,14 +1,49 @@
-cd /Defaults/Handlers/Hadronization/Cluster
-set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
+##################################################
+# Example generator based on LEP parameters
+# usage: Herwig++ read LEP.in
+##################################################
+
+###################################################
+# Change settings for the ee->Z->qq matrix element
+# to avoid producing top quarks
 #
+# 'set' lines like this can be omitted if the 
+# default value is already okay.
+#
+# Any repository setting can be modified here
+###################################################
+cd /Defaults/MatrixElements
+set MEee2gZ2qq:MinimumFlavour 1
+set MEee2gZ2qq:MaximumFlavour 5
+
+##################################################
+# Technical parameters for this run
+##################################################
 cd /Defaults/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
-set LEPGenerator:Strategy /Defaults/ThePEGStrategy
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
-#
+
+###################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
 saverun LEP LEPGenerator
 
+##################################################
+# uncomment this section for an example batch run
+# of two repeats with different parameters
+#
+# Note that a separate call of 'Herwig run' 
+# is not required
+##################################################
+# set LEPGenerator:NumberOfEvents 100
+# run LEP-Zpole LEPGenerator
+# set LEPGenerator:EventHandler:LuminosityFunction:Energy 208.0
+# run LEP-maxE LEPGenerator

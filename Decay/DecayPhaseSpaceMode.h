@@ -163,8 +163,7 @@ protected:
    * in the WidthGenerator object.
    * @param in The partial width to use.
    */
-  void setPartialWidth(int in);
-
+  inline void setPartialWidth(int in);
   //@}
 
 
@@ -211,8 +210,8 @@ protected:
    * @param particles The outgoing particles.
    * @return The weight.
    */
-  Energy weight(bool vertex, bool cc,int & ichan, const Particle & in,
-		ParticleVector & particles) const;
+  inline Energy weight(bool vertex, bool cc,int & ichan, const Particle & in,
+		       ParticleVector & particles) const;
     
   /**
    * Return the weight and momenta for a flat phase-space decay.

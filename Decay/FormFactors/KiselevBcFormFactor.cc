@@ -225,10 +225,10 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
   if(_MF0A[iloc]>0*MeV) f0 = _F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);
   else                  f0 = _F0A[iloc];
   Energy msum(m0+m1);
-  V  =-fv*msum;
-  A1 = f0/msum;
-  A2 =-fp*msum;
-  A0 = 0.5/m1*(f0+msum*(m0-m1)*fp+q2*fm);
+  V  = fv*msum;
+  A1 =-f0/msum;
+  A2 = fp*msum;
+  A0 =-0.5/m1*(f0+msum*(m0-m1)*fp+q2*fm);
 }
 
 void KiselevBcFormFactor::dataBaseOutput(ofstream & output,

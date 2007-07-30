@@ -49,8 +49,6 @@ public:
    */
   VectorMeson2MesonDecayer();
   
-public:
-  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate

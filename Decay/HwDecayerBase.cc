@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/Switch.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HwDecayerBase.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -27,7 +22,6 @@ ParticleVector HwDecayerBase::decay(const DecayMode & dm,
   ParticleVector children = dm.produceProducts();
   return children;
 }
-
 
 void HwDecayerBase::persistentOutput(PersistentOStream & os) const {
   os << _initialize;
@@ -62,11 +56,10 @@ void HwDecayerBase::Init() {
 
 }
 
-void HwDecayerBase::dataBaseOutput(ofstream & output,bool header) const
-{
+void HwDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
-  if(header){output << "update decayers set parameters=\"";}
+  if(header) output << "update decayers set parameters=\"";
   // photon generator if it exists
   // footer for MySQL
-  if(header){output << " where ThePEGName=\" " << fullName() << "\";";}
+  if(header) output << " where ThePEGName=\" " << fullName() << "\";";
 }

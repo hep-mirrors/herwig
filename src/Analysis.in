@@ -1,3 +1,11 @@
+#########################################################
+# Analysis handler setup
+#
+# By default, only 'Basics' is active. Add the commented
+# lines to your input file to switch on other analyses.
+#########################################################
+
+
 mkdir /Defaults/Handlers/Analysis
 library HwAnalysis.so
 create Herwig::BasicConsistency /Defaults/Handlers/Analysis/Basics

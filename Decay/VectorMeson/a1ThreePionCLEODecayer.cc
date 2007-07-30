@@ -9,11 +9,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "a1ThreePionCLEODecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -21,79 +16,47 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
-namespace Herwig{
-using namespace ThePEG;
+using namespace Herwig;
 using namespace ThePEG::Helicity;
+using Constants::pi;
  
 a1ThreePionCLEODecayer::a1ThreePionCLEODecayer() 
-{
-  // local particle properties
-  _localparameters=true;
+  : _rhomass(2), _rhowidth(2), _f2mass(1.275*GeV), _f2width(0.185*GeV), 
+    _pf2cc(0.*MeV), _pf200(0.*MeV), _f0mass(1.186*GeV), _f0width(0.350*GeV),
+    _pf0cc(0.*MeV), _pf000(0.*MeV), _sigmamass(0.860*GeV), _sigmawidth(0.880*GeV), 
+    _psigmacc(0.*MeV), _psigma00(0.*MeV), _mpi0(0.*MeV), _mpic(0.*MeV),
+    _coupling(51.197275/GeV), _rhomagP(2), _rhophaseP(2), _rhomagD(2),
+    _rhophaseD(2), _f2mag(0.71/GeV2), _f2phase(0.56*pi), _f2coup(0./MeV2,0./MeV2),
+    _f0mag(0.77), _f0phase(-0.54*pi), _f0coup(0.,0.), _sigmamag(2.10),
+    _sigmaphase(0.23*pi), _sigmacoup(0.,0.), _localparameters(true),
+    _zerowgts(9), _onewgts(9), _twowgts(9), _threewgts(12), _zeromax(0.0569276),
+    _onemax(1.3864), _twomax(2.77916), _threemax(1.50496) {
   // rho masses and widths
-  _rhomass.push_back(0.7743*GeV);_rhowidth.push_back(0.1491*GeV);
-  _rhomass.push_back(1.370*GeV);_rhowidth.push_back(0.386*GeV);
-  // f_2 mass and width
-  _f2mass=1.275*GeV;_f2width=0.185*GeV;
-  // f_0(1370) mass and width
-  _f0mass=1.186*GeV;_f0width=0.350*GeV;
-  // sigma mass and width
-  _sigmamass = 0.860*GeV;_sigmawidth =0.880*GeV;
-  // overall coupling for the decay
-  //  _coupling = 1.619/GeV;
-  _coupling=51.197275/GeV;
-  // couplings and phases for the different channels
+  _rhomass[0] = 0.7743*GeV; _rhowidth[0] = 0.1491*GeV;
+  _rhomass[1] = 1.370 *GeV; _rhowidth[1] = 0.386 *GeV;
   // p-wave rho and rho prime
-  using Constants::pi;
-  _rhomagP.push_back(1.)  ;_rhophaseP.push_back(0.);
-  _rhomagP.push_back(0.12);_rhophaseP.push_back(0.99*pi);
+  _rhomagP[0] = 1.  ; _rhophaseP[0] = 0.;
+  _rhomagP[1] = 0.12; _rhophaseP[1] = 0.99*pi;
   // d-wave rho and rho prime
-  _rhomagD.push_back(0.37/GeV2);_rhophaseD.push_back(-0.15*pi);
-  _rhomagD.push_back(0.87/GeV2);_rhophaseD.push_back( 0.53*pi);
-  // f_2
-  _f2mag=0.71/GeV2;_f2phase=0.56*pi;
-  // sigma
-  _sigmamag=2.10;_sigmaphase=0.23*pi;
-  // f_0
-  _f0mag=0.77;_f0phase=-0.54*pi;
+  _rhomagD[0] = 0.37/GeV2; _rhophaseD[0] = -0.15*pi;
+  _rhomagD[1] = 0.87/GeV2; _rhophaseD[1] =  0.53*pi;
   // set up the integration channels
-  _threewgts.resize(12,0.);
   _threewgts[0 ]= 0.0794721;_threewgts[1 ]= 0.0795375;_threewgts[2 ]= 0.0844288;
   _threewgts[3 ]= 0.0867505;_threewgts[4 ]= 0.0895405;_threewgts[5 ]= 0.0898378;
   _threewgts[6 ]= 0.0918808;_threewgts[7 ]= 0.0919970;_threewgts[8 ]= 0.0711382;
   _threewgts[9 ]= 0.0734318;_threewgts[10]= 0.0807660;_threewgts[11]= 0.0812191;
-  _threemax=1.50496;
-  _onewgts.resize(9,0.);
-  _onewgts[0]= 0.1253590;_onewgts[1]= 0.1244660;_onewgts[2]= 0.1297050;
-  _onewgts[3]= 0.1303310;_onewgts[4]= 0.1272090;_onewgts[5]= 0.1281130;
-  _onewgts[6]= 0.0994781;_onewgts[7]= 0.0646946;_onewgts[8]= 0.0706432;
-  _onemax=1.3864;
-  _zerowgts.resize(9,0.);
+  _onewgts[0] = 0.1253590;_onewgts[1] = 0.1244660;_onewgts[2] = 0.1297050;
+  _onewgts[3] = 0.1303310;_onewgts[4] = 0.1272090;_onewgts[5] = 0.1281130;
+  _onewgts[6] = 0.0994781;_onewgts[7] = 0.0646946;_onewgts[8] = 0.0706432;
   _zerowgts[0]= 0.1314300;_zerowgts[1]= 0.1310050;_zerowgts[2]= 0.1284550;
   _zerowgts[3]= 0.0934043;_zerowgts[4]= 0.0942500;_zerowgts[5]= 0.0946263;
   _zerowgts[6]= 0.1071220;_zerowgts[7]= 0.1088450;_zerowgts[8]= 0.1108630;
-  _zeromax=0.0569276;
-  _twowgts.resize(9,0.);
-  _twowgts[0]= 0.1240640;_twowgts[1]= 0.1248810;_twowgts[2]= 0.1300810;
-  _twowgts[3]= 0.1312690;_twowgts[4]= 0.1273870;_twowgts[5]= 0.1289640;
-  _twowgts[6]= 0.1001290;_twowgts[7]= 0.0644940;_twowgts[8]= 0.0687322;
-  _twomax=2.77916;
-  // zero other parameters  
-  _pf2cc=0.*MeV;
-  _pf200=0.*MeV;
-  _pf0cc=0.*MeV;
-  _pf000=0.*MeV;
-  _psigmacc=0.*MeV;
-  _psigma00=0.*MeV;
-  _mpi0=0.*MeV;
-  _mpic=0.*MeV;
-  _f2coup=complex<InvEnergy2>(0./MeV2,0./MeV2);
-  _f0coup=Complex(0.,0.);
-  _sigmacoup=Complex(0.,0.);
+  _twowgts[0] = 0.1240640;_twowgts[1] = 0.1248810;_twowgts[2] = 0.1300810;
+  _twowgts[3] = 0.1312690;_twowgts[4] = 0.1273870;_twowgts[5] = 0.1289640;
+  _twowgts[6] = 0.1001290;_twowgts[7] = 0.0644940;_twowgts[8] = 0.0687322;
   // generation of intermediates
   generateIntermediates(true);
 }
-
-a1ThreePionCLEODecayer::~a1ThreePionCLEODecayer() {}
   
 void a1ThreePionCLEODecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
@@ -126,14 +89,14 @@ void a1ThreePionCLEODecayer::doinit() throw(InitException) {
   extpart[1]=pi0;
   extpart[2]=pi0;
   extpart[3]=pi0;
-  mode = new DecayPhaseSpaceMode(extpart,this);
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   // there are six sigma channels
   tPDPtr temp;
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      if(ix==0){temp=sigma;}
-      else if(ix==1){temp=f2;}
-      else if(ix==2){temp=f0;}
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==0)      temp = sigma;
+    else if(ix==1) temp = f2;
+    else if(ix==2) temp = f0;
+    if(temp) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a10,0,0.0,-1,1);
       newchannel->addIntermediate(temp,0,0.0,2,3);
@@ -147,227 +110,275 @@ void a1ThreePionCLEODecayer::doinit() throw(InitException) {
       newchannel->addIntermediate(temp,0,0.0,1,2);
       mode->addChannel(newchannel);
     }
+  }
+  if(_zerowgts.size()!=mode->numberChannels()) 
+    _zerowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_zeromax,_zerowgts);
   // decay mode a_1+ -> pi+ pi0 pi0
   extpart[0]=a1p;
-  extpart[1]=pip;
+  extpart[1]=pi0;
   extpart[2]=pi0;
-  extpart[3]=pi0;
-  mode = new DecayPhaseSpaceMode(extpart,this);
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      // first rho+ channel
-      newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(a1p,0,0.0,-1,2);
-      newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
-      mode->addChannel(newchannel);
-      // second rho+ channel
-      newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(a1p,0,0.0,-1,3);
-      newchannel->addIntermediate(rhop[ix],0,0.0,1,2);
-      mode->addChannel(newchannel);
-    }
+  extpart[3]=pip;
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(!rhop[ix]) continue;
+    // first rho+ channel
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,2);
+    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
+    mode->addChannel(newchannel);
+    // second rho+ channel
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,1);
+    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
+    mode->addChannel(newchannel);
+  }
   // the sigma channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,1);
-  newchannel->addIntermediate(sigma,0,0.0,2,3);
-  mode->addChannel(newchannel);
+  if(sigma) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,3);
+    newchannel->addIntermediate(sigma,0,0.0,1,2);
+    mode->addChannel(newchannel);
+  }
   //  the f_2  channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,1);
-  newchannel->addIntermediate(f2,0,0.0,2,3);
-  mode->addChannel(newchannel);
+  if(f2) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,3);
+    newchannel->addIntermediate(f2,0,0.0,1,2);
+    mode->addChannel(newchannel);
+  }
   // the f_0 channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,1);
-  newchannel->addIntermediate(f0,0,0.0,2,3);
-  mode->addChannel(newchannel);
+  if(f0) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,3);
+    newchannel->addIntermediate(f0,0,0.0,1,2);
+    mode->addChannel(newchannel);
+  }
+  if(_onewgts.size()!=mode->numberChannels()) 
+    _onewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_onemax,_onewgts);
   // decay mode a_10 -> pi+ pi- pi0
   extpart[0]=a10;
   extpart[1]=pip;
   extpart[2]=pim;
   extpart[3]=pi0;
-  mode = new DecayPhaseSpaceMode(extpart,this);
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      // first rho channel
-      newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(a10,0,0.0,-1,1);
-      newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
-      mode->addChannel(newchannel);
-      // second channel
-      newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(a10,0,0.0,-1,2);
-      newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
-      mode->addChannel(newchannel);
-    }
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(!rhop[ix]) continue;
+    // first rho channel
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a10,0,0.0,-1,1);
+    newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
+    mode->addChannel(newchannel);
+    // second channel
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a10,0,0.0,-1,2);
+    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
+    mode->addChannel(newchannel);
+  }
   // sigma channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a10,0,0.0,-1,3);
-  newchannel->addIntermediate(sigma,0,0.0,1,2);
-  mode->addChannel(newchannel);
+  if(sigma) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a10,0,0.0,-1,3);
+    newchannel->addIntermediate(sigma,0,0.0,1,2);
+    mode->addChannel(newchannel);
+  }
   // f_2 channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a10,0,0.0,-1,3);
-  newchannel->addIntermediate(f2,0,0.0,1,2);
-  mode->addChannel(newchannel);
+  if(f2) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a10,0,0.0,-1,3);
+    newchannel->addIntermediate(f2,0,0.0,1,2);
+    mode->addChannel(newchannel);
+  }
   // f_0 channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a10,0,0.0,-1,3);
-  newchannel->addIntermediate(f0,0,0.0,1,2);
-  mode->addChannel(newchannel);
+  if(f0) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a10,0,0.0,-1,3);
+    newchannel->addIntermediate(f0,0,0.0,1,2);
+    mode->addChannel(newchannel);
+  }
+  if(_twowgts.size()!=mode->numberChannels()) 
+    _twowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_twomax,_twowgts);
   // decay mode a_1+ -> pi+ pi+ pi-
   extpart[0]=a1p;
   extpart[1]=pip;
   extpart[2]=pip;
   extpart[3]=pim;
-  mode = new DecayPhaseSpaceMode(extpart,this);
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      // the neutral rho channels
-      // first channel
-      newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(a1p,0,0.0,-1,1);
-      newchannel->addIntermediate(rho0[ix],0,0.0,2,3);
-      mode->addChannel(newchannel);
-      // interchanged channel
-      newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(a1p,0,0.0,-1,2);
-      newchannel->addIntermediate(rho0[ix],0,0.0,1,3);
-      mode->addChannel(newchannel);      
-    }
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  for(unsigned int ix=0;ix<3;++ix) {
+    // the neutral rho channels
+    if(!rho0[ix]) continue;
+    // first channel
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,1);
+    newchannel->addIntermediate(rho0[ix],0,0.0,2,3);
+    mode->addChannel(newchannel);
+    // interchanged channel
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,2);
+    newchannel->addIntermediate(rho0[ix],0,0.0,1,3);
+    mode->addChannel(newchannel);
+  }
   // the sigma channels
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,1);
-  newchannel->addIntermediate(sigma,0,0.0,2,3);
-  mode->addChannel(newchannel);
-  // interchanged channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,2);
-  newchannel->addIntermediate(sigma,0,0.0,1,3);
-  mode->addChannel(newchannel);
+  if(sigma) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,1);
+    newchannel->addIntermediate(sigma,0,0.0,2,3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,2);
+    newchannel->addIntermediate(sigma,0,0.0,1,3);
+    mode->addChannel(newchannel);
+  }
   // the f_2 channels
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,1);
-  newchannel->addIntermediate(f2,0,0.0,2,3);
-  mode->addChannel(newchannel);
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,2);
-  newchannel->addIntermediate(f2,0,0.0,1,3);
-  mode->addChannel(newchannel);
+  if(f2) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,1);
+    newchannel->addIntermediate(f2,0,0.0,2,3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,2);
+    newchannel->addIntermediate(f2,0,0.0,1,3);
+    mode->addChannel(newchannel);
+  }
   // the f_0 channel
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,1);
-  newchannel->addIntermediate(f0,0,0.0,2,3);
-  mode->addChannel(newchannel);
-  newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-  newchannel->addIntermediate(a1p,0,0.0,-1,2);
-  newchannel->addIntermediate(f0,0,0.0,1,3);
-  mode->addChannel(newchannel);
+  if(f0) {
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,1);
+    newchannel->addIntermediate(f0,0,0.0,2,3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(a1p,0,0.0,-1,2);
+    newchannel->addIntermediate(f0,0,0.0,1,3);
+    mode->addChannel(newchannel);
+  }
+  if(_threewgts.size()!=mode->numberChannels()) 
+    _threewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_threemax,_threewgts);
   // if using local parameters set the values in the phase space channels
-  if(_localparameters)
-    {
-      for(unsigned int iy=0;iy<_rhomass.size();++iy)
-	{
-	  resetIntermediate(rho0[iy],_rhomass[iy],_rhowidth[iy]);
-	  resetIntermediate(rhop[iy],_rhomass[iy],_rhowidth[iy]);
-	  resetIntermediate(rhom[iy],_rhomass[iy],_rhowidth[iy]);
-	}
-      resetIntermediate(sigma,_sigmamass,_sigmawidth);
-      resetIntermediate(f2,_f2mass,_f2width);
-      resetIntermediate(f0,_f0mass,_f0width);
-      // make sure the rho array has enough masses
-      if(_rhomass.size()<3)
-	{
-	  for(unsigned int ix=_rhomass.size();ix<3;++ix)
-	    {
-	      _rhomass.push_back(rhop[ix]->mass());
-	      _rhowidth.push_back(rhop[ix]->width());
-	    }
-	}
+  if(_localparameters) {
+    for(unsigned int iy=0;iy<_rhomass.size();++iy) {
+      resetIntermediate(rho0[iy],_rhomass[iy],_rhowidth[iy]);
+      resetIntermediate(rhop[iy],_rhomass[iy],_rhowidth[iy]);
+      resetIntermediate(rhom[iy],_rhomass[iy],_rhowidth[iy]);
     }
+    resetIntermediate(sigma,_sigmamass,_sigmawidth);
+    resetIntermediate(f2,_f2mass,_f2width);
+    resetIntermediate(f0,_f0mass,_f0width);
+    // make sure the rho array has enough masses
+    if(_rhomass.size()<3) {
+      for(unsigned int ix=_rhomass.size();ix<3;++ix) {
+	_rhomass.push_back(rhop[ix]->mass());
+	_rhowidth.push_back(rhop[ix]->width());
+      }
+    }
+  }
   // set the local variables if needed
-  else
-    {
-      // masses and widths for the particles
-      _rhomass.resize(3);_rhowidth.resize(3);
-      for(unsigned int ix=0;ix<3;++ix)
-	{_rhomass[ix]=rhop[ix]->mass();_rhowidth[ix]=rhop[ix]->width();}
-      _f2mass=f2->mass();_f2width=f2->width();
-      _f0mass=f0->mass();_f0width=f0->width();
-      _sigmamass=sigma->mass();_sigmawidth=sigma->width();
+  else {
+    // masses and widths for the particles
+    _rhomass.resize(3);_rhowidth.resize(3);
+    for(unsigned int ix=0;ix<3;++ix) {
+      _rhomass[ix]=rhop[ix]->mass();
+      _rhowidth[ix]=rhop[ix]->width();
     }
+    if(f2) {
+      _f2mass=f2->mass();
+      _f2width=f2->width();
+    }
+    if(f0) {
+      _f0mass=f0->mass();
+      _f0width=f0->width();
+    }
+    if(sigma) {
+      _sigmamass=sigma->mass();
+      _sigmawidth=sigma->width();
+    }
+  }
   // parameters for the breit-wigners
-  _mpic=pip->mass();_mpi0=pi0->mass();
+  _mpic=pip->mass();
+  _mpi0=pi0->mass();
   // momenta of the decay products for on-shell particles
-  _psigmacc=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpic,_mpic);
-  _psigma00=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpi0,_mpi0);
-  _pf2cc=Kinematics::pstarTwoBodyDecay(_f2mass,_mpic,_mpic);
-  _pf200=Kinematics::pstarTwoBodyDecay(_f2mass,_mpi0,_mpi0);
-  _pf0cc=Kinematics::pstarTwoBodyDecay(_f0mass,_mpic,_mpic);
-  _pf000=Kinematics::pstarTwoBodyDecay(_f0mass,_mpi0,_mpi0); 
+  _psigmacc = Kinematics::pstarTwoBodyDecay(_sigmamass,_mpic,_mpic);
+  _psigma00 = Kinematics::pstarTwoBodyDecay(_sigmamass,_mpi0,_mpi0);
+  _pf2cc    = Kinematics::pstarTwoBodyDecay(_f2mass   ,_mpic,_mpic);
+  _pf200    = Kinematics::pstarTwoBodyDecay(_f2mass   ,_mpi0,_mpi0);
+  _pf0cc    = Kinematics::pstarTwoBodyDecay(_f0mass   ,_mpic,_mpic);
+  _pf000    = Kinematics::pstarTwoBodyDecay(_f0mass   ,_mpi0,_mpi0); 
   _prhocc.resize(3);_prhoc0.resize(3);
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      _prhocc[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpic);
-      _prhoc0[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpi0);
-    }
+  for(unsigned int ix=0;ix<3;++ix) {
+    _prhocc[ix] = Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpic);
+    _prhoc0[ix] = Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpi0);
+  }
   // couplings for the different modes
   Complex ii(0.,1.);
   _rhocoupP.resize(_rhomagP.size());
   for(unsigned int ix=0;ix<_rhomagP.size();++ix)
-    {_rhocoupP[ix]=_rhomagP[ix]*(cos(_rhophaseP[ix])+ii*sin(_rhophaseP[ix]));}
+    _rhocoupP[ix]=_rhomagP[ix]*(cos(_rhophaseP[ix])+ii*sin(_rhophaseP[ix]));
   _rhocoupD.resize(_rhomagD.size());
   for(unsigned int ix=0;ix<_rhomagD.size();++ix)
-    {_rhocoupD[ix]=_rhomagD[ix]*(cos(_rhophaseD[ix])+ii*sin(_rhophaseD[ix]));}
+    _rhocoupD[ix]=_rhomagD[ix]*(cos(_rhophaseD[ix])+ii*sin(_rhophaseD[ix]));
   _f0coup=_f0mag*(cos(_f0phase)+ii*sin(_f0phase));
   _f2coup=_f2mag*(cos(_f2phase)+ii*sin(_f2phase));
   _sigmacoup=_sigmamag*(cos(_sigmaphase)+ii*sin(_sigmaphase));
 }
 
-int a1ThreePionCLEODecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
-  int imode(-1);
+
+inline void a1ThreePionCLEODecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    // get the weights for the different channels
+    for(unsigned int ix=0;ix<_zerowgts.size();++ix)
+      _zerowgts[ix]=mode(0)->channelWeight(ix);
+    for(unsigned int ix=0;ix<_onewgts.size();++ix)
+      _onewgts[ix]=mode(1)->channelWeight(ix);
+    for(unsigned int ix=0;ix<_twowgts.size();++ix)
+      _twowgts[ix]=mode(2)->channelWeight(ix);
+    for(unsigned int ix=0;ix<_threewgts.size();++ix)
+      _threewgts[ix]=mode(3)->channelWeight(ix);
+    // get the maximum weight
+    _zeromax  = mode(0)->maxWeight();
+    _onemax   = mode(1)->maxWeight();
+    _twomax   = mode(2)->maxWeight();
+    _threemax = mode(3)->maxWeight();
+  }
+}
+
+int a1ThreePionCLEODecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+  if(dm.products().size()!=3) return -1;
   int id(dm.parent()->id());
-  if(dm.products().size()!=3){return imode;}
   // check the pions
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   int idtemp,npi0(0),npiplus(0),npiminus(0);
-  for( ; pit!=pend;++pit)
-    {
-      idtemp=(**pit).id();
-      if(idtemp==ParticleID::piplus){++npiplus;}
-      else if(idtemp==ParticleID::piminus){++npiminus;}
-      else if(idtemp==ParticleID::pi0){++npi0;}
-    }
+  for( ; pit!=pend;++pit) {
+    idtemp=(**pit).id();
+    if(idtemp==ParticleID::piplus)       ++npiplus;
+    else if(idtemp==ParticleID::piminus) ++npiminus;
+    else if(idtemp==ParticleID::pi0)     ++npi0;
+  }
+  int imode(-1);
   // a_1+ decay modes
-  if(id==ParticleID::a_1plus)
-    {
-      cc=false;
-      if(npiplus==1&&npi0==2){imode=1;}
-      else if(npiplus==2&&npiminus==1){imode=3;}
+  if(id==ParticleID::a_1plus) {
+    cc=false;
+    if(npiplus==1&&npi0==2)          imode=1;
+    else if(npiplus==2&&npiminus==1) imode=3;
     }
   // a_1- modes
-  else if(id==ParticleID::a_1minus)
-    {
-      cc=true;
-      if(npiminus==1&&npi0==2){imode=1;}
-      else if(npiminus==2&&npiplus==1){imode=3;}
-    }
+  else if(id==ParticleID::a_1minus) {
+    cc=true;
+    if(npiminus==1&&npi0==2)         imode=1;
+    else if(npiminus==2&&npiplus==1) imode=3;
+  }
   // a_0 modes
-  else if(id==ParticleID::a_10)
-    {
-      cc=false;
-      if(npiminus==1&&npiplus==1&&npi0==1){imode=0;}
-      else if(npi0==3){imode=2;}
-    }
+  else if(id==ParticleID::a_10) {
+    cc=false;
+    if(npiminus==1&&npiplus==1&&npi0==1) imode=2;
+    else if(npi0==3)                     imode=0;
+  }
   return imode;
 }
-  
+
 void a1ThreePionCLEODecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV) 
      << ounit(_prhocc,GeV) << ounit(_prhoc0,GeV) 
@@ -410,7 +421,8 @@ void a1ThreePionCLEODecayer::persistentInput(PersistentIStream & is, int) {
      >> _zeromax >> _onemax >> _twomax >> _threemax;
 }
   
-ClassDescription<a1ThreePionCLEODecayer> a1ThreePionCLEODecayer::inita1ThreePionCLEODecayer;
+ClassDescription<a1ThreePionCLEODecayer> 
+a1ThreePionCLEODecayer::inita1ThreePionCLEODecayer;
 // Definition of the static class description member.
   
 void a1ThreePionCLEODecayer::Init() {
@@ -483,7 +495,7 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoPWavePhase",
      "The phase of the couplings for the p-wave rho currents",
      &a1ThreePionCLEODecayer::_rhophaseP,
-     0, 0, 0, -Constants::pi, Constants::pi, false, false, true);
+     0, 0, 0, -pi, pi, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,InvEnergy2> interfacerhomagD
     ("RhoDWaveMagnitude",
@@ -495,25 +507,24 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoDWavePhase",
      "The phase of the couplings for the d-wave rho currents",
      &a1ThreePionCLEODecayer::_rhophaseD,
-     0, 0, 0, -Constants::pi, Constants::pi, false, false, true);
+     0, 0, 0, -pi, pi, false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacef0Phase
     ("f0Phase",
      "The phase of the f_0 scalar current",
-     &a1ThreePionCLEODecayer::_f0phase, 0.54*Constants::pi, -Constants::pi, Constants::pi,
+     &a1ThreePionCLEODecayer::_f0phase, 0.54*pi, -pi, pi,
      false, false, Interface::limited);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacef2Phase
     ("f2Phase",
      "The phase of the f_2 tensor current",
-     &a1ThreePionCLEODecayer::_f2phase, 0.56*Constants::pi, -Constants::pi, Constants::pi,
+     &a1ThreePionCLEODecayer::_f2phase, 0.56*pi, -pi, pi,
      false, false, Interface::limited);
-
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacesigmaPhase
     ("sigmaPhase",
      "The phase of the sigma scalar current",
-     &a1ThreePionCLEODecayer::_sigmaphase, 0.23*Constants::pi, -Constants::pi, Constants::pi,
+     &a1ThreePionCLEODecayer::_sigmaphase, 0.23*pi, -pi, pi,
      false, false, Interface::limited);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacef0Magnitude
@@ -521,7 +532,6 @@ void a1ThreePionCLEODecayer::Init() {
      "The magnitude of the f_0 scalar current",
      &a1ThreePionCLEODecayer::_f0mag, 0.77, 0.0, 10,
      false, false, true);
-
 
   static Parameter<a1ThreePionCLEODecayer,InvEnergy2> interfacef2Magnitude
     ("f2Magnitude",
@@ -605,8 +615,7 @@ void a1ThreePionCLEODecayer::Init() {
 
 double a1ThreePionCLEODecayer::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
-				   const ParticleVector & decay) const
-{
+				   const ParticleVector & decay) const {
   // wavefunctions of the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<LorentzPolarizationVector> invec;
@@ -614,37 +623,49 @@ double a1ThreePionCLEODecayer::me2(bool vertex, const int ichan,
 		     incoming,true,false,vertex);
   // create the spin information for the decay products if needed
   unsigned int ix;
-  if(vertex)
-    {for(ix=0;ix<decay.size();++ix)
-	// workaround for gcc 3.2.3 bug
-	//ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-	{PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);}}
+  if(vertex){ 
+    for(ix=0;ix<decay.size();++ix) {
+      // workaround for gcc 3.2.3 bug
+      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
+      PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+    }
+  }
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
   Energy2 q2=Q.mass2();
   // identify the mesons
-  unsigned int iloc[3]={iloc[0]=0,iloc[1]=1,iloc[2]=2};
-  if(imode()==1){iloc[0]=1;iloc[1]=2;iloc[2]=0;}
   // calculate the invariants and form factors
-  Lorentz5Momentum ps1=decay[iloc[1]]->momentum()+decay[iloc[2]]->momentum();
-  Lorentz5Momentum ps2=decay[iloc[0]]->momentum()+decay[iloc[2]]->momentum();
-  Lorentz5Momentum ps3=decay[iloc[0]]->momentum()+decay[iloc[1]]->momentum();
-  ps1.rescaleMass();ps2.rescaleMass();ps3.rescaleMass();
+  Lorentz5Momentum ps1=decay[1]->momentum()+decay[2]->momentum();
+  Lorentz5Momentum ps2=decay[0]->momentum()+decay[2]->momentum();
+  Lorentz5Momentum ps3=decay[0]->momentum()+decay[1]->momentum();
+  ps1.rescaleMass();
+  ps2.rescaleMass();
+  ps3.rescaleMass();
   Energy2 s1=ps1.mass2(),s2=ps2.mass2(),s3=ps3.mass2();
   complex<InvEnergy> F1,F2,F3;
   formFactors(imode(),ichan,q2,s1,s2,s3,F1,F2,F3);
   // use the form-factors to compute the current
   LorentzPolarizationVector output=
-     F1*decay[iloc[1]]->momentum()-F1*decay[iloc[2]]->momentum()
-    -F2*decay[iloc[2]]->momentum()+F2*decay[iloc[0]]->momentum()
-    +F3*decay[iloc[0]]->momentum()-F3*decay[iloc[1]]->momentum();
+     F1*decay[1]->momentum()-F1*decay[2]->momentum()
+    -F2*decay[2]->momentum()+F2*decay[0]->momentum()
+    +F3*decay[0]->momentum()-F3*decay[1]->momentum();
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix)
-    {newME(ix,0,0,0)=output.dot(invec[ix]);}
+  for(unsigned int ix=0;ix<3;++ix) 
+    newME(ix,0,0,0)=output.dot(invec[ix]);
   ME(newME);
+  // answer
+  double out = newME.contract(rhoin).real();
+  // test of the answer
+//   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),
+// 				       s3,s2,s1,decay[0]->mass(),decay[1]->mass(), 
+// 				       decay[2]->mass());
+//   if(ichan<0) cerr << "testing matrix element " << inpart.PDGName() << " -> "
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << decay[2]->PDGName() << out << " " << test << " " 
+//        << (out-test)/(out+test) << "\n";  
   // return the answer
-  return newME.contract(rhoin).real();
+  return out;
 }
 
 // matrix element for the running a_1 width
@@ -665,29 +686,26 @@ threeBodyMatrixElement(const int iopt,const Energy2 q2, const Energy2 s3,
 }
 
 WidthCalculatorBasePtr 
-a1ThreePionCLEODecayer::threeBodyMEIntegrator(const DecayMode & dm) const
-{
+a1ThreePionCLEODecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   int ncharged=0;
-  for( ; pit!=pend;++pit){if(abs((**pit).id())==ParticleID::piplus){++ncharged;}}
+  for( ; pit!=pend;++pit) {
+    if(abs((**pit).id())==ParticleID::piplus) ++ncharged;
+  }
   // integrator to perform the integral
   vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
   vector<int> intype;intype.push_back(2);intype.push_back(3);
   Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
   Energy wrho=getParticleData(ParticleID::rhoplus)->width();
-  vector<Energy> inmass;inmass.push_back(mrho);inmass.push_back(mrho);
-  vector<Energy> inwidth;inwidth.push_back(wrho);inwidth.push_back(wrho);
+  vector<Energy> inmass(2,_rhomass[0]),inwidth(2,_rhowidth[0]);
   vector<double> inpow(2,0.0);
   Energy m[3];
-  if(ncharged==0)     {m[0]=_mpi0;m[1]=_mpi0;m[2]=_mpi0;}
-  else if(ncharged==1){m[0]=_mpi0;m[1]=_mpi0;m[2]=_mpic;}
-  else if(ncharged==2){m[0]=_mpic;m[1]=_mpic;m[2]=_mpi0;}
-  else                {m[0]=_mpic;m[1]=_mpic;m[2]=_mpic;}
-  return new_ptr(
-		 ThreeBodyAllOnCalculator<a1ThreePionCLEODecayer>(inweights,intype,inmass,inwidth,inpow,*this,
-					  ncharged,m[0],m[1],m[2])
-		 );
+  m[0] = ncharged<2 ? _mpi0 : _mpic;
+  m[1] = m[0];
+  m[2] = (ncharged==0||ncharged==2) ? _mpi0 : _mpic;
+  return new_ptr(ThreeBodyAllOnCalculator<a1ThreePionCLEODecayer>
+		 (inweights,intype,inmass,inwidth,inpow,*this,ncharged,m[0],m[1],m[2]));
 }
 
 // calculate the form factos
@@ -696,283 +714,315 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
 					 Energy2 s3,
 					 complex<InvEnergy> & FF1,
 					 complex<InvEnergy> & FF2,
-					 complex<InvEnergy> & FF3) const
-{
+					 complex<InvEnergy> & FF3) const {
   Complex F1, F2, F3;
   InvEnergy fact = _coupling;
   // a_1^0 pi0 pi0 pi0 mode
-  if(iopt==0)
-    {
-      fact*=1./sqrt(6.);
-      // compute the breit wigners we need
-      Complex sigbws1 = sigmaBreitWigner(s1,1);
-      Complex sigbws2 = sigmaBreitWigner(s2,1);
-      Complex sigbws3 = sigmaBreitWigner(s3,1);
-      Complex f0bws1  = f0BreitWigner(s1,1);
-      Complex f0bws2  = f0BreitWigner(s2,1);
-      Complex f0bws3  = f0BreitWigner(s3,1);
-      Complex f2bws1  = f2BreitWigner(s1,1);
-      Complex f2bws2  = f2BreitWigner(s2,1);
-      Complex f2bws3  = f2BreitWigner(s3,1);
-      if(ichan<0)
-	{
-	  // the scalar terms
-	  F1=2./3.*(_sigmacoup*sigbws3+_f0coup*f0bws3)
-	    -2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
-	  F2=2./3.*(_sigmacoup*sigbws3+_f0coup*f0bws3)
-	    -2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1);
-	  F3=-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1)
-	    +2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
-	  // the tensor terms
-	  complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
-	  complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
-	  complex<Energy2> Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
-	  F1+=_f2coup*( 0.5*(s3-s2)*f2bws1-Dfact2+Dfact3);
-	  F2+=_f2coup*( 0.5*(s3-s1)*f2bws2-Dfact1+Dfact3);
-	  F3+=_f2coup*(-0.5*(s1-s2)*f2bws3-Dfact1+Dfact2);
-	}
-      else if(ichan==0){F2=-2./3.*_sigmacoup*sigbws1;F3=-2./3.*_sigmacoup*sigbws1;}
-      else if(ichan==1){F1=-2./3.*_sigmacoup*sigbws2;F3=+2./3.*_sigmacoup*sigbws2;}
-      else if(ichan==2){F1= 2./3.*_sigmacoup*sigbws3;F2= 2./3.*_sigmacoup*sigbws3;}
-      else if(ichan==3)
-	{
-	  complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
-	  F1+=_f2coup*0.5*(s3-s2)*f2bws1;F2-=_f2coup*Dfact1; F3-=_f2coup*Dfact1;
-	}
-      else if(ichan==4)
-	{
-	  complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
-	  F2+=_f2coup*0.5*(s3-s1)*f2bws2;F1-=_f2coup*Dfact2;F3+=_f2coup*Dfact2;
-	}
-      else if(ichan==5)
-	{
-	  complex<Energy2> Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
-	  F3+=-_f2coup*0.5*(s1-s2)*f2bws3;F1+=_f2coup*Dfact3;F2+=_f2coup*Dfact3;
-	}
-      else if(ichan==6){F2=-2./3.*_f0coup*f0bws1;F3=-2./3.*_f0coup*f0bws1;}
-      else if(ichan==7){F1=-2./3.*_f0coup*f0bws2;F3=+2./3.*_f0coup*f0bws2;}
-      else if(ichan==8){F1= 2./3.*_f0coup*f0bws3;F2= 2./3.*_f0coup*f0bws3;}
+  if(iopt==0) {
+    fact*=1./sqrt(6.);
+    // compute the breit wigners we need
+    Complex sigbws1 = sigmaBreitWigner(s1,1);
+    Complex sigbws2 = sigmaBreitWigner(s2,1);
+    Complex sigbws3 = sigmaBreitWigner(s3,1);
+    Complex f0bws1  = f0BreitWigner(s1,1);
+    Complex f0bws2  = f0BreitWigner(s2,1);
+    Complex f0bws3  = f0BreitWigner(s3,1);
+    Complex f2bws1  = f2BreitWigner(s1,1);
+    Complex f2bws2  = f2BreitWigner(s2,1);
+    Complex f2bws3  = f2BreitWigner(s3,1);
+    if(ichan<0) {
+      // the scalar terms
+      F1=2./3.*(_sigmacoup*sigbws3+_f0coup*f0bws3)
+	-2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
+      F2=2./3.*(_sigmacoup*sigbws3+_f0coup*f0bws3)
+	-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1);
+      F3=-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1)
+	+2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
+      // the tensor terms
+      complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
+      complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
+      complex<Energy2> Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
+      F1+=_f2coup*( 0.5*(s3-s2)*f2bws1-Dfact2+Dfact3);
+      F2+=_f2coup*( 0.5*(s3-s1)*f2bws2-Dfact1+Dfact3);
+      F3+=_f2coup*(-0.5*(s1-s2)*f2bws3-Dfact1+Dfact2);
     }
+    else if(ichan==0) {
+      F2=-2./3.*_sigmacoup*sigbws1;
+      F3=-2./3.*_sigmacoup*sigbws1;
+    }
+    else if(ichan==1) {
+      F1=-2./3.*_sigmacoup*sigbws2;
+      F3=+2./3.*_sigmacoup*sigbws2;
+    }
+    else if(ichan==2) {
+      F1= 2./3.*_sigmacoup*sigbws3;
+      F2= 2./3.*_sigmacoup*sigbws3;
+    }
+    else if(ichan==3) {
+      complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
+      F1+=_f2coup*0.5*(s3-s2)*f2bws1;
+      F2-=_f2coup*Dfact1; F3-=_f2coup*Dfact1;
+    }
+    else if(ichan==4) {
+      complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
+      F2+=_f2coup*0.5*(s3-s1)*f2bws2;
+      F1-=_f2coup*Dfact2;
+      F3+=_f2coup*Dfact2;
+    }
+    else if(ichan==5) {
+      complex<Energy2> Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
+      F3+=-_f2coup*0.5*(s1-s2)*f2bws3;
+      F1+=_f2coup*Dfact3;
+      F2+=_f2coup*Dfact3;
+    }
+    else if(ichan==6) {
+      F2=-2./3.*_f0coup*f0bws1;
+      F3=-2./3.*_f0coup*f0bws1;
+    }
+    else if(ichan==7) {
+      F1=-2./3.*_f0coup*f0bws2;
+      F3=+2./3.*_f0coup*f0bws2;
+    }
+    else if(ichan==8) {
+      F1= 2./3.*_f0coup*f0bws3;
+      F2= 2./3.*_f0coup*f0bws3;
+    }
+  }
   // a_1^+ -> pi0 pi0 pi+
-  else if(iopt==1)
-    {
-      fact *= 1./sqrt(2.);
-      // compute the breit wigners we need
-      Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
-      for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
-	{
-	  rhos1bw[ix]=rhoBreitWigner(ix,s1,1);
-	  rhos2bw[ix]=rhoBreitWigner(ix,s2,1);
-	}
-      f0bw  =f0BreitWigner(s3,1);
-      sigbw =sigmaBreitWigner(s3,1);
-      f2bw  =f2BreitWigner(s3,1);
-      if(ichan<0)
-	{
-	  // the p-wave rho terms
-	  for(unsigned int ix=0;ix<_rhocoupP.size();++ix)
-	    {
-	      F1+=_rhocoupP[ix]*rhos1bw[ix];
-	      F2+=_rhocoupP[ix]*rhos2bw[ix];
-	    }
-	  // the D-wave rho terms
-	  Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
-	  Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
-	  for(unsigned int ix=0;ix<_rhocoupD.size();++ix)
-	    {
-	      F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
-	      F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
-	      F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
-	    }
-	  // the scalar terms
-	  Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
-	  F1+=scalar;F2+=scalar;
-	  // the tensor terms
-	  Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
-	  F1+=Dfact3;F2+=Dfact3;
-	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
-	}
-      else if(ichan%2==0&&ichan<=4)
-	{
-	  unsigned int ires=ichan/2;
-	  if(ires<_rhocoupP.size()){F1+=_rhocoupP[ires]*rhos1bw[ires];}
-	  Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
-	  if(ires<_rhocoupD.size())
-	    {F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
-	    F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];}
-	}
-      else if(ichan%2==1&&ichan<=5)
-	{
-	  unsigned int ires=(ichan-1)/2;
-	  if(ires<_rhocoupP.size()){F2+=_rhocoupP[ires]*rhos2bw[ires];}
-	  Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
-	  if(ires<_rhocoupD.size())
-	    {F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
-	    F3-=_rhocoupD[ires]*Dfact1*rhos2bw[ires];}
-	}
-      else if(ichan==6){F1+=2./3.*_sigmacoup*sigbw;F2+=2./3.*_sigmacoup*sigbw;}
-      else if(ichan==7)
-	{
-	  Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
-	  F1+=Dfact3;F2+=Dfact3;
-	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
-	  
-	}
-      else if(ichan==8){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
+  else if(iopt==1) {
+    fact *= 1./sqrt(2.);
+    // compute the breit wigners we need
+    Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
+    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
+      rhos1bw[ix]=rhoBreitWigner(ix,s1,1);
+      rhos2bw[ix]=rhoBreitWigner(ix,s2,1);
     }
+    f0bw  = f0BreitWigner(s3,1);
+    sigbw = sigmaBreitWigner(s3,1);
+    f2bw  = f2BreitWigner(s3,1);
+    if(ichan<0) {
+      // the p-wave rho terms
+      for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
+	F1+=_rhocoupP[ix]*rhos1bw[ix];
+	F2+=_rhocoupP[ix]*rhos2bw[ix];
+      }
+      // the D-wave rho terms
+      Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
+      Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
+      for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
+	F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
+	F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
+	F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
+      }
+      // the scalar terms
+      Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
+      F1+=scalar;
+      F2+=scalar;
+      // the tensor terms
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
+      F1+=Dfact3;F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan%2==0&&ichan<=4) {
+      unsigned int ires=ichan/2;
+      if(ires<_rhocoupP.size()) F1+=_rhocoupP[ires]*rhos1bw[ires];
+      Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
+      if(ires<_rhocoupD.size()) {
+	F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
+	F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
+      }
+    }
+    else if(ichan%2==1&&ichan<=5) {
+      unsigned int ires=(ichan-1)/2;
+      if(ires<_rhocoupP.size()) F2+=_rhocoupP[ires]*rhos2bw[ires];
+      Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
+      if(ires<_rhocoupD.size()) {
+	F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
+	F3-=_rhocoupD[ires]*Dfact1*rhos2bw[ires];
+      }
+    }
+    else if(ichan==6) {
+      F1+=2./3.*_sigmacoup*sigbw;
+      F2+=2./3.*_sigmacoup*sigbw;
+    }
+    else if(ichan==7) {
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
+      F1+=Dfact3;
+      F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan==8) {
+      F1+=2./3.*_f0coup*f0bw;
+      F2+=2./3.*_f0coup*f0bw;
+    }
+  }
   // a_1^0 ->pi+pi-pi0
-  else if(iopt==2)
-    {
-      // compute the breit wigners we need
-      Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
-      for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
-	{
-	  rhos1bw[ix]=rhoBreitWigner(ix,s1,1);
-	  rhos2bw[ix]=rhoBreitWigner(ix,s2,1);
-	}
-      f0bw  =f0BreitWigner(s3,0);
-      sigbw =sigmaBreitWigner(s3,0);
-      f2bw  =f2BreitWigner(s3,0);
-      if(ichan<0)
-	{
-	  // the p-wave rho terms
-	  for(unsigned int ix=0;ix<_rhocoupP.size();++ix)
-	    {
-	      F1+=_rhocoupP[ix]*rhos1bw[ix];
-	      F2+=_rhocoupP[ix]*rhos2bw[ix];
-	    }
-	  // the D-wave rho terms
-	  Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
-	  Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
-	  for(unsigned int ix=0;ix<_rhocoupD.size();++ix)
-	    {
-	      F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
-	      F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
-	      F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
-	    }
-	  // the scalar terms
-	  Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
-	  F1+=scalar;
-	  F2+=scalar;
-	  // the tensor terms
-	  Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
-	  F1+=Dfact3;F2+=Dfact3;
-	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
-	}
-      else if(ichan%2==0&&ichan<=4)
-	{
-	  unsigned int ires=ichan/2;
-	  if(ires<_rhocoupP.size()){F1+=_rhocoupP[ires]*rhos1bw[ires];}
-	  Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
-	  if(ires<_rhocoupD.size())
-	    {F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
-	    F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];}
-	}
-      else if(ichan%2==1&&ichan<=5)
-	{
-	  unsigned int ires=(ichan-1)/2;
-	  if(ires<_rhocoupP.size()){F2+=_rhocoupP[ires]*rhos2bw[ires];}
-	  Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
-	  if(ires<_rhocoupD.size())
-	    {F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
-	    F3-=_rhocoupD[ires]*-Dfact1*rhos2bw[ires];}
-	}
-      else if(ichan==6){F1+=2./3.*_sigmacoup*sigbw;F2+=2./3.*_sigmacoup*sigbw;}
-      else if(ichan==7)
-	{
-	  Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
-	  F1+=Dfact3;F2+=Dfact3;
-	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
-	}
-      else if(ichan==8){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
+  else if(iopt==2) {
+    // compute the breit wigners we need
+    Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
+    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
+      rhos1bw[ix]=rhoBreitWigner(ix,s1,1);
+      rhos2bw[ix]=rhoBreitWigner(ix,s2,1);
     }
+    f0bw  =f0BreitWigner(s3,0);
+    sigbw =sigmaBreitWigner(s3,0);
+    f2bw  =f2BreitWigner(s3,0);
+    if(ichan<0) {
+      // the p-wave rho terms
+      for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
+	F1+=_rhocoupP[ix]*rhos1bw[ix];
+	F2+=_rhocoupP[ix]*rhos2bw[ix];
+      }
+      // the D-wave rho terms
+      Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
+      Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
+      for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
+	F1+=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
+	F2+=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
+	F3+=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
+      }
+      // the scalar terms
+      Complex scalar=2./3.*(_sigmacoup*sigbw+_f0coup*f0bw);
+      F1+=scalar;
+      F2+=scalar;
+      // the tensor terms
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
+      F1+=Dfact3;
+      F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan%2==0&&ichan<=4) {
+      unsigned int ires=ichan/2;
+      if(ires<_rhocoupP.size()) F1+=_rhocoupP[ires]*rhos1bw[ires];
+      Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
+      if(ires<_rhocoupD.size()) {
+	F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
+	F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
+      }
+    }
+    else if(ichan%2==1&&ichan<=5) {
+      unsigned int ires=(ichan-1)/2;
+      if(ires<_rhocoupP.size()) F2+=_rhocoupP[ires]*rhos2bw[ires];
+      Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
+      if(ires<_rhocoupD.size()) {
+	F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
+	F3-=_rhocoupD[ires]*-Dfact1*rhos2bw[ires];
+      }
+    }
+    else if(ichan==6) {
+      F1+=2./3.*_sigmacoup*sigbw;
+      F2+=2./3.*_sigmacoup*sigbw;
+    }
+    else if(ichan==7) {
+      Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
+      F1+=Dfact3;
+      F2+=Dfact3;
+      F3-=0.5*_f2coup*(s1-s2)*f2bw;
+    }
+    else if(ichan==8) {
+      F1+=2./3.*_f0coup*f0bw;
+      F2+=2./3.*_f0coup*f0bw;
+    }
+  }
   // a_1^+ -> pi+ pi+ pi- mode
-  else
-    {
-      fact *= 1./sqrt(2.);
-      // compute the breit wigners we need
-      Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
-      for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
-	{
-	  rhos1bw[ix]=rhoBreitWigner(ix,s1,0);
-	  rhos2bw[ix]=rhoBreitWigner(ix,s2,0);
-	}
-      f0bws1  =f0BreitWigner(s1,0);
-      sigbws1 =sigmaBreitWigner(s1,0);
-      f2bws1  =f2BreitWigner(s1,0);
-      f0bws2  =f0BreitWigner(s2,0);
-      sigbws2 =sigmaBreitWigner(s2,0);
-      f2bws2  =f2BreitWigner(s2,0);
-      if(ichan<0)
-	{
-	  // the p-wave rho terms
-	  for(unsigned int ix=0;ix<_rhocoupP.size();++ix)
-	    {F1-=_rhocoupP[ix]*rhos1bw[ix];F2-=_rhocoupP[ix]*rhos2bw[ix];}
-	  // the D-wave rho terms
-	  Energy2 Dfact1=1./3.*(s1-s3);
-	  Energy2 Dfact2=1./3.*(s2-s3);
-	  for(unsigned int ix=0;ix<_rhocoupD.size();++ix)
-	    {
-	      F1-=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
-	      F2-=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
-	      F3-=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
-	    }
-	  // the scalar terms
-	  F1-=2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
-	  F2-=2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1);
-	  F3+=-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1)
-	    +2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
-	  // the tensor terms
-	  complex<Energy2> sfact1 
-	    = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
-	  complex<Energy2> sfact2 
-	    = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
-	  F1+=_f2coup*(0.5*(s3-s2)*f2bws1-sfact2);
-	  F2+=_f2coup*(0.5*(s3-s1)*f2bws2-sfact1);
-	  F3+=_f2coup*(-sfact1+sfact2);
-	}
-      else if(ichan%2==0&&ichan<=4)
-	{
-	  unsigned int ires=ichan/2;
-	  Energy2 Dfact2=1./3.*(s2-s3);
-	  if(ires<_rhocoupP.size()){F1-=_rhocoupP[ires]*rhos1bw[ires];}
-	  if(ires<_rhocoupD.size())
-	    {F2-=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
-	    F3-=_rhocoupD[ires]*Dfact2*rhos1bw[ires];}
-	}
-      else if(ichan%2==1&&ichan<=5)
-	{
-	  unsigned int ires=(ichan-1)/2;
-	  Energy2 Dfact1=1./3.*(s1-s3);
-	  if(ires<_rhocoupP.size()){F2-=_rhocoupP[ires]*rhos2bw[ires];}
-	  if(ires<_rhocoupD.size())
-	    {F1-=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
-	    F3+=_rhocoupD[ires]*Dfact1*rhos2bw[ires];}
-	}
-      else if(ichan==6){F2-=2./3.*_sigmacoup*sigbws1;F3-=2./3.*_sigmacoup*sigbws1;}
-      else if(ichan==7){F1-=2./3.*_sigmacoup*sigbws2;F3+=2./3.*_sigmacoup*sigbws2;}
-      else if(ichan==8)
-	{
-	  complex<Energy2> sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
-	  F1+=_f2coup*0.5*(s3-s2)*f2bws1;F2-=_f2coup*sfact1;F3-=_f2coup*sfact1;
-	}
-      else if(ichan==9)
-	{
-	  complex<Energy2> sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
-	  F1-=_f2coup*sfact2;F2+=_f2coup*0.5*(s3-s1)*f2bws2;F3+=_f2coup*sfact2;
-	}
-      else if(ichan==10){F2-=2./3.*_f0coup*f0bws1;F3-=2./3.*_f0coup*f0bws1;}
-      else if(ichan==11){F1-=2./3.*_f0coup*f0bws2;F3+=2./3.*_f0coup*f0bws2;}
+  else {
+    fact *= 1./sqrt(2.);
+    // compute the breit wigners we need
+    Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
+    for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix) {
+      rhos1bw[ix]=rhoBreitWigner(ix,s1,0);
+      rhos2bw[ix]=rhoBreitWigner(ix,s2,0);
     }
+    f0bws1  =f0BreitWigner(s1,0);
+    sigbws1 =sigmaBreitWigner(s1,0);
+    f2bws1  =f2BreitWigner(s1,0);
+    f0bws2  =f0BreitWigner(s2,0);
+    sigbws2 =sigmaBreitWigner(s2,0);
+    f2bws2  =f2BreitWigner(s2,0);
+    if(ichan<0) {
+      // the p-wave rho terms
+      for(unsigned int ix=0;ix<_rhocoupP.size();++ix) {
+	F1-=_rhocoupP[ix]*rhos1bw[ix];
+	F2-=_rhocoupP[ix]*rhos2bw[ix];
+      }
+      // the D-wave rho terms
+      Energy2 Dfact1=1./3.*(s1-s3);
+      Energy2 Dfact2=1./3.*(s2-s3);
+      for(unsigned int ix=0;ix<_rhocoupD.size();++ix) {
+	F1-=Dfact1*_rhocoupD[ix]*rhos2bw[ix];
+	F2-=Dfact2*_rhocoupD[ix]*rhos1bw[ix];
+	F3-=_rhocoupD[ix]*(Dfact2*rhos1bw[ix]-Dfact1*rhos2bw[ix]);
+      }
+      // the scalar terms
+      F1-=2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
+      F2-=2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1);
+      F3+=-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1)
+	+2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
+      // the tensor terms
+      complex<Energy2> sfact1 
+	= 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
+      complex<Energy2> sfact2 
+	= 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
+      F1+=_f2coup*(0.5*(s3-s2)*f2bws1-sfact2);
+      F2+=_f2coup*(0.5*(s3-s1)*f2bws2-sfact1);
+      F3+=_f2coup*(-sfact1+sfact2);
+    }
+    else if(ichan%2==0&&ichan<=4) {
+      unsigned int ires=ichan/2;
+      Energy2 Dfact2=1./3.*(s2-s3);
+      if(ires<_rhocoupP.size()) F1-=_rhocoupP[ires]*rhos1bw[ires];
+      if(ires<_rhocoupD.size()){
+	F2-=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
+	F3-=_rhocoupD[ires]*Dfact2*rhos1bw[ires];
+      }
+    }
+    else if(ichan%2==1&&ichan<=5) {
+      unsigned int ires=(ichan-1)/2;
+      Energy2 Dfact1=1./3.*(s1-s3);
+      if(ires<_rhocoupP.size()) F2-=_rhocoupP[ires]*rhos2bw[ires];
+      if(ires<_rhocoupD.size()) {
+	F1-=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
+	F3+=_rhocoupD[ires]*Dfact1*rhos2bw[ires];
+      }
+    }
+    else if(ichan==6) {
+      F2-=2./3.*_sigmacoup*sigbws1;
+      F3-=2./3.*_sigmacoup*sigbws1;
+    }
+    else if(ichan==7) {
+      F1-=2./3.*_sigmacoup*sigbws2;
+      F3+=2./3.*_sigmacoup*sigbws2;
+    }
+    else if(ichan==8) {
+      complex<Energy2> sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
+      F1+=_f2coup*0.5*(s3-s2)*f2bws1;
+      F2-=_f2coup*sfact1;
+      F3-=_f2coup*sfact1;
+    }
+    else if(ichan==9) {
+      complex<Energy2> sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
+      F1-=_f2coup*sfact2;
+      F2+=_f2coup*0.5*(s3-s1)*f2bws2;
+      F3+=_f2coup*sfact2;
+    }
+    else if(ichan==10) {
+      F2-=2./3.*_f0coup*f0bws1;
+      F3-=2./3.*_f0coup*f0bws1;
+    }
+    else if(ichan==11) {
+      F1-=2./3.*_f0coup*f0bws2;
+      F3+=2./3.*_f0coup*f0bws2;
+    }
+  }
   FF1 = F1 * fact;
   FF2 = F2 * fact;
   FF3 = F3 * fact;
 } 
+
 // output the setup information for the particle database
 void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
-					    bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+					    bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // masses and widths of the intermediate particles
@@ -982,24 +1032,18 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":f_0Width "   << _f0width/GeV    << "\n";
   output << "set " << fullName() << ":sigmaMass "  << _sigmamass/GeV  << "\n";
   output << "set " << fullName() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
-  for(unsigned int ix=0;ix<_rhomass.size();++ix)
-    {
-      if(ix<2)
-	{output << "set    " << fullName() << ":RhoMasses " << ix << " " 
-		<< _rhomass[ix]/MeV << endl;}
-      else
-	{output << "insert " << fullName() << ":RhoMasses " << ix << " " 
-		<< _rhomass[ix]/MeV << endl;}
-    }
-  for(unsigned int ix=0;ix<_rhowidth.size();++ix)
-    {
-      if(ix<2)
-	{output << "set    " << fullName() << ":RhoWidths " << ix << " " 
-		<< _rhowidth[ix]/MeV << endl;}
-      else
-	{output << "insert " << fullName() << ":RhoWidths " << ix << " " 
-		<< _rhowidth[ix]/MeV << endl;}
-    }
+  for(unsigned int ix=0;ix<_rhomass.size();++ix) {
+    if(ix<2) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+		    << _rhomass[ix]/MeV << endl;
+    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+		    << _rhomass[ix]/MeV << endl;
+  }
+  for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
+    if(ix<2) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+		    << _rhowidth[ix]/MeV << endl;
+    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+		    << _rhowidth[ix]/MeV << endl;
+  }
   // couplings and phases for different channels
   output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
   output << "set " << fullName() << ":f2Phase " << _f2phase<< "\n";
@@ -1008,70 +1052,54 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
   output << "set " << fullName() << ":sigmaMagnitude " << _sigmamag << "\n";
   output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
-  for(unsigned int ix=0;ix<_rhomagP.size();++ix)
-    {
-      if(ix<2)
-	{output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
-		<< _rhomagP[ix] << endl;}
-      else
-	{output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
-		<< _rhomagP[ix] << endl;}
-    }
-  for(unsigned int ix=0;ix<_rhophaseP.size();++ix)
-    {
-      if(ix<2)
-	{output << "set    " << fullName() << ":RhoPWavePhase " << ix << " " 
-		<< _rhophaseP[ix] << endl;}
-      else
-	{output << "insert " << fullName() << ":RhoPWavePhase " << ix << " " 
-		<< _rhophaseP[ix] << endl;}
-    }  
-  for(unsigned int ix=0;ix<_rhomagD.size();++ix)
-    {
-      if(ix<2)
-	{output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
-		<< _rhomagD[ix]*MeV2 << endl;}
-      else
-	{output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
-		<< _rhomagD[ix]*MeV2 << endl;}
-    }
-  for(unsigned int ix=0;ix<_rhophaseD.size();++ix)
-    {
-      if(ix<2)
-	{output << "set    " << fullName() << ":RhoDWavePhase " << ix << " " 
-		<< _rhophaseD[ix] << endl;}
-      else
-	{output << "insert " << fullName() << ":RhoDWavePhase " << ix << " " 
-		<< _rhophaseD[ix] << endl;}
-    }
+  for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
+    if(ix<2) output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
+		    << _rhomagP[ix] << endl;
+    else     output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
+		    << _rhomagP[ix] << endl;
+  }
+  for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
+    if(ix<2) output << "set    " << fullName() << ":RhoPWavePhase " << ix << " " 
+		    << _rhophaseP[ix] << endl;
+    else     output << "insert " << fullName() << ":RhoPWavePhase " << ix << " " 
+		    << _rhophaseP[ix] << endl;
+  }  
+  for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
+    if(ix<2) output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
+		    << _rhomagD[ix]*MeV2 << endl;
+    else     output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
+		    << _rhomagD[ix]*MeV2 << endl;
+  }
+  for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
+    if(ix<2) output << "set    " << fullName() << ":RhoDWavePhase " << ix << " " 
+		    << _rhophaseD[ix] << endl;
+    else     output << "insert " << fullName() << ":RhoDWavePhase " << ix << " " 
+		    << _rhophaseD[ix] << endl;
+  }
   // use local values of the masses etc.
   output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
   // integration weights for the different channels
-  for(unsigned int ix=0;ix<_zerowgts.size();++ix)
-    {
-      output << "set " << fullName() << ":AllNeutralWeights " 
-	     << ix << " " << _zerowgts[ix] << "\n";
-    }
-  for(unsigned int ix=0;ix<_onewgts.size();++ix)
-    {
-      output << "set " << fullName() << ":OneChargedWeights " 
-	     << ix << " " << _onewgts[ix] << "\n";
-    }
-  for(unsigned int ix=0;ix<_twowgts.size();++ix)
-    {
-      output << "set " << fullName() << ":TwoChargedWeights " 
-	     << ix << " " << _twowgts[ix] << "\n";
-    }
-  for(unsigned int ix=0;ix<_threewgts.size();++ix)
-    {
-      output << "set " << fullName() << ":ThreeChargedWeights " 
-	     << ix << " " << _threewgts[ix] << "\n";
-    }
+  for(unsigned int ix=0;ix<_zerowgts.size();++ix) {
+    output << "set " << fullName() << ":AllNeutralWeights " 
+	   << ix << " " << _zerowgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_onewgts.size();++ix) {
+    output << "set " << fullName() << ":OneChargedWeights " 
+	   << ix << " " << _onewgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_twowgts.size();++ix) {
+    output << "set " << fullName() << ":TwoChargedWeights " 
+	   << ix << " " << _twowgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_threewgts.size();++ix) {
+    output << "set " << fullName() << ":ThreeChargedWeights " 
+	   << ix << " " << _threewgts[ix] << "\n";
+  }
   // maximum weights for the different  channels
   output << "set " << fullName() << ":ZeroMax "  << _zeromax  << "\n";
   output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
   output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
   output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
-} 

@@ -25,13 +25,6 @@
 #include "ThePEG/Interface/Reference.h"
 
 using namespace Herwig; 
-using namespace ThePEG;
-
-// dummy accept method
-bool DecayIntegrator::accept(const DecayMode & dm) const {
-  bool cc;
-  return modeNumber(cc,dm)>=0;
-}
 
 // dummy decay method
 ParticleVector DecayIntegrator::decay(const DecayMode & dm,
@@ -128,15 +121,13 @@ void DecayIntegrator::Init() {
 }
 
 // output info on the integrator
-ostream & Herwig::operator<<(ostream & os, const DecayIntegrator & decay)
-{
+ostream & Herwig::operator<<(ostream & os, const DecayIntegrator & decay) {
   os << "The integrator has " << decay._modes.size() << " modes"  << endl;
- for(unsigned int ix=0;ix<decay._modes.size();++ix)
-   {
-     os << "Information on mode " << ix << endl;
-     os << *(decay._modes[ix]);
-   }
- return os;
+  for(unsigned int ix=0;ix<decay._modes.size();++ix) {
+    os << "Information on mode " << ix << endl;
+    os << *(decay._modes[ix]);
+  }
+  return os;
 }
 
 // generate the momenta for the decay
@@ -181,41 +172,10 @@ void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width)
   }
 } 
 
-bool DecayIntegrator::twoBodyMEcode(const DecayMode &, 
-				    int & imode, double & g) const {
-  g=1.;
-  imode=-1;
-  return true;
-}
-
-// the matrix element to be integrated for the me
-double DecayIntegrator::threeBodyMatrixElement(const int,const Energy2, const Energy2,
-					       const Energy2,const Energy2,
-					       const Energy, const Energy, 
-					       const Energy) const {
-  throw DecayIntegratorError() 
-    << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
-    << "method. This must be overwritten in the classes "
-    << "inheriting from DecayIntegrator where it is needed"
-    << Exception::runerror;
-}
-
-  // the differential three body decay rate with one integral performed
-InvEnergy DecayIntegrator::threeBodydGammads(const int, const Energy2, const Energy2,
-					  const Energy, const Energy, 
-					  const Energy) const {
-  throw DecayIntegratorError() 
-    << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
-    <<"method. This must be overwritten in the classes "
-    << "inheriting from DecayIntegrator where it is needed"
-    << Exception::runerror;
-}
-
 WidthCalculatorBasePtr 
 DecayIntegrator::threeBodyMEIntegrator(const DecayMode &) const {
   return WidthCalculatorBasePtr();
 }
-
 
 // set the code for the partial width
 void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
@@ -244,15 +204,13 @@ void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
       else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
 	  cc2=_modes[ix]->externalParticles(iy)->CC();
-	  if(cc2) extid.push_back(cc2->id());
-	  else    extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	  extid.push_back( cc2 ? cc2->id() : _modes[ix]->externalParticles(iy)->id());
 	}
       }
       else if(cc&&dm.parent()->id()==cc->id()) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
 	  cc = _modes[ix]->externalParticles(iy)->CC();
-	  if(cc) extid.push_back(cc->id());
-	  else   extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	  extid.push_back( cc ? cc->id() : _modes[ix]->externalParticles(iy)->id());
 	}
       }
       // if the parents match
@@ -311,15 +269,13 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
       else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
 	  cc2=_modes[ix]->externalParticles(iy)->CC();
-	  if(cc2) extid.push_back(cc2->id());
-	  else    extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	  extid.push_back( cc2 ? cc2->id() : _modes[ix]->externalParticles(iy)->id());
 	}
       }
       else if(cc&&dm.parent()->id()==cc->id()) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
 	  cc = _modes[ix]->externalParticles(iy)->CC();
-	  if(cc) extid.push_back(cc->id());
-	  else   extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	  extid.push_back( cc ? cc->id() : _modes[ix]->externalParticles(iy)->id());
 	}
       }
       // if the parents match
@@ -355,7 +311,7 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
   while(!found&&ix<_modes.size());
   return imode;
 }
-  
+
 // output the information for the database
 void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
@@ -381,21 +337,6 @@ tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const {
   return _modes[ix];
 }
  
-ParticleVector DecayIntegrator::generatePhotons(const Particle & p,
-						ParticleVector children) {
-  return _photongen->generatePhotons(p,children);
-}
-
-bool DecayIntegrator::oneLoopVirtualME(double &,unsigned int,const Particle &,
-				       const ParticleVector &) {
-  return false;
-}
-
-bool DecayIntegrator::realEmmisionME(double &, unsigned int,const Particle &,
-				     const ParticleVector &) {
-  return false;
-}
-
 Energy DecayIntegrator::initializePhaseSpaceMode(unsigned int imode,bool init) const{
   tcDecayPhaseSpaceModePtr cmodeptr=mode(imode);
   tDecayPhaseSpaceModePtr modeptr = const_ptr_cast<tDecayPhaseSpaceModePtr>(cmodeptr);

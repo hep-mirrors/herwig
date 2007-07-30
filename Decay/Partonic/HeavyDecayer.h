@@ -16,39 +16,40 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  <code>HeavyDecayer</code> is a class that defines all the general routines 
- *  used in HERWIG++ to imitate the HERWIG 6.4 decays. The goal is to have an exact
- *  copy of HERWIG 6.4 decay routines. This will allow for easy 'callibration'
- *  of the new C++ code with the old Fortran code.
- *
  *  This class is designed for the partonic decay of a bottom or charm mesons
- *  and baryons. In is
- *  only supports four body partonic decays.
+ *  and baryons and is intended to be the same as that in HERWIG6.4. 
+ *  Only four body partonic decays are supported.
  *
  *  Two types of matrix element are supported for this decay
  *
- *  - MECode=0   flat-phase space
+ *  - MECode=0   flat phase space
  *  - MECode=100 V-A matrix element for the heavy quark decay in the spectator model.
+ *
+ * The class decays a particle based on the DecayMode given.
+ * The basic idea is that the heavy parton in the heavy meson will decay
+ * weakly while the other parton will be more or less unchanged. This produces
+ * 4 partons, the spectator plus the result of the weak decay. The W then
+ * decays again into two more partons,
+ * e.g. a decay of \f$B^0\to d,\bar{c},\bar{d}, u \f$.
+ *
+ *    \f$\bar{b}\to\bar{c}\f$ (colour connected to spectator)
+ *   and \f$W^+\to\bar{d}u\f$  (the W decay products are colour connected)
+ *
+ * The resulting partons then need to be hadronized and decayed again.
  *
  * @see QuarkoniumDecayer
  * @see Hw64Decayer
  * @see Decayer
  * 
  */
-
 class HeavyDecayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline HeavyDecayer();
-  //@}
-
-public:
 
   /**
    * return true if this decayer can perfom the decay specified by the
@@ -61,6 +62,8 @@ public:
    * decay and return the decay products.
    */
   virtual ParticleVector decay(const DecayMode &, const Particle &) const;
+
+public:
 
   /**
    * Standard Init function used to initialize the interface.
@@ -75,8 +78,7 @@ public:
    */
   void persistentOutput(PersistentOStream & os) const;
 
-  /**
-   * Function used to read in object persistently.
+  /**   * Function used to read in object persistently.
    * @param is the persistent input stream read from.
    * @param version the version number of the object when written.
    */
@@ -101,14 +103,11 @@ public:
 private:
 
   /**
-   *  The code for the matrix element being used.
-   */
-  int MECode;
-
-  /**
    * Weighting of phase space for V-A matrix elements
    */
   static double VAWt(Energy2, Energy2, Energy2, InvEnergy4);
+
+private:
 
   /**
    *  Describe a concrete class with persistent data.
@@ -116,14 +115,16 @@ private:
   static ClassDescription<HeavyDecayer> initHeavyDecayer;
 
   /**
-   *  This control adding handlers but doesn't seem to be used any more
-   */
-  static long lastAddedNumber;
-
-  /**
    *  Private and non-existent assignment operator.
    */
   const HeavyDecayer & operator=(const HeavyDecayer &);
+
+private:
+
+  /**
+   *  The code for the matrix element being used.
+   */
+  int MECode;
 };
 
 }

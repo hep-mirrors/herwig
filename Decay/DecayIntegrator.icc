@@ -15,23 +15,92 @@ inline DecayIntegrator::DecayIntegrator()
     _generateinter(false),_outputmodes(false) {}
 
 // set and get the matrix element
-inline const DecayMatrixElement & DecayIntegrator::ME() const
-{return _matrixelement;}
+inline const DecayMatrixElement & DecayIntegrator::ME() const {
+  return _matrixelement;
+}
 
 // access to the matrix element calculated for the decay
-inline void DecayIntegrator::ME(const DecayMatrixElement & in) const
-{_matrixelement.reset(in);}
+inline void DecayIntegrator::ME(const DecayMatrixElement & in) const {
+  _matrixelement.reset(in);
+}
 
 // mode currently being generated
-inline int DecayIntegrator::imode() const {return _imode;}
-inline void DecayIntegrator::imode(int in){_imode=in;}
-// number of decay modes
-inline unsigned int  DecayIntegrator::numberModes() const {return _modes.size();}
-
-inline bool DecayIntegrator::canGeneratePhotons(){return _photongen;}
-
-inline bool DecayIntegrator::generateIntermediates() const 
-{return _generateinter;}
-
-inline void DecayIntegrator::generateIntermediates(bool in){_generateinter=in;}
+inline int DecayIntegrator::imode() const {
+  return _imode;
 }
+
+inline void DecayIntegrator::imode(int in) {
+  _imode=in;
+}
+
+// number of decay modes
+inline unsigned int  DecayIntegrator::numberModes() const {
+  return _modes.size();
+}
+
+inline bool DecayIntegrator::canGeneratePhotons() {
+  return _photongen;
+}
+
+inline bool DecayIntegrator::generateIntermediates() const {
+  return _generateinter;
+}
+
+inline void DecayIntegrator::generateIntermediates(bool in) {
+  _generateinter=in;
+}
+
+// dummy accept method
+inline bool DecayIntegrator::accept(const DecayMode & dm) const {
+  bool cc;
+  return modeNumber(cc,dm)>=0;
+}
+
+inline bool DecayIntegrator::twoBodyMEcode(const DecayMode &, 
+				    int & imode, double & g) const {
+  g=1.;
+  imode=-1;
+  return true;
+}
+
+inline ParticleVector DecayIntegrator::generatePhotons(const Particle & p,
+						ParticleVector children) {
+  return _photongen->generatePhotons(p,children);
+}
+
+inline bool DecayIntegrator::oneLoopVirtualME(double &,unsigned int,const Particle &,
+				       const ParticleVector &) {
+  return false;
+}
+
+inline bool DecayIntegrator::realEmmisionME(double &, unsigned int,const Particle &,
+				     const ParticleVector &) {
+  return false;
+}
+
+// the matrix element to be integrated for the me
+inline double DecayIntegrator::threeBodyMatrixElement(const int,const Energy2,
+						      const Energy2,
+						      const Energy2,const Energy2,
+						      const Energy, const Energy, 
+						      const Energy) const {
+  throw DecayIntegratorError() 
+    << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
+    << "method. This must be overwritten in the classes "
+    << "inheriting from DecayIntegrator where it is needed"
+    << Exception::runerror;
+}
+
+// the differential three body decay rate with one integral performed
+inline InvEnergy DecayIntegrator::threeBodydGammads(const int, const Energy2,
+						    const Energy2,
+						    const Energy, const Energy, 
+						    const Energy) const {
+  throw DecayIntegratorError() 
+    << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
+    <<"method. This must be overwritten in the classes "
+    << "inheriting from DecayIntegrator where it is needed"
+    << Exception::runerror;
+}
+}
+

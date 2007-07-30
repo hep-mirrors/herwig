@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the a1DecayAnalysis class.
+//
+#ifndef HERWIG_a1DecayAnalysis_FH
+#define HERWIG_a1DecayAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class a1DecayAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::a1DecayAnalysis,a1DecayAnalysisPtr);
+
+}
+
+#endif

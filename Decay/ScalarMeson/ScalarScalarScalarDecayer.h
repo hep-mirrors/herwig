@@ -119,7 +119,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -205,7 +205,7 @@ struct ClassTraits<Herwig::ScalarScalarScalarDecayer>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
+  static string library() { return "HwSMDecay.so"; }
 
 };
 

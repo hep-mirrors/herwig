@@ -212,7 +212,7 @@ public:
    */
   bool isStatusFinal() const;
   
-private:
+protected:
   
   /** @name Clone Methods. */
   //@{
@@ -220,15 +220,16 @@ private:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual PPtr clone() const;
+  inline virtual PPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual PPtr fullclone() const;
+  inline virtual PPtr fullclone() const;
   //@}
-   
+
+private:   
   /**
    * Private and non-existent assignment operator.
    */
@@ -287,6 +288,8 @@ private:
   
 } // end namespace Herwig  
 
+#include "ThePEG/Utilities/ClassTraits.h"
+
 namespace ThePEG {
 
 /** @cond TRAITSPECIALIZATIONS */
@@ -298,7 +301,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::Cluster,1> {
   /** Typedef of the base class of Cluster. */
-  typedef EventRecordBase NthBase;
+  typedef Particle NthBase;
 };
 
 /**

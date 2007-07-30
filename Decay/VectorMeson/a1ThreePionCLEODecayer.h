@@ -141,25 +141,10 @@ class a1ThreePionCLEODecayer: public DecayIntegrator {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   a1ThreePionCLEODecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline a1ThreePionCLEODecayer(const a1ThreePionCLEODecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~a1ThreePionCLEODecayer();
-  //@}
-
-public:
   
   /**
    * Which of the possible decays is required
@@ -265,7 +250,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
   
 private:
