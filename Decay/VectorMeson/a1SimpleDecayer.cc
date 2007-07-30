@@ -365,7 +365,7 @@ threeBodyMatrixElement(const int iopt,const Energy2 q2, const Energy2 s3,
     +0.25*(s1-s3-sqr(m1)+sqr(m3))*(s2-s3-sqr(m2)+sqr(m3))/q2;
   Complex rho1=rhoFormFactor(s2,-1);
   Complex rho2=rhoFormFactor(s1,-1);
-  double me = sqr(_coupling)*real(v12*rho1*conj(rho1)+v22*rho2*1conj(rho2)
+  double me = sqr(_coupling)*real(v12*rho1*conj(rho1)+v22*rho2*conj(rho2)
 				  +2.*v1v2*rho1*conj(rho2))/3.;
   if(iopt!=1) me *= 0.5;
   return me;
