@@ -320,10 +320,10 @@ else
 
 	CXXFLAGS="$CXXFLAGS -L${with_evtgen}/lib"
 
-	AC_CHECK_LIB([EvtGen],[abort],
+	AC_CHECK_LIB([evtgenlhc],[abort],
 		[],
 		[
-			AC_MSG_ERROR([libEvtGen could not be found at ${with_evtgen}/lib])
+			AC_MSG_ERROR([libevtgenlhc could not be found at ${with_evtgen}/lib])
 		])
 	LIBS="$oldLIBS"
 	CXXFLAGS=$tmpcxxflags
