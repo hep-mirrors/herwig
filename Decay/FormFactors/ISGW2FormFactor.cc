@@ -11,8 +11,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
 ISGW2FormFactor::ISGW2FormFactor() { 
   // include the a(omega) piece
@@ -875,33 +874,15 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     // set the relativistic correction parameter
     // decaying b
     if(ifl0==5) {
-      if(ifls<3) {
-	if(ifl1<3) Cf= _CfBrho;
-	else       Cf= _CfBDstar;
-      }
-      else if(ifls==3) {
-	if(ifl1==4) Cf=_CfBsDstar; 
-	else        Cf=_CfBsKstar;
-      }
-      else if(ifls==4) {
-	if(ifl1==4) Cf=_CfBcpsi;
-	else        Cf=_CfBcDstar;
-      }
+      if(ifls<3)       Cf = ifl1<3  ? _CfBrho    : _CfBDstar;
+      else if(ifls==3) Cf = ifl1==4 ? _CfBsDstar : _CfBsKstar;
+      else if(ifls==4) Cf = ifl1==4 ? _CfBcpsi   : _CfBcDstar;
     }
     // decaying D
     else if(ifl0==4) {
-      if(ifls<3) {
-	if(ifl1<3) Cf=_CfDrho;
-	else       Cf=_CfDKstar;
-      }
-      else if(ifls==3) {
-	if(ifl1<3) Cf=_CfDsKstar;
-	else       Cf=_CfDsphi;
-      }
-      else if(ifls==5) {
-	if(ifl1<3) Cf=_CfBcBstar; 
-	else       Cf=_CfBcBsstar;
-      }
+      if(ifls<3)       Cf = ifl1<3  ? _CfDrho    : _CfDKstar;
+      else if(ifls==3) Cf = ifl1<3  ? _CfDsKstar : _CfDsphi;
+      else if(ifls==5) Cf = ifl1<3  ? _CfBcBstar : _CfBcBsstar;
     } 
   }
   else if(ispin==10&&jspin==0) {
@@ -1211,5 +1192,4 @@ void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) 
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
-}
 }
