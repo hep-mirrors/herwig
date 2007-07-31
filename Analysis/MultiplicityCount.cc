@@ -12,6 +12,7 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Utilities/EnumParticles.h"
 #include <iostream>
 #include <fstream>
 
@@ -36,7 +37,7 @@ string MultiplicityInfo::bargraph(long N)
   else                        return "<----|-----";
 }
 
-MultiplicityCount::MultiplicityCount() 
+MultiplicityCount::MultiplicityCount() : _makeHistograms(false)
 {
   // Average particle multiplicities in hadronic Z decay
   // PDG 2006 with 2007 partial update
@@ -92,16 +93,15 @@ MultiplicityCount::MultiplicityCount()
   // Lambda_c+
   _data[4122] = MultiplicityInfo(0.078, 0.024, other);
 
-  // old values
+  // old values from 1.0 paper
 //   _data[433] = MultiplicityInfo(0.096, 0.046, other);
-//   _data[2112] = MultiplicityInfo(0.991, 0.054, lightBaryon);
+  _data[2112] = MultiplicityInfo(0.991, 0.054, lightBaryon);
 //   _data[2214] = MultiplicityInfo(0., 0., lightBaryon);
 //   _data[2114] = MultiplicityInfo(0., 0., lightBaryon);
 
 // values unknown
   // B mesons
-  // flavour averaged value!
-  //  _data[513] = MultiplicityInfo(0.28, 0.04, other);
+  //  _data[513] = MultiplicityInfo(0.28, 0.04, other);   // flavour averaged value!
   _data[513] = MultiplicityInfo(0., 0., other);
   _data[511] = MultiplicityInfo(0., 0., other); // B0
   _data[521] = MultiplicityInfo(0., 0., other); // B+
@@ -118,6 +118,20 @@ MultiplicityCount::MultiplicityCount()
   _data[5322] = MultiplicityInfo(0., 0., other); // Xi'_b0
   _data[5332] = MultiplicityInfo(0., 0., other); // Omega_b-
 }
+
+namespace {
+  Energy parentClusterMass(tcPPtr p) {
+    if (p->parents().empty()) 
+      return -1.0*MeV;
+
+    tcPPtr parent = p->parents()[0];
+    if (parent->id() == ExtraParticleID::Cluster)
+      return parent->mass();
+    else
+      return parentClusterMass(parent);
+  }
+}
+
 
 void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
 
@@ -169,6 +183,12 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
     if (_data.find(ID) != _data.end()) {
       eventcount.insert(make_pair(ID,0));
       ++eventcount[ID];
+
+      if (_makeHistograms) {
+	if (_histograms.find(ID) == _histograms.end())
+	  _histograms.insert(make_pair(ID,Histogram(0.0,10.0,100)));
+	_histograms[ID] += parentClusterMass(*it)/GeV;
+      }
     }
   }
   
@@ -234,10 +254,18 @@ void MultiplicityCount::dofinish() {
     string name = generator()->getParticleData(it->first)->PDGName();
     outfile << name << '\t' << it->second << '\n';
   }
-
-
-
   outfile.close();
+
+  if (_makeHistograms) {
+    string histofilename = filename + ".top";
+    outfile.open(histofilename.c_str());
+    for (map<long,Histogram>::const_iterator it = _histograms.begin();
+	 it != _histograms.end(); ++it) {
+      string title = generator()->getParticleData(it->first)->PDGName();
+      it->second.topdrawOutput(outfile,true,false,false,false,"BLACK",title);
+    }
+    outfile.close();
+  }
   AnalysisHandler::dofinish();
 }
 
@@ -269,6 +297,22 @@ void MultiplicityCount::Init() {
      "The type of particle",
      &MultiplicityCount::_species,
      0, 0, other, 0, other, false, false, true);
+
+
+  static Switch<MultiplicityCount,bool> interfaceHistograms
+    ("Histograms",
+     "Set to On if detailed histograms are required.",
+     &MultiplicityCount::_makeHistograms, false, true, false);
+  static SwitchOption interfaceHistogramsOn
+    (interfaceHistograms,
+     "On",
+     "Generate histograms of cluster mass dependence.",
+     true);
+  static SwitchOption interfaceHistogramsOff
+    (interfaceHistograms,
+     "Off",
+     "Do not generate histograms.",
+     false);
 
   static ClassDocumentation<MultiplicityCount> documentation
     ("The MultiplicityCount class count the multiplcities of final-state particles"
