@@ -5,7 +5,6 @@
 // This is the declaration of the LEPEventShapes class.
 //
 
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "EventShapes.h"
@@ -63,12 +62,6 @@ public:
    * @param particles the vector of pointers to particles to be analyzed
    */
   virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -122,13 +115,13 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -231,11 +224,6 @@ private:
    * Pointer to the object which calculates the event shapes
    */
   EventShapesPtr _shapes;
-
-  /**
-   *  The weight for the event
-   */
-  double eventweight_;
 };
 
 }
