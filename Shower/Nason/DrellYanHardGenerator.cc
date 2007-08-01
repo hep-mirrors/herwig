@@ -3,6 +3,8 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DrellYanHardGenerator class.
 //
+#include <math.h>
+
 #include "DrellYanHardGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
@@ -20,6 +22,8 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
+
+using namespace std;
 
 using namespace Herwig;
 
@@ -67,39 +71,47 @@ void DrellYanHardGenerator::Init() {
      "The prefactor for the sampling of the g qbar channel",
      &DrellYanHardGenerator::_pregqbar, 3.0, 0.0, 1000.0,
      false, false, Interface::limited);
-
 }
 
 NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // get the particles to be showered
   _beams.clear();
   _partons.clear();
+
   // find the incoming particles
   ShowerParticleVector incoming;
+
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  _quarkplus=true;
+  _quarkplus = true;
   vector<ShowerProgenitorPtr> particlesToShower;
-  for(cit=tree->incomingLines().begin(); cit!=tree->incomingLines().end();++cit) {
-    incoming.push_back(cit->first->progenitor());
-    _beams.push_back(cit->first->beam());
-    _partons.push_back(cit->first->progenitor()->dataPtr());
-    if(cit->first->progenitor()->id()>0&&cit->first->progenitor()->momentum().z()<0*MeV)
-      _quarkplus=false;
-    particlesToShower.push_back(cit->first);
+
+  //progenitor particles are produced in z direction.
+
+  for( cit = tree->incomingLines().begin(); cit != tree->incomingLines().end(); ++cit ) {
+    incoming.push_back( cit->first->progenitor() );
+    _beams.push_back( cit->first->beam() );
+    _partons.push_back( cit->first->progenitor()->dataPtr() );
+
+    // cerr<<"\n particle: "<< cit->first->progenitor()->id()<<"\n";
+    // cerr<<" particle momenta: "<< cit->first->progenitor()->momentum() / GeV<< " \n ";
+    if( cit->first->progenitor()->id() > 0 && cit->first->progenitor()->momentum().z() < 0 * MeV )
+      _quarkplus = false;
+    particlesToShower.push_back( cit->first );
   }
+
   // find the gauge boson
   PPtr boson;
-  if(tree->outgoingLines().size()==1) {
-    boson=tree->outgoingLines().begin()->first->copy();
+  if(tree->outgoingLines().size() == 1) {
+    boson = tree->outgoingLines().begin()->first->copy();
   }
   else {
-    boson=tree->outgoingLines().begin()->first->copy()->parents()[0];
+    boson = tree->outgoingLines().begin()->first->copy()->parents()[0];
   }
+
   // calculate the rapidity of the boson
-  _yb=0.5*log((boson->momentum().e()+boson->momentum().z())/
-	      (boson->momentum().e()-boson->momentum().z()));
-  // take quark first
-  _yb *= _quarkplus ? 1. : -1.;
+  _yb = 0.5 * log( ( boson->momentum().e() + boson->momentum().z() ) /
+	      ( boson->momentum().e() - boson->momentum().z() ) );
+  // _yb *= _quarkplus ? 1. : -1.;
   _mass=boson->mass();
   // we are assuming quark first, swap order to ensure this
   // if antiquark first
@@ -159,6 +171,8 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(_partons[iemit],false)));
   newparticles.back()->set5Momentum(poff);
+
+
   // find the sudakov for the branching
   BranchingList branchings=evolver()->splittingGenerator()->initialStateBranchings();
   long index = abs(_partons[iemit]->id());
@@ -233,6 +247,7 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructHardShower(nasontree,evolver());
+
   return nasontree;
 }
    
@@ -329,10 +344,11 @@ double DrellYanHardGenerator::getResult(int emis_type, Energy pt, double yj) {
   if(res*sqr(pt/GeV)>_max[emis_type]) _max[emis_type]=res*sqr(pt/GeV);
   return res;
  } 
+
 bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew, 
 				     int & emis_type){
   // pt cut-off
-  Energy minp = 0.5*GeV;  
+  Energy minp = 0.1*GeV;  
   // maximum pt (half of centre-of-mass energy)
   Energy maxp = 0.5*generator()->maximumCMEnergy();
   // set pt of emission to zero
@@ -517,12 +533,13 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
 }
 
 void DrellYanHardGenerator::dofinish() {
-  //this is called at the end of run - wite histograms to hist.top
+
+  //uncomment to test the bbar fn
+  //TestBbar()
+
   HardestEmissionGenerator::dofinish();
 
   ofstream hist_out("hist3.top");
-  ofstream scatxy("scatxy.dat");
-  ofstream scatyjp("scatyjp.dat");
 
   _hyb->topdrawOutput(hist_out,true,false,false,false,string("BLACK"),string("Drell-Yan hist yb"), string(), string(), string(), string("yb"), string());
   _hyj->topdrawOutput(hist_out,true,false,false,false,string("BLACK"),string("Drell-Yan hist yj"), string(), string(), string(), string("yj"), string());
@@ -559,7 +576,261 @@ void DrellYanHardGenerator::doinitrun() {
   _weightc= new_ptr(Histogram(0.0,100.0,100));
   //set up histograms in here- this is called at start of r
   HardestEmissionGenerator::doinitrun();
+
 }
 
+//a place to test out bbar generation of yb
+
+double DrellYanHardGenerator::H_fn( double x1, double x2, Energy2 Mll2 ){
+  if (x1 > 1. || x2 > 1. ) return 0.;
+  double pdfs =   _beams[0]->pdf()->xfx( _beams[0], _partons[0], Mll2, x1 ) / x1 *_beams[1]->pdf()->xfx( _beams[1], _partons[1], Mll2, x2) / x2 +
+    _beams[0]->pdf()->xfx( _beams[0], _partons[1], Mll2, x1) / x1 *_beams[1]->pdf()->xfx( _beams[1], _partons[0], Mll2, x2 ) / x2;
+  if( isnan(pdfs) ) cerr<< "error in pdf" <<"\n";
+  if (pdfs == 0. ) pdfs = 0.00000001;
+  return ( GeV * GeV / Mll2 )* pdfs;
+}
+
+double DrellYanHardGenerator::K_qg( double x1, double x2, Energy2 Mll2 ){
+    if (x1 > 1. || x2 > 1. ) return 0.;
+    double pdfs =  ( _beams[0]->pdf()->xfx( _beams[0], _partons[0], Mll2, x1) / x1 +_beams[0]->pdf()->xfx( _beams[0], _partons[1], Mll2, x1) / x1 ) *
+    _beams[1]->pdf()->xfx( _beams[1], getParticleData(ParticleID::g), Mll2, x2) / x2;
+     return pdfs;
+     // return 1.;
+}
+
+double DrellYanHardGenerator::K_gq( double x1, double x2, Energy2 Mll2 ){
+    if (x1 > 1. || x2 > 1. ) return 0.;
+    double pdfs =  ( _beams[1]->pdf()->xfx( _beams[1], _partons[0], Mll2, x2 ) / x2 + _beams[1]->pdf()->xfx( _beams[1], _partons[1], Mll2, x2) / x2 ) *
+    _beams[0]->pdf()->xfx( _beams[0], getParticleData(ParticleID::g), Mll2, x1) / x1;
+     return pdfs;
+     // return 1.;
+}
+
+bool DrellYanHardGenerator::BBarInRange( Energy2 Mll2, double yll, double x, double v ){
+
+  Energy2 s = 14000 * 14000 * GeV * GeV;
+  double xb1 = sqrt( Mll2 / s ) * exp( yll );
+  double xb2 = sqrt( Mll2 / s )  * exp( -yll );
+
+
+  double xmin1 = 4. * v * sqr( xb1 ) / ( sqrt( sqr( 1. + sqr( xb1 ) ) * 4.* sqr( 1.- v )
+					  + 16.*( 2. * v - 1.) * sqr( xb1 ) ) + 2. *( 1.- v )*( 1. - sqr( xb1 ) ) );
+
+  double xmin2 = 4. *( 1.- v ) * sqr( xb2 ) / ( sqrt( sqr( 1. + sqr( xb2 ) ) * 4.* sqr( v )
+					  - 16.*( 2. * v - 1.) * sqr( xb2 ) ) + 2. * v * ( 1. - sqr( xb2 ) ) );
+  double xmin;
+  if ( xmin1 > xmin2 ) xmin = 1. - xmin1;
+  else xmin = 1.- xmin2;
+
+  if( x < xmin || x > 1.) return false;
+  if( yll < 0.5 * log( Mll2 / s ) || yll > -0.5 * log( Mll2 / s )) return false;
+
+  return true;
+
+}
+ 
+double DrellYanHardGenerator::BBarWgt( Energy2 Mll2, double yll, double x, double v ){    
+
+  Energy2 s = 14000 * 14000 * GeV * GeV;
+  double xb1 = sqrt( Mll2 / s ) * exp( yll );
+  double xb2 = sqrt( Mll2 / s )  * exp( -yll );
+  double x1 = xb1 / sqrt( x ) * sqrt( ( 1. - ( 1.- x ) * v ) / ( 1.-( 1.- x )*( 1.- v ) ) );
+  double x2 = xb2 / sqrt( x ) * sqrt( ( 1. - ( 1.- x ) *( 1.- v ) ) / ( 1.-( 1.-x )* v ) );
+
+  double xmin1 = 4. * v * sqr( xb1 ) / ( sqrt( sqr( 1. + sqr( xb1 ) ) * 4.* sqr( 1.- v )
+					  + 16.*( 2. * v - 1.) * sqr( xb1 ) ) + 2. *( 1.- v )*( 1. - sqr( xb1 ) ) );
+
+  double xmin2 = 4. *( 1.- v ) * sqr( xb2 ) / ( sqrt( sqr( 1. + sqr( xb2 ) ) * 4.* sqr( v )
+					  - 16.*( 2. * v - 1.) * sqr( xb2 ) ) + 2. * v * ( 1. - sqr( xb2 ) ) );
+
+  double xVol;
+
+  if ( xmin1 > xmin2) xVol = 1. - xmin1;
+  else xVol = 1.- xmin2;
+
+  using Constants::pi;
+  double wqq = 0.;
+
+  wqq += (2. / 3. * pi * pi - 8.) / xVol;
+
+  wqq +=  ( H_fn( xb1 / x , xb2, Mll2) + H_fn( xb1, xb2 / x, Mll2) ) / x / H_fn( xb1, xb2, Mll2) *
+    ( ( 1. - x ) * ( 1. + 2.* log( 1. - x )- log( x ) ) - 2.* x * log( x ) / ( 1.- x )  );
+  
+  wqq += ( ( H_fn( xb1 / x , xb2, Mll2) + H_fn( xb1, xb2 / x, Mll2) ) / H_fn( xb1, xb2, Mll2)   - 2. ) * 4. * log( 1. - x ) / ( 1.- x );
+  
+  wqq += -2.*( 1. - x ) * H_fn( x1, x2, Mll2 ) / x / H_fn( xb1, xb2, Mll2 );
+  
+  wqq += ( 1. + x * x ) / ( 1. - x ) / x / ( 1. - v ) * ( H_fn( x1 , x2, Mll2) + H_fn( xb1, xb2 / x, Mll2) ) / H_fn( xb1, xb2, Mll2);
+
+  wqq += ( 1. + x * x ) / ( 1. - x ) / x / v  * ( H_fn( x1 , x2, Mll2) + H_fn( xb1 / x, xb2, Mll2) ) / H_fn( xb1, xb2, Mll2);
+
+  wqq *= 4. / 3.;  
+
+  //wqq = 0.;
+
+
+  double wgq = K_gq( xb1 / x, xb2 , Mll2 ) / x / H_fn( xb1, xb2, Mll2 ) * ( 0.5 + 1. / 2. * ( sqr( x )+ sqr( 1. - x ) ) * ( -1.+ log( sqr( 1. - x ) / x  ) ) ); //
+  
+  wgq += K_gq( x1, x2, Mll2 ) / x / H_fn ( xb1, xb2, Mll2 ) * ( x * ( 1. - x ) + 0.5 * sqr( 1. - x ) * v + 1. / 2. * ( sqr( x )+ sqr( 1. - x ) ) / v );//
+
+  wgq -= K_gq( xb1 / x, xb2, Mll2 ) / H_fn( xb1, xb2, Mll2 ) / x / v * 1. / 2. * ( sqr( x )+ sqr( 1. - x ) );//
+
+   wgq = 0.;
+
+  double wqg = K_qg( xb1, xb2 / x, Mll2 ) / x / H_fn( xb1, xb2, Mll2 ) * ( 1. / 2. * ( sqr( x )+ sqr( 1. - x ) ) * ( -1.+ log( sqr( 1. - x ) / x ) ) + 0.5 );//
+
+  wqg += K_qg( x1, x2, Mll2 ) / x / H_fn( xb1, xb2, Mll2 ) * ( 0.5 * sqr( 1. - x )*( 1. - v ) + x * ( 1. - x ) + 1. / 2. * ( sqr( x )+ sqr( 1. - x ) ) / ( 1. - v ) );
+
+  wqg -= K_qg( xb1, xb2 / x, Mll2 ) / x / H_fn( xb1, xb2, Mll2 ) * 1. / 2. * ( sqr( x )+ sqr( 1. - x ) ) / ( 1. - v ); //
+
+    wqg = 0.;
+									    
+
+  double wgt = H_fn( xb1, xb2, Mll2 ) * ( 1. / xVol + _alphaS->value( Mll2 ) / 2. / pi * ( wqq + wqg + wgq ) ); //
+
+  double bornyb =  H_fn( xb1, xb2, Mll2 ) / xVol* sqr ( Mll2 / GeV / GeV ) * sqr( 1.- x ) / ( 1. / x + 1. / ( 1. - x ) ); //born wgt * Jacobean;
+  //output to born yb histogram for comparison
+  _hbornyb->addWeighted( yll,bornyb );
+
+  return wgt;
+}
+
+
+void DrellYanHardGenerator::TestBbar(){
+
+  cerr<<"\n satring to test bbar fn \n";
+  ofstream born_out("testing.top");
+
+  _hbbarDileptonMass = new_ptr( Histogram( 0., 1000., 100) );
+  _hbbar = new_ptr( Histogram( -5., 5., 100) );
+  _hbbarv = new_ptr( Histogram( 0., 1., 100) );
+  _hbbarx = new_ptr( Histogram( 0., 1, 100 ) );
+  _hbornyb = new_ptr( Histogram( -5., 5., 100 ) );
+  
+  // the generating variables:
+  Energy2 Mll2;
+  double yll;
+  double x;
+  double v;
+    
+  //integration ranges (approx)
+  double maxy = 5.;
+  double miny = -5.;
+  double minv = 0.001;
+  double maxv = 0.999;
+  double maxx = 0.999;
+  double minx = 0.001;
+  Energy2 s = 14000 * 14000 * GeV * GeV;
+  Energy2 minMll2 = sqr( 60. * GeV );
+  Energy2 maxMll2 = s;
+
+  double wgt;
+  double max_wgt = 0.;
+  double min_wgt =0.;
+  int neg_wgt_count = 0;
+  
+  bool reject;
+  
+  for( int i = 0; i < 10000; i++ ) {
+    do{
+      //generates y flat
+      yll = UseRandom::rnd() * ( maxy - miny )+ miny;
+      //generates Mll2 in 1/ Mll2^2
+      Mll2 = 1. / (1. / minMll2 + UseRandom::rnd() * ( 1. / maxMll2 - 1. / minMll2 ) ) ;
+      //generates v in 1/v+1/(1-v)
+      if ( UseRandom::rnd() > 0.5 ){
+	v = minv * pow( maxv / minv, UseRandom::rnd() );
+      }
+      else {
+	v = 1. - ( 1. - minv ) * pow ( ( 1. - maxv ) / ( 1. - minv ) , UseRandom::rnd() );
+      }
+      //generates x in 1/x^2
+      x = 1. + 1. / ( 1. / ( minx - 1.) + UseRandom::rnd() * ( 1. / ( maxx - 1. ) - 1. / ( minx - 1. ) ) );
+
+      if ( x > 1. || x < 0. ) cerr<< "problem with x generation \n";
+      if ( v > 1. || v < 0. ) cerr<< "problem with v generation \n";
+
+      
+      wgt = BBarWgt( Mll2, yll, x, v ) * sqr ( Mll2 / GeV / GeV ) * sqr( 1.- x ) / ( 1. / x + 1. / ( 1. - x ) ); // change for different g(Mll2)
+   
+      reject = ! BBarInRange( Mll2, yll, x, v ); 
+      
+    }while( reject );
+ 
+
+    //fill histograms if wgt > 0
+    if (wgt > 0.){
+      _hbbarDileptonMass->addWeighted( sqrt(Mll2) / GeV ,wgt );
+      _hbbar->addWeighted( yll,wgt );
+      _hbbarx->addWeighted( x,wgt );
+      _hbbarv->addWeighted( v,wgt );
+    }
+
+    if( isnan(wgt) ) cerr<< "nan error in wgt" <<"\n";
+    if ( wgt < 0. ) {
+      neg_wgt_count ++;
+    }
+    
+    if ( wgt > max_wgt ) {
+      max_wgt = wgt;
+      cerr<<"new max of wgt: " <<max_wgt<< " at (xb1, xb2) = ("<< sqrt( Mll2 / s ) * exp( +yll )<<", "<< sqrt( Mll2 / s ) * exp( -yll ) <<") \n"<<
+	" at (yll, Mll2, v, x) = ("<< yll<<", "<< sqrt( Mll2 ) / GeV <<", "<<v<<", "<<x<<") \n";
+    }
+    if ( wgt < min_wgt ){
+      min_wgt = wgt;
+      	cerr<<"new min of wgt: " <<min_wgt<< " at (yll, Mll2, v, x) = ("<< yll<<", "<< sqrt( Mll2 ) / GeV <<", "<<v<<", "<<x<<") \n";
+    }
+  
+  }
+
+  cerr<< "negative wgts produced = " << neg_wgt_count<<"\n";
+  cerr<<"max wgt = "<< max_wgt<<"\n min wgt = "<< min_wgt<<endl;
+  
+  //output histogram
+
+
+  _hbbarDileptonMass->topdrawOutput( born_out, true, false, false, false,
+				      "BLACK",
+				      "bbar dilepton mass", 
+				      " ", 
+				      " ",
+				      " ", 
+				      "mass / GeV", 
+				      " " );
+  _hbbar->topdrawOutput( born_out, true, false, false, false,
+			  "BLACK",
+			  "bbar yb", 
+			  " ", 
+			  " ",
+			  " ", 
+			  "yb", 
+			  " " );
+ _hbbarx->topdrawOutput( born_out, true, false, false, false,
+			  "BLACK",
+			  "bbar x", 
+			  " ", 
+			  " ",
+			  " ", 
+			  "x", 
+			  " " );
+ _hbornyb->topdrawOutput( born_out, true, false, false, false,
+			  "BLACK",
+			  "born yb", 
+			  " ", 
+			  " ",
+			  " ", 
+			  "yb", 
+			  " " );
+ _hbbarv->topdrawOutput( born_out, true, false, false, false,
+			  "BLACK",
+			  "bbar v", 
+			  " ", 
+			  " ",
+			  " ", 
+			  "v", 
+			  " " );
+
+
+}
 
 

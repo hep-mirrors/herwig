@@ -128,6 +128,29 @@ protected:
    * @param yj The rapidity of the jet
    */
   double getResult(int emis_type, Energy pt, double yj);
+
+
+  void TestBbar();
+  
+  double H_fn( double x1, double x2, Energy2 Mll );
+
+  double K_gq( double x1, double x2, Energy2 Mll );
+
+  double K_qg( double x1, double x2, Energy2 Mll );
+
+
+  
+
+  bool BBarInRange( Energy2 M11, double yll, double x, double v );
+
+  double BBarWgt( Energy2 M11, double yll, double x, double v );
+
+  //some test_fns (delete)
+
+  double test_fn(double x, double y);
+
+  void dotest();
+ 
   
   /**
    *  generates the hardest emission (yj,p)
@@ -250,6 +273,14 @@ private:
   HistogramPtr  _hyj;
   HistogramPtr  _htype;
   HistogramPtr  _weighta,_weightb,_weightc;
+  HistogramPtr _hbbar;
+  HistogramPtr _hbbarDileptonMass;
+
+
+  //test histograms
+  HistogramPtr _hbornyb;
+  HistogramPtr _hbbarx;
+  HistogramPtr _hbbarv;
   /**
    *  vector of points for scatter plot
    */
