@@ -5,10 +5,12 @@
 //
 
 namespace Herwig {
+using namespace ThePEG;
     
-inline SMHGGVertex::SMHGGVertex() : _couplast(0.), _q2last(), _mw(),
-				    _sw(0.), _qopt(0),
-				    _haveCoeff(false) {
+inline SMHGGVertex::SMHGGVertex() 
+  : _couplast(0.), _q2last(),
+    _mw(), _sw(0.), _minloop(6),_maxloop(6)
+{
   //PDG codes for particles at vertices
   vector<int> first(1,25),second(1,21),third(1,21);
   setList(first,second,third);
@@ -20,6 +22,15 @@ inline IBPtr SMHGGVertex::clone() const {
 
 inline IBPtr SMHGGVertex::fullclone() const {
   return new_ptr(*this);
+}
+
+inline void SMHGGVertex::doinit() throw(InitException) {
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if(!_theSM) 
+    throw InitException();
+  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  _sw = sqrt(_theSM->sin2ThetaW());
+  SimpleSVVLoopVertex::doinit();
 }
 
 }
