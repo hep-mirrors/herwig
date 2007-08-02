@@ -6,9 +6,27 @@
 
 namespace Herwig {
 
-inline MEPP2Higgs::MEPP2Higgs() : _process(0), _minloop(6), _maxloop(6),
-				  _minFlavour(3),_maxFlavour(5),_runLoop(false),
-				  _lineshape(false)
+inline MEPP2Higgs::MEPP2Higgs() : 
+  loopopt(1),
+  massopt(1),
+  widthopt(1),
+  branchingopt(3),
+  shapeopt(1),
+  processopt(1),
+  minflavouropt(3),
+  maxflavouropt(5)
+{}
+
+inline MEPP2Higgs::MEPP2Higgs(const MEPP2Higgs & x)
+  : ME2to2Base(x), 
+  loopopt(x.loopopt),
+  massopt(x.massopt),
+  widthopt(x.widthopt),
+  branchingopt(x.branchingopt),
+  shapeopt(x.shapeopt),
+  processopt(x.processopt),
+  minflavouropt(x.minflavouropt),
+  maxflavouropt(x.maxflavouropt)
 {}
 
 inline IBPtr MEPP2Higgs::clone() const {
@@ -19,19 +37,6 @@ inline IBPtr MEPP2Higgs::fullclone() const {
   return new_ptr(*this);
 }
 
-inline Complex MEPP2Higgs::A1(Energy2 s,Energy2 mf2) const {
-  return mf2/s*(4.-W2(s,mf2)*(1.-4.*mf2/s));
-}
-
-inline Complex MEPP2Higgs::W2(Energy2 s,Energy2 mf2) const {
-  double root=0.5*sqrt(abs(s)/mf2);
-  using Constants::pi;
-  if(s<0.*GeV2)
-    return 4.*sqr(asinh(root));
-  else if(s<4.*mf2)
-    return -4.*sqr(asin(root));
-  else
-    return 4.*sqr(acosh(root))-sqr(pi)-4.*pi*acosh(root)*Complex(0.,1.);
-}
+MEPP2Higgs::~MEPP2Higgs() {}
 
 }
