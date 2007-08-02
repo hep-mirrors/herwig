@@ -80,7 +80,7 @@ else
 		if test -f "${CLHEPINCLUDE#-I}/CLHEP/HepMC/GenEvent.h"; then
 			AC_MSG_RESULT([part of CLHEP])
 			HEPMCINCLUDE=$CLHEPINCLUDE/CLHEP
-			HEPMCLIBS=""
+			HEPMCLIBS="$CLHEPLDFLAGS $CLHEPLIB"
 			hepmclinkname=CLHEP
 		else
 			AC_MSG_RESULT([not found in CLHEP, use '--with-hepmc=' explicitly.])
