@@ -65,7 +65,38 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
 
+  // Get the gauge boson.
   PPtr boson = tree->incomingLines().begin()->first->copy();
+  // Get data for the gluon.
+  tcPDPtr gluon_data = getParticleData(ParticleID::g);
+
+  // Find the sudakov for the q->qg branching.
+  BranchingList branchings = 
+    evolver()->splittingGenerator()->finalStateBranchings();
+  long index = abs(QProgenitor->progenitor()->id()); 
+  SudakovPtr sudakov;
+  // For loop cycles through the Branchinglist - to find the sudakov.
+  for(BranchingList::const_iterator cit = branchings.lower_bound(index);
+      cit != branchings.upper_bound(index); ++cit ) {
+    IdList ids = cit->second.second;
+    if(ids[0] == abs(QProgenitor->progenitor()->id()) &&
+       ids[1] == abs(QProgenitor->progenitor()->id()) &&
+       ids[2] == gluon_data->id()) {
+	sudakov = cit->second.first;
+	break; 	    
+    }
+  }
+
+  // Check sudakov has been created:
+  if(!sudakov ) throw Exception() 
+      << "No Sudakov for the hard emission in "
+      << "VectorBosonQQbarHardGenerator::generateHardest()" 
+      << Exception::runerror;
+
+  // Get the nominal quark mass and the cut-offs, including the gluon mass Qg:
+  Energy n_mq=QProgenitor->progenitor()->nominalMass();
+  Energy Qg=sudakov->kinematicCutOff(sudakov->kinScale(),n_mq);
+  Energy mu=max(Qg,n_mq);
 
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent():
@@ -76,7 +107,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   getEvent(); 
 
   // Make the particles for the NasonTree:
-  tcPDPtr gluon_data = getParticleData(ParticleID::g);
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
   emitter->set5Momentum(_quark[_iemitter]); 
   ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons[_ispectator],true)));
@@ -90,29 +120,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
 
-  // Find the sudakov for the branching:
-  BranchingList branchings = 
-    evolver()->splittingGenerator()->finalStateBranchings();
-  long index = abs(emitter->id()); 
-		
-  SudakovPtr sudakov;
-  // For loop cycles through the Branchinglist - to find the sudakov:
-  for(BranchingList::const_iterator cit = branchings.lower_bound(index);
-      cit != branchings.upper_bound(index); ++cit ) {
-    IdList ids = cit->second.second;
-    if(ids[0] == abs(emitter->id()) &&
-       ids[1] == abs(parent->id())  &&
-       ids[2] == gluon->id()) {
-	sudakov = cit->second.first;
-	break; 	    
-    }
-  }
-  // Check sudakov has been created:
-  if(!sudakov ) throw Exception() 
-      << "No Sudakov for the hard emission in "
-      << "VectorBosonQQbarHardGenerator::generateHardest()" 
-      << Exception::runerror;
-		
   // Create the vectors of NasonBranchings to create the NasonTree:
   vector<NasonBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
@@ -158,7 +165,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
       reconstructDecayShower(nasontree,evolver());
-  return nasontree;
 
   // Calculate partonic event shapes from hard emission event?
   double thrust;
@@ -173,6 +179,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   (*_hy) += _y;
   (*_hplow) += _pt/GeV;
   (*_hphigh) += _pt/GeV;
+  return nasontree;
 }
 
 bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
@@ -266,9 +273,8 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   double maxy = 8.;
   double wgt;
   bool reject;
-  Energy last_pt;
-  last_pt = maxp;
-  
+  Energy last_pt(maxp);
+
   do {
     // veto algorithm for all C/Pt^pow except pow = 1
     //  _pt = GeV / pow (
@@ -331,7 +337,7 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   _g = _eventFrame * _g;
 
   return _g;
-  }
+}
 
  double VectorBosonQQbarHardGenerator::getResult() {
    double res = 4. / 3. / Constants::pi * _pt / _s *
