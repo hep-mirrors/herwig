@@ -618,6 +618,20 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
     pout[ix].boost(boostv);
   }
   double lambda=inverseRescaleingFactor(pout,mon,pin[0].mass());
+  if(isnan(lambda)) {
+    cout << "\n\n\nQTildeReconstructor::reconstructDecayShower \n";
+    cout << "lambda = " << lambda << "\n";
+    cout << "particles in the branchings including any children:\n";
+    for(cit=branchings.begin();cit!=branchings.end();++cit) {
+      cout << "(*cit)->_particle\n" << *((*cit)->_particle) << "\n";
+      if((*cit)->_children.size()!=0) {
+	cout << "Has " << (*cit)->_children.size() << " children:\n";
+	for(unsigned  int ix=0;ix< (*cit)->_children.size();++ix) {
+	  cout << *((*cit)->_children[ix]->_particle) << "\n";
+	}
+      } else { cout << "No children.\n"; }
+    }
+  }
   // now calculate the p reference vectors 
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if(!(*cit)->_particle->isFinalState()) continue;
