@@ -22,27 +22,27 @@ dist_pkgdata_DATA = $(DOTINFILES)
 pkgdata_DATA = PDF.in Makefile-UserModules
 
 ########## SVN version string. Only use in cc files! ####################
-BUILT_SOURCES = versionstring.h
 EXTRA_DIST = versionstring.h.in
-
-if USE_SVNVERSION
+BUILT_SOURCES = versionstring.h
+if USE_SVNVERSION # # # # # #
 BUILT_SOURCES += version version.tmp
 version version.tmp:
 	@svnversion -n $(top_srcdir) > version.tmp.new
-	@if ! diff version.tmp{.new,} &> /dev/null ; then \
+	@touch version.tmp.new
+	@if ! diff -q version.tmp{.new,} ; then \
 		mv version.tmp{.new,}; fi
 
 versionstring.h: version.tmp versionstring.h.in
 	@echo "creating versionstring.h"
 	@sed s%@HERWIGVERSIONSTRING@%"$(PACKAGE_STRING) `cd $(top_srcdir); svn info | grep URL | sed s@.*herwig/@@` r`cat version.tmp`"% \
 	  $(srcdir)/versionstring.h.in > versionstring.h
-else
+else # # # # # # # # # # # # #
 versionstring.h:
 	@echo "creating versionstring.h"
 	@sed s%@HERWIGVERSIONSTRING@%"$(PACKAGE_STRING)"% \
 	  $(srcdir)/versionstring.h.in > versionstring.h
 	@touch versionstring.h
-endif
+endif # # # # # # # # # # # # # 
 ########################################################################
 
 CLEANFILES = HerwigDefaults.rpo \
