@@ -23,11 +23,13 @@ inline IBPtr TopDecayMECorrection::fullclone() const {
   return new_ptr(*this);
 }
 
+// This function is auxiliary to the xab function.
 inline double TopDecayMECorrection::xgbr(int toggle) 
 { 
   return 1.+toggle*sqrt(_a)-_c*(1.-toggle*sqrt(_a))/(1.-_a);
 }
 
+// This function is auxiliary to the xab function.
 inline double TopDecayMECorrection::ktr(double xgb, int toggle) 
 { 
   return 2.*xgb/
@@ -36,6 +38,15 @@ inline double TopDecayMECorrection::ktr(double xgb, int toggle)
 		     *(xgb-xgbr(-1))));
 }
 
+// Function xab determines xa (2*W energy fraction) for a given value
+// of xg (2*gluon energy fraction) and kappa tilde (q tilde squared over
+// m_top squared). Hence this function allows you to draw 1: the total
+// phase space volume in the xa vs xg plane 2: for a given value of 
+// kappa tilde (i.e. starting evolution scale) the associated contour 
+// in the xa vs xg plane (and hence the regions that either shower can 
+// populate). This calculation is done assuming the emission came from
+// the top quark i.e. kappa tilde here is the q tilde squared of the TOP
+// quark divided by m_top squared. 
 inline double TopDecayMECorrection::xab(double xgb,
                                         double kt, int toggle) 
 { 
@@ -49,7 +60,7 @@ inline double TopDecayMECorrection::xab(double xgb,
     xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
       + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
   } else {
-    // This is the general form of xab.
+    // This is the form of xab FOR _g=0.
     double ktmktrpktmktrm = ( sqr(xgb*kt-2.*xgb)
 			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1))
 			      *(xgb-xgbr(-1))
@@ -86,6 +97,10 @@ inline double TopDecayMECorrection::xab(double xgb,
   return xab;
 }
 
+// xgbcut is the point along the xg axis where the upper bound on the 
+// top quark (i.e. b) emission phase space goes back on itself in the 
+// xa vs xg plane i.e. roughly mid-way along the xg axis in
+// the xa vs xg Dalitz plot.
 inline double TopDecayMECorrection::xgbcut(double kt) 
 { 
   double lambda2 = 1.+_a*_a+_c*_c-2.*_a-2.*_c-2.*_a*_c; 
