@@ -43,7 +43,7 @@ void VectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 }
 
 VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer() 
-  : _coupling(61), _incoming(61), _outgoingV(61), _outgoingP(61), _maxweight(61) {
+  : _coupling(63), _incoming(63), _outgoingV(63), _outgoingP(63), _maxweight(63) {
   // intermediates
   generateIntermediates(false);
   // rho -> gamma pi modes
@@ -117,8 +117,8 @@ VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer()
   _coupling[25] = 1.932/GeV; _maxweight[25] = 3.; 
   // omega'' rho pi
   _incoming[26] =  30223; _outgoingV[26] =  213; _outgoingP[26] = -211; 
-  _incoming[26] =  30223; _outgoingV[26] =  113; _outgoingP[26] =  111; 
-  _coupling[27] = 2.996/GeV; _maxweight[27] = 3.; 
+  _coupling[26] = 2.996/GeV; _maxweight[26] = 3.; 
+  _incoming[27] =  30223; _outgoingV[27] =  113; _outgoingP[27] =  111; 
   _coupling[27] = 2.996/GeV; _maxweight[27] = 3.; 
   // omega' rho pi
   _incoming[28] =  100223; _outgoingV[28] =  213; _outgoingP[28] = -211; 
@@ -207,6 +207,11 @@ VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer()
   // psi(2s)-> J/psi pi0 decay
   _incoming[60] = 100443; _outgoingV[60] = 443; _outgoingP[60] = 111; 
   _coupling[60] = 0.00846/GeV; _maxweight[60] = 2.; 
+  // psi(2s)-> gamma eta_c decay
+  _incoming[61] = 30443; _outgoingV[61] = 443; _outgoingP[61] = 221; 
+  _coupling[61] = 0.0108/GeV; _maxweight[61] = 3.5;
+  _incoming[62] = 30443; _outgoingV[62] = 333; _outgoingP[62] = 221; 
+  _coupling[62] = 0.0108/GeV; _maxweight[62] = 3.5; 
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }

@@ -65,8 +65,8 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
   if(isize!=_incoming.size()  || isize!=_outgoingV.size()|| isize!=_outgoingf.size()||
      isize!=_outgoinga.size() || isize!=_maxweight.size()|| isize!=_includeVMD.size()||
      isize!=_VMDid.size()     || isize!=_VMDmass.size()  || isize!=_VMDwidth.size())
-    {throw InitException() << "Inconsistent parameters in PScalarVectorFermionsDecayer"
-			   << Exception::abortnow;}
+    throw InitException() << "Inconsistent parameters in PScalarVectorFermionsDecayer"
+			  << Exception::abortnow;
   // create the integration channel for each mode 
   PDVector extpart(4);
   tPDPtr gamma(getParticleData(ParticleID::gamma));

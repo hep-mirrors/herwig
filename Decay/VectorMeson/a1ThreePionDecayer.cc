@@ -648,7 +648,7 @@ a1ThreePionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
     if(abs((**pit).id())==ParticleID::piplus) ++ncharged;
   }
   // integrator to perform the integral
-  vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
+  vector<double> inweights(2,0.5);
   vector<int> intype;intype.push_back(2);intype.push_back(3);
   Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
   Energy wrho=getParticleData(ParticleID::rhoplus)->width();

@@ -41,8 +41,8 @@ void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
 }
 
 TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer() 
-  : _incoming(21), _outgoing1(21), _outgoing2(21), 
-    _coupling(21), _maxweight(21) {
+  : _incoming(22), _outgoing1(22), _outgoing2(22), 
+    _coupling(22), _maxweight(22) {
   // a_2 -> gamma gamma
   _incoming[0] = 115; _outgoing1[0] =  22; _outgoing2[0] = 22; 
   _coupling[0] = 0.02336/GeV; _maxweight[0] = 2.; 
@@ -94,6 +94,8 @@ TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer()
   _coupling[19] = 13.14/GeV; _maxweight[19] = 34.; 
   _incoming[20] =  325; _outgoing1[20] =  213; _outgoing2[20] =  313; 
   _coupling[20] = 18.58/GeV; _maxweight[20] = 34.; 
+  _incoming[21] = 445; _outgoing1[21] = 223; _outgoing2[21] = 223; 
+  _coupling[21] = 0.00120/GeV; _maxweight[21] = 2.; 
   // initial size of the vectors
   _initsize = _incoming.size();
   // intermediates

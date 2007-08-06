@@ -42,8 +42,8 @@ void PVectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 }
 
 PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer() 
-  : _coupling(65), _incoming(65), _outgoingV(65), _outgoingP(65), 
-    _maxweight(65) {
+  : _coupling(67), _incoming(67), _outgoingV(67), _outgoingP(67), 
+    _maxweight(67) {
   // decay mode h'_1 to K K*
   _incoming[0] =  10333; _outgoingV[0] =  313; _outgoingP[0] = -311; 
   _coupling[0] = 4.766/GeV; _maxweight[0] = 11.; 
@@ -162,7 +162,7 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[48] = 0.072/GeV; _maxweight[48] = 2.1; 
   // decaymode B_s1 to B gamma
   _incoming[49] =  10533; _outgoingP[49] =  531; _outgoingV[49] = 22; 
-  _coupling[49] = 0.142/GeV; _maxweight[49] = 2.; 
+  _coupling[49] = 0.142/GeV; _maxweight[49] = 2.;
   // decaymode B_s1 to B* pi
   _incoming[50] =  10533; _outgoingP[50] =  111; _outgoingV[50] =  533; 
   _coupling[50] = 0.0074/GeV; _maxweight[50] = 2.1; 
@@ -202,7 +202,12 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[63] = 5.872/GeV; _maxweight[63] = 7.5; 
   // decay mode K'_1 to gamma K
   _incoming[64] =  20313; _outgoingV[64] =  22; _outgoingP[64] =  311; 
-  _coupling[64] = 0.494/GeV; _maxweight[64] = 8.; 
+  _coupling[64] = 0.494/GeV; _maxweight[64] = 8.;  
+  // decaymode B_s1 to B gamma
+  _incoming[65] =  10533; _outgoingP[65] =  -311; _outgoingV[65] = 513; 
+  _coupling[65] = 0.142/GeV; _maxweight[65] = 2.;
+  _incoming[66] =  10533; _outgoingP[66] =  -321; _outgoingV[66] = 523; 
+  _coupling[66] = 0.142/GeV; _maxweight[66] = 2.;  
   // initial size of the arrays
   _initsize = _coupling.size();
   // intermediates

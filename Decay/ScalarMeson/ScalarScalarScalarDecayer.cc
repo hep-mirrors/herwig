@@ -16,8 +16,8 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() 
-  : _incoming(69), _outgoing1(69), _outgoing2(69), 
-    _coupling(69), _maxweight(69) {
+  : _incoming(73), _outgoing1(73), _outgoing2(73), 
+    _coupling(73), _maxweight(73) {
   // f_0(980) to pi pi
   _incoming[0] = 9010221; _outgoing1[0] = 111; _outgoing2[0] =  111; 
   _coupling[0] = 2.093*GeV; _maxweight[0] = 1.05; 
@@ -191,6 +191,15 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[67] = 5.027*GeV; _maxweight[67] = 2.1; 
   _incoming[68] = 9030221; _outgoing1[68] = 100211;_outgoing2[68] = -211; 
   _coupling[68] = 5.027*GeV; _maxweight[68] = 2.1;
+  // K_0* to K pi
+  _incoming[69] =  9000311; _outgoing1[69] =  311; _outgoing2[69] =  111; 
+  _coupling[69] = 2.837*GeV; _maxweight[69] = 1.05; 
+  _incoming[70] =  9000311; _outgoing1[70] =  321; _outgoing2[70] = -211; 
+  _coupling[70] = 4.000*GeV; _maxweight[70] = 1.05; 
+  _incoming[71] =  9000321; _outgoing1[71] =  321; _outgoing2[71] =  111; 
+  _coupling[71] = 2.837*GeV; _maxweight[71] = 1.05; 
+  _incoming[72] =  9000321; _outgoing1[72] =  311; _outgoing2[72] =  211; 
+  _coupling[72] = 4.000*GeV; _maxweight[72] = 1.05; 
   // initial size
   _initsize = _coupling.size();
   // intermediates
