@@ -207,14 +207,18 @@ void ISGWFormFactor::doinit() throw(InitException) {
 }
 
 void ISGWFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _kappa << ounit(_mdown,GeV) << ounit(_mup,GeV) << ounit(_mstrange,GeV) << ounit(_mcharm,GeV) << ounit(_mbottom,GeV) << ounit(_betaSud,GeV) 
-     << ounit(_betaSus,GeV) << ounit(_betaSuc,GeV) << ounit(_betaSub,GeV) << ounit(_betaPud,GeV) << ounit(_betaPus,GeV) << ounit(_betaPuc,GeV)
+  os << _kappa << ounit(_mdown,GeV) << ounit(_mup,GeV) << ounit(_mstrange,GeV) 
+     << ounit(_mcharm,GeV) << ounit(_mbottom,GeV) << ounit(_betaSud,GeV) 
+     << ounit(_betaSus,GeV) << ounit(_betaSuc,GeV) << ounit(_betaSub,GeV) 
+     << ounit(_betaPud,GeV) << ounit(_betaPus,GeV) << ounit(_betaPuc,GeV)
      << _thetaeta << ounit(_mquark,GeV) << ounit(_betaS,GeV) << ounit(_betaP,GeV);
 }
 
 void ISGWFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _kappa >> iunit(_mdown,GeV) >> iunit(_mup,GeV) >> iunit(_mstrange,GeV) >> iunit(_mcharm,GeV) >> iunit(_mbottom,GeV) >> iunit(_betaSud,GeV) 
-     >> iunit(_betaSus,GeV) >> iunit(_betaSuc,GeV) >> iunit(_betaSub,GeV) >> iunit(_betaPud,GeV) >> iunit(_betaPus,GeV) >> iunit(_betaPuc,GeV)
+  is >> _kappa >> iunit(_mdown,GeV) >> iunit(_mup,GeV) >> iunit(_mstrange,GeV) 
+     >> iunit(_mcharm,GeV) >> iunit(_mbottom,GeV) >> iunit(_betaSud,GeV) 
+     >> iunit(_betaSus,GeV) >> iunit(_betaSuc,GeV) >> iunit(_betaSub,GeV) 
+     >> iunit(_betaPud,GeV) >> iunit(_betaPus,GeV) >> iunit(_betaPuc,GeV)
      >> _thetaeta >> iunit(_mquark,GeV) >> iunit(_betaS,GeV) >> iunit(_betaP,GeV);
 }
 
@@ -225,7 +229,19 @@ void ISGWFormFactor::Init() {
 
   static ClassDocumentation<ISGWFormFactor> documentation
     ("The ISGWFormFactor class implements the ISGW model of"
-     "Phys. Rev. D39, 799 (1989) for the scalar meson form-factors.");
+     "Phys. Rev. D39, 799 (1989) for the scalar meson form-factors.",
+     "The form factor model of ISGW \\cite{Isgur:1988gb} together with the"
+     "form factors for the term which are supressed by the lepton mass from"
+     "\\cite{Scora:1989ys,Isgur:1990jf}",
+     "\\bibitem{Isgur:1988gb} N.~Isgur, D.~Scora, B.~Grinstein and M.~B.~Wise,\n"
+     "Phys.\\ Rev.\\  D {\\bf 39} (1989) 799.\n"
+     "%%CITATION = PHRVA,D39,799;%%\n"
+     "\\bibitem{Scora:1989ys} D.~Scora and N.~Isgur, \n"
+     "Phys.\\ Rev.\\  D {\\bf 40} (1989) 1491.\n"
+     "%%CITATION = PHRVA,D40,1491;%%\n"
+     "\\bibitem{Isgur:1990jf} N.~Isgur and M.~B.~Wise,\n"
+     "Phys.\\ Rev.\\  D {\\bf 43} (1991) 819.\n"
+     "%%CITATION = PHRVA,D43,819;%%\n");
 
   static Parameter<ISGWFormFactor,double> interfaceKappa
     ("Kappa",
