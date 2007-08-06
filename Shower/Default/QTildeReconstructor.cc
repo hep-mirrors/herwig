@@ -448,7 +448,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     // loop over the final-state particles and do the reconstruction
     JetKinVect possiblepartners;
     JetKinVect jetKinematics;
-    bool atLeastOnce = radiated[1];
+    bool atLeastOnce = false;
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // only consider final-state jets
       if(!ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
