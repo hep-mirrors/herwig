@@ -64,39 +64,52 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
+  int q_id(abs(QProgenitor->progenitor()->id()));
+  int qbar_id(abs(QbarProgenitor->progenitor()->id()));
 
   // Get the gauge boson.
   PPtr boson = tree->incomingLines().begin()->first->copy();
   // Get data for the gluon.
   tcPDPtr gluon_data = getParticleData(ParticleID::g);
 
-  // Find the sudakov for the q->qg branching.
+  // Get the list of possible branchings.
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
-  long index = abs(QProgenitor->progenitor()->id()); 
-  SudakovPtr sudakov;
-  // For loop cycles through the Branchinglist - to find the sudakov.
-  for(BranchingList::const_iterator cit = branchings.lower_bound(index);
-      cit != branchings.upper_bound(index); ++cit ) {
+
+  // Find the sudakovs for the q/qbar->q/qbarg branchings.
+  SudakovPtr q_sudakov,qbar_sudakov;
+  long q_index(q_id),qbar_index(qbar_id); 
+  for(BranchingList::const_iterator cit = branchings.lower_bound(q_index);
+      cit != branchings.upper_bound(q_index); ++cit ) {
     IdList ids = cit->second.second;
-    if(ids[0] == abs(QProgenitor->progenitor()->id()) &&
-       ids[1] == abs(QProgenitor->progenitor()->id()) &&
-       ids[2] == gluon_data->id()) {
-	sudakov = cit->second.first;
+    if(ids[0]==q_id&&ids[1]==q_id&&ids[2]==gluon_data->id()) {
+	q_sudakov = cit->second.first;
+	break; 	    
+    }
+  }
+  for(BranchingList::const_iterator cit = branchings.lower_bound(qbar_index);
+      cit != branchings.upper_bound(qbar_index); ++cit ) {
+    IdList ids = cit->second.second;
+    if(ids[0]==qbar_id&&ids[1]==qbar_id&&ids[2]==gluon_data->id()) {
+	qbar_sudakov = cit->second.first;
 	break; 	    
     }
   }
 
-  // Check sudakov has been created:
-  if(!sudakov ) throw Exception() 
+  // Check sudakovs got created:
+  if(!q_sudakov||!qbar_sudakov) throw Exception() 
       << "No Sudakov for the hard emission in "
       << "VectorBosonQQbarHardGenerator::generateHardest()" 
       << Exception::runerror;
 
-  // Get the nominal quark mass and the cut-offs, including the gluon mass Qg:
-  Energy n_mq=QProgenitor->progenitor()->nominalMass();
-  Energy Qg=sudakov->kinematicCutOff(sudakov->kinScale(),n_mq);
-  Energy mu=max(Qg,n_mq);
+  // Get the nominal quark mass and the cut-offs: the gluon mass (Qg) for  
+  // each shower and the effective quark mass in each shower (mu).
+  _n_mq    = QProgenitor->progenitor()->nominalMass();
+  _n_mqbar = QbarProgenitor->progenitor()->nominalMass();
+  _Qg_q    = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),_n_mq);
+  _Qg_qbar = qbar_sudakov->kinematicCutOff(qbar_sudakov->kinScale(),_n_mqbar);
+  _mu_q    = max(_Qg_q,_n_mq);
+  _mu_qbar = max(_Qg_qbar,_n_mqbar);
 
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent():
@@ -105,6 +118,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Generate emission and change _quark[0,1] and _g to momenta
   // of q, qbar and g after the hardest emission:
   getEvent(); 
+
+  // Set the sudakov for the q/qbar->q/qbarg branching.
+  SudakovPtr sudakov;
+  if(_iemitter==0) { sudakov = q_sudakov; }
+  else { sudakov = qbar_sudakov; };
 
   // Make the particles for the NasonTree:
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
@@ -343,6 +361,10 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
    double res = 4. / 3. / Constants::pi * _pt / _s *
      ( sqr ( _x1 ) + sqr( _x2 ) ) / ( 1. - _x1 ) / ( 1. -_x2 ) * GeV;
    res *= _alphaS->value( sqr( _pt ) );
+// KMH - shouldn't we use the ACTUAL pt inside alphaS instead i.e. 
+//   double xfact2;
+//   if(_x1>_x2) { xfact2=sqr(_x1); } else { xfact2=sqr(_x2); }
+//   res *= _alphaS->value( sqr( _pt )*(_x1+_x2-1.)/xfact2 );
    return res;
  }
 

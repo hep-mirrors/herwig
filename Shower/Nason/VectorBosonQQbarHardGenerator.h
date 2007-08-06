@@ -192,6 +192,19 @@ private:
   double _x1;
   double _x2;
 
+  /**
+   * Variables for the kinematic cut off and massive phase space (if required).
+   * _n_mq is the *nominal* mass of the quark.
+   * _n_mqbar is the *nominal* mass of the antiquark.
+   * _Qg is the Qg variable in the `new variables' paper, the "gluon mass".
+   * _mu is the mu variable in the `new variables' paper i.e. max(_Qg,_n_mq).
+   */
+  Energy _n_mq;
+  Energy _n_mqbar;
+  Energy _Qg_q;
+  Energy _Qg_qbar;
+  Energy _mu_q;
+  Energy _mu_qbar;
 
   //  radiative variables (pt,y)
   double _y;
