@@ -487,7 +487,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
   string fname = CurrentGenerator::current().filename() + 
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  Energy step = step=(_theParticle->massMax()-_theParticle->massMin())/100.;
+  Energy step = (_theParticle->massMax()-_theParticle->massMin())/100.;
   output << "SET FONT DUPLEX\n";
   output << "TITLE TOP \"Width for " << _theParticle->name() << "\"\n";
   output << "TITLE BOTTOM \"m/GeV\"\n";
