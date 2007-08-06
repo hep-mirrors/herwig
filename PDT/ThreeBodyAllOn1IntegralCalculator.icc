@@ -27,18 +27,17 @@ inline void ThreeBodyAllOn1IntegralCalculator<T>::resetMass(int id,Energy inmass
     _m[id]=inmass;
     _m2[id]=inmass*inmass;
   }
-  else {
-    cerr << "Tried to set invalid mass" << endl;
-  }
+  else throw Exception() << "Tried to set invalid mass in " 
+			 << "ThreeBodyAllOn1IntegralCalculator::resetMass()"
+			 << Exception::runerror;
 }
 
 template <class T>
 inline Energy ThreeBodyAllOn1IntegralCalculator<T>::getMass(const int id) const {
   if(id<4) return _m[id]; 
-  else {
-    cerr << "Tried to set invalid mass" << endl; 
-    return 0.*MeV;
-  }
+  else throw Exception() << "Tried to get invalid mass in " 
+			 << "ThreeBodyAllOn1IntegralCalculator::getMass()"
+			 << Exception::runerror;
 }
 
 template <class T>
@@ -46,9 +45,8 @@ inline Energy ThreeBodyAllOn1IntegralCalculator<T>::otherMass(const int id) cons
   if(id==1)      return _m[2]+_m[3];
   else if(id==2) return _m[1]+_m[3];
   else if(id==3) return _m[1]+_m[2];
-  else {
-    cerr << "Tried to set invalid mass" << endl;
-    return 0.*MeV;
-  }
+  else throw Exception() << "Tried to get invalid mass in " 
+			 << "ThreeBodyAllOn1IntegralCalculator::otherMass()"
+			 << Exception::runerror;
 }
 }

@@ -335,6 +335,12 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:

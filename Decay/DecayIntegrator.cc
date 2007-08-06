@@ -141,14 +141,23 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int 
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
   if(initialize()) CurrentGenerator::current().log() 
-    << "testing start of the initialisation for " 
-    << this->fullName() << "\n";
-  if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
+    << "Start of the initialisation for " << this->fullName() << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix) {
     if(!_modes[ix]) continue;
     _modes[ix]->initrun();
     _imode=ix;
     _modes[ix]->initializePhaseSpace(initialize());
+  }
+  if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
+}
+
+void DecayIntegrator::dofinish() {
+  HwDecayerBase::dofinish();
+  if(initialize()) {
+    string fname = CurrentGenerator::current().filename() + 
+      string("-") + name() + string(".output");
+    ofstream output(fname.c_str());
+    dataBaseOutput(output,true);
   }
 }
 
@@ -191,7 +200,7 @@ void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
       continue;
     }
     cc = _modes[ix]->externalParticles(0)->CC();
-    tmax=1;if(!cc){++tmax;}
+    tmax = cc ? 1 : 2;
     for(iz=0;iz<tmax;++iz) {
       ifound=-1;
       extid.clear();
@@ -209,8 +218,8 @@ void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
       }
       else if(cc&&dm.parent()->id()==cc->id()) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
-	  cc = _modes[ix]->externalParticles(iy)->CC();
-	  extid.push_back( cc ? cc->id() : _modes[ix]->externalParticles(iy)->id());
+	  cc2 = _modes[ix]->externalParticles(iy)->CC();
+	  extid.push_back( cc2 ? cc2->id() : _modes[ix]->externalParticles(iy)->id());
 	}
       }
       // if the parents match

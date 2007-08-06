@@ -140,13 +140,12 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       inpart->dataPtr()->width();
     if(fact==0.*MeV) fact=MeV;
     // factor for the weight with spin correlations
-    _maxweight *= inpart->dataPtr()->iSpin()*1.1;
+    _maxweight *= inpart->dataPtr()->iSpin()==1 ? 1.1 : 1.6;
     // ouptut the information on the initialisation
     CurrentGenerator::log() << "Initialized the phase space for the decay " 
 			    << _extpart[0]->PDGName() << " -> ";
     for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
       CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
-    CurrentGenerator::log() << "  " << _partial << "\n";
     if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << wsum 
 					  << " +/- " << wsqsum << "\n";
     CurrentGenerator::log() << "The partial width is " << wsum*fact/MeV 
@@ -201,7 +200,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       totsq=sqrt(totsq/_npoint);
       CurrentGenerator::log() << "The branching ratio is " << iy << " " 
 			      << totsum << " +/- " << totsq 
-			      << " MeV " << _maxweight << "\n";
+			      << _maxweight << "\n";
       // compute the individual terms
       double total(0.);
       for(unsigned int ix=0;ix<_channels.size();++ix) {
@@ -224,7 +223,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       }
     }
     // factor for the weight with spin correlations
-    _maxweight*=inpart->dataPtr()->iSpin()*1.1;
+    _maxweight*= inpart->dataPtr()->iSpin()==1 ? 1.1 : 1.6;
     // ouptut the information on the initialisation
     Energy fact = (_widthgen&&_partial>=0) ? 
       _widthgen->partialWidth(_partial,inpart->nominalMass()) :
@@ -328,27 +327,19 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
 	CurrentGenerator::log() << "Resetting max weight for decay " 
 				<< inrest.PDGName() << " -> ";
 	for(ix=0;ix<particles.size();++ix)
-	  {CurrentGenerator::log()  << "  " << particles[ix]->PDGName();}
-	CurrentGenerator::log() << "  " << _maxweight << "   " << wgt 
-				<< "   " << inrest.mass()/MeV << "\n";
+	  CurrentGenerator::log() << "  " << particles[ix]->PDGName();
+	CurrentGenerator::log() << "  " << _maxweight << "  " << wgt 
+				<< "  " << inrest.mass()/MeV << "\n";
 	_maxweight=wgt;
       }
     }
     while(_maxweight*UseRandom::rnd()>wgt&&ncount<_ntry);
     if(ncount>=_ntry) {
       CurrentGenerator::log() << "The decay " << inrest.PDGName() << " -> ";
-      for(ix=0;ix<particles.size();++ix)
-	{CurrentGenerator::log()  << "  " << particles[ix]->PDGName();}
+      for(ix=0;ix<particles.size();++ix) 
+	CurrentGenerator::log()  << "  " << particles[ix]->PDGName();
       CurrentGenerator::log() << "  " << _maxweight << " " << _ntry 
 			      << " is too inefficient vetoing event \n";
-      CurrentGenerator::log() << inrest.mass()/MeV 
-			      << "  " << pre*MeV 
-			      << "  " << wgt << "\n";
-      if(_widthgen&&_partial>=0)
-	{CurrentGenerator::log() << "Used running width " 
-				 << _widthgen << "  " << _partial << "\n";}
-      else
-	{CurrentGenerator::log() << _widthgen << "  " << _partial << "\n";}
       particles.clear();
       throw Veto();
       return particles;
@@ -422,7 +413,7 @@ void DecayPhaseSpaceMode::doinit() throw(InitException) {
   if(_extpart[0]->widthGenerator()) {
     _widthgen=
       dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
-    const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->init();
+    //const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->init();
   }
   else {
     _widthgen=cGenericWidthGeneratorPtr();
@@ -434,7 +425,7 @@ void DecayPhaseSpaceMode::doinit() throw(InitException) {
     if(ix>0) {
       wtemp=
 	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());
-      if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->init();
+      //if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->init();
     }
   }
   for(unsigned int ix=0;ix<_channels.size();++ix) {

@@ -185,6 +185,12 @@ protected:
   virtual void doinit() throw(InitException);
 
   /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
@@ -331,6 +337,11 @@ private:
    * minimum branching ratio for the inclusion in the total running width
    */
   double _BRminimum;
+
+  /**
+   *  Order of the interpolation for the tables
+   */
+  unsigned int _intorder;
 };
 
 }
