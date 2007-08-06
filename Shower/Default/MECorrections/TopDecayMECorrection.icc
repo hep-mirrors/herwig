@@ -197,6 +197,8 @@ inline double TopDecayMECorrection::approxDeadMinxa(double xg,double ktb,double 
   return minxa;
 }
 
+// This function returns true if the phase space point (xg,xa) is in the 
+// kinematically allowed phase space.
 inline bool TopDecayMECorrection::inTheAllowedRegion(double xg , double xa)
 {
     bool output(true);
@@ -206,6 +208,8 @@ inline bool TopDecayMECorrection::inTheAllowedRegion(double xg , double xa)
     return output;
 }
 
+// This function returns true if the phase space point (xg,xa) is in the 
+// approximate (overestimated) dead region.
 inline bool TopDecayMECorrection::inTheApproxDeadRegion(double xg , double xa,
                                                         double ktb, double ktc)
 {
@@ -216,6 +220,8 @@ inline bool TopDecayMECorrection::inTheApproxDeadRegion(double xg , double xa,
     return output;
 }
 
+// This function returns true if the phase space point (xg,xa) is in the 
+// dead region.
 inline bool TopDecayMECorrection::inTheDeadRegion(double xg , double xa,
                                                   double ktb, double ktc)
 {
@@ -230,6 +236,9 @@ inline bool TopDecayMECorrection::inTheDeadRegion(double xg , double xa,
     return output;
 }
 
+// This function attempts to generate a phase space point in the dead
+// region and returns the associated phase space volume factor needed for
+// the associated event weight.
 inline double TopDecayMECorrection::deadRegionxgxa(double ktb,double ktc)
 {
   _xg=0.;
