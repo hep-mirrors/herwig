@@ -138,7 +138,7 @@ void Histogram::topdrawOutput(ostream & out,
     for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) { 
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       out << _bins[ix].limit+delta << "\t" 
-	  << (yout[ix-1]-_bins[ix].data)/_bins[ix].dataerror << "\n";
+	  << (yout[ix-1]-_bins[ix].data)/_bins[ix].data << "\n";
     } 
     out << "join\n";
     out << "SET WINDOW X 1.6 8 Y 1.6 2.5\n";

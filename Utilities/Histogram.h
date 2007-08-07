@@ -104,7 +104,7 @@ public:
 		  unsigned int & ndegrees, double minfrac=0.) const;
 
   /**
-   *  Output as a topdrawer file
+   *  Output as a topdrawer file. The histogram is normalised to unit area
    * @param out The output stream
    * @param frame output on a new graph
    * @param errorbars output data points with error bars
