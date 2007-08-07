@@ -177,15 +177,10 @@ private:
   ShowerAlphaPtr _alphaS;
 
   /**
-   *  The prefactor for the overestimate of the true distribution
+   *  The alphaS for the overestimate of the true distribution
    */
-  double _prefactor;  
+  double _alphaS_max;  
 
- /**
-  * The power (GeV/pt)^_power of overestimate distribution
-  */
-  double _power;
-  
   /**
    *The dalitz variables (x1,x2)
    */

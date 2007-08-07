@@ -26,11 +26,11 @@
 using namespace Herwig;
 
 void VectorBosonQQbarHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _prefactor << _power;
+  os << _alphaS << _alphaS_max;
 }
 
 void VectorBosonQQbarHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _prefactor >> _power;
+  is >> _alphaS >> _alphaS_max;
 }
 
 ClassDescription<VectorBosonQQbarHardGenerator> VectorBosonQQbarHardGenerator::initVectorBosonQQbarHardGenerator;
@@ -270,8 +270,7 @@ void VectorBosonQQbarHardGenerator::dofinish() {
 void VectorBosonQQbarHardGenerator::doinitrun() {
   _s = sqr( generator()->maximumCMEnergy() );
 
-  _power = 1.0; 
-  _prefactor = 1.0;
+  _alphaS_max = 2.0;
 
   _hthrust = new_ptr( Histogram( 0., 0.5, 100) );
   _hthrustlow = new_ptr( Histogram( 0., 0.01, 100) );
@@ -285,46 +284,35 @@ void VectorBosonQQbarHardGenerator::doinitrun() {
 
 Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   
-  Energy minp = 0.1*GeV;  
-  Energy maxp = 0.5*sqrt(_s);
-  double miny = -8.;
-  double maxy = 8.;
+  Energy pt_min = 0.1*GeV;  
+  Energy pt_max = 0.5*sqrt(_s);
+  double y_min  = -8.;
+  double y_max  =  8.;
   double wgt;
   bool reject;
-  Energy last_pt(maxp);
+  Energy last_pt(pt_max);
+  double prefactor = 2.*_alphaS_max*(4./3.)/Constants::pi;
 
   do {
-    // veto algorithm for all C/Pt^pow except pow = 1
-    //  _pt = GeV / pow (
-    //	       pow ( GeV / last_pt ,_power - 1. ) - log( UseRandom::rnd() )
-    //       * ( _power - 1. ) / _prefactor / ( maxy - miny ),
-    //       1. / ( _power - 1. ) );
+     _pt = last_pt*pow(UseRandom::rnd(),1./(prefactor*(y_max-y_min)));
+     _y  = UseRandom::rnd()*(y_max-y_min)+y_min;
 
-    // veto algorithm for pow = 1
-      _pt = last_pt * pow( UseRandom::rnd() ,
-    		    1. / ( maxy - miny ) / _prefactor );
+     _x1 = 1.-_pt/sqrt(_s)*exp(-_y);
+     _x2 = 1.-_pt/sqrt(_s)*exp( _y);
 
-     _y = UseRandom::rnd() * ( maxy - miny ) + miny;
-
-     _x1 = 1. - _pt / sqrt( _s ) * exp( -_y );
-     _x2 = 1. - _pt / sqrt( _s ) * exp( _y );
-
-     wgt = getResult() / ( _prefactor * pow( GeV / _pt , _power ) );
-     reject = UseRandom::rnd() > wgt || ! inRange();
+     wgt    = getResult()/(prefactor*GeV/_pt);
+     reject = UseRandom::rnd()>wgt||!inRange();
      
      last_pt = _pt;
-     if( inRange() ){
-       //  last_pt=_pt;
-       if ( wgt>1. ){ 
-	 cerr << "PROBLEM!!!!"<< endl;
-	 cerr<< " res = "<< getResult() << "overfn = " << 
-	   _prefactor*pow(GeV/_pt,_power) << endl;
-       }
+     if(inRange()&&wgt>1.) { 
+	 cerr << "VectorBosonQQbarHardGenerator::getEvent() excess weight.\n";
+	 cerr << "exact = "<< getResult() << "   crude = " << 
+	     prefactor*GeV/_pt << endl;
      }
-     //no emission event if p goes past p min - basically set to outside
-     //of the histogram bounds (hopefully hist object just ignores it)
-     if( _pt < minp ){
-       _pt = 0. * GeV;//no emission event
+     // No emission event if pt goes past pt_min - basically set to outside
+     // of the histogram bounds (hopefully hist object just ignores it).
+     if(_pt<pt_min) {
+       _pt = 0. * GeV; // No emission event
        _y = -10;
        reject = false;
      }
@@ -335,8 +323,7 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     _ispectator = 0;
     _z = (_x2+_x1-1.)/_x1;
     _ktild = (1.-_x1)/_z/(1.-_z); 
-  }
-  else{
+  } else{
     _iemitter   = 0;
     _ispectator = 1;
     _z = (_x1+_x2-1.)/_x2;
