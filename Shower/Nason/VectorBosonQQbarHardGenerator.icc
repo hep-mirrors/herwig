@@ -28,6 +28,7 @@ inline IBPtr VectorBosonQQbarHardGenerator::fullclone() const {
 }
 
 inline bool VectorBosonQQbarHardGenerator::inRange(){
+    // KMH - Put massive phase space in here.
    return(_x1<1.&&_x2<1.&&_x1+_x2>1.); 
 }
 

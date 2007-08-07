@@ -284,7 +284,7 @@ void VectorBosonQQbarHardGenerator::doinitrun() {
 
 Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   
-  Energy pt_min = 0.1*GeV;  
+  Energy pt_min = 0.3*GeV; //min(_mu_q,_mu_qbar);  
   Energy pt_max = 0.5*sqrt(_s);
   double y_min  = -8.;
   double y_max  =  8.;
