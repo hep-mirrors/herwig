@@ -32,33 +32,34 @@ void Histogram::topdrawOutput(ostream & out,
 			      string title,  string titlecase,
 			      string left,   string leftcase,
 			      string bottom, string bottomcase,
-			      bool smooth) const
-{
+			      bool smooth) const {
   // output the title info if needed
-  if(frame)
-    {
-      out << "NEW FRAME\n";
-      out << "SET FONT DUPLEX\n";
-      out << "TITLE TOP \""    << title     << "\"\n";
-      out << "CASE      \""    << titlecase << "\"\n";
-      out << "TITLE LEFT \""   << left      << "\"\n";
-      out << "CASE       \""   << leftcase  << "\"\n";
+  if(frame) {
+    out << "NEW FRAME\n";
+    if(_havedata) out << "SET WINDOW X 1.6 8 Y 3.5 9\n"; 
+    else          out << "SET WINDOW X 1.6 8 Y 1.6 9\n";
+    out << "SET FONT DUPLEX\n";
+    out << "TITLE TOP \""    << title     << "\"\n";
+    out << "CASE      \""    << titlecase << "\"\n";
+    out << "TITLE LEFT \""   << left      << "\"\n";
+    out << "CASE       \""   << leftcase  << "\"\n";
+    out << (errorbars ? "SET ORDER X Y DX DY \n" : "SET ORDER X Y DX\n");
+    if (versionstring != "") {
+      out << "TITLE RIGHT \"" << versionstring << "\"\n";
+      out << "CASE        \"\"\n";
+    }
+    if(_havedata) out << "SET AXIS BOTTOM OFF\n";
+    else {
       out << "TITLE BOTTOM \"" << bottom     << "\"\n";
       out << "CASE        \""  << bottomcase << "\"\n";
-      if (versionstring != "") {
-	out << "TITLE RIGHT \"" << versionstring << "\"\n";
-	out << "CASE        \"\"\n";
-      }
-      if (errorbars) out << "SET ORDER X Y DX DY \n";
-      else out << "SET ORDER X Y DX\n";
     }
+  }
   // scales
   if(xlog && frame) out << "SET SCALE X LOG " << endl;
   if(ylog && frame) out << "SET SCALE Y LOG " << endl;
   // set the x limits
-
   const unsigned int lastDataBinIndx = _bins.size()-2;
-  if (xlog && frame) {
+  if (frame) {
     out << "SET LIMITS X " << _bins[1].limit << " " 
 	<< _bins[lastDataBinIndx+1].limit << endl;
   }
@@ -68,15 +69,14 @@ void Histogram::topdrawOutput(ostream & out,
   unsigned int numPoints = _globalStats.numberOfPoints();
   if (numPoints == 0) ++numPoints;
 
-  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
-    {
-      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
-      yout.push_back(value);
-      ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
-      if(yout.back()>0.) ymin=min(ymin,value);
-      if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
-    }
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
+    yout.push_back(value);
+    ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
+    if(yout.back()>0.) ymin=min(ymin,value);
+    if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
+  }
   if (ymin > 1e34)  ymin = 1e-34;
   if (ymax < 1e-33) ymax = 1e-33;
   if (ymax < 10*ymin) ymin = 0.1*ymax;
@@ -85,15 +85,14 @@ void Histogram::topdrawOutput(ostream & out,
     out << "SET LIMITS Y " << ymin << " " << ymax << endl;
   }
   // the histogram from the event generator
-  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
-    {
-      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
-      if (errorbars) {
-	out << '\t' << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
-      }
-      out << '\n';
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
+    if (errorbars) {
+      out << '\t' << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
     }
+    out << '\n';
+  }
   // N.B. in td smoothing only works for histograms with uniform binning.
   if(!smooth) {
       out << "HIST " << colour << endl;
@@ -103,16 +102,65 @@ void Histogram::topdrawOutput(ostream & out,
   }
   if (_havedata) {
     // the real experimental data
-    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
-      {
-	double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-	out << _bins[ix].limit+delta << '\t' << _bins[ix].data << '\t' << delta;
-	if (errorbars) {
-	  out  << '\t' << _bins[ix].dataerror;
-	}
-	out << '\n';
-      }
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      out << _bins[ix].limit+delta << '\t' << _bins[ix].data << '\t' << delta;
+      if (errorbars) out  << '\t' << _bins[ix].dataerror;
+      out << '\n';
+    }
     out << "PLOT " << endl;
+    out << "SET WINDOW X 1.6 8 Y 2.5 3.5\n";
+    out << "SET LIMITS X " << _bins[1].limit << " " 
+	<< _bins[lastDataBinIndx+1].limit << "\n";
+    double ymax=0.;
+    out << _bins[1].limit << "\t" << _bins[1].dataerror/_bins[1].data << "\n";
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      if(_bins[ix].dataerror/_bins[ix].data>ymax) 
+	ymax=_bins[ix].dataerror/_bins[ix].data;
+      out << _bins[ix].limit+delta << '\t' 
+	  <<  _bins[ix].dataerror/_bins[ix].data << '\n';
+    }
+    out << _bins[lastDataBinIndx+1].limit << "\t" 
+	<< _bins[lastDataBinIndx].dataerror/_bins[lastDataBinIndx].data << "\n";
+    out << _bins[lastDataBinIndx+1].limit << "\t" 
+	<<-_bins[lastDataBinIndx].dataerror/_bins[lastDataBinIndx].data << "\n";
+    for(unsigned int ix=lastDataBinIndx;ix>=1;--ix) {
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      out << _bins[ix].limit+delta << '\t' 
+	  <<  -_bins[ix].dataerror/_bins[ix].data << '\n';
+    }
+    out << _bins[1].limit << "\t" << -_bins[1].dataerror/_bins[1].data << "\n";
+    out << "set scale y lin\n";
+    out << "set limits y " << -ymax << " " << ymax << "\n";
+    out << "set fill full\n";
+    out << "join yellow fill yellow\n";
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) { 
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      out << _bins[ix].limit+delta << "\t" 
+	  << (yout[ix-1]-_bins[ix].data)/_bins[ix].data << "\n";
+    } 
+    out << "join\n";
+    out << "SET WINDOW X 1.6 8 Y 1.6 2.5\n";
+    out << "SET LIMITS X " << _bins[1].limit << " " 
+	<< _bins[lastDataBinIndx+1].limit << "\n";
+    out << "SET AXIS BOTTOM ON\n";
+    out << "TITLE BOTTOM \"" << bottom     << "\"\n";
+    out << "CASE        \""  << bottomcase << "\"\n";
+    ymax =0.;
+    double ymin=0.;
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      double error =  sqrt(sqr(0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints))+
+			   sqr(_bins[ix].dataerror));
+      double point=(yout[ix-1]-_bins[ix].data)/error;
+      if(point<ymin) ymin=point;
+      if(point>ymax) ymax=point;
+      out << _bins[ix].limit+delta << '\t' 
+	  << point  << '\n'; 
+    }
+    out << "set limits y " << ymin << " " << ymax << "\n";
+    out << "JOIN" << endl;
   }
 }
 
@@ -176,28 +224,27 @@ void Histogram::normaliseToData()
 }
 
 void Histogram::chiSquared(double & chisq, 
-			   unsigned int & ndegrees, double minfrac) const
-{
+			   unsigned int & ndegrees, double minfrac) const {
   chisq =0.;
   ndegrees=_bins.size()-2;
   unsigned int numPoints = _globalStats.numberOfPoints();
-  for(unsigned int ix=1;ix<_bins.size()-1;++ix)
-    {
-      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
-      double error = _bins[ix].dataerror;
-      if(error>0.)
-	{
-	  if(error/_bins[ix].data < minfrac) 
-	    error = minfrac*_bins[ix].data;
-	  double var=sqr(error)
-	    + _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
-	  chisq += sqr(_bins[ix].data - value) / var;
-	}
-    }
+  for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
+    double error = _bins[ix].dataerror;
+    if(error>0.)
+      {
+	if(error/_bins[ix].data < minfrac) 
+	  error = minfrac*_bins[ix].data;
+	double var=sqr(error)
+	  + _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
+	chisq += sqr(_bins[ix].data - value) / var;
+      }
+  }
 }
 
-void Histogram::normaliseToCrossSection() {
+void Histogram::normaliseToCrossSection()
+{
   unsigned int numPoints = _globalStats.numberOfPoints();
   if (numPoints == 0) ++numPoints;
   _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*

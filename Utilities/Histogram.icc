@@ -68,7 +68,6 @@ inline void Histogram::addWeighted(double input, double weight) {
   }
   _bins[ibin-1].contents   += weight;
   _bins[ibin-1].contentsSq += sqr(weight);
-  ++_bins[ibin-1].points;
   _globalStats += weight * input;
 }
 

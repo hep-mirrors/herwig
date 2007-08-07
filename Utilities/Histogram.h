@@ -104,7 +104,7 @@ public:
 		  unsigned int & ndegrees, double minfrac=0.) const;
 
   /**
-   * Output as a topdrawer file. The histogram is normalised to unit area
+   *  Output as a topdrawer file. The histogram is normalised to unit area
    * @param out The output stream
    * @param frame output on a new graph
    * @param errorbars output data points with error bars
@@ -160,10 +160,6 @@ public:
 			    string bottom=string(),
 			    string bottomcase =string()) const;
 
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
   /**
    * Output into a simple ascii file, easily readable by gnuplot.
    */
