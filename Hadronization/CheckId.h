@@ -7,6 +7,7 @@
 
 #include "Herwig++/Config/Herwig.h"
 #include "ThePEG/PDT/StandardMatchers.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include <ThePEG/PDT/EnumParticles.h>
 
 
@@ -37,55 +38,75 @@ class CheckId {
 public:
   
   /**
+   * Return the particle data of the diquark (anti-diquark) made by the two 
+   * quarks (antiquarks) par1, par2.
+   * @param par1 (anti-)quark data pointer
+   * @param par2 (anti-)quark data pointer
+   */
+  static PDPtr makeDiquark(tcPDPtr par1, tcPDPtr par2);
+
+
+  /**
    * Return the id of the diquark (anti-diquark) made by the two 
    * quarks (antiquarks) of id specified in input (id1, id2).
-   * Return 0 if something goes wrong. 
+   * Caller must ensure that id1 and id2 are quarks.
    */
-  static long diquarkId(const long id1, const long id2);
+  static long makeDiquarkID(long id1, long id2);
   
   /**
-   * Return true if the two ids in input can be the components of a meson;
+   * Return true if the two particles in input can be the components of a meson;
    *false otherwise.
    */
-  static inline bool canBeMeson(const long id1, const long id2);
+  static bool canBeMeson(tcPDPtr par1,tcPDPtr par2);
   
   /**
-   * Return true if the two or three ids in input can be the components 
+   * Return true if the two or three particles in input can be the components 
    * of a baryon; false otherwise.
    */
-  static bool canBeBaryon(const long id1, const long id2, const long id3=0);
-  
+  static bool canBeBaryon(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr());
+
+   /**
+   * Return true if the two or three particles in input can be the components 
+   * of a hadron; false otherwise.
+   */
+  static bool canBeHadron(tcPDPtr par1, tcPDPtr par2 , tcPDPtr par3 = PDPtr());
+ 
   /**
-   * Return true if any of the possible three input ids has b-flavour; 
-   * false otherwise. In the case that only the first id is specified,
-   * then the corresponding particle can be: a (anti-)quark, a (anti-)diquark
-   * a (anti-)meson, a (anti-)baryon; in the other cases, each id 
+   * Return true if any of the possible three input particles has
+   * b-flavour; 
+   * false otherwise. In the case that only the first particle is specified,
+   * it can be: an (anti-)quark, an (anti-)diquark
+   * an (anti-)meson, an (anti-)baryon; in the other cases, each pointer
    * is assumed to be either (anti-)quark or (anti-)diquark.
    */
-  static bool hasBeauty(const long id1, const long id2=0, const long id3=0);
-  
+  static bool hasBottom(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
   /**
-   * Return true if any of the possible three input ids has c-flavour; 
-   * false otherwise. In the case that only the first id is specified,
-   * then the corresponding particle can be: a (anti-)quark, a (anti-)diquark
-   * a (anti-)meson, a (anti-)baryon; in the other cases, each id 
+   * Return true if any of the possible three input particles has 
+   * c-flavour; 
+   * false otherwise.In the case that only the first pointer is specified,
+   * it can be: a (anti-)quark, a (anti-)diquark
+   * a (anti-)meson, a (anti-)baryon; in the other cases, each pointer
    * is assumed to be either (anti-)quark or (anti-)diquark.
    */
-  static bool hasCharm(const long id1, const long id2=0, const long id3=0);
-  
+  static bool hasCharm(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
+  /**
+   * Return true, if any of the possible input particle pointer is an exotic quark, e.g. Susy quark;
+   * false otherwise.   
+   */
+  static bool isExotic(tcPDPtr par1, tcPDPtr par2 = PDPtr(), tcPDPtr par3 = PDPtr());
 private:
   
   /**
-   * Return true if the id corresponds to a diquark or anti-diquark 
-   * carrying b flavour; false otherwise.
+   * Return true if the particle pointer corresponds to a diquark 
+   * or anti-diquark carrying b flavour; false otherwise.
    */
-  static inline bool isDiquarkWithB(const long id);
+  static bool isDiquarkWithB(tcPDPtr par1);
   
   /**
-   * Return true if the id corresponds to a diquark or anti-diquark 
-   * carrying c flavour; false otherwise.
+   * Return true if the particle pointer corresponds to a diquark
+   *  or anti-diquark carrying c flavour; false otherwise.
    */
-  static inline bool isDiquarkWithC(const long id);
+  static bool isDiquarkWithC(tcPDPtr par1);
 
 private:
   
@@ -107,8 +128,6 @@ private:
 };
   
 }
-
-#include "CheckId.icc"
 
 #endif /* HERWIG_CheckId_H */
 

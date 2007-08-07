@@ -63,17 +63,35 @@ set PartonicHadronizer:LightClusterDecayer theLightClusterDecayer
 set PartonicHadronizer:ClusterDecayer theClusterDecayer
 #
 cd /Defaults/Handlers/Hadronization/Cluster
-set theColourReconnector:ClReco 0
-set theColourReconnector:PReco  1.0/9.0
-set theClusterFissioner:ClMax  3.2*GeV
-set theClusterFissioner:ClPow  2.0
-set theClusterFissioner:PSplt1 1.0
-set theClusterFissioner:PSplt2 0.33
-set theLightClusterDecayer:B1Lim 0.0
-set theClusterDecayer:ClDir1 1
-set theClusterDecayer:ClDir2 1
-set theClusterDecayer:ClSmr1 0.0
-set theClusterDecayer:ClSmr2 0.0
+set theColourReconnector:ColourReconnection Off
+
+set theClusterFissioner:ClMaxLight  3.2*GeV
+set theClusterFissioner:ClPowLight  2.0
+set theClusterFissioner:PSplitLight 1.0
+set theClusterDecayer:ClDirLight 1
+set theClusterDecayer:ClSmrLight 0.0
+
+set theClusterFissioner:ClMaxBottom  3.2*GeV
+set theClusterFissioner:ClPowBottom  2.0
+set theClusterFissioner:PSplitBottom 1.0
+set theClusterDecayer:ClDirBottom 1
+set theClusterDecayer:ClSmrBottom 0.0
+set theLightClusterDecayer:SingleHadronLimitBottom 0.0
+
+set theClusterFissioner:ClMaxCharm  3.2*GeV
+set theClusterFissioner:ClPowCharm  2.0
+set theClusterFissioner:PSplitCharm 1.0
+set theClusterDecayer:ClDirCharm 1
+set theClusterDecayer:ClSmrCharm 0.0
+set theLightClusterDecayer:SingleHadronLimitCharm 0.0
+
+set theClusterFissioner:ClMaxExotic  3.2*GeV
+set theClusterFissioner:ClPowExotic  2.0
+set theClusterFissioner:PSplitExotic 1.0
+set theClusterDecayer:ClDirExotic 1
+set theClusterDecayer:ClSmrExotic 0.0
+set theLightClusterDecayer:SingleHadronLimitExotic 0.0
+
 set theHadronSelector:PwtDquark  1.0
 set theHadronSelector:PwtUquark  1.0
 set theHadronSelector:PwtSquark  1.0

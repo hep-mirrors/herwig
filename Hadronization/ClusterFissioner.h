@@ -88,7 +88,7 @@ public:
    * of the mass spectrum from which to draw the masses of the two 
    * cluster children (see method drawChildrenMasses for details).
    */
-  void fission(const StepPtr &, bool softUEisOn);
+  void fission(StepPtr, bool softUEisOn);
 
 public:
 
@@ -148,23 +148,21 @@ private:
    * This method does the splitting of the clusters and all of its cluster 
    * children, if heavy. All of these new children clusters are added to the
    * collection of clusters. The method works as follows.
-   * Initially the vector contains just the input pointer to the
-   * cluster to be split. Then it will be filled recursively by all
+   * Initially the vector contains just the stack of input pointers to the
+   * clusters to be split. Then it will be filled recursively by all
    * of the cluster's children that are heavy enough to require
    * to be split. In each loop, the last element of the vector is 
    * considered (only once because it is then removed from the vector).
-   * This approach is conceptually recursive, but avoids the overhead of
-   * a concrete recursive function. Furthermore it requires minimal changes
-   * in the case that the fission of an heavy cluster could produce more
-   * than two cluster children as assumed now. 
    *
+   * \todo is the following still true?
    * For normal, non-beam clusters, a power-like mass distribution
    * is used, whereas for beam clusters a fast-decreasing exponential mass 
    * distribution is used instead. This avoids many iterative splitting which 
    * could produce an unphysical large transverse energy from a supposed 
    * soft beam remnant process.
    */
-  void cut(tClusterPtr, const StepPtr&, ClusterVector&, bool softUEisOn);
+  void cut(stack<tClusterPtr> &, 
+	   StepPtr, ClusterVector&, bool softUEisOn);
 
 public:
 
@@ -197,33 +195,32 @@ public:
   /**
    * Produces a hadron and returns the flavour drawn from the vacuum.
    *
-   * This routine produces a new hadron from the flavours id1 and id2. It
+   * This routine produces a new hadron from the partons ptrQ and newPtr. It
    * also sets the momentum and vertex to the values given.
    */
-  PPair produceHadron(const long id1, const long id2, Lorentz5Momentum &a,
-		      LorentzPoint &b) const;
+  PPair produceHadron(tcPDPtr ptrQ, tPPtr newPtr, 
+		      const Lorentz5Momentum &a,
+		      const LorentzPoint &b) const;
 protected:
   /**
    * Produces a cluster from the flavours passed in.
    *
-   * This routine produces a new cluster with the flavours given by p1 and id.
+   * This routine produces a new cluster with the flavours given by ptrQ and newPtr.
    * The new 5 momentum is a and the parent momentum are c and d. C is for the
-   * p1 and d is for the new particle id. rem specifies whether the existing
+   * ptrQ and d is for the new particle newPtr. rem specifies whether the existing
    * particle is a beam remnant or not.
    */
-  PPair produceCluster(tPPtr &p1, const long id, Lorentz5Momentum &a, 
+  PPair produceCluster(tPPtr & ptrQ, tPPtr newPtr, Lorentz5Momentum &a, 
 		       LorentzPoint &b, Lorentz5Momentum &c, 
 		       Lorentz5Momentum &d, const bool rem) const;
 
   /**
-   * Returns a flavour from the choice u,d,s.
-   *
-   * Return the id ( >0 ) of the quark-antiquark pair from the vacuum
+   * Returns the new quark-antiquark pair
    * needed for fission of a heavy cluster. Equal probabilities
-   * are assumed for quarks  u , d , s . 
+   * are assumed for producing  u, d, or s pairs. 
    */
-  long drawNewFlavour() const;
-
+  void drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const;
+   
   /**
    * Produces the mass of a child cluster.
    *
@@ -250,9 +247,9 @@ protected:
    * The choice of which mass distribution should be used for each of the two
    * cluster children is dictated by the parameter soft.
    */
-  void drawChildMass(const Energy M, const Energy m1, const Energy m2, 
-		     const Energy m, Energy & Mc, const double exp,
-		     const InvEnergy b, const bool soft) const;
+  Energy drawChildMass(const Energy M, const Energy m1, const Energy m2, 
+		       const Energy m, const double exp,
+		       const InvEnergy b, const bool soft) const;
 
   /**
    * Determines the kinematics of a heavy cluster decay C->C1 + C2
@@ -281,13 +278,20 @@ protected:
 protected:
   /** @name Access members for child classes. */
   //@{
-  HadronSelectorPtr hadronsSelector() const { return _hadronsSelector; }
-  Energy btClM() const { return _btClM; }
-  double pSplit1() const { return _pSplit1; }  
-  double pSplit2() const { return _pSplit2; }
+  HadronSelectorPtr hadronsSelector() const {return _hadronsSelector;}
+  Energy btClM() const {return _btClM;}
+  double pSplitLight() const {return _pSplitLight;}  
+  double pSplitBottom() const {return _pSplitBottom;}
+  double pSplitCharm() const {return _pSplitCharm;}
+  double pSplitExotic() const {return _pSplitExotic;}
   //@}
   
 private:
+
+  /**
+   * Check if a cluster is heavy enough to split again
+   */
+  bool isHeavy(tcClusterPtr );
 
   /**
    * A pointer to a Herwig::HadronSelector object for generating hadrons.
@@ -295,26 +299,34 @@ private:
   HadronSelectorPtr _hadronsSelector;
 
   /**
-   * The Cluster max mass used to determine when fission will occur.
+   * @name The Cluster max mass,dependant on which quarks are involved, used to determine when 
+   * fission will occur.
    */
-  Energy _clMax;
-
+  //@{
+  Energy _clMaxLight;
+  Energy _clMaxBottom;
+  Energy _clMaxCharm;
+  Energy _clMaxExotic;
+  //@}
   /**
-   * The power used to determine when cluster fission will occur.
+   * @name The power used to determine when cluster fission will occur.
    */
-  double _clPow;
-
+  //@{
+  double _clPowLight;
+  double _clPowBottom;
+  double _clPowCharm;
+  double _clPowExotic;
+  //@}
   /**
-   * The power used in the cluster mass generation. This is the non-b param.
+   * @name The power, dependant on whic quarks are involved, used in the cluster mass generation.
    */
-  double _pSplit1;
-
-  /**
-   * The power used in the cluster mass generation. This is the b param.
-   */
-  double _pSplit2;
-
-  /**
+  //@{
+  double _pSplitLight;
+  double _pSplitBottom;
+  double _pSplitCharm;
+  double _pSplitExotic;
+  //@}
+   /**
    * Parameter used (2/b) for the beam cluster mass generation.
    * Currently hard coded value.
    */
@@ -331,6 +343,8 @@ private:
   Tension _kappa;
 
 };
+
+  // class ClusterSplittingMaxTries : public ThePEG::Exception {};
 
 }
 

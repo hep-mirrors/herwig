@@ -300,9 +300,10 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
       // decay the cluster to one hadron
       Lorentz5Momentum mom = cluster->momentum();
       LorentzPoint vert = cluster->vertex();
-      int id1=cluster->particle(0)->id();
-      int id2=cluster->particle(1)->id();
-      products=clusterFissioner->produceHadron(id1,id2, mom, vert);
+      tcPDPtr ptrQ = cluster->particle(0)->dataPtr();
+      tPPtr newPtr = cluster->particle(1);
+      products=clusterFissioner->produceHadron(ptrQ,newPtr,
+					       mom, vert);
       // put the cluster and the hadron on mass-shell
       Energy mass=products.first->nominalMass();
       Lorentz5Momentum newp(0.*MeV,0.*MeV,0.*MeV,mass,mass);

@@ -132,7 +132,7 @@ private:
    * @param iopt  Whether to use the \f$q\to gq\f$ or \f$g\to q\bar{q}\f$ splitting function.
    * @param step The step into which the new particles are inserted
    */
-  PPtr forceSplit(const tPPtr rem, long child, Energy &oldQ, double &oldx, 
+  PPtr forceSplit(const tPPtr rem, tcPDPtr child, Energy &oldQ, double &oldx, 
 		  Lorentz5Momentum &pf, Lorentz5Momentum &p,const unsigned int iopt,
 		  const tStepPtr step);
 

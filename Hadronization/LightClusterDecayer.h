@@ -138,14 +138,17 @@ private:
   Ptr<HadronSelector>::pointer _hadronSelector;
 
   /**
-   * A parameter used for determining when b clusters are too light.
+   * @name A parameter used for determining when clusters are too light.
    *
    * This parameter is used for setting the lower threshold, \f$ t \f$ as
    * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
    * where \f$ r \f$ is a random number [0,1].
    */
-  double _B1Lim;
-
+  //@{
+  double _limBottom;
+  double _limCharm;
+  double _limExotic;
+  //@}
 };
 
 }

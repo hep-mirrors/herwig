@@ -8,10 +8,14 @@ namespace Herwig {
 
 
 inline ClusterDecayer::ClusterDecayer() :
-  _ClDir1( 1 ),	     
-  _ClDir2( 1 ),	     
-  _ClSmr1( 0.0 ),	     
-  _ClSmr2( 0.0 ),
+  _clDirLight(1),	     
+  _clDirBottom(1),
+  _clDirCharm(1),
+  _clDirExotic(1),	     
+  _clSmrLight(0.0),	     
+  _clSmrBottom(0.0),
+  _clSmrCharm(0.0),
+  _clSmrExotic(0.0),
   _onshell(false),
   _masstry(20)
 {}

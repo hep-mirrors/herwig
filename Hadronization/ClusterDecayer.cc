@@ -22,13 +22,15 @@ using namespace Herwig;
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {
-  os << _hadronsSelector << _ClDir1 << _ClDir2 
-     << _ClSmr1 << _ClSmr2 << _onshell << _masstry;
+  os << _hadronsSelector << _clDirLight << _clDirBottom
+     << _clDirCharm << _clDirExotic << _clSmrLight << _clSmrBottom 
+     << _clSmrCharm << _clSmrExotic << _onshell << _masstry;
 }
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _ClDir1 >> _ClDir2
-     >> _ClSmr1 >> _ClSmr2 >> _onshell >> _masstry;
+  is >> _hadronsSelector >> _clDirLight >> _clDirBottom
+     >> _clDirCharm >> _clDirExotic >> _clSmrLight >> _clSmrBottom 
+     >> _clSmrCharm >> _clSmrExotic >> _onshell >> _masstry;
 }
 
 ClassDescription<ClusterDecayer> ClusterDecayer::initClusterDecayer;
@@ -45,19 +47,35 @@ void ClusterDecayer::Init() {
                              "A reference to the HadronSelector object", 
                              &Herwig::ClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
+
+  //ClDir for light, Bottom, Charm and exotic (e.g Susy) quarks
   static Parameter<ClusterDecayer,int> 
-    interfaceClDir1 ("ClDir1", "cluster direction for non-b quarks",
-                     &ClusterDecayer::_ClDir1, 0, 1 , 0 , 1,false,false,false);
+    interfaceClDirLight ("ClDirLight", "cluster direction for light quarks",
+                     &ClusterDecayer::_clDirLight, 0, 1 , 0 , 1,false,false,false);
   static Parameter<ClusterDecayer,int> 
-    interfaceClDir2 ("ClDir2", "cluster direction for b quark",
-                     &ClusterDecayer::_ClDir2, 0, 1 , 0 , 1,false,false,false);
+    interfaceClDirBottom ("ClDirBottom", "cluster direction for b quark",
+                     &ClusterDecayer::_clDirBottom, 0, 1 , 0 , 1,false,false,false);
+  static Parameter<ClusterDecayer,int> 
+    interfaceClDirCharm ("ClDirCharm", "cluster direction for c quark",
+                     &ClusterDecayer::_clDirCharm, 0, 1 , 0 , 1,false,false,false);
+  static Parameter<ClusterDecayer,int> 
+    interfaceClDirExotic ("ClDirExotic", "cluster direction for exotic quark",
+                     &ClusterDecayer::_clDirExotic, 0, 1 , 0 , 1,false,false,false);
+
+  // ClSmr for ligth, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterDecayer,double> 
-    interfaceClSmr1 ("ClSmr1", "cluster direction Gaussian smearing for non-b quark",
-                     &ClusterDecayer::_ClSmr1, 0, 0.0 , 0.0 , 2.0,false,false,false);
+    interfaceClSmrLight ("ClSmrLight", "cluster direction Gaussian smearing for light quark",
+                     &ClusterDecayer::_clSmrLight, 0, 0.0 , 0.0 , 2.0,false,false,false);
   static Parameter<ClusterDecayer,double> 
-    interfaceClSmr2 ("ClSmr2", "cluster direction Gaussian smearing for b quark",
-                     &ClusterDecayer::_ClSmr2, 0, 0.0 , 0.0 , 2.0,false,false,false);
-  
+    interfaceClSmrBottom ("ClSmrBottom", "cluster direction Gaussian smearing for b quark",
+                     &ClusterDecayer::_clSmrBottom, 0, 0.0 , 0.0 , 2.0,false,false,false); 
+static Parameter<ClusterDecayer,double> 
+    interfaceClSmrCharm ("ClSmrCharm", "cluster direction Gaussian smearing for c quark",
+                     &ClusterDecayer::_clSmrCharm, 0, 0.0 , 0.0 , 2.0,false,false,false); 
+static Parameter<ClusterDecayer,double> 
+    interfaceClSmrExotic ("ClSmrExotic", "cluster direction Gaussian smearing for exotic quark",
+                     &ClusterDecayer::_clSmrExotic, 0, 0.0 , 0.0 , 2.0,false,false,false); 
+   
   static Switch<ClusterDecayer,bool> interfaceOnShell
     ("OnShell",
      "Whether or not the hadrons produced should by on shell or generated using the"
@@ -138,33 +156,51 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   }
      
   // Extract the id and particle pointer of the two components of the cluster.
-  long id1 = 0, id2 = 0;
-  tPPtr ptr1 = tPPtr(), ptr2 = tPPtr();
-  ptr1 = ptr->particle(0);
-  id1 = ptr1->id();
-  ptr2 = ptr->particle(1);
-  id2 = ptr2->id();
 
-  // Be careful that in these method we use "1" and "2" for the two hadrons
-  // produced by the decay of the cluster, whereas "1" and "2" in the 
-  // parameters _ClDir1, _ClDir2, _ClSmr1, _ClSmr2 have a different meaning:
-  // "1" means non-b quark, and "2" means b quark.
-  bool isHad1FlavB    = false;
-  int cluDirHad1      = _ClDir1;
-  double cluSmearHad1 = _ClSmr1;
-  if ( CheckId::hasBeauty(id1) ) {
-    isHad1FlavB  = true;
-    cluDirHad1   = _ClDir2;
-    cluSmearHad1 = _ClSmr2;
+    tPPtr ptr1 = ptr->particle(0);
+    tPPtr ptr2 = ptr->particle(1);
+    tcPDPtr ptr1data = ptr1->dataPtr();
+    tcPDPtr ptr2data = ptr2->dataPtr();
+  
+  bool isHad1FlavSpecial    = false;
+  int cluDirHad1      = _clDirLight;
+  double cluSmearHad1 = _clSmrLight;
+  bool isHad2FlavSpecial    = false;
+  int cluDirHad2      = _clDirLight;
+  double cluSmearHad2 = _clSmrLight;
+
+  if (CheckId::isExotic(ptr1data)) {
+    isHad1FlavSpecial  = true;
+    cluDirHad1   = _clDirExotic;
+    cluSmearHad1 = _clSmrExotic;
   } 
-  bool isHad2FlavB    = false;
-  int cluDirHad2      = _ClDir1;
-  double cluSmearHad2 = _ClSmr1;
-  if ( CheckId::hasBeauty(id2) ) {
-    isHad2FlavB  = true;
-    cluDirHad2   = _ClDir2;
-    cluSmearHad2 = _ClSmr2;
+  else if (CheckId::hasBottom(ptr1data)) {
+    isHad1FlavSpecial  = true;
+    cluDirHad1   = _clDirBottom;
+    cluSmearHad1 = _clSmrBottom;
   } 
+  else if (CheckId::hasCharm(ptr1data)) {
+    isHad1FlavSpecial  = true;
+    cluDirHad1   = _clDirCharm;
+    cluSmearHad1 = _clSmrCharm;
+  } 
+
+  if (CheckId::isExotic(ptr2data)) {
+    isHad2FlavSpecial  = true;
+    cluDirHad2   = _clDirExotic;
+    cluSmearHad2 = _clSmrExotic;
+  } 
+  else if (CheckId::hasBottom(ptr2data)) {
+    isHad2FlavSpecial  = true;
+    cluDirHad2   = _clDirBottom;
+    cluSmearHad2 = _clSmrBottom;
+  } 
+  else if (CheckId::hasCharm(ptr2data)) {
+    isHad2FlavSpecial  = true;
+    cluDirHad2   = _clDirCharm;
+    cluSmearHad2 = _clSmrCharm;
+  } 
+
 
   bool isOrigin1Perturbative = ptr->isPerturbative(0);
   bool isOrigin2Perturbative = ptr->isPerturbative(1);
@@ -185,12 +221,12 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   int priorityHad1 = 0;
   if ( cluDirHad1 == 1  &&  isOrigin1Perturbative ) {
     priorityHad1 = 1;
-    if (isHad1FlavB) priorityHad1 = 2;
+    if (isHad1FlavSpecial) priorityHad1 = 2;
   }
   int priorityHad2 = 0;
   if ( cluDirHad2 == 1  &&  isOrigin2Perturbative ) {
     priorityHad2 = 1;
-    if (isHad2FlavB) priorityHad2 = 2;
+    if (isHad2FlavSpecial) priorityHad2 = 2;
   }
   if ( priorityHad2  &&  priorityHad1 == priorityHad2  &&  UseRandom::rndbool() ) {
     priorityHad2 = 0;
@@ -252,8 +288,10 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     
   }
 
-  pair<tcPDPtr,tcPDPtr> dataPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
-								      id1,id2);
+  pair<tcPDPtr,tcPDPtr> dataPair 
+    = _hadronsSelector->chooseHadronPair(ptr->mass(),
+					 ptr1data,
+					 ptr2data);
   if(dataPair.first  == tcPDPtr() || 
      dataPair.second == tcPDPtr()) return pair<PPtr,PPtr>();
 

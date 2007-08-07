@@ -50,12 +50,13 @@ Particle(CurrentGenerator::current().getParticleData(ExtraParticleID::Remnant))
       _valence[2]=(abs(pid)/10)%10;
     }
   // beam particle is a meson
+  /// \todo fix runerror and remove asserts
   else if(MesonMatcher::Check(*(pb.particleData())))
-    {throw Exception() << "Meson requested in Remant::Remnant() but not implemented "
+    {assert(false);throw Exception() << "Meson requested in Remant::Remnant() but not implemented "
 		       << Exception::runerror;}
   // unknown type of beam particle
   else
-    {throw Exception() << " requested in Remant::Remnant() but not implemented "
+    {assert(false);throw Exception() << " requested in Remant::Remnant() but not implemented "
 			<< Exception::runerror;}
   // work out the flavours of the remnants
   obtainConstituents(pb.partonData()->id());

@@ -202,9 +202,7 @@ bool Cluster::isStatusFinal() const {
 }
 
 tPPtr Cluster::particle(int i) const { 
-  if(i < _numComp)
-    return _component[i]; 
-  return _component[2];
+  return (i < _numComp) ? _component[i] : PPtr(); 
 }
 
 bool Cluster::isPerturbative(int i) const { 

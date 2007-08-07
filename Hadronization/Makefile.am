@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libHwHadronization.la
 libHwHadronization_la_SOURCES = \
-CheckId.cc CheckId.h CheckId.icc \
+CheckId.cc CheckId.h \
 CluHadConfig.h \
 Cluster.h Cluster.cc Cluster.icc Cluster.fh \
 ClusterDecayer.cc ClusterDecayer.h \

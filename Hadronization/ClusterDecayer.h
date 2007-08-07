@@ -127,26 +127,24 @@ private:
    * Pointer to a Herwig::HadronSelector for choosing decay types
    */
   Ptr<HadronSelector>::pointer _hadronsSelector;
-  
-  /**
-   * Whether non-b clusters decay along the perturbative parton direction.
-   */
-  int _ClDir1;
 
+  //@{  
   /**
-   * Whether b clusters decay along the perturbative parton direction.
+   * Whether a cluster decays along the perturbative parton direction.
    */
-  int _ClDir2;
+  int _clDirLight;
+  int _clDirBottom;
+  int _clDirCharm;
+  int _clDirExotic;
 
-  /**
-   * The S parameter from decayIntoTwoHadrons for non-b clusters.
+   /**
+   * The S parameter from decayIntoTwoHadrons
    */
-  double _ClSmr1;
-
-  /**
-   * The S parameter from decayIntoTwoHadrons for b clusters.
-   */
-  double _ClSmr2;
+  double _clSmrLight;
+  double _clSmrBottom;
+  double _clSmrCharm;
+  double _clSmrExotic;
+  //@}
 
   /**
    * Whether or not the hadrons produced should be on-shell

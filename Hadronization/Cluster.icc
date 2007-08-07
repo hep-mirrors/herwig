@@ -60,7 +60,8 @@ namespace Herwig {
   }
 
   inline bool Cluster::isRedefined() const {
-    return ( children().size() == 1 && children()[0]->PDGName() == "Cluster" );
+    return ( children().size() == 1 
+	     && children()[0]->id() == ExtraParticleID::Cluster );
   }
 
   inline bool Cluster::hasBeenReshuffled() const {

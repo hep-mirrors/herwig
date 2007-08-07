@@ -105,15 +105,9 @@ private:
   ColourReconnector & operator=(const ColourReconnector &);
 
   /**
-   * The numer of colours in the reconstruction.
+   * Do we do colour reconnections?
    */
-  int    _ClReco;
-
-  /**
-   * The probability of a reconstruction.
-   */
-  double _PReco;
-
+  int _clreco;
 };
 
 

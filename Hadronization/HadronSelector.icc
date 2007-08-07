@@ -10,11 +10,11 @@ inline HadronSelector::HadronTable & HadronSelector::table() {
   return _table;
 }
 
-inline vector<long> & HadronSelector::partons() {
+inline vector<PDPtr> & HadronSelector::partons() {
   return _partons;
 }
 
-inline map<long,double> & HadronSelector::pwt() {
+inline map<tcPDPtr,double> & HadronSelector::pwt() {
   return _pwt;
 }
 
@@ -50,7 +50,7 @@ inline double HadronSelector::probabilityMixing(const double angleMix,
   else                 return 1.;
 }
 
-inline HadronSelector::Kupco::Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2,
+inline HadronSelector::Kupco::Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2,
 				    Energy inwgt) 
   : idQ(inidQ),hadron1(inhad1),hadron2(inhad2),weight(inwgt)
 {}
@@ -65,68 +65,78 @@ inline bool HadronSelector::HadronInfo::operator<(const HadronInfo &x) const {
   return mass < x.mass; 
 }
 
-inline Energy HadronSelector::massLightestHadronPair(const long id1, const long id2,
-						     const long id3) const {
-  pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(id1,id2,id3);
+inline Energy HadronSelector::massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3)const {
+  pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
   if ( ! pairData.first || ! pairData.second ) return Energy();
   return ( pairData.first->mass() + pairData.second->mass() ); 
 }
 
-inline tcPDPtr HadronSelector::lightestHadron(const long id1, const long id2,
-					      const long id3) const {
-  // The method assumes id3 == 0  
-  if(id3!=0) throw Exception() << "HadronSelector::lightestHadron"
-			       << "called with id3 = " << id3 
-			       << "which is non-zero and not implemented"
-			       << Exception::runerror;
+inline tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3) const {
+  // The method assumes ptr3 == 0  
+  // rest not implemented
+  assert(ptr1 && ptr2);
+  assert(!ptr3);
+
   // find entry in the table
-  pair<long,long> ids(abs(id1),abs(id2));
+  pair<long,long> ids = make_pair(abs(ptr1->id()),abs(ptr2->id()));
   HadronTable::const_iterator tit=_table.find(ids);
-  // throw exception if flavours wrong
-  if(tit==_table.end()||tit->second.empty()) 
-    throw Exception() << "HadronSelector::lightestHadron "
-		      << "failed for " << id1 << " " << id2 
-		      << Exception::runerror;
+ // throw exception if flavours wrong
+  if (tit==_table.end()) {
+    /// \todo should we just leave the cluster in event record?
+    cerr << "Could not find " << ids.first << ' ' << ids.second 
+	 << " in _table.\n";
+    assert(false);
+  }
+  if(tit->second.empty()) {
+    cerr << "HadronSelector::lightestHadron "
+	 << "could not find any hadrons containing " 
+	 << ptr1->id() << " " << ptr2->id() << '\n';
+    cerr << tit->first.first << ' ' << tit->first.second << '\n';
+    assert(false);
+  }
+
   // find the lightest hadron
-  int sign = signHadron(id1,id2,tit->second.begin()->ptrData);
-  return sign >0 ? tit->second.begin()->ptrData : tit->second.begin()->ptrData->CC();
+  int sign = signHadron(ptr1,ptr2,tit->second.begin()->ptrData);
+  tcPDPtr candidate = sign > 0 ? tit->second.begin()->ptrData : tit->second.begin()->ptrData->CC();
+
+  /// \todo 20 GeV limit is temporary fudge to let SM particles go through. \todo Use isExotic instead?
+  if (candidate->mass() > 20*GeV 
+      && candidate->mass() < ptr1->constituentMass() + ptr2->constituentMass()) {
+    cerr << "HadronSelector::lightestHadron: "
+	 << "chosen candidate " << candidate->PDGName() 
+	 << " is lighter than its constituents "
+	 << ptr1->PDGName() << ", " << ptr2->PDGName() << '\n'
+	 << candidate->mass()/GeV << " < " << ptr1->constituentMass()/GeV
+	 << " + " << ptr2->constituentMass()/GeV << '\n'
+	 << "Check your particle data tables.\n";
+    assert(false);
+  }
+
+  return candidate;
 }
 
-inline Energy HadronSelector::massLightestHadron(const long id1, const long id2,
-						 const long id3) const {
-  // The method assumes id3 == 0  
-  if(id3!=0) throw Exception() << "HadronSelector::massLightestHadron"
-			       << "called with id3 = " << id3 
-			       << "which is non-zero and not implemented"
-			       << Exception::runerror;
+inline Energy HadronSelector::massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3) const {
+  // The method assumes ptr3 == empty  
+  assert(!(ptr3));
+//  throw Exception() << "HadronSelector::massLightestHadron"
+// 			     << "called with ptr3" << ptr3->id()
+// 			     << "which is non-zero and not implemented"
+// 			     << Exception::runerror;
   // find entry in the table
-  pair<long,long> ids(abs(id1),abs(id2));
+  pair<long,long> ids(abs(ptr1->id()),abs(ptr2->id()));
   HadronTable::const_iterator tit=_table.find(ids);
   // throw exception if flavours wrong
-  if(tit==_table.end()||tit->second.empty()) {
-    throw Exception() <<  "HadronSelector::massLightestHadron "
-		      << "failed for " << id1 << " " << id2 
-		      << Exception::runerror;
-  }
+  assert(!(tit==_table.end()||tit->second.empty()));
+//  {
+//     throw Exception() <<  "HadronSelector::massLightestHadron "
+//  		      << "failed for particle" << ptr1->id()  << " " << ptr2->id() 
+//  		      << Exception::runerror;
+//   }
   // return the mass
   return tit->second.begin()->mass;
 }
 
-inline Energy HadronSelector::massLightestBaryonPair(const long id1, 
-						     const long id2) const {
-  // Make sure that we don't have any diquarks as input, return arbitrarily
-  // large value if we do
-  Energy currentSum = Constants::MaxEnergy; 
-  for(unsigned int ix=0;ix<_partons.size();++ix) {
-    if(!DiquarkMatcher::Check(_partons[ix])) continue;
-    HadronTable::const_iterator 
-      tit1=_table.find(make_pair(abs(id1),_partons[ix])),
-      tit2=_table.find(make_pair(_partons[ix],abs(id2)));
-    if( tit1==_table.end() || tit2==_table.end()) continue;
-    if(tit1->second.empty()||tit2->second.empty()) continue;
-    Energy s = tit1->second.begin()->mass + tit2->second.begin()->mass;
-    if(currentSum > s) currentSum = s;
-  }
-  return currentSum;
-}
 }
