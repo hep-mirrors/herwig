@@ -595,7 +595,6 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   if( HwDebug::level == HwDebug::full ) {
     for(HPDVector::size_type d = 0; d < process.size(); ++d) {
       HPDiagram diag = process[d];
-   
       cout << getParticleData(diag.incoming.first)->PDGName() << ","
 	   << getParticleData(diag.incoming.second)->PDGName() << "->";
       if(diag.intermediate)
@@ -619,8 +618,8 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
 	       <<diag.colourFlow[cf].second << ")  ";
 	cout << "\n\n";
       }
-      cout << "---------------------------" << endl;  
     }
+    cout << "---------------------------" << endl;  
   }
   tcPDVector extpart(4);
   extpart[0] = getParticleData(process[0].incoming.first);
