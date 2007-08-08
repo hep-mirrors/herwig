@@ -14,7 +14,7 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/UseRandom.h>
-#include <ThePEG/Utilities/Math.h>
+#include <ThePEG/Utilities/Maths.h>
 
 using namespace Herwig;
 

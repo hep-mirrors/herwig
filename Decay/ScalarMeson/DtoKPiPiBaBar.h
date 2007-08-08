@@ -7,7 +7,7 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "ThePEG/Utilities/Math.h"
+#include "ThePEG/Utilities/Maths.h"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "DtoKPiPiBaBar.fh"

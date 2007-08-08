@@ -10,7 +10,7 @@
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "YFSFormFactors.h"
 #include "GeneralDipole.fh"
 

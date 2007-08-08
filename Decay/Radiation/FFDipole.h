@@ -7,7 +7,7 @@
 
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Interface/Interfaced.h"

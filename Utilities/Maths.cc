@@ -1,6 +1,6 @@
 // -*- C++ -*-
 #include <iostream>
-#include "Math.h"
+#include "Maths.h"
 namespace Herwig {
 namespace Math {
 using ThePEG::Complex;

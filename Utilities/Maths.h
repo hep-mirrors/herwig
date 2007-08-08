@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ThePEG/Config/Complex.h"
-#include "ThePEG/Utilities/Math.h"
+#include "ThePEG/Utilities/Maths.h"
 
 namespace Herwig {
 using ThePEG::Complex;
@@ -38,9 +38,6 @@ namespace Math {
 }
 
 
-#include "Math.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Math.tcc"
-#endif
+#include "Maths.icc"
 
 #endif /* HERWIG_Math_H */
