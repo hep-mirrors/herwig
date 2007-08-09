@@ -12,6 +12,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -239,15 +240,16 @@ void OniumToOniumPiPiDecayer::Init() {
      false, false, Interface::limited);
 }
 
-int OniumToOniumPiPiDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
+int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					const PDVector & children) const {
   cc=false;
   int imode(-1);
-  long idin(dm.parent()->id());
-  if(dm.products().size()!=3) return -1;
+  long idin(parent->id());
+  if(children.size()!=3) return -1;
   unsigned int npip(0),npim(0),npi0(0);
   long idother(0),id;
-  for(ParticleMSet::const_iterator pit=dm.products().begin();
-      pit!=dm.products().end();++pit) {
+  for(PDVector::const_iterator pit=children.begin();
+      pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)       ++npip;
     else if(id==ParticleID::piminus) ++npim;
@@ -290,8 +292,8 @@ double OniumToOniumPiPiDecayer::me2(bool vertex, const int,
     for(unsigned int iy=0;iy<3;++iy) {
       Complex dota = vin[ix].dot(vout[iy]);
       complex<Energy2> dotb = 
-	vin[ix]*decay[1]->momentum()*vout[iy]*decay[2]->momentum()+
-	vin[ix]*decay[2]->momentum()*vout[iy]*decay[1]->momentum();
+	(vin[ix]*decay[1]->momentum())*(vout[iy]*decay[2]->momentum())+
+	(vin[ix]*decay[2]->momentum())*(vout[iy]*decay[1]->momentum());
       newME(ix,iy,0,0)= A*dota*(q2-2.*mpi2)
 	+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
 	+C*dotb;
@@ -352,4 +354,46 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
     }
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+WidthCalculatorBasePtr OniumToOniumPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
+  int imode(-1);
+  long idin(dm.parent()->id());
+  unsigned int npip(0),npim(0),npi0(0);
+  long idother(0),id;
+  for(ParticleMSet::const_iterator pit=dm.products().begin();
+      pit!=dm.products().end();++pit) {
+    id=(**pit).id();
+    if(id==ParticleID::piplus)       ++npip;
+    else if(id==ParticleID::piminus) ++npim;
+    else if(id==ParticleID::pi0)     ++npi0;
+    else idother=id;
+  }
+  unsigned int ix=0;
+  do {
+    if(idin==_incoming[ix]&&idother==_outgoing[ix]) imode=ix;
+    ++ix;
+  }
+  while(ix<_incoming.size()&&imode<0);
+  imode = npi0==2 ? 2*imode+1 : 2*imode;
+  // construct the integrator
+  vector<double> inweights(1,1.);
+  Energy scale=getParticleData(_incoming[ix-1])->mass();
+  Energy mpi = npi0==2 ? getParticleData(ParticleID::pi0)->mass() :
+    getParticleData(ParticleID::piplus)->mass();
+  vector<int> intype(3);
+  vector<Energy> inmass (1,scale);
+  vector<Energy> inwidth(1,scale);
+  vector<double> inpow(1,0.0);
+//   return new_ptr(ThreeBodyAllOnCalculator<OniumToOniumPiPiDecayer>
+// 		 (inweights,intype,inmass,inwidth,inpow,
+// 		  *this,imode,scale,mpi,mpi));
+  return WidthCalculatorBasePtr();
+}
+
+double OniumToOniumPiPiDecayer::
+threeBodyMatrixElement(const int imode, const Energy2 q2,
+		       const  Energy2 s3, const Energy2 s2, const Energy2 s1, const 
+		       Energy , const Energy , const Energy ) const {
+  return 0.;
 }

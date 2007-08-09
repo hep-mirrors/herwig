@@ -493,17 +493,18 @@ void DtoKPiPiE691::Init() {
      false, false, Interface::limited);
 }
 
-int DtoKPiPiE691::modeNumber(bool & cc,const DecayMode & dm) const {
-  int id0(dm.parent()->id());
+int DtoKPiPiE691::modeNumber(bool & cc,tcPDPtr parent,
+			     const PDVector & children) const {
+  int id0(parent->id());
   // incoming particle must be D0 or D+
   if(abs(id0)!=ParticleID::D0&&abs(id0)!=ParticleID::Dplus) return -1;
   cc = id0<0;
   // must be three decay products
-  if(dm.products().size()!=3) return -1;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(children.size()!=3) return -1;
+  PDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
   int id;
-  for( ;pit!=dm.products().end();++pit) {
+  for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id          ==ParticleID::piplus)  ++npip;
     else if(id     ==ParticleID::pi0)     ++npi0;

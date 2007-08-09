@@ -174,6 +174,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	  else              ckm *= conj(ckmmat[abs(ia)/2-1][(abs(iq)-1)/2]);
 	  if(abs(inq)%2==0) ckm *= ckmmat[abs(inq)/2-1][(abs(outq)-1)/2];
 	  else              ckm *= ckmmat[abs(outq)/2-1][(abs(inq)-1)/2];
+	  if(generator()->log()) generator()->log() << "testing ckm factor A " << ckm << "\n";
 	  if(abs(inq)==5)   ckm*=_a1b;
 	  else              ckm*=_a1c;
 	}
@@ -191,6 +192,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	    if(abs(outq)%2==0) ckm *= conj(ckmmat[abs(outq)/2-1][(abs(iq)-1)/2]);
 	    else               ckm *= conj(ckmmat[abs(iq)/2-1][(abs(outq)-1)/2]);
 	  }
+	  if(generator()->log()) generator()->log() << "testing ckm factor B " << ckm << "\n";
 	  if(abs(inq)==5) ckm*=_a2b;
 	  else            ckm*=_a2c;
 	}
@@ -259,14 +261,15 @@ void ScalarMesonFactorizedDecayer::doinitrun() {
   }
 }
 
-bool ScalarMesonFactorizedDecayer::accept(const DecayMode & dm) const {
+bool ScalarMesonFactorizedDecayer::accept(tcPDPtr parent,
+					  const PDVector & children) const {
   // N.B. this is a necessary but not sufficient test
   bool allowed(false),dummy;
   // find the ids of the particles
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   vector<int> ids,idcurr;
-  int id(dm.parent()->id());
+  int id(parent->id());
   for( ; pit!=pend;++pit){ids.push_back((**pit).id());}
   // loop over the possible particles in the formfactor
   unsigned int ipart(0),iform,icurr,ix;
@@ -294,16 +297,17 @@ bool ScalarMesonFactorizedDecayer::accept(const DecayMode & dm) const {
   return allowed;
 }
 
-int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					     const PDVector & children) const {
   int imode(-1);
   // id's of the particles and CC
   // of the parent
-  int id0(dm.parent()->id()),id0bar(id0);
-  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
+  int id0(parent->id()),id0bar(id0);
+  if(parent->CC()){id0bar=parent->CC()->id();}
   // of the products
   vector<int> ids,idbars;
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   for( ;pit!=pend;++pit) {
     ids.push_back((**pit).id());
     if((**pit).CC()) idbars.push_back((**pit).CC()->id());

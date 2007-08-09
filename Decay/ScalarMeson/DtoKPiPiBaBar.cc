@@ -14,10 +14,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
+using namespace ThePEG::Helicity;
 
 DtoKPiPiBaBar::DtoKPiPiBaBar() {
   // choice of the model
@@ -1176,16 +1173,17 @@ void DtoKPiPiBaBar::Init() {
 //   //@}
 }
 
-int DtoKPiPiBaBar::modeNumber(bool & cc,const DecayMode & dm) const {
-  int id0(dm.parent()->id());
+int DtoKPiPiBaBar::modeNumber(bool & cc,tcPDPtr parent, 
+			      const PDVector & children) const {
+  int id0(parent->id());
   // incoming particle must be D0
   if(abs(id0)!=ParticleID::D0) return -1;
   cc = id0==ParticleID::Dbar0;
   // must be three decay products
-  if(dm.products().size()!=3) return -1;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(children.size()!=3) return -1;
+  PDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nk(0);
-  for( ;pit!=dm.products().end();++pit) {
+  for( ;pit!=children.end();++pit) {
     id0=(**pit).id();
     if(id0==ParticleID::piplus)       ++npip;
     else if(id0==ParticleID::piminus) ++npim;

@@ -126,12 +126,40 @@ protected:
    * Helper class for form factors
    */
   struct FormFactors {
+
+    /**
+     * @param F1 The \f$F_1\f$ form factor
+     */
     complex<InvEnergy>  F1;
-    complex<InvEnergy>  F2; 
+    
+    /**
+     * @param F2 The \f$F_2\f$ form factor
+     */
+    complex<InvEnergy>  F2;
+    
+    /**
+     * @param F3 The \f$F_3\f$ form factor
+     */
     complex<InvEnergy>  F3; 
+    
+    /**
+     * @param F4 The \f$F_4\f$ form factor
+     */
     complex<InvEnergy>  F4;
+    
+    /**
+     * @param F5 The \f$F_5\f$ form factor
+     */
     complex<InvEnergy3> F5;
 
+    /**
+     *  Constructor
+     * @param f1 The \f$F_1\f$ form factor
+     * @param f2 The \f$F_2\f$ form factor
+     * @param f3 The \f$F_3\f$ form factor
+     * @param f4 The \f$F_4\f$ form factor
+     * @param f5 The \f$F_5\f$ form factor
+     */    
     FormFactors(complex<InvEnergy>  f1 = 0/MeV, 
 		complex<InvEnergy>  f2 = 0/MeV, 
 		complex<InvEnergy>  f3 = 0/MeV, 

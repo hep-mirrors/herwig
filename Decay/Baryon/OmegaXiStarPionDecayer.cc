@@ -14,16 +14,15 @@
 namespace Herwig {
 using namespace ThePEG;
 
-int OmegaXiStarPionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int OmegaXiStarPionDecayer::modeNumber(bool & cc,tcPDPtr parent,
+				       const PDVector & children) const {
   int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   if(id0==_idin)
     {
       if((id1==_idout&&id2==-211)||

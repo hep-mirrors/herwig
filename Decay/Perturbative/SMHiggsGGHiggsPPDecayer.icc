@@ -5,20 +5,10 @@
 //
 
 namespace Herwig {
-  using namespace ThePEG;
+using namespace ThePEG;
   
-inline SMHiggsGGHiggsPPDecayer::SMHiggsGGHiggsPPDecayer() {
-  _h0wgt.resize(2,0.);
-  //Higgs to glu,glu
-  _h0wgt[0] = 1.;
-  //Higgs to gamma ,gamma
-  _h0wgt[1] = 1.;
-}
-
-inline SMHiggsGGHiggsPPDecayer::SMHiggsGGHiggsPPDecayer
-(const SMHiggsGGHiggsPPDecayer & x)
-  : DecayIntegrator(x),_hggvertex(x._hggvertex),_hppvertex(x._hppvertex),
-    _h0wgt(x._h0wgt) {}
+inline SMHiggsGGHiggsPPDecayer::SMHiggsGGHiggsPPDecayer() : _h0wgt(2,1.)
+{}
 
 inline IBPtr SMHiggsGGHiggsPPDecayer::clone() const {
   return new_ptr(*this);

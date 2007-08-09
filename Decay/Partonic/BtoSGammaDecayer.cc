@@ -15,24 +15,27 @@
 
 using namespace Herwig;
 
-bool BtoSGammaDecayer::accept(const DecayMode & dm) const {
+bool BtoSGammaDecayer::accept(tcPDPtr parent, const PDVector & children) const {
   // should be three decay products
-  if(dm.products().size()!=3) return false;
+  if(children.size()!=3) return false;
   // photon should be last
-  if(dm.orderedProducts()[2]->id()!=ParticleID::gamma) return false;
+  if(children[2]->id()!=ParticleID::gamma) return false;
   // strange should be first
-  if(abs(dm.orderedProducts()[0]->id())!=ParticleID::s) return false;
+  if(abs(children[0]->id())!=ParticleID::s) return false;
   // first and second should form a colour singlet
-  if((dm.orderedProducts()[0]->iColour()==PDT::Colour3&&
-      dm.orderedProducts()[1]->iColour()==PDT::Colour3bar)||
-     (dm.orderedProducts()[1]->iColour()==PDT::Colour3&&
-      dm.orderedProducts()[0]->iColour()==PDT::Colour3bar)) return true;
+  if((children[0]->iColour()==PDT::Colour3&&
+      children[1]->iColour()==PDT::Colour3bar)||
+     (children[1]->iColour()==PDT::Colour3&&
+      children[0]->iColour()==PDT::Colour3bar)) return true;
   else return false;
 }
 
-ParticleVector BtoSGammaDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
+ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
+				       const PDVector & prod) const {
+  ParticleVector children;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    children.push_back(prod[ix]->produceParticle());
+  }
   // momenta of the decay products
   Lorentz5Momentum pout[3],phad;
   pout[0].setMass(children[0]->dataPtr()->constituentMass());

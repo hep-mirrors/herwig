@@ -109,12 +109,15 @@ public:
    */
   double me2(bool vertex, const int ichan,const Particle & part,
 	     const ParticleVector & decay) const;
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.

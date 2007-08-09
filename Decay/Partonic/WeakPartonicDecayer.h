@@ -5,7 +5,7 @@
 // This is the declaration of the WeakPartonicDecayer class.
 //
 
-#include "ThePEG/PDT/Decayer.h"
+#include "Herwig++/Decay/HwDecayerBase.h"
 #include "WeakPartonicDecayer.fh"
 
 namespace Herwig {
@@ -40,7 +40,7 @@ using namespace ThePEG;
  *
  * @see HeavyDecayer
  */
-class WeakPartonicDecayer: public Decayer {
+class WeakPartonicDecayer: public HwDecayerBase {
 
 public:
 
@@ -49,24 +49,23 @@ public:
    */
   inline WeakPartonicDecayer();
 
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
   /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
+   * Check if this decayer can perfom the decay for a particular mode
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
 
+  
   /**
-   * Perform a decay for a given DecayMode and a given Particle instance.
-   * @param dm the DecayMode describing the decay.
-   * @param p the Particle instance to be decayed.
+   *  Perform the decay of the particle to the specified decay products
+   * @param parent The decaying particle
+   * @param children The decay products
    * @return a ParticleVector containing the decay products.
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
-  //@}
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const;
 
 public:
 

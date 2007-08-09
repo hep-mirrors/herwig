@@ -54,15 +54,15 @@ public:
    * Default constructor.
    */
   EtaPiPiGammaDecayer();
-
-public:
-
+  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -311,9 +311,14 @@ private:
   Energy _epscut;
 
   /**
-   *  size parameters for the output
+   *  Size of the vectors for the experimental data 
    */
-  unsigned int _nsizea,_nsizeb;
+  unsigned int _nsizea;
+
+  /**
+   * Size of the vectors for the interpolation tables
+   */
+  unsigned int _nsizeb;
  };
 
 }
@@ -381,7 +386,9 @@ struct OmnesIntegrand {
    *  get the value
    */
   inline InvEnergy4 operator ()(Energy2) const;
+  /** Return type for the GaussianIntegrator */
   typedef InvEnergy4 ValType;
+  /** Argument type for the GaussianIntegrator */
   typedef Energy2 ArgType;
   
   /**

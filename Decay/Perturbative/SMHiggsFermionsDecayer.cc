@@ -7,11 +7,6 @@
 #include "SMHiggsFermionsDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMHiggsFermionsDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -21,15 +16,8 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::ScalarWaveFunction;
-using Helicity::SpinorWaveFunction;
-using Helicity::SpinorBarWaveFunction;
-using Helicity::Direction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() {
   _maxwgt.resize(9);
@@ -43,6 +31,7 @@ SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() {
   _maxwgt[7]=0.00028718;
   _maxwgt[8]=0.0811124;
 }
+
 void SMHiggsFermionsDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // get the vertices from the Standard Model object
@@ -74,9 +63,9 @@ void SMHiggsFermionsDecayer::doinit() throw(InitException) {
   }
 }
   
-bool SMHiggsFermionsDecayer::accept(const DecayMode & dm) const {
-  if(dm.parent()->id()!=ParticleID::h0||dm.products().size()!=2) return false;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+bool SMHiggsFermionsDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+  if(parent->id()!=ParticleID::h0||children.size()!=2) return false;
+  PDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
@@ -86,10 +75,10 @@ bool SMHiggsFermionsDecayer::accept(const DecayMode & dm) const {
     return false;
 }
 
-ParticleVector SMHiggsFermionsDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+ParticleVector SMHiggsFermionsDecayer::decay(const Particle & parent,
+					     const PDVector & children) const {
   // id's of the decaying particles
-  ParticleMSet::const_iterator pit(dm.products().begin());
+  PDVector::const_iterator pit(children.begin());
   int id1((**pit).id());
   int imode=-1;
   if(abs(id1)<6){imode=abs(id1)-1;}
@@ -175,6 +164,4 @@ double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpa
        << endl;
   */
   return output;
-}
-
 }

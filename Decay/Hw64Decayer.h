@@ -5,7 +5,7 @@
 // This is the declaration of the Hw64Decayer class.
 //
 #include <ThePEG/Config/ThePEG.h>
-#include <ThePEG/PDT/Decayer.h>
+#include <HwDecayerBase.h>
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
@@ -34,7 +34,7 @@ using namespace ThePEG;
  * @see Decayer
  * 
  */
-class Hw64Decayer: public Decayer {
+class Hw64Decayer: public HwDecayerBase {
 
 public:
 
@@ -47,13 +47,14 @@ public:
    * return true if this decayer can perfom the decay specified by the
    * given decay mode.
    */
-  virtual bool accept(const DecayMode &) const;
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
 
   /**
    * for a given decay mode and a given particle instance, perform the
    * decay and return the decay products.
    */
-  virtual ParticleVector decay(const DecayMode &, const Particle &) const;
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const;
 
 public:
 

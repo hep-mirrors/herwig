@@ -344,12 +344,13 @@ inline void a1ThreePionCLEODecayer::doinitrun() {
   }
 }
 
-int a1ThreePionCLEODecayer::modeNumber(bool & cc,const DecayMode & dm) const {
-  if(dm.products().size()!=3) return -1;
-  int id(dm.parent()->id());
+int a1ThreePionCLEODecayer::modeNumber(bool & cc,tcPDPtr parent,
+				       const PDVector & children) const {
+  if(children.size()!=3) return -1;
+  int id(parent->id());
   // check the pions
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   int idtemp,npi0(0),npiplus(0),npiminus(0);
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();

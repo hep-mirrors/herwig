@@ -10,11 +10,6 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SU3BaryonSingletOctetPhotonDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -24,17 +19,16 @@ using namespace ThePEG;
 SU3BaryonSingletOctetPhotonDecayer::~SU3BaryonSingletOctetPhotonDecayer() 
 {}
 
-int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const PDVector & children) const {
   int imode(-1);
   if(_outgoingB.size()==0){setupModes(0);}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),iout;
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else if(id2==ParticleID::gamma){iout=id1;}
   else{return imode;}

@@ -49,6 +49,31 @@ public:
   virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
   //@}
 
+protected:
+
+  /** @name Virtual functions to replaced those from the Decayer class. 
+   *  This is so that the decay and accept members of this class can handle all
+   *  the more complicated features of the DecayMode class
+   */
+  //@{
+  /**
+   * Check if this decayer can perfom the decay for a particular mode
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return true If this decayer can handle the given mode, otherwise false.
+   */
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const = 0;
+  
+  /**
+   *  Perform the decay of the particle to the specified decay products
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return a ParticleVector containing the decay products.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const = 0;
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

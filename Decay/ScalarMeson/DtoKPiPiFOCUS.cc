@@ -728,17 +728,18 @@ void DtoKPiPiFOCUS::doinit() throw(InitException) {
   cerr << "join\n";
 }
 
-int DtoKPiPiFOCUS::modeNumber(bool & cc,const DecayMode & dm) const {
-  int id0(dm.parent()->id());
+int DtoKPiPiFOCUS::modeNumber(bool & cc,tcPDPtr parent, 
+			      const PDVector & children) const {
+  int id0(parent->id());
   // incoming particle must be D+/-
   if(abs(id0)!=ParticleID::Dplus) return -1;
   cc = id0==ParticleID::Dminus;
   // must be three decay products
-  if(dm.products().size()!=3) return -1;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(children.size()!=3) return -1;
+  PDVector::const_iterator pit = children.begin();
   int isign = cc ? -1 : 1;
   unsigned int npip(0),nkm(0);
-  for( ;pit!=dm.products().end();++pit) {
+  for( ;pit!=children.end();++pit) {
     id0=isign*(**pit).id();
     if(     id0==ParticleID::piplus)  ++npip;
     else if(id0==ParticleID::Kminus)   ++nkm;

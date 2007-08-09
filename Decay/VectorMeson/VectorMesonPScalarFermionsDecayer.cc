@@ -112,15 +112,16 @@ void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
   }
 }
 
-int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
   int imode(-1);
   // must be three outgoing particles
-  if(dm.products().size()!=3){return imode;}
+  if(children.size()!=3){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],ids(0);
+  int id0(parent->id()),idf[2],ids(0);
   unsigned int nf(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit) {
+  PDVector::const_iterator pit = children.begin();
+  for( ;pit!=children.end();++pit) {
     if((**pit).iSpin()==PDT::Spin0) ids=(**pit).id();
     else {
       idf[nf]=(**pit).id();

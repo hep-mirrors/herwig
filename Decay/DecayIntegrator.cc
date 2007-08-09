@@ -26,17 +26,16 @@
 
 using namespace Herwig; 
 
-// dummy decay method
-ParticleVector DecayIntegrator::decay(const DecayMode & dm,
-				      const Particle & parent) const {
+ParticleVector DecayIntegrator::decay(const Particle & parent,
+				      const PDVector & children) const {
   // return empty vector if products heavier than parent
   Energy mout(0.*GeV);
-  for(ParticleMSet::const_iterator it=dm.products().begin();
-      it!=dm.products().end();++it) mout+=(**it).massMin();
+  for(PDVector::const_iterator it=children.begin();
+      it!=children.end();++it) mout+=(**it).massMin();
   if(mout>parent.mass()) return ParticleVector();
   // generate the decay
   bool cc;
-  int imode=modeNumber(cc,dm);
+  int imode=modeNumber(cc,parent.dataPtr(),children);
   return generate(_generateinter,cc,imode,parent);
 }
   

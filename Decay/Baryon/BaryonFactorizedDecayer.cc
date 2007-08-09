@@ -10,11 +10,6 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonFactorizedDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -232,13 +227,13 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
     }
 }
 
-bool BaryonFactorizedDecayer::accept(const DecayMode & dm) const {
+bool BaryonFactorizedDecayer::accept(tcPDPtr parent, const PDVector & children) const {
   bool allowed=false;
   unsigned int iform(0),ix;
-  int idin(dm.parent()->id()),ibaryon,foundb,id0,id1;
+  int idin(parent->id()),ibaryon,foundb,id0,id1;
   vector<int> idall,idother;
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit){idall.push_back((**pit).id());}
   // loop over the particles in the form factor
   do
@@ -264,13 +259,13 @@ bool BaryonFactorizedDecayer::accept(const DecayMode & dm) const {
   return allowed;
 }
 
-int BaryonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int BaryonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					const PDVector & children) const {
   unsigned int ix,iy;
-  int idin(dm.parent()->id()),ibaryon,foundb,id0,id1,icurr(-1),iform(0);
+  int idin(parent->id()),ibaryon,foundb,id0,id1,icurr(-1),iform(0);
   vector<int> idall,idother;
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit){idall.push_back((**pit).id());}
   // loop over the particles in the form factor
   do

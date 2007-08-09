@@ -88,12 +88,12 @@ void SemiLeptonicBaryonDecayer::doinit() throw(InitException) {
     }
 }
 
-bool SemiLeptonicBaryonDecayer::accept(const DecayMode & dm) const {
+bool SemiLeptonicBaryonDecayer::accept(tcPDPtr parent, const PDVector & children) const {
   // find the non-lepton
-  int ibar(0),idtemp,idin(dm.parent()->id());
+  int ibar(0),idtemp,idin(parent->id());
   vector<int> idother; bool dummy;
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit)
     {
       idtemp=(**pit).id();
@@ -106,12 +106,12 @@ bool SemiLeptonicBaryonDecayer::accept(const DecayMode & dm) const {
   return _current->accept(idother);
 }
 
-int SemiLeptonicBaryonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int SemiLeptonicBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const PDVector & children) const {
   // find the ids of the particles for the decay current
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
-  int idtemp,ibar(0),idin(dm.parent()->id());
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
+  int idtemp,ibar(0),idin(parent->id());
   vector<int> idother;
   cc=false;
   for( ; pit!=pend;++pit)

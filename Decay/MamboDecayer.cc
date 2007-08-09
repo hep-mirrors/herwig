@@ -18,7 +18,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-bool MamboDecayer::accept(const DecayMode &) const {
+bool MamboDecayer::accept(tcPDPtr, const PDVector & ) const {
   return true;
 }
 
@@ -51,10 +51,9 @@ void MamboDecayer::Init() {
 
 }
 
-ParticleVector MamboDecayer::decay(const DecayMode & dm,
-				   const Particle & parent) const {
+ParticleVector MamboDecayer::decay(const Particle & parent,
+				   const PDVector & children) const {
   useMe();
-  PDVector children = dm.orderedProducts();
   const int N = children.size();
   ParticleVector out(N);
   if(N == 1) {
@@ -67,8 +66,7 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
 
   
   if(totalMass > parent.mass()) {
-    generator()->log() << "MamboDecayer: The Decay mode " 
-		       << dm.tag() << " cannot "
+    generator()->log() << "MamboDecayer: The Decay mode cannot "
 		       << "proceed, not enough phase space\n";
     out.clear();
     return out;

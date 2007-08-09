@@ -78,19 +78,19 @@ void ScalarVectorVectorDecayer::doinit() throw(InitException) {
   }
 }
 
-int ScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const {
-  int imode(-1);
+int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const PDVector & children) const {
+  cc = false;
   // check that at least some modes exist
-  if(_incoming.size()==0){return imode;}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(_incoming.size()==0||children.size()!=2) return -1;
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
+  int imode(-1);
   do {
     if(_incoming[ix]==id0) {
       if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||

@@ -35,13 +35,15 @@ public:
    * The default constructor.
    */
   DtoKPiPiBaBar();
-
+  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -929,7 +931,9 @@ struct DtoKPiPiBaBarInnerIntegrand {
    * Get the function value
    */
   inline double operator ()(double argument) const;
+  /** Argument type for the Gaussian Integrator */
   typedef double ArgType;
+  /** Return type for the Gaussian Integrator */
   typedef double ValType;
 
   /**
@@ -972,7 +976,9 @@ struct DtoKPiPiBaBarOuterIntegrand {
    * Get the function value
    */
   inline double operator ()(double argument) const;
+  /** Argument type for the Gaussian Integrator */
   typedef double ArgType;
+  /** Return type for the Gaussian Integrator */
   typedef double ValType;
 
   /**

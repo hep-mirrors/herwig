@@ -81,13 +81,13 @@ void TauDecayer::doinit() throw(InitException) {
   _current->update();
 }
   
-bool TauDecayer::accept(const DecayMode & dm) const {
+bool TauDecayer::accept(tcPDPtr parent, const PDVector & children) const {
   bool allowed(false);
   // find the neutrino 
-  int idnu(0),idtemp,idin(dm.parent()->id());
+  int idnu(0),idtemp,idin(parent->id());
   vector<int> idother;
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
     if(abs(idtemp)==16) idnu=idtemp; 
@@ -101,10 +101,10 @@ bool TauDecayer::accept(const DecayMode & dm) const {
 }
 
 
-int TauDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const PDVector & children) const {
   int imode(-1);
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   int idtemp;vector<int> idother;
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
@@ -115,7 +115,7 @@ int TauDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
     if(_modemap[ix]==itemp) imode=ix;
   }
   // perform the decay
-  cc=dm.parent()->id()==ParticleID::tauplus;
+  cc=parent->id()==ParticleID::tauplus;
   return imode;
 }
 

@@ -65,31 +65,30 @@ public:
   inline DecayIntegrator();
   
   /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. As this is the base class it returns false and
-   * should be overridden in class implementing the decays.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   *
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  inline virtual bool accept(const DecayMode & dm) const;
+  inline virtual bool accept(tcPDPtr parent, const PDVector & children) const;
   
   /**
    * For a given decay mode and a given particle instance, perform the
    * decay and return the decay products. As this is the base class this
    * is not implemented.
-   * @param dm The DecayMode
-   * @param part The Particle instant being decayed.
    * @return The vector of particles produced in the decay.
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const;
   
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc, const DecayMode & dm) const = 0;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const = 0;
 
   /**
    * Add a phase-space mode to the list

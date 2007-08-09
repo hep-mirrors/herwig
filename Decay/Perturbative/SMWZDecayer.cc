@@ -7,11 +7,6 @@
 #include "SMWZDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMWZDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -21,15 +16,8 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::VectorWaveFunction;
-using Helicity::SpinorWaveFunction;
-using Helicity::SpinorBarWaveFunction;
-using Helicity::Direction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 SMWZDecayer::SMWZDecayer() 
   : _zquarkwgt(5,0.),
@@ -147,12 +135,12 @@ void SMWZDecayer::doinit() throw(InitException)
     }
 }
 
-int SMWZDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int SMWZDecayer::modeNumber(bool & cc,tcPDPtr parent, 
+			    const PDVector & children) const {
   int imode(-1);
-  if(dm.products().size()!=2){return imode;}
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(children.size()!=2) return imode;
+  int id0=parent->id();
+  PDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
@@ -279,6 +267,4 @@ double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
   else if(decay[1]->hasColour())
     {decay[1]->antiColourNeighbour(decay[0]);}
   return output;
-}
-
 }

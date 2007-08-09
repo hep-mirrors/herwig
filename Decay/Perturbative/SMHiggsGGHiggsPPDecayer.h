@@ -36,21 +36,11 @@ typedef Ptr<Herwig::SMHPPVertex>::pointer HPPPtr;
 class SMHiggsGGHiggsPPDecayer: public DecayIntegrator {
   
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * The default constructor.
    */
   inline SMHiggsGGHiggsPPDecayer();
-  
-  /**
-   * The copy constructor.
-   */
-  inline SMHiggsGGHiggsPPDecayer(const SMHiggsGGHiggsPPDecayer &);
-  //@}
-  
-public:
   
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -66,27 +56,25 @@ public:
 		     const ParticleVector & decay) const;
   
   /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
   
   /**
    * Which of the possible decays is required
-   * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
    */
-  virtual int modeNumber(bool &, const DecayMode &) const {return -1;}
+  virtual int modeNumber(bool &, tcPDPtr, const PDVector & ) const {return -1;}
   
   /**
-   * Perform a decay for a given DecayMode and a given Particle instance.
-   * @param dm the DecayMode describing the decay.
-   * @param p the Particle instance to be decayed.
-   * @return a ParticleVector containing the decay products.
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
    */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
+  virtual ParticleVector decay(const Particle & parent,const PDVector & children) const;
   //@}
   
 public:

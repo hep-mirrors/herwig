@@ -55,23 +55,24 @@ void Hw64Decayer::Init() {
 
 ClassDescription<Hw64Decayer> Hw64Decayer::initHw64Decayer;
 
-bool Hw64Decayer::accept(const DecayMode &dm) const  {
-  return dm.products().size()<=4;
+bool Hw64Decayer::accept(tcPDPtr parent, const PDVector & children) const  {
+  return children.size()<=4;
 }
 
-ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const {
+ParticleVector Hw64Decayer::decay(const Particle & p, 
+				  const PDVector & children) const {
   // storage for the decay products and number of decay products
   ParticleVector rval;
-  unsigned int numProds(dm.products().size());
+  unsigned int numProds(children.size());
   // check that it is possible to kinematically perform the decay
   Energy minmass(0.*MeV);
   vector<Energy> minmasses(numProds);
   vector<tcGenericMassGeneratorPtr> massgen(numProds,tcGenericMassGeneratorPtr());
   tcMassGenPtr mtemp;
   for(unsigned int ix=0;ix<numProds;++ix) {
-    minmasses[ix]=dm.orderedProducts()[ix]->massMin();
+    minmasses[ix]=children[ix]->massMin();
     minmass+=minmasses[ix];
-    mtemp=dm.orderedProducts()[ix]->massGenerator();
+    mtemp=children[ix]->massGenerator();
     if(mtemp) massgen[ix]=dynamic_ptr_cast<tcGenericMassGeneratorPtr>(mtemp);
   }
   // check not decaying a massless particle
@@ -94,17 +95,17 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const 
       outmass=0.*MeV;
       for(unsigned int ix=istart;ix<numProds;++ix) { 
 	masses[ix] = massgen[ix] ?
-	  massgen[ix]->mass(*(dm.orderedProducts()[ix]),minmasses[ix],
+	  massgen[ix]->mass(*(children[ix]),minmasses[ix],
 			    p.mass()-minmass+minmasses[ix]) :
-	  dm.orderedProducts()[ix]->generateMass();
+	  children[ix]->generateMass();
 	outmass+=masses[ix];
 	if(outmass>p.mass()) break;
       }
       for(unsigned int ix=0;ix<istart;++ix) {
 	masses[ix] = massgen[ix] ?
-	  massgen[ix]->mass(*(dm.orderedProducts()[ix]),minmasses[ix],
+	  massgen[ix]->mass(*(children[ix]),minmasses[ix],
 			    p.mass()-minmass+minmasses[ix]) :
-	  dm.orderedProducts()[ix]->generateMass();
+	  children[ix]->generateMass();
 	outmass+=masses[ix];
 	if(outmass>p.mass()) break;
       }
@@ -175,7 +176,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const 
   if(products[0] == Lorentz5Momentum()) return ParticleVector();
   cPDVector productParticles(numProds);
   for(unsigned int ix=0;ix<numProds;++ix) {
-    productParticles[ix]=dm.orderedProducts()[ix];
+    productParticles[ix]=children[ix];
   }
   // set the momenta of the particles and return the answer
   setParticleMomentum(rval, productParticles, products);

@@ -73,12 +73,13 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
   }
 }
 
-bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
+bool SemiLeptonicScalarDecayer::accept(tcPDPtr parent, 
+				       const PDVector & children) const {
   // find the non-lepton
-  int imes(0),idtemp,idin(dm.parent()->id());
+  int imes(0),idtemp,idin(parent->id());
   vector<int> idother; bool dummy;
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
     if(abs(idtemp)>16) imes=idtemp;
@@ -90,11 +91,12 @@ bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
   return _current->accept(idother);
 }
 
-int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
   // find the ids of the particles for the decay current
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
-  int idtemp,imes(0),idin(dm.parent()->id());
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
+  int idtemp,imes(0),idin(parent->id());
   vector<int> idother;
   cc=false;
   for( ; pit!=pend;++pit) {

@@ -51,9 +51,9 @@ inline void DecayIntegrator::generateIntermediates(bool in) {
 }
 
 // dummy accept method
-inline bool DecayIntegrator::accept(const DecayMode & dm) const {
+inline bool DecayIntegrator::accept(tcPDPtr parent, const PDVector & children) const {
   bool cc;
-  return modeNumber(cc,dm)>=0;
+  return modeNumber(cc,parent,children)>=0;
 }
 
 inline bool DecayIntegrator::twoBodyMEcode(const DecayMode &, 

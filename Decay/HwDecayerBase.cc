@@ -13,14 +13,13 @@
 
 using namespace Herwig;
 
-bool HwDecayerBase::accept(const DecayMode &) const {
-  return false;
+bool HwDecayerBase::accept(const DecayMode & dm) const {
+  return accept(dm.parent(),dm.orderedProducts());
 }
 
 ParticleVector HwDecayerBase::decay(const DecayMode & dm,
-				  const Particle &) const {
-  ParticleVector children = dm.produceProducts();
-  return children;
+				    const Particle & p) const {
+  return decay(p,dm.orderedProducts());
 }
 
 void HwDecayerBase::persistentOutput(PersistentOStream & os) const {

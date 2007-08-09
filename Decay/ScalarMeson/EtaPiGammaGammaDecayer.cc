@@ -76,20 +76,21 @@ void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
   }
 }
 
-int EtaPiGammaGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int EtaPiGammaGammaDecayer::modeNumber(bool & cc,tcPDPtr parent,
+				       const PDVector & children) const {
   cc=false;
   int id;
-  if(dm.products().size()!=3) return -1;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(children.size()!=3) return -1;
+  PDVector::const_iterator pit = children.begin();
   unsigned int npi0(0),ngamma(0);
-  for( ;pit!=dm.products().end();++pit) {
+  for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::pi0)         ++npi0;
     else if(id==ParticleID::gamma)  ++ngamma;
   }
   if(!(npi0==1&&ngamma==2)) return -1;
   // number of the mode
-  switch (dm.parent()->id()) {
+  switch (parent->id()) {
   case ParticleID::eta     : return 0;
   case ParticleID::etaprime: return 1;
   default: return -1;

@@ -19,7 +19,6 @@
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() 
@@ -220,15 +219,16 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
   }
 }
 
-int EtaPiPiGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int EtaPiPiGammaDecayer::modeNumber(bool & cc,tcPDPtr parent,
+				    const PDVector & children) const {
   int imode(-1);
   // check number of external particles
-  if(dm.products().size()!=3){return imode;}
+  if(children.size()!=3){return imode;}
   // check the outgoing particles
   unsigned int npip(0),npim(0),ngamma(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  PDVector::const_iterator pit = children.begin();
   int id;
-  for(;pit!=dm.products().end();++pit) {
+  for(;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)       ++npip;
     else if(id==ParticleID::piminus) ++npim;
@@ -236,7 +236,7 @@ int EtaPiPiGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   }
   if(!(npip==1&&npim==1&&ngamma==1)) return imode;
   unsigned int ix(0);
-  id=dm.parent()->id();
+  id=parent->id();
   do{if(id==_incoming[ix]){imode=ix;}++ix;}
   while(imode<0&&ix<_incoming.size());
   cc=false;

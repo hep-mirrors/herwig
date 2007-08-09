@@ -230,18 +230,15 @@ inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
   }
 }
 
-int ScalarScalarScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
-  // must be two outgoing particles
-  if(dm.products().size()!=2) return -1;
-  // ids of the particles
-  int id0(dm.parent()->id());
-  int id0bar = dm.parent()->CC() ? dm.parent()->CC()->id() : id0;
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());
-  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
-  ++pit;
-  int id2((**pit).id());
-  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
+int ScalarScalarScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
+  if(children.size()!=2) return -1;
+  int id0(parent->id());
+  int id0bar = parent->CC() ? parent->CC()->id() : id0;
+  int id1(children[0]->id());
+  int id1bar = children[0]->CC() ? children[0]->CC()->id() : id1;
+  int id2(children[1]->id());
+  int id2bar = children[1]->CC() ? children[1]->CC()->id() : id2;
   // loop over the modes and see if this is one of them
   unsigned int ix(0);
   int imode(-1);
