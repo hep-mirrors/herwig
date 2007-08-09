@@ -90,7 +90,7 @@ inline double BtoSGammaKagan::KNLO(double y) const {
     		  +s27(y)*_c20*(_c70-_c80/3.));
 }
 
-inline InvEnergy BtoSGammaKagan::operator() (Energy kp) const {
+inline InvEnergy BtoSGammaKagan::smeared(Energy kp) const {
   InvEnergy fermi = exponentialFermiFunction(kp,_fermilambda,_fermia,
 					     _ferminorm,_fermilambda1);
   if(_iopt==1) fermi *=KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp);

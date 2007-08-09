@@ -334,7 +334,9 @@ struct BaryonCFunction {
    *  Return the value
    */
   inline double operator ()(double argument) const;
+  /** Argument type for GaussianIntegrator */
   typedef double ArgType;
+  /** Return type for GaussianIntegrator */
   typedef double ValType;
   
   /**
