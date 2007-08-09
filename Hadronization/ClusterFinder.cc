@@ -185,8 +185,6 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 
   }
 
-  if (quarkQuark.empty() && aQuarkQuark.empty()) return;
-
   // Treat now the special cases, if any. The idea is to find for each pair
   // of quarks coming from a common colour source the corresponding pair of
   // antiquarks coming from a common colour sink, connected to the above
