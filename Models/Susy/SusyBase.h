@@ -195,7 +195,7 @@ protected:
 
   /**
    * Create a object MixingMatrix in the repository
-   * @param Pointer to the mixing matrix
+   * @param matrix Pointer to the mixing matrix
    * @param name Name of the mixing matrix, i.e. nmix, umix...
    * @param values Value of each entry in the matrix
    * @param size The size of the matrix

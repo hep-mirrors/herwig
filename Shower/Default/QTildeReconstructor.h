@@ -165,12 +165,13 @@ protected:
   const double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
 
   /**
-   *  Calculate the rescaling factors for th jets in a particle decay where
+   *  Calculate the rescaling factors for the jets in a particle decay where
    *  there was initial-state radiation
    * @param mb The mass of the decaying particle
    * @param n  The reference vector for the initial state radiation
    * @param pjet The momentum of the initial-state jet
-   * @param pother The momentum of the outgoing colour singlet system before radiation
+   * @param jetKinematics The JetKinStruct objects for the jets
+   * @param partner The colour partner
    * @param ppartner The momentum of the colour partner of the decaying particle
    * before and after radiation
    * @param k1 The rescaling parameter for the partner

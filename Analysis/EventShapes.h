@@ -428,11 +428,12 @@ private:
   void diagonalizeTensors(bool linear, bool cmboost);
 
   /**
-   * Quite general diagonalization of a symmetric Matrix @param T, given as
+   * Quite general diagonalization of a symmetric Matrix  T, given as
    * an array of doubles.  The symmetry is not checked explicitly as
    * this is clear in the context.  It uses an explicit generic
    * solution of the eigenvalue problem and no numerical
-   * approximation, based on Cardano's formula. 
+   * approximation, based on Cardano's formula.
+   * @param T Matrix to be diagonalised 
    */
   vector<double> eigenvalues(const double T[3][3]);
 

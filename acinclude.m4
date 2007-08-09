@@ -306,6 +306,7 @@ AC_ARG_WITH(evtgen,
         [with_evtgen=no])
 
 EVTGENPATH=
+LOAD_EVTGEN=""
 
 if test "x$with_evtgen" = "xno"; then
 	AC_MSG_RESULT([not required])
@@ -328,9 +329,11 @@ else
 	LIBS="$oldLIBS"
 	CXXFLAGS=$tmpcxxflags
 	EVTGENPATH=$with_evtgen
+	LOAD_EVTGEN="library HwEvtGen.so"
 fi
 AM_CONDITIONAL(WANT_EVTGEN,[test "x$with_evtgen" != "xno"])
 AC_SUBST(EVTGENPATH)
+AC_SUBST(LOAD_EVTGEN)
 ])]
 
 

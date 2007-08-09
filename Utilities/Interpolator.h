@@ -54,7 +54,9 @@ public:
    *  Return the interpolated value
    */
   ValT operator () (ArgT) const;
+  /** Return type for GaussianIntegrator */
   typedef ValT ValType;
+  /** Argument type for GaussianIntegrator */
   typedef ArgT ArgType;
 
 public:

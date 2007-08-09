@@ -308,7 +308,8 @@ private:
   /**
    * Calculates the Higgs width with some NLL corrections as it is done in FORTRAN HERWIG. 
    * The following channels are taken into account: 
-   * H->q\bar{q}, H->l\bar{l}, H->WW/ZZ, H->2gammas, H->2gluons
+   * \f$H\to q\bar{q}\f$, \f$H\to \ell\bar{\ell}\f$, \f$H\to WW/ZZ\f$,
+   * \f$H\to \gamma\gamma\f$, \f$H\to gg\f$
    * The prescription corresponds to one in FORTRAN HERWIG (except H->2gluons!)
    * @returns the Higgs width for the Higgs mass Mh.
    */

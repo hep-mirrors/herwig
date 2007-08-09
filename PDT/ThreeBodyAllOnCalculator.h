@@ -50,7 +50,9 @@ struct Outer {
    * Retreive function value
    */
   inline Energy4 operator ()(double argument) const;
+  /** Argument type for the GaussianIntegrator */
   typedef double ArgType;
+  /** Return type for the GaussianIntegrator */
   typedef Energy4 ValType;
 
   /**
@@ -133,7 +135,9 @@ public:
    * @return The value of the inner integrand.
    */
   Energy2 operator ()(Energy2 argument) const;
+  /** Argument type for the GaussianIntegrator */
   typedef Energy2 ArgType;
+  /** Return type for the GaussianIntegrator */
   typedef Energy2 ValType;
 
 

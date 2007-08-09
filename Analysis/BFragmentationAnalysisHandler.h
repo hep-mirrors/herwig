@@ -212,9 +212,13 @@ private:
   HistogramPtr _fragBxEa;
 
   /**
-   *  Histograms for quark energy fraction and b jet mass
+   *  Histograms for quark energy fraction
    */
   HistogramPtr _fragbquarkxE;
+
+  /**
+   * Histograms for b jet mass
+   */
   HistogramPtr _fragbquarkjetmass;
 
   /**

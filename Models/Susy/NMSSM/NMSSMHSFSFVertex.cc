@@ -33,3 +33,7 @@ void NMSSMHSFSFVertex::Init() {
 void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 				   tcPDPtr part2,tcPDPtr part3) {
 }
+
+void NMSSMHSFSFVertex::doinit() throw(InitException) {
+  SSSVertex::doinit();
+}

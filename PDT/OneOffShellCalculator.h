@@ -35,7 +35,9 @@ struct OneOffShellIntegrand  {
    * return the value
    */
   inline  Energy operator ()(double argument) const;
+  /** Argument type for the GaussianIntegrator */
   typedef double ArgType;
+  /** Return type for the GaussianIntegrator */
   typedef Energy ValType;
 
   /**
