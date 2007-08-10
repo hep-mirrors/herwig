@@ -180,13 +180,13 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[54] = 0.0356/GeV; _maxweight[54] = 3.5; 
   // a_1 to K* K
   _incoming[55] = 20213; _outgoingP[55] = -311; _outgoingV[55] = 323; 
-  _coupling[55] = 3.03/GeV; _maxweight[55] = 2.5; 
+  _coupling[55] = 3.42/GeV; _maxweight[55] = 2.5; 
   _incoming[56] = 20213; _outgoingP[56] = 321; _outgoingV[56] = -313; 
-  _coupling[56] = 3.03/GeV; _maxweight[56] = 2.5; 
+  _coupling[56] = 3.42/GeV; _maxweight[56] = 2.5; 
   _incoming[57] = 20113; _outgoingP[57] = 321; _outgoingV[57] = -323; 
-  _coupling[57] = 3.03/GeV; _maxweight[57] = 4.0; 
+  _coupling[57] = 3.42/GeV; _maxweight[57] = 4.0; 
   _incoming[58] = 20113; _outgoingP[58] = 311; _outgoingV[58] = -313; 
-  _coupling[58] = 3.03/GeV; _maxweight[58] = 4.0; 
+  _coupling[58] = 3.42/GeV; _maxweight[58] = 4.0; 
   // a_1 to gamma pi
   _incoming[59] =  20113; _outgoingP[59] =  111; _outgoingV[59] = 22; 
   _coupling[59] = 0.01/GeV; _maxweight[59] = 2.; 
