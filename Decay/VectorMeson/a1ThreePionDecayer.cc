@@ -21,7 +21,9 @@ using namespace ThePEG::Helicity;
 
 a1ThreePionDecayer::a1ThreePionDecayer() 
   : _rhomass(1,0.7761*GeV), _rhowidth(1,0.1445*GeV), _sigmamass(0.8*GeV),
-    _sigmawidth(0.8*GeV), _lambda2(1.2*GeV2), _a1mass2(1.23*1.23*GeV2),
+    _sigmawidth(0.8*GeV), _psigma(0.*GeV), _mpi(0.*GeV), _mpi2(0.*GeV2),
+    _lambda2(1.2*GeV2), _a1mass2(1.23*1.23*GeV2),
+    _zsigma(0.), _zmag(1.3998721), _zphase(0.43585036),
     _rhomag(1,1.), _rhophase(1,0.), _coupling(90.44), 
     _localparameters(true), _zerowgts(3), _onewgts(7), _twowgts(7),
     _threewgts(8) ,_zeromax(19.144), _onemax(7.83592), 
@@ -52,9 +54,6 @@ a1ThreePionDecayer::a1ThreePionDecayer()
   _twowgts[4] = 0.127298;
   _twowgts[5] = 0.124835;
   _twowgts[6] = 0.124217;
-  // relative coupling of the sigam and rho 
-  _zmag   = 1.3998721;
-  _zphase = 0.43585036;
   // generation of intermediates
   generateIntermediates(true);
 }
@@ -309,23 +308,23 @@ int a1ThreePionDecayer::modeNumber(bool & cc,tcPDPtr parent,
 }
   
 void a1ThreePionDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV) << ounit(_prho,GeV) 
-     << ounit(_hm2,GeV2) << ounit(_rhoD,GeV2) << _dhdq2m2 <<  ounit(_sigmamass,GeV)
-     << ounit(_sigmawidth,GeV) << ounit(_psigma,GeV) << ounit(_mpi,GeV) 
-     << ounit(_mpi2,GeV2) << ounit(_lambda2,GeV2) << ounit(_a1mass2,GeV2) << _zsigma 
-     << _rhocoupling << _coupling << _localparameters << _zerowgts << _onewgts 
-     << _twowgts << _threewgts << _zeromax << _zmag << _zphase
-     << _onemax << _twomax << _threemax << _coupling << _rhomag << _rhophase;
+   os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV) << ounit(_prho,GeV) 
+      << ounit(_hm2,GeV2) << ounit(_rhoD,GeV2) << _dhdq2m2 <<  ounit(_sigmamass,GeV)
+      << ounit(_sigmawidth,GeV) << ounit(_psigma,GeV) << ounit(_mpi,GeV)
+      << ounit(_mpi2,GeV2) << ounit(_lambda2,GeV2) << ounit(_a1mass2,GeV2) << _zsigma  
+      << _rhocoupling << _coupling << _localparameters << _zerowgts << _onewgts 
+      << _twowgts << _threewgts << _zeromax << _zmag << _zphase
+      << _onemax << _twomax << _threemax << _coupling << _rhomag << _rhophase;
 }
   
 void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_rhomass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_prho,GeV) 
-     >> iunit(_hm2,GeV2) >> iunit(_rhoD,GeV2) >> _dhdq2m2 >>  iunit(_sigmamass,GeV)
-     >> iunit(_sigmawidth,GeV) >> iunit(_psigma,GeV) >> iunit(_mpi,GeV) 
-     >> iunit(_mpi2,GeV2) >> iunit(_lambda2,GeV2) >> iunit(_a1mass2,GeV2) >> _zsigma 
-     >> _rhocoupling >> _coupling >> _localparameters >> _zerowgts >> _onewgts 
-     >> _twowgts >> _threewgts >> _zeromax >> _zmag >> _zphase
-     >> _onemax >> _twomax >> _threemax >> _coupling >> _rhomag >> _rhophase;
+   is >> iunit(_rhomass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_prho,GeV) 
+      >> iunit(_hm2,GeV2) >> iunit(_rhoD,GeV2) >> _dhdq2m2 >>  iunit(_sigmamass,GeV)
+      >> iunit(_sigmawidth,GeV) >> iunit(_psigma,GeV) >> iunit(_mpi,GeV) 
+      >> iunit(_mpi2,GeV2) >> iunit(_lambda2,GeV2) >> iunit(_a1mass2,GeV2) >> _zsigma
+      >> _rhocoupling >> _coupling >> _localparameters >> _zerowgts >> _onewgts 
+      >> _twowgts >> _threewgts >> _zeromax >> _zmag >> _zphase
+      >> _onemax >> _twomax >> _threemax >> _coupling >> _rhomag >> _rhophase;
 }
 
 ClassDescription<a1ThreePionDecayer> a1ThreePionDecayer::inita1ThreePionDecayer;
