@@ -150,7 +150,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::Hw64Decayer,1> {
   /** Typedef of the base class of Hw64Decayer. */
-  typedef Decayer NthBase;
+  typedef Herwig::HwDecayerBase NthBase;
 };
 
 /**

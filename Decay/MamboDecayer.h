@@ -209,7 +209,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MamboDecayer,1> {
   /** Typedef of the first base class of MamboDecayer. */
-  typedef Decayer NthBase;
+  typedef Herwig::HwDecayerBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

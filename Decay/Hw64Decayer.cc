@@ -55,7 +55,7 @@ void Hw64Decayer::Init() {
 
 ClassDescription<Hw64Decayer> Hw64Decayer::initHw64Decayer;
 
-bool Hw64Decayer::accept(tcPDPtr parent, const PDVector & children) const  {
+bool Hw64Decayer::accept(tcPDPtr, const PDVector & children) const  {
   return children.size()<=4;
 }
 

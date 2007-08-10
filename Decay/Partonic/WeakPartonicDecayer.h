@@ -152,7 +152,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::WeakPartonicDecayer,1> {
   /** Typedef of the first base class of WeakPartonicDecayer. */
-  typedef Decayer NthBase;
+  typedef Herwig::HwDecayerBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
