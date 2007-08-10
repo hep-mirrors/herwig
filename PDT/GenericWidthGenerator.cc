@@ -375,6 +375,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	    }
 	    _MEcoupling.back()=ratio;
 	  }
+	  else _MEcoupling.back()=1.;
 	  _MEtype.push_back(2);
 	  _MEcode.back()=0;
 	  unsigned int ix=0;

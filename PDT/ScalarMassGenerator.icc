@@ -16,73 +16,49 @@ inline IBPtr ScalarMassGenerator::fullclone() const {
 }
 
 inline void ScalarMassGenerator::doinit() throw(InitException) {
+  if(_coupling.size()!=_mass1.size()||
+     _coupling.size()!=_mass2.size()) 
+    throw InitException() << "Parameter vectors have inconsistent sizes in "
+			  << "ScalarMassGenerator::doinit()"
+			  << Exception::runerror;
   // initialise the local variables
-  for(unsigned int ix=0;ix<_mass1.size();++ix)
-    {
-      _mplus.push_back(_mass1[ix]+_mass2[ix]);
-      _m2plus.push_back(_mplus[ix]*_mplus[ix]);
-      _mminus.push_back(abs(_mass1[ix]-_mass2[ix]));
-      _m2minus.push_back(_mminus[ix]*_mminus[ix]);
-      _term.push_back(-abs(log(_mass1[ix]/_mass2[ix]))*_mminus[ix]*_mplus[ix]
-		      /Constants::pi);
-    }
+  for(unsigned int ix=0;ix<_mass1.size();++ix) {
+    _m2plus .push_back(sqr(_mass1[ix]+_mass2[ix]));
+    _m2minus.push_back(sqr(_mass1[ix]-_mass2[ix]));
+  }
   // rest of the initialisation is handled in the base class
   GenericMassGenerator::doinit();
 }
 
-// weight for the factor
-inline double ScalarMassGenerator::weight(Energy q) const
-{
-  Energy2 q2 = q*q;
-  Energy2 mass2=nominalMass()*nominalMass();
-  Energy2 mwidth=nominalMass()*nominalWidth();
-  Energy2 sq = mass2-q2;
-  // numerator
-  Energy2 num=q*width(q);
-  // complex denominantor
-  complex<Energy2> 
-    denom = sq+real(selfEnergy(nominalMass()))-selfEnergy(q)-Complex(0.,1.)*num;
-  Energy4 den = real(denom*conj(denom));
-  return num/den*(sq*sq+mwidth*mwidth)/Constants::pi/mwidth;
-}
-
-  inline complex<Energy2> ScalarMassGenerator::selfEnergy(Energy q) const
-{
-  using Constants::pi;
-  complex<Energy2> self(0.*GeV2);
-  Energy2 q2=q*q;
-  double rho(0.); 
-  Energy rootp,rootm; 
-  //  Energy2 temp(0.*GeV2);
-  for(unsigned int ix=0;ix<_mass1.size();++ix)
-    {
-      if(q>_mplus[ix])
-	{
-	  rootp = sqrt(q2-_m2plus[ix]);
-	  rootm = sqrt(q2-_m2minus[ix]);
-	  rho = rootp*rootm/q2;
-	  self+=_coupling[ix]*_coupling[ix]/16./pi*
-	    (_term[ix]/q2+rho/pi*log((rootm-rootp)/(rootm+rootp)));
-	  //  temp+=rho*_coupling[ix]*_coupling[ix]/16./pi;
-	}
-      else if(q>_mminus[ix])
-	{
-	  rootp = sqrt(_m2plus[ix]-q2);
-	  rootm = sqrt(q2-_m2minus[ix]);
-	  rho = rootp*rootm/q2;
-	  self+=_coupling[ix]*_coupling[ix]/16./pi*
-	    (_term[ix]/q2-rho*(1.-2./pi*atan(rootp/rootm)));
-	}
-      else
-	{
-	  rootp = sqrt(_m2plus[ix]-q2);
-	  rootm = sqrt(_m2minus[ix]-q2);
-	  rho = rootp*rootm/q2;
-	  self+=_coupling[ix]*_coupling[ix]/16./pi*
-	    (_term[ix]/q2-rho/pi*log((rootp-rootm)/(rootp+rootm)));
-	}
+inline double ScalarMassGenerator::weight(Energy q,int shape) const {
+  Energy2 q2    = sqr(q);
+  Energy2 mass2 = sqr(nominalMass());
+  Energy2 mwidth= nominalMass()*nominalWidth();
+  Energy2 gamma[2]={0.,0.};
+  if(shape==1) {
+    for(unsigned int ix=0;ix<_coupling.size();++ix) {
+      double lambda = (mass2-_m2plus[ix])*(mass2-_m2minus[ix])/sqr(mass2);
+      if(lambda>=0.) gamma[0]+=sqr(_coupling[ix])*sqrt( lambda)*q/nominalMass();
+      else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda)*q/nominalMass();
     }
-  return self;
+  }
+  else {
+    for(unsigned int ix=0;ix<_coupling.size();++ix) {
+      double lambda = (q2-_m2plus[ix])*(q2-_m2minus[ix])/sqr(q2);
+      if(lambda>=0.) gamma[0]+=sqr(_coupling[ix])*sqrt( lambda);
+      else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda);
+    }
+  }
+  Energy2 numer(0.);
+  if(shape==2)      numer = nominalMass()*gamma[0]/q;
+  else if(shape==3) numer = nominalMass()*nominalWidth();
+  else              numer = gamma[0];
+  complex<Energy2> denom = (shape==2) ?
+    mass2 - q2 +mass2/q2*complex<Energy2>(gamma[1],-gamma[0]) :
+    mass2 - q2 +complex<Energy2>(gamma[1],-gamma[0]); 
+  // complex denominantor
+  Energy4 den = real(denom*conj(denom));
+  return numer/den*(sqr(mass2-q2)+sqr(mwidth))/Constants::pi/mwidth;
 }
-
+  
 }

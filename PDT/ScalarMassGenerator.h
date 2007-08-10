@@ -14,8 +14,19 @@ using namespace ThePEG;
  *
  *  The <code>ScalarMassGenerator</code> class is designed for the generation
  *  of the masses of the \f$a_0\f$ and \f$f_0\f$ mesons which have \f$K\bar{K}\f$
- *  modes close
- *  to the on-shell mass of the particle. It includes finite-width effects.
+ *  modes close to the on-shell mass of the particle. 
+ *
+ *  The form based on the Flatte parameterisation of PLB63, 224, we use a weight
+ * \[\frac{1}{\pi}\frac{m\Gamma(m)}{|M^2-m^2-i\sum_ig^2_i\rho_i|^2}\],
+ * where
+ * -  \f$g_i\f$  is the coupling for a given decay mode
+ * -  \f$\rho_i=2p_i/m$/\f$ is Lorentz-invariant phase-space where $p_i$ is the 
+ *     momentum release in the decay, this analytically continued
+ *     below the threshold.
+ * In this case the running width given by the sum of the running partial widths
+ * \f[\Gamma_i(m) = 2g^2_i\frac{p_i}{m^2}\f],
+ * and we differ from the Flatte approach in not analytically 
+ * continuing below the threshold for the numerator.
  *
  * @see MassGenerator
  * @see GenericMassGenerator
@@ -51,23 +62,15 @@ public:
   /**
    * Weight for the factor for an off-shell mass
    * @param mass The off-shell mass
+   * @param shape The type of shape to use as for the BreitWignerShape interface
    * @return The weight.
    */
-  inline virtual double weight(Energy mass) const;
+  inline virtual double weight(Energy mass,int shape) const;
 
   /**
    * output for the database
    */
   virtual void dataBaseOutput(ofstream &);
-
-protected:
-
-  /**
-   * The self-energy for the weight
-   * @param mass The off-shell mass.
-   * @return The self energy.
-   */
-  inline complex<Energy2> selfEnergy(Energy mass) const;
 
 protected:
 
@@ -98,7 +101,6 @@ protected:
   inline virtual void doinit() throw(InitException);
   //@}
 
-
 private:
 
   /**
@@ -111,7 +113,7 @@ private:
    */
   ScalarMassGenerator & operator=(const ScalarMassGenerator &);
 
- private:
+private:
 
   /**
    * couplings for the decay channels
@@ -128,21 +130,10 @@ private:
    */
   vector<Energy> _mass2;
 
-
   /**
    * calculated values to speed things up
    */
   //@{
-  /**
-   *  Maximum mass
-   */
-  vector<Energy>  _mplus;
-
-  /**
-   *  Minimum mass
-   */
-  vector<Energy>  _mminus;
-
   /**
    *  Maximum mass squared
    */
@@ -152,11 +143,6 @@ private:
    *  Minimum mass squared
    */
   vector<Energy2> _m2minus;
-
-  /**
-   * calculated values to speed things up
-   */
-  vector<Energy2> _term;
   //@}
 
 };
