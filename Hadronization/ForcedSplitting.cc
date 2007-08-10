@@ -76,22 +76,25 @@ void ForcedSplitting::Init() {
 
 }
 
-tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
+void ForcedSplitting::split(PVector & currentlist) {
   Timer<5000> timer("ForcedSplitting::split");
   // extract the remnants
   tPVector rems;
-  tPVector output;
-  for(unsigned int ix=0;ix<tagged.size();++ix) {
-    if(tagged[ix]->id()!=ExtraParticleID::Remnant) output.push_back(tagged[ix]);
-    else rems.push_back(tagged[ix]);
+  PVector output;
+  for(unsigned int ix=0;ix<currentlist.size();++ix) {
+    if(currentlist[ix]->id()!=ExtraParticleID::Remnant) 
+      output.push_back(currentlist[ix]);
+    else 
+      rems.push_back(currentlist[ix]);
   }
   // if none return
-  if(rems.size()==0) return output;
+  if(rems.size()==0) return;
   // must be two 
   /// \todo what about ep collisions?
-  if(rems.size()!=2) throw Exception() << "Must be either no Remnants or two in "
-				       << "ForcedSplitting::split()"
-				       << Exception::eventerror;
+  if(rems.size()!=2) 
+    throw Exception() << "Must be either no Remnants or two in "
+		      << "ForcedSplitting::split()"
+		      << Exception::eventerror;
   try {
     // Find beam particles
     PPair beam = generator()->currentEventHandler ()->currentCollision()->incoming();
@@ -118,12 +121,12 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
     // split the remnants
     _beam = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
       (beam.first->dataPtr());
-    split(rem[0],part1,pstep,x1);
+    split(rem[0],part1,x1);
     
     
     _beam = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
       (beam.second->dataPtr());
-    split(rem[1],part2,pstep,x2);
+    split(rem[1],part2,x2);
       
     // get the masses of the remnants
     Energy mrem[2];
@@ -183,7 +186,7 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
       output.push_back(rems[ix]->children()[iy]);
     }
   }
-  return output;
+  swap(output,currentlist);
 }
 
 /****
@@ -200,7 +203,7 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
  * may be changed later.
  ****/
 void ForcedSplitting::split(const tPPtr rem,const tPPtr part, 
-			    const tStepPtr step,const double xin) {
+			    const double xin) {
   long hadronId = rem->parents()[0]->id();
   // return if not from a hadron
   /// \todo where else would it come from? throw here?
@@ -232,7 +235,7 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
      currentParton->id() != quarks[2] && currentParton->id() != ParticleID::g) {
     // Create the new parton with its momentum and parent/child relationship set
     PPtr newParton = forceSplit(rem, currentParton->CC(), oldQ, oldx, lastp, 
-				usedMomentum,1, step);
+				usedMomentum,1);
     // Set the proper colour connections
     x1 = new_ptr(ColourLine());
     if(lastColouredParton->colourLine()) x1->addAntiColoured(newParton);
@@ -250,7 +253,7 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
     // Generate the next parton, with s momentum remaining in the remnant.
     oldQ = _qspac;
     PPtr newParton = forceSplit(rem,getParticleData(quarks[idx]), oldQ, oldx, 
-				lastp, usedMomentum,2,step);
+				lastp, usedMomentum,2);
     // Several colour connection cases...
     if(x1) {
       bool npC = newParton->hasColour();
@@ -284,7 +287,7 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
     else assert(false && "Should have got valence quark in ForcedSplitting::split()");
   }
   // Lastly, do the final split into the (di)quark and a parton
-  PPtr newParton = finalSplit(rem,maxIdx,quarks,idx,usedMomentum, step);
+  PPtr newParton = finalSplit(rem,maxIdx,quarks,idx,usedMomentum);
   // Set colour connections, case 1, no other forced splittings
   if(!x1 || !x2) {
     if(rem->colourLine()) rem->colourLine()->addColoured(newParton);
@@ -302,14 +305,14 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
 PPtr ForcedSplitting::forceSplit(const tPPtr rem, tcPDPtr child, Energy &oldQ, 
 				 double &oldx, Lorentz5Momentum &pf, 
 				 Lorentz5Momentum &p,
-				 const unsigned int iopt,
-				 const tStepPtr step) {
+				 const unsigned int iopt) {
   Lorentz5Momentum beam = rem->parents()[0]->momentum();
   PPtr parton = child->produceParticle();
   Lorentz5Momentum partonp = emit(beam,oldQ,oldx,parton,pf,iopt);
   parton->set5Momentum(partonp);
   p += partonp;
-  step->addDecayProduct(rem,parton);
+  //  step->addDecayProduct(rem,parton);
+  rem->addChild(parton);
   return parton;
 }
 
@@ -317,8 +320,7 @@ PPtr ForcedSplitting::forceSplit(const tPPtr rem, tcPDPtr child, Energy &oldQ,
 // momentum and parent/child relationships
 PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx, 
 				 long quarks[3], int idx, 
-				 Lorentz5Momentum usedMomentum, 
-				 const tStepPtr step) {
+				 Lorentz5Momentum usedMomentum) {
   // First decide what the remnant is
   PPtr remnant = PPtr ();
 
@@ -353,7 +355,8 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
   // shower is vetoed 
   /// \todo Is this comment still true?. 
   // Set the colour connections as well
-  step->addDecayProduct(rem,remnant);
+  //  step->addDecayProduct(rem,remnant);
+  rem->addChild(remnant);
   return remnant;
 }
 

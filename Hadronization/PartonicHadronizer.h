@@ -72,7 +72,7 @@ public:
    * @param hadrons The hadrons produced in the decay
    * @return Whether or not the hadronization was successful.
    */
-  bool hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,vector<tPPtr> & hadrons);
+  bool hadronize(tPPtr parent, const PVector & children, EventHandler & ch,vector<tPPtr> & hadrons);
 
 public:
 
@@ -144,14 +144,14 @@ private:
    * @param parent The decaying particles.
    * @param clusters The clusters produced in the decay.
    */
-  void findPartonicClusters(Step & pstep,tPPtr parent,vector<tcPPtr> & clusters);
+  //  void findPartonicClusters(Step & pstep,tPPtr parent,vector<tcPPtr> & clusters);
   
   /**
    * Does a cluster only decay to hadrons
    * @param clu The cluster
    * @return Whether or not the cluster decays to hadrons.
    */
-  bool hadronicCluster(tPPtr clu);
+  //  bool hadronicCluster(tPPtr clu);
 
   /**
    * Check hadrons produce in a partonic hadron decay do not reproduce an inclusive
@@ -161,14 +161,14 @@ private:
    * @param hadrons The hadrons produced in the partonic decay.
    * @return Whether or not there are duplicate modes.
    */
-  bool duplicateMode(tPPtr parent,vector<tcPPtr> & clusters,vector<tPPtr> & hadrons);
+  bool duplicateMode(tPPtr parent,  const vector<tPPtr> & hadrons);
 
   /**
    *  Remove quarks from cluster splitting from the event record
    * @param outhad Outgoing hadron
    * @param quarks The quarks to be removed
    */
-  void removeQuarks(tPPtr outhad,ParticleVector & quarks);
+  //  void removeQuarks(tPPtr outhad,ParticleVector & quarks);
   //@}
 
 private:

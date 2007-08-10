@@ -17,7 +17,6 @@
 #include "Cluster.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/EventRecord/Step.h"
 
 using namespace Herwig;
 
@@ -134,7 +133,8 @@ void ClusterFissioner::Init() {
 
 }
 
-void ClusterFissioner::fission(StepPtr pstep, bool softUEisOn) {
+tPVector ClusterFissioner::fission(ClusterVector & clusters, bool softUEisOn) {
+  if (clusters.empty()) return tPVector();
   /*****************
    * Loop over the (input) collection of cluster pointers, and store in 
    * the vector  splitClusters  all the clusters that need to be split
@@ -142,15 +142,7 @@ void ClusterFissioner::fission(StepPtr pstep, bool softUEisOn) {
    *  heavy non-beam clusters).
    ********************/
   
-  /// \todo reorganize this so we don't start looking again from scratch here
-  ClusterVector clusters; 
-  for (ParticleSet::iterator it = pstep->particles().begin();
-       it!= pstep->particles().end(); ++it) { 
-    if((*it)->id() == ExtraParticleID::Cluster) 
-      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
-  }
-  
-  stack<tClusterPtr> splitClusters; 
+  stack<ClusterPtr> splitClusters; 
   for(ClusterVector::iterator it = clusters.begin() ; 
       it != clusters.end() ; ++it) {
     
@@ -165,14 +157,15 @@ void ClusterFissioner::fission(StepPtr pstep, bool softUEisOn) {
     // if the cluster is a beam cluster add it to the vector of clusters
     // to be split or if it is heavy
     if((*it)->isBeamCluster() || isHeavy(*it)) splitClusters.push(*it);
-  }
-  /// \todo use 'clusters' better
-  cut(splitClusters, pstep, clusters, softUEisOn);
+  }    
+  tPVector finalhadrons;
+  cut(splitClusters, clusters, finalhadrons, softUEisOn);
+  return finalhadrons;
 }
 
-void ClusterFissioner::cut(stack<tClusterPtr> & clusterStack, 
-			   StepPtr pstep, 
-   			   ClusterVector &clusters, bool softUEisOn) {
+void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack, 
+   			   ClusterVector &clusters, tPVector & finalhadrons, 
+			   bool softUEisOn) {
   /**************************************************
    * This method does the splitting of the cluster pointed by  cluPtr
    * and "recursively" by all of its cluster children, if heavy. All of these
@@ -197,9 +190,9 @@ void ClusterFissioner::cut(stack<tClusterPtr> & clusterStack,
   // Here we recursively loop over clusters in the stack and cut them
   while (!clusterStack.empty()) {
     // take the last element of the vector
-    tClusterPtr iCluster = clusterStack.top(); clusterStack.pop();   
+    ClusterPtr iCluster = clusterStack.top(); clusterStack.pop();   
     // split it                 
-    cutType ct = cut(iCluster, softUEisOn);
+    cutType ct = cut(iCluster, finalhadrons, softUEisOn);
     // There are cases when we don't want to split, even if it fails mass test
     if(!ct.first.first || !ct.second.first) {
       // if an unsplit beam cluster leave if for the underlying event
@@ -218,41 +211,35 @@ void ClusterFissioner::cut(stack<tClusterPtr> & clusterStack,
 
     // There should always be a intermediate quark(s) from the splitting
     assert(ct.first.second && ct.second.second);
-
     /// \todo sort out motherless quark pairs here. Watch out for 'quark in final state' errors
-    pstep->addDecayProduct(iCluster, ct.first.first);
-    //pstep->addDecayProduct(iCluster, ct.first.second);
-    pstep->addIntermediate(ct.first.second);
-    ct.first.second->addChild(ct.first.first);
+    iCluster->addChild(ct.first.first);
     //    iCluster->addChild(ct.first.second);
-
-    pstep->addDecayProduct(iCluster, ct.second.first);
-    //pstep->addDecayProduct(iCluster, ct.second.second);
-    pstep->addIntermediate(ct.second.second);
-    ct.second.second->addChild(ct.second.first);
+    //    ct.first.second->addChild(ct.first.first);
+ 
+    iCluster->addChild(ct.second.first);
     //    iCluster->addChild(ct.second.second);
-
+    //    ct.second.second->addChild(ct.second.first);
+ 
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
     if(one) {
       clusters.push_back(one);
       if(one->isBeamCluster() && softUEisOn)
 	one->isAvailable(false);
-      if(isHeavy(one) && one->isAvailable()) {
+      if(isHeavy(one) && one->isAvailable())
 	clusterStack.push(one);
-      } 
     }
     if(two) {
       clusters.push_back(two);
       if(two->isBeamCluster() && softUEisOn)
 	two->isAvailable(false);
-      if(isHeavy(two) && two->isAvailable()) {
+      if(isHeavy(two) && two->isAvailable())
 	clusterStack.push(two);
-      } 
     }
   }
 }
 
-ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster, 
+ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster, 
+						tPVector & finalhadrons,
 						bool softUEisOn) {
   // need to make sure only 2-cpt clusters get here
   assert(cluster->numComponents() == 2);
@@ -411,13 +398,20 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster,
   posC = cluster->labVertex();
   calculatePositions(pClu, posC, pClu1, pClu2, pos1, pos2);
   cutType rval;
-  if(toHadron1) rval.first = produceHadron(ptrQ1->dataPtr(), newPtr1, pClu1, pos1);
-  else rval.first = produceCluster(ptrQ1, newPtr1, pClu1, pos1,
-				   pQ1, pQone, rem1);
-
-  if(toHadron2) rval.second = produceHadron(ptrQ2->dataPtr(), newPtr2, pClu2, pos2);
-  else rval.second = produceCluster(ptrQ2, newPtr2, pClu2, pos2,
-				    pQ2, pQtwo, rem2);
+  if(toHadron1) {
+    rval.first = produceHadron(ptrQ1->dataPtr(), newPtr1, pClu1, pos1);
+    finalhadrons.push_back(rval.first.first);
+  }
+  else {
+    rval.first = produceCluster(ptrQ1, newPtr1, pClu1, pos1, pQ1, pQone, rem1);
+  }
+  if(toHadron2) {
+    rval.second = produceHadron(ptrQ2->dataPtr(), newPtr2, pClu2, pos2);
+    finalhadrons.push_back(rval.second.first);
+  }
+  else {
+    rval.second = produceCluster(ptrQ2, newPtr2, pClu2, pos2, pQ2, pQtwo, rem2);
+  }
   return rval;
 }
 

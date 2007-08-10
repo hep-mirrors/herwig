@@ -46,7 +46,7 @@ public:
    * the "normal" clusters which are not forced into hadrons by
    * the other functions.
    */
-  void decay(const StepPtr&) 
+  void decay(const ClusterVector & clusters, tPVector & finalhadrons) 
     throw(Veto, Stop, Exception);
 
 public:

@@ -48,7 +48,7 @@ set stdCluHadHandler:ClusterDecayer theClusterDecayer
 set stdCluHadHandler:ForcedSplitting theForcedSplitting
 set stdCluHadHandler:MinVirtuality2 0.1*GeV2
 set stdCluHadHandler:MaxDisplacement 1.0e-10*millimeter
-set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
+set stdCluHadHandler:SoftUnderlyingEvent On
 set stdCluHadHandler:UnderlyingEventHandler /Defaults/Handlers/UnderlyingEvent/theUA5
 set theForcedSplitting:AlphaS /Defaults/Handlers/Shower/theShowerAlphaQCD
 #

@@ -3,7 +3,6 @@
 #define HERWIG_LightClusterDecayer_H
 
 #include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
 #include "LightClusterDecayer.fh"
@@ -61,7 +60,7 @@ public:
    * conservation. This is done explicitly by the (private) method 
    * reshuffling().
    */
-  bool decay(const StepPtr &);
+  bool decay(ClusterVector & clusters, tPVector & finalhadrons);
 
 public:
 
@@ -120,7 +119,7 @@ private:
    * reshuffling necessary for energy-momentum conservation.
    */
   bool reshuffling( const tcPDPtr, tClusterPtr, tClusterPtr,
-		    const StepPtr , tClusterVector &) 
+		    tClusterVector &, tPVector & finalhadrons) 
     throw (Veto, Stop, Exception); 
   
   /**
@@ -130,7 +129,7 @@ private:
    * @param cluster The cluster to be reshuffled
    * @param step The step into which the particles are inserted
    */
-  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster,const StepPtr step);
+  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster, tPVector & finalhadrons);
 
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.

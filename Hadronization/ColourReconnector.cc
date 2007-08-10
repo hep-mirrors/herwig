@@ -50,7 +50,6 @@ void ColourReconnector::Init() {
 
 
 void ColourReconnector::rearrange(EventHandler &, 
-				  const StepPtr &, 
 				  ClusterVector &) 
    throw(Veto, Stop, Exception){
   if (_clreco != 0)

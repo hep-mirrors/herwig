@@ -37,7 +37,7 @@ public:
    * @param pstep Pointer to the step
    * @return The particles which were not split and the products of splitting.
    */
-  tPVector split(const tPVector & tagged, tStepPtr pstep);
+  void split(PVector & tagged);
  
 public:
 

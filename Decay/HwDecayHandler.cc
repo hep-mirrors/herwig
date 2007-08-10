@@ -64,7 +64,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
   throw(Veto, Exception) {
   long ntry = 0;
   tcSpinfoPtr hwspin;
-  while ( 1 ) {
+  while ( true ) {
     // exit if fails
     if ( ++ntry >= maxLoop() ) 
       throw Exception() << "Too many tries " << maxLoop() << "to generate decay of "
@@ -88,26 +88,32 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
       // different kinematics this is sometimes needed for the hadronization
       do {
 	ParticleVector children = dm->decayer()->decay(*dm, *parent);
+	assert(parent->children().empty());
 	hadronized=true;
 	// decay generates decay products
 	if ( !children.empty() ) {
 	  // generate radiation in the decay
 	  tDecayIntegratorPtr 
 	    hwdec=dynamic_ptr_cast<tDecayIntegratorPtr>(dm->decayer());
-	  if(hwdec&&hwdec->canGeneratePhotons())
-	    children=hwdec->generatePhotons(*parent,children);
+	  if (hwdec && hwdec->canGeneratePhotons())
+	    children = hwdec->generatePhotons(*parent,children);
 	  // set up parent
 	  parent->decayMode(dm);
 	  // add children
 	  for ( int i = 0, N = children.size(); i < N; ++i ) {
 	    children[i]->setLabVertex(parent->labDecayVertex());
-	    if ( !s.addDecayProduct(parent, children[i]) )
-	      throw Exception() << "Failed to add child " 
-				<< children[i]->PDGName() 
-				<< " in decay of " << parent->PDGName() 
-				<< Exception::eventerror;
+	    if (! children[i]->coloured()) {
+	      if ( !s.addDecayProduct(parent, children[i]) ) 
+		throw Exception() << "Failed to add child " 
+				  << children[i]->PDGName() 
+				  << " in decay of " << parent->PDGName() 
+				  << Exception::eventerror;
+	    }
+	    else {
+	      parent->addChild(children[i]);
+	    }
 	  }
-	  parent->scale(0.0*GeV2);
+	  parent->scale(0.0*MeV2);
 	  // loop over the children
 	  for ( int i = 0, N = children.size(); i < N; ++i ) {
 	    // if the child has already been decayed add products to the record
@@ -137,29 +143,32 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	  }
 	  // special for partonic decays
 	  // see if colour particles produced
-	  bool partonic(false);
-	  unsigned int ix=0;
-	  do {
-	    partonic=children[ix]->coloured();
-	    ++ix;
+	  bool partonic = false;
+	  for (unsigned int ix=0; ix < children.size() && !partonic; ++ix) {
+	    partonic = children[ix]->coloured();
 	  }
-	  while(!partonic&&ix<children.size());
 	  // if coloured particles were produced hadronize them
-	  if(partonic&&_partonhad) {
+	  if (partonic && _partonhad) {
 	    vector<tPPtr> hadrons;
-	    hadronized=_partonhad->hadronize(parent,StepPtr(&s),
+	    hadronized=_partonhad->hadronize(parent,
+					     children,
 					     *(generator()->currentEventHandler()),
 					     hadrons);
 	    // if hadronization fails delete decay products and try again
 	    if(!hadronized) {
-	      for(unsigned int ix=0;ix<children.size();++ix) {
+	      for(unsigned int ix=0; ix<children.size(); ++ix) {
+		children[ix]->undecay();
 		s.removeParticle(children[ix]);
+		parent->abandonChild(children[ix]);
 	      }
 	    }
-	    // otherwise decay the produced hadrons
+	    // otherwise insert hadrons into step 
+	    // and decay the produced hadrons
 	    else {
 	      for(unsigned int ix=0;ix<hadrons.size();++ix) {
-		if(!hadrons[ix]->data().stable()) performDecay(hadrons[ix],s);
+		s.addDecayProduct(hadrons[ix]);
+		if(!hadrons[ix]->data().stable()) 
+		  performDecay(hadrons[ix],s);
 	      }
 	    }
 	  }
@@ -172,6 +181,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	generator()->log() << "Failed to hadronize a partonic decay " 
 			   << dm->tag() << "in"
 			   << " HwDecayHandler::performDecay()" << endl;
+	// why veto here?
 	throw Veto();
       }
       return;
@@ -179,24 +189,6 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
     catch (Veto) 
       {}
   }
-  
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 // method to add an intermediate which has already been decayed to the event record

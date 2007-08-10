@@ -74,11 +74,10 @@ public:
   /**
    *  Split the Remnants into their consituent partons and 
    *  reshuffle the momentum
-   * @param tagged The particles to be handled by the splitting
-   * @param pstep  The step into which to insert the particles
-   * @return The particles including the splittings
+   * @param tagged The particles to be handled by the splitting, 
+   * the remnants will be replaced by their children.
    */
-  tPVector split(const tPVector & tagged, tStepPtr pstep);
+  void split(PVector & tagged);
 
 protected:
 
@@ -115,9 +114,8 @@ private:
    * @param rem   The remnant
    * @param part  The last parton from the parton shower
    * @param x     The fraction of the hadron's momentum carried by the last parton
-   * @param step  The step into which the particles are inserted
    */
-  void split(const tPPtr rem,const tPPtr part, const tStepPtr step,const double x );
+  void split(const tPPtr rem,const tPPtr part,const double x );
   
   /**
    * This takes the particle and find a splitting for np -> p + child and 
@@ -130,11 +128,10 @@ private:
    * @param pf    The momentum of the last parton at input and after branching at output
    * @param p     The total emitted momentum
    * @param iopt  Whether to use the \f$q\to gq\f$ or \f$g\to q\bar{q}\f$ splitting function.
-   * @param step The step into which the new particles are inserted
    */
   PPtr forceSplit(const tPPtr rem, tcPDPtr child, Energy &oldQ, double &oldx, 
-		  Lorentz5Momentum &pf, Lorentz5Momentum &p,const unsigned int iopt,
-		  const tStepPtr step);
+		  Lorentz5Momentum &pf, 
+		  Lorentz5Momentum &p,const unsigned int iopt);
 
   /**
    * This computes the momentum of the emitted parton. 
@@ -154,8 +151,8 @@ private:
    * last parton used was a valance parton, so only 2 (or 1, if meson) flavours
    * remain to be used.
    */
-  PPtr finalSplit(const tPPtr rem, int maxIdx, long q[3], int, Lorentz5Momentum,
-		  const tStepPtr );
+  PPtr finalSplit(const tPPtr rem, int maxIdx, long q[3], int, 
+		  Lorentz5Momentum);
 
 private:
 

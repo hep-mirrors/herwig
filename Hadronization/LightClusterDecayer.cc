@@ -55,7 +55,7 @@ static Parameter<LightClusterDecayer,double>
 }
 
 
-bool LightClusterDecayer::decay(const StepPtr &pstep) {
+bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadrons) {
 
   // Loop over all clusters, and for those that were not heavy enough
   // to undergo to fission, check if they are below the threshold
@@ -91,14 +91,8 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
   // otherwise, the would-be redefined cluster could have undefined
   // components). 
   vector<tClusterPtr> redefinedClusters;
-  ClusterVector clusters; 
-  for (ParticleSet::iterator it = pstep->particles().begin();
-       it!= pstep->particles().end(); it++) { 
-    if((*it)->id() == ExtraParticleID::Cluster) 
-      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
-  }
 
-  for (ClusterVector::iterator it = clusters.begin();
+  for (ClusterVector::const_iterator it = clusters.begin();
        it != clusters.end(); ++it) {
         
     // Skip the clusters that are not available or that are 
@@ -183,11 +177,11 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     multimap<Length,tClusterPtr>::const_iterator mmapIt = candidates.begin();
     bool found = false;
     while (!found && mmapIt  != candidates.end()) {
-      found = reshuffling(hadron, *it, (*mmapIt).second, pstep, redefinedClusters);
+      found = reshuffling(hadron, *it, (*mmapIt).second, redefinedClusters, finalhadrons);
       if (!found) ++mmapIt;
     }
     
-    if (!found) return partonicReshuffle(hadron,*it,pstep);
+    if (!found) return partonicReshuffle(hadron,*it,finalhadrons);
   } // end loop over collecCluPtr 
 
   // Add to  collecCluPtr  all of the redefined new clusters (indeed the 
@@ -203,8 +197,8 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
 bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1, 
 				      tClusterPtr cluPtr1, 
 				      tClusterPtr cluPtr2,
-				      const StepPtr pstep,
-				      tClusterVector & redefinedClusters )
+				      tClusterVector & redefinedClusters,
+				      tPVector & finalhadrons)
   throw (Veto, Stop, Exception) {
   // don't reshuffle with beam clusters
   if(cluPtr2->isBeamCluster()) return false;
@@ -273,8 +267,8 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   ptrhad1->set5Momentum( phad1 );               // set momentum of first hadron.
   ptrhad1->setLabVertex(cluPtr1->vertex()); // set hadron vertex position to the
                                                 // parent cluster position.
-  //cluPtr1->addChild(ptrhad1);
-  pstep->addDecayProduct(cluPtr1, ptrhad1);
+  cluPtr1->addChild(ptrhad1);
+  finalhadrons.push_back(ptrhad1);
   cluPtr1->reshufflingPartnerCluster( cluPtr2 );
   cluPtr2->reshufflingPartnerCluster( cluPtr1 );
 
@@ -290,8 +284,8 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
     ptrhad2->set5Momentum( pclu2 );            
     ptrhad2->setLabVertex( cluPtr2->vertex() ); // set hadron vertex position to the
                                                   // parent cluster position.
-    //    cluPtr2->addChild(ptrhad2);   
-    pstep->addDecayProduct(cluPtr2, ptrhad2);
+    cluPtr2->addChild(ptrhad2);  
+    finalhadrons.push_back(ptrhad2);
   } else {
 
     // Create the new cluster which is the redefinitions of the cluster  
@@ -303,8 +297,7 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
 
     cluPtr2new->set5Momentum( pclu2 );
     cluPtr2new->setVertex( cluPtr2->vertex() );
-    //    cluPtr2->addChild( cluPtr2new );
-    pstep->addDecayProduct(cluPtr2, cluPtr2new);
+    cluPtr2->addChild( cluPtr2new );
     redefinedClusters.push_back( cluPtr2new );
        
     // Set consistently the momenta of the two components of the second cluster
@@ -331,8 +324,9 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   return true;
 }
   
-bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,const PPtr cluster,
-					    const StepPtr pstep) {
+bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,
+					    const PPtr cluster,
+					    tPVector & finalhadrons) {
   tPPtr meson(cluster);
   if(!meson->parents().empty()) meson=meson->parents()[0];
   if(!meson->parents().empty()) meson=meson->parents()[0];
@@ -387,7 +381,8 @@ bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,const PPtr cluster
   ptrhad->set5Momentum( phad1 );         // set momentum of first hadron.
   ptrhad->setLabVertex(cluster->vertex()); // set hadron vertex position to the
   // parent cluster position.
-  pstep->addDecayProduct(cluster, ptrhad);
+  cluster->addChild(ptrhad);
+  finalhadrons.push_back(ptrhad);
   // reshuffle the leptons
   // boost the leptons to the rest frame of the system
   Boost boost1(-pleptons.boostVector());

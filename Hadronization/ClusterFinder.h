@@ -39,13 +39,12 @@ public:
   /** 
    * This routine forms the clusters of the event.
    *
-   * Form clusters starting from the list of particles in the event.
+   * Form clusters starting from the list of partons given.
    * It also checks if the cluster is a beam cluster, that is if
    * at least one of its components is a beam remnant.
    */
-  void formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
-		    tPVector partons,
-		    ClusterVector & clusters) throw(Veto, Stop, Exception);
+  ClusterVector formClusters(const PVector & partons) 
+    throw(Veto, Stop, Exception);
 
   /**
    * Reduces three component clusters into two components.
@@ -56,7 +55,7 @@ public:
    * (quark,diquark) or (antiquark,antidiquark), by a random drawing.
    * This could be eliminated or changed in the future.
    */
-  void reduceToTwoComponents(const StepPtr &, ClusterVector&) 
+  void reduceToTwoComponents(ClusterVector&) 
     throw(Veto, Stop, Exception);
 
 public:

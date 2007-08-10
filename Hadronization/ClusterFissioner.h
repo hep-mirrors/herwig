@@ -88,7 +88,7 @@ public:
    * of the mass spectrum from which to draw the masses of the two 
    * cluster children (see method drawChildrenMasses for details).
    */
-  void fission(StepPtr, bool softUEisOn);
+  tPVector fission(ClusterVector & clusters, bool softUEisOn);
 
 public:
 
@@ -161,8 +161,8 @@ private:
    * could produce an unphysical large transverse energy from a supposed 
    * soft beam remnant process.
    */
-  void cut(stack<tClusterPtr> &, 
-	   StepPtr, ClusterVector&, bool softUEisOn);
+  void cut(stack<ClusterPtr> &,
+	   ClusterVector&, tPVector & finalhadrons, bool softUEisOn);
 
 public:
 
@@ -188,7 +188,7 @@ public:
    * mass spectrum used to generate the cluster child masses (see method
    * drawChildMass).
    */
-  virtual cutType cut(tClusterPtr &, bool softUEisOn);
+  virtual cutType cut(ClusterPtr &, tPVector & finalhadrons, bool softUEisOn);
 
 public:
 

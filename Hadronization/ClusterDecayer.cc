@@ -102,25 +102,21 @@ static Parameter<ClusterDecayer,double>
 }
 
 
-void ClusterDecayer::decay(const StepPtr &pstep) 
+void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) 
   throw(Veto, Stop, Exception) {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
   // into single hadron) then decay them into two hadrons.
-  ClusterVector clusters; 
-  for (ParticleSet::iterator it = pstep->particles().begin();
-       it!= pstep->particles().end(); it++) { 
-    if((*it)->id() == ExtraParticleID::Cluster) 
-      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
-  }
   for (ClusterVector::const_iterator it = clusters.begin();
 	 it != clusters.end(); ++it) {
     if ((*it)->isAvailable() && !(*it)->isStatusFinal() 
 	&& (*it)->isReadyToDecay()) {   
       pair<PPtr,PPtr> prod = decayIntoTwoHadrons(*it);
-      pstep->addDecayProduct(*it,prod.first);
-      pstep->addDecayProduct(*it,prod.second);
+      (*it)->addChild(prod.first);
+      (*it)->addChild(prod.second);
+      finalhadrons.push_back(prod.first);
+      finalhadrons.push_back(prod.second);
     }
   }
 }

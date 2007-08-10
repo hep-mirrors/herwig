@@ -120,21 +120,25 @@ void ClusterHadronizationHandler::Init() {
      &ClusterHadronizationHandler::_maxDisplacement, mm, 1.0e-10*mm, 
      0.0*mm, 1.0e-9*mm,false,false,false);
 
-  static Switch<ClusterHadronizationHandler, bool> interfaceSoftUnderlyingEventMode
-    ("OnOffSoftUnderlyingEventMode",
-     "Choice of the soft underlying event switch mode.",
-     &ClusterHadronizationHandler::_softUnderlyingEventMode, 0, false, false);
-  static SwitchOption interfaceSoftUnderlyingEventMode0
-    (interfaceSoftUnderlyingEventMode,"SoftUnderlyingEvent-OFF", 
-     "soft underlying event is OFF", false);
-  static SwitchOption interfaceSoftUnderlyingEventMode1
-    (interfaceSoftUnderlyingEventMode,"SoftUnderlyingEvent-ON",
-     "soft underlying event is ON", true);
+  static Switch<ClusterHadronizationHandler,bool> interfaceSoftUnderlyingEvent
+    ("SoftUnderlyingEvent",
+     "Set to On if soft underlying event should be run.",
+     &ClusterHadronizationHandler::_softUnderlyingEventMode, false, false, false);
+  static SwitchOption interfaceSoftUnderlyingEventOn
+    (interfaceSoftUnderlyingEvent,
+     "On",
+     "Enable soft underlying event.",
+     true);
+  static SwitchOption interfaceSoftUnderlyingEventOff
+    (interfaceSoftUnderlyingEvent,
+     "Off",
+     "Disable soft underlying event.",
+     false);
 
   static Reference<ClusterHadronizationHandler,StepHandler> interfaceUnderlyingEventHandler
     ("UnderlyingEventHandler",
      "Pointer to the handler for the Underlying Event. "
-     "This must be set when OnOffSoftUnderlyingEventMode is 1.",
+     "This must be set when SoftUnderlyingEvent is On.",
      &ClusterHadronizationHandler::_underlyingEventHandler, false, false, true, true, false);
 }
 
@@ -143,7 +147,7 @@ void ClusterHadronizationHandler::doinit() throw(InitException) {
   HadronizationHandler::doinit();
   // check that UEHandler is there when _softUnderlyingEventMode is true
   if (!_underlyingEventHandler && isSoftUnderlyingEventON())
-    Throw<InitException>() << "OnOffSoftUnderlyingEventMode is set to 1, "
+    Throw<InitException>() << "SoftUnderlyingEvent is set to On, "
 			   << "this requires the pointer\n" 
 			   << name() << ":UnderlyingEventHandler to be set.";
 }
@@ -155,41 +159,89 @@ void ClusterHadronizationHandler::doinitrun() {
   Cluster::setPointerClusterHadHandler(this);
 }
 
+namespace {
+  void extractChildren(tPPtr p, set<PPtr> & all) {
+    if (p->children().empty()) return;
+
+    for (PVector::const_iterator child = p->children().begin();
+	 child != p->children().end(); ++child) {
+      all.insert(*child);
+      extractChildren(*child, all);
+    }
+  }
+}
+
 void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) throw(Veto, Stop, Exception) {
-  ClusterVector clusters;
-  StepPtr pstep = newStep();
-  // split the remnants if needed
-  tPVector partonsA=_forcedSplitter->split(tagged,pstep);
-  // split the gluons
-  tPVector partons=_partonSplitter->split(partonsA,pstep);
-  // force a new step to form the clusters
-  pstep = ch.newStep(this);
-  _clusterFinder->formClusters(ch.currentCollision(),pstep,partons,clusters);
-  _clusterFinder->reduceToTwoComponents(pstep,clusters); 
+
+  PVector currentlist(tagged.begin(),tagged.end());
+
+  _forcedSplitter->split(currentlist);
+
+  _partonSplitter->split(currentlist);
+
+  ClusterVector clusters =
+    _clusterFinder->formClusters(currentlist);
+
+  _clusterFinder->reduceToTwoComponents(clusters); 
+
   // perform colour reconnection if needed and then
   // decay the clusters into one hadron
   bool lightOK = false;
   short tried = 0;
+  const ClusterVector savedclusters = clusters;
+  tPVector finalHadrons; // only needed for partonic decayer
   while (!lightOK && tried++ < 10) {
-    // force a new step that can be erased
-    pstep = ch.newStep(this);
-    _colourReconnector->rearrange(ch,pstep,clusters);
-    _clusterFissioner->fission(pstep, isSoftUnderlyingEventON());
-    // force a new step that can be erased
-    pstep = ch.newStep(this);
-    lightOK = _lightClusterDecayer->decay(pstep);
+
+    _colourReconnector->rearrange(ch,clusters);
+
+    finalHadrons = _clusterFissioner->fission(clusters,isSoftUnderlyingEventON());
+
+    lightOK = _lightClusterDecayer->decay(clusters,finalHadrons);
+
     if (!lightOK) {
-      ch.popStep(); 
-      ch.popStep();
+      clusters = savedclusters;
+      for_each(clusters.begin(), 
+	       clusters.end(), 
+	       mem_fun(&Particle::undecay));
     }
   } 
   if (!lightOK)
-    throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", Exception::eventerror);
-  
+    throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", 
+		    Exception::eventerror);
+
+
+
   // decay the remaining clusters
-  _clusterDecayer->decay(pstep);
+  _clusterDecayer->decay(clusters,finalHadrons);
+
+  // *****************************************
+  // *****************************************
+  // *****************************************
+
+  StepPtr pstep = newStep();
+  set<PPtr> allDecendants;
+  for (tPVector::const_iterator it = tagged.begin();
+       it != tagged.end(); ++it) {
+    extractChildren(*it, allDecendants);
+  }
+
+  for(set<PPtr>::const_iterator it = allDecendants.begin();
+      it != allDecendants.end(); ++it) {
+    // this is a workaround because the set sometimes 
+    // re-orders parents after their children
+    if ((*it)->children().empty())
+      pstep->addDecayProduct(*it);
+    else {
+      pstep->addDecayProduct(*it);
+      pstep->addIntermediate(*it);
+    }
+  }
+
+  // *****************************************
+  // *****************************************
+  // *****************************************
 
   // soft underlying event if needed
   if (isSoftUnderlyingEventON()) {
