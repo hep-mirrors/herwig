@@ -28,9 +28,9 @@ if USE_SVNVERSION # # # # # #
 BUILT_SOURCES += version version.tmp
 version version.tmp:
 	@svnversion -n $(top_srcdir) > version.tmp.new
-	@touch version.tmp.new
-	@if ! diff -q version.tmp{.new,} ; then \
-		mv version.tmp{.new,}; fi
+	@if ! test -e version.tmp.new; then touch version.tmp.new; fi
+	@if ! test -e version.tmp; then touch version.tmp; fi
+	@if ! diff -q version.tmp{.new,}; then mv -f version.tmp{.new,}; fi
 
 versionstring.h: version.tmp versionstring.h.in
 	@echo "creating versionstring.h"
