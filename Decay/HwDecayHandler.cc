@@ -81,22 +81,6 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 					    << parent->PDGName()
 					    << " in HwDecayHandler::performDecay" 
 					    << Exception::eventerror;
-    multimap<tcPDPtr,tDMPtr> proddecay;	      
-    if(!cdm->cascadeProducts().empty()) {
-      ModeMSet::iterator mit;
-      for(mit=cdm->cascadeProducts().begin();mit!=cdm->cascadeProducts().end();++mit) {
-	proddecay.insert(make_pair((*mit)->parent(),(*mit)));
-	cerr << "testing insert\n";
-      }
-      cerr << "testing proddecay " << proddecay.size() << "\n";
-      cerr << "testing products " << cdm->products().size() << "\n";
-      cerr << "testing ordered " << cdm->orderedProducts().size() << "\n";
-      cerr << "testing cascade " << cdm->cascadeProducts().size() << "\n";
-    }
-
-
-
-
     try {
       unsigned int hadronizetries(0);
       bool hadronized;
@@ -130,10 +114,6 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	    if(children[i]->decayed()) addDecayedParticle(children[i],s);
 	    // if not stable decay the child
 	    else if (!children[i]->data().stable()) {
-	      if(proddecay.find(children[i]->dataPtr())!=proddecay.end()) {
-		cerr << "testing need to force the decay mode\n";
-		exit(0);
-	      }
 	      performDecay(children[i], s);
 	    }
 	    // if stable and has spinInfo set up decay matrices etc.
