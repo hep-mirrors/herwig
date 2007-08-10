@@ -58,7 +58,7 @@ void ScalarMassGenerator::dataBaseOutput(ofstream & output) {
   output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
   output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
   for(unsigned int ix=0;ix<_coupling.size();++ix)
-    output << "insert " << fullName() << ":Couplings " 
+    output << "insert " << fullName() << ":Coupling " 
 	   << ix << " " << _coupling[ix]/GeV << "\n";
   for(unsigned int ix=0;ix<_mass1.size();++ix)
     output << "insert " << fullName() << ":Mass1 " 

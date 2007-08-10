@@ -20,14 +20,14 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
     _coupling(73), _maxweight(73) {
   // f_0(980) to pi pi
   _incoming[0] = 9010221; _outgoing1[0] = 111; _outgoing2[0] =  111; 
-  _coupling[0] = 2.093*GeV; _maxweight[0] = 1.05; 
+  _coupling[0] = 1.66*GeV; _maxweight[0] = 1.05; 
   _incoming[1] = 9010221; _outgoing1[1] = 211; _outgoing2[1] = -211; 
-  _coupling[1] = 2.961*GeV; _maxweight[1] = 1.05; 
+  _coupling[1] = 2.35*GeV; _maxweight[1] = 1.05; 
   // f_0(980) to K K 
   _incoming[2] = 9010221; _outgoing1[2] = 321; _outgoing2[2] = -321; 
-  _coupling[2] = 5.921*GeV; _maxweight[2] = 1.05; 
+  _coupling[2] = 1.02*GeV; _maxweight[2] = 1.05; 
   _incoming[3] = 9010221; _outgoing1[3] = 311; _outgoing2[3] = -311; 
-  _coupling[3] = 5.921*GeV; _maxweight[3] = 1.05; 
+  _coupling[3] = 1.02*GeV; _maxweight[3] = 1.05; 
   // f_0(1370) to pi pi
   _incoming[4] = 10221; _outgoing1[4] = 111; _outgoing2[4] = 111; 
   _coupling[4] = 0.745*GeV; _maxweight[4] = 1.05; 
@@ -60,16 +60,16 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[15] = 5.178*GeV; _maxweight[15] = 1.05; 
   // a_0 to eta pi
   _incoming[16] =  9000111; _outgoing1[16] = 221; _outgoing2[16] =  111; 
-  _coupling[16] = 5.307*GeV; _maxweight[16] = 1.1; 
+  _coupling[16] = 3.33*GeV; _maxweight[16] = 1.1; 
   _incoming[17] =  9000211; _outgoing1[17] = 221; _outgoing2[17] =  211; 
-  _coupling[17] = 5.307*GeV; _maxweight[17] = 1.1; 
+  _coupling[17] = 3.33*GeV; _maxweight[17] = 1.1; 
   // a_0 to K K
   _incoming[18] =  9000111; _outgoing1[18] = 321; _outgoing2[18] = -321; 
-  _coupling[18] = 2.242*GeV; _maxweight[18] = 1.05; 
+  _coupling[18] = 2.54*GeV; _maxweight[18] = 1.05; 
   _incoming[19] =  9000111; _outgoing1[19] = 311; _outgoing2[19] = -311; 
-  _coupling[19] = 2.242*GeV; _maxweight[19] = 1.05; 
+  _coupling[19] = 2.54*GeV; _maxweight[19] = 1.05; 
   _incoming[20] =  9000211; _outgoing1[20] = 321; _outgoing2[20] = -311; 
-  _coupling[20] = 3.171*GeV; _maxweight[20] = 1.05; 
+  _coupling[20] = 3.59*GeV; _maxweight[20] = 1.05; 
   // a'_0 to eta pi
   _incoming[21] =  10111; _outgoing1[21] = 221; _outgoing2[21] =  111; 
   _coupling[21] = 1.357*GeV; _maxweight[21] = 1.05; 
