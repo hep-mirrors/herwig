@@ -14,10 +14,10 @@ using namespace ThePEG::Helicity;
 
 NMSSMHSFSFVertex::NMSSMHSFSFVertex() {}
 
-void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & os) const {
+void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & ) const {
 }
 
-void NMSSMHSFSFVertex::persistentInput(PersistentIStream & is, int) {
+void NMSSMHSFSFVertex::persistentInput(PersistentIStream & , int) {
 }
 
 ClassDescription<NMSSMHSFSFVertex> NMSSMHSFSFVertex::initNMSSMHSFSFVertex;
@@ -30,8 +30,8 @@ void NMSSMHSFSFVertex::Init() {
 
 }
 
-void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
-				   tcPDPtr part2,tcPDPtr part3) {
+void NMSSMHSFSFVertex::setCoupling(Energy2 ,tcPDPtr ,
+				   tcPDPtr,tcPDPtr) {
 }
 
 void NMSSMHSFSFVertex::doinit() throw(InitException) {

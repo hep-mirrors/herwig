@@ -141,7 +141,7 @@ void NMSSMGOGOHVertex::Init() {
 }
 
 void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
-				   tcPDPtr part3,int ioff) {
+				   tcPDPtr part3,int ) {
   int ihigg = part3->id();
   int ig1 = part1->id();
   int ig2 = part2->id();
@@ -166,9 +166,9 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
     }
     // neutralino
     else {
-      int in1 = ig1<1000024 ? (ig1-1000022) : (ig1-1000005)/10; 
-      int in2 = ig2<1000024 ? (ig2-1000022) : (ig2-1000005)/10; 
-      Complex Qdp;
+//       int in1 = ig1<1000024 ? (ig1-1000022) : (ig1-1000005)/10; 
+//       int in2 = ig2<1000024 ? (ig2-1000022) : (ig2-1000005)/10; 
+//       Complex Qdp;
     }
   }
   // CP-odd  neutral higgs
@@ -184,9 +184,9 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
     }
     // neutralino
     else {
-      int in1 = ig1<1000024 ? (ig1-1000022) : (ig1-1000005)/10; 
-      int in2 = ig2<1000024 ? (ig2-1000022) : (ig2-1000005)/10; 
-      Complex Rdp;
+//       int in1 = ig1<1000024 ? (ig1-1000022) : (ig1-1000005)/10; 
+//       int in2 = ig2<1000024 ? (ig2-1000022) : (ig2-1000005)/10; 
+//       Complex Rdp;
     }
   }
   // charged higgs
