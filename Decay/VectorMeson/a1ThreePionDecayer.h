@@ -347,9 +347,29 @@ private:
   Complex _zsigma;
 
   /**
+   * The magnitude of the \f$z\f$ \f$\sigma\f$ coupling.
+   */
+  double _zmag;
+
+  /**
+   * The phase of the \f$z\f$ \f$\sigma\f$ coupling.
+   */
+  double _zphase;
+
+  /**
    * \f$g_{\rho_k}\f$ is the coupling of the \f$k\f$ th \f$\rho\f$ multiplet.
    */
   vector<Complex> _rhocoupling;
+
+  /**
+   *  Magnitude of the rho coupling
+   */
+  vector<double> _rhomag;
+
+  /**
+   *  Phase of the rho coupling
+   */
+  vector<double> _rhophase;
 
   /**
    * The overall coupling for the decay.

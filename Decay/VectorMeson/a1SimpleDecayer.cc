@@ -20,12 +20,21 @@ using namespace ThePEG::Helicity;
 
 a1SimpleDecayer::a1SimpleDecayer() 
   : _rhomass(3), _rhowidth(3), _rhowgts(3),_localparameters(true), 
-    _coupling(1./GeV), _onemax(1.), _twomax(1.), _threemax(1.), _onewgts(0), 
-    _twowgts(0), _threewgts(0), _mpi(0.*MeV) {
+    _coupling(47.95/GeV), _onemax(5.4474), _twomax(5.47784), 
+    _threemax(5.40185), _onewgts(6), 
+    _twowgts(6), _threewgts(6), _mpi(0.*MeV) {
   // rho masses, widths and weights
   _rhomass[0] = 0.773*GeV; _rhowidth[0] = 0.145*GeV; _rhowgts[0] =  1.0;  
   _rhomass[1] = 1.370*GeV; _rhowidth[1] = 0.510*GeV; _rhowgts[1] = -0.145;
   _rhomass[2] = 1.750*GeV; _rhowidth[2] = 0.120*GeV; _rhowgts[2] =  0.;
+  // integration weights
+  _onewgts[0] = 0.235562; _twowgts[0] = 0.236208; _threewgts[0] = 0.234259;
+  _onewgts[1] = 0.231098; _twowgts[1] = 0.229481; _threewgts[1] = 0.233634;
+  _onewgts[2] = 0.131071; _twowgts[2] = 0.131169; _threewgts[2] = 0.135922;
+  _onewgts[3] = 0.131135; _twowgts[3] = 0.133604; _threewgts[3] = 0.129231;
+  _onewgts[4] = 0.135841; _twowgts[4] = 0.132685; _threewgts[4] = 0.133949;
+  _onewgts[5] = 0.135294; _twowgts[5] = 0.136854; _threewgts[5] = 0.133005;
+  generateIntermediates(true);
 }
 
 void a1SimpleDecayer::doinit() throw(InitException) {
@@ -205,20 +214,20 @@ void a1SimpleDecayer::Init() {
   static Parameter<a1SimpleDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The overall coupling for the decay",
-     &a1SimpleDecayer::_coupling, 1./GeV, 1./GeV, 0.0/GeV, 10./GeV,
+     &a1SimpleDecayer::_coupling, 1./GeV, 47.95/GeV, 0.0/GeV, 100./GeV,
      false, false, Interface::limited);
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1SimpleDecayer::_rhomass,
-     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+     MeV, 0, 0*MeV, 0*MeV, 10000*MeV, false, false, true);
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1SimpleDecayer::_rhowidth,
-     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+     MeV, 0, 0*MeV, 0*MeV, 10000*MeV, false, false, true);
 
   static ParVector<a1SimpleDecayer,double> interfaceRhoWeights
     ("RhoWeights",
@@ -229,19 +238,19 @@ void a1SimpleDecayer::Init() {
   static Parameter<a1SimpleDecayer,double> interfaceOneMax
     ("OneMax",
      "The maximum weight for the integration fo the channel a_1^+->pi+pi0pi0",
-     &a1SimpleDecayer::_onemax, 1088.96, 0.0, 10000.0,
+     &a1SimpleDecayer::_onemax, 5.57613, 0.0, 10000.0,
      false, false, true);
 
   static Parameter<a1SimpleDecayer,double> interfaceTwoMax
     ("TwoMax",
      "The maximum weight for the integration fo the channel a_1^0->pi+pi-pi0",
-     &a1SimpleDecayer::_twomax, 1750.73, 0.0, 10000.0,
+     &a1SimpleDecayer::_twomax, 5.61218, 0.0, 10000.0,
      false, false, true);
 
   static Parameter<a1SimpleDecayer,double> interfaceThreeMax
     ("ThreeMax",
      "The maximum weight for the integration fo the channel a_1^+->pi+pi+pi-",
-     &a1SimpleDecayer::_threemax, 739.334, 0.0, 10000.0,
+     &a1SimpleDecayer::_threemax, 5.5384, 0.0, 10000.0,
      false, false, true);
   
   static ParVector<a1SimpleDecayer,double> interfaceonewgts
@@ -249,21 +258,21 @@ void a1SimpleDecayer::Init() {
      "The weights of the different channels to use for the integration of"
      " the decay a_1^+->pi+pi0pi0",
      &a1SimpleDecayer::_onewgts,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 1., false, false, true);
 
   static ParVector<a1SimpleDecayer,double> interfacetwowgts
     ("TwoChargedWeights",
      "The weights of the different channels to use for the integration of"
      " the decay a_1^0->pi+pi-pi0",
      &a1SimpleDecayer::_twowgts,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 1., false, false, true);
 
   static ParVector<a1SimpleDecayer,double> interfacethreewgts
     ("ThreeChargedWeights",
      "The weights of the different channels to use for the integration of"
      " the decay a_1^+->pi+pi+pi-",
      &a1SimpleDecayer::_threewgts,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 1., false, false, true);
 
 }
 
@@ -322,7 +331,6 @@ double a1SimpleDecayer::me2(bool vertex, const int ichan,
   Lorentz5Vector<complex<Energy> > current;
   Energy2 s1 = (decay[1]->momentum()+decay[2]->momentum()).m2();
   Energy2 s2 = (decay[0]->momentum()+decay[2]->momentum()).m2();
-  Energy2 s3 = (decay[0]->momentum()+decay[1]->momentum()).m2();
   if(ichan<0) {
     current = rhoFormFactor(s2,-1)*(decay[0]->momentum()-decay[2]->momentum())
     +rhoFormFactor(s1,-1)*(decay[1]->momentum()-decay[2]->momentum());
@@ -380,11 +388,10 @@ a1SimpleDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   for( ; pit!=pend;++pit) {
     if(abs((**pit).id())==ParticleID::piplus) ++ncharged;
   }
+  --ncharged;
   // integrator to perform the integral
   vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
   vector<int> intype;intype.push_back(2);intype.push_back(3);
-  Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
-  Energy wrho=getParticleData(ParticleID::rhoplus)->width();
   vector<Energy> inmass(2,_rhomass[0]),inwidth(2,_rhowidth[0]);
   vector<double> inpow(2,0.0);
   Energy mpi0=getParticleData(ParticleID::pi0)->mass();
@@ -403,6 +410,41 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
+  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
+  output << "set " << fullName() << ":OneMax   " <<   _onemax << "\n";
+  output << "set " << fullName() << ":TwoMax   " <<   _twomax << "\n";
+  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+  for(unsigned int ix=0;ix<_rhomass.size();++ix) {
+    if(ix<3) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+		    << _rhomass[ix]/MeV << "\n";
+    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+		    << _rhomass[ix]/MeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
+    if(ix<3) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+		    << _rhowidth[ix]/MeV << "\n";
+    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+		    << _rhowidth[ix]/MeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhowgts.size();++ix) {
+    if(ix<3) output << "set    " << fullName() << ":RhoWeights " << ix << " " 
+		    << _rhowgts[ix]/MeV << "\n";
+    else     output << "insert " << fullName() << ":RhoWeights " << ix << " " 
+		    << _rhowgts[ix]/MeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_onewgts.size();++ix) {
+    output << "set " << fullName() << ":OneChargedWeights " 
+	   << ix << " " << _onewgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_twowgts.size();++ix) {
+    output << "set " << fullName() << ":TwoChargedWeights " 
+	   << ix << " " << _twowgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_threewgts.size();++ix) {
+    output << "set " << fullName() << ":ThreeChargedWeights " 
+	   << ix << " " << _threewgts[ix] << "\n";
+  }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

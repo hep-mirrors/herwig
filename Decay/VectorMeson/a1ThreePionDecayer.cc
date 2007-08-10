@@ -22,36 +22,39 @@ using namespace ThePEG::Helicity;
 a1ThreePionDecayer::a1ThreePionDecayer() 
   : _rhomass(1,0.7761*GeV), _rhowidth(1,0.1445*GeV), _sigmamass(0.8*GeV),
     _sigmawidth(0.8*GeV), _lambda2(1.2*GeV2), _a1mass2(1.23*1.23*GeV2),
-    _zsigma(1.269,0.591), _rhocoupling(1,1.), _coupling(80.76), 
+    _rhomag(1,1.), _rhophase(1,0.), _coupling(90.44), 
     _localparameters(true), _zerowgts(3), _onewgts(7), _twowgts(7),
-    _threewgts(8) ,_zeromax(107.793), _onemax(1088.96), 
-    _twomax(1750.73), _threemax(739.334) {
+    _threewgts(8) ,_zeromax(19.144), _onemax(7.83592), 
+    _twomax(6.64804), _threemax(6.66296) {
   // weights for the different channels
-  _threewgts[0] = 0.140498;
-  _threewgts[1] = 0.140619;
-  _threewgts[2] = 0.113731;
-  _threewgts[3] = 0.113435;
-  _threewgts[4] = 0.121519;
-  _threewgts[5] = 0.121633;
-  _threewgts[6] = 0.124574;
-  _threewgts[7] = 0.123991;
-  _onewgts[0]  = 0.170911;
-  _onewgts[1]  = 0.170866;
-  _onewgts[2] = 0.128304;
-  _onewgts[3] = 0.127611;
-  _onewgts[4] = 0.134997;
-  _onewgts[5] = 0.134879;
-  _onewgts[6] = 0.132432;
-  _zerowgts[0] = 0.333382;
-  _zerowgts[1] = 0.332914;
-  _zerowgts[2] = 0.333704;
-  _twowgts[0] = 0.170642;
-  _twowgts[1] = 0.170989;
-  _twowgts[2] = 0.127737;
-  _twowgts[3] = 0.127527;
-  _twowgts[4] = 0.135416;
-  _twowgts[5] = 0.135579;
-  _twowgts[6] = 0.132111;
+  _threewgts[0] = 0.153071;
+  _threewgts[1] = 0.165741;
+  _threewgts[2] = 0.107509;
+  _threewgts[3] = 0.10275 ;
+  _threewgts[4] = 0.109738;
+  _threewgts[5] = 0.11254 ;
+  _threewgts[6] = 0.125344;
+  _threewgts[7] = 0.123307;
+  _onewgts[0] = 0.19616 ;
+  _onewgts[1] = 0.191408;
+  _onewgts[2] = 0.12137 ;
+  _onewgts[3] = 0.115498;
+  _onewgts[4] = 0.12729 ;
+  _onewgts[5] = 0.127183;
+  _onewgts[6] = 0.12109 ;
+  _zerowgts[0] = 0.339108;
+  _zerowgts[1] = 0.335601;
+  _zerowgts[2] = 0.325291;
+  _twowgts[0] = 0.188163;
+  _twowgts[1] = 0.192479;
+  _twowgts[2] = 0.121658;
+  _twowgts[3] = 0.12135 ;
+  _twowgts[4] = 0.127298;
+  _twowgts[5] = 0.124835;
+  _twowgts[6] = 0.124217;
+  // relative coupling of the sigam and rho 
+  _zmag   = 1.3998721;
+  _zphase = 0.43585036;
   // generation of intermediates
   generateIntermediates(true);
 }
@@ -261,6 +264,12 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     _dhdq2m2[ix] = dhdq2Parameter(ix);
     _rhoD[ix]    = DParameter(ix);
   }
+  // convert the magnitude and phase of z into a phase
+  _zsigma = _zmag*Complex(cos(_zphase),sin(_zphase));
+  // convert rho couplings
+  for(unsigned int ix=0;ix<_rhomag.size();++ix) {
+    _rhocoupling.push_back(_rhomag[ix]*Complex(cos(_rhophase[ix]),sin(_rhophase[ix])));
+  }
 }
   
 int a1ThreePionDecayer::modeNumber(bool & cc,tcPDPtr parent,
@@ -305,8 +314,8 @@ void a1ThreePionDecayer::persistentOutput(PersistentOStream & os) const {
      << ounit(_sigmawidth,GeV) << ounit(_psigma,GeV) << ounit(_mpi,GeV) 
      << ounit(_mpi2,GeV2) << ounit(_lambda2,GeV2) << ounit(_a1mass2,GeV2) << _zsigma 
      << _rhocoupling << _coupling << _localparameters << _zerowgts << _onewgts 
-     << _twowgts << _threewgts << _zeromax
-     << _onemax << _twomax << _threemax << _coupling;
+     << _twowgts << _threewgts << _zeromax << _zmag << _zphase
+     << _onemax << _twomax << _threemax << _coupling << _rhomag << _rhophase;
 }
   
 void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
@@ -315,8 +324,8 @@ void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
      >> iunit(_sigmawidth,GeV) >> iunit(_psigma,GeV) >> iunit(_mpi,GeV) 
      >> iunit(_mpi2,GeV2) >> iunit(_lambda2,GeV2) >> iunit(_a1mass2,GeV2) >> _zsigma 
      >> _rhocoupling >> _coupling >> _localparameters >> _zerowgts >> _onewgts 
-     >> _twowgts >> _threewgts >> _zeromax
-     >> _onemax >> _twomax >> _threemax >> _coupling;
+     >> _twowgts >> _threewgts >> _zeromax >> _zmag >> _zphase
+     >> _onemax >> _twomax >> _threemax >> _coupling >> _rhomag >> _rhophase;
 }
 
 ClassDescription<a1ThreePionDecayer> a1ThreePionDecayer::inita1ThreePionDecayer;
@@ -347,8 +356,32 @@ void a1ThreePionDecayer::Init() {
   static Parameter<a1ThreePionDecayer,double> interfaceCoupling
     ("Coupling",
      "The overall coupling for the decay",
-     &a1ThreePionDecayer::_coupling, 80.76, 0.0, 1000.0,
+     &a1ThreePionDecayer::_coupling, 90.44, 0.0, 1000.0,
      false, false, true);
+
+  static ParVector<a1ThreePionDecayer,Energy> interfacerhomass
+    ("RhoMasses",
+     "The masses of the different rho resonnaces",
+     &a1ThreePionDecayer::_rhomass,
+     GeV, 0, 0*GeV, 0*GeV, 10000*GeV, false, false, true);
+
+  static ParVector<a1ThreePionDecayer,Energy> interfacerhowidth
+    ("RhoWidths",
+     "The widths of the different rho resonnaces",
+     &a1ThreePionDecayer::_rhowidth,
+     GeV, 0, 0*GeV, 0*GeV, 10000*GeV, false, false, true);
+
+  static ParVector<a1ThreePionDecayer,double> interfaceRhoMagnitude
+    ("RhoMagnitude",
+     "The magnitude of the rho couplings",
+     &a1ThreePionDecayer::_rhomag, -1, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static ParVector<a1ThreePionDecayer,double> interfaceRhoPhase
+    ("RhoPhase",
+     "The phase of the rho coupling",
+     &a1ThreePionDecayer::_rhophase, -1, 0., 0.0, 2.*Constants::pi,
+     false, false, Interface::limited);
 
   static Parameter<a1ThreePionDecayer,Energy2> interfaceLambda2
     ("Lambda2",
@@ -426,18 +459,17 @@ void a1ThreePionDecayer::Init() {
      &a1ThreePionDecayer::_threemax, 739.334, 0.0, 10000.0,
      false, false, true);
 
-  static ParVector<a1ThreePionDecayer,Energy> interfacerhomass
-    ("RhoMasses",
-     "The masses of the different rho resonnaces",
-     &a1ThreePionDecayer::_rhomass,
-     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+  static Parameter<a1ThreePionDecayer,double> interfaceSigmaMagnitude
+    ("SigmaMagnitude",
+     "magnitude of the relative sigma coupling",
+     &a1ThreePionDecayer::_zmag, 1.3998721, 0.0, 10.0e20,
+     false, false, true);
 
-  static ParVector<a1ThreePionDecayer,Energy> interfacerhowidth
-    ("RhoWidths",
-     "The widths of the different rho resonnaces",
-     &a1ThreePionDecayer::_rhowidth,
-     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
-
+  static Parameter<a1ThreePionDecayer,double> interfaceSigmaPhase
+    ("SigmaPhase",
+     "phase of the relative sigma coupling",
+     &a1ThreePionDecayer::_zphase, 0.43585036, 0.0, Constants::twopi,
+     false, false, true);
 }
 
 double a1ThreePionDecayer::me2(bool vertex, const int ichan,
@@ -491,17 +523,17 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
     // scalar propagator
     Complex sig1 = sigmaBreitWigner(s3);
     // sigma terms
-    if(ichan<0||ichan==14) 
+    if(ichan<0||ichan==6) 
       output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();
     // the rho terms
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
       Complex rho1=_rhocoupling[ix]*rhoBreitWigner(s1,ix);
       Complex rho2=_rhocoupling[ix]*rhoBreitWigner(s2,ix);
-      if(ichan<0||ichan==8+2*ix) {
+      if(ichan<0||ichan==2*ix) {
 	output +=rho1*(dot03*(decay[1]->momentum())-
 		       dot02*(decay[2]->momentum()));
       }
-      if(ichan<0||ichan==9+2*ix){
+      if(ichan<0||ichan==2*ix+1){
 	output +=rho2*(dot03*(decay[0]->momentum())-
 		       dot01*(decay[2]->momentum()));
       }
@@ -513,17 +545,17 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
   else if(imode()==2) {
     // the sigma terms
     Complex sig1=sigmaBreitWigner(s3);
-    if(ichan<0||ichan==24)
-      {output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();}
+    if(ichan<0||ichan==6)
+      output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();
     // rho terms
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
       Complex rho1=_rhocoupling[ix]*rhoBreitWigner(s1,ix);
       Complex rho2=_rhocoupling[ix]*rhoBreitWigner(s2,ix);
-      if(ichan<0||ichan==18+2*ix) {
+      if(ichan<0||ichan==2*ix) {
 	output+=rho1*(dot03*(decay[1]->momentum())
 		      -dot02*(decay[2]->momentum()));
       }
-      if(ichan<0||ichan==19+2*ix) {
+      if(ichan<0||ichan==2*ix+1) {
 	output+=rho2*(dot03*(decay[0]->momentum())
 		      -dot01*(decay[2]->momentum()));
       }
@@ -651,8 +683,6 @@ a1ThreePionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   // integrator to perform the integral
   vector<double> inweights(2,0.5);
   vector<int> intype;intype.push_back(2);intype.push_back(3);
-  Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
-  Energy wrho=getParticleData(ParticleID::rhoplus)->width();
   vector<Energy> inmass(2,_rhomass[0]),inwidth(2,_rhowidth[0]);
   vector<double> inpow(2,0.0);
   Energy m[3];
@@ -671,6 +701,59 @@ void a1ThreePionDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
+  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << fullName() << ":Coupling " << _coupling     << "\n";
+  output << "set " << fullName() << ":Lambda2 "  << _lambda2/GeV2 << "\n";
+  output << "set " << fullName() << ":a1mass2 "  << _a1mass2/GeV2 << "\n";
+  output << "set " << fullName() << ":SigmaMass "  << _sigmamass/GeV  << "\n";
+  output << "set " << fullName() << ":SigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "set " << fullName() << ":SigmaMagnitude " << _zmag << "\n";
+  output << "set " << fullName() << ":SigmaPhase " << _zphase << "\n";
+  for(unsigned int ix=0;ix<_rhomag.size();++ix) {
+    if(ix<1) output << "set    " << fullName() << ":RhoMagnitude " << ix << " " 
+		    << _rhomag[ix] << "\n";
+    else     output << "insert " << fullName() << ":RhoMagnitude " << ix << " " 
+		    << _rhomag[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhophase.size();++ix) {
+    if(ix<1) output << "set    " << fullName() << ":RhoPhase " << ix << " " 
+		    << _rhophase[ix] << "\n";
+    else     output << "insert " << fullName() << ":RhoPhase " << ix << " " 
+		    << _rhophase[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhomass.size();++ix) {
+    if(ix<1) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+		    << _rhomass[ix]/GeV << "\n";
+    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+		    << _rhomass[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
+    if(ix<1) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+		    << _rhowidth[ix]/GeV << "\n";
+    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+		    << _rhowidth[ix]/GeV << "\n";
+  }
+  // integration weights for the different channels
+  for(unsigned int ix=0;ix<_zerowgts.size();++ix) {
+    output << "set " << fullName() << ":AllNeutralWeights " 
+	   << ix << " " << _zerowgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_onewgts.size();++ix) {
+    output << "set " << fullName() << ":OneChargedWeights " 
+	   << ix << " " << _onewgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_twowgts.size();++ix) {
+    output << "set " << fullName() << ":TwoChargedWeights " 
+	   << ix << " " << _twowgts[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_threewgts.size();++ix) {
+    output << "set " << fullName() << ":ThreeChargedWeights " 
+	   << ix << " " << _threewgts[ix] << "\n";
+  }
+  output << "set " << fullName() << ":ZeroMax "  << _zeromax  << "\n";
+  output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
+  output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
+  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
