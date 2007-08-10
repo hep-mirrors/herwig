@@ -25,7 +25,8 @@ MEff2ff.icc MEff2vv.cc MEff2vv.h MEff2vv.icc MEff2vv.fh \
 MEfv2vf.h MEfv2vf.fh MEfv2vf.icc MEfv2vf.cc \
 MEvv2vv.h MEvv2vv.fh MEvv2vv.icc MEvv2vv.cc \
 HardVertex.fh HardVertex.h HardVertex.icc HardVertex.cc \
-ProductionMatrixElement.h ProductionMatrixElement.icc ProductionMatrixElement.cc
+ProductionMatrixElement.h ProductionMatrixElement.icc ProductionMatrixElement.cc \
+MEff2vs.h MEff2vs.fh MEff2vs.icc MEff2vs.cc
 
 pkglib_LTLIBRARIES += HwMEWZJet.la
 HwMEWZJet_la_SOURCES = \
