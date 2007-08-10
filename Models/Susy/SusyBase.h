@@ -348,17 +348,7 @@ private:
   /**@name Vertex pointers. */
   //@{
   /**
-   * Pointer to the Z-sfermion-sfermion vertex
-   **/
-  VSSVertexPtr theZSFSFVertex;
-  
-  /**
-   * Pointer to the photon-sfermion-sfermion vertex
-   */
-  VSSVertexPtr thePSFSFVertex;
-  
-  /**
-   * Pointer to the W-sfermion-sfermion vertex
+   * Pointer to the gauge boson sfermion-sfermion vertex
    */
   VSSVertexPtr theWSFSFVertex;
   
