@@ -429,9 +429,9 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   }
   for(unsigned int ix=0;ix<_rhowgts.size();++ix) {
     if(ix<3) output << "set    " << fullName() << ":RhoWeights " << ix << " " 
-		    << _rhowgts[ix]/MeV << "\n";
+		    << _rhowgts[ix] << "\n";
     else     output << "insert " << fullName() << ":RhoWeights " << ix << " " 
-		    << _rhowgts[ix]/MeV << "\n";
+		    << _rhowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
     output << "set " << fullName() << ":OneChargedWeights " 

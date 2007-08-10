@@ -392,8 +392,8 @@ WidthCalculatorBasePtr OniumToOniumPiPiDecayer::threeBodyMEIntegrator(const Deca
 }
 
 double OniumToOniumPiPiDecayer::
-threeBodyMatrixElement(const int imode, const Energy2 q2,
-		       const  Energy2 s3, const Energy2 s2, const Energy2 s1, const 
+threeBodyMatrixElement(const int , const Energy2 ,
+		       const  Energy2 , const Energy2 , const Energy2 , const 
 		       Energy , const Energy , const Energy ) const {
   return 0.;
 }

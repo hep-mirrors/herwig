@@ -15,7 +15,7 @@
 
 using namespace Herwig;
 
-bool BtoSGammaDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
   // should be three decay products
   if(children.size()!=3) return false;
   // photon should be last
