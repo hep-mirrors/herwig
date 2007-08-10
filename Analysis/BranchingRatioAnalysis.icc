@@ -1,0 +1,21 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the BranchingRatioAnalysis class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline BranchingRatioAnalysis::BranchingRatioAnalysis() : _total(101,0.)
+{}
+
+inline IBPtr BranchingRatioAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr BranchingRatioAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
