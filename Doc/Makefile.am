@@ -26,7 +26,7 @@ refman-html: refman.conf refman.h AllInterfaces.h refmanThePEG.conf
 	doxygen $<
 
 tagfileThePEG.tag:
-	ln -s $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag tagfileThePEG.tag
+	if test -e $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag; then ln -s $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag tagfileThePEG.tag; fi
 
 #install-data-local:
 #	if test -d refman-html; then $(mkdir_p) $(DESTDIR)$(docdir);\
