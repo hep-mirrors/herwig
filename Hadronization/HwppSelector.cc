@@ -17,22 +17,22 @@
 
 using namespace Herwig;
 
-void HwppSelector::doinit() throw(InitException) {
-  HadronSelector::doinit();
-  for(unsigned int ix=0;ix<partons().size();++ix) {
-    for(unsigned int iy=0;iy<partons().size();++iy) {
-      _baryonmass[make_pair(partons()[ix],partons()[iy])]=
-	massLightestBaryonPair(partons()[ix],partons()[iy]);
-    }
+namespace {
+  int abs(PDT::Colour c) {
+    return c > 0 ? c : -c;
   }
 }
 
+void HwppSelector::doinit() throw(InitException) {
+  HadronSelector::doinit();
+}
+
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
-  os << _mode << ounit(_baryonmass,GeV);
+  os << _mode;
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _mode >> iunit(_baryonmass,GeV);
+  is >> _mode;
 }
 
 ClassDescription<HwppSelector> HwppSelector::initHwppSelector;
@@ -62,39 +62,41 @@ void HwppSelector::Init() {
 
 }
 
-pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,
-						     const long id1,
-						     const long id2, const long)
+pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
+						     tcPDPtr par2,tcPDPtr )
   throw(Veto, Stop, Exception) {
   // if either of the input partons is a diquark don't allow diquarks to be 
   // produced
-  bool diquark = !(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2));
-  bool quark=true;
+  bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
+  bool quark = true;
   // if the Herwig++ algorithm 
-  if(_mode==1) {
-    if(cluMass > _baryonmass[make_pair(abs(id1),abs(id2))] && 
+  if(_mode ==1) {
+    if(cluMass > massLightestBaryonPair(par1,par2) && 
        UseRandom::rnd() > 1./(1.+pwtDIquark())) {
-      diquark=true;
-      quark=false;
+      diquark = true;
+      quark = false;
     }
     else {
-      diquark=false;
-      quark=true;
+      diquark = false;
+      quark = true;
     }
   }
   // weights for the different possibilities
-  vector<Kupco> hadrons;
-  Energy weight,wgtsum(0.0*MeV);
+  Energy weight, wgtsum(0.0*MeV);
   // loop over all hadron pairs with the allowed flavours
+  vector<Kupco> hadrons;
   for(unsigned int ix=0;ix<partons().size();++ix) {
-    if(!quark  &&  QuarkMatcher::Check(partons()[ix])) continue;
-    if(!diquark&&DiquarkMatcher::Check(partons()[ix])) continue;
-    map<pair<long,long>,KupcoData>::const_iterator 
-      tit1=table().find(make_pair(abs(id1),partons()[ix]));
-    map<pair<long,long>,KupcoData>::const_iterator 
-      tit2=table().find(make_pair(partons()[ix],abs(id2)));
-    // if not in table skip
-    if(tit1==table().end()||tit2==table().end()) continue;
+    tcPDPtr quarktopick  = partons()[ix];
+    if(!quark  &&  abs(quarktopick->iColour()) == 3
+       && !DiquarkMatcher::Check(quarktopick->id())) continue;
+    if(!diquark && abs(quarktopick->iColour()) == 3
+       && DiquarkMatcher::Check(quarktopick->id())) continue;
+    HadronTable::const_iterator 
+      tit1 = table().find(make_pair(abs(par1->id()),quarktopick->id()));
+    HadronTable::const_iterator 
+      tit2 = table().find(make_pair(quarktopick->id(),abs(par2->id())));
+    // If not in table skip
+    if(tit1 == table().end()||tit2==table().end()) continue;
     // tables empty skip
     if(tit1->second.empty()||tit2->second.empty()) continue;
     // if too massive skip
@@ -107,45 +109,59 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
  	// calculate the weight
- 	weight = pwt()[partons()[ix]] * H1->overallWeight * H2->overallWeight *
+ 	weight = pwt()[quarktopick] * H1->overallWeight * H2->overallWeight *
  	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
 	int signQ = 0;
-	long idQ = partons()[ix];
-	if((CheckId::canBeMeson(id1,-idQ) || CheckId::canBeBaryon(id1,-idQ)) && 
-	   (CheckId::canBeMeson(idQ, id2) || CheckId::canBeBaryon(idQ, id2)))
-	  signQ = +1;
-	else if((CheckId::canBeMeson( id1,idQ) || CheckId::canBeBaryon( id1,idQ)) && 
-		(CheckId::canBeMeson(-idQ,id2) || CheckId::canBeBaryon(-idQ,id2)))
-	  signQ = -1;
+	assert (par1 && quarktopick);
+	assert (par2);
+
+	assert(quarktopick->CC());
+	
+	if(CheckId::canBeHadron(par1, quarktopick->CC()) 
+	   && CheckId::canBeHadron(quarktopick, par2))
+	   signQ = +1;
+	else if(CheckId::canBeHadron(par1, quarktopick) 
+		&& CheckId::canBeHadron(quarktopick->CC(), par2))
+	   signQ = -1;
+	else {
+	  cerr << "Could not make sign for" << par1->id()<< " " << quarktopick->id() 
+	       << " " << par2->id() << "\n";
+	  assert(false);
+	}
+
+	if (signQ  == -1)
+	  quarktopick = quarktopick->CC();
 	// construct the object with the info
-	Kupco a(signQ * idQ,H1->ptrData,H2->ptrData,weight);
+	Kupco a(quarktopick, H1->ptrData, H2->ptrData,weight);
 	hadrons.push_back(a);
-	wgtsum+=weight;
+	wgtsum += weight;
       }
     }
   }
   if (hadrons.empty()) 
     return make_pair(tcPDPtr(),tcPDPtr());
   // select the hadron
-  wgtsum *=UseRandom::rnd();
+  wgtsum *= UseRandom::rnd();
   unsigned int ix=0;
   do {
-    wgtsum-=hadrons[ix].weight;
+    wgtsum-= hadrons[ix].weight;
     ++ix;
   }
-  while(wgtsum>0*MeV && ix<hadrons.size());
-  if(ix==hadrons.size()&&wgtsum>0*MeV) return make_pair(tcPDPtr(),tcPDPtr());
+  while(wgtsum > 0*MeV && ix < hadrons.size());
+  if(ix == hadrons.size() && wgtsum > 0*MeV) 
+      return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
-  int signHad1 = signHadron(id1,-hadrons[ix].idQ, hadrons[ix].hadron1);
-  int signHad2 = signHadron(id2, hadrons[ix].idQ, hadrons[ix].hadron2);
-  if(signHad1==0||signHad2==0)
-    throw Exception() << "HwppSelector::selectPair " 
-		      << "***Inconsistent Hadron " 
-		      << hadrons[ix].idQ << " " 
-		      << hadrons[ix].hadron1->id() << " " 
-		      << hadrons[ix].hadron2->id() << " " 
-		      << signHad1 << " " << signHad2
-		      << Exception::runerror;
+  assert(hadrons[ix].idQ);
+  int signHad1 = signHadron(par1, hadrons[ix].idQ->CC(), hadrons[ix].hadron1);
+  int signHad2 = signHadron(par2, hadrons[ix].idQ, hadrons[ix].hadron2);
+  assert(!( signHad1 == 0 || signHad2 == 0));
+//     throw Exception() << "HwppSelector::selectPair " 
+// 		      << "***Inconsistent Hadron " 
+// 		      << hadrons[ix].idQ->id() << " " 
+// 		      << hadrons[ix].hadron1->id() << " " 
+// 		      << hadrons[ix].hadron2->id() << " " 
+// 		      << signHad1 << " " << signHad2
+// 		      << Exception::runerror;
   return make_pair
     ( signHad1 > 0 ? hadrons[ix].hadron1 : tcPDPtr(hadrons[ix].hadron1->CC()),
       signHad2 > 0 ? hadrons[ix].hadron2 : tcPDPtr(hadrons[ix].hadron2->CC()));

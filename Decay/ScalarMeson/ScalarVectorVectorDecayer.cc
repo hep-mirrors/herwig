@@ -19,8 +19,8 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 ScalarVectorVectorDecayer::ScalarVectorVectorDecayer() 
-  : _incoming(9), _outgoing1(9), _outgoing2(9), _coupling(9), 
-    _maxweight(9) {
+  : _incoming(12), _outgoing1(12), _outgoing2(12), _coupling(12), 
+    _maxweight(12) {
   // f_0(1370) to rho rho
   _incoming[0] = 10221; _outgoing1[0] = 113; _outgoing2[0] = 113; 
   _coupling[0] = 11.26/GeV; _maxweight[0] = 20.; 
@@ -42,6 +42,13 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   _coupling[7] = 1./GeV; _maxweight[7] = 1.; 
   _incoming[8] = 10441; _outgoing1[8] = 22; _outgoing2[8] = 22; 
   _coupling[8] = 1./GeV; _maxweight[8] = 1.; 
+  // a'_0 -> omega rho
+  _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223; 
+  _coupling[9] = 11.26/GeV; _maxweight[9] = 20.;
+  _incoming[10] = 10211; _outgoing1[10] = 213; _outgoing2[10] = 223; 
+  _coupling[10] = 11.26/GeV; _maxweight[10] = 20.;
+  _incoming[11] =-10211; _outgoing1[11] =-213; _outgoing2[11] = 223; 
+  _coupling[11] = 11.26/GeV; _maxweight[11] = 20.; 
   // intermediates
   generateIntermediates(false);
 }
@@ -71,19 +78,19 @@ void ScalarVectorVectorDecayer::doinit() throw(InitException) {
   }
 }
 
-int ScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const {
-  int imode(-1);
+int ScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const PDVector & children) const {
+  cc = false;
   // check that at least some modes exist
-  if(_incoming.size()==0){return imode;}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(_incoming.size()==0||children.size()!=2) return -1;
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
+  int imode(-1);
   do {
     if(_incoming[ix]==id0) {
       if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||

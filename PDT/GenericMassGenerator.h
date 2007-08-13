@@ -232,7 +232,7 @@ private:
    */
   GenericMassGenerator & operator=(const GenericMassGenerator &);
 
- protected:
+protected:
 
   /**
    * The maximum weight for unweighting when generating the mass.

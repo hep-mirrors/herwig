@@ -4,7 +4,7 @@
 // This is the declaration of the HeavyDecayer class.
 
 #include <ThePEG/Config/ThePEG.h>
-#include <ThePEG/PDT/Decayer.h>
+#include <PartonicDecayerBase.h>
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
@@ -42,7 +42,7 @@ using namespace ThePEG;
  * @see Decayer
  * 
  */
-class HeavyDecayer: public Decayer {
+class HeavyDecayer: public PartonicDecayerBase {
 
 public:
 
@@ -52,16 +52,21 @@ public:
   inline HeavyDecayer();
 
   /**
-   * return true if this decayer can perfom the decay specified by the
-   * given decay mode.
+   * Check if this decayer can perfom the decay for a particular mode
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(const DecayMode &) const;
-
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  
   /**
-   * for a given decay mode and a given particle instance, perform the
-   * decay and return the decay products.
+   *  Perform the decay of the particle to the specified decay products
+   * @param parent The decaying particle
+   * @param children The decay products
+   * @return a ParticleVector containing the decay products.
    */
-  virtual ParticleVector decay(const DecayMode &, const Particle &) const;
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const;
 
 public:
 
@@ -140,7 +145,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::HeavyDecayer,1> {
   /** Typedef of the base class of HeavyDecayer. */
-  typedef Decayer NthBase;
+  typedef Herwig::PartonicDecayerBase NthBase;
 };
 
 /**

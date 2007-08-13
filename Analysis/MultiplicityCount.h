@@ -8,6 +8,7 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "MultiplicityCount.fh"
 
 namespace Herwig {
@@ -211,6 +212,9 @@ private:
    */
   map<long,MultiplicityInfo> _data;
 
+  /// Histograms for cluster mass dependence
+  map<long,Histogram> _histograms;
+
   /**
    *  Map of number of final-state particles to PDG code
    */
@@ -220,6 +224,10 @@ private:
    *  Particles in hard process
    */
   map<long,long> _collisioncount;
+
+  /// Make histograms of cluster mass dependence
+  bool _makeHistograms;
+
 };
 
 }

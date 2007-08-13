@@ -26,6 +26,9 @@ class Interpolator: public Interfaced {
 
 public:
 
+  /**
+   *  Pointer to an Interpolator
+   */
   typedef typename Ptr<Interpolator<ValT,ArgT> >::pointer Ptr;
 
   /** @name Standard constructors and destructors. */
@@ -54,7 +57,9 @@ public:
    *  Return the interpolated value
    */
   ValT operator () (ArgT) const;
+  /** Return type for GaussianIntegrator */
   typedef ValT ValType;
+  /** Argument type for GaussianIntegrator */
   typedef ArgT ArgType;
 
 public:

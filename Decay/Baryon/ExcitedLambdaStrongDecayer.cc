@@ -998,17 +998,18 @@ double ExcitedLambdaStrongDecayer::threeBodyMatrixElement(int ,Energy2 ,
 void ExcitedLambdaStrongDecayer::dataBaseOutput(ofstream & , bool) const{
 }
 
-int ExcitedLambdaStrongDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int ExcitedLambdaStrongDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
   int idout(0),id,imode(-1);
   unsigned int npi0(0),ix(0);
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  for( ;pit!=dm.products().end();++pit) {
+  PDVector::const_iterator pit(children.begin());
+  for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::pi0){++npi0;}
     else if(id!=ParticleID::piplus&&id!=ParticleID::piminus){idout=id;}
   }
   int charged(2-npi0);
-  id=dm.parent()->id();
+  id=parent->id();
   do {
     if(id==_incoming[ix]&&idout==_outgoing[ix]&&charged==_charged[ix])
       {imode=ix;cc=false;}

@@ -8,11 +8,14 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-inline SSWSSVertex::SSWSSVertex():_sw(0.),_q2last(),_couplast(0.) {
+inline SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
+				  _ulast(0), _dlast(0), _gblast(0),
+				  _factlast(0.) {
   vector<int> first,second,third;
   //W-
   //LL-squarks
@@ -75,17 +78,90 @@ inline SSWSSVertex::SSWSSVertex():_sw(0.),_q2last(),_couplast(0.) {
   second.push_back(2000015);
   third.push_back(-1000016);
   
+  //---Z0----
+//LL-sleptons
+  for(unsigned int ix=1000011;ix<1000017;++ix) {
+    first.push_back(23);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+  //RR-sleptons
+  for(unsigned int ix=2000011;ix<2000016;ix+=2) {
+    first.push_back(23);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+  //L-Rbar stau
+  first.push_back(23);
+  second.push_back(1000015);
+  third.push_back(-2000015);
+  //Lbar-R stau
+  first.push_back(23);
+  second.push_back(-1000015);
+  third.push_back(2000015);
+   
+  //LL squarks
+  for(unsigned int ix=1000001;ix<1000007;++ix) {
+    first.push_back(23);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+  //RR squarks
+  for(unsigned int ix=2000001;ix<2000007;++ix) {
+    first.push_back(23);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+ //L-Rbar stop
+  first.push_back(23);
+  second.push_back(1000006);
+  third.push_back(-2000006);
+  //Lbar-R stop
+  first.push_back(23);
+  second.push_back(-1000006);
+  third.push_back(2000006);
+
+  //L-Rbar sbottom
+  first.push_back(23);
+  second.push_back(1000005);
+  third.push_back(-2000005);
+  //Lbar-R sbottom
+  first.push_back(23);
+  second.push_back(-1000005);
+  third.push_back(2000005);
+  
+  //----gamma----
+  //sleptons
+  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
+    first.push_back(22);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+  for(unsigned int ix=2000011;ix<2000016;ix+=2) {
+    first.push_back(22);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+  //squarks
+  for(unsigned int ix=1000001;ix<1000007;++ix) {
+    first.push_back(22);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
+  for(unsigned int ix=2000001;ix<2000007;++ix) {
+    first.push_back(22);
+    second.push_back(ix);
+    third.push_back(-ix);
+  }
   setList(first,second,third);
 }
 
 void SSWSSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sw << _stau << _stop << _sbottom;
+  os << _theSS << _sw  << _cw << _stau << _stop << _sbottom;
 }
 
 void SSWSSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sw >> _stau >> _stop >> _sbottom;
-  _q2last=0.*GeV2;
-  _couplast=0.;
+  is >> _theSS >> _sw >> _cw >> _stau >> _stop >> _sbottom;
 }
 
 ClassDescription<SSWSSVertex> SSWSSVertex::initSSWSSVertex;
@@ -94,71 +170,91 @@ ClassDescription<SSWSSVertex> SSWSSVertex::initSSWSSVertex;
 void SSWSSVertex::Init() {
 
   static ClassDocumentation<SSWSSVertex> documentation
-    ("This is the implementation of the coupling of the W to two "
-     "sfermions");
+    ("This is the implementation of the coupling of an SM boson "
+     "a pair of sfermions");
   
 }
 
 void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 			      tcPDPtr part2,tcPDPtr part3){
-  long utype(0),dtype(0);//utype for leptons means sneutrinos
-  if(abs(part1->id()) == 24) {
-    if(part2->id() % 2 == 0) {
-      utype = abs(part2->id());
-      dtype = abs(part3->id());
-    }
-    else {
-      utype = abs(part3->id());
-      dtype = abs(part2->id());
-    }
-  }
-  else if(abs(part2->id()) == 24) {
-    if(part1->id() % 2 == 0) {
-      utype = abs(part1->id());
-      dtype = abs(part3->id());
-    }
-    else {
-      utype = abs(part3->id());
-      dtype = abs(part1->id());
-    }
-  }
-  else {
-    if(part1->id() % 2 == 0) {
-      utype = abs(part1->id());
-      dtype = abs(part2->id());
-    }
-    else {
-      utype = abs(part2->id());
-      dtype = abs(part1->id());
-    }
-  }
-  unsigned int eig1(utype/1000000 -1),eig2(dtype/1000000 -1);
-  if((eig1 == eig2) || utype==1000006 || utype==200006 ||
-     dtype==1000015 || dtype==2000015) {
-    if(q2 != _q2last) {
-      _q2last = q2;
-      double alpha = _theSS->alphaEM(q2); 
-      _couplast = sqrt(2.*Constants::pi*alpha)/_sw;
-      
-      if(utype==1000006 ||utype==2000006){
-	_couplast *= (*_stop)(0,eig1)*(*_sbottom)(0,eig2); 
-      }
-      if(dtype==1000015||dtype==2000015) {
-	_couplast *= (*_stau)(0,eig2);
-      }
-    }
-    
-    setNorm(_couplast);
-  }
-  else {
-    throw HelicityConsistencyError() << "SSWSSVertex::setCoupling "
-				     << "Unknown particle "
-				     << part1->PDGName() << " " 
-				     << part2->PDGName() << " "
-				     << part3->PDGName() 
-				     << " in WSS vertex\n"
-				     << Exception::warning;
+  long boson(abs(part1->id()));
+  if( boson != ParticleID::Wplus && boson != ParticleID::Z0 && 
+      boson != ParticleID::gamma ) {
+    throw HelicityConsistencyError()
+      << "SSWSSVertex::setCoupling() - The vector particle in this "
+      << "vertex is not a W/Z. " << boson << Exception::warning;
     setNorm(0.);
   }
+  long sf1(abs(part2->id())),sf2(abs(part3->id()));
+  if( (sf1 > 1000006 && sf1 < 1000011 && sf1 > 1000016) ||
+      (sf1 > 2000006 && sf1 < 2000011 && sf1 > 2000016) ||
+      (sf2 > 1000006 && sf2 < 1000011 && sf2 > 1000016) ||
+      (sf2 > 2000006 && sf2 < 2000011 && sf2 > 2000016) )
+    throw HelicityConsistencyError()
+      << "SSWSSVertex::setCoupling() - There are no sfermions in "
+      << "this vertex! " << part2->id() << " " << part3->id() 
+      << Exception::warning;
+
+  if( sf1 % 2 != 0 ) swap(sf1, sf2);
+  if( sf1 != _ulast || sf2 != _dlast || boson != _gblast) {
+    _gblast = boson;
+    _ulast = sf1;
+    _dlast = sf2;
+    //photon is simplest
+    if( boson == ParticleID::gamma )
+      _factlast = getParticleData(sf1)->charge()/eplus;
+    else {
+      //determine which helicity state
+      unsigned int alpha(sf1/1000000 - 1), beta(sf2/1000000 - 1);
+      //mixing factors
+      Complex m1a(0.), m1b(0.);
+      if( sf1 == ParticleID::SUSY_t_1 || sf1 == ParticleID::SUSY_t_2 )
+	m1a = (*_stop)(0, alpha);
+      else if( sf1 == ParticleID::SUSY_b_1 || sf1 == ParticleID::SUSY_b_2 )
+	m1a = (*_sbottom)(0, alpha);
+      else if( sf1 == ParticleID::SUSY_tau_1minus || 
+	       sf1 == ParticleID::SUSY_tau_2minus )
+	m1a = (*_stau)(0, alpha);
+      else
+	m1a = (alpha == 0) ? Complex(1.) : Complex(0.);
+
+      if( sf2 == ParticleID::SUSY_t_1 || sf2 == ParticleID::SUSY_t_2 )
+	m1b = (*_stop)(0, beta);
+      else if( sf2 == ParticleID::SUSY_b_1 || sf2 == ParticleID::SUSY_b_2 )
+	m1b = (*_sbottom)(0, beta);
+      else if( sf2 == ParticleID::SUSY_tau_1minus || 
+	       sf2 == ParticleID::SUSY_tau_2minus )
+	m1b = (*_stau)(0, beta);
+      else
+	m1b = (beta == 0) ? Complex(1.) : Complex(0.);
+    
+      //W boson
+      if( boson == ParticleID::Wplus ) {
+	_factlast = m1a*m1b/sqrt(2)/_sw;
+      }
+      //Z boson
+      else {
+	if( sf1 == ParticleID::SUSY_nu_eL || sf1 == ParticleID::SUSY_nu_muL ||
+	    sf1 == ParticleID::SUSY_nu_tauL ) {
+	  _factlast = 1./_cw/2./_sw;
+	}
+	else {
+	  double lmda(1.);
+	  if( sf2 % 2 == 0 ) lmda = -1.;
+	  _factlast = lmda*m1a*m1b;
+	  if( alpha == beta) {
+	    double ef = getParticleData(sf1)->charge()/eplus;
+	    _factlast += 2.*ef*sqr(_sw);
+	  }
+	  _factlast *= -1./2./_cw/_sw; 
+	}
+      }
+    }
+  }
+  if( q2 != _q2last ) {
+    _q2last = q2;
+    _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2));
+  }
+  setNorm(_couplast*_factlast);
 }
 

@@ -7,12 +7,20 @@
 namespace Herwig {
 
 inline ClusterFissioner::ClusterFissioner() :
-  _clMax( 3.35*GeV ),
-  _clPow( 2.0 ),
-  _pSplit1( 1.0 ),
-  _pSplit2( 1.0 ),
-  _btClM( 1.0*GeV ),
-  _iopRem( 1 ),
+  _clMaxLight(3.35*GeV),
+  _clMaxBottom(3.35*GeV),
+  _clMaxCharm(3.35*GeV),
+  _clMaxExotic(3.35*GeV),
+  _clPowLight(2.0),
+  _clPowBottom(2.0),
+  _clPowCharm(2.0),
+  _clPowExotic(2.0),
+  _pSplitLight(1.0),
+  _pSplitBottom(1.0),
+  _pSplitCharm(1.0),
+  _pSplitExotic(1.0),
+  _btClM(1.0*GeV),
+  _iopRem(1),
   _kappa(1.0e15*GeV/meter)
 {}
 

@@ -7,7 +7,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline HwDecayHandler::HwDecayHandler() : DecayHandler(),_hadtry(20), _newstep(true)
+inline HwDecayHandler::HwDecayHandler() : DecayHandler(), _newstep(true)
 {}
 
 inline IBPtr HwDecayHandler::clone() const {

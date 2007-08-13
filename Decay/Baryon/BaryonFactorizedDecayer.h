@@ -51,23 +51,21 @@ public:
 
 public:
 
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
+  /**
+   * Check if this decayer can perfom the decay for a particular mode.
+   * @param parent The decaying particle
+   * @param children The decay products
+   */
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
-
-  /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
-   */
-  virtual bool accept(const DecayMode & dm) const;
-  //@}
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

@@ -11,8 +11,7 @@ inline OneOffShellCalculator::OneOffShellCalculator(int inloc,
 						    WidthCalculatorBasePtr inwidth, 
 						    GenericMassGeneratorPtr inmass,
 						    Energy inmin)
-  : _themass(inloc), _minmass(inmin),_onshellwidth(inwidth),_massptr(inmass),
-    _integrand(this,sqr(inmass->nominalMass()), inmass->nominalWidth()*inmass->nominalMass()) 
+  : _themass(inloc), _minmass(inmin),_onshellwidth(inwidth),_massptr(inmass)
 {}
 
 inline void OneOffShellCalculator::resetMass(int id,Energy inmass)  {
@@ -28,7 +27,7 @@ inline Energy OneOffShellCalculator::otherMass(const int id) const {
 }
 
 // the integrand
-inline  Energy OneOffShellCalculator::dGamma(Energy min) {
+inline  Energy OneOffShellCalculator::dGamma(Energy min) const {
   _onshellwidth->resetMass(_themass,min);
   Energy wgt = (_onshellwidth->partialWidth(_scale));
   wgt*=(_massptr->weight(min));
@@ -36,7 +35,7 @@ inline  Energy OneOffShellCalculator::dGamma(Energy min) {
 }
    
 inline OneOffShellIntegrand::
-OneOffShellIntegrand(tOneOffShellCalculatorPtr in, Energy2 m2,
+OneOffShellIntegrand(tcOneOffShellCalculatorPtr in, Energy2 m2,
 		     Energy2 mw) 
   : _integrand(in),_mass2(m2),_mwidth(mw) 
 {}

@@ -16,18 +16,18 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() 
-  : _incoming(69), _outgoing1(69), _outgoing2(69), 
-    _coupling(69), _maxweight(69) {
+  : _incoming(73), _outgoing1(73), _outgoing2(73), 
+    _coupling(73), _maxweight(73) {
   // f_0(980) to pi pi
   _incoming[0] = 9010221; _outgoing1[0] = 111; _outgoing2[0] =  111; 
-  _coupling[0] = 2.093*GeV; _maxweight[0] = 1.05; 
+  _coupling[0] = 1.66*GeV; _maxweight[0] = 1.05; 
   _incoming[1] = 9010221; _outgoing1[1] = 211; _outgoing2[1] = -211; 
-  _coupling[1] = 2.961*GeV; _maxweight[1] = 1.05; 
+  _coupling[1] = 2.35*GeV; _maxweight[1] = 1.05; 
   // f_0(980) to K K 
   _incoming[2] = 9010221; _outgoing1[2] = 321; _outgoing2[2] = -321; 
-  _coupling[2] = 5.921*GeV; _maxweight[2] = 1.05; 
+  _coupling[2] = 1.02*GeV; _maxweight[2] = 1.05; 
   _incoming[3] = 9010221; _outgoing1[3] = 311; _outgoing2[3] = -311; 
-  _coupling[3] = 5.921*GeV; _maxweight[3] = 1.05; 
+  _coupling[3] = 1.02*GeV; _maxweight[3] = 1.05; 
   // f_0(1370) to pi pi
   _incoming[4] = 10221; _outgoing1[4] = 111; _outgoing2[4] = 111; 
   _coupling[4] = 0.745*GeV; _maxweight[4] = 1.05; 
@@ -60,16 +60,16 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[15] = 5.178*GeV; _maxweight[15] = 1.05; 
   // a_0 to eta pi
   _incoming[16] =  9000111; _outgoing1[16] = 221; _outgoing2[16] =  111; 
-  _coupling[16] = 5.307*GeV; _maxweight[16] = 1.1; 
+  _coupling[16] = 3.33*GeV; _maxweight[16] = 1.1; 
   _incoming[17] =  9000211; _outgoing1[17] = 221; _outgoing2[17] =  211; 
-  _coupling[17] = 5.307*GeV; _maxweight[17] = 1.1; 
+  _coupling[17] = 3.33*GeV; _maxweight[17] = 1.1; 
   // a_0 to K K
   _incoming[18] =  9000111; _outgoing1[18] = 321; _outgoing2[18] = -321; 
-  _coupling[18] = 2.242*GeV; _maxweight[18] = 1.05; 
+  _coupling[18] = 2.54*GeV; _maxweight[18] = 1.05; 
   _incoming[19] =  9000111; _outgoing1[19] = 311; _outgoing2[19] = -311; 
-  _coupling[19] = 2.242*GeV; _maxweight[19] = 1.05; 
+  _coupling[19] = 2.54*GeV; _maxweight[19] = 1.05; 
   _incoming[20] =  9000211; _outgoing1[20] = 321; _outgoing2[20] = -311; 
-  _coupling[20] = 3.171*GeV; _maxweight[20] = 1.05; 
+  _coupling[20] = 3.59*GeV; _maxweight[20] = 1.05; 
   // a'_0 to eta pi
   _incoming[21] =  10111; _outgoing1[21] = 221; _outgoing2[21] =  111; 
   _coupling[21] = 1.357*GeV; _maxweight[21] = 1.05; 
@@ -191,6 +191,15 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[67] = 5.027*GeV; _maxweight[67] = 2.1; 
   _incoming[68] = 9030221; _outgoing1[68] = 100211;_outgoing2[68] = -211; 
   _coupling[68] = 5.027*GeV; _maxweight[68] = 2.1;
+  // K_0* to K pi
+  _incoming[69] =  9000311; _outgoing1[69] =  311; _outgoing2[69] =  111; 
+  _coupling[69] = 2.837*GeV; _maxweight[69] = 1.05; 
+  _incoming[70] =  9000311; _outgoing1[70] =  321; _outgoing2[70] = -211; 
+  _coupling[70] = 4.000*GeV; _maxweight[70] = 1.05; 
+  _incoming[71] =  9000321; _outgoing1[71] =  321; _outgoing2[71] =  111; 
+  _coupling[71] = 2.837*GeV; _maxweight[71] = 1.05; 
+  _incoming[72] =  9000321; _outgoing1[72] =  311; _outgoing2[72] =  211; 
+  _coupling[72] = 4.000*GeV; _maxweight[72] = 1.05; 
   // initial size
   _initsize = _coupling.size();
   // intermediates
@@ -221,18 +230,15 @@ inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
   }
 }
 
-int ScalarScalarScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
-  // must be two outgoing particles
-  if(dm.products().size()!=2) return -1;
-  // ids of the particles
-  int id0(dm.parent()->id());
-  int id0bar = dm.parent()->CC() ? dm.parent()->CC()->id() : id0;
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());
-  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
-  ++pit;
-  int id2((**pit).id());
-  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
+int ScalarScalarScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
+  if(children.size()!=2) return -1;
+  int id0(parent->id());
+  int id0bar = parent->CC() ? parent->CC()->id() : id0;
+  int id1(children[0]->id());
+  int id1bar = children[0]->CC() ? children[0]->CC()->id() : id1;
+  int id2(children[1]->id());
+  int id2bar = children[1]->CC() ? children[1]->CC()->id() : id2;
   // loop over the modes and see if this is one of them
   unsigned int ix(0);
   int imode(-1);

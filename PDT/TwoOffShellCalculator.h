@@ -28,13 +28,15 @@ struct TwoOffShellIntegrand {
    * @param mw The mass times width of the off-shell particle for the Jacobian 
    * transform.
    */
-  inline TwoOffShellIntegrand(TwoOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
+  inline TwoOffShellIntegrand(tcTwoOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
 
   /**
    * Retreive function value
    */
   inline Energy operator ()(double argument) const;
+  /** Argument type for the GaussianIntegrator */
   typedef double ArgType;
+  /** Return type for the GaussianIntegrator */
   typedef Energy ValType;
 
 private:
@@ -42,7 +44,7 @@ private:
   /**
    * pointer to the decay integrator
    */
-  TwoOffShellCalculatorPtr _integrand;
+  cTwoOffShellCalculatorPtr _integrand;
 
   /**
    * The mass squared for the off-shell particle for the Jacobian transform.
@@ -130,7 +132,7 @@ protected:
    * @param mass The mass of the second off-shell particle,
    * @return The differential rate.
    */
-  inline  Energy dGamma(Energy mass);
+  inline  Energy dGamma(Energy mass) const;
 
 private:
 
@@ -170,11 +172,6 @@ private:
    * integrator
    */
   GaussianIntegrator _integrator;
-
-  /**
-   * the integrand
-   */
-  TwoOffShellIntegrand _integrand;
 
   /**
    * the mass squared of the decaying particle

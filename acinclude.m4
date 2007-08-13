@@ -136,6 +136,7 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
 oldlibs="$LIBS"
@@ -146,6 +147,7 @@ AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 
 AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
+AC_SUBST(THEPEGPATH)
 
 LIBS="$oldlibs"
 LDFLAGS="$oldldflags"
@@ -306,6 +308,7 @@ AC_ARG_WITH(evtgen,
         [with_evtgen=no])
 
 EVTGENPATH=
+LOAD_EVTGEN=""
 
 if test "x$with_evtgen" = "xno"; then
 	AC_MSG_RESULT([not required])
@@ -328,9 +331,11 @@ else
 	LIBS="$oldLIBS"
 	CXXFLAGS=$tmpcxxflags
 	EVTGENPATH=$with_evtgen
+	LOAD_EVTGEN="library HwEvtGen.so"
 fi
 AM_CONDITIONAL(WANT_EVTGEN,[test "x$with_evtgen" != "xno"])
 AC_SUBST(EVTGENPATH)
+AC_SUBST(LOAD_EVTGEN)
 ])]
 
 

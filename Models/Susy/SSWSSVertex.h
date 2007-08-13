@@ -13,7 +13,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * This is the implementation of the \f$W\f$ coupling to 2 sfermions.
+ * This is the implementation of the coupling of an SM gauge boson to
+ * a pair of sfermions.
  * It inherits from VSSVertex and implements the setCoupling() method.
  *
  * @see VSSVertex
@@ -111,10 +112,15 @@ private:
    */
   tMSSMPtr _theSS;
 
-/**
+  /**
    * Value of \f$sin(\theta_w)\f$
    */
   double _sw;
+
+  /**
+   * Value of \f$cos(\theta_w)\f$
+   */
+  double _cw;
   
   /**
    * Scale at which the coupling was last evaluated
@@ -140,6 +146,28 @@ private:
    * Sbottom mixing matrix
    */
   tMixingMatrixPtr _sbottom;
+  
+  /**
+   * The up type sfermion present when the vertex was evaluated. 
+   */
+  long _ulast;
+
+  /**
+   * The down type sfermion present when the vertex was evaluated. 
+   */
+  long _dlast;
+
+  /**
+   * The gauge boson present when the vertex was last evaluated. 
+   */
+  long _gblast;
+  
+  /**
+   * The value of the mixing matrix dependent part when the vertex was
+   * last evaluated
+   */
+  Complex _factlast;
+  
 };
 }
 

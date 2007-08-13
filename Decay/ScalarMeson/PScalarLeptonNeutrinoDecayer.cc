@@ -98,16 +98,17 @@ void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
   }
 }
 
-int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					     const PDVector & children) const {
   int imode(-1);
-  if(dm.products().size()!=2) return imode;
+  if(children.size()!=2) return imode;
   // ids of the particles
-  int id0(dm.parent()->id()),id0bar(id0);
-  if(dm.parent()->CC()){id0bar=-id0;}
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id0(parent->id()),id0bar(id0);
+  if(parent->CC()){id0bar=-id0;}
+  PDVector::const_iterator pit = children.begin();
   int id;
   unsigned ilep(4);
-  for(;pit!=dm.products().end();++pit) {
+  for(;pit!=children.end();++pit) {
     id=abs((**pit).id());
     if(id>=11&&id<=16&&id%2==0) ilep=(id-10)/2;
   }

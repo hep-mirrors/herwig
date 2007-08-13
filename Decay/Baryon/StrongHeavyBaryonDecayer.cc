@@ -9,11 +9,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "StrongHeavyBaryonDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -407,15 +402,14 @@ void StrongHeavyBaryonDecayer::persistentInput(PersistentIStream & is, int) {
      >> _incoming >> _outgoingB >> _outgoingM >> _maxweight >> _prefactor >> _modetype;
 }
 
-int StrongHeavyBaryonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int StrongHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const PDVector & children) const {
   int imode(-1);
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   unsigned int ix(0);
   cc =false;
   do

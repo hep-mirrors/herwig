@@ -44,19 +44,21 @@ struct Outer {
   /**
    * Constructor with a pointer to the ThreeBodyAllOnCalculator
    */
-  inline Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::pointer); 
+  inline Outer(typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer); 
   
   /**
    * Retreive function value
    */
   inline Energy4 operator ()(double argument) const;
+  /** Argument type for the GaussianIntegrator */
   typedef double ArgType;
+  /** Return type for the GaussianIntegrator */
   typedef Energy4 ValType;
 
   /**
    * pointer to the decay integrator
    */
-  typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::pointer _integrand;
+  typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer _integrand;
   
   /**
    * gaussian integrator
@@ -133,7 +135,9 @@ public:
    * @return The value of the inner integrand.
    */
   Energy2 operator ()(Energy2 argument) const;
+  /** Argument type for the GaussianIntegrator */
   typedef Energy2 ArgType;
+  /** Return type for the GaussianIntegrator */
   typedef Energy2 ValType;
 
 
@@ -148,7 +152,7 @@ protected:
    * @param low The lower limit for the inner integral.
    * @param upp The upper limit for the inner integral.
    */
-  void outerVariables(const double & x, Energy2 & low, Energy2 & upp);
+  void outerVariables(const double & x, Energy2 & low, Energy2 & upp) const;
 
 private:
 
@@ -213,11 +217,6 @@ private:
    * mass squareds of the external particles
    */
   mutable vector<Energy2> _m2;
-
-  /**
-   * the outer integrand
-   */
-  Outer _outer;
 
   /**
    * member to do the integration

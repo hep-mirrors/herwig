@@ -558,7 +558,7 @@ MEff2ff::colourGeometries(tcDiagPtr diag) const {
   cf[1] = ColourLines("1 -2");
   //33b->18
   cf[2] = ColourLines("1 2 5, -3 -5");
-  cf[3] = ColourLines("1 4, -4 2 -3");
+  cf[3] = ColourLines("1 5, -5 2 -3");
   //33b->33bar
   cf[4] = ColourLines("1 2 -3, 4 -2 -5");
   cf[5] = ColourLines("1 3 4, -2 -3 -5");
@@ -612,12 +612,14 @@ MEff2ff::colourGeometries(tcDiagPtr diag) const {
     if(outac == PDT::Colour0 || outbc == PDT::Colour0 ) {
       if(current.channelType == HPDiagram::tChannel) {
 	if(outac == outbc)
-	  cl = current.ordered.second ? 0 : 1;
-	else if(outac == PDT::Colour0 && outbc == PDT::Colour8)
+	  cl = 0;
+	else if( outbc == PDT::Colour8 )
 	  cl = current.ordered.second ? 2 : 3;
 	else
 	  cl = current.ordered.second ? 20 : 21;
       }
+      else
+	cl = 1;
     }
     else if(outbc == PDT::Colour3bar) {
       if(current.channelType == HPDiagram::tChannel)

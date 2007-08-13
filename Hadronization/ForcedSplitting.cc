@@ -12,6 +12,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Remnant.h"
+#include "CheckId.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Utilities/Timer.h"
 #include <cassert>
@@ -75,22 +76,25 @@ void ForcedSplitting::Init() {
 
 }
 
-tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
+void ForcedSplitting::split(PVector & currentlist) {
   Timer<5000> timer("ForcedSplitting::split");
   // extract the remnants
   tPVector rems;
-  tPVector output;
-  for(unsigned int ix=0;ix<tagged.size();++ix) {
-    if(tagged[ix]->id()!=ExtraParticleID::Remnant) output.push_back(tagged[ix]);
-    else rems.push_back(tagged[ix]);
+  PVector output;
+  for(unsigned int ix=0;ix<currentlist.size();++ix) {
+    if(currentlist[ix]->id()!=ExtraParticleID::Remnant) 
+      output.push_back(currentlist[ix]);
+    else 
+      rems.push_back(currentlist[ix]);
   }
   // if none return
-  if(rems.size()==0) return output;
+  if(rems.size()==0) return;
   // must be two 
   /// \todo what about ep collisions?
-  if(rems.size()!=2) throw Exception() << "Must be either no Remnants or two in "
-				       << "ForcedSplitting::split()"
-				       << Exception::eventerror;
+  if(rems.size()!=2) 
+    throw Exception() << "Must be either no Remnants or two in "
+		      << "ForcedSplitting::split()"
+		      << Exception::eventerror;
   try {
     // Find beam particles
     PPair beam = generator()->currentEventHandler ()->currentCollision()->incoming();
@@ -117,12 +121,12 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
     // split the remnants
     _beam = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
       (beam.first->dataPtr());
-    split(rem[0],part1,pstep,x1);
+    split(rem[0],part1,x1);
     
     
     _beam = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
       (beam.second->dataPtr());
-    split(rem[1],part2,pstep,x2);
+    split(rem[1],part2,x2);
       
     // get the masses of the remnants
     Energy mrem[2];
@@ -182,7 +186,7 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
       output.push_back(rems[ix]->children()[iy]);
     }
   }
-  return output;
+  swap(output,currentlist);
 }
 
 /****
@@ -199,13 +203,13 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
  * may be changed later.
  ****/
 void ForcedSplitting::split(const tPPtr rem,const tPPtr part, 
-			    const tStepPtr step,const double xin) {
+			    const double xin) {
   long hadronId = rem->parents()[0]->id();
   // return if not from a hadron
   /// \todo where else would it come from? throw here?
   if(abs(hadronId)<99) return;
 
-  long currentParton(part->id());
+  tcPDPtr currentParton = part->dataPtr();
   Lorentz5Momentum usedMomentum;
   Lorentz5Momentum lastp = part->momentum();
   PPtr lastColouredParton(part);
@@ -227,28 +231,29 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
   // the gluons in the next step
   ColinePtr x1,x2;
 
-  if(currentParton != quarks[0] && currentParton != quarks[1] && 
-     currentParton != quarks[2] && currentParton != ParticleID::g) {
+  if(currentParton->id() != quarks[0] && currentParton->id() != quarks[1] && 
+     currentParton->id() != quarks[2] && currentParton->id() != ParticleID::g) {
     // Create the new parton with its momentum and parent/child relationship set
-    PPtr newParton = forceSplit(rem, -currentParton, oldQ, oldx, lastp, 
-				usedMomentum,1, step);
+    PPtr newParton = forceSplit(rem, currentParton->CC(), oldQ, oldx, lastp, 
+				usedMomentum,1);
     // Set the proper colour connections
     x1 = new_ptr(ColourLine());
     if(lastColouredParton->colourLine()) x1->addAntiColoured(newParton);
     else if(lastColouredParton->antiColourLine()) x1->addColoured(newParton);
-    currentParton = ParticleID::g;
+    currentParton = getParticleData(ParticleID::g);
   }
   // We now handle the gluons, either it is where the shower terminated or
   // it has been created by splitting a sea quark
   int idx = -1;
-  if(currentParton == ParticleID::g) { 
+  if(currentParton->id() == ParticleID::g) { 
     // Create new particles, splitting is q->g q
     // First choose which q
     idx = UseRandom::irnd(maxIdx);
     Lorentz5Momentum s = rem->momentum() - usedMomentum;
     // Generate the next parton, with s momentum remaining in the remnant.
     oldQ = _qspac;
-    PPtr newParton = forceSplit(rem, quarks[idx], oldQ, oldx, lastp, usedMomentum,2,step);
+    PPtr newParton = forceSplit(rem,getParticleData(quarks[idx]), oldQ, oldx, 
+				lastp, usedMomentum,2);
     // Several colour connection cases...
     if(x1) {
       bool npC = newParton->hasColour();
@@ -271,18 +276,18 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
       if(newParton->hasColour()) x2->addColoured(newParton);
       else if(newParton->hasAntiColour()) x1->addAntiColoured(newParton);
     }
-    currentParton = quarks[idx];
+    currentParton = getParticleData(quarks[idx]);
   } 
   // find the extracted quark if not known
   if(idx == -1) {
     // must have extracted valence quark
-    if      (currentParton ==  quarks[0]) idx = 0;
-    else if (currentParton ==  quarks[1]) idx = 1;
-    else if (currentParton ==  quarks[2]) idx = 2;
+    if      (currentParton->id() ==  quarks[0]) idx = 0;
+    else if (currentParton->id() ==  quarks[1]) idx = 1;
+    else if (currentParton->id() ==  quarks[2]) idx = 2;
     else assert(false && "Should have got valence quark in ForcedSplitting::split()");
   }
   // Lastly, do the final split into the (di)quark and a parton
-  PPtr newParton = finalSplit(rem,maxIdx,quarks,idx,usedMomentum, step);
+  PPtr newParton = finalSplit(rem,maxIdx,quarks,idx,usedMomentum);
   // Set colour connections, case 1, no other forced splittings
   if(!x1 || !x2) {
     if(rem->colourLine()) rem->colourLine()->addColoured(newParton);
@@ -290,24 +295,24 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
       rem->antiColourLine()->addAntiColoured(newParton);
   } 
   else {
-    if(getParticleData(currentParton)->hasColour()) x1->addAntiColoured(newParton);
+    if(currentParton->hasColour()) x1->addAntiColoured(newParton);
     else x2->addColoured(newParton);
   }
 }
 
 // This creates the parton to split and sets it momentum and parent/child
 // relationships
-PPtr ForcedSplitting::forceSplit(const tPPtr rem, long child, Energy &oldQ, 
+PPtr ForcedSplitting::forceSplit(const tPPtr rem, tcPDPtr child, Energy &oldQ, 
 				 double &oldx, Lorentz5Momentum &pf, 
 				 Lorentz5Momentum &p,
-				 const unsigned int iopt,
-				 const tStepPtr step) {
+				 const unsigned int iopt) {
   Lorentz5Momentum beam = rem->parents()[0]->momentum();
-  PPtr parton = new_ptr(Particle(getParticleData(child)));
+  PPtr parton = child->produceParticle();
   Lorentz5Momentum partonp = emit(beam,oldQ,oldx,parton,pf,iopt);
   parton->set5Momentum(partonp);
   p += partonp;
-  step->addDecayProduct(rem,parton);
+  //  step->addDecayProduct(rem,parton);
+  rem->addChild(parton);
   return parton;
 }
 
@@ -315,15 +320,15 @@ PPtr ForcedSplitting::forceSplit(const tPPtr rem, long child, Energy &oldQ,
 // momentum and parent/child relationships
 PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx, 
 				 long quarks[3], int idx, 
-				 Lorentz5Momentum usedMomentum, 
-				 const tStepPtr step) {
+				 Lorentz5Momentum usedMomentum) {
   // First decide what the remnant is
-  long remId = 0;
+  PPtr remnant = PPtr ();
 
   if(maxIdx == 2) { 
     // Meson
     assert(idx == 0 || idx == 1);
-    remId = quarks[(idx+1)%2];
+    long remId = quarks[(idx+1)%2];
+    remnant = getParticle(remId);
   }
   // Baryon
   else { 
@@ -333,22 +338,16 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
     // elements of the array constitute the remnant.
     long id1 = quarks[(idx+1)%3];
     long id2 = quarks[(idx+2)%3];
-    if (abs(id1) > abs(id2)) swap(id1, id2);
-    int sign = (id1 < 0) ? -1 : 1; // Needed for the spin 0/1 part
-    remId = id2*1000 + id1*100;
-    
-    // Now decide if we have spin 0 diquark or spin 1 diquark
-    /// \todo Is this right?
-    int spin = (id1 == id2) ? 3 : 1;
-    remId += sign * spin;
+
+    tcPDPtr remData = getParticleData(CheckId::makeDiquarkID(id1,id2));
+    remnant = remData->produceParticle();
   }
    
   // Create the remnant and set its momentum, also reset all of the decay 
   // products from the hadron
-  PPtr remnant = new_ptr(Particle(getParticleData(remId)));
 
   Lorentz5Momentum prem(rem->momentum() - usedMomentum);
-  prem.setMass(getParticleData(remId)->constituentMass());
+  prem.setMass(remnant->dataPtr()->constituentMass());
   prem.rescaleEnergy();
 
   remnant->set5Momentum(prem);
@@ -356,7 +355,8 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
   // shower is vetoed 
   /// \todo Is this comment still true?. 
   // Set the colour connections as well
-  step->addDecayProduct(rem,remnant);
+  //  step->addDecayProduct(rem,remnant);
+  rem->addChild(remnant);
   return remnant;
 }
 

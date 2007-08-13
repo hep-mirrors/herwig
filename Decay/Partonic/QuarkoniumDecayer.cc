@@ -42,14 +42,16 @@ void QuarkoniumDecayer::Init() {
 
 ClassDescription<QuarkoniumDecayer> QuarkoniumDecayer::initQuarkoniumDecayer;
 
-bool QuarkoniumDecayer::accept(const DecayMode &dm) const { 
-  if(dm.products().size() == 3 || dm.products().size() == 2)
-    return true;
-  return false;
+bool QuarkoniumDecayer::accept(tcPDPtr, const PDVector & children) const {
+  return (children.size() == 3 || children.size() == 2);
 }
 
-ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) const {
-  ParticleVector partons = dm.produceProducts();
+ParticleVector QuarkoniumDecayer::decay(const Particle & p,
+					const PDVector & children) const {
+  ParticleVector partons;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    partons.push_back(children[ix]->produceParticle());
+  }
   assert(partons.size()==2 || partons.size()==3);
   Lorentz5Momentum products[3];
   Energy gluMass = getParticleData(ParticleID::g)->constituentMass();

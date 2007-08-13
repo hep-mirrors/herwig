@@ -18,7 +18,7 @@ ThreeBodyAllOnCalculator(vector<double> inweights,
 			 Energy m1,Energy m2,Energy m3)
   : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
     _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
-    _thechannel(0),_souter(0.*MeV2),_outer(this)
+    _thechannel(0),_souter(0.*MeV2)
 {
   _m.resize(4);
   _m[1]=m1;_m[2]=m2;_m[3]=m3;
@@ -34,18 +34,17 @@ inline void ThreeBodyAllOnCalculator<T>::resetMass(int id,Energy inmass) {
     _m[id]=inmass;
     _m2[id]=inmass*inmass;
   }
-  else {
-    cerr << "Tried to set invalid mass" << endl;
-  }
+  else throw Exception() << "Tried to set invalid mass in " 
+			 << "ThreeBodyAllOnCalculator::resetMass()"
+			 << Exception::runerror;
 }
 
 template <class T>
 inline Energy ThreeBodyAllOnCalculator<T>::getMass(const int id) const {
   if(id<4) return _m[id];
-  else {
-    cerr << "Tried to get invalid mass" << endl;
-    return 0.*MeV;
-  }
+  else throw Exception() << "Tried to get invalid mass in " 
+			 << "ThreeBodyAllOnCalculator::getMass()"
+			 << Exception::runerror;
 }
 
 template <class T>
@@ -53,15 +52,14 @@ inline Energy ThreeBodyAllOnCalculator<T>::otherMass(const int id) const {
   if(id==1)      return _m[2]+_m[3];
   else if(id==2) return _m[1]+_m[3];
   else if(id==3) return _m[1]+_m[2];
-  else {
-    cerr << "Tried to set invalid mass" << endl; 
-    return 0.*MeV;
-  }
+  else throw Exception() << "Tried to get invalid mass in " 
+			 << "ThreeBodyAllOnCalculator::otherMass()"
+			 << Exception::runerror;
 }
 
 template <class T>
 inline ThreeBodyAllOnCalculator<T>::Outer::
-Outer(typename Ptr< ThreeBodyAllOnCalculator<T> >::pointer in) 
+Outer(typename Ptr< ThreeBodyAllOnCalculator<T> >::const_pointer in) 
   : _integrand(in)
 {}
 

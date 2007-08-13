@@ -101,13 +101,15 @@ public:
    * Default constructor.
    */
   inline a1ThreePionDecayer();
-  
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -345,9 +347,29 @@ private:
   Complex _zsigma;
 
   /**
+   * The magnitude of the \f$z\f$ \f$\sigma\f$ coupling.
+   */
+  double _zmag;
+
+  /**
+   * The phase of the \f$z\f$ \f$\sigma\f$ coupling.
+   */
+  double _zphase;
+
+  /**
    * \f$g_{\rho_k}\f$ is the coupling of the \f$k\f$ th \f$\rho\f$ multiplet.
    */
   vector<Complex> _rhocoupling;
+
+  /**
+   *  Magnitude of the rho coupling
+   */
+  vector<double> _rhomag;
+
+  /**
+   *  Phase of the rho coupling
+   */
+  vector<double> _rhophase;
 
   /**
    * The overall coupling for the decay.

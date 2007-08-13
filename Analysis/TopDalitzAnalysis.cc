@@ -13,7 +13,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 
 using namespace Herwig;
 

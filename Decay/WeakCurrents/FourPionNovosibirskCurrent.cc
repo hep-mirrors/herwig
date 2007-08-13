@@ -42,7 +42,7 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() {
   // parameters for the resonance used in the integration
   _intmass = 1.4*GeV;
   _intwidth = 0.5*GeV;
-  // relative coupling of the z and rho in the a_1 decay
+  // relative coupling of the sigma and rho in the a_1 decay
   _zmag   = 1.3998721;
   _zphase = 0.43585036;
   _zsigma=0.;

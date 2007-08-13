@@ -125,11 +125,11 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
 
 }
 
-int GeneralTwoBodyDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
-
-  long parentID = dm.parent()->id();
-  long id1 = dm.orderedProducts()[0]->id();
-  long id2 = dm.orderedProducts()[1]->id();
+int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+				      const PDVector & children) const {
+  long parentID = parent->id();
+  long id1 = children[0]->id();
+  long id2 = children[1]->id();
   int imode(-1);
   unsigned ii(0), nipart(_inpart.size());
   cc = false;

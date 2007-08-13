@@ -13,14 +13,53 @@
 
 using namespace Herwig;
 
-bool HwDecayerBase::accept(const DecayMode &) const {
-  return false;
+bool HwDecayerBase::accept(const DecayMode & dm) const {
+  // get the primary products
+  PDVector products=dm.orderedProducts();
+  // add products for which the decay mode is all ready specified
+  if(!dm.cascadeProducts().empty()) {
+    for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();
+	mit!=dm.cascadeProducts().end();++mit) {
+      products.push_back(const_ptr_cast<PDPtr>((**mit).parent()));
+    }
+  }
+  // can this mode be handled ?
+  return accept(dm.parent(),products);
 }
 
 ParticleVector HwDecayerBase::decay(const DecayMode & dm,
-				  const Particle &) const {
-  ParticleVector children = dm.produceProducts();
-  return children;
+				    const Particle & p) const {
+  // handling of the decay including the special features of the
+  // DecayMode  
+  // get the primary products
+  PDVector products=dm.orderedProducts();
+  // add products for which the decay mode is all ready specified
+  if(!dm.cascadeProducts().empty()) {
+    for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();
+	mit!=dm.cascadeProducts().end();++mit) {
+      products.push_back(const_ptr_cast<PDPtr>((**mit).parent()));
+    }
+  }
+  // perform the primary decay
+  ParticleVector output=decay(p,products);
+  // perform the secondary decays
+  if(!dm.cascadeProducts().empty()) {
+    unsigned int iloc=dm.orderedProducts().size();
+    for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();
+	mit!=dm.cascadeProducts().end();++mit) {
+      if(!(*mit)->decayer()) 
+	throw Exception() << "Decay mode " << (**mit).tag() 
+			  << "does not have a decayer, can't perform"
+			  << "decay in  HwDecayerBase::decay()"
+			  << Exception::eventerror;
+      ParticleVector children=(*mit)->decayer()->decay(**mit,*output[iloc]);
+      for(unsigned int ix=0;ix<children.size();++ix) {
+	output[iloc]->addChild(children[ix]);
+      }
+      ++iloc;
+    }
+  }
+  return output;
 }
 
 void HwDecayerBase::persistentOutput(PersistentOStream & os) const {

@@ -10,7 +10,6 @@
 #include "LightClusterDecayer.h"
 #include "ClusterDecayer.h"
 #include "ForcedSplitting.h"
-#include "Cluster.h"
 #include "ClusterHadronizationHandler.fh"
 
 namespace Herwig {
@@ -20,7 +19,11 @@ using namespace ThePEG;
 /** \ingroup Hadronization
  *  \class ClusterHadronizationHandler
  *  \brief Class that controls the cluster hadronization algorithm.
- *  \author Philip Stephens
+ *  \author Philip Stephens  //  cerr << *ch.currentEvent() << '\n';
+  cerr << finalHadrons.size() << '\n';
+
+  cerr << "Finished hadronizing \n";
+
  *  \author Alberto Ribon
  *
  *  This class is the main driver of the cluster hadronization: it is 
@@ -59,7 +62,7 @@ public:
    * situation of vetos on the hadronization.
    */
   virtual void handle(EventHandler & ch, const tPVector & tagged,
-		      const Hint & hint) throw(Veto, Stop, Exception);
+		      const Hint & hint) throw(Veto,Stop, Exception);
 
   /**
    * It returns minimum virtuality^2 of partons to use in calculating 
@@ -183,7 +186,11 @@ private:
    */
   ForcedSplittingPtr _forcedSplitter;
 
-  /**
+  /**  //  cerr << *ch.currentEvent() << '\n';
+  cerr << finalHadrons.size() << '\n';
+
+  cerr << "Finished hadronizing \n";
+
    * The minimum virtuality^2 of partons to use in calculating 
    * distances.
    */

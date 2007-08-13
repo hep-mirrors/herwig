@@ -7,29 +7,19 @@
 #include "ScalarMassGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarMassGenerator.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
 void ScalarMassGenerator::persistentOutput(PersistentOStream & os) const {
   os << ounit(_coupling,GeV) << ounit(_mass1,GeV) << ounit(_mass2,GeV)
-     << ounit(_mplus,GeV) << ounit(_mminus,GeV) 
-     << ounit(_m2plus,GeV2) << ounit(_m2minus,GeV2)
-     << ounit(_term,GeV2);
+     << ounit(_m2plus,GeV2) << ounit(_m2minus,GeV2);
 }
 
 void ScalarMassGenerator::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_coupling,GeV) >> iunit(_mass1,GeV) >> iunit(_mass2,GeV)
-     >> iunit(_mplus,GeV) >> iunit(_mminus,GeV) 
-     >> iunit(_m2plus,GeV2) >> iunit(_m2minus,GeV2)
-     >> iunit(_term,GeV2);
+     >> iunit(_m2plus,GeV2) >> iunit(_m2minus,GeV2);
 }
 
 ClassDescription<ScalarMassGenerator> ScalarMassGenerator::initScalarMassGenerator;
@@ -62,27 +52,19 @@ void ScalarMassGenerator::Init() {
 
 }
 
-
-void ScalarMassGenerator::dataBaseOutput(ofstream & output)
-{
+void ScalarMassGenerator::dataBaseOutput(ofstream & output) {
   output << "update Mass_Generators set parameters=\"";
   output << "set " << fullName() << ":BreitWignerShape "   << _BWshape << "\n";
   output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
   output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
   for(unsigned int ix=0;ix<_coupling.size();++ix)
-    {output << "insert " << fullName() 
-	    << ":Couplings " 
-	    << ix << " " << _coupling[ix]/GeV << "\n";}
-
+    output << "insert " << fullName() << ":Coupling " 
+	   << ix << " " << _coupling[ix]/GeV << "\n";
   for(unsigned int ix=0;ix<_mass1.size();++ix)
-    {output << "insert " << fullName() 
-	    << ":Mass1 " 
-	    << ix << " " << _mass1[ix]/GeV << "\n";}
+    output << "insert " << fullName() << ":Mass1 " 
+	   << ix << " " << _mass1[ix]/GeV << "\n";
   for(unsigned int ix=0;ix<_mass2.size();++ix)
-    {output << "insert " << fullName() 
-	    << ":Mass2 " 
-	    << ix << " " << _mass2[ix]/GeV << "\n";}
+    output << "insert " << fullName() 
+	   << ":Mass2 " << ix << " " << _mass2[ix]/GeV << "\n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
-}
-
 }

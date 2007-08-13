@@ -35,24 +35,23 @@ public:
    * Default constructor.
    */
   inline SemiLeptonicScalarDecayer();
-
-public:
-
+  
+  /**
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
+   */
+  inline virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
-
-  /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. This version checks the particles against the 
-   * list of allowed incoming  and outgoing mesons.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const ;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

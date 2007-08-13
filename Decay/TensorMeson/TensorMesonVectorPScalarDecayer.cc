@@ -126,16 +126,16 @@ void TensorMesonVectorPScalarDecayer::doinit() throw(InitException) {
   }
 }
 
-int TensorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int TensorMesonVectorPScalarDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+						const PDVector & children) const {
+  if(children.size()!=2) return -1;
+  int id(parent->id());
+  int idbar = parent->CC() ? parent->CC()->id() : id;
+  int id1(children[0]->id());
+  int id1bar = children[0]->CC() ? children[0]->CC()->id() : id1;
+  int id2(children[1]->id());
+  int id2bar = children[1]->CC() ? children[1]->CC()->id() : id2;
   int imode(-1);
-  int id(dm.parent()->id());
-  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());
-  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
-  ++pit;
-  int id2((**pit).id());
-  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0);
   cc=false;
   do {

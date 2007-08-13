@@ -23,9 +23,9 @@ using namespace ThePEG;
  *  \author Peter Richardson
  *
  *  This is the base class for the selection of either a pair of hadrons, or
- *  in some cases a single hadron. The different approaches which were previously
- *  implemented in this class are now implemented in the HwppSelector and Hw64Selector
- *  which inherit from this class.
+ *  in some cases a single hadron. The different approaches which were 
+ *  previously implemented in this class are now implemented in the 
+ *  HwppSelector and Hw64Selector which inherit from this class.
  *
  *  This class implements a number of methods which are needed by all models
  *  and in addition contains the weights for the different meson multiplets and
@@ -75,83 +75,83 @@ public:
    * Method to return a pair of hadrons given the PDG codes of
    * two or three constituents
    * @param cluMass The mass of the cluster
-   * @param id1 The PDG code of the first constituent
-   * @param id2 The PDG code of the first constituent
-   * @param id3 The PDG code of the first constituent
+   * @param par1 The first constituent
+   * @param par2 The second constituent
+   * @param par3 The third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, const long id1, 
-						 const long id2, const long id3=0)
-    throw(Veto, Stop, Exception) =0;
+  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
+						 tcPDPtr par2,tcPDPtr par3 = PDPtr())
+    throw(Veto, Stop, Exception) = 0;
 
   /**
    * This returns the lightest pair of hadrons given by the flavours.
    *
-   * Given the id of two (or three) constituents of a cluster, it returns
-   * the id of the two lightest hadrons with proper flavour numbers.
+   * Given the two (or three) constituents of a cluster, it returns
+   * the two lightest hadrons with proper flavour numbers.
    * Furthermore, the first of the two hadrons must have the constituent with
-   * id1, and the second must have the constituent with id2. 
-   * At the moment it does *nothing* in the case that also id3 is present.
+   * par1, and the second must have the constituent with par2. 
+   * \todo At the moment it does *nothing* in the case that also par3 is present.
    *
    * The method is implemented by calling twice lightestHadron, 
-   * once with (id1.-idPartner) , and once with (id2,idPartner)
-   * where  idPartner (with sign defined properly) is either the id of
-   * d or u . In fact, the idea is that whatever the flavour of id1 
-   * and id2, no matter if (anti-)quark or (anti-)diquark, the lightest
-   * pair of hadrons containing flavour id1 and id2 will have either 
+   * once with (par1,quarktopick->CC()) ,and once with (par2,quarktopick)
+   * where quarktopick is either the pointer to
+   * d or u quarks . In fact, the idea is that whatever the flavour of par1 
+   * and par2, no matter if (anti-)quark or (anti-)diquark, the lightest
+   * pair of hadrons containing flavour par1 and par2 will have either 
    * flavour d or u, being the lightest quarks.
-   * The method returns the pair (0,0) if anything goes wrong. 
+   * The method returns the pair (PDPtr(),PDPtr()) if anything goes wrong. 
    *
-   * The method assumes id3==0 (otherwise we don't know how to proceed: a 
+   * \todo The method assumes par3 == PDPtr() (otherwise we don't know how to proceed: a 
    * possible, trivial way would be to randomly select two of the three 
    * (anti-)quarks and treat them as a (anti-)diquark, reducing the problem
    * to two components as treated below.
    * In the normal (two components) situation, the strategy is the following:
    * treat in the same way the two possibilities:  (d dbar)  (i=0) and  
    * (u ubar)  (i=1)  as the pair quark-antiquark necessary to form a
-   * pair of hadrons containing the input flavour  id1  and  id2; finally,
+   * pair of hadrons containing the input flavour  par1  and  par2; finally,
    * select the one that produces the lightest pair of hadrons, compatible
-   * with the charge conservation contraint.
+   * with the charge conservation constraint.
    */
-  pair<tcPDPtr,tcPDPtr> lightestHadronPair(const long id1, const long id2,
-					   const long id3=0) const;
+  pair<tcPDPtr,tcPDPtr> lightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
-   *  Returns the mass of the lightest pair of hadrons with the given ids.
-   * @param id1 The PDG code of the first constituent
-   * @param id2 The PDG code of the first constituent
-   * @param id3 The PDG code of the first constituent
+   *  Returns the mass of the lightest pair of hadrons with the given particles
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   * @param ptr3 is the third  constituent
    */
-  inline Energy massLightestHadronPair(const long id1, const long id2,
-				       const long id3=0) const;
+  inline  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
-   * Returns the lightest hadron formed by the given ids.
+   * Returns the lightest hadron formed by the given particles.
    *
    * Given the id of two (or three) constituents of a cluster, it returns
-   * the id of the lightest hadron with proper flavour numbers.
-   * At the moment it does *nothing* in the case that also id3 is present.
-   * @param id1 The PDG code of the first constituent
-   * @param id2 The PDG code of the first constituent
-   * @param id3 The PDG code of the first constituent
+   * the  lightest hadron with proper flavour numbers.
+   * At the moment it does *nothing* in the case that also 'ptr3' present.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   * @param ptr3 is the third  constituent
    */
-  inline tcPDPtr lightestHadron(const long id1, const long id2,
-				const long id3=0) const;
+  inline tcPDPtr lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
-   * Return the nominal mass of the hadron with id returned by lightestHadron()
-   * @param id1 The PDG code of the first constituent
-   * @param id2 The PDG code of the first constituent
-   * @param id3 The PDG code of the first constituent
+   * Return the nominal mass of the hadron returned by lightestHadron()
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
+   * @param ptr3 is the third  constituent 
    */
-  inline Energy massLightestHadron(const long id1, const long id2,
-				   const long id3=0) const;
+  inline Energy massLightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
+						     tcPDPtr ptr3 = PDPtr ()) const;
 
   /**
-   *  Returns the mass of the lightest pair of baryons with the given ids.
-   * @param id1 The PDG code of the first constituent
-   * @param id2 The PDG code of the first constituent
+   *  Returns the mass of the lightest pair of baryons.
+   * @param ptr1 is the first  constituent
+   * @param ptr2 is the second constituent 
    */
-  inline Energy massLightestBaryonPair(const long id1, const long id2) const;
+ Energy massLightestBaryonPair(tcPDPtr ptr1, tcPDPtr ptr2) const;
 
   /**
    *  Return the weights for the different quarks and diquarks
@@ -281,12 +281,12 @@ protected:
   /**
    *  Access to the list of partons
    */
-  inline vector<long> & partons();
+  inline vector<PDPtr> & partons();
 
   /**
    *  Access the parton weights
    */
-  inline map<long,double> & pwt();
+  inline map<tcPDPtr,double> & pwt();
 
   /**
    * Methods for the mixing of \f$I=0\f$ mesons
@@ -332,10 +332,9 @@ protected:
   /**
    * This method returns the proper sign ( > 0 hadron; < 0 anti-hadron )
    * for the input PDG id  idHad > 0, suppose to be made by the
-   * two constituents of ids: idQ1 and idQ2 (both with proper sign).
-   * In the case of failure, it returns 0.
+   * two constituent particle pointers: par1 and par2 (both with proper sign).
    */
-  int  signHadron(const int idQ1, const int idQ2, const tcPDPtr hadron) const;
+  int signHadron(tcPDPtr ptr1, tcPDPtr ptr2, tcPDPtr hadron) const;
 
 private:
 
@@ -356,18 +355,12 @@ private:
   /**
    *  The PDG codes of the constituent particles allowed
    */
-  vector<long> _partons;
-
-  /**
-   *  Map of the PDG codes of the partons and their charges to avoid
-   *  using getParticleData too much
-   */
-  map<long,long> _charge;
+  vector<PDPtr> _partons;
 
   /**
    *  The PDG codes of the hadrons which cannot be produced in the hadronization
    */
-  vector<long> _forbidden;
+  vector<PDPtr> _forbidden;
 
   /**
    *  The weights for the different quarks and diquarks
@@ -406,7 +399,7 @@ private:
   /**
    * Weights for quarks and diquarks.
    */
-  map<long,double> _pwt;
+  map<tcPDPtr,double> _pwt;
   //@}
 
   /**
@@ -603,7 +596,10 @@ public:
    * @param swtin  The singlet/decuplet/orbital factor
    * @param massin The mass of the hadron
    */
-  HadronInfo(long idin=0,tPDPtr datain=tPDPtr(),double swtin=1.,Energy massin=0.*MeV);
+  HadronInfo(long idin=0,
+	     tPDPtr datain=tPDPtr(),
+	     double swtin=1.,
+	     Energy massin=0.*MeV);
 
   /**
    *  Comparision operator on mass
@@ -690,12 +686,12 @@ public:
    * @param inhad2 ParticleData for the second hadron produced.
    * @param inwgt  The weight for the hadron pair 
    */
-  inline Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt);
+  inline Kupco(tcPDPtr inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt);
   
   /**
    * id of the quark drawn from the vacuum.
    */
-  long idQ;
+  tcPDPtr idQ;
    
   /**
    * The ParticleData object for the first hadron produced.

@@ -60,8 +60,8 @@ public:
    * Calculate the coupling at the given scale.
    * @param q2 The scale at which to evaluate the coupling
    * @param particle1 The first particle at the vertex
-   * @param particle1 The second particle at the vertex
-   * @param particle1 The third particle at the vertex
+   * @param particle2 The second particle at the vertex
+   * @param particle3 The third particle at the vertex
    */
   void setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2, 
 		   tcPDPtr particle3);

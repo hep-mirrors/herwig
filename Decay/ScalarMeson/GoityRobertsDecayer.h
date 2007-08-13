@@ -30,23 +30,23 @@ public:
    * The default constructor.
    */
   GoityRobertsDecayer();
-
-  /** @name Virtual functions required by the Decayer and DecayIntegrator classes. */
-  //@{
+  
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
-
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
+  
   /**
-   * Check if this decayer can perfom the decay specified by the
-   * given decay mode.
-   * @param dm the DecayMode describing the decay.
-   * @return true if this decayer can handle the given mode, otherwise false.
+   * Check if this decayer can perfom the decay for a particular mode.
+   * Uses the modeNumber member but can be overridden
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual bool accept(const DecayMode & dm) const;
+  inline virtual bool accept(tcPDPtr parent, const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -60,7 +60,6 @@ public:
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
 		     const ParticleVector & decay) const;
-  //@}
 
   /**
    * Output the setup information for the particle database

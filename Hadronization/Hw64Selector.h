@@ -31,12 +31,12 @@ public:
    * Method to return a pair of hadrons given the PDG codes of
    * two or three constituents
    * @param cluMass The mass of the cluster
-   * @param id1 The PDG code of the first constituent
-   * @param id2 The PDG code of the first constituent
-   * @param id3 The PDG code of the first constituent
+   * @param par1 The particle pointer of the first constituent
+   * @param par2 The particle pointer of the second constituent
+   * @param par3 The particle pointer of the third constituent
    */
-  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, const long id1, 
-						 const long id2, const long id3=0)
+  virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
+						   tcPDPtr par2,tcPDPtr par3 = PDPtr())
     throw(Veto, Stop, Exception);
 
 public:

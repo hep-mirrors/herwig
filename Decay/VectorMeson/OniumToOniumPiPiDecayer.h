@@ -43,15 +43,15 @@ public:
    * The default constructor.
    */
   OniumToOniumPiPiDecayer();
-  
-public:
-  
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -63,6 +63,31 @@ public:
    */
   double me2(bool vertex, const int ichan,const Particle & part,
 	     const ParticleVector & decay) const;
+
+  /**
+   * Method to return an object to calculate the 3 body partial width.
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
+   */
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
+
+  /**
+   * The matrix element to be integrated for the three-body decays as a function
+   * of the invariant masses of pairs of the outgoing particles.
+   * @param imode The mode for which the matrix element is needed.
+   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The matrix element
+   */
+  virtual double threeBodyMatrixElement(const int imode, const Energy2 q2,
+					const  Energy2 s3, const Energy2 s2, const 
+					Energy2 s1, const Energy m1,
+					const Energy m2, const Energy m3) const;
 
   /**
    * Output the setup information for the particle database

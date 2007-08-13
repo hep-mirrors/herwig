@@ -7,9 +7,7 @@ SSCFSVertex.cc SSCFSVertex.fh SSCFSVertex.h SSCFSVertex.icc \
 SSGFSVertex.cc SSGFSVertex.fh SSGFSVertex.h SSGFSVertex.icc \
 SSHSFSFVertex.fh SSHSFSFVertex.h SSHSFSFVertex.icc SSHSFSFVertex.cc \
 SSNFSVertex.cc SSNFSVertex.fh SSNFSVertex.h SSNFSVertex.icc \
-SSPSSVertex.cc SSPSSVertex.fh SSPSSVertex.h SSPSSVertex.icc\
 SSWSSVertex.cc SSWSSVertex.fh SSWSSVertex.h SSWSSVertex.icc \
-SSZSSVertex.cc SSZSSVertex.fh SSZSSVertex.h SSZSSVertex.icc \
 SSGSSVertex.h SSGSSVertex.icc SSGSSVertex.fh SSGSSVertex.cc \
 SSGGSQSQVertex.cc SSGGSQSQVertex.h SSGGSQSQVertex.fh SSGGSQSQVertex.icc \
 SSGSGSGVertex.cc SSGSGSGVertex.h SSGSGSGVertex.icc SSGSGSGVertex.fh \

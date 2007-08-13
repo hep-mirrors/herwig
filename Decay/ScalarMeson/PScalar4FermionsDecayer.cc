@@ -80,15 +80,16 @@ void PScalar4FermionsDecayer::doinit() throw(InitException) {
   }
 }
 
-int PScalar4FermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int PScalar4FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					const PDVector & children) const {
   // must be four outgoing particles
-  if(dm.products().size()!=4) return -1;
+  if(children.size()!=4) return -1;
   // get the id's of the outgoing particles
   int id[4]; bool done[4]; unsigned int ix(0),iy(0);
   // ids of the particles
-  int id0(dm.parent()->id()),idtemp(-1),idl1(-1),idl2(-1),idt[2];
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for ( ;pit!=dm.products().end();++pit) {
+  int id0(parent->id()),idtemp(-1),idl1(-1),idl2(-1),idt[2];
+  PDVector::const_iterator pit = children.begin();
+  for ( ;pit!=children.end();++pit) {
     id[ix]=(**pit).id();
     done[ix]=false;
     ++ix;

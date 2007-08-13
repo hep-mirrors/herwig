@@ -27,25 +27,21 @@ void ClusterFinder::Init() {
 }
 
 
-void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
-				 tPVector partons,
-				 ClusterVector& clusters) 
+ClusterVector ClusterFinder::formClusters(const PVector & partons) 
   throw(Veto, Stop, Exception) {
-  // Get all the beam remnant partons ((anti-)quark or (anti-)diquark) 
-  // of the current collision.
-  tParticleSet origremnantSet = collisionPtr->getRemnants(),remnantSet;
-  for(tParticleSet::const_iterator pit=origremnantSet.begin();
-      pit!=origremnantSet.end();++pit) {
-    if((**pit).id()==ExtraParticleID::Remnant)
-      remnantSet.insert((**pit).children().back());
-  }
+
   set<tPPtr> examinedSet;  // colour particles already included in a cluster
   map<tColinePtr, pair<tPPtr,tPPtr> > quarkQuark; // quark quark 
   map<tColinePtr, pair<tPPtr,tPPtr> > aQuarkQuark; // anti quark anti quark
-  ParticleSet inputParticles = pstep->particles();
+  ParticleSet inputParticles(partons.begin(),partons.end());
+
+  ClusterVector clusters;
+
   // Loop over all current particles.
-  for(tPVector::const_iterator pit=partons.begin();pit!=partons.end();++pit){
+  for(PVector::const_iterator pit=partons.begin();pit!=partons.end();++pit){
     // Skip to the next particle if it is not coloured or already examined.
+    assert(*pit);
+    assert((*pit)->dataPtr());
     if(!(**pit).data().coloured() 
        || examinedSet.find(*pit) != examinedSet.end()) {
       continue;  
@@ -66,7 +62,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
     // stem from a colour source we have to find the corresponding pair of 
     // anti-quarks which ends in a colour sink and is connected with the
     // above colour source. These special pairs are kept into the maps:
-    //    specialQuarkQuarkMap   and   specialAntiQuarkAntiQuarkMap.
+    //    spec/CluHadConfig.hialQuarkQuarkMap   and   specialAntiQuarkAntiQuarkMap.
 
     tParticleVector connected(3);
     int iElement = 0;         
@@ -74,7 +70,11 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
     bool specialCase = false;
 
     if((*pit)->hasColour()) {
-      tPPtr partner=pstep->antiColourNeighbour(*pit);
+      tPPtr partner = 
+	(*pit)->colourLine()->getColouredParticle(partons.begin(),
+						  partons.end(),
+						  true);
+
       if(partner) {
 	connected[iElement++]= partner;
       }        
@@ -99,6 +99,8 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	    quarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,qp)); 
 	  }
 	  else if(iElement != 3) {
+	    /// \todo fix runerror, then remove asserts
+	    assert(false);
 	    throw Exception() << "Colour connections fail in the hadronization for " 
 			      << **pit << "in ClusterFinder::formClusters"
 			      << " for a coloured particle."
@@ -107,6 +109,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	  }
 	}
 	else {
+	  assert(false);
 	  throw Exception() << "Colour connections fail in the hadronization for " 
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " a coloured particle"
@@ -116,7 +119,10 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
     }
 
     if((*pit)->hasAntiColour()) {
-      tPPtr partner=pstep->colourNeighbour(*pit);
+      tPPtr partner = 
+	(*pit)->antiColourLine()->getColouredParticle(partons.begin(),
+						      partons.end(),
+						      false);
       if(partner) {
 	connected[iElement++]=partner; 
       }
@@ -141,7 +147,8 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	    aQuarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,aqp));
 	  }
 	  else if( iElement !=3) {
-	    throw Exception() << "Colour connections fail in the hadronization for " 
+	    assert(false);
+	    throw Exception() << "Colour connections fail in the hadronization for "
 			      << **pit << "in ClusterFinder::formClusters for"
 			      << " an anti-coloured particle."
 			      << " Failed to find particles from a sink"
@@ -149,6 +156,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	  }
 	}
 	else {
+	  assert(false);
 	  throw Exception() << "Colour connections fail in the hadronization for " 
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " an anti-coloured particle"
@@ -163,16 +171,17 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       // Create the cluster object with the colour connected particles
       ClusterPtr cluPtr = new_ptr(Cluster(connected[0],connected[1],
 					  connected[2]));
-      clusters.push_back(cluPtr);
       // add to the step
-      pstep->addDecayProduct(connected[0], cluPtr);
-      pstep->addDecayProduct(connected[1], cluPtr);
-      if(connected[2]) pstep->addDecayProduct(connected[2], cluPtr);
+      connected[0]->addChild(cluPtr);
+      connected[1]->addChild(cluPtr);
+      if(connected[2]) connected[2]->addChild(cluPtr);
+      clusters.push_back(cluPtr);
       // Check if any of the components is a beam remnant, and if this
       // is the case then inform the cluster.   
       // this will only work for baryon collisions  
       for (int i=0; i<iElement; ++i) {
-	if(connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
+	if(!connected[i]->parents().empty()&&
+	   connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
 	   DiquarkMatcher::Check(connected[i]->id()))
 	  cluPtr->isBeamCluster(connected[i]);
       }
@@ -196,17 +205,17 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       if ( UseRandom::rndbool() ) {      
 	cluPtr1 = new_ptr(Cluster(quarkPair.first , antiQuarkPair.first));
 	cluPtr2 = new_ptr(Cluster(quarkPair.second , antiQuarkPair.second));
-	pstep->addDecayProduct(quarkPair.first, cluPtr1);
-	pstep->addDecayProduct(antiQuarkPair.first, cluPtr1);
-	pstep->addDecayProduct(quarkPair.second, cluPtr2);
-	pstep->addDecayProduct(antiQuarkPair.second, cluPtr2);
+	quarkPair.first->addChild(cluPtr1);
+	antiQuarkPair.first->addChild(cluPtr1);
+	quarkPair.second->addChild(cluPtr2);
+	antiQuarkPair.second->addChild(cluPtr2);
       } else {
 	cluPtr1 = new_ptr(Cluster(quarkPair.first , antiQuarkPair.second));
 	cluPtr2 = new_ptr(Cluster(quarkPair.second , antiQuarkPair.first));
-	pstep->addDecayProduct(quarkPair.second, cluPtr1);
-	pstep->addDecayProduct(antiQuarkPair.first, cluPtr1);
-	pstep->addDecayProduct(quarkPair.first, cluPtr2);
-	pstep->addDecayProduct(antiQuarkPair.second, cluPtr2);
+	quarkPair.second->addChild(cluPtr2);
+	antiQuarkPair.first->addChild(cluPtr2);
+	quarkPair.first->addChild(cluPtr1);
+	antiQuarkPair.second->addChild(cluPtr1);
       }
       clusters.push_back(cluPtr1);
       clusters.push_back(cluPtr2);
@@ -218,11 +227,11 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 			<< Exception::eventerror;
     }
   }
+  return clusters;
 }
 
 
-void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
-					  ClusterVector & clusters) 
+void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) 
   throw(Veto, Stop, Exception) {
 
   // In order to preserve all of the information, we do not modify the 
@@ -234,19 +243,19 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
   // this vector will be copied in  collecCluPtr  (the reason is that it is not 
   // allowed to modify a STL container while iterating over it).
   vector<tClusterPtr> redefinedClusters; 
-  ParticleVector vec(3);
+  tParticleVector vec(3);
   for(ClusterVector::iterator cluIter = clusters.begin() ; 
       cluIter != clusters.end() ; ++cluIter) {
 
-    if ( ! (*cluIter)->isAvailable()  ||  (*cluIter)->numComponents() != 3 ) continue;
+    if ( ! (*cluIter)->isAvailable()  
+	 ||  (*cluIter)->numComponents() != 3 ) continue;
     
     for(int i = 0; i<(*cluIter)->numComponents(); i++)
 	  vec[i] = (*cluIter)->particle(i);
     
     // Randomly selects two components to be considered as a (anti)diquark
     // and place them as the second and third element of  vec.
-    double prob0=1.0/3.0, prob1=1.0/3.0, prob2=1.0/3.0;
-    int choice = UseRandom::rnd3(prob0, prob1, prob2);
+    int choice = UseRandom::rnd3(1.0, 1.0, 1.0);
     switch (choice) {
     case 0: 
       break; 
@@ -257,8 +266,10 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
       swap(vec[0],vec[2]);
       break;
     }
-    
-    long idDiquark = CheckId::diquarkId( vec[1]->id(), vec[2]->id() );
+    tcPDPtr temp1  = vec[1]->dataPtr();
+    tcPDPtr temp2  = vec[2]->dataPtr();
+
+   tcPDPtr dataDiquark  = CheckId::makeDiquark(temp1,temp2);
     // Create the new cluster (with two components) and assign to it the same
     // momentum and position of the original (with three components) one.
     // Furthermore, assign to the diquark component a momentum given by the
@@ -275,21 +286,21 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
     // unique to this kind of component (all perturbative components are in
     // a similar situation), but it is not harmful.
     
-    PPtr diquark = getParticle(idDiquark);
-    pstep->addDecayProduct(vec.begin()+1, vec.end(), diquark,false);
+    PPtr diquark = dataDiquark->produceParticle();
+    vec[1]->addChild(diquark);
+    vec[2]->addChild(diquark);
     ClusterPtr nclus = new_ptr(Cluster(vec[0],diquark));
-    tParticleVector pv;
-    pv.push_back(vec[0]);
-    pv.push_back(diquark);
-    pv.push_back(*cluIter);
-    pstep->addDecayProduct(pv.begin(), pv.end(), nclus,false);
+
+    vec[0]->addChild(nclus);
+    diquark->addChild(nclus);
+    (*cluIter)->addChild(nclus);
+
     nclus->set5Momentum((*cluIter)->momentum());
     nclus->setVertex((*cluIter)->vertex());
     for(int i = 0; i<nclus->numComponents(); i++) {
-      if(nclus->particle(i)->id() == idDiquark) {
+      if(nclus->particle(i)->id() == dataDiquark->id()) {
 	nclus->particle(i)->set5Momentum(Lorentz5Momentum(vec[1]->momentum()
-	                     + vec[2]->momentum(), getParticleData(idDiquark)
-			     ->constituentMass()));
+	                     + vec[2]->momentum(), dataDiquark->constituentMass()));
         nclus->particle(i)->setVertex(0.5*(vec[1]->vertex() 
 			     + vec[2]->vertex()));
       }
@@ -303,6 +314,7 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
 
   // Add to  collecCluPtr  all of the redefined new clusters (indeed the 
   // pointers to them are added) contained in  vecNewRedefinedCluPtr.
+  /// \todo why do we keep the original of the redefined clusters?
   for (tClusterVector::const_iterator it = redefinedClusters.begin();
         it != redefinedClusters.end(); ++it) {
     clusters.push_back(*it);

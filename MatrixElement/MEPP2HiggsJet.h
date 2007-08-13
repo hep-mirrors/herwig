@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Utilities/Math.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"

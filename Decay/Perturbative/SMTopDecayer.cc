@@ -7,9 +7,6 @@
 #include "SMTopDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// // #include "SMTopDecayer.tcc"
-#endif
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -17,14 +14,8 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 
-namespace Herwig {
-  
-using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::VectorWaveFunction;
-using Helicity::Direction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 SMTopDecayer::SMTopDecayer() 
   :_wquarkwgt(6,0.),_wleptonwgt(3,0.) 
@@ -41,13 +32,13 @@ SMTopDecayer::SMTopDecayer()
   generateIntermediates(true);
 }
   
-bool SMTopDecayer::accept(const DecayMode & dm) const {
-  if(abs(dm.parent()->id()) != ParticleID::t) return false;
+bool SMTopDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+  if(abs(parent->id()) != ParticleID::t) return false;
   int id0(0),id1(0),id2(0);
-  for(ParticleMSet::const_iterator it = dm.products().begin();
-      it != dm.products().end();++it) {
+  for(PDVector::const_iterator it = children.begin();
+      it != children.end();++it) {
     int id=(**it).id(),absid(abs(id));
-    if(absid==ParticleID::b&&double(id)/double(dm.parent()->id())>0) {
+    if(absid==ParticleID::b&&double(id)/double(parent->id())>0) {
       id0=id;
     }
     else {
@@ -80,11 +71,11 @@ bool SMTopDecayer::accept(const DecayMode & dm) const {
   return true;
 }
   
-ParticleVector SMTopDecayer::decay(const DecayMode & dm,
-				   const Particle & parent) const {
+ParticleVector SMTopDecayer::decay(const Particle & parent,
+				   const PDVector & children) const {
   int id1(0),id2(0);
-  for(ParticleMSet::const_iterator it = dm.products().begin();
-      it != dm.products().end();++it) {
+  for(PDVector::const_iterator it = children.begin();
+      it != children.end();++it) {
     int id=(**it).id(),absid=abs(id);
     if(absid == ParticleID::b && double(id)/double(parent.id())>0) continue;
     //leptons
@@ -255,6 +246,3 @@ void SMTopDecayer::doinit() throw(InitException) {
     }
   }
 }
-
-}
-

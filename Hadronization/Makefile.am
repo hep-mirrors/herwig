@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libHwHadronization.la
 libHwHadronization_la_SOURCES = \
-CheckId.cc CheckId.h CheckId.icc \
+CheckId.cc CheckId.h \
 CluHadConfig.h \
 Cluster.h Cluster.cc Cluster.icc Cluster.fh \
 ClusterDecayer.cc ClusterDecayer.h \
@@ -19,6 +19,5 @@ HwppSelector.cc HwppSelector.h HwppSelector.icc HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h \
 LightClusterDecayer.fh LightClusterDecayer.icc \
 PartonSplitter.cc PartonSplitter.h PartonSplitter.fh PartonSplitter.icc \
-PartonicHadronizer.h PartonicHadronizer.fh PartonicHadronizer.icc PartonicHadronizer.cc \
 Remnant.h Remnant.icc Remnant.cc Remnant.fh \
 ForcedSplitting.h ForcedSplitting.icc ForcedSplitting.cc ForcedSplitting.fh

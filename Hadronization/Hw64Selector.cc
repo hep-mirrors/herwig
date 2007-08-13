@@ -30,48 +30,49 @@ void Hw64Selector::Init() {
 
 }
 
-pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,
-						     const long id1,
-						     const long id2,const long)
+pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
+						     tcPDPtr par2,tcPDPtr)						    
   throw(Veto, Stop, Exception) {
-  bool diquark = !(DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2));
+  bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
 
 
 
-  pair<tcPDPtr,tcPDPtr> lighthad = lightestHadronPair(id1,id2);
+  pair<tcPDPtr,tcPDPtr> lighthad = lightestHadronPair(par1, par2);
   if(!lighthad.first || !lighthad.second)
     throw Exception() << "Hw64Selector::chooseHadronPair "
-		      << "We have 0's! First id = " << id1 << " second = " 
-		      << id2 << ". This is probably a problem with either"
+		      << "We have 0's! First id = " << par1->id() << " second = " 
+		      << par2->id() << ". This is probably a problem with either"
 		      << " undecayed heavy particles or colour connections" 
 		      << Exception::eventerror;
   // calculate maximum momentum
   Energy PCMax = Kinematics::pstarTwoBodyDecay(cluMass,lighthad.first->mass(),
 					       lighthad.second->mass());
-  tcPDPtr had1=tcPDPtr(),had2=tcPDPtr();
+  tcPDPtr had1 = tcPDPtr();
+  tcPDPtr had2 = tcPDPtr();
   int ntry = 0;
-  int idQ = -123456789;
+  tcPDPtr quark = tcPDPtr();
   const int nmax = 5000;
   Energy p;
   do {
-    idQ=partons()[UseRandom::irnd(partons().size())];
-    if(diquark&&DiquarkMatcher::Check(idQ)) continue;
+    quark = partons()[UseRandom::irnd(partons().size())];
+    if(diquark && DiquarkMatcher::Check(quark->id())) continue;
     KupcoData::const_iterator it1,it2;
-    if(pwt()[idQ] <=UseRandom::rnd()) continue;
-    pair<long,long> pid(abs(id1),idQ);
+    if(pwt()[quark] <= UseRandom::rnd()) continue;
+    pair<long,long> pid(abs(par1->id()),quark->id());
     do {
-      it1=table()[pid].begin();
+      it1 = table()[pid].begin();
       advance(it1,int(double(table()[pid].size())*UseRandom::rnd()));
     } 
-    while(it1!=table()[pid].end() && it1->overallWeight < UseRandom::rnd());
+    while(it1 != table()[pid].end() && it1->overallWeight < UseRandom::rnd());
+    
     had1 = it1->ptrData;
-    pid=make_pair(idQ,abs(id2));
+    pid = make_pair(quark->id(),abs(par2->id())); 
     do {
-      it2=table()[pid].begin();
+      it2 = table()[pid].begin();
       advance(it2,int(double(table()[pid].size())*UseRandom::rnd()));
     }
-    while(it2!=table()[pid].end() && it2->overallWeight < UseRandom::rnd());
-    had2=it2->ptrData;
+    while(it2 != table()[pid].end() && it2->overallWeight < UseRandom::rnd());
+    had2 = it2->ptrData;
     if(had1 && had2) {
       p = Kinematics::pstarTwoBodyDecay(cluMass, it1->mass, it2->mass);
       if(p/PCMax < UseRandom::rnd()) { 
@@ -82,22 +83,19 @@ pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,
   }
   while((!had1|| !had2) && ntry < nmax);
   if(ntry >= nmax) return lighthad;
-  int signQ = 0, signHad1 = -12345678, signHad2 = -12345678;
-  if((CheckId::canBeMeson(id1,-idQ) || CheckId::canBeBaryon(id1,-idQ)) &&
-     (CheckId::canBeMeson(idQ,id2)  || CheckId::canBeBaryon(idQ,id2))) 
-	  signQ = +1;
-  if((CheckId::canBeMeson(id1,idQ ) || CheckId::canBeBaryon(id1,idQ)) &&
-     (CheckId::canBeMeson(-idQ,id2) || CheckId::canBeBaryon(-idQ,id2)))
-	  signQ = -1;
-  if(signQ) {
-    signHad1 = signHadron(id1, -signQ*idQ, had1);
-    signHad2 = signHadron(id2,  signQ*idQ, had2);
-  } 
-  else throw Exception() << "Hw64Selector::chooseHadronPair()"
+  int signHad1 = 0;
+  int signHad2 = 0;
+  if(CheckId::canBeHadron(par1,quark->CC()) && CheckId::canBeHadron(quark,par2)) {
+    signHad1 = signHadron(par1, quark->CC(), had1);
+    signHad2 = signHadron(par2, quark, had2);
+  }
+  else if(CheckId::canBeHadron(par1,quark) && CheckId::canBeHadron(quark->CC(),par2)) {
+    signHad1 = signHadron(par1, quark, had1);
+    signHad2 = signHadron(par2, quark->CC(), had2);
+  }
+	 
+ else throw Exception() << "Hw64Selector::chooseHadronPair()"
 			 << Exception::abortnow;
   return make_pair( signHad1 > 0 ? had1 : tcPDPtr(had1->CC()),
 		    signHad2 > 0 ? had2 : tcPDPtr(had2->CC()));
 }
-
-    
-

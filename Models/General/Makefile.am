@@ -13,4 +13,5 @@ HardProcessConstructor.icc HardProcessConstructor.fh \
 HardProcessConstructor.cc HPDiagram.h HPDiagram.icc \
 ResonantProcessConstructor.cc ResonantProcessConstructor.h \
 ResonantProcessConstructor.icc ResonantProcessConstructor.fh \
-SVVLoopVertex.fh SVVLoopVertex.h SVVLoopVertex.icc SVVLoopVertex.cc
+SVVLoopVertex.fh SVVLoopVertex.h SVVLoopVertex.icc SVVLoopVertex.cc \
+SimpleSVVLoopVertex.fh SimpleSVVLoopVertex.h SimpleSVVLoopVertex.icc SimpleSVVLoopVertex.cc

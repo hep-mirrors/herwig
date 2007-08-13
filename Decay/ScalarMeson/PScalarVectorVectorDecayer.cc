@@ -77,12 +77,13 @@ void PScalarVectorVectorDecayer::doinit() throw(InitException) {
   }
 }
 
-int PScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const {
-  if(dm.products().size()!=2) return -1;
-  int id(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+int PScalarVectorVectorDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
+  cc = false;
+  if(children.size()!=2) return -1;
+  int id(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   unsigned int ix(0);
   int imode(-1);
   do {

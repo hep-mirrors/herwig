@@ -68,12 +68,11 @@ void GeneralCurrentDecayer::Init() {
      false, false, false);
 }
 
-int GeneralCurrentDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
+int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const {
   vector<long> id;
-  id.push_back(dm.parent()->id());
-  for(unsigned int ix=0;ix<dm.orderedProducts().size();++ix) {
-    id.push_back(dm.orderedProducts()[ix]->id());
-  }
+  id.push_back(parent->id());
+  for(unsigned int ix=0;ix<children.size();++ix) id.push_back(children[ix]->id());
   return modeNumber(cc,id);
 }
 

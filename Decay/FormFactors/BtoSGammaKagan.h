@@ -97,7 +97,7 @@ public:
    *  Operator to return the integrand of the smeared function or
    *  Fermi function depending on the value of _iopt to be integrated
    */
-  inline InvEnergy operator ()(Energy argument) const;
+  inline InvEnergy smeared(Energy argument) const;
   //@}
 
 protected:
@@ -500,8 +500,10 @@ struct KaganIntegrand {
   /**
    * Get the function value
    */
-  inline InvEnergy operator ()(Energy arg) const {return (*_kagan)(arg);}
+  inline InvEnergy operator ()(Energy arg) const {return _kagan->smeared(arg);}
+  /** Return type for GaussianIntegrator */
   typedef InvEnergy ValType;
+  /** Argument type for GaussianIntegrator */
   typedef Energy    ArgType;
 
   /**

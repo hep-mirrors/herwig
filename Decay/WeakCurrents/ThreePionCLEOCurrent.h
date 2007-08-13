@@ -192,14 +192,9 @@ protected:
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param F1 The form factor \f$F_1\f$.
-   * @param F2 The form factor \f$F_2\f$.
-   * @param F3 The form factor \f$F_3\f$.
-   * @param F4 The form factor \f$F_4\f$.
-   * @param F5 The form factor \f$F_5\f$.
    */
-  virtual FormFactors calculateFormFactors(const int ichan,const int imode,
-					   Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3) const;
+  virtual FormFactors calculateFormFactors(const int ichan,const int imode,Energy2 q2,
+					   Energy2 s1,Energy2 s2,Energy2 s3) const;
 
   /**
    * Calculate CLEO form factors for the current. Implements the form factors

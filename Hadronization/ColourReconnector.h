@@ -49,7 +49,7 @@ public:
    * in input. If the actual rearrangement is accepted, the new collection 
    * of clusters is overriden to the intial one.
    */
-  void rearrange(EventHandler & ch, const StepPtr & pstep,
+  void rearrange(EventHandler & ch,
                  ClusterVector & clusters) throw(Veto, Stop, Exception);
     
 public:
@@ -105,15 +105,9 @@ private:
   ColourReconnector & operator=(const ColourReconnector &);
 
   /**
-   * The numer of colours in the reconstruction.
+   * Do we do colour reconnections?
    */
-  int    _ClReco;
-
-  /**
-   * The probability of a reconstruction.
-   */
-  double _PReco;
-
+  int _clreco;
 };
 
 

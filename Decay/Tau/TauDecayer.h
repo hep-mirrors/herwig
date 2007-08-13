@@ -49,21 +49,20 @@ public:
   inline TauDecayer();
 
   /**
-   * Which of the possible decays is required
-   * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * Check if this decayer can perfom the decay for a particular mode.
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
 
   /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. As this is the base class it returns false and
-   * should be overridden in class implementing the decays.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   *
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual bool accept(const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

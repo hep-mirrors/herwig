@@ -6,17 +6,21 @@
 //
 
 #include "Herwig++/Models/General/SVVLoopVertex.h"
+#include "Herwig++/Models/General/SimpleSVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "SMHGGVertex.fh"
 
 namespace Herwig {
-    
+using namespace ThePEG;
+
   /**
    * The <code>SMHGGVertex</code> class implements the
    * setCoupling member for the Standard Model Higgs to  
    * gluon, gluon decay mode.
    */
-class SMHGGVertex: public SVVLoopVertex {
+//class SMHGGVertex: public SVVLoopVertex {
+class SMHGGVertex: public SimpleSVVLoopVertex {
   
 public:
   
@@ -61,7 +65,7 @@ public:
    *@param part2 ParticleData pointer to first particle
    *@param part3 ParticleData pointer to first particle
    */
-  virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
+  virtual void setCoupling (Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3);
   
 protected:
@@ -88,7 +92,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  inline virtual void doinit() throw(InitException);
   
 private:
   
@@ -125,37 +129,26 @@ private:
   tcHwSMPtr _theSM;
   
   /**
-   * The \f$W\f$ mass 
+   *Mass of W boson for higgs coupling
    */
   Energy _mw;
-
+  
   /**
    *Storage of \f$\sin\theta_W\f$
    */
   double _sw;
-
-  /**
-   * A pointer to the top quark ParticleData object
-   */
-  tcPDPtr _top;
   
-  /**
-   * A pointer to the bottom quark ParticleData object
-   */
-  tcPDPtr _bottom;
-    
   /**
    * Option to turn on b in quark loop
    */
-  int _qopt;
-  
-  /**
-   * Whether the loop coefficents have been calculated
-   */
-  bool _haveCoeff;
+//  int _qopt;
+  unsigned int _minloop;
+  unsigned int _maxloop;
 };
 
 }
+
+// CLASSDOC OFF
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -168,7 +161,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SMHGGVertex,1> {
   /** Typedef of the first base class of SMHGGVertex. */
-  typedef Herwig::SVVLoopVertex NthBase;
+  typedef Herwig::SimpleSVVLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

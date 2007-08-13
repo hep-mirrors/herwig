@@ -26,25 +26,19 @@ class SMWZDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   SMWZDecayer();
-  //@}
-
-public:
-
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
 
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
-   * @param dm The decay mode
+   * @param parent The decaying particle
+   * @param children The decay products
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+  virtual int modeNumber(bool & cc, tcPDPtr parent, 
+			 const PDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -56,7 +50,6 @@ public:
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
 		     const ParticleVector & decay) const;
-  //@}
 
 public:
 

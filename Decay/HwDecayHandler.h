@@ -5,41 +5,37 @@
 // This is the declaration of the HwDecayHandler class.
 //
 #include "ThePEG/Handlers/DecayHandler.h"
-#include "Herwig++/Hadronization/PartonicHadronizer.h"
 #include "HwDecayHandler.fh"
 
-using namespace ThePEG;
 namespace Herwig {
+using namespace ThePEG;
 
-  /** \ingroup Decay
-   * The <code>HwDecayHandler</code> is the Herwig++ decay handler which 
-   *  administers the decays of unstable particles in Herwig++. It
-   * is derived from ThePEG::DecayHandler and includes a different handle
-   * method in order to simulate decays including spin correlations.
-   *
-   * The handle method decays all particles in the current step, including
-   * spin correlations. Another feature of the DecayHandler is that it correctly
-   * handles mutlistep decays where a Decayer supplys intermediate decay products
-   * in addition to the outgoing particles.
-   *
-   * @see ThePEG::StepHandler
-   * @see ThePEG::CollisionHandler
-   * @see ThePEG::SubProcessHandler
-   * @see ThePEG::DecayHandler
-   * 
-   */
+/** \ingroup Decay
+ * The <code>HwDecayHandler</code> is the Herwig++ decay handler which 
+ *  administers the decays of unstable particles in Herwig++. It
+ * is derived from ThePEG::DecayHandler and includes a different handle
+ * method in order to simulate decays including spin correlations.
+ *
+ * The handle method decays all particles in the current step, including
+ * spin correlations. Another feature of the DecayHandler is that it correctly
+ * handles mutlistep decays where a Decayer supplys intermediate decay products
+ * in addition to the outgoing particles.
+ *
+ * @see ThePEG::StepHandler
+ * @see ThePEG::CollisionHandler
+ * @see ThePEG::SubProcessHandler
+ * @see ThePEG::DecayHandler
+ * 
+ */
 
 class HwDecayHandler: public DecayHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline HwDecayHandler();
-  //@}
 
 public:
 
@@ -129,19 +125,10 @@ private:
 private:
 
   /**
-   * Pointer to the object for the hadronization of partonic decays
-   */
-  PartonicHadronizerPtr _partonhad;
-
-  /**
-   *  Number of tries to regenerate a partonic decay to sucessfully hadronize it
-   */
-  unsigned int _hadtry;
-
-  /**
    *  Option for adding particles in a new Step
    */
   bool _newstep;
+
 };
 }
 

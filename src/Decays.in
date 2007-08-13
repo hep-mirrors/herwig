@@ -10,9 +10,9 @@
 
 # create the DecayHandler
 create Herwig::HwDecayHandler /Defaults/Handlers/DecayHandler
-set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
 # make directory
 mkdir /Defaults/Decays/
+cd /Defaults/Decays/
 #
 #  create the standard fortran decayers
 #
@@ -30,9 +30,33 @@ create Herwig::MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
 set /Defaults/Decays/DecayME0:MECode 0
 set /Defaults/Decays/DecayME100:MECode 100 
 set /Defaults/Decays/HvyDecayME0:MECode 0
+set HvyDecayME0:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set HvyDecayME0:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set HvyDecayME0:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set HvyDecayME0:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set HvyDecayME0:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set HvyDecayME0:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
 set /Defaults/Decays/HvyDecayME100:MECode 100
+set HvyDecayME100:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set HvyDecayME100:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set HvyDecayME100:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set HvyDecayME100:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set HvyDecayME100:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set HvyDecayME100:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
 set /Defaults/Decays/QDecayME0:MECode 0
+set QDecayME0:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set QDecayME0:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set QDecayME0:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set QDecayME0:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set QDecayME0:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set QDecayME0:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
 set /Defaults/Decays/QDecayME130:MECode 130
+set QDecayME130:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set QDecayME130:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set QDecayME130:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set QDecayME130:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set QDecayME130:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set QDecayME130:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
 #
 # create the decays for perturbative particles, i.e. top, W and Z
 #

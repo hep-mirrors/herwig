@@ -14,7 +14,7 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/UseRandom.h>
-#include <ThePEG/Utilities/Math.h>
+#include <ThePEG/Utilities/Maths.h>
 
 using namespace Herwig;
 
@@ -41,8 +41,8 @@ void HeavyDecayer::Init() {
 
 ClassDescription<HeavyDecayer> HeavyDecayer::initHeavyDecayer;
 
-bool HeavyDecayer::accept(const DecayMode &dm) const { 
-  long id = dm.parent()->id();
+bool HeavyDecayer::accept(tcPDPtr parent, const PDVector & children) const { 
+  long id = parent->id();
   int flav1, flav2;
   if((id / 1000)%10) {
     flav1 = (id/1000)%10;
@@ -53,15 +53,15 @@ bool HeavyDecayer::accept(const DecayMode &dm) const {
     flav2 = (id/10)%10;
   }
   if(!flav1 || !flav2) return false;
-  if(dm.products().size() != 4) 
-    throw Exception() << "Heavy Decayer can only decay to 4 partons, given\n"
-		      << "a mode with too many or too few products." 
-		      << dm.tag() << Exception::runerror;
-  return true;
+  return children.size()==4;
 }
 
-ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const {
-  ParticleVector partons = dm.produceProducts();
+ParticleVector HeavyDecayer::decay(const Particle & p,
+				   const PDVector & children) const {
+  ParticleVector partons;
+  for(unsigned int ix=0;ix<children.size();++ix) {
+    partons.push_back(children[ix]->produceParticle());
+  }
   Lorentz5Momentum products[4];
   for(int i = 0; i<4; i++) products[i].setMass(partons[i]->mass());
   // Fraction of momentum to spectator

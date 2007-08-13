@@ -21,8 +21,6 @@ bool SusyBase::preInitialize() const {
 
 void SusyBase::doinit() throw(InitException) {
   readSLHA();
-  addVertex(theZSFSFVertex);
-  addVertex(thePSFSFVertex);
   addVertex(theWSFSFVertex);
   addVertex(theNFSFVertex);
   addVertex(theGFSFVertex);
@@ -42,8 +40,7 @@ void SusyBase::doinit() throw(InitException) {
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
-  os << theNMix << theUMix << theVMix 
-     << theZSFSFVertex << thePSFSFVertex << theWSFSFVertex 
+  os << theNMix << theUMix << theVMix << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex 
      << theGSGSGVertex << theNNZVertex << theCCPVertex 
@@ -55,8 +52,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
-  is >> theNMix >> theUMix >> theVMix  
-     >> theZSFSFVertex >> thePSFSFVertex >> theWSFSFVertex 
+  is >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theCCPVertex >> theCCZVertex >> theCNWVertex
@@ -80,16 +76,6 @@ void SusyBase::Init() {
      "The name of the spectrum file",
      &SusyBase::theSLHAName, "", false, false);
 
-  static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexZSS
-    ("Vertex/ZSFSF",
-     "Reference to Susy ZSSVertex",
-     &SusyBase::theZSFSFVertex, false, false, true, false);
-
-  static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexPSS
-    ("Vertex/PSFSF",
-     "Reference to Susy P SF SF vertex",
-     &SusyBase::thePSFSFVertex, false, false, true, false);
-  
   static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",

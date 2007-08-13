@@ -9,7 +9,7 @@ using namespace ThePEG;
 
 inline GenericWidthGenerator::GenericWidthGenerator() 
   : _mass(),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
-    _BRminimum(0.01)
+    _BRminimum(0.01), _intorder(1)
 {}
 
 inline IBPtr GenericWidthGenerator::clone() const {
@@ -27,47 +27,63 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const
 inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
 						       Energy m2) const {
   using Constants::pi;
-  if(q<m1+m2){return Energy();}
+  if(q<m1+m2) return Energy();
   // calcluate the decay momentum
   Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
-  Energy  pcm(sqrt(pcm2)),gam=Energy();
-  if(_MEcode[imode]==-1)
-    {gam=q/_mass*_theParticle->width();}
+  if(_MEcode[imode]==-1) return q/_mass*_theParticle->width();
+  Energy  pcm(sqrt(pcm2));
+  double gam(0.);
+  switch(_MEcode[imode]) {
   // V -> P P
-  else if(_MEcode[imode]==0){gam=pcm2*pcm/6./pi/q2;}
+  case  0: gam = pcm2/6./q2;
+    break;
   // V -> P V
-  else if(_MEcode[imode]==1){gam=pcm2*pcm/12./pi/m02;}
+  case  1: gam = pcm2/12./m02;
+    break;
   // V -> f fbar
-  else if(_MEcode[imode]==2)
-    {gam=pcm/12./pi*(q2*(2.*q2-m12-m22+6.*m1*m2)-(m12-m22)*(m12-m22))/q2/q2;}
+  case  2: gam = 1./12.*(q2*(2.*q2-m12-m22+6.*m1*m2)
+			 -(m12-m22)*(m12-m22))/q2/q2;
+    break;
   // P -> VV
-  else if(_MEcode[imode]==3){gam=0.25*pcm2*pcm/m02/pi;}
+  case  3: gam = 0.25*pcm2/m02;
+    break;
   // A -> VP 
-  else if(_MEcode[imode]==4){gam = pcm*(2.*pcm2+3.*m12)/24./pi/m02;}
+  case  4: gam = (2.*pcm2+3.*m12)/24./m02;
+    break;
   // V -> VV
-  else if(_MEcode[imode]==5){gam = pcm2*pcm/3./pi/q2*(1.+m12/q2+m22/q2);}
+  case  5: gam = pcm2/3./q2*(1.+m12/q2+m22/q2);
+    break;
   // S -> SS
-  else if(_MEcode[imode]==6){gam = pcm/8./pi/q2*m02;}
+  case  6: gam = 0.125/q2*m02;
+    break;
   // T -> PP
-  else if(_MEcode[imode]==7){gam = pcm2*pcm2*pcm/60./pi/q2/m02;}
+  case  7: gam = pcm2*pcm2/60./q2/m02;
+    break;
   // T -> VP
-  else if(_MEcode[imode]==8){gam = pcm2*pcm2*pcm/40./pi/m02/m02;}
+  case  8: gam = pcm2*pcm2/40./m02/m02;
+    break;
   // T -> VV
-  else if(_MEcode[imode]==9)
-    {gam = pcm/30./pi/q2/q2/m02*(3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
-				 -5.*(m12-m22)*(m12-m22)*pcm2);}
+  case  9: gam = 1./30./q2/q2/m02*
+      (3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
+       -5.*(m12-m22)*(m12-m22)*pcm2);
+    break;
   // P -> PV
-  else if(_MEcode[imode]==10){gam = pcm*pcm2/2./pi/m22;}
+  case 10: gam = 0.5*pcm2/m22;
+    break;
   // P -> PT
-  else if(_MEcode[imode]==11){gam=pcm2*pcm2*pcm/12./pi*q2/m12/m12/m02;}
+  case 11: gam = sqr(pcm2)/12.*q2/m12/m12/m02;
+    break;
   // S -> VV
-  else if(_MEcode[imode]==12){gam=pcm*(2.*pcm2+3.*m12*m22/q2)/8./pi/m02;}
-  // unknowm
-  else{throw Exception() << "Unknown type of mode " << _MEcode[imode] 
-			 << " in GenericWidthGenerator::partial2BodyWidth() " 
-			 << Exception::abortnow;}
-  return gam*_MEcoupling[imode]*_MEcoupling[imode];
+  case 12: gam = 0.125*(2.*pcm2+3.*m12*m22/q2)/m02;
+    break;
+  // unknown
+  default:
+    throw Exception() << "Unknown type of mode " << _MEcode[imode] 
+		      << " in GenericWidthGenerator::partial2BodyWidth() " 
+		      << Exception::abortnow;
+  }
+  return gam*pcm*sqr(_MEcoupling[imode])/pi;
 }
 
 inline int GenericWidthGenerator::MEcode(int imode) const {

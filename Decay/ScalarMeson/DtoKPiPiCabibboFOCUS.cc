@@ -502,17 +502,18 @@ void DtoKPiPiCabibboFOCUS::doinit() throw(InitException) {
   } 
 }
 
-int DtoKPiPiCabibboFOCUS::modeNumber(bool & cc,const DecayMode & dm) const {
-  int id0(dm.parent()->id());
+int DtoKPiPiCabibboFOCUS::modeNumber(bool & cc,tcPDPtr parent, 
+			      const PDVector & children) const {
+  int id0(parent->id());
   // incoming particle must be D+/- or D_s+/-
   if(abs(id0)!=ParticleID::Dplus  &&
      abs(id0)!=ParticleID::D_splus) return -1;
-  if(dm.products().size()!=3) return -1;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(children.size()!=3) return -1;
+  PDVector::const_iterator pit = children.begin();
   cc = id0<0;
   int isign = cc ? -1 : 1;
   unsigned int npip(0),npim(0),nkp(0);
-  for( ;pit!=dm.products().end();++pit) {
+  for( ;pit!=children.end();++pit) {
     int id=isign*(**pit).id();
     if(     id==ParticleID::piplus ) ++npip;
     else if(id==ParticleID::piminus) ++npim;

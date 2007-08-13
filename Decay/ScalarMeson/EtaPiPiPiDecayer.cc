@@ -94,11 +94,12 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
   resetIntermediate(rho,600.*MeV,600.*MeV);
 }
 
-int EtaPiPiPiDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
-  if(dm.products().size()!=3) return -1;
+int EtaPiPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
+				 const PDVector & children) const {
+  if(children.size()!=3) return -1;
   unsigned int npi0(0),npip(0),npim(0); int id,iother(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit) {
+  PDVector::const_iterator pit = children.begin();
+  for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)           ++npip;
     else if(id==ParticleID::piminus)     ++npim;
@@ -113,7 +114,7 @@ int EtaPiPiPiDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   else if(npi0==2) charged=false;
   else return -1;
   // find the mode
-  id=dm.parent()->id();
+  id=parent->id();
   unsigned int ix(0);
   int imode(-1);
   do {

@@ -65,8 +65,8 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
   if(isize!=_incoming.size()  || isize!=_outgoingV.size()|| isize!=_outgoingf.size()||
      isize!=_outgoinga.size() || isize!=_maxweight.size()|| isize!=_includeVMD.size()||
      isize!=_VMDid.size()     || isize!=_VMDmass.size()  || isize!=_VMDwidth.size())
-    {throw InitException() << "Inconsistent parameters in PScalarVectorFermionsDecayer"
-			   << Exception::abortnow;}
+    throw InitException() << "Inconsistent parameters in PScalarVectorFermionsDecayer"
+			  << Exception::abortnow;
   // create the integration channel for each mode 
   PDVector extpart(4);
   tPDPtr gamma(getParticleData(ParticleID::gamma));
@@ -95,15 +95,16 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
   }
 }
 
-int PScalarVectorFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int PScalarVectorFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
   int imode(-1);
   // must be three outgoing particles
-  if(dm.products().size()!=3) return imode;
+  if(children.size()!=3) return imode;
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],idv(0);
+  int id0(parent->id()),idf[2],idv(0);
   unsigned int nf(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit) {
+  PDVector::const_iterator pit = children.begin();
+  for( ;pit!=children.end();++pit) {
     if((**pit).iSpin()==PDT::Spin1) {
       idv=(**pit).id();
     }

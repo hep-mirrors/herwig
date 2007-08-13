@@ -151,12 +151,12 @@ void SMHiggsWWDecayer::doinit() throw(InitException) {
   }
 }
 
-bool SMHiggsWWDecayer::accept(const DecayMode & dm) const {
+bool SMHiggsWWDecayer::accept(tcPDPtr parent, const PDVector & children) const {
   // if not two decay products return false
-  if(dm.products().size()!=2) return false;
+  if(children.size()!=2) return false;
   // if not decaying higgs return false
-  if(dm.parent()->id()!=ParticleID::h0) return false;
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  if(parent->id()!=ParticleID::h0) return false;
+  PDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
@@ -177,12 +177,11 @@ void SMHiggsWWDecayer::persistentInput(PersistentIStream & is, int) {
      >> _wdecays >> _zdecays >> _ratio >> _wmax >> _zmax >> _breit >> _power;
 }
 
-ParticleVector SMHiggsWWDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
+ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
+				       const PDVector & children) const {
   // select the decay modes of the gauge bosons
   unsigned int imode;
-  if(abs(dm.orderedProducts()[0]->id())==ParticleID::Wplus)
+  if(abs(children[0]->id())==ParticleID::Wplus)
     imode=_wdecays.select(UseRandom::rnd());
   else
     imode=_zdecays.select(UseRandom::rnd());

@@ -16,7 +16,7 @@
 # Any repository setting can be modified here
 ##################################################
 cd /Defaults/Handlers/Hadronization/Cluster
-set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
+set stdCluHadHandler:SoftUnderlyingEvent On
 
 ##################################################
 # Technical parameters for this run

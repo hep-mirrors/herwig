@@ -3,7 +3,6 @@
 #define HERWIG_LightClusterDecayer_H
 
 #include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
 #include "LightClusterDecayer.fh"
@@ -61,7 +60,7 @@ public:
    * conservation. This is done explicitly by the (private) method 
    * reshuffling().
    */
-  bool decay(const StepPtr &);
+  bool decay(ClusterVector & clusters, tPVector & finalhadrons);
 
 public:
 
@@ -120,7 +119,7 @@ private:
    * reshuffling necessary for energy-momentum conservation.
    */
   bool reshuffling( const tcPDPtr, tClusterPtr, tClusterPtr,
-		    const StepPtr , tClusterVector &) 
+		    tClusterVector &, tPVector & finalhadrons) 
     throw (Veto, Stop, Exception); 
   
   /**
@@ -128,9 +127,10 @@ private:
    * special case of a semileptonic partonic b/c decay 
    * @param hadron The hadron to be produced
    * @param cluster The cluster to be reshuffled
-   * @param step The step into which the particles are inserted
+   * @param finalhadrons The vector of outgoing hadrons
    */
-  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster,const StepPtr step);
+  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster,
+			 tPVector & finalhadrons);
 
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.
@@ -138,14 +138,17 @@ private:
   Ptr<HadronSelector>::pointer _hadronSelector;
 
   /**
-   * A parameter used for determining when b clusters are too light.
+   * @name A parameter used for determining when clusters are too light.
    *
    * This parameter is used for setting the lower threshold, \f$ t \f$ as
    * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
    * where \f$ r \f$ is a random number [0,1].
    */
-  double _B1Lim;
-
+  //@{
+  double _limBottom;
+  double _limCharm;
+  double _limExotic;
+  //@}
 };
 
 }

@@ -25,12 +25,12 @@ a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
     _pf2cc(0.*MeV), _pf200(0.*MeV), _f0mass(1.186*GeV), _f0width(0.350*GeV),
     _pf0cc(0.*MeV), _pf000(0.*MeV), _sigmamass(0.860*GeV), _sigmawidth(0.880*GeV), 
     _psigmacc(0.*MeV), _psigma00(0.*MeV), _mpi0(0.*MeV), _mpic(0.*MeV),
-    _coupling(51.197275/GeV), _rhomagP(2), _rhophaseP(2), _rhomagD(2),
+    _coupling(45.57/GeV), _rhomagP(2), _rhophaseP(2), _rhomagD(2),
     _rhophaseD(2), _f2mag(0.71/GeV2), _f2phase(0.56*pi), _f2coup(0./MeV2,0./MeV2),
     _f0mag(0.77), _f0phase(-0.54*pi), _f0coup(0.,0.), _sigmamag(2.10),
     _sigmaphase(0.23*pi), _sigmacoup(0.,0.), _localparameters(true),
-    _zerowgts(9), _onewgts(9), _twowgts(9), _threewgts(12), _zeromax(0.0569276),
-    _onemax(1.3864), _twomax(2.77916), _threemax(1.50496) {
+    _zerowgts(9), _onewgts(9), _twowgts(9), _threewgts(12), _zeromax(13.0704),
+    _onemax(6.91104), _twomax(6.94654), _threemax(6.40086) {
   // rho masses and widths
   _rhomass[0] = 0.7743*GeV; _rhowidth[0] = 0.1491*GeV;
   _rhomass[1] = 1.370 *GeV; _rhowidth[1] = 0.386 *GeV;
@@ -41,19 +41,19 @@ a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
   _rhomagD[0] = 0.37/GeV2; _rhophaseD[0] = -0.15*pi;
   _rhomagD[1] = 0.87/GeV2; _rhophaseD[1] =  0.53*pi;
   // set up the integration channels
-  _threewgts[0 ]= 0.0794721;_threewgts[1 ]= 0.0795375;_threewgts[2 ]= 0.0844288;
-  _threewgts[3 ]= 0.0867505;_threewgts[4 ]= 0.0895405;_threewgts[5 ]= 0.0898378;
-  _threewgts[6 ]= 0.0918808;_threewgts[7 ]= 0.0919970;_threewgts[8 ]= 0.0711382;
-  _threewgts[9 ]= 0.0734318;_threewgts[10]= 0.0807660;_threewgts[11]= 0.0812191;
-  _onewgts[0] = 0.1253590;_onewgts[1] = 0.1244660;_onewgts[2] = 0.1297050;
-  _onewgts[3] = 0.1303310;_onewgts[4] = 0.1272090;_onewgts[5] = 0.1281130;
-  _onewgts[6] = 0.0994781;_onewgts[7] = 0.0646946;_onewgts[8] = 0.0706432;
-  _zerowgts[0]= 0.1314300;_zerowgts[1]= 0.1310050;_zerowgts[2]= 0.1284550;
-  _zerowgts[3]= 0.0934043;_zerowgts[4]= 0.0942500;_zerowgts[5]= 0.0946263;
-  _zerowgts[6]= 0.1071220;_zerowgts[7]= 0.1088450;_zerowgts[8]= 0.1108630;
-  _twowgts[0] = 0.1240640;_twowgts[1] = 0.1248810;_twowgts[2] = 0.1300810;
-  _twowgts[3] = 0.1312690;_twowgts[4] = 0.1273870;_twowgts[5] = 0.1289640;
-  _twowgts[6] = 0.1001290;_twowgts[7] = 0.0644940;_twowgts[8] = 0.0687322;
+  _zerowgts[0]  = 0.132162;_zerowgts[1]  = 0.116638;_zerowgts[2]  = 0.121088;
+  _zerowgts[3]  = 0.10656 ;_zerowgts[4]  = 0.102577;_zerowgts[5]  = 0.101169;
+  _zerowgts[6]  = 0.104587;_zerowgts[7]  = 0.104663;_zerowgts[8]  = 0.110557;
+  _onewgts[0]   = 0.177017;_onewgts[1]   = 0.176011;_onewgts[2]   = 0.110129;
+  _onewgts[3]   = 0.108023;_onewgts[4]   = 0.110553;_onewgts[5]   = 0.109976;
+  _onewgts[6]   = 0.088634;_onewgts[7]   = 0.059104;_onewgts[8]   = 0.060553;
+  _twowgts[0]   = 0.173357;_twowgts[1]   = 0.172283;_twowgts[2]   = 0.116031;
+  _twowgts[3]   = 0.114642;_twowgts[4]   = 0.109058;_twowgts[5]   = 0.114073;
+  _twowgts[6]   = 0.080946;_twowgts[7]   = 0.060135;_twowgts[8]   = 0.059477;
+  _threewgts[0] = 0.125022;_threewgts[1] = 0.129911;_threewgts[2] = 0.074165;
+  _threewgts[3] = 0.075813;_threewgts[4 ]= 0.071154;_threewgts[5 ]= 0.077730;
+  _threewgts[6] = 0.082255;_threewgts[7 ]= 0.086761;_threewgts[8 ]= 0.067106;
+  _threewgts[9] = 0.070171;_threewgts[10]= 0.070146;_threewgts[11]= 0.069767;
   // generation of intermediates
   generateIntermediates(true);
 }
@@ -124,13 +124,13 @@ void a1ThreePionCLEODecayer::doinit() throw(InitException) {
     if(!rhop[ix]) continue;
     // first rho+ channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,2);
-    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
+    newchannel->addIntermediate(a1p,0,0.0,-1,1);
+    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
     mode->addChannel(newchannel);
     // second rho+ channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-    newchannel->addIntermediate(a1p,0,0.0,-1,1);
-    newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
+    newchannel->addIntermediate(a1p,0,0.0,-1,2);
+    newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
     mode->addChannel(newchannel);
   }
   // the sigma channel
@@ -344,12 +344,13 @@ inline void a1ThreePionCLEODecayer::doinitrun() {
   }
 }
 
-int a1ThreePionCLEODecayer::modeNumber(bool & cc,const DecayMode & dm) const {
-  if(dm.products().size()!=3) return -1;
-  int id(dm.parent()->id());
+int a1ThreePionCLEODecayer::modeNumber(bool & cc,tcPDPtr parent,
+				       const PDVector & children) const {
+  if(children.size()!=3) return -1;
+  int id(parent->id());
   // check the pions
-  ParticleMSet::const_iterator pit  = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
+  PDVector::const_iterator pit  = children.begin();
+  PDVector::const_iterator pend = children.end();
   int idtemp,npi0(0),npiplus(0),npiminus(0);
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
@@ -482,7 +483,7 @@ void a1ThreePionCLEODecayer::Init() {
   static Parameter<a1ThreePionCLEODecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The overall coupling for the decay",
-     &a1ThreePionCLEODecayer::_coupling, 1./GeV, 51.197275/GeV, -0./GeV, 1000./GeV,
+     &a1ThreePionCLEODecayer::_coupling, 1./GeV, 45.57/GeV, -0./GeV, 1000./GeV,
      false, false, false);
 
   static ParVector<a1ThreePionCLEODecayer,double> interfacerhomagP
@@ -696,8 +697,6 @@ a1ThreePionCLEODecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   // integrator to perform the integral
   vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
   vector<int> intype;intype.push_back(2);intype.push_back(3);
-  Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
-  Energy wrho=getParticleData(ParticleID::rhoplus)->width();
   vector<Energy> inmass(2,_rhomass[0]),inwidth(2,_rhowidth[0]);
   vector<double> inpow(2,0.0);
   Energy m[3];
@@ -761,7 +760,8 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
     else if(ichan==3) {
       complex<Energy2> Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
       F1+=_f2coup*0.5*(s3-s2)*f2bws1;
-      F2-=_f2coup*Dfact1; F3-=_f2coup*Dfact1;
+      F2-=_f2coup*Dfact1; 
+      F3-=_f2coup*Dfact1;
     }
     else if(ichan==4) {
       complex<Energy2> Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
@@ -1034,15 +1034,15 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
     if(ix<2) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
-		    << _rhomass[ix]/MeV << endl;
+		    << _rhomass[ix]/GeV << "\n";
     else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
-		    << _rhomass[ix]/MeV << endl;
+		    << _rhomass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
     if(ix<2) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
-		    << _rhowidth[ix]/MeV << endl;
+		    << _rhowidth[ix]/GeV << "\n";
     else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
-		    << _rhowidth[ix]/MeV << endl;
+		    << _rhowidth[ix]/GeV << "\n";
   }
   // couplings and phases for different channels
   output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
@@ -1054,27 +1054,27 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
     if(ix<2) output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
-		    << _rhomagP[ix] << endl;
+		    << _rhomagP[ix] << "\n";
     else     output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
-		    << _rhomagP[ix] << endl;
+		    << _rhomagP[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
     if(ix<2) output << "set    " << fullName() << ":RhoPWavePhase " << ix << " " 
-		    << _rhophaseP[ix] << endl;
+		    << _rhophaseP[ix] << "\n";
     else     output << "insert " << fullName() << ":RhoPWavePhase " << ix << " " 
-		    << _rhophaseP[ix] << endl;
+		    << _rhophaseP[ix] << "\n";
   }  
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
     if(ix<2) output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
-		    << _rhomagD[ix]*MeV2 << endl;
+		    << _rhomagD[ix]*MeV2 << "\n";
     else     output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
-		    << _rhomagD[ix]*MeV2 << endl;
+		    << _rhomagD[ix]*MeV2 << "\n";
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
     if(ix<2) output << "set    " << fullName() << ":RhoDWavePhase " << ix << " " 
-		    << _rhophaseD[ix] << endl;
+		    << _rhophaseD[ix] << "\n";
     else     output << "insert " << fullName() << ":RhoDWavePhase " << ix << " " 
-		    << _rhophaseD[ix] << endl;
+		    << _rhophaseD[ix] << "\n";
   }
   // use local values of the masses etc.
   output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";

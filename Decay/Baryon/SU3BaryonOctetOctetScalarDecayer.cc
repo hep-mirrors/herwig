@@ -10,11 +10,6 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SU3BaryonOctetOctetScalarDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -24,17 +19,16 @@ using namespace ThePEG;
 
 SU3BaryonOctetOctetScalarDecayer::~SU3BaryonOctetOctetScalarDecayer() {}
 
-int SU3BaryonOctetOctetScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int SU3BaryonOctetOctetScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					  const PDVector & children) const {
   int imode(-1);
   if(_incomingB.size()==0){setupModes(0);}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id());
   unsigned int ix(0);
   cc =false;
   do

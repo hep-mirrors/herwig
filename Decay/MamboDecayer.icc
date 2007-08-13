@@ -17,7 +17,7 @@ inline IBPtr MamboDecayer::fullclone() const {
 }
 
 inline void MamboDecayer::doinitrun() {
-  Decayer::doinitrun();
+  HwDecayerBase::doinitrun();
   _a0[0] = 0.5;
   _a0[1] = 0.375;
   _a0[2] = 0.375;
@@ -131,13 +131,13 @@ inline void MamboDecayer::BesselIExpand(const long double x,
 					long double & f, 
 					long double & fp) const {
   long double y = 1./x;
-  f = 1.+ y*(_a0[1] + y*(_a0[2] + y*(_a0[3] + y*(_a0[4] 
-     + y*(_a0[5] + y*(_a0[6] + y*(_a0[7] + y*(_a0[8] 
-     + y*(_a0[9] + y*_a0[10] )))))))));
+  f = 1.+ y*(_a0[0] + y*(_a0[1] + y*(_a0[2] + y*(_a0[3] 
+     + y*(_a0[4] + y*(_a0[5] + y*(_a0[6] + y*(_a0[7] 
+     + y*(_a0[8] + y*_a0[9] )))))))));
 
-  fp = -y*y*(_a1[1] + y*(_a1[2] + y*(_a1[3] + y*(_a1[4] 
-     + y*(_a1[5] + y*(_a1[6] + y*(_a1[7] + y*(_a1[8] 
-     + y*(_a1[9] + y*_a1[10] )))))))));
+  fp = -y*y*(_a1[0] + y*(_a1[1] + y*(_a1[2] + y*(_a1[3] 
+     + y*(_a1[4] + y*(_a1[5] + y*(_a1[6] + y*(_a1[7] 
+     + y*(_a1[8] + y*_a1[9] )))))))));
 }
   
 }

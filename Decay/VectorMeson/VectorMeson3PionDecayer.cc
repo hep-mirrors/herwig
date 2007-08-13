@@ -191,15 +191,16 @@ void VectorMeson3PionDecayer::doinit() throw(InitException) {
   }
 }
 
-int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int VectorMeson3PionDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					const PDVector & children) const {
   cc=false;
   // must be three outgoing particles
-  if(dm.products().size()!=3) return -1;
+  if(children.size()!=3) return -1;
   // check the id's of the outgoing particles
   int id;
   unsigned int npi0(0),npip(0),npim(0);
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  for(;pit!=dm.products().end();++pit) {
+  PDVector::const_iterator pit  = children.begin();
+  for(;pit!=children.end();++pit) {
     id = (*pit)->id();
     if(id==ParticleID::pi0)          ++npi0;
     else if(id==ParticleID::piplus)  ++npip;
@@ -207,7 +208,7 @@ int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   }
   if(!(npi0==1&&npip==1&&npim==1)) return -1;
   unsigned int ix(0);
-  id=dm.parent()->id();
+  id=parent->id();
   int imode(-1);
   do {
     if(_incoming[ix]==id) imode=ix;

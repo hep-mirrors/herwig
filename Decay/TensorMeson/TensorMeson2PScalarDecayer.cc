@@ -17,8 +17,8 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
-  : _incoming(46), _outgoing1(46), _outgoing2(46), 
-    _coupling(46), _maxweight(46) {
+  : _incoming(48), _outgoing1(48), _outgoing2(48), 
+    _coupling(48), _maxweight(48) {
   // a_2 -> eta pi
   _incoming[0] = 115; _outgoing1[0] =  221; _outgoing2[0] = 111; 
   _coupling[0] = 10.90/GeV; _maxweight[0] = 2.02; 
@@ -132,6 +132,11 @@ TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer()
   _coupling[44] = 99.27/GeV; _maxweight[44] = 30.; 
   _incoming[45] = 10335; _outgoing1[45] = 9000211; _outgoing2[45] = -211; 
   _coupling[45] = 99.27/GeV; _maxweight[45] = 30.; 
+  // chi_c2(2P) to D D
+  _incoming[46] =  100445; _outgoing1[46] =  411; _outgoing2[46] = -411; 
+  _coupling[46] = 0.0226/GeV; _maxweight[46] = 2.02; 
+  _incoming[47] =  100445; _outgoing1[47] =  421; _outgoing2[47] = -421; 
+  _coupling[47] = 0.0159/GeV; _maxweight[47] = 1.62; 
   // initial size of the vectors
   _initsize=_incoming.size();
   // intermediates
@@ -162,16 +167,16 @@ void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
   }
 }
 
-int TensorMeson2PScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int TensorMeson2PScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					   const PDVector & children) const {
+  if(children.size()!=2) return -1;
+  int id(parent->id());
+  int idbar = parent->CC() ? parent->CC()->id() : id;
+  int id1(children[0]->id());
+  int id1bar = children[0]->CC() ? children[0]->CC()->id() : id1;
+  int id2(children[1]->id());
+  int id2bar = children[1]->CC() ? children[1]->CC()->id() : id2;
   int imode(-1);
-  int id(dm.parent()->id());
-  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());
-  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
-  ++pit;
-  int id2((**pit).id());
-  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0);
   cc=false;
   do {

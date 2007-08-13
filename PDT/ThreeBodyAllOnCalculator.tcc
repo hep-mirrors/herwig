@@ -9,7 +9,7 @@ using namespace ThePEG;
 // shift the variables for the outer integrand and give limits for the inner one
 template <class T>
 void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low,
-						 Energy2 & upp) {
+						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
   if(_channelmass[_thechannel] > 0*MeV) {
     _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
@@ -100,6 +100,7 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
 // calculate the width for a given mass
 template <class T>
 Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
+  Outer outer(this);
   _m[0] = sqrt(q2);
   _m2[0]=q2;
   // check the decay is kinematically allowed
@@ -140,7 +141,7 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     // perform the integral using my Gaussian quadature class
     _thechannel=ix;
     GaussianIntegrator intb;
-    sum +=  _channelweights[ix] * intb.value(_outer,rlow,rupp);
+    sum +=  _channelweights[ix] * intb.value(outer,rlow,rupp);
   }
   // final factors
   Energy3 fact = pow<3,1>(Constants::twopi * _m[0]);

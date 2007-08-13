@@ -19,11 +19,11 @@
 using namespace Herwig;
 
 void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _hadronSelector << _B1Lim;
-}
+  os << _hadronSelector << _limBottom << _limCharm << _limExotic;
+} 
 
 void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronSelector >> _B1Lim;
+  is >> _hadronSelector >> _limBottom >> _limCharm >> _limExotic ;
 }
 
 
@@ -42,14 +42,20 @@ void LightClusterDecayer::Init() {
 			     &Herwig::LightClusterDecayer::_hadronSelector,
 			     false, false, true, false);
   
-  static Parameter<LightClusterDecayer,double>
-    interfaceB1Lim ("B1Lim","one-hadron decay of b-cluster over threshold",
-                    &LightClusterDecayer::_B1Lim, 0, 0.0, 0.0, 100.0,false,false,false);
+static Parameter<LightClusterDecayer,double>
+    interfaceSingleHadronLimitBottom ("SingleHadronLimitBottom","threshold for one-hadron decay of b-cluster",
+                    &LightClusterDecayer::_limBottom, 0, 0.0, 0.0, 100.0,false,false,false);
+static Parameter<LightClusterDecayer,double>
+    interfaceSingleHadronLimitCharm ("SingleHadronLimitCharm","threshold for one-hadron decay of c-cluster",
+                    &LightClusterDecayer::_limCharm, 0, 0.0, 0.0, 100.0,false,false,false);
+static Parameter<LightClusterDecayer,double>
+    interfaceSingleHadronLimitExotic ("SingleHadronLimitExotic","threshold for one-hadron decay of exotic cluster",
+                    &LightClusterDecayer::_limExotic, 0, 0.0, 0.0, 100.0,false,false,false);
 
 }
 
 
-bool LightClusterDecayer::decay(const StepPtr &pstep) {
+bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadrons) {
 
   // Loop over all clusters, and for those that were not heavy enough
   // to undergo to fission, check if they are below the threshold
@@ -85,14 +91,8 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
   // otherwise, the would-be redefined cluster could have undefined
   // components). 
   vector<tClusterPtr> redefinedClusters;
-  ClusterVector clusters; 
-  for (ParticleSet::iterator it = pstep->particles().begin();
-       it!= pstep->particles().end(); it++) { 
-    if((*it)->id() == ExtraParticleID::Cluster) 
-      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
-  }
 
-  for (ClusterVector::iterator it = clusters.begin();
+  for (ClusterVector::const_iterator it = clusters.begin();
        it != clusters.end(); ++it) {
         
     // Skip the clusters that are not available or that are 
@@ -112,29 +112,33 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
       continue;
     }
     
-    // Extract the id and particle pointer of the two components of the cluster.
-    long idQ1 = 0, idQ2 = 0;
-    tPPtr ptrQ1 = tPPtr(), ptrQ2 = tPPtr();
-    ptrQ1 = (*it)->particle(0);
-    idQ1 = ptrQ1->id();
-    ptrQ2 = (*it)->particle(1);
-    idQ2 = ptrQ2->id();
+    // Extract the  particle pointer of the two components of the cluster.
+    
+    tPPtr ptrQ1 = (*it)->particle(0);
+    tPPtr ptrQ2 = (*it)->particle(1);
+
+     tcPDPtr par1 = ptrQ1->dataPtr();
+     tcPDPtr par2 = ptrQ2->dataPtr();
       
     // Determine the sum of the nominal masses of the two lightest hadrons
     // with the right flavour numbers as the cluster under consideration.
     // Notice that we don't need real masses (drawn by a Breit-Wigner 
     // distribution) because the lightest pair of hadrons does not involve
     // any broad resonance.
-    Energy threshold = _hadronSelector->massLightestHadronPair(idQ1,idQ2);
-    // Special for b-flavour: it allows one-hadron decays also above threshold.
-    if ( CheckId::hasBeauty(idQ1,idQ2) ) {
-      threshold *= (1.0 + UseRandom::rnd()*_B1Lim);
-    } 
+     Energy threshold = _hadronSelector->massLightestHadronPair(par1,par2);
+     // Special: it allows one-hadron decays also above threshold.
+     if (CheckId::isExotic(par1,par2)) 
+       threshold *= (1.0 + UseRandom::rnd()*_limExotic);
+     else if (CheckId::hasBottom(par1,par2)) 
+       threshold *= (1.0 + UseRandom::rnd()*_limBottom);
+     else if (CheckId::hasCharm(par1,par2)) 
+       threshold *= (1.0 + UseRandom::rnd()*_limCharm);
+     
     
     // only do one hadron decay is mass less than the threshold
     if((*it)->mass()>=threshold) continue;
     
-    tcPDPtr hadron= _hadronSelector->lightestHadron(idQ1,idQ2);
+    tcPDPtr hadron= _hadronSelector->lightestHadron(par1,par2);
     
     // We assume that the candidate reshuffling cluster partner, 
     // with whom the light cluster can exchange momenta,
@@ -173,11 +177,11 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     multimap<Length,tClusterPtr>::const_iterator mmapIt = candidates.begin();
     bool found = false;
     while (!found && mmapIt  != candidates.end()) {
-      found = reshuffling(hadron, *it, (*mmapIt).second, pstep, redefinedClusters);
+      found = reshuffling(hadron, *it, (*mmapIt).second, redefinedClusters, finalhadrons);
       if (!found) ++mmapIt;
     }
     
-    if (!found) return partonicReshuffle(hadron,*it,pstep);
+    if (!found) return partonicReshuffle(hadron,*it,finalhadrons);
   } // end loop over collecCluPtr 
 
   // Add to  collecCluPtr  all of the redefined new clusters (indeed the 
@@ -187,14 +191,14 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     clusters.push_back(*it);
   }
   return true;
-}
+ }
 
 
 bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1, 
 				      tClusterPtr cluPtr1, 
 				      tClusterPtr cluPtr2,
-				      const StepPtr pstep,
-				      tClusterVector & redefinedClusters )
+				      tClusterVector & redefinedClusters,
+				      tPVector & finalhadrons)
   throw (Veto, Stop, Exception) {
   // don't reshuffle with beam clusters
   if(cluPtr2->isBeamCluster()) return false;
@@ -227,8 +231,8 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   Energy mSystem = pSystem.mass();
   Energy mclu2 = cluPtr2->mass();
   bool singleHadron = false;
-  Energy mLHP2 = _hadronSelector->massLightestHadronPair(part3->id(), part4->id());
-  Energy mLH2 = _hadronSelector->massLightestHadron(part3->id(), part4->id());
+  Energy mLHP2 = _hadronSelector->massLightestHadronPair(part3->dataPtr(),part4->dataPtr());
+  Energy mLH2 = _hadronSelector->massLightestHadron(part3->dataPtr(),part4->dataPtr());
 
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
   else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
@@ -263,8 +267,8 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   ptrhad1->set5Momentum( phad1 );               // set momentum of first hadron.
   ptrhad1->setLabVertex(cluPtr1->vertex()); // set hadron vertex position to the
                                                 // parent cluster position.
-  //cluPtr1->addChild(ptrhad1);
-  pstep->addDecayProduct(cluPtr1, ptrhad1);
+  cluPtr1->addChild(ptrhad1);
+  finalhadrons.push_back(ptrhad1);
   cluPtr1->reshufflingPartnerCluster( cluPtr2 );
   cluPtr2->reshufflingPartnerCluster( cluPtr1 );
 
@@ -275,13 +279,13 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
     // redefined cluster (this choice is justified in order to avoid
     // clusters that could have undefined components).
 
-    PPtr ptrhad2 = _hadronSelector->lightestHadron(part3->id(),part4->id())
+    PPtr ptrhad2 = _hadronSelector->lightestHadron(part3->dataPtr(),part4->dataPtr())
       ->produceParticle();
     ptrhad2->set5Momentum( pclu2 );            
     ptrhad2->setLabVertex( cluPtr2->vertex() ); // set hadron vertex position to the
                                                   // parent cluster position.
-    //    cluPtr2->addChild(ptrhad2);   
-    pstep->addDecayProduct(cluPtr2, ptrhad2);
+    cluPtr2->addChild(ptrhad2);  
+    finalhadrons.push_back(ptrhad2);
   } else {
 
     // Create the new cluster which is the redefinitions of the cluster  
@@ -293,8 +297,7 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
 
     cluPtr2new->set5Momentum( pclu2 );
     cluPtr2new->setVertex( cluPtr2->vertex() );
-    //    cluPtr2->addChild( cluPtr2new );
-    pstep->addDecayProduct(cluPtr2, cluPtr2new);
+    cluPtr2->addChild( cluPtr2new );
     redefinedClusters.push_back( cluPtr2new );
        
     // Set consistently the momenta of the two components of the second cluster
@@ -320,71 +323,79 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
   } // end of  if (singleHadron) 
   return true;
 }
-
-bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,const PPtr cluster,
-					    const StepPtr pstep) {
+  
+bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,
+					    const PPtr cluster,
+					    tPVector & finalhadrons) {
   tPPtr meson(cluster);
   if(!meson->parents().empty()) meson=meson->parents()[0];
   if(!meson->parents().empty()) meson=meson->parents()[0];
   // check b/c hadron decay
-  int ptype(abs(meson->id()/1000));
-  if(ptype>5) ptype/=10;
-  if(ptype!=4&&ptype!=5) return false;
-  // get the leptons
-  PPtr leptons[2];
-  unsigned int nlep(0);
-  Lorentz5Momentum pleptons;
-  Energy mLHP2=Energy();
+  int ptype(abs(meson->id())%10000);
+  bool heavy = (ptype/1000 == 5 || ptype/1000 ==4 );
+  heavy |= (ptype/100  == 5 || ptype/100  ==4 );
+  heavy |= (ptype/10   == 5 || ptype/10   ==4 );
+  if(!heavy) return false;
+  // find the leptons
+  tPVector leptons;
   for(unsigned int ix=0;ix<meson->children().size();++ix) {
     if(!(meson->children()[ix]->dataPtr()->coloured())) {
-	if(nlep<=2) leptons[nlep]=meson->children()[ix];
-	++nlep;
-	pleptons+=meson->children()[ix]->momentum();
-	mLHP2+=meson->children()[ix]->mass();
-      }
-    pleptons.rescaleMass();
-  }
-  // check leptons
-  if(nlep==1) {
-    mLHP2=Energy();
-    for(unsigned int ix=0;ix<leptons[0]->children().size();++ix) {
-      mLHP2+=leptons[0]->children()[ix]->mass();
+      leptons.push_back(meson->children()[ix]);
     }
   }
-  else if (nlep>2) return false;
+  if(leptons.size()==1) {
+    tPPtr w=leptons[0];
+    leptons.pop_back();
+    for(unsigned int ix=0;ix<w->children().size();++ix) {
+      if(!w->children()[ix]->dataPtr()->coloured()) {
+	leptons.push_back(w->children()[ix]);
+      }
+    }
+  }
+  if(leptons.size()!=2) return false;
+  // get momentum of leptonic system and the its minimum possible mass
+  Energy mmin(0.*GeV);
+  Lorentz5Momentum pw;
+  for(unsigned int ix=0;ix<leptons.size();++ix) {
+    pw+=leptons[ix]->momentum();
+    mmin+=leptons[ix]->mass();
+  }
+  pw.rescaleMass();
   // check we can do the reshuffling
   PPtr ptrhad = had->produceParticle();
-  Energy mhad1(ptrhad->mass());
-  Lorentz5Momentum pSystem = pleptons + cluster->momentum();
+  // total momentum fo the system
+  Lorentz5Momentum pSystem = pw + cluster->momentum();
   pSystem.rescaleMass();
-  Energy mSystem = pSystem.mass();
-  Energy mclu2 = pleptons.mass();
-  // check if we can reshuffle
-  if(!(mSystem > mhad1+mclu2 && mclu2>mLHP2)) return false;
-  // Calculate the unit three-vector, in the frame "Sys" along which the 
-  // two initial clusters move.
-  Lorentz5Momentum u(cluster->momentum());
-  u.boost( - pSystem.boostVector() );         // boost from LAB to Sys
-  // Calculate the momenta of had1 and clu2 in the Sys frame first, 
-  // and then boost back in the LAB frame.
-  Lorentz5Momentum phad1, pclu2;
-
-  if (pSystem.m() < mhad1 + mclu2 ) {
-    throw Exception() << "Impossible Kinematics in LightClusterDecayer::partonicReshuffle()" 
-		      << Exception::eventerror;
+  // normal case get additional energy by rescaling momentum in rest frame of
+  // system
+  if(pSystem.mass()>ptrhad->mass()+pw.mass()&&pw.mass()>mmin) {
+    // Calculate the unit three-vector, in the frame "Sys" along which the 
+    // two initial clusters move.
+    Lorentz5Momentum u(cluster->momentum());
+    u.boost( - pSystem.boostVector() );
+    // Calculate the momenta of had1 and clu2 in the Sys frame first, 
+    // and then boost back in the LAB frame.
+    Lorentz5Momentum phad1, pclu2;
+    Kinematics::twoBodyDecay(pSystem, ptrhad->mass(), pw.mass(), 
+			     u.vect().unit(), phad1, pclu2);
+    // set momentum of first hadron.
+    ptrhad->set5Momentum( phad1 );
+    // set hadron vertex position to the parent cluster position.    
+    ptrhad->setLabVertex(cluster->vertex());
+    // add hadron
+    cluster->addChild(ptrhad);
+    finalhadrons.push_back(ptrhad);
+    // reshuffle the leptons
+    // boost the leptons to the rest frame of the system
+    Boost boost1(-pw.boostVector());
+    Boost boost2( pclu2.boostVector());
+    for(unsigned int ix=0;ix<leptons.size();++ix) {
+      leptons[ix]->deepBoost(boost1);
+      leptons[ix]->deepBoost(boost2);
+    }
+    return true;
   }
-  Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
-  ptrhad->set5Momentum( phad1 );         // set momentum of first hadron.
-  ptrhad->setLabVertex(cluster->vertex()); // set hadron vertex position to the
-  // parent cluster position.
-  pstep->addDecayProduct(cluster, ptrhad);
-  // reshuffle the leptons
-  // boost the leptons to the rest frame of the system
-  Boost boost1(-pleptons.boostVector());
-  Boost boost2( pclu2.boostVector());
-  for(unsigned int ix=0;ix<nlep;++ix) {
-    leptons[ix]->deepBoost(boost1);
-    leptons[ix]->deepBoost(boost2);
+  else {
+    return false;
   }
-  return true;
 }

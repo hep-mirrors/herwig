@@ -37,10 +37,10 @@ void PartonSplitter::Init() {
 }
 
 
-tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
-  tPVector newtag;
+void PartonSplitter::split(PVector & tagged) {
+  PVector newtag;
   // Loop over all of the particles in the event.
-  for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
+  for(PVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
     // only considering gluons so add other particles to list of particles
     if( (**pit).data().id() != ParticleID::g ) {
       newtag.push_back(*pit);
@@ -60,18 +60,21 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     Energy Q0 = getParticleData(ParticleID::g)->constituentMass();
     ptrQ->scale(Q0*Q0);
     ptrQbar->scale(Q0*Q0);
-    pstep->addDecayProduct(*pit,ptrQ,false);
+
     (*pit)->colourLine()->addColoured(ptrQ);
-    pstep->addDecayProduct(*pit,ptrQbar,false);
-    (*pit)->antiColourLine()->addAntiColoured(ptrQbar);
+    (*pit)->addChild(ptrQ);
     newtag.push_back(ptrQ);
+
+    (*pit)->antiColourLine()->addAntiColoured(ptrQbar);
+    (*pit)->addChild(ptrQbar);
     newtag.push_back(ptrQbar);
-    //pstep->fixColourFlow();
   }
-  return newtag;
+  swap(tagged,newtag);
 }
 
-void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptrQbar){
+void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, 
+					PPtr & ptrQ, 
+					PPtr & ptrQbar){
 
   // Choose the flavour of the quark (u or d with equal 50% probability)
   long newId = 0;

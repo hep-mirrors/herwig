@@ -184,11 +184,13 @@ void SMWZGammaDecayer::Init() {
 
 }
 
-int SMWZGammaDecayer::modeNumber(bool & ,const DecayMode & dm) const {
+int SMWZGammaDecayer::modeNumber(bool & cc,tcPDPtr parent, 
+				 const PDVector & children) const {
+  cc = false;
   int imode(-1);
-  int id0(dm.parent()->id());
-  if(dm.products().size()!=3){return imode;}
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id0(parent->id());
+  if(children.size()!=3){return imode;}
+  PDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
@@ -210,7 +212,7 @@ int SMWZGammaDecayer::modeNumber(bool & ,const DecayMode & dm) const {
 }
 
 double SMWZGammaDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
-	   const ParticleVector & decay) const {
+			     const ParticleVector & decay) const {
   if(decay[2]->momentum().e()<_emin) return 0.;
   // check if the incoming particle has a spin info 
   tcVectorSpinPtr inspin;

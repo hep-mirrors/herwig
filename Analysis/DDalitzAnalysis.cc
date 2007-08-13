@@ -207,235 +207,247 @@ void DDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _m2plus1->topdrawOutput(output,true,false,false,false,"RED",
+  _m2plus1->topdrawOutput(output,true,true,false,false,"RED",
 			 "m0+1223 for D203RK203P2+3P2-3",
 			 " X XX X      X XW X XGX XGX X",
 			 "1/GdG/m0+1223/GeV2-23",
 			 "  F F  X XX X    X  X",
 			 "m0+1223/GeV223",
 			 " X XX X    X X");
-  _m2minus1->topdrawOutput(output,true,false,false,false,"RED",
+  _m2minus1->topdrawOutput(output,true,true,false,false,"RED",
 			  "m0-1223 for D203RK203P2+3P2-3",
 			  " X XX X      X XW X XGX XGX X",
 			  "1/GdG/m0-1223/GeV2-23",
 			  "  F F  X XX X    X  X",
 			  "m0-1223/GeV223",
 			  " X XX X    X X");
-  _m2pipi1->topdrawOutput(output,true,false,false,false,"RED",
+  _m2pipi1->topdrawOutput(output,true,true,false,false,"RED",
 			 "m0PP1223 for D203RK203P2+3P2-3",
 			 " XGGXX X      X XW X XGX XGX X",
 			 "1/GdG/m0PP1223/GeV2-23",
 			 "  F F  XGGXX X    X  X",
 			 "m0PP1223/GeV223",
 			 " XGGXX X    X X");
-   output << "new frame\n";
-   output << "set font duplex\n";
-   output << "set limits x 0 3 y 0 3\n";
-   output << "set order x y \n";
-   output << "title top \"Dalitz plot for D203RK203P2+3P2-3\"\n";
-   output << "case      \"                 X XW X XGX XGX X\"\n";
-   output << "title left   \"m0-1223/GeV223\"\n";
-   output << "case         \" X XX X    X X\"\n";
-   output << "title bottom \"m0+1223/GeV223\"\n";
-   output << "case         \" X XX X    X X\"\n";
-   for(unsigned int ix=0;ix<_points1.size();++ix) {
-     output << _points1[ix].first /GeV2 << " "
-	    << _points1[ix].second/GeV2 << "\n"; 
-     if(ix%50000==0) output << "plot\n";
-   }
-   output << "plot\n";
-  _m2minus2->topdrawOutput(output,true,false,false,false,"RED",
+  _m2minus2->topdrawOutput(output,true,true,false,false,"RED",
 			   "m0K2-3P2031223 for D203RK2-3P2+3P203",
 			   " X X XGX XXX X      X XW X XGX XGX X",
 			   "1/GdG/m0K2-3P2031223/GeV2-23",
 			   "  F F  X X XGX XXX X    X  X",
 			   "m0K2-3P2031223/GeV223",
 			   " X X XGX XXX X    X X");
-  _m2neutral2->topdrawOutput(output,true,false,false,false,"RED",
+  _m2neutral2->topdrawOutput(output,true,true,false,false,"RED",
 			     "m0K2-3P2+31223 for D203RK2-3P2+3P203",
 			     " X X XGX XXX X      X XW X XGX XGX X",
 			     "1/GdG/m0K2-3P2+31223/GeV2-23",
 			     "  F F  X X XGX XXX X    X  X",
 			     "m0K2-3P2+31223/GeV223",
 			     " X X XGX XXX X    X X");
-  _m2pipi2->topdrawOutput(output,true,false,false,false,"RED",
+  _m2pipi2->topdrawOutput(output,true,true,false,false,"RED",
 			 "m0PP1223 for D203RK2-3P2+3P203",
 			 " XGGXX X      X XW X XGX XGX X",
 			 "1/GdG/m0PP1223/GeV2-23",
 			 "  F F  XGGXX X    X  X",
 			 "m0PP1223/GeV223",
 			 " XGGXX X    X X");
-   output << "new frame\n";
-   output << "set font duplex\n";
-   output << "set limits x 0 3 y 0 3\n";
-   output << "set order x y \n";
-   output << "title top \"Dalitz plot for D203RK2-3P2+3P203\"\n";
-   output << "case      \"                 X XW X XGX XGX X\"\n";
-   output << "title left   \"m0-1223/GeV223\"\n";
-   output << "case         \" X XX X    X X\"\n";
-   output << "title bottom \"m0+1223/GeV223\"\n";
-   output << "case         \" X XX X    X X\"\n";
-   for(unsigned int ix=0;ix<_points2.size();++ix) {
-     output << _points2[ix].first /GeV2 << " "
-	    << _points2[ix].second/GeV2 << "\n"; 
-     if(ix%50000==0) output << "plot\n";
-   }
-   output << "plot\n";
-  _mKpilow3->topdrawOutput(output,true,false,false,false,"RED",
+  _mKpilow3->topdrawOutput(output,true,true,false,false,"RED",
 			   "m0K2-3P2+31223 for D2+3RK2-3P2+3P2+3 low",
 			   " X X XGX XXX X      X XW X XGX XGX X    ",
 			   "1/GdG/m0K2-3P2+31223/GeV2-23",
 			   "  F F  X X XGX XXX X    X  X",
 			   "m0K2-3P2+31223/GeV223",
 			   " X X XGX XXX X    X X");
-  _mKpihigh3->topdrawOutput(output,true,false,false,false,"RED",
+  _mKpihigh3->topdrawOutput(output,true,true,false,false,"RED",
 			   "m0K2-3P2+31223 for D2+3RK2-3P2+3P2+3 high",
 			   " X X XGX XXX X      X XW X XGX XGX X     ",
 			   "1/GdG/m0K2-3P2+31223/GeV2-23",
 			   "  F F  X X XGX XXX X    X  X",
 			   "m0K2-3P2+31223/GeV223",
 			   " X X XGX XXX X    X X");
-  _mKpiall3->topdrawOutput(output,true,false,false,false,"RED",
+  _mKpiall3->topdrawOutput(output,true,true,false,false,"RED",
 			   "m0K2-3P2+31223 for D2+3RK2-3P2+3P2+3 all",
 			   " X X XGX XXX X      X XW X XGX XGX X    ",
 			   "1/GdG/m0K2-3P2+31223/GeV2-23",
 			   "  F F  X X XGX XXX X    X  X",
 			   "m0K2-3P2+31223/GeV223",
 			   " X X XGX XXX X    X X");
-  _mpipi3->topdrawOutput(output,true,false,false,false,"RED",
+  _mpipi3->topdrawOutput(output,true,true,false,false,"RED",
 			 "m0P2+3P2+31223 for D2+3RK2-3P2+3P2+3 all",
 			 " XGX XGX XXX X      X XW X XGX XGX X    ",
 			 "1/GdG/m0P2+3P2+31223/GeV2-23",
 			 "  F F  XGX XGX XXX X    X  X",
 			 "m0P2+3P2+31223/GeV223",
 			 " XGX XGX XXX X    X X");
-   output << "new frame\n";
-   output << "set font duplex\n";
-   output << "set limits x 0 3 y 0 3\n";
-   output << "set order x y \n";
-   output << "title top \"Dalitz plot for D2+3RK2-3P2+3P2+3\"\n";
-   output << "case      \"                 X XW X XGX XGX X\"\n";
-   output << "title left   \"m0K2-3P2+31223\"\n";
-   output << "case         \" X X XGX XXX X\"\n";
-   output << "title bottom \"m0P2+3P2+31223\"\n";
-   output << "case         \" XGX XGX XXX X\"\n";
-   for(unsigned int ix=0;ix<_points3.size();++ix) {
-     output << _points3[ix].first /GeV2 << " "
-	    << _points3[ix].second/GeV2 << "\n"; 
-     if(ix%50000==0) output << "plot\n";
-   }
-   output << "plot\n";
-  _m2Kpip4->topdrawOutput(output,true,false,false,false,"RED",
+  _m2Kpip4->topdrawOutput(output,true,true,false,false,"RED",
 			 "m0K203P2+31223 for D2+3RK203P2+3P203",
 			 " X X XGX XXX X      X XW X XGX XGX X",
 			 "1/GdG/m0K203P2+31223/GeV2-23",
 			 "  F F  X X XGX XXX X    X  X",
 			 "m0K203P2+31223/GeV223",
 			 " X X XGX XXX X    X X");
-  _m2pipi4->topdrawOutput(output,true,false,false,false,"RED",
+  _m2pipi4->topdrawOutput(output,true,true,false,false,"RED",
 			  "m0P203P2+31223 for D2+3RK203P2+3P203",
 			  " XGX XGX XXX X      X XW X XGX XGX X",
 			  "1/GdG/m0P203P2+31223/GeV2-23",
 			  "  F F  XGX XGX XXX X    X  X",
 			  "m0P203P2+31223/GeV223",
 			  " XGX XGX XXX X    X X");
-  _m2Kpi04->topdrawOutput(output,true,false,false,false,"RED",
+  _m2Kpi04->topdrawOutput(output,true,true,false,false,"RED",
 			 "m0K203P2-31223 for D2+3RK203P2+3P203",
 			 " X X XGX XXX X      X XW X XGX XGX X",
 			 "1/GdG/m0K203P2-31223/GeV2-23",
 			 "  F F  X X XGX XXX X    X  X",
 			 "m0K203P2-31223/GeV223",
 			 " X X XGX XXX X    X X");
-   output << "new frame\n";
-   output << "set font duplex\n";
-   output << "set limits x 0 3 y 0 3\n";
-   output << "set order x y \n";
-   output << "title top \"Dalitz plot for D2+3RK203P2+3P203\"\n";
-   output << "case      \"                 X XW X XGX XGX X\"\n";
-   output << "title left   \"m0P2+3P2031223\"\n";
-   output << "case         \" XGX XGX XXX X\"\n";
-   output << "title bottom \"m0K203P2031223\"\n";
-   output << "case         \" X X XGX XXX X\"\n";
-   for(unsigned int ix=0;ix<_points4.size();++ix) {
-     output << _points4[ix].first /GeV2 << " "
-	    << _points4[ix].second/GeV2 << "\n"; 
-     if(ix%50000==0) output << "plot\n";
-   }
-   output << "plot\n";
-  _mkppim5->topdrawOutput(output,true,false,false,false,"RED",
+  _mkppim5->topdrawOutput(output,true,true,false,false,"RED",
 			  "m0K2+3P2-31223 for D2+3RK2+3P2-3P2+3",
 			  " X X XGX XXX X      X XW X XGX XGX X",
 			  "1/GdG/m0K2+3P2-31223/GeV2-23",
 			  "  F F  X X XGX XXX X    X  X",
 			  "m0K2+3P2-31223/GeV223",
 			  " X X XGX XXX X    X X");
-  _mkppip5->topdrawOutput(output,true,false,false,false,"RED",
+  _mkppip5->topdrawOutput(output,true,true,false,false,"RED",
 			  "m0K2+3P2+31223 for D2+3RK2+3P2-3P2+3",
 			  " X X XGX XXX X      X XW X XGX XGX X",
 			  "1/GdG/m0K2+3P2+31223/GeV2-23",
 			  "  F F  X X XGX XXX X    X  X",
 			  "m0K2+3P2+31223/GeV223",
 			  " X X XGX XXX X    X X");
-  _mpippim5->topdrawOutput(output,true,false,false,false,"RED",
+  _mpippim5->topdrawOutput(output,true,true,false,false,"RED",
 			   "m0P2+3P2-31223 for D2+3RK2+3P2-3P2+3",
 			   " XGX XGX XXX X      X XW X XGX XGX X",
 			   "1/GdG/m0P2+3P2-31223/GeV2-23",
 			   "  F F  XGX XGX XXX X    X  X",
 			   "m0P2+3P2-31223/GeV223",
 			   " XGX XGX XXX X    X X");
-   output << "new frame\n";
-   output << "set font duplex\n";
-   output << "set limits x 0 3 y 0 3\n";
-   output << "set order x y \n";
-   output << "title top \"Dalitz plot for D2+3RK2+3P2-3P2+3\"\n";
-   output << "case      \"                 X XW X XGX XGX X\"\n";
-   output << "title left   \"m0P2+3P2-31223\"\n";
-   output << "case         \" XGX XGX XXX X\"\n";
-   output << "title bottom \"m0K2+3P2-31223\"\n";
-   output << "case         \" X X XGX XXX X\"\n";
-   for(unsigned int ix=0;ix<_points5.size();++ix) {
-     output << _points5[ix].first /GeV2 << " "
-	    << _points5[ix].second/GeV2 << "\n"; 
-     if(ix%50000==0) output << "plot\n";
-   }
-   output << "plot\n";
-  _mkppim6->topdrawOutput(output,true,false,false,false,"RED",
+  _mkppim6->topdrawOutput(output,true,true,false,false,"RED",
 			  "m0K2+3P2-31223 for D0s12+3RK2+3P2-3P2+3",
 			  " X X XGX XXX X      X XX XW X XGX XGX X",
 			  "1/GdG/m0K2+3P2-31223/GeV2-23",
 			  "  F F  X X XGX XXX X    X  X",
 			  "m0K2+3P2-31223/GeV223",
 			  " X X XGX XXX X    X X");
-  _mkppip6->topdrawOutput(output,true,false,false,false,"RED",
+  _mkppip6->topdrawOutput(output,true,true,false,false,"RED",
 			  "m0K2+3P2+31223 for D0s12+3RK2+3P2-3P2+3",
 			  " X X XGX XXX X      X XX XW X XGX XGX X",
 			  "1/GdG/m0K2+3P2+31223/GeV2-23",
 			  "  F F  X X XGX XXX X    X  X",
 			  "m0K2+3P2+31223/GeV223",
 			  " X X XGX XXX X    X X");
-  _mpippim6->topdrawOutput(output,true,false,false,false,"RED",
+  _mpippim6->topdrawOutput(output,true,true,false,false,"RED",
 			   "m0P2+3P2-31223 for D0s12+3RK2+3P2-3P2+3",
 			   " XGX XGX XXX X      X XX XW X XGX XGX X",
 			   "1/GdG/m0P2+3P2-31223/GeV2-23",
 			   "  F F  XGX XGX XXX X    X  X",
 			   "m0P2+3P2-31223/GeV223",
 			   " XGX XGX XXX X    X X");
-   output << "new frame\n";
-   output << "set font duplex\n";
-   output << "set limits x 0 3.5 y 0 2.5\n";
-   output << "set order x y \n";
-   output << "title top \"Dalitz plot for D0s12+3RK2+3P2-3P2+3\"\n";
-   output << "case      \"                 X XX XW X XGX XGX X\"\n";
-   output << "title left   \"m0P2+3P2-31223\"\n";
-   output << "case         \" XGX XGX XXX X\"\n";
-   output << "title bottom \"m0K2+3P2-31223\"\n";
-   output << "case         \" X X XGX XXX X\"\n";
-   for(unsigned int ix=0;ix<_points6.size();++ix) {
-     output << _points6[ix].first /GeV2 << " "
-	    << _points6[ix].second/GeV2 << "\n"; 
-     if(ix%50000==0) output << "plot\n";
-   }
-   output << "plot\n";
+  if(!_points1.empty()) {
+    output << "new frame\n";
+    output << "set font duplex\n";
+    output << "set limits x 0 3 y 0 3\n";
+    output << "set order x y \n";
+    output << "title top \"Dalitz plot for D203RK203P2+3P2-3\"\n";
+    output << "case      \"                 X XW X XGX XGX X\"\n";
+    output << "title left   \"m0-1223/GeV223\"\n";
+    output << "case         \" X XX X    X X\"\n";
+    output << "title bottom \"m0+1223/GeV223\"\n";
+    output << "case         \" X XX X    X X\"\n";
+    for(unsigned int ix=0;ix<_points1.size();++ix) {
+      output << _points1[ix].first /GeV2 << " "
+	     << _points1[ix].second/GeV2 << "\n"; 
+      if(ix%50000==0) output << "plot\n";
+    }
+    output << "plot\n";
+  }
+  if(!_points2.empty()) {
+    output << "new frame\n";
+    output << "set font duplex\n";
+    output << "set limits x 0 3 y 0 3\n";
+    output << "set order x y \n";
+    output << "title top \"Dalitz plot for D203RK2-3P2+3P203\"\n";
+    output << "case      \"                 X XW X XGX XGX X\"\n";
+    output << "title left   \"m0-1223/GeV223\"\n";
+    output << "case         \" X XX X    X X\"\n";
+    output << "title bottom \"m0+1223/GeV223\"\n";
+    output << "case         \" X XX X    X X\"\n";
+    for(unsigned int ix=0;ix<_points2.size();++ix) {
+      output << _points2[ix].first /GeV2 << " "
+	     << _points2[ix].second/GeV2 << "\n"; 
+      if(ix%50000==0) output << "plot\n";
+    }
+    output << "plot\n";
+  }
+  if(!_points3.empty()) {
+    output << "new frame\n";
+    output << "set font duplex\n";
+    output << "set limits x 0 3 y 0 3\n";
+    output << "set order x y \n";
+    output << "title top \"Dalitz plot for D2+3RK2-3P2+3P2+3\"\n";
+    output << "case      \"                 X XW X XGX XGX X\"\n";
+    output << "title left   \"m0K2-3P2+31223\"\n";
+    output << "case         \" X X XGX XXX X\"\n";
+    output << "title bottom \"m0P2+3P2+31223\"\n";
+    output << "case         \" XGX XGX XXX X\"\n";
+    for(unsigned int ix=0;ix<_points3.size();++ix) {
+      output << _points3[ix].first /GeV2 << " "
+	     << _points3[ix].second/GeV2 << "\n"; 
+      if(ix%50000==0) output << "plot\n";
+    }
+    output << "plot\n";
+  }
+  if(!_points4.empty()) {
+    output << "new frame\n";
+    output << "set font duplex\n";
+    output << "set limits x 0 3 y 0 3\n";
+    output << "set order x y \n";
+    output << "title top \"Dalitz plot for D2+3RK203P2+3P203\"\n";
+    output << "case      \"                 X XW X XGX XGX X\"\n";
+    output << "title left   \"m0P2+3P2031223\"\n";
+    output << "case         \" XGX XGX XXX X\"\n";
+    output << "title bottom \"m0K203P2031223\"\n";
+    output << "case         \" X X XGX XXX X\"\n";
+    for(unsigned int ix=0;ix<_points4.size();++ix) {
+      output << _points4[ix].first /GeV2 << " "
+	     << _points4[ix].second/GeV2 << "\n"; 
+      if(ix%50000==0) output << "plot\n";
+    }
+    output << "plot\n";
+  }
+  if(!_points5.empty()) {
+    output << "new frame\n";
+    output << "set font duplex\n";
+    output << "set limits x 0 3 y 0 3\n";
+    output << "set order x y \n";
+    output << "title top \"Dalitz plot for D2+3RK2+3P2-3P2+3\"\n";
+    output << "case      \"                 X XW X XGX XGX X\"\n";
+    output << "title left   \"m0P2+3P2-31223\"\n";
+    output << "case         \" XGX XGX XXX X\"\n";
+    output << "title bottom \"m0K2+3P2-31223\"\n";
+    output << "case         \" X X XGX XXX X\"\n";
+    for(unsigned int ix=0;ix<_points5.size();++ix) {
+      output << _points5[ix].first /GeV2 << " "
+	     << _points5[ix].second/GeV2 << "\n"; 
+      if(ix%50000==0) output << "plot\n";
+    }
+    output << "plot\n";
+  }
+  if(!_points6.empty()) {
+    output << "new frame\n";
+    output << "set font duplex\n";
+    output << "set limits x 0 3.5 y 0 2.5\n";
+    output << "set order x y \n";
+    output << "title top \"Dalitz plot for D0s12+3RK2+3P2-3P2+3\"\n";
+    output << "case      \"                 X XX XW X XGX XGX X\"\n";
+    output << "title left   \"m0P2+3P2-31223\"\n";
+    output << "case         \" XGX XGX XXX X\"\n";
+    output << "title bottom \"m0K2+3P2-31223\"\n";
+    output << "case         \" X X XGX XXX X\"\n";
+    for(unsigned int ix=0;ix<_points6.size();++ix) {
+      output << _points6[ix].first /GeV2 << " "
+	     << _points6[ix].second/GeV2 << "\n"; 
+      if(ix%50000==0) output << "plot\n";
+    }
+    output << "plot\n";
+  }
 }
  
 void DDalitzAnalysis::doinitrun() {

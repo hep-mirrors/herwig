@@ -768,14 +768,15 @@ void GoityRobertsDecayer::dataBaseOutput(ofstream & output, bool header) const {
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
-bool GoityRobertsDecayer::accept(const DecayMode & dm) const {
+bool GoityRobertsDecayer::accept(tcPDPtr parent,
+				 const PDVector & children) const {
   if(!_current) return false;
   bool allowed(false);
-  int id0(dm.parent()->id()),idtemp,idD(0),idp(0);
+  int id0(parent->id()),idtemp,idD(0),idp(0);
   vector<int> idother;
   // check number of decay products
-  if(dm.products().size()!=4) return false;
-  ParticleMSet::const_iterator pit(dm.products().begin()),pend(dm.products().end());
+  if(children.size()!=4) return false;
+  PDVector::const_iterator pit(children.begin()),pend(children.end());
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
     if(abs(idtemp)<=16){idother.push_back(idtemp);}
@@ -813,11 +814,12 @@ bool GoityRobertsDecayer::accept(const DecayMode & dm) const {
   return _current->accept(idother);
 }
 
-int  GoityRobertsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+int  GoityRobertsDecayer::modeNumber(bool & cc,tcPDPtr parent,
+				     const PDVector & children) const {
   // find the ids of the particles for the decay current
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  ParticleMSet::const_iterator pend = dm.products().end();
-  int id0(dm.parent()->id()),idD(0),idtemp;
+  PDVector::const_iterator pit = children.begin();
+  PDVector::const_iterator pend = children.end();
+  int id0(parent->id()),idD(0),idtemp;
   vector<int> idother;
   // find the pdg code for the D meson
   for( ; pit!=pend;++pit) {
@@ -852,11 +854,11 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   ScalarWaveFunction(temp2,outgoing,true,vertex);
   // calculate some common variables
   Energy mb(inpart.mass()),md(decay[0]->mass());
-  double omega(inpart.momentum()*decay[0]->momentum()/inpart.mass()/decay[0]->mass());
+  double omega(inpart.momentum()*decay[0]->momentum()/mb/md);
   Complex ii(0.,1.);
   // dot products we will need
-  Energy dotv (inpart   .momentum()*decay[1]->momentum()/inpart   .mass()),
-         dotvp(decay[0]->momentum()*decay[1]->momentum()/decay[0]->mass());
+  Energy dotv (inpart   .momentum()*decay[1]->momentum()/mb),
+         dotvp(decay[0]->momentum()*decay[1]->momentum()/md);
   // delta M parameters
   complex<Energy> dmt1(_deltaM1P-0.5*ii*_gamma1P);
   complex<Energy> dmt2(_deltaM1D-0.5*ii*_gamma1D);
@@ -888,10 +890,14 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   // get the IW form factors and calculate some useful prefactors
   double xi,xi1,rho1,rho2;
   calculateFormFactors(omega,xi,xi1,rho1,rho2);
-  InvEnergy xfact  = 0.5*_g/_fpi*xi;
-  InvEnergy a1fact = _alpha1*rho1/2./_fpi;
-  InvEnergy a2fact = _alpha2*rho2/6./_fpi;
-  InvEnergy a3fact = _alpha3*xi1 /2./_fpi;
+//   InvEnergy xfact  = 0.5*_g/_fpi*xi;
+//   InvEnergy a1fact = _alpha1*rho1/2./_fpi;
+//   InvEnergy a2fact = _alpha2*rho2/6./_fpi;
+//   InvEnergy a3fact = _alpha3*xi1 /2./_fpi;
+   InvEnergy xfact  = 0./MeV;
+   InvEnergy a1fact = _alpha1*rho1/2./_fpi;
+   InvEnergy a2fact = 0./MeV;
+   InvEnergy a3fact = 0./MeV;
   complex<Energy> dotvb  = dotv  + dmb;
   complex<Energy> dotvpd = dotvp - dmd;
   // hadronic current

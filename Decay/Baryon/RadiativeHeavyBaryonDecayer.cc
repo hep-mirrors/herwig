@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RadiativeHeavyBaryonDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -115,16 +110,15 @@ void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
     }
 }
 
-int RadiativeHeavyBaryonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int RadiativeHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
+					    const PDVector & children) const {
   int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return imode;}
+  if(children.size()!=2){return imode;}
   // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),ibaryon;
+  int id0(parent->id());
+  int id1(children[0]->id());
+  int id2(children[1]->id()),ibaryon;
   if(id1==ParticleID::gamma){ibaryon=id2;}
   else if(id2==ParticleID::gamma){ibaryon=id1;}
   else {return imode;}
