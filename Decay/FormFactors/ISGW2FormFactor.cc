@@ -14,8 +14,8 @@
 using namespace Herwig;
 
 ISGW2FormFactor::ISGW2FormFactor() { 
-  // include the a(omega) piece
-  _includeaW = true;
+  // include the a(omega) piece (off by default)
+  _includeaW = false;
   // values of a_S at matching scale
   _alphamuQM=0.6;
   // the quark masses
@@ -548,6 +548,14 @@ ClassDescription<ISGW2FormFactor> ISGW2FormFactor::initISGW2FormFactor;
 // Definition of the static class description member.
 
 void ISGW2FormFactor::Init() {
+
+  static ClassDocumentation<ISGW2FormFactor> documentation
+    ("The ISGW2FormFactor class implements the ISGW2 model of "
+     "PRD52, 2783.",
+     "The ISGW2 form factor model \\cite{Scora:1995ty} was used.",
+     "\\bibitem{Scora:1995ty} D.~Scora and N.~Isgur,"
+     "Phys.\\ Rev.\\  D {\\bf 52} (1995) 2783 [arXiv:hep-ph/9503486].\n"
+     "%%CITATION = PHRVA,D52,2783;%%\n");
 
   static Parameter<ISGW2FormFactor,Energy> interfaceDownMass
     ("DownMass",
