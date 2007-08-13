@@ -31,7 +31,6 @@ create Herwig::ClusterFissioner theClusterFissioner
 create Herwig::LightClusterDecayer theLightClusterDecayer
 create Herwig::ClusterDecayer theClusterDecayer
 create Herwig::HwppSelector theHadronSelector
-create Herwig::PartonicHadronizer PartonicHadronizer
 create Herwig::ForcedSplitting theForcedSplitting
 
 # create the underlying event stuff
@@ -55,12 +54,6 @@ set theForcedSplitting:AlphaS /Defaults/Handlers/Shower/theShowerAlphaQCD
 set theClusterFissioner:HadronSelector theHadronSelector 
 set theLightClusterDecayer:HadronSelector theHadronSelector
 set theClusterDecayer:HadronSelector theHadronSelector
-set PartonicHadronizer:PartonSplitter thePartonSplitter
-set PartonicHadronizer:ClusterFinder theClusterFinder
-set PartonicHadronizer:ColourReconnector theColourReconnector
-set PartonicHadronizer:ClusterFissioner theClusterFissioner
-set PartonicHadronizer:LightClusterDecayer theLightClusterDecayer
-set PartonicHadronizer:ClusterDecayer theClusterDecayer
 #
 cd /Defaults/Handlers/Hadronization/Cluster
 set theColourReconnector:ColourReconnection Off

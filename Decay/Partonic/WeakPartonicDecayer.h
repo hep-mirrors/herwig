@@ -5,7 +5,7 @@
 // This is the declaration of the WeakPartonicDecayer class.
 //
 
-#include "Herwig++/Decay/HwDecayerBase.h"
+#include "PartonicDecayerBase.h"
 #include "WeakPartonicDecayer.fh"
 
 namespace Herwig {
@@ -40,7 +40,7 @@ using namespace ThePEG;
  *
  * @see HeavyDecayer
  */
-class WeakPartonicDecayer: public HwDecayerBase {
+class WeakPartonicDecayer: public PartonicDecayerBase {
 
 public:
 
@@ -152,7 +152,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::WeakPartonicDecayer,1> {
   /** Typedef of the first base class of WeakPartonicDecayer. */
-  typedef Herwig::HwDecayerBase NthBase;
+  typedef Herwig::PartonicDecayerBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

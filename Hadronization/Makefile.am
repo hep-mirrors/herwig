@@ -19,6 +19,5 @@ HwppSelector.cc HwppSelector.h HwppSelector.icc HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h \
 LightClusterDecayer.fh LightClusterDecayer.icc \
 PartonSplitter.cc PartonSplitter.h PartonSplitter.fh PartonSplitter.icc \
-PartonicHadronizer.h PartonicHadronizer.fh PartonicHadronizer.icc PartonicHadronizer.cc \
 Remnant.h Remnant.icc Remnant.cc Remnant.fh \
 ForcedSplitting.h ForcedSplitting.icc ForcedSplitting.cc ForcedSplitting.fh

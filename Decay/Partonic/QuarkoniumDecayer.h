@@ -6,7 +6,7 @@
 //
 
 #include <ThePEG/Config/ThePEG.h>
-#include <Herwig++/Decay/HwDecayerBase.h>
+#include <PartonicDecayerBase.h>
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
@@ -45,7 +45,7 @@ using namespace ThePEG;
  * @see Decayer
  *
  */
-class QuarkoniumDecayer: public HwDecayerBase {
+class QuarkoniumDecayer: public PartonicDecayerBase {
 
 public:
 
@@ -136,7 +136,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::QuarkoniumDecayer,1> {
   /** Typedef of the base class of QuarkoniumDecayer. */
-  typedef Herwig::HwDecayerBase NthBase;
+  typedef Herwig::PartonicDecayerBase NthBase;
 };
 
 /**

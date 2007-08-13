@@ -80,7 +80,7 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     for(unsigned int ix=0; ix<2;++ix) partons[ix]->setMomentum(pout[ix]);
     if(partons[0]->coloured()) {
       if(partons[0]->id() > 0) partons[0]->antiColourNeighbour(partons[1]);
-      else                      partons[0]->    colourNeighbour(partons[1]);
+      else                     partons[0]->    colourNeighbour(partons[1]);
     }
   }
   // 3-body decays

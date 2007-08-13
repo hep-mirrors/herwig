@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PartonicDecayerBase class.
+//
+#ifndef HERWIG_PartonicDecayerBase_FH
+#define HERWIG_PartonicDecayerBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class PartonicDecayerBase;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::PartonicDecayerBase,PartonicDecayerBasePtr);
+
+}
+
+#endif

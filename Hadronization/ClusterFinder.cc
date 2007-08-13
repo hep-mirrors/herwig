@@ -180,7 +180,8 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
       // is the case then inform the cluster.   
       // this will only work for baryon collisions  
       for (int i=0; i<iElement; ++i) {
-	if(connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
+	if(!connected[i]->parents().empty()&&
+	   connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
 	   DiquarkMatcher::Check(connected[i]->id()))
 	  cluPtr->isBeamCluster(connected[i]);
       }

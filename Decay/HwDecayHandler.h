@@ -5,7 +5,6 @@
 // This is the declaration of the HwDecayHandler class.
 //
 #include "ThePEG/Handlers/DecayHandler.h"
-#include "Herwig++/Hadronization/PartonicHadronizer.h"
 #include "HwDecayHandler.fh"
 
 namespace Herwig {
@@ -126,19 +125,10 @@ private:
 private:
 
   /**
-   * Pointer to the object for the hadronization of partonic decays
-   */
-  PartonicHadronizerPtr _partonhad;
-
-  /**
-   *  Number of tries to regenerate a partonic decay to sucessfully hadronize it
-   */
-  unsigned int _hadtry;
-
-  /**
    *  Option for adding particles in a new Step
    */
   bool _newstep;
+
 };
 }
 

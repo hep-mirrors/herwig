@@ -127,9 +127,10 @@ private:
    * special case of a semileptonic partonic b/c decay 
    * @param hadron The hadron to be produced
    * @param cluster The cluster to be reshuffled
-   * @param step The step into which the particles are inserted
+   * @param finalhadrons The vector of outgoing hadrons
    */
-  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster, tPVector & finalhadrons);
+  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster,
+			 tPVector & finalhadrons);
 
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.

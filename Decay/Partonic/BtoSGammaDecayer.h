@@ -5,7 +5,7 @@
 // This is the declaration of the BtoSGammaDecayer class.
 //
 
-#include "Herwig++/Decay/HwDecayerBase.h"
+#include "PartonicDecayerBase.h"
 #include "Herwig++/Decay/FormFactors/BtoSGammaHadronicMass.h"
 #include "BtoSGammaDecayer.fh"
 
@@ -17,7 +17,7 @@ using namespace ThePEG;
  * Here is the documentation of the BtoSGammaDecayer class.
  *
  */
-class BtoSGammaDecayer: public HwDecayerBase {
+class BtoSGammaDecayer: public PartonicDecayerBase {
 
 public:
 
@@ -126,7 +126,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::BtoSGammaDecayer,1> {
   /** Typedef of the first base class of BtoSGammaDecayer. */
-  typedef Herwig::HwDecayerBase NthBase;
+  typedef Herwig::PartonicDecayerBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
