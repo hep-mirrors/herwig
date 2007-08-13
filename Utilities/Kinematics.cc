@@ -110,14 +110,12 @@ bool Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
     // qq is ((m2+m3)^2 - m23^2)(|m2-m3|^2-m23^2)
     qq = (cc-ff)*(dd-ff);
     
-    if(fcn != NULL) {
-      ww = (*fcn)(ff,a1,b1,c1);
-    } else ww = 1.0;
-    //if(MECode == 100 || MECode == 101) ww = EMMasslessWt(ff,a1,b1,c1);
-    //else ww =  PhaseSpaceWt();
+    // weight
+    ww = (fcn != NULL) ? (*fcn)(ff,a1,b1,c1) : 1.0;
     ww = sqr(ww);
     rr = ee*ff*UseRandom::rnd();
-  } while(pp*qq*ww < rr*rr);
+  } 
+  while(pp*qq*ww < rr*rr);
   
   // ff is the mass squared of subsystem 23
   // do 2 body decays 0->1+23, 23->2+3
