@@ -616,10 +616,10 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
 	+_c3rho *amplitude(1,ct2,pres2.mass(),_wrho0 ,_mrho0 );
     }
     else if(ichan==0) {
-      amp = _c3K892*amplitude(1,ct1,pres1.mass(),_wK892m,_mK892m);
+      amp = _c3rho *amplitude(1,ct2,pres2.mass(),_wrho0 ,_mrho0 );
     }
     else if(ichan==1) {
-      amp = _c3rho *amplitude(1,ct2,pres2.mass(),_wrho0 ,_mrho0 );
+      amp = _c3K892*amplitude(1,ct1,pres1.mass(),_wK892m,_mK892m);
     }
   }
   // now compute the matrix element
