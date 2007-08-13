@@ -26,6 +26,9 @@ class Interpolator: public Interfaced {
 
 public:
 
+  /**
+   *  Pointer to an Interpolator
+   */
   typedef typename Ptr<Interpolator<ValT,ArgT> >::pointer Ptr;
 
   /** @name Standard constructors and destructors. */

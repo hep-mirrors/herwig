@@ -17,10 +17,10 @@ using namespace ThePEG;
  *  modes close to the on-shell mass of the particle. 
  *
  *  The form based on the Flatte parameterisation of PLB63, 224, we use a weight
- * \[\frac{1}{\pi}\frac{m\Gamma(m)}{|M^2-m^2-i\sum_ig^2_i\rho_i|^2}\],
+ * \f[\frac{1}{\pi}\frac{m\Gamma(m)}{|M^2-m^2-i\sum_ig^2_i\rho_i|^2}\f],
  * where
  * -  \f$g_i\f$  is the coupling for a given decay mode
- * -  \f$\rho_i=2p_i/m$/\f$ is Lorentz-invariant phase-space where $p_i$ is the 
+ * -  \f$\rho_i=2p_i/m\f$ is Lorentz-invariant phase-space where \f$p_i\f$ is the 
  *     momentum release in the decay, this analytically continued
  *     below the threshold.
  * In this case the running width given by the sum of the running partial widths
