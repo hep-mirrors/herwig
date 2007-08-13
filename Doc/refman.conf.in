@@ -2,4 +2,4 @@
 PROJECT_NAME     = Herwig++
 INPUT            = ../
 GENERATE_TAGFILE = Herwig++-refman.tag
-TAGFILES         = tagfileThePEG.tag=http://www.thep.lu.se/ThePEG/Doc/refman-html
+TAGFILES         = tagfileThePEG.tag=file://@THEPEGPATH@/share/ThePEG/Doc/refman-html

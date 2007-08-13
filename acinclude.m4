@@ -136,6 +136,7 @@ if test "x$with_thepeg" = "xno"; then
 fi
 
 THEPEGLDFLAGS="-L${with_thepeg}/lib/ThePEG"
+THEPEGPATH="${with_thepeg}"
 
 oldldflags="$LDFLAGS"
 oldlibs="$LIBS"
@@ -146,6 +147,7 @@ AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 
 AC_SUBST([THEPEGLIB],[-lThePEG])
 AC_SUBST(THEPEGLDFLAGS)
+AC_SUBST(THEPEGPATH)
 
 LIBS="$oldlibs"
 LDFLAGS="$oldldflags"
