@@ -437,28 +437,32 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     }
     // find boost to the rest frame if needed
     Boost boosttorest=-initial->progenitor()->momentum().boostVector();
+    double gammarest =
+      initial->progenitor()->momentum().e()/
+      initial->progenitor()->momentum().mass();
     // check if need to boost to rest frame
     bool gottaBoost = (boosttorest.mag() > 1e-12);
     // boost initial state jet and basis vector if needed
     if(gottaBoost) {
-      pjet.boost(boosttorest);
-      nvect.boost(boosttorest);
-      ppartner[0].boost(boosttorest);
+      pjet.boost(boosttorest,gammarest);
+      nvect.boost(boosttorest,gammarest);
+      ppartner[0].boost(boosttorest,gammarest);
     }
     // loop over the final-state particles and do the reconstruction
     JetKinVect possiblepartners;
     JetKinVect jetKinematics;
     bool atLeastOnce = false;
+    LorentzRotation restboost(boosttorest,gammarest);
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // only consider final-state jets
       if(!ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
       // do the reconstruction
       JetKinStruct tempJetKin;      
-      tempJetKin.parent = ShowerHardJets[ix]->progenitor(); 
+      tempJetKin.parent = ShowerHardJets[ix]->progenitor();
       tempJetKin.p = ShowerHardJets[ix]->progenitor()->momentum();
-      if(gottaBoost) tempJetKin.p.transform(boosttorest);
+      if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);
-      if(gottaBoost) tempJetKin.parent->deepTransform(boosttorest); 
+      if(gottaBoost) tempJetKin.parent->deepTransform(restboost); 
       tempJetKin.q = ShowerHardJets[ix]->progenitor()->momentum();
       jetKinematics.push_back(tempJetKin);
       // check if potential partner of the decay particle
@@ -474,7 +478,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       nvect = possiblepartners[iloc].p;
       nvect = Lorentz5Momentum(0.*MeV,0.5*initial->progenitor()->mass()*
 			       nvect.vect().unit());
-      nvect.boost(-boosttorest);
+      nvect.boost(-boosttorest,gammarest);
       ppartner[0] = possiblepartners[iloc].p;
     }
     if(partner) ppartner[1]=partner->momentum();
@@ -489,8 +493,18 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       LorentzRotation Trafo = LorentzRotation(); 
       if(it->parent!=partner) {
 	// boost for rescaling
-	if(atLeastOnce) Trafo = solveBoost(k2, it->q, it->p);
-	if(gottaBoost)  Trafo.boost(-boosttorest);
+	if(atLeastOnce) {
+	  if(it->parent->children().empty()) {
+	    Lorentz5Momentum pnew(k2*it->p.vect(),
+				  sqrt(sqr(k2*it->p.vect().mag())+it->q.mass2()),
+				  it->q.mass());
+	    it->parent->set5Momentum(pnew);
+	  }
+	  else {
+	    Trafo = solveBoost(k2, it->q, it->p);
+	  }
+	}
+	if(gottaBoost)  Trafo.boost(-boosttorest,gammarest);
 	if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
       }
       else {
@@ -500,7 +514,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	pnew.setMass(ppartner[1].mass());
 	pnew.rescaleEnergy();
 	LorentzRotation Trafo=solveBoost(1.,ppartner[1],pnew);
-	if(gottaBoost) Trafo.boost(-boosttorest);
+	if(gottaBoost) Trafo.boost(-boosttorest,gammarest);
 	partner->deepTransform(Trafo);
       }
     }

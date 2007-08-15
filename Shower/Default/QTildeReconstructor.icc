@@ -22,11 +22,10 @@ inline Energy QTildeReconstructor::momConsEq(const double & k,
   Energy2 dum2;
   for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
     dum2 = (it->q).m2() + sqr(k)*(it->p).vect().mag2();
-    if(dum2 < Energy2())
-      {
-	if(dum2 < -eps) throw Veto();
-	else dum2 = Energy2();
-      }
+    if(dum2 < Energy2()) {
+      if(dum2 < -eps) throw Veto();
+      else dum2 = Energy2();
+    }
     dum += sqrt(dum2);
   }
   return( dum - root_s ); 
@@ -37,10 +36,10 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
 	   const Lorentz5Momentum & oldp ) const {
   Energy q = newq.vect().mag(); 
   Energy2 qs = sqr(q); 
-  Energy2 Q2 = newq.m2(); 
+  Energy2 Q2 = newq.mass2(); 
   Energy kp = k*(oldp.vect().mag()); 
-  Energy2 kps = sqr(kp); 
-  double betam = (q*sqrt(qs + Q2) - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
+  Energy2 kps = sqr(kp);
+  double betam = (q*newq.e() - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
   Boost beta = -betam*(k/kp)*oldp.vect();
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
   Vector3<Energy2> ax = newq.vect().cross( oldp.vect() ); 
