@@ -12,7 +12,6 @@ SSGSSVertex.h SSGSSVertex.icc SSGSSVertex.fh SSGSSVertex.cc \
 SSGGSQSQVertex.cc SSGGSQSQVertex.h SSGGSQSQVertex.fh SSGGSQSQVertex.icc \
 SSGSGSGVertex.cc SSGSGSGVertex.h SSGSGSGVertex.icc SSGSGSGVertex.fh \
 SSNNZVertex.cc SSNNZVertex.h SSNNZVertex.fh SSNNZVertex.icc \
-SSCCPVertex.cc SSCCPVertex.h SSCCPVertex.icc SSCCPVertex.fh \
 SSCCZVertex.cc SSCCZVertex.h SSCCZVertex.icc SSCCZVertex.fh \
 SSCNWVertex.cc SSCNWVertex.h SSCNWVertex.icc SSCNWVertex.fh \
 SSFFHVertex.cc SSFFHVertex.h SSFFHVertex.icc SSFFHVertex.fh \

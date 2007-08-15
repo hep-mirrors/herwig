@@ -162,10 +162,10 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     }
   }
   else {
-    throw HelicityConsistencyError() << "SSNFSVertex::setCoupling() - "
-				     << "There is no chargino in "
-				     << "SSNFSVertex!\n"
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSCFSVertex::setCoupling() - There is no chargino in this vertex!"
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
     setNorm(0.);
     setLeft(0.);
     setRight(0.);
@@ -303,10 +303,10 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     }
   }
   else {
-    throw HelicityConsistencyError() << "SSCFSVertex::setcoupling  - "
-				     << "Incorrect particle found in "
-				     << "SSCFSVertex.\n"
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSCFSVertex::setcoupling() - Incorrect particle found. "
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
     setNorm(0.);
     setLeft(0.);
     setRight(0.);

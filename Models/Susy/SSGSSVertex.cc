@@ -49,7 +49,7 @@ void SSGSSVertex::Init() {
 }
 
 void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-			      tcPDPtr part2, tcPDPtr) {
+			      tcPDPtr part2, tcPDPtr part3) {
   unsigned int isf(0);
   if(part1->id() == ParticleID::g) {
     isf = abs(part2->id());
@@ -70,9 +70,9 @@ void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     setNorm(_couplast);
 }
   else {
-    throw  HelicityConsistencyError() << "SSGSSVertex::setCoupling() - "
-				      << "Incorrect particle(s) in " 
-				      << "SSGSSVertex."
-				      << Exception::warning;
+    throw  HelicityConsistencyError() 
+      << "SSGSSVertex::setCoupling() - Incorrect particle(s) in vertex. "
+      << part1->id() << " " << part2->id() << " " <<  part3->id()
+      << Exception::warning;
   }
 }

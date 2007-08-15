@@ -165,10 +165,10 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     }
   }
   else {
-    throw HelicityConsistencyError() << "SSNFSVertex::setCoupling() - "
-				     << "There is no neutralino in "
-				     << "SSNFSVertex!\n"
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSNFSVertex::setCoupling() - There is no neutralino in this vertex!"
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
     setNorm(0.);
     setLeft(0.);
     setRight(0.);
@@ -317,10 +317,10 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     }
   }
   else {
-    throw HelicityConsistencyError() << "SSNFSVertex::setCoupling() - "
-				     << "Incorrect particle found in "
-				     << "SSNFSVertex!\n"
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSNFSVertex::setCoupling() - Incorrect particle found in vertex. "
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
     setNorm(0.);
     setLeft(0.);
     setRight(0.);

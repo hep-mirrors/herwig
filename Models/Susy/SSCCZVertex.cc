@@ -14,8 +14,9 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
-			     _q2last(), _id1last(0), _id2last(0) {
-  vector<int> first, second, third(4, 23);
+			     _q2last(), _id1last(0), _id2last(0),
+			     _leftlast(0.), _rightlast(0.), _gblast(0){
+  vector<int> first, second, third;
   for(unsigned int ix = 0; ix < 2; ++ix) {
     int ic1(1000024);
     if(ix == 1) ic1 = 1000037;
@@ -24,8 +25,16 @@ SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
       if(iy == 1) ic2 = 1000037;
       first.push_back(-ic1);
       second.push_back(ic2);
+      third.push_back(23);
     }
   }
+  //photon
+  first.push_back(-1000024);
+  second.push_back(1000024);
+  third.push_back(22);
+  first.push_back(-1000037);
+  second.push_back(1000037);
+  third.push_back(22);
   setList(first, second, third);
 }
 
@@ -35,12 +44,6 @@ void SSCCZVertex::persistentOutput(PersistentOStream & os) const {
 
 void SSCCZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _sw2 >> _cw >> _theU >> _theV;
-  _couplast = 0.;
-  _q2last = 0.*GeV2;
-  _id1last = 0;
-  _id2last = 0;
-  _leftlast = 0.;
-  _rightlast = 0.;
 }
 
 ClassDescription<SSCCZVertex> SSCCZVertex::initSSCCZVertex;
@@ -49,40 +52,35 @@ ClassDescription<SSCCZVertex> SSCCZVertex::initSSCCZVertex;
 void SSCCZVertex::Init() {
 
   static ClassDocumentation<SSCCZVertex> documentation
-    ("This class implements the coupling of a Z-boson to a pair of"
+    ("This class implements the coupling of a Z/gamma to a pair of"
      " charginos. ");
 
 }
 
 void SSCCZVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			      tcPDPtr part3) {
-  long ichar1, ichar2;
-  if(part1->id() == ParticleID::Z0) {
-    ichar1 = abs(part2->id());
-    ichar2 = abs(part3->id());
+  long ichar1(abs(part1->id())), ichar2(abs(part2->id())),
+    boson(part3->id());
+  if( (boson != ParticleID::gamma && boson != ParticleID::Z0) ||
+      (ichar1 != 1000024 && ichar1 != 1000037) ||
+      (ichar2 != 1000024 && ichar2 != 1000037) ) {
+    throw HelicityConsistencyError() 
+      << "SSCCZVertex::setCoupling() - An incorrect particle has been found. "
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
+    setNorm(0.); setLeft(0.), setRight(0.);
+    return;
   }
-  else if(part2->id() == ParticleID::Z0) {
-    ichar1 = abs(part1->id());
-    ichar2 = abs(part3->id());
+  if(_q2last != q2) {
+    _q2last = q2;
+    _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2));
   }
-  else if(part3->id() == ParticleID::Z0) {
-    ichar1 = abs(part1->id());
-    ichar2 = abs(part2->id());
-  }
-  else 
-    throw HelicityConsistencyError() << "SSCCZVertex::setCoupling() - There is "
-				     << "no Z0 boson this vertex! "
-				     << Exception::warning;
-  if((ichar1 == 1000024 || ichar1 == 1000037) && 
-     (ichar2 == 1000024 || ichar2 == 1000037) ) {
-    if(_q2last != q2) {
-      _q2last = q2;
-      _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2)/_sw2)/_cw;
-    }
-    setNorm(_couplast);
-    if(ichar1 != _id1last || ichar2 != _id2last) {
-      _id1last = ichar1;
-      _id2last = ichar2;
+  setNorm(_couplast);
+  if(boson != _gblast || ichar1 != _id1last || ichar2 != _id2last) {
+    _gblast = boson;
+    _id1last = ichar1;
+    _id2last = ichar2;
+    if( boson == ParticleID::Z0 ){
       unsigned int ic1(0), ic2(0);
       if(ichar1 == 1000037) ic1 = 1;
       if(ichar2 == 1000037) ic2 = 1;
@@ -94,17 +92,14 @@ void SSCCZVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 	_leftlast += _sw2;
 	_rightlast += _sw2;
       }
+      _leftlast /= sqrt(_sw2)*_cw;
+      _rightlast /= sqrt(_sw2)*_cw;
     }
-    setLeft(_leftlast);
-    setRight(_rightlast);
+    else {
+      _leftlast = -1.;
+      _rightlast = -1.;
+    }
   }
-  else {
-    setNorm(0.);
-    setLeft(0.);
-    setRight(0.);
-    throw HelicityConsistencyError() << "SSCCZVertex::setCoupling() - There are "
-				     << "no charginos in this vertex! "
-				     << Exception::warning;
-  }
-     
+  setLeft(_leftlast);
+  setRight(_rightlast);
 }

@@ -393,11 +393,6 @@ private:
   FFVVertexPtr theNNZVertex;
 
   /**
-   * Pointer to the  vertex chargino-chargino-photon vertex
-   */
-  FFVVertexPtr theCCPVertex;
-
-  /**
    * Pointer to the  vertex chargino-chargino-Z vertex
    */
   FFVVertexPtr theCCZVertex;
