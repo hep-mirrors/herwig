@@ -5,13 +5,10 @@
 //
 
 #include "BasicConsistency.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BasicConsistency.tcc"
-#endif
 #include "ThePEG/Repository/EventGenerator.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/EnumParticles.h"
@@ -32,7 +29,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
-    if(abs((*it)->id()) < 9) {
+    if(abs((*it)->id()) < 9&&_checkquark) {
       cerr << "Had quarks in final state in event " 
 	   << event->number()  << '\n';
       generator()->log() << "Had quarks in final state in event " 
@@ -51,7 +48,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     ptotal += (*it)->momentum();
   }
   
-  if (charge != 0) {
+  if (charge != 0 && _checkcharge ) {
     cerr << "\nCharge imbalance by " << charge 
 	 << "in event " << event->number()  << '\n';// << *event;
     generator()->log() << "Charge imbalance by " << charge 
@@ -74,12 +71,12 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 
 }
 
-void BasicConsistency::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+void BasicConsistency::persistentOutput(PersistentOStream & os) const {
+  os << _checkquark << _checkcharge;
 }
 
-void BasicConsistency::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+void BasicConsistency::persistentInput(PersistentIStream & is, int) {
+  is >> _checkquark >> _checkcharge;
 }
 
 ClassDescription<BasicConsistency> BasicConsistency::initBasicConsistency;
@@ -88,7 +85,38 @@ ClassDescription<BasicConsistency> BasicConsistency::initBasicConsistency;
 void BasicConsistency::Init() {
 
   static ClassDocumentation<BasicConsistency> documentation
-    ("The BasicConsistency analysis handler checks for momentum and charge conservation.");
+    ("The BasicConsistency analysis handler checks for"
+     " momentum and charge conservation.");
+
+  static Switch<BasicConsistency,bool> interfaceCheckQuark
+    ("CheckQuark",
+     "Check whether there are quarks in the final state",
+     &BasicConsistency::_checkquark, true, false, false);
+  static SwitchOption interfaceCheckQuarkCheck
+    (interfaceCheckQuark,
+     "Check",
+     "Check for quarks",
+     true);
+  static SwitchOption interfaceCheckQuarkNoCheck
+    (interfaceCheckQuark,
+     "NoCheck",
+     "Don't check for quarks",
+     false);
+
+  static Switch<BasicConsistency,bool> interfaceCheckCharge
+    ("CheckCharge",
+     "Check whether charge is conserved",
+     &BasicConsistency::_checkcharge, true, false, false);
+  static SwitchOption interfaceCheckChargeCheck
+    (interfaceCheckCharge,
+     "Check",
+     "Check charge conservation",
+     true);
+  static SwitchOption interfaceCheckChargeNoCheck
+    (interfaceCheckCharge,
+     "NoCheck",
+     "Don't check charge conservation",
+     false);
 
 }
 

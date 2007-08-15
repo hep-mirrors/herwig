@@ -21,15 +21,10 @@ class BasicConsistency: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline BasicConsistency();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -127,6 +122,16 @@ private:
    *  Maximum momentum deviation
    */
   Energy _epsmom;
+
+  /**
+   *  check for quarks
+   */
+  bool _checkquark;
+
+  /**
+   *  check for charge conservation
+   */
+  bool _checkcharge;
 };
 
 }
@@ -163,8 +168,5 @@ struct ClassTraits<Herwig::BasicConsistency>
 }
 
 #include "BasicConsistency.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BasicConsistency.tcc"
-#endif
 
 #endif /* THEPEG_BasicConsistency_H */
