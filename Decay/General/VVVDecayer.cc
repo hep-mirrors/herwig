@@ -72,17 +72,15 @@ Energy VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
                                 const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theVVVPtr->setCoupling(scale,inpart,outa,outb);
-  double mu1sq =sqr(outa->mass()/inpart->mass());
-  double mu2sq =sqr(outb->mass()/inpart->mass());
-  Complex norm = _theVVVPtr->getNorm()*_theVVVPtr->getNorm();
-  double me2 = 1. + 2.*pow(mu1sq,4) + 9.*mu2sq - 9.*mu2sq*mu2sq + 
-    6.*pow(mu1sq,3)*(3. + mu2sq) - 
-    mu1sq*mu1sq*(27. + 64.*mu2sq + 18.*mu2sq*mu2sq) + 
-    mu1sq*(7. - 32.*mu2sq - 2.*mu2sq*mu2sq + 10.*pow(mu2sq,3));
-  me2 *= norm.real()/3./(4.*mu1sq*mu2sq);
+  double mu1(outa->mass()/inpart->mass()), mu1sq(sqr(mu1)),
+    mu2(outb->mass()/inpart->mass()), mu2sq(sqr(mu2));
+  double me2 = 
+    (mu1 - mu2 - 1.)*(mu1 - mu2 + 1.)*(mu1 + mu2 - 1.)*(mu1 + mu2 + 1.)
+    * (sqr(mu1sq) + sqr(mu2sq) + 10.*(mu1sq*mu2sq + mu1sq + mu2sq) + 1.)
+    /4./mu1sq/mu2sq;
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy pWidth = me2*pcm/8./Constants::pi;
+  Energy pWidth = norm(_theVVVPtr->getNorm())*me2*pcm/8./Constants::pi;
   if(outa->id() == outb->id()) {
     pWidth /= 2.;
   }

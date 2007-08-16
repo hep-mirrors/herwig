@@ -108,10 +108,8 @@ Energy SVVLoopDecayer::partialWidth(const PDPtr inpart,
 					    - mu2sq*(a12+a21-2.*a22)
 					    + a21 + a12) + 8.*a00*a00;
   me2 /= 2;
-  Complex norm(_theSVVPtr->getNorm()*_theSVVPtr->getNorm());
-  me2 *= norm;
-
-  Energy pWidth = me2.real()*pcm/(8.*Constants::pi)/scale*UnitRemoval::E2;
+  Energy pWidth = norm(_theSVVPtr->getNorm())*me2.real()*pcm
+    /(8.*Constants::pi)/scale*UnitRemoval::E2;
   if(outa->id() == outb->id()) {
     pWidth /= 2;
   }

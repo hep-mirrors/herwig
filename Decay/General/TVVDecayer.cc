@@ -101,15 +101,13 @@ Energy TVVDecayer::partialWidth(const PDPtr inpart,
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
   Energy2 me2;
-  if(outa->mass() > 0.*MeV && outb->mass() > 0.*MeV) {
+  if(outa->mass() > 0.*MeV && outb->mass() > 0.*MeV)
     me2 = scale*(30 - 20.*b*b + 3.*pow(b,4))/120.; 
-  }
-  else {
+  else 
     me2 = scale/10.;
-  }
-  Complex norm(_theVVTPtr->getNorm()*_theVVTPtr->getNorm());
-  me2 *= norm.real();
-  Energy output = me2*pcm/(8.*Constants::pi)*UnitRemoval::InvE2;
+  
+  Energy output = norm(_theVVTPtr->getNorm())*me2*pcm
+    /(8.*Constants::pi)*UnitRemoval::InvE2;
   if(outa->id()==outb->id()) {
     output /=2;
   }

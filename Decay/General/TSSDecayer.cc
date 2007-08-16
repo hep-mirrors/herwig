@@ -82,11 +82,9 @@ Energy TSSDecayer::partialWidth(const PDPtr inpart,
   double musq = sqr(outa->mass()/inpart->mass());
   double b = sqrt(1.-4.*musq);
   double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
-  Complex norm(_theSSTPtr->getNorm()*_theSSTPtr->getNorm());
-  me2 *= norm.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy output = me2*pcm/(8.*Constants::pi);
+  Energy output = norm(_theSSTPtr->getNorm())*me2*pcm/(8.*Constants::pi);
   if(outa->id() == outb->id()) {
     output /= 2;
   }

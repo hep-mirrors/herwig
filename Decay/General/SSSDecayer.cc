@@ -64,10 +64,10 @@ Energy SSSDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theSSSPtr->setCoupling(scale,inpart,outa,outb);
-  Complex norm = (_theSSSPtr->getNorm()*_theSSSPtr->getNorm());
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy pWidth = norm.real()*pcm/8./Constants::pi/scale*UnitRemoval::E2;
+  double c2 = norm(_theSSSPtr->getNorm());
+  Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
   if(outa->id() == outb->id()) {
     pWidth /=2;
   }

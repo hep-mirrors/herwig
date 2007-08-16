@@ -99,17 +99,12 @@ Energy SSVDecayer::partialWidth(const PDPtr inpart,
     _theVSSPtr->setCoupling(scale,outa,outb,inpart);
   }
   double me2(0.);
-  if(mu2sq == 0.) {//massless vector
+  if(mu2sq == 0.) 
     me2 = -2.*mu1sq - 2.;
-  }
-  else {
-    me2 = (mu1sq*mu1sq + mu2sq*mu2sq - 2.*(mu2sq*mu1sq) 
-	   - 2.*(mu1sq + mu2sq) + 1.)/mu2sq;
-	   
-  }
-  Complex norm2 = (_theVSSPtr->getNorm()*_theVSSPtr->getNorm());
+  else
+    me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy output = pcm*me2*norm2.real()/8./Constants::pi;
+  Energy output = pcm*me2*norm(_theVSSPtr->getNorm())/8./Constants::pi;
   return output;
 }

@@ -107,11 +107,9 @@ Energy TFFDecayer::partialWidth(const PDPtr inpart,
   double musq = sqr(outa->mass()/inpart->mass());
   double b = sqrt(1- 4.*musq);
   double me2 = b*b*(5-2*b*b)*scale/120*UnitRemoval::InvE2;
-  Complex norm(_theFFTPtr->getNorm()*_theFFTPtr->getNorm());
-  me2 *= norm.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy pWidth = me2*pcm/(8.*Constants::pi);
+  Energy pWidth = norm(_theFFTPtr->getNorm())*me2*pcm/(8.*Constants::pi);
   if(outa->coloured()) {
     pWidth *= 3.;
   } 

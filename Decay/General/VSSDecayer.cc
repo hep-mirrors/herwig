@@ -1,4 +1,4 @@
-// -*- C++ -*-
+//++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
 // functions of the VSSDecayer class.
@@ -74,13 +74,10 @@ Energy VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
   _theVSSPtr->setCoupling(scale,inpart,outa,outb);
   double mu1sq = sqr(outa->mass()/inpart->mass());
   double mu2sq = sqr(outb->mass()/inpart->mass());
-  Complex norm2(_theVSSPtr->getNorm()*_theVSSPtr->getNorm());
-  double me2 = (mu1sq*mu1sq + mu2sq*mu2sq - 2.*mu1sq*mu2sq - 2.*mu1sq
-		- 2.*mu2sq + 1.);
-  me2 *= norm2.real();
+  double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy output = me2*pcm/(8.*Constants::pi);
+  Energy output = -norm(_theVSSPtr->getNorm())*me2*pcm/(8.*Constants::pi);
   if(outa->id() == outb->id()) {
     output /= 2.;
   }

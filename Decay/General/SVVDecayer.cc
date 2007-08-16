@@ -81,12 +81,12 @@ Energy SVVDecayer::partialWidth(const PDPtr inpart,
 				    outb->mass()));
   _theVVSPtr->setCoupling(scale,outa,outb,inpart);
   //get coupling
-  Complex norm = _theVVSPtr->getNorm()*conj(_theVVSPtr->getNorm());
-  double mu1(outa->mass()/inpart->mass()),mu1sq(mu1*mu1);
-  double mu2(outb->mass()/inpart->mass()),mu2sq(mu2*mu2);
-  double matrixElement2 = 2 + (mu1sq/mu2sq) - (1/mu2sq) + (0.25/mu1sq/mu2sq);
-  matrixElement2 *= norm.real();
-  Energy output = matrixElement2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
+  double mu1sq = sqr(outa->mass()/inpart->mass());
+  double mu2sq = sqr(outb->mass()/inpart->mass());
+  double m1pm2 = mu1sq + mu2sq;
+  double me2 = ( m1pm2*(m1pm2 - 2.) + 8.*mu1sq*mu2sq + 1.)/4./mu1sq/mu2sq;
+  Energy output = norm(_theVVSPtr->getNorm())*me2*pcm/(8*Constants::pi)/scale
+    *UnitRemoval::E2;
   if(outa->id() == outb->id()) 
     output /= 2.;
   return output;
