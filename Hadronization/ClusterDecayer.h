@@ -25,7 +25,9 @@ class ThePEG::Particle;   // forward declaration
  *  This class is directs the production of hadrons via 2-body cluster decays. 
  *  The selection of the hadron flavours is given by Herwig::HadronSelector.
  *
- *  @see HadronSelector
+ *  @see HadronSelector 
+ * @see \ref ClusterDecayerInterfaces "The interfaces"
+ * defined for ClusterDecayer.
  */
 class ClusterDecayer: public Interfaced {
 

@@ -24,6 +24,9 @@ using namespace ThePEG;
  *
  *  \todo change so quark weights can be varied and quarks other
  *        than u and d can be produced
+ *
+ * * @see \ref PartonSplitterInterfaces "The interfaces"
+ * defined for PartonSplitter.
  */
 class PartonSplitter: public Interfaced {
 

@@ -38,7 +38,9 @@ using namespace ThePEG;
  *  @see ClusterFissioner
  *  @see LightClusterDecayer
  *  @see ClusterDecayer
- *  @see Cluster
+ *  @see Cluster 
+ * @see \ref ClusterHadronizationHandlerInterfaces "The interfaces"
+ * defined for ClusterHadronizationHandler.
  */ 
 class ClusterHadronizationHandler: public HadronizationHandler {
 

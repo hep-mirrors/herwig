@@ -30,7 +30,10 @@ using namespace ThePEG;
  *  (anti-) diquark. Notice that if in the future the method 
  *  reduceToTwoComponents is modified or even eliminated, the 
  *  main method for finding clusters, formClusters, will not need 
- *  any change.
+ *  any change. 
+ *
+ * @see \ref ClusterFinderInterfaces "The interfaces"
+ * defined for ClusterFinder.
  */
 class ClusterFinder: public Interfaced {
 

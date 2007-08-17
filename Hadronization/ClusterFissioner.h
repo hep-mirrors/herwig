@@ -57,7 +57,9 @@ using namespace ThePEG;
  *  (expecially in future developments), without any information loss, 
  *  and furthermore it allows a better debugging. 
  *
- *  @see HadronSelector
+ *  @see HadronSelector 
+ * @see \ref ClusterFissionerInterfaces "The interfaces"
+ * defined for ClusterFissioner.
  */ 
 class ClusterFissioner: public Interfaced {
 
