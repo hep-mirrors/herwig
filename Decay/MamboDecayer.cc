@@ -339,3 +339,11 @@ void MamboDecayer::colourConnections(const Particle & parent,
   }
   
 }
+
+void MamboDecayer::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the PartonicDecayerBase base class
+  output << "set " << fullName() << ":MaxWeight "  << _maxweight << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}

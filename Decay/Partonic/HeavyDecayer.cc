@@ -120,3 +120,12 @@ void HeavyDecayer::persistentInput(PersistentIStream &is, int) {
 double HeavyDecayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
   return (t1-t0)*(t0-t2)*t3; 
 }
+
+void HeavyDecayer::dataBaseOutput(ofstream & output,bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the PartonicDecayerBase base class
+  PartonicDecayerBase::dataBaseOutput(output,false);
+  output << "set " << fullName() << ":MECode " << MECode << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}

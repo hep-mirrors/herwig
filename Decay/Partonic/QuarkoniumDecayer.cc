@@ -126,3 +126,12 @@ void QuarkoniumDecayer::persistentOutput(PersistentOStream &os) const {
 void QuarkoniumDecayer::persistentInput(PersistentIStream &is, int) { 
   is >> MECode;
 }
+
+void QuarkoniumDecayer::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the PartonicDecayerBase base class
+  PartonicDecayerBase::dataBaseOutput(output,false);
+  output << "set " << fullName() << ":MECode " << MECode << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
+}

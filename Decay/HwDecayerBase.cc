@@ -10,6 +10,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -95,10 +96,12 @@ void HwDecayerBase::Init() {
 
 }
 
-void HwDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
-  // header for MySQL
-  if(header) output << "update decayers set parameters=\"";
-  // photon generator if it exists
-  // footer for MySQL
-  if(header) output << " where ThePEGName=\" " << fullName() << "\";";
+void HwDecayerBase::dofinish() {
+  Decayer::dofinish();
+  if(initialize()) {
+    string fname = CurrentGenerator::current().filename() + 
+      string("-") + name() + string(".output");
+    ofstream output(fname.c_str());
+    dataBaseOutput(output,true);
+  }
 }

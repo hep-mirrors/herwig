@@ -92,17 +92,12 @@ void BtoSGammaDecayer::Init() {
 
 }
 
-/**
- * Output the setup information for the particle database
- * @param os The stream to output the information to
- * @param header Whether or not to output the information for MySQL
- */
-void BtoSGammaDecayer::dataBaseOutput(ofstream & os,bool header) const {
-  // header for MySQL
-  if(header) os << "update decayers set parameters=\"";
-  _hadronicmass->dataBaseOutput(os,false,true);
-  os << "set " << fullName() << ":HadronicMass " << _hadronicmass->fullName() 
-     << " \n";
-  // footer for MySQL
-  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+void BtoSGammaDecayer::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the PartonicDecayerBase base class
+  PartonicDecayerBase::dataBaseOutput(output,false);
+  output << "set " << fullName() << ":HadronicMass " 
+	 << _hadronicmass->fullName() << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
