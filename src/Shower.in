@@ -105,8 +105,10 @@ set theShowerAlphaQCD:Qmin 0.630882*GeV
 set theShowerAlphaQCD:NumberOfLoops 3
 set theShowerAlphaQCD:InputOption 1
 set theEvolver:GenerateIntrinsicpT 1
-# Recommended: 2.1 GeV for Tevatron Z production and 2.3 GeV for Tevatron W production
-set theEvolver:Iptrms 2.1*GeV
+# Recommended: 2.2 GeV for Tevatron W/Z production.
+# For LHC W/Z production:Iptrms = 5.7GeV. 
+# This value was obtained by assuming a linear correlation between Iptrms and ln(shat/S) 
+set theEvolver:Iptrms 2.2*GeV
 set theEvolver:Beta  0
 set theEvolver:Gamma 0*GeV
 #
