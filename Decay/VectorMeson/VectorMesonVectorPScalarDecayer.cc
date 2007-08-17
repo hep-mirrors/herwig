@@ -43,7 +43,7 @@ void VectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 }
 
 VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer() 
-  : _coupling(63), _incoming(63), _outgoingV(63), _outgoingP(63), _maxweight(63) {
+  : _coupling(73), _incoming(73), _outgoingV(73), _outgoingP(73), _maxweight(73) {
   // intermediates
   generateIntermediates(false);
   // rho -> gamma pi modes
@@ -212,6 +212,34 @@ VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer()
   _coupling[61] = 0.0108/GeV; _maxweight[61] = 3.5;
   _incoming[62] = 30443; _outgoingV[62] = 333; _outgoingP[62] = 221; 
   _coupling[62] = 0.0108/GeV; _maxweight[62] = 3.5; 
+  // psi(2s) K* K
+  _incoming[63] = 100443; _outgoingV[63] = 323; _outgoingP[63] = -321; 
+  _coupling[63] = 0.00177/GeV; _maxweight[63] = 7.; 
+  _incoming[64] = 100443; _outgoingV[64] = 313; _outgoingP[64] = -311; 
+  _coupling[64] = 0.00177/GeV; _maxweight[64] = 7.; 
+  // psi(2s) -> phi eta decay
+  _incoming[65] = 100443; _outgoingV[65] = 333; _outgoingP[65] = 221; 
+  _coupling[65] = 0.00102/GeV; _maxweight[65] = 7.; 
+  // psi(2s) -> phi eta' decay
+  _incoming[66] = 100443; _outgoingV[66] = 333; _outgoingP[66] = 331; 
+  _coupling[66] = 0.00084/GeV; _maxweight[66] = 6.5; 
+  // psi(2s) -> rho pi decay
+  _incoming[67] = 100443; _outgoingV[67] = 213; _outgoingP[67] = -211; 
+  _coupling[67] = 0.00234/GeV; _maxweight[67] = 4.; 
+  _incoming[68] = 100443; _outgoingV[68] = 113; _outgoingP[68] = 111; 
+  _coupling[68] = 0.00234/GeV; _maxweight[68] = 4.; 
+  // psi(2s) -> omega eta' decay
+  _incoming[69] = 100443; _outgoingV[69] = 223; _outgoingP[69] = 331; 
+  _coupling[69] = 0.00054/GeV; _maxweight[69] = 7.;
+  // psi(2s) -> rho0 eta decay
+  _incoming[70] = 100443; _outgoingV[70] = 113; _outgoingP[70] = 221; 
+  _coupling[70] = 0.00054/GeV; _maxweight[70] = 4.; 
+  // psi(2s) -> omega pi0 decay
+  _incoming[71] = 100443; _outgoingV[71] = 223; _outgoingP[71] = 111; 
+  _coupling[71] = 0.00069/GeV; _maxweight[71] = 7.; 
+  // psi(2s) -> rho0 eta' decay
+  _incoming[72] = 100443; _outgoingV[72] = 113; _outgoingP[72] = 331; 
+  _coupling[72] = 0.00045/GeV; _maxweight[72] = 3.5; 
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }

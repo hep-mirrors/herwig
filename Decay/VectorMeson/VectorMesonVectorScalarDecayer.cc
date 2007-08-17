@@ -16,14 +16,14 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
-  : _coupling(15), _incoming(15), _outgoingV(15), 
-    _outgoingS(15), _maxweight(15) {
+  : _coupling(16), _incoming(16), _outgoingV(16), 
+    _outgoingS(16), _maxweight(16) {
   // decay of the phi to the a_0 and f_0 and a photon
   _incoming[0] = 333; _outgoingV[0] = 22; _outgoingS[0] = 9000111; 
   _coupling[0] = 0.154/GeV; _maxweight[0] = 17.; 
   _incoming[1] = 333; _outgoingV[1] = 22; _outgoingS[1] = 9010221; 
   _coupling[1] = 0.267/GeV; _maxweight[1] = 14.; 
-  // Jpsi decayers
+  // Jpsi decays
   _incoming[2] = 443; _outgoingV[2] = 22; _outgoingS[2] = 10331; 
   _coupling[2] = 0.00207/GeV; _maxweight[2] = 3.; 
   _incoming[3] = 443; _outgoingV[3] = 223; _outgoingS[3] = 10331; 
@@ -34,6 +34,8 @@ VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer()
   _coupling[5] = 0.00070/GeV; _maxweight[5] = 12.; 
   _incoming[6] = 443; _outgoingV[6] = 223; _outgoingS[6] = 9010221; 
   _coupling[6] = 0.00048/GeV; _maxweight[6] = 13.; 
+  _incoming[15] = 443; _outgoingV[15] = 22; _outgoingS[15] = 9030221; 
+  _coupling[15] = 0.00207/GeV; _maxweight[15] = 3.; 
   // upsilon(2s)
   _incoming[7] = 100553; _outgoingV[7] = 22; _outgoingS[7] = 10551; 
   _coupling[7] = 0.122/GeV; _maxweight[7] = 2.5; 

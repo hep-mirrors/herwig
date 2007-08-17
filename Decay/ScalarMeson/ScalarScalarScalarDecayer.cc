@@ -16,8 +16,8 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() 
-  : _incoming(73), _outgoing1(73), _outgoing2(73), 
-    _coupling(73), _maxweight(73) {
+  : _incoming(78), _outgoing1(78), _outgoing2(78), 
+    _coupling(78), _maxweight(78) {
   // f_0(980) to pi pi
   _incoming[0] = 9010221; _outgoing1[0] = 111; _outgoing2[0] =  111; 
   _coupling[0] = 1.66*GeV; _maxweight[0] = 1.05; 
@@ -155,7 +155,7 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _incoming[54] = 100221; _outgoing1[54] = 9000221; _outgoing2[54] = 221; 
   _coupling[54] = 4.828*GeV; _maxweight[54] = 2.; 
   // chi_0c decays to K K 
-  _incoming[55] = 10441; _outgoing1[55] = 321; _outgoing2[56] = -321; 
+  _incoming[55] = 10441; _outgoing1[55] = 321; _outgoing2[55] = -321; 
   _coupling[55] = 0.104*GeV; _maxweight[55] = 1.05; 
   _incoming[56] = 10441; _outgoing1[56] = 311; _outgoing2[56] = -311; 
   _coupling[56] = 0.104*GeV; _maxweight[56] = 1.05; 
@@ -200,6 +200,20 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[71] = 2.837*GeV; _maxweight[71] = 1.05; 
   _incoming[72] =  9000321; _outgoing1[72] =  311; _outgoing2[72] =  211; 
   _coupling[72] = 4.000*GeV; _maxweight[72] = 1.05; 
+  // chi_0c decays to K*_0 K*_0 
+  _incoming[73] = 10441; _outgoing1[73] = 10321; _outgoing2[73] = -10321; 
+  _coupling[73] = 0.104*GeV; _maxweight[73] = 1.05; 
+  _incoming[74] = 10441; _outgoing1[74] = 10311; _outgoing2[74] = -10311; 
+  _coupling[74] = 0.104*GeV; _maxweight[74] = 1.05; 
+  // B*_s0 decays
+  _incoming[75] = 10531; _outgoing1[75] = 511; _outgoing2[75] = -311; 
+  _coupling[75] = 0.104*GeV; _maxweight[75] = 1.05; 
+  _incoming[76] = 10531; _outgoing1[76] = 521; _outgoing2[76] = -321; 
+  _coupling[76] = 0.104*GeV; _maxweight[76] = 1.05;  
+  // chi_0c decays to f_0 f_0
+  _incoming[77] = 10441; _outgoing1[77] = 9010221; _outgoing2[77] = 9010221; 
+  _coupling[77] = 0.104*GeV; _maxweight[77] = 1.05; 
+
   // initial size
   _initsize = _coupling.size();
   // intermediates
