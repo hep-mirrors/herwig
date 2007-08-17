@@ -23,10 +23,15 @@ using namespace ThePEG::Helicity;
 
 inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
+  // get the ckm object
+  _ckm=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
+  if(!_ckm) throw InitException() << "ScalarMesonFactorizedDecayer::doinit() "
+				  << "the CKM object must be the Herwig one"
+				  << Exception::runerror;
   unsigned int ix,iy,iz,icurr,iform;
   // get the CKM matrix (unsquared for interference)
   Complex ckmmat[3][3];
-  vector< vector<Complex > > CKM(_theCKM->getUnsquaredMatrix(SM().families()));
+  vector< vector<Complex > > CKM(_ckm->getUnsquaredMatrix(SM().families()));
   for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckmmat[ix][iy]=CKM[ix][iy];}}
   int id0,id1,Wcharge,iq,ia,jspin,spect,inq,outq;
   // make sure the currents and form factors got initialised
@@ -174,7 +179,6 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	  else              ckm *= conj(ckmmat[abs(ia)/2-1][(abs(iq)-1)/2]);
 	  if(abs(inq)%2==0) ckm *= ckmmat[abs(inq)/2-1][(abs(outq)-1)/2];
 	  else              ckm *= ckmmat[abs(outq)/2-1][(abs(inq)-1)/2];
-	  if(generator()->log()) generator()->log() << "testing ckm factor A " << ckm << "\n";
 	  if(abs(inq)==5)   ckm*=_a1b;
 	  else              ckm*=_a1c;
 	}
@@ -192,7 +196,6 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	    if(abs(outq)%2==0) ckm *= conj(ckmmat[abs(outq)/2-1][(abs(iq)-1)/2]);
 	    else               ckm *= conj(ckmmat[abs(iq)/2-1][(abs(outq)-1)/2]);
 	  }
-	  if(generator()->log()) generator()->log() << "testing ckm factor B " << ckm << "\n";
 	  if(abs(inq)==5) ckm*=_a2b;
 	  else            ckm*=_a2c;
 	}
@@ -369,7 +372,7 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _theCKM << ounit(_GF,1/GeV2)
+  os << _current << _form << _ckm << ounit(_GF,1/GeV2)
      << _a1b << _a2b << _a1c << _a2c 
      << _currentmapA << _currentmapB 
      << _formmapA << _formmapB << _formpart << _wgtloc 
@@ -377,7 +380,7 @@ void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) cons
 }
 
 void ScalarMesonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _theCKM >> iunit(_GF ,1/GeV2)
+  is >> _current >> _form >> _ckm >> iunit(_GF ,1/GeV2)
      >> _a1b >> _a2b >> _a1c >> _a2c 
      >> _currentmapA >> _currentmapB 
      >> _formmapA >> _formmapB >> _formpart >> _wgtloc
@@ -434,11 +437,6 @@ void ScalarMesonFactorizedDecayer::Init() {
      "The factorization paramter a_2 for decays of charm baryons",
      &ScalarMesonFactorizedDecayer::_a2c, -0.55, -10.0, 10.0,
      false, false, true);
-
-  static Reference<ScalarMesonFactorizedDecayer,StandardCKM> interfaceCKM
-    ("CKM",
-     "Reference to the Standard Model object",
-     &ScalarMesonFactorizedDecayer::_theCKM, false, false, true, false);
 
   static ParVector<ScalarMesonFactorizedDecayer,int> interfaceWeightLocation
     ("WeightLocation",
@@ -675,7 +673,6 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":a2Bottom "  << _a2b << "\n";
   output << "set " << fullName() << ":a1Charm "   << _a1c << "\n";
   output << "set " << fullName() << ":a2Charm "   << _a2c << "\n";
-  output << "set " << fullName() << ":CKM "       << _theCKM->fullName() << " \n";
   for(ix=0;ix<_current.size();++ix) {
     _current[ix]->dataBaseOutput(output,false,true);
     output << "insert " << fullName() << ":Currents " << ix << " " 
