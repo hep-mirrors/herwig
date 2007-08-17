@@ -24,6 +24,8 @@ using Helicity::VertexBasePtr;
  * order to create the 2 body decaymodes for a given set of vertices
  * stored in a Model class.
  *
+ * @see \ref TwoBodyDecayConstructorInterfaces "The interfaces"
+ * defined for TwoBodyDecayConstructor.
  * @see NBodyDecayConstructor
  **/
 class TwoBodyDecayConstructor: public NBodyDecayConstructorBase {
