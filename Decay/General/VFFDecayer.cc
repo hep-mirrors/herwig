@@ -85,23 +85,22 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr part2,
-				const PDPtr part3) const {
-  //Use analytic expression for partial width
-  double mu1(part2->mass()/inpart->mass()), 
-    mu2(part3->mass()/inpart->mass());
-  Energy2 q2(inpart->mass()*inpart->mass());
-  _theFFVPtr->setCoupling(q2,part2, part3, inpart);
+Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
+  _theFFVPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
+			  inpart.first);
   Complex cl(_theFFVPtr->getLeft()), cr(_theFFVPtr->getRight());
   double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
 				       + sqr(mu1) + sqr(mu2) - 2.)
     - 6.*(cl*conj(cr) + cr*conj(cl)).real()*mu1*mu2;
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),part2->mass(),
-				      part3->mass());
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
   Energy output = -norm(_theFFVPtr->getNorm())*me2*pcm/(8*Constants::pi);
-  if(part2->iColour() == PDT::Colour3 || part2->iColour() == PDT::Colour3bar)
+  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  if( abs(cola) == 3 && abs(colb) == 3)
     output *= 3.;
-  if( part2->id() == part3->id() ) 
+  if( outa.first->id() == outb.first->id() ) 
     output /= 2.;
   return output;
 }

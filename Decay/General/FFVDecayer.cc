@@ -100,19 +100,20 @@ double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
-				const PDPtr part2) const {
+Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
   double mu1(0.),mu2(0.);
-  Energy2 q2(inpart->mass()*inpart->mass());
-  if( part1->iSpin() == PDT::Spin1Half) {
-    mu1 = part1->mass()/inpart->mass();
-    mu2 = part2->mass()/inpart->mass();
-    _theFFVPtr->setCoupling(q2,inpart,part1,part2);
+  if( outa.first->iSpin() == PDT::Spin1Half) {
+    mu1 = outa.second/inpart.second;
+    mu2 = outb.second/inpart.second;
+    _theFFVPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first,
+			    outb.first);
   }
   else {
-    mu2 = part1->mass()/inpart->mass();
-    mu1 = part2->mass()/inpart->mass();
-    _theFFVPtr->setCoupling(q2,inpart,part2,part1);
+    mu1 = outb.second/inpart.second;
+    mu2 = outa.second/inpart.second;
+    _theFFVPtr->setCoupling(sqr(inpart.second),inpart.first, outb.first,
+			    outa.first);
   }
   Complex cl(_theFFVPtr->getLeft()),cr(_theFFVPtr->getRight());
   double me2(0.);
@@ -126,8 +127,8 @@ Energy FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
   else
     me2 = 2.*( (norm(cl) + norm(cr))*(sqr(mu1) + 1.) 
 	       - 4.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),part1->mass(),
-				      part2->mass());
+  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+				      outb.second);
   Energy output = norm(_theFFVPtr->getNorm())*me2*pcm/(8.*Constants::pi);
   return output;
   

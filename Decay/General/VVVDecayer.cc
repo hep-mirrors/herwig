@@ -68,21 +68,20 @@ double VVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
-                                const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass());
-  _theVVVPtr->setCoupling(scale,inpart,outa,outb);
-  double mu1(outa->mass()/inpart->mass()), mu1sq(sqr(mu1)),
-    mu2(outb->mass()/inpart->mass()), mu2sq(sqr(mu2));
+Energy VVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  _theVVVPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first, 
+			  outb.first);
+  double mu1(outa.second/inpart.second), mu1sq(sqr(mu1)),
+    mu2(outb.second/inpart.second), mu2sq(sqr(mu2));
   double me2 = 
     (mu1 - mu2 - 1.)*(mu1 - mu2 + 1.)*(mu1 + mu2 - 1.)*(mu1 + mu2 + 1.)
     * (sqr(mu1sq) + sqr(mu2sq) + 10.*(mu1sq*mu2sq + mu1sq + mu2sq) + 1.)
     /4./mu1sq/mu2sq;
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
   Energy pWidth = norm(_theVVVPtr->getNorm())*me2*pcm/8./Constants::pi;
-  if(outa->id() == outb->id()) {
+  if(outa.first->id() == outb.first->id())
     pWidth /= 2.;
-  }
   return pWidth;
 }

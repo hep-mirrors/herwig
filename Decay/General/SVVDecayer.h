@@ -45,7 +45,8 @@ public:
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
-   * Return the matrix element squared for a given mode and phase-space channel.   * @param vertex Output the information on the vertex for spin correlations
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
@@ -56,13 +57,12 @@ public:
   
   /**
    * Function to return partial Width
-   * @param inpart Pointer to incoming particle data object
-   * @param outa Pointer to incoming particle data object
-   * @param outb Pointer to incoming particle data object
+   * @param inpart The decaying particle.
+   * @param outa One of the decay products.
+   * @param outb The other decay product.
    */
-  virtual Energy partialWidth(const PDPtr inpart,
-			      const PDPtr outa,
-			      const PDPtr outb) const;
+  virtual Energy partialWidth(PMPair inpart, PMPair outa, 
+			      PMPair outb) const;
   //@}
 
 public:

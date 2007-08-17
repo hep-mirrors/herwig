@@ -91,29 +91,26 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
   
-Energy TVVDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass()); 
-  _theVVTPtr->setCoupling(scale,outa,outb,inpart);
-  double mu2 = sqr(outa->mass()/inpart->mass());
+Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  Energy2 scale(sqr(inpart.second));
+  _theVVTPtr->setCoupling(scale, outa.first, outb.first, inpart.first);
+  double mu2 = sqr(outa.second/inpart.second);
   double b = sqrt(1 - 4.*mu2);
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
   Energy2 me2;
-  if(outa->mass() > 0.*MeV && outb->mass() > 0.*MeV)
+  if(outa.second > 0.*MeV && outb.second > 0.*MeV)
     me2 = scale*(30 - 20.*b*b + 3.*pow(b,4))/120.; 
   else 
     me2 = scale/10.;
   
   Energy output = norm(_theVVTPtr->getNorm())*me2*pcm
     /(8.*Constants::pi)*UnitRemoval::InvE2;
-  if(outa->id()==outb->id()) {
+  if(outa.first->id() == outb.first->id())
     output /=2;
-  }
-  if(outa->iColour()==PDT::Colour8 &&
-     outb->iColour()==PDT::Colour8) {
+  if(outa.first->iColour() == PDT::Colour8 &&
+     outb.first->iColour() == PDT::Colour8)
     output *=8.;
-  }
   return output;
 }

@@ -68,22 +68,21 @@ void VSSDecayer::Init() {
    return output;
  }
 
-Energy VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
-				const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass());
-  _theVSSPtr->setCoupling(scale,inpart,outa,outb);
-  double mu1sq = sqr(outa->mass()/inpart->mass());
-  double mu2sq = sqr(outb->mass()/inpart->mass());
+Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  _theVSSPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first,
+			  outb.first);
+  double mu1sq = sqr(outa.second/inpart.second);
+  double mu2sq = sqr(outb.second/inpart.second);
   double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
   Energy output = -norm(_theVSSPtr->getNorm())*me2*pcm/(8.*Constants::pi);
-  if(outa->id() == outb->id()) {
+  if(outa.first->id() == outb.first->id())
     output /= 2.;
-  }
-  if(outa->iColour()==PDT::Colour3) {
+  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  if( abs(cola) == 3 && abs(colb) == 3)
     output *= 3.;
-  }
   return output;
 }
 

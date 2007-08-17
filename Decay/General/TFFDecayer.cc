@@ -99,19 +99,19 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy TFFDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass());
-  _theFFTPtr->setCoupling(scale,inpart,outa,outb);
-  double musq = sqr(outa->mass()/inpart->mass());
+Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  Energy2 scale = sqr(inpart.second);
+  _theFFTPtr->setCoupling(scale, inpart.first, outa.first,
+			  outb.first);
+  double musq = sqr(outa.second/inpart.second);
   double b = sqrt(1- 4.*musq);
-  double me2 = b*b*(5-2*b*b)*scale/120*UnitRemoval::InvE2;
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
+  double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
   Energy pWidth = norm(_theFFTPtr->getNorm())*me2*pcm/(8.*Constants::pi);
-  if(outa->coloured()) {
+  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  if( abs(cola) == 3 && abs(colb) == 3)
     pWidth *= 3.;
-  } 
   return pWidth;
 }

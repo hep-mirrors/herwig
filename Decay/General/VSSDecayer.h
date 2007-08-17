@@ -55,15 +55,14 @@ public:
   virtual double me2(bool vertex, const int ichan, const Particle & part,
 		     const ParticleVector & decay) const;
 
- /**
+  /**
    * Function to return partial Width
-   * @param inpart Pointer to incoming particle data object
-   * @param outa Pointer to incoming particle data object
-   * @param outb Pointer to incoming particle data object
+   * @param inpart The decaying particle.
+   * @param outa One of the decay products.
+   * @param outb The other decay product.
    */
-  virtual Energy partialWidth(const PDPtr inpart,
-			      const PDPtr outa,
-			      const PDPtr outb) const;
+  virtual Energy partialWidth(PMPair inpart, PMPair outa, 
+			      PMPair outb) const;
   //@}
 
 public:
