@@ -74,15 +74,16 @@ void ModelGenerator::doinit() throw(InitException) {
   if(_theParticles.size() > 0) {
     _theDecayConstructor->createDecayers(_theParticles);
     string filename;
-    filename = CurrentGenerator::current().filename() + "-ModelSpectrum.spc";
+    filename = CurrentGenerator::current().filename() + 
+      "-BSMDecayModes.out";
     ofstream ofs(filename.c_str());
-    ofs << "# Automatically Generated Decay Modes\n";
+    ofs << "# BSM Model Decay Modes\n";
     ofs << "#\n#";
     for( PDVector::iterator it = _theParticles.begin();
 	 it != _theParticles.end(); ++it ) {
       tPDPtr parent = *it;
       if( parent->decaySelector().empty() ) {
-	parent->stable(false);
+	parent->stable(true);
 	parent->width(0.0*MeV);
       }
       else
@@ -92,12 +93,15 @@ void ModelGenerator::doinit() throw(InitException) {
 }
 
 void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
-  ofs << " Parent: " << parent->PDGName() << "   Mass (GeV): " 
-      << parent->mass()/GeV << "   Width: " << parent->width()/GeV << '\n';
+  ofs << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
+      << parent->mass()/GeV << "  Total Width (GeV): " 
+      << parent->width()/GeV << endl;
+  ofs << std::left << std::setw(48) << '#' << "BR" << endl; 
   Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
   Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
   for(; dit != dend; ++dit)
-    ofs << (*dit).second->tag() << "   " << (*dit).second->brat() << '\n';
+    ofs << std::setw(48) << (*dit).second->tag() << (*dit).second->brat() 
+	<< '\n';
   ofs << "#\n#";
   
 }
