@@ -21,8 +21,6 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theCosA(0.), theSinB(0.), theCosB(0.), 
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 
 			     theq2last(), theHaveCoeff(false) {
-  //set 5 particles in loop
-  setNParticles(5);
   //PDG codes for particles at vertices
   vector<int> first(3), second(3,21), third(3,21);
   first[0] = 25;
@@ -113,6 +111,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
     theCouplast = 4.*Constants::pi*alphas*sqrt(4*Constants::pi*alpha)/theSw;
     Energy mt = theMSSM->mass(q2, thetop);
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
+      setNParticles(5);
       masses.insert(masses.begin(), theSqmass.begin(), theSqmass.end());
       masses.push_back(mt);
       type.resize(5, PDT::Spin0);
@@ -157,6 +156,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       }
     }
     else {
+      setNParticles(1);
       masses.resize(1, mt);
       type.resize(1, PDT::Spin1Half);
       Complex coup = Complex(0., 1.)*mt/2./theMw/theTanB;
