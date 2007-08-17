@@ -8,7 +8,7 @@ namespace Herwig {
 
 inline UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
 			    theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
-			    theSpectrum("UEDMassSpectrum.spc"), 
+			    theSpectrum("UEDMasses.out"), 
 			    theVeV(246.*GeV) {}
 
 inline IBPtr UEDBase::clone() const {

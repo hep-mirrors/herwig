@@ -93,7 +93,7 @@ void UEDBase::Init() {
   static Parameter<UEDBase,string> interfaceSPCFileName
     ("SPCFileName",
      "The name of the spectrum file",
-     &UEDBase::theSpectrum, "UEDSpectrum.spc", false, false);
+     &UEDBase::theSpectrum, "UEDMasses.out", false, false);
 
   static Parameter<UEDBase,Energy> interfaceVeV
     ("VeV",
