@@ -95,10 +95,15 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	  if(mit!=eit&&!mit->second->_children.empty()) {
 	    progenitor()->hasEmitted(truncatedTimeLikeShower(
 		    particlesToShower[ix]->progenitor(),mit->second));
-	  } else {
+	  } 
+	  else {
 	    progenitor()->hasEmitted(
 		timeLikeShower(particlesToShower[ix]->progenitor()));
 	  }
+	}
+	else {
+	  progenitor()->hasEmitted(
+		timeLikeShower(particlesToShower[ix]->progenitor()));
 	}
       }
     }
@@ -272,13 +277,18 @@ bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
       else                       iout=2;
     }
     // apply the vetos for the truncated shower
+    double zsplit(0.);
     if(iout==0) vetoed=true;
     else {
-      if(iout==1&&fb.kinematics->z()<0.5)      vetoed=true;
-      else if(iout==2&&fb.kinematics->z()>0.5) vetoed=true;
+      zsplit = iout==1 ? fb.kinematics->z() : 1-fb.kinematics->z();
     }
+    // hardest line veto
+    if(zsplit<0.5) vetoed=true;
+    // angular ordering veto
+    if(fb.kinematics->scale()<branch->_scale/zsplit) vetoed=true;
     // pt veto
     if(fb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
+    // if vetoed reset scale
     if(vetoed) particle->setEvolutionScale(ShowerIndex::QCD,fb.kinematics->scale());
   }
   // if no branching set decay matrix and return

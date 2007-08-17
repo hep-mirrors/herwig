@@ -161,7 +161,8 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<VectorBosonQQbarHardGenerator> initVectorBosonQQbarHardGenerator;
+  static ClassDescription<VectorBosonQQbarHardGenerator> 
+  initVectorBosonQQbarHardGenerator;
 
   /**
    * The assignment operator is private and must never be called.
@@ -270,12 +271,14 @@ struct ClassTraits<Herwig::VectorBosonQQbarHardGenerator>
   static string className() { return "Herwig::VectorBosonQQbarHardGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * VectorBosonQQbarHardGenerator is implemented. It may also include several, space-separated,
-   * libraries if the class VectorBosonQQbarHardGenerator depends on other classes (base classes
+   * VectorBosonQQbarHardGenerator is implemented. 
+   * It may also include several, space-separated,
+   * libraries if the class VectorBosonQQbarHardGenerator depends
+   * on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "VectorBosonQQbarHardGenerator.so"; }
+  static string library() { return "HwNasonShower.so"; }
 };
 
 /** @endcond */
@@ -283,8 +286,5 @@ struct ClassTraits<Herwig::VectorBosonQQbarHardGenerator>
 }
 
 #include "VectorBosonQQbarHardGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorBosonQQbarHardGenerator.tcc"
-#endif
 
 #endif /* HERWIG_VectorBosonQQbarHardGenerator_H */

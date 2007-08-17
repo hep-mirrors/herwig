@@ -301,19 +301,19 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
   while (vetoed) {
     vetoed = false; 
     fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance);
-
+    if(!fb.kinematics) break;
     // check whether emission was harder than largest pt of hard subprocess
-    if (hardVetoIS() && fb.kinematics 
-	&& fb.kinematics->pT() > _progenitor->maxHardPt()) {
+    
+    if (hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
       particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
       continue;
     }
 
     // apply vetos if needed
-    if(fb.kinematics && _currentme && softMEC())
+    if(_currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
-    if(fb.kinematics && fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
+    if(fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -372,7 +372,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
 						    _initialenhance,_beam);
 
     // check whether emission was harder than largest pt of hard subprocess
-    if (hardVetoFS() && bb.kinematics 
+    if (hardVetoIS() && bb.kinematics 
 	&& bb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
       particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
