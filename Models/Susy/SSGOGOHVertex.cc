@@ -72,12 +72,10 @@ void SSGOGOHVertex::doinit() throw(InitException) {
   theSw = sqrt(theMSSM->sin2ThetaW());
   double tw = theSw/sqrt(1. - theSw*theSw);
   double tanb = theMSSM->tanBeta();
-  Energy mu = theMSSM->muParameter();
   theSb = tanb/sqrt(1. + sqr(tanb));
   theCb = sqrt( 1. - sqr(theSb) );
   theSa = sin(theMSSM->higgsMixingAngle());
   theCa = sqrt(1. - sqr(theSa));
-  
   MixingMatrix nmix = *theMSSM->neutralinoMix();
   MixingMatrix umix = *theMSSM->charginoUMix();
   MixingMatrix vmix = *theMSSM->charginoVMix();

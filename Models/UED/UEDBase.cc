@@ -283,7 +283,6 @@ void UEDBase::fermionMasses(const unsigned int n) {
   const Energy2 shiftD = sqr(nmass + deltaD);
   
   //Top quarks seperately as they have different corrections
-  const InvEnergy R = 1/theInvRadius; 
   const Energy2 mt2 = sqr(topMass);
   const Energy delta_Q3 = -3.*ht*ht*norm/2.;
   const Energy deltaTD = deltaQ + delta_Q3;
