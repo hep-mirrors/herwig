@@ -1,33 +1,32 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEPP2Higgs_H
-#define HERWIG_MEPP2Higgs_H
+#ifndef HERWIG_MEPP2HiggsQQ_H
+#define HERWIG_MEPP2HiggsQQ_H
 //
-// This is the declaration of the MEPP2Higgs class.
+// This is the declaration of the MEPP2HiggsQQ class.
 //
-
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "ThePEG/MatrixElement/ME2to2Base.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/General/SVVLoopVertex.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "MEPP2Higgs.fh"
+#include "ProductionMatrixElement.h"
+#include "MEPP2HiggsQQ.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /**
- * The MEPP2Higgs class implements the matrix element for the process
- * pp->Higgs with different Higgs shape prescriptions (see details in hep-ph/9505211)
- * and the NLL corrected Higgs width (see details in the FORTRAN HERWIG manual).
+ * The MEPP2HiggsQQ class implements the matrix element for the process 
+ * pp->Higgs->QQ (Q = b,t) with the corrected Higgs width treatment 
+ * (see details in hep-ph/9505211).
  *
- * @see \ref MEPP2HiggsInterfaces "The interfaces"
- * defined for MEPP2Higgs.
+ * @see \ref MEPP2HiggsQQInterfaces "The interfaces"
+ * defined for MEPP2HiggsQQ.
  */
-class MEPP2Higgs: public MEBase {
+class MEPP2HiggsQQ: public ME2to2Base {
 
 public:
 
@@ -36,12 +35,17 @@ public:
   /**
    * The default constructor.
    */
-  inline MEPP2Higgs();
+  inline MEPP2HiggsQQ();
+
+  /**
+   * The copy constructor.
+   */
+  inline MEPP2HiggsQQ(const MEPP2HiggsQQ &);
 
   /**
    * The destructor.
    */
-  virtual ~MEPP2Higgs();
+  virtual ~MEPP2HiggsQQ();
   //@}
 
   /**
@@ -49,7 +53,7 @@ public:
    * previously provided by the last call to setKinematics(). Uses
    * me().
    */
-  virtual CrossSection dSigHatDR() const;
+//  virtual CrossSection dSigHatDR() const;
 
 public:
 
@@ -77,25 +81,9 @@ public:
   virtual double me2() const;
 
   /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
-
-  /**
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
-
-  /**
-   * The number of internal degrees of freedom used in the matrix
-   * element.
-   */
-  virtual int nDim() const;
 
   /**
    * Add all possible diagrams with the add() function.
@@ -119,23 +107,22 @@ public:
    * @return the possible colour geometries weighted by their
    * relative probabilities.
    */
-  virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-//  virtual bool generateKinematics(const double * r);
-  //@}
+  virtual Selector<const ColourLines *>
+  colourGeometries(tcDiagPtr diag) const;
 
   /**
    *  Construct the vertex of spin correlations.
    */
   virtual void constructVertex(tSubProPtr);
+
+  /**
+   * Generate internal degrees of freedom given 'nDim()' uniform
+   * random numbers in the interval ]0,1[. To help the phase space
+   * generator, the 'dSigHatDR()' should be a smooth function of these
+   * numbers, although this is not strictly necessary. Return
+   * false if the chosen points failed the kinematical cuts.
+   */
+  virtual bool generateKinematics(const double * r);
   //@}
 
 public:
@@ -165,6 +152,7 @@ public:
   static void Init();
 
 protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -180,7 +168,12 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+
+// If needed, insert declarations of virtual function defined in the
+// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+
 protected:
+
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -190,28 +183,58 @@ protected:
    */
   virtual void doinit() throw(InitException);
 
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+//  inline virtual void rebind(const TranslationMap & trans)
+//    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+//  inline virtual IVector getReferences();
+  //@}
+
 private:
+
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEPP2Higgs> initMEPP2Higgs;
+  static ClassDescription<MEPP2HiggsQQ> initMEPP2HiggsQQ;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2Higgs & operator=(const MEPP2Higgs &);
+  MEPP2HiggsQQ & operator=(const MEPP2HiggsQQ &);
 
-  double ggME(vector<VectorWaveFunction> g1,
-              vector<VectorWaveFunction> g2,
-              ScalarWaveFunction &, bool calc) const;
+  double ggME(vector<VectorWaveFunction> & g1,
+              vector<VectorWaveFunction> & g2,
+              vector<SpinorWaveFunction> & q1,
+              vector<SpinorBarWaveFunction> & q2,
+              bool calc) const;
 
   double qqME(vector<SpinorWaveFunction>    & fin,
               vector<SpinorBarWaveFunction> & ain,
-              ScalarWaveFunction & hout,bool calc) const;
+              vector<SpinorWaveFunction>    & fout,
+              vector<SpinorBarWaveFunction> & aout,
+              bool calc) const;
 
 private:
+
+  /**
+   *  Use the mass generator for the line shape
+   */
+  unsigned int shapeopt;
 
   /**
    * Type of the Higgs width used (options: fixed, LO running, NLL corrected running, user defined)
@@ -219,32 +242,28 @@ private:
   unsigned int widthopt;
 
   /**
+   *  The processes to be included
+   */
+  unsigned int processopt;
+
+  /**
    * Defines which decay modes are taken into account (see class documentation)
    */
   unsigned int branchingopt;
 
   /**
-   * Defines the Higgs resonance shape
-   */
-  unsigned int shapeopt;
-
-  /**
-   * The processes to be included (GG->H and/or qq->H)
-   */
-  unsigned int processopt;
-
-  /**
-   * Minimum flavour of incoming quarks
+   *  Minimum flavour of incoming quarks
    */
   unsigned int minflavouropt;
 
   /**
-   * Maximum flavour of incoming quarks
+   *  Maximum flavour of incoming quarks
    */
   unsigned int maxflavouropt;
 
+  unsigned int quarkopt;
   /**
-   * Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess
+   *  Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess
    */
   mutable double diagwgt[3];
 
@@ -254,12 +273,12 @@ private:
   ProductionMatrixElement _me;
 
   /**
-   * Pointer to the H->2gluons vertex (used in gg->H)
+   * Pointer to the H->2gluons vertex
    */
   SVVLoopVertexPtr hggvertex;
 
   /**
-   * Pointer to the fermion-fermion Higgs vertex (used in qq->H)
+   * Pointer to the H->f,f vertex
    */
   FFSVertexPtr ffhvertex;
 
@@ -268,17 +287,6 @@ private:
    */
   tcHwSMPtr theSM;
 
-  /** @routines to calculate Higgs width. */
-  //@{
-  /**
-   * Calculates the Higgs width with some NLL corrections a-la FORTRAN HERWIG. 
-   * The following channels are taken into account: 
-   * H->q\bar{q}, H->l\bar{l}, H->WW, H->ZZ, H->2gammas, H->2gluons
-   * The prescription corresponds to one in FORTRAN HERWIG (except H->2gluons!)
-   * @returns the Higgs width for the Higgs mass Mh.
-   */
-  Energy calcNLLRunningWidth(Energy Mh) const;
-
   /**
    * Calculates the Higgs width at LO.
    * @returns the Higgs width for Higgs mass Mh.
@@ -286,19 +294,11 @@ private:
   Energy calcLORunningWidth(Energy Mh) const;
 
   /**
-   * Calculates the double Breit-Wigner Integral a-la FORTRAN HERWIG.
-   * It is used in NLL corrected Higgs width for H->WW/ZZ,
-   * x = (M_V/M_H)^2, y=M_V*G_V/(M_H)^2, where M_V/G_V - V-boson mass/width
-   * @return the integral value.
-   */
-  double HwDoubleBW(double x, double y) const;
-
-  /**
    * Calculate a loop function for the triangle vertex GGH/AAH
    * @return the loop function value: pair -> (real, imaginary).
    */
   std::pair<double,double> HwW2(double tau) const;
-  //@}
+
 };
 
 }
@@ -309,24 +309,25 @@ namespace ThePEG {
 
 /** @cond TRAITSPECIALIZATIONS */
 
-/** This template specialization informs ThePEG about the base classes of MEPP2Higgs. */
+/** This template specialization informs ThePEG about the
+ *  base classes of MEPP2HiggsQQ. */
 template <>
-struct BaseClassTrait<Herwig::MEPP2Higgs,1> {
-  /** Typedef of the first base class of MEPP2Higgs. */
-  typedef MEBase NthBase;
+struct BaseClassTrait<Herwig::MEPP2HiggsQQ,1> {
+  /** Typedef of the first base class of MEPP2HiggsQQ. */
+  typedef ME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEPP2Higgs class and the shared object where it is defined. */
+ *  the MEPP2HiggsQQ class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEPP2Higgs>
-  : public ClassTraitsBase<Herwig::MEPP2Higgs> {
+struct ClassTraits<Herwig::MEPP2HiggsQQ>
+  : public ClassTraitsBase<Herwig::MEPP2HiggsQQ> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2Higgs"; }
+  static string className() { return "Herwig::MEPP2HiggsQQ"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEPP2Higgs is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2Higgs depends on other classes (base classes
+   * MEPP2HiggsQQ is implemented. It may also include several, space-separated,
+   * libraries if the class MEPP2HiggsQQ depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -337,9 +338,9 @@ struct ClassTraits<Herwig::MEPP2Higgs>
 
 }
 
-#include "MEPP2Higgs.icc"
+#include "MEPP2HiggsQQ.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2Higgs.tcc"
+// #include "MEPP2HiggsQQ.tcc"
 #endif
 
-#endif /* HERWIG_MEPP2Higgs_H */
+#endif /* HERWIG_MEPP2HiggsQQ_H */
