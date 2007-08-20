@@ -45,6 +45,16 @@ create Herwig::MEPP2GammaJet   MEGammaJet
 
 # hadron-hadron to higgs
 create Herwig::MEPP2Higgs   MEHiggs
+set MEHiggs:ShapeScheme FixedBreitWigner
+#set MEHiggs:ShapeScheme ImprovedBreitWigner
+#set MEHiggs:WidthScheme FixedHiggsWidth
+set MEHiggs:WidthScheme NLLcorrectedHiggsWidth
+#set MEHiggs:WidthScheme LOHiggsWidth
+set MEHiggs:Process gg
+#set MEHiggs:Process qqbar
+#set MEHiggs:MinimumFlavour 5
+#set MEHiggs:MaximumFlavour 5
+#set MEHiggs:HiggsBranchAllowed FermionWZGammaBR
 
 # hadron-hadron to higgs+jet
 create Herwig::MEPP2HiggsJet   MEHiggsJet
