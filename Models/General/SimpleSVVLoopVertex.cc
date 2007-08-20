@@ -30,7 +30,8 @@ void SimpleSVVLoopVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr,tcPDPtr) {
     tmp+=A1(q2,sqr(masses[i]));
 //    tmp+=W3(sqrt(q2),masses[i]);
   }
-  b(tmp);
+  assert(false || "not updated by cherstn yet");
+  //  b(tmp);
 }
 
 Complex SimpleSVVLoopVertex::A1(Energy2 s,Energy2 mf2) const {
