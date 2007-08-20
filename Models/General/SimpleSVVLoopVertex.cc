@@ -25,13 +25,17 @@ void SimpleSVVLoopVertex::Init() {
 }
   
 void SimpleSVVLoopVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr,tcPDPtr) {
-  Complex tmp(0.);
+  Complex loop(0.);
   for(unsigned int i = 0; i < masses.size(); ++i) {
-    tmp+=A1(q2,sqr(masses[i]));
+    loop += A1(q2,sqr(masses[i]));
 //    tmp+=W3(sqrt(q2),masses[i]);
   }
-  assert(false || "not updated by cherstn yet");
-  //  b(tmp);
+  a00(loop);
+  a11(0.0);
+  a12(0.0);
+  a21(-loop);
+  a22(0.0);
+  aEp(0.0);
 }
 
 Complex SimpleSVVLoopVertex::A1(Energy2 s,Energy2 mf2) const {
@@ -43,7 +47,7 @@ Complex SimpleSVVLoopVertex::W2(Energy2 s, Energy2 mf2) const {
   Complex ac(0.);
   double root=0.5*sqrt(abs(s)/mf2);
 
-  if(s<0.*GeV2)
+  if(s < 0.*GeV2)
     ac = sqr(asinh(root));
   else if(root<1.)
     ac = -sqr(asin(root));
