@@ -386,3 +386,47 @@ if test -d $srcdir/.svn; then
 fi
 AM_CONDITIONAL(USE_SVNVERSION,[test "x$have_svnversion" = "xyes"])
 ])
+
+dnl ##### COMPILERFLAGS #####
+AC_DEFUN([HERWIG_COMPILERFLAGS],
+[
+AC_REQUIRE([HERWIG_CHECK_THEPEG])
+
+AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE"
+
+AC_MSG_CHECKING([for debugging mode])
+AC_ARG_ENABLE(debug,
+        AC_HELP_STRING([--enable-debug],[debug mode, use --enable-debug=slow for additional options that slow down the run.]),
+        [],
+        [enable_debug=no]
+        )
+AC_MSG_RESULT([$enable_debug])
+
+if test "x$enable_debug" != "xno"; then
+	debugflags="-g"
+else
+	AM_CPPFLAGS="$AM_CPPFLAGS -DNDEBUG"
+fi
+
+dnl -Wfloat-equal -fvisibility-inlines-hidden -Wctor-dtor-privacy -Weffc++
+if test -n "$GCC"; then
+	warnflags="-ansi -pedantic -Wall -W"
+
+	if test "x$enable_debug" = "xslow"; then
+		debugflags="$debugflags -fno-inline"
+		AM_CPPFLAGS="$AM_CPPFLAGS -D_GLIBCXX_DEBUG"
+	fi
+
+	# don't know how else to do this. see bug #14
+	case "${host}" in
+	*-linux*)	AM_LDFLAGS="$AM_LDFLAGS -Wl,--disable-new-dtags" ;;
+	*)		;;
+	esac
+fi
+
+AC_SUBST(AM_CPPFLAGS)
+AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])
+AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])
+AC_SUBST(AM_FFLAGS,  ["$debugflags"])
+AC_SUBST(AM_LDFLAGS)
+])

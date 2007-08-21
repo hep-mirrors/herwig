@@ -35,14 +35,15 @@ theLTCHECKSOURCES = ltcheck/auxB.F ltcheck/auxCD.F ltcheck/check.F \
   ltcheck/A0check.F ltcheck/B0check.F ltcheck/B1check.F \
   ltcheck/B00check.F ltcheck/B11check.F ltcheck/DB0check.F \
   ltcheck/DB1check.F ltcheck/DB00check.F ltcheck/DB11check.F \
-  ltcheck/C0check.F ltcheck/D0check.F $(LTCOMMON)
+  ltcheck/C0check.F ltcheck/D0check.F $(theLTCOMMON)
 
 ## installed already from "include/Makefile.am"
 noinst_HEADERS = include/clooptools.h
 
 ## no optimization allowed, see LoopTools homepage
 ## -DQEXT=DBLE should really be checked in configure script
-AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE -g -O0 
+libHwLooptoolsCheck_la_FFLAGS = $(AM_FFLAGS) -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
+libHwLooptools_la_FFLAGS = $(AM_FFLAGS) -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
 libHwLooptools_la_LDFLAGS = -version-info 2:0:0
