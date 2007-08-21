@@ -64,8 +64,8 @@ vector<Energy> RunningMass::mass() const
     if(as>0)
       {massf = massf/(1.+coeff*as)/pow(as,_thePower[f-1]);}
     else {
-//      massf = Energy();
-      massf = 0.001*GeV;
+      massf = Energy();
+//      massf = 0.001*GeV;
     }
     masses.push_back(massf);
   }
