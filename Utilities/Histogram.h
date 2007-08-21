@@ -134,9 +134,20 @@ public:
 		     bool smooth=false) const;
 
   /**
+   * get the number of visible entries (all entries without those in the
+   * under- and overflow bins) in the histogram.  This assumes integer
+   * entries, ie it gives wrong results for weighted histograms.
+   */
+  unsigned int visibleEntries() const;
+  /**
+   * Compute the normalisation of the data. 
+   */
+  double dataNorm() const;
+
+  /**
    * Output into a simple ascii file, easily readable by gnuplot.
    */
-  void simpleOutput(ostream & out, bool errorbars) const;
+  void simpleOutput(ostream & out, bool errorbars, bool normdata=false);
 
 public:
 

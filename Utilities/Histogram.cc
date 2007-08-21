@@ -164,12 +164,47 @@ void Histogram::topdrawOutput(ostream & out,
   }
 }
 
-void Histogram::simpleOutput(ostream & out, bool errorbars) const {
+double Histogram::dataNorm() const {
+  double norm(0.0);
+  if (_havedata) {
+    const unsigned int lastDataBinIndx = _bins.size()-2;
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+      double delta = _bins[ix+1].limit-_bins[ix].limit;
+      double value = _bins[ix].data;
+      norm += delta*value;
+    }
+  } else {
+    norm = -1.0;
+  }
+  return norm;
+}
+
+unsigned int Histogram::visibleEntries() const {
+  unsigned int numPoints(0);
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    numPoints += (unsigned int) _bins[ix].contents;
+  }
+  return numPoints;
+}
+
+void Histogram::simpleOutput(ostream & out, bool errorbars, 
+			     bool normdata) {
   // simple ascii output (eg for gnuplot)
   // work out the y points
   vector<double> yout;
-  unsigned int numPoints = _globalStats.numberOfPoints();  
+  //  unsigned int numPoints = _globalStats.numberOfPoints();  
+  unsigned int numPoints = visibleEntries();
   if (numPoints == 0) ++numPoints;
+  double datanorm(1.0); 
+  double chisq(0.0), minfrac(0.05);
+  unsigned int ndof(0);
+  if (_havedata) {
+    if (normdata) datanorm = dataNorm();
+    normaliseToData();
+    chiSquared(chisq, ndof, minfrac);    
+  }
+  prefactor(1.0);
 
   const unsigned int lastDataBinIndx = _bins.size()-2;
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
@@ -180,8 +215,15 @@ void Histogram::simpleOutput(ostream & out, bool errorbars) const {
 
   out << "# " << numPoints << " entries, mean +- sigma = "
       << _globalStats.mean() << " +- " 
-      << _globalStats.stdDev() << "\n"
-      << "# xlo xhi ynorm " 
+      << _globalStats.stdDev() << "\n";
+  if (_havedata) {
+    out << "# chi^2/dof = " << chisq << "/" << ndof << " = " 
+	<< chisq/double(ndof) << " (min err = " << minfrac << ")\n";
+    if (datanorm) {
+      out << "# data normalised by factor " << datanorm << "\n"; 
+    }
+  }
+  out << "# xlo xhi ynorm " 
       << (errorbars ? "ynorm_err " : "")
       << (_havedata ? "data " : "")
       << (_havedata && errorbars ? "dataerr " : "")
@@ -197,9 +239,9 @@ void Histogram::simpleOutput(ostream & out, bool errorbars) const {
       out << " " << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
     }
     if (_havedata) {
-      out << " " << _bins[ix].data;
+      out << " " << _bins[ix].data/datanorm;
       if (errorbars)
-	out << " " << _bins[ix].dataerror;
+	out << " " << _bins[ix].dataerror/datanorm;
     }
     out << " " << _bins[ix].contents << '\n';
   }
