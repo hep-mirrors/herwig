@@ -28,7 +28,8 @@ inline void SpinCorrAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
-  thelPlus->topdrawOutput(outfile, true, false, false, false,
+  using namespace HistogramOptions;
+  thelPlus->topdrawOutput(outfile, Frame,
 			 "BLACK", "Anti-lepton","","","","","");
   Energy mq1 = getParticleData(5100002)->mass();
   Energy mz1 = getParticleData(5100023)->mass();
@@ -41,7 +42,7 @@ inline void SpinCorrAnalysis::dofinish() {
     outfile << mh << '\t' << pro1 << '\n';
   }
   outfile << "JOIN RED\n";
-  thelMinus->topdrawOutput(outfile, true, false, false, false,
+  thelMinus->topdrawOutput(outfile, Frame,
 			   "BLACK", "lepton","","","","","");
   
   for(double mh = 0.; mh < 1.02; mh += 0.02) {

@@ -113,14 +113,15 @@ void SemiLeptonicDecayAnalysis::dofinish() {
       getParticleData(9+2*_outgoingL[ix])->PDGName() + " " +
       getParticleData(10+2*_outgoingL[ix])->PDGName();
     temp = "Mass for l nu in " +title;
-    _scale[ix]->topdrawOutput(output,true,true,false,false,
+    using namespace HistogramOptions;
+    _scale[ix]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",temp,"",
 			     "1/GdG/dm0lN1/MeV2-13",
 			     "  F F   X GX    X  X",
 			     "m0lN1/MeV",
 			     " X GX    ");
     temp = "Lepton energy for in " +title;
-    _energy[ix]->topdrawOutput(output,true,true,false,false,
+    _energy[ix]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",temp,"",
 			     "1/GdG/dE0l1/MeV2-13",
 			     "  F F   X X    X  X",

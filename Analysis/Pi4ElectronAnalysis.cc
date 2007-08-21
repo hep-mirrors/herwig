@@ -79,8 +79,9 @@ void Pi4ElectronAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
+  using namespace HistogramOptions;
   for(unsigned int ix=0;ix<_mffbar.size();++ix) {
-    _mffbar[ix]->topdrawOutput(output,true,true,false,true,
+    _mffbar[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "Mass of the e2+3e2-3 pair in P203Re2+3e2-3e2+3e2-3",
 			       "             X X X X         GX XW X X X X X X X X",

@@ -71,7 +71,8 @@ void TauToLeptonsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _emode->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _emode->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"e2-3N0O0e1 mass for T2-3RN0T1e2-3N0O0e1",
 			" X XGUDX X          GX XWGXGX X XGUDX X",
@@ -79,7 +80,7 @@ void TauToLeptonsAnalysis::dofinish() {
 			"  G G   X X XGUDX XX    X  X",
 			"m0e2-3N0O0e11/GeV",
 			" X X XGUDX XX    ");
-  _mmode->topdrawOutput(output,true,true,false,true,
+  _mmode->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"M2-3N0O0M1 mass for T2-3RN0T1M2-3N0O0M1",
 			"GX XGUDXGX          GX XWGXGXGX XGUDXGX",

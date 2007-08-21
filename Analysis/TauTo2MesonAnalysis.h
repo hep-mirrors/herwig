@@ -51,6 +51,8 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:

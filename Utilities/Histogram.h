@@ -17,6 +17,20 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+  /**
+   * Options for histogram output. 
+   * They can be combined using the '|' operator, e.g. 'Frame | Ylog'
+   */
+  namespace HistogramOptions {
+    const unsigned int None      = 0;
+    const unsigned int Frame     = 1;
+    const unsigned int Errorbars = 1 << 1;
+    const unsigned int Xlog      = 1 << 2;
+    const unsigned int Ylog      = 1 << 3;
+    const unsigned int Smooth    = 1 << 4;
+    const unsigned int Rawcount  = 1 << 5;
+  }
+
 /**
  * The Histogram class is a simple histogram for the Analysis handlers.
  *
@@ -106,10 +120,7 @@ public:
   /**
    *  Output as a topdrawer file. The histogram is normalised to unit area
    * @param out The output stream
-   * @param frame output on a new graph
-   * @param errorbars output data points with error bars
-   * @param xlog  log scale on x axis
-   * @param ylog  log scale on y axis
+   * @param flags A bitmask of flags from HistogramOptions, e.g. Frame|Ylog
    * @param colour The colour for the line
    * @param title  The title for the top of the plot
    * @param titlecase topdraw format for the title
@@ -117,21 +128,18 @@ public:
    * @param leftcase topdraw format for left axis label
    * @param bottom  Bottom axis lable
    * @param bottomcase Bottom axis lable ofr topdraw
-   * @param smooth Plot a smooth line instead of bars?
    * N.B. in td smoothing only works for histograms with uniform binning.
    */
   void topdrawOutput(ostream & out,
-		     bool frame,
-		     bool errorbars,
-		     bool xlog, bool ylog,
-		     string colour=string("BLACK"),
-		     string title=string(),
-		     string titlecase =string(),
-		     string left=string(),
-		     string leftcase =string(),
-		     string bottom=string(),
-		     string bottomcase =string(),
-		     bool smooth=false) const;
+		     unsigned int flags = 0,
+		     string colour = string("BLACK"),
+		     string title = string(),
+		     string titlecase = string(),
+		     string left = string(),
+		     string leftcase = string(),
+		     string bottom = string(),
+		     string bottomcase = string()
+		     ) const;
 
   /**
    * get the number of visible entries (all entries without those in the
@@ -148,6 +156,17 @@ public:
    * Output into a simple ascii file, easily readable by gnuplot.
    */
   void simpleOutput(ostream & out, bool errorbars, bool normdata=false);
+
+  /**
+   * Dump bin data into a vector
+   */
+  vector<double> dumpBins() const;
+
+  /**
+   * Returns a new histogram containing bin-by-bin ratios of two histograms
+   */
+  Histogram ratioWith(const Histogram & h2) const;
+
 
 public:
 

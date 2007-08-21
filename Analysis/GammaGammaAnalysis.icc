@@ -25,19 +25,21 @@ inline void GammaGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
-  _ptharder.topdrawOutput(outfile,true,false,false,true,"BLACK","pt harder");
-  _ptsofter.topdrawOutput(outfile,true,false,false,true,"BLACK","pt softer");
-  _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");
-  _Eharder.topdrawOutput(outfile,true,false,false,true,"BLACK","E harder");
-  _Esofter.topdrawOutput(outfile,true,false,false,true,"BLACK","E softer");
-  _Epair.topdrawOutput(outfile,true,false,false,true,"BLACK","E pair");
-  _rapharder.topdrawOutput(outfile,true,false,false,false,"BLACK","y harder");
-  _rapsofter.topdrawOutput(outfile,true,false,false,false,"BLACK","y softer");
-  _rappair.topdrawOutput(outfile,true,false,false,false,"BLACK","y pair");
-  _phiharder.topdrawOutput(outfile,true,false,false,false,"BLACK","phi harder");
-  _phisofter.topdrawOutput(outfile,true,false,false,false,"BLACK","phi softer");
-  _deltaphi.topdrawOutput(outfile,true,false,false,false,"BLACK","Delta phi");
-  _mpair.topdrawOutput(outfile,true,false,false,true,"BLACK","M pair");
+  using namespace HistogramOptions;
+  _ptharder.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt harder");
+  _ptsofter.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt softer");
+  _ptpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt pair");
+  _Eharder.topdrawOutput(outfile,Frame|Ylog,"BLACK","E harder");
+  _Esofter.topdrawOutput(outfile,Frame|Ylog,"BLACK","E softer");
+  _Epair.topdrawOutput(outfile,Frame|Ylog,"BLACK","E pair");
+  _rapharder.topdrawOutput(outfile,Frame,"BLACK","y harder");
+  _rapsofter.topdrawOutput(outfile,Frame,"BLACK","y softer");
+  _rappair.topdrawOutput(outfile,Frame,"BLACK","y pair");
+  _phiharder.topdrawOutput(outfile,Frame,"BLACK","phi harder");
+  _phisofter.topdrawOutput(outfile,Frame,"BLACK","phi softer");
+  _deltaphi.topdrawOutput(outfile,Frame,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","M pair");
+  outfile.close();
 }
 
 }

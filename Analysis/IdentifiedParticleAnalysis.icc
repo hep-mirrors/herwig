@@ -22,6 +22,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
   // chisq
   double chisq;
   unsigned int npoint;
+  using namespace HistogramOptions;
   // Histogram for the \f$\xi\f$ distribution for all particles from all quarks
   _xpa->normaliseToData();
   _xpa->chiSquared(chisq,npoint);
@@ -29,7 +30,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for all"
 		     << " charged particles from all quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _xpa->topdrawOutput(output,true,true,false,true,
+  _xpa->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of charged particles for all events(SLD)",
 		      "                                                       ",
@@ -44,7 +45,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for all"
 		     << " charged particles  from light quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _xpl->topdrawOutput(output,true,true,false,true,
+  _xpl->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of charged particles for all light quark events(SLD)",
 		      "                                                                   ",
@@ -59,7 +60,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for all"
 		     << " charged particles  from light quarks(OPAL) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _udsxp->topdrawOutput(output,true,true,false,true,
+  _udsxp->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of charged particles for all light quark events(OPAL)",
 		      "                                                                   ",
@@ -73,7 +74,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xi distrubtion for all"
 		     << " charged particles  from light quarks(OPAL) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _udsxip->topdrawOutput(output,true,true,false,true,
+  _udsxip->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of charged particles for all light quark events(OPAL)",
 		      "                                                                   ",
@@ -88,7 +89,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for all"
 		     << " charged particles  from charm quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _xpc->topdrawOutput(output,true,true,false,true,
+  _xpc->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of charged particles for all charm events(SLD)",
 		      "                                                             ",
@@ -103,7 +104,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for all"
 		     << " charged particles  from bottom quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _xpb->topdrawOutput(output,true,true,false,true,
+  _xpb->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of charged particles for all bottom events(SLD)",
 		      "                                                              ",
@@ -118,7 +119,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "pions from all quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _pipma->topdrawOutput(output,true,true,false,true,
+  _pipma->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of pions for all events(SLD)",
 		      "                                           ",
@@ -133,7 +134,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the momentum distrubtion for "
 		     << "pions from all quarks(OPAL) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _pipm->topdrawOutput(output,true,true,false,true,
+  _pipm->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The momentum of pions for all events(OPAL)",
 		      "                                          ",
@@ -148,7 +149,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "pions from light quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _pipml->topdrawOutput(output,true,true,false,true,
+  _pipml->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of pions for light quark events(SLD)",
 		      "                                           ",
@@ -163,7 +164,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "pions from charm quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _pipmc->topdrawOutput(output,true,true,false,true,
+  _pipmc->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of pions for charm events(SLD)",
 		      "                                           ",
@@ -178,7 +179,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "pions from bottom quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _pipmb->topdrawOutput(output,true,true,false,true,
+  _pipmb->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of pions for bottom quark events(SLD)",
 		      "                                           ",
@@ -193,7 +194,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "kaons from all quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _kpma->topdrawOutput(output,true,true,false,true,
+  _kpma->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of kaons for all events(SLD)",
 		      "                                           ",
@@ -208,7 +209,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the momentum distrubtion for "
 		     << "kaons from all quarks(OPAL) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _kpm->topdrawOutput(output,true,true,false,true,
+  _kpm->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The momentum of kaons for all events(OPAL)",
 		      "                                                   ",
@@ -223,7 +224,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "kaons from light quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _kpml->topdrawOutput(output,true,true,false,true,
+  _kpml->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of kaons for light quark events(SLD)",
 		      "                                           ",
@@ -238,7 +239,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "kaons from charm quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _kpmc->topdrawOutput(output,true,true,false,true,
+  _kpmc->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of kaons for charm events(SLD)",
 		      "                                           ",
@@ -253,7 +254,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "kaons from bottom quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _kpmb->topdrawOutput(output,true,true,false,true,
+  _kpmb->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of kaons for bottom quark events(SLD)",
 		      "                                           ",
@@ -268,7 +269,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "protons from all quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _ppma->topdrawOutput(output,true,true,false,true,
+  _ppma->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of protons for all events(SLD)",
 		      "                                           ",
@@ -283,7 +284,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the momentum distrubtion for "
 		     << "protons from all quarks(OPAL) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _ppm->topdrawOutput(output,true,true,false,true,
+  _ppm->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The momentum of protons for all events(OPAL)",
 		      "                                                   ",
@@ -298,7 +299,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "protons from light quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _ppml->topdrawOutput(output,true,true,false,true,
+  _ppml->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of protons for light quark events(SLD)",
 		      "                                           ",
@@ -313,7 +314,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "protons from charm quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _ppmc->topdrawOutput(output,true,true,false,true,
+  _ppmc->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of protons for charm events(SLD)",
 		      "                                           ",
@@ -328,7 +329,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the xp distrubtion for "
 		     << "protons from bottom quarks(SLD) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _ppmb->topdrawOutput(output,true,true,false,true,
+  _ppmb->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of protons for bottom quark events(SLD)",
 		      "                                           ",
@@ -343,7 +344,7 @@ inline void IdentifiedParticleAnalysis::dofinish() {
 		     << " degrees of freedom for the momentum distrubtion for "
 		     << "lambdas from all quarks(OPAL) " 
 		     << " or " << chisq/npoint << "per degree of freedom \n"; 
-  _lpm->topdrawOutput(output,true,true,false,true,
+  _lpm->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "The scaled momentum of lambdas for all events(OPAL)",
 		      "                                                   ",

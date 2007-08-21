@@ -137,11 +137,12 @@ void SemiLeptonicDPiAnalysis::dofinish() {
       getParticleData(9+2*_outgoingL[ix])->PDGName() + " " +
       getParticleData(10+2*_outgoingL[ix])->PDGName();
     temp = "Mass for l nu in " +title;
-    _scale[ix]->topdrawOutput(outfile,true,false,false,false,"BLACK",temp);
+    using namespace HistogramOptions;
+    _scale[ix]->topdrawOutput(outfile,Frame,"BLACK",temp);
     temp = "Lepton energy for in " +title;
-    _energy[ix]->topdrawOutput(outfile,true,false,false,false,"BLACK",temp);
+    _energy[ix]->topdrawOutput(outfile,Frame,"BLACK",temp);
     temp = "D(*) pi mass in " +title;
-    _mDpi[ix]->topdrawOutput(outfile,true,false,false,false,"BLACK",temp);
+    _mDpi[ix]->topdrawOutput(outfile,Frame,"BLACK",temp);
   }
 }
 

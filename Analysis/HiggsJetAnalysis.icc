@@ -22,14 +22,16 @@ inline void HiggsJetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
-  _pth.topdrawOutput(outfile,true,false,false,false,"BLACK","pt of Higgs");
-  _pth.topdrawOutput(outfile,true,false,false,true,"BLACK","pt of Higgs");
-  _pthZoom.topdrawOutput(outfile,true,false,false,false,"BLACK","35<pt/GeV<65 of Higgs");
-  _pthZoom.topdrawOutput(outfile,true,false,false,true,"BLACK","35<pt/GeV<65 of Higgs");
-  _raph.topdrawOutput(outfile,true,false,false,false,"BLACK","Rapidity of h");
-  _raph.topdrawOutput(outfile,true,false,false,true,"BLACK","Rapidity of h");
-  _phih.topdrawOutput(outfile,true,false,false,false,"BLACK","Azimuth of h");
-  _phih.topdrawOutput(outfile,true,false,false,true,"BLACK","Azimuth of h");
+  using namespace HistogramOptions;
+  _pth.topdrawOutput(outfile,Frame,"BLACK","pt of Higgs");
+  _pth.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt of Higgs");
+  _pthZoom.topdrawOutput(outfile,Frame,"BLACK","35<pt/GeV<65 of Higgs");
+  _pthZoom.topdrawOutput(outfile,Frame|Ylog,"BLACK","35<pt/GeV<65 of Higgs");
+  _raph.topdrawOutput(outfile,Frame,"BLACK","Rapidity of h");
+  _raph.topdrawOutput(outfile,Frame|Ylog,"BLACK","Rapidity of h");
+  _phih.topdrawOutput(outfile,Frame,"BLACK","Azimuth of h");
+  _phih.topdrawOutput(outfile,Frame|Ylog,"BLACK","Azimuth of h");
+  outfile.close();
 }
 
 }

@@ -517,31 +517,31 @@ void TopDalitzAnalysis::dofinish() {
   ////////////
   // DeltaR //
   ////////////
-  _deltaR.topdrawOutput(_output[1],true,false,false,false,"RED","delta(R)");
+  _deltaR.topdrawOutput(_output[1],Frame,"RED","delta(R)");
   _output[1].close();
 
   /////////////
   // log(y3) //
   /////////////
-  _logy3.topdrawOutput(_output[2],true,false,false,false,"RED","log(y3)");
+  _logy3.topdrawOutput(_output[2],Frame,"RED","log(y3)");
   _output[2].close();
 
   ////////////////
   // _xb_bquark //
   ////////////////
-  _xb_bquark.topdrawOutput(_output[3],true,false,false,false,"RED","xb");
+  _xb_bquark.topdrawOutput(_output[3],Frame,"RED","xb");
   _output[3].close();
 
   ////////////////
   // _xb_bquark_peak //
   ////////////////
-  _xb_bquark_peak.topdrawOutput(_output[4],true,false,false,false,"RED","xb");
+  _xb_bquark_peak.topdrawOutput(_output[4],Frame,"RED","xb");
   _output[4].close();
 
   //////////////
   // _xB_Bhad //
   //////////////
-  _xB_Bhad.topdrawOutput(_output[5],true,false,false,false,"RED","xB");
+  _xB_Bhad.topdrawOutput(_output[5],Frame,"RED","xB");
   _output[5].close();
 
 }

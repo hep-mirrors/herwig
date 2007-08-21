@@ -96,7 +96,8 @@ inline void ZPhotonsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _nphoton->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _nphoton->topdrawOutput(output,Frame|Errorbars|Ylog,
 			  "RED",
 			  "Photon Multiplicity",
 			  "                   ",
@@ -105,7 +106,7 @@ inline void ZPhotonsAnalysis::dofinish() {
 			  "N0G1",
 			  " XGX");
   for(unsigned int ix=0;ix<3;++ix) {
-    _masstotal[ix]->topdrawOutput(output,true,true,false,true,
+    _masstotal[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			  "RED",
 			  "Fermion mass for all events",
 			  "                          ",
@@ -113,7 +114,7 @@ inline void ZPhotonsAnalysis::dofinish() {
 			  "  G G      X  X",
 			  "m0l2+3l2-31/GeV",
 			  " X X X X XX    ");
-    _etotal[ix]->topdrawOutput(output,true,true,false,true,
+    _etotal[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			  "RED",
 			  "Photon Energy for all events",
 			  "                   ",
@@ -122,7 +123,7 @@ inline void ZPhotonsAnalysis::dofinish() {
 			  "E0G1/GeV",
 			  " XGX    ");
   }
-  _etotal[3]->topdrawOutput(output,true,true,false,true,
+  _etotal[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "Photon Energy for all events",
 			    "                   ",
@@ -130,7 +131,7 @@ inline void ZPhotonsAnalysis::dofinish() {
 			    "  G G   XGX    X  X",
 			    "E0G1/GeV",
 			    " XGX    ");
-  _etotal[4]->topdrawOutput(output,true,true,false,true,
+  _etotal[4]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "Photon Energy for all events",
 			    "                   ",
@@ -141,7 +142,7 @@ inline void ZPhotonsAnalysis::dofinish() {
   for(unsigned int ix=0;ix<20;++ix) {
     ostringstream titlea;
     titlea << "Fermion mass for "  << ix << " photons " << flush;
-    _mphoton[ix]->topdrawOutput(output,true,true,false,true,
+    _mphoton[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",titlea.str(),"",
 				"1/SdS/d/GeV2-13",
 				"  G G      X  X",
@@ -149,7 +150,7 @@ inline void ZPhotonsAnalysis::dofinish() {
 				" X X X X XX    ");
     ostringstream titleb;
     titleb << "photon energy for " << ix << " photons " << flush;
-    _ephoton[ix]->topdrawOutput(output,true,true,false,true,
+    _ephoton[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",titleb.str(),"",
 				"1/SdS/dE0G1/GeV2-13",
 				"  G G   XGX    X  X",

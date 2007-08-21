@@ -107,27 +107,28 @@ void VectorPScalarFermionsAnalysis::dofinish() {
       getParticleData(_outgoingf[ix])->PDGName() + " " +
       getParticleData(-_outgoingf[ix])->PDGName();
     temp = "Mass for f fbar in " +title;
-    _mffa[ix]->topdrawOutput(output,true,true,false,true,
+    using namespace HistogramOptions;
+    _mffa[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",temp,"",
 			     "1/SdS/dm0l2+3l2-31/GeV2-13",
 			     "  G G   X X X X XX    X  X",
 			     "m0l2+3l2-31",
 			     " X X X X XX");
-    _mffb[ix]->topdrawOutput(output,true,true,false,true,
+    _mffb[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",temp,"",
 			     "1/SdS/dm0l2+3l2-31/GeV2-13",
 			     "  G G   X X X X XX    X  X",
 			     "m0l2+3l2-31",
 			     " X X X X XX");
     temp = "Mass for vector fermion mass in " +title;
-    _mPf[ix]->topdrawOutput(output,true,true,false,true,
+    _mPf[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",temp,"",
 			    "1/SdS/dm0Pl2-31/GeV2-13",
 			    "  G G   X  X XX    X  X",
 			    "m0Pl2-31",
 			    " X  X XX");
     temp = "Mass for vector fbar mass    in " +title;
-    _mPfbar[ix]->topdrawOutput(output,true,true,false,true,
+    _mPfbar[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",temp,"",
 			       "1/SdS/dm0Pl2+31/GeV2-13",
 			       "  G G   X  X XX    X  X",

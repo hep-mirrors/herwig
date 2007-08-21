@@ -205,7 +205,8 @@ void TauTo2MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _m2pipiBELLE->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _m2pipiBELLE->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "P2+3P203 mass",
 			 "GX XGX X     ",
@@ -213,7 +214,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			 "  G G   X XXGX XGX XX    X  X",
 			 "m2230P2+3P2031/GeV223",
 			 " X XXGX XGX XX    X X");
-  _mpipiCLEO->topdrawOutput(output,true,true,false,true,
+  _mpipiCLEO->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2+3P203 mass",
 			    "GX XGX X     ",
@@ -221,7 +222,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P2+3P2031/GeV",
 			    " XGX XGX XX    ");
-  _m2KpiA->topdrawOutput(output,true,true,false,true,
+  _m2KpiA->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"K2+3P203 mass",
 			" X XGX X     ",
@@ -229,7 +230,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			"  G G   X XX X XGX XX    X  X",
 			"m2230K2+3P2031/GeV223",
 			" X XX X XGX XX    X X");
-  _mKpiA->topdrawOutput(output,true,true,false,true,
+  _mKpiA->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "K2+3P203 mass",
 			 " X XGX X     ",
@@ -237,7 +238,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			 "  G G   X X XGX XX    X  X",
 			 "m0K2+3P2031/GeV",
 			 " X X XGX XX    ");
-  _m2KpiC->topdrawOutput(output,true,true,false,true,
+  _m2KpiC->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"K2+3P203 mass",
 			" X XGX X     ",
@@ -245,7 +246,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			"  G G   X XX X XGX XX    X  X",
 			"m2230K2+3P2031/GeV223",
 			" X XX X XGX XX    X X");
-  _m2KpiB->topdrawOutput(output,true,true,false,true,
+  _m2KpiB->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "P2+3K203 mass",
 			 "GX X X X     ",
@@ -253,7 +254,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			 "  G G   X XXGX X X XX    X  X",
 			 "m2230P2+3K2031/GeV223",
 			 " X XXGX X X XX    X X");
-  _mKpiB->topdrawOutput(output,true,true,false,true,
+  _mKpiB->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"P2+3K203 mass",
 			"GX X X X     ",
@@ -261,7 +262,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			"  G G   XGX X X XX    X  X",
 			"m0P2+3K2031/GeV",
 			" XGX X X XX    ");
-  _m2KpiD->topdrawOutput(output,true,true,false,true,
+  _m2KpiD->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "P2+3K203 mass",
 			 "GX X X X     ",
@@ -269,7 +270,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			 "  G G   X XXGX X X XX    X  X",
 			 "m2230P2+3K2031/GeV223",
 			 " X XXGX X X XX    X X");
-  _m2Keta->topdrawOutput(output,true,true,false,true,
+  _m2Keta->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"K2+3H mass",
 			" X XG     ",
@@ -277,7 +278,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			"  G G   X XX X XGX    X  X",
 			"m2230K2+3H1/GeV223",
 			" X XX X XGX    X X");
-  _mKeta->topdrawOutput(output,true,true,false,true,
+  _mKeta->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "K2+3H mass",
 			 " X XG     ",
@@ -285,7 +286,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			 "  G G   X X XGX    X  X",
 			 "m0K2+3H1/GeV",
 			 " X X XGX    ");
-  _m2KK->topdrawOutput(output,true,true,false,true,
+  _m2KK->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"K2+3K203 mass",
 			" X X X X     ",
@@ -293,7 +294,7 @@ void TauTo2MesonAnalysis::dofinish() {
 			"  G G   X XX X X X XX    X  X",
 			"m2230K2+3K2031/GeV223",
 			" X XX X X X XX    X X");
-  _mKK->topdrawOutput(output,true,true,false,true,
+  _mKK->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "K2+3K203 mass",
 			 " X X X X     ",

@@ -141,7 +141,8 @@ void VPPGammaAnalysis::dofinish() {
       + getParticleData(_outgoing2[ix])->PDGName();
     // number of photons
     titleb = "Photon multiplicity " +titlea;
-    _nphoton[ix]->topdrawOutput(output,true,true,false,true,
+    using namespace HistogramOptions;
+    _nphoton[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",titleb,""
 				"1/SdS/dN0G1",
 				"  G G   XGX",
@@ -149,21 +150,21 @@ void VPPGammaAnalysis::dofinish() {
 				" XGX");
     // fermion masses
     titleb = "Mass of the charged decay products "+titlea;
-    _masstotal[ix]->topdrawOutput(output,true,true,false,true,
+    _masstotal[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				  "RED",titleb,""
 				  "1/SdS/dm0l2+3l2-31/GeV2-13",
 				  "  G G   X X X X XX    X  X",
 				  "m0l2+3l2-31",
 				  " X X X X XX");
     // total photon energy
-    _masstotal[ix]->topdrawOutput(output,true,true,false,true,
+    _masstotal[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				  "RED",titleb,""
 				  "1/SdS/dE0G1/GeV2-13",
 				  "  G G   XGX    X  X",
 				  "E0G1",
 				  " XGX");
     titleb="Single photon energy for all events"+titlea;
-    _esingle[ix]->topdrawOutput(output,true,true,false,true,
+    _esingle[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",titleb,""
 				"1/SdS/dE0G1/GeV2-13",
 				"  G G   XGX    X  X",
@@ -171,7 +172,7 @@ void VPPGammaAnalysis::dofinish() {
 				" XGX");
     // all photon
     titleb="All photon energy for all events"+titlea;
-    _eall[ix]->topdrawOutput(output,true,true,false,true,
+    _eall[ix]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",titleb,""
 			     "1/SdS/dE0G1/GeV2-13",
 			     "  G G   XGX    X  X",

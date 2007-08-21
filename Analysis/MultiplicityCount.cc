@@ -257,13 +257,20 @@ void MultiplicityCount::dofinish() {
   outfile.close();
 
   if (_makeHistograms) {
+
+    Histogram piratio = _histograms[ParticleID::piplus].ratioWith(_histograms[ParticleID::pi0]);
+    Histogram Kratio = _histograms[ParticleID::Kplus].ratioWith(_histograms[ParticleID::K0]);
+
+    using namespace HistogramOptions;
     string histofilename = filename + ".top";
     outfile.open(histofilename.c_str());
     for (map<long,Histogram>::const_iterator it = _histograms.begin();
 	 it != _histograms.end(); ++it) {
       string title = generator()->getParticleData(it->first)->PDGName();
-      it->second.topdrawOutput(outfile,true,false,false,false,"BLACK",title);
+      it->second.topdrawOutput(outfile,Frame|Rawcount,"BLACK",title);
     }
+    piratio.topdrawOutput(outfile,Frame|Rawcount,"BLACK","pi+ / pi0");
+    Kratio.topdrawOutput(outfile,Frame|Rawcount,"BLACK","K+ / K0");
     outfile.close();
   }
   AnalysisHandler::dofinish();

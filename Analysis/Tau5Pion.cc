@@ -153,7 +153,8 @@ void Tau5Pion::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _pipi1[0]->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _pipi1[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3 mass in T2-3RN0T12P2-3P2+32P203",
 			   "GX XGX X         GX XWGXGX GX XGX X GX X",
@@ -161,7 +162,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2-3P2-31/GeV",
 			   " XGX XGX XX    ");
-  _pipi1[1]->topdrawOutput(output,true,true,false,true,
+  _pipi1[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2+3 mass in T2-3RN0T12P2-3P2+32P203",
 			   "GX XGX X         GX XWGXGX GX XGX X GX X",
@@ -169,7 +170,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2-3P2+31/GeV",
 			   " XGX XGX XX    ");
-  _pipi1[2]->topdrawOutput(output,true,true,false,true,
+  _pipi1[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P203 mass in T2-3RN0T12P2-3P2+32P203",
 			   "GX XGX X         GX XWGXGX GX XGX X GX X",
@@ -177,7 +178,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2-3P2031/GeV",
 			   " XGX XGX XX    ");
-  _pipi1[3]->topdrawOutput(output,true,true,false,true,
+  _pipi1[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2+3P203 mass in T2-3RN0T12P2-3P2+32P203",
 			   "GX XGX X         GX XWGXGX GX XGX X GX X",
@@ -185,7 +186,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2+3P2031/GeV",
 			   " XGX XGX XX    ");
-  _pipi1[4]->topdrawOutput(output,true,true,false,true,
+  _pipi1[4]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P203 mass in T2-3RN0T12P2-3P2+32P203",
 			   "GX XGX X         GX XWGXGX GX XGX X GX X",
@@ -193,7 +194,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P203P2031/GeV",
 			   " XGX XGX XX    ");
-  _pipipi1[0]->topdrawOutput(output,true,true,false,true,
+  _pipipi1[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P2+3P203P203 mass in T2-3RN0T12P2-3P2+32P203",
 			     "GX XGX XGX X         GX XWGXGX GX XGX X GX X",
@@ -201,7 +202,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P2+3P203P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipi1[1]->topdrawOutput(output,true,true,false,true,
+  _pipipi1[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P2-3P203P203 mass in T2-3RN0T12P2-3P2+32P203",
 			     "GX XGX XGX X         GX XWGXGX GX XGX X GX X",
@@ -209,7 +210,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P2-3P203P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipi1[2]->topdrawOutput(output,true,true,false,true,
+  _pipipi1[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P2+3P2-3P203 mass in T2-3RN0T12P2-3P2+32P203",
 			     "GX XGX XGX X         GX XWGXGX GX XGX X GX X",
@@ -217,7 +218,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P2+3P2-3P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipi1[3]->topdrawOutput(output,true,true,false,true,
+  _pipipi1[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P2-3P2-3P203 mass in T2-3RN0T12P2-3P2+32P203",
 			     "GX XGX XGX X         GX XWGXGX GX XGX X GX X",
@@ -225,7 +226,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P2-3P2-3P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipi1[4]->topdrawOutput(output,true,true,false,true,
+  _pipipi1[4]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P2+3P2-3P2-3 mass in T2-3RN0T12P2-3P2+32P203",
 			     "GX XGX XGX X         GX XWGXGX GX XGX X GX X",
@@ -233,7 +234,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P2+3P2-3P2-31/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipipi1[0]->topdrawOutput(output,true,true,false,true,
+  _pipipipi1[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     "P2-3P2+32P203 mass in T2-3RN0T12P2-3P2+32P203",
 		     "GX XGX X GX X         GX XWGXGX GX XGX X GX X",
@@ -241,7 +242,7 @@ void Tau5Pion::dofinish() {
 		     "  G G   XGX XGX X GX XX    X  X",
 		     "m0P2-3P2+32P2031/GeV",
 		     " XGX XGX X GX XX    ");
-  _pipipipi1[1]->topdrawOutput(output,true,true,false,true,
+  _pipipipi1[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     "2P2-32P203 mass in T2-3RN0T12P2-3P2+32P203",
 		     " GX X GX X         GX XWGXGX GX XGX X GX X",
@@ -249,7 +250,7 @@ void Tau5Pion::dofinish() {
 		     "  G G   X GX X GX XX    X  X",
 		     "m02P2-32P2031/GeV",
 		     " X GX X GX XX    ");
-  _pipipipi1[2]->topdrawOutput(output,true,true,false,true,
+  _pipipipi1[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     "2P2-3P2+3P203 mass in T2-3RN0T12P2-3P2+32P203",
 		     " GX XGX XGX X         GX XWGXGX GX XGX X GX X",
@@ -257,7 +258,7 @@ void Tau5Pion::dofinish() {
 		     "  G G   X GX XGX XGX XX    X  X",
 		     "m02P2-3P2+3P2031/GeV",
 		     " X GX XGX XGX XX    ");
-  _q1->topdrawOutput(output,true,true,false,true,
+  _q1->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     "2P2-3P2+32P203 mass in T2-3RN0T12P2-3P2+32P203",
 		     " GX XGX X GX X         GX XWGXGX GX XGX X GX X",
@@ -265,7 +266,7 @@ void Tau5Pion::dofinish() {
 		     "  G G   X GX XGX X GX XX    X  X",
 		     "m02P2-3P2+32P2031/GeV",
 		     " X GX XGX X GX XX    ");
-  _pipi2[0]->topdrawOutput(output,true,true,false,true,
+  _pipi2[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P203 mass in T2-3RN0T1P2-34P203",
 			   "GX XGX X         GX XWGXGXGX X GX X",
@@ -273,7 +274,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2-3P2031/GeV",
 			   " XGX XGX XX    ");
-  _pipi2[1]->topdrawOutput(output,true,true,false,true,
+  _pipi2[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P203 mass in T2-3RN0T1P2-34P203",
 			   "GX XGX X         GX XWGXGXGX X GX X",
@@ -281,7 +282,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P203P2031/GeV",
 			   " XGX XGX XX    ");
-  _pipipi2[0]->topdrawOutput(output,true,true,false,true,
+  _pipipi2[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P203P203P203 mass in T2-3RN0T1P2-34P203",
 			     "GX XGX XGX X         GX XWGXGXGX X GX X",
@@ -289,7 +290,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P203P203P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipi2[1]->topdrawOutput(output,true,true,false,true,
+  _pipipi2[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P2-3P203P203 mass in T2-3RN0T1P2-34P203",
 			     "GX XGX XGX X         GX XWGXGXGX X GX X",
@@ -297,7 +298,7 @@ void Tau5Pion::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P2-3P203P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _pipipipi2[0]->topdrawOutput(output,true,true,false,true,
+  _pipipipi2[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "P203P203P203P203 mass in T2-3RN0T1P2-34P203",
 			       "GX XGX XGX XGX X         GX XWGXGXGX X GX X",
@@ -305,7 +306,7 @@ void Tau5Pion::dofinish() {
 			       "  G G   XGX XGX XGX XGX XX    X  X",
 			       "m0P203P203P203P2031/GeV",
 			       " XGX XGX XGX XGX XX    ");
-  _pipipipi2[1]->topdrawOutput(output,true,true,false,true,
+  _pipipipi2[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "P2-3P203P203P203 mass in T2-3RN0T1P2-34P203",
 			       "GX XGX XGX XGX X         GX XWGXGXGX X GX X",
@@ -313,7 +314,7 @@ void Tau5Pion::dofinish() {
 			       "  G G   XGX XGX XGX XGX XX    X  X",
 			       "m0P2-3P203P203P2031/GeV",
 			       " XGX XGX XGX XGX XX    ");
-  _q2->topdrawOutput(output,true,true,false,true,
+  _q2->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     " mass in T2-3RN0T1P2-34P203",
 		     "         GX XWGXGXGX X GX X",
@@ -324,7 +325,7 @@ void Tau5Pion::dofinish() {
 
 
 
-  _pipi3[0]->topdrawOutput(output,true,true,false,true,
+  _pipi3[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2+3P2+3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX X         GX XWGXGX GX X GX X",
@@ -332,7 +333,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2+3P2+31/GeV",
 			   " XGX XGX XX    ");
-  _pipi3[1]->topdrawOutput(output,true,true,false,true,
+  _pipi3[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2+3P2-3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX X         GX XWGXGX GX X GX X",
@@ -340,7 +341,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2+3P2-31/GeV",
 			   " XGX XGX XX    ");
-  _pipi3[2]->topdrawOutput(output,true,true,false,true,
+  _pipi3[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX X         GX XWGXGX GX X GX X",
@@ -348,7 +349,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2-3P2-31/GeV",
 			   " XGX XGX XX    ");
-  _pipipi3[0]->topdrawOutput(output,true,true,false,true,
+  _pipipi3[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3P2-3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX XGX X         GX XWGXGX GX X GX X",
@@ -356,7 +357,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XGX XX    X  X",
 			   "m0P2-3P2-3P2-31/GeV",
 			   " XGX XGX XGX XX    ");
-  _pipipi3[1]->topdrawOutput(output,true,true,false,true,
+  _pipipi3[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3P2+3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX XGX X         GX XWGXGX GX X GX X",
@@ -364,7 +365,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XGX XX    X  X",
 			   "m0P2-3P2-3P2+31/GeV",
 			   " XGX XGX XGX XX    ");
-  _pipipi3[2]->topdrawOutput(output,true,true,false,true,
+  _pipipi3[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2+3P2+3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX XGX X         GX XWGXGX GX X GX X",
@@ -372,7 +373,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XGX XX    X  X",
 			   "m0P2-3P2+3P2+31/GeV",
 			   " XGX XGX XGX XX    ");
-  _pipipipi3[0]->topdrawOutput(output,true,true,false,true,
+  _pipipipi3[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3P2+3P2+3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX XGX XGX X         GX XWGXGX GX X GX X",
@@ -380,7 +381,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XGX XGX XX    X  X",
 			   "m0P2-3P2-3P2+3P2+31/GeV",
 			   " XGX XGX XGX XGX XX    ");
-  _pipipipi3[1]->topdrawOutput(output,true,true,false,true,
+  _pipipipi3[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3P2-3P2+3 mass in T2-3RN0T13P2-32P2+3",
 			   "GX XGX XGX XGX X         GX XWGXGX GX X GX X",
@@ -388,7 +389,7 @@ void Tau5Pion::dofinish() {
 			   "  G G   XGX XGX XGX XGX XX    X  X",
 			   "m0P2-3P2-3P2-3P2+31/GeV",
 			   " XGX XGX XGX XGX XX    ");
-  _q3->topdrawOutput(output,true,true,false,true,
+  _q3->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     " mass in T2-3RN0T13P2-32P2+3",
 		     "         GX XWGXGX GX X GX X",

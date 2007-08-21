@@ -131,6 +131,8 @@ public:
    * @param particles the vector of pointers to particles to be analyzed
    */
   virtual void analyze(const tPVector & particles);
+
+  using AnalysisHandler::analyze;
   //@}
 
 public:

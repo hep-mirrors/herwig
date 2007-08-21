@@ -25,14 +25,20 @@ void Histogram::Init() {
 string Histogram::versionstring = "";
 
 void Histogram::topdrawOutput(ostream & out,
-			      bool frame,
-			      bool errorbars,
-			      bool xlog, bool ylog,
+			      unsigned int flags,
 			      string colour,
 			      string title,  string titlecase,
 			      string left,   string leftcase,
-			      string bottom, string bottomcase,
-			      bool smooth) const {
+			      string bottom, string bottomcase
+			      ) const {
+  using namespace HistogramOptions;
+  bool frame     = ( flags & Frame )     == Frame;
+  bool errorbars = ( flags & Errorbars ) == Errorbars;
+  bool xlog      = ( flags & Xlog )      == Xlog;
+  bool ylog      = ( flags & Ylog )      == Ylog;
+  bool smooth    = ( flags & Smooth )    == Smooth;
+  bool rawcount  = ( flags & Rawcount )  == Rawcount;
+
   // output the title info if needed
   if(frame) {
     out << "NEW FRAME\n";
@@ -71,7 +77,10 @@ void Histogram::topdrawOutput(ostream & out,
 
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-    double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
+    
+    double factor = rawcount ? _prefactor : 0.5 * _prefactor / (numPoints * delta);
+
+    double value = factor*_bins[ix].contents;
     yout.push_back(value);
     ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
     if(yout.back()>0.) ymin=min(ymin,value);
@@ -87,9 +96,10 @@ void Histogram::topdrawOutput(ostream & out,
   // the histogram from the event generator
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double factor = rawcount ? _prefactor : 0.5 * _prefactor / (numPoints * delta);
     out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
     if (errorbars) {
-      out << '\t' << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
+      out << '\t' << factor*sqrt(_bins[ix].contentsSq);
     }
     out << '\n';
   }
@@ -183,7 +193,7 @@ unsigned int Histogram::visibleEntries() const {
   unsigned int numPoints(0);
   const unsigned int lastDataBinIndx = _bins.size()-2;
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
-    numPoints += (unsigned int) _bins[ix].contents;
+    numPoints += static_cast<unsigned int>( _bins[ix].contents );
   }
   return numPoints;
 }
@@ -246,6 +256,28 @@ void Histogram::simpleOutput(ostream & out, bool errorbars,
     out << " " << _bins[ix].contents << '\n';
   }
 }
+
+vector<double> Histogram::dumpBins() const {
+  vector<double> bincontents(_bins.size());
+  for (size_t i=0; i < _bins.size(); ++i)
+    bincontents[i] = _bins[i].contents;
+  return bincontents;
+}
+
+Histogram Histogram::ratioWith(const Histogram & h2) const {
+  const size_t numBins = _bins.size();
+  assert( numBins > 2 && numBins == h2._bins.size());
+  Histogram ratio(*this);
+  for (size_t i=0; i < numBins; ++i) {
+    assert(_bins[i].limit == h2._bins[i].limit);
+    if (h2._bins[i].contents > 0.0)
+      ratio._bins[i].contents /= h2._bins[i].contents;
+    else
+      ratio._bins[i].contents = 0.0;
+  }
+  return ratio;
+}
+
 
 void Histogram::normaliseToData()
 {

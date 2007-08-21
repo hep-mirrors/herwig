@@ -16,7 +16,8 @@ void TauCorrelationAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _phi->topdrawOutput(output,true,true,false,false,
+  using namespace HistogramOptions;
+  _phi->topdrawOutput(output,Frame|Errorbars,
 		      "RED",
 		      "F2*3 in h203RT2+3T2-3 with TRPN0T1",
 		      "GX X     X XWGX XGX X      GWGGXGX",
@@ -24,7 +25,7 @@ void TauCorrelationAnalysis::dofinish() {
 		      "  F F  GX X",
 		      "F2*3",
 		      "GX X");  
-  _delta->topdrawOutput(output,true,true,false,false,
+  _delta->topdrawOutput(output,Frame|Errorbars,
 			"RED",
 			"D2*3 in h203RT2+3T2-3 with TRPN0T1",
 			"GX X     X XWGX XGX X      GWGGXGX",
@@ -32,7 +33,7 @@ void TauCorrelationAnalysis::dofinish() {
 			"  F F  GX X",
 			"D2*3",
 			"GX X");
-  _rhoangle1->topdrawOutput(output,true,true,false,false,
+  _rhoangle1->topdrawOutput(output,Frame|Errorbars,
 		      "RED",
 		      "F2*3 in h203RT2+3T2-3 with TRRN0T1 and y011y021>0",
 		      "GX X     X XWGX XGX X      GWGGXGX      X X X X  ",
@@ -40,7 +41,7 @@ void TauCorrelationAnalysis::dofinish() {
 		      "  F F  GX X",
 		      "F2*3",
 		      "GX X"); 
-  _rhoangle2->topdrawOutput(output,true,true,false,false,
+  _rhoangle2->topdrawOutput(output,Frame|Errorbars,
 		      "RED",
 		      "F2*3 in h203RT2+3T2-3 with TRRN0T1 and y011y021<0",
 		      "GX X     X XWGX XGX X      GWGGXGX      X X X X  ",

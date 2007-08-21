@@ -99,7 +99,8 @@ void BtoSGammaAnalysis::dofinish() {
     }
     temp[0] = "Hadronic Mass for " + title;
     temp[1] = "                  " + tcase;
-    _hadmass[ix]->topdrawOutput(output,true,true,false,false,
+    using namespace HistogramOptions;
+    _hadmass[ix]->topdrawOutput(output,Frame|Errorbars,
 				"RED",
 				temp[0],temp[1],
 				"1/SdS/dm/GeV2-13",
@@ -108,7 +109,7 @@ void BtoSGammaAnalysis::dofinish() {
 				"     ");
     temp[0]= "Photon spectrum for " + title;
     temp[1]= "                    " + tcase;
-    _spectrum[ix]->topdrawOutput(output,true,true,false,false,
+    _spectrum[ix]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 temp[0],temp[1],
 				 "1/SdS/dE0G1/GeV2-13",
