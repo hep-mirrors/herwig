@@ -4,6 +4,7 @@
 // functions of the MEPP2Higgs class.
 //
 
+#include "MEPP2Higgs.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -15,7 +16,6 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "GeneralHardME.h"
 #include "HardVertex.h"
-#include "MEPP2Higgs.h"
 
 using namespace Herwig;
 

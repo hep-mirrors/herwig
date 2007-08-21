@@ -13,6 +13,7 @@
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ProductionMatrixElement.h"
 #include "MEPP2Higgs.fh"
 
 namespace Herwig {
