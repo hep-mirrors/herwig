@@ -52,7 +52,7 @@ set MEHiggs:WidthScheme NLLcorrectedHiggsWidth
 #set MEHiggs:WidthScheme LOHiggsWidth
 set MEHiggs:Process gg
 #set MEHiggs:Process qqbar
-#set MEHiggs:MinimumFlavour 5
+#set MEHiggs:MinimumFlavour 4
 #set MEHiggs:MaximumFlavour 5
 #set MEHiggs:HiggsBranchAllowed FermionWZGammaBR
 

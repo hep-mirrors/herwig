@@ -24,12 +24,14 @@ ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
   os << hggvertex << ffhvertex << theSM << branchingopt 
-     << shapeopt << widthopt << processopt;
+     << shapeopt << widthopt << processopt 
+     << minflavouropt << maxflavouropt;
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
   is >> hggvertex >> ffhvertex >> theSM >> branchingopt 
-     >> shapeopt >> widthopt >> processopt;
+     >> shapeopt >> widthopt >> processopt 
+     >> minflavouropt >> maxflavouropt;
 }
 void MEPP2Higgs::Init() {
 
@@ -140,7 +142,7 @@ void MEPP2Higgs::Init() {
   static Parameter<MEPP2Higgs,unsigned int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The minimum flavour of the incoming quarks in the hard process",
-     &MEPP2Higgs::minflavouropt, 3, 3, 5,
+     &MEPP2Higgs::minflavouropt, 4, 3, 5,
      false, false, Interface::limited);
 
   static Parameter<MEPP2Higgs,unsigned int> interfaceMaximumFlavour
