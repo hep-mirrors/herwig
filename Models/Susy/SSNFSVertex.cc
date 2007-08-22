@@ -48,7 +48,7 @@ SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(),
       second.push_back(ix);
       third.push_back(-(1000000+ix));
     }
-    for(unsigned int ix=11;ix<17;++ix){
+    for(unsigned int ix=11;ix<17;ix += 2){
       first.push_back(neu);
       second.push_back(ix);
       third.push_back(-(2000000+ix));
@@ -58,7 +58,7 @@ SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(),
       second.push_back(-ix);
       third.push_back((1000000+ix));
     }
-    for(unsigned int ix=11;ix<17;++ix){
+    for(unsigned int ix=11;ix<17;ix +=2){
       first.push_back(neu);
       second.push_back(-ix);
       third.push_back((2000000+ix));
