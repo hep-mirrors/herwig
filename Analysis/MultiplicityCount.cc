@@ -184,9 +184,10 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
       eventcount.insert(make_pair(ID,0));
       ++eventcount[ID];
 
-      if (_makeHistograms) {
-	if (_histograms.find(ID) == _histograms.end())
-	  _histograms.insert(make_pair(ID,Histogram(0.0,10.0,100)));
+      if (_makeHistograms 
+	  && ! (*it)->parents().empty()
+	  && (*it)->parents()[0]->id() == ExtraParticleID::Cluster) {
+	_histograms.insert(make_pair(ID,Histogram(0.0,10.0,200)));
 	_histograms[ID] += parentClusterMass(*it)/GeV;
       }
     }
@@ -205,8 +206,6 @@ void MultiplicityCount::dofinish() {
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
 
-
-
   outfile << 
     "\nParticle multiplicities (compared to LEP data):\n"
     "  ID       Name    simMult     obsMult       obsErr     Sigma\n";
@@ -219,22 +218,21 @@ void MultiplicityCount::dofinish() {
 		     generator()->getParticleData(it->first)->PDGName() );
       long N = generator()->currentEventNumber() - 1;
 
+      ios::fmtflags oldFlags = outfile.flags();
       outfile << std::scientific << std::showpoint
 	      << std::setprecision(3)
 	      << setw(7) << it->first << ' '
 	      << setw(9) << name << ' ' 
-	//	      << setw(10) << multiplicity.actualCount << ' '
 	      << setw(2) << multiplicity.simMultiplicity(N) << " | " 
-	//	      << setw(2) << multiplicity.simError(N) << " | " 
 	      << setw(2) << multiplicity.obsMultiplicity << " +/- " 
 	      << setw(2) << multiplicity.obsError << ' '
-      //      if (multiplicity.serious(N)) 
 	      << std::showpos << std::setprecision(1)
 	      << multiplicity.nSigma(N) << ' ' 
 	      << multiplicity.bargraph(N)
 	      << std::noshowpos;
 
       outfile << '\n';
+      outfile.flags(oldFlags);
     }
 
 
@@ -258,20 +256,25 @@ void MultiplicityCount::dofinish() {
 
   if (_makeHistograms) {
 
-    Histogram piratio = _histograms[ParticleID::piplus].ratioWith(_histograms[ParticleID::pi0]);
-    Histogram Kratio = _histograms[ParticleID::Kplus].ratioWith(_histograms[ParticleID::K0]);
+    Histogram piratio 
+      = _histograms[ParticleID::piplus].ratioWith(_histograms[ParticleID::pi0]);
+    Histogram Kratio 
+      = _histograms[ParticleID::Kplus].ratioWith(_histograms[ParticleID::K0]);
 
     using namespace HistogramOptions;
     string histofilename = filename + ".top";
-    outfile.open(histofilename.c_str());
+    ofstream outfile2(histofilename.c_str());
     for (map<long,Histogram>::const_iterator it = _histograms.begin();
 	 it != _histograms.end(); ++it) {
       string title = generator()->getParticleData(it->first)->PDGName();
-      it->second.topdrawOutput(outfile,Frame|Rawcount,"BLACK",title);
+      it->second.topdrawOutput(outfile2,Frame|Rawcount,"BLACK",title,"",
+			       "N (200 bins)","","Parent cluster mass [GeV]");
     }
-    piratio.topdrawOutput(outfile,Frame|Rawcount,"BLACK","pi+ / pi0");
-    Kratio.topdrawOutput(outfile,Frame|Rawcount,"BLACK","K+ / K0");
-    outfile.close();
+    piratio.topdrawOutput(outfile2,Frame|Rawcount,"BLACK","pi+ / pi0","",
+			  "","","Parent cluster mass [GeV]");
+    Kratio.topdrawOutput(outfile2,Frame|Rawcount,"BLACK","K+ / K0","",
+			 "","","Parent cluster mass [GeV]");
+    outfile2.close();
   }
   AnalysisHandler::dofinish();
 }
