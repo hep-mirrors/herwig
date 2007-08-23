@@ -16,11 +16,10 @@ inline IBPtr BaryonWidthGenerator::fullclone() const {
 }
 
 inline void BaryonWidthGenerator::doinit() throw(InitException) {
-  if(initialize())
-    { 
-      _baryondecayers.clear();
-      _modeloc.clear();
-    }
+  if(initialize()) { 
+    _baryondecayers.clear();
+    _modeloc.clear();
+  }
   GenericWidthGenerator::doinit();
 }
 

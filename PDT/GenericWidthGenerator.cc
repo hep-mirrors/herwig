@@ -459,7 +459,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     if(_decaytags.size()!=0) {
       _decaymodes.clear();
       for(unsigned int ix=0;ix<_decaytags.size();++ix) {
-	_decaymodes.push_back(Repository::findDecayMode(_decaytags[ix]));
+	_decaymodes.push_back(CurrentGenerator::current().findDecayMode(_decaytags[ix]));
       }
     }
     // otherwise just use the modes from the selector
@@ -478,11 +478,12 @@ void GenericWidthGenerator::doinit() throw(InitException) {
   // setup the partial widths in the decayers for normalization
   tDecayIntegratorPtr temp;
   for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
+    if(!_decaymodes[ix]) continue;
+    _decaymodes[ix]->init();
     decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(_decaymodes[ix]->decayer());
-    if(decayer) {
-      decayer->init();
-      decayer->setPartialWidth(*_decaymodes[ix],ix);
-    }
+    if(!decayer) continue;
+    decayer->init();
+    decayer->setPartialWidth(*_decaymodes[ix],ix);
   }
   // code to output plots
   string fname = CurrentGenerator::current().filename() + 

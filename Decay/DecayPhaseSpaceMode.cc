@@ -146,6 +146,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 			    << _extpart[0]->PDGName() << " -> ";
     for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
       CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
+    CurrentGenerator::log() << "\n";
     if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << wsum 
 					  << " +/- " << wsqsum << "\n";
     CurrentGenerator::log() << "The partial width is " << wsum*fact/MeV 
