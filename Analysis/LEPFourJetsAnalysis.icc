@@ -42,6 +42,7 @@ inline void LEPFourJetsAnalysis::dofinish() {
   generator()->log() << "The chi squared was " << chisq << " for " << npoint 
 		     << " degrees of freedom for the NR four jet distribution or " 
 		     << chisq/npoint << "per degree of freedom \n";  
+  using namespace HistogramOptions;
   // output the plots
   _ca34->topdrawOutput(output,Frame|Errorbars|Ylog,
 		       "RED",

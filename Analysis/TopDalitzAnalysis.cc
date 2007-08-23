@@ -514,6 +514,7 @@ void TopDalitzAnalysis::dofinish() {
   _output[0] << "JOIN GREEN" << endl;
   _output[0].close();
 
+  using namespace HistogramOptions;
   ////////////
   // DeltaR //
   ////////////
