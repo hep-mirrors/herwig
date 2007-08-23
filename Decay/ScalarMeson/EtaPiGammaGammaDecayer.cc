@@ -21,7 +21,7 @@ EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   : _grhoomega(12.924/GeV), _fpi(130.7*MeV),_rhomass(771.1*MeV),
     _rhowidth(149.2*MeV),_grho(_rhomass/_fpi),_mpi(0.*MeV),_rhoconst(0.),
     _localparameters(true),_ratiofpif8(1./1.3),_ratiofpif0(1./1.04),
-    _theta(-Constants::pi/9.),_etamax(1.35),_etapmax(0.006),
+    _theta(-Constants::pi/9.),_etamax(2.36858),_etapmax(0.006),
     _dconst(2), _econst(2) {
   // intermediates
   generateIntermediates(false);

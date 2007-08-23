@@ -29,34 +29,34 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
   // omega -> pi e+e- /mu+mu-
   _incoming[0] =  223; _outgoingP[0] =  111; 
   _outgoingf[0] = 11; _outgoinga[0] = -11; 
-  _coupling[0] = 0.2096/GeV; _maxweight[0] = 5.; _weight[0] = 0.; 
+  _coupling[0] = 0.2179/GeV; _maxweight[0] = 4.0; _weight[0] = 0.; 
   _includeVMD[0] = 2; _VMDid[0] = 113; 
   _VMDmass[0] = 0.7758*GeV; _VMDwidth[0] = 0.1503*GeV; 
   _incoming[1] =  223; _outgoingP[1] =  111; 
   _outgoingf[1] = 13; _outgoinga[1] = -13; 
-  _coupling[1] = 0.2096/GeV; _maxweight[1] = 3.4; _weight[1] = 0.; 
+  _coupling[1] = 0.2179/GeV; _maxweight[1] = 2.8; _weight[1] = 0.; 
   _includeVMD[1] = 2; _VMDid[1] = 113; 
   _VMDmass[1] = 0.7758*GeV; _VMDwidth[1] = 0.1503*GeV; 
   // phi -> eta e+e-/mu+mu-
   _incoming[2] =  333; _outgoingP[2] =  221; 
   _outgoingf[2] = 11; _outgoinga[2] = -11; 
-  _coupling[2] = 0.0643/GeV; _maxweight[2] = 4.7; _weight[2] = 0.; 
+  _coupling[2] = 0.0643/GeV; _maxweight[2] = 3.7; _weight[2] = 0.; 
   _includeVMD[2] = 2; _VMDid[2] = 113; 
   _VMDmass[2] = 0.7758*GeV; _VMDwidth[2] = 0.1503*GeV; 
   _incoming[3] =  333; ;_outgoingP[3] =  221; 
   _outgoingf[3] = 13; _outgoinga[3] = -13; 
-  _coupling[3] = 0.0643/GeV; _maxweight[3] = 3.5; _weight[3] = 0.; 
+  _coupling[3] = 0.0643/GeV; _maxweight[3] = 2.8; _weight[3] = 0.; 
   _includeVMD[3] = 2; _VMDid[3] = 113; 
   _VMDmass[3] = 0.7758*GeV; _VMDwidth[3] = 0.1503*GeV; 
   // phi -> pi e+e-/mu+mu-
   _incoming[4] =  333; ;_outgoingP[4] =  111; 
   _outgoingf[4] = 11; _outgoinga[4] = -11; 
-  _coupling[4] = 0.0120094/GeV; _maxweight[4] = 6.0; _weight[4] = 0.10; 
+  _coupling[4] = 0.0120094/GeV; _maxweight[4] = 4.9; _weight[4] = 0.21; 
   _includeVMD[4] = 2; _VMDid[4] = 113; 
   _VMDmass[4] = 0.7758*GeV; _VMDwidth[4] = 0.1503*GeV; 
   _incoming[5] =  333; ;_outgoingP[5] =  111; 
   _outgoingf[5] = 13; _outgoinga[5] = -13; 
-  _coupling[5] = 0.0120094/GeV; _maxweight[5] = 4.0; _weight[5] = 0.25; 
+  _coupling[5] = 0.0120094/GeV; _maxweight[5] = 3.2; _weight[5] = 0.33; 
   _includeVMD[5] = 2; _VMDid[5] = 113; 
   _VMDmass[5] = 0.7758*GeV; _VMDwidth[5] = 0.1503*GeV; 
   // the initial size of the arrays

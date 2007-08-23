@@ -42,118 +42,122 @@ void VectorMeson2MesonDecayer::doinit() throw(InitException) {
 }
 
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
-  _incoming(63), _outgoing1(63), _outgoing2(63), _maxweight(63), _coupling(63) {
+  _incoming(65), _outgoing1(65), _outgoing2(65), _maxweight(65), _coupling(65) {
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
   // particles and couplings for the different modes
   // rho -> pi pi
   _incoming[0] =  113; _outgoing1[0] =  211; _outgoing2[0] = -211;
-  _coupling[0] = 6.; _maxweight[0] = 2.;
+  _coupling[0] = 6.; _maxweight[0] = 1.7;
   _incoming[1] =  213; _outgoing1[1] =  111; _outgoing2[1] =  211;
-  _coupling[1] = 6.; _maxweight[1] = 2.;
+  _coupling[1] = 6.; _maxweight[1] = 1.7;
   // rho' -> pi pi
   _incoming[2] =  100113; _outgoing1[2] =  211; _outgoing2[2] = -211;  
-  _coupling[2] = 3.428; _maxweight[2] = 2.;
+  _coupling[2] = 2.082; _maxweight[2] = 1.7;
   _incoming[3] =  100213; _outgoing1[3] =  111; _outgoing2[3] =  211;
-  _coupling[3] = 3.428; _maxweight[3] = 2.; 
+  _coupling[3] = 2.082; _maxweight[3] = 1.7; 
   // rho'' -> pi pi
   _incoming[4] =  30113; _outgoing1[4] =  211; _outgoing2[4] = -211; 
-  _coupling[4] = 1.611; _maxweight[4] = 2.; 
+  _coupling[4] = 1.655; _maxweight[4] = 1.7; 
   _incoming[5] =  30213; _outgoing1[5] =  111; _outgoing2[5] =  211; 
-  _coupling[5] = 1.611; _maxweight[5] = 2.;
+  _coupling[5] = 1.655; _maxweight[5] = 1.7;
   // rho'' -> K K
   _incoming[6] =  30113; _outgoing1[6] =  321; _outgoing2[6] = -321; 
-  _coupling[6] = 0.294; _maxweight[6] = 2.;
+  _coupling[6] = 0.194; _maxweight[6] = 1.7;
   _incoming[7] =  30113; _outgoing1[7] =  311; _outgoing2[7] = -311; 
-  _coupling[7] = 0.294; _maxweight[7] = 2.;
+  _coupling[7] = 0.194; _maxweight[7] = 1.7;
   _incoming[8] =  30213; _outgoing1[8] =  321; _outgoing2[8] = -311; 
-  _coupling[8] = 0.416; _maxweight[8] = 2.;
+  _coupling[8] = 0.274; _maxweight[8] = 1.7;
   // rho'' -> pi' pi
   _incoming[ 9] =  30113; _outgoing1[ 9] = 100211; _outgoing2[ 9] = -211; 
-  _coupling[ 9] = 7.630; _maxweight[ 9] = 5.; 
+  _coupling[ 9] = 7.828; _maxweight[ 9] = 4.1; 
   _incoming[10] =  30213; _outgoing1[10] = 100111; _outgoing2[10] =  211; 
-  _coupling[10] = 7.630; _maxweight[10] = 5.; 
+  _coupling[10] = 7.828; _maxweight[10] = 4.1; 
   _incoming[11] =  30213; _outgoing1[11] = 111   ; _outgoing2[11] =  100211; 
-  _coupling[11] = 7.630; _maxweight[11] = 5.; 
+  _coupling[11] = 7.828; _maxweight[11] = 4.1;
   // rho' -> pi' pi
   _incoming[12] =  100113; _outgoing1[12] = 100211; _outgoing2[12] = -211; 
-  _coupling[12] = 28.6;  _maxweight[12] = 5.;
+  _coupling[12] = 17.9;  _maxweight[12] = 4.2;
   _incoming[13] =  100213; _outgoing1[13] = 100111; _outgoing2[13] =  211; 
-  _coupling[13] = 28.6;  _maxweight[13] = 5.;
+  _coupling[13] = 17.9;  _maxweight[13] = 4.2;
   _incoming[14] =  100213; _outgoing1[14] = 111   ; _outgoing2[14] =  100211; 
-  _coupling[14] = 28.6;  _maxweight[14] = 5.;
+  _coupling[14] = 17.9;  _maxweight[14] = 4.2;
   // omega -> pi pi
   _incoming[15] = 223; _outgoing1[15] =  211; _outgoing2[15] = -211; 
-  _coupling[15] = 0.1847; _maxweight[15] = 2.;
+  _coupling[15] = 0.1847; _maxweight[15] = 1.7;
   // K* decays
   _incoming[16] =  313; _outgoing1[16] =  321; _outgoing2[16] = -211; 
-  _coupling[16] = 4.57; _maxweight[16] = 2.;
+  _coupling[16] = 4.57; _maxweight[16] = 1.7;
   _incoming[17] =  313; _outgoing1[17] =  311; _outgoing2[17] =  111; 
-  _coupling[17] = 3.23; _maxweight[17] = 2.;
+  _coupling[17] = 3.23; _maxweight[17] = 1.7;
   _incoming[18] =  323; _outgoing1[18] =  311; _outgoing2[18] =  211; 
-  _coupling[18] = 4.57; _maxweight[18] = 2.;
+  _coupling[18] = 4.57; _maxweight[18] = 1.7;
   _incoming[19] =  323; _outgoing1[19] =  321; _outgoing2[19] =  111; 
-  _coupling[19] = 3.23; _maxweight[19] = 2.;
+  _coupling[19] = 3.23; _maxweight[19] = 1.7;
   // K*' decays
   _incoming[20] =  100313; _outgoing1[20] =  321; _outgoing2[20] = -211; 
-  _coupling[20] = 1.296; _maxweight[20] = 2.;  
+  _coupling[20] = 1.296; _maxweight[20] = 1.7;  
   _incoming[21] =  100313; _outgoing1[21] =  311; _outgoing2[21] =  111; 
-  _coupling[21] = 0.916; _maxweight[21] = 2.;  
+  _coupling[21] = 0.916; _maxweight[21] = 1.7;  
   _incoming[22] =  100323; _outgoing1[22] =  311; _outgoing2[22] =  211; 
-  _coupling[22] = 1.296; _maxweight[22] = 2.;  
+  _coupling[22] = 1.296; _maxweight[22] = 1.7;  
   _incoming[23] =  100323; _outgoing1[23] =  321; _outgoing2[23] =  111; 
-  _coupling[23] = 0.916; _maxweight[23] = 2.;  
+  _coupling[23] = 0.916; _maxweight[23] = 1.7;
   // K*'' decays
   _incoming[24] =  30313; _outgoing1[24] =  321; _outgoing2[24] = -211; 
-  _coupling[24] = 3.114;  _maxweight[24] = 2.;
+  _coupling[24] = 3.114;  _maxweight[24] = 1.7;
   _incoming[25] =  30313; _outgoing1[25] =  311; _outgoing2[25] =  111; 
-  _coupling[25] = 2.201;  _maxweight[25] = 2.;
+  _coupling[25] = 2.201;  _maxweight[25] = 1.7;
   _incoming[26] =  30323; _outgoing1[26] =  311; _outgoing2[26] =  211; 
-  _coupling[26] = 3.114;  _maxweight[26] = 2.;
+  _coupling[26] = 3.114;  _maxweight[26] = 1.7;
   _incoming[27] =  30323; _outgoing1[27] =  321; _outgoing2[27] =  111; 
-  _coupling[27] = 2.201;  _maxweight[27] = 2.;
+  _coupling[27] = 2.201;  _maxweight[27] = 1.7;
   // phi decays
   _incoming[28] =  333; _outgoing1[28] =  321; _outgoing2[28] = -321; 
-  _coupling[28] = 4.48;      _maxweight[28] = 2.; 
+  _coupling[28] = 4.48;      _maxweight[28] = 1.7; 
   _incoming[29] =  333; _outgoing1[29] =  311; _outgoing2[29] = -311; 
-  _coupling[29] = 4.59;      _maxweight[29] = 2.; 
+  _coupling[29] = 4.59;      _maxweight[29] = 1.7; 
+  _incoming[63] =  333; _outgoing1[63] =  130; _outgoing2[63] = 310; 
+  _coupling[63] = 4.59;      _maxweight[63] = 1.7; 
   _incoming[30] =  333; _outgoing1[30] =  211; _outgoing2[30] = -211; 
-  _coupling[30] = 8.986E-3;  _maxweight[30] = 2.; 
+  _coupling[30] = 8.986E-3;  _maxweight[30] = 1.7; 
   // phi' decays
   _incoming[31] =  100333; _outgoing1[31] =  321; _outgoing2[31] = -321; 
-  _coupling[31] = 0.912; _maxweight[31] = 2.;  
+  _coupling[31] = 0.912; _maxweight[31] = 1.7;  
   _incoming[32] =  100333; _outgoing1[32] =  311; _outgoing2[32] = -311; 
-  _coupling[32] = 0.918; _maxweight[32] = 2.;  
+  _coupling[32] = 0.918; _maxweight[32] = 1.7;   
+  _incoming[64] =  100333; _outgoing1[64] =  130; _outgoing2[64] = 310; 
+  _coupling[64] = 0.918; _maxweight[64] = 1.7;  
   // excited psi decays
   _incoming[33] = 30443; _outgoing1[33] =  411; _outgoing2[33] = -411; 
-  _coupling[33] = 13.375; _maxweight[33] = 2.; 
+  _coupling[33] = 12.83; _maxweight[33] = 1.7; 
   _incoming[34] = 30443; _outgoing1[34] =  421; _outgoing2[34] = -421; 
-  _coupling[34] = 13.375; _maxweight[34] = 2.; 
+  _coupling[34] = 12.83; _maxweight[34] = 1.7;
   // D* decays
   _incoming[35] =  423; _outgoing1[35] =  421; _outgoing2[35] = 111; 
-  _coupling[35] = 6.366; _maxweight[35] = 2.; 
+  _coupling[35] = 6.309; _maxweight[35] = 1.7; 
   _incoming[36] =  413; _outgoing1[36] =  411; _outgoing2[36] = 111; 
-  _coupling[36] = 6.370; _maxweight[36] = 2.; 
+  _coupling[36] = 6.313; _maxweight[36] = 1.7; 
   _incoming[37] =  413; _outgoing1[37] =  421; _outgoing2[37] = 211; 
-  _coupling[37] = 9.019; _maxweight[37] = 2.; 
+  _coupling[37] = 8.938; _maxweight[37] = 1.7; 
   // D_s* decays
   _incoming[38] =  433; _outgoing1[38] =  431; _outgoing2[38] = 111; 
-  _coupling[38] = 5.635; _maxweight[38] = 2.; 
+  _coupling[38] = 1.398; _maxweight[38] = 1.7; 
   // K_1 decays to K*_0 pion
   _incoming[39] =  10323; _outgoing1[39] =  10321; _outgoing2[39] =  111;  
-  _coupling[39] = 20.366; _maxweight[39] = 12.5; 
+  _coupling[39] = 13.7; _maxweight[39] = 8.9; 
   _incoming[40] =  10323; _outgoing1[40] =  10311; _outgoing2[40] =  211; 
-  _coupling[40] = 28.802; _maxweight[40] = 12.5; 
+  _coupling[40] = 19.4; _maxweight[40] = 8.9; 
   _incoming[41] =  10313; _outgoing1[41] =  10311; _outgoing2[41] =  111; 
-  _coupling[41] = 20.366; _maxweight[41] = 12.5; 
+  _coupling[41] = 13.7; _maxweight[41] = 8.9; 
   _incoming[42] =  10313; _outgoing1[42] =  10321; _outgoing2[42] = -211;
-  _coupling[42] = 28.802; _maxweight[42] = 12.5;
+  _coupling[42] = 19.4; _maxweight[42] = 8.9;
   // K_1 decays to f(1370) kaon
   _incoming[43] =  10323; _outgoing1[43] =  321; _outgoing2[43] =  10221; 
-  _coupling[43] = 38.8; _maxweight[43] = 6.; 
+  _coupling[43] = 20.; _maxweight[43] = 4.2; 
   _incoming[44] =  10313; _outgoing1[44] =  311; _outgoing2[44] =  10221; 
-  _coupling[44] = 38.8; _maxweight[44] = 6.; 
+  _coupling[44] = 20.; _maxweight[44] = 4.2;
   // K'_1 decays to f(1370) kaon
   _incoming[45] =  20323; _outgoing1[45] =  321; _outgoing2[45] =  10221; 
   _coupling[45] = 23.34; _maxweight[45] = 6.; 
@@ -161,29 +165,29 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[46] = 23.34; _maxweight[46] = 6.; 
   // upsilon(4s)
   _incoming[47] = 300553; _outgoing1[47] = 521; _outgoing2[47] = -521; 
-  _coupling[47] = 23.653; _maxweight[47] = 2.; 
+  _coupling[47] = 24.188; _maxweight[47] = 1.6; 
   _incoming[48] = 300553; _outgoing1[48] = 511; _outgoing2[48] = -511; 
-  _coupling[48] = 23.653; _maxweight[48] = 2.; 
+  _coupling[48] = 24.188; _maxweight[48] = 1.6;
   // jpsi to pions
   _incoming[49] = 443; _outgoing1[49] = 211; _outgoing2[49] = -211; 
-  _coupling[49] = 2.568E-3; _maxweight[49] = 2.; 
+  _coupling[49] = 2.568E-3; _maxweight[49] = 1.7; 
   // jpsi to kaons
   _incoming[50] = 443; _outgoing1[50] = 321; _outgoing2[50] = -321; 
-  _coupling[50] = 1.111E-3; _maxweight[50] = 2.; 
+  _coupling[50] = 1.111E-3; _maxweight[50] = 1.7; 
   _incoming[51] = 443; _outgoing1[51] = 311; _outgoing2[51] = -311; 
-  _coupling[51] = 0.873E-3; _maxweight[51] = 2.; 
+  _coupling[51] = 0.873E-3; _maxweight[51] = 1.7; 
   _incoming[61] = 443; _outgoing1[61] = 130; _outgoing2[61] = 310; 
-  _coupling[61] = 0.873E-3; _maxweight[61] = 2.; 
+  _coupling[61] = 0.873E-3; _maxweight[61] = 1.7; 
   // psi(2s) to pions
   _incoming[52] = 100443; _outgoing1[52] = 211; _outgoing2[52] = -211; 
-  _coupling[52] = 0.963E-3; _maxweight[52] = 2.; 
+  _coupling[52] = 1.055E-3; _maxweight[52] = 1.7;
   // psi(2s) to kaons
   _incoming[53] = 100443; _outgoing1[53] = 321; _outgoing2[53] = -321; 
-  _coupling[53] = 0.817E-3; _maxweight[53] = 2.; 
+  _coupling[53] = 0.905E-3; _maxweight[53] = 1.7; 
   _incoming[54] = 100443; _outgoing1[54] = 311; _outgoing2[54] = -311; 
-  _coupling[54] = 0.817E-3; _maxweight[54] = 2.;  
+  _coupling[54] = 0.905E-3; _maxweight[54] = 1.7;  
   _incoming[62] = 100443; _outgoing1[62] = 130; _outgoing2[62] = 310; 
-  _coupling[62] = 0.817E-3; _maxweight[62] = 2.; 
+  _coupling[62] = 0.905E-3; _maxweight[62] = 1.7;
   // f_1 to a_0 pi
   _incoming[55] = 20223; _outgoing1[55] =  9000111; _outgoing2[55] =  111; 
   _coupling[55] = 3.035; _maxweight[55] = 10.; 

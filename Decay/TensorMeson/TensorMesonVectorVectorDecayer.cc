@@ -45,57 +45,57 @@ TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer()
     _coupling(22), _maxweight(22) {
   // a_2 -> gamma gamma
   _incoming[0] = 115; _outgoing1[0] =  22; _outgoing2[0] = 22; 
-  _coupling[0] = 0.02336/GeV; _maxweight[0] = 2.; 
+  _coupling[0] = 0.00727/GeV; _maxweight[0] = 1.7; 
   // f_2 -> gamma gamma
   _incoming[1] = 225; _outgoing1[1] =  22; _outgoing2[1] = 22; 
-  _coupling[1] = 0.01253/GeV; _maxweight[1] = 2.01; 
+  _coupling[1] = 0.01253/GeV; _maxweight[1] = 1.7; 
   // f'_2 -> gamma gamma
   _incoming[2] = 335; _outgoing1[2] =  22; _outgoing2[2] = 22; 
-  _coupling[2] = 0.00161/GeV; _maxweight[2] = 2.01; 
+  _coupling[2] = 0.00161/GeV; _maxweight[2] = 1.7; 
   // chi_b(2P) decays
   _incoming[3] = 100555; _outgoing1[3] = 553; _outgoing2[3] = 223; 
-  _coupling[3] = 0.0118/GeV; _maxweight[3] = 2.25; 
+  _coupling[3] = 0.0118/GeV; _maxweight[3] = 1.8; 
   _incoming[4] = 100555; _outgoing1[4] = 553; _outgoing2[4] = 22; 
-  _coupling[4] = 0.0172/GeV; _maxweight[4] = 2.02; 
+  _coupling[4] = 0.0172/GeV; _maxweight[4] = 1.7; 
   _incoming[5] = 100555; _outgoing1[5] = 100553; _outgoing2[5] = 22; 
-  _coupling[5] = 0.145/GeV; _maxweight[5] = 2.02; 
+  _coupling[5] = 0.145/GeV; _maxweight[5] = 1.7; 
   _incoming[6] = 100555; _outgoing1[6] = 333; _outgoing2[6] = 333; 
-  _coupling[6] = 0.00483/GeV; _maxweight[6] = 13.5; 
+  _coupling[6] = 0.00483/GeV; _maxweight[6] = 18.0; 
   // chi_c decays
   _incoming[7] = 445; _outgoing1[7] = 443; _outgoing2[7] = 22; 
-  _coupling[7] = 0.243/GeV; _maxweight[7] = 2.02; 
+  _coupling[7] = 0.243/GeV; _maxweight[7] = 1.7; 
   _incoming[8] = 445; _outgoing1[8] = 323; _outgoing2[8] = -323; 
-  _coupling[8] = 0.00627/GeV; _maxweight[8] = 21.; 
+  _coupling[8] = 0.00560/GeV; _maxweight[8] = 15.; 
   _incoming[9] = 445; _outgoing1[9] = 313; _outgoing2[9] = -313; 
-  _coupling[9] = 0.00627/GeV; _maxweight[9] = 19.; 
+  _coupling[9] = 0.00560/GeV; _maxweight[9] = 20.; 
   _incoming[10] = 445; _outgoing1[10] = 333; _outgoing2[10] = 333; 
-  _coupling[10] = 0.00475/GeV; _maxweight[10] = 19.; 
+  _coupling[10] = 0.00418/GeV; _maxweight[10] = 10.; 
   _incoming[11] = 445; _outgoing1[11] = 22; _outgoing2[11] = 22; 
-  _coupling[11] = 0.00120/GeV; _maxweight[11] = 2.; 
+  _coupling[11] = 0.00122/GeV; _maxweight[11] = 1.7; 
   // chi_b(1P) decays
   _incoming[12] = 555; _outgoing1[12] = 553; _outgoing2[12] = 22; 
-  _coupling[12] = 0.0683/GeV; _maxweight[12] = 2.02; 
+  _coupling[12] = 0.0683/GeV; _maxweight[12] = 1.8; 
   // a_2 omega rho 
   _incoming[13] =  115; _outgoing1[13] =  223; _outgoing2[13] =  113; 
-  _coupling[13] = 22.2/GeV; _maxweight[13] = 51.; 
+  _coupling[13] = 23.1/GeV; _maxweight[13] = 15.; 
   _incoming[14] =  215; _outgoing1[14] =  223; _outgoing2[14] =  213; 
-  _coupling[14] = 22.2/GeV; _maxweight[14] = 51.; 
+  _coupling[14] = 23.1/GeV; _maxweight[14] = 21.; 
   // f_2 rho rho
   _incoming[15] =  225; _outgoing1[15] =  113; _outgoing2[15] =  113; 
-  _coupling[15] = 10.5/GeV; _maxweight[15] = 40.; 
+  _coupling[15] = 11.7/GeV; _maxweight[15] = 26.; 
   _incoming[16] =  225; _outgoing1[16] =  213; _outgoing2[16] = -213; 
-  _coupling[16] = 14.8/GeV; _maxweight[16] = 40.; 
+  _coupling[16] = 16.5/GeV; _maxweight[16] = 26.; 
   // K_2-> K* rho
   _incoming[17] =  315; _outgoing1[17] =  113; _outgoing2[17] =  313; 
-  _coupling[17] = 13.14/GeV; _maxweight[17] = 34.; 
+  _coupling[17] = 13.42/GeV; _maxweight[17] = 30.; 
   _incoming[18] =  315; _outgoing1[18] = -213; _outgoing2[18] =  323; 
-  _coupling[18] = 18.58/GeV; _maxweight[18] = 34.; 
+  _coupling[18] = 18.98/GeV; _maxweight[18] = 30.; 
   _incoming[19] =  325; _outgoing1[19] =  113; _outgoing2[19] =  323; 
-  _coupling[19] = 13.14/GeV; _maxweight[19] = 34.; 
+  _coupling[19] = 13.42/GeV; _maxweight[19] = 30.; 
   _incoming[20] =  325; _outgoing1[20] =  213; _outgoing2[20] =  313; 
-  _coupling[20] = 18.58/GeV; _maxweight[20] = 34.; 
+  _coupling[20] = 18.98/GeV; _maxweight[20] = 30.; 
   _incoming[21] = 445; _outgoing1[21] = 223; _outgoing2[21] = 223; 
-  _coupling[21] = 0.00120/GeV; _maxweight[21] = 2.; 
+  _coupling[21] = 0.00389/GeV; _maxweight[21] = 12.; 
   // initial size of the vectors
   _initsize = _incoming.size();
   // intermediates

@@ -46,9 +46,9 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
     _maxweight(67) {
   // decay mode h'_1 to K K*
   _incoming[0] =  10333; _outgoingV[0] =  313; _outgoingP[0] = -311; 
-  _coupling[0] = 4.766/GeV; _maxweight[0] = 11.; 
+  _coupling[0] = 4.889/GeV; _maxweight[0] = 11.; 
   _incoming[1] =  10333; _outgoingV[1] =  323; _outgoingP[1] = -321; 
-  _coupling[1] = 4.051/GeV; _maxweight[1] = 11.; 
+  _coupling[1] = 4.156/GeV; _maxweight[1] = 11.; 
   // decay mode h_1 to rho
   _incoming[2] = 10223; _outgoingV[2] =  113; _outgoingP[2] =  111; 
   _coupling[2] = 4.411/GeV; _maxweight[2] = 6.; 
@@ -69,44 +69,44 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[8] = 0.161/GeV; _maxweight[8] = 2.5; 
   // decay mode B'_s1 to B*K
   _incoming[9] =  20533; _outgoingV[9] =  513; _outgoingP[9] = -311; 
-  _coupling[9] = 0.070/GeV; _maxweight[9] = 2.1; 
+  _coupling[9] = 0.389/GeV; _maxweight[9] = 2.1; 
   _incoming[10] =  20533; _outgoingV[10] =  523; _outgoingP[10] = -321; 
-  _coupling[10] = 0.070/GeV; _maxweight[10] = 2.1; 
+  _coupling[10] = 0.389/GeV; _maxweight[10] = 2.1; 
   // decay mode K_1 to rho K
   _incoming[11] =  10323; _outgoingV[11] =  213; _outgoingP[11] =  311; 
-  _coupling[11] = 4.36/GeV; _maxweight[11] = 3.5; 
+  _coupling[11] = 5.00/GeV; _maxweight[11] = 3.5; 
   _incoming[12] =  10323; _outgoingV[12] =  113; _outgoingP[12] =  321; 
-  _coupling[12] = 3.08/GeV; _maxweight[12] = 3.5; 
+  _coupling[12] = 3.3/GeV; _maxweight[12] = 3.5; 
   _incoming[13] =  10313; _outgoingV[13] = -213; _outgoingP[13] =  321; 
-  _coupling[13] = 4.36/GeV; _maxweight[13] = 3.5; 
+  _coupling[13] = 4.89/GeV; _maxweight[13] = 3.5; 
   _incoming[14] =  10313; _outgoingV[14] =  113; _outgoingP[14] =  311; 
-  _coupling[14] = 3.08/GeV; _maxweight[14] = 3.5; 
+  _coupling[14] = 3.46/GeV; _maxweight[14] = 3.5; 
   // decay mode K'_1 to rho K
   _incoming[15] =  20323; _outgoingV[15] =  213; _outgoingP[15] =  311; 
-  _coupling[15] = 0.834/GeV; _maxweight[15] = 6.5; 
+  _coupling[15] = 0.97/GeV; _maxweight[15] = 6.5; 
   _incoming[16] =  20323; _outgoingV[16] =  113; _outgoingP[16] =  321; 
-  _coupling[16] = 0.590/GeV; _maxweight[16] = 6.5; 
+  _coupling[16] = 0.707/GeV; _maxweight[16] = 6.5; 
   _incoming[17] =  20313; _outgoingV[17] = -213; _outgoingP[17] =  321; 
-  _coupling[17] = 0.834/GeV; _maxweight[17] = 6.5; 
+  _coupling[17] = 1.000/GeV; _maxweight[17] = 6.5; 
   _incoming[18] =  20313; _outgoingV[18] =  113; _outgoingP[18] =  311; 
-  _coupling[18] = 0.590/GeV; _maxweight[18] = 6.5; 
+  _coupling[18] = 0.707/GeV; _maxweight[18] = 6.5; 
   // decay mode K_1 to omega K
   _incoming[19] =  10323; _outgoingV[19] =  223; _outgoingP[19] =  321; 
-  _coupling[19] = 5.872/GeV; _maxweight[19] = 7.5; 
+  _coupling[19] = 7.2/GeV; _maxweight[19] = 7.5; 
   _incoming[20] =  10313; _outgoingV[20] =  223; _outgoingP[20] =  311; 
-  _coupling[20] = 7.906/GeV; _maxweight[20] = 7.5; 
+  _coupling[20] = 7.2/GeV; _maxweight[20] = 7.5; 
   // decay mode K'_1 to omega K
   _incoming[21] =  20323; _outgoingV[21] =  223; _outgoingP[21] =  321; 
-  _coupling[21] = 0.494/GeV; _maxweight[21] = 8.; 
+  _coupling[21] = 0.600/GeV; _maxweight[21] = 8.; 
   _incoming[22] =  20313; _outgoingV[22] =  223; _outgoingP[22] =  311; 
-  _coupling[22] = 0.494/GeV; _maxweight[22] = 8.; 
+  _coupling[22] = 0.600/GeV; _maxweight[22] = 8.; 
   // decay mode K_1 to K* pi
   _incoming[23] =  10323; _outgoingP[23] =  211; _outgoingV[23] =  313; 
-  _coupling[23] = 1.02/GeV; _maxweight[23] = 8.5; 
+  _coupling[23] = 0.90/GeV; _maxweight[23] = 8.5; 
   _incoming[24] =  10323; _outgoingP[24] =  111; _outgoingV[24] =  323; 
-  _coupling[24] = 0.72/GeV; _maxweight[24] = 8.5; 
+  _coupling[24] = 0.60/GeV; _maxweight[24] = 8.5; 
   _incoming[25] =  10313; _outgoingP[25] = -211; _outgoingV[25] =  323; 
-  _coupling[25] = 1.02/GeV; _maxweight[25] = 8.5; 
+  _coupling[25] = 0.66/GeV; _maxweight[25] = 8.5; 
   _incoming[26] =  10313; _outgoingP[26] =  111; _outgoingV[26] =  313; 
   _coupling[26] = 0.72/GeV; _maxweight[26] = 8.5; 
   // decay mode K'_1 to K* pi
@@ -120,46 +120,46 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[30] = 2.01/GeV; _maxweight[30] = 12.; 
   // decaymode D_1 to D* pi
   _incoming[31] =  10423; _outgoingP[31] = -211; _outgoingV[31] =  413; 
-  _coupling[31] = 0.473/GeV; _maxweight[31] = 3.; 
+  _coupling[31] = 0.489/GeV; _maxweight[31] = 3.; 
   _incoming[32] =  10423; _outgoingP[32] =  111; _outgoingV[32] =  423; 
-  _coupling[32] = 0.333/GeV; _maxweight[32] = 3.; 
+  _coupling[32] = 0.347/GeV; _maxweight[32] = 3.; 
   _incoming[33] =  10413; _outgoingP[33] =  211; _outgoingV[33] =  423; 
-  _coupling[33] = 0.570/GeV; _maxweight[33] = 3.; 
+  _coupling[33] = 0.542/GeV; _maxweight[33] = 3.; 
   _incoming[34] =  10413; _outgoingP[34] =  111; _outgoingV[34] =  413; 
-  _coupling[34] = 0.403/GeV; _maxweight[34] = 3.; 
+  _coupling[34] = 0.383/GeV; _maxweight[34] = 3.; 
   // decaymode D'_1 to D* pi
   _incoming[35] =  20423; _outgoingP[35] = -211; _outgoingV[35] =  413; 
   _coupling[35] = 1.933/GeV; _maxweight[35] = 3.; 
   _incoming[36] =  20423; _outgoingP[36] =  111; _outgoingV[36] =  423; 
   _coupling[36] = 1.367/GeV; _maxweight[36] = 3.; 
   _incoming[37] =  20413; _outgoingP[37] =  211; _outgoingV[37] =  423; 
-  _coupling[37] = 1.993/GeV; _maxweight[37] = 3.; 
+  _coupling[37] = 1.926/GeV; _maxweight[37] = 3.; 
   _incoming[38] =  20413; _outgoingP[38] =  111; _outgoingV[38] =  413; 
   _coupling[38] = 1.367/GeV; _maxweight[38] = 3.; 
   // decaymode B_1 to B* pi
   _incoming[39] =  10523; _outgoingP[39] =  211; _outgoingV[39] =  513; 
-  _coupling[39] = 0.128/GeV; _maxweight[39] = 2.2; 
+  _coupling[39] = 0.130/GeV; _maxweight[39] = 2.2; 
   _incoming[40] =  10523; _outgoingP[40] =  111; _outgoingV[40] =  523; 
-  _coupling[40] = 0.091/GeV; _maxweight[40] = 2.2; 
+  _coupling[40] = 0.0924/GeV; _maxweight[40] = 2.2; 
   _incoming[41] =  10513; _outgoingP[41] = -211; _outgoingV[41] =  523; 
-  _coupling[41] = 0.128/GeV; _maxweight[41] = 2.2; 
+  _coupling[41] = 0.130/GeV; _maxweight[41] = 2.2; 
   _incoming[42] =  10513; _outgoingP[42] =  111; _outgoingV[42] =  513; 
-  _coupling[42] = 0.091/GeV; _maxweight[42] = 2.2; 
+  _coupling[42] = 0.0924/GeV; _maxweight[42] = 2.2; 
   // decaymode B'_1 to B* pi
   _incoming[43] =  20523; _outgoingP[43] =  211; _outgoingV[43] =  513; 
-  _coupling[43] = 0.481/GeV; _maxweight[43] = 2.2; 
+  _coupling[43] = 0.445/GeV; _maxweight[43] = 2.2; 
   _incoming[44] =  20523; _outgoingP[44] =  111; _outgoingV[44] =  523; 
-  _coupling[44] = 0.340/GeV; _maxweight[44] = 2.2; 
+  _coupling[44] = 0.314/GeV; _maxweight[44] = 2.2; 
   _incoming[45] =  20513; _outgoingP[45] = -211; _outgoingV[45] =  523; 
-  _coupling[45] = 0.481/GeV; _maxweight[45] = 2.2; 
+  _coupling[45] = 0.445/GeV; _maxweight[45] = 2.2; 
   _incoming[46] =  20513; _outgoingP[46] =  111; _outgoingV[46] =  513; 
-  _coupling[46] = 0.340/GeV; _maxweight[46] = 2.2; 
+  _coupling[46] = 0.314/GeV; _maxweight[46] = 2.2; 
   // decaymode D_s1 to D* pi
   _incoming[47] =  10433; _outgoingP[47] =  111; _outgoingV[47] =  433; 
-  _coupling[47] = 0.021/GeV; _maxweight[47] = 2.5; 
+  _coupling[47] = 0.022/GeV; _maxweight[47] = 2.5; 
   // decaymode D_s1 to D gamma
   _incoming[48] =  10433; _outgoingP[48] =  431; _outgoingV[48] = 22; 
-  _coupling[48] = 0.072/GeV; _maxweight[48] = 2.1; 
+  _coupling[48] = 0.0587/GeV; _maxweight[48] = 2.1; 
   // decaymode B_s1 to B gamma
   _incoming[49] =  10533; _outgoingP[49] =  531; _outgoingV[49] = 22; 
   _coupling[49] = 0.142/GeV; _maxweight[49] = 2.;
@@ -168,10 +168,10 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[50] = 0.0074/GeV; _maxweight[50] = 2.1; 
   // decaymode B_c1 to B_c gamma
   _incoming[51] =  10543; _outgoingP[51] =  541; _outgoingV[51] = 22; 
-  _coupling[51] = 0.072/GeV; _maxweight[51] = 2.2; 
+  _coupling[51] = 0.0759/GeV; _maxweight[51] = 2.2; 
   // decaymode B'_c1 to B_c gamma
   _incoming[52] =  20543; _outgoingP[52] =  541; _outgoingV[52] = 22; 
-  _coupling[52] = 0.197/GeV; _maxweight[52] = 2.2; 
+  _coupling[52] = 0.175/GeV; _maxweight[52] = 2.2; 
   // decaymode h_c to eta_c gamma
   _incoming[53] = 10443; _outgoingP[53] = 441; _outgoingV[53] = 22; 
   _coupling[53] = 0.364/GeV; _maxweight[53] = 4.; 
@@ -202,12 +202,12 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _coupling[63] = 5.872/GeV; _maxweight[63] = 7.5; 
   // decay mode K'_1 to gamma K
   _incoming[64] =  20313; _outgoingV[64] =  22; _outgoingP[64] =  311; 
-  _coupling[64] = 0.494/GeV; _maxweight[64] = 8.;  
-  // decaymode B_s1 to B gamma
+  _coupling[64] = 0.164/GeV; _maxweight[64] = 8.;  
+  // decaymode B_s1 to B K
   _incoming[65] =  10533; _outgoingP[65] =  -311; _outgoingV[65] = 513; 
-  _coupling[65] = 0.142/GeV; _maxweight[65] = 2.;
+  _coupling[65] = 0.0418/GeV; _maxweight[65] = 2.;
   _incoming[66] =  10533; _outgoingP[66] =  -321; _outgoingV[66] = 523; 
-  _coupling[66] = 0.142/GeV; _maxweight[66] = 2.;  
+  _coupling[66] = 0.0373/GeV; _maxweight[66] = 2.;  
   // initial size of the arrays
   _initsize = _coupling.size();
   // intermediates

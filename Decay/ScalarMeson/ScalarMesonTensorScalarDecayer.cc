@@ -20,12 +20,12 @@ ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer()
   : _incoming(3), _outgoingT(3), _outgoingS(3), _coupling(3), _maxweight(3) {
   // D+ -> f_2 pi
   _incoming[0] =  411; _outgoingT[0] = 225; _outgoingS[0] =  211; 
-  _coupling[0] = 7.24E-7/GeV; _maxweight[0] = 0.006; 
+  _coupling[0] = 8.23E-7/GeV; _maxweight[0] = 5; 
   // chi_c0 -> K*_0 K*_2
   _incoming[1] =  10441; _outgoingT[1] = 325; _outgoingS[1] =  -10321; 
-  _coupling[1] = 7.24E-7/GeV; _maxweight[1] = 0.006; 
+  _coupling[1] = 0.0217/GeV; _maxweight[1] = 5; 
   _incoming[2] =  10441; _outgoingT[2] = 315; _outgoingS[2] =  -10311; 
-  _coupling[2] = 7.24E-7/GeV; _maxweight[2] = 0.006; 
+  _coupling[2] = 0.0217/GeV; _maxweight[2] = 5; 
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates
@@ -235,7 +235,7 @@ void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingS[ix] << "\n";
       output << "set " << fullName() << ":Coupling " << ix << " " 
-	     << _coupling[ix]*MeV << "\n";
+	     << _coupling[ix]*GeV << "\n";
       output << "set " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
@@ -247,7 +247,7 @@ void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingS[ix] << "\n";
       output << "insert " << fullName() << ":Coupling " << ix << " " 
-	     << _coupling[ix]*MeV << "\n";
+	     << _coupling[ix]*GeV << "\n";
       output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }

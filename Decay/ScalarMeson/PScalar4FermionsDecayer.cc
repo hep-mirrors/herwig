@@ -23,7 +23,7 @@ using namespace ThePEG::Helicity;
 
 PScalar4FermionsDecayer::PScalar4FermionsDecayer() 
   : _coupling(1,0.025159062/GeV), _incoming(1,111), _outgoing1(1,11), 
-    _outgoing2(1,11), _maxweight(1,0.0002), 
+    _outgoing2(1,11), _maxweight(1,0.000234211), 
     _includeVMD(1,2),_VMDid(1,113), _VMDmass(1,0.7758*GeV), 
     _VMDwidth(1,0.1503*GeV), _initsize(1) {
   // intermediates

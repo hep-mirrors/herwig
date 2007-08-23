@@ -48,30 +48,30 @@ VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer()
   generateIntermediates(false);
   // rho -> gamma pi modes
   _incoming[0] =  113; _outgoingV[0] =  22; _outgoingP[0] =  111; 
-  _coupling[0] = 0.2527/GeV; _maxweight[0] = 2.; 
+  _coupling[0] = 0.2527/GeV; _maxweight[0] = 1.7; 
   _incoming[1] =  213; _outgoingV[1] =  22; _outgoingP[1] =  211; 
-  _coupling[1] = 0.2210/GeV; _maxweight[1] = 2.; 
+  _coupling[1] = 0.2210/GeV; _maxweight[1] = 1.7; 
   // rho  -> gamma eta mode
   _incoming[2] =  113; _outgoingV[2] =  22; _outgoingP[2] =  221; 
-  _coupling[2] = 0.492/GeV; _maxweight[2] = 2.; 
+  _coupling[2] = 0.492/GeV; _maxweight[2] = 1.7; 
   // omega -> gamma pi 
   _incoming[3] =  223; _outgoingV[3] =  22; _outgoingP[3] =  111; 
-  _coupling[3] = 0.7279465/GeV; _maxweight[3] = 2.; 
+  _coupling[3] = 0.7279465/GeV; _maxweight[3] = 1.7; 
   // omega -> gamma eta
   _incoming[4] =  223; _outgoingV[4] =  22; _outgoingP[4] =  221; 
-  _coupling[4] = 0.143/GeV; _maxweight[4] = 2.; 
+  _coupling[4] = 0.143/GeV; _maxweight[4] = 1.7; 
   // phi -> gamma pi 
   _incoming[5] =  333; _outgoingV[5] =  22; _outgoingP[5] =  111; 
-  _coupling[5] = 0.0397/GeV; _maxweight[5] = 2.; 
+  _coupling[5] = 0.0397/GeV; _maxweight[5] = 1.7; 
   // phi -> gamma eta
   _incoming[6] =  333; _outgoingV[6] =  22; _outgoingP[6] =  221; 
-  _coupling[6] = 0.212/GeV; _maxweight[6] = 2.; 
+  _coupling[6] = 0.212/GeV; _maxweight[6] = 1.7; 
   // phi -> gamma eta'
   _incoming[7] =  333; _outgoingV[7] =  22; _outgoingP[7] =  331; 
-  _coupling[7] = 0.219/GeV; _maxweight[7] = 2.5; 
+  _coupling[7] = 0.219/GeV; _maxweight[7] = 1.8; 
   // phi -> omega pi
   _incoming[8] =  333; _outgoingV[8] = 223; _outgoingP[8] =  111; 
-  _coupling[8] = 0.0417/GeV; _maxweight[8] = 2.5; 
+  _coupling[8] = 0.0417/GeV; _maxweight[8] = 1.9; 
   // phi' -> K* K
   _incoming[9] =  100333; _outgoingV[9] =  323; _outgoingP[9] = -321; 
   _coupling[9] = 3.934/GeV; _maxweight[9] = 5.; 
@@ -79,167 +79,167 @@ VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer()
   _coupling[10] = 4.011/GeV; _maxweight[10] = 5.; 
   // K* -> gamma K 
   _incoming[11] =  313; _outgoingV[11] =  22; _outgoingP[11] =  311; 
-  _coupling[11] = 0.384/GeV; _maxweight[11] = 2.; 
+  _coupling[11] = 0.384/GeV; _maxweight[11] = 1.7; 
   _incoming[12] =  323; _outgoingV[12] =  22; _outgoingP[12] =  321; 
-  _coupling[12] = 0.253/GeV; _maxweight[12] = 2.; 
+  _coupling[12] = 0.253/GeV; _maxweight[12] = 1.7; 
   // d* decay
   _incoming[13] =  423; _outgoingV[13] = 22; _outgoingP[13] =  421; 
-  _coupling[13] = 0.616/GeV; _maxweight[13] = 2.; 
+  _coupling[13] = 0.616/GeV; _maxweight[13] = 1.7; 
   _incoming[14] =  413; _outgoingV[14] = 22; _outgoingP[14] =  411; 
-  _coupling[14] = 0.152/GeV; _maxweight[14] = 2.; 
+  _coupling[14] = 0.152/GeV; _maxweight[14] = 1.7; 
   // D_s* decays
   _incoming[15] =  433; _outgoingV[15] = 22; _outgoingP[15] =  431; 
-  _coupling[15] = 0.189/GeV; _maxweight[15] = 2.; 
+  _coupling[15] = 0.764/GeV; _maxweight[15] = 1.7; 
   // B_s* decays
   _incoming[16] =  533; _outgoingV[16] = 22; _outgoingP[16] =  531; 
-  _coupling[16] = 0.235/GeV; _maxweight[16] = 2.; 
+  _coupling[16] = 0.248/GeV; _maxweight[16] = 1.7; 
   // B_c* decays
   _incoming[17] =  543; _outgoingV[17] = 22; _outgoingP[17] =  541; 
-  _coupling[17] = 0.1025/GeV; _maxweight[17] = 2.; 
+  _coupling[17] = 0.266/GeV; _maxweight[17] = 1.7; 
   // B* decay
   _incoming[18] =  523; _outgoingV[18] = 22; _outgoingP[18] =  521; 
-  _coupling[18] = 0.553/GeV; _maxweight[18] = 2.; 
+  _coupling[18] = 0.553/GeV; _maxweight[18] = 1.7; 
   _incoming[19] =  513; _outgoingV[19] = 22; _outgoingP[19] =  511; 
-  _coupling[19] = 0.310/GeV; _maxweight[19] = 2.; 
+  _coupling[19] = 0.310/GeV; _maxweight[19] = 1.7; 
   // rho'' eta rho
   _incoming[20] =  30113; _outgoingV[20] =  113; _outgoingP[20] = 221; 
-  _coupling[20] = 2.600/GeV; _maxweight[20] = 5.; 
+  _coupling[20] = 2.663/GeV; _maxweight[20] = 4.; 
   _incoming[21] =  30213; _outgoingV[21] =  213; _outgoingP[21] = 221; 
-  _coupling[21] = 2.600/GeV; _maxweight[21] = 5.; 
+  _coupling[21] = 2.663/GeV; _maxweight[21] = 4.; 
   // rho '' K* K
   _incoming[22] =  30113; _outgoingV[22] =  323; _outgoingP[22] = -321; 
-  _coupling[22] = 1.357/GeV; _maxweight[22] = 3.; 
+  _coupling[22] = 0.894/GeV; _maxweight[22] = 5.; 
   _incoming[23] =  30113; _outgoingV[23] =  313; _outgoingP[23] = -311; 
-  _coupling[23] = 1.378/GeV; _maxweight[23] = 3.; 
+  _coupling[23] = 0.908/GeV; _maxweight[23] = 5.; 
   _incoming[24] =  30213; _outgoingV[24] =  323; _outgoingP[24] = -311; 
-  _coupling[24] = 1.932/GeV; _maxweight[24] = 3.; 
+  _coupling[24] = 1.265/GeV; _maxweight[24] = 5.; 
   _incoming[25] =  30213; _outgoingV[25] = -313; _outgoingP[25] =  321; 
-  _coupling[25] = 1.932/GeV; _maxweight[25] = 3.; 
+  _coupling[25] = 1.273/GeV; _maxweight[25] = 5.; 
   // omega'' rho pi
   _incoming[26] =  30223; _outgoingV[26] =  213; _outgoingP[26] = -211; 
-  _coupling[26] = 2.996/GeV; _maxweight[26] = 3.; 
+  _coupling[26] = 2.996/GeV; _maxweight[26] = 3.5; 
   _incoming[27] =  30223; _outgoingV[27] =  113; _outgoingP[27] =  111; 
-  _coupling[27] = 2.996/GeV; _maxweight[27] = 3.; 
+  _coupling[27] = 2.996/GeV; _maxweight[27] = 3.5; 
   // omega' rho pi
   _incoming[28] =  100223; _outgoingV[28] =  213; _outgoingP[28] = -211; 
-  _coupling[28] = 4.507/GeV; _maxweight[28] = 5.; 
+  _coupling[28] = 4.507/GeV; _maxweight[28] = 4.; 
   _incoming[29] =  100223; _outgoingV[29] =  113; _outgoingP[29] =  111; 
-  _coupling[29] = 4.507/GeV; _maxweight[29] = 5.; 
+  _coupling[29] = 4.507/GeV; _maxweight[29] = 4.; 
   // K*''->K* pi decays
   _incoming[30] =  30313; _outgoingV[30] =  323; _outgoingP[30] = -211; 
-  _coupling[30] = 3.36/GeV;  _maxweight[30] = 5.; 
+  _coupling[30] = 3.36/GeV;  _maxweight[30] = 4.; 
   _incoming[31] =  30313; _outgoingV[31] =  313; _outgoingP[31] =  111; 
-  _coupling[31] = 2.38/GeV;  _maxweight[31] = 5.; 
+  _coupling[31] = 2.38/GeV;  _maxweight[31] = 4.; 
   _incoming[32] =  30323; _outgoingV[32] =  313; _outgoingP[32] =  211; 
-  _coupling[32] = 3.36/GeV;  _maxweight[32] = 5.; 
+  _coupling[32] = 3.36/GeV;  _maxweight[32] = 4.; 
   _incoming[33] =  30323; _outgoingV[33] =  323; _outgoingP[33] =  111; 
-  _coupling[33] = 2.38/GeV;  _maxweight[33] = 5.; 
+  _coupling[33] = 2.38/GeV;  _maxweight[33] = 4.; 
   // K*''->K rho decays
   _incoming[34] =  30313; _outgoingP[34] =  321; _outgoingV[34] = -213; 
-  _coupling[34] = 4.159/GeV;  _maxweight[34] = 5.; 
+  _coupling[34] = 4.159/GeV;  _maxweight[34] = 3.; 
   _incoming[35] =  30313; _outgoingP[35] =  311; _outgoingV[35] =  113; 
-  _coupling[35] = 2.939/GeV;  _maxweight[35] = 5.; 
+  _coupling[35] = 2.939/GeV;  _maxweight[35] = 3.; 
   _incoming[36] =  30323; _outgoingP[36] =  311; _outgoingV[36] =  213; 
-  _coupling[36] = 4.159/GeV;  _maxweight[36] = 5.; 
+  _coupling[36] = 4.159/GeV;  _maxweight[36] = 3.; 
   _incoming[37] =  30323; _outgoingP[37] =  321; _outgoingV[37] =  113; 
-  _coupling[37] = 2.939/GeV;  _maxweight[37] = 5.; 
+  _coupling[37] = 2.939/GeV;  _maxweight[37] = 3.; 
   // K*' decays
   _incoming[38] =  100313; _outgoingV[38] =  323; _outgoingP[38] = -211; 
-  _coupling[38] = 9.469/GeV;  _maxweight[38] = 5.; 
+  _coupling[38] = 9.469/GeV;  _maxweight[38] = 6.; 
   _incoming[39] =  100313; _outgoingV[39] =  313; _outgoingP[39] =  111; 
-  _coupling[39] = 6.781/GeV;  _maxweight[39] = 5.; 
+  _coupling[39] = 6.781/GeV;  _maxweight[39] = 6.; 
   _incoming[40] =  100323; _outgoingV[40] =  313; _outgoingP[40] =  211; 
-  _coupling[40] = 9.469/GeV;  _maxweight[40] = 5.; 
+  _coupling[40] = 9.469/GeV;  _maxweight[40] = 6.; 
   _incoming[41] =  100323; _outgoingV[41] =  323; _outgoingP[41] =  111; 
-  _coupling[41] = 6.781/GeV;  _maxweight[41] = 5.; 
+  _coupling[41] = 6.781/GeV;  _maxweight[41] = 6.; 
   // J/psi -> gamma eta_c decay
   _incoming[42] = 443; _outgoingV[42] = 22; _outgoingP[42] = 441; 
-  _coupling[42] = 0.160/GeV; _maxweight[42] = 20.; 
+  _coupling[42] = 0.149/GeV; _maxweight[42] = 30.; 
   // J/psi -> gamma eta' decay
   _incoming[43] = 443; _outgoingV[43] = 22; _outgoingP[43] = 331; 
-  _coupling[43] = 0.00236/GeV; _maxweight[43] = 2.; 
+  _coupling[43] = 0.00250/GeV; _maxweight[43] = 1.7; 
   // J/psi -> rho pi decay
   _incoming[44] = 443; _outgoingV[44] = 213; _outgoingP[44] = -211; 
-  _coupling[44] = 0.00234/GeV; _maxweight[44] = 4.; 
+  _coupling[44] = 0.00274/GeV; _maxweight[44] = 3.3; 
   _incoming[45] = 443; _outgoingV[45] = 113; _outgoingP[45] = 111; 
-  _coupling[45] = 0.00234/GeV; _maxweight[45] = 4.; 
+  _coupling[45] = 0.00274/GeV; _maxweight[45] = 3.3; 
   // J/psi -> K* K decay
   _incoming[46] = 443; _outgoingV[46] = 323; _outgoingP[46] = -321; 
-  _coupling[46] = 0.00177/GeV; _maxweight[46] = 7.; 
+  _coupling[46] = 0.00180/GeV; _maxweight[46] = 6.; 
   _incoming[47] = 443; _outgoingV[47] = 313; _outgoingP[47] = -311; 
-  _coupling[47] = 0.00177/GeV; _maxweight[47] = 7.; 
+  _coupling[47] = 0.00180/GeV; _maxweight[47] = 6.; 
   // J/psi -> omega eta decay
   _incoming[48] = 443; _outgoingV[48] = 223; _outgoingP[48] = 221; 
-  _coupling[48] = 0.00145/GeV; _maxweight[48] = 7.; 
+  _coupling[48] = 0.00154/GeV; _maxweight[48] = 6.; 
   // J/psi -> gamma eta decay
   _incoming[49] = 443; _outgoingV[49] = 22; _outgoingP[49] = 221; 
-  _coupling[49] = 0.00095/GeV; _maxweight[49] = 2.; 
+  _coupling[49] = 0.00103/GeV; _maxweight[49] = 1.7; 
   // J/psi -> phi eta decay
   _incoming[50] = 443; _outgoingV[50] = 333; _outgoingP[50] = 221; 
-  _coupling[50] = 0.00102/GeV; _maxweight[50] = 7.; 
+  _coupling[50] = 0.00110/GeV; _maxweight[50] = 5.5; 
   // J/psi -> phi eta' decay
   _incoming[51] = 443; _outgoingV[51] = 333; _outgoingP[51] = 331; 
-  _coupling[51] = 0.00084/GeV; _maxweight[51] = 6.5; 
+  _coupling[51] = 0.00085/GeV; _maxweight[51] = 5.5; 
   // J/psi -> omega pi0 decay
   _incoming[52] = 443; _outgoingV[52] = 223; _outgoingP[52] = 111; 
-  _coupling[52] = 0.00069/GeV; _maxweight[52] = 7.; 
+  _coupling[52] = 0.00073/GeV; _maxweight[52] = 6.; 
   // J/psi -> rho0 eta decay
   _incoming[53] = 443; _outgoingV[53] = 113; _outgoingP[53] = 221; 
-  _coupling[53] = 0.00054/GeV; _maxweight[53] = 4.; 
+  _coupling[53] = 0.00054/GeV; _maxweight[53] = 3.; 
   // J/psi -> rho0 eta' decay
   _incoming[54] = 443; _outgoingV[54] = 113; _outgoingP[54] = 331; 
-  _coupling[54] = 0.00045/GeV; _maxweight[54] = 3.5; 
+  _coupling[54] = 0.00045/GeV; _maxweight[54] = 3.; 
   // J/psi -> omega eta' decay
   _incoming[55] = 443; _outgoingV[55] = 223; _outgoingP[55] = 331; 
-  _coupling[55] = 0.00054/GeV; _maxweight[55] = 7.; 
+  _coupling[55] = 0.00058/GeV; _maxweight[55] = 6.; 
   // J/psi -> gamma pi0 decay
   _incoming[56] = 443; _outgoingV[56] = 22; _outgoingP[56] = 111; 
-  _coupling[56] = 0.00019/GeV; _maxweight[56] = 2.; 
+  _coupling[56] = 0.000177/GeV; _maxweight[56] = 1.7; 
   // psi(2s)-> j/psi eta decay
   _incoming[57] = 100443; _outgoingV[57] = 443; _outgoingP[57] = 221; 
-  _coupling[57] = 0.213/GeV; _maxweight[57] = 2.; 
+  _coupling[57] = 0.230/GeV; _maxweight[57] = 1.7; 
   // psi(2s)-> gamma eta_c decay
   _incoming[58] = 100443; _outgoingV[58] = 22; _outgoingP[58] = 441; 
-  _coupling[58] = 0.0108/GeV; _maxweight[58] = 3.5; 
+  _coupling[58] = 0.0114/GeV; _maxweight[58] = 3.4; 
   // psi(2s)-> gamma eta' decay
   _incoming[59] = 100443; _outgoingV[59] = 22; _outgoingP[59] = 331; 
-  _coupling[59] = 0.00057/GeV; _maxweight[59] = 2.; 
+  _coupling[59] = 0.00062/GeV; _maxweight[59] = 1.7; 
   // psi(2s)-> J/psi pi0 decay
   _incoming[60] = 100443; _outgoingV[60] = 443; _outgoingP[60] = 111; 
-  _coupling[60] = 0.00846/GeV; _maxweight[60] = 2.; 
-  // psi(2s)-> gamma eta_c decay
+  _coupling[60] = 0.0106/GeV; _maxweight[60] = 1.7; 
+  // psi(1d)-> gamma eta_c decay
   _incoming[61] = 30443; _outgoingV[61] = 443; _outgoingP[61] = 221; 
-  _coupling[61] = 0.0108/GeV; _maxweight[61] = 3.5;
+  _coupling[61] = 0.135/GeV; _maxweight[61] = 1.7;
   _incoming[62] = 30443; _outgoingV[62] = 333; _outgoingP[62] = 221; 
-  _coupling[62] = 0.0108/GeV; _maxweight[62] = 3.5; 
+  _coupling[62] = 0.0076/GeV; _maxweight[62] = 5.5; 
   // psi(2s) K* K
   _incoming[63] = 100443; _outgoingV[63] = 323; _outgoingP[63] = -321; 
-  _coupling[63] = 0.00177/GeV; _maxweight[63] = 7.; 
+  _coupling[63] = 0.00021/GeV; _maxweight[63] = 6.5; 
   _incoming[64] = 100443; _outgoingV[64] = 313; _outgoingP[64] = -311; 
-  _coupling[64] = 0.00177/GeV; _maxweight[64] = 7.; 
+  _coupling[64] = 0.00054/GeV; _maxweight[64] = 6.5; 
   // psi(2s) -> phi eta decay
   _incoming[65] = 100443; _outgoingV[65] = 333; _outgoingP[65] = 221; 
-  _coupling[65] = 0.00102/GeV; _maxweight[65] = 7.; 
+  _coupling[65] = 0.00029/GeV; _maxweight[65] = 5.5; 
   // psi(2s) -> phi eta' decay
   _incoming[66] = 100443; _outgoingV[66] = 333; _outgoingP[66] = 331; 
-  _coupling[66] = 0.00084/GeV; _maxweight[66] = 6.5; 
+  _coupling[66] = 0.00033/GeV; _maxweight[66] = 5.5; 
   // psi(2s) -> rho pi decay
   _incoming[67] = 100443; _outgoingV[67] = 213; _outgoingP[67] = -211; 
-  _coupling[67] = 0.00234/GeV; _maxweight[67] = 4.; 
+  _coupling[67] = 0.00017/GeV; _maxweight[67] = 3.5; 
   _incoming[68] = 100443; _outgoingV[68] = 113; _outgoingP[68] = 111; 
-  _coupling[68] = 0.00234/GeV; _maxweight[68] = 4.; 
+  _coupling[68] = 0.00017/GeV; _maxweight[68] = 3.5; 
   // psi(2s) -> omega eta' decay
   _incoming[69] = 100443; _outgoingV[69] = 223; _outgoingP[69] = 331; 
-  _coupling[69] = 0.00054/GeV; _maxweight[69] = 7.;
+  _coupling[69] = 0.00032/GeV; _maxweight[69] = 6.;
   // psi(2s) -> rho0 eta decay
   _incoming[70] = 100443; _outgoingV[70] = 113; _outgoingP[70] = 221; 
-  _coupling[70] = 0.00054/GeV; _maxweight[70] = 4.; 
+  _coupling[70] = 0.00025/GeV; _maxweight[70] = 3.5; 
   // psi(2s) -> omega pi0 decay
   _incoming[71] = 100443; _outgoingV[71] = 223; _outgoingP[71] = 111; 
-  _coupling[71] = 0.00069/GeV; _maxweight[71] = 7.; 
+  _coupling[71] = 0.00022/GeV; _maxweight[71] = 6.; 
   // psi(2s) -> rho0 eta' decay
   _incoming[72] = 100443; _outgoingV[72] = 113; _outgoingP[72] = 331; 
-  _coupling[72] = 0.00045/GeV; _maxweight[72] = 3.5; 
+  _coupling[72] = 0.00026/GeV; _maxweight[72] = 3.5; 
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }

@@ -53,22 +53,22 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   _coupling[11] = 14.33/GeV2; _maxweight[11] = 9.; 
   // K_2 -> K* pi 
   _incoming[12] =  325; _outgoingV[12] =  323; _outgoingP[12] =  111; 
-  _coupling[12] = 9.627/GeV2; _maxweight[12] = 13; 
+  _coupling[12] = 9.733/GeV2; _maxweight[12] = 13; 
   _incoming[13] =  325; _outgoingV[13] =  313; _outgoingP[13] =  211; 
-  _coupling[13] = 13.62/GeV2; _maxweight[13] = 11; 
+  _coupling[13] = 13.77/GeV2; _maxweight[13] = 11; 
   _incoming[14] =  315; _outgoingV[14] =  313; _outgoingP[14] =  111; 
-  _coupling[14] = 9.627/GeV2; _maxweight[14] = 8.; 
+  _coupling[14] = 9.733/GeV2; _maxweight[14] = 8.; 
   _incoming[15] =  315; _outgoingV[15] =  323; _outgoingP[15] = -211; 
-  _coupling[15] = 13.62/GeV2; _maxweight[15] = 8.; 
+  _coupling[15] = 13.77/GeV2; _maxweight[15] = 8.; 
   // D_2 -> D* pi 
   _incoming[16] =  425; _outgoingV[16] =  423; _outgoingP[16] =  111; 
-  _coupling[16] = 5.931/GeV2; _maxweight[16] = 2.2; 
+  _coupling[16] = 8.035/GeV2; _maxweight[16] = 2.2; 
   _incoming[17] =  425; _outgoingV[17] =  413; _outgoingP[17] = -211; 
-  _coupling[17] = 8.387/GeV2; _maxweight[17] = 2.4; 
+  _coupling[17] = 11.670/GeV2; _maxweight[17] = 2.4; 
   _incoming[18] =  415; _outgoingV[18] =  413; _outgoingP[18] =  111; 
-  _coupling[18] = 5.931/GeV2; _maxweight[18] = 2.4; 
+  _coupling[18] = 6.801/GeV2; _maxweight[18] = 2.4; 
   _incoming[19] =  415; _outgoingV[19] =  423; _outgoingP[19] =  211; 
-  _coupling[19] = 8.387/GeV2; _maxweight[19] = 2.; 
+  _coupling[19] = 9.527/GeV2; _maxweight[19] = 2.; 
   // D_s2 -> D* K
   _incoming[20] =  435; _outgoingV[20] =  423; _outgoingP[20] =  321; 
   _coupling[20] = 13.10/GeV2; _maxweight[20] = 2.2; 
@@ -76,13 +76,13 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   _coupling[21] = 13.10/GeV2; _maxweight[21] = 2.5; 
   // B_2 -> B* pi 
   _incoming[22] =  525; _outgoingV[22] =  523; _outgoingP[22] =  111; 
-  _coupling[22] = 4.384/GeV2; _maxweight[22] = 2.1; 
+  _coupling[22] = 4.99/GeV2; _maxweight[22] = 2.1; 
   _incoming[23] =  525; _outgoingV[23] =  513; _outgoingP[23] =  211; 
-  _coupling[23] = 6.199/GeV2; _maxweight[23] = 2.1; 
+  _coupling[23] = 7.059/GeV2; _maxweight[23] = 2.1; 
   _incoming[24] =  515; _outgoingV[24] =  513; _outgoingP[24] =  111; 
-  _coupling[24] = 4.384/GeV2; _maxweight[24] = 2.1; 
+  _coupling[24] = 4.99/GeV2; _maxweight[24] = 2.1; 
   _incoming[25] =  515; _outgoingV[25] =  523; _outgoingP[25] = -211; 
-  _coupling[25] = 6.199/GeV2; _maxweight[25] = 2.1; 
+  _coupling[25] = 7.059/GeV2; _maxweight[25] = 2.1; 
   // D_s2
   _incoming[26] =  435; _outgoingV[26] =  423; _outgoingP[26] =  321; 
   _coupling[26] = 13.09/GeV2; _maxweight[26] = 2.2; 
@@ -90,12 +90,12 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   _coupling[27] = 13.09/GeV2; _maxweight[27] = 2.5; 
   // B_s2
   _incoming[28] =  535; _outgoingV[28] =  523; _outgoingP[28] = -321; 
-  _coupling[28] = 8.12/GeV2; _maxweight[28] = 2.4; 
+  _coupling[28] = 7.29/GeV2; _maxweight[28] = 2.4; 
   _incoming[29] =  535; _outgoingV[29] =  513; _outgoingP[29] = -311; 
-  _coupling[29] = 8.12/GeV2; _maxweight[29] = 2.1; 
+  _coupling[29] = 9.43/GeV2; _maxweight[29] = 2.1; 
   // upsilon_2(1d) to chi_b gamma
   _incoming[30] = 20555; _outgoingV[30] =   22; _outgoingP[30] = 10551; 
-  _coupling[30] = 8.12/GeV2; _maxweight[30] = 2.4; 
+  _coupling[30] = 1.11/GeV2; _maxweight[30] = 2.4; 
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates

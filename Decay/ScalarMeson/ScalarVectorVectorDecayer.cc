@@ -46,11 +46,11 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   _coupling[12] = 1./GeV; _maxweight[12] = 1.; 
   // a'_0 -> omega rho
   _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223; 
-  _coupling[9] = 11.26/GeV; _maxweight[9] = 20.;
+  _coupling[9] = 27.09/GeV; _maxweight[9] = 20.;
   _incoming[10] = 10211; _outgoing1[10] = 213; _outgoing2[10] = 223; 
-  _coupling[10] = 11.26/GeV; _maxweight[10] = 20.;
+  _coupling[10] = 27.09/GeV; _maxweight[10] = 20.;
   _incoming[11] =-10211; _outgoing1[11] =-213; _outgoing2[11] = 223; 
-  _coupling[11] = 11.26/GeV; _maxweight[11] = 20.; 
+  _coupling[11] = 27.09/GeV; _maxweight[11] = 20.; 
   // intermediates
   generateIntermediates(false);
 }

@@ -22,29 +22,29 @@ PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer()
   : _incoming(6), _decayconstant(6), _leptons(6), _maxweighte(6), 
     _maxweightmu(6), _maxweighttau(6), _GF(1.16637E-5/GeV2) {
   // pion decay
-  _incoming[0] = 211; _decayconstant[0] = 127.3*MeV; _leptons[0] = 2; 
-  _maxweighte[0] = 0.000126639; _maxweightmu[0] = 0.986777; 
+  _incoming[0] = 211; _decayconstant[0] = 127.27*MeV; _leptons[0] = 2; 
+  _maxweighte[0] = 0.00014; _maxweightmu[0] = 1.09; 
   _maxweighttau[0] = 0.0; 
   // kaon decay
-  _incoming[1] = 321; _decayconstant[1] = 36.31*MeV; _leptons[1] = 2; 
-  _maxweighte[1] = 1.6599e-05; _maxweightmu[1] = 0.646136; 
+  _incoming[1] = 321; _decayconstant[1] = 36.06*MeV; _leptons[1] = 2; 
+  _maxweighte[1] = 1.87e-05; _maxweightmu[1] = 0.74; 
   _maxweighttau[1] = 0.0; 
   // D_s decay
-  _incoming[2] = 431; _decayconstant[2] = 286.1*MeV; _leptons[2] = 3; 
-  _maxweighte[2] = 8.29008e-08; _maxweightmu[2] = 0.00352387; 
-  _maxweighttau[2] = 0.0342748; 
+  _incoming[2] = 431; _decayconstant[2] = 281.36*MeV; _leptons[2] = 3; 
+  _maxweighte[2] = 1.83428e-07; _maxweightmu[2] = 0.00782778; 
+  _maxweighttau[2] = 0.00782778; 
   // D decay
-  _incoming[3] = 411; _decayconstant[3] = 50.55*MeV; _leptons[3] = 3; 
-  _maxweighte[3] = 1.67007e-07; _maxweightmu[3] = 0.00709453; 
-  _maxweighttau[3] = 0.0187692; 
+  _incoming[3] = 411; _decayconstant[3] = 51.20*MeV; _leptons[3] = 3; 
+  _maxweighte[3] = 1.19915e-08; _maxweightmu[3] = 0.000511418; 
+  _maxweighttau[3] = 0.00135052; 
   // B_c decay
   _incoming[4] = 541; _decayconstant[4] = 16.0*MeV; _leptons[4] = 3; 
-  _maxweighte[4] = 1.61603e-09; _maxweightmu[4] = 6.90525e-05; 
-  _maxweighttau[4] = 0.0166333; 
+  _maxweighte[4] = 1.7429e-09; _maxweightmu[4] = 7.47667e-05; 
+  _maxweighttau[4] = 0.0179128; 
   // B_u decays
-  _incoming[5] = 521; _decayconstant[5] = 0.6970*MeV; _leptons[5] = 3; 
-  _maxweighte[5] = 1.07731e-11; _maxweightmu[5] = 4.60215e-07; 
-  _maxweighttau[5] = 9.31156e-05; 
+  _incoming[5] = 521; _decayconstant[5] = 0.759*MeV; _leptons[5] = 3; 
+  _maxweighte[5] = 1.19578e-11; _maxweightmu[5] = 5.12844e-07; 
+  _maxweighttau[5] = 0.000114138; 
   // initial size of the vectors
   _initsize=_incoming.size();
   // intermediates
@@ -278,7 +278,7 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
       output << "set " << fullName() << ":DecayConstant "     << ix << " "
-	     << _decayconstant[ix]/GeV  << "\n";
+	     << _decayconstant[ix]/MeV  << "\n";
     }
     else {
       output << "insert " << fullName() << ":Incoming   " << ix << " "
@@ -292,7 +292,7 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
       output << "insert " << fullName() << ":DecayConstant "     << ix << " "
-	     << _decayconstant[ix]/GeV  << "\n";
+	     << _decayconstant[ix]/MeV  << "\n";
     }
   }
   if(header) 

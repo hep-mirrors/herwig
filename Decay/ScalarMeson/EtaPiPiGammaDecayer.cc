@@ -37,13 +37,13 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   // eta decay
   _incoming[0] = 221; 
   _option[0] = 3; 
-  _coupling[0] = 0.005261433; 
-  _maxweight[0] = 4.; 
+  _coupling[0] = 5.060e-3; 
+  _maxweight[0] = 3.95072; 
   // eta' decay
   _incoming[1] = 331; 
   _option[1] = 3; 
-  _coupling[1] = 0.004494391; 
-  _maxweight[1] = 4.; 
+  _coupling[1] = 4.278e-3; 
+  _maxweight[1] = 3.53141; 
   _rhoconst=0.;
   _mpi=0.*MeV;
   // initialization of the experimental function
