@@ -197,6 +197,10 @@ private:
    */
   //@{
   /**
+   *  Overall normalisation
+   */
+  vector<double> _coupling;
+  /**
    *  The real part of \f$A\f$
    */
   vector<InvEnergy2> _reA;

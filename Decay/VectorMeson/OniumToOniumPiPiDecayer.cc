@@ -23,6 +23,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(3.92e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back(-2.523/MeV2);_imB.push_back( 1.189/MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
@@ -31,6 +32,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(311e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back(-0.395/MeV2);_imB.push_back( 0.001/MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
@@ -39,6 +41,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(61.4e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back(-0.753/MeV2);_imB.push_back( 0.000/MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
@@ -47,14 +50,16 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(1.77e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
-  // Upsilon(3S)->Upsilon(2S) pi pi
+  // Upsilon(4S)->Upsilon(2S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(68.8e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
@@ -63,6 +68,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(66.2e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back(-0.336/MeV2);_imB.push_back( 0.   /MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
@@ -71,6 +77,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
+  _coupling.push_back(20.6e-6);
   _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
   _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
   _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
@@ -85,6 +92,7 @@ void OniumToOniumPiPiDecayer::doinit() throw(InitException) {
   // check consistency of the vectors
   unsigned int isize=_incoming.size();
   if(_outgoing.size()!=isize||_maxweight.size()!=2*isize||
+     _coupling.size()!=isize||
      _reA     .size()!=isize||_imA.size()      !=isize||
      _reB     .size()!=isize||_imB.size()      !=isize||
      _reC     .size()!=isize||_imC.size()      !=isize)
@@ -203,6 +211,12 @@ void OniumToOniumPiPiDecayer::Init() {
      &OniumToOniumPiPiDecayer::_maxweight, -1, 1.0, 0.0, 10000.0,
      false, false, Interface::limited);
 
+  static ParVector<OniumToOniumPiPiDecayer,double> interfaceCoupling
+    ("Coupling",
+     "The overall coupling for the decay",
+     &OniumToOniumPiPiDecayer::_coupling, -1, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
   static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReA
     ("ReA",
      "The real part of the A coupling",
@@ -294,14 +308,24 @@ double OniumToOniumPiPiDecayer::me2(bool vertex, const int,
       complex<Energy2> dotb = 
 	(vin[ix]*decay[1]->momentum())*(vout[iy]*decay[2]->momentum())+
 	(vin[ix]*decay[2]->momentum())*(vout[iy]*decay[1]->momentum());
-      newME(ix,iy,0,0)= A*dota*(q2-2.*mpi2)
-	+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
-	+C*dotb;
+      newME(ix,iy,0,0)= _coupling[imode()/2]*
+	(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
+	 +C*dotb);
     }
   }
+  // matrix element
   ME(newME);
+  double output=newME.contract(rhoin).real();
+  if(imode()%2==1) output*=0.5;
+  // test of the matrix element
+//   Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();
+//   Energy2 s2=(decay[0]->momentum()+decay[2]->momentum()).m2();
+//   Energy2 s3=(decay[1]->momentum()+decay[0]->momentum()).m2();
+//   double test=threeBodyMatrixElement(imode(),sqr(inpart.mass()),
+// 				     s3,s2,s1,decay[0]->mass(),
+// 				     decay[1]->mass(),decay[2]->mass());
   // return the answer
-  return newME.contract(rhoin).real();
+  return output;
 }
 
 // output the setup information for the particle database
@@ -319,6 +343,8 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 	     << _outgoing[ix] << "\n";
       output << "set " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
+      output << "set " << fullName() << ":Coupling " << ix << " " 
+	     << _coupling[ix] << "\n";
       output << "set " << fullName() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
       output << "set " << fullName() << ":ImA " << ix << " " 
@@ -339,6 +365,8 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 	     << _outgoing[ix] << "\n";
       output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
+      output << "insert " << fullName() << ":Coupling " << ix << " " 
+	     << _coupling[ix] << "\n";
       output << "insert " << fullName() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
       output << "insert " << fullName() << ":ImA " << ix << " " 
@@ -356,7 +384,8 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
-WidthCalculatorBasePtr OniumToOniumPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
+WidthCalculatorBasePtr OniumToOniumPiPiDecayer::
+threeBodyMEIntegrator(const DecayMode & dm) const {
   int imode(-1);
   long idin(dm.parent()->id());
   unsigned int npip(0),npim(0),npi0(0);
@@ -379,21 +408,28 @@ WidthCalculatorBasePtr OniumToOniumPiPiDecayer::threeBodyMEIntegrator(const Deca
   // construct the integrator
   vector<double> inweights(1,1.);
   Energy scale=getParticleData(_incoming[ix-1])->mass();
+  Energy m1=getParticleData(_outgoing[ix-1])->mass();
   Energy mpi = npi0==2 ? getParticleData(ParticleID::pi0)->mass() :
     getParticleData(ParticleID::piplus)->mass();
-  vector<int> intype(3);
+  vector<int> intype(1,3);
   vector<Energy> inmass (1,scale);
   vector<Energy> inwidth(1,scale);
   vector<double> inpow(1,0.0);
-//   return new_ptr(ThreeBodyAllOnCalculator<OniumToOniumPiPiDecayer>
-// 		 (inweights,intype,inmass,inwidth,inpow,
-// 		  *this,imode,scale,mpi,mpi));
-  return WidthCalculatorBasePtr();
+  return new_ptr(ThreeBodyAllOnCalculator<OniumToOniumPiPiDecayer>
+		 (inweights,intype,inmass,inwidth,inpow,
+		  *this,imode,m1,mpi,mpi));
 }
 
 double OniumToOniumPiPiDecayer::
-threeBodyMatrixElement(const int , const Energy2 ,
-		       const  Energy2 , const Energy2 , const Energy2 , const 
-		       Energy , const Energy , const Energy ) const {
-  return 0.;
+threeBodyMatrixElement(const int imode, const Energy2 q2,
+		       const  Energy2 s3, const Energy2 s2, const Energy2 s1, 
+		       const Energy m1, const Energy m2, const Energy m3) const {
+  Energy q=sqrt(q2);
+  Energy e2 = 0.5*(q2+sqr(m2)-s2)/q;
+  Energy e3 = 0.5*(q2+sqr(m3)-s3)/q;
+  Complex amp = _cA[imode/2]*(s1-sqr(m2)-sqr(m3))+_cB[imode/2]*e2*e3;
+  Energy2 dot = 0.5*(q2+sqr(m1)-s1);
+  double output=(2.+sqr(dot/q/m1))*real(amp*conj(amp))*sqr(_coupling[imode/2])/3.;
+  if(imode%2==1) output*=0.5;
+  return output;
 }
