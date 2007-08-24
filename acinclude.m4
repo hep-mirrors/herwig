@@ -402,10 +402,10 @@ AC_ARG_ENABLE(debug,
         )
 AC_MSG_RESULT([$enable_debug])
 
-if test "x$enable_debug" != "xno"; then
-	debugflags="-g"
-else
+if test "x$enable_debug" = "xno"; then
 	AM_CPPFLAGS="$AM_CPPFLAGS -DNDEBUG"
+else
+	debugflags="-g"
 fi
 
 dnl -Wfloat-equal -fvisibility-inlines-hidden -Wctor-dtor-privacy -Weffc++
