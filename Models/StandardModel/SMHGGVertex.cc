@@ -7,6 +7,7 @@
 #include "SMHGGVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -14,17 +15,16 @@ namespace Herwig {
 using namespace ThePEG;
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM 
-     << ounit(_mw,GeV) 
-     << _sw << _minloop << _maxloop;
+  os << _theSM << ounit(_mw,GeV) << massopt 
+     << _minloop << _maxloop << _CoefRepresentation;
 }
 
 void SMHGGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM 
-     >> iunit(_mw,GeV) 
-     >> _sw >> _minloop >> _maxloop;
-  _couplast =Complex(0.);
+  is >> _theSM >> iunit(_mw,GeV) >> massopt 
+     >> _minloop >> _maxloop >> _CoefRepresentation;
+  _couplast = Complex(0.);
   _q2last = 0.*GeV2;
+  setCoefScheme(_CoefRepresentation);
 }
 
 ClassDescription<SMHGGVertex> SMHGGVertex::initSMHGGVertex;
@@ -46,41 +46,141 @@ void SMHGGVertex::Init() {
      "The maximum flavour of the quarks to include in the loops",
      &SMHGGVertex::_maxloop, 6, 1, 6,
      false, false, Interface::limited);
+
+  static Switch<SMHGGVertex,unsigned int> interfaceMassOption
+    ("LoopMassScheme",
+     "Switch for the treatment of the masses in the loops ",
+     &SMHGGVertex::massopt, 1, false, false);
+  static SwitchOption interfaceHeavyMass
+    (interfaceMassOption,
+     "PoleMasses",
+     "The loop is calculcated with the pole quark masses",
+     1);
+  static SwitchOption interfaceNormalMass
+    (interfaceMassOption,
+     "RunningMasses",
+     "running quark masses are taken in the loop",
+     2);
+
+  static Switch<SMHGGVertex,unsigned int> interfaceScheme
+    ("SMCoefficientScheme",
+     "Which scheme for the tensor coefficients is applied",
+     &SMHGGVertex::_CoefRepresentation, 1, false, false);
+  static SwitchOption interfaceSchemeSimplified
+    (interfaceScheme,
+     "Simplified",
+     "Represection suitable for the simplified the H-g-g and H-gamma-gamma vertices",
+     1);
+  static SwitchOption interfaceSchemeGeneral
+    (interfaceScheme,
+     "General",
+     "Represection suitable for the Passarino-Veltman tensor reduction scheme",
+     2);
 }
-  
+
 void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2, tcPDPtr part3) {
-  int delta = _maxloop - _minloop;
-  if (0>delta) {
-    _maxloop=_maxloop-delta;
-    _minloop=_minloop+delta;
-    delta*=-1;
+  if (part1->id() != ParticleID::h0 && 
+      part2->id() != ParticleID::g &&
+      part3->id() != ParticleID::g ) {
+    throw HelicityConsistencyError() 
+      << "SMHGGVertex::setCoupling() - The particle content of this vertex "
+      << "is incorrect: " << part1->id() << " " << part2->id() << " " << part3->id() 
+      << Exception::warning;
+    setNorm(0.);
+    return;
   }
-  ++delta;
 
-  type.resize(delta,PDT::SpinUnknown);
-  masses.resize(delta,0.*GeV);
-  left.resize(delta,0.);
-  right.resize(delta,0.);
-  for (int i = 0; i < delta; ++i) {
-    tcPDPtr q = getParticleData(_minloop+i);
-    type[i] = PDT::Spin1Half;
-    masses[i] = q->mass();
-    left[i] = q->mass()/_mw;
+  unsigned int Qminloop = _minloop;
+  unsigned int Qmaxloop = _maxloop;
+  if (_maxloop < _minloop) {
+    Qmaxloop=_minloop;
+    Qminloop=_maxloop;
   }
-  right=left;
 
-  if(q2 != _q2last) {
-    double g = sqrt(4.*Constants::pi*_theSM->alphaEM(q2)/_theSM->sin2ThetaW());
-    double gs2 = 4.*Constants::pi*_theSM->alphaS(q2);
-    _couplast = Complex(UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi));
-    _q2last = q2;
+  switch (_CoefRepresentation) {
+    case 1: {
+      if(q2 != _q2last) {
+        double g = sqrt(4.*Constants::pi*_theSM->alphaEM(q2)/_theSM->sin2ThetaW());
+        double gs2 = 4.*Constants::pi*_theSM->alphaS(q2);
+        _couplast = UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi);
+        _q2last = q2;
+      }
+      setNorm(_couplast);
+
+      Complex loop(0.);
+      for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
+        tcPDPtr qrk = getParticleData(i);
+        Energy mass = qrk->mass();
+        if (2 == massopt) {
+          mass = _theSM->mass(q2,qrk);
+        }
+        loop += Af(sqr(mass)/q2);
+      }
+      a00(loop);
+      a11(0.0);
+      a12(0.0);
+      a21(-loop);
+      a22(0.0);
+      aEp(0.0);
+      break;}
+    case 2: {
+      if (q2 != _q2last) {
+        double g = sqrt(4.*Constants::pi*_theSM->alphaEM(q2)/_theSM->sin2ThetaW());
+        double gs2 = 4.*Constants::pi*_theSM->alphaS(q2);
+        _couplast = gs2*g/Constants::pi/sqrt(Constants::pi/2.);
+      }
+      setNorm(_couplast);
+
+      unsigned int delta = Qmaxloop - Qminloop + 1;
+      type.resize(delta,PDT::SpinUnknown);
+      masses.resize(delta,0.*GeV);
+      for (unsigned int i = 0; i < delta; ++i) {
+        tcPDPtr q = getParticleData(_minloop+i);
+        type[i] = PDT::Spin1Half;
+        masses[i] = q->mass();
+        if (2 == massopt) {
+          masses[i] = _theSM->mass(q2,q);
+        }
+        couplings.push_back(make_pair(masses[i]/_mw, masses[i]/_mw));
+      }
+      setNParticles(delta);
+      SVVLoopVertex::setCoupling(q2, part1, part2, part3);
+      break;}
   }
-  setNorm(_couplast);
 
-  //calculate tensor coefficients
-//  SVVLoopVertex::setCoupling(q2,part1,part2,part3);
-  SimpleSVVLoopVertex::setCoupling(q2,part1,part2,part3);
+  return;
+}
+
+Complex SMHGGVertex::Af(double tau) const {
+  return tau*(4.- W2(tau)*(1.-4.*tau));
+}
+
+Complex SMHGGVertex::W2(double lambda) const {
+  double pi = Constants::pi;
+
+  if (0.0 == lambda) 
+    return 0.0;
+
+  if (lambda < 0.0) 
+    return 4.*sqr(asinh(0.5*sqrt(-1./lambda)));
+
+  double root(0.5*sqrt(1./lambda));
+  Complex ac(0.);
+  if(root < 1.) {
+    ac = -sqr(asin(root));
+  } else {
+// formulae from NPB297,221
+    double ex = acosh(root);
+    ac = sqr(ex) - 0.25*sqr(pi) - pi*ex*Complex(0.,1.);
+/*
+// formulae from Higgs hunter's guide (gives the same result).
+    double pl = .5 + .5*sqrt(1. - 4.*lambda);
+    double ms = .5 - .5*sqrt(1. - 4.*lambda);
+    double lg = 0.5*log(pl/ms);
+    ac = sqr(lg) - 0.25*sqr(pi) - pi*lg*Complex(0.,1.);
+*/
+  }
+  return 4.*ac;
 }
 
 }
- 

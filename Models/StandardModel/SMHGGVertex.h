@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/Models/General/SVVLoopVertex.h"
-#include "Herwig++/Models/General/SimpleSVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "SMHGGVertex.fh"
@@ -15,15 +14,13 @@ namespace Herwig {
 using namespace ThePEG;
 
   /**
-   * The <code>SMHGGVertex</code> class implements the
-   * setCoupling member for the Standard Model Higgs to  
-   * gluon, gluon decay mode.
+   * The <code>SMHGGVertex</code> class implements the 
+   * setCoupling member for the Standard Model effective 
+   * vertex Higgs-gluon-gluon. 
    */
-//class SMHGGVertex: public SVVLoopVertex {
-class SMHGGVertex: public SimpleSVVLoopVertex {
+class SMHGGVertex: public SVVLoopVertex {
   
 public:
-  
   /** @name Standard constructors and destructors. */
   //@{
   /**
@@ -31,9 +28,7 @@ public:
    */
   inline SMHGGVertex();
   //@}
-  
-public:
-  
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -41,7 +36,7 @@ public:
    * @param os the persistent output stream written to.
    */
   void persistentOutput(PersistentOStream & os) const;
-  
+
   /**
    * Function used to read in object persistently.
    * @param is the persistent input stream read from.
@@ -49,7 +44,7 @@ public:
    */
   void persistentInput(PersistentIStream & is, int version);
   //@}
-  
+
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -57,7 +52,7 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-  
+
   /** 
    * Calculate couplings
    *@param q2 Scale at which to evaluate coupling
@@ -65,11 +60,9 @@ public:
    *@param part2 ParticleData pointer to first particle
    *@param part3 ParticleData pointer to first particle
    */
-  virtual void setCoupling (Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-			   tcPDPtr part3);
-  
+  virtual void setCoupling (Energy2 q2, tcPDPtr part1, tcPDPtr part2, tcPDPtr part3);
+
 protected:
-  
   /** @name Clone Methods. */
   //@{
   /**
@@ -77,73 +70,91 @@ protected:
    * @return a pointer to the new object.
    */
   inline virtual IBPtr clone() const;
-  
+
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
   inline virtual IBPtr fullclone() const;
   //@}
-  
-protected:
-  
+
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-  
+
 private:
-  
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
   static ClassDescription<SMHGGVertex> initSMHGGVertex;
-  
+
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SMHGGVertex & operator=(const SMHGGVertex &);
-  
+
   /**
-   *Storage of couplings
+   * Storage of couplings
    */
   //@{
   /**
-   *Last value of the coupling calculated
+   * Last value of the coupling calculated
    */
   Complex _couplast;
-  
+
   /**
-   *The scale \f$q^2\f$ at which coupling was last evaluated
+   * The scale \f$q^2\f$ at which coupling was last evaluated
    */
   Energy2 _q2last;
   //@}
-  
+
   /**
-   *Pointer to Standard Model object
+   * Pointer to Standard Model object
    */
   tcHwSMPtr _theSM;
-  
+
   /**
-   *Mass of W boson for higgs coupling
+   * Mass of W-boson for higgs coupling
    */
   Energy _mw;
-  
+
   /**
-   *Storage of \f$\sin\theta_W\f$
+   * define quark mass scheme (fixed/running)
    */
-  double _sw;
-  
+  unsigned int massopt;
+
   /**
-   * Option to turn on b in quark loop
+   * The minimum flavour number in quark loops
    */
-//  int _qopt;
   unsigned int _minloop;
+  
+  /**
+   * The maximum flavour number in quark loops
+   */
   unsigned int _maxloop;
+
+  /**
+   * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Af(double labmda) const;
+
+  /**
+   * Loop calculations: W2 function (see details in NPB297,221)
+   */
+  Complex W2(double lambda) const;
+
+  /**
+   * Switch between two representations of coefficients (_a00,_a11,_a12,_a21,_a22,_aEp):
+   * suitable for the simplified H-g-g and H-gamma-gamma vertices and 
+   * suitable for the Passarino-Veltman tensor reduction scheme
+   */
+  unsigned int _CoefRepresentation;
+
 };
 
 }
@@ -161,7 +172,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SMHGGVertex,1> {
   /** Typedef of the first base class of SMHGGVertex. */
-  typedef Herwig::SimpleSVVLoopVertex NthBase;
+  typedef Herwig::SVVLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

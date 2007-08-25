@@ -100,15 +100,10 @@ protected:
   vector<PDT::Spin> type;
   
   /**
-   * Vector of left couplings
+   * The left and right couplings for a fermion loop 
    */
-  vector<double> left;
-  
-  /**
-   * Vector of right couplings
-   */
-  vector<double> right;
-  
+  vector<pair<Complex, Complex> > couplings;
+
   /**
    * The number of particles in the loop 
    */
@@ -158,8 +153,6 @@ struct ClassTraits<Herwig::SimpleSVVLoopVertex>
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SimpleSVVLoopVertex"; }
 };
-
-/** @endcond */
 
 }
  
