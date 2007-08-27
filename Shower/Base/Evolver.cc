@@ -302,7 +302,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance);
 
     // check whether emission was harder than largest pt of hard subprocess
-    if (hardVetoIS() && fb.kinematics 
+    if (hardVetoFS() && fb.kinematics 
 	&& fb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
       particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
@@ -370,7 +370,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
 						    _initialenhance,_beam);
 
     // check whether emission was harder than largest pt of hard subprocess
-    if (hardVetoFS() && bb.kinematics 
+    if (hardVetoIS() && bb.kinematics 
 	&& bb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
       particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
