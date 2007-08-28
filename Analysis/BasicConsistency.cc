@@ -29,45 +29,76 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
-    if(abs((*it)->id()) < 9&&_checkquark) {
+    if (_checkquark && (*it)->coloured()) {
       cerr << "Had quarks in final state in event " 
-	   << event->number()  << '\n';
+	   << event->number()  
+	   << '\n';
       generator()->log() << "Had quarks in final state in event " 
-			 << event->number()  << '\n'
+			 << event->number()  
+			 << '\n'
 			 << *event;
     }
     else if((**it).id()==ExtraParticleID::Cluster)
       {
 	cerr << "Had clusters in final state in event " 
-	     << event->number()  << '\n';
+	     << event->number()  
+	     << '\n';
 	generator()->log() << "Had clusters in final state in event " 
-			   << event->number()  << '\n'
+			   << event->number()  
+			   << '\n'
 			   << *event;
       }
     charge += (*it)->dataPtr()->iCharge();
     ptotal += (*it)->momentum();
   }
   
-  if (charge != 0 && _checkcharge ) {
-    cerr << "\nCharge imbalance by " << charge 
-	 << "in event " << event->number()  << '\n';// << *event;
-    generator()->log() << "Charge imbalance by " << charge 
-		       << "in event " << event->number()  << '\n' 
+  if ( _checkcharge && charge != 0 ) {
+    cerr << "\nCharge imbalance by " 
+	 << charge 
+	 << "in event " 
+	 << event->number()  
+	 << '\n';
+    generator()->log() << "Charge imbalance by " 
+		       << charge 
+		       << "in event " 
+		       << event->number()  
+		       << '\n' 
 		       << *event;
   }
-  if (ptotal.mag() > 5.*MeV || abs(ptotal.t()) > 5.*MeV) {
+
+  Energy mag = ptotal.mag();
+  Energy ee  = ptotal.e();
+
+  if (isnan(mag/MeV)) {
+    cerr << "\nMomentum is 'nan'; " << ptotal/GeV 
+	 << " GeV in event " << event->number() << '\n';
+    generator()->log() <<"\nMomentum is 'nan'; " << ptotal/GeV 
+		       << " GeV in event " << event->number() << '\n' 
+		       << *event;
+  }
+
+  if (mag > 5.*MeV || abs(ee) > 5.*MeV) {
     cerr << "\nMomentum imbalance by " << ptotal/GeV 
-	 << " GeV in event " << event->number() << '\n';// << *event;
+	 << " GeV in event " << event->number() << '\n';
     generator()->log() <<"\nMomentum imbalance by " << ptotal/GeV 
 		       << " GeV in event " << event->number() << '\n' 
 		       << *event;
   }
   
-  if (ptotal.mag() > _epsmom)
-    _epsmom = ptotal.mag();
+  if (mag > _epsmom)
+    _epsmom = mag;
 
-  if (abs(ptotal.t()) > _epsmom)
-    _epsmom=abs(ptotal.t());
+  if (abs(ee) > _epsmom)
+    _epsmom = abs(ee);
+
+  if (abs(ptotal.x()) > _epsmom)
+    _epsmom = abs(ptotal.x());
+
+  if (abs(ptotal.y()) > _epsmom)
+    _epsmom = abs(ptotal.y());
+
+  if (abs(ptotal.z()) > _epsmom)
+    _epsmom = abs(ptotal.z());
 
 }
 
