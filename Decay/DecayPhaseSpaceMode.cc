@@ -459,7 +459,7 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
   // set masses of stable particles and limits 
   for(unsigned int ix=1;ix<_extpart.size();++ix) {
     // get the mass of the particle if can't use weight
-    if(!_massgen[ix]) {
+    if(!_massgen[ix] || _extpart[ix]->stable()) {
       mass.push_back(_extpart[ix]->generateMass());
       mlow+=mass[ix];
     }

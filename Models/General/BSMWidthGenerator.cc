@@ -44,9 +44,15 @@ Energy BSMWidthGenerator::partial2BodyWidth(int iloc, Energy m0,
   if( m0 < (m1 + m2) ) return Energy();
   //need pointers to particles involved
   tcDMPtr dm = theModes[iloc].first;
-  assert(dm->products().size() == 2);
-  GeneralTwoBodyDecayer::PMPair p0 = make_pair(dm->parent(), m0);
-  GeneralTwoBodyDecayer::PMPair p1 = make_pair(dm->orderedProducts()[0], m1);
-  GeneralTwoBodyDecayer::PMPair p2 = make_pair(dm->orderedProducts()[1], m2);
-  return theModes[iloc].second->partialWidth(p0, p1, p2);
+  ParticleMSet::const_iterator pit = dm->products().begin();
+  tcPDPtr parta = *pit;
+  ++pit;
+  tcPDPtr partb = *pit;
+  int dummya(0);
+  double dummyb(0.);
+  if( !theModes[iloc].second->twoBodyMEcode(*dm, dummya, dummyb) ) 
+    swap(parta, partb);
+  return theModes[iloc].second->partialWidth(make_pair(dm->parent(), m0), 
+					     make_pair(parta, m1),
+					     make_pair(partb, m2));
 }

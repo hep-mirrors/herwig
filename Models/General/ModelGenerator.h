@@ -131,6 +131,11 @@ private:
    * Pointer to the ResonantProcessConstructor
    */
   RPConstructorPtr _theRPConstructor;
+
+  /**
+   * The particles to create MassGenerator and WidthGenerators  
+   */
+  PDVector _theOffshell;
 };
 
 }
@@ -156,10 +161,6 @@ struct ClassTraits<Herwig::ModelGenerator>
   : public ClassTraitsBase<Herwig::ModelGenerator> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ModelGenerator"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the ModelGenerator class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */

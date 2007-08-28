@@ -249,11 +249,11 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	part1=*pit;++pit;
 	part2=*pit;
 	// mass generators
-	if(part1->massGenerator())
+	if( part1->stable() || part1->massGenerator())
 	  massgen1=dynamic_ptr_cast<tGenericMassGeneratorPtr>(part1->massGenerator());
 	else
 	  massgen1=tGenericMassGeneratorPtr();
-	if(part2->massGenerator())
+	if(part2->stable() || part2->massGenerator())
 	  massgen2=dynamic_ptr_cast<tGenericMassGeneratorPtr>(part2->massGenerator());
 	else
 	  massgen2=tGenericMassGeneratorPtr();
