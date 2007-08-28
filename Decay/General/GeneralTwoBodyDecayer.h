@@ -71,6 +71,19 @@ public:
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
 			      PMPair outb) const = 0;
+
+  /**
+   * Specify the \f$1\to2\f$ matrix element to be used in the running width 
+   * calculation.
+   * @param dm The DecayMode
+   * @param mecode The code for the matrix element as described
+   *               in the GenericWidthGenerator class.
+   * @param coupling The coupling for the matrix element.
+   * @return True if the the order of the particles in the 
+   * decayer is the same as the DecayMode tag.
+   */
+  virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
+			     double & coupling) const;
   //@}
 
 protected:
