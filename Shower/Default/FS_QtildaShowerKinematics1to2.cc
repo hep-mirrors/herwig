@@ -74,10 +74,11 @@ reconstructParent(const tShowerParticlePtr theParent,
 }
 
 void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
-					       unsigned int iopt) const {
+						    unsigned int iopt, 
+						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = theLast->data().constituentMass(); 
+  Energy theMass = mass > 0.*GeV  ?  mass : theLast->data().constituentMass(); 
   theLast->showerParameters()[1]=
     (sqr(theMass) + sqr(theLast->showerVariables()[2]) 
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
