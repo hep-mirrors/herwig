@@ -315,10 +315,10 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
      q2b = (beta == 0) ? 0.0 : 1.0;
    }
    else {
-     q1a = (*theMix[1])(0, alpha);
-     q1b = (*theMix[1])(0, beta);
-     q2a = (*theMix[1])(1, alpha);
-     q2b = (*theMix[1])(1, beta);
+     q1a = (*theMix[1])(alpha, 0);
+     q1b = (*theMix[1])(beta, 0);
+     q2a = (*theMix[1])(alpha, 1);
+     q2b = (*theMix[1])(beta, 1);
    }
    Complex fbrac = (q1a*q1b*(0.5 + factb) - factb*q2a*q2b);
    Complex sbrac = (q1a*q1b + q2a*q2b);
@@ -359,10 +359,10 @@ void SSHSFSFVertex::upSF(long higgs, long smID,
     q2b = (beta == 0) ? 0.0 : 1.0;
   }
   else {
-    q1a = (*theMix[2])(0, alpha);
-    q1b = (*theMix[2])(0, beta);
-    q2a = (*theMix[2])(1, alpha);
-    q2b = (*theMix[2])(1, beta);
+    q1a = (*theMix[2])(alpha, 0);
+    q1b = (*theMix[2])(beta, 0);
+    q2a = (*theMix[2])(alpha, 1);
+    q2b = (*theMix[2])(beta, 1);
   }
   Complex fbrac = (q1a*q1b*(0.5 - factb) - factb*q2a*q2b);
   Complex sbrac = (q1a*q1b + q2a*q2b);
@@ -410,10 +410,10 @@ void SSHSFSFVertex::leptonSF(long higgs, long smID,
      l2b = (beta == 0) ? 0.0 : 1.0;
    }
    else {
-     l1a = (*theMix[2])(0, alpha);
-     l1b = (*theMix[2])(0, beta);
-     l2a = (*theMix[2])(1, alpha);
-     l2b = (*theMix[2])(1, beta);
+     l1a = (*theMix[2])(alpha, 0);
+     l1b = (*theMix[2])(beta, 0);
+     l2a = (*theMix[2])(alpha, 1);
+     l2b = (*theMix[2])(beta, 1);
    }
    Complex fbrac = (l1a*l1b*(0.5 - factb) + factb*l2a*l2b);
    Complex sbrac = (l1a*l1b + l2a*l2b);
@@ -451,8 +451,8 @@ void SSHSFSFVertex::chargedHiggs(long id1, long id2) {
     Complex l1b = (beta == 0) ? 1.0 : 0.0;
     Complex l2b = (beta == 0) ? 0.0 : 1.0;
     if( smdID == 15 ) {
-      l1b = (*theMix[2])(0, beta);
-      l2b = (*theMix[2])(1, beta);
+      l1b = (*theMix[2])(beta, 0);
+      l2b = (*theMix[2])(beta, 1);
     }
     theCoupLast = ( l1b*(mfd*mfd*theTanB - facta) 
 		    + l2b*mfd*(theTriC[(smdID + 1)/2]*theTanB + theMu)
@@ -473,7 +473,7 @@ void SSHSFSFVertex::chargedHiggs(long id1, long id2) {
     q2a = (alpha == 0) ? 0.0 : 1.0;
   }
   else {
-    q1a = (*theMix[0])(0, alpha);
+    q1a = (*theMix[0])(alpha, 0);
     q2a = (*theMix[0])(1, alpha);
   }
   if( smdID == 1 || smdID == 3 ) {

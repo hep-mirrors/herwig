@@ -191,8 +191,8 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 	_leftlast = 0.;
 	Complex l1 = lmass*(*_chargU)(chargino,1)/sqrt(2)/_mw/_cb;
 	if(abs(iferm)==16) {
-	  _rightlast = (*_chargU)(chargino,0)*(*_stau)(0,eig)
-	    - l1*(*_stau)(1,eig);
+	  _rightlast = (*_chargU)(chargino,0)*(*_stau)(eig,0)
+	    - l1*(*_stau)(eig,1);
 	}
 	else {
 	  if(eig==0) {
@@ -214,9 +214,9 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 	Complex u1 = massu*(*_chargV)(chargino,1)/sqrt(2)/_mw/_sb;
 	Complex u2 = massd*(*_chargU)(chargino,1)/sqrt(2)/_mw/_cb;
 	if(abs(iferm)==6) {
-	  _leftlast = -conj(u1)*(*_sbottom)(0,eig);
-	  _rightlast = (*_chargU)(chargino,0)*(*_sbottom)(0,eig) 
-	    - u2*(*_sbottom)(1,eig);	  
+	  _leftlast = -conj(u1)*(*_sbottom)(eig,0);
+	  _rightlast = (*_chargU)(chargino,0)*(*_sbottom)(eig,0) 
+	    - u2*(*_sbottom)(eig,1);	  
 	}
 	else {
 	  if(eig==0) {
@@ -236,8 +236,8 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 	Complex d1 = massd*(*_chargU)(chargino,1)/sqrt(2)/_mw/_cb;
 	Complex d2 = massu*(*_chargV)(chargino,1)/sqrt(2)/_mw/_sb;
 	if(abs(iferm)==5) {
-	  _leftlast = -conj(d1)*(*_stop)(0,eig);
-	  _rightlast = (*_chargV)(0,eig) - d2*(*_stop)(1,eig);
+	  _leftlast = -conj(d1)*(*_stop)(eig,0);
+	  _rightlast = (*_chargV)(chargino,0) - d2*(*_stop)(eig,1);
 	}
 	else {
 	  if(eig==0) {

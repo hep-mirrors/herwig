@@ -208,8 +208,8 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	Complex l2 = gE*(n1prime - (_sw*n2prime/_cw));
 	Complex l3 = gE*(n1prime + (n2prime*fact2/_cw/_sw));
 	if(abs(iferm) == 15) {
-	  _leftlast = (conj(l1)*(*_theStau)(0,eig)) + (*_theStau)(1,eig)*conj(l2);
-	  _rightlast = (l1*(*_theStau)(1,eig)) - (*_theStau)(0,eig)*l3;
+	  _leftlast = (conj(l1)*(*_theStau)(eig,0)) + (*_theStau)(eig,1)*conj(l2);
+	  _rightlast = (l1*(*_theStau)(eig,1)) - (*_theStau)(eig,0)*l3;
 	}
 	else {
 	  if(eig == 0) {
@@ -229,9 +229,9 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	Complex u2 = gE*(eu*n1prime + (n2prime*fact3/_sw/_cw)); 
 	Complex u3 = gE*eu*(n1prime - (_sw*n2prime/_cw));
 	if(abs(iferm) == 6) {
-	  _leftlast = (conj(u1)*(*_theStop)(0,eig)) - 
-	    ((*_theStop)(1,eig)*conj(u3));
-	  _rightlast = (u1*(*_theStop)(1,eig)) + ((*_theStop)(0,eig)*u3);
+	  _leftlast = (conj(u1)*(*_theStop)(eig,0)) - 
+	    ((*_theStop)(eig,1)*conj(u3));
+	  _rightlast = (u1*(*_theStop)(eig,1)) + ((*_theStop)(eig,0)*u3);
 	}
 	else {
 	  if(eig == 0) {
@@ -249,9 +249,9 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	Complex d2 = gE*(ed*n1prime - (n2prime*fact4/_sw/_cw));
 	Complex d3 = gE*(ed*n1prime - (ed*_sw*n2prime/_cw) );
 	if(abs(iferm) == 5) {
-	  _leftlast = (conj(d1)*(*_theSbottom)(0,eig)) - 
-	    ((*_theSbottom)(1,eig)*conj(d3));
-	  _rightlast = (d1*(*_theSbottom)(1,eig)) + ((*_theSbottom)(0,eig)*d2);
+	  _leftlast = (conj(d1)*(*_theSbottom)(eig,0)) - 
+	    ((*_theSbottom)(eig,1)*conj(d3));
+	  _rightlast = (d1*(*_theSbottom)(eig,1)) + ((*_theSbottom)(eig,0)*d2);
 	}
 	else {
 	  if(eig == 0) {

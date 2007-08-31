@@ -209,22 +209,22 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       //mixing factors
       Complex m1a(0.), m1b(0.);
       if( sf1 == ParticleID::SUSY_t_1 || sf1 == ParticleID::SUSY_t_2 )
-	m1a = (*_stop)(0, alpha);
+	m1a = (*_stop)(alpha, 0);
       else if( sf1 == ParticleID::SUSY_b_1 || sf1 == ParticleID::SUSY_b_2 )
-	m1a = (*_sbottom)(0, alpha);
+	m1a = (*_sbottom)(alpha, 0);
       else if( sf1 == ParticleID::SUSY_tau_1minus || 
 	       sf1 == ParticleID::SUSY_tau_2minus )
-	m1a = (*_stau)(0, alpha);
+	m1a = (*_stau)(alpha, 0);
       else
 	m1a = (alpha == 0) ? Complex(1.) : Complex(0.);
 
       if( sf2 == ParticleID::SUSY_t_1 || sf2 == ParticleID::SUSY_t_2 )
-	m1b = (*_stop)(0, beta);
+	m1b = (*_stop)(beta, 0);
       else if( sf2 == ParticleID::SUSY_b_1 || sf2 == ParticleID::SUSY_b_2 )
-	m1b = (*_sbottom)(0, beta);
+	m1b = (*_sbottom)(beta, 0);
       else if( sf2 == ParticleID::SUSY_tau_1minus || 
 	       sf2 == ParticleID::SUSY_tau_2minus )
-	m1b = (*_stau)(0, beta);
+	m1b = (*_stau)(beta, 0);
       else
 	m1b = (beta == 0) ? Complex(1.) : Complex(0.);
     
