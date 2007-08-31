@@ -23,3 +23,10 @@ HwEvtGen_la_LIBADD = -L$(EVTGENPATH)/lib  -levtgenlhc
 HwEvtGen_la_LDFLAGS = -R$(EVTGENPATH)/lib -module -version-info 1:0:0
 HwEvtGen_la_CXXFLAGS = $(AM_CXXFLAGS) -Wno-non-virtual-dtor -Wno-unused
 HwEvtGen_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(EVTGENPATH)
+
+pkglib_LTLIBRARIES += HwPOWHEG.la
+HwPOWHEG_la_LDFLAGS = -R$(EVTGENPATH)/lib -module 
+
+HwPOWHEG_la_SOURCES =\
+POWHEGReader.cc POWHEGReader.fh \
+POWHEGReader.h POWHEGReader.icc 
