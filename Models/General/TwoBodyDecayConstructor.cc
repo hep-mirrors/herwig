@@ -283,8 +283,10 @@ createDecayMode(tPDPtr inpart, const PDVector & decays,
 	eg->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
 	eg->preinitInterface(ndm, "OnOff", "set", "1");
-	Energy width = decayer->partialWidth(inpart, children[0], 
-					     children[1]);
+	Energy width = 
+	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
+				make_pair(children[0],children[0]->mass()) , 
+				make_pair(children[1], children[1]->mass()));
 	setBranchingRatio(ndm, width);
       }
       else

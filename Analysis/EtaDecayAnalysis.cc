@@ -138,7 +138,8 @@ void EtaDecayAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _mgammagamma[0]->topdrawOutput(output,true,true,false,false,
+  using namespace HistogramOptions;
+  _mgammagamma[0]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "GG mass in HRP203GG",
 				 "GG         GWGX XGG",
@@ -146,7 +147,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGGX    X  X",
 				 "m0GG1/MeV",
 				 " XGGX    ");
-  _mpi0gamma[0]->topdrawOutput(output,true,true,false,false,
+  _mpi0gamma[0]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "P203G mass in HRP203GG",
 				 "GX XG         GWGX XGG",
@@ -154,7 +155,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX XGX    X  X",
 				 "m0P203G1/MeV",
 				 " XGX XGX    ");
-  _mgammagamma[1]->topdrawOutput(output,true,true,false,false,
+  _mgammagamma[1]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "GG mass in H'RP203GG",
 				 "GG         G WGX XGG",
@@ -162,7 +163,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGGX    X  X",
 				 "m0GG1/MeV",
 				 " XGGX    ");
-  _mpi0gamma[1]->topdrawOutput(output,true,true,false,false,
+  _mpi0gamma[1]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "P203G mass in H'RP203GG",
 				 "GX XG         G WGX XGG",
@@ -170,7 +171,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX XGX    X  X",
 				 "m0P203G1/MeV",
 				 " XGX XGX    ");
-  _mpipgamma[0]->topdrawOutput(output,true,true,false,false,
+  _mpipgamma[0]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "P2+3G mass in HRP2+3P2-3G",
 				 "GX XG         GWGX XGX XG",
@@ -178,7 +179,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX XGX    X  X",
 				 "m0P2+3G1/MeV",
 				 " XGX XGX    ");
-  _mpimgamma[0]->topdrawOutput(output,true,true,false,false,
+  _mpimgamma[0]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "P2-3G mass in HRP2+3P2-3G",
 				 "GX XG         GWGX XGX XG",
@@ -186,7 +187,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX XGX    X  X",
 				 "m0P2-3G1/MeV",
 				 " XGX XGX    ");
-  _photonenergy[0]->topdrawOutput(output,true,true,false,false,
+  _photonenergy[0]->topdrawOutput(output,Frame|Errorbars,
 				  "RED",
 				  "G Energy in HRP2+3P2-3G",
 				  "G           GWGX XGX XG",
@@ -194,7 +195,7 @@ void EtaDecayAnalysis::dofinish() {
 				  "  F F   XGX    X  X",
 				  "E0G1/MeV",
 				  " XGX    ");
-  _mpippim[0]->topdrawOutput(output,true,true,false,false,
+  _mpippim[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P2-3P2+3 mass in HRP2+3P2-3G",
 			     "GX XGX X         GWGX XGX XG",
@@ -202,7 +203,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   0GX XGX X1    X  X",
 			     "m0P2-3P2+31/MeV",
 			     " XGX XGX XX    ");
-  _mpipgamma[1]->topdrawOutput(output,true,true,false,false,
+  _mpipgamma[1]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "P2+3G mass in H'RP2+3P2-3G",
 				 "GX XG         G WGX XGX XG",
@@ -210,7 +211,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX XGX    X  X",
 				 "m0P2+3G1/MeV",
 				 " XGX XGX    ");
-  _mpimgamma[1]->topdrawOutput(output,true,true,false,false,
+  _mpimgamma[1]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "P2-3G mass in H'RP2+3P2-3G",
 				 "GX XG         G WGX XGX XG",
@@ -218,7 +219,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX XGX    X  X",
 				 "m0P2-3G1/MeV",
 				 " XGX XGX    ");
-  _photonenergy[1]->topdrawOutput(output,true,true,false,false,
+  _photonenergy[1]->topdrawOutput(output,Frame|Errorbars,
 				 "RED",
 				 "G Energy in H'RP2+3P2-3G",
 				 "G           G WGX XGX XG",
@@ -226,7 +227,7 @@ void EtaDecayAnalysis::dofinish() {
 				 "  F F   XGX    X  X",
 				 "E0G1/MeV",
 				 " XGX    ");
-  _mpippim[1]->topdrawOutput(output,true,true,false,false,
+  _mpippim[1]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P2-3P2+3 mass in H'RP2+3P2-3G",
 			     "GX XGX X         G WGX XGX XG",
@@ -234,7 +235,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P2-3P2+31/MeV",
 			     " XGX XGX XX    ");
-  _dpi0pi0[0]->topdrawOutput(output,true,true,false,false,
+  _dpi0pi0[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P203 mass in HRP203P203P203",
 			     "GX XGX X         GWGX XGX XGX X",
@@ -242,7 +243,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2031/MeV",
 			     " XGX XGX XX    ");
-  _dpi0pi0[1]->topdrawOutput(output,true,true,false,false,
+  _dpi0pi0[1]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P203 mass in H'RP203P203P203",
 			     "GX XGX X         G WGX XGX XGX X",
@@ -250,7 +251,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2031/MeV",
 			     " XGX XGX XX    ");
-  _dpippim[0]->topdrawOutput(output,true,true,false,false,
+  _dpippim[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P2-3P2+3 mass in HRP2+3P2-3P203",
 			     "GX XGX X         GWGX XGX XGX X",
@@ -258,7 +259,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P2-3P2+31/MeV",
 			     " XGX XGX XX    ");
-  _dpi0pip[0]->topdrawOutput(output,true,true,false,false,
+  _dpi0pip[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P2+3 mass in HRP2+3P2-3P203",
 			     "GX XGX X         GWGX XGX XGX X",
@@ -266,7 +267,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2+31/MeV",
 			     " XGX XGX XX    ");
-  _dpi0pim[0]->topdrawOutput(output,true,true,false,false,
+  _dpi0pim[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P2-3 mass in HRP2+3P2-3P203",
 			     "GX XGX X         GWGX XGX XGX X",
@@ -274,7 +275,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2-31/MeV",
 			     " XGX XGX XX    ");
-  _dpi0pim[1]->topdrawOutput(output,true,true,false,false,
+  _dpi0pim[1]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P2-3 mass in H'RP2+3P2-3P203",
 			     "GX XGX X         G WGX XGX XGX X",
@@ -282,7 +283,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2-31/MeV",
 			     " XGX XGX XX    ");
-  _dpi0pip[1]->topdrawOutput(output,true,true,false,false,
+  _dpi0pip[1]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P2+3 mass in H'RP2+3P2-3P203",
 			     "GX XGX X         G WGX XGX XGX X",
@@ -290,7 +291,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2+31/MeV",
 			     " XGX XGX XX    ");
-  _dpippim[1]->topdrawOutput(output,true,true,false,false,
+  _dpippim[1]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P2-3P2+3 mass in H'RP2+3P2-3P203",
 			     "GX XGX X         G WGX XGX XGX X",
@@ -298,7 +299,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P2-3P2+31/MeV",
 			     " XGX XGX XX    ");
-  _dpippim[2]->topdrawOutput(output,true,true,false,false,
+  _dpippim[2]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P2-3P2+3 mass in H'RP2+3P2-3H",
 			     "GX XGX X         G WGX XGX XG",
@@ -306,7 +307,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P2-3P2+31/MeV",
 			     " XGX XGX XX    ");
-  _dpipeta[0]->topdrawOutput(output,true,true,false,false,
+  _dpipeta[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "HP2+3 mass in H'RP2+3P2-3H",
 			     "GGX X         G WGX XGX XG",
@@ -314,7 +315,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGGX XX    X  X",
 			     "m0HP2+31/MeV",
 			     " XGGX XX    ");
-  _dpimeta[0]->topdrawOutput(output,true,true,false,false,
+  _dpimeta[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "HP2-3 mass in H'RP2+3P2-3H",
 			     "GGX X         G WGX XGX XG",
@@ -322,7 +323,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGGX XX    X  X",
 			     "m0HP2-31/MeV",
 			     " XGGX XX    ");
-  _dpi0pi0[2]->topdrawOutput(output,true,true,false,false,
+  _dpi0pi0[2]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "P203P203 mass in H'RP203P203H",
 			     "GX XGX X         G WGX XGX XG",
@@ -330,7 +331,7 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2031/MeV",
 			     " XGX XGX XX    ");
-  _dpi0eta[0]->topdrawOutput(output,true,true,false,false,
+  _dpi0eta[0]->topdrawOutput(output,Frame|Errorbars,
 			     "RED",
 			     "HP203 mass in H'RP203P203H",
 			     "GGX X         G WGX XGX XG",

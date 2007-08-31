@@ -52,7 +52,8 @@ inline void SingleParticleAnalysis::dofinish() {
   generator()->log() << "The chi squared was " << chisq << " for " << npoint 
 		     << " degrees of freedom for the number of charged particles distribution " << chisq/npoint << "per degree of freedom \n";  
   // output the plots
-  _yT->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _yT->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     "Radidity with respect to the thrust axis compared to DELPHI data",
 		     "                                                                ",
@@ -60,7 +61,7 @@ inline void SingleParticleAnalysis::dofinish() {
 		     "        X X",
 		     "y0T1",
 		     " X X");
-  _yS->topdrawOutput(output,true,true,false,true,
+  _yS->topdrawOutput(output,Frame|Errorbars|Ylog,
 		     "RED",
 		     "Radidity with respect to the sphericity axis"
 		     " compared to DELPHI data",
@@ -70,7 +71,7 @@ inline void SingleParticleAnalysis::dofinish() {
 		     "        X X",
 		     "y0S1",
 		     " X X");
-  _ptinT->topdrawOutput(output,true,true,false,true,
+  _ptinT->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"p0T1 in the plane with respect to the thrust axis"
 			" compared to DELPHI data",
@@ -80,7 +81,7 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X    X",
 			"p0T,in1",
 			" X    X");
-  _ptoutT->topdrawOutput(output,true,true,false,true,
+  _ptoutT->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"p0T1 out of the plane with respect to the thrust axis"
 			" compared to DELPHI data",
@@ -90,7 +91,7 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X     X",
 			"p0T,out1",
 			" X     X");
-  _ptinS->topdrawOutput(output,true,true,false,true,
+  _ptinS->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"p0T1 in the plane with respect to the sphericity axis"
 			" compared to DELPHI data",
@@ -100,7 +101,7 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X    X",
 			"p0T,in1",
 			" X    X");
-  _ptoutS->topdrawOutput(output,true,true,false,true,
+  _ptoutS->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"p0T1 out of the plane with respect to the sphericity axis"
 			" compared to DELPHI data",
@@ -109,7 +110,7 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X     X",
 			"p0T,out1",
 			" X     X");
-  _nch->topdrawOutput(output,true,true,false,true,
+  _nch->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Multiplcity of charged particles compared to OPAL data",
 		      "                                                      ",

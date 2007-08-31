@@ -21,32 +21,32 @@ PScalarVectorVectorDecayer::PScalarVectorVectorDecayer()
   : _incoming(10), _outgoing1(10), _outgoing2(10), _coupling(10), _maxweight(10) {
   // decay eta -> omega gamma
   _incoming[0] = 331; _outgoing1[0] = 223; _outgoing2[0] = 22; 
-  _coupling[0] = 0.1412/GeV; _maxweight[0] = 1.1; 
+  _coupling[0] = 0.1412/GeV; _maxweight[0] = 1.2; 
   // decay pi -> gamma gamma
   _incoming[1] = 111; _outgoing1[1] = 22; _outgoing2[1] = 22; 
-  _coupling[1] = 0.0178/GeV; _maxweight[1] = 1.; 
+  _coupling[1] = 0.0178/GeV; _maxweight[1] = 1.1; 
   // decay eta -> gamma gamma
   _incoming[2] = 221; _outgoing1[2] = 22; _outgoing2[2] = 22; 
-  _coupling[2] = 0.0176/GeV; _maxweight[2] = 1.; 
+  _coupling[2] = 0.0176/GeV; _maxweight[2] = 1.1; 
   // decay eta' -> gamma gamma
   _incoming[3] = 331; _outgoing1[3] = 22; _outgoing2[3] = 22; 
   _coupling[3] = 0.0221/GeV; _maxweight[3] = 1.1; 
   // decay eta_c -> rho rho
   _incoming[4] = 441; _outgoing1[4] = 213; _outgoing2[4] = -213; 
-  _coupling[4] = 0.0494/GeV; _maxweight[4] = 2.5; 
+  _coupling[4] = 0.0525/GeV; _maxweight[4] = 2.7; 
   _incoming[5] = 441; _outgoing1[5] = 113; _outgoing2[5] =  113; 
-  _coupling[5] = 0.0349/GeV; _maxweight[5] = 2.5; 
+  _coupling[5] = 0.0371/GeV; _maxweight[5] = 2.7; 
   // decay eta-c -> phi phi
   _incoming[6] = 441; _outgoing1[6] = 333; _outgoing2[6] = 333; 
-  _coupling[6] = 0.0215/GeV; _maxweight[6] = 6.; 
+  _coupling[6] = 0.0267/GeV; _maxweight[6] = 9.; 
   // decay eta-c -> gamma gamma
   _incoming[7] = 441; _outgoing1[7] = 22; _outgoing2[7] = 22; 
-  _coupling[7] = 0.00531/GeV; _maxweight[7] = 1.; 
+  _coupling[7] = 0.00521/GeV; _maxweight[7] = 1.2; 
   // decay eta_c -> K* K*
   _incoming[8] = 441; _outgoing1[8] = 323; _outgoing2[8] = -323; 
-  _coupling[8] = 0.0242/GeV; _maxweight[8] = 5.; 
+  _coupling[8] = 0.0308/GeV; _maxweight[8] = 5.3; 
   _incoming[9] = 441; _outgoing1[9] = 313; _outgoing2[9] = -313; 
-  _coupling[9] = 0.0242/GeV; _maxweight[9] = 5.; 
+  _coupling[9] = 0.0308/GeV; _maxweight[9] = 5.3; 
   // initial size of the vectors
   _initsize = _incoming.size();
   // intermediates
@@ -224,7 +224,7 @@ void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":SecondOutgoing " << ix << " "
 	     << _outgoing2[ix]  << "\n";
       output << "set " << fullName() << ":Coupling   " << ix << " "
-	     << _coupling[ix]*MeV   << "\n";
+	     << _coupling[ix]*GeV   << "\n";
       output << "set " << fullName() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
@@ -236,7 +236,7 @@ void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":SecondOutgoing " << ix << " "
 	     << _outgoing2[ix]  << "\n";
       output << "insert " << fullName() << ":Coupling   " << ix << " "
-	     << _coupling[ix]*MeV   << "\n";
+	     << _coupling[ix]*GeV   << "\n";
       output << "insert " << fullName() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }

@@ -39,7 +39,9 @@ using namespace ThePEG;
  *  - An alternate choice of what is considered a "neighbour" could be
  *    implemented but was not considered for Herwig++.
  *
- *  @see HadronSelector
+ *  @see HadronSelector 
+ * @see \ref LightClusterDecayerInterfaces "The interfaces"
+ * defined for LightClusterDecayer.
  */ 
 class LightClusterDecayer: public Interfaced {
 

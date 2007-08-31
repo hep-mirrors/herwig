@@ -120,7 +120,8 @@ void OmegaPhi3PionAnalysis::dofinish() {
   string fname = CurrentGenerator::current().filename() + 
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _xhist[0]->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _xhist[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "x distribution in WRP2+3P2-3P203",
 			   "                  GWGX XGX XGX X",
@@ -128,7 +129,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G       X  X",
 			   "x/MeV",
 			   "     ");
-  _yhist[0]->topdrawOutput(output,true,true,false,true,
+  _yhist[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "y distribution in WRP2+3P2-3P203",
 			   "                  GWGX XGX XGX X",
@@ -136,7 +137,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G       X  X",
 			   "y/MeV",
 			   "     ");
-  _mplus[0]->topdrawOutput(output,true,true,false,true,
+  _mplus[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "R2+3 mass in WRP2+3P2-3P203",
 			   "GX X         GWGX XGX XGX X",
@@ -144,7 +145,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G   XGX XX    X  X",
 			   "m0R2+31/MeV",
 			   " XGX XX    ");
-  _mminus[0]->topdrawOutput(output,true,true,false,true,
+  _mminus[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "R2-3 mass in WRP2+3P2-3P203",
 			    "GX X         GWGX XGX XGX X",
@@ -152,7 +153,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			    "  G G   XGX XX    X  X",
 			    "m0R2-31/MeV",
 			    " XGX XX    ");
-  _m0[0]->topdrawOutput(output,true,true,false,true,
+  _m0[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "R203 mass in WRP2+3P2-3P203",
 			    "GX X         GWGX XGX XGX X",
@@ -170,7 +171,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
      output << ounit(_xvalue[0][ix],MeV) << "   " << ounit(_yvalue[0][ix],MeV) << "\n";
    }
    output << "plot\n";
-  _xhist[1]->topdrawOutput(output,true,true,false,true,
+  _xhist[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "x distribution in FRP2+3P2-3P203",
 			   "                  GWGX XGX XGX X",
@@ -178,7 +179,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G       X  X",
 			   "x/MeV",
 			   "     ");
-  _yhist[1]->topdrawOutput(output,true,true,false,true,
+  _yhist[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "y distribution in FRP2+3P2-3P203",
 			   "                  GWGX XGX XGX X",
@@ -186,7 +187,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G       X  X",
 			   "y/MeV",
 			   "     ");
-  _mplus[1]->topdrawOutput(output,true,true,false,true,
+  _mplus[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "R2+3 mass in FRP2+3P2-3P203",
 			   "GX X         GWGX XGX XGX X",
@@ -194,7 +195,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G   XGX XX    X  X",
 			   "m0R2+31/MeV",
 			   " XGX XX    ");
-  _mminus[1]->topdrawOutput(output,true,true,false,true,
+  _mminus[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "R2-3 mass in FRP2+3P2-3P203",
 			    "GX X         GWGX XGX XGX X",
@@ -202,7 +203,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			    "  G G   XGX XX    X  X",
 			    "m0R2-31/MeV",
 			    " XGX XX    ");
-  _m0[1]->topdrawOutput(output,true,true,false,true,
+  _m0[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "R203 mass in FRP2+3P2-3P203",
 			    "GX X         GWGX XGX XGX X",

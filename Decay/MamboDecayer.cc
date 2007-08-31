@@ -105,7 +105,6 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
     rm2tot += mom[i].mass2();
   }
   Energy wb = sqrt( (N*sqr(comEn) - sqr(rmtot))/N/N/(N - 1.) ) - rmtot/N;
-  Energy wmin = 0.5*wb;
   Energy wmax = (2.0/3.0)*wb;
   const Energy tol(1e-12*MeV);
   long double r(0.), sf1(0.);
@@ -338,4 +337,12 @@ void MamboDecayer::colourConnections(const Particle & parent,
     }
   }
   
+}
+
+void MamboDecayer::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the PartonicDecayerBase base class
+  output << "set " << fullName() << ":MaxWeight "  << _maxweight << " \n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

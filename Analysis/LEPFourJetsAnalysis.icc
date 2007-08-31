@@ -42,8 +42,9 @@ inline void LEPFourJetsAnalysis::dofinish() {
   generator()->log() << "The chi squared was " << chisq << " for " << npoint 
 		     << " degrees of freedom for the NR four jet distribution or " 
 		     << chisq/npoint << "per degree of freedom \n";  
+  using namespace HistogramOptions;
   // output the plots
-  _ca34->topdrawOutput(output,true,true,false,true,
+  _ca34->topdrawOutput(output,Frame|Errorbars|Ylog,
 		       "RED",
 		       "cosA0341 to DELPHI data",
 		       "   GX  X               ",
@@ -51,7 +52,7 @@ inline void LEPFourJetsAnalysis::dofinish() {
 		       "          GX  X",
 		       "cosA0341",
 		       "   GX  X");
-  _cchiBZ->topdrawOutput(output,true,true,false,true,
+  _cchiBZ->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "cos|C0BZ1| to DELPHI data",
 			 "    GX  X                ",
@@ -59,7 +60,7 @@ inline void LEPFourJetsAnalysis::dofinish() {
 			 "           GX  X ",
 			 "|cosC0BZ1|",
 			 "    GX  X ");
-  _cphiKSW->topdrawOutput(output,true,true,false,true,
+  _cphiKSW->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "cosF0KSW1 to DELPHI data",
 			 "   FX   X               ",
@@ -67,7 +68,7 @@ inline void LEPFourJetsAnalysis::dofinish() {
 			 "          FX   X",
 			 " cosF0KSW1",
 			 "    FX   X");
-  _cthNR->topdrawOutput(output,true,true,false,true,
+  _cthNR->topdrawOutput(output,Frame|Errorbars|Ylog,
 			 "RED",
 			 "|cosQ0NR1| to DELPHI data",
 			 "    GX  X                ",

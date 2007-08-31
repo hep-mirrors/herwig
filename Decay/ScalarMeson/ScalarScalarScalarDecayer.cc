@@ -16,8 +16,8 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() 
-  : _incoming(73), _outgoing1(73), _outgoing2(73), 
-    _coupling(73), _maxweight(73) {
+  : _incoming(78), _outgoing1(78), _outgoing2(78), 
+    _coupling(78), _maxweight(78) {
   // f_0(980) to pi pi
   _incoming[0] = 9010221; _outgoing1[0] = 111; _outgoing2[0] =  111; 
   _coupling[0] = 1.66*GeV; _maxweight[0] = 1.05; 
@@ -45,9 +45,9 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[9] = 0.886*GeV; _maxweight[9] = 1.1; 
   // f_0(1710) to pi pi
   _incoming[10] = 10331; _outgoing1[10] = 111; _outgoing2[10] = 111; 
-  _coupling[10] = 0.696*GeV; _maxweight[10] = 1.05; 
+  _coupling[10] = 0.503*GeV; _maxweight[10] = 1.05; 
   _incoming[11] = 10331; _outgoing1[11] = 211; _outgoing2[11] = -211; 
-  _coupling[11] = 0.985*GeV; _maxweight[11] = 1.05; 
+  _coupling[11] = 0.711*GeV; _maxweight[11] = 1.05; 
   // f_0(1710) to K K 
   _incoming[12] = 10331; _outgoing1[12] = 321; _outgoing2[12] = -321; 
   _coupling[12] = 2.096*GeV; _maxweight[12] = 1.05; 
@@ -107,31 +107,31 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[34] = 4.000*GeV; _maxweight[34] = 1.05; 
   // D_0* to D pi
   _incoming[35] =  10411; _outgoing1[35] =  411; _outgoing2[35] =  111; 
-  _coupling[35] = 5.408*GeV; _maxweight[35] = 1.05; 
+  _coupling[35] = 5.472*GeV; _maxweight[35] = 1.05; 
   _incoming[36] =  10411; _outgoing1[36] =  421; _outgoing2[36] =  211; 
-  _coupling[36] = 7.623*GeV; _maxweight[36] = 1.05; 
+  _coupling[36] = 7.714*GeV; _maxweight[36] = 1.05; 
   _incoming[37] =  10421; _outgoing1[37] =  421; _outgoing2[37] =  111; 
-  _coupling[37] = 5.408*GeV; _maxweight[37] = 1.05; 
+  _coupling[37] = 5.447*GeV; _maxweight[37] = 1.05; 
   _incoming[38] =  10421; _outgoing1[38] =  411; _outgoing2[38] = -211; 
-  _coupling[38] = 7.623*GeV; _maxweight[38] = 1.05; 
+  _coupling[38] = 7.818*GeV; _maxweight[38] = 1.05; 
   // B_0* to B pi
   _incoming[39] =  10511; _outgoing1[39] =  511; _outgoing2[39] =  111; 
-  _coupling[39] = 9.327*GeV; _maxweight[39] = 1.05; 
+  _coupling[39] = 9.698*GeV; _maxweight[39] = 1.05; 
   _incoming[40] =  10511; _outgoing1[40] =  521; _outgoing2[40] = -211; 
-  _coupling[40] = 13.19*GeV; _maxweight[40] = 1.05; 
+  _coupling[40] = 13.71*GeV; _maxweight[40] = 1.05; 
   _incoming[41] =  10521; _outgoing1[41] =  521; _outgoing2[41] =  111; 
-  _coupling[41] = 9.327*GeV; _maxweight[41] = 1.05; 
+  _coupling[41] = 9.698*GeV; _maxweight[41] = 1.05; 
   _incoming[42] =  10521; _outgoing1[42] =  511; _outgoing2[42] =  211; 
-  _coupling[42] = 13.19*GeV; _maxweight[42] = 1.05; 
+  _coupling[42] = 13.71*GeV; _maxweight[42] = 1.05; 
   // K' to K_0* pi
   _incoming[43] =  100311; _outgoing1[43] =  10311; _outgoing2[43] =  111; 
-  _coupling[43] = 6.822*GeV; _maxweight[43] = 2.; 
+  _coupling[43] = 6.595*GeV; _maxweight[43] = 2.; 
   _incoming[44] =  100311; _outgoing1[44] =  10321; _outgoing2[44] = -211; 
-  _coupling[44] = 9.770*GeV; _maxweight[44] = 2.; 
+  _coupling[44] = 9.445*GeV; _maxweight[44] = 2.; 
   _incoming[45] =  100321; _outgoing1[45] =  10321; _outgoing2[45] =  111; 
-  _coupling[45] = 6.822*GeV; _maxweight[45] = 2.; 
+  _coupling[45] = 6.595*GeV; _maxweight[45] = 2.; 
   _incoming[46] =  100321; _outgoing1[46] =  10311; _outgoing2[46] =  211; 
-  _coupling[46] = 9.770*GeV; _maxweight[46] = 2.; 
+  _coupling[46] = 9.445*GeV; _maxweight[46] = 2.; 
   // D_s0* to D_s pi
   _incoming[47] =  10431; _outgoing1[47] =  431; _outgoing2[47] =  111; 
   _coupling[47] = 0.103*GeV; _maxweight[47] = 1.05; 
@@ -140,22 +140,22 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[48] = 8.314*GeV; _maxweight[48] = 1.05; 
   // eta'' to a_0 pi
   _incoming[49] = 100221; _outgoing1[49] = 9000111; _outgoing2[49] = 111; 
-  _coupling[49] = 0.936*GeV; _maxweight[49] = 2.; 
+  _coupling[49] = 2.057*GeV; _maxweight[49] = 2.; 
   _incoming[50] = 100221; _outgoing1[50] = 9000211; _outgoing2[50] = -211; 
-  _coupling[50] = 0.936*GeV; _maxweight[50] = 2.; 
+  _coupling[50] = 2.057*GeV; _maxweight[50] = 2.; 
   // eta''' to a_0 pi
   _incoming[51] = 9020221; _outgoing1[51] = 9000111; _outgoing2[51] = 111; 
-  _coupling[51] = 1.257*GeV; _maxweight[51] = 2.; 
+  _coupling[51] = 1.470*GeV; _maxweight[51] = 2.; 
   _incoming[52] = 9020221; _outgoing1[52] = 9000211; _outgoing2[52] = -211; 
-  _coupling[52] = 1.257*GeV; _maxweight[52] = 2.; 
+  _coupling[52] = 1.470*GeV; _maxweight[52] = 2.; 
   // eta''' to sigma eta
   _incoming[53] = 9020221; _outgoing1[53] = 221; _outgoing2[53] = 9000221; 
-  _coupling[53] = 3.808*GeV; _maxweight[53] = 2.; 
+  _coupling[53] = 4.051*GeV; _maxweight[53] = 2.; 
   // eta'' to sigma eta
   _incoming[54] = 100221; _outgoing1[54] = 9000221; _outgoing2[54] = 221; 
-  _coupling[54] = 4.828*GeV; _maxweight[54] = 2.; 
+  _coupling[54] = 4.316*GeV; _maxweight[54] = 2.; 
   // chi_0c decays to K K 
-  _incoming[55] = 10441; _outgoing1[55] = 321; _outgoing2[56] = -321; 
+  _incoming[55] = 10441; _outgoing1[55] = 321; _outgoing2[55] = -321; 
   _coupling[55] = 0.104*GeV; _maxweight[55] = 1.05; 
   _incoming[56] = 10441; _outgoing1[56] = 311; _outgoing2[56] = -311; 
   _coupling[56] = 0.104*GeV; _maxweight[56] = 1.05; 
@@ -174,13 +174,13 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[61] = 0.989*GeV; _maxweight[61] = 1.05; 
   // f_0(1500) to sigma sigma
   _incoming[62] = 9030221; _outgoing1[62] = 9000221; _outgoing2[62] = 9000221; 
-  _coupling[62] = 5.902*GeV; _maxweight[62] = 7.; 
+  _coupling[62] = 6.079*GeV; _maxweight[62] = 7.; 
   // f_0(1500) to eta eta
   _incoming[63] = 9030221; _outgoing1[63] = 221; _outgoing2[63] = 221; 
   _coupling[63] = 0.809*GeV; _maxweight[63] = 1.05; 
   // f_0(1500) to eta eta'
   _incoming[64] = 9030221; _outgoing1[64] = 221; _outgoing2[64] = 331; 
-  _coupling[64] = 2.712*GeV; _maxweight[64] = 4.5; 
+  _coupling[64] = 2.844*GeV; _maxweight[64] = 4.5; 
   // f_0(1500) to K K
   _incoming[65] = 9030221; _outgoing1[65] = 321; _outgoing2[65] = -321; 
   _coupling[65] = 0.686*GeV; _maxweight[65] = 1.05; 
@@ -188,18 +188,32 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   _coupling[66] = 0.686*GeV; _maxweight[66] = 1.05; 
   // f_0(1500) to pi' pi
   _incoming[67] = 9030221; _outgoing1[67] = 100111; _outgoing2[67] = 111; 
-  _coupling[67] = 5.027*GeV; _maxweight[67] = 2.1; 
+  _coupling[67] = 2.615*GeV; _maxweight[67] = 2.1; 
   _incoming[68] = 9030221; _outgoing1[68] = 100211;_outgoing2[68] = -211; 
-  _coupling[68] = 5.027*GeV; _maxweight[68] = 2.1;
-  // K_0* to K pi
+  _coupling[68] = 2.615*GeV; _maxweight[68] = 2.1;
+  // kappa to K pi
   _incoming[69] =  9000311; _outgoing1[69] =  311; _outgoing2[69] =  111; 
-  _coupling[69] = 2.837*GeV; _maxweight[69] = 1.05; 
+  _coupling[69] = 3.834*GeV; _maxweight[69] = 1.05; 
   _incoming[70] =  9000311; _outgoing1[70] =  321; _outgoing2[70] = -211; 
-  _coupling[70] = 4.000*GeV; _maxweight[70] = 1.05; 
+  _coupling[70] = 5.406*GeV; _maxweight[70] = 1.05; 
   _incoming[71] =  9000321; _outgoing1[71] =  321; _outgoing2[71] =  111; 
-  _coupling[71] = 2.837*GeV; _maxweight[71] = 1.05; 
+  _coupling[71] = 3.834*GeV; _maxweight[71] = 1.05; 
   _incoming[72] =  9000321; _outgoing1[72] =  311; _outgoing2[72] =  211; 
-  _coupling[72] = 4.000*GeV; _maxweight[72] = 1.05; 
+  _coupling[72] = 5.406*GeV; _maxweight[72] = 1.05; 
+  // chi_0c decays to K*_0 K*_0 
+  _incoming[73] = 10441; _outgoing1[73] = 10321; _outgoing2[73] = -10321; 
+  _coupling[73] = 0.104*GeV; _maxweight[73] = 1.05; 
+  _incoming[74] = 10441; _outgoing1[74] = 10311; _outgoing2[74] = -10311; 
+  _coupling[74] = 0.104*GeV; _maxweight[74] = 1.05; 
+  // B*_s0 decays
+  _incoming[75] = 10531; _outgoing1[75] = 511; _outgoing2[75] = -311; 
+  _coupling[75] = 12.17*GeV; _maxweight[75] = 1.05; 
+  _incoming[76] = 10531; _outgoing1[76] = 521; _outgoing2[76] = -321; 
+  _coupling[76] = 12.17*GeV; _maxweight[76] = 1.05;  
+  // chi_0c decays to f_0 f_0
+  _incoming[77] = 10441; _outgoing1[77] = 9010221; _outgoing2[77] = 9010221; 
+  _coupling[77] = 0.084*GeV; _maxweight[77] = 1.05; 
+
   // initial size
   _initsize = _coupling.size();
   // intermediates

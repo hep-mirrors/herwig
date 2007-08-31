@@ -37,24 +37,25 @@ inline void TTbarAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
-  _pttop.topdrawOutput(outfile,true,false,false,true,"RED","pt t, tbar");
-  _pttbar.topdrawOutput(outfile,false,false,false,true,"BLUE","pt tbar");
-  _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");
-  _ettop.topdrawOutput(outfile,true,false,false,true,"RED","Et t, tbar");
-  _ettbar.topdrawOutput(outfile,false,false,false,true,"BLUE","Et tbar");
-  _etpair.topdrawOutput(outfile,true,false,false,true,"BLACK","Et pair");
-  _etop.topdrawOutput(outfile,true,false,false,true,"RED","E t, tbar");
-  _etbar.topdrawOutput(outfile,false,false,false,true,"BLUE","E tbar");
-  _epair.topdrawOutput(outfile,true,false,false,true,"BLACK","E pair");
-  _raptop.topdrawOutput(outfile,true,false,false,false,"RED","y t, tbar");
-  _raptbar.topdrawOutput(outfile,false,false,false,false,"BLUE","y tbar");
-  _rappair.topdrawOutput(outfile,true,false,false,false,"BLACK","y pair");
-  _phitop.topdrawOutput(outfile,true,false,false,false,"RED","phi t, tbar");
-  _phitbar.topdrawOutput(outfile,false,false,false,false,"BLUE","phi tbar");
-  _deltaphi.topdrawOutput(outfile,true,false,false,false,"BLACK","Delta phi");
-  _mpair.topdrawOutput(outfile,true,false,false,true,"BLACK","M pair");
-  _etsum.topdrawOutput(outfile,true,false,false,true,"BLACK","pt sum");
-  _ptsum.topdrawOutput(outfile,true,false,false,true,"BLACK","Et sum");
+  using namespace HistogramOptions;
+  _pttop.topdrawOutput(outfile,Frame|Ylog,"RED","pt t, tbar");
+  _pttbar.topdrawOutput(outfile,Ylog,"BLUE","pt tbar");
+  _ptpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt pair");
+  _ettop.topdrawOutput(outfile,Frame|Ylog,"RED","Et t, tbar");
+  _ettbar.topdrawOutput(outfile,Ylog,"BLUE","Et tbar");
+  _etpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","Et pair");
+  _etop.topdrawOutput(outfile,Frame|Ylog,"RED","E t, tbar");
+  _etbar.topdrawOutput(outfile,Ylog,"BLUE","E tbar");
+  _epair.topdrawOutput(outfile,Frame|Ylog,"BLACK","E pair");
+  _raptop.topdrawOutput(outfile,Frame,"RED","y t, tbar");
+  _raptbar.topdrawOutput(outfile,None,"BLUE","y tbar");
+  _rappair.topdrawOutput(outfile,Frame,"BLACK","y pair");
+  _phitop.topdrawOutput(outfile,Frame,"RED","phi t, tbar");
+  _phitbar.topdrawOutput(outfile,None,"BLUE","phi tbar");
+  _deltaphi.topdrawOutput(outfile,Frame,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","M pair");
+  _etsum.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt sum");
+  _ptsum.topdrawOutput(outfile,Frame|Ylog,"BLACK","Et sum");
 }
 
 }

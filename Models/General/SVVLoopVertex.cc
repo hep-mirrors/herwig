@@ -218,8 +218,8 @@ void SVVLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
     }
     else {
       throw Helicity::HelicityConsistencyError() 
-	<< "SVVLoopVertex::setCoupling "
-	<< "Incorrect particle in SVV loop."
+	<< "SVVLoopVertex::setCoupling - Incorrect particle in SVV loop. "
+	<< "Spin: " << type[i]
 	<< Exception::warning;
     }
   }

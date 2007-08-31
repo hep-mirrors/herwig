@@ -22,7 +22,8 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theQijdp(4, vector<Complex>(4,0.0)),
 				 theSw(0.0), theSa(0.0), theSb(0.0),
 				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
-				 theLLast(0.0), theRLast(0.0), theq2last() {
+				 theLLast(0.0), theRLast(0.0), theHLast(0),
+				 theID1Last(0), theID2Last(0), theq2last() {
   vector<int> first, second, third;
   int neu[4] = {1000022, 1000023, 1000025, 1000035};
   int chg[2] = {1000024, 1000037};
@@ -71,42 +72,13 @@ void SSGOGOHVertex::doinit() throw(InitException) {
   theSw = sqrt(theMSSM->sin2ThetaW());
   double tw = theSw/sqrt(1. - theSw*theSw);
   double tanb = theMSSM->tanBeta();
-  Energy mu = theMSSM->muParameter();
   theSb = tanb/sqrt(1. + sqr(tanb));
   theCb = sqrt( 1. - sqr(theSb) );
   theSa = sin(theMSSM->higgsMixingAngle());
   theCa = sqrt(1. - sqr(theSa));
-  
   MixingMatrix nmix = *theMSSM->neutralinoMix();
   MixingMatrix umix = *theMSSM->charginoUMix();
   MixingMatrix vmix = *theMSSM->charginoVMix();
-
-  Energy mOne = theMSSM->softMOne();
-  Energy mTwo = theMSSM->softMTwo();
-
-//   for(unsigned int i = 0; i < 4; ++i) {
-//     for(unsigned int j = 0; j < 4; ++j) {
-//       if( i < 2 && j < 2 ) { 
-// 	theRij[i][j] = 
-// 	  ( mTwo*umix(i,0)*vmix(j,0) + mu*umix(i,1)*vmix(j,1))/2./theMw;
-
-// 	theQij[i][j] = umix(i,1)*vmix(j,0)/sqrt(2);
-//       }
-//       if( j < 2 ) {
-// 	theQijLp[i][j] = theCb*( nmix(i, 3)*vmix(j,0) 
-// 				 + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2));
-// 	theQijRp[i][j] = theSb*( nmix(i, 3)*umix(j,0) 
-// 				 - (nmix(i,1) + nmix(i,0)*tw)*umix(j,1)/sqrt(2));
-//       }
-
-//       theRijdp[i][j] = 
-// 	( mTwo*nmix(i,1)*nmix(j,1) + mOne*nmix(i,0)*nmix(j,0)
-// 	  - mu*(nmix(i,2)*nmix(j,3) + nmix(i,3)*nmix(j,2)) )/2./theMw;
-      
-//       theQijdp[i][j] = 0.5*( nmix(i,2)*( nmix(j,1) - theSw*nmix(j,0) )
-// 			     + nmix(j,2)*( nmix(i,1) - theSw*nmix(i,0) ) );
-//     }
-//   }
 
   for(unsigned int i = 0; i < 4; ++i) {
     for(unsigned int j = 0; j < 4; ++j) {

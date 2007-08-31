@@ -128,7 +128,8 @@ inline void VffGammaAnalysis::dofinish() {
       else if(iy==2){titleb = titlea + "tau+ tau-";}
       // number of photons
       titlec = "Photon multiplicity " +titleb;
-      _nphoton[3*ix+iy]->topdrawOutput(output,true,true,false,true,
+      using namespace HistogramOptions;
+      _nphoton[3*ix+iy]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				       "RED",titlec,""
 			    "1/SdS/dN0G1",
 			    "  G G   XGX",
@@ -136,21 +137,21 @@ inline void VffGammaAnalysis::dofinish() {
 			    " XGX");
       // fermion masses
       titlec = "Mass of the charged decay products "+titleb;
-      _masstotal[3*ix+iy]->topdrawOutput(output,true,true,false,true,
+      _masstotal[3*ix+iy]->topdrawOutput(output,Frame|Errorbars|Ylog,
 					  "RED",titlec,""
 					  "1/SdS/dm0l2+3l2-31/GeV2-13",
 					  "  G G   X X X X XX    X  X",
 					  "m0l2+3l2-31",
 					  " X X X X XX");
       // total photon energy
-      _masstotal[3*ix+iy]->topdrawOutput(output,true,true,false,true,
+      _masstotal[3*ix+iy]->topdrawOutput(output,Frame|Errorbars|Ylog,
 					 "RED",titlec,""
 					 "1/SdS/dE0G1/GeV2-13",
 					 "  G G   XGX    X  X",
 					 "E0G1",
 					 " XGX");
       titlec="Single photon energy for all events"+titleb;
-      _esingle[3*ix+iy]->topdrawOutput(output,true,true,false,true,
+      _esingle[3*ix+iy]->topdrawOutput(output,Frame|Errorbars|Ylog,
 					 "RED",titlec,""
 					 "1/SdS/dE0G1/GeV2-13",
 					 "  G G   XGX    X  X",
@@ -158,7 +159,7 @@ inline void VffGammaAnalysis::dofinish() {
 					 " XGX");
 	  // all photon
       titlec="All photon energy for all events"+titleb;
-      _eall[3*ix+iy]->topdrawOutput(output,true,true,false,true,
+      _eall[3*ix+iy]->topdrawOutput(output,Frame|Errorbars|Ylog,
 					 "RED",titlec,""
 					 "1/SdS/dE0G1/GeV2-13",
 					 "  G G   XGX    X  X",

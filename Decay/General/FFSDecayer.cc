@@ -113,28 +113,31 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
-				const PDPtr outb) const {
-  double mu1,mu2;
-  if(outa->iSpin() == PDT::Spin1Half) {
-    mu1 = outa->mass()/inpart->mass();
-    mu2 = outb->mass()/inpart->mass();
-    _theFFSPtr->setCoupling(inpart->mass()*inpart->mass(),inpart,outa,outb,1);
-}
-  else {
-    mu1 = outb->mass()/inpart->mass();
-    mu2 = outa->mass()/inpart->mass();
-    _theFFSPtr->setCoupling(inpart->mass()*inpart->mass(),inpart,outb,outa,1);
+Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
+				PMPair outb) const {
+  double mu1(0.),mu2(0.);
+  if(outa.first->iSpin() == PDT::Spin1Half) {
+    mu1 = outa.second/inpart.second;
+    mu2 = outb.second/inpart.second;
+    _theFFSPtr->setCoupling(sqr(inpart.second), inpart.first,
+			    outa.first, outb.first,1);
   }
-  Complex norm(_theFFSPtr->getNorm()*_theFFSPtr->getNorm());
-  double cl = (_theFFSPtr->getLeft()).real();
-  double cr = (_theFFSPtr->getRight()).real();
-  double me2 = norm.real()*((1.+ mu1*mu1 - mu2*mu2)*(cl*cl + cr*cr) 
-			    + 4.*cl*cr*mu1)/2.;
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				       outb->mass());
+  else {
+    mu1 = outb.second/inpart.second;
+    mu2 = outa.second/inpart.second;
+    _theFFSPtr->setCoupling(sqr(inpart.second), inpart.first,
+			    outb.first, outa.first,1);
+
+  }
+  double c2 = norm(_theFFSPtr->getNorm());
+  Complex cl = _theFFSPtr->getLeft();
+  Complex cr = _theFFSPtr->getRight();
+  double me2 = c2*( (norm(cl) + norm(cr))*(1. + sqr(mu1) - sqr(mu2))
+		    + 2.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
+  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+				       outb.second);
   Energy pWidth = me2*pcm/8./Constants::pi;
-  if(inpart->iColour()==PDT::Colour8) {
+  if(inpart.first->iColour() == PDT::Colour8) {
     pWidth *= 0.5;
   }
   return pWidth;

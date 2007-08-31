@@ -12,11 +12,11 @@
 #include <string.h>
 
 
-//#ifdef HAVE_UNDERSCORE
+/* #ifdef HAVE_UNDERSCORE */
 #define cachelookup cachelookup_
 #define setcachelast setcachelast_
 #define getcachelast getcachelast_
-//#endif
+/* #endif */
 
 
 #ifndef REALSIZE

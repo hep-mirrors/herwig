@@ -16,14 +16,14 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
-  : _coupling(15), _incoming(15), _outgoingV(15), 
-    _outgoingS(15), _maxweight(15) {
+  : _coupling(16), _incoming(16), _outgoingV(16), 
+    _outgoingS(16), _maxweight(16) {
   // decay of the phi to the a_0 and f_0 and a photon
   _incoming[0] = 333; _outgoingV[0] = 22; _outgoingS[0] = 9000111; 
-  _coupling[0] = 0.154/GeV; _maxweight[0] = 17.; 
+  _coupling[0] = 0.238/GeV; _maxweight[0] = 10.; 
   _incoming[1] = 333; _outgoingV[1] = 22; _outgoingS[1] = 9010221; 
-  _coupling[1] = 0.267/GeV; _maxweight[1] = 14.; 
-  // Jpsi decayers
+  _coupling[1] = 0.267/GeV; _maxweight[1] = 15.; 
+  // Jpsi decays
   _incoming[2] = 443; _outgoingV[2] = 22; _outgoingS[2] = 10331; 
   _coupling[2] = 0.00207/GeV; _maxweight[2] = 3.; 
   _incoming[3] = 443; _outgoingV[3] = 223; _outgoingS[3] = 10331; 
@@ -31,29 +31,31 @@ VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer()
   _incoming[4] = 443; _outgoingV[4] = 333; _outgoingS[4] = 10331; 
   _coupling[4] = 0.00127/GeV; _maxweight[4] = 9.; 
   _incoming[5] = 443; _outgoingV[5] = 333; _outgoingS[5] = 9010221; 
-  _coupling[5] = 0.00070/GeV; _maxweight[5] = 12.; 
+  _coupling[5] = 0.00064/GeV; _maxweight[5] = 6.; 
   _incoming[6] = 443; _outgoingV[6] = 223; _outgoingS[6] = 9010221; 
-  _coupling[6] = 0.00048/GeV; _maxweight[6] = 13.; 
+  _coupling[6] = 0.00044/GeV; _maxweight[6] = 7.;
+  _incoming[15] = 443; _outgoingV[15] = 22; _outgoingS[15] = 9030221; 
+  _coupling[15] = 0.00114/GeV; _maxweight[15] = 3.; 
   // upsilon(2s)
   _incoming[7] = 100553; _outgoingV[7] = 22; _outgoingS[7] = 10551; 
-  _coupling[7] = 0.122/GeV; _maxweight[7] = 2.5; 
+  _coupling[7] = 0.105/GeV; _maxweight[7] = 2.; 
   // upsilon(3s)
   _incoming[8] = 200553; _outgoingV[8] = 22; _outgoingS[8] = 110551; 
-  _coupling[8] = 0.174/GeV; _maxweight[8] = 2.5; 
+  _coupling[8] = 0.160/GeV; _maxweight[8] = 2.; 
   // psi2s decays
   _incoming[9] = 100443; _outgoingV[9] = 22; _outgoingS[9] = 10441; 
-  _coupling[9] = 0.229/GeV; _maxweight[9] = 5.; 
+  _coupling[9] = 0.258/GeV; _maxweight[9] = 4.; 
   _incoming[10] = 100443; _outgoingV[10] = 22; _outgoingS[10] = 331; 
-  _coupling[10] = 0.0464/GeV; _maxweight[10] = 2.1; 
+  _coupling[10] = 0.0508/GeV; _maxweight[10] = 2.; 
   _incoming[11] = 100443; _outgoingV[11] = 22; _outgoingS[11] = 10331; 
-  _coupling[11] = 0.000695/GeV; _maxweight[11] = 2.5; 
+  _coupling[11] = 0.000680/GeV; _maxweight[11] = 2.; 
   _incoming[12] = 100443; _outgoingV[12] = 333; _outgoingS[12] = 9010221; 
-  _coupling[12] = 0.000530/GeV; _maxweight[12] = 10.; 
+  _coupling[12] = 0.000509/GeV; _maxweight[12] = 6.; 
   // rho' to sigma rho
   _incoming[13] = 100213; _outgoingV[13] = 213; _outgoingS[13] = 9000221; 
-  _coupling[13] = 0.174/GeV; _maxweight[13] = 2.5; 
+  _coupling[13] = 5.056/GeV; _maxweight[13] = 5.5; 
   _incoming[14] = 100113; _outgoingV[14] = 113; _outgoingS[14] = 9000221; 
-  _coupling[14] = 0.174/GeV; _maxweight[14] = 2.5; 
+  _coupling[14] = 5.056/GeV; _maxweight[14] = 5.5; 
   // initial size of the arrays
   _initsize = _coupling.size();
   // intermediates
@@ -270,7 +272,7 @@ void VectorMesonVectorScalarDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":OutgoingScalar " << ix << " "
 	     << _outgoingS[ix] << "\n";
       output << "set " << fullName() << ":Coupling " << ix << " "
-	     << _coupling[ix]*MeV << "\n";
+	     << _coupling[ix]*GeV << "\n";
       output << "set " << fullName() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
@@ -282,7 +284,7 @@ void VectorMesonVectorScalarDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":OutgoingScalar " << ix << " "
 	     << _outgoingS[ix] << "\n";
       output << "insert " << fullName() << ":Coupling " << ix << " "
-	     << _coupling[ix]*MeV << "\n";
+	     << _coupling[ix]*GeV << "\n";
       output << "insert " << fullName() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }

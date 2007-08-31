@@ -139,7 +139,27 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
   //@}
+
 
 private:
 
@@ -266,7 +286,7 @@ private:
   /**
    * Pointer to the CKM object.
    */
-  Ptr<StandardCKM>::pointer _theCKM;
+  Ptr<StandardCKM>::pointer _ckm;
 
 };
 

@@ -21,8 +21,6 @@ using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::TensorWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
-
-
 using ThePEG::Helicity::SpinfoPtr;
 
 double MEff2ff::me2() const {
@@ -647,11 +645,11 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   hardpro[2] = subp->outgoing()[0]; 
   hardpro[3] = subp->outgoing()[1];
 
-//particle ordering. If q qb initial q = 0, qb = 1
-  if( hardpro[0]->id() < hardpro[1]->id() )
+  //ensure particle ordering is the same as it was when
+  //the diagrams were created
+  if( hardpro[0]->id() != getIncoming().first )
     swap(hardpro[0], hardpro[1]);
-
-  if( hardpro[2]->id() < hardpro[3]->id() )
+  if( hardpro[2]->id() != getOutgoing().first )
     swap(hardpro[2], hardpro[3]);
 
   //pick which process we are doing

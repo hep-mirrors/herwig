@@ -27,24 +27,24 @@ PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer()
   // pi0 -> gamma e+e-
   _incoming[0] = 111;_outgoingV[0] =  22;
   _outgoingf[0] = 11;_outgoinga[0] = -11;
-  _coupling[0] = 0.00761872/GeV;_maxweight[0] = 0.025;
+  _coupling[0] = 0.00761872/GeV;_maxweight[0] = 0.027;
   _includeVMD[0] = 2;_VMDid[0] = 113;
   _VMDmass[0] = 0.7758*GeV;_VMDwidth[0] = 0.1503*GeV;
   // eta -> gamma e+e-/mu+/mu-
   _incoming[1] = 221;_outgoingV[1] =  22;
   _outgoingf[1] = 11;_outgoinga[1] = -11;
-  _coupling[1] = 0.007554164/GeV;_maxweight[1] = 2.5;
+  _coupling[1] = 0.007554164/GeV;_maxweight[1] = 2.8;
   _includeVMD[1] = 2;_VMDid[1] = 113;
   _VMDmass[1] = 0.7758*GeV;_VMDwidth[1] = 0.1503*GeV;
   _incoming[2] = 221;_outgoingV[2] =  22;
   _outgoingf[2] = 13;_outgoinga[2] = -13;
-  _coupling[2] = 0.007554164/GeV;_maxweight[2] = 2.;
+  _coupling[2] = 0.007554164/GeV;_maxweight[2] = 2.1;
   _includeVMD[2] = 2;_VMDid[2] = 113;
   _VMDmass[2] = 0.7758*GeV;_VMDwidth[2] = 0.1503*GeV;
   // eta' -> gamma e+e-/mu+mu-
   _incoming[3] = 331;_outgoingV[3] =  22;
   _outgoingf[3] = 11;_outgoinga[3] = -11;
-  _coupling[3] = 0.0104/GeV;_maxweight[3] = 4.5;
+  _coupling[3] = 0.0104/GeV;_maxweight[3] = 5.2;
   _includeVMD[3] = 2;_VMDid[3] = 113;
   _VMDmass[3] = 0.7758*GeV;_VMDwidth[3] = 0.1503*GeV;
   _incoming[4] = 331;_outgoingV[4] =  22;

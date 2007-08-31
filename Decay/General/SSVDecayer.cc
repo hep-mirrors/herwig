@@ -83,33 +83,28 @@ double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy SSVDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
+Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa, 
+				 PMPair outb) const {
   double mu1sq(0.),mu2sq(0.);
-  Energy2 scale(inpart->mass()*inpart->mass());
-  if(outa->iSpin() == PDT::Spin0) {
-    mu1sq = sqr(outa->mass()/inpart->mass());
-    mu2sq = sqr(outb->mass()/inpart->mass());
-    _theVSSPtr->setCoupling(scale,outb,outa,inpart);
+  if(outa.first->iSpin() == PDT::Spin0) {
+    mu1sq = sqr(outa.second/inpart.second);
+    mu2sq = sqr(outb.second/inpart.second);
+    _theVSSPtr->setCoupling(sqr(inpart.second), outb.first, outa.first,
+			    inpart.first);
   }
   else {
-    mu1sq = sqr(outb->mass()/inpart->mass());
-    mu2sq = sqr(outa->mass()/inpart->mass());
-    _theVSSPtr->setCoupling(scale,outa,outb,inpart);
+    mu1sq = sqr(outa.second/inpart.second);
+    mu2sq = sqr(outb.second/inpart.second);
+    _theVSSPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
+			    inpart.first);
   }
   double me2(0.);
-  if(mu2sq == 0.) {//massless vector
+  if(mu2sq == 0.) 
     me2 = -2.*mu1sq - 2.;
-  }
-  else {
-    me2 = (mu1sq*mu1sq + mu2sq*mu2sq - 2.*(mu2sq*mu1sq) 
-	   - 2.*(mu1sq + mu2sq) + 1.)/mu2sq;
-	   
-  }
-  Complex norm2 = (_theVSSPtr->getNorm()*_theVSSPtr->getNorm());
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
-  Energy output = pcm*me2*norm2.real()/8./Constants::pi;
+  else
+    me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
+  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+				      outb.second);
+  Energy output = pcm*me2*norm(_theVSSPtr->getNorm())/8./Constants::pi;
   return output;
 }

@@ -220,3 +220,27 @@ bool PartonicDecayerBase::duplicateMode(const Particle & parent,
   }
   return found;
 }
+
+void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
+  // header for MySQL
+  if(header) output << "update decayers set parameters=\"";
+  HwDecayerBase::dataBaseOutput(output,false);
+  // parameters
+  output << "set  " << fullName() << ":PartonSplitter " 
+	 << _partonSplitter->fullName() << " \n";
+  output << "set  " << fullName() << ":ClusterFinder " 
+	 << _clusterFinder->fullName() << " \n";
+  output << "set  " << fullName() << ":ColourReconnector " 
+	 << _colourReconnector->fullName() << " \n";
+  output << "set  " << fullName() << ":ClusterFissioner " 
+	 << _clusterFissioner->fullName() << " \n";
+  output << "set  " << fullName() << ":LightClusterDecayer " 
+	 << _lightClusterDecayer->fullName() << " \n";
+  output << "set  " << fullName() << ":ClusterDecayer " 
+	 << _clusterDecayer->fullName() << " \n";
+  output << "set  " << fullName() << ":Exclusive " <<  _exclusive<< " \n";
+  output << "set  " << fullName() << ":Intermediates " << _inter << " \n";
+  output << "set  " << fullName() << ":Partonic_Tries " << _partontries << " \n";
+  // footer for MySQL
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+}

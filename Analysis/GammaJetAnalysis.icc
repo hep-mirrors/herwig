@@ -23,16 +23,18 @@ inline void GammaJetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
-  _Eg.topdrawOutput(outfile,true,false,false,false,"BLACK","Energy of Gamma");
-  _Eg.topdrawOutput(outfile,true,false,false,true,"BLACK","Energy of Gamma");
-  _ptg.topdrawOutput(outfile,true,false,false,false,"BLACK","pt of Gamma");
-  _ptg.topdrawOutput(outfile,true,false,false,true,"BLACK","pt of Gamma");
-  _ptgZoom.topdrawOutput(outfile,true,false,false,false,"BLACK","35<pt/GeV<65 of Gamma");
-  _ptgZoom.topdrawOutput(outfile,true,false,false,true,"BLACK","35<pt/GeV<65 of Gamma");
-  _rapg.topdrawOutput(outfile,true,false,false,false,"BLACK","Rapidity of Gamma");
-  _rapg.topdrawOutput(outfile,true,false,false,true,"BLACK","Rapidity of Gamma");
-  _phig.topdrawOutput(outfile,true,false,false,false,"BLACK","Azimuth of Gamma");
-  _phig.topdrawOutput(outfile,true,false,false,true,"BLACK","Azimuth of Gamma");
+  using namespace HistogramOptions;
+  _Eg.topdrawOutput(outfile,Frame,"BLACK","Energy of Gamma");
+  _Eg.topdrawOutput(outfile,Frame|Ylog,"BLACK","Energy of Gamma");
+  _ptg.topdrawOutput(outfile,Frame,"BLACK","pt of Gamma");
+  _ptg.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt of Gamma");
+  _ptgZoom.topdrawOutput(outfile,Frame,"BLACK","35<pt/GeV<65 of Gamma");
+  _ptgZoom.topdrawOutput(outfile,Frame|Ylog,"BLACK","35<pt/GeV<65 of Gamma");
+  _rapg.topdrawOutput(outfile,Frame,"BLACK","Rapidity of Gamma");
+  _rapg.topdrawOutput(outfile,Frame|Ylog,"BLACK","Rapidity of Gamma");
+  _phig.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Gamma");
+  _phig.topdrawOutput(outfile,Frame|Ylog,"BLACK","Azimuth of Gamma");
+  outfile.close();
 }
 
 }

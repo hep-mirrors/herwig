@@ -25,10 +25,9 @@ using namespace ThePEG;
  *
  *  Note: by default this class does nothing. It can be inherited and overridden
  *  in future hadronization models.
+ * * @see \ref ColourReconnectorInterfaces "The interfaces"
+ * defined for ColourReconnector.
  */
-//class ThePEG::PartialCollisionHandler; // forward declaration
-
-
 class ColourReconnector: public Interfaced {
 
 public:

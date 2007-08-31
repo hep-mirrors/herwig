@@ -80,23 +80,22 @@ double SVVLoopDecayer::me2(bool vertex, const int ,
   return output;
 }
   
-Energy SVVLoopDecayer::partialWidth(const PDPtr inpart,
-				    const PDPtr outa,
-				    const PDPtr outb) const {
-  Lorentz5Momentum in(0.*MeV,0.*MeV,0.*MeV,inpart->mass()),out1,out2;
-  Kinematics::twoBodyDecay(in,outa->mass(),outb->mass(),
+Energy SVVLoopDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				    PMPair outb) const {
+  Lorentz5Momentum in(0.*MeV,0.*MeV,0.*MeV,inpart.second),out1,out2;
+  Kinematics::twoBodyDecay(in,outa.second,outb.second,
 			   Axis(0.,0.,1.),out1,out2);
-    _theSVVPtr->calculateKinematics(in,out1,out2);
-  Energy2 scale(inpart->mass()*inpart->mass());
-  _theSVVPtr->setCoupling(scale,inpart,outa,outb);
+  _theSVVPtr->calculateKinematics(in,out1,out2);
+  Energy2 scale(sqr(inpart.second));
+  _theSVVPtr->setCoupling(scale, inpart.first,outa.first, outb.first);
   //get loop coefficients
   Complex a00(_theSVVPtr->a00());Complex a11(_theSVVPtr->a11());
   Complex a12(_theSVVPtr->a12());Complex a21(_theSVVPtr->a21());
   Complex a22(_theSVVPtr->a22());Complex aEp(_theSVVPtr->aEp());
-  double mu1(outa->mass()/inpart->mass()),mu1sq(mu1*mu1);
-  double mu2(outb->mass()/inpart->mass()),mu2sq(mu2*mu2);
-  Energy pcm(Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				    outb->mass()));
+  double mu1(outa.second/inpart.second),mu1sq(mu1*mu1);
+  double mu2(outb.second/inpart.second),mu2sq(mu2*mu2);
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
   Complex me2 = (aEp*aEp + a11*(2.*a11-2.*a21+a22))*mu1sq*mu1sq
     +2.*a21*a21*mu2sq*mu1sq + 2.*mu1sq*(a11*(a21-a22) - aEp*aEp)
     + mu2sq*mu2sq*(aEp*aEp + a22*(a11-2.*a21+2.*a22)) + aEp*aEp
@@ -108,16 +107,12 @@ Energy SVVLoopDecayer::partialWidth(const PDPtr inpart,
 					    - mu2sq*(a12+a21-2.*a22)
 					    + a21 + a12) + 8.*a00*a00;
   me2 /= 2;
-  Complex norm(_theSVVPtr->getNorm()*_theSVVPtr->getNorm());
-  me2 *= norm;
-
-  Energy pWidth = me2.real()*pcm/(8.*Constants::pi)/scale*UnitRemoval::E2;
-  if(outa->id() == outb->id()) {
+  Energy pWidth = norm(_theSVVPtr->getNorm())*me2.real()*pcm
+    /(8.*Constants::pi)/scale*UnitRemoval::E2;
+  if(outa.first->id() == outb.first->id())
     pWidth /= 2;
-  }
-  if(outa->iColour() == PDT::Colour8 &&
-     outb->iColour() == PDT::Colour8){
+  if(outa.first->iColour() == PDT::Colour8 &&
+     outb.first->iColour() == PDT::Colour8)
     pWidth *= 2.;
-  }
   return pWidth;
 }

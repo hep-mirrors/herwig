@@ -21,27 +21,27 @@ EtaPiPiPiDecayer::EtaPiPiPiDecayer()
     _a(6), _b(6), _c(6), _maxweight(6) {
   // eta to pi+pi-pi0
   _incoming[0] = 221; _outgoing[0] = 111; _charged[0] = true; 
-  _prefactor[0] = 0.0404509; _maxweight[0] = 1.32;
+  _prefactor[0] = 0.06477; _maxweight[0] = 1.72861;
   _a[0] = -1.17; _b[0] = 0.21; _c[0] = 0.06; 
   // eta to pi0pi0pi0
   _incoming[1] = 221; _outgoing[1] = 111; _charged[1] = false; 
-  _prefactor[1] = 0.0883547; _maxweight[1] = 1.33; 
+  _prefactor[1] = 0.0883547; _maxweight[1] = 1.45813; 
   _a[1] = 0.; _b[1] = -0.062; _c[1] = -0.062; 
   // eta' to pi+pi-pi0
   _incoming[2] = 331; _outgoing[2] = 111; _charged[2] = true; 
-  _prefactor[2] = 0.037165; _maxweight[2] = 0.0227363;
+  _prefactor[2] = 0.037165; _maxweight[2] = 0.0153201;
   _a[2] = -3.08; _b[2] = 0.13; _c[2] = 0.62; 
   // eta' to pi0pi0pi0
   _incoming[3] = 331; _outgoing[3] = 111; _charged[3] = false; 
-  _prefactor[3] = 0.016203; _maxweight[3] = 2.26; 
+  _prefactor[3] = 0.016203; _maxweight[3] = 2.52411; 
   _a[3] = 0.0; _b[3] = -0.86; _c[3] = -0.86; 
   // eta' to pi+pi-eta
   _incoming[4] = 331; _outgoing[4] = 221; _charged[4] = true; 
-  _prefactor[4] = 46.47; _maxweight[4] = 1.30;
+  _prefactor[4] = 49.42; _maxweight[4] = 1.421;
   _a[4] = -0.093; _b[4] = -0.059; _c[4] = -0.003; 
   // eta' to pi0pi0eta
   _incoming[5] = 331; _outgoing[5] = 221; _charged[5] = false; 
-  _prefactor[5] = 19.408225; _maxweight[5] = 1.30;
+  _prefactor[5] = 20.62; _maxweight[5] = 1.42649;
   _a[5] = -0.105; _b[5] = -0.065; _c[5] = -0.004; 
   // initial size of the arrays
   _initsize=_maxweight.size();

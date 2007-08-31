@@ -4,7 +4,6 @@
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/XComb.h"
 #include <cassert>
 
@@ -547,9 +546,10 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
     ShowerTreePtr ptree=ShowerTreePtr(this);
     ShowerParticlePtr newparent=_parent->_treelinks[ptree].second;
     // workout the lorentz boost
-    LorentzRotation boost(_incomingLines.begin()->first->progenitor()->momentum().
-			  findBoostToCM());
-    boost.boost(-newparent->momentum().findBoostToCM());
+    Lorentz5Momentum ptemp(_incomingLines.begin()->first->progenitor()->momentum());
+    LorentzRotation boost(ptemp.findBoostToCM(),ptemp.e()/ptemp.mass());
+    boost.boost(newparent->momentum().boostVector(),
+		newparent->momentum().e()/newparent->mass());
     // now boost all the particles
     map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
     for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit) {

@@ -93,7 +93,8 @@ inline void TauTo4MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _mpipi[0]->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _mpipi[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P2-3 mass in T2-3RN0T1P203P203P203P2-3",
 			   "GX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -101,7 +102,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P203P2-31/GeV",
 			   " XGX XGX XX    ");
-  _mpipi[1]->topdrawOutput(output,true,true,false,true,
+  _mpipi[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P203 mass in T2-3RN0T1P203P203P203P2-3",
 			   "GX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -109,7 +110,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P203P2031/GeV",
 			   " XGX XGX XX    ");
-  _mpipipi[0]->topdrawOutput(output,true,true,false,true,
+  _mpipipi[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P203P203P203 mass in T2-3RN0T1P203P203P203P2-3",
 			     "GX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -117,7 +118,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P203P203P2031/GeV",
 			     " XGX XGX XGX XX    ");
-  _mpipipi[1]->topdrawOutput(output,true,true,false,true,
+  _mpipipi[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			     "RED",
 			     "P203P203P2-3 mass in T2-3RN0T1P203P203P203P2-3",
 			     "GX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -125,7 +126,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			     "  G G   XGX XGX XGX XX    X  X",
 			     "m0P203P203P2-31/GeV",
 			     " XGX XGX XGX XX    ");
-  _mpipipipi[0]->topdrawOutput(output,true,true,false,true,
+  _mpipipipi[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "P203P203P203P2-3 mass in T2-3RN0T1P203P203P203P2-3",
 			       "GX XGX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -133,7 +134,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			       "  G G   XGX XGX XGX XGX XX    X  X",
 			       "m0P203P203P203P2-31/GeV",
 			       " XGX XGX XGX XGX XX    ");
-  _mpipi[2]->topdrawOutput(output,true,true,false,true,
+  _mpipi[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P2+3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -141,7 +142,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P203P2+31/GeV",
 			   " XGX XGX XX    ");
-  _mpipi[3]->topdrawOutput(output,true,true,false,true,
+  _mpipi[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -149,7 +150,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P203P2-31/GeV",
 			   " XGX XGX XX    ");
-  _mpipi[4]->topdrawOutput(output,true,true,false,true,
+  _mpipi[4]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2+3P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -157,7 +158,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2+3P2-31/GeV",
 			   " XGX XGX XX    ");
-  _mpipi[5]->topdrawOutput(output,true,true,false,true,
+  _mpipi[5]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2-3P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -165,7 +166,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XX    X  X",
 			   "m0P2-3P2-31/GeV",
 			   " XGX XGX XX    ");
-  _mpipipi[2]->topdrawOutput(output,true,true,false,true,
+  _mpipipi[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P2+3P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -173,7 +174,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XGX XX    X  X",
 			   "m0P203P2+3P2-31/GeV",
 			   " XGX XGX XGX XX    ");
-  _mpipipi[3]->topdrawOutput(output,true,true,false,true,
+  _mpipipi[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P2+3P2-3P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -181,7 +182,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XGX XX    X  X",
 			   "m0P2+3P2-3P2-31/GeV",
 			   " XGX XGX XGX XX    ");
-  _mpipipi[4]->topdrawOutput(output,true,true,false,true,
+  _mpipipi[4]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			   "RED",
 			   "P203P2-3P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			   "GX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",
@@ -189,7 +190,7 @@ inline void TauTo4MesonAnalysis::dofinish() {
 			   "  G G   XGX XGX XGX XX    X  X",
 			   "m0P203P2-3P2-31/GeV",
 			   " XGX XGX XGX XX    ");
-  _mpipipipi[1]->topdrawOutput(output,true,true,false,true,
+  _mpipipipi[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "P203P2+3P2-3P2-3 mass in T2-3RN0T1P203P2+3P2-3P2-3",
 			       "GX XGX XGX XGX X         GX XWGXGXGX XGX XGX XGX X",

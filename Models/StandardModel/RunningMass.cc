@@ -63,8 +63,10 @@ vector<Energy> RunningMass::mass() const
     as = _theStandardModel->alphaS(massf*massf);
     if(as>0)
       {massf = massf/(1.+coeff*as)/pow(as,_thePower[f-1]);}
-    else
-      {massf = Energy();}
+    else {
+      massf = Energy();
+//      massf = 0.001*GeV;
+    }
     masses.push_back(massf);
   }
   return masses;

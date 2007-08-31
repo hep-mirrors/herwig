@@ -85,24 +85,23 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
-				const PDPtr ferm) const {
-  //Use analytic expression for partial width
-  double mu1 = ferm->mass()/inpart->mass();
-  double mu2 = anti->mass()/inpart->mass();
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),anti->mass(),
-				      ferm->mass());
-  Energy2 q2(inpart->mass()*inpart->mass());
-  //coupling may not have been calculated yet
-  _theFFVPtr->setCoupling(q2,anti,ferm,inpart);
-  Complex norm = (_theFFVPtr->getNorm()*_theFFVPtr->getNorm());
-  double cl(_theFFVPtr->getLeft().real()),cr(_theFFVPtr->getRight().real());
-  double matrixElement2 = (cl*cl+cr*cr)*((mu1*mu1 + mu2*mu2 )*(mu1*mu1 + mu2*mu2) + mu2*mu2 + mu1*mu1 + 2);
-  matrixElement2 += -12.*cl*cr*mu1*mu2;
-  matrixElement2 *= norm.real()/3.;
-  Energy output = matrixElement2*pcm/(8*Constants::pi);
-  if(ferm->coloured())
+Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
+  _theFFVPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
+			  inpart.first);
+  Complex cl(_theFFVPtr->getLeft()), cr(_theFFVPtr->getRight());
+  double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
+				       + sqr(mu1) + sqr(mu2) - 2.)
+    - 6.*(cl*conj(cr) + cr*conj(cl)).real()*mu1*mu2;
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
+  Energy output = -norm(_theFFVPtr->getNorm())*me2*pcm/(8*Constants::pi);
+  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  if( abs(cola) == 3 && abs(colb) == 3)
     output *= 3.;
+  if( outa.first->id() == outb.first->id() ) 
+    output /= 2.;
   return output;
 }
 

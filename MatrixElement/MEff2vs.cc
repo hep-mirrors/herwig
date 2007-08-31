@@ -125,7 +125,7 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	      diag[ix] = theSca[ix].second->evaluate(m2, vec[ovhel], sca, interS); 
 	    }
 	    else if( offshell->iSpin() == PDT::Spin1 ) {
-	      interV = theVec[ix].first->evaluate(m2, 3, offshell, sp[ihel1], 
+	      interV = theVec[ix].first->evaluate(m2, 1, offshell, sp[ihel1], 
 						  spbar[ihel2]);
 	      diag[ix] = theVec[ix].second->evaluate(m2, vec[ovhel], interV, sca);
 	    }

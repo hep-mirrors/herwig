@@ -31,6 +31,11 @@ using Helicity::VertexBasePtr;
 class GeneralTwoBodyDecayer: public DecayIntegrator {
 
 public:
+  
+  /** A ParticleData ptr and (possible) mass pair.*/
+  typedef pair<tcPDPtr, Energy> PMPair;
+
+public:
 
   /**
    * The default constructor.
@@ -60,12 +65,25 @@ public:
   
   /**
    * Function to return partial Width
-   * @param inpart Pointer to incoming particle data object
-   * @param outa Pointer to incoming particle data object
-   * @param outb Pointer to incoming particle data object
+   * @param inpart The decaying particle.
+   * @param outa One of the decay products.
+   * @param outb The other decay product.
    */
-  virtual Energy partialWidth(const PDPtr inpart, const PDPtr outa,
-			      const PDPtr outb) const = 0;
+  virtual Energy partialWidth(PMPair inpart, PMPair outa, 
+			      PMPair outb) const = 0;
+
+  /**
+   * Specify the \f$1\to2\f$ matrix element to be used in the running width 
+   * calculation.
+   * @param dm The DecayMode
+   * @param mecode The code for the matrix element as described
+   *               in the GenericWidthGenerator class.
+   * @param coupling The coupling for the matrix element.
+   * @return True if the the order of the particles in the 
+   * decayer is the same as the DecayMode tag.
+   */
+  virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
+			     double & coupling) const;
   //@}
 
 protected:

@@ -46,7 +46,18 @@ void HQETFormFactor::Init() {
 
   static ClassDocumentation<HQETFormFactor> documentation
     ("The HQETFormFactor class uses the parameterisation of hep-ph/9712417"
-     " of the form factor in the heavy quark limit.");
+     " of the form factor in the heavy quark limit.",
+     "The parameterisation of \\cite{Caprini:1997mu} was used for the "
+     "$B\\to D^{(*)}$ form factors together with the parameters from"
+     "\\cite{Snyder:2007qn} for the $D$ and \\cite{Aubert:2007rs}"
+     " for the $D^*$",
+     "\\bibitem{Caprini:1997mu} I.~Caprini, L.~Lellouch and M.~Neubert,"
+     "Nucl.\\ Phys.\\  B {\\bf 530} (1998) 153 [arXiv:hep-ph/9712417].\n"
+     "%%CITATION = NUPHA,B530,153;%%\n"
+     "\\bibitem{Aubert:2007rs} B.~Aubert {\\it et al.}  [BABAR Collaboration],"
+     "arXiv:0705.4008 [hep-ex]. %%CITATION = ARXIV:0705.4008;%%\n"
+     "\\bibitem{Snyder:2007qn} A.~E.~Snyder, [arXiv:hep-ex/0703035].\n"
+     "%%CITATION = ECONF,C0610161,015;%%\n");
 
   static Parameter<HQETFormFactor,double> interfaceF1Scalar
     ("F1Scalar",
@@ -96,7 +107,7 @@ void HQETFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int ,int,int,
   double Rs = 2.*sqrt(m0*m1)/(m0+m1);
   fp = 1.-8.*_rho2scalar*z+((51.*_rho2scalar-10.)-(252*_rho2scalar-84.)*z)*sqr(z);
   fp *=_f1scalar/Rs;
-  f0 = 0.;
+  f0 = fp*(1.-q2/sqr(m0+m1));
 }
 
 void HQETFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int,
@@ -115,7 +126,8 @@ void HQETFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int,
   A1 = 0.5*(omega+1.)*Rs*hA1;
   A2 = R2*hA1/Rs;
   V  =-R1*hA1/Rs;
-  A0 = 0.;
+  Complex A3 = 0.5/m1*((m0+m1)*A1-(m0-m1)*A2);
+  A0 = A3+0.5*A2*q2/m1/(m0+m1);
 }
 
 void HQETFormFactor::dataBaseOutput(ofstream & os,bool header,bool create) const {

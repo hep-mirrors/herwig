@@ -100,22 +100,36 @@ double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
-				const PDPtr part2) const {
-  double mu1 = part1->mass()/inpart->mass();
-  double mu2 = part2->mass()/inpart->mass();
-  Energy2 q2(inpart->mass()*inpart->mass());
-  _theFFVPtr->setCoupling(q2,inpart,part1,part2);
-  Complex norm(_theFFVPtr->getNorm()*_theFFVPtr->getNorm());
+Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  double mu1(0.),mu2(0.);
+  if( outa.first->iSpin() == PDT::Spin1Half) {
+    mu1 = outa.second/inpart.second;
+    mu2 = outb.second/inpart.second;
+    _theFFVPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first,
+			    outb.first);
+  }
+  else {
+    mu1 = outb.second/inpart.second;
+    mu2 = outa.second/inpart.second;
+    _theFFVPtr->setCoupling(sqr(inpart.second),inpart.first, outb.first,
+			    outa.first);
+  }
   Complex cl(_theFFVPtr->getLeft()),cr(_theFFVPtr->getRight());
-  double x = (cl*conj(cl)+cr*conj(cr)).real();
-  double y = (cr*conj(cl) + cl*conj(cr)).real(); 
-  double matrixElement2 = (-2*mu2*mu2 + mu1*mu1 + 1)*x - 6.*y*mu1;
-  matrixElement2 += (mu1*mu1 - 1)*(mu1*mu1 - 1)*x/mu2/mu2;
-  matrixElement2 *= norm.real()/2.;
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),part1->mass(),
-				      part2->mass());
-  Energy output =matrixElement2*pcm/(8.*Constants::pi);
+  double me2(0.);
+  if( mu2 > 0. ) {
+    me2 = (norm(cl) + norm(cr))*(1. +sqr(mu1*mu2) + 2.*sqr(mu2) 
+				      - 2.*sqr(mu1) - 2.*sqr(mu2*mu2) 
+				      +  sqr(mu1*mu1))
+    - 6.*mu1*sqr(mu2)*(conj(cl)*cr + conj(cr)*cl).real();
+    me2 /= sqr(mu2);
+  }
+  else
+    me2 = 2.*( (norm(cl) + norm(cr))*(sqr(mu1) + 1.) 
+	       - 4.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
+  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+				      outb.second);
+  Energy output = norm(_theFFVPtr->getNorm())*me2*pcm/(8.*Constants::pi);
   return output;
   
 }

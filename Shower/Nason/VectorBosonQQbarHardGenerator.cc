@@ -220,8 +220,9 @@ void VectorBosonQQbarHardGenerator::dofinish() {
   HardestEmissionGenerator::dofinish();
 
   ofstream hist_out("hist3.top");
+  using namespace HistogramOptions;
 
-  _hy->topdrawOutput( hist_out, true, false, false, false,
+  _hy->topdrawOutput( hist_out, Frame,
 		      "BLACK",
 		      "e+e-  y", 
 		      " ", 
@@ -229,7 +230,7 @@ void VectorBosonQQbarHardGenerator::dofinish() {
 		      " ", 
 		      "y", 
 		      " " );
- _hplow->topdrawOutput( hist_out, true, false, false, false,
+ _hplow->topdrawOutput( hist_out, Frame,
 		      "BLACK",
 		      "e+e- low pT", 
 		      " ", 
@@ -237,7 +238,7 @@ void VectorBosonQQbarHardGenerator::dofinish() {
 		      " ", 
 		      "pT / GeV", 
 		      " " );
- _hphigh->topdrawOutput( hist_out, true, false, false, false,
+ _hphigh->topdrawOutput( hist_out, Frame,
 		      "BLACK",
 		      "e+e- high pT", 
 		      " ", 
@@ -245,7 +246,7 @@ void VectorBosonQQbarHardGenerator::dofinish() {
 		      " ", 
 		      "pT / GeV", 
 		      " " );
- _hthrust->topdrawOutput( hist_out, true, false, false, false,
+ _hthrust->topdrawOutput( hist_out, Frame,
 		      "BLACK",
 		      "e+e- 1-T", 
 		      " ", 
@@ -253,7 +254,7 @@ void VectorBosonQQbarHardGenerator::dofinish() {
 		      " ", 
 		      "1-T", 
 		      " " );
- _hthrustlow->topdrawOutput( hist_out, true, false, false, false,
+ _hthrustlow->topdrawOutput( hist_out, Frame,
 		      "BLACK",
 		      "e+e- 1-T", 
 		      " ", 

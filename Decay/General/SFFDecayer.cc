@@ -91,27 +91,23 @@ double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy SFFDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
-  double mu1(outa->mass()/inpart->mass()),mu2(outb->mass()/inpart->mass());
-  Energy2 q2(inpart->mass()*inpart->mass());
-  _theFFSPtr->setCoupling(q2,outb,outa,inpart,3);
-  Complex norm(_theFFSPtr->getNorm()*_theFFSPtr->getNorm());
-  Complex cl = _theFFSPtr->getLeft();
-  Complex cr = _theFFSPtr->getRight();
-  Complex dl = conj(_theFFSPtr->getLeft());
-  Complex dr = conj(_theFFSPtr->getRight());
-  double matrixElement2 = -( (cl*dl + cr*dr)*(mu2*mu2 + mu1*mu1 - 1.)
-			     -2.*mu1*mu2*(cr*dl + cl*dr) ).real();
-  matrixElement2 *= norm.real();
-  Energy pcm(Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				    outb->mass()));
-  Energy output = matrixElement2*pcm/(8*Constants::pi);
-  if(outa->coloured() && outb->coloured()){
+Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  _theFFSPtr->setCoupling(sqr(inpart.second), outb.first, outa.first,
+			  inpart.first, 3);
+  double mu1(outa.second/inpart.second),
+    mu2(outb.second/inpart.second);
+  double c2 = norm(_theFFSPtr->getNorm());
+  Complex al(_theFFSPtr->getLeft()), ar(_theFFSPtr->getRight());
+  double me2 = -c2*( (norm(al) + norm(ar))*( sqr(mu1) + sqr(mu2) - 1.)
+		     + 2.*(ar*conj(al) + al*conj(ar)).real()*mu1*mu2 );
+  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+				      outb.second);
+  Energy output = me2*pcm/(8*Constants::pi);
+  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  if( abs(cola) == 3 && abs(colb) == 3)
     output *= 3.;
-  }
-  if( outa->id() == outb->id() )
+  if( outa.first->id() == outb.first->id() )
     output *= 0.5;
   return output;
 }

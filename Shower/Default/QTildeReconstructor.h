@@ -293,6 +293,13 @@ private:
    * In fact, it should not even be implemented.
    */
   QTildeReconstructor & operator=(const QTildeReconstructor &);
+
+private:
+
+  /**
+   *  The progenitor of the jet currently being reconstructed
+   */
+  mutable tShowerParticlePtr _progenitor;
 };
 
 }
@@ -333,8 +340,5 @@ struct ClassTraits<Herwig::QTildeReconstructor>
 }
 
 #include "QTildeReconstructor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeReconstructor.tcc"
-#endif
 
 #endif /* HERWIG_QTildeReconstructor_H */

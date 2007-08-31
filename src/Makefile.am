@@ -25,11 +25,10 @@ pkgdata_DATA = PDF.in Makefile-UserModules
 EXTRA_DIST = versionstring.h.in
 BUILT_SOURCES = versionstring.h
 if USE_SVNVERSION # # # # # #
-BUILT_SOURCES += version version.tmp
-version version.tmp:
+version:
 	@svnversion -n $(top_srcdir) > version.tmp.new
-	@if ! test -e version.tmp.new; then touch version.tmp.new; fi
-	@if ! test -e version.tmp; then touch version.tmp; fi
+
+version.tmp: version
 	@if ! diff -q version.tmp{.new,}; then mv -f version.tmp{.new,}; fi
 
 versionstring.h: version.tmp versionstring.h.in

@@ -7,26 +7,12 @@
 namespace Herwig {
 
 inline MEPP2Higgs::MEPP2Higgs() : 
-  loopopt(1),
-  massopt(1),
   widthopt(1),
   branchingopt(3),
   shapeopt(1),
   processopt(1),
   minflavouropt(3),
   maxflavouropt(5)
-{}
-
-inline MEPP2Higgs::MEPP2Higgs(const MEPP2Higgs & x)
-  : ME2to2Base(x), 
-  loopopt(x.loopopt),
-  massopt(x.massopt),
-  widthopt(x.widthopt),
-  branchingopt(x.branchingopt),
-  shapeopt(x.shapeopt),
-  processopt(x.processopt),
-  minflavouropt(x.minflavouropt),
-  maxflavouropt(x.maxflavouropt)
 {}
 
 inline IBPtr MEPP2Higgs::clone() const {

@@ -62,7 +62,8 @@ inline void BeamCorrelationAnalysis::dofinish() {
     string title= "Angle for " + getParticleData(_incoming[ix])->PDGName() +
       " -> " + getParticleData(_outgoing[ix])->PDGName() +
       getParticleData(-_outgoing[ix])->PDGName();
-    _angle[ix]->topdrawOutput(output,true,true,false,false,
+    using namespace HistogramOptions;
+    _angle[ix]->topdrawOutput(output,Frame|Errorbars,
 			      "RED",title,"",
 			      "1/SdS/dQ",
 			      "  G G  G",

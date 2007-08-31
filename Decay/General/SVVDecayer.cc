@@ -72,23 +72,22 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   colourConnections(inpart, decay);
   return matrixElement2;
 }
-  
-Energy SVVDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass());
-  Energy pcm(Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				    outb->mass()));
-  _theVVSPtr->setCoupling(scale,outa,outb,inpart);
-  //get coupling
-  Complex norm = _theVVSPtr->getNorm()*conj(_theVVSPtr->getNorm());
-  double mu1(outa->mass()/inpart->mass()),mu1sq(mu1*mu1);
-  double mu2(outb->mass()/inpart->mass()),mu2sq(mu2*mu2);
-  double matrixElement2 = 2 + (mu1sq/mu2sq) - (1/mu2sq) + (0.25/mu1sq/mu2sq);
-  matrixElement2 *= norm.real();
-  Energy output = matrixElement2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
-  if(outa->id() == outb->id()) 
+
+Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  Energy2 scale(sqr(inpart.second));
+  _theVVSPtr->setCoupling(scale, outa.first ,outb.first, 
+			  inpart.first);
+  double mu1sq = sqr(outa.second/inpart.second);
+  double mu2sq = sqr(outb.second/inpart.second);
+  double m1pm2 = mu1sq + mu2sq;
+  double me2 = ( m1pm2*(m1pm2 - 2.) + 8.*mu1sq*mu2sq + 1.)/4./mu1sq/mu2sq;
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
+
+  Energy output = norm(_theVVSPtr->getNorm())*me2*pcm/(8*Constants::pi)/scale
+    *UnitRemoval::E2;
+  if( outa.first->id() == outb.first->id() ) 
     output /= 2.;
   return output;
 }
-

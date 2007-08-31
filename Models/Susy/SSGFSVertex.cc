@@ -66,51 +66,61 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   long iferm(0),isc(0);
   if(abs(part1->id()) == 1000021) {
     if(part2->iSpin() == PDT::Spin1Half) {
-      iferm = part2->id();
-      isc = part3->id();
+      iferm = abs(part2->id());
+      isc = abs(part3->id());
     }
     else {
-      iferm = part3->id();
-      isc = part2->id();
+      iferm = abs(part3->id());
+      isc = abs(part2->id());
     }
   }
-  if(abs(part2->id()) == 1000021) {
+  else if(abs(part2->id()) == 1000021) {
     if(part1->iSpin() == PDT::Spin1Half) {
-      iferm = part1->id();
-      isc = part3->id();
+      iferm = abs(part1->id());
+      isc = abs(part3->id());
     }
     else {
-      iferm = part3->id();
-      isc = part1->id();
+      iferm = abs(part3->id());
+      isc = abs(part1->id());
     }
   }
-  if(abs(part3->id()) == 1000021) {
+  else if(abs(part3->id()) == 1000021) {
     if(part1->iSpin() == PDT::Spin1Half) {
-      iferm = part1->id();
-      isc = part2->id();
+      iferm = abs(part1->id());
+      isc = abs(part2->id());
     }
     else {
-      iferm = part2->id();
-      isc = part1->id();
+      iferm = abs(part2->id());
+      isc = abs(part1->id());
     }
   }
-  if(abs(iferm) >=1 && abs(iferm) <=6) {
+  else {
+    throw HelicityConsistencyError()
+      << "SSGFSVertex::setCoupling() - There is no gluino in this vertex!"
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
+    setNorm(0.);
+    setLeft(0.);
+    setRight(0.);
+    return;
+  }    
+  if(iferm >=1 && iferm <=6) {
     if(q2 != _q2last) {
       double alphaStr = _theSS->alphaS(q2);
       _couplast = -2.*sqrt(2.*Constants::pi*alphaStr);
       _q2last = q2;
     }
-    if(abs(iferm) != _id1last || abs(isc) != _id2last) { 
-      _id1last = abs(iferm);
-      _id2last = abs(isc);
-      unsigned int eig = (abs(isc)/1000000) - 1;
+    if(iferm != _id1last || isc != _id2last) { 
+      _id1last = iferm;
+      _id2last = isc;
+      unsigned int eig = (isc/1000000) - 1;
       if(iferm == 6) {
-	_leftlast = -(*_stop)(1,eig);
-	_rightlast = (*_stop)(0,eig);
+	_leftlast = -(*_stop)(eig,1);
+	_rightlast = (*_stop)(eig,0);
       }
       else if(iferm == 5){
-	_leftlast = -(*_sbottom)(1,eig);
-	_rightlast = (*_sbottom)(0,eig);
+	_leftlast = -(*_sbottom)(eig,1);
+	_rightlast = (*_sbottom)(eig,0);
       }
       else {
 	if(eig == 0) { 
@@ -176,9 +186,10 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 
   }
   else{
-    throw HelicityConsistencyError() << "Incorrect particles detected in "
-				     << "SSGFSVertex!"
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSGFSVertex::setCoupling() - There are unknown particles in "
+      << "this vertex. " << part1->id() << " " << part2->id() << " " 
+      << part3->id() << Exception::warning;
     setNorm(0.);
     setLeft(0.);
     setRight(0.);

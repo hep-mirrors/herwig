@@ -46,7 +46,8 @@ inline void BFragmentationAnalysisHandler::dofinish() {
   // output the histograms
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _fragBxE->topdrawOutput(output,true,true,false,false,
+  using namespace HistogramOptions;
+  _fragBxE->topdrawOutput(output,Frame|Errorbars,
 			  "RED",
 			  "B Hadron fragmentation function compared to SLD data",
 			  "                                                    ",
@@ -54,15 +55,15 @@ inline void BFragmentationAnalysisHandler::dofinish() {
 			  "  G G   X X",
 			  "x0B1",
 			  " X X");
-  _fragbquarkxE->topdrawOutput(output,false,false,false,false,
+  _fragbquarkxE->topdrawOutput(output,Smooth,
 		       "RED",
 		       "b quark fragmentation function compared to SLD data",
 		       "                                                    ",
 		       "1/SdS/dx0B1",
 		       "  G G   X X",
 		       "x0B1",
-		       " X X",true);
-  _fragBxEa->topdrawOutput(output,true,true,false,false,
+		       " X X");
+  _fragBxEa->topdrawOutput(output,Frame|Errorbars,
 			   "RED",
 			   "B Hadron framgentation function compared to ALEPH data",
 			   "                                                      ",
@@ -70,22 +71,23 @@ inline void BFragmentationAnalysisHandler::dofinish() {
 			   "  G G   X X",
 			   "x0B1",
 			   " X X");
-  _fragbquarkxE->topdrawOutput(output,false,false,false,false,
+  _fragbquarkxE->topdrawOutput(output,Smooth,
 		      "RED",
 		      "b quark fragmentation function compared to ALEPH data",
 		      "                                                      ",
 		      "1/SdS/dx0B1",
 		      "  G G   X X",
 		      "x0B1",
-		      " X X",true);
-  _fragbquarkjetmass->topdrawOutput(output,true,false,false,false,
+		      " X X");
+  _fragbquarkjetmass->topdrawOutput(output,Frame|Smooth,
 		       "RED",
 		       "b quark jet mass",
 		       "                                                    ",
 		       "1/SdS/dm0J1223",
 		       "  G G   X XX X",
 		       "m0J1223",
-		       " X XX X",true);
+		       " X XX X");
+  output.close();
 }
 
 inline void BFragmentationAnalysisHandler::doinitrun() {

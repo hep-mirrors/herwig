@@ -76,7 +76,8 @@ void LEPEventShapes::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _omthr->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _omthr->topdrawOutput(output,Frame|Errorbars|Ylog,
 			"RED",
 			"1-T compared to DELPHI data",
 			"                           ",
@@ -84,7 +85,7 @@ void LEPEventShapes::dofinish() {
 			"  G G       ",
 			"1-T",
 			"   ");
-  _maj->topdrawOutput(output,true,true,false,true,
+  _maj->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Thrust Major compared to DELPHI data",
 		      "                                    ",
@@ -92,7 +93,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G       ",
 		      "Major",
 		      "     ");
-  _min->topdrawOutput(output,true,true,false,true,
+  _min->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Thrust Minor compared to DELPHI data",
 		      "                           ",
@@ -100,7 +101,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G       ",
 		      "Minor",
 		      "     ");
-  _obl->topdrawOutput(output,true,true,false,true,
+  _obl->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Oblateness compared to DELPHI data",
 		      "                                  ",
@@ -108,7 +109,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   ",
 		      "O",
 		      " ");
-  _sph->topdrawOutput(output,true,true,false,true,
+  _sph->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Sphericity compared to DELPHI data",
 		      "                                  ",
@@ -116,7 +117,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   ",
 		      "S",
 		      " ");
-  _apl->topdrawOutput(output,true,true,false,true,
+  _apl->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Aplanarity compared to DELPHI data",
 		      "                                  ",
@@ -124,7 +125,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   ",
 		      "A",
 		      " ");
-  _pla->topdrawOutput(output,true,true,false,true,
+  _pla->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Planarity compared to DELPHI data",
 		      "                                 ",
@@ -132,7 +133,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   ",
 		      "P",
 		      " ");
-  _c->topdrawOutput(output,true,true,false,true,
+  _c->topdrawOutput(output,Frame|Errorbars|Ylog,
 		    "RED",
 		    "C parameter compared to DELPHI data",
 		    "                                   ",
@@ -140,7 +141,7 @@ void LEPEventShapes::dofinish() {
 		    "  G G   ",
 		    "C",
 		    " ");
-  _d->topdrawOutput(output,true,true,false,true,
+  _d->topdrawOutput(output,Frame|Errorbars|Ylog,
 		    "RED",
 		    "D parameter compared to DELPHI data",
 		    "                                   ",
@@ -148,7 +149,7 @@ void LEPEventShapes::dofinish() {
 		    "  G G   ",
 		    "D",
 		    " ");
-  _mhi->topdrawOutput(output,true,true,false,true,
+  _mhi->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "High hemisphere mass compared to DELPHI data",
 		      "                                            ",
@@ -156,7 +157,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   X    X",
 		      "M0high1",
 		      " X    X");
-  _mlo->topdrawOutput(output,true,true,false,true,
+  _mlo->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Low hemisphere mass compared to DELPHI data",
 		      "                                           ",
@@ -164,7 +165,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   X   X",
 		      "M0low1",
 		      " X   X");
-  _mdiff->topdrawOutput(output,true,true,false,true,
+  _mdiff->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
 		      "Difference in hemisphere masses compared to DELPHI data",
 		      "                                                       ",
@@ -172,7 +173,7 @@ void LEPEventShapes::dofinish() {
 		      "  G G   X    X",
 		      "M0diff1",
 		      " X    X");
-  _bmax->topdrawOutput(output,true,true,false,true,
+  _bmax->topdrawOutput(output,Frame|Errorbars|Ylog,
 		       "RED",
 		       "Wide jet broadening measure compared to DELPHI data",
 		       "                                                   ",
@@ -180,7 +181,7 @@ void LEPEventShapes::dofinish() {
 		       "  G G   X   X",
 		       "B0max1",
 		       " X   X");
-  _bmin->topdrawOutput(output,true,true,false,true,
+  _bmin->topdrawOutput(output,Frame|Errorbars|Ylog,
 		       "RED",
 		       "Narrow jet broadening measure compared to DELPHI data",
 		       "                                                     ",
@@ -188,7 +189,7 @@ void LEPEventShapes::dofinish() {
 		       "  G G   X   X",
 		       "B0min1",
 		       " X   X");
-  _bsum->topdrawOutput(output,true,true,false,true,
+  _bsum->topdrawOutput(output,Frame|Errorbars|Ylog,
 		       "RED",
 		       "Sum of jet broadening measures compared to DELPHI data",
 		       "                                                      ",
@@ -196,7 +197,7 @@ void LEPEventShapes::dofinish() {
 		       "  G G   X   X",
 		       "B0sum1",
 		       " X   X");
-  _bdiff->topdrawOutput(output,true,true,false,true,
+  _bdiff->topdrawOutput(output,Frame|Errorbars|Ylog,
 		       "RED",
 		       "Difference of jet broadenings measure compared to DELPHI data",
 		       "                                                             ",

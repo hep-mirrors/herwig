@@ -16,17 +16,15 @@ html-local: refman-html
 pdf-local: refman-html
 	if test -d refman-latex; then cd refman-latex; make refman.pdf; fi
 
-myENV= HERWIG_USER_MODULES=$(top_builddir)/lib
-
 AllInterfaces.h: HerwigDefaults.in
-	$(myENV) $(top_builddir)/src/Herwig++ init
+	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
 
 refman-html: refman.conf refman.h AllInterfaces.h refmanThePEG.conf
 	./fixinterfaces.pl AllInterfaces.h
 	doxygen $<
 
 tagfileThePEG.tag:
-	if test -e $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag; then ln -s $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag tagfileThePEG.tag; fi
+	@if test -e $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag; then $(LN_S) $(THEPEGPATH)/share/ThePEG/Doc/ThePEG-refman.tag tagfileThePEG.tag; fi
 
 #install-data-local:
 #	if test -d refman-html; then $(mkdir_p) $(DESTDIR)$(docdir);\

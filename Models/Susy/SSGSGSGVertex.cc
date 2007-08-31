@@ -49,11 +49,11 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     setLeft(1.);setRight(1.);
   }
   else {
-    throw HelicityConsistencyError() << "Incorrect particle found in SUSY "
-				     << "gluon-gluino-gluino vertex: " 
-				     << part1->id() << "  " << part2->id()
-				     << "  " << part3->id() << "\n"
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSGSGSGVertex::setCoupling() - Incorrect particle found. "
+      << part1->id() << "  " << part2->id()
+      << "  " << part3->id()
+      << Exception::warning;
     setNorm(0.);
     setLeft(0.); setRight(0);
   }

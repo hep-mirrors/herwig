@@ -6,33 +6,14 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.fh"
-#include "Herwig++/Models/StandardModel/RunningMassBase.h"
-#include "ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-
-
-
-#include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Utilities/Maths.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-//#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-
-
-
-#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Models/StandardModel/SMHGGVertex.h"
-#include "Herwig++/Models/General/SimpleSVVLoopVertex.h"
-
-#include "Herwig++/PDT/GenericMassGenerator.h"
+#include "ProductionMatrixElement.h"
 #include "MEPP2Higgs.fh"
 
 namespace Herwig {
@@ -41,13 +22,13 @@ using namespace ThePEG::Helicity;
 
 /**
  * The MEPP2Higgs class implements the matrix element for the process
- * pp->Higgs with the corrected Higgs shape treatment (see details in hep-ph/9505211)
- * and NLL corrected Higgs width (see details in the FORTRAN HERWIG manual).
+ * pp->Higgs with different Higgs shape prescriptions (see details in hep-ph/9505211)
+ * and the NLL corrected Higgs width (see details in the FORTRAN HERWIG manual).
  *
  * @see \ref MEPP2HiggsInterfaces "The interfaces"
  * defined for MEPP2Higgs.
  */
-class MEPP2Higgs: public ME2to2Base {
+class MEPP2Higgs: public MEBase {
 
 public:
 
@@ -57,11 +38,6 @@ public:
    * The default constructor.
    */
   inline MEPP2Higgs();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEPP2Higgs(const MEPP2Higgs &);
 
   /**
    * The destructor.
@@ -117,6 +93,12 @@ public:
   virtual Energy2 scale() const;
 
   /**
+   * The number of internal degrees of freedom used in the matrix
+   * element.
+   */
+  virtual int nDim() const;
+
+  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -138,8 +120,7 @@ public:
    * @return the possible colour geometries weighted by their
    * relative probabilities.
    */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
+  virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const;
 
   /**
    * Generate internal degrees of freedom given nDim() uniform
@@ -234,47 +215,37 @@ private:
 private:
 
   /**
-   *  Maximum flavour of quarks to include in the loops
-   */
-  unsigned int loopopt;
-
-  /**
-   *  Option for treatment of the fermion loops
-   */
-  unsigned int massopt;
-
-  /**
-   *  Type of the Higgs width used (variants: user defined, LO running , NLL corrected running)
+   * Type of the Higgs width used (options: fixed, LO running, NLL corrected running, user defined)
    */
   unsigned int widthopt;
 
   /**
-   *  Defines which decay modes are taken into account (see class documentation)
+   * Defines which decay modes are taken into account (see class documentation)
    */
   unsigned int branchingopt;
 
   /**
-   *  Defines the Higgs resonance shape
+   * Defines the Higgs resonance shape
    */
   unsigned int shapeopt;
 
   /**
-   *  The processes to be included
+   * The processes to be included (GG->H and/or qq->H)
    */
   unsigned int processopt;
 
   /**
-   *  Minimum flavour of incoming quarks
+   * Minimum flavour of incoming quarks
    */
   unsigned int minflavouropt;
 
   /**
-   *  Maximum flavour of incoming quarks
+   * Maximum flavour of incoming quarks
    */
   unsigned int maxflavouropt;
 
   /**
-   *  Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess
+   * Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess
    */
   mutable double diagwgt[3];
 
@@ -284,41 +255,30 @@ private:
   ProductionMatrixElement _me;
 
   /**
-   *  Pointer to the mass generator for the Higgs
-   */
-  GenericMassGeneratorPtr _massgen;
-
-  /**
    * Pointer to the H->2gluons vertex (used in gg->H)
    */
-  SimpleSVVLoopVertexPtr hggvertex;
+  SVVLoopVertexPtr hggvertex;
 
   /**
-   *  Pointer to the fermion-fermion Higgs vertex (used in ff->H)
+   * Pointer to the fermion-fermion Higgs vertex (used in qq->H)
    */
   FFSVertexPtr ffhvertex;
 
   /**
-   *  Pointer to the Standard Model instance used in the class
+   * Pointer to the Standard Model instance used in the class
    */
   tcHwSMPtr theSM;
 
   /** @routines to calculate Higgs width. */
   //@{
   /**
-   * Calculates the Higgs width with some NLL corrections as it is done in FORTRAN HERWIG. 
+   * Calculates the Higgs width with some NLL corrections a-la FORTRAN HERWIG. 
    * The following channels are taken into account: 
-   * \f$H\to q\bar{q}\f$, \f$H\to \ell\bar{\ell}\f$, \f$H\to WW/ZZ\f$,
-   * \f$H\to \gamma\gamma\f$, \f$H\to gg\f$
+   * H->q\bar{q}, H->l\bar{l}, H->WW, H->ZZ, H->2gammas, H->2gluons
    * The prescription corresponds to one in FORTRAN HERWIG (except H->2gluons!)
    * @returns the Higgs width for the Higgs mass Mh.
    */
   Energy calcNLLRunningWidth(Energy Mh) const;
-  
-  /**
-   *  Nominal width for the nominal Higgs mass used.
-   */
-  Energy nominalHiggswidth;
 
   /**
    * Calculates the Higgs width at LO.
@@ -354,7 +314,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2Higgs,1> {
   /** Typedef of the first base class of MEPP2Higgs. */
-  typedef ME2to2Base NthBase;
+  typedef MEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

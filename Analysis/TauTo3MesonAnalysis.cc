@@ -35,7 +35,9 @@ void TauTo3MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _m3pippimpim[0]->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+
+  _m3pippimpim[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2+3P2-3P2-3 mass in T2-3RN0T1P2+3P2-3P2-3",
 			    "GX XGX XGX X         GX XWGXGXGX XGX XGX X",
@@ -43,7 +45,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XGX XX    X  X",
 			    "m0P2+3P2-3P2-31/GeV",
 			    " XGX XGX XGX XX    ");
-  _m3pippimpim[1]->topdrawOutput(output,true,true,false,true,
+  _m3pippimpim[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P2-3 mass in T2-3RN0T1P2+3P2-3P2-3",
 			    "GX XGX X         GX XWGXGXGX XGX XGX X",
@@ -51,7 +53,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P2-3P2-31/GeV",
 			    " XGX XGX XX    ");
-  _m3pippimpim[2]->topdrawOutput(output,true,true,false,true,
+  _m3pippimpim[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2+3P2-3 mass in T2-3RN0T1P2+3P2-3P2-3",
 			    "GX XGX X         GX XWGXGXGX XGX XGX X",
@@ -59,7 +61,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P2+3P2-31/GeV",
 			    " XGX XGX XX    ");
-  _m3pi0pi0pim[0]->topdrawOutput(output,true,true,false,true,
+  _m3pi0pi0pim[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P203P203 mass in T2-3RN0T1P2-3P203P203",
 			    "GX XGX XGX X         GX XWGXGXGX XGX XGX X",
@@ -67,7 +69,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XGX XX    X  X",
 			    "m0P2-3P203P2031/GeV",
 			    " XGX XGX XGX XX    ");
-  _m3pi0pi0pim[1]->topdrawOutput(output,true,true,false,true,
+  _m3pi0pi0pim[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P203P203 mass in T2-3RN0T1P2-3P203P203",
 			    "GX XGX X         GX XWGXGXGX XGX XGX X",
@@ -75,7 +77,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P203P2031/GeV",
 			    " XGX XGX XX    ");
-  _m3pi0pi0pim[2]->topdrawOutput(output,true,true,false,true,
+  _m3pi0pi0pim[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P203 mass in T2-3RN0T1P2-3P203P203",
 			    "GX XGX X         GX XWGXGXGX XGX XGX X",
@@ -83,7 +85,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P2-3P2031/GeV",
 			    " XGX XGX XX    ");
-  _m3kmpimkp[0]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimkp[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "K2-3P2-3K2+3 mass in T2-3RN0T1K2-3P2-3K2+3",
 			    " X XGX X X X         GX XWGXGX X XGX X X X",
@@ -91,7 +93,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   X X XGX X X XX    X  X",
 			    "m0K2-3P2-3K2+31/GeV",
 			    " X X XGX X X XX    ");
-  _m3kmpimkp[1]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimkp[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "K2-3P2-3 mass in T2-3RN0T1K2-3P2-3K2+3",
 			    " X XGX X         GX XWGXGX X XGX X X X",
@@ -99,7 +101,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   X X XGX XX    X  X",
 			    "m0K2-3P2-31/GeV",
 			    " X X XGX XX    ");
-  _m3kmpimkp[2]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimkp[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "K2-3K2+3 mass in T2-3RN0T1K2-3P2-3K2+3",
 			    " X X X X         GX XWGXGX X XGX X X X",
@@ -107,7 +109,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   X X X X XX    X  X",
 			    "m0K2-3K2+31/GeV",
 			    " X X X X XX    ");
-  _m3kmpimkp[3]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimkp[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3K2+3 mass in T2-3RN0T1K2-3P2-3K2+3",
 			    "GX X X X         GX XWGXGX X XGX X X X",
@@ -115,7 +117,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX X X XX    X  X",
 			    "m0P2-3K2+31/GeV",
 			    " XGX X X XX    ");
-  _m3k0pimk0[0]->topdrawOutput(output,true,true,false,true,
+  _m3k0pimk0[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K203P2-3K0O203 mass in T2-3RN0T1K203P2-3K0O203",
 			       " X XGX X UDX X         GX XWGXGX X XGX X UDX X",
@@ -123,7 +125,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XGX X UDX XX    X  X",
 			       "m0K203P2-3K0O2031/GeV",
 			       " X X XGX X UDX XX    ");
-  _m3k0pimk0[1]->topdrawOutput(output,true,true,false,true,
+  _m3k0pimk0[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K203P2-3 mass in T2-3RN0T1K203P2-3K0O2033",
 			       " X XGX X         GX XWGXGX X XGX X UDX XX",
@@ -131,7 +133,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XGX XX    X  X",
 			       "m0K203P2-31/GeV",
 			       " X X XGX XX    ");
-  _m3k0pimk0[2]->topdrawOutput(output,true,true,false,true,
+  _m3k0pimk0[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K203K0O203 mass in T2-3RN0T1K203P2-3K0O203",
 			       " X X UDX X         GX XWGXGX X XGX X UDX X",
@@ -139,7 +141,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X X UDX XX    X  X",
 			       "m0K203K0O2031/GeV",
 			       " X X X UDX XX    ");
-  _m3k0pimk0[3]->topdrawOutput(output,true,true,false,true,
+  _m3k0pimk0[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "P2-3K0O203 mass in T2-3RN0T1K203P2-3K0O203",
 			       "GX X UDX X         GX XWGXGX X XGX X UDX X",
@@ -147,7 +149,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   XGX X UDX XX    X  X",
 			       "m0P2-3K0O2031/GeV",
 			       " XGX X UDX XX    ");
-  _m3kmpi0k0[0]->topdrawOutput(output,true,true,false,true,
+  _m3kmpi0k0[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2-3P203K203 mass in T2-3RN0T1K2-3P203K203",
 			       " X XGX X X X         GX XWGXGX X XGX X X X",
@@ -155,7 +157,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XGX X X XX    X  X",
 			       "m0K2-3P203K2031/GeV",
 			       " X X XGX X X XX    ");
-  _m3kmpi0k0[1]->topdrawOutput(output,true,true,false,true,
+  _m3kmpi0k0[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2-3P203 mass in T2-3RN0T1K2-3P203K203",
 			       " X XGX X         GX XWGXGX X XGX X X X",
@@ -163,7 +165,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XGX XX    X  X",
 			       "m0K2-3P2031/GeV",
 			       " X X XGX XX    ");
-  _m3kmpi0k0[2]->topdrawOutput(output,true,true,false,true,
+  _m3kmpi0k0[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2-3K203 mass in T2-3RN0T1K2-3P203K203",
 			       " X X X X         GX XWGXGX X XGX X X X",
@@ -171,7 +173,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X X X XX    X  X",
 			       "m0K2-3K2031/GeV",
 			       " X X X X XX    ");
-  _m3kmpi0k0[3]->topdrawOutput(output,true,true,false,true,
+  _m3kmpi0k0[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "P203K203 mass in T2-3RN0T1K2-3P203K203",
 			       "GX X X X         GX XWGXGX X XGX X X X",
@@ -179,7 +181,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   XGX X X XX    X  X",
 			       "m0P203K2031/GeV",
 			       " XGX X X XX    ");
-  _m3pi0pi0km[0]->topdrawOutput(output,true,true,false,true,
+  _m3pi0pi0km[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P203P203K2-3 mass in T2-3RN0T1P203P203K2-3",
 				"GX XGX X X X         GX XWGXGXGX XGX X X X",
@@ -187,7 +189,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX XGX X X XX    X  X",
 				"m0P203P203K2-31/GeV",
 				" XGX XGX X X XX    ");
-  _m3pi0pi0km[1]->topdrawOutput(output,true,true,false,true,
+  _m3pi0pi0km[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P203P203 mass in T2-3RN0T1P203P203K2-3",
 				"GX XGX X         GX XWGXGXGX XGX X X X",
@@ -195,7 +197,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX XGX XX    X  X",
 				"m0P203P2031/GeV",
 				" XGX XGX XX    ");
-  _m3pi0pi0km[2]->topdrawOutput(output,true,true,false,true,
+  _m3pi0pi0km[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P203K2-3 mass in T2-3RN0T1P203P203K2-3",
 				"GX X X X         GX XWGXGXGX XGX X X X",
@@ -203,7 +205,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX X X XX    X  X",
 				"m0P203K2-31/GeV",
 				" XGX X X XX    ");
-  _m3kmpimpip[0]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimpip[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"K2-3P2-3P2+3 mass in T2-3RN0T1K2-3P2-3P2+3",
 				" X XGX XGX X         GX XWGXGX X XGX XGX X",
@@ -211,7 +213,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   X X XGX XGX XX    X  X",
 				"m0K2-3P2-3P2+31/GeV",
 				" X X XGX XGX XX    ");
-  _m3kmpimpip[1]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimpip[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"K2-3P2-3 mass in T2-3RN0T1K2-3P2-3P2+3",
 				" X XGX X         GX XWGXGX X XGX XGX X",
@@ -219,7 +221,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   X X XGX XX    X  X",
 				"m0K2-3P2-31/GeV",
 				" X X XGX XX    ");
-  _m3kmpimpip[2]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimpip[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"K2-3P2+3 mass in T2-3RN0T1K2-3P2-3P2+3",
 				" X XGX X         GX XWGXGX X XGX XGX X",
@@ -227,7 +229,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX XGX XX    X  X",
 				"m0K2-3P2+31/GeV",
 				" X X XGX XX    ");
-  _m3kmpimpip[3]->topdrawOutput(output,true,true,false,true,
+  _m3kmpimpip[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P2-3P2+3 mass in T2-3RN0T1K2-3P2-3P2+3",
 				"GX XGX X         GX XWGXGX X XGX XGX X",
@@ -235,7 +237,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX XGX XX    X  X",
 				"m0P2-3P2+31/GeV",
 				" XGX XGX XX    ");
-  _m3pimk0pi0[0]->topdrawOutput(output,true,true,false,true,
+  _m3pimk0pi0[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P2-3P203K0O203 mass in T2-3RN0T1P2-3P203K0O203",
 				"GX XGX X UDX X         GX XWGXGXGX XGX X UDX X",
@@ -243,7 +245,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX XGX X UDX XX    X  X",
 				"m0P2-3P203K0O2031/GeV",
 				" XGX XGX X UDX XX    ");
-  _m3pimk0pi0[1]->topdrawOutput(output,true,true,false,true,
+  _m3pimk0pi0[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P2-3K0O203 mass in T2-3RN0T1P2-3P203K0O203",
 				"GX X UDX X         GX XWGXGXGX XGX X UDX X",
@@ -251,7 +253,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX X UDX XX    X  X",
 				"m0P2-3K0O2031/GeV",
 				" XGX X UDX XX    ");
-  _m3pimk0pi0[2]->topdrawOutput(output,true,true,false,true,
+  _m3pimk0pi0[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P2-3P203 mass in T2-3RN0T1P2-3P203K0O203",
 				"GX XGX X         GX XWGXGXGX XGX X UDX X",
@@ -259,7 +261,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX XGX XX    X  X",
 				"m0P2-3P2031/GeV",
 				" XGX XGX XX    ");
-  _m3pimk0pi0[3]->topdrawOutput(output,true,true,false,true,
+  _m3pimk0pi0[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 				"RED",
 				"P203K0O203 mass in T2-3RN0T1P2-3P203K0O203",
 				"GX X UDX X         GX XWGXGXGX XGX X UDX X",
@@ -267,7 +269,7 @@ void TauTo3MesonAnalysis::dofinish() {
 				"  G G   XGX X UDX XX    X  X",
 				"m0P203K0O2031/GeV",
 				" XGX X UDX XX    ");
-  _m3pimpi0eta[0]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0eta[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P203H mass in T2-3RN0T1P2-3P203H",
 			    "GX XGX XG         GX XWGXGXGX XGX XG",
@@ -275,7 +277,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XGX    X  X",
 			    "m0P2-3P203H1/GeV",
 			    " XGX XGX XGX    ");
-  _m3pimpi0eta[1]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0eta[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P203 mass in T2-3RN0T1P2-3P203H",
 			    "GX XGX X         GX XWGXGXGX XGX XG",
@@ -283,7 +285,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P2-3P2031/GeV",
 			    " XGX XGX XX    ");
-  _m3pimpi0eta[2]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0eta[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3H mass in T2-3RN0T1P2-3P203H",
 			    "GX XG         GX XWGXGXGX XGX XG",
@@ -291,7 +293,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX    X  X",
 			    "m0P2-3H1/GeV",
 			    " XGX XGX    ");
-  _m3pimpi0eta[3]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0eta[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P203H mass in T2-3RN0T1P2-3P203H",
 			    "GX XG         GX XWGXGXGX XGX XG",
@@ -299,7 +301,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX    X  X",
 			    "m0P203H1/GeV",
 			    " XGX XGX    ");
-  _m3pimpi0gamma[0]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0gamma[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P203G mass in T2-3RN0T1P2-3P203G",
 			    "GX XGX XG         GX XWGXGXGX XGX XG",
@@ -307,7 +309,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XGX    X  X",
 			    "m0P2-3P203G1/GeV",
 			    " XGX XGX XGX    ");
-  _m3pimpi0gamma[1]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0gamma[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3P203 mass in T2-3RN0T1P2-3P203G",
 			    "GX XGX X         GX XWGXGXGX XGX XG",
@@ -315,7 +317,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX XX    X  X",
 			    "m0P2-3P2031/GeV",
 			    " XGX XGX XX    ");
-  _m3pimpi0gamma[2]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0gamma[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P2-3G mass in T2-3RN0T1P2-3P203G",
 			    "GX XG         GX XWGXGXGX XGX XG",
@@ -323,7 +325,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX    X  X",
 			    "m0P2-3G1/GeV",
 			    " XGX XGX    ");
-  _m3pimpi0gamma[3]->topdrawOutput(output,true,true,false,true,
+  _m3pimpi0gamma[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "P203G mass in T2-3RN0T1P2-3P203G",
 			    "GX XG         GX XWGXGXGX XGX XG",
@@ -331,7 +333,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			    "  G G   XGX XGX    X  X",
 			    "m0P203G1/GeV",
 			    " XGX XGX    ");
-  _m3kspimks[0]->topdrawOutput(output,true,true,false,true,
+  _m3kspimks[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030S1P2-3K2030S1 mass in T2-3RN0T1K2030S1P2-3K2030S1",
 			       " X XX XGX X X XX X         GX XWGXGX X XX XGX X X XX X",
@@ -339,7 +341,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX XGX X X XX XX    X  X",
 			       "m0K2030S1P2-3K2030S11/GeV",
 			       " X X XX XGX X X XX XX    ");
-  _m3kspimks[1]->topdrawOutput(output,true,true,false,true,
+  _m3kspimks[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030S1P2-3 mass in T2-3RN0T1K2030S1P2-3K2030S1",
 			       " X XX XGX X         GX XWGXGX X XX XGX X X XX X",
@@ -347,7 +349,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX XGX XX    X  X",
 			       "m0K2030S1P2-31/GeV",
 			       " X X XX XGX XX    ");
-  _m3kspimks[2]->topdrawOutput(output,true,true,false,true,
+  _m3kspimks[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030S1K2030S1 mass in T2-3RN0T1K2030S1P2-3K2030S1",
 			       " X XX X X XX X         GX XWGXGX X XX XGX X X XX X",
@@ -355,7 +357,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX X X XX XX    X  X",
 			       "m0K2030S1K2030S11/GeV",
 			       " X X XX X X XX XX    ");
-  _m3klpimkl[0]->topdrawOutput(output,true,true,false,true,
+  _m3klpimkl[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030L1P2-3K2030L1 mass in T2-3RN0T1K2030L1P2-3K2030L1",
 			       " X XX XGX X X XX X         GX XWGXGX X XX XGX X X XX X",
@@ -363,7 +365,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX XGX X X XX XX    X  X",
 			       "m0K2030L1P2-3K2030L11/GeV",
 			       " X X XX XGX X X XX XX    ");
-  _m3klpimkl[1]->topdrawOutput(output,true,true,false,true,
+  _m3klpimkl[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030L1P2-3 mass in T2-3RN0T1K2030L1P2-3K2030L1",
 			       " X XX XGX X         GX XWGXGX X XX XGX X X XX X",
@@ -371,7 +373,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX XGX XX    X  X",
 			       "m0K2030L1P2-31/GeV",
 			       " X X XX XGX XX    ");
-  _m3klpimkl[2]->topdrawOutput(output,true,true,false,true,
+  _m3klpimkl[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030L1K2030L1 mass in T2-3RN0T1K2030L1P2-3K2030L1",
 			       " X XX X X XX X         GX XWGXGX X XX XGX X X XX X",
@@ -379,7 +381,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX X X XX XX    X  X",
 			       "m0K2030L1K2030L11/GeV",
 			       " X X XX X X XX XX    ");
-  _m3kspimkl[0]->topdrawOutput(output,true,true,false,true,
+  _m3kspimkl[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030S1P2-3K0L1 mass in T2-3RN0T1K2030S1P2-3K0L1",
 			       " X XX XGX X X X         GX XWGXGX X XX XGX X X X",
@@ -387,7 +389,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX XGX X X XX    X  X",
 			       "m0K2030S1P2-3K0L11/GeV",
 			       " X X XX XGX X X XX    ");
-  _m3kspimkl[1]->topdrawOutput(output,true,true,false,true,
+  _m3kspimkl[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030S1P2-3 mass in T2-3RN0T1K2030S1P2-3K0L1",
 			       " X XX XGX X         GX XWGXGX X XX XGX X X X",
@@ -395,7 +397,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX XGX XX    X  X",
 			       "m0K2030S1P2-31/GeV",
 			       " X X XX XGX XX    ");
-  _m3kspimkl[2]->topdrawOutput(output,true,true,false,true,
+  _m3kspimkl[2]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "K2030S1K0L1 mass in T2-3RN0T1K2030S1K0L1",
 			       " X XX X X X         GX XWGXGX X XX X X X",
@@ -403,7 +405,7 @@ void TauTo3MesonAnalysis::dofinish() {
 			       "  G G   X X XX X X XX    X  X",
 			       "m0K2030S1K0L11/GeV",
 			       " X X XX X X XX    ");
-  _m3kspimkl[3]->topdrawOutput(output,true,true,false,true,
+  _m3kspimkl[3]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			       "RED",
 			       "1P2-3K0L1 mass in T2-3RN0T1K2030S1P2-3K0L1",
 			       "XGX X X X         GX XWGXGX X XX XGX X X X",

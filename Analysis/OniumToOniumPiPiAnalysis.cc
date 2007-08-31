@@ -119,12 +119,13 @@ void OniumToOniumPiPiAnalysis::dofinish() {
       getParticleData(_incoming[ix])->PDGName() + " -> " +
       getParticleData(_outgoing[ix])->PDGName();
     string temp = "Mass distrubtion for pi+pi- in " + title;
-    _mpipi[ix].first->topdrawOutput(output,true,false,false,false,"BLACK",temp);
+    using namespace HistogramOptions;
+    _mpipi[ix].first->topdrawOutput(output,Frame,"BLACK",temp);
     temp = "Mass distrubtion for pi0pi0 in " + title;
-    _mpipi[ix].second->topdrawOutput(output,true,false,false,false,"BLACK",temp);
+    _mpipi[ix].second->topdrawOutput(output,Frame,"BLACK",temp);
     temp = "Helicity angle for pi+pi- in " + title;
-    _hel[ix].first->topdrawOutput(output,true,false,false,false,"BLACK",temp);
+    _hel[ix].first->topdrawOutput(output,Frame,"BLACK",temp);
     temp = "Helicity angle for pi0pi0 in " + title;
-    _hel[ix].second->topdrawOutput(output,true,false,false,false,"BLACK",temp);
+    _hel[ix].second->topdrawOutput(output,Frame,"BLACK",temp);
   }
 }

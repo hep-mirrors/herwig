@@ -46,24 +46,24 @@ PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer()
   _coupling[10] = 2.19; _maxweight[10] = 2.; 
   // eta (1475) to K* K
   _incoming[11] =  100331; _outgoingV[11] =  323; _outgoingP[11] = -321; 
-  _coupling[11] = 2.80; _maxweight[11] = 3.5; 
+  _coupling[11] = 2.92; _maxweight[11] = 3.5; 
   _incoming[12] =  100331; _outgoingV[12] =  313; _outgoingP[12] = -311; 
-  _coupling[12] = 2.80; _maxweight[12] = 3.5; 
+  _coupling[12] = 2.92; _maxweight[12] = 3.5; 
   // eta (1475) to K* K
   _incoming[13] =  9020221; _outgoingV[13] =  323; _outgoingP[13] = -321; 
-  _coupling[13] = 0.98; _maxweight[13] = 4.; 
+  _coupling[13] = 0.956; _maxweight[13] = 4.; 
   _incoming[14] =  9020221; _outgoingV[14] =  313; _outgoingP[14] = -311; 
-  _coupling[14] = 0.98; _maxweight[14] = 4.; 
+  _coupling[14] = 0.956; _maxweight[14] = 4.; 
   // decay f_0(1370) to a_1 pi
   _incoming[15] =  10221; _outgoingV[15] = 20213; _outgoingP[15] = -211; 
-  _coupling[15] = 3.57; _maxweight[15] = 4.5; 
+  _coupling[15] = 2.68; _maxweight[15] = 4.5; 
   _incoming[16] =  10221; _outgoingV[16] = 20113; _outgoingP[16] =  111; 
-  _coupling[16] = 3.57; _maxweight[16] = 4.5; 
+  _coupling[16] = 2.68; _maxweight[16] = 4.5; 
   // decay f_0(1500) to a_1 pi
   _incoming[17] =  9030221; _outgoingV[17] = 20213; _outgoingP[17] = -211; 
-  _coupling[17] = 1.502; _maxweight[17] = 3.2; 
+  _coupling[17] = 1.147; _maxweight[17] = 3.2; 
   _incoming[18] =  9030221; _outgoingV[18] = 20113; _outgoingP[18] =  111; 
-  _coupling[18] = 1.502; _maxweight[18] = 3.2; 
+  _coupling[18] = 1.147; _maxweight[18] = 3.2; 
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates

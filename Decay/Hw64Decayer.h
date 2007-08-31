@@ -56,6 +56,13 @@ public:
   virtual ParticleVector decay(const Particle & parent,
 			       const PDVector & children) const;
 
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
+
 public:
 
   /**

@@ -540,11 +540,12 @@ void DrellYanHardGenerator::dofinish() {
   HardestEmissionGenerator::dofinish();
 
   ofstream hist_out("hist3.top");
+  using namespace HistogramOptions;
 
-  _hyb->topdrawOutput(hist_out,true,false,false,false,string("BLACK"),string("Drell-Yan hist yb"), string(), string(), string(), string("yb"), string());
-  _hyj->topdrawOutput(hist_out,true,false,false,false,string("BLACK"),string("Drell-Yan hist yj"), string(), string(), string(), string("yj"), string());
-  _hplow->topdrawOutput(hist_out,true,false,false,false,string("BLACK"),string("Drell-Yan hist pT"), string(), string(), string(), string("pT/GeV"), string());
-  _hphigh->topdrawOutput(hist_out,true,false,false,true,string("BLACK"),string("Drell-Yan hist pT"), string(), string(), string(), string("pT/GeV"), string());
+  _hyb->topdrawOutput(hist_out,Frame,string("BLACK"),string("Drell-Yan hist yb"), string(), string(), string(), string("yb"), string());
+  _hyj->topdrawOutput(hist_out,Frame,string("BLACK"),string("Drell-Yan hist yj"), string(), string(), string(), string("yj"), string());
+  _hplow->topdrawOutput(hist_out,Frame,string("BLACK"),string("Drell-Yan hist pT"), string(), string(), string(), string("pT/GeV"), string());
+  _hphigh->topdrawOutput(hist_out,Frame|Ylog,string("BLACK"),string("Drell-Yan hist pT"), string(), string(), string(), string("pT/GeV"), string());
 
 
   _htype->topdrawOutputAverage(hist_out,true,false,false,true,string("BLACK"),string("Emission type"), string(), string(), string(), string("Emission Type"), string());
@@ -787,9 +788,10 @@ void DrellYanHardGenerator::TestBbar(){
   cerr<<"max wgt = "<< max_wgt<<"\n min wgt = "<< min_wgt<<endl;
   
   //output histogram
+  using namespace HistogramOptions;
 
 
-  _hbbarDileptonMass->topdrawOutput( born_out, true, false, false, false,
+  _hbbarDileptonMass->topdrawOutput( born_out, Frame,
 				      "BLACK",
 				      "bbar dilepton mass", 
 				      " ", 
@@ -797,7 +799,7 @@ void DrellYanHardGenerator::TestBbar(){
 				      " ", 
 				      "mass / GeV", 
 				      " " );
-  _hbbar->topdrawOutput( born_out, true, false, false, false,
+  _hbbar->topdrawOutput( born_out, Frame,
 			  "BLACK",
 			  "bbar yb", 
 			  " ", 
@@ -805,7 +807,7 @@ void DrellYanHardGenerator::TestBbar(){
 			  " ", 
 			  "yb", 
 			  " " );
- _hbbarx->topdrawOutput( born_out, true, false, false, false,
+ _hbbarx->topdrawOutput( born_out, Frame,
 			  "BLACK",
 			  "bbar x", 
 			  " ", 
@@ -813,7 +815,7 @@ void DrellYanHardGenerator::TestBbar(){
 			  " ", 
 			  "x", 
 			  " " );
- _hbornyb->topdrawOutput( born_out, true, false, false, false,
+ _hbornyb->topdrawOutput( born_out, Frame,
 			  "BLACK",
 			  "born yb", 
 			  " ", 
@@ -821,7 +823,7 @@ void DrellYanHardGenerator::TestBbar(){
 			  " ", 
 			  "yb", 
 			  " " );
- _hbbarv->topdrawOutput( born_out, true, false, false, false,
+ _hbbarv->topdrawOutput( born_out, Frame,
 			  "BLACK",
 			  "bbar v", 
 			  " ", 

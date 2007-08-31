@@ -21,6 +21,19 @@ case "${host}" in
     ;;
 esac
 
+dnl === disable debug symbols by default =====
+if test "x$CXXFLAGS" = "x"; then
+   CXXFLAGS=-O2
+fi
+if test "x$CFLAGS" = "x"; then
+   CFLAGS=-O2
+fi
+dnl Looptools manual requires no optimization
+if test "x$FFLAGS" = "x"; then
+   FFLAGS=-O0
+fi
+dnl ==========================================
+
 AC_LANG(C++)
 
 AM_INIT_AUTOMAKE([1.9])
@@ -55,7 +68,6 @@ HERWIG_LOOPTOOLS
 
 HERWIG_PDF_PATH
 
-
 HERWIG_CHECK_HEPMC
 
 HERWIG_CHECK_KTJET
@@ -64,26 +76,10 @@ HERWIG_CHECK_EVTGEN
 
 HERWIG_VERSIONSTRING
 
+HERWIG_COMPILERFLAGS
+
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
-
-dnl ###########################
-dnl ###########################
-
-AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE"
-AM_CXXFLAGS="-ansi -pedantic -Wall -W"
-
-# don't know how else to do this. see bug #14
-if test -n "$GCC"; then
-   case "${host}" in
-   *-linux*)	AM_LDFLAGS="$AM_LDFLAGS -Wl,--disable-new-dtags" ;;
-   *)		;;
-   esac
-fi
-
-AC_SUBST(AM_CPPFLAGS)
-AC_SUBST(AM_CXXFLAGS)
-AC_SUBST(AM_LDFLAGS)
 
 AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Makefile

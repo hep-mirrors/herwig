@@ -249,11 +249,11 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	part1=*pit;++pit;
 	part2=*pit;
 	// mass generators
-	if(part1->massGenerator())
+	if( part1->stable() || part1->massGenerator())
 	  massgen1=dynamic_ptr_cast<tGenericMassGeneratorPtr>(part1->massGenerator());
 	else
 	  massgen1=tGenericMassGeneratorPtr();
-	if(part2->massGenerator())
+	if(part2->stable() || part2->massGenerator())
 	  massgen2=dynamic_ptr_cast<tGenericMassGeneratorPtr>(part2->massGenerator());
 	else
 	  massgen2=tGenericMassGeneratorPtr();
@@ -459,7 +459,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     if(_decaytags.size()!=0) {
       _decaymodes.clear();
       for(unsigned int ix=0;ix<_decaytags.size();++ix) {
-	_decaymodes.push_back(Repository::findDecayMode(_decaytags[ix]));
+	_decaymodes.push_back(CurrentGenerator::current().findDecayMode(_decaytags[ix]));
       }
     }
     // otherwise just use the modes from the selector
@@ -478,11 +478,12 @@ void GenericWidthGenerator::doinit() throw(InitException) {
   // setup the partial widths in the decayers for normalization
   tDecayIntegratorPtr temp;
   for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
+    if(!_decaymodes[ix]) continue;
+    _decaymodes[ix]->init();
     decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(_decaymodes[ix]->decayer());
-    if(decayer) {
-      decayer->init();
-      decayer->setPartialWidth(*_decaymodes[ix],ix);
-    }
+    if(!decayer) continue;
+    decayer->init();
+    decayer->setPartialWidth(*_decaymodes[ix],ix);
   }
   // code to output plots
   string fname = CurrentGenerator::current().filename() + 

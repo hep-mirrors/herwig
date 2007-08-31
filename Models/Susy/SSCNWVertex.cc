@@ -96,9 +96,10 @@ void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     }
   }
   else
-    throw HelicityConsistencyError() << "SSCNWVertex::setCoupling() - There is "
-				     << "no W-boson in this vertex! "
-				     << Exception::warning;
+    throw HelicityConsistencyError() 
+      << "SSCNWVertex::setCoupling() - There is no W-boson in this vertex! "
+      << part1->id() << " " << part2->id() << " " << part3->id()
+      << Exception::warning;
   if((abs(cha) == 1000024 || abs(cha) == 1000037) && 
      (abs(neu) == 1000022 || abs(neu) == 1000023 || 
       abs(neu) == 1000025 || abs(neu) == 1000035 || 

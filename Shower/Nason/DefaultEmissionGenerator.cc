@@ -79,7 +79,8 @@ void DefaultEmissionGenerator::doinitrun() {
 void DefaultEmissionGenerator::dofinish() {
   HardestEmissionGenerator::dofinish();
   ofstream output("hardestemission.top");
-  _thrust[0]->topdrawOutput(output,true,true,false,true,
+  using namespace HistogramOptions;
+  _thrust[0]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "1-T ",
 			    "    ",
@@ -87,7 +88,7 @@ void DefaultEmissionGenerator::dofinish() {
 			    "  G G       ",
 			    "1-T",
 			    "   ");
-  _thrust[1]->topdrawOutput(output,true,true,false,true,
+  _thrust[1]->topdrawOutput(output,Frame|Errorbars|Ylog,
 			    "RED",
 			    "1-T ",
 			    "    ",
@@ -95,8 +96,8 @@ void DefaultEmissionGenerator::dofinish() {
 			    "  G G       ",
 			    "1-T",
 			    "   ");
-  _pthist[0]->topdrawOutput(output,true,true,false,true,"red","pt");
-  _pthist[1]->topdrawOutput(output,true,true,false,true,"red","pt");
+  _pthist[0]->topdrawOutput(output,Frame|Errorbars|Ylog,"red","pt");
+  _pthist[1]->topdrawOutput(output,Frame|Errorbars|Ylog,"red","pt");
   output << "new frame\n";
   output << "set limits x 0 1 y 0 1\n";
   for(unsigned int ix=0;ix<_xq.size();++ix) {

@@ -13,7 +13,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * This class implements the coupling of a \f$Z^0\f$ boson to a pair of 
+ * This class implements the coupling of a \f$\gamma/Z^0\f$ to a pair of 
  * charginos. It inherits from FFVVertex and implements the setCoupling method.
  *
  * @see \ref SSCCZVertexInterfaces "The interfaces"
@@ -164,6 +164,11 @@ private:
    * The value of the right coupling when it was last evaluated
    */
   Complex _rightlast;
+
+  /**
+   * The ID of the gauge boson when the vertex was last evaluated
+   */
+  long _gblast;
 };
 }
 

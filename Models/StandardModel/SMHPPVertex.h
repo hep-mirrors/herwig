@@ -7,14 +7,16 @@
 
 #include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "SMHPPVertex.fh"
 
 namespace Herwig {
-    
+using namespace ThePEG;
+
 /**
- * The <code>SMHPPVertex</code> class implements the
- * setCoupling member for the Standard Model Higgs to  
- * gamma,gamma decay mode.
+ * The <code>SMHGGVertex</code> class implements the 
+ * setCoupling member for the Standard Model effective 
+ * vertex Higgs-gamma-gamma. 
  */
 class SMHPPVertex: public SVVLoopVertex {
 
@@ -28,8 +30,6 @@ public:
   inline SMHPPVertex();
   //@}
 
-public:
-
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -37,7 +37,7 @@ public:
    * @param os the persistent output stream written to.
    */
   void persistentOutput(PersistentOStream & os) const;
-  
+
   /**
    * Function used to read in object persistently.
    * @param is the persistent input stream read from.
@@ -45,7 +45,7 @@ public:
    */
   void persistentInput(PersistentIStream & is, int version);
   //@}
-  
+
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -53,7 +53,7 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-  
+
   /**
    * Calculate couplings
    *@param q2 Scale at which to evaluate coupling
@@ -63,9 +63,8 @@ public:
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3);
-  
+
 protected:
-  
   /** @name Clone Methods. */
   //@{
   /**
@@ -73,15 +72,13 @@ protected:
    * @return a pointer to the new object.
    */
   inline virtual IBPtr clone() const;
-  
+
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
   inline virtual IBPtr fullclone() const;
   //@}
-  
-protected:
 
   /**
    * Initialize this object after the setup phase before saving and
@@ -89,21 +86,20 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-  
+
 private:
-  
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
   static ClassDescription<SMHPPVertex> initSMHPPVertex;
-  
+
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SMHPPVertex & operator=(const SMHPPVertex &);
-  
+
   /**
    *Storage of couplings
    */
@@ -112,37 +108,60 @@ private:
    * Last value of the coupling calculated
    */
   Complex _couplast;
-  
+
   /**
    * The scale \f$q^2\f$ at which coupling was last evaluated
    */
   Energy2 _q2last;
   //@}
-  
+
   /**
    * Pointer to Standard Model object
    */
   tcHwSMPtr _theSM;
-  
+
   /**
    * The mass of the \f$W\f$ boson.
    */
   Energy _mw;
 
   /**
-   * Storage of \f$\sin\theta_W\f$
+   * define quark mass scheme (fixed/running)
    */
-  double _sw;
-  
-  /**
-   * A pointer to the top quark ParticleData object 
-   */
-  tcPDPtr _top;
+  unsigned int massopt;
 
   /**
-   * Whether we have calculated the tensor coefficients already
+   * The minimum flavour number in quark loops
    */
-  bool _haveCoeff;  
+  unsigned int _minloop;
+
+  /**
+   * The maximum flavour number in quark loops
+   */
+  unsigned int _maxloop;
+
+  /**
+   * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Af(const double lambda) const;
+
+  /**
+   * Loop calculations: A1 for spin-1 particles (see details in ``Higgs Hunter's Guide'')
+   */
+  Complex Aw(const double lambda) const;
+
+  /**
+   * Loop calculations: W2 function (see details in NPB297,221)
+   */
+  Complex W2(double lambda) const;
+
+  /**
+   * Switch between two representations of coefficients (_a00,_a11,_a12,_a21,_a22,_aEp):
+   * suitable for the simplified H-g-g and H-gamma-gamma vertices and 
+   * suitable for the Passarino-Veltman tensor reduction scheme
+   */
+  unsigned int _CoefRepresentation;
+
 };
 }
 

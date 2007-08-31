@@ -42,8 +42,8 @@ void VectorMesonPVectorPScalarDecayer::doinit() throw(InitException) {
 }
 
 VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer()
-  :  _coupling(25), _incoming(25), _outgoingA(25), _outgoingP(25), 
-     _maxweight(25) {
+  :  _coupling(21), _incoming(21), _outgoingA(21), _outgoingP(21), 
+     _maxweight(21) {
   // Jpsi to K_1 K
   _incoming[0] = 443; _outgoingA[0] =  20313; _outgoingP[0] = -311; 
   _coupling[0] = 0.00114/GeV; _maxweight[0] = 12.; 
@@ -95,6 +95,9 @@ VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer()
   _coupling[18] = 1.64/GeV; _maxweight[18] = 7.; 
   _incoming[19] = 100223; _outgoingA[19] =  10213; _outgoingP[19] = -211; 
   _coupling[19] = 1.64/GeV; _maxweight[19] = 6.; 
+  // psi(2s) -> h_c pi0
+  _incoming[20] = 100443; _outgoingA[20] =  10443; _outgoingP[20] = 111; 
+  _coupling[20] = 1.64/GeV; _maxweight[20] = 6.; 
   // initial size of the arrays
   _initsize = _coupling.size();
   // intermediates

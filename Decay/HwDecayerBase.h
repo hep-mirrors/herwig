@@ -111,12 +111,23 @@ public:
    * @param os The stream to output the information to
    * @param header Whether or not to output the information for MySQL
    */
-  virtual void dataBaseOutput(ofstream & os,bool header) const;
+  virtual void dataBaseOutput(ofstream & os,bool header) const = 0;
 
   /**
    *  Access to the initialize variable
    */
   inline bool initialize() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:

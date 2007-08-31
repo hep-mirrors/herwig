@@ -34,10 +34,6 @@ set /Defaults/Model:Vertex/GSGSG GSGSGVertex
 create Herwig::SSNNZVertex NNZVertex
 set /Defaults/Model:Vertex/NNZ NNZVertex
 
-# create chargino-chargino-P vertex 
-create Herwig::SSCCPVertex CCPVertex
-set /Defaults/Model:Vertex/CCP CCPVertex
-
 # create chargino-chargino-Z vertex 
 create Herwig::SSCCZVertex CCZVertex
 set /Defaults/Model:Vertex/CCZ CCZVertex

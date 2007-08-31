@@ -269,6 +269,36 @@ colourConnections(const Particle & parent,
 		      << Exception::runerror; 
 }
 
+bool GeneralTwoBodyDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
+					  double & coupling) const {
+  long parent = dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  long id1 = (*pit)->id();
+  ++pit;
+  long id2 = (*pit)->id();
+  bool order(false);
+  vector<int>::size_type ix(0);
+  do {
+    if( parent == _inpart[ix] ) {
+      long id1t(_outparta[ix]), id2t(_outpartb[ix]);
+      if( id1 == id1t && id2 == id2t ) {
+	order = true;
+	break;
+      }
+      if( id1 == id2t && id2 == id1t ) {
+	order = false;
+	break;
+      }
+    }
+    ++ix;
+  }
+  while( ix < _inpart.size() );
+  mecode = -1;
+  coupling = 1.;
+  return order;
+}
+
+
 void GeneralTwoBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << _thelist << _theVertex << _inpart << _outparta << _outpartb
      << _maxweight;

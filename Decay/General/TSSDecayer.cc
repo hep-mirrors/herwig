@@ -74,21 +74,17 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 }
 
 
-Energy TSSDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass());
-  _theSSTPtr->setCoupling(scale,outa,outb,inpart);
-  double musq = sqr(outa->mass()/inpart->mass());
-  double b = sqrt(1.-4.*musq);
+Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  Energy2 scale(sqr(inpart.second));
+  _theSSTPtr->setCoupling(scale, outa.first, outb.first, inpart.first);
+  double musq = sqr(outa.second/inpart.second);
+  double b = sqrt(1. - 4.*musq);
   double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
-  Complex norm(_theSSTPtr->getNorm()*_theSSTPtr->getNorm());
-  me2 *= norm.real();
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
-  Energy output = me2*pcm/(8.*Constants::pi);
-  if(outa->id() == outb->id()) {
+  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+				      outb.second);
+  Energy output = norm(_theSSTPtr->getNorm())*me2*pcm/(8.*Constants::pi);
+  if(outa.first->id() == outb.first->id())
     output /= 2;
-  }
   return output;
 }

@@ -150,16 +150,6 @@ void DecayIntegrator::doinitrun() {
   if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
 }
 
-void DecayIntegrator::dofinish() {
-  HwDecayerBase::dofinish();
-  if(initialize()) {
-    string fname = CurrentGenerator::current().filename() + 
-      string("-") + name() + string(".output");
-    ofstream output(fname.c_str());
-    dataBaseOutput(output,true);
-  }
-}
-
 // add a new mode
 void DecayIntegrator::addMode(DecayPhaseSpaceModePtr in,double maxwgt,
 				     const vector<double> inwgt) const {
@@ -324,7 +314,6 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
 void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
-  HwDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":Iteration " << _niter << "\n";
   output << "set " << fullName() << ":Ntry " << _ntry << "\n";
   output << "set " << fullName() << ":Points " << _npoint << "\n";

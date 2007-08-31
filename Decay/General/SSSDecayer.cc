@@ -59,20 +59,19 @@ double SSSDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-Energy SSSDecayer::partialWidth(const PDPtr inpart,
-				const PDPtr outa,
-				const PDPtr outb) const {
-  Energy2 scale(inpart->mass()*inpart->mass());
-  _theSSSPtr->setCoupling(scale,inpart,outa,outb);
-  Complex norm = (_theSSSPtr->getNorm()*_theSSSPtr->getNorm());
-  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
-				      outb->mass());
-  Energy pWidth = norm.real()*pcm/8./Constants::pi/scale*UnitRemoval::E2;
-  if(outa->id() == outb->id()) {
-    pWidth /=2;
-  }
-  if(outa->coloured() && outb->coloured()) {
+Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
+				PMPair outb) const {
+  Energy2 scale(sqr(inpart.second));
+  _theSSSPtr->setCoupling(scale, inpart.first, outa.first,
+			  outb.first);
+  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+				      outb.second);
+  double c2 = norm(_theSSSPtr->getNorm());
+  Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
+  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  if( abs(cola) == 3 && abs(colb) == 3)
     pWidth *= 3.;
-  }
+  if( outa.first->id() == outb.first->id() )
+    pWidth *= 0.5;
   return pWidth;
 }

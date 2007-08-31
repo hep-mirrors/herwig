@@ -146,6 +146,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 			    << _extpart[0]->PDGName() << " -> ";
     for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
       CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
+    CurrentGenerator::log() << "\n";
     if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << wsum 
 					  << " +/- " << wsqsum << "\n";
     CurrentGenerator::log() << "The partial width is " << wsum*fact/MeV 
@@ -458,7 +459,7 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
   // set masses of stable particles and limits 
   for(unsigned int ix=1;ix<_extpart.size();++ix) {
     // get the mass of the particle if can't use weight
-    if(!_massgen[ix]) {
+    if(!_massgen[ix] || _extpart[ix]->stable()) {
       mass.push_back(_extpart[ix]->generateMass());
       mlow+=mass[ix];
     }

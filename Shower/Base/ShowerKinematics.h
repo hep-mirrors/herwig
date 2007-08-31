@@ -118,9 +118,10 @@ public:
    * @param iopt The option for the momentum reconstruction 
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector
+   * @param mass The mass to be used, if less than zero on-shell
    */
   virtual void reconstructLast(const tShowerParticlePtr theLast,
-			       unsigned int iopt) const;
+			       unsigned int iopt, Energy mass=-1.*GeV) const;
 
   /**
    *  Perform any initial calculations needed after the branching has been selected
