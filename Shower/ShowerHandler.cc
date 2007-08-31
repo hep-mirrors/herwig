@@ -293,10 +293,12 @@ PPtr ShowerHandler::findParent(PPtr original, bool & isHard,
 }
 
 bool ShowerHandler::decayProduct(tPPtr particle) const{
-  return 
+  return
     !(particle->dataPtr()->coloured()&&
-      (particle->parents()[0]==eventHandler()->lastPartons().first||
-       particle->parents()[0]==eventHandler()->lastPartons().second)) && 
+      ((particle->parents()[0]==eventHandler()->lastPartons().first&&
+	eventHandler()->lastPartons().first->children().size()<2)||
+       (particle->parents()[0]==eventHandler()->lastPartons().second&&
+	eventHandler()->lastPartons().second->children().size()<2))) && 
     particle->momentum().m2()>0.0*GeV2&&
     particle != eventHandler()->lastPartons().first &&
     particle != eventHandler()->lastPartons().second;
