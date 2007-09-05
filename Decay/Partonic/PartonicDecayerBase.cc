@@ -224,7 +224,6 @@ bool PartonicDecayerBase::duplicateMode(const Particle & parent,
 void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
-  HwDecayerBase::dataBaseOutput(output,false);
   // parameters
   output << "set  " << fullName() << ":PartonSplitter " 
 	 << _partonSplitter->fullName() << " \n";
