@@ -215,9 +215,8 @@ LorentzRotation UA5Handler::rotate(const LorentzMomentum &p) const {
      theta = acos(ct);
   }
   // Rotate first around the z axis to put p in the x-z plane
-  R = R.rotateZ(phi);
   // Then rotate around the Y axis to put p on the z axis
-  R = R.rotateY(theta);
+  R.rotateZ(phi).rotateY(theta);
   return R;
 }
 
