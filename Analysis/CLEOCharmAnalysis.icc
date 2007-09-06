@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the CLEOCharmAnalysis class.
+//
+
+namespace Herwig {
+
+inline CLEOCharmAnalysis::CLEOCharmAnalysis() {}
+
+inline IBPtr CLEOCharmAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr CLEOCharmAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

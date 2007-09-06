@@ -90,7 +90,9 @@ a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
 BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
 BELLECharmAnalysis.h BELLECharmAnalysis.icc \
-BELLECharmAnalysis.fh BELLECharmAnalysis.cc
+BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
+CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
+CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
