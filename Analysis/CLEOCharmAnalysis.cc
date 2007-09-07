@@ -71,6 +71,20 @@ void CLEOCharmAnalysis::dofinish() {
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
+  double chisq=0.,minfrac=0.05;
+  unsigned int ndegrees;
+  _histDstarplus->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for CLEO D*+ distribution\n";
+  _histDstar0   ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for CLEO D*0 distribution\n";
+  _histD0       ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for CLEO D0 distribution\n";
+  _histDplus    ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for CLEO D+ distribution\n";
   _histDstarplus->topdrawOutput(output,Frame|Errorbars,
 				"RED",
 				"D2*+3",
@@ -161,11 +175,11 @@ void CLEOCharmAnalysis::doinitrun() {
       error = vector<double>(dstar0error,dstar0error+17);
     }
     double norm=0.;
-    for(unsigned int ix=0;ix<data.size();++ix) norm+=data[ix];
+    for(unsigned int iy=0;iy<data.size();++iy) norm+=data[iy];
     norm *= 0.05; 
-    for(unsigned int ix=0;ix<data.size();++ix) {
-      data [ix] /= norm;
-      error[ix] /= norm;
+    for(unsigned int iy=0;iy<data.size();++iy) {
+      data [iy] /= norm;
+      error[iy] /= norm;
     }
     if(ix==0)      _histDplus=new_ptr(Histogram(bins,data,error));
     else if(ix==1) _histD0=new_ptr(Histogram(bins,data,error));

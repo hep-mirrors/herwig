@@ -113,6 +113,26 @@ void BELLECharmAnalysis::dofinish() {
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
+  double chisq=0.,minfrac=0.05;
+  unsigned int ndegrees;
+  _histDstarplus->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for BELLE D*+ distribution\n";
+  _histDstar0   ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for BELLE D*0 distribution\n";
+  _histD0       ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for BELLE D0 distribution\n";
+  _histDplus    ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for BELLE D+ distribution\n";
+  _histDs       ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for BELLE D_s+ distribution\n";
+  _histLambda   ->chiSquared(chisq,ndegrees,minfrac);
+  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for BELLE Lambda_c+ distribution\n";
   _histDstarplus->topdrawOutput(output,Frame|Errorbars,
 				"RED",
 				"D2*+3",
@@ -173,7 +193,9 @@ void BELLECharmAnalysis::dofinish() {
   double ratio[3]={0.527,0.099,0.081};
   double error[3]={0.027,0.004,0.004};
   for(unsigned int ix=0;ix<3;++ix) {
-    double chisq = (data[ix]-ratio[ix])/sqrt(sqr(derror[ix])+sqr(error[ix]));
+    double chisq = sqr(data[ix]-ratio[ix])/(sqr(derror[ix])+sqr(error[ix]));
+    CurrentGenerator::log() << "Chi Square = " << chisq 
+			    << " for 1 degree of freedon for BELLE ";
     if(ix==0) {
       CurrentGenerator::log() << "Ratio of D*/D = ";
     }
@@ -182,10 +204,9 @@ void BELLECharmAnalysis::dofinish() {
     }
     else if(ix==2) {
       CurrentGenerator::log() << "Ratio of Lambda_c/D = ";
-    } 
-    CurrentGenerator::log() << data[ix] << "+/-" << derror[ix] << "\t"
-			    << "Exp = " << ratio[ix] << "+/-" << error[ix] << "\t"
-			    << "ChiSq = " << chisq << "\n";
+    }  
+    CurrentGenerator::log() << "Hw++ = " << data[ix]  << " +/- " << derror[ix] << "\t"
+			    << "Exp = "  << ratio[ix] << " +/- " << error[ix]  << "\n";
   }
 }
 

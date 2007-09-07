@@ -338,19 +338,16 @@ void Histogram::chiSquared(double & chisq,
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
     double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
     double error = _bins[ix].dataerror;
-    if(error>0.)
-      {
-	if(error/_bins[ix].data < minfrac) 
-	  error = minfrac*_bins[ix].data;
-	double var=sqr(error)
-	  + _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
-	chisq += sqr(_bins[ix].data - value) / var;
-      }
+    if(error>0.) {
+      if(error/_bins[ix].data < minfrac) error = minfrac*_bins[ix].data;
+      double var=sqr(error)
+	+ _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
+      chisq += sqr(_bins[ix].data - value) / var;
+    }
   }
 }
 
-void Histogram::normaliseToCrossSection()
-{
+void Histogram::normaliseToCrossSection() {
   unsigned int numPoints = _globalStats.numberOfPoints();
   if (numPoints == 0) ++numPoints;
   _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*
