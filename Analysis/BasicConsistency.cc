@@ -16,6 +16,13 @@
 using namespace Herwig;
 using namespace ThePEG;
 
+// the usual OS X workaround
+// SP: shouldn't we move this into a central place,
+// e.g. ThePEG/Config/ThePEG.h, which is included
+// by almost all headers through Interfaced.h ?
+extern "C" int isnan(double) throw();
+extern "C" int isinf(double) throw();
+
 void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   set<tcPPtr> particles;
   event->selectFinalState(inserter(particles));
