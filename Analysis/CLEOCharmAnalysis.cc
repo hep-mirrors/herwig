@@ -26,7 +26,7 @@ void CLEOCharmAnalysis::analyze(tEventPtr event, long, int, int) {
       it != particles.end(); ++it) {
     long id = abs((*it)->id());
     if(id==ParticleID::Dplus   || id==ParticleID::Dstarplus    ||
-       id==ParticleID::D0      || id==ParticleID::Dstar0       );
+       id==ParticleID::D0      || id==ParticleID::Dstar0       )
       output.push_back(*it);
   }
   analyze(output);
