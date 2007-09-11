@@ -217,6 +217,8 @@ private:
   /// Histograms for cluster mass dependence
   map<long,Histogram> _histograms;
 
+  map<int,Histogram> _clusters;
+
   /**
    *  Map of number of final-state particles to PDG code
    */

@@ -13,7 +13,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/Hadronization/Cluster.h"
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 using namespace Herwig;
@@ -190,22 +192,28 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
 	it != steps.end(); ++it ) {
     (**it).select(inserter(particles), ThePEG::AllSelector());
   }
-
+  
   if( _makeHistograms ) 
     _histograms.insert(make_pair(ExtraParticleID::Cluster, 
 				 Histogram(0.0,10.0,200)));
-
+  
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = abs( (*it)->id() );
     
-    if ( _makeHistograms && isLastCluster(*it) )
+    if ( _makeHistograms && isLastCluster(*it) ) {
       _histograms[ExtraParticleID::Cluster] += (*it)->mass()/GeV;
-
+      tcClusterPtr clu = dynamic_ptr_cast<tcClusterPtr>(*it);
+      if (clu) {
+	_clusters.insert(make_pair(clu->clusterId(), Histogram(0.0,10.0,200)));
+	_clusters[clu->clusterId()] += (*it)->mass()/GeV;
+      }
+    }
+    
     if (_data.find(ID) != _data.end()) {
       eventcount.insert(make_pair(ID,0));
       ++eventcount[ID];
-
+      
       if (_makeHistograms 
 	  && ! (*it)->parents().empty()
 	  && (*it)->parents()[0]->id() == ExtraParticleID::Cluster) {
@@ -277,15 +285,23 @@ void MultiplicityCount::dofinish() {
   outfile.close();
 
   if (_makeHistograms) {
-
+    
     Histogram piratio 
       = _histograms[ParticleID::piplus].ratioWith(_histograms[ParticleID::pi0]);
     Histogram Kratio 
       = _histograms[ParticleID::Kplus].ratioWith(_histograms[ParticleID::K0]);
-
+    
     using namespace HistogramOptions;
     string histofilename = filename + ".top";
     ofstream outfile2(histofilename.c_str());
+    for (map<int,Histogram>::const_iterator it = _clusters.begin();
+	 it != _clusters.end(); ++it) {
+      ostringstream title1;
+      title1 << "Final Cluster " << it->first;
+      string title = title1.str();
+      it->second.topdrawOutput(outfile2,Frame|Rawcount|Ylog,"BLACK",title,"",
+			       "N (200 bins)","","Cluster mass [GeV]");
+    }
     for (map<long,Histogram>::const_iterator it = _histograms.begin();
 	 it != _histograms.end(); ++it) {
       string title = generator()->getParticleData(it->first)->PDGName();
