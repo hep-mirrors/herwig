@@ -109,7 +109,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
  	// calculate the weight
- 	weight = pwt()[quarktopick] * H1->overallWeight * H2->overallWeight *
+ 	weight = pwt(quarktopick) * H1->overallWeight * H2->overallWeight *
  	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
 	int signQ = 0;
 	assert (par1 && quarktopick);
@@ -132,7 +132,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
 	if (signQ  == -1)
 	  quarktopick = quarktopick->CC();
 	// construct the object with the info
-	Kupco a(quarktopick, H1->ptrData, H2->ptrData,weight);
+	Kupco a(quarktopick, H1->ptrData, H2->ptrData, weight);
 	hadrons.push_back(a);
 	wgtsum += weight;
       }

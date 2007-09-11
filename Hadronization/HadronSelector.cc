@@ -389,9 +389,6 @@ void HadronSelector::doinit() throw(InitException) {
       _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy)));
     }
   }
-  // SUSY stuff that can hadronize
-  _partons.push_back(getParticleData(1000006)); // ~t_L
-  _partons.push_back(getParticleData(1000021)); // ~g
 
   // set the weights for the various excited mesons
   // set all to one to start with
