@@ -66,7 +66,7 @@ set theClusterDecayer:ClSmrLight 0.0
 
 set theClusterFissioner:ClMaxBottom  3.2*GeV
 set theClusterFissioner:ClPowBottom  2.0
-set theClusterFissioner:PSplitBottom 1.0
+set theClusterFissioner:PSplitBottom 0.33
 set theClusterDecayer:ClDirBottom 1
 set theClusterDecayer:ClSmrBottom 0.0
 set theLightClusterDecayer:SingleHadronLimitBottom 0.0
