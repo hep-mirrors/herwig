@@ -7,6 +7,77 @@
 #
 # Regular users should not need to edit this file.
 ###############################################################
+#
+#  create the standard fortran decayers
+#
+library Hw64Decay.so
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME0
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME100
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME101
+library HwPartonicDecay.so
+create Herwig::HeavyDecayer /Defaults/Decays/HvyDecayME0
+create Herwig::HeavyDecayer /Defaults/Decays/HvyDecayME100
+create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME0
+create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME130
+create Herwig::MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
+#
+set /Defaults/Decays/DecayME0:MECode 0
+set /Defaults/Decays/DecayME100:MECode 100 
+set /Defaults/Decays/HvyDecayME0:MECode 0
+set HvyDecayME0:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set HvyDecayME0:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set HvyDecayME0:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set HvyDecayME0:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set HvyDecayME0:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set HvyDecayME0:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
+set /Defaults/Decays/HvyDecayME100:MECode 100
+set HvyDecayME100:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set HvyDecayME100:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set HvyDecayME100:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set HvyDecayME100:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set HvyDecayME100:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set HvyDecayME100:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
+set /Defaults/Decays/QDecayME0:MECode 0
+set QDecayME0:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set QDecayME0:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set QDecayME0:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set QDecayME0:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set QDecayME0:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set QDecayME0:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
+set /Defaults/Decays/QDecayME130:MECode 130
+set QDecayME130:PartonSplitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
+set QDecayME130:ClusterFinder /Defaults/Handlers/Hadronization/Cluster/theClusterFinder
+set QDecayME130:ColourReconnector /Defaults/Handlers/Hadronization/Cluster/theColourReconnector
+set QDecayME130:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set QDecayME130:LightClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theLightClusterDecayer
+set QDecayME130:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
+#
+# create the decays for perturbative particles, i.e. top, W and Z
+#
+create Herwig::SMTopDecayer            /Defaults/Decays/Top HwPerturbativeDecay.so
+create Herwig::SMWZDecayer             /Defaults/Decays/WZ  HwPerturbativeDecay.so
+create Herwig::SMHiggsFermionsDecayer  /Defaults/Decays/Hff HwPerturbativeHiggsDecay.so
+create Herwig::SMHiggsWWDecayer        /Defaults/Decays/HWW HwPerturbativeHiggsDecay.so
+set /Defaults/Decays/HWW:BreitWigner 0
+set /Defaults/Decays/HWW:Power 0.0
+set /Defaults/Decays/HWW:Ntry 1000
+
+#
+
+#  Left over from Hw64Decays.in
+#  for new Decayer structure
+#decaymode b'->b,tbar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->s,cbar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->d,ubar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->mu-,nu_mubar,c; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode b'->e-,nu_ebar,c; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode b'->tau-,nu_taubar,c; 0.080 1 /Defaults/Decays/DecayME100
+#decaymode t'->t,bbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->c,sbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->u,dbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_mu,mu+,b'; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_e,e+,b'; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_tau,tau+,b'; 0.080 1 /Defaults/Decays/DecayME100
 decaymode t->u,dbar,b; 0.334 1 /Defaults/Decays/Top
 decaymode t->c,sbar,b; 0.333 1 /Defaults/Decays/Top
 decaymode t->nu_tau,tau+,b; 0.111 1 /Defaults/Decays/Top

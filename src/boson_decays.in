@@ -1,5 +1,4 @@
-#
-#  taken from Hw64Decays.in
+
 #
 decaymode Z0->d,dbar; 0.153817 1 /Defaults/Decays/WZ
 decaymode Z0->s,sbar; 0.153816 1 /Defaults/Decays/WZ
@@ -40,4 +39,3 @@ decaymode h0->gamma,gamma; 0.0021 1 /Defaults/Decays/Mambo
 decaymode h0->Z0,gamma;    0.0007 1 /Defaults/Decays/DecayME0
 decaymode h0->W+,W-;       0.0806 1 /Defaults/Decays/HWW
 decaymode h0->Z0,Z0;       0.0082 1 /Defaults/Decays/HWW
-#
