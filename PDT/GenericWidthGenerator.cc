@@ -486,72 +486,72 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     decayer->setPartialWidth(*_decaymodes[ix],ix);
   }
   // code to output plots
-  string fname = CurrentGenerator::current().filename() + 
-    string("-") + name() + string(".top");
-  ofstream output(fname.c_str());
-  Energy step = (_theParticle->massMax()-_theParticle->massMin())/100.;
-  output << "SET FONT DUPLEX\n";
-  output << "TITLE TOP \"Width for " << _theParticle->name() << "\"\n";
-  output << "TITLE BOTTOM \"m/GeV\"\n";
-  output << "TITLE LEFT \"G/GeV\"\n";
-  output << "CASE       \"F    \"\n";
-  output << "SET LIMITS X " 
-	 << (_theParticle->massMin()-10.*step)/GeV << " " 
-	 << _theParticle->massMax()/GeV << "\n";
-  Energy upper(0.*GeV);
-  for(Energy etest=_theParticle->massMin();etest<_theParticle->massMax();etest+=step) {
-    Energy gamma=width(*_theParticle,etest);
-    upper = max(gamma,upper);
-    output << etest/GeV << "\t" << gamma/GeV << "\n";
-  }
-  output << "SET LIMITS Y 0. " << upper/GeV << "\n";
-  output << "JOIN\n";
-  output << (_theParticle->massMin()-9.*step)/GeV << "\t" 
-	 <<  upper*(_MEcode.size()+1)/(_MEcode.size()+2)/GeV << "\n";
-  output << (_theParticle->massMin()-7.*step)/GeV << "\t" 
-	 <<  upper*(_MEcode.size()+1)/(_MEcode.size()+2)/GeV << "\n";
-  output << "JOIN\n";
-  output << "TITLE DATA " 
-	 << (_theParticle->massMin()-6.*step)/GeV << "\t" 
-	 <<  upper*(_MEcode.size()+1)/(_MEcode.size()+2)/GeV 
-	 << " \"total\"\n";
-  for(unsigned int ix=0;ix<_MEcode.size();++ix) {
-    for(Energy etest=_theParticle->massMin();etest<_theParticle->massMax();etest+=step) {
-      output << etest/GeV << "\t" << partialWidth(ix,etest)*_prefactor/GeV << "\n";
-    }
-    switch(ix) {
-    case 0:  output << "join red\n"    ; break;
-    case 1:  output << "join blue\n"   ; break;
-    case 2:  output << "join green\n"  ; break;
-    case 3:  output << "join yellow\n" ; break;
-    case 4:  output << "join magenta\n"; break;
-    case 5:  output << "join cyan\n"   ; break;
-    case 6:  output << "join dashes\n" ; break;
-    case 7:  output << "join dotted\n" ; break;
-    case 8:  output << "join dotdash\n"; break;
-    default: output << "join daashes space\n";  break;
-    }
-    output << (_theParticle->massMin()-9.*step)/GeV << "\t" 
-	   <<  upper*(_MEcode.size()-ix)/(_MEcode.size()+2)/GeV << "\n";
-    output << (_theParticle->massMin()-7.*step)/GeV << "\t" 
-	   <<  upper*(_MEcode.size()-ix)/(_MEcode.size()+2)/GeV << "\n"; 
-    switch(ix) {
-    case 0:  output << "join red\n"    ; break;
-    case 1:  output << "join blue\n"   ; break;
-    case 2:  output << "join green\n"  ; break;
-    case 3:  output << "join yellow\n" ; break;
-    case 4:  output << "join magenta\n"; break;
-    case 5:  output << "join cyan\n"   ; break;
-    case 6:  output << "join dashes\n" ; break;
-    case 7:  output << "join dotted\n" ; break;
-    case 8:  output << "join dotdash\n"; break;
-    default: output << "join daashes space\n";  break;
-    }
-    output << "TITLE DATA " 
-	   << (_theParticle->massMin()-6.*step)/GeV << "\t" 
-	   <<  upper*(_MEcode.size()-ix)/(_MEcode.size()+2)/GeV 
-	   << " \"" << _decaytags[ix] << "\"\n";
-  }
+//   string fname = CurrentGenerator::current().filename() + 
+//     string("-") + name() + string(".top");
+//   ofstream output(fname.c_str());
+//   Energy step = (_theParticle->massMax()-_theParticle->massMin())/100.;
+//   output << "SET FONT DUPLEX\n";
+//   output << "TITLE TOP \"Width for " << _theParticle->name() << "\"\n";
+//   output << "TITLE BOTTOM \"m/GeV\"\n";
+//   output << "TITLE LEFT \"G/GeV\"\n";
+//   output << "CASE       \"F    \"\n";
+//   output << "SET LIMITS X " 
+// 	 << (_theParticle->massMin()-10.*step)/GeV << " " 
+// 	 << _theParticle->massMax()/GeV << "\n";
+//   Energy upper(0.*GeV);
+//   for(Energy etest=_theParticle->massMin();etest<_theParticle->massMax();etest+=step) {
+//     Energy gamma=width(*_theParticle,etest);
+//     upper = max(gamma,upper);
+//     output << etest/GeV << "\t" << gamma/GeV << "\n";
+//   }
+//   output << "SET LIMITS Y 0. " << upper/GeV << "\n";
+//   output << "JOIN\n";
+//   output << (_theParticle->massMin()-9.*step)/GeV << "\t" 
+// 	 <<  upper*(_MEcode.size()+1)/(_MEcode.size()+2)/GeV << "\n";
+//   output << (_theParticle->massMin()-7.*step)/GeV << "\t" 
+// 	 <<  upper*(_MEcode.size()+1)/(_MEcode.size()+2)/GeV << "\n";
+//   output << "JOIN\n";
+//   output << "TITLE DATA " 
+// 	 << (_theParticle->massMin()-6.*step)/GeV << "\t" 
+// 	 <<  upper*(_MEcode.size()+1)/(_MEcode.size()+2)/GeV 
+// 	 << " \"total\"\n";
+//   for(unsigned int ix=0;ix<_MEcode.size();++ix) {
+//     for(Energy etest=_theParticle->massMin();etest<_theParticle->massMax();etest+=step) {
+//       output << etest/GeV << "\t" << partialWidth(ix,etest)*_prefactor/GeV << "\n";
+//     }
+//     switch(ix) {
+//     case 0:  output << "join red\n"    ; break;
+//     case 1:  output << "join blue\n"   ; break;
+//     case 2:  output << "join green\n"  ; break;
+//     case 3:  output << "join yellow\n" ; break;
+//     case 4:  output << "join magenta\n"; break;
+//     case 5:  output << "join cyan\n"   ; break;
+//     case 6:  output << "join dashes\n" ; break;
+//     case 7:  output << "join dotted\n" ; break;
+//     case 8:  output << "join dotdash\n"; break;
+//     default: output << "join daashes space\n";  break;
+//     }
+//     output << (_theParticle->massMin()-9.*step)/GeV << "\t" 
+// 	   <<  upper*(_MEcode.size()-ix)/(_MEcode.size()+2)/GeV << "\n";
+//     output << (_theParticle->massMin()-7.*step)/GeV << "\t" 
+// 	   <<  upper*(_MEcode.size()-ix)/(_MEcode.size()+2)/GeV << "\n"; 
+//     switch(ix) {
+//     case 0:  output << "join red\n"    ; break;
+//     case 1:  output << "join blue\n"   ; break;
+//     case 2:  output << "join green\n"  ; break;
+//     case 3:  output << "join yellow\n" ; break;
+//     case 4:  output << "join magenta\n"; break;
+//     case 5:  output << "join cyan\n"   ; break;
+//     case 6:  output << "join dashes\n" ; break;
+//     case 7:  output << "join dotted\n" ; break;
+//     case 8:  output << "join dotdash\n"; break;
+//     default: output << "join daashes space\n";  break;
+//     }
+//     output << "TITLE DATA " 
+// 	   << (_theParticle->massMin()-6.*step)/GeV << "\t" 
+// 	   <<  upper*(_MEcode.size()-ix)/(_MEcode.size()+2)/GeV 
+// 	   << " \"" << _decaytags[ix] << "\"\n";
+//   }
 }
  
 void GenericWidthGenerator::setInterpolators() {

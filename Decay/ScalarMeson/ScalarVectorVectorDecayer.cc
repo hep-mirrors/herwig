@@ -33,17 +33,17 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   _coupling[3] = 2.391/GeV; _maxweight[3] = 20.; 
   // chi_c0 decays
   _incoming[4] = 10441; _outgoing1[4] = 443; _outgoing2[4] = 22; 
-  _coupling[4] = 1./GeV; _maxweight[4] = 1.; 
+  _coupling[4] = 0.251/GeV; _maxweight[4] = 1.; 
   _incoming[5] = 10441; _outgoing1[5] = 323; _outgoing2[5] = -323; 
-  _coupling[5] = 1./GeV; _maxweight[5] = 1.; 
+  _coupling[5] = 0.0088/GeV; _maxweight[5] = 1.; 
   _incoming[6] = 10441; _outgoing1[6] = 313; _outgoing2[6] = -313; 
-  _coupling[6] = 1./GeV; _maxweight[6] = 1.; 
+  _coupling[6] = 0.0088/GeV; _maxweight[6] = 1.; 
   _incoming[7] = 10441; _outgoing1[7] = 333; _outgoing2[7] = 333; 
-  _coupling[7] = 1./GeV; _maxweight[7] = 1.; 
+  _coupling[7] = 0.0067/GeV; _maxweight[7] = 1.; 
   _incoming[8] = 10441; _outgoing1[8] = 22; _outgoing2[8] = 22; 
-  _coupling[8] = 1./GeV; _maxweight[8] = 1.; 
+  _coupling[8] = 0.0027/GeV; _maxweight[8] = 1.; 
   _incoming[12] = 10441; _outgoing1[12] = 223; _outgoing2[12] = 223; 
-  _coupling[12] = 1./GeV; _maxweight[12] = 1.; 
+  _coupling[12] = 0.0093/GeV; _maxweight[12] = 1.; 
   // a'_0 -> omega rho
   _incoming[9] = 10111; _outgoing1[9] = 113; _outgoing2[9] = 223; 
   _coupling[9] = 27.09/GeV; _maxweight[9] = 20.;
@@ -51,6 +51,8 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   _coupling[10] = 27.09/GeV; _maxweight[10] = 20.;
   _incoming[11] =-10211; _outgoing1[11] =-213; _outgoing2[11] = 223; 
   _coupling[11] = 27.09/GeV; _maxweight[11] = 20.; 
+  // size of arrays
+  _initsize = _incoming.size();
   // intermediates
   generateIntermediates(false);
 }
@@ -214,7 +216,7 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":SecondOutgoing " << ix << " "
 	     << _outgoing2[ix]  << "\n";
       output << "set " << fullName() << ":Coupling   " << ix << " "
-	     << _coupling[ix]*MeV   << "\n";
+	     << _coupling[ix]*GeV   << "\n";
       output << "set " << fullName() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
@@ -226,7 +228,7 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":SecondOutgoing " << ix << " "
 	     << _outgoing2[ix]  << "\n";
       output << "insert " << fullName() << ":Coupling   " << ix << " "
-	     << _coupling[ix]*MeV   << "\n";
+	     << _coupling[ix]*GeV   << "\n";
       output << "insert " << fullName() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }

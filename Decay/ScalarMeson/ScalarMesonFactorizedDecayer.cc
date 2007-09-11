@@ -273,7 +273,7 @@ bool ScalarMesonFactorizedDecayer::accept(tcPDPtr parent,
   PDVector::const_iterator pend = children.end();
   vector<int> ids,idcurr;
   int id(parent->id());
-  for( ; pit!=pend;++pit){ids.push_back((**pit).id());}
+  for( ; pit!=pend;++pit) ids.push_back((**pit).id());
   // loop over the possible particles in the formfactor
   unsigned int ipart(0),iform,icurr,ix;
   do {

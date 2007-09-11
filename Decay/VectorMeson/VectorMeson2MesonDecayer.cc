@@ -42,7 +42,7 @@ void VectorMeson2MesonDecayer::doinit() throw(InitException) {
 }
 
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
-  _incoming(65), _outgoing1(65), _outgoing2(65), _maxweight(65), _coupling(65) {
+  _incoming(64), _outgoing1(64), _outgoing2(64), _maxweight(64), _coupling(64) {
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
@@ -118,8 +118,8 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[28] = 4.48;      _maxweight[28] = 1.7; 
   _incoming[29] =  333; _outgoing1[29] =  311; _outgoing2[29] = -311; 
   _coupling[29] = 4.59;      _maxweight[29] = 1.7; 
-  _incoming[63] =  333; _outgoing1[63] =  130; _outgoing2[63] = 310; 
-  _coupling[63] = 4.59;      _maxweight[63] = 1.7; 
+  _incoming[62] =  333; _outgoing1[62] =  130; _outgoing2[62] = 310; 
+  _coupling[62] = 4.59;      _maxweight[62] = 1.7; 
   _incoming[30] =  333; _outgoing1[30] =  211; _outgoing2[30] = -211; 
   _coupling[30] = 8.986E-3;  _maxweight[30] = 1.7; 
   // phi' decays
@@ -127,8 +127,8 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[31] = 0.912; _maxweight[31] = 1.7;  
   _incoming[32] =  100333; _outgoing1[32] =  311; _outgoing2[32] = -311; 
   _coupling[32] = 0.918; _maxweight[32] = 1.7;   
-  _incoming[64] =  100333; _outgoing1[64] =  130; _outgoing2[64] = 310; 
-  _coupling[64] = 0.918; _maxweight[64] = 1.7;  
+  _incoming[63] =  100333; _outgoing1[63] =  130; _outgoing2[63] = 310; 
+  _coupling[63] = 0.918; _maxweight[63] = 1.7;  
   // excited psi decays
   _incoming[33] = 30443; _outgoing1[33] =  411; _outgoing2[33] = -411; 
   _coupling[33] = 12.83; _maxweight[33] = 1.7; 
@@ -146,13 +146,13 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[38] = 1.398; _maxweight[38] = 1.7; 
   // K_1 decays to K*_0 pion
   _incoming[39] =  10323; _outgoing1[39] =  10321; _outgoing2[39] =  111;  
-  _coupling[39] = 13.7; _maxweight[39] = 8.9; 
+  _coupling[39] = 14.45; _maxweight[39] = 8.9; 
   _incoming[40] =  10323; _outgoing1[40] =  10311; _outgoing2[40] =  211; 
-  _coupling[40] = 19.4; _maxweight[40] = 8.9; 
+  _coupling[40] = 20.46; _maxweight[40] = 8.9; 
   _incoming[41] =  10313; _outgoing1[41] =  10311; _outgoing2[41] =  111; 
-  _coupling[41] = 13.7; _maxweight[41] = 8.9; 
+  _coupling[41] = 14.27; _maxweight[41] = 8.9; 
   _incoming[42] =  10313; _outgoing1[42] =  10321; _outgoing2[42] = -211;
-  _coupling[42] = 19.4; _maxweight[42] = 8.9;
+  _coupling[42] = 20.43; _maxweight[42] = 8.9;
   // K_1 decays to f(1370) kaon
   _incoming[43] =  10323; _outgoing1[43] =  321; _outgoing2[43] =  10221; 
   _coupling[43] = 20.; _maxweight[43] = 4.2; 
@@ -176,8 +176,8 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[50] = 1.111E-3; _maxweight[50] = 1.7; 
   _incoming[51] = 443; _outgoing1[51] = 311; _outgoing2[51] = -311; 
   _coupling[51] = 0.873E-3; _maxweight[51] = 1.7; 
-  _incoming[61] = 443; _outgoing1[61] = 130; _outgoing2[61] = 310; 
-  _coupling[61] = 0.873E-3; _maxweight[61] = 1.7; 
+  _incoming[60] = 443; _outgoing1[60] = 130; _outgoing2[60] = 310; 
+  _coupling[60] = 0.873E-3; _maxweight[60] = 1.7; 
   // psi(2s) to pions
   _incoming[52] = 100443; _outgoing1[52] = 211; _outgoing2[52] = -211; 
   _coupling[52] = 1.055E-3; _maxweight[52] = 1.7;
@@ -186,22 +186,18 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _coupling[53] = 0.905E-3; _maxweight[53] = 1.7; 
   _incoming[54] = 100443; _outgoing1[54] = 311; _outgoing2[54] = -311; 
   _coupling[54] = 0.905E-3; _maxweight[54] = 1.7;  
-  _incoming[62] = 100443; _outgoing1[62] = 130; _outgoing2[62] = 310; 
-  _coupling[62] = 0.905E-3; _maxweight[62] = 1.7;
+  _incoming[61] = 100443; _outgoing1[61] = 130; _outgoing2[61] = 310; 
+  _coupling[61] = 0.905E-3; _maxweight[61] = 1.7;
   // f_1 to a_0 pi
   _incoming[55] = 20223; _outgoing1[55] =  9000111; _outgoing2[55] =  111; 
-  _coupling[55] = 3.035; _maxweight[55] = 10.; 
+  _coupling[55] = 4.169; _maxweight[55] = 10.; 
   _incoming[56] = 20223; _outgoing1[56] =  9000211; _outgoing2[56] = -211; 
-  _coupling[56] = 3.035; _maxweight[56] = 10.; 
-  _incoming[57] = 20223; _outgoing1[57] = -9000211; _outgoing2[57] =  211; 
-  _coupling[57] = 3.035; _maxweight[57] = 10.; 
+  _coupling[56] = 4.169; _maxweight[56] = 10.;
   // f'_1 to a_0 pi
-  _incoming[58] = 20333; _outgoing1[58] =  9000111; _outgoing2[58] =  111; 
-  _coupling[58] = 0.954; _maxweight[58] = 10.; 
-  _incoming[59] = 20333; _outgoing1[59] =  9000211; _outgoing2[59] = -211; 
-  _coupling[59] = 0.954; _maxweight[59] = 10.; 
-  _incoming[60] = 20333; _outgoing1[60] = -9000211; _outgoing2[60] =  211; 
-  _coupling[60] = 0.954; _maxweight[60] = 10.; 
+  _incoming[57] = 20333; _outgoing1[57] =  9000111; _outgoing2[57] =  111; 
+  _coupling[57] = 0.968; _maxweight[57] = 10.; 
+  _incoming[58] = 20333; _outgoing1[58] =  9000211; _outgoing2[58] = -211; 
+  _coupling[58] = 0.968; _maxweight[58] = 10.; 
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }
@@ -223,7 +219,7 @@ int VectorMeson2MesonDecayer::modeNumber(bool & cc,tcPDPtr parent,
       if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
 	 (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])) imode=ix;
     }
-    if(idbar==_incoming[ix]) {
+    if(idbar==_incoming[ix]&&imode<0) {
       if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
 	 (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])) {
 	imode=ix;

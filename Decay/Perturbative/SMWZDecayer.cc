@@ -20,11 +20,8 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMWZDecayer::SMWZDecayer() 
-  : _zquarkwgt(5,0.),
-    _zleptonwgt(6,0.),
-    _wquarkwgt(6,0.),
-    _wleptonwgt(3,0.)
-{
+  : _zquarkwgt(5,0.), _zleptonwgt(6,0.),
+    _wquarkwgt(6,0.), _wleptonwgt(3,0.) {
    _zquarkwgt[0]  = 0.488029;
    _zquarkwgt[1]  = 0.378461;
    _zquarkwgt[2]  = 0.488019;
@@ -49,21 +46,18 @@ SMWZDecayer::SMWZDecayer()
    generateIntermediates(false);
 }
 
-void SMWZDecayer::doinit() throw(InitException) 
-{
+void SMWZDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
-  if(hwsm)
-    {
-      _wvertex = hwsm->vertexFFW();
-      _zvertex = hwsm->vertexFFZ();
-      // make sure they are initialized
-      _wvertex->init();
-      _zvertex->init();
-    }
-  else
-    {throw InitException();}
+  if(!hwsm) throw InitException() << "Must have Herwig++ StandardModel object in"
+				  << "SMWZDecayer::doinit()"
+				  << Exception::runerror;
+  _wvertex = hwsm->vertexFFW();
+  _zvertex = hwsm->vertexFFZ();
+  // make sure they are initialized
+  _wvertex->init();
+  _zvertex->init();
   // now set up the decay modes
   DecayPhaseSpaceModePtr mode;
   PDVector extpart(3);
@@ -72,67 +66,51 @@ void SMWZDecayer::doinit() throw(InitException)
   extpart[0]=getParticleData(ParticleID::Z0);
   // loop over the  quarks and the leptons
   int ix,istep=0,iy;
-  for( ;istep<11;istep+=10)
-    {
-      for(ix=1;ix<7;++ix)
-	{
-	  iy=istep+ix;
-	  if(iy!=6)
-	    {
-	      // check that the combination of particles is allowed
-	      if(_zvertex->allowed(-iy,iy,ParticleID::Z0))
-		{
-		  extpart[1] = getParticleData(-iy);
-		  extpart[2] = getParticleData( iy);
-		  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-		  if(iy<=6){addMode(mode,_zquarkwgt.at(ix-1),wgt);}
-		  else{addMode(mode,_zleptonwgt.at(iy-11),wgt);}
-		}
-	      else
-		{throw InitException() << "SMWZDecayer::doinit() the Z vertex" 
-				       << "cannot handle all the modes" 
-				       << Exception::abortnow;}
-	    }
-	}
+  for( ;istep<11;istep+=10) {
+    for(ix=1;ix<7;++ix) {
+      iy=istep+ix;
+      if(iy==6) continue;
+      // check that the combination of particles is allowed
+      if(!_zvertex->allowed(-iy,iy,ParticleID::Z0))
+	throw InitException() << "SMWZDecayer::doinit() the Z vertex" 
+			      << "cannot handle all the modes" 
+			      << Exception::abortnow;
+      extpart[1] = getParticleData(-iy);
+      extpart[2] = getParticleData( iy);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      if(iy<=6) addMode(mode,  _zquarkwgt.at(ix-1),wgt);
+      else      addMode(mode,_zleptonwgt.at(iy-11),wgt);
     }
+  }
   // and the W modes
   extpart[0]=getParticleData(ParticleID::Wplus);
   // loop for the quarks
   unsigned int iz=0;
-  for(ix=1;ix<6;ix+=2)
-    {
-      for(iy=2;iy<6;iy+=2)
-	{
-	  // check that the combination of particles is allowed
-	  if(_wvertex->allowed(-ix,iy,ParticleID::Wminus))
-	    {
-	      extpart[1] = getParticleData(-ix);
-	      extpart[2] = getParticleData( iy);
-	      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-	      addMode(mode,_wquarkwgt[iz],wgt);
-	      ++iz;
-	    }
-	  else
-	    {throw InitException() << "SMWZDecayer::doinit() the W vertex" 
-				   << "cannot handle all the quark modes" 
-				   << Exception::abortnow;}
-	}
-    }
-  for(ix=11;ix<17;ix+=2)
-    {
+  for(ix=1;ix<6;ix+=2) {
+    for(iy=2;iy<6;iy+=2) {
       // check that the combination of particles is allowed
-      if(_wvertex->allowed(-ix,ix+1,ParticleID::Wminus))
-	{
-	  extpart[1] = getParticleData(-ix);
-	  extpart[2] = getParticleData(ix+1);
-	  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-	  addMode(mode,_wleptonwgt[(ix-11)/2],wgt);
-	}
-	  else
-	    {throw InitException() << "SMWZDecayer::doinit() the W vertex" 
-				   << "cannot handle all the lepton modes" 
-				   << Exception::abortnow;}
+      if(!_wvertex->allowed(-ix,iy,ParticleID::Wminus))
+	throw InitException() << "SMWZDecayer::doinit() the W vertex" 
+			      << "cannot handle all the quark modes" 
+			      << Exception::abortnow;
+      extpart[1] = getParticleData(-ix);
+      extpart[2] = getParticleData( iy);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      addMode(mode,_wquarkwgt[iz],wgt);
+      ++iz;
     }
+  }
+  for(ix=11;ix<17;ix+=2) {
+    // check that the combination of particles is allowed
+    if(!_wvertex->allowed(-ix,ix+1,ParticleID::Wminus))
+      throw InitException() << "SMWZDecayer::doinit() the W vertex" 
+			    << "cannot handle all the lepton modes" 
+			    << Exception::abortnow;
+    extpart[1] = getParticleData(-ix);
+    extpart[2] = getParticleData(ix+1);
+    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+    addMode(mode,_wleptonwgt[(ix-11)/2],wgt);
+  }
 }
 
 int SMWZDecayer::modeNumber(bool & cc,tcPDPtr parent, 
@@ -217,8 +195,7 @@ void SMWZDecayer::Init() {
 
 // return the matrix element squared
 double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
-			const ParticleVector & decay) const 
-{
+			const ParticleVector & decay) const {
   // get/calculate the spin info for the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<VectorWaveFunction> inwave;
@@ -236,35 +213,64 @@ double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
   DecayMatrixElement newme(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   Energy2 scale(inpart.mass()*inpart.mass());
   unsigned int ifm,ia,vhel;
-  for(ifm=0;ifm<2;++ifm)
-    {
-      for(ia=0;ia<2;++ia)
-	{
-	  for(vhel=0;vhel<3;++vhel)
-	    {
-	      if(inpart.id()==ParticleID::Z0)
-		{
-		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
-		  else{newme(vhel,ifm,ia)=
-		      _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
-		}
-	      else
-		{
-		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
-		  else{newme(vhel,ifm,ia)=
-		      _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
-		}
-	    }
+  for(ifm=0;ifm<2;++ifm) {
+    for(ia=0;ia<2;++ia) {
+      for(vhel=0;vhel<3;++vhel) {
+	if(inpart.id()==ParticleID::Z0) {
+	  if(iferm>ianti) newme(vhel,ia,ifm)=
+	    _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
+	  else            newme(vhel,ifm,ia)=
+	    _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
 	}
+	else {
+	  if(iferm>ianti) newme(vhel,ia,ifm)=
+	    _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
+	  else            newme(vhel,ifm,ia)=
+	    _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
+	}
+      }
     }
+  }
   ME(newme);
   double output=(newme.contract(rhoin)).real()*UnitRemoval::E2/scale;
-  if(abs(decay[0]->id())<=6){output*=3.;}
-  if(decay[0]->hasColour())
-    {decay[0]->antiColourNeighbour(decay[1]);}
-  else if(decay[1]->hasColour())
-    {decay[1]->antiColourNeighbour(decay[0]);}
+  if(abs(decay[0]->id())<=6) output*=3.;
+  if(decay[0]->hasColour())      decay[0]->antiColourNeighbour(decay[1]);
+  else if(decay[1]->hasColour()) decay[1]->antiColourNeighbour(decay[0]);
   return output;
+}
+
+void SMWZDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      if(ix<5)       _zquarkwgt [ix   ]=mode(ix)->maxWeight();
+      else if(ix<11) _zleptonwgt[ix-5 ]=mode(ix)->maxWeight();
+      else if(ix<17) _wquarkwgt [ix-11]=mode(ix)->maxWeight();
+      else           _wleptonwgt[ix-17]=mode(ix)->maxWeight();
+    }
+  }
+}
+
+void SMWZDecayer::dataBaseOutput(ofstream & output,
+				 bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  for(unsigned int ix=0;ix<_zquarkwgt.size();++ix) {
+    output << "set " << fullName() << ":ZquarkMax " << ix << " "
+	   << _zquarkwgt[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_zleptonwgt.size();++ix) {
+    output << "set " << fullName() << ":ZleptonMax " << ix << " "
+	   << _zleptonwgt[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_wquarkwgt.size();++ix) {
+    output << "set " << fullName() << ":WquarkMax " << ix << " "
+	   << _wquarkwgt[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_wleptonwgt.size();++ix) {
+    output << "set " << fullName() << ":WleptonMax " << ix << " "
+	   << _wleptonwgt[ix] << "\n";
+  }
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

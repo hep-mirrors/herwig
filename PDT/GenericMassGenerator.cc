@@ -9,15 +9,10 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GenericMassGenerator.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
@@ -139,33 +134,39 @@ void GenericMassGenerator::doinit() throw(InitException) {
   _lowermass = _mass-_particle->widthLoCut();
   _uppermass = _mass+_particle->widthUpCut();
   // print out messagw if doing the initialisation
-  if(_initialize)
-    {
-      // zero the maximum weight
-      _maxwgt=0.;
-      // storage of variables for the loop
-      double wgt=0.,swgt=0.,sqwgt=0.;
-      Energy mdummy;
-      // perform the initialisation
-      for(int ix=0;ix<_ninitial;++ix)
-	{
-	  mdummy=mass(*_particle,wgt,3);
-	  swgt+=wgt;
-	  sqwgt+=wgt*wgt;
-	  if(wgt>_maxwgt){_maxwgt=wgt;}
-	}
-      swgt=swgt/_ninitial;
-      sqwgt=sqrt(max(0.,sqwgt/_ninitial-swgt*swgt)/_ninitial);
+  if(_initialize) {
+    // zero the maximum weight
+    _maxwgt=0.;
+    // storage of variables for the loop
+    double wgt=0.,swgt=0.,sqwgt=0.;
+    Energy mdummy;
+    // perform the initialisation
+    for(int ix=0;ix<_ninitial;++ix) {
+      mdummy=mass(*_particle,wgt,3);
+      swgt+=wgt;
+      sqwgt+=wgt*wgt;
+      if(wgt>_maxwgt){_maxwgt=wgt;}
     }
+    swgt=swgt/_ninitial;
+    sqwgt=sqrt(max(0.,sqwgt/_ninitial-swgt*swgt)/_ninitial);
+  }
 }
-
-void GenericMassGenerator::dataBaseOutput(ofstream & output)
-{
-  output << "update Mass_Generators set parameters=\"";
+  
+void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
+  if(header) output << "update Mass_Generators set parameters=\"";
   output << "set " << fullName() << ":BreitWignerShape "   << _BWshape << "\n";
   output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
   output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
+void GenericMassGenerator::dofinish() {
+  if(_initialize) {
+    string fname = CurrentGenerator::current().filename() + 
+      string("-") + name() + string(".output");
+    ofstream output(fname.c_str());
+    dataBaseOutput(output,true);
+  }
+  MassGenerator::dofinish();
 }

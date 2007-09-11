@@ -70,7 +70,7 @@ public:
   /**
    * output for the database
    */
-  virtual void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream &,bool);
 
 protected:
 

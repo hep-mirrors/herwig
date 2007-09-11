@@ -96,6 +96,7 @@ void BtoSGammaDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
+  _hadronicmass->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":HadronicMass " 
 	 << _hadronicmass->fullName() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
