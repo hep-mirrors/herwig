@@ -120,13 +120,28 @@ MultiplicityCount::MultiplicityCount() : _makeHistograms(false)
 }
 
 namespace {
+  bool isLastCluster(tcPPtr p) {
+    if ( p->id() != ExtraParticleID::Cluster ) 
+      return false;
+    for ( size_t i = 0, end = p->children().size();
+	  i < end; ++i ) {
+      if ( p->children()[i]->id() == ExtraParticleID::Cluster )
+	return false;
+    }
+    return true;
+  }
+
   Energy parentClusterMass(tcPPtr p) {
     if (p->parents().empty()) 
       return -1.0*MeV;
 
     tcPPtr parent = p->parents()[0];
-    if (parent->id() == ExtraParticleID::Cluster)
-      return parent->mass();
+    if (parent->id() == ExtraParticleID::Cluster) {
+      if ( isLastCluster(parent) )
+	return parent->mass();
+      else
+	return p->mass();
+    }
     else
       return parentClusterMass(parent);
   }
@@ -176,10 +191,17 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
     (**it).select(inserter(particles), ThePEG::AllSelector());
   }
 
+  if( _makeHistograms ) 
+    _histograms.insert(make_pair(ExtraParticleID::Cluster, 
+				 Histogram(0.0,10.0,200)));
+
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = abs( (*it)->id() );
     
+    if ( _makeHistograms && isLastCluster(*it) )
+      _histograms[ExtraParticleID::Cluster] += (*it)->mass()/GeV;
+
     if (_data.find(ID) != _data.end()) {
       eventcount.insert(make_pair(ID,0));
       ++eventcount[ID];
@@ -267,7 +289,7 @@ void MultiplicityCount::dofinish() {
     for (map<long,Histogram>::const_iterator it = _histograms.begin();
 	 it != _histograms.end(); ++it) {
       string title = generator()->getParticleData(it->first)->PDGName();
-      it->second.topdrawOutput(outfile2,Frame|Rawcount,"BLACK",title,"",
+      it->second.topdrawOutput(outfile2,Frame|Rawcount|Ylog,"BLACK",title,"",
 			       "N (200 bins)","","Parent cluster mass [GeV]");
     }
     piratio.topdrawOutput(outfile2,Frame|Rawcount,"BLACK","pi+ / pi0","",
