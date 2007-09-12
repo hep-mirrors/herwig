@@ -1,0 +1,69 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the UEobservables class.
+//
+
+namespace Herwig {
+
+inline UEobservables::UEobservables() {}
+
+inline UEobservables::UEobservables(const UEobservables & x)
+  : AnalysisHandler(x), theShowerHandler(x.theShowerHandler) {}
+
+inline IBPtr UEobservables::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr UEobservables::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void UEobservables::doupdate() throw(UpdateException) {
+  AnalysisHandler::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void UEobservables::doinit() throw(InitException) {
+  AnalysisHandler::doinit();
+}
+
+inline void UEobservables::dofinish() {
+//  AnalysisHandler::dofinish();
+    theRootData.finish();
+}
+
+inline void UEobservables::doinitrun() {
+  //AnalysisHandler::doinitrun();
+  string gen(CurrentGenerator::current().filename());
+  gen = gen.substr(2, gen.size());
+  //string pt(gen.substr(gen.rfind("-")+1, gen.size()));
+  theRootData.init((gen+".root").c_str(),gen.c_str());
+}
+
+inline void UEobservables::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  AnalysisHandler::rebind(trans);
+}
+
+inline IVector UEobservables::getReferences() {
+  IVector ret = AnalysisHandler::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

@@ -315,6 +315,8 @@ reconstructISJets(Lorentz5Momentum pcm,
   // add the intrinsic pt if needed
   int iloc=-1;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    //dont do anything for the moment for secondary scatters
+    if( !ShowerHandler::currentHandler()->FirstInt() ) break;
     // only for initial-state particles which haven't radiated
     if(ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
     ++iloc;

@@ -9,6 +9,14 @@ HwKtJet_la_LIBADD = $(KTJETLIBS)
 HwKtJet_la_LDFLAGS = -module -version-info 2:0:0
 HwKtJet_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 
+if WANT_LIBROOT
+pkglib_LTLIBRARIES += HwRoot.la
+endif
+
+HwRoot_la_SOURCES = RootInterface.cc RootInterface.h
+HwRoot_la_LIBADD = $(ROOTLIBS)
+HwRoot_la_LDFLAGS = -module -version-info 2:0:0
+HwRoot_la_CPPFLAGS = $(AM_CPPFLAGS) $(ROOTINCLUDE)
 
 if WANT_EVTGEN
 pkglib_LTLIBRARIES += HwEvtGen.la

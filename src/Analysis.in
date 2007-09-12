@@ -23,7 +23,8 @@ create Herwig::HiggsJetAnalysis /Defaults/Handlers/Analysis/HJet
 
 insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/SimpleLHC
-#insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Plot
+#insert LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/Plot
+#insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HJet
 #insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HJet
 
 

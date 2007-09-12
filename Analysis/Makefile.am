@@ -21,7 +21,9 @@ GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
+MPIMultiplicity.h MPIMultiplicity.fh \
+MPIMultiplicity.icc MPIMultiplicity.cc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
@@ -107,6 +109,17 @@ LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
 LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
 TopDalitzAnalysis.h TopDalitzAnalysis.icc
+
+#code which also depends on ROOT
+if WANT_LIBROOT
+pkglib_LTLIBRARIES += HwUEAnalysis.la
+HwUEAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwUEAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) $(ROOTINCLUDE)
+HwUEAnalysis_la_LIBADD = $(KTJETLIBS) $(ROOTLIBS)
+HwUEAnalysis_la_SOURCES = \
+UEobservables.cc UEobservables.fh \
+UEobservables.h UEobservables.icc 
+endif
 endif
 
 HwBSMAnalysis_la_LDFLAGS = -module

@@ -5,11 +5,19 @@
 // This is the declaration of the ShowerHandler class.
 //
 
-#include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Handlers/CascadeHandler.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/EventRecord/SubProcess.h"
+#include "ThePEG/PDT/RemnantData.h"
+#include "ThePEG/PDT/RemnantDecayer.h"
+#include "ThePEG/EventRecord/RemnantParticle.h"
+
+#include "Herwig++/UnderlyingEvent/MPIHandler.h" 
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/PDF/HwRemDecayer.h"
 #include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.fh"
 #include "Herwig++/Shower/CKKW/Reweighting/Reweighter.fh"
 #include "ShowerHandler.fh"
@@ -24,12 +32,13 @@ using namespace ThePEG;
  *  the proper handling of all other specific collaborating classes
  *  and for the storing of the produced particles in the event record.
  * 
- *  @see CascadeHandler
+ *  @see ThePEG::CascadeHandler
  */
 class ShowerHandler: public CascadeHandler {
 
 public:
-
+  
+  typedef pair<tRemPPtr, tRemPPtr> RemPair;
   /**
    * The default constructor.
    */
@@ -43,7 +52,8 @@ public:
 public:
 
   /**
-   * The main method which manages the all showering.
+   * The main method which manages the multiple interactions and starts the shower by calling
+   * cascade(sub, lastXC).
    */
   virtual void cascade();
 
@@ -102,6 +112,33 @@ public:
    */
   static void Init();
 
+
+  /** @name Functions to access information. */
+  //@{
+
+  /**
+   * Return true if currently the primary subprocess is showered.
+   */
+  inline bool FirstInt() const;
+
+  /**
+   * Return the currently used SubProcess.
+   */
+  inline tSubProPtr currentSubProcess() const;
+
+  /**
+   * Return true if hard multiple parton interactions are ordered 
+   * according to their scale.
+   */
+  inline bool IsOrdered() const;
+
+  /**
+   * Return true if multiple parton interactions are switched on.
+   */
+  inline bool IsMPIOn() const;
+  //@}
+
+
 protected:
 
   /** @name Clone Methods. */
@@ -120,6 +157,11 @@ protected:
   //@}
 
 protected:
+
+  /**
+   * The main method which manages the showering of a subprocess.
+   */
+  tPPair cascade(tSubProPtr sub);
 
   /**
    * At the end of the Showering, transform ShowerParticle objects
@@ -143,6 +185,22 @@ protected:
    * @param outgoing The outgoing particles from the hard process
    */
   PPtr findParent(PPtr parent, bool & isHard, set<PPtr> outgoing) const;
+
+  /**
+   * Find the parton extracted from the incoming particle after ISR
+   */
+  PPtr findFirstParton(tPPtr seed, tPPair incoming) const;
+
+  /**
+   * Fix Remnant connections after ISR
+   */
+  tPPair remakeRemnant(tPPair oldp); 
+
+  /**
+   * Get the remnants from the ThePEG::PartonBinInstance es and 
+   * do some checks.
+   */
+  RemPair getRemnants(PBIPair incbins);
 
   /**
    *  Make the remnant after the shower
@@ -170,7 +228,6 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
-
   //@}
 
 private:
@@ -190,9 +247,32 @@ private:
 private:
 
   /**
+   * Switch for Multi Parton Interactions to be ordered
+   */
+  bool theOrderSecondaries;
+
+  /**
+   * Switch for Multi Parton Interactions
+   */
+  bool theMPIOnOff;
+
+  /**
+   * a MPIHandler to administer the creation of several (semihard) 
+   * partonic interactions.
+   */
+  MPIHPtr theMPIHandler;
+
+private:
+
+  /**
    *  Pointer to the evolver
    */
   EvolverPtr _evolver;
+
+  /**
+   *  Pointer to the HwRemDecayer
+   */
+  HwRemDecPtr theRemDec;
 
   /**
    *  Maximum number of attempts for the
@@ -233,6 +313,27 @@ private:
   tcStepPtr _current;
 
   /**
+   *  Const pointer to the currently handeled ThePEG::SubProcess
+   */
+  tSubProPtr theSubProcess;
+
+  /**
+   *  pointer to "this", the current ShowerHandler.
+   */
+  static ShowerHandler * theHandler;
+
+public:
+  
+  struct ExtraScatterVeto {};
+
+  /**
+   *  pointer to "this", the current ShowerHandler.
+   */
+  static inline const ShowerHandler * currentHandler();
+
+private:
+
+  /**
    * Wether or not to use CKKW
    */
   bool _useCKKW;
@@ -246,8 +347,6 @@ private:
    * The reweighter used for ME/PS merging
    */
   ReweighterPtr _reweighter;
-
-
 };
 
 }
@@ -280,7 +379,7 @@ struct ClassTraits<Herwig::ShowerHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

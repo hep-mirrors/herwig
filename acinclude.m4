@@ -262,6 +262,33 @@ fi
 AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
 ])
 
+dnl ##### ROOT #####
+AC_DEFUN([HERWIG_CHECK_ROOT],[
+
+AC_PATH_PROG(ROOTCONF, root-config, no)
+
+if test x"$ROOTCONF" = "xno" ; then      
+  AC_MSG_RESULT([root-config not set... won't build Root interface])
+else
+
+  AC_MSG_CHECKING([ROOTLIBS is])
+  if test -z "$ROOTLIBS"; then
+    ROOTLIBS=`root-config --libs`
+  fi
+  AC_MSG_RESULT([$ROOTLIBS])
+
+  AC_MSG_CHECKING([for ROOTINCLUDE])
+  if test -z "$ROOTINCLUDE"; then
+    ROOTINCLUDE="`root-config --cflags` -Wno-long-long"
+  fi
+  AC_MSG_RESULT([$ROOTINCLUDE])
+fi
+AM_CONDITIONAL(WANT_LIBROOT, test ! x"$ROOTCONF" = "xno")
+
+AC_SUBST(ROOTLIBS)
+AC_SUBST(ROOTINCLUDE)
+])
+
 dnl ##### LOOPTOOLS #####
 AC_DEFUN([HERWIG_LOOPTOOLS],
 [

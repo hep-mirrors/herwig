@@ -64,7 +64,11 @@ set /Defaults/ACDCSampler:Margin  1.1
 # Create NoPDF and RemnantHandlers
 cd /Defaults/Partons
 create ThePEG::NoRemnants NoRemnants
-create Herwig::BaryonRemnants BaryonRemnants HwMRST.so
+create Herwig::HwRemDecayer RemnantDecayer HwRemDecayer.so
+create Herwig::ForcedSplitting theForcedSplitting
+set RemnantDecayer:ForcedSplitting theForcedSplitting
+create ThePEG::SoftRemnantHandler HadronRemnants
+set HadronRemnants:RemnantDecayer RemnantDecayer
 create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so
 create ThePEG::NoPDF NoPDF
 
@@ -84,22 +88,35 @@ set NoPDF:RemnantHandler NoRemnants
 
 # Make particle extractors
 cd /Defaults/Handlers
-# Herwig's extractor
-create Herwig::PartonExtractor StandardExtractor
+create ThePEG::PartonExtractor StandardExtractor
 set StandardExtractor:NoPDF /Defaults/Partons/NoPDF
 set StandardExtractor:FlatSHatY 1
 
-# ThePEG's extractor
-create ThePEG::PartonExtractor EEExtractor
-set EEExtractor:NoPDF /Defaults/Partons/NoPDF
+# copy the extractors
+cp StandardExtractor EEExtractor
 cp StandardExtractor QCDExtractor
 
 # insert the matrix elements
 read MatrixElements.in
 
-# insert the Herwig++ specific defaults
+#Set the cuts on the hard process
+cd /Defaults/Generators
+read Cuts.in
+
 cd /Defaults
+# insert the Herwig++ specific defaults
+
+# create the underlying event stuff
+read UnderlyingEvent.in
+# create the shower stuff
+
 read Shower.in
+
+# set the forced splitting alphas
+cd /Defaults/Partons
+set theForcedSplitting:AlphaS /Defaults/Handlers/Shower/theShowerAlphaQCD
+
+# create the hadronization stuff
 read Hadronization.in
 read Decays.in
 read PDF.in
@@ -154,12 +171,7 @@ set LHCHandler:DecayHandler /Defaults/Handlers/DecayHandler
 # uncomment to get QED radiation off W/Z decay products in hard process
 #insert LHCHandler:PostSubProcessHandlers[0] /Defaults/Handlers/QED/QEDRadiationHandler
 
-#####################################
-# Set the cuts on the hard process
-#####################################
-cd /Defaults/Generators
-read Cuts.in
-
+cd /Defaults/Generators 
 
 #################################################################
 # Finally, the EventGenerator objects are responsible 

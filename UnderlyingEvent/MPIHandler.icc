@@ -1,0 +1,116 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MPIHandler class.
+//
+namespace Herwig {
+
+inline tEHPtr MPIHandler::eventHandler() const {
+  return theHandler;
+}
+
+inline tStdEHPtr MPIHandler::stdeventHandler() const {
+  return dynamic_ptr_cast<Ptr<StandardEventHandler>::transient_pointer>(theHandler);
+}
+
+inline tCutsPtr MPIHandler::cuts() const {
+  return theCuts;
+}
+
+inline const MPIHandler::SubHandlerList &
+MPIHandler::subProcesses() const {
+  return theSubProcesses;
+}
+
+inline MPIHandler::SubHandlerList &
+MPIHandler::subProcesses() {
+  return theSubProcesses;
+}
+
+
+inline long MPIHandler::maxLoop() const {
+  return eventHandler()->maxLoop();
+}
+
+inline tSamplerPtr MPIHandler::sampler() {
+  return theSampler;
+}
+
+inline tcSamplerPtr MPIHandler::sampler() const {
+  return theSampler;
+}
+
+inline const cPDPair & MPIHandler::incoming() const {
+  return stdeventHandler()->incoming();
+}
+
+inline const LuminosityFunction & MPIHandler::lumiFn() const {
+  // Did that in that strange way, because lumiFn is protected
+  return *stdeventHandler()->lumiFnPtr();
+}
+
+inline int MPIHandler::lumiDim() const {
+  return stdeventHandler()->lumiDim();
+}
+
+inline int MPIHandler::maxDim(int bin) const {
+  return theMaxDims[bin];
+}
+
+inline int MPIHandler::nDim(int bin) const {
+  return lumiDim() + maxDim(bin);
+}
+
+inline int MPIHandler::statLevel() const {
+  return eventHandler()->statLevel();
+}
+
+inline const MPIHandler::XVector &
+MPIHandler::xCombs() const {
+  return theXCombs;
+}
+
+inline MPIHandler::XVector & MPIHandler::xCombs() {
+  return theXCombs;
+}
+
+inline const MPIHandler::XSVector &
+MPIHandler::xSecs() const {
+  return theXSecs;
+}
+
+inline MPIHandler::XSVector & MPIHandler::xSecs() {
+  return theXSecs;
+}
+
+inline int MPIHandler::binStrategy() const {
+  return theBinStrategy;
+}
+
+inline unsigned int MPIHandler::multiplicity() const {
+  ofstream file; 
+  unsigned int N(theMultiplicities.select(UseRandom::rnd()) );
+
+  file.open("multi.test", ios::app);
+  file << N << "\n";
+  file.close();
+
+  return N;
+}
+
+inline tStdXCombPtr MPIHandler::generate() {
+  return select(sampler()->lastBin(), sampler()->generate());
+}
+
+inline IBPtr MPIHandler::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MPIHandler::fullclone() const {
+  return new_ptr(*this);
+}
+  /*Functions for the integrand struct*/
+inline Eikonalization::Eikonalization(tMPIHPtr handler, CrossSection xsec, int option)
+    : theHandler(handler), theUneikXSec(xsec), theoption(option) {}
+
+}
