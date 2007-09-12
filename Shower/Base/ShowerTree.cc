@@ -5,6 +5,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/XComb.h"
+#include "KinematicsReconstructor.h"
 #include <cassert>
 
 namespace Herwig {
@@ -502,7 +503,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
 	// if succeeded break out of loop
 	break;
       }
-      catch(Veto) {}
+      catch(KinematicsReconstructionVeto) {}
     }
     // insert the trees from the children
     ParticleVector children=parent->children();

@@ -69,7 +69,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 	  &&particleJetParent->dataPtr()->stable()
 	  &&particleJetParent->id()!=ParticleID::gamma) {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
-	if(dm>dum.e()) throw Veto();
+	if(dm>dum.e()) throw KinematicsReconstructionVeto();
 	dum.setMass(dm); 
 	dum.rescaleRho(); 
 	particleJetParent->set5Momentum(dum);  
@@ -167,7 +167,7 @@ reconstructHardJets(ShowerTreePtr hard,
       }
     }
   }
-  catch(Veto) {
+  catch(KinematicsReconstructionVeto) {
     return false;
   }
   return true;
@@ -393,10 +393,10 @@ reconstructISJets(Lorentz5Momentum pcm,
   Boost betaboost(0, 0, beta1);
   tPPtr parent;
   boostChain(toBoost[0], betaboost,parent);
-  if(parent->momentum().e()/pq[0].e()>1.||parent->momentum().z()/pq[0].z()>1.) throw Veto();
+  if(parent->momentum().e()/pq[0].e()>1.||parent->momentum().z()/pq[0].z()>1.) throw KinematicsReconstructionVeto();
   betaboost = Boost(0, 0, beta2);
   boostChain(toBoost[1], betaboost,parent);
-  if(parent->momentum().e()/pq[1].e()>1.||parent->momentum().z()/pq[1].z()>1.) throw Veto();
+  if(parent->momentum().e()/pq[1].e()>1.||parent->momentum().z()/pq[1].z()>1.) throw KinematicsReconstructionVeto();
   boostRest = pcm.findBoostToCM();
   boostNewF = (toBoost[0]->momentum() + toBoost[1]->momentum()).boostVector();
   return true;
@@ -533,7 +533,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       }
     }
   }
-  catch(Veto) {
+  catch(KinematicsReconstructionVeto) {
     return false;
   }
     

@@ -1,0 +1,78 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DefaultReweighter class.
+//
+
+namespace Herwig {
+
+inline DefaultReweighter::DefaultReweighter()
+  : Reweighter(), _integrationAccuracy(1.e-3), _useMassive(true), _sudakovUnweight(true)
+{}
+
+inline void DefaultReweighter::insertSplitting (const IdList& ids,
+						SplittingFnPtr sp,
+						bool initial) {
+  splittingKey key;
+  // do not consider tops
+  if (abs(ids[0] ==6) || abs(ids[1] ==6) || abs(ids[2] ==6)) return;
+  key.ids = ids;
+  key.initial = initial;
+  _splittingMap.insert(make_pair(key,sp));
+}
+
+inline Energy2 DefaultReweighter::interpolationSpacing () const {
+  return _interpolationSpacing;
+}
+
+inline double DefaultReweighter::integrationAccuracy () const {
+  return _integrationAccuracy;
+}
+
+inline Energy2 DefaultReweighter::sudakovMaxScale () const {
+  return _sudakovMaxScale;
+}
+
+inline string DefaultReweighter::sudakovDataPath () const {
+  return _sudakovDataPath;
+}
+
+inline bool DefaultReweighter::useMassiveSplittings () const {
+  return _useMassive;
+}
+
+inline void DefaultReweighter::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  for (map<splittingKey,SplittingFnPtr>::iterator s = _splittingMap.begin();
+       s != _splittingMap.end(); ++s)
+    s->second = trans.translate(s->second);
+  for (map<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
+       s != _sudakovMap.end(); ++s)
+    s->second = trans.translate(s->second);
+  Reweighter::rebind(trans);
+}
+
+inline IVector DefaultReweighter::getReferences() {
+  IVector ret = Reweighter::getReferences();
+  for (map<splittingKey,SplittingFnPtr>::iterator s = _splittingMap.begin();
+       s != _splittingMap.end(); ++s)
+    ret.push_back(s->second);
+  for (map<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
+       s != _sudakovMap.end(); ++s)
+    ret.push_back(s->second);
+  return ret;
+}
+
+#ifdef HERWIG_DEBUG_CKKW_CHECK_SUDAKOVS
+
+inline void DefaultReweighter::dofinish() {
+  Reweighter::dofinish();
+  for (multimap<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
+       s != _sudakovMap.end(); ++s) {
+    s->second->dumpSudakovCalls();
+  }
+}
+
+#endif
+
+}

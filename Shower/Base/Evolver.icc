@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
-			    _intrinsicpT(1), _initialenhance(1.), _finalenhance(1.)
+			    _intrinsicpT(1), _initialenhance(1.), _finalenhance(1.), _useCKKW(false)
 {}
 
 inline IBPtr Evolver::clone() const {
@@ -89,4 +89,31 @@ Evolver::beamParticle() const {
 inline void Evolver::setBeamParticle(Ptr<BeamParticleData>::const_pointer in) {
   _beam=in;
 }
+
+  inline void Evolver::addVeto (ShowerVetoPtr v) {
+    _vetoes.push_back(v);
+  }
+
+  inline void Evolver::removeVeto (ShowerVetoPtr v) {
+    vector<ShowerVetoPtr>::iterator vit = find(_vetoes.begin(),_vetoes.end(),v);
+    if (vit != _vetoes.end())
+      _vetoes.erase(vit);
+  }
+
+
+inline void Evolver::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _reconstructor=trans.translate(_reconstructor);
+  _reweighter=trans.translate(_reweighter);
+  Interfaced::rebind(trans);
+}
+
+inline IVector Evolver::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  ret.push_back(_reconstructor);
+  ret.push_back(_reweighter);
+  return ret;
+}
+
+
 }

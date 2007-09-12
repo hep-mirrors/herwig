@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QtildeReweighter class.
+//
+
+namespace Herwig {
+
+inline IBPtr QtildeReweighter::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr QtildeReweighter::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

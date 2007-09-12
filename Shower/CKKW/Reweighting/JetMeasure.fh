@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the JetMeasure class.
+//
+#ifndef HERWIG_JetMeasure_FH
+#define HERWIG_JetMeasure_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class JetMeasure;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::JetMeasure,JetMeasurePtr);
+
+}
+
+#endif

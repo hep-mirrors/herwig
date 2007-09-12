@@ -41,6 +41,14 @@ inline IVector SplittingGenerator::getReferences() {
   return ret;
 }
 
+  inline const BranchingList & SplittingGenerator::fbList () const {
+    return _fbranchings;
+  }
+
+  inline const BranchingList & SplittingGenerator::bbList () const {
+    return _bbranchings;
+  }
+
 inline bool SplittingGenerator::isISRadiationON() const {
   return _isr_Mode && (_isr_qcdMode||_isr_qedMode||_isr_ewkMode);
 }  

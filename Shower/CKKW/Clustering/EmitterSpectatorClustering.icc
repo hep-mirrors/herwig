@@ -1,0 +1,64 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EmitterSpectatorClustering class.
+//
+
+namespace Herwig {
+
+inline EmitterSpectatorClustering::EmitterSpectatorClustering()
+  : Clustering(),
+    _childSpectator(2),
+    _parentSpectator(1)
+{}
+
+inline EmitterSpectatorClustering::EmitterSpectatorClustering(const vector<tClusteringParticlePtr>& children,
+							      const unsigned int childSpectator,
+							      const vector<ClusteringParticlePtr>& parents,
+							      const unsigned int parentSpectator,
+							      tClustererPtr clusterer,
+							      tClusteringConfigurationPtr config)
+  : Clustering(children,parents,clusterer,config),
+    _childSpectator(childSpectator),
+    _parentSpectator(parentSpectator)
+{}
+
+inline IBPtr EmitterSpectatorClustering::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr EmitterSpectatorClustering::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline tClusteringParticlePtr EmitterSpectatorClustering::emitter() const {
+  if(_parentSpectator == 0) return parents()[1];
+  else return parents()[0];
+}
+
+inline pair<tClusteringParticlePtr,tClusteringParticlePtr>
+EmitterSpectatorClustering::emission () const {
+  pair<unsigned int,unsigned int> emmIndices;
+  switch (_childSpectator) {
+  case 0: emmIndices = make_pair(1,2); break;
+  case 1: emmIndices = make_pair(0,2); break;
+  case 2: emmIndices = make_pair(0,1); break;
+  }
+  return make_pair(children()[emmIndices.first],children()[emmIndices.second]);
+}
+
+inline tClusteringParticlePtr
+EmitterSpectatorClustering::spectatorBeforeClustering () const {
+  return children()[_childSpectator];
+}
+
+inline tClusteringParticlePtr
+EmitterSpectatorClustering::spectatorAfterClustering () const {
+  return parents()[_parentSpectator];
+}
+
+inline pair<Lorentz5Momentum,Lorentz5Momentum> EmitterSpectatorClustering::sudakovBasis () const {
+  return _sudakovBasis;
+}
+
+}

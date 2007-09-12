@@ -6,6 +6,7 @@
 #include "Evolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -15,24 +16,31 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Utilities/Throw.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.h"
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
 #include "MECorrectionBase.h"
 
+#include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
+#include "Herwig++/Shower/CKKW/Reweighting/DefaultReweighter.h"
+#include "Herwig++/Shower/CKKW/Reweighting/DefaultCKKWVeto.h"
+
 using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _intrinsicpT 
-     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) ;
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << _vetoes
+     << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _intrinsicpT 
-     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV);
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> _vetoes
+     >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
 }
 
 void Evolver::doinitrun() {
@@ -119,7 +127,103 @@ void Evolver::Init() {
      "Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
      &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
+
+  static RefVector<Evolver,ShowerVeto> ifaceVetoes
+    ("Vetoes",
+     "The vetoes to be checked during showering",
+     &Evolver::_vetoes, -1,
+     false,false,true,true,false);
+
+
  }
+
+
+void Evolver::useCKKW (CascadeReconstructorPtr cr, ReweighterPtr rew) {
+
+  DefaultReweighterPtr drew = dynamic_ptr_cast<DefaultReweighterPtr>(rew);
+  if (!drew) Throw<InitException>()
+    << "Shower : Evolver::useCKKW : DefaultReweighter needed by Evolver, found Reweighter.";
+  _reconstructor = cr;
+  _reweighter = drew;
+
+  // alpha_s
+
+  // alpha_s is set as a reference in Reweighter
+
+  // now register the splitting functions with
+  // the reweighter
+
+  if (!_splittingGenerator->isISRadiationON(ShowerIndex::QCD) && 
+      !_splittingGenerator->isFSRadiationON(ShowerIndex::QCD))
+    Throw<InitException>() << "Shower : Evolver::useCKKW : Attempt to use CKKW with QCD radiation switched off.";
+
+  if(_splittingGenerator->isISRadiationON(ShowerIndex::QCD)) {
+    BranchingList bb = _splittingGenerator->bbList();
+    for(BranchingList::iterator b = bb.begin(); b != bb.end(); ++b) {
+      if (b->second.first->interactionType() == ShowerIndex::QCD)
+	_reweighter->insertSplitting(b->second.second,
+				    b->second.first->splittingFn(),
+				    true);
+    }
+  }
+
+  if(_splittingGenerator->isFSRadiationON(ShowerIndex::QCD)) {
+    BranchingList fb = _splittingGenerator->fbList();
+    for(BranchingList::iterator b = fb.begin(); b != fb.end(); ++b) {
+      if (b->second.first->interactionType() == ShowerIndex::QCD)
+	_reweighter->insertSplitting(b->second.second,
+				    b->second.first->splittingFn(),
+				    false);
+    }
+  }
+
+  // setup the reweighter
+
+  _reweighter->setup(_reconstructor);
+
+  // and insert an appropriate veto
+
+  if (!dynamic_ptr_cast<DefaultJetMeasurePtr>(_reweighter->resolution()))
+    Throw<InitException>() << "Shower : Evolver::useCKKW : DefaultJetMeasure needed by Evolver, found JetMeasure.";
+
+  _ckkwVeto =
+    new_ptr(DefaultCKKWVeto(dynamic_ptr_cast<DefaultJetMeasurePtr>(_reweighter->resolution())));
+
+  _ckkwVeto->enable();
+
+  addVeto(_ckkwVeto);
+
+  // indicate that we are doing CKKW
+
+  _useCKKW = true;
+
+}
+
+void Evolver::initCKKWShower (unsigned int currentMult, unsigned int maxMult) {
+
+  _ckkwVeto->eventGenerator(generator());
+
+  // disable the veto for maximum multiplicity,
+  // if wanted.
+
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+  generator()->log() << "== Evolver::initCKKWShower (" << currentMult << ", " << maxMult << ")" << endl;
+#endif
+
+  if(!_reweighter->vetoHighest() && currentMult == maxMult) {
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+    generator()->log() << "max multiplicity and no vetoes on max multiplicity" << endl;
+#endif
+    _ckkwVeto->disable();
+  }
+  else {
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+    generator()->log() << "veto will be applied." << endl;
+#endif
+    _ckkwVeto->enable();
+  }
+
+}
 
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -310,8 +414,29 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     }
 
     // apply vetos if needed
-    if(fb.kinematics && _currentme && softMEC())
+    if(fb.kinematics && _currentme && softMEC() && !_theUseCKKW) {
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
+      if (vetoed) continue;
+    }
+
+    if (fb.kinematics && _vetoes.size()) {
+      for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
+	   v != _vetoes.end(); ++v) {
+	if ((**v).vetoType() == ShowerVetoType::Emission) {
+	  vetoed |= (**v).vetoTimeLike(_progenitor,particle,fb);
+	}
+	if ((**v).vetoType() == ShowerVetoType::Shower && (**v).vetoTimeLike(_progenitor,particle,fb)) {
+	  throw VetoShower ();
+	}
+	if ((**v).vetoType() == ShowerVetoType::Event && (**v).vetoTimeLike(_progenitor,particle,fb))
+	  throw Veto ();
+      }
+      if (vetoed) {
+	particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
+	continue;
+      }
+    }
+
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -378,8 +503,28 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
     }
 
     // apply the soft correction
-    if(bb.kinematics && _currentme && softMEC())
+    if(bb.kinematics && _currentme && softMEC() && !_theUseCKKW) {
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
+      if (vetoed) continue;
+    }
+
+    if (bb.kinematics && _vetoes.size()) {
+      for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
+	   v != _vetoes.end(); ++v) {
+	if ((**v).vetoType() == ShowerVetoType::Emission) {
+	  vetoed |= (**v).vetoSpaceLike(_progenitor,particle,bb);
+	}
+	if ((**v).vetoType() == ShowerVetoType::Shower && (**v).vetoSpaceLike(_progenitor,particle,bb))
+	  throw VetoShower ();
+	if ((**v).vetoType() == ShowerVetoType::Event && (**v).vetoSpaceLike(_progenitor,particle,bb))
+	  throw Veto ();
+      }
+      if (vetoed) {
+	particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
+	continue;
+      }
+    }
+
   }
   if(!bb.kinematics) return false;
   // assign the splitting function and shower kinematics
@@ -496,8 +641,28 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
     // initial conditions don't allow this anyway.
 
     // apply the soft correction
-    if(fb.kinematics && _currentme && softMEC())
+    if(fb.kinematics && _currentme && softMEC() && !_theUseCKKW) {
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
+      if (vetoed) continue;
+    }
+
+    if (fb.kinematics && _vetoes.size()) {
+      for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
+	   v != _vetoes.end(); ++v) {
+	if ((**v).vetoType() == ShowerVetoType::Emission) {
+	  vetoed |= (**v).vetoSpaceLike(_progenitor,particle,fb);
+	}
+	if ((**v).vetoType() == ShowerVetoType::Shower && (**v).vetoSpaceLike(_progenitor,particle,fb))
+	  throw VetoShower ();
+	if ((**v).vetoType() == ShowerVetoType::Event && (**v).vetoSpaceLike(_progenitor,particle,fb))
+	  throw Veto ();
+      }
+      if (vetoed) {
+	particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
+	continue;
+      }
+    }
+
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -550,11 +715,42 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // and the maximum pt for emission from the particle
   // set the initial colour partners
   setColourPartners(hard);
-  // generate the hard matrix element correction if needed
-  hardMatrixElementCorrection();
-  // get the particles to be showered
+
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+
+  // If we use CKKW and there is information available from
+  // the last parton shower history for each coloured line
+  // in the current tree, we reset scales and apply vetoes
+  _theUseCKKW = false;
+  if (_useCKKW) {
+    _theUseCKKW = true;
+    for(cit=_currenttree->incomingLines().begin();
+	cit!=_currenttree->incomingLines().end();++cit) {
+      if ((*cit).first->original()->coloured())
+	if (!_reconstructor->clusteringParticle((*cit).first->original())) {
+	  _theUseCKKW = false;
+	  break;
+	}
+    }
+    if(_theUseCKKW)
+      for(cjt=_currenttree->outgoingLines().begin();
+	  cjt!=_currenttree->outgoingLines().end();++cjt) {
+	if ((*cjt).first->original()->coloured())
+	  if (!_reconstructor->clusteringParticle((*cjt).first->original())) {
+	    _theUseCKKW = false;
+	    break;
+	  }
+      }
+    // if we failed here, disable the veto
+    if(!_theUseCKKW) _ckkwVeto->disable();
+  }
+
+  // generate the hard matrix element correction if needed
+  // don't do this if we are doing CKKW
+  if (!_theUseCKKW)
+    hardMatrixElementCorrection();
+  // get the particles to be showered
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=_currenttree->incomingLines().begin();
@@ -567,9 +763,31 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
       cjt!=_currenttree->outgoingLines().end();++cjt)
     particlesToShower.push_back(((*cjt).first));
   // remake the colour partners if needed
-  if(_currenttree->hardMatrixElementCorrection()) {
+  if(_currenttree->hardMatrixElementCorrection() && !_theUseCKKW) {
     setColourPartners(hard);
     _currenttree->resetShowerProducts();
+  }
+  // if CKKW, reset the initial scales
+  if (_theUseCKKW) {
+
+    for (vector<ShowerProgenitorPtr>::iterator p = particlesToShower.begin();
+	 p != particlesToShower.end(); ++p)
+      // if not coloured, don't consider
+      if ((**p).original()->coloured()) {
+	tClusteringParticlePtr historyP = _reconstructor->clusteringParticle((**p).original());
+	if (!historyP)
+	  throw Exception() << "Shower : Evolver::setupShower (CKKW): No external leg for particle"
+			    << " found in cascade history" << Exception::eventerror;
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+	generator()->log() << "resetting hard scale for " << (**p).original()
+			   << " PDGId = " << (**p).original()->id()
+			   << " to " << sqrt(historyP->showerScale())/GeV << " GeV "
+			   << " using clustering partilce " << endl;
+	historyP->debugDump(generator()->log());
+#endif
+	(**p).progenitor()->setEvolutionScale(ShowerIndex::QCD,sqrt(historyP->showerScale()));
+      }
+
   }
   return particlesToShower;
 }

@@ -88,6 +88,12 @@ public:
    * for Initial State radiation or Final State radiation effects.
    */
   inline double scaleFactor() const;
+
+  /**
+   * Initialize this coupling.
+   */
+  virtual inline void initialize ();
+
   //@}
 
 public:

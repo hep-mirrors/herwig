@@ -16,6 +16,14 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+  /**\ingroup Shower
+   * Exception class
+   * used to communicate failure of kinematics
+   * reconstruction.
+   */
+  struct KinematicsReconstructionVeto {};
+
+
 /** \ingroup Shower
  *
  * This class is responsible for the kinematical reconstruction 

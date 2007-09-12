@@ -11,6 +11,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Handlers/XComb.h"
+#include "ThePEG/Utilities/Throw.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
@@ -18,15 +19,49 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
+#include "Herwig++/Shower/CKKW/Reweighting/Reweighter.h"
 #include <cassert>
 
 using namespace Herwig;
 
 ShowerHandler::~ShowerHandler() {}
+
+void ShowerHandler::doinit() throw(InitException) {
+  CascadeHandler::doinit();
+  // copy particles to decay before showering from input vector to the 
+  // set used in the simulation
+  _particlesDecayInShower.insert(_inputparticlesDecayInShower.begin(),
+				 _inputparticlesDecayInShower.end());
+
+
+  // check for CKKW and setup if present
+
+  if (_reconstructor && _reweighter) {
+
+    _reconstructor->setup();
+    _evolver->useCKKW(_reconstructor,_reweighter);
+    _useCKKW = true;
+
+
+  } else {
+    _useCKKW = false;
+  }
+
+}
+
+void ShowerHandler::doinitrun() {
+
+  if (_useCKKW) {
+    _reweighter->initialize();
+  }
+
+}
 
 IBPtr ShowerHandler::clone() const {
   return new_ptr(*this);
@@ -80,13 +115,13 @@ ShowerHandler::ShowerHandler() : _maxtry(10) {
 
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _evolver << _maxtry << _inputparticlesDecayInShower
-     << _particlesDecayInShower;
+     << _particlesDecayInShower << _useCKKW << _reconstructor << _reweighter;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> _evolver >> _maxtry
      >> _inputparticlesDecayInShower
-     >> _particlesDecayInShower;  
+     >> _particlesDecayInShower >> _useCKKW >> _reconstructor >> _reweighter;  
 }
 
 ClassDescription<ShowerHandler> ShowerHandler::initShowerHandler;
@@ -114,6 +149,17 @@ void ShowerHandler::Init() {
      "PDG codes of the particles to be decayed in the shower",
      &ShowerHandler::_inputparticlesDecayInShower, -1, 0l, -10000000l, 10000000l,
      false, false, Interface::limited);
+
+
+  static Reference<ShowerHandler,CascadeReconstructor> interfaceCascadeReconstructor
+    ("CascadeReconstructor",
+     "Casacde reconstructor used for ME/PS merging.",
+     &ShowerHandler::_reconstructor, false, false, true, true, false);
+
+  static Reference<ShowerHandler,Reweighter> interfaceReweighter
+    ("Reweighter",
+     "Reweighter used for ME/PS merging.",
+     &ShowerHandler::_reweighter, false, false, true, true, false);
 
 }
 
@@ -224,9 +270,7 @@ void ShowerHandler::cascade() {
       // suceeded break out of the loop
       break;
     }
-    catch (Veto) {
-      throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
-			<< Exception::eventerror;
+    catch (KinematicsReconstructionVeto) {
       ++countFailures;
     }
   }
@@ -300,4 +344,58 @@ bool ShowerHandler::decayProduct(tPPtr particle) const{
     particle->momentum().m2()>0.0*GeV2&&
     particle != eventHandler()->lastPartons().first &&
     particle != eventHandler()->lastPartons().second;
+}
+
+double ShowerHandler::reweightCKKW(int, int maxMult) {
+
+  if(_useCKKW) {
+
+#ifdef HERWIG_DEBUG_CKKW
+    generator()->log() << "== ShowerHandler::reweightCKKW" << endl;
+#endif
+
+    // get the hard subprocess particles
+    
+    PPair in = lastXCombPtr()->subProcess()->incoming();
+    ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
+    pair<double,double> x = make_pair(lastXCombPtr()->lastX1(),lastXCombPtr()->lastX2());
+    
+    bool gotHistory = false;
+
+    try {
+
+      // check resolution cut
+      
+      _reweighter->unresolvedCut(in,out);
+
+      // set the generation alpha_s
+
+      _reweighter->MEalpha(lastXCombPtr()->lastAlphaS());
+
+      // reconstruct a history
+
+      gotHistory = _reconstructor->reconstruct(in,x,out);
+
+    } catch (Veto) {
+
+      // as Veto is not handled if the subprocess has not been setup
+      // completely, we return weight 0, which, according to Leif,
+      // does the same job.
+
+      return 0.;
+
+    }
+
+    if (!gotHistory)
+      throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
+			<< Exception::eventerror;
+
+    double weight = _reweighter->reweight(_reconstructor->history(),out.size());
+
+    _evolver->initCKKWShower(out.size(),maxMult);
+
+    return weight;
+
+  } else return 1.;
+
 }

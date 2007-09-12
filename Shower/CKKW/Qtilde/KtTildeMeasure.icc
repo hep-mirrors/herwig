@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the KtTildeMeasure class.
+//
+
+namespace Herwig {
+
+inline KtTildeMeasure::KtTildeMeasure()
+  : DefaultJetMeasure(3) {}
+
+inline IBPtr KtTildeMeasure::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr KtTildeMeasure::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

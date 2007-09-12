@@ -1,0 +1,30 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the CKKWqq2V class.
+//
+
+namespace Herwig {
+
+inline CKKWqq2V::CKKWqq2V()
+  : CKKWHardProcess(),
+    _useColour(true)
+{}
+
+inline IBPtr CKKWqq2V::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr CKKWqq2V::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline bool CKKWqq2V::veto (const vector <tClusteringParticlePtr>&) const {
+  return false;
+}
+
+inline bool CKKWqq2V::useColour () const {
+  return _useColour;
+}
+
+}

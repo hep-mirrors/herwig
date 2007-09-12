@@ -9,6 +9,7 @@ Smearing.cc Smearing.h Smearing.icc \
 Maths.h Maths.icc Maths.cc \
 StandardSelectors.cc StandardSelectors.h StandardSelectors.icc \
 Histogram.cc Histogram.fh Histogram.h Histogram.icc \
+Histogram2.cc Histogram2.fh Histogram2.h Histogram2.icc \
 GaussianIntegrator.cc GaussianIntegrator.h \
 GaussianIntegrator.icc GaussianIntegrator.tcc \
 Statistic.cc Statistic.fh Statistic.h Statistic.icc 

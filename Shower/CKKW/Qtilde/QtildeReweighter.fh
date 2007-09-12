@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the QtildeReweighter class.
+//
+#ifndef HERWIG_QtildeReweighter_FH
+#define HERWIG_QtildeReweighter_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class QtildeReweighter;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::QtildeReweighter,QtildeReweighterPtr);
+
+}
+
+#endif

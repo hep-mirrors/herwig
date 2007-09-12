@@ -25,6 +25,10 @@ inline IBPtr ShowerAlphaQCD::fullclone() const {
   return new_ptr(*this);
 }
 
+inline void ShowerAlphaQCD::initialize () {
+  doinit ();
+}
+
 inline pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) const {
   short nf = 3;
   // get lambda and nf according to the thresholds

@@ -1,0 +1,21 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DefaultJetMeasure class.
+//
+
+namespace Herwig {
+
+inline DefaultJetMeasure::DefaultJetMeasure (unsigned int num)
+  : JetMeasure(num,num)
+{}
+
+inline void DefaultJetMeasure::sudakovBasis (const Lorentz5Momentum& p, const Lorentz5Momentum& n) {
+  _sudakovBasis = make_pair(p,n);
+}
+  
+inline pair<Lorentz5Momentum,Lorentz5Momentum> DefaultJetMeasure::sudakovBasis () const {
+  return _sudakovBasis;
+}
+
+}

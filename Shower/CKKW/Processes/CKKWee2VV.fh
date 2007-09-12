@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CKKWee2VV class.
+//
+#ifndef HERWIG_CKKWee2VV_FH
+#define HERWIG_CKKWee2VV_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class CKKWee2VV;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::CKKWee2VV,CKKWee2VVPtr);
+
+}
+
+#endif

@@ -5,17 +5,18 @@
 //
 
 namespace Herwig {
-
-inline void ShowerHandler::doinit() throw(InitException) {
-  CascadeHandler::doinit();
-  // copy particles to decay before showering from input vector to the 
-  // set used in the simulation
-  _particlesDecayInShower.insert(_inputparticlesDecayInShower.begin(),
-				 _inputparticlesDecayInShower.end());
-}
  
 inline bool ShowerHandler::decayInShower(const long id) const {
   return ( _particlesDecayInShower.find( abs(id) ) != 
 	   _particlesDecayInShower.end() ); 
 }
+
+inline tCascadeReconstructorPtr ShowerHandler::cascadeReconstructor () const {
+  return _reconstructor;
+}
+
+inline tReweighterPtr ShowerHandler::reweighter () const {
+  return _reweighter;
+}
+
 }

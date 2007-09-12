@@ -230,6 +230,21 @@ public:
   inline string addInitialSplitting(string);
   //@}
 
+  /**@name Meber access */
+  //@{
+
+  /**
+   * Return the list of final state branchings
+   */
+  inline const BranchingList & fbList () const;
+
+  /**
+   * Return the list of initial state branchings
+   */
+  inline const BranchingList & bbList () const;
+
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

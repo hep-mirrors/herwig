@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QCDQtildeClusterer class.
+//
+
+namespace Herwig {
+
+inline IBPtr QCDQtildeClusterer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr QCDQtildeClusterer::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

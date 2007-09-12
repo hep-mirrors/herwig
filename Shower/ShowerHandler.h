@@ -10,6 +10,8 @@
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.fh"
+#include "Herwig++/Shower/CKKW/Reweighting/Reweighter.fh"
 #include "ShowerHandler.fh"
 
 namespace Herwig {
@@ -51,6 +53,28 @@ public:
    * showering.
    */
   inline bool decayInShower(const long id) const;
+
+public:
+
+  /**@name Methods related to ME/PS merging */
+  //@{
+
+  /**
+   * Perform CKKW reweighting
+   */
+  virtual double reweightCKKW(int minMult, int maxMult);
+
+  /**
+   * Return the cascade reconstructor
+   */
+  inline tCascadeReconstructorPtr cascadeReconstructor () const;
+
+  /**
+   * Return the reweighter
+   */
+  inline tReweighterPtr reweighter () const;
+
+  //@}
 
 public:
 
@@ -139,7 +163,14 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
   //@}
 
 private:
@@ -200,6 +231,23 @@ private:
    *  Const pointer to the current step
    */
   tcStepPtr _current;
+
+  /**
+   * Wether or not to use CKKW
+   */
+  bool _useCKKW;
+
+  /**
+   * The cascade reconstructor used for ME/PS merging
+   */
+  CascadeReconstructorPtr _reconstructor;
+
+  /**
+   * The reweighter used for ME/PS merging
+   */
+  ReweighterPtr _reweighter;
+
+
 };
 
 }

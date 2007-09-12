@@ -1,0 +1,74 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EmitterSpectatorConfiguration class.
+//
+
+namespace Herwig {
+
+inline EmitterSpectatorConfiguration::EmitterSpectatorConfiguration()
+  : ClusteringConfiguration(),
+    _childSpectator(2),
+    _parentSpectator(3)
+{}
+
+inline EmitterSpectatorConfiguration::EmitterSpectatorConfiguration 
+(const vector<ClusteringParticleData>& children,
+ const unsigned int spectatorBefore,
+ const vector<ClusteringParticleData>& parents,
+ const unsigned int spectatorAfter,
+ ClusteringInteractionType::ClusteringInteractionType interaction,
+ tClustererPtr clusterer)
+  : ClusteringConfiguration(children,parents,interaction,clusterer),
+    _childSpectator(spectatorBefore),
+    _parentSpectator(spectatorAfter)
+{}
+
+inline IBPtr EmitterSpectatorConfiguration::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr EmitterSpectatorConfiguration::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline ClusteringParticleData EmitterSpectatorConfiguration::emitter() const {
+  if(_parentSpectator == 0) return emergingFromClustering()[1];
+  else return emergingFromClustering()[0];
+}
+
+inline pair<ClusteringParticleData,ClusteringParticleData>
+EmitterSpectatorConfiguration::emission () const {
+  pair<unsigned int,unsigned int> emmIndices;
+  switch (_childSpectator) {
+  case 0: emmIndices = make_pair(1,2); break;
+  case 1: emmIndices = make_pair(0,2); break;
+  case 2: emmIndices = make_pair(0,1); break;
+    }
+  return make_pair(toBeClustered()[emmIndices.first],toBeClustered()[emmIndices.second]);
+}
+
+inline ClusteringParticleData
+EmitterSpectatorConfiguration::spectatorBeforeClustering () const {
+  return toBeClustered()[_childSpectator];
+}
+
+inline ClusteringParticleData
+EmitterSpectatorConfiguration::spectatorAfterClustering () const {
+  return emergingFromClustering()[_parentSpectator];
+}
+
+inline unsigned int EmitterSpectatorConfiguration::spectatorBeforeClusteringIndex () const {
+  return _childSpectator;
+}
+
+inline unsigned int EmitterSpectatorConfiguration::emitterAfterClusteringIndex () const {
+  if(_parentSpectator == 0) return 1;
+  else return 0;
+}
+
+inline unsigned int EmitterSpectatorConfiguration::spectatorAfterClusteringIndex () const {
+  return _parentSpectator;
+}
+
+}

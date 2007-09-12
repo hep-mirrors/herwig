@@ -181,6 +181,7 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
+
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {
