@@ -301,11 +301,6 @@ void ShowerHandler::cascade() {
 
   theRemDec->finalize();
 
-  ofstream file;
-  file.open("multi.test", ios::app);
-  file << "max Multiplicity: " 
-       << eventHandler()->currentCollision()->subProcesses().size()-1 << endl; 
-  file.close();
   theHandler = 0;
 }
 
