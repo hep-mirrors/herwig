@@ -341,8 +341,6 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 	     << _incoming[ix] << "\n";
       output << "set " << fullName() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
       output << "set " << fullName() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
       output << "set " << fullName() << ":ReA " << ix << " " 
@@ -363,8 +361,6 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 	     << _incoming[ix] << "\n";
       output << "insert " << fullName() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
-	     << _maxweight[ix] << "\n";
       output << "insert " << fullName() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
       output << "insert " << fullName() << ":ReA " << ix << " " 
@@ -381,7 +377,18 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
 	     << _imC[ix]*MeV2 << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
+    if(ix<2*_initsize) {
+      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+	     << _maxweight[ix] << "\n";
+    }
+    else {
+      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+	     << _maxweight[ix] << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
 WidthCalculatorBasePtr OniumToOniumPiPiDecayer::

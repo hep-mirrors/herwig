@@ -33,7 +33,7 @@ bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
 ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
 				       const PDVector & prod) const {
   ParticleVector children;
-  for(unsigned int ix=0;ix<children.size();++ix) {
+  for(unsigned int ix=0;ix<prod.size();++ix) {
     children.push_back(prod[ix]->produceParticle());
   }
   // momenta of the decay products

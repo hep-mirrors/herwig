@@ -16,7 +16,7 @@ inline IBPtr OniumToOniumPiPiDecayer::fullclone() const {
 
 inline void OniumToOniumPiPiDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
   }
 }
