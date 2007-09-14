@@ -29,44 +29,11 @@ public:
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
   /**
-   * Analyze a given Event. Note that a fully generated event
-   * may be presented several times, if it has been manipulated in
-   * between. The default version of this function will call transform
-   * to make a lorentz transformation of the whole event, then extract
-   * all final state particles and call analyze(tPVector) of this
-   * analysis object and those of all associated analysis objects. The
-   * default version will not, however, do anything on events which
-   * have not been fully generated, or have been manipulated in any
-   * way.
-   * @param event pointer to the Event to be analyzed.
-   * @param ieve the event number.
-   * @param loop the number of times this event has been presented.
-   * If negative the event is now fully generated.
-   * @param state a number different from zero if the event has been
-   * manipulated in some way since it was last presented.
-   */
-  virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
    * Analyze the given vector of particles. The default version calls
    * analyze(tPPtr) for each of the particles.
    * @param particles the vector of pointers to particles to be analyzed
    */
   virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -127,13 +94,13 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -268,9 +235,170 @@ private:
   HistogramPtr _lpm;
 
   /**
+   *  Histogram for the ALEPH \f$K^{*\pm}\f$ \f$x\f$distribution
+   */
+  HistogramPtr _xpKstarplus;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^-\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpXiminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^-\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiXiminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*+}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpSigmaplus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*+}\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiSigmaplus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*-}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpSigmaminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Sigma^{*-}\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiSigmaminus;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^{*0}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpXi0;
+
+  /**
+   *  Histogram for the OPAL \f$\Xi^{*0}\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiXi0;
+
+  /**
+   *  Histogram for \f$\Lambda(1520)\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpLambda1520;
+
+  /**
+   *  Histogram for \f$\Lambda(1520)\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiLambda1520;
+
+  /**
+   *  Histogram for \f$\Delta^{++}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeDelta;
+
+  /**
+   *  Histogram for \f$f_0(980)\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpf980;
+
+  /**
+   *  Histogram for \f$\phi\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpphi;
+
+  /**
+   *  Histogram for \f$f_2\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpf2;
+
+  /**
+   *  Histogram for \f$K^{*0}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpKstar0;  
+
+  /**
+   *  Histogram for \f$K^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xpK0; 
+
+  /**
+   *  Histogram for \f$\rho^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xerho0;
+
+  /**
+   *  Histogram for the OPAL \f$\pi^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xepi0;
+
+  /**
+   *  Histogram for the OPAL \f$\pi^0\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xipi0;
+
+  /**
+   *  Histogram for the OPAL \f$\eta\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeeta;
+
+  /**
+   *  Histogram for the OPAL \f$\eta'\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xieta;
+
+  /**
+   *  Histogram for the OPAL \f$\eta\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeetap;
+
+  /**
+   *  Histogram for the OPAL \f$\eta'\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xietap;
+
+  /**
+   *  Histogram for the OPAL \f$\omega\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeomega;
+
+  /**
+   *  Histogram for the OPAL \f$\omega'\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xiomega;
+
+  /**
+   *  Histogram for the OPAL \f$\rho^+\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xerhop;
+
+  /**
+   *  Histogram for the OPAL \f$\rho^+\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xirhop;
+
+  /**
+   *  Histogram for the OPAL \f$\a_0^+\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xea_0p;
+
+  /**
+   *  Histogram for the OPAL \f$\a_0^+\f$ \f$\xi\f$ distribution
+   */
+  HistogramPtr _xia_0p;
+
+  /**
+   *  Histogram for \f$D^0\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeD0; 
+
+  /**
+   *  Histogram for \f$D^{*+}\f$ \f$x\f$ distribution
+   */
+  HistogramPtr _xeDstar;
+
+  /**
    *  Pointer to the event shapes object
    */
   EventShapesPtr _shapes;
+
 };
 
 }
@@ -307,8 +435,5 @@ struct ClassTraits<Herwig::IdentifiedParticleAnalysis>
 }
 
 #include "IdentifiedParticleAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IdentifiedParticleAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_IdentifiedParticleAnalysis_H */

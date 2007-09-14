@@ -10,6 +10,8 @@ BasicConsistency.cc BasicConsistency.fh \
 BasicConsistency.h BasicConsistency.icc \
 MultiplicityCount.cc MultiplicityCount.fh \
 MultiplicityCount.h MultiplicityCount.icc \
+LEPBMultiplicity.cc LEPBMultiplicity.fh \
+LEPBMultiplicity.h LEPBMultiplicity.icc \
 SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
 SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc\
 TTbarAnalysis.h TTbarAnalysis.fh \
@@ -101,10 +103,12 @@ if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
 HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 3:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS)
+HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh \
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
+LEPJetAnalysis.cc LEPJetAnalysis.fh \
+LEPJetAnalysis.h LEPJetAnalysis.icc \
 LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
 LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \

@@ -30,32 +30,6 @@ public:
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
-  /**
-   * Analyze a given Event. Note that a fully generated event
-   * may be presented several times, if it has been manipulated in
-   * between. The default version of this function will call transform
-   * to make a lorentz transformation of the whole event, then extract
-   * all final state particles and call analyze(tPVector) of this
-   * analysis object and those of all associated analysis objects. The
-   * default version will not, however, do anything on events which
-   * have not been fully generated, or have been manipulated in any
-   * way.
-   * @param event pointer to the Event to be analyzed.
-   * @param ieve the event number.
-   * @param loop the number of times this event has been presented.
-   * If negative the event is now fully generated.
-   * @param state a number different from zero if the event has been
-   * manipulated in some way since it was last presented.
-   */
-  virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
 
   /**
    * Analyze the given vector of particles. The default version calls
@@ -63,12 +37,6 @@ public:
    * @param particles the vector of pointers to particles to be analyzed
    */
   virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -122,13 +90,13 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
  //@}
 
 private:
@@ -222,8 +190,5 @@ struct ClassTraits<Herwig::SingleParticleAnalysis>
 }
 
 #include "SingleParticleAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SingleParticleAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_SingleParticleAnalysis_H */

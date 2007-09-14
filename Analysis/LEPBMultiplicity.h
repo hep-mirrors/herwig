@@ -1,27 +1,32 @@
 // -*- C++ -*-
-#ifndef HERWIG_BFragmentationAnalysisHandler_H
-#define HERWIG_BFragmentationAnalysisHandler_H
+#ifndef HERWIG_LEPBMultiplicity_H
+#define HERWIG_LEPBMultiplicity_H
 //
-// This is the declaration of the BFragmentationAnalysisHandler class.
+// This is the declaration of the LEPBMultiplicity class.
 //
 
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "Herwig++/Utilities/Histogram.h"
-#include "ThePEG/EventRecord/Event.h"
-#include "BFragmentationAnalysisHandler.fh"
+#include "MultiplicityCount.h"
+#include "LEPBMultiplicity.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the BFragmentationAnalysisHandler class.
+ * Here is the documentation of the LEPBMultiplicity class.
  *
- * @see \ref BFragmentationAnalysisHandlerInterfaces "The interfaces"
- * defined for BFragmentationAnalysisHandler.
+ * @see \ref LEPBMultiplicityInterfaces "The interfaces"
+ * defined for LEPBMultiplicity.
  */
-class BFragmentationAnalysisHandler: public AnalysisHandler {
+class LEPBMultiplicity: public AnalysisHandler {
+
+public:
+
+  /**
+   * The default constructor.
+   */
+  inline LEPBMultiplicity();
 
 public:
 
@@ -45,25 +50,6 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   *  Identifies which step(2) final state particles originate
-   *  from the b/bbar...
-   */
-  void analyze_bquarks(ParticleSet);
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -98,12 +84,6 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-
-  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
@@ -114,43 +94,42 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<BFragmentationAnalysisHandler> initBFragmentationAnalysisHandler;
+  static NoPIOClassDescription<LEPBMultiplicity> initLEPBMultiplicity;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  BFragmentationAnalysisHandler & operator=(const BFragmentationAnalysisHandler &);
+  LEPBMultiplicity & operator=(const LEPBMultiplicity &);
 
 private:
-  
-  /**
-   *  Histogram for the SLD binning
-   */
-  HistogramPtr _fragBxE;
 
   /**
-   *  Histogram for the ALEPH binning
+   *  The PDG codes of the particles
    */
-  HistogramPtr _fragBxEa;
+  vector<long> _particlecodes;
 
   /**
-   *  Histograms for quark energy fraction
+   * The multiplcity
    */
-  HistogramPtr _fragbquarkxE;
+  vector<double> _multiplicity;
 
   /**
-   * Histograms for b jet mass
+   * The error
    */
-  HistogramPtr _fragbquarkjetmass;
+  vector<double> _error;
 
   /**
-   *  Centre-of-mass energy of the collision
+   * Species of particle
    */
-  Energy _emax;
+  vector<unsigned int> _species;
 
+  /**
+   *  Map of PDG codes to multiplicity info
+   */
+  map<long,MultiplicityInfo> _data;
 };
 
 }
@@ -162,30 +141,34 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of BFragmentationAnalysisHandler. */
+ *  base classes of LEPBMultiplicity. */
 template <>
-struct BaseClassTrait<Herwig::BFragmentationAnalysisHandler,1> {
-  /** Typedef of the first base class of BFragmentationAnalysisHandler. */
+struct BaseClassTrait<Herwig::LEPBMultiplicity,1> {
+  /** Typedef of the first base class of LEPBMultiplicity. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the BFragmentationAnalysisHandler class and the shared object where it is defined. */
+ *  the LEPBMultiplicity class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::BFragmentationAnalysisHandler>
-  : public ClassTraitsBase<Herwig::BFragmentationAnalysisHandler> {
+struct ClassTraits<Herwig::LEPBMultiplicity>
+  : public ClassTraitsBase<Herwig::LEPBMultiplicity> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::BFragmentationAnalysisHandler"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the BFragmentationAnalysisHandler class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "HwAnalysis.so HwLEPAnalysis.so"; }
+  static string className() { return "Herwig::LEPBMultiplicity"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * LEPBMultiplicity is implemented. It may also include several, space-separated,
+   * libraries if the class LEPBMultiplicity depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "HwAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "BFragmentationAnalysisHandler.icc"
+#include "LEPBMultiplicity.icc"
 
-#endif /* HERWIG_BFragmentationAnalysisHandler_H */
+#endif /* HERWIG_LEPBMultiplicity_H */

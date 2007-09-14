@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
-// the SingleParticleAnalysis class.
+// the LEPBMultiplicity class.
 //
 
 namespace Herwig {
 
-inline IBPtr SingleParticleAnalysis::clone() const {
+inline IBPtr LEPBMultiplicity::clone() const {
   return new_ptr(*this);
 }
 
-inline IBPtr SingleParticleAnalysis::fullclone() const {
+inline IBPtr LEPBMultiplicity::fullclone() const {
   return new_ptr(*this);
 }
 

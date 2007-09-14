@@ -236,6 +236,8 @@ void MultiplicityCount::dofinish() {
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
 
+  cerr << "testing do hist " << _makeHistograms << "\n";
+
   outfile << 
     "\nParticle multiplicities (compared to LEP data):\n"
     "  ID       Name    simMult     obsMult       obsErr     Sigma\n";
@@ -317,7 +319,7 @@ void MultiplicityCount::dofinish() {
   AnalysisHandler::dofinish();
 }
 
-NoPIOClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
+ClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
 // Definition of the static class description member.
 
 void MultiplicityCount::Init() {
@@ -367,3 +369,10 @@ void MultiplicityCount::Init() {
      " and compares them with LEP data.");
 }
 
+void MultiplicityCount::persistentOutput(PersistentOStream & os) const {
+  os << _particlecodes << _multiplicity << _error << _species << _makeHistograms;
+}
+
+void MultiplicityCount::persistentInput(PersistentIStream & is, int) {
+  is >> _particlecodes >> _multiplicity >> _error >> _species >> _makeHistograms;
+}
