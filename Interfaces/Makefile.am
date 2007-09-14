@@ -5,7 +5,7 @@ pkglib_LTLIBRARIES += HwKtJet.la
 endif
 
 HwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
-HwKtJet_la_LIBADD = $(KTJETLIBS)
+HwKtJet_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwKtJet_la_LDFLAGS = -module -version-info 2:0:0
 HwKtJet_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 
