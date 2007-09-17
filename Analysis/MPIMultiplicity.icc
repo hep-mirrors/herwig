@@ -46,7 +46,7 @@ inline void MPIMultiplicity::doinit() throw(InitException) {
 inline void MPIMultiplicity::dofinish() {
   AnalysisHandler::dofinish();
   if(!theShowerHandler->IsMPIOn()) return;
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".dat");
+  string fname = generator()->filename() + string("-") + name() + string(".dat");
   ofstream outfile(fname.c_str());
   theRealMult.simpleOutput(outfile, false);
   theRequestedMult.simpleOutput(outfile, false);

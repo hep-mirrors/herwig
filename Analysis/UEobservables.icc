@@ -48,7 +48,7 @@ inline void UEobservables::dofinish() {
 
 inline void UEobservables::doinitrun() {
   //AnalysisHandler::doinitrun();
-  string gen(CurrentGenerator::current().filename());
+  string gen(generator()->filename());
   gen = gen.substr(2, gen.size());
   //string pt(gen.substr(gen.rfind("-")+1, gen.size()));
   theRootData.init((gen+".root").c_str(),gen.c_str());

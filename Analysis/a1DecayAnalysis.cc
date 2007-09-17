@@ -87,7 +87,7 @@ void a1DecayAnalysis::Init() {
 
 void a1DecayAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + 
+  string fname = generator()->filename() + 
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;

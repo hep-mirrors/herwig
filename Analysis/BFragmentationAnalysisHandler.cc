@@ -117,7 +117,7 @@ void BFragmentationAnalysisHandler::Init() {
 void BFragmentationAnalysisHandler::dofinish() {
   AnalysisHandler::dofinish();
   // output the histograms
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   double chisq,minfrac=0.05;

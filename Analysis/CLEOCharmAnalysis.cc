@@ -67,23 +67,23 @@ void CLEOCharmAnalysis::Init() {
 
 void CLEOCharmAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + 
+  string fname = generator()->filename() + 
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   double chisq=0.,minfrac=0.05;
   unsigned int ndegrees;
   _histDstarplus->chiSquared(chisq,ndegrees,minfrac);
-  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
 			  << " degrees of freedom for CLEO D*+ distribution\n";
   _histDstar0   ->chiSquared(chisq,ndegrees,minfrac);
-  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
 			  << " degrees of freedom for CLEO D*0 distribution\n";
   _histD0       ->chiSquared(chisq,ndegrees,minfrac);
-  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
 			  << " degrees of freedom for CLEO D0 distribution\n";
   _histDplus    ->chiSquared(chisq,ndegrees,minfrac);
-  CurrentGenerator::log() << "Chi Square = " << chisq << " for " << ndegrees 
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
 			  << " degrees of freedom for CLEO D+ distribution\n";
   _histDstarplus->topdrawOutput(output,Frame|Errorbars,
 				"RED",

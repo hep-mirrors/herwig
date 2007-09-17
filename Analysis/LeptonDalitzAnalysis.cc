@@ -187,7 +187,7 @@ void LeptonDalitzAnalysis::Init() {
 void LeptonDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   ofstream file;
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   file.open(fname.c_str());
   file << "SET WINDOW X 2 9 Y 2 9\n";
   file << "SET FONT DUPLEX\n";

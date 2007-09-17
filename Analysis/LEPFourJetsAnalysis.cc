@@ -48,7 +48,7 @@ void LEPFourJetsAnalysis::Init() {
 
 void LEPFourJetsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") 
+  string fname = generator()->filename() + string("-") 
     + name() + string(".top");
   ofstream output(fname.c_str());
   _ca34->normaliseToData();

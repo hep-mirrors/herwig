@@ -69,7 +69,7 @@ void TauToLeptonsAnalysis::Init() {
 
 void TauToLeptonsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   _emode->topdrawOutput(output,Frame|Errorbars|Ylog,

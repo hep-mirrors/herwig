@@ -24,7 +24,7 @@ inline IBPtr SimpleLHCAnalysis::fullclone() const {
 
 inline void SimpleLHCAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   string title;
   using namespace HistogramOptions;

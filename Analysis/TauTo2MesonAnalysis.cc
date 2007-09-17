@@ -203,7 +203,7 @@ void TauTo2MesonAnalysis::Init() {
 
 void TauTo2MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   _m2pipiBELLE->topdrawOutput(output,Frame|Errorbars|Ylog,

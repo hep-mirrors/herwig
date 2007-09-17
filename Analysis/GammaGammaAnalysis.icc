@@ -23,7 +23,7 @@ inline IBPtr GammaGammaAnalysis::fullclone() const {
 
 inline void GammaGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   using namespace HistogramOptions;
   _ptharder.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt harder");

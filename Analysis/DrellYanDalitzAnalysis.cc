@@ -130,7 +130,7 @@ void DrellYanDalitzAnalysis::Init() {
 void DrellYanDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   ofstream file;
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   file.open(fname.c_str());
   file << "SET WINDOW X 2 9 Y 2 9\n";
   file << "SET LIMITS X 1 10 Y 0 -10\n";

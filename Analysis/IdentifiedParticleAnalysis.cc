@@ -196,7 +196,7 @@ void IdentifiedParticleAnalysis::Init() {
 
 void IdentifiedParticleAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() 
+  string fname = generator()->filename() 
     + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   // chisq
