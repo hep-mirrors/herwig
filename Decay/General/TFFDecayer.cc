@@ -101,6 +101,7 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   Energy2 scale = sqr(inpart.second);
   _theFFTPtr->setCoupling(scale, inpart.first, outa.first,
 			  outb.first);

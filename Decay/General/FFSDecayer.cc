@@ -13,7 +13,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
@@ -115,6 +114,7 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   double mu1(0.),mu2(0.);
   if(outa.first->iSpin() == PDT::Spin1Half) {
     mu1 = outa.second/inpart.second;
@@ -136,9 +136,8 @@ Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
 		    + 2.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
   Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
 				       outb.second);
-  Energy pWidth = me2*pcm/8./Constants::pi;
-  if(inpart.first->iColour() == PDT::Colour8) {
+  Energy pWidth = me2*pcm/16./Constants::pi;
+  if(inpart.first->iColour() == PDT::Colour8)
     pWidth *= 0.5;
-  }
   return pWidth;
 }

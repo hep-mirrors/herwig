@@ -70,6 +70,7 @@ void VSSDecayer::Init() {
 
 Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   _theVSSPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first,
 			  outb.first);
   double mu1sq = sqr(outa.second/inpart.second);

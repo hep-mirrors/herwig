@@ -11,7 +11,6 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
@@ -82,6 +81,7 @@ double SVVLoopDecayer::me2(bool vertex, const int ,
   
 Energy SVVLoopDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				    PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   Lorentz5Momentum in(0.*MeV,0.*MeV,0.*MeV,inpart.second),out1,out2;
   Kinematics::twoBodyDecay(in,outa.second,outb.second,
 			   Axis(0.,0.,1.),out1,out2);

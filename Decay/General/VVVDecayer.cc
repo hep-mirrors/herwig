@@ -70,6 +70,7 @@ double VVVDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy VVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   _theVVVPtr->setCoupling(sqr(inpart.second), inpart.first, outa.first, 
 			  outb.first);
   double mu1(outa.second/inpart.second), mu1sq(sqr(mu1)),

@@ -12,7 +12,6 @@
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
@@ -75,6 +74,7 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   Energy2 scale(sqr(inpart.second));
   _theVVSPtr->setCoupling(scale, outa.first ,outb.first, 
 			  inpart.first);

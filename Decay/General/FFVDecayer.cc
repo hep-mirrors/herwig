@@ -13,7 +13,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
@@ -102,6 +101,7 @@ double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   double mu1(0.),mu2(0.);
   if( outa.first->iSpin() == PDT::Spin1Half) {
     mu1 = outa.second/inpart.second;
@@ -118,7 +118,7 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
   Complex cl(_theFFVPtr->getLeft()),cr(_theFFVPtr->getRight());
   double me2(0.);
   if( mu2 > 0. ) {
-    me2 = (norm(cl) + norm(cr))*(1. +sqr(mu1*mu2) + 2.*sqr(mu2) 
+    me2 = (norm(cl) + norm(cr))*(1. + sqr(mu1*mu2) + sqr(mu2) 
 				      - 2.*sqr(mu1) - 2.*sqr(mu2*mu2) 
 				      +  sqr(mu1*mu1))
     - 6.*mu1*sqr(mu2)*(conj(cl)*cr + conj(cr)*cl).real();
@@ -129,7 +129,7 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
 	       - 4.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
   Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
 				      outb.second);
-  Energy output = norm(_theFFVPtr->getNorm())*me2*pcm/(8.*Constants::pi);
+  Energy output = norm(_theFFVPtr->getNorm())*me2*pcm/16./Constants::pi;  
   return output;
   
 }

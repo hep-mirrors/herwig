@@ -13,7 +13,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 
 using namespace Herwig;
@@ -87,6 +86,7 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
   _theFFVPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
 			  inpart.first);
