@@ -6,6 +6,7 @@
 //
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Handlers/StandardEventHandler.h"
+#include "ThePEG/Handlers/LuminosityFunction.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/MultipleInteractionHandler.h"
 #include "ThePEG/Handlers/SamplerBase.h"
@@ -166,11 +167,6 @@ public:
    * to the ThePEG::EventHandler.
    */
   inline tEHPtr eventHandler() const;
-
-  /**
-   * Return the ThePEG::StandardEventHandler assigned to this handler.
-   */
-  inline tStdEHPtr stdeventHandler() const;
 
   /**
    * Return the sampler assigned to this handler.

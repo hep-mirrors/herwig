@@ -196,9 +196,7 @@ addME(Energy maxEnergy, tSubHdlPtr sub, tPExtrPtr extractor, tCutsPtr cuts,
 
     //todo: hope that it is no problem that I take the EventHandler here and not the MPIHandler:
     StdXCombPtr xcomb =
-      new_ptr(StandardXComb(maxEnergy, incoming(), 
-			    dynamic_ptr_cast<Ptr<StandardEventHandler>::transient_pointer>
-			    (eventHandler()), 
+      new_ptr(StandardXComb(maxEnergy, incoming(), eventHandler(), 
 			    sub, extractor, ckkw, pBins, cuts, me, dit->second, mirror));
 
     if ( xcomb->checkInit() ) xCombs().push_back(xcomb);
@@ -549,7 +547,7 @@ void MPIHandler::Init() {
 
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",
-     "The list of sub-process handlers used in this StandardEventHandler. ",
+     "The list of sub-process handlers used in this EventHandler. ",
      &MPIHandler::theSubProcesses, 0, false, false, true, false);
 
   static Reference<MPIHandler,Cuts> interfaceCuts

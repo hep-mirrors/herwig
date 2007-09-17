@@ -9,10 +9,6 @@ inline tEHPtr MPIHandler::eventHandler() const {
   return theHandler;
 }
 
-inline tStdEHPtr MPIHandler::stdeventHandler() const {
-  return dynamic_ptr_cast<Ptr<StandardEventHandler>::transient_pointer>(theHandler);
-}
-
 inline tCutsPtr MPIHandler::cuts() const {
   return theCuts;
 }
@@ -41,16 +37,16 @@ inline tcSamplerPtr MPIHandler::sampler() const {
 }
 
 inline const cPDPair & MPIHandler::incoming() const {
-  return stdeventHandler()->incoming();
+  return eventHandler()->incoming();
 }
 
 inline const LuminosityFunction & MPIHandler::lumiFn() const {
   // Did that in that strange way, because lumiFn is protected
-  return *stdeventHandler()->lumiFnPtr();
+  return *eventHandler()->lumiFnPtr();
 }
 
 inline int MPIHandler::lumiDim() const {
-  return stdeventHandler()->lumiDim();
+  return lumiFn().nDim(incoming());
 }
 
 inline int MPIHandler::maxDim(int bin) const {

@@ -224,7 +224,7 @@ protected:
       still in a compensating mode when the run was finished */
   struct ACDCStillCompensating: public Exception {};
 
-  /** Exception class used by ACDCSampler if a StandardEventHandler
+  /** Exception class used by ACDCSampler if a EventHandler
       was not able to produce a non-zero cross section. */
   struct EventInitNoXSec: public Exception {};
 
@@ -291,7 +291,7 @@ namespace ACDCGenerator {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** Specialized Traits class to define the interface to the
- * StandardEventHandler object to be sampled by ACDCGen.
+ * EventHandler object to be sampled by ACDCGen.
  */
 template <>
 struct ACDCFncTraits<Herwig::tMPIHPtr>: public ACDCTraitsType {
