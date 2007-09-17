@@ -529,7 +529,7 @@ tPPair ShowerHandler::remakeRemnant(tPPair oldp){
   // flags should be false if the first and/or last side do not have
   // remnants at all. It returns an overall boost which should be
   // applied to all partons in the shower.
-  LorentzRotation tot = pex.boostRemnants(newbins, p1, p2, true, true);
+  //LorentzRotation tot = pex.boostRemnants(newbins, p1, p2, true, true);
 
   return newp;
 
