@@ -45,16 +45,15 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 			 << '\n'
 			 << *event;
     }
-    else if((**it).id()==ExtraParticleID::Cluster)
-      {
-	cerr << "Had clusters in final state in event " 
-	     << event->number()  
-	     << '\n';
-	generator()->log() << "Had clusters in final state in event " 
-			   << event->number()  
-			   << '\n'
-			   << *event;
-      }
+    else if( _checkcluster && (**it).id()==ExtraParticleID::Cluster) {
+      cerr << "Had clusters in final state in event " 
+	   << event->number()  
+	   << '\n';
+      generator()->log() << "Had clusters in final state in event " 
+			 << event->number()  
+			 << '\n'
+			 << *event;
+    }
     charge += (*it)->dataPtr()->iCharge();
     ptotal += (*it)->momentum();
   }
@@ -110,11 +109,11 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 }
 
 void BasicConsistency::persistentOutput(PersistentOStream & os) const {
-  os << _checkquark << _checkcharge;
+  os << _checkquark << _checkcharge << _checkcluster;
 }
 
 void BasicConsistency::persistentInput(PersistentIStream & is, int) {
-  is >> _checkquark >> _checkcharge;
+  is >> _checkquark >> _checkcharge >> _checkcluster;
 }
 
 ClassDescription<BasicConsistency> BasicConsistency::initBasicConsistency;
@@ -154,6 +153,21 @@ void BasicConsistency::Init() {
     (interfaceCheckCharge,
      "NoCheck",
      "Don't check charge conservation",
+     false);
+
+  static Switch<BasicConsistency,bool> interfaceCheckCluster
+    ("CheckCluster",
+     "Check whether there are clusters in the final state",
+     &BasicConsistency::_checkcluster, true, false, false);
+  static SwitchOption interfaceCheckClusterCheck
+    (interfaceCheckCluster,
+     "Check",
+     "Check for clusters",
+     true);
+  static SwitchOption interfaceCheckClusterNoCheck
+    (interfaceCheckCluster,
+     "NoCheck",
+     "Don't check for clusters",
      false);
 
 }

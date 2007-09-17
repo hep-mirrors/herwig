@@ -132,6 +132,11 @@ private:
    *  check for charge conservation
    */
   bool _checkcharge;
+
+  /**
+   *  Check for clusters in  the final-state
+   */
+  bool _checkcluster;
 };
 
 }
