@@ -435,9 +435,9 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       delete integrand;
     } while ( (i < 100) && (i < 5 || P > 1.e-15) );
     delete inelint;
-    cout << "AvgN: " << AvgN << endl;
 
-    file << "Probabilities end -----------------------------\n\n";
+    file << "------------------------------------------------\n";
+    file << "AvgN: " << AvgN << endl;    
     file.close();
   }
   

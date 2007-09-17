@@ -23,7 +23,6 @@ MPIHandler::subProcesses() {
   return theSubProcesses;
 }
 
-
 inline long MPIHandler::maxLoop() const {
   return eventHandler()->maxLoop();
 }
@@ -84,14 +83,7 @@ inline int MPIHandler::binStrategy() const {
 }
 
 inline unsigned int MPIHandler::multiplicity() const {
-  ofstream file; 
-  unsigned int N(theMultiplicities.select(UseRandom::rnd()) );
-
-  file.open("multi.test", ios::app);
-  file << N << "\n";
-  file.close();
-
-  return N;
+  return theMultiplicities.select(UseRandom::rnd());
 }
 
 inline tStdXCombPtr MPIHandler::generate() {
