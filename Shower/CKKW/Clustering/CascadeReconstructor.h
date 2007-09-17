@@ -57,6 +57,22 @@ using namespace ThePEG;
      */
     tCKKWHardProcessPtr hard;
 
+#ifdef HERWIG_DEBUG_CKKW_GRAPHVIZ
+
+    /**
+     * Output the cascade history to a file
+     * to be processed by dot.
+     */
+    void toDot (ostream&, long evtNum, double ckkwweight);
+
+    /**
+     * Map colour line indices to X11 colour
+     * scheme names.
+     */
+    string colour (unsigned int);
+
+#endif
+
   };
 
 /**\ingroup CKKW

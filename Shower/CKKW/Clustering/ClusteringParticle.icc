@@ -32,6 +32,9 @@ inline ClusteringParticle::ClusteringParticle (const ClusteringParticleData& dat
     _data(data),
     _momentum(mom),
     _x(x),
+    _productionScale(0.*GeV2),
+    _splittingScale(0.*GeV2),
+    _showerScale(0.*GeV2),
     _noReweight(false)
 {}
 

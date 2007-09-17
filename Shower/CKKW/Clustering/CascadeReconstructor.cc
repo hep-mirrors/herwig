@@ -12,6 +12,8 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Utilities/Throw.h"
 
+#include "EmitterSpectatorClustering.h"
+
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "CascadeReconstructor.tcc"
 #endif
@@ -673,6 +675,239 @@ void CascadeReconstructor::dumpThePEGParticle (ostream& os, PPtr particle) {
   os << "Colour line = " << particle->colourLine() << " AntiColourLine = " << particle->antiColourLine() << "\n";
   os << endl;
 
+}
+
+#endif
+
+#ifdef HERWIG_DEBUG_CKKW_GRAPHVIZ
+
+void CascadeHistory::toDot (ostream& os, long evtNum, double ckkwweight) {
+
+  ostringstream gName ("");
+  gName << "event_" << evtNum;
+
+  os << "digraph " << gName.str() << " {" << endl
+     << "graph [center rankdir=LR]" << endl
+     << "edge [dir=none]" << endl
+     << "node [ label=\"w_ckkw="
+     << ckkwweight << "\" shape=box ] weight;" << endl;
+
+  // put the hard process
+
+  os << "node [ label=\"" << hard->name() << "\", shape=ellipse ] hard;" << endl;
+
+  // now put the clusterings
+
+  unsigned int count = 0;
+
+  for (list<ClusteringPtr>::iterator i = clusterings.begin();
+       i != clusterings.end(); ++i) {
+
+    ++count;
+
+    os << "node [ label=\"" << count << " : "
+       << sqrt((**i).scale())/GeV << " GeV\", shape=ellipse ] clustering"
+       << *i << ";" << endl;
+
+    // put the spectator vertex, if we have one
+    if (dynamic_ptr_cast<EmitterSpectatorClusteringPtr>(*i)) {
+      os << "node [ shape=point ] spectator" << *i << ";" << endl
+	 << "clustering" << *i << " -> spectator" << *i << " [ color=grey ]" << endl;
+    }
+
+  }
+
+  // particles
+
+  bool hard, external, splittingSpectator, productionSpectator;
+
+  for (vector<ClusteringParticlePtr>::iterator i = reconstructed.begin();
+       i != reconstructed.end() ; ++i) {
+
+    // add a vertex containing the shower scale, if external leg
+    external = !(**i).splitting();
+
+    if (external) {
+      os << "node [ label=\"" << sqrt((**i).showerScale())/GeV << " GeV\" shape=box ] external"
+	 << *i << ";" << endl;
+    }
+
+    // add a vertex containing the hard scale, if hard leg
+    hard = !(**i).production();
+
+    if (hard) {
+      os << "node [ label=\"" << sqrt((**i).productionScale())/GeV << " GeV\" shape=ellipse ] hard"
+	 << *i << ";" << endl
+	 << "hard" << *i << " -> hard [ color=black ]" << endl;
+    }
+
+    tcEmitterSpectatorClusteringPtr escSplit =
+      dynamic_ptr_cast<tcEmitterSpectatorClusteringPtr>((**i).splitting());
+
+    if (escSplit) {
+      splittingSpectator = escSplit->spectatorAfterClustering() == *i;
+    }
+
+    tcEmitterSpectatorClusteringPtr escProd =
+      dynamic_ptr_cast<tcEmitterSpectatorClusteringPtr>((**i).production());
+
+    if (escProd) {
+      productionSpectator = escProd->spectatorBeforeClustering() == *i;
+    }
+
+    // connect
+
+    // internal line
+    if ((**i).production() && (**i).splitting()) {
+
+
+      os << "{ edge [ label=\"" << (**i).pData().partonId.PDGId;
+      if ((**i).pData().partonId.state == ClusteringParticleState::initial)
+	os << " , x = " << (**i).x();
+      os << "\" , color=\"";
+
+      if ((**i).pData().colour != 0 && (**i).pData().antiColour == 0) {
+	os << colour((**i).pData().colour);
+      } else if ((**i).pData().colour == 0 && (**i).pData().antiColour != 0) {
+	os << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour != 0 && (**i).pData().antiColour != 0)) {
+	os << colour((**i).pData().colour) << ":" << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour == 0 && (**i).pData().antiColour == 0)) {
+	os << "black";
+      }
+
+      os << "\" ] ";
+
+
+      if (escSplit && splittingSpectator) {
+	os << "spectator" << (**i).splitting();
+      } else {
+	os << "clustering" << (**i).splitting();
+      }
+      if (escProd && productionSpectator) {
+	os << " -> spectator" << (**i).production();
+      } else {
+	os << " -> clustering" << (**i).production();
+      }
+
+      os << " }" << endl;
+
+    }
+
+    // external line
+    if ((**i).production() && !(**i).splitting()) {
+
+
+      os << "{ edge [ label=\"" << (**i).pData().partonId.PDGId;
+      if ((**i).pData().partonId.state == ClusteringParticleState::initial)
+	os << " , x = " << (**i).x();
+      os << "\" , color=\"";
+
+      if ((**i).pData().colour != 0 && (**i).pData().antiColour == 0) {
+	os << colour((**i).pData().colour);
+      } else if ((**i).pData().colour == 0 && (**i).pData().antiColour != 0) {
+	os << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour != 0 && (**i).pData().antiColour != 0)) {
+	os << colour((**i).pData().colour) << ":" << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour == 0 && (**i).pData().antiColour == 0)) {
+	os << "black";
+      }
+
+      os << "\" ] external" << *i;
+
+      if (escProd && productionSpectator) {
+	os << " -> spectator" << (**i).production();
+      } else {
+	os << " -> clustering" << (**i).production();
+      }
+
+      os << " }" << endl;
+
+    }
+
+    // hard line
+    if (!(**i).production() && (**i).splitting()) {
+
+
+      os << "{ edge [ label=\"" << (**i).pData().partonId.PDGId;
+      if ((**i).pData().partonId.state == ClusteringParticleState::initial)
+	os << " , x = " << (**i).x();
+      os << "\" , color=\"";
+
+      if ((**i).pData().colour != 0 && (**i).pData().antiColour == 0) {
+	os << colour((**i).pData().colour);
+      } else if ((**i).pData().colour == 0 && (**i).pData().antiColour != 0) {
+	os << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour != 0 && (**i).pData().antiColour != 0)) {
+	os << colour((**i).pData().colour) << ":" << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour == 0 && (**i).pData().antiColour == 0)) {
+	os << "black";
+      }
+
+      os << "\" ] ";
+
+
+      if (escSplit && splittingSpectator) {
+	os << "spectator" << (**i).splitting();
+      } else {
+	os << "clustering" << (**i).splitting();
+      }
+
+      os << " -> hard" << *i;
+
+      os << " }" << endl;
+
+    }
+
+    // line to which nothing happened
+    if (!(**i).production() && !(**i).splitting()) {
+
+
+      os << "{ edge [ label=\"" << (**i).pData().partonId.PDGId;
+      if ((**i).pData().partonId.state == ClusteringParticleState::initial)
+	os << " , x = " << (**i).x();
+      os << "\" , color=\"";
+
+      if ((**i).pData().colour != 0 && (**i).pData().antiColour == 0) {
+	os << colour((**i).pData().colour);
+      } else if ((**i).pData().colour == 0 && (**i).pData().antiColour != 0) {
+	os << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour != 0 && (**i).pData().antiColour != 0)) {
+	os << colour((**i).pData().colour) << ":" << colour((**i).pData().antiColour);
+      } else if (((**i).pData().colour == 0 && (**i).pData().antiColour == 0)) {
+	os << "black";
+      }
+
+      os << "\" ] external" << *i << " -> hard" << *i;
+
+      os << " }" << endl;
+
+    }
+
+  }
+
+  os << "}" << endl;
+
+}
+
+string CascadeHistory::colour (unsigned int index) {
+  switch (index) {
+  case 500: return "red";
+  case 501: return "blue";
+  case 502: return "green";
+  case 503: return "cyan";
+  case 504: return "magenta";
+  case 505: return "yellow";
+  case 506: return "purple";
+  case 507: return "orange";
+  case 508: return "skyblue";
+  case 509: return "";
+  case 510: return "";
+  case 511: return "";
+  case 512: return "";
+  case 513: return "";
+  case 514: return "";
+  }
 }
 
 #endif

@@ -181,6 +181,19 @@ double Reweighter::reweight (CascadeHistory history, unsigned int mult) {
   }
 #endif
 
+#ifdef HERWIG_DEBUG_CKKW_GRAPHVIZ
+
+  ostringstream dotname ("");
+  dotname << generator()->currentEventNumber() << ".dot";
+
+  ofstream dotOut(dotname.str().c_str());
+
+  history.toDot(dotOut,
+		generator()->currentEventNumber(),
+		weight);
+
+#endif
+
   return weight;
 }
 
