@@ -297,7 +297,7 @@ AC_SUBST(ROOTLIBS)
 AC_SUBST(ROOTINCLUDE)
 
 fi
-AM_CONDITIONAL(WANT_LIBROOT, test ! x"$ROOTCONF" = "xno")
+AM_CONDITIONAL(WANT_LIBROOT, test ! x"$with_root" = "xno")
 
 ])
 
