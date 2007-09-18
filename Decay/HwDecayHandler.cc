@@ -20,6 +20,8 @@
 #include "ThePEG/Helicity/SpinInfo.h"
 #include "DecayIntegrator.h"
 #include "DecayPhaseSpaceMode.h"
+#include "ThePEG/PDT/RemnantData.h"
+#include "ThePEG/PDT/RemnantDecayer.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -32,7 +34,8 @@ handle(EventHandler &, const tPVector & tagged,
   for(int i = 0, N = tagged.size(); i<N; ++i) {
     if(tagged[i]) {
       // add to parents if not stable
-      if(!tagged[i]->data().stable()) {
+      if(!tagged[i]->data().stable()&&
+	 !dynamic_ptr_cast<tcRemPDPtr>(tagged[i]->dataPtr())) {
 	parents.push_back(tagged[i]);
       }
       // if stable and has spinInfo set the developed flag
