@@ -48,15 +48,15 @@ set MPIHandler:Jmueo 1
 ##################################################
 cd /Defaults/Handlers/Analysis
 #create Herwig::GraphvizPlot Plot
-create Herwig::UEobservables UEshapes HwUEAnalysis.so
-set UEshapes:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
+#create Herwig::UEobservables UEshapes HwUEAnalysis.so
+#set UEshapes:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
 
 create Herwig::MPIMultiplicity MPIMult
 set MPIMult:MPIHandler /Defaults/Handlers/UnderlyingEvent/MPIHandler
 set MPIMult:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
 
-insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 UEshapes
-#insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 MPIMult
+#insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 UEshapes
+insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 MPIMult
 #insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 2 SimpleLHC
 #insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 3 Plot
 #insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 4 HJet
@@ -80,7 +80,7 @@ set PhotonKtCut:MinKT 20.0*GeV
 # Technical parameters for this run
 ##################################################
 cd /Defaults/Generators
-set LHCGenerator:NumberOfEvents 10000
+set LHCGenerator:NumberOfEvents 1000000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
