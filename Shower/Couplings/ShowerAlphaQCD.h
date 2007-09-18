@@ -64,6 +64,12 @@ public:
    */
   virtual inline void initialize ();
 
+  /**
+   * A command to initialize the coupling and write
+   * its value at the scale given by the argument (in GeV)
+   */
+  inline string value (string);
+
   //@}
 
   /**

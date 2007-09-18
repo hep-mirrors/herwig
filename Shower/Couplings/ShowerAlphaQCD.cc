@@ -9,6 +9,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/Throw.h"
@@ -142,6 +143,11 @@ void ShowerAlphaQCD::Init() {
      "Constituent",
      "Use the constitent masses.",
      false);
+
+  static Command<ShowerAlphaQCD> interfaceValue
+    ("Value",
+     "",
+     &ShowerAlphaQCD::value, false);
 
 }
 
