@@ -10,7 +10,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "ThePEG/Repository/Repository.h"
+#include "ThePEG/Repository/Repository.h" 
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -18,7 +19,6 @@ void UEDBase::doinit() throw(InitException) {
   StandardModel::doinit();
   //level-1 masses and mixing angle
   calculateKKMasses(1);
-  //write out the entire spectrum ordered by increasing mass
   writeSpectrum();
   //add the level-1 vertices.
   addVertex(theF1F1Z0Vertex);
@@ -351,8 +351,10 @@ void UEDBase::resetMass(long id, Energy mass) throw(InitException) {
 
 void UEDBase::writeSpectrum() {
   sort(theMasses.begin(), theMasses.end(), lowerMass);
-  ofstream ofs(theSpectrum.c_str());
-  ofs << "# UED Model Particle Spectrum\n"
+  string filename = CurrentGenerator::current().filename() + 
+    string("-BSMModelInfo.out");
+  ofstream ofs(filename.c_str(), ios::out|ios::app);
+  ofs << "# MUED Model Particle Spectrum\n"
       << "# R^-1: " << theInvRadius/GeV << " GeV\n"
       << "# Lambda * R: " << theLambdaR << "\n"
       << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
@@ -363,6 +365,7 @@ void UEDBase::writeSpectrum() {
     ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
     theMasses.erase(it);
   }
+  ofs << "#\n";
 }
 
 double UEDBase::sinThetaN(const unsigned int n) const {

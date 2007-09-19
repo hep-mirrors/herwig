@@ -126,9 +126,9 @@ void ModelGenerator::doinit() throw(InitException) {
   //create decayers and decaymodes (if necessary)
   _theDecayConstructor->createDecayers(_theParticles);
   string filename = CurrentGenerator::current().filename() + 
-    string("-BSMDecayModes.out");
-  ofstream ofs(filename.c_str());
-  ofs << "# The decay modes listed in this file will have spin "
+    string("-BSMModelInfo.out");
+  ofstream ofs(filename.c_str(), ios::out|ios::app);
+  ofs << "# The decay modes listed below will have spin\n"
       << "# correlations included when they are generated.\n#\n#";
   pit = _theParticles.begin();
   pend = _theParticles.end();
@@ -143,10 +143,12 @@ void ModelGenerator::doinit() throw(InitException) {
     else
       writeDecayModes(ofs, parent);
 
-    if(parent->massGenerator()) parent->massGenerator()->reset();
-    if(parent->widthGenerator()) parent->widthGenerator()->reset();
+    if( parent->massGenerator() ) {
+      parent->massGenerator()->reset();
+      ofs << "# " <<parent->PDGName() << " will be considered off-shell.\n#";
+    }
+    if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
-  
 }
 
 void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
