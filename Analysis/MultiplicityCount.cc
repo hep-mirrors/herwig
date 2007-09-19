@@ -200,6 +200,8 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = abs( (*it)->id() );
+    if(ID==ParticleID::K0) continue;
+    if(ID==ParticleID::K_L0||ID==ParticleID::K_S0) ID=ParticleID::K0;
     
     if ( _makeHistograms && isLastCluster(*it) ) {
       _histograms[ExtraParticleID::Cluster] += (*it)->mass()/GeV;
