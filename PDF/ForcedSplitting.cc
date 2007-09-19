@@ -121,13 +121,7 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   Ptr<BeamParticleData>::const_pointer beamdata = 
     dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>(_beam->dataPtr());
 
-  // SG: modified the kinematic cutoff in order to increase zmax, no
-  // reason to contrain it so much in the NP emission. 
-  // double Q0 = _kinCutoff;
-  Energy Q0 = 1*MeV;
-
   // the last scale is minimum of last value and upper limit
-  // SG: this is left at the normal (higher value)
   Energy minQ=_range*_kinCutoff*sqrt(lastx)/(1-lastx);
   if(minQ>lastQ) lastQ=minQ;
   // generate the new value of qtilde
@@ -136,12 +130,9 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   Energy q;
   double zmin,zmax,yy;
   do {
-    //q = minQ*pow(lastQ/minQ,UseRandom::rnd());
-    // SG: distribute Q flat between minQ and lastQ
-    // this is as in Fortran and reasonable fo NP model 
-    q = minQ + UseRandom::rnd()*(lastQ-minQ);
+    q = minQ*pow(lastQ/minQ,UseRandom::rnd());
     zmin = lastx;
-    yy   = 1.+0.5*sqr(Q0/q);
+    yy   = 1.+0.5*sqr(_kinCutoff/q);
     zmax = yy - sqrt(sqr(yy)-1.);    
   }
   while(zmax<zmin);
@@ -157,25 +148,17 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   double psum(0.);
   tcPDPtr gluon=getParticleData(ParticleID::g);
   vector<double> prob;
-  //  for(unsigned int iz=0;iz<nz;++iz) {
   for(unsigned int iz=0;iz<nz;++iz) {
     double ez=exp(yy);
     double wr=1.+ez;
-    double zr=wr/ez;
     double wz=1./wr;
     double zz=wz*ez;
-    //    double az=wz*zz*_alpha->value(sqr(max(wz*q,Q0)));
-    double az=wz*zz*_alpha->value(sqr(max(zz*q,Q0)));
+    double az=wz*zz*_alpha->value(sqr(max(zz*q,_kinCutoff)));
     // g -> q qbar
     if(iopt==1) {
       // calculate splitting function
       double pdf(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
-//       if(first)
-// 	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*zr);
-//       else
-// 	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*zr)
-// 	  - beamdata->pdf()->xfvx(beamdata,gluon,sqr(q),lastx*zr);
       if(first)
 	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*wr);
       else
@@ -183,7 +166,7 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
 	  - beamdata->pdf()->xfvx(beamdata,gluon,sqr(q),lastx*wr);
       // SG: this is symmetric in z <-> 1-z
       psum+=pdf*az*0.5*(sqr(zz)+sqr(wz));
-      //      psum += 1;
+
       prob.push_back(psum);
     }
     // q -> q g
@@ -191,20 +174,14 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
       // calculate splitting function
       double pdf(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
-//       if(first)
-// 	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*zr);
-//       else
-// 	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*zr)
-// 	  - beamdata->pdf()->xfvx(beamdata,parton->dataPtr(),sqr(q),lastx*zr);
       if(first)
 	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*wr);
       else
 	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*wr)
 	  - beamdata->pdf()->xfvx(beamdata,parton->dataPtr(),sqr(q),lastx*wr);
       // SG this splitting function has to have a 1/z pole! 
-      //      psum+=pdf*az*4./3.*(1.+sqr(wz))*zr;
       psum+=pdf*az*4./3.*(1.+sqr(zz))*wr;
-      //      psum += 1;
+
       prob.push_back(psum);
     }
     yy+=dely;
@@ -218,10 +195,7 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   if(iz==prob.size()) --iz;
   double ey=exp(ymin+dely*(float(iz+1)-UseRandom::rnd()));
   double z=ey/(1.+ey);
-  // SG played with this extreme value to see that the whole 
-  // softness of the remnant is really related to a phase space effect. 
-  //double z = zmax; 
-  Energy2 pt2=sqr((1.-z)*q)- z*sqr(Q0);
+  Energy2 pt2=sqr((1.-z)*q)- z*sqr(_kinCutoff);
   Energy2 emittedm2 = sqr(parton->dataPtr()->constituentMass());
   // Now boost pcm and pf to z only frame
   Lorentz5Momentum p = Lorentz5Momentum(0.0*MeV,  par.vect());
