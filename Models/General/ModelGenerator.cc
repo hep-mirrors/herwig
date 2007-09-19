@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -19,12 +20,12 @@ using namespace Herwig;
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << _theHPConstructor << _theDecayConstructor << _theParticles 
-     << _theRPConstructor << _theOffshell;
+     << _theRPConstructor << _theOffshell << _theOffsel;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _theHPConstructor >> _theDecayConstructor >> _theParticles
-     >> _theRPConstructor >> _theOffshell;
+     >> _theRPConstructor >> _theOffshell >> _theOffsel;
 }
 
 bool ModelGenerator::preInitialize() const {
@@ -52,8 +53,9 @@ void ModelGenerator::Init() {
       &ModelGenerator::_theDecayConstructor, false, false, true, false);
   
   static RefVector<ModelGenerator,ThePEG::ParticleData> interfaceModelParticles
-    ("ModelParticles",
-     "Pointers to particles contained in model",
+    ("DecayParticles",
+     "ParticleData pointers to the particles requiring spin correlation "
+     "decayers. If decay modes do not exist they will also be created.",
      &ModelGenerator::_theParticles, -1, false, false, true, false);
 
   static Reference<ModelGenerator,Herwig::ResonantProcessConstructor> 
@@ -61,12 +63,27 @@ void ModelGenerator::Init() {
     ("ResonantProcessConstructor",
      "Pointer to the object that constructs the resonant process(es)",
      &ModelGenerator::_theRPConstructor, false, false, true, true);
-  
-  
+    
   static RefVector<ModelGenerator,ParticleData> interfaceOffshell
     ("Offshell",
      "The particles to treat as off-shell",
      &ModelGenerator::_theOffshell, -1, false, false, true, false);
+
+  static Switch<ModelGenerator,int> interfaceWhichOffshell
+    ("WhichOffshell",
+     "A switch to determine which particles to create mass and width "
+     "generators for.",
+     &ModelGenerator::_theOffsel, 0, false, false);
+  static SwitchOption interfaceWhichOffshellSelected
+    (interfaceWhichOffshell,
+     "Selected",
+     "Only create mass and width generators for the particles specified",
+     0);
+  static SwitchOption interfaceWhichOffshellAll
+    (interfaceWhichOffshell,
+     "All",
+     "Treat all particles in the specified in the DecayParticles list as off-shell",
+     1);
 
 }
 
@@ -111,8 +128,8 @@ void ModelGenerator::doinit() throw(InitException) {
   string filename = CurrentGenerator::current().filename() + 
     string("-BSMDecayModes.out");
   ofstream ofs(filename.c_str());
-  ofs << "# BSM Model Decay Modes\n";
-  ofs << "#\n#";
+  ofs << "# The decay modes listed in this file will have spin "
+      << "# correlations included when they are generated.\n#\n#";
   pit = _theParticles.begin();
   pend = _theParticles.end();
   for( ; pit != pend; ++pit) {
@@ -128,14 +145,6 @@ void ModelGenerator::doinit() throw(InitException) {
 
     if(parent->massGenerator()) parent->massGenerator()->reset();
     if(parent->widthGenerator()) parent->widthGenerator()->reset();
-
-//     cerr << "Testing mass and width gens " << parent->PDGName() << "\n"
-// 	 << "Mass gen " << parent->massGenerator() << "  ";
-//     if(parent->massGenerator()) cerr << parent->massGenerator()->state() << '\n';
-//     cerr<< "Width gen " << parent->widthGenerator() << " ";
-//     if( parent->widthGenerator() )
-//       cerr << parent->widthGenerator()->state() << endl;
-      
   }
   
 }

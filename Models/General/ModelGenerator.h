@@ -136,6 +136,13 @@ private:
    * The particles to create MassGenerator and WidthGenerators  
    */
   PDVector _theOffshell;
+  
+  /**
+   * Which particles to treat as off-shell. 1 treats all particles in
+   * _theParticles vector as off-shell, 0 allows selection via
+   * _theOffshell vector.
+   */
+  int _theOffsel;
 };
 
 }

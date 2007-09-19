@@ -158,11 +158,11 @@ private:
     void setBranchingRatio(tDMPtr dm, Energy pwidth);
 
   /**
-   * Set the interfaces on the decayers to initialise them
+   * Set the interfaces of the decayers depending on the flags stored.
    * @param name Fullname of the decayer in the EventGenerator
    * including the path
    */
-  void initializeDecayers(string name) const;
+  void setDecayerInterfaces(string name) const;
   //@}
 
 private:
@@ -191,6 +191,11 @@ private:
    * Number of points to do in initialization
    */
   int _points;
+
+  /**
+   * Whether to output information on the decayers 
+   */
+  bool _info;
 };
   
 }
