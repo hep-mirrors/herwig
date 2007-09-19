@@ -269,8 +269,11 @@ ROOTPATH=""
 ROOTLIBS=""
 ROOTINCLUDE=""
 
+AC_MSG_CHECKING([for ROOT])
+
+
 AC_ARG_WITH(root,
-        AC_HELP_STRING([--with-root=DIR],[location of Root installation]),
+        AC_HELP_STRING([--with-root=DIR],[location of ROOT installation]),
         [],
         [with_root=no])
 
@@ -279,22 +282,29 @@ if test "x$with_root" = "xno"; then
 else
 
   ROOTPATH="$with_root"
-  AC_PATH_PROG(ROOTCONF, $ROOTPATH/bin/root-config, no)
 
-  AC_MSG_CHECKING([ROOTLIBS is])
-  if test -z "$ROOTLIBS"; then
-    ROOTLIBS=`$ROOTPATH/bin/root-config --libs`
+  if test -f $ROOTPATH/bin/root-config; then
+
+    AC_MSG_RESULT([$ROOTPATH])
+
+    AC_MSG_CHECKING([for ROOTLIBS])
+    if test -z "$ROOTLIBS"; then
+      ROOTLIBS=`$ROOTPATH/bin/root-config --libs`
+    fi
+    AC_MSG_RESULT([$ROOTLIBS])
+
+    AC_MSG_CHECKING([for ROOTINCLUDE])
+    if test -z "$ROOTINCLUDE"; then
+      ROOTINCLUDE="`$ROOTPATH/bin/root-config --cflags` -Wno-long-long"
+    fi
+    AC_MSG_RESULT([$ROOTINCLUDE])
+
+    AC_SUBST(ROOTLIBS)
+    AC_SUBST(ROOTINCLUDE)
+
+  else
+    AC_MSG_ERROR([root-config not found...aborting])    
   fi
-  AC_MSG_RESULT([$ROOTLIBS])
-
-  AC_MSG_CHECKING([for ROOTINCLUDE])
-  if test -z "$ROOTINCLUDE"; then
-    ROOTINCLUDE="`$ROOTPATH/bin/root-config --cflags` -Wno-long-long"
-  fi
-  AC_MSG_RESULT([$ROOTINCLUDE])
-
-AC_SUBST(ROOTLIBS)
-AC_SUBST(ROOTINCLUDE)
 
 fi
 AM_CONDITIONAL(WANT_LIBROOT, test ! x"$with_root" = "xno")
