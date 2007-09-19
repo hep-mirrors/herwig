@@ -567,7 +567,8 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
   }
   else if(offshell == PDT::Colour0) {
     if( ina == PDT::Colour0 || inb == PDT::Colour0 ||
-	outa == PDT::Colour0 || outb == PDT::Colour0 )
+	outa == PDT::Colour0 || outb == PDT::Colour0 ||
+	(ina == PDT::Colour8 && inb == PDT::Colour8) )
       cfv[0] = make_pair(1, 1);
     else {
       if( sameQuarkFlavour(diag.incoming.first, diag.incoming.second) ) {
