@@ -952,7 +952,7 @@ create /ThePEG/ParticleData /Defaults/Particles/K_S0
 setup /Defaults/Particles/K_S0 310 K_S0 0.497648 7.3514250055883E-15 0 26.842 0 0 1 0 
 defaultparticle /Defaults/Particles/K_S0
 create /ThePEG/ParticleData /Defaults/Particles/K_L0
-setup /Defaults/Particles/K_L0 130 K_L0 0.497648 1.2871947162427E-17 0 15330 0 0 1 0 
+setup /Defaults/Particles/K_L0 130 K_L0 0.497648 1.2871947162427E-17 0 15330 0 0 1 1 
 defaultparticle /Defaults/Particles/K_L0
 create /ThePEG/ParticleData /Defaults/Particles/kappa0
 setup /Defaults/Particles/kappa0 9000311 kappa0 0.841 0.618 0.7215 0 0 0 1 0 
