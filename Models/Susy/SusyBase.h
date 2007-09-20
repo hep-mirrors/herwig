@@ -113,12 +113,6 @@ public:
    */
   static void Init();
 
-  /**
-   * Tell EventGenerator::init() that this is an object that wants to
-   * create new interfaced objects in the read step
-   */
-  virtual bool preInitialize() const;
-
   /**@name Functions to access specific vertices.*/
   //@{
   /**
@@ -137,14 +131,14 @@ public:
   virtual inline tGeneralSVVVertexPtr vertexHGG() const;
   //@}
 
+protected:
 
-private:
-  
   /**
-   * Read the SLHA file with the name set by an interface.
+   * Function to read information from a setup file.
+   * @param is istream object to read file.
    */
-  void readSLHA() throw(InitException);
-  
+  virtual void readSetup(istream & is) throw(SetupException);
+
 private:
   
   /**@name Functions to help file read-in. */
@@ -154,7 +148,7 @@ private:
    * @param ifs input stream containg data
    * @param name The name of the block
    */
-  void readBlock(ifstream & ifs,string name) throw(InitException);
+  void readBlock(ifstream & ifs,string name) throw(SetupException);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -163,14 +157,14 @@ private:
    * @param col Number of columns
    */
   const MixingVector readMatrix(ifstream & ifs, unsigned int & row,
-				unsigned int & col) throw(InitException);
+				unsigned int & col) throw(SetupException);
 
   /**
    * Read decaymodes from LHA file
    * @param ifs input stream containg data
    * @param decay string containing name of parent and value of total width
    */
-  void readDecay(ifstream & ifs, string decay) const throw(InitException);
+  void readDecay(ifstream & ifs, string decay) const throw(SetupException);
 
   /**
    * Create a DecayMode object in the repository
@@ -178,7 +172,7 @@ private:
    * @param products Decay products
    * @param brat Branching ratio of this mode 
    */
-  void createDecayMode(string tag, vector<long> products,
+  void createDecayMode(string tag, tcPDVector products,
 		       double brat) const;
 
 protected:
@@ -316,11 +310,6 @@ private:
   Energy theMthree;  
   //@}
 
-  /**
-   * The name of the SLHA file
-   */
-  string theSLHAName;
-  
   /**
    *  Neutralino and Chargino mixing matrices
    */

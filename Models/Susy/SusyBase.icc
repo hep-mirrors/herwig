@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline SusyBase::SusyBase() : _tanbeta(0), _mu(), theMone(), theMtwo(),
-			      theMthree(), theSLHAName("") {}
+			      theMthree() {}
 
 inline IBPtr SusyBase::clone() const {
   return new_ptr(*this);
