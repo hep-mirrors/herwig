@@ -10,8 +10,11 @@ pTSudakov.h pTSudakov.icc pTSudakov.fh pTSudakov.cc \
 NasonTree.h NasonTree.icc NasonTree.fh NasonTree.cc\
 DrellYanHardGenerator.h DrellYanHardGenerator.fh \
 DrellYanHardGenerator.icc DrellYanHardGenerator.cc \
-VectorBosonQQbarHardGenerator.h VectorBosonQQbarHardGenerator.fh \
-VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc 
+VectorBosonQQbarHardGenerator.h   VectorBosonQQbarHardGenerator.fh \
+VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc \
+CSVectorBosonQQbarHardGenerator.h   CSVectorBosonQQbarHardGenerator.fh \
+CSVectorBosonQQbarHardGenerator.icc CSVectorBosonQQbarHardGenerator.cc 
 
 
 HwNasonShower_la_LDFLAGS = -module
+HwNasonShower_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)

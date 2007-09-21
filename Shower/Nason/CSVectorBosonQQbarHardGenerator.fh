@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the CSVectorBosonQQbarHardGenerator class.
+//
+#ifndef HERWIG_CSVectorBosonQQbarHardGenerator_FH
+#define HERWIG_CSVectorBosonQQbarHardGenerator_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class CSVectorBosonQQbarHardGenerator;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::CSVectorBosonQQbarHardGenerator,CSVectorBosonQQbarHardGeneratorPtr);
+
+}
+
+#endif

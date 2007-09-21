@@ -31,11 +31,6 @@ using namespace std;
  */
 class VectorBosonQQbarHardGenerator: public HardestEmissionGenerator {
 
-  /**
-   * Typedef for the BeamParticleData object
-   */
-  typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
-
 public:
 
   /**
