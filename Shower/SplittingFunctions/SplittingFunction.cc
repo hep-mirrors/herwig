@@ -6,11 +6,7 @@
 
 #include "SplittingFunction.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SplittingFunction.tcc"
-#endif
-
+#include "ThePEG/Repository/UseRandom.h"
 
 using namespace Herwig;
 
@@ -25,3 +21,19 @@ void SplittingFunction::Init() {
 
 }
 
+double SplittingFunction::generatePhi(ShowerParticle &,ShoKinPtr,
+				      const double, const Energy,
+				      const IdList &, const RhoDMatrix &,
+				      const double) {
+  cerr << "Using SplittingFunction::generatePhi()" << fullName() << "\n";
+  exit(1);
+  return Constants::twopi*UseRandom::rnd();
+}
+
+DecayMatrixElement SplittingFunction::matrixElement(ShowerParticle &,ShoKinPtr,
+						    const double, const Energy, 
+						    const IdList &,
+						    const RhoDMatrix &, const double) {
+  throw Exception() << "SplittingFunction::matrixElement called for " << fullName()
+		    << Exception::runerror;
+}

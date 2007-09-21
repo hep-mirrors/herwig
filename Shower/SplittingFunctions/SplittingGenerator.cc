@@ -206,6 +206,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   Timer<1200> timer("SplittingGenerator::chooseForwardBranching");
   Energy newQ = Energy();
   ShoKinPtr kinematics = ShoKinPtr();
+  SudakovPtr newSud;
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
@@ -227,11 +228,14 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
        newKin->scale() <= particle.evolutionScales()[i]) {
       kinematics=newKin;
       newQ = newKin->scale();
+      newSud = cit->second.first;
       ids = cit->second.second;
     }
   }
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList());
+  // and generate phi
+  newSud->generatePhi(particle,ids,kinematics);
   // If a branching has been selected initialize it
   kinematics->initialize(particle,PPtr());
   // and return it

@@ -13,12 +13,16 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
+#include "ThePEG/Helicity/RhoDMatrix.h"
+#include "ThePEG/Helicity/SpinInfo.h"
 #include "ShowerKinematics.h"
 #include "SudakovFormFactor.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using ThePEG::Helicity::RhoDMatrix;
+using ThePEG::Helicity::SpinfoPtr;
 
 /**  \ingroup Shower
  *
@@ -119,6 +123,13 @@ class SudakovFormFactor: public Interfaced {
    */
   friend class SplittingGenerator;
 
+protected:
+  
+  /**
+   *  Type def to make things easier
+   */
+  typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+  
 public:
 
   /**
@@ -175,8 +186,17 @@ public:
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc,double enhance,
-					       Ptr<BeamParticleData>::transient_const_pointer beam)=0;
+					       tcBeamPtr beam)=0;
   //@}
+
+  /**
+   *  Generate the azimuthal angle of the branching
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhi(ShowerParticle & particle,const IdList & ids,
+			     ShoKinPtr kinematics)=0;
 
   /**
    *  Methods to provide public access to the private member variables
@@ -281,10 +301,9 @@ protected:
    *                original particle
    * @param beam The BeamParticleData object
    */
-  bool PDFVeto(const Energy2 t, const double x,
-	       const tcPDPtr parton0, const tcPDPtr parton1,
-	       Ptr<BeamParticleData>::transient_const_pointer beam) const;
-
+  bool PDFVeto(const Energy2 t, const double x,const tcPDPtr parton0,
+ 	       const tcPDPtr parton1,tcBeamPtr beam) const;
+  
   /**
    *  The veto on the splitting function.
    * @param t The scale
@@ -348,6 +367,17 @@ protected:
    *  Access the potential branchings
    */
   inline vector<IdList> particles() const;
+
+  /**
+   * For a particle which came from the hard process get the spin density and
+   * the mapping required to the basis used in the Shower
+   * @param rho The \f$\rho\f$ matrix
+   * @param mapping The mapping
+   * @param particle The particle
+   * @param showerkin The ShowerKinematics object
+   */
+  SpinfoPtr getMapping(RhoDMatrix & rho, RhoDMatrix & map,
+		       ShowerParticle & particle,ShoKinPtr showerkin);
 
 private:
 

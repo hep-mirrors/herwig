@@ -12,8 +12,13 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "Herwig++/Shower/ShowerHandler.h"
-
+#include "ShowerParticle.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/FermionSpinInfo.h"
+ 
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _splittingFn << _alpha << _pdfmax << _particles;
@@ -112,4 +117,97 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
     }
   }
   if(add) _particles.push_back(in);
+}
+
+SpinfoPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
+					ShowerParticle & particle,ShoKinPtr showerkin) {
+  // output spininfo
+  SpinfoPtr output;
+  // if the particle is final-state and not from the hard process
+  if(!particle.perturbative() && particle.isFinalState()) {
+    // mapping is the identity
+    mapping=RhoDMatrix(particle.dataPtr()->iSpin());mapping.average();
+    output=dynamic_ptr_cast<SpinfoPtr>(particle.spinInfo());
+    // should have spin info
+    if(!output) {
+      cerr << " particle does not have spinInfo " << endl;
+      exit(1); 
+    }
+  }
+  // if particle is final-state and is from the hard process
+  else if(particle.perturbative() && particle.isFinalState()) {
+    // get the basis vectors
+    vector<Lorentz5Momentum> basis=showerkin->getBasis();
+    // we are doing the evolution in the back-to-back frame
+    // work out the boostvector
+    Boost boostv(-(basis[0]+basis[1]).boostVector());
+    // boost the momentum
+    Lorentz5Momentum porig(basis[0]);porig.boost(boostv);
+    // now rotate so along the z axis as needed for the splitting functions
+    Axis axis(porig.vect().unit());
+    LorentzRotation rot;
+    if(axis.perp2()>0.) {
+      double sinth(sqrt(1.-sqr(axis.z())));
+      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      porig.transform(rot);
+    }
+    else if(axis.z()>0.) {
+      porig.setZ(-porig.z());
+    }
+    // the rest depends on the spin of the particle
+    PDT::Spin spin(particle.dataPtr()->iSpin());
+    mapping=RhoDMatrix(spin);
+    // do the spin dependent bit
+    if(spin==PDT::Spin0) {
+      cerr << "testing spin 0 not yet implemented " << endl;
+      exit(0);
+    }
+    else if(spin==PDT::Spin1Half) {
+      FermionSpinPtr fspin=dynamic_ptr_cast<FermionSpinPtr>(particle.spinInfo());
+      // spin info exists get information from it
+      if(fspin) {
+	output=fspin;
+	// rotate the original basis
+	vector<LorentzSpinor<SqrtEnergy> > sbasis;
+	for(unsigned int ix=0;ix<2;++ix) {
+	  sbasis.push_back(fspin->getProductionBasisState(ix));
+	  sbasis.back().transform(rot);
+	}
+	// splitting basis
+	DiracRep dbasis(sbasis[0].Rep());
+	vector<LorentzSpinorBar<SqrtEnergy> > fbasis;
+	SpinorBarWaveFunction wave;
+	if(particle.id()>0)
+	  wave=SpinorBarWaveFunction(porig,particle.dataPtr(),outgoing,dbasis);
+	else
+	  wave=SpinorBarWaveFunction(porig,particle.dataPtr(),incoming,dbasis);
+	for(unsigned int ix=0;ix<2;++ix) {
+	  wave.reset(ix);
+	  fbasis.push_back(wave.dimensionedWave());
+	}
+	// work out the mapping
+	for(unsigned int ix=0;ix<2;++ix) {
+	  for(unsigned int iy=0;iy<2;++iy) {
+	    mapping(ix,iy)=sbasis[iy].scalar(fbasis[ix])/2./porig.mass();
+	    if(particle.id()<0){mapping(ix,iy)=conj(mapping(ix,iy));}
+	    cerr << "testing the mapping " << ix << " " << iy << " " 
+		 << mapping(ix,iy) << endl;
+	  }
+	}
+      }
+      // spin info does not exist create it
+      else {
+	cerr << "testing no basis case not yet handled " << endl;
+	exit(1);
+      }
+    }
+    else {
+      cerr << "testing spin 1 not yet implemented " << endl;
+      exit(0);
+    }
+  }
+  // set the decayed flag
+  output->decay();
+  rho=output->rhoMatrix();
+  return output;
 }

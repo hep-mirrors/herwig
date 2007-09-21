@@ -113,3 +113,52 @@ bool QtoQGSplitFn::accept(const IdList &ids) const {
   return q->iSpin()==PDT::Spin1Half&&(q->iColour()==PDT::Colour3||
 				      q->iColour()==PDT::Colour3bar);
 }
+
+double QtoQGSplitFn::generatePhi(ShowerParticle & ,ShoKinPtr ,
+				 const double , const Energy ,
+				 const IdList & , const RhoDMatrix &, 
+				 const double ) {
+  return 1.;
+}
+
+DecayMatrixElement QtoQGSplitFn::
+matrixElement(ShowerParticle &, ShoKinPtr,
+	      const double z, const Energy qtilde, 
+	      const IdList & ids,
+	      const RhoDMatrix & mapping, const double phi) {
+  // compute the splitting matrix 
+  Energy m(getParticleData(ids[0])->mass());
+  // temporarily as an array and store in DecayMatrixElement class permanently
+  double terma(m/qtilde*sqrt(1.-z)/z);
+  double termb(sqrt((1.-sqr(m/(qtilde*z)))/(1.-z)));
+  Complex ephi(cos(phi)+Complex(0.,1.)*sin(phi));
+  Complex me[2][2][2];
+  // +++
+  me[1][1][1]=termb*conj(ephi);
+  // -++
+  me[0][1][1]=0.;
+  // ++-
+  me[1][1][0]=-z*termb*ephi;
+  // -+-
+  me[0][1][0]=terma;
+  // +-+
+  me[1][0][1]=terma;
+  // --+
+  me[0][0][1]=z*termb*conj(ephi);
+  // +--
+  me[1][0][0]=0.;
+  // ---
+  me[0][0][0]=-termb*ephi;
+  // compute the decay matrix element
+  DecayMatrixElement bme(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
+  for(unsigned int in1=0;in1<2;++in1) {
+    for(unsigned int in2=0;in2<2;++in2) {
+      for(unsigned int out1=0;out1<2;++out1) {
+	for(unsigned int out2=0;out2<2;++out2) {
+	  bme(in1,out1,2*out2)+=mapping(in1,in2)*me[in2][out1][out2];
+	}
+      }
+    }
+  }
+  return bme;
+}

@@ -78,8 +78,17 @@ public:
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc, double enhance,
-					       Ptr<BeamParticleData>::transient_const_pointer beam);
+ 					       tcBeamPtr beam);
   //@}
+
+  /**
+   *  Generate the azimuthal angle of the branching
+   * @param particle The branching particle
+   * @param ids The PDG codes of the particles in the branchings
+   * @param The Shower kinematics
+   */
+  virtual double generatePhi(ShowerParticle & particle,const IdList & ids,
+			     ShoKinPtr kinematics);
 
 public:
 

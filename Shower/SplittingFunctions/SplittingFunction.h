@@ -9,11 +9,14 @@
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
 #include "Herwig++/Shower/Couplings/ShowerIndex.h"
+#include "ThePEG/Helicity/RhoDMatrix.h"
+#include "Herwig++/Decay/DecayMatrixElement.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using Helicity::RhoDMatrix;
 
 /** \ingroup Shower
  *
@@ -149,6 +152,28 @@ public:
 				tShowerParticlePtr first,
 				tShowerParticlePtr second,
 				const bool back) const=0;
+
+  /**
+   * Method to calculate the azimuthal angle
+   * @param particle The particle which is branching
+   * @param showerkin The ShowerKinematics object
+   * @param z The energy fraction
+   * @param qtilde   The scale.
+   * @param ids The PDG codes for the particles in the splitting.
+   * @param The azimuthal angle, \f$\phi\f$.
+   * @return The weight
+   */
+  virtual double generatePhi(ShowerParticle & particle,ShoKinPtr showerkin,
+			     const double z, const Energy qtilde, const IdList & ids,
+			     const RhoDMatrix &, const double phi);
+
+  /**
+   * Calculate the matrix element for the splitting
+   */
+  virtual DecayMatrixElement matrixElement(ShowerParticle & particle,ShoKinPtr showerkin,
+					   const double z, const Energy qtilde, 
+					   const IdList & ids,
+					   const RhoDMatrix &, const double phi);
 
 public:
 
