@@ -58,6 +58,18 @@ public:
    *  Return the ratio of the coupling at the scale to the overestimated value
    */
   virtual double ratio(const Energy2 scale) const;
+
+  /**
+   * Initialize this coupling.
+   */
+  virtual inline void initialize ();
+
+  /**
+   * A command to initialize the coupling and write
+   * its value at the scale given by the argument (in GeV)
+   */
+  inline string value (string);
+
   //@}
 
   /**
@@ -283,7 +295,7 @@ struct ClassTraits<Herwig::ShowerAlphaQCD>
    * libraries will be dynamically linked in the order they are
    * specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

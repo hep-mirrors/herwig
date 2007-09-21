@@ -1,0 +1,70 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DefaultSudakov class.
+//
+
+namespace Herwig {
+
+inline DefaultSudakov::DefaultSudakov()
+  : Interfaced(),
+    _initial(false),
+    _useMassive(true),
+    _qvalues(NULL),
+    _ivalues(NULL),
+    _spline(NULL),
+    _acc(NULL),
+    _data_allocated(false),
+    _interpolation_allocated(false)
+{}
+
+inline DefaultSudakov::DefaultSudakov (DefaultReweighterPtr r,
+				       SplittingFnPtr sp,
+				       const IdList& ids,
+				       bool useMassive,
+				       bool initial)
+  : Interfaced(),
+    _reweighter(r),
+    _splittingFunction(sp),
+    _ids(ids),
+    _initial(initial),
+    _useMassive(useMassive),
+    _data_allocated(false),
+    _interpolation_allocated(false)
+{}
+
+inline IBPtr DefaultSudakov::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DefaultSudakov::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline double DefaultSudakov::operator () (Energy2 q1, Energy2 q2) {
+  return interpolate(q1)/interpolate(q2);
+}
+
+inline tDefaultReweighterPtr DefaultSudakov::reweighter () const {
+  return _reweighter;
+}
+
+inline tSplittingFnPtr DefaultSudakov::splittingFunction () const {
+  return _splittingFunction;
+}
+
+inline void DefaultSudakov::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _reweighter = trans.translate(_reweighter);
+  _splittingFunction = trans.translate(_splittingFunction);
+  Interfaced::rebind(trans);
+}
+
+inline IVector DefaultSudakov::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  ret.push_back(_reweighter);
+  ret.push_back(_splittingFunction);
+  return ret;
+}
+
+}

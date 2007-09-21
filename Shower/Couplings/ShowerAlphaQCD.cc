@@ -9,6 +9,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Command.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/Throw.h"
@@ -143,6 +144,11 @@ void ShowerAlphaQCD::Init() {
      "Use the constitent masses.",
      false);
 
+  static Command<ShowerAlphaQCD> interfaceValue
+    ("Value",
+     "",
+     &ShowerAlphaQCD::value, false);
+
 }
 
 void ShowerAlphaQCD::doinit() throw(InitException) {
@@ -181,6 +187,7 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
+
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {

@@ -295,7 +295,7 @@ void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
 void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
 						bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::BallZwickyScalarFormFactor "
+  if(create) output << "create Herwig::BallZwickyScalarFormFactor "
 		    << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {

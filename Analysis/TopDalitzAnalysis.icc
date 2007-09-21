@@ -23,7 +23,7 @@ inline IBPtr TopDalitzAnalysis::fullclone() const {
 
 inline void TopDalitzAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  string basename = CurrentGenerator::current().filename() + string("-") + name();
+  string basename = generator()->filename() + string("-") + name();
   _output[0].open((basename+".top").c_str());
   _output[0] << "SET FONT DUPLEX\n";
   _output[0] << "SET LIMITS X 0 1 Y 0.9 1.3\n";

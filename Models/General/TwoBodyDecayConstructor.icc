@@ -7,7 +7,8 @@
 namespace Herwig {
     
 inline TwoBodyDecayConstructor::TwoBodyDecayConstructor():
-  _theExistingDecayers(0),_init(true),_iteration(1),_points(1000) {}
+  _theExistingDecayers(0),_init(true),_iteration(1),_points(1000),
+  _info(false) {}
   
 inline IBPtr TwoBodyDecayConstructor::clone() const {
   return new_ptr(*this);

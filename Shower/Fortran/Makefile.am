@@ -9,3 +9,4 @@ FortranShowerKinematics.icc FortranShowerKinematics.fh \
 FortranSudakov.cc FortranSudakov.h FortranSudakov.icc FortranSudakov.fh \
 FortranModel.cc FortranModel.h FortranModel.icc FortranModel.fh 
 HwFortranShower_la_LDFLAGS = -module
+HwFortranShower_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)

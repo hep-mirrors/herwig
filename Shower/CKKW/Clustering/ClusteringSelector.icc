@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ClusteringSelector class.
+//
+
+namespace Herwig {
+
+inline ClusteringSelector::ClusteringSelector() {}
+
+inline IBPtr ClusteringSelector::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ClusteringSelector::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

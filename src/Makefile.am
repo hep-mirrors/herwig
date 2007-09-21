@@ -4,17 +4,19 @@ Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
 DOTINFILES = Analysis.in Decays.in Hadronization.in \
-HerwigDefaults.in HerwigParticles.in Particles.in \
-Hw64Decays.in Model.in RSModelVertices.in \
+HerwigDefaults.in OldParticles.in Particles.in \
+OldDecays.in Model.in RSModelVertices.in \
 Shower.in StandardModelVertices.in \
-ThePEGParticles.in UnderlyingEvent.in \
+UnderlyingEvent.in \
 MatrixElements.in QED.in Cuts.in \
 ILC.in LEP.in LHC.in TVT.in \
 bosons.in diquarks.in leptons.in \
 quarks.in mesons.in baryons.in \
 quark_decays.in baryon_decays.in \
 boson_decays.in lepton_decays.in \
-meson_decays.in decayers.in
+meson_decays.in decayers.in \
+masses.in widths.in BSMDecays.in \
+BSMParticles.in DiffractiveParticles.in
 
 dist_pkgdata_DATA = $(DOTINFILES)
 

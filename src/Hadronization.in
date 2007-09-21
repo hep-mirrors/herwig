@@ -31,10 +31,13 @@ create Herwig::ClusterFissioner theClusterFissioner
 create Herwig::LightClusterDecayer theLightClusterDecayer
 create Herwig::ClusterDecayer theClusterDecayer
 create Herwig::HwppSelector theHadronSelector
-create Herwig::ForcedSplitting theForcedSplitting
 
-# create the underlying event stuff
-read UnderlyingEvent.in 
+#
+create Herwig::UA5Handler theUA5 HwUA5.so
+#
+set theUA5:ClusterFissioner theClusterFissioner
+set theUA5:ClusterDecayer theClusterDecayer
+
 
 cd /Defaults/Handlers/Hadronization/Cluster
 # Set default values
@@ -44,12 +47,10 @@ set stdCluHadHandler:ColourReconnector theColourReconnector
 set stdCluHadHandler:ClusterFissioner theClusterFissioner
 set stdCluHadHandler:LightClusterDecayer theLightClusterDecayer
 set stdCluHadHandler:ClusterDecayer theClusterDecayer
-set stdCluHadHandler:ForcedSplitting theForcedSplitting
 set stdCluHadHandler:MinVirtuality2 0.1*GeV2
 set stdCluHadHandler:MaxDisplacement 1.0e-10*millimeter
 set stdCluHadHandler:SoftUnderlyingEvent On
-set stdCluHadHandler:UnderlyingEventHandler /Defaults/Handlers/UnderlyingEvent/theUA5
-set theForcedSplitting:AlphaS /Defaults/Handlers/Shower/theShowerAlphaQCD
+set stdCluHadHandler:UnderlyingEventHandler theUA5
 #
 set theClusterFissioner:HadronSelector theHadronSelector 
 set theLightClusterDecayer:HadronSelector theHadronSelector
@@ -66,7 +67,7 @@ set theClusterDecayer:ClSmrLight 0.0
 
 set theClusterFissioner:ClMaxBottom  3.2*GeV
 set theClusterFissioner:ClPowBottom  2.0
-set theClusterFissioner:PSplitBottom 1.0
+set theClusterFissioner:PSplitBottom 0.33
 set theClusterDecayer:ClDirBottom 1
 set theClusterDecayer:ClSmrBottom 0.0
 set theLightClusterDecayer:SingleHadronLimitBottom 0.0

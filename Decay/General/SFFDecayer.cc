@@ -93,6 +93,7 @@ double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   _theFFSPtr->setCoupling(sqr(inpart.second), outb.first, outa.first,
 			  inpart.first, 3);
   double mu1(outa.second/inpart.second),

@@ -9,7 +9,6 @@
 #include "ClusterFissioner.h"
 #include "LightClusterDecayer.h"
 #include "ClusterDecayer.h"
-#include "ForcedSplitting.h"
 #include "ClusterHadronizationHandler.fh"
 
 namespace Herwig {
@@ -184,15 +183,6 @@ private:
   ClusterDecayerPtr      _clusterDecayer; 
 
   /**
-   * This is a poniter to the Herwig::ForcedSplitting object
-   */
-  ForcedSplittingPtr _forcedSplitter;
-
-  /**  //  cerr << *ch.currentEvent() << '\n';
-  cerr << finalHadrons.size() << '\n';
-
-  cerr << "Finished hadronizing \n";
-
    * The minimum virtuality^2 of partons to use in calculating 
    * distances.
    */

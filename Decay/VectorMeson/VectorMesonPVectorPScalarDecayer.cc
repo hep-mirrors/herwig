@@ -46,9 +46,9 @@ VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer()
      _maxweight(21) {
   // Jpsi to K_1 K
   _incoming[0] = 443; _outgoingA[0] =  20313; _outgoingP[0] = -311; 
-  _coupling[0] = 0.00114/GeV; _maxweight[0] = 12.; 
+  _coupling[0] = 0.00127/GeV; _maxweight[0] = 12.; 
   _incoming[1] = 443; _outgoingA[1] =  20323; _outgoingP[1] = -321; 
-  _coupling[1] = 0.00114/GeV; _maxweight[1] = 12.; 
+  _coupling[1] = 0.00127/GeV; _maxweight[1] = 12.; 
   // Jpsi to b_1 pi
   _incoming[2] = 443; _outgoingA[2] =  10213; _outgoingP[2] = -211; 
   _coupling[2] = 0.00106/GeV; _maxweight[2] = 10.5; 
@@ -56,48 +56,48 @@ VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer()
   _coupling[3] = 0.00106/GeV; _maxweight[3] = 10.5; 
   // psi(2s) to K_1 K
   _incoming[4] = 100443; _outgoingA[4] =  10313; _outgoingP[4] = -311; 
-  _coupling[4] = 0.000898/GeV; _maxweight[4] = 12.; 
+  _coupling[4] = 0.00152/GeV; _maxweight[4] = 12.; 
   _incoming[5] = 100443; _outgoingA[5] =  10323; _outgoingP[5] = -321; 
-  _coupling[5] = 0.000898/GeV; _maxweight[5] = 12.; 
+  _coupling[5] = 0.00152/GeV; _maxweight[5] = 12.; 
   // psi(2s) to b_1 pi
   _incoming[6] = 100443; _outgoingA[6] =  10213; _outgoingP[6] = -211; 
-  _coupling[6] = 0.000464/GeV; _maxweight[6] = 10.5; 
+  _coupling[6] = 0.000694/GeV; _maxweight[6] = 10.5; 
   _incoming[7] = 100443; _outgoingA[7] =  10113; _outgoingP[7] =  111; 
-  _coupling[7] = 0.000464/GeV; _maxweight[7] = 10.5; 
+  _coupling[7] = 0.000694/GeV; _maxweight[7] = 10.5; 
   // rho'' decays
   // to h_1
   _incoming[8] =  30213; _outgoingA[8] =  10223; _outgoingP[8] = 211; 
-  _coupling[8] = 1.41/GeV; _maxweight[8] = 5.5; 
+  _coupling[8] = 1.45/GeV; _maxweight[8] = 5.5; 
   _incoming[9] =  30113; _outgoingA[9] =  10223; _outgoingP[9] = 111; 
-  _coupling[9] = 1.41/GeV; _maxweight[9] = 5.5; 
+  _coupling[9] = 1.45/GeV; _maxweight[9] = 5.5; 
   // to a_1
   _incoming[10] =  30213; _outgoingA[10] =  20213; _outgoingP[10] =  111; 
-  _coupling[10] = 1.29/GeV; _maxweight[10] = 4.; 
+  _coupling[10] = 1.09/GeV; _maxweight[10] = 4.; 
   _incoming[11] =  30213; _outgoingA[11] =  20113; _outgoingP[11] =  211; 
-  _coupling[11] = 1.29/GeV; _maxweight[11] = 4.; 
+  _coupling[11] = 1.09/GeV; _maxweight[11] = 4.; 
   _incoming[12] =  30113; _outgoingA[12] =  20213; _outgoingP[12] = -211; 
-  _coupling[12] = 1.29/GeV; _maxweight[12] = 4.; 
+  _coupling[12] = 1.09/GeV; _maxweight[12] = 4.; 
   //  rho' decays
   // to h_1
   _incoming[13] =  100213; _outgoingA[13] =  10223; _outgoingP[13] = 211; 
-  _coupling[13] = 1.95/GeV; _maxweight[13] = 5.; 
+  _coupling[13] = 1.20/GeV; _maxweight[13] = 5.; 
   _incoming[14] =  100113; _outgoingA[14] =  10223; _outgoingP[14] = 111; 
-  _coupling[14] = 1.95/GeV; _maxweight[14] = 5.; 
+  _coupling[14] = 1.20/GeV; _maxweight[14] = 5.; 
   // to a_1
   _incoming[15] =  100213; _outgoingA[15] =  20213; _outgoingP[15] = 111; 
-  _coupling[15] = 3.73/GeV; _maxweight[15] = 4.; 
+  _coupling[15] = 1.83/GeV; _maxweight[15] = 4.; 
   _incoming[16] =  100213; _outgoingA[16] =  20113; _outgoingP[16] = 211; 
-  _coupling[16] = 3.73/GeV; _maxweight[16] = 4.; 
+  _coupling[16] = 1.83/GeV; _maxweight[16] = 4.; 
   _incoming[17] =  100113; _outgoingA[17] =  20213; _outgoingP[17] = -211; 
-  _coupling[17] = 3.73/GeV; _maxweight[17] = 4.; 
+  _coupling[17] = 1.83/GeV; _maxweight[17] = 4.; 
   // omega' to b pi
   _incoming[18] = 100223; _outgoingA[18] =  10113; _outgoingP[18] =  111; 
-  _coupling[18] = 1.64/GeV; _maxweight[18] = 7.; 
+  _coupling[18] = 1.659/GeV; _maxweight[18] = 7.; 
   _incoming[19] = 100223; _outgoingA[19] =  10213; _outgoingP[19] = -211; 
-  _coupling[19] = 1.64/GeV; _maxweight[19] = 6.; 
+  _coupling[19] = 1.659/GeV; _maxweight[19] = 6.; 
   // psi(2s) -> h_c pi0
   _incoming[20] = 100443; _outgoingA[20] =  10443; _outgoingP[20] = 111; 
-  _coupling[20] = 1.64/GeV; _maxweight[20] = 6.; 
+  _coupling[20] = 0.0029/GeV; _maxweight[20] = 6.; 
   // initial size of the arrays
   _initsize = _coupling.size();
   // intermediates
@@ -282,7 +282,7 @@ void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
       output << "set " << fullName() << ":Coupling " << ix << " "
-	     << _coupling[ix]*MeV << "\n";
+	     << _coupling[ix]*GeV << "\n";
       output << "set " << fullName() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
@@ -294,7 +294,7 @@ void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
       output << "insert " << fullName() << ":Coupling " << ix << " "
-	     << _coupling[ix]*MeV << "\n";
+	     << _coupling[ix]*GeV << "\n";
       output << "insert " << fullName() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }

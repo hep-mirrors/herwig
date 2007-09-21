@@ -29,7 +29,7 @@ LorentzRotation LEPEventShapes::transform(tEventPtr) const {
 }
 
 void LEPEventShapes::analyze(const tPVector & particles) {
-  double eventweight = CurrentGenerator::current().currentEvent()->weight();
+  double eventweight = generator()->currentEvent()->weight();
   _omthr ->addWeighted( 1.-_shapes->thrust() ,eventweight);
   _maj ->addWeighted( _shapes->thrustMajor() ,eventweight);
   _min ->addWeighted( _shapes->thrustMinor() ,eventweight);
@@ -74,7 +74,8 @@ void LEPEventShapes::Init() {
 
 void LEPEventShapes::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + 
+    string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   _omthr->topdrawOutput(output,Frame|Errorbars|Ylog,
@@ -205,6 +206,57 @@ void LEPEventShapes::dofinish() {
 		       "  G G   X    X",
 		       "B0diff1",
 		       " X    X");
+  // chi squareds
+  double chisq=0.,minfrac=0.05;
+  unsigned int ndegrees;
+  _omthr->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI thrust distribution\n";
+  _maj->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI major distribution\n";
+  _min->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI minor distribution\n";
+  _obl->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI oblateness distribution\n";
+  _sph->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI sphericity distribution\n";
+  _apl->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI aplanarity distribution\n";
+  _pla->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI planarity distribution\n";
+  _c->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI C distribution\n";
+  _d->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI D distribution\n";
+  _mhi->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI m_high distribution\n";
+  _mlo->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI m_low distribution\n";
+  _mdiff->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI m_diff distribution\n";
+  _bmax->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI B_max distribution\n";
+  _bmin->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI B_min distribution\n";
+  _bsum->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI B_sum distribution\n";
+  _bdiff->chiSquared(chisq,ndegrees,minfrac);
+  generator()->log() << "Chi Square = " << chisq << " for " << ndegrees 
+			  << " degrees of freedom for DELPHI B_diff distribution\n";
 }
 
 void LEPEventShapes::doinitrun() {

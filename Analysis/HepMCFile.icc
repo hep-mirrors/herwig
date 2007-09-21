@@ -22,7 +22,7 @@ inline IBPtr HepMCFile::fullclone() const {
 
 inline void HepMCFile::doinitrun() {
   AnalysisHandler::doinitrun();
-  string filename = CurrentGenerator::current().filename() + ".hepmc";
+  string filename = generator()->filename() + ".hepmc";
   _hepmcfile.open(filename.c_str());
 }
 

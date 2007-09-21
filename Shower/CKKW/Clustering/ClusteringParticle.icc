@@ -1,0 +1,150 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ClusteringParticle class.
+//
+
+namespace Herwig {
+
+inline PersistentOStream& operator << (PersistentOStream& os, const PartonId& pid) {
+  os << pid.PDGId << pid.state;
+  return os;
+}
+
+inline PersistentIStream& operator >> (PersistentIStream& is, PartonId& pid) {
+  is >> pid.PDGId >> pid.state;
+  return is;
+}
+
+inline ClusteringParticle::ClusteringParticle()
+  : Interfaced(),
+    _x(0.),
+    _productionScale(0.*GeV2),
+    _splittingScale(0.*GeV2),
+    _showerScale(0.*GeV2),
+    _noReweight(false)
+{}
+
+inline ClusteringParticle::ClusteringParticle (const ClusteringParticleData& data,
+					       const Lorentz5Momentum& mom,
+					       double x)
+  : Interfaced(),
+    _data(data),
+    _momentum(mom),
+    _x(x),
+    _productionScale(0.*GeV2),
+    _splittingScale(0.*GeV2),
+    _showerScale(0.*GeV2),
+    _noReweight(false)
+{}
+
+inline IBPtr ClusteringParticle::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ClusteringParticle::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ClusteringParticle::wasClustered (tClusteringPtr clu) {
+  _momentumBackup.push_front(_momentum);
+  if (_data.partonId.state == ClusteringParticleState::initial) _xBackup.push_front(_x);
+  _production = clu;
+}
+
+inline void ClusteringParticle::emergedFromClustering
+(unsigned int index, tClusteringPtr clu) {
+  _splitting = clu;
+  _indexStack.push_front(index);
+}
+
+inline void ClusteringParticle::wasUnclustered () {
+  _momentum = _momentumBackup.front(); _momentumBackup.pop_front();
+  if (_data.partonId.state == ClusteringParticleState::initial) {
+    _x = _xBackup.front(); _xBackup.pop_front();
+  }
+  _production = tClusteringPtr();
+}
+
+inline void ClusteringParticle::performedClustering (unsigned int index) {
+  _indexStack.push_front(index);
+  _momentumBackup.push_front(_momentum);
+  if (_data.partonId.state == ClusteringParticleState::initial) _xBackup.push_front(_x);    
+}
+
+inline void ClusteringParticle::undoneClustering () {
+  if (!_momentumBackup.empty()) {
+    _momentum = _momentumBackup.front(); _momentumBackup.pop_front();
+  }
+  if (_data.partonId.state == ClusteringParticleState::initial &&
+      !_xBackup.empty()) {
+    _x = _xBackup.front(); _xBackup.pop_front();
+  }
+  _indexStack.pop_front();
+}
+
+inline unsigned int ClusteringParticle::index () const {
+  return _indexStack.front();
+}
+  
+inline tcClusteringPtr ClusteringParticle::production () const {
+  return _production;
+}
+
+inline tcClusteringPtr ClusteringParticle::splitting () const {
+  return _splitting;
+}
+
+inline ClusteringParticleData& ClusteringParticle::pData () {
+  return _data;
+}
+
+inline Lorentz5Momentum ClusteringParticle::momentum () const {
+  return _momentum;
+}
+
+inline void ClusteringParticle::momentum (const Lorentz5Momentum& mom) {
+  _momentum = mom;
+}
+
+inline double ClusteringParticle::x () const {
+  return _x;
+}
+
+inline void ClusteringParticle::x (double nx) {
+  _x = nx;
+}
+
+inline Energy2 ClusteringParticle::productionScale () const {
+  return _productionScale;
+}
+
+inline void ClusteringParticle::productionScale (const Energy2& q) {
+  _productionScale = q;
+}
+
+inline Energy2 ClusteringParticle::splittingScale () const {
+  return _splittingScale;
+}
+
+inline void ClusteringParticle::splittingScale (const Energy2& q) {
+  _splittingScale = q;
+}
+
+inline Energy2 ClusteringParticle::showerScale () const {
+  return _showerScale;
+}
+
+inline void ClusteringParticle::showerScale (const Energy2& q) {
+  _showerScale = q;
+}
+
+inline bool ClusteringParticle::noReweight() const {
+  return _noReweight;
+}
+
+inline void ClusteringParticle::setNoReweight() {
+  _noReweight = true;
+}
+
+}

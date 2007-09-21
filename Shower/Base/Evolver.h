@@ -13,6 +13,10 @@
 #include "MECorrectionBase.fh"
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
+#include "ShowerVeto.h"
+#include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
+#include "Herwig++/Shower/CKKW/Reweighting/DefaultReweighter.h"
+#include "Herwig++/Shower/CKKW/Reweighting/DefaultCKKWVeto.h"
 #include "Evolver.fh"
 
 namespace Herwig {
@@ -55,6 +59,14 @@ public:
   virtual void showerHardProcess(ShowerTreePtr);
 
   /**
+   * Initialize the Shower for ME/PS merging,
+   * given the minimum and maximum multiplicity.
+   * The cascade history is available through
+   * the reconstructor object.
+   */
+  virtual void initCKKWShower (unsigned int currentMult, unsigned int maxMult);
+
+  /**
    * Perform the shower of a decay
    */
   virtual void showerDecay(ShowerTreePtr);
@@ -88,6 +100,14 @@ public:
    *  Get the SplittingGenerator
    */
   inline tSplittingGeneratorPtr splittingGenerator() const;
+
+  /**
+   * Set the cascade reconstructor and reweighter
+   * for ME/PS merging. This also communicates the
+   * splitting functions used in the Shower and
+   * initializes the reweighter.
+   */
+  void useCKKW (CascadeReconstructorPtr,ReweighterPtr);
   //@}
 
 public:
@@ -204,6 +224,19 @@ protected:
    */
   inline bool ipTon() const;
    //@}  
+
+  /**@name Additional shower vetoes */
+  //@{
+  /**
+   * Insert a veto.
+   */
+  inline void addVeto (ShowerVetoPtr);
+
+  /**
+   * Remove a veto.
+   */
+  inline void removeVeto (ShowerVetoPtr);
+  //@}
 
   /**
    *  Switches for vetoing hard emissions
@@ -342,6 +375,26 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
+
   //@}
 
 private:
@@ -444,6 +497,42 @@ private:
    *  Storage of the intrinsic \f$p_t\f$ of the particles
    */
   map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
+
+  /**
+   * Vetoes
+   */
+  vector<ShowerVetoPtr> _vetoes;
+
+  /**@name Members related to CKKW ME/PS merging */
+  //@{
+
+  /**
+   * The cascade reconstructor used.
+   */
+  CascadeReconstructorPtr _reconstructor;
+
+  /**
+   * The reweighter used.
+   */
+  DefaultReweighterPtr _reweighter;
+
+  /**
+   * The CKKW veto used
+   */
+  DefaultCKKWVetoPtr _ckkwVeto;
+
+  /**
+   * Wether or not CKKW is used
+   */
+  bool _useCKKW;
+
+  /**
+   * Wether or not CKKW applies to the current tree
+   */
+  bool _theUseCKKW;
+
+  //@}
+
 };
 
 }
@@ -476,7 +565,7 @@ struct ClassTraits<Herwig::Evolver>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */
@@ -484,8 +573,5 @@ struct ClassTraits<Herwig::Evolver>
 }
 
 #include "Evolver.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Evolver.tcc"
-#endif
 
 #endif /* HERWIG_Evolver_H */

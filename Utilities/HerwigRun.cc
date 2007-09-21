@@ -137,7 +137,17 @@ EventPtr HerwigRun::generateEvent() {
   }
   if(!egCreated) eventGenerator();
   if(eg) {
-    if(ngen < N) { ngen++; lastEvent = eg->shoot(); return lastEvent; }
+    if(ngen < N) { 
+      ngen++; 
+      try {
+	lastEvent = eg->shoot(); 
+      }
+      catch ( ... ) {
+	eg->finish();
+	throw;
+      }
+      return lastEvent; 
+    }
     else {
       std::cerr << "Can only generate " << N << " events.\n";
       return lastEvent;

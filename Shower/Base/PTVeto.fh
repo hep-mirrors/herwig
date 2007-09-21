@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PTVeto class.
+//
+#ifndef HERWIG_PTVeto_FH
+#define HERWIG_PTVeto_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class PTVeto;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::PTVeto,PTVetoPtr);
+
+}
+
+#endif

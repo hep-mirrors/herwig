@@ -18,6 +18,4 @@ Hw64Selector.cc Hw64Selector.h Hw64Selector.icc Hw64Selector.fh\
 HwppSelector.cc HwppSelector.h HwppSelector.icc HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h \
 LightClusterDecayer.fh LightClusterDecayer.icc \
-PartonSplitter.cc PartonSplitter.h PartonSplitter.fh PartonSplitter.icc \
-Remnant.h Remnant.icc Remnant.cc Remnant.fh \
-ForcedSplitting.h ForcedSplitting.icc ForcedSplitting.cc ForcedSplitting.fh
+PartonSplitter.cc PartonSplitter.h PartonSplitter.fh PartonSplitter.icc

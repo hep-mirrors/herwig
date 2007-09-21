@@ -25,6 +25,21 @@ inline IBPtr ShowerAlphaQCD::fullclone() const {
   return new_ptr(*this);
 }
 
+inline void ShowerAlphaQCD::initialize () {
+  doinit ();
+}
+
+inline string ShowerAlphaQCD::value (string scale) {
+  istringstream readscale(scale);
+  double inScale; readscale >> inScale;
+  Energy theScale = inScale * GeV;
+  initialize();
+  ostringstream showvalue ("");
+  showvalue << "alpha_s (" << theScale/GeV << " GeV) = "
+	    << value (sqr(theScale));
+  return showvalue.str();
+}
+
 inline pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) const {
   short nf = 3;
   // get lambda and nf according to the thresholds

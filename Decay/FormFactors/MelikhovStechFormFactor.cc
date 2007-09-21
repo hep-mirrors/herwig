@@ -588,7 +588,7 @@ void MelikhovStechFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned in
 void MelikhovStechFormFactor::dataBaseOutput(ofstream & output,bool header,
 					     bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::MelikhovStechFormFactor " 
+  if(create) output << "create Herwig::MelikhovStechFormFactor " 
 		    << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {

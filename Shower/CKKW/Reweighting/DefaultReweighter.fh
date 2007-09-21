@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DefaultReweighter class.
+//
+#ifndef HERWIG_DefaultReweighter_FH
+#define HERWIG_DefaultReweighter_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DefaultReweighter;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DefaultReweighter,DefaultReweighterPtr);
+
+}
+
+#endif

@@ -38,6 +38,10 @@ These classes are used for particle density functions.
 These classes are used for the Showering.
 */
 
+/** \defgroup CKKW CKKW classes
+These classes are used for ME/PS merging.
+*/
+
 /** \defgroup UnderlyingEvent UnderlyingEvent classes
 These classes are used for the underlying event.
 */

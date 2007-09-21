@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BELLECharmAnalysis class.
+//
+#ifndef HERWIG_BELLECharmAnalysis_FH
+#define HERWIG_BELLECharmAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class BELLECharmAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::BELLECharmAnalysis,BELLECharmAnalysisPtr);
+
+}
+
+#endif

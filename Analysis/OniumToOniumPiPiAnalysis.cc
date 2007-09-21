@@ -112,7 +112,7 @@ void OniumToOniumPiPiAnalysis::Init() {
 
 void OniumToOniumPiPiAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     string title= 

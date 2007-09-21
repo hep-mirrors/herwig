@@ -127,7 +127,7 @@ public:
   /**
    * Output the initialisation info for the database
    */
-  void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream &,bool);
 
 public:
 
@@ -218,6 +218,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:

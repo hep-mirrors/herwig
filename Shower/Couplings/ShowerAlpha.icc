@@ -13,4 +13,6 @@ inline double ShowerAlpha::scaleFactor() const {
   return _scaleFactor;
 }
 
+inline void ShowerAlpha::initialize () { }
+
 }

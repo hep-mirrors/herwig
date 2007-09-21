@@ -29,7 +29,7 @@ void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
   if (event->number() != _eventNumber) return;
 
   ostringstream fname;
-  fname << CurrentGenerator::current().filename() << '-' 
+  fname << generator()->filename() << '-' 
 	<< name() << '-'
 	<< event->number() << ".dot";
   ofstream hepmcdotfile(fname.str().c_str());

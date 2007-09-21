@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Reweighter class.
+//
+#ifndef HERWIG_Reweighter_FH
+#define HERWIG_Reweighter_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Reweighter;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Reweighter,ReweighterPtr);
+
+}
+
+#endif

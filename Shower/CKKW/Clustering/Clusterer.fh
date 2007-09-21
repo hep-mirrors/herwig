@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Clusterer class.
+//
+#ifndef HERWIG_Clusterer_FH
+#define HERWIG_Clusterer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Clusterer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Clusterer,ClustererPtr);
+
+}
+
+#endif

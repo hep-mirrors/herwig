@@ -678,19 +678,24 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 }
 
 bool ClusterFissioner::isHeavy(tcClusterPtr clu) {
-
+  // default
   double clpow = _clPowLight;
   Energy clmax = _clMaxLight;
-
-  if(CheckId::isExotic(clu->dataPtr())) {
+  // particle data for constituents
+  tcPDPtr cptr[3]={tcPDPtr(),tcPDPtr(),tcPDPtr()};
+  for(int ix=0;ix<min(clu->numComponents(),3);++ix) {
+    cptr[ix]=clu->particle(ix)->dataPtr();
+  }
+  // different parameters for exotic, bottom and charm clusters
+  if(CheckId::isExotic(cptr[0],cptr[1],cptr[1])) {
     clpow = _clPowExotic;
     clmax = _clMaxExotic;
   }
-  else if(CheckId::hasBottom(clu->dataPtr())) {
+  else if(CheckId::hasBottom(cptr[0],cptr[1],cptr[1])) {
     clpow = _clPowBottom;
     clmax = _clMaxBottom;
   }
-  else if(CheckId::hasCharm(clu->dataPtr())) {
+  else if(CheckId::hasCharm(cptr[0],cptr[1],cptr[1])) {
     clpow = _clPowCharm;
     clmax = _clMaxCharm;
   }

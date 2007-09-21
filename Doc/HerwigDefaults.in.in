@@ -16,6 +16,7 @@ library HwNMSSM.so
 library HwUED.so
 library HwShower.so
 library HwUA5.so
+library HwMPI.so
 library HwBaryonDecay.so
 library HwFormFactors.so
 library HwSMDecay.so

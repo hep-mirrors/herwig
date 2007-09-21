@@ -16,11 +16,11 @@ using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
 
 void TwoBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _theExistingDecayers << _init << _iteration << _points;
+  os << _theExistingDecayers << _init << _iteration << _points << _info;
 }
   
 void TwoBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >>_theExistingDecayers >> _init >> _iteration >> _points;
+  is >>_theExistingDecayers >> _init >> _iteration >> _points >> _info;
 }
 
 ClassDescription<TwoBodyDecayConstructor> 
@@ -60,6 +60,20 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_points, 1000, 100, 100000000,
      false, false, true);
 
+  static Switch<TwoBodyDecayConstructor,bool> interfaceOutputInfo
+    ("OutputInfo",
+     "Whether to output information about the decayers",
+     &TwoBodyDecayConstructor::_info, false, false, false);
+  static SwitchOption interfaceOutputInfoOff
+    (interfaceOutputInfo,
+     "Off",
+     "Do not output information regarding the created decayers",
+     false);
+  static SwitchOption interfaceOutputInfoOn
+    (interfaceOutputInfo,
+     "On",
+     "Output information regarding the decayers",
+     true);
 }
 
 void TwoBodyDecayConstructor::DecayList(const PDVector & part) {
@@ -236,9 +250,7 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vert,
       << " - " << msg
       << Exception::abortnow;
   decayer->init();
-  if(_init) 
-    initializeDecayers(fullname.str());
-    
+  setDecayerInterfaces(fullname.str());
   _theExistingDecayers[ivert][icol] = decayer;
 }
 
@@ -334,17 +346,24 @@ void TwoBodyDecayConstructor::setBranchingRatio(tDMPtr dm, Energy pwidth) {
   parent->reset();
 }
 
-void TwoBodyDecayConstructor::initializeDecayers(string fullname) const {
-  ostringstream value;
-  value << _init;
-  generator()->preinitInterface(fullname, "Initialize", "set",
-				value.str());
-  value.str("");
-  value << _iteration;
-  generator()->preinitInterface(fullname, "Iteration", "set",
-				value.str());
-  value.str("");
-  value << _points;
-  generator()->preinitInterface(fullname, "Points", "set",
-				value.str());
+void TwoBodyDecayConstructor::setDecayerInterfaces(string fullname) const {
+  if( _init ) {
+    ostringstream value;
+    value << _init;
+    generator()->preinitInterface(fullname, "Initialize", "set",
+				  value.str());
+    value.str("");
+    value << _iteration;
+    generator()->preinitInterface(fullname, "Iteration", "set",
+				  value.str());
+    value.str("");
+    value << _points;
+    generator()->preinitInterface(fullname, "Points", "set",
+				  value.str());
+  }
+  string outputmodes;
+  if( _info ) outputmodes = string("Output");
+  else outputmodes = string("NoOutput");
+  generator()->preinitInterface(fullname, "OutputModes", "set",
+				outputmodes);
 }

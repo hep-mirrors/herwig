@@ -18,6 +18,14 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+  /**\ingroup Shower
+   * Exception class
+   * used to communicate failure of kinematics
+   * reconstruction.
+   */
+  struct KinematicsReconstructionVeto {};
+
+
 /** \ingroup Shower
  *
  * This class is responsible for the kinematical reconstruction 
@@ -149,7 +157,7 @@ struct ClassTraits<Herwig::KinematicsReconstructor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

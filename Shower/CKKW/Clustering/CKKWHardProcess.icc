@@ -1,0 +1,11 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the CKKWHardProcess class.
+//
+
+namespace Herwig {
+
+inline double CKKWHardProcess::hardCouplings (const vector <tClusteringParticlePtr>&,double) { return 1.; }
+
+}

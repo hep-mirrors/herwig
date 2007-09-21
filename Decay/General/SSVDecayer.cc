@@ -85,6 +85,7 @@ double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa, 
 				 PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   double mu1sq(0.),mu2sq(0.);
   if(outa.first->iSpin() == PDT::Spin0) {
     mu1sq = sqr(outa.second/inpart.second);

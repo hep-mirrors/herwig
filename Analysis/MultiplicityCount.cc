@@ -13,7 +13,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/Hadronization/Cluster.h"
 #include <iostream>
+#include <sstream>
 #include <fstream>
 
 using namespace Herwig;
@@ -120,13 +122,28 @@ MultiplicityCount::MultiplicityCount() : _makeHistograms(false)
 }
 
 namespace {
+  bool isLastCluster(tcPPtr p) {
+    if ( p->id() != ExtraParticleID::Cluster ) 
+      return false;
+    for ( size_t i = 0, end = p->children().size();
+	  i < end; ++i ) {
+      if ( p->children()[i]->id() == ExtraParticleID::Cluster )
+	return false;
+    }
+    return true;
+  }
+
   Energy parentClusterMass(tcPPtr p) {
     if (p->parents().empty()) 
       return -1.0*MeV;
 
     tcPPtr parent = p->parents()[0];
-    if (parent->id() == ExtraParticleID::Cluster)
-      return parent->mass();
+    if (parent->id() == ExtraParticleID::Cluster) {
+      if ( isLastCluster(parent) )
+	return parent->mass();
+      else
+	return p->mass();
+    }
     else
       return parentClusterMass(parent);
   }
@@ -175,15 +192,30 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
 	it != steps.end(); ++it ) {
     (**it).select(inserter(particles), ThePEG::AllSelector());
   }
-
+  
+  if( _makeHistograms ) 
+    _histograms.insert(make_pair(ExtraParticleID::Cluster, 
+				 Histogram(0.0,10.0,200)));
+  
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = abs( (*it)->id() );
+    if(ID==ParticleID::K0) continue;
+    if(ID==ParticleID::K_L0||ID==ParticleID::K_S0) ID=ParticleID::K0;
+    
+    if ( _makeHistograms && isLastCluster(*it) ) {
+      _histograms[ExtraParticleID::Cluster] += (*it)->mass()/GeV;
+      tcClusterPtr clu = dynamic_ptr_cast<tcClusterPtr>(*it);
+      if (clu) {
+	_clusters.insert(make_pair(clu->clusterId(), Histogram(0.0,10.0,200)));
+	_clusters[clu->clusterId()] += (*it)->mass()/GeV;
+      }
+    }
     
     if (_data.find(ID) != _data.end()) {
       eventcount.insert(make_pair(ID,0));
       ++eventcount[ID];
-
+      
       if (_makeHistograms 
 	  && ! (*it)->parents().empty()
 	  && (*it)->parents()[0]->id() == ExtraParticleID::Cluster) {
@@ -205,6 +237,8 @@ void MultiplicityCount::analyze(const tPVector & ) {}
 void MultiplicityCount::dofinish() {
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
+
+  cerr << "testing do hist " << _makeHistograms << "\n";
 
   outfile << 
     "\nParticle multiplicities (compared to LEP data):\n"
@@ -255,19 +289,27 @@ void MultiplicityCount::dofinish() {
   outfile.close();
 
   if (_makeHistograms) {
-
+    
     Histogram piratio 
       = _histograms[ParticleID::piplus].ratioWith(_histograms[ParticleID::pi0]);
     Histogram Kratio 
       = _histograms[ParticleID::Kplus].ratioWith(_histograms[ParticleID::K0]);
-
+    
     using namespace HistogramOptions;
     string histofilename = filename + ".top";
     ofstream outfile2(histofilename.c_str());
+    for (map<int,Histogram>::const_iterator it = _clusters.begin();
+	 it != _clusters.end(); ++it) {
+      ostringstream title1;
+      title1 << "Final Cluster " << it->first;
+      string title = title1.str();
+      it->second.topdrawOutput(outfile2,Frame|Rawcount|Ylog,"BLACK",title,"",
+			       "N (200 bins)","","Cluster mass [GeV]");
+    }
     for (map<long,Histogram>::const_iterator it = _histograms.begin();
 	 it != _histograms.end(); ++it) {
       string title = generator()->getParticleData(it->first)->PDGName();
-      it->second.topdrawOutput(outfile2,Frame|Rawcount,"BLACK",title,"",
+      it->second.topdrawOutput(outfile2,Frame|Rawcount|Ylog,"BLACK",title,"",
 			       "N (200 bins)","","Parent cluster mass [GeV]");
     }
     piratio.topdrawOutput(outfile2,Frame|Rawcount,"BLACK","pi+ / pi0","",
@@ -279,7 +321,7 @@ void MultiplicityCount::dofinish() {
   AnalysisHandler::dofinish();
 }
 
-NoPIOClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
+ClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
 // Definition of the static class description member.
 
 void MultiplicityCount::Init() {
@@ -329,3 +371,10 @@ void MultiplicityCount::Init() {
      " and compares them with LEP data.");
 }
 
+void MultiplicityCount::persistentOutput(PersistentOStream & os) const {
+  os << _particlecodes << _multiplicity << _error << _species << _makeHistograms;
+}
+
+void MultiplicityCount::persistentInput(PersistentIStream & is, int) {
+  is >> _particlecodes >> _multiplicity >> _error >> _species >> _makeHistograms;
+}

@@ -205,7 +205,7 @@ void DDalitzAnalysis::Init() {
 
 void DDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   _m2plus1->topdrawOutput(output,Frame|Errorbars,"RED",

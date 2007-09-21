@@ -29,6 +29,8 @@ HQETFormFactor::HQETFormFactor() {
   addFormFactor(-521, 423  ,1,-2, 5, 4);
   addFormFactor(-511, 411  ,0, 1, 5, 4);
   addFormFactor(-511, 413  ,1, 1, 5, 4);
+  // set the initial number of modes
+  initialModes(numberOfFactors());
 }
 
 void HQETFormFactor::persistentOutput(PersistentOStream & os) const {

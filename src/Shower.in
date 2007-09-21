@@ -9,6 +9,8 @@
 ############################################################
 mkdir /Defaults/Handlers/Shower
 cd /Defaults/Handlers/Shower
+library HwMPI.so
+library HwMPIPDF.so
 library HwShower.so
 
 #####################################
@@ -22,6 +24,12 @@ create Herwig::Evolver theEvolver
 create Herwig::QTildeModel theShowerModel
 create Herwig::QTildeFinder thePartnerFinder
 create Herwig::QTildeReconstructor theKinematicsReconstructor
+
+set stdShowerHandler:MPIHandler /Defaults/Handlers/UnderlyingEvent/MPIHandler
+set stdShowerHandler:MPIOnOff 0
+set stdShowerHandler:OrderSecondaries 1
+set stdShowerHandler:RemDecayer /Defaults/Partons/RemnantDecayer
+
 #
 set stdShowerHandler:Evolver theEvolver
 set theShowerModel:PartnerFinder thePartnerFinder

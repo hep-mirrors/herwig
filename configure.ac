@@ -72,6 +72,8 @@ HERWIG_CHECK_HEPMC
 
 HERWIG_CHECK_KTJET
 
+HERWIG_CHECK_ROOT
+
 HERWIG_CHECK_EVTGEN
 
 HERWIG_VERSIONSTRING
@@ -113,6 +115,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Fortran/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
+		Shower/CKKW/Clustering/Makefile
+		Shower/CKKW/Reweighting/Makefile
+		Shower/CKKW/Vertices/Makefile
+		Shower/CKKW/Processes/Makefile
+		Shower/CKKW/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

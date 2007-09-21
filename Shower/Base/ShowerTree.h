@@ -37,19 +37,16 @@ public:
    * @param hand Pointer to the ShowerHandler to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
    */
-  ShowerTree(tEHPtr eh, const ParticleVector & out,
-	     tShowerHandlerPtr hand,
+  ShowerTree(const ParticleVector & out,
 	     multimap<Energy,ShowerTreePtr> & decay);
   
   /**
    *  Constructor for a decay
    * @param in The decaying particle
-   * @param hand Pointer to the ShowerHandler to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
    * @param ch Access to the event handler
    */
-  ShowerTree(PPtr in, tShowerHandlerPtr hand ,multimap<Energy,ShowerTreePtr> & decay,
-	     tEHPtr ch);
+  ShowerTree(PPtr in, multimap<Energy,ShowerTreePtr> & decay);
   //@}
 
 public:
@@ -74,7 +71,7 @@ public:
    *  any unstable decay products can be added.
    * @param ch Access to the event handler
    */
-  void decay(multimap<Energy,ShowerTreePtr> & decay,tEHPtr ch);
+  void decay(multimap<Energy,ShowerTreePtr> & decay);
 
   /**
    * Access methods for the type of interaction
@@ -162,7 +159,7 @@ public:
    *  any unstable decay products can be added.
    *  @param eh The EventHandler
    */
-  void updateAfterShower(multimap<Energy,ShowerTreePtr> & decay,tEHPtr eh);
+  void updateAfterShower(multimap<Energy,ShowerTreePtr> & decay);
 
   /**
    *  Access and set the flag for whether this tree has been showered
@@ -313,7 +310,7 @@ private:
   /**
    *  Pointer to the shower variables
    */
-  tShowerHandlerPtr _showerHandler;
+  tcShowerHandlerPtr _showerHandler;
 
   /**
    *  Has this tree showered

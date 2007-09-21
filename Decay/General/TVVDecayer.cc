@@ -12,7 +12,6 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 
 
@@ -93,6 +92,7 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   
 Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   Energy2 scale(sqr(inpart.second));
   _theVVTPtr->setCoupling(scale, outa.first, outb.first, inpart.first);
   double mu2 = sqr(outa.second/inpart.second);

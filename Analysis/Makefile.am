@@ -10,6 +10,8 @@ BasicConsistency.cc BasicConsistency.fh \
 BasicConsistency.h BasicConsistency.icc \
 MultiplicityCount.cc MultiplicityCount.fh \
 MultiplicityCount.h MultiplicityCount.icc \
+LEPBMultiplicity.cc LEPBMultiplicity.fh \
+LEPBMultiplicity.h LEPBMultiplicity.icc \
 SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
 SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc\
 TTbarAnalysis.h TTbarAnalysis.fh \
@@ -21,7 +23,9 @@ GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
+MPIMultiplicity.h MPIMultiplicity.fh \
+MPIMultiplicity.icc MPIMultiplicity.cc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
@@ -88,21 +92,38 @@ BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
 a1DecayAnalysis.h a1DecayAnalysis.icc \
 a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
-BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc 
+BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
+BELLECharmAnalysis.h BELLECharmAnalysis.icc \
+BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
+CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
+CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
 HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 3:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS)
+HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh \
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
+LEPJetAnalysis.cc LEPJetAnalysis.fh \
+LEPJetAnalysis.h LEPJetAnalysis.icc \
 LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
 LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
 TopDalitzAnalysis.h TopDalitzAnalysis.icc
+
+#code which also depends on ROOT
+if WANT_LIBROOT
+pkglib_LTLIBRARIES += HwUEAnalysis.la
+HwUEAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwUEAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) $(ROOTINCLUDE)
+HwUEAnalysis_la_LIBADD = $(KTJETLIBS) $(ROOTLIBS)
+HwUEAnalysis_la_SOURCES = \
+UEobservables.cc UEobservables.fh \
+UEobservables.h UEobservables.icc 
+endif
 endif
 
 HwBSMAnalysis_la_LDFLAGS = -module

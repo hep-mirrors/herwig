@@ -262,6 +262,55 @@ fi
 AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
 ])
 
+dnl ##### ROOT #####
+AC_DEFUN([HERWIG_CHECK_ROOT],[
+
+ROOTPATH=""
+ROOTLIBS=""
+ROOTINCLUDE=""
+
+AC_MSG_CHECKING([for ROOT])
+
+
+AC_ARG_WITH(root,
+        AC_HELP_STRING([--with-root=DIR],[location of ROOT installation]),
+        [],
+        [with_root=no])
+
+if test "x$with_root" = "xno"; then
+  AC_MSG_RESULT([not required])
+else
+
+  ROOTPATH="$with_root"
+
+  if test -f $ROOTPATH/bin/root-config; then
+
+    AC_MSG_RESULT([$ROOTPATH])
+
+    AC_MSG_CHECKING([for ROOTLIBS])
+    if test -z "$ROOTLIBS"; then
+      ROOTLIBS=`$ROOTPATH/bin/root-config --libs`
+    fi
+    AC_MSG_RESULT([$ROOTLIBS])
+
+    AC_MSG_CHECKING([for ROOTINCLUDE])
+    if test -z "$ROOTINCLUDE"; then
+      ROOTINCLUDE="`$ROOTPATH/bin/root-config --cflags` -Wno-long-long"
+    fi
+    AC_MSG_RESULT([$ROOTINCLUDE])
+
+    AC_SUBST(ROOTLIBS)
+    AC_SUBST(ROOTINCLUDE)
+
+  else
+    AC_MSG_ERROR([root-config not found...aborting])    
+  fi
+
+fi
+AM_CONDITIONAL(WANT_LIBROOT, test ! x"$with_root" = "xno")
+
+])
+
 dnl ##### LOOPTOOLS #####
 AC_DEFUN([HERWIG_LOOPTOOLS],
 [

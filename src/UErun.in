@@ -1,0 +1,135 @@
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig++ read myrun.in
+##################################################
+
+##################################################
+# Switch for soft underlying event.
+##################################################
+cd /Defaults/Handlers/Hadronization/Cluster
+set stdCluHadHandler:SoftUnderlyingEvent Off
+
+##################################################
+# Switches for hard underlying event + Shower
+##################################################
+cd /Defaults/Handlers/Shower 
+# Switch for JIMMY
+set stdShowerHandler:MPIOnOff 0
+# Order the scatters in decreasing scale
+set stdShowerHandler:OrderSecondaries 1
+
+# Switch the shower ON/OFF (needed for debugging)
+set theSplittingGenerator:OnOffISRMode 1
+set theSplittingGenerator:OnOffFSRMode 1
+
+# Switch for intrinsic p_T
+set theEvolver:GenerateIntrinsicpT 0
+
+#disable hadronization and/or decays:
+cd /Defaults/Handlers
+#set LHCHandler:HadronizationHandler NULL
+#set LHCHandler:DecayHandler NULL
+
+##################################################
+# Steer the hard underlying event
+##################################################
+cd /Defaults/Handlers/UnderlyingEvent
+set KtCut:MinKT 2.5
+# This should always be 2*MinKT!!
+set UECuts:MHatMin 5.0
+
+# set the hadron radius in GeV^2
+set MPIHandler:Radius 0.71
+# set the algorithm
+set MPIHandler:Jmueo 1 
+
+##################################################
+# Analysis Handlers
+##################################################
+cd /Defaults/Handlers/Analysis
+#create Herwig::GraphvizPlot Plot
+#create Herwig::UEobservables UEshapes HwUEAnalysis.so
+#set UEshapes:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
+
+create Herwig::MPIMultiplicity MPIMult
+set MPIMult:MPIHandler /Defaults/Handlers/UnderlyingEvent/MPIHandler
+set MPIMult:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
+
+#insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 UEshapes
+insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 MPIMult
+#insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 2 SimpleLHC
+#insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 3 Plot
+#insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 4 HJet
+
+##################################################
+# Change hard process ME's
+##################################################
+cd /Defaults/
+erase Handlers/SimpleQCD:MatrixElements[0]
+insert Handlers/SimpleQCD:MatrixElements[0] MatrixElements/MEQCD2to2
+
+##################################################
+# Cuts on the hard process
+##################################################
+cd /Defaults/Generators
+set JetKtCut:MinKT 20.0*GeV
+set LeptonKtCut:MinKT 50.0*GeV
+set PhotonKtCut:MinKT 20.0*GeV
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Defaults/Generators
+set LHCGenerator:NumberOfEvents 1000000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 1000000
+
+##################################################
+# collider physics parameters (override defaults here) 
+##################################################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+# Tevatron mode:
+#set LHCGenerator:EventHandler:BeamB /Defaults/Particles/pbar-
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+
+set /Defaults/Handlers/Shower/stdShowerHandler:MPIOnOff 0
+saverun LHCoff LHCGenerator
+
+set /Defaults/Handlers/Shower/stdShowerHandler:MPIOnOff 1
+saverun LHCon LHCGenerator
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+set LHCGenerator:EventHandler:BeamB /Defaults/Particles/pbar-
+
+set /Defaults/Handlers/Shower/stdShowerHandler:MPIOnOff 0
+saverun TVToff LHCGenerator
+
+set /Defaults/Handlers/Shower/stdShowerHandler:MPIOnOff 1
+saverun TVTon LHCGenerator
+
+# next p_t window
+set /Defaults/Generators/JetKtCut:MinKT 50.0*GeV
+
+set /Defaults/Handlers/Shower/stdShowerHandler:MPIOnOff 0
+saverun TVToff50 LHCGenerator
+
+set /Defaults/Handlers/Shower/stdShowerHandler:MPIOnOff 1
+saverun TVTon50 LHCGenerator
+
+##################################################
+# uncomment this section for an example batch run
+# of two repeats with different parameters
+#
+# Note that a separate call of 'Herwig run' 
+# is not required
+##################################################
+# set LHCGenerator:NumberOfEvents 10
+# run LHC-full LHCGenerator
+#
+# set LHCGenerator:EventHandler:LuminosityFunction:Energy 900.0
+# run LHC-initial LHCGenerator

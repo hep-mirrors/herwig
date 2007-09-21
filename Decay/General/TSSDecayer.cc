@@ -76,6 +76,7 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 
 Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
+  if( inpart.second < outa.second + outb.second  ) return Energy();
   Energy2 scale(sqr(inpart.second));
   _theSSTPtr->setCoupling(scale, outa.first, outb.first, inpart.first);
   double musq = sqr(outa.second/inpart.second);

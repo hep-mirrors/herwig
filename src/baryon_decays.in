@@ -1,6 +1,4 @@
-#
-#  taken from Hw64Decays.in
-#
+
 decaymode Delta+->p+,pi0; 0.663 1 /Defaults/Decays/DecayME0
 decaymode Delta+->n0,pi+; 0.331 1 /Defaults/Decays/DecayME0
 decaymode Delta+->p+,gamma; 0.006 1 /Defaults/Decays/DecayME0
@@ -78,7 +76,6 @@ decaymode Omegabar+->Lambdabar0,K+; 0.675 1 /Defaults/Decays/DecayME0
 decaymode Omegabar+->Xibar0,pi+; 0.233 1 /Defaults/Decays/DecayME0
 decaymode Omegabar+->Xibar+,pi0; 0.086 1 /Defaults/Decays/DecayME0
 decaymode Omegabar+->e+,nu_e,Xibar0; 0.006 1 /Defaults/Decays/DecayME101
-
 decaymode Sigma_c++->Lambda_c+,pi+; 1.000 1 /Defaults/Decays/DecayME0
 decaymode Sigma*_c++->Lambda_c+,pi+; 1.000 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->n0,Kbar0,pi+; 0.040 1 /Defaults/Decays/DecayME0
@@ -130,7 +127,7 @@ decaymode Lambda_c+->Sigma*+,pi0; 0.005 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->Sigma*0,pi+; 0.005 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->Sigma+,K+,K-; 0.004 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->Sigma+,phi; 0.004 1 /Defaults/Decays/DecayME0
-decaymode Lambda_c+->p+,f0p0; 0.004 1 /Defaults/Decays/DecayME0
+decaymode Lambda_c+->p+,f_0; 0.004 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->Xi-,K+,pi+; 0.003 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->Xi0,K+; 0.003 1 /Defaults/Decays/DecayME0
 decaymode Lambda_c+->p+,pi+,pi-,pi+,pi-; 0.003 1 /Defaults/Decays/Mambo
@@ -195,7 +192,6 @@ decaymode Omega_c0->Xi0,Kbar0; 0.075 1 /Defaults/Decays/DecayME0
 decaymode Omega_c0->nu_mu,mu+,Omega-; 0.050 1 /Defaults/Decays/DecayME101
 decaymode Omega_c0->nu_e,e+,Omega-; 0.050 1 /Defaults/Decays/DecayME101
 decaymode Omega*_c0->Omega_c0,gamma; 1.000 1 /Defaults/Decays/DecayME0
-
 decaymode Sigma_cbar--->Lambda_cbar-,pi-; 1.000 1 /Defaults/Decays/DecayME0
 decaymode Sigma*_cbar--->Lambda_cbar-,pi-; 1.000 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->nbar0,K0,pi-; 0.040 1 /Defaults/Decays/DecayME0
@@ -250,7 +246,7 @@ decaymode Lambda_cbar-->Sigma*bar-,pi0; 0.005 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->Sigma*bar0,pi-; 0.005 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->Sigmabar-,K+,K-; 0.004 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->Sigmabar-,phi; 0.004 1 /Defaults/Decays/DecayME0
-decaymode Lambda_cbar-->pbar-,f0p0; 0.004 1 /Defaults/Decays/DecayME0
+decaymode Lambda_cbar-->pbar-,f_0; 0.004 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->Xibar+,K-,pi-; 0.003 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->Xibar0,K-; 0.003 1 /Defaults/Decays/DecayME0
 decaymode Lambda_cbar-->pbar-,pi+,pi-,pi+,pi-; 0.003 1 /Defaults/Decays/Mambo
@@ -316,7 +312,6 @@ decaymode Omega_cbar0->Xibar0,K0; 0.075 1 /Defaults/Decays/DecayME0
 decaymode Omega_cbar0->nu_mubar,mu-,Omegabar+; 0.050 1 /Defaults/Decays/DecayME101
 decaymode Omega_cbar0->nu_ebar,e-,Omegabar+; 0.050 1 /Defaults/Decays/DecayME101
 decaymode Omega*_cbar0->Omega_cbar0,gamma; 1.000 1 /Defaults/Decays/DecayME0
-
 decaymode Sigma_b+->s,cbar,c,uu_1; 0.242 1 /Defaults/Decays/HvyDecayME100
 decaymode Sigma_b+->d,ubar,c,uu_1; 0.242 1 /Defaults/Decays/HvyDecayME100
 decaymode Sigma_b+->mu-,nu_mubar,c,uu_1; 0.090 1 /Defaults/Decays/HvyDecayME100
@@ -425,7 +420,6 @@ decaymode Omega_b-->u,ubar,d,ss_1; 0.009 1 /Defaults/Decays/HvyDecayME100
 decaymode Omega_b-->tau-,nu_taubar,u,ss_1; 0.005 1 /Defaults/Decays/HvyDecayME100
 decaymode Omega_b-->c,cbar,d,ss_1; 0.004 1 /Defaults/Decays/HvyDecayME100
 decaymode Omega_b-->c,ubar,s,ss_1; 0.004 1 /Defaults/Decays/HvyDecayME100
-
 decaymode Sigma_bbar-->sbar,c,cbar,uu_1bar; 0.242 1 /Defaults/Decays/HvyDecayME100
 decaymode Sigma_bbar-->dbar,u,cbar,uu_1bar; 0.242 1 /Defaults/Decays/HvyDecayME100
 decaymode Sigma_bbar-->mu+,nu_mu,cbar,uu_1bar; 0.090 1 /Defaults/Decays/HvyDecayME100
@@ -494,7 +488,7 @@ decaymode Xi_bbar0->sbar,u,cbar,su_0bar; 0.012 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->mu+,nu_mu,ubar,su_0bar; 0.010 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->e+,nu_e,ubar,su_0bar; 0.010 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->ubar,c,sbar,su_0bar; 0.009 1 /Defaults/Decays/HvyDecayME100
-decaymode Xi_bbar0->ubar,u,dbar,su_0bar; 0.009 1 /Defaults/Decays/DecayME100
+decaymode Xi_bbar0->ubar,u,dbar,su_0bar; 0.009 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->tau+,nu_tau,ubar,su_0bar; 0.005 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->cbar,c,dbar,su_0bar; 0.004 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->cbar,u,sbar,su_0bar; 0.004 1 /Defaults/Decays/HvyDecayME100
@@ -534,7 +528,6 @@ decaymode Omega_bbar+->ubar,u,dbar,ss_1bar; 0.009 1 /Defaults/Decays/HvyDecayME1
 decaymode Omega_bbar+->tau+,nu_tau,ubar,ss_1bar; 0.005 1 /Defaults/Decays/HvyDecayME100
 decaymode Omega_bbar+->cbar,c,dbar,ss_1bar; 0.004 1 /Defaults/Decays/HvyDecayME100
 decaymode Omega_bbar+->cbar,u,sbar,ss_1bar; 0.004 1 /Defaults/Decays/HvyDecayME100
-
 decaymode Sigma*_b-->Lambda_b0,pi-; 1.000 1 /Defaults/Decays/DecayME0
 decaymode Sigma_b0->Lambda_b0,pi0; 1.000 1 /Defaults/Decays/DecayME0
 decaymode Sigma*_b0->Lambda_b0,pi0; 1.000 1 /Defaults/Decays/DecayME0
@@ -569,7 +562,6 @@ decaymode Xi*_bbar+->Xi_bbar0,pi+; 0.600 1 /Defaults/Decays/DecayME0
 decaymode Xi*_bbar+->Xi_bbar+,pi0; 0.300 1 /Defaults/Decays/DecayME0
 decaymode Xi*_bbar+->Xi_bbar+,gamma; 0.100 1 /Defaults/Decays/DecayME0
 decaymode Omega*_bbar+->Omega_bbar+,gamma; 1.000 1 /Defaults/Decays/DecayME0
-
 decaymode Lambda_c+->n0,Kbar0,pi+,pi0,pi0; 0.010 1 /Defaults/Decays/Mambo
 decaymode Lambda_c+->n0,Kbar0,pi+,pi+,pi-; 0.010 1 /Defaults/Decays/Mambo
 decaymode Lambda_c+->n0,K+,pi0,pi0,pi0; 0.010 1 /Defaults/Decays/Mambo
@@ -582,6 +574,10 @@ decaymode Lambda_c+->Sigma+,pi+,pi-,pi0,pi0; 0.005 1 /Defaults/Decays/Mambo
 decaymode Lambda_c+->Sigma+,pi+,pi+,pi-,pi-; 0.005 1 /Defaults/Decays/Mambo
 decaymode Lambda_c+->Sigma0,pi+,pi0,pi0,pi0; 0.005 1 /Defaults/Decays/Mambo
 decaymode Lambda_c+->p+,K-,pi+,pi+,pi-; 0.002 1 /Defaults/Decays/Mambo
+decaymode Jpsi->pi+,pi+,pi-,pi-,pi0; 0.034 1 /Defaults/Decays/Mambo
+decaymode Jpsi->omega,pi+,pi+,pi-,pi-; 0.009 1 /Defaults/Decays/Mambo
+decaymode Jpsi->p+,pbar-,pi+,pi-,pi0; 0.002 1 /Defaults/Decays/Mambo
+decaymode D-->K+,pi-,pi-,pi0,pi0; 0.042 1 /Defaults/Decays/Mambo
 decaymode Lambda_cbar-->nbar0,K0,pi-,pi0,pi0; 0.010 1 /Defaults/Decays/Mambo
 decaymode Lambda_cbar-->nbar0,K-,pi0,pi0,pi0; 0.010 1 /Defaults/Decays/Mambo
 decaymode Lambda_cbar-->nbar0,K-,pi+,pi-,pi0; 0.010 1 /Defaults/Decays/Mambo

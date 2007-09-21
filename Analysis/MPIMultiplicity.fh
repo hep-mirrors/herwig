@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MPIMultiplicity class.
+//
+#ifndef THEPEG_MPIMultiplicity_FH
+#define THEPEG_MPIMultiplicity_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MPIMultiplicity;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MPIMultiplicity,MPIMultiplicityPtr);
+
+}
+
+#endif

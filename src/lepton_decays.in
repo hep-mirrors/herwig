@@ -16,10 +16,10 @@ decaymode tau+->pi+,pi0,pi0,nu_taubar; 0.09237 1 /Defaults/Decays/Tau3Pion
 decaymode tau+->pi+,pi-,pi+,nu_taubar; 0.089813 1 /Defaults/Decays/Tau3Pion
 decaymode tau+->pi+,pi-,pi+,pi0,nu_taubar; 0.044435 1 /Defaults/Decays/Tau4Pion
 decaymode tau+->pi+,pi0,pi0,pi0,nu_taubar; 0.010313 1 /Defaults/Decays/Tau4Pion
-decaymode tau+->K0,pi+,nu_taubar; 0.008957 1 /Defaults/Decays/Tau2Meson
+decaymode tau+->K0,pi+,nu_taubar; 0.008957 1 /Defaults/Decays/TauKPi
 decaymode tau+->K+,nu_taubar; 0.006885 1 /Defaults/Decays/Tau1Meson
 decaymode tau+->pi+,pi+,pi-,pi0,pi0,nu_taubar; 0.004935 1 /Defaults/Decays/Tau5Pion
-decaymode tau+->K+,pi0,nu_taubar; 0.004491 1 /Defaults/Decays/Tau2Meson
+decaymode tau+->K+,pi0,nu_taubar; 0.004491 1 /Defaults/Decays/TauKPi
 decaymode tau+->K0,pi+,pi0,nu_taubar; 0.003757 1 /Defaults/Decays/Tau3Kaon
 decaymode tau+->K+,pi+,pi-,nu_taubar; 0.003292 1 /Defaults/Decays/Tau3Kaon
 decaymode tau+->pi+,pi0,gamma,nu_taubar; 0.001762 1 /Defaults/Decays/Tau2MesonPhoton
@@ -55,10 +55,10 @@ decaymode tau-->pi-,pi0,pi0,nu_tau; 0.09237 1 /Defaults/Decays/Tau3Pion
 decaymode tau-->pi-,pi+,pi-,nu_tau; 0.089813 1 /Defaults/Decays/Tau3Pion
 decaymode tau-->pi-,pi+,pi-,pi0,nu_tau; 0.044435 1 /Defaults/Decays/Tau4Pion
 decaymode tau-->pi-,pi0,pi0,pi0,nu_tau; 0.010313 1 /Defaults/Decays/Tau4Pion
-decaymode tau-->Kbar0,pi-,nu_tau; 0.008957 1 /Defaults/Decays/Tau2Meson
+decaymode tau-->Kbar0,pi-,nu_tau; 0.008957 1 /Defaults/Decays/TauKPi
 decaymode tau-->K-,nu_tau; 0.006885 1 /Defaults/Decays/Tau1Meson
 decaymode tau-->pi-,pi-,pi+,pi0,pi0,nu_tau; 0.004935 1 /Defaults/Decays/Tau5Pion
-decaymode tau-->K-,pi0,nu_tau; 0.004491 1 /Defaults/Decays/Tau2Meson
+decaymode tau-->K-,pi0,nu_tau; 0.004491 1 /Defaults/Decays/TauKPi
 decaymode tau-->Kbar0,pi-,pi0,nu_tau; 0.003757 1 /Defaults/Decays/Tau3Kaon
 decaymode tau-->K-,pi-,pi+,nu_tau; 0.003292 1 /Defaults/Decays/Tau3Kaon
 decaymode tau-->pi-,pi0,gamma,nu_tau; 0.001762 1 /Defaults/Decays/Tau2MesonPhoton
@@ -79,8 +79,8 @@ decaymode tau-->eta,K-,nu_tau; 0.000263 1 /Defaults/Decays/Tau2Meson
 decaymode tau-->Kbar0,pi-,pi0,pi0,nu_tau; 0.000238 1 /Defaults/Decays/Mambo
 decaymode tau-->K_L0,K_L0,pi-,nu_tau; 0.000235 1 /Defaults/Decays/Tau3Kaon
 decaymode tau-->K_S0,K_S0,pi-,nu_tau; 0.000235 1 /Defaults/Decays/Tau3Kaon
-decaymode tau-->eta,pi-,pi-,pi+,nu_tau; 0.000225 1 /Defaults/Decays/Mambo
 decaymode tau-->Kbar0,pi-,pi-,pi+,nu_tau; 0.000225 1 /Defaults/Decays/Mambo
+decaymode tau-->eta,pi-,pi-,pi+,nu_tau; 0.000225 1 /Defaults/Decays/Mambo
 decaymode tau-->eta,pi-,pi0,pi0,nu_tau; 0.000145 1 /Defaults/Decays/Mambo
 decaymode tau-->omega,pi-,pi0,pi0,nu_tau; 0.000135 1 /Defaults/Decays/Mambo
 decaymode tau-->omega,pi-,pi-,pi+,nu_tau; 0.000118 1 /Defaults/Decays/Mambo

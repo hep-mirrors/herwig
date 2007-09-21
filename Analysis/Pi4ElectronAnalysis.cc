@@ -77,7 +77,7 @@ void Pi4ElectronAnalysis::Init() {
 
 void Pi4ElectronAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   for(unsigned int ix=0;ix<_mffbar.size();++ix) {

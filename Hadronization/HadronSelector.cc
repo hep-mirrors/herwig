@@ -15,6 +15,7 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
+#include <ThePEG/Repository/Repository.h>
 #include "CheckId.h"
 
 using namespace Herwig;
@@ -168,12 +169,13 @@ void HadronSelector::Init() {
   static RefVector<HadronSelector,ParticleData> interfacePartons
     ("Partons",
      "The partons which are to be considered as the consistuents of the hadrons.",
-     &HadronSelector::_partons, false, false, true, false);
+     &HadronSelector::_partons, -1, false, false, true, false, false);
 
   static RefVector<HadronSelector,ParticleData> interfaceForbidden
     ("Forbidden",
      "The PDG codes of the particles which cannot be produced in the hadronization.",
-     &HadronSelector::_forbidden, false, false, true, false);
+     &HadronSelector::_forbidden, -1, false, false, true, false, false);
+
   //
   // mixing angles
   //
@@ -376,9 +378,7 @@ double HadronSelector::mixingStateWeight(long id) {
 
 void HadronSelector::doinit() throw(InitException) {
   Interfaced::doinit();
-
- 
- // the default partons allowed
+  // the default partons allowed
   // the quarks
   for(unsigned int ix=1;ix<=5;++ix) {
     _partons.push_back(getParticleData(ix));
@@ -389,10 +389,6 @@ void HadronSelector::doinit() throw(InitException) {
       _partons.push_back(getParticleData(CheckId::makeDiquarkID(ix,iy)));
     }
   }
-  // SUSY stuff that can hadronize
-  _partons.push_back(getParticleData(1000006)); // ~t_L
-  _partons.push_back(getParticleData(1000021)); // ~g
-
   // set the weights for the various excited mesons
   // set all to one to start with
   for (int l = 0; l < Lmax; ++l ) {
@@ -472,7 +468,6 @@ void HadronSelector::constructHadronTable() {
       _table[make_pair(_partons[ix]->id(),_partons[iy]->id())] = KupcoData();
     }
   }
-
   // get the particles from the event generator
   ParticleMap particles = generator()->particles();
   // loop over the particles
@@ -482,9 +477,12 @@ void HadronSelector::constructHadronTable() {
     long pid = it->first;
     tPDPtr particle = it->second;
     int pspin = particle->iSpin();
+    // Don't include hadrons which are explicitly forbidden
+    if(find(_forbidden.begin(),_forbidden.end(),particle)!=_forbidden.end()) 
+      continue;
     // Don't include non-hadrons or antiparticles
     if(pid < 100) continue;
-    // K_0S and K_0L not made made K0 and Kbar0
+    // K_0S and K_0L not made make K0 and Kbar0
     if(pspin == 0) continue;
     // Debugging options
     // Only include those with 2J+1 less than...5

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EmitterSpectatorClustering class.
+//
+#ifndef HERWIG_EmitterSpectatorClustering_FH
+#define HERWIG_EmitterSpectatorClustering_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class EmitterSpectatorClustering;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::EmitterSpectatorClustering,EmitterSpectatorClusteringPtr);
+
+}
+
+#endif

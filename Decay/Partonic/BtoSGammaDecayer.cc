@@ -33,7 +33,7 @@ bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
 ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
 				       const PDVector & prod) const {
   ParticleVector children;
-  for(unsigned int ix=0;ix<children.size();++ix) {
+  for(unsigned int ix=0;ix<prod.size();++ix) {
     children.push_back(prod[ix]->produceParticle());
   }
   // momenta of the decay products
@@ -96,6 +96,7 @@ void BtoSGammaDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
+  _hadronicmass->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":HadronicMass " 
 	 << _hadronicmass->fullName() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 

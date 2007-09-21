@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MPIHandler class.
+//
+#ifndef HERWIG_MPIHandler_FH
+#define HERWIG_MPIHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+//create typedefs for c, t, tc, MPIHPtr's:
+ThePEG_DECLARE_CLASS_POINTERS(MPIHandler,MPIHPtr);
+
+}
+#endif

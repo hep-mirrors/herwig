@@ -184,7 +184,7 @@ struct ClassTraits<Herwig::QtoQGammaSplitFn>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

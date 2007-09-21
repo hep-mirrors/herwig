@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EWKEmitterSpectatorClusterer class.
+//
+
+namespace Herwig {
+
+inline unsigned int EWKEmitterSpectatorClusterer::toClusterMultiplicity () const {
+  return 3;
+}
+
+inline unsigned int EWKEmitterSpectatorClusterer::fromClusterMultiplicity () const {
+  return 2;
+}
+
+}

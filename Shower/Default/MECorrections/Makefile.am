@@ -9,3 +9,4 @@ TopDecayMECorrection.icc TopDecayMECorrection.cc \
 DrellYanMECorrection.h DrellYanMECorrection.fh \
 DrellYanMECorrection.icc DrellYanMECorrection.cc
 
+libHwDefaultMECorrections_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)

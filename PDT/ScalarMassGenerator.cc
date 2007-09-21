@@ -52,8 +52,8 @@ void ScalarMassGenerator::Init() {
 
 }
 
-void ScalarMassGenerator::dataBaseOutput(ofstream & output) {
-  output << "update Mass_Generators set parameters=\"";
+void ScalarMassGenerator::dataBaseOutput(ofstream & output,bool header) {
+  if(header) output << "update Mass_Generators set parameters=\"";
   output << "set " << fullName() << ":BreitWignerShape "   << _BWshape << "\n";
   output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
   output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
@@ -66,5 +66,5 @@ void ScalarMassGenerator::dataBaseOutput(ofstream & output) {
   for(unsigned int ix=0;ix<_mass2.size();++ix)
     output << "insert " << fullName() 
 	   << ":Mass2 " << ix << " " << _mass2[ix]/GeV << "\n";
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

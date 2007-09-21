@@ -12,4 +12,8 @@ Evolver.h Evolver.fh Evolver.icc Evolver.cc \
 ShowerKinematics.fh  ShowerKinematics.h  ShowerKinematics.icc ShowerKinematics.cc \
 ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc \
 ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc \
-ShowerVertex.fh ShowerVertex.h ShowerVertex.icc ShowerVertex.cc
+ShowerVertex.fh ShowerVertex.h ShowerVertex.icc ShowerVertex.cc \
+ShowerVeto.h ShowerVeto.fh ShowerVeto.icc ShowerVeto.cc \
+PTVeto.h PTVeto.fh PTVeto.icc PTVeto.cc
+
+libHwShowerBase_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)

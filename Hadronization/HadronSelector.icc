@@ -14,8 +14,13 @@ inline vector<PDPtr> & HadronSelector::partons() {
   return _partons;
 }
 
-inline map<tcPDPtr,double> & HadronSelector::pwt() {
-  return _pwt;
+inline double HadronSelector::pwt(tcPDPtr p) {
+  assert(p);
+  if ( p->id() < 0 ) 
+    p = p->CC();
+  map<tcPDPtr,double>::iterator it = _pwt.find(p);
+  assert( it != _pwt.end() );
+  return it->second;
 }
 
 inline double HadronSelector::pwtDquark() const {

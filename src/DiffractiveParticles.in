@@ -1,0 +1,40 @@
+
+create /ThePEG/ParticleData /Defaults/Particles/reggeon 
+setup /Defaults/Particles/reggeon 28 reggeon 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/reggeon 
+create /ThePEG/ParticleData /Defaults/Particles/pomeron 
+setup /Defaults/Particles/pomeron 29 pomeron 0.0 0.0 0.0 0.0 0 0 3 1
+defaultparticle /Defaults/Particles/pomeron 
+create /ThePEG/ParticleData /Defaults/Particles/rho_diff0 
+setup /Defaults/Particles/rho_diff0 110 rho_diff0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/rho_diff0 
+create /ThePEG/ParticleData /Defaults/Particles/pi_diffr+ 
+setup /Defaults/Particles/pi_diffr+ 210 pi_diffr+ 0.0 0.0 0.0 0.0 3 0 0 1
+defaultparticle /Defaults/Particles/pi_diffr+ 
+create /ThePEG/ParticleData /Defaults/Particles/pi_diffr- 
+setup /Defaults/Particles/pi_diffr- -210 pi_diffr- 0.0 0.0 0.0 0.0 -3 0 0 1
+defaultparticle /Defaults/Particles/pi_diffr- 
+makeanti /Defaults/Particles/pi_diffr+ /Defaults/Particles/pi_diffr-
+create /ThePEG/ParticleData /Defaults/Particles/omega_di 
+setup /Defaults/Particles/omega_di 220 omega_di 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/omega_di  
+create /ThePEG/ParticleData /Defaults/Particles/phi_diff 
+setup /Defaults/Particles/phi_diff 330 phi_diff 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/phi_diff  
+create /ThePEG/ParticleData /Defaults/Particles/Jpsi_di 
+setup /Defaults/Particles/Jpsi_di 440 Jpsi_di 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/Jpsi_di 
+create /ThePEG/ParticleData /Defaults/Particles/n_diffr0 
+setup /Defaults/Particles/n_diffr0 2110 n_diffr0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/n_diffr0 
+create /ThePEG/ParticleData /Defaults/Particles/n_diffrbar0 
+setup /Defaults/Particles/n_diffrbar0 -2110 n_diffrbar0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/n_diffrbar0 
+makeanti /Defaults/Particles/n_diffr0 /Defaults/Particles/n_diffrbar0
+create /ThePEG/ParticleData /Defaults/Particles/p_diffr+ 
+setup /Defaults/Particles/p_diffr+ 2210 p_diffr+ 0.0 0.0 0.0 0.0 3 0 0 1
+defaultparticle /Defaults/Particles/p_diffr+ 
+create /ThePEG/ParticleData /Defaults/Particles/p_diffrbar- 
+setup /Defaults/Particles/p_diffrbar- -2210 p_diffrbar- 0.0 0.0 0.0 0.0 -3 0 0 1
+defaultparticle /Defaults/Particles/p_diffrbar- 
+makeanti /Defaults/Particles/p_diffr+ /Defaults/Particles/p_diffrbar-

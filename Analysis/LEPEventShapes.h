@@ -262,8 +262,5 @@ struct ClassTraits<Herwig::LEPEventShapes>
 }
 
 #include "LEPEventShapes.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LEPEventShapes.tcc"
-#endif
 
 #endif /* HERWIG_LEPEventShapes_H */

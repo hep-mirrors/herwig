@@ -1,0 +1,93 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DefaultCKKWVeto class.
+//
+
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+#include "ThePEG/Repository/EventGenerator.h"
+#endif
+
+namespace Herwig {
+
+inline DefaultCKKWVeto::DefaultCKKWVeto()
+  : ShowerVeto(),
+    _enabled(true)
+{}
+
+inline DefaultCKKWVeto::DefaultCKKWVeto (DefaultJetMeasurePtr res)
+  : ShowerVeto(ShowerVetoType::Emission),
+    _resolution(res)
+{}
+
+inline IBPtr DefaultCKKWVeto::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DefaultCKKWVeto::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+inline bool DefaultCKKWVeto::vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr p, const Branching& br) {
+  if(_enabled) {
+    bool veto = _resolution->resolvable(p,br);
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+    generator()->log() << "time like CKKW veto ... " << endl;
+    generator()->log() << br.ids[0] << " -> " << br.ids[1] << " " << br.ids[2] << endl
+		       << "with q/GeV = " << br.kinematics->scale()/GeV << " z = " << br.kinematics->z()
+		       << endl
+		       << "branching will " << (veto ? "be " : "not be " ) << "vetoed." << endl;
+#endif
+    return veto;
+  }
+  else {
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+    generator()->log() << "veto disabled" << endl;
+#endif
+    return false;
+  }
+}
+
+inline bool DefaultCKKWVeto::vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr p, const Branching& br) {
+  if(_enabled) {
+    bool veto = _resolution->resolvable(p,br,true);
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+    generator()->log() << "time like CKKW veto ... " << endl;
+    generator()->log() << br.ids[0] << " -> " << br.ids[1] << " " << br.ids[2] << endl
+		       << "with q/GeV = " << br.kinematics->scale()/GeV << " z = " << br.kinematics->z()
+		       << endl
+		       << "branching will " << (veto ? "be " : "not be " ) << "vetoed." << endl;
+#endif
+    return veto;
+  }
+  else {
+#ifdef HERWIG_DEBUG_CKKW_EXTREME
+    generator()->log() << "veto disabled" << endl;
+#endif
+    return false;
+  }
+}
+
+inline void DefaultCKKWVeto::enable (bool en) { _enabled = en; }
+
+inline void DefaultCKKWVeto::disable () { enable(false); }
+
+inline void DefaultCKKWVeto::eventGenerator(tEGPtr eg) {
+  setGenerator(eg);
+}
+
+inline void DefaultCKKWVeto::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _resolution = trans.translate(_resolution);
+  ShowerVeto::rebind(trans);
+}
+
+inline IVector DefaultCKKWVeto::getReferences() {
+  IVector ret = ShowerVeto::getReferences();
+  ret.push_back(_resolution);
+  return ret;
+}
+
+
+}

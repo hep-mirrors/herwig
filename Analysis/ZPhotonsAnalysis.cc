@@ -94,7 +94,7 @@ void ZPhotonsAnalysis::Init() {
 
 inline void ZPhotonsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   using namespace HistogramOptions;
   _nphoton->topdrawOutput(output,Frame|Errorbars|Ylog,

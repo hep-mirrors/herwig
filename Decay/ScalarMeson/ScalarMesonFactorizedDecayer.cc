@@ -273,7 +273,7 @@ bool ScalarMesonFactorizedDecayer::accept(tcPDPtr parent,
   PDVector::const_iterator pend = children.end();
   vector<int> ids,idcurr;
   int id(parent->id());
-  for( ; pit!=pend;++pit){ids.push_back((**pit).id());}
+  for( ; pit!=pend;++pit) ids.push_back((**pit).id());
   // loop over the possible particles in the formfactor
   unsigned int ipart(0),iform,icurr,ix;
   do {
@@ -364,9 +364,15 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
     ++ix;
   }
   while(imode<0&&ix<numberModes());
-  if(imode<0){throw DecayIntegratorError() << "Unable to find the mode in " 
-					   << "ScalarMesonFactorizedDecayer::decay()" 
-					   << Exception::abortnow;}
+  if(imode<0) {
+    string mode = parent->PDGName() + "->";
+    for(unsigned int ix=0;ix<children.size();++ix) 
+      mode += children[ix]->PDGName() +",";
+    throw DecayIntegratorError() << "Unable to find the mode " << mode << " in " 
+				 << fullName() 
+				 << " ScalarMesonFactorizedDecayer::decay()" 
+				 << Exception::abortnow;
+  }
   return imode;
 }
 

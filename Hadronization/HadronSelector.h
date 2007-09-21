@@ -286,7 +286,7 @@ protected:
   /**
    *  Access the parton weights
    */
-  inline map<tcPDPtr,double> & pwt();
+  inline double pwt(tcPDPtr);
 
   /**
    * Methods for the mixing of \f$I=0\f$ mesons

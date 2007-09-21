@@ -1,0 +1,71 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MPIMultiplicity class.
+//
+
+namespace Herwig {
+
+inline MPIMultiplicity::MPIMultiplicity() : 
+  theRealMult(-0.5, 20.5, 21), theRequestedMult(-0.5, 20.5, 21) {}
+
+inline MPIMultiplicity::MPIMultiplicity(const MPIMultiplicity & x)
+  : AnalysisHandler(x), theShowerHandler(x.theShowerHandler),
+    theMPIHandler(x.theMPIHandler) {}
+
+inline IBPtr MPIMultiplicity::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MPIMultiplicity::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MPIMultiplicity::doupdate() throw(UpdateException) {
+  AnalysisHandler::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void MPIMultiplicity::doinit() throw(InitException) {
+  AnalysisHandler::doinit();
+}
+
+inline void MPIMultiplicity::dofinish() {
+  AnalysisHandler::dofinish();
+  if(!theShowerHandler->IsMPIOn()) return;
+  string fname = generator()->filename() + string("-") + name() + string(".dat");
+  ofstream outfile(fname.c_str());
+  theRealMult.simpleOutput(outfile, false);
+  theRequestedMult.simpleOutput(outfile, false);
+}
+
+inline void MPIMultiplicity::doinitrun() {
+  AnalysisHandler::doinitrun();
+}
+
+inline void MPIMultiplicity::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  AnalysisHandler::rebind(trans);
+}
+
+inline IVector MPIMultiplicity::getReferences() {
+  IVector ret = AnalysisHandler::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

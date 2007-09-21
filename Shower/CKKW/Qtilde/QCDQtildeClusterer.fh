@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the QCDQtildeClusterer class.
+//
+#ifndef HERWIG_QCDQtildeClusterer_FH
+#define HERWIG_QCDQtildeClusterer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class QCDQtildeClusterer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::QCDQtildeClusterer,QCDQtildeClustererPtr);
+
+}
+
+#endif

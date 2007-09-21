@@ -55,7 +55,7 @@ void BeamCorrelationAnalysis::Init() {
 
 inline void BeamCorrelationAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + 
+  string fname = generator()->filename() + 
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   for(unsigned int ix=0;ix<_incoming.size();++ix) {

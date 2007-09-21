@@ -117,7 +117,7 @@ void VffGammaAnalysis::Init() {
 
 inline void VffGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   string titlea,titleb,titlec;
   for(unsigned int ix=0;ix<_id.size();++ix) {

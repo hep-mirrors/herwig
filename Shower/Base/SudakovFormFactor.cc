@@ -11,6 +11,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
@@ -81,12 +82,29 @@ bool SudakovFormFactor::
 PDFVeto(const Energy2 t, const double x,
 	const tcPDPtr parton0, const tcPDPtr parton1,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  tcPDFPtr pdf=beam->pdf();
+  tcPDFPtr pdf = tcPDFPtr();
+  //using the pdf's associated with the ShowerHandler assures, that
+  //modified pdf's are used for the secondary interactions via 
+  //CascadeHandler::resetPDFs(...)
+  if(ShowerHandler::currentHandler()->firstPDF().particle() == beam)
+    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
+  if(ShowerHandler::currentHandler()->secondPDF().particle() == beam)
+    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
+
   assert(pdf);
   // remember: pdf's q is cut in pdf class.  should probably be done here! 
-  // this would correspond to QSPAC in F-HERWIG. 
-  double newpdf=pdf->xfx(beam,parton0,t,x/z());
-  double oldpdf=pdf->xfx(beam,parton1,t,x);
+  // this would correspond to QSPAC in F-HERWIG.     
+
+  double newpdf(0.0), oldpdf(0.0);
+  //different treatment of MPI ISR by hand:
+  if( ShowerHandler::currentHandler()->FirstInt() ){
+    newpdf=pdf->xfx(beam,parton0,t,x/z());
+    oldpdf=pdf->xfx(beam,parton1,t,x);
+  }else{
+    newpdf=pdf->xfx(beam,parton0,t,x/z()) - pdf->xfvx(beam,parton0,t,x/z());
+    oldpdf=pdf->xfx(beam,parton1,t,x) - pdf->xfvx(beam,parton1,t,x);
+  }
+  
   if(newpdf<=0.) return true;
   if(oldpdf<=0.) return false;
   double ratio = newpdf/oldpdf;

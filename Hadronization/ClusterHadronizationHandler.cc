@@ -19,6 +19,7 @@
 #include <ThePEG/PDT/PDT.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Utilities/Throw.h>
+#include <ThePEG/PDT/RemnantDecayer.h>
 #include "Remnant.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
@@ -37,7 +38,6 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _clusterFissioner
      << _lightClusterDecayer
      << _clusterDecayer
-     << _forcedSplitter
      << ounit(_minVirtuality2,GeV2)
      << ounit(_maxDisplacement,mm)
      << _softUnderlyingEventMode
@@ -52,7 +52,6 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _clusterFissioner
      >> _lightClusterDecayer
      >> _clusterDecayer
-     >> _forcedSplitter
      >> iunit(_minVirtuality2,GeV2)
      >> iunit(_maxDisplacement,mm)
      >> _softUnderlyingEventMode
@@ -103,11 +102,6 @@ void ClusterHadronizationHandler::Init() {
 		       "A reference to the ClusterDecayer object", 
 		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
 		       false, false, true, false);
-
-  static Reference<ClusterHadronizationHandler,ForcedSplitting> interfaceForcedSplitting
-    ("ForcedSplitting",
-     "Object responsible for the forced splitting of the Remnant",
-     &ClusterHadronizationHandler::_forcedSplitter, false, false, true, false, false);
 
   static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2 
     ("MinVirtuality2",
@@ -176,8 +170,6 @@ handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) throw(Veto, Stop, Exception) {
 
   PVector currentlist(tagged.begin(),tagged.end());
-
-  _forcedSplitter->split(currentlist);
 
   _partonSplitter->split(currentlist);
 

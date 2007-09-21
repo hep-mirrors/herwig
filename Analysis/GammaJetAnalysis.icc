@@ -21,7 +21,7 @@ inline IBPtr GammaJetAnalysis::fullclone() const {
 
 inline void GammaJetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   using namespace HistogramOptions;
   _Eg.topdrawOutput(outfile,Frame,"BLACK","Energy of Gamma");

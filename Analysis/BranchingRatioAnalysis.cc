@@ -81,7 +81,7 @@ void BranchingRatioAnalysis::Init() {
 
 void BranchingRatioAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + 
+  string fname = generator()->filename() + 
     string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   map<tDMPtr,vector<double> >::const_iterator it;

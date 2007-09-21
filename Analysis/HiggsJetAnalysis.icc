@@ -20,7 +20,7 @@ inline IBPtr HiggsJetAnalysis::fullclone() const {
 
 inline void HiggsJetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   using namespace HistogramOptions;
   _pth.topdrawOutput(outfile,Frame,"BLACK","pt of Higgs");

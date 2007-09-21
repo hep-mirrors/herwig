@@ -126,7 +126,7 @@ void SemiLeptonicDPiAnalysis::Init() {
 
 void SemiLeptonicDPiAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   string title,temp;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {

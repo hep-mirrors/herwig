@@ -25,26 +25,6 @@ class BFragmentationAnalysisHandler: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline BFragmentationAnalysisHandler();
-
-  /**
-   * The copy constructor.
-   */
-  inline BFragmentationAnalysisHandler(const BFragmentationAnalysisHandler &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BFragmentationAnalysisHandler();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
   /**
@@ -73,14 +53,6 @@ public:
   void analyze_bquarks(ParticleSet);
 
   /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
    * Analyze the given vector of particles. The default version calls
    * analyze(tPPtr) for each of the particles.
    * @param particles the vector of pointers to particles to be analyzed
@@ -95,22 +67,6 @@ public:
   //@}
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -142,47 +98,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void dofinish();
   //@}
 
 private:
@@ -191,7 +116,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<BFragmentationAnalysisHandler> initBFragmentationAnalysisHandler;
+  static NoPIOClassDescription<BFragmentationAnalysisHandler> initBFragmentationAnalysisHandler;
 
   /**
    * The assignment operator is private and must never be called.
@@ -262,8 +187,5 @@ struct ClassTraits<Herwig::BFragmentationAnalysisHandler>
 }
 
 #include "BFragmentationAnalysisHandler.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BFragmentationAnalysisHandler.tcc"
-#endif
 
 #endif /* HERWIG_BFragmentationAnalysisHandler_H */

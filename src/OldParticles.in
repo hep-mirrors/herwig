@@ -1,0 +1,1894 @@
+############################################################
+# Old particle data. 
+# Changing these is entirely at your own risk!
+#
+# Despite the name, this file no longer matches the version 
+# found in ThePEG.
+############################################################
+create /ThePEG/ConstituentParticleData /Defaults/Particles/d 
+setup /Defaults/Particles/d 1 d 0.00990 0.0 0.0 0.0 -1 3 2 1 0.3250 
+defaultparticle /Defaults/Particles/d 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/dbar 
+setup /Defaults/Particles/dbar -1 dbar 0.00990 0.0 0.0 0.0 1 -3 2 1 0.3250 
+defaultparticle /Defaults/Particles/dbar 
+makeanti /Defaults/Particles/d /Defaults/Particles/dbar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/u 
+setup /Defaults/Particles/u 2 u 0.00560 0.0 0.0 0.0 2 3 2 1 0.3250 
+defaultparticle /Defaults/Particles/u 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ubar 
+setup /Defaults/Particles/ubar -2 ubar 0.00560 0.0 0.0 0.0 -2 -3 2 1 0.3250 
+defaultparticle /Defaults/Particles/ubar 
+makeanti /Defaults/Particles/u /Defaults/Particles/ubar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/s 
+setup /Defaults/Particles/s 3 s 0.1990 0.0 0.0 0.0 -1 3 2 1 0.50 
+defaultparticle /Defaults/Particles/s 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/sbar 
+setup /Defaults/Particles/sbar -3 sbar 0.1990 0.0 0.0 0.0 1 -3 2 1 0.50 
+defaultparticle /Defaults/Particles/sbar 
+makeanti /Defaults/Particles/s /Defaults/Particles/sbar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/c 
+setup /Defaults/Particles/c 4 c 1.350 0.0 0.0 0.0 2 3 2 1 1.600 
+defaultparticle /Defaults/Particles/c 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cbar 
+setup /Defaults/Particles/cbar -4 cbar 1.350 0.0 0.0 0.0 -2 -3 2 1 1.600 
+defaultparticle /Defaults/Particles/cbar 
+makeanti /Defaults/Particles/c /Defaults/Particles/cbar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/b 
+setup /Defaults/Particles/b 5 b 4.50 0.0 0.0 0.0 -1 3 2 1 5.0 
+defaultparticle /Defaults/Particles/b 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bbar 
+setup /Defaults/Particles/bbar -5 bbar 4.50 0.0 0.0 0.0 1 -3 2 1 5.0 
+defaultparticle /Defaults/Particles/bbar 
+makeanti /Defaults/Particles/b /Defaults/Particles/bbar 
+create /ThePEG/ParticleData /Defaults/Particles/t 
+setup /Defaults/Particles/t 6 t 175.0 1.398830 13.988350 0.0 2 3 2 0
+defaultparticle /Defaults/Particles/t 
+create /ThePEG/ParticleData /Defaults/Particles/tbar 
+setup /Defaults/Particles/tbar -6 tbar 175.0 1.398830 13.988350 0.0 -2 -3 2 0
+defaultparticle /Defaults/Particles/tbar 
+makeanti /Defaults/Particles/t /Defaults/Particles/tbar 
+create /ThePEG/ParticleData /Defaults/Particles/b' 
+setup /Defaults/Particles/b' 7 b' 400.0 0.0 0.0 0.0 -1 3 2 0
+defaultparticle /Defaults/Particles/b' 
+create /ThePEG/ParticleData /Defaults/Particles/b'bar 
+setup /Defaults/Particles/b'bar -7 b'bar 400.0 0.0 0.0 0.0 1 -3 2 0
+defaultparticle /Defaults/Particles/b'bar 
+makeanti /Defaults/Particles/b' /Defaults/Particles/b'bar 
+create /ThePEG/ParticleData /Defaults/Particles/t' 
+setup /Defaults/Particles/t' 8 t' 400.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle /Defaults/Particles/t' 
+create /ThePEG/ParticleData /Defaults/Particles/t'bar 
+setup /Defaults/Particles/t'bar -8 t'bar 400.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle /Defaults/Particles/t'bar 
+makeanti /Defaults/Particles/t' /Defaults/Particles/t'bar 
+create /ThePEG/BeamParticleData /Defaults/Particles/e- 
+setup /Defaults/Particles/e- 11 e- 0.000510 0.0 0.0 0.0 -3 0 2 1
+defaultparticle /Defaults/Particles/e- 
+create /ThePEG/BeamParticleData /Defaults/Particles/e+ 
+setup /Defaults/Particles/e+ -11 e+ 0.000510 0.0 0.0 0.0 3 0 2 1
+defaultparticle /Defaults/Particles/e+ 
+makeanti /Defaults/Particles/e- /Defaults/Particles/e+ 
+create /ThePEG/ParticleData /Defaults/Particles/nu_e 
+setup /Defaults/Particles/nu_e 12 nu_e 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu_e 
+create /ThePEG/ParticleData /Defaults/Particles/nu_ebar 
+setup /Defaults/Particles/nu_ebar -12 nu_ebar 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu_ebar 
+makeanti /Defaults/Particles/nu_e /Defaults/Particles/nu_ebar 
+create /ThePEG/BeamParticleData /Defaults/Particles/mu- 
+setup /Defaults/Particles/mu- 13 mu- 0.105660 0.0 0.0 658654.0 -3 0 2 1
+defaultparticle /Defaults/Particles/mu- 
+create /ThePEG/BeamParticleData /Defaults/Particles/mu+ 
+setup /Defaults/Particles/mu+ -13 mu+ 0.105660 0.0 0.0 658654.0 3 0 2 1
+defaultparticle /Defaults/Particles/mu+ 
+makeanti /Defaults/Particles/mu- /Defaults/Particles/mu+ 
+create /ThePEG/ParticleData /Defaults/Particles/nu_mu 
+setup /Defaults/Particles/nu_mu 14 nu_mu 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu_mu 
+create /ThePEG/ParticleData /Defaults/Particles/nu_mubar 
+setup /Defaults/Particles/nu_mubar -14 nu_mubar 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu_mubar 
+makeanti /Defaults/Particles/nu_mu /Defaults/Particles/nu_mubar 
+create /ThePEG/ParticleData /Defaults/Particles/tau- 
+setup /Defaults/Particles/tau- 15 tau- 1.7770 0.0 0.0 0.08720 -3 0 2 0
+defaultparticle /Defaults/Particles/tau- 
+create /ThePEG/ParticleData /Defaults/Particles/tau+ 
+setup /Defaults/Particles/tau+ -15 tau+ 1.7770 0.0 0.0 0.08720 3 0 2 0
+defaultparticle /Defaults/Particles/tau+ 
+makeanti /Defaults/Particles/tau- /Defaults/Particles/tau+ 
+create /ThePEG/ParticleData /Defaults/Particles/nu_tau 
+setup /Defaults/Particles/nu_tau 16 nu_tau 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu_tau 
+create /ThePEG/ParticleData /Defaults/Particles/nu_taubar 
+setup /Defaults/Particles/nu_taubar -16 nu_taubar 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu_taubar 
+makeanti /Defaults/Particles/nu_tau /Defaults/Particles/nu_taubar 
+create /ThePEG/ParticleData /Defaults/Particles/tau'- 
+setup /Defaults/Particles/tau'- 17 tau'- 400.0 0.0 0.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/tau'- 
+create /ThePEG/ParticleData /Defaults/Particles/tau'+ 
+setup /Defaults/Particles/tau'+ -17 tau'+ 400.0 0.0 0.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/tau'+ 
+makeanti /Defaults/Particles/tau'- /Defaults/Particles/tau'+ 
+create /ThePEG/ParticleData /Defaults/Particles/nu'_tau 
+setup /Defaults/Particles/nu'_tau 18 nu'_tau 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu'_tau 
+create /ThePEG/ParticleData /Defaults/Particles/nu'_taubar 
+setup /Defaults/Particles/nu'_taubar -18 nu'_taubar 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nu'_taubar 
+makeanti /Defaults/Particles/nu'_tau /Defaults/Particles/nu'_taubar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/g 
+setup /Defaults/Particles/g 21 g 0.0 0.0 0.0 0.0 0 8 3 1 0.750 
+defaultparticle /Defaults/Particles/g 
+create /ThePEG/ParticleData /Defaults/Particles/gamma 
+setup /Defaults/Particles/gamma 22 gamma 0.0 0.0 0.0 0.0 0 0 3 1
+defaultparticle /Defaults/Particles/gamma 
+create /ThePEG/ParticleData /Defaults/Particles/Z0 
+setup /Defaults/Particles/Z0 23 Z0 91.1870 2.480090 24.80090 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Z0 
+create /ThePEG/ParticleData /Defaults/Particles/W+ 
+setup /Defaults/Particles/W+ 24 W+ 80.330 2.070020 20.700150 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/W+ 
+create /ThePEG/ParticleData /Defaults/Particles/W- 
+setup /Defaults/Particles/W- -24 W- 80.330 2.070020 20.700150 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/W- 
+makeanti /Defaults/Particles/W+ /Defaults/Particles/W- 
+create /ThePEG/ParticleData /Defaults/Particles/h0 
+setup /Defaults/Particles/h0 25 h0 115.0 0.003196 0.3196 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/h0 
+create /ThePEG/ParticleData /Defaults/Particles/reggeon 
+setup /Defaults/Particles/reggeon 28 reggeon 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/reggeon 
+create /ThePEG/ParticleData /Defaults/Particles/pomeron 
+setup /Defaults/Particles/pomeron 29 pomeron 0.0 0.0 0.0 0.0 0 0 3 1
+defaultparticle /Defaults/Particles/pomeron 
+create /ThePEG/ParticleData /Defaults/Particles/Z'0 
+setup /Defaults/Particles/Z'0 32 Z'0 500.0 14.548480 145.484840 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Z'0 
+create /ThePEG/ParticleData /Defaults/Particles/Z"0 
+setup /Defaults/Particles/Z"0 33 Z"0 900.0 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Z"0 
+create /ThePEG/ParticleData /Defaults/Particles/W'+ 
+setup /Defaults/Particles/W'+ 34 W'+ 500.0 16.67080 166.708010 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/W'+ 
+create /ThePEG/ParticleData /Defaults/Particles/W'- 
+setup /Defaults/Particles/W'- -34 W'- 500.0 16.67080 166.708010 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/W'- 
+makeanti /Defaults/Particles/W'+ /Defaults/Particles/W'- 
+create /ThePEG/ParticleData /Defaults/Particles/H0 
+setup /Defaults/Particles/H0 35 H0 300.0 8.428420 84.284160 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/H0 
+create /ThePEG/ParticleData /Defaults/Particles/A0 
+setup /Defaults/Particles/A0 36 A0 300.0 4.920260 49.202560 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/A0 
+create /ThePEG/ParticleData /Defaults/Particles/H+ 
+setup /Defaults/Particles/H+ 37 H+ 300.0 5.759670 57.596710 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/H+ 
+create /ThePEG/ParticleData /Defaults/Particles/H- 
+setup /Defaults/Particles/H- -37 H- 300.0 5.759670 57.596710 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/H- 
+makeanti /Defaults/Particles/H+ /Defaults/Particles/H- 
+create /ThePEG/ParticleData /Defaults/Particles/eta_tech0 
+setup /Defaults/Particles/eta_tech0 38 eta_tech0 350.0 0.101580 1.01580 0.0 0 8 0 0
+defaultparticle /Defaults/Particles/eta_tech0 
+create /ThePEG/ParticleData /Defaults/Particles/LQ_ue 
+setup /Defaults/Particles/LQ_ue 39 LQ_ue 200.0 0.391620 3.916240 0.0 -1 3 0 0
+defaultparticle /Defaults/Particles/LQ_ue 
+create /ThePEG/ParticleData /Defaults/Particles/LQ_uebar 
+setup /Defaults/Particles/LQ_uebar -39 LQ_uebar 200.0 0.391620 3.916240 0.0 1 -3 0 0
+defaultparticle /Defaults/Particles/LQ_uebar 
+makeanti /Defaults/Particles/LQ_ue /Defaults/Particles/LQ_uebar 
+create /ThePEG/ParticleData /Defaults/Particles/R0 
+setup /Defaults/Particles/R0 40 R0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
+defaultparticle /Defaults/Particles/R0 
+create /ThePEG/ParticleData /Defaults/Particles/Rbar0 
+setup /Defaults/Particles/Rbar0 -40 Rbar0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
+defaultparticle /Defaults/Particles/Rbar0 
+makeanti /Defaults/Particles/R0 /Defaults/Particles/Rbar0 
+create /ThePEG/ParticleData /Defaults/Particles/pi_tech0 
+setup /Defaults/Particles/pi_tech0 51 pi_tech0 110.0 0.041040 0.410420 0.0 0 0 0 0
+defaultparticle /Defaults/Particles/pi_tech0 
+create /ThePEG/ParticleData /Defaults/Particles/pi_tech+ 
+setup /Defaults/Particles/pi_tech+ 52 pi_tech+ 110.0 0.01050 0.105040 0.0 3 0 0 0
+defaultparticle /Defaults/Particles/pi_tech+ 
+create /ThePEG/ParticleData /Defaults/Particles/pi_tech- 
+setup /Defaults/Particles/pi_tech- -52 pi_tech- 110.0 0.01050 0.105040 0.0 -3 0 0 0
+defaultparticle /Defaults/Particles/pi_tech- 
+makeanti /Defaults/Particles/pi_tech+ /Defaults/Particles/pi_tech- 
+create /ThePEG/ParticleData /Defaults/Particles/pi'_tech0 
+setup /Defaults/Particles/pi'_tech0 53 pi'_tech0 110.0 0.028070 0.280680 0.0 0 0 0 0
+defaultparticle /Defaults/Particles/pi'_tech0 
+create /ThePEG/ParticleData /Defaults/Particles/rho_tech0 
+setup /Defaults/Particles/rho_tech0 54 rho_tech0 210.0 0.821010 8.210050 0.0 0 0 0 0
+defaultparticle /Defaults/Particles/rho_tech0 
+create /ThePEG/ParticleData /Defaults/Particles/rho_tech+ 
+setup /Defaults/Particles/rho_tech+ 55 rho_tech+ 210.0 0.649730 6.497280 0.0 3 0 0 0
+defaultparticle /Defaults/Particles/rho_tech+ 
+create /ThePEG/ParticleData /Defaults/Particles/rho_tech- 
+setup /Defaults/Particles/rho_tech- -55 rho_tech- 210.0 0.649730 6.497280 0.0 -3 0 0 0
+defaultparticle /Defaults/Particles/rho_tech- 
+makeanti /Defaults/Particles/rho_tech+ /Defaults/Particles/rho_tech- 
+create /ThePEG/ParticleData /Defaults/Particles/omega_tech 
+setup /Defaults/Particles/omega_tech 56 omega_tech 210.0 0.15750 1.574960 0.0 0 0 0 0
+defaultparticle /Defaults/Particles/omega_tech 
+create /ThePEG/ParticleData /Defaults/Particles/H_L++ 
+setup /Defaults/Particles/H_L++ 61 H_L++ 200.0 0.881610 8.816060 0.0 6 0 0 0
+defaultparticle /Defaults/Particles/H_L++ 
+create /ThePEG/ParticleData /Defaults/Particles/H_L-- 
+setup /Defaults/Particles/H_L-- -61 H_L-- 200.0 0.881610 8.816060 0.0 -6 0 0 0
+defaultparticle /Defaults/Particles/H_L-- 
+makeanti /Defaults/Particles/H_L++ /Defaults/Particles/H_L-- 
+create /ThePEG/ParticleData /Defaults/Particles/H_R++ 
+setup /Defaults/Particles/H_R++ 62 H_R++ 200.0 0.880010 8.800130 0.0 6 0 0 0
+defaultparticle /Defaults/Particles/H_R++ 
+create /ThePEG/ParticleData /Defaults/Particles/H_R-- 
+setup /Defaults/Particles/H_R-- -62 H_R-- 200.0 0.880010 8.800130 0.0 -6 0 0 0
+defaultparticle /Defaults/Particles/H_R-- 
+makeanti /Defaults/Particles/H_R++ /Defaults/Particles/H_R-- 
+create /ThePEG/ParticleData /Defaults/Particles/W_R+ 
+setup /Defaults/Particles/W_R+ 63 W_R+ 750.0 19.339050 193.390480 0.0 3 0 0 0
+defaultparticle /Defaults/Particles/W_R+ 
+create /ThePEG/ParticleData /Defaults/Particles/W_R- 
+setup /Defaults/Particles/W_R- -63 W_R- 750.0 19.339050 193.390480 0.0 -3 0 0 0
+defaultparticle /Defaults/Particles/W_R- 
+makeanti /Defaults/Particles/W_R+ /Defaults/Particles/W_R- 
+create /ThePEG/ParticleData /Defaults/Particles/nu_Re 
+setup /Defaults/Particles/nu_Re 64 nu_Re 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/nu_Re 
+create /ThePEG/ParticleData /Defaults/Particles/nu_Rebar 
+setup /Defaults/Particles/nu_Rebar -64 nu_Rebar 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/nu_Rebar 
+makeanti /Defaults/Particles/nu_Re /Defaults/Particles/nu_Rebar 
+create /ThePEG/ParticleData /Defaults/Particles/nu_Rmu 
+setup /Defaults/Particles/nu_Rmu 65 nu_Rmu 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/nu_Rmu 
+create /ThePEG/ParticleData /Defaults/Particles/nu_Rmubar 
+setup /Defaults/Particles/nu_Rmubar -65 nu_Rmubar 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/nu_Rmubar 
+makeanti /Defaults/Particles/nu_Rmu /Defaults/Particles/nu_Rmubar 
+create /ThePEG/ParticleData /Defaults/Particles/nu_Rtau 
+setup /Defaults/Particles/nu_Rtau 66 nu_Rtau 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/nu_Rtau 
+create /ThePEG/ParticleData /Defaults/Particles/nu_Rtaubar 
+setup /Defaults/Particles/nu_Rtaubar -66 nu_Rtaubar 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/nu_Rtaubar 
+makeanti /Defaults/Particles/nu_Rtau /Defaults/Particles/nu_Rtaubar 
+create /ThePEG/ParticleData /Defaults/Particles/rho_diff0 
+setup /Defaults/Particles/rho_diff0 110 rho_diff0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/rho_diff0 
+create /ThePEG/ParticleData /Defaults/Particles/pi0 
+setup /Defaults/Particles/pi0 111 pi0 0.134980 0.0 0.0 0.000030 0 0 1 0
+defaultparticle /Defaults/Particles/pi0 
+create /ThePEG/ParticleData /Defaults/Particles/rho0 
+setup /Defaults/Particles/rho0 113 rho0 0.76850 0.1510 0.40 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/rho0 
+create /ThePEG/ParticleData /Defaults/Particles/a_20 
+setup /Defaults/Particles/a_20 115 a_20 1.3180 0.1070 0.250 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/a_20 
+create /ThePEG/ParticleData /Defaults/Particles/K_L0 
+setup /Defaults/Particles/K_L0 130 K_L0 0.497670 0.0 0.0 15500.0 0 0 0 1
+defaultparticle /Defaults/Particles/K_L0 
+create /ThePEG/ParticleData /Defaults/Particles/pi_diffr+ 
+setup /Defaults/Particles/pi_diffr+ 210 pi_diffr+ 0.0 0.0 0.0 0.0 3 0 0 1
+defaultparticle /Defaults/Particles/pi_diffr+ 
+create /ThePEG/ParticleData /Defaults/Particles/pi_diffr- 
+setup /Defaults/Particles/pi_diffr- -210 pi_diffr- 0.0 0.0 0.0 0.0 -3 0 0 1
+defaultparticle /Defaults/Particles/pi_diffr- 
+makeanti /Defaults/Particles/pi_diffr+ /Defaults/Particles/pi_diffr- 
+create /ThePEG/ParticleData /Defaults/Particles/pi+ 
+setup /Defaults/Particles/pi+ 211 pi+ 0.139570 0.0 0.0 7804.50 3 0 1 1
+defaultparticle /Defaults/Particles/pi+ 
+create /ThePEG/ParticleData /Defaults/Particles/pi- 
+setup /Defaults/Particles/pi- -211 pi- 0.139570 0.0 0.0 7804.50 -3 0 1 1
+defaultparticle /Defaults/Particles/pi- 
+makeanti /Defaults/Particles/pi+ /Defaults/Particles/pi- 
+create /ThePEG/ParticleData /Defaults/Particles/rho+ 
+setup /Defaults/Particles/rho+ 213 rho+ 0.76690 0.1490 0.40 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/rho+ 
+create /ThePEG/ParticleData /Defaults/Particles/rho- 
+setup /Defaults/Particles/rho- -213 rho- 0.76690 0.1490 0.40 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/rho- 
+makeanti /Defaults/Particles/rho+ /Defaults/Particles/rho- 
+create /ThePEG/ParticleData /Defaults/Particles/a_2+ 
+setup /Defaults/Particles/a_2+ 215 a_2+ 1.3180 0.1070 0.250 0.0 3 0 5 0
+defaultparticle /Defaults/Particles/a_2+ 
+create /ThePEG/ParticleData /Defaults/Particles/a_2- 
+setup /Defaults/Particles/a_2- -215 a_2- 1.3180 0.1070 0.250 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/a_2- 
+makeanti /Defaults/Particles/a_2+ /Defaults/Particles/a_2- 
+create /ThePEG/ParticleData /Defaults/Particles/omega_di 
+setup /Defaults/Particles/omega_di 220 omega_di 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/omega_di 
+create /ThePEG/ParticleData /Defaults/Particles/eta 
+setup /Defaults/Particles/eta 221 eta 0.547450 0.0 0.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/eta 
+create /ThePEG/ParticleData /Defaults/Particles/omega 
+setup /Defaults/Particles/omega 223 omega 0.781940 0.008430 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/omega 
+create /ThePEG/ParticleData /Defaults/Particles/f_2 
+setup /Defaults/Particles/f_2 225 f_2 1.2750 0.1850 0.170 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/f_2 
+create /ThePEG/ParticleData /Defaults/Particles/K_S0 
+setup /Defaults/Particles/K_S0 310 K_S0 0.497670 0.0 0.0 26.7620 0 0 0 0
+defaultparticle /Defaults/Particles/K_S0 
+create /ThePEG/ParticleData /Defaults/Particles/K0 
+setup /Defaults/Particles/K0 311 K0 0.497670 0.0 0.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/K0 
+create /ThePEG/ParticleData /Defaults/Particles/Kbar0 
+setup /Defaults/Particles/Kbar0 -311 Kbar0 0.497670 0.0 0.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/Kbar0 
+makeanti /Defaults/Particles/K0 /Defaults/Particles/Kbar0 
+create /ThePEG/ParticleData /Defaults/Particles/K*0 
+setup /Defaults/Particles/K*0 313 K*0 0.89610 0.05050 0.20 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/K*0 
+create /ThePEG/ParticleData /Defaults/Particles/K*bar0 
+setup /Defaults/Particles/K*bar0 -313 K*bar0 0.89610 0.05050 0.20 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/K*bar0 
+makeanti /Defaults/Particles/K*0 /Defaults/Particles/K*bar0 
+create /ThePEG/ParticleData /Defaults/Particles/K*_20 
+setup /Defaults/Particles/K*_20 315 K*_20 1.4320 0.1090 0.120 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/K*_20 
+create /ThePEG/ParticleData /Defaults/Particles/K*_2bar0 
+setup /Defaults/Particles/K*_2bar0 -315 K*_2bar0 1.4320 0.1090 0.120 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/K*_2bar0 
+makeanti /Defaults/Particles/K*_20 /Defaults/Particles/K*_2bar0 
+create /ThePEG/ParticleData /Defaults/Particles/K+ 
+setup /Defaults/Particles/K+ 321 K+ 0.49360 0.0 0.0 3709.0 3 0 1 1
+defaultparticle /Defaults/Particles/K+ 
+create /ThePEG/ParticleData /Defaults/Particles/K- 
+setup /Defaults/Particles/K- -321 K- 0.49360 0.0 0.0 3709.0 -3 0 1 1
+defaultparticle /Defaults/Particles/K- 
+makeanti /Defaults/Particles/K+ /Defaults/Particles/K- 
+create /ThePEG/ParticleData /Defaults/Particles/K*+ 
+setup /Defaults/Particles/K*+ 323 K*+ 0.89160 0.04980 0.20 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/K*+ 
+create /ThePEG/ParticleData /Defaults/Particles/K*- 
+setup /Defaults/Particles/K*- -323 K*- 0.89160 0.04980 0.20 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/K*- 
+makeanti /Defaults/Particles/K*+ /Defaults/Particles/K*- 
+create /ThePEG/ParticleData /Defaults/Particles/K*_2+ 
+setup /Defaults/Particles/K*_2+ 325 K*_2+ 1.4250 0.0980 0.120 0.0 3 0 5 0
+defaultparticle /Defaults/Particles/K*_2+ 
+create /ThePEG/ParticleData /Defaults/Particles/K*_2- 
+setup /Defaults/Particles/K*_2- -325 K*_2- 1.4250 0.0980 0.120 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/K*_2- 
+makeanti /Defaults/Particles/K*_2+ /Defaults/Particles/K*_2- 
+create /ThePEG/ParticleData /Defaults/Particles/phi_diff 
+setup /Defaults/Particles/phi_diff 330 phi_diff 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/phi_diff 
+create /ThePEG/ParticleData /Defaults/Particles/eta' 
+setup /Defaults/Particles/eta' 331 eta' 0.957770 0.00020 0.0020 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/eta' 
+create /ThePEG/ParticleData /Defaults/Particles/phi 
+setup /Defaults/Particles/phi 333 phi 1.01940 0.004430 0.0150 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/phi 
+create /ThePEG/ParticleData /Defaults/Particles/f'_2 
+setup /Defaults/Particles/f'_2 335 f'_2 1.5250 0.0760 0.20 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/f'_2 
+create /ThePEG/ParticleData /Defaults/Particles/D+ 
+setup /Defaults/Particles/D+ 411 D+ 1.86930 0.0 0.0 0.3170 3 0 1 0
+defaultparticle /Defaults/Particles/D+ 
+create /ThePEG/ParticleData /Defaults/Particles/D- 
+setup /Defaults/Particles/D- -411 D- 1.86930 0.0 0.0 0.3170 -3 0 1 0
+defaultparticle /Defaults/Particles/D- 
+makeanti /Defaults/Particles/D+ /Defaults/Particles/D- 
+create /ThePEG/ParticleData /Defaults/Particles/D*+ 
+setup /Defaults/Particles/D*+ 413 D*+ 2.010 0.0 0.0 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/D*+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*- 
+setup /Defaults/Particles/D*- -413 D*- 2.010 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/D*- 
+makeanti /Defaults/Particles/D*+ /Defaults/Particles/D*- 
+create /ThePEG/ParticleData /Defaults/Particles/D*_2+ 
+setup /Defaults/Particles/D*_2+ 415 D*_2+ 2.460 0.0230 0.120 0.0 3 0 5 0
+defaultparticle /Defaults/Particles/D*_2+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_2- 
+setup /Defaults/Particles/D*_2- -415 D*_2- 2.460 0.0230 0.120 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/D*_2- 
+makeanti /Defaults/Particles/D*_2+ /Defaults/Particles/D*_2- 
+create /ThePEG/ParticleData /Defaults/Particles/D0 
+setup /Defaults/Particles/D0 421 D0 1.86450 0.0 0.0 0.12440 0 0 1 0
+defaultparticle /Defaults/Particles/D0 
+create /ThePEG/ParticleData /Defaults/Particles/Dbar0 
+setup /Defaults/Particles/Dbar0 -421 Dbar0 1.86450 0.0 0.0 0.12440 0 0 1 0
+defaultparticle /Defaults/Particles/Dbar0 
+makeanti /Defaults/Particles/D0 /Defaults/Particles/Dbar0 
+create /ThePEG/ParticleData /Defaults/Particles/D*0 
+setup /Defaults/Particles/D*0 423 D*0 2.00670 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/D*0 
+create /ThePEG/ParticleData /Defaults/Particles/D*bar0 
+setup /Defaults/Particles/D*bar0 -423 D*bar0 2.00670 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/D*bar0 
+makeanti /Defaults/Particles/D*0 /Defaults/Particles/D*bar0 
+create /ThePEG/ParticleData /Defaults/Particles/D*_20 
+setup /Defaults/Particles/D*_20 425 D*_20 2.460 0.0230 0.120 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/D*_20 
+create /ThePEG/ParticleData /Defaults/Particles/D*_2bar0 
+setup /Defaults/Particles/D*_2bar0 -425 D*_2bar0 2.460 0.0230 0.120 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/D*_2bar0 
+makeanti /Defaults/Particles/D*_20 /Defaults/Particles/D*_2bar0 
+create /ThePEG/ParticleData /Defaults/Particles/D_s+ 
+setup /Defaults/Particles/D_s+ 431 D_s+ 1.96850 0.0 0.0 0.140 3 0 1 0
+defaultparticle /Defaults/Particles/D_s+ 
+create /ThePEG/ParticleData /Defaults/Particles/D_s- 
+setup /Defaults/Particles/D_s- -431 D_s- 1.96850 0.0 0.0 0.140 -3 0 1 0
+defaultparticle /Defaults/Particles/D_s- 
+makeanti /Defaults/Particles/D_s+ /Defaults/Particles/D_s- 
+create /ThePEG/ParticleData /Defaults/Particles/D*_s+ 
+setup /Defaults/Particles/D*_s+ 433 D*_s+ 2.11240 0.0 0.0 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/D*_s+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_s- 
+setup /Defaults/Particles/D*_s- -433 D*_s- 2.11240 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/D*_s- 
+makeanti /Defaults/Particles/D*_s+ /Defaults/Particles/D*_s- 
+create /ThePEG/ParticleData /Defaults/Particles/D*_2s+ 
+setup /Defaults/Particles/D*_2s+ 435 D*_2s+ 2.57350 0.0150 0.050 0.0 3 0 5 0
+defaultparticle /Defaults/Particles/D*_2s+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_2s- 
+setup /Defaults/Particles/D*_2s- -435 D*_2s- 2.57350 0.0150 0.050 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/D*_2s- 
+makeanti /Defaults/Particles/D*_2s+ /Defaults/Particles/D*_2s- 
+create /ThePEG/ParticleData /Defaults/Particles/Jpsi_di 
+setup /Defaults/Particles/Jpsi_di 440 Jpsi_di 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/Jpsi_di 
+create /ThePEG/ParticleData /Defaults/Particles/eta_c 
+setup /Defaults/Particles/eta_c 441 eta_c 2.97980 0.00130 0.0050 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/eta_c 
+create /ThePEG/ParticleData /Defaults/Particles/Jpsi 
+setup /Defaults/Particles/Jpsi 443 Jpsi 3.096880 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Jpsi 
+create /ThePEG/ParticleData /Defaults/Particles/chi_2c 
+setup /Defaults/Particles/chi_2c 445 chi_2c 3.55620 0.0020 0.010 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/chi_2c 
+create /ThePEG/ParticleData /Defaults/Particles/B0 
+setup /Defaults/Particles/B0 511 B0 5.27920 0.0 0.0 0.4680 0 0 1 0
+defaultparticle /Defaults/Particles/B0 
+create /ThePEG/ParticleData /Defaults/Particles/Bbar0 
+setup /Defaults/Particles/Bbar0 -511 Bbar0 5.27920 0.0 0.0 0.4680 0 0 1 0
+defaultparticle /Defaults/Particles/Bbar0 
+makeanti /Defaults/Particles/B0 /Defaults/Particles/Bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*0 
+setup /Defaults/Particles/B*0 513 B*0 5.32480 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*0 
+create /ThePEG/ParticleData /Defaults/Particles/B*bar0 
+setup /Defaults/Particles/B*bar0 -513 B*bar0 5.32480 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*bar0 
+makeanti /Defaults/Particles/B*0 /Defaults/Particles/B*bar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_20 
+setup /Defaults/Particles/B*_20 515 B*_20 5.830 0.020 0.050 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/B*_20 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2bar0 
+setup /Defaults/Particles/B*_2bar0 -515 B*_2bar0 5.830 0.020 0.050 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/B*_2bar0 
+makeanti /Defaults/Particles/B*_20 /Defaults/Particles/B*_2bar0 
+create /ThePEG/ParticleData /Defaults/Particles/B+ 
+setup /Defaults/Particles/B+ 521 B+ 5.27890 0.0 0.0 0.4620 3 0 1 0
+defaultparticle /Defaults/Particles/B+ 
+create /ThePEG/ParticleData /Defaults/Particles/B- 
+setup /Defaults/Particles/B- -521 B- 5.27890 0.0 0.0 0.4620 -3 0 1 0
+defaultparticle /Defaults/Particles/B- 
+makeanti /Defaults/Particles/B+ /Defaults/Particles/B- 
+create /ThePEG/ParticleData /Defaults/Particles/B*+ 
+setup /Defaults/Particles/B*+ 523 B*+ 5.32480 0.0 0.0 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/B*+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*- 
+setup /Defaults/Particles/B*- -523 B*- 5.32480 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/B*- 
+makeanti /Defaults/Particles/B*+ /Defaults/Particles/B*- 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2+ 
+setup /Defaults/Particles/B*_2+ 525 B*_2+ 5.830 0.020 0.050 0.0 3 0 5 0
+defaultparticle /Defaults/Particles/B*_2+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2- 
+setup /Defaults/Particles/B*_2- -525 B*_2- 5.830 0.020 0.050 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/B*_2- 
+makeanti /Defaults/Particles/B*_2+ /Defaults/Particles/B*_2- 
+create /ThePEG/ParticleData /Defaults/Particles/B_s0 
+setup /Defaults/Particles/B_s0 531 B_s0 5.36930 0.0 0.0 0.4830 0 0 1 0
+defaultparticle /Defaults/Particles/B_s0 
+create /ThePEG/ParticleData /Defaults/Particles/B_sbar0 
+setup /Defaults/Particles/B_sbar0 -531 B_sbar0 5.36930 0.0 0.0 0.4830 0 0 1 0
+defaultparticle /Defaults/Particles/B_sbar0 
+makeanti /Defaults/Particles/B_s0 /Defaults/Particles/B_sbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_s0 
+setup /Defaults/Particles/B*_s0 533 B*_s0 5.41630 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*_s0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_sbar0 
+setup /Defaults/Particles/B*_sbar0 -533 B*_sbar0 5.41630 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*_sbar0 
+makeanti /Defaults/Particles/B*_s0 /Defaults/Particles/B*_sbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2s0 
+setup /Defaults/Particles/B*_2s0 535 B*_2s0 6.070 0.020 0.050 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/B*_2s0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2sbar0 
+setup /Defaults/Particles/B*_2sbar0 -535 B*_2sbar0 6.070 0.020 0.050 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/B*_2sbar0 
+makeanti /Defaults/Particles/B*_2s0 /Defaults/Particles/B*_2sbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B_c+ 
+setup /Defaults/Particles/B_c+ 541 B_c+ 6.5940 0.0 0.0 0.150 3 0 1 0
+defaultparticle /Defaults/Particles/B_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/B_c- 
+setup /Defaults/Particles/B_c- -541 B_c- 6.5940 0.0 0.0 0.150 -3 0 1 0
+defaultparticle /Defaults/Particles/B_c- 
+makeanti /Defaults/Particles/B_c+ /Defaults/Particles/B_c- 
+create /ThePEG/ParticleData /Defaults/Particles/B*_c+ 
+setup /Defaults/Particles/B*_c+ 543 B*_c+ 6.6020 0.0 0.0 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/B*_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_c- 
+setup /Defaults/Particles/B*_c- -543 B*_c- 6.6020 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/B*_c- 
+makeanti /Defaults/Particles/B*_c+ /Defaults/Particles/B*_c- 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2c+ 
+setup /Defaults/Particles/B*_2c+ 545 B*_2c+ 7.350 0.020 0.050 0.0 3 0 5 0
+defaultparticle /Defaults/Particles/B*_2c+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_2c- 
+setup /Defaults/Particles/B*_2c- -545 B*_2c- 7.350 0.020 0.050 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/B*_2c- 
+makeanti /Defaults/Particles/B*_2c+ /Defaults/Particles/B*_2c- 
+create /ThePEG/ParticleData /Defaults/Particles/eta_b 
+setup /Defaults/Particles/eta_b 551 eta_b 9.40 0.0 0.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/eta_b 
+create /ThePEG/ParticleData /Defaults/Particles/Upsilon 
+setup /Defaults/Particles/Upsilon 553 Upsilon 9.46030 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Upsilon 
+create /ThePEG/ParticleData /Defaults/Particles/chi_2b 
+setup /Defaults/Particles/chi_2b 555 chi_2b 9.91320 0.0 0.0 0.0 0 0 5 0
+defaultparticle /Defaults/Particles/chi_2b 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/dd_1 
+setup /Defaults/Particles/dd_1 1103 dd_1 0.771330 0.0 0.0 0.0 -2 -3 3 1 0.6500 
+defaultparticle /Defaults/Particles/dd_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/dd_1bar 
+setup /Defaults/Particles/dd_1bar -1103 dd_1bar 0.771330 0.0 0.0 0.0 2 3 3 1 0.6500 
+defaultparticle /Defaults/Particles/dd_1bar 
+makeanti /Defaults/Particles/dd_1 /Defaults/Particles/dd_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Delta- 
+setup /Defaults/Particles/Delta- 1114 Delta- 1.2340 0.120 0.140 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Delta- 
+create /ThePEG/ParticleData /Defaults/Particles/Deltabar+ 
+setup /Defaults/Particles/Deltabar+ -1114 Deltabar+ 1.2340 0.120 0.140 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Deltabar+ 
+makeanti /Defaults/Particles/Delta- /Defaults/Particles/Deltabar+ 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_0 
+setup /Defaults/Particles/ud_0 2101 ud_0 0.579330 0.0 0.0 0.0 1 -3 1 1 0.6500 
+defaultparticle /Defaults/Particles/ud_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_0bar 
+setup /Defaults/Particles/ud_0bar -2101 ud_0bar 0.579330 0.0 0.0 0.0 -1 3 1 1 0.6500 
+defaultparticle /Defaults/Particles/ud_0bar 
+makeanti /Defaults/Particles/ud_0 /Defaults/Particles/ud_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_1 
+setup /Defaults/Particles/ud_1 2103 ud_1 0.771330 0.0 0.0 0.0 1 -3 3 1 0.6500 
+defaultparticle /Defaults/Particles/ud_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_1bar 
+setup /Defaults/Particles/ud_1bar -2103 ud_1bar 0.771330 0.0 0.0 0.0 -1 3 3 1 0.6500 
+defaultparticle /Defaults/Particles/ud_1bar 
+makeanti /Defaults/Particles/ud_1 /Defaults/Particles/ud_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/n_diffr0 
+setup /Defaults/Particles/n_diffr0 2110 n_diffr0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/n_diffr0 
+create /ThePEG/ParticleData /Defaults/Particles/n_diffrbar0 
+setup /Defaults/Particles/n_diffrbar0 -2110 n_diffrbar0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle /Defaults/Particles/n_diffrbar0 
+makeanti /Defaults/Particles/n_diffr0 /Defaults/Particles/n_diffrbar0 
+create /ThePEG/BeamParticleData /Defaults/Particles/n0 
+setup /Defaults/Particles/n0 2112 n0 0.939570 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/n0 
+create /ThePEG/BeamParticleData /Defaults/Particles/nbar0 
+setup /Defaults/Particles/nbar0 -2112 nbar0 0.939570 0.0 0.0 0.0 0 0 2 1
+defaultparticle /Defaults/Particles/nbar0 
+makeanti /Defaults/Particles/n0 /Defaults/Particles/nbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Delta0 
+setup /Defaults/Particles/Delta0 2114 Delta0 1.2330 0.120 0.140 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Delta0 
+create /ThePEG/ParticleData /Defaults/Particles/Deltabar0 
+setup /Defaults/Particles/Deltabar0 -2114 Deltabar0 1.2330 0.120 0.140 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Deltabar0 
+makeanti /Defaults/Particles/Delta0 /Defaults/Particles/Deltabar0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/uu_1 
+setup /Defaults/Particles/uu_1 2203 uu_1 0.771330 0.0 0.0 0.0 4 -3 3 1 0.6500 
+defaultparticle /Defaults/Particles/uu_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/uu_1bar 
+setup /Defaults/Particles/uu_1bar -2203 uu_1bar 0.771330 0.0 0.0 0.0 -4 3 3 1 0.6500 
+defaultparticle /Defaults/Particles/uu_1bar 
+makeanti /Defaults/Particles/uu_1 /Defaults/Particles/uu_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/p_diffr+ 
+setup /Defaults/Particles/p_diffr+ 2210 p_diffr+ 0.0 0.0 0.0 0.0 3 0 0 1
+defaultparticle /Defaults/Particles/p_diffr+ 
+create /ThePEG/ParticleData /Defaults/Particles/p_diffrbar- 
+setup /Defaults/Particles/p_diffrbar- -2210 p_diffrbar- 0.0 0.0 0.0 0.0 -3 0 0 1
+defaultparticle /Defaults/Particles/p_diffrbar- 
+makeanti /Defaults/Particles/p_diffr+ /Defaults/Particles/p_diffrbar- 
+create /ThePEG/BeamParticleData /Defaults/Particles/p+ 
+setup /Defaults/Particles/p+ 2212 p+ 0.938270 0.0 0.0 0.0 3 0 2 1
+defaultparticle /Defaults/Particles/p+ 
+create /ThePEG/BeamParticleData /Defaults/Particles/pbar- 
+setup /Defaults/Particles/pbar- -2212 pbar- 0.938270 0.0 0.0 0.0 -3 0 2 1
+defaultparticle /Defaults/Particles/pbar- 
+makeanti /Defaults/Particles/p+ /Defaults/Particles/pbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Delta+ 
+setup /Defaults/Particles/Delta+ 2214 Delta+ 1.2320 0.120 0.140 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Delta+ 
+create /ThePEG/ParticleData /Defaults/Particles/Deltabar- 
+setup /Defaults/Particles/Deltabar- -2214 Deltabar- 1.2320 0.120 0.140 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Deltabar- 
+makeanti /Defaults/Particles/Delta+ /Defaults/Particles/Deltabar- 
+create /ThePEG/ParticleData /Defaults/Particles/Delta++ 
+setup /Defaults/Particles/Delta++ 2224 Delta++ 1.2310 0.120 0.140 0.0 6 0 4 0
+defaultparticle /Defaults/Particles/Delta++ 
+create /ThePEG/ParticleData /Defaults/Particles/Deltabar-- 
+setup /Defaults/Particles/Deltabar-- -2224 Deltabar-- 1.2310 0.120 0.140 0.0 -6 0 4 0
+defaultparticle /Defaults/Particles/Deltabar-- 
+makeanti /Defaults/Particles/Delta++ /Defaults/Particles/Deltabar-- 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_0 
+setup /Defaults/Particles/sd_0 3101 sd_0 0.804730 0.0 0.0 0.0 -2 -3 1 1 0.8250 
+defaultparticle /Defaults/Particles/sd_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_0bar 
+setup /Defaults/Particles/sd_0bar -3101 sd_0bar 0.804730 0.0 0.0 0.0 2 3 1 1 0.8250 
+defaultparticle /Defaults/Particles/sd_0bar 
+makeanti /Defaults/Particles/sd_0 /Defaults/Particles/sd_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_1 
+setup /Defaults/Particles/sd_1 3103 sd_1 0.929530 0.0 0.0 0.0 -2 -3 3 1 0.8250 
+defaultparticle /Defaults/Particles/sd_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_1bar 
+setup /Defaults/Particles/sd_1bar -3103 sd_1bar 0.929530 0.0 0.0 0.0 2 3 3 1 0.8250 
+defaultparticle /Defaults/Particles/sd_1bar 
+makeanti /Defaults/Particles/sd_1 /Defaults/Particles/sd_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma- 
+setup /Defaults/Particles/Sigma- 3112 Sigma- 1.197440 0.0 0.0 44.340 -3 0 2 0
+defaultparticle /Defaults/Particles/Sigma- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigmabar+ 
+setup /Defaults/Particles/Sigmabar+ -3112 Sigmabar+ 1.197440 0.0 0.0 44.340 3 0 2 0
+defaultparticle /Defaults/Particles/Sigmabar+ 
+makeanti /Defaults/Particles/Sigma- /Defaults/Particles/Sigmabar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*- 
+setup /Defaults/Particles/Sigma*- 3114 Sigma*- 1.38720 0.03940 0.040 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*bar+ 
+setup /Defaults/Particles/Sigma*bar+ -3114 Sigma*bar+ 1.38720 0.03940 0.040 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*bar+ 
+makeanti /Defaults/Particles/Sigma*- /Defaults/Particles/Sigma*bar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Lambda0 
+setup /Defaults/Particles/Lambda0 3122 Lambda0 1.115680 0.0 0.0 78.880 0 0 2 0
+defaultparticle /Defaults/Particles/Lambda0 
+create /ThePEG/ParticleData /Defaults/Particles/Lambdabar0 
+setup /Defaults/Particles/Lambdabar0 -3122 Lambdabar0 1.115680 0.0 0.0 78.880 0 0 2 0
+defaultparticle /Defaults/Particles/Lambdabar0 
+makeanti /Defaults/Particles/Lambda0 /Defaults/Particles/Lambdabar0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/su_0 
+setup /Defaults/Particles/su_0 3201 su_0 0.804730 0.0 0.0 0.0 1 -3 1 1 0.8250 
+defaultparticle /Defaults/Particles/su_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/su_0bar 
+setup /Defaults/Particles/su_0bar -3201 su_0bar 0.804730 0.0 0.0 0.0 -1 3 1 1 0.8250 
+defaultparticle /Defaults/Particles/su_0bar 
+makeanti /Defaults/Particles/su_0 /Defaults/Particles/su_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/su_1 
+setup /Defaults/Particles/su_1 3203 su_1 0.929530 0.0 0.0 0.0 1 -3 3 1 0.8250 
+defaultparticle /Defaults/Particles/su_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/su_1bar 
+setup /Defaults/Particles/su_1bar -3203 su_1bar 0.929530 0.0 0.0 0.0 -1 3 3 1 0.8250 
+defaultparticle /Defaults/Particles/su_1bar 
+makeanti /Defaults/Particles/su_1 /Defaults/Particles/su_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma0 
+setup /Defaults/Particles/Sigma0 3212 Sigma0 1.192550 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Sigma0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigmabar0 
+setup /Defaults/Particles/Sigmabar0 -3212 Sigmabar0 1.192550 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Sigmabar0 
+makeanti /Defaults/Particles/Sigma0 /Defaults/Particles/Sigmabar0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*0 
+setup /Defaults/Particles/Sigma*0 3214 Sigma*0 1.38370 0.0360 0.0350 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Sigma*0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*bar0 
+setup /Defaults/Particles/Sigma*bar0 -3214 Sigma*bar0 1.38370 0.0360 0.0350 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Sigma*bar0 
+makeanti /Defaults/Particles/Sigma*0 /Defaults/Particles/Sigma*bar0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma+ 
+setup /Defaults/Particles/Sigma+ 3222 Sigma+ 1.189370 0.0 0.0 23.960 3 0 2 0
+defaultparticle /Defaults/Particles/Sigma+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigmabar- 
+setup /Defaults/Particles/Sigmabar- -3222 Sigmabar- 1.189370 0.0 0.0 23.960 -3 0 2 0
+defaultparticle /Defaults/Particles/Sigmabar- 
+makeanti /Defaults/Particles/Sigma+ /Defaults/Particles/Sigmabar- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*+ 
+setup /Defaults/Particles/Sigma*+ 3224 Sigma*+ 1.38280 0.03580 0.0350 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*bar- 
+setup /Defaults/Particles/Sigma*bar- -3224 Sigma*bar- 1.38280 0.03580 0.0350 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*bar- 
+makeanti /Defaults/Particles/Sigma*+ /Defaults/Particles/Sigma*bar- 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ss_1 
+setup /Defaults/Particles/ss_1 3303 ss_1 1.093610 0.0 0.0 0.0 -2 -3 3 1 1.0 
+defaultparticle /Defaults/Particles/ss_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/ss_1bar 
+setup /Defaults/Particles/ss_1bar -3303 ss_1bar 1.093610 0.0 0.0 0.0 2 3 3 1 1.0 
+defaultparticle /Defaults/Particles/ss_1bar 
+makeanti /Defaults/Particles/ss_1 /Defaults/Particles/ss_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Xi- 
+setup /Defaults/Particles/Xi- 3312 Xi- 1.32130 0.0 0.0 49.10 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi- 
+create /ThePEG/ParticleData /Defaults/Particles/Xibar+ 
+setup /Defaults/Particles/Xibar+ -3312 Xibar+ 1.32130 0.0 0.0 49.10 3 0 2 0
+defaultparticle /Defaults/Particles/Xibar+ 
+makeanti /Defaults/Particles/Xi- /Defaults/Particles/Xibar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*- 
+setup /Defaults/Particles/Xi*- 3314 Xi*- 1.5350 0.00990 0.050 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Xi*- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*bar+ 
+setup /Defaults/Particles/Xi*bar+ -3314 Xi*bar+ 1.5350 0.00990 0.050 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Xi*bar+ 
+makeanti /Defaults/Particles/Xi*- /Defaults/Particles/Xi*bar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi0 
+setup /Defaults/Particles/Xi0 3322 Xi0 1.31490 0.0 0.0 87.10 0 0 2 0
+defaultparticle /Defaults/Particles/Xi0 
+create /ThePEG/ParticleData /Defaults/Particles/Xibar0 
+setup /Defaults/Particles/Xibar0 -3322 Xibar0 1.31490 0.0 0.0 87.10 0 0 2 0
+defaultparticle /Defaults/Particles/Xibar0 
+makeanti /Defaults/Particles/Xi0 /Defaults/Particles/Xibar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*0 
+setup /Defaults/Particles/Xi*0 3324 Xi*0 1.53180 0.00910 0.050 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*bar0 
+setup /Defaults/Particles/Xi*bar0 -3324 Xi*bar0 1.53180 0.00910 0.050 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*bar0 
+makeanti /Defaults/Particles/Xi*0 /Defaults/Particles/Xi*bar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega- 
+setup /Defaults/Particles/Omega- 3334 Omega- 1.672450 0.0 0.0 24.60 -3 0 4 0
+defaultparticle /Defaults/Particles/Omega- 
+create /ThePEG/ParticleData /Defaults/Particles/Omegabar+ 
+setup /Defaults/Particles/Omegabar+ -3334 Omegabar+ 1.672450 0.0 0.0 24.60 3 0 4 0
+defaultparticle /Defaults/Particles/Omegabar+ 
+makeanti /Defaults/Particles/Omega- /Defaults/Particles/Omegabar+ 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_0 
+setup /Defaults/Particles/cd_0 4101 cd_0 1.969080 0.0 0.0 0.0 1 -3 1 1 1.925 
+defaultparticle /Defaults/Particles/cd_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_0bar 
+setup /Defaults/Particles/cd_0bar -4101 cd_0bar 1.969080 0.0 0.0 0.0 -1 3 1 1 1.925 
+defaultparticle /Defaults/Particles/cd_0bar 
+makeanti /Defaults/Particles/cd_0 /Defaults/Particles/cd_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_1 
+setup /Defaults/Particles/cd_1 4103 cd_1 2.008080 0.0 0.0 0.0 1 -3 3 1 1.925 
+defaultparticle /Defaults/Particles/cd_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_1bar 
+setup /Defaults/Particles/cd_1bar -4103 cd_1bar 2.008080 0.0 0.0 0.0 -1 3 3 1 1.925 
+defaultparticle /Defaults/Particles/cd_1bar 
+makeanti /Defaults/Particles/cd_1 /Defaults/Particles/cd_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_c0 
+setup /Defaults/Particles/Sigma_c0 4112 Sigma_c0 2.45210 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Sigma_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_cbar0 
+setup /Defaults/Particles/Sigma_cbar0 -4112 Sigma_cbar0 2.45210 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Sigma_cbar0 
+makeanti /Defaults/Particles/Sigma_c0 /Defaults/Particles/Sigma_cbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_c0 
+setup /Defaults/Particles/Sigma*_c0 4114 Sigma*_c0 2.50 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_cbar0 
+setup /Defaults/Particles/Sigma*_cbar0 -4114 Sigma*_cbar0 2.50 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_cbar0 
+makeanti /Defaults/Particles/Sigma*_c0 /Defaults/Particles/Sigma*_cbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Lambda_c+ 
+setup /Defaults/Particles/Lambda_c+ 4122 Lambda_c+ 2.28490 0.0 0.0 0.06180 3 0 2 0
+defaultparticle /Defaults/Particles/Lambda_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/Lambda_cbar- 
+setup /Defaults/Particles/Lambda_cbar- -4122 Lambda_cbar- 2.28490 0.0 0.0 0.06180 -3 0 2 0
+defaultparticle /Defaults/Particles/Lambda_cbar- 
+makeanti /Defaults/Particles/Lambda_c+ /Defaults/Particles/Lambda_cbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_c0 
+setup /Defaults/Particles/Xi_c0 4132 Xi_c0 2.47030 0.0 0.0 0.0290 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_cbar0 
+setup /Defaults/Particles/Xi_cbar0 -4132 Xi_cbar0 2.47030 0.0 0.0 0.0290 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_cbar0 
+makeanti /Defaults/Particles/Xi_c0 /Defaults/Particles/Xi_cbar0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_0 
+setup /Defaults/Particles/cu_0 4201 cu_0 1.969080 0.0 0.0 0.0 4 -3 1 1 1.925 
+defaultparticle /Defaults/Particles/cu_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_0bar 
+setup /Defaults/Particles/cu_0bar -4201 cu_0bar 1.969080 0.0 0.0 0.0 -4 3 1 1 1.925 
+defaultparticle /Defaults/Particles/cu_0bar 
+makeanti /Defaults/Particles/cu_0 /Defaults/Particles/cu_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_1 
+setup /Defaults/Particles/cu_1 4203 cu_1 2.008080 0.0 0.0 0.0 4 -3 3 1 1.925 
+defaultparticle /Defaults/Particles/cu_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_1bar 
+setup /Defaults/Particles/cu_1bar -4203 cu_1bar 2.008080 0.0 0.0 0.0 -4 3 3 1 1.925 
+defaultparticle /Defaults/Particles/cu_1bar 
+makeanti /Defaults/Particles/cu_1 /Defaults/Particles/cu_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_c+ 
+setup /Defaults/Particles/Sigma_c+ 4212 Sigma_c+ 2.45350 0.0 0.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/Sigma_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_cbar- 
+setup /Defaults/Particles/Sigma_cbar- -4212 Sigma_cbar- 2.45350 0.0 0.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/Sigma_cbar- 
+makeanti /Defaults/Particles/Sigma_c+ /Defaults/Particles/Sigma_cbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_c+ 
+setup /Defaults/Particles/Sigma*_c+ 4214 Sigma*_c+ 2.50 0.0 0.0 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_cbar- 
+setup /Defaults/Particles/Sigma*_cbar- -4214 Sigma*_cbar- 2.50 0.0 0.0 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_cbar- 
+makeanti /Defaults/Particles/Sigma*_c+ /Defaults/Particles/Sigma*_cbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_c++ 
+setup /Defaults/Particles/Sigma_c++ 4222 Sigma_c++ 2.45290 0.0 0.0 0.0 6 0 2 0
+defaultparticle /Defaults/Particles/Sigma_c++ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_cbar-- 
+setup /Defaults/Particles/Sigma_cbar-- -4222 Sigma_cbar-- 2.45290 0.0 0.0 0.0 -6 0 2 0
+defaultparticle /Defaults/Particles/Sigma_cbar-- 
+makeanti /Defaults/Particles/Sigma_c++ /Defaults/Particles/Sigma_cbar-- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_c++ 
+setup /Defaults/Particles/Sigma*_c++ 4224 Sigma*_c++ 2.50 0.0 0.0 0.0 6 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_c++ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_cbar-- 
+setup /Defaults/Particles/Sigma*_cbar-- -4224 Sigma*_cbar-- 2.50 0.0 0.0 0.0 -6 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_cbar-- 
+makeanti /Defaults/Particles/Sigma*_c++ /Defaults/Particles/Sigma*_cbar-- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_c+ 
+setup /Defaults/Particles/Xi_c+ 4232 Xi_c+ 2.46560 0.0 0.0 0.1060 3 0 2 0
+defaultparticle /Defaults/Particles/Xi_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_cbar- 
+setup /Defaults/Particles/Xi_cbar- -4232 Xi_cbar- 2.46560 0.0 0.0 0.1060 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi_cbar- 
+makeanti /Defaults/Particles/Xi_c+ /Defaults/Particles/Xi_cbar- 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_0 
+setup /Defaults/Particles/cs_0 4301 cs_0 2.154320 0.0 0.0 0.0 1 -3 1 1 2.100 
+defaultparticle /Defaults/Particles/cs_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_0bar 
+setup /Defaults/Particles/cs_0bar -4301 cs_0bar 2.154320 0.0 0.0 0.0 -1 3 1 1 2.100 
+defaultparticle /Defaults/Particles/cs_0bar 
+makeanti /Defaults/Particles/cs_0 /Defaults/Particles/cs_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_1 
+setup /Defaults/Particles/cs_1 4303 cs_1 2.179670 0.0 0.0 0.0 1 -3 3 1 2.100 
+defaultparticle /Defaults/Particles/cs_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_1bar 
+setup /Defaults/Particles/cs_1bar -4303 cs_1bar 2.179670 0.0 0.0 0.0 -1 3 3 1 2.100 
+defaultparticle /Defaults/Particles/cs_1bar 
+makeanti /Defaults/Particles/cs_1 /Defaults/Particles/cs_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_c0 
+setup /Defaults/Particles/Xi'_c0 4312 Xi'_c0 2.550 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Xi'_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_cbar0 
+setup /Defaults/Particles/Xi'_cbar0 -4312 Xi'_cbar0 2.550 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Xi'_cbar0 
+makeanti /Defaults/Particles/Xi'_c0 /Defaults/Particles/Xi'_cbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_c0 
+setup /Defaults/Particles/Xi*_c0 4314 Xi*_c0 2.630 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_cbar0 
+setup /Defaults/Particles/Xi*_cbar0 -4314 Xi*_cbar0 2.630 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_cbar0 
+makeanti /Defaults/Particles/Xi*_c0 /Defaults/Particles/Xi*_cbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_c+ 
+setup /Defaults/Particles/Xi'_c+ 4322 Xi'_c+ 2.550 0.0 0.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/Xi'_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_cbar- 
+setup /Defaults/Particles/Xi'_cbar- -4322 Xi'_cbar- 2.550 0.0 0.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi'_cbar- 
+makeanti /Defaults/Particles/Xi'_c+ /Defaults/Particles/Xi'_cbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_c+ 
+setup /Defaults/Particles/Xi*_c+ 4324 Xi*_c+ 2.630 0.0 0.0 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_c+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_cbar- 
+setup /Defaults/Particles/Xi*_cbar- -4324 Xi*_cbar- 2.630 0.0 0.0 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_cbar- 
+makeanti /Defaults/Particles/Xi*_c+ /Defaults/Particles/Xi*_cbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_c0 
+setup /Defaults/Particles/Omega_c0 4332 Omega_c0 2.7040 0.0 0.0 0.0190 0 0 2 0
+defaultparticle /Defaults/Particles/Omega_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_cbar0 
+setup /Defaults/Particles/Omega_cbar0 -4332 Omega_cbar0 2.7040 0.0 0.0 0.0190 0 0 2 0
+defaultparticle /Defaults/Particles/Omega_cbar0 
+makeanti /Defaults/Particles/Omega_c0 /Defaults/Particles/Omega_cbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_c0 
+setup /Defaults/Particles/Omega*_c0 4334 Omega*_c0 2.80 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Omega*_c0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_cbar0 
+setup /Defaults/Particles/Omega*_cbar0 -4334 Omega*_cbar0 2.80 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Omega*_cbar0 
+makeanti /Defaults/Particles/Omega*_c0 /Defaults/Particles/Omega*_cbar0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cc_1 
+setup /Defaults/Particles/cc_1 4403 cc_1 3.275310 0.0 0.0 0.0 4 -3 3 1 3.200 
+defaultparticle /Defaults/Particles/cc_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/cc_1bar 
+setup /Defaults/Particles/cc_1bar -4403 cc_1bar 3.275310 0.0 0.0 0.0 -4 3 3 1 3.200 
+defaultparticle /Defaults/Particles/cc_1bar 
+makeanti /Defaults/Particles/cc_1 /Defaults/Particles/cc_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_cc+ 
+setup /Defaults/Particles/Xi_cc+ 4412 Xi_cc+ 3.597980 0.0 0.0 0.10 3 0 2 0
+defaultparticle /Defaults/Particles/Xi_cc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_ccbar- 
+setup /Defaults/Particles/Xi_ccbar- -4412 Xi_ccbar- 3.597980 0.0 0.0 0.10 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi_ccbar- 
+makeanti /Defaults/Particles/Xi_cc+ /Defaults/Particles/Xi_ccbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_cc+ 
+setup /Defaults/Particles/Xi*_cc+ 4414 Xi*_cc+ 3.656480 0.0 0.0 0.10 3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_cc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_ccbar- 
+setup /Defaults/Particles/Xi*_ccbar- -4414 Xi*_ccbar- 3.656480 0.0 0.0 0.10 -3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_ccbar- 
+makeanti /Defaults/Particles/Xi*_cc+ /Defaults/Particles/Xi*_ccbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_cc++ 
+setup /Defaults/Particles/Xi_cc++ 4422 Xi_cc++ 3.597980 0.0 0.0 0.10 6 0 2 0
+defaultparticle /Defaults/Particles/Xi_cc++ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_ccbar-- 
+setup /Defaults/Particles/Xi_ccbar-- -4422 Xi_ccbar-- 3.597980 0.0 0.0 0.10 -6 0 2 0
+defaultparticle /Defaults/Particles/Xi_ccbar-- 
+makeanti /Defaults/Particles/Xi_cc++ /Defaults/Particles/Xi_ccbar-- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_cc++ 
+setup /Defaults/Particles/Xi*_cc++ 4424 Xi*_cc++ 3.656480 0.0 0.0 0.10 6 0 4 0
+defaultparticle /Defaults/Particles/Xi*_cc++ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_ccbar-- 
+setup /Defaults/Particles/Xi*_ccbar-- -4424 Xi*_ccbar-- 3.656480 0.0 0.0 0.10 -6 0 4 0
+defaultparticle /Defaults/Particles/Xi*_ccbar-- 
+makeanti /Defaults/Particles/Xi*_cc++ /Defaults/Particles/Xi*_ccbar-- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_cc+ 
+setup /Defaults/Particles/Omega_cc+ 4432 Omega_cc+ 3.786630 0.0 0.0 0.10 3 0 2 0
+defaultparticle /Defaults/Particles/Omega_cc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_ccbar- 
+setup /Defaults/Particles/Omega_ccbar- -4432 Omega_ccbar- 3.786630 0.0 0.0 0.10 -3 0 2 0
+defaultparticle /Defaults/Particles/Omega_ccbar- 
+makeanti /Defaults/Particles/Omega_cc+ /Defaults/Particles/Omega_ccbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_cc+ 
+setup /Defaults/Particles/Omega*_cc+ 4434 Omega*_cc+ 3.824660 0.0 0.0 0.10 3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_cc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_ccbar- 
+setup /Defaults/Particles/Omega*_ccbar- -4434 Omega*_ccbar- 3.824660 0.0 0.0 0.10 -3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_ccbar- 
+makeanti /Defaults/Particles/Omega*_cc+ /Defaults/Particles/Omega*_ccbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_ccc++ 
+setup /Defaults/Particles/Omega*_ccc++ 4444 Omega*_ccc++ 4.915940 0.0 0.0 0.10 6 0 4 0
+defaultparticle /Defaults/Particles/Omega*_ccc++ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_cccbar- 
+setup /Defaults/Particles/Omega*_cccbar- -4444 Omega*_cccbar- 4.915940 0.0 0.0 0.10 -6 0 4 0
+defaultparticle /Defaults/Particles/Omega*_cccbar- 
+makeanti /Defaults/Particles/Omega*_ccc++ /Defaults/Particles/Omega*_cccbar- 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_0 
+setup /Defaults/Particles/bd_0 5101 bd_0 5.388970 0.0 0.0 0.0 -2 -3 1 1 5.325 
+defaultparticle /Defaults/Particles/bd_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_0bar 
+setup /Defaults/Particles/bd_0bar -5101 bd_0bar 5.388970 0.0 0.0 0.0 2 3 1 1 5.325 
+defaultparticle /Defaults/Particles/bd_0bar 
+makeanti /Defaults/Particles/bd_0 /Defaults/Particles/bd_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_1 
+setup /Defaults/Particles/bd_1 5103 bd_1 5.401450 0.0 0.0 0.0 -2 -3 3 1 5.325 
+defaultparticle /Defaults/Particles/bd_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_1bar 
+setup /Defaults/Particles/bd_1bar -5103 bd_1bar 5.401450 0.0 0.0 0.0 2 3 3 1 5.325 
+defaultparticle /Defaults/Particles/bd_1bar 
+makeanti /Defaults/Particles/bd_1 /Defaults/Particles/bd_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_b- 
+setup /Defaults/Particles/Sigma_b- 5112 Sigma_b- 5.80 0.0 0.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/Sigma_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_bbar+ 
+setup /Defaults/Particles/Sigma_bbar+ -5112 Sigma_bbar+ 5.80 0.0 0.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/Sigma_bbar+ 
+makeanti /Defaults/Particles/Sigma_b- /Defaults/Particles/Sigma_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_b- 
+setup /Defaults/Particles/Sigma*_b- 5114 Sigma*_b- 5.810 0.0 0.0 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_bbar+ 
+setup /Defaults/Particles/Sigma*_bbar+ -5114 Sigma*_bbar+ 5.810 0.0 0.0 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_bbar+ 
+makeanti /Defaults/Particles/Sigma*_b- /Defaults/Particles/Sigma*_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Lambda_b0 
+setup /Defaults/Particles/Lambda_b0 5122 Lambda_b0 5.6410 0.0 0.0 0.3420 0 0 2 0
+defaultparticle /Defaults/Particles/Lambda_b0 
+create /ThePEG/ParticleData /Defaults/Particles/Lambda_bbar0 
+setup /Defaults/Particles/Lambda_bbar0 -5122 Lambda_bbar0 5.6410 0.0 0.0 0.3420 0 0 2 0
+defaultparticle /Defaults/Particles/Lambda_bbar0 
+makeanti /Defaults/Particles/Lambda_b0 /Defaults/Particles/Lambda_bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_b- 
+setup /Defaults/Particles/Xi_b- 5132 Xi_b- 5.840 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bbar+ 
+setup /Defaults/Particles/Xi_bbar+ -5132 Xi_bbar+ 5.840 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Xi_bbar+ 
+makeanti /Defaults/Particles/Xi_b- /Defaults/Particles/Xi_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bc0 
+setup /Defaults/Particles/Xi_bc0 5142 Xi_bc0 7.005750 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_bc0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bcbar0 
+setup /Defaults/Particles/Xi_bcbar0 -5142 Xi_bcbar0 7.005750 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_bcbar0 
+makeanti /Defaults/Particles/Xi_bc0 /Defaults/Particles/Xi_bcbar0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_0 
+setup /Defaults/Particles/bu_0 5201 bu_0 5.388970 0.0 0.0 0.0 1 -3 1 1 5.325 
+defaultparticle /Defaults/Particles/bu_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_0bar 
+setup /Defaults/Particles/bu_0bar -5201 bu_0bar 5.388970 0.0 0.0 0.0 -1 3 1 1 5.325 
+defaultparticle /Defaults/Particles/bu_0bar 
+makeanti /Defaults/Particles/bu_0 /Defaults/Particles/bu_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_1 
+setup /Defaults/Particles/bu_1 5203 bu_1 5.401450 0.0 0.0 0.0 1 -3 3 1 5.325 
+defaultparticle /Defaults/Particles/bu_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_1bar 
+setup /Defaults/Particles/bu_1bar -5203 bu_1bar 5.401450 0.0 0.0 0.0 -1 3 3 1 5.325 
+defaultparticle /Defaults/Particles/bu_1bar 
+makeanti /Defaults/Particles/bu_1 /Defaults/Particles/bu_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_b0 
+setup /Defaults/Particles/Sigma_b0 5212 Sigma_b0 5.80 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Sigma_b0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_bbar0 
+setup /Defaults/Particles/Sigma_bbar0 -5212 Sigma_bbar0 5.80 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Sigma_bbar0 
+makeanti /Defaults/Particles/Sigma_b0 /Defaults/Particles/Sigma_bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_b0 
+setup /Defaults/Particles/Sigma*_b0 5214 Sigma*_b0 5.810 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_b0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_bbar0 
+setup /Defaults/Particles/Sigma*_bbar0 -5214 Sigma*_bbar0 5.810 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_bbar0 
+makeanti /Defaults/Particles/Sigma*_b0 /Defaults/Particles/Sigma*_bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_b+ 
+setup /Defaults/Particles/Sigma_b+ 5222 Sigma_b+ 5.80 0.0 0.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/Sigma_b+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma_bbar- 
+setup /Defaults/Particles/Sigma_bbar- -5222 Sigma_bbar- 5.80 0.0 0.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/Sigma_bbar- 
+makeanti /Defaults/Particles/Sigma_b+ /Defaults/Particles/Sigma_bbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_b+ 
+setup /Defaults/Particles/Sigma*_b+ 5224 Sigma*_b+ 5.810 0.0 0.0 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_b+ 
+create /ThePEG/ParticleData /Defaults/Particles/Sigma*_bbar- 
+setup /Defaults/Particles/Sigma*_bbar- -5224 Sigma*_bbar- 5.810 0.0 0.0 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Sigma*_bbar- 
+makeanti /Defaults/Particles/Sigma*_b+ /Defaults/Particles/Sigma*_bbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_b0 
+setup /Defaults/Particles/Xi_b0 5232 Xi_b0 5.840 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_b0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bbar0 
+setup /Defaults/Particles/Xi_bbar0 -5232 Xi_bbar0 5.840 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_bbar0 
+makeanti /Defaults/Particles/Xi_b0 /Defaults/Particles/Xi_bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bc+ 
+setup /Defaults/Particles/Xi_bc+ 5242 Xi_bc+ 7.005750 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Xi_bc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bcbar- 
+setup /Defaults/Particles/Xi_bcbar- -5242 Xi_bcbar- 7.005750 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi_bcbar- 
+makeanti /Defaults/Particles/Xi_bc+ /Defaults/Particles/Xi_bcbar- 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_0 
+setup /Defaults/Particles/bs_0 5301 bs_0 5.567250 0.0 0.0 0.0 -2 -3 1 1 5.500 
+defaultparticle /Defaults/Particles/bs_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_0bar 
+setup /Defaults/Particles/bs_0bar -5301 bs_0bar 5.567250 0.0 0.0 0.0 2 3 1 1 5.500 
+defaultparticle /Defaults/Particles/bs_0bar 
+makeanti /Defaults/Particles/bs_0 /Defaults/Particles/bs_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_1 
+setup /Defaults/Particles/bs_1 5303 bs_1 5.575360 0.0 0.0 0.0 -2 -3 3 1 5.500 
+defaultparticle /Defaults/Particles/bs_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_1bar 
+setup /Defaults/Particles/bs_1bar -5303 bs_1bar 5.575360 0.0 0.0 0.0 2 3 3 1 5.500 
+defaultparticle /Defaults/Particles/bs_1bar 
+makeanti /Defaults/Particles/bs_1 /Defaults/Particles/bs_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_b- 
+setup /Defaults/Particles/Xi'_b- 5312 Xi'_b- 5.960 0.0 0.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi'_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_bbar+ 
+setup /Defaults/Particles/Xi'_bbar+ -5312 Xi'_bbar+ 5.960 0.0 0.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/Xi'_bbar+ 
+makeanti /Defaults/Particles/Xi'_b- /Defaults/Particles/Xi'_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_b- 
+setup /Defaults/Particles/Xi*_b- 5314 Xi*_b- 5.970 0.0 0.0 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bbar+ 
+setup /Defaults/Particles/Xi*_bbar+ -5314 Xi*_bbar+ 5.970 0.0 0.0 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bbar+ 
+makeanti /Defaults/Particles/Xi*_b- /Defaults/Particles/Xi*_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_b0 
+setup /Defaults/Particles/Xi'_b0 5322 Xi'_b0 5.960 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Xi'_b0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_bbar0 
+setup /Defaults/Particles/Xi'_bbar0 -5322 Xi'_bbar0 5.960 0.0 0.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/Xi'_bbar0 
+makeanti /Defaults/Particles/Xi'_b0 /Defaults/Particles/Xi'_bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_b0 
+setup /Defaults/Particles/Xi*_b0 5324 Xi*_b0 5.970 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_b0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bbar0 
+setup /Defaults/Particles/Xi*_bbar0 -5324 Xi*_bbar0 5.970 0.0 0.0 0.0 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bbar0 
+makeanti /Defaults/Particles/Xi*_b0 /Defaults/Particles/Xi*_bbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_b- 
+setup /Defaults/Particles/Omega_b- 5332 Omega_b- 6.120 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Omega_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bbar+ 
+setup /Defaults/Particles/Omega_bbar+ -5332 Omega_bbar+ 6.120 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Omega_bbar+ 
+makeanti /Defaults/Particles/Omega_b- /Defaults/Particles/Omega_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_b- 
+setup /Defaults/Particles/Omega*_b- 5334 Omega*_b- 6.130 0.0 0.0 0.0 -3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_b- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bbar+ 
+setup /Defaults/Particles/Omega*_bbar+ -5334 Omega*_bbar+ 6.130 0.0 0.0 0.0 3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bbar+ 
+makeanti /Defaults/Particles/Omega*_b- /Defaults/Particles/Omega*_bbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bc0 
+setup /Defaults/Particles/Omega_bc0 5342 Omega_bc0 7.190990 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Omega_bc0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bcbar0 
+setup /Defaults/Particles/Omega_bcbar0 -5342 Omega_bcbar0 7.190990 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Omega_bcbar0 
+makeanti /Defaults/Particles/Omega_bc0 /Defaults/Particles/Omega_bcbar0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_0 
+setup /Defaults/Particles/bc_0 5401 bc_0 6.671430 0.0 0.0 0.0 1 -3 1 1 6.600 
+defaultparticle /Defaults/Particles/bc_0 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_0bar 
+setup /Defaults/Particles/bc_0bar -5401 bc_0bar 6.671430 0.0 0.0 0.0 -1 3 1 1 6.600 
+defaultparticle /Defaults/Particles/bc_0bar 
+makeanti /Defaults/Particles/bc_0 /Defaults/Particles/bc_0bar 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_1 
+setup /Defaults/Particles/bc_1 5403 bc_1 6.673970 0.0 0.0 0.0 1 -3 3 1 6.600 
+defaultparticle /Defaults/Particles/bc_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_1bar 
+setup /Defaults/Particles/bc_1bar -5403 bc_1bar 6.673970 0.0 0.0 0.0 -1 3 3 1 6.600 
+defaultparticle /Defaults/Particles/bc_1bar 
+makeanti /Defaults/Particles/bc_1 /Defaults/Particles/bc_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_bc0 
+setup /Defaults/Particles/Xi'_bc0 5412 Xi'_bc0 7.037240 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi'_bc0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_bcbar0 
+setup /Defaults/Particles/Xi'_bcbar0 -5412 Xi'_bcbar0 7.037240 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi'_bcbar0 
+makeanti /Defaults/Particles/Xi'_bc0 /Defaults/Particles/Xi'_bcbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bc0 
+setup /Defaults/Particles/Xi*_bc0 5414 Xi*_bc0 7.04850 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bc0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bcbar0 
+setup /Defaults/Particles/Xi*_bcbar0 -5414 Xi*_bcbar0 7.04850 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bcbar0 
+makeanti /Defaults/Particles/Xi*_bc0 /Defaults/Particles/Xi*_bcbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_bc+ 
+setup /Defaults/Particles/Xi'_bc+ 5422 Xi'_bc+ 7.037240 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Xi'_bc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi'_bcbar- 
+setup /Defaults/Particles/Xi'_bcbar- -5422 Xi'_bcbar- 7.037240 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi'_bcbar- 
+makeanti /Defaults/Particles/Xi'_bc+ /Defaults/Particles/Xi'_bcbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bc+ 
+setup /Defaults/Particles/Xi*_bc+ 5424 Xi*_bc+ 7.04850 0.0 0.0 0.3870 3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bcbar- 
+setup /Defaults/Particles/Xi*_bcbar- -5424 Xi*_bcbar- 7.04850 0.0 0.0 0.3870 -3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bcbar- 
+makeanti /Defaults/Particles/Xi*_bc+ /Defaults/Particles/Xi*_bcbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega'_bc0 
+setup /Defaults/Particles/Omega'_bc0 5432 Omega'_bc0 7.211010 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Omega'_bc0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega'_bcba 
+setup /Defaults/Particles/Omega'_bcba -5432 Omega'_bcba 7.211010 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Omega'_bcba 
+makeanti /Defaults/Particles/Omega'_bc0 /Defaults/Particles/Omega'_bcba 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bc0 
+setup /Defaults/Particles/Omega*_bc0 5434 Omega*_bc0 7.2190 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bc0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bcbar0 
+setup /Defaults/Particles/Omega*_bcbar0 -5434 Omega*_bcbar0 7.2190 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bcbar0 
+makeanti /Defaults/Particles/Omega*_bc0 /Defaults/Particles/Omega*_bcbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bcc+ 
+setup /Defaults/Particles/Omega_bcc+ 5442 Omega_bcc+ 8.309450 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Omega_bcc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bccbar- 
+setup /Defaults/Particles/Omega_bccbar- -5442 Omega_bccbar- 8.309450 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Omega_bccbar- 
+makeanti /Defaults/Particles/Omega_bcc+ /Defaults/Particles/Omega_bccbar- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bcc+ 
+setup /Defaults/Particles/Omega*_bcc+ 5444 Omega*_bcc+ 8.313250 0.0 0.0 0.3870 3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bcc+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bccbar- 
+setup /Defaults/Particles/Omega*_bccbar- -5444 Omega*_bccbar- 8.313250 0.0 0.0 0.3870 -3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bccbar- 
+makeanti /Defaults/Particles/Omega*_bcc+ /Defaults/Particles/Omega*_bccbar- 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bb_1 
+setup /Defaults/Particles/bb_1 5503 bb_1 10.073540 0.0 0.0 0.0 -2 -3 3 1 10.00 
+defaultparticle /Defaults/Particles/bb_1 
+create /ThePEG/ConstituentParticleData /Defaults/Particles/bb_1bar 
+setup /Defaults/Particles/bb_1bar -5503 bb_1bar 10.073540 0.0 0.0 0.0 2 3 3 1 10.00 
+defaultparticle /Defaults/Particles/bb_1bar 
+makeanti /Defaults/Particles/bb_1 /Defaults/Particles/bb_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bb- 
+setup /Defaults/Particles/Xi_bb- 5512 Xi_bb- 10.422720 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Xi_bb- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bbbar+ 
+setup /Defaults/Particles/Xi_bbbar+ -5512 Xi_bbbar+ 10.422720 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Xi_bbbar+ 
+makeanti /Defaults/Particles/Xi_bb- /Defaults/Particles/Xi_bbbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bb- 
+setup /Defaults/Particles/Xi*_bb- 5514 Xi*_bb- 10.441440 0.0 0.0 0.3870 -3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bb- 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bbbar+ 
+setup /Defaults/Particles/Xi*_bbbar+ -5514 Xi*_bbbar+ 10.441440 0.0 0.0 0.3870 3 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bbbar+ 
+makeanti /Defaults/Particles/Xi*_bb- /Defaults/Particles/Xi*_bbbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bb0 
+setup /Defaults/Particles/Xi_bb0 5522 Xi_bb0 10.422720 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_bb0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi_bbbar0 
+setup /Defaults/Particles/Xi_bbbar0 -5522 Xi_bbbar0 10.422720 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Xi_bbbar0 
+makeanti /Defaults/Particles/Xi_bb0 /Defaults/Particles/Xi_bbbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bb0 
+setup /Defaults/Particles/Xi*_bb0 5524 Xi*_bb0 10.441440 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bb0 
+create /ThePEG/ParticleData /Defaults/Particles/Xi*_bbbar0 
+setup /Defaults/Particles/Xi*_bbbar0 -5524 Xi*_bbbar0 10.441440 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Xi*_bbbar0 
+makeanti /Defaults/Particles/Xi*_bb0 /Defaults/Particles/Xi*_bbbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bb- 
+setup /Defaults/Particles/Omega_bb- 5532 Omega_bb- 10.602090 0.0 0.0 0.3870 -3 0 2 0
+defaultparticle /Defaults/Particles/Omega_bb- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bbbar+ 
+setup /Defaults/Particles/Omega_bbbar+ -5532 Omega_bbbar+ 10.602090 0.0 0.0 0.3870 3 0 2 0
+defaultparticle /Defaults/Particles/Omega_bbbar+ 
+makeanti /Defaults/Particles/Omega_bb- /Defaults/Particles/Omega_bbbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bb- 
+setup /Defaults/Particles/Omega*_bb- 5534 Omega*_bb- 10.614260 0.0 0.0 0.3870 -3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bb- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bbbar+ 
+setup /Defaults/Particles/Omega*_bbbar+ -5534 Omega*_bbbar+ 10.614260 0.0 0.0 0.3870 3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bbbar+ 
+makeanti /Defaults/Particles/Omega*_bb- /Defaults/Particles/Omega*_bbbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bbc0 
+setup /Defaults/Particles/Omega_bbc0 5542 Omega_bbc0 11.707670 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Omega_bbc0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega_bbcbar0 
+setup /Defaults/Particles/Omega_bbcbar0 -5542 Omega_bbcbar0 11.707670 0.0 0.0 0.3870 0 0 2 0
+defaultparticle /Defaults/Particles/Omega_bbcbar0 
+makeanti /Defaults/Particles/Omega_bbc0 /Defaults/Particles/Omega_bbcbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bbc0 
+setup /Defaults/Particles/Omega*_bbc0 5544 Omega*_bbc0 11.711470 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bbc0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bbcbar0 
+setup /Defaults/Particles/Omega*_bbcbar0 -5544 Omega*_bbcbar0 11.711470 0.0 0.0 0.3870 0 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bbcbar0 
+makeanti /Defaults/Particles/Omega*_bbc0 /Defaults/Particles/Omega*_bbcbar0 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bbb- 
+setup /Defaults/Particles/Omega*_bbb- 5554 Omega*_bbb- 15.110610 0.0 0.0 0.3870 -3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bbb- 
+create /ThePEG/ParticleData /Defaults/Particles/Omega*_bbbbar+ 
+setup /Defaults/Particles/Omega*_bbbbar+ -5554 Omega*_bbbbar+ 15.110610 0.0 0.0 0.3870 3 0 4 0
+defaultparticle /Defaults/Particles/Omega*_bbbbar+ 
+makeanti /Defaults/Particles/Omega*_bbb- /Defaults/Particles/Omega*_bbbbar+ 
+create /ThePEG/ParticleData /Defaults/Particles/a_0(H)0 
+setup /Defaults/Particles/a_0(H)0 10111 a_0(H)0 1.474 0.265 0.050 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/a_0(H)0 
+create /ThePEG/ParticleData /Defaults/Particles/b_10 
+setup /Defaults/Particles/b_10 10113 b_10 1.2310 0.1420 0.250 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/b_10 
+create /ThePEG/ParticleData /Defaults/Particles/a_0(H)+ 
+setup /Defaults/Particles/a_0(H)+ 10211 a_0(H)+ 1.474 0.265 0.050 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/a_0(H)+ 
+create /ThePEG/ParticleData /Defaults/Particles/a_0(H)- 
+setup /Defaults/Particles/a_0(H)- -10211 a_0(H)- 1.474 0.265 0.050 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/a_0(H)- 
+makeanti /Defaults/Particles/a_0(H)+ /Defaults/Particles/a_0(H)- 
+create /ThePEG/ParticleData /Defaults/Particles/b_1+ 
+setup /Defaults/Particles/b_1+ 10213 b_1+ 1.2310 0.1420 0.250 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/b_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/b_1- 
+setup /Defaults/Particles/b_1- -10213 b_1- 1.2310 0.1420 0.250 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/b_1- 
+makeanti /Defaults/Particles/b_1+ /Defaults/Particles/b_1- 
+create /ThePEG/ParticleData /Defaults/Particles/f_0 
+setup /Defaults/Particles/f_0 10221 f_0 1.0 0.0 0.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/f_0 
+create /ThePEG/ParticleData /Defaults/Particles/h_1 
+setup /Defaults/Particles/h_1 10223 h_1 1.170 0.360 0.20 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/h_1 
+create /ThePEG/ParticleData /Defaults/Particles/K*_00 
+setup /Defaults/Particles/K*_00 10311 K*_00 1.4290 0.2870 0.40 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/K*_00 
+create /ThePEG/ParticleData /Defaults/Particles/K*_0bar0 
+setup /Defaults/Particles/K*_0bar0 -10311 K*_0bar0 1.4290 0.2870 0.40 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/K*_0bar0 
+makeanti /Defaults/Particles/K*_00 /Defaults/Particles/K*_0bar0 
+create /ThePEG/ParticleData /Defaults/Particles/K_10 
+setup /Defaults/Particles/K_10 10313 K_10 1.570 0.090 0.0050 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/K_10 
+create /ThePEG/ParticleData /Defaults/Particles/K_1bar0 
+setup /Defaults/Particles/K_1bar0 -10313 K_1bar0 1.570 0.090 0.0050 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/K_1bar0 
+makeanti /Defaults/Particles/K_10 /Defaults/Particles/K_1bar0 
+create /ThePEG/ParticleData /Defaults/Particles/K*_0+ 
+setup /Defaults/Particles/K*_0+ 10321 K*_0+ 1.4290 0.2870 0.40 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/K*_0+ 
+create /ThePEG/ParticleData /Defaults/Particles/K*_0- 
+setup /Defaults/Particles/K*_0- -10321 K*_0- 1.4290 0.2870 0.40 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/K*_0- 
+makeanti /Defaults/Particles/K*_0+ /Defaults/Particles/K*_0- 
+create /ThePEG/ParticleData /Defaults/Particles/K_1+ 
+setup /Defaults/Particles/K_1+ 10323 K_1+ 1.570 0.090 0.010 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/K_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/K_1- 
+setup /Defaults/Particles/K_1- -10323 K_1- 1.570 0.090 0.010 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/K_1- 
+makeanti /Defaults/Particles/K_1+ /Defaults/Particles/K_1- 
+#create /ThePEG/ParticleData /Defaults/Particles/f'_0 
+#setup /Defaults/Particles/f'_0 10331 f'_0 1.40 0.250 0.350 0.0 0 0 1 0
+#defaultparticle /Defaults/Particles/f'_0 
+create /ThePEG/ParticleData /Defaults/Particles/h'_1 
+setup /Defaults/Particles/h'_1 10333 h'_1 1.40 0.080 0.0010 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/h'_1 
+create /ThePEG/ParticleData /Defaults/Particles/D*_0+ 
+setup /Defaults/Particles/D*_0+ 10411 D*_0+ 2.2720 0.050 0.10 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/D*_0+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_0- 
+setup /Defaults/Particles/D*_0- -10411 D*_0- 2.2720 0.050 0.10 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/D*_0- 
+makeanti /Defaults/Particles/D*_0+ /Defaults/Particles/D*_0- 
+create /ThePEG/ParticleData /Defaults/Particles/D_1+ 
+setup /Defaults/Particles/D_1+ 10413 D_1+ 2.4240 0.020 0.080 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/D_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/D_1- 
+setup /Defaults/Particles/D_1- -10413 D_1- 2.4240 0.020 0.080 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/D_1- 
+makeanti /Defaults/Particles/D_1+ /Defaults/Particles/D_1- 
+create /ThePEG/ParticleData /Defaults/Particles/D*_00 
+setup /Defaults/Particles/D*_00 10421 D*_00 2.2720 0.050 0.10 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/D*_00 
+create /ThePEG/ParticleData /Defaults/Particles/D*_0bar0 
+setup /Defaults/Particles/D*_0bar0 -10421 D*_0bar0 2.2720 0.050 0.10 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/D*_0bar0 
+makeanti /Defaults/Particles/D*_00 /Defaults/Particles/D*_0bar0 
+create /ThePEG/ParticleData /Defaults/Particles/D_10 
+setup /Defaults/Particles/D_10 10423 D_10 2.4240 0.020 0.080 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/D_10 
+create /ThePEG/ParticleData /Defaults/Particles/D_1bar0 
+setup /Defaults/Particles/D_1bar0 -10423 D_1bar0 2.4240 0.020 0.080 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/D_1bar0 
+makeanti /Defaults/Particles/D_10 /Defaults/Particles/D_1bar0 
+create /ThePEG/ParticleData /Defaults/Particles/D*_0s+ 
+setup /Defaults/Particles/D*_0s+ 10431 D*_0s+ 2.50 0.050 0.10 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/D*_0s+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_0s- 
+setup /Defaults/Particles/D*_0s- -10431 D*_0s- 2.50 0.050 0.10 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/D*_0s- 
+makeanti /Defaults/Particles/D*_0s+ /Defaults/Particles/D*_0s- 
+create /ThePEG/ParticleData /Defaults/Particles/D_1s+ 
+setup /Defaults/Particles/D_1s+ 10433 D_1s+ 2.5360 0.0 0.0 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/D_1s+ 
+create /ThePEG/ParticleData /Defaults/Particles/D_1s- 
+setup /Defaults/Particles/D_1s- -10433 D_1s- 2.5360 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/D_1s- 
+makeanti /Defaults/Particles/D_1s+ /Defaults/Particles/D_1s- 
+create /ThePEG/ParticleData /Defaults/Particles/chi_0c 
+setup /Defaults/Particles/chi_0c 10441 chi_0c 3.41510 0.0140 0.050 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/chi_0c 
+create /ThePEG/ParticleData /Defaults/Particles/h_1c 
+setup /Defaults/Particles/h_1c 10443 h_1c 3.460 0.010 0.020 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/h_1c 
+create /ThePEG/ParticleData /Defaults/Particles/B*_00 
+setup /Defaults/Particles/B*_00 10511 B*_00 5.680 0.050 0.10 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/B*_00 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0bar0 
+setup /Defaults/Particles/B*_0bar0 -10511 B*_0bar0 5.680 0.050 0.10 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/B*_0bar0 
+makeanti /Defaults/Particles/B*_00 /Defaults/Particles/B*_0bar0 
+create /ThePEG/ParticleData /Defaults/Particles/B_10 
+setup /Defaults/Particles/B_10 10513 B_10 5.730 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B_10 
+create /ThePEG/ParticleData /Defaults/Particles/B_1bar0 
+setup /Defaults/Particles/B_1bar0 -10513 B_1bar0 5.730 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B_1bar0 
+makeanti /Defaults/Particles/B_10 /Defaults/Particles/B_1bar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0+ 
+setup /Defaults/Particles/B*_0+ 10521 B*_0+ 5.680 0.050 0.10 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/B*_0+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0- 
+setup /Defaults/Particles/B*_0- -10521 B*_0- 5.680 0.050 0.10 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/B*_0- 
+makeanti /Defaults/Particles/B*_0+ /Defaults/Particles/B*_0- 
+create /ThePEG/ParticleData /Defaults/Particles/B_1+ 
+setup /Defaults/Particles/B_1+ 10523 B_1+ 5.730 0.050 0.10 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/B_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/B_1- 
+setup /Defaults/Particles/B_1- -10523 B_1- 5.730 0.050 0.10 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/B_1- 
+makeanti /Defaults/Particles/B_1+ /Defaults/Particles/B_1- 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0s0 
+setup /Defaults/Particles/B*_0s0 10531 B*_0s0 5.920 0.050 0.10 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/B*_0s0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0sbar0 
+setup /Defaults/Particles/B*_0sbar0 -10531 B*_0sbar0 5.920 0.050 0.10 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/B*_0sbar0 
+makeanti /Defaults/Particles/B*_0s0 /Defaults/Particles/B*_0sbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B_1s0 
+setup /Defaults/Particles/B_1s0 10533 B_1s0 5.970 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B_1s0 
+create /ThePEG/ParticleData /Defaults/Particles/B_1sbar0 
+setup /Defaults/Particles/B_1sbar0 -10533 B_1sbar0 5.970 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B_1sbar0 
+makeanti /Defaults/Particles/B_1s0 /Defaults/Particles/B_1sbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0c+ 
+setup /Defaults/Particles/B*_0c+ 10541 B*_0c+ 7.250 0.050 0.050 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/B*_0c+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_0c- 
+setup /Defaults/Particles/B*_0c- -10541 B*_0c- 7.250 0.050 0.050 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/B*_0c- 
+makeanti /Defaults/Particles/B*_0c+ /Defaults/Particles/B*_0c- 
+create /ThePEG/ParticleData /Defaults/Particles/B_1c+ 
+setup /Defaults/Particles/B_1c+ 10543 B_1c+ 7.30 0.050 0.10 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/B_1c+ 
+create /ThePEG/ParticleData /Defaults/Particles/B_1c- 
+setup /Defaults/Particles/B_1c- -10543 B_1c- 7.30 0.050 0.10 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/B_1c- 
+makeanti /Defaults/Particles/B_1c+ /Defaults/Particles/B_1c- 
+create /ThePEG/ParticleData /Defaults/Particles/chi_0b 
+setup /Defaults/Particles/chi_0b 10551 chi_0b 9.85980 0.0 0.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/chi_0b 
+create /ThePEG/ParticleData /Defaults/Particles/h_1b 
+setup /Defaults/Particles/h_1b 10553 h_1b 9.8750 0.010 0.020 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/h_1b 
+create /ThePEG/ParticleData /Defaults/Particles/a_10 
+setup /Defaults/Particles/a_10 20113 a_10 1.230 0.40 0.30 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/a_10 
+create /ThePEG/ParticleData /Defaults/Particles/a_1+ 
+setup /Defaults/Particles/a_1+ 20213 a_1+ 1.230 0.40 0.30 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/a_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/a_1- 
+setup /Defaults/Particles/a_1- -20213 a_1- 1.230 0.40 0.30 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/a_1- 
+makeanti /Defaults/Particles/a_1+ /Defaults/Particles/a_1- 
+create /ThePEG/ParticleData /Defaults/Particles/f_1 
+setup /Defaults/Particles/f_1 20223 f_1 1.2820 0.0250 0.050 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/f_1 
+create /ThePEG/ParticleData /Defaults/Particles/K*_10 
+setup /Defaults/Particles/K*_10 20313 K*_10 1.850 0.1740 0.30 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/K*_10 
+create /ThePEG/ParticleData /Defaults/Particles/K*_1bar0 
+setup /Defaults/Particles/K*_1bar0 -20313 K*_1bar0 1.850 0.1740 0.30 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/K*_1bar0 
+makeanti /Defaults/Particles/K*_10 /Defaults/Particles/K*_1bar0 
+create /ThePEG/ParticleData /Defaults/Particles/K*_1+ 
+setup /Defaults/Particles/K*_1+ 20323 K*_1+ 1.850 0.1740 0.30 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/K*_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/K*_1- 
+setup /Defaults/Particles/K*_1- -20323 K*_1- 1.850 0.1740 0.30 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/K*_1- 
+makeanti /Defaults/Particles/K*_1+ /Defaults/Particles/K*_1- 
+create /ThePEG/ParticleData /Defaults/Particles/f'_1 
+setup /Defaults/Particles/f'_1 20333 f'_1 1.4270 0.0530 0.020 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/f'_1 
+create /ThePEG/ParticleData /Defaults/Particles/D*_1+ 
+setup /Defaults/Particles/D*_1+ 20413 D*_1+ 2.3720 0.050 0.10 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/D*_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_1- 
+setup /Defaults/Particles/D*_1- -20413 D*_1- 2.3720 0.050 0.10 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/D*_1- 
+makeanti /Defaults/Particles/D*_1+ /Defaults/Particles/D*_1- 
+create /ThePEG/ParticleData /Defaults/Particles/D*_10 
+setup /Defaults/Particles/D*_10 20423 D*_10 2.3720 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/D*_10 
+create /ThePEG/ParticleData /Defaults/Particles/D*_1bar0 
+setup /Defaults/Particles/D*_1bar0 -20423 D*_1bar0 2.3720 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/D*_1bar0 
+makeanti /Defaults/Particles/D*_10 /Defaults/Particles/D*_1bar0 
+create /ThePEG/ParticleData /Defaults/Particles/D*_1s+ 
+setup /Defaults/Particles/D*_1s+ 20433 D*_1s+ 2.560 0.050 0.030 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/D*_1s+ 
+create /ThePEG/ParticleData /Defaults/Particles/D*_1s- 
+setup /Defaults/Particles/D*_1s- -20433 D*_1s- 2.560 0.050 0.030 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/D*_1s- 
+makeanti /Defaults/Particles/D*_1s+ /Defaults/Particles/D*_1s- 
+create /ThePEG/ParticleData /Defaults/Particles/chi_1c 
+setup /Defaults/Particles/chi_1c 20443 chi_1c 3.51060 0.00090 0.0010 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/chi_1c 
+create /ThePEG/ParticleData /Defaults/Particles/B*_10 
+setup /Defaults/Particles/B*_10 20513 B*_10 5.780 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*_10 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1bar0 
+setup /Defaults/Particles/B*_1bar0 -20513 B*_1bar0 5.780 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*_1bar0 
+makeanti /Defaults/Particles/B*_10 /Defaults/Particles/B*_1bar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1+ 
+setup /Defaults/Particles/B*_1+ 20523 B*_1+ 5.780 0.050 0.10 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/B*_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1- 
+setup /Defaults/Particles/B*_1- -20523 B*_1- 5.780 0.050 0.10 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/B*_1- 
+makeanti /Defaults/Particles/B*_1+ /Defaults/Particles/B*_1- 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1s0 
+setup /Defaults/Particles/B*_1s0 20533 B*_1s0 6.020 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*_1s0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1sbar0 
+setup /Defaults/Particles/B*_1sbar0 -20533 B*_1sbar0 6.020 0.050 0.10 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/B*_1sbar0 
+makeanti /Defaults/Particles/B*_1s0 /Defaults/Particles/B*_1sbar0 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1c+ 
+setup /Defaults/Particles/B*_1c+ 20543 B*_1c+ 7.30 0.050 0.10 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/B*_1c+ 
+create /ThePEG/ParticleData /Defaults/Particles/B*_1c- 
+setup /Defaults/Particles/B*_1c- -20543 B*_1c- 7.30 0.050 0.10 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/B*_1c- 
+makeanti /Defaults/Particles/B*_1c+ /Defaults/Particles/B*_1c- 
+create /ThePEG/ParticleData /Defaults/Particles/chi_1b 
+setup /Defaults/Particles/chi_1b 20553 chi_1b 9.89190 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/chi_1b 
+create /ThePEG/ParticleData /Defaults/Particles/psi' 
+setup /Defaults/Particles/psi' 100443 psi' 3.6860 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/psi' 
+create /ThePEG/ParticleData /Defaults/Particles/Upsilon' 
+setup /Defaults/Particles/Upsilon' 100553 Upsilon' 10.02330 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Upsilon' 
+create /ThePEG/ParticleData /Defaults/Particles/~d_L 
+setup /Defaults/Particles/~d_L 1000001 ~d_L 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/~d_L 
+create /ThePEG/ParticleData /Defaults/Particles/~d_Lbar 
+setup /Defaults/Particles/~d_Lbar -1000001 ~d_Lbar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle /Defaults/Particles/~d_Lbar 
+makeanti /Defaults/Particles/~d_L /Defaults/Particles/~d_Lbar 
+create /ThePEG/ParticleData /Defaults/Particles/~u_L 
+setup /Defaults/Particles/~u_L 1000002 ~u_L 500.0 1.0 10.0 0.0 2 3 1 0 
+defaultparticle /Defaults/Particles/~u_L 
+create /ThePEG/ParticleData /Defaults/Particles/~u_Lbar 
+setup /Defaults/Particles/~u_Lbar -1000002 ~u_Lbar 500.0 1.0 10.0 0.0 -2 -3 1 0 
+defaultparticle /Defaults/Particles/~u_Lbar 
+makeanti /Defaults/Particles/~u_L /Defaults/Particles/~u_Lbar 
+create /ThePEG/ParticleData /Defaults/Particles/~s_L 
+setup /Defaults/Particles/~s_L 1000003 ~s_L 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/~s_L 
+create /ThePEG/ParticleData /Defaults/Particles/~s_Lbar 
+setup /Defaults/Particles/~s_Lbar -1000003 ~s_Lbar 500.0 1.0 10.0 0.0 1 -3 1 0
+defaultparticle /Defaults/Particles/~s_Lbar 
+makeanti /Defaults/Particles/~s_L /Defaults/Particles/~s_Lbar 
+create /ThePEG/ParticleData /Defaults/Particles/~c_L 
+setup /Defaults/Particles/~c_L 1000004 ~c_L 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle /Defaults/Particles/~c_L 
+create /ThePEG/ParticleData /Defaults/Particles/~c_Lbar 
+setup /Defaults/Particles/~c_Lbar -1000004 ~c_Lbar 500.0 1.0 10.0 0.0 -2 -3 1 0 
+defaultparticle /Defaults/Particles/~c_Lbar 
+makeanti /Defaults/Particles/~c_L /Defaults/Particles/~c_Lbar 
+create /ThePEG/ParticleData /Defaults/Particles/~b_1 
+setup /Defaults/Particles/~b_1 1000005 ~b_1 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/~b_1 
+create /ThePEG/ParticleData /Defaults/Particles/~b_1bar 
+setup /Defaults/Particles/~b_1bar -1000005 ~b_1bar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle /Defaults/Particles/~b_1bar 
+makeanti /Defaults/Particles/~b_1 /Defaults/Particles/~b_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/~t_1 
+setup /Defaults/Particles/~t_1 1000006 ~t_1 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle /Defaults/Particles/~t_1 
+create /ThePEG/ParticleData /Defaults/Particles/~t_1bar 
+setup /Defaults/Particles/~t_1bar -1000006 ~t_1bar 500.0 1.0 10.0 0.0 -2 -3 1 0 
+defaultparticle /Defaults/Particles/~t_1bar 
+makeanti /Defaults/Particles/~t_1 /Defaults/Particles/~t_1bar 
+create /ThePEG/ParticleData /Defaults/Particles/~e_L- 
+setup /Defaults/Particles/~e_L- 1000011 ~e_L- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/~e_L- 
+create /ThePEG/ParticleData /Defaults/Particles/~e_L+ 
+setup /Defaults/Particles/~e_L+ -1000011 ~e_L+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/~e_L+ 
+makeanti /Defaults/Particles/~e_L- /Defaults/Particles/~e_L+ 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_eL 
+setup /Defaults/Particles/~nu_eL 1000012 ~nu_eL 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/~nu_eL 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_eLbar 
+setup /Defaults/Particles/~nu_eLbar -1000012 ~nu_eLbar 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/~nu_eLbar 
+makeanti /Defaults/Particles/~nu_eL /Defaults/Particles/~nu_eLbar 
+create /ThePEG/ParticleData /Defaults/Particles/~mu_L- 
+setup /Defaults/Particles/~mu_L- 1000013 ~mu_L- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/~mu_L- 
+create /ThePEG/ParticleData /Defaults/Particles/~mu_L+ 
+setup /Defaults/Particles/~mu_L+ -1000013 ~mu_L+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/~mu_L+ 
+makeanti /Defaults/Particles/~mu_L- /Defaults/Particles/~mu_L+ 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_muL 
+setup /Defaults/Particles/~nu_muL 1000014 ~nu_muL 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/~nu_muL 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_muLbar 
+setup /Defaults/Particles/~nu_muLbar -1000014 ~nu_muLbar 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/~nu_muLbar 
+makeanti /Defaults/Particles/~nu_muL /Defaults/Particles/~nu_muLbar 
+create /ThePEG/ParticleData /Defaults/Particles/~tau_1- 
+setup /Defaults/Particles/~tau_1- 1000015 ~tau_1- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/~tau_1- 
+create /ThePEG/ParticleData /Defaults/Particles/~tau_1+ 
+setup /Defaults/Particles/~tau_1+ -1000015 ~tau_1+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/~tau_1+ 
+makeanti /Defaults/Particles/~tau_1- /Defaults/Particles/~tau_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_tauL 
+setup /Defaults/Particles/~nu_tauL 1000016 ~nu_tauL 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/~nu_tauL 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_tauLbar 
+setup /Defaults/Particles/~nu_tauLbar -1000016 ~nu_tauLbar 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/~nu_tauLbar 
+makeanti /Defaults/Particles/~nu_tauL /Defaults/Particles/~nu_tauLbar 
+create /ThePEG/ParticleData /Defaults/Particles/~g 
+setup /Defaults/Particles/~g 1000021 ~g 500.0 1.0 10.0 0.0 0 8 2 0
+defaultparticle /Defaults/Particles/~g 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_10 
+setup /Defaults/Particles/~chi_10 1000022 ~chi_10 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/~chi_10 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_20 
+setup /Defaults/Particles/~chi_20 1000023 ~chi_20 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/~chi_20 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_1+ 
+setup /Defaults/Particles/~chi_1+ 1000024 ~chi_1+ 500.0 1.0 10.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/~chi_1+ 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_1- 
+setup /Defaults/Particles/~chi_1- -1000024 ~chi_1- 500.0 1.0 10.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/~chi_1- 
+makeanti /Defaults/Particles/~chi_1+ /Defaults/Particles/~chi_1- 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_30 
+setup /Defaults/Particles/~chi_30 1000025 ~chi_30 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/~chi_30 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_40 
+setup /Defaults/Particles/~chi_40 1000035 ~chi_40 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle /Defaults/Particles/~chi_40 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_2+ 
+setup /Defaults/Particles/~chi_2+ 1000037 ~chi_2+ 500.0 1.0 10.0 0.0 3 0 2 0
+defaultparticle /Defaults/Particles/~chi_2+ 
+create /ThePEG/ParticleData /Defaults/Particles/~chi_2- 
+setup /Defaults/Particles/~chi_2- -1000037 ~chi_2- 500.0 1.0 10.0 0.0 -3 0 2 0
+defaultparticle /Defaults/Particles/~chi_2- 
+makeanti /Defaults/Particles/~chi_2+ /Defaults/Particles/~chi_2- 
+create /ThePEG/ParticleData /Defaults/Particles/~gravitino 
+setup /Defaults/Particles/~gravitino 1000039 ~gravitino 500.0 0.0 0.000010 0.0 0 0 4 1
+defaultparticle /Defaults/Particles/~gravitino 
+create /ThePEG/ParticleData /Defaults/Particles/~d_R 
+setup /Defaults/Particles/~d_R 2000001 ~d_R 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/~d_R 
+create /ThePEG/ParticleData /Defaults/Particles/~d_Rbar 
+setup /Defaults/Particles/~d_Rbar -2000001 ~d_Rbar 500.0 1.0 10.0 0.0 1 -3 1 0
+defaultparticle /Defaults/Particles/~d_Rbar 
+makeanti /Defaults/Particles/~d_R /Defaults/Particles/~d_Rbar 
+create /ThePEG/ParticleData /Defaults/Particles/~u_R 
+setup /Defaults/Particles/~u_R 2000002 ~u_R 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle /Defaults/Particles/~u_R 
+create /ThePEG/ParticleData /Defaults/Particles/~u_Rbar 
+setup /Defaults/Particles/~u_Rbar -2000002 ~u_Rbar 500.0 1.0 10.0 0.0 -2 -3 1 0
+defaultparticle /Defaults/Particles/~u_Rbar 
+makeanti /Defaults/Particles/~u_R /Defaults/Particles/~u_Rbar 
+create /ThePEG/ParticleData /Defaults/Particles/~s_R 
+setup /Defaults/Particles/~s_R 2000003 ~s_R 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/~s_R 
+create /ThePEG/ParticleData /Defaults/Particles/~s_Rbar 
+setup /Defaults/Particles/~s_Rbar -2000003 ~s_Rbar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle /Defaults/Particles/~s_Rbar 
+makeanti /Defaults/Particles/~s_R /Defaults/Particles/~s_Rbar 
+create /ThePEG/ParticleData /Defaults/Particles/~c_R 
+setup /Defaults/Particles/~c_R 2000004 ~c_R 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle /Defaults/Particles/~c_R 
+create /ThePEG/ParticleData /Defaults/Particles/~c_Rbar 
+setup /Defaults/Particles/~c_Rbar -2000004 ~c_Rbar 500.0 1.0 10.0 0.0 -2 -3 1 0
+defaultparticle /Defaults/Particles/~c_Rbar 
+makeanti /Defaults/Particles/~c_R /Defaults/Particles/~c_Rbar 
+create /ThePEG/ParticleData /Defaults/Particles/~b_2 
+setup /Defaults/Particles/~b_2 2000005 ~b_2 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/~b_2 
+create /ThePEG/ParticleData /Defaults/Particles/~b_2bar 
+setup /Defaults/Particles/~b_2bar -2000005 ~b_2bar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle /Defaults/Particles/~b_2bar 
+makeanti /Defaults/Particles/~b_2 /Defaults/Particles/~b_2bar 
+create /ThePEG/ParticleData /Defaults/Particles/~t_2 
+setup /Defaults/Particles/~t_2 2000006 ~t_2 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle /Defaults/Particles/~t_2 
+create /ThePEG/ParticleData /Defaults/Particles/~t_2bar 
+setup /Defaults/Particles/~t_2bar -2000006 ~t_2bar 500.0 1.0 10.0 0.0 -2 -3 1 0
+defaultparticle /Defaults/Particles/~t_2bar 
+makeanti /Defaults/Particles/~t_2 /Defaults/Particles/~t_2bar 
+create /ThePEG/ParticleData /Defaults/Particles/~e_R- 
+setup /Defaults/Particles/~e_R- 2000011 ~e_R- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/~e_R- 
+create /ThePEG/ParticleData /Defaults/Particles/~e_R+ 
+setup /Defaults/Particles/~e_R+ -2000011 ~e_R+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/~e_R+ 
+makeanti /Defaults/Particles/~e_R- /Defaults/Particles/~e_R+ 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_eR 
+setup /Defaults/Particles/~nu_eR 2000012 ~nu_eR 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle /Defaults/Particles/~nu_eR 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_eRbar 
+setup /Defaults/Particles/~nu_eRbar -2000012 ~nu_eRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle /Defaults/Particles/~nu_eRbar 
+makeanti /Defaults/Particles/~nu_eR /Defaults/Particles/~nu_eRbar 
+create /ThePEG/ParticleData /Defaults/Particles/~mu_R- 
+setup /Defaults/Particles/~mu_R- 2000013 ~mu_R- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/~mu_R- 
+create /ThePEG/ParticleData /Defaults/Particles/~mu_R+ 
+setup /Defaults/Particles/~mu_R+ -2000013 ~mu_R+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/~mu_R+ 
+makeanti /Defaults/Particles/~mu_R- /Defaults/Particles/~mu_R+ 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_muR 
+setup /Defaults/Particles/~nu_muR 2000014 ~nu_muR 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle /Defaults/Particles/~nu_muR 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_muRbar 
+setup /Defaults/Particles/~nu_muRbar -2000014 ~nu_muRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle /Defaults/Particles/~nu_muRbar 
+makeanti /Defaults/Particles/~nu_muR /Defaults/Particles/~nu_muRbar 
+create /ThePEG/ParticleData /Defaults/Particles/~tau_2- 
+setup /Defaults/Particles/~tau_2- 2000015 ~tau_2- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/~tau_2- 
+create /ThePEG/ParticleData /Defaults/Particles/~tau_2+ 
+setup /Defaults/Particles/~tau_2+ -2000015 ~tau_2+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle /Defaults/Particles/~tau_2+ 
+makeanti /Defaults/Particles/~tau_2- /Defaults/Particles/~tau_2+ 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_tauR 
+setup /Defaults/Particles/~nu_tauR 2000016 ~nu_tauR 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle /Defaults/Particles/~nu_tauR 
+create /ThePEG/ParticleData /Defaults/Particles/~nu_tauRbar 
+setup /Defaults/Particles/~nu_tauRbar -2000016 ~nu_tauRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle /Defaults/Particles/~nu_tauRbar 
+makeanti /Defaults/Particles/~nu_tauR /Defaults/Particles/~nu_tauRbar 
+create /ThePEG/ParticleData /Defaults/Particles/d* 
+setup /Defaults/Particles/d* 4000001 d* 400.0 2.651710 26.517150 0.0 -1 3 3 0
+defaultparticle /Defaults/Particles/d* 
+create /ThePEG/ParticleData /Defaults/Particles/d*bar 
+setup /Defaults/Particles/d*bar -4000001 d*bar 400.0 2.651710 26.517150 0.0 1 -3 3 0
+defaultparticle /Defaults/Particles/d*bar 
+makeanti /Defaults/Particles/d* /Defaults/Particles/d*bar 
+create /ThePEG/ParticleData /Defaults/Particles/u* 
+setup /Defaults/Particles/u* 4000002 u* 400.0 2.654990 26.549940 0.0 2 3 3 0
+defaultparticle /Defaults/Particles/u* 
+create /ThePEG/ParticleData /Defaults/Particles/u*bar 
+setup /Defaults/Particles/u*bar -4000002 u*bar 400.0 2.654990 26.549940 0.0 -2 -3 3 0 
+defaultparticle /Defaults/Particles/u*bar 
+makeanti /Defaults/Particles/u* /Defaults/Particles/u*bar 
+create /ThePEG/ParticleData /Defaults/Particles/e*- 
+setup /Defaults/Particles/e*- 4000011 e*- 400.0 0.429010 4.290110 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/e*- 
+create /ThePEG/ParticleData /Defaults/Particles/e*bar+ 
+setup /Defaults/Particles/e*bar+ -4000011 e*bar+ 400.0 0.429010 4.290110 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/e*bar+ 
+makeanti /Defaults/Particles/e*- /Defaults/Particles/e*bar+ 
+create /ThePEG/ParticleData /Defaults/Particles/nu*_e0 
+setup /Defaults/Particles/nu*_e0 4000012 nu*_e0 400.0 0.419170 4.191730 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/nu*_e0 
+create /ThePEG/ParticleData /Defaults/Particles/nu*_ebar0 
+setup /Defaults/Particles/nu*_ebar0 -4000012 nu*_ebar0 400.0 0.419170 4.191730 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/nu*_ebar0 
+makeanti /Defaults/Particles/nu*_e0 /Defaults/Particles/nu*_ebar0 
+
+############################################################
+# Additional particle data of particles not found in ThePEG.
+# Changing these is entirely at your own risk!
+#
+# The distinction between this file and Herwig's version of
+# ThePEGParticles.in has become obsolete when the latter 
+# diverged from ThePEG's version.
+############################################################
+
+create ThePEG::ParticleData /Defaults/Particles/psi_d
+setup /Defaults/Particles/psi_d 30443 psi_d 3.770 0.0 0.0 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/psi_d
+create ThePEG::ParticleData /Defaults/Particles/V-quark
+setup /Defaults/Particles/V-quark 7 V-quark 200.000 0.0 0.0 0.0 -1 3 1 0
+defaultparticle /Defaults/Particles/V-quark
+create ThePEG::ParticleData /Defaults/Particles/A-quark
+setup /Defaults/Particles/A-quark 8 A-quark 400.000 0.0 0.0 0.0  2 3 1 0
+defaultparticle /Defaults/Particles/A-quark
+create ThePEG::ParticleData /Defaults/Particles/Vbar-quark
+setup /Defaults/Particles/Vbar-quark -7 Vbar-quark 200.000 0.0 0.0 0.0  1 -3 1 0
+defaultparticle /Defaults/Particles/Vbar-quark
+create ThePEG::ParticleData /Defaults/Particles/Abar-quark
+setup /Defaults/Particles/Abar-quark -8 Abar-quark 400.000 0.0 0.0 0.0 -2 -3 1 0
+defaultparticle /Defaults/Particles/Abar-quark
+makeanti /Defaults/Particles/V-quark /Defaults/Particles/Vbar-quark
+makeanti /Defaults/Particles/A-quark /Defaults/Particles/Abar-quark
+create ThePEG::ParticleData /Defaults/Particles/a_00
+setup /Defaults/Particles/a_00 9000111 a_00 0.996 0.0 0.0 0.0  0 0 1 0
+defaultparticle /Defaults/Particles/a_00
+create ThePEG::ParticleData /Defaults/Particles/a_0+
+setup /Defaults/Particles/a_0+ 9000211 a_0+ 0.996 0.0 0.0 0.0  3 0 1 0
+defaultparticle /Defaults/Particles/a_0+
+create ThePEG::ParticleData /Defaults/Particles/a_0-
+setup /Defaults/Particles/a_0- -9000211 a_0- 0.996 0.0 0.0 0.0 -3 0 1 0
+defaultparticle /Defaults/Particles/a_0-
+makeanti /Defaults/Particles/a_0+ /Defaults/Particles/a_0-
+create ThePEG::ParticleData /Defaults/Particles/f0p0
+setup /Defaults/Particles/f0p0 9010221 f0p0 0.996 0.0 0.0 0.0  0 0 1 0
+defaultparticle /Defaults/Particles/f0p0
+create ThePEG::ParticleData /Defaults/Particles/K_dL2+
+setup /Defaults/Particles/K_dL2+ 10325 K_dL2+ 1.773 0.0 0.0 0.0  3 0 5 0
+defaultparticle /Defaults/Particles/K_dL2+
+create ThePEG::ParticleData /Defaults/Particles/K_dL20
+setup /Defaults/Particles/K_dL20 10315 K_dL20 1.773 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/K_dL20
+create ThePEG::ParticleData /Defaults/Particles/Kbar_dL20
+setup /Defaults/Particles/Kbar_dL20 -10315 Kbar_dL20 1.773 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/Kbar_dL20
+create ThePEG::ParticleData /Defaults/Particles/K_dL2-
+setup /Defaults/Particles/K_dL2- -10325 K_dL2- 1.773 0.0 0.0 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/K_dL2-
+makeanti /Defaults/Particles/K_dL2+ /Defaults/Particles/K_dL2-
+makeanti /Defaults/Particles/K_dL20 /Defaults/Particles/Kbar_dL20
+create ThePEG::ParticleData /Defaults/Particles/K*_d+
+setup /Defaults/Particles/K*_d+ 30323 K*_d+ 1.717 0.0 0.0 0.0  3 0 3 0
+defaultparticle /Defaults/Particles/K*_d+
+create ThePEG::ParticleData /Defaults/Particles/K*_d0
+setup /Defaults/Particles/K*_d0 30313 K*_d0 1.717 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/K*_d0
+create ThePEG::ParticleData /Defaults/Particles/K*bar_d0
+setup /Defaults/Particles/K*bar_d0 -30313 K*bar_d0 1.717 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/K*bar_d0
+create ThePEG::ParticleData /Defaults/Particles/K*_d-
+setup /Defaults/Particles/K*_d- -30323 K*_d- 1.717 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/K*_d-
+makeanti /Defaults/Particles/K*_d+ /Defaults/Particles/K*_d-
+makeanti /Defaults/Particles/K*_d0 /Defaults/Particles/K*bar_d0
+create ThePEG::ParticleData /Defaults/Particles/KH_d2+
+setup /Defaults/Particles/KH_d2+ 20325 KH_d2+ 1.816 0.0 0.0 0.0  3 0 5 0
+defaultparticle /Defaults/Particles/KH_d2+
+create ThePEG::ParticleData /Defaults/Particles/KH_d20
+setup /Defaults/Particles/KH_d20 20315 KH_d20 1.816 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/KH_d20
+create ThePEG::ParticleData /Defaults/Particles/KbarH_d20
+setup /Defaults/Particles/KbarH_d20 -20315 KbarH_d20 1.816 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/KbarH_d20
+create ThePEG::ParticleData /Defaults/Particles/KH_d2-
+setup /Defaults/Particles/KH_d2- -20325 KH_d2- 1.816 0.0 0.0 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/KH_d2-
+makeanti /Defaults/Particles/KH_d2+ /Defaults/Particles/KH_d2-
+makeanti /Defaults/Particles/KH_d20 /Defaults/Particles/KbarH_d20
+create ThePEG::ParticleData /Defaults/Particles/K_d3+
+setup /Defaults/Particles/K_d3+ 327 K_d3+ 1.773 0.0 0.0 0.0  3 0 7 0
+defaultparticle /Defaults/Particles/K_d3+
+create ThePEG::ParticleData /Defaults/Particles/K_d30
+setup /Defaults/Particles/K_d30 317 K_d30 1.773 0.0 0.0 0.0  0 0 7 0
+defaultparticle /Defaults/Particles/K_d30
+create ThePEG::ParticleData /Defaults/Particles/Kbar_d30
+setup /Defaults/Particles/Kbar_d30 -317 Kbar_d30 1.773 0.0 0.0 0.0  0 0 7 0
+defaultparticle /Defaults/Particles/Kbar_d30
+create ThePEG::ParticleData /Defaults/Particles/K_d3-
+setup /Defaults/Particles/K_d3- -327 K_d3- 1.773 0.0 0.0 0.0 -3 0 7 0
+defaultparticle /Defaults/Particles/K_d3-
+makeanti /Defaults/Particles/K_d3+ /Defaults/Particles/K_d3-
+makeanti /Defaults/Particles/K_d30 /Defaults/Particles/Kbar_d30
+create ThePEG::ParticleData /Defaults/Particles/pi_2+
+setup /Defaults/Particles/pi_2+ 10215 pi_2+ 1.670 0.0 0.0 0.0  3 0 5 0
+defaultparticle /Defaults/Particles/pi_2+
+create ThePEG::ParticleData /Defaults/Particles/pi_20
+setup /Defaults/Particles/pi_20 10115 pi_20 1.670 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/pi_20
+create ThePEG::ParticleData /Defaults/Particles/pi_2-
+setup /Defaults/Particles/pi_2- -10215 pi_2- 1.670 0.0 0.0 0.0 -3 0 5 0
+defaultparticle /Defaults/Particles/pi_2-
+makeanti /Defaults/Particles/pi_2+ /Defaults/Particles/pi_2-
+create ThePEG::ParticleData /Defaults/Particles/rho_d+
+setup /Defaults/Particles/rho_d+ 30213 rho_d+ 1.700 0.0 0.0 0.0  3 0 3 0
+defaultparticle /Defaults/Particles/rho_d+
+create ThePEG::ParticleData /Defaults/Particles/rho_d0
+setup /Defaults/Particles/rho_d0 30113 rho_d0 1.700 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/rho_d0
+create ThePEG::ParticleData /Defaults/Particles/rho_d-
+setup /Defaults/Particles/rho_d- -30213 rho_d- 1.700 0.0 0.0 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/rho_d-
+makeanti /Defaults/Particles/rho_d+ /Defaults/Particles/rho_d-
+create ThePEG::ParticleData /Defaults/Particles/rho_3+
+setup /Defaults/Particles/rho_3+ 217 rho_3+ 1.691 0.0 0.0 0.0  3 0 7 0
+defaultparticle /Defaults/Particles/rho_3+
+create ThePEG::ParticleData /Defaults/Particles/rho_30
+setup /Defaults/Particles/rho_30 117 rho_30 1.691 0.0 0.0 0.0  0 0 7 0
+defaultparticle /Defaults/Particles/rho_30
+create ThePEG::ParticleData /Defaults/Particles/rho_3-
+setup /Defaults/Particles/rho_3- -217 rho_3- 1.691 0.0 0.0 0.0 -3 0 7 0
+defaultparticle /Defaults/Particles/rho_3-
+makeanti /Defaults/Particles/rho_3+ /Defaults/Particles/rho_3- 
+create ThePEG::ParticleData /Defaults/Particles/chi2P_b0
+setup /Defaults/Particles/chi2P_b0 110551 chi2P_b0 10.232 0.0 0.0 0.0  0 0 1 0
+defaultparticle /Defaults/Particles/chi2P_b0
+create ThePEG::ParticleData /Defaults/Particles/chi2P_b1
+setup /Defaults/Particles/chi2P_b1 120553 chi2P_b1 10.255 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/chi2P_b1
+create ThePEG::ParticleData /Defaults/Particles/chi2P_b2
+setup /Defaults/Particles/chi2P_b2 100555 chi2P_b2 10.269 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/chi2P_b2
+create ThePEG::ParticleData /Defaults/Particles/Upsilon3s
+setup /Defaults/Particles/Upsilon3s 200553 Upsilon3s 10.355 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/Upsilon3s
+create ThePEG::ParticleData /Defaults/Particles/Upsilon4s
+setup /Defaults/Particles/Upsilon4s 300553 Upsilon4s 10.580 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/Upsilon4s
+create ThePEG::ParticleData /Defaults/Particles/omega3
+setup /Defaults/Particles/omega3 227 omega3 1.667 0.0 0.0 0.0  0 0 7 0
+defaultparticle /Defaults/Particles/omega3
+create ThePEG::ParticleData /Defaults/Particles/phi3
+setup /Defaults/Particles/phi3 337 phi3 1.854 0.0 0.0 0.0  0 0 7 0
+defaultparticle /Defaults/Particles/phi3
+create ThePEG::ParticleData /Defaults/Particles/eta_2L
+setup /Defaults/Particles/eta_2L 10225 eta_2L 1.632 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/eta_2L
+create ThePEG::ParticleData /Defaults/Particles/eta_2H
+setup /Defaults/Particles/eta_2H 10335 eta_2H 1.854 0.0 0.0 0.0  0 0 5 0
+defaultparticle /Defaults/Particles/eta_2H
+create ThePEG::ParticleData /Defaults/Particles/omega_H
+setup /Defaults/Particles/omega_H 30223 omega_H 1.649 0.0 0.0 0.0  0 0 3 0
+defaultparticle /Defaults/Particles/omega_H
