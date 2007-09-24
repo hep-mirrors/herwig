@@ -20,11 +20,9 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Utilities/Throw.h>
 #include <ThePEG/PDT/RemnantDecayer.h>
-#include "Remnant.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "CluHadConfig.h"
 #include "Cluster.h"  
-#include "Remnant.h"
 #include <iostream>
 #include <cassert>
 

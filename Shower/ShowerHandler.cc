@@ -20,7 +20,6 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
-#include "Herwig++/Hadronization/Remnant.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
