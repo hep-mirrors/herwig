@@ -560,7 +560,7 @@ bool ShowerHandler::decayProduct(tPPtr particle) const{
     particle != currentSubProcess()->incoming().second;
 }
 
-double ShowerHandler::reweightCKKW(int, int maxMult) {
+double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
 
   if(_useCKKW) {
 
@@ -604,7 +604,7 @@ double ShowerHandler::reweightCKKW(int, int maxMult) {
       throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
 			<< Exception::eventerror;
 
-    double weight = _reweighter->reweight(_reconstructor->history(),out.size());
+    double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
 
     _evolver->initCKKWShower(out.size(),maxMult);
 
