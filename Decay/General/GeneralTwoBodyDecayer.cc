@@ -350,4 +350,18 @@ void GeneralTwoBodyDecayer::Init() {
  
 }
 
-
+double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
+				   double oldbrat) const {
+  ParticleVector children = p.children();
+  if( children.size() != 2 || !p.data().widthGenerator() ) 
+    return oldbrat;
+  
+  // partial width for this mode
+  Energy scale = p.mass();
+  Energy pwidth = 
+    partialWidth( make_pair(p.dataPtr(), scale),
+		  make_pair(children[0]->dataPtr(), children[0]->mass()),
+		  make_pair(children[1]->dataPtr(), children[1]->mass()) );
+  Energy width = p.data().widthGenerator()->width(p.data(), scale);
+  return pwidth/width;
+}
