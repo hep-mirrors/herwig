@@ -166,11 +166,16 @@ namespace {
 void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) throw(Veto, Stop, Exception) {
-
   PVector currentlist(tagged.begin(),tagged.end());
-
+  // set the scale for coloured particles to just above the gluon mass squared
+  // if less than this so they are classed as perturbative
+  Energy2 Q02 = 1.01*sqr(getParticleData(ParticleID::g)->constituentMass());
+  for(unsigned int ix=0;ix<currentlist.size();++ix) {
+    if(currentlist[ix]->scale()<Q02) currentlist[ix]->scale(Q02);
+  }
+  // split the gluons
   _partonSplitter->split(currentlist);
-
+  // form the clusters
   ClusterVector clusters =
     _clusterFinder->formClusters(currentlist);
 

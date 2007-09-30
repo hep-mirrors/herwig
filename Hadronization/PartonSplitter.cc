@@ -39,6 +39,7 @@ void PartonSplitter::Init() {
 
 void PartonSplitter::split(PVector & tagged) {
   PVector newtag;
+  Energy2 Q02 = 0.99*sqr(getParticleData(ParticleID::g)->constituentMass());
   // Loop over all of the particles in the event.
   for(PVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
     // only considering gluons so add other particles to list of particles
@@ -57,9 +58,8 @@ void PartonSplitter::split(PVector & tagged) {
     PPtr ptrQ = PPtr();
     PPtr ptrQbar = PPtr();
     splitTimeLikeGluon(*pit,ptrQ,ptrQbar);
-    Energy Q0 = getParticleData(ParticleID::g)->constituentMass();
-    ptrQ->scale(Q0*Q0);
-    ptrQbar->scale(Q0*Q0);
+    ptrQ->scale(Q02);
+    ptrQbar->scale(Q02);
 
     (*pit)->colourLine()->addColoured(ptrQ);
     (*pit)->addChild(ptrQ);
