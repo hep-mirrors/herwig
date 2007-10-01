@@ -332,7 +332,7 @@ void Histogram::normaliseToData()
 void Histogram::chiSquared(double & chisq, 
 			   unsigned int & ndegrees, double minfrac) const {
   chisq =0.;
-  ndegrees=_bins.size()-2;
+  ndegrees=0;
   unsigned int numPoints = _globalStats.numberOfPoints();
   for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
@@ -343,6 +343,7 @@ void Histogram::chiSquared(double & chisq,
       double var=sqr(error)
 	+ _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
       chisq += sqr(_bins[ix].data - value) / var;
+      ++ndegrees;
     }
   }
 }
