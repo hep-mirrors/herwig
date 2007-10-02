@@ -195,7 +195,7 @@ private:
    * @param parton The parton for which to return the PDF.
    * @param valenceOnly Switch to request valence-only PDFs
    */
-  double pdfValue(double x, double q2, 
+  double pdfValue(double x, Energy2 q2, 
 		  tcPDPtr particle, tcPDPtr parton, bool valenceOnly=false) const;
 
   /**
@@ -273,22 +273,22 @@ private:
   /**
    *  Minimum value of \f$q^2\f$.
    */
-  static const double qsqmin;
+  static const Energy2 qsqmin;
   
   /**
    *  Maximum value of \f$q^2\f$.
    */
-  static const double qsqmax;
+  static const Energy2 qsqmax;
   
   /**
    *  Mass squared of the charm quark
    */
-  static const double mc2;
+  static const Energy2 mc2;
   
   /**
    *  Mass squared of the bottom quark
    */
-  static const double mb2;
+  static const Energy2 mb2;
   //@}
 
 
