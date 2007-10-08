@@ -223,7 +223,7 @@ private:
   void setRemMasses() const;
 
   /**
-   * This is a poniter to the Herwig::ForcedSplitting object
+   * This is a pointer to the Herwig::ForcedSplitting object
    */
   ForcedSplittingPtr theForcedSplitter; 
 
@@ -262,6 +262,11 @@ private:
    * in the Remnant-Remnant CMF after all have been decayed.
    */
   pair<RemPPtr, RemPPtr> theRems;
+
+  /**
+   * Flag to completely turn off ForcedSplittings. (just for testing)
+   */
+  bool theSplittingOnOff;
 
 };
 

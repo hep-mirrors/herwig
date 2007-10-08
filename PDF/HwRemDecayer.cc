@@ -14,6 +14,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <ThePEG/Interface/Reference.h>  
+#include <ThePEG/Interface/Switch.h>  
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 
@@ -111,6 +112,7 @@ canHandle(tcPDPtr particle, tcPDPtr parton) const {
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
+  if(!theSplittingOnOff) return;
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
 
   thestep = &step;
@@ -378,6 +380,8 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
 }
 
 void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
+  if(!theSplittingOnOff) return;
+
   try{
     split(partons.first, theContent.first, theRems.first, 
 	  theUsed.first, theMaps.first, first);
@@ -409,6 +413,8 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
 }
 
 void HwRemDecayer::finalize(){
+  if(!theSplittingOnOff) return;
+
   PPtr diquark;
   //Do the final Rem->Diquark or Rem->quark "decay"
   diquark = theForcedSplitter->
@@ -436,11 +442,11 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 
 
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
-  os << theForcedSplitter;
+  os << theForcedSplitter << theSplittingOnOff;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> theForcedSplitter;
+  is >> theForcedSplitter >> theSplittingOnOff;
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
@@ -455,5 +461,15 @@ void HwRemDecayer::Init() {
     ("ForcedSplitting",
      "Object used for the forced splitting of the Remnant",
      &HwRemDecayer::theForcedSplitter, false, false, true, false, false);
+
+  static Switch<HwRemDecayer,bool> interfaceSplittingOnOff
+    ("SplittingOnOff", "flag to switch the ForcedSplitting on or off, i.e. switch the entire class on or off",
+     &HwRemDecayer::theSplittingOnOff, 1, false, false);
+
+  static SwitchOption interfaceSplittingOnOff0
+    (interfaceSplittingOnOff,"ForcedSplitting-OFF","Forced Splitting is OFF", 0);
+  static SwitchOption interfaceSplittingOnOff1
+    (interfaceSplittingOnOff,"ForcedSplitting-ON","Forced Splitting is ON", 1);
+
 }
 
