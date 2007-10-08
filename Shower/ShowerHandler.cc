@@ -239,7 +239,13 @@ void ShowerHandler::cascade() {
   theRemDec->initialize(remnants, *currentStep());
 
   //do the first forcedSplitting
-  theRemDec->doSplit(incs, true);
+  try{
+    theRemDec->doSplit(incs, true);
+  }catch(ExtraScatterVeto){
+    throw Exception() << "Remnant extraction failed in "
+                      << "ShowerHandler::cascade()" 
+                      << Exception::eventerror;   
+  }
 
   if( !IsMPIOn() ){
     theRemDec->finalize();
