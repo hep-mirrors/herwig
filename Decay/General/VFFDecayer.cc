@@ -97,7 +97,7 @@ Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa,
   Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
 				      outb.second);
   Energy output = -norm(_theFFVPtr->getNorm())*me2*pcm/(8*Constants::pi);
-  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  int cola(outa.first->iColour()), colb(outb.first->iColour());
   if( abs(cola) == 3 && abs(colb) == 3)
     output *= 3.;
   if( outa.first->id() == outb.first->id() ) 

@@ -81,7 +81,7 @@ Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa,
   Energy output = -norm(_theVSSPtr->getNorm())*me2*pcm/(8.*Constants::pi);
   if(outa.first->id() == outb.first->id())
     output /= 2.;
-  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  int cola(outa.first->iColour()), colb(outb.first->iColour());
   if( abs(cola) == 3 && abs(colb) == 3)
     output *= 3.;
   return output;
