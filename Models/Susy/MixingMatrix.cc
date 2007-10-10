@@ -41,9 +41,9 @@ void MixingMatrix::adjustPhase(long id) {
 ostream & Herwig::operator<<(ostream & os,const MixingMatrix & mix) {
   for(unsigned int ix=0;ix<mix.size().first;++ix) {
     for(unsigned int iy=0;iy<mix.size().second;++iy) {
-      cout << mix(ix,iy) << " ";
+      os << mix(ix,iy) << " ";
     }
-    cout << "\n";
+    os << "\n";
   }
   return os;
 }

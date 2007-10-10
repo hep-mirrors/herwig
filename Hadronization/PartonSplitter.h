@@ -4,6 +4,7 @@
 
 #include "CluHadConfig.h"
 #include <ThePEG/Interface/Interfaced.h>
+#include <ThePEG/Utilities/Selector.h>
 #include "PartonSplitter.fh"
 
 namespace Herwig {
@@ -84,6 +85,18 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 private:
 
   /**
@@ -104,6 +117,13 @@ private:
    * @param anti  The antiquark produced in the splitting
    */
   void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
+
+private:
+
+  /**
+   *  The selector to pick the type of quark
+   */
+  Selector<PDPtr,double> _quarkSelector;
 
 };
 

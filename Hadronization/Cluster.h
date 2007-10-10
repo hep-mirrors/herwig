@@ -94,7 +94,7 @@ public:
    * Set the static pointer to the ClusterHadronizationHandler object.
    * The pointer is set in ClusterHadronizationHandler::doinitrun().
    */ 
-  static inline void setPointerClusterHadHandler(tcCluHadHdlPtr gp);
+  static void setPointerClusterHadHandler(tcCluHadHdlPtr gp);
   
   /**
    * Number of quark (diquark) constituents (normally two).    
@@ -264,13 +264,18 @@ private:
   /**
    * Determines whether constituent p is perturbative or not.
    */
-  bool initPerturbative(tPPtr p);
+  inline bool initPerturbative(tPPtr p);
   
   /**
    * This is needed to determine if a cluster is from a perturbative quark.
    */
   static tcCluHadHdlPtr _clusterHadHandler;
   
+  /**
+   *  The gluon mass is needed to determine if a cluster is from a perturbative quark
+   */
+  static Energy2 _mg2;
+
   /**
    * Describe an abstract base class with persistent data.
    */

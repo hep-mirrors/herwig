@@ -208,7 +208,9 @@ Histogram2::Histogram2 (const string& dataFile, const string& dataName) {
   double low, high, dataval, err;
   string in;
   while (getline(data,in)) {
+    in = StringUtils::stripws(in);
     if (in[0] == '#') continue;
+    if (in == "") continue;
     istringstream theIn (in);
     theIn >> low >> high >> dataval >> err;
     _binning.push_back(make_pair(low,high));

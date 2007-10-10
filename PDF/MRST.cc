@@ -28,22 +28,22 @@ const double MRST::xmax=1.0;
 /**
  *  Minimum value of \f$q^2\f$.
  */
-const double MRST::qsqmin=1.25;
+const Energy2 MRST::qsqmin = 1.25 * GeV2;
 
 /**
  *  Maximum value of \f$q^2\f$.
  */
-const double MRST::qsqmax=1E7;
+const Energy2 MRST::qsqmax = 1E7 * GeV2;
 
 /**
  *  Mass squared of the charm quark
  */
-const double MRST::mc2=2.045;
+const Energy2 MRST::mc2 = 2.045 * GeV2;
 
 /**
  *  Mass squared of the bottom quark
  */
-const double MRST::mb2=18.5;
+const Energy2 MRST::mb2 = 18.5 * GeV2;
 
 ClassDescription<MRST> MRST::initMRST;
 
@@ -76,7 +76,7 @@ double MRST::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 
 double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                  double x, double, Energy2) const {
-  return pdfValue(x, partonScale/GeV2, particle, parton);
+  return pdfValue(x, partonScale, particle, parton);
 }
 
 double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
@@ -87,12 +87,12 @@ double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 
 double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                   double x, double, Energy2) const {
-  return pdfValue(x, partonScale/GeV2, particle, parton, true);
+  return pdfValue(x, partonScale, particle, parton, true);
 }
 
-double MRST::pdfValue(double x, double q2, tcPDPtr particle, tcPDPtr parton, bool valenceOnly) const
+double MRST::pdfValue(double x, Energy2 q2, 
+		      tcPDPtr particle, tcPDPtr parton, bool valenceOnly) const
 {
-  // !!!! q2 in GeV^2 !!!!
   if(x<xmin)      x=xmin;
   else if(x>xmax) x=xmax;
 
@@ -101,7 +101,7 @@ double MRST::pdfValue(double x, double q2, tcPDPtr particle, tcPDPtr parton, boo
   
   // interpolation is in logx, log qsq:
   double xxx=log10(x);
-  double qsq=log10(q2);
+  double qsq=log10(q2/GeV2);
 
   // bin position
   int n=locate(xx,nx,xxx);
@@ -177,7 +177,7 @@ double MRST::pdfValue(double x, double q2, tcPDPtr particle, tcPDPtr parton, boo
       break;
     }
   }
-  output = max(output,0.);
+  output = max(output,1.0e-12);
   return output;
 }
 
@@ -246,40 +246,48 @@ void MRST::doinitrun()
 	  parton=getParticleData(ParticleID::g);
 	}
       ofstream output(name.c_str());
-      double qmin=2.0*GeV,qmax=3000.0*GeV;
+      Energy qmin=2.0*GeV,qmax=3000.0*GeV;
       int nq=10;
-      double qstep=(qmax-qmin)/nq;
-      for(double q=qmin+qstep;q<=qmax;q+=qstep)
+      Energy qstep=(qmax-qmin)/nq;
+      for(Energy q=qmin+qstep;q<=qmax;q+=qstep)
 	{
 	  double nx=500;
 	  double xmin=1e-5,xmax=1.;
 	  double xstep=(log(xmax)-log(xmin))/nx;
 	  output << "NEW FRAME"  << endl;
-	  output << "SET FONT DUPLEX" << endl;
-	  output << "SET SCALE Y LOG" << endl;
+	  output << "SET FONT DUPLEX\n";
+	  output << "SET SCALE Y LOG\n";
 	  output << "SET LIMITS X " << xmin << " " << xmax << endl;
 	  if(itype==0)
-	    output << "TITLE TOP \" up      distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" up      distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==1)
-	    output << "TITLE TOP \" down    distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" down    distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==2)
-	    output << "TITLE TOP \" ubar    distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" ubar    distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==3)
-	    output << "TITLE TOP \" dbar    distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" dbar    distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==4)
-	    output << "TITLE TOP \" strange distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" strange distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==5)
-	    output << "TITLE TOP \" charm   distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" charm   distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==6)
-	    output << "TITLE TOP \" bottom  distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" bottom  distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  else if(itype==7)
-	    output << "TITLE TOP \" gluon   distribution for q=" <<  q << "\"" << endl;
+	    output << "TITLE TOP \" gluon   distribution for q=" 
+		   <<  q/GeV << "\"\n";
 	  for(double xl=log(xmin)+xstep;xl<=log(xmax);xl+=xstep)
 	    {
 	      double x=exp(xl);
-	      output << x << " "
+	      output << x << ' '
 		     << xfl(proton,parton,q*q,-xl)
-		     << endl;
+		     << '\n';
 	    }
 	  output << "JOIN" << endl;
 	}

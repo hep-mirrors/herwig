@@ -1,6 +1,6 @@
 #
 # This file contains the set-up of the decayers for Herwig++ outputted
-# from the Herwig++ Particles Database at 11:32:14 on the 14/9/2007.
+# from the Herwig++ Particles Database at 21:23:55 on the 24/9/2007.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -19700,5 +19700,212 @@ set /Defaults/Decays/HQETFormFactor:Rho2Vector 1.179
 set /Defaults/Decays/HQETFormFactor:R1         1.417
 set /Defaults/Decays/HQETFormFactor:R2         0.836
 set /Defaults/Decays/HQET:FormFactor /Defaults/Decays/HQETFormFactor 
+
+#
+create Herwig::DtoKPiPiCLEO  /Defaults/Decays/DKPiPiCLEO
+set /Defaults/Decays/DKPiPiCLEO:Iteration 10
+set /Defaults/Decays/DKPiPiCLEO:Ntry 500
+set /Defaults/Decays/DKPiPiCLEO:Points 10000
+set /Defaults/Decays/DKPiPiCLEO:GenerateIntermediates 1 
+set /Defaults/Decays/DKPiPiCLEO:LocalParameters 1
+set /Defaults/Decays/DKPiPiCLEO:OmegaMass 782.57
+set /Defaults/Decays/DKPiPiCLEO:f980Mass 977
+set /Defaults/Decays/DKPiPiCLEO:f_2Mass 1275.4
+set /Defaults/Decays/DKPiPiCLEO:f1370Mass 1310
+set /Defaults/Decays/DKPiPiCLEO:K_01430Mass 1412
+set /Defaults/Decays/DKPiPiCLEO:K_21430Mass 1425.6
+set /Defaults/Decays/DKPiPiCLEO:Kstar1680Mass 1717
+set /Defaults/Decays/DKPiPiCLEO:rho1700Mass 1700
+set /Defaults/Decays/DKPiPiCLEO:Kstar0892Mass 896.1
+set /Defaults/Decays/DKPiPiCLEO:KstarPlus892AMass 891.5
+set /Defaults/Decays/DKPiPiCLEO:KstarPlus892BMass 891.66
+set /Defaults/Decays/DKPiPiCLEO:RhoPlusMass 770
+set /Defaults/Decays/DKPiPiCLEO:Rho0Mass 769.3
+set /Defaults/Decays/DKPiPiCLEO:OmegaWidth 8.44
+set /Defaults/Decays/DKPiPiCLEO:f980Width 50
+set /Defaults/Decays/DKPiPiCLEO:f_2Width 185.1
+set /Defaults/Decays/DKPiPiCLEO:f1370Width 272
+set /Defaults/Decays/DKPiPiCLEO:K_01430Width 294
+set /Defaults/Decays/DKPiPiCLEO:K_21430Width 98.5
+set /Defaults/Decays/DKPiPiCLEO:Kstar1680Width 322
+set /Defaults/Decays/DKPiPiCLEO:rho1700Width 240
+set /Defaults/Decays/DKPiPiCLEO:Kstar0892Width 50.5
+set /Defaults/Decays/DKPiPiCLEO:KstarPlus892AWidth 50
+set /Defaults/Decays/DKPiPiCLEO:KstarPlus892BWidth 50.8
+set /Defaults/Decays/DKPiPiCLEO:RhoPlusWidth 150.7
+set /Defaults/Decays/DKPiPiCLEO:Rho0Width 150.2
+set /Defaults/Decays/DKPiPiCLEO:gPi 0.09
+set /Defaults/Decays/DKPiPiCLEO:gK 0.02
+set /Defaults/Decays/DKPiPiCLEO:f0Option 0
+set /Defaults/Decays/DKPiPiCLEO:ChargedNonResonantAmplitude 1.75
+set /Defaults/Decays/DKPiPiCLEO:ChargedNonResonantPhase 31.2
+set /Defaults/Decays/DKPiPiCLEO:ChargedRhoAmplitude 1
+set /Defaults/Decays/DKPiPiCLEO:ChargedRhoPhase 0
+set /Defaults/Decays/DKPiPiCLEO:ChargedKStarMinusAmplitude 0.44
+set /Defaults/Decays/DKPiPiCLEO:ChargedKStarMinusPhase 163
+set /Defaults/Decays/DKPiPiCLEO:ChargedKStar0Amplitude 0.39
+set /Defaults/Decays/DKPiPiCLEO:ChargedKStar0Phase -0.2
+set /Defaults/Decays/DKPiPiCLEO:ChargedK_0MinusAmplitude 0.77
+set /Defaults/Decays/DKPiPiCLEO:ChargedK_0MinusPhase 55.5
+set /Defaults/Decays/DKPiPiCLEO:ChargedK_00Amplitude 0.85
+set /Defaults/Decays/DKPiPiCLEO:ChargedK_00Phase 166
+set /Defaults/Decays/DKPiPiCLEO:ChargedRho1700Amplitude 2.5
+set /Defaults/Decays/DKPiPiCLEO:ChargedRho1700Phase 171
+set /Defaults/Decays/DKPiPiCLEO:ChargedK1680MinusAmplitude 2.5
+set /Defaults/Decays/DKPiPiCLEO:ChargedK1680MinusPhase 103
+set /Defaults/Decays/DKPiPiCLEO:NeutralKStarPlusAmplitude 0.11
+set /Defaults/Decays/DKPiPiCLEO:NeutralKStarPlusPhase 321
+set /Defaults/Decays/DKPiPiCLEO:NeutralRhoAmplitude 1
+set /Defaults/Decays/DKPiPiCLEO:NeutralRhoPhase 0
+set /Defaults/Decays/DKPiPiCLEO:NeutralOmegaAmplitude 0.037
+set /Defaults/Decays/DKPiPiCLEO:NeutralOmegaPhase 114
+set /Defaults/Decays/DKPiPiCLEO:NeutralKStarMinusAmplitude 1.56
+set /Defaults/Decays/DKPiPiCLEO:NeutralKStarMinusPhase 150
+set /Defaults/Decays/DKPiPiCLEO:Neutralf980Amplitude 0.34
+set /Defaults/Decays/DKPiPiCLEO:Neutralf980Phase 188
+set /Defaults/Decays/DKPiPiCLEO:Neutralf2Amplitude 0.7
+set /Defaults/Decays/DKPiPiCLEO:Neutralf2Phase 308
+set /Defaults/Decays/DKPiPiCLEO:Neutralf1370Amplitude 1.8
+set /Defaults/Decays/DKPiPiCLEO:Neutralf1370Phase 85
+set /Defaults/Decays/DKPiPiCLEO:NeutralKK_0MinusAmplitude 2
+set /Defaults/Decays/DKPiPiCLEO:NeutralKK_0MinusPhase 3
+set /Defaults/Decays/DKPiPiCLEO:NeutralKK_2MinusAmplitude 1
+set /Defaults/Decays/DKPiPiCLEO:NeutralKK_2MinusPhase 335
+set /Defaults/Decays/DKPiPiCLEO:NeutralK1680MinusAmplitude 5.6
+set /Defaults/Decays/DKPiPiCLEO:NeutralK1680MinusPhase 174
+set /Defaults/Decays/DKPiPiCLEO:NeutralNonResonantAmplitude 1.1
+set /Defaults/Decays/DKPiPiCLEO:NeutralNonResonantPhase 340
+set /Defaults/Decays/DKPiPiCLEO:DRadius 5
+set /Defaults/Decays/DKPiPiCLEO:ResonanceRadius 1.5
+insert /Defaults/Decays/DKPiPiCLEO:MaximumWeights 0 1.42657e+10
+insert /Defaults/Decays/DKPiPiCLEO:MaximumWeights 1 3.21105e+10
+insert /Defaults/Decays/DKPiPiCLEO:Weights 0 0.28797
+insert /Defaults/Decays/DKPiPiCLEO:Weights 1 0.137184
+insert /Defaults/Decays/DKPiPiCLEO:Weights 2 0.0809083
+insert /Defaults/Decays/DKPiPiCLEO:Weights 3 0.0900742
+insert /Defaults/Decays/DKPiPiCLEO:Weights 4 0.168189
+insert /Defaults/Decays/DKPiPiCLEO:Weights 5 0.085995
+insert /Defaults/Decays/DKPiPiCLEO:Weights 6 0.149679
+insert /Defaults/Decays/DKPiPiCLEO:Weights 7 0.0309423
+insert /Defaults/Decays/DKPiPiCLEO:Weights 8 0.144479
+insert /Defaults/Decays/DKPiPiCLEO:Weights 9 0.0612441
+insert /Defaults/Decays/DKPiPiCLEO:Weights 10 0.317923
+insert /Defaults/Decays/DKPiPiCLEO:Weights 11 0.0289859
+insert /Defaults/Decays/DKPiPiCLEO:Weights 12 0.107982
+insert /Defaults/Decays/DKPiPiCLEO:Weights 13 0.11297
+insert /Defaults/Decays/DKPiPiCLEO:Weights 14 0.0684044
+insert /Defaults/Decays/DKPiPiCLEO:Weights 15 0.0555692
+insert /Defaults/Decays/DKPiPiCLEO:Weights 16 0.0714999
+
+#
+create Herwig::DtoKPiPiE691  /Defaults/Decays/DKPiPiE691
+set /Defaults/Decays/DKPiPiE691:Iteration 10
+set /Defaults/Decays/DKPiPiE691:Ntry 500
+set /Defaults/Decays/DKPiPiE691:Points 10000
+set /Defaults/Decays/DKPiPiE691:GenerateIntermediates 1 
+set /Defaults/Decays/DKPiPiE691:KmPipPipNonResonantMagnitude 1
+set /Defaults/Decays/DKPiPiE691:KmPipPipNonResonantPhase     0
+set /Defaults/Decays/DKPiPiE691:KmPipPipK892Magnitude        0.78
+set /Defaults/Decays/DKPiPiE691:KmPipPipK892Phase            -60
+set /Defaults/Decays/DKPiPiE691:KmPipPipK1430Magnitude       0.53
+set /Defaults/Decays/DKPiPiE691:KmPipPipK1430Phase           132
+set /Defaults/Decays/DKPiPiE691:KmPipPipK1680Magnitude       0.47
+set /Defaults/Decays/DKPiPiE691:KmPipPipK1680Phase           -51
+set /Defaults/Decays/DKPiPiE691:KmPipPi0NonResonantMagnitude 1
+set /Defaults/Decays/DKPiPiE691:KmPipPi0NonResonantPhase     0
+set /Defaults/Decays/DKPiPiE691:KmPipPi0K8920Magnitude       3.19
+set /Defaults/Decays/DKPiPiE691:KmPipPi0K8920Phase           167
+set /Defaults/Decays/DKPiPiE691:KmPipPi0K892mMagnitude       2.96
+set /Defaults/Decays/DKPiPiE691:KmPipPi0K892mPhase           -112
+set /Defaults/Decays/DKPiPiE691:KmPipPi0RhoMagnitude         8.56
+set /Defaults/Decays/DKPiPiE691:KmPipPi0RhoPhase             40
+set /Defaults/Decays/DKPiPiE691:K0PipPimNonResonantMagnitude 1
+set /Defaults/Decays/DKPiPiE691:K0PipPimNonResonantPhase     0
+set /Defaults/Decays/DKPiPiE691:K0PipPimK892Magnitude        2.31
+set /Defaults/Decays/DKPiPiE691:K0PipPimK892Phase            109
+set /Defaults/Decays/DKPiPiE691:K0PipPimRhoMagnitude         1.59
+set /Defaults/Decays/DKPiPiE691:K0PipPimRhoPhase             -123
+set /Defaults/Decays/DKPiPiE691:LocalParameters 1
+set /Defaults/Decays/DKPiPiE691:K8920Mass      0.8961
+set /Defaults/Decays/DKPiPiE691:K8920Width     0.0505
+set /Defaults/Decays/DKPiPiE691:K892MinusMass  0.89159
+set /Defaults/Decays/DKPiPiE691:K892MinusWidth 0.0498
+set /Defaults/Decays/DKPiPiE691:K1680Mass      1.714
+set /Defaults/Decays/DKPiPiE691:K1680Width     0.323
+set /Defaults/Decays/DKPiPiE691:K1430Mass      1.429
+set /Defaults/Decays/DKPiPiE691:K1430Width     0.287
+set /Defaults/Decays/DKPiPiE691:Rho0Mass       0.7681
+set /Defaults/Decays/DKPiPiE691:Rho0Width      0.1515
+set /Defaults/Decays/DKPiPiE691:RhoPlusMass    0.7681
+set /Defaults/Decays/DKPiPiE691:RhoPlusWidth   0.1515
+insert /Defaults/Decays/DKPiPiE691:MaximumWeights 0 1.76526e+09
+insert /Defaults/Decays/DKPiPiE691:MaximumWeights 1 6.09945e+09
+insert /Defaults/Decays/DKPiPiE691:MaximumWeights 2 1.02351e+09
+insert /Defaults/Decays/DKPiPiE691:Weights 0 0.192843
+insert /Defaults/Decays/DKPiPiE691:Weights 1 0.198588
+insert /Defaults/Decays/DKPiPiE691:Weights 2 0.108339
+insert /Defaults/Decays/DKPiPiE691:Weights 3 0.114322
+insert /Defaults/Decays/DKPiPiE691:Weights 4 0.192924
+insert /Defaults/Decays/DKPiPiE691:Weights 5 0.192984
+insert /Defaults/Decays/DKPiPiE691:Weights 6 0.226201
+insert /Defaults/Decays/DKPiPiE691:Weights 7 0.217755
+insert /Defaults/Decays/DKPiPiE691:Weights 8 0.556044
+insert /Defaults/Decays/DKPiPiE691:Weights 9 0.453208
+insert /Defaults/Decays/DKPiPiE691:Weights 10 0.546792
+
+#
+create Herwig::DtoKPiPiMarkIII  /Defaults/Decays/DtoKPiPiMarkIII
+set /Defaults/Decays/DtoKPiPiMarkIII:Iteration 10
+set /Defaults/Decays/DtoKPiPiMarkIII:Ntry 500
+set /Defaults/Decays/DtoKPiPiMarkIII:Points 10000
+set /Defaults/Decays/DtoKPiPiMarkIII:GenerateIntermediates 1 
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0RhoMagnitude 1
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0RhoPhase 0
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0KstarmMagnitude 0.4018
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0KstarmPhase 154
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0Kstar0Magnitude 0.4244
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0Kstar0Phase 7
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0NonResonantMagnitude 2.0693
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPi0NonResonantPhase 52
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPimRhoMagnitude 0.0975
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPimRhoPhase 93
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPimKstarMagnitude 0.2225
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPimKstarPhase 0
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPimNonResonantMagnitude 1
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPimNonResonantPhase 0
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPi0RhoMagnitude 1
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPi0RhoPhase 0
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPi0KstarMagnitude 0.5617
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPi0KstarPhase 43
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPi0NonResonantMagnitude 2.725
+set /Defaults/Decays/DtoKPiPiMarkIII:K0PipPi0NonResonantPhase 250
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPipNonResonantMagnitude 1
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPipNonResonantPhase 0
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPipKstarMagnitude 0.04749
+set /Defaults/Decays/DtoKPiPiMarkIII:KmPipPipKstarPhase 105
+set /Defaults/Decays/DtoKPiPiMarkIII:LocalParameters 1
+set /Defaults/Decays/DtoKPiPiMarkIII:Kstar0Mass 0.8695
+set /Defaults/Decays/DtoKPiPiMarkIII:Kstar0Width 0.0502
+set /Defaults/Decays/DtoKPiPiMarkIII:KstarMinusMass 0.8921
+set /Defaults/Decays/DtoKPiPiMarkIII:KstarMinusWidth 0.0511
+set /Defaults/Decays/DtoKPiPiMarkIII:Rho0Mass 0.77
+set /Defaults/Decays/DtoKPiPiMarkIII:Rho0Width 0.1533
+set /Defaults/Decays/DtoKPiPiMarkIII:RhoPlusMass 0.77
+set /Defaults/Decays/DtoKPiPiMarkIII:RhoPlusWidth 0.1533
+set /Defaults/Decays/DtoKPiPiMarkIII:RhoRadius 5
+set /Defaults/Decays/DtoKPiPiMarkIII:KstarRadius 2
+insert /Defaults/Decays/DtoKPiPiMarkIII:MaximumWeights 0 3.40137e+10
+insert /Defaults/Decays/DtoKPiPiMarkIII:MaximumWeights 1 1.26052e+09
+insert /Defaults/Decays/DtoKPiPiMarkIII:MaximumWeights 2 7.78925e+10
+insert /Defaults/Decays/DtoKPiPiMarkIII:MaximumWeights 3 3.50351e+09
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 0 0.508183
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 1 0.186959
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 2 0.304858
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 3 0.442997
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 4 0.557003
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 5 0.576273
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 6 0.423727
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 7 0.497905
+insert /Defaults/Decays/DtoKPiPiMarkIII:Weights 8 0.502095
 
 #

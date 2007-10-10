@@ -11,7 +11,6 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Remnant.h"
 #include "CheckId.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Utilities/Timer.h"

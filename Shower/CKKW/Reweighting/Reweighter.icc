@@ -12,15 +12,6 @@ inline Reweighter::Reweighter()
     _MEalpha(1.)
 {}
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
-
-inline Reweighter::Reweighter(const Reweighter& x)
-  : Interfaced(x), _resolution(x._resolution), _reconstructor(x._reconstructor),
-    _vetoHighest(x._vetoHighest), _MEalpha(x._MEalpha),
-    _showerAlpha(x._showerAlpha), _stats(x._stats) { }
-  
-#endif
-
 inline tJetMeasurePtr Reweighter::resolution () const {
   return _resolution;
 }
@@ -61,12 +52,56 @@ inline IVector Reweighter::getReferences() {
 
 inline void Reweighter::doinitrun() {
   Interfaced::doinitrun();
-  event_internals().open("event_internals.dat");
-  event_internals() << "# multiplicity\t CKKW weight\t (scale/GeV2 of clustering, z of clustering)" << endl;
+  _clustering_scales = new_ptr(Histogram2(0,500,500,"sum"));
+  _weights = new_ptr(Histogram2(0,1,50,"sum"));
+  for(unsigned int i =1; i < 6; ++i) {
+    ostringstream mname ("");
+    mname << i;
+    _weights->insertChannel(mname.str());
+    _mult.insert(make_pair(i,mname.str()));
+    for (unsigned int j=1; j<=i; ++j) {
+      ostringstream name ("");
+      name << i << "_" << j;
+      _clustering_scales->insertChannel(name.str());
+      _mult_cluster.insert(make_pair(make_pair(i,j),name.str()));
+    }
+  }
 }
 
 inline void Reweighter::dofinish() {
   Interfaced::dofinish();
+
+  for(map<pair<unsigned int,unsigned int>,string>::iterator ch = _mult_cluster.begin();
+      ch != _mult_cluster.end(); ++ch) {
+    _clustering_scales->channel("sum") += _clustering_scales->channel(ch->second);
+  }
+
+  for(map<unsigned int,string>::iterator ch = _mult.begin();
+      ch != _mult.end(); ++ch) {
+    _weights->channel("sum") += _weights->channel(ch->second);
+  }
+
+  _weights->store("weights");
+  _clustering_scales->store("clustering_scales");
+
+  ofstream weights ("weights.dat");
+  ofstream clustering_scales ("clustering_scales.dat");
+
+  vector<string> allChannels = _weights->channels();
+
+  for(vector<string>::iterator c = allChannels.begin();
+      c != allChannels.end(); ++c) {
+    _weights->output(weights,*c);
+    weights << endl << endl;
+  }
+
+  allChannels = _clustering_scales->channels();
+
+  for(vector<string>::iterator c = allChannels.begin();
+      c != allChannels.end(); ++c) {
+    _clustering_scales->output(clustering_scales,*c);
+    clustering_scales << endl << endl;
+  }
 
   generator()->log() << "CKKW statistics" << endl
 		     << "================================================================================"

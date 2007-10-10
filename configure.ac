@@ -127,6 +127,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		include/Makefile
 		src/Makefile
 		src/PDF.in
+		src/herwig-config
 		Doc/Makefile
 		Doc/HerwigDefaults.in
 		Looptools/Makefile

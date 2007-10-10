@@ -20,7 +20,6 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
-#include "Herwig++/Hadronization/Remnant.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -240,7 +239,13 @@ void ShowerHandler::cascade() {
   theRemDec->initialize(remnants, *currentStep());
 
   //do the first forcedSplitting
-  theRemDec->doSplit(incs, true);
+  try{
+    theRemDec->doSplit(incs, true);
+  }catch(ExtraScatterVeto){
+    throw Exception() << "Remnant extraction failed in "
+                      << "ShowerHandler::cascade()" 
+                      << Exception::eventerror;   
+  }
 
   if( !IsMPIOn() ){
     theRemDec->finalize();
@@ -561,7 +566,7 @@ bool ShowerHandler::decayProduct(tPPtr particle) const{
     particle != currentSubProcess()->incoming().second;
 }
 
-double ShowerHandler::reweightCKKW(int, int maxMult) {
+double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
 
   if(_useCKKW) {
 
@@ -605,7 +610,7 @@ double ShowerHandler::reweightCKKW(int, int maxMult) {
       throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
 			<< Exception::eventerror;
 
-    double weight = _reweighter->reweight(_reconstructor->history(),out.size());
+    double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
 
     _evolver->initCKKWShower(out.size(),maxMult);
 

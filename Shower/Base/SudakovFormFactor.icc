@@ -9,7 +9,7 @@ namespace Herwig {
 inline SudakovFormFactor::SudakovFormFactor() : _pdfmax(35.0), _z( 0.0 ), 
 						_phi(0.0), _pT(0.*MeV),
 						_a(0.3), _b(2.3), _c(0.3*GeV),
-						_kinCutoffScale( .75*GeV )
+						_kinCutoffScale( 2.3*GeV )
 {}
 
 inline tSplittingFnPtr SudakovFormFactor::splittingFn() const { 

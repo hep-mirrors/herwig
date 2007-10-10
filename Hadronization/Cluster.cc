@@ -25,6 +25,8 @@ using namespace Herwig;
 
 tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
 
+Energy2 Cluster::_mg2 = 0.*GeV2;
+
 ClassDescription<Cluster> Cluster::initCluster;
 
 Cluster::Cluster() 
@@ -223,9 +225,8 @@ void Cluster::setBeamRemnant(int i, bool b) {
     _isBeamRemnant[i] = b;
 }
 
-bool Cluster::initPerturbative(tPPtr p) {
-  assert(_clusterHadHandler);
-  Energy Q0 = _clusterHadHandler->
-    getParticleData(ParticleID::g)->constituentMass();
-  return (p->scale() > Q0*Q0);
+void Cluster::setPointerClusterHadHandler(tcCluHadHdlPtr gp) {
+  _clusterHadHandler = gp;
+  _mg2=sqr(_clusterHadHandler->
+	   getParticleData(ParticleID::g)->constituentMass());
 }

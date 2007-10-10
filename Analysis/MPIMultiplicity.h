@@ -241,7 +241,7 @@ struct ClassTraits<Herwig::MPIMultiplicity>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MPIMultiplicity class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwAnalysis.so"; }
+  static string library() { return "HwShower.so HwMPIAnalysis.so"; }
 };
 
 /** @endcond */
@@ -249,8 +249,5 @@ struct ClassTraits<Herwig::MPIMultiplicity>
 }
 
 #include "MPIMultiplicity.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MPIMultiplicity.tcc"
-#endif
 
 #endif /* THEPEG_MPIMultiplicity_H */

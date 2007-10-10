@@ -2,7 +2,8 @@ CLEANFILES = AllInterfaces.h Herwig++-refman.tag HerwigDefaults.rpo
 
 docdir = $(pkgdatadir)/Doc
 
-dist_doc_DATA = refman.conf refman.h  tagfileThePEG.tag HerwigDefaults.in
+dist_doc_DATA = refman.conf refman.h HerwigDefaults.in
+EXTRA_DATA = tagfileThePEG.tag
 
 doc_SCRIPTS = fixinterfaces.pl
 

@@ -12,15 +12,11 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Utilities/StringUtils.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
-bool SusyBase::preInitialize() const {
-  return true;
-}    
-
 void SusyBase::doinit() throw(InitException) {
-  readSLHA();
   addVertex(theWSFSFVertex);
   addVertex(theNFSFVertex);
   addVertex(theGFSFVertex);
@@ -36,6 +32,11 @@ void SusyBase::doinit() throw(InitException) {
   addVertex(theWHHVertex);
   addVertex(theHHHVertex);
   StandardModel::doinit();
+  //create fresh BSM info file so it can be appended to later
+  //when decaymodes have been created
+  string name = CurrentGenerator::current().filename() +
+    string("-BSMModelInfo.out");
+  ofstream dummy(name.c_str());
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
@@ -46,8 +47,8 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theCCZVertex << theCNWVertex << theSSFFHVertex << theGOGOHVertex
      << theSSWWHVertex << theWHHVertex << theHHHVertex << theSSHGGVertex
      << _tanbeta << ounit(_mu,GeV) 
-     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
-     << theSLHAName;
+     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
+
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -58,8 +59,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex
      >> theHHHVertex >> theSSHGGVertex
      >> _tanbeta >> iunit(_mu,GeV) 
-     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
-     >> theSLHAName;
+     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -69,11 +69,6 @@ void SusyBase::Init() {
 
   static ClassDocumentation<SusyBase> documentation
     ("This is the base class for any SUSY model.");
-
-  static Parameter<SusyBase,string> interfaceSLHA
-    ("SLHA",
-     "The name of the spectrum file",
-     &SusyBase::theSLHAName, "", false, false);
 
   static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
@@ -162,15 +157,17 @@ void SusyBase::Init() {
 
 }
 
-void SusyBase::readSLHA() throw(InitException) {
-  ifstream file(theSLHAName.c_str());
-  if(!file)
-    throw InitException() 
-      << "SusyBase::readSLHA() - An error occurred while trying to open "
-      << "the spectrum file: " << theSLHAName << Exception::abortnow;
-   string line;
-   //function pointer for putting all characters to lower case.
-   int (*pf)(int) = tolower;
+void SusyBase::readSetup(istream & is) throw(SetupException) {
+  string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
+  ifstream file(filename.c_str());
+  if( !file ) throw SetupException() 
+    << "SusyBase::readSetup - An error occurred in opening the "
+    << "spectrum file \"" << filename << "\". A SUSY model cannot be "
+    << "run without this."
+    << Exception::abortnow; 
+  string line;
+  //function pointer for putting all characters to lower case.
+  int (*pf)(int) = tolower;
    //Start to read in the file
    while(getline(file, line)) {
      // ignore comment lines
@@ -201,14 +198,15 @@ void SusyBase::readSLHA() throw(InitException) {
    // create the mixing matrices we need
    createMixingMatrices();
    // set the masses, this has to be done after the 
-   // mixing matrices
+   // mixing matrices have been created
    resetRepositoryMasses();
 }
 
-void SusyBase::readBlock(ifstream & ifs,string name) throw(InitException) {
+void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {
   if(!ifs)
-    throw InitException() << "The input stream is in a bad state"
-			   << Exception::runerror;
+    throw SetupException() 
+      << "SusyBase::readBlock() - The input stream is in a bad state"
+      << Exception::abortnow;
   string line;
   ParamMap store;
   // special for the alpha block
@@ -240,9 +238,9 @@ void SusyBase::readBlock(ifstream & ifs,string name) throw(InitException) {
 }
 
 void SusyBase::readDecay(ifstream & ifs, 
-			 string decay) const throw(InitException){
+			 string decay) const throw(SetupException){
   if(!ifs)
-    throw InitException() 
+    throw SetupException() 
       <<"SusyBase::readDecay - The input stream is in a bad state";
   //if the particle is stable then next line will be the start of a 
   //new decaymode or a new block so just return if this is found
@@ -254,12 +252,14 @@ void SusyBase::readDecay(ifstream & ifs,
   double width;
   iss >> dummy >> parent >> width;
   PDPtr inpart = getParticleData(parent);
-  if(!inpart) throw InitException() << "Decaying particle with PDG code "
-				     << parent << " does not exist in "
-				     << "SusyBase::readDecay()" 
-				     << Exception::runerror;
+  if(!inpart)  {
+    throw SetupException() 
+    << "SusyBase::readDecay() - A ParticleData object with the PDG code "
+    << parent << " does not exist. " << Exception::abortnow;
+    return;
+  }
   inpart->width(width*GeV);
-  string tag = inpart->PDGName() + "->";
+  string tag = "decaymode " + inpart->PDGName() + "->";
   string line;
   while(getline(ifs, line)) {
     if(line[0] == '#') {
@@ -271,10 +271,21 @@ void SusyBase::readDecay(ifstream & ifs,
     double brat(0.);
     unsigned int nda(0);
     is >> brat >> nda;
-    vector<long> products(nda);
+    tcPDVector products(nda);
     vector<long>::size_type i(0);
-    while(is && ++i < nda + 1)
-      is >> products[i - 1];
+    while(is && ++i < nda + 1) {
+      long t;
+      is >> t;
+      tcPDPtr p = getParticleData(t);
+      if( !p ) {
+	throw SetupException()
+	  << "SusyBase::readDecay() - An unknown PDG code has been encounterd "
+	  << "while reading a decay mode. ID: " << t
+	  << Exception::abortnow;
+	products.resize(0);
+      }
+      else products[i - 1] = p;
+    }
     if( products.size() > 0 ) {
       inpart->stable(false);
       createDecayMode(tag, products, brat);
@@ -290,9 +301,11 @@ void SusyBase::readDecay(ifstream & ifs,
 
 const MixingVector
 SusyBase::readMatrix(ifstream & ifs, 
-		     unsigned int & row, unsigned int & col) throw(InitException) {
+		     unsigned int & row, unsigned int & col) throw(SetupException) {
   if(!ifs)
-    throw InitException() << "The input stream is in a bad state";
+    throw SetupException() 
+      << "SusyBase::readMatrix() - The input stream is in a bad state."
+      << Exception::abortnow;
   string line;
   unsigned int rowmax(0), colmax(0);
   MixingVector values;
@@ -317,30 +330,18 @@ SusyBase::readMatrix(ifstream & ifs,
   return values;
 }
 
-void SusyBase::createDecayMode(string tag, vector<long> products,
+void SusyBase::createDecayMode(string tag, tcPDVector products,
 			       double brat) const {
-  vector<long>::size_type nda = products.size();
-  for(vector<long>::size_type i = 0; i < nda; ++i) {
-    tcPDPtr prod = getParticleData(products[i]);
-    if( !prod ) 
-      throw InitException() 
-	<< "Unknown decay product with PDG code "
-	<< products[i] << " in SusyBase::createDecayMode()"
-	<< Exception::runerror;
-    tag += prod->PDGName();
-    if(i != nda - 1) tag += ",";
-    else tag += ";";
+  ostringstream cmd;
+  cmd << tag;
+  tcPDVector::size_type nda = products.size();
+  for(tcPDVector::size_type i = 0; i < nda; ++i) {
+    cmd << products[i]->PDGName();
+    if( i != nda - 1 ) cmd << ",";
+    else cmd << ";";
   }
-  tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
-  if(ndm) {
-    generator()->preinitInterface(ndm, "Decayer", "set",
-				  "/Defaults/Decays/Mambo");
-    generator()->preinitInterface(ndm, "OnOff", "set", "1");
-    ostringstream br;
-    br << brat;
-    generator()->preinitInterface(ndm, "BranchingRatio",
-				  "set", br.str());
-  }
+  cmd << string(" ") <<  brat << string(" 1 /Defaults/Decays/Mambo");
+  Repository::exec(cmd.str(), cerr);
 }
 
 void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
@@ -398,8 +399,8 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     matrix->setIds(ids);
   }
   else
-    throw InitException() << "Cannot find correct title for mixing matrix "
-			   << name << Exception::runerror;
+    throw SetupException() << "Cannot find correct title for mixing matrix "
+			   << name << Exception::abortnow;
 }
 
 void SusyBase::resetRepositoryMasses() {
@@ -407,18 +408,18 @@ void SusyBase::resetRepositoryMasses() {
   if(fit==_parameters.end()) 
     throw Exception() << "BLOCK MASS not found in input file"
 		      << " can't set masses of SUSY particles"
-		      << Exception::runerror;
+		      << Exception::abortnow;
   ParamMap theMasses = fit->second;
   for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end();){
     long id = it->first;
     double mass = it->second;
-    //a negative mass requires an adjustment to the associated mixing matrix 
+    //a negative mass requires an adjustment to the 
+    //associated mixing matrix by a factor of i
     if(mass < 0.0) adjustMixingMatrix(id);
     PDPtr part = getParticleData(id);
-    if(!part) throw Exception() << "Particle with PDG code " << id 
-				<< " not found in SusyBase::"
-				<< "resetRepositoryMasses()"
-				<< Exception::runerror;
+    if(!part) throw SetupException() 
+      << "SusyBase::resetRepositoryMasses() - Particle with PDG code " << id  
+      << " not found." << Exception::warning;
     //Find interface nominal mass interface
     const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
     ostringstream os;
@@ -440,30 +441,32 @@ void SusyBase::adjustMixingMatrix(long id) {
     if(theNMix)
       theNMix->adjustPhase(id);
     else 
-      throw InitException() << "SusyBase::adjustMixingMatrix - "
+      throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The neutralino mixing matrix pointer "
-			     << "is null!" << Exception::runerror;
+			     << "is null!" << Exception::abortnow;
     break;
   case 1000024 :
   case 1000037 : 
     if(theUMix)
       theUMix->adjustPhase(id);
     else 
-      throw InitException() << "SusyBase::adjustMixingMatrix - "
+      throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The U-Type chargino mixing matrix pointer "
-			     << "is null!" << Exception::runerror;
+			     << "is null!" << Exception::abortnow;
     if(theVMix)
       theVMix->adjustPhase(id);
     else 
-      throw InitException() << "SusyBase::adjustMixingMatrix - "
+      throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The V-Type chargino mixing matrix pointer "
-			     << "is null!" << Exception::runerror;
+			     << "is null!" << Exception::abortnow;
     break;
   default : 
-    throw InitException() << "SusyBase::adjustMixingMatrix - "
-			   << "PDG code does not correspond to anything that "
-			   << "has a mixing matrix associated with it"
-			   << Exception::runerror;
+    throw SetupException() 
+      << "SusyBase::adjustMixingMatrix - Trying to adjust mixing matrix "
+      << "phase for a particle that does not have a mixing matrix "
+      << "associated with it. " << id << " must have a negative mass in "
+      << "the spectrum file, this should only occur for particles that mix."
+      << Exception::abortnow;
   }
 }
 
@@ -491,12 +494,12 @@ void SusyBase::extractParameters(bool checkmodel) {
   if(pit==_parameters.end()) 
     throw Exception() << "BLOCK MINPAR not found in " 
 		      << "SusyBase::extractParameters()"
-		      << Exception::runerror;
+		      << Exception::abortnow;
   // extract tan beta
   ParamMap::const_iterator it = pit->second.find(3);
   if(it==pit->second.end()) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
-		      << Exception::runerror;
+		      << Exception::abortnow;
   _tanbeta=it->second;
   // extract parameters from hmix
   pit=_parameters.find("hmix");
@@ -517,7 +520,7 @@ void SusyBase::extractParameters(bool checkmodel) {
   if( pit == _parameters.end() )
     throw Exception() << "BLOCK MSOFT not found in " 
 		      << "SusyBase::extractParameters()"
-		      << Exception::runerror;
+		      << Exception::abortnow;
   it = pit->second.find(1);
   theMone = it->second*GeV;
   it = pit->second.find(2);
@@ -527,6 +530,6 @@ void SusyBase::extractParameters(bool checkmodel) {
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"
-		      << " from it" << Exception::runerror;
+		      << " from it" << Exception::abortnow;
   }
 }

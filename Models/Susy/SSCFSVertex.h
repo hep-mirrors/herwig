@@ -92,7 +92,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -114,11 +114,6 @@ private:
    */
   tMSSMPtr _theSS;
 
-  /**
-   * \f$\tan(\beta)\f$
-   */
-  double _tanB;
-  
   /**
    * \f$\sin(\beta)\f$
    */
@@ -147,7 +142,7 @@ private:
   /**
    * Pointer to sbottom mixing matrix
    */
-  tMixingMatrixPtr _sbottom;
+  tMixingMatrixPtr _sbot;
 
   /**
    * Pointer to stau mixing matrix 
@@ -157,12 +152,12 @@ private:
   /**
    * Pointer to U chargino mixing matrix 
    */
-  tMixingMatrixPtr _chargU;
+  tMixingMatrixPtr _umix;
 
   /**
    * Pointer to V chargino mixing matrix
    */
-  tMixingMatrixPtr _chargV;
+  tMixingMatrixPtr _vmix;
 
   /**
    * The energy scale at which the coupling 

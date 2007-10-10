@@ -113,7 +113,7 @@ void DefaultReweighter::Init() {
 
 }
 
-double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int mult) {
+double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int mult, unsigned int minmult) {
 
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
   generator()->log() << "== DefaultReweighter::sudakovReweight" << endl;
@@ -121,7 +121,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 
   double weight = 1.;
 
-  if (history.hardProcess.size()-2 == mult && _sudakovUnweight) return weight;
+  if (mult == minmult && _sudakovUnweight) return weight;
 
   for (vector<ClusteringParticlePtr>::iterator p = history.reconstructed.begin();
        p != history.reconstructed.end(); ++p) {

@@ -3,6 +3,8 @@ Herwig___SOURCES = Herwig++.cc
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
+bin_SCRIPTS = herwig-config
+
 DOTINFILES = Analysis.in Decays.in Hadronization.in \
 HerwigDefaults.in OldParticles.in Particles.in \
 OldDecays.in Model.in RSModelVertices.in \
