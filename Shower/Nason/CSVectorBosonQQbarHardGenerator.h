@@ -92,7 +92,7 @@ protected:
   /**
    *  Generate the values of 
    */
-  void generate(Energy2 s);
+  void generate(Energy2 s,double theta, double phi);
 
 private:
 
