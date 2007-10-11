@@ -6,11 +6,6 @@
 
 #include "HwRemDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "HwRemDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <ThePEG/Interface/Reference.h>  
@@ -399,10 +394,18 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
     theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();
 
     if(partons.first->id() != ParticleID::g){
-      if(partons.first==theMaps.first.back().first)
+      if(partons.first==theMaps.first.back().first) {
+	if(!theMaps.first.back().second) throw Exception()
+	  << "theMaps.first.back().second does not exist in HwRemDecayer::doSplit()"
+	  << Exception::eventerror;
 	theUsed.first -= theMaps.first.back().second->momentum();
-      else
+      }
+      else {
+	if(!theMaps.first.back().first) throw Exception()
+	  << "theMaps.first.back().first does not exist in HwRemDecayer::doSplit()"
+	  << Exception::eventerror;
 	theUsed.first -= theMaps.first.back().first->momentum();
+      }
       //remove a possible created quark from gluon splitting
       thestep->removeParticle(theMaps.first.back().first);
       thestep->removeParticle(theMaps.first.back().second);
