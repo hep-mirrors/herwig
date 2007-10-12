@@ -263,6 +263,26 @@ private:
   ProductionMatrixElement _me;
 
   /**
+   *  Parameters for the NLO weight
+   */
+  //@{
+  /**
+   *  Whether to generate the positive, negative or leading order contribution
+   */
+  unsigned int _contrib;
+
+  /**
+   *  The magnitude of the correction term to reduce the negative contribution
+   */
+  double _a;
+
+  /**
+   *  The power of the correction term to reduce the negative contribution
+   */
+  double _p;
+  //@}
+
+  /**
    *  Radiation variables
    */
   //@{

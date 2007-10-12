@@ -120,15 +120,14 @@ MEqq2gZ2ffNason::colourGeometries(tcDiagPtr) const {
 }
 
 void MEqq2gZ2ffNason::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _gammaZ << _process
-     << _theFFZVertex << _theFFPVertex 
-     << _gamma << _z0;
+  os << _maxflavour << _gammaZ << _process << _theFFZVertex << _theFFPVertex 
+     << _gamma << _z0 << _contrib << _a << _p;
 }
 
 void MEqq2gZ2ffNason::persistentInput(PersistentIStream & is, int) { 
   is >> _maxflavour >> _gammaZ >> _process
      >> _theFFZVertex >> _theFFPVertex 
-     >> _gamma >> _z0; 
+     >> _gamma >> _z0 >> _contrib >> _a >> _p; 
 }
 
 ClassDescription<MEqq2gZ2ffNason> MEqq2gZ2ffNason::initMEqq2gZ2ffNason;
@@ -257,6 +256,37 @@ void MEqq2gZ2ffNason::Init() {
      "Only include t tbar as outgoing particles",
      16);
 
+  static Switch<MEqq2gZ2ffNason,unsigned int> interfaceContribution
+    ("Contribution",
+     "Which contributions to the cross section to include",
+     &MEqq2gZ2ffNason::_contrib, 1, false, false);
+  static SwitchOption interfaceContributionLeadingOrder
+    (interfaceContribution,
+     "LeadingOrder",
+     "Just generate the leading order cross section",
+     0);
+  static SwitchOption interfaceContributionPositiveNLO
+    (interfaceContribution,
+     "PositiveNLO",
+     "Generate the positive contribution to the full NLO cross section",
+     1);
+  static SwitchOption interfaceContributionNegativeNLO
+    (interfaceContribution,
+     "NegativeNLO",
+     "Generate the negative contribution to the full NLO cross section",
+     2);
+
+  static Parameter<MEqq2gZ2ffNason,double> interfaceCorrectionCoefficient
+    ("CorrectionCoefficient",
+     "The magnitude pf the correction term to reduce the negative contribution",
+     &MEqq2gZ2ffNason::_a, 0.5, -10., 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<MEqq2gZ2ffNason,double> interfaceCorrectionPower
+    ("CorrectionPower",
+     "The power of the correction term to reduce the negative contribution",
+     &MEqq2gZ2ffNason::_p, 0.7, 0.0, 1.0,
+     false, false, Interface::limited);
 }
 
 double MEqq2gZ2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
@@ -265,7 +295,8 @@ double MEqq2gZ2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
 			   vector<SpinorWaveFunction>    & aout,
 			   bool calc) const {
   // scale
-  Energy2 mb2(scale());
+  //Energy2 mb2(scale());
+  Energy2 mb2(sqr(getParticleData(ParticleID::Z0)->mass()));
   // matrix element to be stored
   ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
 				PDT::Spin1Half,PDT::Spin1Half);
@@ -314,7 +345,9 @@ double MEqq2gZ2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
   save.push_back(me[2]);
   meInfo(save);
   if(calc) _me.reset(menew);
-  return me[0]*NLOweight();
+  // the last factor is the difference betweeon our and MCFM's
+  // alpha at the Z mass
+  return me[0]*NLOweight()*sqr(0.00754677226/0.00776334);
 }
 
 void MEqq2gZ2ffNason::constructVertex(tSubProPtr sub) {
@@ -358,6 +391,8 @@ bool MEqq2gZ2ffNason::generateKinematics(const double * r) {
 }
 
 double MEqq2gZ2ffNason::NLOweight() const {
+  // if leading order this is one
+  if(_contrib==0) return 1.;
   using Constants::pi;
   // first extract xbarp and xbarm
   double xbp = lastX1();
@@ -377,7 +412,7 @@ double MEqq2gZ2ffNason::NLOweight() const {
   double aS = SM().alphaS(scale());
   double CF(4./3.),TR(0.5);
   // pieces with LO kinematics
-  double lowgt = 1.+4.*aS/pi*CF;
+  double lowgt = 1.+aS/pi*CF;
   // + radiation and collinear pieces
   double z  = xbp+(1.-xbp)*_x;
   double xp = xbp/z;
@@ -393,7 +428,6 @@ double MEqq2gZ2ffNason::NLOweight() const {
      +CF*((2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
 	  (newq/oldq-1.)*2./(1.-z)*zlog)
      +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*newg/oldq);
-  //cerr << "testing pwgt " << pwgt << " " << z << " " << sqrt(sHat()/z)/GeV << "\n";
   if(isnan(pwgt)||isinf(pwgt)) cerr << "testing + weight nan\n";
   int xbin = int(_x*100.);
   int vbin = int(_v*100.);
@@ -431,10 +465,8 @@ double MEqq2gZ2ffNason::NLOweight() const {
   }
   double wgt = lowgt+pwgt+nwgt;
   // trick to try and make less negative events
-  const double p=0.7;
-  const double a=0.1; 
   if(_x>=eps) {
-    wgt = wgt + a*(1./pow(_x,p)-(1.-pow(eps,1.-p))/(1.-p)/(1.-eps));
+    wgt += _a*(1./pow(_x,_p)-(1.-pow(eps,1.-_p))/(1.-_p)/(1.-eps));
   }
   if(xbin>99||vbin>99) cerr << "testing hist error\n";
   if(wgt>0.) {
@@ -451,7 +483,7 @@ double MEqq2gZ2ffNason::NLOweight() const {
     cerr << "testing variables " << _x << " " << _v << "\n";
     exit(0);
   }
-  return max(0.,-wgt);
+  return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
 void MEqq2gZ2ffNason::dofinish() {
