@@ -425,8 +425,8 @@ double MEqq2gZ2ffNason::NLOweight() const {
   double pwgt = 0.5*aS/pi*(1.-xbp)/z*
     (2.*CF*(vt-(1.-z))     *newq/oldq
      +  TR*(1.-z)*(vt+2.*z)*newg/oldq
-     +CF*((2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
-	  (newq/oldq-1.)*2./(1.-z)*zlog)
+     +CF*(z*(2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
+	  (newq/oldq-z)*2./(1.-z)*zlog)
      +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*newg/oldq);
   if(isnan(pwgt)||isinf(pwgt)) cerr << "testing + weight nan\n";
   int xbin = int(_x*100.);
@@ -451,8 +451,8 @@ double MEqq2gZ2ffNason::NLOweight() const {
   double nwgt = 0.5*aS/pi*(1.-xbm)/z*
     (2.*CF*(vt-(1.-z))     *newq/oldq
      +  TR*(1.-z)*(vt+2.*z)*newg/oldq
-     +CF*((2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
-	  (newq/oldq-1.)*2./(1.-z)*zlog)
+     +CF*(z*(2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
+	  (newq/oldq-z)*2./(1.-z)*zlog)
      +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*newg/oldq);
   if(isnan(nwgt)||isinf(nwgt)) cerr << "testing - weight nan\n";
   if(nwgt>0.) {
