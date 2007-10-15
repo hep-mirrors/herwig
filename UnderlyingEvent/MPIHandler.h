@@ -22,13 +22,15 @@ using namespace ThePEG;
   /** \ingroup UnderlyingEvent
    * \class MPIHandler
    * This class is responsible for generating additional 
-   * Parton interactions.
+   * semi hard partonic interactions.
    * 
-   * \author Manuel Bahr
+   * \author Manuel B\"ahr
    *
    * @see \ref MPIHandlerInterfaces "The interfaces"
    * defined for MPIHandler.
    * @see MPISampler
+   * @see ShowerHandler
+   * @see HwRemDecayer
    */
 
 class MPIHandler: public Interfaced, public LastXCombInfo<> {
@@ -509,8 +511,13 @@ namespace Herwig {
      * Get the function value
      */
     Length operator ()(Length argument) const;
+
+    /** Resulting integral is of type Length, because the integrand has no dimension */
     typedef Length ValType;
+
+    /** Integration variable is of type Length */
     typedef Length ArgType;
+
     /**
      * Pointer to the Handler that calls this integrand
      */

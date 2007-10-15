@@ -16,6 +16,8 @@ using namespace ThePEG;
  * modifications like removing the valence part of it, which
  * is needed in the backward evolution of secondary scatters.
  *
+ * \author Manuel B\"ahr
+ *
  * @see \ref MPIPDFInterfaces "The interfaces"
  * defined for MPIPDF.
  */

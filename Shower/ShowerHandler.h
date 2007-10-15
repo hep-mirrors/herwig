@@ -38,7 +38,9 @@ class ShowerHandler: public CascadeHandler {
 
 public:
   
+  /** Typedef for a pair of ThePEG::RemnantParticle pointers. */
   typedef pair<tRemPPtr, tRemPPtr> RemPair;
+
   /**
    * The default constructor.
    */
