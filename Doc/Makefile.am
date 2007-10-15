@@ -20,7 +20,7 @@ pdf-local: refman-html
 AllInterfaces.h: HerwigDefaults.in
 	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
 
-refman-html: refman.conf refman.h AllInterfaces.h refmanThePEG.conf
+refman-html: refman.conf refman.h AllInterfaces.h refmanThePEG.conf tagfileThePEG.tag
 	./fixinterfaces.pl AllInterfaces.h
 	doxygen $<
 

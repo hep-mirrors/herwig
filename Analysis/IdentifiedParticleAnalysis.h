@@ -375,12 +375,12 @@ private:
   HistogramPtr _xirhop;
 
   /**
-   *  Histogram for the OPAL \f$\a_0^+\f$ \f$x\f$ distribution
+   *  Histogram for the OPAL \f$a_0^+\f$ \f$x\f$ distribution
    */
   HistogramPtr _xea_0p;
 
   /**
-   *  Histogram for the OPAL \f$\a_0^+\f$ \f$\xi\f$ distribution
+   *  Histogram for the OPAL \f$a_0^+\f$ \f$\xi\f$ distribution
    */
   HistogramPtr _xia_0p;
 

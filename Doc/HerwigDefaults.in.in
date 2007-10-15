@@ -14,9 +14,11 @@ library HwRSModel.so
 library HwSusy.so
 library HwNMSSM.so
 library HwUED.so
+library HwMPI.so 
+library HwMPIPDF.so 
+library HwRemDecayer.so
 library HwShower.so
 library HwUA5.so
-library HwMPI.so
 library HwBaryonDecay.so
 library HwFormFactors.so
 library HwSMDecay.so
@@ -32,6 +34,8 @@ library HwSMDecay.so
 library HwTauDecay.so
 library HwTMDecay.so
 library HwVMDecay.so
+library HwMPIAnalysis.so
 @LOAD_EVTGEN@
 @LOAD_KTJET@
+@LOAD_ROOT@
 doxygendump Herwig:: AllInterfaces.h

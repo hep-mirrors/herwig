@@ -154,6 +154,8 @@ struct ClassTraits<Herwig::SimpleSVVLoopVertex>
   static string className() { return "Herwig::SimpleSVVLoopVertex"; }
 };
 
+/** @endcond */
+
 }
  
 #endif /* HERWIG_SimpleSVVLoopVertex_H */

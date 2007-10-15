@@ -90,7 +90,7 @@ public:
    * particle instance.
    * @param dm The DecayMode of the particle
    * @param p The particle object
-   * @param The branching fraction given in the DecayMode object
+   * @param oldbrat The branching fraction given in the DecayMode object
    */
   virtual double brat(const DecayMode & dm, const Particle & p,
 		      double oldbrat) const;

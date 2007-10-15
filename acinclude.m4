@@ -268,6 +268,7 @@ AC_DEFUN([HERWIG_CHECK_ROOT],[
 ROOTPATH=""
 ROOTLIBS=""
 ROOTINCLUDE=""
+LOAD_ROOT=""
 
 AC_MSG_CHECKING([for ROOT])
 
@@ -301,6 +302,9 @@ else
 
     AC_SUBST(ROOTLIBS)
     AC_SUBST(ROOTINCLUDE)
+
+	LOAD_ROOT="read Root.in"
+	AC_SUBST(LOAD_ROOT)
 
   else
     AC_MSG_ERROR([root-config not found...aborting])    
