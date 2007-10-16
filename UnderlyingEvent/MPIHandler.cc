@@ -398,7 +398,6 @@ void MPIHandler::statistics(ostream & os, Stat & tot) const {
 
 void MPIHandler::Probs(XSVector UEXSecs) {
   GaussianIntegrator integrator;
-  Eikonalization *integrand, *inelint;
   ofstream file;
   file.open("multi.test", ios::app);
   file << "Probabilities:\n";
@@ -413,17 +412,17 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
     i = 1;
-    inelint = new Eikonalization(this, *it, -1);//get the inel xsec
+    Eikonalization inelint(this, *it, -1);//get the inel xsec
     do{
       //      cout << "debug: add integrand i = " << i << endl;
-      integrand = new Eikonalization(this, *it, i);
+      Eikonalization integrand(this, *it, i);
       
       if(i>10) bmax = 10.0*sqrt(millibarn);
       if(theJmueo){
-	P = integrator.value(*integrand, Length(), bmax)/(*it);
+	P = integrator.value(integrand, Length(), bmax)/(*it);
       }else{
-	P = integrator.value(*integrand, Length(), bmax) /
-	integrator.value(*inelint, Length(), bmax);
+	P = integrator.value(integrand, Length(), bmax) /
+	integrator.value(inelint, Length(), bmax);
       }
       AvgN += P*(i-1);
       
@@ -432,9 +431,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       theMultiplicities.insert(P, i-1);
 
       i++;
-      delete integrand;
     } while ( (i < 100) && (i < 5 || P > 1.e-15) );
-    delete inelint;
 
     file << "------------------------------------------------\n";
     file << "AvgN: " << AvgN << endl;    
