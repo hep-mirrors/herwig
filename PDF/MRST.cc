@@ -267,6 +267,7 @@ double MRST::pdfValue(double x, Energy2 q2,
       }
     }
   }
+  output = max(output,0.);
   return output;
 }
 
