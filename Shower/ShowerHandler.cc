@@ -341,7 +341,8 @@ void ShowerHandler::findShoweringParticles() {
   tPVector thetagged;
   if( FirstInt() ){
     thetagged = tagged();
-  }else{
+  }
+  else{
     //get the "tagged" particles 
     for(PVector::const_iterator pit = currentSubProcess()->outgoing().begin(); 
 	pit != currentSubProcess()->outgoing().end(); ++pit)
@@ -556,66 +557,81 @@ PPtr ShowerHandler::findFirstParton(tPPtr seed, tPPair incoming) const{
   }
 }
 
-bool ShowerHandler::decayProduct(tPPtr particle) const{
-  return 
-    !(particle->dataPtr()->coloured()&&
-      (particle->parents()[0]==currentSubProcess()->incoming().first||
-       particle->parents()[0]==currentSubProcess()->incoming().second)) && 
-    particle->momentum().m2()>0.0*GeV2&&
-    particle != currentSubProcess()->incoming().first &&
-    particle != currentSubProcess()->incoming().second;
+bool ShowerHandler::decayProduct(tPPtr particle) const {
+  // must be time-like and not incoming
+  if(particle->momentum().m2()<=0.0*GeV2||
+     particle == currentSubProcess()->incoming().first||
+     particle == currentSubProcess()->incoming().second) return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
+  // must not be the s-channel intermediate
+  if(find(currentSubProcess()->incoming().first->children().begin(),
+	  currentSubProcess()->incoming().first->children().end(),particle)!=
+     currentSubProcess()->incoming().first->children().end()&&
+     find(currentSubProcess()->incoming().second->children().begin(),
+	  currentSubProcess()->incoming().second->children().end(),particle)!=
+     currentSubProcess()->incoming().second->children().end()&&
+     currentSubProcess()->incoming().first ->children().size()==1&&
+     currentSubProcess()->incoming().second->children().size()==1)
+    return false;
+  // must not have same particle type as a child
+  int id = particle->id();
+  for(unsigned int ix=0;ix<particle->children().size();++ix)
+    if(particle->children()[ix]->id()==id) return false;
+  // otherwise its a decaying particle
+  return true;
 }
 
 double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
-
-  if(_useCKKW) {
-
+  // return if not doing CKKW
+  if(!_useCKKW) return 1.;
+  
 #ifdef HERWIG_DEBUG_CKKW
-    generator()->log() << "== ShowerHandler::reweightCKKW" << endl;
+  generator()->log() << "== ShowerHandler::reweightCKKW" << endl;
 #endif
 
-    // get the hard subprocess particles
+  // get the hard subprocess particles
+  
+  PPair in = lastXCombPtr()->subProcess()->incoming();
+  ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
+  pair<double,double> x = make_pair(lastXCombPtr()->lastX1(),lastXCombPtr()->lastX2());
+  
+  bool gotHistory = false;
+  
+  try {
     
-    PPair in = lastXCombPtr()->subProcess()->incoming();
-    ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
-    pair<double,double> x = make_pair(lastXCombPtr()->lastX1(),lastXCombPtr()->lastX2());
+    // check resolution cut
     
-    bool gotHistory = false;
-
-    try {
-
-      // check resolution cut
-      
-      _reweighter->unresolvedCut(in,out);
-
-      // set the generation alpha_s
-
-      _reweighter->MEalpha(lastXCombPtr()->lastAlphaS());
-
-      // reconstruct a history
-
-      gotHistory = _reconstructor->reconstruct(in,x,out);
-
-    } catch (Veto) {
-
-      // as Veto is not handled if the subprocess has not been setup
-      // completely, we return weight 0, which, according to Leif,
-      // does the same job.
-
-      return 0.;
-
-    }
-
-    if (!gotHistory)
-      throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
-			<< Exception::eventerror;
-
-    double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
-
-    _evolver->initCKKWShower(out.size(),maxMult);
-
-    return weight;
-
-  } else return 1.;
+    _reweighter->unresolvedCut(in,out);
+    
+    // set the generation alpha_s
+    
+    _reweighter->MEalpha(lastXCombPtr()->lastAlphaS());
+    
+    // reconstruct a history
+    
+    gotHistory = _reconstructor->reconstruct(in,x,out);
+    
+  } catch (Veto) {
+    
+    // as Veto is not handled if the subprocess has not been setup
+    // completely, we return weight 0, which, according to Leif,
+    // does the same job.
+    
+    return 0.;
+    
+  }
+  
+  if (!gotHistory)
+    throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
+		      << Exception::eventerror;
+  
+  double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
+  
+  _evolver->initCKKWShower(out.size(),maxMult);
+  
+  return weight;
 
 }
