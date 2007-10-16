@@ -259,6 +259,11 @@ private:
    *  \f$q^2\f$ bin where bottom introduced
    */
   static const int nqb0=11;
+
+  /**
+   *  Parameter for the FORTRAN interpolation
+   */
+  static const int ntenth=23;
   
   /**
    *  Minimum value of \f$x\f$
@@ -291,7 +296,10 @@ private:
   static const Energy2 mb2;
   //@}
 
-
+  /**
+   *  Use FORTRAN or C++ MRST interpolation
+   */
+  bool _inter;
 
   /**
    *  The name of the file
@@ -305,9 +313,20 @@ private:
   vector<vector<vector<double> > > data;
 
   /**
+   *  Array containing the data to be interpolated
+   */
+  //  double data[np+1][nx+1][nq+1];
+  vector<vector<vector<double> > > fdata;
+
+  /**
    *  The \f$x\f$ values for interpolation
    */
   static double xx[nx+1];
+
+  /**
+   *  The \f$x\f$ values for interpolation
+   */
+  static double xxb[nx+1];
 
   /**
    *  The \f$q^2\f$ values for interpolation
@@ -315,9 +334,19 @@ private:
   static double qq[nq+1];
 
   /**
-   * Coefficients used for interpolation
+   *  The \f$q^2\f$ values for interpolation
+   */
+  static double qqb[nq+1];
+
+  /**
+   *  Coefficients used for interpolation
    */
   double c[np+1][nx][nq][5][5];
+
+  /**
+   *  The powers n0 for the FORTRAN interpolation
+   */
+  static double n0[np+1];
 };
 
 }
