@@ -6,11 +6,6 @@
 
 #include "HwRemDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "HwRemDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <ThePEG/Interface/Reference.h>  
@@ -163,7 +158,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
 
   Energy oldQ(theForcedSplitter->getQspac());
   
-  //cerr << "extracted parton:\n" << *parton;
   //do nothing if already valence quark
   if(first && content.isValenceQuark(parton)){ 
     //set the extracted value, because otherwise no RemID could be generated.
@@ -200,7 +194,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     if(newSea->id() > 0) cl->addColoured(newSea);
     else cl->addAntiColoured(newSea);
 
-    //cerr << "sea quark from gluon splitting\n" << *newSea;
   }
 
   if(!first){
@@ -232,7 +225,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
 	theanti.second = anti;
 
       parton->colourLine(!anti)->addColoured(newValence, anti);
-      //cerr << "valence quark from valence splitting\n" << *newValence;
       return;
     }
     //The valence quark will always be connected to the sea quark with opposite sign
@@ -253,7 +245,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     if(particle->colourLine()) particle->colourLine()->addAntiColoured(newValence);
     if(particle->antiColourLine()) particle->antiColourLine()->addColoured(newValence);  
     
-    //cerr << "valence quark from valence splitting\n" << *newValence;
   }
   return;
 }
@@ -381,7 +372,7 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
 
 void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
   if(!theSplittingOnOff) return;
-
+  
   try{
     split(partons.first, theContent.first, theRems.first, 
 	  theUsed.first, theMaps.first, first);
@@ -399,10 +390,18 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
     theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();
 
     if(partons.first->id() != ParticleID::g){
-      if(partons.first==theMaps.first.back().first)
+      if(partons.first==theMaps.first.back().first) {
+	if(!theMaps.first.back().second) throw Exception()
+	  << "theMaps.first.back().second does not exist in HwRemDecayer::doSplit()"
+	  << Exception::eventerror;
 	theUsed.first -= theMaps.first.back().second->momentum();
-      else
+      }
+      else {
+	if(!theMaps.first.back().first) throw Exception()
+	  << "theMaps.first.back().first does not exist in HwRemDecayer::doSplit()"
+	  << Exception::eventerror;
 	theUsed.first -= theMaps.first.back().first->momentum();
+      }
       //remove a possible created quark from gluon splitting
       thestep->removeParticle(theMaps.first.back().first);
       thestep->removeParticle(theMaps.first.back().second);
