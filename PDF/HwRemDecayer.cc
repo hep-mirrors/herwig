@@ -388,21 +388,19 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
     //case of the first forcedSplitting worked fine
     theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
     theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();
+    
+    //case of the first interaction
+    //throw veto immediately, because event get rejected anyway.
+    if(first) throw ShowerHandler::ExtraScatterVeto();
 
+    //secondary interactions have to end on a gluon, if parton 
+    //was NOT a gluon, the forced splitting particles must be removed
     if(partons.first->id() != ParticleID::g){
-      if(partons.first==theMaps.first.back().first) {
-	if(!theMaps.first.back().second) throw Exception()
-	  << "theMaps.first.back().second does not exist in HwRemDecayer::doSplit()"
-	  << Exception::eventerror;
+      if(partons.first==theMaps.first.back().first) 
 	theUsed.first -= theMaps.first.back().second->momentum();
-      }
-      else {
-	if(!theMaps.first.back().first) throw Exception()
-	  << "theMaps.first.back().first does not exist in HwRemDecayer::doSplit()"
-	  << Exception::eventerror;
+      else
 	theUsed.first -= theMaps.first.back().first->momentum();
-      }
-      //remove a possible created quark from gluon splitting
+      
       thestep->removeParticle(theMaps.first.back().first);
       thestep->removeParticle(theMaps.first.back().second);
     }
