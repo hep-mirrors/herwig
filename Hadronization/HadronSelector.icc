@@ -90,16 +90,16 @@ inline tcPDPtr HadronSelector::lightestHadron(tcPDPtr ptr1, tcPDPtr ptr2,
  // throw exception if flavours wrong
   if (tit==_table.end()) {
     /// \todo should we just leave the cluster in event record?
-    cerr << "Could not find " << ids.first << ' ' << ids.second 
-	 << " in _table.\n";
-    assert(false);
+    throw Exception() << "Could not find " 
+		      << ids.first << ' ' << ids.second 
+		      << " in _table." << Exception::eventerror;
   }
   if(tit->second.empty()) {
-    cerr << "HadronSelector::lightestHadron "
-	 << "could not find any hadrons containing " 
-	 << ptr1->id() << " " << ptr2->id() << '\n';
-    cerr << tit->first.first << ' ' << tit->first.second << '\n';
-    assert(false);
+    throw Exception() << "HadronSelector::lightestHadron "
+		      << "could not find any hadrons containing " 
+		      << ptr1->id() << ' ' << ptr2->id() << '\n'
+		      << tit->first.first << ' ' 
+		      << tit->first.second << Exception::eventerror;
   }
 
   // find the lightest hadron
