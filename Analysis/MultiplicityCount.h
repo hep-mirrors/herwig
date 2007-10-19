@@ -235,6 +235,8 @@ private:
 
   map<int,Histogram> _clusters;
 
+  map<int,Histogram> _primary;
+
   /**
    *  Map of number of final-state particles to PDG code
    */
@@ -284,8 +286,5 @@ struct ClassTraits<Herwig::MultiplicityCount>
 }
 
 #include "MultiplicityCount.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MultiplicityCount.tcc"
-#endif
 
 #endif /* HERWIG_MultiplicityCount_H */
