@@ -261,6 +261,12 @@ ClusteringParticleData QCDClusterer::doEmergingLine
 
 bool QCDClusterer::colourConnected (ClusteringParticleData p1, ClusteringParticleData p2) {
 
+  if (!_useColour) {
+    // any QCD particle is colour connected
+    return ((p1.partonId.PDGId == 21 || abs(p1.partonId.PDGId) <7)
+      && (p2.partonId.PDGId == 21 || abs(p2.partonId.PDGId) <7));
+  }
+
   if (p1.colour == p1.antiColour || p2.colour == p2.antiColour) return false;
 
   if (p1.partonId.state == p2.partonId.state) {

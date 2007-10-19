@@ -48,7 +48,7 @@ inline IVector Reweighter::getReferences() {
   return ret;
 }
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
 inline void Reweighter::doinitrun() {
   Interfaced::doinitrun();

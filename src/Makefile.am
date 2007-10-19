@@ -5,7 +5,7 @@ Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
 bin_SCRIPTS = herwig-config
 
-DOTINFILES = Analysis.in Decays.in Hadronization.in \
+DOTINFILES = Analysis.in Analysis2.in LEPAnalysis2.in Decays.in Hadronization.in \
 HerwigDefaults.in OldParticles.in Particles.in \
 OldDecays.in Model.in RSModelVertices.in \
 Shower.in StandardModelVertices.in \

@@ -6,6 +6,19 @@
 
 namespace Herwig {
 
+inline bool splittingKey::operator < (const splittingKey& x) const {
+  if (ids[0] == x.ids[0]) {
+    if (ids[1] == x.ids[1]) {
+      if (ids[2] == x.ids[2]) {
+	return initial && !x.initial;
+      }
+      return (ids[2] < x.ids[2]);
+    }
+    return (ids[1] < x.ids[1]);
+  }
+  return (ids[0] < x.ids[0]);
+}
+
 inline DefaultReweighter::DefaultReweighter()
   : Reweighter(), _integrationAccuracy(1.e-3), _useMassive(true), _sudakovUnweight(true)
 {}

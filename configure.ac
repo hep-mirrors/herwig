@@ -72,6 +72,8 @@ HERWIG_CHECK_HEPMC
 
 HERWIG_CHECK_KTJET
 
+HERWIG_CHECK_FASTJET
+
 HERWIG_CHECK_ROOT
 
 HERWIG_CHECK_EVTGEN
@@ -117,9 +119,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/CKKW/Reweighting/Makefile
 		Shower/CKKW/Vertices/Makefile
 		Shower/CKKW/Processes/Makefile
+		Shower/CKKW/Qtilde/Makefile
 		Shower/CKKW/Makefile
                 Shower/Makefile
                 Utilities/Makefile
+                Utilities/Histogram2/Makefile
                 Hadronization/Makefile
 		lib/Makefile
 		include/Makefile
@@ -130,6 +134,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Doc/HerwigDefaults.in
 		Looptools/Makefile
 		Analysis/Makefile
+		Analysis2/Makefile
+		Analysis2/Data/Makefile
 		src/Makefile-UserModules
 		Makefile])
 

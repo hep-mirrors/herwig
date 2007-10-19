@@ -11,9 +11,22 @@
 // #include "Histogram2.tcc"
 #endif
 
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include "ThePEG/Utilities/Throw.h"
+
 using namespace Herwig;
 
-string Histogram2::versionstring = "";
+void HistogramChannel::persistentOutput(PersistentOStream & os) const {
+  os << _isCountingChannel << _bins << _outOfRange << _visible
+     << _total << _nanEvents << _nanWeights;
+}
+
+void HistogramChannel::persistentInput(PersistentIStream & is) {
+  is >> _isCountingChannel >> _bins >> _outOfRange >> _visible
+     >> _total >> _nanEvents >> _nanWeights;
+}
 
 HistogramChannel& HistogramChannel::operator += (const HistogramChannel& c) {
   if (!c.isCountingChannel()) _isCountingChannel = false;
@@ -116,6 +129,13 @@ unsigned long HistogramChannel::nanWeightEvents () const {
   return all;
 }
 
+void HistogramChannel::differential (const vector<pair<double,double> >& binning) {
+  for (unsigned int i=0; i<binning.size(); ++i) {
+    _bins[i].first /= (binning[i].second-binning[i].first);
+    _bins[i].second /= (binning[i].second-binning[i].first);
+  }
+}
+
 pair<double,double> HistogramChannel::binSum () const {
   pair<double,double> s = make_pair(0.,0.);
   for (vector<pair<double,double> >::const_iterator b = _bins.begin();
@@ -163,7 +183,10 @@ HistogramChannel HistogramChannel::chi2 (const HistogramChannel& channel, double
     if (channel.bin(i).second/sqr(channel.bin(i).first) < minfrac)
       var = sqr(minfrac*channel.bin(i).first);
     else var = channel.bin(i).second;
-    chi2.bin(i,make_pair(chi2.bin(i).first/var,chi2.bin(i).second/var));
+    if (var != 0)
+      chi2.bin(i,make_pair(chi2.bin(i).first/var,chi2.bin(i).second/var));
+    else
+      chi2.bin(i,make_pair(0,0));
   }
   return chi2;
 }
@@ -204,17 +227,23 @@ Histogram2::Histogram2 (const vector<pair<double,double> >& binning, const strin
 
 Histogram2::Histogram2 (const string& dataFile, const string& dataName) {
   ifstream data (dataFile.c_str());
+  if (!data) {
+    Throw<InitException>() << "Histogram2::Histogram2 : Building from datafile, but cannot open "
+			   << dataFile;
+  }
   vector<pair<double,double> > dataCache;
-  double low, high, dataval, err;
+  double low, high, dataval, errstat, errsys;
+  double sigma;
   string in;
   while (getline(data,in)) {
     in = StringUtils::stripws(in);
     if (in[0] == '#') continue;
     if (in == "") continue;
     istringstream theIn (in);
-    theIn >> low >> high >> dataval >> err;
+    theIn >> low >> high >> dataval >> errstat >> errsys;
     _binning.push_back(make_pair(low,high));
-    dataCache.push_back(make_pair(dataval,sqr(err)));
+    sigma = sqr(errstat) + sqr(errsys);
+    dataCache.push_back(make_pair(dataval,sigma));
   }
   for (unsigned int i = 0; i<_binning.size(); ++i) {
     _binhash.insert(make_pair(_binning[i].second,i));
@@ -222,6 +251,7 @@ Histogram2::Histogram2 (const string& dataFile, const string& dataName) {
   _range = make_pair(_binning.front().first,_binning.back().second);
   HistogramChannel theData (dataCache);
   insertChannel(dataName,theData);
+
 }
 
 void Histogram2::book (const string& name, double event, double weight) {
@@ -422,15 +452,17 @@ void Histogram2::store (const string& name) const {
   ofstream os ((name+".h2").c_str());
   if (!os) return;
 
-  os << "<?xml version=\"1.0\">" << endl;
+  os << "<?xml version=\"1.0\"?>" << endl;
   os << "<HerwigHistogram version=\"1.0\" herwigversion=\""
-     << versionstring << "\" name=\"" << Named::name() << "\">" << endl;
+     << HerwigVersion::versionstring << "\" name=\"" << Named::name() << "\">" << endl;
   os << "<!--" << endl
      << "  WARNING" << endl
      << "  Though this is valid XML, the Histogram2 class will" << endl
      << "  not be able to parse arbitraty, XML-valid changes" << endl
      << "  to this file!" << endl
      << "-->" << endl;
+
+  os << "<xsec unit=\"nanobarn\" value=\"" << _xSec/nanobarn << "\"/>" << endl;
 
   os << "<binning>" << endl;
 
@@ -465,6 +497,17 @@ bool Histogram2::load (const string& fname) {
   map<string,string> attributes = StringUtils::xmlAttributes("HerwigHistogram",tag);
   map<string,string>::iterator atit = attributes.find("name"); if (atit == attributes.end()) return false;
   Named::name(atit->second);
+
+  // get the cross section
+  tag = getNextTag(is);
+
+  if (tag.find("<xsec") == string::npos) return false;
+  attributes = StringUtils::xmlAttributes("xsec",tag);
+  atit = attributes.find("unit"); if (atit == attributes.end()) return false;
+  if (atit->second != "nanobarn") return false; // switch units in a future version
+  atit = attributes.find("value"); if (atit == attributes.end()) return false;
+  double theXsec; fromString(atit->second,theXsec);
+  _xSec = theXsec * nanobarn;
 
   // get the binning
 
@@ -532,14 +575,31 @@ Histogram2Ptr Histogram2::loadToHistogram (const string& name) const {
 }
 
 void Histogram2::combine (const string& prefix, const string& name,
-			  unsigned int numRuns, const string& dataChannel) {
+			  unsigned int numRuns, const string& dataChannel,
+			  const string& mcChannel) {
   vector<Histogram2Ptr> inHistos;
   for (unsigned int i = 0; i<numRuns; ++i) {
-    ostringstream fname (prefix);
-    fname << "." << i << "/" << name;
+    ostringstream fname ("");
+    fname << prefix << "." << i << "/" << name;
     Histogram2Ptr in = loadToHistogram (fname.str());
-    if (in) inHistos.push_back(in);
+    if (in) {
+      inHistos.push_back(in);
+    }
   }
+
+  // get the total cross section
+  CrossSection all = 0.*nanobarn;
+  unsigned long allEvents = 0;
+  for(vector<Histogram2Ptr>::iterator h = inHistos.begin();
+      h != inHistos.end(); ++h) {
+    if ((**h).haveChannel(mcChannel)) {
+      all += (**h).xSec() * (**h).channel(mcChannel).total();
+      allEvents += (**h).channel(mcChannel).total();
+    }
+  }
+  all /= allEvents;
+  xSec (all);
+
   if (!inHistos.size()) return;
   vector<string> channels = inHistos[0]->channels();
   _binning = inHistos[0]->binning();
@@ -589,6 +649,10 @@ Histogram2::Histogram2 (vector<double> limits,
     dataCache.push_back(make_pair(data[i],sqr(dataerror[i])));
   }
 
+  for (unsigned int i = 0; i<_binning.size(); ++i) {
+    _binhash.insert(make_pair(_binning[i].second,i));
+  }
+
   _range = make_pair(_binning.front().first,_binning.back().second);
 
   insertChannel("mc");
@@ -604,7 +668,17 @@ Histogram2 Histogram2::ratioWith(const Histogram2& h2) const {
 
 Histogram2::~Histogram2() {}
 
-NoPIOClassDescription<Histogram2> Histogram2::initHistogram2;
+void Histogram2::persistentOutput(PersistentOStream & os) const {
+  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+  os << _binning << _range << _binhash << _channels << ounit(_xSec,nanobarn);
+}
+
+void Histogram2::persistentInput(PersistentIStream & is, int) {
+  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+  is >> _binning >> _range >> _binhash >> _channels >> iunit(_xSec,nanobarn);
+}
+
+ClassDescription<Histogram2> Histogram2::initHistogram2;
 // Definition of the static class description member.
 
 void Histogram2::Init() {

@@ -24,7 +24,8 @@ GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc 
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
+DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \

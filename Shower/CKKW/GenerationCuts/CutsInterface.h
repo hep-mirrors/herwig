@@ -12,16 +12,25 @@ inline double min (double a, double b) {
   return (a < b ? a : b);
 }
 
+/** A simple five momentum */
 struct FiveMomentum {
-  
+
+  /** E */  
   double E;
   
+  /** px */  
   double px;
+
+  /** px */  
   double py;
+
+  /** px */ 
   double pz;
   
+  /** The invariant mass squared */ 
   double invMass2;
 
+  /** Wether the momentum is incoming */
   bool initial;
   
 };

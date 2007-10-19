@@ -13,7 +13,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**\ingroup CKKW
- * This class implements the \tilde{k}_\perp
+ * This class implements the \f$\tilde{k}_\perp\f$
  * jet measure, which generalizes the Durham measure
  * to the Herwig++ evolution variable.
  *

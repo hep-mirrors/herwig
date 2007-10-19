@@ -48,6 +48,11 @@ void Evolver::doinitrun() {
   for(unsigned int ix=0;ix<_model->meCorrections().size();++ix) {
     _model->meCorrections()[ix]->evolver(this);
   }
+#ifdef HERWIG_CHECK_VETOES
+  _vetoed_points.timelike.open("vetoed_timelike.dat");
+  _vetoed_points.spacelike.open("vetoed_spacelike.dat");
+  _vetoed_points.spacelike_decay.open("vetoed_spacelike_decay.dat");
+#endif
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -433,6 +438,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 	  throw Veto ();
       }
       if (vetoed) {
+#ifdef HERWIG_CHECK_VETOES
+	_vetoed_points.timelike << fb.kinematics->scale()/GeV << "\t"
+				<< fb.kinematics->z() << endl;
+#endif
 	particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
 	continue;
       }
@@ -521,6 +530,10 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
 	  throw Veto ();
       }
       if (vetoed) {
+#ifdef HERWIG_CHECK_VETOES
+	_vetoed_points.spacelike << bb.kinematics->scale()/GeV << "\t"
+				 << bb.kinematics->z() << endl;
+#endif
 	particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
 	continue;
       }
@@ -659,6 +672,10 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
 	  throw Veto ();
       }
       if (vetoed) {
+#ifdef HERWIG_CHECK_VETOES
+	_vetoed_points.spacelike_decay << fb.kinematics->scale()/GeV << "\t"
+				       << fb.kinematics->z() << endl;
+#endif
 	particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
 	continue;
       }

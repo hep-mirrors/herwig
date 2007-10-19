@@ -11,6 +11,16 @@ extern "C" int isinf(double) throw();
 
 namespace Herwig {
 
+inline PersistentOStream& operator << (PersistentOStream& os, const HistogramChannel& h) {
+  h.persistentOutput(os);
+  return os;
+}
+
+inline PersistentIStream& operator >> (PersistentIStream& is, HistogramChannel& h) {
+  h.persistentInput(is);
+  return is;
+}
+
 inline string getNextTag (istream& is) {
   string line = "";
   while (line == "") {
@@ -31,6 +41,14 @@ inline string getNextTag (istream& is) {
   }
   return line;
 }
+
+inline HistogramChannel::HistogramChannel ()
+  : _isCountingChannel(true),
+    _bins(vector<pair<double,double> >()),
+    _outOfRange(make_pair(0.,0.)),
+    _visible(0), _total(0), _nanEvents(0),
+    _nanWeights(vector<unsigned long>())
+{}
 
 inline HistogramChannel::HistogramChannel (unsigned int bins, bool counting)
   : _isCountingChannel(counting),
@@ -134,7 +152,7 @@ inline HistogramChannel operator / (const HistogramChannel& a, const HistogramCh
 }
 
 inline Histogram2::Histogram2 ()
-  : _binning(), _binhash(), _channels() { }
+  : _binning(), _binhash(), _channels(), _xSec(0.*nanobarn) { }
 
 inline void Histogram2::setName (const string& name) {
   Named::name(name);
@@ -182,6 +200,21 @@ inline map<double,unsigned int> Histogram2::binhash () const {
 
 inline pair<double,double> Histogram2::range () const {
   return _range;
+}
+
+inline CrossSection Histogram2::xSec () const {
+  return _xSec;
+}
+
+inline void Histogram2::xSec (CrossSection xs) {
+  _xSec = xs;
+}
+
+inline void Histogram2::differential (const string& name) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    c->second.differential(_binning);
+  }
 }
 
 inline pair<double,double> Histogram2::integrate (const string& name) const {
@@ -237,7 +270,7 @@ inline void Histogram2::normaliseToData() {
 
 inline void Histogram2::normaliseToCrossSection(const string& name) {
   normalise(name);
-  channel(name) *= CurrentGenerator::current().eventHandler()->histogramScale()/nanobarn;
+  channel(name) *= _xSec/nanobarn;
 }
 
 inline void Histogram2::chiSquared(double & chisq, 

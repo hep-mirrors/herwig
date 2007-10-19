@@ -8,15 +8,15 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Histogram2.fh"
 
-#include "ThePEG/Repository/CurrentGenerator.h"
-#include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Utilities/StringUtils.h"
+
+#include "Herwig++/Utilities/HerwigVersion.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/**\ingroup Analysis2
  * A channel in a histogram.
  *
  * @author Simon Plaetzer
@@ -27,6 +27,12 @@ public:
 
   /**@name Constructors */
   //@{
+
+  /**
+   * Default constructor
+   */
+  inline HistogramChannel ();
+
   /**
    * Construct giving the number of bins.
    */
@@ -180,6 +186,13 @@ public:
 
   /**@name Normalization and statistical tests */
   //@{
+
+  /**
+   * This channel is a differential distribution:
+   * dvide each bin by its width.
+   */
+  void differential (const vector<pair<double,double> >&);
+
   /**
    * Return the summed visible bin content
    */
@@ -207,7 +220,7 @@ public:
   HistogramChannel delta (const HistogramChannel& channel) const;
 
   /**
-   * Return a channel containing the \chi^2 taking
+   * Return a channel containing the \f$\chi^2\f$ taking
    * this as hypothesis and the given channel as data.
    * Rescale the data error to data*minfrac, if
    * data error/data < minfrac.
@@ -230,6 +243,24 @@ public:
    */
   string read (istream&);
 
+  //@}
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is);
   //@}
 
 private:
@@ -275,6 +306,9 @@ private:
 
 };
 
+inline PersistentOStream& operator << (PersistentOStream& os, const HistogramChannel&);
+inline PersistentIStream& operator >> (PersistentIStream& is, HistogramChannel&);
+
 /**
  * Add two histogram channels
  */
@@ -313,7 +347,7 @@ inline void fromString (const string& str, T& result) {
   buffer >> result;
 }
 
-/**
+/**\ingroup Analysis2
  * Options for channel output
  */
 namespace ChannelOutput {
@@ -347,7 +381,7 @@ namespace ChannelOutput {
 
 }
 
-/**
+/**\ingroup Analysis2
  * A more sophisticated histogram. It is almost completely
  * compatible to Histogram, but will use a different
  * way to actually dump the histogram for use with
@@ -476,6 +510,12 @@ public:
   /**@name Normalisation and statistical tests */
   //@{
   /**
+   * The given channel is a differential distribution,
+   * dvidie each bin by its bin width.
+   */
+  inline void differential (const string&);
+
+  /**
    * Return the integral of the given channel
    */
   inline pair<double,double> integrate (const string&) const;
@@ -498,7 +538,7 @@ public:
   inline void normaliseToCrossSection(const string& name = "mc");
 
   /**
-   * Return the \chi^2 per DOF taking the first
+   * Return the \f$\chi^2\f$ per DOF taking the first
    * channel as hypotheses and the second one as data/
    */
   inline pair<double,double> chi2perDOF (const string&, const string&, double minfrac = .0) const;
@@ -559,10 +599,23 @@ public:
    * to be included only once.
    *
    * All other channels are added into this
-   * histogram.
+   * histogram. If a mcChannel is given,
+   * this is used to compute the total cross section
+   * for the combined histogram.
    */
   void combine (const string& prefix, const string& name,
-		unsigned int numRuns, const string& dataChannel = "");
+		unsigned int numRuns, const string& dataChannel = "",
+		const string& mcChannel = "Herwig++");
+
+  /**
+   * Return the cross section accumulated in this histogram.
+   */
+  inline CrossSection xSec () const;
+
+  /**
+   * Set the cross section accumulated in this histogram.
+   */
+  inline void xSec (CrossSection);
 
   //@}
 
@@ -629,6 +682,22 @@ public:
 
 public:
 
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -636,13 +705,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
-public:
-
-  /**
-   * Version of the code to add to Histogram
-   */
-  static string versionstring;
 
 protected:
 
@@ -690,10 +752,16 @@ private:
   map<string,HistogramChannel> _channels;
 
   /**
+   * The cross section this histogram accumulated
+   * according to the event generator.
+   */
+  CrossSection _xSec;
+
+  /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class without persistent data.
    */
-  static NoPIOClassDescription<Histogram2> initHistogram2;
+  static ClassDescription<Histogram2> initHistogram2;
 
   /**
    * The assignment operator is private and must never be called.

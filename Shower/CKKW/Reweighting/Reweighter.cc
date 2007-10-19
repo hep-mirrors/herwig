@@ -142,14 +142,14 @@ void Reweighter::unresolvedCut (PPair in, PVector out) {
     generator()->log() << "found unresolved partons" << endl;
 #endif
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   if (_stats.find(out.size()) == _stats.end())
     _stats.insert(make_pair(out.size(),make_pair(0,0.)));
 #endif
 
   if (!_res) 
     throw Veto ();
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   else {
     _stats.find(out.size())->second.first += 1;
   }
@@ -169,7 +169,7 @@ double Reweighter::reweight (CascadeHistory history, unsigned int mult, unsigned
   generator()->log() << "CKKW weight is " << weight << endl;
 #endif
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   _stats.find(mult)->second.second += weight;
 
   unsigned int njets = mult-minmult;

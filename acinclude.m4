@@ -262,6 +262,79 @@ fi
 AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
 ])
 
+dnl ##### FastJet #####
+AC_DEFUN([HERWIG_CHECK_FASTJET],[
+
+FASTJETPATH=""
+FASTJETLIBS=""
+FASTJETINCLUDE=""
+LOAD_FASTJET=""
+
+AC_MSG_CHECKING([for FastJet])
+
+AC_ARG_WITH(fastjet,
+        AC_HELP_STRING([--with-fastjet=DIR],[location of FastJet installation]),
+        [],
+	[with_fastjet=no])
+
+if test "x$with_fastjet" = "xno"; then
+	AC_MSG_RESULT([not required])	
+else
+
+	AC_MSG_RESULT([required])
+	FASTJETPATH="$with_fastjet"
+
+	# check for libraries
+
+	AC_MSG_CHECKING([for FastJet library])
+
+	if test -z "$FASTJETLIB" ; then
+		FASTJETLIB="$FASTJETPATH/lib"
+	fi
+
+	if test -e "$FASTJETLIB/libfastjet.a"; then
+	  	AC_MSG_RESULT([found static library])
+
+		AC_MSG_CHECKING([for FastJet dynamic library])
+
+		if test ! -e "$FASTJETLIB/libfastjet.so"; then
+			AC_MSG_RESULT([not found, please create libfastjet.so from $FASTJETLIB/libfastjet.a])
+			AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
+		fi
+		AC_MSG_RESULT([$FASTJETLIB/libfastjet.so])
+	else
+		AC_MSG_RESULT([?])
+		AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
+	fi
+
+	FASTJETLIBS="-L$FASTJETLIB -lfastjet"
+
+	AC_SUBST(FASTJETLIBS)
+
+	# check for headers
+
+	AC_MSG_CHECKING([for FastJet headers])
+
+	if test -z "$FASTJETINCLUDE" ; then
+		FASTJETINCLUDE="$FASTJETPATH/include"
+	fi
+
+	if test -f "$FASTJETINCLUDE/fastjet/ClusterSequence.hh"; then
+		FASTJETINCLUDE="-I$FASTJETINCLUDE"
+	else
+		AC_MSG_RESULT([not found.])
+		AC_MSG_ERROR([No FastJet headers.])
+	fi
+
+	AC_MSG_RESULT([$FASTJETINCLUDE])
+
+	AC_SUBST(FASTJETINCLUDE)
+
+fi
+
+AM_CONDITIONAL(WANT_LIBFASTJET,[test ! -z "$FASTJETPATH"])
+])
+
 dnl ##### ROOT #####
 AC_DEFUN([HERWIG_CHECK_ROOT],[
 

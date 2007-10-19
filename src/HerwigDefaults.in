@@ -202,3 +202,8 @@ set LHCGenerator:EventHandler:Cuts QCDCuts
 ##########################################
 read Analysis.in
 
+##########################################
+# include Analysis2 based analyses
+##########################################
+
+# read Analysis2.in

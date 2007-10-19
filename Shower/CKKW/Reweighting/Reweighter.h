@@ -13,8 +13,8 @@
 #include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
 #include "JetMeasure.h"
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
-#include "Herwig++/Utilities/Histogram2.h"
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
+#include "Herwig++/Utilities/Histogram2/Histogram2.h"
 #endif
 
 namespace Herwig {
@@ -172,7 +172,7 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -237,7 +237,7 @@ private:
    */
   ShowerAlphaPtr _showerAlpha;
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
   /**
    * Map multiplicities to number of events
