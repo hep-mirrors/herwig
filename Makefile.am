@@ -1,5 +1,3 @@
-## include first, then all dirs, then lib, then src
-## PDT before Decay
 SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
@@ -12,5 +10,3 @@ noinst_HEADERS = Config/Herwig.h Config/HepMCHelper_CLHEP.h \
 EXTRA_DIST=GUIDELINES
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH)
-
-## Doc # look at this later
