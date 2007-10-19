@@ -15,6 +15,7 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
 #include "ThePEG/PDT/StandardMatchers.h"
+#include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "Herwig++/Shower/Base/Evolver.h"
@@ -258,14 +259,34 @@ void ShowerHandler::cascade() {
   //	      new_ptr(MPIPDF(secondPDF().pdf())));
   //resetPDFs(newpdf);
 
-  //do the MultiPartonInteractions 
-  for(i=0; i<theMPIHandler->multiplicity(); i++){      
+  int veto(1);
+  unsigned int max(theMPIHandler->multiplicity());
+  for(i=0; i<max; i++){      
     //generate PSpoint
     lastXC = theMPIHandler->generate();
     sub = lastXC->construct();
+
+    //If Jmueo=1 additional scatters of the signal type with pt > ptmin have to be vetoed
+    //with probability 1/(m+1), where m is the number of occurances in this event
+
+    //check if the same process is used for the signal and UE
+    //For LesHouches event files the MEBasePtr should be 0
+    //That leads to the correct behaviour as long as no QCD2->2 event is read in
+    if(sub->handler() == subProcess()->handler() && theMPIHandler->Jmueo() ){
+      //get the pT
+      Energy pt = sub->outgoing().front()->momentum().perp();
+      Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
+
+      if(pt > ptmin && UseRandom::rnd() < 1./(veto+1) ){
+        veto++;
+        i--;
+        continue;
+      } 
+    }
     //sort in -scale, because reverse iterator doesn't work with gcc3.x.x
     if( IsOrdered() ) scale = -lastXC->lastScale();
     else scale = 1.*GeV2;
+
     procs.insert(make_pair(scale, sub));
   }
   

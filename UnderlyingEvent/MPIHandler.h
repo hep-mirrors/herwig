@@ -220,6 +220,10 @@ public:
    */
   inline long maxLoop() const;
 
+  /**
+   * Return true if Jmueo = 1.
+   */
+  inline bool Jmueo() const;
 
 protected:
 
