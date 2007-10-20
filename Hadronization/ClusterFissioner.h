@@ -250,8 +250,7 @@ protected:
    * cluster children is dictated by the parameter soft.
    */
   Energy drawChildMass(const Energy M, const Energy m1, const Energy m2, 
-		       const Energy m, const double exp,
-		       const InvEnergy b, const bool soft) const;
+		       const Energy m, const double exp, const bool soft) const;
 
   /**
    * Determines the kinematics of a heavy cluster decay C->C1 + C2

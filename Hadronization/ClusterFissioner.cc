@@ -256,7 +256,6 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
   bool soft1 = rem1 || (_iopRem==0 && rem2);
   bool soft2 = rem2 || (_iopRem==0 && rem1);
   // Initialization for the exponential ("soft") mass distribution.
-  static const InvEnergy b = 2.0 / _btClM;
   static const int max_loop = 1000;
   int counter = 0;
   Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy(),m=Energy();
@@ -301,8 +300,8 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
       // If, during the drawing of candidate masses, too many attempts fail 
       // (because the phase space available is tiny)
       /// \todo run separate loop here?
-      Mc1 = drawChildMass(Mc,m1,m2,m,exp1,b,soft1);
-      Mc2 = drawChildMass(Mc,m2,m1,m,exp2,b,soft2);
+      Mc1 = drawChildMass(Mc,m1,m2,m,exp1,soft1);
+      Mc2 = drawChildMass(Mc,m2,m1,m,exp2,soft2);
       if(Mc1 < m1+m || Mc2 < m+m2 || Mc1+Mc2 > Mc) continue;
       /**************************
        * New (not present in Fortran Herwig):
@@ -480,8 +479,7 @@ void ClusterFissioner::drawNewFlavour(PPtr& newPtrPos,PPtr& newPtrNeg) const {
 
 Energy ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
 				       const Energy m2, const Energy m,
-				       const double expt, 
-				       const InvEnergy b, const bool soft) const {
+				       const double expt, const bool soft) const {
 
   /***************************
    * This method, given in input the cluster mass Mclu of an heavy cluster C,
@@ -519,18 +517,18 @@ Energy ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
 	       )*UnitRemoval::E + m1;
   }
   // Otherwise it uses a soft mass distribution
-  else 
-    { 
-      Energy max = M-m1-m2-2.0*m;
-      double rmin = exp(-b*max);
-      if(rmin > 50.0) rmin = 0.0;
-      double r1 = UseRandom::rnd(rmin, 1.0-rmin) 
-	* UseRandom::rnd(rmin, 1.0-rmin);
-      if(r1 > rmin) 
-	return m1 + m - log(r1)/b;
-      else 
-	return Energy();
+  else { 
+    static const InvEnergy b = 2.0 / _btClM;
+    Energy max = M-m1-m2-2.0*m;
+    double rmin = b*max;
+    rmin = ( rmin < 50 ) ? exp(-rmin) : 0.;
+    double r1;
+    do {
+      r1 = UseRandom::rnd(rmin, 1.0) * UseRandom::rnd(rmin, 1.0);
     }
+    while (r1 < rmin);
+    return m1 + m - log(r1)/b;
+  }
 }
 
 
