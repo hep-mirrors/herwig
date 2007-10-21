@@ -32,18 +32,10 @@ class MEPP2Higgs: public MEBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEPP2Higgs();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEPP2Higgs();
-  //@}
 
   /**
    * Return the matrix element for the kinematical configuation
@@ -215,16 +207,6 @@ private:
 private:
 
   /**
-   * Type of the Higgs width used (options: fixed, LO running, NLL corrected running, user defined)
-   */
-  unsigned int widthopt;
-
-  /**
-   * Defines which decay modes are taken into account (see class documentation)
-   */
-  unsigned int branchingopt;
-
-  /**
    * Defines the Higgs resonance shape
    */
   unsigned int shapeopt;
@@ -268,38 +250,6 @@ private:
    * Pointer to the Standard Model instance used in the class
    */
   tcHwSMPtr theSM;
-
-  /** @routines to calculate Higgs width. */
-  //@{
-  /**
-   * Calculates the Higgs width with some NLL corrections a-la FORTRAN HERWIG. 
-   * The following channels are taken into account: 
-   * H->q\bar{q}, H->l\bar{l}, H->WW, H->ZZ, H->2gammas, H->2gluons
-   * The prescription corresponds to one in FORTRAN HERWIG (except H->2gluons!)
-   * @returns the Higgs width for the Higgs mass Mh.
-   */
-  Energy calcNLLRunningWidth(Energy Mh) const;
-
-  /**
-   * Calculates the Higgs width at LO.
-   * @returns the Higgs width for Higgs mass Mh.
-   */
-  Energy calcLORunningWidth(Energy Mh) const;
-
-  /**
-   * Calculates the double Breit-Wigner Integral a-la FORTRAN HERWIG.
-   * It is used in NLL corrected Higgs width for H->WW/ZZ,
-   * x = (M_V/M_H)^2, y=M_V*G_V/(M_H)^2, where M_V/G_V - V-boson mass/width
-   * @return the integral value.
-   */
-  double HwDoubleBW(double x, double y) const;
-
-  /**
-   * Calculate a loop function for the triangle vertex GGH/AAH
-   * @return the loop function value: pair -> (real, imaginary).
-   */
-  std::pair<double,double> HwW2(double tau) const;
-  //@}
 };
 
 }
@@ -339,8 +289,5 @@ struct ClassTraits<Herwig::MEPP2Higgs>
 }
 
 #include "MEPP2Higgs.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2Higgs.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2Higgs_H */
