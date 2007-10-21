@@ -59,40 +59,40 @@ set theClusterDecayer:HadronSelector theHadronSelector
 cd /Defaults/Handlers/Hadronization/Cluster
 set theColourReconnector:ColourReconnection Off
 
-set theClusterFissioner:ClMaxLight  3.2*GeV
+set theClusterFissioner:ClMaxLight  3.10*GeV
 set theClusterFissioner:ClPowLight  2.0
-set theClusterFissioner:PSplitLight 1.0
+set theClusterFissioner:PSplitLight 1.27
 set theClusterDecayer:ClDirLight 1
-set theClusterDecayer:ClSmrLight 0.0
+set theClusterDecayer:ClSmrLight 0.78
 
-set theClusterFissioner:ClMaxBottom  3.2*GeV
-set theClusterFissioner:ClPowBottom  2.0
-set theClusterFissioner:PSplitBottom 0.33
+set theClusterFissioner:ClMaxBottom  2.7*GeV
+set theClusterFissioner:ClPowBottom  1.46
+set theClusterFissioner:PSplitBottom 1.00
 set theClusterDecayer:ClDirBottom 1
-set theClusterDecayer:ClSmrBottom 0.0
-set theLightClusterDecayer:SingleHadronLimitBottom 0.0
+set theClusterDecayer:ClSmrBottom 0.78
+set theLightClusterDecayer:SingleHadronLimitBottom 0.1
 
-set theClusterFissioner:ClMaxCharm  3.2*GeV
-set theClusterFissioner:ClPowCharm  2.0
-set theClusterFissioner:PSplitCharm 1.0
+set theClusterFissioner:ClMaxCharm  3.1*GeV
+set theClusterFissioner:ClPowCharm  2.5
+set theClusterFissioner:PSplitCharm 1.05
 set theClusterDecayer:ClDirCharm 1
-set theClusterDecayer:ClSmrCharm 0.0
+set theClusterDecayer:ClSmrCharm 0.45
 set theLightClusterDecayer:SingleHadronLimitCharm 0.0
 
-set theClusterFissioner:ClMaxExotic  3.2*GeV
-set theClusterFissioner:ClPowExotic  2.0
-set theClusterFissioner:PSplitExotic 1.0
+set theClusterFissioner:ClMaxExotic  2.7*GeV
+set theClusterFissioner:ClPowExotic  1.46
+set theClusterFissioner:PSplitExotic 1.00
 set theClusterDecayer:ClDirExotic 1
-set theClusterDecayer:ClSmrExotic 0.0
-set theLightClusterDecayer:SingleHadronLimitExotic 0.0
+set theClusterDecayer:ClSmrExotic 0.78
+set theLightClusterDecayer:SingleHadronLimitExotic 0.1
 
 set theHadronSelector:PwtDquark  1.0
 set theHadronSelector:PwtUquark  1.0
-set theHadronSelector:PwtSquark  1.0
+set theHadronSelector:PwtSquark  0.7
 set theHadronSelector:PwtCquark  1.0
 set theHadronSelector:PwtBquark  1.0
-set theHadronSelector:PwtDIquark 0.55
+set theHadronSelector:PwtDIquark 0.54
 set theHadronSelector:SngWt      1.0
-set theHadronSelector:DecWt      0.7
+set theHadronSelector:DecWt      0.64
 set theHadronSelector:Mode 1
 
