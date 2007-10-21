@@ -38,9 +38,9 @@ mkdir /Defaults/Generators
 
 # read in the particle lists and physics model
 # old model
-read OldParticles.in
+#read OldParticles.in
 # new model
-# read Particles.in
+read Particles.in
 read Model.in
 
 #####################################################################

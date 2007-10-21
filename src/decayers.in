@@ -1,6 +1,6 @@
 #
 # This file contains the set-up of the decayers for Herwig++ outputted
-# from the Herwig++ Particles Database at 21:23:55 on the 24/9/2007.
+# from the Herwig++ Particles Database at 13:32:34 on the 21/10/2007.
 #
 # load libraries which are needed
 library Hw64Decay.so
@@ -19634,13 +19634,47 @@ set /Defaults/Decays/BtosgammaKagan:HadronicMass /Defaults/Decays/BtosgammaMass
 
 #
 create Herwig::SMTopDecayer  /Defaults/Decays/Top
+set /Defaults/Decays/Top:QuarkWeights 0 0.851719
+set /Defaults/Decays/Top:QuarkWeights 1 0.0450162
+set /Defaults/Decays/Top:QuarkWeights 2 0.0456962
+set /Defaults/Decays/Top:QuarkWeights 3 0.859839
+set /Defaults/Decays/Top:QuarkWeights 4 3.9704e-06
+set /Defaults/Decays/Top:QuarkWeights 5 0.000489657
+set /Defaults/Decays/Top:LeptonWeights 0 0.302583
+set /Defaults/Decays/Top:LeptonWeights 1 0.301024
+set /Defaults/Decays/Top:LeptonWeights 2 0.299548
+set /Defaults/Decays/Top:Iteration 1
+set /Defaults/Decays/Top:Ntry 500
+set /Defaults/Decays/Top:Points 10000
+set /Defaults/Decays/Top:GenerateIntermediates 1 
+
 #
 create Herwig::SMHiggsFermionsDecayer  /Defaults/Decays/Hff
+set /Defaults/Decays/Hff:MaxWeights 0 0
+set /Defaults/Decays/Hff:MaxWeights 1 0
+set /Defaults/Decays/Hff:MaxWeights 2 0
+set /Defaults/Decays/Hff:MaxWeights 3 0.0194397
+set /Defaults/Decays/Hff:MaxWeights 4 0.463542
+set /Defaults/Decays/Hff:MaxWeights 5 0
+set /Defaults/Decays/Hff:MaxWeights 6 6.7048e-09
+set /Defaults/Decays/Hff:MaxWeights 7 0.00028665
+set /Defaults/Decays/Hff:MaxWeights 8 0.0809643
+set /Defaults/Decays/Hff:Iteration 10
+set /Defaults/Decays/Hff:Ntry 500
+set /Defaults/Decays/Hff:Points 10000
+set /Defaults/Decays/Hff:GenerateIntermediates 0 
+
 #
 create Herwig::SMHiggsWWDecayer  /Defaults/Decays/HWW
+set /Defaults/Decays/HWW:WMaximum 5.00873
+set /Defaults/Decays/HWW:ZMaximum 2.64924
 set /Defaults/Decays/HWW:BreitWigner 0
-set /Defaults/Decays/HWW:Power 0.0
+set /Defaults/Decays/HWW:Power 0
+set /Defaults/Decays/HWW:Iteration 1
 set /Defaults/Decays/HWW:Ntry 1000
+set /Defaults/Decays/HWW:Points 10000
+set /Defaults/Decays/HWW:GenerateIntermediates 0 
+
 #
 create Herwig::SemiLeptonicScalarDecayer  /Defaults/Decays/HQET
 set /Defaults/Decays/HQET:Iteration 1

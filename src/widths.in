@@ -1,6 +1,6 @@
 #
 # This file contains the set-up of the width generators for Herwig++ outputted
-# from the Herwig++ Particles Database at 12:43:12 on the 14/9/2007.
+# from the Herwig++ Particles Database at 13:32:35 on the 21/10/2007.
 #
 create Herwig::GenericWidthGenerator  /Defaults/Widths/rho+width
 set /Defaults/Widths/rho+width:Particle /Defaults/Particles/rho+ 
@@ -48417,6 +48417,10 @@ insert /Defaults/Widths/eta(1405)width:NumberofEntries 6 378
 insert /Defaults/Widths/eta(1405)width:NumberofEntries 7 432
 
 set /Defaults/Particles/eta(1405):Width_generator /Defaults/Widths/eta(1405)width
+#
+create Herwig::SMHiggsWidthGenerator  /Defaults/Widths/HiggsWidth
+
+set /Defaults/Particles/h0:Width_generator /Defaults/Widths/HiggsWidth
 #
 create Herwig::GenericWidthGenerator  /Defaults/Widths/chi_c22PWidth
 set /Defaults/Widths/chi_c22PWidth:Particle /Defaults/Particles/chi_c2(2P) 
