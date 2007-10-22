@@ -15,6 +15,10 @@
 
 using namespace Herwig;
 
+UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
+		     theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
+		     theVeV(246.*GeV) {}
+
 void UEDBase::doinit() throw(InitException) {
   StandardModel::doinit();
   //create fresh BSM info file so it can be appended to later
@@ -94,11 +98,6 @@ void UEDBase::Init() {
      "The boundary mass for the Higgs",
      &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
-
-  static Parameter<UEDBase,string> interfaceSPCFileName
-    ("SPCFileName",
-     "The name of the spectrum file",
-     &UEDBase::theSpectrum, "UEDMasses.out", false, false);
 
   static Parameter<UEDBase,Energy> interfaceVeV
     ("VeV",

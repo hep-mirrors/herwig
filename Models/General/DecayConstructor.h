@@ -18,6 +18,8 @@ using namespace ThePEG;
  * function to create the decayers and decaymodes in the 
  * NBodyDecayConstructor
  * 
+ * @see \ref DecayConstructorInterfaces "The interfaces"
+ * defined for DecayConstructor. 
  * @see Interfaced
  */
 class DecayConstructor: public Interfaced {
