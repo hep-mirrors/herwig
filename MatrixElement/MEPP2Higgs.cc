@@ -164,7 +164,8 @@ double MEPP2Higgs::me2() const {
   useMe();
   ScalarWaveFunction hout(meMomenta()[2],mePartonData()[2],outgoing);
 
-// Safety code to garantee reliable behaviour of Higgs shape limits (important for heavy and broad Higgs resonance).
+// Safety code to garantee the reliable behaviour of Higgs shape limits 
+// (important for heavy and broad Higgs resonance).
   Energy hmass = meMomenta()[2].m();
   PDPtr h0 = getParticleData(ParticleID::h0);
   Energy mass = h0->mass();

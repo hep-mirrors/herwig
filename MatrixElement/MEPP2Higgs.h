@@ -115,17 +115,6 @@ public:
   virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const;
 
   /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-//  virtual bool generateKinematics(const double * r);
-  //@}
-
-  /**
    *  Construct the vertex of spin correlations.
    */
   virtual void constructVertex(tSubProPtr);
@@ -195,14 +184,37 @@ private:
    * In fact, it should not even be implemented.
    */
   MEPP2Higgs & operator=(const MEPP2Higgs &);
+  //@}
 
+  /**
+   *  Members to return the matrix elements for the different subprocesses
+   */
+  //@{
+
+  /**
+   * Calculates the matrix element for the process g,g->h (via quark loops)
+   * @param g1 a vector of wave functions of the first incoming gluon
+   * @param g2 a vector of wave functions of the second incoming gluon
+   * @param calc Whether or not to calculate the matrix element for spin correlations
+   * @return the amlitude value.
+   */
   double ggME(vector<VectorWaveFunction> g1,
               vector<VectorWaveFunction> g2,
-              ScalarWaveFunction &, bool calc) const;
+              ScalarWaveFunction &, 
+              bool calc) const;
 
-  double qqME(vector<SpinorWaveFunction>    & fin,
-              vector<SpinorBarWaveFunction> & ain,
-              ScalarWaveFunction & hout,bool calc) const;
+  /**
+   * Calculates the matrix element for the process q,qbar->h
+   * @param fin a vector of quark spinors
+   * @param ain a vector of anti-quark spinors
+   * @param calc Whether or not to calculate the matrix element for spin correlations
+   * @return the amlitude value.
+   */
+  double qqME(vector<SpinorWaveFunction> & fin, 
+              vector<SpinorBarWaveFunction> & ain, 
+              ScalarWaveFunction &, 
+              bool calc) const;
+  //@}
 
 private:
 
