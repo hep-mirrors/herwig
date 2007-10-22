@@ -16,6 +16,8 @@ namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
+RSModel::RSModel() : _theLambda_pi(10000*GeV) {}
+
 void RSModel::persistentOutput(PersistentOStream & os) const {
   os << ounit(_theLambda_pi,GeV) 
      << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 

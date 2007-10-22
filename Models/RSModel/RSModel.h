@@ -20,7 +20,8 @@ using namespace ThePEG::Helicity;
  *  This is the class to be used instead of the Standard Model class for
  *  the Randell Sundrum model.
  *
- *
+ * @see \ref RSModelInterfaces "The interfaces"
+ * defined for RSModel.
  * @see StandardModel
  * @see StandardModelBase
  * 
@@ -28,6 +29,11 @@ using namespace ThePEG::Helicity;
 class RSModel: public StandardModel {
 
 public:
+
+  /**
+   * The default constructor 
+   */
+  RSModel();
   
   /**
    * Return the gravition coupling
