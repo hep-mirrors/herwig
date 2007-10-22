@@ -138,7 +138,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
       if (abs(sudakovKey.first)<7 && sudakovKey.first<0) sudakovKey.first = -sudakovKey.first;
       sudakovKey.second = ((**p).pData().partonId.state == ClusteringParticleState::initial);
       bool gotone=false;
-      for(map<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
+      for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	  s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	if (!gotone) gotone = true;
 	double sweight = (*(s->second))((**p).productionScale(),(**p).splittingScale());
@@ -177,7 +177,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 	if (abs(sudakovKey.first)<7 && sudakovKey.first<0) sudakovKey.first = -sudakovKey.first;
 	sudakovKey.second = ((**p).pData().partonId.state == ClusteringParticleState::initial);
 	bool gotone=false;
-	for(map<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
+	for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	    s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	  if (!gotone) gotone = true;
 	  double sweight = (*(s->second))((**p).productionScale(),
