@@ -258,7 +258,6 @@ public:
   /**
    * Function used to read in object persistently.
    * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
    */
   void persistentInput(PersistentIStream & is);
   //@}
@@ -306,7 +305,14 @@ private:
 
 };
 
+/**\ingroup Analysis2
+ * Persistent output of histogram channel
+ */
 inline PersistentOStream& operator << (PersistentOStream& os, const HistogramChannel&);
+
+/**\ingroup Analysis2
+ * Persistent input of histogram channel
+ */
 inline PersistentIStream& operator >> (PersistentIStream& is, HistogramChannel&);
 
 /**

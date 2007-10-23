@@ -8,7 +8,7 @@ Herwig++ is a C++ Monte Carlo event generator.
 
 */
 
-/** \defgroup Analysis2 Analysis Classes
+/** \defgroup Analysis2 New Analysis Classes
 These classes are used for analyses.
 */
 

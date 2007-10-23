@@ -177,18 +177,18 @@ cd JetFinders
 ## FastJet #######################
 
 ## For the various options of FastJet see the documentation for the interfaces
-## of FastJetInterface and JetFinder
+## of FastJetFinder and JetFinder
 
-# library HwFastJetInterface.so
-# create Herwig::FastJetInterface FastJet
+# library HwFastJetFinder.so
+# create Herwig::FastJetFinder FastJet
 
 ## KtJet #########################
 
 ## For the various options of KtJet see the documentation for the interfaces of
-## KtJetInterface and JetFinder
+## KtJetFinder and JetFinder
 
-# library HwKtJetInterface.so
-# create Herwig::KtJetInterface KtJet
+# library HwKtJetFinder.so
+# create Herwig::KtJetFinder KtJet
 
 cd /Defaults/Handlers/Analysis2
 

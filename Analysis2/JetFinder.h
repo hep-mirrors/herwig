@@ -162,31 +162,61 @@ protected:
   /**@name Binary predicats for jet sorting. */
   //@{
 
+  /**
+   * Sort in energy
+   */
   struct LessInEnergy {
+    /**
+     * Return true, if less in energy
+     */
     inline bool operator () (const Lorentz5Momentum& a, const Lorentz5Momentum& b) {
       return a.e() < b.e();
     }
   };
 
+  /**
+   * Sort in transverse energy
+   */
   struct LessInEt {
+    /**
+     * Return true, if less in transverse energy
+     */
     inline bool operator () (const Lorentz5Momentum& a, const Lorentz5Momentum& b) {
       return a.et() < b.et();
     }
   };
 
+  /**
+   * Sort in pt
+   */
   struct LessInPt {
+    /**
+     * Return true, if less in pt
+     */
     inline bool operator () (const Lorentz5Momentum& a, const Lorentz5Momentum& b) {
       return a.perp() < b.perp();
     }
   };
 
+  /**
+   * Sort in y
+   */
   struct LessInY {
+    /**
+     * Return true, if less in y
+     */
     inline bool operator () (const Lorentz5Momentum& a, const Lorentz5Momentum& b) {
       return a.rapidity() < b.rapidity();
     }
   };
 
+  /**
+   * Sort in eta
+   */
   struct LessInEta {
+    /**
+     * Return true, if less in eta
+     */
     inline bool operator () (const Lorentz5Momentum& a, const Lorentz5Momentum& b) {
       return a.eta() < b.eta();
     }

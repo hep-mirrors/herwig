@@ -23,12 +23,19 @@ using namespace ThePEG;
  * They can be combined using the '|' operator, e.g. 'Frame | Ylog'
  */
 namespace HistogramOutput {
+  /** Default behaviour */
   const unsigned int Default   = 0;
+  /** Frame */
   const unsigned int Frame     = 1;
+  /** Errorbars */
   const unsigned int Errorbars = 1 << 1;
+  /** Log x axis */
   const unsigned int Xlog      = 1 << 2;
+  /** Log y axis */
   const unsigned int Ylog      = 1 << 3;
+  /** Smooth */
   const unsigned int Smooth    = 1 << 4;
+  /** Rawcount */
   const unsigned int Rawcount  = 1 << 5;
 }
 
@@ -37,11 +44,17 @@ namespace HistogramOutput {
  * output of an observable.
  */
 struct Histogram2Options {
-  
+
+  /**
+   * Default constructor
+   */  
   inline Histogram2Options ()
     : plotFlags(0), channelFlags(0), title(""), datatitle(""),
       xlabel(""), ylabel ("") {}
   
+  /**
+   * Constructor giving initial values
+   */
   inline Histogram2Options (int pFlags,
 			int cFlags = 0,
 			string t = "",
@@ -51,13 +64,22 @@ struct Histogram2Options {
     : plotFlags(pFlags), channelFlags(cFlags), title(t),
       datatitle(dt), xlabel(x), ylabel (y) {}
   
+  /** Flags for plotting */
   int plotFlags;
+
+  /** Flags for channel output */
   int channelFlags;
-  
+
+  /** Title of the histogram */  
   string title;
+
+  /** Title of data, if present */
   string datatitle;
   
+  /** X label */
   string xlabel;
+
+  /** Y label */
   string ylabel;
   
 };
@@ -240,7 +262,14 @@ private:
 
 };
 
+/**\ingroup Analysis2
+ * Persistent output of histogram options
+ */
 inline PersistentOStream& operator << (PersistentOStream& os, const Histogram2Options& options);
+
+/**\ingroup Analysis2
+ * Persistent input of histogram options
+ */
 inline PersistentIStream& operator >> (PersistentIStream& is, Histogram2Options& options);
 
 }

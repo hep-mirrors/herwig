@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the FastJetInterface class.
+// functions of the FastJetFinder class.
 //
 
-#include "FastJetInterface.h"
+#include "FastJetFinder.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 #include "ThePEG/Interface/Switch.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FastJetInterface.tcc"
+// #include "FastJetFinder.tcc"
 #endif
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -18,31 +18,31 @@
 
 using namespace Herwig;
 
-FastJetInterface::~FastJetInterface() {}
+FastJetFinder::~FastJetFinder() {}
 
-void FastJetInterface::persistentOutput(PersistentOStream & os) const {
+void FastJetFinder::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
   os << _jetFinder << _strategy << _recombinationScheme;
 }
 
-void FastJetInterface::persistentInput(PersistentIStream & is, int) {
+void FastJetFinder::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
   is >> _jetFinder >> _strategy >> _recombinationScheme;
 }
 
-ClassDescription<FastJetInterface> FastJetInterface::initFastJetInterface;
+ClassDescription<FastJetFinder> FastJetFinder::initFastJetFinder;
 // Definition of the static class description member.
 
-void FastJetInterface::Init() {
+void FastJetFinder::Init() {
 
-  static ClassDocumentation<FastJetInterface> documentation
-    ("JetFinder using the FastJetInterface library.");
+  static ClassDocumentation<FastJetFinder> documentation
+    ("JetFinder using the FastJetFinder library.");
 
 
-  static Switch<FastJetInterface,int> interfaceJetFinder
+  static Switch<FastJetFinder,int> interfaceJetFinder
     ("JetFinder",
      "Set the jet finder type",
-     &FastJetInterface::_jetFinder, 0, false, false);
+     &FastJetFinder::_jetFinder, 0, false, false);
   static SwitchOption interfaceJetFinderkt_algorithm
     (interfaceJetFinder,
      "kt_algorithm",
@@ -55,10 +55,10 @@ void FastJetInterface::Init() {
      1);
 
 
-  static Switch<FastJetInterface,int> interfaceStrategy
+  static Switch<FastJetFinder,int> interfaceStrategy
     ("Strategy",
-     "The strategy used by FastJetInterface",
-     &FastJetInterface::_strategy, 1, false, false);
+     "The strategy used by FastJetFinder",
+     &FastJetFinder::_strategy, 1, false, false);
   static SwitchOption interfaceStrategyN2MinHeapTiled
     (interfaceStrategy,
      "N2MinHeapTiled",
@@ -106,10 +106,10 @@ void FastJetInterface::Init() {
      4);  
 
 
-  static Switch<FastJetInterface,int> interfaceRecombinationScheme
+  static Switch<FastJetFinder,int> interfaceRecombinationScheme
     ("RecombinationScheme",
      "The recombination scheme to be used",
-     &FastJetInterface::_recombinationScheme, 0, false, false);
+     &FastJetFinder::_recombinationScheme, 0, false, false);
   static SwitchOption interfaceRecombinationSchemeE_scheme
     (interfaceRecombinationScheme,
      "E_scheme",
@@ -149,7 +149,7 @@ void FastJetInterface::Init() {
 
 }
 
-void FastJetInterface::convert () {
+void FastJetFinder::convert () {
   _lastPseudojets.clear();
   tPVector final = lastEvent()->getFinalState();
   Lorentz5Momentum sum = Lorentz5Momentum (0.*GeV,0.*GeV,0.*GeV,0.*GeV);
@@ -165,7 +165,7 @@ void FastJetInterface::convert () {
   _E2vis = sum.m2();
 }
 
-void FastJetInterface::convert (const vector<fastjet::PseudoJet>& pv) {
+void FastJetFinder::convert (const vector<fastjet::PseudoJet>& pv) {
   list<Lorentz5Momentum> tmp;
   for(vector<fastjet::PseudoJet>::const_iterator p =pv.begin(); p != pv.end(); ++p) {
     tmp.push_back(Lorentz5Momentum((*p).px()*GeV,(*p).py()*GeV,(*p).pz()*GeV,(*p).e()*GeV));
@@ -173,13 +173,13 @@ void FastJetInterface::convert (const vector<fastjet::PseudoJet>& pv) {
   jets(tmp);
 }
 
-void FastJetInterface::cluster () {
+void FastJetFinder::cluster () {
   _lastClusterSequence =
     std::auto_ptr<fastjet::ClusterSequence>
     (new fastjet::ClusterSequence(_lastPseudojets,_jetDefinition));
 }
 
-void FastJetInterface::use (tcEventPtr evt, bool) {
+void FastJetFinder::use (tcEventPtr evt, bool) {
   JetFinder::use(evt);
   _lastPseudojets.clear();
   convert();

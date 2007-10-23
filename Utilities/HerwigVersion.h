@@ -8,6 +8,9 @@ namespace Herwig {
 
   struct HerwigVersion {
 
+    /**
+     * The version string
+     */
     static string versionstring;
 
   };

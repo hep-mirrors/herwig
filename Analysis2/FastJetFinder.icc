@@ -1,77 +1,77 @@
 // -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
-// the FastJetInterface class.
+// the FastJetFinder class.
 //
 
 namespace Herwig {
 
-inline FastJetInterface::FastJetInterface()
+inline FastJetFinder::FastJetFinder()
   : _jetFinder(fastjet::kt_algorithm), _strategy(fastjet::Best),
     _recombinationScheme(fastjet::E_scheme)
 {}
 
-  inline FastJetInterface::FastJetInterface (const FastJetInterface& x)
+  inline FastJetFinder::FastJetFinder (const FastJetFinder& x)
     : JetFinder(x), _jetFinder(x._jetFinder), _strategy(x._strategy),
       _recombinationScheme(x._recombinationScheme)
   {}
 
-inline IBPtr FastJetInterface::clone() const {
+inline IBPtr FastJetFinder::clone() const {
   return new_ptr(*this);
 }
 
-inline IBPtr FastJetInterface::fullclone() const {
+inline IBPtr FastJetFinder::fullclone() const {
   return new_ptr(*this);
 }
 
-inline int FastJetInterface::jetFinder () const {
+inline int FastJetFinder::jetFinder () const {
   return _jetFinder;
 }
 
-inline int FastJetInterface::recombinationScheme () const {
+inline int FastJetFinder::recombinationScheme () const {
   return _recombinationScheme;
 }
 
-inline int FastJetInterface::strategy () const {
+inline int FastJetFinder::strategy () const {
   return _strategy;
 }
 
-inline const fastjet::JetDefinition& FastJetInterface::jetDefintion () const {
+inline const fastjet::JetDefinition& FastJetFinder::jetDefintion () const {
   return _jetDefinition;
 }
 
-inline const vector<fastjet::PseudoJet>& FastJetInterface::lastPseudojets () const {
+inline const vector<fastjet::PseudoJet>& FastJetFinder::lastPseudojets () const {
   return _lastPseudojets;
 }
 
-inline const fastjet::ClusterSequence& FastJetInterface::lastClusterSequence () const {
+inline const fastjet::ClusterSequence& FastJetFinder::lastClusterSequence () const {
   return *_lastClusterSequence;
 }
 
-inline void FastJetInterface::findJets () {
+inline void FastJetFinder::findJets () {
   convert(_lastClusterSequence->inclusive_jets());
 }
 
-inline void FastJetInterface::findJetsN (unsigned int nJets) {
+inline void FastJetFinder::findJetsN (unsigned int nJets) {
   int inJets = (int)nJets;
   convert(_lastClusterSequence->exclusive_jets(inJets));
 }
 
-inline void FastJetInterface::findJetsD () {
+inline void FastJetFinder::findJetsD () {
   convert(_lastClusterSequence->exclusive_jets(sqr(dCut()/GeV)));
 }
 
-inline void FastJetInterface::findJetsY () {
+inline void FastJetFinder::findJetsY () {
   Energy2 res = yCut()*_E2vis;
   convert(_lastClusterSequence->exclusive_jets(res/GeV2));
 }
 
-inline Energy FastJetInterface::getDMerge (unsigned int nJets) const {
+inline Energy FastJetFinder::getDMerge (unsigned int nJets) const {
   int inJets = (int)nJets;
   return sqrt(_lastClusterSequence->exclusive_dmerge(inJets))*GeV;
 }
 
-inline double FastJetInterface::getYMerge (unsigned int nJets) const {
+inline double FastJetFinder::getYMerge (unsigned int nJets) const {
   int inJets = (int)nJets;
   Energy dn = getDMerge (inJets);
   return sqr(dn)/_E2vis;
@@ -81,7 +81,7 @@ inline double FastJetInterface::getYMerge (unsigned int nJets) const {
 // If needed, insert default implementations of virtual function defined
 // in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
 
-inline void FastJetInterface::doinitrun() {
+inline void FastJetFinder::doinitrun() {
   JetFinder::doinitrun();
 
   fastjet::JetFinder theJetFinder = fastjet::kt_algorithm;
@@ -123,7 +123,7 @@ inline void FastJetInterface::doinitrun() {
   _jetDefinition = fastjet::JetDefinition(theJetFinder,R(),theRecombinationScheme,theStrategy);
 }
 
-inline void FastJetInterface::dofinish() {
+inline void FastJetFinder::dofinish() {
   JetFinder::dofinish();
 }
 

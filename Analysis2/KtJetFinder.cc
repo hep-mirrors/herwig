@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the KtJetInterface class.
+// functions of the KtJetFinder class.
 //
 
-#include "KtJetInterface.h"
+#include "KtJetFinder.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 #include "ThePEG/Interface/Switch.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KtJetInterface.tcc"
+// #include "KtJetFinder.tcc"
 #endif
 
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -18,31 +18,31 @@
 
 using namespace Herwig;
 
-KtJetInterface::~KtJetInterface() {}
+KtJetFinder::~KtJetFinder() {}
 
-void KtJetInterface::persistentOutput(PersistentOStream & os) const {
+void KtJetFinder::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
   os << _collisionType << _distanceScheme << _recombinationScheme;
 }
 
-void KtJetInterface::persistentInput(PersistentIStream & is, int) {
+void KtJetFinder::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
   is >> _collisionType >> _distanceScheme >> _recombinationScheme;
 }
 
-ClassDescription<KtJetInterface> KtJetInterface::initKtJetInterface;
+ClassDescription<KtJetFinder> KtJetFinder::initKtJetFinder;
 // Definition of the static class description member.
 
-void KtJetInterface::Init() {
+void KtJetFinder::Init() {
 
-  static ClassDocumentation<KtJetInterface> documentation
+  static ClassDocumentation<KtJetFinder> documentation
     ("Interface to KtJet");
 
 
-  static Switch<KtJetInterface,int> interfaceCollisionType
+  static Switch<KtJetFinder,int> interfaceCollisionType
     ("CollisionType",
      "Set  the collision type used by KtJet",
-     &KtJetInterface::_collisionType, 1, false, false);
+     &KtJetFinder::_collisionType, 1, false, false);
   static SwitchOption interfaceCollisionTypeee
     (interfaceCollisionType,
      "ee",
@@ -65,10 +65,10 @@ void KtJetInterface::Init() {
      4);
 
 
-  static Switch<KtJetInterface,int> interfaceDistanceScheme
+  static Switch<KtJetFinder,int> interfaceDistanceScheme
     ("DistanceScheme",
      "Set the distance scheme (\"angle\") used by KtJet",
-     &KtJetInterface::_distanceScheme, 1, false, false);
+     &KtJetFinder::_distanceScheme, 1, false, false);
   static SwitchOption interfaceDistanceSchemeangular
     (interfaceDistanceScheme,
      "angular",
@@ -87,10 +87,10 @@ void KtJetInterface::Init() {
 
 
 
-  static Switch<KtJetInterface,int> interfaceRecombinationScheme
+  static Switch<KtJetFinder,int> interfaceRecombinationScheme
     ("RecombinationScheme",
      "Set the recombination scheme used by KtJet",
-     &KtJetInterface::_recombinationScheme, 1, false, false);
+     &KtJetFinder::_recombinationScheme, 1, false, false);
   static SwitchOption interfaceRecombinationSchemeE
     (interfaceRecombinationScheme,
      "E",
@@ -119,7 +119,7 @@ void KtJetInterface::Init() {
 
 }
 
-void KtJetInterface::use (tcEventPtr evt, bool inclusive) {
+void KtJetFinder::use (tcEventPtr evt, bool inclusive) {
   JetFinder::use(evt, inclusive);
   convert();
   if (inclusive)
@@ -128,7 +128,7 @@ void KtJetInterface::use (tcEventPtr evt, bool inclusive) {
     cluster();
 }
 
-void KtJetInterface::convert () {
+void KtJetFinder::convert () {
   _lastMomenta.clear();
   tPVector final = lastEvent()->getFinalState();
   for(tPVector::iterator p = final.begin();
@@ -141,7 +141,7 @@ void KtJetInterface::convert () {
   }
 }
 
-void KtJetInterface::convert (const vector<KtJet::KtLorentzVector>& ktvectors) {
+void KtJetFinder::convert (const vector<KtJet::KtLorentzVector>& ktvectors) {
   list<Lorentz5Momentum> tmp;
   for(vector<KtJet::KtLorentzVector>::const_iterator p =ktvectors.begin(); p != ktvectors.end(); ++p) {
     tmp.push_back(Lorentz5Momentum((*p).px()*GeV,(*p).py()*GeV,(*p).pz()*GeV,(*p).e()*GeV));
@@ -149,13 +149,13 @@ void KtJetInterface::convert (const vector<KtJet::KtLorentzVector>& ktvectors) {
   jets(tmp);
 }
 
-void KtJetInterface::cluster () {
+void KtJetFinder::cluster () {
   _lastKtEvent =
     std::auto_ptr<KtJet::KtEvent>
     (new KtJet::KtEvent(_lastMomenta,_collisionType,_distanceScheme,_recombinationScheme));
 }
 
-void KtJetInterface::clusterInclusive () {
+void KtJetFinder::clusterInclusive () {
   _lastKtEvent =
     std::auto_ptr<KtJet::KtEvent>
     (new KtJet::KtEvent(_lastMomenta,_collisionType,_distanceScheme,_recombinationScheme));
