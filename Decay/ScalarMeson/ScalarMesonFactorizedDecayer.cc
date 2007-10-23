@@ -35,8 +35,8 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckmmat[ix][iy]=CKM[ix][iy];}}
   int id0,id1,Wcharge,iq,ia,jspin,spect,inq,outq;
   // make sure the currents and form factors got initialised
-  for(ix=0;ix<_current.size();++ix){_current[ix]->init();}
-  for(ix=0;ix<_form.size();++ix){_form[ix]->init();}
+  for(ix=0;ix<_current.size();++ix) _current[ix]->init();
+  for(ix=0;ix<_form.size();++ix)    _form[ix]->init();
   // find all the possible modes
   vector<unsigned int> tformmap[2],tcurrmap[2];
   vector<int> inquark,outquark,currq,curra;
@@ -114,7 +114,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   vector<double>::iterator start,end;
   for(ix=0;ix<particles.size();++ix) {
     while (true) {
-      if(particles[ix].size()==0){break;}
+      if(particles[ix].empty()) break;
       findModes(ix,particles,modeloc,modecc);
       // if more than three particles only allow one diagram
       if(particles[ix].size()>3&&modeloc.size()!=0){break;}
@@ -136,8 +136,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
       ttcurr[0].push_back(tcurrmap[0][ix]);ttcurr[1].push_back(tcurrmap[1][ix]);
       tformpart.clear();tformpart.push_back(0);
       id=particles[ix][1]->id();
-      if(particles[ix][1]->CC()){idbar=particles[ix][1]->CC()->id();}
-      else{idbar=id;}
+      idbar = particles[ix][1]->CC() ? particles[ix][1]->CC()->id() : id;
       for(iy=0;iy<modeloc.size();++iy) {
 	ttform[0].push_back(tformmap[0][modeloc[iy]]);
 	ttform[1].push_back(tformmap[1][modeloc[iy]]);
@@ -621,50 +620,50 @@ void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
   vector<bool> done(id.size(),false);
   // loop over the modes
   for(ix=0;ix<particles.size();++ix) {
-    if(ix!=imode) {
-      // the particle mode
-      if(particles[ix][0]->id()==id[0]&&particles[ix].size()==id.size()) {
-	nfound=1;
-	for(iy=0;iy<id.size();++iy){done[iy]=false;}
-	for(iy=1;iy<id.size();++iy) {
-	  idtemp=particles[ix][iy]->id();
-	  iz=1;
-	  found=false;
-	  do {
-	    if(idtemp==id[iz]&&!done[iz]) {
-	      done[iz]=true;
-	      found=true;
-	    }
-	    ++iz;
+    if(ix==imode||particles[ix].empty()) continue;
+    assert(!particles[ix].empty());
+    // the particle mode
+    if(particles[ix][0]->id()==id[0]&&particles[ix].size()==id.size()) {
+      nfound=1;
+      for(iy=0;iy<id.size();++iy){done[iy]=false;}
+      for(iy=1;iy<id.size();++iy) {
+	idtemp=particles[ix][iy]->id();
+	iz=1;
+	found=false;
+	do {
+	  if(idtemp==id[iz]&&!done[iz]) {
+	    done[iz]=true;
+	    found=true;
 	  }
-	  while(iz<id.size()&&!found);
-	  if(found) ++nfound;
+	  ++iz;
 	}
-	if(nfound==id.size()) {
-	  cc.push_back(false);
-	  loc.push_back(ix);
-	}
+	while(iz<id.size()&&!found);
+	if(found) ++nfound;
       }
-      // the charge conjugate mode
-      if(particles[ix][0]->id()==idbar[0]&&particles[ix].size()==idbar.size()) {
-	nfound=1;
-	for(iy=0;iy<idbar.size();++iy) done[iy]=false;
-	for(iy=1;iy<idbar.size();++iy) {
-	  idtemp=particles[ix][iy]->id();
-	  iz=1;
-	  found=false;
-	  do {
-	    if(idtemp==idbar[iz]&&!done[iz]) {
-	      done[iz]=true;
-	      found=true;
-	    }
-	    ++iz;
+      if(nfound==id.size()) {
+	cc.push_back(false);
+	loc.push_back(ix);
+      }
+    }
+    // the charge conjugate mode
+    if(particles[ix][0]->id()==idbar[0]&&particles[ix].size()==idbar.size()) {
+      nfound=1;
+      for(iy=0;iy<idbar.size();++iy) done[iy]=false;
+      for(iy=1;iy<idbar.size();++iy) {
+	idtemp=particles[ix][iy]->id();
+	iz=1;
+	found=false;
+	do {
+	  if(idtemp==idbar[iz]&&!done[iz]) {
+	    done[iz]=true;
+	    found=true;
 	  }
-	  while(iz<idbar.size()&&!found);
-	  if(found){++nfound;}
+	  ++iz;
 	}
-	if(nfound==idbar.size()){cc.push_back(false);loc.push_back(ix);}
+	while(iz<idbar.size()&&!found);
+	if(found){++nfound;}
       }
+      if(nfound==idbar.size()){cc.push_back(false);loc.push_back(ix);}
     }
   }
 }
