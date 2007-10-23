@@ -421,8 +421,8 @@ void DecayPhaseSpaceMode::doinit() throw(InitException) {
   }
   tcGenericWidthGeneratorPtr wtemp;
   for(unsigned int ix=0;ix<_extpart.size();++ix) {
-    _massgen[ix]=
-      dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
+    assert(_extpart[ix]);
+    _massgen[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
     if(ix>0) {
       wtemp=
 	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());

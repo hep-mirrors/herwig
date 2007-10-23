@@ -13756,7 +13756,7 @@ create Herwig::LeptonNeutrinoCurrent /Defaults/Decays/BZScalarCurrent  HwWeakCur
 set /Defaults/Decays/BZScalarCurrent:Quark 0  11
 set /Defaults/Decays/BZScalarCurrent:AntiQuark 0  -12
 set /Defaults/Decays/BZScalarCurrent:Quark 1  13
-set /Defaults/Decays/BZScalarCurrent:AntiQuark 1  -15
+set /Defaults/Decays/BZScalarCurrent:AntiQuark 1  -14
 set /Defaults/Decays/BZScalarCurrent:Quark 2  15
 set /Defaults/Decays/BZScalarCurrent:AntiQuark 2  -16
 set /Defaults/Decays/BZScalar:Current /Defaults/Decays/BZScalarCurrent 

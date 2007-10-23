@@ -55,7 +55,9 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
       extpart.resize(2); 	
       _current->decayModeInfo(iy,iq,ia);
       ptemp=_current->particles(Wcharge,iy,iq,ia);
-      for(iz=0;iz<ptemp.size();++iz) extpart.push_back(ptemp[iz]);
+      for(iz=0;iz<ptemp.size();++iz) {
+	extpart.push_back(ptemp[iz]);
+      }
       // create the mode
       mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
       // create the first piece of the channel
@@ -66,7 +68,8 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
 	// the maximum weight
 	if(_maxwgt.size()>numberModes()) maxweight=_maxwgt[numberModes()];
 	else                             maxweight=2.;
-	channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
+	channelwgts.resize(mode->numberChannels(),
+			   1./(mode->numberChannels()));
 	addMode(mode,maxweight,channelwgts);
       }
     }

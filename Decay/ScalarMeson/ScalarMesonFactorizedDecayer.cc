@@ -208,7 +208,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	for(iy=0;iy<isize;++iy) {
 	  ttcurr[0].push_back(ttcurr[0][iy]);ttcurr[1].push_back(ttcurr[1][iy]);
 	  ttform[0].push_back(ttform[0][iy]);ttform[1].push_back(ttform[1][iy]);
-	  if(tformpart[ix]==0){tformpart.push_back(1);}
+	  if(tformpart[iy]==0){tformpart.push_back(1);}
 	  else{tformpart.push_back(0);}
 	  tCKM[iy]*=ort;tCKM.push_back(tCKM[iy]);
 	}
