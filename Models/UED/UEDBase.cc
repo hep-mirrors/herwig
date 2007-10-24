@@ -364,10 +364,10 @@ void UEDBase::writeSpectrum() {
       << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
       << endl;
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
-  for(vector<IDMassPair>::iterator it = theMasses.begin(); 
-      it != theMasses.end();) {
-    ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
-    theMasses.erase(it);
+  while (!theMasses.empty()) {
+    IDMassPair tmp = theMasses.back();
+    ofs << tmp.first << "\t\t\t" << tmp.second/GeV << endl;
+    theMasses.pop_back();
   }
   ofs << "#\n";
 }

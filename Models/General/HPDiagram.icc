@@ -15,9 +15,8 @@ inline bool HPDiagram::operator==(const HPDiagram & x) const {
   return false;
 }
 
-inline bool HPDiagram::sameProcess(HPDiagram & x) const {
-  if( x.incoming == incoming && x.outgoing == outgoing ) return true;
-  else return false;
+inline bool HPDiagram::sameProcess(const HPDiagram & x) const {
+  return ( x.incoming == incoming && x.outgoing == outgoing );
 }
 
 inline PersistentOStream & operator<<(PersistentOStream & os, 
