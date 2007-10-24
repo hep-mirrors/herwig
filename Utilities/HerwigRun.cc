@@ -130,14 +130,14 @@ EGPtr HerwigRun::eventGenerator() {
 
 EventPtr HerwigRun::generateEvent() {
   lastEvent = EventPtr();
-  if(Status != RUN || errorFlag) return lastEvent;
+  if(Status != RUN || errorFlag) return EventPtr();
   if(!isInitialized) {
     eg->initialize();
     isInitialized = true;
   }
   if(!egCreated) eventGenerator();
   if(eg) {
-    if(ngen < N) { 
+    if(ngen < N && ngen < eg->N()) { 
       ngen++; 
       try {
 	lastEvent = eg->shoot(); 
@@ -149,8 +149,7 @@ EventPtr HerwigRun::generateEvent() {
       return lastEvent; 
     }
     else {
-      std::cerr << "Can only generate " << N << " events.\n";
-      return lastEvent;
+      return EventPtr();
     }
   } else return lastEvent;
 }
