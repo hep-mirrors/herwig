@@ -18,7 +18,7 @@ quark_decays.in baryon_decays.in \
 boson_decays.in lepton_decays.in \
 meson_decays.in decayers.in \
 masses.in widths.in BSMDecays.in \
-BSMParticles.in DiffractiveParticles.in
+BSMParticles.in BSMVertices.in DiffractiveParticles.in
 
 dist_pkgdata_DATA = $(DOTINFILES)
 
