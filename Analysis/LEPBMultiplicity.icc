@@ -14,4 +14,30 @@ inline IBPtr LEPBMultiplicity::fullclone() const {
   return new_ptr(*this);
 }
 
+inline BranchingInfo::BranchingInfo(double inmult,double inerror)
+  : obsBranching(inmult), obsError(inerror), actualCount(0), 
+    sumofsquares(0.0)
+{}
+  
+inline double BranchingInfo::simBranching(long N, BranchingInfo den) {
+  return den.actualCount>0 ? 
+    double(actualCount) / double(den.actualCount) : 
+    double(actualCount) / double(N)       ;
+}
+
+inline double BranchingInfo::simError(long N, BranchingInfo den) {
+  double rn = N*( sumofsquares/double(N)  -  sqr(simBranching(N))) /
+    sqr(double(actualCount));
+  double rd = den.actualCount>0 ?
+    N*( den.sumofsquares/double(N)  -  sqr(den.simBranching(N))) /
+    sqr(double(den.actualCount)) : 0.;
+  return simBranching(N,den)*sqrt(rn+rd);
+}
+
+inline double BranchingInfo::nSigma(long N,BranchingInfo den) {
+  return obsBranching == 0.0 ?
+    0.0 :
+    (simBranching(N,den) - obsBranching) 
+    / sqrt(sqr(simError(N,den)) + sqr(obsError));
+}
 }

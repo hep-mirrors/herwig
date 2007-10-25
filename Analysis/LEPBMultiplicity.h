@@ -6,18 +6,74 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "MultiplicityCount.h"
 #include "LEPBMultiplicity.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
+
 /**
- * Here is the documentation of the LEPBMultiplicity class.
+ *  Struct for the multiplcity data
+ */
+struct BranchingInfo {
+  /**
+   *  Default constructor
+   * @param mult  The observed multiplcity.
+   * @param error The error on the observed multiplicity
+   * @param type  The type of particle
+   */
+  inline BranchingInfo(double mult=0.,double error=0.);
+
+  /**
+   *  The observed multiplicity
+   */
+  double obsBranching;
+
+  /**
+   *  The error on the observed multiplicity
+   */
+  double obsError;
+
+  /**
+   *  Number of particles of this type
+   */
+  long actualCount;
+
+  /**
+   *  Sum of squares of number per event for error
+   */
+  double sumofsquares;
+
+  /**
+   *  The average fraction per quark
+   * @param N The number of events
+   */
+  double simBranching(long N,BranchingInfo den=BranchingInfo());
+
+  /**
+   *  The error on the average number per event
+   * @param N The number of events 
+   */
+  double simError(long N,BranchingInfo den=BranchingInfo());
+
+  /**
+   *  Is the result more than \f$3\sigma\f$ from the experimental result
+   * @param N The number of events
+   */
+  double nSigma(long N,BranchingInfo den=BranchingInfo());
+
+  /**
+   * Plot standard error in a simple barchart
+   */
+  string bargraph(long N,BranchingInfo den=BranchingInfo());
+};
+
+/**
+ * Here is the documentation of the LEPBBranching class.
  *
- * @see \ref LEPBMultiplicityInterfaces "The interfaces"
- * defined for LEPBMultiplicity.
+ * @see \ref LEPBBranchingInterfaces "The interfaces"
+ * defined for LEPBBranching.
  */
 class LEPBMultiplicity: public AnalysisHandler {
 
@@ -107,29 +163,9 @@ private:
 private:
 
   /**
-   *  The PDG codes of the particles
-   */
-  vector<long> _particlecodes;
-
-  /**
-   * The multiplcity
-   */
-  vector<double> _multiplicity;
-
-  /**
-   * The error
-   */
-  vector<double> _error;
-
-  /**
-   * Species of particle
-   */
-  vector<unsigned int> _species;
-
-  /**
    *  Map of PDG codes to multiplicity info
    */
-  map<long,MultiplicityInfo> _data;
+  map<long,BranchingInfo> _data;
 };
 
 }
