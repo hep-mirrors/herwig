@@ -63,6 +63,12 @@ public:
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
 		     const ParticleVector & decay) const;
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
 
@@ -117,6 +123,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:

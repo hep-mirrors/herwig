@@ -25,18 +25,18 @@ void SMHiggsWWDecayer::Init() {
 
   static ClassDocumentation<SMHiggsWWDecayer> documentation
     ("The SMHiggsWWDecayer class performs the decay of the Standard Model Higgs"
-     " boson to W+w- and Z0Z0");
+     " boson to W+W- and Z0Z0");
 
   static Parameter<SMHiggsWWDecayer,double> interfaceWMaximum
     ("WMaximum",
      "The maximum weight for H-> W+W- decays",
-     &SMHiggsWWDecayer::_wmax, 7.0, 0.0001, 1000.,
+     &SMHiggsWWDecayer::_wmax, 5.0, 0.0001, 1000.,
      false, false, Interface::limited);
 
   static Parameter<SMHiggsWWDecayer,double> interfaceZMaximum
     ("ZMaximum",
      "The maximum weight for H-> Z0Z0 decays",
-     &SMHiggsWWDecayer::_zmax, 0.4, 0.0001, 1000.,
+     &SMHiggsWWDecayer::_zmax, 2.64, 0.0001, 1000.,
      false, false, Interface::limited);
 
   static Switch<SMHiggsWWDecayer,bool> interfaceBreitWigner
@@ -60,10 +60,9 @@ void SMHiggsWWDecayer::Init() {
      "The power to use for the power law",
      &SMHiggsWWDecayer::_power, 0.0, -5.0, 5.0,
      false, false, Interface::limited);
-
 }
 
-SMHiggsWWDecayer::SMHiggsWWDecayer() : _wmax(7.0), _zmax(0.4), 
+SMHiggsWWDecayer::SMHiggsWWDecayer() : _wmax(5.00), _zmax(2.64), 
 				       _breit(true),_power(0.)
 {}
 
@@ -123,13 +122,13 @@ void SMHiggsWWDecayer::doinit() throw(InitException) {
   tPDPtr Z0=getParticleData(ParticleID::Z0);
   DecaySelector Z0Decay = Z0->decaySelector();
   for(DecaySelector::const_iterator z1=Z0Decay.begin();z1!=Z0Decay.end();++z1) {
-    // extract the decay products of W+
+    // extract the decay products of Z0
     PDVector prod=(*z1).second->orderedProducts();
     if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
     extpart[1]=prod[0];
     extpart[2]=prod[1];
     for(DecaySelector::const_iterator z2=Z0Decay.begin();z2!=Z0Decay.end();++z2) {
-      // extract the decay products of W-
+      // extract the decay products of Z0
       PDVector prod=(*z2).second->orderedProducts();
       if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
       extpart[3]=prod[0];
@@ -264,10 +263,33 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
   return output;
 }
 
+void SMHiggsWWDecayer::dataBaseOutput(ofstream & os,bool header) const {
+  if(header) os << "update decayers set parameters=\"";
+  os << "set " << fullName() << ":WMaximum "    << _wmax  << "\n";
+  os << "set " << fullName() << ":ZMaximum "    << _zmax  << "\n";
+  os << "set " << fullName() << ":BreitWigner " << _breit << "\n";
+  os << "set " << fullName() << ":Power "       << _power << "\n";
+  DecayIntegrator::dataBaseOutput(os,false);
+  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 
-
-
-
-
-
-
+void SMHiggsWWDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  unsigned int nw(0),nz(0);
+  double ztemp(0.),wtemp(0.);
+  if(initialize()) {
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      if(mode(ix)->externalParticles(1)->iCharge()==
+	 -mode(ix)->externalParticles(2)->iCharge()) {
+	++nz;
+	ztemp+=mode(ix)->maxWeight();
+      }
+      else {
+	++nw;
+	wtemp+=mode(ix)->maxWeight();
+      }
+    }
+    _wmax = wtemp/double(nw);
+    _zmax = wtemp/double(nz);
+  }
+}

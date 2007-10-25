@@ -62,6 +62,8 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() {
   _mpi=0.*MeV;
   _mkp=0.*MeV;
   _mk0=0.*MeV;
+  // intermediates
+  generateIntermediates(true);
 }
 
 void DtoKPiPiCLEO::doinit() throw(InitException) {
@@ -263,8 +265,6 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   }
   else {
     wtemp=vector<double>(iy-ix,1./double(iy-ix));
-    for(unsigned int iz=0;iz<wtemp.size();++iz) {
-    }
   }
   if(_maxwgt.size()<2) _maxwgt.push_back(1.);
   addMode(mode2,_maxwgt[1],wtemp);
@@ -832,7 +832,7 @@ void DtoKPiPiCLEO::Init() {
   static ParVector<DtoKPiPiCLEO,double> interfaceMaximumWeights
     ("MaximumWeights",
      "The maximum weights for the unweighting of the decays",
-     &DtoKPiPiCLEO::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     &DtoKPiPiCLEO::_maxwgt, -1, 1.0, 0.0, 1.0e11,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiCLEO,double> interfaceWeights
@@ -1064,5 +1064,19 @@ void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
   }
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
+}
+
+void DtoKPiPiCLEO::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(mode(0)->numberChannels()+mode(1)->numberChannels());
+  _maxwgt.resize(2);
+  unsigned int iy=0;
+  for(unsigned int ix=0;ix<2;++ix) {
+    _maxwgt[ix]=mode(ix)->maxWeight();
+    for(unsigned int iz=0;iz<mode(ix)->numberChannels();++iz) {
+      _weights[iy]=mode(ix)->channelWeight(iz);
+      ++iy;
+    }
   }
 }

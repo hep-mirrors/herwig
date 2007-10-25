@@ -13,6 +13,10 @@
 #include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
 #include "JetMeasure.h"
 
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
+#include "Herwig++/Utilities/Histogram2/Histogram2.h"
+#endif
+
 namespace Herwig {
 
 using namespace ThePEG;
@@ -38,15 +42,6 @@ public:
    */
   inline Reweighter();
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
-
-  /**
-   * The copy constructor.
-   */
-  inline Reweighter(const Reweighter&);
-
-#endif
-
   /**
    * The destructor.
    */
@@ -65,7 +60,7 @@ public:
    * Perform the reweighting. It calls the Sudakov
    * reweighting and then the alpha_s reweighting.
    */
-  double reweight (CascadeHistory, unsigned int);
+  double reweight (CascadeHistory, unsigned int, unsigned int);
   
   /**
    * Analyze the given cascade history
@@ -99,7 +94,7 @@ public:
    * Perform the Sudakov reweighting. The default
    * returns 1.
    */
-  virtual double sudakovReweight (CascadeHistory, unsigned int);
+  virtual double sudakovReweight (CascadeHistory, unsigned int, unsigned int);
 
   //@}
 
@@ -177,7 +172,7 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -190,8 +185,6 @@ protected:
    * run has ended. Used eg. to write out statistics.
    */
   inline virtual void dofinish();
-
-  inline ofstream& event_internals () { return _event_internals; }
 
 #endif
 
@@ -244,7 +237,7 @@ private:
    */
   ShowerAlphaPtr _showerAlpha;
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
   /**
    * Map multiplicities to number of events
@@ -253,10 +246,25 @@ private:
   map<unsigned int, pair<unsigned long, double> > _stats;
 
   /**
-   * Stream to write various statistics on an
-   * event by event basis.
+   * Histogram to store scales
    */
-  ofstream _event_internals;
+  Histogram2Ptr _clustering_scales;
+
+  /**
+   * Histogram to store weights
+   */
+  Histogram2Ptr _weights;
+
+  /**
+   * Map multiplicities to channel names
+   */
+  map<unsigned int,string> _mult;
+
+  /**
+   * Map multiplicities and clustering number
+   * to channel names
+   */
+  map<pair<unsigned int,unsigned int>,string> _mult_cluster;
 
 #endif
 

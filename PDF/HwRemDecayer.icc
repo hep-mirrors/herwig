@@ -6,10 +6,11 @@
 
 namespace Herwig {
 
-inline HwRemDecayer::HwRemDecayer(): thestep(StepPtr()) {}
+inline HwRemDecayer::HwRemDecayer(): thestep(StepPtr()), theSplittingOnOff(1) {}
 
 inline HwRemDecayer::HwRemDecayer(const HwRemDecayer & x)
-  : RemnantDecayer(x), theForcedSplitter(x.theForcedSplitter) {}
+  : RemnantDecayer(x), theForcedSplitter(x.theForcedSplitter), 
+    theSplittingOnOff(x.theSplittingOnOff) {}
 
 inline IBPtr HwRemDecayer::clone() const {
   return new_ptr(*this);
@@ -18,10 +19,5 @@ inline IBPtr HwRemDecayer::clone() const {
 inline IBPtr HwRemDecayer::fullclone() const {
   return new_ptr(*this);
 }
-
-
-// If needed, insert default implementations of virtual function defined
-// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
-
 
 }

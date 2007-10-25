@@ -147,6 +147,19 @@ namespace {
     else
       return parentClusterMass(parent);
   }
+
+  bool isPrimaryCluster(tcPPtr p) {
+    if ( p->id() != ExtraParticleID::Cluster ) 
+      return false;
+    if( p->parents().empty())
+      return false;
+    for ( size_t i = 0, end = p->parents().size();
+	  i < end; ++i ) {
+      if ( !(p->parents()[i]->dataPtr()->coloured()) )
+	return false;
+    }
+    return true;
+  }
 }
 
 
@@ -200,7 +213,7 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = abs( (*it)->id() );
-    if(ID==ParticleID::K0) continue;
+    //if(ID==ParticleID::K0) continue;
     if(ID==ParticleID::K_L0||ID==ParticleID::K_S0) ID=ParticleID::K0;
     
     if ( _makeHistograms && isLastCluster(*it) ) {
@@ -209,6 +222,16 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
       if (clu) {
 	_clusters.insert(make_pair(clu->clusterId(), Histogram(0.0,10.0,200)));
 	_clusters[clu->clusterId()] += (*it)->mass()/GeV;
+      }
+    }
+
+    if( _makeHistograms && isPrimaryCluster(*it) ) {
+      _primary.insert(make_pair(0, Histogram(0.0,20.0,400)));
+      _primary[0] += (*it)->mass()/GeV;
+      tcClusterPtr clu = dynamic_ptr_cast<tcClusterPtr>(*it);
+      if(clu) {
+	_primary.insert(make_pair(clu->clusterId(), Histogram(0.0,20.0,400)));
+	_primary[clu->clusterId()] += (*it)->mass()/GeV;
       }
     }
     
@@ -294,10 +317,24 @@ void MultiplicityCount::dofinish() {
       = _histograms[ParticleID::piplus].ratioWith(_histograms[ParticleID::pi0]);
     Histogram Kratio 
       = _histograms[ParticleID::Kplus].ratioWith(_histograms[ParticleID::K0]);
-    
+
     using namespace HistogramOptions;
     string histofilename = filename + ".top";
     ofstream outfile2(histofilename.c_str());
+
+    for (map<int,Histogram>::const_iterator it = _primary.begin();
+	 it != _primary.end(); ++it) {
+      ostringstream title1;
+      title1 << "Primary Cluster " << it->first;
+      string title = title1.str();
+      it->second.topdrawOutput(outfile2,Frame|Ylog,"BLACK",title,"",
+			       "N (200 bins)","","Cluster mass [GeV]");
+    }
+    map<long,Histogram>::const_iterator cit = _histograms.find(ExtraParticleID::Cluster);
+    string title = generator()->getParticleData(cit->first)->PDGName();
+    cit->second.topdrawOutput(outfile2,Frame|Ylog,"BLACK",title,"",
+			     "N (200 bins)","","Parent cluster mass [GeV]");
+
     for (map<int,Histogram>::const_iterator it = _clusters.begin();
 	 it != _clusters.end(); ++it) {
       ostringstream title1;

@@ -11,6 +11,7 @@ namespace Herwig {
 
   using namespace std;
 
+  /** Append one vector to another keeping the ordering */
   template<class T, class S>
   void appendvector (vector<T>& to, const vector<S>& from) {
     for (unsigned int f = 0; f < from.size(); ++f)

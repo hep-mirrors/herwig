@@ -41,7 +41,7 @@ public:
   /**
    * The default constructor.
    */
-  inline UEDBase();
+  UEDBase();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -227,12 +227,7 @@ private:
    * Store the masses of the new particles
    */
   vector<IDMassPair> theMasses;
-
-  /**
-   * Name of the spectrum file
-   */
-  string theSpectrum;
-
+  
   /**
    * The value of the vacuum expectation value of the higgs field.
    */

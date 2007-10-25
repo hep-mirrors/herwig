@@ -20,6 +20,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include <cassert>
+#include <cfloat>
 
 #include "Herwig++/Shower/CKKW/Clustering/EmitterSpectatorConfiguration.h"
 
@@ -140,10 +141,10 @@ double KtTildeMeasure::zPM (Energy2 mi2, Energy2 mj2, Energy2 mij2) {
 
   Energy2 dm2 = mij2-(mi2+mj2);
 
-  if (mi2 == 0.*GeV2 && mj2 == 0.*GeV2 && mij2 == 0.*GeV2) return .5;
-  if (mi2 == mj2) return .5;
+  if (mi2/GeV2 < DBL_EPSILON && mj2/GeV2 < DBL_EPSILON  && mij2/GeV2 < DBL_EPSILON) return .5;
+  if ((mi2 - mj2)/GeV2 < DBL_EPSILON) return .5;
 
-  if(dm2 == 0.*GeV2) 
+  if(dm2/GeV2 < DBL_EPSILON) 
     return (mi2+resolution())/(mi2+resolution()+sqrt((mi2+resolution())*(mj2+resolution())));
 
   // for the general solution, disable unit checking

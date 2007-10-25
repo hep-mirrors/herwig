@@ -156,6 +156,19 @@ void HardProcessConstructor::Init() {
     true);
 }
 
+namespace {
+  // Helper functor for find_if below.
+  class SameProcessAs {
+  public:
+    SameProcessAs(const HPDiagram & diag) : a(diag) {}
+    bool operator()(const HPDiagram & b) {
+      return a.sameProcess(b);
+    }
+  private:
+    HPDiagram a;
+  };
+}
+
 void HardProcessConstructor::constructDiagrams() {
   if(theIncPairs.empty() || theOutgoing.empty()) return;
   // delete the matrix elements we already have
@@ -197,26 +210,30 @@ void HardProcessConstructor::constructDiagrams() {
     }
   }
   // We now have a vector of diagrams that need to be grouped together
-  HPDVector::iterator ita, itb;
-  for(ita = theProcesses.begin(); ita != theProcesses.end(); ) {
+  while(!theProcesses.empty()) {
     HPDVector group;
-    HPDiagram current = *ita;
+    // Pick the last HPDiagram
+    HPDiagram current = theProcesses.back();
+    theProcesses.pop_back();
     group.push_back(current);
-    for(itb = ita + 1; itb != theProcesses.end();) {
-      if( (*itb).sameProcess(current) ) {
-	group.push_back(*itb);
-	theProcesses.erase(itb);
+
+    // Find duplicates among the rest
+    bool foundDup = true;
+    while (foundDup) {
+      HPDVector::iterator dup 
+	= find_if(theProcesses.begin(), theProcesses.end(), 
+		  SameProcessAs(current));
+      foundDup = dup != theProcesses.end();
+      if (foundDup) {
+	group.push_back(*dup);
+	theProcesses.erase(dup);
       }
-      else
-	++itb;
     }
-    theProcesses.erase(ita);
+    
     if( !group.empty() ) {
       createMatrixElement(group);
-      group.clear();
     }
   }
-  
 }
 
 void HardProcessConstructor::

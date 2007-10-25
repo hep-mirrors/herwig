@@ -7,16 +7,18 @@
 
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
-#include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.fh"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "TwoBodyDecayConstructor.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::VertexType;
 using Helicity::VertexBasePtr;
+
+/**
+ * A two body decay mode 
+ */
+typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
 
 /**
  * The TwoBodyDecayConstructor class inherits from the dummy base class
@@ -29,13 +31,13 @@ using Helicity::VertexBasePtr;
  * @see NBodyDecayConstructor
  **/
 class TwoBodyDecayConstructor: public NBodyDecayConstructorBase {
-
+  
 public:
 
   /**
    * The default constructor.
    */
-  inline TwoBodyDecayConstructor();
+  TwoBodyDecayConstructor();
 
   /**
    * Function used to determine allowed decaymodes
@@ -86,18 +88,6 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-  //@}
-
 private:
 
   /**
@@ -122,11 +112,11 @@ private:
    * @param vert The vertex to create decays for
    * @param ilist Which list to search
    * @param iv Row number in _theExistingDecayers member
-   * @return vector of ParticleData ptrs
+   * @return A vector a decay modes
    */
-  PDVector createModes(tPDPtr inpart, VertexBasePtr vert,
-		       unsigned int ilist,
-		       unsigned int iv);
+  vector<TwoBodyDecay> createModes(tPDPtr inpart, VertexBasePtr vert,
+				   unsigned int ilist,
+				   unsigned int iv);
 
   /**
    * Function to create decayer for specific vertex
@@ -140,12 +130,10 @@ private:
 
   /**
    * Create decay mode(s) from given part and decay modes
-   * @param inpart pointer to incoming particle
-   * @param decays list of allowed interactions
+   * @param decays The vector of decay modes
    * @param decayer The decayer responsible for this decay
    */
-  void createDecayMode(tPDPtr inpart,
-		       const PDVector & decays,
+  void createDecayMode(const vector<TwoBodyDecay> & decays,
 		       GeneralTwoBodyDecayerPtr decayer);
 
   /**
@@ -173,11 +161,6 @@ private:
    vector<vector<GeneralTwoBodyDecayerPtr> > _theExistingDecayers;
 
   /**
-   * Model Pointer
-   */
-  Ptr<Herwig::StandardModel>::pointer _theModel;
-
-  /**
    * Whether to initialize decayers or not
    */
   bool _init;
@@ -196,6 +179,12 @@ private:
    * Whether to output information on the decayers 
    */
   bool _info;
+
+  
+  /**
+   * Whether to create the DecayModes as well as the Decayer objects 
+   */
+  bool _createmodes;
 };
   
 }

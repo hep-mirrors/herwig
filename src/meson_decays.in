@@ -97,14 +97,14 @@ decaymode K-->pi-,gamma,gamma; 1E-06 1 /Defaults/Decays/DecayME0
 decaymode Kbar0->K_S0; 0.5 1 /Defaults/Decays/DecayME0
 decaymode Kbar0->K_L0; 0.5 1 /Defaults/Decays/DecayME0
 #
-decaymode D0->K-,pi+,pi0; 0.141 1 /Defaults/Decays/DecayME0
+decaymode D0->K-,pi+,pi0; 0.141 1 /Defaults/Decays/DKPiPiCLEO
 decaymode D0->K-,a_1+; 0.075 1 /Defaults/Decays/WSBHadronic
 decaymode D0->K*-,rho+; 0.064 1 /Defaults/Decays/WSBHadronic
 decaymode D0->K-,pi+; 0.038 1 /Defaults/Decays/WSBHadronic
 decaymode D0->K-,e+,nu_e; 0.0344 1 /Defaults/Decays/ISGW2
 decaymode D0->K-,mu+,nu_mu; 0.0333 1 /Defaults/Decays/ISGW2
-decaymode D0->K_S0,pi+,pi-; 0.029 1 /Defaults/Decays/DecayME0
-decaymode D0->K_L0,pi+,pi-; 0.029 1 /Defaults/Decays/DecayME0
+decaymode D0->K_S0,pi+,pi-; 0.029 1 /Defaults/Decays/DKPiPiCLEO
+decaymode D0->K_L0,pi+,pi-; 0.029 1 /Defaults/Decays/DKPiPiCLEO
 decaymode D0->K-,pi+,omega; 0.023 1 /Defaults/Decays/DecayME0
 decaymode D0->Kbar0,pi+,pi-,pi0; 0.022 1 /Defaults/Decays/DecayME0
 decaymode D0->K*-,e+,nu_e; 0.0214 1 /Defaults/Decays/ISGW2
@@ -229,8 +229,8 @@ decaymode D0->phi,pi+,pi-; 4.7E-05 1 /Defaults/Decays/DecayME0
 decaymode D0->K-,K+,K-,pi+; 3.2E-05 1 /Defaults/Decays/DecayME0
 decaymode D0->phi,gamma; 2.4E-05 1 /Defaults/Decays/DecayME0
 #
-decaymode D+->Kbar0,pi+,pi0; 0.14 1 /Defaults/Decays/DecayME0
-decaymode D+->K-,pi+,pi+; 0.0951 1 /Defaults/Decays/DecayME0
+decaymode D+->Kbar0,pi+,pi0; 0.14 1 /Defaults/Decays/DtoKPiPiMarkIII
+decaymode D+->K-,pi+,pi+; 0.0951 1 /Defaults/Decays/DKPiPiE691
 decaymode D+->Kbar0,e+,nu_e; 0.0892 1 /Defaults/Decays/ISGW2
 decaymode D+->Kbar0,mu+,nu_mu; 0.0865 1 /Defaults/Decays/ISGW2
 decaymode D+->Kbar0,a_1+; 0.072 1 /Defaults/Decays/WSBHadronic
@@ -306,14 +306,14 @@ decaymode D+->f_0,K+; 9E-05 1 /Defaults/Decays/DecayME0
 decaymode D+->K+,K+,K-; 9E-05 1 /Defaults/Decays/DecayME0
 decaymode D+->K*_20,pi+; 7.8E-05 1 /Defaults/Decays/DecayME0
 #
-decaymode Dbar0->K+,pi-,pi0; 0.141 1 /Defaults/Decays/DecayME0
+decaymode Dbar0->K+,pi-,pi0; 0.141 1 /Defaults/Decays/DKPiPiCLEO
 decaymode Dbar0->K+,a_1-; 0.075 1 /Defaults/Decays/WSBHadronic
 decaymode Dbar0->K*+,rho-; 0.064 1 /Defaults/Decays/WSBHadronic
 decaymode Dbar0->K+,pi-; 0.038 1 /Defaults/Decays/WSBHadronic
 decaymode Dbar0->K+,e-,nu_ebar; 0.0344 1 /Defaults/Decays/ISGW2
 decaymode Dbar0->K+,mu-,nu_mubar; 0.0333 1 /Defaults/Decays/ISGW2
-decaymode Dbar0->K_S0,pi-,pi+; 0.029 1 /Defaults/Decays/DecayME0
-decaymode Dbar0->K_L0,pi-,pi+; 0.029 1 /Defaults/Decays/DecayME0
+decaymode Dbar0->K_S0,pi-,pi+; 0.029 1 /Defaults/Decays/DKPiPiCLEO
+decaymode Dbar0->K_L0,pi-,pi+; 0.029 1 /Defaults/Decays/DKPiPiCLEO
 decaymode Dbar0->K+,pi-,omega; 0.023 1 /Defaults/Decays/DecayME0
 decaymode Dbar0->K0,pi-,pi+,pi0; 0.022 1 /Defaults/Decays/DecayME0
 decaymode Dbar0->K*+,e-,nu_ebar; 0.0214 1 /Defaults/Decays/ISGW2
@@ -438,8 +438,8 @@ decaymode Dbar0->phi,pi-,pi+; 4.7E-05 1 /Defaults/Decays/DecayME0
 decaymode Dbar0->K+,K-,K+,pi-; 3.2E-05 1 /Defaults/Decays/DecayME0
 decaymode Dbar0->phi,gamma; 2.4E-05 1 /Defaults/Decays/DecayME0
 #
-decaymode D-->K0,pi-,pi0; 0.14 1 /Defaults/Decays/DecayME0
-decaymode D-->K+,pi-,pi-; 0.0951 1 /Defaults/Decays/DecayME0
+decaymode D-->K0,pi-,pi0; 0.14 1 /Defaults/Decays/DtoKPiPiMarkIII
+decaymode D-->K+,pi-,pi-; 0.0951 1 /Defaults/Decays/DKPiPiE691
 decaymode D-->K0,e-,nu_ebar; 0.0892 1 /Defaults/Decays/ISGW2
 decaymode D-->K0,mu-,nu_mubar; 0.0865 1 /Defaults/Decays/ISGW2
 decaymode D-->K0,a_1-; 0.072 1 /Defaults/Decays/WSBHadronic

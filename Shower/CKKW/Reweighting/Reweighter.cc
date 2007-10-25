@@ -142,14 +142,14 @@ void Reweighter::unresolvedCut (PPair in, PVector out) {
     generator()->log() << "found unresolved partons" << endl;
 #endif
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   if (_stats.find(out.size()) == _stats.end())
     _stats.insert(make_pair(out.size(),make_pair(0,0.)));
 #endif
 
   if (!_res) 
     throw Veto ();
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   else {
     _stats.find(out.size())->second.first += 1;
   }
@@ -157,28 +157,37 @@ void Reweighter::unresolvedCut (PPair in, PVector out) {
 
 }
 
-double Reweighter::reweight (CascadeHistory history, unsigned int mult) {
+double Reweighter::reweight (CascadeHistory history, unsigned int mult, unsigned int minmult) {
 #ifdef HERWIG_DEBUG_CKKW
   generator()->log() << "== Reweighter::reweight" << endl;
 #endif
   double weight = 1.;
   analyzeHistory(history);
-  weight *= sudakovReweight(history,mult);
+  weight *= sudakovReweight(history,mult,minmult);
   weight *= couplingReweight(history);
 #ifdef HERWIG_DEBUG_CKKW
   generator()->log() << "CKKW weight is " << weight << endl;
 #endif
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   _stats.find(mult)->second.second += weight;
-  if (mult > 2) {
-    event_internals() << mult << "\t" << weight;
+
+  unsigned int njets = mult-minmult;
+
+  if (njets > 0 && njets < 6) {
+
+    _weights->book(_mult.find(njets)->second,weight);
+
+    unsigned int count = 1;
+
     for (list<ClusteringPtr>::iterator c = history.clusterings.begin();
 	 c != history.clusterings.end(); ++c) {
-      event_internals() << "\t" << (**c).scale()/GeV2 << "\t" << (**c).momentumFraction();
+      _clustering_scales->book(_mult_cluster.find(make_pair(njets,count))->second,sqrt((**c).scale())/GeV);
+      count += 1;
     }
-    event_internals() << endl;
+
   }
+
 #endif
 
 #ifdef HERWIG_DEBUG_CKKW_GRAPHVIZ
@@ -213,6 +222,6 @@ double Reweighter::couplingReweight (CascadeHistory history) {
   return weight;
 }
 
-double Reweighter::sudakovReweight (CascadeHistory, unsigned int) {
+double Reweighter::sudakovReweight (CascadeHistory, unsigned int, unsigned int) {
   return 1.;
 }

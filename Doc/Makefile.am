@@ -2,7 +2,8 @@ CLEANFILES = AllInterfaces.h Herwig++-refman.tag HerwigDefaults.rpo
 
 docdir = $(pkgdatadir)/Doc
 
-dist_doc_DATA = refman.conf refman.h  tagfileThePEG.tag HerwigDefaults.in
+dist_doc_DATA = refman.conf refman.h HerwigDefaults.in
+EXTRA_DATA = tagfileThePEG.tag
 
 doc_SCRIPTS = fixinterfaces.pl
 
@@ -19,8 +20,8 @@ pdf-local: refman-html
 AllInterfaces.h: HerwigDefaults.in
 	$(top_builddir)/src/Herwig++ init -L$(top_builddir)/lib
 
-refman-html: refman.conf refman.h AllInterfaces.h refmanThePEG.conf
-	./fixinterfaces.pl AllInterfaces.h
+refman-html: refman.conf refman.h AllInterfaces.h refmanThePEG.conf tagfileThePEG.tag
+	$(srcdir)/fixinterfaces.pl AllInterfaces.h
 	doxygen $<
 
 tagfileThePEG.tag:

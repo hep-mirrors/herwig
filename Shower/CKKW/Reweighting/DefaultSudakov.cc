@@ -9,6 +9,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Config/Constants.h"
 
 #include "DefaultReweighter.h"
 #include "DefaultJetMeasure.h"
@@ -42,11 +43,11 @@ using namespace Herwig;
       double value = 1.;
 
       if (!_initial) {
-	value = _showerAlpha->value(sqr(shower.second*(1.-shower.second))*shower.first);
+	value = _showerAlpha->value(sqr(shower.second*(1.-shower.second))*shower.first)/(2.*Constants::pi);
 	value *= _splittingFunction->P(shower.second,shower.second*(1.-shower.second)*shower.first,_ids,_useMassive);
 	value *= _resolution->showerJacobian(_ids,q2,z,_initial)*GeV2/shower.first;
       } else {
-	value = _showerAlpha->value(sqr(1.-shower.second)*shower.first);
+	value = _showerAlpha->value(sqr(1.-shower.second)*shower.first)/(2.*Constants::pi);
 	value *= _splittingFunction->P(shower.second,(1.-shower.second)*shower.first/shower.second,_ids,_useMassive);
 	value *= _resolution->showerJacobian(_ids,q2,z,_initial)*GeV2/shower.first;
       }
@@ -124,7 +125,9 @@ string DefaultSudakov::dataFile () const {
 
   name << _initial << "_"
        << _reweighter->resolution()->name() << "_"
-       << _reweighter->resolution()->resolution()/GeV2 << ".dat";
+       << _reweighter->resolution()->resolution()/GeV2 << "_"
+       << _reweighter->showerAlpha()->value(_reweighter->resolution()->resolution())
+       << ".dat";
 
   return name.str();
 }

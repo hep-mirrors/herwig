@@ -1,6 +1,6 @@
 #
 # This file contains the set-up of the mass generators for Herwig++ outputted
-# from the Herwig++ Particles Database at 12:41:53 on the 14/9/2007.
+# from the Herwig++ Particles Database at 13:32:34 on the 21/10/2007.
 #
 create Herwig::GenericMassGenerator  /Defaults/Masses/rho+mass
 set /Defaults/Masses/rho+mass:Particle /Defaults/Particles/rho+ 

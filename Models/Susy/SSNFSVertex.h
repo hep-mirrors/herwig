@@ -112,33 +112,28 @@ private:
   /**
    * Pointer to the stop mixing matrix
    */
-  tMixingMatrixPtr _theStop;
+  tMixingMatrixPtr _stop;
 
   /**
    * Pointer to the sbottom mixing matrix
    */
-  tMixingMatrixPtr _theSbottom;
+  tMixingMatrixPtr _sbot;
 
   /**
    * Pointer to the stau mixing matrix
    */
-  tMixingMatrixPtr _theStau;
+  tMixingMatrixPtr _stau;
   
   /**
    * Pointer to the neutralino mixing matrix
    */
-  tMixingMatrixPtr _theN;
+  tMixingMatrixPtr _nmix;
  
   /**
    * Pointer to the Susy Model object
    */
   tMSSMPtr _theSS;
 
-  /**
-   * \f$\tan(\beta)\f$
-   */
-  double _tanB;
-  
   /**
    * \f$\sin(\theta_w)\f$
    */
@@ -165,6 +160,16 @@ private:
   double _cb;
 
   /**
+   * The scale at which the coupling was last evaluated. 
+   */
+  Energy2 _q2last;
+
+  /**
+   * The value of the normalisation when it was evaluated at _q2last 
+   */
+  Complex _couplast;
+  
+  /**
    * Store the value of the left coupling when it was last evaluated
    */
   Complex _leftlast;
@@ -184,7 +189,7 @@ private:
    */
   long _id2last;
 
-/**
+  /**
    * Store the id of the last scalar to be evaluate
    */
   long _id3last;

@@ -25,6 +25,10 @@ using namespace ThePEG;
    */
   struct ClusteringScaleLess {
 
+    /**
+     * Return wether the first clustering scale is less than
+     * the second clustering scale.
+     */
     inline bool operator () (const pair<ClusteringPtr,tClusteringGuidePtr>& first,
 			     const pair<ClusteringPtr,tClusteringGuidePtr>& second)
     { return first.first->scale() < second.first->scale() ; }

@@ -49,18 +49,70 @@ void ClusterDecayer::Init() {
 			     false, false, true, false);
 
   //ClDir for light, Bottom, Charm and exotic (e.g Susy) quarks
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirLight ("ClDirLight", "cluster direction for light quarks",
-                     &ClusterDecayer::_clDirLight, 0, 1 , 0 , 1,false,false,false);
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirBottom ("ClDirBottom", "cluster direction for b quark",
-                     &ClusterDecayer::_clDirBottom, 0, 1 , 0 , 1,false,false,false);
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirCharm ("ClDirCharm", "cluster direction for c quark",
-                     &ClusterDecayer::_clDirCharm, 0, 1 , 0 , 1,false,false,false);
-  static Parameter<ClusterDecayer,int> 
-    interfaceClDirExotic ("ClDirExotic", "cluster direction for exotic quark",
-                     &ClusterDecayer::_clDirExotic, 0, 1 , 0 , 1,false,false,false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirLight
+    ("ClDirLight",
+     "Cluster direction for light quarks",
+     &ClusterDecayer::_clDirLight, true, false, false);
+  static SwitchOption interfaceClDirLightPreserve
+    (interfaceClDirLight,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirLightIsotropic
+    (interfaceClDirLight,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirBottom
+    ("ClDirBottom",
+     "Cluster direction for bottom quarks",
+     &ClusterDecayer::_clDirBottom, true, false, false);
+  static SwitchOption interfaceClDirBottomPreserve
+    (interfaceClDirBottom,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirBottomIsotropic
+    (interfaceClDirBottom,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirCharm
+    ("ClDirCharm",
+     "Cluster direction for charm quarks",
+     &ClusterDecayer::_clDirCharm, true, false, false);
+  static SwitchOption interfaceClDirCharmPreserve
+    (interfaceClDirCharm,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirCharmIsotropic
+    (interfaceClDirCharm,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
+
+  static Switch<ClusterDecayer,bool> interfaceClDirExotic
+    ("ClDirExotic",
+     "Cluster direction for exotic quarks",
+     &ClusterDecayer::_clDirExotic, true, false, false);
+  static SwitchOption interfaceClDirExoticPreserve
+    (interfaceClDirExotic,
+     "Preserve",
+     "Preserve the direction of the quark from the perturbative stage"
+     " as the direction of the meson produced from it",
+     true);
+  static SwitchOption interfaceClDirExoticIsotropic
+    (interfaceClDirExotic,
+     "Isotropic",
+     "Assign the direction of the meson randomly",
+     false);
 
   // ClSmr for ligth, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterDecayer,double> 
@@ -159,10 +211,10 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     tcPDPtr ptr2data = ptr2->dataPtr();
   
   bool isHad1FlavSpecial    = false;
-  int cluDirHad1      = _clDirLight;
+  bool cluDirHad1      = _clDirLight;
   double cluSmearHad1 = _clSmrLight;
   bool isHad2FlavSpecial    = false;
-  int cluDirHad2      = _clDirLight;
+  bool cluDirHad2      = _clDirLight;
   double cluSmearHad2 = _clSmrLight;
 
   if (CheckId::isExotic(ptr1data)) {
@@ -215,14 +267,12 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   // we choose randomly, with equal probability, one of the two. 
 
   int priorityHad1 = 0;
-  if ( cluDirHad1 == 1  &&  isOrigin1Perturbative ) {
-    priorityHad1 = 1;
-    if (isHad1FlavSpecial) priorityHad1 = 2;
+  if ( cluDirHad1  &&  isOrigin1Perturbative ) {
+    priorityHad1 = isHad1FlavSpecial ? 2 : 1;
   }
   int priorityHad2 = 0;
-  if ( cluDirHad2 == 1  &&  isOrigin2Perturbative ) {
-    priorityHad2 = 1;
-    if (isHad2FlavSpecial) priorityHad2 = 2;
+  if ( cluDirHad2  &&  isOrigin2Perturbative ) {
+    priorityHad2 = isHad2FlavSpecial ? 2 : 1;
   }
   if ( priorityHad2  &&  priorityHad1 == priorityHad2  &&  UseRandom::rndbool() ) {
     priorityHad2 = 0;

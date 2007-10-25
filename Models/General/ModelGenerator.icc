@@ -7,7 +7,9 @@
 namespace Herwig {
 
 inline ModelGenerator::ModelGenerator() : _theParticles(0), _theOffshell(0),
-					  _theOffsel(0) {}
+					  _theOffsel(0), _theBRnorm(true),
+					  _theNpoints(50), _theIorder(1),
+					  _theBWshape(0) {}
 
 inline IBPtr ModelGenerator::clone() const {
   return new_ptr(*this);

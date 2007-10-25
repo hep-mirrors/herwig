@@ -23,6 +23,24 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+#ifdef HERWIG_CHECK_VETOES
+struct vetoed_points {
+
+  inline vetoed_points ()
+    : timelike (), spacelike(), spacelike_decay () { }
+
+  inline vetoed_points (const vetoed_points&)
+    : timelike (), spacelike(), spacelike_decay () { }
+
+  ofstream timelike;
+
+  ofstream spacelike;
+
+  ofstream spacelike_decay;
+  
+};
+#endif
+
 /** \ingroup Shower
  * Here is the documentation of the Evolver class.
  *
@@ -486,6 +504,12 @@ private:
    * Wether or not CKKW applies to the current tree
    */
   bool _theUseCKKW;
+
+#ifdef HERWIG_CHECK_VETOES
+
+  vetoed_points _vetoed_points;
+
+#endif
 
   //@}
 

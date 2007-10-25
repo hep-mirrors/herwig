@@ -69,7 +69,7 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				      outb.second);
   double c2 = norm(_theSSSPtr->getNorm());
   Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
-  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  int cola(outa.first->iColour()), colb(outb.first->iColour());
   if( abs(cola) == 3 && abs(colb) == 3)
     pWidth *= 3.;
   if( outa.first->id() == outb.first->id() )

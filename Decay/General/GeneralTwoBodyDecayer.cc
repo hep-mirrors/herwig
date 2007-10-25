@@ -26,86 +26,40 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
 			  << "Null vertex pointer!\n";  
 
   vector<double> wgt(0);  
-  PDVector inc(_theVertex->getIncoming());
-  for(unsigned int i = 0; i < inc.size(); ++i) {
-    int id = inc[i]->id();
-    if(id < 0)  continue;
-    Energy m1 = inc[i]->mass();
-    PDVector decaylist(0);
-    for(unsigned int il=0;il<_thelist.size();++il) {
-      PDVector dtemp = _theVertex->search(_thelist[il],id);
-      decaylist.insert(decaylist.end(),dtemp.begin(),dtemp.end());
+  PDVector parents = _theVertex->getIncoming();
+  PDVector::size_type np = parents.size();
+  PDVector extpart(3);
+  for( tPDVector::size_type i = 0; i < np; ++i ) {
+    tPDPtr inpart = parents[i];
+    long pid = inpart->id();
+    if( pid < 0 ) continue;
+    Energy m1 = inpart->mass();
+    PDVector decaylist;
+    for(unsigned int il = 0; il< _thelist.size(); ++il) {
+       PDVector temp = _theVertex->search(_thelist[il], pid);
+       decaylist.insert(decaylist.end(),temp.begin(),temp.end());
     }
-    PDVector extpart(3);
-    for(PDVector::iterator iter=decaylist.begin();iter!=decaylist.end();) {
-      Energy m2(0.*MeV),m3(0.*MeV);
-      bool cc1(false),cc2(false),cc3(false);
-      if((*iter)->CC()) {cc1=true;}
-      if((*(iter+1))->CC()) {cc2=true;}
-      if((*(iter+2))->CC()) {cc3=true;}
-
-      if((*iter)->id()==id) {
-	m2 = (*(iter+1))->mass();
-	m3 = (*(iter+2))->mass();
-	extpart[0] = *iter;
-	if(cc1) {
-	  if(cc2) {extpart[1] = (*(iter+1))->CC();}
-	  else {extpart[1] = *(iter+1);}
-	  
-	  if(cc3) {extpart[2] = (*(iter+2))->CC();}
-	  else {extpart[2] = *(iter+2);}
-	}
-	else {
-	  extpart[1] = *(iter+1);
-	  extpart[2] = *(iter+2);	  
-	}
-      }
-      else if((*(iter+1))->id()==id) {
-	m2 = (*iter)->mass();
-	m3 = (*(iter+2))->mass();
- 	extpart[0] = *(iter+1);
-	if(cc2) {
-	  if(cc1) {extpart[1] = (*iter)->CC();}
-	  else {extpart[1] = *iter;}
-	  
-	  if(cc3) {extpart[2] = (*(iter+2))->CC();}
-	  else {extpart[2] = *(iter+2);}
-	}
-	else {
-	  extpart[1] = *iter;
-	  extpart[2] = *(iter+2);	  
-	}
-      }
-      else {
-	m2 = (*iter)->mass();
-	m3 = (*(iter+1))->mass();
-	extpart[0]=*(iter+2);
-
-	if(cc3) {
-	  if(cc1) {extpart[1] = (*iter)->CC();}
-	  else {extpart[1] = *iter;}
-	  
-	  if(cc2) {extpart[2] = (*(iter+1))->CC();}
-	  else {extpart[2] = *(iter+1);}
-	}
-	else {
-	  extpart[1] = *iter;
-	  extpart[2] = *(iter+1);	  
-	}
-	
-      }
-      if(m1 <= (m2 + m3)) { 
-	decaylist.erase(iter,iter+3);
-      }
-      else {
-	_inpart.push_back(extpart[0]->id());
-	_outparta.push_back(extpart[1]->id());
-	_outpartb.push_back(extpart[2]->id());
-	DecayPhaseSpaceModePtr mode;
-	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-	addMode(mode,_maxweight[0],wgt);
-	iter+=3;
-      }
+    PDVector::size_type ndec = decaylist.size();
+    for( PDVector::size_type j = 0; j < ndec; j +=3 ) {
+      tPDPtr pa(decaylist[j]), pb(decaylist[j + 1]), pc(decaylist[j + 2]);
+      if( pb->id() == pid ) swap(pa, pb);
+      if( pc->id() == pid ) swap(pa, pc);
+      //allowed on-shell decay?
+      if( m1 <= pb->mass() + pc->mass() ) continue;
+      //vertices are defined with all particles incoming
+      if( pb->CC() ) pb = pb->CC();
+      if( pc->CC() ) pc = pc->CC();
+      //store ids so that the decayer knows what it is allowed to 
+      //decay
+      _inpart.push_back(pid); _outparta.push_back(pb->id());
+      _outpartb.push_back(pc->id());
+      //create phase space mode
+      extpart[0] = pa;
+      extpart[1] = pb;
+      extpart[2] = pc;
+      addMode(new_ptr(DecayPhaseSpaceMode(extpart, this)), 
+	      _maxweight[0], wgt);
+      
     }
   }
   unsigned int isize(_inpart.size()), oasize(_outparta.size()),
@@ -350,4 +304,18 @@ void GeneralTwoBodyDecayer::Init() {
  
 }
 
-
+double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
+				   double oldbrat) const {
+  ParticleVector children = p.children();
+  if( children.size() != 2 || !p.data().widthGenerator() ) 
+    return oldbrat;
+  
+  // partial width for this mode
+  Energy scale = p.mass();
+  Energy pwidth = 
+    partialWidth( make_pair(p.dataPtr(), scale),
+		  make_pair(children[0]->dataPtr(), children[0]->mass()),
+		  make_pair(children[1]->dataPtr(), children[1]->mass()) );
+  Energy width = p.data().widthGenerator()->width(p.data(), scale);
+  return pwidth/width;
+}

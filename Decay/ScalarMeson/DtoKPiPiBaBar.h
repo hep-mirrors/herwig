@@ -120,7 +120,7 @@ protected:
   /**
    *  Integrand for the \f$\rho\f$ function for the \f$4\pi\f$ state
    */
-  inline double rho3(Energy2 s,Energy2 s1, Energy2 s2) const;
+  inline InvEnergy4 rho3(Energy2 s,Energy2 s1, Energy2 s2) const;
 
 protected:
 
@@ -149,7 +149,15 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
+
+
 
 private:
 
@@ -304,7 +312,7 @@ private:
   /**
    *  \f$s\f$ values for the interpolation table for \f$\rho_3\f$.
    */
-  vector<double> _rho3scale;
+  vector<Energy2> _rho3scale;
 
   /**
    *  \f$\rho_3\f$ values for the interpolation table for \f$\rho_3\f$.
@@ -319,7 +327,7 @@ private:
   /**
    *  The interpolator for \f$\rho_3\f$
    */
-  Interpolator<double,double>::Ptr _rho3inter;
+  Interpolator<double,Energy2>::Ptr _rho3inter;
   //@}
 
   /**
@@ -930,11 +938,11 @@ struct DtoKPiPiBaBarInnerIntegrand {
   /**
    * Get the function value
    */
-  inline double operator ()(double argument) const;
+  inline InvEnergy4 operator ()(Energy2 argument) const;
   /** Argument type for the Gaussian Integrator */
-  typedef double ArgType;
+  typedef Energy2 ArgType;
   /** Return type for the Gaussian Integrator */
-  typedef double ValType;
+  typedef InvEnergy4 ValType;
 
   /**
    * Set the value of s
@@ -975,11 +983,11 @@ struct DtoKPiPiBaBarOuterIntegrand {
   /**
    * Get the function value
    */
-  inline double operator ()(double argument) const;
+  inline InvEnergy2 operator ()(Energy2 argument) const;
   /** Argument type for the Gaussian Integrator */
-  typedef double ArgType;
+  typedef Energy2 ArgType;
   /** Return type for the Gaussian Integrator */
-  typedef double ValType;
+  typedef InvEnergy2 ValType;
 
   /**
    * Set the value of s

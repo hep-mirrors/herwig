@@ -22,7 +22,7 @@ using namespace ThePEG;
  * possible for a given set of incoming and outgoing particles.
  *
  * @see \ref HardProcessConstructorInterfaces "The interfaces"
- * defined for EventGenerator.
+ * defined for HardProcessConstructor.
  * @see Interfaced
  */
 class HardProcessConstructor: public Interfaced {

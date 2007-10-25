@@ -77,10 +77,10 @@ decaymode tau-->K0,Kbar0,pi-,pi0,nu_tau; 0.000297 1 /Defaults/Decays/Mambo
 decaymode tau-->eta,K*-,nu_tau; 0.00028 1 /Defaults/Decays/DecayME0
 decaymode tau-->eta,K-,nu_tau; 0.000263 1 /Defaults/Decays/Tau2Meson
 decaymode tau-->Kbar0,pi-,pi0,pi0,nu_tau; 0.000238 1 /Defaults/Decays/Mambo
-decaymode tau-->K_L0,K_L0,pi-,nu_tau; 0.000235 1 /Defaults/Decays/Tau3Kaon
 decaymode tau-->K_S0,K_S0,pi-,nu_tau; 0.000235 1 /Defaults/Decays/Tau3Kaon
-decaymode tau-->Kbar0,pi-,pi-,pi+,nu_tau; 0.000225 1 /Defaults/Decays/Mambo
+decaymode tau-->K_L0,K_L0,pi-,nu_tau; 0.000235 1 /Defaults/Decays/Tau3Kaon
 decaymode tau-->eta,pi-,pi-,pi+,nu_tau; 0.000225 1 /Defaults/Decays/Mambo
+decaymode tau-->Kbar0,pi-,pi-,pi+,nu_tau; 0.000225 1 /Defaults/Decays/Mambo
 decaymode tau-->eta,pi-,pi0,pi0,nu_tau; 0.000145 1 /Defaults/Decays/Mambo
 decaymode tau-->omega,pi-,pi0,pi0,nu_tau; 0.000135 1 /Defaults/Decays/Mambo
 decaymode tau-->omega,pi-,pi-,pi+,nu_tau; 0.000118 1 /Defaults/Decays/Mambo

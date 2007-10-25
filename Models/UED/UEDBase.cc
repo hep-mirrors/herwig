@@ -15,8 +15,17 @@
 
 using namespace Herwig;
 
+UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
+		     theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
+		     theVeV(246.*GeV) {}
+
 void UEDBase::doinit() throw(InitException) {
   StandardModel::doinit();
+  //create fresh BSM info file so it can be appended to later
+  //when decaymodes have been created
+  string name = CurrentGenerator::current().filename() +
+    string("-BSMModelInfo.out");
+  ofstream dummy(name.c_str());
   //level-1 masses and mixing angle
   calculateKKMasses(1);
   writeSpectrum();
@@ -89,11 +98,6 @@ void UEDBase::Init() {
      "The boundary mass for the Higgs",
      &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
-
-  static Parameter<UEDBase,string> interfaceSPCFileName
-    ("SPCFileName",
-     "The name of the spectrum file",
-     &UEDBase::theSpectrum, "UEDMasses.out", false, false);
 
   static Parameter<UEDBase,Energy> interfaceVeV
     ("VeV",
@@ -360,10 +364,10 @@ void UEDBase::writeSpectrum() {
       << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
       << endl;
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
-  for(vector<IDMassPair>::iterator it = theMasses.begin(); 
-      it != theMasses.end();) {
-    ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
-    theMasses.erase(it);
+  while (!theMasses.empty()) {
+    IDMassPair tmp = theMasses.back();
+    ofs << tmp.first << "\t\t\t" << tmp.second/GeV << endl;
+    theMasses.pop_back();
   }
   ofs << "#\n";
 }

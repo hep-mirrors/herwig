@@ -22,14 +22,14 @@ using namespace ThePEG::Helicity;
 SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() {
   _maxwgt.resize(9);
   _maxwgt[0]=0.;
-  _maxwgt[1]=0.;
-  _maxwgt[2]=0.000699053;
-  _maxwgt[3]=0.046073;
-  _maxwgt[4]=0.789082;
-  _maxwgt[5]=0.;
-  _maxwgt[6]=6.69076e-09;
-  _maxwgt[7]=0.00028718;
-  _maxwgt[8]=0.0811124;
+  _maxwgt[1]=0;		
+  _maxwgt[2]=0;		
+  _maxwgt[3]=0.0194397;	
+  _maxwgt[4]=0.463542;	
+  _maxwgt[5]=0.;		
+  _maxwgt[6]=6.7048e-09; 
+  _maxwgt[7]=0.00028665; 
+  _maxwgt[8]=0.0809643;  
 }
 
 void SMHiggsFermionsDecayer::doinit() throw(InitException) {
@@ -114,12 +114,17 @@ void SMHiggsFermionsDecayer::Init() {
      &SMHiggsFermionsDecayer::_maxwgt,
      0, 0, 0, 0., 10000, false, false, true);
 
+  static ParVector<SMHiggsFermionsDecayer,double> interfaceMaxWeights
+    ("MaxWeights",
+     "Maximum weights for the various decays",
+     &SMHiggsFermionsDecayer::_maxwgt, 9, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
 }
 
 // return the matrix element squared
 double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpart,
-				   const ParticleVector & decay) const 
-{
+				   const ParticleVector & decay) const {
   RhoDMatrix rhoin;
   // check if the incoming particle has a spin info and if not create it
   ScalarWaveFunction inwave = ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),
@@ -164,4 +169,24 @@ double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpa
        << endl;
   */
   return output;
+}
+
+void SMHiggsFermionsDecayer::dataBaseOutput(ofstream & os,bool header) const {
+  if(header) os << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
+    os << "set " << fullName() << ":MaxWeights " << ix << " "
+	   << _maxwgt[ix] << "\n";
+  }
+  DecayIntegrator::dataBaseOutput(os,false);
+  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+void SMHiggsFermionsDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      _maxwgt[ix] = mode(ix)->maxWeight();
+    }
+  }
 }

@@ -17,7 +17,9 @@ using namespace ThePEG;
  * This is the base class for NBodyDecayConstructors. An N-body 
  * decay constructor should inherit from this and implement the 
  * DecayList virtual funtcion to create the decays and decayers.  
- * 
+ *
+ * @see \ref NBodyDecayConstructorInterfaces "The interfaces"
+ * defined for NBodyDecayConstructor. 
  */
 class NBodyDecayConstructorBase: public Interfaced {
 

@@ -6,6 +6,19 @@
 
 namespace Herwig {
 
+inline bool splittingKey::operator < (const splittingKey& x) const {
+  if (ids[0] == x.ids[0]) {
+    if (ids[1] == x.ids[1]) {
+      if (ids[2] == x.ids[2]) {
+	return initial && !x.initial;
+      }
+      return (ids[2] < x.ids[2]);
+    }
+    return (ids[1] < x.ids[1]);
+  }
+  return (ids[0] < x.ids[0]);
+}
+
 inline DefaultReweighter::DefaultReweighter()
   : Reweighter(), _integrationAccuracy(1.e-3), _useMassive(true), _sudakovUnweight(true)
 {}
@@ -46,7 +59,7 @@ inline void DefaultReweighter::rebind(const TranslationMap & trans)
   for (map<splittingKey,SplittingFnPtr>::iterator s = _splittingMap.begin();
        s != _splittingMap.end(); ++s)
     s->second = trans.translate(s->second);
-  for (map<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
+  for (multimap<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
        s != _sudakovMap.end(); ++s)
     s->second = trans.translate(s->second);
   Reweighter::rebind(trans);
@@ -57,7 +70,7 @@ inline IVector DefaultReweighter::getReferences() {
   for (map<splittingKey,SplittingFnPtr>::iterator s = _splittingMap.begin();
        s != _splittingMap.end(); ++s)
     ret.push_back(s->second);
-  for (map<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
+  for (multimap<pair<long,bool>, DefaultSudakovPtr>::iterator s = _sudakovMap.begin();
        s != _sudakovMap.end(); ++s)
     ret.push_back(s->second);
   return ret;

@@ -113,7 +113,7 @@ void DefaultReweighter::Init() {
 
 }
 
-double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int mult) {
+double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int mult, unsigned int minmult) {
 
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
   generator()->log() << "== DefaultReweighter::sudakovReweight" << endl;
@@ -121,7 +121,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 
   double weight = 1.;
 
-  if (history.hardProcess.size()-2 == mult && _sudakovUnweight) return weight;
+  if (mult == minmult && _sudakovUnweight) return weight;
 
   for (vector<ClusteringParticlePtr>::iterator p = history.reconstructed.begin();
        p != history.reconstructed.end(); ++p) {
@@ -138,7 +138,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
       if (abs(sudakovKey.first)<7 && sudakovKey.first<0) sudakovKey.first = -sudakovKey.first;
       sudakovKey.second = ((**p).pData().partonId.state == ClusteringParticleState::initial);
       bool gotone=false;
-      for(map<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
+      for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	  s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	if (!gotone) gotone = true;
 	double sweight = (*(s->second))((**p).productionScale(),(**p).splittingScale());
@@ -177,7 +177,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 	if (abs(sudakovKey.first)<7 && sudakovKey.first<0) sudakovKey.first = -sudakovKey.first;
 	sudakovKey.second = ((**p).pData().partonId.state == ClusteringParticleState::initial);
 	bool gotone=false;
-	for(map<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
+	for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	    s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	  if (!gotone) gotone = true;
 	  double sweight = (*(s->second))((**p).productionScale(),

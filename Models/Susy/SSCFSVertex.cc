@@ -12,106 +12,120 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSCFSVertex::SSCFSVertex(): _tanB(0.),_sb(0.),_cb(0.),_mw(0.*MeV),
-			    _sw(0.),_q2last(0.*sqr(MeV)),_couplast(0.),
+SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
+			    _sw(0.),_q2last(), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {
   vector<int> first,second,third;
-  for(unsigned int ic=0;ic<2;++ic) {
-    int chargino(-1);
-    if(ic==0) {chargino=1000024;}
-    else {chargino=1000037;}
-    //outgoing chi-
-    for(unsigned int ix=2;ix<7;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(ix);
-      third.push_back(-(999999+ix));
+  long chargino[2] = {1000024, 1000037};
+  for(unsigned int ic = 0; ic < 2; ++ic) {
+    //quarks 
+    for(unsigned int ix = 1; ix < 7; ++ix) {
+      if( ix % 2 == 0 ) {
+	first.push_back(-chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(999999+ix));
+	
+	first.push_back(-chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(1999999+ix));
+	
+	first.push_back(-ix);
+	second.push_back(chargino[ic]);
+	third.push_back((999999+ix));
+	
+	first.push_back(-ix);
+	second.push_back(chargino[ic]);
+	third.push_back((1999999+ix));
+      }
+      else {
+	first.push_back(-chargino[ic]);
+	second.push_back(-ix);
+	third.push_back((1000001+ix));
+
+	first.push_back(-chargino[ic]);
+	second.push_back(-ix);
+	third.push_back(2000001+ix);
+
+	first.push_back(chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(1000001+ix));
+
+	first.push_back(chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(2000001+ix));
+      }
     }
-    for(unsigned int ix=2;ix<7;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(ix);
-      third.push_back(-(1999999+ix));
+    //leptons
+    for(unsigned int ix = 11; ix < 16; ++ix) {
+      if( ix % 2 == 0 ) {
+	first.push_back(-chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(999999+ix));
+      
+	first.push_back(-chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(1999999+ix));
+
+	first.push_back(-ix);
+	second.push_back(chargino[ic]);
+	third.push_back((999999+ix));
+
+	first.push_back(-ix);
+	second.push_back(chargino[ic]);
+	third.push_back((1999999+ix));	
+      }
+      else {
+	first.push_back(-chargino[ic]);
+	second.push_back(-ix);
+	third.push_back(1000001+ix);
+
+	first.push_back(chargino[ic]);
+	second.push_back(ix);
+	third.push_back(-(1000001+ix));
+      }
     }
-    for(unsigned int ix=1;ix<6;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(-ix);
-      third.push_back((1000001+ix));
-    }
-    for(unsigned int ix=1;ix<6;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(-ix);
-      third.push_back(2000001+ix);
-    }
-    for(unsigned int ix=12;ix<17;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(ix);
-      third.push_back(-(999999+ix));
-    }
-    for(unsigned int ix=12;ix<17;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(ix);
-      third.push_back(-(1999999+ix));
-    }
-    for(unsigned int ix=11;ix<16;ix+=2) {
-      first.push_back(-chargino);
-      second.push_back(-ix);
-      third.push_back(1000001+ix);
-    }
-    //outgoing chi+
-    for(unsigned int ix=2;ix<7;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(-ix);
-      third.push_back((999999+ix));
-    }
-    for(unsigned int ix=2;ix<7;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(-ix);
-      third.push_back((1999999+ix));
-    }
-    for(unsigned int ix=1;ix<6;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(ix);
-      third.push_back(-(1000001+ix));
-    }
-    for(unsigned int ix=1;ix<6;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(ix);
-      third.push_back(-(2000001+ix));
-    }
-    for(unsigned int ix=12;ix<17;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(-ix);
-      third.push_back((999999+ix));
-    }
-    for(unsigned int ix=12;ix<17;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(-ix);
-      third.push_back((1999999+ix));
-    }
-    for(unsigned int ix=11;ix<16;ix+=2) {
-      first.push_back(chargino);
-      second.push_back(ix);
-      third.push_back(-(1000001+ix));
-    }
-  }
-   setList(first,second,third);
+
+  } //chargino loop
+  setList(first,second,third);
 }
 
+void SSCFSVertex::doinit() throw(InitException) {
+  FFSVertex::doinit();
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
+  //mixing matrices
+  _stop = _theSS->stopMix();
+  _sbot = _theSS->sbottomMix();
+  _stau = _theSS->stauMix();
+  _umix = _theSS->charginoUMix();
+  _vmix = _theSS->charginoVMix();
+
+  if(!_stop || !_stau || !_sbot || !_umix || !_vmix)
+    throw InitException() << "SSCFSVertex:: doinit  - " 
+			  << "A mixing matrix pointer is null."
+			  << " stop: " << _stop << " sbottom: " << _sbot
+			  << " stau: " << _stau << " U: " << _umix
+			  << " V:" << _vmix
+			  << Exception::abortnow;
+
+  _sw = sqrt(_theSS->sin2ThetaW());
+  _mw = getParticleData(24)->mass();
+  double tb = _theSS->tanBeta();
+  _sb = tb/sqrt(1 + sqr(tb));
+  _cb = sqrt(1.- sqr(_sb));
+  orderInGem(1);
+  orderInGs(0);
+}
+
+
 void SSCFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _tanB << _sb << _cb << ounit(_mw,GeV) << _sw << _stop <<
-    _sbottom << _stau << _chargU << _chargV;
+  os << _theSS << _sb << _cb << ounit(_mw,GeV) << _sw << _stop 
+     << _sbot << _stau << _umix << _vmix;
 }
 
 void SSCFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _tanB >> _sb >> _cb >> iunit(_mw,GeV) >> _sw >> _stop >>
-    _sbottom >> _stau >> _chargU >> _chargV;
-  _q2last=0.*sqr(MeV);
-  _couplast=0.;
-  _leftlast=0.;
-  _rightlast=0.;
-  _id1last=0;
-  _id2last=0;
-  _id3last = 0;
+  is >> _theSS  >> _sb >> _cb >> iunit(_mw,GeV) >> _sw >> _stop
+     >> _sbot >> _stau >> _umix >> _vmix;
 }
 
 
@@ -127,188 +141,119 @@ void SSCFSVertex::Init() {
 
 void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 			      tcPDPtr part2,tcPDPtr part3, int iinc) {
-  long iferm(0),icharg(0),isc(0);
-  if(abs(part1->id()) == 1000024 || abs(part1->id()) == 1000037) {
-    icharg = abs(part1->id());
-    if(part2->iSpin() == PDT::Spin1Half) {
-      iferm = part2->id();
-      isc = part3->id();
+  long isc(abs(part3->id())), ism(abs(part1->id())), 
+    ichg(abs(part2->id()));
+  tcPDPtr smfermion = part1;
+  if( ism / 1000000 == 1 )  {
+    swap( ism, ichg);
+    smfermion = part2;
+  }
+  
+  //overall normalisation
+  double gew = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw;
+  setNorm(-gew);
+
+  if( ichg != _id1last || ism != _id2last || isc != _id3last ) {
+    _id1last = ichg;
+    _id2last = ism;
+    _id3last = isc;
+    // determine chargino and sfermion eigenstates
+    unsigned int alpha(isc/1000000 - 1);
+    unsigned int ch = (ichg == 1000024 ) ? ch = 0 : ch = 1;
+
+    Complex ul1 = (*_umix)(ch,0);
+    Complex ul2 = (*_umix)(ch,1);
+    Complex vl1 = (*_vmix)(ch,0);
+    Complex vl2 = (*_vmix)(ch,1);
+
+    if( ism >= 11 && ism <= 16 ) {
+      double y = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_cb;
+      if( ism == 12 || ism == 14 ) {
+	_leftlast = Complex(0., 0.);
+	if( alpha == 0 )
+	  _rightlast = ul1;
+	else
+	  _rightlast = -y*ul2;
+      }
+      else if( ism == 16 ) {
+	_leftlast = Complex(0., 0.);
+	_rightlast = ul1*(*_stau)(alpha, 0) - y*(*_stau)(alpha,1)*ul2/_cb;
+      }
+      else if( ism == 11 || ism == 13 || ism == 15 ) {
+	_leftlast = -y*conj(ul2);
+	_rightlast = vl1;
+      }
     }
     else {
-      iferm = part3->id();
-      isc = part2->id();
+      double yd(0.), yu(0.);
+      if( ism % 2 == 0) {
+	yu = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_sb;
+	yd = _theSS->mass(q2, getParticleData(ism - 1))/_mw/sqrt(2)/_cb;
+      }
+      else {
+	yu = _theSS->mass(q2, getParticleData(ism + 1))/_mw/sqrt(2)/_sb;
+	yd = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_cb;
+      }
+      //heavy quarks
+      if( ism == 5 ) {
+	_leftlast = -yd*conj(ul2)*(*_stop)(alpha,0);
+	_rightlast = vl1*(*_stop)(alpha, 0) - yu*vl2*(*_stop)(alpha,1);
+      }
+      else if( ism == 6 ) {
+	_leftlast = -yu*conj(vl2)*(*_sbot)(alpha,0);
+	_rightlast = ul1*(*_sbot)(alpha, 0) - yd*ul2*(*_sbot)(alpha,1);
+      }
+      else {
+	if( alpha == 0 ) {
+	  _leftlast = (ism % 2 == 0) ? -yu*conj(vl2) : -yd*conj(ul2);
+	  _rightlast = (ism % 2 == 0) ? ul1 : vl1;
+	}
+	else {
+	  _leftlast = Complex(0.);
+	  _rightlast = (ism % 2 == 0) ? -yd*ul2 : -yu*vl2;
+	}
+      }
+    }
+  }//end of coupling calculation
+  
+  //determine the helicity order of the vertex
+  tcPDPtr incoming;
+  switch( iinc ) {
+  case 1 : incoming = part1;
+    break;
+  case 2 : incoming = part2;
+    break;
+  default : incoming = part3;
+  }
+  if( incoming->iSpin() == PDT::Spin0 ) {
+    if( incoming->id() > 0 ) {
+      setLeft(_leftlast);
+      setRight(_rightlast);
+    }
+    else {
+      setLeft(conj(_rightlast));
+      setRight(conj(_leftlast));
     }
   }
-  else if(abs(part2->id()) == 1000024 || abs(part2->id()) == 1000037) {
-    icharg = abs(part2->id());
-    if(part1->iSpin() == PDT::Spin1Half) {
-      iferm = part1->id();
-      isc = part3->id();
+  else if( incoming->id() == smfermion->id() ) {
+    if(incoming->id() > 0) {
+      setLeft(conj(_rightlast));
+      setRight(conj(_leftlast));
     }
     else {
-      iferm = part3->id();
-      isc = part1->id();
-    } 
-  }
-  else if(abs(part3->id()) == 1000024 || abs(part3->id()) == 1000037){
-    icharg = abs(part3->id());
-    if(part1->iSpin() == PDT::Spin1Half) {
-      iferm = part1->id();
-      isc = part2->id();
-    }
-    else {
-      iferm = part2->id();
-      isc = part1->id();
+      setLeft(_leftlast);
+      setRight(_rightlast);
     }
   }
   else {
-    throw HelicityConsistencyError() 
-      << "SSCFSVertex::setCoupling() - There is no chargino in this vertex!"
-      << part1->id() << " " << part2->id() << " " << part3->id()
-      << Exception::warning;
-    setNorm(0.);
-    setLeft(0.);
-    setRight(0.);
-  }
-  if((abs(iferm)>=1 && abs(iferm)<=6)||(abs(iferm)>=11 && abs(iferm) <=16)){
-    if(q2 != _q2last){
-      double gEw = sqrt(4.*Constants::pi*(_theSS->alphaEM(q2)))/_sw;
-      _couplast=-gEw;
-      _q2last = q2;
-    }
-    if(abs(iferm) != _id1last || abs(isc) != _id2last || 
-       icharg != _id3last) {
-      _id1last = abs(iferm);
-      _id2last = abs(isc);
-      _id3last = icharg;
-      unsigned int chargino;
-      if(icharg==1000024)chargino=0;
-      else chargino=1;
-      unsigned int eig = (abs(isc)/1000000) - 1;
-      
-      if(abs(iferm)==12||abs(iferm)==14||abs(iferm)==16) {
-	Energy lmass = getParticleData(abs(iferm)-1)->mass();
-	_leftlast = 0.;
-	Complex l1 = lmass*(*_chargU)(chargino,1)/sqrt(2)/_mw/_cb;
-	if(abs(iferm)==16) {
-	  _rightlast = (*_chargU)(chargino,0)*(*_stau)(eig,0)
-	    - l1*(*_stau)(eig,1);
-	}
-	else {
-	  if(eig==0) {
-	    _rightlast = (*_chargU)(chargino,0);
-	  }
-	  else {
-	    _rightlast = -l1*(*_chargU)(chargino,1);
-	  }
-	}
-      }
-      else if(abs(iferm)==11||abs(iferm)==13||abs(iferm)==15) {
-	Energy lmass = getParticleData(abs(iferm))->mass();
-	_leftlast = -lmass*conj((*_chargU)(chargino,1))/sqrt(2)/_cb/_mw;
-	_rightlast = (*_chargV)(chargino,0);
-      }
-      else if(abs(iferm)==2||abs(iferm)==4||abs(iferm)==6) {
-	Energy massu = getParticleData(abs(iferm))->mass();
-	Energy massd = getParticleData(abs(iferm) - 1)->mass();
-	Complex u1 = massu*(*_chargV)(chargino,1)/sqrt(2)/_mw/_sb;
-	Complex u2 = massd*(*_chargU)(chargino,1)/sqrt(2)/_mw/_cb;
-	if(abs(iferm)==6) {
-	  _leftlast = -conj(u1)*(*_sbottom)(eig,0);
-	  _rightlast = (*_chargU)(chargino,0)*(*_sbottom)(eig,0) 
-	    - u2*(*_sbottom)(eig,1);	  
-	}
-	else {
-	  if(eig==0) {
-	    _leftlast = -conj(u1);
-	    _rightlast = (*_chargU)(chargino,0);
-	  }
-	  else {
-	    _leftlast = 0.;
-	    _rightlast = -u2;
-	  }
-	}
-      }
-      else {
-	Energy massu = getParticleData(abs(iferm)+1)->mass();
-	Energy massd = getParticleData(abs(iferm))->mass();
-	
-	Complex d1 = massd*(*_chargU)(chargino,1)/sqrt(2)/_mw/_cb;
-	Complex d2 = massu*(*_chargV)(chargino,1)/sqrt(2)/_mw/_sb;
-	if(abs(iferm)==5) {
-	  _leftlast = -conj(d1)*(*_stop)(eig,0);
-	  _rightlast = (*_chargV)(chargino,0) - d2*(*_stop)(eig,1);
-	}
-	else {
-	  if(eig==0) {
-	    _leftlast = -conj(d1);
-	    _rightlast = (*_chargV)(chargino,0); 
-	  }
-	  else {
-	    _leftlast = 0.;
-	    _rightlast = -d2;
-	  }
-	}
-      }
-    }
-    setNorm(_couplast);
-    //work out the correct left and right
-    tcPDPtr incoming, fermion;
-    if(iinc == 1) {
-      incoming = part1;
-      if(part2->iSpin() == PDT::Spin1Half) fermion = part2;
-      else fermion = part3;
-    }
-    else if(iinc == 2) {
-      incoming = part2;
-      if(part1->iSpin() == PDT::Spin1Half) fermion = part1;
-      else fermion = part3;
-    } 
-    else {
-      incoming = part3;
-      if(part1->iSpin() == PDT::Spin1Half) fermion = part1;
-      else fermion = part2;
-    }
-    //determine whether to flip couplings 
-    if(incoming->iSpin() == PDT::Spin0) {
-      if(incoming->id() > 0) {
-	setLeft(_leftlast);
-	setRight(_rightlast);
-      }
-      else {
-	setLeft(conj(_rightlast));
-	setRight(conj(_leftlast));
-      }
-    }
-    else if(incoming->iSpin() == PDT::Spin1Half && 
-	    abs(incoming->id()) != 1000024 && abs(incoming->id()) != 1000037) {
-      if(incoming->id() > 0) {
-	setLeft(conj(_rightlast));
-	setRight(conj(_leftlast));
-      }
-      else {
-	setLeft(_leftlast);
-	setRight(_rightlast);
-      }
+    if( smfermion->id() < 0 ) {
+      setLeft(conj(_rightlast));
+      setRight(conj(_leftlast));
     }
     else {
-      if(fermion->id() < 0) {
-	setLeft(conj(_rightlast));
-	setRight(conj(_leftlast));
-      }
-      else {
-	setLeft(_leftlast);
-	setRight(_rightlast);
-      }
+      setLeft(_leftlast);
+      setRight(_rightlast);
     }
   }
-  else {
-    throw HelicityConsistencyError() 
-      << "SSCFSVertex::setcoupling() - Incorrect particle found. "
-      << part1->id() << " " << part2->id() << " " << part3->id()
-      << Exception::warning;
-    setNorm(0.);
-    setLeft(0.);
-    setRight(0.);
-  }
+  	 
 }

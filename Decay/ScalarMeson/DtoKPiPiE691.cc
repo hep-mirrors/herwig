@@ -483,7 +483,7 @@ void DtoKPiPiE691::Init() {
   static ParVector<DtoKPiPiE691,double> interfaceMaximumWeights
     ("MaximumWeights",
      "The maximum weights for the unweighting of the decays",
-     &DtoKPiPiE691::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     &DtoKPiPiE691::_maxwgt, -1, 1.0, 0.0, 1.0e11,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiE691,double> interfaceWeights
@@ -701,5 +701,20 @@ void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
   }
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
+}
+
+void DtoKPiPiE691::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(mode(0)->numberChannels()+mode(1)->numberChannels()+
+		  mode(2)->numberChannels());
+  _maxwgt.resize(3);
+  unsigned int iy=0;
+  for(unsigned int ix=0;ix<3;++ix) {
+    _maxwgt[ix]=mode(ix)->maxWeight();
+    for(unsigned int iz=0;iz<mode(ix)->numberChannels();++iz) {
+      _weights[iy]=mode(ix)->channelWeight(iz);
+      ++iy;
+    }
   }
 }

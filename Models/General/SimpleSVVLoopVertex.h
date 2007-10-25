@@ -75,16 +75,23 @@ protected:
    * @param s   The invariant
    * @param mf2 The fermion mass squared
    */
-  Complex A1(Energy2 s,Energy2 mf2) const;
+  Complex A1(Energy2 s, Energy2 mf2) const;
 
   /**
    *  The \f$W_2(s)\f$ function of NPB297 (1988) 221-243.
    * @param s   The invariant
    * @param mf2 The fermion mass squared
    */
-  Complex W2(Energy2 s,Energy2 mf2) const;
+  Complex W2(Energy2 s, Energy2 mf2) const;
+
+  /**
+   *  The \f$I_q\f$ function of V.D.Berger and R.N.Phillips Collider Physics, p .434
+   * N.B. is not used in the code...
+   * @param mh The Higgs mass (invariant)
+   * @param mf The fermion mass
+   */
+   Complex W3(Energy mh, Energy mf) const;
   //@}
-  Complex W3(Energy mh, Energy mf) const;
 
 protected:
   
@@ -153,6 +160,8 @@ struct ClassTraits<Herwig::SimpleSVVLoopVertex>
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SimpleSVVLoopVertex"; }
 };
+
+/** @endcond */
 
 }
  

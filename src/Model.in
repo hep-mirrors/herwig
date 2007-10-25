@@ -2,47 +2,11 @@
 # Set up the physics model.
 # 
 # The Standard Model is used by default. 
-#
-# A Randall-Sundrum model can be used instead by
-# uncommenting the marked lines. 
 ################################################
-
-
-#######################################################
-# Uncomment either the Standard Model ...
-#######################################################
+# Main SM object
 create Herwig::StandardModel /Defaults/Model
-create Herwig::ModelGenerator /Defaults/GeneralModel
-#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
-#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/Z0
-#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/t
-#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/h0
 
-create Herwig::HardProcessConstructor /Defaults/HardProcessConstructor
-set /Defaults/HardProcessConstructor:QCDandEW 0
-
-create Herwig::DecayConstructor /Defaults/DecayConstructor
-set /Defaults/Model:ModelGenerator /Defaults/GeneralModel
-
-set /Defaults/GeneralModel:HardProcessConstructor /Defaults/HardProcessConstructor
-set /Defaults/GeneralModel:DecayConstructor /Defaults/DecayConstructor
-create Herwig::TwoBodyDecayConstructor /Defaults/TwoBody
-insert /Defaults/DecayConstructor:NBodyDecayConstructors[0] /Defaults/TwoBody
-
-#######################################################
-# ... or Randall Sundrum. (You also need to uncomment
-# one more line below!)
-#######################################################
-#create Herwig::RSModel /Defaults/Model HwRSModel.so
-#set /Defaults/Model:Lambda_pi 10000
-
-#
-
-#
-
-#
-
-# set up the Standard Model couplings (this always needs to be done)
+## Couplings
 # the strong coupling
 create /ThePEG/O1AlphaS /Defaults/AlphaS O1AlphaS.so
 set /Defaults/Model:QCD/RunningAlphaS /Defaults/AlphaS
@@ -58,15 +22,27 @@ set /Defaults/RunningMass:MaxFlav 6
 set /Defaults/RunningMass:QCDOrder 2
 set /Defaults/Model:RunningMass /Defaults/RunningMass
 
-
-# read in the Standard Model vertices
-cd /Defaults
-mkdir Vertices
-cd Vertices
+mkdir /Defaults/Vertices
+cd /Defaults/Vertices
 read StandardModelVertices.in 
+read BSMVertices.in
 
-###########################################################
-# also uncomment here to read in the additional RS vertices
-###########################################################
-#read RSModelVertices.in
+#################################################
+# Create the BSM machinery
+# This only gets switched on in read if it is
+# requested by the user
+################################################
+mkdir /Defaults/NewPhysics
+cd /Defaults/NewPhysics
+create /Herwig/ModelGenerator NewModel
+create /Herwig/HardProcessConstructor HPConstructor
+create /Herwig/DecayConstructor DecayConstructor
+create /Herwig/TwoBodyDecayConstructor TwoBodyDC
+
+# Required to decay the particles before showering so as to keep
+# the spin correlations in the decay
+cd /Defaults/Handlers
+create /Herwig/HwDecayHandler NewModelDecayHandler
+set NewModelDecayHandler:NewStep Current
+
 cd /

@@ -17,10 +17,11 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-  /**\ingroup Shower
-   * Define types of ShowerVetoes
-   */
   namespace ShowerVetoType {
+
+    /**\ingroup Shower
+     * Define types of ShowerVetoes
+     */
     enum ShowerVetoType {
       /**
        * Throw away emission, if veto encountered. Set the scale to
@@ -146,6 +147,9 @@ private:
 
 private:
 
+  /**
+   * The type of this veto.
+   */
   int _vetoType;
 
 };

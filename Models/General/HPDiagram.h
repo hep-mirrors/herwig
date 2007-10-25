@@ -72,7 +72,7 @@ struct HPDiagram {
    * Test whether this and x are the same process
    * @param x The other process to check
    */
-  inline bool sameProcess(HPDiagram & x) const;
+  inline bool sameProcess(const HPDiagram & x) const;
 };
   
   

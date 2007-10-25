@@ -45,6 +45,8 @@ DtoKPiPiMarkIII::DtoKPiPiMarkIII() {
   // radii of the mesons
   _rrho   = 5.*mm*1e-12/hbarc; 
   _rKstar = 2.*mm*1e-12/hbarc;
+  // intermediates
+  generateIntermediates(true);
 }
 
 
@@ -94,7 +96,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0RhoPhase
     ("KmPipPi0RhoPhase",
      "The phase of the rho component for D0 -> K- pi+ pi0",
-     &DtoKPiPiMarkIII::_phi1rho,  0., -180., 180.,
+     &DtoKPiPiMarkIII::_phi1rho,  0.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0KstarmMagnitude
@@ -106,7 +108,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0KstarmPhase
     ("KmPipPi0KstarmPhase",
      "The phase of the K*(892)- component for D0 -> K- pi+ pi0",
-     &DtoKPiPiMarkIII::_phi1Kstarm, 154., -180., 180.,
+     &DtoKPiPiMarkIII::_phi1Kstarm, 154.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0Kstar0Magnitude
@@ -118,7 +120,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0Kstar0Phase
     ("KmPipPi0Kstar0Phase",
      "The phase of the K*(892)0 component for D0 -> K- pi+ pi0",
-     &DtoKPiPiMarkIII::_phi1Kstar0, 7., -180., 180.,
+     &DtoKPiPiMarkIII::_phi1Kstar0, 7.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0NonResonantMagnitude
@@ -130,7 +132,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0NonResonantPhase
     ("KmPipPi0NonResonantPhase",
      "The phase of the non-resonant component for D0 -> K- pi+ pi0",
-     &DtoKPiPiMarkIII::_phi1NR, 52., -180., 180.,
+     &DtoKPiPiMarkIII::_phi1NR, 52.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimRhoMagnitude
@@ -142,7 +144,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimRhoPhase
     ("K0PipPimRhoPhase",
      "The phase of the rho component for D0 -> Kbar0 pi+pi-",
-     &DtoKPiPiMarkIII::_phi2rho,  93., -180., 180.,
+     &DtoKPiPiMarkIII::_phi2rho,  93.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimKstarMagnitude
@@ -154,7 +156,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimKstarPhase
     ("K0PipPimKstarPhase",
      "The phase of the K*(892)0 component for D0 -> Kbar0 pi+pi-",
-     &DtoKPiPiMarkIII::_phi2Kstar, 0., -180., 180.,
+     &DtoKPiPiMarkIII::_phi2Kstar, 0.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimNonResonantMagnitude
@@ -166,7 +168,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimNonResonantPhase
     ("K0PipPimNonResonantPhase",
      "The phase of the non-resonant component for D0 -> Kbar0 pi+pi-",
-     &DtoKPiPiMarkIII::_phi2NR, 0., -180., 180.,
+     &DtoKPiPiMarkIII::_phi2NR, 0.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0RhoMagnitude
@@ -202,7 +204,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0NonResonantPhase
     ("K0PipPi0NonResonantPhase",
      "The phase of the non-resonant component for D0 -> Kbar0 pi+pi-",
-     &DtoKPiPiMarkIII::_phi3NR, 250., -180., 180.,
+     &DtoKPiPiMarkIII::_phi3NR, 250.,0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipNonResonantMagnitude
@@ -214,7 +216,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipNonResonantPhase
     ("KmPipPipNonResonantPhase",
      "The phase of the non-resonant component for D+ -> K- pi+ pi+",
-     &DtoKPiPiMarkIII::_phi4NR, 0., -180., 180.,
+     &DtoKPiPiMarkIII::_phi4NR, 0., 0., 360.,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipKstarMagnitude
@@ -226,7 +228,7 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipKstarPhase
     ("KmPipPipKstarPhase",
      "The phase of the K*(892) component for D+ -> K- pi+ pi+",
-     &DtoKPiPiMarkIII::_phi4Kstar, 105., -180., 180.,
+     &DtoKPiPiMarkIII::_phi4Kstar, 105.,0., 360.,
      false, false, Interface::limited);
 
   static Switch<DtoKPiPiMarkIII,bool> interfaceLocalParameters
@@ -308,7 +310,7 @@ void DtoKPiPiMarkIII::Init() {
   static ParVector<DtoKPiPiMarkIII,double> interfaceMaximumWeights
     ("MaximumWeights",
      "The maximum weights for the unweighting of the decays",
-     &DtoKPiPiMarkIII::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     &DtoKPiPiMarkIII::_maxwgt, -1, 1.0, 0.0, 1.0e11,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiMarkIII,double> interfaceWeights
@@ -620,5 +622,71 @@ double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart
   return real(amp*conj(amp));
 }
 
-void DtoKPiPiMarkIII::dataBaseOutput(ofstream &, bool) const {}
+void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters
+  output << "set " << fullName() << ":KmPipPi0RhoMagnitude " << _a1rho << "\n";
+  output << "set " << fullName() << ":KmPipPi0RhoPhase " << _phi1rho << "\n";
+  output << "set " << fullName() << ":KmPipPi0KstarmMagnitude " << _a1Kstarm << "\n";
+  output << "set " << fullName() << ":KmPipPi0KstarmPhase " << _phi1Kstarm << "\n";
+  output << "set " << fullName() << ":KmPipPi0Kstar0Magnitude " << _a1Kstar0 << "\n";
+  output << "set " << fullName() << ":KmPipPi0Kstar0Phase " << _phi1Kstar0 << "\n";
+  output << "set " << fullName() << ":KmPipPi0NonResonantMagnitude " << _a1NR << "\n";
+  output << "set " << fullName() << ":KmPipPi0NonResonantPhase " << _phi1NR << "\n";
+  output << "set " << fullName() << ":K0PipPimRhoMagnitude " << _a2rho << "\n";
+  output << "set " << fullName() << ":K0PipPimRhoPhase " << _phi2rho << "\n";
+  output << "set " << fullName() << ":K0PipPimKstarMagnitude " << _a2Kstar << "\n";
+  output << "set " << fullName() << ":K0PipPimKstarPhase " << _phi2Kstar << "\n";
+  output << "set " << fullName() << ":K0PipPimNonResonantMagnitude " << _a2NR << "\n";
+  output << "set " << fullName() << ":K0PipPimNonResonantPhase " << _phi2NR << "\n";
+  output << "set " << fullName() << ":K0PipPi0RhoMagnitude " << _a3rho << "\n";
+  output << "set " << fullName() << ":K0PipPi0RhoPhase " << _phi3rho << "\n";
+  output << "set " << fullName() << ":K0PipPi0KstarMagnitude " << _a3Kstar << "\n";
+  output << "set " << fullName() << ":K0PipPi0KstarPhase " << _phi3Kstar << "\n";
+  output << "set " << fullName() << ":K0PipPi0NonResonantMagnitude " << _a3NR << "\n";
+  output << "set " << fullName() << ":K0PipPi0NonResonantPhase " << _phi3NR << "\n";
+  output << "set " << fullName() << ":KmPipPipNonResonantMagnitude " << _a4NR << "\n";
+  output << "set " << fullName() << ":KmPipPipNonResonantPhase " << _phi4NR << "\n";
+  output << "set " << fullName() << ":KmPipPipKstarMagnitude " << _a4Kstar << "\n";
+  output << "set " << fullName() << ":KmPipPipKstarPhase " << _phi4Kstar << "\n";
+  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << fullName() << ":Kstar0Mass " << _mKstar0/GeV << "\n";
+  output << "set " << fullName() << ":Kstar0Width " << _wKstar0/GeV << "\n";
+  output << "set " << fullName() << ":KstarMinusMass " << _mKstarm/GeV << "\n";
+  output << "set " << fullName() << ":KstarMinusWidth " << _wKstarm/GeV << "\n";
+  output << "set " << fullName() << ":Rho0Mass " << _mrho0/GeV << "\n";
+  output << "set " << fullName() << ":Rho0Width " << _wrho0/GeV << "\n";
+  output << "set " << fullName() << ":RhoPlusMass " << _mrhop/GeV << "\n";
+  output << "set " << fullName() << ":RhoPlusWidth " << _wrhop/GeV << "\n";
+  output << "set " << fullName() << ":RhoRadius " << _rrho/(mm*1e-12/hbarc) << "\n";
+  output << "set " << fullName() << ":KstarRadius " << _rKstar/(mm*1e-12/hbarc) << "\n";
+  for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
+    output << "insert " << fullName() << ":MaximumWeights " 
+	   << ix << " " << _maxwgt[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_weights.size();++ix) {
+    output << "insert " << fullName() << ":Weights " 
+	   << ix << " " << _weights[ix] << "\n";
+  }
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
+}
+
+void DtoKPiPiMarkIII::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(mode(0)->numberChannels()+mode(1)->numberChannels()+
+		  mode(2)->numberChannels()+mode(3)->numberChannels());
+  _maxwgt.resize(4);
+  unsigned int iy=0;
+  for(unsigned int ix=0;ix<4;++ix) {
+    _maxwgt[ix]=mode(ix)->maxWeight();
+    for(unsigned int iz=0;iz<mode(ix)->numberChannels();++iz) {
+      _weights[iy]=mode(ix)->channelWeight(iz);
+      ++iy;
+    }
+  }
+}
 

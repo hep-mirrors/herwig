@@ -1,0 +1,168 @@
+##################################################
+# Example generator for the MSSM
+# The best way to use this is to make your own 
+# copy of this file and edit that as you require.
+#
+# The first section does not contain anything that 
+# users need to touch.
+#
+# The second section contains the user settings.
+###################################################
+mkdir /Defaults/NewPhysics
+
+create /Herwig/MSSM /Defaults/NewPhysics/MSSM HwSusy.so
+
+cd /Defaults/NewPhysics
+# Need to reset SM interfaces to new model
+# SM couplings
+set MSSM:QCD/RunningAlphaS /Defaults/AlphaS
+set MSSM:EW/RunningAlphaEM /Defaults/AlphaEM
+set MSSM:EW/CKM /Defaults/CKM
+set MSSM:RunningMass /Defaults/RunningMass
+# SM vertices
+set MSSM:Vertex/FFZ /Defaults/Vertices/FFZVertex
+set MSSM:Vertex/FFW /Defaults/Vertices/FFWVertex
+set MSSM:Vertex/FFH /Defaults/Vertices/FFHVertex
+set MSSM:Vertex/FFG /Defaults/Vertices/FFGVertex
+set MSSM:Vertex/FFP /Defaults/Vertices/FFPVertex
+set MSSM:Vertex/GGG /Defaults/Vertices/GGGVertex
+set MSSM:Vertex/GGGG /Defaults/Vertices/GGGGVertex
+set MSSM:Vertex/WWH /Defaults/Vertices/WWHVertex
+set MSSM:Vertex/WWW /Defaults/Vertices/WWWVertex
+set MSSM:Vertex/WWWW /Defaults/Vertices/WWWWVertex
+set MSSM:Vertex/HGG /Defaults/Vertices/HGGVertex
+set MSSM:Vertex/HPP /Defaults/Vertices/HPPVertex
+# MSSM feynman rules
+set MSSM:Vertex/WSFSF /Defaults/Vertices/BSM/MSSM_WSS
+set MSSM:Vertex/NFSF /Defaults/Vertices/BSM/MSSM_NFS
+set MSSM:Vertex/GFSF /Defaults/Vertices/BSM/MSSM_GFS
+set MSSM:Vertex/HSFSF /Defaults/Vertices/BSM/MSSM_HSS
+set MSSM:Vertex/CFSF /Defaults/Vertices/BSM/MSSM_CFS
+set MSSM:Vertex/GSFSF /Defaults/Vertices/BSM/MSSM_GSS
+set MSSM:Vertex/GGSQSQ /Defaults/Vertices/BSM/MSSM_GGSS
+set MSSM:Vertex/GSGSG /Defaults/Vertices/BSM/MSSM_GGOGO
+set MSSM:Vertex/NNZ /Defaults/Vertices/BSM/MSSM_NNZ
+set MSSM:Vertex/CCZ /Defaults/Vertices/BSM/MSSM_CCZ
+set MSSM:Vertex/CNW /Defaults/Vertices/BSM/MSSM_CNW
+set MSSM:Vertex/SSFFH /Defaults/Vertices/BSM/MSSM_FFH
+set MSSM:Vertex/GOGOH /Defaults/Vertices/BSM/MSSM_GOGOH
+set MSSM:Vertex/SSWWH /Defaults/Vertices/BSM/MSSM_WWH
+set MSSM:Vertex/SSWHH /Defaults/Vertices/BSM/MSSM_WHH
+set MSSM:Vertex/HHH /Defaults/Vertices/BSM/MSSM_HHH
+set MSSM:Vertex/SSHGG /Defaults/Vertices/BSM/MSSM_HGG
+
+# Set up the shower for the coloured objects
+cd /Defaults/Handlers/Shower
+
+create /Herwig/PhitoPhiGSplitFn thePhitoPhiGSplitFn
+create /Herwig/GluinotoGluinoGSplitFn theGluinotoGluinoGSplitFn
+create /Herwig/QTildeSudakov PhitoPhiGSudakov
+set PhitoPhiGSudakov:SplittingFunction thePhitoPhiGSplitFn
+set PhitoPhiGSudakov:Alpha theShowerAlphaQCD
+set PhitoPhiGSudakov:PDFmax 35.0
+set PhitoPhiGSudakov:cutoffKinScale 2.3*GeV
+set PhitoPhiGSudakov:CutoffQCDMassScale 0.75*GeV
+set PhitoPhiGSudakov:CutoffQEDMassScale 0.75*GeV
+set PhitoPhiGSudakov:CutoffEWKMassScale 91.0*GeV
+create /Herwig/QTildeSudakov GluinotoGluinoGSudakov
+set GluinotoGluinoGSudakov:SplittingFunction theGluinotoGluinoGSplitFn
+set GluinotoGluinoGSudakov:Alpha theShowerAlphaQCD
+set GluinotoGluinoGSudakov:PDFmax 1.0
+set GluinotoGluinoGSudakov:cutoffKinScale 2.3*GeV
+set GluinotoGluinoGSudakov:CutoffQCDMassScale 0.75*GeV
+set GluinotoGluinoGSudakov:CutoffQEDMassScale 0.75*GeV
+set GluinotoGluinoGSudakov:CutoffEWKMassScale 91.0*GeV
+
+set theSplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~s_L->~s_L,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~c_L->~c_L,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~b_1->~b_1,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~t_1->~t_1,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~u_R->~u_R,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~d_R->~d_R,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~s_R->~s_R,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~c_R->~c_R,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
+set theSplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
+
+cd /Defaults/Handlers
+insert LHCHandler:PreCascadeHandlers 0 NewModelDecayHandler
+
+# Set up the bsm framework
+cd /Defaults/NewPhysics
+set NewModel:HardProcessConstructor HPConstructor
+set NewModel:DecayConstructor DecayConstructor
+insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
+set MSSM:ModelGenerator NewModel
+##################################################
+
+
+##################################################
+#
+# This section contains the user defined settings
+#
+##################################################
+# --- Hard Process ----
+# The particle names can be found in 'BSMParticles.in'
+# by searching for the relevant PDG code and noting the text 
+# '/Defaults/Particles/###' where the hashes denote the name
+
+# Switch to decide whether to include EW diagrams in the 
+# hard process (On by default)
+set HPConstructor:QCDandEW Off
+
+# Example hard process: Incoming proton, outgoing squarks
+insert HPConstructor:Incoming 0 /Defaults/Particles/g
+insert HPConstructor:Incoming 1 /Defaults/Particles/u
+insert HPConstructor:Incoming 2 /Defaults/Particles/ubar
+insert HPConstructor:Incoming 3 /Defaults/Particles/d
+insert HPConstructor:Incoming 4 /Defaults/Particles/dbar
+
+insert HPConstructor:Outgoing 0 /Defaults/Particles/~u_L
+insert HPConstructor:Outgoing 1 /Defaults/Particles/~u_Lbar
+insert HPConstructor:Outgoing 2 /Defaults/Particles/~d_L
+insert HPConstructor:Outgoing 3 /Defaults/Particles/~d_Lbar
+
+# --- Perturbative Decays ---
+# Read in the spectrum file and optional decay table.
+# If a decay table is in a separate file
+# then add another 'setup' line with that
+# file as the argument. The provided
+# spectrum file is an example using SPheno 2.2.3
+setup MSSM SPhenoSPS1a.spc
+
+# If the file contains a decay table 
+# set this interface to off
+set TwoBodyDC:CreateDecayModes Off
+
+# Particles that are specified in the 'DecayParticles' 
+# interface will have spin correlations included
+# when they are decayed. If a decay table in SLHA
+# format is not available then set the above 
+# 'CreateDecayModes' interface to 'On' and the
+# particles list here will have decay modes
+# created also.
+insert NewModel:DecayParticles 0 /Defaults/Particles/~d_L
+insert NewModel:DecayParticles 1 /Defaults/Particles/~u_L
+insert NewModel:DecayParticles 2 /Defaults/Particles/~e_R-
+insert NewModel:DecayParticles 3 /Defaults/Particles/~mu_R-
+insert NewModel:DecayParticles 4 /Defaults/Particles/~chi_10
+insert NewModel:DecayParticles 5 /Defaults/Particles/~chi_20
+insert NewModel:DecayParticles 6 /Defaults/Particles/~chi_2+
+
+
+# --- General event generator parameters --- 
+cd /Defaults/Generators
+# Choose MSSM over SM
+set LHCGenerator:StandardModelParameters  /Defaults/NewPhysics/MSSM
+
+# Other parameters for run
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 100
+set LHCGenerator:MaxErrors 10000
+
+saverun LHC-MSSM LHCGenerator

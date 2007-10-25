@@ -84,6 +84,16 @@ public:
    */
   virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
 			     double & coupling) const;
+
+  /**
+   * An overidden member to calculate a branching ratio for a certain
+   * particle instance.
+   * @param dm The DecayMode of the particle
+   * @param p The particle object
+   * @param oldbrat The branching fraction given in the DecayMode object
+   */
+  virtual double brat(const DecayMode & dm, const Particle & p,
+		      double oldbrat) const;
   //@}
 
 protected:

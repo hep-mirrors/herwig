@@ -1,4 +1,5 @@
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la\
+                     HwMPIAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 3:1:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
@@ -24,8 +25,7 @@ GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
 HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
-MPIMultiplicity.h MPIMultiplicity.fh \
-MPIMultiplicity.icc MPIMultiplicity.cc
+DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
@@ -130,3 +130,10 @@ HwBSMAnalysis_la_LDFLAGS = -module
 HwBSMAnalysis_la_SOURCES = \
 SpinCorrAnalysis.cc SpinCorrAnalysis.h \
 SpinCorrAnalysis.icc SpinCorrAnalysis.fh
+
+HwMPIAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwMPIAnalysis_la_LIBADD =
+HwMPIAnalysis_la_SOURCES = \
+MPIMultiplicity.h MPIMultiplicity.fh \
+MPIMultiplicity.icc MPIMultiplicity.cc

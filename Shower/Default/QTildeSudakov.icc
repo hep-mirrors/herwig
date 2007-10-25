@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline QTildeSudakov::QTildeSudakov() :_a(0.3), _b(2.3), _c(0.3*GeV),
-				       _kinCutoffScale( .75*GeV ),
+				       _kinCutoffScale( 2.3*GeV ),
 				       _cutoffQCDMassScale( 1.0*GeV ),
 				       _cutoffQEDMassScale( 0.51*MeV ),
 				       _cutoffEWKMassScale( 91.0*GeV )

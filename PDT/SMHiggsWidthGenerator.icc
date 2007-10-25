@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMHiggsWidthGenerator class.
+//
+
+namespace Herwig {
+
+inline SMHiggsWidthGenerator::SMHiggsWidthGenerator() 
+  : _widthopt(1), _branchingopt(3), _partialwidths(14,0.*GeV),
+    _mw(0.*GeV),_mz(0.*GeV),_gamw(0.*GeV),_gamz(0.*GeV),
+    _qmass(7,0.*GeV),_lmass(3,0.*GeV)
+{}
+
+inline IBPtr SMHiggsWidthGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMHiggsWidthGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

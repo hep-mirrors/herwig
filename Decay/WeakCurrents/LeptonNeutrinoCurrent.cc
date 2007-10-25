@@ -60,13 +60,15 @@ PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
   PDVector output(2);
   if(icharge==3)
     {
-      output[0]=getParticleData(-11-2*imode);
+      int id = -11-2*imode;
+      output[0]=getParticleData(id);
       output[1]=getParticleData(12+2*imode);
     }
   else if(icharge==-3)
     {
       output[0]=getParticleData(11+2*imode);
-      output[1]=getParticleData(-12-2*imode);
+      int id = -12-2*imode;
+      output[1]=getParticleData(id);
     }
   return output;
 }

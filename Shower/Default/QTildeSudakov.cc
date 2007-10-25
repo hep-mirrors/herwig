@@ -62,7 +62,7 @@ void QTildeSudakov::Init() {
 		       "kinematic cutoff scale for the parton shower phase"
 		       " space (unit [GeV])",
 		       &QTildeSudakov::_kinCutoffScale, GeV, 
-		       0.75*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
+		       2.3*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
 
   static Parameter<QTildeSudakov,Energy>
     interfaceCutoffQCD ("CutoffQCDMassScale",

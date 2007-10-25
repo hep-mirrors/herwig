@@ -94,8 +94,8 @@ Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa,
 			    inpart.first);
   }
   else {
-    mu1sq = sqr(outa.second/inpart.second);
-    mu2sq = sqr(outb.second/inpart.second);
+    mu1sq = sqr(outb.second/inpart.second);
+    mu2sq = sqr(outa.second/inpart.second);
     _theVSSPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
 			    inpart.first);
   }

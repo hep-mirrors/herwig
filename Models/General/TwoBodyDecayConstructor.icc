@@ -5,10 +5,6 @@
 //
 
 namespace Herwig {
-    
-inline TwoBodyDecayConstructor::TwoBodyDecayConstructor():
-  _theExistingDecayers(0),_init(true),_iteration(1),_points(1000),
-  _info(false) {}
   
 inline IBPtr TwoBodyDecayConstructor::clone() const {
   return new_ptr(*this);
@@ -16,12 +12,6 @@ inline IBPtr TwoBodyDecayConstructor::clone() const {
 
 inline IBPtr TwoBodyDecayConstructor::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void TwoBodyDecayConstructor::doinit() throw(InitException) {
-  NBodyDecayConstructorBase::doinit();
-  _theModel = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>
-    (generator()->standardModel());
 }
 
 }

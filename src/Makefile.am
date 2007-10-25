@@ -3,7 +3,9 @@ Herwig___SOURCES = Herwig++.cc
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
-DOTINFILES = Analysis.in Decays.in Hadronization.in \
+bin_SCRIPTS = herwig-config
+
+DOTINFILES = Analysis.in Analysis2.in LEPAnalysis2.in Decays.in Hadronization.in \
 HerwigDefaults.in OldParticles.in Particles.in \
 OldDecays.in Model.in RSModelVertices.in \
 Shower.in StandardModelVertices.in \
@@ -16,7 +18,7 @@ quark_decays.in baryon_decays.in \
 boson_decays.in lepton_decays.in \
 meson_decays.in decayers.in \
 masses.in widths.in BSMDecays.in \
-BSMParticles.in DiffractiveParticles.in
+BSMParticles.in BSMVertices.in DiffractiveParticles.in
 
 dist_pkgdata_DATA = $(DOTINFILES)
 
@@ -47,20 +49,25 @@ endif # # # # # # # # # # # # #
 ########################################################################
 
 CLEANFILES = HerwigDefaults.rpo \
-  LEP.run LEP.log LEP.out \
-  LHC.run LHC.log LHC.out \
-  TVT.run TVT.log TVT.out \
-  ILC.run ILC.log ILC.out \
+  LEP.run LEP.log LEP.out LEP.tex \
+  LHC.run LHC.log LHC.out LHC.tex \
+  TVT.run TVT.log TVT.out TVT.tex \
+  ILC.run ILC.log ILC.out ILC.tex \
   valgrind-init.log valgrind-read.log \
   valgrind-run.log versionstring.h version.tmp \
-  version.tmp.new
+  version.tmp.new \
+  LHC-MSSM.run LHC-MSSM.log LHC-MSSM.out LHC-MSSM.tex \
+  LHC-MUED.run LHC-MUED.log LHC-MUED.out LHC-MUED.tex \
+  LHC-MSSM-BSMModelInfo.out LHC-MUED-BSMModelInfo.out *.output
 
 ## checking targets ##
 
 HerwigDefaults.rpo: $(DOTINFILES) PDF.in Herwig++ $(top_builddir)/lib/*.so
 	./Herwig++ init -L$(top_builddir)/lib --exitonerror
 
-check-local: check-LHC check-LEP check-TVT check-ILC
+check-local: check-LHC check-LEP check-TVT check-ILC check-LHC-MSSM \
+	check-LHC-MUED
+
 
 check-LEP: HerwigDefaults.rpo
 	./Herwig++ read LEP.in --exitonerror
@@ -77,6 +84,14 @@ check-LHC: HerwigDefaults.rpo
 check-TVT: HerwigDefaults.rpo
 	./Herwig++ read TVT.in --exitonerror
 	./Herwig++ run  TVT.run -N100 --exitonerror
+
+check-LHC-MSSM: HerwigDefaults.rpo
+	./Herwig++ read LHC-MSSM.in --exitonerror
+	./Herwig++ run  LHC-MSSM.run -N100 --exitonerror
+
+check-LHC-MUED: HerwigDefaults.rpo
+	./Herwig++ read LHC-MUED.in --exitonerror
+	./Herwig++ run  LHC-MUED.run -N100 --exitonerror
 
 ## valgrind targets ##
 

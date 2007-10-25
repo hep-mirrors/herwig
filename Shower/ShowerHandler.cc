@@ -15,12 +15,12 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
 #include "ThePEG/PDT/StandardMatchers.h"
+#include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Throw.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
-#include "Herwig++/Hadronization/Remnant.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -186,9 +186,9 @@ void ShowerHandler::Init() {
      &ShowerHandler::theMPIOnOff, 1, false, false);
 
   static SwitchOption interfaceMPIOnOff0                             
-    (interfaceMPIOnOff,"MPI-OFF","Multi parton intercations are OFF", 0);
+    (interfaceMPIOnOff,"MPI-OFF","Multiple parton interactions are OFF", 0);
   static SwitchOption interfaceMPIOnOff1                            
-    (interfaceMPIOnOff,"MPI-ON","Multi parton interactions are ON", 1);
+    (interfaceMPIOnOff,"MPI-ON","Multiple parton interactions are ON", 1);
 
   static Switch<ShowerHandler,bool> interfaceOrderSecondaries
     ("OrderSecondaries", 
@@ -196,10 +196,10 @@ void ShowerHandler::Init() {
      &ShowerHandler::theOrderSecondaries, 1, false, false);
 
   static SwitchOption interfaceOrderSecondaries0                             
-    (interfaceOrderSecondaries,"Order-OFF","Multi parton intercations aren't ordered", 0);
+    (interfaceOrderSecondaries,"Order-OFF","Multiple parton interactions aren't ordered", 0);
   static SwitchOption interfaceOrderSecondaries1                            
     (interfaceOrderSecondaries,"Order-ON",
-     "Multi parton interactions are ordered according to their scale", 1);
+     "Multiple parton interactions are ordered according to their scale", 1);
 
   static Reference<ShowerHandler,CascadeReconstructor> interfaceCascadeReconstructor
     ("CascadeReconstructor",
@@ -240,7 +240,13 @@ void ShowerHandler::cascade() {
   theRemDec->initialize(remnants, *currentStep());
 
   //do the first forcedSplitting
-  theRemDec->doSplit(incs, true);
+  try{
+    theRemDec->doSplit(incs, true);
+  }catch(ExtraScatterVeto){
+    throw Exception() << "Remnant extraction failed in "
+                      << "ShowerHandler::cascade()" 
+                      << Exception::eventerror;   
+  }
 
   if( !IsMPIOn() ){
     theRemDec->finalize();
@@ -253,14 +259,34 @@ void ShowerHandler::cascade() {
   //	      new_ptr(MPIPDF(secondPDF().pdf())));
   //resetPDFs(newpdf);
 
-  //do the MultiPartonInteractions 
-  for(i=0; i<theMPIHandler->multiplicity(); i++){      
+  int veto(1);
+  unsigned int max(theMPIHandler->multiplicity());
+  for(i=0; i<max; i++){      
     //generate PSpoint
     lastXC = theMPIHandler->generate();
     sub = lastXC->construct();
+
+    //If Jmueo=1 additional scatters of the signal type with pt > ptmin have to be vetoed
+    //with probability 1/(m+1), where m is the number of occurances in this event
+
+    //check if the same process is used for the signal and UE
+    //For LesHouches event files the MEBasePtr should be 0
+    //That leads to the correct behaviour as long as no QCD2->2 event is read in
+    if(sub->handler() == subProcess()->handler() && theMPIHandler->Jmueo() ){
+      //get the pT
+      Energy pt = sub->outgoing().front()->momentum().perp();
+      Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
+
+      if(pt > ptmin && UseRandom::rnd() < 1./(veto+1) ){
+        veto++;
+        i--;
+        continue;
+      } 
+    }
     //sort in -scale, because reverse iterator doesn't work with gcc3.x.x
     if( IsOrdered() ) scale = -lastXC->lastScale();
     else scale = 1.*GeV2;
+
     procs.insert(make_pair(scale, sub));
   }
   
@@ -336,7 +362,8 @@ void ShowerHandler::findShoweringParticles() {
   tPVector thetagged;
   if( FirstInt() ){
     thetagged = tagged();
-  }else{
+  }
+  else{
     //get the "tagged" particles 
     for(PVector::const_iterator pit = currentSubProcess()->outgoing().begin(); 
 	pit != currentSubProcess()->outgoing().end(); ++pit)
@@ -551,66 +578,81 @@ PPtr ShowerHandler::findFirstParton(tPPtr seed, tPPair incoming) const{
   }
 }
 
-bool ShowerHandler::decayProduct(tPPtr particle) const{
-  return 
-    !(particle->dataPtr()->coloured()&&
-      (particle->parents()[0]==currentSubProcess()->incoming().first||
-       particle->parents()[0]==currentSubProcess()->incoming().second)) && 
-    particle->momentum().m2()>0.0*GeV2&&
-    particle != currentSubProcess()->incoming().first &&
-    particle != currentSubProcess()->incoming().second;
+bool ShowerHandler::decayProduct(tPPtr particle) const {
+  // must be time-like and not incoming
+  if(particle->momentum().m2()<=0.0*GeV2||
+     particle == currentSubProcess()->incoming().first||
+     particle == currentSubProcess()->incoming().second) return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
+  // must not be the s-channel intermediate
+  if(find(currentSubProcess()->incoming().first->children().begin(),
+	  currentSubProcess()->incoming().first->children().end(),particle)!=
+     currentSubProcess()->incoming().first->children().end()&&
+     find(currentSubProcess()->incoming().second->children().begin(),
+	  currentSubProcess()->incoming().second->children().end(),particle)!=
+     currentSubProcess()->incoming().second->children().end()&&
+     currentSubProcess()->incoming().first ->children().size()==1&&
+     currentSubProcess()->incoming().second->children().size()==1)
+    return false;
+  // must not have same particle type as a child
+  int id = particle->id();
+  for(unsigned int ix=0;ix<particle->children().size();++ix)
+    if(particle->children()[ix]->id()==id) return false;
+  // otherwise its a decaying particle
+  return true;
 }
 
-double ShowerHandler::reweightCKKW(int, int maxMult) {
-
-  if(_useCKKW) {
-
+double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
+  // return if not doing CKKW
+  if(!_useCKKW) return 1.;
+  
 #ifdef HERWIG_DEBUG_CKKW
-    generator()->log() << "== ShowerHandler::reweightCKKW" << endl;
+  generator()->log() << "== ShowerHandler::reweightCKKW" << endl;
 #endif
 
-    // get the hard subprocess particles
+  // get the hard subprocess particles
+  
+  PPair in = lastXCombPtr()->subProcess()->incoming();
+  ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
+  pair<double,double> x = make_pair(lastXCombPtr()->lastX1(),lastXCombPtr()->lastX2());
+  
+  bool gotHistory = false;
+  
+  try {
     
-    PPair in = lastXCombPtr()->subProcess()->incoming();
-    ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
-    pair<double,double> x = make_pair(lastXCombPtr()->lastX1(),lastXCombPtr()->lastX2());
+    // check resolution cut
     
-    bool gotHistory = false;
-
-    try {
-
-      // check resolution cut
-      
-      _reweighter->unresolvedCut(in,out);
-
-      // set the generation alpha_s
-
-      _reweighter->MEalpha(lastXCombPtr()->lastAlphaS());
-
-      // reconstruct a history
-
-      gotHistory = _reconstructor->reconstruct(in,x,out);
-
-    } catch (Veto) {
-
-      // as Veto is not handled if the subprocess has not been setup
-      // completely, we return weight 0, which, according to Leif,
-      // does the same job.
-
-      return 0.;
-
-    }
-
-    if (!gotHistory)
-      throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
-			<< Exception::eventerror;
-
-    double weight = _reweighter->reweight(_reconstructor->history(),out.size());
-
-    _evolver->initCKKWShower(out.size(),maxMult);
-
-    return weight;
-
-  } else return 1.;
+    _reweighter->unresolvedCut(in,out);
+    
+    // set the generation alpha_s
+    
+    _reweighter->MEalpha(lastXCombPtr()->lastAlphaS());
+    
+    // reconstruct a history
+    
+    gotHistory = _reconstructor->reconstruct(in,x,out);
+    
+  } catch (Veto) {
+    
+    // as Veto is not handled if the subprocess has not been setup
+    // completely, we return weight 0, which, according to Leif,
+    // does the same job.
+    
+    return 0.;
+    
+  }
+  
+  if (!gotHistory)
+    throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
+		      << Exception::eventerror;
+  
+  double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
+  
+  _evolver->initCKKWShower(out.size(),maxMult);
+  
+  return weight;
 
 }

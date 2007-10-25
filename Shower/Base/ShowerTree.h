@@ -32,9 +32,7 @@ public:
   //@{
   /**
    * Constructor for a scattering process
-   * @param eh The event handler
    * @param out The outgoing particles
-   * @param hand Pointer to the ShowerHandler to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
    */
   ShowerTree(const ParticleVector & out,
@@ -44,7 +42,6 @@ public:
    *  Constructor for a decay
    * @param in The decaying particle
    * @param decay Map into which the trees for any unstable particles are inserted
-   * @param ch Access to the event handler
    */
   ShowerTree(PPtr in, multimap<Energy,ShowerTreePtr> & decay);
   //@}
@@ -67,9 +64,8 @@ public:
 
   /**
    *  Perform the decay for a tree starting with an unstable particle
-   *  @param decay The map of widths and ShowerTrees for the decays so that
-   *  any unstable decay products can be added.
-   * @param ch Access to the event handler
+   * @param decay The map of widths and ShowerTrees for the decays so that
+   * any unstable decay products can be added.
    */
   void decay(multimap<Energy,ShowerTreePtr> & decay);
 
@@ -157,7 +153,6 @@ public:
    *  updates.
    *  @param decay The map of widths and ShowerTrees for the decays so that
    *  any unstable decay products can be added.
-   *  @param eh The EventHandler
    */
   void updateAfterShower(multimap<Energy,ShowerTreePtr> & decay);
 

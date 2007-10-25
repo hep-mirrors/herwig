@@ -134,10 +134,10 @@ private:
   /**
    * Whether a cluster decays along the perturbative parton direction.
    */
-  int _clDirLight;
-  int _clDirBottom;
-  int _clDirCharm;
-  int _clDirExotic;
+  bool _clDirLight;
+  bool _clDirBottom;
+  bool _clDirCharm;
+  bool _clDirExotic;
 
    /**
    * The S parameter from decayIntoTwoHadrons

@@ -32,13 +32,19 @@ using namespace ThePEG;
  *  the proper handling of all other specific collaborating classes
  *  and for the storing of the produced particles in the event record.
  * 
+ *  @see \ref ShowerHandlerInterfaces "The interfaces"
+ *
  *  @see ThePEG::CascadeHandler
+ *  @see MPIHandler
+ *  @see HwRemDecayer
  */
 class ShowerHandler: public CascadeHandler {
 
 public:
   
+  /** Typedef for a pair of ThePEG::RemnantParticle pointers. */
   typedef pair<tRemPPtr, tRemPPtr> RemPair;
+
   /**
    * The default constructor.
    */
