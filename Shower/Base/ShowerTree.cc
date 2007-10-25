@@ -392,20 +392,35 @@ void ShowerTree::addFinalStateShower(PPtr p, StepPtr s) {
 void ShowerTree::updateColour(PPtr particle) {
   // if attached to a colour line
   if(particle->colourLine()) {
+    bool reset=false;
     // if colour line from hard process reconnect
     if(_colour.find(particle->colourLine())!=_colour.end()) {
       ColinePtr c1=particle->colourLine();
       c1->removeColoured(particle);
       _colour[c1]->addColoured(particle);
+      reset=true;
+    }
+    // ensure properly connected to the line
+    if(!reset) {
+      ColinePtr c1=particle->colourLine();
+      c1->removeColoured(particle);
+      c1->addColoured(particle);
     }
   }
   // if attached to an anticolour line
   if(particle->antiColourLine()) {
+    bool reset=false;
     // if anti colour line from hard process reconnect
     if(_colour.find(particle->antiColourLine())!=_colour.end()) {
       ColinePtr c1=particle->antiColourLine();
       c1->removeColoured(particle,true);
       _colour[c1]->addColoured(particle,true);
+      reset=true;
+    }
+    if(!reset) {
+      ColinePtr c1=particle->antiColourLine();
+      c1->removeColoured(particle,true);
+      c1->addColoured(particle,true);
     }
   }
 }

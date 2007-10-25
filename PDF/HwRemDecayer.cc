@@ -133,7 +133,6 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
 void HwRemDecayer::split(tPPtr parton, HadronContent & content, 
 			 tRemPPtr rem, Lorentz5Momentum & used, 
 			 PartnerMap &partners, bool first) {
-  
   tcPPtr beam(parent(rem));
 
   if(rem==theRems.first)
@@ -177,7 +176,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     partners.push_back(make_pair(parton, tPPtr()));
     return; 
   }
-
   if( lastID != ParticleID::g ){
     //do the gluon splitting
     // Create the new parton with its momentum and parent/child relationship set
@@ -307,7 +305,7 @@ void HwRemDecayer::setRemMasses() const {
 void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
   PartnerMap::const_iterator prev;
   tPPtr pnew, pold;
-  tColinePtr clnew, clold;
+  ColinePtr clnew, clold;
 
   assert(partners.size()>=2);
   for(PartnerMap::iterator it=partners.begin(); 
@@ -321,16 +319,23 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
       if(pold->hasAntiColour() != anti)
 	pold = prev->second;
     }
+    assert(pold);
 
     pnew = it->first;
     if(it->second){
       if(it->second->colourLine(!anti)) //look for the opposite colour
 	pnew = it->second;
     }
+    assert(pnew);
+
+
     //save the corresponding colour lines
     clold = pold->colourLine(anti);
     clnew = pnew->colourLine(!anti);
 
+    assert(clold);
+
+    
     if(clnew){//there is already a colour line (not the final diquark)
 
       if( (clnew->coloured().size() + clnew->antiColoured().size()) > 1 ){
@@ -339,12 +344,12 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
           //I don't use the join method, because potentially only (anti)coloured
           //particles belong to one colour line
 	  if(clold!=clnew){//procs are not already connected
-	    while ( clnew->coloured().size() ) {
+	    while ( !clnew->coloured().empty() ) {
 	      tPPtr p = clnew->coloured()[0];
 	      clnew->removeColoured(p);
 	      clold->addColoured(p);
 	    }
-	    while ( clnew->antiColoured().size() ) {
+	    while ( !clnew->antiColoured().empty() ) {
 	      tPPtr p = clnew->antiColoured()[0];
 	      clnew->removeAntiColoured(p);
 	      clold->addAntiColoured(p);
