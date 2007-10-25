@@ -169,7 +169,7 @@ set GtobbbarSudakov:CutoffEWKMassScale 91.0*GeV
 create Herwig::QTildeSudakov GtoccbarSudakov
 set GtoccbarSudakov:SplittingFunction theGtoQQbarSplitFn
 set GtoccbarSudakov:Alpha theShowerAlphaQCD
-set GtoccbarSudakov:PDFmax 600.0
+set GtoccbarSudakov:PDFmax 1000.0
 set GtoccbarSudakov:cutoffKinScale 3.00*GeV
 set GtoccbarSudakov:CutoffQCDMassScale 0.75*GeV
 set GtoccbarSudakov:CutoffQEDMassScale 0.75*GeV
