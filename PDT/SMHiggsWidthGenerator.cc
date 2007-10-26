@@ -47,42 +47,42 @@ void SMHiggsWidthGenerator::Init() {
      &SMHiggsWidthGenerator::_widthopt, 1, false, false);
   static SwitchOption interfaceFixedWidth
     (interfaceWidthOption,
-     "FixedHiggsWidth",
+     "Fixed",
      "Fixed Higgs width, taken from ThePEGParticles.in",
      1);
   static SwitchOption interfaceNLLWidth
     (interfaceWidthOption,
-     "NLLcorrectedHiggsWidth",
+     "NLLcorrected",
      "NLL corrected Higgs width (a-la FORTRAN HERWIG)",
      2);
   static SwitchOption interfaceLOWidthOption
     (interfaceWidthOption,
-     "LOHiggsWidth",
+     "LO",
      "LO Higgs width (formula taken from The \"Higgs Hunter's Guide\")",
      3);
 
   static Switch<SMHiggsWidthGenerator,unsigned int> interfaceBranchingOption
-    ("BranchAllowed",
+    ("Branching",
      "Option to switch on/off branchings in the total Higgs width calculation",
      &SMHiggsWidthGenerator::_branchingopt, 3, false, false);
   static SwitchOption interfaceFermionOnlyBranchings
     (interfaceBranchingOption,
-     "FermionBR",
+     "Fermion",
      "Fermion branchings in the full Higgs width",
      1);
   static SwitchOption interfacePlusWWZZBranchings
     (interfaceBranchingOption,
-     "FermionWZBR",
+     "FermionWZ",
      "Fermion and WW/ZZ branchings in the full Higgs width",
      2);
   static SwitchOption interfacePlusGammaBranching
     (interfaceBranchingOption,
-     "FermionWZGammaBR",
+     "FermionWZGamma",
      "Fermion 2gamma, and WW/ZZ branchings in the full Higgs width",
      3);
   static SwitchOption interfacePlausGluonBranching
     (interfaceBranchingOption,
-     "FermionWZGammaGluonBR",
+     "FermionWZGammaGluon",
      "Fermion 2gamma, 2gluons, and WW/ZZ branchings in the full Higgs width",
      4);
 }

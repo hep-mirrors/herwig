@@ -87,35 +87,35 @@ void Evolver::Init() {
      "Choice of the ME Correction Mode",
      &Evolver::_meCorrMode, 1, false, false);
   static SwitchOption off
-    (ifaceMECorrMode,"MEC-off","MECorrections off", 0);
+    (ifaceMECorrMode,"Off","MECorrections off", 0);
   static SwitchOption on
-    (ifaceMECorrMode,"MEC-on","hard+soft on", 1);
+    (ifaceMECorrMode,"On","hard+soft on", 1);
   static SwitchOption hard
-    (ifaceMECorrMode,"MEC-hard","only hard on", 2);
+    (ifaceMECorrMode,"Hard","only hard on", 2);
   static SwitchOption soft
-    (ifaceMECorrMode,"MEC-soft","only soft on", 3);
+    (ifaceMECorrMode,"Soft","only soft on", 3);
 
   static Switch<Evolver, unsigned int> ifaceHardVetoMode
     ("HardVetoMode",
      "Choice of the Hard Veto Mode",
      &Evolver::_hardVetoMode, 1, false, false);
   static SwitchOption HVoff
-    (ifaceHardVetoMode,"HV-off","hard vetos off", 0);
+    (ifaceHardVetoMode,"Off","hard vetos off", 0);
   static SwitchOption HVon
-    (ifaceHardVetoMode,"HV-on","hard vetos on", 1);
+    (ifaceHardVetoMode,"On","hard vetos on", 1);
   static SwitchOption HVIS
-    (ifaceHardVetoMode,"HV-IS", "only IS emissions vetoed", 2);
+    (ifaceHardVetoMode,"Initial", "only IS emissions vetoed", 2);
   static SwitchOption HVFS
-    (ifaceHardVetoMode,"HV-FS","only FS emissions vetoed", 3);
+    (ifaceHardVetoMode,"Final","only FS emissions vetoed", 3);
 
   static Switch<Evolver, unsigned int> ifaceIntrinsicpT
   ("GenerateIntrinsicpT",
   "Switch Intrinsic pT on or off",
    &Evolver::_intrinsicpT, 1, false, false); 
    static SwitchOption ipToff
- (ifaceIntrinsicpT,"ipT-off","Intrinsic pT off",0);  
+ (ifaceIntrinsicpT,"Off","Intrinsic pT off",0);  
    static SwitchOption ipTon
- (ifaceIntrinsicpT,"ipT-on","Intrinsic pT on",1);
+ (ifaceIntrinsicpT,"On","Intrinsic pT on",1);
    static Parameter<Evolver, Energy> ifaceiptrms
   ("Iptrms",
      "rms intrinsic pT of Gaussian distribution:2*(1-Beta)*exp(-sqr(intrinsicpT/iptrms))/sqr(iptrms)",

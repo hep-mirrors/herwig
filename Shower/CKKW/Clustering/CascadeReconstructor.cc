@@ -67,12 +67,12 @@ void CascadeReconstructor::Init() {
      &CascadeReconstructor::_forceIncreasing, false, false, false);
   static SwitchOption interfaceForceIncreasingOn
     (interfaceForceIncreasing,
-     "On",
+     "Yes",
      "Switch on forcing increasing clustering scales.",
      true);
   static SwitchOption interfaceForceIncreasingOff
     (interfaceForceIncreasing,
-     "Off",
+     "No",
      "Switch off forcing increasing clustering scales",
      false);
 
@@ -83,12 +83,12 @@ void CascadeReconstructor::Init() {
      &CascadeReconstructor::_mayUseUnordered, false, false, false);
   static SwitchOption interfaceMayUseUnorderedOn
     (interfaceMayUseUnordered,
-     "On",
+     "Yes",
      "Switch on possible use of unordered histories.",
      true);
   static SwitchOption interfaceMayUseUnorderedOff
     (interfaceMayUseUnordered,
-     "Off",
+     "No",
      "Switch off possible use of unordered histories.",
      false);
 

@@ -45,12 +45,12 @@ void EWKClusterer::Init() {
      &EWKClusterer::_useColour, true, false, false);
   static SwitchOption interfaceUseColourUseColourOn
     (interfaceUseColour,
-     "On",
+     "Yes",
      "Use colour on clustering",
      true);
   static SwitchOption interfaceUseColourUseColourOff
     (interfaceUseColour,
-     "Off",
+     "No",
      "Do not use colour on clustering",
      false);
 
@@ -60,12 +60,12 @@ void EWKClusterer::Init() {
      &EWKClusterer::_useHadronic, true, false, false);
   static SwitchOption interfaceUseHadronicUseHadronicOn
     (interfaceUseHadronic,
-     "On",
+     "Yes",
      "Use hadronic clusterings",
      true);
   static SwitchOption interfaceUseHadronicUseHadronicOff
     (interfaceUseHadronic,
-     "Off",
+     "No",
      "Do not use hadronic clusterings",
      false);
 

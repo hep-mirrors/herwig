@@ -96,12 +96,12 @@ void ModelGenerator::Init() {
      &ModelGenerator::_theBRnorm, true, false, false);
   static SwitchOption interfaceBRNormalizeNormalize
     (interfaceBRNormalize,
-     "Normalize",
+     "Yes",
      "Normalize the partial widths",
      true);
   static SwitchOption interfaceBRNormalizeNoNormalize
     (interfaceBRNormalize,
-     "NoNormalize",
+     "No",
      "Do not normalize the partial widths",
      false);
 

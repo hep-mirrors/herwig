@@ -16,8 +16,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-HwRemDecayer::~HwRemDecayer() {}
-
 int HwRemDecayer::HadronContent::getValence() {
   if(extracted != -1)
     throw Exception() << "Try to extract second valence quark in "
@@ -107,7 +105,7 @@ canHandle(tcPDPtr particle, tcPDPtr parton) const {
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
-  if(!theSplittingOnOff) return;
+  if(!theForcedSplitter) return;
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
 
   thestep = &step;
@@ -376,7 +374,7 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
 }
 
 void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
-  if(!theSplittingOnOff) return;
+  if(!theForcedSplitter) return;
   
   try{
     split(partons.first, theContent.first, theRems.first, 
@@ -415,7 +413,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
 }
 
 void HwRemDecayer::finalize(){
-  if(!theSplittingOnOff) return;
+  if(!theForcedSplitter) return;
 
   PPtr diquark;
   //Do the final Rem->Diquark or Rem->quark "decay"
@@ -444,11 +442,11 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 
 
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
-  os << theForcedSplitter << theSplittingOnOff;
+  os << theForcedSplitter;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> theForcedSplitter >> theSplittingOnOff;
+  is >> theForcedSplitter;
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
@@ -460,18 +458,8 @@ void HwRemDecayer::Init() {
     ("There is no documentation for the HwRemDecayer class");
 
   static Reference<HwRemDecayer,ForcedSplitting> interfaceForcedSplitting
-    ("ForcedSplitting",
-     "Object used for the forced splitting of the Remnant",
-     &HwRemDecayer::theForcedSplitter, false, false, true, false, false);
-
-  static Switch<HwRemDecayer,bool> interfaceSplittingOnOff
-    ("SplittingOnOff", "flag to switch the ForcedSplitting on or off, i.e. switch the entire class on or off",
-     &HwRemDecayer::theSplittingOnOff, 1, false, false);
-
-  static SwitchOption interfaceSplittingOnOff0
-    (interfaceSplittingOnOff,"ForcedSplitting-OFF","Forced Splitting is OFF", 0);
-  static SwitchOption interfaceSplittingOnOff1
-    (interfaceSplittingOnOff,"ForcedSplitting-ON","Forced Splitting is ON", 1);
-
+    ("ForcedSplitter",
+     "Object used for the forced splitting of the Remnant. "
+     "Set NULL to turn off forced splitting.",
+     &HwRemDecayer::theForcedSplitter, false, false, true, true, false);
 }
-

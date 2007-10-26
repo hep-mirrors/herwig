@@ -43,6 +43,6 @@ create /Herwig/TwoBodyDecayConstructor TwoBodyDC
 # the spin correlations in the decay
 cd /Defaults/Handlers
 create /Herwig/HwDecayHandler NewModelDecayHandler
-set NewModelDecayHandler:NewStep Current
+set NewModelDecayHandler:NewStep No
 
 cd /

@@ -186,12 +186,12 @@ void MEqq2W2ff::Init() {
       &MEqq2W2ff::_maxflavour, 5, 0, 5, false, false, true);
 
   static Switch<MEqq2W2ff,unsigned int> interfacePlusMinus
-    ("PlusMinus",
+    ("Wcharge",
      "Which intermediate W bosons to include",
      &MEqq2W2ff::_plusminus, 0, false, false);
   static SwitchOption interfacePlusMinusAll
     (interfacePlusMinus,
-     "All",
+     "Both",
      "Include W+ and W-",
      0);
   static SwitchOption interfacePlusMinusPlus

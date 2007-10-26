@@ -182,13 +182,19 @@ void ShowerHandler::Init() {
   
   
   static Switch<ShowerHandler,bool> interfaceMPIOnOff
-    ("MPIOnOff", "flag to switch MPI on or off",
+    ("MPI", "flag to switch multi-parton interactions on or off",
      &ShowerHandler::theMPIOnOff, 1, false, false);
 
   static SwitchOption interfaceMPIOnOff0                             
-    (interfaceMPIOnOff,"MPI-OFF","Multiple parton interactions are OFF", 0);
+    (interfaceMPIOnOff,
+     "Off",
+     "Multiple parton interactions are Off", 
+     false);
   static SwitchOption interfaceMPIOnOff1                            
-    (interfaceMPIOnOff,"MPI-ON","Multiple parton interactions are ON", 1);
+    (interfaceMPIOnOff,
+     "On",
+     "Multiple parton interactions are On", 
+     true);
 
   static Switch<ShowerHandler,bool> interfaceOrderSecondaries
     ("OrderSecondaries", 
@@ -196,10 +202,15 @@ void ShowerHandler::Init() {
      &ShowerHandler::theOrderSecondaries, 1, false, false);
 
   static SwitchOption interfaceOrderSecondaries0                             
-    (interfaceOrderSecondaries,"Order-OFF","Multiple parton interactions aren't ordered", 0);
+    (interfaceOrderSecondaries,
+     "No",
+     "Multiple parton interactions aren't ordered", 
+     false);
   static SwitchOption interfaceOrderSecondaries1                            
-    (interfaceOrderSecondaries,"Order-ON",
-     "Multiple parton interactions are ordered according to their scale", 1);
+    (interfaceOrderSecondaries,
+     "Yes",
+     "Multiple parton interactions are ordered according to their scale", 
+     true);
 
   static Reference<ShowerHandler,CascadeReconstructor> interfaceCascadeReconstructor
     ("CascadeReconstructor",

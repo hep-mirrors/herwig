@@ -48,12 +48,12 @@ void CKKWQCD2to2::Init() {
      &CKKWQCD2to2::_useColour, true, false, false);
   static SwitchOption interfaceUseColourUseColourOn
     (interfaceUseColour,
-     "On",
+     "Yes",
      "Use colour information.",
      true);
   static SwitchOption interfaceUseColourUseColourOff
     (interfaceUseColour,
-     "Off",
+     "No",
      "Do not use colour information.",
      false);
 

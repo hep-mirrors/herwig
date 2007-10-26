@@ -168,12 +168,12 @@ void FivePionCurrent::Init() {
      &FivePionCurrent::_rhoomega, true, false, false);
   static SwitchOption interfaceRhoOmegaInclude
     (interfaceRhoOmega,
-     "Include",
+     "Yes",
      "Include the rho Breit-Wigners",
      true);
   static SwitchOption interfaceRhoOmegaOmit
     (interfaceRhoOmega,
-     "Omit",
+     "No",
      "Don't include the rho Breit-Wigners",
      false);
 

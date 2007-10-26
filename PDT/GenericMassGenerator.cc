@@ -53,12 +53,12 @@ void GenericMassGenerator::Init() {
      &GenericMassGenerator::_initialize, false, false, false);
   static SwitchOption interfaceInitializeInitialization
     (interfaceInitialize,
-     "Initialization",
+     "Yes",
      "Do the initialization",
      true);
   static SwitchOption interfaceInitializeNoInitialization
     (interfaceInitialize,
-     "NoInitialization",
+     "No",
      "Don't do the initalization",
      false);
 

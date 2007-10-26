@@ -66,7 +66,7 @@ cd /Defaults/Partons
 create ThePEG::NoRemnants NoRemnants
 create Herwig::HwRemDecayer RemnantDecayer HwRemDecayer.so
 create Herwig::ForcedSplitting theForcedSplitting
-set RemnantDecayer:ForcedSplitting theForcedSplitting
+set RemnantDecayer:ForcedSplitter theForcedSplitting
 create ThePEG::SoftRemnantHandler HadronRemnants
 set HadronRemnants:RemnantDecayer RemnantDecayer
 create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so

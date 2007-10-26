@@ -44,14 +44,14 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_init, true, false, false);
   static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
     (interfaceInitializeDecayers,
-     "On",
+     "Yes",
      "Initialize new decayers to find max weights",
-     1);
+     true);
   static SwitchOption interfaceInitializeDecayersoff
     (interfaceInitializeDecayers,
-     "Off",
+     "No",
      "Use supplied weights for integration",
-     0);
+     false);
   
   static Parameter<TwoBodyDecayConstructor,int> interfaceInitIteration
     ("InitIteration",
@@ -71,12 +71,12 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_info, false, false, false);
   static SwitchOption interfaceOutputInfoOff
     (interfaceOutputInfo,
-     "Off",
+     "No",
      "Do not output information regarding the created decayers",
      false);
   static SwitchOption interfaceOutputInfoOn
     (interfaceOutputInfo,
-     "On",
+     "Yes",
      "Output information regarding the decayers",
      true);
 
@@ -86,12 +86,12 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_createmodes, true, false, false);
   static SwitchOption interfaceCreateDecayModesOn
     (interfaceCreateDecayModes,
-     "On",
+     "Yes",
      "Create the ThePEG::DecayMode objects",
      true);
   static SwitchOption interfaceCreateDecayModesOff
     (interfaceCreateDecayModes,
-     "Off",
+     "No",
      "Only create the Decayer objects",
      false);
 }

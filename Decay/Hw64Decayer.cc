@@ -35,7 +35,7 @@ void Hw64Decayer::Init() {
   static SwitchOption interfaceMECodeFreeVA
     (interfaceMECode,
      "FreeVA",
-     " Free Massless (V-A)*(V-A) ME",
+     "Free Massless (V-A)*(V-A) ME",
      100);
   static SwitchOption interfaceMECodeBoundVA
     (interfaceMECode,

@@ -125,12 +125,12 @@ void EvtGen::Init() {
      &EvtGen::_checkconv, false, false, false);
   static SwitchOption interfaceCheckConversionfalse
     (interfaceCheckConversion,
-     "NoCheck",
+     "No",
      "Don't check the conversion",
      false);
   static SwitchOption interfaceCheckConversionCheck
     (interfaceCheckConversion,
-     "Check",
+     "Yes",
      "Check the conversion",
      true);
 

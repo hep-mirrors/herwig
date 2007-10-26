@@ -61,12 +61,12 @@ void Reweighter::Init() {
      &Reweighter::_vetoHighest, false, false, false);
   static SwitchOption interfaceVetoHighestOn
     (interfaceVetoHighest,
-     "On",
+     "Yes",
      "Switch on vetoing highest multiplicity.",
      true);
   static SwitchOption interfaceVetoHighestOff
     (interfaceVetoHighest,
-     "Off",
+     "No",
      "Switch off vetoing highest multiplicity.",
      false);
 

@@ -6,12 +6,6 @@
 
 namespace Herwig {
 
-inline HwRemDecayer::HwRemDecayer(): thestep(StepPtr()), theSplittingOnOff(1) {}
-
-inline HwRemDecayer::HwRemDecayer(const HwRemDecayer & x)
-  : RemnantDecayer(x), theForcedSplitter(x.theForcedSplitter), 
-    theSplittingOnOff(x.theSplittingOnOff) {}
-
 inline IBPtr HwRemDecayer::clone() const {
   return new_ptr(*this);
 }

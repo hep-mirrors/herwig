@@ -179,12 +179,12 @@ void HwDecayHandler::Init() {
      &HwDecayHandler::_newstep, true, false, false);
   static SwitchOption interfaceNewStepNew
     (interfaceNewStep,
-     "New",
+     "Yes",
      "Add particles in a new step",
      true);
   static SwitchOption interfaceNewStepCurrent
     (interfaceNewStep,
-     "Current",
+     "No",
      "Add them in the current step",
      false);
 

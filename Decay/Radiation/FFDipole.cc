@@ -148,12 +148,12 @@ void FFDipole::Init() {
      1);
   static SwitchOption interfaceBetaOptionCollinearVirtA
     (interfaceBetaOption,
-     "Collinear",
+     "CollinearVirtualA",
      "Include the collinear approx with virtual corrections",
      2);
   static SwitchOption interfaceBetaOptionCollinearVirtB
     (interfaceBetaOption,
-     "Collinear",
+     "CollinearVirtualB",
      "Include the collinear approx with virtual corrections",
      3);
   static SwitchOption interfaceBetaOptionExact

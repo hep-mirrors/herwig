@@ -43,14 +43,14 @@ void WeakCurrentDecayConstructor::Init() {
      &WeakCurrentDecayConstructor::_init, true, false, false);
   static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
     (interfaceInitializeDecayers,
-     "On",
+     "Yes",
      "Initialize new decayers to find max weights",
-     1);
+     true);
   static SwitchOption interfaceInitializeDecayersoff
     (interfaceInitializeDecayers,
-     "Off",
+     "No",
      "Use supplied weights for integration",
-     0);
+     false);
   
   static Parameter<WeakCurrentDecayConstructor,int> interfaceInitIteration
     ("InitIteration",

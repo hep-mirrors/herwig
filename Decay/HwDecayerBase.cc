@@ -85,12 +85,12 @@ void HwDecayerBase::Init() {
      &HwDecayerBase::_initialize, false, false, false);
   static SwitchOption interfaceInitializeon
     (interfaceInitialize,
-     "on",
+     "Yes",
      "At initialisation find max weight and optimise the integration",
      true);
   static SwitchOption interfaceInitializeoff
     (interfaceInitialize,
-     "off",
+     "No",
      "Use the maximum weight and channel weights supplied for the integration",
      false);
 

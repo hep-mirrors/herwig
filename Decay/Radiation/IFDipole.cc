@@ -19,22 +19,12 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #ifdef KEITH_DEBUG
-// KH - PAW STUFF - needed in order to use HFILL (26/09/05)...
-//#include "/home/kmh/herwig++build/herwig/src/KHAnalysis.h"
 #include <cfortran.h>
 #include <packlib.h>
 #include <hplot.h>
 #include <higz.h>
 #include <graflib.h>
 #include <kernlib.h>
-//#define PAWC_SIZE 300000
-//typedef struct { float PAW[PAWC_SIZE]; } PAWC_DEF;
-//#define PAWC COMMON_BLOCK(PAWC,pawc)
-//COMMON_BLOCK_DEF(PAWC_DEF,PAWC);
-// int ISTAT = 0;
-// int ICY   = 0;
-// int SIZE  = 1024;
-// int HUNIT = 1;
 #endif
 
 extern "C" int isnan(double) throw();
@@ -144,12 +134,12 @@ void IFDipole::Init() {
      1);
   static SwitchOption interfaceBetaOptionCollinearVirtA
     (interfaceBetaOption,
-     "Collinear",
+     "CollinearVirtualA",
      "Include the collinear approx with virtual corrections",
      2);
   static SwitchOption interfaceBetaOptionCollinearVirtB
     (interfaceBetaOption,
-     "Collinear",
+     "CollinearVirtualB",
      "Include the collinear approx with virtual corrections",
      3);
   static SwitchOption interfaceBetaOptionExact

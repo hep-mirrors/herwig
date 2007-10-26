@@ -36,24 +36,6 @@ public:
   /** Typedef to store information about colour partners */
   typedef vector<pair<tPPtr, tPPtr> > PartnerMap;
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline HwRemDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline HwRemDecayer(const HwRemDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~HwRemDecayer();
-  //@}
-
 public:
 
   /** @name Virtual functions required by the Decayer class. */
@@ -279,12 +261,6 @@ private:
    * in the Remnant-Remnant CMF after all have been decayed.
    */
   pair<RemPPtr, RemPPtr> theRems;
-
-  /**
-   * Flag to completely turn off ForcedSplittings. (just for testing)
-   */
-  bool theSplittingOnOff;
-
 };
 
 }

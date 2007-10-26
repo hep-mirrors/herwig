@@ -86,12 +86,12 @@ void DefaultReweighter::Init() {
      &DefaultReweighter::_useMassive, true, false, false);
   static SwitchOption interfaceUseMassiveUseMassiveOn
     (interfaceUseMassive,
-     "On",
+     "Yes",
      "Use massive splitting functions",
      true);
   static SwitchOption interfaceUseMassiveUseMassiveOff
     (interfaceUseMassive,
-     "Off",
+     "No",
      "Do not use massive splitting functions",
      false);
 
@@ -102,12 +102,12 @@ void DefaultReweighter::Init() {
      &DefaultReweighter::_sudakovUnweight, true, false, false);
   static SwitchOption interfaceSudakovUnweightOn
     (interfaceSudakovUnweight,
-     "On",
+     "Yes",
      "Divide Sudakov weights by maximum weight",
      true);
   static SwitchOption interfaceSudakovUnweightOff
     (interfaceSudakovUnweight,
-     "Off",
+     "No",
      "Do not divide Sudakov weight by the maximum Sudakov weight",
      false);
 

@@ -26,8 +26,8 @@ create Herwig::QTildeFinder thePartnerFinder
 create Herwig::QTildeReconstructor theKinematicsReconstructor
 
 set stdShowerHandler:MPIHandler /Defaults/Handlers/UnderlyingEvent/MPIHandler
-set stdShowerHandler:MPIOnOff 0
-set stdShowerHandler:OrderSecondaries 1
+set stdShowerHandler:MPI On
+set stdShowerHandler:OrderSecondaries Yes
 set stdShowerHandler:RemDecayer /Defaults/Partons/RemnantDecayer
 
 #
@@ -46,23 +46,23 @@ set theEvolver:SplittingGenerator theSplittingGenerator
 #############################################################
 
 # These switch a whole row on and off:
-set theSplittingGenerator:OnOffISRMode 1
-set theSplittingGenerator:OnOffFSRMode 1
+set theSplittingGenerator:ISR On
+set theSplittingGenerator:FSR On
 
 # These switch a whole column on and off (QED and EWK are not implemented):
-set theSplittingGenerator:OnOffQCDinteractionMode 1
-set theSplittingGenerator:OnOffQEDinteractionMode 0
-set theSplittingGenerator:OnOffEWKinteractionMode 0
+set theSplittingGenerator:QCDinteractions On
+set theSplittingGenerator:QEDinteractions Off
+set theSplittingGenerator:EWKinteractions Off
 
 # These switches are for each entry individually.
-# If their column or row is 0, they are not considered.
-set theSplittingGenerator:OnOffISR_QCDMode 1
-set theSplittingGenerator:OnOffISR_QEDMode 1
-set theSplittingGenerator:OnOffISR_EWKMode 1
+# If their column or row is Off, they are not considered.
+set theSplittingGenerator:ISR_QCD On
+set theSplittingGenerator:ISR_QED On
+set theSplittingGenerator:ISR_EWK On
 
-set theSplittingGenerator:OnOffFSR_QCDMode 1
-set theSplittingGenerator:OnOffFSR_QEDMode 1
-set theSplittingGenerator:OnOffFSR_EWKMode 1
+set theSplittingGenerator:FSR_QCD On
+set theSplittingGenerator:FSR_QED On
+set theSplittingGenerator:FSR_EWK On
 #
 #############################################################
 

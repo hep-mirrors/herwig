@@ -46,12 +46,12 @@ void CKKWee2qq::Init() {
      &CKKWee2qq::_useColour, true, false, false);
   static SwitchOption interfaceUseColourUseColourOn
     (interfaceUseColour,
-     "On",
+     "Yes",
      "Use colour information.",
      true);
   static SwitchOption interfaceUseColourUseColourOff
     (interfaceUseColour,
-     "Off",
+     "No",
      "Do not use colour information.",
      false);
 

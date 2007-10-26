@@ -348,7 +348,7 @@ void a1ThreePionDecayer::Init() {
      true);
   static SwitchOption interfaceLocalParametersDefault
     (interfaceLocalParameters,
-     "Default",
+     "ParticleData",
      "Use the values from the particleData objects",
      false);
 

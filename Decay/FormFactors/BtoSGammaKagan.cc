@@ -123,12 +123,12 @@ void BtoSGammaKagan::Init() {
      &BtoSGammaKagan::_initialize, false, false, false);
   static SwitchOption interfaceInitializeInitialize
     (interfaceInitialize,
-     "Initialize",
+     "Yes",
      "Perform initialization",
      true);
   static SwitchOption interfaceInitializeNoInitialization
     (interfaceInitialize,
-     "NoInitialization",
+     "No",
      "No initialization is performed",
      false);
 

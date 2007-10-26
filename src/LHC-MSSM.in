@@ -111,7 +111,7 @@ set MSSM:ModelGenerator NewModel
 
 # Switch to decide whether to include EW diagrams in the 
 # hard process (On by default)
-set HPConstructor:QCDandEW Off
+set HPConstructor:IncludeEW No
 
 # Example hard process: Incoming proton, outgoing squarks
 insert HPConstructor:Incoming 0 /Defaults/Particles/g
@@ -134,14 +134,14 @@ insert HPConstructor:Outgoing 3 /Defaults/Particles/~d_Lbar
 setup MSSM SPhenoSPS1a.spc
 
 # If the file contains a decay table 
-# set this interface to off
-set TwoBodyDC:CreateDecayModes Off
+# set this interface to 'No'
+set TwoBodyDC:CreateDecayModes No
 
 # Particles that are specified in the 'DecayParticles' 
 # interface will have spin correlations included
 # when they are decayed. If a decay table in SLHA
 # format is not available then set the above 
-# 'CreateDecayModes' interface to 'On' and the
+# 'CreateDecayModes' interface to 'Yes' and the
 # particles list here will have decay modes
 # created also.
 insert NewModel:DecayParticles 0 /Defaults/Particles/~d_L

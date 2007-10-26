@@ -79,12 +79,12 @@ void MEPP2WJet::Init() {
      3);
 
   static Switch<MEPP2WJet,unsigned int> interfacePlusMinus
-    ("PlusMinus",
+    ("Wcharge",
      "Which intermediate W bosons to include",
      &MEPP2WJet::_plusminus, 0, false, false);
   static SwitchOption interfacePlusMinusAll
     (interfacePlusMinus,
-     "All",
+     "Both",
      "Include W+ and W-",
      0);
   static SwitchOption interfacePlusMinusPlus

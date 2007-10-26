@@ -93,12 +93,12 @@ void DecayIntegrator::Init() {
      &DecayIntegrator::_generateinter, false, false, false);
   static SwitchOption interfaceGenerateIntermediatesNoIntermediates
     (interfaceGenerateIntermediates,
-     "NoIntermediates",
+     "No",
      "Don't include the intermediates",
      false);
   static SwitchOption interfaceGenerateIntermediatesIncludeIntermediates
     (interfaceGenerateIntermediates,
-     "IncludeIntermediates",
+     "Yes",
      "include the intermediates",
      true);
 
@@ -108,12 +108,12 @@ void DecayIntegrator::Init() {
      &DecayIntegrator::_outputmodes, false, false, false);
   static SwitchOption interfaceOutputModesOutput
     (interfaceOutputModes,
-     "Output",
+     "Yes",
      "Output the modes",
      true);
   static SwitchOption interfaceOutputModesNoOutput
     (interfaceOutputModes,
-     "NoOutput",
+     "No",
      "Don't output the modes",
      false);
   

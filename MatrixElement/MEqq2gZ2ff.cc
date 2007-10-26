@@ -217,12 +217,12 @@ void MEqq2gZ2ff::Init() {
      8);
   static SwitchOption interfaceProcessnu_mu
     (interfaceProcess,
-     "nu_mu",
+     "Nu_mu",
      "Only include nu_mu nu_mubar as outgoing particles",
      9);
   static SwitchOption interfaceProcessnu_tau
     (interfaceProcess,
-     "nu_tau",
+     "Nu_tau",
      "Only include nu_tau nu_taubar as outgoing particles",
      10);
   static SwitchOption interfaceProcessDown

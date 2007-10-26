@@ -131,12 +131,12 @@ void BasicConsistency::Init() {
      &BasicConsistency::_checkquark, true, false, false);
   static SwitchOption interfaceCheckQuarkCheck
     (interfaceCheckQuark,
-     "Check",
+     "Yes",
      "Check for quarks",
      true);
   static SwitchOption interfaceCheckQuarkNoCheck
     (interfaceCheckQuark,
-     "NoCheck",
+     "No",
      "Don't check for quarks",
      false);
 
@@ -146,12 +146,12 @@ void BasicConsistency::Init() {
      &BasicConsistency::_checkcharge, true, false, false);
   static SwitchOption interfaceCheckChargeCheck
     (interfaceCheckCharge,
-     "Check",
+     "Yes",
      "Check charge conservation",
      true);
   static SwitchOption interfaceCheckChargeNoCheck
     (interfaceCheckCharge,
-     "NoCheck",
+     "No",
      "Don't check charge conservation",
      false);
 
@@ -161,12 +161,12 @@ void BasicConsistency::Init() {
      &BasicConsistency::_checkcluster, true, false, false);
   static SwitchOption interfaceCheckClusterCheck
     (interfaceCheckCluster,
-     "Check",
+     "Yes",
      "Check for clusters",
      true);
   static SwitchOption interfaceCheckClusterNoCheck
     (interfaceCheckCluster,
-     "NoCheck",
+     "No",
      "Don't check for clusters",
      false);
 

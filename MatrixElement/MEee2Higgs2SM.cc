@@ -183,37 +183,37 @@ void MEee2Higgs2SM::Init() {
      2);
   static SwitchOption interfacealloweddown
     (interfaceallowed,
-     "down",
+     "Down",
      "Only d dbar allowed",
      3);
   static SwitchOption interfaceallowedup
     (interfaceallowed,
-     "up",
+     "Up",
      "Only u ubar allowed",
      4);
   static SwitchOption interfaceallowedstrange
     (interfaceallowed,
-     "strange",
+     "Strange",
      "Only s sbar allowed",
      5);
   static SwitchOption interfaceallowedcharm
     (interfaceallowed,
-     "charm",
+     "Charm",
      "Only c cbar allowed",
      6);
   static SwitchOption interfaceallowedbottom
     (interfaceallowed,
-     "bottom",
+     "Bottom",
      "Only b bbar allowed",
      7);
   static SwitchOption interfaceallowedtop
     (interfaceallowed,
-     "top",
+     "Top",
      "Only t tbar allowed",
      8);
   static SwitchOption interfaceallowedelectron
     (interfaceallowed,
-     "electron",
+     "Electron",
      "Only e+e- allowed",
      9);
   static SwitchOption interfaceallowedMuon

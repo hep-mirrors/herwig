@@ -371,12 +371,12 @@ void QCDClusterer::Init() {
      &QCDClusterer::_useColour, true, false, false);
   static SwitchOption interfaceUseColourUseColourOn
     (interfaceUseColour,
-     "On",
+     "Yes",
      "Do use colour information on clustering.",
      true);
   static SwitchOption interfaceUseColourUseColourOff
     (interfaceUseColour,
-     "Off",
+     "No",
      "Do not use colour information on clustering.",
      false);
 

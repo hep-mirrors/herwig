@@ -141,17 +141,17 @@ void HardProcessConstructor::Init() {
      &HardProcessConstructor::theOutgoing, -1, false, false, true, false);
  
   static Switch<HardProcessConstructor,bool> interfaceIncludeAllDiagrams
-    ("QCDandEW",
+    ("IncludeEW",
      "Switch to decide which diagrams to include in ME calc.",
      &HardProcessConstructor::theAllDiagrams, true, false, false);
   static SwitchOption interfaceIncludeAllDiagramsOff
     (interfaceIncludeAllDiagrams,
-     "Off",
+     "No",
      "Only include QCD diagrams",
      false);
   static SwitchOption interfaceIncludeAllDiagramsOn
    (interfaceIncludeAllDiagrams,
-     "On",
+     "Yes",
     "Include EW+QCD.",
     true);
 }

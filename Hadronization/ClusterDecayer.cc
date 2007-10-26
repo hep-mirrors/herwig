@@ -135,12 +135,12 @@ static Parameter<ClusterDecayer,double>
      &ClusterDecayer::_onshell, false, false, false);
   static SwitchOption interfaceOnShellOnShell
     (interfaceOnShell,
-     "OnShell",
+     "Yes",
      "Produce the hadrons on shell",
      false);
   static SwitchOption interfaceOnShellOffShell
     (interfaceOnShell,
-     "OffShell",
+     "No",
      "Generate the masses using the mass generator.",
      false);
 

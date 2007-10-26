@@ -120,7 +120,7 @@ set MUED:LambdaR 20
 
 # Switch to decide whether to include EW diagrams in the 
 # hard process (On by default)
-set HPConstructor:QCDandEW Off
+set HPConstructor:IncludeEW No
 
 # Example hard process: Incoming proton, outgoing kk quarks
 insert HPConstructor:Incoming 0 /Defaults/Particles/g

@@ -839,12 +839,12 @@ void ISGW2FormFactor::Init() {
      &ISGW2FormFactor::_includeaW, true, false, false);
   static SwitchOption interfaceIncludeaWInclude
     (interfaceIncludeaW,
-     "Include",
+     "Yes",
      "Include the factor",
      true);
   static SwitchOption interfaceIncludeaWDoNot
     (interfaceIncludeaW,
-     "DoNot",
+     "No",
      "Do not include the factor",
      false);
 

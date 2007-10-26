@@ -105,12 +105,12 @@ void MEPP2ZJet::Init() {
      8);
   static SwitchOption interfaceZDecaynu_mu
     (interfaceZDecay,
-     "nu_mu",
+     "Nu_mu",
      "Only include nu_mu nu_mubar as outgoing particles",
      9);
   static SwitchOption interfaceZDecaynu_tau
     (interfaceZDecay,
-     "nu_tau",
+     "Nu_tau",
      "Only include nu_tau nu_taubar as outgoing particles",
      10);
   static SwitchOption interfaceZDecayDown

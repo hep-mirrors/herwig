@@ -557,7 +557,7 @@ void a1ThreePionCLEODecayer::Init() {
      true);
   static SwitchOption interfaceLocalParametersDefault
     (interfaceLocalParameters,
-     "Default",
+     "ParticleData",
      "Use the values from the particleData objects",
      false);
 

@@ -56,12 +56,12 @@ void GenericWidthGenerator::Init() {
      &GenericWidthGenerator::_initialize, false, false, false);
   static SwitchOption interfaceInitializeInitialization
     (interfaceInitialize,
-     "Initialization",
+     "Yes",
      "Do the initialization",
      true);
   static SwitchOption interfaceInitializeNoInitialization
     (interfaceInitialize,
-     "NoInitialization",
+     "No",
      "Don't do the initalization",
      false);
 
@@ -134,12 +134,12 @@ void GenericWidthGenerator::Init() {
      &GenericWidthGenerator::_BRnorm, false, false, false);
   static SwitchOption interfaceBRNormalizeNormalize
     (interfaceBRNormalize,
-     "Normalize",
+     "Yes",
      "Perform the normalization",
      true);
   static SwitchOption interfaceBRNormalizeNoNormalisation
     (interfaceBRNormalize,
-     "NoNormalisation",
+     "No",
      "Do not perform the normalization",
      false);
 

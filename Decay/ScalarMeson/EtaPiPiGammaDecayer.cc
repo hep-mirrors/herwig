@@ -391,12 +391,12 @@ void EtaPiPiGammaDecayer::Init() {
      &EtaPiPiGammaDecayer::_initialize, false, false, false);
   static SwitchOption interfaceInitializeOmnesInitialize
     (interfaceInitializeOmnes,
-     "Initialize",
+     "Yes",
      "Perform the initialization",
      true);
   static SwitchOption interfaceInitializeOmnesNoInitialization
     (interfaceInitializeOmnes,
-     "NoInitialization",
+     "No",
      "No initialization",
      false);
 

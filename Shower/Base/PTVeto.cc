@@ -58,12 +58,12 @@ void PTVeto::Init() {
      &PTVeto::_vetoTimelike, true, false, false);
   static SwitchOption interfacevetoTimelikevetoTimelikeOn
     (interfacevetoTimelike,
-     "vetoTimelikeOn",
+     "Yes",
      "Veto timelike showering",
      true);
   static SwitchOption interfacevetoTimelikevetoTimelikeOff
     (interfacevetoTimelike,
-     "vetoTimelikeOff",
+     "No",
      "Do not veto timelike showering",
      false);
 
@@ -73,12 +73,12 @@ void PTVeto::Init() {
      &PTVeto::_vetoSpacelike, true, false, false);
   static SwitchOption interfacevetoSpacelikevetoSpacelikeOn
     (interfacevetoSpacelike,
-     "vetoSpacelikeOn",
+     "Yes",
      "Veto spacelike showering",
      true);
   static SwitchOption interfacevetoSpacelikevetoSpacelikeOff
     (interfacevetoSpacelike,
-     "vetoSpacelikeOff",
+     "No",
      "Do not veto spacelike showering",
      false);
 
@@ -88,12 +88,12 @@ void PTVeto::Init() {
      &PTVeto::_vetoDecay, true, false, false);
   static SwitchOption interfacevetoDecayvetoDecayOn
     (interfacevetoDecay,
-     "vetoDecayOn",
+     "Yes",
      "Veto decay showering",
      true);
   static SwitchOption interfacevetoDecayvetoDecayOff
     (interfacevetoDecay,
-     "vetoDecayOff",
+     "No",
      "Do not veto decay showering",
      false);
 

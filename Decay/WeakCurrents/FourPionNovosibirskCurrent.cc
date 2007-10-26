@@ -459,7 +459,7 @@ void FourPionNovosibirskCurrent::Init() {
      true);
   static SwitchOption interfaceLocalParametersDefault
     (interfaceLocalParameters,
-     "Default",
+     "ParticleData",
      "Use the values from the particleData objects",
      false);
 
@@ -469,12 +469,12 @@ void FourPionNovosibirskCurrent::Init() {
      &FourPionNovosibirskCurrent::_initializea1, false, false, false);
   static SwitchOption interfaceInitializea1Initialization
     (interfaceInitializea1,
-     "Initialization",
+     "Yes",
      "Initialize the calculation",
      true);
   static SwitchOption interfaceInitializea1NoInitialization
     (interfaceInitializea1,
-     "NoInitialization",
+     "No",
      "Use the default values",
      false);
   

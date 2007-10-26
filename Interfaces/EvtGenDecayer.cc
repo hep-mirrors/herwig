@@ -95,12 +95,12 @@ void EvtGenDecayer::Init() {
      &EvtGenDecayer::_check, false, false, false);
   static SwitchOption interfaceCheckCheck
     (interfaceCheck,
-     "Check",
+     "Yes",
      "Perform the checks",
      true);
   static SwitchOption interfaceCheckNoCheck
     (interfaceCheck,
-     "NoCheck",
+     "No",
      "Don't perform the checks",
      false);
 }

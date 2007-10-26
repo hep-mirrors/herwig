@@ -99,12 +99,12 @@ void Analysis2Base::Init() {
      &Analysis2Base::_bookPerSubprocess, false, false, false);
   static SwitchOption interfaceBookPerSubprocessOn
     (interfaceBookPerSubprocess,
-     "On",
+     "Yes",
      "Book per subprocess multiplicity",
      true);
   static SwitchOption interfaceBookPerSubprocessOff
     (interfaceBookPerSubprocess,
-     "Off",
+     "No",
      "Do not book per subprocess multiplicity",
      false);
 
@@ -115,12 +115,12 @@ void Analysis2Base::Init() {
      &Analysis2Base::_parallel, false, false, false);
   static SwitchOption interfaceParallelOn
     (interfaceParallel,
-     "On",
+     "Yes",
      "This analysis is carried out on part of a parallel run.",
      true);
   static SwitchOption interfaceParallelOff
     (interfaceParallel,
-     "Off",
+     "No",
      "This analysis is carried out on a serial run",
      false);
 
