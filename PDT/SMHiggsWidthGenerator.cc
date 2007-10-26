@@ -92,7 +92,6 @@ bool SMHiggsWidthGenerator::accept(const ParticleData & in) const {
 }
 
 Energy SMHiggsWidthGenerator::width(const ParticleData & in, Energy m) const {
-  cerr << "testing in width generator " << _widthopt << " " << m/GeV << "\n";
   switch (_widthopt) {
   case 1:
     return in.width();
@@ -128,7 +127,6 @@ Complex SMHiggsWidthGenerator::HwW2(double tau) const {
 
 // Taken from HERWIG 6510 with some simplifications.
 Energy SMHiggsWidthGenerator::calcNLLRunningWidth(Energy Mh) const {
-  cerr << "testing scale A " << Mh/GeV << "\n";
   using Constants::pi;
   Energy2 q2 = sqr(Mh);
   Energy QCDLambda = generator()->standardModel()->LambdaQCD(q2);
