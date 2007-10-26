@@ -301,10 +301,10 @@ setup /Defaults/Particles/Lambda_bbar0 -5122 Lambda_bbar0 5.6410 0.0 0.0 0.3420 
 defaultparticle /Defaults/Particles/Lambda_bbar0 
 makeanti /Defaults/Particles/Lambda_b0 /Defaults/Particles/Lambda_bbar0 
 create /ThePEG/ParticleData /Defaults/Particles/Xi_b- 
-setup /Defaults/Particles/Xi_b- 5132 Xi_b- 5.840 0.0 0.0 0.3870 -3 0 2 0
+setup /Defaults/Particles/Xi_b- 5132 Xi_b- 5.793 0.0 0.0 0.3870 -3 0 2 0
 defaultparticle /Defaults/Particles/Xi_b- 
 create /ThePEG/ParticleData /Defaults/Particles/Xi_bbar+ 
-setup /Defaults/Particles/Xi_bbar+ -5132 Xi_bbar+ 5.840 0.0 0.0 0.3870 3 0 2 0
+setup /Defaults/Particles/Xi_bbar+ -5132 Xi_bbar+ 5.793 0.0 0.0 0.3870 3 0 2 0
 defaultparticle /Defaults/Particles/Xi_bbar+ 
 makeanti /Defaults/Particles/Xi_b- /Defaults/Particles/Xi_bbar+ 
 create /ThePEG/ParticleData /Defaults/Particles/Xi_bc0 
@@ -343,10 +343,10 @@ setup /Defaults/Particles/Sigma*_bbar- -5224 Sigma*_bbar- 5.810 0.0 0.0 0.0 -3 0
 defaultparticle /Defaults/Particles/Sigma*_bbar- 
 makeanti /Defaults/Particles/Sigma*_b+ /Defaults/Particles/Sigma*_bbar- 
 create /ThePEG/ParticleData /Defaults/Particles/Xi_b0 
-setup /Defaults/Particles/Xi_b0 5232 Xi_b0 5.840 0.0 0.0 0.3870 0 0 2 0
+setup /Defaults/Particles/Xi_b0 5232 Xi_b0 5.793 0.0 0.0 0.3870 0 0 2 0
 defaultparticle /Defaults/Particles/Xi_b0 
 create /ThePEG/ParticleData /Defaults/Particles/Xi_bbar0 
-setup /Defaults/Particles/Xi_bbar0 -5232 Xi_bbar0 5.840 0.0 0.0 0.3870 0 0 2 0
+setup /Defaults/Particles/Xi_bbar0 -5232 Xi_bbar0 5.793 0.0 0.0 0.3870 0 0 2 0
 defaultparticle /Defaults/Particles/Xi_bbar0 
 makeanti /Defaults/Particles/Xi_b0 /Defaults/Particles/Xi_bbar0 
 create /ThePEG/ParticleData /Defaults/Particles/Xi_bc+ 
@@ -357,31 +357,31 @@ setup /Defaults/Particles/Xi_bcbar- -5242 Xi_bcbar- 7.005750 0.0 0.0 0.3870 -3 0
 defaultparticle /Defaults/Particles/Xi_bcbar- 
 makeanti /Defaults/Particles/Xi_bc+ /Defaults/Particles/Xi_bcbar- 
 create /ThePEG/ParticleData /Defaults/Particles/Xi'_b- 
-setup /Defaults/Particles/Xi'_b- 5312 Xi'_b- 5.960 0.0 0.0 0.0 -3 0 2 0
+setup /Defaults/Particles/Xi'_b- 5312 Xi'_b- 5.900 0.0 0.0 0.0 -3 0 2 0
 defaultparticle /Defaults/Particles/Xi'_b- 
 create /ThePEG/ParticleData /Defaults/Particles/Xi'_bbar+ 
-setup /Defaults/Particles/Xi'_bbar+ -5312 Xi'_bbar+ 5.960 0.0 0.0 0.0 3 0 2 0
+setup /Defaults/Particles/Xi'_bbar+ -5312 Xi'_bbar+ 5.900 0.0 0.0 0.0 3 0 2 0
 defaultparticle /Defaults/Particles/Xi'_bbar+ 
 makeanti /Defaults/Particles/Xi'_b- /Defaults/Particles/Xi'_bbar+ 
 create /ThePEG/ParticleData /Defaults/Particles/Xi*_b- 
-setup /Defaults/Particles/Xi*_b- 5314 Xi*_b- 5.970 0.0 0.0 0.0 -3 0 4 0
+setup /Defaults/Particles/Xi*_b- 5314 Xi*_b- 5.971 0.0 0.0 0.0 -3 0 4 0
 defaultparticle /Defaults/Particles/Xi*_b- 
 create /ThePEG/ParticleData /Defaults/Particles/Xi*_bbar+ 
-setup /Defaults/Particles/Xi*_bbar+ -5314 Xi*_bbar+ 5.970 0.0 0.0 0.0 3 0 4 0
+setup /Defaults/Particles/Xi*_bbar+ -5314 Xi*_bbar+ 5.971 0.0 0.0 0.0 3 0 4 0
 defaultparticle /Defaults/Particles/Xi*_bbar+ 
 makeanti /Defaults/Particles/Xi*_b- /Defaults/Particles/Xi*_bbar+ 
 create /ThePEG/ParticleData /Defaults/Particles/Xi'_b0 
-setup /Defaults/Particles/Xi'_b0 5322 Xi'_b0 5.960 0.0 0.0 0.0 0 0 2 0
+setup /Defaults/Particles/Xi'_b0 5322 Xi'_b0 5.900 0.0 0.0 0.0 0 0 2 0
 defaultparticle /Defaults/Particles/Xi'_b0 
 create /ThePEG/ParticleData /Defaults/Particles/Xi'_bbar0 
-setup /Defaults/Particles/Xi'_bbar0 -5322 Xi'_bbar0 5.960 0.0 0.0 0.0 0 0 2 0
+setup /Defaults/Particles/Xi'_bbar0 -5322 Xi'_bbar0 5.900 0.0 0.0 0.0 0 0 2 0
 defaultparticle /Defaults/Particles/Xi'_bbar0 
 makeanti /Defaults/Particles/Xi'_b0 /Defaults/Particles/Xi'_bbar0 
 create /ThePEG/ParticleData /Defaults/Particles/Xi*_b0 
-setup /Defaults/Particles/Xi*_b0 5324 Xi*_b0 5.970 0.0 0.0 0.0 0 0 4 0
+setup /Defaults/Particles/Xi*_b0 5324 Xi*_b0 5.971 0.0 0.0 0.0 0 0 4 0
 defaultparticle /Defaults/Particles/Xi*_b0 
 create /ThePEG/ParticleData /Defaults/Particles/Xi*_bbar0 
-setup /Defaults/Particles/Xi*_bbar0 -5324 Xi*_bbar0 5.970 0.0 0.0 0.0 0 0 4 0
+setup /Defaults/Particles/Xi*_bbar0 -5324 Xi*_bbar0 5.971 0.0 0.0 0.0 0 0 4 0
 defaultparticle /Defaults/Particles/Xi*_bbar0 
 makeanti /Defaults/Particles/Xi*_b0 /Defaults/Particles/Xi*_bbar0 
 create /ThePEG/ParticleData /Defaults/Particles/Omega_b- 
