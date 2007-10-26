@@ -60,7 +60,7 @@ create /Herwig/QTildeSudakov PhitoPhiGSudakov
 set PhitoPhiGSudakov:SplittingFunction thePhitoPhiGSplitFn
 set PhitoPhiGSudakov:Alpha theShowerAlphaQCD
 set PhitoPhiGSudakov:PDFmax 35.0
-set PhitoPhiGSudakov:cutoffKinScale 2.3*GeV
+set PhitoPhiGSudakov:cutoffKinScale 3.00*GeV
 set PhitoPhiGSudakov:CutoffQCDMassScale 0.75*GeV
 set PhitoPhiGSudakov:CutoffQEDMassScale 0.75*GeV
 set PhitoPhiGSudakov:CutoffEWKMassScale 91.0*GeV
@@ -68,7 +68,7 @@ create /Herwig/QTildeSudakov GluinotoGluinoGSudakov
 set GluinotoGluinoGSudakov:SplittingFunction theGluinotoGluinoGSplitFn
 set GluinotoGluinoGSudakov:Alpha theShowerAlphaQCD
 set GluinotoGluinoGSudakov:PDFmax 1.0
-set GluinotoGluinoGSudakov:cutoffKinScale 2.3*GeV
+set GluinotoGluinoGSudakov:cutoffKinScale 3.00*GeV
 set GluinotoGluinoGSudakov:CutoffQCDMassScale 0.75*GeV
 set GluinotoGluinoGSudakov:CutoffQEDMassScale 0.75*GeV
 set GluinotoGluinoGSudakov:CutoffEWKMassScale 91.0*GeV

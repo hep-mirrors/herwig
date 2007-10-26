@@ -22,6 +22,6 @@ inline IBPtr BasicConsistency::fullclone() const {
 inline void BasicConsistency::dofinish() {
   AnalysisHandler::dofinish();
   cout << "\nBasicConsistency: maximum 4-momentum violation: " 
-       << _epsmom/GeV << " GeV\n";
+       << _epsmom/MeV << " MeV\n";
 }
 }
