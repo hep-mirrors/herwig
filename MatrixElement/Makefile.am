@@ -15,6 +15,11 @@ MEPP2QQ.h MEPP2QQ.icc MEPP2QQ.fh MEPP2QQ.cc\
 MEPP2Higgs.h MEPP2Higgs.icc MEPP2Higgs.fh MEPP2Higgs.cc
 HwME_la_LDFLAGS = -module -version-info 2:1:0
 
+pkglib_LTLIBRARIES += HwMEFast.la
+HwMEFast_la_SOURCES = \
+MEQCD2to2Fast.h MEQCD2to2Fast.icc MEQCD2to2Fast.fh MEQCD2to2Fast.cc
+HwMEFast_la_LDFLAGS = -module -version-info 2:1:0
+
 noinst_LTLIBRARIES = libHwGeneralME.la
 libHwGeneralME_la_SOURCES = \
 GeneralHardME.cc GeneralHardME.h GeneralHardME.icc GeneralHardME.fh \
