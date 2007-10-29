@@ -127,13 +127,6 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-
    /**
     * Initialize this object at the begining of the run phase.
     */
@@ -195,13 +188,7 @@ private:
   Length _maxDisplacement;
 
   /**
-   *  Is the soft underlying event on/off
-   */
-  bool _softUnderlyingEventMode;
-
-  /**
-   * The pointer to the Underlying Event handler. If _softUnderlyingEventMode is true, 
-   * this pointer must be set. This is checked in doinit().
+   * The pointer to the Underlying Event handler. 
    */
   StepHdlPtr _underlyingEventHandler;
 };
