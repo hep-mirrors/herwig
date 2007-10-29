@@ -112,7 +112,10 @@ LEPJetAnalysis.h LEPJetAnalysis.icc \
 LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
 LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
-TopDalitzAnalysis.h TopDalitzAnalysis.icc
+TopDalitzAnalysis.h TopDalitzAnalysis.icc \
+RFieldAnalysis.cc RFieldAnalysis.fh \
+RFieldAnalysis.h RFieldAnalysis.icc 
+
 
 #code which also depends on ROOT
 if WANT_LIBROOT
