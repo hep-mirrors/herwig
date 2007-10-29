@@ -21,9 +21,12 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   // find the Z
   Lorentz5Momentum pz;
   StepVector::const_iterator sit =event->primaryCollision()->steps().begin();
+  StepVector::const_iterator stest =event->primaryCollision()->steps().end();
   StepVector::const_iterator send=sit;
   ++send;
+  if(send==stest) --send;
   ++send;
+  if(send==stest) --send;
   for(;sit!=send;++sit) {
     ParticleSet part=(**sit).all();
     ParticleSet::const_iterator iter = part.begin(), end = part.end();
