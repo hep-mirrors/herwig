@@ -4,9 +4,9 @@
 //
 // This is the declaration of the Histogram class.
 //
-
-#include "Statistic.h"
 #include "Histogram.fh"
+#include "ThePEG/Interface/Interfaced.h"
+#include "Statistic.h"
 #include <string>
 
 // workaround for OS X bug where isnan() and isinf() are hidden

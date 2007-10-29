@@ -186,7 +186,7 @@ private:
   /**
    *  N jet distribution
    */
-  vector<StatisticPtr> _njet;
+  vector<Statistic> _njet;
 
   /**
    *  For different jet rates

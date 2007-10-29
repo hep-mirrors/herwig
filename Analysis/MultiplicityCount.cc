@@ -21,21 +21,21 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-string MultiplicityInfo::bargraph(long N)
+string MultiplicityInfo::bargraph()
 {
   if (obsMultiplicity == 0.0) return "     ?     ";
-  else if (nSigma(N) >= 6.0)  return "-----|---->";
-  else if (nSigma(N) >= 5.0)  return "-----|----*";
-  else if (nSigma(N) >= 4.0)  return "-----|---*-";
-  else if (nSigma(N) >= 3.0)  return "-----|--*--";
-  else if (nSigma(N) >= 2.0)  return "-----|-*---";
-  else if (nSigma(N) >= 1.0)  return "-----|*----";
-  else if (nSigma(N) > -1.0)  return "-----*-----";
-  else if (nSigma(N) > -2.0)  return "----*|-----";
-  else if (nSigma(N) > -3.0)  return "---*-|-----";
-  else if (nSigma(N) > -4.0)  return "--*--|-----";
-  else if (nSigma(N) > -5.0)  return "-*---|-----";
-  else if (nSigma(N) > -6.0)  return "*----|-----";
+  else if (nSigma() >= 6.0)  return "-----|---->";
+  else if (nSigma() >= 5.0)  return "-----|----*";
+  else if (nSigma() >= 4.0)  return "-----|---*-";
+  else if (nSigma() >= 3.0)  return "-----|--*--";
+  else if (nSigma() >= 2.0)  return "-----|-*---";
+  else if (nSigma() >= 1.0)  return "-----|*----";
+  else if (nSigma() > -1.0)  return "-----*-----";
+  else if (nSigma() > -2.0)  return "----*|-----";
+  else if (nSigma() > -3.0)  return "---*-|-----";
+  else if (nSigma() > -4.0)  return "--*--|-----";
+  else if (nSigma() > -5.0)  return "-*---|-----";
+  else if (nSigma() > -6.0)  return "*----|-----";
   else                        return "<----|-----";
 }
 
@@ -201,9 +201,11 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
 
   particles.clear();
 
-  for ( StepVector::const_iterator it = steps.begin()+2;
-	it != steps.end(); ++it ) {
-    (**it).select(inserter(particles), ThePEG::AllSelector());
+  if (steps.size() > 2) {
+    for ( StepVector::const_iterator it = steps.begin()+2;
+	  it != steps.end(); ++it ) {
+      (**it).select(inserter(particles), ThePEG::AllSelector());
+    }
   }
   
   if( _makeHistograms ) 
@@ -250,8 +252,7 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   
   for(map<long,long>::const_iterator it = eventcount.begin();
       it != eventcount.end(); ++it) {
-    _data[it->first].actualCount += it->second;
-    _data[it->first].sumofsquares += sqr(double(it->second));
+    _data[it->first].count += it->second;
   }
 }
 
@@ -273,19 +274,18 @@ void MultiplicityCount::dofinish() {
       MultiplicityInfo multiplicity = it->second;
       string name = (it->first==0 ? "All chgd" : 
 		     generator()->getParticleData(it->first)->PDGName() );
-      long N = generator()->currentEventNumber() - 1;
 
       ios::fmtflags oldFlags = outfile.flags();
       outfile << std::scientific << std::showpoint
 	      << std::setprecision(3)
 	      << setw(7) << it->first << ' '
 	      << setw(9) << name << ' ' 
-	      << setw(2) << multiplicity.simMultiplicity(N) << " | " 
+	      << setw(2) << multiplicity.simMultiplicity() << " | " 
 	      << setw(2) << multiplicity.obsMultiplicity << " +/- " 
 	      << setw(2) << multiplicity.obsError << ' '
 	      << std::showpos << std::setprecision(1)
-	      << multiplicity.nSigma(N) << ' ' 
-	      << multiplicity.bargraph(N)
+	      << multiplicity.nSigma() << ' ' 
+	      << multiplicity.bargraph()
 	      << std::noshowpos;
 
       outfile << '\n';

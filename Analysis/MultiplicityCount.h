@@ -9,7 +9,9 @@
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "Herwig++/Utilities/Histogram.h"
+#include "Herwig++/Utilities/Statistic.h"
 #include "MultiplicityCount.fh"
+
 
 namespace Herwig {
 
@@ -53,37 +55,32 @@ struct MultiplicityInfo
   ParticleSpecies type;
 
   /**
-   *  Number of particles of this type
+   *  Simulation statistics for particles of this type
    */
-  long actualCount;
-
-  /**
-   *  Sum of squares of number per event for error
-   */
-  double sumofsquares;
+  Statistic count;
 
   /**
    *  The average number per event
    * @param N The number of events
    */
-  double simMultiplicity(long N);
+  double simMultiplicity();
 
   /**
    *  The error on the average number per event
    * @param N The number of events 
    */
-  double simError(long N);
+  double simError();
 
   /**
    *  Is the result more than \f$3\sigma\f$ from the experimental result
    * @param N The number of events
    */
-  double nSigma(long N);
+  double nSigma();
 
   /**
    * Plot standard error in a simple barchart
    */
-  string bargraph(long N);
+  string bargraph();
 };
 
 /**
