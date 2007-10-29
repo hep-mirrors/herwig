@@ -54,6 +54,24 @@ public:
   inline double mean() const;
 
   /**
+   *  Error on the mean estimate. Needed for example for Profile
+   *  histograms, where this should be used to compute a chi2
+   *  or significance level of deviation to data, rather than stdDeV.
+   *  This is obvious because the error on the estimate should go to 
+   *  zero for N -> infinity.
+   */
+  inline double mean_stdDev() const;
+
+  /**
+   *  Variance on the mean estimate. Needed for example for Profile
+   *  histograms, where this should be used to compute a chi2
+   *  or significance level of deviation to data, rather than stdDeV
+   *  This is obvious because the error on the estimate should go to 
+   *  zero for N -> infinity.
+   */
+  inline double mean_var() const;
+
+  /**
    *  Standard Deviation
    */
   inline double stdDev() const;

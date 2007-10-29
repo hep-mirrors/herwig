@@ -40,6 +40,15 @@ inline double Statistic::mean() const {
   return _n>0 ? _xsum/_n : 0.;
 }
 
+inline double Statistic::mean_var() const {
+  return _n>0 ? var()/_n : 0.;
+}
+
+inline double Statistic::mean_stdDev() const  {
+  return (_n==0||mean_var()==0.) ? 0. : sqrt(mean_var());
+}
+
+
 inline double Statistic::var() const {
   return (_n>1) ? (_x2sum-sqr(_xsum)/_n)/(_n-1) : 0.;
 }
