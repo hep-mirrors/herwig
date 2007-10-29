@@ -35,6 +35,9 @@ public:
   /** Vector of HPDiagrams. */
   typedef vector<HPDiagram> HPDVector;
 
+  /** Map of HPDiagrams. */
+  typedef multimap<HPDiagram, HPDiagram> HPDMap;
+
   /** Enumeration for the direction */
   enum direction {incoming, outgoing};
 

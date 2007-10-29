@@ -132,9 +132,7 @@ makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const PDSet & out,
   for(PDSet::const_iterator ita = out.begin(); ita != out.end(); ++ita) {
     if( abs(outa) == abs(offshell->id()) || 
 	abs((*ita)->id()) == abs(offshell->id())) continue;
-    HPDiagram newdiag;
-    newdiag.incoming = in;
-    newdiag.outgoing  = make_pair(outa, (*ita)->id()); 
+    HPDiagram newdiag(in,make_pair(outa, (*ita)->id()) );
     newdiag.intermediate = offshell;
     newdiag.vertices = vertpair;
     newdiag.channelType = HPDiagram::sChannel;

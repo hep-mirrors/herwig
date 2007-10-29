@@ -4,12 +4,28 @@
 // functions of the HPDiagram struct.
 //
 namespace Herwig {
+using namespace ThePEG;
 
-inline bool HPDiagram::operator==(const HPDiagram & x) const {
-  if( x.channelType == channelType && ordered == x.ordered && 
-      x.incoming == incoming && x.outgoing == outgoing ) {
-    if( (!intermediate && !x.intermediate) ||
-	( abs(intermediate->id()) == abs(x.intermediate->id()) ) ) 
+inline HPDiagram::HPDiagram() 
+  : incoming(make_pair(0, 0)), outgoing(make_pair(0, 0)),
+    ordered(make_pair(true,true)), channelType(UNDEFINED),
+    colourFlow(0), ids(4, 0) {}
+
+inline HPDiagram::HPDiagram(IDPair a, IDPair b) 
+  : incoming(a), outgoing(b), ordered(make_pair(true,true)), 
+    channelType(UNDEFINED), colourFlow(0), ids(4, 0){
+  ids[0] = incoming.first;
+  ids[1] = incoming.second;
+  ids[2] = outgoing.first;
+  ids[3] = outgoing.second;
+}
+
+
+inline bool operator==(const HPDiagram & x, const HPDiagram & y) {
+  if( x.channelType == y.channelType && x.ordered == y.ordered && 
+      x.incoming == y.incoming && x.outgoing == y.outgoing ) {
+    if( (!y.intermediate && !x.intermediate) ||
+	( abs(y.intermediate->id()) == abs(x.intermediate->id()) ) )
       return true;
   } 
   return false;
@@ -19,10 +35,36 @@ inline bool HPDiagram::sameProcess(const HPDiagram & x) const {
   return ( x.incoming == incoming && x.outgoing == outgoing );
 }
 
+inline bool operator<(const HPDiagram & x, const HPDiagram & y) {
+  for( size_t i = 0; i < 4; ++i ) {
+    if( x.ids[i] < y.ids[i] )
+      return true;
+    else if( x.ids[i] > y.ids[i] )
+      return false;
+  }
+  return false;
+}
+
+inline ostream & operator<<(ostream & os, const HPDiagram & diag) {
+  os << diag.incoming.first << " " << diag.incoming.second << " -> ";
+  if(diag.intermediate)
+    os << diag.intermediate->id() << " -> ";
+  os << diag.outgoing.first << " " << diag.outgoing.second
+     << "  channel: " << diag.channelType << "  ";
+  if(diag.channelType == HPDiagram::tChannel)
+    os << "ordering " << diag.ordered.first << " " 
+       << diag.ordered.second << "  ";
+  for(size_t cf = 0; cf < diag.colourFlow.size(); ++cf) 
+    os << "(" << diag.colourFlow[cf].first << "," 
+       <<diag.colourFlow[cf].second << ")";
+  os << '\n';
+  return os;
+}
+
 inline PersistentOStream & operator<<(PersistentOStream & os, 
 				      const HPDiagram & x) {
   os << x.incoming << x.outgoing << x.ordered << x.intermediate
-     << x.vertices << x.channelType << x.colourFlow;
+     << x.vertices << x.channelType << x.colourFlow << x.ids;
   return os;
 }
 
@@ -30,7 +72,7 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
 				      HPDiagram & x) {
   int chan = -1;
   is >> x.incoming >> x.outgoing >> x.ordered >> x.intermediate
-     >> x.vertices >> chan >> x.colourFlow;
+     >> x.vertices >> chan >> x.colourFlow >> x.ids;
   x.channelType = HPDiagram::Channel(chan);
   return is;
 }

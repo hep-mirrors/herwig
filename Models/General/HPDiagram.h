@@ -38,10 +38,11 @@ struct HPDiagram {
   enum Channel {UNDEFINED = -1, sChannel, tChannel, fourPoint};
 
   /** Standard Constructor */
-  HPDiagram() : incoming(make_pair(0, 0)), outgoing(make_pair(0, 0)),
-		ordered(make_pair(true,true)), channelType(UNDEFINED),
-		colourFlow(0) {}
+  HPDiagram();
 
+  /** Constructor taking ids as arguments.*/
+  inline HPDiagram(IDPair, IDPair);
+  
   /** Incoming particle id's */
   IDPair incoming;
   
@@ -63,10 +64,8 @@ struct HPDiagram {
   /** Store colour flow information */
   vector<CFPair> colourFlow;
 
-  /**
-   * Test whether this and x are identical
-   */
-  inline bool operator==(const HPDiagram & x) const;
+  /** Store the ids in a vector for easy use of comparison operator. */
+  vector<long> ids;
 
   /**
    * Test whether this and x are the same process
@@ -74,22 +73,36 @@ struct HPDiagram {
    */
   inline bool sameProcess(const HPDiagram & x) const;
 };
+
+/**
+ * Test whether two diagrams are identical.
+ */
+  inline bool operator==(const HPDiagram & x, const HPDiagram & y);
   
+/**
+ * Test whether one diagram is 'less' than another. Does a 
+ * lexicographic comparison of the external states.
+ */
+  inline bool operator<(const HPDiagram & x, const HPDiagram & y);
   
-  
-  /** 
-   * Output operator to allow the structure to be persistently written
-   * @param os The output stream
-   * @param x The HPDiagram 
-   */
+/**
+ * Output to a stream 
+ */
+  inline ostream & operator<<(ostream & os, const HPDiagram & d);
+   
+/** 
+ * Output operator to allow the structure to be persistently written
+ * @param os The output stream
+ * @param x The HPDiagram 
+ */
   inline PersistentOStream & operator<<(PersistentOStream & os, 
 					const HPDiagram  & x);
 
-  /** 
-   * Input operator to allow persistently written data to be read in
-   * @param is The input stream
-   * @param x The HPDiagram 
-  */
+/** 
+ * Input operator to allow persistently written data to be read in
+ * @param is The input stream
+ * @param x The HPDiagram 
+ */
   inline PersistentIStream & operator>>(PersistentIStream & is,
 					HPDiagram & x);
 }

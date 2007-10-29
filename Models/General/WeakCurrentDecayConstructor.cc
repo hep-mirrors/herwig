@@ -150,52 +150,37 @@ vector<PDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
 						       unsigned int ilist,
 						       unsigned int iv) {
   int id = inpart->id();
-  if(id < 0) return vector<PDPtr>(0);
+  if( id < 0 || !vert->incoming(id) || vert->getNpoint() != 3 )
+    return PDVector();
   Energy m1(inpart->mass());
   vector<PDPtr> decaylist;
-  if(vert->getNpoint()==3 && vert->incoming(id)) {
-    decaylist = vert->search(ilist,id);
-    for(PDVector::iterator iter=decaylist.begin();iter!=decaylist.end();) {
-      Energy m2,m3;
-      bool cc1((*iter)->CC()),cc2((*(iter+1))->CC()),cc3((*(iter+2))->CC());
-      int id2,id3;
-      if((*iter)->id()==id) {
- 	m2  = (*(iter+1))->mass();
- 	m3  = (*(iter+2))->mass();
-	id2 = abs((*(iter+1))->id());
-	id3 = abs((*(iter+2))->id());
- 	if(cc1) {
- 	  if(cc2) *(iter+1) = (*(iter+1))->CC();	  	  
- 	  if(cc3) *(iter+2) = (*(iter+2))->CC();	  
- 	}
-      }
-      else if((*(iter+1))->id()==id) {
- 	m2 = (*iter)    ->mass();
- 	m3 = (*(iter+2))->mass();
-	id2 = abs((*iter)    ->id());
-	id3 = abs((*(iter+2))->id());
-  	if(cc2) {
- 	  if(cc1) *iter     = (*iter)->CC();
- 	  if(cc3) *(iter+2) = (*(iter+2))->CC();
- 	}
-      }
-      else {
- 	m2 = (*iter)    ->mass();
- 	m3 = (*(iter+1))->mass();
-	id2 = abs((*iter)    ->id());
-	id3 = abs((*(iter+1))->id());
- 	if(cc3) {
-	  if(cc1) *iter     = (*iter)->CC();
-	  if(cc2) *(iter+1) = (*(iter+1))->CC();
-	}
-      }
-      if(id2==ParticleID::Wplus&&(m1-m3>=0.*MeV && m1-m3<=_masscut))      iter+=3;
-      else if(id3==ParticleID::Wplus&&(m1-m2>=0.*MeV && m1-m2<=_masscut)) iter+=3;
-      else decaylist.erase(iter,iter+3);
-    }
-    if(decaylist.size() > 0) createDecayer(vert,ilist,iv);
+  decaylist = vert->search(ilist,id);
+  PDVector::size_type nd = decaylist.size();
+  PDVector decays;
+  for( PDVector::size_type i = 0; i < nd; i += 3 ) {
+    tPDPtr pa(decaylist[i]), pb(decaylist.at(i + 1)), 
+      pc(decaylist.at(i + 2));
+    if( pb->id() == id ) swap(pa, pb);
+    if( pc->id() == id ) swap(pa, pc);
+    //One of the products must be a W
+    Energy mp(0.*GeV);
+    if( abs(pb->id()) == ParticleID::Wplus )
+      mp = pc->mass();
+    else if( abs(pc->id()) == ParticleID::Wplus )
+      mp = pb->mass();
+    else 
+      continue;
+    //allowed on-shell decay and passes mass cut
+    if( ( m1 <= pb->mass() + pc->mass() ) && m1 - mp <= _masscut ) continue;
+    //vertices are defined with all particles incoming
+    if( pb->CC() ) pb = pb->CC();
+    if( pc->CC() ) pc = pc->CC();
+    decays.push_back(inpart); decays.push_back(pb);
+    decays.push_back(pc);    
   }
-  return decaylist;
+  
+  if( !decays.empty() ) createDecayer(vert,ilist,iv);
+  return decays;
 }
 
 void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,

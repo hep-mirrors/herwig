@@ -410,7 +410,8 @@ void SusyBase::resetRepositoryMasses() {
 		      << " can't set masses of SUSY particles"
 		      << Exception::abortnow;
   ParamMap theMasses = fit->second;
-  for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end();){
+  for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end(); 
+      ++it) {
     long id = it->first;
     double mass = it->second;
     //a negative mass requires an adjustment to the 
@@ -425,9 +426,8 @@ void SusyBase::resetRepositoryMasses() {
     ostringstream os;
     os << abs(it->second);
     ifb->exec(*part, "set", os.str());
-    //no need to store all masses after this stage
-    theMasses.erase(it++);
   }
+  theMasses.clear();
 }
 
 void SusyBase::adjustMixingMatrix(long id) {
