@@ -97,7 +97,7 @@ namespace {
   class SameIncomingAs {
   public:
     SameIncomingAs(tcPDPair in) : a(in.first->id()), b(in.second->id())  {}
-    bool operator()(tcPDPair ppair) {
+    bool operator()(tcPDPair ppair) const {
       long id1(ppair.first->id()), id2(ppair.second->id());
       if( ( id1 == a && id2 == b ) || ( id1 == b && id2 == a ) )
 	return true;
@@ -112,7 +112,7 @@ namespace {
 bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
   vector<tcPDPair>::const_iterator it = 
     find_if( theIncPairs.begin(), theIncPairs.end(), SameIncomingAs(ppair) );
-  return ( it == theIncPairs.end() ) ? false : true;
+  return it != theIncPairs.end(); 
 }
 
 void HardProcessConstructor::persistentOutput(PersistentOStream & os) const {
@@ -168,7 +168,7 @@ namespace {
   class SameProcessAs {
   public:
     SameProcessAs(const HPDiagram & diag) : a(diag) {}
-    bool operator()(const HPDiagram & b) {
+    bool operator()(const HPDiagram & b) const {
       return a.sameProcess(b);
     }
   private:
@@ -695,7 +695,7 @@ namespace {
   class SameDiagramAs {
   public:
     SameDiagramAs(const HPDiagram & diag) : a(diag) {}
-    bool operator()(const HPDiagram & b) {
+    bool operator()(const HPDiagram & b) const {
       return a == b;
     }
   private:
@@ -708,7 +708,7 @@ bool HardProcessConstructor::duplicate(const HPDiagram & diag,
   //find if a duplicate diagram exists
   HPDVector::const_iterator it = 
     find_if(group.begin(), group.end(), SameDiagramAs(diag));
-  return ( it == group.end() ) ? false : true;
+  return it != group.end();
 } 
 
 string HardProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
