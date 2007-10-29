@@ -20,7 +20,10 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /**
- * Here is the documentation of the MEQCD2to2Fast class.
+ * The MEQCD2to2Fast class implements the matrix elements for
+ * QCD \f$2\to2\f$ scattering processes using hard coded formulae and
+ * as such can not include spin correlations. It is designed to be a faster
+ * replacement for MEQCD2to2 for use in the underlying event.
  *
  * @see \ref MEQCD2to2FastInterfaces "The interfaces"
  * defined for MEQCD2to2Fast.
@@ -29,15 +32,10 @@ class MEQCD2to2Fast: public ME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEQCD2to2Fast();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{

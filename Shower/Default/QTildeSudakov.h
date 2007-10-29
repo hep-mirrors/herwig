@@ -330,8 +330,5 @@ struct ClassTraits<Herwig::QTildeSudakov>
 }
 
 #include "QTildeSudakov.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeSudakov.tcc"
-#endif
 
 #endif /* HERWIG_QTildeSudakov_H */
