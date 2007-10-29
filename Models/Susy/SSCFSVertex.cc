@@ -159,7 +159,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     _id3last = isc;
     // determine chargino and sfermion eigenstates
     unsigned int alpha(isc/1000000 - 1);
-    unsigned int ch = (ichg == 1000024 ) ? ch = 0 : ch = 1;
+    unsigned int ch = (ichg == 1000024 ) ? 0 : 1;
 
     Complex ul1 = (*_umix)(ch,0);
     Complex ul2 = (*_umix)(ch,1);
