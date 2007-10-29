@@ -1,5 +1,3 @@
 #include "HerwigVersion.h"
 
-using namespace Herwig;
-
-string HerwigVersion::versionstring = "";
+std::string Herwig::HerwigVersion::versionstring = "";

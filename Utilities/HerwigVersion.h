@@ -1,17 +1,14 @@
 // -*- C++ -*-
-
-#include "ThePEG/Config/ThePEG.h"
+#include <string>
 
 namespace Herwig {
-
-  using namespace ThePEG;
 
   struct HerwigVersion {
 
     /**
      * The version string
      */
-    static string versionstring;
+    static std::string versionstring;
 
   };
 

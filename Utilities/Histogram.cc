@@ -10,6 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "HerwigVersion.h"
 
 using namespace Herwig;
 NoPIOClassDescription<Histogram> Histogram::initHistogram;
@@ -21,8 +22,6 @@ void Histogram::Init() {
      " points for comparision with experimental results.");
 
 }
-
-string Histogram::versionstring = "";
 
 void Histogram::topdrawOutput(ostream & out,
 			      unsigned int flags,
@@ -50,8 +49,8 @@ void Histogram::topdrawOutput(ostream & out,
     out << "TITLE LEFT \""   << left      << "\"\n";
     out << "CASE       \""   << leftcase  << "\"\n";
     out << (errorbars ? "SET ORDER X Y DX DY \n" : "SET ORDER X Y DX\n");
-    if (versionstring != "") {
-      out << "TITLE RIGHT \"" << versionstring << "\"\n";
+    if (HerwigVersion::versionstring != "") {
+      out << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
       out << "CASE        \"\"\n";
     }
     if(_havedata) out << "SET AXIS BOTTOM OFF\n";

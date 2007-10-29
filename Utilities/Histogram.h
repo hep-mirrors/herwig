@@ -209,13 +209,6 @@ private:
    */
   Histogram & operator=(const Histogram &);
 
-public:
-
-  /**
-   *  Version of the code to add to Histogram
-   */
-  static string versionstring;
-
 private:
 
  /**

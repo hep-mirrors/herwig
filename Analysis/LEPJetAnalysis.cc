@@ -8,6 +8,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Utilities/HerwigVersion.h"
 
 using namespace Herwig;
 
@@ -281,8 +282,8 @@ void LEPJetAnalysis::dofinish() {
     output << "CASE      \" X X     X   X\"\n";
     output << "TITLE LEFT \"R0" << ix << "1\"\n";
     output << "CASE       \" X X\"\n";
-    if (Histogram::versionstring != "") {
-      output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+    if (HerwigVersion::versionstring != "") {
+      output << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
       output << "CASE        \"\"\n";
     }
     output << "SET AXIS BOTTOM OFF\n";
@@ -379,8 +380,8 @@ void LEPJetAnalysis::dofinish() {
   output << "CASE      \"  X    X\"\n";
   output << "TITLE LEFT \" <N0jets1>\"\n";
   output << "CASE       \"   X    X \"\n";
-  if (Histogram::versionstring != "") {
-    output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+  if (HerwigVersion::versionstring != "") {
+    output << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
     output << "CASE        \"\"\n";
   }
   output << "SET AXIS BOTTOM OFF\n";
@@ -538,8 +539,8 @@ void LEPJetAnalysis::dofinish() {
     output << "CASE      \" X X     X   X\"\n";
     output << "TITLE LEFT \"D0" << ix << "1\"\n";
     output << "CASE       \" X X\"\n";
-    if (Histogram::versionstring != "") {
-      output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+    if (HerwigVersion::versionstring != "") {
+      output << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
       output << "CASE        \"\"\n";
     }
     output << "SET AXIS BOTTOM OFF\n";
