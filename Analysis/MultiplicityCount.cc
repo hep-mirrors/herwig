@@ -250,9 +250,12 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
     }
   }
   
-  for(map<long,long>::const_iterator it = eventcount.begin();
-      it != eventcount.end(); ++it) {
-    _data[it->first].count += it->second;
+  for(map<long,MultiplicityInfo>::iterator it = _data.begin();
+      it != _data.end(); ++it) {
+    long currentcount 
+      = eventcount.find(it->first) == eventcount.end() ? 0
+      : eventcount[it->first];
+    it->second.count += currentcount; 
   }
 }
 
