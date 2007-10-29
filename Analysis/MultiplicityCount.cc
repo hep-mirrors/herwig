@@ -262,8 +262,6 @@ void MultiplicityCount::dofinish() {
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
 
-  cerr << "testing do hist " << _makeHistograms << "\n";
-
   outfile << 
     "\nParticle multiplicities (compared to LEP data):\n"
     "  ID       Name    simMult     obsMult       obsErr     Sigma\n";
