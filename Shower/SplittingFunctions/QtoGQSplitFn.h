@@ -92,6 +92,22 @@ public:
    * @param r Value of the splitting function to be inverted
    */ 
   virtual double invIntegOverP(const double r) const;
+
+  /**
+   * Purely virtual method which should return the indefinite integral of the 
+   * overestimated splitting function, \f$P_{\rm over}/(1-z)\f$.
+   * @param z   The energy fraction.
+   */
+  virtual double integOverPPDFFactor(const double z) const; 
+
+  /**
+   * Purely virtual method which should return the inverse of the 
+   * indefinite integral of the 
+   * overestimated splitting function, \f$P_{\rm over}/(1-z)\f$ which is used to
+   * generate the value of \f$z\f$.
+   * @param r Value of the splitting function to be inverted
+   */
+  virtual double invIntegOverPPDFFactor(const double r) const; 
   //@}
 
   /**

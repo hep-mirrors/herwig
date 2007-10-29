@@ -10,17 +10,18 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _splittingFn << _alpha << _pdfmax << _particles;
+  os << _splittingFn << _alpha << _pdfmax << _particles << _pdffactor;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingFn >> _alpha >> _pdfmax >> _particles;
+  is >> _splittingFn >> _alpha >> _pdfmax >> _particles >> _pdffactor;
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
@@ -50,6 +51,20 @@ void SudakovFormFactor::Init() {
      &SudakovFormFactor::_pdfmax, 35.0, 1.0, 4000.0,
      false, false, Interface::limited);
 
+  static Switch<SudakovFormFactor,bool> interfacePDFFactor
+    ("PDFFactor",
+     "Include a factor of 1/(1-z) in the overestimate for the PDFs",
+     &SudakovFormFactor::_pdffactor, false, false, false);
+  static SwitchOption interfacePDFFactorOff
+    (interfacePDFFactor,
+     "Off",
+     "Don't include the factor",
+     false);
+  static SwitchOption interfacePDFFactorOn
+    (interfacePDFFactor,
+     "On",
+     "Include the factor",
+     true);
 }
 
 bool SudakovFormFactor::
@@ -83,15 +98,17 @@ PDFVeto(const Energy2 t, const double x,
   if(oldpdf<=0.) return false;
   double ratio = newpdf/oldpdf;
 
+  double maxpdf = _pdffactor ? _pdfmax/(1.-z()) : _pdfmax;
+
   // ratio / PDFMax must be a probability <= 1.0
-  if (ratio > _pdfmax) {
+  if (ratio > maxpdf) {
     generator()->log() << "PDFVeto warning: Ratio (" << ratio 
 			    << ") > " << name() << ":PDFmax ("
-		       <<_pdfmax <<") for " 
+		       << _pdfmax <<") for " 
 		       << parton0->PDGName() << " to " 
 		       << parton1->PDGName() << "\n";
   }
-  return ratio < UseRandom::rnd()*_pdfmax;
+  return ratio < UseRandom::rnd()*maxpdf;
 }
 
 void SudakovFormFactor::addSplitting(const IdList & in) {

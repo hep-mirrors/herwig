@@ -25,3 +25,17 @@ void SplittingFunction::Init() {
 
 }
 
+double SplittingFunction::integOverPPDFFactor(const double) const {
+  throw Exception() << "Base class SplittingFunction::integOverPPDFFactor() "
+		    << "used you should not be using this method for this"
+		    << "splitting function\n"
+		    << Exception::runerror;
+
+}
+
+double SplittingFunction::invIntegOverPPDFFactor(const double) const {
+  throw Exception() << "Base class SplittingFunction::invIntegOverPPDFFactor()"
+		    << "used you should not be using this method for this"
+		    << "splitting function\n"
+		    << Exception::runerror;
+}

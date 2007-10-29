@@ -47,10 +47,20 @@ double QtoGQSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 }
 
-double QtoGQSplitFn::integOverP(const double z) const { return 8./3.*log(z); }
+double QtoGQSplitFn::integOverP(const double z) const { 
+  return 8./3.*log(z); 
+}
 
 double QtoGQSplitFn::invIntegOverP(const double r) const {
   return exp(3.*r/8.); 
+}
+
+double QtoGQSplitFn::integOverPPDFFactor(const double z) const {
+  return 8./3.*log(z/(1.-z));
+}
+
+double QtoGQSplitFn::invIntegOverPPDFFactor(const double r) const {
+  return 1./(1.+exp(-3.*r/8.));
 }
 
 void QtoGQSplitFn::colourConnection(tShowerParticlePtr parent,
@@ -102,5 +112,4 @@ bool QtoGQSplitFn::accept(const IdList &ids) const {
   return q->iSpin()==PDT::Spin1Half&&(q->iColour()==PDT::Colour3||
 				      q->iColour()==PDT::Colour3bar);
 }
-
 

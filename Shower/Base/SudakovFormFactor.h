@@ -349,6 +349,11 @@ protected:
    */
   inline vector<IdList> particles() const;
 
+  /**
+   *  Get the option for the PDF factor
+   */
+  inline bool PDFFactor() const;
+
 private:
 
   /**
@@ -385,6 +390,11 @@ private:
    * interpolation tables if needed
    */
   vector<IdList> _particles;
+
+  /**
+   *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
+   */
+  bool _pdffactor;
 
 private:
 

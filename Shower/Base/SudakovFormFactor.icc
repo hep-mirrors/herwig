@@ -6,8 +6,8 @@
 
 namespace Herwig {
 
-inline SudakovFormFactor::SudakovFormFactor() : _pdfmax(35.0), _z( 0.0 ), 
-						_phi(0.0), _pT()
+inline SudakovFormFactor::SudakovFormFactor() : _pdfmax(35.0), _pdffactor(false),
+						_z( 0.0 ),_phi(0.0), _pT()
 {}
 
 inline tSplittingFnPtr SudakovFormFactor::splittingFn() const { 
@@ -55,9 +55,16 @@ inline void SudakovFormFactor::zLimits(pair<double,double> in) {
 }
 
 inline double SudakovFormFactor::guessz () const {
-  double lower = _splittingFn->integOverP(_zlimits.first);
-  return _splittingFn->invIntegOverP
-    (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second) - lower));
+  if(_pdffactor) {
+    double lower = _splittingFn->integOverPPDFFactor(_zlimits.first);
+    return _splittingFn->invIntegOverPPDFFactor
+      (lower + UseRandom::rnd()*(_splittingFn->integOverPPDFFactor(_zlimits.second) - lower));
+  }
+  else {
+    double lower = _splittingFn->integOverP(_zlimits.first);
+    return _splittingFn->invIntegOverP
+      (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second) - lower));
+  }
 }
  
 inline bool SudakovFormFactor::SplittingFnVeto(const Energy2 t, 
@@ -73,9 +80,13 @@ inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
 
 inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
 					 double enhance,bool ident) const {
-  double c = 1./((_splittingFn->integOverP(_zlimits.second) -
-		  _splittingFn->integOverP(_zlimits.first))* 
-		 _alpha->overestimateValue()/Constants::twopi*enhance);
+  double c = _pdffactor ? 
+    1./((_splittingFn->integOverPPDFFactor(_zlimits.second) -
+	 _splittingFn->integOverPPDFFactor(_zlimits.first))* 
+	_alpha->overestimateValue()/Constants::twopi*enhance) :
+    1./((_splittingFn->integOverP(_zlimits.second) -
+	 _splittingFn->integOverP(_zlimits.first))* 
+	_alpha->overestimateValue()/Constants::twopi*enhance);
   assert(iopt<=2);
   if(iopt==1) {
     c/=_pdfmax;
@@ -98,4 +109,9 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
 inline vector<IdList> SudakovFormFactor::particles() const {
   return _particles;
 }
+
+inline bool SudakovFormFactor::PDFFactor() const {
+  return _pdffactor;
+}
+
 }
