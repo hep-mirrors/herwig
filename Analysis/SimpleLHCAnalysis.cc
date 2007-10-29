@@ -27,12 +27,13 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   if(send==stest) --send;
   ++send;
   if(send==stest) --send;
+  ++send;
   for(;sit!=send;++sit) {
     ParticleSet part=(**sit).all();
     ParticleSet::const_iterator iter = part.begin(), end = part.end();
     for( ;iter!=end;++iter) {
-      if(((**iter).id()==ParticleID::Z0||(**iter).id()==ParticleID::gamma)&&
-	 (**iter).children().size()==2) {
+      if((**iter).children().size()!=2) continue;
+      if((**iter).id()==ParticleID::Z0||(**iter).id()==ParticleID::gamma) {
 	pz=(*iter)->momentum();
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
@@ -89,27 +90,26 @@ void SimpleLHCAnalysis::dofinish() {
   ofstream outfile(fname.c_str());
   string title;
   using namespace HistogramOptions;
-  for(unsigned int ix=0;ix<4;++ix)
-    {
-      if(ix==0){title="pt of Z for all masses ";}
-      else if(ix==1){title="pt of Z for mass 40-80 GeV";}
-      else if(ix==2){title="pt of Z for mass 80-100 GeV";}
-      else if(ix==3){title="pt of Z for mass 100- GeV";}
-      _ptZ[ix].topdrawOutput(outfile,Frame,"BLACK",title);
-      _ptZ[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
-      if(ix==0){title="pt of Wp for all masses ";}
-      else if(ix==1){title="pt of Wp for mass 40-80 GeV";}
-      else if(ix==2){title="pt of Wp for mass 80-100 GeV";}
-      else if(ix==3){title="pt of Wp for mass 100- GeV";}
-      _ptWp[ix].topdrawOutput(outfile,Frame,"BLACK",title);
-      _ptWp[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
-      if(ix==0){title="pt of Wm for all masses ";}
-      else if(ix==1){title="pt of Wm for mass 40-80 GeV";}
-      else if(ix==2){title="pt of Wm for mass 80-100 GeV";}
-      else if(ix==3){title="pt of Wm for mass 100- GeV";}
-      _ptWm[ix].topdrawOutput(outfile,Frame,"BLACK",title);
-      _ptWm[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
-    }
+  for(unsigned int ix=0;ix<4;++ix) {
+    if(ix==0){title="pt of Z for all masses ";}
+    else if(ix==1){title="pt of Z for mass 40-80 GeV";}
+    else if(ix==2){title="pt of Z for mass 80-100 GeV";}
+    else if(ix==3){title="pt of Z for mass 100- GeV";}
+    _ptZ[ix].topdrawOutput(outfile,Frame,"BLACK",title);
+    _ptZ[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
+    if(ix==0){title="pt of Wp for all masses ";}
+    else if(ix==1){title="pt of Wp for mass 40-80 GeV";}
+    else if(ix==2){title="pt of Wp for mass 80-100 GeV";}
+    else if(ix==3){title="pt of Wp for mass 100- GeV";}
+    _ptWp[ix].topdrawOutput(outfile,Frame,"BLACK",title);
+    _ptWp[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
+    if(ix==0){title="pt of Wm for all masses ";}
+    else if(ix==1){title="pt of Wm for mass 40-80 GeV";}
+    else if(ix==2){title="pt of Wm for mass 80-100 GeV";}
+    else if(ix==3){title="pt of Wm for mass 100- GeV";}
+    _ptWm[ix].topdrawOutput(outfile,Frame,"BLACK",title);
+    _ptWm[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
+  }
   _mZ.topdrawOutput(outfile,Frame,"BLACK","Mass of Z");
   _mZ.topdrawOutput(outfile,Frame|Ylog,"BLACK", "Mass of Z");
   _mWp.topdrawOutput(outfile,Frame,"BLACK","Mass of Wp");
