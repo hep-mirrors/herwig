@@ -4,17 +4,6 @@
 ##################################################
 
 ##################################################
-# Switch for soft underlying event.
-#
-# 'set' lines like this can be omitted if the 
-# default value is already okay.
-#
-# Any repository setting can be modified here
-##################################################
-cd /Defaults/Handlers/Hadronization/Cluster
-set stdCluHadHandler:SoftUnderlyingEvent On
-
-##################################################
 # Technical parameters for this run
 ##################################################
 cd /Defaults/Generators

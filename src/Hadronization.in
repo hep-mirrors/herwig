@@ -49,8 +49,8 @@ set stdCluHadHandler:LightClusterDecayer theLightClusterDecayer
 set stdCluHadHandler:ClusterDecayer theClusterDecayer
 set stdCluHadHandler:MinVirtuality2 0.1*GeV2
 set stdCluHadHandler:MaxDisplacement 1.0e-10*millimeter
-set stdCluHadHandler:SoftUnderlyingEvent On
-set stdCluHadHandler:UnderlyingEventHandler theUA5
+set stdCluHadHandler:SoftUnderlyingEvent Off
+set stdCluHadHandler:UnderlyingEventHandler NULL
 #
 set theClusterFissioner:HadronSelector theHadronSelector 
 set theLightClusterDecayer:HadronSelector theHadronSelector
