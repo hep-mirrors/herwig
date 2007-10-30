@@ -19,6 +19,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDF/BeamParticleData.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "HardVertex.h"
 
 using namespace Herwig;
@@ -351,6 +352,8 @@ double MEqq2gZ2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
 }
 
 void MEqq2gZ2ffNason::constructVertex(tSubProPtr sub) {
+  *_xwgt += _x;
+  *_vwgt += _v;
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -415,19 +418,21 @@ double MEqq2gZ2ffNason::NLOweight() const {
   double lowgt = 1.+aS/pi*CF;
   // + radiation and collinear pieces
   double z  = xbp+(1.-xbp)*_x;
-  double xp = xbp/z;
-  double oldq = beam[0]->pdf()->xfx(beam[0],in[0],scale(),xbp)/xbp;
-  if(oldq<eps) return 0.;
-  double newq = beam[0]->pdf()->xfx(beam[0],in[0],scale(),xp )/xp;
-  double newg = beam[0]->pdf()->xfx(beam[0],gluon,scale(),xp )/xp;
   double vt = (1.-z)*_v; 
   double zlog = log(sqr(1.-z)/z);
+  // pdf values
+  double oldq = beam[0]->pdf()->xfx(beam[0],in[0],scale(),xbp)/xbp;
+  if(oldq<eps) return 0.;
+  double xp = xbp/z;
+  double rg   = beam[0]->pdf()->xfx(beam[0],gluon,scale(),xp )/xp/oldq;
+  double rq   = beam[0]->pdf()->xfx(beam[0],in[0],scale(),xp )/xp/oldq;
+  // weight
   double pwgt = 0.5*aS/pi*(1.-xbp)/z*
-    (2.*CF*(vt-(1.-z))     *newq/oldq
-     +  TR*(1.-z)*(vt+2.*z)*newg/oldq
-     +CF*(z*(2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
-	  (newq/oldq-z)*2./(1.-z)*zlog)
-     +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*newg/oldq);
+    (2.*CF*(vt-(1.-z))     *rq
+     +  TR*(1.-z)*(vt+2.*z)*rg
+     +CF*(z/(1.-xbp)*(sqr(pi)/3.-5.+2.*sqr(log(1.-xbp))+2.*Math::ReLi2(1.-xbp))
+	  +(1.-z-(1.+z)*zlog)*rq+(rq-z)*2./(1.-z)*zlog)
+     +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*rg);
   if(isnan(pwgt)||isinf(pwgt)) cerr << "testing + weight nan\n";
   int xbin = int(_x*100.);
   int vbin = int(_v*100.);
@@ -441,19 +446,21 @@ double MEqq2gZ2ffNason::NLOweight() const {
   }
   // - radiation and collinear pieces
   z  = xbm+(1.-xbm)*_x;
-  double xm = xbm/z;
-  oldq = beam[1]->pdf()->xfx(beam[1],in[1],scale(),xbm)/xbm;
-  if(oldq<eps) return 0.;
-  newq = beam[1]->pdf()->xfx(beam[1],in[1],scale(),xm )/xm;
-  newg = beam[1]->pdf()->xfx(beam[1],gluon,scale(),xm )/xm;
   vt = (1.-z)*_v;
   zlog = log(sqr(1.-z)/z);
+  // pdfs
+  oldq = beam[1]->pdf()->xfx(beam[1],in[1],scale(),xbm)/xbm;
+  if(oldq<eps) return 0.;
+  double xm = xbm/z;
+  rq   = beam[1]->pdf()->xfx(beam[1],in[1],scale(),xm )/xm/oldq;
+  rg   = beam[1]->pdf()->xfx(beam[1],gluon,scale(),xm )/xm/oldq;
+  // weight
   double nwgt = 0.5*aS/pi*(1.-xbm)/z*
-    (2.*CF*(vt-(1.-z))     *newq/oldq
-     +  TR*(1.-z)*(vt+2.*z)*newg/oldq
-     +CF*(z*(2.*sqr(pi)/3.-5.)+(1.-z-(1.+z)*zlog)*newq/oldq+
-	  (newq/oldq-z)*2./(1.-z)*zlog)
-     +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*newg/oldq);
+    (2.*CF*(vt-(1.-z))     *rq
+     +  TR*(1.-z)*(vt+2.*z)*rg
+     +CF*(z/(1.-xbm)*(sqr(pi)/3.-5.+2.*sqr(log(1.-xbm))+2.*Math::ReLi2(1.-xbm))
+	  +(1.-z-(1.+z)*zlog)*rq+(rq-z)*2./(1.-z)*zlog)
+     +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*rg);
   if(isnan(nwgt)||isinf(nwgt)) cerr << "testing - weight nan\n";
   if(nwgt>0.) {
     _posxn[xbin] += nwgt;
@@ -465,8 +472,8 @@ double MEqq2gZ2ffNason::NLOweight() const {
   }
   double wgt = lowgt+pwgt+nwgt;
   // trick to try and make less negative events
-  if(_x>=eps) {
-    wgt += _a*(1./pow(_x,_p)-(1.-pow(eps,1.-_p))/(1.-_p)/(1.-eps));
+  if(1.-_x>=eps) {
+    wgt += _a*(1./pow(1.-_x,_p)-(1.-pow(eps,1.-_p))/(1.-_p)/(1.-eps));
   }
   if(xbin>99||vbin>99) cerr << "testing hist error\n";
   if(wgt>0.) {
@@ -490,6 +497,13 @@ void MEqq2gZ2ffNason::dofinish() {
   ME2to2Base::dofinish();
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
+  using namespace HistogramOptions;
+  _xwgt->topdrawOutput(outfile,Frame,
+		       "RED",
+		       "x wgt distribution");
+  _vwgt->topdrawOutput(outfile,Frame,
+		       "RED",
+		       "v wgt distribution");
   outfile << "NEW FRAME\n";
   outfile << "TITLE TOP \"weight for x distribution +ve weight events\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
@@ -715,4 +729,10 @@ void MEqq2gZ2ffNason::dofinish() {
   }
   outfile << "HIST\n";
   outfile.close();
+}
+
+void MEqq2gZ2ffNason::doinitrun() {
+  ME2to2Base::doinitrun();
+  _xwgt = new_ptr(Histogram(0.,1.  ,200));
+  _vwgt = new_ptr(Histogram(0.,1.  ,200));
 }

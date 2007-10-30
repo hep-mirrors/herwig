@@ -10,7 +10,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "Herwig++/Utilities/Statistic.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "MEqq2gZ2ffNason.fh"
 
 namespace Herwig {
@@ -185,6 +185,12 @@ protected:
   virtual void doinit() throw(InitException);
 
   /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
+
+  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
@@ -303,6 +309,12 @@ private:
   mutable vector<Statistic> _posx,_negx,_posv,_negv;
   mutable vector<Statistic> _posxp,_negxp,_posvp,_negvp;
   mutable vector<Statistic> _posxn,_negxn,_posvn,_negvn;
+
+  /**
+   *  Histograms
+   */
+  HistogramPtr _xwgt,_vwgt;
+
 };
 
 }
