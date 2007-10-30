@@ -46,6 +46,11 @@ set RField:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
 set RField:LowerBorder 30.0
 set RField:UpperBorder 50.0
 
+# set the directory where the data files are stored. The files are
+# in $(Herwigsrc)/Analysis/TVTUEdata/
+# Default is the directory where you run Herwig++
+#set RField:Dir "/foo/dir"
+
 insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/RField
 
 
