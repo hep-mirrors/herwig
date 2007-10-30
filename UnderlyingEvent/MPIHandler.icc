@@ -23,9 +23,8 @@ MPIHandler::subProcesses() {
   return theSubProcesses;
 }
 
-inline bool MPIHandler::Jmueo() const {
-  if(theJmueo) return true;
-  else return false;
+inline int MPIHandler::Jmueo() const {
+  return theJmueo;
 }
 
 inline long MPIHandler::maxLoop() const {

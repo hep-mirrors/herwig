@@ -221,9 +221,9 @@ public:
   inline long maxLoop() const;
 
   /**
-   * Return true if Jmueo = 1.
+   * Return theJmueo.
    */
-  inline bool Jmueo() const;
+  inline int Jmueo() const;
 
 protected:
 

@@ -5,7 +5,7 @@
 ##################################################
 
 ##################################################
-# Switches for hard underlying event: all left on default
+# Switches for hard underlying event
 ##################################################
 cd /Defaults/Handlers/Shower 
 # Switch for JIMMY
@@ -19,7 +19,9 @@ cd /Defaults/Handlers/UnderlyingEvent
 # set the hadron radius in GeV^2
 #set MPIHandler:Radius 0.71
 # set the algorithm
-#set MPIHandler:Jmueo 1 
+
+# needs to be changed because signal is same than UE (QCD)
+set MPIHandler:Jmueo 1 
 
 ##################################################
 # Change hard process ME's

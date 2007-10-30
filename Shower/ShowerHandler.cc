@@ -290,7 +290,7 @@ void ShowerHandler::cascade() {
     //check if the same process is used for the signal and UE
     //For LesHouches event files the MEBasePtr should be 0
     //That leads to the correct behaviour as long as no QCD2->2 event is read in
-    if(sub->handler() == subProcess()->handler() && theMPIHandler->Jmueo() ){
+    if( theMPIHandler->Jmueo() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());

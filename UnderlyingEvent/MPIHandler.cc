@@ -40,7 +40,7 @@ using namespace Herwig;
 typedef Ptr< MPISampler >::transient_pointer tMPISamplerPtr;
 
 MPIHandler::MPIHandler()
-  : theBinStrategy(2), theJmueo(1) {}
+  : theBinStrategy(2), theJmueo(2) {}
 
 MPIHandler::MPIHandler(const MPIHandler & x)
   : Interfaced(x), LastXCombInfo<>(x), 
@@ -418,7 +418,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       Eikonalization integrand(this, *it, i);
       
       if(i>10) bmax = 10.0*sqrt(millibarn);
-      if(theJmueo){
+      if(theJmueo > 0){
 	P = integrator.value(integrand, Length(), bmax)/(*it);
       }else{
 	P = integrator.value(integrand, Length(), bmax) /
@@ -497,7 +497,7 @@ Length Eikonalization::operator() (Length b) const {
   //P_n*sigma. Described in MPIHandler.h
   if(theoption > 0){
     n=theoption;
-    if(theHandler->theJmueo)
+    if(theHandler->theJmueo > 0)
       return fac / theHandler->factorial(n-1) * pow(Ab*sigma, double(n)) 
 	* exp(-Ab*sigma);
     else
@@ -564,9 +564,10 @@ void MPIHandler::Init() {
   static Switch<MPIHandler,int> interfaceJmueo
     ("Jmueo",
      "This option determines in which mode the UE algorithm runs. "
-     "0 for UE under low pt jets, 1 for efficient generation "
+     "0 for UE under low pt jets, 1 for UE(jets) under highpt jets, "
+     "2 for efficient generation "
      "of UE activity with a rare signal process.",
-     &MPIHandler::theJmueo, 1, false, false);
+     &MPIHandler::theJmueo, 2, false, false);
 
   static SwitchOption interfaceJmueo0
     (interfaceJmueo,
@@ -576,9 +577,17 @@ void MPIHandler::Init() {
 
   static SwitchOption interfaceJmueo1
     (interfaceJmueo,
-     "rare",
-     "Signal process has a much smaller cross section than UE.",
+     "highpt",
+     "Signal process has a much smaller cross section "
+     "than UE, but the same ME's",
      1);
+
+  static SwitchOption interfaceJmueo2
+    (interfaceJmueo,
+     "rare",
+     "Signal process has a much smaller cross section "
+     "than UE and is a different process.",
+     2);
 
   static Switch<MPIHandler,int> interfaceBinStrategy
     ("BinStrategy",

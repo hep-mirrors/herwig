@@ -55,4 +55,7 @@ set MPIHandler:Cuts UECuts
 # set the hadron radius
 set MPIHandler:Radius 0.71
 # set the algorithm
-set MPIHandler:Jmueo 1
+# 0 = UE and signal with comparable cross section
+# 1 = signal cross section much smaller than UE xsec (same processes)
+# 2 = signal cross section much smaller than UE xsec (different processes)
+set MPIHandler:Jmueo 2
