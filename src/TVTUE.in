@@ -49,7 +49,7 @@ set RField:UpperBorder 50.0
 # set the directory where the data files are stored. The files are
 # in $(Herwigsrc)/Analysis/TVTUEdata/
 # Default is the directory where you run Herwig++
-#set RField:Dir "/foo/dir"
+#set RField:Dir /foo/dir
 
 insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/RField
 
