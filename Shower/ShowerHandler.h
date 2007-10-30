@@ -329,8 +329,25 @@ private:
   static ShowerHandler * theHandler;
 
 public:
-  
+
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to energy conservation issues of additional scatters
+   */
   struct ExtraScatterVeto {};
+
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to fact that the Shower has been invoked more than
+   * a defined threshold on a certain configuration
+   */
+  struct ShowerTriesVeto {
+    /** variable to store the number of attempts */
+    int theTries;
+
+    /** constructor */
+    ShowerTriesVeto(int tries){theTries = tries;}
+  };
 
   /**
    *  pointer to "this", the current ShowerHandler.

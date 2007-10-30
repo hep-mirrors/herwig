@@ -355,10 +355,8 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
   }
   while(!_model->kinematicsReconstructor()->reconstructHardJets(hard,_intrinsic)&&
 	_maxtry>++ntry);
-  if(_maxtry==ntry) throw Exception() << "Failed to generate the shower after "
-				      << ntry 
-				      << " attempts in Evolver::showerHardProcess()"
-				      << Exception::eventerror;
+  if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
+
   _currenttree->hasShowered(true);
 }
 

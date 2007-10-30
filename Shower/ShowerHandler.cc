@@ -237,7 +237,14 @@ void ShowerHandler::cascade() {
   sub = eventHandler()->currentCollision()->primarySubProcess();
 
   //first shower the hard process
-  incs = cascade(sub);
+  try{
+    incs = cascade(sub);
+  }catch(ShowerTriesVeto &veto){
+    throw Exception() << "Failed to generate the shower after "
+                      << veto.theTries
+                      << " attempts in Evolver::showerHardProcess()"
+                      << Exception::eventerror;
+  }
 
   PBIPair incbins = make_pair(lastExtractor()->partonBinInstance(incs.first),
 			      lastExtractor()->partonBinInstance(incs.second));
@@ -302,14 +309,20 @@ void ShowerHandler::cascade() {
   }
   
   for( pit=procs.begin(); pit!=procs.end(); ++pit ){
-    // cerr << "scale: " << sqrt(-pit->first/GeV2) << endl;
     //add to the EventHandler's list
     newStep()->addSubProcess(pit->second);
-    //start the Shower
-    incs = cascade(pit->second);
 
     try{
-      //cerr << "do extra scatter forced splitting\n";
+      //Run the Shower. If not possible veto the scatter
+      incs = cascade(pit->second);
+    }catch(ShowerTriesVeto){
+
+      newStep()->removeSubProcess(pit->second);
+      //discard this extra scattering, but try the next one
+      continue;      
+    }
+
+    try{
       //do the forcedSplitting
       theRemDec->doSplit(incs, false);
 
@@ -318,7 +331,6 @@ void ShowerHandler::cascade() {
 	  (remnants.second->momentum() - incs.second->momentum()).e() < 0*MeV )
 	throw ExtraScatterVeto();
     }catch(ExtraScatterVeto){
-      //cerr << "remove scatter\n";
       //remove all particles associated with the subprocess
       newStep()->removeParticle(incs.first);
       newStep()->removeParticle(incs.second);
