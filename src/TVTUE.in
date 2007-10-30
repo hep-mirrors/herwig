@@ -1,0 +1,69 @@
+##################################################
+# File to run R.Fields TVT analyses [Phys.Rev.D65:092002,2002]
+# writes the Chi^2 values to the log file: TVTUEcheck.log 
+# usage: Herwig++ read TVTUE.in
+##################################################
+
+##################################################
+# Switches for hard underlying event: all left on default
+##################################################
+cd /Defaults/Handlers/Shower 
+# Switch for JIMMY
+#set stdShowerHandler:MPI 0
+
+cd /Defaults/Handlers/UnderlyingEvent
+#set KtCut:MinKT 2.5
+# This should always be 2*MinKT!!
+#set UECuts:MHatMin 5.0
+
+# set the hadron radius in GeV^2
+#set MPIHandler:Radius 0.71
+# set the algorithm
+#set MPIHandler:Jmueo 1 
+
+##################################################
+# Change hard process ME's
+##################################################
+cd /Defaults/
+erase Handlers/SimpleQCD:MatrixElements[0]
+insert Handlers/SimpleQCD:MatrixElements[0] MatrixElements/MEQCD2to2
+
+##################################################
+# Cuts on the hard process
+##################################################
+cd /Defaults/Generators
+set JetKtCut:MinKT 20.0*GeV
+set LeptonKtCut:MinKT 50.0*GeV
+set PhotonKtCut:MinKT 20.0*GeV
+
+##################################################
+# Analysis Handlers
+##################################################
+cd /Defaults/Handlers/Analysis
+#create Herwig::GraphvizPlot Plot
+create Herwig::RFieldAnalysis RField HwLEPJetAnalysis.so
+set RField:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
+set RField:LowerBorder 30.0
+set RField:UpperBorder 50.0
+
+insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/RField
+
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Defaults/Generators
+set LHCGenerator:NumberOfEvents 1000000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 1000000
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+set LHCGenerator:EventHandler:BeamB /Defaults/Particles/pbar-
+
+saverun TVTUEcheck LHCGenerator
