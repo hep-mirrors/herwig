@@ -20,8 +20,16 @@ namespace Herwig {
  * capable of doing my sort of analysis
  */
   struct DataContainer{
-    double low, up, content, error;
+    /** lower bin border */
+    double low;
+    /** upper bin border */
+    double up;
+    /** bin content */
+    double content;
+    /** bin error */
+    double error;
 
+    /** constructor */
     DataContainer(){
       low = 0.0;
       up  = 0.0;
@@ -225,31 +233,31 @@ private:
      */
     ShowerHandlerPtr theShowerHandler;
 
-  //lower border of chi^2 comparison to data
+  /** lower border of chi^2 comparison to data */
   int thelow;
 
-  //upper border of chi^2 comparison to data
+  /** upper border of chi^2 comparison to data */
   int theup;
 
-  //Dir where Data files are stored
+  /** dir where Data files are stored */
   string theDir;
 
-  //  N_ch in towards region
+  /**  N_ch in towards region */
   vector<Statistic> theNTow;
 
-  //  N_ch in transverse region
+  /**  N_ch in transverse region */
   vector<Statistic> theNTrans;
 
-  //  N_ch in away region
+  /**  N_ch in away region */
   vector<Statistic> theNAway;
 
-  //  p_Tsum in towards region
+  /**  p_Tsum in towards region */
   vector<Statistic> thePtsumTow;
 
-  //  p_Tsum in transverse region
+  /**  p_Tsum in transverse region */
   vector<Statistic> thePtsumTrans;
 
-  //  p_Tsum in away region
+  /**  p_Tsum in away region */
   vector<Statistic> thePtsumAway;
 
 };
