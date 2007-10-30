@@ -1,8 +1,5 @@
 ################################################
 # Set up the handler for the underlying event. 
-# 
-# UA5 is currently the only choice; 
-# it requires the default hadronization model.
 ################################################
 
 mkdir /Defaults/Handlers/UnderlyingEvent
@@ -23,6 +20,8 @@ insert UECuts:OneCuts[0] KtCut
 #########################
 
 ########subprocesses#####
+create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEFast.so
+
 create ThePEG::SubProcessHandler SimpleQCD
 
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ff
@@ -31,7 +30,7 @@ create ThePEG::SubProcessHandler SimpleQCD
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaJet
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggs
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggsJet
-insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEQCD2to2
+insert SimpleQCD:MatrixElements[0] MEQCD2to2Fast
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHeavyQuark
 set SimpleQCD:PartonExtractor /Defaults/Handlers/QCDExtractor
 #########################
