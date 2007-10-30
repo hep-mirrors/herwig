@@ -1,18 +1,9 @@
 // -*- C++ -*-
-#ifndef _HERWIG_RUN_H_
-#define _HERWIG_RUN_H_
+#ifndef HERWIG_RUN_H_
+#define HERWIG_RUN_H_
 
+#include <ThePEG/EventRecord/Step.h>
 #include <ThePEG/Repository/EventGenerator.h>
-#include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/PDT/StandardMatchers.h>
-#include <ThePEG/PDT/DummyDecayer.h>
-#include <ThePEG/Utilities/Debug.h>
-#include "Herwig++/Utilities/HwDebug.h"
-#include <ThePEG/Utilities/Timer.h>
-#include <ThePEG/Utilities/DynamicLoader.h>
-#include <ThePEG/Utilities/Exception.h>
-#include <ThePEG/EventRecord/Event.h>
-#include <ThePEG/Repository/Repository.h>
 #include <iostream>
 
 namespace Herwig {
@@ -44,11 +35,6 @@ public:
    * @param argv string
    */
   HerwigRun(int argc, char **argv);
-
-  /**
-   *  Destructor
-   */
-  ~HerwigRun();
   //@}
   
   /**
@@ -167,13 +153,6 @@ public:
   ThePEG::ParticleSet getOutgoing(int step = -1, 
 				  ThePEG::EventPtr e = ThePEG::EventPtr());
   //@}
-
-private:
-
-  /**
-   *  default constructor is private to ensure arguements are passed
-   */
-  HerwigRun();
 
 private:
 

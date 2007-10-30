@@ -1,6 +1,7 @@
 SUBDIRS = Histogram2 .
 noinst_LTLIBRARIES = libHwUtils.la
 libHwUtils_la_LIBADD=Histogram2/libHwHistogram2.la
+libHwUtils_la_CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\""
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
 HerwigRun.cc HerwigRun.h \

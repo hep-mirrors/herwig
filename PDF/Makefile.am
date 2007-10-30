@@ -3,8 +3,8 @@ pkglib_LTLIBRARIES += HwMRST.la
 HwMRST_la_SOURCES = \
 MRST.cc MRST.h MRST.icc \
 PartonExtractor.h PartonExtractor.icc PartonExtractor.cc PartonExtractor.fh
-# add this to produce tests of the PDFs
-#HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
+## add this to produce tests of the PDFs
+## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
 HwMRST_la_LDFLAGS = -module -version-info 2:0:0
 
 EXTRA_DIST = mrst

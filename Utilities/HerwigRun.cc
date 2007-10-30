@@ -1,6 +1,11 @@
 #include "HerwigRun.h"
+#include "HerwigVersion.h"
+#include "HwDebug.h"
+#include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/SystemUtils.h>
 #include <ThePEG/Utilities/StringUtils.h>
+#include <ThePEG/Repository/Repository.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -12,15 +17,11 @@ const string usage = " init|read|run "
                    "[-L first-load-path] [-r repo-file] "
                    "[-i initialization file] [run-file]\n";
 
-HerwigRun::HerwigRun() {}
-
-HerwigRun::~HerwigRun() {}
-
 HerwigRun::HerwigRun(int argc, char **argv) 
 : N(-1),
   ngen(0),
   seed(0),
-  repo("HerwigDefaults.rpo"),
+  repo(),
   egCreated(false), 
   Status(UNKNOWN), 
   isInitialized(false),
@@ -82,13 +83,19 @@ HerwigRun::HerwigRun(int argc, char **argv)
     breakThePEG();
     {
       HoldFlag<> setup(InterfaceBase::NoReadOnly);
-      if ( repoin.empty() ) repoin = "HerwigDefaults.in";
-      ifstream is(repoin.c_str());
-      Repository::read(is, cout);
+      Repository::read(repoin, cout);
       Repository::update();
     }
+    if ( repo.empty() )
+      repo = "HerwigDefaults.rpo";
     Repository::save(repo);
-  } else if(Status == READ) {
+  } else if (Status == READ) {
+    repo = "HerwigDefaults.rpo";
+    ifstream test(repo.c_str());
+    if (!test) {
+      repo = HerwigVersion::pkgdatadir + "/HerwigDefaults.rpo";
+    }
+    test.close();
     Repository::load(repo);
     breakThePEG();
     if ( run.size() && run != "-" ) {

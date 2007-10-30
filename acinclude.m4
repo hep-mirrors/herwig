@@ -417,7 +417,7 @@ if test -f "${HERWIG_PDF_DEFAULT}"; then
 	localPDFneeded=false
 else
 	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_DEFAULT=../PDF/mrst/1998/lo05a.dat
+	HERWIG_PDF_DEFAULT=PDF/mrst/1998/lo05a.dat
 	localPDFneeded=true
 fi
 AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])

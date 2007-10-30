@@ -437,12 +437,10 @@ void MRST::initialize(bool reread) {
   }
 
   if(reread) {
-     ifstream datafile;
-     datafile.open(_file.c_str());
-
-     if(datafile.bad()) throw Exception() << "Could not open file " << _file 
-					  << "in MRST::initialize()"
-					  << Exception::runerror;
+    ifstream datafile(_file.c_str());
+    if(!datafile) throw Exception() << "Could not open file '" << _file 
+				    << "' in MRST::initialize()"
+				    << Exception::runerror;
 
      for(int nn=1; nn<nx; nn++) {
        for(int mm=1; mm<=nq; mm++) {

@@ -9,7 +9,7 @@ namespace Herwig {
      * The version string
      */
     static std::string versionstring;
-
+    static std::string pkgdatadir;
   };
 
 }

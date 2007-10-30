@@ -2,9 +2,8 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT([Herwig++],[SVN],[http://projects.hepforge.org/herwig/],[Herwig++])
-AC_CONFIG_AUX_DIR([Config])
-
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
+AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_HEADERS([Config/config.h])
 
 AC_CANONICAL_HOST
@@ -128,7 +127,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		lib/Makefile
 		include/Makefile
 		src/Makefile
-		src/PDF.in
+		src/defaults/Makefile
 		src/herwig-config
 		Doc/Makefile
 		Doc/HerwigDefaults.in
