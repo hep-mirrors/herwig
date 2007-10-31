@@ -20,6 +20,7 @@
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::SpinorWaveFunction;
@@ -127,7 +128,12 @@ double MEvv2ff::me2() const {
   for(DVector::size_type ix = 0; ix < ndiags; ++ix)
     save[ix] = identFact*me[ix]/256.;
   meInfo(save);
-  full_me *= identFact/256; 
+  full_me *= identFact/256;
+
+#ifndef NDEBUG 
+  if( debugME() ) debug(full_me);
+#endif
+
   return full_me;
 }
 
@@ -199,3 +205,31 @@ void MEvv2ff::Init() {
 
 }
 
+void MEvv2ff::debug(double me2) const {
+  if( !generator()->logfile().is_open() ) return;
+  if( mePartonData()[0]->id() != 21 || mePartonData()[1]->id() != 21 ||
+      mePartonData()[2]->id() != 1000021 || mePartonData()[3]->id() != 1000021 ) 
+    return;
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  int Nc = sm->Nc();
+  Energy2 s(sHat());
+  Energy2 m3s = meMomenta()[2].m2();
+  Energy2 m4s = meMomenta()[3].m2();
+  Energy4 spt2 = uHat()*tHat() - m3s*m4s;
+  Energy2 t3(tHat() - m3s), u4(uHat() - m4s);
+    
+  double analytic = gs4*sqr(Nc)*u4*t3*
+    ( sqr(u4) + sqr(t3) + 4.*m3s*s*spt2/u4/t3 ) * 
+    ( 1./sqr(s*t3) + 1./sqr(s*u4) + 1./sqr(u4*t3) )/2./(Nc*Nc - 1.);
+  double diff = abs(analytic - me2);
+  if( diff > 1e-8 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << ","
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff << '\n';
+  }
+
+}

@@ -13,6 +13,7 @@
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "HardVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -94,6 +95,11 @@ double MEff2ff::me2() const {
       << "MEff2ff::me2() - Cannot find correct function to deal with process " 
       << ina->PDGName() << "," << inb->PDGName() << "->" << outa->PDGName() 
       << "," << outb->PDGName() << "\n";
+
+#ifndef NDEBUG
+  if( debugME() ) debug(full_me);
+#endif
+
   return full_me;
 }
 
@@ -193,7 +199,6 @@ MEff2ff::ffb2ffbHeME(SpinorVector & fin, SpinorBarVector & fbin,
     save[ix] = 0.25*identfact*colfact*me[ix];
   meInfo(save);
   me2 *= 0.25*identfact*colfact;
-  
   return prodME;
 }
 
@@ -544,7 +549,7 @@ MEff2ff::ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin,
   for(DVector::size_type ix = 0; ix < ndiags; ++ix) 
     save[ix] = 0.25*identfact*colfact*me[ix]; 
   meInfo(save); 
-  me2 *= 0.25*identfact*colfact; 
+  me2 *= 0.25*identfact*colfact;
   return prodME;
 }
 
@@ -754,4 +759,48 @@ void MEff2ff::Init() {
     ("This is the implementation of the matrix element for fermion-"
      "antifermion -> fermion-antifermion.");
 
+}
+
+void MEff2ff::debug(double me2) const {
+  if( !generator()->logfile().is_open() ) return;
+  if( mePartonData()[0]->id() != 2 ||  
+      mePartonData()[1]->id() != -2 ||
+      mePartonData()[2]->id() != 1000021 ||
+      mePartonData()[3]->id() != 1000021 ) return; 
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  int Nc = sm->Nc();
+  double Cf = (sqr(Nc) - 1.)/2./Nc;
+  Energy2 mgo2 = meMomenta()[3].m2();
+  Energy2 muL2 = sqr(getParticleData(1000002)->mass());
+  Energy2 deltaL = muL2 - mgo2;
+  Energy2 muR2 = sqr(getParticleData(2000002)->mass());
+  Energy2 deltaR = muR2 - mgo2;
+  Energy2 s(sHat());
+  Energy2 m3s = meMomenta()[2].m2();
+  Energy2 m4s = meMomenta()[3].m2();
+  Energy4 spt2 = uHat()*tHat() - m3s*m4s;
+  Energy2 t3(tHat() - m3s), u4(uHat() - m4s);
+
+  double Cl = 2.*spt2*( (u4*u4 - deltaL*deltaL) + (t3*t3 - deltaL*deltaL)
+			- (s*s/Nc/Nc) )/s/s/(u4 - deltaL)/(t3 - deltaL);
+  Cl += deltaL*deltaL*( (1./sqr(t3 - deltaL)) + (1./sqr(u4 - deltaL))
+			- ( sqr( (1./(t3 - deltaL)) - 
+				 (1./(u4 - deltaL)) )/Nc/Nc ) );
+
+  double Cr = 2.*spt2*( (u4*u4 - deltaR*deltaR) + (t3*t3 - deltaR*deltaR)
+			- (s*s/Nc/Nc) )/s/s/(u4 - deltaR)/(t3 - deltaR);
+  Cr += deltaR*deltaR*( (1./sqr(t3 - deltaR)) + (1./sqr(u4 - deltaR))
+			- ( sqr( (1./(t3 - deltaR)) 
+				 - (1./(u4 - deltaR)) )/Nc/Nc ) );
+
+  double diff = abs( gs4*Cf*(Cl + Cr)/4. - me2 );
+  if( diff  > 1e-8 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << ","
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff  << '\n';
+  }
 }

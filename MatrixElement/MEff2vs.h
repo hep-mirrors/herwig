@@ -229,14 +229,6 @@ struct ClassTraits<Herwig::MEff2vs>
   : public ClassTraitsBase<Herwig::MEff2vs> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEff2vs"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEff2vs is implemented. It may also include several, space-separated,
-   * libraries if the class MEff2vs depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

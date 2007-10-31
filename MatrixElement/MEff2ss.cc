@@ -14,6 +14,8 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::SpinorWaveFunction;
@@ -87,13 +89,18 @@ double MEff2ss::me2() const {
   }
   const double identFact = mePartonData()[2]->id() == mePartonData()[3]->id() 
     ? 0.5 : 1;
-  const double colourAvg = mePartonData()[0]->iColour() == PDT::Colour3 
-    ? 1./9. : 1.;
+  int cola = mePartonData()[0]->iColour();
+  const double colourAvg = ( abs(cola) == 3 ) ? 1./9. : 1.;
   DVector save(ndiags);
   for(DVector::size_type ix = 0; ix < ndiags; ++ix)
     save[ix] = 0.25*identFact*colourAvg*me[ix];
   meInfo(save);
   full_me *= 0.25*identFact*colourAvg;
+ 
+#ifndef NDEBUG
+  if( debugME() ) debug(full_me);
+#endif
+  
   return full_me;
 }
 
@@ -176,3 +183,69 @@ void MEff2ss::Init() {
 
 }
 
+void MEff2ss::debug(double me2) const {
+  if( !generator()->logfile().is_open() ) return;
+  long id1 = mePartonData()[0]->id();
+  long id2 = mePartonData()[1]->id();
+  long id3 = mePartonData()[2]->id();
+  long id4 = mePartonData()[3]->id();
+  if( (abs(id1) != 1 && abs(id1) != 2) || (abs(id2) != 1 && abs(id2) != 2) ||
+      ( abs(id3) != 1000001 && abs(id3) != 1000002 && 
+        abs(id3) != 2000001 && abs(id3) != 2000002 ) || 
+      ( abs(id4) != 1000001 && abs(id4) != 1000002  &&
+	abs(id4) != 2000001 && abs(id4) != 2000002 ) ) return;
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  int Nc = sm->Nc();
+  double Cf = (sqr(Nc) - 1)/2./Nc;
+  Energy2 s(sHat());
+  Energy2 mgos = sqr( getParticleData(ParticleID::SUSY_g)->mass());
+  Energy4 spt2 = uHat()*tHat() - meMomenta()[2].m2()*meMomenta()[3].m2();
+  Energy2 tgl(tHat() - mgos), ugl(uHat() - mgos);
+  unsigned int alpha = abs(id3)/1000000;
+  unsigned int beta = abs(id4)/1000000;
+  bool iflav = ( abs(id1) == abs(id2) );
+  unsigned int oflav = ( abs(id3) - abs(id1) ) % 10;
+  
+  double analytic(0.);
+  if( alpha != beta ) {
+    if( ( id1 > 0 && id2 > 0) ||
+	( id1 < 0 && id2 < 0) ) { 
+      analytic = spt2/sqr(tgl);
+      if( iflav ) analytic += spt2/sqr(ugl);
+    }
+    else {
+      analytic = s*mgos/sqr(tgl);
+    }
+  }
+  else {
+    if( oflav != 0 ) {
+      analytic = 2.*spt2/sqr(s);
+    }
+    else if( ( id1 > 0 && id2 > 0) ||
+	     ( id1 < 0 && id2 < 0) ) {
+      analytic = s*mgos/sqr(tgl);
+      if( iflav ) {
+	analytic += s*mgos/sqr(ugl) - 2.*s*mgos/Nc/tgl/ugl;
+      }
+      analytic /= ( iflav ? 2. : 1.);
+    }
+    else {
+      analytic = spt2/sqr(tgl);
+      if( iflav ) {
+	analytic += 2.*spt2/sqr(s) - 2.*spt2/Nc/s/tgl;
+      }
+    }
+  }
+  analytic *= gs4*Cf/2./Nc;
+  double diff = abs(analytic - me2);
+  if( diff > 1e-8 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << "," 	
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff << '\n';
+  }
+    
+}

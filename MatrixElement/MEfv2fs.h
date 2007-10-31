@@ -116,7 +116,16 @@ private:
 				     const ScalarWaveFunction & scaOut,
 				     double & full_me) const;
   //@}
-  
+
+protected:
+
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -223,14 +232,6 @@ struct ClassTraits<Herwig::MEfv2fs>
   : public ClassTraitsBase<Herwig::MEfv2fs> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEfv2fs"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEfv2fs is implemented. It may also include several, space-separated,
-   * libraries if the class MEfv2fs depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libGeneralHardME.so"; }
 };
 
 /** @endcond */

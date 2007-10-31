@@ -63,6 +63,15 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+protected:
+
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -177,14 +186,6 @@ struct ClassTraits<Herwig::MEff2ss>
   : public ClassTraitsBase<Herwig::MEff2ss> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEff2ss"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEff2ss is implemented. It may also include several, space-separated,
-   * libraries if the class MEff2ss depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

@@ -14,12 +14,10 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include <numeric>
 
 using namespace Herwig;
-
-
-
 using ThePEG::Helicity::SpinfoPtr;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
@@ -84,6 +82,11 @@ double MEfv2fs::me2() const {
     }
     fbv2fsHeME(spbIn, vecIn, spOut, scaOut, fullme);
   }
+
+#ifndef NDEBUG
+  if( debugME() ) debug(fullme);
+#endif
+
   return fullme;
 }
 
@@ -175,9 +178,10 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
   const vector<vector<double> > cfactors = getColourFactors();
   vector<double> me(ndiags, 0.);
   vector<Complex> diag(ndiags, Complex(0.));
+
   fullme = 0.;
   //intermediate wave functions
-  SpinorWaveFunction interF; ScalarWaveFunction interS;
+  ScalarWaveFunction interS;
   SpinorBarWaveFunction interFB;
   //vertex pointers
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1Half,
@@ -348,4 +352,33 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
   }
   
 
+}
+
+void MEfv2fs::debug(double me2) const {
+  if( !generator()->logfile().is_open() ) return;
+  long id1 = abs(mePartonData()[0]->id());
+  long id4 = abs(mePartonData()[3]->id());
+  if( (id1 != 1 && id1 != 2) || mePartonData()[1]->id() != 21 ||
+      mePartonData()[2]->id() != 1000021 ||
+      (id4 != 1000001 && id4 != 1000002 &&  id4 != 2000001 && 
+       id4 != 2000002) ) return;
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  int Nc = sm->Nc();
+  Energy2 m3s = meMomenta()[2].m2();
+  Energy2 m4s = meMomenta()[3].m2();
+  //formula has vf->fs so swap t and u
+  Energy2 s(sHat()), t3(uHat() - m3s), u4(tHat() - m4s);
+  double analytic = -gs4*( u4 + 2.*(m4s - m3s)*(1. + m3s/t3 + m4s/u4) )*
+    ( sqr(u4) + sqr(s) - sqr(t3)/sqr(Nc) )/s/t3/u4/4.;
+  double diff = abs( analytic - me2);
+  if( diff > 1e-8 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << ","
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff << '\n';
+  }
+    
 }
