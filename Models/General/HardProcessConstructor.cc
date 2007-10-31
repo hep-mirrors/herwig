@@ -17,7 +17,7 @@
 using namespace Herwig;
 
 HardProcessConstructor::HardProcessConstructor() : 
-  theNout(0), theNv(0), theAllDiagrams(true), 
+  theNout(0), theNv(0), theAllDiagrams(true), theDebug(false),
   the33bto33b(4, DVector(4, 0.)),  the33bpto33bp(3, DVector(3, 0.)),
   the33bto88(2, DVector(4, 0.)), the88to88(2, DVector(4, 0.)) {
   //set-up colour factor matrices
@@ -161,6 +161,21 @@ void HardProcessConstructor::Init() {
      "Yes",
     "Include EW+QCD.",
     true);
+
+  static Switch<HardProcessConstructor,bool> interfaceDebugME
+    ("DebugME",
+     "Print comparison with analytical ME",
+     &HardProcessConstructor::theDebug, false, false, false);
+  static SwitchOption interfaceDebugMEYes
+    (interfaceDebugME,
+     "Yes",
+     "Print the debug information",
+     true);
+  static SwitchOption interfaceDebugMENo
+    (interfaceDebugME,
+     "No",
+     "Do not print the debug information",
+     false);
 }
 
 namespace {
@@ -486,6 +501,15 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
     return;
   }
 
+//   if( psc->iSpin() == psd->iSpin() ) {
+//     long id3(psc->id()), id4(psd->id());
+//     if( ( id3 > 0 && id4 > 0 ) || ( id3 < 0 && id4 < 0 ) ) {
+//       if( id4 < id3 ) swap(diag.outgoing.first, diag.outgoing.second);
+//       if(diag.channelType == HPDiagram::tChannel) 
+// 	diag.ordered.second = !diag.ordered.second;
+//     }
+//   }
+
 }
 
 void HardProcessConstructor::assignToCF(HPDiagram & diag) {
@@ -628,15 +652,7 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   string classname = MEClassname(extpart, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
       (generator()->preinitCreate(classname, objectname));
-  if(matrixElement) {
-    unsigned int ncf(0);
-    vector<DVector> cfactors = getColourFactors(extpart, ncf);
-    matrixElement->setProcessInfo(process, cfactors, ncf);
-    generator()->preinitInterface(theSubProcess, "MatrixElements", 
-				  theSubProcess->MEs().size(),
-				  "insert", matrixElement->fullName()); 
-  }
-  else 
+  if( !matrixElement ) {
     throw HardProcessConstructorError() 
       << "createMatrixElement - No matrix element object could be created for "
       << "the process " 
@@ -644,8 +660,16 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
       << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
       << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
       << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
-      << ".  No class for this spin-structure exists! \n"
+      << ".  Constructed class name: \"" << classname << "\""
       << Exception::warning;
+    return;
+  }
+  unsigned int ncf(0);
+  vector<DVector> cfactors = getColourFactors(extpart, ncf);
+  matrixElement->setProcessInfo(process, cfactors, ncf, theDebug);
+  generator()->preinitInterface(theSubProcess, "MatrixElements", 
+				  theSubProcess->MEs().size(),
+				  "insert", matrixElement->fullName()); 
 }
 
 vector<DVector> HardProcessConstructor::

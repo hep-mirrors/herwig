@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
 #include "Herwig++/MatrixElement/GeneralHardME.h"
 
 using namespace Herwig;
@@ -51,6 +52,20 @@ void ResonantProcessConstructor::Init() {
      &ResonantProcessConstructor::theOutgoing, -1, false, false, true, 
      false);
 
+  static Switch<ResonantProcessConstructor,bool> interfaceDebugME
+    ("DebugME",
+     "Print comparison with analytical ME",
+     &ResonantProcessConstructor::theDebug, false, false, false);
+  static SwitchOption interfaceDebugMEYes
+    (interfaceDebugME,
+     "Yes",
+     "Print the debug information",
+     true);
+  static SwitchOption interfaceDebugMENo
+    (interfaceDebugME,
+     "No",
+     "Do not print the debug information",
+     false);
 }
 
 void ResonantProcessConstructor::constructResonances() {
@@ -208,22 +223,23 @@ createMatrixElement(const HPDiagram & diag) const {
   string classname = MEClassname(extpart, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
     (generator()->preinitCreate(classname, objectname));
-  if(matrixElement) {
-    matrixElement->setProcessInfo(HPDVector(1, diag),
-				  colourFactor(extpart), 1);
-    generator()->preinitInterface(theSubProcess, "MatrixElements", 
-				  theSubProcess->MEs().size(),
-				  "insert", matrixElement->fullName()); 
-  }
-  else 
+  if( !matrixElement ) {
     throw RPConstructorError() 
       << "createMatrixElement - No matrix element object could be created for "
-      << "the process " << extpart[0]->PDGName() << "," 
-      << extpart[1]->PDGName() << "->" << extpart[2]->PDGName() 
-      << "," << extpart[3]->PDGName() << ".  No class for this spin-structure "
-      << "exists! \n"
+      << "the process " 
+      << extpart[0]->PDGName() << " " << extpart[0]->iSpin() << "," 
+      << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
+      << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
+      << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
+      << ".  Constructed class name: \"" << classname << "\""
       << Exception::warning;
-
+    return;
+  }
+  matrixElement->setProcessInfo(HPDVector(1, diag),
+				colourFactor(extpart), 1, theDebug);
+  generator()->preinitInterface(theSubProcess, "MatrixElements", 
+				theSubProcess->MEs().size(),
+				"insert", matrixElement->fullName()); 
 }
 
 string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
@@ -236,11 +252,10 @@ string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else
-      throw RPConstructorError() << "MEClassname() : Encountered an "
-				 << "unknown spin while constructing "
-				 << "MatrixElement classname " 
-				 << extpart[ix]->iSpin()
-				 << Exception::runerror;
+      throw RPConstructorError()
+	<< "MEClassname() : Encountered an unknown spin for "
+	<< extpart[ix]->PDGName() << " while constructing MatrixElement "
+	<< "classname " << extpart[ix]->iSpin() << Exception::warning;
   }
   objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2" 
     + extpart[2]->PDGName() + extpart[3]->PDGName();

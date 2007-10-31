@@ -41,7 +41,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralHardME();
+  GeneralHardME();
 
 public:
 
@@ -106,10 +106,14 @@ public:
    * will allow the diagrams to be created in the specific matrix element
    * @param factors
    * @param ncf Number of colour flows
+   * @param debug Whether to compare the numerical answer to an analytical
+   * formula (This is only stored for certain processes. It is intended
+   * for quick checks of the matrix elements).
    */
-  inline void setProcessInfo(const vector<HPDiagram> & process,
-			     const vector<DVector> & factors,
-			     const unsigned int ncf);
+  void setProcessInfo(const vector<HPDiagram> & process,
+		      const vector<DVector> & factors,
+		      const unsigned int ncf,
+		      bool debug);
 
 public:
 
@@ -136,6 +140,15 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function. This is to be overidden in an inheriting class.
+   * @param x The value of \f$ |\mathcal{M} |^2 \f$
+   */
+  virtual void debug(double x) const;  
 
 protected:
 
@@ -171,6 +184,11 @@ protected:
    * Access number of colour flows
    */
   inline const size_t numberOfFlows() const;
+
+  /**
+   * Whether to print the debug information 
+   */
+  inline bool debugME() const;
 
 private:
 
@@ -217,7 +235,11 @@ private:
    * The number of colourflows.
    */
   unsigned int theNcf;
-  
+
+  /**
+   * Whether to test the value of me2 against the analytical function
+   */
+  bool theDebug;
 };
 
   /** Exception class to indicate a problem has occurred with setting
@@ -247,14 +269,6 @@ struct ClassTraits<Herwig::GeneralHardME>
   : public ClassTraitsBase<Herwig::GeneralHardME> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::GeneralHardME"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * GeneralHardME is implemented. It may also include several, space-separated,
-   * libraries if the class GeneralHardME depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

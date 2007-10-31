@@ -105,10 +105,7 @@ template <>
 struct ClassTraits<Herwig::NBodyDecayConstructorBase>
   : public ClassTraitsBase<Herwig::NBodyDecayConstructorBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::NBodyDecayConstructorBase"; }      /** Return the name of the shared library be loaded to get
-   *  access to the NBodyDecayConstructorBase class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
+  static string className() { return "Herwig::NBodyDecayConstructorBase"; }
 };
 
 /** @endcond */

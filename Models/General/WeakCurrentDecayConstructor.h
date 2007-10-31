@@ -252,14 +252,6 @@ struct ClassTraits<Herwig::WeakCurrentDecayConstructor>
   : public ClassTraitsBase<Herwig::WeakCurrentDecayConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::WeakCurrentDecayConstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * WeakCurrentDecayConstructor is implemented. It may also include several, space-separated,
-   * libraries if the class WeakCurrentDecayConstructor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */

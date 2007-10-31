@@ -22,12 +22,25 @@ inline HPDiagram::HPDiagram(IDPair a, IDPair b)
 
 
 inline bool operator==(const HPDiagram & x, const HPDiagram & y) {
-  if( x.channelType == y.channelType && x.ordered == y.ordered && 
-      x.incoming == y.incoming && x.outgoing == y.outgoing ) {
-    if( (!y.intermediate && !x.intermediate) ||
-	( abs(y.intermediate->id()) == abs(x.intermediate->id()) ) )
+  if( x.channelType != y.channelType ) return false;
+  if( x.incoming == y.incoming && x.outgoing == y.outgoing &&
+      x.ordered == y.ordered ) {
+    if( !y.intermediate && !x.intermediate ) return true;
+    if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
       return true;
-  } 
+  }
+  //diagram is also the same if the outgoing particles are
+  //swapped and the ordering is opposite
+  else if( x.incoming == y.incoming &&
+	   x.outgoing.first != x.outgoing.second &&
+	   y.outgoing.first != y.outgoing.second &&
+	   x.outgoing.first == y.outgoing.second && 
+	   x.outgoing.second == y.outgoing.first &&
+	   x.ordered.second != y.ordered.second ) {
+    if( !y.intermediate && !x.intermediate ) return true;
+    if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
+      return true;
+  }
   return false;
 }
 

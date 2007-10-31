@@ -14,5 +14,4 @@ inline IBPtr HardProcessConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-
 }

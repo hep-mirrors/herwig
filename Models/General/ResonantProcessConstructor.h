@@ -202,6 +202,11 @@ private:
    * Store a pointer to the subprocess handler
    */
   SubHdlPtr theSubProcess; 
+  
+  /**
+   * Whether to debug the matrix element classes or not 
+   */
+  bool theDebug;
 };
 
   /** Exception class indicating setup problem. */
@@ -231,14 +236,6 @@ struct ClassTraits<Herwig::ResonantProcessConstructor>
   : public ClassTraitsBase<Herwig::ResonantProcessConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::ResonantProcessConstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * ResonantProcessConstructor is implemented. It may also include several, space-separated,
-   * libraries if the class ResonantProcessConstructor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */
