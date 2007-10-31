@@ -22,6 +22,7 @@ HerwigRun::HerwigRun(int argc, char **argv)
   ngen(0),
   seed(0),
   repo(),
+  repoin("HerwigDefaults.in"),
   egCreated(false), 
   Status(UNKNOWN), 
   isInitialized(false),
