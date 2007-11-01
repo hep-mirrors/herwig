@@ -133,6 +133,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Doc/HerwigDefaults.in
 		Looptools/Makefile
 		Analysis/Makefile
+		Analysis/BSM/Makefile
 		Analysis2/Makefile
 		Analysis2/Data/Makefile
 		src/Makefile-UserModules
