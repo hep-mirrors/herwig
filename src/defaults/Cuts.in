@@ -41,6 +41,8 @@ set JetKtCut:MinKT 20.0*GeV
 create ThePEG::SimpleKTCut PhotonKtCut SimpleKTCut.so
 set PhotonKtCut:Matcher /Defaults/Matchers/MatchPhoton
 set PhotonKtCut:MinKT 20.0*GeV
+set PhotonKtCut:MinEta -3.
+set PhotonKtCut:MaxEta  3.
 
 # cut on leptons
 create ThePEG::SimpleKTCut LeptonKtCut SimpleKTCut.so
