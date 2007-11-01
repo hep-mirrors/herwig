@@ -255,8 +255,12 @@ protected:
   //@{
   /**
    * Value of the energy fraction for the veto algorithm
+   * @param iopt The option for calculating z
+   * - 0 is final-state
+   * - 1 is initial-state for the hard process
+   * - 2 is initial-state for particle decays
    */
-  inline double guessz () const;
+  inline double guessz (unsigned int iopt) const;
 
   /**
    *  Value of the scale for the veto algorithm
@@ -352,7 +356,7 @@ protected:
   /**
    *  Get the option for the PDF factor
    */
-  inline bool PDFFactor() const;
+  inline unsigned int PDFFactor() const;
 
 private:
 
@@ -394,7 +398,7 @@ private:
   /**
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
-  bool _pdffactor;
+  unsigned _pdffactor;
 
 private:
 

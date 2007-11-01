@@ -41,12 +41,30 @@ double GtoGGSplitFn::ratioP(const double z, const Energy2, const IdList &,
   return sqr(1.-z*(1.-z));
 }
 
-double GtoGGSplitFn::invIntegOverP(const double r) const {
-  return 1./(1.+exp(-r/3.)); 
+double GtoGGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 1./(1.+exp(-r/3.)); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "GtoGGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 } 
 
-double GtoGGSplitFn::integOverP(const double z) const {
-  return 3.*log(z/(1.-z)); 
+double GtoGGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 3.*log(z/(1.-z)); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "GtoGGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
 void GtoGGSplitFn::colourConnection(tShowerParticlePtr parent,

@@ -49,12 +49,36 @@ double GtoQQbarSplitFn::ratioP(const double z, const Energy2 t,
   return val;
 }
 
-double GtoQQbarSplitFn::integOverP(const double z) const { 
-  return z/2.; 
+double GtoQQbarSplitFn::integOverP(const double z, unsigned int PDFfactor) const { 
+  switch(PDFfactor) {
+  case 0:
+    return z/2.; 
+  case 1:
+    return 0.5*log(z);
+  case 2:
+    return -0.5*log(1.-z);
+  case 3:
+    return 0.5*log(z/(1.-z));
+  default:
+    throw Exception() << "GtoQQbarSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-double GtoQQbarSplitFn::invIntegOverP(const double r) const {
-  return 2.*r; 
+double GtoQQbarSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 2.*r; 
+  case 1:
+    return exp(2.*r);
+  case 2:
+    return 1.-exp(-2.*r);
+  case 3:
+    return 1./(1.+exp(-2.*r));
+  default:
+    throw Exception() << "GtoQQbarSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
 void GtoQQbarSplitFn::colourConnection(tShowerParticlePtr parent,

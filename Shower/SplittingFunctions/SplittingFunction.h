@@ -123,9 +123,13 @@ public:
   /**
    * Purely virtual method which should return the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
-   * @param z   The energy fraction.
+   * @param z         The energy fraction.
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
+   *                  
    */
-  virtual double integOverP(const double z) const = 0; 
+  virtual double integOverP(const double z, unsigned int PDFfactor=0) const = 0; 
 
   /**
    * Purely virtual method which should return the inverse of the 
@@ -133,26 +137,11 @@ public:
    * overestimated splitting function, \f$P_{\rm over}\f$ which is used to
    * generate the value of \f$z\f$.
    * @param r Value of the splitting function to be inverted
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double invIntegOverP(const double r) const = 0; 
-
-  /**
-   * Virtual method which should return the indefinite integral of the 
-   * overestimated splitting function, \f$P_{\rm over}/(1-z)\f$ 
-   * when we are including an extra factor of \f$1/(1-z)\f$ for the PDFs.
-   * @param z   The energy fraction.
-   */
-  virtual double integOverPPDFFactor(const double z) const; 
-
-  /**
-   * Virtual method which should return the inverse of the 
-   * indefinite integral of the 
-   * overestimated splitting function, \f$P_{\rm over}/(1-z)\f$ which is used to
-   * generate the value of \f$z\f$ when we are including an extra factor of
-   * \f$1/(1-z)\f$ for the PDFs.
-   * @param r Value of the splitting function to be inverted
-   */
-  virtual double invIntegOverPPDFFactor(const double r) const; 
+  virtual double invIntegOverP(const double r, unsigned int PDFfactor=0) const = 0;
   //@}
 
   /**
@@ -243,8 +232,5 @@ struct ClassTraits<Herwig::SplittingFunction>
 }
 
 #include "SplittingFunction.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SplittingFunction.tcc"
-#endif
 
 #endif /* HERWIG_SplittingFunction_H */

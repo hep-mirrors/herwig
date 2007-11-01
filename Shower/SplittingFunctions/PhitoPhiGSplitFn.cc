@@ -50,12 +50,30 @@ double PhitoPhiGSplitFn::ratioP(const double z, const Energy2 t,
   return val;
 } 
 
-double PhitoPhiGSplitFn::integOverP(const double z) const {
-  return -8./3.*log(1.-z); 
+double PhitoPhiGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return -8./3.*log(1.-z); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "PhitoPhiGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-double PhitoPhiGSplitFn::invIntegOverP(const double r) const {
-  return 1. - exp(- 3.*r/8.); 
+double PhitoPhiGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 1. - exp(- 3.*r/8.);
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "PhitoPhiGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  } 
 }
 
 void PhitoPhiGSplitFn::colourConnection(tShowerParticlePtr parent,

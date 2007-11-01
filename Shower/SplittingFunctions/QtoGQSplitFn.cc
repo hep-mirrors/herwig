@@ -47,20 +47,34 @@ double QtoGQSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 }
 
-double QtoGQSplitFn::integOverP(const double z) const { 
-  return 8./3.*log(z); 
+double QtoGQSplitFn::integOverP(const double z, unsigned int PDFfactor) const { 
+  switch(PDFfactor) {
+  case 0:
+    return 8./3.*log(z); 
+  case 1:
+    return -8./3./z;
+  case 2:
+    return 8./3.*log(z/(1.-z));
+  case 3:
+  default:
+    throw Exception() << "QtoGQSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-double QtoGQSplitFn::invIntegOverP(const double r) const {
-  return exp(3.*r/8.); 
-}
-
-double QtoGQSplitFn::integOverPPDFFactor(const double z) const {
-  return 8./3.*log(z/(1.-z));
-}
-
-double QtoGQSplitFn::invIntegOverPPDFFactor(const double r) const {
-  return 1./(1.+exp(-3.*r/8.));
+double QtoGQSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return exp(3.*r/8.); 
+  case 1:
+    return -8./3./r;
+  case 2:
+    return 1./(1.+exp(-3.*r/8.));
+  case 3:
+  default:
+    throw Exception() << "QtoGQSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
 void QtoGQSplitFn::colourConnection(tShowerParticlePtr parent,

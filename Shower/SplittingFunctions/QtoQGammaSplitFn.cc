@@ -49,12 +49,30 @@ double QtoQGammaSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val; 
 }
 
-double QtoQGammaSplitFn::integOverP(const double z) const {
-  return -2.*log(1.-z); 
+double QtoQGammaSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return -2.*log(1.-z); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "QtoQGammaSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-double QtoQGammaSplitFn::invIntegOverP(const double r) const {
-  return 1. - exp(-r/2.); 
+double QtoQGammaSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 1. - exp(-0.5*r); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "QtoQGammaSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
 void QtoQGammaSplitFn::colourConnection(tShowerParticlePtr parent,

@@ -51,20 +51,30 @@ void SudakovFormFactor::Init() {
      &SudakovFormFactor::_pdfmax, 35.0, 1.0, 4000.0,
      false, false, Interface::limited);
 
-  static Switch<SudakovFormFactor,bool> interfacePDFFactor
+  static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
     ("PDFFactor",
-     "Include a factor of 1/(1-z) in the overestimate for the PDFs",
-     &SudakovFormFactor::_pdffactor, false, false, false);
+     "Include additional factors in the overestimate for the PDFs",
+     &SudakovFormFactor::_pdffactor, 0, false, false);
   static SwitchOption interfacePDFFactorOff
     (interfacePDFFactor,
      "Off",
-     "Don't include the factor",
-     false);
-  static SwitchOption interfacePDFFactorOn
+     "Don't include any factors",
+     0);
+  static SwitchOption interfacePDFFactorOverZ
     (interfacePDFFactor,
-     "On",
-     "Include the factor",
-     true);
+     "OverZ",
+     "Include an additional factor of 1/z",
+     1);
+  static SwitchOption interfacePDFFactorOverOneMinusZ
+    (interfacePDFFactor,
+     "OverOneMinusZ",
+     "Include an additional factor of 1/(1-z)",
+     2);
+  static SwitchOption interfacePDFFactorOverZOneMinusZ
+    (interfacePDFFactor,
+     "OverZOneMinusZ",
+     "Include an additional factor of 1/z/(1-z)",
+     3);
 }
 
 bool SudakovFormFactor::
@@ -98,13 +108,24 @@ PDFVeto(const Energy2 t, const double x,
   if(oldpdf<=0.) return false;
   double ratio = newpdf/oldpdf;
 
-  double maxpdf = _pdffactor ? _pdfmax/(1.-z()) : _pdfmax;
+  double maxpdf(_pdfmax);
+  switch (_pdffactor) {
+  case 1:
+    maxpdf /= z();
+    break;
+  case 2:
+    maxpdf /= 1.-z();
+    break;
+  case 3:
+    maxpdf /= (z()*(1.-z()));
+    break;
+  }
 
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > maxpdf) {
-    generator()->log() << "PDFVeto warning: Ratio (" << ratio 
-			    << ") > " << name() << ":PDFmax ("
-		       << _pdfmax <<") for " 
+    generator()->log() << "PDFVeto warning: Ratio > " << name() 
+		       << ":PDFmax (by a factor of"
+		       << ratio/maxpdf <<") for " 
 		       << parton0->PDGName() << " to " 
 		       << parton1->PDGName() << "\n";
   }
