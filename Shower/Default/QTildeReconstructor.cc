@@ -295,22 +295,11 @@ reconstructISJets(Lorentz5Momentum pcm,
     // reconstruct the jet
     atLeastOnce |= reconstructSpaceLikeJet(ShowerHardJets[ix]->progenitor());
     p.push_back(ShowerHardJets[ix]->progenitor()->momentum());
-    if(ShowerHardJets[ix]->progenitor()->showerKinematics()) {
-      pq.push_back(ShowerHardJets[ix]->progenitor()->
-		   showerKinematics()->getBasis()[0]);
-    }
-    else {
-      if (!ShowerHardJets[ix]->original()->parents().empty()) {
-	Energy etemp = ShowerHardJets[ix]->original()->
-	  parents()[0]->momentum().z();
-	Lorentz5Momentum ptemp = Lorentz5Momentum(0*MeV, 0*MeV, etemp, abs(etemp));
-	pq.push_back(ptemp);
-      } 
-      else 
-	throw Exception() << "QTildeReconstructor::reconstructISJets: "
-			   << "Warning, bad pq!!!\n"
-			   << Exception::eventerror;
-    }
+    assert(!ShowerHardJets[ix]->original()->parents().empty());
+    Energy etemp = ShowerHardJets[ix]->original()->
+      parents()[0]->momentum().z();
+    Lorentz5Momentum ptemp = Lorentz5Momentum(0*MeV, 0*MeV, etemp, abs(etemp));
+    pq.push_back(ptemp);
   }
   // add the intrinsic pt if needed
   int iloc=-1;
@@ -380,12 +369,10 @@ reconstructISJets(Lorentz5Momentum pcm,
 			 (k1*a1+b1/k1), (k1*a1-b1/k1));
   double beta2 = getBeta((a2+b2), (a2-b2), 
 			 (a2/k2+k2*b2), (a2/k2-k2*b2));
-
   if (pq[0].z() > 0*MeV) {
     beta1 = -beta1; 
     beta2 = -beta2;
   }
-
   tPVector toBoost;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     if(!ShowerHardJets[ix]->progenitor()->isFinalState())
@@ -400,7 +387,9 @@ reconstructISJets(Lorentz5Momentum pcm,
   boostChain(toBoost[1], betaboost,parent);
   if(parent->momentum().e()/pq[1].e()>1.||parent->momentum().z()/pq[1].z()>1.) throw KinematicsReconstructionVeto();
   boostRest = pcm.findBoostToCM();
-  boostNewF = (toBoost[0]->momentum() + toBoost[1]->momentum()).boostVector();
+  Lorentz5Momentum newcmf=(toBoost[0]->momentum() + toBoost[1]->momentum());
+  if(newcmf.m()<0.*GeV) throw KinematicsReconstructionVeto();
+  boostNewF = newcmf.boostVector();
   return true;
 }
 
