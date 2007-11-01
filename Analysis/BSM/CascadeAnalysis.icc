@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the CascadeAnalysis class.
+//
+
+namespace Herwig {
+
+inline IBPtr CascadeAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr CascadeAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

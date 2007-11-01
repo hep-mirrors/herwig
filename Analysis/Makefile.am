@@ -1,4 +1,6 @@
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la\
+SUBDIRS = BSM
+
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
                      HwMPIAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 3:1:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
@@ -128,11 +130,6 @@ UEobservables.cc UEobservables.fh \
 UEobservables.h UEobservables.icc 
 endif
 endif
-
-HwBSMAnalysis_la_LDFLAGS = -module
-HwBSMAnalysis_la_SOURCES = \
-SpinCorrAnalysis.cc SpinCorrAnalysis.h \
-SpinCorrAnalysis.icc SpinCorrAnalysis.fh
 
 HwMPIAnalysis_la_LDFLAGS = -module -version-info 3:1:0
 HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
