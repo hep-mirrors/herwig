@@ -10,6 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/Repository.h" 
 #include "ThePEG/Repository/CurrentGenerator.h"
 
@@ -75,11 +76,20 @@ void UEDBase::Init() {
     ("This class implements/stores the necessary information for the simulation"
      " of a Universal Extra Dimensions model.");
 
-  static Parameter<UEDBase,bool> interfaceRadiativeCorrections
+  static Switch<UEDBase,bool> interfaceRadiativeCorrections
     ("RadiativeCorrections",
-     "Switch for calculating the radiative corrections to the KK masses",
-     &UEDBase::theRadCorr, true, 0, 0,
-     false, false, Interface::nolimits);
+     "Calculate the radiative corrections to the masses",
+     &UEDBase::theRadCorr, true, false, false);
+  static SwitchOption interfaceRadiativeCorrectionsYes
+    (interfaceRadiativeCorrections,
+     "Yes",
+     "Calculate the radiative corrections to the masses",
+     true);
+  static SwitchOption interfaceRadiativeCorrectionsNo
+    (interfaceRadiativeCorrections,
+     "No",
+     "Leave the masses of the KK particles as n/R",
+     false);
 
   static Parameter<UEDBase,Energy> interfaceInverseRadius
     ("InverseRadius",
@@ -181,9 +191,11 @@ void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
       bosonMasses(n);
     }
     else {
-      cerr << "Warning! Radiative corrections have been turned off."
-	   << " Therefore the particle spectrum will be degenerate and "
-	   << "no decays will occur.\n";
+      cerr << "WARNING!! Radiative corrections to particle masses have been "
+	   << "turned off. The masses will be set to (n/R + m_sm)^1/2 and "
+	   << "the spectrum will be highly degenerate so that no decays "
+	   << "will occur. This is only meant to be used for debugging "
+	   << "purposes.\n";
       //set masses to tree level for each kk mode
       long level1 = 5000000 + n*100000;
       long level2 = 6000000 + n*100000;
