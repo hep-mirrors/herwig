@@ -12,6 +12,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -39,6 +40,11 @@ double MEvv2vv::me2() const {
     vd[1] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 1, outgoing);
   double full_me(0.);
   vv2vvHeME(va, vb, vc, vd, full_me);
+
+#ifndef NDEBUG
+  if( debugME() ) debug(full_me);
+#endif
+
   return full_me;
 }
 
@@ -129,7 +135,10 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		current.colourFlow[iy].second * diag[ix];
 	    
 	  } //end of diagram loop
-
+	  //set the appropriate element in ProductionMatrixElement
+	  prodME(ihel1, ihel2, ohel1, ohel2) = 
+	    std::accumulate(cflows.begin(), cflows.end(), Complex(0.0, 0.0));
+	  
 	  for(size_t ii = 0; ii < ncf; ++ii)
 	    for(size_t ij = 0; ij < ncf; ++ij)
 	      mesq += cfactors[ii][ij]*(cflows[ii]*conj(cflows[ij])).real();
@@ -232,3 +241,29 @@ void MEvv2vv::Init() {
 
 }
 
+void MEvv2vv::debug(double me2) const {
+  if( mePartonData()[0]->id() != 21 || mePartonData()[1]->id() != 21 ||
+      mePartonData()[2]->id() != 5100021 || 
+      mePartonData()[3]->id() != 5100021 ) return;
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  Energy2 s(sHat());
+  Energy2 mf2 = meMomenta()[2].m2();
+  Energy2 t3(tHat() - mf2), u4(uHat() - mf2);
+  Energy4 s2(sqr(s)), t3s(sqr(t3)), u4s(sqr(u4)); 
+
+  Energy4 num = s2 + t3s + u4s;  
+  double analytic = 3.*mf2*( mf2*num/t3s/u4s - num/s/t3/u4 ) + 1.
+    + sqr(num)*num/4./s2/t3s/u4s - t3*u4/s2;
+  analytic *= 9.*gs4/8.;
+  
+  double diff = abs( analytic - me2 );
+  if( diff  > 1e-4 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << ","
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff  << "  ratio: " << analytic/me2  << '\n';
+  }
+}

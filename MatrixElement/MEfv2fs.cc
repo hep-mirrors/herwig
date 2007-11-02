@@ -372,13 +372,13 @@ void MEfv2fs::debug(double me2) const {
   double analytic = -gs4*( u4 + 2.*(m4s - m3s)*(1. + m3s/t3 + m4s/u4) )*
     ( sqr(u4) + sqr(s) - sqr(t3)/sqr(Nc) )/s/t3/u4/4.;
   double diff = abs( analytic - me2);
-  if( diff > 1e-8 ) {
+  if( diff > 1e-4 ) {
     generator()->log() 
       << mePartonData()[0]->PDGName() << ","
       << mePartonData()[1]->PDGName() << "->"
       << mePartonData()[2]->PDGName() << ","
       << mePartonData()[3]->PDGName() << "   difference: " 
-      << setprecision(10) << diff << '\n';
+      << setprecision(10) << diff << "  ratio: " << analytic/me2  << '\n';
   }
     
 }

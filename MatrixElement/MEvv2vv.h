@@ -86,6 +86,15 @@ public:
 	    VBVector & vout1, VBVector & vout2,
 	    double & me2) const;
 
+protected:
+  
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

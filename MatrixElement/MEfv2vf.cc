@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -56,6 +57,11 @@ double MEfv2vf::me2() const {
 				     outgoing);
     fbv2vfbHeME(spb, vecIn, vecOut, sp, fullme);
   }
+
+#ifndef NDEBUG
+  if( debugME() ) debug(fullme);
+#endif
+
   return fullme;
 }
 
@@ -286,3 +292,34 @@ void MEfv2vf::Init() {
 
 }
 
+void MEfv2vf::debug(double me2) const {
+  if( !generator()->logfile().is_open() ) return;
+  long id1 = abs(mePartonData()[0]->id());
+  long id4 = abs(mePartonData()[3]->id());
+  if( (id1 != 1 && id1 != 2) || mePartonData()[1]->id() != 21 ||
+      mePartonData()[2]->id() != 5100021 || 
+      (id4 != 5100001 && id4 != 5100002 &&
+       id4 != 6100001 && id4 != 6100002) ) return;
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  Energy2 s(sHat());
+  Energy2 mf2 = meMomenta()[2].m2();
+  Energy4 spt2 = uHat()*tHat() - sqr(mf2);
+  //swap t and u as formula defines process vf->vf
+  Energy2 t3(uHat() - mf2), u4(tHat() - mf2);
+  Energy4 s2(sqr(s)), t3s(sqr(t3)), u4s(sqr(u4));
+
+  double analytic = -gs4*( 5.*s2/12./t3s + s2*s/t3s/u4 + 11.*s*u4/6./t3s
+			   + 5.*u4s/12./t3s + u4s*u4/s/t3s)/3.;
+  double diff = abs(analytic - me2);
+  if( diff > 1e-4 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << ","
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff << "  ratio: " << analytic/me2 << '\n';
+  }
+
+
+}

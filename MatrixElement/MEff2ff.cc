@@ -763,44 +763,108 @@ void MEff2ff::Init() {
 
 void MEff2ff::debug(double me2) const {
   if( !generator()->logfile().is_open() ) return;
-  if( mePartonData()[0]->id() != 2 ||  
-      mePartonData()[1]->id() != -2 ||
-      mePartonData()[2]->id() != 1000021 ||
-      mePartonData()[3]->id() != 1000021 ) return; 
-  tcSMPtr sm = generator()->standardModel();
-  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
-  int Nc = sm->Nc();
-  double Cf = (sqr(Nc) - 1.)/2./Nc;
-  Energy2 mgo2 = meMomenta()[3].m2();
-  Energy2 muL2 = sqr(getParticleData(1000002)->mass());
-  Energy2 deltaL = muL2 - mgo2;
-  Energy2 muR2 = sqr(getParticleData(2000002)->mass());
-  Energy2 deltaR = muR2 - mgo2;
-  Energy2 s(sHat());
-  Energy2 m3s = meMomenta()[2].m2();
-  Energy2 m4s = meMomenta()[3].m2();
-  Energy4 spt2 = uHat()*tHat() - m3s*m4s;
-  Energy2 t3(tHat() - m3s), u4(uHat() - m4s);
+  long id1 = mePartonData()[0]->id();
+  long id2 = mePartonData()[1]->id();
+  long id3 = mePartonData()[2]->id();
+  long id4 = mePartonData()[3]->id();
+  long aid1 = abs(mePartonData()[0]->id());
+  long aid2 = abs(mePartonData()[1]->id());
+  long aid3 = abs(mePartonData()[2]->id());
+  long aid4 = abs(mePartonData()[3]->id());
+  if( (aid1 != 1 && aid1 != 2) || (aid2 != 1 && aid2 != 2) ) return;
+  double analytic(0.);
+  if( id3 == id4 && id3 == 1000021 ) {
+    tcSMPtr sm = generator()->standardModel();
+    double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+    int Nc = sm->Nc();
+    double Cf = (sqr(Nc) - 1.)/2./Nc;
+    Energy2 mgo2 = meMomenta()[3].m2();
+    long squark = (aid1 == 1) ? 1000001 : 1000002;
+    Energy2 muL2 = sqr(getParticleData(squark)->mass());
+    Energy2 deltaL = muL2 - mgo2;
+    Energy2 muR2 = sqr(getParticleData(squark + 1000000)->mass());
+    Energy2 deltaR = muR2 - mgo2;
+    Energy2 s(sHat());
+    Energy2 m3s = meMomenta()[2].m2();
+    Energy2 m4s = meMomenta()[3].m2();
+    Energy4 spt2 = uHat()*tHat() - m3s*m4s;
+    Energy2 t3(tHat() - m3s), u4(uHat() - m4s);
+    
+    double Cl = 2.*spt2*( (u4*u4 - deltaL*deltaL) + (t3*t3 - deltaL*deltaL)
+			  - (s*s/Nc/Nc) )/s/s/(u4 - deltaL)/(t3 - deltaL);
+    Cl += deltaL*deltaL*( (1./sqr(t3 - deltaL)) + (1./sqr(u4 - deltaL))
+			  - ( sqr( (1./(t3 - deltaL)) - 
+				   (1./(u4 - deltaL)) )/Nc/Nc ) );
+    
+    double Cr = 2.*spt2*( (u4*u4 - deltaR*deltaR) + (t3*t3 - deltaR*deltaR)
+			  - (s*s/Nc/Nc) )/s/s/(u4 - deltaR)/(t3 - deltaR);
+    Cr += deltaR*deltaR*( (1./sqr(t3 - deltaR)) + (1./sqr(u4 - deltaR))
+			  - ( sqr( (1./(t3 - deltaR)) 
+				   - (1./(u4 - deltaR)) )/Nc/Nc ) );
+    analytic = gs4*Cf*(Cl + Cr)/4.;
+  }
+  else if( (aid3 == 5100001 || aid3 == 5100002 ||
+	    aid3 == 6100001 || aid3 == 6100002) &&
+	   (aid4 == 5100001 || aid4 == 5100002 ||
+	    aid4 == 6100001 || aid4 == 6100002) ) {
+    tcSMPtr sm = generator()->standardModel();
+    double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+    Energy2 s(sHat());
+    Energy2 mf2 = meMomenta()[2].m2();
+    Energy2 t3(tHat() - mf2), u4(uHat() - mf2);
+    Energy4 s2(sqr(s)), t3s(sqr(t3)), u4s(sqr(u4));
+    
+    bool iflav = (aid2 - aid1 == 0);
+    int alpha(aid3/1000000), beta(aid4/1000000);
+    bool oflav = ((aid3 - aid1) % 10  == 0);
+    if( alpha != beta ) {
+      if( ( id1 > 0 && id2 > 0) ||
+	  ( id1 < 0 && id2 < 0) ) {
+	if( iflav )
+	  analytic = gs4*( mf2*(2.*s2*s/t3s/u4s - 4.*s/t3/u4) 
+			   + 2.*sqr(s2)/t3s/u4s - 8.*s2/t3/u4 + 5. )/9.;
+	else
+	  analytic = gs4*( -2.*mf2*(1./t3 + u4/t3s) + 0.5 + 2.*u4s/t3s)/9.;
+      }
+      else
+	analytic = gs4*( 2.*mf2*(1./t3 + u4/t3s) + 5./2. + 4.*u4/t3 
+			 + 2.*u4s/t3s)/9.;
+    }
+    else {
+      if( ( id1 > 0 && id2 > 0) ||
+	  ( id1 < 0 && id2 < 0) ) {
+	if( iflav ) {
+	  analytic = gs4*( mf2*(6.*t3/u4s + 6.*u4/t3s - s/t3/u4) 
+			   + 2.*(3.*t3s/u4s + 3.*u4s/t3s 
+				 + 4.*s2/t3/u4 - 5.) )/27.;
+	}
+	else
+	  analytic = 2.*gs4*( -mf2*s/t3s + 0.25 + s2/t3s )/9.;
+      }
+      else {
+	if( iflav ) {
+	  if( oflav )	  
+	    analytic = gs4*( 2.*mf2*(4./s + s/t3s - 1./t3) + 23./6.+ 2.*s2/t3s
+			     + 8.*s/3./t3 + 6.*t3/s + 8.*t3s/s2 )/9.;
+	  else
+	    analytic = 4.*gs4*( 2.*mf2/s + (t3s + u4s)/s2)/9.;
+	}
+	else 
+	  analytic = gs4*(4.*mf2*s/t3s + 5. + 4.*s2/t3s + 8.*s/t3 )/18.;
+      }
+    }
+    if( id3 == id4 ) analytic /= 2.;
 
-  double Cl = 2.*spt2*( (u4*u4 - deltaL*deltaL) + (t3*t3 - deltaL*deltaL)
-			- (s*s/Nc/Nc) )/s/s/(u4 - deltaL)/(t3 - deltaL);
-  Cl += deltaL*deltaL*( (1./sqr(t3 - deltaL)) + (1./sqr(u4 - deltaL))
-			- ( sqr( (1./(t3 - deltaL)) - 
-				 (1./(u4 - deltaL)) )/Nc/Nc ) );
-
-  double Cr = 2.*spt2*( (u4*u4 - deltaR*deltaR) + (t3*t3 - deltaR*deltaR)
-			- (s*s/Nc/Nc) )/s/s/(u4 - deltaR)/(t3 - deltaR);
-  Cr += deltaR*deltaR*( (1./sqr(t3 - deltaR)) + (1./sqr(u4 - deltaR))
-			- ( sqr( (1./(t3 - deltaR)) 
-				 - (1./(u4 - deltaR)) )/Nc/Nc ) );
-
-  double diff = abs( gs4*Cf*(Cl + Cr)/4. - me2 );
-  if( diff  > 1e-8 ) {
+  }
+  else return;
+  double diff = abs(analytic - me2);
+  if( diff  > 1e-4 ) {
     generator()->log() 
       << mePartonData()[0]->PDGName() << ","
       << mePartonData()[1]->PDGName() << "->"
       << mePartonData()[2]->PDGName() << ","
       << mePartonData()[3]->PDGName() << "   difference: " 
-      << setprecision(10) << diff  << '\n';
+      << setprecision(10) << diff  << "  ratio: " << analytic/me2 
+      << '\n';
   }
 }

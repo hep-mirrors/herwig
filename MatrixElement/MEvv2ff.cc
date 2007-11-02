@@ -207,29 +207,38 @@ void MEvv2ff::Init() {
 
 void MEvv2ff::debug(double me2) const {
   if( !generator()->logfile().is_open() ) return;
+  long id3(abs(mePartonData()[2]->id())), id4(abs(mePartonData()[3]->id()));
   if( mePartonData()[0]->id() != 21 || mePartonData()[1]->id() != 21 ||
-      mePartonData()[2]->id() != 1000021 || mePartonData()[3]->id() != 1000021 ) 
+      id3 != id4 || (id3 != 1000021 && id3 != 5100002 && id3 != 5100001 &&
+		     id3 != 6100002 && id3 != 6100001) )
     return;
   tcSMPtr sm = generator()->standardModel();
   double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
   int Nc = sm->Nc();
   Energy2 s(sHat());
-  Energy2 m3s = meMomenta()[2].m2();
-  Energy2 m4s = meMomenta()[3].m2();
-  Energy4 spt2 = uHat()*tHat() - m3s*m4s;
-  Energy2 t3(tHat() - m3s), u4(uHat() - m4s);
+  Energy2 mf2 = meMomenta()[2].m2();
+  Energy4 spt2 = uHat()*tHat() - sqr(mf2);
+  Energy2 t3(tHat() - mf2), u4(uHat() - mf2);
     
-  double analytic = gs4*sqr(Nc)*u4*t3*
-    ( sqr(u4) + sqr(t3) + 4.*m3s*s*spt2/u4/t3 ) * 
-    ( 1./sqr(s*t3) + 1./sqr(s*u4) + 1./sqr(u4*t3) )/2./(Nc*Nc - 1.);
+  double analytic(0.);
+  if( id3 == 1000021 ) {
+   analytic = gs4*sqr(Nc)*u4*t3*
+     ( sqr(u4) + sqr(t3) + 4.*mf2*s*spt2/u4/t3 ) * 
+     ( 1./sqr(s*t3) + 1./sqr(s*u4) + 1./sqr(u4*t3) )/2./(Nc*Nc - 1.);
+  }
+  else {
+    double brac = sqr(s)/6./t3/u4 - 3./8.;
+    analytic = gs4*( -4.*sqr(mf2)*brac/t3/u4 + 4.*mf2*brac/s + brac 
+		     - 1./3. + 3.*t3*u4/4/s/s);
+  }
   double diff = abs(analytic - me2);
-  if( diff > 1e-8 ) {
+  if( diff > 1e-4 ) {
     generator()->log() 
       << mePartonData()[0]->PDGName() << ","
       << mePartonData()[1]->PDGName() << "->"
       << mePartonData()[2]->PDGName() << ","
       << mePartonData()[3]->PDGName() << "   difference: " 
-      << setprecision(10) << diff << '\n';
+      << setprecision(10) << diff << "  ratio: " << analytic/me2  << '\n';
   }
 
 }

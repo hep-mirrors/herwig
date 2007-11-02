@@ -239,13 +239,14 @@ void MEff2ss::debug(double me2) const {
   }
   analytic *= gs4*Cf/2./Nc;
   double diff = abs(analytic - me2);
-  if( diff > 1e-8 ) {
+  if( diff > 1e-4 ) {
     generator()->log() 
       << mePartonData()[0]->PDGName() << "," 	
       << mePartonData()[1]->PDGName() << "->"
       << mePartonData()[2]->PDGName() << ","
       << mePartonData()[3]->PDGName() << "   difference: " 
-      << setprecision(10) << diff << '\n';
+      << setprecision(10) << diff << "  ratio: " << analytic/me2 
+      << '\n';
   }
     
 }

@@ -207,12 +207,12 @@ void MEvv2ss::debug(double me2) const {
   double analytic = gs4*Nc*( sqr(spt2) + s2*m3s*m4s ) * 
     ( u4s + t3s - s2/sqr(Nc) )/2./(sqr(Nc) - 1.)/s2/t3s/u4s;
   double diff = abs(analytic - me2);
-  if(  diff > 1e-8 ) {
+  if(  diff > 1e-4 ) {
     generator()->log() 
       << mePartonData()[0]->PDGName() << ","
       << mePartonData()[1]->PDGName() << "->"
       << mePartonData()[2]->PDGName() << ","
       << mePartonData()[3]->PDGName() << "   difference: "
-      << setprecision(10) << diff << '\n';
+      << setprecision(10) << diff << "  ratio: " << analytic/me2 << '\n';
   }
 }
