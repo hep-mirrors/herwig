@@ -50,6 +50,10 @@ void EmitterSpectatorClustering::generateSudakovBasis () {
     p = - emission().first->momentum() + emission().second->momentum();
   }
 
+  Energy emmMass = getParticleData(emitter()->pData().partonId.PDGId)->mass();
+
+  p.setMass(emmMass); p.rescaleEnergy();
+
   _sudakovBasis = make_pair(p,n);
 
 }

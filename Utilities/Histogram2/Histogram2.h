@@ -144,6 +144,17 @@ public:
   inline pair<double,double> bin (unsigned int) const;
 
   /**
+   * Return the bin entries.
+   */
+  inline vector<unsigned long> binEntries () const;
+
+  /**
+   * Return the bin entries for the
+   * given index.
+   */
+  inline unsigned long binEntries (unsigned int) const;
+
+  /**
    * Explicitly set the content of the
    * bin with given index.
    */
@@ -186,6 +197,11 @@ public:
 
   /**@name Normalization and statistical tests */
   //@{
+
+  /**
+   * Finish this channel.
+   */
+  inline void finish ();
 
   /**
    * This channel is a differential distribution:
@@ -275,6 +291,12 @@ private:
    * to be accessed by the bin id.
    */
   vector<pair<double,double> > _bins;
+
+  /**
+   * The number of entries in each bin,
+   * to be accessed by the bin id.
+   */
+  vector<unsigned long> _binEntries;
 
   /**
    * The contents of under- and overflow
@@ -515,6 +537,12 @@ public:
 
   /**@name Normalisation and statistical tests */
   //@{
+
+  /**
+   * Finish the given channel
+   */
+  inline void finish (const string&);
+
   /**
    * The given channel is a differential distribution,
    * dvidie each bin by its bin width.

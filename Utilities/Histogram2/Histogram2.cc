@@ -37,6 +37,7 @@ HistogramChannel& HistogramChannel::operator += (const HistogramChannel& c) {
   // uppon addition of a counting channel it remains a counting channel
   if (_isCountingChannel) {
     for (unsigned int i = 0; i < _bins.size(); ++i) {
+      _binEntries[i] += c.binEntries()[i];
       _nanWeights[i] += c.nanWeights()[i];
     }
     _outOfRange.first += c.outOfRange().first;
@@ -233,7 +234,7 @@ Histogram2::Histogram2 (const string& dataFile, const string& dataName) {
   }
   vector<pair<double,double> > dataCache;
   double low, high, dataval, errstat, errsys;
-  double sigma;
+  double sigma2;
   string in;
   while (getline(data,in)) {
     in = StringUtils::stripws(in);
@@ -242,8 +243,8 @@ Histogram2::Histogram2 (const string& dataFile, const string& dataName) {
     istringstream theIn (in);
     theIn >> low >> high >> dataval >> errstat >> errsys;
     _binning.push_back(make_pair(low,high));
-    sigma = sqr(errstat) + sqr(errsys);
-    dataCache.push_back(make_pair(dataval,sigma));
+    sigma2 = sqr(errstat) + sqr(errsys);
+    dataCache.push_back(make_pair(dataval,sigma2));
   }
   for (unsigned int i = 0; i<_binning.size(); ++i) {
     _binhash.insert(make_pair(_binning[i].second,i));
@@ -340,9 +341,11 @@ void HistogramChannel::write (ostream& os, const string& name) const {
   os << ">" << endl;
 
   os << "<bins>" << endl;
-  for (vector<pair<double,double> >::const_iterator b = _bins.begin();
-       b != _bins.end(); ++b) {
-    os << "<bincontent value=\"" << b->first << "\" sigma=\"" << b->second << "\"/>" << endl;
+  for (unsigned int b = 0; b < _bins.size(); ++b) {
+    os << "<bincontent value=\"" << _bins[b].first
+       << "\" sigma2=\"" << _bins[b].second
+       << "\" entries=\"" << _binEntries[b]
+       << "\"/>" << endl;
   }
   os << "</bins>" << endl;
 
@@ -409,8 +412,10 @@ string HistogramChannel::read (istream& is) {
     attributes = StringUtils::xmlAttributes("bincontent",tag);
     atit = attributes.find("value"); if (atit == attributes.end()) return "";
     fromString(atit->second,_bins[i].first);
-    atit = attributes.find("sigma"); if (atit == attributes.end()) return "";
+    atit = attributes.find("sigma2"); if (atit == attributes.end()) return "";
     fromString(atit->second,_bins[i].second);
+    atit = attributes.find("entries"); if (atit == attributes.end()) return "";
+    fromString(atit->second,_binEntries[i]);
   }
 
   tag = getNextTag(is);

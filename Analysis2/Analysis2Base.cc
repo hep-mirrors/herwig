@@ -295,7 +295,26 @@ void Analysis2Base::finish (const string& name,
 			    int norm,
 			    bool combined) {
 
-  // return immediatly, if part of a parallel run
+  Histogram2Ptr theHisto;
+  if (_histograms.find(name) != _histograms.end()) {
+    theHisto = _histograms.find(name)->second;
+  } else {
+    generator()->log() << "Analysis2Base::finish : could not finish "
+		       << name << " : No such observable." << endl;
+    return;
+  }
+
+  string data = "";
+
+  if (_datachannels.find(name) != _datachannels.end())
+    data = _datachannels.find(name)->second;
+
+  vector<string> allchannels = theHisto->channels();
+  for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
+    if (*c != data)
+      theHisto->finish(*c);
+
+  // return here, if part of a parallel run
   if (_parallel) return;
 
   int normMode = NormaliseToXSec;
@@ -305,20 +324,6 @@ void Analysis2Base::finish (const string& name,
       normMode = _normalisation.find(name)->second;
   } else {
     normMode = norm;
-  }
-
-  string data = "";
-
-  if (_datachannels.find(name) != _datachannels.end())
-    data = _datachannels.find(name)->second;
-
-  Histogram2Ptr theHisto;
-  if (_histograms.find(name) != _histograms.end()) {
-    theHisto = _histograms.find(name)->second;
-  } else {
-    generator()->log() << "Analysis2Base::finish : could not finish "
-		       << name << " : No such observable." << endl;
-    return;
   }
 
   if (!combined) {
