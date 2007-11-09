@@ -250,12 +250,12 @@ void Analysis2Base::insert (const string& name,
 	Repository::clog() << error;
 	return;
       }
-      double c = log10(binhigher/binlower)/(double)numbins;
+      double c = log10(binhigher/binlower)/numbins;
       vector<pair<double,double> > binning;
       double bi = binlower;
       for(unsigned int i = 0; i< numbins; ++i) {
-	binning.push_back(make_pair(bi,bi*pow(10.,c*(double)i)));
-	bi *= pow(10.,c*(double)i);
+	binning.push_back(make_pair(bi,bi*pow(10.,c*i)));
+	bi *= pow(10.,c*i);
       }
       insertObservable(name,new_ptr(Histogram2(binning,"Herwig++")),options);
     }
@@ -330,7 +330,6 @@ void Analysis2Base::finish (const string& name,
     theHisto->xSec(generator()->currentEventHandler()->histogramScale());
   }
 
-  vector<string> allchannels = theHisto->channels();
   for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
     if (*c != data)
       theHisto->differential(*c);
