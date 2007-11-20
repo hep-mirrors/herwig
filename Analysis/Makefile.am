@@ -47,7 +47,11 @@ LEPEventShapes.cc LEPEventShapes.fh LEPEventShapes.h LEPEventShapes.icc \
 IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.fh \
 IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc \
 DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh \
-DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
+DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc \
+BELLECharmAnalysis.h BELLECharmAnalysis.icc \
+BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
+CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
+CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
 
 HwDecayAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 HwDecayAnalysis_la_SOURCES = \
@@ -94,11 +98,7 @@ BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
 a1DecayAnalysis.h a1DecayAnalysis.icc \
 a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
-BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
-BELLECharmAnalysis.h BELLECharmAnalysis.icc \
-BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
-CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
-CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
+BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
@@ -114,7 +114,13 @@ LEPJetAnalysis.h LEPJetAnalysis.icc \
 LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
 LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
-TopDalitzAnalysis.h TopDalitzAnalysis.icc \
+TopDalitzAnalysis.h TopDalitzAnalysis.icc
+
+pkglib_LTLIBRARIES += HwFieldAnalysis.la 
+HwFieldAnalysis_la_LDFLAGS = -module -version-info 3:0:0 
+HwFieldAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH) 
+HwFieldAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB) 
+HwFieldAnalysis_la_SOURCES = \
 RFieldAnalysis.cc RFieldAnalysis.fh \
 RFieldAnalysis.h RFieldAnalysis.icc 
 

@@ -288,7 +288,7 @@ struct ClassTraits<Herwig::RFieldAnalysis>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the RFieldAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */
@@ -296,8 +296,5 @@ struct ClassTraits<Herwig::RFieldAnalysis>
 }
 
 #include "RFieldAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RFieldAnalysis.tcc"
-#endif
 
 #endif /* THEPEG_RFieldAnalysis_H */
