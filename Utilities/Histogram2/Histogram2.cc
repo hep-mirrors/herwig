@@ -20,12 +20,12 @@ using namespace Herwig;
 
 void HistogramChannel::persistentOutput(PersistentOStream & os) const {
   os << _isCountingChannel << _bins << _outOfRange << _visible
-     << _total << _nanEvents << _nanWeights;
+     << _total << _nanEvents << _nanWeights << _finished;
 }
 
 void HistogramChannel::persistentInput(PersistentIStream & is) {
   is >> _isCountingChannel >> _bins >> _outOfRange >> _visible
-     >> _total >> _nanEvents >> _nanWeights;
+     >> _total >> _nanEvents >> _nanWeights >> _finished;
 }
 
 HistogramChannel& HistogramChannel::operator += (const HistogramChannel& c) {
@@ -324,7 +324,8 @@ void Histogram2::output (ostream& os, const string& name,
 
 }
 
-void HistogramChannel::write (ostream& os, const string& name) const {
+void HistogramChannel::write (ostream& os, const string& name) {
+  finish();
   os << "<channel"
      << " name=\"" << name << "\""
      << " counting=\"" << _isCountingChannel << "\"";
@@ -363,6 +364,8 @@ void HistogramChannel::write (ostream& os, const string& name) const {
 }
 
 string HistogramChannel::read (istream& is) {
+
+  _finished = true;
 
   string tag;
   string name;
@@ -452,7 +455,7 @@ string HistogramChannel::read (istream& is) {
 
 }
 
-void Histogram2::store (const string& name) const {
+void Histogram2::store (const string& name) {
 
   ofstream os ((name+".h2").c_str());
   if (!os) return;
@@ -480,7 +483,7 @@ void Histogram2::store (const string& name) const {
 
   os << "<channels size=\"" << _channels.size()  << "\">" << endl;
 
-  for(map<string,HistogramChannel>::const_iterator c = _channels.begin();
+  for(map<string,HistogramChannel>::iterator c = _channels.begin();
       c != _channels.end(); ++c) {
     c->second.write(os,c->first);
   }

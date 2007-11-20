@@ -252,7 +252,7 @@ public:
   /**
    * Write out the channel
    */
-  void write (ostream&, const string&) const;
+  void write (ostream&, const string&);
 
   /**
    * Read in the channel
@@ -324,6 +324,11 @@ private:
    * indefinite weights.
    */
   vector<unsigned long> _nanWeights;
+
+  /**
+   * Has finish() already been called?
+   */
+  bool _finished;
 
 };
 
@@ -605,7 +610,7 @@ public:
    * Write out the histogram to a file
    * name.h2
    */
-  void store (const string& name) const;
+  void store (const string& name);
 
   /**
    * Read in the histogram from a file
