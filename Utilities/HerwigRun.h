@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HerwigRun.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_RUN_H_
 #define HERWIG_RUN_H_
 
@@ -21,7 +28,7 @@ public:
   /**
    *  Enumeration for the status of the event generator
    */  
-  enum RunStatus { UNKNOWN, INIT, READ, RUN };
+  enum RunStatus { UNKNOWN, INIT, READ, RUN, ERROR, SUCCESS };
   
 public:
 
@@ -48,24 +55,9 @@ public:
   ThePEG::EventPtr generateEvent();
 
   /**
-   *  Names of files
+   * Generate the requested number of events
    */
-  //@{
-  /**
-   *  Name of the repository file
-   */
-  std::string repositoryFile() const;
-
-  /**
-   *  Name of the input file used to generate the repository
-   */
-  std::string repositoryInput() const;
-
-  /**
-   *   Name of the event generator to run
-   */
-  std::string runName() const;  
-  //@}
+  void generateEvents();
 
   /**
    *  Access to various flags and parameters
@@ -74,17 +66,22 @@ public:
   /**
    *  Number of events to generator
    */
-  int getN() const;
+  long getN() const;
 
   /**
    *  Number of events which have been generated
    */
-  int getNGen() const;
+  long getNGen() const;
 
   /**
    *  Status of the event generator
    */
   RunStatus status() const;
+
+  /**
+   *  State of the object
+   */
+  bool good() const;
 
   /**
    *  Is this the run mode
@@ -112,59 +109,17 @@ public:
    */
   static void printHelp(std::ostream &);
 
-  /**
-   *  Access to various particles and event properties
-   */
-  //@{
-  /**
-   *  Get the Step s from the event
-   * @param e The event
-   */
-  ThePEG::StepVector getSteps(ThePEG::EventPtr e = ThePEG::EventPtr());
-
-  /**
-   *  Get the final-state particles from a Step
-   * @param step The step, all steps if -1
-   * @param e The event
-   */
-  ThePEG::tPVector getFinalState(int step = -1, ThePEG::EventPtr e = ThePEG::EventPtr());
-
-  /**
-   *  Get all the particle from a Step
-   * @param step The step, all steps if -1
-   * @param e The event
-   */
-  ThePEG::ParticleSet getAllParticles(int step = -1, 
-				      ThePEG::EventPtr e = ThePEG::EventPtr());
-
-  /**
-   *  Get the intermediates from a Step
-   * @param step The step, all steps if -1
-   * @param e The event
-   */
-  ThePEG::ParticleSet getIntermediates(int step = -1, 
-				       ThePEG::EventPtr e = ThePEG::EventPtr());
-
-  /**
-   *  Get the outgoing particles from a Step.
-   * @param step The step, all steps if -1
-   * @param e The event
-   */
-  ThePEG::ParticleSet getOutgoing(int step = -1, 
-				  ThePEG::EventPtr e = ThePEG::EventPtr());
-  //@}
-
 private:
 
   /**
    *  Number of events to generate
    */
-  int N;
+  long N;
 
   /**
    *  Number of events which have been generated
    */
-  int ngen;
+  long ngen;
 
   /**
    *  Random number seed
@@ -205,11 +160,6 @@ private:
    *  Whether or not the event generator is initialised
    */
   bool isInitialized;
-
-  /**
-   *  Error status
-   */
-  bool errorFlag;
 
   /**
    *  The last event which was generated

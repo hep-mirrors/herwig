@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GenericMassGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GenericMassGenerator_H
 #define HERWIG_GenericMassGenerator_H
 //
@@ -191,6 +198,11 @@ protected:
    */
   inline virtual double weight(Energy mass,int shape) const;
 
+  /**
+   *  Accesss to the particle
+   */
+  inline tcPDPtr particle() const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -311,6 +323,12 @@ private:
    * Pointer to the width generator
    */
   WidthGeneratorPtr _widthgen;
+
+  /**
+   *  Option for the treatment of the width
+   */
+  bool _widthopt;
+
 };
 
 }

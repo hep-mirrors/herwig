@@ -1,178 +1,178 @@
 #
 # file containing the particle data for the diquarks
 #
-create /ThePEG/ConstituentParticleData /Defaults/Particles/dd_1
-setup /Defaults/Particles/dd_1 1103 dd_1 0.65 0.  0 0 -2 -3 3 1  0.65
-defaultparticle /Defaults/Particles/dd_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/dd_1bar
-setup /Defaults/Particles/dd_1bar -1103 dd_1bar 0.65 0.  0 0 2 3 3 1  0.65
-defaultparticle /Defaults/Particles/dd_1bar
-makeanti /Defaults/Particles/dd_1bar /Defaults/Particles/dd_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_0bar
-setup /Defaults/Particles/ud_0bar -2101 ud_0bar 0.65 0.  0 0 -1 3 1 1  0.65
-defaultparticle /Defaults/Particles/ud_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_1bar
-setup /Defaults/Particles/ud_1bar -2103 ud_1bar 0.65 0.  0 0 -1 3 3 1  0.65
-defaultparticle /Defaults/Particles/ud_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_1
-setup /Defaults/Particles/ud_1 2103 ud_1 0.65 0.  0 0 1 -3 3 1  0.65
-defaultparticle /Defaults/Particles/ud_1
-makeanti /Defaults/Particles/ud_1 /Defaults/Particles/ud_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/ud_0
-setup /Defaults/Particles/ud_0 2101 ud_0 0.65 0.  0 0 1 -3 1 1  0.65
-defaultparticle /Defaults/Particles/ud_0
-makeanti /Defaults/Particles/ud_0 /Defaults/Particles/ud_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/uu_1
-setup /Defaults/Particles/uu_1 2203 uu_1 0.65 0.  0 0 4 -3 3 1  0.65
-defaultparticle /Defaults/Particles/uu_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/uu_1bar
-setup /Defaults/Particles/uu_1bar -2203 uu_1bar 0.65 0.  0 0 -4 3 3 1  0.65
-defaultparticle /Defaults/Particles/uu_1bar
-makeanti /Defaults/Particles/uu_1bar /Defaults/Particles/uu_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_0bar
-setup /Defaults/Particles/sd_0bar -3101 sd_0bar 0.825 0.  0 0 2 3 1 1  0.825
-defaultparticle /Defaults/Particles/sd_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_0
-setup /Defaults/Particles/sd_0 3101 sd_0 0.825 0.  0 0 -2 -3 1 1  0.825
-defaultparticle /Defaults/Particles/sd_0
-makeanti /Defaults/Particles/sd_0 /Defaults/Particles/sd_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_1
-setup /Defaults/Particles/sd_1 3103 sd_1 0.825 0.  0 0 -2 -3 3 1  0.825
-defaultparticle /Defaults/Particles/sd_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/sd_1bar
-setup /Defaults/Particles/sd_1bar -3103 sd_1bar 0.825 0.  0 0 2 3 3 1  0.825
-defaultparticle /Defaults/Particles/sd_1bar
-makeanti /Defaults/Particles/sd_1bar /Defaults/Particles/sd_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/su_0bar
-setup /Defaults/Particles/su_0bar -3201 su_0bar 0.825 0.  0 0 -1 3 1 1  0.825
-defaultparticle /Defaults/Particles/su_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/su_0
-setup /Defaults/Particles/su_0 3201 su_0 0.825 0.  0 0 1 -3 1 1  0.825
-defaultparticle /Defaults/Particles/su_0
-makeanti /Defaults/Particles/su_0 /Defaults/Particles/su_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/su_1
-setup /Defaults/Particles/su_1 3203 su_1 0.825 0.  0 0 1 -3 3 1  0.825
-defaultparticle /Defaults/Particles/su_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/su_1bar
-setup /Defaults/Particles/su_1bar -3203 su_1bar 0.825 0.  0 0 -1 3 3 1  0.825
-defaultparticle /Defaults/Particles/su_1bar
-makeanti /Defaults/Particles/su_1bar /Defaults/Particles/su_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/ss_1bar
-setup /Defaults/Particles/ss_1bar -3303 ss_1bar 1 0.  0 0 2 3 3 1  1
-defaultparticle /Defaults/Particles/ss_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/ss_1
-setup /Defaults/Particles/ss_1 3303 ss_1 1 0.  0 0 -2 -3 3 1  1
-defaultparticle /Defaults/Particles/ss_1
-makeanti /Defaults/Particles/ss_1 /Defaults/Particles/ss_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_0
-setup /Defaults/Particles/cd_0 4101 cd_0 1.925 0.  0 0 1 -3 1 1  1.925
-defaultparticle /Defaults/Particles/cd_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_0bar
-setup /Defaults/Particles/cd_0bar -4101 cd_0bar 1.925 0.  0 0 -1 3 1 1  1.925
-defaultparticle /Defaults/Particles/cd_0bar
-makeanti /Defaults/Particles/cd_0bar /Defaults/Particles/cd_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_1bar
-setup /Defaults/Particles/cd_1bar -4103 cd_1bar 1.925 0.  0 0 -1 3 3 1  1.925
-defaultparticle /Defaults/Particles/cd_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cd_1
-setup /Defaults/Particles/cd_1 4103 cd_1 1.925 0.  0 0 1 -3 3 1  1.925
-defaultparticle /Defaults/Particles/cd_1
-makeanti /Defaults/Particles/cd_1 /Defaults/Particles/cd_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_0
-setup /Defaults/Particles/cu_0 4201 cu_0 1.925 0.  0 0 4 -3 1 1  1.925
-defaultparticle /Defaults/Particles/cu_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_0bar
-setup /Defaults/Particles/cu_0bar -4201 cu_0bar 1.925 0.  0 0 -4 3 1 1  1.925
-defaultparticle /Defaults/Particles/cu_0bar
-makeanti /Defaults/Particles/cu_0bar /Defaults/Particles/cu_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_1bar
-setup /Defaults/Particles/cu_1bar -4203 cu_1bar 1.925 0.  0 0 -4 3 3 1  1.925
-defaultparticle /Defaults/Particles/cu_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cu_1
-setup /Defaults/Particles/cu_1 4203 cu_1 1.925 0.  0 0 4 -3 3 1  1.925
-defaultparticle /Defaults/Particles/cu_1
-makeanti /Defaults/Particles/cu_1 /Defaults/Particles/cu_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_0
-setup /Defaults/Particles/cs_0 4301 cs_0 2.1 0.  0 0 1 -3 1 1  2.1
-defaultparticle /Defaults/Particles/cs_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_0bar
-setup /Defaults/Particles/cs_0bar -4301 cs_0bar 2.1 0.  0 0 -1 3 1 1  2.1
-defaultparticle /Defaults/Particles/cs_0bar
-makeanti /Defaults/Particles/cs_0bar /Defaults/Particles/cs_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_1bar
-setup /Defaults/Particles/cs_1bar -4303 cs_1bar 2.1 0.  0 0 -1 3 3 1  2.1
-defaultparticle /Defaults/Particles/cs_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cs_1
-setup /Defaults/Particles/cs_1 4303 cs_1 2.1 0.  0 0 1 -3 3 1  2.1
-defaultparticle /Defaults/Particles/cs_1
-makeanti /Defaults/Particles/cs_1 /Defaults/Particles/cs_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cc_1
-setup /Defaults/Particles/cc_1 4403 cc_1 3.2 0.  0 0 4 -3 3 1  3.2
-defaultparticle /Defaults/Particles/cc_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/cc_1bar
-setup /Defaults/Particles/cc_1bar -4403 cc_1bar 3.2 0.  0 0 -4 -3 3 1  3.2
-defaultparticle /Defaults/Particles/cc_1bar
-makeanti /Defaults/Particles/cc_1bar /Defaults/Particles/cc_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_0bar
-setup /Defaults/Particles/bd_0bar -5101 bd_0bar 5.325 0.  0 0 2 -3 1 1  5.325
-defaultparticle /Defaults/Particles/bd_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_0
-setup /Defaults/Particles/bd_0 5101 bd_0 5.325 0.  0 0 -2 -3 1 1  5.325
-defaultparticle /Defaults/Particles/bd_0
-makeanti /Defaults/Particles/bd_0 /Defaults/Particles/bd_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_1
-setup /Defaults/Particles/bd_1 5103 bd_1 5.325 0.  0 0 -2 -3 3 1  5.325
-defaultparticle /Defaults/Particles/bd_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bd_1bar
-setup /Defaults/Particles/bd_1bar -5103 bd_1bar 5.325 0.  0 0 2 3 3 1  5.325
-defaultparticle /Defaults/Particles/bd_1bar
-makeanti /Defaults/Particles/bd_1bar /Defaults/Particles/bd_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_0bar
-setup /Defaults/Particles/bu_0bar -5201 bu_0bar 5.325 0.  0 0 -1 3 1 1  5.325
-defaultparticle /Defaults/Particles/bu_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_1bar
-setup /Defaults/Particles/bu_1bar -5203 bu_1bar 5.325 0.  0 0 -1 3 3 1  5.325
-defaultparticle /Defaults/Particles/bu_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_1
-setup /Defaults/Particles/bu_1 5203 bu_1 5.325 0.  0 0 1 -3 3 1  5.325
-defaultparticle /Defaults/Particles/bu_1
-makeanti /Defaults/Particles/bu_1 /Defaults/Particles/bu_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bu_0
-setup /Defaults/Particles/bu_0 5201 bu_0 5.325 0.  0 0 1 -3 1 1  5.325
-defaultparticle /Defaults/Particles/bu_0
-makeanti /Defaults/Particles/bu_0 /Defaults/Particles/bu_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_0
-setup /Defaults/Particles/bs_0 5301 bs_0 5.5 0.  0 0 -2 -3 1 1  5.5
-defaultparticle /Defaults/Particles/bs_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_1
-setup /Defaults/Particles/bs_1 5303 bs_1 5.5 0.  0 0 -2 -3 3 1  5.5
-defaultparticle /Defaults/Particles/bs_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_1bar
-setup /Defaults/Particles/bs_1bar -5303 bs_1bar 5.5 0.  0 0 2 3 3 1  5.5
-defaultparticle /Defaults/Particles/bs_1bar
-makeanti /Defaults/Particles/bs_1bar /Defaults/Particles/bs_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bs_0bar
-setup /Defaults/Particles/bs_0bar -5301 bs_0bar 5.5 0.  0 0 2 3 1 1  5.5
-defaultparticle /Defaults/Particles/bs_0bar
-makeanti /Defaults/Particles/bs_0bar /Defaults/Particles/bs_0
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_0bar
-setup /Defaults/Particles/bc_0bar -5401 bc_0bar 6.6 0.  0 0 -1 3 1 1  6.6
-defaultparticle /Defaults/Particles/bc_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_1bar
-setup /Defaults/Particles/bc_1bar -5403 bc_1bar 6.6 0.  0 0 -1 3 3 1  6.6
-defaultparticle /Defaults/Particles/bc_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_1
-setup /Defaults/Particles/bc_1 5403 bc_1 6.6 0.  0 0 1 -3 3 1  6.6
-defaultparticle /Defaults/Particles/bc_1
-makeanti /Defaults/Particles/bc_1 /Defaults/Particles/bc_1bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bc_0
-setup /Defaults/Particles/bc_0 5401 bc_0 6.6 0.  0 0 1 -3 1 1  6.6
-defaultparticle /Defaults/Particles/bc_0
-makeanti /Defaults/Particles/bc_0 /Defaults/Particles/bc_0bar
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bb_1
-setup /Defaults/Particles/bb_1 5503 bb_1 10 0.  0 0 -2 -3 3 1  10
-defaultparticle /Defaults/Particles/bb_1
-create /ThePEG/ConstituentParticleData /Defaults/Particles/bb_1bar
-setup /Defaults/Particles/bb_1bar -5503 bb_1bar 10 0.  0 0 2 3 3 1  10
-defaultparticle /Defaults/Particles/bb_1bar
-makeanti /Defaults/Particles/bb_1bar /Defaults/Particles/bb_1
+create ThePEG::ConstituentParticleData dd_1
+setup dd_1 1103 dd_1 0.65 0.  0 0 -2 -3 3 1  0.65
+defaultparticle dd_1
+create ThePEG::ConstituentParticleData dd_1bar
+setup dd_1bar -1103 dd_1bar 0.65 0.  0 0 2 3 3 1  0.65
+defaultparticle dd_1bar
+makeanti dd_1bar dd_1
+create ThePEG::ConstituentParticleData ud_0bar
+setup ud_0bar -2101 ud_0bar 0.65 0.  0 0 -1 3 1 1  0.65
+defaultparticle ud_0bar
+create ThePEG::ConstituentParticleData ud_1bar
+setup ud_1bar -2103 ud_1bar 0.65 0.  0 0 -1 3 3 1  0.65
+defaultparticle ud_1bar
+create ThePEG::ConstituentParticleData ud_1
+setup ud_1 2103 ud_1 0.65 0.  0 0 1 -3 3 1  0.65
+defaultparticle ud_1
+makeanti ud_1 ud_1bar
+create ThePEG::ConstituentParticleData ud_0
+setup ud_0 2101 ud_0 0.65 0.  0 0 1 -3 1 1  0.65
+defaultparticle ud_0
+makeanti ud_0 ud_0bar
+create ThePEG::ConstituentParticleData uu_1
+setup uu_1 2203 uu_1 0.65 0.  0 0 4 -3 3 1  0.65
+defaultparticle uu_1
+create ThePEG::ConstituentParticleData uu_1bar
+setup uu_1bar -2203 uu_1bar 0.65 0.  0 0 -4 3 3 1  0.65
+defaultparticle uu_1bar
+makeanti uu_1bar uu_1
+create ThePEG::ConstituentParticleData sd_0bar
+setup sd_0bar -3101 sd_0bar 0.825 0.  0 0 2 3 1 1  0.825
+defaultparticle sd_0bar
+create ThePEG::ConstituentParticleData sd_0
+setup sd_0 3101 sd_0 0.825 0.  0 0 -2 -3 1 1  0.825
+defaultparticle sd_0
+makeanti sd_0 sd_0bar
+create ThePEG::ConstituentParticleData sd_1
+setup sd_1 3103 sd_1 0.825 0.  0 0 -2 -3 3 1  0.825
+defaultparticle sd_1
+create ThePEG::ConstituentParticleData sd_1bar
+setup sd_1bar -3103 sd_1bar 0.825 0.  0 0 2 3 3 1  0.825
+defaultparticle sd_1bar
+makeanti sd_1bar sd_1
+create ThePEG::ConstituentParticleData su_0bar
+setup su_0bar -3201 su_0bar 0.825 0.  0 0 -1 3 1 1  0.825
+defaultparticle su_0bar
+create ThePEG::ConstituentParticleData su_0
+setup su_0 3201 su_0 0.825 0.  0 0 1 -3 1 1  0.825
+defaultparticle su_0
+makeanti su_0 su_0bar
+create ThePEG::ConstituentParticleData su_1
+setup su_1 3203 su_1 0.825 0.  0 0 1 -3 3 1  0.825
+defaultparticle su_1
+create ThePEG::ConstituentParticleData su_1bar
+setup su_1bar -3203 su_1bar 0.825 0.  0 0 -1 3 3 1  0.825
+defaultparticle su_1bar
+makeanti su_1bar su_1
+create ThePEG::ConstituentParticleData ss_1bar
+setup ss_1bar -3303 ss_1bar 1 0.  0 0 2 3 3 1  1
+defaultparticle ss_1bar
+create ThePEG::ConstituentParticleData ss_1
+setup ss_1 3303 ss_1 1 0.  0 0 -2 -3 3 1  1
+defaultparticle ss_1
+makeanti ss_1 ss_1bar
+create ThePEG::ConstituentParticleData cd_0
+setup cd_0 4101 cd_0 1.925 0.  0 0 1 -3 1 1  1.925
+defaultparticle cd_0
+create ThePEG::ConstituentParticleData cd_0bar
+setup cd_0bar -4101 cd_0bar 1.925 0.  0 0 -1 3 1 1  1.925
+defaultparticle cd_0bar
+makeanti cd_0bar cd_0
+create ThePEG::ConstituentParticleData cd_1bar
+setup cd_1bar -4103 cd_1bar 1.925 0.  0 0 -1 3 3 1  1.925
+defaultparticle cd_1bar
+create ThePEG::ConstituentParticleData cd_1
+setup cd_1 4103 cd_1 1.925 0.  0 0 1 -3 3 1  1.925
+defaultparticle cd_1
+makeanti cd_1 cd_1bar
+create ThePEG::ConstituentParticleData cu_0
+setup cu_0 4201 cu_0 1.925 0.  0 0 4 -3 1 1  1.925
+defaultparticle cu_0
+create ThePEG::ConstituentParticleData cu_0bar
+setup cu_0bar -4201 cu_0bar 1.925 0.  0 0 -4 3 1 1  1.925
+defaultparticle cu_0bar
+makeanti cu_0bar cu_0
+create ThePEG::ConstituentParticleData cu_1bar
+setup cu_1bar -4203 cu_1bar 1.925 0.  0 0 -4 3 3 1  1.925
+defaultparticle cu_1bar
+create ThePEG::ConstituentParticleData cu_1
+setup cu_1 4203 cu_1 1.925 0.  0 0 4 -3 3 1  1.925
+defaultparticle cu_1
+makeanti cu_1 cu_1bar
+create ThePEG::ConstituentParticleData cs_0
+setup cs_0 4301 cs_0 2.1 0.  0 0 1 -3 1 1  2.1
+defaultparticle cs_0
+create ThePEG::ConstituentParticleData cs_0bar
+setup cs_0bar -4301 cs_0bar 2.1 0.  0 0 -1 3 1 1  2.1
+defaultparticle cs_0bar
+makeanti cs_0bar cs_0
+create ThePEG::ConstituentParticleData cs_1bar
+setup cs_1bar -4303 cs_1bar 2.1 0.  0 0 -1 3 3 1  2.1
+defaultparticle cs_1bar
+create ThePEG::ConstituentParticleData cs_1
+setup cs_1 4303 cs_1 2.1 0.  0 0 1 -3 3 1  2.1
+defaultparticle cs_1
+makeanti cs_1 cs_1bar
+create ThePEG::ConstituentParticleData cc_1
+setup cc_1 4403 cc_1 3.2 0.  0 0 4 -3 3 1  3.2
+defaultparticle cc_1
+create ThePEG::ConstituentParticleData cc_1bar
+setup cc_1bar -4403 cc_1bar 3.2 0.  0 0 -4 -3 3 1  3.2
+defaultparticle cc_1bar
+makeanti cc_1bar cc_1
+create ThePEG::ConstituentParticleData bd_0bar
+setup bd_0bar -5101 bd_0bar 5.325 0.  0 0 2 -3 1 1  5.325
+defaultparticle bd_0bar
+create ThePEG::ConstituentParticleData bd_0
+setup bd_0 5101 bd_0 5.325 0.  0 0 -2 -3 1 1  5.325
+defaultparticle bd_0
+makeanti bd_0 bd_0bar
+create ThePEG::ConstituentParticleData bd_1
+setup bd_1 5103 bd_1 5.325 0.  0 0 -2 -3 3 1  5.325
+defaultparticle bd_1
+create ThePEG::ConstituentParticleData bd_1bar
+setup bd_1bar -5103 bd_1bar 5.325 0.  0 0 2 3 3 1  5.325
+defaultparticle bd_1bar
+makeanti bd_1bar bd_1
+create ThePEG::ConstituentParticleData bu_0bar
+setup bu_0bar -5201 bu_0bar 5.325 0.  0 0 -1 3 1 1  5.325
+defaultparticle bu_0bar
+create ThePEG::ConstituentParticleData bu_1bar
+setup bu_1bar -5203 bu_1bar 5.325 0.  0 0 -1 3 3 1  5.325
+defaultparticle bu_1bar
+create ThePEG::ConstituentParticleData bu_1
+setup bu_1 5203 bu_1 5.325 0.  0 0 1 -3 3 1  5.325
+defaultparticle bu_1
+makeanti bu_1 bu_1bar
+create ThePEG::ConstituentParticleData bu_0
+setup bu_0 5201 bu_0 5.325 0.  0 0 1 -3 1 1  5.325
+defaultparticle bu_0
+makeanti bu_0 bu_0bar
+create ThePEG::ConstituentParticleData bs_0
+setup bs_0 5301 bs_0 5.5 0.  0 0 -2 -3 1 1  5.5
+defaultparticle bs_0
+create ThePEG::ConstituentParticleData bs_1
+setup bs_1 5303 bs_1 5.5 0.  0 0 -2 -3 3 1  5.5
+defaultparticle bs_1
+create ThePEG::ConstituentParticleData bs_1bar
+setup bs_1bar -5303 bs_1bar 5.5 0.  0 0 2 3 3 1  5.5
+defaultparticle bs_1bar
+makeanti bs_1bar bs_1
+create ThePEG::ConstituentParticleData bs_0bar
+setup bs_0bar -5301 bs_0bar 5.5 0.  0 0 2 3 1 1  5.5
+defaultparticle bs_0bar
+makeanti bs_0bar bs_0
+create ThePEG::ConstituentParticleData bc_0bar
+setup bc_0bar -5401 bc_0bar 6.6 0.  0 0 -1 3 1 1  6.6
+defaultparticle bc_0bar
+create ThePEG::ConstituentParticleData bc_1bar
+setup bc_1bar -5403 bc_1bar 6.6 0.  0 0 -1 3 3 1  6.6
+defaultparticle bc_1bar
+create ThePEG::ConstituentParticleData bc_1
+setup bc_1 5403 bc_1 6.6 0.  0 0 1 -3 3 1  6.6
+defaultparticle bc_1
+makeanti bc_1 bc_1bar
+create ThePEG::ConstituentParticleData bc_0
+setup bc_0 5401 bc_0 6.6 0.  0 0 1 -3 1 1  6.6
+defaultparticle bc_0
+makeanti bc_0 bc_0bar
+create ThePEG::ConstituentParticleData bb_1
+setup bb_1 5503 bb_1 10 0.  0 0 -2 -3 3 1  10
+defaultparticle bb_1
+create ThePEG::ConstituentParticleData bb_1bar
+setup bb_1bar -5503 bb_1bar 10 0.  0 0 2 3 3 1  10
+defaultparticle bb_1bar
+makeanti bb_1bar bb_1

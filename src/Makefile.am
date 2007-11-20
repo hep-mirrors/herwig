@@ -8,9 +8,12 @@ Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
 bin_SCRIPTS = herwig-config
 
-INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in SPhenoSPS1a.spc
+HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model RS.model
 
-dist_pkgdata_DATA = $(INPUTFILES)
+INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-RS.in \
+             ILC-MSSM.in ILC-MUED.in ILC-RS.in
+
+dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
 
 ########## SVN version string. Only use in cc files! ####################
@@ -37,32 +40,25 @@ endif # # # # # # # # # # # # #
 ########################################################################
 
 CLEANFILES = HerwigDefaults.rpo \
-  LEP.run LEP.log LEP.out LEP.tex \
-  LHC.run LHC.log LHC.out LHC.tex \
-  TVT.run TVT.log TVT.out TVT.tex \
-  ILC.run ILC.log ILC.out ILC.tex \
-  valgrind-init.log valgrind-read.log \
-  valgrind-run.log versionstring.h version.tmp \
-  version.tmp.new UE.out Looptools.log multi.test \
-  LHC-MSSM.run LHC-MSSM.log LHC-MSSM.out LHC-MSSM.tex \
-  LHC-MUED.run LHC-MUED.log LHC-MUED.out LHC-MUED.tex \
-  LHC-MSSM-BSMModelInfo.out LHC-MUED-BSMModelInfo.out *.output
+  *.run *.log *.out *.tex \
+  versionstring.h version.tmp \
+  version.tmp.new multi.test \
+  *.output
 
 ## checking targets ##
 
-HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in $(top_builddir)/lib/*.so
+HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
 	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in --exitonerror
 
 check-local: check-LHC check-LEP check-TVT check-ILC check-LHC-MSSM \
-	check-LHC-MUED
+	check-LHC-MUED check-LHC-RS
 
-check-LHC-MSSM: link-spectrum
+link-helper-files:
+	@for i in $(HELPERFILES); do \
+	if test -f $(srcdir)/$$i -a ! -e $$i; then \
+	$(LN_S) -f $(srcdir)/$$i; fi; done
 
-link-spectrum:
-	@if test -f $(srcdir)/SPhenoSPS1a.spc -a ! -e SPhenoSPS1a.spc; then \
-	$(LN_S) -f $(srcdir)/SPhenoSPS1a.spc; fi
-
-check-%: $(srcdir)/%.in HerwigDefaults.rpo
+check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< --exitonerror
 	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N100 --exitonerror
 

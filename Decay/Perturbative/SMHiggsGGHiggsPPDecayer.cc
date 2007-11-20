@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SMHiggsGGHiggsPPDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SMHiggsGGHiggsPPDecayer class.
 //
@@ -47,11 +54,11 @@ ParticleVector SMHiggsGGHiggsPPDecayer::decay(const Particle & parent,
 }
 
 void SMHiggsGGHiggsPPDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _hggvertex  << _hppvertex << _h0wgt;
+  os << _hggvertex  << _hppvertex << _h0wgt << _hwidth;
 }
 
 void SMHiggsGGHiggsPPDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hggvertex >> _hppvertex >> _h0wgt;
+  is >> _hggvertex >> _hppvertex >> _h0wgt >> _hwidth;
 }
 
 ClassDescription<SMHiggsGGHiggsPPDecayer>
@@ -119,6 +126,61 @@ double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int,
   }
   //symmetric final states
   output /= 2.;
+  // normalize if width generator
+  if(_hwidth) {
+    if(decay[0]->id() == ParticleID::g) 
+      output *=UnitRemoval::E/_hwidth->partialWidth(part.mass(),13);
+    else
+      output *=UnitRemoval::E/_hwidth->partialWidth(part.mass(),12);
+  }
   return output;
 }
 
+void SMHiggsGGHiggsPPDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // get the width generator for the higgs
+  tPDPtr higgs = getParticleData(ParticleID::h0);
+  if(higgs->widthGenerator()) {
+    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(higgs->widthGenerator());
+  }
+  if(_hggvertex) {
+    _hggvertex->init();
+  }
+  else {
+    throw InitException() << "SMHiggsGGHiggsPPDecayer::doinit() - " 
+			  << "_hggvertex is null";
+  }
+  if(_hppvertex) {
+    _hppvertex->init();
+  }
+  else {
+    throw InitException() << "SMHiggsGGHiggsPPDecayer::doinit() - " 
+			  << "_hppvertex is null";
+  }
+  //set up decay modes
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  vector<double> wgt(0);
+  //glu,glu mode
+  extpart[0] = getParticleData(ParticleID::h0);
+  extpart[1] = getParticleData(ParticleID::g);
+  extpart[2] = getParticleData(ParticleID::g);
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  addMode(mode,_h0wgt[0],wgt);
+  //gamma,gamma mode
+  extpart[1] = getParticleData(ParticleID::gamma);
+  extpart[2] = getParticleData(ParticleID::gamma);
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  addMode(mode,_h0wgt[1],wgt);
+}
+
+void SMHiggsGGHiggsPPDecayer::doinitrun() {
+  _hggvertex->initrun();
+  _hppvertex->initrun();
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      _h0wgt[ix] = mode(ix)->maxWeight();
+    }
+  }
+}

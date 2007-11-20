@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MPIHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MPIHandler class.
 //
@@ -40,7 +47,7 @@ using namespace Herwig;
 typedef Ptr< MPISampler >::transient_pointer tMPISamplerPtr;
 
 MPIHandler::MPIHandler()
-  : theBinStrategy(2), theJmueo(2) {}
+  : theBinStrategy(2), theAlgorithm(2) {}
 
 MPIHandler::MPIHandler(const MPIHandler & x)
   : Interfaced(x), LastXCombInfo<>(x), 
@@ -49,7 +56,7 @@ MPIHandler::MPIHandler(const MPIHandler & x)
     theXCombs(x.theXCombs), theXSecs(x.theXSecs),
     theBinStrategy(x.theBinStrategy), theMEXMap(x.theMEXMap),
     theMaxDims(x.theMaxDims), theMultiplicities(x.theMultiplicities),
-    theJmueo(x.theJmueo), theRadius(x.theRadius) {}
+    theAlgorithm(x.theAlgorithm), theInvRadius(x.theInvRadius) {}
 
 
 MPIHandler::~MPIHandler() {}
@@ -132,35 +139,34 @@ void MPIHandler::initialize() {
   }
 
   ofstream file;
-  file.open("multi.test");
-  file.close();
-
-  file.open("UE.out");
+  if(Algorithm()==0) file.open("UE.out");
   Stat tot;
-
   statistics(file, tot);
+
+  if(Algorithm()==0){
   
-  //check out the eikonalization -1=inelastic, -2=total xsec
-  Eikonalization integrand(this, tot.xSec(), -1);
-  Eikonalization integrand_tot(this, tot.xSec(), -2);
-  GaussianIntegrator integrator;
+    //check out the eikonalization -1=inelastic, -2=total xsec
+    Eikonalization integrand(this, tot.xSec(), -1);
+    Eikonalization integrand_tot(this, tot.xSec(), -2);
+    GaussianIntegrator integrator;
 
-  string line = "======================================="
-    "=======================================\n";
+    string line = "======================================="
+      "=======================================\n";
   
-  CrossSection inel(integrator.value(integrand, Length(), 1000.*sqrt(millibarn))), 
-    total(integrator.value(integrand_tot, Length(), 1000.*sqrt(millibarn)));
+    CrossSection inel(integrator.value(integrand, Length(), 1000.*sqrt(millibarn))), 
+      total(integrator.value(integrand_tot, Length(), 1000.*sqrt(millibarn)));
 
-  file << "\nEikonalization results:\n"
-       << setw(79)
-       << "Cross-section (mb)\n"
-       << line << "Inelastic cross-section" << setw(55) 
-       << inel/millibarn << endl
-       << "Total pp->X cross-section" << setw(53)
-       << total/millibarn << endl << line 
-       << "Average number of MPI" << setw(57) << tot.xSec()/inel << endl;
+    file << "\nEikonalization results:\n"
+         << setw(79)
+         << "Cross-section (mb)\n"
+         << line << "Inelastic cross-section" << setw(55) 
+         << inel/millibarn << endl
+         << "Total pp->X cross-section" << setw(53)
+         << total/millibarn << endl << line 
+         << "Average number of MPI" << setw(57) << tot.xSec()/inel << endl;
 
-  file.close();
+    file.close();
+  }
   
   //now calculate the indivudual Probabilities
   XSVector UEXSecs;
@@ -323,6 +329,9 @@ void MPIHandler::statistics(ostream & os, Stat & tot) const {
     tot += s;
   }
 
+  //if Algorithm != 0: output makes no sense:
+  if(Algorithm() != 0) return;
+
   string line = "======================================="
     "=======================================\n";
 
@@ -398,10 +407,6 @@ void MPIHandler::statistics(ostream & os, Stat & tot) const {
 
 void MPIHandler::Probs(XSVector UEXSecs) {
   GaussianIntegrator integrator;
-  ofstream file;
-  file.open("multi.test", ios::app);
-  file << "Probabilities:\n";
-  
   unsigned int i(1);
   double P(0.0), AvgN(0.0);
   Length bmax(500.0*sqrt(millibarn));
@@ -418,24 +423,19 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       Eikonalization integrand(this, *it, i);
       
       if(i>10) bmax = 10.0*sqrt(millibarn);
-      if(theJmueo > 0){
+      if(theAlgorithm > 0){
 	P = integrator.value(integrand, Length(), bmax)/(*it);
       }else{
 	P = integrator.value(integrand, Length(), bmax) /
 	integrator.value(inelint, Length(), bmax);
       }
       AvgN += P*(i-1);
-      
-      file << "i = " << i-1 << ", P = " << P << "\n";
       //store the probability
       theMultiplicities.insert(P, i-1);
 
       i++;
     } while ( (i < 100) && (i < 5 || P > 1.e-15) );
 
-    file << "------------------------------------------------\n";
-    file << "AvgN: " << AvgN << endl;    
-    file.close();
   }
   
 }
@@ -497,7 +497,7 @@ Length Eikonalization::operator() (Length b) const {
   //P_n*sigma. Described in MPIHandler.h
   if(theoption > 0){
     n=theoption;
-    if(theHandler->theJmueo > 0)
+    if(theHandler->theAlgorithm > 0)
       return fac / theHandler->factorial(n-1) * pow(Ab*sigma, double(n)) 
 	* exp(-Ab*sigma);
     else
@@ -517,7 +517,7 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << theXCombs << ounit(theXSecs, nanobarn)
      << theBinStrategy << theMaxDims << theMEXMap
      << theMultiplicities << theSampler << theHandler
-     << theJmueo << ounit(theRadius, GeV2);
+     << theAlgorithm << ounit(theInvRadius, GeV2);
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -525,7 +525,7 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> theXCombs >> iunit(theXSecs, nanobarn)
      >> theBinStrategy >> theMaxDims >> theMEXMap
      >> theMultiplicities >> theSampler >> theHandler
-     >> theJmueo >> iunit(theRadius, GeV2);
+     >> theAlgorithm >> iunit(theInvRadius, GeV2);
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
@@ -554,36 +554,36 @@ void MPIHandler::Init() {
      &MPIHandler::theCuts, false, false, true, false);
 
 
-  static Parameter<MPIHandler,Energy2> interfaceRadius
-    ("Radius",
-     "The inverse hadron radius squared, used in the overlap function",
-     &MPIHandler::theRadius, GeV2, 0.71*GeV2, 0.0*GeV2, 0*GeV2,
-     true, false, Interface::lowerlim);
+  static Parameter<MPIHandler,Energy2> interfaceInvRadius
+    ("InvRadius",
+     "The inverse hadron radius squared used in the overlap function",
+     &MPIHandler::theInvRadius, GeV2, 1.3*GeV2, 0.2*GeV2, 4.0*GeV2,
+     true, false, Interface::limited);
 
 
-  static Switch<MPIHandler,int> interfaceJmueo
-    ("Jmueo",
+  static Switch<MPIHandler,int> interfaceAlgorithm
+    ("Algorithm",
      "This option determines in which mode the UE algorithm runs. "
      "0 for UE under low pt jets, 1 for UE(jets) under highpt jets, "
      "2 for efficient generation "
      "of UE activity with a rare signal process.",
-     &MPIHandler::theJmueo, 2, false, false);
+     &MPIHandler::theAlgorithm, 2, false, false);
 
-  static SwitchOption interfaceJmueo0
-    (interfaceJmueo,
+  static SwitchOption interfaceAlgorithm0
+    (interfaceAlgorithm,
      "lowpt",
      "Signal process has similar cross section than UE.",
      0);
 
-  static SwitchOption interfaceJmueo1
-    (interfaceJmueo,
+  static SwitchOption interfaceAlgorithm1
+    (interfaceAlgorithm,
      "highpt",
      "Signal process has a much smaller cross section "
      "than UE, but the same ME's",
      1);
 
-  static SwitchOption interfaceJmueo2
-    (interfaceJmueo,
+  static SwitchOption interfaceAlgorithm2
+    (interfaceAlgorithm,
      "rare",
      "Signal process has a much smaller cross section "
      "than UE and is a different process.",
@@ -619,6 +619,6 @@ void MPIHandler::Init() {
 }
 
 InvArea MPIHandler::OverlapFunction(Length b) {
-  InvLength mu = sqrt(theRadius)/hbarc;
+  InvLength mu = sqrt(theInvRadius)/hbarc;
   return (sqr(mu)/96/Constants::pi)*pow(mu*b, 3)*(gsl_sf_bessel_Kn(3, mu*b));
 }

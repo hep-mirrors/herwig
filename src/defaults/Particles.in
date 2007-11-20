@@ -1,6 +1,10 @@
-#
-#  New particle data tables
-#
+#####################################################################
+# Herwig now gets all its particle information from the database
+# at URL HERE
+#####################################################################
+mkdir /Herwig/Particles
+cd /Herwig/Particles
+
 read leptons.in
 read quarks.in
 read bosons.in
@@ -9,16 +13,24 @@ read baryons.in
 read diquarks.in
 read BSMParticles.in
 read DiffractiveParticles.in
+
+mkdir /Herwig/Masses
+cd /Herwig/Masses
 read masses.in
+
+mkdir /Herwig/Widths
+cd /Herwig/Widths
 read widths.in
+
 #
 #  not sure about this
 #
-create /ThePEG/ParticleData /Defaults/Particles/R0 
-setup /Defaults/Particles/R0 40 R0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
-defaultparticle /Defaults/Particles/R0 
-create /ThePEG/ParticleData /Defaults/Particles/Rbar0 
-setup /Defaults/Particles/Rbar0 -40 Rbar0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
-defaultparticle /Defaults/Particles/Rbar0 
-makeanti /Defaults/Particles/R0 /Defaults/Particles/Rbar0 
+cd /Herwig/Particles
 
+create ThePEG::ParticleData R0 
+setup R0 40 R0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
+defaultparticle R0 
+create ThePEG::ParticleData Rbar0 
+setup Rbar0 -40 Rbar0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
+defaultparticle Rbar0 
+makeanti R0 Rbar0 

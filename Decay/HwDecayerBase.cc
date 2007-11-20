@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HwDecayerBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HwDecayerBase class.
 //
@@ -64,11 +71,11 @@ ParticleVector HwDecayerBase::decay(const DecayMode & dm,
 }
 
 void HwDecayerBase::persistentOutput(PersistentOStream & os) const {
-  os << _initialize;
+  os << _initialize << _dbOutput;
 }
 
 void HwDecayerBase::persistentInput(PersistentIStream & is, int) {
-  is >> _initialize;
+  is >> _initialize >> _dbOutput;
 }
 
 AbstractClassDescription<HwDecayerBase> HwDecayerBase::initHwDecayerBase;
@@ -94,11 +101,25 @@ void HwDecayerBase::Init() {
      "Use the maximum weight and channel weights supplied for the integration",
      false);
 
+  static Switch<HwDecayerBase,bool> interfaceDatabaseOutput
+    ("DatabaseOutput",
+     "Whether to print the database information",
+     &HwDecayerBase::_dbOutput, false, false, false);
+  static SwitchOption interfaceDatabaseOutputYes
+    (interfaceDatabaseOutput,
+     "Yes",
+     "Output information on the decayer initialization",
+     true);
+  static SwitchOption interfaceDatabaseOutputNo
+    (interfaceDatabaseOutput,
+     "No",
+     "Do not output information about the decayer initialization",
+     false);
 }
 
 void HwDecayerBase::dofinish() {
   Decayer::dofinish();
-  if(initialize()) {
+  if(initialize() && databaseOutput()) {
     string fname = CurrentGenerator::current().filename() + 
       string("-") + name() + string(".output");
     ofstream output(fname.c_str());

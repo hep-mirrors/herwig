@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// QTildeReconstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the QTildeReconstructor class.
 //
@@ -9,7 +16,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 
 using namespace Herwig;
@@ -90,7 +96,6 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    map<tShowerProgenitorPtr,pair<Energy,double> > intrinsic) const {
-  Timer<1100> timer("QTildeReconstructor::reconstructHardJets");
   try {
     bool radiated[2] = {false,false};
     // find the hard process centre-of-mass energy
@@ -348,11 +353,7 @@ reconstructISJets(Lorentz5Momentum pcm,
   Energy2 C = a2*b1*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if (rad >= 0) {kp = B/(2.*A)*(1.+sqrt(rad));}
-  else {
-    throw Exception() << "QTildeReconstructor::reconstructISJets " 
-		      << "WARNING! Can't get kappa_pm!\n"
-		      << Exception::eventerror;
-  }
+  else throw KinematicsReconstructionVeto();
   // now compute k1, k2
   double k1 = 1.0, k2 = 1.0;
   rad = kp*(b1+kp*b2)/(kp*a1+a2)*(x1/x2);   
@@ -360,11 +361,7 @@ reconstructISJets(Lorentz5Momentum pcm,
     k1 = sqrt(rad);
     k2 = kp/k1;
   } 
-  else
-    throw Exception() << "QTildeReconstructor::reconstructISJets " 
-		      << "  Plus:  k1 = " << k1 
-		      << "WARNING! Can't get k1p, k2p!\n"
-		      << Exception::eventerror;
+  else throw KinematicsReconstructionVeto();
   double beta1 = getBeta((a1+b1), (a1-b1), 
 			 (k1*a1+b1/k1), (k1*a1-b1/k1));
   double beta2 = getBeta((a2+b2), (a2-b2), 
@@ -388,7 +385,7 @@ reconstructISJets(Lorentz5Momentum pcm,
   if(parent->momentum().e()/pq[1].e()>1.||parent->momentum().z()/pq[1].z()>1.) throw KinematicsReconstructionVeto();
   boostRest = pcm.findBoostToCM();
   Lorentz5Momentum newcmf=(toBoost[0]->momentum() + toBoost[1]->momentum());
-  if(newcmf.m()<0.*GeV) throw KinematicsReconstructionVeto();
+  if(newcmf.m()<0.*GeV||newcmf.e()<0.*GeV) throw KinematicsReconstructionVeto();
   boostNewF = newcmf.boostVector();
   return true;
 }
@@ -457,13 +454,25 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     JetKinVect jetKinematics;
     bool atLeastOnce = radiated[0];
     LorentzRotation restboost(boosttorest,gammarest);
+    Energy inmass(0.*GeV);
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // only consider final-state jets
-      if(!ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
+      if(!ShowerHardJets[ix]->progenitor()->isFinalState()) {
+	inmass=ShowerHardJets[ix]->progenitor()->mass();
+	continue;
+      }
       // do the reconstruction
       JetKinStruct tempJetKin;      
       tempJetKin.parent = ShowerHardJets[ix]->progenitor();
+      if(ShowerHardJets.size()==2) {
+	Lorentz5Momentum dum=ShowerHardJets[ix]->progenitor()->momentum();
+	dum.setMass(inmass);
+	dum.rescaleRho();
+	tempJetKin.parent->set5Momentum(dum);
+      }
       tempJetKin.p = ShowerHardJets[ix]->progenitor()->momentum();
+
+
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
       atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);

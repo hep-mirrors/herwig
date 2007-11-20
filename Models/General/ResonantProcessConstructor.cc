@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ResonantProcessConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ResonantProcessConstructor class.
 //
@@ -35,19 +42,19 @@ void ResonantProcessConstructor::Init() {
      "a provided set of intermediate particles");
   
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOffshell
-    ("intermediates",
+    ("Intermediates",
      "A vector of offshell particles for resonant diagrams",
      &ResonantProcessConstructor::theIntermediates, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceIncoming
-    ("incoming",
+    ("Incoming",
      "A vector of incoming particles for resonant diagrams",
      &ResonantProcessConstructor::theIncoming, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOutgoing
-    ("outgoing",
+    ("Outgoing",
      "A vector of outgoin particles for resonant diagrams",
      &ResonantProcessConstructor::theOutgoing, -1, false, false, true, 
      false);
@@ -219,7 +226,7 @@ createMatrixElement(const HPDiagram & diag) const {
   extpart[1] = getParticleData(diag.incoming.second);
   extpart[2] = getParticleData(diag.outgoing.first);
   extpart[3] = getParticleData(diag.outgoing.second);
-  string objectname ("/Defaults/MatrixElements/");
+  string objectname ("/Herwig/MatrixElements/");
   string classname = MEClassname(extpart, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
     (generator()->preinitCreate(classname, objectname));
@@ -271,6 +278,9 @@ colourFactor(const tcPDVector & extpart) const {
     if(extpart[2]->iColour() == PDT::Colour3 || 
        extpart[3]->iColour() == PDT::Colour3)
       cfactor[0][0] = 9.;
+    else if(extpart[2]->iColour() == PDT::Colour8 || 
+	    extpart[3]->iColour() == PDT::Colour8)
+      cfactor[0][0] = 24.;
     else
       cfactor[0][0] = 3.;
   }
@@ -278,8 +288,21 @@ colourFactor(const tcPDVector & extpart) const {
     if(extpart[2]->iColour() == PDT::Colour3 || 
        extpart[3]->iColour() == PDT::Colour3)
       cfactor[0][0] = 24.;
+    else if(extpart[2]->iColour() == PDT::Colour8 || 
+	    extpart[3]->iColour() == PDT::Colour8)
+      cfactor[0][0] = 64.;
     else 
       cfactor[0][0] = 8.;
+  }
+  else if(extpart[0]->iColour() == PDT::Colour0) {
+    if(extpart[2]->iColour() == PDT::Colour3 || 
+       extpart[3]->iColour() == PDT::Colour3)
+      cfactor[0][0] = 3.;
+    else if(extpart[2]->iColour() == PDT::Colour8 || 
+	    extpart[3]->iColour() == PDT::Colour8)
+      cfactor[0][0] = 8.;
+    else
+      cfactor[0][0] = 1.;
   }
   return cfactor;
 }

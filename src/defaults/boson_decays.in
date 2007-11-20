@@ -3,43 +3,43 @@
 #
 #
 #
-decaymode h0->b,bbar; 0.7315 1 /Defaults/Decays/Hff
-decaymode h0->W+,W-; 0.0806 1 /Defaults/Decays/HWW
-decaymode h0->tau-,tau+; 0.0742 1 /Defaults/Decays/Hff
-decaymode h0->g,g; 0.0702 1 /Defaults/Decays/Mambo
-decaymode h0->c,cbar; 0.0322 1 /Defaults/Decays/Hff
-decaymode h0->Z0,Z0; 0.0082 1 /Defaults/Decays/HWW
-decaymode h0->gamma,gamma; 0.0021 1 /Defaults/Decays/Mambo
-decaymode h0->Z0,gamma; 0.0007 1 /Defaults/Decays/Mambo
-decaymode h0->mu-,mu+; 0.0003 1 /Defaults/Decays/Hff
+decaymode h0->b,bbar; 0.7322 1 Hff
+decaymode h0->W+,W-; 0.0806 1 HWW
+decaymode h0->tau-,tau+; 0.0742 1 Hff
+decaymode h0->g,g; 0.0702 1 Mambo
+decaymode h0->c,cbar; 0.0322 1 Hff
+decaymode h0->Z0,Z0; 0.0082 1 HWW
+decaymode h0->gamma,gamma; 0.0021 1 Mambo
+decaymode h0->mu-,mu+; 0.0003 1 Hff
+decaymode h0->t,tbar; 0 1 Hff
 #
 #
-decaymode Z0->d,dbar; 0.153812 1 /Defaults/Decays/WZ
-decaymode Z0->s,sbar; 0.153811 1 /Defaults/Decays/WZ
-decaymode Z0->b,bbar; 0.152457 1 /Defaults/Decays/WZ
-decaymode Z0->u,ubar; 0.119279 1 /Defaults/Decays/WZ
-decaymode Z0->c,cbar; 0.119162 1 /Defaults/Decays/WZ
-decaymode Z0->nu_tau,nu_taubar; 0.066897 1 /Defaults/Decays/WZ
-decaymode Z0->nu_mu,nu_mubar; 0.066897 1 /Defaults/Decays/WZ
-decaymode Z0->nu_e,nu_ebar; 0.066897 1 /Defaults/Decays/WZ
-decaymode Z0->mu-,mu+; 0.033621 1 /Defaults/Decays/WZ
-decaymode Z0->e-,e+; 0.033621 1 /Defaults/Decays/WZ
-decaymode Z0->tau-,tau+; 0.033546 1 /Defaults/Decays/WZ
+decaymode Z0->d,dbar; 0.153812 1 WZ
+decaymode Z0->s,sbar; 0.153811 1 WZ
+decaymode Z0->b,bbar; 0.152457 1 WZ
+decaymode Z0->u,ubar; 0.119279 1 WZ
+decaymode Z0->c,cbar; 0.119162 1 WZ
+decaymode Z0->nu_tau,nu_taubar; 0.066897 1 WZ
+decaymode Z0->nu_mu,nu_mubar; 0.066897 1 WZ
+decaymode Z0->nu_e,nu_ebar; 0.066897 1 WZ
+decaymode Z0->mu-,mu+; 0.033621 1 WZ
+decaymode Z0->e-,e+; 0.033621 1 WZ
+decaymode Z0->tau-,tau+; 0.033546 1 WZ
 #
-decaymode W+->dbar,u; 0.321586 1 /Defaults/Decays/WZ
-decaymode W+->sbar,c; 0.320957 1 /Defaults/Decays/WZ
-decaymode W+->e+,nu_e; 0.108059 1 /Defaults/Decays/WZ
-decaymode W+->mu+,nu_mu; 0.108059 1 /Defaults/Decays/WZ
-decaymode W+->tau+,nu_tau; 0.10798 1 /Defaults/Decays/WZ
-decaymode W+->sbar,u; 0.01644 1 /Defaults/Decays/WZ
-decaymode W+->dbar,c; 0.016407 1 /Defaults/Decays/WZ
-decaymode W+->bbar,c; 0.000512 1 /Defaults/Decays/WZ
+decaymode W+->dbar,u; 0.321586 1 WZ
+decaymode W+->sbar,c; 0.320957 1 WZ
+decaymode W+->e+,nu_e; 0.108059 1 WZ
+decaymode W+->mu+,nu_mu; 0.108059 1 WZ
+decaymode W+->tau+,nu_tau; 0.10798 1 WZ
+decaymode W+->sbar,u; 0.01644 1 WZ
+decaymode W+->dbar,c; 0.016407 1 WZ
+decaymode W+->bbar,c; 0.000512 1 WZ
 #
-decaymode W-->d,ubar; 0.321586 1 /Defaults/Decays/WZ
-decaymode W-->s,cbar; 0.320957 1 /Defaults/Decays/WZ
-decaymode W-->mu-,nu_mubar; 0.108059 1 /Defaults/Decays/WZ
-decaymode W-->e-,nu_ebar; 0.108059 1 /Defaults/Decays/WZ
-decaymode W-->tau-,nu_taubar; 0.10798 1 /Defaults/Decays/WZ
-decaymode W-->s,ubar; 0.01644 1 /Defaults/Decays/WZ
-decaymode W-->d,cbar; 0.016407 1 /Defaults/Decays/WZ
-decaymode W-->b,cbar; 0.000512 1 /Defaults/Decays/WZ
+decaymode W-->d,ubar; 0.321586 1 WZ
+decaymode W-->s,cbar; 0.320957 1 WZ
+decaymode W-->mu-,nu_mubar; 0.108059 1 WZ
+decaymode W-->e-,nu_ebar; 0.108059 1 WZ
+decaymode W-->tau-,nu_taubar; 0.10798 1 WZ
+decaymode W-->s,ubar; 0.01644 1 WZ
+decaymode W-->d,cbar; 0.016407 1 WZ
+decaymode W-->b,cbar; 0.000512 1 WZ

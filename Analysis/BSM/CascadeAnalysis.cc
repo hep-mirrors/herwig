@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// CascadeAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the CascadeAnalysis class.
 //
@@ -23,29 +30,29 @@ CascadeAnalysis::CascadeAnalysis() :
   theNChain(6,0), theFractions(6,0), theAlpha(0.) {}
 
 void CascadeAnalysis::analyze(tEventPtr event, long, int, int) {
-  StepVector::const_iterator sit = event->primaryCollision()->steps().begin();
-  StepVector::const_iterator send= event->primaryCollision()->steps().end();
-  for( ; sit != send; ++sit ) {
-    // Loop over all particles in the step
-    ParticleSet::const_iterator iter = (**sit).all().begin();
-    ParticleSet::const_iterator cend = (**sit).all().end();
-    for(; iter != cend; ++iter) {
-      if( abs((*iter)->id()) == theResonances[0] ) {
-	tPPtr parent = showeredProduct(*iter);
-	ParticleVector products = parent->children();
-	if( !products[0]->data().charged() || 
-	    !products[1]->data().charged() )
-	  analyseNeutralChain(parent, products);
-	else
-	  analyseChargedChain(parent, products);
-      }
-      else if(abs((*iter)->id()) == theResonances[0] - 1 ) {
-	tPPtr parent = showeredProduct(*iter);
-	ParticleVector products = parent->children();
+  ParticleVector::const_iterator pit = 
+    event->primaryCollision()->primarySubProcess()->outgoing().begin();
+  ParticleVector::const_iterator pend = 
+    event->primaryCollision()->primarySubProcess()->outgoing().end();
+
+  for( ; pit != pend; ++pit ) {
+    if( abs((*pit)->id()) == theResonances[0] ) {
+      tPPtr parent = showeredProduct(*pit);
+      ParticleVector products = parent->children();
+      if( products.size() != 2 ) continue;
+      if( !products[0]->data().charged() || 
+	  !products[1]->data().charged() )
+	analyseNeutralChain(parent, products);
+      else
 	analyseChargedChain(parent, products);
-      }
-      else {}
     }
+    else if(abs((*pit)->id()) == theResonances[0] - 1 ) {
+      tPPtr parent = showeredProduct(*pit);
+      ParticleVector products = parent->children();
+      if( products.size() != 2 ) continue;
+      analyseChargedChain(parent, products);
+    }
+    else {}
   }
 
 }
@@ -104,9 +111,9 @@ void CascadeAnalysis::Init() {
 }
 
 void CascadeAnalysis::
-analyseNeutralChain(tPPtr inpart, ParticleVector & products) {
+analyseNeutralChain(tPPtr inpart, const ParticleVector & products) {
   if( products.empty() ) return;
-  //D->C,c
+//   //D->C,c
   tPPtr partC, quark;
   long tid0(abs(products[0]->id())), tid1(abs(products[1]->id()));
   if( tid0 == theResonances[1] ) { 
@@ -116,43 +123,43 @@ analyseNeutralChain(tPPtr inpart, ParticleVector & products) {
     partC = products[1];
     quark = products[0];
   } else return;
-  
   //C->B,b
-  products = showeredProduct(partC)->children();
+  ParticleVector prd = showeredProduct(partC)->children();
+  if( prd.size() != 2 ) return;
   tPPtr partB, ln;
-  tid0 = abs(products[0]->id());
-  tid1 = abs(products[1]->id());
+  tid0 = abs(prd[0]->id());
+  tid1 = abs(prd[1]->id());
   if( ( tid0 == ParticleID::muminus &&
         tid1 == theResonances[2] + 2) ||
       ( tid0 == ParticleID::eminus &&
         tid1 == theResonances[2]) ) { 
-    ln = products[0];
-    partB = products[1];    
+    ln = prd[0];
+    partB = prd[1];    
   } else if( (tid1 == ParticleID::muminus &&
 	      tid0 == theResonances[2] + 2) ||
 	     (tid1 == ParticleID::eminus &&
 	      tid0 == theResonances[2]) ) {
-    ln = products[1];
-    partB = products[0];    
+    ln = prd[1];
+    partB = prd[0];    
   } else return;
-
-  //B->A,a
-  products = showeredProduct(partB)->children();
-  tid0 = abs(products[0]->id());
-  tid1 = abs(products[1]->id());
+    //B->A,a
+  prd = showeredProduct(partB)->children();
+  if( prd.size() != 2 ) return;
+  tid0 = abs(prd[0]->id());
+  tid1 = abs(prd[1]->id());
   tPPtr lf, partA;
   if( (tid0 == ParticleID::muminus &&
        tid1 == theResonances[3]) ||
       (tid0 == ParticleID::eminus &&
        tid1 == theResonances[3]) ) { 
-    lf = products[0];
-    partA = products[1];    
+    lf = prd[0];
+    partA = prd[1];    
   } else if( (tid1 == ParticleID::muminus &&
 	      tid0 == theResonances[3]) ||
 	     (tid1 == ParticleID::eminus &&
 	      tid0 == theResonances[3]) ) { 
-    lf = products[1];
-    partA = products[0];    
+    lf = prd[1];
+    partA = prd[0];    
   } else return;
   
   // Invariant masses normalized appropriately according to user options
@@ -205,7 +212,7 @@ analyseNeutralChain(tPPtr inpart, ParticleVector & products) {
 }
 
 void CascadeAnalysis::
-analyseChargedChain(tPPtr, ParticleVector & products) {
+analyseChargedChain(tPPtr, const ParticleVector & products) {
   if( products.empty() ) return;
   tPPtr partC, quark;
   long tid0(abs(products[0]->id())), tid1(abs(products[1]->id()));
@@ -218,23 +225,25 @@ analyseChargedChain(tPPtr, ParticleVector & products) {
   } else return;
   if( abs(quark->id()) > 4 ) return;
   //C->W,A
-  products = showeredProduct(partC)->children();
+  ParticleVector prd = showeredProduct(partC)->children();
+  if( prd.size() != 2 ) return;
   tPPtr wboson, partA;
-  tid0 = abs(products[0]->id());
-  tid1 = abs(products[1]->id());
+  tid0 = abs(prd[0]->id());
+  tid1 = abs(prd[1]->id());
   if( tid0 == theResonances[5] && tid1 == theResonances[6] ) {
-    wboson = products[0];
-    partA = products[1];    
+    wboson = prd[0];
+    partA = prd[1];    
   } else if( tid0 == theResonances[6] && tid1 == theResonances[5] ) {
-    wboson = products[1];
-    partA = products[0];    
+    wboson = prd[1];
+    partA = prd[0];    
   } else return;
-  products = showeredProduct(wboson)->children();
+  prd = showeredProduct(wboson)->children();
+  if( prd.size() != 2 ) return;
   tPPtr lepton;
-  tid0 = abs(products[0]->id());
-  tid1 = abs(products[1]->id());
-  if( tid0 == 11 || tid0 == 13 ) lepton = products[0];
-  else if( tid1 == 11 || tid1 == 13 ) lepton = products[1];
+  tid0 = abs(prd[0]->id());
+  tid1 = abs(prd[1]->id());
+  if( tid0 == 11 || tid0 == 13 ) lepton = prd[0];
+  else if( tid1 == 11 || tid1 == 13 ) lepton = prd[1];
   else return;
 
   Energy mlq = sqrt( (quark->momentum() + lepton->momentum() ).m2());
@@ -265,17 +274,19 @@ analyseChargedChain(tPPtr, ParticleVector & products) {
 }
 
 tPPtr CascadeAnalysis::showeredProduct(tPPtr p) const {
-  ParticleVector::size_type nc = p->children().size();
-  if( nc == 0 ) return p;
-  for( unsigned int i = 0; i < nc; ++i ) {
-    if( p->children()[i]->id() == p->id() ) {
-      p = showeredProduct(p->children()[i]);
+  if( isLastInShower(*p) ) return p;
+  long pid = p->id();
+  ParticleVector prds = p->children();
+  ParticleVector::size_type n = p->children().size();
+  for( ParticleVector::size_type i = 0; i < n; ++i ) {
+    tPPtr child = prds[i];
+    if( child->id() == pid ) {
+      p = showeredProduct(child);
       break;
     }
   }
   return p;
 }
-
 
 void CascadeAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
@@ -287,7 +298,7 @@ void CascadeAnalysis::doinitrun() {
     theResonances[2] = 2000011;
     theResonances[3] = 1000022;
     //chargino
-    theResonances[4] = 1000024;
+    theResonances[4] = 1000037;
     theResonances[5] = 24;
     theResonances[6] = 1000022;
   }
@@ -297,9 +308,9 @@ void CascadeAnalysis::doinitrun() {
     theResonances[2] = 6100011;
     theResonances[3] = 5100022;
     //W_1
-    theResonances[4] = 1000024;
+    theResonances[4] = 5100024;
     theResonances[5] = 24;
-    theResonances[6] = 1000022;
+    theResonances[6] = 5100022;
   }
 
   Energy2 mD2 = sqr(getParticleData(theResonances[0])->mass());
@@ -395,8 +406,8 @@ void CascadeAnalysis::dofinish() {
   theFractions[5] = (double)theNChain[5]/(double)Nt;
 
   string filename = CurrentGenerator::current().filename();
-  if( theModel == 0 ) filename += string("-MSSMCascade.top");
-  else filename += string("-MUEDCascade.top");
+  if( theModel == 0 ) filename += string("-mssm_spin.top");
+  else filename += string("-mued_spin.top");
   
   ofstream os(filename.c_str());
   

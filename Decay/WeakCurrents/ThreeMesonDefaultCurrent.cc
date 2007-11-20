@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ThreeMesonDefaultCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ThreeMesonDefaultCurrent class.
 //
@@ -859,11 +866,21 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
     }
   }
   if(_rhoparameters) {
-    for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
-      if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF123masses[ix],
-					   _rhoF123widths[ix]);
-      if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF123masses[ix],
-					   _rhoF123widths[ix]);
+    if(imode!=8) {
+      for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
+	if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF123masses[ix],
+					     _rhoF123widths[ix]);
+	if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF123masses[ix],
+					     _rhoF123widths[ix]);
+      }
+    }
+    else {
+      for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
+	if(rhoc[ix]) mode->resetIntermediate(rhoc[ix],_rhoF5masses[ix],
+					     _rhoF5widths[ix]);
+	if(rho0[ix]) mode->resetIntermediate(rho0[ix],_rhoF5masses[ix],
+					     _rhoF5widths[ix]);
+      }
     }
   }
   // K star parameters in the base class

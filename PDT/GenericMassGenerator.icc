@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GenericMassGenerator.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the GenericMassGenerator class.
 //
@@ -13,7 +20,7 @@ inline GenericMassGenerator::GenericMassGenerator()
     _mass(),_width(), 
     _mass2(),_mwidth(),
     _ninitial(1000),
-    _initialize(false) {}
+    _initialize(false), _widthopt(false) {}
 
 inline IBPtr GenericMassGenerator::clone() const {
   return new_ptr(*this);
@@ -110,6 +117,10 @@ inline double GenericMassGenerator::weight(Energy q,int shape) const {
 inline Energy GenericMassGenerator::width(Energy q) const {
   return (_BWshape==1||!_widthgen) ? 
     _width : _widthgen->width(*_particle,q);
+}
+
+inline tcPDPtr GenericMassGenerator::particle() const {
+  return _particle;
 }
 
 }

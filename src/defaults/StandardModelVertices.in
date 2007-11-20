@@ -6,48 +6,48 @@
 
 # create the Standard Model fermion-antifermion Z vertex
 create Herwig::SMFFZVertex FFZVertex
-set /Defaults/Model:Vertex/FFZ FFZVertex
+set /Herwig/Model:Vertex/FFZ FFZVertex
 
 # create the Standard Model fermion-antiferion W vertex
 create Herwig::SMFFWVertex FFWVertex
-set /Defaults/Model:Vertex/FFW FFWVertex
+set /Herwig/Model:Vertex/FFW FFWVertex
 
 # create the standard model fermion-fermion higgs vertex
 create Herwig::SMFFHVertex FFHVertex
-set /Defaults/Model:Vertex/FFH FFHVertex
+set /Herwig/Model:Vertex/FFH FFHVertex
 
 # create the Standard Model quark-antiquark-gluon vertex
 create Herwig::SMFFGVertex FFGVertex
-set /Defaults/Model:Vertex/FFG FFGVertex
+set /Herwig/Model:Vertex/FFG FFGVertex
 
 # create the standard model fermion-antifermion gamma vertex
 create Herwig::SMFFPVertex FFPVertex
-set /Defaults/Model:Vertex/FFP FFPVertex
+set /Herwig/Model:Vertex/FFP FFPVertex
 
 # create the Standard Model triple gluon vertex
 create Herwig::SMGGGVertex GGGVertex
-set /Defaults/Model:Vertex/GGG GGGVertex
+set /Herwig/Model:Vertex/GGG GGGVertex
 
 # create the standartd model 4-gluon vertex
 create Herwig::SMGGGGVertex GGGGVertex
-set /Defaults/Model:Vertex/GGGG GGGGVertex
+set /Herwig/Model:Vertex/GGGG GGGGVertex
 
 # create the standard model WWH vertex
 create Herwig::SMWWHVertex WWHVertex
-set /Defaults/Model:Vertex/WWH WWHVertex
+set /Herwig/Model:Vertex/WWH WWHVertex
 
 # create the standard model WWW vertex
 create Herwig::SMWWWVertex WWWVertex
-set /Defaults/Model:Vertex/WWW WWWVertex
+set /Herwig/Model:Vertex/WWW WWWVertex
 
 # create the standard model WWWW vertex
 create Herwig::SMWWWWVertex WWWWVertex
-set /Defaults/Model:Vertex/WWWW WWWWVertex
+set /Herwig/Model:Vertex/WWWW WWWWVertex
 
 #create the standard model HGG vertex
 create Herwig::SMHGGVertex HGGVertex
-set /Defaults/Model:Vertex/HGG HGGVertex
+set /Herwig/Model:Vertex/HGG HGGVertex
 
 #create the standard model HPP vertex
 create Herwig::SMHPPVertex HPPVertex
-set /Defaults/Model:Vertex/HPP HPPVertex
+set /Herwig/Model:Vertex/HPP HPPVertex

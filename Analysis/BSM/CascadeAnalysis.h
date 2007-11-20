@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// CascadeAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_CascadeAnalysis_H
 #define HERWIG_CascadeAnalysis_H
 //
@@ -7,6 +14,7 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/EventRecord/Particle.h"
 #include "CascadeAnalysis.fh"
 
 namespace Herwig {
@@ -128,13 +136,6 @@ protected:
    */
   inline virtual IBPtr fullclone() const;
   //@}
-
-  /**
-   * Find the particle after it has been showered.
-   * @param p The particle to be found
-   */
-  tPPtr showeredProduct(tPPtr p ) const;
-  //@}
   
 private:
 
@@ -151,7 +152,19 @@ private:
   CascadeAnalysis & operator=(const CascadeAnalysis &);
 
 private:
-  
+
+  /**
+   * Check if a given particle is the last in the shower chain.
+   * @param p The particle to check
+   */
+  inline bool isLastInShower(const Particle & p) const;
+
+  /**
+   * Get the last particle in a shower chain for a given particle
+   * @param p The particle.
+   */
+  tPPtr showeredProduct(tPPtr p) const;
+    
   /** @name Cascade analysis functions. */
   //@{
   /**
@@ -159,14 +172,14 @@ private:
    * @param inpart The first particle in the cascade
    * @param products The first decay products
    */
-  void analyseNeutralChain(tPPtr inpart, ParticleVector & products);
+  void analyseNeutralChain(tPPtr inpart, const ParticleVector & products);
 
   /**
    * Analyse a charged decay chain
    * @param inpart The first particle in the cascade
    * @param products The first decay products
    */
-  void analyseChargedChain(tPPtr inpart, ParticleVector & products);
+  void analyseChargedChain(tPPtr inpart, const ParticleVector & products);
   //@}
   
   /** @name Calculate analytic results.*/
@@ -241,8 +254,32 @@ private:
   /**
    * The values of the dimensionless quantities \f$ \frac{m_i^2}{m_j^2}\f$
    */
-  double theX, theY, theZ, theYc, theZc;
-    
+  //@{
+  /**
+   *  \f$X\f$
+   */
+  double theX;
+
+  /**
+   *  \f$Y\f$
+   */
+  double theY;
+
+  /**
+   *  \f$Z\f$
+   */
+  double theZ;
+
+  /**
+   *  \f$Y_c\f$
+   */
+  double theYc;
+
+  /**
+   *  \f$Z_c\f$
+   */
+  double theZc;
+  //@}
   /**
    * The number of decay chains indexed with a string identifier.
    */

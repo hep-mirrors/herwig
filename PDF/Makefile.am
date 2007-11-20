@@ -1,11 +1,12 @@
 pkglib_LTLIBRARIES =
 pkglib_LTLIBRARIES += HwMRST.la
 HwMRST_la_SOURCES = \
-MRST.cc MRST.h MRST.icc \
-PartonExtractor.h PartonExtractor.icc PartonExtractor.cc PartonExtractor.fh
+MRST.cc MRST.h MRST.icc 
+
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
-HwMRST_la_LDFLAGS = -module -version-info 2:0:0
+
+HwMRST_la_LDFLAGS = -module -version-info 3:0:0
 
 EXTRA_DIST = mrst
 
@@ -14,13 +15,13 @@ HwRemDecayer_la_SOURCES = \
 HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh \
 ForcedSplitting.h ForcedSplitting.icc ForcedSplitting.cc ForcedSplitting.fh
 
-HwRemDecayer_la_LDFLAGS = -module -version-info 2:0:0
+HwRemDecayer_la_LDFLAGS = -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwMPIPDF.la
 HwMPIPDF_la_SOURCES = \
 MPIPDF.h MPIPDF.icc MPIPDF.cc MPIPDF.fh
 
-HwMPIPDF_la_LDFLAGS = -module -version-info 2:0:0
+HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
 
 if WANT_LOCAL_PDF
 install-data-local:

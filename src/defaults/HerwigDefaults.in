@@ -2,7 +2,8 @@
 #
 # This is the main repository setup file for Herwig++. 
 #
-# It is read using the 'Herwig++ init' command.
+# It is read using the 'Herwig++ init' command which prepares the
+# default repository file 'HerwigDefaults.rpo'.
 #
 # The 'Herwig++ read' step allows additional configuration
 # instructions to be read from a run-specific file, to modify the 
@@ -14,34 +15,14 @@
 #
 ###################################################################
 
-
-
 ###################################################################
 # The repository contains its own internal directory structure to
 # keep track of created objects. (This is entirely independent of 
 # the file system)
 ###################################################################
 
-# Make all the directories in the Repository we need
-mkdir /Defaults
-mkdir /Defaults/Matchers
-mkdir /Defaults/Particles
-mkdir /Defaults/Partons
-mkdir /Defaults/Handlers
-mkdir /Defaults/Generators
-
-###################################################################
-# The 'read' command includes external files in place, to reduce
-# clutter. You can also use it for blocks of settings you're likely 
-# to use again and again.
-###################################################################
-
-# read in the particle lists and physics model
-# old model
-#read OldParticles.in
-# new model
-read Particles.in
-read Model.in
+# Make the root directory in the Repository
+mkdir /Herwig
 
 #####################################################################
 # The 'create' command creates an object in the repository from
@@ -55,22 +36,10 @@ read Model.in
 #####################################################################
 
 # the default random number generator
-create ThePEG::StandardRandom /Defaults/Random
+create ThePEG::StandardRandom /Herwig/Random
 
 # the default phase space sampler
-create ThePEG::ACDCSampler /Defaults/ACDCSampler ACDCSampler.so
-set /Defaults/ACDCSampler:Margin  1.1
-
-# Create NoPDF and RemnantHandlers
-cd /Defaults/Partons
-create ThePEG::NoRemnants NoRemnants
-create Herwig::HwRemDecayer RemnantDecayer HwRemDecayer.so
-create Herwig::ForcedSplitting theForcedSplitting
-set RemnantDecayer:ForcedSplitter theForcedSplitting
-create ThePEG::SoftRemnantHandler HadronRemnants
-set HadronRemnants:RemnantDecayer RemnantDecayer
-create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so
-create ThePEG::NoPDF NoPDF
+create ThePEG::ACDCSampler /Herwig/ACDCSampler ACDCSampler.so
 
 #####################################################################
 # Objects in the repository are influenced through 'interfaces'.
@@ -83,44 +52,24 @@ create ThePEG::NoPDF NoPDF
 # Note that only repository names can be used here. You must 'create'
 # objects before you can use them in a 'set' command
 #####################################################################
-# NoPDF's remnant handler should be NoRemnants
-set NoPDF:RemnantHandler NoRemnants
 
-# Make particle extractors
-cd /Defaults/Handlers
-create ThePEG::PartonExtractor StandardExtractor
-set StandardExtractor:NoPDF /Defaults/Partons/NoPDF
-set StandardExtractor:FlatSHatY 1
+set /Herwig/ACDCSampler:Margin  1.1
 
-# copy the extractors
-cp StandardExtractor EEExtractor
-cp StandardExtractor QCDExtractor
+###################################################################
+# The 'read' command includes external files in place, to reduce
+# clutter. You can also use it for blocks of settings you're likely 
+# to use again and again.
+###################################################################
 
-# insert the matrix elements
+read Particles.in
+read Model.in
+read Partons.in
 read MatrixElements.in
-
-#Set the cuts on the hard process
-cd /Defaults/Generators
-read Cuts.in
-
-cd /Defaults
-# insert the Herwig++ specific defaults
-
-# create the underlying event stuff
 read UnderlyingEvent.in
-# create the shower stuff
-
 read Shower.in
-
-# set the forced splitting alphas
-cd /Defaults/Partons
-set theForcedSplitting:AlphaS /Defaults/Handlers/Shower/theShowerAlphaQCD
-
-# create the hadronization stuff
 read Hadronization.in
 read Decays.in
-read PDF.in
-read QED.in
+read QEDRadiation.in
 
 #######################################################################
 # The EventHandler is the most important object in a run. It 
@@ -136,42 +85,42 @@ read QED.in
 # own input file (for the 'Herwig++ read' step) and not here.
 #######################################################################
 
-cd /Defaults/Handlers
+mkdir /Herwig/EventHandlers
+cd /Herwig/EventHandlers
+
 # Create LEPHandler
 create ThePEG::StandardEventHandler LEPHandler 
 create ThePEG::FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
 set FixedLEPLuminosity:Energy 91.2
 set LEPHandler:LuminosityFunction FixedLEPLuminosity
-insert LEPHandler:SubProcessHandlers[0] /Defaults/Handlers/EE2QQ
-set LEPHandler:BeamA /Defaults/Particles/e-
-set LEPHandler:BeamB /Defaults/Particles/e+
-set LEPHandler:Sampler /Defaults/ACDCSampler
-set LEPHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LEPHandler:DecayHandler /Defaults/Handlers/DecayHandler
-#
+insert LEPHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleEE
+set LEPHandler:BeamA /Herwig/Particles/e-
+set LEPHandler:BeamB /Herwig/Particles/e+
+set LEPHandler:Sampler /Herwig/ACDCSampler
+set LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
 # uncomment to get QED radiation off Z decay products in hard process
-#insert LEPHandler:PostSubProcessHandlers[0] /Defaults/Handlers/QED/QEDRadiationHandler
-
+# insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadHandler
 
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
 create ThePEG::FixedCMSLuminosity FixedLHCLuminosity
 set FixedLHCLuminosity:Energy 14000.0
 set LHCHandler:LuminosityFunction FixedLHCLuminosity
-insert LHCHandler:SubProcessHandlers[0] /Defaults/Handlers/SimpleQCD
-set LHCHandler:BeamA /Defaults/Particles/p+
-set LHCHandler:BeamB /Defaults/Particles/p+
-set LHCHandler:Sampler /Defaults/ACDCSampler
+insert LHCHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleQCD
+set LHCHandler:BeamA /Herwig/Particles/p+
+set LHCHandler:BeamB /Herwig/Particles/p+
+set LHCHandler:Sampler /Herwig/ACDCSampler
 set LHCHandler:BinStrategy 2
-set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LHCHandler:DecayHandler /Defaults/Handlers/DecayHandler
-#
+set LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
 # uncomment to get QED radiation off W/Z decay products in hard process
-#insert LHCHandler:PostSubProcessHandlers[0] /Defaults/Handlers/QED/QEDRadiationHandler
+# insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadHandler
 
-cd /Defaults/Generators 
+mkdir /Herwig/Generators 
+cd /Herwig/Generators 
 
 #################################################################
 # Finally, the EventGenerator objects are responsible 
@@ -185,25 +134,26 @@ cd /Defaults/Generators
 #################################################################
 # Now the LEPGenerator
 create ThePEG::EventGenerator LEPGenerator
-set LEPGenerator:RandomNumberGenerator /Defaults/Random
-set LEPGenerator:StandardModelParameters /Defaults/Model
-set LEPGenerator:EventHandler /Defaults/Handlers/LEPHandler
-set LEPGenerator:EventHandler:Cuts EECuts
+set LEPGenerator:RandomNumberGenerator /Herwig/Random
+set LEPGenerator:StandardModelParameters /Herwig/Model
+set LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
 
 # And the LHCGenerator
 create ThePEG::EventGenerator LHCGenerator
-set LHCGenerator:RandomNumberGenerator /Defaults/Random
-set LHCGenerator:StandardModelParameters /Defaults/Model
-set LHCGenerator:EventHandler /Defaults/Handlers/LHCHandler
-set LHCGenerator:EventHandler:Cuts QCDCuts
+set LHCGenerator:RandomNumberGenerator /Herwig/Random
+set LHCGenerator:StandardModelParameters /Herwig/Model
+set LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
+
+############################################
+# The default cuts
+############################################
+read Cuts.in
+
+cd /Herwig/Generators
+set LEPGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
+set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
 
 ##########################################
 # include some default analysis handlers
 ##########################################
 read Analysis.in
-
-##########################################
-# include Analysis2 based analyses
-##########################################
-
-# read Analysis2.in

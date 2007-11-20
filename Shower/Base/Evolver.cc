@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Evolver.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Evolver class.
 //
@@ -31,14 +38,14 @@ using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _intrinsicpT 
+     << _meCorrMode << _hardVetoMode
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << _vetoes
      << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _intrinsicpT 
+     >> _meCorrMode >> _hardVetoMode
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> _vetoes
      >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
 }
@@ -87,9 +94,9 @@ void Evolver::Init() {
      "Choice of the ME Correction Mode",
      &Evolver::_meCorrMode, 1, false, false);
   static SwitchOption off
-    (ifaceMECorrMode,"Off","MECorrections off", 0);
+    (ifaceMECorrMode,"No","MECorrections off", 0);
   static SwitchOption on
-    (ifaceMECorrMode,"On","hard+soft on", 1);
+    (ifaceMECorrMode,"Yes","hard+soft on", 1);
   static SwitchOption hard
     (ifaceMECorrMode,"Hard","only hard on", 2);
   static SwitchOption soft
@@ -100,36 +107,32 @@ void Evolver::Init() {
      "Choice of the Hard Veto Mode",
      &Evolver::_hardVetoMode, 1, false, false);
   static SwitchOption HVoff
-    (ifaceHardVetoMode,"Off","hard vetos off", 0);
+    (ifaceHardVetoMode,"No","hard vetos off", 0);
   static SwitchOption HVon
-    (ifaceHardVetoMode,"On","hard vetos on", 1);
+    (ifaceHardVetoMode,"Yes","hard vetos on", 1);
   static SwitchOption HVIS
     (ifaceHardVetoMode,"Initial", "only IS emissions vetoed", 2);
   static SwitchOption HVFS
     (ifaceHardVetoMode,"Final","only FS emissions vetoed", 3);
 
-  static Switch<Evolver, unsigned int> ifaceIntrinsicpT
-  ("GenerateIntrinsicpT",
-  "Switch Intrinsic pT on or off",
-   &Evolver::_intrinsicpT, 1, false, false); 
-   static SwitchOption ipToff
- (ifaceIntrinsicpT,"Off","Intrinsic pT off",0);  
-   static SwitchOption ipTon
- (ifaceIntrinsicpT,"On","Intrinsic pT on",1);
-   static Parameter<Evolver, Energy> ifaceiptrms
-  ("Iptrms",
-     "rms intrinsic pT of Gaussian distribution:2*(1-Beta)*exp(-sqr(intrinsicpT/iptrms))/sqr(iptrms)",
+  static Parameter<Evolver, Energy> ifaceiptrms
+    ("IntrinsicPtGaussian",
+     "RMS of intrinsic pT of Gaussian distribution:\n"
+     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
      &Evolver::_iptrms, GeV, 0*GeV, 0*GeV, 1000000.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<Evolver, double> ifacebeta
-    ("Beta",
-     "Proportion of inverse quadratic distribution. (1-Beta) is the proportion of Gaussian distribution",
+    ("IntrinsicPtBeta",
+     "Proportion of inverse quadratic distribution in generating intrinsic pT.\n"
+     "(1-Beta) is the proportion of Gaussian distribution",
      &Evolver::_beta, 0, 0, 1,
      false, false, Interface::limited);
+
   static Parameter<Evolver, Energy> ifacegamma
-    ("Gamma",
-     "Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
+    ("IntrinsicPtGamma",
+     "Parameter for inverse quadratic:\n"
+     "2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
      &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
 

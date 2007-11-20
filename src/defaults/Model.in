@@ -3,27 +3,36 @@
 # 
 # The Standard Model is used by default. 
 ################################################
+cd /Herwig
+
 # Main SM object
-create Herwig::StandardModel /Defaults/Model
+create Herwig::StandardModel Model
 
 ## Couplings
-# the strong coupling
-create /ThePEG/O1AlphaS /Defaults/AlphaS O1AlphaS.so
-set /Defaults/Model:QCD/RunningAlphaS /Defaults/AlphaS
-# the electromagetic coupling
-create /ThePEG/SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
-set /Defaults/Model:EW/RunningAlphaEM /Defaults/AlphaEM
-# the CKM matrix
-create Herwig::StandardCKM /Defaults/CKM
-set /Defaults/Model:EW/CKM /Defaults/CKM
-# the running mass
-create Herwig::RunningMass /Defaults/RunningMass
-set /Defaults/RunningMass:MaxFlav 6
-set /Defaults/RunningMass:QCDOrder 2
-set /Defaults/Model:RunningMass /Defaults/RunningMass
 
-mkdir /Defaults/Vertices
-cd /Defaults/Vertices
+# the strong coupling
+create ThePEG::O1AlphaS AlphaS O1AlphaS.so
+set Model:QCD/RunningAlphaS AlphaS
+
+# the electromagetic coupling
+create ThePEG::SimpleAlphaEM AlphaEM SimpleAlphaEM.so
+set Model:EW/RunningAlphaEM AlphaEM
+
+# the CKM matrix
+create Herwig::StandardCKM CKM
+set Model:EW/CKM CKM
+
+# the running mass
+create Herwig::RunningMass RunningMass
+set RunningMass:MaxFlav 6
+set RunningMass:QCDOrder 2
+set Model:RunningMass RunningMass
+
+#####################################
+# Set up the standard model vertices
+#####################################
+mkdir /Herwig/Vertices
+cd /Herwig/Vertices
 read StandardModelVertices.in 
 read BSMVertices.in
 
@@ -32,17 +41,20 @@ read BSMVertices.in
 # This only gets switched on in read if it is
 # requested by the user
 ################################################
-mkdir /Defaults/NewPhysics
-cd /Defaults/NewPhysics
-create /Herwig/ModelGenerator NewModel
-create /Herwig/HardProcessConstructor HPConstructor
-create /Herwig/DecayConstructor DecayConstructor
-create /Herwig/TwoBodyDecayConstructor TwoBodyDC
+mkdir /Herwig/NewPhysics
+cd /Herwig/NewPhysics
+create Herwig::ModelGenerator NewModel
+create Herwig::HardProcessConstructor HPConstructor
+create Herwig::ResonantProcessConstructor ResConstructor
+create Herwig::DecayConstructor DecayConstructor
+create Herwig::TwoBodyDecayConstructor TwoBodyDC
+
+set NewModel:HardProcessConstructor HPConstructor
+set NewModel:DecayConstructor DecayConstructor
+set NewModel:ResonantProcessConstructor ResConstructor
+insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
 
 # Required to decay the particles before showering so as to keep
 # the spin correlations in the decay
-cd /Defaults/Handlers
-create /Herwig/HwDecayHandler NewModelDecayHandler
-set NewModelDecayHandler:NewStep No
-
-cd /
+create Herwig::HwDecayHandler DecayHandler
+set DecayHandler:NewStep No

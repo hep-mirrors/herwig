@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEff2ff.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEff2ff class.
 //
@@ -657,6 +664,7 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   if( hardpro[2]->id() != getOutgoing().first )
     swap(hardpro[2], hardpro[3]);
 
+  double dummy(0.);
   //pick which process we are doing
   if( hardpro[0]->id() > 0) {
     //common spinors
@@ -681,9 +689,8 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
 					     spB[ix].wave().bar().conjugate(),
 					     spB[ix].direction()));
       }
-      double me;
       ProductionMatrixElement prodME = ffb2mfmfHeME(spA, spbA, spbB, spB, spC, 
-						    spbC, me);
+						    spbC, dummy);
       HardVertexPtr hardvertex = new_ptr(HardVertex());
       hardvertex->ME(prodME);
       for(ParticleVector::size_type i = 0; i < 4; ++i) {
@@ -697,7 +704,6 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       SpinorBarVector spbA;
       SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
       SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
-      double dummy;
       ProductionMatrixElement prodME = ffb2ffbHeME(spA, spbA, spbB, spB,
 						   dummy);
       HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -713,7 +719,6 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       SpinorWaveFunction(spB,hardpro[1],incoming, false, true);
       SpinorBarWaveFunction(spbA, hardpro[3], outgoing, true, true);
 
-      double dummy;
       ProductionMatrixElement prodME = ff2ffHeME(spA, spB, spbB, spbA,
 						 dummy);
       HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -731,7 +736,7 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     SpinorBarWaveFunction(spbB,hardpro[1],incoming, false, true);
     SpinorWaveFunction(spA, hardpro[2], outgoing, true, true);
     SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
-    double dummy;
+
     ProductionMatrixElement prodME = fbfb2fbfbHeME(spbA, spbB, spA, spB,
 						   dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -740,6 +745,11 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       dynamic_ptr_cast<SpinfoPtr>(hardpro[i]->spinInfo())->
 	setProductionVertex(hardvertex);
   }
+  
+#ifndef NDEBUG
+  if( debugME() ) debug(dummy);
+#endif
+
 }
 
 void MEff2ff::persistentOutput(PersistentOStream & os) const {

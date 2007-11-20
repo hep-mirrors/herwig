@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MultiplicityCount.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MultiplicityCount_H
 #define HERWIG_MultiplicityCount_H
 //
@@ -61,19 +68,16 @@ struct MultiplicityInfo
 
   /**
    *  The average number per event
-   * @param N The number of events
    */
   double simMultiplicity();
 
   /**
    *  The error on the average number per event
-   * @param N The number of events 
    */
   double simError();
 
   /**
    *  Is the result more than \f$3\sigma\f$ from the experimental result
-   * @param N The number of events
    */
   double nSigma();
 
@@ -230,8 +234,14 @@ private:
   /// Histograms for cluster mass dependence
   map<long,Histogram> _histograms;
 
+  /**
+   *  Histograms of the clusters after cluster splitting
+   */
   map<int,Histogram> _clusters;
 
+  /**
+   *  Histograms of the primary clusters
+   */
   map<int,Histogram> _primary;
 
   /**

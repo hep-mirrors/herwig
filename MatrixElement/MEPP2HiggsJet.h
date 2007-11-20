@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEPP2HiggsJet.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEPP2HiggsJet_H
 #define HERWIG_MEPP2HiggsJet_H
 //
@@ -12,6 +19,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "ProductionMatrixElement.h"
 #include "MEPP2HiggsJet.fh"
 
@@ -36,6 +44,19 @@ public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
+  /**
+   * Return the matrix element for the kinematical configuation
+   * previously provided by the last call to setKinematics(). Uses
+   * me().
+   */
+  virtual CrossSection dSigHatDR() const;
+
+  /**
+   * The number of internal degreed of freedom used in the matrix
+   * element.
+   */
+  virtual int nDim() const;
+
   /**
    * Return the order in \f$\alpha_S\f$ in which this matrix
    * element is given.
@@ -146,9 +167,17 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
 
 private:
 
@@ -299,6 +328,11 @@ private:
 private:
 
   /**
+   * Defines the Higgs resonance shape
+   */
+  unsigned int _shapeopt;
+
+  /**
    *  Maximum PDG code of the quarks allowed
    */
   unsigned int _maxflavour;
@@ -332,6 +366,21 @@ private:
    *  Small complex number to regularize some integrals
    */
   static const Complex _epsi;
+
+  /**
+   *  On-shell mass for the higgs
+   */
+  Energy _mh;
+
+  /**
+   *  On-shell width for the higgs
+   */
+  Energy _wh;
+
+  /**
+   *  The mass generator for the Higgs
+   */
+  SMHiggsMassGeneratorPtr _hmass;
 
   /**
    *  Storage of the loop functions
@@ -397,8 +446,5 @@ struct ClassTraits<Herwig::MEPP2HiggsJet>
 }
 
 #include "MEPP2HiggsJet.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2HiggsJet.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2HiggsJet_H */

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ColourReconnector.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ColourReconnector class.
 //
@@ -37,12 +44,12 @@ void ColourReconnector::Init() {
      &ColourReconnector::_clreco, 0, true, false);
   static SwitchOption interfaceColourReconnectionOff
     (interfaceColourReconnection,
-     "Off",
+     "No",
      "Colour reconnections off",
      0);
   static SwitchOption interfaceColourReconnectionOn
     (interfaceColourReconnection,
-     "On",
+     "Yes",
      "Colour reconnections on",
      1);
   

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MamboDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MamboDecayer class.
 //
@@ -61,13 +68,17 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
     return out;
   }
   Energy totalMass(0.0*MeV);
-  for(int i = 0; i < N; ++i)
+  for(int i = 0; i < N; ++i) {
     totalMass += children[i]->mass();
-
-  
+  }
   if(totalMass > parent.mass()) {
-    generator()->log() << "MamboDecayer: The Decay mode cannot "
-		       << "proceed, not enough phase space\n";
+    generator()->log() << "MamboDecayer::decay - The Decay mode " 
+		       << parent.PDGName() << "->";
+    for(int i = 0; i < N; ++i) 
+      generator()->log() << children[i]->PDGName() << " ";
+    generator()->log() << " cannot proceed as there is not "
+		       << "enough phase space.\n";
+
     out.clear();
     return out;
   }

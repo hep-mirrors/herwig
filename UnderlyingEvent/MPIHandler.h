@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MPIHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MPIHandler_H
 #define HERWIG_MPIHandler_H
 //
@@ -221,9 +228,9 @@ public:
   inline long maxLoop() const;
 
   /**
-   * Return theJmueo.
+   * Return theAlgorithm.
    */
-  inline int Jmueo() const;
+  inline int Algorithm() const;
 
 protected:
 
@@ -436,12 +443,12 @@ private:
    * Switch to be set from outside to determine the algorithm used for 
    * UE activity.
    */
-  int theJmueo;
+  int theAlgorithm;
 
   /**
-   * Inverse Radius squared \f$ (\mu^2) \f$. Used inside the overlap function.  
+   * Inverse hadron Radius squared \f$ (\mu^2) \f$. Used inside the overlap function.  
    */
-  Energy2 theRadius;
+  Energy2 theInvRadius;
 
 protected:
 

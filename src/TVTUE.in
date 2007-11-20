@@ -7,33 +7,31 @@
 ##################################################
 # Switches for hard underlying event
 ##################################################
-cd /Defaults/Handlers/Shower 
+cd /Herwig/Shower 
 # Switch for JIMMY
-#set stdShowerHandler:MPI 0
+# set ShowerHandler:MPI No
 
-cd /Defaults/Handlers/UnderlyingEvent
-#set KtCut:MinKT 2.5
+cd /Herwig/UnderlyingEvent
+# set KtCut:MinKT 2.2
 # This should always be 2*MinKT!!
-#set UECuts:MHatMin 5.0
+# set UECuts:MHatMin 5.0
 
-# set the hadron radius in GeV^2
-#set MPIHandler:Radius 0.71
+# set the inverse hadron radius in GeV^2
+# set MPIHandler:InvRadius 1.3
 # set the algorithm
-
 # needs to be changed because signal is same than UE (QCD)
-set MPIHandler:Jmueo 1 
+set MPIHandler:Algorithm 1 
 
 ##################################################
 # Change hard process ME's
 ##################################################
-cd /Defaults/
-erase Handlers/SimpleQCD:MatrixElements[0]
-insert Handlers/SimpleQCD:MatrixElements[0] MatrixElements/MEQCD2to2
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] MEQCD2to2
 
 ##################################################
 # Cuts on the hard process
 ##################################################
-cd /Defaults/Generators
+cd /Herwig/Cuts
 set JetKtCut:MinKT 20.0*GeV
 set LeptonKtCut:MinKT 50.0*GeV
 set PhotonKtCut:MinKT 20.0*GeV
@@ -41,25 +39,25 @@ set PhotonKtCut:MinKT 20.0*GeV
 ##################################################
 # Analysis Handlers
 ##################################################
-cd /Defaults/Handlers/Analysis
-#create Herwig::GraphvizPlot Plot
+cd /Herwig/Analysis
+# create Herwig::GraphvizPlot Plot
 create Herwig::RFieldAnalysis RField HwLEPJetAnalysis.so
-set RField:ShowerHandler /Defaults/Handlers/Shower/stdShowerHandler
+set RField:ShowerHandler /Herwig/Shower/ShowerHandler
 set RField:LowerBorder 30.0
 set RField:UpperBorder 50.0
 
 # set the directory where the data files are stored. The files are
 # in $(Herwigsrc)/Analysis/TVTUEdata/
 # Default is the directory where you run Herwig++
-#set RField:Dir /foo/dir
+# set RField:Dir /foo/dir
 
-insert /Defaults/Generators/LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/RField
+insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 RField
 
 
 ##################################################
 # Technical parameters for this run
 ##################################################
-cd /Defaults/Generators
+cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 1000000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
@@ -71,6 +69,6 @@ set LHCGenerator:MaxErrors 1000000
 ##################################################
 
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
-set LHCGenerator:EventHandler:BeamB /Defaults/Particles/pbar-
+set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 
 saverun TVTUEcheck LHCGenerator

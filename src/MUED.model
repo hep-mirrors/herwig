@@ -1,0 +1,103 @@
+##################################################
+# Common setup for Universal extra dimensions
+#
+# See LHC-MUED.in or ILC-MUED.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-MUED.in
+#
+###################################################
+
+mkdir /Herwig/NewPhysics/MUED
+cd /Herwig/NewPhysics/MUED
+
+create Herwig::UEDBase Model HwUED.so
+
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# MUED Feynman rules
+set Model:Vertex/F1F1Z /Herwig/Vertices/BSM/UED_F1F1Z
+set Model:Vertex/F1F1P /Herwig/Vertices/BSM/UED_F1F1P
+set Model:Vertex/F1F1W /Herwig/Vertices/BSM/UED_F1F1W
+set Model:Vertex/F1F1G0 /Herwig/Vertices/BSM/UED_F1F1G0
+set Model:Vertex/F1F0G1 /Herwig/Vertices/BSM/UED_F1F0G1
+set Model:Vertex/F1F0W1 /Herwig/Vertices/BSM/UED_F1F0W1
+set Model:Vertex/G1G1G0 /Herwig/Vertices/BSM/UED_G1G1G0
+set Model:Vertex/G0G0G1G1 /Herwig/Vertices/BSM/UED_G0G0G1G1
+set Model:Vertex/P0H1H1 /Herwig/Vertices/BSM/UED_P0H1H1
+set Model:Vertex/Z0H1H1 /Herwig/Vertices/BSM/UED_Z0H1H1
+set Model:Vertex/W0A1H1 /Herwig/Vertices/BSM/UED_W0A1H1
+set Model:Vertex/Z0A1h1 /Herwig/Vertices/BSM/UED_Z0A1h1
+set Model:Vertex/W0W1W1 /Herwig/Vertices/BSM/UED_W0W1W1
+
+# Set up the shower
+cd /Herwig/Shower
+insert ShowerHandler:DecayInShower 0 5100001
+insert ShowerHandler:DecayInShower 1 5100002
+insert ShowerHandler:DecayInShower 2 5100003
+insert ShowerHandler:DecayInShower 3 5100004
+insert ShowerHandler:DecayInShower 4 5100005
+insert ShowerHandler:DecayInShower 5 5100006
+insert ShowerHandler:DecayInShower 6 5100011
+insert ShowerHandler:DecayInShower 7 5100012
+insert ShowerHandler:DecayInShower 8 5100013
+insert ShowerHandler:DecayInShower 9 5100014
+insert ShowerHandler:DecayInShower 10 5100015
+insert ShowerHandler:DecayInShower 11 5100016
+insert ShowerHandler:DecayInShower 12 6100001
+insert ShowerHandler:DecayInShower 13 6100002
+insert ShowerHandler:DecayInShower 14 6100003
+insert ShowerHandler:DecayInShower 15 6100004
+insert ShowerHandler:DecayInShower 16 6100005
+insert ShowerHandler:DecayInShower 17 6100006
+insert ShowerHandler:DecayInShower 18 6100011
+insert ShowerHandler:DecayInShower 19 6100013
+insert ShowerHandler:DecayInShower 20 6100015
+insert ShowerHandler:DecayInShower 21 5100021
+insert ShowerHandler:DecayInShower 22 5100022
+insert ShowerHandler:DecayInShower 23 5100023
+insert ShowerHandler:DecayInShower 24 5100024
+insert ShowerHandler:DecayInShower 25 5100025
+insert ShowerHandler:DecayInShower 26 5100036
+insert ShowerHandler:DecayInShower 27 5100037
+set SplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_s_L->KK1_s_L,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_c_L->KK1_c_L,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_b_1->KK1_b_1,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_t_1->KK1_t_1,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_u_R->KK1_u_R,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_d_R->KK1_d_R,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
+
+cd /Herwig/NewPhysics
+insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
+insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
+
+# Set up the model framework
+set MUED/Model:ModelGenerator NewModel
+
+cd /Herwig/Generators
+# Choose MUED over SM
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MUED/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MUED/Model

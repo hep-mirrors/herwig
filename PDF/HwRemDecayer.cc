@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HwRemDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HwRemDecayer class.
 //
@@ -138,12 +145,9 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   else
     theX.second += parton->momentum().rho()/beam->momentum().rho();
 
-  double check;
-  if(rem==theRems.first) check = theX.first;
-  else check = theX.second;
+  double check = rem==theRems.first ? theX.first : theX.second;
 
-  if(1.0-check < 1e-3)     
-    throw ShowerHandler::ExtraScatterVeto();
+  if(1.0-check < 1e-3) throw ShowerHandler::ExtraScatterVeto();
 
   bool anti;
   Lorentz5Momentum lastp(parton->momentum());
@@ -265,12 +269,11 @@ void HwRemDecayer::setRemMasses() const {
 			    theprocessed[1]->momentum()};
   ptotal=prem[0]+prem[1];
   ptotal.rescaleMass();
-
   // boost momenta to this frame
-  if(ptotal.m()< (pnew[0].m()+pnew[1].m())) throw Exception() 
-    << "Not enough energy in both remnants in " 
-    << "HwRemDecayer::setRemMasses() " 
-    << Exception::eventerror;
+  if(ptotal.m()< (pnew[0].m()+pnew[1].m())) 
+    throw Exception() << "Not enough energy in both remnants in " 
+		      << "HwRemDecayer::setRemMasses() " 
+		      << Exception::eventerror;
 
   Boost boostv(-ptotal.boostVector());
   ptotal.boost(boostv);
@@ -296,7 +299,7 @@ void HwRemDecayer::setRemMasses() const {
       ptemp.boost(btorest); 
       ptemp.boost(bfmrest); 
       theprocessed[ix]->children()[iy]->set5Momentum(ptemp); 
-    } 
+    }
   }
 }
 
@@ -387,7 +390,44 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
   try{
     split(partons.second, theContent.second, theRems.second, 
 	  theUsed.second, theMaps.second, first);
-  }catch(ShowerHandler::ExtraScatterVeto){
+    // additional check for the remnants
+    // if can't do the rescale veto the emission
+    if(!first) {
+      Lorentz5Momentum pnew[2]=
+	{theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
+	 theRems.second->momentum() - theUsed.second - partons.second->momentum()};
+
+      pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
+      pnew[0].rescaleEnergy();
+      pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
+      pnew[1].rescaleEnergy();
+
+      for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
+	pnew[0] += theRems.first->children()[iy]->momentum();
+
+      for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
+	pnew[1] += theRems.second->children()[iy]->momentum();
+
+      Lorentz5Momentum ptotal=
+	theRems.first ->momentum()-partons.first ->momentum()+
+	theRems.second->momentum()-partons.second->momentum();
+
+      if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
+	if(partons.second->id() != ParticleID::g){
+	  if(partons.second==theMaps.second.back().first) 
+	    theUsed.second -= theMaps.second.back().second->momentum();
+	  else
+	    theUsed.second -= theMaps.second.back().first->momentum();
+	  
+	  thestep->removeParticle(theMaps.second.back().first);
+	  thestep->removeParticle(theMaps.second.back().second);
+	}
+	theMaps.second.pop_back();
+	throw ShowerHandler::ExtraScatterVeto();
+      }
+    }
+  }
+  catch(ShowerHandler::ExtraScatterVeto){
     //case of the first forcedSplitting worked fine
     theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
     theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();

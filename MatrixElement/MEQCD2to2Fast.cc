@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEQCD2to2Fast.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEQCD2to2Fast class.
 //
@@ -349,29 +356,29 @@ MEQCD2to2Fast::colourGeometries(tcDiagPtr diag) const {
   switch(abs(diag->id())) {
     // gg -> gg subprocess
   case 1:
-    if(abs(diag->id())==1) {
+    if(_flow==1) {
       sel.insert(0.5, &cgggg[0]);
       sel.insert(0.5, &cgggg[1]);
     }
     else {
-      sel.insert(0.5, &cgggg[2]);
-      sel.insert(0.5, &cgggg[3]);
-    }
-    break;
-  case 2: 
-    if(abs(diag->id())==1) {
       sel.insert(0.5, &cgggg[4]);
       sel.insert(0.5, &cgggg[5]);
     }
-    else {
+    break;
+  case 2: 
+    if(_flow==2) {
       sel.insert(0.5, &cgggg[6]);
       sel.insert(0.5, &cgggg[7]);
     }
-    break;
-  case 3:
-    if(abs(diag->id())==2) {
+    else {
       sel.insert(0.5, &cgggg[8]);
       sel.insert(0.5, &cgggg[9]);
+    }
+    break;
+  case 3:
+    if(_flow==1) {
+      sel.insert(0.5, &cgggg[2]);
+      sel.insert(0.5, &cgggg[3]);
     }
     else {
       sel.insert(0.5, &cgggg[10]);

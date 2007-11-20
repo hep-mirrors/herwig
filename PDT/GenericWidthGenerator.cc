@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GenericWidthGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GenericWidthGenerator class.
 //
@@ -644,23 +651,19 @@ void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header) {
 }
 
 DecayMap GenericWidthGenerator::rate(const Particle & p) {
+  // return default if not using running widths
+  if(!_theParticle->variableRatio()) return p.data().decaySelector();
+  // use the running widths to generate the branching ratios
   Energy scale(p.mass());
   DecayMap dm;
-  // use the running widths to generate the branching ratios
-  if(_theParticle->variableRatio()) {
-    DecayMap newmap;
-    Energy width = _theParticle->width();
-    for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
-      // DGRELL units?
-      if(p.id()==_theParticle->id())
-	newmap.insert(partialWidth(ix,scale)/width,_decaymodes[ix]);
-      else
-	newmap.insert(partialWidth(ix,scale)/width,_decaymodes[ix]->CC());
-    }
-    dm=newmap;
+  Energy width = _theParticle->width();
+  for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
+    // DGRELL units?
+    if(p.id()==_theParticle->id())
+      dm.insert(partialWidth(ix,scale)/width,_decaymodes[ix]);
+    else
+      dm.insert(partialWidth(ix,scale)/width,_decaymodes[ix]->CC());
   }
-  // if we are not varying the width return the default
-  else dm=p.data().decaySelector();
   return dm;
 }
 

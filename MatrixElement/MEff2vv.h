@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEff2vv.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEff2vv_H
 #define HERWIG_MEff2vv_H
 //
@@ -80,6 +87,13 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param sub Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+
 protected:
   
   /**
@@ -158,7 +172,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
   
 private:

@@ -2,7 +2,7 @@ SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
                      HwMPIAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+HwAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
@@ -37,7 +37,7 @@ HwAnalysis_la_LIBADD += $(HEPMCLIBS)
 endif
 
 
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 2:0:0
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:0:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.fh \
 BFragmentationAnalysisHandler.h BFragmentationAnalysisHandler.icc \
@@ -49,7 +49,7 @@ IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc \
 DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh \
 DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
 
-HwDecayAnalysis_la_LDFLAGS = -module
+HwDecayAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 HwDecayAnalysis_la_SOURCES = \
 TauTo2MesonAnalysis.h TauTo2MesonAnalysis.icc \
 TauTo2MesonAnalysis.fh TauTo2MesonAnalysis.cc \
@@ -103,7 +103,7 @@ CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
@@ -122,7 +122,7 @@ RFieldAnalysis.h RFieldAnalysis.icc
 #code which also depends on ROOT
 if WANT_LIBROOT
 pkglib_LTLIBRARIES += HwUEAnalysis.la
-HwUEAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwUEAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwUEAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) $(ROOTINCLUDE)
 HwUEAnalysis_la_LIBADD = $(KTJETLIBS) $(ROOTLIBS)
 HwUEAnalysis_la_SOURCES = \
@@ -131,7 +131,7 @@ UEobservables.h UEobservables.icc
 endif
 endif
 
-HwMPIAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMPIAnalysis_la_LIBADD =
 HwMPIAnalysis_la_SOURCES = \

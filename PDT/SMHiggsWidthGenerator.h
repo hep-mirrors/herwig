@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMHiggsWidthGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHiggsWidthGenerator_H
 #define HERWIG_SMHiggsWidthGenerator_H
 //
@@ -49,7 +56,25 @@ public:
    * Return decay map for the given particle type.
    */
   virtual DecayMap rate(const ParticleData &) const;
+
+  /**
+   * Return a decay map for a given Particle instance.
+   */
+  virtual DecayMap rate(const Particle &);
   //@}
+
+  /**
+   *  Return the total width and the sum of the partial widths for
+   *  modes which are used
+   */
+  pair<Energy,Energy> width(Energy, const ParticleData &) const;
+
+  /**
+   *  Calculate the partial width for a given mode
+   * @param mH The Higgs masses
+   * @param imode The decay mode
+   */
+  Energy partialWidth(Energy mH,unsigned int imode) const;
 
 public:
 
@@ -99,21 +124,6 @@ protected:
   /** @routines to calculate Higgs width. */
   //@{
   /**
-   * Calculates the Higgs width with some NLL corrections a-la FORTRAN HERWIG. 
-   * The following channels are taken into account: 
-   * H->1quarks, H->2leptons, H->WW, H->ZZ, H->2gammas, H->2gluons
-   * The prescription corresponds to one in FORTRAN HERWIG (except H->2gluons!)
-   * @returns the Higgs width for the Higgs mass Mh.
-   */
-  Energy calcNLLRunningWidth(Energy Mh) const;
-
-  /**
-   * Calculates the Higgs width at LO.
-   * @returns the Higgs width for Higgs mass Mh.
-   */
-  Energy calcLORunningWidth(Energy Mh) const;
-
-  /**
    * Calculates the double Breit-Wigner Integral a-la FORTRAN HERWIG.
    * It is used in NLL corrected Higgs width for H->WW/ZZ,
    * x = (M_V/M_H)^2, y=M_V*G_V/(M_H)^2, where M_V/G_V - V-boson mass/width
@@ -127,7 +137,12 @@ protected:
    */
   Complex HwW2(double tau) const;
   //@}
- 
+
+  /**
+   *  Return the branching ratios at the given scale
+   * @param scale The off shell-mass of the Higgs 
+   */
+  DecayMap branching(Energy scale, const ParticleData &) const;
 
 protected:
 
@@ -163,16 +178,6 @@ private:
   unsigned int _widthopt;
 
   /**
-   * Defines which decay modes are taken into account (see class documentation)
-   */
-  unsigned int _branchingopt;
-
-  /**
-   *  Storage of the partial widths
-   */
-  mutable vector<Energy> _partialwidths;
-
-  /**
    *  Particle properties extracged at initialization
    */
   //@{
@@ -205,7 +210,68 @@ private:
    *  Masses of the leptons
    */
   vector<Energy> _lmass;
+
+  /**
+   *  \f$\sin^2\theta_W\f$
+   */
+  double _sw2;
+
+  /**
+   *  The \f$C_A\f$ colour factor
+   */
+  double _ca;
+
+  /**
+   *  The \f$C_F\f$ colour factor
+   */
+  double _cf;
   //@}
+
+  /**
+   * Storage of parameters for speed
+   */
+  //@{
+  /**
+   *  The last scale
+   */
+  mutable Energy _qlast;
+
+  /**
+   *  \f$\Lambda_{\rm QCD}\f$
+   */
+  mutable Energy _lambdaQCD;
+
+  /**
+   *  The electromagnetic coupling
+   */
+  mutable double _alphaEM;
+
+  /**
+   *  The strong coupling
+   */
+  mutable double _alphaS;
+
+  /**
+   *  Correction factor for \f$H\to q\bar{q}\f$
+   */
+  mutable double _cd;
+
+  /**
+   *  Fermi constant
+   */
+  mutable Energy2 _gfermiinv;
+
+  /**
+   *  The anomalous dimension for  \f$H\to q\bar{q}\f$
+   */
+  mutable double _gam0;
+
+  /**
+   *  The \f$\beta\f$ function coefficient for  \f$H\to q\bar{q}\f$
+   */
+  mutable double _beta0;
+  //@}
+
 };
 
 }

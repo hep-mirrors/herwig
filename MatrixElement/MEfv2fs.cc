@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEfv2fs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEfv2fs class.
 //
@@ -320,14 +327,18 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
   //calculate production ME
   VecWFVector vecIn;
   VectorWaveFunction(vecIn, external[1], incoming, false, true,  true);
+  //function to calculate me2 expects massless incoming vectors
+  // and this constructor sets the '1' polarisation at element [2] 
+  //in the vector
+  vecIn[1] = vecIn[2];
   ScalarWaveFunction scaOut(external[3], outgoing, true, true);
-
+  double dummy(0.);
   if( external[0]->id() > 0 ) {
     SpinorVector spIn;
     SpinorWaveFunction(spIn, external[0], incoming, false, true);
     SpinorBarVector spbOut;
     SpinorBarWaveFunction(spbOut, external[2], outgoing, true, true);
-    double dummy;
+
     ProductionMatrixElement prodME = fv2fbsHeME(spIn, vecIn, spbOut, 
 						scaOut, dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -341,7 +352,6 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
     SpinorBarWaveFunction(spbIn, external[0], incoming, false, true);
     SpinorVector spOut;
     SpinorWaveFunction(spOut, external[2], outgoing, true, true);
-    double dummy;
     ProductionMatrixElement prodME = fbv2fsHeME(spbIn, vecIn, spOut, 
 						scaOut, dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -351,6 +361,9 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
 	setProductionVertex(hardvertex);
   }
   
+#ifndef NDEBUG
+  if( debugME() ) debug(dummy);
+#endif
 
 }
 
@@ -365,8 +378,8 @@ void MEfv2fs::debug(double me2) const {
   tcSMPtr sm = generator()->standardModel();
   double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
   int Nc = sm->Nc();
-  Energy2 m3s = meMomenta()[2].m2();
-  Energy2 m4s = meMomenta()[3].m2();
+  Energy2 m3s = sqr(mePartonData()[2]->mass());
+  Energy2 m4s = sqr(mePartonData()[3]->mass());
   //formula has vf->fs so swap t and u
   Energy2 s(sHat()), t3(uHat() - m3s), u4(tHat() - m4s);
   double analytic = -gs4*( u4 + 2.*(m4s - m3s)*(1. + m3s/t3 + m4s/u4) )*

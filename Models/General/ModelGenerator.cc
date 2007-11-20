@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ModelGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ModelGenerator class.
 //
@@ -177,7 +184,7 @@ void ModelGenerator::doinit() throw(InitException) {
   string filename = CurrentGenerator::current().filename() + 
     string("-BSMModelInfo.out");
   ofstream ofs(filename.c_str(), ios::out|ios::app);
-  ofs << "# The decay modes listed below will have spin\n"
+  ofs << "# The two body decay modes listed below will have spin\n"
       << "# correlations included when they are generated.\n#\n#";
   pit = _theParticles.begin();
   pend = _theParticles.end();
@@ -231,10 +238,10 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   generator()->preinitInterface(p, "Width_generator","set", wn);
   
   //initialize the generators
-  generator()->preinitInterface(mgen, "Initialize", "set", "Initialization");
-  generator()->preinitInterface(wgen, "Initialize", "set", "Initialization");
+  generator()->preinitInterface(mgen, "Initialize", "set", "Yes");
+  generator()->preinitInterface(wgen, "Initialize", "set", "Yes");
 
-  string norm = _theBRnorm ? "Normalize" : "NoNormalize";
+  string norm = _theBRnorm ? "Yes" : "No";
   generator()->preinitInterface(wgen, "BRNormalize", "set", norm);
   ostringstream os;
   os << _theNpoints;

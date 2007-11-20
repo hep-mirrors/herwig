@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// IFDipole.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the IFDipole class.
 //
@@ -10,13 +17,10 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IFDipole.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+using namespace ThePEG::Helicity;
 
 #ifdef KEITH_DEBUG
 #include <cfortran.h>
@@ -150,8 +154,7 @@ void IFDipole::Init() {
 
 }
 
-ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector children)
-{
+ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector children) {
   // set parameters which won't change in the event loop
   // masses of the particles
   _m[0] = p.mass(); 
@@ -180,121 +183,113 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
   // and set the initial momenta of the charged particles 
   // in the dipole rest frame: currently this is the same 
   // as the boson rest frame...
-  for(unsigned int ix=0;ix<2;++ix)
-    {
-  // KMH - 08/11/05 - This used to be boostv instead of -boostv
-  // -boostv is the boost from the lab to the parent rest frame
-  // whereas boostv goes the other way!!!
-      children[ix]->deepBoost(-boostv);
-      _qprf[ix]=children[ix]->momentum();
-    }
+  for(unsigned int ix=0;ix<2;++ix) {
+    // KMH - 08/11/05 - This used to be boostv instead of -boostv
+    // -boostv is the boost from the lab to the parent rest frame
+    // whereas boostv goes the other way!!!
+    children[ix]->deepBoost(-boostv);
+    _qprf[ix]=children[ix]->momentum();
+  }
   // perform the unweighting
   double wgt;
   unsigned int ntry(0);
-  do
-    {
-      wgt =makePhotons(boostv,children);
-      ++ntry;
-      // Record warnings about large and weird weights in the .log file.
-      if(wgt>_maxwgt||wgt<0.0||isnan(wgt)==1)
-	{
-          generator()->log() << "IFDipole.cc: " << endl;
-          if(wgt>_maxwgt) {
-	    generator()->log() << "Weight exceeds maximum for decay!" 
-                               << endl; 
-	  } 
-          if(wgt<0.0) {
-	    generator()->log() << "Weight is negative! " 
-                               << endl; 
-	  }
-          if(isnan(wgt)==1) {
-	    generator()->log() << "Weight is NAN! " 
-                               << endl; 
-	  }
-	  generator()->log() << p.PDGName() << " " 
-			     << children[0]->PDGName() << " " 
-                             << children[1]->PDGName()
-			     << endl 
-			     << " Current Maximum = " << _maxwgt 
-                             << endl
-                             << " Current Weight  = " << wgt  
-			     << endl;
-          generator()->log() << "Photon Multiplicity      : " 
-                             << _multiplicity                          << endl
-                             << "Original Parent rest frame momenta: " << endl
-                             << "charged child: " << ounit(_qprf[_map[0]],GeV) << endl
-                             << "neutral child: " << ounit(_qprf[_map[1]],GeV) << endl
-                             << "Parent rest frame momenta: "          << endl
-                             << "charged child: " << ounit(_qnewprf[_map[0]],GeV)<< endl
-                             << "neutral child: " << ounit(_qnewprf[_map[1]],GeV)<< endl
-                             << "photons      : " << ounit(_bigLprf,GeV) << endl
-                             << "Weights      : "                      << endl
-                             << "_dipolewgt   : " << _dipolewgt        << endl
-                             << "_yfswgt      : " << _yfswgt           << endl
-                             << "_jacobianwgt : " << _jacobianwgt      << endl
-                             << "_mewgt       : " << _mewgt            << endl;
-          for(unsigned int ct=0;ct<_multiplicity;ct++) {
-            generator()->log() << "_cosphot[" << ct << "]: " << _cosphot[ct] << endl;
-            generator()->log() << "_sinphot[" << ct << "]: " << _sinphot[ct] << endl;
-	  }
-          if(wgt>_maxwgt) {
-            if(wgt<15.0) { 
-              generator()->log() << "Resetting maximum weight" 
-                                 << endl << " New Maximum = " << wgt  << endl;
-              _maxwgt=wgt; 
-	    } else {
-              generator()->log() << "Maximum weight set to limit (15)" << endl;
-              _maxwgt=15.0; 
-	    }
-	  }
+  do {
+    wgt =makePhotons(boostv,children);
+    ++ntry;
+    // Record warnings about large and weird weights in the .log file.
+    if(wgt>_maxwgt||wgt<0.0||isnan(wgt)==1) {
+      generator()->log() << "IFDipole.cc: " << endl;
+      if(wgt>_maxwgt) {
+	generator()->log() << "Weight exceeds maximum for decay!" 
+			   << endl; 
+      } 
+      if(wgt<0.0) {
+	generator()->log() << "Weight is negative! " 
+			   << endl; 
+      }
+      if(isnan(wgt)==1) {
+	generator()->log() << "Weight is NAN! " 
+			   << endl; 
+      }
+      generator()->log() << p.PDGName() << " " 
+			 << children[0]->PDGName() << " " 
+			 << children[1]->PDGName()
+			 << endl 
+			 << " Current Maximum = " << _maxwgt 
+			 << endl
+			 << " Current Weight  = " << wgt  
+			 << endl;
+      generator()->log() << "Photon Multiplicity      : " 
+			 << _multiplicity                          << endl
+			 << "Original Parent rest frame momenta: " << endl
+			 << "charged child: " << ounit(_qprf[_map[0]],GeV) << endl
+			 << "neutral child: " << ounit(_qprf[_map[1]],GeV) << endl
+			 << "Parent rest frame momenta: "          << endl
+			 << "charged child: " << ounit(_qnewprf[_map[0]],GeV)<< endl
+			 << "neutral child: " << ounit(_qnewprf[_map[1]],GeV)<< endl
+			 << "photons      : " << ounit(_bigLprf,GeV) << endl
+			 << "Weights      : "                      << endl
+			 << "_dipolewgt   : " << _dipolewgt        << endl
+			 << "_yfswgt      : " << _yfswgt           << endl
+			 << "_jacobianwgt : " << _jacobianwgt      << endl
+			 << "_mewgt       : " << _mewgt            << endl;
+      for(unsigned int ct=0;ct<_multiplicity;ct++) {
+	generator()->log() << "_cosphot[" << ct << "]: " << _cosphot[ct] << endl;
+	generator()->log() << "_sinphot[" << ct << "]: " << _sinphot[ct] << endl;
+      }
+      if(wgt>_maxwgt) {
+	if(wgt<15.0) { 
+	  generator()->log() << "Resetting maximum weight" 
+			     << endl << " New Maximum = " << wgt  << endl;
+	  _maxwgt=wgt; 
+	} else {
+	  generator()->log() << "Maximum weight set to limit (15)" << endl;
+	  _maxwgt=15.0; 
 	}
+      }
     }
+  }
   while(wgt<(_maxwgt*UseRandom::rnd())&&ntry<_maxtry);
-  if(ntry>=_maxtry)
-    {
-      generator()->log() << "IFDipole Failed to generate QED radiation for the decay " 
-			 << p.PDGName() << " -> " 
-			 << children[0]->PDGName() << " "
-			 << children[1]->PDGName() << endl;
-      return children;
-    }
+  if(ntry>=_maxtry) {
+    generator()->log() << "IFDipole Failed to generate QED radiation for the decay " 
+		       << p.PDGName() << " -> " 
+		       << children[0]->PDGName() << " "
+		       << children[1]->PDGName() << endl;
+    return children;
+  }
   // produce products after radiation if needed
-  if(_multiplicity>0)
-    {
-      // change the momenta of the children, they are currently
-      // in parent rest frame 
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-          children[ix]->set5Momentum(_qnewprf[ix]);
-	  // boost back to the lab
-          // KMH - 08/11/05 - This used to be -boostv instead of boostv
-          // -boostv is the boost from the lab to the parent rest frame
-          // whereas boostv goes the other way!!!
-	  children[ix]->deepBoost(boostv);
-	}
-      // add the photons to the event record
-      tcPDPtr photon=getParticleData(ParticleID::gamma);
-      for(unsigned int ix=0;ix<_multiplicity;++ix)
-	{
-	  PPtr newphoton=new_ptr(Particle(photon));
-	  newphoton->set5Momentum(_llab[ix]);
-	  children.push_back(newphoton);
-	}
-      return children;
+  if(_multiplicity>0) {
+    // change the momenta of the children, they are currently
+    // in parent rest frame 
+    for(unsigned int ix=0;ix<2;++ix) {
+      LorentzRotation boost(solveBoost(_qnewprf[ix],children[ix]->momentum()));
+      children[ix]->deepTransform(boost);
+      // boost back to the lab
+      // KMH - 08/11/05 - This used to be -boostv instead of boostv
+      // -boostv is the boost from the lab to the parent rest frame
+      // whereas boostv goes the other way!!!
+      children[ix]->deepBoost(boostv);
     }
+    // add the photons to the event record
+    tcPDPtr photon=getParticleData(ParticleID::gamma);
+    for(unsigned int ix=0;ix<_multiplicity;++ix) {
+      PPtr newphoton=new_ptr(Particle(photon));
+      newphoton->set5Momentum(_llab[ix]);
+      children.push_back(newphoton);
+    }
+    return children;
+  }
   // otherwise just return the orginial particles
   // boosted back to lab
-  else
-    {
-      for(unsigned int ix=0;ix<children.size();++ix)
-	children[ix]->deepBoost(boostv);
-      return children;
-    }
+  else {
+    for(unsigned int ix=0;ix<children.size();++ix)
+      children[ix]->deepBoost(boostv);
+    return children;
+  }
 }
 
 // member which generates the photons
-double IFDipole::makePhotons(Boost boostv,ParticleVector children)
-{
+double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
   // set the initial parameters
   // number of photons (zero)
   _multiplicity=0;
@@ -598,8 +593,7 @@ double IFDipole::meWeight(ParticleVector children)
 }
 
 double IFDipole::exactYFSFormFactor(double beta1,double ombeta1,
-					   double beta2,double ombeta2)
-{
+					   double beta2,double ombeta2) {
   double Y    = 0.0    ;
   double b    = beta1  ;
   double omb  = ombeta1;
@@ -651,8 +645,7 @@ double IFDipole::exactYFSFormFactor(double beta1,double ombeta1,
   return exp(Y);
 }
 
-double IFDipole::jacobianWeight()
-{
+double IFDipole::jacobianWeight() {
   // calculate the velocities of the children (crude/overvalued)
   Energy mag1old  = sqrt( (_qprf[_map[0]].e()   +_m[_map[0]+1])
                          *(_qprf[_map[0]].e()   -_m[_map[0]+1])
@@ -685,4 +678,23 @@ double IFDipole::jacobianWeight()
                 +_qnewprf[_map[0]].e()*magL*cos1L
 	       )
             );
+}
+
+LorentzRotation IFDipole::solveBoost(const Lorentz5Momentum & q, 
+				     const Lorentz5Momentum & p ) const {
+  Energy modp = p.vect().mag();
+  Energy modq = q.vect().mag();
+  double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
+  Boost beta = -betam*q.vect().unit();
+  Vector3<Energy2> ax = p.vect().cross( q.vect() ); 
+  double delta = p.vect().angle( q.vect() );
+  LorentzRotation R;
+  using Constants::pi;
+  if ( ax.mag2()/GeV2/MeV2 > 1e-16 ) {
+    R.rotate( delta, unitVector(ax) ).boost( beta );
+  } 
+  else {
+    R.boost( beta );
+  } 
+  return R;
 }

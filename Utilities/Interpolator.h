@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Interpolator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Interpolator_H
 #define HERWIG_Interpolator_H
 //
@@ -17,8 +24,6 @@ using namespace ThePEG;
  *  This class implments a polynominal interpolation of a table of values, it is
  *  based on the interpolation code in FORTRAN HERWIG. 
  *
- * @see \ref InterpolatorInterfaces "The interfaces"
- * defined for Interpolator.
  */
 
 template <typename ValT, typename ArgT>

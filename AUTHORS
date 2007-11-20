@@ -1,8 +1,26 @@
+============
+Herwig++ 2.1
+============
+
+Please contact <herwig@projects.hepforge.org> for any queries.
+
+========
+Authors:
+========
+Manuel Baehr <mb@particle.uni-karlsruhe.de>
 Stefan Gieseke <gieseke@particle.uni-karlsruhe.de>
-David Grellscheid <david.grellscheid@durham.ac.uk>
-Keith Hamilton <keith.hamilton@durham.ac.uk>
-Alberto Ribon <Alberto.Ribon@cern.ch>
+Martyn Gigg <m.a.gigg@durham.ac.uk>
+David Grellscheid <David.Grellscheid@durham.ac.uk>
+Keith Hamilton <hamilton@fyma.ucl.ac.be>
+Seyi Latunde-Dada <seyi@hep.phy.cam.ac.uk>
+Simon Plaetzer <sp@particle.uni-karlsruhe.de>
 Peter Richardson <Peter.Richardson@durham.ac.uk>
-Mike Seymour <M.H.Seymour@rl.ac.uk>
-Philip Stephens <stephens@hep.phy.cam.ac.uk>
+Mike Seymour <Michael.Seymour@cern.ch>
+Alexander Sherstnev <cherstn@hep.phy.cam.ac.uk>
 Bryan Webber <webber@hep.phy.cam.ac.uk>
+
+===============
+Former authors:
+===============
+Alberto Ribon <Alberto.Ribon@cern.ch>
+Philip Stephens <stephens@hep.phy.cam.ac.uk>

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// PTVeto.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the PTVeto class.
 //
@@ -23,12 +30,12 @@ PTVeto::~PTVeto() {}
 
 void PTVeto::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-  os << ounit(_maxPT,GeV) << ounit(_minPT,GeV) << _vetoTimelike << _vetoSpacelike << _vetoDecay;
+  os << ounit(_maxPT,GeV) << ounit(_minPT,GeV) << _vetoTimelike << _vetoSpacelike;
 }
 
 void PTVeto::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-  is >> iunit(_maxPT,GeV) >> iunit(_minPT,GeV) >> _vetoTimelike >> _vetoSpacelike >> _vetoDecay;
+  is >> iunit(_maxPT,GeV) >> iunit(_minPT,GeV) >> _vetoTimelike >> _vetoSpacelike;
 }
 
 ClassDescription<PTVeto> PTVeto::initPTVeto;
@@ -38,14 +45,14 @@ void PTVeto::Init() {
 
   
   static Parameter<PTVeto,Energy> interfacemaxPT
-    ("maxPT",
+    ("MaxPT",
      "Maximum allowed PT",
      &PTVeto::_maxPT, GeV, 100.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
 
   static Parameter<PTVeto,Energy> interfaceminPT
-    ("minPT",
+    ("MinPT",
      "Minimum allowed PT",
      &PTVeto::_minPT, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
@@ -53,7 +60,7 @@ void PTVeto::Init() {
 
 
   static Switch<PTVeto,bool> interfacevetoTimelike
-    ("vetoTimelike",
+    ("VetoTimelike",
      "Veto timelike showering",
      &PTVeto::_vetoTimelike, true, false, false);
   static SwitchOption interfacevetoTimelikevetoTimelikeOn
@@ -68,7 +75,7 @@ void PTVeto::Init() {
      false);
 
   static Switch<PTVeto,bool> interfacevetoSpacelike
-    ("vetoSpacelike",
+    ("VetoSpacelike",
      "Veto spacelike showering",
      &PTVeto::_vetoSpacelike, true, false, false);
   static SwitchOption interfacevetoSpacelikevetoSpacelikeOn
@@ -80,21 +87,6 @@ void PTVeto::Init() {
     (interfacevetoSpacelike,
      "No",
      "Do not veto spacelike showering",
-     false);
-
-  static Switch<PTVeto,bool> interfacevetoDecay
-    ("vetoDecay",
-     "Veto decay showering",
-     &PTVeto::_vetoDecay, true, false, false);
-  static SwitchOption interfacevetoDecayvetoDecayOn
-    (interfacevetoDecay,
-     "Yes",
-     "Veto decay showering",
-     true);
-  static SwitchOption interfacevetoDecayvetoDecayOff
-    (interfacevetoDecay,
-     "No",
-     "Do not veto decay showering",
      false);
 
 

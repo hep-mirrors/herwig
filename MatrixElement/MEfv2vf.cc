@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEfv2vf.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEfv2vf class.
 //
@@ -10,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -27,6 +35,7 @@ double MEfv2vf::me2() const {
   VBVector vecIn(2), vecOut(3);
   SpinorBarVector spb(2);
   double fullme(0.);
+  bool mc = !(mePartonData()[2]->mass() > 0.*MeV);
   if(mePartonData()[0]->id() > 0) {
     for(unsigned int i = 0; i < 2; ++i) {
       sp[i] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], i, incoming);
@@ -37,10 +46,10 @@ double MEfv2vf::me2() const {
       spb[i] = SpinorBarWaveFunction(meMomenta()[3], mePartonData()[3], i, 
 				     outgoing);
     }
-    if(mePartonData()[2]->mass() > 0.0*MeV)
+    if( !mc )
       vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
-    fv2vfHeME(sp, vecIn, vecOut, spb, fullme);
+    fv2vfHeME(sp, vecIn, vecOut, mc, spb, fullme);
   }
   else {
     for(unsigned int i = 0; i < 2; ++i) {
@@ -52,10 +61,10 @@ double MEfv2vf::me2() const {
 				     outgoing);
       sp[i] = SpinorWaveFunction(meMomenta()[3], mePartonData()[3], i, outgoing);
     }
-    if(mePartonData()[2]->mass() > 0.0*MeV)
+    if( !mc )
       vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
-    fbv2vfbHeME(spb, vecIn, vecOut, sp, fullme);
+    fbv2vfbHeME(spb, vecIn, vecOut, mc, sp, fullme);
   }
 
 #ifndef NDEBUG
@@ -66,19 +75,17 @@ double MEfv2vf::me2() const {
 }
 
 ProductionMatrixElement
-MEfv2vf::fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn, 
-		   VBVector & vecOut, SpinorBarVector & spbOut, 
-		   double & mesq) const {
+MEfv2vf::fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
+		   const VBVector & vecOut, bool mc, 
+		   const SpinorBarVector & spbOut, double & mesq) const {
   const HPCount ndiags = numberOfDiags();
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
-  const bool masslessC = mePartonData()[2]->mass() == 0.0*MeV;
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
 				 PDT::Spin1Half);
   vector<Complex> diag(ndiags, Complex(0., 0.));
   vector<double> me(ndiags, 0.);
- 
   //intermediate wave functions
   SpinorBarWaveFunction interFB; VectorWaveFunction interV;
   SpinorWaveFunction interF;
@@ -86,7 +93,7 @@ MEfv2vf::fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn,
   for(unsigned int ifh = 0; ifh < 2; ++ifh) {
     for(unsigned int ivh = 0; ivh < 2; ++ivh) {
       for(unsigned int ovh = 0; ovh < 3; ++ovh) {
-	if(masslessC && ovh == 1) ++ovh;
+	if(mc && ovh == 1) ++ovh;
 	for(unsigned int ofh = 0; ofh < 2; ++ofh) {
 	  //store the flows
 	  vector<Complex> cflows(ncf, Complex(0. ,0.));
@@ -145,19 +152,17 @@ MEfv2vf::fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn,
 }
 
 ProductionMatrixElement
-MEfv2vf::fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn, 
-		     VBVector & vecOut, SpinorVector & spOut, 
-		     double & mesq) const {
+MEfv2vf::fbv2vfbHeME(const SpinorBarVector & spbIn, const VBVector & vecIn, 
+		     const VBVector & vecOut, bool mc, 
+		     const SpinorVector & spOut, double & mesq) const {
   const HPCount ndiags = numberOfDiags();
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
-  const bool masslessC = mePartonData()[2]->mass() == 0.0*MeV;
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
 				 PDT::Spin1Half);
   vector<Complex> diag(ndiags, Complex(0., 0.));
   vector<double> me(ndiags, 0.);
-
   //intermediate wave functions
   SpinorBarWaveFunction interFB; VectorWaveFunction interV;
   SpinorWaveFunction interF;
@@ -165,7 +170,7 @@ MEfv2vf::fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn,
   for(unsigned int ifh = 0; ifh < 2; ++ifh) {
     for(unsigned int ivh = 0; ivh < 2; ++ivh) {
       for(unsigned int ovh = 0; ovh < 3; ++ovh) {
-	if(masslessC && ovh == 1) ++ovh;
+	if(mc && ovh == 1) ++ovh;
 	for(unsigned int ofh = 0; ofh < 2; ++ofh) {
 	  //store the flows
 	  vector<Complex> cflows(ncf, Complex(0. ,0.));
@@ -292,6 +297,50 @@ void MEfv2vf::Init() {
 
 }
 
+void MEfv2vf::constructVertex(tSubProPtr sub) {
+  ParticleVector ext(4);
+  ext[0] = sub->incoming().first;
+  ext[1] = sub->incoming().second;
+  ext[2] = sub->outgoing()[0];
+  ext[3] = sub->outgoing()[1];
+
+  if( ext[0]->data().iSpin() > ext[1]->data().iSpin() ) swap(ext[0], ext[1]);
+  if( ext[2]->data().iSpin() < ext[3]->data().iSpin() ) swap(ext[2], ext[3]);
+
+  VBVector v1, v3;
+  VectorWaveFunction(v1, ext[1], incoming, false, true, true);
+  //function to calculate me2 expects massless incoming vectors
+  // and this constructor sets the '1' polarisation at element [2] 
+  //in the vector
+  v1[1] = v1[2];
+  bool mc = !(ext[2]->data().mass() > 0.*MeV);
+  VectorWaveFunction(v3, ext[2], outgoing, true, mc, true);
+  if( mc ) v3[1] = v3[2];
+  SpinorVector sp;  SpinorBarVector sbar;
+  double dummy(0.);
+  HardVertexPtr hv = new_ptr(HardVertex());
+  if( ext[0]->id() > 0 ) {
+    SpinorWaveFunction(sp, ext[0], incoming, false, true);
+    SpinorBarWaveFunction(sbar, ext[3], outgoing, true, true);
+    ProductionMatrixElement pme = fv2vfHeME(sp, v1, v3, mc, sbar, dummy);
+    hv->ME(pme);
+    for(unsigned int i = 0; i < 4; ++i) 
+      dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
+  }
+  else {
+    SpinorBarWaveFunction(sbar, ext[0], incoming, false, true);
+    SpinorWaveFunction(sp, ext[3], outgoing, true, true);
+    ProductionMatrixElement pme = fbv2vfbHeME(sbar, v1, v3, mc, sp, dummy);
+    hv->ME(pme);
+    for(unsigned int i = 0; i < 4; ++i) 
+      dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
+  }
+  
+#ifndef NDEBUG
+  if( debugME() ) debug(dummy);
+#endif
+}
+
 void MEfv2vf::debug(double me2) const {
   if( !generator()->logfile().is_open() ) return;
   long id1 = abs(mePartonData()[0]->id());
@@ -304,7 +353,7 @@ void MEfv2vf::debug(double me2) const {
   double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
   Energy2 s(sHat());
   Energy2 mf2 = meMomenta()[2].m2();
-  Energy4 spt2 = uHat()*tHat() - sqr(mf2);
+  //  Energy4 spt2 = uHat()*tHat() - sqr(mf2);
   //swap t and u as formula defines process vf->vf
   Energy2 t3(uHat() - mf2), u4(tHat() - mf2);
   Energy4 s2(sqr(s)), t3s(sqr(t3)), u4s(sqr(u4));

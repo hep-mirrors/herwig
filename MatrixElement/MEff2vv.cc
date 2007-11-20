@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEff2vv.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEff2vv class.
 //
@@ -17,17 +24,52 @@
 using namespace Herwig;
 using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::TensorWaveFunction;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::FFTVertexPtr;
-using ThePEG::Helicity::FFSVertexPtr;
-using ThePEG::Helicity::VVSVertexPtr;
-using ThePEG::Helicity::GeneralSVVVertexPtr;
-using ThePEG::Helicity::VVTVertex;
-using ThePEG::Helicity::VVVVertexPtr;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-typedef Ptr<VVTVertex>::pointer VVTVertexPtr;
+void MEff2vv::doinit() throw(InitException) {
+  GeneralHardME::doinit();
+  Energy mC = getParticleData(getOutgoing().first)->mass();
+  Energy mD = getParticleData(getOutgoing().second)->mass();
+  bool masslVec = (mC == 0.*MeV && mD == 0.*MeV);
+  HPCount ndiags(numberOfDiags());
+  theFerm.resize(ndiags); theVec.resize(ndiags);
+  theTen.resize(ndiags);
+  if(masslVec) theSca1.resize(ndiags);
+  else theSca2.resize(ndiags);
+  for(HPCount i = 0; i < ndiags; ++i) {
+    HPDiagram current = getProcessInfo()[i];
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.intermediate->iSpin() == PDT::Spin1Half)
+	theFerm[i] = 
+	  make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first),
+		    dynamic_ptr_cast<FFVVertexPtr>(current.vertices.second));
+    }
+    else if(current.channelType == HPDiagram::sChannel) {
+      if(current.intermediate->iSpin() == PDT::Spin0) {
+	if(masslVec) 
+	  theSca1[i] = 
+	    make_pair(dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first),
+		      dynamic_ptr_cast<GeneralSVVVertexPtr>
+		      (current.vertices.second));
+	else
+	  theSca2[i] = 
+	    make_pair(dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first),
+		      dynamic_ptr_cast<VVSVertexPtr>(current.vertices.second));
+      }
+      if(current.intermediate->iSpin() == PDT::Spin1)
+	theVec[i] = 
+	  make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first),
+		    dynamic_ptr_cast<VVVVertexPtr>(current.vertices.second));
+      if(current.intermediate->iSpin() == PDT::Spin2)
+	theTen[i] = 
+	  make_pair(dynamic_ptr_cast<FFTVertexPtr>(current.vertices.first),
+		    dynamic_ptr_cast<VVTVertexPtr>(current.vertices.second));
+    }
+  }
+  
+}
+
 
 double MEff2vv::me2() const {
   SpinorVector sp(2);
@@ -166,7 +208,7 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 
 Selector<const ColourLines *>
 MEff2vv::colourGeometries(tcDiagPtr diag) const {
-  static  vector<ColourLines> cf(9);
+  static  vector<ColourLines> cf(10);
   //33b->11
   cf[0] = ColourLines("1 2 -3");
   cf[1] = ColourLines("1 -2");
@@ -179,6 +221,8 @@ MEff2vv::colourGeometries(tcDiagPtr diag) const {
   //33b->81
   cf[7] = ColourLines("1 4, -4 2 -3");
   cf[8] = ColourLines("1 2 5, -5 -3");
+  //no colour
+  cf[9] = ColourLines("");
 
 HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
   vector<ColourLines>::size_type cl(0);
@@ -194,8 +238,13 @@ HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
     }
   }
   else if(mePartonData()[2]->iColour() == PDT::Colour0 &&
-	  mePartonData()[3]->iColour() == PDT::Colour0 )
-    cl = (current.channelType == HPDiagram::tChannel) ? 0 : 1;
+	  mePartonData()[3]->iColour() == PDT::Colour0 ) {
+    if( mePartonData()[0]->iColour() == PDT::Colour0 &&
+	mePartonData()[1]->iColour() == PDT::Colour0 )
+      cl = 9;
+    else
+      cl = (current.channelType == HPDiagram::tChannel) ? 0 : 1;
+  }
   else if(mePartonData()[2]->iColour() == PDT::Colour8 &&
 	  mePartonData()[3]->iColour() == PDT::Colour0 )
     cl = (current.channelType == HPDiagram::tChannel) ? 7 : 8;
@@ -229,6 +278,42 @@ void MEff2vv::Init() {
     ("This class implements the matrix element calculation of the 2->2 "
      "process, fermion-antifermion -> vector vector");
 
+}
+
+void MEff2vv::constructVertex(tSubProPtr sub) {
+  //get particles
+  ParticleVector ext(4);
+  ext[0] = sub->incoming().first;
+  ext[1] = sub->incoming().second;
+  ext[2] = sub->outgoing()[0];
+  ext[3] = sub->outgoing()[1];
+  if( ext[0]->id() < ext[1]->id() ) swap(ext[0], ext[1]);
+
+  vector<SpinorWaveFunction> sp;
+  SpinorWaveFunction(sp, ext[0], incoming, false, true);
+  vector<SpinorBarWaveFunction> sbar;
+  SpinorBarWaveFunction(sbar, ext[1], incoming, false, true);
+  vector<VectorWaveFunction> v1, v2;
+  bool mc  = !(ext[2]->data().mass() > 0.*MeV);
+  bool md  = !(ext[3]->data().mass() > 0.*MeV);
+  VectorWaveFunction(v1, ext[2], outgoing, true, mc, true);
+  VectorWaveFunction(v2, ext[3], outgoing, true, md, true);
+  
+  double dummy(0.);
+  ProductionMatrixElement pme = ff2vvME(sp, sbar, v1, mc, v2, md, dummy);
+  if( mc ) v1[1] = v1[2];
+  if( md ) v2[1] = v2[2];
+  
+#ifndef NDEBUG
+  if( debugME() ) debug(dummy);
+#endif
+
+  //create and set the hardvertex for the process
+  HardVertexPtr hv = new_ptr(HardVertex());
+  hv->ME(pme);
+  for( ParticleVector::size_type i = 0; i < 4; ++i ) 
+    dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->
+      setProductionVertex(hv);
 }
 
 void MEff2vv::debug(double me2) const {

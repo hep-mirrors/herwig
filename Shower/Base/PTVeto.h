@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// PTVeto.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_PTVeto_H
 #define HERWIG_PTVeto_H
 //
@@ -12,8 +19,13 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the PTVeto class.
+/**\ingroup Shower
+ * 
+ * Veto shower emissions according to transverse
+ * momentum of a branching.
+ *
+ * Emissions may be vetoed, if the pt is above and/or
+ * below given values.
  *
  * @see \ref PTVetoInterfaces "The interfaces"
  * defined for PTVeto.
@@ -124,11 +136,6 @@ private:
    * Apply the veto to spacelike showering
    */
   bool _vetoSpacelike;
-
-  /**
-   * Apply the veto to decay showering
-   */
-  bool _vetoDecay;
 
   /**
    * The static object used to initialize the description of this class.

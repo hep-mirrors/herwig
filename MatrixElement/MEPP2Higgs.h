@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEPP2Higgs.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEPP2Higgs_H
 #define HERWIG_MEPP2Higgs_H
 //
@@ -11,6 +18,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ProductionMatrixElement.h"
@@ -262,6 +270,21 @@ private:
    * Pointer to the Standard Model instance used in the class
    */
   tcHwSMPtr theSM;
+
+  /**
+   *  The mass generator for the Higgs
+   */
+  SMHiggsMassGeneratorPtr _hmass;
+
+  /**
+   *  On-shell mass for the higgs
+   */
+  Energy _mh;
+
+  /**
+   *  On-shell width for the higgs
+   */
+  Energy _wh;
 };
 
 }

@@ -2,37 +2,28 @@
 # Set up the handler for the underlying event. 
 ################################################
 
-mkdir /Defaults/Handlers/UnderlyingEvent
-cd /Defaults/Handlers/UnderlyingEvent
+mkdir /Herwig/UnderlyingEvent
+cd /Herwig/UnderlyingEvent
 
 ########cuts############
 # cut on pt. Without a specific matcher object, it works on all particles
 create ThePEG::SimpleKTCut KtCut SimpleKTCut.so
-set KtCut:MinKT 2.0
+set KtCut:MinKT 2.2
 
 # create the cuts object for the Underlying Event
 create ThePEG::Cuts UECuts
 # This should always be 2*MinKT!!
-set UECuts:MHatMin 4.0
+set UECuts:MHatMin 4.4
 set UECuts:MHatMax 10000000.0
 
-insert UECuts:OneCuts[0] KtCut
+insert UECuts:OneCuts 0 KtCut
 #########################
 
 ########subprocesses#####
 create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEFast.so
-
-create ThePEG::SubProcessHandler SimpleQCD
-
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ff
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2W2ff
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaGamma
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaJet
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggs
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggsJet
-insert SimpleQCD:MatrixElements[0] MEQCD2to2Fast
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHeavyQuark
-set SimpleQCD:PartonExtractor /Defaults/Handlers/QCDExtractor
+create ThePEG::SubProcessHandler FastQCD
+insert FastQCD:MatrixElements 0 MEQCD2to2Fast
+set FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor
 #########################
 
 library HwMPI.so
@@ -46,16 +37,16 @@ create Herwig::MPIHandler MPIHandler
 set MPIHandler:Sampler MPISampler
 
 # set the subprocesses
-insert MPIHandler:SubProcessHandlers[0] SimpleQCD
+insert MPIHandler:SubProcessHandlers 0 FastQCD
 
 # set the cuts object
 set MPIHandler:Cuts UECuts
-#set MPIHandler:Cuts  /Defaults/Generators/QCDCuts
 
-# set the hadron radius
-set MPIHandler:Radius 0.71
+# set the inverse hadron radius
+set MPIHandler:InvRadius 1.3
+
 # set the algorithm
 # 0 = UE and signal with comparable cross section
 # 1 = signal cross section much smaller than UE xsec (same processes)
 # 2 = signal cross section much smaller than UE xsec (different processes)
-set MPIHandler:Jmueo 2
+set MPIHandler:Algorithm 2

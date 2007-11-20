@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEQCD2to2Fast.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the MEQCD2to2Fast class.
 //
@@ -66,7 +73,7 @@ inline double MEQCD2to2Fast::gg2ggME() const {
 inline double MEQCD2to2Fast::qbarg2qbargME() const {
   // scale
   Energy2 u(uHat()),t(tHat()),s(sHat());
-  Energy4 u2(sqr(u)),t2(sqr(t)),s2(sqr(s));
+  Energy4 u2(sqr(u)),s2(sqr(s)); // t2(sqr(t))
   double flow[2]={u2/(s2+u2),s2/(s2+u2)};
   _flow=1+UseRandom::rnd2(flow[0],flow[1]);
   _diagram=12+_flow;

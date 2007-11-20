@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SplittingGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SplittingGenerator class.
 //
@@ -11,7 +18,6 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Command.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
@@ -47,90 +53,90 @@ void SplittingGenerator::Init() {
      "Should shower include QCD interactions",
      &SplittingGenerator::_qcdinteractionMode, 1, false, false);
   static SwitchOption interfaceQCDinteractionMode0
-    (interfaceQCDinteractionMode,"Off","QCD interaction is Off", 0);
+    (interfaceQCDinteractionMode,"No","QCD interaction is Off", 0);
   static SwitchOption interfaceQCDinteractionMode1
-    (interfaceQCDinteractionMode,"On","QCD interaction is On", 1);
+    (interfaceQCDinteractionMode,"Yes","QCD interaction is On", 1);
 
   static Switch<SplittingGenerator, bool> interfaceQEDinteractionMode
     ("QEDinteractions",
      "Should shower include QED interactions",
      &SplittingGenerator::_qedinteractionMode, 0, false, false);
   static SwitchOption interfaceQEDinteractionMode0
-    (interfaceQEDinteractionMode,"Off","QED interaction is Off", 0);
+    (interfaceQEDinteractionMode,"No","QED interaction is Off", 0);
   static SwitchOption interfaceQEDinteractionMode1
-    (interfaceQEDinteractionMode,"On","QED interaction is On", 1);
+    (interfaceQEDinteractionMode,"Yes","QED interaction is On", 1);
 
   static Switch<SplittingGenerator, bool> interfaceEWKinteractionMode
     ("EWKinteractions",
      "Should shower include EWK interactions",
      &SplittingGenerator::_ewkinteractionMode, 0, false, false);
   static SwitchOption interfaceEWKinteractionMode0
-    (interfaceEWKinteractionMode,"Off","EWK interaction is OFF", 0);
+    (interfaceEWKinteractionMode,"No","EWK interaction is OFF", 0);
   static SwitchOption interfaceEWKinteractionMode1
-    (interfaceEWKinteractionMode,"On","EWK interaction is ON", 1);
+    (interfaceEWKinteractionMode,"Yes","EWK interaction is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceISRMode
     ("ISR",
      "Include initial-state radiation?",
      &SplittingGenerator::_isr_Mode, 1, false, false);
   static SwitchOption interfaceISRMode0
-    (interfaceISRMode,"Off","ISR (Initial State Radiation) is OFF", 0);
+    (interfaceISRMode,"No","ISR (Initial State Radiation) is OFF", 0);
   static SwitchOption interfaceISRMode1
-    (interfaceISRMode,"On","ISR (Initial State Radiation) is ON", 1);
+    (interfaceISRMode,"Yes","ISR (Initial State Radiation) is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceISR_qcdMode
     ("ISR_QCD",
      "Include initial-state QCD radiation?",
      &SplittingGenerator::_isr_qcdMode, 1, false, false);
   static SwitchOption interfaceISR_qcdMode0
-    (interfaceISR_qcdMode,"Off","QCD ISR is OFF", 0);
+    (interfaceISR_qcdMode,"No","QCD ISR is OFF", 0);
   static SwitchOption interfaceISR_qcdMode1
-    (interfaceISR_qcdMode,"On","QCD ISR is ON", 1);
+    (interfaceISR_qcdMode,"Yes","QCD ISR is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceISR_qedMode
     ("ISR_QED",
      "Include initial-state QED radiation?",
      &SplittingGenerator::_isr_qedMode, 1, false, false);
   static SwitchOption interfaceISR_qedMode0
-    (interfaceISR_qedMode,"Off","QED ISR is OFF", 0);
+    (interfaceISR_qedMode,"No","QED ISR is OFF", 0);
   static SwitchOption interfaceISR_qedMode1
-    (interfaceISR_qedMode,"On","QED ISR is ON", 1);
+    (interfaceISR_qedMode,"Yes","QED ISR is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceISR_ewkMode
     ("ISR_EWK",
      "Include initial-state EWK radiation?",
      &SplittingGenerator::_isr_ewkMode, 1, false, false);
   static SwitchOption interfaceISR_ewkMode0
-    (interfaceISR_ewkMode,"Off","EWK ISR is OFF", 0);
+    (interfaceISR_ewkMode,"No","EWK ISR is OFF", 0);
   static SwitchOption interfaceISR_ewkMode1
-    (interfaceISR_ewkMode,"On","EWK ISR is ON", 1);
+    (interfaceISR_ewkMode,"Yes","EWK ISR is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceFSRMode
     ("FSR",
      "Include final-state radiation?",
      &SplittingGenerator::_fsr_Mode, 1, false, false);
   static SwitchOption interfaceFSRMode0
-    (interfaceFSRMode,"Off","FSR (Final State Radiation) is OFF", 0);
+    (interfaceFSRMode,"No","FSR (Final State Radiation) is OFF", 0);
   static SwitchOption interfaceFSRMode1
-    (interfaceFSRMode,"On","FSR (Final State Radiation) is ON", 1);
+    (interfaceFSRMode,"Yes","FSR (Final State Radiation) is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceFSR_qcdMode
     ("FSR_QCD",
      "Include final-state QCD radiation?",
      &SplittingGenerator::_fsr_qcdMode, 1, false, false);
   static SwitchOption interfaceFSR_qcdMode0
-    (interfaceFSR_qcdMode,"Off","QCD FSR is OFF", 0);
+    (interfaceFSR_qcdMode,"No","QCD FSR is OFF", 0);
   static SwitchOption interfaceFSR_qcdMode1
-    (interfaceFSR_qcdMode,"On","QCD FSR is ON", 1);
+    (interfaceFSR_qcdMode,"Yes","QCD FSR is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceFSR_qedMode
     ("FSR_QED",
      "Include final-state QED radiation?",
      &SplittingGenerator::_fsr_qedMode, 1, false, false);
   static SwitchOption interfaceFSR_qedMode0
-    (interfaceFSR_qedMode,"Off","QED FSR is OFF", 0);
+    (interfaceFSR_qedMode,"No","QED FSR is OFF", 0);
   static SwitchOption interfaceFSR_qedMode1
-    (interfaceFSR_qedMode,"On","QED FSR is ON", 1);
+    (interfaceFSR_qedMode,"Yes","QED FSR is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceFSR_ewkMode
     ("FSR_EWK",
@@ -138,10 +144,10 @@ void SplittingGenerator::Init() {
      &SplittingGenerator::_fsr_ewkMode, 1, false, false);
 
   static SwitchOption interfaceFSR_ewkMode0
-    (interfaceFSR_ewkMode,"Off","EWK FSR is OFF", 0);
+    (interfaceFSR_ewkMode,"No","EWK FSR is OFF", 0);
 
   static SwitchOption interfaceFSR_ewkMode1
-    (interfaceFSR_ewkMode,"On","EWK FSR is ON", 1);
+    (interfaceFSR_ewkMode,"Yes","EWK FSR is ON", 1);
 
   static Command<SplittingGenerator> interfaceAddSplitting
     ("AddFinalSplitting",
@@ -203,7 +209,6 @@ void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool f
 
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance) const {
-  Timer<1200> timer("SplittingGenerator::chooseForwardBranching");
   Energy newQ = Energy();
   ShoKinPtr kinematics = ShoKinPtr();
   IdList ids;

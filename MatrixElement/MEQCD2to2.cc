@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEQCD2to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEQCD2to2 class.
 //
@@ -212,11 +219,10 @@ Selector<MEBase::DiagramIndex>
 MEQCD2to2::diagrams(const DiagramVector & diags) const {
   // select the diagram, this is easy for us as we have already done it
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    {
-      if(diags[i]->id()==-int(_diagram)) sel.insert(1.0, i);
-      else sel.insert(0., i);
-    }
+  for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+    if(diags[i]->id()==-int(_diagram)) sel.insert(1.0, i);
+    else sel.insert(0., i);
+  }
   return sel;
 }
 
@@ -424,57 +430,66 @@ double MEQCD2to2::qg2qgME(vector<SpinorWaveFunction> & qin,
 
 double MEQCD2to2::gg2ggME(vector<VectorWaveFunction> &g1,vector<VectorWaveFunction> &g2,
 			  vector<VectorWaveFunction> &g3,vector<VectorWaveFunction> &g4,
-			  unsigned int iflow) const
-{
+			  unsigned int iflow) const {
+  // colour factors for different flows
+  static const double c1 = 4.*(      sqr(9.)/8.-3.*9./8.+1.-0.75/9.);
+  static const double c2 = 4.*(-0.25*9.                 +1.-0.75/9.);
   // scale
   Energy2 mt(scale());
   //    // matrix element to be stored
   if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
 						 PDT::Spin1,PDT::Spin1));
   // calculate the matrix element
-  double output(0.),sumdiag[3]={0.,0.,0.};
-  Complex diag[3];
-  for(unsigned int ihel1=0;ihel1<2;++ihel1)
-    { 
-      for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
- 	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
- 	    { 
- 	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
- 		{
-		  // s-channel diagram
-		  diag[0]=_ggggvertex->evaluate(mt,1,g3[ohel1],g1[ihel1],
-						g4[ohel2],g2[ihel2]);
-		  // first t-channel
-		  diag[1]=_ggggvertex->evaluate(mt,1,g1[ihel1],g2[ihel2],
-						g3[ohel1],g4[ohel2]);
-		  // second t-channel
-		  diag[2]=_ggggvertex->evaluate(mt,1,g2[ihel2],g1[ihel1],
-						g3[ohel1],g4[ohel2]);
-		  // sums
-		  for(unsigned int ix=0;ix<3;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  // total
-		  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
-				+diag[2]*conj(diag[2])
-				+(diag[0]*conj(diag[1])-diag[0]*conj(diag[2])
-				  +diag[2]*conj(diag[1])));
-		  // store the me if needed
-		  if(iflow!=0) _me(2*ihel1,2*ihel2,2*ohel1,2*ohel2)=diag[iflow-1];
-		}
-	    }
+  double output(0.),sumdiag[3]={0.,0.,0.},sumflow[3]={0.,0.,0.};
+  Complex diag[3],flow[3];
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // s-channel diagram
+	  diag[0]=_ggggvertex->evaluate(mt,1,g3[ohel1],g1[ihel1],
+					g4[ohel2],g2[ihel2]);
+	  // t-channel
+	  diag[1]=_ggggvertex->evaluate(mt,1,g1[ihel1],g2[ihel2],
+					g3[ohel1],g4[ohel2]);
+	  // u-channel
+	  diag[2]=_ggggvertex->evaluate(mt,1,g2[ihel2],g1[ihel1],
+					g3[ohel1],g4[ohel2]);
+	  // colour flows
+	  flow[0] =  diag[0]-diag[2];
+	  flow[1] = -diag[0]-diag[1];
+	  flow[2] =  diag[1]+diag[2];
+	  // sums
+	  for(unsigned int ix=0;ix<3;++ix) {
+	    sumdiag[ix] += norm(diag[ix]);
+	    sumflow[ix] += norm(flow[ix]);
+	  }
+	  // total 
+	  output += c1*(norm(flow[0])+norm(flow[1])+norm(flow[2]))
+	    +2.*c2*real(flow[0]*conj(flow[1])+flow[0]*conj(flow[2])+
+			flow[1]*conj(flow[2]));
+	  // store the me if needed
+	  if(iflow!=0) _me(2*ihel1,2*ihel2,2*ohel1,2*ohel2)=flow[iflow-1];
 	}
-     }
-   // test code vs me from ESW
-//    Energy2 u(uHat()),t(tHat()),s(sHat());
-//    double alphas(4.*pi*SM().alphaS(mt));
-//    cerr << "testing matrix element "
-//         << 64./9./output*9./4.*(3.-t*u/s/s-s*u/t/t-s*t/u/u)*sqr(alphas) << endl;
-   //select a colour flow and diagram (identical here)
-   _flow=1+UseRandom::rnd3(sumdiag[0],sumdiag[1],sumdiag[2]);
-   _diagram=_flow;
-   // final part of colour and spin factors
-   return 9.*output/64.;
+      }
+    }
+  }
+  // spin, colour and identical particle factorsxs
+  output /= 4.*64.*2.;
+  // test code vs me from ESW
+//   Energy2 u(uHat()),t(tHat()),s(sHat());
+//   using Constants::pi;
+//   double alphas(4.*pi*SM().alphaS(mt));
+//   cerr << "testing matrix element "
+//        << 1./output*9./4.*(3.-t*u/s/s-s*u/t/t-s*t/u/u)*sqr(alphas) << endl;
+  // select a colour flow
+  _flow=1+UseRandom::rnd3(sumflow[0],sumflow[1],sumflow[2]);
+  // and diagram
+  if(_flow==1)      _diagram = 1+2*UseRandom::rnd2(sumdiag[0],sumdiag[2]);
+  else if(_flow==2) _diagram = 1+  UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  else if(_flow==3) _diagram = 2+  UseRandom::rnd2(sumdiag[1],sumdiag[2]);
+  // final part of colour and spin factors
+  return output;
 }
 
 double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
@@ -880,18 +895,19 @@ void MEQCD2to2::getDiagrams() const {
 Selector<const ColourLines *>
 MEQCD2to2::colourGeometries(tcDiagPtr diag) const {
   // colour lines for gg to gg
-  static const ColourLines cgggg[12]={ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5"),
-				ColourLines("-1 2, 1 3 4, -4 5, -2 -3 -5"),
-				ColourLines("1 -2, -1 -3 -5, 5 -4, 2 3 4"),
-				ColourLines("-1 2, 1 3 5, -5 4, -2 -3 -4"),
-				ColourLines("1 4, -1 -2 3, -3 -5, -4 2 5"),
-				ColourLines("-1 -4, 1 2 -3, 3 5, 4 -2 -5"),
-				ColourLines("1 4, -1 -2 -5, 3 5, -3 2 -4"),
-				ColourLines("-1 -4, 1 2 5, -3 -5, 3 -2 4"),
-				ColourLines("1 5, -1 -2 3, -3 -4, -5 2 4"),
-				ColourLines("-1 -5, 1 2 -3, 3 4, 5 -2 -4"),
-				ColourLines("1 5, -1 -2 -4, 3 4, -3 2 -5"),
-				ColourLines("-1 -5, 1 2 4, -3 -4, 3 -2 5")};
+  static const ColourLines cgggg[12]={ColourLines("1 -2, -1 -3 -5, 5 -4, 2 3 4"),// A_2 s
+				      ColourLines("-1 2, 1 3 5, -5 4, -2 -3 -4"),// A_1 s
+				      ColourLines("1 5, -1 -2 3, -3 -4, -5 2 4"),// A_1 u
+				      ColourLines("-1 -5, 1 2 -3, 3 4, 5 -2 -4"),// A_2 u
+				      ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5"),// B_2 s
+				      ColourLines("-1 2, 1 3 4, -4 5, -2 -3 -5"),// B_1 s
+				      ColourLines("1 4, -1 -2 3, -3 -5, -4 2 5"),// B_1 t
+				      ColourLines("-1 -4, 1 2 -3, 3 5, 4 -2 -5"),// B_2 t
+				      ColourLines("1 4, -1 -2 -5, 3 5, -3 2 -4"),// C_1 t
+				      ColourLines("-1 -4, 1 2 5, -3 -5, 3 -2 4"),// C_2 t
+				      ColourLines("1 5, -1 -2 -4, 3 4, -3 2 -5"),// C_1 u
+				      ColourLines("-1 -5, 1 2 4, -3 -4, 3 -2 5") // C_2 u
+  };
   // colour lines for gg to q qbar
   static const ColourLines cggqq[4]={ColourLines("1  4, -1 -2 3, -3 -5"),
 			       ColourLines("3  4, -3 -2 1, -1 -5"),
@@ -925,11 +941,35 @@ MEQCD2to2::colourGeometries(tcDiagPtr diag) const {
   Selector<const ColourLines *> sel;
   switch(abs(diag->id())) {
     // gg -> gg subprocess
-  case 1: case 2: case 3:
-    sel.insert(0.25, &cgggg[4*abs(diag->id())-4]);
-    sel.insert(0.25, &cgggg[4*abs(diag->id())-3]);
-    sel.insert(0.25, &cgggg[4*abs(diag->id())-2]);
-    sel.insert(0.25, &cgggg[4*abs(diag->id())-1]);
+  case 1: 
+    if(_flow==1) {
+      sel.insert(0.5, &cgggg[0]);
+      sel.insert(0.5, &cgggg[1]);
+    }
+    else {
+      sel.insert(0.5, &cgggg[4]);
+      sel.insert(0.5, &cgggg[5]);
+    }
+    break;
+  case 2: 
+    if(_flow==2) {
+      sel.insert(0.5, &cgggg[6]);
+      sel.insert(0.5, &cgggg[7]);
+    }
+    else {
+      sel.insert(0.5, &cgggg[8]);
+      sel.insert(0.5, &cgggg[9]);
+    }
+    break;
+  case 3:
+    if(_flow==1) {
+      sel.insert(0.5, &cgggg[2]);
+      sel.insert(0.5, &cgggg[3]);
+    }
+    else {
+      sel.insert(0.5, &cgggg[10]);
+      sel.insert(0.5, &cgggg[11]);
+    }
     break;
     // gg -> q qbar subprocess
   case 4: case 5:

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ShowerHandler class.
 //
@@ -187,13 +194,13 @@ void ShowerHandler::Init() {
 
   static SwitchOption interfaceMPIOnOff0                             
     (interfaceMPIOnOff,
-     "Off",
-     "Multiple parton interactions are Off", 
+     "No",
+     "Multiple parton interactions are off", 
      false);
   static SwitchOption interfaceMPIOnOff1                            
     (interfaceMPIOnOff,
-     "On",
-     "Multiple parton interactions are On", 
+     "Yes",
+     "Multiple parton interactions are on", 
      true);
 
   static Switch<ShowerHandler,bool> interfaceOrderSecondaries
@@ -284,13 +291,9 @@ void ShowerHandler::cascade() {
     lastXC = theMPIHandler->generate();
     sub = lastXC->construct();
 
-    //If Jmueo=1 additional scatters of the signal type with pt > ptmin have to be vetoed
+    //If Algorithm=1 additional scatters of the signal type with pt > ptmin have to be vetoed
     //with probability 1/(m+1), where m is the number of occurances in this event
-
-    //check if the same process is used for the signal and UE
-    //For LesHouches event files the MEBasePtr should be 0
-    //That leads to the correct behaviour as long as no QCD2->2 event is read in
-    if( theMPIHandler->Jmueo() == 1 ){
+    if( theMPIHandler->Algorithm() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
@@ -307,7 +310,6 @@ void ShowerHandler::cascade() {
 
     procs.insert(make_pair(scale, sub));
   }
-  
   for( pit=procs.begin(); pit!=procs.end(); ++pit ){
     //add to the EventHandler's list
     newStep()->addSubProcess(pit->second);
@@ -345,11 +347,9 @@ void ShowerHandler::cascade() {
 	 !remnants.second->extract(incs.second, false) )
       throw Exception() << "Remnant extraction failed in "
 			<< "ShowerHandler::cascade()" 
-			<< Exception::runerror;   
-  } 
-
+			<< Exception::runerror;
+  }
   theRemDec->finalize();
-
   theHandler = 0;
 }
 

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GeneralTwoBodyDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GeneralTwoBodyDecayer class.
 //
@@ -285,19 +292,19 @@ void GeneralTwoBodyDecayer::Init() {
      false, false, false,&GeneralTwoBodyDecayer::setWeight, 0 ,0, 0, 0);
 
   static ParVector<GeneralTwoBodyDecayer,int> interfaceIncomingPart
-    ("IncomingPart",
+    ("Incoming",
      "PDG Codes for incoming particles",
      &GeneralTwoBodyDecayer::_inpart, 0, -1, 0, 0,
      false, false, false);
 
   static ParVector<GeneralTwoBodyDecayer,int> interfaceOutgoingPartA
-    ("OutgoingPartA",
+    ("OutgoingA",
      "PDG Codes for first set of outgoing particles",
      &GeneralTwoBodyDecayer::_outparta, 0, -1, 0, 0,
      false, false, false);
 
   static ParVector<GeneralTwoBodyDecayer,int> interfaceOutgoingPartB
-    ("OutgoingPartB",
+    ("OutgoingB",
      "PDG Codes for second set of outgoing particles",
      &GeneralTwoBodyDecayer::_outpartb, 0, -1, 0, 0,
      false, false, false);
@@ -318,4 +325,12 @@ double GeneralTwoBodyDecayer::brat(const DecayMode &, const Particle & p,
 		  make_pair(children[1]->dataPtr(), children[1]->mass()) );
   Energy width = p.data().widthGenerator()->width(p.data(), scale);
   return pwidth/width;
+}
+
+void GeneralTwoBodyDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  for(unsigned int ix=0;ix<numberModes();++ix) {
+    double fact = pow(1.5,int(mode(ix)->externalParticles(0)->iSpin())-1);
+    mode(ix)->setMaxWeight(fact*mode(ix)->maxWeight());
+  }
 }

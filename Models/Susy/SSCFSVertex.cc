@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SSCFSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SSCFSVertex class.
 //
@@ -167,7 +174,8 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     Complex vl2 = (*_vmix)(ch,1);
 
     if( ism >= 11 && ism <= 16 ) {
-      double y = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_cb;
+      long lept = ( ism % 2 == 0 ) ? ism - 1 : ism;
+      double y = _theSS->mass(q2, getParticleData(lept))/_mw/sqrt(2)/_cb;
       if( ism == 12 || ism == 14 ) {
 	_leftlast = Complex(0., 0.);
 	if( alpha == 0 )
@@ -215,7 +223,6 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
     }
   }//end of coupling calculation
-  
   //determine the helicity order of the vertex
   tcPDPtr incoming;
   switch( iinc ) {

@@ -1,5 +1,25 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.1.0 release: 2007-11-20 (tagged at SVN r2542)
+** Major new release
+   Herwig++-2.1 includes significant improvements, including
+   multi-parton interactions, BSM physics and a new hadronic decay
+   model, tuned to LEP data.
+
+   For an overview of the changes, please see the release note
+   arXiv:0711.3137
+
+* Herwig++-2.0.3 release: 2007-08-21 (tagged at SVN r2101)
+
+** Bug #90
+   nan in top decay ME corrections fixed.
+
+** unlisted
+   Colour flow fix in LightClusterDecayer
+
+** unlisted
+   Updated version of MultiplicityCount analysis handler.
+
 * Herwig++-2.0.2 release: 2007-07-06 (tagged at SVN r1716)
 
 ** Bug #80

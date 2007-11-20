@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// IS_QtildaShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the IS_QtildaShowerKinematics1to2 class.
 //
@@ -118,18 +125,22 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
     Lorentz5Momentum ppartner(partner->momentum());
     if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     if(partner->isFinalState()) {
-      Lorentz5Momentum pa=-particle.momentum()+partner->momentum();
+      Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
+      Lorentz5Momentum pb =  particle.momentum();
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate( acos(axis.z()),Axis( axis.y()/sinth,-axis.x()/sinth,0.));
-      rot.boostZ(-pa.e()/pa.vect().mag());
-      Lorentz5Momentum pc=rot*ppartner;
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.rotateX(Constants::pi);
+      rot.boostZ( pa.e()/pa.vect().mag());
+      pb*=rot;
+      Boost trans = -1./pb.e()*pb.vect();
+      trans.setZ(0.);
+      rot.boost(trans);
+      pcm = rot*parent->momentum();
       rot.invert();
-      n = rot*Lorentz5Momentum(0.*GeV,pc.vect());
-      pcm = parent->momentum();
-      p = Lorentz5Momentum(0.0*MeV, pcm.vect());
-//       n = Lorentz5Momentum(0.0*MeV, -pcm.vect());
+      n = rot*Lorentz5Momentum(0.*GeV,-pcm.vect());
+      p = rot*Lorentz5Momentum(0.*GeV, pcm.vect());
     }
     else {
       pcm = parent->momentum();

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// LEPBMultiplicity.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_LEPBMultiplicity_H
 #define HERWIG_LEPBMultiplicity_H
 //
@@ -21,7 +28,6 @@ struct BranchingInfo {
    *  Default constructor
    * @param mult  The observed multiplcity.
    * @param error The error on the observed multiplicity
-   * @param type  The type of particle
    */
   inline BranchingInfo(double mult=0.,double error=0.);
 
@@ -48,23 +54,28 @@ struct BranchingInfo {
   /**
    *  The average fraction per quark
    * @param N The number of events
+   * @param den The denominator to give the fraction
    */
   double simBranching(long N,BranchingInfo den=BranchingInfo());
 
   /**
    *  The error on the average number per event
    * @param N The number of events 
+   * @param den The denominator to give the fraction
    */
   double simError(long N,BranchingInfo den=BranchingInfo());
 
   /**
-   *  Is the result more than \f$3\sigma\f$ from the experimental result
+   * Is the result more than \f$3\sigma\f$ from the experimental result
    * @param N The number of events
+   * @param den The denominator to give the fraction
    */
   double nSigma(long N,BranchingInfo den=BranchingInfo());
 
   /**
    * Plot standard error in a simple barchart
+   * @param N The number of events
+   * @param den The denominator to give the fraction
    */
   string bargraph(long N,BranchingInfo den=BranchingInfo());
 };
@@ -72,8 +83,8 @@ struct BranchingInfo {
 /**
  * Here is the documentation of the LEPBBranching class.
  *
- * @see \ref LEPBBranchingInterfaces "The interfaces"
- * defined for LEPBBranching.
+ * @see \ref LEPBMultiplicityInterfaces "The interfaces"
+ * defined for LEPBMultiplicity.
  */
 class LEPBMultiplicity: public AnalysisHandler {
 

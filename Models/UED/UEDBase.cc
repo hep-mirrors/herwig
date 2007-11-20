@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDBase class.
 //
@@ -104,13 +111,13 @@ void UEDBase::Init() {
      false, false, Interface::lowerlim);
 
     static Parameter<UEDBase,Energy> interfaceBoundaryMass
-    ("BoundaryMass",
+    ("HiggsBoundaryMass",
      "The boundary mass for the Higgs",
      &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
   static Parameter<UEDBase,Energy> interfaceVeV
-    ("VeV",
+    ("HiggsVEV",
      "The vacuum expectation value of the Higgs field",
      &UEDBase::theVeV, GeV, 246.*GeV, 0*GeV, 0*GeV,
      true, false, Interface::nolimits);
@@ -191,11 +198,12 @@ void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
       bosonMasses(n);
     }
     else {
-      cerr << "WARNING!! Radiative corrections to particle masses have been "
-	   << "turned off. The masses will be set to (n/R + m_sm)^1/2 and "
-	   << "the spectrum will be highly degenerate so that no decays "
-	   << "will occur. This is only meant to be used for debugging "
-	   << "purposes.\n";
+      cerr << 
+	"Warning: Radiative corrections to particle masses have been "
+	"turned off.\n  The masses will be set to (n/R + m_sm)^1/2 and "
+	"the spectrum will be\n  highly degenerate so that no decays "
+	"will occur.\n  This is only meant to be used for debugging "
+	"purposes.\n";
       //set masses to tree level for each kk mode
       long level1 = 5000000 + n*100000;
       long level2 = 6000000 + n*100000;

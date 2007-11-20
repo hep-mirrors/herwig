@@ -1,0 +1,89 @@
+#########################################################
+# Analysis handler setup
+#
+# By default, only 'Basics' is active. Add the commented
+# lines to your input file to switch on other analyses.
+#########################################################
+
+mkdir /Herwig/Analysis
+cd /Herwig/Analysis
+
+library HwAnalysis.so
+
+#
+# basic analysis to check consistency of events
+# (only analysis handler switched on by default)
+#
+create Herwig::BasicConsistency Basics
+insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 0 Basics
+insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 0 Basics
+
+#
+#  Analysis Handlers for hadron-hadron collisions
+#  (switched off by default)
+#
+# simple analysis of W/Z events
+create Herwig::SimpleLHCAnalysis DrellYan
+# simple analysis of top-antitop events
+create Herwig::TTbarAnalysis TTbar
+# simple analysis of gamma+jet events
+create Herwig::GammaJetAnalysis  GammaJet
+# simple analysis of gamma-gamma events
+create Herwig::GammaGammaAnalysis GammaGamma
+# simple analysis of higgs+jet events
+create Herwig::HiggsJetAnalysis  HiggsJet
+# BSM analysis of cascade decays
+create Herwig::CascadeAnalysis Cascade HwBSMAnalysis.so
+
+#
+#  Analysis Handlers for LEP 91.2 GeV collisions
+#  (switched off by default)
+#
+# hadron multiplicities compared to LEP data
+create Herwig::MultiplicityCount Multiplicity HwLEPAnalysis.so
+# b fractions in specific hadrons
+create Herwig::LEPBMultiplicity BMultiplicity HwLEPAnalysis.so
+# b fragmentation functions
+create Herwig::BFragmentationAnalysisHandler BFrag HwLEPAnalysis.so
+# master LEP event shape analysis and object which does the work
+create Herwig::EventShapesMasterAnalysis Shapes
+create Herwig::EventShapes LEPShapes
+set Shapes:EventShapes LEPShapes
+# LEP event shapes
+create Herwig::LEPEventShapes LEPEvent
+set LEPEvent:EventShapes LEPShapes
+insert Shapes:Slaves 0 LEPEvent
+# LEP identified particles
+create Herwig::IdentifiedParticleAnalysis LEPIdent
+set LEPIdent:EventShapes LEPShapes
+insert Shapes:Slaves 0 LEPIdent
+# LEP single particle analysis
+create Herwig::SingleParticleAnalysis LEPSingle
+set LEPSingle:EventShapes LEPShapes
+insert Shapes:Slaves 0 LEPSingle
+
+# 
+#  Analysis Handlers for Belle and CLEO data below the Upsilon(4S)
+#  (switched off by default)
+#
+# BELLE data on charm hadron spetra
+create Herwig::BELLECharmAnalysis BELLECharm HwLEPAnalysis.so
+# CLEO  data on charm meson spectra
+create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
+
+#
+#  Handlers which depend on KtJet for LEP data
+#  (switched off by default)
+#
+# four jet analysis
+@CREATE_KTJET@ Herwig::LEPFourJetsAnalysis LEPFourJet HwKtJet.so HwLEPJetAnalysis.so
+# general jet analysis
+@CREATE_KTJET@ Herwig::LEPJetAnalysis LEPJet HwKtJet.so HwLEPJetAnalysis.so
+#
+#  Handlers which depend on HepMC
+#  (switched off by default)
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+@CREATE_HEPMC@ Herwig::GraphvizPlot Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+@CREATE_HEPMC@ Herwig::HepMCFile HepMCFile
