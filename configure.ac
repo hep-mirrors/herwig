@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[2.1.0],[herwig@projects.hepforge.org],[Herwig++])
+AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_HEADERS([Config/config.h])
@@ -71,6 +71,8 @@ HERWIG_CHECK_HEPMC
 
 HERWIG_CHECK_KTJET
 
+HERWIG_CHECK_FASTJET
+
 HERWIG_CHECK_ROOT
 
 HERWIG_CHECK_EVTGEN
@@ -88,11 +90,13 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/RSModel/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
+		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
 		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
+		Decay/Baryon/Makefile
 		Decay/VectorMeson/Makefile
 		Decay/Perturbative/Makefile
                 Decay/ScalarMeson/Makefile
@@ -118,6 +122,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/CKKW/Makefile
                 Shower/Makefile
                 Utilities/Makefile
+		Utilities/Histogram2/Makefile
                 Hadronization/Makefile
 		lib/Makefile
 		include/Makefile
@@ -129,6 +134,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Looptools/Makefile
 		Analysis/Makefile
 		Analysis/BSM/Makefile
+		Analysis2/Makefile
+                Analysis2/Data/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		Makefile])
