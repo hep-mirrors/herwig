@@ -1,6 +1,7 @@
 BUILT_SOURCES = done-all-links
 
 DIRLINKS = $(top_srcdir)/Analysis \
+	   $(top_srcdir)/Analysis2 \
 	   $(top_srcdir)/Decay \
            $(top_srcdir)/Hadronization \
            $(top_srcdir)/Interfaces \
