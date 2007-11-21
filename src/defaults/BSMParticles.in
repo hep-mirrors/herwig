@@ -1,0 +1,613 @@
+###################################################################
+#
+#   Additional Higgs Bosons for 2 Higgs doublet model and SUSY
+#
+###################################################################
+
+create ThePEG::ParticleData H0 
+setup H0 35 H0 300.0 8.428420 84.284160 0.0 0 0 1 0
+defaultparticle H0 
+create ThePEG::ParticleData A0 
+setup A0 36 A0 300.0 4.920260 49.202560 0.0 0 0 1 0
+defaultparticle A0 
+create ThePEG::ParticleData H+ 
+setup H+ 37 H+ 300.0 5.759670 57.596710 0.0 3 0 1 0
+defaultparticle H+ 
+create ThePEG::ParticleData H- 
+setup H- -37 H- 300.0 5.759670 57.596710 0.0 -3 0 1 0
+defaultparticle H- 
+makeanti H+ H- 
+
+###################################################################
+#
+#                         SUSY particles
+#
+###################################################################
+
+create ThePEG::ParticleData ~d_L 
+setup ~d_L 1000001 ~d_L 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle ~d_L 
+create ThePEG::ParticleData ~d_Lbar 
+setup ~d_Lbar -1000001 ~d_Lbar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle ~d_Lbar 
+makeanti ~d_L ~d_Lbar 
+create ThePEG::ParticleData ~u_L 
+setup ~u_L 1000002 ~u_L 500.0 1.0 10.0 0.0 2 3 1 0 
+defaultparticle ~u_L 
+create ThePEG::ParticleData ~u_Lbar 
+setup ~u_Lbar -1000002 ~u_Lbar 500.0 1.0 10.0 0.0 -2 -3 1 0 
+defaultparticle ~u_Lbar 
+makeanti ~u_L ~u_Lbar 
+create ThePEG::ParticleData ~s_L 
+setup ~s_L 1000003 ~s_L 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle ~s_L 
+create ThePEG::ParticleData ~s_Lbar 
+setup ~s_Lbar -1000003 ~s_Lbar 500.0 1.0 10.0 0.0 1 -3 1 0
+defaultparticle ~s_Lbar 
+makeanti ~s_L ~s_Lbar 
+create ThePEG::ParticleData ~c_L 
+setup ~c_L 1000004 ~c_L 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle ~c_L 
+create ThePEG::ParticleData ~c_Lbar 
+setup ~c_Lbar -1000004 ~c_Lbar 500.0 1.0 10.0 0.0 -2 -3 1 0 
+defaultparticle ~c_Lbar 
+makeanti ~c_L ~c_Lbar 
+create ThePEG::ParticleData ~b_1 
+setup ~b_1 1000005 ~b_1 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle ~b_1 
+create ThePEG::ParticleData ~b_1bar 
+setup ~b_1bar -1000005 ~b_1bar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle ~b_1bar 
+makeanti ~b_1 ~b_1bar 
+create ThePEG::ParticleData ~t_1 
+setup ~t_1 1000006 ~t_1 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle ~t_1 
+create ThePEG::ParticleData ~t_1bar 
+setup ~t_1bar -1000006 ~t_1bar 500.0 1.0 10.0 0.0 -2 -3 1 0 
+defaultparticle ~t_1bar 
+makeanti ~t_1 ~t_1bar 
+create ThePEG::ParticleData ~e_L- 
+setup ~e_L- 1000011 ~e_L- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle ~e_L- 
+create ThePEG::ParticleData ~e_L+ 
+setup ~e_L+ -1000011 ~e_L+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle ~e_L+ 
+makeanti ~e_L- ~e_L+ 
+create ThePEG::ParticleData ~nu_eL 
+setup ~nu_eL 1000012 ~nu_eL 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle ~nu_eL 
+create ThePEG::ParticleData ~nu_eLbar 
+setup ~nu_eLbar -1000012 ~nu_eLbar 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle ~nu_eLbar 
+makeanti ~nu_eL ~nu_eLbar 
+create ThePEG::ParticleData ~mu_L- 
+setup ~mu_L- 1000013 ~mu_L- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle ~mu_L- 
+create ThePEG::ParticleData ~mu_L+ 
+setup ~mu_L+ -1000013 ~mu_L+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle ~mu_L+ 
+makeanti ~mu_L- ~mu_L+ 
+create ThePEG::ParticleData ~nu_muL 
+setup ~nu_muL 1000014 ~nu_muL 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle ~nu_muL 
+create ThePEG::ParticleData ~nu_muLbar 
+setup ~nu_muLbar -1000014 ~nu_muLbar 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle ~nu_muLbar 
+makeanti ~nu_muL ~nu_muLbar 
+create ThePEG::ParticleData ~tau_1- 
+setup ~tau_1- 1000015 ~tau_1- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle ~tau_1- 
+create ThePEG::ParticleData ~tau_1+ 
+setup ~tau_1+ -1000015 ~tau_1+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle ~tau_1+ 
+makeanti ~tau_1- ~tau_1+ 
+create ThePEG::ParticleData ~nu_tauL 
+setup ~nu_tauL 1000016 ~nu_tauL 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle ~nu_tauL 
+create ThePEG::ParticleData ~nu_tauLbar 
+setup ~nu_tauLbar -1000016 ~nu_tauLbar 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle ~nu_tauLbar 
+makeanti ~nu_tauL ~nu_tauLbar 
+create ThePEG::ParticleData ~g 
+setup ~g 1000021 ~g 500.0 1.0 10.0 0.0 0 8 2 0
+defaultparticle ~g 
+create ThePEG::ParticleData ~chi_10 
+setup ~chi_10 1000022 ~chi_10 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle ~chi_10 
+create ThePEG::ParticleData ~chi_20 
+setup ~chi_20 1000023 ~chi_20 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle ~chi_20 
+create ThePEG::ParticleData ~chi_1+ 
+setup ~chi_1+ 1000024 ~chi_1+ 500.0 1.0 10.0 0.0 3 0 2 0
+defaultparticle ~chi_1+ 
+create ThePEG::ParticleData ~chi_1- 
+setup ~chi_1- -1000024 ~chi_1- 500.0 1.0 10.0 0.0 -3 0 2 0
+defaultparticle ~chi_1- 
+makeanti ~chi_1+ ~chi_1- 
+create ThePEG::ParticleData ~chi_30 
+setup ~chi_30 1000025 ~chi_30 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle ~chi_30 
+create ThePEG::ParticleData ~chi_40 
+setup ~chi_40 1000035 ~chi_40 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle ~chi_40 
+create ThePEG::ParticleData ~chi_2+ 
+setup ~chi_2+ 1000037 ~chi_2+ 500.0 1.0 10.0 0.0 3 0 2 0
+defaultparticle ~chi_2+ 
+create ThePEG::ParticleData ~chi_2- 
+setup ~chi_2- -1000037 ~chi_2- 500.0 1.0 10.0 0.0 -3 0 2 0
+defaultparticle ~chi_2- 
+makeanti ~chi_2+ ~chi_2- 
+create ThePEG::ParticleData ~gravitino 
+setup ~gravitino 1000039 ~gravitino 500.0 0.0 0.000010 0.0 0 0 4 1
+defaultparticle ~gravitino 
+create ThePEG::ParticleData ~d_R 
+setup ~d_R 2000001 ~d_R 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle ~d_R 
+create ThePEG::ParticleData ~d_Rbar 
+setup ~d_Rbar -2000001 ~d_Rbar 500.0 1.0 10.0 0.0 1 -3 1 0
+defaultparticle ~d_Rbar 
+makeanti ~d_R ~d_Rbar 
+create ThePEG::ParticleData ~u_R 
+setup ~u_R 2000002 ~u_R 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle ~u_R 
+create ThePEG::ParticleData ~u_Rbar 
+setup ~u_Rbar -2000002 ~u_Rbar 500.0 1.0 10.0 0.0 -2 -3 1 0
+defaultparticle ~u_Rbar 
+makeanti ~u_R ~u_Rbar 
+create ThePEG::ParticleData ~s_R 
+setup ~s_R 2000003 ~s_R 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle ~s_R 
+create ThePEG::ParticleData ~s_Rbar 
+setup ~s_Rbar -2000003 ~s_Rbar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle ~s_Rbar 
+makeanti ~s_R ~s_Rbar 
+create ThePEG::ParticleData ~c_R 
+setup ~c_R 2000004 ~c_R 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle ~c_R 
+create ThePEG::ParticleData ~c_Rbar 
+setup ~c_Rbar -2000004 ~c_Rbar 500.0 1.0 10.0 0.0 -2 -3 1 0
+defaultparticle ~c_Rbar 
+makeanti ~c_R ~c_Rbar 
+create ThePEG::ParticleData ~b_2 
+setup ~b_2 2000005 ~b_2 500.0 1.0 10.0 0.0 -1 3 1 0
+defaultparticle ~b_2 
+create ThePEG::ParticleData ~b_2bar 
+setup ~b_2bar -2000005 ~b_2bar 500.0 1.0 10.0 0.0 1 -3 1 0 
+defaultparticle ~b_2bar 
+makeanti ~b_2 ~b_2bar 
+create ThePEG::ParticleData ~t_2 
+setup ~t_2 2000006 ~t_2 500.0 1.0 10.0 0.0 2 3 1 0
+defaultparticle ~t_2 
+create ThePEG::ParticleData ~t_2bar 
+setup ~t_2bar -2000006 ~t_2bar 500.0 1.0 10.0 0.0 -2 -3 1 0
+defaultparticle ~t_2bar 
+makeanti ~t_2 ~t_2bar 
+create ThePEG::ParticleData ~e_R- 
+setup ~e_R- 2000011 ~e_R- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle ~e_R- 
+create ThePEG::ParticleData ~e_R+ 
+setup ~e_R+ -2000011 ~e_R+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle ~e_R+ 
+makeanti ~e_R- ~e_R+ 
+create ThePEG::ParticleData ~nu_eR 
+setup ~nu_eR 2000012 ~nu_eR 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle ~nu_eR 
+create ThePEG::ParticleData ~nu_eRbar 
+setup ~nu_eRbar -2000012 ~nu_eRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle ~nu_eRbar 
+makeanti ~nu_eR ~nu_eRbar 
+create ThePEG::ParticleData ~mu_R- 
+setup ~mu_R- 2000013 ~mu_R- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle ~mu_R- 
+create ThePEG::ParticleData ~mu_R+ 
+setup ~mu_R+ -2000013 ~mu_R+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle ~mu_R+ 
+makeanti ~mu_R- ~mu_R+ 
+create ThePEG::ParticleData ~nu_muR 
+setup ~nu_muR 2000014 ~nu_muR 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle ~nu_muR 
+create ThePEG::ParticleData ~nu_muRbar 
+setup ~nu_muRbar -2000014 ~nu_muRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle ~nu_muRbar 
+makeanti ~nu_muR ~nu_muRbar 
+create ThePEG::ParticleData ~tau_2- 
+setup ~tau_2- 2000015 ~tau_2- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle ~tau_2- 
+create ThePEG::ParticleData ~tau_2+ 
+setup ~tau_2+ -2000015 ~tau_2+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle ~tau_2+ 
+makeanti ~tau_2- ~tau_2+ 
+create ThePEG::ParticleData ~nu_tauR 
+setup ~nu_tauR 2000016 ~nu_tauR 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle ~nu_tauR 
+create ThePEG::ParticleData ~nu_tauRbar 
+setup ~nu_tauRbar -2000016 ~nu_tauRbar 500.0 0.0 0.000010 0.0 0 0 1 1
+defaultparticle ~nu_tauRbar 
+makeanti ~nu_tauR ~nu_tauRbar 
+
+###################################################################
+#
+#             Additional gauge bosons
+#
+###################################################################
+
+create ThePEG::ParticleData Z'0 
+setup Z'0 32 Z'0 500.0 14.548480 145.484840 0.0 0 0 3 0
+defaultparticle Z'0 
+create ThePEG::ParticleData Z"0 
+setup Z"0 33 Z"0 900.0 0.0 0.0 0.0 0 0 3 0
+defaultparticle Z"0 
+create ThePEG::ParticleData W'+ 
+setup W'+ 34 W'+ 500.0 16.67080 166.708010 0.0 3 0 3 0
+defaultparticle W'+ 
+create ThePEG::ParticleData W'- 
+setup W'- -34 W'- 500.0 16.67080 166.708010 0.0 -3 0 3 0
+defaultparticle W'- 
+makeanti W'+ W'- 
+
+
+###################################################################
+#
+#             Gravition
+#
+###################################################################
+
+create /ThePEG/ParticleData Graviton
+setup Graviton 39 G 500.0 1. 10. 0.0 0 0 5 0
+defaultparticle Graviton
+
+###################################################################
+#
+#             Fourth generation quarks and leptons
+#
+###################################################################
+
+create ThePEG::ParticleData b' 
+setup b' 7 b' 400.0 0.0 0.0 0.0 -1 3 2 0
+defaultparticle b' 
+create ThePEG::ParticleData b'bar 
+setup b'bar -7 b'bar 400.0 0.0 0.0 0.0 1 -3 2 0
+defaultparticle b'bar 
+makeanti b' b'bar 
+create ThePEG::ParticleData t' 
+setup t' 8 t' 400.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle t' 
+create ThePEG::ParticleData t'bar 
+setup t'bar -8 t'bar 400.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle t'bar 
+makeanti t' t'bar  
+create ThePEG::ParticleData tau'- 
+setup tau'- 17 tau'- 400.0 0.0 0.0 0.0 -3 0 2 0
+defaultparticle tau'- 
+create ThePEG::ParticleData tau'+ 
+setup tau'+ -17 tau'+ 400.0 0.0 0.0 0.0 3 0 2 0
+defaultparticle tau'+ 
+makeanti tau'- tau'+ 
+create ThePEG::ParticleData nu'_tau 
+setup nu'_tau 18 nu'_tau 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle nu'_tau 
+create ThePEG::ParticleData nu'_taubar 
+setup nu'_taubar -18 nu'_taubar 0.0 0.0 0.0 0.0 0 0 2 1
+defaultparticle nu'_taubar 
+makeanti nu'_tau nu'_taubar 
+
+###################################################################
+#
+#             Excited quarks and leptons
+#
+###################################################################
+
+create ThePEG::ParticleData d* 
+setup d* 4000001 d* 400.0 2.651710 26.517150 0.0 -1 3 3 0
+defaultparticle d* 
+create ThePEG::ParticleData d*bar 
+setup d*bar -4000001 d*bar 400.0 2.651710 26.517150 0.0 1 -3 3 0
+defaultparticle d*bar 
+makeanti d* d*bar 
+create ThePEG::ParticleData u* 
+setup u* 4000002 u* 400.0 2.654990 26.549940 0.0 2 3 3 0
+defaultparticle u* 
+create ThePEG::ParticleData u*bar 
+setup u*bar -4000002 u*bar 400.0 2.654990 26.549940 0.0 -2 -3 3 0 
+defaultparticle u*bar 
+makeanti u* u*bar 
+create ThePEG::ParticleData e*- 
+setup e*- 4000011 e*- 400.0 0.429010 4.290110 0.0 -3 0 3 0
+defaultparticle e*- 
+create ThePEG::ParticleData e*bar+ 
+setup e*bar+ -4000011 e*bar+ 400.0 0.429010 4.290110 0.0 3 0 3 0
+defaultparticle e*bar+ 
+makeanti e*- e*bar+ 
+create ThePEG::ParticleData nu*_e0 
+setup nu*_e0 4000012 nu*_e0 400.0 0.419170 4.191730 0.0 0 0 3 0
+defaultparticle nu*_e0 
+create ThePEG::ParticleData nu*_ebar0 
+setup nu*_ebar0 -4000012 nu*_ebar0 400.0 0.419170 4.191730 0.0 0 0 3 0
+defaultparticle nu*_ebar0 
+makeanti nu*_e0 nu*_ebar0 
+
+###################################################################
+#
+#                       Technicolor particles
+#
+###################################################################
+
+create ThePEG::ParticleData pi_tech0 
+setup pi_tech0 3000111 pi_tech0 110.0 0.041040 0.410420 0.0 0 0 0 0
+defaultparticle pi_tech0 
+create ThePEG::ParticleData pi_tech+ 
+setup pi_tech+ 3000211 pi_tech+ 110.0 0.01050 0.105040 0.0 3 0 0 0
+defaultparticle pi_tech+ 
+create ThePEG::ParticleData pi_tech- 
+setup pi_tech- -3000211 pi_tech- 110.0 0.01050 0.105040 0.0 -3 0 0 0
+defaultparticle pi_tech- 
+makeanti pi_tech+ pi_tech- 
+create ThePEG::ParticleData pi'_tech0 
+setup pi'_tech0 3000221 pi'_tech0 110.0 0.028070 0.280680 0.0 0 0 0 0
+defaultparticle pi'_tech0 
+create ThePEG::ParticleData eta_tech0 
+setup eta_tech0 3100221 eta_tech0 350.0 0.101580 1.01580 0.0 0 8 0 0
+defaultparticle eta_tech0 
+create ThePEG::ParticleData rho_tech0 
+setup rho_tech0 3000113 rho_tech0 210.0 0.821010 8.210050 0.0 0 0 0 0
+defaultparticle rho_tech0 
+create ThePEG::ParticleData rho_tech+ 
+setup rho_tech+ 3000213 rho_tech+ 210.0 0.649730 6.497280 0.0 3 0 0 0
+defaultparticle rho_tech+ 
+create ThePEG::ParticleData rho_tech- 
+setup rho_tech- -3000213 rho_tech- 210.0 0.649730 6.497280 0.0 -3 0 0 0
+defaultparticle rho_tech- 
+makeanti rho_tech+ rho_tech- 
+create ThePEG::ParticleData omega_tech 
+setup omega_tech 3000223 omega_tech 210.0 0.15750 1.574960 0.0 0 0 0 0
+defaultparticle omega_tech 
+
+###################################################################
+#
+#                           Leptoquarks
+#
+###################################################################
+
+create ThePEG::ParticleData LQ_ue 
+setup LQ_ue 42 LQ_ue 200.0 0.391620 3.916240 0.0 -1 3 0 0
+defaultparticle LQ_ue 
+create ThePEG::ParticleData LQ_uebar 
+setup LQ_uebar -42 LQ_uebar 200.0 0.391620 3.916240 0.0 1 -3 0 0
+defaultparticle LQ_uebar 
+makeanti LQ_ue LQ_uebar 
+
+###################################################################
+#
+#                       Particles for left/right models
+#
+#   These were inherited from PYTHIA, via ThePEG and have
+#   non-standard numbers, they don't clash with anything at the
+#   moment but could be a probem in the future.
+#
+###################################################################
+
+create ThePEG::ParticleData H_L++ 
+setup H_L++ 61 H_L++ 200.0 0.881610 8.816060 0.0 6 0 0 0
+defaultparticle H_L++ 
+create ThePEG::ParticleData H_L-- 
+setup H_L-- -61 H_L-- 200.0 0.881610 8.816060 0.0 -6 0 0 0
+defaultparticle H_L-- 
+makeanti H_L++ H_L-- 
+create ThePEG::ParticleData H_R++ 
+setup H_R++ 62 H_R++ 200.0 0.880010 8.800130 0.0 6 0 0 0
+defaultparticle H_R++ 
+create ThePEG::ParticleData H_R-- 
+setup H_R-- -62 H_R-- 200.0 0.880010 8.800130 0.0 -6 0 0 0
+defaultparticle H_R-- 
+makeanti H_R++ H_R-- 
+create ThePEG::ParticleData W_R+ 
+setup W_R+ 63 W_R+ 750.0 19.339050 193.390480 0.0 3 0 0 0
+defaultparticle W_R+ 
+create ThePEG::ParticleData W_R- 
+setup W_R- -63 W_R- 750.0 19.339050 193.390480 0.0 -3 0 0 0
+defaultparticle W_R- 
+makeanti W_R+ W_R- 
+create ThePEG::ParticleData nu_Re 
+setup nu_Re 64 nu_Re 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle nu_Re 
+create ThePEG::ParticleData nu_Rebar 
+setup nu_Rebar -64 nu_Rebar 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle nu_Rebar 
+makeanti nu_Re nu_Rebar 
+create ThePEG::ParticleData nu_Rmu 
+setup nu_Rmu 65 nu_Rmu 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle nu_Rmu 
+create ThePEG::ParticleData nu_Rmubar 
+setup nu_Rmubar -65 nu_Rmubar 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle nu_Rmubar 
+makeanti nu_Rmu nu_Rmubar 
+create ThePEG::ParticleData nu_Rtau 
+setup nu_Rtau 66 nu_Rtau 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle nu_Rtau 
+create ThePEG::ParticleData nu_Rtaubar 
+setup nu_Rtaubar -66 nu_Rtaubar 750.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle nu_Rtaubar 
+makeanti nu_Rtau nu_Rtaubar 
+
+###################################################################
+#
+#                       The level-1 UED fields
+#
+###################################################################
+create ThePEG::ParticleData KK1_d_L
+setup KK1_d_L 5100001 KK1_d_L 500. 1.0 10.0 0.0 -1 3 2 0
+defaultparticle KK1_d_L
+create ThePEG::ParticleData KK1_d_Lbar
+setup KK1_d_Lbar -5100001 KK1_d_Lbar 500. 1.0 10.0 0.0 1 -3 2 0
+defaultparticle KK1_d_Lbar
+makeanti KK1_d_L KK1_d_Lbar
+create ThePEG::ParticleData KK1_u_L
+setup KK1_u_L 5100002 KK1_u_L 500. 1.0 10.0 0.0 2 3 2 0
+defaultparticle KK1_u_L
+create ThePEG::ParticleData KK1_u_Lbar
+setup KK1_u_Lbar -5100002 KK1_u_Lbar 500. 1.0 10.0 0.0 -2 -3 2 0
+defaultparticle KK1_u_Lbar
+makeanti KK1_u_L KK1_u_Lbar
+create ThePEG::ParticleData KK1_s_L
+setup KK1_s_L 5100003 KK1_s_L 500. 1.0 10.0 0.0 -1 3 2 0
+defaultparticle KK1_s_L
+create ThePEG::ParticleData KK1_s_Lbar
+setup KK1_s_Lbar -5100003 KK1_s_Lbar 500. 1.0 10.0 0.0 1 -3 2 0
+defaultparticle KK1_s_Lbar
+makeanti KK1_s_L KK1_s_Lbar
+create ThePEG::ParticleData KK1_c_L
+setup KK1_c_L 5100004 KK1_c_L 500. 1.0 10.0 0.0 2 3 2 0
+defaultparticle KK1_c_L
+create ThePEG::ParticleData KK1_c_Lbar
+setup KK1_c_Lbar -5100004 KK1_c_Lbar 500. 1.0 10.0 0.0 -2 -3 2 0
+defaultparticle KK1_c_Lbar
+makeanti KK1_c_L KK1_c_Lbar
+create ThePEG::ParticleData KK1_b_1
+setup KK1_b_1 5100005 KK1_b_1 500. 1.0 10.0 0.0 -1 3 2 0
+defaultparticle KK1_b_1
+create ThePEG::ParticleData KK1_b_1bar
+setup KK1_b_1bar -5100005 KK1_b_1bar 500. 1.0 10.0 0.0 1 -3 2 0
+defaultparticle KK1_b_1bar
+makeanti KK1_b_1 KK1_b_1bar
+create ThePEG::ParticleData KK1_t_1
+setup KK1_t_1 5100006 KK1_t_1 500. 1.0 10.0 0.0 2 3 2 0
+defaultparticle KK1_t_1
+create ThePEG::ParticleData KK1_t_1bar
+setup KK1_t_1bar -5100006 KK1_t_1bar 500. 1.0 10.0 0.0 -2 -3 2 0
+defaultparticle KK1_t_1bar
+makeanti KK1_t_1 KK1_t_1bar
+# Right
+create ThePEG::ParticleData KK1_d_R
+setup KK1_d_R 6100001 KK1_d_R 500. 1.0 10.0 0.0 -1 3 2 0
+defaultparticle KK1_d_R
+create ThePEG::ParticleData KK1_d_Rbar
+setup KK1_d_Rbar -6100001 KK1_d_Rbar 500. 1.0 10.0 0.0 1 -3 2 0
+defaultparticle KK1_d_Rbar
+makeanti KK1_d_R KK1_d_Rbar
+create ThePEG::ParticleData KK1_u_R
+setup KK1_u_R 6100002 KK1_u_R 500. 1.0 10.0 0.0 2 3 2 0
+defaultparticle KK1_u_R
+create ThePEG::ParticleData KK1_u_Rbar
+setup KK1_u_Rbar -6100002 KK1_u_Rbar 500. 1.0 10.0 0.0 -2 -3 2 0
+defaultparticle KK1_u_Rbar
+makeanti KK1_u_R KK1_u_Rbar
+create ThePEG::ParticleData KK1_s_R
+setup KK1_s_R 6100003 KK1_s_R 500. 1.0 10.0 0.0 -1 3 2 0
+defaultparticle KK1_s_R
+create ThePEG::ParticleData KK1_s_Rbar
+setup KK1_s_Rbar -6100003 KK1_s_Rbar 500. 1.0 10.0 0.0 1 -3 2 0
+defaultparticle KK1_s_Rbar
+makeanti KK1_s_R KK1_s_Rbar
+create ThePEG::ParticleData KK1_c_R
+setup KK1_c_R 6100004 KK1_c_R 500. 1.0 10.0 0.0 2 3 2 0
+defaultparticle KK1_c_R
+create ThePEG::ParticleData KK1_c_Rbar
+setup KK1_c_Rbar -6100004 KK1_c_Rbar 500. 1.0 10.0 0.0 -2 -3 2 0
+defaultparticle KK1_c_Rbar
+makeanti KK1_c_R KK1_c_Rbar
+create ThePEG::ParticleData KK1_b_2
+setup KK1_b_2 6100005 KK1_b_2 500. 1.0 10.0 0.0 -1 3 2 0
+defaultparticle KK1_b_2
+create ThePEG::ParticleData KK1_b_2bar
+setup KK1_b_2bar -6100005 KK1_b_2bar 500. 1.0 10.0 0.0 1 -3 2 0
+defaultparticle KK1_b_2bar
+makeanti KK1_b_2 KK1_b_2bar
+create ThePEG::ParticleData KK1_t_2
+setup KK1_t_2 6100006 KK1_t_2 500. 1.0 10.0 0.0 2 3 2 0
+defaultparticle KK1_t_2
+create ThePEG::ParticleData KK1_t_2bar
+setup KK1_t_2bar -6100006 KK1_t_2bar 500. 1.0 10.0 0.0 -2 -3 2 0
+defaultparticle KK1_t_2bar
+makeanti KK1_t_2 KK1_t_2bar
+create ThePEG::ParticleData KK1_e_L-
+setup KK1_e_L- 5100011 KK1_e_L- 500. 1.0 10.0 0.0 -3 0 2 0
+defaultparticle KK1_e_L-
+create ThePEG::ParticleData KK1_e_L+
+setup KK1_e_L+ -5100011 KK1_e_L+ 500. 1.0 10.0 0.0 3 0 2 0
+defaultparticle KK1_e_L+
+makeanti KK1_e_L- KK1_e_L+
+create ThePEG::ParticleData KK1_nu_eL
+setup KK1_nu_eL 5100012 KK1_nu_eL 500. 1.0 10.0 0.0 0 0 2 0
+defaultparticle KK1_nu_eL
+create ThePEG::ParticleData KK1_nu_eLbar
+setup KK1_nu_eLbar -5100012 KK1_nu_eLbar 500. 1.0 10.0 0.0 0 0 2 0
+defaultparticle KK1_nu_eLbar
+makeanti KK1_nu_eL KK1_nu_eLbar
+create ThePEG::ParticleData KK1_mu_L-
+setup KK1_mu_L- 5100013 KK1_mu_L- 500. 1.0 10.0 0.0 -3 0 2 0
+defaultparticle KK1_mu_L-
+create ThePEG::ParticleData KK1_mu_L+
+setup KK1_mu_L+ -5100013 KK1_mu_L+ 500. 1.0 10.0 0.0 3 0 2 0
+defaultparticle KK1_mu_L+
+makeanti KK1_mu_L- KK1_mu_L+
+create ThePEG::ParticleData KK1_nu_muL
+setup KK1_nu_muL 5100014 KK1_nu_muL 500. 1.0 10.0 0.0 0 0 2 0
+defaultparticle KK1_nu_muL
+create ThePEG::ParticleData KK1_nu_muLbar
+setup KK1_nu_muLbar -5100014 KK1_nu_muLbar 500. 1.0 10.0 0.0 0 0 2 0
+defaultparticle KK1_nu_muLbar
+makeanti KK1_nu_muL KK1_nu_muLbar
+create ThePEG::ParticleData KK1_tau_1-
+setup KK1_tau_1- 5100015 KK1_tau_1- 500. 1.0 10.0 0.0 -3 0 2 0
+defaultparticle KK1_tau_1-
+create ThePEG::ParticleData KK1_tau_1+
+setup KK1_tau_1+ -5100015 KK1_tau_1+ 500. 1.0 10.0 0.0 3 0 2 0
+defaultparticle KK1_tau_1+
+makeanti KK1_tau_1- KK1_tau_1+
+create ThePEG::ParticleData KK1_nu_tauL
+setup KK1_nu_tauL 5100016 KK1_nu_tauL 500. 1.0 10.0 0.0 0 0 2 0
+defaultparticle KK1_nu_tauL
+create ThePEG::ParticleData KK1_nu_tauLbar
+setup KK1_nu_tauLbar -5100016 KK1_nu_tauLbar 500. 1.0 10.0 0.0 0 0 2 0
+defaultparticle KK1_nu_tauLbar
+makeanti KK1_nu_tauL KK1_nu_tauLbar
+create ThePEG::ParticleData KK1_e_R-
+setup KK1_e_R- 6100011 KK1_e_R- 500. 1.0 10.0 0.0 -3 0 2 0
+defaultparticle KK1_e_R-
+create ThePEG::ParticleData KK1_e_R+
+setup KK1_e_R+ -6100011 KK1_e_R+ 500. 1.0 10.0 0.0 3 0 2 0
+defaultparticle KK1_e_R+
+makeanti KK1_e_R- KK1_e_R+
+create ThePEG::ParticleData KK1_mu_R-
+setup KK1_mu_R- 6100013 KK1_mu_R- 500. 1.0 10.0 0.0 -3 0 2 0
+defaultparticle KK1_mu_R-
+create ThePEG::ParticleData KK1_mu_R+
+setup KK1_mu_R+ -6100013 KK1_mu_R+ 500. 1.0 10.0 0.0 3 0 2 0
+defaultparticle KK1_mu_R+
+makeanti KK1_mu_R- KK1_mu_R+
+create ThePEG::ParticleData KK1_tau_2-
+setup KK1_tau_2- 6100015 KK1_tau_2- 500. 1.0 10.0 0.0 -3 0 2 0
+defaultparticle KK1_tau_2-
+create ThePEG::ParticleData KK1_tau_2+
+setup KK1_tau_2+ -6100015 KK1_tau_2+ 500. 1.0 10.0 0.0 3 0 2 0
+defaultparticle KK1_tau_2+
+makeanti KK1_tau_2- KK1_tau_2+
+create ThePEG::ParticleData KK1_g
+setup KK1_g 5100021 KK1_g 500. 1.0 10.0 0.0 0 8 3 0
+defaultparticle KK1_g
+create ThePEG::ParticleData KK1_gamma
+setup KK1_gamma 5100022 KK1_gamma 500. 1.0 10.0 0.0 0 0 3 0
+defaultparticle KK1_gamma
+create ThePEG::ParticleData KK1_Z0
+setup KK1_Z0 5100023 KK1_Z0 500. 1.0 10.0 0.0 0 0 3 0
+defaultparticle KK1_Z0
+create ThePEG::ParticleData KK1_W+
+setup KK1_W+ 5100024 KK1_W+ 500. 1.0 10.0 0.0 3 0 3 0
+defaultparticle KK1_W+
+create ThePEG::ParticleData KK1_W-
+setup KK1_W- -5100024 KK1_W- 500. 1.0 10.0 0.0 -3 0 3 0
+defaultparticle KK1_W-
+makeanti KK1_W+ KK1_W-
+create ThePEG::ParticleData KK1_h0
+setup KK1_h0 5100025 KK1_h0 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle KK1_h0
+create ThePEG::ParticleData KK1_A0
+setup KK1_A0 5100036 KK1_A0 500.0 1.0 10.0 0.0 0 0 1 0
+defaultparticle KK1_A0
+create ThePEG::ParticleData KK1_H+
+setup KK1_H+ 5100037 KK1_H+ 500.0 1.0 10.0 0.0 3 0 1 0
+defaultparticle KK1_H+
+create ThePEG::ParticleData KK1_H-
+setup KK1_H- -5100037 KK1_H- 500.0 1.0 10.0 0.0 -3 0 1 0
+defaultparticle KK1_H-
+makeanti KK1_H+ KK1_H-

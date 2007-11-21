@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// LEPBMultiplicity.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the LEPBMultiplicity class.
 //
@@ -7,25 +14,56 @@
 #include "LEPBMultiplicity.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Utilities/StandardSelectors.h"
 
 using namespace Herwig;
 using namespace ThePEG;
 
+string BranchingInfo::bargraph(long N, BranchingInfo den)
+{
+  if (obsBranching == 0.0) return "     ?     ";
+  else if (nSigma(N,den) >= 6.0)  return "-----|---->";
+  else if (nSigma(N,den) >= 5.0)  return "-----|----*";
+  else if (nSigma(N,den) >= 4.0)  return "-----|---*-";
+  else if (nSigma(N,den) >= 3.0)  return "-----|--*--";
+  else if (nSigma(N,den) >= 2.0)  return "-----|-*---";
+  else if (nSigma(N,den) >= 1.0)  return "-----|*----";
+  else if (nSigma(N,den) > -1.0)  return "-----*-----";
+  else if (nSigma(N,den) > -2.0)  return "----*|-----";
+  else if (nSigma(N,den) > -3.0)  return "---*-|-----";
+  else if (nSigma(N,den) > -4.0)  return "--*--|-----";
+  else if (nSigma(N,den) > -5.0)  return "-*---|-----";
+  else if (nSigma(N,den) > -6.0)  return "*----|-----";
+  else                            return "<----|-----";
+}
+
 inline LEPBMultiplicity::LEPBMultiplicity() {
   // B+
-  _data[521 ] = MultiplicityInfo(0.175, 0.0044, other);
+  _data[521 ] = BranchingInfo(0.403, 0.009);
   // B_s
-  _data[531 ] = MultiplicityInfo(0.0450, 0.0038, other);
+  _data[531 ] = BranchingInfo(0.103, 0.009);
   // baryons
-  _data[5122] = MultiplicityInfo(0.0432, 0.0074, other);
+  _data[5122] = BranchingInfo(0.091, 0.015);
+  // b's
+  _data[5]    = BranchingInfo(0.   , 0.   );
 }
 
 void LEPBMultiplicity::analyze(tEventPtr event, long , int , int ) {
   // extract the weakly decaying B hadrons using set to avoid double counting
   set<PPtr> particles;
   map <long,long> eventcount;
+  StepVector steps = event->primaryCollision()->steps();
+  steps[0]->select(inserter(particles), ThePEG::AllSelector());
+  unsigned int nb=0;
+  for(set<PPtr>::const_iterator cit=particles.begin();cit!=particles.end();++cit) {
+    if(abs((*cit)->id())==ParticleID::b) ++nb;
+  }
+  if(nb!=0) eventcount.insert(make_pair(5,nb));
+
+
+  particles.clear();
   event->select(inserter(particles),WeakBHadronSelector());
   for(set<PPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
@@ -58,27 +96,31 @@ void LEPBMultiplicity::dofinish() {
   string filename = generator()->filename() + ".Bmult";
   ofstream outfile(filename.c_str());
   outfile << 
-    "\nParticle multiplicities (compared to LEP data):\n"
+    "\nB branching fraction (compared to LEP data):\n"
     "  ID       Name    simMult     obsMult       obsErr     Sigma\n";
-  for (map<long,MultiplicityInfo>::const_iterator it = _data.begin();
+  long N = generator()->currentEventNumber() - 1;
+  BranchingInfo den = _data[5];
+  for (map<long,BranchingInfo>::const_iterator it = _data.begin();
        it != _data.end();
        ++it)  {
-    MultiplicityInfo multiplicity = it->second;
+    if(it->first==5) continue;
+    BranchingInfo multiplicity = it->second;
     string name = (it->first==5122 ? "b baryons" : 
-		   generator()->getParticleData(it->first)->PDGName() );
-    long N = generator()->currentEventNumber() - 1;
-    
+		   generator()->getParticleData(it->first)->PDGName() ) +"     ";
     ios::fmtflags oldFlags = outfile.flags();
     outfile << std::scientific << std::showpoint
 	    << std::setprecision(3)
 	    << setw(7) << it->first << ' '
 	    << setw(9) << name << ' ' 
-	    << setw(2) << multiplicity.simMultiplicity(N) << " | " 
-	    << setw(2) << multiplicity.obsMultiplicity << " +/- " 
+	    << setw(2) 
+	    << multiplicity.simBranching(N,den) << " | " 
+	    << setw(2) 
+	    << multiplicity.obsBranching 
+	    << " +/- " 
 	    << setw(2) << multiplicity.obsError << ' '
 	    << std::showpos << std::setprecision(1)
-	    << multiplicity.nSigma(N) << ' ' 
-	    << multiplicity.bargraph(N)
+	    << multiplicity.nSigma(N,den) << ' ' 
+	    << multiplicity.bargraph(N,den)
 	    << std::noshowpos;
     outfile << '\n';
     outfile.flags(oldFlags);

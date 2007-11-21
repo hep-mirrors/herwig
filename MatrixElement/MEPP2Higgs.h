@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEPP2Higgs.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEPP2Higgs_H
 #define HERWIG_MEPP2Higgs_H
 //
@@ -11,6 +18,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ProductionMatrixElement.h"
@@ -32,18 +40,10 @@ class MEPP2Higgs: public MEBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEPP2Higgs();
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEPP2Higgs();
-  //@}
 
   /**
    * Return the matrix element for the kinematical configuation
@@ -123,17 +123,6 @@ public:
   virtual Selector<const ColourLines *> colourGeometries(tcDiagPtr diag) const;
 
   /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-//  virtual bool generateKinematics(const double * r);
-  //@}
-
-  /**
    *  Construct the vertex of spin correlations.
    */
   virtual void constructVertex(tSubProPtr);
@@ -203,26 +192,39 @@ private:
    * In fact, it should not even be implemented.
    */
   MEPP2Higgs & operator=(const MEPP2Higgs &);
+  //@}
 
+  /**
+   *  Members to return the matrix elements for the different subprocesses
+   */
+  //@{
+
+  /**
+   * Calculates the matrix element for the process g,g->h (via quark loops)
+   * @param g1 a vector of wave functions of the first incoming gluon
+   * @param g2 a vector of wave functions of the second incoming gluon
+   * @param calc Whether or not to calculate the matrix element for spin correlations
+   * @return the amlitude value.
+   */
   double ggME(vector<VectorWaveFunction> g1,
               vector<VectorWaveFunction> g2,
-              ScalarWaveFunction &, bool calc) const;
+              ScalarWaveFunction &, 
+              bool calc) const;
 
-  double qqME(vector<SpinorWaveFunction>    & fin,
-              vector<SpinorBarWaveFunction> & ain,
-              ScalarWaveFunction & hout,bool calc) const;
+  /**
+   * Calculates the matrix element for the process q,qbar->h
+   * @param fin a vector of quark spinors
+   * @param ain a vector of anti-quark spinors
+   * @param calc Whether or not to calculate the matrix element for spin correlations
+   * @return the amlitude value.
+   */
+  double qqME(vector<SpinorWaveFunction> & fin, 
+              vector<SpinorBarWaveFunction> & ain, 
+              ScalarWaveFunction &, 
+              bool calc) const;
+  //@}
 
 private:
-
-  /**
-   * Type of the Higgs width used (options: fixed, LO running, NLL corrected running, user defined)
-   */
-  unsigned int widthopt;
-
-  /**
-   * Defines which decay modes are taken into account (see class documentation)
-   */
-  unsigned int branchingopt;
 
   /**
    * Defines the Higgs resonance shape
@@ -269,37 +271,20 @@ private:
    */
   tcHwSMPtr theSM;
 
-  /** @routines to calculate Higgs width. */
-  //@{
   /**
-   * Calculates the Higgs width with some NLL corrections a-la FORTRAN HERWIG. 
-   * The following channels are taken into account: 
-   * H->q\bar{q}, H->l\bar{l}, H->WW, H->ZZ, H->2gammas, H->2gluons
-   * The prescription corresponds to one in FORTRAN HERWIG (except H->2gluons!)
-   * @returns the Higgs width for the Higgs mass Mh.
+   *  The mass generator for the Higgs
    */
-  Energy calcNLLRunningWidth(Energy Mh) const;
+  SMHiggsMassGeneratorPtr _hmass;
 
   /**
-   * Calculates the Higgs width at LO.
-   * @returns the Higgs width for Higgs mass Mh.
+   *  On-shell mass for the higgs
    */
-  Energy calcLORunningWidth(Energy Mh) const;
+  Energy _mh;
 
   /**
-   * Calculates the double Breit-Wigner Integral a-la FORTRAN HERWIG.
-   * It is used in NLL corrected Higgs width for H->WW/ZZ,
-   * x = (M_V/M_H)^2, y=M_V*G_V/(M_H)^2, where M_V/G_V - V-boson mass/width
-   * @return the integral value.
+   *  On-shell width for the higgs
    */
-  double HwDoubleBW(double x, double y) const;
-
-  /**
-   * Calculate a loop function for the triangle vertex GGH/AAH
-   * @return the loop function value: pair -> (real, imaginary).
-   */
-  std::pair<double,double> HwW2(double tau) const;
-  //@}
+  Energy _wh;
 };
 
 }
@@ -339,8 +324,5 @@ struct ClassTraits<Herwig::MEPP2Higgs>
 }
 
 #include "MEPP2Higgs.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2Higgs.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2Higgs_H */

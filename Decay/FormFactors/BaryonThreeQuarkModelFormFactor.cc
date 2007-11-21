@@ -160,12 +160,12 @@ void BaryonThreeQuarkModelFormFactor::Init() {
      &BaryonThreeQuarkModelFormFactor::_initialize, false, false, false);
   static SwitchOption interfaceInitializeInitialize
     (interfaceInitialize,
-     "Initialize",
+     "Yes",
      "Perform the initialize",
      true);
   static SwitchOption interfaceInitializeNoInitialize
     (interfaceInitialize,
-     "NoInitialize",
+     "No",
      "No initialization",
      false);
 }

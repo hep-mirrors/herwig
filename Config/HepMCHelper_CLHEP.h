@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HepMCHelper_CLHEP.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is a helper header to implement HepMC conversions
 //
 #include "ThePEG/Vectors/HepMCConverter.h"
@@ -14,6 +21,12 @@ struct HepMCTraits<HepMC::GenEvent>
 			   HepMC::GenVertex,
 			   HepMC::Polarization> 
 {
+  /**
+   *  Create a new particle
+   * @param p The momentum
+   * @param id The id
+   * @param status The status
+   */
   static ParticleT * newParticle(const Lorentz5Momentum & p,
 				 long id, int status) {
     // Note that according to the documentation the momentum is stored in a
@@ -27,6 +40,9 @@ struct HepMCTraits<HepMC::GenEvent>
     return genp;
   }
 
+  /**
+   *  Set the position
+   */
   static void setPosition(VertexT & v, const LorentzPoint & p) {
     // We assume that the position is measured in millimeters.
     CLHEP::HepLorentzVector p_mm(p.x()/mm, 

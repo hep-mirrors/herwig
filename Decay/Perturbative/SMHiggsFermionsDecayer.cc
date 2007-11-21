@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SMHiggsFermionsDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SMHiggsFermionsDecayer class.
 //
@@ -22,14 +29,14 @@ using namespace ThePEG::Helicity;
 SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() {
   _maxwgt.resize(9);
   _maxwgt[0]=0.;
-  _maxwgt[1]=0.;
-  _maxwgt[2]=0.000699053;
-  _maxwgt[3]=0.046073;
-  _maxwgt[4]=0.789082;
-  _maxwgt[5]=0.;
-  _maxwgt[6]=6.69076e-09;
-  _maxwgt[7]=0.00028718;
-  _maxwgt[8]=0.0811124;
+  _maxwgt[1]=0;		
+  _maxwgt[2]=0;		
+  _maxwgt[3]=0.0194397;	
+  _maxwgt[4]=0.463542;	
+  _maxwgt[5]=0.;		
+  _maxwgt[6]=6.7048e-09; 
+  _maxwgt[7]=0.00028665; 
+  _maxwgt[8]=0.0809643;  
 }
 
 void SMHiggsFermionsDecayer::doinit() throw(InitException) {
@@ -43,12 +50,18 @@ void SMHiggsFermionsDecayer::doinit() throw(InitException) {
   _hvertex = hwsm->vertexFFH();
   // make sure they are initialized
   _hvertex->init();
+  // get the width generator for the higgs
+  tPDPtr higgs = getParticleData(ParticleID::h0);
+  if(higgs->widthGenerator()) {
+    _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(higgs->widthGenerator());
+  }
+  // set up the decay modes
   vector<double> wgt(0);
   unsigned int imode=0;
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   int iy;
-  extpart[0]=getParticleData(ParticleID::h0);
+  extpart[0]=higgs;
   for(unsigned int istep=0;istep<11;istep+=10) {
     for(unsigned ix=1;ix<7;++ix) {
       if(istep<10||ix%2!=0) {
@@ -69,7 +82,7 @@ bool SMHiggsFermionsDecayer::accept(tcPDPtr parent, const PDVector & children) c
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
-  if(id1==-id2&&(abs(id1)<=5||(abs(id1)>=11&&abs(id1)<=16)))
+  if(id1==-id2&&(abs(id1)<=6||(abs(id1)>=11&&abs(id1)<=16)))
     return true;
   else
     return false;
@@ -81,22 +94,22 @@ ParticleVector SMHiggsFermionsDecayer::decay(const Particle & parent,
   PDVector::const_iterator pit(children.begin());
   int id1((**pit).id());
   int imode=-1;
-  if(abs(id1)<6){imode=abs(id1)-1;}
-  else if(abs(id1)>=11&&abs(id1)<=16){imode=(abs(id1)-11)/2+5;}
+  if(abs(id1)<=6)                     imode = abs(id1)-1;
+  else if(abs(id1)>=11&&abs(id1)<=16) imode = (abs(id1)-11)/2+5;
   ParticleVector output(generate(false,false,imode,parent));
   // set up the colour flow
-  if(output[0]->hasColour())     {output[0]->antiColourNeighbour(output[1]);}
-  else if(output[1]->hasColour()){output[1]->antiColourNeighbour(output[0]);}
+  if(output[0]->hasColour())      output[0]->antiColourNeighbour(output[1]);
+  else if(output[1]->hasColour()) output[1]->antiColourNeighbour(output[0]);
   return output;
 }
 
 
 void SMHiggsFermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _maxwgt << _hvertex;
+  os << _maxwgt << _hvertex << _hwidth;
 }
 
 void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _maxwgt >> _hvertex;
+  is >> _maxwgt >> _hvertex >> _hwidth;
 }
 
 ClassDescription<SMHiggsFermionsDecayer> SMHiggsFermionsDecayer::initSMHiggsFermionsDecayer;
@@ -108,18 +121,17 @@ void SMHiggsFermionsDecayer::Init() {
     ("The SMHiggsFermionsDecayer class implements the decat of the Standard Model"
      " Higgs boson to the Standard Model fermions");
 
-  static ParVector<SMHiggsFermionsDecayer,double> interfaceZquarkMax
-    ("MaxWeight",
-     "The maximum weight for the decays",
-     &SMHiggsFermionsDecayer::_maxwgt,
-     0, 0, 0, 0., 10000, false, false, true);
+  static ParVector<SMHiggsFermionsDecayer,double> interfaceMaxWeights
+    ("MaxWeights",
+     "Maximum weights for the various decays",
+     &SMHiggsFermionsDecayer::_maxwgt, 9, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 
 }
 
 // return the matrix element squared
 double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpart,
-				   const ParticleVector & decay) const 
-{
+				   const ParticleVector & decay) const {
   RhoDMatrix rhoin;
   // check if the incoming particle has a spin info and if not create it
   ScalarWaveFunction inwave = ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),
@@ -147,8 +159,16 @@ double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpa
 	}
     }
   ME(newme);
+  int id = abs(decay[0]->id());
   double output=(newme.contract(rhoin)).real()*UnitRemoval::E2/scale;
-  if(abs(decay[0]->id())<=6){output*=3.;}
+  if(id <=6) output*=3.;
+  // normalize if width generator
+  if(_hwidth) {
+    if(id<=6) 
+      output *=UnitRemoval::E/_hwidth->partialWidth(inpart.mass(),id);
+    else if(id>=11&&id<=15&&(id-9)%2==0) 
+      output *=UnitRemoval::E/_hwidth->partialWidth(inpart.mass(),(id+3)/2);
+  }
   // test of the partial width
   /*
   Ptr<Herwig::StandardModel>::transient_const_pointer 
@@ -164,4 +184,24 @@ double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpa
        << endl;
   */
   return output;
+}
+
+void SMHiggsFermionsDecayer::dataBaseOutput(ofstream & os,bool header) const {
+  if(header) os << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
+    os << "set " << fullName() << ":MaxWeights " << ix << " "
+	   << _maxwgt[ix] << "\n";
+  }
+  DecayIntegrator::dataBaseOutput(os,false);
+  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+void SMHiggsFermionsDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      _maxwgt[ix] = mode(ix)->maxWeight();
+    }
+  }
 }

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MultiplicityCount.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the MultiplicityCount class.
 //
@@ -8,26 +15,22 @@ namespace Herwig {
 
 inline MultiplicityInfo::MultiplicityInfo(double inmult,double inerror,
 					  ParticleSpecies intype)
-  : obsMultiplicity(inmult), obsError(inerror), type(intype), 
-    actualCount(0), sumofsquares(0.0)
+  : obsMultiplicity(inmult), obsError(inerror), type(intype)
 {}
   
-inline double MultiplicityInfo::simMultiplicity(long N) {
-  return actualCount / double(N);
+inline double MultiplicityInfo::simMultiplicity() {
+  return count.mean();
 }
 
-inline double MultiplicityInfo::simError(long N) {
-  return sqrt( 
-	      ( sumofsquares/double(N)  -  sqr(simMultiplicity(N)) ) 
-	      / N 
-	      );
+inline double MultiplicityInfo::simError() {
+  return count.mean_stdDev();
 }
 
-inline double MultiplicityInfo::nSigma(long N) {
+inline double MultiplicityInfo::nSigma() {
   return obsMultiplicity == 0.0 ?
     0.0 :
-    (simMultiplicity(N) - obsMultiplicity) 
-    / sqrt(sqr(simError(N)) + sqr(obsError));
+    (simMultiplicity() - obsMultiplicity) 
+    / sqrt(sqr(simError()) + sqr(obsError));
 }
 
 inline IBPtr MultiplicityCount::clone() const {

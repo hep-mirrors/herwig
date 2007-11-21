@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DecayIntegrator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DecayIntegrator class.
 //
@@ -19,7 +26,6 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "DecayPhaseSpaceMode.h"
 #include "Herwig++/PDT/WidthCalculatorBase.h"
 #include "ThePEG/Interface/Reference.h"
@@ -93,12 +99,12 @@ void DecayIntegrator::Init() {
      &DecayIntegrator::_generateinter, false, false, false);
   static SwitchOption interfaceGenerateIntermediatesNoIntermediates
     (interfaceGenerateIntermediates,
-     "NoIntermediates",
+     "No",
      "Don't include the intermediates",
      false);
   static SwitchOption interfaceGenerateIntermediatesIncludeIntermediates
     (interfaceGenerateIntermediates,
-     "IncludeIntermediates",
+     "Yes",
      "include the intermediates",
      true);
 
@@ -108,12 +114,12 @@ void DecayIntegrator::Init() {
      &DecayIntegrator::_outputmodes, false, false, false);
   static SwitchOption interfaceOutputModesOutput
     (interfaceOutputModes,
-     "Output",
+     "Yes",
      "Output the modes",
      true);
   static SwitchOption interfaceOutputModesNoOutput
     (interfaceOutputModes,
-     "NoOutput",
+     "No",
      "Don't output the modes",
      false);
   

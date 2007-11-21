@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// UEDBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the UEDBase class.
 //
@@ -10,10 +17,15 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/Repository.h" 
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
+
+UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
+		     theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
+		     theVeV(246.*GeV) {}
 
 void UEDBase::doinit() throw(InitException) {
   StandardModel::doinit();
@@ -71,11 +83,20 @@ void UEDBase::Init() {
     ("This class implements/stores the necessary information for the simulation"
      " of a Universal Extra Dimensions model.");
 
-  static Parameter<UEDBase,bool> interfaceRadiativeCorrections
+  static Switch<UEDBase,bool> interfaceRadiativeCorrections
     ("RadiativeCorrections",
-     "Switch for calculating the radiative corrections to the KK masses",
-     &UEDBase::theRadCorr, true, 0, 0,
-     false, false, Interface::nolimits);
+     "Calculate the radiative corrections to the masses",
+     &UEDBase::theRadCorr, true, false, false);
+  static SwitchOption interfaceRadiativeCorrectionsYes
+    (interfaceRadiativeCorrections,
+     "Yes",
+     "Calculate the radiative corrections to the masses",
+     true);
+  static SwitchOption interfaceRadiativeCorrectionsNo
+    (interfaceRadiativeCorrections,
+     "No",
+     "Leave the masses of the KK particles as n/R",
+     false);
 
   static Parameter<UEDBase,Energy> interfaceInverseRadius
     ("InverseRadius",
@@ -90,18 +111,13 @@ void UEDBase::Init() {
      false, false, Interface::lowerlim);
 
     static Parameter<UEDBase,Energy> interfaceBoundaryMass
-    ("BoundaryMass",
+    ("HiggsBoundaryMass",
      "The boundary mass for the Higgs",
      &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
      false, false, Interface::lowerlim);
 
-  static Parameter<UEDBase,string> interfaceSPCFileName
-    ("SPCFileName",
-     "The name of the spectrum file",
-     &UEDBase::theSpectrum, "UEDMasses.out", false, false);
-
   static Parameter<UEDBase,Energy> interfaceVeV
-    ("VeV",
+    ("HiggsVEV",
      "The vacuum expectation value of the Higgs field",
      &UEDBase::theVeV, GeV, 246.*GeV, 0*GeV, 0*GeV,
      true, false, Interface::nolimits);
@@ -182,9 +198,12 @@ void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
       bosonMasses(n);
     }
     else {
-      cerr << "Warning! Radiative corrections have been turned off."
-	   << " Therefore the particle spectrum will be degenerate and "
-	   << "no decays will occur.\n";
+      cerr << 
+	"Warning: Radiative corrections to particle masses have been "
+	"turned off.\n  The masses will be set to (n/R + m_sm)^1/2 and "
+	"the spectrum will be\n  highly degenerate so that no decays "
+	"will occur.\n  This is only meant to be used for debugging "
+	"purposes.\n";
       //set masses to tree level for each kk mode
       long level1 = 5000000 + n*100000;
       long level2 = 6000000 + n*100000;
@@ -365,10 +384,10 @@ void UEDBase::writeSpectrum() {
       << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
       << endl;
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
-  for(vector<IDMassPair>::iterator it = theMasses.begin(); 
-      it != theMasses.end();) {
-    ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
-    theMasses.erase(it);
+  while (!theMasses.empty()) {
+    IDMassPair tmp = theMasses.back();
+    ofs << tmp.first << "\t\t\t" << tmp.second/GeV << endl;
+    theMasses.pop_back();
   }
   ofs << "#\n";
 }

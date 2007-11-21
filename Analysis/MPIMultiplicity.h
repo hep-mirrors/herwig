@@ -208,9 +208,14 @@ private:
   MPIHPtr theMPIHandler;
 
   /**
-   * Histograms for extra scatter multiplicity
+   * Histogram for the real extra scatter multiplicity
    */
   Histogram theRealMult;
+
+  /**
+   * Histogram for the theoretical (without momentum conservation) 
+   * extra scatter multiplicity
+   */
   Histogram theRequestedMult;
 
 };

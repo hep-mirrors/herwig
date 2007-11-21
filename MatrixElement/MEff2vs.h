@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEff2vs.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEff2vs_H
 #define HERWIG_MEff2vs_H
 //
@@ -229,14 +236,6 @@ struct ClassTraits<Herwig::MEff2vs>
   : public ClassTraitsBase<Herwig::MEff2vs> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEff2vs"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEff2vs is implemented. It may also include several, space-separated,
-   * libraries if the class MEff2vs depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

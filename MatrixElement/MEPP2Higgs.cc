@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEPP2Higgs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEPP2Higgs class.
 //
@@ -23,23 +30,21 @@ ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 // Definition of the static class description member.
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
-  os << hggvertex << ffhvertex << theSM << branchingopt 
-     << shapeopt << widthopt << processopt 
-     << minflavouropt << maxflavouropt;
+  os << hggvertex << ffhvertex << theSM << shapeopt << processopt 
+     << minflavouropt << maxflavouropt << _hmass << ounit(_mh,GeV) << ounit(_wh,GeV);
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
-  is >> hggvertex >> ffhvertex >> theSM >> branchingopt 
-     >> shapeopt >> widthopt >> processopt 
-     >> minflavouropt >> maxflavouropt;
+  is >> hggvertex >> ffhvertex >> theSM >> shapeopt >> processopt 
+     >> minflavouropt >> maxflavouropt >> _hmass >> iunit(_mh,GeV) >> iunit(_wh,GeV);
 }
+
 void MEPP2Higgs::Init() {
 
   static ClassDocumentation<MEPP2Higgs> documentation
     ("The MEPP2Higgs class implements the matrix elements for"
      " Higgs production (with decay H->W-W+) in hadron-hadron collisions.");
 
-//////////////////////////////////////////////////////////////////////////////////////////
   static Switch<MEPP2Higgs,unsigned int> interfaceShapeOption
     ("ShapeScheme",
      "Option for the treatment of the Higgs resonance shape",
@@ -51,73 +56,10 @@ void MEPP2Higgs::Init() {
      1);
   static SwitchOption interfaceStandardShapeRunning
     (interfaceShapeOption,
-     "RunningBreitWigner",
-     "Breit-Wigner Higgs resonanse with internal running width",
+     "MassGenerator",
+     "Use the mass generator to give the shape",
      2);
-  static SwitchOption interfaceImprovedShape
-    (interfaceShapeOption,
-     "ImprovedBreitWigner",
-     "Improved Higgs s-channel resonanse (hep-ph/9505211)",
-     6);
 
-//////////////////////////////////////////////////////////////////////////////////////////
-  static Switch<MEPP2Higgs,unsigned int> interfaceWidthOption
-    ("WidthScheme",
-     "Option for the treatment of the Higss Width calculation",
-     &MEPP2Higgs::widthopt, 1, false, false);
-  static SwitchOption interfaceFixedWidth
-    (interfaceWidthOption,
-     "FixedHiggsWidth",
-     "Fixed Higgs width, taken from ThePEGParticles.in",
-     1);
-  static SwitchOption interfaceRunningWidth
-    (interfaceWidthOption,
-     "RunningHiggsWidth",
-     "Running Higgs width, according to Breit-Wigner (does not work...)",
-     2);
-  static SwitchOption interfaceNLLWidth
-    (interfaceWidthOption,
-     "NLLcorrectedHiggsWidth",
-     "NLL corrected Higgs width (a-la FORTRAN HERWIG)",
-     3);
-  static SwitchOption interfaceLOWidthOption
-    (interfaceWidthOption,
-     "LOHiggsWidth",
-     "LO Higgs width (formula taken from The \"Higgs Hunter's Guide\")",
-     4);
-  static SwitchOption interfaceWidthTestOption
-    (interfaceWidthOption,
-     "HiggsWidthTests",
-     "Test option",
-     5);
-
-//////////////////////////////////////////////////////////////////////////////////////////
-  static Switch<MEPP2Higgs,unsigned int> interfaceBranchingOption
-    ("BranchAllowed",
-     "Option to switch on/off branchings in the total Higgs width calculation",
-     &MEPP2Higgs::branchingopt, 3, false, false);
-  static SwitchOption interfaceFermionOnlyBranchings
-    (interfaceBranchingOption,
-     "FermionBR",
-     "Fermion branchings in the full Higgs width",
-     1);
-  static SwitchOption interfacePlusWWZZBranchings
-    (interfaceBranchingOption,
-     "FermionWZBR",
-     "Fermion and WW/ZZ branchings in the full Higgs width",
-     2);
-  static SwitchOption interfacePlusGammaBranching
-    (interfaceBranchingOption,
-     "FermionWZGammaBR",
-     "Fermion 2gamma, and WW/ZZ branchings in the full Higgs width",
-     3);
-  static SwitchOption interfacePlausGluonBranching
-    (interfaceBranchingOption,
-     "FermionWZGammaGluonBR",
-     "Fermion 2gamma, 2glions, and WW/ZZ branchings in the full Higgs width",
-     4);
-
-//////////////////////////////////////////////////////////////////////////////////////////
   static Switch<MEPP2Higgs,unsigned int> interfaceProcess
     ("Process",
      "Which subprocesses to include",
@@ -138,7 +80,6 @@ void MEPP2Higgs::Init() {
      "Only include the incoming gg subprocess",
      3);
 
-//////////////////////////////////////////////////////////////////////////////////////////
   static Parameter<MEPP2Higgs,unsigned int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The minimum flavour of the incoming quarks in the hard process",
@@ -163,9 +104,18 @@ void MEPP2Higgs::doinit() throw(InitException) {
                           << Exception::runerror;
   }
   hggvertex = dynamic_ptr_cast<SVVLoopVertexPtr>(theSM->vertexHGG());
-//  hggvertex = dynamic_ptr_cast<GeneralSVVVertexPtr>(theSM->vertexHGG());
   ffhvertex = theSM->vertexFFH();
+  // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
+  _mh = h0->mass();
+  _wh = h0->generateWidth(_mh);
+  if(h0->massGenerator()) {
+    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+  }
+  if(shapeopt==2&&!_hmass) throw InitException()
+    << "If using the mass generator for the line shape in MEPP2Higgs::doinit()"
+    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << Exception::runerror;
 }
 
 unsigned int MEPP2Higgs::orderInAlphaS() const {
@@ -184,62 +134,17 @@ int MEPP2Higgs::nDim() const {
   return 0;
 }
 
-
 bool MEPP2Higgs::generateKinematics(const double *) {
   Lorentz5Momentum pout = meMomenta()[0] + meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2].setMass(pout.mass());
   meMomenta()[2] = LorentzMomentum(pout.x(),pout.y(),pout.z(),pout.t());
   jacobian(1.0);
-
-  Energy2 s(sHat());
-  PDPtr h0 = getParticleData(ParticleID::h0);
-  if (s < 0.*GeV2 && widthopt != 1) {
-    throw MEException() << "Warning! Shat < 0.0 (" << s/GeV2 
-                        << "), so I can not use widthopt != 1" 
-                        << Exception::warning;
-  } else {
-    switch (widthopt) {
-    case 1:
-      break;
-    case 2: {
-      Energy runwidth = h0->generateWidth(sqrt(s));
-      h0->width(runwidth);
-      break;}
-    case 3: {
-      Energy runwidth = calcNLLRunningWidth(sqrt(s));
-      h0->width(runwidth);
-      break;
-    }
-    case 4: {
-      Energy runwidth = calcLORunningWidth(sqrt(s));
-      h0->width(runwidth);
-      break;
-    }
-    case 5: {
-      Energy fixwidth1 = h0->width();
-      Energy runwidth1 = h0->generateWidth(sqrt(s));
-      Energy runwidth2 = calcNLLRunningWidth(sqrt(s));
-      cout << "Test: MEPP2Higgs::generateKinematics --> mass = " << sqrt(s)/GeV 
-                                                       << ": fw = " << fixwidth1/GeV 
-                                                       << ", rw1 = " << runwidth1/GeV 
-                                                       << ", rw2 = " << runwidth2/GeV << endl;
-      break;
-    }
-    default: 
-      throw MEException() << "Unknown width option in MEPP2Higgs::generateKinematics" 
-                          << Exception::runerror;
-      break;
-    }
-  }
-//  cout << "Higgs width = " << ounit(h0->width(),GeV) << endl;
-
   // check whether it passes all the cuts: returns true if it does
   vector<LorentzMomentum> out(1,meMomenta()[2]);
   tcPDVector tout(1,mePartonData()[2]);
   return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
 }
-
 
 void MEPP2Higgs::getDiagrams() const {
   tcPDPtr h0=getParticleData(ParticleID::h0);
@@ -258,33 +163,41 @@ void MEPP2Higgs::getDiagrams() const {
   }
 }
 
-
 CrossSection MEPP2Higgs::dSigHatDR() const {
-  tcPDPtr h0 = getParticleData(ParticleID::h0);
-  double cs = me2() * jacobian() * h0->width()/sqrt(sHat());
+  using Constants::pi;
+  InvEnergy2 bwfact;
+  if(shapeopt==1) {
+    bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
+      (sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+  }
+  else {
+    bwfact = _hmass->BreitWignerWeight(sqrt(sHat()),0);
+  }
+  double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
   return UnitRemoval::InvE2 * sqr(hbarc) * cs;
 }
-
 
 double MEPP2Higgs::me2() const {
   double output(0.0);
   useMe();
   ScalarWaveFunction hout(meMomenta()[2],mePartonData()[2],outgoing);
 
-// Safety code to garantee reliable behaviour of Higgs shape limits (important for heavy and broad Higgs resonance).
+// Safety code to garantee the reliable behaviour of Higgs shape limits 
+// (important for heavy and broad Higgs resonance).
   Energy hmass = meMomenta()[2].m();
-  PDPtr h0 = getParticleData(ParticleID::h0);
+  tcPDPtr h0 = mePartonData()[2];
   Energy mass = h0->mass();
   Energy halfmass = .5*mass;
   if (.0*GeV > hmass) return 0.0;
-// stricly speaking the condition is applicable if h0->widthUpCut() == h0->widthLoCut()...
+  // stricly speaking the condition is applicable if h0->widthUpCut() == h0->widthLoCut()...
   if (h0->widthLoCut() > halfmass) {
     if ((mass + h0->widthUpCut() < hmass || mass - h0->widthLoCut() > hmass)) return 0.0;
   } else {
     if (mass + halfmass < hmass || halfmass > hmass) return 0.0;
   }
 
-  if (mePartonData()[0]->id() == ParticleID::g && mePartonData()[1]->id() == ParticleID::g) {
+  if (mePartonData()[0]->id() == ParticleID::g && 
+      mePartonData()[1]->id() == ParticleID::g) {
     VectorWaveFunction gin1(meMomenta()[0],mePartonData()[0],incoming);
     VectorWaveFunction gin2(meMomenta()[1],mePartonData()[1],incoming);
 
@@ -326,7 +239,6 @@ Selector<MEBase::DiagramIndex> MEPP2Higgs::diagrams(const DiagramVector & diags)
   return sel;
 }
 
-
 Selector<const ColourLines *> MEPP2Higgs::colourGeometries(tcDiagPtr diag) const {
   // colour lines
   static const ColourLines line1("1 -2,2 -1");
@@ -341,7 +253,6 @@ Selector<const ColourLines *> MEPP2Higgs::colourGeometries(tcDiagPtr diag) const
   // return the answer
   return sel;
 }
-
 
 void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   // extract the particles in the hard process
@@ -381,300 +292,41 @@ void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   }
 }
 
-
 double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, 
                           vector<VectorWaveFunction> g2, 
-                          ScalarWaveFunction &, 
+                          ScalarWaveFunction & in, 
                           bool calc) const {
-  PDPtr h0 = getParticleData(ParticleID::h0);
   ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 s(sHat());
   double me2(0.0);
   for(int i = 0; i < 2; ++i) {
     for(int j = 0; j < 2; ++j) {
-      ScalarWaveFunction higgsWF = hggvertex->evaluate(s,shapeopt,h0,g1[i],g2[j]);
-      Complex diag = higgsWF.wave();
-      me2 += real(diag*conj(diag));
+      Complex diag = hggvertex->evaluate(s,in,g1[i],g2[j]);
+      me2 += norm(diag);
       if(calc) newme(2*i, 2*j, 0) = diag;
     }
   }
   if(calc) _me.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
-  return me2/(32.);
+  return me2/32.;
 }
 
 
 double MEPP2Higgs::qqME(vector<SpinorWaveFunction> & fin, 
                           vector<SpinorBarWaveFunction> & ain, 
-                          ScalarWaveFunction &, 
+                          ScalarWaveFunction & in, 
                           bool calc) const {
-  PDPtr h0 = getParticleData(ParticleID::h0);
   ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
   Energy2 s(scale());
   double me2(0.0);
   for(int i = 0; i < 2; ++i) {
     for(int j = 0; j < 2; ++j) {
-      ScalarWaveFunction higgsWF = ffhvertex->evaluate(s,shapeopt,h0,fin[i],ain[j]);
-      Complex diag = higgsWF.wave();
-      me2+=real(diag*conj(diag));
+      Complex diag = ffhvertex->evaluate(s,fin[i],ain[j],in);
+      me2+=norm(diag);
       if(calc) newme(i, j, 0) = diag;
     }
   }
   if(calc) _me.reset(newme);
   // final colour/spin factors
-  return 3.*me2/9./4.;
-}
-
-
-// Taken from HERWIG 6510 with some simplifications.
-Energy MEPP2Higgs::calcNLLRunningWidth(Energy Mh) const {
-  Energy2 q2 = sqr(Mh);
-  Energy QCDLambda = theSM->LambdaQCD(q2);
-//  double alphaEM   = theSM->alphaEM(q2);
-  double alphaEM   = theSM->alphaEM();
-  double alphaS    = theSM->alphaS(q2);
-  double sw2       = theSM->sin2ThetaW();
-  Energy partialw[14] = {0.0*GeV};
-
-  tPDPtr w = getParticleData(ParticleID::Wplus);
-  tPDPtr z = getParticleData(ParticleID::Z0);
-  Energy wmnom = w->mass();
-  Energy zmnom = z->mass();
-  Energy wgnom = w->width ();
-  Energy zgnom = z->width ();
-
-  double ncolour = theSM->Nc();
-  double Ca = ncolour;
-  double Cf = (sqr(ncolour)-1.0)/(2.0*Ca);
-  const unsigned int minflavour = 1;
-  const unsigned int maxflavour = 6;
-  double pi = Constants::pi;
-
-// All calculation are being done for Monte-Carlo QCD Lambda, except Higgs width...
-  double bcoeff4=(11.*Ca-10.)/(12.*pi);
-  double kfac=Ca*(67./18.-sqr(pi)/6.)-25./9.;
-  QCDLambda /= exp(kfac/(4.*pi*bcoeff4))/sqrt(2.);
-
-// H->fermion pair
-  Energy qmass[7];
-  double nflavour=minflavour-1;
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    tcPDPtr quark = getParticleData(i);
-    qmass[i] = quark->mass();
-    if (2.0*qmass[i] < Mh) nflavour+=1.;
-  }
-  double k1 = 5./sqr(pi);
-  double k0 = 3./(4.*sqr(pi));
-  double beta0 = (11.*Ca-2.0*nflavour)/3.;
-  double beta1 = (34.*sqr(Ca)-(10.*Ca+6.*Cf)*nflavour)/3.;
-  double gam0 = -8.;
-  double gam1 = -404./3.+40.*nflavour/9.;
-  double SClog = log(sqr(Mh/QCDLambda));
-  double Cd = 1.+(k1/k0-2.*gam0+gam0*beta1/sqr(beta0)*log(SClog)+(gam0*beta1-gam1*beta0)/sqr(beta0))/(beta0*SClog);
-  Energy2 GFermiINV = 8.*sw2*sqr(wmnom)/alphaEM;
-
-// quarks: partialw[1-6]
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    Energy mf = qmass[i];
-    double xf = sqr(mf/Mh);
-    if (mf > QCDLambda) mf *= pow(log(Mh/QCDLambda)/log(mf/QCDLambda),gam0/(2.0*beta0));
-    if (xf < 0.25) partialw[i] = Ca*Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)*Cd/GFermiINV;
-  }
-
-// leptons: partialw[7-9]
-  for (unsigned int i = 0; i < 3; ++i) {
-    tcPDPtr lepton = getParticleData(11+2*i);
-    Energy mf = lepton->mass();
-    double xf = sqr(mf/Mh);
-    if (xf < 0.25) partialw[7+i] = Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)/GFermiINV;
-  }
-
-// H->W*W*/Z*Z*: partialw[10,11]
-  if (branchingopt > 1) {
-    double xw = sqr(wmnom/Mh);
-    double xz = sqr(zmnom/Mh);
-    double yw = wmnom*wgnom/sqr(Mh);
-    double yz = zmnom*zgnom/sqr(Mh);
-    partialw[10] = Mh*Mh*Mh*HwDoubleBW(xw,yw)/2./GFermiINV;
-    partialw[11] = Mh*Mh*Mh*HwDoubleBW(xz,yz)/4./GFermiINV;
-  }
-
-// H->gamma,gamma: partialw[12]
-  if (branchingopt > 2) {
-    double taut = sqr(2.0*qmass[ParticleID::t]/Mh);
-    double tauw = sqr(2.0*wmnom/Mh);
-    std::pair<double,double> ftaut = HwW2 (taut);
-    std::pair<double,double> ftauw = HwW2 (tauw);
-    double re = 4.0/3.0*(-2.0*taut*(1.0+(1.0-taut)*ftaut.first))+(2.0+3.0*tauw*(1+(2.0-tauw)*ftauw.first));
-    double im = 4.0/3.0*(-2.0*taut*(    (1.0-taut)*ftaut.second))+(   3.0*tauw*(  (2.0-tauw)*ftauw.second));
-    partialw[12] = sqr(alphaEM/pi)*Mh*Mh*Mh*(sqr(re)+ sqr(im))/32./GFermiINV;
-  }
-
-// H->gluon,gluon: partialw[13]
-  if (branchingopt > 3) {
-    double tau = sqr(2.0*qmass[ParticleID::t]/Mh);
-    std::pair<double,double> ftau = HwW2 (tau);
-    double re = 1+(1.0-tau)*ftau.first;
-    double im =   (1.0-tau)*ftau.second;
-    partialw[13] = sqr(alphaS/pi)*Mh*Mh*Mh*sqr(tau)*(sqr(re)+ sqr(im))/4./GFermiINV;
-  }
-
-  Energy higgswidth = Energy();
-  for (unsigned int i = 1; i < 14; ++i) {
-    higgswidth += partialw[i];
-  }
-  return higgswidth;
-}
-
-// Taken from HERWIG 6510.
-double MEPP2Higgs::HwDoubleBW(double x, double y) const {
-// Calculate the Double Breit-Wigner Integral
-//  x=(mw/mh)**2, y=mw*gw/mh**2
-  double limit = 0.425;
-  double nbin = 25;
-  double itgerl = 0.0;
-  if (y < 0.0) return itgerl;
-  if (x > limit) {
-// Direct Integration
-    double fac1 = 0.25/nbin;
-    for (unsigned int i = 0; i < nbin; ++i) {
-      double x1 = (i+0.5)*fac1;
-      double fac2 = (sqr(1-sqrt(x1))-x1)/nbin;
-      double sq = 1.0;
-      int j = 0;
-      while (j < nbin && 0.0 < sq) {
-        double x2 = (j+0.5)*fac2+x1;
-        sq = 1.0+x1*x1+x2*x2-2*(x1+x2+x1*x2);
-        itgerl += 2.0*(sqr(1-x1-x2)+8.0*x1*x2)*sqrt(sq)/(sqr(x1-x)+y*y)*y/(sqr(x2-x)+y*y)*y*fac1*fac2;
-        ++j;
-      }
-    }
-  } else {
-// Integration using tan theta substitution
-    double th1low = atan ((0.0-x)/y);
-    double th1high = atan ((1.0-x)/y);
-    double fac1 = (th1high-th1low)/nbin;
-    for (unsigned int i = 0; i < nbin; ++i) {
-      double th1 = (i+0.5)*fac1+th1low;
-      double x1 = y*tan(th1)+x;
-      double x2max = min(x1,sqr(1-sqrt(x1)));
-      double th2low = atan ((0-x)/y);
-      double th2high = atan ((x2max-x)/y);
-      double fac2 = (th2high-th2low)/nbin;
-      double sq = 1.0;
-      int j = 0;
-      while (j < nbin && 0.0 < sq) {
-        double th2 = (j+0.5)*fac2+th2low;
-        double x2 = y*tan(th2)+x;
-        double sq = 1.0+x1*x1+x2*x2-2*(x1+x2+x1*x2);
-        itgerl += 2.0*(sqr(1-x1-x2)+8*x1*x2)*sqrt(sq)*fac1*fac2;
-        ++j;
-      }
-    }
-  }
-  itgerl *= 1/sqr(Constants::pi);
-  return itgerl;
-}
-
-// Taken from HERWIG 6510.
-std::pair<double,double> MEPP2Higgs::HwW2(double tau) const {
-  std::pair<double,double> ac;
-  double pi = Constants::pi;
-  if (tau > 1.0) {
-    ac.first = sqr(asin(1.0/sqrt(tau)));
-  } else if (tau < 1.0) {
-    double FNsqr = sqrt(1-tau);
-    double FNlog = log((1+FNsqr)/(1-FNsqr));
-    ac.first = -0.25 * (sqr(FNlog)-pi*pi);
-    ac.second = 0.5*pi*FNlog;
-  } else {
-    ac.first = sqr(0.5*pi);
-  }
-  return ac;
-}
-
-// Taken from HERWIG 6510 with simplifications.
-Energy MEPP2Higgs::calcLORunningWidth(Energy Mh) const {
-  Energy2 q2 = sqr(Mh);
-  Energy QCDLambda = theSM->LambdaQCD(q2);
-//  double alphaEM   = theSM->alphaEM(q2);
-  double alphaEM   = theSM->alphaEM();
-  double alphaS    = theSM->alphaS(q2);
-  double sw2       = theSM->sin2ThetaW();
-  Energy partialw[13] = {Energy()};
-
-  tPDPtr w = getParticleData(ParticleID::Wplus);
-  tPDPtr z = getParticleData(ParticleID::Z0);
-  Energy wmnom = w->mass();
-  Energy zmnom = z->mass();
-
-  double ncolour = theSM->Nc();
-  double Ca = ncolour;
-  const unsigned int minflavour = 1;
-  const unsigned int maxflavour = 6;
-  double pi = Constants::pi;
-
-// All calculation are being done for Monte-Carlo QCD Lambda, except Higgs width...
-  double bcoeff4=(11.*Ca-10.)/(12.*pi);
-  double kfac(Ca*(67./18.-sqr(pi)/6.)-25./9.);
-  QCDLambda /= exp(kfac/(4.*pi*bcoeff4))/sqrt(2.);
-
-// H->fermion pair
-  Energy qmass[7];
-  double nflavour = minflavour-1;
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    tcPDPtr quark = getParticleData(i);
-    qmass[i] = quark->mass();
-    if (2.0*qmass[i] < Mh) nflavour+=1.;
-  }
-  Energy2 GFermiINV = 8.*sw2*sqr(wmnom)/alphaEM;
-
-// quarks: partialw[1-6]
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    Energy mf = qmass[i];
-    double xf = sqr(mf/Mh);
-    if (xf < 0.25) partialw[i] = Ca*Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)/GFermiINV;
-  }
-
-// leptons: partialw[7-9]
-  for (unsigned int i = 0; i < 3; ++i) {
-    tcPDPtr lepton = getParticleData(11+2*i);
-    Energy mf = lepton->mass();
-    double xf = sqr(mf/Mh);
-    if (xf < 0.25) partialw[7+i] = Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)/GFermiINV;
-  }
-
-// H->W*W*/Z*Z*: partialw[10,11]
-  if (branchingopt > 1) {
-    double xfw = sqr(wmnom/Mh);
-    double xfz = sqr(zmnom/Mh);
-    if (2.0*wmnom < Mh) partialw[10] = Mh*Mh*Mh*sqrt(1-4.0*xfw)*(1-xfw+0.75*sqr(xfw))/2./GFermiINV;
-    if (2.0*zmnom < Mh) partialw[11] = Mh*Mh*Mh*sqrt(1-4.0*xfz)*(1-xfz+0.75*sqr(xfz))/4./GFermiINV;
-  }
-
-// H->gamma,gamma: partialw[12]
-  if (branchingopt > 2) {
-    double taut = sqr(2.0*qmass[ParticleID::t]/Mh);
-    double tauw = sqr(2.0*wmnom/Mh);
-    std::pair<double,double> ftaut = HwW2 (taut);
-    std::pair<double,double> ftauw = HwW2 (tauw);
-    double re = 4.0/3.0*(-2.0*taut*(1.0+(1.0-taut)*ftaut.first))+(2.0+3.0*tauw*(1+(2.0-tauw)*ftauw.first));
-    double im = 4.0/3.0*(-2.0*taut*(    (1.0-taut)*ftaut.second))+(   3.0*tauw*(  (2.0-tauw)*ftauw.second));
-    partialw[12] = sqr(alphaEM/pi)*Mh*Mh*Mh*(sqr(re)+ sqr(im))/32./GFermiINV;
-  }
-
-// H->gluon,gluon: partialw[13]
-  if (branchingopt > 3) {
-    double tau = sqr(2.0*qmass[ParticleID::t]/Mh);
-    std::pair<double,double> ftau = HwW2 (tau);
-    double re = 1+(1.0-tau)*ftau.first;
-    double im =   (1.0-tau)*ftau.second;
-    partialw[13] = sqr(alphaS/pi)*Mh*Mh*Mh*sqr(tau)*(sqr(re)+ sqr(im))/4./GFermiINV;
-  }
-
-  Energy higgswidth = Energy();
-  for (unsigned int i = 1; i < 13; ++i) {
-    higgswidth += partialw[i];
-  }
-  return higgswidth;
+  return me2/12.;
 }

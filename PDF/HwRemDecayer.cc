@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HwRemDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HwRemDecayer class.
 //
@@ -15,8 +22,6 @@
 
 using namespace Herwig;
 using namespace ThePEG;
-
-HwRemDecayer::~HwRemDecayer() {}
 
 int HwRemDecayer::HadronContent::getValence() {
   if(extracted != -1)
@@ -107,7 +112,7 @@ canHandle(tcPDPtr particle, tcPDPtr parton) const {
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
-  if(!theSplittingOnOff) return;
+  if(!theForcedSplitter) return;
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
 
   thestep = &step;
@@ -133,7 +138,6 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
 void HwRemDecayer::split(tPPtr parton, HadronContent & content, 
 			 tRemPPtr rem, Lorentz5Momentum & used, 
 			 PartnerMap &partners, bool first) {
-  
   tcPPtr beam(parent(rem));
 
   if(rem==theRems.first)
@@ -141,12 +145,9 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   else
     theX.second += parton->momentum().rho()/beam->momentum().rho();
 
-  double check;
-  if(rem==theRems.first) check = theX.first;
-  else check = theX.second;
+  double check = rem==theRems.first ? theX.first : theX.second;
 
-  if(1.0-check < 1e-3)     
-    throw ShowerHandler::ExtraScatterVeto();
+  if(1.0-check < 1e-3) throw ShowerHandler::ExtraScatterVeto();
 
   bool anti;
   Lorentz5Momentum lastp(parton->momentum());
@@ -158,7 +159,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
 
   Energy oldQ(theForcedSplitter->getQspac());
   
-  //cerr << "extracted parton:\n" << *parton;
   //do nothing if already valence quark
   if(first && content.isValenceQuark(parton)){ 
     //set the extracted value, because otherwise no RemID could be generated.
@@ -178,7 +178,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     partners.push_back(make_pair(parton, tPPtr()));
     return; 
   }
-
   if( lastID != ParticleID::g ){
     //do the gluon splitting
     // Create the new parton with its momentum and parent/child relationship set
@@ -195,7 +194,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     if(newSea->id() > 0) cl->addColoured(newSea);
     else cl->addAntiColoured(newSea);
 
-    //cerr << "sea quark from gluon splitting\n" << *newSea;
   }
 
   if(!first){
@@ -227,7 +225,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
 	theanti.second = anti;
 
       parton->colourLine(!anti)->addColoured(newValence, anti);
-      //cerr << "valence quark from valence splitting\n" << *newValence;
       return;
     }
     //The valence quark will always be connected to the sea quark with opposite sign
@@ -248,7 +245,6 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     if(particle->colourLine()) particle->colourLine()->addAntiColoured(newValence);
     if(particle->antiColourLine()) particle->antiColourLine()->addColoured(newValence);  
     
-    //cerr << "valence quark from valence splitting\n" << *newValence;
   }
   return;
 }
@@ -273,12 +269,11 @@ void HwRemDecayer::setRemMasses() const {
 			    theprocessed[1]->momentum()};
   ptotal=prem[0]+prem[1];
   ptotal.rescaleMass();
-
   // boost momenta to this frame
-  if(ptotal.m()< (pnew[0].m()+pnew[1].m())) throw Exception() 
-    << "Not enough energy in both remnants in " 
-    << "HwRemDecayer::setRemMasses() " 
-    << Exception::eventerror;
+  if(ptotal.m()< (pnew[0].m()+pnew[1].m())) 
+    throw Exception() << "Not enough energy in both remnants in " 
+		      << "HwRemDecayer::setRemMasses() " 
+		      << Exception::eventerror;
 
   Boost boostv(-ptotal.boostVector());
   ptotal.boost(boostv);
@@ -304,14 +299,14 @@ void HwRemDecayer::setRemMasses() const {
       ptemp.boost(btorest); 
       ptemp.boost(bfmrest); 
       theprocessed[ix]->children()[iy]->set5Momentum(ptemp); 
-    } 
+    }
   }
 }
 
 void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
   PartnerMap::const_iterator prev;
   tPPtr pnew, pold;
-  tColinePtr clnew, clold;
+  ColinePtr clnew, clold;
 
   assert(partners.size()>=2);
   for(PartnerMap::iterator it=partners.begin(); 
@@ -325,16 +320,23 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
       if(pold->hasAntiColour() != anti)
 	pold = prev->second;
     }
+    assert(pold);
 
     pnew = it->first;
     if(it->second){
       if(it->second->colourLine(!anti)) //look for the opposite colour
 	pnew = it->second;
     }
+    assert(pnew);
+
+
     //save the corresponding colour lines
     clold = pold->colourLine(anti);
     clnew = pnew->colourLine(!anti);
 
+    assert(clold);
+
+    
     if(clnew){//there is already a colour line (not the final diquark)
 
       if( (clnew->coloured().size() + clnew->antiColoured().size()) > 1 ){
@@ -343,12 +345,12 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
           //I don't use the join method, because potentially only (anti)coloured
           //particles belong to one colour line
 	  if(clold!=clnew){//procs are not already connected
-	    while ( clnew->coloured().size() ) {
+	    while ( !clnew->coloured().empty() ) {
 	      tPPtr p = clnew->coloured()[0];
 	      clnew->removeColoured(p);
 	      clold->addColoured(p);
 	    }
-	    while ( clnew->antiColoured().size() ) {
+	    while ( !clnew->antiColoured().empty() ) {
 	      tPPtr p = clnew->antiColoured()[0];
 	      clnew->removeAntiColoured(p);
 	      clold->addAntiColoured(p);
@@ -375,8 +377,8 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
 }
 
 void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
-  if(!theSplittingOnOff) return;
-
+  if(!theForcedSplitter) return;
+  
   try{
     split(partons.first, theContent.first, theRems.first, 
 	  theUsed.first, theMaps.first, first);
@@ -388,25 +390,60 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
   try{
     split(partons.second, theContent.second, theRems.second, 
 	  theUsed.second, theMaps.second, first);
-  }catch(ShowerHandler::ExtraScatterVeto){
+    // additional check for the remnants
+    // if can't do the rescale veto the emission
+    if(!first) {
+      Lorentz5Momentum pnew[2]=
+	{theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
+	 theRems.second->momentum() - theUsed.second - partons.second->momentum()};
+
+      pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
+      pnew[0].rescaleEnergy();
+      pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
+      pnew[1].rescaleEnergy();
+
+      for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
+	pnew[0] += theRems.first->children()[iy]->momentum();
+
+      for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
+	pnew[1] += theRems.second->children()[iy]->momentum();
+
+      Lorentz5Momentum ptotal=
+	theRems.first ->momentum()-partons.first ->momentum()+
+	theRems.second->momentum()-partons.second->momentum();
+
+      if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
+	if(partons.second->id() != ParticleID::g){
+	  if(partons.second==theMaps.second.back().first) 
+	    theUsed.second -= theMaps.second.back().second->momentum();
+	  else
+	    theUsed.second -= theMaps.second.back().first->momentum();
+	  
+	  thestep->removeParticle(theMaps.second.back().first);
+	  thestep->removeParticle(theMaps.second.back().second);
+	}
+	theMaps.second.pop_back();
+	throw ShowerHandler::ExtraScatterVeto();
+      }
+    }
+  }
+  catch(ShowerHandler::ExtraScatterVeto){
     //case of the first forcedSplitting worked fine
     theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
     theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();
+    
+    //case of the first interaction
+    //throw veto immediately, because event get rejected anyway.
+    if(first) throw ShowerHandler::ExtraScatterVeto();
 
+    //secondary interactions have to end on a gluon, if parton 
+    //was NOT a gluon, the forced splitting particles must be removed
     if(partons.first->id() != ParticleID::g){
-      if(partons.first==theMaps.first.back().first) {
-	if(!theMaps.first.back().second) throw Exception()
-	  << "theMaps.first.back().second does not exist in HwRemDecayer::doSplit()"
-	  << Exception::eventerror;
+      if(partons.first==theMaps.first.back().first) 
 	theUsed.first -= theMaps.first.back().second->momentum();
-      }
-      else {
-	if(!theMaps.first.back().first) throw Exception()
-	  << "theMaps.first.back().first does not exist in HwRemDecayer::doSplit()"
-	  << Exception::eventerror;
+      else
 	theUsed.first -= theMaps.first.back().first->momentum();
-      }
-      //remove a possible created quark from gluon splitting
+      
       thestep->removeParticle(theMaps.first.back().first);
       thestep->removeParticle(theMaps.first.back().second);
     }
@@ -416,7 +453,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
 }
 
 void HwRemDecayer::finalize(){
-  if(!theSplittingOnOff) return;
+  if(!theForcedSplitter) return;
 
   PPtr diquark;
   //Do the final Rem->Diquark or Rem->quark "decay"
@@ -445,11 +482,11 @@ ParticleVector HwRemDecayer::decay(const DecayMode &,
 
 
 void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
-  os << theForcedSplitter << theSplittingOnOff;
+  os << theForcedSplitter;
 }
 
 void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> theForcedSplitter >> theSplittingOnOff;
+  is >> theForcedSplitter;
 }
 
 ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
@@ -461,18 +498,8 @@ void HwRemDecayer::Init() {
     ("There is no documentation for the HwRemDecayer class");
 
   static Reference<HwRemDecayer,ForcedSplitting> interfaceForcedSplitting
-    ("ForcedSplitting",
-     "Object used for the forced splitting of the Remnant",
-     &HwRemDecayer::theForcedSplitter, false, false, true, false, false);
-
-  static Switch<HwRemDecayer,bool> interfaceSplittingOnOff
-    ("SplittingOnOff", "flag to switch the ForcedSplitting on or off, i.e. switch the entire class on or off",
-     &HwRemDecayer::theSplittingOnOff, 1, false, false);
-
-  static SwitchOption interfaceSplittingOnOff0
-    (interfaceSplittingOnOff,"ForcedSplitting-OFF","Forced Splitting is OFF", 0);
-  static SwitchOption interfaceSplittingOnOff1
-    (interfaceSplittingOnOff,"ForcedSplitting-ON","Forced Splitting is ON", 1);
-
+    ("ForcedSplitter",
+     "Object used for the forced splitting of the Remnant. "
+     "Set NULL to turn off forced splitting.",
+     &HwRemDecayer::theForcedSplitter, false, false, true, true, false);
 }
-

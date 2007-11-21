@@ -1,6 +1,8 @@
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la\
+SUBDIRS = BSM
+
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
                      HwMPIAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+HwAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
@@ -24,7 +26,8 @@ GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc 
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
+DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
@@ -34,7 +37,7 @@ HwAnalysis_la_LIBADD += $(HEPMCLIBS)
 endif
 
 
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 2:0:0
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:0:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.fh \
 BFragmentationAnalysisHandler.h BFragmentationAnalysisHandler.icc \
@@ -44,9 +47,13 @@ LEPEventShapes.cc LEPEventShapes.fh LEPEventShapes.h LEPEventShapes.icc \
 IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.fh \
 IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc \
 DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh \
-DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
+DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc \
+BELLECharmAnalysis.h BELLECharmAnalysis.icc \
+BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
+CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
+CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
 
-HwDecayAnalysis_la_LDFLAGS = -module
+HwDecayAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 HwDecayAnalysis_la_SOURCES = \
 TauTo2MesonAnalysis.h TauTo2MesonAnalysis.icc \
 TauTo2MesonAnalysis.fh TauTo2MesonAnalysis.cc \
@@ -91,16 +98,12 @@ BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
 a1DecayAnalysis.h a1DecayAnalysis.icc \
 a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
-BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
-BELLECharmAnalysis.h BELLECharmAnalysis.icc \
-BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
-CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
-CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
+BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
@@ -113,10 +116,19 @@ LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
 TopDalitzAnalysis.h TopDalitzAnalysis.icc
 
+pkglib_LTLIBRARIES += HwFieldAnalysis.la 
+HwFieldAnalysis_la_LDFLAGS = -module -version-info 3:0:0 
+HwFieldAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH) 
+HwFieldAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB) 
+HwFieldAnalysis_la_SOURCES = \
+RFieldAnalysis.cc RFieldAnalysis.fh \
+RFieldAnalysis.h RFieldAnalysis.icc 
+
+
 #code which also depends on ROOT
 if WANT_LIBROOT
 pkglib_LTLIBRARIES += HwUEAnalysis.la
-HwUEAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwUEAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwUEAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) $(ROOTINCLUDE)
 HwUEAnalysis_la_LIBADD = $(KTJETLIBS) $(ROOTLIBS)
 HwUEAnalysis_la_SOURCES = \
@@ -125,12 +137,7 @@ UEobservables.h UEobservables.icc
 endif
 endif
 
-HwBSMAnalysis_la_LDFLAGS = -module
-HwBSMAnalysis_la_SOURCES = \
-SpinCorrAnalysis.cc SpinCorrAnalysis.h \
-SpinCorrAnalysis.icc SpinCorrAnalysis.fh
-
-HwMPIAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMPIAnalysis_la_LIBADD =
 HwMPIAnalysis_la_SOURCES = \

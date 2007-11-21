@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusteringSelector.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusteringSelector_H
 #define HERWIG_ClusteringSelector_H
 //
@@ -25,6 +32,10 @@ using namespace ThePEG;
    */
   struct ClusteringScaleLess {
 
+    /**
+     * Return wether the first clustering scale is less than
+     * the second clustering scale.
+     */
     inline bool operator () (const pair<ClusteringPtr,tClusteringGuidePtr>& first,
 			     const pair<ClusteringPtr,tClusteringGuidePtr>& second)
     { return first.first->scale() < second.first->scale() ; }

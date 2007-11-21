@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Reweighter.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Reweighter_H
 #define HERWIG_Reweighter_H
 //
@@ -13,8 +20,8 @@
 #include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
 #include "JetMeasure.h"
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
-#include "Herwig++/Utilities/Histogram2.h"
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
+#include "Herwig++/Utilities/Histogram2/Histogram2.h"
 #endif
 
 namespace Herwig {
@@ -172,7 +179,7 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -237,7 +244,7 @@ private:
    */
   ShowerAlphaPtr _showerAlpha;
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
 
   /**
    * Map multiplicities to number of events

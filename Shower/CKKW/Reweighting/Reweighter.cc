@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Reweighter.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Reweighter class.
 //
@@ -61,12 +68,12 @@ void Reweighter::Init() {
      &Reweighter::_vetoHighest, false, false, false);
   static SwitchOption interfaceVetoHighestOn
     (interfaceVetoHighest,
-     "On",
+     "Yes",
      "Switch on vetoing highest multiplicity.",
      true);
   static SwitchOption interfaceVetoHighestOff
     (interfaceVetoHighest,
-     "Off",
+     "No",
      "Switch off vetoing highest multiplicity.",
      false);
 
@@ -142,14 +149,14 @@ void Reweighter::unresolvedCut (PPair in, PVector out) {
     generator()->log() << "found unresolved partons" << endl;
 #endif
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   if (_stats.find(out.size()) == _stats.end())
     _stats.insert(make_pair(out.size(),make_pair(0,0.)));
 #endif
 
   if (!_res) 
     throw Veto ();
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   else {
     _stats.find(out.size())->second.first += 1;
   }
@@ -169,7 +176,7 @@ double Reweighter::reweight (CascadeHistory history, unsigned int mult, unsigned
   generator()->log() << "CKKW weight is " << weight << endl;
 #endif
 
-#ifdef HERWIG_DEBUG_CKKW_REWEIGHTING
+#ifdef HERWIG_CHECK_CKKW_REWEIGHTING
   _stats.find(mult)->second.second += weight;
 
   unsigned int njets = mult-minmult;

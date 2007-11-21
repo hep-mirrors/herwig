@@ -1,0 +1,16 @@
+#####################################
+# Default PDF set
+#####################################
+
+# Handle leptons
+create ThePEG::LeptonLeptonPDF LeptonPDF LeptonLeptonPDF.so
+set LeptonPDF:RemnantHandler LeptonRemnants
+set /Herwig/Particles/e-:PDF LeptonPDF
+set /Herwig/Particles/e+:PDF LeptonPDF
+
+# Handle hadrons
+create Herwig::MRST MRST HwMRST.so
+setup MRST @HERWIG_PDF_DEFAULT@
+set MRST:RemnantHandler HadronRemnants
+set /Herwig/Particles/p+:PDF MRST
+set /Herwig/Particles/pbar-:PDF MRST

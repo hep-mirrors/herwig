@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// WeakCurrentDecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_WeakCurrentDecayConstructor_H
 #define HERWIG_WeakCurrentDecayConstructor_H
 //
@@ -252,14 +259,6 @@ struct ClassTraits<Herwig::WeakCurrentDecayConstructor>
   : public ClassTraitsBase<Herwig::WeakCurrentDecayConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::WeakCurrentDecayConstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * WeakCurrentDecayConstructor is implemented. It may also include several, space-separated,
-   * libraries if the class WeakCurrentDecayConstructor depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */

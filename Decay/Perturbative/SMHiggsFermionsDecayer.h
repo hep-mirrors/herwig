@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMHiggsFermionsDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHiggsFermionsDecayer_H
 #define HERWIG_SMHiggsFermionsDecayer_H
 //
@@ -8,6 +15,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 #include "SMHiggsFermionsDecayer.fh"
 
 namespace Herwig {
@@ -60,6 +68,13 @@ public:
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
 		     const ParticleVector & decay) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
 
 public:
 
@@ -116,8 +131,13 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-  //@}
 
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
 
 private:
 
@@ -144,6 +164,11 @@ private:
    * maximum weights for the different decay modes
    */
   vector<double> _maxwgt;
+
+  /**
+   *  Pointer to the width generator for the Higgs
+   */
+  SMHiggsWidthGeneratorPtr _hwidth;
 
 };
 

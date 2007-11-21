@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Partitioner.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 
 #ifndef HERWIG_Partitioner_H
 #define HERWIG_Partitioner_H
@@ -11,6 +18,7 @@ namespace Herwig {
 
   using namespace std;
 
+  /** Append one vector to another keeping the ordering */
   template<class T, class S>
   void appendvector (vector<T>& to, const vector<S>& from) {
     for (unsigned int f = 0; f < from.size(); ++f)

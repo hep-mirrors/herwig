@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusterFissioner.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterFissioner_H
 #define HERWIG_ClusterFissioner_H
 
@@ -250,8 +257,7 @@ protected:
    * cluster children is dictated by the parameter soft.
    */
   Energy drawChildMass(const Energy M, const Energy m1, const Energy m2, 
-		       const Energy m, const double exp,
-		       const InvEnergy b, const bool soft) const;
+		       const Energy m, const double exp, const bool soft) const;
 
   /**
    * Determines the kinematics of a heavy cluster decay C->C1 + C2

@@ -66,6 +66,7 @@ AC_DEFUN([HERWIG_CHECK_HEPMC],
 AC_REQUIRE([HERWIG_CHECK_CLHEP])
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
+CREATE_HEPMC="#create"
 HEPMCLIBS="-lHepMC"
 hepmclinkname=HepMC
 AC_ARG_WITH(hepmc,
@@ -112,12 +113,14 @@ if test "x$with_hepmc" != "xno"; then
 	LIBS="$oldLIBS"
 	LDFLAGS="$oldLDFLAGS"
 	CPPFLAGS="$oldCPPFLAGS"
+	CREATE_HEPMC="create"
 fi
 
 
 AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_hepmc" != "xno"])
 AC_SUBST(HEPMCINCLUDE)
 AC_SUBST(HEPMCLIBS)
+AC_SUBST(CREATE_HEPMC)
 AC_CONFIG_LINKS([Config/HepMCHelper.h:Config/HepMCHelper_$hepmclinkname.h])
 ])
 
@@ -182,6 +185,7 @@ KTJETPATH=""
 KTJETLIBS=""
 KTJETINCLUDE=""
 LOAD_KTJET=""
+CREATE_KTJET="#create"
 
 AC_MSG_CHECKING([for KtJet])
 
@@ -256,18 +260,95 @@ else
 	AC_SUBST(KTJETINCLUDE)
 	
 	LOAD_KTJET="read KtJetAnalysis.in"
+	CREATE_KTJET="create"
 	AC_SUBST(LOAD_KTJET)
+	AC_SUBST(CREATE_KTJET)
 fi
 
 AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
+])
+
+dnl ##### FastJet #####
+AC_DEFUN([HERWIG_CHECK_FASTJET],[
+
+FASTJETPATH=""
+FASTJETLIBS=""
+FASTJETINCLUDE=""
+LOAD_FASTJET=""
+
+AC_MSG_CHECKING([for FastJet])
+
+AC_ARG_WITH(fastjet,
+        AC_HELP_STRING([--with-fastjet=DIR],[location of FastJet installation]),
+        [],
+	[with_fastjet=no])
+
+if test "x$with_fastjet" = "xno"; then
+	AC_MSG_RESULT([not required])	
+else
+
+	AC_MSG_RESULT([required])
+	FASTJETPATH="$with_fastjet"
+
+	# check for libraries
+
+	AC_MSG_CHECKING([for FastJet library])
+
+	if test -z "$FASTJETLIB" ; then
+		FASTJETLIB="$FASTJETPATH/lib"
+	fi
+
+	if test -e "$FASTJETLIB/libfastjet.a"; then
+	  	AC_MSG_RESULT([found static library])
+
+		AC_MSG_CHECKING([for FastJet dynamic library])
+
+		if test ! -e "$FASTJETLIB/libfastjet.so"; then
+			AC_MSG_RESULT([not found, please create libfastjet.so from $FASTJETLIB/libfastjet.a])
+			AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
+		fi
+		AC_MSG_RESULT([$FASTJETLIB/libfastjet.so])
+	else
+		AC_MSG_RESULT([?])
+		AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
+	fi
+
+	FASTJETLIBS="-L$FASTJETLIB -lfastjet"
+
+	AC_SUBST(FASTJETLIBS)
+
+	# check for headers
+
+	AC_MSG_CHECKING([for FastJet headers])
+
+	if test -z "$FASTJETINCLUDE" ; then
+		FASTJETINCLUDE="$FASTJETPATH/include"
+	fi
+
+	if test -f "$FASTJETINCLUDE/fastjet/ClusterSequence.hh"; then
+		FASTJETINCLUDE="-I$FASTJETINCLUDE"
+	else
+		AC_MSG_RESULT([not found.])
+		AC_MSG_ERROR([No FastJet headers.])
+	fi
+
+	AC_MSG_RESULT([$FASTJETINCLUDE])
+
+	AC_SUBST(FASTJETINCLUDE)
+
+fi
+
+AM_CONDITIONAL(WANT_LIBFASTJET,[test ! -z "$FASTJETPATH"])
 ])
 
 dnl ##### ROOT #####
 AC_DEFUN([HERWIG_CHECK_ROOT],[
 
 ROOTPATH=""
+ROOTLIBPATH=""
 ROOTLIBS=""
 ROOTINCLUDE=""
+LOAD_ROOT=""
 
 AC_MSG_CHECKING([for ROOT])
 
@@ -290,6 +371,7 @@ else
     AC_MSG_CHECKING([for ROOTLIBS])
     if test -z "$ROOTLIBS"; then
       ROOTLIBS=`$ROOTPATH/bin/root-config --libs`
+      ROOTLIBPATH=`$ROOTPATH/bin/root-config --libdir`
     fi
     AC_MSG_RESULT([$ROOTLIBS])
 
@@ -300,7 +382,12 @@ else
     AC_MSG_RESULT([$ROOTINCLUDE])
 
     AC_SUBST(ROOTLIBS)
+    AC_SUBST(ROOTLIBPATH)
+    AC_SUBST(ROOTPATH)
     AC_SUBST(ROOTINCLUDE)
+
+	LOAD_ROOT="read Root.in"
+	AC_SUBST(LOAD_ROOT)
 
   else
     AC_MSG_ERROR([root-config not found...aborting])    
@@ -333,14 +420,14 @@ AC_ARG_WITH(pdf,
         [],
         [with_pdf=${prefix}]
         )
-HERWIG_PDF_DEFAULT=${with_pdf}/share/Herwig++PDF/mrst/1998/lo05a.dat
+HERWIG_PDF_DEFAULT=${with_pdf}/share/Herwig++PDF/mrst/2001/lo2002.dat
 
 if test -f "${HERWIG_PDF_DEFAULT}"; then
 	AC_MSG_RESULT([$with_pdf])
 	localPDFneeded=false
 else
 	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_DEFAULT=../PDF/mrst/1998/lo05a.dat
+	HERWIG_PDF_DEFAULT=PDF/mrst/2001/lo2002.dat
 	localPDFneeded=true
 fi
 AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])

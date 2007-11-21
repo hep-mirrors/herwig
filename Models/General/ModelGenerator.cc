@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ModelGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ModelGenerator class.
 //
@@ -9,6 +16,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -20,12 +28,14 @@ using namespace Herwig;
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << _theHPConstructor << _theDecayConstructor << _theParticles 
-     << _theRPConstructor << _theOffshell << _theOffsel;
+     << _theRPConstructor << _theOffshell << _theOffsel << _theBRnorm
+     << _theNpoints << _theIorder << _theBWshape;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _theHPConstructor >> _theDecayConstructor >> _theParticles
-     >> _theRPConstructor >> _theOffshell >> _theOffsel;
+     >> _theRPConstructor >> _theOffshell >> _theOffsel >> _theBRnorm
+     >> _theNpoints >> _theIorder >> _theBWshape;
 }
 
 bool ModelGenerator::preInitialize() const {
@@ -82,9 +92,62 @@ void ModelGenerator::Init() {
   static SwitchOption interfaceWhichOffshellAll
     (interfaceWhichOffshell,
      "All",
-     "Treat all particles in the specified in the DecayParticles list as off-shell",
+     "Treat all particles specified in the DecayParticles "
+     "list as off-shell",
      1);
+  
+  static Switch<ModelGenerator,bool> interfaceBRNormalize
+    ("BRNormalize",
+     "Whether to normalize the partial widths to BR*total width for an "
+     "on-shell particle",
+     &ModelGenerator::_theBRnorm, true, false, false);
+  static SwitchOption interfaceBRNormalizeNormalize
+    (interfaceBRNormalize,
+     "Yes",
+     "Normalize the partial widths",
+     true);
+  static SwitchOption interfaceBRNormalizeNoNormalize
+    (interfaceBRNormalize,
+     "No",
+     "Do not normalize the partial widths",
+     false);
 
+  static Parameter<ModelGenerator,int> interfacePoints
+    ("InterpolationPoints",
+     "Number of points to use for interpolation tables when needed",
+     &ModelGenerator::_theNpoints, 50, 5, 1000,
+     false, false, true);
+  
+  static Parameter<ModelGenerator,unsigned int> 
+    interfaceInterpolationOrder
+    ("InterpolationOrder", "The interpolation order for the tables",
+     &ModelGenerator::_theIorder, 1, 1, 5,
+     false, false, Interface::limited);
+
+  static Switch<ModelGenerator,int> interfaceBreitWignerShape
+    ("BreitWignerShape",
+     "Controls the shape of the mass distribution generated",
+     &ModelGenerator::_theBWshape, 0, false, false);
+  static SwitchOption interfaceBreitWignerShapeDefault
+    (interfaceBreitWignerShape,
+     "Default",
+     "Running width with q in numerator and denominator width factor",
+     0);
+  static SwitchOption interfaceBreitWignerShapeFixedWidth
+    (interfaceBreitWignerShape,
+     "FixedWidth",
+     "Use a fixed width",
+     1);
+  static SwitchOption interfaceBreitWignerShapeNoq
+    (interfaceBreitWignerShape,
+     "Noq",
+     "Use M rather than q in the numerator and denominator width factor",
+     2);
+  static SwitchOption interfaceBreitWignerShapeNoNumerator
+    (interfaceBreitWignerShape,
+     "NoNumerator",
+     "Neglect the numerator factors",
+     3);
 }
 
 void ModelGenerator::doinit() throw(InitException) {
@@ -98,37 +161,30 @@ void ModelGenerator::doinit() throw(InitException) {
     _theRPConstructor->constructResonances();
   }
   if( _theParticles.empty() ) return;
-  //create mass and width generators for the requested particles
-  PDVector::iterator pit = _theOffshell.begin();
-  PDVector::iterator pend = _theOffshell.end();
-  for(; pit != pend; ++pit) {
-    PDPtr inpart = *pit;
-    GenericMassGeneratorPtr mgen = dynamic_ptr_cast<GenericMassGeneratorPtr>
-      (generator()->preinitCreate("Herwig::GenericMassGenerator",
-				  inpart->fullName() + string("-MGen")));
-    generator()->preinitInterface(mgen, "Particle", "set",
-				  inpart->fullName());
-    generator()->preinitInterface(inpart, "Mass_generator","set",
-				  inpart->fullName() + string("-MGen"));
-    generator()->preinitInterface(mgen, "Initialize", "set",
-				  "Initialization");
 
-    BSMWidthGeneratorPtr wgen = dynamic_ptr_cast<BSMWidthGeneratorPtr>
-      (generator()->preinitCreate("Herwig::BSMWidthGenerator",
-				  inpart->fullName() + string("-WGen")));
-    generator()->preinitInterface(wgen, "Particle", "set",
-				  inpart->fullName());
-    generator()->preinitInterface(inpart, "Width_generator","set",
-				  inpart->fullName() + string("-WGen"));
-    generator()->preinitInterface(wgen, "Initialize", "set",
-				  "Initialization");
+  //create mass and width generators for the requested particles
+  PDVector::iterator pit, pend;
+  if( _theOffsel == 0 ) {
+    pit = _theOffshell.begin();
+    pend = _theOffshell.end();
   }
+  else {
+    pit = _theParticles.begin();
+    pend = _theParticles.end();
+  }
+  for(; pit != pend; ++pit)
+    createWidthGenerator(*pit);
+
   //create decayers and decaymodes (if necessary)
-  _theDecayConstructor->createDecayers(_theParticles);
+  if( _theDecayConstructor )
+    _theDecayConstructor->createDecayers(_theParticles);
+
+  // write out decays with spin correlations and set particles
+  // that have no decay modes to stable.
   string filename = CurrentGenerator::current().filename() + 
     string("-BSMModelInfo.out");
   ofstream ofs(filename.c_str(), ios::out|ios::app);
-  ofs << "# The decay modes listed below will have spin\n"
+  ofs << "# The two body decay modes listed below will have spin\n"
       << "# correlations included when they are generated.\n#\n#";
   pit = _theParticles.begin();
   pend = _theParticles.end();
@@ -165,4 +221,38 @@ void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
   
 }
 
+void ModelGenerator::createWidthGenerator(tPDPtr p) {
+  string wn = p->fullName() + string("-WGen");
+  string mn = p->fullName() + string("-MGen");
+  GenericMassGeneratorPtr mgen = dynamic_ptr_cast<GenericMassGeneratorPtr>
+    (generator()->preinitCreate("Herwig::GenericMassGenerator", mn));
+  BSMWidthGeneratorPtr wgen = dynamic_ptr_cast<BSMWidthGeneratorPtr>
+    (generator()->preinitCreate("Herwig::BSMWidthGenerator", wn));
 
+  //set the particle interface
+  generator()->preinitInterface(mgen, "Particle", "set", p->fullName());
+  generator()->preinitInterface(wgen, "Particle", "set", p->fullName());
+
+  //set the generator interfaces in the ParticleData object
+  generator()->preinitInterface(p, "Mass_generator","set", mn);
+  generator()->preinitInterface(p, "Width_generator","set", wn);
+  
+  //initialize the generators
+  generator()->preinitInterface(mgen, "Initialize", "set", "Yes");
+  generator()->preinitInterface(wgen, "Initialize", "set", "Yes");
+
+  string norm = _theBRnorm ? "Yes" : "No";
+  generator()->preinitInterface(wgen, "BRNormalize", "set", norm);
+  ostringstream os;
+  os << _theNpoints;
+  generator()->preinitInterface(wgen, "InterpolationPoints", "set", 
+				  os.str());
+  os.str("");
+  os << _theIorder;
+  generator()->preinitInterface(wgen, "InterpolationOrder", "set",
+				  os.str());
+  os.str("");
+  os << _theBWshape;
+  generator()->preinitInterface(mgen, "BreitWignerShape", "set", 
+				  os.str());
+}

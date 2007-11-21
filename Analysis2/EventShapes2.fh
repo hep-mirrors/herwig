@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EventShapes2 class.
+//
+#ifndef HERWIG_EventShapes2_FH
+#define HERWIG_EventShapes2_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class EventShapes2;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::EventShapes2,EventShapes2Ptr);
+
+}
+
+#endif

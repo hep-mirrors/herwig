@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GtoGGSplitFn.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GtoGGSplitFn class.
 //
@@ -41,12 +48,30 @@ double GtoGGSplitFn::ratioP(const double z, const Energy2, const IdList &,
   return sqr(1.-z*(1.-z));
 }
 
-double GtoGGSplitFn::invIntegOverP(const double r) const {
-  return 1./(1.+exp(-r/3.)); 
+double GtoGGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 1./(1.+exp(-r/3.)); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "GtoGGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 } 
 
-double GtoGGSplitFn::integOverP(const double z) const {
-  return 3.*log(z/(1.-z)); 
+double GtoGGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 3.*log(z/(1.-z)); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "GtoGGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
 void GtoGGSplitFn::colourConnection(tShowerParticlePtr parent,

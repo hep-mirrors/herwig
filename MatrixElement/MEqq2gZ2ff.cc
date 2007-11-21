@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEqq2gZ2ff.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEqq2gZ2ff class.
 //
@@ -217,12 +224,12 @@ void MEqq2gZ2ff::Init() {
      8);
   static SwitchOption interfaceProcessnu_mu
     (interfaceProcess,
-     "nu_mu",
+     "Nu_mu",
      "Only include nu_mu nu_mubar as outgoing particles",
      9);
   static SwitchOption interfaceProcessnu_tau
     (interfaceProcess,
-     "nu_tau",
+     "Nu_tau",
      "Only include nu_tau nu_taubar as outgoing particles",
      10);
   static SwitchOption interfaceProcessDown

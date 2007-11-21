@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEqq2W2ff.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEqq2W2ff class.
 //
@@ -186,12 +193,12 @@ void MEqq2W2ff::Init() {
       &MEqq2W2ff::_maxflavour, 5, 0, 5, false, false, true);
 
   static Switch<MEqq2W2ff,unsigned int> interfacePlusMinus
-    ("PlusMinus",
+    ("Wcharge",
      "Which intermediate W bosons to include",
      &MEqq2W2ff::_plusminus, 0, false, false);
   static SwitchOption interfacePlusMinusAll
     (interfacePlusMinus,
-     "All",
+     "Both",
      "Include W+ and W-",
      0);
   static SwitchOption interfacePlusMinusPlus

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DefaultReweighter.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DefaultReweighter class.
 //
@@ -86,12 +93,12 @@ void DefaultReweighter::Init() {
      &DefaultReweighter::_useMassive, true, false, false);
   static SwitchOption interfaceUseMassiveUseMassiveOn
     (interfaceUseMassive,
-     "On",
+     "Yes",
      "Use massive splitting functions",
      true);
   static SwitchOption interfaceUseMassiveUseMassiveOff
     (interfaceUseMassive,
-     "Off",
+     "No",
      "Do not use massive splitting functions",
      false);
 
@@ -102,12 +109,12 @@ void DefaultReweighter::Init() {
      &DefaultReweighter::_sudakovUnweight, true, false, false);
   static SwitchOption interfaceSudakovUnweightOn
     (interfaceSudakovUnweight,
-     "On",
+     "Yes",
      "Divide Sudakov weights by maximum weight",
      true);
   static SwitchOption interfaceSudakovUnweightOff
     (interfaceSudakovUnweight,
-     "Off",
+     "No",
      "Do not divide Sudakov weight by the maximum Sudakov weight",
      false);
 
@@ -138,7 +145,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
       if (abs(sudakovKey.first)<7 && sudakovKey.first<0) sudakovKey.first = -sudakovKey.first;
       sudakovKey.second = ((**p).pData().partonId.state == ClusteringParticleState::initial);
       bool gotone=false;
-      for(map<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
+      for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	  s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	if (!gotone) gotone = true;
 	double sweight = (*(s->second))((**p).productionScale(),(**p).splittingScale());
@@ -177,7 +184,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 	if (abs(sudakovKey.first)<7 && sudakovKey.first<0) sudakovKey.first = -sudakovKey.first;
 	sudakovKey.second = ((**p).pData().partonId.state == ClusteringParticleState::initial);
 	bool gotone=false;
-	for(map<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
+	for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	    s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	  if (!gotone) gotone = true;
 	  double sweight = (*(s->second))((**p).productionScale(),

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusteringParticle.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusteringParticle_H
 #define HERWIG_ClusteringParticle_H
 //
@@ -62,21 +69,45 @@ using namespace ThePEG;
    */
   struct PartonId {
 
+    /**
+     * The default constructor
+     */
     inline PartonId () : PDGId(0), state(ClusteringParticleState::undefined) { }
+
+    /**
+     * Construct giving PDG id and state
+     */
     inline explicit PartonId (long id, int st) : PDGId(id), state(st) { }
+
+    /**
+     * Lexicographic ordering
+     */
     inline bool operator < (const PartonId& x) const {
       if (PDGId == x.PDGId) return state < x.state;
       return PDGId < x.PDGId;
     }
+
+    /**
+     * Equality comparison
+     */
     inline bool operator == (const PartonId& x) const {
       return PDGId == x.PDGId && state == x.state;
     }
 
+    /**
+     * The PDG id
+     */
     long PDGId;
+
+    /**
+     * Wether the particle is incoming, intermediate or outgoing.
+     */
     int state;
   };
 
+  /** Persistent output of PartonId */
   inline PersistentOStream& operator << (PersistentOStream& os, const PartonId&);
+  /** Persistent input of PartonId */
   inline PersistentIStream& operator >> (PersistentIStream& is, PartonId&);
 
   /**\ingroup CKKW
@@ -109,6 +140,9 @@ using namespace ThePEG;
       return partonId < x.partonId;
     }
 
+    /**
+     * Equality comparison
+     */
     inline bool operator == (const ClusteringParticleData& x) const {
       return colour == x.colour && antiColour == x.antiColour
 	&& partonId.PDGId == x.partonId.PDGId && partonId.state == x.partonId.state;

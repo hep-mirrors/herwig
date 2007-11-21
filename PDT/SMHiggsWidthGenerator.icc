@@ -1,0 +1,30 @@
+// -*- C++ -*-
+//
+// SMHiggsWidthGenerator.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the SMHiggsWidthGenerator class.
+//
+
+namespace Herwig {
+
+inline SMHiggsWidthGenerator::SMHiggsWidthGenerator() 
+  : _widthopt(2), _mw(0.*GeV),_mz(0.*GeV),_gamw(0.*GeV),
+    _gamz(0.*GeV),_qmass(7,0.*GeV),_lmass(3,0.*GeV),
+    _sw2(0.), _ca(0.), _cf(0.),_qlast(0.*GeV)
+{}
+
+inline IBPtr SMHiggsWidthGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMHiggsWidthGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

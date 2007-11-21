@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HardProcessConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HardProcessConstructor class.
 //
@@ -17,7 +24,7 @@
 using namespace Herwig;
 
 HardProcessConstructor::HardProcessConstructor() : 
-  theNout(0), theNv(0),theProcesses(0), theAllDiagrams(true), 
+  theNout(0), theNv(0), theAllDiagrams(true), theDebug(false),
   the33bto33b(4, DVector(4, 0.)),  the33bpto33bp(3, DVector(3, 0.)),
   the33bto88(2, DVector(4, 0.)), the88to88(2, DVector(4, 0.)) {
   //set-up colour factor matrices
@@ -92,20 +99,27 @@ void HardProcessConstructor::doinit() throw(InitException) {
       << Exception::abortnow;
 }
 
-bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
-  vector<tcPDPair>::size_type psize = theIncPairs.size();
-  if(psize == 0) return false;
-  bool found(false);
-  for(vector<tcPDPair>::size_type i = 0; i < psize; ++i) {
-    long id1 = theIncPairs[i].first->id();
-    long id2 = theIncPairs[i].second->id();
-    if( (ppair.first->id() == id1 && ppair.second->id() == id2) ||
-	(ppair.first->id() == id2 && ppair.second->id() == id1) ) {
-      found = true;
-      break;
+namespace {
+  // Helper functor for find_if in duplicate function.
+  class SameIncomingAs {
+  public:
+    SameIncomingAs(tcPDPair in) : a(in.first->id()), b(in.second->id())  {}
+    bool operator()(tcPDPair ppair) const {
+      long id1(ppair.first->id()), id2(ppair.second->id());
+      if( ( id1 == a && id2 == b ) || ( id1 == b && id2 == a ) )
+	return true;
+      else
+	return false;
     }
-  }
-  return found;
+  private:
+    long a, b;
+  };
+}
+
+bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
+  vector<tcPDPair>::const_iterator it = 
+    find_if( theIncPairs.begin(), theIncPairs.end(), SameIncomingAs(ppair) );
+  return it != theIncPairs.end(); 
 }
 
 void HardProcessConstructor::persistentOutput(PersistentOStream & os) const {
@@ -141,19 +155,47 @@ void HardProcessConstructor::Init() {
      &HardProcessConstructor::theOutgoing, -1, false, false, true, false);
  
   static Switch<HardProcessConstructor,bool> interfaceIncludeAllDiagrams
-    ("QCDandEW",
+    ("IncludeEW",
      "Switch to decide which diagrams to include in ME calc.",
      &HardProcessConstructor::theAllDiagrams, true, false, false);
   static SwitchOption interfaceIncludeAllDiagramsOff
     (interfaceIncludeAllDiagrams,
-     "Off",
+     "No",
      "Only include QCD diagrams",
      false);
   static SwitchOption interfaceIncludeAllDiagramsOn
    (interfaceIncludeAllDiagrams,
-     "On",
+     "Yes",
     "Include EW+QCD.",
     true);
+
+  static Switch<HardProcessConstructor,bool> interfaceDebugME
+    ("DebugME",
+     "Print comparison with analytical ME",
+     &HardProcessConstructor::theDebug, false, false, false);
+  static SwitchOption interfaceDebugMEYes
+    (interfaceDebugME,
+     "Yes",
+     "Print the debug information",
+     true);
+  static SwitchOption interfaceDebugMENo
+    (interfaceDebugME,
+     "No",
+     "Do not print the debug information",
+     false);
+}
+
+namespace {
+  // Helper functor for find_if below.
+  class SameProcessAs {
+  public:
+    SameProcessAs(const HPDiagram & diag) : a(diag) {}
+    bool operator()(const HPDiagram & b) const {
+      return a.sameProcess(b);
+    }
+  private:
+    HPDiagram a;
+  };
 }
 
 void HardProcessConstructor::constructDiagrams() {
@@ -196,27 +238,33 @@ void HardProcessConstructor::constructDiagrams() {
       }
     }
   }
-  // We now have a vector of diagrams that need to be grouped together
-  HPDVector::iterator ita, itb;
-  for(ita = theProcesses.begin(); ita != theProcesses.end(); ) {
-    HPDVector group;
-    HPDiagram current = *ita;
-    group.push_back(current);
-    for(itb = ita + 1; itb != theProcesses.end();) {
-      if( (*itb).sameProcess(current) ) {
-	group.push_back(*itb);
-	theProcesses.erase(itb);
-      }
-      else
-	++itb;
+  //need to find all of the diagrams that relate to the same process
+  //first insert them into a map which uses the '<' operator 
+  //to sort the diagrams 
+  multimap<HPDiagram,HPDiagram > grouped;
+  HPDVector::iterator dit = theProcesses.begin();
+  HPDVector::iterator dend = theProcesses.end();
+  for( ; dit != dend; ++dit) {
+    grouped.insert(make_pair(*dit, *dit));
+  }
+  assert( theProcesses.size() == grouped.size() );
+  theProcesses.clear();
+  typedef multimap<HPDiagram, HPDiagram>::const_iterator map_iter;
+  map_iter it = grouped.begin();
+  map_iter iend = grouped.end();
+  while( it != iend ) {
+    pair< map_iter, map_iter> range = grouped.equal_range(it->first);
+    map_iter itb = range.first;
+    HPDVector process;
+    for( ; itb != range.second; ++itb ) {
+      process.push_back(itb->second);
     }
-    theProcesses.erase(ita);
-    if( !group.empty() ) {
-      createMatrixElement(group);
-      group.clear();
-    }
+    createMatrixElement(process);
+    process.clear();
+    it = range.second;
   }
   
+
 }
 
 void HardProcessConstructor::
@@ -298,20 +346,17 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 void HardProcessConstructor::makeFourPointDiagrams(long parta, long partb,
 						   long partc, VBPtr vert) {
   PDSet ext = search(vert, parta, incoming, partb,incoming, partc, outgoing);
-  if(ext.size() > 0) {
-    IDPair in(parta, partb);
-    for(PDSet::const_iterator iter=ext.begin(); iter!=ext.end();
-	++iter) {
-      HPDiagram nhp;
-      nhp.incoming = in; 
-      nhp.outgoing = make_pair(partc, (*iter)->id());
-      nhp.vertices = make_pair(vert, vert);
-      nhp.channelType = HPDiagram::fourPoint;
-      fixFSOrder(nhp);
-      if( !duplicate(nhp, theProcesses) ) {
-	assignToCF(nhp);
-	theProcesses.push_back(nhp);
-      }
+  if( ext.empty() ) return;
+  IDPair in(parta, partb);
+  for(PDSet::const_iterator iter=ext.begin(); iter!=ext.end();
+      ++iter) {
+    HPDiagram nhp(in,make_pair(partc, (*iter)->id()));
+    nhp.vertices = make_pair(vert, vert);
+    nhp.channelType = HPDiagram::fourPoint;
+    fixFSOrder(nhp);
+    if( !duplicate(nhp, theProcesses) ) {
+      assignToCF(nhp);
+      theProcesses.push_back(nhp);
     }
   }
 }
@@ -321,9 +366,7 @@ HardProcessConstructor::makeDiagrams(IDPair in, long out1, const PDSet & out2,
 				     PDPtr inter, HPDiagram::Channel chan, 
 				     VBPair vertexpair, BPair cross) {
   for(PDSet::const_iterator it = out2.begin(); it != out2.end(); ++it) {
-    HPDiagram nhp;
-    nhp.incoming  = in;
-    nhp.outgoing = make_pair(out1, (*it)->id());
+    HPDiagram nhp( in,make_pair(out1, (*it)->id()) );
     nhp.intermediate = inter;
     nhp.vertices = vertexpair;
     nhp.channelType = chan;
@@ -334,14 +377,12 @@ HardProcessConstructor::makeDiagrams(IDPair in, long out1, const PDSet & out2,
       theProcesses.push_back(nhp);
     }
   }
-
 }
 
 set<PDPtr> 
 HardProcessConstructor::search(VBPtr vertex, long part1, direction d1, 
 			       long part2, direction d2, direction d3) {
-  if(vertex->getNpoint() != 3)
-    return PDSet();
+  if(vertex->getNpoint() != 3) return PDSet();
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
   PDVector ext;
@@ -379,8 +420,7 @@ set<PDPtr>
 HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
 			       long part2, direction d2, long part3, direction d3,
 			       direction d4) {
-  if(vertex->getNpoint() != 4)
-    return PDSet();
+  if(vertex->getNpoint() != 4) return PDSet();
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
   if(d3 == incoming && getParticleData(part3)->CC()) part3 = -part3;
@@ -467,6 +507,15 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
     }
     return;
   }
+
+//   if( psc->iSpin() == psd->iSpin() ) {
+//     long id3(psc->id()), id4(psd->id());
+//     if( ( id3 > 0 && id4 > 0 ) || ( id3 < 0 && id4 < 0 ) ) {
+//       if( id4 < id3 ) swap(diag.outgoing.first, diag.outgoing.second);
+//       if(diag.channelType == HPDiagram::tChannel) 
+// 	diag.ordered.second = !diag.ordered.second;
+//     }
+//   }
 
 }
 
@@ -593,32 +642,10 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 
 void 
 HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
+  if ( process.empty() ) return;
   if( HwDebug::level == HwDebug::full ) {
     for(HPDVector::size_type d = 0; d < process.size(); ++d) {
-      HPDiagram diag = process[d];
-      cout << getParticleData(diag.incoming.first)->PDGName() << ","
-	   << getParticleData(diag.incoming.second)->PDGName() << "->";
-      if(diag.intermediate)
-	cout << diag.intermediate->PDGName() << "->";
-    
-      cout << getParticleData(diag.outgoing.first)->PDGName() << ","
-	   << getParticleData(diag.outgoing.second)->PDGName()
-	   << "  channel " << diag.channelType;
-      if(diag.channelType == HPDiagram::tChannel) {
-	cout << "  ordering " << diag.ordered.first << " " 
-	     << diag.ordered.second << "   ";
-	for(unsigned int cf = 0; cf < diag.colourFlow.size(); ++cf) 
-	  cout << "(" << diag.colourFlow[cf].first << "," 
-	       <<diag.colourFlow[cf].second << ")  ";
-	cout << "\n\n";
-      }
-      else {
-	cout << "   ";
-	for(unsigned int cf = 0; cf < diag.colourFlow.size(); ++cf) 
-	  cout << "(" << diag.colourFlow[cf].first << "," 
-	       <<diag.colourFlow[cf].second << ")  ";
-	cout << "\n\n";
-      }
+      cout << process[d] << '\n';
     }
     cout << "---------------------------" << endl;  
   }
@@ -627,19 +654,12 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   extpart[1] = getParticleData(process[0].incoming.second);
   extpart[2] = getParticleData(process[0].outgoing.first);
   extpart[3] = getParticleData(process[0].outgoing.second);
-  string objectname ("/Defaults/MatrixElements/");
+
+  string objectname ("/Herwig/MatrixElements/");
   string classname = MEClassname(extpart, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
       (generator()->preinitCreate(classname, objectname));
-  if(matrixElement) {
-    unsigned int ncf(0);
-    vector<DVector> cfactors = getColourFactors(extpart, ncf);
-    matrixElement->setProcessInfo(process, cfactors, ncf);
-    generator()->preinitInterface(theSubProcess, "MatrixElements", 
-				  theSubProcess->MEs().size(),
-				  "insert", matrixElement->fullName()); 
-  }
-  else 
+  if( !matrixElement ) {
     throw HardProcessConstructorError() 
       << "createMatrixElement - No matrix element object could be created for "
       << "the process " 
@@ -647,8 +667,16 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
       << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
       << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
       << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
-      << ".  No class for this spin-structure exists! \n"
+      << ".  Constructed class name: \"" << classname << "\""
       << Exception::warning;
+    return;
+  }
+  unsigned int ncf(0);
+  vector<DVector> cfactors = getColourFactors(extpart, ncf);
+  matrixElement->setProcessInfo(process, cfactors, ncf, theDebug);
+  generator()->preinitInterface(theSubProcess, "MatrixElements", 
+				  theSubProcess->MEs().size(),
+				  "insert", matrixElement->fullName()); 
 }
 
 vector<DVector> HardProcessConstructor::
@@ -693,17 +721,25 @@ getColourFactors(const tcPDVector & extpart, unsigned int & ncf) const {
   return scf;
 }
 
+namespace {
+  // Helper functor for find_if in duplicate function.
+  class SameDiagramAs {
+  public:
+    SameDiagramAs(const HPDiagram & diag) : a(diag) {}
+    bool operator()(const HPDiagram & b) const {
+      return a == b;
+    }
+  private:
+    HPDiagram a;
+  };
+}
+
 bool HardProcessConstructor::duplicate(const HPDiagram & diag, 
 				       const HPDVector & group) const {
-  unsigned int Nd = group.size(), ix(0);
-  if(Nd == 0) return false;
-  bool copy(false);
-  do {
-    if( group[ix] == diag ) copy = true;
-    ++ix;
-  }
-  while(copy == false && ix < Nd);
-  return copy;
+  //find if a duplicate diagram exists
+  HPDVector::const_iterator it = 
+    find_if(group.begin(), group.end(), SameDiagramAs(diag));
+  return it != group.end();
 } 
 
 string HardProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 

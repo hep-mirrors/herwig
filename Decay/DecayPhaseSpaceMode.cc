@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DecayPhaseSpaceMode.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DecayPhaseSpaceMode class.
 //
@@ -340,10 +347,10 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
       for(ix=0;ix<particles.size();++ix) 
 	CurrentGenerator::log()  << "  " << particles[ix]->PDGName();
       CurrentGenerator::log() << "  " << _maxweight << " " << _ntry 
-			      << " is too inefficient vetoing event \n";
+			      << " is too inefficient for the particle "
+			      << inpart << "vetoing the decay \n";
       particles.clear();
       throw Veto();
-      return particles;
     }
   }
   catch (Veto) {
@@ -421,8 +428,8 @@ void DecayPhaseSpaceMode::doinit() throw(InitException) {
   }
   tcGenericWidthGeneratorPtr wtemp;
   for(unsigned int ix=0;ix<_extpart.size();++ix) {
-    _massgen[ix]=
-      dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
+    assert(_extpart[ix]);
+    _massgen[ix]= dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
     if(ix>0) {
       wtemp=
 	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());

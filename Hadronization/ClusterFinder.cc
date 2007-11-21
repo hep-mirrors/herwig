@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ClusterFinder.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ClusterFinder class.
 //
@@ -99,8 +106,6 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
 	    quarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,qp)); 
 	  }
 	  else if(iElement != 3) {
-	    /// \todo fix runerror, then remove asserts
-	    assert(false);
 	    throw Exception() << "Colour connections fail in the hadronization for " 
 			      << **pit << "in ClusterFinder::formClusters"
 			      << " for a coloured particle."
@@ -109,7 +114,6 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
 	  }
 	}
 	else {
-	  assert(false);
 	  throw Exception() << "Colour connections fail in the hadronization for " 
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " a coloured particle"
@@ -147,7 +151,6 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
 	    aQuarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,aqp));
 	  }
 	  else if( iElement !=3) {
-	    assert(false);
 	    throw Exception() << "Colour connections fail in the hadronization for "
 			      << **pit << "in ClusterFinder::formClusters for"
 			      << " an anti-coloured particle."
@@ -156,7 +159,6 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
 	  }
 	}
 	else {
-	  assert(false);
 	  throw Exception() << "Colour connections fail in the hadronization for " 
 			    << **pit << "in ClusterFinder::formClusters for"
 			    << " an anti-coloured particle"

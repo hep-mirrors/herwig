@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// DecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_DecayConstructor_H
 #define HERWIG_DecayConstructor_H
 //
@@ -18,6 +25,8 @@ using namespace ThePEG;
  * function to create the decayers and decaymodes in the 
  * NBodyDecayConstructor
  * 
+ * @see \ref DecayConstructorInterfaces "The interfaces"
+ * defined for DecayConstructor. 
  * @see Interfaced
  */
 class DecayConstructor: public Interfaced {
@@ -126,10 +135,6 @@ struct ClassTraits<Herwig::DecayConstructor>
   : public ClassTraitsBase<Herwig::DecayConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::DecayConstructor"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the DecayConstructor class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */

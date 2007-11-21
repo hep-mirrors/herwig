@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SSCFSVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SSCFSVertex class.
 //
@@ -17,7 +24,7 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {
   vector<int> first,second,third;
-  long chargino[2] = {1000024, 1000035};
+  long chargino[2] = {1000024, 1000037};
   for(unsigned int ic = 0; ic < 2; ++ic) {
     //quarks 
     for(unsigned int ix = 1; ix < 7; ++ix) {
@@ -158,8 +165,8 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     _id2last = ism;
     _id3last = isc;
     // determine chargino and sfermion eigenstates
-    unsigned int alpha(isc/1000000 - 1), ch(0);
-    if( ichg == 1000037 ) ch = 1;
+    unsigned int alpha(isc/1000000 - 1);
+    unsigned int ch = (ichg == 1000024 ) ? 0 : 1;
 
     Complex ul1 = (*_umix)(ch,0);
     Complex ul2 = (*_umix)(ch,1);
@@ -167,7 +174,8 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     Complex vl2 = (*_vmix)(ch,1);
 
     if( ism >= 11 && ism <= 16 ) {
-      double y = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_cb;
+      long lept = ( ism % 2 == 0 ) ? ism - 1 : ism;
+      double y = _theSS->mass(q2, getParticleData(lept))/_mw/sqrt(2)/_cb;
       if( ism == 12 || ism == 14 ) {
 	_leftlast = Complex(0., 0.);
 	if( alpha == 0 )
@@ -205,7 +213,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
       else {
 	if( alpha == 0 ) {
-	  _leftlast = (ism % 2 == 0) ? -yu*conj(vl2) : yd*conj(ul2);
+	  _leftlast = (ism % 2 == 0) ? -yu*conj(vl2) : -yd*conj(ul2);
 	  _rightlast = (ism % 2 == 0) ? ul1 : vl1;
 	}
 	else {
@@ -215,7 +223,6 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
     }
   }//end of coupling calculation
-  
   //determine the helicity order of the vertex
   tcPDPtr incoming;
   switch( iinc ) {

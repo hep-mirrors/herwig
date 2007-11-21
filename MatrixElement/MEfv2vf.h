@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEfv2vf.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEfv2vf_H
 #define HERWIG_MEfv2vf_H
 //
@@ -72,6 +79,14 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param sub Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+private:
+
   /** @name Functions to calculate the Helicity MatrixElement.*/
   //@{
   /**
@@ -80,11 +95,13 @@ public:
    * @param vecIn A vector of VectorWaveFunctions for the incoming boson
    * @param spbOut A vector of SpinorBarWaveFunctions for the outgoing fermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
+   * @param mc If the outgoing vector is massless or not
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
-  fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn, VBVector & vecOut, 
-	    SpinorBarVector & spbOut, double & mesq) const;
+  fv2vfHeME(const SpinorVector & spIn,  const VBVector & vecIn, 
+	    const VBVector & vecOut, bool mc,
+	    const SpinorBarVector & spbOut, double & mesq) const;
 
   /**
    * Calculate the matrix element for an incoming anti-fermion
@@ -92,12 +109,23 @@ public:
    * @param vecIn A vector of VectorWaveFunctions for the incoming boson
    * @param spOut A vector of Spinors for the outgoing antifermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
+   * @param mc If the outgoing vector is massless or not
    * @param mesq The matrix element squared
   */
   ProductionMatrixElement
-  fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn, VBVector & vecOut, 
-	    SpinorVector & spOut, double & mesq) const;
+  fbv2vfbHeME(const SpinorBarVector & spbIn,  const VBVector & vecIn, 
+	      const VBVector & vecOut, bool mc,
+	      const SpinorVector & spOut, double & mesq) const;
   //@}
+
+protected:
+  
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
 
 public:
 
@@ -209,14 +237,6 @@ struct ClassTraits<Herwig::MEfv2vf>
   : public ClassTraitsBase<Herwig::MEfv2vf> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEfv2vf"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEfv2vf is implemented. It may also include several, space-separated,
-   * libraries if the class MEfv2vf depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "GeneralHardME.so"; }
 };
 
 /** @endcond */

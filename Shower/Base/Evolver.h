@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Evolver.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Evolver_H
 #define HERWIG_Evolver_H
 //
@@ -22,6 +29,24 @@
 namespace Herwig {
 
 using namespace ThePEG;
+
+#ifdef HERWIG_CHECK_VETOES
+struct vetoed_points {
+
+  inline vetoed_points ()
+    : timelike (), spacelike(), spacelike_decay () { }
+
+  inline vetoed_points (const vetoed_points&)
+    : timelike (), spacelike(), spacelike_decay () { }
+
+  ofstream timelike;
+
+  ofstream spacelike;
+
+  ofstream spacelike_decay;
+  
+};
+#endif
 
 /** \ingroup Shower
  * Here is the documentation of the Evolver class.
@@ -439,11 +464,6 @@ private:
   unsigned int _hardVetoMode; 
 
   /**
-   * IntrinsicpT switch
-   */
-  unsigned int _intrinsicpT;
-
-  /**
    * rms intrinsic pT of Gaussian distribution
    */
   Energy _iptrms;
@@ -530,6 +550,12 @@ private:
    * Wether or not CKKW applies to the current tree
    */
   bool _theUseCKKW;
+
+#ifdef HERWIG_CHECK_VETOES
+
+  vetoed_points _vetoed_points;
+
+#endif
 
   //@}
 

@@ -1,7 +1,16 @@
+// -*- C++ -*-
+//
+// UA5Handler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #include <ThePEG/Repository/UseRandom.h>
 #include "UA5Handler.h"
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Interface/Switch.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Handlers/DecayHandler.h>
@@ -11,7 +20,7 @@
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Utilities/Timer.h"
+#include "ThePEG/Utilities/Throw.h"
 #include <cassert>
 
 using namespace std;
@@ -22,7 +31,7 @@ using namespace Herwig;
 UA5Handler::UA5Handler() 
   : _n1(9.11), _n2(0.115), _n3(-9.5), _k1(0.029), _k2(-0.104),
     _m1(0.4*GeV), _m2(2./GeV), _p1(5.2/GeV), _p2(3.0/GeV), _p3(5.2/GeV),
-    _probSoft(1.0), _enhanceCM(1.), _maxtries(300)
+    _probSoft(1.0), _enhanceCM(1.), _maxtries(300), _needWarning(true)
 {}  
 
 // Saving things into run file
@@ -31,7 +40,7 @@ void UA5Handler::persistentOutput(PersistentOStream &os) const {
      << _n1 << _n2 << _n3 << _k1 << _k2 
      << ounit(_m1,GeV) << ounit(_m2,InvGeV)
      << ounit(_p1,InvGeV) << ounit(_p2,InvGeV) << ounit(_p3,InvGeV) 
-     << _probSoft << _enhanceCM << _maxtries;
+     << _probSoft << _enhanceCM << _maxtries << _needWarning;
 }
 
 // Reading them back in, in the same order
@@ -40,7 +49,7 @@ void UA5Handler::persistentInput(PersistentIStream &is, int) {
      >> _n1 >> _n2 >> _n3 >> _k1 >> _k2 
      >> iunit(_m1,GeV) >> iunit(_m2,InvGeV) 
      >> iunit(_p1,InvGeV) >> iunit(_p2,InvGeV) >> iunit(_p3,InvGeV) 
-     >> _probSoft >> _enhanceCM >> _maxtries;
+     >> _probSoft >> _enhanceCM >> _maxtries >> _needWarning;
 }
 
 // We must define this static member for ThePEG
@@ -145,8 +154,22 @@ void UA5Handler::Init() {
      &UA5Handler::_maxtries, 300, 100, 1000,
      false, false, Interface::limited);
 
-}
+  static Switch<UA5Handler,bool> interfaceWarning
+    ("Warning",
+     "Whether to issue a warning if UA5 and MPI are on at the same time.",
+     &UA5Handler::_needWarning, true, false, false);
+  static SwitchOption interfaceWarningYes
+    (interfaceWarning,
+     "Yes",
+     "Warn if UA5 and MPI are on at the same time.",
+     true);
+  static SwitchOption interfaceWarningNo
+    (interfaceWarning,
+     "No",
+     "Print no warnings.",
+     false);
 
+}
 void UA5Handler::insertParticle(PPtr particle,StepPtr step,bool all) const
 { 
   if(all) step->addDecayProduct(particle);
@@ -231,7 +254,7 @@ void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge) 
   // for a stable particle just add the charge
   else if(parent->data().stable())
     {
-      int charge=parent->data().charge()/eplus;
+      int charge = parent->data().iCharge()/3;
       totalcharge  +=    charge ;
       numbercharge +=abs(charge);
     }
@@ -320,7 +343,26 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 			const Hint &) throw(Veto,Stop,Exception) {
-  Timer<10000> timer("UA5Handler::handle()");
+  // Warn if the event has multiple scatters. 
+  // If so, UA5 often has been left on by accident.
+  if (_needWarning 
+      && ch.currentEvent()->primaryCollision()->subProcesses().size() > 1) {
+    static const string message = "\n\n"
+      "warning:\n"
+      "  The use of UA5Handler for events with multiple hard subprocesses\n"
+      "  is probably not intended as it applies two different models\n" 
+      "  of the underlying event at the same time.\n" 
+      "  UA5Handler can be disabled in the input files with\n"
+      "  'set stdCluHadHandler:UnderlyingEventHandler NULL'\n";
+    // here we should really ask the event handler 
+    // for the name of the hadronization handler.
+    cerr << message 
+	 << "\n  This message can be disabled with\n  'set "
+	 << fullName() << ":Warning No'\n\n";
+    Throw<Exception>() << message << Exception::warning;
+    _needWarning = false;
+  }
+
   // create a new step for the products
   StepPtr newstep = newStep();
   // Constants that should not need changing.
@@ -488,7 +530,6 @@ void UA5Handler::generateMomentum(tClusterPtr clu1, tClusterPtr clu2,
 				  const ClusterVector &clusters, 
 				  Energy CME, const Lorentz5Momentum & cm) 
   const throw(Veto,Exception) {
-  Timer<10001> timer("UA5Handler::generateMomentum()");
   // begin with the cylindrical phase space generation described in the paper of Jadach
   generateCylindricalPS(clusters, CME);
   // boost momentum of incoming cluster along z axis to cluster cmf frame

@@ -13,7 +13,12 @@ MEPP2HiggsJet.h MEPP2HiggsJet.icc MEPP2HiggsJet.fh MEPP2HiggsJet.cc\
 MEPP2GammaGamma.h MEPP2GammaGamma.icc MEPP2GammaGamma.fh MEPP2GammaGamma.cc \
 MEPP2QQ.h MEPP2QQ.icc MEPP2QQ.fh MEPP2QQ.cc\
 MEPP2Higgs.h MEPP2Higgs.icc MEPP2Higgs.fh MEPP2Higgs.cc
-HwME_la_LDFLAGS = -module -version-info 2:1:0
+HwME_la_LDFLAGS = -module -version-info 3:0:0
+
+pkglib_LTLIBRARIES += HwMEFast.la
+HwMEFast_la_SOURCES = \
+MEQCD2to2Fast.h MEQCD2to2Fast.icc MEQCD2to2Fast.fh MEQCD2to2Fast.cc
+HwMEFast_la_LDFLAGS = -module -version-info 3:0:0
 
 noinst_LTLIBRARIES = libHwGeneralME.la
 libHwGeneralME_la_SOURCES = \
@@ -32,7 +37,7 @@ pkglib_LTLIBRARIES += HwMEWZJet.la
 HwMEWZJet_la_SOURCES = \
 MEPP2WJet.cc  MEPP2WJet.fh  MEPP2WJet.h  MEPP2WJet.icc  \
 MEPP2ZJet.cc  MEPP2ZJet.fh  MEPP2ZJet.h  MEPP2ZJet.icc
-HwMEWZJet_la_LDFLAGS = -module -version-info 1:0:0
+HwMEWZJet_la_LDFLAGS = -module -version-info 2:0:0
 
 pkglib_LTLIBRARIES += HwNasonME.la
 HwNasonME_la_SOURCES = \

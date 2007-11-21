@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusterDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterDecayer_H
 #define HERWIG_ClusterDecayer_H
 
@@ -134,10 +141,10 @@ private:
   /**
    * Whether a cluster decays along the perturbative parton direction.
    */
-  int _clDirLight;
-  int _clDirBottom;
-  int _clDirCharm;
-  int _clDirExotic;
+  bool _clDirLight;
+  bool _clDirBottom;
+  bool _clDirCharm;
+  bool _clDirExotic;
 
    /**
    * The S parameter from decayIntoTwoHadrons

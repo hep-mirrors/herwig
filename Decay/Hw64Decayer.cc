@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Hw64Decayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Hw64Decayer class.
 //
@@ -35,7 +42,7 @@ void Hw64Decayer::Init() {
   static SwitchOption interfaceMECodeFreeVA
     (interfaceMECode,
      "FreeVA",
-     " Free Massless (V-A)*(V-A) ME",
+     "Free Massless (V-A)*(V-A) ME",
      100);
   static SwitchOption interfaceMECodeBoundVA
     (interfaceMECode,

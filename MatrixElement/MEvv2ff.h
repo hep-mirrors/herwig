@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEvv2ff.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEvv2ff_H
 #define HERWIG_MEvv2ff_H
 //
@@ -6,10 +13,25 @@
 //
 
 #include "GeneralHardME.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ProductionMatrixElement.h"
 #include "MEvv2ff.fh"
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
 
 /**
  * This class is designed to implement the matrix element for the 
@@ -22,6 +44,17 @@ using namespace ThePEG;
  * 
  */
 class MEvv2ff: public GeneralHardME {
+
+public:
+  
+  /** A Vector of VectorWaveFunction objects. */
+  typedef vector<VectorWaveFunction> VBVector;
+
+  /** A vector of SpinorBarWaveFunction objects. */
+  typedef vector<SpinorWaveFunction> SpinorVector;
+
+  /** A vector of SpinorBarWaveFunction objects. */
+  typedef vector<SpinorBarWaveFunction> SpinorBarVector;
 
 public:
 
@@ -53,6 +86,30 @@ public:
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
   //@}
+
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param sub Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+private:
+
+  /**
+   * Calculate the value of the matrix element 
+   */
+  ProductionMatrixElement vv2ffME(const VBVector & v1, const VBVector & v2,
+				  const SpinorBarVector & sbar,
+				  const SpinorVector & sp, double & me2) const;
+  
+protected:
+
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
   
 public:
 
@@ -79,6 +136,20 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 
 protected:
 
@@ -110,6 +181,26 @@ private:
    * In fact, it should not even be implemented.
    */
   MEvv2ff & operator=(const MEvv2ff &);
+
+private:
+  
+  /** @name Dynamically casted vertices. */
+  //@{
+  /**
+   * Intermediate fermion 
+   */
+  vector<pair<FFVVertexPtr, FFVVertexPtr> > theFerm;
+
+  /**
+   * Intermediate vector
+   */
+  vector<pair<VVVVertexPtr, FFVVertexPtr> > theVec;
+  
+  /**
+   * Intermediate tensor
+   */
+  vector<pair<VVTVertexPtr, FFTVertexPtr> > theTen;
+  //@}
 };
 
 }
@@ -135,14 +226,6 @@ struct ClassTraits<Herwig::MEvv2ff>
   : public ClassTraitsBase<Herwig::MEvv2ff> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEvv2ff"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEvv2ff is implemented. It may also include several, space-separated,
-   * libraries if the class MEvv2ff depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

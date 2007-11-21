@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ShowerAlphaQCD.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ShowerAlphaQCD class.
 //
@@ -43,17 +50,17 @@ void ShowerAlphaQCD::Init() {
      "Behaviour of AlphaS in the NP region",
      &ShowerAlphaQCD::_asType, 1, false, false);
   static SwitchOption intAsTypeZero
-    (intAsType, "AsTypeZero","zero below Q_min", 1);
+    (intAsType, "Zero","zero below Q_min", 1);
   static SwitchOption intAsTypeConst
-    (intAsType, "AsTypeConst","const as(qmin) below Q_min", 2);
+    (intAsType, "Const","const as(qmin) below Q_min", 2);
   static SwitchOption intAsTypeLin
-    (intAsType, "AsTypeLin ","growing linearly below Q_min", 3);
+    (intAsType, "Linear","growing linearly below Q_min", 3);
   static SwitchOption intAsTypeQuad
-    (intAsType, "AsTypeQuad","growing quadratically below Q_min", 4);
+    (intAsType, "Quadratic","growing quadratically below Q_min", 4);
   static SwitchOption intAsTypeExx1
-    (intAsType, "AsTypeExx1 ", "quad from AlphaMaxNP down to as(Q_min)", 5);
+    (intAsType, "Exx1", "quadratic from AlphaMaxNP down to as(Q_min)", 5);
   static SwitchOption intAsTypeExx2
-    (intAsType, "AsTypeExx2 ", "const = AlphaMaxNP below Q_min", 6);
+    (intAsType, "Exx2", "const = AlphaMaxNP below Q_min", 6);
 
   // default such that as(qmin) = 1 in the current parametrization.
   // min = Lambda3

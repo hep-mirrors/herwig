@@ -1,29 +1,28 @@
+// -*- C++ -*-
+//
+// Herwig++.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #include "Herwig++/Utilities/HerwigRun.h"
 #include "versionstring.h"
 
 int main(int argc, char * argv[]) {
   setVersionString();
+  // HerwigRun's constructor does all the work
   try {
-    Herwig::HerwigRun hw(argc,argv);
-    if (hw.isRunMode() && hw.preparedToRun()) {
-      int step = hw.getN() >= 100 ? hw.getN() / 100 : 1 ;
-      for(int i = 0; i<hw.getN(); i++) {
-	hw.generateEvent();
-	if ((i+1) % step == 0)
-	  std::cout << "Generated event: " << i+1 
-		    << " of " << hw.getN() << "\r" << std::flush;
-      }
-      hw.eventGenerator()->finalize();
-    } else if(hw.isRunMode()) {
-      std::cerr << "Error: Expecting a run but there is no EventGenerator!\n";
-    }
-
+    Herwig::HerwigRun hw(argc, argv);
+    return hw.good() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   catch ( std::exception & e ) {
     std::cerr << e.what() << '\n';
     return EXIT_FAILURE;
   }
-  std::cout << std::endl;
-  return EXIT_SUCCESS;
+  catch (...) {
+    std::cerr << __FILE__ << ": Unknown exception caught.\n";
+    return EXIT_FAILURE;
+  }
+  
 }
-

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DrellYanMECorrection.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the DrellYanMECorrection class.
 //
@@ -156,8 +163,9 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
     Lorentz5Momentum pquark(pnew[0]),panti(pnew[1]),pgluon(pnew[2]);
     if(iemit==2) swap(pquark,panti);
     // ensure gluon can be put on shell
-    if (pgluon.e() < getParticleData(ParticleID::g)->constituentMass())
-      return;
+    Lorentz5Momentum ptest(pgluon);
+    if(ptest.boost(-(pquark+panti).boostVector()).e() < 
+       getParticleData(ParticleID::g)->constituentMass()) return;
     // create the new gluon
     PPtr newg= getParticleData(ParticleID::g)->produceParticle(pgluon);
     PPtr newq,newa;
@@ -239,7 +247,9 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
     Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
     if(iemit==2) swap(pin,pout);
     // ensure outgoing quark can be put on-shell
-    if(pout.e()<incoming[1]->dataPtr()->constituentMass()) return;
+    Lorentz5Momentum ptest(pout);
+    if(ptest.boost(-(pin+pgluon).boostVector()).e() < 
+       incoming[1]->dataPtr()->constituentMass()) return;
     // create the new gluon
     PPtr newg  = getParticleData(ParticleID::g)->produceParticle(pgluon);
     // create the new outgoing quark
@@ -302,7 +312,9 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
     Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
     if(iemit==2) swap(pin,pout);
     // ensure outgoing antiquark can be put on-shell
-    if(pout.e()<incoming[0]->dataPtr()->constituentMass()) return;
+    Lorentz5Momentum ptest(pout);
+    if(ptest.boost(-(pin+pgluon).boostVector()).e() < 
+       incoming[0]->dataPtr()->constituentMass()) return;
     // create the new gluon
     PPtr newg  = getParticleData(ParticleID::g)->produceParticle(pgluon);
     // create the new outgoing antiquark

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// Decay_QtildaShowerKinematics1to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Decay_QtildaShowerKinematics1to2_H
 #define HERWIG_Decay_QtildaShowerKinematics1to2_H
 //
@@ -58,6 +65,10 @@ public:
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
+   * @param theLast The particle to update
+   * @param iopt The option for the momentum reconstruction 
+   * - 0 is in the rest frame of the pair of reference vectors
+   * - 1 is in the rest frame of the p vector
    * @param mass The mass to be used, if less than zero on-shell
    */
   virtual void reconstructLast(const tShowerParticlePtr theLast,

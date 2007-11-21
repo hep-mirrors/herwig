@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SSSDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SSSDecayer class.
 //
@@ -69,7 +76,7 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				      outb.second);
   double c2 = norm(_theSSSPtr->getNorm());
   Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
-  int cola(outa.first->iColour()), colb(outa.first->iColour());
+  int cola(outa.first->iColour()), colb(outb.first->iColour());
   if( abs(cola) == 3 && abs(colb) == 3)
     pWidth *= 3.;
   if( outa.first->id() == outb.first->id() )

@@ -122,7 +122,7 @@ bool pTSudakov::guessTimeLike(Energy2 &t,Energy2 tmin) {
   zLimits(limits);
   // guess values of t and z
   t = guesst(told,0,1.,_ids[1]==_ids[2]); 
-  z(guessz());
+  z(guessz(0));
   // actual values for z-limits
   _pt2 = t -_masssquared[1]*(1.-z())-_masssquared[2]*z();
   _q2  = _pt2/(z()*(1.-z()))+_masssquared[1]/z()+_masssquared[2]/(1.-z());

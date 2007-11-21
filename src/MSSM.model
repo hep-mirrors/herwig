@@ -1,0 +1,92 @@
+##################################################
+# Common setup for the MSSM
+#
+# See LHC-MSSM.in or ILC-MSSM.in for example usage
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-MSSM.in
+#
+###################################################
+
+mkdir /Herwig/NewPhysics/MSSM
+cd /Herwig/NewPhysics/MSSM
+
+create Herwig::MSSM Model HwSusy.so
+
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+# SM vertices
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
+set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+# MSSM feynman rules
+set Model:Vertex/WSFSF /Herwig/Vertices/BSM/MSSM_WSS
+set Model:Vertex/NFSF /Herwig/Vertices/BSM/MSSM_NFS
+set Model:Vertex/GFSF /Herwig/Vertices/BSM/MSSM_GFS
+set Model:Vertex/HSFSF /Herwig/Vertices/BSM/MSSM_HSS
+set Model:Vertex/CFSF /Herwig/Vertices/BSM/MSSM_CFS
+set Model:Vertex/GSFSF /Herwig/Vertices/BSM/MSSM_GSS
+set Model:Vertex/GGSQSQ /Herwig/Vertices/BSM/MSSM_GGSS
+set Model:Vertex/GSGSG /Herwig/Vertices/BSM/MSSM_GGOGO
+set Model:Vertex/NNZ /Herwig/Vertices/BSM/MSSM_NNZ
+set Model:Vertex/CCZ /Herwig/Vertices/BSM/MSSM_CCZ
+set Model:Vertex/CNW /Herwig/Vertices/BSM/MSSM_CNW
+set Model:Vertex/SSFFH /Herwig/Vertices/BSM/MSSM_FFH
+set Model:Vertex/GOGOH /Herwig/Vertices/BSM/MSSM_GOGOH
+set Model:Vertex/SSWWH /Herwig/Vertices/BSM/MSSM_WWH
+set Model:Vertex/SSWHH /Herwig/Vertices/BSM/MSSM_WHH
+set Model:Vertex/HHH /Herwig/Vertices/BSM/MSSM_HHH
+set Model:Vertex/SSHGG /Herwig/Vertices/BSM/MSSM_HGG
+
+# Set up the shower for the coloured objects
+cd /Herwig/Shower
+
+create Herwig::PhitoPhiGSplitFn PhitoPhiGSplitFn
+create Herwig::GluinotoGluinoGSplitFn GluinotoGluinoGSplitFn
+
+cp SudakovCommon PhitoPhiGSudakov
+set PhitoPhiGSudakov:SplittingFunction PhitoPhiGSplitFn
+set PhitoPhiGSudakov:PDFmax 35.0
+
+cp SudakovCommon GluinotoGluinoGSudakov
+set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
+
+set SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~s_L->~s_L,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~c_L->~c_L,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~b_1->~b_1,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~t_1->~t_1,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~u_R->~u_R,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~d_R->~d_R,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~s_R->~s_R,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~c_R->~c_R,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
+set SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
+
+cd /Herwig/EventHandlers
+insert LEPHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
+insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
+
+cd /Herwig/NewPhysics
+# Set up the bsm framework
+set MSSM/Model:ModelGenerator NewModel
+
+cd /Herwig/Generators
+# Choose MSSM over SM
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model

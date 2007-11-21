@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// LEPJetAnalysis.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the LEPJetAnalysis class.
 //
@@ -8,6 +15,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Utilities/HerwigVersion.h"
 
 using namespace Herwig;
 
@@ -27,7 +35,7 @@ void LEPJetAnalysis::analyze(tEventPtr event, long, int, int ) {
   for(int j = 0; j<entr_fr; j++) {
     ev.findJetsY(_yc_frac[j]);
     int Nfound = ev.getNJets();
-    *_njet[j] += double(Nfound);
+    _njet[j] += double(Nfound);
     switch (Nfound) {	 
     case 0: break; 
     case 1:  _frac1[j]++; break;
@@ -281,8 +289,8 @@ void LEPJetAnalysis::dofinish() {
     output << "CASE      \" X X     X   X\"\n";
     output << "TITLE LEFT \"R0" << ix << "1\"\n";
     output << "CASE       \" X X\"\n";
-    if (Histogram::versionstring != "") {
-      output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+    if (HerwigVersion::versionstring != "") {
+      output << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
       output << "CASE        \"\"\n";
     }
     output << "SET AXIS BOTTOM OFF\n";
@@ -379,8 +387,8 @@ void LEPJetAnalysis::dofinish() {
   output << "CASE      \"  X    X\"\n";
   output << "TITLE LEFT \" <N0jets1>\"\n";
   output << "CASE       \"   X    X \"\n";
-  if (Histogram::versionstring != "") {
-    output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+  if (HerwigVersion::versionstring != "") {
+    output << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
     output << "CASE        \"\"\n";
   }
   output << "SET AXIS BOTTOM OFF\n";
@@ -389,7 +397,7 @@ void LEPJetAnalysis::dofinish() {
   output << "SET SCALE X LOG Y LOG\n";
   output << "SET LIMITS Y 2 16\n";
   for(unsigned int ix=1;ix<37;++ix) {
-    output << _yc_frac[ix] << "\t" << _njet[ix]->mean() << "\n";
+    output << _yc_frac[ix] << "\t" << _njet[ix].mean() << "\n";
   }
   output << "JOIN RED\n";
   for(unsigned int ix=0;ix<36;++ix) {
@@ -414,7 +422,7 @@ void LEPJetAnalysis::dofinish() {
   output << "join yellow fill yellow\n";
   for(unsigned int ix=1;ix<37;++ix) {
     output << _yc_frac[ix] << "\t" 
-	   << (_njet[ix]->mean()-njetdata[ix-1])/njetdata[ix-1] << "\n";
+	   << (_njet[ix].mean()-njetdata[ix-1])/njetdata[ix-1] << "\n";
   }
   output << "JOIN\n";
   output << "SET WINDOW X 1.6 8 Y 1.6 2.5\n";
@@ -429,16 +437,16 @@ void LEPJetAnalysis::dofinish() {
   npoint=0;
   for(unsigned int ix=1;ix<37;++ix) {
     double point = njetdata[ix-1]>0.&&njeterror[ix-1]>0. ? 
-      (_njet[ix]->mean()-njetdata[ix-1])/
-      sqrt(sqr(njeterror[ix-1])+_njet[ix]->var()/_njet[ix]->numberOfPoints()) : 0.;
+      (_njet[ix].mean()-njetdata[ix-1])/
+      sqrt(sqr(njeterror[ix-1])+_njet[ix].mean_var()) : 0.;
     if(point!=0.) ++npoint;
     if(point<ymin) ymin=point;
     if(point>ymax) ymax=point;
     output << _yc_frac[ix] << "\t" << point << "\n";
     if(point!=0.) {
       if(njeterror[ix-1]>0.05*njetdata[ix-1]) chisq+=sqr(point);
-      else chisq+=sqr(_njet[ix]->mean()-njetdata[ix-1])/
-	(sqr(0.05*njetdata[ix-1])+_njet[ix]->var()/_njet[ix]->numberOfPoints());
+      else chisq+=sqr(_njet[ix].mean()-njetdata[ix-1])/
+	(sqr(0.05*njetdata[ix-1])+_njet[ix].mean_var());
     }
   }
   output << "set limits y " << ymin << " " << ymax << "\n";
@@ -538,8 +546,8 @@ void LEPJetAnalysis::dofinish() {
     output << "CASE      \" X X     X   X\"\n";
     output << "TITLE LEFT \"D0" << ix << "1\"\n";
     output << "CASE       \" X X\"\n";
-    if (Histogram::versionstring != "") {
-      output << "TITLE RIGHT \"" << Histogram::versionstring << "\"\n";
+    if (HerwigVersion::versionstring != "") {
+      output << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
       output << "CASE        \"\"\n";
     }
     output << "SET AXIS BOTTOM OFF\n";
@@ -733,7 +741,7 @@ void LEPJetAnalysis::doinitrun() {
   _frac5.resize(entr_fr,0);
   _frac6.resize(entr_fr,0);
   _njet.resize(entr_fr);
-  for(int ix=0;ix<entr_fr;++ix) _njet[ix]=new_ptr(Statistic());
+  _njet = vector<Statistic>(entr_fr);
   const int ddentr = 16;
   double d2dbins[] = {0.000, 0.010, 0.020, 0.030, 0.040, 
 		      0.050, 0.060, 0.080, 0.100, 0.120, 

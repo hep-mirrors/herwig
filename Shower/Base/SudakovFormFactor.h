@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SudakovFormFactor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SudakovFormFactor_H
 #define HERWIG_SudakovFormFactor_H
 //
@@ -295,8 +302,12 @@ protected:
   //@{
   /**
    * Value of the energy fraction for the veto algorithm
+   * @param iopt The option for calculating z
+   * - 0 is final-state
+   * - 1 is initial-state for the hard process
+   * - 2 is initial-state for particle decays
    */
-  inline double guessz () const;
+  inline double guessz (unsigned int iopt) const;
 
   /**
    *  Value of the scale for the veto algorithm
@@ -407,6 +418,11 @@ protected:
    *  Method to set the maximum PDF weight
    */
   inline void pdfMax(double);
+
+  /**
+   *  Get the option for the PDF factor
+   */
+  inline unsigned int PDFFactor() const;
   //@}
 
 private:
@@ -445,6 +461,13 @@ private:
    * interpolation tables if needed
    */
   vector<IdList> _particles;
+
+  /**
+   *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
+   */
+  unsigned _pdffactor;
+
+private:
 
   /**
    * Member variables to keep the shower kinematics information

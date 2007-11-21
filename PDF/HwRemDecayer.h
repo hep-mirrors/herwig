@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HwRemDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HwRemDecayer_H
 #define HERWIG_HwRemDecayer_H
 //
@@ -15,7 +22,16 @@
 namespace Herwig {
 using namespace ThePEG;
 /**
- * Here is the documentation of the HwRemDecayer class.
+ * Here is the documentation of the HwRemDecayer class. This
+ * class is responsible for the decay of the remnants. Additional 
+ * secondary scatter have to be evolved backwards to a gluon, the
+ * first/hard interaction has to be evolved back to a valence quark.
+ * This is necessary because the Cluster Hadronization can only cope
+ * with diquarks as remnants. All this is generated inside this class,
+ * which main methods are then called by the ShowerHandler. The kinematics
+ * of the splittings is calculated inside ForcedSplitting.
+ *
+ * \author Manuel B\"ahr
  *
  * @see \ref HwRemDecayerInterfaces "The interfaces"
  * defined for HwRemDecayer.
@@ -24,25 +40,8 @@ class HwRemDecayer: public RemnantDecayer {
 
 public:
 
+  /** Typedef to store information about colour partners */
   typedef vector<pair<tPPtr, tPPtr> > PartnerMap;
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline HwRemDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline HwRemDecayer(const HwRemDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~HwRemDecayer();
-  //@}
 
 public:
 
@@ -109,8 +108,18 @@ public:
    */
   void initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step);
 
+  /**
+   * Perform the acual forced splitting.
+   * @param partons is a pair of ThePEG::Particle pointers which store the final 
+   * partons on which the shower ends.
+   * @param first is a flage wether or not this is the first or a secondary interation
+   */
   void doSplit(pair<tPPtr, tPPtr> partons, bool first);
 
+  /**
+   * Perform the final creation of the diquarks. Set the remnant masses and do 
+   * all colour connections.
+   */
   void finalize();
 
 protected:
@@ -129,11 +138,6 @@ protected:
    */
   inline virtual IBPtr fullclone() const;
   //@}
-
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
 
 private:
 
@@ -201,11 +205,13 @@ private:
   /**
    * Do the forced Splitting of the Remnant with respect to the 
    * extracted parton \a parton.
-   * @param parton = PPtr to the parton going into the subprocess
+   * @param parton = PPtr to the parton going into the subprocess.
    * @param content = HadronContent struct to keep track of flavours.
+   * @param rem = Pointer to the ThePEG::RemnantParticle.
    * @param used = Momentum vector to keep track of remaining momenta.
-   * @param partners = vector of pairs filled with tPPtr to the particles 
+   * @param partners = Vector of pairs filled with tPPtr to the particles 
    * which should be colour connected.
+   * @param first = Flag for the first interaction.
    */
   void split(tPPtr parton, HadronContent & content, tRemPPtr rem, 
 	     Lorentz5Momentum & used, PartnerMap & partners, bool first);
@@ -262,12 +268,6 @@ private:
    * in the Remnant-Remnant CMF after all have been decayed.
    */
   pair<RemPPtr, RemPPtr> theRems;
-
-  /**
-   * Flag to completely turn off ForcedSplittings. (just for testing)
-   */
-  bool theSplittingOnOff;
-
 };
 
 }
@@ -308,8 +308,5 @@ struct ClassTraits<Herwig::HwRemDecayer>
 }
 
 #include "HwRemDecayer.icc"
-#ifndef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "HwRemDecayer.tcc"
-#endif
 
 #endif /* HERWIG_HwRemDecayer_H */

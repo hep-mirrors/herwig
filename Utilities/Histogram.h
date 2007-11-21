@@ -1,12 +1,19 @@
 // -*- C++ -*-
+//
+// Histogram.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_Histogram_H
 #define HERWIG_Histogram_H
 //
 // This is the declaration of the Histogram class.
 //
-
-#include "Statistic.h"
 #include "Histogram.fh"
+#include "ThePEG/Interface/Interfaced.h"
+#include "Statistic.h"
 #include <string>
 
 // workaround for OS X bug where isnan() and isinf() are hidden
@@ -22,13 +29,13 @@ using namespace ThePEG;
    * They can be combined using the '|' operator, e.g. 'Frame | Ylog'
    */
   namespace HistogramOptions {
-    const unsigned int None      = 0;
-    const unsigned int Frame     = 1;
-    const unsigned int Errorbars = 1 << 1;
-    const unsigned int Xlog      = 1 << 2;
-    const unsigned int Ylog      = 1 << 3;
-    const unsigned int Smooth    = 1 << 4;
-    const unsigned int Rawcount  = 1 << 5;
+    const unsigned int None      = 0;      /**< No options */
+    const unsigned int Frame     = 1;      /**< Plot on new frame */
+    const unsigned int Errorbars = 1 << 1; /**< Plot error bars */
+    const unsigned int Xlog      = 1 << 2; /**< log scale for x-axis */
+    const unsigned int Ylog      = 1 << 3; /**< log scale for y-axis */
+    const unsigned int Smooth    = 1 << 4; /**< smooth the line */
+    const unsigned int Rawcount  = 1 << 5; /**< don't normalize to unit area */
   }
 
 /**
@@ -236,13 +243,6 @@ private:
    * In fact, it should not even be implemented.
    */
   Histogram & operator=(const Histogram &);
-
-public:
-
-  /**
-   *  Version of the code to add to Histogram
-   */
-  static string versionstring;
 
 private:
 

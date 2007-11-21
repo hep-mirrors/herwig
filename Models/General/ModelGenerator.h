@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ModelGenerator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ModelGenerator_H
 #define HERWIG_ModelGenerator_H
 //
@@ -18,6 +25,8 @@ using namespace ThePEG;
  * This class is designed to store the particles in some model and 
  * then call the appropriate function to setup the model
  *
+ * @see \ref ModelGeneratorInterfaces "The interfaces"
+ * defined for ModelGenerator.
  * @see Interfaced 
  */
 class ModelGenerator: public Interfaced {
@@ -110,6 +119,14 @@ private:
    */
   void writeDecayModes(ofstream & ofs, tcPDPtr parent) const;
 
+  /**
+   * Create mass and width generators to simulate off-shell effects
+   * @param p A pointer to the ParticleData object to create
+   * the width and mass generators for.
+   */
+  void createWidthGenerator(tPDPtr p);
+			   
+
 private:
   
   /**
@@ -132,6 +149,8 @@ private:
    */
   RPConstructorPtr _theRPConstructor;
 
+  /** @name Width and Mass Generator variables. */
+  //@{
   /**
    * The particles to create MassGenerator and WidthGenerators  
    */
@@ -143,6 +162,28 @@ private:
    * _theOffshell vector.
    */
   int _theOffsel;
+  
+  /**
+   * Whether to normalise the partial widths to BR*Total width for 
+   * an on-shell particle
+   */
+  bool _theBRnorm;
+
+  /**
+   * The number of points to include in the interpolation table
+   */
+  int _theNpoints;
+  
+  /**
+   * The order for the interpolation
+   */
+  unsigned int _theIorder;
+
+  /**
+   * The shape of the Breit-Wigner used in the mass generation
+   */
+  int _theBWshape;
+  //@}
 };
 
 }

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ResonantProcessConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ResonantProcessConstructor class.
 //
@@ -9,6 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
 #include "Herwig++/MatrixElement/GeneralHardME.h"
 
 using namespace Herwig;
@@ -34,23 +42,37 @@ void ResonantProcessConstructor::Init() {
      "a provided set of intermediate particles");
   
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOffshell
-    ("intermediates",
+    ("Intermediates",
      "A vector of offshell particles for resonant diagrams",
      &ResonantProcessConstructor::theIntermediates, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceIncoming
-    ("incoming",
+    ("Incoming",
      "A vector of incoming particles for resonant diagrams",
      &ResonantProcessConstructor::theIncoming, -1, false, false, true, 
      false);
 
   static RefVector<ResonantProcessConstructor, ParticleData> interfaceOutgoing
-    ("outgoing",
+    ("Outgoing",
      "A vector of outgoin particles for resonant diagrams",
      &ResonantProcessConstructor::theOutgoing, -1, false, false, true, 
      false);
 
+  static Switch<ResonantProcessConstructor,bool> interfaceDebugME
+    ("DebugME",
+     "Print comparison with analytical ME",
+     &ResonantProcessConstructor::theDebug, false, false, false);
+  static SwitchOption interfaceDebugMEYes
+    (interfaceDebugME,
+     "Yes",
+     "Print the debug information",
+     true);
+  static SwitchOption interfaceDebugMENo
+    (interfaceDebugME,
+     "No",
+     "Do not print the debug information",
+     false);
 }
 
 void ResonantProcessConstructor::constructResonances() {
@@ -132,9 +154,7 @@ makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const PDSet & out,
   for(PDSet::const_iterator ita = out.begin(); ita != out.end(); ++ita) {
     if( abs(outa) == abs(offshell->id()) || 
 	abs((*ita)->id()) == abs(offshell->id())) continue;
-    HPDiagram newdiag;
-    newdiag.incoming = in;
-    newdiag.outgoing  = make_pair(outa, (*ita)->id()); 
+    HPDiagram newdiag(in,make_pair(outa, (*ita)->id()) );
     newdiag.intermediate = offshell;
     newdiag.vertices = vertpair;
     newdiag.channelType = HPDiagram::sChannel;
@@ -206,26 +226,27 @@ createMatrixElement(const HPDiagram & diag) const {
   extpart[1] = getParticleData(diag.incoming.second);
   extpart[2] = getParticleData(diag.outgoing.first);
   extpart[3] = getParticleData(diag.outgoing.second);
-  string objectname ("/Defaults/MatrixElements/");
+  string objectname ("/Herwig/MatrixElements/");
   string classname = MEClassname(extpart, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
     (generator()->preinitCreate(classname, objectname));
-  if(matrixElement) {
-    matrixElement->setProcessInfo(HPDVector(1, diag),
-				  colourFactor(extpart), 1);
-    generator()->preinitInterface(theSubProcess, "MatrixElements", 
-				  theSubProcess->MEs().size(),
-				  "insert", matrixElement->fullName()); 
-  }
-  else 
+  if( !matrixElement ) {
     throw RPConstructorError() 
       << "createMatrixElement - No matrix element object could be created for "
-      << "the process " << extpart[0]->PDGName() << "," 
-      << extpart[1]->PDGName() << "->" << extpart[2]->PDGName() 
-      << "," << extpart[3]->PDGName() << ".  No class for this spin-structure "
-      << "exists! \n"
+      << "the process " 
+      << extpart[0]->PDGName() << " " << extpart[0]->iSpin() << "," 
+      << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
+      << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
+      << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
+      << ".  Constructed class name: \"" << classname << "\""
       << Exception::warning;
-
+    return;
+  }
+  matrixElement->setProcessInfo(HPDVector(1, diag),
+				colourFactor(extpart), 1, theDebug);
+  generator()->preinitInterface(theSubProcess, "MatrixElements", 
+				theSubProcess->MEs().size(),
+				"insert", matrixElement->fullName()); 
 }
 
 string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
@@ -238,11 +259,10 @@ string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
     else if(extpart[ix]->iSpin() == PDT::Spin1Half) classname += "f";
     else if(extpart[ix]->iSpin() == PDT::Spin2) classname += "t";
     else
-      throw RPConstructorError() << "MEClassname() : Encountered an "
-				 << "unknown spin while constructing "
-				 << "MatrixElement classname " 
-				 << extpart[ix]->iSpin()
-				 << Exception::runerror;
+      throw RPConstructorError()
+	<< "MEClassname() : Encountered an unknown spin for "
+	<< extpart[ix]->PDGName() << " while constructing MatrixElement "
+	<< "classname " << extpart[ix]->iSpin() << Exception::warning;
   }
   objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2" 
     + extpart[2]->PDGName() + extpart[3]->PDGName();
@@ -258,6 +278,9 @@ colourFactor(const tcPDVector & extpart) const {
     if(extpart[2]->iColour() == PDT::Colour3 || 
        extpart[3]->iColour() == PDT::Colour3)
       cfactor[0][0] = 9.;
+    else if(extpart[2]->iColour() == PDT::Colour8 || 
+	    extpart[3]->iColour() == PDT::Colour8)
+      cfactor[0][0] = 24.;
     else
       cfactor[0][0] = 3.;
   }
@@ -265,8 +288,21 @@ colourFactor(const tcPDVector & extpart) const {
     if(extpart[2]->iColour() == PDT::Colour3 || 
        extpart[3]->iColour() == PDT::Colour3)
       cfactor[0][0] = 24.;
+    else if(extpart[2]->iColour() == PDT::Colour8 || 
+	    extpart[3]->iColour() == PDT::Colour8)
+      cfactor[0][0] = 64.;
     else 
       cfactor[0][0] = 8.;
+  }
+  else if(extpart[0]->iColour() == PDT::Colour0) {
+    if(extpart[2]->iColour() == PDT::Colour3 || 
+       extpart[3]->iColour() == PDT::Colour3)
+      cfactor[0][0] = 3.;
+    else if(extpart[2]->iColour() == PDT::Colour8 || 
+	    extpart[3]->iColour() == PDT::Colour8)
+      cfactor[0][0] = 8.;
+    else
+      cfactor[0][0] = 1.;
   }
   return cfactor;
 }

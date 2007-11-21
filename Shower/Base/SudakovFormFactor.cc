@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SudakovFormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SudakovFormFactor class.
 //
@@ -10,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 
@@ -17,12 +25,14 @@ using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _splittingFn << _alpha << _pdfmax << _particles
-     << _a << _b << ounit(_c,GeV) << ounit(_kinCutoffScale,GeV);
+     << _a << _b << ounit(_c,GeV) << ounit(_kinCutoffScale,GeV)
+     << _pdffactor;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _splittingFn >> _alpha >> _pdfmax >> _particles 
-     >> _a >> _b >> iunit(_c,GeV) >> iunit(_kinCutoffScale,GeV);
+     >> _a >> _b >> iunit(_c,GeV) >> iunit(_kinCutoffScale,GeV)
+     >> _pdffactor;
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
@@ -76,6 +86,31 @@ void SudakovFormFactor::Init() {
 		       " space (unit [GeV])",
 		       &SudakovFormFactor::_kinCutoffScale, GeV, 
 		       2.3*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
+
+  static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
+    ("PDFFactor",
+     "Include additional factors in the overestimate for the PDFs",
+     &SudakovFormFactor::_pdffactor, 0, false, false);
+  static SwitchOption interfacePDFFactorOff
+    (interfacePDFFactor,
+     "Off",
+     "Don't include any factors",
+     0);
+  static SwitchOption interfacePDFFactorOverZ
+    (interfacePDFFactor,
+     "OverZ",
+     "Include an additional factor of 1/z",
+     1);
+  static SwitchOption interfacePDFFactorOverOneMinusZ
+    (interfacePDFFactor,
+     "OverOneMinusZ",
+     "Include an additional factor of 1/(1-z)",
+     2);
+  static SwitchOption interfacePDFFactorOverZOneMinusZ
+    (interfacePDFFactor,
+     "OverZOneMinusZ",
+     "Include an additional factor of 1/z/(1-z)",
+     3);
 }
 
 bool SudakovFormFactor::
@@ -109,15 +144,28 @@ PDFVeto(const Energy2 t, const double x,
   if(oldpdf<=0.) return false;
   double ratio = newpdf/oldpdf;
 
+  double maxpdf(_pdfmax);
+  switch (_pdffactor) {
+  case 1:
+    maxpdf /= z();
+    break;
+  case 2:
+    maxpdf /= 1.-z();
+    break;
+  case 3:
+    maxpdf /= (z()*(1.-z()));
+    break;
+  }
+
   // ratio / PDFMax must be a probability <= 1.0
-  if (ratio > _pdfmax) {
-    generator()->log() << "PDFVeto warning: Ratio (" << ratio 
-			    << ") > " << name() << ":PDFmax ("
-		       <<_pdfmax <<") for " 
+  if (ratio > maxpdf) {
+    generator()->log() << "PDFVeto warning: Ratio > " << name() 
+		       << ":PDFmax (by a factor of"
+		       << ratio/maxpdf <<") for " 
 		       << parton0->PDGName() << " to " 
 		       << parton1->PDGName() << "\n";
   }
-  return ratio < UseRandom::rnd()*_pdfmax;
+  return ratio < UseRandom::rnd()*maxpdf;
 }
 
 void SudakovFormFactor::addSplitting(const IdList & in) {

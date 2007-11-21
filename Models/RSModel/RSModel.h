@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// RSModel.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_RSModel_H
 #define HERWIG_RSModel_H
 // This is the declaration of the RSModel class.
@@ -20,7 +27,8 @@ using namespace ThePEG::Helicity;
  *  This is the class to be used instead of the Standard Model class for
  *  the Randell Sundrum model.
  *
- *
+ * @see \ref RSModelInterfaces "The interfaces"
+ * defined for RSModel.
  * @see StandardModel
  * @see StandardModelBase
  * 
@@ -28,6 +36,11 @@ using namespace ThePEG::Helicity;
 class RSModel: public StandardModel {
 
 public:
+
+  /**
+   * The default constructor 
+   */
+  RSModel();
   
   /**
    * Return the gravition coupling

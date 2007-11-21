@@ -1,0 +1,40 @@
+
+create ThePEG::ParticleData reggeon 
+setup reggeon 28 reggeon 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle reggeon 
+create ThePEG::ParticleData pomeron 
+setup pomeron 29 pomeron 0.0 0.0 0.0 0.0 0 0 3 1
+defaultparticle pomeron 
+create ThePEG::ParticleData rho_diff0 
+setup rho_diff0 110 rho_diff0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle rho_diff0 
+create ThePEG::ParticleData pi_diffr+ 
+setup pi_diffr+ 210 pi_diffr+ 0.0 0.0 0.0 0.0 3 0 0 1
+defaultparticle pi_diffr+ 
+create ThePEG::ParticleData pi_diffr- 
+setup pi_diffr- -210 pi_diffr- 0.0 0.0 0.0 0.0 -3 0 0 1
+defaultparticle pi_diffr- 
+makeanti pi_diffr+ pi_diffr-
+create ThePEG::ParticleData omega_di 
+setup omega_di 220 omega_di 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle omega_di  
+create ThePEG::ParticleData phi_diff 
+setup phi_diff 330 phi_diff 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle phi_diff  
+create ThePEG::ParticleData Jpsi_di 
+setup Jpsi_di 440 Jpsi_di 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle Jpsi_di 
+create ThePEG::ParticleData n_diffr0 
+setup n_diffr0 2110 n_diffr0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle n_diffr0 
+create ThePEG::ParticleData n_diffrbar0 
+setup n_diffrbar0 -2110 n_diffrbar0 0.0 0.0 0.0 0.0 0 0 0 1
+defaultparticle n_diffrbar0 
+makeanti n_diffr0 n_diffrbar0
+create ThePEG::ParticleData p_diffr+ 
+setup p_diffr+ 2210 p_diffr+ 0.0 0.0 0.0 0.0 3 0 0 1
+defaultparticle p_diffr+ 
+create ThePEG::ParticleData p_diffrbar- 
+setup p_diffrbar- -2210 p_diffrbar- 0.0 0.0 0.0 0.0 -3 0 0 1
+defaultparticle p_diffrbar- 
+makeanti p_diffr+ p_diffrbar-

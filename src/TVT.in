@@ -8,20 +8,9 @@
 ##################################################
 
 ##################################################
-# Switch for soft underlying event.
-#
-# 'set' lines like this can be omitted if the 
-# default value is already okay.
-#
-# Any repository setting can be modified here
-##################################################
-cd /Defaults/Handlers/Hadronization/Cluster
-set stdCluHadHandler:SoftUnderlyingEvent On
-
-##################################################
 # Technical parameters for this run
 ##################################################
-cd /Defaults/Generators
+cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
@@ -32,8 +21,55 @@ set LHCGenerator:MaxErrors 100000
 # Tevatron physics parameters (override defaults) 
 ##################################################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
-set LHCGenerator:EventHandler:BeamB /Defaults/Particles/pbar-
+set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 
+##################################################
+# Matrix Elements for hadron-hadron collisions 
+# (by default only gamma/Z switched on)
+##################################################
+cd /Herwig/MatrixElements
+
+# Drell-Yan Z/gamma
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+# Drell-Yan W
+# insert SimpleQCD:MatrixElements[0] MEqq2W2ff
+# gamma-gamma
+# insert SimpleQCD:MatrixElements[0] MEGammaGamma
+# gamma+jet
+# insert SimpleQCD:MatrixElements[0] MEGammaJet
+# gg/qqbar -> Higgs
+# insert SimpleQCD:MatrixElements[0] MEHiggs
+# higgs+jet
+# insert SimpleQCD:MatrixElements[0] MEHiggsJet
+# QCD 2-2 scattering
+# insert SimpleQCD:MatrixElements[0] MEQCD2to2
+# top-antitop production
+# insert SimpleQCD:MatrixElements[0] MEHeavyQuark
+
+cd /Herwig/Generators
+##################################################
+#  Useful analysis handlers for hadron-hadron physics
+##################################################
+# analysis of W/Z events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
+# analysis of top-antitop events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/TTbar
+# analysis of gamma+jet events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/GammaJet
+# analysis of gamma-gamma events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/GammaGamma
+# analysis of higgs-jet events
+# insert  LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HiggsJet
+
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# set /Herwig/Analysis/HepMCFile:PrintEvent 100
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

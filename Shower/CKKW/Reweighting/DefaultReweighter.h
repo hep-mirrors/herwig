@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// DefaultReweighter.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_DefaultReweighter_H
 #define HERWIG_DefaultReweighter_H
 //
@@ -18,21 +25,37 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+  /**
+   * Key to index splittings
+   */
   struct splittingKey {
 
+    /**
+     * The PDG id's of the particles
+     * involved in the branching
+     */
     IdList ids;
+
+    /**
+     * Wether or not this is an initial state
+     * branching
+     */
     bool initial;
 
-    inline bool operator < (const splittingKey& x) const 
-    { return ids[0] < x.ids[0] || ids[1] < x.ids[1]; }
+    /**
+     * Lexicographic ordering
+     */
+    inline bool operator < (const splittingKey& x) const;
 
   };
 
+  /** Persistent output of a splitting key. */
   inline PersistentOStream& operator << (PersistentOStream& os, const splittingKey& k) {
     os << k.ids << k.initial;
     return os;
   }
 
+  /** Persistent input of a splitting key. */
   inline PersistentIStream& operator >> (PersistentIStream& is, splittingKey& k) {
     is >> k.ids >> k.initial;
     return is;

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEff2vv.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEff2vv_H
 #define HERWIG_MEff2vv_H
 //
@@ -13,6 +20,10 @@
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ProductionMatrixElement.h"
 #include "MEff2vv.fh"
 
 namespace Herwig {
@@ -24,6 +35,9 @@ using ThePEG::Helicity::VVSVertexPtr;
 using ThePEG::Helicity::GeneralSVVVertexPtr;
 using ThePEG::Helicity::VVTVertexPtr;
 using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
 
 /**
  * This class implements the matrix element calculation for a generic
@@ -33,6 +47,16 @@ using ThePEG::Helicity::VVVVertexPtr;
  * defined for MEff2vv.
  */
 class MEff2vv: public GeneralHardME {
+public:
+  
+  /** Vector of SpinorWaveFunctions objects */
+  typedef vector<SpinorWaveFunction> SpinorVector;
+
+  /** Vector of SpinorBarWaveFunction objects. */
+  typedef vector<SpinorBarWaveFunction> SpinorBarVector;
+
+  /** Vector of VectorWaveFunction objects. */
+  typedef vector<VectorWaveFunction> VBVector;
 
 public:
 
@@ -63,6 +87,38 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param sub Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+
+protected:
+  
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
+
+private: 
+  
+  /**
+   * Compute the production matrix element.
+   * @param sp Spinors for first incoming fermion
+   * @param sbar SpinorBar Wavefunctions for incoming anti-fermion
+   * @param v1 A vector of VectorWaveFunction objects for the first vector
+   * @param m1 Whether v1 is massless or not
+   * @param v2 A vector of VectorWaveFunction objects for the second vector
+   * @param m2 Whether v2 is massless or not
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  ProductionMatrixElement 
+  ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar, 
+	  const VBVector & v1, bool m1, const VBVector & v2, bool m2,
+	  double & me2) const;
 
 public:
 
@@ -116,7 +172,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
   
 private:
@@ -189,14 +245,6 @@ struct ClassTraits<Herwig::MEff2vv>
   : public ClassTraitsBase<Herwig::MEff2vv> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEff2vv"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEff2vv is implemented. It may also include several, space-separated,
-   * libraries if the class MEff2vv depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

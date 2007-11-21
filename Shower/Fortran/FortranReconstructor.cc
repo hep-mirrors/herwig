@@ -9,7 +9,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 
 using namespace Herwig;

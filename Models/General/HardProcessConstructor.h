@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HardProcessConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HardProcessConstructor_H
 #define HERWIG_HardProcessConstructor_H
 //
@@ -22,7 +29,7 @@ using namespace ThePEG;
  * possible for a given set of incoming and outgoing particles.
  *
  * @see \ref HardProcessConstructorInterfaces "The interfaces"
- * defined for EventGenerator.
+ * defined for HardProcessConstructor.
  * @see Interfaced
  */
 class HardProcessConstructor: public Interfaced {
@@ -34,6 +41,9 @@ public:
 
   /** Vector of HPDiagrams. */
   typedef vector<HPDiagram> HPDVector;
+
+  /** Map of HPDiagrams. */
+  typedef multimap<HPDiagram, HPDiagram> HPDMap;
 
   /** Enumeration for the direction */
   enum direction {incoming, outgoing};
@@ -326,6 +336,13 @@ private:
   bool theAllDiagrams;
 
   /**
+   * Whether to print the debug information with the matrix 
+   * element. This is here solely so it can be passed to 
+   * a matrix element that is created here.
+   */
+  bool theDebug;
+  
+  /**
    * Pointer to the sub process handler
    */
    tSubHdlPtr theSubProcess;
@@ -380,15 +397,6 @@ struct ClassTraits<Herwig::HardProcessConstructor>
   : public ClassTraitsBase<Herwig::HardProcessConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::HardProcessConstructor"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * HardProcessConstructor is implemented. It may also include several,
-   *  space-separated,
-   * libraries if the class HardProcessConstructor depends on other classes 
-   * (base classes excepted). In this case the listed libraries will be 
-   * dynamically linked in the order they are specified.
-   */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */

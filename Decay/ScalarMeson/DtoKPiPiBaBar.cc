@@ -18,7 +18,7 @@ using namespace ThePEG::Helicity;
 
 DtoKPiPiBaBar::DtoKPiPiBaBar() {
   // choice of the model
-  _imodel=0;
+  _imodel=1;
   // Parameters for the K-matrix based fit
   // g_pipi
   _gpipi.push_back( 0.229*GeV);
@@ -83,27 +83,27 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   _metap = 0.*MeV;
   // rho_3 interpolation tables
   _initrho3 = false;
-  double rscale[101]={0.311677,0.31856 ,0.325443,0.332326,0.339209,
-		      0.346093,0.352976,0.359859,0.366742,0.373626,
-		      0.380509,0.387392,0.394275,0.401159,0.408042,
-		      0.414925,0.421808,0.428692,0.435575,0.442458,
-		      0.449341,0.456224,0.463108,0.469991,0.476874,
-		      0.483757,0.490641,0.497524,0.504407,0.51129 ,
-		      0.518174,0.525057,0.53194 ,0.538823,0.545707,
-		      0.55259 ,0.559473,0.566356,0.573239,0.580123,
-		      0.587006,0.593889,0.600772,0.607656,0.614539,
-		      0.621422,0.628305,0.635189,0.642072,0.648955,
-		      0.655838,0.662722,0.669605,0.676488,0.683371,
-		      0.690254,0.697138,0.704021,0.710904,0.717787,
-		      0.724671,0.731554,0.738437,0.74532 ,0.752204,
-		      0.759087,0.76597 ,0.772853,0.779736,0.78662 ,
-		      0.793503,0.800386,0.807269,0.814153,0.821036,
-		      0.827919,0.834802,0.841686,0.848569,0.855452,
-		      0.862335,0.869219,0.876102,0.882985,0.889868,
-		      0.896751,0.903635,0.910518,0.917401,0.924284,
-		      0.931168,0.938051,0.944934,0.951817,0.958701,
-		      0.965584,0.972467,0.97935 ,0.986234,0.993117,
-		      1};
+  Energy2 rscale[101]={0.311677*GeV2,0.31856 *GeV2,0.325443*GeV2,0.332326*GeV2,0.339209*GeV2,
+		       0.346093*GeV2,0.352976*GeV2,0.359859*GeV2,0.366742*GeV2,0.373626*GeV2,
+		       0.380509*GeV2,0.387392*GeV2,0.394275*GeV2,0.401159*GeV2,0.408042*GeV2,
+		       0.414925*GeV2,0.421808*GeV2,0.428692*GeV2,0.435575*GeV2,0.442458*GeV2,
+		       0.449341*GeV2,0.456224*GeV2,0.463108*GeV2,0.469991*GeV2,0.476874*GeV2,
+		       0.483757*GeV2,0.490641*GeV2,0.497524*GeV2,0.504407*GeV2,0.51129 *GeV2,
+		       0.518174*GeV2,0.525057*GeV2,0.53194 *GeV2,0.538823*GeV2,0.545707*GeV2,
+		       0.55259 *GeV2,0.559473*GeV2,0.566356*GeV2,0.573239*GeV2,0.580123*GeV2,
+		       0.587006*GeV2,0.593889*GeV2,0.600772*GeV2,0.607656*GeV2,0.614539*GeV2,
+		       0.621422*GeV2,0.628305*GeV2,0.635189*GeV2,0.642072*GeV2,0.648955*GeV2,
+		       0.655838*GeV2,0.662722*GeV2,0.669605*GeV2,0.676488*GeV2,0.683371*GeV2,
+		       0.690254*GeV2,0.697138*GeV2,0.704021*GeV2,0.710904*GeV2,0.717787*GeV2,
+		       0.724671*GeV2,0.731554*GeV2,0.738437*GeV2,0.74532 *GeV2,0.752204*GeV2,
+		       0.759087*GeV2,0.76597 *GeV2,0.772853*GeV2,0.779736*GeV2,0.78662 *GeV2,
+		       0.793503*GeV2,0.800386*GeV2,0.807269*GeV2,0.814153*GeV2,0.821036*GeV2,
+		       0.827919*GeV2,0.834802*GeV2,0.841686*GeV2,0.848569*GeV2,0.855452*GeV2,
+		       0.862335*GeV2,0.869219*GeV2,0.876102*GeV2,0.882985*GeV2,0.889868*GeV2,
+		       0.896751*GeV2,0.903635*GeV2,0.910518*GeV2,0.917401*GeV2,0.924284*GeV2,
+		       0.931168*GeV2,0.938051*GeV2,0.944934*GeV2,0.951817*GeV2,0.958701*GeV2,
+		       0.965584*GeV2,0.972467*GeV2,0.97935 *GeV2,0.986234*GeV2,0.993117*GeV2,
+		       1       *GeV2};
   double rvalue[101]={0          ,8.53899e-12,3.80878e-10,3.49296e-09,1.67667e-08,
 		      5.64581e-08,1.51939e-07,3.50344e-07,7.21493e-07,1.36305e-06,
 		      2.40589e-06,4.0196e-06 ,6.41823e-06,9.8661e-06 ,1.46838e-05,
@@ -125,7 +125,7 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
 		      0.363046   ,0.387818   ,0.414078   ,0.441905   ,0.471385   ,
 		      0.502608   ,0.535667   ,0.570662   ,0.607696   ,0.646878   ,
 		      0.688323};
-  _rho3scale=vector<double>(rscale,rscale+101);
+  _rho3scale=vector<Energy2>(rscale,rscale+101);
   _rho3     =vector<double>(rvalue,rvalue+101);
   // The amplitudes and phases for the K-matrix fit
   _k892mre   =-1.159     ; _k892mim   = 1.361     ;
@@ -137,7 +137,7 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   _k1430pre0 = 0.375*GeV2; _k1430pim0 =-0.143*GeV2;
   _k1430pre2 = 0.088/GeV2; _k1430pim2 =-0.057/GeV2;
   _rho770re  = 1.000     ; _rho770im  = 0.000     ;
-  _omegare   =-0.0182    ; _omegaim   =-0.0367    ;
+  _omegare   =-0.0182    ; _omegaim   = 0.0367    ;
   _f2re      = 0.787/GeV2; _f2im      =-0.397/GeV2;
   _rho1450re = 0.405     ; _rho1450im =-0.458     ;
   // amplitudes and phase for the normal fit
@@ -165,13 +165,14 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   _mK892    =  891.66*MeV; _wK892    =  50.80*MeV;      
   _mK14300  = 1412.00*MeV; _wK14300  = 294.00*MeV;    
   _mK14302  = 1425.60*MeV; _wK14302  =  98.50*MeV;    
-  _mK1410   = 1414.00*MeV; _wK1410   = 232.00*MeV;     
-  _mK1680   = 1717.00*MeV; _wK1680   = 322.00*MeV;     
-  _mrho770  =  775.80*MeV; _wrho770  = 150.30*MeV;    
+  _mK1410   = 1414.00*MeV; _wK1410   = 232.00*MeV;
+  _mK1680   = 1717.00*MeV; _wK1680   = 322.00*MeV;
+  _mrho770  =  775.80*MeV; _wrho770  = 146.4*MeV;
   _momega   =  782.59*MeV; _womega   =   8.49*MeV;     
   _mf2      = 1275.40*MeV; _wf2      = 185.10*MeV;	      
-  _mrho1450 = 1465.00*MeV; _wrho1450 = 400.00*MeV;   
-  _mf980    =  977.00*MeV; _wf980    =  44.00*MeV;      
+  _mrho1450 = 1465.00*MeV; _wrho1450 = 400.00*MeV;	      
+  _mrho1450 = 1406.00*MeV; _wrho1450 = 455.00*MeV;
+  _mf980    =  974.00*MeV; _wf980    =  44.00*MeV;
   _mf1370   = 1434.00*MeV; _wf1370   = 173.00*MeV;     
   _msigma   =  484.00*MeV; _wsigma   = 383.00*MeV;     
   _msigmap  = 1014.00*MeV; _wsigmap  =  88.00*MeV;
@@ -418,22 +419,30 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
     GaussianIntegrator integrator;
     Energy2 step = (GeV2-16.*sqr(_mpi))/100.;
     integrand.s(GeV2);
-    double low = sqr(2.*_mpi/GeV);
-    double upp = sqr(GeV-2.*_mpi)/GeV2;
+    Energy2 low = sqr(2.*_mpi);
+    Energy2 upp = sqr(GeV-2.*_mpi);
     double norm = (GeV2-16.*sqr(_mpi))/GeV2/integrator.value(integrand,low,upp);
     for(Energy2 s=16.*sqr(_mpi);s<GeV2;s+=step) {
       integrand.s(s);
-      low = sqr(2.*_mpi/GeV);
-      upp = sqr(sqrt(s)-2.*_mpi)/GeV2;
+      low = sqr(2.*_mpi);
+      upp = sqr(sqrt(s)-2.*_mpi);
       integrand.s(s);
       double output = norm*integrator.value(integrand,low,upp);
       _rho3     .push_back(output);
-      _rho3scale.push_back(s/GeV2);
+      _rho3scale.push_back(s);
     }
   }
-  _rho3inter = new_ptr(Interpolator<double,double>(_rho3,_rho3scale,3));
+  _rho3inter = new_ptr(Interpolator<double,Energy2>(_rho3,_rho3scale,3));
 
 
+  for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+    double output;
+    if(s<=16.*sqr(_mpi))     output = 0.;
+    else if(s<GeV2)          output = (*_rho3inter)(s);
+    else                     output = 1.-16.*sqr(_mpi)/s;
+    cerr << s/GeV2 << " " << output << "\n";
+  }
+  cerr << "JOIN BLUE\n NEW FRAME\n";
   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
     Complex test=F1(s);
     cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
@@ -514,7 +523,7 @@ void DtoKPiPiBaBar::persistentOutput(PersistentOStream & os) const {
      << ounit(_womega,GeV) << ounit(_wf2,GeV) << ounit(_wrho1450,GeV) << ounit(_wf980,GeV) 
      << ounit(_wf1370,GeV) << ounit(_wsigma,GeV) << ounit(_wsigmap,GeV) << _maxwgt 
      << _weights << ounit(_gialpha,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV) << ounit(_meta,GeV) 
-     << ounit(_metap,GeV) << _rho3scale << _rho3 << _initrho3 << _rho3inter;
+     << ounit(_metap,GeV) << ounit(_rho3scale,GeV2) << _rho3 << _initrho3;
 }
 
 void DtoKPiPiBaBar::persistentInput(PersistentIStream & is, int) {
@@ -548,7 +557,7 @@ void DtoKPiPiBaBar::persistentInput(PersistentIStream & is, int) {
      >> iunit(_womega,GeV) >> iunit(_wf2,GeV) >> iunit(_wrho1450,GeV) >> iunit(_wf980,GeV) 
      >> iunit(_wf1370,GeV) >> iunit(_wsigma,GeV) >> iunit(_wsigmap,GeV) >> _maxwgt 
      >> _weights >> iunit(_gialpha,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV) >> iunit(_meta,GeV) 
-     >> iunit(_metap,GeV) >> _rho3scale >> _rho3 >> _initrho3 >> _rho3inter;
+     >> iunit(_metap,GeV) >> iunit(_rho3scale,GeV2) >> _rho3 >> _initrho3;
 }
 
 ClassDescription<DtoKPiPiBaBar> DtoKPiPiBaBar::initDtoKPiPiBaBar;
@@ -1229,19 +1238,17 @@ double DtoKPiPiBaBar::me2(bool vertex, const int ichan,
       +_arho770      *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho770 ,_wrho770 )
       +_aomega       *amplitude(1,false,mD,mB,mC,mA,mBC,mAB,mAC,_momega  ,_womega  )
       +Complex(_af2     *GeV2)*amplitude(2,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf2     ,_wf2     )
-      +_arho1450     *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho1450,_wrho1450)
-      ;
+      +_arho1450     *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho1450,_wrho1450);
     if(_imodel==0) {
       amp+= 
       _af980  /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )+
       _af1370 /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )+
       _asigma /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_msigma ,_wsigma )+
       _asigmap/GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_msigmap,_wsigmap)+
-      _aNR
-	;
+      _aNR;
     }
     else {
-      amp+=F1(sqr(mBC));
+      amp +=F1(sqr(mBC));
     }
   }
   else if(ichan==0 ) {
@@ -1292,10 +1299,10 @@ Complex DtoKPiPiBaBar::F1(Energy2 s) const {
   vector<Complex> rho(5);
   if(s>=4.*sqr(_mpi))      rho[0] =            sqrt( 1.-sqr(_mpi  + _mpi  )/s);
   else                     rho[0] = Complex(0.,sqrt(-1.+sqr(_mpi  + _mpi  )/s));
-  if(s>=4.*sqr(_mK))       rho[1] = sqrt(1.-sqr(_mK   + _mK   )/s);
+  if(s>=4.*sqr(_mK))       rho[1] =            sqrt( 1.-sqr(_mK   + _mK   )/s);
   else                     rho[1] = Complex(0.,sqrt(-1.+sqr(_mK   + _mK   )/s));
   if(s<=16.*sqr(_mpi))     rho[2] = 0.;
-  else if(s<GeV2)          rho[2] = (*_rho3inter)(s/GeV2);
+  else if(s<GeV2)          rho[2] = (*_rho3inter)(s);
   else                     rho[2] = 1.-16.*sqr(_mpi)/s;
   if(s>=4.*sqr(_meta))     rho[3] =            sqrt( 1.-sqr(_meta + _meta )/s);
   else                     rho[3] = Complex(0.,sqrt(-1.+sqr(_meta + _meta )/s));
@@ -1303,11 +1310,20 @@ Complex DtoKPiPiBaBar::F1(Energy2 s) const {
   else                     rho[4] = Complex(0.,sqrt(-1.+sqr(_meta + _metap)/s));
   // K -matrix
   Complex K[5][5];
+  Energy2 delta[5];
+  for(unsigned int ix=0;ix<5;++ix) {
+    Energy2 diff  = sqr(_malpha[ix])-s;
+    if(abs(diff)>1e-6*MeV2) delta[ix] = diff;
+    else {
+      if(diff>0.*MeV2)    delta[ix] = 1e-6*MeV2;
+      else                delta[ix] =-1e-6*MeV2;
+    }
+  }
   for(unsigned int i=0;i<5;++i) {
     for(unsigned int j=0;j<5;++j) {
       K[i][j]=0.;
       for(unsigned int alpha=0;alpha<5;++alpha) {
-	K[i][j]+=_gialpha[i][alpha]*_gialpha[j][alpha]/(sqr(_malpha[alpha])-s);
+	K[i][j]+=_gialpha[i][alpha]*_gialpha[j][alpha]/delta[alpha];
       }
       if(i==0) K[i][j]+= _fscatt[j]*(GeV2-_s0scatt)/(s-_s0scatt);
       else if(j==0) K[i][j]+= _fscatt[i]*(GeV2-_s0scatt)/(s-_s0scatt);
@@ -1490,12 +1506,17 @@ Complex DtoKPiPiBaBar::F1(Energy2 s) const {
   for(unsigned int i=0;i<5;++i) {
     p[i]=0.;
     for(unsigned int alpha=0;alpha<5;++alpha) {
-      p[i]+=_gialpha[i][alpha]*_beta[alpha]/(sqr(_malpha[alpha])-s);
+      p[i]+=_gialpha[i][alpha]*_beta[alpha]/delta[alpha];
     }
     if(i==0) p[i]+=_fprod*(GeV2-_s0scatt)/(s-_s0scatt);
   }
   // finally compute the answer
   Complex output(0.);
-  for(unsigned int j=0;j<5;++j) output += inverse[1][j]*p[j];
+  for(unsigned int j=0;j<5;++j) output += inverse[0][j]*p[j];
   return output;
+}
+
+void DtoKPiPiBaBar::doinitrun() {
+  _rho3inter = new_ptr(Interpolator<double,Energy2>(_rho3,_rho3scale,3));
+  DecayIntegrator::doinitrun();
 }

@@ -1,3 +1,11 @@
+// -*- C++ -*-
+//
+// MRST.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #include "MRST.h"
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/PDT/EnumParticles.h>
@@ -267,7 +275,7 @@ double MRST::pdfValue(double x, Energy2 q2,
       }
     }
   }
-  output = max(output,1.0e-12);
+  output = max(output,0.);
   return output;
 }
 
@@ -437,12 +445,10 @@ void MRST::initialize(bool reread) {
   }
 
   if(reread) {
-     ifstream datafile;
-     datafile.open(_file.c_str());
-
-     if(datafile.bad()) throw Exception() << "Could not open file " << _file 
-					  << "in MRST::initialize()"
-					  << Exception::runerror;
+    ifstream datafile(_file.c_str());
+    if(!datafile) throw Exception() << "Could not open file '" << _file 
+				    << "' in MRST::initialize()"
+				    << Exception::runerror;
 
      for(int nn=1; nn<nx; nn++) {
        for(int mm=1; mm<=nq; mm++) {

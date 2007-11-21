@@ -20,7 +20,12 @@ TwoOffShellCalculator.cc TwoOffShellCalculator.fh \
 TwoOffShellCalculator.h TwoOffShellCalculator.icc \
 WidthCalculatorBase.cc WidthCalculatorBase.fh \
 WidthCalculatorBase.h WidthCalculatorBase.icc \
-StandardMatchers.h StandardMatchers.cc
+StandardMatchers.h StandardMatchers.cc \
+SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.fh \
+SMHiggsWidthGenerator.h SMHiggsWidthGenerator.icc \
+SMHiggsMassGenerator.cc SMHiggsMassGenerator.fh \
+SMHiggsMassGenerator.h SMHiggsMassGenerator.icc
+
 
 libHwBaryonWidth_la_SOURCES = \
 BaryonWidthGenerator.cc BaryonWidthGenerator.fh \

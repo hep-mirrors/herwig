@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// IdentifiedParticleAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_IdentifiedParticleAnalysis_H
 #define HERWIG_IdentifiedParticleAnalysis_H
 //
@@ -375,12 +382,12 @@ private:
   HistogramPtr _xirhop;
 
   /**
-   *  Histogram for the OPAL \f$\a_0^+\f$ \f$x\f$ distribution
+   *  Histogram for the OPAL \f$a_0^+\f$ \f$x\f$ distribution
    */
   HistogramPtr _xea_0p;
 
   /**
-   *  Histogram for the OPAL \f$\a_0^+\f$ \f$\xi\f$ distribution
+   *  Histogram for the OPAL \f$a_0^+\f$ \f$\xi\f$ distribution
    */
   HistogramPtr _xia_0p;
 

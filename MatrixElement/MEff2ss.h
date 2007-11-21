@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEff2ss.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEff2ss_H
 #define HERWIG_MEff2ss_H
 //
@@ -11,6 +18,10 @@
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
 #include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ProductionMatrixElement.h"
 #include "MEff2ss.fh"
 
 namespace Herwig {
@@ -21,6 +32,9 @@ using ThePEG::Helicity::VSSVertex;
 using ThePEG::Helicity::FFTVertexPtr;
 using ThePEG::Helicity::SSTVertexPtr;
 using ThePEG::Helicity::VSSVertexPtr;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
 
 /**
  * The MEff2ss class is designed to implement the matrix element for a
@@ -33,6 +47,14 @@ using ThePEG::Helicity::VSSVertexPtr;
  * @see GeneralHardME
  */
 class MEff2ss: public GeneralHardME {
+
+public:
+
+  /** Vector of SpinorWaveFunctions objects */
+  typedef vector<SpinorWaveFunction> SpinorVector;
+
+  /** Vector of SpinorBarWaveFunction objects. */
+  typedef vector<SpinorBarWaveFunction> SpinorBarVector;
 
 public:
 
@@ -62,6 +84,21 @@ public:
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
   //@}
+
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param sub Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+protected:
+
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
 
 public:
 
@@ -133,7 +170,23 @@ private:
    */
   MEff2ss & operator=(const MEff2ss &);
 
-  private:
+private:
+
+  /**
+   * Calculate the matrix element
+   * @param sp A vector of SpinorWaveFunction objects
+   * @param sbar A vector of SpinorBarWaveFunction objects
+   * @param sca1 A ScalarWaveFunction for an outgoing scalar
+   * @param sca2 A ScalarWaveFunction for the other outgoing scalar
+   * @param me2 The spin averaged matrix element
+   */
+  ProductionMatrixElement ff2ssME(const SpinorVector & sp, 
+				  const SpinorBarVector & sbar, 
+				  const ScalarWaveFunction & sca1,
+				  const ScalarWaveFunction & sca2,
+				  double & me2) const;
+
+private:
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
@@ -177,14 +230,6 @@ struct ClassTraits<Herwig::MEff2ss>
   : public ClassTraitsBase<Herwig::MEff2ss> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEff2ss"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEff2ss is implemented. It may also include several, space-separated,
-   * libraries if the class MEff2ss depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralME.so"; }
 };
 
 /** @endcond */

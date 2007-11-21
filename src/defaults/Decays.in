@@ -1,0 +1,34 @@
+#######################################################
+# Setup of default decay handlers.
+#
+# Nothing interesting for users here. To set up or
+# modify decay modes in your own input files, use 
+# the xyz_decays.in files as an example.
+#######################################################
+
+mkdir /Herwig/Decays
+cd /Herwig/Decays
+
+# create the DecayHandler
+create Herwig::HwDecayHandler DecayHandler
+
+#######################################################
+#
+#                     New Decays
+#
+#######################################################
+read decayers.in
+read quark_decays.in
+read baryon_decays.in
+read boson_decays.in
+read lepton_decays.in
+read meson_decays.in
+read BSMDecays.in
+
+cd /Herwig/Hadronization
+# with new decays these should not be made by the hadronization
+insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/kappabar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/sigma

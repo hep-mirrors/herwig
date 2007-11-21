@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GeneralHardME.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GeneralHardME class.
 //
@@ -9,6 +16,25 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 using namespace Herwig;
+
+GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
+				 theDiagrams(0), theNDiags(0), 
+				 theColour(0), theNcf(0) , 
+				 theDebug(false) {}
+  
+void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
+				   const vector<vector<double> > & factors,
+				   const unsigned int ncf,
+				   bool debug) {
+  theIncoming = alldiagrams.at(0).incoming;
+  theOutgoing = alldiagrams.at(0).outgoing;
+  theDiagrams = alldiagrams;
+  theColour = factors;
+  theNDiags = alldiagrams.size();
+  theNcf = ncf;
+  theDebug = debug;
+}
+
 
 void GeneralHardME::getDiagrams() const {
   //get ParticleData pointers for external particles
@@ -79,12 +105,12 @@ GeneralHardME::diagrams(const DiagramVector & diags) const {
 
 void GeneralHardME::persistentOutput(PersistentOStream & os) const {
   os << theIncoming << theOutgoing << theDiagrams << theColour 
-     << theNDiags << theNcf;
+     << theNDiags << theNcf << theDebug;
 }
 
 void GeneralHardME::persistentInput(PersistentIStream & is, int) {
   is >> theIncoming >> theOutgoing >> theDiagrams >> theColour 
-     >> theNDiags >> theNcf;
+     >> theNDiags >> theNcf >> theDebug;
 }
 
 AbstractClassDescription<GeneralHardME> GeneralHardME::initGeneralHardME;
@@ -99,3 +125,5 @@ void GeneralHardME::Init() {
 
 }
 
+void GeneralHardME::debug(double) const {
+}

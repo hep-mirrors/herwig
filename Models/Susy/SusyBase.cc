@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SusyBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SusyBase class.
 //
@@ -13,6 +20,9 @@
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/MassGenerator.h"
+#include "ThePEG/PDT/WidthGenerator.h"
 
 using namespace Herwig;
 
@@ -165,6 +175,24 @@ void SusyBase::readSetup(istream & is) throw(SetupException) {
     << "spectrum file \"" << filename << "\". A SUSY model cannot be "
     << "run without this."
     << Exception::abortnow; 
+
+  //Before reading the spectrum/decay files the SM higgs 
+  //decay modes, mass and width generators need to be turned off.
+  PDPtr h0 = getParticleData(ParticleID::h0);
+  h0->widthGenerator(WidthGeneratorPtr());
+  h0->massGenerator(MassGenPtr());
+  DecaySet::const_iterator dit = h0->decayModes().begin();
+  DecaySet::const_iterator dend = h0->decayModes().end();
+  ostringstream os;
+  os << 0.0;
+  for( ; dit != dend; ++dit ) {
+    const InterfaceBase * ifb = 
+      BaseRepository::FindInterface(*dit, "BranchingRatio");
+    ifb->exec(**dit, "set", os.str());
+    ifb = BaseRepository::FindInterface(*dit, "OnOff");
+    ifb->exec(**dit, "set", "Off");
+  }
+  
   string line;
   //function pointer for putting all characters to lower case.
   int (*pf)(int) = tolower;
@@ -340,7 +368,7 @@ void SusyBase::createDecayMode(string tag, tcPDVector products,
     if( i != nda - 1 ) cmd << ",";
     else cmd << ";";
   }
-  cmd << string(" ") <<  brat << string(" 1 /Defaults/Decays/Mambo");
+  cmd << string(" ") <<  brat << string(" 1 /Herwig/Decays/Mambo");
   Repository::exec(cmd.str(), cerr);
 }
 
@@ -410,7 +438,8 @@ void SusyBase::resetRepositoryMasses() {
 		      << " can't set masses of SUSY particles"
 		      << Exception::abortnow;
   ParamMap theMasses = fit->second;
-  for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end();){
+  for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end(); 
+      ++it) {
     long id = it->first;
     double mass = it->second;
     //a negative mass requires an adjustment to the 
@@ -425,9 +454,8 @@ void SusyBase::resetRepositoryMasses() {
     ostringstream os;
     os << abs(it->second);
     ifb->exec(*part, "set", os.str());
-    //no need to store all masses after this stage
-    theMasses.erase(it++);
   }
+  theMasses.clear();
 }
 
 void SusyBase::adjustMixingMatrix(long id) {

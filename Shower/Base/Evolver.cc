@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Evolver.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Evolver class.
 //
@@ -31,14 +38,14 @@ using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _intrinsicpT 
+     << _meCorrMode << _hardVetoMode
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << _vetoes
      << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _intrinsicpT 
+     >> _meCorrMode >> _hardVetoMode
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> _vetoes
      >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
 }
@@ -48,6 +55,11 @@ void Evolver::doinitrun() {
   for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
     showerModel()->meCorrections()[ix]->evolver(this);
   }
+#ifdef HERWIG_CHECK_VETOES
+  _vetoed_points.timelike.open("vetoed_timelike.dat");
+  _vetoed_points.spacelike.open("vetoed_spacelike.dat");
+  _vetoed_points.spacelike_decay.open("vetoed_spacelike_decay.dat");
+#endif
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -82,49 +94,45 @@ void Evolver::Init() {
      "Choice of the ME Correction Mode",
      &Evolver::_meCorrMode, 1, false, false);
   static SwitchOption off
-    (ifaceMECorrMode,"MEC-off","MECorrections off", 0);
+    (ifaceMECorrMode,"No","MECorrections off", 0);
   static SwitchOption on
-    (ifaceMECorrMode,"MEC-on","hard+soft on", 1);
+    (ifaceMECorrMode,"Yes","hard+soft on", 1);
   static SwitchOption hard
-    (ifaceMECorrMode,"MEC-hard","only hard on", 2);
+    (ifaceMECorrMode,"Hard","only hard on", 2);
   static SwitchOption soft
-    (ifaceMECorrMode,"MEC-soft","only soft on", 3);
+    (ifaceMECorrMode,"Soft","only soft on", 3);
 
   static Switch<Evolver, unsigned int> ifaceHardVetoMode
     ("HardVetoMode",
      "Choice of the Hard Veto Mode",
      &Evolver::_hardVetoMode, 1, false, false);
   static SwitchOption HVoff
-    (ifaceHardVetoMode,"HV-off","hard vetos off", 0);
+    (ifaceHardVetoMode,"No","hard vetos off", 0);
   static SwitchOption HVon
-    (ifaceHardVetoMode,"HV-on","hard vetos on", 1);
+    (ifaceHardVetoMode,"Yes","hard vetos on", 1);
   static SwitchOption HVIS
-    (ifaceHardVetoMode,"HV-IS", "only IS emissions vetoed", 2);
+    (ifaceHardVetoMode,"Initial", "only IS emissions vetoed", 2);
   static SwitchOption HVFS
-    (ifaceHardVetoMode,"HV-FS","only FS emissions vetoed", 3);
+    (ifaceHardVetoMode,"Final","only FS emissions vetoed", 3);
 
-  static Switch<Evolver, unsigned int> ifaceIntrinsicpT
-  ("GenerateIntrinsicpT",
-  "Switch Intrinsic pT on or off",
-   &Evolver::_intrinsicpT, 1, false, false); 
-   static SwitchOption ipToff
- (ifaceIntrinsicpT,"ipT-off","Intrinsic pT off",0);  
-   static SwitchOption ipTon
- (ifaceIntrinsicpT,"ipT-on","Intrinsic pT on",1);
-   static Parameter<Evolver, Energy> ifaceiptrms
-  ("Iptrms",
-     "rms intrinsic pT of Gaussian distribution:2*(1-Beta)*exp(-sqr(intrinsicpT/iptrms))/sqr(iptrms)",
+  static Parameter<Evolver, Energy> ifaceiptrms
+    ("IntrinsicPtGaussian",
+     "RMS of intrinsic pT of Gaussian distribution:\n"
+     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
      &Evolver::_iptrms, GeV, 0*GeV, 0*GeV, 1000000.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<Evolver, double> ifacebeta
-    ("Beta",
-     "Proportion of inverse quadratic distribution. (1-Beta) is the proportion of Gaussian distribution",
+    ("IntrinsicPtBeta",
+     "Proportion of inverse quadratic distribution in generating intrinsic pT.\n"
+     "(1-Beta) is the proportion of Gaussian distribution",
      &Evolver::_beta, 0, 0, 1,
      false, false, Interface::limited);
+
   static Parameter<Evolver, Energy> ifacegamma
-    ("Gamma",
-     "Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
+    ("IntrinsicPtGamma",
+     "Parameter for inverse quadratic:\n"
+     "2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
      &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
 
@@ -348,14 +356,11 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
       }
     }
   }
-  while(!showerModel()->kinematicsReconstructor()->reconstructHardJets(hard,_intrinsic)&&
-	maximumTries()>++ntry);
-  if(maximumTries()==ntry) throw Exception() 
-    << "Failed to generate the shower after "
-    << ntry 
-    << " attempts in Evolver::showerHardProcess()"
-    << Exception::eventerror;
-  currentTree()->hasShowered(true);
+  while(!_model->kinematicsReconstructor()->reconstructHardJets(hard,_intrinsic)&&
+	_maxtry>++ntry);
+  if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
+
+  _currenttree->hasShowered(true);
 }
 
 
@@ -434,6 +439,10 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 	  throw Veto ();
       }
       if (vetoed) {
+#ifdef HERWIG_CHECK_VETOES
+	_vetoed_points.timelike << fb.kinematics->scale()/GeV << "\t"
+				<< fb.kinematics->z() << endl;
+#endif
 	particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
 	continue;
       }
@@ -523,6 +532,10 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
 	  throw Veto ();
       }
       if (vetoed) {
+#ifdef HERWIG_CHECK_VETOES
+	_vetoed_points.spacelike << bb.kinematics->scale()/GeV << "\t"
+				 << bb.kinematics->z() << endl;
+#endif
 	particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
 	continue;
       }
@@ -662,6 +675,10 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
 	  throw Veto ();
       }
       if (vetoed) {
+#ifdef HERWIG_CHECK_VETOES
+	_vetoed_points.spacelike_decay << fb.kinematics->scale()/GeV << "\t"
+				       << fb.kinematics->z() << endl;
+#endif
 	particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
 	continue;
       }

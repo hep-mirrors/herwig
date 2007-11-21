@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ISGW2FormFactor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ISGW2FormFactor class.
 //
@@ -839,12 +846,12 @@ void ISGW2FormFactor::Init() {
      &ISGW2FormFactor::_includeaW, true, false, false);
   static SwitchOption interfaceIncludeaWInclude
     (interfaceIncludeaW,
-     "Include",
+     "Yes",
      "Include the factor",
      true);
   static SwitchOption interfaceIncludeaWDoNot
     (interfaceIncludeaW,
-     "DoNot",
+     "No",
      "Do not include the factor",
      false);
 

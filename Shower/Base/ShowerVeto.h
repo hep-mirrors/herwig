@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ShowerVeto.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ShowerVeto_H
 #define HERWIG_ShowerVeto_H
 //
@@ -17,10 +24,11 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-  /**\ingroup Shower
-   * Define types of ShowerVetoes
-   */
   namespace ShowerVetoType {
+
+    /**\ingroup Shower
+     * Define types of ShowerVetoes
+     */
     enum ShowerVetoType {
       /**
        * Throw away emission, if veto encountered. Set the scale to
@@ -146,6 +154,9 @@ private:
 
 private:
 
+  /**
+   * The type of this veto.
+   */
   int _vetoType;
 
 };

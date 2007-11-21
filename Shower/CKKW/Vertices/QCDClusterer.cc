@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// QCDClusterer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the QCDClusterer class.
 //
@@ -261,6 +268,12 @@ ClusteringParticleData QCDClusterer::doEmergingLine
 
 bool QCDClusterer::colourConnected (ClusteringParticleData p1, ClusteringParticleData p2) {
 
+  if (!_useColour) {
+    // any QCD particle is colour connected
+    return ((p1.partonId.PDGId == 21 || abs(p1.partonId.PDGId) <7)
+      && (p2.partonId.PDGId == 21 || abs(p2.partonId.PDGId) <7));
+  }
+
   if (p1.colour == p1.antiColour || p2.colour == p2.antiColour) return false;
 
   if (p1.partonId.state == p2.partonId.state) {
@@ -365,12 +378,12 @@ void QCDClusterer::Init() {
      &QCDClusterer::_useColour, true, false, false);
   static SwitchOption interfaceUseColourUseColourOn
     (interfaceUseColour,
-     "On",
+     "Yes",
      "Do use colour information on clustering.",
      true);
   static SwitchOption interfaceUseColourUseColourOff
     (interfaceUseColour,
-     "Off",
+     "No",
      "Do not use colour information on clustering.",
      false);
 

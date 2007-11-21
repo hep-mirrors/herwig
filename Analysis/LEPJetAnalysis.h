@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// LEPJetAnalysis.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_LEPJetAnalysis_H
 #define HERWIG_LEPJetAnalysis_H
 //
@@ -186,7 +193,7 @@ private:
   /**
    *  N jet distribution
    */
-  vector<StatisticPtr> _njet;
+  vector<Statistic> _njet;
 
   /**
    *  For different jet rates

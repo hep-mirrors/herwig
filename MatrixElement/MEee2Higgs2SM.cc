@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEee2Higgs2SM.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEee2Higgs2SM class.
 //
@@ -183,37 +190,37 @@ void MEee2Higgs2SM::Init() {
      2);
   static SwitchOption interfacealloweddown
     (interfaceallowed,
-     "down",
+     "Down",
      "Only d dbar allowed",
      3);
   static SwitchOption interfaceallowedup
     (interfaceallowed,
-     "up",
+     "Up",
      "Only u ubar allowed",
      4);
   static SwitchOption interfaceallowedstrange
     (interfaceallowed,
-     "strange",
+     "Strange",
      "Only s sbar allowed",
      5);
   static SwitchOption interfaceallowedcharm
     (interfaceallowed,
-     "charm",
+     "Charm",
      "Only c cbar allowed",
      6);
   static SwitchOption interfaceallowedbottom
     (interfaceallowed,
-     "bottom",
+     "Bottom",
      "Only b bbar allowed",
      7);
   static SwitchOption interfaceallowedtop
     (interfaceallowed,
-     "top",
+     "Top",
      "Only t tbar allowed",
      8);
   static SwitchOption interfaceallowedelectron
     (interfaceallowed,
-     "electron",
+     "Electron",
      "Only e+e- allowed",
      9);
   static SwitchOption interfaceallowedMuon

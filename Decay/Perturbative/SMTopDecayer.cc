@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SMTopDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SMTopDecayer class.
 //
@@ -20,15 +27,15 @@ using namespace ThePEG::Helicity;
 SMTopDecayer::SMTopDecayer() 
   :_wquarkwgt(6,0.),_wleptonwgt(3,0.) 
 {
-  _wleptonwgt[0] = 0.434654;
-  _wleptonwgt[1] = 0.431726;
-  _wleptonwgt[2] = 0.426912;
-  _wquarkwgt[0]  = 1.21429;
-  _wquarkwgt[1]  = 0.0654597;
-  _wquarkwgt[2]  = 0.0666334;
-  _wquarkwgt[3]  = 1.23453;
-  _wquarkwgt[4]  = 5.72811e-06;
-  _wquarkwgt[5]  = 0.000705673;
+  _wleptonwgt[0] = 0.302583;
+  _wleptonwgt[1] = 0.301024;
+  _wleptonwgt[2] = 0.299548;
+  _wquarkwgt[0]  = 0.851719;
+  _wquarkwgt[1]  = 0.0450162;
+  _wquarkwgt[2]  = 0.0456962;
+  _wquarkwgt[3]  = 0.859839;
+  _wquarkwgt[4]  = 3.9704e-06;
+  _wquarkwgt[5]  = 0.000489657; 
   generateIntermediates(true);
 }
   
@@ -53,6 +60,7 @@ bool SMTopDecayer::accept(tcPDPtr parent, const PDVector & children) const {
       case ParticleID::tauminus:
 	id2 = id;
 	break;
+      case ParticleID::b:
       case ParticleID::d:
       case ParticleID::s:
 	id1 = id;
@@ -119,12 +127,23 @@ void SMTopDecayer::Init() {
      "decays top quarks into bottom quarks and either leptons  "
      "or quark-antiquark pairs.");
   
+  static ParVector<SMTopDecayer,double> interfaceQuarkWeights
+    ("QuarkWeights",
+     "Maximum weights for the hadronic decays",
+     &SMTopDecayer::_wquarkwgt, 6, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+  
+  static ParVector<SMTopDecayer,double> interfaceLeptonWeights
+    ("LeptonWeights",
+     "Maximum weights for the semi-leptonic decays",
+     &SMTopDecayer::_wleptonwgt, 3, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+  
 }
 
 double SMTopDecayer::me2(bool vertex, const int, 
 			 const Particle & inpart,
-			 const ParticleVector & decay) const
-{
+			 const ParticleVector & decay) const {
   RhoDMatrix rhot(PDT::Spin1Half);
   rhot.average();   //diagonalise  
   DecayMatrixElement topMe(PDT::Spin1Half,PDT::Spin1Half,
@@ -157,35 +176,33 @@ double SMTopDecayer::me2(bool vertex, const int,
       }
     }
   }
-  if(inpart.id() == ParticleID::tbar)
-    {
-      //Vectors to hold all heliticies of spinors
-      vector<SpinorWaveFunction> bbarWave,awave;
-      vector<SpinorBarWaveFunction> tbarWave,fwave;
-      //Set-up spinors for externl particles
-      SpinorBarWaveFunction(tbarWave,rhot,const_ptr_cast<tPPtr>(&inpart),
-			    incoming,true,vertex);
-      SpinorWaveFunction(bbarWave,decay[0],outgoing,true,vertex);
-      SpinorBarWaveFunction(fwave,decay[1],outgoing,true,vertex);
-      SpinorWaveFunction(awave,decay[2],outgoing,true,vertex);
-      VectorWaveFunction inter;
-      tcPDPtr Wminus(getParticleData(ParticleID::Wminus));
-      unsigned int tbhel,bbhel,afhel,fhel;
-      for(tbhel = 0;tbhel<2;++tbhel){
-	for(bbhel = 0;bbhel<2;++bbhel){
-	  inter = _wvertex->
-	    evaluate(scale,1,Wminus,bbarWave[bbhel],tbarWave[tbhel]);
-	  for(afhel=0;afhel<2;++afhel){
-	    for(fhel=0;fhel<2;++fhel){
-	      topMe(tbhel,bbhel,fhel,afhel) = 
-		_wvertex->evaluate(scale,awave[afhel],
-				   fwave[fhel],inter);
-	    }
+  if(inpart.id() == ParticleID::tbar) {
+    //Vectors to hold all heliticies of spinors
+    vector<SpinorWaveFunction> bbarWave,awave;
+    vector<SpinorBarWaveFunction> tbarWave,fwave;
+    //Set-up spinors for externl particles
+    SpinorBarWaveFunction(tbarWave,rhot,const_ptr_cast<tPPtr>(&inpart),
+			  incoming,true,vertex);
+    SpinorWaveFunction(bbarWave,decay[0],outgoing,true,vertex);
+    SpinorBarWaveFunction(fwave,decay[1],outgoing,true,vertex);
+    SpinorWaveFunction(awave,decay[2],outgoing,true,vertex);
+    VectorWaveFunction inter;
+    tcPDPtr Wminus(getParticleData(ParticleID::Wminus));
+    unsigned int tbhel,bbhel,afhel,fhel;
+    for(tbhel = 0;tbhel<2;++tbhel){
+      for(bbhel = 0;bbhel<2;++bbhel){
+	inter = _wvertex->
+	  evaluate(scale,1,Wminus,bbarWave[bbhel],tbarWave[tbhel]);
+	for(afhel=0;afhel<2;++afhel){
+	  for(fhel=0;fhel<2;++fhel){
+	    topMe(tbhel,bbhel,fhel,afhel) = 
+	      _wvertex->evaluate(scale,awave[afhel],
+				 fwave[fhel],inter);
 	  }
 	}
       }
     }
-  
+  }
   ME(topMe);
   double output = (topMe.contract(rhot)).real();
   if(abs(decay[1]->id())<=4){output *=3.;}
@@ -243,6 +260,31 @@ void SMTopDecayer::doinit() throw(InitException) {
 			      << "cannot handle all the quark modes" 
 			      << Exception::abortnow;
       }
+    }
+  }
+}
+
+void SMTopDecayer::dataBaseOutput(ofstream & os,bool header) const {
+  if(header) os << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  for(unsigned int ix=0;ix<_wquarkwgt.size();++ix) {
+    os << "set " << fullName() << ":QuarkWeights " << ix << " "
+	   << _wquarkwgt[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_wleptonwgt.size();++ix) {
+    os << "set " << fullName() << ":LeptonWeights " << ix << " "
+	   << _wleptonwgt[ix] << "\n";
+  }
+  DecayIntegrator::dataBaseOutput(os,false);
+  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
+
+void SMTopDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      if(ix<3) _wleptonwgt[ix  ] = mode(ix)->maxWeight();
+      else     _wquarkwgt [ix-3] = mode(ix)->maxWeight();
     }
   }
 }
