@@ -35,7 +35,7 @@ inline void DefaultReweighter::insertSplitting (const IdList& ids,
 						bool initial) {
   splittingKey key;
   // do not consider tops
-  if (abs(ids[0] ==6) || abs(ids[1] ==6) || abs(ids[2] ==6)) return;
+  if (abs(ids[0]) ==6 || abs(ids[1]) ==6 || abs(ids[2]) ==6) return;
   key.ids = ids;
   key.initial = initial;
   _splittingMap.insert(make_pair(key,sp));
