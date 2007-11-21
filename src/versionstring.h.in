@@ -1,7 +1,5 @@
-#include "Herwig++/Utilities/Histogram.h"
 #include "Herwig++/Utilities/HerwigVersion.h"
 
 void setVersionString() {
-  Herwig::Histogram::versionstring = "@HERWIGVERSIONSTRING@";
   Herwig::HerwigVersion::versionstring = "@HERWIGVERSIONSTRING@";
 }

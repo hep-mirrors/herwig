@@ -66,6 +66,7 @@ AC_DEFUN([HERWIG_CHECK_HEPMC],
 AC_REQUIRE([HERWIG_CHECK_CLHEP])
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
+CREATE_HEPMC="#create"
 HEPMCLIBS="-lHepMC"
 hepmclinkname=HepMC
 AC_ARG_WITH(hepmc,
@@ -112,12 +113,14 @@ if test "x$with_hepmc" != "xno"; then
 	LIBS="$oldLIBS"
 	LDFLAGS="$oldLDFLAGS"
 	CPPFLAGS="$oldCPPFLAGS"
+	CREATE_HEPMC="create"
 fi
 
 
 AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_hepmc" != "xno"])
 AC_SUBST(HEPMCINCLUDE)
 AC_SUBST(HEPMCLIBS)
+AC_SUBST(CREATE_HEPMC)
 AC_CONFIG_LINKS([Config/HepMCHelper.h:Config/HepMCHelper_$hepmclinkname.h])
 ])
 
@@ -182,6 +185,7 @@ KTJETPATH=""
 KTJETLIBS=""
 KTJETINCLUDE=""
 LOAD_KTJET=""
+CREATE_KTJET="#create"
 
 AC_MSG_CHECKING([for KtJet])
 
@@ -256,7 +260,9 @@ else
 	AC_SUBST(KTJETINCLUDE)
 	
 	LOAD_KTJET="read KtJetAnalysis.in"
+	CREATE_KTJET="create"
 	AC_SUBST(LOAD_KTJET)
+	AC_SUBST(CREATE_KTJET)
 fi
 
 AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
@@ -339,6 +345,7 @@ dnl ##### ROOT #####
 AC_DEFUN([HERWIG_CHECK_ROOT],[
 
 ROOTPATH=""
+ROOTLIBPATH=""
 ROOTLIBS=""
 ROOTINCLUDE=""
 LOAD_ROOT=""
@@ -364,6 +371,7 @@ else
     AC_MSG_CHECKING([for ROOTLIBS])
     if test -z "$ROOTLIBS"; then
       ROOTLIBS=`$ROOTPATH/bin/root-config --libs`
+      ROOTLIBPATH=`$ROOTPATH/bin/root-config --libdir`
     fi
     AC_MSG_RESULT([$ROOTLIBS])
 
@@ -374,6 +382,8 @@ else
     AC_MSG_RESULT([$ROOTINCLUDE])
 
     AC_SUBST(ROOTLIBS)
+    AC_SUBST(ROOTLIBPATH)
+    AC_SUBST(ROOTPATH)
     AC_SUBST(ROOTINCLUDE)
 
 	LOAD_ROOT="read Root.in"
@@ -410,14 +420,14 @@ AC_ARG_WITH(pdf,
         [],
         [with_pdf=${prefix}]
         )
-HERWIG_PDF_DEFAULT=${with_pdf}/share/Herwig++PDF/mrst/1998/lo05a.dat
+HERWIG_PDF_DEFAULT=${with_pdf}/share/Herwig++PDF/mrst/2001/lo2002.dat
 
 if test -f "${HERWIG_PDF_DEFAULT}"; then
 	AC_MSG_RESULT([$with_pdf])
 	localPDFneeded=false
 else
 	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-pdf.])
-	HERWIG_PDF_DEFAULT=../PDF/mrst/1998/lo05a.dat
+	HERWIG_PDF_DEFAULT=PDF/mrst/2001/lo2002.dat
 	localPDFneeded=true
 fi
 AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])

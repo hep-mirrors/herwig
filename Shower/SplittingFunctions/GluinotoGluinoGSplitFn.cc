@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GluinotoGluinoGSplitFn.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GluinotoGluinoGSplitFn class.
 //
@@ -52,12 +59,30 @@ double GluinotoGluinoGSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 } 
 
-double GluinotoGluinoGSplitFn::integOverP(const double z) const {
-  return -6.*log(1.-z); 
+double GluinotoGluinoGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return -6.*log(1.-z); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "GluinotoGluinoGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
-double GluinotoGluinoGSplitFn::invIntegOverP(const double r) const {
-  return 1. - exp(-r/6.); 
+double GluinotoGluinoGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+  switch(PDFfactor) {
+  case 0:
+    return 1. - exp(-r/6.); 
+  case 1:
+  case 2:
+  case 3:
+  default:
+    throw Exception() << "GluinotoGluinoGSplitFn::integOverP() invalid PDFfactor = "
+		      << PDFfactor << Exception::runerror;
+  }
 }
 
 void GluinotoGluinoGSplitFn::colourConnection(tShowerParticlePtr parent,

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMHiggsWWDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHiggsWWDecayer_H
 #define HERWIG_SMHiggsWWDecayer_H
 //
@@ -9,6 +16,7 @@
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
+#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 #include "SMHiggsWWDecayer.fh"
 
 namespace Herwig {
@@ -179,6 +187,11 @@ private:
   //@}
 
   /**
+   *  Pointer to the width generator for the Higgs
+   */
+  SMHiggsWidthGeneratorPtr _hwidth;
+
+  /**
    *  Selectors for the gauge boson decay modes
    */
   //@{
@@ -205,27 +218,12 @@ private:
   /**
    *  Maximum weight for \f$H\to W^+W^-\f$ decays
    */
-  double _wmax;
+  vector<double> _wmax;
 
   /**
    *  Maximum weight for \f$H\to Z^0Z^0\f$ decays
    */
-  double _zmax;
-  //@}
-
-  /**
-   *  Parameters for the generation of the boson masses
-   */
-  //@{
-  /**
-   *  Generate using a Breit-Wigner or a power law
-   */
-  bool _breit;
-
-  /**
-   *  Power for the power law
-   */
-  double _power;
+  vector<double> _zmax;
   //@}
 };
 

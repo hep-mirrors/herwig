@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// a1ThreePionCLEODecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the a1ThreePionCLEODecayer class.
 //
@@ -557,7 +564,7 @@ void a1ThreePionCLEODecayer::Init() {
      true);
   static SwitchOption interfaceLocalParametersDefault
     (interfaceLocalParameters,
-     "Default",
+     "ParticleData",
      "Use the values from the particleData objects",
      false);
 

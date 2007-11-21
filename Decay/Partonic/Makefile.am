@@ -8,4 +8,4 @@ BtoSGammaDecayer.h BtoSGammaDecayer.icc \
 BtoSGammaDecayer.cc BtoSGammaDecayer.fh  \
 PartonicDecayerBase.h PartonicDecayerBase.icc \
 PartonicDecayerBase.cc PartonicDecayerBase.fh 
-HwPartonicDecay_la_LDFLAGS = -module -version-info 2:0:0
+HwPartonicDecay_la_LDFLAGS = -module -version-info 3:0:0

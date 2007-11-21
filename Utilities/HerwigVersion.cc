@@ -1,5 +1,9 @@
 #include "HerwigVersion.h"
 
-using namespace Herwig;
+std::string Herwig::HerwigVersion::versionstring = "";
 
-string HerwigVersion::versionstring = "";
+#ifdef HERWIG_DATADIR
+std::string Herwig::HerwigVersion::pkgdatadir = HERWIG_DATADIR;
+#else
+#error "HERWIG_DATADIR must be defined."
+#endif

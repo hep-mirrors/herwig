@@ -144,6 +144,17 @@ public:
   inline pair<double,double> bin (unsigned int) const;
 
   /**
+   * Return the bin entries.
+   */
+  inline vector<unsigned long> binEntries () const;
+
+  /**
+   * Return the bin entries for the
+   * given index.
+   */
+  inline unsigned long binEntries (unsigned int) const;
+
+  /**
    * Explicitly set the content of the
    * bin with given index.
    */
@@ -186,6 +197,11 @@ public:
 
   /**@name Normalization and statistical tests */
   //@{
+
+  /**
+   * Finish this channel.
+   */
+  inline void finish ();
 
   /**
    * This channel is a differential distribution:
@@ -236,7 +252,7 @@ public:
   /**
    * Write out the channel
    */
-  void write (ostream&, const string&) const;
+  void write (ostream&, const string&);
 
   /**
    * Read in the channel
@@ -277,6 +293,12 @@ private:
   vector<pair<double,double> > _bins;
 
   /**
+   * The number of entries in each bin,
+   * to be accessed by the bin id.
+   */
+  vector<unsigned long> _binEntries;
+
+  /**
    * The contents of under- and overflow
    */
   pair<double,double> _outOfRange;
@@ -302,6 +324,11 @@ private:
    * indefinite weights.
    */
   vector<unsigned long> _nanWeights;
+
+  /**
+   * Has finish() already been called?
+   */
+  bool _finished;
 
 };
 
@@ -515,6 +542,12 @@ public:
 
   /**@name Normalisation and statistical tests */
   //@{
+
+  /**
+   * Finish the given channel
+   */
+  inline void finish (const string&);
+
   /**
    * The given channel is a differential distribution,
    * dvidie each bin by its bin width.
@@ -577,7 +610,7 @@ public:
    * Write out the histogram to a file
    * name.h2
    */
-  void store (const string& name) const;
+  void store (const string& name);
 
   /**
    * Read in the histogram from a file

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEPP2HiggsJet.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEPP2HiggsJet class.
 //
@@ -32,11 +39,13 @@ unsigned int MEPP2HiggsJet::orderInAlphaEW() const {
 }
 
 void MEPP2HiggsJet::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _process << _minloop << _maxloop << _massopt;
+  os << _shapeopt << _maxflavour << _process << _minloop << _maxloop << _massopt
+     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass;
 }
 
 void MEPP2HiggsJet::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _process >> _minloop >> _maxloop >> _massopt;
+  is >> _shapeopt >> _maxflavour >> _process >> _minloop >> _maxloop >> _massopt
+     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
 }
 
 ClassDescription<MEPP2HiggsJet> MEPP2HiggsJet::initMEPP2HiggsJet;
@@ -59,6 +68,21 @@ void MEPP2HiggsJet::Init() {
      "The maximum flavour of the quarks in the process",
      &MEPP2HiggsJet::_maxflavour, 5, 1, 5,
      false, false, Interface::limited);
+
+  static Switch<MEPP2HiggsJet,unsigned int> interfaceShapeOption
+    ("ShapeScheme",
+     "Option for the treatment of the Higgs resonance shape",
+     &MEPP2HiggsJet::_shapeopt, 1, false, false);
+  static SwitchOption interfaceStandardShapeFixed
+    (interfaceShapeOption,
+     "FixedBreitWigner",
+     "Breit-Wigner s-channel resonanse",
+     1);
+  static SwitchOption interfaceStandardShapeRunning
+    (interfaceShapeOption,
+     "MassGenerator",
+     "Use the mass generator to give the shape",
+     2);
 
   static Switch<MEPP2HiggsJet,unsigned int> interfaceProcess
     ("Process",
@@ -120,29 +144,43 @@ void MEPP2HiggsJet::Init() {
 }
 
 bool MEPP2HiggsJet::generateKinematics(const double * r) {
-  double ctmin = -1.0;
-  double ctmax = 1.0;
-  if(mePartonData()[2]->id()!=ParticleID::h0) meMomenta()[2].setMass(0.*GeV);
-  if(mePartonData()[3]->id()!=ParticleID::h0) meMomenta()[3].setMass(0.*GeV);
+  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
+   		     lastCuts().minKT(mePartonData()[3]));
+  Energy e = sqrt(sHat())/2.0;
+  // generate the mass of the higgs boson
+  Energy2 mhmax2 = sHat()-4.*ptmin*e;
+  Energy2 mhmin2 =0.*GeV2;
+  if(mhmax2<=mhmin2) return false;
+  double rhomin = atan((mhmin2-sqr(_mh))/_mh/_wh);
+  double rhomax = atan((mhmax2-sqr(_mh))/_mh/_wh);
+  Energy mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
+  // assign masses
+  if(mePartonData()[2]->id()!=ParticleID::h0) {
+    meMomenta()[2].setMass(0.*GeV);
+    meMomenta()[3].setMass(mh);
+  }
+  else {
+    meMomenta()[3].setMass(0.*GeV);
+    meMomenta()[2].setMass(mh);
+  }
 
   Energy q = 0.0*GeV;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
-  } catch ( ImpossibleKinematics ) {
+  } 
+  catch ( ImpossibleKinematics ) {
     return false;
   }
-
-  Energy e = sqrt(sHat())/2.0;
 		    
-  Energy2 m22 = meMomenta()[2].mass2();
-  Energy2 m32 = meMomenta()[3].mass2();
+  Energy2 m22  = meMomenta()[2].mass2();
+  Energy2 m32  = meMomenta()[3].mass2();
   Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
   Energy2 e1e2 = 2.0*e*sqrt(sqr(q) + m22);
   Energy2 e0e3 = 2.0*e*sqrt(sqr(q) + m32);
   Energy2 e1e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 pq = 2.0*e*q;
-
+  Energy2 pq   = 2.0*e*q;
+  double ctmin = -1.0,ctmax = 1.0;
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
   if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
@@ -154,9 +192,6 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
 
   thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
   if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-
-  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
-   		     lastCuts().minKT(mePartonData()[3]));
   if ( ptmin > 0.0*GeV ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
@@ -192,7 +227,10 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
 
   tHat(pq*cth + m22 - e0e2);
   uHat(m22 + m32 - sHat() - tHat());
+  // main piece
   jacobian((pq/sHat())*Constants::pi*jacobian());
+  // mass piece
+  jacobian((rhomax-rhomin)*jacobian());
   return true;
 }
 
@@ -239,96 +277,92 @@ double MEPP2HiggsJet::me2() const {
   useMe();
   double output(0.);
   // g g to H g
-  if(mePartonData()[0]->id()==ParticleID::g&&mePartonData()[1]->id()==ParticleID::g)
-    {
-      // order of the particles
-      unsigned int ih(2),ig(3);
-      if(mePartonData()[3]->id()==ParticleID::h0){ig=2;ih=3;}
-      VectorWaveFunction glin1(meMomenta()[ 0],mePartonData()[ 0],incoming);
-      VectorWaveFunction glin2(meMomenta()[ 1],mePartonData()[ 1],incoming);
-      ScalarWaveFunction  hout(meMomenta()[ih],mePartonData()[ih],outgoing);
-      VectorWaveFunction glout(meMomenta()[ig],mePartonData()[ig],outgoing);
-      vector<VectorWaveFunction> g1,g2,g4;
-      for(unsigned int ix=0;ix<2;++ix) {
-	glin1.reset(2*ix);g1.push_back(glin1);
-	glin2.reset(2*ix);g2.push_back(glin2);
-	glout.reset(2*ix);g4.push_back(glout);
-      }
-      // calculate the matrix element
-      output = ggME(g1,g2,hout,g4,false); 
+  if(mePartonData()[0]->id()==ParticleID::g&&mePartonData()[1]->id()==ParticleID::g) {
+    // order of the particles
+    unsigned int ih(2),ig(3);
+    if(mePartonData()[3]->id()==ParticleID::h0){ig=2;ih=3;}
+    VectorWaveFunction glin1(meMomenta()[ 0],mePartonData()[ 0],incoming);
+    VectorWaveFunction glin2(meMomenta()[ 1],mePartonData()[ 1],incoming);
+    ScalarWaveFunction  hout(meMomenta()[ih],mePartonData()[ih],outgoing);
+    VectorWaveFunction glout(meMomenta()[ig],mePartonData()[ig],outgoing);
+    vector<VectorWaveFunction> g1,g2,g4;
+    for(unsigned int ix=0;ix<2;++ix) {
+      glin1.reset(2*ix);g1.push_back(glin1);
+      glin2.reset(2*ix);g2.push_back(glin2);
+      glout.reset(2*ix);g4.push_back(glout);
     }
+    // calculate the matrix element
+    output = ggME(g1,g2,hout,g4,false); 
+  }
   // qg -> H q
-  else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id()==ParticleID::g)
-    {
-      // order of the particles
-      unsigned int iq(0),iqb(3),ih(2),ig(1);
-      if(mePartonData()[0]->id()==ParticleID::g){iq=1;ig=0;}
-      if(mePartonData()[3]->id()==ParticleID::h0){iqb=2;ih=3;}
-      // calculate the spinors and polarization vectors
-      vector<SpinorWaveFunction> fin;
-      vector<SpinorBarWaveFunction>  fout;
-      vector<VectorWaveFunction> gin;
-      SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
-      VectorWaveFunction    glin(meMomenta()[ig ],mePartonData()[ig ],incoming);
-      ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
-      SpinorBarWaveFunction qout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
-      for(unsigned int ix=0;ix<2;++ix) {
-	qin.reset(ix)   ; fin.push_back( qin);
-	qout.reset(ix)  ;fout.push_back(qout);
-	glin.reset(2*ix); gin.push_back(glin);
-      }
-      // calculate the matrix element
-      output = qgME(fin,gin,hout,fout,false); 
+  else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id()==ParticleID::g) {
+    // order of the particles
+    unsigned int iq(0),iqb(3),ih(2),ig(1);
+    if(mePartonData()[0]->id()==ParticleID::g){iq=1;ig=0;}
+    if(mePartonData()[3]->id()==ParticleID::h0){iqb=2;ih=3;}
+    // calculate the spinors and polarization vectors
+    vector<SpinorWaveFunction> fin;
+    vector<SpinorBarWaveFunction>  fout;
+    vector<VectorWaveFunction> gin;
+    SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
+    VectorWaveFunction    glin(meMomenta()[ig ],mePartonData()[ig ],incoming);
+    ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
+    SpinorBarWaveFunction qout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)   ; fin.push_back( qin);
+      qout.reset(ix)  ;fout.push_back(qout);
+      glin.reset(2*ix); gin.push_back(glin);
     }
+    // calculate the matrix element
+    output = qgME(fin,gin,hout,fout,false); 
+  }
   // qbar g -> H q
-  else if(mePartonData()[0]->id()<0&&mePartonData()[1]->id()==ParticleID::g)
-    {
-      // order of the particles
-      unsigned int iq(0),iqb(3),ih(2),ig(1);
-      if(mePartonData()[0]->id()==ParticleID::g){iq=1;ig=0;}
-      if(mePartonData()[3]->id()==ParticleID::h0){iqb=2;ih=3;}
-       // calculate the spinors and polarization vectors
-       vector<SpinorBarWaveFunction> fin;
-       vector<SpinorWaveFunction>  fout;
-       vector<VectorWaveFunction> gin;
-       SpinorBarWaveFunction qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
-       VectorWaveFunction    glin(meMomenta()[ig ],mePartonData()[ig ],incoming);
-       ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
-       SpinorWaveFunction    qout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
-      for(unsigned int ix=0;ix<2;++ix) {
-	qin.reset(ix)   ; fin.push_back( qin);
-	qout.reset(ix)  ;fout.push_back(qout);
-	glin.reset(2*ix); gin.push_back(glin);
-      }
-      // calculate the matrix element
-      output = qbargME(fin,gin,hout,fout,false); 
+  else if(mePartonData()[0]->id()<0&&mePartonData()[1]->id()==ParticleID::g) {
+    // order of the particles
+    unsigned int iq(0),iqb(3),ih(2),ig(1);
+    if(mePartonData()[0]->id()==ParticleID::g){iq=1;ig=0;}
+    if(mePartonData()[3]->id()==ParticleID::h0){iqb=2;ih=3;}
+    // calculate the spinors and polarization vectors
+    vector<SpinorBarWaveFunction> fin;
+    vector<SpinorWaveFunction>  fout;
+    vector<VectorWaveFunction> gin;
+    SpinorBarWaveFunction qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
+    VectorWaveFunction    glin(meMomenta()[ig ],mePartonData()[ig ],incoming);
+    ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
+    SpinorWaveFunction    qout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)   ; fin.push_back( qin);
+      qout.reset(ix)  ;fout.push_back(qout);
+      glin.reset(2*ix); gin.push_back(glin);
     }
+    // calculate the matrix element
+    output = qbargME(fin,gin,hout,fout,false); 
+  }
   // q qbar to H g
-  else if(mePartonData()[0]->id()==-mePartonData()[1]->id())
-    {
-      // order of the particles
-      unsigned int iq(0),iqb(1),ih(2),ig(3);
-      if(mePartonData()[0]->id()<0){iq=1;iqb=0;}
-      if(mePartonData()[2]->id()==ParticleID::g){ig=2;ih=3;}
-      // calculate the spinors and polarization vectors
-      vector<SpinorWaveFunction> fin;
-      vector<SpinorBarWaveFunction>  ain;
-      vector<VectorWaveFunction> gout;
-      SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
-      SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
-      ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
-      VectorWaveFunction   glout(meMomenta()[ig ],mePartonData()[ig ],outgoing);
-      for(unsigned int ix=0;ix<2;++ix) {
-	qin.reset(ix)    ; fin.push_back(  qin);
-	qbin.reset(ix)   ; ain.push_back( qbin);
-	glout.reset(2*ix);gout.push_back(glout);
-      }
-      // calculate the matrix element
-      output = qqbarME(fin,ain,hout,gout,false); 
+  else if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
+    // order of the particles
+    unsigned int iq(0),iqb(1),ih(2),ig(3);
+    if(mePartonData()[0]->id()<0){iq=1;iqb=0;}
+    if(mePartonData()[2]->id()==ParticleID::g){ig=2;ih=3;}
+    // calculate the spinors and polarization vectors
+    vector<SpinorWaveFunction> fin;
+    vector<SpinorBarWaveFunction>  ain;
+    vector<VectorWaveFunction> gout;
+    SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
+    SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
+    ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
+    VectorWaveFunction   glout(meMomenta()[ig ],mePartonData()[ig ],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)    ; fin.push_back(  qin);
+      qbin.reset(ix)   ; ain.push_back( qbin);
+      glout.reset(2*ix);gout.push_back(glout);
     }
+    // calculate the matrix element
+    output = qqbarME(fin,ain,hout,gout,false); 
+  }
   else
-    {throw Exception() << "Unknown subprocess in MEPP2HiggsJet::me2()" 
-		       << Exception::runerror;}
+    throw Exception() << "Unknown subprocess in MEPP2HiggsJet::me2()" 
+		      << Exception::runerror;
   // return the answer
   return output;
 }
@@ -794,4 +828,40 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     dynamic_ptr_cast<ThePEG::Helicity::SpinfoPtr>(hard[ix]->spinInfo())->
       setProductionVertex(hardvertex);
   }
+}
+
+int MEPP2HiggsJet::nDim() const {
+  return 2;
+}
+
+void MEPP2HiggsJet::doinit() throw(InitException) {
+  ME2to2Base::doinit();
+  tcPDPtr h0=getParticleData(ParticleID::h0);
+  _mh = h0->mass();
+  _wh = h0->generateWidth(_mh);
+  if(h0->massGenerator()) {
+    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+  }
+  if(_shapeopt==2&&!_hmass) throw InitException()
+    << "If using the mass generator for the line shape in MEPP2HiggsJet::doinit()"
+    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << Exception::runerror;
+}
+
+CrossSection MEPP2HiggsJet::dSigHatDR() const {
+  using Constants::pi;
+  InvEnergy2 bwfact;
+  Energy moff = mePartonData()[2]->id()==ParticleID::h0 ?
+    meMomenta()[2].mass() : meMomenta()[3].mass();
+  if(_shapeopt==1) {
+    tcPDPtr h0 = mePartonData()[2]->id()==ParticleID::h0 ?
+      mePartonData()[2] : mePartonData()[3];
+    bwfact = h0->generateWidth(moff)*moff/pi/
+      (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
+  }
+  else {
+    bwfact = _hmass->BreitWignerWeight(moff,0);
+  }
+  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc)*
+    (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)*bwfact;
 }

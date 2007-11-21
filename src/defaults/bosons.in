@@ -1,0 +1,23 @@
+#
+# file containing the particle data for the bosons
+#
+create ThePEG::ParticleData gamma
+setup gamma 22 gamma 0 0.  0 0 0 0 3 1 
+defaultparticle gamma
+create ThePEG::ParticleData h0
+setup h0 25 h0 115 0.003196 0.030196 0 0 0 1 0 
+defaultparticle h0
+set h0:VariableRatio 1
+create ThePEG::ConstituentParticleData g
+setup g 21 g 0 0.  0 0 0 8 3 1  0.9
+defaultparticle g
+create ThePEG::ParticleData Z0
+setup Z0 23 Z0 91.1876 2.4952 24.952 0 0 0 3 0 
+defaultparticle Z0
+create ThePEG::ParticleData W+
+setup W+ 24 W+ 80.403 2.141 21.41 0 3 0 3 0 
+defaultparticle W+
+create ThePEG::ParticleData W-
+setup W- -24 W- 80.403 2.141 21.41 0 -3 0 3 0 
+defaultparticle W-
+makeanti W- W+

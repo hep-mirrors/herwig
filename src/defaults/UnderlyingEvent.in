@@ -1,0 +1,52 @@
+################################################
+# Set up the handler for the underlying event. 
+################################################
+
+mkdir /Herwig/UnderlyingEvent
+cd /Herwig/UnderlyingEvent
+
+########cuts############
+# cut on pt. Without a specific matcher object, it works on all particles
+create ThePEG::SimpleKTCut KtCut SimpleKTCut.so
+set KtCut:MinKT 2.2
+
+# create the cuts object for the Underlying Event
+create ThePEG::Cuts UECuts
+# This should always be 2*MinKT!!
+set UECuts:MHatMin 4.4
+set UECuts:MHatMax 10000000.0
+
+insert UECuts:OneCuts 0 KtCut
+#########################
+
+########subprocesses#####
+create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEFast.so
+create ThePEG::SubProcessHandler FastQCD
+insert FastQCD:MatrixElements 0 MEQCD2to2Fast
+set FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor
+#########################
+
+library HwMPI.so
+create Herwig::MPISampler MPISampler
+create Herwig::MPIHandler MPIHandler
+
+# set how to sample the subprocesses
+#set MPIHandler:BinStrategy 0
+
+# set the ACDC Sampler
+set MPIHandler:Sampler MPISampler
+
+# set the subprocesses
+insert MPIHandler:SubProcessHandlers 0 FastQCD
+
+# set the cuts object
+set MPIHandler:Cuts UECuts
+
+# set the inverse hadron radius
+set MPIHandler:InvRadius 1.3
+
+# set the algorithm
+# 0 = UE and signal with comparable cross section
+# 1 = signal cross section much smaller than UE xsec (same processes)
+# 2 = signal cross section much smaller than UE xsec (different processes)
+set MPIHandler:Algorithm 2

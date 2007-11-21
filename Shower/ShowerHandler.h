@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ShowerHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ShowerHandler_H
 #define HERWIG_ShowerHandler_H
 //
@@ -329,8 +336,25 @@ private:
   static ShowerHandler * theHandler;
 
 public:
-  
+
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to energy conservation issues of additional scatters
+   */
   struct ExtraScatterVeto {};
+
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to fact that the Shower has been invoked more than
+   * a defined threshold on a certain configuration
+   */
+  struct ShowerTriesVeto {
+    /** variable to store the number of attempts */
+    int theTries;
+
+    /** constructor */
+    ShowerTriesVeto(int tries){theTries = tries;}
+  };
 
   /**
    *  pointer to "this", the current ShowerHandler.

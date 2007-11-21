@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// GtoQQbarSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_GtoQQbarSplitFn_H
 #define HERWIG_GtoQQbarSplitFn_H
 //
@@ -90,14 +97,20 @@ public:
    * The concrete implementation of the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z) const;
+  virtual double integOverP(const double z, unsigned int PDFfactor=0) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
    * @param r Value of the splitting function to be inverted
+   * @param PDFfactor Which additional factor to include for the PDF
+   *                  0 is no additional factor,
+   *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r) const;
+  virtual double invIntegOverP(const double r, unsigned int PDFfactor=0) const;
   //@}
 
   /**

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TwoBodyDecayConstructor.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the TwoBodyDecayConstructor class.
 //
@@ -44,14 +51,14 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_init, true, false, false);
   static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
     (interfaceInitializeDecayers,
-     "On",
+     "Yes",
      "Initialize new decayers to find max weights",
-     1);
+     true);
   static SwitchOption interfaceInitializeDecayersoff
     (interfaceInitializeDecayers,
-     "Off",
+     "No",
      "Use supplied weights for integration",
-     0);
+     false);
   
   static Parameter<TwoBodyDecayConstructor,int> interfaceInitIteration
     ("InitIteration",
@@ -71,12 +78,12 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_info, false, false, false);
   static SwitchOption interfaceOutputInfoOff
     (interfaceOutputInfo,
-     "Off",
+     "No",
      "Do not output information regarding the created decayers",
      false);
   static SwitchOption interfaceOutputInfoOn
     (interfaceOutputInfo,
-     "On",
+     "Yes",
      "Output information regarding the decayers",
      true);
 
@@ -86,12 +93,12 @@ void TwoBodyDecayConstructor::Init() {
      &TwoBodyDecayConstructor::_createmodes, true, false, false);
   static SwitchOption interfaceCreateDecayModesOn
     (interfaceCreateDecayModes,
-     "On",
+     "Yes",
      "Create the ThePEG::DecayMode objects",
      true);
   static SwitchOption interfaceCreateDecayModesOff
     (interfaceCreateDecayModes,
-     "Off",
+     "No",
      "Only create the Decayer objects",
      false);
 }
@@ -214,7 +221,7 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vertex,
     <<  "Looking in column " << icol;
   }
   ostringstream fullname;
-  fullname << "/Defaults/Decays/" << name << "_" 
+  fullname << "/Herwig/Decays/" << name << "_" 
 	   << ivert << "_" << icol;
   string classname = "Herwig::" + name;
     

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEPP2Higgs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEPP2Higgs class.
 //
@@ -24,13 +31,14 @@ ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
   os << hggvertex << ffhvertex << theSM << shapeopt << processopt 
-     << minflavouropt << maxflavouropt;
+     << minflavouropt << maxflavouropt << _hmass << ounit(_mh,GeV) << ounit(_wh,GeV);
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
   is >> hggvertex >> ffhvertex >> theSM >> shapeopt >> processopt 
-     >> minflavouropt >> maxflavouropt;
+     >> minflavouropt >> maxflavouropt >> _hmass >> iunit(_mh,GeV) >> iunit(_wh,GeV);
 }
+
 void MEPP2Higgs::Init() {
 
   static ClassDocumentation<MEPP2Higgs> documentation
@@ -48,14 +56,9 @@ void MEPP2Higgs::Init() {
      1);
   static SwitchOption interfaceStandardShapeRunning
     (interfaceShapeOption,
-     "RunningBreitWigner",
-     "Breit-Wigner Higgs resonanse with internal running width",
+     "MassGenerator",
+     "Use the mass generator to give the shape",
      2);
-  static SwitchOption interfaceImprovedShape
-    (interfaceShapeOption,
-     "ImprovedBreitWigner",
-     "Improved Higgs s-channel resonanse (hep-ph/9505211)",
-     6);
 
   static Switch<MEPP2Higgs,unsigned int> interfaceProcess
     ("Process",
@@ -102,7 +105,17 @@ void MEPP2Higgs::doinit() throw(InitException) {
   }
   hggvertex = dynamic_ptr_cast<SVVLoopVertexPtr>(theSM->vertexHGG());
   ffhvertex = theSM->vertexFFH();
+  // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
+  _mh = h0->mass();
+  _wh = h0->generateWidth(_mh);
+  if(h0->massGenerator()) {
+    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+  }
+  if(shapeopt==2&&!_hmass) throw InitException()
+    << "If using the mass generator for the line shape in MEPP2Higgs::doinit()"
+    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
+    << Exception::runerror;
 }
 
 unsigned int MEPP2Higgs::orderInAlphaS() const {
@@ -127,9 +140,6 @@ bool MEPP2Higgs::generateKinematics(const double *) {
   meMomenta()[2].setMass(pout.mass());
   meMomenta()[2] = LorentzMomentum(pout.x(),pout.y(),pout.z(),pout.t());
   jacobian(1.0);
-
-  Energy2 s(sHat());
-  PDPtr h0 = getParticleData(ParticleID::h0);
   // check whether it passes all the cuts: returns true if it does
   vector<LorentzMomentum> out(1,meMomenta()[2]);
   tcPDVector tout(1,mePartonData()[2]);
@@ -154,8 +164,16 @@ void MEPP2Higgs::getDiagrams() const {
 }
 
 CrossSection MEPP2Higgs::dSigHatDR() const {
-  tcPDPtr h0 = getParticleData(ParticleID::h0);
-  double cs = me2() * jacobian() * h0->generateWidth(sqrt(sHat()))/sqrt(sHat());
+  using Constants::pi;
+  InvEnergy2 bwfact;
+  if(shapeopt==1) {
+    bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
+      (sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+  }
+  else {
+    bwfact = _hmass->BreitWignerWeight(sqrt(sHat()),0);
+  }
+  double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
   return UnitRemoval::InvE2 * sqr(hbarc) * cs;
 }
 
@@ -167,18 +185,19 @@ double MEPP2Higgs::me2() const {
 // Safety code to garantee the reliable behaviour of Higgs shape limits 
 // (important for heavy and broad Higgs resonance).
   Energy hmass = meMomenta()[2].m();
-  PDPtr h0 = getParticleData(ParticleID::h0);
+  tcPDPtr h0 = mePartonData()[2];
   Energy mass = h0->mass();
   Energy halfmass = .5*mass;
   if (.0*GeV > hmass) return 0.0;
-// stricly speaking the condition is applicable if h0->widthUpCut() == h0->widthLoCut()...
+  // stricly speaking the condition is applicable if h0->widthUpCut() == h0->widthLoCut()...
   if (h0->widthLoCut() > halfmass) {
     if ((mass + h0->widthUpCut() < hmass || mass - h0->widthLoCut() > hmass)) return 0.0;
   } else {
     if (mass + halfmass < hmass || halfmass > hmass) return 0.0;
   }
 
-  if (mePartonData()[0]->id() == ParticleID::g && mePartonData()[1]->id() == ParticleID::g) {
+  if (mePartonData()[0]->id() == ParticleID::g && 
+      mePartonData()[1]->id() == ParticleID::g) {
     VectorWaveFunction gin1(meMomenta()[0],mePartonData()[0],incoming);
     VectorWaveFunction gin2(meMomenta()[1],mePartonData()[1],incoming);
 
@@ -275,39 +294,35 @@ void MEPP2Higgs::constructVertex(tSubProPtr sub) {
 
 double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, 
                           vector<VectorWaveFunction> g2, 
-                          ScalarWaveFunction &, 
+                          ScalarWaveFunction & in, 
                           bool calc) const {
-  PDPtr h0 = getParticleData(ParticleID::h0);
   ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 s(sHat());
   double me2(0.0);
   for(int i = 0; i < 2; ++i) {
     for(int j = 0; j < 2; ++j) {
-      ScalarWaveFunction higgsWF = hggvertex->evaluate(s,shapeopt,h0,g1[i],g2[j]);
-      Complex diag = higgsWF.wave();
-      me2 += real(diag*conj(diag));
+      Complex diag = hggvertex->evaluate(s,in,g1[i],g2[j]);
+      me2 += norm(diag);
       if(calc) newme(2*i, 2*j, 0) = diag;
     }
   }
   if(calc) _me.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
-  return me2/(32.);
+  return me2/32.;
 }
 
 
 double MEPP2Higgs::qqME(vector<SpinorWaveFunction> & fin, 
                           vector<SpinorBarWaveFunction> & ain, 
-                          ScalarWaveFunction &, 
+                          ScalarWaveFunction & in, 
                           bool calc) const {
-  PDPtr h0 = getParticleData(ParticleID::h0);
   ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
   Energy2 s(scale());
   double me2(0.0);
   for(int i = 0; i < 2; ++i) {
     for(int j = 0; j < 2; ++j) {
-      ScalarWaveFunction higgsWF = ffhvertex->evaluate(s,shapeopt,h0,fin[i],ain[j]);
-      Complex diag = higgsWF.wave();
-      me2+=real(diag*conj(diag));
+      Complex diag = ffhvertex->evaluate(s,fin[i],ain[j],in);
+      me2+=norm(diag);
       if(calc) newme(i, j, 0) = diag;
     }
   }

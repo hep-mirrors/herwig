@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// HwDecayHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the HwDecayHandler class.
 //
@@ -179,12 +186,12 @@ void HwDecayHandler::Init() {
      &HwDecayHandler::_newstep, true, false, false);
   static SwitchOption interfaceNewStepNew
     (interfaceNewStep,
-     "New",
+     "Yes",
      "Add particles in a new step",
      true);
   static SwitchOption interfaceNewStepCurrent
     (interfaceNewStep,
-     "Current",
+     "No",
      "Add them in the current step",
      false);
 

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ClusterHadronizationHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ClusterHadronizationHandler class.
 //
@@ -38,7 +45,6 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _clusterDecayer
      << ounit(_minVirtuality2,GeV2)
      << ounit(_maxDisplacement,mm)
-     << _softUnderlyingEventMode
      << _underlyingEventHandler;
 }
 
@@ -52,7 +58,6 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _clusterDecayer
      >> iunit(_minVirtuality2,GeV2)
      >> iunit(_maxDisplacement,mm)
-     >> _softUnderlyingEventMode
      >> _underlyingEventHandler;
 }
 
@@ -112,36 +117,11 @@ void ClusterHadronizationHandler::Init() {
      &ClusterHadronizationHandler::_maxDisplacement, mm, 1.0e-10*mm, 
      0.0*mm, 1.0e-9*mm,false,false,false);
 
-  static Switch<ClusterHadronizationHandler,bool> interfaceSoftUnderlyingEvent
-    ("SoftUnderlyingEvent",
-     "Set to On if soft underlying event should be run.",
-     &ClusterHadronizationHandler::_softUnderlyingEventMode, false, false, false);
-  static SwitchOption interfaceSoftUnderlyingEventOn
-    (interfaceSoftUnderlyingEvent,
-     "On",
-     "Enable soft underlying event.",
-     true);
-  static SwitchOption interfaceSoftUnderlyingEventOff
-    (interfaceSoftUnderlyingEvent,
-     "Off",
-     "Disable soft underlying event.",
-     false);
-
   static Reference<ClusterHadronizationHandler,StepHandler> interfaceUnderlyingEventHandler
     ("UnderlyingEventHandler",
      "Pointer to the handler for the Underlying Event. "
-     "This must be set when SoftUnderlyingEvent is On.",
+     "Set to NULL to disable.",
      &ClusterHadronizationHandler::_underlyingEventHandler, false, false, true, true, false);
-}
-
-
-void ClusterHadronizationHandler::doinit() throw(InitException) {
-  HadronizationHandler::doinit();
-  // check that UEHandler is there when _softUnderlyingEventMode is true
-  if (!_underlyingEventHandler && isSoftUnderlyingEventON())
-    Throw<InitException>() << "SoftUnderlyingEvent is set to On, "
-			   << "this requires the pointer\n" 
-			   << name() << ":UnderlyingEventHandler to be set.";
 }
 
 void ClusterHadronizationHandler::doinitrun() {

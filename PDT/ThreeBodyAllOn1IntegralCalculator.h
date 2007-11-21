@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ThreeBodyAllOn1IntegralCalculator.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ThreeBodyAllOn1IntegralCalculator_H
 #define HERWIG_ThreeBodyAllOn1IntegralCalculator_H
 // This is the declaration of the ThreeBodyAllOn1IntegralCalculator class.

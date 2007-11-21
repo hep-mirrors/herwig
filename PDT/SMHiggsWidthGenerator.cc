@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SMHiggsWidthGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SMHiggsWidthGenerator class.
 //
@@ -12,20 +19,23 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/DecayMode.h"
+#include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/PDT/ParticleData.h"
 
 using namespace Herwig;
 
 void SMHiggsWidthGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _widthopt << _branchingopt << ounit(_mw,GeV) << ounit(_mz,GeV) 
+  os << _widthopt << ounit(_mw,GeV) << ounit(_mz,GeV) 
      << ounit(_gamw,GeV) << ounit(_gamz,GeV) << ounit(_qmass,GeV) 
-     << ounit(_lmass,GeV);
+     << ounit(_lmass,GeV) << _sw2 << _ca << _cf;
 }
 
 void SMHiggsWidthGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _widthopt >> _branchingopt >> iunit(_mw,GeV) >> iunit(_mz,GeV) 
+  is >> _widthopt >> iunit(_mw,GeV) >> iunit(_mz,GeV) 
      >> iunit(_gamw,GeV) >> iunit(_gamz,GeV) >> iunit(_qmass,GeV) 
-     >> iunit(_lmass,GeV);
+     >> iunit(_lmass,GeV) >> _sw2 >> _ca >> _cf;
 }
 
 ClassDescription<SMHiggsWidthGenerator> SMHiggsWidthGenerator::initSMHiggsWidthGenerator;
@@ -44,47 +54,22 @@ void SMHiggsWidthGenerator::Init() {
   static Switch<SMHiggsWidthGenerator,unsigned int> interfaceWidthOption
     ("WidthScheme",
      "Option for the treatment of the Higss Width calculation",
-     &SMHiggsWidthGenerator::_widthopt, 1, false, false);
+     &SMHiggsWidthGenerator::_widthopt, 2, false, false);
   static SwitchOption interfaceFixedWidth
     (interfaceWidthOption,
-     "FixedHiggsWidth",
+     "Fixed",
      "Fixed Higgs width, taken from ThePEGParticles.in",
      1);
   static SwitchOption interfaceNLLWidth
     (interfaceWidthOption,
-     "NLLcorrectedHiggsWidth",
+     "NLLcorrected",
      "NLL corrected Higgs width (a-la FORTRAN HERWIG)",
      2);
   static SwitchOption interfaceLOWidthOption
     (interfaceWidthOption,
-     "LOHiggsWidth",
+     "LO",
      "LO Higgs width (formula taken from The \"Higgs Hunter's Guide\")",
      3);
-
-  static Switch<SMHiggsWidthGenerator,unsigned int> interfaceBranchingOption
-    ("BranchAllowed",
-     "Option to switch on/off branchings in the total Higgs width calculation",
-     &SMHiggsWidthGenerator::_branchingopt, 3, false, false);
-  static SwitchOption interfaceFermionOnlyBranchings
-    (interfaceBranchingOption,
-     "FermionBR",
-     "Fermion branchings in the full Higgs width",
-     1);
-  static SwitchOption interfacePlusWWZZBranchings
-    (interfaceBranchingOption,
-     "FermionWZBR",
-     "Fermion and WW/ZZ branchings in the full Higgs width",
-     2);
-  static SwitchOption interfacePlusGammaBranching
-    (interfaceBranchingOption,
-     "FermionWZGammaBR",
-     "Fermion 2gamma, and WW/ZZ branchings in the full Higgs width",
-     3);
-  static SwitchOption interfacePlausGluonBranching
-    (interfaceBranchingOption,
-     "FermionWZGammaGluonBR",
-     "Fermion 2gamma, 2gluons, and WW/ZZ branchings in the full Higgs width",
-     4);
 }
 
 bool SMHiggsWidthGenerator::accept(const ParticleData & in) const {
@@ -92,22 +77,71 @@ bool SMHiggsWidthGenerator::accept(const ParticleData & in) const {
 }
 
 Energy SMHiggsWidthGenerator::width(const ParticleData & in, Energy m) const {
-  cerr << "testing in width generator " << _widthopt << " " << m/GeV << "\n";
-  switch (_widthopt) {
-  case 1:
+  if(_widthopt==1) {
     return in.width();
-  case 2: 
-    return calcNLLRunningWidth(m);
-  case 3: 
-    return  calcLORunningWidth(m);
-  default: 
+  }
+  else if(_widthopt <=3 ) {
+    Energy higgswidth = Energy();
+    for (unsigned int i = 1; i < 14; ++i) higgswidth += partialWidth(m,i);
+    return higgswidth;
+  }
+  else  
     throw Exception() << "Unknown width option in SMHiggsWidthGenerator::width()" 
 		      << Exception::runerror;
-  }
 }
 
 DecayMap SMHiggsWidthGenerator::rate(const ParticleData & p) const {
-  return p.decaySelector();
+  if(_mw==0.*GeV) return p.decaySelector();
+  else            return branching(p.mass(),p);
+}
+
+DecayMap SMHiggsWidthGenerator::rate(const Particle & p) {
+  return branching(p.mass(),p.data());
+}
+
+DecayMap SMHiggsWidthGenerator::branching(Energy scale, const ParticleData & p) const {
+  // if not using running width return original
+  if(_widthopt==1) return p.decaySelector();
+  // calculate the partial widths
+  vector<Energy> partial;
+  Energy total(0.*GeV);
+  for(unsigned int ix=0;ix<14;++ix) {
+    partial.push_back(partialWidth(scale,ix));
+    total+=partial.back();
+  }
+  // produce the new decay selector
+  DecayMap newdm;
+  for(DecaySet::const_iterator it=p.decayModes().begin();
+      it!=p.decayModes().end();++it) {
+    tDMPtr mode=*it;
+    if(mode->orderedProducts().size()!=2||!mode->on()) continue;
+    // particle antiparticle
+    long id=abs(mode->orderedProducts()[0]->id());
+    double br=0;
+    if(mode->orderedProducts()[0]->id()==-mode->orderedProducts()[1]->id()) {
+      // quarks
+      if(id<=6)                            br = partial[id      ]/total;
+      // leptons
+      else if(id>=11&&id<=15&&(id-9)%2==0) br = partial[(id+3)/2]/total;
+      // WW
+      else if(id==ParticleID::Wplus)       br = partial[10      ]/total;
+      // unknown mode
+      else continue;
+    }
+    else if(mode->orderedProducts()[0]->id()==mode->orderedProducts()[1]->id()) {
+      // gamma gamma
+      if(id==ParticleID::Z0)         br = partial[11]/total;
+      else if(id==ParticleID::gamma) br = partial[12]/total;
+      else if(id==ParticleID::g)     br = partial[13]/total;
+      // unknown mode
+      else continue;      
+    }
+    // unknown mode
+    else continue;
+    // insert the mode into the new selector
+    newdm.insert(br,mode);
+  }
+  return newdm;
 }
 
 // Taken from HERWIG 6510.
@@ -126,171 +160,100 @@ Complex SMHiggsWidthGenerator::HwW2(double tau) const {
   }
 }
 
-// Taken from HERWIG 6510 with some simplifications.
-Energy SMHiggsWidthGenerator::calcNLLRunningWidth(Energy Mh) const {
-  cerr << "testing scale A " << Mh/GeV << "\n";
+Energy SMHiggsWidthGenerator::partialWidth(Energy Mh,unsigned int imode) const {
   using Constants::pi;
-  Energy2 q2 = sqr(Mh);
-  Energy QCDLambda = generator()->standardModel()->LambdaQCD(q2);
-//  double alphaEM   = generator()->standardModel()->alphaEM(q2);
-  double alphaEM   = generator()->standardModel()->alphaEM();
-  double alphaS    = generator()->standardModel()->alphaS(q2);
-  double sw2       = generator()->standardModel()->sin2ThetaW();
-  _partialwidths=vector<Energy>(14,0.*GeV);
-
-  double ncolour = generator()->standardModel()->Nc();
-  double Ca = ncolour;
-  double Cf = (sqr(ncolour)-1.0)/(2.0*Ca);
-  const unsigned int minflavour = 1;
-  const unsigned int maxflavour = 6;
-
-// All calculation are being done for Monte-Carlo QCD Lambda, except Higgs width...
-  double bcoeff4=(11.*Ca-10.)/(12.*pi);
-  double kfac=Ca*(67./18.-sqr(pi)/6.)-25./9.;
-  QCDLambda /= exp(kfac/(4.*pi*bcoeff4))/sqrt(2.);
-
-// H->fermion pair
-  double nflavour=minflavour-1;
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    if (2.0*_qmass[i] < Mh) nflavour+=1.;
+  if(Mh!=_qlast) {
+    _qlast = Mh;
+    Energy2 q2 = sqr(_qlast);
+    // couplings
+    _lambdaQCD = generator()->standardModel()->LambdaQCD(q2);
+    _alphaEM   = generator()->standardModel()->alphaEM();
+    _alphaS    = generator()->standardModel()->alphaS(q2);
+    // QCD correction factors for H -> f fbar
+    double nflavour=0.;
+    for (unsigned int i =1; i <= 6; ++i) if (2.0*_qmass[i] < Mh) nflavour+=1.;
+    // All calculation are being done for Monte-Carlo QCD Lambda, except Higgs width...
+    // not needed in C++ as should be normal lambda
+    // MC only in shower
+    //double bcoeff4=(11.*_ca-10.)/(12.*pi);
+    //double kfac=_ca*(67./18.-sqr(pi)/6.)-25./9.;
+    //_lambdaQCD /= exp(kfac/(4.*pi*bcoeff4))/sqrt(2.);
+    double k1 = 5./sqr(pi);
+    double k0 = 3./(4.*sqr(pi));
+    _beta0 = (11.*_ca-2.0*nflavour)/3.;
+    double beta1 = (34.*sqr(_ca)-(10.*_ca+6.*_cf)*nflavour)/3.;
+    _gam0 = -8.;
+    double gam1 = -404./3.+40.*nflavour/9.;
+    double SClog = log(sqr(Mh/_lambdaQCD));
+    _cd = 1.+(k1/k0-2.*_gam0+_gam0*beta1/sqr(_beta0)*log(SClog)+
+	      (_gam0*beta1-gam1*_beta0)/sqr(_beta0))/(_beta0*SClog);
+    _gfermiinv = 8.*_sw2*sqr(_mw)/_alphaEM;
   }
-  double k1 = 5./sqr(pi);
-  double k0 = 3./(4.*sqr(pi));
-  double beta0 = (11.*Ca-2.0*nflavour)/3.;
-  double beta1 = (34.*sqr(Ca)-(10.*Ca+6.*Cf)*nflavour)/3.;
-  double gam0 = -8.;
-  double gam1 = -404./3.+40.*nflavour/9.;
-  double SClog = log(sqr(Mh/QCDLambda));
-  double Cd = 1.+(k1/k0-2.*gam0+gam0*beta1/sqr(beta0)*log(SClog)+(gam0*beta1-gam1*beta0)/sqr(beta0))/(beta0*SClog);
-  Energy2 GFermiINV = 8.*sw2*sqr(_mw)/alphaEM;
-
-// quarks: partialw[1-6]
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    Energy mf = _qmass[i];
+  // output value
+  Energy3 output(0.*GeV2*GeV);
+  // quark modes
+  if(imode<=6) {
+    Energy mf = _qmass[imode];
     double xf = sqr(mf/Mh);
-    if (mf > QCDLambda) mf *= pow(log(Mh/QCDLambda)/log(mf/QCDLambda),gam0/(2.0*beta0));
-    if (xf < 0.25) _partialwidths[i] = Ca*Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)*Cd/GFermiINV;
+    if( xf >= 0.25 ) return 0.*GeV;
+    if(_widthopt==2) {
+      if (mf > _lambdaQCD) mf *= pow(log(Mh/_lambdaQCD)/log(mf/_lambdaQCD),
+				     _gam0/(2.0*_beta0));
+      output = _ca*Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)*_cd;
+    }
+    else {
+      output = _ca*Mh*sqr(mf)*pow(1.0-4.0*xf,1.5);
+    }
   }
-
-// leptons: partialw[7-9]
-  for (unsigned int i = 0; i < 3; ++i) {
-    Energy mf = _lmass[i];
+  // lepton modes
+  else if(imode<=9) {
+    Energy mf = _lmass[imode-7];
     double xf = sqr(mf/Mh);
-    if (xf < 0.25) _partialwidths[7+i] = Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)/GFermiINV;
+    if (xf < 0.25) output = Mh*sqr(mf)*pow(1.0-4.0*xf,1.5);
   }
-
-// H->W*W*/Z*Z*: partialw[10,11]
-  if (_branchingopt > 1) {
-    double xw = sqr(_mw/Mh);
-    double xz = sqr(_mz/Mh);
-    double yw = _mw*_gamw/sqr(Mh);
-    double yz = _mz*_gamz/sqr(Mh);
-    _partialwidths[10] = Mh*Mh*Mh*HwDoubleBW(xw,yw)/2./GFermiINV;
-    _partialwidths[11] = Mh*Mh*Mh*HwDoubleBW(xz,yz)/4./GFermiINV;
+  // H->W*W*
+  else if(imode==10) {
+    if(_widthopt==2) {
+      double xw = sqr(_mw/Mh);
+      double yw = _mw*_gamw/sqr(Mh);
+      output = pow<3,1>(Mh)*HwDoubleBW(xw,yw)/2.;
+    }
+    else {
+      double xfw = sqr(_mw/Mh);
+      if(2.0*_mw < Mh) output = pow<3,1>(Mh)*sqrt(1-4.0*xfw)*(1-xfw+0.75*sqr(xfw))/2.;
+    }
   }
-
-// H->gamma,gamma: partialw[12]
-  if (_branchingopt > 2) {
+  // H->Z*Z*
+  else if(imode==11) {
+    if(_widthopt==2) {
+      double xz = sqr(_mz/Mh);
+      double yz = _mz*_gamz/sqr(Mh);
+      output = pow<3,1>(Mh)*HwDoubleBW(xz,yz)/4.;
+    }
+    else {
+      double xfz = sqr(_mz/Mh);
+      if (2.0*_mz < Mh) output = pow<3,1>(Mh)*sqrt(1-4.0*xfz)*(1-xfz+0.75*sqr(xfz))/4.;
+    }
+  }
+  // H->gamma gamma
+  else if(imode==12) {
     double taut = sqr(2.0*_qmass[ParticleID::t]/Mh);
     double tauw = sqr(2.0*_mw/Mh);
     Complex ftaut = HwW2 (taut);
     Complex ftauw = HwW2 (tauw);
     double re = 4.0/3.0*(-2.0*taut*(1.0+(1.0-taut)*ftaut.real()))+(2.0+3.0*tauw*(1+(2.0-tauw)*ftauw.real()));
     double im = 4.0/3.0*(-2.0*taut*(    (1.0-taut)*ftaut.imag()))+(   3.0*tauw*(  (2.0-tauw)*ftauw.imag()));
-    _partialwidths[12] = sqr(alphaEM/pi)*Mh*Mh*Mh*(sqr(re)+ sqr(im))/32./GFermiINV;
+    output = sqr(_alphaEM/pi)*pow<3,1>(Mh)*(sqr(re)+ sqr(im))/32.;
   }
-
-// H->gluon,gluon: partialw[13]
-  if (_branchingopt > 3) {
+  // H -> gg
+  else if(imode==13) {
     double tau = sqr(2.0*_qmass[ParticleID::t]/Mh);
     Complex ftau = HwW2(tau);
     double re = 1+(1.0-tau)*ftau.real();
     double im =   (1.0-tau)*ftau.imag();
-    _partialwidths[13] = sqr(alphaS/pi)*Mh*Mh*Mh*sqr(tau)*(sqr(re)+ sqr(im))/4./GFermiINV;
+    output = sqr(_alphaS/pi)*pow<3,1>(Mh)*sqr(tau)*(sqr(re)+ sqr(im))/4.;
   }
-
-  Energy higgswidth = Energy();
-  for (unsigned int i = 1; i < 14; ++i) {
-    higgswidth += _partialwidths[i];
-  }
-  return higgswidth;
-}
-
-// Taken from HERWIG 6510 with simplifications.
-Energy SMHiggsWidthGenerator::calcLORunningWidth(Energy Mh) const {
-  Energy2 q2 = sqr(Mh);
-  Energy QCDLambda = generator()->standardModel()->LambdaQCD(q2);
-//  double alphaEM   = generator()->standardModel()->alphaEM(q2);
-  double alphaEM   = generator()->standardModel()->alphaEM();
-  double alphaS    = generator()->standardModel()->alphaS(q2);
-  double sw2       = generator()->standardModel()->sin2ThetaW();
-  _partialwidths = vector<Energy>(14,0.*GeV);
-
-  double ncolour = generator()->standardModel()->Nc();
-  double Ca = ncolour;
-  const unsigned int minflavour = 1;
-  const unsigned int maxflavour = 6;
-  double pi = Constants::pi;
-
-// All calculation are being done for Monte-Carlo QCD Lambda, except Higgs width...
-  double bcoeff4=(11.*Ca-10.)/(12.*pi);
-  double kfac(Ca*(67./18.-sqr(pi)/6.)-25./9.);
-  QCDLambda /= exp(kfac/(4.*pi*bcoeff4))/sqrt(2.);
-
-// H->fermion pair
-  double nflavour = minflavour-1;
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    if (2.0*_qmass[i] < Mh) nflavour+=1.;
-  }
-  Energy2 GFermiINV = 8.*sw2*sqr(_mw)/alphaEM;
-
-// quarks: partialw[1-6]
-  for (unsigned int i = minflavour; i <= maxflavour; ++i) {
-    Energy mf = _qmass[i];
-    double xf = sqr(mf/Mh);
-    if (xf < 0.25) _partialwidths[i] = Ca*Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)/GFermiINV;
-  }
-
-// leptons: partialw[7-9]
-  for (unsigned int i = 0; i < 3; ++i) {
-    Energy mf = _lmass[i];
-    double xf = sqr(mf/Mh);
-    if (xf < 0.25) _partialwidths[7+i] = Mh*sqr(mf)*pow(1.0-4.0*xf,1.5)/GFermiINV;
-  }
-
-// H->W*W*/Z*Z*: partialw[10,11]
-  if (_branchingopt > 1) {
-    double xfw = sqr(_mw/Mh);
-    double xfz = sqr(_mz/Mh);
-    if (2.0*_mw < Mh) _partialwidths[10] = Mh*Mh*Mh*sqrt(1-4.0*xfw)*(1-xfw+0.75*sqr(xfw))/2./GFermiINV;
-    if (2.0*_mz < Mh) _partialwidths[11] = Mh*Mh*Mh*sqrt(1-4.0*xfz)*(1-xfz+0.75*sqr(xfz))/4./GFermiINV;
-  }
-
-// H->gamma,gamma: partialw[12]
-  if (_branchingopt > 2) {
-    double taut = sqr(2.0*_qmass[ParticleID::t]/Mh);
-    double tauw = sqr(2.0*_mw/Mh);
-    Complex ftaut = HwW2(taut);
-    Complex ftauw = HwW2(tauw);
-    double re = 4.0/3.0*(-2.0*taut*(1.0+(1.0-taut)*ftaut.real()))+(2.0+3.0*tauw*(1+(2.0-tauw)*ftauw.real()));
-    double im = 4.0/3.0*(-2.0*taut*(    (1.0-taut)*ftaut.imag()))+(   3.0*tauw*(  (2.0-tauw)*ftauw.imag()));
-    _partialwidths[12] = sqr(alphaEM/pi)*Mh*Mh*Mh*(sqr(re)+ sqr(im))/32./GFermiINV;
-  }
-
-// H->gluon,gluon: partialw[13]
-  if (_branchingopt > 3) {
-    double tau = sqr(2.0*_qmass[ParticleID::t]/Mh);
-    Complex ftau = HwW2 (tau);
-    double re = 1+(1.0-tau)*ftau.real();
-    double im =   (1.0-tau)*ftau.imag();
-    _partialwidths[13] = sqr(alphaS/pi)*Mh*Mh*Mh*sqr(tau)*(sqr(re)+ sqr(im))/4./GFermiINV;
-  }
-
-  Energy higgswidth = Energy();
-  for (unsigned int i = 1; i < 13; ++i) {
-    higgswidth += _partialwidths[i];
-  }
-  return higgswidth;
+  return output/_gfermiinv;
 }
 
 // Taken from HERWIG 6510.
@@ -352,12 +315,60 @@ void SMHiggsWidthGenerator::doinit() throw(InitException) {
   _mz = z->mass();
   _gamw = w->width();
   _gamz = z->width();
+  // quark masses
   for(unsigned int ix=1;ix<7;++ix) {
     tcPDPtr q = getParticleData(ix);
     _qmass[ix] = q->mass();
   }
+  // lepton masses
   for(unsigned int ix=0;ix<3;++ix) {
     tcPDPtr lepton = getParticleData(11+2*ix);
     _lmass[ix] = lepton->mass();
   }
+  // sin2 theta_w
+  _sw2       = generator()->standardModel()->sin2ThetaW();
+  // casmirs
+  double ncolour = generator()->standardModel()->Nc();
+  _ca = ncolour;
+  _cf = (sqr(ncolour)-1.0)/(2.0*_ca);
+}
+
+pair<Energy,Energy> SMHiggsWidthGenerator::width(Energy scale, const ParticleData & p) const {
+  if(_widthopt==1) return make_pair(p.width(),p.width());
+  // calculate the partial widths
+  vector<Energy> partial;
+  Energy total(0.*GeV);
+  for(unsigned int ix=0;ix<14;++ix) {
+    partial.push_back(partialWidth(scale,ix));
+    total+=partial.back();
+  }
+  // sum for the on modes
+  Energy partialon(0.*GeV);
+  for(DecaySet::const_iterator it=p.decayModes().begin();it!=p.decayModes().end();++it) {
+    tDMPtr mode=*it;
+    if(!mode->on()||mode->orderedProducts().size()!=2) continue;
+    // particle antiparticle
+    long id=abs(mode->orderedProducts()[0]->id());
+    if(mode->orderedProducts()[0]->id()==-mode->orderedProducts()[1]->id()) {
+      // quarks
+      if(id<=6)                            partialon += partial[id      ];
+      // leptons
+      else if(id>=11&&id<=15&&(id-9)%2==0) partialon += partial[(id+3)/2];
+      // WW
+      else if(id==ParticleID::Wplus)       partialon += partial[10      ];
+      // unknown mode
+      else continue;
+    }
+    else if(mode->orderedProducts()[0]->id()==mode->orderedProducts()[1]->id()) {
+      // gamma gamma
+      if(id==ParticleID::Z0)         partialon += partial[11];
+      else if(id==ParticleID::gamma) partialon += partial[12];
+      else if(id==ParticleID::g)     partialon += partial[13];
+      // unknown mode
+      else continue;      
+    }
+    // unknown mode
+    else continue;
+  }
+  return make_pair(partialon,total);
 }

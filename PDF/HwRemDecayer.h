@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// HwRemDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_HwRemDecayer_H
 #define HERWIG_HwRemDecayer_H
 //
@@ -35,24 +42,6 @@ public:
 
   /** Typedef to store information about colour partners */
   typedef vector<pair<tPPtr, tPPtr> > PartnerMap;
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline HwRemDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline HwRemDecayer(const HwRemDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~HwRemDecayer();
-  //@}
 
 public:
 
@@ -279,12 +268,6 @@ private:
    * in the Remnant-Remnant CMF after all have been decayed.
    */
   pair<RemPPtr, RemPPtr> theRems;
-
-  /**
-   * Flag to completely turn off ForcedSplittings. (just for testing)
-   */
-  bool theSplittingOnOff;
-
 };
 
 }
@@ -325,8 +308,5 @@ struct ClassTraits<Herwig::HwRemDecayer>
 }
 
 #include "HwRemDecayer.icc"
-#ifndef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "HwRemDecayer.tcc"
-#endif
 
 #endif /* HERWIG_HwRemDecayer_H */

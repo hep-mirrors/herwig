@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// ClusterHadronizationHandler.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_ClusterHadronizationHandler_H
 #define HERWIG_ClusterHadronizationHandler_H
 
@@ -127,13 +134,6 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-
    /**
     * Initialize this object at the begining of the run phase.
     */
@@ -195,13 +195,7 @@ private:
   Length _maxDisplacement;
 
   /**
-   *  Is the soft underlying event on/off
-   */
-  bool _softUnderlyingEventMode;
-
-  /**
-   * The pointer to the Underlying Event handler. If _softUnderlyingEventMode is true, 
-   * this pointer must be set. This is checked in doinit().
+   * The pointer to the Underlying Event handler. 
    */
   StepHdlPtr _underlyingEventHandler;
 };

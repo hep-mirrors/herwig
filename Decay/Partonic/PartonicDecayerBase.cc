@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// PartonicDecayerBase.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the PartonicDecayerBase class.
 //
@@ -146,16 +153,16 @@ void PartonicDecayerBase::Init() {
   static Switch<PartonicDecayerBase,bool> interface_exclusive
     ("Exclusive",
      "Ensure that the hadrons produced in the partonic decays of bottom"
-     " and charm baryons do not duplicated the inclusive modes.",
+     " and charm baryons do not duplicate the inclusive modes.",
      &PartonicDecayerBase::_exclusive, true, false, false);
   static SwitchOption interface_exclusiveNoDuplication
     (interface_exclusive,
-     "NoDuplication",
+     "Yes",
      "Forbid duplication",
      true);
   static SwitchOption interface_exclusiveDuplication
     (interface_exclusive,
-     "Duplication",
+     "No",
      "Duplication allowed",
      false);
   
@@ -166,12 +173,12 @@ void PartonicDecayerBase::Init() {
      &PartonicDecayerBase::_inter, false, false, false);
   static SwitchOption interfaceIntermediatesIntermediates
     (interfaceIntermediates,
-     "Intermediates",
+     "Yes",
      "Include the intermediates",
      true);
   static SwitchOption interfaceIntermediatesNoIntermediates
     (interfaceIntermediates,
-     "NoIntermediates",
+     "No",
      "Don't include the intermediates.",
      false);
 

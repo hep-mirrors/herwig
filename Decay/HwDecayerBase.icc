@@ -1,16 +1,27 @@
 // -*- C++ -*-
 //
+// HwDecayerBase.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the HwDecayerBase class.
 //
 
 namespace Herwig {
 
-inline HwDecayerBase::HwDecayerBase() : _initialize(false)
+inline HwDecayerBase::HwDecayerBase() : _initialize(false), _dbOutput(false)
 {}
 
 inline bool HwDecayerBase::initialize() const {
   return _initialize;
+}
+
+inline bool HwDecayerBase::databaseOutput() const {
+  return _dbOutput;
 }
 
 }

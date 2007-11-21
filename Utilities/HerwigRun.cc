@@ -1,6 +1,19 @@
+// -*- C++ -*-
+//
+// HerwigRun.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #include "HerwigRun.h"
+#include "HerwigVersion.h"
+#include "HwDebug.h"
+#include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/SystemUtils.h>
 #include <ThePEG/Utilities/StringUtils.h>
+#include <ThePEG/Repository/Repository.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -12,19 +25,15 @@ const string usage = " init|read|run "
                    "[-L first-load-path] [-r repo-file] "
                    "[-i initialization file] [run-file]\n";
 
-HerwigRun::HerwigRun() {}
-
-HerwigRun::~HerwigRun() {}
-
 HerwigRun::HerwigRun(int argc, char **argv) 
 : N(-1),
   ngen(0),
   seed(0),
-  repo("HerwigDefaults.rpo"),
+  repo(),
+  repoin("HerwigDefaults.in"),
   egCreated(false), 
   Status(UNKNOWN), 
-  isInitialized(false),
-  errorFlag(false) 
+  isInitialized(false)
 {
   std::string runType;
   if(argc > 1) runType = argv[1];
@@ -34,20 +43,15 @@ HerwigRun::HerwigRun(int argc, char **argv)
   else if(runType == "read") Status = READ;
   else if(runType == "run") Status = RUN;
   else if(runType == "-h" || runType == "--help") {
-    std::cerr << "Usage: " << argv[0] << usage;
-    HerwigRun::printHelp(std::cerr);
-    errorFlag = true;
+    std::cout << "Usage: " << argv[0] << usage;
+    printHelp(std::cout);
+    Status = SUCCESS;
     return;
   } else {
     std::cerr << "Usage: " << argv[0] << usage;
-    errorFlag = true; 
+    Status = ERROR;
     return;
   }
-
-  string spaths = SystemUtils::getenv("HERWIG_USER_MODULES");
-  vector<string> vpaths = StringUtils::split(spaths, ":");
-  for(unsigned int i = 0; i<vpaths.size(); i++) 
-    DynamicLoader::appendPath(vpaths[i]);
 
   for ( int iarg = 2; iarg < argc; ++iarg ) {
     std::string arg = argv[iarg];
@@ -70,25 +74,36 @@ HerwigRun::HerwigRun(int argc, char **argv)
     else if ( arg == "-seed" || arg == "--seed" ) seed = atoi(argv[++iarg]);
     else if ( arg == "--exitonerror" ) Repository::exitOnError() = 1;
     else if ( arg == "-h" || arg == "--help" ) {
-      std::cerr << "Usage: " << argv[0] << usage;
-      HerwigRun::printHelp(std::cerr);
-      errorFlag = true;
+      std::cout << "Usage: " << argv[0] << usage;
+      printHelp(std::cout);
+      Status = SUCCESS;
       return;
     }
     else
       run = arg;
   }
   if ( Status == INIT ) {
+    // debugging breakpoint
     breakThePEG();
     {
       HoldFlag<> setup(InterfaceBase::NoReadOnly);
-      if ( repoin.empty() ) repoin = "HerwigDefaults.in";
-      ifstream is(repoin.c_str());
-      Repository::read(is, cout);
+      Repository::read(repoin, cout);
       Repository::update();
     }
+    if ( repo.empty() )
+      repo = "HerwigDefaults.rpo";
     Repository::save(repo);
-  } else if(Status == READ) {
+    Status = SUCCESS;
+  } 
+  else if ( Status == READ ) {
+    if ( repo.empty() ) {
+      repo = "HerwigDefaults.rpo";
+      ifstream test(repo.c_str());
+      if (!test) {
+	repo = HerwigVersion::pkgdatadir + "/HerwigDefaults.rpo";
+      }
+      test.close();
+    }
     Repository::load(repo);
     breakThePEG();
     if ( run.size() && run != "-" ) {
@@ -97,15 +112,24 @@ HerwigRun::HerwigRun(int argc, char **argv)
     } else {
       Repository::read(std::cin, std::cout, "Herwig++> ");
     }
-  } else if ( run.empty() ) {
-    std::cerr << "No run-file specified." << endl;
-    errorFlag = true;
-    return;
+    Status = SUCCESS;
+  } 
+  else if ( run.empty() ) {
+    std::cerr << "No run-file specified.\n";
+    Status = ERROR;
+  } 
+  else if ( Status == RUN ) {
+    generateEvents();
+  }
+  else {
+    std::cerr << "Argument parse error.\n";
+    Status = ERROR;
   }
 }
   
 EGPtr HerwigRun::eventGenerator() {
-  if(errorFlag || Status != RUN) return EGPtr();
+  if( Status != RUN ) 
+    return EGPtr();
   if(!egCreated) {
     PersistentIStream is(run);
     is >> eg;
@@ -130,7 +154,8 @@ EGPtr HerwigRun::eventGenerator() {
 
 EventPtr HerwigRun::generateEvent() {
   lastEvent = EventPtr();
-  if(Status != RUN || errorFlag) return EventPtr();
+  if( Status != RUN ) 
+    return EventPtr();
   if(!isInitialized) {
     eg->initialize();
     isInitialized = true;
@@ -154,15 +179,39 @@ EventPtr HerwigRun::generateEvent() {
   } else return lastEvent;
 }
 
-int HerwigRun::getN() const { return N; }
-int HerwigRun::getNGen() const { return ngen; }
-std::string HerwigRun::runName() const { return run; }
-std::string HerwigRun::repositoryFile() const { return repo; }
-std::string HerwigRun::repositoryInput() const { return repoin; }
+void HerwigRun::generateEvents() {
+  if ( !isRunMode() || !preparedToRun() ) {
+    std::cerr << "Error: EventGenerator not available.\n";
+    Status = ERROR;
+    return;
+  }
+
+  if ( getN() > eventGenerator()->N() )
+    std::cerr << "Warning: will only generate " 
+	      << eventGenerator()->N() << " events;\n"
+	      << "Warning: you can increase NumberOfEvents "
+	      << "in the input files.\n";
+  long number = std::min( getN(), eventGenerator()->N() );
+  long step = std::max( number/100l, 1l );
+  std::cout << "Generating events.\r" << std::flush;
+  for( long i = 1; i <= number; ++i ) {
+    generateEvent();
+    if ( i % step == 0 )
+      std::cout << "Generated event: " << i 
+		<< " of " << number << "\r" << std::flush;
+  }
+  std::cout << '\n';
+  eventGenerator()->finalize();
+  Status = SUCCESS;
+}
+
+long HerwigRun::getN() const { return N; }
+long HerwigRun::getNGen() const { return ngen; }
 HerwigRun::RunStatus HerwigRun::status() const { return Status; }
-bool HerwigRun::isRunMode() const { return (status() == RUN); }
-bool HerwigRun::isReadMode() const { return (status() == READ); }
-bool HerwigRun::isInitMode() const { return (status() == INIT); }
+bool HerwigRun::good() const { return status() == SUCCESS; }
+bool HerwigRun::isRunMode() const { return status() == RUN; }
+bool HerwigRun::isReadMode() const { return status() == READ; }
+bool HerwigRun::isInitMode() const { return status() == INIT; }
 
 void HerwigRun::printHelp(std::ostream &out) {
   out << endl
@@ -184,52 +233,6 @@ void HerwigRun::printHelp(std::ostream &out) {
       << "-seed   - Sets the random seed on initialization\n"
       << "-h      - Displays this help message\n"
       << "==============================================================\n";
-}
-
-StepVector HerwigRun::getSteps(EventPtr e) {
-  if(!e) e = lastEvent;
-  if(!e) {
-    std::cerr << "Invalid request: HerwigRun::getSteps on a null event\n";
-    return StepVector();
-  }
-  return e->primaryCollision()->steps();
-}
-
-tPVector HerwigRun::getFinalState(int step, EventPtr e) {
-  if(!e) e = lastEvent;
-  if(!e) {
-    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
-    return tPVector();
-  }
-  if(step < 0) return e->getFinalState();
-  else return e->primaryCollision()->step(step)->getFinalState();
-}
-
-ParticleSet HerwigRun::getAllParticles(int step, EventPtr e) {
-  if(!e) e = lastEvent;
-  if(!e) {
-    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
-    return ParticleSet();
-  }
-  return e->primaryCollision()->step(step)->all();
-}
-
-ParticleSet HerwigRun::getIntermediates(int step, EventPtr e) {
-  if(!e) e = lastEvent;
-  if(!e) {
-    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
-    return ParticleSet();
-  }
-  return e->primaryCollision()->step(step)->intermediates();
-}
-
-ParticleSet HerwigRun::getOutgoing(int step, EventPtr e) {
-  if(!e) e = lastEvent;
-  if(!e) {
-    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
-    return ParticleSet();
-  }
-  return e->primaryCollision()->step(step)->particles();
 }
 
 bool HerwigRun::preparedToRun() {

@@ -270,7 +270,7 @@ void NonLeptonicOmegaDecayer::Init() {
      true);
   static SwitchOption interfaceLocalMassesNonLocal
     (interfaceLocalMasses,
-     "NonLocal",
+     "ParticleData",
      "Use values from the particle data objects",
      false);
 

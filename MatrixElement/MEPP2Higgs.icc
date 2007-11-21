@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEPP2Higgs.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the MEPP2Higgs class.
 //
@@ -7,10 +14,10 @@
 namespace Herwig {
 
 inline MEPP2Higgs::MEPP2Higgs() : 
-  shapeopt(1),
+  shapeopt(2),
   processopt(1),
   minflavouropt(4),
-  maxflavouropt(5)
+  maxflavouropt(5), _mh(0.*GeV),_wh(0.*GeV)
 {}
 
 inline IBPtr MEPP2Higgs::clone() const {

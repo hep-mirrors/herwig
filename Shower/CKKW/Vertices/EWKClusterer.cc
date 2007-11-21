@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// EWKClusterer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the EWKClusterer class.
 //
@@ -45,12 +52,12 @@ void EWKClusterer::Init() {
      &EWKClusterer::_useColour, true, false, false);
   static SwitchOption interfaceUseColourUseColourOn
     (interfaceUseColour,
-     "On",
+     "Yes",
      "Use colour on clustering",
      true);
   static SwitchOption interfaceUseColourUseColourOff
     (interfaceUseColour,
-     "Off",
+     "No",
      "Do not use colour on clustering",
      false);
 
@@ -60,12 +67,12 @@ void EWKClusterer::Init() {
      &EWKClusterer::_useHadronic, true, false, false);
   static SwitchOption interfaceUseHadronicUseHadronicOn
     (interfaceUseHadronic,
-     "On",
+     "Yes",
      "Use hadronic clusterings",
      true);
   static SwitchOption interfaceUseHadronicUseHadronicOff
     (interfaceUseHadronic,
-     "Off",
+     "No",
      "Do not use hadronic clusterings",
      false);
 

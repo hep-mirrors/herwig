@@ -118,12 +118,12 @@ void GoityRobertsDecayer::Init() {
      &GoityRobertsDecayer::_includeDstar, false, false, false);
   static SwitchOption interfaceIncludeDstarInclude
     (interfaceIncludeDstar,
-     "Include",
+     "Yes",
      "Include the D*",
      true);
   static SwitchOption interfaceIncludeDstarOmit
     (interfaceIncludeDstar,
-     "Omit",
+     "No",
      "Don't include the D*",
      false);
 
@@ -133,12 +133,12 @@ void GoityRobertsDecayer::Init() {
      &GoityRobertsDecayer::_includeDstarstar, false, false, false);
   static SwitchOption interfaceIncludeDstarstarInclude
     (interfaceIncludeDstarstar,
-     "Include",
+     "Yes",
      "Include the D**",
      true);
   static SwitchOption interfaceIncludeDstarstarOmit
     (interfaceIncludeDstarstar,
-     "Omit",
+     "No",
      "Don't include the D**",
      false);
 

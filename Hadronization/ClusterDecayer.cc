@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ClusterDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ClusterDecayer class.
 //
@@ -135,12 +142,12 @@ static Parameter<ClusterDecayer,double>
      &ClusterDecayer::_onshell, false, false, false);
   static SwitchOption interfaceOnShellOnShell
     (interfaceOnShell,
-     "OnShell",
+     "Yes",
      "Produce the hadrons on shell",
      false);
   static SwitchOption interfaceOnShellOffShell
     (interfaceOnShell,
-     "OffShell",
+     "No",
      "Generate the masses using the mass generator.",
      false);
 

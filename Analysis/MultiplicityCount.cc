@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MultiplicityCount.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MultiplicityCount class.
 //
@@ -21,21 +28,21 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-string MultiplicityInfo::bargraph(long N)
+string MultiplicityInfo::bargraph()
 {
   if (obsMultiplicity == 0.0) return "     ?     ";
-  else if (nSigma(N) >= 6.0)  return "-----|---->";
-  else if (nSigma(N) >= 5.0)  return "-----|----*";
-  else if (nSigma(N) >= 4.0)  return "-----|---*-";
-  else if (nSigma(N) >= 3.0)  return "-----|--*--";
-  else if (nSigma(N) >= 2.0)  return "-----|-*---";
-  else if (nSigma(N) >= 1.0)  return "-----|*----";
-  else if (nSigma(N) > -1.0)  return "-----*-----";
-  else if (nSigma(N) > -2.0)  return "----*|-----";
-  else if (nSigma(N) > -3.0)  return "---*-|-----";
-  else if (nSigma(N) > -4.0)  return "--*--|-----";
-  else if (nSigma(N) > -5.0)  return "-*---|-----";
-  else if (nSigma(N) > -6.0)  return "*----|-----";
+  else if (nSigma() >= 6.0)  return "-----|---->";
+  else if (nSigma() >= 5.0)  return "-----|----*";
+  else if (nSigma() >= 4.0)  return "-----|---*-";
+  else if (nSigma() >= 3.0)  return "-----|--*--";
+  else if (nSigma() >= 2.0)  return "-----|-*---";
+  else if (nSigma() >= 1.0)  return "-----|*----";
+  else if (nSigma() > -1.0)  return "-----*-----";
+  else if (nSigma() > -2.0)  return "----*|-----";
+  else if (nSigma() > -3.0)  return "---*-|-----";
+  else if (nSigma() > -4.0)  return "--*--|-----";
+  else if (nSigma() > -5.0)  return "-*---|-----";
+  else if (nSigma() > -6.0)  return "*----|-----";
   else                        return "<----|-----";
 }
 
@@ -201,9 +208,11 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
 
   particles.clear();
 
-  for ( StepVector::const_iterator it = steps.begin()+2;
-	it != steps.end(); ++it ) {
-    (**it).select(inserter(particles), ThePEG::AllSelector());
+  if (steps.size() > 2) {
+    for ( StepVector::const_iterator it = steps.begin()+2;
+	  it != steps.end(); ++it ) {
+      (**it).select(inserter(particles), ThePEG::AllSelector());
+    }
   }
   
   if( _makeHistograms ) 
@@ -213,7 +222,7 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = abs( (*it)->id() );
-    //if(ID==ParticleID::K0) continue;
+    if(ID==ParticleID::K0) continue;
     if(ID==ParticleID::K_L0||ID==ParticleID::K_S0) ID=ParticleID::K0;
     
     if ( _makeHistograms && isLastCluster(*it) ) {
@@ -248,10 +257,12 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
     }
   }
   
-  for(map<long,long>::const_iterator it = eventcount.begin();
-      it != eventcount.end(); ++it) {
-    _data[it->first].actualCount += it->second;
-    _data[it->first].sumofsquares += sqr(double(it->second));
+  for(map<long,MultiplicityInfo>::iterator it = _data.begin();
+      it != _data.end(); ++it) {
+    long currentcount 
+      = eventcount.find(it->first) == eventcount.end() ? 0
+      : eventcount[it->first];
+    it->second.count += currentcount; 
   }
 }
 
@@ -260,8 +271,6 @@ void MultiplicityCount::analyze(const tPVector & ) {}
 void MultiplicityCount::dofinish() {
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
-
-  cerr << "testing do hist " << _makeHistograms << "\n";
 
   outfile << 
     "\nParticle multiplicities (compared to LEP data):\n"
@@ -273,19 +282,18 @@ void MultiplicityCount::dofinish() {
       MultiplicityInfo multiplicity = it->second;
       string name = (it->first==0 ? "All chgd" : 
 		     generator()->getParticleData(it->first)->PDGName() );
-      long N = generator()->currentEventNumber() - 1;
 
       ios::fmtflags oldFlags = outfile.flags();
       outfile << std::scientific << std::showpoint
 	      << std::setprecision(3)
 	      << setw(7) << it->first << ' '
 	      << setw(9) << name << ' ' 
-	      << setw(2) << multiplicity.simMultiplicity(N) << " | " 
+	      << setw(2) << multiplicity.simMultiplicity() << " | " 
 	      << setw(2) << multiplicity.obsMultiplicity << " +/- " 
 	      << setw(2) << multiplicity.obsError << ' '
 	      << std::showpos << std::setprecision(1)
-	      << multiplicity.nSigma(N) << ' ' 
-	      << multiplicity.bargraph(N)
+	      << multiplicity.nSigma() << ' ' 
+	      << multiplicity.bargraph()
 	      << std::noshowpos;
 
       outfile << '\n';
@@ -394,12 +402,12 @@ void MultiplicityCount::Init() {
      &MultiplicityCount::_makeHistograms, false, true, false);
   static SwitchOption interfaceHistogramsOn
     (interfaceHistograms,
-     "On",
+     "Yes",
      "Generate histograms of cluster mass dependence.",
      true);
   static SwitchOption interfaceHistogramsOff
     (interfaceHistograms,
-     "Off",
+     "No",
      "Do not generate histograms.",
      false);
 

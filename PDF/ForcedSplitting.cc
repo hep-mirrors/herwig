@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ForcedSplitting.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ForcedSplitting class.
 //
@@ -151,23 +158,22 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   for(unsigned int iz=0;iz<nz;++iz) {
     double ez=exp(yy);
     double wr=1.+ez;
+    double zr=wr/ez;
     double wz=1./wr;
     double zz=wz*ez;
-    double az=wz*zz*_alpha->value(sqr(max(zz*q,_kinCutoff)));
+    double az=wz*zz*_alpha->value(sqr(max(wz*q,_kinCutoff)));
     // g -> q qbar
     if(iopt==1) {
       // calculate splitting function
       double pdf(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
       if(first)
-	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*wr);
+	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*zr);
       else
-	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*wr)
-	  - beamdata->pdf()->xfvx(beamdata,gluon,sqr(q),lastx*wr);
+	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*zr)
+	  - beamdata->pdf()->xfvx(beamdata,gluon,sqr(q),lastx*zr);
       // SG: this is symmetric in z <-> 1-z
       psum+=pdf*az*0.5*(sqr(zz)+sqr(wz));
-
-      prob.push_back(psum);
     }
     // q -> q g
     else {
@@ -175,15 +181,14 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
       double pdf(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
       if(first)
-	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*wr);
+	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*zr);
       else
-	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*wr)
-	  - beamdata->pdf()->xfvx(beamdata,parton->dataPtr(),sqr(q),lastx*wr);
+	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*zr)
+	  - beamdata->pdf()->xfvx(beamdata,parton->dataPtr(),sqr(q),lastx*zr);
       // SG this splitting function has to have a 1/z pole! 
-      psum+=pdf*az*4./3.*(1.+sqr(zz))*wr;
-
-      prob.push_back(psum);
+      psum+=pdf*az*4./3.*(1.+sqr(wz))*zr;
     }
+    prob.push_back(psum);
     yy+=dely;
   }
   // choose z

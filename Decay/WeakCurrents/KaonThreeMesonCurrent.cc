@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// KaonThreeMesonCurrent.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the KaonThreeMesonCurrent class.
 //
@@ -204,12 +211,12 @@ void KaonThreeMesonCurrent::Init() {
      &KaonThreeMesonCurrent::_initializea1, false, false, false);
   static SwitchOption interfaceInitializea1Initialization
     (interfaceInitializea1,
-     "Initialization",
+     "Yes",
      "Initialize the calculation",
      true);
   static SwitchOption interfaceInitializea1NoInitialization
     (interfaceInitializea1,
-     "NoInitialization",
+     "No",
      "Use the default values",
      false);
 
@@ -324,7 +331,7 @@ void KaonThreeMesonCurrent::Init() {
      &KaonThreeMesonCurrent::_kstarparameters, true, false, false);
   static SwitchOption interfaceKstarParameterstrue
     (interfaceKstarParameters,
-       "Local",
+     "Local",
      "Use local values of the parameters",
      true);
   static SwitchOption interfaceKstarParametersParticleData
@@ -375,9 +382,9 @@ void KaonThreeMesonCurrent::Init() {
      true);
   static SwitchOption interfacea1WidthOptionParam
     (interfacea1WidthOption,
+     "Kuhn",
      "Use the parameterization of Kuhn and Santamaria for default parameters."
      " This should only be used for testing vs TAUOLA",
-     "",
      false);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfacea1RunningWidth

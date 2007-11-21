@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Reweighter.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Reweighter class.
 //
@@ -61,12 +68,12 @@ void Reweighter::Init() {
      &Reweighter::_vetoHighest, false, false, false);
   static SwitchOption interfaceVetoHighestOn
     (interfaceVetoHighest,
-     "On",
+     "Yes",
      "Switch on vetoing highest multiplicity.",
      true);
   static SwitchOption interfaceVetoHighestOff
     (interfaceVetoHighest,
-     "Off",
+     "No",
      "Switch off vetoing highest multiplicity.",
      false);
 

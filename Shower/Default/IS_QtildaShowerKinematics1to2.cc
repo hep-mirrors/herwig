@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// IS_QtildaShowerKinematics1to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the IS_QtildaShowerKinematics1to2 class.
 //
@@ -91,14 +98,20 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   if(theLast->isFinalState()) return;
   Energy2 pt2=sqr(px)+sqr(py);
   theLast->showerParameters()[0]=theLast->x();
-  theLast->showerParameters()[1]=0.5*(sqr(theLast->data().mass())+pt2)/
+  theLast->showerParameters()[1]=0.5*pt2/
     theLast->showerParameters()[0]/p_dot_n();
   theLast->showerVariables().resize(3);
   theLast->showerParameters().resize(2);
   for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=0.*MeV;
-  theLast->set5Momentum(sudakov2Momentum(theLast->showerParameters()[0], 
-					 theLast->showerParameters()[1], 
-					 px,py,0));
+  // momentum
+  Lorentz5Momentum ntemp=Lorentz5Momentum(0.*GeV,-pVector().vect());
+  double beta = 0.5*pt2/
+    theLast->showerParameters()[0]/(pVector()*ntemp);
+  Lorentz5Momentum plast = 
+    Lorentz5Momentum(pVector().z()>0.*GeV ? px : -px ,py,0.*GeV,0.*GeV)
+    +theLast->x()*pVector()+beta*ntemp;
+  plast.rescaleMass();
+  theLast->set5Momentum(plast);
 }
  
 void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
@@ -106,9 +119,34 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   Lorentz5Momentum p, n, pthis, ppartner, pcm;
   assert(particle.perturbative()!=2);
   if(particle.perturbative()==1) {
-    pcm = parent->momentum();
-    p = Lorentz5Momentum(0.0*MeV, pcm.vect());
-    n = Lorentz5Momentum(0.0*MeV, -pcm.vect());
+    // find the partner and its momentum
+    ShowerIndex::InteractionType type=splittingFn()->interactionType();
+    ShowerParticlePtr partner=particle.partners()[type];
+    Lorentz5Momentum ppartner(partner->momentum());
+    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    if(partner->isFinalState()) {
+      Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
+      Lorentz5Momentum pb =  particle.momentum();
+      Axis axis(pa.vect().unit());
+      LorentzRotation rot;
+      double sinth(sqrt(1.-sqr(axis.z())));
+      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.rotateX(Constants::pi);
+      rot.boostZ( pa.e()/pa.vect().mag());
+      pb*=rot;
+      Boost trans = -1./pb.e()*pb.vect();
+      trans.setZ(0.);
+      rot.boost(trans);
+      pcm = rot*parent->momentum();
+      rot.invert();
+      n = rot*Lorentz5Momentum(0.*GeV,-pcm.vect());
+      p = rot*Lorentz5Momentum(0.*GeV, pcm.vect());
+    }
+    else {
+      pcm = parent->momentum();
+      p = Lorentz5Momentum(0.0*MeV, pcm.vect());
+      n = Lorentz5Momentum(0.0*MeV, -pcm.vect());
+    }
   } 
   else {
     p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])

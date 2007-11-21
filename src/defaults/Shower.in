@@ -1,0 +1,241 @@
+############################################################
+# Setup of default parton shower
+#
+# Useful switches for users are marked near the top of 
+# this file.
+#
+# Don't edit this file directly, but reset the switches
+# in your own input files!
+############################################################
+library HwMPI.so
+library HwMPIPDF.so
+library HwShower.so
+
+mkdir /Herwig/Shower
+cd /Herwig/Shower
+
+create Herwig::ShowerHandler ShowerHandler
+set ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set ShowerHandler:MPI Yes
+set ShowerHandler:OrderSecondaries Yes
+set ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
+
+#####################################
+# initial setup, don't change these!
+#####################################
+create Herwig::SplittingGenerator SplittingGenerator
+create Herwig::ShowerAlphaQCD AlphaQCD
+create Herwig::ShowerAlphaQED AlphaQED
+create Herwig::Evolver Evolver
+create Herwig::QTildeModel ShowerModel
+create Herwig::QTildeFinder PartnerFinder
+create Herwig::QTildeReconstructor KinematicsReconstructor
+
+set /Herwig/Partons/ForcedSplitting:AlphaS AlphaQCD
+
+set ShowerHandler:Evolver Evolver
+set ShowerModel:PartnerFinder PartnerFinder
+set ShowerModel:KinematicsReconstructor KinematicsReconstructor
+set Evolver:ShowerModel ShowerModel
+set Evolver:SplittingGenerator SplittingGenerator
+
+##################################################################
+# Intrinsic pT
+#
+# Recommended: 
+# 2.2 GeV for Tevatron W/Z production.
+# 5.7 GeV for LHC W/Z production
+# ( assuming a linear correlation between Iptrms and ln(shat/S) )
+#
+# Set all parameters to 0 to disable
+##################################################################
+set Evolver:IntrinsicPtGaussian 2.2*GeV
+set Evolver:IntrinsicPtBeta  	0
+set Evolver:IntrinsicPtGamma 	0*GeV
+
+#############################################################
+# Main control switches for the parton shower.
+#
+# Read this as a 2x3 matrix with FSR/ISR being the rows 
+# and QCD/QED/EWK as columns. The switches allow detailed
+# control over whole rows and columns or individual entries.
+#############################################################
+
+# These switch a whole row on and off:
+set SplittingGenerator:ISR Yes
+set SplittingGenerator:FSR Yes
+
+# These switch a whole column on and off (QED and EWK are not implemented):
+set SplittingGenerator:QCDinteractions Yes
+set SplittingGenerator:QEDinteractions No
+set SplittingGenerator:EWKinteractions No
+
+# These switches are for each entry individually.
+# If their column or row is No, they are not considered.
+set SplittingGenerator:ISR_QCD Yes
+set SplittingGenerator:ISR_QED Yes
+set SplittingGenerator:ISR_EWK Yes
+
+set SplittingGenerator:FSR_QCD Yes
+set SplittingGenerator:FSR_QED Yes
+set SplittingGenerator:FSR_EWK Yes
+#
+#############################################################
+
+
+#############################################################
+# End of interesting user servicable section.
+#
+# Anything that follows below should only be touched if you 
+# know what you're doing. 
+#
+# Really.
+#############################################################
+
+#
+
+#
+
+#
+
+#
+
+#
+
+#
+#  create the matrix element corrections
+# 
+# vector boson decay
+create Herwig::VectorBosonQQBarMECorrection qqbarg
+insert ShowerModel:MECorrections 0 qqbarg
+set qqbarg:Coupling AlphaQCD
+
+# top decay
+create Herwig::TopDecayMECorrection TopME
+insert ShowerModel:MECorrections 1  TopME
+set TopME:Coupling AlphaQCD
+
+# drell-yan
+create Herwig::DrellYanMECorrection DrellYan
+insert ShowerModel:MECorrections 2  DrellYan
+set DrellYan:Coupling AlphaQCD
+#
+# a few default values
+set Evolver:MECorrMode 1
+set AlphaQCD:ScaleFactor 1.0
+set AlphaQED:ScaleFactor 1.0
+set AlphaQCD:NPAlphaS 2
+set AlphaQCD:Qmin 0.935
+set AlphaQCD:NumberOfLoops 3
+set AlphaQCD:InputOption 1
+set AlphaQCD:AlphaMZ 0.127
+#
+#
+# Lets set up all the splittings
+create Herwig::QtoQGSplitFn QtoQGSplitFn
+create Herwig::GtoQQbarSplitFn GtoQQbarSplitFn
+create Herwig::GtoGGSplitFn GtoGGSplitFn
+create Herwig::QtoQGammaSplitFn QtoQGammaSplitFn
+create Herwig::QtoGQSplitFn QtoGQSplitFn
+#
+# Now the Sudakovs
+create Herwig::QTildeSudakov SudakovCommon
+set SudakovCommon:Alpha AlphaQCD
+set SudakovCommon:cutoffKinScale 3.00*GeV
+set SudakovCommon:CutoffQCDMassScale 0.75*GeV
+set SudakovCommon:CutoffQEDMassScale 0.75*GeV
+set SudakovCommon:CutoffEWKMassScale 91.0*GeV
+set SudakovCommon:PDFmax 1.0
+
+cp SudakovCommon QtoQGSudakov
+set QtoQGSudakov:SplittingFunction QtoQGSplitFn
+set QtoQGSudakov:PDFmax 1.9
+
+cp SudakovCommon GtoGGSudakov
+set GtoGGSudakov:SplittingFunction GtoGGSplitFn
+
+cp SudakovCommon GtoQQbarSudakov
+set GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
+set GtoQQbarSudakov:PDFmax 120.0
+
+cp SudakovCommon GtobbbarSudakov
+set GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
+set GtobbbarSudakov:PDFmax 4000.0
+
+cp SudakovCommon GtoccbarSudakov
+set GtoccbarSudakov:SplittingFunction GtoQQbarSplitFn
+set GtoccbarSudakov:PDFmax 2000.0
+
+cp SudakovCommon QtoGQSudakov
+set QtoGQSudakov:SplittingFunction QtoGQSplitFn
+
+cp SudakovCommon utoGuSudakov
+set utoGuSudakov:SplittingFunction QtoGQSplitFn
+set utoGuSudakov:PDFFactor OverOneMinusZ
+set utoGuSudakov:PDFmax 5.0
+
+cp SudakovCommon dtoGdSudakov
+set dtoGdSudakov:SplittingFunction QtoGQSplitFn
+set dtoGdSudakov:PDFFactor OverOneMinusZ
+
+cp SudakovCommon QtoQGammaSudakov
+set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
+
+#
+# Now add the final splittings
+#
+set SplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting c->c,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting b->b,g; QtoQGSudakov
+set SplittingGenerator:AddFinalSplitting t->t,g; QtoQGSudakov
+#
+set SplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
+#
+set SplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
+set SplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
+set SplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
+set SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
+set SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
+set SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
+#
+set SplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
+#
+# Now lets add the initial splittings. Remember the form a->b,c; means
+# that particle a is the particle given and we backward branch to
+# particle b which is initial state and particle c which is final state
+#
+set SplittingGenerator:AddInitialSplitting u->u,g; QtoQGSudakov
+set SplittingGenerator:AddInitialSplitting d->d,g; QtoQGSudakov
+set SplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
+set SplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
+set SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
+set SplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
+#
+set SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
+#
+set SplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
+set SplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
+set SplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
+set SplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
+set SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
+set SplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
+#
+set SplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
+set SplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
+set SplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting dbar->g,dbar; dtoGdSudakov
+set SplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
+set SplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
+set SplittingGenerator:AddInitialSplitting tbar->g,tbar; QtoGQSudakov

@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// ShowerHandler.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ShowerHandler class.
 //
@@ -182,13 +189,19 @@ void ShowerHandler::Init() {
   
   
   static Switch<ShowerHandler,bool> interfaceMPIOnOff
-    ("MPIOnOff", "flag to switch MPI on or off",
+    ("MPI", "flag to switch multi-parton interactions on or off",
      &ShowerHandler::theMPIOnOff, 1, false, false);
 
   static SwitchOption interfaceMPIOnOff0                             
-    (interfaceMPIOnOff,"MPI-OFF","Multiple parton interactions are OFF", 0);
+    (interfaceMPIOnOff,
+     "No",
+     "Multiple parton interactions are off", 
+     false);
   static SwitchOption interfaceMPIOnOff1                            
-    (interfaceMPIOnOff,"MPI-ON","Multiple parton interactions are ON", 1);
+    (interfaceMPIOnOff,
+     "Yes",
+     "Multiple parton interactions are on", 
+     true);
 
   static Switch<ShowerHandler,bool> interfaceOrderSecondaries
     ("OrderSecondaries", 
@@ -196,10 +209,15 @@ void ShowerHandler::Init() {
      &ShowerHandler::theOrderSecondaries, 1, false, false);
 
   static SwitchOption interfaceOrderSecondaries0                             
-    (interfaceOrderSecondaries,"Order-OFF","Multiple parton interactions aren't ordered", 0);
+    (interfaceOrderSecondaries,
+     "No",
+     "Multiple parton interactions aren't ordered", 
+     false);
   static SwitchOption interfaceOrderSecondaries1                            
-    (interfaceOrderSecondaries,"Order-ON",
-     "Multiple parton interactions are ordered according to their scale", 1);
+    (interfaceOrderSecondaries,
+     "Yes",
+     "Multiple parton interactions are ordered according to their scale", 
+     true);
 
   static Reference<ShowerHandler,CascadeReconstructor> interfaceCascadeReconstructor
     ("CascadeReconstructor",
@@ -226,7 +244,14 @@ void ShowerHandler::cascade() {
   sub = eventHandler()->currentCollision()->primarySubProcess();
 
   //first shower the hard process
-  incs = cascade(sub);
+  try{
+    incs = cascade(sub);
+  }catch(ShowerTriesVeto &veto){
+    throw Exception() << "Failed to generate the shower after "
+                      << veto.theTries
+                      << " attempts in Evolver::showerHardProcess()"
+                      << Exception::eventerror;
+  }
 
   PBIPair incbins = make_pair(lastExtractor()->partonBinInstance(incs.first),
 			      lastExtractor()->partonBinInstance(incs.second));
@@ -266,13 +291,9 @@ void ShowerHandler::cascade() {
     lastXC = theMPIHandler->generate();
     sub = lastXC->construct();
 
-    //If Jmueo=1 additional scatters of the signal type with pt > ptmin have to be vetoed
+    //If Algorithm=1 additional scatters of the signal type with pt > ptmin have to be vetoed
     //with probability 1/(m+1), where m is the number of occurances in this event
-
-    //check if the same process is used for the signal and UE
-    //For LesHouches event files the MEBasePtr should be 0
-    //That leads to the correct behaviour as long as no QCD2->2 event is read in
-    if(sub->handler() == subProcess()->handler() && theMPIHandler->Jmueo() ){
+    if( theMPIHandler->Algorithm() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
@@ -289,16 +310,21 @@ void ShowerHandler::cascade() {
 
     procs.insert(make_pair(scale, sub));
   }
-  
   for( pit=procs.begin(); pit!=procs.end(); ++pit ){
-    // cerr << "scale: " << sqrt(-pit->first/GeV2) << endl;
     //add to the EventHandler's list
     newStep()->addSubProcess(pit->second);
-    //start the Shower
-    incs = cascade(pit->second);
 
     try{
-      //cerr << "do extra scatter forced splitting\n";
+      //Run the Shower. If not possible veto the scatter
+      incs = cascade(pit->second);
+    }catch(ShowerTriesVeto){
+
+      newStep()->removeSubProcess(pit->second);
+      //discard this extra scattering, but try the next one
+      continue;      
+    }
+
+    try{
       //do the forcedSplitting
       theRemDec->doSplit(incs, false);
 
@@ -307,7 +333,6 @@ void ShowerHandler::cascade() {
 	  (remnants.second->momentum() - incs.second->momentum()).e() < 0*MeV )
 	throw ExtraScatterVeto();
     }catch(ExtraScatterVeto){
-      //cerr << "remove scatter\n";
       //remove all particles associated with the subprocess
       newStep()->removeParticle(incs.first);
       newStep()->removeParticle(incs.second);
@@ -322,11 +347,9 @@ void ShowerHandler::cascade() {
 	 !remnants.second->extract(incs.second, false) )
       throw Exception() << "Remnant extraction failed in "
 			<< "ShowerHandler::cascade()" 
-			<< Exception::runerror;   
-  } 
-
+			<< Exception::runerror;
+  }
   theRemDec->finalize();
-
   theHandler = 0;
 }
 

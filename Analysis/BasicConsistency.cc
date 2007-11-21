@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// BasicConsistency.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the BasicConsistency class.
 //
@@ -131,12 +138,12 @@ void BasicConsistency::Init() {
      &BasicConsistency::_checkquark, true, false, false);
   static SwitchOption interfaceCheckQuarkCheck
     (interfaceCheckQuark,
-     "Check",
+     "Yes",
      "Check for quarks",
      true);
   static SwitchOption interfaceCheckQuarkNoCheck
     (interfaceCheckQuark,
-     "NoCheck",
+     "No",
      "Don't check for quarks",
      false);
 
@@ -146,12 +153,12 @@ void BasicConsistency::Init() {
      &BasicConsistency::_checkcharge, true, false, false);
   static SwitchOption interfaceCheckChargeCheck
     (interfaceCheckCharge,
-     "Check",
+     "Yes",
      "Check charge conservation",
      true);
   static SwitchOption interfaceCheckChargeNoCheck
     (interfaceCheckCharge,
-     "NoCheck",
+     "No",
      "Don't check charge conservation",
      false);
 
@@ -161,12 +168,12 @@ void BasicConsistency::Init() {
      &BasicConsistency::_checkcluster, true, false, false);
   static SwitchOption interfaceCheckClusterCheck
     (interfaceCheckCluster,
-     "Check",
+     "Yes",
      "Check for clusters",
      true);
   static SwitchOption interfaceCheckClusterNoCheck
     (interfaceCheckCluster,
-     "NoCheck",
+     "No",
      "Don't check for clusters",
      false);
 

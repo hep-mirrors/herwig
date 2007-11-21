@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Evolver.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the Evolver class.
 //
@@ -7,7 +14,7 @@
 namespace Herwig {
 
 inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
-			    _intrinsicpT(1), _initialenhance(1.), _finalenhance(1.), _useCKKW(false)
+			    _initialenhance(1.), _finalenhance(1.), _useCKKW(false)
 {}
 
 inline IBPtr Evolver::clone() const {
@@ -38,7 +45,7 @@ inline ShowerModelPtr Evolver::showerModel() const {
 }
 
 inline bool Evolver::ipTon() const {
-  return _intrinsicpT == 1; 
+  return _iptrms != 0.0*MeV || ( _beta == 1.0 && _gamma != 0.0*MeV );
 }
 
 inline bool Evolver::MECOn() const {

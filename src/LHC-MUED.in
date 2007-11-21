@@ -3,105 +3,14 @@
 # The best way to use this is to make your own 
 # copy of this file and edit that as you require.
 #
-# The first section does not contain anything that 
-# that users need to touch.
+# The first section loads the model file which 
+# does not contain anything that users need to touch.
 #
 # The second section contains the user settings.
 ###################################################
-mkdir /Defaults/NewPhysics
 
-create /Herwig/UEDBase /Defaults/NewPhysics/MUED HwUED.so
-
-cd /Defaults/NewPhysics
-# Need to reset SM interfaces to new model
-# SM couplings
-set MUED:QCD/RunningAlphaS /Defaults/AlphaS
-set MUED:EW/RunningAlphaEM /Defaults/AlphaEM
-set MUED:EW/CKM /Defaults/CKM
-set MUED:RunningMass /Defaults/RunningMass
-# SM vertices
-set MUED:Vertex/FFZ /Defaults/Vertices/FFZVertex
-set MUED:Vertex/FFW /Defaults/Vertices/FFWVertex
-set MUED:Vertex/FFH /Defaults/Vertices/FFHVertex
-set MUED:Vertex/FFG /Defaults/Vertices/FFGVertex
-set MUED:Vertex/FFP /Defaults/Vertices/FFPVertex
-set MUED:Vertex/GGG /Defaults/Vertices/GGGVertex
-set MUED:Vertex/GGGG /Defaults/Vertices/GGGGVertex
-set MUED:Vertex/WWH /Defaults/Vertices/WWHVertex
-set MUED:Vertex/WWW /Defaults/Vertices/WWWVertex
-set MUED:Vertex/WWWW /Defaults/Vertices/WWWWVertex
-set MUED:Vertex/HGG /Defaults/Vertices/HGGVertex
-set MUED:Vertex/HPP /Defaults/Vertices/HPPVertex
-# MUED Feynman rules
-set MUED:Vertex/F1F1Z /Defaults/Vertices/BSM/UED_F1F1Z
-set MUED:Vertex/F1F1P /Defaults/Vertices/BSM/UED_F1F1P
-set MUED:Vertex/F1F1W /Defaults/Vertices/BSM/UED_F1F1W
-set MUED:Vertex/F1F1G0 /Defaults/Vertices/BSM/UED_F1F1G0
-set MUED:Vertex/F1F0G1 /Defaults/Vertices/BSM/UED_F1F0G1
-set MUED:Vertex/F1F0W1 /Defaults/Vertices/BSM/UED_F1F0W1
-set MUED:Vertex/G1G1G0 /Defaults/Vertices/BSM/UED_G1G1G0
-set MUED:Vertex/G0G0G1G1 /Defaults/Vertices/BSM/UED_G0G0G1G1
-set MUED:Vertex/P0H1H1 /Defaults/Vertices/BSM/UED_P0H1H1
-set MUED:Vertex/Z0H1H1 /Defaults/Vertices/BSM/UED_Z0H1H1
-set MUED:Vertex/W0A1H1 /Defaults/Vertices/BSM/UED_W0A1H1
-set MUED:Vertex/Z0A1h1 /Defaults/Vertices/BSM/UED_Z0A1h1
-set MUED:Vertex/W0W1W1 /Defaults/Vertices/BSM/UED_W0W1W1
-
-# Set up the shower
-cd /Defaults/Handlers/Shower
-insert stdShowerHandler:DecayInShower 0 5100001
-insert stdShowerHandler:DecayInShower 1 5100002
-insert stdShowerHandler:DecayInShower 2 5100003
-insert stdShowerHandler:DecayInShower 3 5100004
-insert stdShowerHandler:DecayInShower 4 5100005
-insert stdShowerHandler:DecayInShower 5 5100006
-insert stdShowerHandler:DecayInShower 6 5100011
-insert stdShowerHandler:DecayInShower 7 5100012
-insert stdShowerHandler:DecayInShower 8 5100013
-insert stdShowerHandler:DecayInShower 9 5100014
-insert stdShowerHandler:DecayInShower 10 5100015
-insert stdShowerHandler:DecayInShower 11 5100016
-insert stdShowerHandler:DecayInShower 12 6100001
-insert stdShowerHandler:DecayInShower 13 6100002
-insert stdShowerHandler:DecayInShower 14 6100003
-insert stdShowerHandler:DecayInShower 15 6100004
-insert stdShowerHandler:DecayInShower 16 6100005
-insert stdShowerHandler:DecayInShower 17 6100006
-insert stdShowerHandler:DecayInShower 18 6100011
-insert stdShowerHandler:DecayInShower 19 6100013
-insert stdShowerHandler:DecayInShower 20 6100015
-insert stdShowerHandler:DecayInShower 21 5100021
-insert stdShowerHandler:DecayInShower 22 5100022
-insert stdShowerHandler:DecayInShower 23 5100023
-insert stdShowerHandler:DecayInShower 24 5100024
-insert stdShowerHandler:DecayInShower 25 5100025
-insert stdShowerHandler:DecayInShower 26 5100036
-insert stdShowerHandler:DecayInShower 27 5100037
-set theSplittingGenerator:AddFinalSplitting KK1_u_L->KK1_u_L,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_d_L->KK1_d_L,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_s_L->KK1_s_L,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_c_L->KK1_c_L,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_b_1->KK1_b_1,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_t_1->KK1_t_1,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_u_R->KK1_u_R,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_d_R->KK1_d_R,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
-set theSplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
-
-cd /Defaults/Handlers
-insert LHCHandler:PreCascadeHandlers 0 NewModelDecayHandler
-
-# Set up the bsm framework
-cd /Defaults/NewPhysics
-set NewModel:HardProcessConstructor HPConstructor
-set NewModel:DecayConstructor DecayConstructor
-insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
-set MUED:ModelGenerator NewModel
-
-##################################################
-
+read MUED.model
+cd /Herwig/NewPhysics
 
 ##################################################
 #
@@ -110,29 +19,29 @@ set MUED:ModelGenerator NewModel
 ##################################################
 
 # The UED parameters (these are the default)
-set MUED:InverseRadius 500.*GeV
-set MUED:LambdaR 20
+set MUED/Model:InverseRadius 500.*GeV
+set MUED/Model:LambdaR 20
 
 # --- Hard Process ----
 # The particle names can be found in 'BSMParticles.in'
 # by searching for the relevant PDG code and noting the text 
-# '/Defaults/Particles/###' where the hashes denote the name
+# '/Herwig/Particles/###' where the hashes denote the name
 
 # Switch to decide whether to include EW diagrams in the 
 # hard process (On by default)
-set HPConstructor:QCDandEW Off
+set HPConstructor:IncludeEW No
 
 # Example hard process: Incoming proton, outgoing kk quarks
-insert HPConstructor:Incoming 0 /Defaults/Particles/g
-insert HPConstructor:Incoming 1 /Defaults/Particles/u
-insert HPConstructor:Incoming 2 /Defaults/Particles/ubar
-insert HPConstructor:Incoming 3 /Defaults/Particles/d
-insert HPConstructor:Incoming 4 /Defaults/Particles/dbar
+insert HPConstructor:Incoming 0 /Herwig/Particles/g
+insert HPConstructor:Incoming 1 /Herwig/Particles/u
+insert HPConstructor:Incoming 2 /Herwig/Particles/ubar
+insert HPConstructor:Incoming 3 /Herwig/Particles/d
+insert HPConstructor:Incoming 4 /Herwig/Particles/dbar
 
-insert HPConstructor:Outgoing 0 /Defaults/Particles/KK1_u_L
-insert HPConstructor:Outgoing 1 /Defaults/Particles/KK1_u_Lbar
-insert HPConstructor:Outgoing 2 /Defaults/Particles/KK1_d_L
-insert HPConstructor:Outgoing 3 /Defaults/Particles/KK1_d_Lbar
+insert HPConstructor:Outgoing 0 /Herwig/Particles/KK1_u_L
+insert HPConstructor:Outgoing 1 /Herwig/Particles/KK1_u_Lbar
+insert HPConstructor:Outgoing 2 /Herwig/Particles/KK1_d_L
+insert HPConstructor:Outgoing 3 /Herwig/Particles/KK1_d_Lbar
 
 
 # --- Perturbative Decays ---
@@ -140,41 +49,39 @@ insert HPConstructor:Outgoing 3 /Defaults/Particles/KK1_d_Lbar
 # for UED the particles listed below will have
 # both decay modes and spin correlation decayers
 # created.
-insert NewModel:DecayParticles 0 /Defaults/Particles/KK1_d_L
-insert NewModel:DecayParticles 1 /Defaults/Particles/KK1_u_L
-insert NewModel:DecayParticles 2 /Defaults/Particles/KK1_s_L
-insert NewModel:DecayParticles 3 /Defaults/Particles/KK1_c_L
-insert NewModel:DecayParticles 4 /Defaults/Particles/KK1_b_1
-insert NewModel:DecayParticles 5 /Defaults/Particles/KK1_t_1
-insert NewModel:DecayParticles 6 /Defaults/Particles/KK1_d_R
-insert NewModel:DecayParticles 7 /Defaults/Particles/KK1_u_R
-insert NewModel:DecayParticles 8 /Defaults/Particles/KK1_s_R
-insert NewModel:DecayParticles 9 /Defaults/Particles/KK1_c_R
-insert NewModel:DecayParticles 10 /Defaults/Particles/KK1_b_2
-insert NewModel:DecayParticles 11 /Defaults/Particles/KK1_t_2
-insert NewModel:DecayParticles 12 /Defaults/Particles/KK1_e_L-
-insert NewModel:DecayParticles 13 /Defaults/Particles/KK1_nu_eL
-insert NewModel:DecayParticles 14 /Defaults/Particles/KK1_mu_L-
-insert NewModel:DecayParticles 15 /Defaults/Particles/KK1_nu_muL
-insert NewModel:DecayParticles 16 /Defaults/Particles/KK1_tau_1-
-insert NewModel:DecayParticles 17 /Defaults/Particles/KK1_nu_tauL
-insert NewModel:DecayParticles 18 /Defaults/Particles/KK1_e_R-
-insert NewModel:DecayParticles 19 /Defaults/Particles/KK1_mu_R-
-insert NewModel:DecayParticles 20 /Defaults/Particles/KK1_tau_2-
-insert NewModel:DecayParticles 21 /Defaults/Particles/KK1_g
-insert NewModel:DecayParticles 22 /Defaults/Particles/KK1_Z0
-insert NewModel:DecayParticles 23 /Defaults/Particles/KK1_W+
-insert NewModel:DecayParticles 24 /Defaults/Particles/KK1_h0
-insert NewModel:DecayParticles 25 /Defaults/Particles/KK1_A0
-insert NewModel:DecayParticles 26 /Defaults/Particles/KK1_H+
+insert NewModel:DecayParticles 0 /Herwig/Particles/KK1_d_L
+insert NewModel:DecayParticles 1 /Herwig/Particles/KK1_u_L
+insert NewModel:DecayParticles 2 /Herwig/Particles/KK1_s_L
+insert NewModel:DecayParticles 3 /Herwig/Particles/KK1_c_L
+insert NewModel:DecayParticles 4 /Herwig/Particles/KK1_b_1
+insert NewModel:DecayParticles 5 /Herwig/Particles/KK1_t_1
+insert NewModel:DecayParticles 6 /Herwig/Particles/KK1_d_R
+insert NewModel:DecayParticles 7 /Herwig/Particles/KK1_u_R
+insert NewModel:DecayParticles 8 /Herwig/Particles/KK1_s_R
+insert NewModel:DecayParticles 9 /Herwig/Particles/KK1_c_R
+insert NewModel:DecayParticles 10 /Herwig/Particles/KK1_b_2
+insert NewModel:DecayParticles 11 /Herwig/Particles/KK1_t_2
+insert NewModel:DecayParticles 12 /Herwig/Particles/KK1_e_L-
+insert NewModel:DecayParticles 13 /Herwig/Particles/KK1_nu_eL
+insert NewModel:DecayParticles 14 /Herwig/Particles/KK1_mu_L-
+insert NewModel:DecayParticles 15 /Herwig/Particles/KK1_nu_muL
+insert NewModel:DecayParticles 16 /Herwig/Particles/KK1_tau_1-
+insert NewModel:DecayParticles 17 /Herwig/Particles/KK1_nu_tauL
+insert NewModel:DecayParticles 18 /Herwig/Particles/KK1_e_R-
+insert NewModel:DecayParticles 19 /Herwig/Particles/KK1_mu_R-
+insert NewModel:DecayParticles 20 /Herwig/Particles/KK1_tau_2-
+insert NewModel:DecayParticles 21 /Herwig/Particles/KK1_g
+insert NewModel:DecayParticles 22 /Herwig/Particles/KK1_Z0
+insert NewModel:DecayParticles 23 /Herwig/Particles/KK1_W+
+insert NewModel:DecayParticles 24 /Herwig/Particles/KK1_h0
+insert NewModel:DecayParticles 25 /Herwig/Particles/KK1_A0
+insert NewModel:DecayParticles 26 /Herwig/Particles/KK1_H+
 
-
-# --- General event generator parameters --- 
-cd /Defaults/Generators
-# Choose MUED over SM
-set LHCGenerator:StandardModelParameters  /Defaults/NewPhysics/MUED
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 5.7*GeV
 
 # Other parameters for run
+cd /Herwig/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1

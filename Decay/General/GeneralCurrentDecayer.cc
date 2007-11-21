@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GeneralCurrentDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GeneralCurrentDecayer class.
 //
@@ -39,13 +46,13 @@ void GeneralCurrentDecayer::Init() {
      &GeneralCurrentDecayer::_theVertex, false, false, true, false);
 
   static ParVector<GeneralCurrentDecayer,int> interfaceIncomingPart
-    ("IncomingPart",
+    ("Incoming",
      "PDG Codes for incoming particles",
      &GeneralCurrentDecayer::_inpart, 0, -1, 0, 0,
      false, false, false);
 
   static ParVector<GeneralCurrentDecayer,int> interfaceOutgoingPart
-    ("OutgoingPart",
+    ("Outgoing",
      "PDG Codes for the outgoing particles",
      &GeneralCurrentDecayer::_outpart, 0, -1, 0, 0,
      false, false, false);

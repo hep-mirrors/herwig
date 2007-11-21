@@ -5,7 +5,7 @@
 #ifndef HERWIG_Histogram_FH
 #define HERWIG_Histogram_FH
 
-#include "ThePEG/Config/Pointers.h"
+#include "ThePEG/Config/ThePEG.h"
 
 namespace Herwig {
 using namespace ThePEG;

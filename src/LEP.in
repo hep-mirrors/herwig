@@ -12,14 +12,14 @@
 #
 # Any repository setting can be modified here
 ###################################################
-cd /Defaults/MatrixElements
+cd /Herwig/MatrixElements
 set MEee2gZ2qq:MinimumFlavour 1
 set MEee2gZ2qq:MaximumFlavour 5
 
 ##################################################
 # Technical parameters for this run
 ##################################################
-cd /Defaults/Generators
+cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 1
@@ -30,6 +30,41 @@ set LEPGenerator:MaxErrors 10000
 # LEP physics parameters (override defaults) 
 ##################################################
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+
+cd /Herwig/Generators
+##################################################
+#  Useful analysis handlers for LEP physics
+##################################################
+# particle multiplicities
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Multiplicity
+# b multiplicities
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
+# b fragmentation functions
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
+# event shapes and identified particle spectra
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
+# four jet analysis
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
+# general jet analysis
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
+
+##################################################
+#  Useful analysis handlers for B-factory physics
+##################################################
+# BELLE data on charm hadron spetra
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BELLECharm
+# CLEO  data on charm meson spectra
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/CLEOCharm
+
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# set /Herwig/Analysis/HepMCFile:PrintEvent 100
 
 ###################################################
 # Save run for later usage with 'Herwig++ run'

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// SMHiggsGGHiggsPPDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_SMHiggsGGHiggsPPDecayer_H
 #define HERWIG_SMHiggsGGHiggsPPDecayer_H
 //
@@ -10,6 +17,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/StandardModel/SMHGGVertex.h"
 #include "Herwig++/Models/StandardModel/SMHPPVertex.h"
+#include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 #include "SMHiggsGGHiggsPPDecayer.fh"
 
 namespace Herwig {
@@ -129,13 +137,13 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
   
 private:
@@ -167,6 +175,11 @@ private:
    * Maximum weight for integration
    */
   vector<double> _h0wgt;
+
+  /**
+   *  Pointer to the width generator for the Higgs
+   */
+  SMHiggsWidthGeneratorPtr _hwidth;
   
 };
   

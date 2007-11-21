@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// QTildeSudakov.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the QTildeSudakov class.
 //
@@ -88,7 +95,7 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
   t = guesst(told,0,enhance,_ids[1]==_ids[2]);
-  z(guessz()); 
+  z(guessz(0)); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
   if(t<tmin) {
@@ -106,7 +113,7 @@ bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
   if(!computeSpaceLikeLimits(t,x)) return false;
   // guess values of t and z
   t = guesst(told,1,enhance,_ids[1]==_ids[2]); 
-  z(guessz()); 
+  z(guessz(1)); 
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
   if(t<tmin) {
@@ -294,7 +301,7 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   zLimits(limits);
   // guess values of t and z
   t = guesst(told,2,enhance,_ids[1]==_ids[2]); 
-  z(guessz()); 
+  z(guessz(2)); 
   // actual values for z-limits
   limits=make_pair(sqr(minmass/_masses[0]),
 		   1.-_kinCutoff/sqrt(t-_masssquared[0])

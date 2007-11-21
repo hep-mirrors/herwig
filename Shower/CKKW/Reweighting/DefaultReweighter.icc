@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// DefaultReweighter.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the inlined member functions of
 // the DefaultReweighter class.
 //
@@ -28,7 +35,7 @@ inline void DefaultReweighter::insertSplitting (const IdList& ids,
 						bool initial) {
   splittingKey key;
   // do not consider tops
-  if (abs(ids[0] ==6) || abs(ids[1] ==6) || abs(ids[2] ==6)) return;
+  if (abs(ids[0]) ==6 || abs(ids[1]) ==6 || abs(ids[2]) ==6) return;
   key.ids = ids;
   key.initial = initial;
   _splittingMap.insert(make_pair(key,sp));

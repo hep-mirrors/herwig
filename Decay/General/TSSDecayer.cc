@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// TSSDecayer.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the TSSDecayer class.
 //
@@ -21,8 +28,6 @@ using ThePEG::Helicity::TensorWaveFunction;
 using ThePEG::Helicity::Direction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
-
-TSSDecayer::~TSSDecayer() {}
 
 void TSSDecayer::persistentOutput(PersistentOStream & os) const {
   os << _theSSTPtr;
@@ -52,7 +57,7 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 		     incoming,true,false,vertex);
   ScalarWaveFunction sca1(decay[0],outgoing,true,vertex);
   ScalarWaveFunction sca2(decay[1],outgoing,true,vertex);
-  Energy2 scale(inpart.scale());
+  Energy2 scale(sqr(inpart.mass()));
   DecayMatrixElement newme(PDT::Spin2,PDT::Spin0,PDT::Spin0);
   for(unsigned int thel=0;thel<5;++thel) {
     TensorWaveFunction inwave(inpart.momentum(),

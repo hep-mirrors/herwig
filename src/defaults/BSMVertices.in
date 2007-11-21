@@ -1,0 +1,51 @@
+######################################################
+# Create the BSM vertices
+# They are set to the appropriate model in a run file
+######################################################
+mkdir /Herwig/Vertices/BSM
+cd /Herwig/Vertices/BSM
+
+# R-S Model
+library HwRSModel.so
+create Herwig::RSModelFFGRVertex RS_FFGRVertex
+create Herwig::RSModelFFVGRVertex RS_FFVGRVertex
+create Herwig::RSModelSSGRVertex RS_SSGRVertex
+create Herwig::RSModelVVGRVertex RS_VVGRVertex
+create Herwig::RSModelVVVGRVertex RS_VVVGRVertex
+
+# MSSM
+library HwSusy.so
+create Herwig::SSWSSVertex MSSM_WSS
+create Herwig::SSNFSVertex MSSM_NFS
+create Herwig::SSGFSVertex MSSM_GFS
+create Herwig::SSHSFSFVertex MSSM_HSS
+create Herwig::SSCFSVertex MSSM_CFS
+create Herwig::SSGSSVertex MSSM_GSS
+create Herwig::SSGGSQSQVertex MSSM_GGSS
+create Herwig::SSGSGSGVertex MSSM_GGOGO
+create Herwig::SSNNZVertex MSSM_NNZ
+create Herwig::SSCCZVertex MSSM_CCZ
+create Herwig::SSCNWVertex MSSM_CNW
+create Herwig::SSFFHVertex MSSM_FFH
+create Herwig::SSGOGOHVertex MSSM_GOGOH
+create Herwig::SSWWHVertex MSSM_WWH
+create Herwig::SSWHHVertex MSSM_WHH
+create Herwig::SSHHHVertex MSSM_HHH
+create Herwig::SSHGGVertex MSSM_HGG
+
+# MUED
+library HwUED.so
+create Herwig::UEDF1F1Z0Vertex UED_F1F1Z
+create Herwig::UEDF1F1P0Vertex UED_F1F1P
+create Herwig::UEDF1F1W0Vertex UED_F1F1W
+create Herwig::UEDF1F1G0Vertex UED_F1F1G0
+create Herwig::UEDF1F0G1Vertex UED_F1F0G1
+create Herwig::UEDF1F0W1Vertex UED_F1F0W1
+create Herwig::UEDG1G1G0Vertex UED_G1G1G0
+create Herwig::UEDG0G0G1G1Vertex UED_G0G0G1G1
+create Herwig::UEDP0H1H1Vertex UED_P0H1H1
+create Herwig::UEDZ0H1H1Vertex UED_Z0H1H1
+create Herwig::UEDW0A1H1Vertex UED_W0A1H1
+create Herwig::UEDZ0A1h1Vertex UED_Z0A1h1
+create Herwig::UEDW0W1W1Vertex UED_W0W1W1
+

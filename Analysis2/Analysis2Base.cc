@@ -99,12 +99,12 @@ void Analysis2Base::Init() {
      &Analysis2Base::_bookPerSubprocess, false, false, false);
   static SwitchOption interfaceBookPerSubprocessOn
     (interfaceBookPerSubprocess,
-     "On",
+     "Yes",
      "Book per subprocess multiplicity",
      true);
   static SwitchOption interfaceBookPerSubprocessOff
     (interfaceBookPerSubprocess,
-     "Off",
+     "No",
      "Do not book per subprocess multiplicity",
      false);
 
@@ -115,12 +115,12 @@ void Analysis2Base::Init() {
      &Analysis2Base::_parallel, false, false, false);
   static SwitchOption interfaceParallelOn
     (interfaceParallel,
-     "On",
+     "Yes",
      "This analysis is carried out on part of a parallel run.",
      true);
   static SwitchOption interfaceParallelOff
     (interfaceParallel,
-     "Off",
+     "No",
      "This analysis is carried out on a serial run",
      false);
 
@@ -250,12 +250,12 @@ void Analysis2Base::insert (const string& name,
 	Repository::clog() << error;
 	return;
       }
-      double c = log10(binhigher/binlower)/(double)numbins;
+      double c = log10(binhigher/binlower)/numbins;
       vector<pair<double,double> > binning;
       double bi = binlower;
       for(unsigned int i = 0; i< numbins; ++i) {
-	binning.push_back(make_pair(bi,bi*pow(10.,c*(double)i)));
-	bi *= pow(10.,c*(double)i);
+	binning.push_back(make_pair(bi,bi*pow(10.,c*i)));
+	bi *= pow(10.,c*i);
       }
       insertObservable(name,new_ptr(Histogram2(binning,"Herwig++")),options);
     }
@@ -295,7 +295,26 @@ void Analysis2Base::finish (const string& name,
 			    int norm,
 			    bool combined) {
 
-  // return immediatly, if part of a parallel run
+  Histogram2Ptr theHisto;
+  if (_histograms.find(name) != _histograms.end()) {
+    theHisto = _histograms.find(name)->second;
+  } else {
+    generator()->log() << "Analysis2Base::finish : could not finish "
+		       << name << " : No such observable." << endl;
+    return;
+  }
+
+  string data = "";
+
+  if (_datachannels.find(name) != _datachannels.end())
+    data = _datachannels.find(name)->second;
+
+  vector<string> allchannels = theHisto->channels();
+  for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
+    if (*c != data)
+      theHisto->finish(*c);
+
+  // return here, if part of a parallel run
   if (_parallel) return;
 
   int normMode = NormaliseToXSec;
@@ -307,25 +326,10 @@ void Analysis2Base::finish (const string& name,
     normMode = norm;
   }
 
-  string data = "";
-
-  if (_datachannels.find(name) != _datachannels.end())
-    data = _datachannels.find(name)->second;
-
-  Histogram2Ptr theHisto;
-  if (_histograms.find(name) != _histograms.end()) {
-    theHisto = _histograms.find(name)->second;
-  } else {
-    generator()->log() << "Analysis2Base::finish : could not finish "
-		       << name << " : No such observable." << endl;
-    return;
-  }
-
   if (!combined) {
     theHisto->xSec(generator()->currentEventHandler()->histogramScale());
   }
 
-  vector<string> allchannels = theHisto->channels();
   for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
     if (*c != data)
       theHisto->differential(*c);

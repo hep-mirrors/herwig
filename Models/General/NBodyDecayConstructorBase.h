@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// NBodyDecayConstructorBase.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_NBodyDecayConstructorBase_H
 #define HERWIG_NBodyDecayConstructorBase_H
 //
@@ -18,7 +25,7 @@ using namespace ThePEG;
  * decay constructor should inherit from this and implement the 
  * DecayList virtual funtcion to create the decays and decayers.  
  *
- * @see \ref NBodyDecayConstructorInterfaces "The interfaces"
+ * @see \ref NBodyDecayConstructorBaseInterfaces "The interfaces"
  * defined for NBodyDecayConstructor. 
  */
 class NBodyDecayConstructorBase: public Interfaced {
@@ -105,10 +112,7 @@ template <>
 struct ClassTraits<Herwig::NBodyDecayConstructorBase>
   : public ClassTraitsBase<Herwig::NBodyDecayConstructorBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::NBodyDecayConstructorBase"; }      /** Return the name of the shared library be loaded to get
-   *  access to the NBodyDecayConstructorBase class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
+  static string className() { return "Herwig::NBodyDecayConstructorBase"; }
 };
 
 /** @endcond */

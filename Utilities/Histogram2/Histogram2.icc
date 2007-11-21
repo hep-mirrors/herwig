@@ -45,26 +45,32 @@ inline string getNextTag (istream& is) {
 inline HistogramChannel::HistogramChannel ()
   : _isCountingChannel(true),
     _bins(vector<pair<double,double> >()),
+    _binEntries(vector<unsigned long>()),
     _outOfRange(make_pair(0.,0.)),
     _visible(0), _total(0), _nanEvents(0),
-    _nanWeights(vector<unsigned long>())
+    _nanWeights(vector<unsigned long>()),
+    _finished(false)
 {}
 
 inline HistogramChannel::HistogramChannel (unsigned int bins, bool counting)
   : _isCountingChannel(counting),
     _bins(bins,make_pair(0.,0.)),
+    _binEntries(bins,0),
     _outOfRange(make_pair(0.,0.)),
     _visible(0), _total(0), _nanEvents(0),
-    _nanWeights(bins,0)
+    _nanWeights(bins,0),
+    _finished(false)
 {}
 
 inline HistogramChannel::HistogramChannel (const vector<pair<double,double> >& bins,
 					   double underflow, double overflow)
   : _isCountingChannel(false),
     _bins(bins),
+    _binEntries(bins.size(),0),
     _outOfRange(make_pair(underflow,overflow)),
     _visible(0), _total(0), _nanEvents(0),
-    _nanWeights(bins.size(),0)
+    _nanWeights(bins.size(),0),
+    _finished(false)
 {}
 
 inline void HistogramChannel::book (unsigned int bin, double weight) {
@@ -74,6 +80,7 @@ inline void HistogramChannel::book (unsigned int bin, double weight) {
   }
   _bins[bin].first += weight;
   _bins[bin].second += sqr(weight);
+  ++_binEntries[bin];
   ++_visible; ++_total;
 }
 
@@ -111,6 +118,14 @@ inline void HistogramChannel::bin (unsigned int bin, pair<double,double> val) {
   _bins[bin] = val;
 }
 
+inline vector<unsigned long> HistogramChannel::binEntries () const {
+  return _binEntries;
+}
+
+inline unsigned long HistogramChannel::binEntries (unsigned int bin) const {
+  return _binEntries[bin];
+}
+
 inline pair<double,double> HistogramChannel::outOfRange () const {
   return _outOfRange;
 }
@@ -129,6 +144,14 @@ inline vector<unsigned long> HistogramChannel::nanWeights () const {
 
 inline unsigned long HistogramChannel::nanEvents () const {
   return _nanEvents;
+}
+
+inline void HistogramChannel::finish () {
+  if (_finished) return;
+  for(unsigned int b = 0; b< _bins.size(); ++b)
+    _bins[b].second = 
+      _binEntries[b] > 0 ? _bins[b].second/(_binEntries[b]*_binEntries[b])  : 0;
+  _finished = true;
 }
 
 inline pair<double,double> HistogramChannel::binAverage () const {
@@ -208,6 +231,13 @@ inline CrossSection Histogram2::xSec () const {
 
 inline void Histogram2::xSec (CrossSection xs) {
   _xSec = xs;
+}
+
+inline void Histogram2::finish (const string& name) {
+  map<string,HistogramChannel>::iterator c = _channels.find(name);
+  if (c != _channels.end()) {
+    c->second.finish();
+  }
 }
 
 inline void Histogram2::differential (const string& name) {

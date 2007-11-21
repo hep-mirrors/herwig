@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEQCD2to2Fast class.
+//
+#ifndef HERWIG_MEQCD2to2Fast_FH
+#define HERWIG_MEQCD2to2Fast_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEQCD2to2Fast;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEQCD2to2Fast,MEQCD2to2FastPtr);
+
+}
+
+#endif

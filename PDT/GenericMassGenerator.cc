@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// GenericMassGenerator.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the GenericMassGenerator class.
 //
@@ -21,7 +28,7 @@ void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
      << _BWshape << _ngenerate 
      << ounit(_mass,GeV) << ounit(_width,GeV) 
      << ounit(_mass2,GeV2) << ounit(_mwidth,GeV2) 
-     << _ninitial << _initialize << _widthgen;
+     << _ninitial << _initialize << _widthgen << _widthopt;
 }
 
 void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
@@ -30,7 +37,7 @@ void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
      >> _BWshape >> _ngenerate 
      >> iunit(_mass,GeV) >> iunit(_width ,GeV)
      >> iunit(_mass2,GeV2) >> iunit(_mwidth ,GeV2)
-     >> _ninitial >> _initialize >> _widthgen;
+     >> _ninitial >> _initialize >> _widthgen >> _widthopt;
 }
 
 ClassDescription<GenericMassGenerator> GenericMassGenerator::initGenericMassGenerator;
@@ -53,12 +60,12 @@ void GenericMassGenerator::Init() {
      &GenericMassGenerator::_initialize, false, false, false);
   static SwitchOption interfaceInitializeInitialization
     (interfaceInitialize,
-     "Initialization",
+     "Yes",
      "Do the initialization",
      true);
   static SwitchOption interfaceInitializeNoInitialization
     (interfaceInitialize,
-     "NoInitialization",
+     "No",
      "Don't do the initalization",
      false);
 
@@ -98,7 +105,6 @@ void GenericMassGenerator::Init() {
      "The number of tries to generate the mass",
      &GenericMassGenerator::_ngenerate, 100, 0, 10000,
      false, false, true);
-
  
   static Parameter<GenericMassGenerator,int> interfaceNInitial
     ("NInitial",
@@ -106,11 +112,24 @@ void GenericMassGenerator::Init() {
      &GenericMassGenerator::_ninitial, 1000, 0, 100000,
      false, false, true);
 
+  static Switch<GenericMassGenerator,bool> interfaceWidthOption
+    ("WidthOption",
+     "Which width to use",
+     &GenericMassGenerator::_widthopt, false, false, false);
+  static SwitchOption interfaceWidthOptionNominalWidth
+    (interfaceWidthOption,
+     "NominalWidth",
+     "Use the normal width from the particle data object",
+     false);
+  static SwitchOption interfaceWidthOptionPhysicalWidth
+    (interfaceWidthOption,
+     "PhysicalWidth",
+     "Use the width calculated at the on-shell mass",
+     true);
+
 }
 
-
-bool GenericMassGenerator::accept(const ParticleData & in) const
-{
+bool GenericMassGenerator::accept(const ParticleData & in) const {
   if(!_particle){return false;}
   bool allowed=false;
   if(in.id()==_particle->id()){allowed=true;}
@@ -128,7 +147,7 @@ void GenericMassGenerator::doinit() throw(InitException) {
   if(_widthgen){_widthgen->init();}
   // local storage of particle properties for speed
   _mass=_particle->mass();
-  _width=_particle->width();
+  _width= _widthopt ? _particle->generateWidth(_mass) : _particle->width();
   _mass2=_mass*_mass;
   _mwidth=_mass*_width;
   _lowermass = _mass-_particle->widthLoCut();
@@ -157,6 +176,7 @@ void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
   output << "set " << fullName() << ":BreitWignerShape "   << _BWshape << "\n";
   output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
   output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
+  output << "set " << fullName() << ":WidthOption " << _widthopt << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

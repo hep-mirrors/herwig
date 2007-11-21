@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEvv2ss.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEvv2ss_H
 #define HERWIG_MEvv2ss_H
 //
@@ -6,10 +13,27 @@
 //
 
 #include "GeneralHardME.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ProductionMatrixElement.h"
 #include "MEvv2ss.fh"
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::VSSVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::SSTVertexPtr;
+using ThePEG::Helicity::VVSSVertexPtr;
 
 /**
  * This is the implementation of the matrix element for the process
@@ -21,6 +45,11 @@ using namespace ThePEG;
  * @see GeneralHardME
  */
 class MEvv2ss: public GeneralHardME {
+
+public:
+
+  /** A vector of VectorWaveFunction objects*/
+  typedef vector<VectorWaveFunction> VBVector;
 
 public:
 
@@ -53,6 +82,36 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+  /**
+   * Set the Hardvertex for the spin correlations
+   * @param sub
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+private:
+
+  /**
+   * Calculate the matrix element.
+   * @param v1 A vector of VectorWaveFunction objects for the first boson
+   * @param v2 A vector of VectorWaveFunction objects for the second boson
+   * @param sca1 A ScalarWaveFunction for the first outgoing
+   * @param sca2 A ScalarWaveFunction for the second outgoing
+   * @param me2 The value of the spin-summed matrix element squared
+   * (to be calculated)
+   */
+  ProductionMatrixElement vv2ssME(const VBVector & v1, const VBVector & v2,
+				  const ScalarWaveFunction & sca1, 
+				  const ScalarWaveFunction & sca2, 
+				  double & me2) const;
+protected:
+  
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -78,6 +137,20 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 
 protected:
 
@@ -109,6 +182,33 @@ private:
    * In fact, it should not even be implemented.
    */
   MEvv2ss & operator=(const MEvv2ss &);
+
+private:
+
+  /** @name The dynamically casted vertices. */
+  //@{
+  /**
+   * Intermediate t-channel scalar
+   */
+  vector<pair<VSSVertexPtr, VSSVertexPtr> > theSca;
+
+  /**
+   * Intermediate s-channel vector
+   */
+  vector<pair<VVVVertexPtr, VSSVertexPtr> > theVec;
+
+  /**
+   * Intermediate s-channel tensor
+   */
+  vector<pair<VVTVertexPtr, SSTVertexPtr> > theTen;
+  
+  /**
+   * The contact vertex 
+   */
+  VVSSVertexPtr theContact;
+  //@}
+  
+  
 };
 
 }
@@ -134,14 +234,6 @@ struct ClassTraits<Herwig::MEvv2ss>
   : public ClassTraitsBase<Herwig::MEvv2ss> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEvv2ss"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEvv2ss is implemented. It may also include several, space-separated,
-   * libraries if the class MEvv2ss depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libGeneralHardME.so"; }
 };
 
 /** @endcond */

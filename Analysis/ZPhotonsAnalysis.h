@@ -165,6 +165,11 @@ private:
   vector<HistogramPtr> _ephoton;
 
   /**
+   *  histograms for the cos thetas of different photons
+   */
+  HistogramPtr _cphoton;
+
+  /**
    *  histogram for the photon multiplicity
    */
   HistogramPtr _nphoton;

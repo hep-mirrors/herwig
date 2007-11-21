@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEvv2vv.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEvv2vv_H
 #define HERWIG_MEvv2vv_H
 //
@@ -72,19 +79,38 @@ public:
   //@}
 
   /**
+   * Construct the vertex information for the spin correlations
+   * @param sub Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr sub);
+
+private:
+
+  /**
    * Compute the matrix element for \f$V\, V\to V\, V\f$
    * @param vin1 VectorWaveFunctions for first incoming particle
    * @param vin2 VectorWaveFunctions for second incoming particle
    * @param vout1 VectorWaveFunctions for first outgoing particle
+   * @param mc Whether vout1 is massless or not
    * @param vout2  VectorWaveFunctions for outgoing particle
+   * @param md Whether vout2 is massless or not
    * @param me2 colour averaged, spin summed ME
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
    */
   ProductionMatrixElement 
   vv2vvHeME(VBVector & vin1, VBVector & vin2, 
-	    VBVector & vout1, VBVector & vout2,
+	    VBVector & vout1, bool mc, VBVector & vout2, bool md,
 	    double & me2) const;
+
+protected:
+  
+  /**
+   * A debugging function to test the value of me2 against an
+   * analytic function.
+   * @param me2 The value of the \f$ |\bar{\mathcal{M}}|^2 \f$
+   */
+  virtual void debug(double me2) const;
 
 public:
 
@@ -202,14 +228,6 @@ struct ClassTraits<Herwig::MEvv2vv>
   : public ClassTraitsBase<Herwig::MEvv2vv> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::MEvv2vv"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * MEvv2vv is implemented. It may also include several, space-separated,
-   * libraries if the class MEvv2vv depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "HwGeneralME.so"; }
 };
 
 /** @endcond */

@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// TwoBodyDecayConstructor.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_TwoBodyDecayConstructor_H
 #define HERWIG_TwoBodyDecayConstructor_H
 //
@@ -210,10 +217,6 @@ struct ClassTraits<Herwig::TwoBodyDecayConstructor>
   : public ClassTraitsBase<Herwig::TwoBodyDecayConstructor> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::TwoBodyDecayConstructor"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the TwoBodyDecayConstructor class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwModelGenerator.so"; }
 };
 
 /** @endcond */

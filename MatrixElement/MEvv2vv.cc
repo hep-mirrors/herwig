@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// MEvv2vv.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEvv2vv class.
 //
@@ -12,6 +19,9 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/SpinInfo.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;
@@ -20,6 +30,7 @@ using ThePEG::Helicity::TensorWaveFunction;
 using ThePEG::Helicity::VVTVertexPtr;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::SpinfoPtr;
 
 double MEvv2vv::me2() const {
   VBVector va(2), vb(2), vc(3), vd(3);  
@@ -32,19 +43,26 @@ double MEvv2vv::me2() const {
     vc[2*i] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 2*i, outgoing);
     vd[2*i] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 2*i, outgoing);
   }
+  bool mc  = !(mePartonData()[2]->mass() > 0.*MeV);
   //massive vector, also 1
-  if(mePartonData()[2]->mass() > 0.0*MeV)
+  if( !mc )
     vc[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, outgoing);
-  if(mePartonData()[3]->mass() > 0.0*MeV)
+  bool md  = !(mePartonData()[3]->mass() > 0.*MeV);
+  if( !md ) 
     vd[1] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 1, outgoing);
   double full_me(0.);
-  vv2vvHeME(va, vb, vc, vd, full_me);
+  vv2vvHeME(va, vb, vc, mc, vd, md, full_me);
+
+#ifndef NDEBUG
+  if( debugME() ) debug(full_me);
+#endif
+
   return full_me;
 }
 
 ProductionMatrixElement 
 MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2, 
-		   VBVector & vout1, VBVector & vout2,
+		   VBVector & vout1, bool mc, VBVector & vout2, bool md,
 		   double & mesq) const {
   const HPCount ndiags = numberOfDiags();
   const size_t ncf(numberOfFlows());
@@ -52,17 +70,15 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
   const Energy2 q2(scale());
   vector<Complex> diag(ndiags, Complex(0.));
   vector<double> me(ndiags, 0.);
-  bool masslessC = (mePartonData()[2]->mass() == 0.0*MeV);
-  bool masslessD = (mePartonData()[3]->mass() == 0.0*MeV);
   ScalarWaveFunction interS; VectorWaveFunction interV;
   TensorWaveFunction interT;
   ProductionMatrixElement prodME(PDT::Spin1, PDT::Spin1, PDT::Spin1, PDT::Spin1);
   for(unsigned int ihel1 = 0; ihel1 < 2; ++ihel1) { 
     for(unsigned int ihel2 = 0; ihel2 < 2; ++ihel2) {
       for(unsigned int ohel1 = 0; ohel1 < 3; ++ohel1) {
-	if(masslessC && ohel1 == 1) ++ohel1;
+	if(mc && ohel1 == 1) ++ohel1;
 	for(unsigned int ohel2 = 0; ohel2 < 3; ++ohel2) {
-	  if(masslessD && ohel2 == 1) ++ohel2;
+	  if(md && ohel2 == 1) ++ohel2;
 	  vector<Complex> cflows(ncf, Complex(0.0));
 	  for(HPCount ix = 0; ix < ndiags; ++ix) {
 	    HPDiagram current = getProcessInfo()[ix];
@@ -78,7 +94,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
  						  vout2[ohel2], vin1[ihel1]);
 	      }
 	      else if(offshell->iSpin() == PDT::Spin2) {
-		interT = theTenV[ix].first->evaluate(q2, 3, offshell,
+		interT = theTenV[ix].first->evaluate(q2, 1, offshell,
 						     vin1[ihel1], vin2[ihel2]);
 		diag[ix] = theTenV[ix].second->evaluate(q2, vout1[ohel1], 
 							vout2[ohel2],interT);
@@ -129,7 +145,10 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		current.colourFlow[iy].second * diag[ix];
 	    
 	  } //end of diagram loop
-
+	  //set the appropriate element in ProductionMatrixElement
+	  prodME(ihel1, ihel2, ohel1, ohel2) = 
+	    std::accumulate(cflows.begin(), cflows.end(), Complex(0.0, 0.0));
+	  
 	  for(size_t ii = 0; ii < ncf; ++ii)
 	    for(size_t ij = 0; ij < ncf; ++ij)
 	      mesq += cfactors[ii][ij]*(cflows[ii]*conj(cflows[ij])).real();
@@ -152,7 +171,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 
 Selector<const ColourLines *>
 MEvv2vv::colourGeometries(tcDiagPtr diag) const {
-  static vector<ColourLines> colourflows(15);
+  static vector<ColourLines> colourflows(16);
   //88->8->88
   colourflows[0] = ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5");
   colourflows[1] = ColourLines("-1 2, 1 3 4, -4 5, -2 -3 -5");
@@ -170,7 +189,9 @@ MEvv2vv::colourGeometries(tcDiagPtr diag) const {
   colourflows[12] = ColourLines("1 -2, 2 -1, 4 -5, 5 -4");
   colourflows[13] = ColourLines("1 4, -1 -4, 3 5, -5 -3");
   colourflows[14] = ColourLines("1 5, -1 -5, 3 4, -3 -4");
-  
+  //88->0->00
+  colourflows[15] = ColourLines("1 -2,2 -1");
+
   HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
   Selector<const ColourLines *> select;
   if(current.channelType == HPDiagram::sChannel) {
@@ -180,8 +201,12 @@ MEvv2vv::colourGeometries(tcDiagPtr diag) const {
       select.insert(0.25, &colourflows[2]);
       select.insert(0.25, &colourflows[3]);
     }
-    else
-      select.insert(1., &colourflows[12]);
+    else {
+      if(getParticleData(current.outgoing.first)->iColour() == PDT::Colour0)
+	select.insert(1., &colourflows[15]);
+      else
+	select.insert(1., &colourflows[12]);
+    }
   }
   else if(current.channelType == HPDiagram::tChannel) {
     if(current.ordered.second) {
@@ -232,3 +257,66 @@ void MEvv2vv::Init() {
 
 }
 
+void MEvv2vv::constructVertex(tSubProPtr sub) {
+  ParticleVector ext(4);
+  ext[0] = sub->incoming().first;
+  ext[1] = sub->incoming().second;
+  ext[2] = sub->outgoing()[0];
+  ext[3] = sub->outgoing()[1];
+
+  VBVector v1, v2, v3, v4;
+  VectorWaveFunction(v1, ext[0], incoming, false, true, true);
+  VectorWaveFunction(v2, ext[1], incoming, false, true, true);
+  //function to calculate me2 expects massless incoming vectors
+  // and this constructor sets the '1' polarisation at element [2] 
+  //in the vector
+  v1[1] = v1[2]; 
+  v2[1] = v2[2];
+  bool mc  = !(ext[2]->data().mass() > 0.*MeV);
+  bool md  = !(ext[3]->data().mass() > 0.*MeV);
+  VectorWaveFunction(v3, ext[2], outgoing, true, mc, true);
+  VectorWaveFunction(v4, ext[3], outgoing, true, md, true);
+  if( mc ) v3[1] = v3[2];
+  if( md ) v4[1] = v4[2];
+    
+  double dummy(0.);
+
+  ProductionMatrixElement pme = vv2vvHeME(v1, v2, v3, mc, v4, md, dummy);
+
+#ifndef NDEBUG
+  if( debugME() ) debug(dummy);
+#endif
+
+  HardVertexPtr hv = new_ptr(HardVertex());
+  hv->ME(pme);
+  for(unsigned int i = 0; i < 4; ++i) 
+    dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
+}
+
+void MEvv2vv::debug(double me2) const {
+  if( !generator()->logfile().is_open() ) return;
+  if( mePartonData()[0]->id() != 21 || mePartonData()[1]->id() != 21 ||
+      mePartonData()[2]->id() != 5100021 || 
+      mePartonData()[3]->id() != 5100021 ) return;
+  tcSMPtr sm = generator()->standardModel();
+  double gs4 = sqr( 4.*Constants::pi*sm->alphaS(scale()) );
+  Energy2 s(sHat());
+  Energy2 mf2 = meMomenta()[2].m2();
+  Energy2 t3(tHat() - mf2), u4(uHat() - mf2);
+  Energy4 s2(sqr(s)), t3s(sqr(t3)), u4s(sqr(u4)); 
+
+  Energy4 num = s2 + t3s + u4s;  
+  double analytic = 3.*mf2*( mf2*num/t3s/u4s - num/s/t3/u4 ) + 1.
+    + sqr(num)*num/4./s2/t3s/u4s - t3*u4/s2;
+  analytic *= 9.*gs4/8.;
+  
+  double diff = abs( analytic - me2 );
+  if( diff  > 1e-4 ) {
+    generator()->log() 
+      << mePartonData()[0]->PDGName() << ","
+      << mePartonData()[1]->PDGName() << "->"
+      << mePartonData()[2]->PDGName() << ","
+      << mePartonData()[3]->PDGName() << "   difference: " 
+      << setprecision(10) << diff  << "  ratio: " << analytic/me2  << '\n';
+  }
+}

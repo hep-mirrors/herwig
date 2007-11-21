@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// IFDipole.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_IFDipole_H
 #define HERWIG_IFDipole_H
 //
@@ -173,6 +180,14 @@ protected:
    * @param children The decay products
    */
   double makePhotons(Boost boost,ParticleVector children);
+
+  /**
+   *  Compute a Lorentz transform from p to q
+   * @param p Original momentum
+   * @param q Final momentum
+   */
+  LorentzRotation solveBoost(const Lorentz5Momentum & q, 
+			     const Lorentz5Momentum & p ) const;
 
 private:
 

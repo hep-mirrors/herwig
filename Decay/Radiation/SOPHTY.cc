@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// SOPHTY.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the SOPHTY class.
 //
@@ -9,15 +16,11 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SOPHTY.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "FFDipole.h"
 #include "IFDipole.h"
+
 using namespace Herwig;
 
 void SOPHTY::persistentOutput(PersistentOStream & os) const {
@@ -51,28 +54,25 @@ void SOPHTY::Init() {
      &SOPHTY::_ifdipole, false, false, true, false, false);
 }
 
-ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector children)
-{
+ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector children) {
   if(children.size()!=2) return children;
   useMe();
   // final-final dipole
-  if(p.dataPtr()->iCharge()==0)
-    {
-      if(children[0]->dataPtr()->iCharge()!=0&&
-	 children[1]->dataPtr()->iCharge()!=0)
-	return _ffdipole->generatePhotons(p,children);
-      else
-	return children;
-    }
+  if(p.dataPtr()->iCharge()==0) {
+    if(children[0]->dataPtr()->iCharge()!=0&&
+       children[1]->dataPtr()->iCharge()!=0)
+      return _ffdipole->generatePhotons(p,children);
+    else
+      return children;
+  }
   // initial final dipole
-  else
-    {
-      if((children[0]->dataPtr()->iCharge()==0&&
-	  children[1]->dataPtr()->iCharge()!=0)||
-	 (children[0]->dataPtr()->iCharge()!=0&&
-	  children[1]->dataPtr()->iCharge()==0))
-	return _ifdipole->generatePhotons(p,children);
-      else
-	return children;
-    }
+  else {
+    if((children[0]->dataPtr()->iCharge()==0&&
+	children[1]->dataPtr()->iCharge()!=0)||
+       (children[0]->dataPtr()->iCharge()!=0&&
+	children[1]->dataPtr()->iCharge()==0))
+      return _ifdipole->generatePhotons(p,children);
+    else
+      return children;
+  }
 }
