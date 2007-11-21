@@ -44,10 +44,13 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
   // check we have the right decay
   if(abs(part->children()[0]->id())!=_iferm) return;
   if(abs(part->children()[1]->id())!=_iferm) return;
+  // pphoton is the total momentum of all photons, mult is the multiplicity,
+  // ix/emax is the index/energy of the most energetic photon emitted:
   Lorentz5Momentum pphoton;
   unsigned int mult=0;
   Energy emax=0.*MeV;
   int imax=-1;
+  // loop over the non-fermionic children i.e. the photons:
   for(unsigned int ix=2;ix<part->children().size();++ix) {
     if(part->children()[ix]->id()!=ParticleID::gamma) return;
     pphoton+=part->children()[ix]->momentum();
@@ -56,21 +59,38 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
       emax=part->children()[ix]->momentum().e();
       imax=ix;
     }
+    Lorentz5Momentum pf(part->children()[0]->momentum());
+    Lorentz5Momentum pfb(part->children()[1]->momentum());
+    if(part->children()[0]->id()<0&&part->children()[0]>0) swap(pf,pfb);
+    pf.boost(-part->momentum().boostVector());
+    pfb.boost(-part->momentum().boostVector());
+    // bin the cosine of the angle between each photon and the fermion 
+    Lorentz5Momentum pphot(part->children()[ix]->momentum());
+    pphot.boost(-part->momentum().boostVector());
+    *_cphoton+=pf.vect().cosTheta(pphot.vect());
     ++mult;
   }
+  // boost the combined fermion momentum and the total photon momentum
+  // to the Z/gamma rest framefermion rest frame:
   Lorentz5Momentum pferm(part->children()[0]->momentum()+
 			 part->children()[1]->momentum());
   pferm.boost(-part->momentum().boostVector());
   pphoton.boost(-part->momentum().boostVector());
   pferm.rescaleMass();
   pphoton.rescaleMass();
+  // bin the photon multiplicity of this decay:
   *_nphoton+=mult;
   for(unsigned int ix=0;ix<3;++ix) {
+    // bin the invariant mass of the fermions and the total photon energy
+    // in histograms of varying ranges (ix):  
     *_masstotal[ix]+=pferm.mass()/MeV;
     if(mult>0) *_etotal[ix]+=pphoton.e()/MeV;
   }
+  // bin the energy of the most energetic photon:
   if(imax>0) *_etotal[3]+=part->children()[imax]->momentum().e()/MeV;
   if(mult<20) {
+    // bin the difermion invariant mass and the total photon energy 
+    // according to multiplicity:
     *_mphoton[mult]+=pferm.mass()/MeV;
     *_ephoton[mult]+=pphoton.e()/MeV;
   }
@@ -139,6 +159,13 @@ inline void ZPhotonsAnalysis::dofinish() {
 			    "  G G   XGX    X  X",
 			    "E0G1/GeV",
 			    " XGX    ");
+
+  _cphoton->topdrawOutput(output,Frame|Errorbars|Ylog,
+                          "RED","Photon cosine wrt fermion","",
+                          "1/SdS/dc0G1",
+                          "  G G   XGX",
+                          "c0G1",
+                          " XGX    ");
   for(unsigned int ix=0;ix<20;++ix) {
     ostringstream titlea;
     titlea << "Fermion mass for "  << ix << " photons " << flush;
@@ -171,6 +198,7 @@ inline void ZPhotonsAnalysis::doinitrun() {
     _mphoton.push_back(new_ptr(Histogram(0.,92000.,400)));
     _ephoton.push_back(new_ptr(Histogram(0.,92000.,400)));
   }
+  _cphoton=new_ptr(Histogram(-1.,1.,100));
   _etotal.push_back(new_ptr(Histogram(0.,92000.,400)));
   _etotal.push_back(new_ptr(Histogram(0.,92000.,400)));
   _nphoton=new_ptr(Histogram(-0.5,100.5,101));
