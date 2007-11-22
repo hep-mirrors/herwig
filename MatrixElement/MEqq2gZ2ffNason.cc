@@ -20,6 +20,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig++/Utilities/Maths.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "HardVertex.h"
 
 using namespace Herwig;
@@ -39,6 +40,17 @@ void MEqq2gZ2ffNason::doinit() throw(InitException) {
     throw InitException() << "Must be the Herwig++ StandardModel class in "
 			  << "MEqq2gZ2ffNason::doinit" << Exception::abortnow;
 }
+
+void MEqq2gZ2ffNason::doinitrun() {  
+  ME2to2Base::doinitrun();
+  maxy = 0.;
+  miny = 0.;
+  no_wgts = 0;
+  no_negwgts = 0;
+
+}
+
+
 
 void MEqq2gZ2ffNason::getDiagrams() const {
   // which intermediates to include
@@ -73,7 +85,9 @@ void MEqq2gZ2ffNason::getDiagrams() const {
 }
 
 Energy2 MEqq2gZ2ffNason::scale() const {
-  return sHat();
+  // Checked sqrt(sHat)-sqrt(lastX1()*lastX2()*lastS())<1 MeV for 10K events. 
+  return 10000.0*GeV2;
+//  return sHat();
 }
 
 double MEqq2gZ2ffNason::me2() const {
@@ -279,7 +293,7 @@ void MEqq2gZ2ffNason::Init() {
 
   static Parameter<MEqq2gZ2ffNason,double> interfaceCorrectionCoefficient
     ("CorrectionCoefficient",
-     "The magnitude pf the correction term to reduce the negative contribution",
+     "The magnitude of the correction term to reduce the negative contribution",
      &MEqq2gZ2ffNason::_a, 0.5, -10., 10.0,
      false, false, Interface::limited);
 
@@ -296,8 +310,7 @@ double MEqq2gZ2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
 			   vector<SpinorWaveFunction>    & aout,
 			   bool calc) const {
   // scale
-  //Energy2 mb2(scale());
-  Energy2 mb2(sqr(getParticleData(ParticleID::Z0)->mass()));
+  Energy2 mb2(scale());
   // matrix element to be stored
   ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
 				PDT::Spin1Half,PDT::Spin1Half);
@@ -346,14 +359,14 @@ double MEqq2gZ2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
   save.push_back(me[2]);
   meInfo(save);
   if(calc) _me.reset(menew);
-  // the last factor is the difference betweeon our and MCFM's
-  // alpha at the Z mass
-  return me[0]*NLOweight()*sqr(0.00754677226/0.00776334);
+  // Get Born momentum fractions xbar_a and xbar_b:
+  _xb_a = lastX1();
+  _xb_b = lastX2();
+//  return me[0];
+  return me[0]*NLOweight();
 }
 
 void MEqq2gZ2ffNason::constructVertex(tSubProPtr sub) {
-  *_xwgt += _x;
-  *_vwgt += _v;
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -386,353 +399,318 @@ int MEqq2gZ2ffNason::nDim() const {
 }
 
 bool MEqq2gZ2ffNason::generateKinematics(const double * r) {
-  _x=*(r+1);
-  _v=*(r+2);
-  //_x=UseRandom::rnd();
+  _xt=*(r+1);
+  _v =*(r+2);
+  //_xt=UseRandom::rnd();
   //_v=UseRandom::rnd();
   return ME2to2Base::generateKinematics(r);
 }
 
 double MEqq2gZ2ffNason::NLOweight() const {
-  // if leading order this is one
+
+  // If only leading order is required return 1:
   if(_contrib==0) return 1.;
   using Constants::pi;
-  // first extract xbarp and xbarm
-  double xbp = lastX1();
-  double xbm = lastX2();
-  tcPDPtr in[2]={mePartonData()[0],mePartonData()[1]};
-  Ptr<BeamParticleData>::transient_const_pointer beam[2]=
-    {dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>(lastParticles().first->dataPtr()),
-     dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>(lastParticles().second->dataPtr())};
-  tcPDPtr gluon = getParticleData(ParticleID::g);
-  if(mePartonData()[0]->id()<0) {
-    swap(xbp    ,xbm    );
-    swap(beam[0],beam[1]);
-    swap(in[0]  ,in[1]  );
+
+  // Get particle data for QCD particles:
+  _parton_a=mePartonData()[0];
+  _parton_b=mePartonData()[1];
+  _gluon=getParticleData(ParticleID::g);
+  _hadron_A=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>(lastParticles().first->dataPtr());
+  _hadron_B=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>(lastParticles().second->dataPtr());
+  // If necessary swap the particle data vectors so that _xb_a, 
+  // mePartonData[0], beam[0] relate to the inbound quark: 
+  if(_parton_a->id()<0) {
+    swap(_xb_a    ,_xb_b    );
+    swap(_parton_a,_parton_b);
+    swap(_hadron_A,_hadron_B);
   }
-  // alpha_S
-  const double eps=1e-8;
-  double aS = SM().alphaS(scale());
-  double CF(4./3.),TR(0.5);
-  // pieces with LO kinematics
-  double lowgt = 1.+aS/pi*CF;
-  // + radiation and collinear pieces
-  double z  = xbp+(1.-xbp)*_x;
-  double vt = (1.-z)*_v; 
-  double zlog = log(sqr(1.-z)/z);
-  // pdf values
-  double oldq = beam[0]->pdf()->xfx(beam[0],in[0],scale(),xbp)/xbp;
-  if(oldq<eps) return 0.;
-  double xp = xbp/z;
-  double rg   = beam[0]->pdf()->xfx(beam[0],gluon,scale(),xp )/xp/oldq;
-  double rq   = beam[0]->pdf()->xfx(beam[0],in[0],scale(),xp )/xp/oldq;
-  // weight
-  double pwgt = 0.5*aS/pi*(1.-xbp)/z*
-    (2.*CF*(vt-(1.-z))     *rq
-     +  TR*(1.-z)*(vt+2.*z)*rg
-     +CF*(z/(1.-xbp)*(sqr(pi)/3.-5.+2.*sqr(log(1.-xbp))+2.*Math::ReLi2(1.-xbp))
-	  +(1.-z-(1.+z)*zlog)*rq+(rq-z)*2./(1.-z)*zlog)
-     +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*rg);
-  if(isnan(pwgt)||isinf(pwgt)) cerr << "testing + weight nan\n";
-  int xbin = int(_x*100.);
-  int vbin = int(_v*100.);
-  if(pwgt>0.) {
-    _posxp[xbin] += pwgt;
-    _posvp[vbin] += pwgt; 
+
+  // Calculate alpha_S, CF, TF etc:
+  _alphaS = SM().alphaS(scale());
+  _CF = 4./3.; _TF = 0.5;
+  // Calculate the invariant mass of the dilepton pair
+  _mll2 = x(_xt,_v)*sHat();
+  _mu2  = scale();
+
+  // Calculate the integrand:
+  double wqqvirt      = Vtilde_qq();
+  double wqqcollin    = Ctilde_qq(x(_xt,1.),1.) + Ctilde_qq(x(_xt,0.),0.);
+  double wqqreal      = Ftilde_qq(_xt,_v);
+  double wqq          = wqqvirt+wqqcollin+wqqreal;
+
+  double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
+  double wqgreal      = Ftilde_qg(_xt,_v);
+  double wqg          = wqgreal+wqgcollin;
+
+  double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
+  double wgqbarreal   = Ftilde_gq(_xt,_v);
+  double wgqbar       = wgqbarreal+wgqbarcollin;
+
+  double wgt          = 1.+(wqq+wqg+wgqbar);
+
+  //trick to try and reduce neg wgt contribution
+  if(_xt<1-_eps) {
+    wgt += _a*(1./pow(1-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
   }
-  else {
-    _negxp[xbin] += (-pwgt);
-    _negvp[vbin] += (-pwgt); 
+  
+  no_wgts ++;
+  if( wgt < 0. ) no_negwgts ++;
+
+  // MCFM histograms:
+
+  //fill hist bins
+  int x_bin = int( 100. * _xt );
+  int v_bin = int( 100. * _v );
+  x_h[x_bin] += wgt;
+  v_h[v_bin] += wgt;
+ 
+  if ( wgt > 0. ) {
+    x_pos_h[x_bin] += wgt;
+    v_pos_h[v_bin] += wgt;
+  } 
+  else if( wgt < 0. ) {
+    x_neg_h[x_bin] += wgt;
+    v_neg_h[v_bin] += wgt;
   }
-  // - radiation and collinear pieces
-  z  = xbm+(1.-xbm)*_x;
-  vt = (1.-z)*_v;
-  zlog = log(sqr(1.-z)/z);
-  // pdfs
-  oldq = beam[1]->pdf()->xfx(beam[1],in[1],scale(),xbm)/xbm;
-  if(oldq<eps) return 0.;
-  double xm = xbm/z;
-  rq   = beam[1]->pdf()->xfx(beam[1],in[1],scale(),xm )/xm/oldq;
-  rg   = beam[1]->pdf()->xfx(beam[1],gluon,scale(),xm )/xm/oldq;
-  // weight
-  double nwgt = 0.5*aS/pi*(1.-xbm)/z*
-    (2.*CF*(vt-(1.-z))     *rq
-     +  TR*(1.-z)*(vt+2.*z)*rg
-     +CF*(z/(1.-xbm)*(sqr(pi)/3.-5.+2.*sqr(log(1.-xbm))+2.*Math::ReLi2(1.-xbm))
-	  +(1.-z-(1.+z)*zlog)*rq+(rq-z)*2./(1.-z)*zlog)
-     +TR*((sqr(z)+sqr(1.-z))*zlog+2.*z*(1.-z))*rg);
-  if(isnan(nwgt)||isinf(nwgt)) cerr << "testing - weight nan\n";
-  if(nwgt>0.) {
-    _posxn[xbin] += nwgt;
-    _posvn[vbin] += nwgt; 
-  }
-  else {
-    _negxn[xbin] += (-nwgt);
-    _negvn[vbin] += (-nwgt); 
-  }
-  double wgt = lowgt+pwgt+nwgt;
-  // trick to try and make less negative events
-  if(1.-_x>=eps) {
-    wgt += _a*(1./pow(1.-_x,_p)-(1.-pow(eps,1.-_p))/(1.-_p)/(1.-eps));
-  }
-  if(xbin>99||vbin>99) cerr << "testing hist error\n";
-  if(wgt>0.) {
-    _posx[xbin] += wgt;
-    _posv[vbin] += wgt; 
-  }
-  else {
-    _negx[xbin] += (-wgt);
-    _negv[vbin] += (-wgt); 
-  }
-  if(isnan(wgt)||isinf(wgt)) {
-    cerr << "testing infinite weightA " << lowgt+pwgt+nwgt << "\n";
-    cerr << "testing infinite weightB " << wgt << "\n";
-    cerr << "testing variables " << _x << " " << _v << "\n";
-    exit(0);
+
+  if(lastY()>maxy)maxy=lastY();
+  if(lastY()<miny)miny=lastY();
+
+  if(wgt > _max_wgt){
+    // cerr<<"maxwgt = "<<wgt<<" at xt = "<<_xt<<", vt = "<< _v<<"\n";
+    _max_wgt = wgt;
   }
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
-
 void MEqq2gZ2ffNason::dofinish() {
+  cerr << "\n";
+  cerr << "a = " << _a << "\n";
+  cerr << "Y ranged from "    << miny << " to " << maxy << "\n";
+  cerr << "total wgts = " << no_wgts    << "\n"
+       << "neg   wgts = " << no_negwgts << "\n";
+  cerr << "percentage neg wgts = " << double(no_negwgts)/double(no_wgts)*100. << "% \n"; 
+
   ME2to2Base::dofinish();
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
-  using namespace HistogramOptions;
-  _xwgt->topdrawOutput(outfile,Frame,
-		       "RED",
-		       "x wgt distribution");
-  _vwgt->topdrawOutput(outfile,Frame,
-		       "RED",
-		       "v wgt distribution");
+  
+  //output mcfm histograms
   outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for x distribution +ve weight events\"\n";
+  outfile << "TITLE TOP \"xt distribution: all wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  double step=0.01;
-  double x=-0.005;
-  for(unsigned int ix=0;ix<_posx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posx[ix].mean() << "\n";
+  outfile << "TITLE BOTTOM \"xt\"\n";
+  double step = 1. / 100.;
+  double x=0.;
+  for( unsigned int ix = 0; ix < x_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << x_h[ix].mean() << "\n";
   }
   outfile << "HIST\n";
+
   outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for x distribution -ve weight events\"\n";
+  outfile << "TITLE TOP \"xt distribution: pos wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negx[ix].mean() << "\n";
+  outfile << "TITLE BOTTOM \"xt\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < x_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << x_pos_h[ix].mean() << "\n";
   }
   outfile << "HIST\n";
+
   outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for v distribution +ve weight events\"\n";
+  outfile << "TITLE TOP \"xt distribution: neg wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posv[ix].mean() << "\n";
+  outfile << "TITLE BOTTOM \"xt\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < x_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << x_neg_h[ix].mean() << "\n";
   }
   outfile << "HIST\n";
+
   outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for v distribution -ve weight events\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negv[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for x distribution +ve weight events\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posx[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for x distribution -ve weight events\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negx[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for v distribution +ve weight events\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posx.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posv[ix].numberOfPoints() << "\n";
-  }
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for x distribution +ve weight events Pos emission\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posxp[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for x distribution -ve weight events Pos emission\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negxp[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for v distribution +ve weight events Pos emission\"\n";
+  outfile << "TITLE TOP \"v distribution: all wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
   outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posvp[ix].mean() << "\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < v_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << v_h[ix].mean() << "\n";
   }
   outfile << "HIST\n";
+
   outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for v distribution -ve weight events Pos emission\"\n";
+  outfile << "TITLE TOP \"v distribution: pos wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
   outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negvp[ix].mean() << "\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < v_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << v_pos_h[ix].mean() << "\n";
   }
   outfile << "HIST\n";
+
   outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for x distribution +ve weight events Pos emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posxp[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for x distribution -ve weight events Pos emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negxp[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for v distribution +ve weight events Pos emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxp.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posvp[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for v distribution -ve weight events Pos emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for x distribution +ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posxn[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for x distribution -ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negxn[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for v distribution +ve weight events Neg emission\"\n";
+  outfile << "TITLE TOP \"v distribution: neg wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
   outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posvn[ix].mean() << "\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < v_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << v_neg_h[ix].mean() << "\n";
   }
   outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"weight for v distribution -ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negvn[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for x distribution +ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posxn[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for x distribution -ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"x\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negxn[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for v distribution +ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_posxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _posvn[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"numbers of enteries for v distribution -ve weight events Neg emission\"\n";
-  outfile << "TITLE LEFT \"numbers of enteries\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  x=-0.005;
-  for(unsigned int ix=0;ix<_negxn.size();++ix) {
-    x+=step;
-    outfile << x << "\t" << _negvn[ix].numberOfPoints() << "\n";
-  }
-  outfile << "HIST\n";
+
   outfile.close();
 }
 
-void MEqq2gZ2ffNason::doinitrun() {
-  ME2to2Base::doinitrun();
-  _xwgt = new_ptr(Histogram(0.,1.  ,200));
-  _vwgt = new_ptr(Histogram(0.,1.  ,200));
+double MEqq2gZ2ffNason::x(double xt, double v) const {
+    double x0(xbar(v));
+    return x0+(1.-x0)*xt;
+}
+double MEqq2gZ2ffNason::x_a(double x, double v) const {
+    if(x==1.) return _xb_a;
+    if(v==0.) return _xb_a;
+    if(v==1.) return _xb_a/x;
+    return (_xb_a/sqrt(x))*sqrt((1.-(1.-x)*(1.-v))/(1.-(1.-x)*v));
+}
+double MEqq2gZ2ffNason::x_b(double x, double v) const {
+    if(x==1.) return _xb_b;
+    if(v==0.) return _xb_b/x;
+    if(v==1.) return _xb_b;
+    return (_xb_b/sqrt(x))*sqrt((1.-(1.-x)*v)/(1.-(1.-x)*(1.-v)));
+}
+double MEqq2gZ2ffNason::xbar(double v) const {
+    double xba2(sqr(_xb_a)), xbb2(sqr(_xb_b)), omv(-999.);
+    double xbar1(-999.), xbar2(-999.);
+    if(v==1.) return _xb_a;
+    if(v==0.) return _xb_b;
+    omv = 1.-v;
+    xbar1=4.*  v*xba2/
+	(sqrt(sqr(1.+xba2)*4.*sqr(omv)+16.*(1.-2.*omv)*xba2)+2.*omv*(1.-_xb_a)*(1.+_xb_a));
+    xbar2=4.*omv*xbb2/
+	(sqrt(sqr(1.+xbb2)*4.*sqr(  v)+16.*(1.-2.*  v)*xbb2)+2.*  v*(1.-_xb_b)*(1.+_xb_b));
+    return max(xbar1,xbar2);
+}
+double MEqq2gZ2ffNason::Ltilde_qq(double x, double v) const {
+  double xa(x_a(x,v));
+  double xb(x_b(x,v));
+
+  double newq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
+  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
+
+  double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
+  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
+
+  if(oldq<_eps || oldqbar < _eps) return 0.;
+
+  return( newq * newqbar / oldq / oldqbar );
+
+}
+double MEqq2gZ2ffNason::Ltilde_qg(double x, double v) const {
+  double xa(x_a(x,v));
+  double xb(x_b(x,v));
+  
+  double newq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
+  double newg2 = (_hadron_B->pdf()->xfx(_hadron_B,_gluon   ,scale(),   xb)/   xb);
+    
+  double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
+  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
+
+  if(oldq < _eps || oldqbar < _eps) return 0.;
+ 
+  return( newq * newg2 / oldq / oldqbar );
+
+}
+double MEqq2gZ2ffNason::Ltilde_gq(double x, double v) const {
+  double xa(x_a(x,v));
+  double xb(x_b(x,v));
+
+  double newg1 = (_hadron_A->pdf()->xfx(_hadron_A,_gluon   ,scale(),   xa)/   xa);
+  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
+
+  double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
+  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
+
+  if(oldq < _eps || oldqbar < _eps) return 0.;
+
+  return( newg1 * newqbar / oldq / oldqbar );
+}
+double MEqq2gZ2ffNason::Vtilde_qq() const {
+    using Constants::pi;
+    return (_alphaS*_CF/(2.*pi))
+          *(-3.*log(_mu2/_mll2)+(2.*pi*pi/3.)-8.);
+}
+double MEqq2gZ2ffNason::Ccalbar_qg(double x) const {
+    return (sqr(x)+sqr(1.-x))*(log(_mll2/(_mu2*x))+2.*log(1.-x))+2.*x*(1.-x);
+}
+double MEqq2gZ2ffNason::Ctilde_qg(double x, double v) const {
+    using Constants::pi;
+    return  (_alphaS*_TF/(2.*pi))
+	  * ((1.-xbar(v))/x)
+	  * Ccalbar_qg(x)*Ltilde_qg(x,v);
+}
+double MEqq2gZ2ffNason::Ctilde_gq(double x, double v) const {
+    using Constants::pi;
+    return  (_alphaS*_TF/(2.*pi))
+	  * ((1.-xbar(v))/x)
+          * Ccalbar_qg(x)*Ltilde_gq(x,v);
+}
+double MEqq2gZ2ffNason::Ctilde_qq(double x, double v) const {
+    using Constants::pi;
+    double wgt 
+       = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Ltilde_qq(x,v)
+       -  4.*log(1.-x)/(1.-x)
+       +  2./(1.-xbar(v))*log(1.-xbar(v))*log(1.-xbar(v))
+       + (2./(1.-xbar(v))*log(1.-xbar(v))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Ltilde_qq(x,v))
+	 *log(_mll2/_mu2);
+    return (_alphaS*_CF/(2.*pi))*(1.-xbar(v))*wgt;    
+}
+double MEqq2gZ2ffNason::Fcal_qq(double x, double v) const {
+    using Constants::pi;
+    double tmp = (sqr(1.-x)*(1.-2.*v*(1.-v))+2.*x)/x;
+    return (_alphaS*_CF/(2.*pi))
+	  *tmp*Ltilde_qq(x,v);
+}
+double MEqq2gZ2ffNason::Fcal_qg(double x, double v) const {
+    using Constants::pi;
+    double tmp = 2.*x*(1.-x)*v+sqr((1.-x)*v)+sqr(x)+sqr(1.-x);
+    return (_alphaS*_TF/(2.*pi))
+	*((1.-xbar(v))/x)
+	*tmp*Ltilde_qg(x,v);
+}
+double MEqq2gZ2ffNason::Fcal_gq(double x, double v) const {
+    using Constants::pi;
+    double tmp = 2.*x*(1.-x)*(1.-v)+sqr((1.-x)*(1.-v))+sqr(x)+sqr(1.-x);
+    return (_alphaS*_TF/(2.*pi))
+	*((1.-xbar(v))/x)
+	*tmp*Ltilde_gq(x,v);
+}
+double MEqq2gZ2ffNason::Ftilde_qg(double xt, double v) const {
+    return ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
+	   )/v;
+}
+double MEqq2gZ2ffNason::Ftilde_gq(double xt, double v) const {
+    return ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
+	   )/(1.-v);
+}
+double MEqq2gZ2ffNason::Ftilde_qq(double xt, double v) const {
+    return 
+	( Fcal_qq(x(xt, v), v) - Fcal_qq(1., v)
+	- Fcal_qq(x(xt,1.),1.) + Fcal_qq(1.,1.)
+	) / ((1.-xt)*(1.-v))
+      + ( Fcal_qq(x(xt, v), v) - Fcal_qq(1., v)
+        - Fcal_qq(x(xt,0.),0.) + Fcal_qq(1.,0.)
+        ) / ((1.-xt)*v)
+      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,1.)*log(1.-xbar(1.))
+        )/(1.-v)
+      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,0.)*log(1.-xbar(0.))
+	)/v;
 }

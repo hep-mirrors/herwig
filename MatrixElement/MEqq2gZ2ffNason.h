@@ -10,7 +10,9 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/Utilities/Statistic.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include "MEqq2gZ2ffNason.fh"
 
 namespace Herwig {
@@ -34,6 +36,12 @@ public:
    * The default constructor.
    */
   inline MEqq2gZ2ffNason();
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -155,6 +163,33 @@ protected:
    *  Calculate the correction weight
    */
   double NLOweight() const;
+  
+  mutable double _max_wgt;
+ 
+  //cut off for pdfs
+  mutable double  _xb_a,_xb_b,_alphaS,_TF,_CF;
+  mutable Energy2 _mll2,_mu2;
+  mutable tcPDPtr _parton_a,_parton_b,_gluon;
+  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A,_hadron_B;
+   
+    double x(double xt, double v) const;
+    double x_a(double x, double v) const;
+    double x_b(double x, double v) const;
+    double xbar(double v) const;
+    double Ltilde_qg(double x, double v) const;
+    double Ltilde_gq(double x, double v) const;
+    double Ltilde_qq(double x, double v) const;
+    double Vtilde_qq() const;
+    double Ccalbar_qg(double x) const;
+    double Fcal_qg(double x, double v) const;
+    double Fcal_gq(double x, double v) const;
+    double Fcal_qq(double x, double v) const;
+    double Ftilde_qg(double xt, double v) const;
+    double Ftilde_gq(double xt, double v) const;
+    double Ftilde_qq(double xt, double v) const;
+    double Ctilde_qg(double x, double v) const;
+    double Ctilde_gq(double x, double v) const;
+    double Ctilde_qq(double x, double v) const;
 
 protected:
 
@@ -183,12 +218,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
@@ -286,8 +315,19 @@ private:
    *  The power of the correction term to reduce the negative contribution
    */
   double _p;
-  //@}
 
+  /**
+   * Histograms implemented as vectors of statistics to take into 
+   * account the acdc sampling
+   */
+  mutable vector<Statistic> x_h, v_h, x_pos_h, v_pos_h, x_neg_h, v_neg_h;
+
+  /**
+   *  The cut-off on the pdfs
+   */
+  double _eps;
+
+  //@}
   /**
    *  Radiation variables
    */
@@ -295,7 +335,7 @@ private:
   /**
    *   The \f$x\f$ variable
    */
-  double _x;
+  double _xt;
 
   /**
    *  The \f$\tilde{v}
@@ -304,17 +344,11 @@ private:
   //@}
 
   /**
-   * Statistics on the weights for testing
+   * Statistics & Histograms for testing.
    */
-  mutable vector<Statistic> _posx,_negx,_posv,_negv;
-  mutable vector<Statistic> _posxp,_negxp,_posvp,_negvp;
-  mutable vector<Statistic> _posxn,_negxn,_posvn,_negvn;
-
-  /**
-   *  Histograms
-   */
-  HistogramPtr _xwgt,_vwgt;
-
+  mutable int no_wgts;
+  mutable int no_negwgts;
+  mutable double maxy, miny;
 };
 
 }
