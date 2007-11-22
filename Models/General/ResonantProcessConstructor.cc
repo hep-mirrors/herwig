@@ -17,7 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include "Herwig++/MatrixElement/GeneralHardME.h"
+#include "Herwig++/MatrixElement/General/GeneralHardME.h"
 
 using namespace Herwig;
 

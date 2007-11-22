@@ -20,7 +20,7 @@ insert UECuts:OneCuts 0 KtCut
 #########################
 
 ########subprocesses#####
-create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEFast.so
+create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEHadronFast.so
 create ThePEG::SubProcessHandler FastQCD
 insert FastQCD:MatrixElements 0 MEQCD2to2Fast
 set FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor

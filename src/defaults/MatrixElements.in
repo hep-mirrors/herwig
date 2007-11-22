@@ -17,7 +17,8 @@
 ##############################################################################
 mkdir /Herwig/MatrixElements
 cd /Herwig/MatrixElements
-library HwME.so
+library HwMELepton.so
+library HwMEHadron.so
 
 ############################################################
 #  e+e- matrix elements

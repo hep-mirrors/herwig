@@ -18,7 +18,7 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
-#include "Herwig++/MatrixElement/GeneralHardME.h"
+#include "Herwig++/MatrixElement/General/GeneralHardME.h"
 #include "Herwig++/Utilities/HwDebug.h"
 
 using namespace Herwig;

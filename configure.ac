@@ -109,6 +109,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
+                MatrixElement/General/Makefile
+                MatrixElement/Lepton/Makefile
+                MatrixElement/Hadron/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile
