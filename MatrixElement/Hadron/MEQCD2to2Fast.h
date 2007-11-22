@@ -266,7 +266,7 @@ struct ClassTraits<Herwig::MEQCD2to2Fast>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEFast.so"; }
+  static string library() { return "HwMEHadronFast.so"; }
 };
 
 /** @endcond */

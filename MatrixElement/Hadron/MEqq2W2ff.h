@@ -260,7 +260,7 @@ struct ClassTraits<Herwig::MEqq2W2ff>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2W2ff class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwME.so"; }
+  static string library() { return "HwMEHadron.so"; }
 };
 
 /** @endcond */

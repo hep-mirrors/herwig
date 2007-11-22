@@ -267,7 +267,7 @@ struct ClassTraits<Herwig::MEee2VectorMeson>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwME.so"; }
+  static string library() { return "HwMELepton.so"; }
 };
 
 /** @endcond */

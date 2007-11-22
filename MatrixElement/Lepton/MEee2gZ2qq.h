@@ -272,7 +272,7 @@ struct ClassTraits<Herwig::MEee2gZ2qq>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEee2gZ2qq class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwME.so"; }
+  static string library() { return "HwMELepton.so"; }
 };
 
 /** @endcond */
