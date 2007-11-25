@@ -8,16 +8,11 @@
 //
 //
 // This is the implementation of the inlined member functions of
-// the QTildeReconstructor class.?
+// the QTildeReconstructor class.ﬁ
 //
 
 namespace Herwig {
 using namespace ThePEG;
-
-inline QTildeReconstructor::QTildeReconstructor() 
-  : _reconopt(0)
-{}
-
 inline IBPtr QTildeReconstructor::clone() const {
   return new_ptr(*this);
 }
@@ -74,19 +69,15 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   return R;
 }
 
-inline void QTildeReconstructor::boostChain(tPPtr p, const LorentzRotation &bv,
+inline void QTildeReconstructor::boostChain(tPPtr p, const Boost &bv,
 					    tPPtr & parent) const {
   if(!p->parents().empty()) boostChain(p->parents()[0], bv,parent);
   else parent=p;
-  p->transform(bv);
+  p->boost(bv);
   if(p->children().size()==2) {
     if(dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]))
-      p->children()[1]->deepTransform(bv);
+      p->children()[1]->deepBoost(bv);
   }
 }
 
-inline double QTildeReconstructor::getBeta(const double E, const double q, 
-					   const double Ep, const double qp) const {
-  return (q*E-qp*Ep)/(sqr(qp)+sqr(E));
-}
 }

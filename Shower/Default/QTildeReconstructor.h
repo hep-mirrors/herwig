@@ -73,11 +73,6 @@ class QTildeReconstructor: public KinematicsReconstructor {
 public:
 
   /**
-   *  Default constructor
-   */
-  inline QTildeReconstructor();
-
-  /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
    */
   //@{
@@ -111,6 +106,7 @@ protected:
    */
   virtual bool reconstructISJets(Lorentz5Momentum pcm,
 				 const vector<ShowerProgenitorPtr> & ShowerHardJets,
+				 map<tShowerProgenitorPtr,pair<Energy,double> > intrinsic,
 				 Boost & boostRest, Boost & boostNewF) const;
 
   /**
@@ -151,22 +147,6 @@ protected:
   //@}
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -231,7 +211,7 @@ protected:
    * @param bv The boost
    * @param parent The parent of the chain
    */
-  inline void boostChain(tPPtr p, const LorentzRotation &bv, tPPtr & parent) const;
+  inline void boostChain(tPPtr p, const Boost &bv, tPPtr & parent) const;
 
   /**
    * Given a 5-momentum and a scale factor, the method returns the
@@ -249,16 +229,9 @@ protected:
    * from (E, same perp, q).
    */
   inline double getBeta(const double E, const double q, 
-			const double Ep, const double qp) const;
-
-  vector<unsigned int> findPartners(unsigned int ,vector<ShowerProgenitorPtr>) const;
-
-  bool reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
-
-  bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
-
-  LorentzRotation solveBoost(const Lorentz5Momentum & q,
-			     const Lorentz5Momentum & p ) const;
+			const double Ep, const double qp) const {
+    return (q*E-qp*Ep)/(sqr(qp)+sqr(E));
+  }
 
 protected:
 
@@ -283,7 +256,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static ClassDescription<QTildeReconstructor> initQTildeReconstructor;
+  static NoPIOClassDescription<QTildeReconstructor> initQTildeReconstructor;
 
   /**
    * The assignment operator is private and must never be called.
@@ -294,19 +267,9 @@ private:
 private:
 
   /**
-   *  Option for handling the reconstruction
-   */
-  unsigned int _reconopt;
-
-  /**
    *  The progenitor of the jet currently being reconstructed
    */
   mutable tShowerParticlePtr _progenitor;
-
-  /**
-   *
-   */
-  mutable map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
 };
 
 }
