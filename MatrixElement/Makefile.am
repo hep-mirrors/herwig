@@ -1,2 +1,1 @@
-SUBDIRS = General Lepton Hadron
-
+SUBDIRS = General Lepton Hadron DIS
