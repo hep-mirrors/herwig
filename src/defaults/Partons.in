@@ -23,4 +23,6 @@ create ThePEG::PartonExtractor EEExtractor
 set EEExtractor:NoPDF NoPDF
 cp EEExtractor QCDExtractor
 set QCDExtractor:FlatSHatY 1
+cp EEExtractor DISExtractor
+set DISExtractor:FlatSHatY 1
 
