@@ -68,5 +68,29 @@ struct TopMatcher: public MatcherType {
  * Gives a MatcherBase class based on TopMatcher. 
  */
 typedef Matcher<TopMatcher> MatchTop;
+
+/**
+ * A Matcher class which matches any hadron.
+ */
+struct HadronMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef HadronMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) { return Check(pd.id()); }
+  /** The main static function to check if a given particle with type
+      \a id matches. */
+  static bool Check(long id) {
+    return 
+      ((id/10)%10 && (id/100)%10 && (id/1000)%10 == 0) ||
+      ((id/10)%10 && (id/100)%10 && (id/1000)%10);
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "Hadron"; }
+};
+/** Gives a MatcherBase class based on HadronMatcher. */
+typedef Matcher<HadronMatcher> MatchHadron;
+
 }
+
 #endif /* Herwig_StandardMatchers_H */

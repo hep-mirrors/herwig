@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <ThePEG/Interface/Reference.h>  
 #include <ThePEG/Interface/Switch.h>  
+#include "Herwig++/PDT/StandardMatchers.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 
@@ -85,8 +86,7 @@ HwRemDecayer::HadronContent
 HwRemDecayer::getHadronContent(tcPPtr hadron) const {
   HadronContent hc;
   long id(hadron->id());
-  if(BaryonMatcher::Check(hadron->data())||
-     MesonMatcher ::Check(hadron->data())) {
+  if(HadronMatcher::Check(hadron->data())) {
     hc.sign = id < 0? -1: 1;
     hc.flav.push_back((id = abs(id)/10)%10);
     hc.flav.push_back((id /= 10)%10);
@@ -106,8 +106,7 @@ bool HwRemDecayer::multiCapable() const {
 
 bool HwRemDecayer::
 canHandle(tcPDPtr particle, tcPDPtr parton) const {
-  return ( BaryonMatcher::Check(*particle) || MesonMatcher::Check(*particle) ) &&
-    StandardQCDPartonMatcher::Check(*parton);
+  return ( HadronMatcher::Check(*particle) && StandardQCDPartonMatcher::Check(*parton));
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {

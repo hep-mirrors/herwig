@@ -21,7 +21,7 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
-#include "ThePEG/PDT/StandardMatchers.h"
+#include "Herwig++/PDT/StandardMatchers.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Throw.h"
@@ -127,10 +127,8 @@ void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   theMPIHandler->initrun();
   if(IsMPIOn() && 
-     (BaryonMatcher::Check(*generator()->eventHandler()->incoming().first) ||
-      MesonMatcher ::Check(*generator()->eventHandler()->incoming().first)) &&
-     (BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
-      MesonMatcher ::Check(*generator()->eventHandler()->incoming().second)) )
+     HadronMatcher::Check(*generator()->eventHandler()->incoming().first) &&
+     HadronMatcher::Check(*generator()->eventHandler()->incoming().second))
     theMPIHandler->initialize();
 
   if (_useCKKW) {
@@ -260,10 +258,8 @@ void ShowerHandler::cascade() {
   PBIPair incbins = make_pair(lastExtractor()->partonBinInstance(incs.first),
 			      lastExtractor()->partonBinInstance(incs.second));
 
-  if(!(BaryonMatcher::Check(*generator()->eventHandler()->incoming().first ) ||
-       MesonMatcher ::Check(*generator()->eventHandler()->incoming().first )) &&
-     !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
-       MesonMatcher ::Check(*generator()->eventHandler()->incoming().second)) )
+  if(!HadronMatcher::Check(*generator()->eventHandler()->incoming().first ) &&
+     !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )
     return;
  
   pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incbins));
@@ -281,10 +277,8 @@ void ShowerHandler::cascade() {
   }
 
   if( !IsMPIOn() || (
-     !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().first) ||
-       MesonMatcher ::Check(*generator()->eventHandler()->incoming().first)) ||
-     !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
-       MesonMatcher ::Check(*generator()->eventHandler()->incoming().second))) ) {
+     !HadronMatcher::Check(*generator()->eventHandler()->incoming().first) ||
+     !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )) {
     theRemDec->finalize();
     return;
   }
@@ -497,10 +491,8 @@ cascade(tSubProPtr sub) {
   //enter the particles in the event record
   fillEventRecord();
   //non hadronic case:
-  if (!(BaryonMatcher::Check(*generator()->eventHandler()->incoming().first) ||
-	MesonMatcher ::Check(*generator()->eventHandler()->incoming().first)) && 
-      !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
-	MesonMatcher ::Check(*generator()->eventHandler()->incoming().second)) )
+  if (!HadronMatcher::Check(*generator()->eventHandler()->incoming().first ) && 
+      !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )
     return eventHandler()->currentCollision()->incoming();
 
   // remake the remnants (needs to be after the colours are sorted
@@ -531,14 +523,12 @@ PPtr ShowerHandler::findParent(PPtr original, bool & isHard,
 ShowerHandler::RemPair 
 ShowerHandler::getRemnants(PBIPair incbins){
   RemPair remnants;
-  if( (BaryonMatcher::Check(*incbins.first->particleData()) ||
-       MesonMatcher ::Check(*incbins.first->particleData())) &&  
+  if( HadronMatcher::Check(*incbins.first->particleData()) &&  
       incbins. first->remnants().size() != 1)
     throw Exception() << "Wrong number of Remnants "
 		      << "in ShowerHandler::getRemnants() for first particle." 
 		      << Exception::runerror;
-  if( (BaryonMatcher::Check(*incbins.second->particleData()) ||
-       MesonMatcher ::Check(*incbins.second->particleData())) &&  
+  if( HadronMatcher::Check(*incbins.second->particleData()) &&  
       incbins. second->remnants().size() != 1)
     throw Exception() << "Wrong number of Remnants "
 		      << "in ShowerHandler::getRemnants() for second particle." 
