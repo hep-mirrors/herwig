@@ -1,5 +1,10 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.1.1 release: 2007-mm-dd (tagged at SVN r????)
+** gcc abs bug detection
+   configure now checks for and works around
+   http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
+
 * Herwig++-2.1.0 release: 2007-11-20 (tagged at SVN r2542)
 ** Major new release
    Herwig++-2.1 includes significant improvements, including

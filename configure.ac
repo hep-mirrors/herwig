@@ -81,6 +81,8 @@ HERWIG_VERSIONSTRING
 
 HERWIG_COMPILERFLAGS
 
+HERWIG_CHECK_ABS_BUG
+
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
 
