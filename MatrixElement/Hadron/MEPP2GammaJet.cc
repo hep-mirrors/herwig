@@ -21,11 +21,6 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/General/HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2GammaJet.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -37,15 +32,14 @@ void MEPP2GammaJet::doinit() throw(InitException) {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
-  if(hwsm)
-    {
-      _gluonvertex  = hwsm->vertexFFG();
-      _photonvertex = hwsm->vertexFFP();
-    }
-  else
-    {throw InitException() << "Wrong type of StandardModel object in "
-			   << "MEPP2GammaJet::doinit() the Herwig++ version must be used" 
-			   << Exception::runerror;}
+  if(hwsm) {
+    _gluonvertex  = hwsm->vertexFFG();
+    _photonvertex = hwsm->vertexFFP();
+  }
+  else throw InitException() << "Wrong type of StandardModel object in "
+			     << "MEPP2GammaJet::doinit() the Herwig++"
+			     << " version must be used" 
+			     << Exception::runerror;
   // call the base class
   ME2to2Base::doinit();
 }
@@ -55,29 +49,25 @@ void MEPP2GammaJet::getDiagrams() const {
   tcPDPtr g = getParticleData(ParticleID::g);
   tcPDPtr p = getParticleData(ParticleID::gamma);
   // for each quark species there are three subprocesses
-  for(unsigned int iq=1;iq<=_maxflavour;++iq)
-    {
-      tcPDPtr q = getParticleData(iq);
-      tcPDPtr qb = q->CC();
-      // q qbar to gamma gluon (two diagrams)
-      if(_processopt==0||_processopt==1)
-	{
-	  add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 1, p, 2, g, -1)));
-	  add(new_ptr((Tree2toNDiagram(3), q,  q, qb, 2, p, 1, g, -2)));
-	}
-      // q gluon to gamma q (two diagrams)
-      if(_processopt==0||_processopt==2)
-	{
-	  add(new_ptr((Tree2toNDiagram(3), q, q, g, 1, p, 2, q, -3)));
-	  add(new_ptr((Tree2toNDiagram(2), q, g, 1, q , 3, p, 3, q, -4)));
-	}
-      // qbar gluon to gamma qbar (two diagrams)
-      if(_processopt==0||_processopt==3)
-	{
-	  add(new_ptr((Tree2toNDiagram(3), qb, qb, g, 1, p, 2, qb, -5)));
-	  add(new_ptr((Tree2toNDiagram(2), qb, g, 1, qb , 3, p, 3, qb, -6)));
-	}
+  for(unsigned int iq=1;iq<=_maxflavour;++iq) {
+    tcPDPtr q = getParticleData(iq);
+    tcPDPtr qb = q->CC();
+    // q qbar to gamma gluon (two diagrams)
+    if(_processopt==0||_processopt==1) {
+      add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 1, p, 2, g, -1)));
+      add(new_ptr((Tree2toNDiagram(3), q,  q, qb, 2, p, 1, g, -2)));
     }
+    // q gluon to gamma q (two diagrams)
+    if(_processopt==0||_processopt==2) {
+      add(new_ptr((Tree2toNDiagram(3), q, q, g, 1, p, 2, q, -3)));
+      add(new_ptr((Tree2toNDiagram(2), q, g, 1, q , 3, p, 3, q, -4)));
+    }
+    // qbar gluon to gamma qbar (two diagrams)
+    if(_processopt==0||_processopt==3) {
+      add(new_ptr((Tree2toNDiagram(3), qb, qb, g, 1, p, 2, qb, -5)));
+      add(new_ptr((Tree2toNDiagram(2), qb, g, 1, qb , 3, p, 3, qb, -6)));
+    }
+  }
 }
 
 unsigned int MEPP2GammaJet::orderInAlphaS() const {

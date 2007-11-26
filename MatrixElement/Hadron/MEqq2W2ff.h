@@ -227,6 +227,7 @@ private:
    *  Which decay products of the \f$W^\pm\f$ to include
    */
   unsigned int _process;
+  //@}
 
   /**
    * Matrix element for spin correlations
