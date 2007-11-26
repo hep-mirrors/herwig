@@ -126,8 +126,11 @@ ShowerHandler::ShowerHandler() :
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   theMPIHandler->initrun();
-  if(IsMPIOn() && abs(generator()->eventHandler()->incoming().first->id()) > 99 &&
-    abs(generator()->eventHandler()->incoming().second->id()) > 99)
+  if(IsMPIOn() && 
+     (BaryonMatcher::Check(*generator()->eventHandler()->incoming().first) ||
+      MesonMatcher ::Check(*generator()->eventHandler()->incoming().first)) &&
+     (BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
+      MesonMatcher ::Check(*generator()->eventHandler()->incoming().second)) )
     theMPIHandler->initialize();
 
   if (_useCKKW) {
@@ -244,9 +247,10 @@ void ShowerHandler::cascade() {
   sub = eventHandler()->currentCollision()->primarySubProcess();
 
   //first shower the hard process
-  try{
+  try {
     incs = cascade(sub);
-  }catch(ShowerTriesVeto &veto){
+  } 
+  catch(ShowerTriesVeto &veto){
     throw Exception() << "Failed to generate the shower after "
                       << veto.theTries
                       << " attempts in Evolver::showerHardProcess()"
@@ -256,8 +260,10 @@ void ShowerHandler::cascade() {
   PBIPair incbins = make_pair(lastExtractor()->partonBinInstance(incs.first),
 			      lastExtractor()->partonBinInstance(incs.second));
 
-  if (abs(eventHandler()->incoming().first->id()) < 99 ||
-    abs(eventHandler()->incoming().second->id()) < 99 )
+  if(!(BaryonMatcher::Check(*generator()->eventHandler()->incoming().first ) ||
+       MesonMatcher ::Check(*generator()->eventHandler()->incoming().first )) &&
+     !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
+       MesonMatcher ::Check(*generator()->eventHandler()->incoming().second)) )
     return;
  
   pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incbins));
@@ -265,15 +271,20 @@ void ShowerHandler::cascade() {
   theRemDec->initialize(remnants, *currentStep());
 
   //do the first forcedSplitting
-  try{
+  try {
     theRemDec->doSplit(incs, true);
-  }catch(ExtraScatterVeto){
+  }
+  catch (ExtraScatterVeto) {
     throw Exception() << "Remnant extraction failed in "
                       << "ShowerHandler::cascade()" 
                       << Exception::eventerror;   
   }
 
-  if( !IsMPIOn() ){
+  if( !IsMPIOn() || (
+     !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().first) ||
+       MesonMatcher ::Check(*generator()->eventHandler()->incoming().first)) ||
+     !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
+       MesonMatcher ::Check(*generator()->eventHandler()->incoming().second))) ) {
     theRemDec->finalize();
     return;
   }
@@ -486,8 +497,10 @@ cascade(tSubProPtr sub) {
   //enter the particles in the event record
   fillEventRecord();
   //non hadronic case:
-  if ( abs(eventHandler()->incoming().first->id()) < 99 ||
-    abs(eventHandler()->incoming().second->id()) < 99 ) 
+  if (!(BaryonMatcher::Check(*generator()->eventHandler()->incoming().first) ||
+	MesonMatcher ::Check(*generator()->eventHandler()->incoming().first)) && 
+      !(BaryonMatcher::Check(*generator()->eventHandler()->incoming().second) ||
+	MesonMatcher ::Check(*generator()->eventHandler()->incoming().second)) )
     return eventHandler()->currentCollision()->incoming();
 
   // remake the remnants (needs to be after the colours are sorted
@@ -518,50 +531,62 @@ PPtr ShowerHandler::findParent(PPtr original, bool & isHard,
 ShowerHandler::RemPair 
 ShowerHandler::getRemnants(PBIPair incbins){
   RemPair remnants;
-  if ( incbins.first->remnants().size() != 1 ||
-       incbins.second->remnants().size() != 1 )
+  if( (BaryonMatcher::Check(*incbins.first->particleData()) ||
+       MesonMatcher ::Check(*incbins.first->particleData())) &&  
+      incbins. first->remnants().size() != 1)
     throw Exception() << "Wrong number of Remnants "
-		      << "in ShowerHandler::getRemnants()." 
-		      << Exception::runerror; 	
-    
-  remnants.first = dynamic_ptr_cast<tRemPPtr>(incbins.first->remnants()[0]);
-  remnants.second = dynamic_ptr_cast<tRemPPtr>(incbins.second->remnants()[0]);
-  
-  if(remnants.first && remnants.second){
-      //remove existing colour lines from the remnants
+		      << "in ShowerHandler::getRemnants() for first particle." 
+		      << Exception::runerror;
+  if( (BaryonMatcher::Check(*incbins.second->particleData()) ||
+       MesonMatcher ::Check(*incbins.second->particleData())) &&  
+      incbins. second->remnants().size() != 1)
+    throw Exception() << "Wrong number of Remnants "
+		      << "in ShowerHandler::getRemnants() for second particle." 
+		      << Exception::runerror;
+
+  remnants.first  = incbins.first->remnants().empty() ? tRemPPtr() :
+    dynamic_ptr_cast<tRemPPtr>(incbins.first->remnants()[0] );
+  if(remnants.first) {
+    //remove existing colour lines from the remnants
     if(remnants.first->colourLine()) 
       remnants.first->colourLine()->removeColoured(remnants.first);
     if(remnants.first->antiColourLine()) 
       remnants.first->antiColourLine()->removeAntiColoured(remnants.first);
-    if(remnants.second->colourLine()) 
-      remnants.second->colourLine()->removeColoured(remnants.second);
-    if(remnants.second->antiColourLine()) 
-      remnants.second->antiColourLine()->removeAntiColoured(remnants.second);
-
     //copy the remnants to the current step, as they may be changed now
     if ( remnants.first->birthStep() != newStep() ) {
       RemPPtr newrem = new_ptr(*remnants.first);
       newStep()->addDecayProduct(remnants.first, newrem, false);
       remnants.first = newrem;
     }
+  }
+  remnants.second = incbins.second->remnants().empty() ? tRemPPtr() :
+    dynamic_ptr_cast<tRemPPtr>(incbins.second->remnants()[0] );
+  if(remnants.second) {
+    //remove existing colour lines from the remnants
+    if(remnants.second->colourLine()) 
+      remnants.second->colourLine()->removeColoured(remnants.second);
+    if(remnants.second->antiColourLine()) 
+      remnants.second->antiColourLine()->removeAntiColoured(remnants.second);
+    //copy the remnants to the current step, as they may be changed now
     if ( remnants.second->birthStep() != newStep() ) {
       RemPPtr newrem = new_ptr(*remnants.second);
       newStep()->addDecayProduct(remnants.second, newrem, false);
       remnants.second = newrem;
     }
-    return remnants;
-  }else{
-    throw Exception() << "Remnants are not accessable"
-		      << "in ShowerHandler::getRemnants()." 
-		      << Exception::runerror; 	    
   }
+
+  if(remnants.first || remnants.second ) return remnants;
+  else throw Exception() << "Remnants are not accessable "
+			 << "in ShowerHandler::getRemnants()." 
+			 << Exception::runerror;
 }
 
 tPPair ShowerHandler::remakeRemnant(tPPair oldp){                     
   PartonExtractor & pex = *lastExtractor();
   tPPair inc = generator()->currentEvent()->incoming();
   
-  tPPair newp = make_pair(findFirstParton(oldp.first, inc), findFirstParton(oldp.second, inc));
+  tPPair newp = make_pair(findFirstParton(oldp.first, inc), 
+			  findFirstParton(oldp.second, inc));
 
   if(newp == oldp) return oldp;
   // Get the momentum of the new partons before remnant extraction
@@ -589,16 +614,9 @@ PPtr ShowerHandler::findFirstParton(tPPtr seed, tPPair incoming) const{
   tPPtr parent = seed->parents()[0];
   //if no parent there this is a loose end which will 
   //be connected to the remnant soon.
-  if(!parent){
-    assert(StandardQCDPartonMatcher::Check(seed->data()));
-    return seed;
-  }
-  if( parent == incoming.first || parent == incoming.second ){
-    assert(StandardQCDPartonMatcher::Check(seed->data()));
-    return seed;
-  }else{
-    return findFirstParton(parent, incoming);
-  }
+  if(!parent || parent == incoming.first || 
+     parent == incoming.second ) return seed;
+  else return findFirstParton(parent, incoming);
 }
 
 bool ShowerHandler::decayProduct(tPPtr particle) const {
