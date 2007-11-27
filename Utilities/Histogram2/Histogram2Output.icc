@@ -51,13 +51,13 @@ inline void Histogram2Output::doinitrun() {
 
 inline PersistentOStream& operator << (PersistentOStream& os, const Histogram2Options& options) {
   os << options.plotFlags << options.channelFlags << options.title
-     << options.datatitle << options.xlabel << options.ylabel;
+     << options.datatitle << options.xlabel << options.ylabel << options.differential;
   return os;
 }
 
 inline PersistentIStream& operator >> (PersistentIStream& is, Histogram2Options& options) {
   is >> options.plotFlags >> options.channelFlags >> options.title
-     >> options.datatitle >> options.xlabel >> options.ylabel;
+     >> options.datatitle >> options.xlabel >> options.ylabel >> options.differential;
   return is;
 }
 

@@ -50,19 +50,20 @@ struct Histogram2Options {
    */  
   inline Histogram2Options ()
     : plotFlags(0), channelFlags(0), title(""), datatitle(""),
-      xlabel(""), ylabel ("") {}
+      xlabel(""), ylabel (""), differential(true) {}
   
   /**
    * Constructor giving initial values
    */
   inline Histogram2Options (int pFlags,
-			int cFlags = 0,
-			string t = "",
-			string dt = "",
-			string x = "",
-			string y = "")
+			    int cFlags = 0,
+			    string t = "",
+			    string dt = "",
+			    string x = "",
+			    string y = "",
+			    bool diff = true)
     : plotFlags(pFlags), channelFlags(cFlags), title(t),
-      datatitle(dt), xlabel(x), ylabel (y) {}
+      datatitle(dt), xlabel(x), ylabel (y), differential(diff) {}
   
   /** Flags for plotting */
   int plotFlags;
@@ -81,6 +82,9 @@ struct Histogram2Options {
 
   /** Y label */
   string ylabel;
+
+  /** wether or not this is a differential observable */
+  bool differential;
   
 };
 

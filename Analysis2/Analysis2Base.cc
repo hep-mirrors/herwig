@@ -330,9 +330,10 @@ void Analysis2Base::finish (const string& name,
     theHisto->xSec(generator()->currentEventHandler()->histogramScale());
   }
 
-  for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
-    if (*c != data)
-      theHisto->differential(*c);
+  if (_outputOptions[name].differential)
+    for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
+      if (*c != data)
+	theHisto->differential(*c);
 
   // normalize
 
