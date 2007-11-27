@@ -114,8 +114,14 @@ inline pair<double,double> HistogramChannel::bin (unsigned int bin) const {
   return _bins[bin];
 }
 
-inline void HistogramChannel::bin (unsigned int bin, pair<double,double> val) {
+inline void HistogramChannel::bin (unsigned int bin,
+				   pair<double,double> val,
+				   unsigned long entries) {
   _bins[bin] = val;
+  if (entries > 0) {
+    _visible = _visible - _binEntries[bin] + entries;
+  _binEntries[bin] = entries;
+  }
 }
 
 inline vector<unsigned long> HistogramChannel::binEntries () const {
@@ -148,10 +154,20 @@ inline unsigned long HistogramChannel::nanEvents () const {
 
 inline void HistogramChannel::finish () {
   if (_finished) return;
-  for(unsigned int b = 0; b< _bins.size(); ++b)
-    _bins[b].second = 
-      _binEntries[b] > 0 ? _bins[b].second/(_binEntries[b]*_binEntries[b])  : 0;
   _finished = true;
+}
+
+inline double HistogramChannel::binVariance (unsigned int bin) const {
+  return _bins[bin].second;
+}
+
+inline double HistogramChannel::weightMean (unsigned int bin) const {
+  return _binEntries[bin] > 0 ? _bins[bin].first/_binEntries[bin] : 0.;
+}
+
+inline double HistogramChannel::weightVariance (unsigned int bin) const {
+  return _binEntries[bin] > 1 ?
+    (_bins[bin].second-sqr(_bins[bin].first)/_binEntries[bin])/(_binEntries[bin] - 1) : 0.; 
 }
 
 inline pair<double,double> HistogramChannel::binAverage () const {

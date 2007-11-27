@@ -5,6 +5,8 @@
 // This is the declaration of the Histogram2 class.
 //
 
+#include <cassert>
+
 #include "ThePEG/Interface/Interfaced.h"
 #include "Histogram2.fh"
 
@@ -139,7 +141,9 @@ public:
 
   /**
    * Return the bin content for the
-   * given index.
+   * given index. The first entry is
+   * the sum of weights, the second
+   * the sum of squared weights.
    */
   inline pair<double,double> bin (unsigned int) const;
 
@@ -158,7 +162,7 @@ public:
    * Explicitly set the content of the
    * bin with given index.
    */
-  inline void bin (unsigned int, pair<double,double>);
+  inline void bin (unsigned int, pair<double,double>, unsigned long en = 0);
 
   /**
    * Return under- and overflow
@@ -195,17 +199,36 @@ public:
 
 public:
 
-  /**@name Normalization and statistical tests */
+  /**@name Normalization and statistics */
   //@{
 
   /**
-   * Finish this channel.
+   * Finish this channel. Provided for future
+   * use.
    */
   inline void finish ();
 
   /**
+   * Return the variance of the bin
+   * content for the given bin.
+   */
+  inline double binVariance (unsigned int) const;
+
+  /**
+   * Return the mean of weights
+   * in the given bin.
+   */
+  inline double weightMean (unsigned int) const;
+
+  /**
+   * Return the variance of weights
+   * in the given bin.
+   */
+  inline double weightVariance (unsigned int) const;
+
+  /**
    * This channel is a differential distribution:
-   * dvide each bin by its width.
+   * divide each bin by its width.
    */
   void differential (const vector<pair<double,double> >&);
 
@@ -242,6 +265,16 @@ public:
    * data error/data < minfrac.
    */
   HistogramChannel chi2 (const HistogramChannel& channel, double minfrac = .0) const;
+
+  /**
+   * Generate a channel containing
+   * the profile histogram obtained from this
+   * channel, i.e. a channel containing
+   * the mean of weights and its variance
+   * as content/content square values
+   */
+  HistogramChannel profile () const;
+
   //@}
 
 public:
