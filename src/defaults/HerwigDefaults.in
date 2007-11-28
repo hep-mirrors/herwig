@@ -179,3 +179,4 @@ set DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
 # include some default analysis handlers
 ##########################################
 read Analysis.in
+read Analysis2.in
