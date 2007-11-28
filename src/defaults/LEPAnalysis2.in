@@ -2,7 +2,7 @@
 # Analysis of various observables at LEP 1
 ################################################################################
 
-cd /Defaults/Handlers/Analysis2
+cd /Herwig/Analysis2
 cp EventShapes LEPEventShapes
 cp YMerge LEPYMerge
 cp FourJetCorrelations LEPFourJets
@@ -13,33 +13,33 @@ cp FourJetCorrelations LEPFourJets
 
 ## Event shapes ################################################################
 
-# insert /Defaults/Generators/LEPGenerator:AnalysisHandlers 1 LEPEventShapes
+# insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 1 LEPEventShapes
 
 ## y-merge distribution ########################################################
 ## enable KtJet in Analysis2.in !
 
-# cd /Defaults/Handlers/Analysis2/JetFinders
+# cd /Herwig/Analysis2/JetFinders
 # set KtJet:CollisionType ee
 # set KtJet:DistanceScheme angular
 # set KtJet:RecombinationScheme E
-# cd /Defaults/Handlers/Analysis2
-# set LEPYMerge:JetFinder /Defaults/Handlers/Analysis2/JetFinders/KtJet
+# cd /Herwig/Analysis2
+# set LEPYMerge:JetFinder /Herwig/Analysis2/JetFinders/KtJet
 
-# insert /Defaults/Generators/LEPGenerator:AnalysisHandlers 1 LEPYMerge
+# insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 1 LEPYMerge
 
 ## Four-jet correlations #######################################################
 ## enable KtJet in Analysis2.in !
 
-# cd /Defaults/Handlers/Analysis2/JetFinders
+# cd /Herwig/Analysis2/JetFinders
 # cp KtJet KtJetFourJets
 # set KtJetFourJets:yCut 0.008
 # set KtJetFourJets:CollisionType ee
 # set KtJetFourJets:DistanceScheme angular
 # set KtJetFourJets:RecombinationScheme E
-# cd /Defaults/Handlers/Analysis2
-# set LEPFourJets:JetFinder /Defaults/Handlers/Analysis2/JetFinders/KtJetFourJets
+# cd /Herwig/Analysis2
+# set LEPFourJets:JetFinder /Herwig/Analysis2/JetFinders/KtJetFourJets
 
-# insert /Defaults/Generators/LEPGenerator:AnalysisHandlers 1 LEPFourJets
+# insert /Herwig/Generators/LEPGenerator:AnalysisHandlers 1 LEPFourJets
 
 ################################################################################
 # Set the data files to compare to
