@@ -98,7 +98,8 @@ inline unsigned int MPIHandler::multiplicity() const {
 }
 
 inline tStdXCombPtr MPIHandler::generate() {
-  return select(sampler()->lastBin(), sampler()->generate());
+  double wgt = sampler()->generate();
+  return select(sampler()->lastBin(), wgt);
 }
 
 inline IBPtr MPIHandler::clone() const {
