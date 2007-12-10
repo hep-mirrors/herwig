@@ -109,9 +109,21 @@ void EWKQtildeClusterer::doKinematics (const tClusteringPtr& clustering) {
   cl->spectatorBeforeClustering()->productionScale(cl->spectatorBeforeClustering()->splittingScale());
   cl->spectatorBeforeClustering()->setNoReweight();
   cl->spectatorAfterClustering()->splittingScale(cl->spectatorBeforeClustering()->splittingScale());
-
-  cl->emitter()->momentum(cl->sudakovBasis().first);
   cl->spectatorAfterClustering()->momentum(cl->spectatorBeforeClustering()->momentum());
+
+  Lorentz5Momentum emerging;
+  if (cl->emission().first->pData().partonId.state == ClusteringParticleState::final &&
+      cl->emission().second->pData().partonId.state == ClusteringParticleState::final)
+    emerging = cl->emission().first->momentum() + cl->emission().second->momentum();
+  if (cl->emission().first->pData().partonId.state == ClusteringParticleState::initial &&
+      cl->emission().second->pData().partonId.state == ClusteringParticleState::final) {
+    emerging = cl->emission().first->momentum() - cl->emission().second->momentum();
+  }
+  if (cl->emission().first->pData().partonId.state == ClusteringParticleState::final &&
+      cl->emission().second->pData().partonId.state == ClusteringParticleState::initial) {
+    emerging = - cl->emission().first->momentum() + cl->emission().second->momentum();
+  }
+  cl->emitter()->momentum(emerging);
 
   // the clustering has been chosen to be performed,
   // hoever, if we have already reached the electroweak
