@@ -41,8 +41,7 @@ set PhotonKtCut:MinKT 20.0*GeV
 ##################################################
 cd /Herwig/Analysis
 # create Herwig::GraphvizPlot Plot
-create Herwig::RFieldAnalysis RField HwLEPJetAnalysis.so
-set RField:ShowerHandler /Herwig/Shower/ShowerHandler
+create Herwig::RFieldAnalysis RField HwMPIAnalysis.so
 set RField:LowerBorder 30.0
 set RField:UpperBorder 50.0
 
