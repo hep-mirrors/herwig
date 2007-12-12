@@ -10,8 +10,6 @@
 #include "Herwig++/Utilities/Statistic.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
-#include "RFieldAnalysis.fh"
-
 namespace Herwig {
     using namespace ThePEG;
 
@@ -228,11 +226,6 @@ private:
 
 private:
 
-    /**
-     * This is a pointer to the ShowerHandler object for switch of UE
-     */
-    ShowerHandlerPtr theShowerHandler;
-
   /** lower border of chi^2 comparison to data */
   int thelow;
 
@@ -288,7 +281,7 @@ struct ClassTraits<Herwig::RFieldAnalysis>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the RFieldAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "HwMPIAnalysis.so"; }
 };
 
 /** @endcond */

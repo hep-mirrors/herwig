@@ -116,15 +116,6 @@ LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
 TopDalitzAnalysis.h TopDalitzAnalysis.icc
 
-pkglib_LTLIBRARIES += HwFieldAnalysis.la 
-HwFieldAnalysis_la_LDFLAGS = -module -version-info 3:0:0 
-HwFieldAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH) 
-HwFieldAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB) 
-HwFieldAnalysis_la_SOURCES = \
-RFieldAnalysis.cc RFieldAnalysis.fh \
-RFieldAnalysis.h RFieldAnalysis.icc 
-
-
 #code which also depends on ROOT
 if WANT_LIBROOT
 pkglib_LTLIBRARIES += HwUEAnalysis.la
@@ -141,5 +132,7 @@ HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMPIAnalysis_la_LIBADD =
 HwMPIAnalysis_la_SOURCES = \
+RFieldAnalysis.h \
+RFieldAnalysis.cc RFieldAnalysis.icc \
 MPIMultiplicity.h MPIMultiplicity.fh \
 MPIMultiplicity.icc MPIMultiplicity.cc
