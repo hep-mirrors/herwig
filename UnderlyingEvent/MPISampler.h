@@ -15,7 +15,9 @@
 #include "ThePEG/Repository/RandomGenerator.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.xh"
-#include "MPIHandler.h"
+#include "MPISampler.fh"
+
+#include "ProcessHandler.h"
 
 namespace Herwig {
 
@@ -25,12 +27,12 @@ namespace Herwig {
    * This class inherits from SampleBase and implements
    * the Auto Compensating Divide-and-Conquer phase space generator,
    * ACDCGen. In contrast to a ThePEG::ACDCSampler, this
-   * class can be called by MPIHandler.
+   * class can be called by ProcessHandler.
    *
    * @see \ref MPISamplerInterfaces "The interfaces"
    * defined for MPISampler.
    * @see ACDCGen
-   * @see MPIHandler
+   * @see ProcessHandler
    */
 
 class MPISampler: public SamplerBase {
@@ -38,7 +40,7 @@ class MPISampler: public SamplerBase {
 public:
 
   /** Typedef the underlying ACDCGen class. */
-  typedef ACDCGenerator::ACDCGen<UseRandom,tMPIHPtr> SamplerType;
+  typedef ACDCGenerator::ACDCGen<UseRandom,tProHdlPtr> SamplerType;
 
   /** @name Standard constructors and destructors. */
   //@{
@@ -63,10 +65,10 @@ public:
   /** @name Virtual functions needed for SamplerBase */
   //@{
   /**
-   * Method to set the connected MPIHandler pointer
+   * Method to set the connected ProcessHandler pointer
    * 
    */
-  inline void setMPIHandler(tMPIHPtr mpih);
+  inline void setProcessHandler(tProHdlPtr mpih);
 
   /**
    * Initialize the sampler, possibly doing presampling of the
@@ -205,9 +207,9 @@ private:
   SamplerType theSampler;
 
   /**
-   * The MPIHandler that calls us
+   * The ProcessHandler that calls us
    */
-  tMPIHPtr theMPIHandler;
+  tProHdlPtr theProcessHandler;
 
   /**
    * The smallest possible division allowed.
@@ -301,14 +303,14 @@ namespace ACDCGenerator {
  * EventHandler object to be sampled by ACDCGen.
  */
 template <>
-struct ACDCFncTraits<Herwig::tMPIHPtr>: public ACDCTraitsType {
+struct ACDCFncTraits<Herwig::tProHdlPtr>: public ACDCTraitsType {
   /** Convenient typdef. */
-  typedef Herwig::tMPIHPtr tMPIHPtr;
+  typedef Herwig::tProHdlPtr tProHdlPtr;
   /**
    * Call a function to be sampled by ACDCGen.
    * @return <code>(*f)(x)</code>.
    */
-  static inline double value(const tMPIHPtr & mpih, const DVector & x) {
+  static inline double value(const tProHdlPtr & mpih, const DVector & x) {
     using namespace ThePEG::Units;
     try {
       return mpih->dSigDR(x)/nanobarn;

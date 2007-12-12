@@ -126,10 +126,8 @@ ShowerHandler::ShowerHandler() :
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   theMPIHandler->initrun();
-  if(IsMPIOn() && 
-     HadronMatcher::Check(*generator()->eventHandler()->incoming().first) &&
-     HadronMatcher::Check(*generator()->eventHandler()->incoming().second))
-    theMPIHandler->initialize();
+
+  if(IsMPIOn()) theMPIHandler->initialize();
 
   if (_useCKKW) {
     _reweighter->initialize();
@@ -276,9 +274,7 @@ void ShowerHandler::cascade() {
                       << Exception::eventerror;   
   }
 
-  if( !IsMPIOn() || (
-     !HadronMatcher::Check(*generator()->eventHandler()->incoming().first) ||
-     !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )) {
+  if( !IsMPIOn() || !theMPIHandler->beamOK() ) {
     theRemDec->finalize();
     return;
   }
