@@ -62,6 +62,10 @@ CrossSection MPISampler::integratedXSec() const {
   return theSampler.integral()*nanobarn;
 }
 
+CrossSection MPISampler::maxXSec() const {
+  return theSampler.maxInt()*nanobarn;
+}
+
 int MPISampler::lastBin() const {
   return theSampler.last() - 1;
 }
