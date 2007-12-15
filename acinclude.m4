@@ -543,7 +543,7 @@ if test "x$with_gsl" = "xno"; then
 	AC_CHECK_LIB(gslcblas,main)
 	AC_CHECK_LIB(gsl,main,[],
 			[
-			AC_MSG_ERROR([Cannot find libgsl. Please install the GNU scientific library.])
+			AC_MSG_ERROR([Cannot find libgsl. Please install the GNU scientific library and header files or use --with-gsl=.])
 			]
 		     )
 	GSLLIBS="$LIBS"

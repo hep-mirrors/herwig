@@ -1,9 +1,22 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.1.1 release: 2007-mm-dd (tagged at SVN r????)
+* Herwig++-2.1.1 release: 2007-12-08 (tagged at SVN r2589)
+** Bug #123
+   Fixed a bug with particle lifetimes which resulted in nan for some
+   vertex positions.
+
+** Secondary scatters
+   Fixed bug which gave intrinsic pT to secondary scatters.
+
 ** gcc abs bug detection
    configure now checks for and works around
    http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
+
+** CKKW reweighting
+   Fixed wrong check for top quarks.
+
+** MPIHandler
+   Fixed call order ambiguity.
 
 * Herwig++-2.1.0 release: 2007-11-20 (tagged at SVN r2542)
 ** Major new release

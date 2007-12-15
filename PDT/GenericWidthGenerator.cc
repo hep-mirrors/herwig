@@ -706,3 +706,9 @@ void GenericWidthGenerator::doinitrun() {
   // set up the interpolators
   setInterpolators();
 }
+
+Length GenericWidthGenerator::lifeTime(const ParticleData &, Energy m, Energy w) const {
+  if(m<_theParticle->massMin()) w = width(*_theParticle,_theParticle->massMin());
+  else if(m>_theParticle->massMax()) w = width(*_theParticle,_theParticle->massMax());
+  return UseRandom::rndExp(hbarc/w);
+}
