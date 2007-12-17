@@ -2,7 +2,7 @@ BUILT_SOURCES = done-all-links
 
 defaultsdir = ${pkgdatadir}/defaults
 
-INPUTFILES = Analysis.in\
+INPUTFILES = Analysis.in Analysis2.in LEPAnalysis2.in\
 baryon_decays.in baryons.in boson_decays.in \
 bosons.in BSMDecays.in BSMParticles.in BSMVertices.in Cuts.in decayers.in \
 Decays.in DiffractiveParticles.in diquarks.in \
