@@ -65,3 +65,11 @@ insert QCDCuts:OneCuts[1] PhotonKtCut
 insert QCDCuts:OneCuts[2] LeptonKtCut
 insert QCDCuts:OneCuts[3] TopKtCut
 insert QCDCuts:MultiCuts[0] MassCut
+
+# cuts for DIS
+create ThePEG::Cuts DISCuts
+set DISCuts:ScaleMin 1.0*GeV
+set DISCuts:X1Min 1.0e-5
+set DISCuts:X2Min 1.0e-5
+set DISCuts:MHatMin 20.*GeV
+insert DISCuts:OneCuts[0] JetKtCut

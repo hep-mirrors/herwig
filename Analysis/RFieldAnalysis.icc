@@ -10,7 +10,7 @@ inline RFieldAnalysis::RFieldAnalysis(): thelow(30),
 					 theup(50), theDir(".") {}
 
 inline RFieldAnalysis::RFieldAnalysis(const RFieldAnalysis & x)
-  : AnalysisHandler(x), theShowerHandler(x.theShowerHandler),
+  : AnalysisHandler(x),
     thelow(x.thelow), theup(x.theup), theDir(x.theDir) {}
 
 inline IBPtr RFieldAnalysis::clone() const {

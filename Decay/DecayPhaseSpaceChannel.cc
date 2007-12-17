@@ -397,8 +397,8 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
       pinter+=external[_intext[ix][iz]]->momentum();
     pinter.rescaleMass();
     respart = (cc&&_intpart[ix]->CC()) ? 
-      new_ptr(Particle(_intpart[ix]->CC())) : new_ptr(Particle(_intpart[ix]));
-    respart->set5Momentum(pinter);
+      _intpart[ix]->CC()->produceParticle(pinter) : 
+      _intpart[ix]      ->produceParticle(pinter);
     resonance.push_back(respart);
   }
   // set up the mother daughter relations

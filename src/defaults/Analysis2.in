@@ -2,8 +2,8 @@
 # Analysis2 setup
 ################################################################################
 
-mkdir /Defaults/Handlers/Analysis2
-cd /Defaults/Handlers/Analysis2
+mkdir /Herwig/Analysis2
+cd /Herwig/Analysis2
 
 library HwAnalysis2.so
 
@@ -162,7 +162,7 @@ set Gnuplot:Chi2 Off
 ## if non-standard (default is 'gnuplot')
 # set Gnuplot:Gnuplot $(MYOPT)/gnuplot/4.2.1/bin/gnuplot
 
-cd /Defaults/Handlers/Analysis2
+cd /Herwig/Analysis2
 
 ## Selection of jet finder #####################################################
 # 
@@ -190,7 +190,7 @@ cd JetFinders
 # library HwKtJetFinder.so
 # create Herwig::KtJetFinder KtJet
 
-cd /Defaults/Handlers/Analysis2
+cd /Herwig/Analysis2
 
 ## Analysis for e+e- colliders #################################################
 #
@@ -204,7 +204,7 @@ cd /Defaults/Handlers/Analysis2
 create Herwig::EventShapes2 EventShapes
 
 ## set the output object
-set EventShapes:HistogramOutput /Defaults/Handlers/Analysis2/Output/Gnuplot
+set EventShapes:HistogramOutput /Herwig/Analysis2/Output/Gnuplot
 
 ## enable booking per hard subprocess multiplicity (default is Off)
 # set EventShapes:BookPerSubprocess On
@@ -371,14 +371,14 @@ set EventShapes:BDiff <options \
 
 create Herwig::YMerge YMerge
 
-set YMerge:HistogramOutput /Defaults/Handlers/Analysis2/Output/Gnuplot
+set YMerge:HistogramOutput /Herwig/Analysis2/Output/Gnuplot
 
 ## here we need a jet finder. Commented out, as depends
 ## on your build. Note that, for e+e- colliders only KtJet
 ## is a suitable choice, as FastJet (by now) does only provide
 ## the longitudinal invariant kt version
 
-# set YMerge:JetFinder /DefaultsHandlers/Analysis2/JetFinders/KtJet
+# set YMerge:JetFinder /Herwig/Analysis2/JetFinders/KtJet
 
 ## set the maximum n
 
@@ -432,18 +432,18 @@ set YMerge:Y 5 <options \
 
 create Herwig::FourJetCorrelations FourJetCorrelations
 
-set FourJetCorrelations:HistogramOutput /Defaults/Handlers/Analysis2/Output/Gnuplot
+set FourJetCorrelations:HistogramOutput /Herwig/Analysis2/Output/Gnuplot
 
 ## here we need a jet finder. Commented out, as depends
 ## on your build. Note that, for e+e- colliders only KtJet
 ## is a suitable choice, as FastJet (by now) does only provide
 ## the longitudinal invariant kt version
 
-# cd /DefaultsHandlers/Analysis2/JetFinders
+# cd /Herwig/Analysis2/JetFinders
 # cp KtJet KtJetFourJets
 # set KtJetFourJets:yCut 0.008
-# cd /DefaultsHandlers/Analysis2
-# set FourJetCorrelations:JetFinder /DefaultsHandlers/Analysis2/JetFinders/KtJetFourJets
+# cd /Herwig/Analysis2
+# set FourJetCorrelations:JetFinder /Herwig/Analysis2/JetFinders/KtJetFourJets
 
 set FourJetCorrelations:CosAlpha34 <options \
 	xlabel="$\cos (\alpha_{34})$" \

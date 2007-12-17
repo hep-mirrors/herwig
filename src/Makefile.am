@@ -11,7 +11,7 @@ bin_SCRIPTS = herwig-config
 HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model RS.model
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-RS.in \
-             ILC-MSSM.in ILC-MUED.in ILC-RS.in
+             ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in
 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules

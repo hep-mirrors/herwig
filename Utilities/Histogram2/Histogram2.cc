@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Histogram2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Histogram2 class.
 //
@@ -324,6 +331,19 @@ void Histogram2::output (ostream& os, const string& name,
 
 }
 
+HistogramChannel HistogramChannel::profile () const {
+  HistogramChannel temp (_bins.size(),false);
+  for (unsigned int i = 0; i< _bins.size(); ++i) {
+    pair<double,double> prof;
+    // mean of weights
+    prof.first = weightMean(i);
+    // varaince of mean
+    prof.second = binEntries(i) > 0 ? weightVariance(i)/binEntries(i) : 0;
+    temp.bin(i,prof,binEntries(i));
+  }
+  return temp;
+}
+
 void HistogramChannel::write (ostream& os, const string& name) {
   finish();
   os << "<channel"
@@ -343,8 +363,8 @@ void HistogramChannel::write (ostream& os, const string& name) {
 
   os << "<bins>" << endl;
   for (unsigned int b = 0; b < _bins.size(); ++b) {
-    os << "<bincontent value=\"" << _bins[b].first
-       << "\" sigma2=\"" << _bins[b].second
+    os << "<bincontent sumweights=\"" << _bins[b].first
+       << "\" sumsquaredweights=\"" << _bins[b].second
        << "\" entries=\"" << _binEntries[b]
        << "\"/>" << endl;
   }
@@ -356,7 +376,7 @@ void HistogramChannel::write (ostream& os, const string& name) {
   if (nanWeightEvents() > 0)
     for (vector<unsigned long>::const_iterator n = _nanWeights.begin();
 	 n != _nanWeights.end(); ++n)
-      os << "<bincontent value=\"" << *n << "\"/>" << endl;
+      os << "<bincontent entries=\"" << *n << "\"/>" << endl;
 
   os << "</nanweights>" << endl;
 
@@ -413,9 +433,9 @@ string HistogramChannel::read (istream& is) {
     tag = getNextTag(is);
     if (tag.find("<bincontent") == string::npos) return "";
     attributes = StringUtils::xmlAttributes("bincontent",tag);
-    atit = attributes.find("value"); if (atit == attributes.end()) return "";
+    atit = attributes.find("sumweights"); if (atit == attributes.end()) return "";
     fromString(atit->second,_bins[i].first);
-    atit = attributes.find("sigma2"); if (atit == attributes.end()) return "";
+    atit = attributes.find("sumsquaredweights"); if (atit == attributes.end()) return "";
     fromString(atit->second,_bins[i].second);
     atit = attributes.find("entries"); if (atit == attributes.end()) return "";
     fromString(atit->second,_binEntries[i]);
@@ -441,7 +461,7 @@ string HistogramChannel::read (istream& is) {
     }
     if (tag.find("<bincontent") == string::npos) return "";
     attributes = StringUtils::xmlAttributes("bincontent",tag);
-    atit = attributes.find("value"); if (atit == attributes.end()) return "";
+    atit = attributes.find("entries"); if (atit == attributes.end()) return "";
     fromString(atit->second,_nanWeights[i]);
   }
 

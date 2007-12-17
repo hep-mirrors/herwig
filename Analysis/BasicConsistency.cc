@@ -63,6 +63,40 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     }
     charge += (*it)->dataPtr()->iCharge();
     ptotal += (*it)->momentum();
+    bool problem=false;
+    LorentzDistance test;
+    for(unsigned int ix=0;ix<5;++ix) {
+      switch (ix) {
+      case 0:
+	test = (*it)->vertex();
+	break;
+      case 1:
+	test = (*it)->labVertex();
+	break;
+      case 2:
+	test = (*it)->decayVertex();
+	break;
+      case 3:
+	test = (*it)->labDecayVertex();
+	break;
+      case 4:
+	test = (*it)->lifeLength();
+	break;
+      }
+      problem |= 
+	isnan(test.x()/mm) || isnan(test.y()/mm) ||
+	isnan(test.z()/mm) || isnan(test.t()/mm) ||
+	isinf(test.x()/mm) || isinf(test.y()/mm) ||
+	isinf(test.z()/mm) || isinf(test.t()/mm);
+    }
+    if(problem) {
+      generator()->log() << "Problem with position of " << **it << "\n"
+			 << (*it)->vertex()/mm << "\n"
+			 << (*it)->labVertex()/mm << "\n"
+			 << (*it)->decayVertex()/mm << "\n"
+			 << (*it)->labDecayVertex()/mm << "\n"
+			 << (*it)->lifeLength()/mm << "\n"; 
+    }
   }
   
   if ( _checkcharge && charge != 0 ) {
@@ -97,7 +131,10 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 		       << " GeV in event " << event->number() << '\n' 
 		       << *event;
   }
-  
+
+
+
+
   if (mag > _epsmom)
     _epsmom = mag;
 
@@ -113,6 +150,50 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   if (abs(ptotal.z()) > _epsmom)
     _epsmom = abs(ptotal.z());
 
+
+  particles.clear();
+
+  event->select(inserter(particles), ThePEG::AllSelector());
+  bool output=false;
+  for(set<tcPPtr>::const_iterator it = particles.begin(); 
+      it != particles.end(); ++it) {
+    bool problem=false;
+    LorentzDistance test;
+    for(unsigned int ix=0;ix<5;++ix) {
+      switch (ix) {
+      case 0:
+	test = (*it)->vertex();
+	break;
+      case 1:
+	test = (*it)->labVertex();
+	break;
+      case 2:
+	test = (*it)->decayVertex();
+	break;
+      case 3:
+	test = (*it)->labDecayVertex();
+	break;
+      case 4:
+	test = (*it)->lifeLength();
+	break;
+      }
+      problem |= 
+	isnan(test.x()/mm) || isnan(test.y()/mm) ||
+	isnan(test.z()/mm) || isnan(test.t()/mm) ||
+	isinf(test.x()/mm) || isinf(test.y()/mm) ||
+	isinf(test.z()/mm) || isinf(test.t()/mm);
+    }
+    if(problem) {
+      generator()->log() << "Problem with position of " << **it << "\n"
+			 << (*it)->vertex()/mm << "\n"
+			 << (*it)->labVertex()/mm << "\n"
+			 << (*it)->decayVertex()/mm << "\n"
+			 << (*it)->labDecayVertex()/mm << "\n"
+			 << (*it)->lifeLength()/mm << "\n"; 
+      output=true;
+    }
+  }
+  if(output) generator()->log() << *event;
 }
 
 void BasicConsistency::persistentOutput(PersistentOStream & os) const {

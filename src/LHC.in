@@ -1,6 +1,6 @@
 ##################################################
 # Example generator based on LHC parameters
-# usage: Herwig++ read TVT.in
+# usage: Herwig++ read LHC.in
 ##################################################
 
 ##################################################

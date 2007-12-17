@@ -93,4 +93,17 @@ inline void ShowerTree::fixColour(tShowerParticlePtr part) {
     line->addAntiColoured(part);
   }
 }
+  
+inline vector<ShowerProgenitorPtr> ShowerTree::extractProgenitors() {
+  // extract the particles from the ShowerTree
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator mit;
+  vector<ShowerProgenitorPtr> ShowerHardJets;
+  for(mit=incomingLines().begin();mit!=incomingLines().end();++mit)
+    ShowerHardJets.push_back((*mit).first);
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mjt;
+  for(mjt=outgoingLines().begin();mjt!=outgoingLines().end();++mjt)
+    ShowerHardJets.push_back((*mjt).first);
+  return ShowerHardJets;
+}
+
 }
