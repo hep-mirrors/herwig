@@ -1,0 +1,118 @@
+// -*- C++ -*-
+#ifndef HERWIG_MEee2ZH_H
+#define HERWIG_MEee2ZH_H
+//
+// This is the declaration of the MEee2ZH class.
+//
+
+#include "Herwig++/MatrixElement/General/ME2toVH.h"
+#include "MEee2ZH.fh"
+
+namespace Herwig {
+
+using namespace ThePEG;
+
+/**
+ * Here is the documentation of the MEee2ZH class.
+ *
+ * @see \ref MEee2ZHInterfaces "The interfaces"
+ * defined for MEee2ZH.
+ */
+class MEee2ZH: public ME2toVH {
+
+public:
+  /**
+   * The default constructor.
+   */
+  inline MEee2ZH();
+
+  /** @name Virtual functions required by the ME2toVH class. */
+  //@{
+  /**
+   * Add all possible diagrams with the add() function.
+   */
+  virtual void getDiagrams() const;
+
+public:
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static NoPIOClassDescription<MEee2ZH> initMEee2ZH;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  MEee2ZH & operator=(const MEee2ZH &);
+
+};
+
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of MEee2ZH. */
+template <>
+struct BaseClassTrait<Herwig::MEee2ZH,1> {
+  /** Typedef of the first base class of MEee2ZH. */
+  typedef Herwig::ME2toVH NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the MEee2ZH class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::MEee2ZH>
+  : public ClassTraitsBase<Herwig::MEee2ZH> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig::MEee2ZH"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * MEee2ZH is implemented. It may also include several, space-separated,
+   * libraries if the class MEee2ZH depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "HwMELepton.so"; }
+};
+
+/** @endcond */
+
+}
+
+#include "MEee2ZH.icc"
+
+#endif /* HERWIG_MEee2ZH_H */

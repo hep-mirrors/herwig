@@ -4,7 +4,7 @@ LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
 
 pkglib_LTLIBRARIES = libHerwig.la
 libHerwig_la_SOURCES =
-libHerwig_la_LDFLAGS = -version-info 4:0:0 -export-dynamic 
+libHerwig_la_LDFLAGS = -version-info 4:1:0 -export-dynamic 
 libHerwig_la_LDFLAGS += $(THEPEGLDFLAGS)
 libHerwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
@@ -15,7 +15,7 @@ $(top_builddir)/Decay/Radiation/libHwDecRad.la \
 $(top_builddir)/Utilities/libHwUtils.la \
 $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
-$(top_builddir)/MatrixElement/libHwGeneralME.la \
+$(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(THEPEGLIB) -ldl
 

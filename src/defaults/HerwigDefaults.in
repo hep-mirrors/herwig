@@ -119,6 +119,21 @@ set LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
 # uncomment to get QED radiation off W/Z decay products in hard process
 # insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadHandler
 
+# Create DISHandler
+create ThePEG::StandardEventHandler DISHandler 
+create ThePEG::LuminosityFunction DISLuminosity
+set DISHandler:BeamA /Herwig/Particles/e-
+set DISLuminosity:BeamEMaxA 30.*GeV
+set DISHandler:BeamB /Herwig/Particles/p+
+set DISLuminosity:BeamEMaxB 920.*GeV
+set DISHandler:LuminosityFunction DISLuminosity
+insert DISHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleDIS
+set DISHandler:Sampler /Herwig/ACDCSampler
+set DISHandler:BinStrategy 2
+set DISHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set DISHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set DISHandler:DecayHandler /Herwig/Decays/DecayHandler
+
 mkdir /Herwig/Generators 
 cd /Herwig/Generators 
 
@@ -144,6 +159,12 @@ set LHCGenerator:RandomNumberGenerator /Herwig/Random
 set LHCGenerator:StandardModelParameters /Herwig/Model
 set LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
 
+# And the DISGenerator
+create ThePEG::EventGenerator DISGenerator
+set DISGenerator:RandomNumberGenerator /Herwig/Random
+set DISGenerator:StandardModelParameters /Herwig/Model
+set DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
+
 ############################################
 # The default cuts
 ############################################
@@ -152,8 +173,10 @@ read Cuts.in
 cd /Herwig/Generators
 set LEPGenerator:EventHandler:Cuts /Herwig/Cuts/EECuts
 set LHCGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
+set DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
 
 ##########################################
 # include some default analysis handlers
 ##########################################
 read Analysis.in
+read Analysis2.in

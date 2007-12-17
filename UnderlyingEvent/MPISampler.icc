@@ -18,11 +18,11 @@ inline MPISampler::MPISampler()
   theNTry(1000) {}
 
 inline MPISampler::MPISampler(const MPISampler & x)
-  : SamplerBase(x), theMPIHandler(x.theMPIHandler), theEps(x.theEps), 
+  : SamplerBase(x), theProcessHandler(x.theProcessHandler), theEps(x.theEps), 
     theMargin(x.theMargin), theNTry(x.theNTry) {}
 
-inline void MPISampler::setMPIHandler(tMPIHPtr mpih){
-  theMPIHandler = mpih;
+inline void MPISampler::setProcessHandler(tProHdlPtr proh){
+  theProcessHandler = proh;
 }
 
 inline IBPtr MPISampler::clone() const {

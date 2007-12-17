@@ -1,3 +1,52 @@
+# check for gcc bug http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
+AC_DEFUN([HERWIG_CHECK_ABS_BUG],
+[
+if test "$GCC" = "yes"; then
+AC_MSG_CHECKING([for gcc abs bug])
+AC_RUN_IFELSE(
+	AC_LANG_PROGRAM(
+		[ int foo (int i) { return -2 * __builtin_abs(i - 2); }	],
+		[ if ( foo(1) != -2 || foo(3) != -2 ) return 1; ]
+	),
+	[ AC_MSG_RESULT([not found. Compiler is ok.]) ],
+	[
+	AC_MSG_RESULT([found. Builtin abs() is buggy.])
+	AC_MSG_CHECKING([if -fno-builtin-abs works])
+	oldcxxflags=$CXXFLAGS
+	CXXFLAGS="$CXXFLAGS -fno-builtin-abs"
+	AC_RUN_IFELSE(
+		AC_LANG_PROGRAM(
+			[
+			#include <cstdlib>
+			int foo (int i) { return -2 * std::abs(i - 2); }
+			],
+			[
+			if (foo(1) != -2 || foo(3) != -2) return 1; 
+			]
+		),
+		[
+		AC_MSG_RESULT([yes. Setting -fno-builtin-abs.])
+		AM_CXXFLAGS="$AM_CXXFLAGS -fno-builtin-abs"
+		AM_CFLAGS="$AM_CFLAGS -fno-builtin-abs"
+		],
+		[
+		AC_MSG_RESULT([no. Setting -fno-builtin.])
+		AC_MSG_WARN([
+*****************************************************************************
+For this version of gcc, -fno-builtin-abs alone did not work to avoid the 
+gcc abs() bug. Instead, all gcc builtin functions are now disabled.
+Update gcc if possible.
+*****************************************************************************])
+		AM_CXXFLAGS="$AM_CXXFLAGS -fno-builtin"
+		AM_CFLAGS="$AM_CFLAGS -fno-builtin"
+		]
+	)
+	CXXFLAGS=$oldcxxflags
+	]
+)
+fi
+])
+
 dnl ##### CLHEP #####
 AC_DEFUN([HERWIG_CHECK_CLHEP],
 [
@@ -494,7 +543,7 @@ if test "x$with_gsl" = "xno"; then
 	AC_CHECK_LIB(gslcblas,main)
 	AC_CHECK_LIB(gsl,main,[],
 			[
-			AC_MSG_ERROR([Cannot find libgsl. Please install the GNU scientific library.])
+			AC_MSG_ERROR([Cannot find libgsl. Please install the GNU scientific library and header files or use --with-gsl=.])
 			]
 		     )
 	GSLLIBS="$LIBS"

@@ -61,7 +61,7 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
     }
     Lorentz5Momentum pf(part->children()[0]->momentum());
     Lorentz5Momentum pfb(part->children()[1]->momentum());
-    if(part->children()[0]->id()<0&&part->children()[0]>0) swap(pf,pfb);
+    if(part->children()[0]->id()<0&&part->children()[1]>0) swap(pf,pfb);
     pf.boost(-part->momentum().boostVector());
     pfb.boost(-part->momentum().boostVector());
     // bin the cosine of the angle between each photon and the fermion 

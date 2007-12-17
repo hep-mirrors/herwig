@@ -81,6 +81,8 @@ HERWIG_VERSIONSTRING
 
 HERWIG_COMPILERFLAGS
 
+HERWIG_CHECK_ABS_BUG
+
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
 
@@ -109,6 +111,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
+                MatrixElement/General/Makefile
+                MatrixElement/Lepton/Makefile
+                MatrixElement/Hadron/Makefile
+                MatrixElement/DIS/Makefile
+                MatrixElement/Nason/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile

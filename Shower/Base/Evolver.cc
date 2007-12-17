@@ -237,6 +237,9 @@ void Evolver::initCKKWShower (unsigned int currentMult, unsigned int maxMult) {
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
   if ( !ipTon() || !isISRadiationON() ) return;
+  //dont do anything for the moment for secondary scatters
+  if( !ShowerHandler::currentHandler()->FirstInt() ) return;
+  // generate intrinsic pT
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     // only consider initial-state particles
     if(particlesToShower[ix]->progenitor()->isFinalState()) continue;

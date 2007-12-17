@@ -1,5 +1,12 @@
 // -*- C++ -*-
 //
+// Analysis2Base.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Analysis2Base class.
 //
@@ -330,9 +337,10 @@ void Analysis2Base::finish (const string& name,
     theHisto->xSec(generator()->currentEventHandler()->histogramScale());
   }
 
-  for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
-    if (*c != data)
-      theHisto->differential(*c);
+  if (_outputOptions[name].differential)
+    for (vector<string>::iterator c = allchannels.begin(); c != allchannels.end(); ++c)
+      if (*c != data)
+	theHisto->differential(*c);
 
   // normalize
 

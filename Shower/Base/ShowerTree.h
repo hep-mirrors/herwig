@@ -195,6 +195,11 @@ public:
    */
   void resetShowerProducts();
 
+  /**
+   *  Extract the progenitors for the reconstruction
+   */
+  inline vector<ShowerProgenitorPtr> extractProgenitors();
+
 protected:
 
   /**

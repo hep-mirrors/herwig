@@ -30,7 +30,7 @@ struct Stat {
    * Calculation of the cross section.
    */
   inline CrossSection xSec() const {
-    return maxXSec*sumw/totsum;
+    return totsum >0.0? maxXSec*sumw/totsum: maxXSec;
   }
 
   /** Store the number of attempts */

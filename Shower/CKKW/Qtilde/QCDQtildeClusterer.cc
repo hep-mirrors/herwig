@@ -114,12 +114,24 @@ void QCDQtildeClusterer::doKinematics (const tClusteringPtr& clustering) {
   cl->emission().second->productionScale(scale);
   cl->emitter()->splittingScale(scale);
 
+  Lorentz5Momentum emerging;
+  if (cl->emission().first->pData().partonId.state == ClusteringParticleState::final &&
+      cl->emission().second->pData().partonId.state == ClusteringParticleState::final)
+    emerging = cl->emission().first->momentum() + cl->emission().second->momentum();
+  if (cl->emission().first->pData().partonId.state == ClusteringParticleState::initial &&
+      cl->emission().second->pData().partonId.state == ClusteringParticleState::final) {
+    emerging = cl->emission().first->momentum() - cl->emission().second->momentum();
+  }
+  if (cl->emission().first->pData().partonId.state == ClusteringParticleState::final &&
+      cl->emission().second->pData().partonId.state == ClusteringParticleState::initial) {
+    emerging = - cl->emission().first->momentum() + cl->emission().second->momentum();
+  }
+  cl->emitter()->momentum(emerging);
+
   // nothing happened to the spectator
   cl->spectatorBeforeClustering()->productionScale(cl->spectatorBeforeClustering()->splittingScale());
   cl->spectatorBeforeClustering()->setNoReweight();
   cl->spectatorAfterClustering()->splittingScale(cl->spectatorBeforeClustering()->splittingScale());
-
-  cl->emitter()->momentum(cl->sudakovBasis().first);
   cl->spectatorAfterClustering()->momentum(cl->spectatorBeforeClustering()->momentum());
 
 }

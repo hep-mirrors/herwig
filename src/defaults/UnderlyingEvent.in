@@ -20,27 +20,18 @@ insert UECuts:OneCuts 0 KtCut
 #########################
 
 ########subprocesses#####
-create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEFast.so
+create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEHadronFast.so
 create ThePEG::SubProcessHandler FastQCD
 insert FastQCD:MatrixElements 0 MEQCD2to2Fast
 set FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor
 #########################
 
 library HwMPI.so
-create Herwig::MPISampler MPISampler
 create Herwig::MPIHandler MPIHandler
 
-# set how to sample the subprocesses
-#set MPIHandler:BinStrategy 0
-
-# set the ACDC Sampler
-set MPIHandler:Sampler MPISampler
-
-# set the subprocesses
+# set the subprocesses and corresponding cuts
 insert MPIHandler:SubProcessHandlers 0 FastQCD
-
-# set the cuts object
-set MPIHandler:Cuts UECuts
+insert MPIHandler:Cuts 0 UECuts
 
 # set the inverse hadron radius
 set MPIHandler:InvRadius 1.3

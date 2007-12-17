@@ -17,7 +17,9 @@
 ##############################################################################
 mkdir /Herwig/MatrixElements
 cd /Herwig/MatrixElements
-library HwME.so
+library HwMELepton.so
+library HwMEHadron.so
+library HwMEDIS.so
 
 ############################################################
 #  e+e- matrix elements
@@ -59,6 +61,13 @@ create Herwig::MEQCD2to2       MEQCD2to2
 create Herwig::MEPP2QQ         MEHeavyQuark        
 
 ##########################################################
+# DIS matrix elements
+##########################################################
+
+# neutral current
+create Herwig::MENeutralCurrentDIS MEDISNC
+
+##########################################################
 # Set up the Subprocesses
 #
 # For e+e-
@@ -72,3 +81,9 @@ set SimpleEE:PartonExtractor /Herwig/Partons/EEExtractor
 ##########################################################
 create ThePEG::SubProcessHandler SimpleQCD
 set SimpleQCD:PartonExtractor /Herwig/Partons/QCDExtractor
+
+##########################################################
+# For DIS only neutral current on by default
+##########################################################
+create ThePEG::SubProcessHandler SimpleDIS
+set SimpleDIS:PartonExtractor /Herwig/Partons/DISExtractor

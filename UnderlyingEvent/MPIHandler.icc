@@ -16,9 +16,11 @@ inline tEHPtr MPIHandler::eventHandler() const {
   return theHandler;
 }
 
-inline tCutsPtr MPIHandler::cuts() const {
-  return theCuts;
+inline bool MPIHandler::beamOK() const {
+  return (HadronMatcher::Check(*eventHandler()->incoming().first)  &&
+	  HadronMatcher::Check(*eventHandler()->incoming().second) );
 }
+
 
 inline const MPIHandler::SubHandlerList &
 MPIHandler::subProcesses() const {
@@ -26,79 +28,50 @@ MPIHandler::subProcesses() const {
 }
 
 inline MPIHandler::SubHandlerList &
-MPIHandler::subProcesses() {
+MPIHandler::subProcesses(){
   return theSubProcesses;
 }
 
+inline const MPIHandler::ProcessHandlerList &
+MPIHandler::processHandlers() const {
+  return theProcessHandlers;
+}
+
+inline MPIHandler::ProcessHandlerList &
+MPIHandler::processHandlers(){
+  return theProcessHandlers;
+}
+
+inline const MPIHandler::CutsList &
+MPIHandler::cuts() const {
+  return theCuts;
+}
+
+inline MPIHandler::CutsList &
+MPIHandler::cuts(){
+  return theCuts;
+}
+
+
 inline int MPIHandler::Algorithm() const {
   return theAlgorithm;
-}
-
-inline long MPIHandler::maxLoop() const {
-  return eventHandler()->maxLoop();
-}
-
-inline tSamplerPtr MPIHandler::sampler() {
-  return theSampler;
-}
-
-inline tcSamplerPtr MPIHandler::sampler() const {
-  return theSampler;
-}
-
-inline const cPDPair & MPIHandler::incoming() const {
-  return eventHandler()->incoming();
-}
-
-inline const LuminosityFunction & MPIHandler::lumiFn() const {
-  // Did that in that strange way, because lumiFn is protected
-  return *eventHandler()->lumiFnPtr();
-}
-
-inline int MPIHandler::lumiDim() const {
-  return lumiFn().nDim(incoming());
-}
-
-inline int MPIHandler::maxDim(int bin) const {
-  return theMaxDims[bin];
-}
-
-inline int MPIHandler::nDim(int bin) const {
-  return lumiDim() + maxDim(bin);
 }
 
 inline int MPIHandler::statLevel() const {
   return eventHandler()->statLevel();
 }
 
-inline const MPIHandler::XVector &
-MPIHandler::xCombs() const {
-  return theXCombs;
-}
-
-inline MPIHandler::XVector & MPIHandler::xCombs() {
-  return theXCombs;
-}
-
-inline const MPIHandler::XSVector &
-MPIHandler::xSecs() const {
-  return theXSecs;
-}
-
-inline MPIHandler::XSVector & MPIHandler::xSecs() {
-  return theXSecs;
-}
-
-inline int MPIHandler::binStrategy() const {
-  return theBinStrategy;
-}
-
 inline unsigned int MPIHandler::multiplicity() const {
   return theMultiplicities.select(UseRandom::rnd());
 }
 
-inline tStdXCombPtr MPIHandler::generate() {
-  return select(sampler()->lastBin(), sampler()->generate());
+inline tStdXCombPtr MPIHandler::generate(unsigned int sel) {
+  //generate a certain process
+  if(sel+1 > processHandlers().size())
+    throw Exception() << "MPIHandler::generate called with argument out of range"
+                      << Exception::runerror;
+
+  return processHandlers()[sel]->generate();
 }
 
 inline IBPtr MPIHandler::clone() const {

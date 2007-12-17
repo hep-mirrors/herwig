@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <ThePEG/Interface/Reference.h>  
 #include <ThePEG/Interface/Switch.h>  
+#include "Herwig++/PDT/StandardMatchers.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 
@@ -83,17 +84,15 @@ long HwRemDecayer::HadronContent::RemID() const{
 
 HwRemDecayer::HadronContent
 HwRemDecayer::getHadronContent(tcPPtr hadron) const {
-  long id(hadron->id());
-  if(abs(id) < 99)
-    throw Exception() << "No hadron as beam particle "
-		      << "HwRemDecayer::GetHadronContent(...)"
-		      << Exception::runerror; 
   HadronContent hc;
-  hc.sign = id < 0? -1: 1;
-  hc.flav.push_back((id = abs(id)/10)%10);
-  hc.flav.push_back((id /= 10)%10);
-  hc.flav.push_back((id /= 10)%10);
-  hc.extracted = -1;
+  long id(hadron->id());
+  if(HadronMatcher::Check(hadron->data())) {
+    hc.sign = id < 0? -1: 1;
+    hc.flav.push_back((id = abs(id)/10)%10);
+    hc.flav.push_back((id /= 10)%10);
+    hc.flav.push_back((id /= 10)%10);
+    hc.extracted = -1;
+  }
   return hc;
 }
 
@@ -107,8 +106,7 @@ bool HwRemDecayer::multiCapable() const {
 
 bool HwRemDecayer::
 canHandle(tcPDPtr particle, tcPDPtr parton) const {
-  return ( BaryonMatcher::Check(*particle) || MesonMatcher::Check(*particle) ) &&
-    StandardQCDPartonMatcher::Check(*parton);
+  return ( HadronMatcher::Check(*particle) && StandardQCDPartonMatcher::Check(*parton));
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
@@ -116,9 +114,9 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
 
   thestep = &step;
-  theContent.first = getHadronContent(beam.first);
+  theContent.first  = getHadronContent(beam.first);
   theContent.second = getHadronContent(beam.second);
-  theUsed.first = Lorentz5Momentum();
+  theUsed.first  = Lorentz5Momentum();
   theUsed.second = Lorentz5Momentum();
   theMaps.first.clear();
   theMaps.second.clear();
@@ -126,12 +124,11 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
   theX.second = 0.0;
   theRems = rems;
 
-  if( parent(theRems.first) != beam.first ||
-      parent(theRems.second) != beam.second )
+  if( (theRems.first  && parent(theRems.first ) != beam.first ) ||
+      (theRems.second && parent(theRems.second) != beam.second) )
     throw Exception() << "Remnant order wrong in "
 		      << "HwRemDecayer::initialize(...)"
-		      << Exception::runerror;
-
+		      << Exception::runerror; 
   return;
 }
 
@@ -258,6 +255,7 @@ void HwRemDecayer::setRemMasses() const {
   theprocessed.push_back(theRems.second);
 
   for(unsigned int ix=0;ix<2;++ix) {
+    if(!theprocessed[ix]) continue;
     pnew[ix]=Lorentz5Momentum();
     for(unsigned int iy=0;iy<theprocessed[ix]->children().size();++iy) {
       pnew[ix]+=theprocessed[ix]->children()[iy]->momentum();
@@ -265,6 +263,7 @@ void HwRemDecayer::setRemMasses() const {
     mrem[ix]=sqrt(pnew[ix].m2());
   }
   // now find the remnant remnant cmf frame
+  if(!theprocessed[0]||!theprocessed[1]) return;
   Lorentz5Momentum prem[2]={theprocessed[0]->momentum(),
 			    theprocessed[1]->momentum()};
   ptotal=prem[0]+prem[1];
@@ -378,98 +377,105 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
 
 void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
   if(!theForcedSplitter) return;
-  
-  try{
-    split(partons.first, theContent.first, theRems.first, 
-	  theUsed.first, theMaps.first, first);
-  }catch(ShowerHandler::ExtraScatterVeto){
-    theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
-    throw ShowerHandler::ExtraScatterVeto();
+  // forced splitting for first parton
+  if(partons.first->data().coloured()) {
+    try {
+      split(partons.first, theContent.first, theRems.first, 
+	    theUsed.first, theMaps.first, first);
+    }
+    catch(ShowerHandler::ExtraScatterVeto) {
+      theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
+      throw ShowerHandler::ExtraScatterVeto();
+    }
   }
-  
-  try{
-    split(partons.second, theContent.second, theRems.second, 
-	  theUsed.second, theMaps.second, first);
-    // additional check for the remnants
-    // if can't do the rescale veto the emission
-    if(!first) {
-      Lorentz5Momentum pnew[2]=
-	{theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
-	 theRems.second->momentum() - theUsed.second - partons.second->momentum()};
-
-      pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
-      pnew[0].rescaleEnergy();
-      pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
-      pnew[1].rescaleEnergy();
-
-      for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
-	pnew[0] += theRems.first->children()[iy]->momentum();
-
-      for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
-	pnew[1] += theRems.second->children()[iy]->momentum();
-
-      Lorentz5Momentum ptotal=
-	theRems.first ->momentum()-partons.first ->momentum()+
-	theRems.second->momentum()-partons.second->momentum();
-
-      if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
-	if(partons.second->id() != ParticleID::g){
-	  if(partons.second==theMaps.second.back().first) 
-	    theUsed.second -= theMaps.second.back().second->momentum();
-	  else
-	    theUsed.second -= theMaps.second.back().first->momentum();
-	  
-	  thestep->removeParticle(theMaps.second.back().first);
-	  thestep->removeParticle(theMaps.second.back().second);
+  // forced splitting for second parton
+  if(partons.second->data().coloured()) {   
+    try{
+      split(partons.second, theContent.second, theRems.second, 
+	    theUsed.second, theMaps.second, first);
+      // additional check for the remnants
+      // if can't do the rescale veto the emission
+      if(!first&&partons.first->data().coloured()&&
+	 partons.second->data().coloured()) {
+	Lorentz5Momentum pnew[2]=
+	  {theRems.first->momentum()  - theUsed.first  - partons.first->momentum(),
+	   theRems.second->momentum() - theUsed.second - partons.second->momentum()};
+	
+	pnew[0].setMass(getParticleData(theContent.first.RemID())->constituentMass());
+	pnew[0].rescaleEnergy();
+	pnew[1].setMass(getParticleData(theContent.second.RemID())->constituentMass());
+	pnew[1].rescaleEnergy();
+	
+	for(unsigned int iy=0; iy<theRems.first->children().size(); ++iy)
+	  pnew[0] += theRems.first->children()[iy]->momentum();
+	
+	for(unsigned int iy=0; iy<theRems.second->children().size(); ++iy)
+	  pnew[1] += theRems.second->children()[iy]->momentum();
+	
+	Lorentz5Momentum ptotal=
+	  theRems.first ->momentum()-partons.first ->momentum()+
+	  theRems.second->momentum()-partons.second->momentum();
+	
+	if(ptotal.m() < (pnew[0].m() + pnew[1].m()) ) {
+	  if(partons.second->id() != ParticleID::g){
+	    if(partons.second==theMaps.second.back().first) 
+	      theUsed.second -= theMaps.second.back().second->momentum();
+	    else
+	      theUsed.second -= theMaps.second.back().first->momentum();
+	    
+	    thestep->removeParticle(theMaps.second.back().first);
+	    thestep->removeParticle(theMaps.second.back().second);
+	  }
+	  theMaps.second.pop_back();
+	  throw ShowerHandler::ExtraScatterVeto();
 	}
-	theMaps.second.pop_back();
-	throw ShowerHandler::ExtraScatterVeto();
       }
     }
-  }
-  catch(ShowerHandler::ExtraScatterVeto){
-    //case of the first forcedSplitting worked fine
-    theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
-    theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();
-    
-    //case of the first interaction
-    //throw veto immediately, because event get rejected anyway.
-    if(first) throw ShowerHandler::ExtraScatterVeto();
-
-    //secondary interactions have to end on a gluon, if parton 
-    //was NOT a gluon, the forced splitting particles must be removed
-    if(partons.first->id() != ParticleID::g){
-      if(partons.first==theMaps.first.back().first) 
-	theUsed.first -= theMaps.first.back().second->momentum();
-      else
-	theUsed.first -= theMaps.first.back().first->momentum();
+    catch(ShowerHandler::ExtraScatterVeto){
+      //case of the first forcedSplitting worked fine
+      theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
+      theX.second -= partons.second->momentum().rho()/parent(theRems.second)->momentum().rho();
       
-      thestep->removeParticle(theMaps.first.back().first);
-      thestep->removeParticle(theMaps.first.back().second);
+      //case of the first interaction
+      //throw veto immediately, because event get rejected anyway.
+      if(first) throw ShowerHandler::ExtraScatterVeto();
+      
+      //secondary interactions have to end on a gluon, if parton 
+      //was NOT a gluon, the forced splitting particles must be removed
+      if(partons.first->id() != ParticleID::g){
+	if(partons.first==theMaps.first.back().first) 
+	  theUsed.first -= theMaps.first.back().second->momentum();
+	else
+	  theUsed.first -= theMaps.first.back().first->momentum();
+	
+	thestep->removeParticle(theMaps.first.back().first);
+	thestep->removeParticle(theMaps.first.back().second);
+      }
+      theMaps.first.pop_back();
+      throw ShowerHandler::ExtraScatterVeto();
     }
-    theMaps.first.pop_back();
-    throw ShowerHandler::ExtraScatterVeto();
   }
 }
 
 void HwRemDecayer::finalize(){
   if(!theForcedSplitter) return;
-
   PPtr diquark;
   //Do the final Rem->Diquark or Rem->quark "decay"
-  diquark = theForcedSplitter->
-    finalSplit(theRems.first, theContent.first.RemID(), 
-	       theUsed.first, thestep);
-  theMaps.first.push_back(make_pair(diquark, tPPtr()));
-
-  diquark = theForcedSplitter->
-    finalSplit(theRems.second, theContent.second.RemID(), 
-	       theUsed.second, thestep);
-  theMaps.second.push_back(make_pair(diquark, tPPtr()));
-
+  if(theRems.first) {
+    diquark = theForcedSplitter->
+      finalSplit(theRems.first, theContent.first.RemID(), 
+		 theUsed.first, thestep);
+    theMaps.first.push_back(make_pair(diquark, tPPtr()));
+  }
+  if(theRems.second) {
+    diquark = theForcedSplitter->
+      finalSplit(theRems.second, theContent.second.RemID(), 
+		 theUsed.second, thestep);
+    theMaps.second.push_back(make_pair(diquark, tPPtr()));
+  }
   setRemMasses();
-  fixColours(theMaps.first, theanti.first);
-  fixColours(theMaps.second, theanti.second);
+  if(theRems.first) fixColours(theMaps.first, theanti.first);
+  if(theRems.second) fixColours(theMaps.second, theanti.second);
 }
 
 ParticleVector HwRemDecayer::decay(const DecayMode &, 

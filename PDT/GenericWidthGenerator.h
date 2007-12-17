@@ -130,6 +130,12 @@ public:
    **/
   virtual void dataBaseOutput(ofstream & output, bool header=true);
 
+  /**
+   * Given a particle type and a mass and a width of an instance of
+   * that particle type, generate a life time.
+   */
+  virtual Length lifeTime(const ParticleData &, Energy m, Energy w) const;
+
 protected:
 
   /**

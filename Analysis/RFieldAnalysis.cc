@@ -8,10 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/Interfaces/KtJetInterface.h"
-#include "KtJet/KtEvent.h"
-#include "KtJet/KtLorentzVector.h"
-
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "RFieldAnalysis.tcc"
@@ -22,6 +18,86 @@
 
 using namespace Herwig;
 using namespace ThePEG;
+
+class Jet{
+
+public:
+
+  Jet(){
+    ptsum = 0.0*GeV; 
+    ptweighted_phi = 0.0*GeV; 
+    ptweighted_eta = 0.0*GeV;
+  }
+  void add(const Lorentz5Momentum &p){
+    ptweighted_phi += p.perp()*p.phi();
+    ptweighted_eta += p.perp()*p.eta();
+    ptsum += p.perp();
+  } 
+  bool isInCircle(const Lorentz5Momentum &p, double R){
+    double deta = eta() - p.eta();
+    double phi1 = phi();
+    double phi2 = p.phi();
+    double dphi = fabs( phi1 - phi2 );
+    if (dphi > Constants::pi) dphi = fabs( dphi - 2*Constants::pi );
+    if( (sqr(deta) + sqr(dphi)) < sqr(R) ) return true;
+    return false;
+  }
+  Energy perp() const {return ptsum;}
+  double phi() const {return ptweighted_phi/ptsum;}
+  double eta() const {return ptweighted_eta/ptsum;}
+
+private:
+  Energy ptsum;
+  Energy ptweighted_phi;
+  Energy ptweighted_eta;
+};
+
+typedef multimap<double, tPPtr> ptlist;
+typedef multimap<double, Jet> Jetptlist;
+
+/**
+ * Returns the list of jets 
+ */
+vector<Jet> getJets(vector<tPPtr> particles, double R=0.7){
+  ptlist tracks;
+  ptlist::iterator t1, t2;
+  Jetptlist tmp;
+  vector<Jet> result;
+  
+  for(unsigned int i=0; i<particles.size(); i++)
+    //sort in decreasing pt
+    tracks.insert(make_pair(-particles[i]->momentum().perp()/GeV, particles[i]));
+    
+  /* output all particles to work with
+  for(t1=tracks.begin(); t1!=tracks.end(); ++t1)
+    cerr << t1->first << "--" << t1->second << endl;
+  */
+
+  while( !tracks.empty() ){
+    t1 = tracks.begin();
+
+    Jet curjet;
+    curjet.add(t1->second->momentum());
+    tracks.erase(t1);
+
+    t2 = tracks.begin();
+    while (t2 != tracks.end()) {
+      if( curjet.isInCircle(t2->second->momentum(), R) ){
+        curjet.add(t2->second->momentum());
+        tracks.erase(t2);
+      }
+      ++t2;
+    }    
+    tmp.insert(make_pair(-curjet.perp()/GeV, curjet));
+//    cerr << "Jet with ptsum: " << curjet.perp()/GeV << endl;
+  }
+
+  for(Jetptlist::iterator jit=tmp.begin(); jit!=tmp.end(); ++jit)
+    result.push_back(jit->second);
+
+//  cerr << "return result: " << result[0].perp()/GeV << endl;
+  return result;
+}
 
 RFieldAnalysis::~RFieldAnalysis() {}
 
@@ -39,6 +115,9 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
   for (tPVector::const_iterator pit = particles.begin(); pit != particles.end(); ++pit){
       /** Select only the charged particles  */
       if( ChargedSelector::Check(**pit) ){
+          //CDF detector simulation:
+          if(UseRandom::rnd() < 0.08) continue;
+
 	  p = (**pit).momentum();
 	  /**
 	     Select the particles according the noted selection cuts and do the
@@ -50,21 +129,17 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
 	  nch++;//number of all charged particles
       }
   }
-  
   /*
     get the "transverse" region, defined by the azimuthal angle difference
-    to the reconstructed jet with larges pt and write all the particles that 
-    are in there to the ROOT file in the same manner as above.
+    to the reconstructed jet with largest pt.
   */
   if(selection.size()){
 
-      KtJetInterface jet;
-      KtJet::KtEvent ev(jet.convert(selection), 4, 2, 2, 0.7);//pt recom scheme
-      /** Get the leading jet (largest pt) */
-      vector<KtJet::KtLorentzVector> jets = ev.getJetsPt();
-      vector<KtJet::KtLorentzVector>::const_iterator itr = jets.begin();
-  
-      pt1 = itr->perp()/1000.0;//leading jet pt
+      vector<Jet> jets = getJets(selection);
+      //Get the leading jet (largest pt)
+      vector<Jet>::const_iterator itr = jets.begin();
+
+      pt1 = itr->perp()/GeV;//leading jet scalar ptsum of constituent particles
       
       //overflow or underflow
       if(pt1 < (double)thelow || pt1 > (double)theup) return;
@@ -199,11 +274,11 @@ void RFieldAnalysis::analyze(const tPVector & particles) {
 void RFieldAnalysis::analyze(tPPtr) {}
 
 void RFieldAnalysis::persistentOutput(PersistentOStream & os) const {
-  os << theShowerHandler << thelow << theup << theDir;
+  os << thelow << theup << theDir;
 }
 
 void RFieldAnalysis::persistentInput(PersistentIStream & is, int) {
-  is >> theShowerHandler >> thelow >> theup >> theDir;
+  is >> thelow >> theup >> theDir;
 }
 
 ClassDescription<RFieldAnalysis> RFieldAnalysis::initRFieldAnalysis;
@@ -215,12 +290,6 @@ void RFieldAnalysis::Init() {
     ("There is no documentation for the RFieldAnalysis class");
 
   
-  static Reference<RFieldAnalysis,ShowerHandler> interfaceShowerHandler
-    ("ShowerHandler",
-     "A reference to the ShowerHandler",
-     &RFieldAnalysis::theShowerHandler, true, false, true, false, false);
-
-
   static Parameter<RFieldAnalysis,int> interfaceLowerBorder
     ("LowerBorder",
      "Lower border of chi^2 comparison to data.",

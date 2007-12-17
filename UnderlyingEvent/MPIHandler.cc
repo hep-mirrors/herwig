@@ -12,7 +12,6 @@
 //
 
 #include "MPIHandler.h"
-#include "MPISampler.h"
 
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Handlers/SubProcessHandler.h"
@@ -22,10 +21,7 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
 
-#include "ThePEG/Utilities/SimplePhaseSpace.h"
-#include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "ThePEG/Handlers/LuminosityFunction.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
 
@@ -43,106 +39,62 @@
 
 using namespace Herwig;
 
-/** Typedef for the MPISampler class.*/
-typedef Ptr< MPISampler >::transient_pointer tMPISamplerPtr;
-
 MPIHandler::MPIHandler()
-  : theBinStrategy(2), theAlgorithm(2) {}
+  : theAlgorithm(2) {}
 
 MPIHandler::MPIHandler(const MPIHandler & x)
-  : Interfaced(x), LastXCombInfo<>(x), 
-    theSampler(x.theSampler), theHandler(x.theHandler), 
-    theCuts(x.theCuts), theSubProcesses(x.theSubProcesses),
-    theXCombs(x.theXCombs), theXSecs(x.theXSecs),
-    theBinStrategy(x.theBinStrategy), theMEXMap(x.theMEXMap),
-    theMaxDims(x.theMaxDims), theMultiplicities(x.theMultiplicities),
+  : Interfaced(x), 
+    theHandler(x.theHandler), theSubProcesses(x.theSubProcesses),
+    theCuts(x.theCuts), theProcessHandlers(x.theProcessHandlers),
+    theMultiplicities(x.theMultiplicities),
     theAlgorithm(x.theAlgorithm), theInvRadius(x.theInvRadius) {}
 
 
 MPIHandler::~MPIHandler() {}
 
+
+void MPIHandler::doinitrun() {
+  Interfaced::doinitrun();
+}
+
+void MPIHandler::dofinish() {
+  Interfaced::dofinish();
+  if( beamOK() )//still have to check wether MPI is ON or OFF
+    statistics("UE.out");
+}
+
+
 void MPIHandler::initialize() {
   
-  Energy maxEnergy = lumiFn().maximumCMEnergy();
+  theHandler = generator()->currentEventHandler(); 
+  //stop if the EventHandler is not present:
+  assert(theHandler);
 
-  xCombs().clear();
-  xSecs().clear();
-
-  cuts()->initialize(sqr(maxEnergy), lumiFn().Y());
-
-  for ( SubHandlerList::const_iterator sit = subProcesses().begin();
-        sit != subProcesses().end(); ++sit ) {
-
-    CutsPtr kincuts = (**sit).cuts()? (**sit).cuts(): cuts();
-    if ( (**sit).cuts() ) kincuts->initialize(sqr(maxEnergy), lumiFn().Y());
-    PExtrPtr pextract = (**sit).pExtractor();
-
-    // Use an empty ckkw handler for the additional interactions:
-    tCascHdlPtr ckkw = tCascHdlPtr();
-
-    PartonPairVec vpc = pextract->getPartons(maxEnergy, incoming(), *kincuts);
-
-    // The last parton bin pair was in fact the bins corresponding to
-    // the incoming particles, so we remove them, but save them to
-    // keep them referenced.
-    PBPair orig = vpc.back();
-    vpc.pop_back();
-
-    for ( PartonPairVec::iterator ppit = vpc.begin();
-          ppit != vpc.end(); ++ppit )
-      for ( MEVector::const_iterator meit = (**sit).MEs().begin();
-            meit != (**sit).MEs().end(); ++meit )
-	addME(maxEnergy, *sit, pextract, kincuts, ckkw, *meit, *ppit);
+  //check if MPI is wanted
+  if( !beamOK() ){
+    generator()->log() << "You have requested multiple parton-parton scattering,\n"
+		       << "but the model is not forseen for the setup you chose.\n" 
+		       << "Events will be produced without MPI.\n";
+    return;
   }
 
-  xSecs().resize(xCombs().size());
 
-  theMaxDims.clear();
-  switch ( binStrategy() ) {
-  case 0: {
-    theMaxDims.push_back(0);
-    for ( int i = 0, N = xCombs().size(); i < N; ++i )
-      theMaxDims[0] = max(theMaxDims[0], xCombs()[i]->nDim());
-    break;
-  }
-  case 1: {
-    for ( int i = 0, N = xCombs().size(); i < N; ++i )
-      theMEXMap[xCombs()[i]->matrixElement()].push_back(xCombs()[i]);
-    MEXMap::const_iterator mei = theMEXMap.begin();
-    for ( int i = 0, N = theMEXMap.size(); i < N; ++i, ++mei) {
-      theMaxDims.push_back(0);
-      for ( int j = 0, M = mei->second.size(); j < M; ++j )
-        theMaxDims[i] = max(theMaxDims[i], mei->second[j]->nDim());
-    }
-    break;
-  }
-  case 2: {
-    for ( int i = 0, N = xCombs().size(); i < N; ++i )
-      theMaxDims.push_back(xCombs()[i]->nDim());
-    break;
-  }
+  if( subProcesses().size() != cuts().size() ) 
+    throw Exception() << "MPIHandler::each SubProcess needs a Cuts Object"
+		      << "ReferenceVectors are not equal in size"
+		      << Exception::runerror;
+
+  for(unsigned int i=0; i<cuts().size(); i++){
+    theProcessHandlers.push_back(new_ptr(ProcessHandler()));
+    processHandlers().back()->initialize(subProcesses()[i], 
+					 cuts()[i], theHandler);
   }
 
-  tMPISamplerPtr smplr = dynamic_ptr_cast<tMPISamplerPtr>( sampler() );
-  smplr->setMPIHandler(this);
-  smplr->initialize();
 
-  for ( int i = 0, N = xCombs().size(); i < N; ++i )
-    xCombs()[i]->reset();
+  for(unsigned int i=0; i<cuts().size(); i++)
+    processHandlers()[i]->initrun();
 
-  double weight(0);
-  //sample N PSpoints to get an estimate of the xsec
-  for(unsigned int i=0; i<1000; i++){
-    weight = sampler()->generate();
-    tStdXCombPtr lastXC = select(sampler()->lastBin(), weight);
-    weight /= lastXC->matrixElement()->preWeight();
-  }
-
-  ofstream file;
-  if(Algorithm()==0) file.open("UE.out");
-  Stat tot;
-  statistics(file, tot);
-
+  /*
   if(Algorithm()==0){
   
     //check out the eikonalization -1=inelastic, -2=total xsec
@@ -168,241 +120,31 @@ void MPIHandler::initialize() {
     file.close();
   }
   
-  //now calculate the indivudual Probabilities
+  */
+
+
+  //now calculate the individual Probabilities
   XSVector UEXSecs;
-  UEXSecs.push_back(tot.xSec());
-  //  UEXSecs.push_back(99*millibarn);
+  UEXSecs.push_back(processHandlers()[0]->integratedXSec());
+
+  cerr << UEXSecs[0]/nanobarn << endl;
   Probs(UEXSecs);
   UEXSecs.clear();
 
 }
 
-void MPIHandler::
-addME(Energy maxEnergy, tSubHdlPtr sub, tPExtrPtr extractor, tCutsPtr cuts,
-      tCascHdlPtr ckkw, tMEPtr me, const PBPair & pBins) {
 
-  typedef MEBase::DiagramVector DiagramVector;
-  typedef map<string,DiagramVector> DiagramMap;
-  cPDPair pin(pBins.first->parton(), pBins.second->parton());
-  DiagramVector diag = me->diagrams();
-  DiagramMap tdiag;
-  DiagramMap tmdiag;
-  for ( int i = 0, N = diag.size(); i < N; ++i ) {
-    if ( diag[i]->partons()[0] == pin.first &&
-         diag[i]->partons()[1] == pin.second )
-      tdiag[diag[i]->getTag()].push_back(diag[i]);
-    if ( diag[i]->partons()[0] == pin.second &&
-         diag[i]->partons()[1] == pin.first )
-      tmdiag[diag[i]->getTag()].push_back(diag[i]);
+void MPIHandler::statistics(string os) const {
+  ofstream file;
+  file.open(os.c_str());
+
+  for(unsigned int i=0; i<cuts().size(); i++){
+    Stat tot;
+    file << "Process " << i << ":\n";
+    processHandlers()[i]->statistics(file, tot);
+    file << "\n";
   }
 
-  bool mirror = false;
-  if ( ( mirror = tdiag.empty() ) ) tdiag = tmdiag;
-  for ( DiagramMap::iterator dit = tdiag.begin(); dit != tdiag.end(); ++dit ) {
-
-    //todo: hope that it is no problem that I take the EventHandler here and not the MPIHandler:
-    StdXCombPtr xcomb =
-      new_ptr(StandardXComb(maxEnergy, incoming(), eventHandler(), 
-			    sub, extractor, ckkw, pBins, cuts, me, dit->second, mirror));
-
-    if ( xcomb->checkInit() ) xCombs().push_back(xcomb);
-
-    else generator()->logWarning( 
-      InitError() << "The matrix element '"
-      << xcomb->matrixElement()->name() << "' cannot generate the diagram '"
-      << dit->first << "' when used together with the parton extractor '"
-      << xcomb->pExtractor()->name()
-      << "'. The corresponding diagram is switched off." << Exception::warning);
-  }
-}
-
-tStdXCombPtr MPIHandler::select(int bin, double weight) {
-
-  int i = upper_bound(xSecs().begin(), xSecs().end(), UseRandom::rnd()*xSecs().back())
-    - xSecs().begin();
-  tStdXCombPtr lastXC;
-  switch ( binStrategy() ) {
-  case 0:
-    lastXC = xCombs()[i];
-    break;
-  case 1: {
-    MEXMap::iterator mei = theMEXMap.begin();
-    for ( int j = 0; j < bin; ++j) ++mei;
-    lastXC = mei->second[i];
-    break;
-  }
-  case 2:
-    lastXC = xCombs()[bin];
-    break;
-  }
-  // clean up the old XComb object before switching to a new one
-  if ( theLastXComb && theLastXComb != lastXC ) theLastXComb->clean();
-  theLastXComb = lastXC;
-
-  lastXC->select(weight);
-  lastXC->accept();
-  lastXC->matrixElement()->setXComb(lastXC);
-  return lastXC;
-}
-
-
-CrossSection MPIHandler::
-dSigDR(const pair<double,double> ll, Energy2 maxS,
-       int ibin, int nr, const double * r) {
-
-  PPair inc = make_pair(incoming().first->produceParticle(),
-                        incoming().second->produceParticle());
-  SimplePhaseSpace::CMS(inc, maxS);
-
-  XVector xv;
-  switch ( binStrategy() ) {
-  case 0:
-    xv = xCombs();
-    break;
-  case 1: {
-    MEXMap::iterator mei = theMEXMap.begin();
-    for ( int i = 0; i < ibin; ++i) ++mei;
-    xv = mei->second;
-    break;
-  }
-  case 2:
-    xv = XVector(1, xCombs()[ibin]);
-    break;
-  }
-
-  xSecs().resize(xv.size());
-  for ( int i = 0, N = xv.size(); i < N; ++i ) xv[i]->prepare(inc);
-  CrossSection sum = 0.0*nanobarn;
-  for ( int i = 0, N = xv.size(); i < N; ++i )
-    xSecs()[i] = ( sum += xv[i]->dSigDR(ll, nr, r) );
-
-  return sum;
-}
-
-
-CrossSection MPIHandler::dSigDR(const vector<double> & r) {
-  double jac = 1.0;
-  pair<double,double> ll = lumiFn().generateLL(&r[0], jac);
-  Energy2 maxS = sqr(lumiFn().maximumCMEnergy())/exp(ll.first + ll.second);
-  int bin = sampler()->lastBin();
-  CrossSection x = jac*lumiFn().value(incoming(), ll.first, ll.second)
-    *dSigDR(ll, maxS, bin, nDim(bin) - lumiDim(), &r[lumiDim()]);
-  return x;
-}
-
-int MPIHandler::nBins() const {
-  switch ( binStrategy() ) {
-  case 0: return 1;
-  case 1: return theMEXMap.size();
-  case 2: return xCombs().size();
-  }
-  return -1;
-}
-
-void MPIHandler::doinitrun() {
-  
-  Interfaced::doinitrun();
-  sampler()->initrun();
-  theHandler = generator()->currentEventHandler(); 
-  //stop if the EventHandler is not present:
-  assert(theHandler);
-}
-
-
-void MPIHandler::statistics(ostream & os, Stat & tot) const {
-
-  if ( statLevel() == 0 ) return;
-  map<cPDPair, Stat> partonMap;
-  map<MEPtr, Stat> meMap;
-  map<PExtrPtr, Stat> extractMap;
-  //  Stat tot;
-
-  for ( int i = 0, N = xCombs().size(); i < N; ++i ) {
-    const StandardXComb & x = *xCombs()[i];
-    Stat s;
-    s = Stat(x.stats().attempts(), x.stats().accepted(),
-             x.stats().sumWeights(), sampler()->integratedXSec(),
-             sampler()->sumWeights());
-    partonMap[x.partons()] += s;
-    meMap[x.matrixElement()] += s;
-    extractMap[x.pExtractor()] += s;
-    tot += s;
-  }
-
-  //if Algorithm != 0: output makes no sense:
-  if(Algorithm() != 0) return;
-
-  string line = "======================================="
-    "=======================================\n";
-
-  if ( tot.accepted <= 0 ) {
-    os << line << "No events generated by event handler '" << name() << "'."
-       << endl;
-    return;
-  }
-
-  os << line << "Statistics for event handler \'" << name() << "\':\n"
-     << "                                       "
-     << "generated    number of    Cross-section\n"
-     << "                                       "
-     << "   events     attempts             (nb)\n";
-
-  os << line << "Total:" << setw(42) << tot.accepted << setw(13)
-     << tot.attempted << setw(17) << tot.xSec()/nanobarn << endl
-     << line;
-
-  if ( statLevel() == 1 ) return;
-
-  os << "Per matrix element breakdown:\n";
-  for ( map<MEPtr, Stat>::iterator i = meMap.begin();
-        i != meMap.end(); ++i ) {
-    string n = i->first->name();
-    n.resize(37, ' ');
-    os << n << setw(11) << i->second.accepted << setw(13)
-       << i->second.attempted << setw(17) << i->second.xSec()/nanobarn << endl;
-  }
-  os << line;
-
-  if ( statLevel() == 2 ) return;
-
-  os << "Per parton extractor breakdown:\n";
-  for ( map<PExtrPtr, Stat>::iterator i = extractMap.begin();
-        i != extractMap.end(); ++i ) {
-    string n = i->first->name();
-    n.resize(37, ' ');
-    os << n << setw(11) << i->second.accepted << setw(13)
-       << i->second.attempted << setw(17) << i->second.xSec()/millibarn << endl;
-  }
-  os << line;
-
-  os << "Per incoming partons breakdown:\n";
-  for ( map<cPDPair, Stat>::iterator i = partonMap.begin();
-        i != partonMap.end(); ++i ) {
-    string n = i->first.first->PDGName() + " " + i->first.second->PDGName();
-    n.resize(37, ' ');
-    os << n << setw(11) << i->second.accepted << setw(13)
-       << i->second.attempted << setw(17) << i->second.xSec()/millibarn << endl;
-  }
-  os << line;
-
-  if ( statLevel() == 3 ) return;
-
-  os << "Detailed breakdown:\n";
-  double xsectot = sampler()->integratedXSec()/
-    (sampler()->sumWeights()*nanobarn);
-  for ( int i = 0, N = xCombs().size(); i < N; ++i ) {
-    const StandardXComb & x = *xCombs()[i];
-    os << "(" << x.pExtractor()->name() << ") "
-       << x.partons().first->PDGName() << " "
-       << x.partons().second->PDGName()
-
-       << " (" << x.matrixElement()->name() << " "
-       << x.lastDiagram()->getTag() << ") " << endl
-       << setw(48) << x.stats().accepted() << setw(13) << x.stats().attempts()
-       << setw(17) << x.stats().sumWeights()*xsectot << endl;
-  }
-
-  os << line;
 }
 
 void MPIHandler::Probs(XSVector UEXSecs) {
@@ -413,6 +155,14 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 
   //currently only one UE process is possible so check that.
   assert(UEXSecs.size() == 1);
+  ofstream file;
+  file.open("probs.test");
+  file << "hard process xsec: "
+       << dynamic_ptr_cast<tStdEHPtr>(eventHandler())->integratedXSec()/millibarn
+       << endl;             
+
+  file << "UE process[0] xsec: " 
+       << UEXSecs.front()/millibarn << endl; 
 
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
@@ -432,15 +182,47 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       AvgN += P*(i-1);
       //store the probability
       theMultiplicities.insert(P, i-1);
-
+      file << i-1 << " " << P << endl;
       i++;
     } while ( (i < 100) && (i < 5 || P > 1.e-15) );
-
+    file.close();
   }
   
 }
 
-double MPIHandler::factorial (unsigned int n) {
+
+// calculate the integrand
+Length Eikonalization::operator() (Length b) const {
+  //fac is just: db^2=fac*db despite that large number
+  unsigned int n(0);
+  Length fac(Constants::twopi*b);
+  CrossSection sigma(theUneikXSec);
+  InvArea Ab(theHandler->OverlapFunction(b));
+
+  //total cross section wanted
+  if(theoption == -2) return 2 * fac * ( 1 - exp(-Ab*sigma / 2.) );
+
+  //inelastic cross section
+  if(theoption == -1) return   fac * ( 1 - exp(-Ab*sigma) );
+
+  //P_n*sigma. Described in MPIHandler.h
+  if(theoption > 0){
+    n=theoption;
+    if(theHandler->theAlgorithm > 0)
+      return fac / theHandler->factorial(n-1) * pow(Ab*sigma, double(n)) 
+	* exp(-Ab*sigma);
+    else
+      return fac / theHandler->factorial(n) * pow(Ab*sigma, double(n)) 
+	* exp(-Ab*sigma);
+  }else{
+    throw Exception() << "Parameter theoption in Struct Eikonalization in " 
+		      << "MPIHandler.cc has not allowed value"
+                      << Exception::runerror;
+    return 0.0*meter;
+  }
+}
+
+double MPIHandler::factorial (unsigned int n) const {
   static unsigned int max(100);
   double f[] = {1.,1.,2.,6.,24.,120.,720.,5040.,40320.,362880.,3.6288e6,
 		3.99168e7,4.790016e8,6.2270208e9,8.71782912e10,1.307674368e12,
@@ -480,51 +262,25 @@ double MPIHandler::factorial (unsigned int n) {
     return f[n];
 }
 
-// calculate the integrand
-Length Eikonalization::operator() (Length b) const {
-  //fac is just: db^2=fac*db despite that large number
-  unsigned int n(0);
-  Length fac(Constants::twopi*b);
-  CrossSection sigma(theUneikXSec);
-  InvArea Ab(theHandler->OverlapFunction(b));
-
-  //total cross section wanted
-  if(theoption == -2) return 2 * fac * ( 1 - exp(-Ab*sigma / 2.) );
-
-  //inelastic cross section
-  if(theoption == -1) return   fac * ( 1 - exp(-Ab*sigma) );
-
-  //P_n*sigma. Described in MPIHandler.h
-  if(theoption > 0){
-    n=theoption;
-    if(theHandler->theAlgorithm > 0)
-      return fac / theHandler->factorial(n-1) * pow(Ab*sigma, double(n)) 
-	* exp(-Ab*sigma);
-    else
-      return fac / theHandler->factorial(n) * pow(Ab*sigma, double(n)) 
-	* exp(-Ab*sigma);
-  }else{
-    throw Exception() << "Parameter theoption in Struct Eikonalization in " 
-		      << "MPIHandler.cc has not allowed value"
-                      << Exception::runerror;
-    return 0.0*meter;
-  }
+InvArea MPIHandler::OverlapFunction(Length b) const {
+  InvLength mu = sqrt(theInvRadius)/hbarc;
+  return (sqr(mu)/96/Constants::pi)*pow(mu*b, 3)*(gsl_sf_bessel_Kn(3, mu*b));
 }
 
+double MPIHandler::poisson(Length b, CrossSection sigma, unsigned int N) const {
+  return pow(OverlapFunction(b)*sigma, (double)N)/factorial(N)
+    *exp(-OverlapFunction(b)*sigma);
+}
 
 void MPIHandler::persistentOutput(PersistentOStream & os) const {
-  os << theSubProcesses << theCuts << theLastXComb
-     << theXCombs << ounit(theXSecs, nanobarn)
-     << theBinStrategy << theMaxDims << theMEXMap
-     << theMultiplicities << theSampler << theHandler
+  os << theMultiplicities << theHandler
+     << theSubProcesses << theCuts << theProcessHandlers
      << theAlgorithm << ounit(theInvRadius, GeV2);
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
-  is >> theSubProcesses >> theCuts >> theLastXComb
-     >> theXCombs >> iunit(theXSecs, nanobarn)
-     >> theBinStrategy >> theMaxDims >> theMEXMap
-     >> theMultiplicities >> theSampler >> theHandler
+  is >> theMultiplicities >> theHandler
+     >> theSubProcesses >> theCuts >> theProcessHandlers
      >> theAlgorithm >> iunit(theInvRadius, GeV2);
 }
 
@@ -536,23 +292,16 @@ void MPIHandler::Init() {
   static ClassDocumentation<MPIHandler> documentation
     ("There is soon documentation for the MPIHandler class");
 
-  static Reference<MPIHandler,SamplerBase> interfaceSampler
-    ("Sampler",
-     "The phase space sampler responsible for generating phase space"
-     "points according to the cross section given by this handler",
-     &MPIHandler::theSampler, false, false, true, true);
-
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",
      "The list of sub-process handlers used in this EventHandler. ",
-     &MPIHandler::theSubProcesses, 0, false, false, true, false);
+     &MPIHandler::theSubProcesses, -1, false, false, true, false, false);
 
-  static Reference<MPIHandler,Cuts> interfaceCuts
+  static RefVector<MPIHandler,Cuts> interfaceCuts
     ("Cuts",
-     "Common kinematical cuts for this MultipleInteractionHandler. These cuts "
-     "should not be ovveridden in individual sub-process handlers.",
-     &MPIHandler::theCuts, false, false, true, false);
-
+     "List of cuts used for the corresponding list of subprocesses. These cuts "
+     "should not be overidden in individual sub-process handlers.",
+     &MPIHandler::theCuts, -1, false, false, true, false, false);
 
   static Parameter<MPIHandler,Energy2> interfaceInvRadius
     ("InvRadius",
@@ -588,37 +337,4 @@ void MPIHandler::Init() {
      "Signal process has a much smaller cross section "
      "than UE and is a different process.",
      2);
-
-  static Switch<MPIHandler,int> interfaceBinStrategy
-    ("BinStrategy",
-     "The strategy to be used when sampling different ThePEG::XComb "
-     "objects. An ThePEG::XComb objet represents a pair of incoming "
-     "parton types as defined by a ThePEG::PartonExtractor and a "
-     "matrix element.",
-     &MPIHandler::theBinStrategy, 2, false, false);
-
-  static SwitchOption interfaceBinStrategy0
-    (interfaceBinStrategy,
-     "AllAtOnce",
-     "All bins are sampled together.",
-     0);
-
-  static SwitchOption interfaceBinStrategy1
-    (interfaceBinStrategy,
-     "PerME",
-     "All bins which have the same matrix element object are sampled together.",
-     1);
-
-  static SwitchOption interfaceBinStrategy2
-    (interfaceBinStrategy,
-     "Individual",
-     "All bins are sampled individually.",
-     2);
-
-
-}
-
-InvArea MPIHandler::OverlapFunction(Length b) {
-  InvLength mu = sqrt(theInvRadius)/hbarc;
-  return (sqr(mu)/96/Constants::pi)*pow(mu*b, 3)*(gsl_sf_bessel_Kn(3, mu*b));
 }
