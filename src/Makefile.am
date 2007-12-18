@@ -1,4 +1,4 @@
-0;184;0cSUBDIRS = defaults
+SUBDIRS = defaults
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
