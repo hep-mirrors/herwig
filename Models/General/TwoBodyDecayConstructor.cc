@@ -19,6 +19,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
@@ -263,7 +264,7 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
 	"," + pb->PDGName() + ";";
       dm = eg->findDecayMode(tag);
     }
-    if( !dm && _createmodes ) {
+    if( _createmodes && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = eg->preinitCreateDecayMode(tag);
       if(ndm) {
 	eg->preinitInterface(ndm, "Decayer", "set",
@@ -301,6 +302,7 @@ void TwoBodyDecayConstructor::setBranchingRatio(tDMPtr dm, Energy pwidth) {
   if( !modes.empty() ) currentwidth = parent->width(); 
   Energy newWidth = currentwidth + pwidth;
   parent->width(newWidth);
+  parent->widthCut(5.*newWidth);
   //need to reweight current branching fractions if there are any
   for(Selector<tDMPtr>::const_iterator dit = modes.begin(); 
       dit != modes.end(); ++dit) {

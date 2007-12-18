@@ -287,6 +287,7 @@ void SusyBase::readDecay(ifstream & ifs,
     return;
   }
   inpart->width(width*GeV);
+  inpart->widthCut(5.*width*GeV);
   string tag = "decaymode " + inpart->PDGName() + "->";
   string line;
   while(getline(ifs, line)) {
@@ -390,6 +391,7 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035;
     ids[4] = 1000045; 
+    matrix->setIds(ids);
   }
   else if(name == "umix") {
     vector<long> ids(2);
