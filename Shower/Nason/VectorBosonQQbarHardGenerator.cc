@@ -284,8 +284,9 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   
   Energy pt_min = 0.3*GeV; //min(_mu_q,_mu_qbar);  
   Energy pt_max = 0.5*sqrt(_s);
-  double y_min  = -8.;
-  double y_max  =  8.;
+// Define over valued y_max & y_min according to the associated pt_min cut.
+  double y_max  =  acosh(pt_max/pt_min);
+  double y_min  = -acosh(pt_max/pt_min);
   double wgt;
   bool reject;
   Energy last_pt(pt_max);
@@ -300,7 +301,8 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     _x2 = 1.-_pt/sqrt(_s)*exp( _y);
 
     last_pt = _pt;
-
+// KH - maybe we should get inRange to check that we're in the fully massive
+// phase space instead of just the upper right triangle in x1, x2 plane?
     if(!inRange()) continue;
 
 
@@ -321,6 +323,7 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     }
   } while (reject);
   
+// KH What are z and _ktild in terms of qtilde and z in "new variables" paper?
   if(UseRandom::rnd()<sqr(_x1)/(sqr(_x1)+sqr(_x2))) {
     _iemitter   = 1;
     _ispectator = 0;
@@ -351,7 +354,7 @@ double VectorBosonQQbarHardGenerator::getResult() {
   double res = 4. / 3. / Constants::pi * _pt / _s *
     ( sqr ( _x1 ) + sqr( _x2 ) ) / ( 1. - _x1 ) / ( 1. -_x2 ) * GeV;
   //res *= _alphaS->value( sqr( _pt ) );
-  // KMH - shouldn't we use the ACTUAL pt inside alphaS instead i.e. 
+  // KH - shouldn't we use the ACTUAL pt inside alphaS instead i.e. 
   double xfact2 = _x1>_x2 ? sqr(_x1) : sqr(_x2);
   res *= _alphaS->value( sqr( _pt )*(_x1+_x2-1.)/xfact2 );
   return res;
@@ -371,6 +374,7 @@ LorentzRotation VectorBosonQQbarHardGenerator::getTransf() {
 
 void VectorBosonQQbarHardGenerator::azimuthal() {
   using Constants::pi;
+// KH - Check no emission events - they gave nans before when in azimuthal().
   _r.setRotate( UseRandom::rnd() * Constants::twopi, 
 	_quark[_ispectator].vect().unit());
   _quark[_iemitter] = _r*_quark[_iemitter];
@@ -382,6 +386,7 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * Constants::twopi;
 
+//KH - remind me to check these.
   _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
   _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
   _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
