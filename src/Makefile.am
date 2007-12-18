@@ -1,4 +1,4 @@
-SUBDIRS = defaults
+0;184;0cSUBDIRS = defaults
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
@@ -43,7 +43,7 @@ CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
   versionstring.h version.tmp \
   version.tmp.new multi.test \
-  *.output
+  *.output probs.test
 
 ## checking targets ##
 
