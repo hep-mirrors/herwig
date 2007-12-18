@@ -163,6 +163,9 @@ public:
    *
    * [run prefix] [number of runs] [observable name] \
    * {normalization mode : none, unity, xsec, data}
+   *
+   * If observable = *, all present observables are
+   * combined.
    */
   string combine (string);
 

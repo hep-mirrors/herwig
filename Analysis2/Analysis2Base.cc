@@ -495,7 +495,13 @@ string Analysis2Base::combine (string argstring) {
     else normMode = FromMap;
   }
 
-  combineObservable(prefix,name,nruns,normMode);
+  if (name == "*") {
+    for (map<string,Histogram2Ptr>::iterator obs = _histograms.begin();
+	 obs != _histograms.end(); ++obs)
+      combineObservable(prefix,obs->first,nruns,normMode);
+  }
+  else
+    combineObservable(prefix,name,nruns,normMode);
 
   return "";
   
