@@ -273,10 +273,12 @@ void ProcessHandler::doinitrun() {
     weight = sampler()->generate();
     tStdXCombPtr lastXC = select(sampler()->lastBin(), weight);
   }
-
 }
 
 CrossSection ProcessHandler::integratedXSec() const {
+  if ( sampler()->integratedXSec() == 0.0*nanobarn )
+    return sampler()->maxXSec();
+
   Stat tot;
   for ( int i = 0, N = xCombs().size(); i < N; ++i ) {
     const StandardXComb & x = *xCombs()[i];

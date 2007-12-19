@@ -125,9 +125,17 @@ ShowerHandler::ShowerHandler() :
 
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
-  theMPIHandler->initrun();
-
-  if(IsMPIOn()) theMPIHandler->initialize();
+  //can't use IsMPIOn here, because the EventHandler is not set at that stage
+  if(theMPIHandler) getMPIHandler()->initrun();
+  //check if the old switch is used
+  if( theMPIHandler && !theMPIOnOff ){
+    throw Exception() << "WARNING: You used the outdated interface switch\n"
+                      << "ShowerHandler:MPIOnOff to switch MPI on or off.\n"
+                      << "The supported way of switching MPI off is setting the\n"
+                      << "reference ShowerHandler:MPIHandler to NULL." 
+                      << "Otherwise MPI is on\n"
+                      << Exception::runerror;
+  }
 
   if (_useCKKW) {
     _reweighter->initialize();
@@ -184,11 +192,10 @@ void ShowerHandler::Init() {
   static Reference<ShowerHandler,MPIHandler> interfaceMPIHandler
     ("MPIHandler",
      "The object that admisinsters all additional semihard partonic scatterings.",
-     &ShowerHandler::theMPIHandler, false, false, true, false);
-  
+     &ShowerHandler::theMPIHandler, false, false, true, true);
   
   static Switch<ShowerHandler,bool> interfaceMPIOnOff
-    ("MPI", "flag to switch multi-parton interactions on or off",
+    ("MPI", "Flag is outdated. Kept for backward compatibility",
      &ShowerHandler::theMPIOnOff, 1, false, false);
 
   static SwitchOption interfaceMPIOnOff0                             
@@ -274,7 +281,7 @@ void ShowerHandler::cascade() {
                       << Exception::eventerror;   
   }
 
-  if( !IsMPIOn() || !theMPIHandler->beamOK() ) {
+  if( !IsMPIOn() ) {
     theRemDec->finalize();
     return;
   }
@@ -286,15 +293,15 @@ void ShowerHandler::cascade() {
   //resetPDFs(newpdf);
 
   int veto(1);
-  unsigned int max(theMPIHandler->multiplicity());
+  unsigned int max(getMPIHandler()->multiplicity());
   for(i=0; i<max; i++){      
     //generate PSpoint
-    lastXC = theMPIHandler->generate();
+    lastXC = getMPIHandler()->generate();
     sub = lastXC->construct();
 
     //If Algorithm=1 additional scatters of the signal type with pt > ptmin have to be vetoed
     //with probability 1/(m+1), where m is the number of occurances in this event
-    if( theMPIHandler->Algorithm() == 1 ){
+    if( getMPIHandler()->Algorithm() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
