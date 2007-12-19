@@ -109,8 +109,8 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   }
 
   // calculate the rapidity of the boson
-  _yb = 0.5 * log( ( boson->momentum().e() + boson->momentum().z() ) /
-	      ( boson->momentum().e() - boson->momentum().z() ) );
+  _yb = 0.5 * log((boson->momentum().e()+boson->momentum().z())/
+	          (boson->momentum().e()-boson->momentum().z()));
   // _yb *= _quarkplus ? 1. : -1.;
   _mass=boson->mass();
   // we are assuming quark first, swap order to ensure this

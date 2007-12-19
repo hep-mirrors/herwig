@@ -98,14 +98,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     << "VectorBosonQQbarHardGenerator::generateHardest()" 
     << Exception::runerror;
   
-  // Get the nominal quark mass and the cut-offs: the gluon mass (Qg) for  
-  // each shower and the effective quark mass in each shower (mu).
-  _n_mq    = QProgenitor->progenitor()->nominalMass();
-  _n_mqbar = QbarProgenitor->progenitor()->nominalMass();
-  _Qg_q    = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),_n_mq);
-  _Qg_qbar = qbar_sudakov->kinematicCutOff(qbar_sudakov->kinScale(),_n_mqbar);
-  _mu_q    = max(_Qg_q,_n_mq);
-  _mu_qbar = max(_Qg_qbar,_n_mqbar);
+  // Get all the gluon mass assuming massless quarks: 
+  _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
 
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent():
@@ -164,8 +158,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 	
   // Connect the particles with the branchings in the NasonTree
   // and set the maximum pt for the radiation
-  double xfact2 = _x1>_x2 ? sqr(_x1) : sqr(_x2);
-  Energy ptveto = _pt *sqrt((_x1+_x2-1.)/xfact2);
+  double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
+  Energy ptveto = _pt *sqrt((_xb+_xc-1.)/xfact2);
   QProgenitor->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
   nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
@@ -184,11 +178,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
   // Calculate partonic event shapes from hard emission event?
-  double thrust = _iemitter == 0 ? _x1 : _x2;
+  double thrust = _iemitter == 0 ? _xb : _xc;
   _ptplot.push_back(_pt/GeV);
   _yplot.push_back(_y);
-  _x1plot.push_back(_x1);
-  _x2plot.push_back(_x2);
+  _xbplot.push_back(_xb);
+  _xcplot.push_back(_xc);
   (*_hthrust) += 1.-thrust;
   (*_hthrustlow) += 1.-thrust;
   (*_hy) += _y;
@@ -282,7 +276,7 @@ void VectorBosonQQbarHardGenerator::doinitrun() {
 
 Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   
-  Energy pt_min = 0.3*GeV; //min(_mu_q,_mu_qbar);  
+  Energy pt_min = _Qg;  
   Energy pt_max = 0.5*sqrt(_s);
 // Define over valued y_max & y_min according to the associated pt_min cut.
   double y_max  =  acosh(pt_max/pt_min);
@@ -297,12 +291,10 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     _pt = last_pt*pow(UseRandom::rnd(),1./(prefactor*(y_max-y_min)));
     _y  = UseRandom::rnd()*(y_max-y_min)+y_min;
     
-    _x1 = 1.-_pt/sqrt(_s)*exp(-_y);
-    _x2 = 1.-_pt/sqrt(_s)*exp( _y);
+    _xb = 1.-_pt/sqrt(_s)*exp(-_y);
+    _xc = 1.-_pt/sqrt(_s)*exp( _y);
 
     last_pt = _pt;
-// KH - maybe we should get inRange to check that we're in the fully massive
-// phase space instead of just the upper right triangle in x1, x2 plane?
     if(!inRange()) continue;
 
 
@@ -323,20 +315,21 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     }
   } while (reject);
   
-// KH What are z and _ktild in terms of qtilde and z in "new variables" paper?
-  if(UseRandom::rnd()<sqr(_x1)/(sqr(_x1)+sqr(_x2))) {
+// _z and _ktild are the z & \tilde{kappa} variables in the new variables
+// paper, for the final-final colour connnection with massless partons (b=c=0).
+  if(UseRandom::rnd()<sqr(_xb)/(sqr(_xb)+sqr(_xc))) {
     _iemitter   = 1;
     _ispectator = 0;
-    _z = (_x2+_x1-1.)/_x1;
-    _ktild = (1.-_x1)/_z/(1.-_z); 
+    _z = (_xc+_xb-1.)/_xb; 
+    _ktild = (1.-_xb)/_z/(1.-_z); 
   } else{
     _iemitter   = 0;
     _ispectator = 1;
-    _z = (_x1+_x2-1.)/_x2;
-    _ktild = (1.-_x2)/_z/(1.-_z);
+    _z = (_xb+_xc-1.)/_xc;
+    _ktild = (1.-_xc)/_z/(1.-_z);
   }
 
-  _k = sqrt(_z*_z*(1.-_z)*(1.-_z)*_ktild);
+  _k = _z*(1.-_z)*sqrt(_ktild);
      
   //construct vectors in com z frame
   constructVectors();
@@ -352,11 +345,11 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
 
 double VectorBosonQQbarHardGenerator::getResult() {
   double res = 4. / 3. / Constants::pi * _pt / _s *
-    ( sqr ( _x1 ) + sqr( _x2 ) ) / ( 1. - _x1 ) / ( 1. -_x2 ) * GeV;
+    ( sqr ( _xb ) + sqr( _xc ) ) / ( 1. - _xb ) / ( 1. -_xc ) * GeV;
   //res *= _alphaS->value( sqr( _pt ) );
   // KH - shouldn't we use the ACTUAL pt inside alphaS instead i.e. 
-  double xfact2 = _x1>_x2 ? sqr(_x1) : sqr(_x2);
-  res *= _alphaS->value( sqr( _pt )*(_x1+_x2-1.)/xfact2 );
+  double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
+  res *= _alphaS->value( sqr( _pt )*(_xb+_xc-1.)/xfact2 );
   return res;
 }
 

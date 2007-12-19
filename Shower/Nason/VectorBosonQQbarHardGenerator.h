@@ -142,7 +142,7 @@ private:
   void azimuthal();
 
   /** Returns the value of the radiative cross section (R(v,r)/B(v))
-   *for the current (_x1,_x2)
+   *for the current (_xb,_xc)
    */
   double getResult();
 
@@ -178,24 +178,15 @@ private:
   double _alphaS_max;  
 
   /**
-   *The dalitz variables (x1,x2)
+   *The dalitz variables (xb,xc)
    */
-  double _x1;
-  double _x2;
+  double _xb;
+  double _xc;
 
   /**
-   * Variables for the kinematic cut off and massive phase space (if required).
-   * _n_mq is the *nominal* mass of the quark.
-   * _n_mqbar is the *nominal* mass of the antiquark.
-   * _Qg is the Qg variable in the `new variables' paper, the "gluon mass".
-   * _mu is the mu variable in the `new variables' paper i.e. max(_Qg,_n_mq).
+   * The gluon mass (Q_g) i.e. the cut off on pt, assuming massless quarks.
    */
-  Energy _n_mq;
-  Energy _n_mqbar;
-  Energy _Qg_q;
-  Energy _Qg_qbar;
-  Energy _mu_q;
-  Energy _mu_qbar;
+  Energy _Qg;
 
   //  radiative variables (pt,y)
   double _y;
@@ -226,8 +217,8 @@ private:
    */
   std::vector<double> _ptplot;
   std::vector<double> _yplot;
-  std::vector<double> _x1plot;
-  std::vector<double> _x2plot;
+  std::vector<double> _xbplot;
+  std::vector<double> _xcplot;
 
   // The quark momenta
   vector<Lorentz5Momentum> _quark;
