@@ -1,15 +1,14 @@
 ##################################################
-# Common setup for the MSSM
+# Common setup for the NMSSM
 #
-# See LHC-MSSM.in or ILC-MSSM.in for example usage
+# See LHC-NMSSM.in or ILC-NMSSM.in for example usage
 #
 # This file does not contain anything that 
 # users need to touch. User settings are in 
-# ???-MSSM.in
+# ???-NMSSM.in
 #
 ###################################################
-
-# Create particle content
+# The NMSSM particle content
 cd /Herwig/Particles
 
 create ThePEG::ParticleData H0 
@@ -25,6 +24,12 @@ create ThePEG::ParticleData H-
 setup H- -37 H- 300.0 5.759670 57.596710 0.0 -3 0 1 0
 defaultparticle H- 
 makeanti H+ H- 
+create ThePEG::ParticleData H30 
+setup H30 45 H30 300.0 8.428420 84.284160 0.0 0 0 1 0
+defaultparticle H30 
+create ThePEG::ParticleData A20 
+setup A20 46 A20 300.0 4.920260 49.202560 0.0 0 0 1 0
+defaultparticle A20
 create ThePEG::ParticleData ~d_L 
 setup ~d_L 1000001 ~d_L 500.0 1.0 10.0 0.0 -1 3 1 0
 defaultparticle ~d_L 
@@ -141,6 +146,9 @@ makeanti ~chi_2+ ~chi_2-
 create ThePEG::ParticleData ~gravitino 
 setup ~gravitino 1000039 ~gravitino 500.0 0.0 0.000010 0.0 0 0 4 1
 defaultparticle ~gravitino 
+create ThePEG::ParticleData ~chi_50
+setup ~chi_50 1000045 ~chi_50 500.0 1.0 10.0 0.0 0 0 2 0
+defaultparticle ~chi_50 
 create ThePEG::ParticleData ~d_R 
 setup ~d_R 2000001 ~d_R 500.0 1.0 10.0 0.0 -1 3 1 0
 defaultparticle ~d_R 
@@ -224,13 +232,12 @@ defaultparticle ~nu_tauR
 create ThePEG::ParticleData ~nu_tauRbar 
 setup ~nu_tauRbar -2000016 ~nu_tauRbar 500.0 0.0 0.000010 0.0 0 0 1 1
 defaultparticle ~nu_tauRbar 
-makeanti ~nu_tauR ~nu_tauRbar 
 
-# Set up directory and main model object
-mkdir /Herwig/NewPhysics/MSSM
-cd /Herwig/NewPhysics/MSSM
+# Main directory and object 
+mkdir /Herwig/NewPhysics/NMSSM
+cd /Herwig/NewPhysics/NMSSM
 
-create Herwig::MSSM Model HwSusy.so
+create Herwig::NMSSM Model HwNMSSM.so
 
 # SM couplings
 set Model:QCD/RunningAlphaS /Herwig/AlphaS
@@ -268,6 +275,13 @@ set Model:Vertex/SSWWH /Herwig/Vertices/BSM/MSSM_WWH
 set Model:Vertex/SSWHH /Herwig/Vertices/BSM/MSSM_WHH
 set Model:Vertex/HHH /Herwig/Vertices/BSM/MSSM_HHH
 set Model:Vertex/SSHGG /Herwig/Vertices/BSM/MSSM_HGG
+# NMSSM feynman rules
+set Model:Vertex/NMSSMFFH /Herwig/Vertices/BSM/NMSSM_FFH
+set Model:Vertex/NMSSMGOGOH /Herwig/Vertices/BSM/NMSSM_GOGOH
+set Model:Vertex/NMSSMHSS /Herwig/Vertices/BSM/NMSSM_HSS
+set Model:Vertex/NMSSMWHH /Herwig/Vertices/BSM/NMSSM_WHH
+set Model:Vertex/NMSSMWWH /Herwig/Vertices/BSM/NMSSM_WWH
+set Model:Vertex/NMSSMHHH /Herwig/Vertices/BSM/NMSSM_HHH
 
 # Set up the shower for the coloured objects
 cd /Herwig/Shower
@@ -302,9 +316,9 @@ insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
 
 cd /Herwig/NewPhysics
 # Set up the bsm framework
-set MSSM/Model:ModelGenerator NewModel
+set NMSSM/Model:ModelGenerator NewModel
 
 cd /Herwig/Generators
-# Choose MSSM over SM
-set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
-set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
+# Choose NMSSM over SM
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/NMSSM/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/NMSSM/Model

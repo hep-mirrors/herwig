@@ -23,7 +23,7 @@ read baryon_decays.in
 read boson_decays.in
 read lepton_decays.in
 read meson_decays.in
-read BSMDecays.in
+#read BSMDecays.in
 
 cd /Herwig/Hadronization
 # with new decays these should not be made by the hadronization
