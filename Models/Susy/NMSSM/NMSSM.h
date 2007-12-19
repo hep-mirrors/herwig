@@ -46,6 +46,22 @@ public:
    *  Superpotential \f$\kappa\f$ coupling
    */
   inline double kappa() const;
+
+  /**
+   *  The V.E.V of the extra singlet field scaled
+   * by \f$ lambda\f$, 
+   */
+  inline Energy lambdaVEV() const;
+  
+  /**
+   * Soft trilinear \f$S\H_2 H_1\f$ coupling
+   */
+  inline Energy trilinearLambda() const;
+
+  /**
+   * Soft cubic \f$S\f$ coupling
+   */
+  inline Energy trilinearKappa() const;
   //@}
 
 public:
@@ -74,6 +90,38 @@ public:
    */
   static void Init();
 
+public:
+
+  /**
+   * Pointer to the fermion-fermion-Higgs vertex
+   */
+  virtual inline tFFSVertexPtr vertexFFH() const;
+
+  /**
+   * Pointer to the two electroweak gauge boson Higgs vertex.
+   */
+  virtual inline tVVSVertexPtr vertexWWH() const;
+
+  /**
+   * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
+   */
+  virtual inline tVSSVertexPtr vertexWHH() const;
+
+  /**
+   * Pointer to the higgs coupling to a pair of gauginos
+   */
+  virtual inline tFFSVertexPtr vertexGOGOH() const;
+
+  /**
+   * Pointer to the triple higgs vertex
+   */
+  virtual inline tSSSVertexPtr vertexHHH() const;
+
+  /**
+   * Pointer to higgs-sfermion-sfermion vertex 
+   */
+  virtual inline tSSSVertexPtr vertexHSS() const;
+  
 protected:
 
   /**
@@ -137,6 +185,70 @@ private:
    *  Superpotential \f$\kappa\f$ coupling
    */
   double _kappa;
+
+  /**
+   * Soft trilinear \f$S\H_2 H_1\f$ coupling
+   */
+  Energy _theAlambda;
+
+  /**
+   * Soft cubic \f$S\f$ coupling
+   */
+  Energy _theAkappa;
+
+  /**
+   *  The V.E.V of the extra singlet field scaled
+   * by \f$ lambda\f$
+   */
+  Energy _lambdaVEV;
+  //@}
+
+  /** @name The NMSSM vertices.*/
+  //@{
+  /**
+   * The fermion-fermion higgs vertex.
+   */
+  FFSVertexPtr _ffhvertex;
+
+  /**
+   * The vector-vector-higgs vertex.
+   */
+  VVSVertexPtr _wwhvertex;
+  
+  /**
+   * The vector-higgs-higgs vertex
+   */
+  VSSVertexPtr _whhvertex;
+
+  /**
+   * The coupling of a pair of gauginos to the higgs 
+   */
+  FFSVertexPtr _gogohvertex;
+
+  /**
+   * The triple higgs coupling 
+   */
+  SSSVertexPtr _hhhvertex;
+
+  /**
+   * The higgs sfermion vertex 
+   */
+  SSSVertexPtr _hssvertex;
+
+  /**
+   * The neutralino-sfermion-fermion vertex 
+   */
+  FFSVertexPtr _nfsvertex;
+
+  /**
+   * The neutralino-neutralino-Z vertex 
+   */
+  FFVVertexPtr _nnzvertex;
+
+  /**
+   * The chargino-neutralino-W vertex 
+   */
+  FFVVertexPtr _cnwvertex;
   //@}
 };
 

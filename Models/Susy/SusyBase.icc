@@ -77,6 +77,21 @@ inline tGeneralSVVVertexPtr SusyBase::vertexHGG() const{
   return theSSHGGVertex;
 }
 
+inline tVSSVertexPtr SusyBase::vertexWHH() const {
+  return theWHHVertex;
+}
+
+inline tFFSVertexPtr SusyBase::vertexGOGOH() const {
+  return theGOGOHVertex;
+}
+
+inline tSSSVertexPtr SusyBase::vertexHHH() const {
+  return theHHHVertex;
+}
+
+inline tSSSVertexPtr SusyBase::vertexHSS() const {
+  return theHSFSFVertex;
+}
 
 }
 

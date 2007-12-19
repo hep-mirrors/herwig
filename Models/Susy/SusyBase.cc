@@ -30,7 +30,7 @@ void SusyBase::doinit() throw(InitException) {
   addVertex(theWSFSFVertex);
   addVertex(theNFSFVertex);
   addVertex(theGFSFVertex);
-  addVertex(theHSFSFVertex);
+  addVertex(vertexHSS());
   addVertex(theCFSFVertex);
   addVertex(theGSFSFVertex);
   addVertex(theGGSQSQVertex);
@@ -38,9 +38,9 @@ void SusyBase::doinit() throw(InitException) {
   addVertex(theNNZVertex);
   addVertex(theCCZVertex);
   addVertex(theCNWVertex);
-  addVertex(theGOGOHVertex);
-  addVertex(theWHHVertex);
-  addVertex(theHHHVertex);
+  addVertex(vertexGOGOH());
+  addVertex(vertexWHH());
+  addVertex(vertexHHH());
   StandardModel::doinit();
   //create fresh BSM info file so it can be appended to later
   //when decaymodes have been created

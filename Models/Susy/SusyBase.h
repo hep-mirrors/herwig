@@ -136,6 +136,26 @@ public:
    * Pointer to the MSSM effective higgs-gluon-gluon vertex
    */
   virtual inline tGeneralSVVVertexPtr vertexHGG() const;
+
+  /**
+   * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
+   */
+  virtual inline tVSSVertexPtr vertexWHH() const;
+
+  /**
+   * Pointer to the higgs coupling to a pair of gauginos
+   */
+  virtual inline tFFSVertexPtr vertexGOGOH() const;
+
+  /**
+   * Pointer to the triple higgs vertex
+   */
+  virtual inline tSSSVertexPtr vertexHHH() const;
+
+  /**
+   * Pointer to higgs-sfermion-sfermion vertex 
+   */
+  virtual inline tSSSVertexPtr vertexHSS() const;
   //@}
 
 protected:
@@ -231,7 +251,7 @@ protected:
    */
   inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const;
   //@}
-  
+
 protected:
 
   /** @name Clone Methods. */
