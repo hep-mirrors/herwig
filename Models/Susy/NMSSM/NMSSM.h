@@ -234,21 +234,6 @@ private:
    * The higgs sfermion vertex 
    */
   SSSVertexPtr _hssvertex;
-
-  /**
-   * The neutralino-sfermion-fermion vertex 
-   */
-  FFSVertexPtr _nfsvertex;
-
-  /**
-   * The neutralino-neutralino-Z vertex 
-   */
-  FFVVertexPtr _nnzvertex;
-
-  /**
-   * The chargino-neutralino-W vertex 
-   */
-  FFVVertexPtr _cnwvertex;
   //@}
 };
 
