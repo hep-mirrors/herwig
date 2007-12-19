@@ -112,13 +112,6 @@ private:
 private:
 
   /**
-   *  Method to return \f$\Pi^{ab}_{ij} = N_{ia}N_{jb}+N_{ib}N_{ja}\f$
-   */
-  inline Complex Pi(int a,int b,int i, int j_);
-
-private:
-
-  /**
    *  The various mixing matrices and couplings
    */
   //@{

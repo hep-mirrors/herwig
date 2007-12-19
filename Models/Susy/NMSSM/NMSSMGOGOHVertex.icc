@@ -14,7 +14,4 @@ inline IBPtr NMSSMGOGOHVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline Complex NMSSMGOGOHVertex::Pi(int a,int b,int i, int j) {
-  return (*_mixN)(i,a)*(*_mixN)(j,b)+(*_mixN)(i,b)*(*_mixN)(j,a);
-}
 }
