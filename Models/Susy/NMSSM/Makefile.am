@@ -5,5 +5,6 @@ NMSSMFFHVertex.h NMSSMFFHVertex.fh NMSSMFFHVertex.icc NMSSMFFHVertex.cc\
 NMSSMWWHVertex.h NMSSMWWHVertex.fh NMSSMWWHVertex.icc NMSSMWWHVertex.cc\
 NMSSMWHHVertex.h NMSSMWHHVertex.fh NMSSMWHHVertex.icc NMSSMWHHVertex.cc\
 NMSSMHSFSFVertex.h NMSSMHSFSFVertex.fh NMSSMHSFSFVertex.icc NMSSMHSFSFVertex.cc\
-NMSSMGOGOHVertex.h NMSSMGOGOHVertex.fh NMSSMGOGOHVertex.icc NMSSMGOGOHVertex.cc
+NMSSMGOGOHVertex.h NMSSMGOGOHVertex.fh NMSSMGOGOHVertex.icc NMSSMGOGOHVertex.cc \
+NMSSMHHHVertex.h NMSSMHHHVertex.fh NMSSMHHHVertex.icc NMSSMHHHVertex.cc 
 HwNMSSM_la_LDFLAGS = -module
