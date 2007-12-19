@@ -63,21 +63,6 @@ void NMSSM::Init() {
     ("Vertex/NMSSMHSS",
      "The coupling of a pair of sfermions to a higgs in the NMSSM",
      &NMSSM::_hssvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,FFSVertex> interfaceVertexNMSSMNFS
-    ("Vertex/NMSSMNFS",
-     "The coupling of a neutralino to a fermion and an sfermion",
-     &NMSSM::_nfsvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,FFVVertex> interfaceVertexNMSSMNNZ
-    ("Vertex/NMSSMNNZ",
-     "The coulping of a pair of neutralinos to a Z-boson in the NMSSM ",
-     &NMSSM::_nnzvertex, false, false, true, false, false);
-  
-  static Reference<NMSSM,FFVVertex> interfaceVertexNMSSMCNW
-    ("Vertex/NMSSMCNW",
-     "The coupling of a chargino to a neutralino and W boson in the NMSSM",
-     &NMSSM::_cnwvertex, false, false, true, false, false);
 }
 
 void NMSSM::extractParameters(bool checkmodel) {
