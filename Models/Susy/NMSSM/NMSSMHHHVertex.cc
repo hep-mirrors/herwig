@@ -80,14 +80,14 @@ void NMSSMHHHVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(_mw, GeV) << ounit(_mz,GeV) << _sw2 << _cw <<  _lambda 
      << _kappa <<  ounit(_lambdaVEV,GeV) <<  ounit(_theAl, GeV) 
      << ounit(_theAk,GeV) <<  _sb <<  _cb << _s2b <<  _c2b
-     << ounit(_v1,GeV) << ounit(_v2,GeV);
+     << ounit(_v1,GeV) << ounit(_v2,GeV) << _theSM << _mixS << _mixP;
 }
 
 void NMSSMHHHVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_mw, GeV) >> iunit(_mz,GeV) >> _sw2 >> _cw >>  _lambda 
      >> _kappa >>  iunit(_lambdaVEV,GeV) >>  iunit(_theAl, GeV) 
      >> iunit(_theAk,GeV) >>  _sb >>  _cb >> _s2b >>  _c2b
-     >> iunit(_v1,GeV) >> iunit(_v2,GeV);
+     >> iunit(_v1,GeV) >> iunit(_v2,GeV) >> _theSM >> _mixS >> _mixP;
 }
 
 ClassDescription<NMSSMHHHVertex> NMSSMHHHVertex::initNMSSMHHHVertex;
