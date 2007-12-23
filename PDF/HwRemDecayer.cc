@@ -134,7 +134,7 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
 
 void HwRemDecayer::split(tPPtr parton, HadronContent & content, 
 			 tRemPPtr rem, Lorentz5Momentum & used, 
-			 PartnerMap &partners, bool first) {
+			 PartnerMap &partners, tcPDFPtr pdf, bool first) {
   tcPPtr beam(parent(rem));
 
   if(rem==theRems.first)
@@ -151,8 +151,9 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   int lastID(parton->id());
   PPtr newSea, newValence;
   ColinePtr cl;
-  //set the beam object to access the PDF's.
+  //set the beam object to access its momentum.
   theForcedSplitter->setBeam(beam);
+  theForcedSplitter->setPDF(pdf);
 
   Energy oldQ(theForcedSplitter->getQspac());
   
@@ -181,11 +182,11 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     if(rem==theRems.first)
       newSea = theForcedSplitter->
 	forceSplit(rem, -lastID, oldQ, theX.first, 
-		   lastp, used,1, thestep, first);
+		   lastp, used,1, thestep);
     else
       newSea = theForcedSplitter->
 	forceSplit(rem, -lastID, oldQ, theX.second, 
-		   lastp, used,1, thestep, first);
+		   lastp, used,1, thestep);
 
     cl = new_ptr(ColourLine());
     if(newSea->id() > 0) cl->addColoured(newSea);
@@ -205,11 +206,11 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
     if(rem==theRems.first)
       newValence = theForcedSplitter->
 	forceSplit(rem, content.getValence(), 
-		   oldQ, theX.first, lastp, used, 2, thestep, first);
+		   oldQ, theX.first, lastp, used, 2, thestep);
     else
       newValence = theForcedSplitter->
 	forceSplit(rem, content.getValence(), 
-		   oldQ, theX.second, lastp, used, 2, thestep, first);
+		   oldQ, theX.second, lastp, used, 2, thestep);
 
     //case of a gluon going into the hard subprocess
     if( lastID == ParticleID::g ){
@@ -375,13 +376,14 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
   return;
 }
 
-void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
+void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> pdfs, 
+                           bool first) {
   if(!theForcedSplitter) return;
   // forced splitting for first parton
   if(partons.first->data().coloured()) {
     try {
       split(partons.first, theContent.first, theRems.first, 
-	    theUsed.first, theMaps.first, first);
+	    theUsed.first, theMaps.first, pdfs.first, first);
     }
     catch(ShowerHandler::ExtraScatterVeto) {
       theX.first -= partons.first->momentum().rho()/parent(theRems.first)->momentum().rho();
@@ -392,7 +394,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, bool first) {
   if(partons.second->data().coloured()) {   
     try{
       split(partons.second, theContent.second, theRems.second, 
-	    theUsed.second, theMaps.second, first);
+	    theUsed.second, theMaps.second, pdfs.second, first);
       // additional check for the remnants
       // if can't do the rescale veto the emission
       if(!first&&partons.first->data().coloured()&&

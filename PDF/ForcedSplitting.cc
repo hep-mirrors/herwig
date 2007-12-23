@@ -21,6 +21,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 #include <cassert>
 
 using namespace Herwig;
@@ -89,10 +90,10 @@ PPtr ForcedSplitting::forceSplit(const tRemPPtr rem, long child, Energy &oldQ,
 				 double &oldx, Lorentz5Momentum &pf, 
 				 Lorentz5Momentum &p,
 				 const unsigned int iopt,
-				 const tStepPtr step, const bool first) const {
+				 const tStepPtr step) const {
   Lorentz5Momentum beam = _beam->momentum();
   PPtr parton = new_ptr(Particle(getParticleData(child)));
-  Lorentz5Momentum partonp = emit(beam,oldQ,oldx,parton,pf,iopt,first);
+  Lorentz5Momentum partonp = emit(beam,oldQ,oldx,parton,pf,iopt);
   p += partonp;
   parton->set5Momentum(partonp);
   step->addDecayProduct(rem,parton,false);
@@ -122,11 +123,15 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
 				       Energy &lastQ, double &lastx, 
 				       PPtr parton,
 				       Lorentz5Momentum &pf,
-				       const unsigned int iopt,
-				       const bool first) const {
+				       const unsigned int iopt) const {
   assert(iopt==1||iopt==2);
-  Ptr<BeamParticleData>::const_pointer beamdata = 
+  Ptr<BeamParticleData>::const_pointer beam = 
     dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>(_beam->dataPtr());
+
+  if(!_pdf)
+    throw Exception() << "No PDF object present in "
+		      << "ForcedSplitting::emit(...)"
+		      << Exception::runerror; 
 
   // the last scale is minimum of last value and upper limit
   Energy minQ=_range*_kinCutoff*sqrt(lastx)/(1-lastx);
@@ -165,28 +170,20 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
     // g -> q qbar
     if(iopt==1) {
       // calculate splitting function
-      double pdf(0.0);
+      double pdfval(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
-      if(first)
-	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*zr);
-      else
-	pdf=beamdata->pdf()->xfx(beamdata,gluon,sqr(q),lastx*zr)
-	  - beamdata->pdf()->xfvx(beamdata,gluon,sqr(q),lastx*zr);
+      pdfval=_pdf->xfx(beam,gluon,sqr(q),lastx*zr);
       // SG: this is symmetric in z <-> 1-z
-      psum+=pdf*az*0.5*(sqr(zz)+sqr(wz));
+      psum+=pdfval*az*0.5*(sqr(zz)+sqr(wz));
     }
     // q -> q g
     else {
       // calculate splitting function
-      double pdf(0.0);
+      double pdfval(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
-      if(first)
-	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*zr);
-      else
-	pdf=beamdata->pdf()->xfx(beamdata,parton->dataPtr(),sqr(q),lastx*zr)
-	  - beamdata->pdf()->xfvx(beamdata,parton->dataPtr(),sqr(q),lastx*zr);
+      pdfval=_pdf->xfx(beam,parton->dataPtr(),sqr(q),lastx*zr);
       // SG this splitting function has to have a 1/z pole! 
-      psum+=pdf*az*4./3.*(1.+sqr(wz))*zr;
+      psum+=pdfval*az*4./3.*(1.+sqr(wz))*zr;
     }
     prob.push_back(psum);
     yy+=dely;

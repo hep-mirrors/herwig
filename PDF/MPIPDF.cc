@@ -43,7 +43,6 @@ double MPIPDF::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                       double l, Energy2 particleScale) const {
   // returns the density with removed valence part.
   assert(thePDF);
-  cerr << "\n\n\n modified pdfs are used \n\n\n";
   return thePDF->xfl(particle, parton, partonScale, l, particleScale)-
     thePDF->xfvl(particle, parton, partonScale, l, particleScale);
 }

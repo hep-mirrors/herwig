@@ -112,9 +112,10 @@ public:
    * Perform the acual forced splitting.
    * @param partons is a pair of ThePEG::Particle pointers which store the final 
    * partons on which the shower ends.
+   * @param pdfs are pointers to the pdf objects for both beams
    * @param first is a flage wether or not this is the first or a secondary interation
    */
-  void doSplit(pair<tPPtr, tPPtr> partons, bool first);
+  void doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> pdfs, bool first);
 
   /**
    * Perform the final creation of the diquarks. Set the remnant masses and do 
@@ -211,10 +212,11 @@ private:
    * @param used = Momentum vector to keep track of remaining momenta.
    * @param partners = Vector of pairs filled with tPPtr to the particles 
    * which should be colour connected.
+   * @param pdf pointer to the PDF Object which is used for this particle
    * @param first = Flag for the first interaction.
    */
   void split(tPPtr parton, HadronContent & content, tRemPPtr rem, 
-	     Lorentz5Momentum & used, PartnerMap & partners, bool first);
+	     Lorentz5Momentum & used, PartnerMap & partners, tcPDFPtr pdf, bool first);
 
   /**
    * Do all colour connections.

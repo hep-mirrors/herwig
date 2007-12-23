@@ -273,7 +273,8 @@ void ShowerHandler::cascade() {
 
   //do the first forcedSplitting
   try {
-    theRemDec->doSplit(incs, true);
+    theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
+                                       secondPDF().pdf()), true);
   }
   catch (ExtraScatterVeto) {
     throw Exception() << "Remnant extraction failed in "
@@ -287,10 +288,10 @@ void ShowerHandler::cascade() {
   }
 
   //use modified pdf's now:
-  //const pair <tcPDFPtr, tcPDFPtr> newpdf = 
-  //  make_pair(new_ptr(MPIPDF(firstPDF().pdf())), 
-  //	      new_ptr(MPIPDF(secondPDF().pdf())));
-  //resetPDFs(newpdf);
+  const pair <PDFPtr, PDFPtr> newpdf = 
+    make_pair(new_ptr(MPIPDF(firstPDF().pdf())), 
+              new_ptr(MPIPDF(secondPDF().pdf())));
+  resetPDFs(newpdf);
 
   int veto(1);
   unsigned int max(getMPIHandler()->multiplicity());
@@ -334,7 +335,8 @@ void ShowerHandler::cascade() {
 
     try{
       //do the forcedSplitting
-      theRemDec->doSplit(incs, false);
+      theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
+                                         secondPDF().pdf()), false);
 
       //check if there is enough energy to extract
       if( (remnants.first->momentum() - incs.first->momentum()).e() < 0*MeV ||
