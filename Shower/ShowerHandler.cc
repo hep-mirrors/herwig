@@ -126,7 +126,7 @@ ShowerHandler::ShowerHandler() :
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   //can't use IsMPIOn here, because the EventHandler is not set at that stage
-  if(theMPIHandler) getMPIHandler()->initrun();
+  if(theMPIHandler) theMPIHandler->initialize();
   //check if the old switch is used
   if( theMPIHandler && !theMPIOnOff ){
     throw Exception() << "WARNING: You used the outdated interface switch\n"
@@ -142,6 +142,10 @@ void ShowerHandler::doinitrun(){
   }
 }
 
+void ShowerHandler::dofinish(){
+  CascadeHandler::dofinish();
+  if(theMPIHandler) theMPIHandler->finalize();
+}
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _evolver << theRemDec << _maxtry << _inputparticlesDecayInShower
      << _particlesDecayInShower << theOrderSecondaries 

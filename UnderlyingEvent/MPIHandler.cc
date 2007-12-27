@@ -52,19 +52,10 @@ MPIHandler::MPIHandler(const MPIHandler & x)
 
 MPIHandler::~MPIHandler() {}
 
-
-void MPIHandler::doinitrun() {
-  Interfaced::doinitrun();
-  initialize();
-}
-
-void MPIHandler::dofinish() {
-  Interfaced::dofinish();
+void MPIHandler::finalize() {
   if( beamOK() )
     statistics("UE.out");
 }
-
-
 void MPIHandler::initialize() {
   
   theHandler = generator()->currentEventHandler(); 

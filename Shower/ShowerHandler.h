@@ -242,6 +242,11 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+  /**
+   * Called at the end of the run phase.
+   */
+  virtual void dofinish();
   //@}
 
 private:
