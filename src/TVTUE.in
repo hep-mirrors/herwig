@@ -9,7 +9,7 @@
 ##################################################
 cd /Herwig/Shower 
 # Switch for JIMMY
-# set ShowerHandler:MPI No
+#set ShowerHandler:MPIHandler NULL
 
 cd /Herwig/UnderlyingEvent
 # set KtCut:MinKT 2.2

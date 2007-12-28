@@ -16,7 +16,6 @@ cd /Herwig/Shower
 
 create Herwig::ShowerHandler ShowerHandler
 set ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
-set ShowerHandler:MPI Yes
 set ShowerHandler:OrderSecondaries Yes
 set ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 

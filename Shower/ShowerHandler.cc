@@ -18,6 +18,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
@@ -127,15 +128,6 @@ void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   //can't use IsMPIOn here, because the EventHandler is not set at that stage
   if(theMPIHandler) theMPIHandler->initialize();
-  //check if the old switch is used
-  if( theMPIHandler && !theMPIOnOff ){
-    throw Exception() << "WARNING: You used the outdated interface switch\n"
-                      << "ShowerHandler:MPIOnOff to switch MPI on or off.\n"
-                      << "The supported way of switching MPI off is setting the\n"
-                      << "reference ShowerHandler:MPIHandler to NULL." 
-                      << "Otherwise MPI is on\n"
-                      << Exception::runerror;
-  }
 
   if (_useCKKW) {
     _reweighter->initialize();
@@ -201,6 +193,10 @@ void ShowerHandler::Init() {
   static Switch<ShowerHandler,bool> interfaceMPIOnOff
     ("MPI", "Flag is outdated. Kept for backward compatibility",
      &ShowerHandler::theMPIOnOff, 1, false, false);
+
+  string desc("The supported way of switching MPI off is setting the ");
+  desc += "reference ShowerHandler:MPIHandler to NULL. Otherwise MPI is on.";
+  static Deleted<ShowerHandler> delint("MPI", desc);
 
   static SwitchOption interfaceMPIOnOff0                             
     (interfaceMPIOnOff,
