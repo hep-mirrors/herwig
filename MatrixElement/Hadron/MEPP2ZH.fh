@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEPP2ZH class.
+//
+#ifndef HERWIG_MEPP2ZH_FH
+#define HERWIG_MEPP2ZH_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEPP2ZH;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEPP2ZH,MEPP2ZHPtr);
+
+}
+
+#endif
