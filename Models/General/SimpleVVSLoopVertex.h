@@ -1,52 +1,34 @@
 // -*- C++ -*-
+#ifndef HERWIG_SimpleVVSLoopVertex_H
+#define HERWIG_SimpleVVSLoopVertex_H
 //
-// SimpleSVVLoopVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_SimpleSVVLoopVertex_H
-#define HERWIG_SimpleSVVLoopVertex_H
-//
-// This is the declaration of the SimpleSVVLoopVertex class.
+// This is the declaration of the SimpleVVSLoopVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
-#include "ThePEG/PDT/PDT.h"
-#include "SimpleSVVLoopVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.h"
+#include "SimpleVVSLoopVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /**
- * The <code>SimpleSVVLoopVertex</code> is designed to
+ * The <code>SimpleVVSLoopVertex</code> is designed to
  * calculate the coefficents for the terms in the
  * Passarino-Veltman tensor reduction scheme. A vertex
  * class should inherit from this and implement it's own 
- * setCoupling member from which the SimpleSVVLoopVertex  
+ * setCoupling member from which the SimpleVVSLoopVertex  
  * setCoupling member is called.
  */
-class SimpleSVVLoopVertex: public GeneralSVVVertex {
+class SimpleVVSLoopVertex: public GeneralVVSVertex {
 
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * The default constructor.
    */
-  inline SimpleSVVLoopVertex();
-  
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-  
+  inline SimpleVVSLoopVertex();
+
   /** 
    * Calculate couplings
    *@param q2 Scale at which to evaluate coupling
@@ -55,23 +37,16 @@ public:
    *@param part3 ParticleData pointer to first particle
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2, tcPDPtr part3);
-  
-protected:
-  
-  /** @name Clone Methods. */
-  //@{
+
   /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
    */
-  inline virtual IBPtr clone() const;
-  
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr fullclone() const;
-  //@}
+  static void Init();
+
+protected:
   
   /**
    *  Member functions to calculate the loop functions
@@ -101,6 +76,23 @@ protected:
   //@}
 
 protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+protected:
   
   /**
    * Vector of loop masses
@@ -124,26 +116,22 @@ protected:
   unsigned int theNpart;
 
 private:
-  
+
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<SimpleSVVLoopVertex> initSimpleSVVLoopVertex;
-  
+  static NoPIOClassDescription<SimpleVVSLoopVertex> initSimpleVVSLoopVertex;
+
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SimpleSVVLoopVertex & operator=(const SimpleSVVLoopVertex &);
-  
+  SimpleVVSLoopVertex & operator=(const SimpleVVSLoopVertex &);
+
 };
 
 }
-
-#include "SimpleSVVLoopVertex.icc"
-
-// CLASSDOC OFF
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -152,24 +140,26 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of SimpleSVVLoopVertex. */
+ *  base classes of SimpleVVSLoopVertex. */
 template <>
-struct BaseClassTrait<Herwig::SimpleSVVLoopVertex,1> {
-  /** Typedef of the first base class of SVVLoopVertex. */
-  typedef Helicity::GeneralSVVVertex NthBase;
+struct BaseClassTrait<Herwig::SimpleVVSLoopVertex,1> {
+  /** Typedef of the first base class of SimpleVVSLoopVertex. */
+  typedef Helicity::GeneralVVSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the SVVLoopVertex class and the shared object where it is defined. */
+ *  the SimpleVVSLoopVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SimpleSVVLoopVertex>
-  : public ClassTraitsBase<Herwig::SimpleSVVLoopVertex> {
+struct ClassTraits<Herwig::SimpleVVSLoopVertex>
+  : public ClassTraitsBase<Herwig::SimpleVVSLoopVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::SimpleSVVLoopVertex"; }
+  static string className() { return "Herwig::SimpleVVSLoopVertex"; }
 };
 
 /** @endcond */
 
 }
- 
-#endif /* HERWIG_SimpleSVVLoopVertex_H */
+
+#include "SimpleVVSLoopVertex.icc"
+
+#endif /* HERWIG_SimpleVVSLoopVertex_H */
