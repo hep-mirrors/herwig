@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LittleHiggsFFZVertex class.
+//
+#ifndef THEPEG_LittleHiggsFFZVertex_FH
+#define THEPEG_LittleHiggsFFZVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LittleHiggsFFZVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LittleHiggsFFZVertex,LittleHiggsFFZVertexPtr);
+
+}
+
+#endif
