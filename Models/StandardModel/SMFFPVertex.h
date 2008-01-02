@@ -132,7 +132,8 @@ private:
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
   Energy2 _q2last;
-  //@
+  //@}
+
 };
 }
 

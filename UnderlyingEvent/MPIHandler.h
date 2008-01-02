@@ -134,6 +134,12 @@ public:
   void initialize();
 
   /**
+   * Finalize this Multiple Interaction handler and all related objects needed to
+   * generate additional events.
+   */
+  void finalize();
+
+  /**
    * Write out accumulated statistics about intergrated cross sections
    * and stuff.
    */
@@ -154,7 +160,7 @@ public:
    * This methods shadows ThePEG::StepHandler::eventHandler(), because
    * it is not virtual in ThePEG::StepHandler. This is ok, because this
    * method would give a null-pointer at some stages, whereas this method
-   * gives access to the explicitely copied pointer (in doinitrun()) 
+   * gives access to the explicitely copied pointer (in initialize()) 
    * to the ThePEG::EventHandler.
    */
   inline tEHPtr eventHandler() const;
@@ -238,24 +244,6 @@ private:
    *  Return n!
    */
   double factorial (unsigned int n) const;
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Writes out statistics on the generation.
-   */
-  virtual void dofinish();
-
-  //@}
 
 private:
 

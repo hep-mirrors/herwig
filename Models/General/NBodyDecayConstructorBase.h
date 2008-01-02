@@ -44,6 +44,49 @@ public:
    */
   virtual void DecayList(const vector<PDPtr> & part)=0;
 
+protected:
+  
+  /**
+   * Set the branching ratio of this mode. This requires 
+   * calculating a new width for the decaying particle and reweighting
+   * the current branching fractions.
+   * @param dm The decaymode for which to set the branching ratio
+   * @param pwidth The calculated width of the mode
+   */
+  void setBranchingRatio(tDMPtr dm, Energy pwidth);
+
+  /**
+   * Set the interfaces of the decayers depending on the flags stored.
+   * @param name Fullname of the decayer in the EventGenerator
+   * including the path
+   */
+  void setDecayerInterfaces(string name) const;
+
+  /**
+   * Whether to initialize decayers or not
+   */
+  inline bool initialize() const;
+  
+  /**
+   * Number of iterations if initializing (default 1)
+   */
+  inline int iteration() const;
+
+  /**
+   * Number of points to do in initialization
+   */
+  inline int points() const;
+
+  /**
+   * Whether to output information on the decayers 
+   */
+  inline bool info() const;
+
+  /**
+   * Whether to create the DecayModes as well as the Decayer objects 
+   */
+  inline bool createDecayModes() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -84,6 +127,32 @@ private:
    */
   NBodyDecayConstructorBase & operator=(const NBodyDecayConstructorBase &);
 
+private:
+
+  /**
+   * Whether to initialize decayers or not
+   */
+  bool _init;
+  
+  /**
+   * Number of iterations if initializing (default 1)
+   */
+  int _iteration;
+
+  /**
+   * Number of points to do in initialization
+   */
+  int _points;
+
+  /**
+   * Whether to output information on the decayers 
+   */
+  bool _info;
+
+  /**
+   * Whether to create the DecayModes as well as the Decayer objects 
+   */
+  bool _createmodes;
 };
 
   /** An Exception class that can be used by all inheriting classes to

@@ -95,11 +95,10 @@ public:
    * @param p     The total emitted momentum
    * @param iopt  Whether to use the \f$q\to gq\f$ or \f$g\to q\bar{q}\f$ splitting function.
    * @param step The step into which the new particles are inserted
-   * @param first true if split belongs to extraction of partons from the hard process.
    */
   PPtr forceSplit(const tRemPPtr rem, long child, Energy &oldQ, double &oldx, 
 		  Lorentz5Momentum &pf, Lorentz5Momentum &p,const unsigned int iopt,
-		  const tStepPtr step, const bool first) const;
+		  const tStepPtr step) const;
 
   /**
    * This computes the momentum of the emitted parton. 
@@ -109,11 +108,10 @@ public:
    * @param parton The parton in the last emission
    * @param pf at input is the momentum of the last parton and the emitted momentum on output
    * @param iopt  Whether to use the \f$q\to gq\f$ or \f$g\to q\bar{q}\f$ splitting function.
-   * @param first true if split belongs to extraction of partons from the hard process.
    */
   Lorentz5Momentum emit(const Lorentz5Momentum &par, Energy &lastQ, 
 			double &lastx, PPtr parton, Lorentz5Momentum &pf,
-			const unsigned int iopt, const bool first) const;
+			const unsigned int iopt) const;
 
   /**
    * This creates a parton from the remaining flavours of the hadron. The
@@ -127,6 +125,11 @@ public:
    * Set the beam particle.
    */
   inline void setBeam(tcPPtr beam) const;
+
+  /**
+   * Set the PDF to use.
+   */
+  inline void setPDF(tcPDFPtr pdf) const;
 
   /**
    * Set the ThePEG::BeamParticleData object of the current hadron.
@@ -216,6 +219,11 @@ private:
    */
   mutable tcPPtr _beam;
 
+  /**
+   *  The PDF for the current initial-state shower
+   */
+  mutable tcPDFPtr _pdf;
+
 };
 
 }
@@ -248,7 +256,7 @@ struct ClassTraits<Herwig::ForcedSplitting>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwHadronization.so"; }
+  static string library() { return "HwRemDecayer.so"; }
 };
 
 /** @endcond */

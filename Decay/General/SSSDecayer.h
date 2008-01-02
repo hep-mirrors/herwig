@@ -134,9 +134,14 @@ private:
 private:
 
   /**
-   * Store pointer to vertex
+   *  Abstract pointer to AbstractSSSVertex
    */
-  SSSVertexPtr _theSSSPtr;
+  AbstractSSSVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  SSSVertexPtr _perturbativeVertex;
 };
 
 }
@@ -162,10 +167,6 @@ struct ClassTraits<Herwig::SSSDecayer>
   : public ClassTraitsBase<Herwig::SSSDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SSSDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SSSDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

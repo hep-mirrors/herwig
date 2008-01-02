@@ -34,20 +34,10 @@ class TFFDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline TFFDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~TFFDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -143,9 +133,14 @@ private:
 private:
 
   /**
-   * Pointer to FFTVertex
+   *  Abstract pointer to AbstractFFTVertex
    */
-  FFTVertexPtr _theFFTPtr;
+  AbstractFFTVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  FFTVertexPtr _perturbativeVertex;
 
 };
 
@@ -172,10 +167,6 @@ struct ClassTraits<Herwig::TFFDecayer>
   : public ClassTraitsBase<Herwig::TFFDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::TFFDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the TFFDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

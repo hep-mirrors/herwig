@@ -52,18 +52,10 @@ MPIHandler::MPIHandler(const MPIHandler & x)
 
 MPIHandler::~MPIHandler() {}
 
-
-void MPIHandler::doinitrun() {
-  Interfaced::doinitrun();
-}
-
-void MPIHandler::dofinish() {
-  Interfaced::dofinish();
-  if( beamOK() )//still have to check wether MPI is ON or OFF
+void MPIHandler::finalize() {
+  if( beamOK() )
     statistics("UE.out");
 }
-
-
 void MPIHandler::initialize() {
   
   theHandler = generator()->currentEventHandler(); 
@@ -127,10 +119,8 @@ void MPIHandler::initialize() {
   XSVector UEXSecs;
   UEXSecs.push_back(processHandlers()[0]->integratedXSec());
 
-  cerr << UEXSecs[0]/nanobarn << endl;
   Probs(UEXSecs);
   UEXSecs.clear();
-
 }
 
 
@@ -144,7 +134,7 @@ void MPIHandler::statistics(string os) const {
     processHandlers()[i]->statistics(file, tot);
     file << "\n";
   }
-
+  file.close();
 }
 
 void MPIHandler::Probs(XSVector UEXSecs) {
@@ -185,9 +175,8 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       file << i-1 << " " << P << endl;
       i++;
     } while ( (i < 100) && (i < 5 || P > 1.e-15) );
-    file.close();
   }
-  
+  file.close();  
 }
 
 

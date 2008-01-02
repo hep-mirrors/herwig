@@ -14,9 +14,9 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "SusyBase.fh"
 
 namespace Herwig {
@@ -125,17 +125,37 @@ public:
   /**
    * Pointer to the MSSM fermion-antifermion-higgs vertex 
    */
-  virtual inline tFFSVertexPtr vertexFFH() const;
+  virtual inline tAbstractFFSVertexPtr vertexFFH() const;
   
   /**
    * Pointer to the MSSM double gauge boson-higgs vertex 
    */
-  virtual inline tVVSVertexPtr vertexWWH() const;
+  virtual inline tAbstractVVSVertexPtr vertexWWH() const;
   
   /**
    * Pointer to the MSSM effective higgs-gluon-gluon vertex
    */
-  virtual inline tGeneralSVVVertexPtr vertexHGG() const;
+  virtual inline tAbstractVVSVertexPtr vertexHGG() const;
+
+  /**
+   * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
+   */
+  virtual inline tAbstractVSSVertexPtr vertexWHH() const;
+
+  /**
+   * Pointer to the higgs coupling to a pair of gauginos
+   */
+  virtual inline tAbstractFFSVertexPtr vertexGOGOH() const;
+
+  /**
+   * Pointer to the triple higgs vertex
+   */
+  virtual inline tAbstractSSSVertexPtr vertexHHH() const;
+
+  /**
+   * Pointer to higgs-sfermion-sfermion vertex 
+   */
+  virtual inline tAbstractSSSVertexPtr vertexHSS() const;
   //@}
 
 protected:
@@ -231,7 +251,7 @@ protected:
    */
   inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const;
   //@}
-  
+
 protected:
 
   /** @name Clone Methods. */
@@ -346,87 +366,87 @@ private:
   /**
    * Pointer to the gauge boson sfermion-sfermion vertex
    */
-  VSSVertexPtr theWSFSFVertex;
+  AbstractVSSVertexPtr theWSFSFVertex;
   
   /**
    * Pointer to the neutralino-fermion-sfermion vertex
    */
-  FFSVertexPtr theNFSFVertex;
+  AbstractFFSVertexPtr theNFSFVertex;
   
   /**
    * Pointer to the gluino-fermion-sfermion coupling
    */
-  FFSVertexPtr theGFSFVertex;
+  AbstractFFSVertexPtr theGFSFVertex;
 
   /**
    * Pointer to the Higgs-sfermion-sfermion vertex
    */
-  SSSVertexPtr theHSFSFVertex;
+  AbstractSSSVertexPtr theHSFSFVertex;
 
   /**
    * Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex
    */
-  FFSVertexPtr theCFSFVertex;
+  AbstractFFSVertexPtr theCFSFVertex;
 
   /**
    * Pointer to the gluon-sfermion-sfermion vertex
    */
-  VSSVertexPtr theGSFSFVertex;
+  AbstractVSSVertexPtr theGSFSFVertex;
 
   /**
    * Pointer to the gluon-gluon-squark-squark vertex;
    */
-  VVSSVertexPtr theGGSQSQVertex;
+  AbstractVVSSVertexPtr theGGSQSQVertex;
 
   /**
    * Pointer to the gluon-gluino-gluino vertex
    */
-  FFVVertexPtr theGSGSGVertex; 
+  AbstractFFVVertexPtr theGSGSGVertex; 
 
   /**
    * Pointer to the neutralino-neutralino-Z vertex
    */
-  FFVVertexPtr theNNZVertex;
+  AbstractFFVVertexPtr theNNZVertex;
 
   /**
    * Pointer to the  vertex chargino-chargino-Z vertex
    */
-  FFVVertexPtr theCCZVertex;
+  AbstractFFVVertexPtr theCCZVertex;
   
   /**
    * Pointer to the  vertex chargino-neutralino-Z vertex
    */
-  FFVVertexPtr theCNWVertex;
+  AbstractFFVVertexPtr theCNWVertex;
 
   /**
    * Pointer to the vertex fermion-antifermion-higgs vertex
    */
-  FFSVertexPtr theSSFFHVertex;
+  AbstractFFSVertexPtr theSSFFHVertex;
 
   /**
    * Pointer to the vertex gaugino-gaugino-higgs vertex
    */
-  FFSVertexPtr theGOGOHVertex;
+  AbstractFFSVertexPtr theGOGOHVertex;
   
   /**
    * Pointer to the vertex for a pair of gauge bosons and higgs
    */
-  VVSVertexPtr theSSWWHVertex;
+  AbstractVVSVertexPtr theSSWWHVertex;
   
   /**
    * Pointer to the vertex for a gauge boson and higgs
    */
-  VSSVertexPtr theWHHVertex;
+  AbstractVSSVertexPtr theWHHVertex;
 
   /**
    * Pointer to triple higgs vertex
    */
-  SSSVertexPtr theHHHVertex;
+  AbstractSSSVertexPtr theHHHVertex;
   
   /**
    * The effective coupling of the higgs to a pai of gluons in the MSSM
    */
-  GeneralSVVVertexPtr theSSHGGVertex;
+  AbstractVVSVertexPtr theSSHGGVertex;
   //@}
 };
 

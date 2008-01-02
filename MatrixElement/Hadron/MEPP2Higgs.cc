@@ -102,7 +102,7 @@ void MEPP2Higgs::doinit() throw(InitException) {
                           << " the Herwig++ version must be used" 
                           << Exception::runerror;
   }
-  hggvertex = dynamic_ptr_cast<SVVLoopVertexPtr>(theSM->vertexHGG());
+  hggvertex = theSM->vertexHGG();
   ffhvertex = theSM->vertexFFH();
   // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
@@ -300,7 +300,7 @@ double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1,
   double me2(0.0);
   for(int i = 0; i < 2; ++i) {
     for(int j = 0; j < 2; ++j) {
-      Complex diag = hggvertex->evaluate(s,in,g1[i],g2[j]);
+      Complex diag = hggvertex->evaluate(s,g1[i],g2[j],in);
       me2 += norm(diag);
       if(calc) newme(2*i, 2*j, 0) = diag;
     }

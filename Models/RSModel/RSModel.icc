@@ -31,10 +31,10 @@ inline void RSModel::doinit() throw(InitException) {
 
 inline Energy RSModel::lambda_pi() const {return _theLambda_pi;}
 
-inline tFFTVertexPtr   RSModel::vertexFFGR()  const {return _theFFGRVertex;}
-inline tVVTVertexPtr   RSModel::vertexVVGR()  const {return _theVVGRVertex;}
-inline tSSTVertexPtr   RSModel::vertexSSGR()  const {return _theSSGRVertex;}
-inline tFFVTVertexPtr  RSModel::vertexFFVGR() const {return _theFFVGRVertex;}
-inline tVVVTVertexPtr  RSModel::vertexVVVGR() const {return _theVVVGRVertex;}
+inline tAbstractFFTVertexPtr   RSModel::vertexFFGR()  const {return _theFFGRVertex;}
+inline tAbstractVVTVertexPtr   RSModel::vertexVVGR()  const {return _theVVGRVertex;}
+inline tAbstractSSTVertexPtr   RSModel::vertexSSGR()  const {return _theSSGRVertex;}
+inline tAbstractFFVTVertexPtr  RSModel::vertexFFVGR() const {return _theFFVGRVertex;}
+inline tAbstractVVVTVertexPtr  RSModel::vertexVVVGR() const {return _theVVVGRVertex;}
 
 }

@@ -14,7 +14,8 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-NMSSMWHHVertex::NMSSMWHHVertex() {
+NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
+				   _q2last(0.*MeV2), _couplast(0.) {
   // PDG codes for the particles
   vector<int> first,second,third;
   // codes for the neutral higgs
@@ -25,7 +26,7 @@ NMSSMWHHVertex::NMSSMWHHVertex() {
     for(unsigned int iy=0;iy<2;++iy) {
       first.push_back(23);
       second.push_back(ieven[ix]);
-      second.push_back(iodd [iy]);
+      third.push_back(iodd [iy]);
     }
   }
   // W H+ S
@@ -49,12 +50,6 @@ NMSSMWHHVertex::NMSSMWHHVertex() {
   third.push_back(-37);
   // add list
   setList(first,second,third);
-  _sinb=0.;
-  _cosb=0.;
-  _sw=0.;
-  _cw=0.;
-  _q2last=0.*MeV2;
-  _couplast=0.;
 }
 
 void NMSSMWHHVertex::doinit() throw(InitException) {

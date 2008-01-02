@@ -13,8 +13,8 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "SMWZGammaDecayer.fh"
 
@@ -138,22 +138,22 @@ private:
   /**
    * Pointer to the Z vertex
    */
-  Helicity::FFVVertexPtr _zvertex;
+  AbstractFFVVertexPtr _zvertex;
 
   /**
    * Pointer to the W vertex
    */
-  Helicity::FFVVertexPtr _wvertex;
+  AbstractFFVVertexPtr _wvertex;
 
   /**
    * Pointer to the \f$\gamma\f$ vertex
    */
-  Helicity::FFVVertexPtr _pvertex;
+  AbstractFFVVertexPtr _pvertex;
 
   /**
    *  Pointer to the triple electroweak gauge boson vertex
    */
-  Helicity::VVVVertexPtr _wwwvertex;
+  AbstractVVVVertexPtr _wwwvertex;
   //@}
 
   /**

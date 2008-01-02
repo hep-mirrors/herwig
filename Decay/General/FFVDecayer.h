@@ -134,11 +134,16 @@ private:
   FFVDecayer & operator=(const FFVDecayer &);
 
 private:
-  
+
   /**
-   * Pointer to FFVVertex
+   *  Abstract pointer to AbstractFFVVertex
    */
-  FFVVertexPtr _theFFVPtr;
+  AbstractFFVVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  FFVVertexPtr _perturbativeVertex;
 };
 
 }
@@ -164,10 +169,6 @@ struct ClassTraits<Herwig::FFVDecayer>
   : public ClassTraitsBase<Herwig::FFVDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::FFVDecayer"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the FFVDecayer class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

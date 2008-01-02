@@ -34,7 +34,7 @@ public:
   /**
    * Default constructor.
    */
-  inline SMWWWVertex();
+  SMWWWVertex();
   //@}  
 
 public:
@@ -110,6 +110,8 @@ private:
    */
   SMWWWVertex & operator=(const SMWWWVertex &);
   
+private:
+
   /**
    * Pointer to the Standard Model object.
    */

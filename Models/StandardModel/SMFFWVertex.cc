@@ -107,7 +107,7 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
   if(q2!=_q2last) {
     double alpha = _theSM->alphaEM(q2);
     double sw    = sqrt(2.*(_theSM->sin2ThetaW()));
-    _couplast = -sqrt(4.0*3.14159265*alpha)/sw;
+    _couplast = -sqrt(4.0*Constants::pi*alpha)/sw;
     _q2last=q2;
   }
   setNorm(_couplast);

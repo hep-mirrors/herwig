@@ -18,6 +18,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Deleted.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "ThePEG/PDF/PartonBinInstance.h"
@@ -125,15 +126,18 @@ ShowerHandler::ShowerHandler() :
 
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
-  theMPIHandler->initrun();
-
-  if(IsMPIOn()) theMPIHandler->initialize();
+  //can't use IsMPIOn here, because the EventHandler is not set at that stage
+  if(theMPIHandler) theMPIHandler->initialize();
 
   if (_useCKKW) {
     _reweighter->initialize();
   }
 }
 
+void ShowerHandler::dofinish(){
+  CascadeHandler::dofinish();
+  if(theMPIHandler) theMPIHandler->finalize();
+}
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _evolver << theRemDec << _maxtry << _inputparticlesDecayInShower
      << _particlesDecayInShower << theOrderSecondaries 
@@ -184,12 +188,15 @@ void ShowerHandler::Init() {
   static Reference<ShowerHandler,MPIHandler> interfaceMPIHandler
     ("MPIHandler",
      "The object that admisinsters all additional semihard partonic scatterings.",
-     &ShowerHandler::theMPIHandler, false, false, true, false);
-  
+     &ShowerHandler::theMPIHandler, false, false, true, true);
   
   static Switch<ShowerHandler,bool> interfaceMPIOnOff
-    ("MPI", "flag to switch multi-parton interactions on or off",
+    ("MPI", "Flag is outdated. Kept for backward compatibility",
      &ShowerHandler::theMPIOnOff, 1, false, false);
+
+  string desc("The supported way of switching MPI off is setting the ");
+  desc += "reference ShowerHandler:MPIHandler to NULL. Otherwise MPI is on.";
+  static Deleted<ShowerHandler> delint("MPI", desc);
 
   static SwitchOption interfaceMPIOnOff0                             
     (interfaceMPIOnOff,
@@ -266,7 +273,8 @@ void ShowerHandler::cascade() {
 
   //do the first forcedSplitting
   try {
-    theRemDec->doSplit(incs, true);
+    theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
+                                       secondPDF().pdf()), true);
   }
   catch (ExtraScatterVeto) {
     throw Exception() << "Remnant extraction failed in "
@@ -274,27 +282,27 @@ void ShowerHandler::cascade() {
                       << Exception::eventerror;   
   }
 
-  if( !IsMPIOn() || !theMPIHandler->beamOK() ) {
+  if( !IsMPIOn() ) {
     theRemDec->finalize();
     return;
   }
 
   //use modified pdf's now:
-  //const pair <tcPDFPtr, tcPDFPtr> newpdf = 
-  //  make_pair(new_ptr(MPIPDF(firstPDF().pdf())), 
-  //	      new_ptr(MPIPDF(secondPDF().pdf())));
-  //resetPDFs(newpdf);
+  const pair <PDFPtr, PDFPtr> newpdf = 
+    make_pair(new_ptr(MPIPDF(firstPDF().pdf())), 
+              new_ptr(MPIPDF(secondPDF().pdf())));
+  resetPDFs(newpdf);
 
   int veto(1);
-  unsigned int max(theMPIHandler->multiplicity());
+  unsigned int max(getMPIHandler()->multiplicity());
   for(i=0; i<max; i++){      
     //generate PSpoint
-    lastXC = theMPIHandler->generate();
+    lastXC = getMPIHandler()->generate();
     sub = lastXC->construct();
 
     //If Algorithm=1 additional scatters of the signal type with pt > ptmin have to be vetoed
     //with probability 1/(m+1), where m is the number of occurances in this event
-    if( theMPIHandler->Algorithm() == 1 ){
+    if( getMPIHandler()->Algorithm() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
@@ -327,7 +335,8 @@ void ShowerHandler::cascade() {
 
     try{
       //do the forcedSplitting
-      theRemDec->doSplit(incs, false);
+      theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
+                                         secondPDF().pdf()), false);
 
       //check if there is enough energy to extract
       if( (remnants.first->momentum() - incs.first->momentum()).e() < 0*MeV ||

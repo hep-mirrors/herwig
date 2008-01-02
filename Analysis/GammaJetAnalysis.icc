@@ -16,7 +16,7 @@ namespace Herwig {
 inline GammaJetAnalysis::GammaJetAnalysis() :
   _ptg(0.,250.,100), _ptgZoom(35.,65.,100), 
   _Eg(0,3000,100), _rapg(-10.,10.,100), 
-  _phig(-3.1459,3.1459,100) {}
+  _phig(-Constants::pi,Constants::pi,100) {}
 
 inline IBPtr GammaJetAnalysis::clone() const {
   return new_ptr(*this);

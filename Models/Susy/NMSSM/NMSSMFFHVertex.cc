@@ -14,7 +14,11 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-NMSSMFFHVertex::NMSSMFFHVertex() {
+NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.), 
+				   _tanb(0.), _idlast(make_pair(0,0)),
+				   _q2last(0.*MeV2), 
+				   _masslast(make_pair(0.*MeV,0*MeV)),
+				   _couplast(0.) {
   // PDG codes for the particles
   vector<int> first,second,third;
   // the quarks and neutral higgs
@@ -47,14 +51,6 @@ NMSSMFFHVertex::NMSSMFFHVertex() {
     third.push_back(-37);
   }
   setList(first,second,third);
-  _mw=0.*MeV;
-  _sinb=0.;
-  _cosb=0.;
-  _tanb=0.;
-  _idlast=make_pair(0,0);
-  _q2last=0.*MeV2;
-  _masslast=make_pair(0.*MeV,0.*MeV);
-  _couplast=0.;
 }
 
 void NMSSMFFHVertex::persistentOutput(PersistentOStream & os) const {
@@ -134,8 +130,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
       int iloc = (ihiggs-36)/10;
       output *= (id%2==0) ? (*_mixP)(iloc,1)/_sinb : (*_mixP)(iloc,0)/_cosb;
       setLeft(1.); setRight(-1.);
-      output *= Complex(0.,1.);
-      Complex fact = (id%2==0) ? (*_mixP)(iloc,1)/_sinb : (*_mixP)(iloc,0)/_cosb;
+      output *= Complex(0.,-1.);
     }
   }
   // charged higgs

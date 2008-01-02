@@ -43,7 +43,7 @@ CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
   versionstring.h version.tmp \
   version.tmp.new multi.test \
-  *.output
+  *.output probs.test
 
 ## checking targets ##
 

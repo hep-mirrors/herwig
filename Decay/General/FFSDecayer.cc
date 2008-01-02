@@ -22,25 +22,14 @@
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::u_spinortype;
-using ThePEG::Helicity::v_spinortype;
-using ThePEG::Helicity::SpinorWaveFunction;
-using ThePEG::Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
-
-
-FFSDecayer::~FFSDecayer() {}
+using namespace ThePEG::Helicity;
 
 void FFSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theFFSPtr;
+  os << _perturbativeVertex << _abstractVertex;
 }
 
 void FFSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theFFSPtr;
+  is >> _perturbativeVertex >> _abstractVertex;
 }
 
 ClassDescription<FFSDecayer> FFSDecayer::initFFSDecayer;
@@ -60,15 +49,8 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   rhoin.average();
   vector<SpinorWaveFunction> wave;
   vector<SpinorBarWaveFunction> barWave;
-  unsigned int iferm,iscal;
-  if(decay[0]->data().iSpin() == PDT::Spin1Half) {
-    iferm = 0;
-    iscal = 1;
-  }
-  else {
-    iferm = 1;
-    iscal = 0;
-  }
+  unsigned int iferm(0),iscal(1);
+  if(decay[0]->data().iSpin() != PDT::Spin1Half) swap(iferm,iscal);
   int itype[2];
   if(inpart.dataPtr()->CC())        itype[0] = inpart.id() > 0 ? 0 : 1;
   else                              itype[0] = 2;
@@ -102,49 +84,56 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   Energy2 scale(inpart.mass()*inpart.mass());
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
-      if(ferm) newme(if1, if2, 0) = _theFFSPtr->evaluate(scale,wave[if1],
-						       barWave[if2],scal);
-      else     newme(if2, if1, 0) = _theFFSPtr->evaluate(scale,wave[if1],
-						       barWave[if2],scal);
+      if(ferm) newme(if1, if2, 0) = 
+	_perturbativeVertex->evaluate(scale,wave[if1],barWave[if2],scal);
+      else     newme(if2, if1, 0) = 
+	_abstractVertex    ->evaluate(scale,wave[if1],barWave[if2],scal);
     }
   }
-
+  
   ME(newme);
   double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-  if((inpart.data()).iColour()==PDT::Colour8) {
-    output *= 0.5;
-  }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
   colourConnections(inpart, decay);
-  
+  // return the answer
   return output;
 }
 
 Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  double mu1(0.),mu2(0.);
-  if(outa.first->iSpin() == PDT::Spin1Half) {
-    mu1 = outa.second/inpart.second;
-    mu2 = outb.second/inpart.second;
-    _theFFSPtr->setCoupling(sqr(inpart.second), inpart.first,
-			    outa.first, outb.first,1);
+  if(_perturbativeVertex) {
+    double mu1(0.),mu2(0.);
+    if(outa.first->iSpin() == PDT::Spin1Half) {
+      mu1 = outa.second/inpart.second;
+      mu2 = outb.second/inpart.second;
+      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
+				       outa.first, outb.first,1);
+    }
+    else {
+      mu1 = outb.second/inpart.second;
+      mu2 = outa.second/inpart.second;
+      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
+				       outb.first, outa.first,1);
+      
+    }
+    double c2 = norm(_perturbativeVertex->getNorm());
+    Complex cl = _perturbativeVertex->getLeft();
+    Complex cr = _perturbativeVertex->getRight();
+    double me2 = c2*( (norm(cl) + norm(cr))*(1. + sqr(mu1) - sqr(mu2))
+		      + 2.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
+    Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+					outb.second);
+    Energy output = me2*pcm/16./Constants::pi;
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
   }
   else {
-    mu1 = outb.second/inpart.second;
-    mu2 = outa.second/inpart.second;
-    _theFFSPtr->setCoupling(sqr(inpart.second), inpart.first,
-			    outb.first, outa.first,1);
-
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
-  double c2 = norm(_theFFSPtr->getNorm());
-  Complex cl = _theFFSPtr->getLeft();
-  Complex cr = _theFFSPtr->getRight();
-  double me2 = c2*( (norm(cl) + norm(cr))*(1. + sqr(mu1) - sqr(mu2))
-		    + 2.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
-  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
-				       outb.second);
-  Energy pWidth = me2*pcm/16./Constants::pi;
-  if(inpart.first->iColour() == PDT::Colour8)
-    pWidth *= 0.5;
-  return pWidth;
 }

@@ -12,7 +12,7 @@
 // This is the declaration of the SMHPPVertex class.
 //
 
-#include "Herwig++/Models/General/SVVLoopVertex.h"
+#include "Herwig++/Models/General/VVSLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "SMHPPVertex.fh"
@@ -25,7 +25,7 @@ using namespace ThePEG;
  * setCoupling member for the Standard Model effective 
  * vertex Higgs-gamma-gamma. 
  */
-class SMHPPVertex: public SVVLoopVertex {
+class SMHPPVertex: public VVSLoopVertex {
 
 public:
 
@@ -184,7 +184,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SMHPPVertex,1> {
   /** Typedef of the first base class of SMHPPVertex. */
-  typedef Herwig::SVVLoopVertex NthBase;
+  typedef Herwig::VVSLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

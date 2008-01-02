@@ -92,8 +92,8 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
 	third.push_back(-(1000001+ix));
       }
     }
-
-  } //chargino loop
+  } 
+  //chargino loop
   setList(first,second,third);
 }
 
@@ -155,7 +155,6 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     swap( ism, ichg);
     smfermion = part2;
   }
-  
   //overall normalisation
   double gew = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw;
   setNorm(-gew);

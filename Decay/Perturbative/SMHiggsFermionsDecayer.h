@@ -13,14 +13,13 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 #include "SMHiggsFermionsDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::FFSVertexPtr;
 
 /**
  * The SMHiggsFermionsDecayer class is designed to decay the Standard Model Higgs
@@ -158,7 +157,7 @@ private:
   /**
    * Pointer to the Higgs vertex
    */
-  FFSVertexPtr _hvertex;
+  AbstractFFSVertexPtr _hvertex;
 
   /**
    * maximum weights for the different decay modes

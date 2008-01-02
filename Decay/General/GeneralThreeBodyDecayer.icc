@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GeneralThreeBodyDecayer class.
+//
+
+namespace Herwig {
+
+inline GeneralThreeBodyDecayer::GeneralThreeBodyDecayer() {}
+
+inline const vector<TBDiagram> & GeneralThreeBodyDecayer::getProcessInfo() const {
+  return _diagrams;
+}
+
+inline PDPtr GeneralThreeBodyDecayer::incoming() const {
+  return _incoming;
+}
+
+inline const vector<PDPtr> & GeneralThreeBodyDecayer::outgoing() const {
+  return _outgoing;
+}
+ 
+inline const unsigned int GeneralThreeBodyDecayer::numberOfFlows() const {
+  return _nflow;
+}
+
+inline const vector<vector<double> > & 
+GeneralThreeBodyDecayer::getColourFactors() const {
+  return _colour;
+}
+
+}

@@ -13,47 +13,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
-				    _couplast(0.0), _q2last()
-{
-  // PDG codes for the particles
-  vector<int> first,second,third;
-  // the quarks
-  for(unsigned int ix=1;ix<7;++ix)
-    {first.push_back(-ix);second.push_back(ix);third.push_back(23);}
-  // the leptons
-  for(unsigned int ix=11;ix<17;++ix)
-    {first.push_back(-ix);second.push_back(ix);third.push_back(23);}
-  setList(first,second,third);
-}
-
 inline IBPtr SMFFZVertex::clone() const {
   return new_ptr(*this);
 }
 
 inline IBPtr SMFFZVertex::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void SMFFZVertex::doinit() throw(InitException) {
-  _theSM = generator()->standardModel();
-  double sw2=_theSM->sin2ThetaW();
-  double fact = 0.25/sqrt(sw2*(1.-sw2));
-  for(int ix=1;ix<4;++ix)
-    {
-      _gl[2*ix-1]  = fact*((_theSM->vd())+(_theSM->ad()));
-      _gl[2*ix ]   = fact*((_theSM->vu())+(_theSM->au()));
-      _gl[2*ix+9 ] = fact*((_theSM->ve())+(_theSM->ae()));
-      _gl[2*ix+10] = fact*((_theSM->vnu())+(_theSM->anu()));
-      _gr[2*ix-1]  = fact*((_theSM->vd())-(_theSM->ad()));
-      _gr[2*ix ]   = fact*((_theSM->vu())-(_theSM->au()));
-      _gr[2*ix+9 ] = fact*((_theSM->ve())-(_theSM->ae()));
-      _gr[2*ix+10] = fact*((_theSM->vnu())-(_theSM->anu()));
-    }
-  _couplast=0.;
-  _q2last=0.*GeV2; 
-  orderInGem(1);
-  orderInGs(0);
-  FFVVertex::doinit();
 }
 }

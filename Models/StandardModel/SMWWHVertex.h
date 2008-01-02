@@ -36,6 +36,17 @@ public:
    */
   SMWWHVertex();
   
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+
+public:
+  
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -56,15 +67,6 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
-  
-  /**
-   * Calculate the couplings. 
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param part1 The ParticleData pointer for the first  particle.
-   * @param part2 The ParticleData pointer for the second particle.
-   * @param part3 The ParticleData pointer for the third  particle.
-   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
   
 protected:
   
@@ -101,11 +103,12 @@ private:
    * Describe a concrete class with persistent data.
    */
   static ClassDescription<SMWWHVertex> initSMWWHVertex;
-  
-  /**
+    /**
    * Private and non-existent assignment operator.
    */
   SMWWHVertex & operator=(const SMWWHVertex &);
+
+private:
   
   /**
    * Pointer to he Standard Model object.

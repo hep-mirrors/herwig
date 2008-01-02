@@ -19,18 +19,14 @@
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
+using namespace ThePEG::Helicity;
 
 void SSSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theSSSPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void SSSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theSSSPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<SSSDecayer> SSSDecayer::initSSSDecayer;
@@ -53,33 +49,34 @@ double SSSDecayer::me2(bool vertex, const int , const Particle & inpart,
   ScalarWaveFunction s2(decay[1],outgoing,true,vertex);
   Energy2 scale(inpart.mass()*inpart.mass());
   DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newme(0,0,0) = _theSSSPtr->evaluate(scale,s1,s2,inwave);
+  newme(0,0,0) = _abstractVertex->evaluate(scale,s1,s2,inwave);
   ME(newme);
   double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-  if(decay[0]->id() == decay[1]->id()) {
-    output /=2;
-  }
-  if(decay[0]->coloured() && decay[1]->coloured()) {
-    output*=3.;
-  }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
   colourConnections(inpart, decay);
+  // return the answer
   return output;
 }
 
 Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  Energy2 scale(sqr(inpart.second));
-  _theSSSPtr->setCoupling(scale, inpart.first, outa.first,
-			  outb.first);
-  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
-				      outb.second);
-  double c2 = norm(_theSSSPtr->getNorm());
-  Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
-  int cola(outa.first->iColour()), colb(outb.first->iColour());
-  if( abs(cola) == 3 && abs(colb) == 3)
-    pWidth *= 3.;
-  if( outa.first->id() == outb.first->id() )
-    pWidth *= 0.5;
-  return pWidth;
+  if(_perturbativeVertex) {
+    Energy2 scale(sqr(inpart.second));
+    _perturbativeVertex->setCoupling(scale, inpart.first, outa.first,
+				     outb.first);
+    Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+					outb.second);
+    double c2 = norm(_perturbativeVertex->getNorm());
+    Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
+    // colour factor
+    pWidth *= colourFactor(inpart.first,outa.first,outb.first);
+    return pWidth;
+  }
+  else {
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+  }
 }

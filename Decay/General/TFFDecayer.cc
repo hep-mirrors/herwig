@@ -22,23 +22,14 @@
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::TensorWaveFunction;
-using ThePEG::Helicity::LorentzTensor;
-using ThePEG::Helicity::SpinorWaveFunction;
-using ThePEG::Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
- 
-TFFDecayer::~TFFDecayer() {}
+using namespace ThePEG::Helicity;
 
 void TFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theFFTPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void TFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theFFTPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<TFFDecayer> TFFDecayer::initTFFDecayer;
@@ -59,15 +50,8 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   vector<LorentzTensor<double> > in;
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);
-  unsigned int iferm,ianti;
-  if(decay[0]->id()<0) {
-    ianti = 0;
-    iferm = 1;
-  }
-  else {
-    ianti = 1;
-    iferm = 0;
-  }
+  unsigned int iferm(0),ianti(1);
+  if(decay[0]->id()>=0) swap(iferm,ianti);
   vector<SpinorWaveFunction> wave;
   vector<SpinorBarWaveFunction> awave;
   SpinorWaveFunction(wave,decay[ianti],outgoing,true,vertex);
@@ -87,39 +71,46 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
     for(fhel=0;fhel<2;++fhel) {
       for(ahel=0;ahel<2;++ahel) {
 	if(iferm > ianti) {
-	  newme(thel,fhel,ahel) = _theFFTPtr->evaluate(scale,wave[ahel],
-						       awave[fhel],inwave);
+	  newme(thel,fhel,ahel) = _abstractVertex->evaluate(scale,wave[ahel],
+							    awave[fhel],inwave);
 	}
 	else {
-	  newme(thel,ahel,fhel) = _theFFTPtr->evaluate(scale,wave[ahel],
-						       awave[fhel],inwave);
+	  newme(thel,ahel,fhel) = _abstractVertex->evaluate(scale,wave[ahel],
+							    awave[fhel],inwave);
 	}
       }
     }
   }
   ME(newme);
   double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-  if(decay[0]->coloured()) {
-    output *= 3.;
-  }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
   colourConnections(inpart, decay);
+  // return the answer
   return output;
 }
 
 Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  Energy2 scale = sqr(inpart.second);
-  _theFFTPtr->setCoupling(scale, inpart.first, outa.first,
-			  outb.first);
-  double musq = sqr(outa.second/inpart.second);
-  double b = sqrt(1- 4.*musq);
-  double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
-  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
-				      outb.second);
-  Energy pWidth = norm(_theFFTPtr->getNorm())*me2*pcm/(8.*Constants::pi);
-  int cola(outa.first->iColour()), colb(outb.first->iColour());
-  if( abs(cola) == 3 && abs(colb) == 3)
-    pWidth *= 3.;
-  return pWidth;
+  if(_perturbativeVertex) {
+    Energy2 scale = sqr(inpart.second);
+    _perturbativeVertex->setCoupling(scale, inpart.first, outa.first,
+				     outb.first);
+    double musq = sqr(outa.second/inpart.second);
+    double b = sqrt(1- 4.*musq);
+    double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
+    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+					outb.second);
+    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/(8.*Constants::pi);
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
+  }
+  else {
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+  }
 }

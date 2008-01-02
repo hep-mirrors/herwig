@@ -23,6 +23,10 @@ inline void ForcedSplitting::setBeam(tcPPtr beam) const{
   _beam = beam;
 }
 
+inline void ForcedSplitting::setPDF(tcPDFPtr pdf) const{
+  _pdf = pdf;
+}
+
 inline Energy ForcedSplitting::getQspac() const {
   return _qspac;
 }

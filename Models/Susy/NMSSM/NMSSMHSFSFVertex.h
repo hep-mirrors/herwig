@@ -6,14 +6,17 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Models/Susy/MixingMatrix.h"
 #include "NMSSMHSFSFVertex.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the NMSSMHSFSFVertex class.
+/** \ingroup Helicity
+ * This class defines the coupling of Higgs bosons to the sfermions
+ * in the NMSSM.
  *
  * @see \ref NMSSMHSFSFVertexInterfaces "The interfaces"
  * defined for NMSSMHSFSFVertex.
@@ -59,7 +62,8 @@ public:
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
+			   tcPDPtr part3);
 
 protected:
 
@@ -104,6 +108,145 @@ private:
    */
   NMSSMHSFSFVertex & operator=(const NMSSMHSFSFVertex &);
 
+private:
+
+  /**
+   * Return the coupling of the charged higgs to the sfermions
+   */
+  Complex chargedHiggs(Energy2 q2, long id1, long id2);
+
+private:
+  
+  /** @name Stored parameters for fast access.*/
+  //@{
+  /**
+   * A pointer to the Standard Model object 
+   */
+  tcHwSMPtr _theSM;
+
+  /**
+   * The CP-even higgs mixing matrix
+   */
+  MixingMatrixPtr _mixS;
+
+  /**
+   * The CP-odd higgs mixing matrix
+   */
+  MixingMatrixPtr _mixP;
+
+  /**
+   * The \f$ \tilde{t}\f$ mixing matrix 
+   */
+  MixingMatrixPtr _mixTp;
+
+  /**
+   * The \f$ \tilde{b}\f$ mixing matrix 
+   */
+  MixingMatrixPtr _mixBt;
+
+  /**
+   * The \f$ \tilde{\tau}\f$ mixing matrix 
+   */
+  MixingMatrixPtr _mixTa;
+
+  /**
+   * The top quark trilinear coupling
+   */
+  complex<Energy> _triTp;
+
+  /**
+   * The bottom quark trilinear coupling
+   */
+  complex<Energy> _triBt;
+
+  /**
+   * The tau lepton trilinear coupling
+   */
+  complex<Energy> _triTa;
+
+  /**
+   * The value of \f$\lambda\f$.
+   */
+  double _lambda;
+  
+  /**
+   * The value of \f$ \lambda <S> \f$, the 
+   * V.E.V of the extra gauge singlet scaled
+   * by \f$\lambda\f$
+   */
+  Energy _lambdaVEV;
+
+  /**
+   * The value of the V.E.V \f$ v_1 \f$ 
+   */
+  Energy _v1;
+
+  /**
+   * The value of the V.E.V \f$ v_2 \f$ 
+   */
+  Energy _v2;
+  
+  /**
+   * The value of \f$ \sin\theta_W \f$
+   */
+  double _sw;
+
+  /**
+   * The value of \f$ \cos\theta_W \f$
+   */
+  double _cw;
+  
+  /**
+   * The value of \f$ M_W \f$
+   */
+  Energy _mw;
+
+  /**
+   * The value of \f$ M_Z \f$
+   */
+  Energy _mz;
+
+  /**
+   * The value of \f$ \sin\beta \f$
+   */
+  double _sb;
+
+  /**
+   * The value of \f$ \cos\beta \f$
+   */
+  double _cb;
+
+  /**
+   * The value of \f$ \tan\beta \f$
+   */
+  double _tb;
+
+  //@}
+  
+  /** @name Store previously calculated values for speed. */
+  //@{
+  /**
+   * The scale at which the last calculation took place. 
+   */
+  Energy2 _q2last;
+  
+  /**
+   * The value of the dimensionless coupling \f$g_W\f$ when
+   * last calculated.
+   */
+  double _couplast;
+
+  /**
+   * The value of mass of the counterpart SM fermion when
+   * last calculated.
+   */
+  pair<Energy, Energy> _masslast;
+
+  /**
+   * The PDG codes of the particles in the vertex when it was last evaluated
+   */
+  pair<long, long> _idlast;
+  //@}
 };
 }
 

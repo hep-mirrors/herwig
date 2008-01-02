@@ -65,18 +65,33 @@ SusyBase::mixings() const {
   return _mixings;
 }
 
-inline tFFSVertexPtr SusyBase::vertexFFH() const {
+inline tAbstractFFSVertexPtr SusyBase::vertexFFH() const {
   return theSSFFHVertex;
 }  
 
-inline tVVSVertexPtr SusyBase::vertexWWH() const {
+inline tAbstractVVSVertexPtr SusyBase::vertexWWH() const {
   return theSSWWHVertex;
 }
   
-inline tGeneralSVVVertexPtr SusyBase::vertexHGG() const{
+inline tAbstractVVSVertexPtr SusyBase::vertexHGG() const{
   return theSSHGGVertex;
 }
 
+inline tAbstractVSSVertexPtr SusyBase::vertexWHH() const {
+  return theWHHVertex;
+}
+
+inline tAbstractFFSVertexPtr SusyBase::vertexGOGOH() const {
+  return theGOGOHVertex;
+}
+
+inline tAbstractSSSVertexPtr SusyBase::vertexHHH() const {
+  return theHHHVertex;
+}
+
+inline tAbstractSSSVertexPtr SusyBase::vertexHSS() const {
+  return theHSFSFVertex;
+}
 
 }
 

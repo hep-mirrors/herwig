@@ -77,7 +77,7 @@ public:
    * @param outb The other decay product.
    */
   virtual Energy partialWidth(PMPair inpart, PMPair outa, 
-			      PMPair outb) const = 0;
+			      PMPair outb) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width 
@@ -132,6 +132,11 @@ protected:
    */
   void colourConnections(const Particle & parent, 
 			 const ParticleVector & out) const;
+
+  /**
+   *  Compute the spin and colour factor
+   */
+  double colourFactor(tcPDPtr in, tcPDPtr out1, tcPDPtr out2) const;
   //@}
 
 public:
@@ -248,10 +253,6 @@ struct ClassTraits<Herwig::GeneralTwoBodyDecayer>
   : public ClassTraitsBase<Herwig::GeneralTwoBodyDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::GeneralTwoBodyDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the GeneralTwoBodyDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

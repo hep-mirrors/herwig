@@ -45,7 +45,7 @@ struct HPDiagram {
   enum Channel {UNDEFINED = -1, sChannel, tChannel, fourPoint};
 
   /** Standard Constructor */
-  HPDiagram();
+  inline HPDiagram();
 
   /** Constructor taking ids as arguments.*/
   inline HPDiagram(IDPair, IDPair);

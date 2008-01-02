@@ -31,45 +31,34 @@ void MEff2vv::doinit() throw(InitException) {
   GeneralHardME::doinit();
   Energy mC = getParticleData(getOutgoing().first)->mass();
   Energy mD = getParticleData(getOutgoing().second)->mass();
-  bool masslVec = (mC == 0.*MeV && mD == 0.*MeV);
   HPCount ndiags(numberOfDiags());
   theFerm.resize(ndiags); theVec.resize(ndiags);
   theTen.resize(ndiags);
-  if(masslVec) theSca1.resize(ndiags);
-  else theSca2.resize(ndiags);
+  theSca.resize(ndiags);
   for(HPCount i = 0; i < ndiags; ++i) {
     HPDiagram current = getProcessInfo()[i];
     if(current.channelType == HPDiagram::tChannel) {
       if(current.intermediate->iSpin() == PDT::Spin1Half)
 	theFerm[i] = 
-	  make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first),
-		    dynamic_ptr_cast<FFVVertexPtr>(current.vertices.second));
+	  make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first),
+		    dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.second));
     }
     else if(current.channelType == HPDiagram::sChannel) {
-      if(current.intermediate->iSpin() == PDT::Spin0) {
-	if(masslVec) 
-	  theSca1[i] = 
-	    make_pair(dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first),
-		      dynamic_ptr_cast<GeneralSVVVertexPtr>
-		      (current.vertices.second));
-	else
-	  theSca2[i] = 
-	    make_pair(dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first),
-		      dynamic_ptr_cast<VVSVertexPtr>(current.vertices.second));
-      }
+      if(current.intermediate->iSpin() == PDT::Spin0)
+	theSca[i] = 
+	  make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first ),
+		    dynamic_ptr_cast<AbstractVVSVertexPtr>(current.vertices.second));
       if(current.intermediate->iSpin() == PDT::Spin1)
 	theVec[i] = 
-	  make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first),
-		    dynamic_ptr_cast<VVVVertexPtr>(current.vertices.second));
+	  make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first),
+		    dynamic_ptr_cast<AbstractVVVVertexPtr>(current.vertices.second));
       if(current.intermediate->iSpin() == PDT::Spin2)
 	theTen[i] = 
-	  make_pair(dynamic_ptr_cast<FFTVertexPtr>(current.vertices.first),
-		    dynamic_ptr_cast<VVTVertexPtr>(current.vertices.second));
+	  make_pair(dynamic_ptr_cast<AbstractFFTVertexPtr>(current.vertices.first),
+		    dynamic_ptr_cast<AbstractVVTVertexPtr>(current.vertices.second));
     }
   }
-  
 }
-
 
 double MEff2vv::me2() const {
   SpinorVector sp(2);
@@ -146,18 +135,10 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 	    }
 	    else if(current.channelType == HPDiagram::sChannel) {
 	      if(current.intermediate->iSpin() == PDT::Spin0) {
-		if( m1 && m2 ) {
-		  interS = theSca1[ix].first->evaluate(q2, 1, offshell, 
-						       sp[if1], sbar[if2]);
-		  diag[ix] = theSca1[ix].second->evaluate(q2, interS, 
-							  v1[vh1], v2[vh2]);
- 		}
-		else {
-		  interS = theSca2[ix].first->evaluate(q2, 1, offshell, 
-						       sp[if1], sbar[if2]);
-		  diag[ix] = theSca2[ix].second->evaluate(q2, v1[if1], v2[if2], 
-							  interS);
-		}
+		interS = theSca[ix].first->evaluate(q2, 1, offshell, 
+						    sp[if1], sbar[if2]);
+		diag[ix] = theSca[ix].second->evaluate(q2, v1[if1], v2[if2], 
+						       interS);
 	      }
 	      else if(current.intermediate->iSpin() == PDT::Spin1) {
 		interV = theVec[ix].first->evaluate(q2, 5, offshell, sp[if1], 
@@ -262,11 +243,11 @@ HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
 
 
 void MEff2vv::persistentOutput(PersistentOStream & os) const {
-  os << theFerm << theVec << theTen << theSca1 << theSca2;
+  os << theFerm << theVec << theTen << theSca;
 }
 
 void MEff2vv::persistentInput(PersistentIStream & is, int) {
-  is >> theFerm >> theVec >> theTen >> theSca1 >> theSca2;
+  is >> theFerm >> theVec >> theTen >> theSca;
 }
 
 ClassDescription<MEff2vv> MEff2vv::initMEff2vv;

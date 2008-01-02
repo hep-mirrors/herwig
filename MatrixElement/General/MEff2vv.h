@@ -13,13 +13,12 @@
 //
 
 #include "GeneralHardME.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -28,13 +27,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::FFTVertexPtr;
-using ThePEG::Helicity::FFSVertexPtr;
-using ThePEG::Helicity::VVSVertexPtr;
-using ThePEG::Helicity::GeneralSVVVertexPtr;
-using ThePEG::Helicity::VVTVertexPtr;
-using ThePEG::Helicity::VVVVertexPtr;
 using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::VectorWaveFunction;
@@ -195,31 +187,25 @@ private:
    * Storage for a dynamically cast vertices for a tchannel vector
    * intermediate
    */
-  vector<pair<FFVVertexPtr, FFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
 
   /**
    * Storage for a dynamically cast vertices for a schannel vector
    * intermediate
    */
-  vector<pair<FFVVertexPtr, VVVVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > theVec;
 
   /**
    * Storage for a dynamically cast vertices for a schannel scalar
    * intermediate
    */
-  vector<pair<FFTVertexPtr, VVTVertexPtr> > theTen;
+  vector<pair<AbstractFFTVertexPtr, AbstractVVTVertexPtr> > theTen;
 
   /**
    * Storage for a dynamically cast vertices for a schannel scalar
    * intermediate for massless external vector bosons
    */
-  vector<pair<FFSVertexPtr, GeneralSVVVertexPtr> > theSca1;
-
-  /**
-   * Storage for a dynamically cast vertices for a schannel scalar
-   * intermediate for massive external vector bosons
-   */
-  vector<pair<FFSVertexPtr, VVSVertexPtr> > theSca2;
+  vector<pair<AbstractFFSVertexPtr, AbstractVVSVertexPtr> > theSca;
 };
 
 }

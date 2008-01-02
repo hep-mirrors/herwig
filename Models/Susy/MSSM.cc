@@ -88,21 +88,20 @@ void MSSM::adjustMixingMatrix(long id) {
     break;
   case 1000005 :
   case 2000005 :
-    theSbotMix->adjustPhase(id);
-    if(theStopMix)
+    if(theSbotMix)
       theStopMix->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
-			     << "The stop mixing matrix pointer is null!" 
+			     << "The sbottom mixing matrix pointer is null!" 
 			     << Exception::runerror;
     break;
   case 1000015 :
   case 2000015 :
-    if(theStopMix)
-      theStopMix->adjustPhase(id);
+    if(theStauMix)
+      theStauMix->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
-			     << "The stop mixing matrix pointer is null!" 
+			     << "The stau mixing matrix pointer is null!" 
 			     << Exception::runerror;
     break;
   default :
