@@ -28,6 +28,7 @@ endif
 all-local: done-all-links
 
 done-all-links:
+	if test ! -L Herwig++ ; then $(LN_S) . Herwig++ ; fi
 	find $(top_builddir) -name '*.so' -not -name 'lib*' -not -path '$(top_builddir)/lib/*' -exec $(LN_S) \{\} \;
 	echo "stamp" > done-all-links
 

@@ -11,8 +11,9 @@ inline LPairAnalysis::LPairAnalysis() :
   _etp(0.,250.,100), _etm(0.,250.,100), _etpair(0.,250.,100), 
   _ep(0.,1000.,100), _em(1.,3000.,100), _epair(0.,1500.,100), 
   _rapp(-5.,5.,100), _rapm(-5.,5.,100), _rappair(-5.,5.,100), 
-  _phip(-3.1459,3.1459,50), _phim(-3.1459,3.1459,50), 
-  _deltaphi(-3.1459,3.1459,100), _mpair(0,750,100), 
+  _phip(-Constants::pi,Constants::pi,50), 
+  _phim(-Constants::pi,Constants::pi,50), 
+  _deltaphi(-Constants::pi,Constants::pi,100), _mpair(0,750,100), 
   _etsum(0.,400.,100), _ptsum(0.,400.,100) {}
 
 inline IBPtr LPairAnalysis::clone() const {

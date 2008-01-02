@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LittleHiggsModel class.
+//
+#ifndef HERWIG_LittleHiggsModel_FH
+#define HERWIG_LittleHiggsModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LittleHiggsModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LittleHiggsModel,LittleHiggsModelPtr);
+
+}
+
+#endif

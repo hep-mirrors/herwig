@@ -51,7 +51,7 @@ void RSModelVVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
   if(q2!=_q2last[1])
     {
       double alphaS = _theModel->alphaS(q2);
-      _couplast[1] = sqrt(4.0*3.14159265*alphaS);
+      _couplast[1] = sqrt(4.0*Constants::pi*alphaS);
       _q2last[1]=q2;
     }
   setNorm(Complex(_couplast[1]*_theKappa*UnitRemoval::E));
@@ -61,7 +61,7 @@ void RSModelVVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
       if(q2!=_q2last[0])
         {
           double alpha = _theModel->alphaEM(q2);
-          _couplast[0] = sqrt(4.0*3.14159265*alpha);
+          _couplast[0] = sqrt(4.0*Constants::pi*alpha);
           _q2last[0]=q2;
         }
       // W- W+ photon and cylic perms

@@ -13,7 +13,7 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -219,7 +219,7 @@ private:
   /**
    *  Pointer to the quark-antiquark-photon vertex
    */
-  FFVVertexPtr _photonvertex;
+  AbstractFFVVertexPtr _photonvertex;
 
   /**
    *  Maximum PDG code of the quarks allowed

@@ -131,14 +131,10 @@ PDFVeto(const Energy2 t, const double x,
   // this would correspond to QSPAC in F-HERWIG.     
 
   double newpdf(0.0), oldpdf(0.0);
-  //different treatment of MPI ISR by hand:
-  if( ShowerHandler::currentHandler()->FirstInt() ){
-    newpdf=pdf->xfx(beam,parton0,t,x/z());
-    oldpdf=pdf->xfx(beam,parton1,t,x);
-  }else{
-    newpdf=pdf->xfx(beam,parton0,t,x/z()) - pdf->xfvx(beam,parton0,t,x/z());
-    oldpdf=pdf->xfx(beam,parton1,t,x) - pdf->xfvx(beam,parton1,t,x);
-  }
+  //different treatment of MPI ISR is done via CascadeHandler::resetPDFs()
+  newpdf=pdf->xfx(beam,parton0,t,x/z());
+  oldpdf=pdf->xfx(beam,parton1,t,x);
+
   
   if(newpdf<=0.) return true;
   if(oldpdf<=0.) return false;

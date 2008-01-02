@@ -25,7 +25,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::VectorWaveFunction;
@@ -205,7 +204,7 @@ private:
   /**
    *  Pointer to the Z vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFZVertex;
 
 };
 

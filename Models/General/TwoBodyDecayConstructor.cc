@@ -19,20 +19,20 @@
 #include "ThePEG/Interface/Switch.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
 
 TwoBodyDecayConstructor::TwoBodyDecayConstructor():
-  _theExistingDecayers(0),_init(true),_iteration(1),_points(1000),
-  _info(false), _createmodes(true) {}
+  _theExistingDecayers(0) {}
 
 void TwoBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _theExistingDecayers << _init << _iteration << _points << _info;
+  os << _theExistingDecayers;
 }
   
 void TwoBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >>_theExistingDecayers >> _init >> _iteration >> _points >> _info;
+  is >>_theExistingDecayers;
 }
 
 ClassDescription<TwoBodyDecayConstructor> 
@@ -44,63 +44,7 @@ void TwoBodyDecayConstructor::Init() {
   static ClassDocumentation<TwoBodyDecayConstructor> documentation
     ("The TwoBodyDecayConstructor implements to creation of 2 body decaymodes "
      "and decayers that do not already exist for the given set of vertices.");
-  
-  static Switch<TwoBodyDecayConstructor,bool> interfaceInitializeDecayers
-    ("InitializeDecayers",
-     "Initialize new decayers",
-     &TwoBodyDecayConstructor::_init, true, false, false);
-  static SwitchOption interfaceInitializeDecayersInitializeDecayersOn
-    (interfaceInitializeDecayers,
-     "Yes",
-     "Initialize new decayers to find max weights",
-     true);
-  static SwitchOption interfaceInitializeDecayersoff
-    (interfaceInitializeDecayers,
-     "No",
-     "Use supplied weights for integration",
-     false);
-  
-  static Parameter<TwoBodyDecayConstructor,int> interfaceInitIteration
-    ("InitIteration",
-     "Number of iterations to optimise integration weights",
-     &TwoBodyDecayConstructor::_iteration, 1, 0, 10,
-     false, false, true);
 
-  static Parameter<TwoBodyDecayConstructor,int> interfaceInitPoints
-    ("InitPoints",
-     "Number of points to generate when optimising integration",
-     &TwoBodyDecayConstructor::_points, 1000, 100, 100000000,
-     false, false, true);
-
-  static Switch<TwoBodyDecayConstructor,bool> interfaceOutputInfo
-    ("OutputInfo",
-     "Whether to output information about the decayers",
-     &TwoBodyDecayConstructor::_info, false, false, false);
-  static SwitchOption interfaceOutputInfoOff
-    (interfaceOutputInfo,
-     "No",
-     "Do not output information regarding the created decayers",
-     false);
-  static SwitchOption interfaceOutputInfoOn
-    (interfaceOutputInfo,
-     "Yes",
-     "Output information regarding the decayers",
-     true);
-
-  static Switch<TwoBodyDecayConstructor,bool> interfaceCreateDecayModes
-    ("CreateDecayModes",
-     "Whether to create the ThePEG::DecayMode objects as well as the decayers",
-     &TwoBodyDecayConstructor::_createmodes, true, false, false);
-  static SwitchOption interfaceCreateDecayModesOn
-    (interfaceCreateDecayModes,
-     "Yes",
-     "Create the ThePEG::DecayMode objects",
-     true);
-  static SwitchOption interfaceCreateDecayModesOff
-    (interfaceCreateDecayModes,
-     "No",
-     "Only create the Decayer objects",
-     false);
 }
 
 void TwoBodyDecayConstructor::DecayList(const PDVector & particles) {
@@ -162,72 +106,50 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vertex,
   if( _theExistingDecayers[ivert][icol] ) return;
   string name;
   switch(vertex->getName()) {
-  case FFV : {
-    if( icol == 0 || icol == 1)
-      name = "FFVDecayer";
-    else
-      name = "VFFDecayer";
-  }
+  case FFV :
+    name = ( icol == 0 || icol == 1) ? "FFVDecayer" : "VFFDecayer";
     break;
-  case FFS : {
-    if( icol == 0 || icol == 1) 
-      name = "FFSDecayer";
-    else 
-      name = "SFFDecayer";
-  }
+  case FFS :
+    name = ( icol == 0 || icol == 1) ? "FFSDecayer" : "SFFDecayer";
     break;
-  case VVS : {
-    if( icol == 0 || icol == 1) 
-      name = "VVSDecayer";
-    else 
-      name = "SVVDecayer";
-  } 
+  case VVS :
+    name = ( icol == 0 || icol == 1) ? "VVSDecayer" : "SVVDecayer";
     break;
-  case GeneralSVV : {
-    if(icol == 0) 
-      name = "SVVLoopDecayer";
-  }
+  case VSS :
+    name = (icol == 0) ? "VSSDecayer" : "SSVDecayer";
     break;
-  case VSS : {
-    if(icol == 0)
-      name = "VSSDecayer";
-    else 
-      name = "SSVDecayer";
-  }
+  case VVT :
+    name = (icol == 2) ? "TVVDecayer" : "Unknown";
     break;
-  case VVT : {
-    if(icol == 2)
-      name = "TVVDecayer";
-  }
+  case FFT :
+    name = (icol == 2) ? "TFFDecayer" : "Unknown";
     break;
-  case FFT : {
-    if(icol == 2)
-      name = "TFFDecayer";
-  }
+  case SST :
+    name = (icol == 2) ? "TSSDecayer" : "Unknown";
     break;
-  case SST : {
-    if(icol == 2)
-      name = "TSSDecayer";
-  }
-    break;
-  case SSS : {
+  case SSS :
     name = "SSSDecayer";
-  }
     break;
-  case VVV : name = "VVVDecayer";
+  case VVV :
+    name = "VVVDecayer";
     break;
   default : throw NBodyDecayConstructorError() 
+      << "Error: Cannot assign " << vertex->fullName() << " to a decayer. " 
+      <<  "Looking in column " << icol;
+  }
+  if(name=="Unknown") throw NBodyDecayConstructorError() 
     << "Error: Cannot assign " << vertex->fullName() << " to a decayer. " 
     <<  "Looking in column " << icol;
-  }
   ostringstream fullname;
   fullname << "/Herwig/Decays/" << name << "_" 
 	   << ivert << "_" << icol;
   string classname = "Herwig::" + name;
-    
   GeneralTwoBodyDecayerPtr decayer;
   decayer = dynamic_ptr_cast<GeneralTwoBodyDecayerPtr>
     (generator()->preinitCreate(classname,fullname.str()));
+  if(!decayer)  throw NBodyDecayConstructorError() 
+    << "Error: Cannot assign " << vertex->fullName() << " to a decayer. " 
+    <<  "Looking in column " << icol;
   string msg = generator()->preinitInterface(decayer, "DecayVertex", 
 					     "set", vertex->fullName());
   if(msg.find("Error:") != string::npos)
@@ -263,7 +185,7 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
 	"," + pb->PDGName() + ";";
       dm = eg->findDecayMode(tag);
     }
-    if( !dm && _createmodes ) {
+    if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = eg->preinitCreateDecayMode(tag);
       if(ndm) {
 	eg->preinitInterface(ndm, "Decayer", "set",
@@ -286,59 +208,7 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
 	eg->preinitInterface(dm, "Decayer", "set", 
 			     decayer->fullName());
     }
-    else {}
   }
-  //update CC mode if it exists
-  if( inpart->CC() )
-    inpart->CC()->synchronize();
-}
-
-void TwoBodyDecayConstructor::setBranchingRatio(tDMPtr dm, Energy pwidth) {
-  //Need width and branching ratios for all currently created decay modes
-  PDPtr parent = const_ptr_cast<PDPtr>(dm->parent());
-  Selector<tDMPtr> modes = parent->decaySelector();
-  Energy currentwidth(0.*MeV);
-  if( !modes.empty() ) currentwidth = parent->width(); 
-  Energy newWidth = currentwidth + pwidth;
-  parent->width(newWidth);
-  //need to reweight current branching fractions if there are any
-  for(Selector<tDMPtr>::const_iterator dit = modes.begin(); 
-      dit != modes.end(); ++dit) {
-    double newbrat = ((*dit).second->brat())*currentwidth/newWidth;
-    ostringstream brf;
-    brf << newbrat;
-    generator()->preinitInterface((*dit).second, "BranchingRatio",
-				  "set", brf.str());
-  }
-  //set brat for current mode
-  double brat = pwidth/newWidth;
-  ostringstream br;
-  br << brat;
-  generator()->preinitInterface(dm, "BranchingRatio",
-				"set", br.str());
-  parent->touch();
-  parent->update();
-  parent->reset();
-}
-
-void TwoBodyDecayConstructor::setDecayerInterfaces(string fullname) const {
-  if( _init ) {
-    ostringstream value;
-    value << _init;
-    generator()->preinitInterface(fullname, "Initialize", "set",
-				  value.str());
-    value.str("");
-    value << _iteration;
-    generator()->preinitInterface(fullname, "Iteration", "set",
-				  value.str());
-    value.str("");
-    value << _points;
-    generator()->preinitInterface(fullname, "Points", "set",
-				  value.str());
-  }
-  string outputmodes;
-  if( _info ) outputmodes = string("Output");
-  else outputmodes = string("NoOutput");
-  generator()->preinitInterface(fullname, "OutputModes", "set",
-				outputmodes);
+  // update CC mode if it exists
+  if( inpart->CC() ) inpart->CC()->synchronize();
 }

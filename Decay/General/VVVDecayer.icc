@@ -28,7 +28,8 @@ inline IBPtr VVVDecayer::fullclone() const {
 }
 
 inline void VVVDecayer::doinit() throw(InitException) {
-  _theVVVPtr = dynamic_ptr_cast<VVVVertexPtr>(getVertex());
+  _perturbativeVertex = dynamic_ptr_cast<VVVVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVVVVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();
 }
 

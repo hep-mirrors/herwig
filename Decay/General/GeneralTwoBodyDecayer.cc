@@ -25,13 +25,9 @@ using namespace Herwig;
 
 void GeneralTwoBodyDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
-  if(_theVertex) {
-    _theVertex->init();
-  }
-  else 
-    throw InitException() << "GeneralTwoBodyDecayer::doinit() - "
-			  << "Null vertex pointer!\n";  
-
+  if(!_theVertex) throw InitException() << "GeneralTwoBodyDecayer::doinit() - "
+					<< "Null vertex pointer!\n";  
+  _theVertex->init();
   vector<double> wgt(0);  
   PDVector parents = _theVertex->getIncoming();
   PDVector::size_type np = parents.size();
@@ -43,8 +39,8 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
     Energy m1 = inpart->mass();
     PDVector decaylist;
     for(unsigned int il = 0; il< _thelist.size(); ++il) {
-       PDVector temp = _theVertex->search(_thelist[il], pid);
-       decaylist.insert(decaylist.end(),temp.begin(),temp.end());
+      PDVector temp = _theVertex->search(_thelist[il], pid);
+      decaylist.insert(decaylist.end(),temp.begin(),temp.end());
     }
     PDVector::size_type ndec = decaylist.size();
     for( PDVector::size_type j = 0; j < ndec; j +=3 ) {
@@ -200,7 +196,7 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour antitriplet "
-			<< "in GeneralTwoBodyDecayer::decay() "
+			<< "in GeneralTwoBodyDecayer::colourConnections() "
 			<< outaColour << " " << outbColour
 			<< Exception::runerror; 
   }
@@ -219,13 +215,13 @@ colourConnections(const Particle & parent,
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour octet "
-			<< "in GeneralTwoBodyDecayer::decay() "
+			<< "in GeneralTwoBodyDecayer::colourConnections() "
 			<< outaColour << " " << outbColour
 			<< Exception::runerror;
   }
   else
     throw Exception() << "Unknown incoming colour in "
-		      << "GeneralTwoBodyDecayer::decay() "
+		      << "GeneralTwoBodyDecayer::colourConnections() "
 		      << incColour
 		      << Exception::runerror; 
 }
@@ -333,4 +329,129 @@ void GeneralTwoBodyDecayer::doinitrun() {
     double fact = pow(1.5,int(mode(ix)->externalParticles(0)->iSpin())-1);
     mode(ix)->setMaxWeight(fact*mode(ix)->maxWeight());
   }
+}
+
+double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
+					   tcPDPtr out2) const {
+  // identical particle symmetry factor
+  double output = out1->id()==out2->id() ? 0.5 : 1.;
+  // colour neutral incoming particle
+  if(in->iColour()==PDT::Colour0) {
+    // both colour neutral
+    if(out1->iColour()==PDT::Colour0 && out2->iColour()==PDT::Colour0)
+      output *= 1.;
+    // colour triplet/ antitriplet
+    else if((out1->iColour()==PDT::Colour3    && out2->iColour()==PDT::Colour3bar) ||
+	    (out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour3   ) ) {
+      output *= 3.;
+    }
+    // colour octet colour octet
+    else if(out1->iColour()==PDT::Colour8 && out2->iColour()==PDT::Colour8 ) {
+      output *= 8.;
+    }
+    else 
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour neutral particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  // triplet
+  else if(in->iColour()==PDT::Colour3) {
+    // colour triplet + neutral
+    if((out1->iColour()==PDT::Colour0 && out2->iColour()==PDT::Colour3) ||
+       (out1->iColour()==PDT::Colour3 && out2->iColour()==PDT::Colour0) ) {
+      output *= 1.;
+    }
+    // colour triplet + octet
+    else if((out1->iColour()==PDT::Colour8 && out2->iColour()==PDT::Colour3) ||
+	    (out1->iColour()==PDT::Colour3 && out2->iColour()==PDT::Colour8) ) {
+      output *= 4./3.;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour triplet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  // anti triplet
+  else if(in->iColour()==PDT::Colour3bar) {
+    // colour anti triplet + neutral
+    if((out1->iColour()==PDT::Colour0    && out2->iColour()==PDT::Colour3bar ) ||
+       (out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour0    ) ) {
+      output *= 1.;
+    }
+    // colour anti triplet + octet
+    else if((out1->iColour()==PDT::Colour8    && out2->iColour()==PDT::Colour3bar ) ||
+	    (out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour8    ) ) {
+      output *= 4./3.;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour anti triplet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  else if(in->iColour()==PDT::Colour8) {
+    // colour octet + neutral
+    if((out1->iColour()==PDT::Colour0 && out2->iColour()==PDT::Colour8 ) ||
+       (out1->iColour()==PDT::Colour8 && out2->iColour()==PDT::Colour0 ) ) {
+      output *= 1.;
+    }
+    // colour triplet/antitriplet
+    else if((out1->iColour()==PDT::Colour3    && out2->iColour()==PDT::Colour3bar) ||
+	    (out1->iColour()==PDT::Colour3bar && out2->iColour()==PDT::Colour3   ) ) {
+      output *= 0.5;
+    }
+    else
+      throw Exception() << "Unknown colour for the outgoing particles"
+			<< " for decay colour octet particle in "
+			<< "GeneralTwoBodyDecayer::colourFactor() for "
+			<< in->PDGName() << " -> "
+			<< out1->PDGName() << " " << out2->PDGName() 
+			<< Exception::runerror;
+  }
+  else
+    throw Exception() << "Unknown colour for the decaying particle in "
+		      << "GeneralTwoBodyDecayer::colourFactor() for "
+		      << in->PDGName() << " -> "
+		      << out1->PDGName() << " " << out2->PDGName() 
+		      << Exception::runerror;
+  return output;
+}
+
+Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa, 
+					   PMPair outb) const {
+  // select the number of the mode
+  PDVector children;
+  children.push_back(const_ptr_cast<PDPtr>(outa.first));
+  children.push_back(const_ptr_cast<PDPtr>(outb.first));
+  bool cc;
+  int nmode=modeNumber(cc,inpart.first,children);
+  tcPDPtr newchild[2] = {mode(nmode)->externalParticles(1),
+			 mode(nmode)->externalParticles(2)};
+  // make the particles
+  Lorentz5Momentum pparent = Lorentz5Momentum(inpart.second);
+  PPtr parent = inpart.first->produceParticle(pparent);
+  Lorentz5Momentum pout[2];
+  double ctheta,phi;
+  Kinematics::generateAngles(ctheta,phi);
+  Kinematics::twoBodyDecay(pparent, outa.second, outb.second,
+ 			   ctheta, phi,pout[0],pout[1]);
+  if( ( !cc && outa.first!=newchild[0]) ||
+      (  cc && !((  outa.first->CC() && outa.first->CC() == newchild[0])||
+		 ( !outa.first->CC() && outa.first       == newchild[0]) )))
+    swap(pout[0],pout[1]);
+  ParticleVector decay;
+  decay.push_back(newchild[0]->produceParticle(pout[0]));
+  decay.push_back(newchild[1]->produceParticle(pout[1]));
+  double me =  me2(false,-1,*parent,decay);
+  Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,
+					     outa.second, outb.second);
+  return me/(8.*Constants::pi)*pcm;
 }

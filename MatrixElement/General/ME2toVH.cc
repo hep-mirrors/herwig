@@ -166,7 +166,7 @@ double ME2toVH::helicityME(vector<SpinorWaveFunction>    & fin ,
   else if(incharge>0) vec = _wplus;
   else                vec = _wminus;
   // vertex for vector boson
-  FFVVertexPtr vertex = vec==_z0 ? _vertexFFZ : _vertexFFW;
+  AbstractFFVVertexPtr vertex = vec==_z0 ? _vertexFFZ : _vertexFFW;
   // wavefunction for the scalar
   ScalarWaveFunction higgs(meMomenta()[2],mePartonData()[2],1.,outgoing);
   // calculate the matrix element

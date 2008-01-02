@@ -207,7 +207,7 @@ private:
   /**
    *  Pointer to the Higgs vertex
    */
-  FFSVertexPtr _theFFHVertex;
+  AbstractFFSVertexPtr _theFFHVertex;
 
   /**
    * Allowed outgoing particles

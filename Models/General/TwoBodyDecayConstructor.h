@@ -142,22 +142,6 @@ private:
    */
   void createDecayMode(const vector<TwoBodyDecay> & decays,
 		       GeneralTwoBodyDecayerPtr decayer);
-
-  /**
-   * Set the branching ratio of this mode. This requires 
-   * calculating a new width for the decaying particle and reweighting
-   * the current branching fractions.
-   * @param dm The decaymode for which to set the branching ratio
-   * @param pwidth The calculated width of the mode
-   */
-    void setBranchingRatio(tDMPtr dm, Energy pwidth);
-
-  /**
-   * Set the interfaces of the decayers depending on the flags stored.
-   * @param name Fullname of the decayer in the EventGenerator
-   * including the path
-   */
-  void setDecayerInterfaces(string name) const;
   //@}
 
 private:
@@ -166,32 +150,6 @@ private:
    * Existing decayers
    */
    vector<vector<GeneralTwoBodyDecayerPtr> > _theExistingDecayers;
-
-  /**
-   * Whether to initialize decayers or not
-   */
-  bool _init;
-  
-  /**
-   * Number of iterations if initializing (default 1)
-   */
-  int _iteration;
-
-  /**
-   * Number of points to do in initialization
-   */
-  int _points;
-
-  /**
-   * Whether to output information on the decayers 
-   */
-  bool _info;
-
-  
-  /**
-   * Whether to create the DecayModes as well as the Decayer objects 
-   */
-  bool _createmodes;
 };
   
 }

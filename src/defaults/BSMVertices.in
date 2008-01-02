@@ -33,6 +33,15 @@ create Herwig::SSWHHVertex MSSM_WHH
 create Herwig::SSHHHVertex MSSM_HHH
 create Herwig::SSHGGVertex MSSM_HGG
 
+# NMSSM
+library HwNMSSM.so
+create Herwig::NMSSMFFHVertex NMSSM_FFH
+create Herwig::NMSSMGOGOHVertex NMSSM_GOGOH
+create Herwig::NMSSMHSFSFVertex NMSSM_HSS
+create Herwig::NMSSMWWHVertex NMSSM_WWH
+create Herwig::NMSSMWHHVertex NMSSM_WHH
+create Herwig::NMSSMHHHVertex NMSSM_HHH
+
 # MUED
 library HwUED.so
 create Herwig::UEDF1F1Z0Vertex UED_F1F1Z

@@ -14,7 +14,9 @@
 
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.fh"
 #include "SVVDecayer.fh"
 
 namespace Herwig {
@@ -23,7 +25,8 @@ using Helicity::VVSVertexPtr;
 
 /** \ingroup Decay
  * This SVVDecayer class implements the decay of a scalar to 
- * 2 vector bosons using the tree level VVSVertex. It inherits from 
+ * 2 vector bosons using either the tree level VVSVertex or the loop vertex.
+ * It inherits from 
  * GeneralTwoBodyDecayer and implements the virtual member functions me2() 
  * and partialWidth(). It also stores a pointer to the VVSVertex.
  *
@@ -34,20 +37,10 @@ class SVVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline SVVDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SVVDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -125,6 +118,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
   //@}
 
 private:
@@ -144,10 +143,19 @@ private:
 private:
   
   /**
-   * Store pointer to VVSVertex that is set in doinit by 
-   * typecast from vertex pointer in base class
+   *  Abstract pointer to general VVS vertex
    */
-  VVSVertexPtr _theVVSPtr; 
+  AbstractVVSVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative form
+   */
+  VVSVertexPtr _perturbativeVertex; 
+  
+  /**
+   * Pointer to the general form
+   */
+  GeneralVVSVertexPtr _generalVertex;
 };
 
 }
@@ -173,10 +181,6 @@ struct ClassTraits<Herwig::SVVDecayer>
   : public ClassTraitsBase<Herwig::SVVDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SVVDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SVVDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

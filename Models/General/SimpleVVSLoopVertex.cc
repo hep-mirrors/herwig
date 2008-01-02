@@ -1,37 +1,27 @@
 // -*- C++ -*-
 //
-// SimpleSVVLoopVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-//
 // This is the implementation of the non-inlined, non-templated member
-// functions of the SimpleSVVLoopVertex class.
+// functions of the SimpleVVSLoopVertex class.
 //
 
-#include "SimpleSVVLoopVertex.h"
+#include "SimpleVVSLoopVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/PDT/EnumParticles.h"
 
-namespace Herwig {
-using namespace ThePEG;
-   
-NoPIOClassDescription<SimpleSVVLoopVertex> 
-SimpleSVVLoopVertex::initSimpleSVVLoopVertex;
+using namespace Herwig;
+
+NoPIOClassDescription<SimpleVVSLoopVertex> SimpleVVSLoopVertex::initSimpleVVSLoopVertex;
 // Definition of the static class description member.
-    
-void SimpleSVVLoopVertex::Init() {
-  
-  static ClassDocumentation<SimpleSVVLoopVertex> documentation
-    ("The SimpleSVVLoopVertex class calculates the tensor integral"
+
+void SimpleVVSLoopVertex::Init() {
+
+  static ClassDocumentation<SimpleVVSLoopVertex> documentation
+    ("The SimpleVVSLoopVertex class calculates the tensor integral"
      " coefficients using Looptools.");
+
 }
+
   
-void SimpleSVVLoopVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr,tcPDPtr) {
+void SimpleVVSLoopVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr,tcPDPtr) {
   Complex loop(0.);
   for(unsigned int i = 0; i < masses.size(); ++i) {
     loop += A1(q2,sqr(masses[i]));
@@ -45,11 +35,11 @@ void SimpleSVVLoopVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr,tcPDPtr) {
   aEp(0.0);
 }
 
-Complex SimpleSVVLoopVertex::A1(Energy2 s,Energy2 mf2) const {
+Complex SimpleVVSLoopVertex::A1(Energy2 s,Energy2 mf2) const {
   return mf2/s*(4.-W2(s,mf2)*(1.-4.*mf2/s));
 }
 
-Complex SimpleSVVLoopVertex::W2(Energy2 s, Energy2 mf2) const {
+Complex SimpleVVSLoopVertex::W2(Energy2 s, Energy2 mf2) const {
   double pi = Constants::pi;
   Complex ac(0.);
   double root=0.5*sqrt(abs(s)/mf2);
@@ -63,7 +53,7 @@ Complex SimpleSVVLoopVertex::W2(Energy2 s, Energy2 mf2) const {
   return 4.*ac;
 }
 
-Complex SimpleSVVLoopVertex::W3(Energy mh, Energy mf) const {
+Complex SimpleVVSLoopVertex::W3(Energy mh, Energy mf) const {
   double pi = Constants::pi;
   Complex ac(0.);
   Complex i(0.,1.);
@@ -81,6 +71,4 @@ Complex SimpleSVVLoopVertex::W3(Energy mh, Energy mf) const {
   ac = 3.*ratio2*(2. + (4.*ratio2-1.)*ac);
 
   return ac;
-}
-
 }

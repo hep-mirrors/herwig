@@ -146,7 +146,8 @@ public:
   inline bool IsOrdered() const;
 
   /**
-   * Return true if multiple parton interactions are switched on.
+   * Return true if multiple parton interactions are switched on 
+   * and can be used for this beam setup.
    */
   inline bool IsMPIOn() const;
   //@}
@@ -241,6 +242,11 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+  /**
+   * Called at the end of the run phase.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -258,6 +264,12 @@ private:
   ShowerHandler & operator=(const ShowerHandler &);
 
 private:
+  /**
+   * Access function for the MPIHandler. If it is a zero pointer
+   * an exception is thrown, because it should only be called after
+   * checking with IsMPIOn.
+   */
+  inline tMPIHPtr getMPIHandler() const;
 
   /**
    * Switch for Multi Parton Interactions to be ordered
@@ -265,7 +277,7 @@ private:
   bool theOrderSecondaries;
 
   /**
-   * Switch for Multi Parton Interactions
+   * Switch for Multi Parton Interactions. Not used any more.
    */
   bool theMPIOnOff;
 

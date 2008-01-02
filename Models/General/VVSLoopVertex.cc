@@ -1,61 +1,55 @@
 // -*- C++ -*-
 //
-// SVVLoopVertex.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-//
 // This is the implementation of the non-inlined, non-templated member
-// functions of the SVVLoopVertex class.
+// functions of the VVSLoopVertex class.
 //
 
-#include "SVVLoopVertex.h"
-#include "Herwig++/Looptools/clooptools.h"
+#include "VVSLoopVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/Looptools/clooptools.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 using namespace Looptools;
-   
-void SVVLoopVertex::persistentOutput(PersistentOStream & os) const {
+
+
+void VVSLoopVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(masses,GeV) << type << couplings << theNpart;
 }
 
-void SVVLoopVertex::persistentInput(PersistentIStream & is, int) {
+void VVSLoopVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(masses,GeV) >> type >> couplings >> theNpart;
 }
 
-void SVVLoopVertex::doinit() throw(InitException) {
+void VVSLoopVertex::doinit() throw(InitException) {
   Looptools::ffini();
-  GeneralSVVVertex::doinit();
+  GeneralVVSVertex::doinit();
 }
 
-void SVVLoopVertex::dofinish() {
+void VVSLoopVertex::dofinish() {
   Looptools::ffexi();
-  GeneralSVVVertex::dofinish();
+  GeneralVVSVertex::dofinish();
 }
 
-void SVVLoopVertex::doinitrun() {
+void VVSLoopVertex::doinitrun() {
   Looptools::ffini();
-  GeneralSVVVertex::doinitrun();
+  GeneralVVSVertex::doinitrun();
 }
 
-ClassDescription<SVVLoopVertex> SVVLoopVertex::initSVVLoopVertex;
+ClassDescription<VVSLoopVertex> VVSLoopVertex::initVVSLoopVertex;
 // Definition of the static class description member.
-    
-void SVVLoopVertex::Init() {
-  
-  static ClassDocumentation<SVVLoopVertex> documentation
-    ("The SVVLoopVertex class calculates the tenosr integral"
+
+void VVSLoopVertex::Init() {
+
+  static ClassDocumentation<VVSLoopVertex> documentation
+    ("The VVSLoopVertex class calculates the tenosr integral"
      " coefficients using Looptools.");
+
 }
-  
-void SVVLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
+
+void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
 				tcPDPtr) {
   //Kinematic invariants
   double ps2 = invariant(0,0) * UnitRemoval::InvE2;
@@ -238,6 +232,4 @@ void SVVLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
   a21(fact*d);
   a22(fact*e);
   aEp(fact*f);
-}
-
 }

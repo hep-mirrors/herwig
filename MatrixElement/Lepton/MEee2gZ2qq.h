@@ -217,12 +217,12 @@ private:
   /**
    *  Pointer to the fermion-antifermion Z vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFZVertex;
   
   /**
    *  Pointer to the fermion-antifermion photon vertex
    */
-  FFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr _theFFPVertex;
   
   /**
    *  Pointer to the particle data object for the Z

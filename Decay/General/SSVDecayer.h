@@ -19,6 +19,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using Helicity::VSSVertexPtr;
 
 /** \ingroup Decay
  * The SSVDecayer class implements the decay of a scalar to a vector 
@@ -33,19 +34,10 @@ class SSVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
   /**
    * The default constructor.
    */
   inline SSVDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSVDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -140,10 +132,18 @@ private:
    */
   SSVDecayer & operator=(const SSVDecayer &);
 
+private:
+
   /**
-   * Pointer to VSSVertex
+   *  Abstract pointer to AbstractFFVVertex
    */
-  Ptr<Helicity::VSSVertex>::pointer _theVSSPtr;
+  AbstractVSSVertexPtr _abstractVertex;
+  
+  /**
+   * Pointer to the perturbative vertex
+   */
+  VSSVertexPtr _perturbativeVertex;
+
 };
 
 }
@@ -169,14 +169,6 @@ struct ClassTraits<Herwig::SSVDecayer>
   : public ClassTraitsBase<Herwig::SSVDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SSVDecayer"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * SSVDecayer is implemented. It may also include several, space-separated,
-   * libraries if the class SSVDecayer depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

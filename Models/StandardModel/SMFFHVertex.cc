@@ -19,6 +19,43 @@
 
 using namespace Herwig;
 
+SMFFHVertex::SMFFHVertex()  {
+  // PDG codes for the particles
+  vector<int> first,second,third;
+  // the quarks
+  for(unsigned int ix=1;ix<7;++ix) {
+    first.push_back(-ix);
+    second.push_back(ix);
+    third.push_back(25);
+  }
+  // the leptons
+  for(unsigned int ix=11;ix<17;ix+=2) {
+    first.push_back(-ix);
+    second.push_back(ix);
+    third.push_back(25);
+  }
+  setList(first,second,third);
+  // set up for the couplings
+  _couplast=InvEnergy();
+  _idlast=0;
+  _q2last=0.*GeV2;
+  _masslast=0.*GeV;
+  _mw=0.*GeV;
+  _sw=0.;
+}
+
+void SMFFHVertex::doinit() throw(InitException) {
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if (!_theSM) 
+    throw InitException();
+  double sw2=_theSM->sin2ThetaW();
+  _sw = sqrt(sw2);
+  _mw= getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  orderInGem(1);
+  orderInGs(0);
+  FFSVertex::doinit();
+}
+
 void SMFFHVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << ounit(_mw,GeV) << _sw;
 }

@@ -23,22 +23,14 @@
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::SpinorWaveFunction;
-using ThePEG::Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
- 
-VFFDecayer::~VFFDecayer() {}
+using namespace ThePEG::Helicity;
 
 void VFFDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theFFVPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void VFFDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theFFVPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<VFFDecayer> VFFDecayer::initVFFDecayer;
@@ -47,7 +39,8 @@ ClassDescription<VFFDecayer> VFFDecayer::initVFFDecayer;
 void VFFDecayer::Init() {
 
   static ClassDocumentation<VFFDecayer> documentation
-    ("There is no documentation for the VFFDecayer class");
+    ("The VFFDecayer implements the matrix element for the"
+     " decay of a vector to fermion-antifermion pair");
 
 }
 
@@ -73,43 +66,46 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {//loop over vector helicities
 	if(iferm > ianti)
 	  newme(vhel, ia, ifm) = 
-	    _theFFVPtr->evaluate(scale,awave[ia],
-				fwave[ifm],inwave[vhel]);
+	    _abstractVertex->evaluate(scale,awave[ia],
+				      fwave[ifm],inwave[vhel]);
 	else
 	  newme(vhel,ifm,ia)=
-	    _theFFVPtr->evaluate(scale,awave[ia],
-				fwave[ifm],inwave[vhel]);
+	    _abstractVertex->evaluate(scale,awave[ia],
+				      fwave[ifm],inwave[vhel]);
       }
     }
   }
   ME(newme);
   double output=(newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-  if(decay[0]->coloured()){
-    output*=3.;
-  }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
   colourConnections(inpart, decay);
+  // return the answer
   return output;
 }
 
 Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
-  _theFFVPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
-			  inpart.first);
-  Complex cl(_theFFVPtr->getLeft()), cr(_theFFVPtr->getRight());
-  double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
-				       + sqr(mu1) + sqr(mu2) - 2.)
-    - 6.*(cl*conj(cr) + cr*conj(cl)).real()*mu1*mu2;
-  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
-				      outb.second);
-  Energy output = -norm(_theFFVPtr->getNorm())*me2*pcm/(8*Constants::pi);
-  int cola(outa.first->iColour()), colb(outb.first->iColour());
-  if( abs(cola) == 3 && abs(colb) == 3)
-    output *= 3.;
-  if( outa.first->id() == outb.first->id() ) 
-    output /= 2.;
-  return output;
+  if(_perturbativeVertex) {
+    double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
+    _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,
+				     inpart.first);
+    Complex cl(_perturbativeVertex->getLeft()), cr(_perturbativeVertex->getRight());
+    double me2 = (norm(cl) + norm(cr))*( sqr(sqr(mu1) - sqr(mu2)) 
+					 + sqr(mu1) + sqr(mu2) - 2.)
+      - 6.*(cl*conj(cr) + cr*conj(cl)).real()*mu1*mu2;
+    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+					outb.second);
+    Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm/(8*Constants::pi);
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
+  }
+  else {
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+  }
 }
-
-

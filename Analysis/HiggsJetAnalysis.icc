@@ -15,7 +15,7 @@ namespace Herwig {
 
 inline HiggsJetAnalysis::HiggsJetAnalysis() :
   _pth(0.,250.,100), _pthZoom(35.,65.,100), 
-  _raph(-10.,10.,100), _phih(-3.1459,3.1459,100) {}
+  _raph(-10.,10.,100), _phih(-Constants::pi,Constants::pi,100) {}
 
 inline IBPtr HiggsJetAnalysis::clone() const {
   return new_ptr(*this);

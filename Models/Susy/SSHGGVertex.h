@@ -12,7 +12,7 @@
 // This is the declaration of the SSHGGVertex class.
 //
 
-#include "Herwig++/Models/General/SVVLoopVertex.h"
+#include "Herwig++/Models/General/VVSLoopVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSHGGVertex.fh"
 
@@ -28,7 +28,7 @@ namespace Herwig {
    * defined for SSHGGVertex.
 
    */
-class SSHGGVertex: public SVVLoopVertex {
+class SSHGGVertex: public VVSLoopVertex {
   
 public:
   
@@ -243,7 +243,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SSHGGVertex,1> {
   /** Typedef of the first base class of SSHGGVertex. */
-  typedef Herwig::SVVLoopVertex NthBase;
+  typedef Herwig::VVSLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

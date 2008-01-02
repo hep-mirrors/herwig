@@ -19,12 +19,15 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
-  : _couplast(0.), _q2last(), _mw(), _zfact(), _sw() {
+  : _couplast(0.), _q2last(0.*GeV2), _mw(0.*GeV), _zfact(0.), _sw(0.) {
   // particles
   vector<int> first,second,third;
-  first.push_back(24);first.push_back(23);
-  second.push_back(-24);second.push_back(23);
-  third.push_back(25);third.push_back(25);
+  first.push_back(24);  
+  second.push_back(-24);
+  third.push_back(25);  
+  first.push_back(23);  
+  second.push_back(23); 
+  third.push_back(25);  
   setList(first,second,third);
 }
 
@@ -71,10 +74,8 @@ void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
   }
   if(ibos==24)      setNorm(_couplast);
   else if(ibos==23) setNorm(_couplast*_zfact);
-  else {
+  else
     throw HelicityConsistencyError() << "SMWWHVertex::setCoupling "
 				     << "Invalid particles in WWH Vertex" 
-				     << Exception::warning;
-    setNorm(0.);
-  }
+				     << Exception::runerror;
 }

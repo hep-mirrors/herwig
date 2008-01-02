@@ -1,12 +1,5 @@
 // -*- C++ -*-
 //
-// Histogram2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Histogram2 class.
 //
@@ -26,12 +19,12 @@
 using namespace Herwig;
 
 void HistogramChannel::persistentOutput(PersistentOStream & os) const {
-  os << _isCountingChannel << _bins << _outOfRange << _visible
+  os << _isCountingChannel << _bins << _binEntries << _outOfRange << _visible
      << _total << _nanEvents << _nanWeights << _finished;
 }
 
 void HistogramChannel::persistentInput(PersistentIStream & is) {
-  is >> _isCountingChannel >> _bins >> _outOfRange >> _visible
+  is >> _isCountingChannel >> _bins >> _binEntries >> _outOfRange >> _visible
      >> _total >> _nanEvents >> _nanWeights >> _finished;
 }
 
@@ -107,8 +100,16 @@ HistogramChannel& HistogramChannel::operator *= (pair<double,double> factor) {
 HistogramChannel& HistogramChannel::operator /= (pair<double,double> factor) {
   for (vector<pair<double,double> >::iterator b = _bins.begin();
        b != _bins.end(); ++b) {
-    b->first /= factor.first;
-    b->second = sqr(b->first/factor.first)*(b->second/sqr(b->first) + factor.second/sqr(factor.first));
+    if (factor.first != 0.) {
+      b->first /= factor.first;
+      if (b->first != 0.)
+	b->second = sqr(b->first/factor.first)*(b->second/sqr(b->first) + factor.second/sqr(factor.first));
+      else
+	b->second = 0.;
+    } else {
+      b->first = 0.;
+      b->second = 0.;
+    }
   }
   _isCountingChannel = false;
   return *this;
@@ -116,7 +117,7 @@ HistogramChannel& HistogramChannel::operator /= (pair<double,double> factor) {
 
 HistogramChannel& HistogramChannel::operator /= (const HistogramChannel& c) {
   for (unsigned int i = 0; i < _bins.size(); ++i) {
-    if (c.bin(i).first!=0.) {
+    if (c.bin(i).first != 0. && _bins[i].first != 0.) {
       _bins[i].first /= c.bin(i).first;
       _bins[i].second = sqr(_bins[i].first/c.bin(i).first)*
 	(_bins[i].second/sqr(_bins[i].first)+c.bin(i).second/sqr(c.bin(i).first));

@@ -13,7 +13,7 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "SMTopDecayer.fh"
@@ -155,7 +155,7 @@ private:
   /**
    *Pointer to the W vertex
    */
-  FFVVertexPtr _wvertex;
+  AbstractFFVVertexPtr _wvertex;
   
   /**
    * Max weight for integration

@@ -17,7 +17,9 @@ inline GammaGammaAnalysis::GammaGammaAnalysis() :
   _ptharder(0.,250.,100), _ptsofter(0.,250.,100), _ptpair(0.,250.,100), 
   _Eharder(0.,3000.,100), _Esofter(0.,3000.,100), _Epair(0.,6000.,100), 
   _rapharder(-12.,12.,120), _rapsofter(-12.,12.,120), _rappair(-12.,12.,120), 
-  _phiharder(-3.1459,3.1459,50), _phisofter(-3.1459,3.1459,50), _deltaphi(-3.1459,3.1459,100), 
+  _phiharder(-Constants::pi,Constants::pi,50), 
+  _phisofter(-Constants::pi,Constants::pi,50), 
+  _deltaphi(-Constants::pi,Constants::pi,100), 
   _mpair(0,1000,100)  {}
 
 inline IBPtr GammaGammaAnalysis::clone() const {

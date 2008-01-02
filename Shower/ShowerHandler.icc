@@ -17,9 +17,22 @@ inline bool ShowerHandler::decayInShower(const long id) const {
   return ( _particlesDecayInShower.find( abs(id) ) != 
 	   _particlesDecayInShower.end() ); 
 }
-  
+
+inline tMPIHPtr ShowerHandler::getMPIHandler() const {  
+  if(!theMPIHandler)
+    throw Exception() << "The reference to the MPIHandler is set to zero."
+		      << "So this call to ShowerHandler::getMPIHandler() should "
+                      << "have never happened."
+		      << Exception::runerror;
+
+  return theMPIHandler;    
+}
+
 inline bool ShowerHandler::IsMPIOn() const {
-  return theMPIOnOff;
+  if(!theMPIHandler)
+    return false;
+
+  return theMPIHandler->beamOK();
 }
 
 inline tCascadeReconstructorPtr ShowerHandler::cascadeReconstructor () const {

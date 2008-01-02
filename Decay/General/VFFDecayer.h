@@ -35,18 +35,10 @@ class VFFDecayer: public GeneralTwoBodyDecayer {
 
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline VFFDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~VFFDecayer();
-  //@}
 
 public:
 
@@ -143,11 +135,16 @@ private:
   VFFDecayer & operator=(const VFFDecayer &);
 
 private:
-  
+
   /**
-   * Store pointer to FFVVertex 
+   *  Abstract pointer to AbstractFFVVertex
    */
-  FFVVertexPtr _theFFVPtr;
+  AbstractFFVVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  FFVVertexPtr _perturbativeVertex;
 };
 
 }
@@ -173,10 +170,6 @@ struct ClassTraits<Herwig::VFFDecayer>
   : public ClassTraitsBase<Herwig::VFFDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::VFFDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the VFFDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

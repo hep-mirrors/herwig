@@ -27,8 +27,8 @@ inline IBPtr SSVDecayer::fullclone() const {
 }
 
 inline void SSVDecayer::doinit() throw(InitException) {
-  _theVSSPtr = dynamic_ptr_cast<Ptr<Helicity::VSSVertex>
-    ::pointer>(getVertex());
+  _perturbativeVertex = dynamic_ptr_cast<VSSVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVSSVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();
 }
 

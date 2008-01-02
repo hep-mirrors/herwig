@@ -54,7 +54,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
       if(_q2last[0]!=q2)
         {
           double alpha = _theModel->alphaEM(q2);
-          _couplast[0] = sqrt(4.0*3.14159265*alpha);
+          _couplast[0] = sqrt(4.0*Constants::pi*alpha);
           _q2last[0]=q2;
         }
       norm = UnitRemoval::E * _theKappa*_couplast[0];
@@ -76,7 +76,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
       if(_q2last[1]!=q2)
         {
           double alphas= _theModel->alphaS(q2);
-          _couplast[1] = sqrt(4.0*3.14159265*alphas);
+          _couplast[1] = sqrt(4.0*Constants::pi*alphas);
           _q2last[1]=q2;
         }
       norm = UnitRemoval::E * _theKappa*_couplast[1];

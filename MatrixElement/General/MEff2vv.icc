@@ -13,7 +13,7 @@
 
 namespace Herwig {
 
-inline MEff2vv::MEff2vv() : theVec(0), theTen(0), theSca1(0), theSca2(0) {}
+inline MEff2vv::MEff2vv() : theVec(0), theTen(0), theSca(0) {}
 
 inline IBPtr MEff2vv::clone() const {
   return new_ptr(*this);

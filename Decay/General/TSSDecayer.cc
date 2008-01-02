@@ -21,20 +21,14 @@
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzTensor;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::TensorWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
+using namespace ThePEG::Helicity;
 
 void TSSDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theSSTPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void TSSDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theSSTPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<TSSDecayer> TSSDecayer::initTSSDecayer;
@@ -68,13 +62,16 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 			      in[thel].zy(),in[thel].zz(),in[thel].zt(),
 			      in[thel].tx(),in[thel].ty(),in[thel].tz(),
 			      in[thel].tt());
-    newme(thel,0,0) =_theSSTPtr->evaluate(scale,sca1,sca2,inwave); 
+    newme(thel,0,0) =_abstractVertex->evaluate(scale,sca1,sca2,inwave); 
   }
   ME(newme);
   double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-  if(decay[0]->id() == decay[1]->id()) {
-    output /=2.;
-  }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
+  colourConnections(inpart, decay);
+  // return the answer
   return output;
 }
 
@@ -82,15 +79,21 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 Energy TSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  Energy2 scale(sqr(inpart.second));
-  _theSSTPtr->setCoupling(scale, outa.first, outb.first, inpart.first);
-  double musq = sqr(outa.second/inpart.second);
-  double b = sqrt(1. - 4.*musq);
-  double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
-  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
-				      outb.second);
-  Energy output = norm(_theSSTPtr->getNorm())*me2*pcm/(8.*Constants::pi);
-  if(outa.first->id() == outb.first->id())
-    output /= 2;
-  return output;
+  if(_perturbativeVertex) {
+    Energy2 scale(sqr(inpart.second));
+    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
+    double musq = sqr(outa.second/inpart.second);
+    double b = sqrt(1. - 4.*musq);
+    double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
+    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+					outb.second);
+    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/(8.*Constants::pi);
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
+  }
+  else {
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+  }
 }

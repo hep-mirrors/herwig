@@ -21,21 +21,14 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
-
-SSVDecayer::~SSVDecayer() {}
+using namespace ThePEG::Helicity;
 
 void SSVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theVSSPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void SSVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theVSSPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<SSVDecayer> SSVDecayer::initSSVDecayer;
@@ -50,20 +43,12 @@ void SSVDecayer::Init() {
 
 double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
-
   RhoDMatrix rhoin(PDT::Spin0);
   rhoin.average();
   ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),rhoin,incoming,
 			    true,vertex);
-  unsigned int isc,ivec;
-  if(decay[0]->dataPtr()->iSpin() == PDT::Spin0) {
-    isc = 0;
-    ivec = 1;
-  }
-  else {
-    isc = 1;
-    ivec = 0;
-  }
+  unsigned int isc(0),ivec(1);
+  if(decay[0]->dataPtr()->iSpin() != PDT::Spin0) swap(isc,ivec);
   ScalarWaveFunction sca(decay[isc],outgoing,true,vertex);
   vector<VectorWaveFunction> vecWave;
   VectorWaveFunction(vecWave,decay[ivec],outgoing,true,false,vertex);
@@ -73,7 +58,7 @@ double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
   if(ivec == 0) {
     DecayMatrixElement newme(PDT::Spin0,PDT::Spin1,PDT::Spin0);
     for(unsigned int ix = 0; ix < 3; ++ix)
-      newme(0, ix, 0) = _theVSSPtr->evaluate(scale,vecWave[ix],sca, inwave);
+      newme(0, ix, 0) = _abstractVertex->evaluate(scale,vecWave[ix],sca, inwave);
     
     ME(newme);
     output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
@@ -81,38 +66,49 @@ double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
   else {
     DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
     for(unsigned int ix = 0; ix < 3; ++ix)
-      newme(0, 0, ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+      newme(0, 0, ix) = _abstractVertex->evaluate(scale,vecWave[ix],sca,inwave);
     
     ME(newme);
     output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
   colourConnections(inpart, decay);
+  // return the answer
   return output;
 }
 
 Energy SSVDecayer:: partialWidth(PMPair inpart, PMPair outa, 
 				 PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  double mu1sq(0.),mu2sq(0.);
-  if(outa.first->iSpin() == PDT::Spin0) {
-    mu1sq = sqr(outa.second/inpart.second);
-    mu2sq = sqr(outb.second/inpart.second);
-    _theVSSPtr->setCoupling(sqr(inpart.second), outb.first, outa.first,
-			    inpart.first);
+  if(_perturbativeVertex) {
+    double mu1sq(sqr(outa.second/inpart.second)),
+      mu2sq(sqr(outb.second/inpart.second));
+    if(outa.first->iSpin() == PDT::Spin0) {
+      _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
+				       inpart.first);
+    }
+    else {
+      swap(mu1sq,mu2sq);
+      _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,
+				       inpart.first);
+    }
+    double me2(0.);
+    if(mu2sq == 0.) 
+      me2 = -2.*mu1sq - 2.;
+    else
+      me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
+    Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+					outb.second);
+    Energy output = pcm*me2*norm(_perturbativeVertex->getNorm())/8./Constants::pi;
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
   }
   else {
-    mu1sq = sqr(outb.second/inpart.second);
-    mu2sq = sqr(outa.second/inpart.second);
-    _theVSSPtr->setCoupling(sqr(inpart.second), outa.first, outb.first,
-			    inpart.first);
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
   }
-  double me2(0.);
-  if(mu2sq == 0.) 
-    me2 = -2.*mu1sq - 2.;
-  else
-    me2 = ( sqr(mu2sq - mu1sq) - 2.*(mu2sq + mu1sq) + 1. )/mu2sq;
-  Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
-				      outb.second);
-  Energy output = pcm*me2*norm(_theVSSPtr->getNorm())/8./Constants::pi;
-  return output;
 }

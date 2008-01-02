@@ -1,65 +1,51 @@
 // -*- C++ -*-
+#ifndef THEPEG_VVSDecayer_H
+#define THEPEG_VVSDecayer_H
 //
-// SVVLoopDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_SVVLoopDecayer_H
-#define HERWIG_SVVLoopDecayer_H
-//
-// This is the declaration of the SVVLoopDecayer class.
+// This is the declaration of the VVSDecayer class.
 //
 
 #include "GeneralTwoBodyDecayer.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
-#include "SVVLoopDecayer.fh"
+#include "VVSDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::GeneralSVVVertexPtr;
+using Helicity::VVSVertexPtr;
 
 /** \ingroup Decay
- * This SVVLoopDecayer class implements the decay of a scalar to 
- * 2 vector bosons using the loop vertex. It inherits from 
- * GeneralTwoBodyDecayer and implements the virtual member functions me2() 
- * and partialWidth(). It also stores a pointer to the GeneralSVVVertex.
+ * The VVSDecayer class implements the decay of a vector to a
+ * vector and a scalar in a general model. It holds an VVSVertex pointer
+ * that must be typecast from the  VertexBase pointer helid in the
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
+ * partialWidth(). 
  *
- * @see GeneralTwoBodyDecayer 
- * 
+ * @see \ref VVSDecayerInterfaces "The interfaces"
+ * defined for VVSDecayer.
  */
-class SVVLoopDecayer: public GeneralTwoBodyDecayer {
+class VVSDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
   /**
    * The default constructor.
    */
-  inline SVVLoopDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SVVLoopDecayer();
-  //@}
-
-public:
+  inline VVSDecayer();
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
-   * Return the matrix element squared for a given mode and phase-space channel.   * @param vertex Output the information on the vertex for spin correlations
+   * Return the matrix element squared for a given mode and phase-space channel
+   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
-                      const ParticleVector & decay) const;
-  
+		     const ParticleVector & decay) const;
+
   /**
    * Function to return partial Width
    * @param inpart The decaying particle.
@@ -117,18 +103,12 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-   /**
-   * Initialize this object after the setup phase before saving and
+  /**
+   * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
   //@}
 
 private:
@@ -137,21 +117,25 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SVVLoopDecayer> initSVVLoopDecayer;
+  static ClassDescription<VVSDecayer> initVVSDecayer;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SVVLoopDecayer & operator=(const SVVLoopDecayer &);
+  VVSDecayer & operator=(const VVSDecayer &);
 
 private:
-  
+
   /**
-   * Store pointer to GeneralSVVVertex that is set in doinit by 
-   * typecast from vertex pointer in base class
+   *  Abstract pointer to AbstractVVSVertex
    */
-  GeneralSVVVertexPtr _theSVVPtr;
+  AbstractVVSVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  VVSVertexPtr _perturbativeVertex;
 };
 
 }
@@ -163,30 +147,26 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of SVVLoopDecayer. */
+ *  base classes of VVSDecayer. */
 template <>
-struct BaseClassTrait<Herwig::SVVLoopDecayer,1> {
-  /** Typedef of the first base class of SVVLoopDecayer. */
+struct BaseClassTrait<VVSDecayer,1> {
+  /** Typedef of the first base class of VVSDecayer. */
   typedef Herwig::GeneralTwoBodyDecayer NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the SVVLoopDecayer class and the shared object where it is defined. */
+ *  the VVSDecayer class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SVVLoopDecayer>
-  : public ClassTraitsBase<Herwig::SVVLoopDecayer> {
+struct ClassTraits<VVSDecayer>
+  : public ClassTraitsBase<VVSDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::SVVLoopDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SVVLoopDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
+  static string className() { return "Herwig::VVSDecayer"; }
 };
 
 /** @endcond */
 
 }
 
-#include "SVVLoopDecayer.icc"
+#include "VVSDecayer.icc"
 
-#endif /* HERWIG_SVVLoopDecayer_H */
+#endif /* THEPEG_VVSDecayer_H */

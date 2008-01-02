@@ -9,7 +9,7 @@
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Utilities/Statistic.h"
 #include "ThePEG/PDF/BeamParticleData.h"
@@ -249,12 +249,12 @@ private:
   /**
    *  Pointer to the Z vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFZVertex;
 
   /**
    *  Pointer to the photon vertex
    */
-  FFVVertexPtr _theFFPVertex;
+  AbstractFFVVertexPtr _theFFPVertex;
   //@}
 
   /**
