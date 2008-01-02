@@ -13,7 +13,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEee2ZH class.
+ * The MEee2ZH class implements the matrix element
+ * for \f$e^+e^-\to Z^0h^0\f$.
  *
  * @see \ref MEee2ZHInterfaces "The interfaces"
  * defined for MEee2ZH.
@@ -21,6 +22,7 @@ using namespace ThePEG;
 class MEee2ZH: public ME2toVH {
 
 public:
+
   /**
    * The default constructor.
    */

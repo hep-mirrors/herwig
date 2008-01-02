@@ -202,7 +202,7 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
   bool Z0=decay[0]->id()==-decay[1]->id();
   // get the intermediates and vertex
   tcPDPtr inter[2];
-  FFVVertexPtr vert;
+  AbstractFFVVertexPtr vert;
   if(Z0) {
     inter[0]=getParticleData(ParticleID::Z0);
     inter[1]=inter[0];

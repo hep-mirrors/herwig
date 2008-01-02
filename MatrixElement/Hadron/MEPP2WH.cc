@@ -37,7 +37,7 @@ void MEPP2WH::Init() {
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
-      &MEPP2WH::_maxflavour, 5, 0, 5, false, false, true);
+      &MEPP2WH::_maxflavour, 5, 1, 5, false, false, true);
 
   static Switch<MEPP2WH,unsigned int> interfacePlusMinus
     ("Wcharge",

@@ -14,8 +14,8 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "Herwig++/PDT/SMHiggsWidthGenerator.h"
 #include "SMHiggsWWDecayer.fh"
 
@@ -173,17 +173,17 @@ private:
   /**
    *  Pointer to the fermion-femion-W vertex
    */
-  FFVVertexPtr _theFFWVertex;
+  AbstractFFVVertexPtr _theFFWVertex;
 
   /**
    *  Pointer to the fermion-femion-Z vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFZVertex;
 
   /**
    *  Pointer to the higgs-WW/ZZ vertex
    */
-  VVSVertexPtr _theHVVVertex;
+  AbstractVVSVertexPtr _theHVVVertex;
   //@}
 
   /**

@@ -6,14 +6,13 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "ME2toVH.fh"
 
 namespace Herwig {
-
 using namespace ThePEG;
 
 /**
@@ -247,17 +246,17 @@ private:
   /**
    *  Vertex for fermion-fermion-W
    */
-  FFVVertexPtr _vertexFFW;
+  AbstractFFVVertexPtr _vertexFFW;
 
   /**
    *  Vertex for fermion-fermion-Z
    */
-  FFVVertexPtr _vertexFFZ;
+  AbstractFFVVertexPtr _vertexFFZ;
 
   /**
    *  Vertex for vector-vector-Higgs
    */
-  VVSVertexPtr _vertexWWH;
+  AbstractVVSVertexPtr _vertexWWH;
   //@}
 
   /**

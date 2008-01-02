@@ -17,9 +17,9 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
-#include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "MEPP2Higgs.fh"
@@ -259,12 +259,12 @@ private:
   /**
    * Pointer to the H->2gluons vertex (used in gg->H)
    */
-  SVVLoopVertexPtr hggvertex;
+  AbstractVVSVertexPtr hggvertex;
 
   /**
    * Pointer to the fermion-fermion Higgs vertex (used in qq->H)
    */
-  FFSVertexPtr ffhvertex;
+  AbstractFFSVertexPtr ffhvertex;
 
   /**
    * Pointer to the Standard Model instance used in the class

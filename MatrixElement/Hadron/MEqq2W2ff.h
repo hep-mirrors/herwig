@@ -16,7 +16,7 @@
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "MEqq2W2ff.fh"
 
 namespace Herwig {
@@ -192,7 +192,7 @@ private:
   /**
    *  Pointer to the W vertex
    */
-  FFVVertexPtr  _theFFWVertex;
+  AbstractFFVVertexPtr  _theFFWVertex;
 
   /**
    *  Pointers to the intermediates resonances

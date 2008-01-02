@@ -14,8 +14,8 @@
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -236,12 +236,12 @@ private:
   /**
    *  \f$ggg\f$ vertex
    */
-  VVVVertexPtr _gggvertex;
+  AbstractVVVVertexPtr _gggvertex;
 
   /**
    *  \f$q\bar{q}g\f$ vertex
    */
-  FFVVertexPtr _qqgvertex;
+  AbstractFFVVertexPtr _qqgvertex;
   //@}
 
   /**

@@ -12,7 +12,7 @@
 // This is the declaration of the SMWZDecayer class.
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "SMWZDecayer.fh"
 
@@ -140,12 +140,12 @@ private:
   /**
    * Pointer to the Z vertex
    */
-  FFVVertexPtr _zvertex;
+  AbstractFFVVertexPtr _zvertex;
 
   /**
    * Pointer to the W vertex
    */
-  FFVVertexPtr _wvertex;
+  AbstractFFVVertexPtr _wvertex;
 
   /**
    * maximum weights for the different integrations

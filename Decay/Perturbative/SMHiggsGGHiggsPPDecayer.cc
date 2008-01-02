@@ -105,14 +105,12 @@ double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int,
       
       if(decay[0]->id() == ParticleID::g &&
 	 decay[1]->id() == ParticleID::g) {
-	higgs(0,v1hel,v2hel) = _hggvertex->evaluate(scale,hwave,
-						    V1[v1hel],
-						    V2[v2hel]);
+	higgs(0,v1hel,v2hel) = _hggvertex->evaluate(scale,V1[v1hel],
+						    V2[v2hel],hwave);
       }
       else {
-	higgs(0,v1hel,v2hel) = _hppvertex->evaluate(scale,hwave,
-						    V1[v1hel],
-						    V2[v2hel]);
+	higgs(0,v1hel,v2hel) = _hppvertex->evaluate(scale,V1[v1hel],
+						    V2[v2hel],hwave);
       }
     }
   }
