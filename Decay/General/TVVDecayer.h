@@ -34,20 +34,10 @@ class TVVDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline TVVDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~TVVDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -144,9 +134,14 @@ private:
 private:
 
   /**
-   *  Pointer to the vertex
+   *  Abstract pointer to AbstractVVTVertex
    */
-  VVTVertexPtr _theVVTPtr;
+  AbstractVVTVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  VVTVertexPtr _perturbativeVertex;
 };
 
 }
@@ -172,10 +167,6 @@ struct ClassTraits<Herwig::TVVDecayer>
   : public ClassTraitsBase<Herwig::TVVDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::TVVDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the TVVDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

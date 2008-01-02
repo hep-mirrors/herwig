@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FtoFFFDecayer class.
+//
+#ifndef HERWIG_FtoFFFDecayer_FH
+#define HERWIG_FtoFFFDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class FtoFFFDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::FtoFFFDecayer,FtoFFFDecayerPtr);
+
+}
+
+#endif

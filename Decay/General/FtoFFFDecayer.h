@@ -1,48 +1,39 @@
 // -*- C++ -*-
+#ifndef HERWIG_FtoFFFDecayer_H
+#define HERWIG_FtoFFFDecayer_H
 //
-// SSSDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_SSSDecayer_H
-#define HERWIG_SSSDecayer_H
-//
-// This is the declaration of the SSSDecayer class.
+// This is the declaration of the FtoFFFDecayer class.
 //
 
-#include "GeneralTwoBodyDecayer.h"
-#include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "SSSDecayer.fh"
+#include "GeneralThreeBodyDecayer.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "FtoFFFDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::SSSVertexPtr;
-  
-/** \ingroup Decay
- * The SSDecayer class implements the decay of a scalar
- * to 2 scalars in a general model. It holds a SSSVertex
- * pointer that must be typecast from the VertexBase pointer held in
- * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
- * partialWidth().
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+
+/**
+ * Here is the documentation of the FtoFFFDecayer class.
  *
- * @see GeneralTwoBodyDecayer
+ * @see \ref FtoFFFDecayerInterfaces "The interfaces"
+ * defined for FtoFFFDecayer.
  */
-class SSSDecayer: public GeneralTwoBodyDecayer {
+class FtoFFFDecayer: public GeneralThreeBodyDecayer {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline SSSDecayer();
+  inline FtoFFFDecayer();
 
-  /** @name Virtual functions required by the Decayer class. */
-  //@{
   /**
-   * Return the matrix element squared for a given mode and phase-space channel.
+   * Return the matrix element squared for a given mode and phase-space channel
    * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
@@ -50,17 +41,14 @@ public:
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
-                     const ParticleVector & decay) const;
-
+		     const ParticleVector & decay) const;
+  
   /**
-   * Function to return partial Width
-   * @param inpart The decaying particle.
-   * @param outa One of the decay products.
-   * @param outb The other decay product.
+   * Method to return an object to calculate the 3 (or higher body) partial width
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
    */
-  virtual Energy partialWidth(PMPair inpart, PMPair outa, 
-			      PMPair outb) const;
-  //@}
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
 
 public:
 
@@ -110,11 +98,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object after the setup phase before saving and
+   * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -123,25 +111,31 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SSSDecayer> initSSSDecayer;
+  static ClassDescription<FtoFFFDecayer> initFtoFFFDecayer;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSSDecayer & operator=(const SSSDecayer &);
+  FtoFFFDecayer & operator=(const FtoFFFDecayer &);
 
 private:
+  
+  /**
+   * Store the vector of FFSVertex pairs
+   */
+  vector<pair<FFSVertexPtr, FFSVertexPtr> > _sca;
 
   /**
-   *  Abstract pointer to AbstractSSSVertex
+   * Store the vector of FFVVertex pairs
    */
-  AbstractSSSVertexPtr _abstractVertex;
+  vector<pair<FFVVertexPtr, FFVVertexPtr> > _vec;
 
   /**
-   * Pointer to the perturbative vertex
+   * Store the vector of FFTVertex pairs
    */
-  SSSVertexPtr _perturbativeVertex;
+  vector<pair<FFTVertexPtr, FFTVertexPtr> > _ten;
+
 };
 
 }
@@ -153,26 +147,26 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of SSSDecayer. */
+ *  base classes of FtoFFFDecayer. */
 template <>
-struct BaseClassTrait<Herwig::SSSDecayer,1> {
-  /** Typedef of the first base class of SSSDecayer. */
-  typedef Herwig::GeneralTwoBodyDecayer NthBase;
+struct BaseClassTrait<Herwig::FtoFFFDecayer,1> {
+  /** Typedef of the first base class of FtoFFFDecayer. */
+  typedef Herwig::GeneralThreeBodyDecayer NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the SSSDecayer class and the shared object where it is defined. */
+ *  the FtoFFFDecayer class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SSSDecayer>
-  : public ClassTraitsBase<Herwig::SSSDecayer> {
+struct ClassTraits<Herwig::FtoFFFDecayer>
+  : public ClassTraitsBase<Herwig::FtoFFFDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSSDecayer"; }
+  static string className() { return "Herwig::FtoFFFDecayer"; }
 };
 
 /** @endcond */
 
 }
 
-#include "SSSDecayer.icc"
+#include "FtoFFFDecayer.icc"
 
-#endif /* HERWIG_SSSDecayer_H */
+#endif /* HERWIG_FtoFFFDecayer_H */

@@ -34,20 +34,10 @@ class SFFDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline SFFDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SFFDecayer();
-  //@}
-  
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -141,11 +131,17 @@ private:
   SFFDecayer & operator=(const SFFDecayer &);
 
 private:
-  
+
   /**
-   * Pointer to FFSVertex
+   *  Abstract pointer to AbstractFFSVertex
    */
-  FFSVertexPtr _theFFSPtr;
+  AbstractFFSVertexPtr _abstractVertex;
+
+  /**
+   * Pointer to the perturbative vertex
+   */
+  FFSVertexPtr _perturbativeVertex;
+  
 };
 
 }
@@ -171,10 +167,6 @@ struct ClassTraits<Herwig::SFFDecayer>
   : public ClassTraitsBase<Herwig::SFFDecayer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SFFDecayer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SFFDecayer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwGeneralDecay.so"; }
 };
 
 /** @endcond */

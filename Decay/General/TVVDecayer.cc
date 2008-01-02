@@ -21,24 +21,15 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 
-
 using namespace Herwig;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzTensor;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::TensorWaveFunction;
-using ThePEG::Helicity::Direction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
-
-TVVDecayer::~TVVDecayer() {}
+using namespace ThePEG::Helicity;
 
 void TVVDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theVVTPtr;
+  os << _abstractVertex << _perturbativeVertex;
 }
 
 void TVVDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theVVTPtr;
+  is >> _abstractVertex >> _perturbativeVertex;
 }
 
 ClassDescription<TVVDecayer> TVVDecayer::initTVVDecayer;
@@ -76,48 +67,49 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
 			      in[thel].tt());
     for(v1hel=0;v1hel<3;++v1hel) {
       for(v2hel=0;v2hel<3;++v2hel) {
-	newme(thel,v1hel,v2hel) = _theVVTPtr->evaluate(scale,vec1[v1hel],
-						       vec2[v2hel],
-						       inwave);
-	if(massb) {++v2hel;}
+	newme(thel,v1hel,v2hel) = _abstractVertex->evaluate(scale,vec1[v1hel],
+							    vec2[v2hel],
+							    inwave);
+	if(massb) ++v2hel;
       }
-      if(massa) {++v1hel;}
+      if(massa) ++v1hel;
     }
   }
   ME(newme);
   double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
-  if(decay[0]->id() == decay[1]->id()) {
-    output /= 2;
-  }
-  if(decay[0]->data().iColour()==PDT::Colour8 &&
-     decay[1]->data().iColour()==PDT::Colour8) {
-    output *= 8.;
-  }
+  // colour and identical particle factors
+  output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
+			 decay[1]->dataPtr());
+  // make the colour connections
   colourConnections(inpart, decay);
+  // return the answer
   return output;
 }
   
 Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
   if( inpart.second < outa.second + outb.second  ) return Energy();
-  Energy2 scale(sqr(inpart.second));
-  _theVVTPtr->setCoupling(scale, outa.first, outb.first, inpart.first);
-  double mu2 = sqr(outa.second/inpart.second);
-  double b = sqrt(1 - 4.*mu2);
-  Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
-				      outb.second);
-  Energy2 me2;
-  if(outa.second > 0.*MeV && outb.second > 0.*MeV)
-    me2 = scale*(30 - 20.*b*b + 3.*pow(b,4))/120.; 
-  else 
-    me2 = scale/10.;
-  
-  Energy output = norm(_theVVTPtr->getNorm())*me2*pcm
-    /(8.*Constants::pi)*UnitRemoval::InvE2;
-  if(outa.first->id() == outb.first->id())
-    output /=2;
-  if(outa.first->iColour() == PDT::Colour8 &&
-     outb.first->iColour() == PDT::Colour8)
-    output *=8.;
-  return output;
+  if(_perturbativeVertex) {
+    Energy2 scale(sqr(inpart.second));
+    _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
+    double mu2 = sqr(outa.second/inpart.second);
+    double b = sqrt(1 - 4.*mu2);
+    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+					outb.second);
+    Energy2 me2;
+    if(outa.second > 0.*MeV && outb.second > 0.*MeV)
+      me2 = scale*(30 - 20.*b*b + 3.*pow(b,4))/120.; 
+    else 
+      me2 = scale/10.;
+    
+    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm
+      /(8.*Constants::pi)*UnitRemoval::InvE2;
+    // colour factor
+    output *= colourFactor(inpart.first,outa.first,outb.first);
+    // return the answer
+    return output;
+  }
+  else {
+    return GeneralTwoBodyDecayer::partialWidth(inpart,outa,outb);
+  }
 }

@@ -26,7 +26,8 @@ inline IBPtr TFFDecayer::fullclone() const {
 }
 
 inline void TFFDecayer::doinit() throw(InitException) {
-  _theFFTPtr = dynamic_ptr_cast<FFTVertexPtr>(getVertex());
+  _perturbativeVertex = dynamic_ptr_cast<FFTVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractFFTVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();
 }
 

@@ -27,7 +27,8 @@ inline IBPtr TSSDecayer::fullclone() const {
 
 inline void TSSDecayer::doinit() throw(InitException) {
   GeneralTwoBodyDecayer::doinit();
-  _theSSTPtr = dynamic_ptr_cast<SSTVertexPtr>(getVertex());
+  _perturbativeVertex = dynamic_ptr_cast<SSTVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractSSTVertexPtr>(getVertex());
 }
 
 }
