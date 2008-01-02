@@ -18,8 +18,9 @@ inline TTbarAnalysis::TTbarAnalysis() :
   _ettop(0.,350.,100), _ettbar(0.,350.,100), _etpair(0.,350.,100), 
   _etop(0.,3000.,100), _etbar(0.,3000.,100), _epair(0.,6000.,100), 
   _raptop(-5.,5.,100), _raptbar(-5.,5.,100), _rappair(-5.,5.,100), 
-  _phitop(-3.1459,3.1459,50), _phitbar(-3.1459,3.1459,50), 
-  _deltaphi(-3.1459,3.1459,100), _mpair(300,1500,100), 
+  _phitop  (-Constants::pi,Constants::pi,50), 
+  _phitbar (-Constants::pi,Constants::pi,50), 
+  _deltaphi(-Constants::pi,Constants::pi,100), _mpair(300,1500,100), 
   _etsum(0.,700.,100), _ptsum(0.,700.,100) {}
 
 inline IBPtr TTbarAnalysis::clone() const {
