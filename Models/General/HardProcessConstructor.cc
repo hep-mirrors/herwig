@@ -219,8 +219,7 @@ void HardProcessConstructor::constructDiagrams() {
       long fs = theOutgoing[os]->id();
       for(size_t iv = 0; iv < theNv; ++iv) {
 	tVertexBasePtr vertexA = theModel->vertex(iv);
-	if( vertexA->getName() == GeneralSVV ||
-	    (!theAllDiagrams && vertexA->orderInGs() == 0) ) 
+	if( !theAllDiagrams && vertexA->orderInGs() == 0 ) 
 	  continue;
 
 	if(vertexA->getNpoint() == 3) {
@@ -279,9 +278,7 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
     for(size_t iv = 0; iv < theNv; ++iv) {
       tVertexBasePtr vertexB = theModel->vertex(iv);
       if( vertexB->getNpoint() != 3) continue;
-      if( vertexB->getName() == GeneralSVV ||
-	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) 
-	continue;
+      if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
       
       PDSet final;
       if( vertexB->outgoing(fs) &&
@@ -308,9 +305,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
      for(size_t iv = 0; iv < theNv; ++iv) {
        tVertexBasePtr vertexB = theModel->vertex(iv);
        if( vertexB->getNpoint() != 3 ) continue;
-       if( vertexB->getName() == GeneralSVV ||
-	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) 
-	continue;
+       if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
        PDSet final;
        if( vertexB->incoming(inc.second) )
 	 final = search(vertexB, inc.second, incoming, (*it)->id(),
@@ -327,9 +322,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
     for(size_t iv = 0; iv < theNv; ++iv) {
        tVertexBasePtr vertexB = theModel->vertex(iv);
        if( vertexB->getNpoint() != 3 ) continue;
-       if( vertexB->getName() == GeneralSVV ||
-	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) 
-	continue;
+       if(!theAllDiagrams && vertexB->orderInGs() == 0) continue;
 
        PDSet final;
        if( vertexB->incoming(inc.first) )
