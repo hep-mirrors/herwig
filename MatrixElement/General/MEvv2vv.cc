@@ -27,10 +27,45 @@
 using namespace Herwig;
 using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::TensorWaveFunction;
-using ThePEG::Helicity::VVTVertexPtr;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 using ThePEG::Helicity::SpinfoPtr;
+
+void MEvv2vv::doinit() throw(InitException) {
+  GeneralHardME::doinit();
+  size_t ndiags = numberOfDiags();
+  theScaV.resize(ndiags);
+  theVecV.resize(ndiags);
+  theTenV.resize(ndiags);
+  for(size_t i = 0; i < ndiags; ++i) {
+    HPDiagram diag = getProcessInfo()[i];
+    tcPDPtr offshell = diag.intermediate;
+    if(!offshell)
+      theFPVertex = dynamic_ptr_cast<AbstractVVVVVertexPtr>
+	(diag.vertices.first);
+    else if(offshell->iSpin() == PDT::Spin0) {
+      AbstractVVSVertexPtr vert1 = dynamic_ptr_cast<AbstractVVSVertexPtr>
+	(diag.vertices.first);
+      AbstractVVSVertexPtr vert2 = dynamic_ptr_cast<AbstractVVSVertexPtr>
+	(diag.vertices.second);
+      theScaV[i] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin1) {
+      AbstractVVVVertexPtr vert1 = dynamic_ptr_cast<AbstractVVVVertexPtr>
+	(diag.vertices.first);
+      AbstractVVVVertexPtr vert2 = dynamic_ptr_cast<AbstractVVVVertexPtr>
+	(diag.vertices.second);
+      theVecV[i] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin2) {
+      AbstractVVTVertexPtr vert1 = dynamic_ptr_cast<AbstractVVTVertexPtr>
+	(diag.vertices.first);
+      AbstractVVTVertexPtr vert2 = dynamic_ptr_cast<AbstractVVTVertexPtr>
+	(diag.vertices.second);
+      theTenV[i] = make_pair(vert1, vert2);
+    }
+  }
+}
 
 double MEvv2vv::me2() const {
   VBVector va(2), vb(2), vc(3), vd(3);  

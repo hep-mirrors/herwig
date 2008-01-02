@@ -17,15 +17,12 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "MEfv2vf.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-
-using Helicity::FFVVertexPtr;
-using Helicity::VVVVertexPtr;
 
 /**
  * This class implements the matrix element for a fermion and a vector
@@ -163,7 +160,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 protected:
@@ -204,12 +201,12 @@ private:
   /**
    * A pair off FFVVertex pointers 
    */
-  vector<pair<FFVVertexPtr, FFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
 
   /**
    * A pair of FFVVertex, VVVertex pointers 
    */
-  vector<pair<FFVVertexPtr, VVVVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVVVertexPtr> > theVec;
     //@}
 
 };

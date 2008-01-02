@@ -13,10 +13,10 @@
 //
 
 #include "GeneralHardME.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -26,10 +26,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::FFSVertexPtr;
-using Helicity::FFVVertexPtr;
-using Helicity::VSSVertexPtr;
-using Helicity::VVSVertexPtr;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::VectorWaveFunction;
@@ -198,19 +194,19 @@ private:
    * Storage for dynamically cast vertices for a diagram with intermediate
    * scalar
    */
-  vector<pair<FFSVertexPtr, VSSVertexPtr> > theSca;
+  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > theSca;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * vector
    */
-  vector<pair<FFVVertexPtr, VVSVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVVSVertexPtr> > theVec;
   
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * fermion
    */
-  vector<pair<FFVVertexPtr, FFSVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFSVertexPtr> > theFerm;
 };
 
 }

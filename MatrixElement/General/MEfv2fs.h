@@ -18,16 +18,13 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.fh"
 #include "MEfv2fs.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::FFSVertexPtr;
-using ThePEG::Helicity::VSSVertexPtr;
 using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::VectorWaveFunction;
@@ -168,7 +165,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline void doinit() throw(InitException);
+  void doinit() throw(InitException);
   //@}
 
 protected:
@@ -207,12 +204,12 @@ private:
   /**
    * Store a pair of  FFSVertex and VSSVertex pointers  
    */
-  vector<pair<FFSVertexPtr, VSSVertexPtr> > theScaV;
+  vector<pair<AbstractFFSVertexPtr, AbstractVSSVertexPtr> > theScaV;
 
   /**
    * Store a pair of  FFSVertex and FFVVertex pointers  
    */
-  vector<pair<FFSVertexPtr, FFVVertexPtr> > theFermV;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFVVertexPtr> > theFermV;
   
 };
 

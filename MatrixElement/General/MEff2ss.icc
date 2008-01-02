@@ -23,37 +23,4 @@ inline IBPtr MEff2ss::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MEff2ss::doinit() throw(InitException) {
-  GeneralHardME::doinit();
-  HPCount ndiags(numberOfDiags());
-  theFerm.resize(ndiags);
-  theVec.resize(ndiags);
-  theTen.resize(ndiags);
-  for(HPCount i = 0; i < ndiags; ++i) {
-    HPDiagram current = getProcessInfo()[i];
-    if(current.channelType == HPDiagram::tChannel) {
-      if(current.intermediate->iSpin() == PDT::Spin1Half)
-	theFerm[i] = 
-	  make_pair(dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first), 
-		    dynamic_ptr_cast<FFSVertexPtr>(current.vertices.second));
-    }
-    else if(current.channelType == HPDiagram::sChannel) {
-      if(current.intermediate->iSpin() == PDT::Spin1)
-	theVec[i] = 
-	  make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first), 
-		    dynamic_ptr_cast<VSSVertexPtr>(current.vertices.second));
-
-      if(current.intermediate->iSpin() == PDT::Spin2)
-	theTen[i] = 
-	  make_pair(dynamic_ptr_cast<FFTVertexPtr>(current.vertices.first), 
-		    dynamic_ptr_cast<SSTVertexPtr>(current.vertices.second));
-    }
-    else 
-      throw InitException() << "MEFF2ss:doinit() - Cannot find correct "
-			    << "channel from diagram. Vertex not cast! "
-			    << Exception::runerror;
-  }
-
-}
-
 }

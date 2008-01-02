@@ -15,12 +15,12 @@
 #include "GeneralHardME.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
 #include "ProductionMatrixElement.h"
 #include "MEvv2ss.fh"
 
@@ -28,12 +28,6 @@ namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::VectorWaveFunction;
 using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VVSVertexPtr;
-using ThePEG::Helicity::VSSVertexPtr;
-using ThePEG::Helicity::VVVVertexPtr;
-using ThePEG::Helicity::VVTVertexPtr;
-using ThePEG::Helicity::SSTVertexPtr;
-using ThePEG::Helicity::VVSSVertexPtr;
 
 /**
  * This is the implementation of the matrix element for the process
@@ -190,22 +184,22 @@ private:
   /**
    * Intermediate t-channel scalar
    */
-  vector<pair<VSSVertexPtr, VSSVertexPtr> > theSca;
+  vector<pair<AbstractVSSVertexPtr, AbstractVSSVertexPtr> > theSca;
 
   /**
    * Intermediate s-channel vector
    */
-  vector<pair<VVVVertexPtr, VSSVertexPtr> > theVec;
+  vector<pair<AbstractVVVVertexPtr, AbstractVSSVertexPtr> > theVec;
 
   /**
    * Intermediate s-channel tensor
    */
-  vector<pair<VVTVertexPtr, SSTVertexPtr> > theTen;
+  vector<pair<AbstractVVTVertexPtr, AbstractSSTVertexPtr> > theTen;
   
   /**
    * The contact vertex 
    */
-  VVSSVertexPtr theContact;
+  AbstractVVSSVertexPtr theContact;
   //@}
   
   
