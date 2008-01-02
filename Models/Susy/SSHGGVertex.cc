@@ -71,7 +71,7 @@ void SSHGGVertex::doinit() throw(InitException) {
 
   orderInGs(2);
   orderInGem(1);
-  SVVLoopVertex::doinit();
+  VVSLoopVertex::doinit();
 }
 
 
@@ -101,8 +101,8 @@ void SSHGGVertex::Init() {
 
 }
   
-void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
-			      tcPDPtr particle2, tcPDPtr particle3) {
+void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
+			      tcPDPtr particle3, tcPDPtr particle1) {
   long higgs(abs(particle1->id()));
   if( higgs != ParticleID::h0 && 
       higgs != ParticleID::H0 &&
@@ -175,7 +175,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   setNorm(theCouplast);
   //calculate tensor coefficients
   if( !theHaveCoeff ) {
-    SVVLoopVertex::setCoupling(q2, particle1, particle2, particle3);
+    VVSLoopVertex::setCoupling(q2, particle2, particle3, particle1);
     theHaveCoeff = true;
   }
 }

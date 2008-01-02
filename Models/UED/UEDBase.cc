@@ -122,67 +122,67 @@ void UEDBase::Init() {
      &UEDBase::theVeV, GeV, 246.*GeV, 0*GeV, 0*GeV,
      true, false, Interface::nolimits);
     
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1Z
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1Z
     ("Vertex/F1F1Z",
      "The F1F1Z UED Vertex",
      &UEDBase::theF1F1Z0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1G0
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1G0
     ("Vertex/F1F1G0",
      "The F1F1G UED Vertex",
      &UEDBase::theF1F1G0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0G1
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F0G1
     ("Vertex/F1F0G1",
      "The F1F0G0 UED Vertex",
      &UEDBase::theF1F0G1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VVVVertex> interfaceG1G1G0
+  static Reference<UEDBase,Helicity::AbstractVVVVertex> interfaceG1G1G0
     ("Vertex/G1G1G0",
      "The G1G1G0 UED Vertex",
      &UEDBase::theG1G1G0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VVVVVertex> interfaceG0G0G1G1
+  static Reference<UEDBase,Helicity::AbstractVVVVVertex> interfaceG0G0G1G1
     ("Vertex/G0G0G1G1",
      "The G0G0G1G1 UED Vertex",
      &UEDBase::theG0G0G1G1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1P
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1P
     ("Vertex/F1F1P",
      "The F1F1P UED Vertex",
      &UEDBase::theF1F1P0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1W
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1W
     ("Vertex/F1F1W",
      "The F1F1W UED Vertex",
      &UEDBase::theF1F1W0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0W1
+  static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F0W1
     ("Vertex/F1F0W1",
      "The F1F0W1 UED Vertex",
      &UEDBase::theF1F0W1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceP0H1H1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceP0H1H1
     ("Vertex/P0H1H1",
      "The P0H1H1 UED Vertex",
      &UEDBase::theP0H1H1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceZ0H1H1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceZ0H1H1
     ("Vertex/Z0H1H1",
      "The Z0H1H1 UED Vertex",
      &UEDBase::theZ0H1H1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceW0A1H1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceW0A1H1
     ("Vertex/W0A1H1",
      "The W0A1H1 UED Vertex",
      &UEDBase::theW0A1H1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VSSVertex> interfaceZ0A1h1
+  static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceZ0A1h1
     ("Vertex/Z0A1h1",
      "The W0A1H1 UED Vertex",
      &UEDBase::theZ0A1h1Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::VVVVertex> interfaceW0W1W1
+  static Reference<UEDBase,Helicity::AbstractVVVVertex> interfaceW0W1W1
     ("Vertex/W0W1W1",
      "The W0W1W1 UED Vertex",
      &UEDBase::theW0W1W1Vertex, false, false, true, false, false);

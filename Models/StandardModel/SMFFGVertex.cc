@@ -15,17 +15,17 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void SMFFGVertex::persistentOutput(PersistentOStream & os) const {
-  os <<  _theSM;
+  os << _theSM;
 }
 
 void SMFFGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM;
-  _couplast=0.;_q2last=0.*GeV2;
 }
 
 ClassDescription<SMFFGVertex> 
@@ -33,6 +33,7 @@ SMFFGVertex::initSMFFGVertex;
 // Definition of the static class description member.
 
 void SMFFGVertex::Init() {
+
   static ClassDocumentation<SMFFGVertex> documentation
     ("The SMFFGVertex class is the implementation of"
      "the coupling of the gluon to the Standard Model fermions");
@@ -40,30 +41,40 @@ void SMFFGVertex::Init() {
 }
 
 // coupling for FFG vertex
-void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr)
-{
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last)
-    {
-      double alphas = _theSM->alphaS(q2);
-      _couplast = -sqrt(4.0*3.14159265*alphas);
-      _q2last=q2;
-    }
+  if(q2!=_q2last) {
+    double alphas = _theSM->alphaS(q2);
+    _couplast = -sqrt(4.0*Constants::pi*alphas);
+    _q2last=q2;
+  }
   setNorm(_couplast);
   // the left and right couplings
   int iferm=abs(a->id());
-  if(iferm>=1 && iferm<=6)
-    {
-      setLeft(1.);
-      setRight(1.);
+  if(iferm>=1 && iferm<=6) {
+    setLeft(1.);
+    setRight(1.);
   }
   else
-    {
-      throw HelicityConsistencyError() << "SMFFGVertex::setCoupling" 
-				       << "Unknown particle in gluon vertex" 
-				       << Exception::warning;
-      setLeft(0.);setRight(0.);
-    }
+    throw HelicityConsistencyError() << "SMFFGVertex::setCoupling" 
+				     << "Unknown particle in gluon vertex" 
+				     << Exception::runerror;
 }
 
+SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
+  // PDG codes for the particles
+  vector<int> first,second,third;
+  for(unsigned int ix=1;ix<7;++ix) {
+    first.push_back(-ix);
+    second.push_back(ix);
+    third.push_back(21);
+  }
+  setList(first,second,third);
+}
+  
+void SMFFGVertex::doinit() throw(InitException) {
+  _theSM = generator()->standardModel();
+  orderInGs(1);
+  orderInGem(0);
+  FFVVertex::doinit();
 }

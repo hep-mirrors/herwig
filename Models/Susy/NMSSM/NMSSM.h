@@ -95,32 +95,32 @@ public:
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  virtual inline tFFSVertexPtr vertexFFH() const;
+  virtual inline tAbstractFFSVertexPtr vertexFFH() const;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  virtual inline tVVSVertexPtr vertexWWH() const;
+  virtual inline tAbstractVVSVertexPtr vertexWWH() const;
 
   /**
    * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
    */
-  virtual inline tVSSVertexPtr vertexWHH() const;
+  virtual inline tAbstractVSSVertexPtr vertexWHH() const;
 
   /**
    * Pointer to the higgs coupling to a pair of gauginos
    */
-  virtual inline tFFSVertexPtr vertexGOGOH() const;
+  virtual inline tAbstractFFSVertexPtr vertexGOGOH() const;
 
   /**
    * Pointer to the triple higgs vertex
    */
-  virtual inline tSSSVertexPtr vertexHHH() const;
+  virtual inline tAbstractSSSVertexPtr vertexHHH() const;
 
   /**
    * Pointer to higgs-sfermion-sfermion vertex 
    */
-  virtual inline tSSSVertexPtr vertexHSS() const;
+  virtual inline tAbstractSSSVertexPtr vertexHSS() const;
   
 protected:
 
@@ -208,32 +208,32 @@ private:
   /**
    * The fermion-fermion higgs vertex.
    */
-  FFSVertexPtr _ffhvertex;
+  AbstractFFSVertexPtr _ffhvertex;
 
   /**
    * The vector-vector-higgs vertex.
    */
-  VVSVertexPtr _wwhvertex;
+  AbstractVVSVertexPtr _wwhvertex;
   
   /**
    * The vector-higgs-higgs vertex
    */
-  VSSVertexPtr _whhvertex;
+  AbstractVSSVertexPtr _whhvertex;
 
   /**
    * The coupling of a pair of gauginos to the higgs 
    */
-  FFSVertexPtr _gogohvertex;
+  AbstractFFSVertexPtr _gogohvertex;
 
   /**
    * The triple higgs coupling 
    */
-  SSSVertexPtr _hhhvertex;
+  AbstractSSSVertexPtr _hhhvertex;
 
   /**
    * The higgs sfermion vertex 
    */
-  SSSVertexPtr _hssvertex;
+  AbstractSSSVertexPtr _hssvertex;
   //@}
 };
 

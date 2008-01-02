@@ -41,27 +41,27 @@ inline Energy NMSSM::trilinearKappa() const {
   return _theAkappa;
 }
 
-inline tFFSVertexPtr NMSSM::vertexFFH() const {
+inline tAbstractFFSVertexPtr NMSSM::vertexFFH() const {
   return _ffhvertex;
 }
 
-inline tVVSVertexPtr NMSSM::vertexWWH() const {
+inline tAbstractVVSVertexPtr NMSSM::vertexWWH() const {
   return _wwhvertex;
 }
 
-inline tVSSVertexPtr NMSSM::vertexWHH() const {
+inline tAbstractVSSVertexPtr NMSSM::vertexWHH() const {
   return _whhvertex;
 }
 
-inline tFFSVertexPtr NMSSM::vertexGOGOH() const {
+inline tAbstractFFSVertexPtr NMSSM::vertexGOGOH() const {
   return _gogohvertex;
 }
 
-inline tSSSVertexPtr NMSSM::vertexHHH() const {
+inline tAbstractSSSVertexPtr NMSSM::vertexHHH() const {
   return _hhhvertex;
 }
 
-inline tSSSVertexPtr NMSSM::vertexHSS() const {
+inline tAbstractSSSVertexPtr NMSSM::vertexHSS() const {
   return _hssvertex;
 }
 

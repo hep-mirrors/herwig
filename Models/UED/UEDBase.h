@@ -13,9 +13,9 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "UEDBase.fh"
 
 namespace Herwig {
@@ -245,67 +245,67 @@ private:
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}Z^{(0)}\f$
    */
-  Helicity::FFVVertexPtr theF1F1Z0Vertex;
+  AbstractFFVVertexPtr theF1F1Z0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}g^{(0)}\f$
    */
-  Helicity::FFVVertexPtr theF1F1G0Vertex;
+  AbstractFFVVertexPtr theF1F1G0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(0)}g^{(1)}\f$
    */
-  Helicity::FFVVertexPtr theF1F0G1Vertex;
+  AbstractFFVVertexPtr theF1F0G1Vertex;
 
   /**
    * The \f$g^{(1)}g^{(1)}g\f$ vertex
    */
-  Helicity::VVVVertexPtr theG1G1G0Vertex;
+  AbstractVVVVertexPtr theG1G1G0Vertex;
 
   /**
    * The \f$g\,g\,g^{(1)},g^{(1)}\f$ vertex
    */
-  Helicity::VVVVVertexPtr theG0G0G1G1Vertex;
+  AbstractVVVVVertexPtr theG0G0G1G1Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}\gamma\f$
    */
-  Helicity::FFVVertexPtr theF1F1P0Vertex;
+  AbstractFFVVertexPtr theF1F1P0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(1)}W\f$
    */
-  Helicity::FFVVertexPtr theF1F1W0Vertex;
+  AbstractFFVVertexPtr theF1F1W0Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(0)}W^{(1)}\f$
    */
-  Helicity::FFVVertexPtr theF1F0W1Vertex;
+  AbstractFFVVertexPtr theF1F0W1Vertex;
 
   /**
    * The \f$ A^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$
    */
-  VSSVertexPtr theP0H1H1Vertex;
+  AbstractVSSVertexPtr theP0H1H1Vertex;
 
   /**
    * The \f$ Z^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$
    */
-  VSSVertexPtr theZ0H1H1Vertex;
+  AbstractVSSVertexPtr theZ0H1H1Vertex;
 
   /**
    * The \f$ W^\pm_{\mu(0)}A_{(1)}H^\mp_{(1)}\f$
    */
-  VSSVertexPtr theW0A1H1Vertex;
+  AbstractVSSVertexPtr theW0A1H1Vertex;
 
   /**
    * The \f$ Z^\mu_{\mu(0)}A_{(1)}h_{(1)}\f$
    */
-  VSSVertexPtr theZ0A1h1Vertex;
+  AbstractVSSVertexPtr theZ0A1h1Vertex;
   
   /**
    * The \f$W^{(1)}Z^{(1)}W_{(0)}\f$ vertex
    */
-  Helicity::VVVVertexPtr theW0W1W1Vertex;
+  AbstractVVVVertexPtr theW0W1W1Vertex;
   //@}
 };
 

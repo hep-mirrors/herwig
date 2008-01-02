@@ -44,7 +44,7 @@ void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr)
   if(q2!=_q2last)
     {
       double alpha = _theSM->alphaEM(q2);
-      _couplast = -sqrt(4.0*3.14159265*alpha);
+      _couplast = -sqrt(4.0*Constants::pi*alpha);
       _q2last=q2;
     }
   setNorm(_couplast);

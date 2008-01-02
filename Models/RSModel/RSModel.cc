@@ -43,26 +43,26 @@ ClassDescription<RSModel> RSModel::initRSModel;
 void RSModel::Init() {
   
 
-static Reference<RSModel,ThePEG::Helicity::FFTVertex> interfaceVertexFFGR
+static Reference<RSModel,ThePEG::Helicity::AbstractFFTVertex> interfaceVertexFFGR
   ("Vertex/FFGR",
    "Reference to the fermion-fermion-graviton vertex",
    &RSModel::_theFFGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,ThePEG::Helicity::VVTVertex> interfaceVertexVVGR
+static Reference<RSModel,ThePEG::Helicity::AbstractVVTVertex> interfaceVertexVVGR
   ("Vertex/VVGR",
    "Reference to the vector-vector-graviton vertex",
    &RSModel::_theVVGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,ThePEG::Helicity::SSTVertex> interfaceVertexSSGR
+static Reference<RSModel,ThePEG::Helicity::AbstractSSTVertex> interfaceVertexSSGR
   ("Vertex/SSGR",
    "Reference to the scalar-scalar-graviton vertex",
    &RSModel::_theSSGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,ThePEG::Helicity::FFVTVertex> interfaceVertexFFVGR
+static Reference<RSModel,ThePEG::Helicity::AbstractFFVTVertex> interfaceVertexFFVGR
   ("Vertex/FFVGR",
    "Reference to the fermion-antifermion-vector graviton vertex",
    &RSModel::_theFFVGRVertex, false, false, true, false, false);
-static Reference<RSModel,ThePEG::Helicity::VVVTVertex> interfaceVertexVVVGR
+static Reference<RSModel,ThePEG::Helicity::AbstractVVVTVertex> interfaceVertexVVVGR
   ("Vertex/VVVGR",
    "Reference to the three vector graviton vertex",
    &RSModel::_theVVVGRVertex, false, false, true, false, false);

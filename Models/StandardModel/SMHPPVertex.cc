@@ -82,8 +82,8 @@ void SMHPPVertex::Init() {
 }
 
 
-void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-                              tcPDPtr part2, tcPDPtr part3) {
+void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
+                              tcPDPtr part3, tcPDPtr part1) {
   if( part1->id() != ParticleID::h0 && 
       part2->id() != ParticleID::gamma &&
       part3->id() != ParticleID::gamma ) {
@@ -170,7 +170,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       couplings.push_back(make_pair(copl, copl));
       couplings.push_back(make_pair(UnitRemoval::InvE*_mw, UnitRemoval::InvE*_mw));
 
-      SVVLoopVertex::setCoupling(q2, part1, part2, part3);
+      VVSLoopVertex::setCoupling(q2, part1, part2, part3);
       break;}
   }
 

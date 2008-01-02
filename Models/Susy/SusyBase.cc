@@ -80,87 +80,87 @@ void SusyBase::Init() {
   static ClassDocumentation<SusyBase> documentation
     ("This is the base class for any SUSY model.");
 
-  static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexWSS
+  static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",
      &SusyBase::theWSFSFVertex, false, false, true, false);
   
-  static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexNFSF
+  static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexNFSF
     ("Vertex/NFSF",
      "Reference to the neutralino-fermion-sfermion vertex",
      &SusyBase::theNFSFVertex, false, false, true, false);
 
-  static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexGFSF
+  static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexGFSF
     ("Vertex/GFSF",
      "Reference to the gluino-fermion-sfermion vertex",
      &SusyBase::theGFSFVertex, false, false, true, false);
   
-  static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexHSFSF
+  static Reference<SusyBase,Helicity::AbstractSSSVertex> interfaceVertexHSFSF
     ("Vertex/HSFSF",
      "Reference to the Higgs-fermion-sfermion vertex",
      &SusyBase::theHSFSFVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexCFSF
+   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexCFSF
    ("Vertex/CFSF",
       "Reference to the chargino-fermion-sfermion vertex",
       &SusyBase::theCFSFVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexGSFSF
+   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexGSFSF
    ("Vertex/GSFSF",
       "Reference to the gluon-sfermion-sfermion vertex",
       &SusyBase::theGSFSFVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::VVSSVertex> interfaceVertexGGSS
+   static Reference<SusyBase,Helicity::AbstractVVSSVertex> interfaceVertexGGSS
      ("Vertex/GGSQSQ",
       "Reference to the gluon-gluon-squark-squark vertex",
       &SusyBase::theGGSQSQVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFVVertex> interfaceVertexGSGSG
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGSGSG
      ("Vertex/GSGSG",
       "Reference to the gluon-gluino-gluino vertex",
       &SusyBase::theGSGSGVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFVVertex> interfaceVertexNNZ
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexNNZ
     ("Vertex/NNZ",
      "Reference to Z-~chi_i0-~chi_i0 vertex",
      &SusyBase::theNNZVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFVVertex> interfaceVertexCCZ
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCCZ
     ("Vertex/CCZ",
      "Reference to ~chi_i+-~chi_i-Z vertex",
      &SusyBase::theCCZVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFVVertex> interfaceVertexCNW
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCNW
     ("Vertex/CNW",
      "Reference to ~chi_i+-chi_i0-W vertex",
      &SusyBase::theCNWVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexSSFFH
+   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexSSFFH
    ("Vertex/SSFFH",
     "Reference to the fermion-antifermion-higgs vertex",
     &SusyBase::theSSFFHVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexGOGOH
+   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexGOGOH
    ("Vertex/GOGOH",
     "Reference to the gaugino-gaugino-higgs vertex",
     &SusyBase::theGOGOHVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::VVSVertex> interfaceVertexWWH
+   static Reference<SusyBase,Helicity::AbstractVVSVertex> interfaceVertexWWH
    ("Vertex/SSWWH",
     "Reference to the boson-boson-higgs vertex",
     &SusyBase::theSSWWHVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexWHH
+   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWHH
     ("Vertex/SSWHH",
      "Reference to Susy WHHVertex",
      &SusyBase::theWHHVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexHHH
+   static Reference<SusyBase,Helicity::AbstractSSSVertex> interfaceVertexHHH
     ("Vertex/HHH",
      "Triple higgs coupling",
      &SusyBase::theHHHVertex, false, false, true, false);
    
-   static Reference<SusyBase,GeneralSVVVertex> interfaceVertexSSHGG
+   static Reference<SusyBase,Helicity::AbstractVVSVertex> interfaceVertexSSHGG
     ("Vertex/SSHGG",
      "The coupling of a higgs to 2 gluons",
      &SusyBase::theSSHGGVertex, false, false, true, false);

@@ -11,11 +11,11 @@
 // This is the declaration of the RSModel class.
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVTVertex.h"
 #include "RSModel.fh"
 
 namespace Herwig {
@@ -53,27 +53,27 @@ public:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  inline tFFTVertexPtr   vertexFFGR() const;
+  inline tAbstractFFTVertexPtr   vertexFFGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  inline tVVTVertexPtr   vertexVVGR() const;
+  inline tAbstractVVTVertexPtr   vertexVVGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  inline tSSTVertexPtr   vertexSSGR() const;
+  inline tAbstractSSTVertexPtr   vertexSSGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  inline tFFVTVertexPtr  vertexFFVGR() const;
+  inline tAbstractFFVTVertexPtr  vertexFFVGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  inline tVVVTVertexPtr  vertexVVVGR() const;
+  inline tAbstractVVVTVertexPtr  vertexVVVGR() const;
   //@}
   
 public:
@@ -148,27 +148,27 @@ private:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  FFTVertexPtr  _theFFGRVertex;
+  AbstractFFTVertexPtr  _theFFGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  VVTVertexPtr  _theVVGRVertex;
+  AbstractVVTVertexPtr  _theVVGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  SSTVertexPtr  _theSSGRVertex;
+  AbstractSSTVertexPtr  _theSSGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  FFVTVertexPtr _theFFVGRVertex;
+  AbstractFFVTVertexPtr _theFFVGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  VVVTVertexPtr _theVVVGRVertex;
+  AbstractVVVTVertexPtr _theVVVGRVertex;
   
 };
 }
