@@ -54,7 +54,7 @@ insert NewModel:DecayParticles 25 /Herwig/Particles/KK1_A0
 insert NewModel:DecayParticles 26 /Herwig/Particles/KK1_H+
 
 cd /Herwig/Analysis
-create Herwig::CascadeAnalysis CascadeTest HwBSMAnalysis.so
+create Herwig::CascadeAnalysis CascadeTest HwSusy.so HwUED.so HwBSMAnalysis.so
 set CascadeTest:ModelName MUED
 insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 CascadeTest
 
