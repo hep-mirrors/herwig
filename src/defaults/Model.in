@@ -34,7 +34,6 @@ set Model:RunningMass RunningMass
 mkdir /Herwig/Vertices
 cd /Herwig/Vertices
 read StandardModelVertices.in 
-read BSMVertices.in
 
 #################################################
 # Create the BSM machinery

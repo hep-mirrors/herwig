@@ -8,9 +8,12 @@
 # ???-MUED.in
 #
 ###################################################
+#
+#  Create particle content
+#
+###################################################
 # The UED level-1 particles
 cd /Herwig/Particles
-
 create ThePEG::ParticleData KK1_d_L
 setup KK1_d_L 5100001 KK1_d_L 500. 1.0 10.0 0.0 -1 3 2 0
 defaultparticle KK1_d_L
@@ -188,19 +191,43 @@ create ThePEG::ParticleData KK1_H-
 setup KK1_H- -5100037 KK1_H- 500.0 1.0 10.0 0.0 -3 0 1 0
 defaultparticle KK1_H-
 makeanti KK1_H+ KK1_H-
-
-# The directory and model object
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
 mkdir /Herwig/NewPhysics/MUED
 cd /Herwig/NewPhysics/MUED
-
 create Herwig::UEDBase Model HwUED.so
-
 # SM couplings
 set Model:QCD/RunningAlphaS /Herwig/AlphaS
 set Model:EW/RunningAlphaEM /Herwig/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+mkdir /Herwig/Vertices/MUED
+cd /Herwig/Vertices/MUED
+# create MUED vertices
+library HwUED.so
+create Herwig::UEDF1F1Z0Vertex UED_F1F1Z
+create Herwig::UEDF1F1P0Vertex UED_F1F1P
+create Herwig::UEDF1F1W0Vertex UED_F1F1W
+create Herwig::UEDF1F1G0Vertex UED_F1F1G0
+create Herwig::UEDF1F0G1Vertex UED_F1F0G1
+create Herwig::UEDF1F0W1Vertex UED_F1F0W1
+create Herwig::UEDG1G1G0Vertex UED_G1G1G0
+create Herwig::UEDG0G0G1G1Vertex UED_G0G0G1G1
+create Herwig::UEDP0H1H1Vertex UED_P0H1H1
+create Herwig::UEDZ0H1H1Vertex UED_Z0H1H1
+create Herwig::UEDW0A1H1Vertex UED_W0A1H1
+create Herwig::UEDZ0A1h1Vertex UED_Z0A1h1
+create Herwig::UEDW0W1W1Vertex UED_W0W1W1
 # SM vertices
+cd /Herwig/NewPhysics/MUED
 set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
 set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
 set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
@@ -214,19 +241,19 @@ set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # MUED Feynman rules
-set Model:Vertex/F1F1Z /Herwig/Vertices/BSM/UED_F1F1Z
-set Model:Vertex/F1F1P /Herwig/Vertices/BSM/UED_F1F1P
-set Model:Vertex/F1F1W /Herwig/Vertices/BSM/UED_F1F1W
-set Model:Vertex/F1F1G0 /Herwig/Vertices/BSM/UED_F1F1G0
-set Model:Vertex/F1F0G1 /Herwig/Vertices/BSM/UED_F1F0G1
-set Model:Vertex/F1F0W1 /Herwig/Vertices/BSM/UED_F1F0W1
-set Model:Vertex/G1G1G0 /Herwig/Vertices/BSM/UED_G1G1G0
-set Model:Vertex/G0G0G1G1 /Herwig/Vertices/BSM/UED_G0G0G1G1
-set Model:Vertex/P0H1H1 /Herwig/Vertices/BSM/UED_P0H1H1
-set Model:Vertex/Z0H1H1 /Herwig/Vertices/BSM/UED_Z0H1H1
-set Model:Vertex/W0A1H1 /Herwig/Vertices/BSM/UED_W0A1H1
-set Model:Vertex/Z0A1h1 /Herwig/Vertices/BSM/UED_Z0A1h1
-set Model:Vertex/W0W1W1 /Herwig/Vertices/BSM/UED_W0W1W1
+set Model:Vertex/F1F1Z /Herwig/Vertices/MUED/UED_F1F1Z
+set Model:Vertex/F1F1P /Herwig/Vertices/MUED/UED_F1F1P
+set Model:Vertex/F1F1W /Herwig/Vertices/MUED/UED_F1F1W
+set Model:Vertex/F1F1G0 /Herwig/Vertices/MUED/UED_F1F1G0
+set Model:Vertex/F1F0G1 /Herwig/Vertices/MUED/UED_F1F0G1
+set Model:Vertex/F1F0W1 /Herwig/Vertices/MUED/UED_F1F0W1
+set Model:Vertex/G1G1G0 /Herwig/Vertices/MUED/UED_G1G1G0
+set Model:Vertex/G0G0G1G1 /Herwig/Vertices/MUED/UED_G0G0G1G1
+set Model:Vertex/P0H1H1 /Herwig/Vertices/MUED/UED_P0H1H1
+set Model:Vertex/Z0H1H1 /Herwig/Vertices/MUED/UED_Z0H1H1
+set Model:Vertex/W0A1H1 /Herwig/Vertices/MUED/UED_W0A1H1
+set Model:Vertex/Z0A1h1 /Herwig/Vertices/MUED/UED_Z0A1h1
+set Model:Vertex/W0W1W1 /Herwig/Vertices/MUED/UED_W0W1W1
 
 # Set up the shower
 cd /Herwig/Shower

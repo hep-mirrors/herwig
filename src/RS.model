@@ -8,24 +8,42 @@
 # ???-RS.in
 #
 ###################################################
-# The graviton
+#
+#  Particle Data object for the Gravition
+#
+###################################################
 cd /Herwig/Particles
-
 create /ThePEG/ParticleData Graviton
 setup Graviton 39 G 500.0 1. 10. 0.0 0 0 5 0
 defaultparticle Graviton
-
-# Main directory and model object
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
 mkdir /Herwig/NewPhysics/RS
 cd /Herwig/NewPhysics/RS
-
 create Herwig::RSModel Model HwRSModel.so
-
 # SM couplings
 set Model:QCD/RunningAlphaS /Herwig/AlphaS
 set Model:EW/RunningAlphaEM /Herwig/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+# create RS model vertices
+mkdir /Herwig/Vertices/RS
+cd /Herwig/Vertices/RS
+library HwRSModel.so
+create Herwig::RSModelFFGRVertex RS_FFGRVertex
+create Herwig::RSModelFFVGRVertex RS_FFVGRVertex
+create Herwig::RSModelSSGRVertex RS_SSGRVertex
+create Herwig::RSModelVVGRVertex RS_VVGRVertex
+create Herwig::RSModelVVVGRVertex RS_VVVGRVertex
+cd /Herwig/NewPhysics/RS
 # SM vertices
 set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
 set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
@@ -40,20 +58,27 @@ set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # RS model vertices
-set Model:Vertex/FFGR  /Herwig/Vertices/BSM/RS_FFGRVertex
-set Model:Vertex/FFVGR /Herwig/Vertices/BSM/RS_FFVGRVertex
-set Model:Vertex/SSGR  /Herwig/Vertices/BSM/RS_SSGRVertex
-set Model:Vertex/VVGR  /Herwig/Vertices/BSM/RS_VVGRVertex
-set Model:Vertex/VVVGR /Herwig/Vertices/BSM/RS_VVVGRVertex
-
+set Model:Vertex/FFGR  /Herwig/Vertices/RS/RS_FFGRVertex
+set Model:Vertex/FFVGR /Herwig/Vertices/RS/RS_FFVGRVertex
+set Model:Vertex/SSGR  /Herwig/Vertices/RS/RS_SSGRVertex
+set Model:Vertex/VVGR  /Herwig/Vertices/RS/RS_VVGRVertex
+set Model:Vertex/VVVGR /Herwig/Vertices/RS/RS_VVVGRVertex
+###################################################
+#
+#  Setting to ensure spin correlations
+#  and generation of processes and decays
+#
+###################################################
 cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
 insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
-
 # Set up the model framework
 set RS/Model:ModelGenerator NewModel
-
+###################################################
+#
+#  Choose RS over SM
+#
+###################################################
 cd /Herwig/Generators
-# Choose RS over SM
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/RS/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/RS/Model
