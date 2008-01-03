@@ -69,13 +69,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   _diagrams = process;
   _colour   = factors;
   _nflow    = ncf;
-  cerr << "testing in the setdecayinfo " << _diagrams.size() << "\n";
-  for(unsigned int ix=0;ix<_outgoing.size();++ix) {
-    cerr << "testing outgoing " << _outgoing[ix] << "\n";
-  }
   for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-    cerr << "testing in the loop " << _diagrams[ix].outgoing 
-	 << " " << _diagrams[ix].channelType << "\n";
     unsigned int iy=0;
     for(;iy<3;++iy) 
       if(_diagrams[ix].outgoing == _outgoing[iy]->id()) break;
@@ -122,7 +116,6 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
   // add the mode
   vector<double> wgt(nmode,1./double(nmode));
   addMode(mode,1.,wgt);
-  cerr << *this;
 }
 
 double GeneralThreeBodyDecayer::
@@ -188,3 +181,52 @@ Energy GeneralThreeBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   return _widthcalc->partialWidth(sqr(inpart.second));
 }
 
+void GeneralThreeBodyDecayer::
+colourConnections(const Particle & parent,
+		  const ParticleVector & out) const {
+  // extract colour of the incoming and outgoing particles
+  PDT::Colour inColour(parent.data().iColour());
+  vector<PDT::Colour> outColour;
+  vector<int> singlet,octet,triplet,antitriplet;
+  for(unsigned int ix=0;ix<out.size();++ix) {
+    outColour.push_back(out[ix]->data().iColour());
+    if     (outColour.back() == PDT::Colour0    )     singlet.push_back(ix); 
+    else if(outColour.back() == PDT::Colour3    )     triplet.push_back(ix);
+    else if(outColour.back() == PDT::Colour3bar ) antitriplet.push_back(ix);
+    else if(outColour.back() == PDT::Colour8    )     octet  .push_back(ix);
+  }
+  // colour neutral decaying particle
+  if     ( inColour == PDT::Colour0) {
+    // options are all neutral or triplet/antitriplet+ neutral
+    if(singlet.size()==3) {
+      return;
+    }
+    else if(singlet.size()==1&&triplet.size()==1&&antitriplet.size()==1) {
+      out[triplet[0]]->antiColourNeighbour(out[antitriplet[0]]);
+    }
+    else throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for singlet decaying particle" 
+      << Exception::runerror;
+    
+  }
+  // colour triplet decaying particle
+  else if( inColour == PDT::Colour3) {
+    throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for triplet decaying particle" 
+      << Exception::runerror;
+  }
+  else if( inColour == PDT::Colour3bar) {
+    throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for anti-triplet decaying particle" 
+      << Exception::runerror;
+  }
+  else if( inColour == PDT::Colour8) {
+    throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for octet decaying particle" 
+      << Exception::runerror;
+  }
+}

@@ -227,6 +227,8 @@ createDecayer(const vector<TBDiagram> & diagrams) const {
   string objectname ("/Herwig/Decays/");
   string classname = DecayerClassName(incoming, outgoing, objectname);
   if(classname=="") return GeneralThreeBodyDecayerPtr();
+  cerr << "testing created decayer " << objectname << " "
+       << classname << "\n";
   GeneralThreeBodyDecayerPtr decayer = 
     dynamic_ptr_cast<GeneralThreeBodyDecayerPtr>
     (generator()->preinitCreate(classname, objectname));
@@ -234,8 +236,8 @@ createDecayer(const vector<TBDiagram> & diagrams) const {
   vector<DVector> cfactors = getColourFactors(incoming,outgoing, ncf);
   decayer->setDecayInfo(incoming,vector<PDPtr>(outgoing.begin(),outgoing.end()),
 			diagrams,cfactors,ncf);
-  decayer->init();
   setDecayerInterfaces(objectname);
+  decayer->init();
   return decayer;
 }
 
@@ -274,9 +276,6 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
 
 void ThreeBodyDecayConstructor::
 createDecayMode(const vector<TBDiagram> & diagrams) {
-  // create the decayer
-  GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams);
-  if(!decayer) return;
   // incoming particle
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
   // outgoing particles
@@ -299,6 +298,9 @@ createDecayMode(const vector<TBDiagram> & diagrams) {
   tDMPtr dm = generator()->findDecayMode(tag);
   // create mode if needed
   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
+    // create the decayer
+    GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams);
+    if(!decayer) return;
     tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
     if(ndm) {
       generator()->preinitInterface(ndm, "Decayer", "set",
@@ -322,9 +324,13 @@ createDecayMode(const vector<TBDiagram> & diagrams) {
 	<< tag << Exception::warning;
   }
   else if( dm ) {
-    if((dm->decayer()->fullName()).find("Mambo") != string::npos)
+    if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
+      // create the decayer
+      GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams);
+      if(!decayer) return;
       generator()->preinitInterface(dm, "Decayer", "set", 
 				    decayer->fullName());
+    }
   }
   //update CC mode if it exists
   if( inpart->CC() )

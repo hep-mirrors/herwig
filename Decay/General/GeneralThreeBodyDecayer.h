@@ -168,6 +168,15 @@ protected:
    */
   inline const vector<DVector> & getColourFactors() const;
 
+  /**
+   * Set colour connections
+   * @param parent Parent particle
+   * @param out Particle vector containing particles to 
+   * connect colour lines
+   */
+  void colourConnections(const Particle & parent, 
+			 const ParticleVector & out) const;
+
 private:
 
   /**

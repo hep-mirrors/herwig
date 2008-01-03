@@ -28,7 +28,8 @@ ClassDescription<FtoFFFDecayer> FtoFFFDecayer::initFtoFFFDecayer;
 void FtoFFFDecayer::Init() {
 
   static ClassDocumentation<FtoFFFDecayer> documentation
-    ("There is no documentation for the FtoFFFDecayer class");
+    ("The FtoFFFDecayer class implements the general decay of a fermion to "
+     "three fermions.");
 
 }
 
@@ -112,8 +113,6 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
   static unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   vector<DecayMatrixElement> mes(ncf,DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 							PDT::Spin1Half,PDT::Spin1Half));
-  vector<double> pflows(ncf,0.);
-  double me2(0.);
   for(unsigned int s0 = 0; s0 < 2; ++s0) {
     for(unsigned int s1 = 0; s1 < 2; ++s1) {
       for(unsigned int s2 = 0; s2 < 2; ++s2) {
@@ -188,14 +187,19 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	  }
 	  // now add the flows to the me2 with appropriate colour factors
 	  for(unsigned int ix = 0; ix < ncf; ++ix) {
-	    mes[ix](s0,s1,s2,s3) = cfactors[ix][ix]*flows[ix];
-	    pflows[ix] += cfactors[ix][ix]*norm(flows[ix]);
-	    for(unsigned int iy = 0; iy < ncf; ++iy) {
-	      me2 += cfactors[ix][iy]*(flows[ix]*conj(flows[iy])).real();
-	    }
+	    mes[ix](s0,s1,s2,s3) = flows[ix];
 	  }
 	}
       }
+    }
+  }
+  vector<double> pflows(ncf,0.);
+  double me2(0.);
+  for(unsigned int ix = 0; ix < ncf; ++ix) {
+    for(unsigned int iy = 0; iy < ncf; ++ iy) {
+      double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rhoin)).real();
+      if(ix==iy) pflows[ix] += con;
+      me2 += con;
     }
   }
   // select the matrix element according to the colour flow
@@ -210,21 +214,44 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
       ptotal-=pflows[ix];
     }
   }
+  // make the colour connections
+  colourConnections(inpart, decay);
   // return the matrix element squared
   return me2;
 }
 
 WidthCalculatorBasePtr FtoFFFDecayer::
 threeBodyMEIntegrator(const DecayMode & ) const {
+  Energy min = incoming()->mass();
   vector<int> intype;
   vector<Energy> inmass,inwidth;
   vector<double> inpow;
   int nchannel(0);
+  pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
+			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
   for(unsigned int ix=0;ix<getProcessInfo().size();++ix) {
+    Energy deltam(min);
     if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel23) intype.push_back(3);
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) intype.push_back(2);
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) intype.push_back(1);
+    int itype(0);
+    if     (getProcessInfo()[ix].channelType==TBDiagram::channel23) {
+      deltam -= outgoing()[0]->mass();
+      itype = 3;
+    }
+    else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) {
+      deltam -= outgoing()[1]->mass();
+      itype = 2;
+    }
+    else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) {
+      deltam -= outgoing()[2]->mass();
+      itype = 1;
+    }
+    deltam -= getProcessInfo()[ix].intermediate->mass();
+    if(deltam<0.*GeV) {
+      if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
+      else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
+    } 
+    if(deltam<0.*GeV) continue;
+    intype.push_back(itype);
     if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
       inpow.push_back(0.);
       inmass.push_back(getProcessInfo()[ix].intermediate->mass());
@@ -236,6 +263,22 @@ threeBodyMEIntegrator(const DecayMode & ) const {
       inwidth.push_back(-1.*GeV);
     }
     ++nchannel;
+  }
+  for(unsigned int ix=1;ix<4;++ix) {
+    if(imin[ix].first>0) {
+      intype.push_back(ix);
+      if(getProcessInfo()[imin[ix].first].intermediate->id()!=ParticleID::gamma) {
+	inpow.push_back(0.);
+	inmass.push_back(getProcessInfo()[imin[ix].first].intermediate->mass());
+	inwidth.push_back(getProcessInfo()[imin[ix].first].intermediate->width());
+      }
+      else {
+	inpow.push_back(-2.);
+	inmass.push_back(-1.*GeV);
+	inwidth.push_back(-1.*GeV);
+      }
+      ++nchannel;
+    }
   }
   vector<double> inweights(nchannel,1./double(nchannel));
   return new_ptr(ThreeBodyAllOnCalculator<FtoFFFDecayer>
