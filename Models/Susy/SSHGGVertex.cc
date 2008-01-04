@@ -29,10 +29,10 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 
 			     theq2last(), theHaveCoeff(false) {
   //PDG codes for particles at vertices
-  vector<int> first(3), second(3,21), third(3,21);
-  first[0] = 25;
-  first[1] = 35;
-  first[2] = 36;
+  vector<int> first(3,21), second(3,21), third(3);
+  third[0] = 25;
+  third[1] = 35;
+  third[2] = 36;
   setList(first,second,third);
 }
 
