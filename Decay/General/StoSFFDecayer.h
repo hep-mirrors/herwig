@@ -1,26 +1,29 @@
 // -*- C++ -*-
-#ifndef HERWIG_FtoFFFDecayer_H
-#define HERWIG_FtoFFFDecayer_H
+#ifndef THEPEG_StoSFFDecayer_H
+#define THEPEG_StoSFFDecayer_H
 //
-// This is the declaration of the FtoFFFDecayer class.
+// This is the declaration of the StoSFFDecayer class.
 //
 
 #include "GeneralThreeBodyDecayer.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
-#include "FtoFFFDecayer.fh"
+#include "StoSFFDecayer.fh"
 
 namespace Herwig {
-using namespace ThePEG;
+  using namespace ThePEG;
 
 /**
- * Here is the documentation of the FtoFFFDecayer class.
+ * Here is the documentation of the StoSFFDecayer class.
  *
- * @see \ref FtoFFFDecayerInterfaces "The interfaces"
- * defined for FtoFFFDecayer.
+ * @see \ref StoSFFDecayerInterfaces "The interfaces"
+ * defined for StoSFFDecayer.
  */
-class FtoFFFDecayer: public GeneralThreeBodyDecayer {
+class StoSFFDecayer: public GeneralThreeBodyDecayer {
 
 public:
 
@@ -103,30 +106,35 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<FtoFFFDecayer> initFtoFFFDecayer;
+  static ClassDescription<StoSFFDecayer> initStoSFFDecayer;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FtoFFFDecayer & operator=(const FtoFFFDecayer &);
+  StoSFFDecayer & operator=(const StoSFFDecayer &);
 
 private:
   
   /**
-   * Store the vector of FFSVertex pairs
+   * Store the vertices for scalar intrermediate
    */
-  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > _sca;
+  vector<pair<AbstractSSSVertexPtr, AbstractFFSVertexPtr> > _sca;
 
   /**
-   * Store the vector of FFVVertex pairs
+   * Store the vertices for fermion intrermediate
    */
-  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > _vec;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > _fer;
 
   /**
-   * Store the vector of FFTVertex pairs
+   * Store the vertices for vector intrermediate
    */
-  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > _ten;
+  vector<pair<AbstractVSSVertexPtr, AbstractFFVVertexPtr> > _vec;
+
+  /**
+   * Store the vertices for tensor intrermediate
+   */
+  vector<pair<AbstractSSTVertexPtr, AbstractFFTVertexPtr> > _ten;
 
 };
 
@@ -139,26 +147,26 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of FtoFFFDecayer. */
+ *  base classes of Herwig::StoSFFDecayer. */
 template <>
-struct BaseClassTrait<Herwig::FtoFFFDecayer,1> {
-  /** Typedef of the first base class of FtoFFFDecayer. */
+struct BaseClassTrait<Herwig::StoSFFDecayer,1> {
+  /** Typedef of the first base class of Herwig::StoSFFDecayer. */
   typedef Herwig::GeneralThreeBodyDecayer NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the FtoFFFDecayer class and the shared object where it is defined. */
+ *  the Herwig::StoSFFDecayer class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::FtoFFFDecayer>
-  : public ClassTraitsBase<Herwig::FtoFFFDecayer> {
+struct ClassTraits<Herwig::StoSFFDecayer>
+  : public ClassTraitsBase<Herwig::StoSFFDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::FtoFFFDecayer"; }
+  static string className() { return "Herwig::StoSFFDecayer"; }
 };
 
 /** @endcond */
 
 }
 
-#include "FtoFFFDecayer.icc"
+#include "StoSFFDecayer.icc"
 
-#endif /* HERWIG_FtoFFFDecayer_H */
+#endif /* THEPEG_StoSFFDecayer_H */

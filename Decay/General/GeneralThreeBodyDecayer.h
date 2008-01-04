@@ -177,6 +177,13 @@ protected:
   void colourConnections(const Particle & parent, 
 			 const ParticleVector & out) const;
 
+  /**
+   *
+   */
+  void constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
+				   vector<Energy> & inwidth, vector<double> & inpow,
+				   vector<double> & inweights) const;
+
 private:
 
   /**

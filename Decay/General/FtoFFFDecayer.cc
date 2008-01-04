@@ -43,24 +43,33 @@ void FtoFFFDecayer::doinit() throw(InitException) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
     if(offshell->iSpin() == PDT::Spin0) {
-      FFSVertexPtr vert1 = dynamic_ptr_cast<FFSVertexPtr>
+      AbstractFFSVertexPtr vert1 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.first);
-      FFSVertexPtr vert2 = dynamic_ptr_cast<FFSVertexPtr>
+      AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a scalar diagram in FtoFFFDecayer::doinit()"
+	<< Exception::runerror;
       _sca[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1) {
-      FFVVertexPtr vert1 = dynamic_ptr_cast<FFVVertexPtr>
+      AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.first);
-      FFVVertexPtr vert2 = dynamic_ptr_cast<FFVVertexPtr>
+      AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a vector diagram in FtoFFFDecayer::doinit()"
+	<< Exception::runerror;
       _vec[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin2) {
-      FFTVertexPtr vert1 = dynamic_ptr_cast<FFTVertexPtr>
+      AbstractFFTVertexPtr vert1 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.first);
-      FFTVertexPtr vert2 = dynamic_ptr_cast<FFTVertexPtr>
+      AbstractFFTVertexPtr vert2 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a tensor diagram in FtoFFFDecayer::doinit()"
+	<< Exception::runerror;
       _ten[ix] = make_pair(vert1, vert2);
     }
   }
@@ -110,7 +119,7 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
   bool ferm = inpart.id()>0; 
   const size_t ncf(numberOfFlows());
   vector<Complex> flows(ncf, Complex(0.)); 
-  static unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
+  static const unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   vector<DecayMatrixElement> mes(ncf,DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 							PDT::Spin1Half,PDT::Spin1Half));
   for(unsigned int s0 = 0; s0 < 2; ++s0) {
@@ -155,8 +164,8 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    ++nchan;
 	    if(ichan>0&&ichan!=nchan) continue;
 	    tcPDPtr offshell = dit->intermediate;
-	    // intermediate scalar
 	    Complex diag;
+	    // intermediate scalar
 	    if     (offshell->iSpin() == PDT::Spin0) {
 	      ScalarWaveFunction inters = _sca[idiag].first->
 		evaluate(scale, 1, offshell, w0, w1);
@@ -222,65 +231,10 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 
 WidthCalculatorBasePtr FtoFFFDecayer::
 threeBodyMEIntegrator(const DecayMode & ) const {
-  Energy min = incoming()->mass();
   vector<int> intype;
   vector<Energy> inmass,inwidth;
-  vector<double> inpow;
-  int nchannel(0);
-  pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
-			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
-  for(unsigned int ix=0;ix<getProcessInfo().size();++ix) {
-    Energy deltam(min);
-    if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
-    int itype(0);
-    if     (getProcessInfo()[ix].channelType==TBDiagram::channel23) {
-      deltam -= outgoing()[0]->mass();
-      itype = 3;
-    }
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) {
-      deltam -= outgoing()[1]->mass();
-      itype = 2;
-    }
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) {
-      deltam -= outgoing()[2]->mass();
-      itype = 1;
-    }
-    deltam -= getProcessInfo()[ix].intermediate->mass();
-    if(deltam<0.*GeV) {
-      if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
-      else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
-    } 
-    if(deltam<0.*GeV) continue;
-    intype.push_back(itype);
-    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
-      inpow.push_back(0.);
-      inmass.push_back(getProcessInfo()[ix].intermediate->mass());
-      inwidth.push_back(getProcessInfo()[ix].intermediate->width());
-    }
-    else {
-      inpow.push_back(-2.);
-      inmass.push_back(-1.*GeV);
-      inwidth.push_back(-1.*GeV);
-    }
-    ++nchannel;
-  }
-  for(unsigned int ix=1;ix<4;++ix) {
-    if(imin[ix].first>0) {
-      intype.push_back(ix);
-      if(getProcessInfo()[imin[ix].first].intermediate->id()!=ParticleID::gamma) {
-	inpow.push_back(0.);
-	inmass.push_back(getProcessInfo()[imin[ix].first].intermediate->mass());
-	inwidth.push_back(getProcessInfo()[imin[ix].first].intermediate->width());
-      }
-      else {
-	inpow.push_back(-2.);
-	inmass.push_back(-1.*GeV);
-	inwidth.push_back(-1.*GeV);
-      }
-      ++nchannel;
-    }
-  }
-  vector<double> inweights(nchannel,1./double(nchannel));
+  vector<double> inpow,inweights;
+  constructIntegratorChannels(intype,inmass,inwidth,inpow,inweights);
   return new_ptr(ThreeBodyAllOnCalculator<FtoFFFDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
 		  outgoing()[0]->mass(),outgoing()[1]->mass(),outgoing()[2]->mass()));

@@ -224,9 +224,75 @@ colourConnections(const Particle & parent,
       << Exception::runerror;
   }
   else if( inColour == PDT::Colour8) {
-    throw Exception() 
+    if(triplet.size()==1&&antitriplet.size()==1&&singlet.size()==1) {
+      out[    triplet[0]]->incomingColour    (const_ptr_cast<tPPtr>(&parent));
+      out[antitriplet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else throw Exception() 
       << "Unknown colour structure in GeneralThreeBodyDecayer::"
       << "colourConnections() for octet decaying particle" 
       << Exception::runerror;
   }
+}
+
+void GeneralThreeBodyDecayer::
+constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
+			    vector<Energy> & inwidth, vector<double> & inpow,
+			    vector<double> & inweights) const {
+  Energy min = incoming()->mass();
+  int nchannel(0);
+  pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
+			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
+  for(unsigned int ix=0;ix<getProcessInfo().size();++ix) {
+    Energy deltam(min);
+    if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
+    int itype(0);
+    if     (getProcessInfo()[ix].channelType==TBDiagram::channel23) {
+      deltam -= outgoing()[0]->mass();
+      itype = 3;
+    }
+    else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) {
+      deltam -= outgoing()[1]->mass();
+      itype = 2;
+    }
+    else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) {
+      deltam -= outgoing()[2]->mass();
+      itype = 1;
+    }
+    deltam -= getProcessInfo()[ix].intermediate->mass();
+    if(deltam<0.*GeV) {
+      if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
+      else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
+    } 
+    if(deltam<0.*GeV) continue;
+    intype.push_back(itype);
+    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
+      inpow.push_back(0.);
+      inmass.push_back(getProcessInfo()[ix].intermediate->mass());
+      inwidth.push_back(getProcessInfo()[ix].intermediate->width());
+    }
+    else {
+      inpow.push_back(-2.);
+      inmass.push_back(-1.*GeV);
+      inwidth.push_back(-1.*GeV);
+    }
+    ++nchannel;
+  }
+  for(unsigned int ix=1;ix<4;++ix) {
+    if(imin[ix].first>0) {
+      intype.push_back(ix);
+      if(getProcessInfo()[imin[ix].first].intermediate->id()!=ParticleID::gamma) {
+	inpow.push_back(0.);
+	inmass.push_back(getProcessInfo()[imin[ix].first].intermediate->mass());
+	inwidth.push_back(getProcessInfo()[imin[ix].first].intermediate->width());
+      }
+      else {
+	inpow.push_back(-2.);
+	inmass.push_back(-1.*GeV);
+	inwidth.push_back(-1.*GeV);
+      }
+      ++nchannel;
+    }
+  }
+  inweights = vector<double>(nchannel,1./double(nchannel));
 }
