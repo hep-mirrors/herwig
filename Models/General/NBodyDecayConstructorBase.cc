@@ -103,28 +103,35 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
   //Need width and branching ratios for all currently created decay modes
   PDPtr parent = const_ptr_cast<PDPtr>(dm->parent());
   DecaySet modes = parent->decayModes();
-  Energy currentwidth = modes.empty() ?  0.*MeV : parent->width(); 
-  Energy newWidth = currentwidth + pwidth;
-  parent->width(newWidth);
-  parent->widthCut(5.*newWidth);
-  //need to reweight current branching fractions if there are any
-  for(DecaySet::const_iterator dit = modes.begin(); 
-      dit != modes.end(); ++dit) {
-    double newbrat = ((**dit).brat())*currentwidth/newWidth;
-    ostringstream brf;
-    brf << newbrat;
-    generator()->preinitInterface(*dit, "BranchingRatio",
-				  "set", brf.str());
+  if( modes.empty() ) return;
+  double dmbrat(0.);
+  if( modes.size() == 1 ) {
+    parent->width(pwidth);
+    parent->widthCut(5.*pwidth);
+    dmbrat = 1.;
   }
-  //set brat for current mode
-  double brat = pwidth/newWidth;
+  else {
+    Energy currentwidth(parent->width());
+    Energy newWidth(currentwidth + pwidth);
+    parent->width(newWidth);
+    parent->widthCut(5.*newWidth);
+    //need to reweight current branching fractions if there are any
+    for(DecaySet::const_iterator dit = modes.begin(); 
+	dit != modes.end(); ++dit) {
+      if( **dit == *dm ) continue; 
+      double newbrat = ((**dit).brat())*currentwidth/newWidth;
+      ostringstream brf;
+      brf << newbrat;
+      generator()->preinitInterface(*dit, "BranchingRatio",
+				    "set", brf.str());
+    }
+    //set brat for current mode
+    dmbrat = pwidth/newWidth;
+  }
   ostringstream br;
-  br << brat;
+  br << dmbrat;
   generator()->preinitInterface(dm, "BranchingRatio",
 				"set", br.str());
-  parent->touch();
-  parent->update();
-  parent->reset();
 }
 
 void NBodyDecayConstructorBase::setDecayerInterfaces(string fullname) const {

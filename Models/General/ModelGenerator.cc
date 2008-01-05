@@ -190,6 +190,8 @@ void ModelGenerator::doinit() throw(InitException) {
   pend = _theParticles.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
+    parent->touch();
+    parent->update();
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(0.0*MeV);
