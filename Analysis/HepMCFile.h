@@ -16,6 +16,7 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "HepMC/IO_BaseClass.h"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -101,13 +102,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -118,13 +119,13 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-   inline virtual void doinitrun();
+   virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -149,9 +150,24 @@ private:
   long _eventNumber;
 
   /**
-   *  The HepMC file
+   *  The HepMC format
    */
-  ofstream _hepmcfile;
+  int _format;
+
+  /**
+   *  The HepMC filename
+   */
+  string _filename;
+
+  /**
+   *  The HepMC I/O handler
+   */
+  HepMC::IO_BaseClass *_hepmcio;
+
+  /**
+   *  The HepMC dump file
+   */
+  ofstream _hepmcdump;
 };
 
 }
@@ -186,10 +202,5 @@ struct ClassTraits<Herwig::HepMCFile>
 /** @endcond */
 
 }
-
-#include "HepMCFile.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HepMCFile.tcc"
-#endif
 
 #endif /* THEPEG_HepMCFile_H */

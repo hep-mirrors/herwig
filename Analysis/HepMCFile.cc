@@ -14,30 +14,90 @@
 #include "HepMCFile.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/EventGenerator.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include <HepMCHelper.h>
+#include "HepMC/IO_GenEvent.h"
+#include "HepMC/IO_AsciiParticles.h"
+#include "HepMC/IO_Ascii.h"
+#include "HepMC/IO_ExtendedAscii.h"
 
 using namespace ThePEG;
 using namespace Herwig;
 
+HepMCFile::HepMCFile() 
+  : _eventNumber(1), _format(1), _filename() {}
+
+// Cannot copy streams. 
+// Let doinitrun() take care of their initialization.
+HepMCFile::HepMCFile(const HepMCFile & x) 
+  : AnalysisHandler(x), 
+    _eventNumber(x._eventNumber), _format(x._format), 
+    _filename(x._filename), _hepmcio(), _hepmcdump() {}
+
+IBPtr HepMCFile::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr HepMCFile::fullclone() const {
+  return new_ptr(*this);
+}
+
+void HepMCFile::doinitrun() {
+  AnalysisHandler::doinitrun();
+
+  // set default filename unless user-specified name exists
+  if ( _filename.empty() )
+    _filename = generator()->filename() + ".hepmc";
+
+  switch ( _format ) {
+  default: 
+    _hepmcio = new HepMC::IO_GenEvent(_filename.c_str(), ios::out); 
+    break;
+  case 2: 
+    _hepmcio = new HepMC::IO_AsciiParticles(_filename.c_str(), ios::out); 
+    break;
+  case 3: 
+    _hepmcio = new HepMC::IO_Ascii(_filename.c_str(), ios::out); 
+    break;
+  case 4: 
+    _hepmcio = new HepMC::IO_ExtendedAscii(_filename.c_str(), ios::out); 
+    break;
+  case 5: 
+    _hepmcio = 0; 
+    _hepmcdump.open(_filename.c_str()); 
+    break;
+  }
+}
+
+void HepMCFile::dofinish() {
+  if (_hepmcio)
+    delete _hepmcio;
+  else
+    _hepmcdump.close();
+  AnalysisHandler::dofinish();
+  cout << "\nHepMCFile: generated HepMC output.\n";
+}
+
 void HepMCFile::analyze(tEventPtr event, long, int, int) {
   if (event->number() > _eventNumber) return;
   HepMC::GenEvent * hepmc = HepMCConverter<HepMC::GenEvent>::convert(*event);
-  hepmc->print(_hepmcfile);
+  if (_hepmcio)
+    _hepmcio->write_event(hepmc);
+  else
+    hepmc->print(_hepmcdump);
   delete hepmc;
 }
 
 void HepMCFile::persistentOutput(PersistentOStream & os) const {
-  os << _eventNumber;
+  os << _eventNumber << _format << _filename;
 }
 
 void HepMCFile::persistentInput(PersistentIStream & is, int) {
-  is >> _eventNumber;
+  is >> _eventNumber >> _format >> _filename;
 }
 
 
@@ -54,5 +114,39 @@ void HepMCFile::Init() {
      "The number of events that should be printed.",
      &HepMCFile::_eventNumber, 1, 1, 1,
      false, false, Interface::lowerlim);
-}
 
+  static Switch<HepMCFile,int> interfaceFormat
+    ("Format",
+     "Output format (1 = GenEvent, 2 = AsciiParticles, 3 = Ascii, 4 = ExtendedAscii, 5 = HepMC dump)",
+     &HepMCFile::_format, 1, false, false);
+  static SwitchOption interfaceFormatGenEvent
+    (interfaceFormat,
+     "GenEvent",
+     "IO_GenEvent format",
+     1);
+  static SwitchOption interfaceFormatAsciiParticles
+    (interfaceFormat,
+     "AsciiParticles",
+     "IO_AsciiParticles format",
+     2);
+  static SwitchOption interfaceFormatAscii
+    (interfaceFormat,
+     "Ascii",
+     "IO_Ascii format",
+     3);
+  static SwitchOption interfaceFormatExtendedAscii
+    (interfaceFormat,
+     "ExtendedAscii",
+     "IO_ExtendedAscii format",
+     4);
+  static SwitchOption interfaceFormatDump
+    (interfaceFormat,
+     "Dump",
+     "Event dump (human readable)",
+     5);
+
+  static Parameter<HepMCFile,string> interfaceFilename
+    ("Filename", "Name of the output file",
+     &HepMCFile::_filename, "");
+
+}

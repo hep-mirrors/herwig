@@ -2,7 +2,7 @@ SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
                      HwMPIAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 4:1:0
+HwAnalysis_la_LDFLAGS = -module -version-info 5:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
@@ -31,7 +31,7 @@ DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
-GraphvizPlot.icc GraphvizPlot.cc HepMCFile.h HepMCFile.icc HepMCFile.cc
+GraphvizPlot.icc GraphvizPlot.cc HepMCFile.h HepMCFile.cc
 HwAnalysis_la_CPPFLAGS += $(HEPMCINCLUDE)
 HwAnalysis_la_LIBADD += $(HEPMCLIBS)
 endif

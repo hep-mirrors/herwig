@@ -1,5 +1,16 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.1.2 release: 2008-01-05 (tagged at SVN r2694)
+** Ticket #127
+   Thanks to a patch submitted by Fred Stober, HepMCFile now can
+   output event files in all supported formats. 
+
+** Ticket #128
+   Fixed incorrect value of pi in histogram limits.
+
+** Other fixes in
+   CKKW Qtilde clusterers, BSM width cut, SUSY mixing matrices.
+
 * Herwig++-2.1.1 release: 2007-12-08 (tagged at SVN r2589)
 ** Bug #123
    Fixed a bug with particle lifetimes which resulted in nan for some
