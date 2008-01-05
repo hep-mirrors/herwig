@@ -22,6 +22,4 @@ SimpleVVSLoopVertex.fh SimpleVVSLoopVertex.h \
 SimpleVVSLoopVertex.icc SimpleVVSLoopVertex.cc \
 BSMWidthGenerator.h  BSMWidthGenerator.icc \
 BSMWidthGenerator.fh BSMWidthGenerator.cc \
-TBDiagram.h TBDiagram.icc \
-SimpleWidthGenerator.h  SimpleWidthGenerator.icc \
-SimpleWidthGenerator.fh SimpleWidthGenerator.cc
+TBDiagram.h TBDiagram.icc
