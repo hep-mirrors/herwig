@@ -20,7 +20,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) {
   vector<int> first, second, third;
   //CP even
-  int even[5] = {25, 35, 45};
+  int even[3] = {25, 35, 45};
   for( unsigned int h = 0; h < 3; ++h ) {
     //squarks
     for( unsigned int q = 1; q < 7; ++q) {
