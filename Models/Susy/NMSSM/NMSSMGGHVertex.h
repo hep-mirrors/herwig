@@ -143,12 +143,12 @@ private:
   /**
    * A pointer to the top quark
    */
-  tPDPtr _top;
+  tcPDPtr _top;
 
   /**
    * A pointer to the bottom quark
    */
-  tPDPtr _bt;
+  tcPDPtr _bt;
 
   /**
    * CP-even Higgs mixing matrix 
@@ -239,7 +239,7 @@ struct ClassTraits<Herwig::NMSSMGGHVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNMSSM.so"; }
+  static string library() { return "HwSusy.so HwNMSSM.so"; }
 };
 
 /** @endcond */

@@ -65,4 +65,8 @@ inline tAbstractSSSVertexPtr NMSSM::vertexHSS() const {
   return _hssvertex;
 }
 
+inline tAbstractVVSVertexPtr NMSSM::vertexHGG() const {
+  return _gghvertex;
+}
+
 }

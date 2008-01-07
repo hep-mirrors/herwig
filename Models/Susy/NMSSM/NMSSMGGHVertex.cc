@@ -46,6 +46,9 @@ void NMSSMGGHVertex::doinit() throw(InitException) {
   _mixP = nmssm->CPoddHiggsMix();
   _mixQt = nmssm->stopMix();
   _mixQb = nmssm->sbottomMix();
+  double beta = atan(nmssm->tanBeta());
+  _sb = sin(beta);
+  _cb = cos(beta);
 
   // resize vectors here and use setNParticles method
   // to the set the actual number in the loop.

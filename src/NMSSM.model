@@ -59,7 +59,8 @@ create Herwig::NMSSMGOGOHVertex NMSSM_GOGOH
 create Herwig::NMSSMHSFSFVertex NMSSM_HSS     
 create Herwig::NMSSMWHHVertex NMSSM_WHH     
 create Herwig::NMSSMWWHVertex NMSSM_WWH     
-create Herwig::NMSSMHHHVertex NMSSM_HHH     
+create Herwig::NMSSMHHHVertex NMSSM_HHH
+create Herwig::NMSSMGGHVertex NMSSM_GGH
 cd /Herwig/NewPhysics/NMSSM
 # SM vertices
 set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
@@ -99,6 +100,7 @@ set Model:Vertex/NMSSMHSS /Herwig/Vertices/NMSSM/NMSSM_HSS
 set Model:Vertex/NMSSMWHH /Herwig/Vertices/NMSSM/NMSSM_WHH
 set Model:Vertex/NMSSMWWH /Herwig/Vertices/NMSSM/NMSSM_WWH
 set Model:Vertex/NMSSMHHH /Herwig/Vertices/NMSSM/NMSSM_HHH
+set Model:Vertex/NMSSMGGH /Herwig/Vertices/NMSSM/NMSSM_GGH
 ###################################################
 #
 #  Generate processes and decays in the NMSSM
