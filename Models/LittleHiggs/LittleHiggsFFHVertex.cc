@@ -12,11 +12,11 @@
 using namespace Herwig;
 
 void LittleHiggsFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _model << ounit(_coup,1./GeV);
+  os << ounit(_coup,1./GeV);
 }
 
 void LittleHiggsFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> iunit(_coup,1./GeV);
+  is >> iunit(_coup,1./GeV);
 }
 
 ClassDescription<LittleHiggsFFHVertex> LittleHiggsFFHVertex::initLittleHiggsFFHVertex;
@@ -102,8 +102,7 @@ void LittleHiggsFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, in
 //   setLeft(1.); setRight(1.);
 //   // first the overall normalisation
 //   if(q2!=_q2last) {
-//     double alpha = _theSM->alphaEM(q2);
-//     _couplast = -0.5*sqrt(4.0*Constants::pi*alpha)/_sw/_mw;
+//     _couplast = -0.5*weakCoupling(q2)/_mw;
 //     _q2last=q2;
 //     _idlast=iferm;
 //     if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {

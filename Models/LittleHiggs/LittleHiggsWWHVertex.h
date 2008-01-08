@@ -107,11 +107,6 @@ private:
   LittleHiggsWWHVertex & operator=(const LittleHiggsWWHVertex &);
 
 private:
-  
-  /**
-   * Pointer to he Standard Model object.
-   */
-  cLittleHiggsModelPtr _model;
 
   /**
    * Storage of the couplings.

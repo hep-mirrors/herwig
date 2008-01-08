@@ -29,13 +29,21 @@ class RSModelFFVGRVertex: public FFVTVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline RSModelFFVGRVertex();
-  //@}
+  RSModelFFVGRVertex();
+  
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   * @param part4 The ParticleData pointer for the foruth particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
+			   tcPDPtr part4);
   
 public:
   
@@ -59,17 +67,6 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
-  
-  /**
-   * Calculate the couplings. 
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param part1 The ParticleData pointer for the first  particle.
-   * @param part2 The ParticleData pointer for the second particle.
-   * @param part3 The ParticleData pointer for the third  particle.
-   * @param part4 The ParticleData pointer for the foruth particle.
-   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   tcPDPtr part4);
 
 protected:
   
@@ -110,11 +107,6 @@ private:
   RSModelFFVGRVertex & operator=(const RSModelFFVGRVertex &);
 
 private:
-
-  /**
-   * Pointer to the Standard Model object.
-   */
-  tcSMPtr _theModel;
 
   /**
    * Storage of the couplings.

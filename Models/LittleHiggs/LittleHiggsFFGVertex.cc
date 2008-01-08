@@ -12,15 +12,8 @@
 
 using namespace Herwig;
 
-void LittleHiggsFFGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM;
-}
-
-void LittleHiggsFFGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM;
-}
-
-ClassDescription<LittleHiggsFFGVertex> LittleHiggsFFGVertex::initLittleHiggsFFGVertex;
+NoPIOClassDescription<LittleHiggsFFGVertex> 
+LittleHiggsFFGVertex::initLittleHiggsFFGVertex;
 // Definition of the static class description member.
 
 void LittleHiggsFFGVertex::Init() {
@@ -34,8 +27,7 @@ void LittleHiggsFFGVertex::Init() {
 void LittleHiggsFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alphas = _theSM->alphaS(q2);
-    _couplast = -sqrt(4.0*Constants::pi*alphas);
+    _couplast = -strongCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);
@@ -64,7 +56,6 @@ LittleHiggsFFGVertex::LittleHiggsFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
 }
   
 void LittleHiggsFFGVertex::doinit() throw(InitException) {
-  _theSM = generator()->standardModel();
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

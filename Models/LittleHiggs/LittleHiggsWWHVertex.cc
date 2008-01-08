@@ -12,11 +12,11 @@
 using namespace Herwig;
 
 void LittleHiggsWWHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _model << ounit(_coup,GeV);
+  os << ounit(_coup,GeV);
 }
 
 void LittleHiggsWWHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> iunit(_coup,GeV);
+  is >> iunit(_coup,GeV);
 }
 
 ClassDescription<LittleHiggsWWHVertex> LittleHiggsWWHVertex::initLittleHiggsWWHVertex;
@@ -179,8 +179,9 @@ LittleHiggsWWHVertex::LittleHiggsWWHVertex()
 
 void LittleHiggsWWHVertex::doinit() throw(InitException) {
   // model
-  _model = dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
-  if(!_model) 
+ cLittleHiggsModelPtr model = 
+   dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  if(!model) 
     throw InitException() << "Must be using the LittleHiggsModel "
 			  << " in LittleHiggsWWHVertex::doinit()"
 			  << Exception::runerror;
@@ -190,13 +191,13 @@ void LittleHiggsWWHVertex::doinit() throw(InitException) {
   // base class
   VVSVertex::doinit();
   // calculate the couplings for the different combinations of particles
-  Energy fact = 0.5*_model->vev()/_model->sin2ThetaW();
-  double sw(sqrt(_model->sin2ThetaW())),cw(sqrt(1.-_model->sin2ThetaW()));
-  double vf(sqr(_model->vev()/_model->f()));
-  double vr(_model->vevPrime()/_model->vev());
+  Energy fact = 0.5*model->vev()/model->sin2ThetaW();
+  double sw(sqrt(model->sin2ThetaW())),cw(sqrt(1.-model->sin2ThetaW()));
+  double vf(sqr(model->vev()/model->f()));
+  double vr(model->vevPrime()/model->vev());
   double r2(sqrt(2.));
-  double s (_model->sinTheta()     ),c (_model->cosTheta()     );
-  double sp(_model->sinThetaPrime()),cp(_model->cosThetaPrime());
+  double s (model->sinTheta()     ),c (model->cosTheta()     );
+  double sp(model->sinThetaPrime()),cp(model->cosThetaPrime());
   double s0(2.*r2*vr);
   _coup.resize(27);
   _coup[ 0] = fact        *(1.-vf/3.+0.5*vf* sqr(sqr(c)-sqr(s))
@@ -234,8 +235,7 @@ void LittleHiggsWWHVertex::doinit() throw(InitException) {
 void LittleHiggsWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _model->alphaEM(q2);
-    _couplast = sqrt(4.0*Constants::pi*alpha);
+    _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }
   int ih = abs(c->id());
