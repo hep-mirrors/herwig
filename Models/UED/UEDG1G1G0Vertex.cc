@@ -20,17 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-void UEDG1G1G0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
-}
-
-void UEDG1G1G0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-}
-
-ClassDescription<UEDG1G1G0Vertex> UEDG1G1G0Vertex::initUEDG1G1G0Vertex;
+NoPIOClassDescription<UEDG1G1G0Vertex> UEDG1G1G0Vertex::initUEDG1G1G0Vertex;
 // Definition of the static class description member.
 
 void UEDG1G1G0Vertex::Init() {
@@ -48,15 +38,12 @@ void UEDG1G1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       (id3 == ParticleID::g && id1 == 5100021 && id2 == 5100021) ) {
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = sqrt(4.*Constants::pi*theUEDBase->alphaS(q2));
+      theCoupLast = strongCoupling(q2);
     }
     setNorm(theCoupLast);
   }
-  else {
-    throw HelicityLogicalError() << "UEDG1G1G0Vertex::setCoupling - "
-				 << "There is an unknown particle in this vertex "
-				 << id1 << " " << id2 << " " << id3 
-				 << Exception::warning;
-    setNorm(0.);
-  }
+  else throw HelicityLogicalError() 
+    << "UEDG1G1G0Vertex::setCoupling - "
+    << "There is an unknown particle in this vertex "
+    << id1 << " " << id2 << " " << id3 << Exception::runerror;
 }

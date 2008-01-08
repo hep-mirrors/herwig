@@ -22,7 +22,7 @@ using namespace Herwig;
 
 UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,
-				     theq2Last(), theCoupLast(0.), 
+				     theq2Last(0.*GeV2), theCoupLast(0.), 
 				     theLeftLast(0.), theRightLast(0.) {
   vector<int> anti, ferm, boson(25, 23);
   //QQ, uu, dd
@@ -48,18 +48,27 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(),
   setList(anti, ferm, boson);
 }
 
+void UEDF1F1Z0Vertex::doinit() throw(InitException) {
+  FFVVertex::doinit();
+  UEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!model)
+    throw InitException() << "UEDF1F1Z0Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  
+  theSin2ThW = model->sin2ThetaW();
+  theCosThW = sqrt(1. - theSin2ThW); 
+  theRadius = model->compactRadius();
+  orderInGs(0);
+  orderInGem(1);
+}
+
 void UEDF1F1Z0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSin2ThW << theCosThW << ounit(theRadius,1/GeV);
+  os << theSin2ThW << theCosThW << ounit(theRadius,1/GeV);
 }
 
 void UEDF1F1Z0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSin2ThW >> theCosThW >> iunit(theRadius,1/GeV);
-  theID1Last = 0;
-  theID2Last = 0;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-  theLeftLast = 0.;
-  theRightLast = 0.;
+  is >> theSin2ThW >> theCosThW >> iunit(theRadius,1/GeV);
 }
 
 ClassDescription<UEDF1F1Z0Vertex> UEDF1F1Z0Vertex::initUEDF1F1Z0Vertex;
@@ -107,8 +116,7 @@ void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   if( ferma && fermb  ) {
     if(q2 != theq2Last) {
 	theq2Last = q2;
-	theCoupLast = 
-	  sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2)/theSin2ThW)/theCosThW/2.;
+	theCoupLast = 0.5*weakCoupling(q2)/theCosThW;
     }
     if( ianti != theID1Last || iferm != theID2Last) {
       theID1Last = ianti;

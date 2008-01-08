@@ -20,10 +20,11 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1G0Vertex::UEDF1F1G0Vertex() {
+UEDF1F1G0Vertex::UEDF1F1G0Vertex() 
+  : theq2Last(0.*GeV2), theCoupLast(0.) {
   vector<int> anti, ferm, boson(12, 21);
   //QQ
-    for(int i = 5100001; i < 6100007; ++i) {
+  for(int i = 5100001; i < 6100007; ++i) {
     if(i == 5100007) i += 999994;
     anti.push_back(-i);
     ferm.push_back(i);
@@ -31,17 +32,7 @@ UEDF1F1G0Vertex::UEDF1F1G0Vertex() {
   setList(anti, ferm, boson);
 }
 
-void UEDF1F1G0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
-}
-
-void UEDF1F1G0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-}
-
-ClassDescription<UEDF1F1G0Vertex> UEDF1F1G0Vertex::initUEDF1F1G0Vertex;
+NoPIOClassDescription<UEDF1F1G0Vertex> UEDF1F1G0Vertex::initUEDF1F1G0Vertex;
 // Definition of the static class description member.
 
 void UEDF1F1G0Vertex::Init() {
@@ -66,9 +57,10 @@ void UEDF1F1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << Exception::warning;
   if((iferm >= 5100001 && iferm <= 5100006) ||
      (iferm >= 6100001 && iferm <= 6100006)) {
-    if(q2 != theq2Last)
-      theCoupLast = -sqrt(4.*Constants::pi*(theUEDBase->alphaS(q2)));
-    
+    if(q2 != theq2Last) {
+      theCoupLast = -strongCoupling(q2);
+      theq2Last=q2;
+    }
     setNorm(theCoupLast);
     setLeft(1.);
     setRight(1.);

@@ -13,7 +13,7 @@
 
 namespace Herwig {
 
-inline UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(), theCoupLast(0.) {
+inline UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(0.*GeV2), theCoupLast(0.) {
   setList(vector<int>(1, 22), vector<int>(1, 5100037), 
 	  vector<int>(1, -5100037));
 }
@@ -28,11 +28,6 @@ inline IBPtr UEDP0H1H1Vertex::fullclone() const {
 
 inline void UEDP0H1H1Vertex::doinit() throw(InitException) {
   VSSVertex::doinit();
-  theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
-  if(!theUEDBase)
-    throw InitException() << "UEDP0H1H1Vertex::doinit() - The pointer to "
-			  << "the UEDBase object is null!"
-			  << Exception::runerror;
   orderInGs(0);
   orderInGem(1);
 }

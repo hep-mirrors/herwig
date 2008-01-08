@@ -96,7 +96,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -114,11 +114,6 @@ private:
   UEDF1F0H1Vertex & operator=(const UEDF1F0H1Vertex &);
 
 private:
-
-  /**
-   * A pointer to the UEDBase object.
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The compactification radius.

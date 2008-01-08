@@ -120,16 +120,6 @@ private:
 private:
 
   /**
-   * A pointer to the UEDBase object.
-   */
-  tUEDBasePtr theUEDBase;
-
-  /**
-   * The value of \f$\sin\theta_W\f$.
-   */
-  double theSinThetaW;
-
-  /**
    * The value of \f$\cos\theta_W\f$.
    */
   double theCosThetaW;

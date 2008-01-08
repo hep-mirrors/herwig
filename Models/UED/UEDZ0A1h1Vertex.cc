@@ -20,14 +20,35 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
+UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
+				     theq2Last(0.*GeV2), theCoupLast(0.) {
+  setList(vector<int>(1, 23), vector<int>(1, 5100036), 
+	  vector<int>(1, 5100025));
+}
+
+void UEDZ0A1h1Vertex::doinit() throw(InitException) {
+  VSSVertex::doinit();
+  tUEDBasePtr UEDBase = 
+    dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!UEDBase)
+    throw InitException() << "UEDZ0A1h1Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  double sw2 = UEDBase->sin2ThetaW();
+  theSin2ThetaW = 2.*sqrt(sw2*(1. - sw2));
+  Energy2 mz2 = sqr(getParticleData(23)->mass());
+  InvEnergy2 rad2 = sqr(UEDBase->compactRadius());
+  theKappa = 1./sqrt(1. + mz2*rad2);
+  orderInGs(0);
+  orderInGem(0);
+}
+
 void UEDZ0A1h1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSin2ThetaW << theKappa;
+  os << theSin2ThetaW << theKappa;
 }
 
 void UEDZ0A1h1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSin2ThetaW >> theKappa;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
+  is >> theSin2ThetaW >> theKappa;
 }
 
 ClassDescription<UEDZ0A1h1Vertex> UEDZ0A1h1Vertex::initUEDZ0A1h1Vertex;
@@ -65,8 +86,7 @@ void UEDZ0A1h1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       (scaB == 5100036 && scaA == 5100025) ) {
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = 
-	theKappa*sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2))/theSin2ThetaW;
+      theCoupLast = theKappa*electroMagneticCoupling(q2)/theSin2ThetaW;
     }
     setNorm(theCoupLast); 
   }

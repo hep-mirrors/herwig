@@ -20,16 +20,35 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
+UEDZ0H1H1Vertex::UEDZ0H1H1Vertex() : theCosThetaW(0.), theCosTheta2W(0.), theMw2(), 
+				     theR2(), theq2Last(0.*MeV2), theCoupLast(0.) {
+  setList(vector<int>(1, 23), vector<int>(1, 5100037), 
+	  vector<int>(1, -5100037));
+}
+
+void UEDZ0H1H1Vertex::doinit() throw(InitException) {
+  VSSVertex::doinit();
+  tUEDBasePtr theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!theUEDBase)
+    throw InitException() << "UEDZ0H1H1Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  theCosThetaW = sqrt(1. - theUEDBase->sin2ThetaW());
+  theCosTheta2W = 1. - 2.*theUEDBase->sin2ThetaW();
+  theMw2 = sqr(getParticleData(24)->mass());
+  theR2 = sqr(theUEDBase->compactRadius());
+  orderInGs(0);
+  orderInGem(1);
+}
+
 void UEDZ0H1H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinThetaW << theCosThetaW << theCosTheta2W
+  os << theCosThetaW << theCosTheta2W
      << ounit(theMw2,GeV2) << ounit(theR2,1/GeV2);
 }
 
 void UEDZ0H1H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinThetaW >> theCosThetaW >> theCosTheta2W
+  is >> theCosThetaW >> theCosTheta2W
      >> iunit(theMw2,GeV2) >> iunit(theR2,1/GeV2);
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
 }
 
 ClassDescription<UEDZ0H1H1Vertex> UEDZ0H1H1Vertex::initUEDZ0H1H1Vertex;
@@ -61,7 +80,7 @@ void UEDZ0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     if(q2 != theq2Last) {
       theq2Last = q2;
       theCoupLast = 
-	Complex(0., 1.)*sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2))/theSinThetaW;
+	Complex(0., 1.)*weakCoupling(q2);
       theCoupLast *= ( (theCosTheta2W/2./theCosThetaW) 
 		       - sqr(theCosThetaW)*theMw2*theR2 )/(1. + theMw2*theR2);
     }

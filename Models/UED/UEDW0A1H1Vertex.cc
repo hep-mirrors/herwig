@@ -20,8 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theSinThetaW(0.), theMw2(),
-				     theMz2(), theR2(), 
+UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
 				     theq2Last(), theCoupLast(0.) {
   vector<int> wboson(2), higgsA(2), higgsH(2);
   wboson[0] = 24;
@@ -36,15 +35,11 @@ UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theSinThetaW(0.), theMw2(),
 }
 
 void UEDW0A1H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinThetaW 
-     << ounit(theMw2,GeV2) << ounit(theMz2,GeV2) << ounit(theR2,1/GeV2);  
+  os << ounit(theMw2,GeV2) << ounit(theMz2,GeV2) << ounit(theR2,1/GeV2);  
 }
 
 void UEDW0A1H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinThetaW 
-     >> iunit(theMw2,GeV2) >> iunit(theMz2,GeV2) >> iunit(theR2,1/GeV2);
-  theCoupLast = 0.;
-  theq2Last = 0.*GeV2;
+  is >> iunit(theMw2,GeV2) >> iunit(theMz2,GeV2) >> iunit(theR2,1/GeV2);
 }
 
 ClassDescription<UEDW0A1H1Vertex> UEDW0A1H1Vertex::initUEDW0A1H1Vertex;
@@ -76,7 +71,7 @@ void UEDW0A1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   if(abs(chiggs) == 5100037) {
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2))/theSinThetaW;
+      theCoupLast = weakCoupling(q2);
       double mwRs = theMw2*theR2;
       double denom = sqrt( (1 + mwRs)*(1. + theMw2*theR2) );
       theCoupLast *= ( 0.5 + mwRs )/denom;
@@ -88,6 +83,6 @@ void UEDW0A1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     throw HelicityLogicalError() << "UEDW0A1H1Vertex::setCoupling - "
 				 << "There is an unknown particle in this " 
 				 << "vertex " << chiggs
-				 << Exception::warning;
+				 << Exception::runerror;
 }
 

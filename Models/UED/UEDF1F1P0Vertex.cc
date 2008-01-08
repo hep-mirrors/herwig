@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(),
+UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(0.*GeV2),
 				     thefermLast(0), theLRLast(0.0), 
 				     theCharges(3) {
   //lists
@@ -45,19 +45,22 @@ UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(),
   setList(anti, ferm, photon);
 }
 
-void UEDF1F1P0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
+void UEDF1F1P0Vertex::doinit() throw(InitException) {
+  FFVVertex::doinit();
+  tUEDBasePtr UEDBase = 
+    dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!UEDBase)
+    throw InitException() << "UEDF1F1P0Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  theCharges[0] = UEDBase->ee();
+  theCharges[1] = UEDBase->ed();
+  theCharges[2] = UEDBase->eu();
+  orderInGs(0);
+  orderInGem(0);
 }
 
-void UEDF1F1P0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theCoupLast = 0.;
-  theq2Last = 0.*GeV2;
-  thefermLast = 0;
-  theLRLast = 0.;
-}
-
-ClassDescription<UEDF1F1P0Vertex> UEDF1F1P0Vertex::initUEDF1F1P0Vertex;
+NoPIOClassDescription<UEDF1F1P0Vertex> UEDF1F1P0Vertex::initUEDF1F1P0Vertex;
 // Definition of the static class description member.
 
 void UEDF1F1P0Vertex::Init() {
@@ -91,7 +94,7 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
      (iferm >= 6100011 && iferm <= 6100016)) {
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = sqrt(4.*Constants::pi*(theUEDBase->alphaEM(q2)));
+      theCoupLast = electroMagneticCoupling(q2);
     }
     setNorm(theCoupLast);
     if(iferm != thefermLast) {
