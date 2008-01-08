@@ -42,8 +42,8 @@ modeNumber(bool & cc, tcPDPtr in, const PDVector & out) const {
   for(unsigned int ix=0;ix<3;++ix) {
     if(out[ix]!=_outgoing[ix]) 
       allowed.first  = false;
-    if( ( out[ix]->CC() && out[ix]->CC() == _outgoing[ix] ) ||
-	(!out[ix]->CC() && out[ix]       == _outgoing[ix] ) )
+    if( !(( out[ix]->CC() && out[ix]->CC() == _outgoing[ix] ) ||
+	  (!out[ix]->CC() && out[ix]       == _outgoing[ix] )) )
       allowed.second = false;
   }
   if(allowed.first  && in->id() == _incoming->id()) {
@@ -96,6 +96,7 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
   for(unsigned int ix=0;ix<_diagrams.size();++ix) {
     if(_diagrams[ix].channelType==TBDiagram::fourPoint||
        _diagrams[ix].channelType==TBDiagram::UNDEFINED) continue;
+    if(_diagrams[ix].intermediate->width()==0.*MeV) continue;
     // create the new channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
     if(_diagrams[ix].channelType==TBDiagram::channel23) {
@@ -113,6 +114,8 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
     mode->addChannel(newchannel);
     ++nmode;
   }
+  if(nmode==0) throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
+				 << "doinit()" << Exception::runerror;
   // add the mode
   vector<double> wgt(nmode,1./double(nmode));
   addMode(mode,1.,wgt);
@@ -212,13 +215,19 @@ colourConnections(const Particle & parent,
   }
   // colour triplet decaying particle
   else if( inColour == PDT::Colour3) {
-    throw Exception() 
+    if(singlet.size()==2&&triplet.size()==1) {
+      out[triplet[0]]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else throw Exception() 
       << "Unknown colour structure in GeneralThreeBodyDecayer::"
       << "colourConnections() for triplet decaying particle" 
       << Exception::runerror;
   }
   else if( inColour == PDT::Colour3bar) {
-    throw Exception() 
+    if(singlet.size()==2&&antitriplet.size()==1) {
+      out[antitriplet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else throw Exception() 
       << "Unknown colour structure in GeneralThreeBodyDecayer::"
       << "colourConnections() for anti-triplet decaying particle" 
       << Exception::runerror;
@@ -260,18 +269,20 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       itype = 1;
     }
     deltam -= getProcessInfo()[ix].intermediate->mass();
-    if(deltam<0.*GeV) {
+    if(deltam<0.*GeV&&getProcessInfo()[ix].intermediate->width()>0.*MeV) {
       if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
       else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
     } 
     if(deltam<0.*GeV) continue;
-    intype.push_back(itype);
-    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
+    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma &&
+       getProcessInfo()[ix].intermediate->width()>0.*MeV) {
+      intype.push_back(itype);
       inpow.push_back(0.);
       inmass.push_back(getProcessInfo()[ix].intermediate->mass());
       inwidth.push_back(getProcessInfo()[ix].intermediate->width());
     }
-    else {
+    else if(getProcessInfo()[ix].intermediate->id()==ParticleID::gamma) {
+      intype.push_back(itype);
       inpow.push_back(-2.);
       inmass.push_back(-1.*GeV);
       inwidth.push_back(-1.*GeV);

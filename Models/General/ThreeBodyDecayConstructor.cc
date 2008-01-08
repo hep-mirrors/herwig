@@ -270,12 +270,11 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
   }
   objname   += "Decayer";
   if(incoming->iSpin()==PDT::Spin0) {
-    classname="";
+    if(ns==1&&nf==2) classname += "StoSFFDecayer";
+    else             classname  = "";
   }
   else if(incoming->iSpin()==PDT::Spin1Half) {
-    if(nf==3) {
-      classname += "FtoFFFDecayer";
-    }
+    if(nf==3) classname += "FtoFFFDecayer";
     else      classname  = "";
   }
   else if(incoming->iSpin()==PDT::Spin1) {
@@ -361,14 +360,15 @@ vector<DVector> ThreeBodyDecayConstructor::
 getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
 		 unsigned int & ncf) const {
   unsigned int ns(0),nt(0),ntb(0),no(0);
+  string name = incoming->PDGName() + "->";
   for(OrderedParticles::const_iterator it = outgoing.begin();
       it != outgoing.end();++it) {
+    name += (**it).PDGName() + " ";
     if     ((**it).iColour() == PDT::Colour0    ) ++ns ;
     else if((**it).iColour() == PDT::Colour3    ) ++nt ;
     else if((**it).iColour() == PDT::Colour3bar ) ++ntb;
     else if((**it).iColour() == PDT::Colour8    ) ++no ;
   }
-
   vector<DVector> output;
   // colour neutral decaying particle
   if     ( incoming->iColour() == PDT::Colour0) {
@@ -381,35 +381,26 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
       ncf = 1;
       output = vector<DVector>(1,DVector(1,3.));
     }
-    else {
-      OrderedParticles::const_iterator it = outgoing.begin();
-      throw Exception() << "Unknown colour flow structure for"
-			<< incoming->PDGName() << "->"
-			<<    (**it) .PDGName() << ","
-			<< (**(++it)).PDGName() << ","
-			<< (**(++it)).PDGName()
-			<< Exception::runerror;
-    }
+    else throw Exception() << "Unknown colour flow structure for"
+			   << name << Exception::runerror;
   }
   // colour triplet decaying particle
   else if( incoming->iColour() == PDT::Colour3) {
-    OrderedParticles::const_iterator it = outgoing.begin();
-    throw Exception() << "Unknown colour flow structure for"
-		      << incoming->PDGName() << "->"
-		      <<    (**it) .PDGName() << ","
-		      << (**(++it)).PDGName() << ","
-		      << (**(++it)).PDGName()
-		      << Exception::runerror;
+    if(ns==2&&nt==1) {
+      ncf = 1;
+      output = vector<DVector>(1,DVector(1,1.));
+    }
+    else throw Exception() << "Unknown colour flow structure for"
+		      << name << Exception::runerror;
   }
   // colour antitriplet decayign particle
   else if( incoming->iColour() == PDT::Colour3bar) {
-    OrderedParticles::const_iterator it = outgoing.begin();
-    throw Exception() << "Unknown colour flow structure for"
-		      << incoming->PDGName() << "->"
-		      <<    (**it) .PDGName() << ","
-		      << (**(++it)).PDGName() << ","
-		      << (**(++it)).PDGName()
-		      << Exception::runerror;
+    if(ns==2&&ntb==1) {
+      ncf = 1;
+      output = vector<DVector>(1,DVector(1,1.));
+    }
+    else throw Exception() << "Unknown colour flow structure for"
+			   << name << Exception::runerror;
   }
   else if( incoming->iColour() == PDT::Colour8) {
     // triplet antitriplet
@@ -417,15 +408,8 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
       ncf = 1;
       output = vector<DVector>(1,DVector(1,0.5));
     }
-    else {
-      OrderedParticles::const_iterator it = outgoing.begin();
-      throw Exception() << "Unknown colour flow structure for"
-			 << incoming->PDGName() << "->"
-			 <<    (**it) .PDGName() << ","
-			 << (**(++it)).PDGName() << ","
-			 << (**(++it)).PDGName()
-			 << Exception::runerror;
-    }
+    else throw Exception() << "Unknown colour flow structure for"
+			   << name << Exception::runerror;
   }
   return output;
 }
