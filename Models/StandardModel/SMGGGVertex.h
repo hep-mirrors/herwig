@@ -28,31 +28,10 @@ class SMGGGVertex : public Helicity::VVVVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMGGGVertex();
-  //@}  
-
-public:
-  
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
+  SMGGGVertex();
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -94,7 +73,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -102,17 +81,12 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<SMGGGVertex> initSMGGGVertex;
+  static NoPIOClassDescription<SMGGGVertex> initSMGGGVertex;
   
   /**
    * Private and non-existent assignment operator.
    */
   SMGGGVertex & operator=(const SMGGGVertex &);
-
-  /**
-   * Pointer to the Standard Model.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.

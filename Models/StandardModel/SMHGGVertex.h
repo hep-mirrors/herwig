@@ -20,21 +20,19 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  /**
-   * The <code>SMHGGVertex</code> class implements the 
-   * setCoupling member for the Standard Model effective 
-   * vertex Higgs-gluon-gluon. 
-   */
+/**
+ * The <code>SMHGGVertex</code> class implements the 
+ * setCoupling member for the Standard Model effective 
+ * vertex Higgs-gluon-gluon. 
+ */
 class SMHGGVertex: public VVSLoopVertex {
   
 public:
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * The default constructor.
    */
-  inline SMHGGVertex();
-  //@}
+  SMHGGVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -90,7 +88,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
 private:
   /**

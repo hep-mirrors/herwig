@@ -20,11 +20,11 @@ using namespace Herwig;
 using namespace ThePEG;
 
 void SMFFZVertex::persistentOutput(PersistentOStream & os) const {
-  os << _gl << _gr <<  _theSM;
+  os << _gl << _gr;
 }
 
 void SMFFZVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _gl >> _gr >> _theSM;
+  is >> _gl >> _gr;
 }
 
 ClassDescription<SMFFZVertex> 
@@ -40,8 +40,7 @@ void SMFFZVertex::Init() {
 void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    _couplast = -sqrt(4.0*Constants::pi*alpha);
+    _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);
@@ -77,18 +76,18 @@ SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
 }
 
 void SMFFZVertex::doinit() throw(InitException) {
-  _theSM = generator()->standardModel();
-  double sw2=_theSM->sin2ThetaW();
+  tcSMPtr sm = generator()->standardModel();
+  double sw2=sm->sin2ThetaW();
   double fact = 0.25/sqrt(sw2*(1.-sw2));
   for(int ix=1;ix<4;++ix) {
-    _gl[2*ix-1]  = fact*(_theSM->vd()  + _theSM->ad() );
-    _gl[2*ix ]   = fact*(_theSM->vu()  + _theSM->au() );
-    _gl[2*ix+9 ] = fact*(_theSM->ve()  + _theSM->ae() );
-    _gl[2*ix+10] = fact*(_theSM->vnu() + _theSM->anu());
-    _gr[2*ix-1]  = fact*(_theSM->vd()  - _theSM->ad() );
-    _gr[2*ix ]   = fact*(_theSM->vu()  - _theSM->au() );
-    _gr[2*ix+9 ] = fact*(_theSM->ve()  - _theSM->ae() );
-    _gr[2*ix+10] = fact*(_theSM->vnu() - _theSM->anu());
+    _gl[2*ix-1]  = fact*(sm->vd()  + sm->ad() );
+    _gl[2*ix ]   = fact*(sm->vu()  + sm->au() );
+    _gl[2*ix+9 ] = fact*(sm->ve()  + sm->ae() );
+    _gl[2*ix+10] = fact*(sm->vnu() + sm->anu());
+    _gr[2*ix-1]  = fact*(sm->vd()  - sm->ad() );
+    _gr[2*ix ]   = fact*(sm->vu()  - sm->au() );
+    _gr[2*ix+9 ] = fact*(sm->ve()  - sm->ae() );
+    _gr[2*ix+10] = fact*(sm->vnu() - sm->anu());
   }
   orderInGem(1);
   orderInGs(0);

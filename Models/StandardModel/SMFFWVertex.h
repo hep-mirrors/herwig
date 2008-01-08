@@ -31,13 +31,10 @@ class SMFFWVertex: public FFVVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMFFWVertex();
-  //@}
+  SMFFWVertex();
   
 public:
   
@@ -95,7 +92,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   
 private:
   
@@ -110,11 +107,6 @@ private:
   SMFFWVertex & operator=(const SMFFWVertex &);
 
 private:
-
-  /**
-   * Pointer to the Standard Model object.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Pointer to the CKM object.
