@@ -30,18 +30,10 @@ class SSWHHVertex: public VSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSWHHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSWHHVertex();
-  //@}
 
 public:
 
@@ -123,11 +115,6 @@ private:
   SSWHHVertex & operator=(const SSWHHVertex &);
 
 private:
-  
-  /**
-   * A pointer to the MSSM object. 
-   */
-  tMSSMPtr theMSSM;
   
   /**
    * The value of \f$\sin\theta_W\f$ 

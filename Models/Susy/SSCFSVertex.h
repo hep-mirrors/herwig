@@ -137,11 +137,6 @@ private:
   Energy _mw;
   
   /**
-   * \f$sin^2(\theta_w)\f$
-   */
-  double _sw;
-  
-  /**
    * Pointer to stop mixing matrix
    */
   tMixingMatrixPtr _stop;

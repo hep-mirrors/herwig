@@ -79,22 +79,22 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
 
 void NMSSMGOGOHVertex::persistentOutput(PersistentOStream & os) const {
    os << _mixV << _mixU << _mixN << _mixS << _mixP << _lambda << _kappa << _sinb
-      << _cosb << _sw << _cw << _theSM;
+      << _cosb << _sw << _cw;
 }
 
 void NMSSMGOGOHVertex::persistentInput(PersistentIStream & is, int) {
   is >> _mixV >> _mixU >> _mixN >> _mixS >> _mixP >> _lambda >> _kappa >> _sinb
-     >> _cosb >> _sw >> _cw >> _theSM;
+     >> _cosb >> _sw >> _cw;
 }
 
 void NMSSMGOGOHVertex::doinit() throw(InitException) {
   // SM parameters
-  _theSM = generator()->standardModel();
-  _sw = _theSM->sin2ThetaW();
+  generator()->standardModel() = generator()->standardModel();
+  _sw = generator()->standardModel()->sin2ThetaW();
   _cw=sqrt(1.-_sw);
   _sw=sqrt(_sw);
   // NMSSM parameters
-  tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
+  tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
     throw InitException() << "Must have the NMSSM Model in "
 			  << "NMSSMGOGOHVertex::doinit()"
@@ -158,8 +158,8 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
   setNorm(1.);
   // electromagentic coupling
   if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    _couplast = sqrt(4.0*Constants::pi*alpha);
+    _couplast = electroMagneticCoupling(q2);
+    _q2last = q2;
   }
   double rt = sqrt(0.5);
   // CP-even neutral higgs

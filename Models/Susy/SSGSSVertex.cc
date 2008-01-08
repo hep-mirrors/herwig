@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last() {
+SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(0.*GeV2) {
   vector<int> first,second,third;
   for(int ix=1000001;ix<1000007;++ix) {
     first.push_back(21);
@@ -35,17 +35,13 @@ SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last() {
   setList(first,second,third);
 }
 
-void SSGSSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS;
+void SSGSSVertex::doinit() throw(InitException) {
+  orderInGs(1);
+  orderInGem(0);
+  VSSVertex::doinit();
 }
 
-void SSGSSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS;
-  _couplast=0.;
-  _q2last=0.*GeV2;
-}
-
-ClassDescription<SSGSSVertex> SSGSSVertex::initSSGSSVertex;
+NoPIOClassDescription<SSGSSVertex> SSGSSVertex::initSSGSSVertex;
 // Definition of the static class description member.
 
 void SSGSSVertex::Init() {
@@ -70,8 +66,7 @@ void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   if((isf >= 1000001 && isf <= 1000006) || 
      (isf>=2000001 && isf <= 2000006) ) {
     if(q2 != _q2last) {
-      double alphaStr = _theSS->alphaS(q2);
-      _couplast = sqrt(4.*Constants::pi*alphaStr);
+      _couplast = strongCoupling(q2);
       _q2last = q2;
     }
     setNorm(_couplast);

@@ -113,9 +113,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       << "particle content in it. " << higgs << " " 
       << particle2->id() << " " << particle3->id();
   if( q2 != theq2last )	{
-    double alphas = theMSSM->alphaS(q2);
-    double alpha = theMSSM->alphaEM(q2);
-    theCouplast = 4.*Constants::pi*alphas*sqrt(4*Constants::pi*alpha)/theSw;
+    theCouplast = sqr(strongCoupling(q2))*weakCoupling(q2);
     Energy mt = theMSSM->mass(q2, thetop);
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
       setNParticles(5);

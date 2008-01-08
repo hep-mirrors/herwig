@@ -28,7 +28,7 @@ public:
   /**
    * The default constructor.
    */
-  inline NMSSMWHHVertex();
+  NMSSMWHHVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -148,11 +148,6 @@ private:
    *  Mixing matrix for the CP-odd  Higgs bosons
    */
   MixingMatrixPtr _mixP;
-
-  /**
-   * Pointer to the SM object.
-   */
-  tcHwSMPtr _theSM;
 
 };
 }

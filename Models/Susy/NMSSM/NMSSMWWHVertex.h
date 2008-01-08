@@ -112,11 +112,6 @@ private:
   NMSSMWWHVertex & operator=(const NMSSMWWHVertex &);
 
 private:
-  
-  /**
-   * Pointer to he Standard Model object.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.
@@ -141,11 +136,6 @@ private:
    *  The factor for the \f$Z\f$ vertex.
    */
   double _zfact;
-
-  /**
-   *  \f$\sin\theta_W\f$.
-   */
-  double _sw;
 
   /**
    *  \f$\sin\beta\f$

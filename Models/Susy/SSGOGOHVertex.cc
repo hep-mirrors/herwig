@@ -27,7 +27,7 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theQijRp(4, vector<Complex>(2,0.0)),
 				 theSijdp(4, vector<Complex>(4,0.0)),
 				 theQijdp(4, vector<Complex>(4,0.0)),
-				 theSw(0.0), theSa(0.0), theSb(0.0),
+				 theSa(0.0), theSb(0.0),
 				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
 				 theLLast(0.0), theRLast(0.0), theHLast(0),
 				 theID1Last(0), theID2Last(0), theq2last() {
@@ -69,14 +69,15 @@ SSGOGOHVertex::~SSGOGOHVertex() {}
 
 void SSGOGOHVertex::doinit() throw(InitException) {
   FFSVertex::doinit();
-  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  
+  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
       << "SSGOGOHVertex::doinit() - The pointer to the MSSM object is null!"
       << Exception::abortnow;
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
-  theSw = sqrt(theMSSM->sin2ThetaW());
+  double theSw = sqrt(theMSSM->sin2ThetaW());
   double tw = theSw/sqrt(1. - theSw*theSw);
   double tanb = theMSSM->tanBeta();
   theSb = tanb/sqrt(1. + sqr(tanb));
@@ -111,14 +112,14 @@ void SSGOGOHVertex::doinit() throw(InitException) {
 }
 
 void SSGOGOHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM  << theSij << theQij << theQijLp << theQijRp << theSijdp
-     << theQijdp << ounit(theMw,GeV) << theSw << theSa << theSb << theCa 
+  os << theSij << theQij << theQijLp << theQijRp << theSijdp
+     << theQijdp << ounit(theMw,GeV) << theSa << theSb << theCa 
      << theCb;
 }
 
 void SSGOGOHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM  >> theSij >> theQij >> theQijLp >> theQijRp >> theSijdp
-     >> theQijdp >> iunit(theMw,GeV) >> theSw >> theSa >> theSb >> theCa 
+  is >> theSij >> theQij >> theQijLp >> theQijRp >> theSijdp
+     >> theQijdp >> iunit(theMw,GeV) >> theSa >> theSb >> theCa 
      >> theCb;
 }
 
@@ -164,7 +165,7 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
   if( f1ID < 0 ) swap(f1ID, f2ID);
   
   if( q2 != theq2last ) {
-    theCoupLast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw;
+    theCoupLast = weakCoupling(q2);
     theq2last = q2;
   }
   if( higgsID == theHLast && f1ID == theID1Last && f2ID == theID2Last) {

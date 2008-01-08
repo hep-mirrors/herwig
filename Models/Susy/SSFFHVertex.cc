@@ -22,7 +22,7 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV), 
-			     theSw(0.0), theSa(0.0), theSb(0.0),
+			     theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
 			     theLLast(0.0), theRLast(0.0), theHLast(0), 
 			     theFLast(0), theGlast(0.), theq2last() {
@@ -62,15 +62,13 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV),
 }
 
 void SSFFHVertex::doinit() throw(InitException) {
-  FFSVertex::doinit();
-  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
       << "SSFFHVertex::doinit() - The pointer to the MSSM object is null!"
       << Exception::abortnow;
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
-  theSw = sqrt(theMSSM->sin2ThetaW());
   thetanb = theMSSM->tanBeta();
   theSb = thetanb/sqrt(1. + sqr(thetanb));
   theCb = sqrt( 1. - sqr(theSb) );
@@ -82,12 +80,12 @@ void SSFFHVertex::doinit() throw(InitException) {
 }
 
 void SSFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM  << thetanb << ounit(theMw,GeV) << theSw << theSa
+  os << thetanb << ounit(theMw,GeV) << theSa
      << theSb << theCa << theCb;
 }
 
 void SSFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM  >> thetanb >> iunit(theMw,GeV) >> theSw >> theSa
+  is >> thetanb >> iunit(theMw,GeV) >> theSa
      >> theSb >> theCa >> theCb;
 }
 
@@ -143,7 +141,7 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     return;
   }
   if( q2 != theq2last ) {
-    theGlast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw;
+    theGlast = weakCoupling(q2);
     theq2last = q2;
   }
 

@@ -38,8 +38,8 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 }
 
 void NMSSMHHHVertex::doinit() throw(InitException) {
-  _theSM = generator()->standardModel();
-  tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
+  generator()->standardModel() = generator()->standardModel();
+  tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if( !nmssm ) 
     throw InitException() << "NMSSMHHHVertex::doinit - The model object is"
 			  << "not the NMSSM object."
@@ -48,7 +48,7 @@ void NMSSMHHHVertex::doinit() throw(InitException) {
   //SM parameters
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
-  _sw2 = _theSM->sin2ThetaW();
+  _sw2 = generator()->standardModel()->sin2ThetaW();
   _cw = sqrt(1. - _sw2);
   
   //NMSSM parameters
@@ -80,14 +80,14 @@ void NMSSMHHHVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(_mw, GeV) << ounit(_mz,GeV) << _sw2 << _cw <<  _lambda 
      << _kappa <<  ounit(_lambdaVEV,GeV) <<  ounit(_theAl, GeV) 
      << ounit(_theAk,GeV) <<  _sb <<  _cb << _s2b <<  _c2b
-     << ounit(_v1,GeV) << ounit(_v2,GeV) << _theSM << _mixS << _mixP;
+     << ounit(_v1,GeV) << ounit(_v2,GeV) << _mixS << _mixP;
 }
 
 void NMSSMHHHVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_mw, GeV) >> iunit(_mz,GeV) >> _sw2 >> _cw >>  _lambda 
      >> _kappa >>  iunit(_lambdaVEV,GeV) >>  iunit(_theAl, GeV) 
      >> iunit(_theAk,GeV) >>  _sb >>  _cb >> _s2b >>  _c2b
-     >> iunit(_v1,GeV) >> iunit(_v2,GeV) >> _theSM >> _mixS >> _mixP;
+     >> iunit(_v1,GeV) >> iunit(_v2,GeV) >> _mixS >> _mixP;
 }
 
 ClassDescription<NMSSMHHHVertex> NMSSMHHHVertex::initNMSSMHHHVertex;
@@ -115,7 +115,7 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
   assert( ns + np + nc == 3 );
   if( q2 != _q2last ) {
     _q2last = q2;
-    _glast = sqrt(4.*Constants::pi*_theSM->alphaEM(q2)/_sw2);
+    _glast = weakCoupling(q2);
   }
   complex<Energy> coupling;
   double rt = sqrt(2);

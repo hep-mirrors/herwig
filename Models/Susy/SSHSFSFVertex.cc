@@ -165,7 +165,7 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
 
 void SSHSFSFVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
-  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() << "SSHSFSFVertex::doinit - A problem occurred"
 			  << "while trying to cast the SM pointer to "
@@ -208,7 +208,7 @@ void SSHSFSFVertex::doinit() throw(InitException) {
 }
 
 void SSHSFSFVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM << theMix << theSinA << theCosA << theSinB
+  os << theMix << theSinA << theCosA << theSinB
      << theCosB << theTanB << ounit(theMu, GeV) << theSinAB << theCosAB 
      << ounit(theMw,GeV) << ounit(theMz,GeV) << theSw << theCw 
      << ounit(theTriC,GeV);
@@ -216,7 +216,7 @@ void SSHSFSFVertex::persistentOutput(PersistentOStream & os) const {
 }
 
 void SSHSFSFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM >> theMix >>  theSinA >> theCosA >> theSinB
+  is >> theMix >>  theSinA >> theCosA >> theSinB
      >> theCosB >> theTanB >> iunit(theMu, GeV) >> theSinAB >> theCosAB 
      >> iunit(theMw,GeV) >> iunit(theMz,GeV) >> theSw >> theCw
      >> iunit(theTriC,GeV);
@@ -265,7 +265,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   assert( higgsID != 0 && sq1ID != 0 && sq2ID != 0);
   
   if( q2 != theq2Last ) {
-      thegLast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw;
+    thegLast = weakCoupling(q2);
       theq2Last = q2;
     }
   
@@ -312,7 +312,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
    }
    Energy mfactb = sqr(fmass)/theMw/theCosB;
    Energy facta = theMz/theCw;
-   double factb = theMSSM->ed()*theSw*theSw;
+   double factb = generator()->standardModel()->ed()*theSw*theSw;
    //mixing parameters
    Complex q1a(0.), q1b(0.), q2a(0.), q2b(0.);  
    if( smID == 1 || smID == 3) {
@@ -356,7 +356,7 @@ void SSHSFSFVertex::upSF(long higgs, long smID,
   }
   Energy mfactb = sqr(fmass)/theMw/theSinB;
   Energy facta = theMz/theCw;
-  double factb = theMSSM->eu()*theSw*theSw;
+  double factb = generator()->standardModel()->eu()*theSw*theSw;
   //mixing parameters
   Complex q1a(0.), q1b(0.), q2a(0.), q2b(0.);  
   if( smID == 2 || smID == 4) {

@@ -46,12 +46,31 @@ SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0),
   setList(first, second, third);
 }
 
+void SSNNZVertex::doinit() throw(InitException) {
+  FFVVertex::doinit();
+  tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  if(!theSS)
+    throw InitException() << "SSNNZVertex::doinit() - "
+			  << "The model pointer is null."
+			  << Exception::abortnow;
+  
+  _theN  = theSS->neutralinoMix();
+  if(!_theN)
+    throw InitException() << "SSNNZVertex::doinit - The neutralino "
+			  << "mixing matrix pointer is null." 
+			  << Exception::abortnow;
+  _sw = sqrt(theSS->sin2ThetaW());
+  _cw = sqrt(1 - _sw*_sw);
+  orderInGem(1);
+  orderInGs(0);
+}
+
 void SSNNZVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sw << _cw << _theN;
+  os << _sw << _cw << _theN;
 }
 
 void SSNNZVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sw >> _cw >> _theN;
+  is >> _sw >> _cw >> _theN;
   _id1last = 0;
   _id2last = 0;
   _q2last = 0.*GeV2;
@@ -95,7 +114,7 @@ void SSNNZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
      ic1 == 1000045                 || ic2 == 1000045                ) {
     if(q2 != _q2last) {
       _q2last = q2;
-      _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw/_cw;
+      _couplast = weakCoupling(q2)/_cw;
     }
     if(ic1 != _id1last || ic2 != _id2last) {
       _id1last = ic1;

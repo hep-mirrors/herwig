@@ -100,11 +100,6 @@ protected:
    */
   inline virtual void doinit() throw(InitException);
   //@}
-
-  /**
-   * Pointer to the MSSM object
-   */
-  tMSSMPtr _theSS;
   
   /**
    * Pointer to the stop mixing matrix

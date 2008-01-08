@@ -56,7 +56,7 @@ SSHHHVertex::SSHHHVertex() : theMw(0.*MeV), theZfact(0.*MeV), theSw(0.),
 
 void SSHHHVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
-  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
       << "SSHHHVertex::doinit() - The pointer to the MSSM object is null!"
@@ -86,13 +86,13 @@ void SSHHHVertex::doinit() throw(InitException) {
 }
 
 void SSHHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM << ounit(theMw,GeV) << ounit(theZfact,GeV) << theSw 
+  os << ounit(theMw,GeV) << ounit(theZfact,GeV) << theSw 
      << theSbpa << theCbpa << theSbma << theCbma << theS2a << theC2a 
      << theS2b << theC2b; 
 }
 
 void SSHHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM >> iunit(theMw,GeV) >> iunit(theZfact,GeV) >> theSw 
+  is >> iunit(theMw,GeV) >> iunit(theZfact,GeV) >> theSw 
      >> theSbpa >> theCbpa >> theSbma >> theCbma >> theS2a >> theC2a 
      >> theS2b >> theC2b;
 }
@@ -166,7 +166,7 @@ void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
   
   if( q2 != theq2last ) {
     theq2last = q2;
-    theElast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2));
+    theElast = electroMagneticCoupling(q2);;
   }
 
   setNorm(theElast*coupling*UnitRemoval::InvE);

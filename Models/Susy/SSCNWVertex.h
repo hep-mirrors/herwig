@@ -98,7 +98,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -116,11 +116,6 @@ private:
   SSCNWVertex & operator=(const SSCNWVertex &);
 
 private:
-
-  /**
-   * A pointer to the Susy Model object
-   */
-  tSusyBasePtr _theSS;
 
   /**
    * Store \f$sin(\theta_W)\f$

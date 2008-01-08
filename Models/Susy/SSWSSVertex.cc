@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-inline SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
+SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
 				  _ulast(0), _dlast(0), _gblast(0),
 				  _factlast(0.) {
   vector<int> first,second,third;
@@ -163,12 +163,33 @@ inline SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   setList(first,second,third);
 }
 
+void SSWSSVertex::doinit() throw(InitException) {
+  VSSVertex::doinit();
+  tMSSMPtr theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
+  if(!theSS)
+    throw InitException() << "SSWSSVertex::doinit() - "
+			  << "The model pointer is null."
+			  << Exception::abortnow;
+  _sw = sqrt(theSS->sin2ThetaW());
+  _cw = sqrt( 1. - sqr(_sw) );
+  _stop = theSS->stopMix();
+  _sbottom = theSS->sbottomMix();
+  _stau = theSS->stauMix();
+  if(!_stop || !_stau || !_sbottom)
+    throw InitException() << "SSWSSVertex::doinit() - "
+			  << "A mixing matrix pointer is null."
+			  << " stop: " << _stop << " sbottom: " << _sbottom
+			  << " stau: " << _stau << Exception::abortnow;
+  orderInGem(1);
+  orderInGs(0);
+}
+
 void SSWSSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sw  << _cw << _stau << _stop << _sbottom;
+  os << _sw  << _cw << _stau << _stop << _sbottom;
 }
 
 void SSWSSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sw >> _cw >> _stau >> _stop >> _sbottom;
+  is >> _sw >> _cw >> _stau >> _stop >> _sbottom;
 }
 
 ClassDescription<SSWSSVertex> SSWSSVertex::initSSWSSVertex;
@@ -260,7 +281,7 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   }
   if( q2 != _q2last ) {
     _q2last = q2;
-    _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2));
+    _couplast = electroMagneticCoupling(q2);
   }
   setNorm(_couplast*_factlast);
 }

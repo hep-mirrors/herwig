@@ -34,24 +34,6 @@ public:
    */
   SSGSSVertex();
 
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -97,7 +79,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -106,7 +88,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SSGSSVertex> initSSGSSVertex;
+  static NoPIOClassDescription<SSGSSVertex> initSSGSSVertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -114,10 +96,7 @@ private:
    */
   SSGSSVertex & operator=(const SSGSSVertex &);
 
- /**
-   * Pointer to the standard model
-   */
-  tSusyBasePtr _theSS;
+private:
   
   /**
    * Store the value of the coupling when last evaluated
