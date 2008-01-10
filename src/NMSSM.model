@@ -24,15 +24,14 @@ read MSSM.model
 ##################################################
 cd /Herwig/Particles
 create ThePEG::ParticleData H30 
-setup H30 45 H30 300.0 8.428420 84.284160 0.0 0 0 1 0
+setup H30 45 H30 500.0 0.0 0.0 0.0 0 0 1 0
 defaultparticle H30 
 create ThePEG::ParticleData A20 
-setup A20 46 A20 300.0 4.920260 49.202560 0.0 0 0 1 0
+setup A20 46 A20 500.0 0.0 0.0 0.0 0 0 1 0
 defaultparticle A20
 create ThePEG::ParticleData ~chi_50
-setup ~chi_50 1000045 ~chi_50 500.0 1.0 10.0 0.0 0 0 2 0
+setup ~chi_50 1000045 ~chi_50 500.0 0.0 0.0 0.0 0 0 2 0
 defaultparticle ~chi_50 
-
 ###################################################
 #
 # The main directory and model object
