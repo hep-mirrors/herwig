@@ -27,11 +27,10 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV),
 			     theLLast(0.0), theRLast(0.0), theHLast(0), 
 			     theFLast(0), theGlast(0.), theq2last() {
   vector<int> first, second, third;
-  //neutral higgs
-  int higgs = 25;
   for(unsigned int h = 0; h < 3; ++h) {
-    if( h == 1 ) higgs = 35;
-    if( h == 2 ) higgs = 36;
+    //neutral higgs
+    int higgs = h==0 ? 25 : 35;
+    if( h == 2 ) ++higgs;
     //3rd generation quarks
     for(unsigned int i = 5; i < 7; ++i) {
       first.push_back(-i);
@@ -57,7 +56,6 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV),
   first.push_back(-15);
   second.push_back(16);
   third.push_back(-37);
-
   setList(first, second, third);
 }
 
@@ -77,6 +75,7 @@ void SSFFHVertex::doinit() throw(InitException) {
   
   orderInGem(1);
   orderInGs(0);
+  FFSVertex::doinit();
 }
 
 void SSFFHVertex::persistentOutput(PersistentOStream & os) const {
