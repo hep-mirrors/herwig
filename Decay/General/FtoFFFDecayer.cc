@@ -122,10 +122,11 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
   static const unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   vector<DecayMatrixElement> mes(ncf,DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 							PDT::Spin1Half,PDT::Spin1Half));
-  for(unsigned int s0 = 0; s0 < 2; ++s0) {
-    for(unsigned int s1 = 0; s1 < 2; ++s1) {
-      for(unsigned int s2 = 0; s2 < 2; ++s2) {
-	for(unsigned int s3 = 0; s3 < 2; ++s3) {
+  unsigned int ihel[4];
+  for(ihel[0] = 0; ihel[0] < 2; ++ihel[0]) {
+    for(ihel[1] = 0; ihel[1] < 2; ++ihel[1]) {
+      for(ihel[2] = 0; ihel[2] < 2; ++ihel[2]) {
+	for(ihel[3] = 0; ihel[3] < 2; ++ihel[3]) {
 	  flows = vector<Complex>(ncf, Complex(0.));
 	  int nchan=-1;
 	  unsigned int idiag=0;
@@ -135,8 +136,8 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    double sign = ferm ? 1. : -1;
 	    // outgoing wavefunction and NO sign
 	    if     (dit->channelType==TBDiagram::channel23) sign *= -1.;
-	    else if(dit->channelType==TBDiagram::channel13) sign *= -1.;
-	    else if(dit->channelType==TBDiagram::channel12) sign *=  1.;
+	    else if(dit->channelType==TBDiagram::channel13) sign *=  1.;
+	    else if(dit->channelType==TBDiagram::channel12) sign *= -1.;
 	    else throw Exception()
 	      << "Unknown diagram type in FtoFFFDecayer::me2()" << Exception::runerror;
 	    // wavefunctions
@@ -144,21 +145,22 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    SpinorBarWaveFunction w1,w2;
 	    // incoming wavefunction
 	    if(ferm) {
-	      w0 = inwave.first [s0];
-	      w1 = outwave[dit->channelType].second[s1];
+	      w0 = inwave.first [ihel[0]];
+	      w1 = outwave[dit->channelType].second[ihel[dit->channelType+1]];
 	    }
 	    else {
-	      w0 = outwave[dit->channelType].first [s1];
-	      w1 = inwave.second[s0];
+	      w0 = outwave[dit->channelType].first [ihel[dit->channelType+1]];
+	      w1 = inwave.second[ihel[0]];
 	    }
 	    if(decay[out2[dit->channelType]]->id()<0&&
 	       decay[out3[dit->channelType]]->id()>0) {
-	      w2 = outwave[out3[dit->channelType]].second[s3];
-	      w3 = outwave[out2[dit->channelType]].first [s2];
+	      w2 = outwave[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
+	      w3 = outwave[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
+	      sign *= -1.;
 	    }
 	    else {
-	      w2 = outwave[out2[dit->channelType]].second[s2];
-	      w3 = outwave[out3[dit->channelType]].first [s3];
+	      w2 = outwave[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
+	      w3 = outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
 	    // channels if selecting
 	    ++nchan;
@@ -166,7 +168,7 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    tcPDPtr offshell = dit->intermediate;
 	    Complex diag;
 	    // intermediate scalar
-	    if     (offshell->iSpin() == PDT::Spin0) {
+	    if     (offshell->iSpin() == PDT::Spin0) { 
 	      ScalarWaveFunction inters = _sca[idiag].first->
 		evaluate(scale, 1, offshell, w0, w1);
 	      diag = _sca[idiag].second->evaluate(scale,w3,w2,inters);
@@ -175,7 +177,7 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    else if(offshell->iSpin() == PDT::Spin1) {
 	      VectorWaveFunction interv = _vec[idiag].first->
 		evaluate(scale, 1, offshell, w0, w1);
-	      diag = _vec[idiag].second->evaluate(scale,w3,w2,interv);
+	      diag = -_vec[idiag].second->evaluate(scale,w3,w2,interv);
 	    }
 	    // intermediate tensor
 	    else if(offshell->iSpin() == PDT::Spin2) {
@@ -187,6 +189,8 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    else throw Exception()
 	      << "Unknown intermediate in FtoFFFDecayer::me2()" 
 	      << Exception::runerror;
+	    // apply NO sign
+	    diag *= sign;
 	    // matrix element for the different colour flows
 	    for(unsigned iy = 0; iy < dit->colourFlow.size(); ++iy) {
 	      flows[dit->colourFlow[iy].first - 1] += 
@@ -196,7 +200,7 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	  }
 	  // now add the flows to the me2 with appropriate colour factors
 	  for(unsigned int ix = 0; ix < ncf; ++ix) {
-	    mes[ix](s0,s1,s2,s3) = flows[ix];
+	    mes[ix](ihel[0],ihel[1],ihel[2],ihel[3]) = flows[ix];
 	  }
 	}
       }

@@ -59,8 +59,7 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
   model->init();
   unsigned int nv(model->numberOfVertices());
   // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) 
-    model->vertex(i)->init();
+  for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
   // loop over the particles and create the decayers
   for(unsigned int ip = 0; ip < np; ++ip) {
     tPDPtr parent = particles[ip];
@@ -150,26 +149,26 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       if(!added) modes.push_back(vector<TBDiagram>(1,*dit));
     }
     // print out info on the potential modes
-    cerr << "testing there are " << modes.size() << " modes\n";
-    for(unsigned int ix=0;ix<modes.size();++ix) {
-      cerr << "testing mode " << ix << "\n";
-      cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
-      cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
-	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
-	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
-      cerr << "testing there are " << modes[ix].size() << " diagrams\n";
-      for(unsigned int iy=0;iy<modes[ix].size();++iy) {
-	cerr << "testing diagram " << iy << "\n";
-	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
-	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
-	     << modes[ix][iy].outgoingPair.first  << " "
-	     << modes[ix][iy].outgoingPair.second << "\n";
-	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
-	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
-	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
-	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
-      }
-    }
+//     cerr << "testing there are " << modes.size() << " modes\n";
+//     for(unsigned int ix=0;ix<modes.size();++ix) {
+//       cerr << "testing mode " << ix << "\n";
+//       cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
+//       cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
+// 	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
+// 	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
+//       cerr << "testing there are " << modes[ix].size() << " diagrams\n";
+//       for(unsigned int iy=0;iy<modes[ix].size();++iy) {
+// 	cerr << "testing diagram " << iy << "\n";
+// 	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
+// 	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
+// 	     << modes[ix][iy].outgoingPair.first  << " "
+// 	     << modes[ix][iy].outgoingPair.second << "\n";
+// 	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
+// 	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
+// 	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
+// 	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
+//       }
+//     }
     // now we need to create the decayers for the mode
     for(unsigned int ix=0;ix<modes.size();++ix) {
       createDecayMode(modes[ix]);

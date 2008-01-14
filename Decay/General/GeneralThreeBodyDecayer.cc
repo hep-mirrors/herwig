@@ -13,6 +13,22 @@
 
 using namespace Herwig;
 
+/**
+ *  A struct to order the particles in the same way as in the DecayMode's
+ */
+struct ParticleOrdering {
+  bool operator()(PDPtr p1, PDPtr p2) {
+    return abs(p1->id()) > abs(p2->id()) ||
+      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+  }
+};
+
+/**
+ * A set of ParticleData objects ordered as for the DecayMode's
+ */
+typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
+
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
   os << _incoming << _outgoing << _diagrams << _colour << _nflow;
 }
@@ -32,7 +48,9 @@ void GeneralThreeBodyDecayer::Init() {
 }
 
 int  GeneralThreeBodyDecayer::
-modeNumber(bool & cc, tcPDPtr in, const PDVector & out) const {
+modeNumber(bool & cc, tcPDPtr in, const PDVector & outin) const {
+  OrderedParticles outb(outin.begin(),outin.end());
+  PDVector out(outb.begin(),outb.end());
   // check number of outgoing particles
   if(out.size()!=3) return -1;
   // check incoming particle
@@ -272,7 +290,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
     if(deltam<0.*GeV&&getProcessInfo()[ix].intermediate->width()>0.*MeV) {
       if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
       else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
-    } 
+    }
     if(deltam<0.*GeV) continue;
     if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma &&
        getProcessInfo()[ix].intermediate->width()>0.*MeV) {
@@ -290,7 +308,7 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
     ++nchannel;
   }
   for(unsigned int ix=1;ix<4;++ix) {
-    if(imin[ix].first>0) {
+    if(imin[ix].first>=0) {
       intype.push_back(ix);
       if(getProcessInfo()[imin[ix].first].intermediate->id()!=ParticleID::gamma) {
 	inpow.push_back(0.);
