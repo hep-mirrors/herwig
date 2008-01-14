@@ -97,16 +97,10 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       isc = abs(part1->id());
     }
   }
-  else {
-    throw HelicityConsistencyError()
-      << "SSGFSVertex::setCoupling() - There is no gluino in this vertex!"
-      << part1->id() << " " << part2->id() << " " << part3->id()
-      << Exception::warning;
-    setNorm(0.);
-    setLeft(0.);
-    setRight(0.);
-    return;
-  }    
+  else throw HelicityConsistencyError()
+    << "SSGFSVertex::setCoupling() - There is no gluino in this vertex!"
+    << part1->id() << " " << part2->id() << " " << part3->id()
+    << Exception::runerror;
   if(iferm >=1 && iferm <=6) {
     if(q2 != _q2last) {
       _couplast = -strongCoupling(q2)*sqrt(2.);
