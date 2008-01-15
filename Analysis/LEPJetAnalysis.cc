@@ -15,7 +15,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Utilities/HerwigVersion.h"
+#include "Herwig++/Config/Herwig.h"
 
 using namespace Herwig;
 

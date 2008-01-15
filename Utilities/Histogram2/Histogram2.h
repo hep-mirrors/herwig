@@ -19,7 +19,7 @@
 
 #include "ThePEG/Utilities/StringUtils.h"
 
-#include "Herwig++/Utilities/HerwigVersion.h"
+#include "Herwig++/Config/Herwig.h"
 
 namespace Herwig {
 

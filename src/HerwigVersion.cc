@@ -1,4 +1,4 @@
-#include "HerwigVersion.h"
+#include "Herwig++/Config/Herwig.h"
 
 std::string Herwig::HerwigVersion::versionstring = "";
 

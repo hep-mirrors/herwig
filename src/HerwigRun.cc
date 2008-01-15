@@ -7,8 +7,7 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "HerwigRun.h"
-#include "HerwigVersion.h"
-#include "HwDebug.h"
+#include "Herwig++/Config/Herwig.h"
 #include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/SystemUtils.h>
 #include <ThePEG/Utilities/StringUtils.h>
@@ -20,7 +19,7 @@ using namespace ThePEG;
 
 const string usage = " init|read|run "
                    " [-N num-events] [--seed random-generator-seed] "
-                   "[-d debug-level] [-dHw herwig-debug-level] "
+                   "[-d debug-level] "
                    "[--exitonerror] [-l load-path] "
                    "[-L first-load-path] [-r repo-file] "
                    "[-i initialization file] [run-file]\n";
@@ -64,11 +63,8 @@ HerwigRun::HerwigRun(int argc, char **argv)
     else if ( arg.substr(0,2) == "-L" )
       DynamicLoader::prependPath(arg.substr(2));
     else if ( arg == "-d" ) Debug::level = atoi(argv[++iarg]);
-    else if ( arg.substr(0,2) == "-d" && arg.substr(0,4) != "-dHw" )
+    else if ( arg.substr(0,2) == "-d" )
 	Debug::level = atoi(arg.substr(2).c_str());
-    else if ( arg == "-dHw" ) Herwig::HwDebug::level = atoi(argv[++iarg]);
-    else if ( arg.substr(0,4) == "-dHw" )
-	Herwig::HwDebug::level = atoi(arg.substr(4).c_str());
     else if ( arg == "-N" ) N = atoi(argv[++iarg]);
     else if ( arg.substr(0,2) == "-N" ) N = atoi(arg.substr(2).c_str());
     else if ( arg == "-seed" || arg == "--seed" ) seed = atoi(argv[++iarg]);
