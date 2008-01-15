@@ -148,7 +148,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   ofstream file;
   file.open("probs.test");
   file << "hard process xsec: "
-       << dynamic_ptr_cast<tStdEHPtr>(eventHandler())->integratedXSec()/millibarn
+       << eventHandler()->integratedXSec()/millibarn
        << endl;             
 
   file << "UE process[0] xsec: " 
