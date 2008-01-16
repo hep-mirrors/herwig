@@ -8,6 +8,8 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "NasonEvolver.h"
 #include "HardestEmissionGenerator.h"
+#include "Herwig++/Utilities/Histogram.h"
+
 
 namespace Herwig {
 
@@ -41,7 +43,13 @@ public:
    * Perform the shower of a decay
    */
   virtual void showerDecay(ShowerTreePtr);
-  //@}
+ 
+  /**
+   * Is the truncated shower on?
+   */
+  inline bool isTruncatedShowerON() const;
+
+ //@}
 
 public:
 
@@ -126,7 +134,18 @@ protected:
    */
   inline virtual void doinit() throw(InitException);
   //@}
+    /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
+  //@}
 
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
 
 private:
 
@@ -153,6 +172,23 @@ private:
    *  The NasonTree currently being showered
    */
   NasonTreePtr _nasontree;
+
+ /**
+   *  Truncated shower switch
+   */
+  bool _trunc_Mode;
+
+   /**
+   *  Histogram object to record the number of truncated emissions
+   */
+  HistogramPtr _hTrunc;
+  
+  
+  /**
+   *  Count of the number of truncated emissions
+   */
+  unsigned int _truncEmissions;
+
 };
 
 }

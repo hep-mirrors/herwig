@@ -7,6 +7,7 @@
 #include "NasonEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
@@ -16,15 +17,17 @@
 #include "DefaultEmissionGenerator.h"
 #include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
 #include "NasonTree.h"
+#include "Herwig++/Utilities/Histogram.h"
+
 
 using namespace Herwig;
 
 void NasonEvolver::persistentOutput(PersistentOStream & os) const {
-  os << _hardgenerator;
+  os << _hardgenerator << _trunc_Mode;
 }
 
 void NasonEvolver::persistentInput(PersistentIStream & is, int) {
-  is >> _hardgenerator;
+  is >> _hardgenerator >> _trunc_Mode;
 }
 
 ClassDescription<NasonEvolver> NasonEvolver::initNasonEvolver;
@@ -40,7 +43,17 @@ void NasonEvolver::Init() {
      "The objects responsible for generating the hardestr emission",
      &NasonEvolver::_hardgenerator, -1, false, false, true, false, false);
 
+  static Switch<NasonEvolver,bool> interfaceTruncMode
+    ("TruncatedShower", "Include the truncated shower?", 
+     &NasonEvolver::_trunc_Mode, 1, false, false);
+  static SwitchOption interfaceTruncMode0
+    (interfaceTruncMode,"No","Truncated Shower is OFF", 0);
+  static SwitchOption interfaceTruncMode1
+    (interfaceTruncMode,"Yes","Truncated Shower is ON", 1);
+
+
 }
+
 
 void NasonEvolver::showerDecay(ShowerTreePtr tree) {
   // set the tree
@@ -93,8 +106,14 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	if(_nasontree) {
 	  mit=_nasontree->particles().find(progenitor()->progenitor());
 	  if(mit!=eit&&!mit->second->_children.empty()) {
+	     //produce the truncated emissions and histogram the number of emissions
+	    _truncEmissions = 0;
+
 	    progenitor()->hasEmitted(truncatedTimeLikeShower(
-		    particlesToShower[ix]->progenitor(),mit->second));
+		    particlesToShower[ix]->progenitor(),mit->second) );
+	    
+	    //add 0.5 to make sure we put in correct bin
+	    (*_hTrunc) += double( _truncEmissions ) + 0.5;
 	  } 
 	  else {
 	    progenitor()->hasEmitted(
@@ -252,7 +271,7 @@ bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
   tcPDPtr pdata[2];
   while (vetoed) {
     iout=0;
-    vetoed = false;
+    if( isTruncatedShowerON() ) vetoed = false;
     fb=splittingGenerator()->chooseForwardBranching(*particle,1.);
     // check haven't evolved too far
     if(!fb.kinematics||fb.kinematics->scale()<branch->_scale) {
@@ -290,6 +309,8 @@ bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     if(fb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
     // if vetoed reset scale
     if(vetoed) particle->setEvolutionScale(ShowerIndex::QCD,fb.kinematics->scale());
+    //if truncated emission is accepted add one to the count
+    if( !vetoed )  _truncEmissions++;
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -386,7 +407,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   // generate branching
   tcPDPtr part[2];
   while (vetoed) {
-    vetoed=false;
+    if( isTruncatedShowerON() ) vetoed=false;
     bb=splittingGenerator()->chooseBackwardBranching(*particle,beam,1.,beamParticle());
     if(!bb.kinematics||bb.kinematics->scale()<branch->_scale) {
       bb=Branching();
@@ -504,4 +525,23 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   timeLikeShower(otherChild);
   // return the emitted
   return true;
+}
+
+void NasonEvolver::dofinish() {
+ ofstream hist_out("truncated_emissions.top");
+  using namespace HistogramOptions;
+
+  _hTrunc->topdrawOutput( hist_out, Frame,
+			  "BLACK",
+			  "frequency of truncated emissions", 
+			  " ", 
+			  " ",
+			  " ", 
+			  "truncated emissions", 
+			  " " );
+}
+
+void NasonEvolver::doinitrun() {
+  _hTrunc = new_ptr( Histogram( 0., 10., 10) ); 
+  Evolver::doinitrun();
 }
