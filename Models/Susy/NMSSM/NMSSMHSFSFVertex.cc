@@ -218,27 +218,25 @@ void NMSSMHSFSFVertex::doinit() throw(InitException) {
 
 void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 				   tcPDPtr part2, tcPDPtr part3) {
+  long id1(abs(part1->id())), id2(abs(part2->id())), id3(abs(part3->id())); 
   long higgs(0), isf1(0), isf2(0);
-  if( part1->id() == 25 || part1->id() == 35 || part1->id() == 45 ||
-      part1->id() == 36 || part1->id() == 46 || 
-      abs(part1->id()) == 37 ) {
-    higgs = part1->id();
-    isf1 = part2->id();
-    isf2 = part3->id();
+  if( id1 == 25 || id1 == 35 || id1 == 45 || id1 == 36 || id1 == 46 || 
+      id1 == 37 ) {
+    higgs = id1;
+    isf1 = id2;
+    isf2 = id3;
   }
-  else if( part2->id() == 25 || part2->id() == 35 || part2->id() == 45 ||
-	   part2->id() == 36 || part2->id() == 46 || 
-	   abs(part2->id()) == 37 ) { 
-    higgs = part2->id();
-    isf1 = part1->id();
-    isf2 = part3->id();
+  else if( id2 == 25 || id2 == 35 || id2 == 45 || id2 == 36 || id2 == 46 || 
+	   id2 == 37 ) { 
+    higgs = id2;
+    isf1 = id1;
+    isf2 = id3;
   }
-  else if( part3->id() == 25 || part3->id() == 35 || part3->id() == 45 ||
-	   part3->id() == 36 || part3->id() == 46 || 
-	   abs(part3->id()) == 37 ) { 
-    higgs = part3->id();
-    isf1 = part1->id();
-    isf2 = part2->id();
+  else if( id3 == 25 || id3 == 35 || id3 == 45 || id3 == 36 || id3 == 46 || 
+	   id3 == 37 ) { 
+    higgs = id3;
+    isf1 = id1;
+    isf2 = id2;
   }
   else {
     throw HelicityConsistencyError()
@@ -248,18 +246,17 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     setNorm(Complex(0.));
     return;
   }
-  if( isf2 < 0 ) swap(isf1, isf2);
-  int alpha = (abs(isf1) < 2000000) ? 0 : 1;
-  int beta = (isf2 < 2000000) ? 0 : 1;
   Complex fact(0.);
     //charged higgs
-  if( abs(higgs) == 37 ) {
-    fact = chargedHiggs(q2, abs(isf1), abs(isf2));
+  if( higgs == 37 ) {
+    fact = chargedHiggs(q2, isf1, isf2);
   }
   else { 
-    long smid = (alpha == 0) ? isf2 - 1000000 : isf2 - 2000000;
-    if( q2 != _q2last || isf2 != _idlast.first) {
-      _idlast.first = isf2;
+    unsigned int alpha = ( isf1 > 2000000 ) ? 1 : 0;
+    unsigned int beta = ( isf2 > 2000000 ) ? 1 : 0;
+    long smid = ( alpha == 0 ) ? isf1 - 1000000 : isf1 - 2000000;
+    if( q2 != _q2last || smid != _idlast.first) {
+      _idlast.first = smid;
       tcPDPtr p = getParticleData(smid);
       _masslast.first = _theSM->mass(q2, p);
     }

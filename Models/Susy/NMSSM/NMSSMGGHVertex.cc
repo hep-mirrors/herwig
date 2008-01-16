@@ -97,9 +97,8 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
   if( q2 != _q2last ) {
     _masslast.first = _theSM->mass(q2, _bt);
     _masslast.second = _theSM->mass(q2, _top);
-    double alpha = _theSM->alphaEM(q2);
-    double alphas = _theSM->alphaS(q2);
-    _couplast = 4.*Constants::pi*alphas*sqrt(Constants::pi*alpha)/_sw;
+    //factor of 0.5 factored from each EW vertex
+    _couplast = 0.5*sqr(strongCoupling(q2))*weakCoupling(q2);
     _q2last = q2;
     _recalc = true;
   }
