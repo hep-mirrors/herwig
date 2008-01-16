@@ -160,6 +160,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // and set the maximum pt for the radiation
   double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
   Energy ptveto = _pt *sqrt((_xb+_xc-1.)/xfact2);
+  //if no emission event set ptveto to minpt = _Qg
+  if( _pt < _Qg ) ptveto = _Qg;
   QProgenitor->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
   nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
@@ -213,7 +215,7 @@ void VectorBosonQQbarHardGenerator::doinit() throw(InitException) {
 void VectorBosonQQbarHardGenerator::dofinish() {
   HardestEmissionGenerator::dofinish();
 
-  ofstream hist_out("hist3.top");
+  ofstream hist_out("hardEmissHists.top");
   using namespace HistogramOptions;
 
   _hy->topdrawOutput( hist_out, Frame,
@@ -265,9 +267,9 @@ void VectorBosonQQbarHardGenerator::doinitrun() {
   _alphaS_max = _alphaS->overestimateValue();
 
   _hthrust = new_ptr( Histogram( 0., 0.5, 100) );
-  _hthrustlow = new_ptr( Histogram( 0., 0.01, 100) );
-  _hy = new_ptr( Histogram( -8., 8., 100 ) );
-  _hplow = new_ptr( Histogram( 0., 5., 100 ) );
+  _hthrustlow = new_ptr( Histogram( 0., 0.1, 100) );
+  _hy = new_ptr( Histogram( -6., 6., 100 ) );
+  _hplow = new_ptr( Histogram( 0., 10., 100 ) );
   _hphigh = new_ptr( Histogram( 0., 100., 100) );
   HardestEmissionGenerator::doinitrun();
 }
@@ -295,11 +297,9 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     _xc = 1.-_pt/sqrt(_s)*exp( _y);
 
     last_pt = _pt;
-    if(!inRange()) continue;
-
 
     wgt    = getResult()/(prefactor*GeV/_pt);
-    reject = UseRandom::rnd()>wgt;
+    reject = !inRange() || UseRandom::rnd()>wgt;
     
     if(inRange()&&wgt>1.) { 
       cerr << "VectorBosonQQbarHardGenerator::getEvent() excess weight.\n";
@@ -309,8 +309,7 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
     // No emission event if pt goes past pt_min - basically set to outside
     // of the histogram bounds (hopefully hist object just ignores it).
     if(_pt<pt_min) {
-      _pt = 0. * GeV; // No emission event
-      _y = -10;
+      _pt = 0. * GeV; 
       reject = false;
     }
   } while (reject);
