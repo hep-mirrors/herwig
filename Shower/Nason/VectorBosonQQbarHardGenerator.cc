@@ -22,7 +22,6 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
-
 using namespace Herwig;
 
 void VectorBosonQQbarHardGenerator::persistentOutput(PersistentOStream & os) const {
@@ -39,41 +38,42 @@ ClassDescription<VectorBosonQQbarHardGenerator> VectorBosonQQbarHardGenerator::i
 void VectorBosonQQbarHardGenerator::Init() {
 
   static ClassDocumentation<VectorBosonQQbarHardGenerator> documentation
-    ("There is no documentation for the VectorBosonQQbarHardGenerator class");
+    ("The VectorBosonQQbarHardGenerator class generates the hardest emission for"
+     "vector boson decays to fermion-antifermion events in the Nason approach");
 
   static Reference<VectorBosonQQbarHardGenerator,ShowerAlpha> interfaceShowerAlpha
     ("ShowerAlpha",
      "The object calculating the strong coupling constant",
      &VectorBosonQQbarHardGenerator::_alphaS, false, false, true, false, false);
-}
 
+}
 
 NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Get the progenitors: Q and Qbar.
-  vector<tcPDPtr> partons(2);
   ShowerProgenitorPtr 
-    QProgenitor   =tree->outgoingLines().begin()->first,
-    QbarProgenitor=tree->outgoingLines().rbegin()->first;
+    QProgenitor    = tree->outgoingLines().begin()->first,
+    QbarProgenitor = tree->outgoingLines().rbegin()->first;
   if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
-  partons[0]=QProgenitor->progenitor()->dataPtr();
-  partons[1]=QbarProgenitor->progenitor()->dataPtr();
+  vector<tcPDPtr> partons(2);
+  partons[0] = QProgenitor->progenitor()->dataPtr();
+  partons[1] = QbarProgenitor->progenitor()->dataPtr();
+  // momentum of the partons
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
-  int q_id(abs(QProgenitor->progenitor()->id()));
+  // PDG codes of the partons
+  int q_id   (abs(QProgenitor->progenitor()->id()   ));
   int qbar_id(abs(QbarProgenitor->progenitor()->id()));
-
   // Get the gauge boson.
   PPtr boson = tree->incomingLines().begin()->first->copy();
   // Get data for the gluon.
   tcPDPtr gluon_data = getParticleData(ParticleID::g);
-
   // Get the list of possible branchings.
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
-
   // Find the sudakovs for the q/qbar->q/qbarg branchings.
   SudakovPtr q_sudakov,qbar_sudakov;
+  // quark
   long q_index(q_id),qbar_index(qbar_id); 
   for(BranchingList::const_iterator cit = branchings.lower_bound(q_index);
       cit != branchings.upper_bound(q_index); ++cit ) {
@@ -83,6 +83,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
       break; 	    
     }
   }
+  // antiquark
   for(BranchingList::const_iterator cit = branchings.lower_bound(qbar_index);
       cit != branchings.upper_bound(qbar_index); ++cit ) {
     IdList ids = cit->second.second;
@@ -91,19 +92,16 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
       break; 	    
     }
   }
-
   // Check sudakovs got created:
   if(!q_sudakov||!qbar_sudakov) throw Exception() 
     << "No Sudakov for the hard emission in "
     << "VectorBosonQQbarHardGenerator::generateHardest()" 
     << Exception::runerror;
-  
   // Get all the gluon mass assuming massless quarks: 
   _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
   // Generate emission and change _quark[0,1] and _g to momenta
   // of q, qbar and g after the hardest emission:
-  getEvent(); 
-
+  getEvent();
   // now we need to assign the emitter based on evolution scales
   // rather than for the correlations
   _iemitter   = _quark[0]*_g>_quark[1]*_g ? 1 : 0;
@@ -123,7 +121,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
-
   // Create the vectors of NasonBranchings to create the NasonTree:
   vector<NasonBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
@@ -141,7 +138,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   if(_iemitter==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);
-  } else {
+  } 
+  else {
     allBranchings.push_back(spectatorBranch);
     allBranchings.push_back(emitterBranch);
   }
@@ -156,7 +154,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   Energy ptveto = _pt *sqrt((_xb+_xc-1.)/xfact2);
   //if no emission event set ptveto to minpt = _Qg
   if( _pt < _Qg ) ptveto = _Qg;
-  QProgenitor->maximumpT(ptveto);
+  QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
   nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
   nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
