@@ -173,6 +173,12 @@ private:
    */
   NasonTreePtr _nasontree;
 
+  /**
+   *  Only generate the emission from the hardest emission
+   *  generate for testing only
+   */
+  bool _hardonly;
+
  /**
    *  Truncated shower switch
    */

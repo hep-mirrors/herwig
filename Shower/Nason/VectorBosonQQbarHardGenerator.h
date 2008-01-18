@@ -123,23 +123,12 @@ protected:
 
 private:
 
-  Lorentz5Momentum getEvent();
-  /**
-   * Returns the lorentz transform to move from the CM frame (with q 
-   * and qbar parallel to z-axis) to the frame of the input q and qbar.
-   */
-  LorentzRotation getTransf();
+  void getEvent();
  
   /**
    * Constructs the post-emission momenta of q, qbar, g
    */
   void constructVectors();
-
-  /**
-   * Rotates the final state momenta in such a way to take into account correlation
-  * between plane of branching and gluon polarization. 
-  */
-  void azimuthal();
 
   /** Returns the value of the radiative cross section (R(v,r)/B(v))
    *for the current (_xb,_xc)
@@ -224,11 +213,6 @@ private:
   vector<Lorentz5Momentum> _quark;
   // The gluon momenta
   Lorentz5Momentum _g;
-  // Rotation for the azimuthal correlation
-  LorentzRotation _r;
-  // LT to take into lab frame - momenta calculated in c.o.m frame 
-  // with q along z.
-  LorentzRotation  _eventFrame;
 
 };
 

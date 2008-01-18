@@ -105,7 +105,6 @@ void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partners()[type];
     Lorentz5Momentum ppartner(partner->momentum());
-    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     // momentum of the emitting particle
     p = particle.momentum();
     Lorentz5Momentum pcm;

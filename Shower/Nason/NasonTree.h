@@ -21,6 +21,11 @@ using namespace ThePEG;
  */
 class NasonTree : public Base {
 
+  /**
+   *  Output operator for testing
+   */
+  friend ostream & operator<<(ostream &, const NasonTree & );
+
 public:
 
   /**
@@ -133,6 +138,11 @@ public:
   Lorentz5Momentum _qt;
 
   /**
+   *  The momentum the particle should have as the start of a shower
+   */
+  Lorentz5Momentum _shower;
+
+  /**
    *  The transverse momentum
    */
   Energy _pt;
@@ -182,6 +192,30 @@ public:
    */
   PPtr _beam;
 };
+
+inline ostream & operator<<(ostream & os, const NasonTree & x) {
+  os << "Output of NasonTree " << &x << "\n";
+  for(set<NasonBranchingPtr>::const_iterator it=x._branchings.begin();
+      it!=x._branchings.end();++it) {
+    os << "Hard Particle: " << *(**it)._particle << " has Sudakov " 
+       << (**it)._sudakov << "\n";
+    for(unsigned int iy=0;iy<(**it)._children.size();++iy) {
+      os << "\t Children : " << *(**it)._children[iy]->_particle
+	 << "\n";
+    }
+  }
+  for(set<NasonBranchingPtr>::const_iterator it=x._spacelike.begin();
+      it!=x._spacelike.end();++it) {
+    os << "SpaceLike: " << *(**it)._particle << " has Sudakov" 
+       << (**it)._sudakov << "\n";
+    for(unsigned int iy=0;iy<(**it)._children.size();++iy) {
+      os << "\t Children: " << *(**it)._children[iy]->_particle
+	 << "\n";
+    }
+  }
+  return os;
+}
+
 }
 
 #include "NasonTree.icc"

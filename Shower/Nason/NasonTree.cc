@@ -11,26 +11,8 @@ using namespace Herwig;
 
 NasonTree::NasonTree(vector<NasonBranchingPtr> branchings,
 		     vector<NasonBranchingPtr> spacelike) {
-  for(unsigned int ix=0;ix<branchings.size();++ix) {
-    _branchings.insert(branchings[ix]);
-//     cerr << "testing hard " 
-// 	 << *branchings[ix]->_particle << " " 
-// 	 << branchings[ix]->_sudakov << "\n";
-//     for(unsigned int iy=0;iy<branchings[ix]->_children.size();++iy) {
-//       cerr << "testing children " << *branchings[ix]->_children[iy]->_particle
-// 	   << "\n";
-//     }
-  }
-  for(unsigned int ix=0;ix<spacelike.size();++ix) {
-    _spacelike.insert(spacelike[ix]);
-//     cerr << "testing spacelike " 
-// 	 << *spacelike[ix]->_particle << " " 
-// 	 << spacelike[ix]->_sudakov << "\n";
-//     for(unsigned int iy=0;iy<spacelike[ix]->_children.size();++iy) {
-//       cerr << "testing children " << *spacelike[ix]->_children[iy]->_particle
-// 	   << "\n";
-//     }
-  }
+  _branchings.insert(branchings.begin(),branchings.end());
+  _spacelike .insert(spacelike .begin(),spacelike .end());
 }
 
 void NasonBranching::setMomenta(LorentzRotation R,double aparent,
@@ -40,9 +22,9 @@ void NasonBranching::setMomenta(LorentzRotation R,double aparent,
   Energy2 dot=_n*_p;
   double alpha = (_original*_n)/dot;
   double beta = ((_original*_p)-alpha*sqr(_p.mass()))/dot;
-  _z=alpha/aparent;
   _qt=_original-alpha*_p-beta*_n-ptparent;
   _pt=sqrt(max(-_qt*_qt,0.*MeV2));
+  _z=alpha/aparent;
   // reconstruct children
   for(unsigned int ix=0;ix<_children.size();++ix) {
     _children[ix]->_p=_p;
@@ -83,7 +65,7 @@ void NasonBranching::setMomenta(LorentzRotation R,double aparent,
       vect.setZ(vect.z());
     }
     _phi= atan2(vect.y(),vect.x());
-    if(_phi<0.) _phi+=Constants::twopi;
+    if(_phi<0.)                 _phi+=Constants::twopi;
     if(_children[1]->_incoming) _phi+=Constants::pi;
     
   }

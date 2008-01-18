@@ -100,11 +100,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   
   // Get all the gluon mass assuming massless quarks: 
   _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
-
-  // Finds the boost to lab frame that should be applied to particles
-  // generated in c.o.m frame by getEvent():
-  _eventFrame = getTransf();
-
   // Generate emission and change _quark[0,1] and _g to momenta
   // of q, qbar and g after the hardest emission:
   getEvent(); 
@@ -115,7 +110,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   _ispectator = _iemitter==1              ? 0 : 1; 
   // Set the sudakov for the q/qbar->q/qbarg branching.
   SudakovPtr sudakov = _iemitter==0 ? q_sudakov : qbar_sudakov;
-
   // Make the particles for the NasonTree:
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
   emitter->set5Momentum(_quark[_iemitter]); 
@@ -190,6 +184,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   (*_hy) += _y;
   (*_hplow) += _pt/GeV;
   (*_hphigh) += _pt/GeV;
+  // reset the momenta to ensure correct momenta after shower recon
+  // if emitter for Kliess trick and shower are different
+  for(map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator 
+	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
+    mit->first->set5Momentum(mit->second->_shower);
+  // return the tree
   return nasontree;
 }
 
@@ -276,7 +276,8 @@ void VectorBosonQQbarHardGenerator::doinitrun() {
 
 //private functions-internal workings
 
-Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
+void VectorBosonQQbarHardGenerator::getEvent(){
+
   
   Energy pt_min = _Qg;  
   Energy pt_max = 0.5*sqrt(_s);
@@ -332,14 +333,6 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
      
   //construct vectors in com z frame
   constructVectors();
-  azimuthal();
- 
-  //boost constructed vectors into the event frame
-  _quark[0] = _eventFrame * _quark[0];
-  _quark[1] = _eventFrame * _quark[1];
-  _g = _eventFrame * _g;
-
-  return _g;
 }
 
 double VectorBosonQQbarHardGenerator::getResult() {
@@ -352,51 +345,40 @@ double VectorBosonQQbarHardGenerator::getResult() {
   return res;
 }
 
-//momentum construction
-LorentzRotation VectorBosonQQbarHardGenerator::getTransf() {
- 
-  LorentzRotation transf((_quark[0]+_quark[1]).findBoostToCM() );
-  Lorentz5Momentum quark = transf*_quark[0];
-  transf.rotateZ(-quark.phi());
-  transf.rotateY(-quark.theta());
-  transf.invert();
-
-  return transf;
-}
-
-void VectorBosonQQbarHardGenerator::azimuthal() {
-  using Constants::pi;
-// KH - Check no emission events - they gave nans before when in azimuthal().
-  _r.setRotate( UseRandom::rnd() * Constants::twopi, 
-	_quark[_ispectator].vect().unit());
-  _quark[_iemitter] = _r*_quark[_iemitter];
-  _g = _r*_g;
-  return;
-}
-
 void VectorBosonQQbarHardGenerator::constructVectors(){
+  using Constants::twopi;
+  Lorentz5Momentum test[2]={_quark[0],_quark[1]};
+  // Finds the boost to lab frame that should be applied to particles
+  // generated in c.o.m frame by getEvent():
+  LorentzRotation eventFrame((_quark[0]+_quark[1]).findBoostToCM() );
+  Lorentz5Momentum quark = eventFrame*_quark[_iemitter];
+  eventFrame.rotateZ(-quark.phi());
+  eventFrame.rotateY(-quark.theta());
+  eventFrame.invert();
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
-  _phi = UseRandom::rnd() * Constants::twopi;
-
-//KH - remind me to check these.
+  _phi = UseRandom::rnd() * twopi;
+  //KH - remind me to check these.
+  // momentum of emitter
   _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
   _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
   _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
   _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
-
+  // momentum of spectator
   _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
   _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
-  
-  // If Qbar emits then reflect the z components of emitter & spectator.
-  if(_iemitter==1) { 
-    _quark[_iemitter].setZ(-1.*sqrt(_s)*(_z-_k*_k/_z)/2.);
-    _quark[_ispectator].setZ(-1.*sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
-  }
-
+  // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
-
-  return;  
+  // KH - Check no emission events - they gave nans before here
+  // Rotation for the azimuthal correlation
+  LorentzRotation r;
+  r.setRotate( twopi, _quark[_ispectator].vect().unit());
+  _quark[_iemitter] = r*_quark[_iemitter];
+  _g = r*_g;
+  //boost constructed vectors into the event frame
+  _quark[0] = eventFrame * _quark[0];
+  _quark[1] = eventFrame * _quark[1];
+  _g        = eventFrame * _g;
 }

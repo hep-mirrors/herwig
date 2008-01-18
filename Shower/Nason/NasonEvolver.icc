@@ -6,7 +6,8 @@
 
 namespace Herwig {
 
-inline NasonEvolver::NasonEvolver() {}
+  inline NasonEvolver::NasonEvolver() : _hardonly(false), _trunc_Mode(true)
+{}
 
 inline IBPtr NasonEvolver::clone() const {
   return new_ptr(*this);
@@ -21,6 +22,10 @@ inline void NasonEvolver::doinit() throw(InitException) {
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix) {
     _hardgenerator[ix]->setEvolver(this);
   }
+}
+
+inline bool NasonEvolver::isTruncatedShowerON() const {
+  return _trunc_Mode;
 }
 
 }

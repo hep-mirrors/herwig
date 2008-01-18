@@ -585,8 +585,6 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	tempJetKin.parent->set5Momentum(dum);
       }
       tempJetKin.p = ShowerHardJets[ix]->progenitor()->momentum();
-
-
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
       atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);
@@ -750,9 +748,7 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
   assert(pin.size()==1);
   // boost all the momenta to the rest frame of the decaying particle
   Boost boostv=-pin[0].boostVector();
-  for(unsigned int ix=0;ix<pout.size();++ix) {
-    pout[ix].boost(boostv);
-  }
+  for(unsigned int ix=0;ix<pout.size();++ix) pout[ix].boost(boostv);
   double lambda=inverseRescaleingFactor(pout,mon,pin[0].mass());
   if(isnan(lambda)) {
     cerr << "\n\n\nQTildeReconstructor::reconstructDecayShower \n";
@@ -774,9 +770,11 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
     if(!(*cit)->_particle->isFinalState()) continue;
     (*cit)->_p=(*cit)->_particle->momentum();
     (*cit)->_p.boost(boostv);
-    (*cit)->_p*=lambda;
+    (*cit)->_p/=lambda;
     (*cit)->_p.setMass((*cit)->_particle->dataPtr()->mass());
     (*cit)->_p.rescaleEnergy();
+    (*cit)->_shower = (*cit)->_p;
+    (*cit)->_shower.boost(-boostv);
   }
   // find the colour partners
   ShowerParticleVector particles;

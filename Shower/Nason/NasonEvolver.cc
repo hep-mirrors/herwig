@@ -6,6 +6,7 @@
 
 #include "NasonEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -23,11 +24,11 @@
 using namespace Herwig;
 
 void NasonEvolver::persistentOutput(PersistentOStream & os) const {
-  os << _hardgenerator << _trunc_Mode;
+  os << _hardgenerator << _hardonly << _trunc_Mode;
 }
 
 void NasonEvolver::persistentInput(PersistentIStream & is, int) {
-  is >> _hardgenerator >> _trunc_Mode;
+  is >> _hardgenerator >> _hardonly >> _trunc_Mode;
 }
 
 ClassDescription<NasonEvolver> NasonEvolver::initNasonEvolver;
@@ -43,6 +44,22 @@ void NasonEvolver::Init() {
      "The objects responsible for generating the hardestr emission",
      &NasonEvolver::_hardgenerator, -1, false, false, true, false, false);
 
+  static Switch<NasonEvolver,bool> interfaceHardOnly
+    ("HardOnly",
+     "Only generate the emission supplied by the hardest emission"
+     " generator, for testing only.",
+     &NasonEvolver::_hardonly, false, false, false);
+  static SwitchOption interfaceHardOnlyNo
+    (interfaceHardOnly,
+     "No",
+     "Generate full shower",
+     false);
+  static SwitchOption interfaceHardOnlyYes
+    (interfaceHardOnly,
+     "Yes",
+     "Only the hardest emission",
+     true);
+
   static Switch<NasonEvolver,bool> interfaceTruncMode
     ("TruncatedShower", "Include the truncated shower?", 
      &NasonEvolver::_trunc_Mode, 1, false, false);
@@ -50,7 +67,6 @@ void NasonEvolver::Init() {
     (interfaceTruncMode,"No","Truncated Shower is OFF", 0);
   static SwitchOption interfaceTruncMode1
     (interfaceTruncMode,"Yes","Truncated Shower is ON", 1);
-
 
 }
 
@@ -116,12 +132,12 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	    (*_hTrunc) += double( _truncEmissions ) + 0.5;
 	  } 
 	  else {
-	    progenitor()->hasEmitted(
+	    progenitor()->hasEmitted( _hardonly ? false :
 		timeLikeShower(particlesToShower[ix]->progenitor()));
 	  }
 	}
 	else {
-	  progenitor()->hasEmitted(
+	  progenitor()->hasEmitted( _hardonly ? false :
 		timeLikeShower(particlesToShower[ix]->progenitor()));
 	}
       }
@@ -134,6 +150,63 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 		      << ntry << " attempts in NasonEvolver::showerDecay()"
 		      << Exception::eventerror;
   currentTree()->hasShowered(true);
+  // test that matches
+  if(_hardonly) {
+    // extract the end point of the shower
+    map<int,PPtr> outgoing;
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
+      PPtr temp = particlesToShower[ix]->progenitor();
+      if(!temp->children().empty()) {
+	outgoing.insert(make_pair(temp->children()[0]->id(),temp->children()[0]));
+	outgoing.insert(make_pair(temp->children()[1]->id(),temp->children()[1]));
+      }
+      else {
+	outgoing.insert(make_pair(temp->id(),temp));
+      }
+    }
+    // extract the particles from the nason tree
+    vector<PPtr> outb;
+    for(set<NasonBranchingPtr>::const_iterator it=_nasontree->branchings().begin();
+	it!=_nasontree->branchings().end();++it) {
+      if(!(**it)._children.empty()) {
+	for(vector<NasonBranchingPtr>::const_iterator jt=(**it)._children.begin();
+	    jt!=(**it)._children.end();++jt) {
+	  outb.push_back((**jt)._particle);
+	}
+      }
+      else if((**it)._particle->isFinalState()) {
+	outb.push_back((**it)._particle);
+      }
+    }
+    static Energy eps = 1e-5*GeV;
+    for(unsigned int ix=0;ix<outb.size();++ix) {
+      Lorentz5Momentum pdiff = outb[ix]->momentum();
+      pdiff -=outgoing[outb[ix]->id()]->momentum();
+      if(abs(pdiff.x()) > eps ||
+	 abs(pdiff.y()) > eps ||
+	 abs(pdiff.z()) > eps ||
+	 abs(pdiff.t()) > eps ) {
+	cerr << "testing recon problem " << *outgoing[outb[ix]->id()] << "\n"
+	     << "                      " << pdiff/GeV << "\n";
+	cerr << "testing " << abs(pdiff.x())/eps  << " "
+	     << abs(pdiff.y())/eps  << " "
+	     << abs(pdiff.z())/eps  << " "
+	     << abs(pdiff.t())/eps  << "\n";
+      }
+    }
+  }
+  
+
+
+
+
+
+
+
+
+
+
 }
 
 void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
@@ -307,6 +380,8 @@ bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     if(fb.kinematics->scale()<branch->_scale/zsplit) vetoed=true;
     // pt veto
     if(fb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
+    // no truncated shower if only generating hardest emission
+    if(_hardonly) vetoed = true;
     // if vetoed reset scale
     if(vetoed) particle->setEvolutionScale(ShowerIndex::QCD,fb.kinematics->scale());
     //if truncated emission is accepted add one to the count
