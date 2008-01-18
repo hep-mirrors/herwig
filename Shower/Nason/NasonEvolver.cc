@@ -76,6 +76,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
   currentTree(tree);
   // set up the shower
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
+  setupMaximumScales(tree, particlesToShower);
   // generate the intrinsic p_T once and for all
   generateIntrinsicpT(particlesToShower);
   // main showering loop
@@ -214,6 +215,7 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
   currentTree(tree);
   // set up the shower
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
+  setupMaximumScales(tree, particlesToShower);
   unsigned int ntry(0);
   do {
     // clear results of last attempt
@@ -344,7 +346,7 @@ bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
   tcPDPtr pdata[2];
   while (vetoed) {
     iout=0;
-    if( isTruncatedShowerON() ) vetoed = false;
+    vetoed = !isTruncatedShowerON();
     fb=splittingGenerator()->chooseForwardBranching(*particle,1.);
     // check haven't evolved too far
     if(!fb.kinematics||fb.kinematics->scale()<branch->_scale) {
