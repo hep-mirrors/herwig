@@ -25,7 +25,9 @@ ClassDescription<LittleHiggsWWHVertex> LittleHiggsWWHVertex::initLittleHiggsWWHV
 void LittleHiggsWWHVertex::Init() {
 
   static ClassDocumentation<LittleHiggsWWHVertex> documentation
-    ("There is no documentation for the LittleHiggsWWHVertex class");
+    ("The LittleHiggsWWHVertex class implements the coupling of two electroweak"
+     " gauge bosons to a Higgs boson in the Little Higgs Model including the "
+     "additional heavy photon, Z and W bosons and the triplet Higgs bosons.");
 
 }
 
@@ -200,6 +202,7 @@ void LittleHiggsWWHVertex::doinit() throw(InitException) {
   double sp(model->sinThetaPrime()),cp(model->cosThetaPrime());
   double s0(2.*r2*vr);
   _coup.resize(27);
+  // couplings to SM higgs
   _coup[ 0] = fact        *(1.-vf/3.+0.5*vf* sqr(sqr(c)-sqr(s))
 			    -0.5*sqr(s0)-2.*r2*s0*vr);
   _coup[ 1] = fact/sqr(cw)*(1.-vf/3.-0.5*vf*(sqr(sqr(c)-sqr(s))+5.*sqr(sqr(cp)-sqr(sp)))
@@ -210,7 +213,7 @@ void LittleHiggsWWHVertex::doinit() throw(InitException) {
   _coup[ 5] =-fact*0.5*(sqr(c)-sqr(s))/s/c;
   _coup[ 6] =-fact/cw*0.5*(sqr(c)-sqr(s))/s/c;
   _coup[ 7] =-fact/sqr(cw)*sw*0.5*(sqr(cp)-sqr(sp))/sp/cp;
-  _coup[ 8] =-fact/sqr(cw)*sw/s/c/sp/cp*(sqr(c*sp)-sqr(s*cp));
+  _coup[ 8] =-fact/cw*sw*0.5/s/c/sp/cp*(sqr(c*sp)+sqr(s*cp));
   _coup[ 9] =-fact*(s0-2.*r2*vr);
   _coup[10] = fact*(s0-2.*r2*vr);
   _coup[11] = fact*(s0-2.*r2*vr)*0.5*(sqr(c)-sqr(s))/s/c;
@@ -221,12 +224,13 @@ void LittleHiggsWWHVertex::doinit() throw(InitException) {
   _coup[16] = fact*sw/cw*0.5/s/c/sp/cp*(s0*(sqr(c*sp)+sqr(s*cp))
 					+2.*r2*(sqr(c)-sqr(s))*(sqr(cp)-sqr(sp))*vr);
   _coup[17] = fact*sqr(sw/cw)*(s0+r2*vr*sqr(sqr(cp)-sqr(sp))/sqr(sp*cp));
+
   _coup[18] =-fact/cw*vr;
   _coup[19] = fact/cw*0.5*(sqr(c)-sqr(s))/s/c*vr;
   _coup[20] =-fact*sw/cw*0.5*(sqr(cp)-sqr(sp))/sp/cp*(sp-4.*vr);
-  _coup[21] =-fact*sw/cw*(sqr(c*cp)-sqr(s*sp))/s/c/sp/cp*vr;
-  _coup[22] = fact*0.5*(sqr(c)-sqr(s))/s/c*vr;
-  _coup[23] =-fact*0.5*(pow(c,4)+pow(s,4))/sqr(s)/sqr(c)*vr;
+  _coup[21] =-fact*sw/cw*(sqr(c*cp)+sqr(s*sp))/s/c/sp/cp*vr;
+  _coup[22] = fact*(sqr(c)-sqr(s))/s/c*vr;
+  _coup[23] =-fact*(pow(c,4)+pow(s,4))/sqr(s)/sqr(c)*vr;
   _coup[24] = fact*4.*vr;
   _coup[25] = fact*2.*(pow(c,4)+pow(s,4))/sqr(s)/sqr(c)*vr;
   _coup[26] =-fact*2.*vr*(sqr(c)-sqr(s))/s/c;

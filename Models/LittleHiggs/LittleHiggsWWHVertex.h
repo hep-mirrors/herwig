@@ -14,7 +14,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LittleHiggsWWHVertex class.
+ * The LittleHiggsWWHVertex class implements the couplings of two electroweak
+ * gauge bosons to a Higgs boson in the Little Higgs model including the additional
+ * heavy photon, Z and W bosons in the model and the triplet Higgs bosons.
  *
  * @see \ref LittleHiggsWWHVertexInterfaces "The interfaces"
  * defined for LittleHiggsWWHVertex.
