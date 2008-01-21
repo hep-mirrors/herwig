@@ -507,11 +507,11 @@ void IdentifiedParticleAnalysis::dofinish() {
   _lpm->normaliseToData();
   _lpm->chiSquared(chisq,npoint,minfrac);
   generator()->log() << "Chi Square = " << chisq << " for " << npoint 
-		     << " degrees of freedom for OPAL momentum (lambda, all quarks) "
+		     << " degrees of freedom for ALEPH momentum (lambda, all quarks) "
 		     << "distribution or " << chisq/npoint << " per degree of freedom\n"; 
   _lpm->topdrawOutput(output,Frame|Errorbars|Ylog,
 		      "RED",
-		      "The scaled momentum of L for all events (OPAL)",
+		      "The scaled momentum of L for all events (ALEPH)",
 		      "                       F                      ",
 		      "1/NdN/dp/GeV2-13",
 		      "            X  X",
