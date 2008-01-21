@@ -156,7 +156,7 @@ double StoSFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	// intermediate scalar
 	if     (offshell->iSpin() == PDT::Spin0) {
 	  ScalarWaveFunction inters = _sca[idiag].first->
-	    evaluate(scale, 1, offshell, inScalar, outScalar);
+	    evaluate(scale, widthOption(), offshell, inScalar, outScalar);
 	  unsigned int h1(s1),h2(s2);
 	  if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
 	  if(decay[out2[dit->channelType]]->id()<0&&
@@ -182,13 +182,15 @@ double StoSFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	  sign = iferm<dit->channelType ? 1. : -1.;
 	  if(decay[dit->channelType]->id()<0&&decay[iferm]->id()>0) {
 	    SpinorWaveFunction    inters = _fer[idiag].first->
-	      evaluate(scale,1,offshell,outspin[dit->channelType].first [h1],inScalar);
+	      evaluate(scale,widthOption(),offshell,
+		       outspin[dit->channelType].first [h1],inScalar);
 	    diag = -sign*_fer[idiag].second->
 	      evaluate(scale,inters,outspin[iferm].second[h2],outScalar);
 	  }
 	  else {
 	    SpinorBarWaveFunction inters = _fer[idiag].first->
-	      evaluate(scale,1,offshell,outspin[dit->channelType].second[h1],inScalar);
+	      evaluate(scale,widthOption(),offshell,
+		       outspin[dit->channelType].second[h1],inScalar);
 	    diag =  sign*_fer[idiag].second->
 	      evaluate(scale,outspin[iferm].first [h2],inters,outScalar);
 	  }
@@ -196,7 +198,7 @@ double StoSFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	// intermediate vector
 	else if(offshell->iSpin() == PDT::Spin1) {
 	  VectorWaveFunction interv = _vec[idiag].first->
-	    evaluate(scale, 1, offshell, inScalar, outScalar);
+	    evaluate(scale, widthOption(), offshell, inScalar, outScalar);
 	  unsigned int h1(s1),h2(s2);
 	  if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
 	  if(decay[out2[dit->channelType]]->id()<0&&
@@ -216,7 +218,7 @@ double StoSFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	// intermediate tensor
 	else if(offshell->iSpin() == PDT::Spin2) {
  	  TensorWaveFunction intert = _ten[idiag].first->
-	    evaluate(scale, 1, offshell, inScalar, outScalar);
+	    evaluate(scale, widthOption(), offshell, inScalar, outScalar);
 	  unsigned int h1(s1),h2(s2);
 	  if(out2[dit->channelType]>out3[dit->channelType]) swap(h1,h2);
 	  if(decay[out2[dit->channelType]]->id()<0&&

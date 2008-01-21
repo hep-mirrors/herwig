@@ -19,14 +19,15 @@
 using namespace Herwig;
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _removeOnShell;
+  os << _removeOnShell << _widthopt;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _removeOnShell;
+  is >> _removeOnShell >> _widthopt;
 }
 
-ClassDescription<ThreeBodyDecayConstructor> ThreeBodyDecayConstructor::initThreeBodyDecayConstructor;
+ClassDescription<ThreeBodyDecayConstructor> 
+ThreeBodyDecayConstructor::initThreeBodyDecayConstructor;
 // Definition of the static class description member.
 
 void ThreeBodyDecayConstructor::Init() {
@@ -48,6 +49,26 @@ void ThreeBodyDecayConstructor::Init() {
      "No",
      "Don't remove the diagrams",
      false);
+
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceWidthOption
+    ("WidthOption",
+     "Option for the treatment of the widths of the intermediates",
+     &ThreeBodyDecayConstructor::_widthopt, 1, false, false);
+  static SwitchOption interfaceWidthOptionFixed
+    (interfaceWidthOption,
+     "Fixed",
+     "Use fixed widths",
+     1);
+  static SwitchOption interfaceWidthOptionRunning
+    (interfaceWidthOption,
+     "Running",
+     "Use running widths",
+     2);
+  static SwitchOption interfaceWidthOptionZero
+    (interfaceWidthOption,
+     "Zero",
+     "Set the widths to zero",
+     3);
 
 }
 
@@ -248,8 +269,15 @@ createDecayer(const vector<TBDiagram> & diagrams) const {
   vector<DVector> cfactors = getColourFactors(incoming,outgoing, ncf);
   decayer->setDecayInfo(incoming,vector<PDPtr>(outgoing.begin(),outgoing.end()),
 			diagrams,cfactors,ncf);
+  // set decayer options from base class
   setDecayerInterfaces(objectname);
+  // set the width option
+  ostringstream value;
+  value << _widthopt;
+  generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
+  // initialize the decayer
   decayer->init();
+  // return the decayer
   return decayer;
 }
 

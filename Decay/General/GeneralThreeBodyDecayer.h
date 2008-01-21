@@ -169,6 +169,11 @@ protected:
   inline const vector<DVector> & getColourFactors() const;
 
   /**
+   *  Option for the handling of the widths of the intermediate particles
+   */
+  inline unsigned int widthOption() const;
+
+  /**
    * Set colour connections
    * @param parent Parent particle
    * @param out Particle vector containing particles to 
@@ -229,6 +234,11 @@ private:
    *  Reference to object to calculate the partial width
    */
   mutable WidthCalculatorBasePtr _widthcalc;
+
+  /**
+   *  Option for the treatment of the widths 
+   */
+  unsigned int _widthopt;
 };
 
 }

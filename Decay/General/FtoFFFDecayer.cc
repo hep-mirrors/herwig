@@ -170,19 +170,19 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    // intermediate scalar
 	    if     (offshell->iSpin() == PDT::Spin0) { 
 	      ScalarWaveFunction inters = _sca[idiag].first->
-		evaluate(scale, 1, offshell, w0, w1);
+		evaluate(scale, widthOption(), offshell, w0, w1);
 	      diag = _sca[idiag].second->evaluate(scale,w3,w2,inters);
 	    }
 	    // intermediate vector
 	    else if(offshell->iSpin() == PDT::Spin1) {
 	      VectorWaveFunction interv = _vec[idiag].first->
-		evaluate(scale, 1, offshell, w0, w1);
+		evaluate(scale, widthOption(), offshell, w0, w1);
 	      diag = -_vec[idiag].second->evaluate(scale,w3,w2,interv);
 	    }
 	    // intermediate tensor
 	    else if(offshell->iSpin() == PDT::Spin2) {
 	      TensorWaveFunction intert = _ten[idiag].first->
-		evaluate(scale, 1, offshell, w0, w1);
+		evaluate(scale, widthOption(), offshell, w0, w1);
 	      diag = _ten[idiag].second->evaluate(scale,w3,w2,intert);
 	    }
 	    // unknown

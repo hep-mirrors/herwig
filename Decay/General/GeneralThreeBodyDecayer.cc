@@ -7,6 +7,7 @@
 #include "GeneralThreeBodyDecayer.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
@@ -30,20 +31,42 @@ struct ParticleOrdering {
 typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _diagrams << _colour << _nflow;
+  os << _incoming << _outgoing << _diagrams << _colour << _nflow << _widthopt;
 }
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _diagrams >> _colour >> _nflow;
+  is >> _incoming >> _outgoing >> _diagrams >> _colour >> _nflow >> _widthopt;
 }
 
-AbstractClassDescription<GeneralThreeBodyDecayer> GeneralThreeBodyDecayer::initGeneralThreeBodyDecayer;
+AbstractClassDescription<GeneralThreeBodyDecayer> 
+GeneralThreeBodyDecayer::initGeneralThreeBodyDecayer;
 // Definition of the static class description member.
 
 void GeneralThreeBodyDecayer::Init() {
 
   static ClassDocumentation<GeneralThreeBodyDecayer> documentation
-    ("There is no documentation for the GeneralThreeBodyDecayer class");
+    ("The GeneralThreeBodyDecayer class is the base class for the implementation of"
+     " all three body decays based on spin structures in Herwig++.");
+
+  static Switch<GeneralThreeBodyDecayer,unsigned int> interfaceWidthOption
+    ("WidthOption",
+     "Option for the treatment of the widths of the intermediates",
+     &GeneralThreeBodyDecayer::_widthopt, 1, false, false);
+  static SwitchOption interfaceWidthOptionFixed
+    (interfaceWidthOption,
+     "Fixed",
+     "Use fixed widths",
+     1);
+  static SwitchOption interfaceWidthOptionRunning
+    (interfaceWidthOption,
+     "Running",
+     "Use running widths",
+     2);
+  static SwitchOption interfaceWidthOptionZero
+    (interfaceWidthOption,
+     "Zero",
+     "Set the widths to zero",
+     3);
 
 }
 
