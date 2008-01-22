@@ -112,11 +112,6 @@ private:
   SSHHHVertex & operator=(const SSHHHVertex &);
 
 private:
-
-  /**
-   * A pointer to the MSSM object 
-   */
-  tMSSMPtr theMSSM;
   
   /**
    * The mass of the \f$W\f$.

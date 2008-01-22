@@ -1,11 +1,8 @@
 SUBDIRS = Histogram2 .
 noinst_LTLIBRARIES = libHwUtils.la
-libHwUtils_la_LIBADD=Histogram2/libHwHistogram2.la
-libHwUtils_la_CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\""
+libHwUtils_la_LIBADD = Histogram2/libHwHistogram2.la
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
-HerwigRun.cc HerwigRun.h \
-HwDebug.cc HwDebug.h \
 Interpolator.tcc Interpolator.h \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \
@@ -14,5 +11,4 @@ StandardSelectors.cc StandardSelectors.h StandardSelectors.icc \
 Histogram.cc Histogram.fh Histogram.h Histogram.icc \
 GaussianIntegrator.cc GaussianIntegrator.h \
 GaussianIntegrator.icc GaussianIntegrator.tcc \
-Statistic.h \
-HerwigVersion.h HerwigVersion.cc
+Statistic.h

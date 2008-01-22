@@ -20,17 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-void SSGSGSGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS;
-}
-
-void SSGSGSGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS;
-  _couplast = 0.;
-  _q2last = 0.*GeV2;
-}
-
-ClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
+NoPIOClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
 // Definition of the static class description member.
 
 void SSGSGSGVertex::Init() {
@@ -49,7 +39,7 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
      (part3->id() == ParticleID::g && part1->id() == ParticleID::SUSY_g &&
       part2->id() == ParticleID::SUSY_g)) {
     if(q2 != _q2last) {
-      _couplast = sqrt(4.*Constants::pi*_theSS->alphaS(q2));
+      _couplast = strongCoupling(q2);
       _q2last = q2;
     }
     setNorm(_couplast);

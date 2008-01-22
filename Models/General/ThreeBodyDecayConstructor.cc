@@ -13,19 +13,21 @@
 #include "Herwig++/Decay/General/GeneralThreeBodyDecayer.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _removeOnShell;
+  os << _removeOnShell << _widthopt;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _removeOnShell;
+  is >> _removeOnShell >> _widthopt;
 }
 
-ClassDescription<ThreeBodyDecayConstructor> ThreeBodyDecayConstructor::initThreeBodyDecayConstructor;
+ClassDescription<ThreeBodyDecayConstructor> 
+ThreeBodyDecayConstructor::initThreeBodyDecayConstructor;
 // Definition of the static class description member.
 
 void ThreeBodyDecayConstructor::Init() {
@@ -48,6 +50,26 @@ void ThreeBodyDecayConstructor::Init() {
      "Don't remove the diagrams",
      false);
 
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceWidthOption
+    ("WidthOption",
+     "Option for the treatment of the widths of the intermediates",
+     &ThreeBodyDecayConstructor::_widthopt, 1, false, false);
+  static SwitchOption interfaceWidthOptionFixed
+    (interfaceWidthOption,
+     "Fixed",
+     "Use fixed widths",
+     1);
+  static SwitchOption interfaceWidthOptionRunning
+    (interfaceWidthOption,
+     "Running",
+     "Use running widths",
+     2);
+  static SwitchOption interfaceWidthOptionZero
+    (interfaceWidthOption,
+     "Zero",
+     "Set the widths to zero",
+     3);
+
 }
 
 void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
@@ -58,8 +80,7 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
   model->init();
   unsigned int nv(model->numberOfVertices());
   // make sure vertices are initialized
-  for(unsigned int i = 0; i < nv; ++i) 
-    model->vertex(i)->init();
+  for(unsigned int i = 0; i < nv; ++i) model->vertex(i)->init();
   // loop over the particles and create the decayers
   for(unsigned int ip = 0; ip < np; ++ip) {
     tPDPtr parent = particles[ip];
@@ -99,12 +120,26 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       // remove processes which aren't kinematically allowed
       if(min<=mout[0]+mout[1]+mout[2]) continue;
       // remove QED and QCD radiation diagrams
+      // radiation from intermediate
       if((dit->outgoingPair.first ==dit->intermediate->id()&&
 	  (dit->outgoingPair.second==ParticleID::g ||
 	   dit->outgoingPair.second==ParticleID::gamma ))||
 	 (dit->outgoingPair.second==dit->intermediate->id()&&
 	  (dit->outgoingPair.first ==ParticleID::g ||
 	   dit->outgoingPair.first ==ParticleID::gamma ))) continue;
+      // radiation from the parent
+      if((dit->outgoing ==dit->incoming&&
+	  (dit->intermediate->id()==ParticleID::g ||
+	   dit->intermediate->id()==ParticleID::gamma ))||
+	 (dit->intermediate->id()==dit->incoming&&
+	  (dit->outgoing ==ParticleID::g ||
+	   dit->outgoing ==ParticleID::gamma ))) continue;
+      // remove weak decays of quarks other than top
+      if(StandardQCDPartonMatcher::Check(dit->intermediate->id()) &&
+	 ((StandardQCDPartonMatcher::Check(dit->outgoingPair.first)&&
+	   abs(dit->outgoingPair.second)==ParticleID::Wplus)||
+	  (StandardQCDPartonMatcher::Check(dit->outgoingPair.second)&&
+	   abs(dit->outgoingPair.first)==ParticleID::Wplus))) continue;
       // remove processes where one of the outgoing particles has the same id as the
       // incoming particles
       if(abs(particles[ip]->id()) == abs(dit->outgoing           ) ||
@@ -135,26 +170,26 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       if(!added) modes.push_back(vector<TBDiagram>(1,*dit));
     }
     // print out info on the potential modes
-    cerr << "testing there are " << modes.size() << " modes\n";
-    for(unsigned int ix=0;ix<modes.size();++ix) {
-      cerr << "testing mode " << ix << "\n";
-      cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
-      cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
-	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
-	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
-      cerr << "testing there are " << modes[ix].size() << " diagrams\n";
-      for(unsigned int iy=0;iy<modes[ix].size();++iy) {
-	cerr << "testing diagram " << iy << "\n";
-	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
-	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
-	     << modes[ix][iy].outgoingPair.first  << " "
-	     << modes[ix][iy].outgoingPair.second << "\n";
-	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
-	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
-	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
-	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
-      }
-    }
+//     cerr << "testing there are " << modes.size() << " modes\n";
+//     for(unsigned int ix=0;ix<modes.size();++ix) {
+//       cerr << "testing mode " << ix << "\n";
+//       cerr << "incoming = " << getParticleData(modes[ix][0].incoming)->PDGName() << "\n";
+//       cerr << "outgoing = " << getParticleData(modes[ix][0].outgoing)->PDGName() << " "
+// 	   << getParticleData(modes[ix][0].outgoingPair.first )->PDGName() << " "
+// 	   << getParticleData(modes[ix][0].outgoingPair.second)->PDGName() << "\n";
+//       cerr << "testing there are " << modes[ix].size() << " diagrams\n";
+//       for(unsigned int iy=0;iy<modes[ix].size();++iy) {
+// 	cerr << "testing diagram " << iy << "\n";
+// 	cerr << "incoming = " << modes[ix][iy].incoming << "\n";
+// 	cerr << "outgoing = " << modes[ix][iy].outgoing << " "
+// 	     << modes[ix][iy].outgoingPair.first  << " "
+// 	     << modes[ix][iy].outgoingPair.second << "\n";
+// 	cerr << "intermediate = " << modes[ix][iy].intermediate->PDGName() 
+// 	     << "\t" << modes[ix][iy].intermediate->id() << "\n";
+// 	cerr << "vertices = " << modes[ix][iy].vertices.first ->fullName() << "\n"
+// 	     << "           " << modes[ix][iy].vertices.second->fullName() << "\n";
+//       }
+//     }
     // now we need to create the decayers for the mode
     for(unsigned int ix=0;ix<modes.size();++ix) {
       createDecayMode(modes[ix]);
@@ -234,8 +269,15 @@ createDecayer(const vector<TBDiagram> & diagrams) const {
   vector<DVector> cfactors = getColourFactors(incoming,outgoing, ncf);
   decayer->setDecayInfo(incoming,vector<PDPtr>(outgoing.begin(),outgoing.end()),
 			diagrams,cfactors,ncf);
-  decayer->init();
+  // set decayer options from base class
   setDecayerInterfaces(objectname);
+  // set the width option
+  ostringstream value;
+  value << _widthopt;
+  generator()->preinitInterface(objectname, "WidthOption", "set", value.str());
+  // initialize the decayer
+  decayer->init();
+  // return the decayer
   return decayer;
 }
 
@@ -255,12 +297,11 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
   }
   objname   += "Decayer";
   if(incoming->iSpin()==PDT::Spin0) {
-    classname="";
+    if(ns==1&&nf==2) classname += "StoSFFDecayer";
+    else             classname  = "";
   }
   else if(incoming->iSpin()==PDT::Spin1Half) {
-    if(nf==3) {
-      classname += "FtoFFFDecayer";
-    }
+    if(nf==3) classname += "FtoFFFDecayer";
     else      classname  = "";
   }
   else if(incoming->iSpin()==PDT::Spin1) {
@@ -274,9 +315,6 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
 
 void ThreeBodyDecayConstructor::
 createDecayMode(const vector<TBDiagram> & diagrams) {
-  // create the decayer
-  GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams);
-  if(!decayer) return;
   // incoming particle
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
   // outgoing particles
@@ -299,6 +337,12 @@ createDecayMode(const vector<TBDiagram> & diagrams) {
   tDMPtr dm = generator()->findDecayMode(tag);
   // create mode if needed
   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
+    // create the decayer
+    GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams);
+    if(!decayer) {
+      cerr << "Can't create the decayer for " << tag << " so mode not created\n";
+      return;
+    }
     tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
     if(ndm) {
       generator()->preinitInterface(ndm, "Decayer", "set",
@@ -322,9 +366,17 @@ createDecayMode(const vector<TBDiagram> & diagrams) {
 	<< tag << Exception::warning;
   }
   else if( dm ) {
-    if((dm->decayer()->fullName()).find("Mambo") != string::npos)
+    if((dm->decayer()->fullName()).find("Mambo") != string::npos) {
+      // create the decayer
+      GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams);
+      if(!decayer) {
+	cerr << "Can't create the decayer for " << dm->tag() 
+	     << " so decays by phase-space\n";
+	return;
+      }
       generator()->preinitInterface(dm, "Decayer", "set", 
 				    decayer->fullName());
+    }
   }
   //update CC mode if it exists
   if( inpart->CC() )
@@ -335,14 +387,15 @@ vector<DVector> ThreeBodyDecayConstructor::
 getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
 		 unsigned int & ncf) const {
   unsigned int ns(0),nt(0),ntb(0),no(0);
+  string name = incoming->PDGName() + "->";
   for(OrderedParticles::const_iterator it = outgoing.begin();
       it != outgoing.end();++it) {
+    name += (**it).PDGName() + " ";
     if     ((**it).iColour() == PDT::Colour0    ) ++ns ;
     else if((**it).iColour() == PDT::Colour3    ) ++nt ;
     else if((**it).iColour() == PDT::Colour3bar ) ++ntb;
     else if((**it).iColour() == PDT::Colour8    ) ++no ;
   }
-
   vector<DVector> output;
   // colour neutral decaying particle
   if     ( incoming->iColour() == PDT::Colour0) {
@@ -353,46 +406,37 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
     }
     else if(ns==1&&nt==1&&ntb==1) {
       ncf = 1;
-      output = vector<DVector>(1,DVector(1,4.));
+      output = vector<DVector>(1,DVector(1,3.));
     }
-    else {
-      OrderedParticles::const_iterator it = outgoing.begin();
-      throw Exception() << "Unknown colour flow structure for"
-			<< incoming->PDGName() << "->"
-			<<    (**it) .PDGName() << ","
-			<< (**(++it)).PDGName() << ","
-			<< (**(++it)).PDGName()
-			<< Exception::runerror;
-    }
+    else throw Exception() << "Unknown colour flow structure for"
+			   << name << Exception::runerror;
   }
   // colour triplet decaying particle
   else if( incoming->iColour() == PDT::Colour3) {
-    OrderedParticles::const_iterator it = outgoing.begin();
-    throw Exception() << "Unknown colour flow structure for"
-		      << incoming->PDGName() << "->"
-		      <<    (**it) .PDGName() << ","
-		      << (**(++it)).PDGName() << ","
-		      << (**(++it)).PDGName()
-		      << Exception::runerror;
+    if(ns==2&&nt==1) {
+      ncf = 1;
+      output = vector<DVector>(1,DVector(1,1.));
+    }
+    else throw Exception() << "Unknown colour flow structure for"
+		      << name << Exception::runerror;
   }
   // colour antitriplet decayign particle
   else if( incoming->iColour() == PDT::Colour3bar) {
-    OrderedParticles::const_iterator it = outgoing.begin();
-    throw Exception() << "Unknown colour flow structure for"
-		      << incoming->PDGName() << "->"
-		      <<    (**it) .PDGName() << ","
-		      << (**(++it)).PDGName() << ","
-		      << (**(++it)).PDGName()
-		      << Exception::runerror;
+    if(ns==2&&ntb==1) {
+      ncf = 1;
+      output = vector<DVector>(1,DVector(1,1.));
+    }
+    else throw Exception() << "Unknown colour flow structure for"
+			   << name << Exception::runerror;
   }
   else if( incoming->iColour() == PDT::Colour8) {
-    OrderedParticles::const_iterator it = outgoing.begin();
-    throw Exception() << "Unknown colour flow structure for"
-		      << incoming->PDGName() << "->"
-		      <<    (**it) .PDGName() << ","
-		      << (**(++it)).PDGName() << ","
-		      << (**(++it)).PDGName()
-		      << Exception::runerror;
+    // triplet antitriplet
+    if(nt == 1 && ntb == 1 && ns == 1) {
+      ncf = 1;
+      output = vector<DVector>(1,DVector(1,0.5));
+    }
+    else throw Exception() << "Unknown colour flow structure for"
+			   << name << Exception::runerror;
   }
   return output;
 }

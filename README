@@ -1,8 +1,8 @@
-============
-HERWIG++ 2.1
-============
+==============
+HERWIG++ 2.1.2
+==============
 
-This is the release of Herwig++ 2.1, a multi purpose event
+This is the release of Herwig++ 2.1.2, a multi purpose event
 generator for high energy physics.
 
 The Herwig++ distribution contains an adapted version of LoopTools
@@ -27,7 +27,7 @@ found in a package called libgsl-dev.
 ThePEG
 ------
 
-Download ThePEG 1.1 or later from 
+Download ThePEG 1.1.1 or later from 
 http://projects.hepforge.org/herwig/versions.html
  
 Do not build this package inside the Herwig++ source directory!

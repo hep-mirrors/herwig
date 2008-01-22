@@ -124,11 +124,6 @@ private:
   complex<InvEnergy> _couplast;
 
   /**
-   *  The value of \f$\sin\theta_w\f$.
-   */
-  double _sw;
-
-  /**
    *  The PDG code of the last fermion the coupling was evaluated for.
    */
   int _idlast;

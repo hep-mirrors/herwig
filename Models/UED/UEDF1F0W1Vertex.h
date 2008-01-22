@@ -115,11 +115,6 @@ private:
   UEDF1F0W1Vertex & operator=(const UEDF1F0W1Vertex &);
 
 private:
-  
-  /**
-   * A pointer to the UEDBase object.
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The value of \f$\sin\theta_W\f$

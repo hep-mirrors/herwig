@@ -156,6 +156,13 @@ public:
    * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
    */
   Complex contract(RhoDMatrix & rhoin);
+
+  /** 
+   * Contract the matrix element with the \f$\rho\f$ matrix of the 
+   * incoming particle. The spins of the decay products are summed over.
+   * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
+   */
+  Complex contract(const DecayMatrixElement & con, RhoDMatrix & rhoin);
   //@}
 
 public:

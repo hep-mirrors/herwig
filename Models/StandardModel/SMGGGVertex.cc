@@ -16,18 +16,25 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
-void SMGGGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM;
+SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last() {
+  // the particles
+  vector<int> first,second,third;
+  first.push_back(21);
+  second.push_back(21);
+  third.push_back(21);
+  setList(first,second,third);
 }
 
-void SMGGGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM;
+void SMGGGVertex::doinit() throw(InitException) {
+  orderInGs(1);
+  orderInGem(0);
+  VVVVertex::doinit();
 }
 
-ClassDescription<SMGGGVertex> SMGGGVertex::initSMGGGVertex;
+NoPIOClassDescription<SMGGGVertex> SMGGGVertex::initSMGGGVertex;
 // Definition of the static class description member.
 
 void SMGGGVertex::Init() {
@@ -38,16 +45,11 @@ void SMGGGVertex::Init() {
 }
 
 // couplings for the GGG vertex
-void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr)
-{
+void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last)
-    {
-      double alpha = _theSM->alphaS(q2);
-      _couplast = sqrt(4.0*Constants::pi*alpha);
-      _q2last=q2;
-    }
+  if(q2!=_q2last) {
+    _couplast = strongCoupling(q2);
+    _q2last=q2;
+  }
   setNorm(_couplast);
 }
-}
-

@@ -113,12 +113,7 @@ private:
    */
   UEDZ0A1h1Vertex & operator=(const UEDZ0A1h1Vertex &);
 
-  private:
-  
-  /**
-   * A pointer to the UEDBase object
-   */
-  tUEDBasePtr theUEDBase;
+private:
   
   /**
    * The value of \f$ \sin 2\theta_W \f$. 

@@ -105,33 +105,34 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
   setList(anti, ferm, wboson);
 }
 
-inline void UEDF1F0W1Vertex::doinit() throw(InitException) {
+void UEDF1F0W1Vertex::doinit() throw(InitException) {
   FFVVertex::doinit();
-  theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
-  if(!theUEDBase)
+  tUEDBasePtr UEDBase = 
+    dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!UEDBase)
     throw InitException() << "UEDF1F0W1Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theSinW = sqrt(theUEDBase->sin2ThetaW());
+  theSinW = sqrt(UEDBase->sin2ThetaW());
   theCosW = sqrt( 1. - sqr(theSinW));
-  theSinOne = theUEDBase->sinThetaOne();
+  theSinOne = UEDBase->sinThetaOne();
   theCosOne = sqrt(1. - sqr(theSinOne)); 
   theSinWmO = theSinW*theCosOne - theSinOne*theCosW;
   theCosWmO = theCosW*theCosOne + theSinW*theSinOne;
   theCKM = dynamic_ptr_cast<Ptr<StandardCKM>::transient_pointer>
-    (theUEDBase->CKM())->getUnsquaredMatrix(theUEDBase->families());
+    (UEDBase->CKM())->getUnsquaredMatrix(UEDBase->families());
   orderInGs(0);
   orderInGem(1);
 }
 
 
 void UEDF1F0W1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinW << theCosW << theSinOne << theCosOne
+  os << theSinW << theCosW << theSinOne << theCosOne
      << theSinWmO << theCosWmO << theCKM;
 }
 
 void UEDF1F0W1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinW >> theCosW >> theSinOne >> theCosOne
+  is >> theSinW >> theCosW >> theSinOne >> theCosOne
      >> theSinWmO >> theCosWmO >> theCKM;
 }
 
@@ -196,7 +197,7 @@ void UEDF1F0W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       (kkparticle >= 6100011 && kkparticle <= 6100016) ) {
     if(q2 != theq2last) {
       theq2last = q2;
-      theCouplast = sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2));
+      theCouplast = electroMagneticCoupling(q2);
     }
     if( gboson != theGBlast || kkparticle != theKKlast || smID != theSMlast ) {
       theGBlast = gboson;

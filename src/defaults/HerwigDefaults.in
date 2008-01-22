@@ -21,7 +21,10 @@
 # the file system)
 ###################################################################
 
+globallibrary Herwig.so
+
 # Make the root directory in the Repository
+rrmdir /Herwig
 mkdir /Herwig
 
 #####################################################################

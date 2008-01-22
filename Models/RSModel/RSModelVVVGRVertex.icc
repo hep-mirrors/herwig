@@ -13,21 +13,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  inline RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2,0.0), _q2last(2)
-{
-  vector<int> first,second,third,fourth;
-  first.push_back(24);second.push_back(-24);third.push_back(22);fourth.push_back(39);
-  first.push_back(24);second.push_back(-24);third.push_back(23);fourth.push_back(39);
-  first.push_back(21);second.push_back(21);third.push_back(21);fourth.push_back(39);
-  setList(first,second,third,fourth);
-  _theKappa=InvEnergy();
-  _couplast[0]=0.;
-  _couplast[1]=0.;
- _q2last[0]=0.*GeV2;
- _q2last[1]=0.*GeV2;
- _zfact=0.;
-}
-
 inline IBPtr RSModelVVVGRVertex::clone() const {
   return new_ptr(*this);
 }
@@ -36,13 +21,4 @@ inline IBPtr RSModelVVVGRVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void RSModelVVVGRVertex::doinit() throw(InitException) {
-  VVVTVertex::doinit();
-  _theModel = generator()->standardModel();
-  _zfact = sqrt((1.-_theModel->sin2ThetaW())/_theModel->sin2ThetaW());
-  // set the graviton coupling 
-  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
-  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
-  else{throw InitException();}
-}
 }

@@ -28,7 +28,8 @@ ClassDescription<FtoFFFDecayer> FtoFFFDecayer::initFtoFFFDecayer;
 void FtoFFFDecayer::Init() {
 
   static ClassDocumentation<FtoFFFDecayer> documentation
-    ("There is no documentation for the FtoFFFDecayer class");
+    ("The FtoFFFDecayer class implements the general decay of a fermion to "
+     "three fermions.");
 
 }
 
@@ -42,24 +43,33 @@ void FtoFFFDecayer::doinit() throw(InitException) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
     if(offshell->iSpin() == PDT::Spin0) {
-      FFSVertexPtr vert1 = dynamic_ptr_cast<FFSVertexPtr>
+      AbstractFFSVertexPtr vert1 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.first);
-      FFSVertexPtr vert2 = dynamic_ptr_cast<FFSVertexPtr>
+      AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a scalar diagram in FtoFFFDecayer::doinit()"
+	<< Exception::runerror;
       _sca[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin1) {
-      FFVVertexPtr vert1 = dynamic_ptr_cast<FFVVertexPtr>
+      AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.first);
-      FFVVertexPtr vert2 = dynamic_ptr_cast<FFVVertexPtr>
+      AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
 	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a vector diagram in FtoFFFDecayer::doinit()"
+	<< Exception::runerror;
       _vec[ix] = make_pair(vert1, vert2);
     }
     else if(offshell->iSpin() == PDT::Spin2) {
-      FFTVertexPtr vert1 = dynamic_ptr_cast<FFTVertexPtr>
+      AbstractFFTVertexPtr vert1 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.first);
-      FFTVertexPtr vert2 = dynamic_ptr_cast<FFTVertexPtr>
+      AbstractFFTVertexPtr vert2 = dynamic_ptr_cast<AbstractFFTVertexPtr>
 	(current.vertices.second);
+      if(!vert1||!vert2) throw Exception() 
+	<< "Invalid vertices for a tensor diagram in FtoFFFDecayer::doinit()"
+	<< Exception::runerror;
       _ten[ix] = make_pair(vert1, vert2);
     }
   }
@@ -109,15 +119,14 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
   bool ferm = inpart.id()>0; 
   const size_t ncf(numberOfFlows());
   vector<Complex> flows(ncf, Complex(0.)); 
-  static unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
+  static const unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   vector<DecayMatrixElement> mes(ncf,DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 							PDT::Spin1Half,PDT::Spin1Half));
-  vector<double> pflows(ncf,0.);
-  double me2(0.);
-  for(unsigned int s0 = 0; s0 < 2; ++s0) {
-    for(unsigned int s1 = 0; s1 < 2; ++s1) {
-      for(unsigned int s2 = 0; s2 < 2; ++s2) {
-	for(unsigned int s3 = 0; s3 < 2; ++s3) {
+  unsigned int ihel[4];
+  for(ihel[0] = 0; ihel[0] < 2; ++ihel[0]) {
+    for(ihel[1] = 0; ihel[1] < 2; ++ihel[1]) {
+      for(ihel[2] = 0; ihel[2] < 2; ++ihel[2]) {
+	for(ihel[3] = 0; ihel[3] < 2; ++ihel[3]) {
 	  flows = vector<Complex>(ncf, Complex(0.));
 	  int nchan=-1;
 	  unsigned int idiag=0;
@@ -127,8 +136,8 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    double sign = ferm ? 1. : -1;
 	    // outgoing wavefunction and NO sign
 	    if     (dit->channelType==TBDiagram::channel23) sign *= -1.;
-	    else if(dit->channelType==TBDiagram::channel13) sign *= -1.;
-	    else if(dit->channelType==TBDiagram::channel12) sign *=  1.;
+	    else if(dit->channelType==TBDiagram::channel13) sign *=  1.;
+	    else if(dit->channelType==TBDiagram::channel12) sign *= -1.;
 	    else throw Exception()
 	      << "Unknown diagram type in FtoFFFDecayer::me2()" << Exception::runerror;
 	    // wavefunctions
@@ -136,49 +145,52 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    SpinorBarWaveFunction w1,w2;
 	    // incoming wavefunction
 	    if(ferm) {
-	      w0 = inwave.first [s0];
-	      w1 = outwave[dit->channelType].second[s1];
+	      w0 = inwave.first [ihel[0]];
+	      w1 = outwave[dit->channelType].second[ihel[dit->channelType+1]];
 	    }
 	    else {
-	      w0 = outwave[dit->channelType].first [s1];
-	      w1 = inwave.second[s0];
+	      w0 = outwave[dit->channelType].first [ihel[dit->channelType+1]];
+	      w1 = inwave.second[ihel[0]];
 	    }
 	    if(decay[out2[dit->channelType]]->id()<0&&
 	       decay[out3[dit->channelType]]->id()>0) {
-	      w2 = outwave[out3[dit->channelType]].second[s3];
-	      w3 = outwave[out2[dit->channelType]].first [s2];
+	      w2 = outwave[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
+	      w3 = outwave[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
+	      sign *= -1.;
 	    }
 	    else {
-	      w2 = outwave[out2[dit->channelType]].second[s2];
-	      w3 = outwave[out3[dit->channelType]].first [s3];
+	      w2 = outwave[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
+	      w3 = outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
 	    // channels if selecting
 	    ++nchan;
 	    if(ichan>0&&ichan!=nchan) continue;
 	    tcPDPtr offshell = dit->intermediate;
-	    // intermediate scalar
 	    Complex diag;
-	    if     (offshell->iSpin() == PDT::Spin0) {
+	    // intermediate scalar
+	    if     (offshell->iSpin() == PDT::Spin0) { 
 	      ScalarWaveFunction inters = _sca[idiag].first->
-		evaluate(scale, 1, offshell, w0, w1);
+		evaluate(scale, widthOption(), offshell, w0, w1);
 	      diag = _sca[idiag].second->evaluate(scale,w3,w2,inters);
 	    }
 	    // intermediate vector
 	    else if(offshell->iSpin() == PDT::Spin1) {
 	      VectorWaveFunction interv = _vec[idiag].first->
-		evaluate(scale, 1, offshell, w0, w1);
-	      diag = _vec[idiag].second->evaluate(scale,w3,w2,interv);
+		evaluate(scale, widthOption(), offshell, w0, w1);
+	      diag = -_vec[idiag].second->evaluate(scale,w3,w2,interv);
 	    }
 	    // intermediate tensor
 	    else if(offshell->iSpin() == PDT::Spin2) {
 	      TensorWaveFunction intert = _ten[idiag].first->
-		evaluate(scale, 1, offshell, w0, w1);
+		evaluate(scale, widthOption(), offshell, w0, w1);
 	      diag = _ten[idiag].second->evaluate(scale,w3,w2,intert);
 	    }
 	    // unknown
 	    else throw Exception()
 	      << "Unknown intermediate in FtoFFFDecayer::me2()" 
 	      << Exception::runerror;
+	    // apply NO sign
+	    diag *= sign;
 	    // matrix element for the different colour flows
 	    for(unsigned iy = 0; iy < dit->colourFlow.size(); ++iy) {
 	      flows[dit->colourFlow[iy].first - 1] += 
@@ -188,14 +200,19 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	  }
 	  // now add the flows to the me2 with appropriate colour factors
 	  for(unsigned int ix = 0; ix < ncf; ++ix) {
-	    mes[ix](s0,s1,s2,s3) = cfactors[ix][ix]*flows[ix];
-	    pflows[ix] += cfactors[ix][ix]*norm(flows[ix]);
-	    for(unsigned int iy = 0; iy < ncf; ++iy) {
-	      me2 += cfactors[ix][iy]*(flows[ix]*conj(flows[iy])).real();
-	    }
+	    mes[ix](ihel[0],ihel[1],ihel[2],ihel[3]) = flows[ix];
 	  }
 	}
       }
+    }
+  }
+  vector<double> pflows(ncf,0.);
+  double me2(0.);
+  for(unsigned int ix = 0; ix < ncf; ++ix) {
+    for(unsigned int iy = 0; iy < ncf; ++ iy) {
+      double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rhoin)).real();
+      if(ix==iy) pflows[ix] += con;
+      me2 += con;
     }
   }
   // select the matrix element according to the colour flow
@@ -210,6 +227,8 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
       ptotal-=pflows[ix];
     }
   }
+  // make the colour connections
+  colourConnections(inpart, decay);
   // return the matrix element squared
   return me2;
 }
@@ -218,26 +237,8 @@ WidthCalculatorBasePtr FtoFFFDecayer::
 threeBodyMEIntegrator(const DecayMode & ) const {
   vector<int> intype;
   vector<Energy> inmass,inwidth;
-  vector<double> inpow;
-  int nchannel(0);
-  for(unsigned int ix=0;ix<getProcessInfo().size();++ix) {
-    if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel23) intype.push_back(3);
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) intype.push_back(2);
-    else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) intype.push_back(1);
-    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
-      inpow.push_back(0.);
-      inmass.push_back(getProcessInfo()[ix].intermediate->mass());
-      inwidth.push_back(getProcessInfo()[ix].intermediate->width());
-    }
-    else {
-      inpow.push_back(-2.);
-      inmass.push_back(-1.*GeV);
-      inwidth.push_back(-1.*GeV);
-    }
-    ++nchannel;
-  }
-  vector<double> inweights(nchannel,1./double(nchannel));
+  vector<double> inpow,inweights;
+  constructIntegratorChannels(intype,inmass,inwidth,inpow,inweights);
   return new_ptr(ThreeBodyAllOnCalculator<FtoFFFDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,0,
 		  outgoing()[0]->mass(),outgoing()[1]->mass(),outgoing()[2]->mass()));

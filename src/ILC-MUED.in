@@ -24,8 +24,8 @@ set MUED/Model:InverseRadius 300.*GeV
 set MUED/Model:LambdaR 20
 
 # --- Hard Process ----
-# The particle names can be found in 'BSMParticles.in'
-# by searching for the relevant PDG code and noting the text 
+# The particle name can be found in the relevant model file
+# by searching for its PDG code and noting the text 
 # '/Herwig/Particles/###' where the hashes denote the name
 
 # Switch to decide whether to include EW diagrams in the 

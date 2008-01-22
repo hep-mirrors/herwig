@@ -25,7 +25,6 @@
 
 using namespace Herwig;
 using ThePEG::Helicity::TensorWaveFunction;
-using ThePEG::Helicity::SSSVertex;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 using ThePEG::Helicity::SpinfoPtr;
@@ -39,22 +38,28 @@ void MEvv2ss::doinit() throw(InitException) {
   for(size_t i = 0; i < ndiags; ++i ) {
     HPDiagram dg = getProcessInfo()[i];
     if( !dg.intermediate ) {
-      theContact = dynamic_ptr_cast<VVSSVertexPtr>(dg.vertices.first);
+      theContact = dynamic_ptr_cast<AbstractVVSSVertexPtr>(dg.vertices.first);
     }
     else if(dg.channelType == HPDiagram::tChannel) {
-      VSSVertexPtr vss1 = dynamic_ptr_cast<VSSVertexPtr>(dg.vertices.first);
-      VSSVertexPtr vss2 = dynamic_ptr_cast<VSSVertexPtr>(dg.vertices.second);
+      AbstractVSSVertexPtr vss1 = 
+	dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.first);
+      AbstractVSSVertexPtr vss2 =
+	dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.second);
       theSca[i] = make_pair(vss1, vss2);
     }
     else {
       if( dg.intermediate->iSpin() == PDT::Spin1 ) {
-	VVVVertexPtr vvv = dynamic_ptr_cast<VVVVertexPtr>(dg.vertices.first);
-	VSSVertexPtr vss = dynamic_ptr_cast<VSSVertexPtr>(dg.vertices.second);
+	AbstractVVVVertexPtr vvv =
+	  dynamic_ptr_cast<AbstractVVVVertexPtr>(dg.vertices.first);
+	AbstractVSSVertexPtr vss =
+	  dynamic_ptr_cast<AbstractVSSVertexPtr>(dg.vertices.second);
 	theVec[i] = make_pair(vvv, vss);
       }
       else if( dg.intermediate->iSpin() == PDT::Spin2 ) {
-	VVTVertexPtr vvt = dynamic_ptr_cast<VVTVertexPtr>(dg.vertices.first);
-	SSTVertexPtr sst = dynamic_ptr_cast<SSTVertexPtr>(dg.vertices.second);
+	AbstractVVTVertexPtr vvt =
+	  dynamic_ptr_cast<AbstractVVTVertexPtr>(dg.vertices.first);
+	AbstractSSTVertexPtr sst = 
+	  dynamic_ptr_cast<AbstractSSTVertexPtr>(dg.vertices.second);
 	theTen[i] = make_pair(vvt, sst);
       }
     }

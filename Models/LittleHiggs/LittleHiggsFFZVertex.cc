@@ -13,11 +13,11 @@
 using namespace Herwig;
 
 void LittleHiggsFFZVertex::persistentOutput(PersistentOStream & os) const {
-  os << _model << _gl << _gr << _glH << _grH;
+  os << _gl << _gr << _glH << _grH;
 }
 
 void LittleHiggsFFZVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> _gl >> _gr >> _glH >> _grH;
+  is >> _gl >> _gr >> _glH >> _grH;
 }
 
 ClassDescription<LittleHiggsFFZVertex> LittleHiggsFFZVertex::initLittleHiggsFFZVertex;
@@ -68,22 +68,23 @@ LittleHiggsFFZVertex::LittleHiggsFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) 
 
 void LittleHiggsFFZVertex::doinit() throw(InitException) {
   FFVVertex::doinit();
-  _model = dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
-  if(!_model) 
+  cLittleHiggsModelPtr model = 
+    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  if(!model) 
     throw InitException() << "Must be using the LittleHiggsModel "
 			  << " in LittleHiggsFFZVertex::doinit()"
 			  << Exception::runerror;
-  double sw2(_model->sin2ThetaW());
+  double sw2(model->sin2ThetaW());
   double sw(sqrt(sw2)),cw(sqrt(1.-sw2));
   double pre =-0.5/sqrt(sw2*(1.-sw2));
-  double s (_model->sinTheta()     ),c (_model->cosTheta()     );
-  double sp(_model->sinThetaPrime()),cp(_model->cosThetaPrime());
+  double s (model->sinTheta()     ),c (model->cosTheta()     );
+  double sp(model->sinThetaPrime()),cp(model->cosThetaPrime());
   double sp2(sqr(sp)),cp2(sqr(cp));
   double xW(-0.5/cw*s*c*(sqr(c)-sqr(s)));
   double xB(-2.5/sw*sp*cp*(sqr(cp)-sqr(sp)));
   double yu  = -0.4, ye  =  0.6;
-  double vf(_model->vev()/_model->f());
-  double xL(sqr(_model->lambda1())/(sqr(_model->lambda1())+sqr(_model->lambda2())));
+  double vf(model->vev()/model->f());
+  double xL(sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2())));
   double vu  = pre*( 0.5-4./3.*sw2-sqr(vf)*(+0.5*cw*xW*c/s
 					    +sw*xB/sp/cp*(2.*yu+7./15.  -cp2/6.))); 
   double vd  = pre*(-0.5+2./3.*sw2-sqr(vf)*(-0.5*cw*xW*c/s
@@ -165,8 +166,7 @@ void LittleHiggsFFZVertex::doinit() throw(InitException) {
 void LittleHiggsFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _model->alphaEM(q2);
-    _couplast = -sqrt(4.0*Constants::pi*alpha);
+    _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);

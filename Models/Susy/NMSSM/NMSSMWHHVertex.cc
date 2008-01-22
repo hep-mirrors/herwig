@@ -58,9 +58,8 @@ void NMSSMWHHVertex::doinit() throw(InitException) {
   if(!model) 
     throw InitException() << "Must have the NMSSM Model in NMSSMFFHVertex::doinit()"
 			  << Exception::runerror;
-  _theSM = model;
   // sin theta_W
-  double sw2=_theSM->sin2ThetaW();
+  double sw2=model->sin2ThetaW();
   _sw = sqrt(sw2);
   _cw = sqrt(1.-sw2);
   // get the mixing matrices
@@ -84,11 +83,11 @@ void NMSSMWHHVertex::doinit() throw(InitException) {
 }
 
 void NMSSMWHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _sinb << _cosb << _sw << _cw << _mixS << _mixP << _theSM;
+  os << _sinb << _cosb << _sw << _cw << _mixS << _mixP;
 }
 
 void NMSSMWHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _sinb >> _cosb >> _sw >> _cw >> _mixS >> _mixP >> _theSM;
+  is >> _sinb >> _cosb >> _sw >> _cw >> _mixS >> _mixP;
 }
 
 ClassDescription<NMSSMWHHVertex> NMSSMWHHVertex::initNMSSMWHHVertex;
@@ -105,8 +104,7 @@ void NMSSMWHHVertex::Init() {
 void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   // em coupling
   if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    _couplast = sqrt(4.0*Constants::pi*alpha);
+    _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }
   // gauge bosons

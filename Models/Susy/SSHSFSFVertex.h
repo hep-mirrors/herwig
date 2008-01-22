@@ -157,11 +157,6 @@ private:
   //@}
 
 private:
-
-  /**
-   * A pointer to the MSSM object 
-   */
-  tMSSMPtr theMSSM;
   
   /**
    * A vector containing pointers to the mixing matrices, 0 = stop, 

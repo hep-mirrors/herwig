@@ -8,32 +8,59 @@
 # ???-NMSSM.in
 #
 ###################################################
-# Read the MSSM
+
+###################################################
+#
+# Read the MSSM.
+#
+##################################################
 read MSSM.model
 
-# The additional NMSSM particle content
+###################################################
+#
+# Create the additional particle content in the
+# NMSSM
+#
+##################################################
 cd /Herwig/Particles
-
 create ThePEG::ParticleData H30 
-setup H30 45 H30 300.0 8.428420 84.284160 0.0 0 0 1 0
+setup H30 45 H30 500.0 0.0 0.0 0.0 0 0 1 0
 defaultparticle H30 
 create ThePEG::ParticleData A20 
-setup A20 46 A20 300.0 4.920260 49.202560 0.0 0 0 1 0
+setup A20 46 A20 500.0 0.0 0.0 0.0 0 0 1 0
 defaultparticle A20
 create ThePEG::ParticleData ~chi_50
-setup ~chi_50 1000045 ~chi_50 500.0 1.0 10.0 0.0 0 0 2 0
+setup ~chi_50 1000045 ~chi_50 500.0 0.0 0.0 0.0 0 0 2 0
 defaultparticle ~chi_50 
-
-# Main directory and object 
+###################################################
+#
+# The main directory and model object
+#
+##################################################
 mkdir /Herwig/NewPhysics/NMSSM
 cd /Herwig/NewPhysics/NMSSM
-
 create Herwig::NMSSM Model HwNMSSM.so
 # SM couplings
 set Model:QCD/RunningAlphaS /Herwig/AlphaS
 set Model:EW/RunningAlphaEM /Herwig/AlphaEM
 set Model:EW/CKM /Herwig/CKM
 set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+# Vertices
+#
+##################################################
+# Create additional NMSSM vertices
+mkdir /Herwig/Vertices/NMSSM
+cd /Herwig/Vertices/NMSSM
+create Herwig::NMSSMFFHVertex NMSSM_FFH     
+create Herwig::NMSSMGOGOHVertex NMSSM_GOGOH 
+create Herwig::NMSSMHSFSFVertex NMSSM_HSS     
+create Herwig::NMSSMWHHVertex NMSSM_WHH     
+create Herwig::NMSSMWWHVertex NMSSM_WWH     
+create Herwig::NMSSMHHHVertex NMSSM_HHH
+create Herwig::NMSSMGGHVertex NMSSM_GGH
+cd /Herwig/NewPhysics/NMSSM
 # SM vertices
 set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
 set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
@@ -48,36 +75,43 @@ set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # MSSM feynman rules
-set Model:Vertex/WSFSF /Herwig/Vertices/BSM/MSSM_WSS
-set Model:Vertex/NFSF /Herwig/Vertices/BSM/MSSM_NFS
-set Model:Vertex/GFSF /Herwig/Vertices/BSM/MSSM_GFS
-set Model:Vertex/HSFSF /Herwig/Vertices/BSM/MSSM_HSS
-set Model:Vertex/CFSF /Herwig/Vertices/BSM/MSSM_CFS
-set Model:Vertex/GSFSF /Herwig/Vertices/BSM/MSSM_GSS
-set Model:Vertex/GGSQSQ /Herwig/Vertices/BSM/MSSM_GGSS
-set Model:Vertex/GSGSG /Herwig/Vertices/BSM/MSSM_GGOGO
-set Model:Vertex/NNZ /Herwig/Vertices/BSM/MSSM_NNZ
-set Model:Vertex/CCZ /Herwig/Vertices/BSM/MSSM_CCZ
-set Model:Vertex/CNW /Herwig/Vertices/BSM/MSSM_CNW
-set Model:Vertex/SSFFH /Herwig/Vertices/BSM/MSSM_FFH
-set Model:Vertex/GOGOH /Herwig/Vertices/BSM/MSSM_GOGOH
-set Model:Vertex/SSWWH /Herwig/Vertices/BSM/MSSM_WWH
-set Model:Vertex/SSWHH /Herwig/Vertices/BSM/MSSM_WHH
-set Model:Vertex/HHH /Herwig/Vertices/BSM/MSSM_HHH
-set Model:Vertex/SSHGG /Herwig/Vertices/BSM/MSSM_HGG
+set Model:Vertex/WSFSF /Herwig/Vertices/MSSM/MSSM_WSS
+set Model:Vertex/NFSF /Herwig/Vertices/MSSM/MSSM_NFS
+set Model:Vertex/GFSF /Herwig/Vertices/MSSM/MSSM_GFS
+set Model:Vertex/HSFSF /Herwig/Vertices/MSSM/MSSM_HSS
+set Model:Vertex/CFSF /Herwig/Vertices/MSSM/MSSM_CFS
+set Model:Vertex/GSFSF /Herwig/Vertices/MSSM/MSSM_GSS
+set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
+set Model:Vertex/GSGSG /Herwig/Vertices/MSSM/MSSM_GGOGO
+set Model:Vertex/NNZ /Herwig/Vertices/MSSM/MSSM_NNZ
+set Model:Vertex/CCZ /Herwig/Vertices/MSSM/MSSM_CCZ
+set Model:Vertex/CNW /Herwig/Vertices/MSSM/MSSM_CNW
+set Model:Vertex/SSFFH /Herwig/Vertices/MSSM/MSSM_FFH
+set Model:Vertex/GOGOH /Herwig/Vertices/MSSM/MSSM_GOGOH
+set Model:Vertex/SSWWH /Herwig/Vertices/MSSM/MSSM_WWH
+set Model:Vertex/SSWHH /Herwig/Vertices/MSSM/MSSM_WHH
+set Model:Vertex/HHH /Herwig/Vertices/MSSM/MSSM_HHH
+set Model:Vertex/SSHGG /Herwig/Vertices/MSSM/MSSM_HGG
 # NMSSM feynman rules
-set Model:Vertex/NMSSMFFH /Herwig/Vertices/BSM/NMSSM_FFH
-set Model:Vertex/NMSSMGOGOH /Herwig/Vertices/BSM/NMSSM_GOGOH
-set Model:Vertex/NMSSMHSS /Herwig/Vertices/BSM/NMSSM_HSS
-set Model:Vertex/NMSSMWHH /Herwig/Vertices/BSM/NMSSM_WHH
-set Model:Vertex/NMSSMWWH /Herwig/Vertices/BSM/NMSSM_WWH
-set Model:Vertex/NMSSMHHH /Herwig/Vertices/BSM/NMSSM_HHH
-
+set Model:Vertex/NMSSMFFH /Herwig/Vertices/NMSSM/NMSSM_FFH
+set Model:Vertex/NMSSMGOGOH /Herwig/Vertices/NMSSM/NMSSM_GOGOH
+set Model:Vertex/NMSSMHSS /Herwig/Vertices/NMSSM/NMSSM_HSS
+set Model:Vertex/NMSSMWHH /Herwig/Vertices/NMSSM/NMSSM_WHH
+set Model:Vertex/NMSSMWWH /Herwig/Vertices/NMSSM/NMSSM_WWH
+set Model:Vertex/NMSSMHHH /Herwig/Vertices/NMSSM/NMSSM_HHH
+set Model:Vertex/NMSSMGGH /Herwig/Vertices/NMSSM/NMSSM_GGH
+###################################################
+#
+#  Generate processes and decays in the NMSSM
+#
+###################################################
 cd /Herwig/NewPhysics
-# Set up the bsm framework
 set NMSSM/Model:ModelGenerator NewModel
-
+###################################################
+#
+#  Choose NMSSM over SM
+#
+###################################################
 cd /Herwig/Generators
-# Choose NMSSM over SM
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/NMSSM/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/NMSSM/Model

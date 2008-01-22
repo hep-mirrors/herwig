@@ -46,15 +46,11 @@ SSGFSVertex::SSGFSVertex() :_q2last(0.*sqr(MeV)),_couplast(0.),
 }
 
 void SSGFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _stop << _sbottom;
+  os << _stop << _sbottom;
 }
 
 void SSGFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _stop >> _sbottom;
-  _couplast = 0.;
-  _q2last = 0.*sqr(MeV);
-  _id1last = 0;
-  _id2last = 0;
+  is >> _stop >> _sbottom;
 }
 
 ClassDescription<SSGFSVertex> SSGFSVertex::initSSGFSVertex;
@@ -101,20 +97,13 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       isc = abs(part1->id());
     }
   }
-  else {
-    throw HelicityConsistencyError()
-      << "SSGFSVertex::setCoupling() - There is no gluino in this vertex!"
-      << part1->id() << " " << part2->id() << " " << part3->id()
-      << Exception::warning;
-    setNorm(0.);
-    setLeft(0.);
-    setRight(0.);
-    return;
-  }    
+  else throw HelicityConsistencyError()
+    << "SSGFSVertex::setCoupling() - There is no gluino in this vertex!"
+    << part1->id() << " " << part2->id() << " " << part3->id()
+    << Exception::runerror;
   if(iferm >=1 && iferm <=6) {
     if(q2 != _q2last) {
-      double alphaStr = _theSS->alphaS(q2);
-      _couplast = -2.*sqrt(2.*Constants::pi*alphaStr);
+      _couplast = -strongCoupling(q2)*sqrt(2.);
       _q2last = q2;
     }
     if(iferm != _id1last || isc != _id2last) { 

@@ -116,17 +116,6 @@ private:
   UEDW0A1H1Vertex & operator=(const UEDW0A1H1Vertex &);
 
 private:
-  
-  /**
-   * A pointer to the UEDBase object.
-   */
-  tUEDBasePtr theUEDBase;
-  
-  
-  /**
-   * The value of \f$ \sin\theta_W \f$. 
-   */
-  double theSinThetaW;
 
   /**
    * The mass-squared of the \f$W\f$ boson. 

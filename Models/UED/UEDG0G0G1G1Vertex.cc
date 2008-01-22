@@ -19,17 +19,7 @@
 
 using namespace Herwig;
 
-void UEDG0G0G1G1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
-}
-
-void UEDG0G0G1G1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-}
-
-ClassDescription<UEDG0G0G1G1Vertex> UEDG0G0G1G1Vertex::initUEDG0G0G1G1Vertex;
+NoPIOClassDescription<UEDG0G0G1G1Vertex> UEDG0G0G1G1Vertex::initUEDG0G0G1G1Vertex;
 // Definition of the static class description member.
 
 void UEDG0G0G1G1Vertex::Init() {
@@ -53,7 +43,7 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   if(ismg == 2 && ikkg == 2) { 
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = 4.*Constants::pi*theUEDBase->alphaS(q2);
+      theCoupLast = sqr(strongCoupling(q2));
     }
     setNorm(theCoupLast);
     setType(1); setOrder(0,1,2,3);

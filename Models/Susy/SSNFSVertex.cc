@@ -97,7 +97,7 @@ void SSNFSVertex::doinit() throw(InitException) {
   _sw = sqrt(_theSS->sin2ThetaW());
   _mw = getParticleData(24)->mass();
   double tb = _theSS->tanBeta();
-  _cw = sqrt(1. - _sw*_sw);
+  _cw = sqrt(1. - sqr(_sw));
   _sb = tb/sqrt(1 + sqr(tb));
   _cb = sqrt(1 - sqr(_sb));
   orderInGem(1);
@@ -125,7 +125,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     smfermion = part2;
   }
   
-  double gew = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw;
+  double gew = weakCoupling(q2);
   setNorm(-sqrt(2)*gew);
   if( ineut != _id1last || ism != _id2last || isc != _id3last ) {
     _id1last = ineut;

@@ -31,15 +31,10 @@ class SMWWWWVertex: public VVVVVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMWWWWVertex();
-  //@}  
-
-public:
+  SMWWWWVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -99,7 +94,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
   
 private:
@@ -113,11 +108,6 @@ private:
    * Private and non-existent assignment operator.
    */
   SMWWWWVertex & operator=(const SMWWWWVertex &);
-
-  /**
-   * Pointer to the SM object.
-   */
-  tcSMPtr _theSM;
 
   /**
    *  Intermediate particles

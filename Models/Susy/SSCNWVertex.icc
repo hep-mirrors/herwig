@@ -20,23 +20,4 @@ inline IBPtr SSCNWVertex::clone() const {
 inline IBPtr SSCNWVertex::fullclone() const {
   return new_ptr(*this);
 }
-
-inline void SSCNWVertex::doinit() throw(InitException) {
-  FFVVertex::doinit();
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
-  if(!_theSS)
-    throw InitException() << "SSCNWVertex::doinit() - The model pointer is null!"
-			  << Exception::abortnow;
-  _sw = sqrt(_theSS->sin2ThetaW());
-  
-  _theN = _theSS->neutralinoMix();
-  _theU = _theSS->charginoUMix();
-  _theV = _theSS->charginoVMix();
-
-  if(!_theN || !_theU || ! _theV)
-    throw InitException() << "SSCNWVertex::doinit() - "
-			  << "A mixing matrix pointer is null."
-			  << " N: " << _theN << " U: " << _theU << " V: "
-			  << _theV << Exception::abortnow;
-}
 }

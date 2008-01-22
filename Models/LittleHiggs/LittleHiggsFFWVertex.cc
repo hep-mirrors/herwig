@@ -13,7 +13,7 @@
 
 using namespace Herwig;
 
-inline LittleHiggsFFWVertex::LittleHiggsFFWVertex() 
+LittleHiggsFFWVertex::LittleHiggsFFWVertex() 
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.), _q2last(0.*GeV2),
     _corrL(0.),_corrH(0.),_tcorrL(0.),_tcorrH(0.),_tHcorrL(0.), _tHcorrH(0.) {
   // particles for the vertex
@@ -77,13 +77,11 @@ inline LittleHiggsFFWVertex::LittleHiggsFFWVertex()
 }
 
 void LittleHiggsFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _model << _ckm << _corrL << _corrH << _tcorrL << _tcorrH 
-     << _tHcorrL << _tHcorrH;
+  os << _ckm << _corrL << _corrH << _tcorrL << _tcorrH << _tHcorrL << _tHcorrH;
 }
 
 void LittleHiggsFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> _ckm >> _corrL >> _corrH >> _tcorrL >> _tcorrH 
-     >> _tHcorrL >> _tHcorrH;
+  is >> _ckm >> _corrL >> _corrH >> _tcorrL >> _tcorrH >> _tHcorrL >> _tHcorrH;
 }
 
 ClassDescription<LittleHiggsFFWVertex> LittleHiggsFFWVertex::initLittleHiggsFFWVertex;
@@ -100,8 +98,9 @@ void LittleHiggsFFWVertex::Init() {
   
 void LittleHiggsFFWVertex::doinit() throw(InitException) {
   ThePEG::Helicity::FFVVertex::doinit();
-  _model = dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
-  if(!_model) 
+  cLittleHiggsModelPtr model = 
+    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  if(!model) 
     throw InitException() << "Must be using the LittleHiggsModel "
 			  << " in LittleHiggsFFWVertex::doinit()"
 			  << Exception::runerror;
@@ -113,17 +112,17 @@ void LittleHiggsFFWVertex::doinit() throw(InitException) {
     throw InitException() << "Must have access to the Herwig::StandardCKM object"
 			  << "for the CKM matrix in LittleHiggsFFWVertex::doinit()"
 			  << Exception::runerror;
-  _ckm = hwCKM->getUnsquaredMatrix(_model->families());
+  _ckm = hwCKM->getUnsquaredMatrix(model->families());
   // compute the correction factors
-  double s2(sqr(_model->sinTheta())),c2(sqr(_model->cosTheta()));
-  double vf(_model->vev()/_model->f());
-  double xL = sqr(_model->lambda1())/(sqr(_model->lambda1())+sqr(_model->lambda2()));
+  double s2(sqr(model->sinTheta())),c2(sqr(model->cosTheta()));
+  double vf(model->vev()/model->f());
+  double xL = sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2()));
   _corrL   =  1.-0.5*sqr(vf)*c2*(c2-s2);
-  _corrH   = -_model->cosTheta()/_model->sinTheta();
+  _corrH   = -model->cosTheta()/model->sinTheta();
   _tcorrL  =  1.-0.5*sqr(vf)*(c2*(c2-s2)+sqr(xL));
-  _tcorrH  = -_model->cosTheta()/_model->sinTheta();
+  _tcorrH  = -model->cosTheta()/model->sinTheta();
   _tHcorrL =  vf*xL;
-  _tHcorrH = -vf*xL*_model->cosTheta()/_model->sinTheta();
+  _tHcorrH = -vf*xL*model->cosTheta()/model->sinTheta();
   // order of vertex in couplings
   orderInGem(1);
   orderInGs(0);
@@ -133,9 +132,7 @@ void LittleHiggsFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
 				       tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _model->alphaEM(q2);
-    double sw    = sqrt(2.*(_model->sin2ThetaW()));
-    _couplast    = sqrt(4.0*Constants::pi*alpha)/sw;
+    _couplast    = sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);

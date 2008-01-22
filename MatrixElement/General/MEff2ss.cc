@@ -29,6 +29,38 @@ using ThePEG::Helicity::TensorWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
+void MEff2ss::doinit() throw(InitException) {
+  GeneralHardME::doinit();
+  HPCount ndiags(numberOfDiags());
+  theFerm.resize(ndiags);
+  theVec.resize(ndiags);
+  theTen.resize(ndiags);
+  for(HPCount i = 0; i < ndiags; ++i) {
+    HPDiagram current = getProcessInfo()[i];
+    if(current.channelType == HPDiagram::tChannel) {
+      if(current.intermediate->iSpin() == PDT::Spin1Half)
+	theFerm[i] = 
+	  make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.second));
+    }
+    else if(current.channelType == HPDiagram::sChannel) {
+      if(current.intermediate->iSpin() == PDT::Spin1)
+	theVec[i] = 
+	  make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractVSSVertexPtr>(current.vertices.second));
+
+      if(current.intermediate->iSpin() == PDT::Spin2)
+	theTen[i] = 
+	  make_pair(dynamic_ptr_cast<AbstractFFTVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractSSTVertexPtr>(current.vertices.second));
+    }
+    else 
+      throw InitException() << "MEFF2ss:doinit() - Cannot find correct "
+			    << "channel from diagram. Vertex not cast! "
+			    << Exception::runerror;
+  }
+}
+
 double MEff2ss::me2() const {
   //first setup  wavefunctions for external particles
   SpinorVector sp(2);

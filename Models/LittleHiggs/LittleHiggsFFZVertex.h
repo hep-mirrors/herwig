@@ -105,11 +105,6 @@ private:
 private:
 
   /**
-   * Pointer to the Standard Model object. 
-   */
-  cLittleHiggsModelPtr _model;
-
-  /**
    * Storage of the couplings.
    */
   //@{

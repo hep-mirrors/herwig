@@ -44,22 +44,6 @@ public:
 
 public:
   
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-  
   /**
    * Standard Init function used to initialize the interfaces.
    */
@@ -99,7 +83,7 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<SMFFGVertex> initSMFFGVertex;
+  static NoPIOClassDescription<SMFFGVertex> initSMFFGVertex;
   
   /**
    * Private and non-existent assignment operator.
@@ -107,11 +91,6 @@ private:
   SMFFGVertex & operator=(const SMFFGVertex &);
   
 private:
-
-  /**
-   * Pointer to the Standard Model object.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.

@@ -202,6 +202,11 @@ private:
    */
   bool _removeOnShell;
 
+  /**
+   *  How to treat the widths of the intermediate particles
+   */
+  unsigned int _widthopt;
+
 };
 
 }

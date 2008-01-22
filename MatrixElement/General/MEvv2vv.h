@@ -14,21 +14,16 @@
 
 #include "GeneralHardME.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
 #include "ProductionMatrixElement.h"
 #include "MEvv2vv.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::VectorWaveFunction;
-using ThePEG::Helicity::VVSVertexPtr;
-using ThePEG::Helicity::VVVVertexPtr;
-using ThePEG::Helicity::VVTVertexPtr;
-using ThePEG::Helicity::VVVVVertexPtr;
-
 
 /**
  * This is the implementation of the matrix element for 
@@ -164,7 +159,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -186,22 +181,22 @@ private:
   /**
    * Store the dynamically casted VVSVertex pointers
    */
-  vector<pair<VVSVertexPtr, VVSVertexPtr> > theScaV;
+  vector<pair<AbstractVVSVertexPtr, AbstractVVSVertexPtr> > theScaV;
 
   /**
    * Store the dynamically casted VVVVertex pointers
    */
-  vector<pair<VVVVertexPtr, VVVVertexPtr> > theVecV;
+  vector<pair<AbstractVVVVertexPtr, AbstractVVVVertexPtr> > theVecV;
 
   /**
    * Store the dynamically casted VVTVertex pointers
    */
-  vector<pair<VVTVertexPtr, VVTVertexPtr> > theTenV;
+  vector<pair<AbstractVVTVertexPtr, AbstractVVTVertexPtr> > theTenV;
 
   /**
    * Store the dynamically casted VVVVVertex pointer
    */
-  VVVVVertexPtr theFPVertex;
+  AbstractVVVVVertexPtr theFPVertex;
   
 };
 

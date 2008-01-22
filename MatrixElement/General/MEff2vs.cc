@@ -34,23 +34,23 @@ void MEff2vs::doinit() throw(InitException) {
     if( current.channelType == HPDiagram::sChannel ) {
       if( current.intermediate->iSpin() == PDT::Spin0 )
 	theSca[i] = 
-	  make_pair(dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first), 
-		    dynamic_ptr_cast<VSSVertexPtr>(current.vertices.second));
+	  make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractVSSVertexPtr>(current.vertices.second));
       else if( current.intermediate->iSpin() == PDT::Spin1 )
 	theVec[i] = 
-	  make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first), 
-		    dynamic_ptr_cast<VVSVertexPtr>(current.vertices.second));
+	  make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first), 
+		    dynamic_ptr_cast<AbstractVVSVertexPtr>(current.vertices.second));
     }
     else if( current.channelType == HPDiagram::tChannel ) {
       if(current.intermediate->iSpin() == PDT::Spin1Half) {
 	if( current.ordered.second ) 
 	  theFerm[i] = 
-	    make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.first), 
-		      dynamic_ptr_cast<FFSVertexPtr>(current.vertices.second));
+	    make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first), 
+		      dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.second));
 	else
 	  theFerm[i] = 
-	    make_pair(dynamic_ptr_cast<FFVVertexPtr>(current.vertices.second), 
-		      dynamic_ptr_cast<FFSVertexPtr>(current.vertices.first));
+	    make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.second), 
+		      dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first));
       }
     }
   }

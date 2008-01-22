@@ -184,6 +184,7 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
 pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
   throw(Veto, Stop, Exception) {
   using Constants::pi;
+  using Constants::twopi;
   // To decay the cluster into two hadrons one must distinguish between
   // constituent quarks (or diquarks) that originate from perturbative
   // processes (hard process or parton shower) from those that are generated
@@ -286,8 +287,8 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   }
 
   Lorentz5Momentum pClu = ptr->momentum();
-  Axis uSmear_v3;
   bool secondHad = false;
+  Axis uSmear_v3;
   if ( priorityHad1  ||  priorityHad2 ) { 
 
     double cluSmear;
@@ -315,21 +316,27 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     // (always in the same parent cluster frame).
 
     pQ.boost( -pClu.boostVector() );    // boost from Lab to Cluster frame 
-    Axis u_v3 = unitVector(pQ.vect()); 
-    uSmear_v3 = u_v3;
-    if ( cluSmear > 0.001 ) {           // skip if cluSmear is too small
-      double cosThetaQ = pQ.cosTheta();    
-      double sinThetaQ = sqrt( 1.0 - cosThetaQ*cosThetaQ );
+    uSmear_v3 = pQ.vect().unit();
+    // skip if cluSmear is too small
+    if ( cluSmear > 0.001 ) {
+      // generate the smearing angle    
       double cosSmear;
-      do {
-	cosSmear = 1.0 + cluSmear*log( UseRandom::rnd() );            
-      } while ( cosSmear < -1.0 );
-      double sinSmear = sqrt( 1.0 - cosSmear*cosSmear );
-      // Determine now the theta angle of the smeared direction 
-      // w.r.t. to the usual x-y-z axes (rather than w.r.t. u_v3)
-      double cosTheta = cosThetaQ*cosSmear - sinThetaQ*sinSmear;
-      uSmear_v3.setTheta( acos( cosTheta ) );
-      uSmear_v3.rotate( UseRandom::rnd( -pi , pi ) , u_v3 );  // smear in phi around u_v3
+      do cosSmear = 1.0 + cluSmear*log( UseRandom::rnd() );
+      while ( cosSmear < -1.0 );
+      double sinSmear = sqrt( 1.0 - sqr(cosSmear) );
+      // calculate rotation to z axis
+      LorentzRotation rot;
+      double sinth(sqrt(1.-sqr(uSmear_v3.z())));
+      rot.setRotate(-acos(uSmear_v3.z()),
+		    Axis(-uSmear_v3.y()/sinth,uSmear_v3.x()/sinth,0.));
+      // + random azimuthal rotation
+      rot.rotateZ(UseRandom::rnd()*twopi);
+      // set direction in rotated frame
+      Lorentz5Vector<double> ltemp(0.,sinSmear,cosSmear,0.);
+      // rotate back
+      rot.invert();
+      ltemp *= rot;
+      uSmear_v3 = ltemp.vect();
     }
   } 
   else {

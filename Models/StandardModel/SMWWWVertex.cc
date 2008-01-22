@@ -19,11 +19,11 @@
 using namespace Herwig;
 
 void SMWWWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << _zfact; 
+  os << _zfact; 
 }
 
 void SMWWWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> _zfact;
+  is >> _zfact;
 }
 
 ClassDescription<SMWWWVertex>
@@ -44,7 +44,7 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   int idc=c->id();
   // first the overall normalisation
   if(q2!=_q2last) {
-    _couplast = sqrt(4.0*Constants::pi*_theSM->alphaEM(q2));
+    _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }
   // W- W+ photon and cylic perms
@@ -69,7 +69,7 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
       << Exception::runerror;
 }
 
-SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.),_q2last(0.*GeV2) {
+SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.), _q2last(0.*GeV2) {
   // particles
   vector<int> first,second,third;
   first.push_back(24);
@@ -86,6 +86,6 @@ void SMWWWVertex::doinit() throw(InitException) {
   orderInGs(0);
   VVVVertex::doinit();
   // factor for the Z vertex
-  _theSM = generator()->standardModel();
-  _zfact = sqrt((1.-_theSM->sin2ThetaW())/_theSM->sin2ThetaW());
+  double sw2=generator()->standardModel()->sin2ThetaW();
+  _zfact = sqrt((1.-sw2)/sw2);
 }

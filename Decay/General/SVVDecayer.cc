@@ -103,7 +103,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
 			     Axis(0.,0.,1.),out1,out2);
     _generalVertex->calculateKinematics(in,out1,out2);
     Energy2 scale(sqr(inpart.second));
-    _generalVertex->setCoupling(scale, inpart.first,outa.first, outb.first);
+    _generalVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
     //get loop coefficients
     Complex a00(_generalVertex->a00());Complex a11(_generalVertex->a11());
     Complex a12(_generalVertex->a12());Complex a21(_generalVertex->a21());

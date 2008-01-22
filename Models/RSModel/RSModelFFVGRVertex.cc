@@ -17,16 +17,53 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
+RSModelFFVGRVertex::RSModelFFVGRVertex() 
+  : _charge(17,0.), _couplast(2,0.), _q2last(2,0.*GeV2) {
+  vector<int> first,second,third,fourth;
+  for(unsigned int ix=1;ix<7;++ix) {
+    first.push_back(-ix);
+    second.push_back(ix);
+    third.push_back(22);
+    fourth.push_back(39);
+  }
+  for(unsigned int ix=11;ix<17;++ix) {
+    first.push_back(-ix);
+    second.push_back(ix);
+    third.push_back(22);
+    fourth.push_back(39);
+  }
+  for(unsigned int ix=1;ix<7;++ix) {
+    first.push_back(-ix);
+    second.push_back(ix);
+    third.push_back(21);
+    fourth.push_back(39);
+  }
+  setList(first,second,third,fourth);
+  _theKappa=InvEnergy();
+}
+
+void RSModelFFVGRVertex::doinit() throw(InitException) {
+  orderInGem(1);
+  FFVTVertex::doinit();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
+  for(int ix=1;ix<4;++ix) {
+    _charge[2*ix-1]  = (generator()->standardModel()->ed());
+    _charge[2*ix ]   = (generator()->standardModel()->eu());
+    _charge[2*ix+9 ] = (generator()->standardModel()->ee());
+    _charge[2*ix+10] = (generator()->standardModel()->enu());
+  }
+  if(hwRS) _theKappa=2./hwRS->lambda_pi();
+}
+
 void RSModelFFVGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _charge <<  _theModel << ounit(_theKappa,InvGeV);
+  os << _charge << ounit(_theKappa,InvGeV);
 }
 
 void RSModelFFVGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _charge >> _theModel >> iunit(_theKappa,InvGeV);
-  for(int ix=0;ix<2;++ix){_couplast[ix]=0.;_q2last[ix]=0.*GeV2;}
+  is >> _charge >> iunit(_theKappa,InvGeV);
 }
 
 ClassDescription<RSModelFFVGRVertex> RSModelFFVGRVertex::initRSModelFFVGRVertex;
@@ -40,57 +77,39 @@ void RSModelFFVGRVertex::Init() {
 }
 // FFVGR coupling
 void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
-    				 tcPDPtr c, tcPDPtr)
-{
+    				 tcPDPtr c, tcPDPtr) {
   // work out the particles
   int iferm=abs(a->id());
   int ibos =c->id();
   Complex norm;
   // overall factor
   // photon
-  if(ibos==22)
-    {
-      // alpha
-      if(_q2last[0]!=q2)
-        {
-          double alpha = _theModel->alphaEM(q2);
-          _couplast[0] = sqrt(4.0*Constants::pi*alpha);
-          _q2last[0]=q2;
-        }
-      norm = UnitRemoval::E * _theKappa*_couplast[0];
-      // _charge of particle
-      if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16))
-        {norm = norm*_charge[iferm];}
-      else
-        {
-	  throw HelicityConsistencyError() << "RSModelFFVGRVertex::setCoupling " 
-					   << "Unknown particle in FFVGR vertex" 
-					   << Exception::warning;
-	  setNorm(0.);
-	  return;
-	}
+  if(ibos==22) {
+    // alpha
+    if(_q2last[0]!=q2) {
+      _couplast[0] = electroMagneticCoupling(q2);
+      _q2last[0]=q2;
     }
+    norm = UnitRemoval::E * _theKappa*_couplast[0];
+    // _charge of particle
+    if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16))
+      {norm = norm*_charge[iferm];}
+    else throw HelicityConsistencyError() << "RSModelFFVGRVertex::setCoupling " 
+					  << "Unknown particle in FFVGR vertex" 
+					  << Exception::runerror;
+  }
   // gluon
-  else if (ibos==21||ibos==9)
-    {
-      if(_q2last[1]!=q2)
-        {
-          double alphas= _theModel->alphaS(q2);
-          _couplast[1] = sqrt(4.0*Constants::pi*alphas);
-          _q2last[1]=q2;
-        }
-      norm = UnitRemoval::E * _theKappa*_couplast[1];
+  else if (ibos==21||ibos==9) {
+    if(_q2last[1]!=q2) {
+      _couplast[1] = strongCoupling(q2);
+      _q2last[1]=q2;
     }
-  else
-    {
-      throw HelicityConsistencyError() << "RSModelFFVGRVertex::setCoupling " 
-				       << "Unknown boson in FFVGR vertex" 
-				       << Exception::warning;
-      setNorm(0.);
-      return;
-    }
+    norm = UnitRemoval::E * _theKappa*_couplast[1];
+  }
+  else throw HelicityConsistencyError() << "RSModelFFVGRVertex::setCoupling " 
+					<< "Unknown boson in FFVGR vertex" 
+					<< Exception::runerror;
   // set the coupling
   setNorm(norm);
-}
 }
 

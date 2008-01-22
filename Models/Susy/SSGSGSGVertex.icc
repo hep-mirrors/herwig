@@ -13,7 +13,7 @@
 
 namespace Herwig {
 
-inline SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last() {
+inline SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(0.*GeV2) {
   vector<int> first(1,1000021), third(1, 21);
   setList(first, first, third);
 }
@@ -27,11 +27,6 @@ inline IBPtr SSGSGSGVertex::fullclone() const {
 }
 
 inline void SSGSGSGVertex::doinit() throw(InitException) {
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
-  if(!_theSS)
-    throw InitException() << "SSGSGSGVertex::doinit() - "
-			  << "The model pointer is null."
-			  << Exception::abortnow;
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

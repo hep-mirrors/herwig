@@ -16,15 +16,47 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
+RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2,0.0), _q2last(2,0.*GeV2) {
+  vector<int> first,second,third,fourth;
+  first.push_back(24);
+  second.push_back(-24);
+  third.push_back(22);
+  fourth.push_back(39);
+  first.push_back(24);
+  second.push_back(-24);
+  third.push_back(23);
+  fourth.push_back(39);
+  first.push_back(21);
+  second.push_back(21);
+  third.push_back(21);
+  fourth.push_back(39);
+  setList(first,second,third,fourth);
+  _theKappa=InvEnergy();
+  _couplast[0]=0.;
+  _couplast[1]=0.;
+ _q2last[0]=0.*GeV2;
+ _q2last[1]=0.*GeV2;
+ _zfact=0.;
+}
+
+void RSModelVVVGRVertex::doinit() throw(InitException) {
+  VVVTVertex::doinit();
+  _zfact = sqrt((1.-generator()->standardModel()->sin2ThetaW())/
+		generator()->standardModel()->sin2ThetaW());
+  // set the graviton coupling 
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+  else{throw InitException();}
+}
+
 void RSModelVVVGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << ounit(_theKappa,InvGeV) << _zfact;
+  os << ounit(_theKappa,InvGeV) << _zfact;
 }
 void RSModelVVVGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> iunit(_theKappa,InvGeV) >> _zfact;
-  for(int ix=0;ix<2;++ix){_couplast[ix]=0.;_q2last[ix]=0.*GeV2;}
+  is >> iunit(_theKappa,InvGeV) >> _zfact;
 }
 
 ClassDescription<RSModelVVVGRVertex> RSModelVVVGRVertex::initRSModelVVVGRVertex;
@@ -40,58 +72,45 @@ void RSModelVVVGRVertex::Init() {
 
 // couplings for the VVVGR vertex
 void RSModelVVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-    				 tcPDPtr c, tcPDPtr)
-{
+    				 tcPDPtr c, tcPDPtr) {
   int ida=a->id();
   int idb=b->id();
   int idc=c->id();
   // first the overall normalisation
-  if(ida==21 && idb==21 && idc==21)
-    {
-  if(q2!=_q2last[1])
-    {
-      double alphaS = _theModel->alphaS(q2);
-      _couplast[1] = sqrt(4.0*Constants::pi*alphaS);
+  if(ida==21 && idb==21 && idc==21) {
+    if(q2!=_q2last[1]) {
+      _couplast[1] = strongCoupling(q2);
       _q2last[1]=q2;
     }
-  setNorm(Complex(_couplast[1]*_theKappa*UnitRemoval::E));
+    setNorm(Complex(_couplast[1]*_theKappa*UnitRemoval::E));
+  }
+  else {
+    if(q2!=_q2last[0]) {
+      _couplast[0] = electroMagneticCoupling(q2);
+      _q2last[0]=q2;
     }
-  else
-    {
-      if(q2!=_q2last[0])
-        {
-          double alpha = _theModel->alphaEM(q2);
-          _couplast[0] = sqrt(4.0*Constants::pi*alpha);
-          _q2last[0]=q2;
-        }
       // W- W+ photon and cylic perms
-      if((ida==-24 && idb== 24 && idc== 22) ||
-         (ida== 22 && idb==-24 && idc== 24) || 
-         (ida== 24 && idb== 22 && idc==-24) )
-        {setNorm(Complex(_couplast[0]*_theKappa*UnitRemoval::E));}
-      // W+ W- photon (anticylic perms of above)
-  else if((ida== 24 && idb==-24 && idc== 22) ||
-          (ida== 22 && idb== 24 && idc==-24) || 
-          (ida==-24 && idb== 22 && idc== 24) )
-    {setNorm(-Complex(_couplast[0]*_theKappa*UnitRemoval::E));}
-      // W- W+ Z and cylic perms
-      else if((ida==-24 && idb== 24 && idc== 23) ||
-    	  (ida== 23 && idb==-24 && idc== 24) || 
-    	  (ida== 24 && idb== 23 && idc==-24) )
-        {setNorm(Complex(_couplast[0]*_zfact*_theKappa*UnitRemoval::E));}
-      // W+ W- Z (anticylic perms of above)
-      else if((ida== 24 && idb==-24 && idc== 23) ||
-    	  (ida== 23 && idb== 24 && idc==-24) || 
-    	  (ida==-24 && idb== 23 && idc== 24) )
-        {setNorm(-Complex(_couplast[0]*_zfact*_theKappa*UnitRemoval::E));}
-      else
-        {
-	  throw HelicityConsistencyError() << "RSModelVVVGRVertex::setCoupling " 
-					   << "Invalid particles in VVVGR Vertex" 
-					   << Exception::warning;
-	  setNorm(0.);
-        }
-    }
-}
-    
+    if((ida==-24 && idb== 24 && idc== 22) ||
+       (ida== 22 && idb==-24 && idc== 24) || 
+       (ida== 24 && idb== 22 && idc==-24) )
+      setNorm(Complex(_couplast[0]*_theKappa*UnitRemoval::E));
+    // W+ W- photon (anticylic perms of above)
+    else if((ida== 24 && idb==-24 && idc== 22) ||
+	    (ida== 22 && idb== 24 && idc==-24) || 
+	    (ida==-24 && idb== 22 && idc== 24) )
+      setNorm(-Complex(_couplast[0]*_theKappa*UnitRemoval::E));
+    // W- W+ Z and cylic perms
+    else if((ida==-24 && idb== 24 && idc== 23) ||
+	    (ida== 23 && idb==-24 && idc== 24) || 
+	    (ida== 24 && idb== 23 && idc==-24) )
+      setNorm(Complex(_couplast[0]*_zfact*_theKappa*UnitRemoval::E));
+    // W+ W- Z (anticylic perms of above)
+    else if((ida== 24 && idb==-24 && idc== 23) ||
+	    (ida== 23 && idb== 24 && idc==-24) || 
+	    (ida==-24 && idb== 23 && idc== 24) )
+      setNorm(-Complex(_couplast[0]*_zfact*_theKappa*UnitRemoval::E));
+    else throw HelicityConsistencyError() << "RSModelVVVGRVertex::setCoupling " 
+					  << "Invalid particles in VVVGR Vertex" 
+					  << Exception::runerror;
+  }
 }

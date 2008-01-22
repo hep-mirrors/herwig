@@ -44,6 +44,7 @@ set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

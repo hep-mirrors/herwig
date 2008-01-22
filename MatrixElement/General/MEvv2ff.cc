@@ -35,19 +35,25 @@ void MEvv2ff::doinit() throw(InitException) {
   for( size_t i = 0; i < ndiags; ++i ) {
     HPDiagram dg = getProcessInfo()[i];
     if( dg.channelType == HPDiagram::tChannel ) {
-      FFVVertexPtr ffv1 = dynamic_ptr_cast<FFVVertexPtr>(dg.vertices.first);
-      FFVVertexPtr ffv2 = dynamic_ptr_cast<FFVVertexPtr>(dg.vertices.second);
+      AbstractFFVVertexPtr ffv1 = 
+	dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.first);
+      AbstractFFVVertexPtr ffv2 = 
+	dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.second);
       theFerm[i] = make_pair(ffv1, ffv2);
     }
     else if( dg.channelType == HPDiagram::sChannel ) {
       if( dg.intermediate->iSpin() == PDT::Spin1) {
-	VVVVertexPtr vvv = dynamic_ptr_cast<VVVVertexPtr>(dg.vertices.first);
-	FFVVertexPtr ffv = dynamic_ptr_cast<FFVVertexPtr>(dg.vertices.second);
+	AbstractVVVVertexPtr vvv = 
+	  dynamic_ptr_cast<AbstractVVVVertexPtr>(dg.vertices.first);
+	AbstractFFVVertexPtr ffv = 
+	  dynamic_ptr_cast<AbstractFFVVertexPtr>(dg.vertices.second);
 	theVec[i] = make_pair(vvv,ffv);
       }
       else if(dg.intermediate->iSpin() == PDT::Spin2) {
-	VVTVertexPtr vvt = dynamic_ptr_cast<VVTVertexPtr>(dg.vertices.first);
-	FFTVertexPtr fft = dynamic_ptr_cast<FFTVertexPtr>(dg.vertices.second);
+	AbstractVVTVertexPtr vvt = 
+	  dynamic_ptr_cast<AbstractVVTVertexPtr>(dg.vertices.first);
+	AbstractFFTVertexPtr fft = 
+	  dynamic_ptr_cast<AbstractFFTVertexPtr>(dg.vertices.second);
 	theTen[i] = make_pair(vvt,fft);
       }
     }

@@ -124,10 +124,6 @@ private:
 
 private:
 
-  /**
-   * A pointer to the MSSM object. 
-   */
-  tMSSMPtr theMSSM;
   
   /**
    * The value of the factor \f$\frac{m_W \sin(\beta-\alpha)}{\sin\theta_W}\f$

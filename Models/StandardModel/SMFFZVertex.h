@@ -107,11 +107,6 @@ private:
 private:
 
   /**
-   * Pointer to the Standard Model object. 
-   */
-  tcSMPtr _theSM;
-
-  /**
    * Storage of the couplings.
    */
   //@{

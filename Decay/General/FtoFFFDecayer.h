@@ -6,16 +6,13 @@
 //
 
 #include "GeneralThreeBodyDecayer.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "FtoFFFDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::FFSVertexPtr;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::FFTVertexPtr;
 
 /**
  * Here is the documentation of the FtoFFFDecayer class.
@@ -26,11 +23,6 @@ using ThePEG::Helicity::FFTVertexPtr;
 class FtoFFFDecayer: public GeneralThreeBodyDecayer {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  inline FtoFFFDecayer();
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
@@ -124,17 +116,17 @@ private:
   /**
    * Store the vector of FFSVertex pairs
    */
-  vector<pair<FFSVertexPtr, FFSVertexPtr> > _sca;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > _sca;
 
   /**
    * Store the vector of FFVVertex pairs
    */
-  vector<pair<FFVVertexPtr, FFVVertexPtr> > _vec;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > _vec;
 
   /**
    * Store the vector of FFTVertex pairs
    */
-  vector<pair<FFTVertexPtr, FFTVertexPtr> > _ten;
+  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > _ten;
 
 };
 

@@ -12,11 +12,11 @@
 using namespace Herwig;
 
 void LittleHiggsWWWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _model << _corr; 
+  os << _corr; 
 }
 
 void LittleHiggsWWWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> _corr; 
+  is >> _corr; 
 }
 
 ClassDescription<LittleHiggsWWWVertex> LittleHiggsWWWVertex::initLittleHiggsWWWVertex;
@@ -79,16 +79,17 @@ LittleHiggsWWWVertex::LittleHiggsWWWVertex() : _couplast(0.),_q2last(0.*GeV2) {
 
 void LittleHiggsWWWVertex::doinit() throw(InitException) {
   // model
-  _model = dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
-  if(!_model) 
+  cLittleHiggsModelPtr model = 
+    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  if(!model) 
     throw InitException() << "Must be using the LittleHiggsModel "
 			  << " in LittleHiggsWWWVertex::doinit()"
 			  << Exception::runerror;
   // correction factors for the different interactions
-  double sw(sqrt(_model->sin2ThetaW())),cw(sqrt(1.-_model->sin2ThetaW()));
-  double vf(sqr(_model->vev()/_model->f()));
-  double s (_model->sinTheta()     ),c (_model->cosTheta()     );
-  double sp(_model->sinThetaPrime()),cp(_model->cosThetaPrime());
+  double sw(sqrt(model->sin2ThetaW())),cw(sqrt(1.-model->sin2ThetaW()));
+  double vf(sqr(model->vev()/model->f()));
+  double s (model->sinTheta()     ),c (model->cosTheta()     );
+  double sp(model->sinThetaPrime()),cp(model->cosThetaPrime());
   double xB(-2.5/sw*sp*cp*(sqr(cp)-sqr(sp)));
   double xH(2.5/sw/cw*s*c*sp*cp*(sqr(c*sp)+sqr(s*cp))/
 	    (5.*sqr(sp*cp/sw)-sqr(s*c/cw)));
@@ -127,7 +128,7 @@ void LittleHiggsWWWVertex::doinit() throw(InitException) {
 void LittleHiggsWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    _couplast = sqrt(4.0*Constants::pi*_model->alphaEM(q2));
+    _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }
   int ia(a->iCharge()/3),ib(b->iCharge()/3),ic(c->iCharge()/3);

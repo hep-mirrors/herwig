@@ -4,7 +4,7 @@ defaultsdir = ${pkgdatadir}/defaults
 
 INPUTFILES = Analysis.in Analysis2.in LEPAnalysis2.in\
 baryon_decays.in baryons.in boson_decays.in \
-bosons.in BSMDecays.in BSMParticles.in BSMVertices.in Cuts.in decayers.in \
+bosons.in Cuts.in decayers.in \
 Decays.in DiffractiveParticles.in diquarks.in \
 Hadronization.in HerwigDefaults.in \
 lepton_decays.in leptons.in \

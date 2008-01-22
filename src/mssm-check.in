@@ -35,7 +35,7 @@ cd /Herwig/Shower
 #set ShowerHandler:MPI No
 
 cd /Herwig/Analysis
-create Herwig::CascadeAnalysis CascadeTest HwBSMAnalysis.so
+create Herwig::CascadeAnalysis CascadeTest HwSusy.so HwUED.so HwBSMAnalysis.so
 set CascadeTest:ModelName MSSM
 insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 CascadeTest
 set Basics:CheckCharge No

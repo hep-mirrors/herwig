@@ -13,10 +13,10 @@
 //
 
 #include "GeneralHardME.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -25,10 +25,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::VVVVertexPtr;
-using ThePEG::Helicity::VVTVertexPtr;
-using ThePEG::Helicity::FFTVertexPtr;
 using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::VectorWaveFunction;
@@ -189,17 +185,17 @@ private:
   /**
    * Intermediate fermion 
    */
-  vector<pair<FFVVertexPtr, FFVVertexPtr> > theFerm;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theFerm;
 
   /**
    * Intermediate vector
    */
-  vector<pair<VVVVertexPtr, FFVVertexPtr> > theVec;
+  vector<pair<AbstractVVVVertexPtr, AbstractFFVVertexPtr> > theVec;
   
   /**
    * Intermediate tensor
    */
-  vector<pair<VVTVertexPtr, FFTVertexPtr> > theTen;
+  vector<pair<AbstractVVTVertexPtr, AbstractFFTVertexPtr> > theTen;
   //@}
 };
 

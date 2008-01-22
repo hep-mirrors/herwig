@@ -29,10 +29,10 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 
 			     theq2last(), theHaveCoeff(false) {
   //PDG codes for particles at vertices
-  vector<int> first(3), second(3,21), third(3,21);
-  first[0] = 25;
-  first[1] = 35;
-  first[2] = 36;
+  vector<int> first(3,21), second(3,21), third(3);
+  third[0] = 25;
+  third[1] = 35;
+  third[2] = 36;
   setList(first,second,third);
 }
 
@@ -113,9 +113,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       << "particle content in it. " << higgs << " " 
       << particle2->id() << " " << particle3->id();
   if( q2 != theq2last )	{
-    double alphas = theMSSM->alphaS(q2);
-    double alpha = theMSSM->alphaEM(q2);
-    theCouplast = 4.*Constants::pi*alphas*sqrt(4*Constants::pi*alpha)/theSw;
+    theCouplast = sqr(strongCoupling(q2))*weakCoupling(q2);
     Energy mt = theMSSM->mass(q2, thetop);
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {
       setNParticles(5);

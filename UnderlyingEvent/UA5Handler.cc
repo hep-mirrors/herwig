@@ -16,7 +16,6 @@
 #include <ThePEG/Handlers/DecayHandler.h>
 #include <ThePEG/Handlers/EventHandler.h>
 #include "Herwig++/Hadronization/Cluster.h"
-#include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
