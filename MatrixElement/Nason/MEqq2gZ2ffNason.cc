@@ -420,9 +420,12 @@ double MEqq2gZ2ffNason::NLOweight() const {
   _hadron_B=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>(lastParticles().second->dataPtr());
   // If necessary swap the particle data vectors so that _xb_a, 
   // mePartonData[0], beam[0] relate to the inbound quark: 
-  if(_parton_a->id()<0) {
-    swap(_xb_a    ,_xb_b    );
-    swap(_parton_a,_parton_b);
+
+
+
+  if(!(lastPartons().first ->dataPtr()==_parton_a&&
+       lastPartons().second->dataPtr()==_parton_b)) {
+    swap(_xb_a    ,_xb_b);
     swap(_hadron_A,_hadron_B);
   }
 
