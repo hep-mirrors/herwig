@@ -21,13 +21,40 @@
 #include <numeric>
 
 using namespace Herwig;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::VVVVertexPtr;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::VectorWaveFunction;
+
+void MEfv2vf::doinit() throw(InitException) {
+  GeneralHardME::doinit();
+  HPCount ndiags = numberOfDiags();
+  theFerm.resize(ndiags);
+  theVec.resize(ndiags);
+  for(HPCount ix = 0; ix < ndiags; ++ix) {
+    HPDiagram diagram = getProcessInfo()[ix];
+    PDT::Spin offspin = diagram.intermediate->iSpin();
+    if(diagram.channelType == HPDiagram::sChannel ||
+       ( diagram.channelType == HPDiagram::tChannel 
+	 && offspin == PDT::Spin1Half)) {
+      AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
+		(diagram.vertices.first);
+      AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
+	(diagram.vertices.second);
+      theFerm[ix] = make_pair(vert1, vert2);
+    }
+    else {
+      if(offspin == PDT::Spin1) {
+	AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
+	  (diagram.vertices.first);
+	AbstractVVVVertexPtr vert2 = dynamic_ptr_cast<AbstractVVVVertexPtr>
+	  (diagram.vertices.second);
+	theVec[ix] = make_pair(vert1, vert2);
+      }
+    }
+  }
+}
 
 double MEfv2vf::me2() const {
   //wavefunctions

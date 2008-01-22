@@ -12,7 +12,7 @@
 
 using namespace Herwig;
 
-inline LittleHiggsFFPVertex::LittleHiggsFFPVertex() 
+LittleHiggsFFPVertex::LittleHiggsFFPVertex() 
   : _couplast(0.), _q2last(-1.*GeV2) {
   // PDG codes for the particles
   vector<int> first,second,third;
@@ -50,11 +50,11 @@ inline LittleHiggsFFPVertex::LittleHiggsFFPVertex()
 }
 
 void LittleHiggsFFPVertex::persistentOutput(PersistentOStream & os) const {
-  os << _charge <<  _gv << _ga << _model;
+  os << _charge <<  _gv << _ga;
 }
 
 void LittleHiggsFFPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _charge >>  _gv >> _ga >> _model;
+  is >> _charge >>  _gv >> _ga;
 }
 
 ClassDescription<LittleHiggsFFPVertex> LittleHiggsFFPVertex::initLittleHiggsFFPVertex;
@@ -69,25 +69,26 @@ void LittleHiggsFFPVertex::Init() {
 
 void LittleHiggsFFPVertex::doinit() throw(InitException) {
   FFVVertex::doinit();
-  _model = dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
-  if(!_model) 
+  cLittleHiggsModelPtr model = 
+    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  if(!model) 
     throw InitException() << "Must be using the LittleHiggsModel "
 			  << " in LittleHiggsFFPVertex::doinit()"
 			  << Exception::runerror;
   // charges
   _charge.resize(17);  
   for(int ix=1;ix<4;++ix) {
-    _charge[2*ix-1]  = _model->ed();
-    _charge[2*ix ]   = _model->eu();
-    _charge[2*ix+9 ] = _model->ee();
-    _charge[2*ix+10] = _model->enu();
+    _charge[2*ix-1]  = model->ed();
+    _charge[2*ix ]   = model->eu();
+    _charge[2*ix+9 ] = model->ee();
+    _charge[2*ix+10] = model->enu();
   }
-  _charge[8] =  _model->eu();
+  _charge[8] =  model->eu();
   // couplings for the heavy photon
-  double cw  = sqrt(1.-_model->sin2ThetaW());
-  double pre = 0.5/cw/_model->cosThetaPrime()/_model->sinThetaPrime();
-  double xL  = sqr(_model->lambda1())/(sqr(_model->lambda1())+sqr(_model->lambda2()));
-  double cp2 = sqr(_model->cosThetaPrime());
+  double cw  = sqrt(1.-model->sin2ThetaW());
+  double pre = 0.5/cw/model->cosThetaPrime()/model->sinThetaPrime();
+  double xL  = sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2()));
+  double cp2 = sqr(model->cosThetaPrime());
   double yu  = -0.4;
   double ye  =  0.6;
   // down type quarks
@@ -106,8 +107,8 @@ void LittleHiggsFFPVertex::doinit() throw(InitException) {
   double gvtll = pre*(2.*yu+17./15.-5./6.*cp2-0.2*xL);
   double gatll = pre*(0.2-0.5*cp2-0.2*xL);
   // mixed top
-  double gvtlh = pre*0.2*_model->lambda1()*_model->lambda2()/
-    (sqr(_model->lambda1())+sqr(_model->lambda2()));
+  double gvtlh = pre*0.2*model->lambda1()*model->lambda2()/
+    (sqr(model->lambda1())+sqr(model->lambda2()));
   double gatlh = gvtlh;
   // heavy top
   double gvthh = pre*(2.*yu+14./15.-4./3.*cp2+0.2*xL);
@@ -142,8 +143,7 @@ void LittleHiggsFFPVertex::doinit() throw(InitException) {
 void LittleHiggsFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _model->alphaEM(q2);
-    _couplast = -sqrt(4.0*Constants::pi*alpha);
+    _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);

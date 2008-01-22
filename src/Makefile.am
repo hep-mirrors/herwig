@@ -2,9 +2,11 @@ SUBDIRS = defaults
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
-Herwig___SOURCES = Herwig++.cc
+Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h \
+HerwigVersion.cc
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
-Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
+Herwig___LDADD = $(THEPEGLIB) -ldl
+Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\""
 
 bin_SCRIPTS = herwig-config
 

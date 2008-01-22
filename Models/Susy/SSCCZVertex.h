@@ -98,7 +98,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -116,11 +116,6 @@ private:
   SSCCZVertex & operator=(const SSCCZVertex &);
 
 private:
-
-  /**
-   * A pointer to the model
-   */
-  tSusyBasePtr _theSS;
 
   /**
    * Value of \f$sin^2(\theta_W)\f$

@@ -41,15 +41,12 @@ SMFFHVertex::SMFFHVertex()  {
   _q2last=0.*GeV2;
   _masslast=0.*GeV;
   _mw=0.*GeV;
-  _sw=0.;
 }
 
 void SMFFHVertex::doinit() throw(InitException) {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if (!_theSM) 
     throw InitException();
-  double sw2=_theSM->sin2ThetaW();
-  _sw = sqrt(sw2);
   _mw= getParticleData(ThePEG::ParticleID::Wplus)->mass();
   orderInGem(1);
   orderInGs(0);
@@ -57,11 +54,11 @@ void SMFFHVertex::doinit() throw(InitException) {
 }
 
 void SMFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << ounit(_mw,GeV) << _sw;
+  os << _theSM << ounit(_mw,GeV);
 }
 
 void SMFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw,GeV) >> _sw;
+  is >> _theSM >> iunit(_mw,GeV);
 }
 
 ClassDescription<SMFFHVertex> 
@@ -83,8 +80,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
   setLeft(1.); setRight(1.);
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    _couplast = -0.5*sqrt(4.0*Constants::pi*alpha)/_sw/_mw;
+    _couplast = -0.5*weakCoupling(q2)/_mw;
     _q2last=q2;
     _idlast=iferm;
     if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {

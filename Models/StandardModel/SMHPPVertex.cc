@@ -19,15 +19,17 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void SMHPPVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << ounit(_mw,GeV) << massopt << _minloop << _maxloop << _CoefRepresentation;
+  os << _theSM << ounit(_mw,GeV) << massopt << _minloop << _maxloop 
+     << _CoefRepresentation;
 }
 
 void SMHPPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw, GeV) >> massopt >> _minloop >> _maxloop >> _CoefRepresentation;
+  is >> _theSM >> iunit(_mw, GeV) >> massopt >> _minloop >> _maxloop 
+     >> _CoefRepresentation;
   setCoefScheme(_CoefRepresentation);
 }
 
@@ -84,97 +86,81 @@ void SMHPPVertex::Init() {
 
 void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
                               tcPDPtr part3, tcPDPtr part1) {
-  if( part1->id() != ParticleID::h0 && 
-      part2->id() != ParticleID::gamma &&
-      part3->id() != ParticleID::gamma ) {
+  if( part1->id() != ParticleID::h0 && part2->id() != ParticleID::gamma &&
+      part3->id() != ParticleID::gamma )
     throw HelicityConsistencyError() 
       << "SMHPPVertex::setCoupling() - The particle content of this vertex "
       << "is incorrect: " << part1->id() << " " << part2->id() << " "
-      << part3->id() << Exception::warning;
-    setNorm(0.);
-    return;
-  }
-
+      << part3->id() << Exception::runerror;
   orderInGs(0);
   orderInGem(3);
-
   unsigned int Qminloop = _minloop;
   unsigned int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
     Qmaxloop=_minloop;
     Qminloop=_maxloop;
   }
-
   switch (_CoefRepresentation) {
-    case 1: {
-      if(q2 != _q2last) {
-        double g = sqrt(4.*Constants::pi*_theSM->alphaEM(q2)/_theSM->sin2ThetaW());
-        _couplast = UnitRemoval::E * pow(g,3)/_mw/sqr(Constants::pi)/sqrt(2.)/16.;
-        _q2last = q2;
-      }
-      setNorm(_couplast);
-
-      Complex loop(0.);
-      // quark loops
-      for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
-        tcPDPtr qrk = getParticleData(i);
-        Energy mass = qrk->mass();
-        Charge charge = qrk->charge();
-        if (2 == massopt) {
-          mass = _theSM->mass(q2,qrk);
-        }
-        loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
-      }
-      // lepton loops
-      unsigned int Lminloop = 3; // still fixed value
-      unsigned int Lmaxloop = 3; // still fixed value
-      for (unsigned int i = Lminloop; i <= Lmaxloop; ++i) {
-        tcPDPtr lpt = getParticleData(9 + 2*i);
-        Energy mass = lpt->mass();
-        Charge charge = lpt->charge();
-        if (2 == massopt) {
-          mass = _theSM->mass(q2,lpt);
-        }
-        loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2)/3.;  // 3. -> no color!
-      }
-
-      // W loop
-      loop += Aw(sqr(_mw)/q2);
-
-      a00(loop);
-      a11(0.0);
-      a12(0.0);
-      a21(-loop);
-      a22(0.0);
-      aEp(0.0);
-      break;}
-    case 2: {
-      if(q2 != _q2last) {
-        double e = sqrt(4.*Constants::pi*_theSM->alphaEM(q2));
-        _couplast = pow(e,3)/_theSM->sin2ThetaW();
-        _q2last = q2;
-      }
-      setNorm(_couplast);
-
-      type.resize(3,PDT::SpinUnknown);
-      type[0] = PDT::Spin1Half;
-      type[1] = PDT::Spin1Half;
-      type[2] = PDT::Spin1;
-      masses.resize(3,0.*GeV);
-      masses[0] = _theSM->mass(q2,getParticleData(ParticleID::t));
-      masses[1] = _theSM->mass(q2,getParticleData(ParticleID::b));
-      masses[2] = _mw;
-      double copl = -_theSM->mass(q2,getParticleData(6))*(4./3.)/_mw/2.;
-      couplings.push_back(make_pair(copl, copl));
-      copl = -_theSM->mass(q2,getParticleData(5))*(4./3.)/_mw/2.;
-      couplings.push_back(make_pair(copl, copl));
-      couplings.push_back(make_pair(UnitRemoval::InvE*_mw, UnitRemoval::InvE*_mw));
-
-      VVSLoopVertex::setCoupling(q2, part1, part2, part3);
-      break;}
+  case 1: {
+    if(q2 != _q2last) {
+      double g = weakCoupling(q2);
+      _couplast = UnitRemoval::E * pow(g,3)/_mw/sqr(Constants::pi)/sqrt(2.)/16.;
+      _q2last = q2;
+    }
+    setNorm(_couplast);
+    Complex loop(0.);
+    // quark loops
+    for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
+      tcPDPtr qrk = getParticleData(i);
+      Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
+	Charge charge = qrk->charge();
+	loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
+    }
+    // lepton loops
+    unsigned int Lminloop = 3; // still fixed value
+    unsigned int Lmaxloop = 3; // still fixed value
+    for (unsigned int i = Lminloop; i <= Lmaxloop; ++i) {
+      tcPDPtr lpt = getParticleData(9 + 2*i);
+      Energy mass = (2 == massopt) ? _theSM->mass(q2,lpt) : lpt->mass();
+      Charge charge = lpt->charge();
+      loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2)/3.;  // 3. -> no color!
+    }
+    // W loop
+    loop += Aw(sqr(_mw)/q2);
+    
+    a00(loop);
+    a11(0.0);
+    a12(0.0);
+    a21(-loop);
+    a22(0.0);
+    aEp(0.0);
+    break;
   }
-
-  return;
+  case 2: {
+    if(q2 != _q2last) {
+      double e = electroMagneticCoupling(q2);
+      _couplast = pow(e,3)/_theSM->sin2ThetaW();
+      _q2last = q2;
+    }
+    setNorm(_couplast);
+    type.resize(3,PDT::SpinUnknown);
+    type[0] = PDT::Spin1Half;
+    type[1] = PDT::Spin1Half;
+    type[2] = PDT::Spin1;
+    masses.resize(3,0.*GeV);
+    masses[0] = _theSM->mass(q2,getParticleData(ParticleID::t));
+    masses[1] = _theSM->mass(q2,getParticleData(ParticleID::b));
+    masses[2] = _mw;
+    double copl = -_theSM->mass(q2,getParticleData(6))*(4./3.)/_mw/2.;
+    couplings.push_back(make_pair(copl, copl));
+    copl = -_theSM->mass(q2,getParticleData(5))*(4./3.)/_mw/2.;
+    couplings.push_back(make_pair(copl, copl));
+    couplings.push_back(make_pair(UnitRemoval::InvE*_mw, UnitRemoval::InvE*_mw));
+    
+    VVSLoopVertex::setCoupling(q2, part1, part2, part3);
+    break;
+  }
+  }
 }
 
 Complex SMHPPVertex::Af(const double tau) const {
@@ -211,6 +197,4 @@ Complex SMHPPVertex::W2(double lambda) const {
 */
   }
   return 4.*ac;
-}
-
 }

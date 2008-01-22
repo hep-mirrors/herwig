@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(), 
+SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(0.*GeV2), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
 			     _rightlast(0.) {
   vector<int> first, second, third;
@@ -44,18 +44,32 @@ SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(),
   setList(first, second, third);
 }
 
+
+void SSCNWVertex::doinit() throw(InitException) {
+  FFVVertex::doinit();
+  tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  if(!theSS)
+    throw InitException() << "SSCNWVertex::doinit() - The model pointer is null!"
+			  << Exception::abortnow;
+  _sw = sqrt(theSS->sin2ThetaW());
+  
+  _theN = theSS->neutralinoMix();
+  _theU = theSS->charginoUMix();
+  _theV = theSS->charginoVMix();
+
+  if(!_theN || !_theU || ! _theV)
+    throw InitException() << "SSCNWVertex::doinit() - "
+			  << "A mixing matrix pointer is null."
+			  << " N: " << _theN << " U: " << _theU << " V: "
+			  << _theV << Exception::abortnow;
+}
+
 void SSCNWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sw << _theN << _theU << _theV;
+  os << _sw << _theN << _theU << _theV;
 }
 
 void SSCNWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sw >> _theN >> _theU >> _theV;
-  _id1last = 0;
-  _id2last = 0;
-  _q2last = 0.*GeV2;
-  _couplast = 0.;
-  _leftlast = 0.;
-  _rightlast = 0.;
+  is >> _sw >> _theN >> _theU >> _theV;
 }
 
 ClassDescription<SSCNWVertex> SSCNWVertex::initSSCNWVertex;
@@ -113,7 +127,7 @@ void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       abs(neu) == 1000045) ) {
     if(q2 != _q2last) {
       _q2last = q2;
-      _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw;
+      _couplast = weakCoupling(q2);;
     }
     setNorm(_couplast);
     if(abs(cha) != _id1last || abs(neu) != _id2last) {

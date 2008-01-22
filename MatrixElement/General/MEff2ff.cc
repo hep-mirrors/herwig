@@ -31,6 +31,39 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 using ThePEG::Helicity::SpinfoPtr;
 
+void MEff2ff::doinit() throw(InitException) {
+  GeneralHardME::doinit();
+  size_t ndiags = numberOfDiags();
+  theScaV.resize(ndiags);
+  theVecV.resize(ndiags);
+  theTenV.resize(ndiags);
+  for(size_t ix = 0;ix < ndiags; ++ix) {
+    HPDiagram current = getProcessInfo()[ix];
+    tcPDPtr offshell = current.intermediate;
+    if(offshell->iSpin() == PDT::Spin0) {
+      AbstractFFSVertexPtr vert1 = dynamic_ptr_cast<AbstractFFSVertexPtr>
+	(current.vertices.first);
+      AbstractFFSVertexPtr vert2 = dynamic_ptr_cast<AbstractFFSVertexPtr>
+	(current.vertices.second);
+      theScaV[ix] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin1) {
+      AbstractFFVVertexPtr vert1 = dynamic_ptr_cast<AbstractFFVVertexPtr>
+	(current.vertices.first);
+      AbstractFFVVertexPtr vert2 = dynamic_ptr_cast<AbstractFFVVertexPtr>
+	(current.vertices.second);
+      theVecV[ix] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin2) {
+      AbstractFFTVertexPtr vert1 = dynamic_ptr_cast<AbstractFFTVertexPtr>
+	(current.vertices.first);
+      AbstractFFTVertexPtr vert2 = dynamic_ptr_cast<AbstractFFTVertexPtr>
+	(current.vertices.second);
+      theTenV[ix] = make_pair(vert1, vert2);
+    }
+  }
+}
+
 double MEff2ff::me2() const {
   tcPDPtr ina(mePartonData()[0]), inb(mePartonData()[1]),
     outa(mePartonData()[2]), outb(mePartonData()[3]);

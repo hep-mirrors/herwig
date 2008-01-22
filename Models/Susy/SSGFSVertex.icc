@@ -23,10 +23,10 @@ inline IBPtr SSGFSVertex::fullclone() const {
  
 inline void SSGFSVertex::doinit() throw(InitException) {
   FFSVertex::doinit();
-  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
+  tMSSMPtr model = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
 
-  _stop = _theSS->stopMix();
-  _sbottom = _theSS->sbottomMix();
+  _stop = model->stopMix();
+  _sbottom = model->sbottomMix();
 
   if(!_stop || !_sbottom)
     throw InitException() << "SSGFSVertex::doinit() - "

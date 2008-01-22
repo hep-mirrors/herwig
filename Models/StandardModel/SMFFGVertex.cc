@@ -20,15 +20,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-void SMFFGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM;
-}
-
-void SMFFGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM;
-}
-
-ClassDescription<SMFFGVertex> 
+NoPIOClassDescription<SMFFGVertex> 
 SMFFGVertex::initSMFFGVertex;
 // Definition of the static class description member.
 
@@ -44,8 +36,7 @@ void SMFFGVertex::Init() {
 void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alphas = _theSM->alphaS(q2);
-    _couplast = -sqrt(4.0*Constants::pi*alphas);
+    _couplast = -strongCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);
@@ -73,7 +64,6 @@ SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
 }
   
 void SMFFGVertex::doinit() throw(InitException) {
-  _theSM = generator()->standardModel();
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

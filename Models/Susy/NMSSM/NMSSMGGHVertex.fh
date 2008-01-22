@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NMSSMGGHVertex class.
+//
+#ifndef HERWIG_NMSSMGGHVertex_FH
+#define HERWIG_NMSSMGGHVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class NMSSMGGHVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::NMSSMGGHVertex,NMSSMGGHVertexPtr);
+
+}
+
+#endif

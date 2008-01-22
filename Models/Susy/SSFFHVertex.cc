@@ -22,16 +22,15 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV), 
-			     theSw(0.0), theSa(0.0), theSb(0.0),
+			     theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
 			     theLLast(0.0), theRLast(0.0), theHLast(0), 
 			     theFLast(0), theGlast(0.), theq2last() {
   vector<int> first, second, third;
-  //neutral higgs
-  int higgs = 25;
   for(unsigned int h = 0; h < 3; ++h) {
-    if( h == 1 ) higgs = 35;
-    if( h == 2 ) higgs = 36;
+    //neutral higgs
+    int higgs = h==0 ? 25 : 35;
+    if( h == 2 ) ++higgs;
     //3rd generation quarks
     for(unsigned int i = 5; i < 7; ++i) {
       first.push_back(-i);
@@ -57,20 +56,17 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV),
   first.push_back(-15);
   second.push_back(16);
   third.push_back(-37);
-
   setList(first, second, third);
 }
 
 void SSFFHVertex::doinit() throw(InitException) {
-  FFSVertex::doinit();
-  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
       << "SSFFHVertex::doinit() - The pointer to the MSSM object is null!"
       << Exception::abortnow;
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
-  theSw = sqrt(theMSSM->sin2ThetaW());
   thetanb = theMSSM->tanBeta();
   theSb = thetanb/sqrt(1. + sqr(thetanb));
   theCb = sqrt( 1. - sqr(theSb) );
@@ -79,15 +75,16 @@ void SSFFHVertex::doinit() throw(InitException) {
   
   orderInGem(1);
   orderInGs(0);
+  FFSVertex::doinit();
 }
 
 void SSFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM  << thetanb << ounit(theMw,GeV) << theSw << theSa
+  os << thetanb << ounit(theMw,GeV) << theSa
      << theSb << theCa << theCb;
 }
 
 void SSFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM  >> thetanb >> iunit(theMw,GeV) >> theSw >> theSa
+  is >> thetanb >> iunit(theMw,GeV) >> theSa
      >> theSb >> theCa >> theCb;
 }
 
@@ -143,7 +140,7 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     return;
   }
   if( q2 != theq2last ) {
-    theGlast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw;
+    theGlast = weakCoupling(q2);
     theq2last = q2;
   }
 

@@ -6,7 +6,7 @@
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#include "Herwig++/Utilities/HerwigRun.h"
+#include "HerwigRun.h"
 #include "versionstring.h"
 
 int main(int argc, char * argv[]) {

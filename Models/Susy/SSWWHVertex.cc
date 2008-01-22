@@ -51,7 +51,7 @@ SSWWHVertex::~SSWWHVertex() {}
 
 void SSWWHVertex::doinit() throw(InitException) {
   VVSVertex::doinit();
-  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 
       << "SSWWHVertex::doinit() - The pointer to the MSSM object is null!"
@@ -78,12 +78,12 @@ void SSWWHVertex::doinit() throw(InitException) {
 }
 
 void SSWWHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM << ounit(theh0Wfact,GeV) << ounit(theH0Wfact,GeV) 
+  os << ounit(theh0Wfact,GeV) << ounit(theH0Wfact,GeV) 
      << ounit(theh0Zfact,GeV) << ounit(theH0Zfact,GeV);
 }
 
 void SSWWHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM >> iunit(theh0Wfact,GeV) >> iunit(theH0Wfact,GeV) 
+  is >> iunit(theh0Wfact,GeV) >> iunit(theH0Wfact,GeV) 
      >> iunit(theh0Zfact,GeV) >> iunit(theH0Zfact,GeV);
 }
 
@@ -139,7 +139,7 @@ void SSWWHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
   }
   if( q2 != theq2last ) {
     theq2last = q2;
-    theElast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2));
+    theElast = electroMagneticCoupling(q2);
   }
 
   setNorm(theElast*theCoupLast*UnitRemoval::InvE);

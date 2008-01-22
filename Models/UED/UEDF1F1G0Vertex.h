@@ -34,24 +34,6 @@ public:
    */
   UEDF1F1G0Vertex();
 
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -105,7 +87,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<UEDF1F1G0Vertex> initUEDF1F1G0Vertex;
+  static NoPIOClassDescription<UEDF1F1G0Vertex> initUEDF1F1G0Vertex;
 
   /**
    * The assignment operator is private and must never be called.
@@ -114,11 +96,6 @@ private:
   UEDF1F1G0Vertex & operator=(const UEDF1F1G0Vertex &);
 
 private:
-
-  /**
-   * Pointer to the UEDBase object
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The energy at which the coupling was last evaluated 

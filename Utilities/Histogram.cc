@@ -17,7 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "HerwigVersion.h"
+#include "Herwig++/Config/Herwig.h"
 
 using namespace Herwig;
 NoPIOClassDescription<Histogram> Histogram::initHistogram;

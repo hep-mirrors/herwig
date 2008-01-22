@@ -19,9 +19,8 @@
 namespace Herwig {
 using namespace ThePEG;
     
-SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)),_couplast(0.),
-			     _q2last(0.*sqr(MeV))
-{
+SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
+			     _q2last(0.*sqr(MeV)) {
   // particles for the vertex
   vector<int> first,second,third;
   // particles for outgoing W-
@@ -58,23 +57,23 @@ SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)),_couplast(0.),
 }
 
 void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theCKM << _theSM << _ckm;
+  os << _theCKM << _ckm;
 }
   
 void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theCKM >> _theSM >> _ckm;
+  is >> _theCKM >> _ckm;
 }
   
 void SMFFWVertex::doinit() throw(InitException) {
   ThePEG::Helicity::FFVVertex::doinit();
-  _theSM  = generator()->standardModel();
   _theCKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one
   ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
-    hwCKM=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer>(_theCKM);
+    hwCKM = ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::
+    transient_const_pointer>(_theCKM);
   if(hwCKM) {
     vector< vector<Complex > > CKM;
-    CKM = hwCKM->getUnsquaredMatrix(_theSM->families());
+    CKM = hwCKM->getUnsquaredMatrix(generator()->standardModel()->families());
     for(unsigned int ix=0;ix<3;++ix) {
       for(unsigned int iy=0;iy<3;++iy) {
 	_ckm[ix][iy]=CKM[ix][iy];
@@ -105,9 +104,7 @@ void SMFFWVertex::Init() {
 void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    double sw    = sqrt(2.*(_theSM->sin2ThetaW()));
-    _couplast = -sqrt(4.0*Constants::pi*alpha)/sw;
+    _couplast = -sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);

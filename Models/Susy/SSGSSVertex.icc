@@ -20,15 +20,4 @@ inline IBPtr SSGSSVertex::clone() const {
 inline IBPtr SSGSSVertex::fullclone() const {
   return new_ptr(*this);
 }
-
-inline void SSGSSVertex::doinit() throw(InitException) {
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
-  if(!_theSS)
-    throw InitException() << "SSGSSVertex::doinit() - "
-			  << "The model pointer is null."
-			  << Exception::abortnow;
-  orderInGs(1);
-  orderInGem(0);
-  VSSVertex::doinit();
-}
 }

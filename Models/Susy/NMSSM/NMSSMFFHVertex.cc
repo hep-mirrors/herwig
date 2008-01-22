@@ -157,8 +157,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
   }
   // prefact
   if(q2!=_q2last) {
-    double alpha = _theSM->alphaEM(q2);
-    _couplast = 0.5*sqrt(4.0*Constants::pi*alpha)/_sw;
+    _couplast = 0.5*weakCoupling(q2);
     _q2last=q2;
   }
   setNorm(-_couplast*output);

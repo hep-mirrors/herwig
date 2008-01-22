@@ -45,12 +45,30 @@ SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
   setList(first, second, third);
 }
 
+void SSCCZVertex::doinit() throw(InitException) {
+  FFVVertex::doinit();
+  tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  if(!theSS) 
+    throw InitException() << "SSCCZVertex::doinit - The model pointer "
+				     << "is null! "
+				     << Exception::abortnow;
+  _sw2 = theSS->sin2ThetaW();
+  _cw = sqrt(1. - _sw2);
+  _theU = theSS->charginoUMix();
+  _theV = theSS->charginoVMix();
+  if(!_theU || !_theV)
+    throw InitException() << "SSCCZVertex::doinit - "
+			  << "A mixing matrix pointer is null.  U: " 
+			  << _theU << "  V: " << _theV
+			  << Exception::abortnow;
+}
+
 void SSCCZVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sw2 << _cw << _theU << _theV;
+  os << _sw2 << _cw << _theU << _theV;
 }
 
 void SSCCZVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sw2 >> _cw >> _theU >> _theV;
+  is >> _sw2 >> _cw >> _theU >> _theV;
 }
 
 ClassDescription<SSCCZVertex> SSCCZVertex::initSSCCZVertex;
@@ -80,7 +98,7 @@ void SSCCZVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   }
   if(_q2last != q2) {
     _q2last = q2;
-    _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2));
+    _couplast = electroMagneticCoupling(q2);
   }
   setNorm(_couplast);
   if(boson != _gblast || ichar1 != _id1last || ichar2 != _id2last) {

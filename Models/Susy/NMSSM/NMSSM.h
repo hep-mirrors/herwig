@@ -121,6 +121,11 @@ public:
    * Pointer to higgs-sfermion-sfermion vertex 
    */
   virtual inline tAbstractSSSVertexPtr vertexHSS() const;
+
+  /**
+   * Pointer to the effective higgs-gluon-gluon vertex
+   */
+  virtual inline tAbstractVVSVertexPtr vertexHGG() const;
   
 protected:
 
@@ -234,6 +239,11 @@ private:
    * The higgs sfermion vertex 
    */
   AbstractSSSVertexPtr _hssvertex;
+
+  /**
+   * The effective Higgs gluon gluon vertex 
+   */
+  AbstractVVSVertexPtr _gghvertex;
   //@}
 };
 

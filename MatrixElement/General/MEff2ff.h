@@ -16,19 +16,15 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
 #include "MEff2ff.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::FFSVertexPtr;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::FFTVertexPtr;
-
 
 /**
  * This is the implementation of the \f$ 2\to 2\f$ matrix element for
@@ -199,7 +195,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 protected:
@@ -238,17 +234,17 @@ private:
   /**
    * Store the vector of FFSVertex pairs
    */
-  vector<pair<FFSVertexPtr, FFSVertexPtr> > theScaV;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > theScaV;
 
   /**
    * Store the vector of FFVVertex pairs
    */
-  vector<pair<FFVVertexPtr, FFVVertexPtr> > theVecV;
+  vector<pair<AbstractFFVVertexPtr, AbstractFFVVertexPtr> > theVecV;
 
   /**
    * Store the vector of FFTVertex pairs
    */
-  vector<pair<FFTVertexPtr, FFTVertexPtr> > theTenV;
+  vector<pair<AbstractFFTVertexPtr, AbstractFFTVertexPtr> > theTenV;
 };
 
 }

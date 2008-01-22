@@ -99,7 +99,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -117,11 +117,6 @@ private:
   UEDF1F1Z0Vertex & operator=(const UEDF1F1Z0Vertex &);
   
 private:
-  
-  /**
-   * A pointer to the model
-   */
-  tUEDBasePtr theUEDBase;
 
   /**
    * The value if \f$\sin^2\theta_W\f$

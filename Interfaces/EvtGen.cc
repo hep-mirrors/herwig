@@ -154,9 +154,8 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
   ParticleVector output,temp;
   tcPDPtr pd;
   EvtParticle * daug;
-  unsigned int ix,iy;
   int id;
-  for(ix=0;ix<abs(part->getNDaug());++ix) {
+  for(unsigned int ix=0,N=part->getNDaug();ix<N;++ix) {
     daug=part->getDaug(ix);
     // may just have been used for mass generation, so check has valid momentum
     if(!daug->hasValidP4()) continue;
@@ -171,7 +170,7 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
       if(EvtPDL::getStdHep(daug->getId())==92) {
 	// add the particles
 	ParticleVector temp(decayProducts(daug,spin));
-	for(iy=0;iy<temp.size();++iy) output.push_back(temp[iy]);
+	for(unsigned int iy=0;iy<temp.size();++iy) output.push_back(temp[iy]);
       }
       else if(!daug->isDecayed()) {
 	EvtDecayBase *decayer = EvtDecayTable::GetDecayFunc(daug);
@@ -186,7 +185,7 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
 	decayer->makeDecay(daug,false);
 	// add the particles
 	ParticleVector temp(decayProducts(daug,spin));
-	for(iy=0;iy<temp.size();++iy) output.push_back(temp[iy]);
+	for(unsigned int iy=0;iy<temp.size();++iy) output.push_back(temp[iy]);
       }
     }
     else {
@@ -199,7 +198,7 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
   // boost to lab
   if(output.size()>0) {
     Boost bv=ThePEGMomentum(part->getP4(),part->mass()).boostVector();
-    for(ix=0;ix<output.size();++ix) output[ix]->deepBoost(bv); 
+    for(unsigned int ix=0; ix<output.size(); ++ix) output[ix]->deepBoost(bv); 
   }
   return output;
 }

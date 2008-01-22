@@ -179,11 +179,6 @@ private:
    *  The last value of the coupling
    */
   double _couplast;
-
-  /**
-   * Pointer to the SM object.
-   */
-  tcSMPtr _theSM;
   //@}
 
 };

@@ -241,10 +241,6 @@ void ShowerHandler::cascade() {
   tStdXCombPtr lastXC;
   SubProPtr sub;
   tPPair incs;
-  Energy2 scale;
-  multimap <Energy2, SubProPtr> procs;
-  multimap <Energy2, SubProPtr> :: const_iterator pit;
-  unsigned int i(0);
 
   lastXC = dynamic_ptr_cast<StdXCombPtr>(lastXCombPtr());
   sub = eventHandler()->currentCollision()->primarySubProcess();
@@ -293,9 +289,16 @@ void ShowerHandler::cascade() {
               new_ptr(MPIPDF(secondPDF().pdf())));
   resetPDFs(newpdf);
 
-  int veto(1);
+  unsigned int ptveto(1), veto(1);
   unsigned int max(getMPIHandler()->multiplicity());
-  for(i=0; i<max; i++){      
+  //  cerr << "\n\n" << max << " additional scatters requested\n";
+  for(unsigned int i=0; i<max; i++){
+    //check how often this scattering has been regenerated
+    if(veto > 10) break;
+
+    //    cerr << "Try scattering " << i << " for the " << veto
+    //  << " time\n";
+
     //generate PSpoint
     lastXC = getMPIHandler()->generate();
     sub = lastXC->construct();
@@ -307,29 +310,25 @@ void ShowerHandler::cascade() {
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
 
-      if(pt > ptmin && UseRandom::rnd() < 1./(veto+1) ){
-        veto++;
+      if(pt > ptmin && UseRandom::rnd() < 1./(ptveto+1) ){
+        ptveto++;
         i--;
         continue;
       } 
     }
-    //sort in -scale, because reverse iterator doesn't work with gcc3.x.x
-    if( IsOrdered() ) scale = -lastXC->lastScale();
-    else scale = 1.*GeV2;
 
-    procs.insert(make_pair(scale, sub));
-  }
-  for( pit=procs.begin(); pit!=procs.end(); ++pit ){
     //add to the EventHandler's list
-    newStep()->addSubProcess(pit->second);
+    newStep()->addSubProcess(sub);
 
     try{
-      //Run the Shower. If not possible veto the scatter
-      incs = cascade(pit->second);
+      //Run the Shower. If not possible veto the scattering
+      incs = cascade(sub);
     }catch(ShowerTriesVeto){
 
-      newStep()->removeSubProcess(pit->second);
-      //discard this extra scattering, but try the next one
+      newStep()->removeSubProcess(sub);
+      //regenerate the scattering
+      veto++;
+      i--;
       continue;      
     }
 
@@ -339,17 +338,20 @@ void ShowerHandler::cascade() {
                                          secondPDF().pdf()), false);
 
       //check if there is enough energy to extract
-      if( (remnants.first->momentum() - incs.first->momentum()).e() < 0*MeV ||
-	  (remnants.second->momentum() - incs.second->momentum()).e() < 0*MeV )
+      if( (remnants.first->momentum() - incs.first->momentum()).e() < 1.0e-3*MeV ||
+	  (remnants.second->momentum() - incs.second->momentum()).e() < 1.0e-3*MeV )
 	throw ExtraScatterVeto();
     }catch(ExtraScatterVeto){
       //remove all particles associated with the subprocess
       newStep()->removeParticle(incs.first);
       newStep()->removeParticle(incs.second);
       //remove the subprocess from the list
-      newStep()->removeSubProcess(pit->second);
-      //discard this extra scattering, but try the next one
-      continue;
+      newStep()->removeSubProcess(sub);
+
+      //regenerate the scattering
+      veto++;
+      i--;
+      continue;      
     }
     //connect with the remnants but don't set Remnant colour,
     //because that causes problems due to the multiple colour lines.
@@ -358,7 +360,11 @@ void ShowerHandler::cascade() {
       throw Exception() << "Remnant extraction failed in "
 			<< "ShowerHandler::cascade()" 
 			<< Exception::runerror;
+
+    //reset veto counter
+    veto = 1;
   }
+
   theRemDec->finalize();
   theHandler = 0;
 }

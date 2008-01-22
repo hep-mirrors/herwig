@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
-			    _sw(0.),_q2last(), _couplast(0.),
+			    _q2last(), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {
   vector<int> first,second,third;
@@ -115,7 +115,6 @@ void SSCFSVertex::doinit() throw(InitException) {
 			  << " V:" << _vmix
 			  << Exception::abortnow;
 
-  _sw = sqrt(_theSS->sin2ThetaW());
   _mw = getParticleData(24)->mass();
   double tb = _theSS->tanBeta();
   _sb = tb/sqrt(1 + sqr(tb));
@@ -126,12 +125,12 @@ void SSCFSVertex::doinit() throw(InitException) {
 
 
 void SSCFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sb << _cb << ounit(_mw,GeV) << _sw << _stop 
+  os << _theSS << _sb << _cb << ounit(_mw,GeV) << _stop 
      << _sbot << _stau << _umix << _vmix;
 }
 
 void SSCFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS  >> _sb >> _cb >> iunit(_mw,GeV) >> _sw >> _stop
+  is >> _theSS  >> _sb >> _cb >> iunit(_mw,GeV) >> _stop
      >> _sbot >> _stau >> _umix >> _vmix;
 }
 
@@ -156,7 +155,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     smfermion = part2;
   }
   //overall normalisation
-  double gew = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw;
+  double gew = weakCoupling(q2);
   setNorm(-gew);
 
   if( ichg != _id1last || ism != _id2last || isc != _id3last ) {

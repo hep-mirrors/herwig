@@ -114,11 +114,6 @@ private:
   SSFFHVertex & operator=(const SSFFHVertex &);
 
 private:
-  
-  /**
-   * A pointer to the MSSM object.
-   */
-  tMSSMPtr theMSSM;
 
   /**
    * The value of \f$\tan\beta\f$.

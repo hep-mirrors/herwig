@@ -31,30 +31,10 @@ class SMGGGGVertex: public VVVVVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMGGGGVertex();
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
+  SMGGGGVertex();
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -106,17 +86,12 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<SMGGGGVertex> initSMGGGGVertex;
+  static NoPIOClassDescription<SMGGGGVertex> initSMGGGGVertex;
   
   /**
    * Private and non-existent assignment operator.
    */
   SMGGGGVertex & operator=(const SMGGGGVertex &);
-  
-  /**
-   * Pointer to the Standard Model.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.

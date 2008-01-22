@@ -184,12 +184,14 @@ void ModelGenerator::doinit() throw(InitException) {
   string filename = CurrentGenerator::current().filename() + 
     string("-BSMModelInfo.out");
   ofstream ofs(filename.c_str(), ios::out|ios::app);
-  ofs << "# The two body decay modes listed below will have spin\n"
+  ofs << "# The decay modes listed below will have spin\n"
       << "# correlations included when they are generated.\n#\n#";
   pit = _theParticles.begin();
   pend = _theParticles.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
+    parent->touch();
+    parent->update();
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(0.0*MeV);
@@ -211,11 +213,13 @@ void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
   ofs << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
       << parent->mass()/GeV << "  Total Width (GeV): " 
       << parent->width()/GeV << endl;
-  ofs << std::left << std::setw(48) << '#' << "BR" << endl; 
+  ofs << std::left << std::setw(48) << '#' << "Partial Width/GeV\tBR\n"; 
   Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
   Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
   for(; dit != dend; ++dit)
-    ofs << std::setw(48) << (*dit).second->tag() << (*dit).second->brat() 
+    ofs << std::setw(48) << (*dit).second->tag() 
+	<< (*dit).second->brat()*parent->width()/GeV << "\t"
+	<< (*dit).second->brat() 
 	<< '\n';
   ofs << "#\n#";
   

@@ -252,6 +252,21 @@ protected:
   inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const;
   //@}
 
+  /**
+   * Reset neutralino mixing matrix
+   */
+  inline void neutralinoMix(MixingMatrixPtr);
+
+  /**
+   * Reset the U-type chargino mixing matrix
+   */
+  inline void charginoUMix(MixingMatrixPtr);
+
+  /**
+   *  Reset the V-type chargino mixing matrix
+   */
+  inline void charginoVMix(MixingMatrixPtr);
+  
 protected:
 
   /** @name Clone Methods. */

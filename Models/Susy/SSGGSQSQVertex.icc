@@ -22,11 +22,6 @@ inline IBPtr SSGGSQSQVertex::fullclone() const {
 }
 
 inline void SSGGSQSQVertex::doinit() throw(InitException) {
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
-  if(!_theSS)
-    throw InitException() << "SSGGSQSQVertex::doinit() - "
-			  << "The model pointer is null."
-			  << Exception::abortnow;
   orderInGs(2);
   orderInGem(0);
   VVSSVertex::doinit();

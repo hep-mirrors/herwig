@@ -53,27 +53,25 @@ UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 
 void UEDW0W1W1Vertex::doinit() throw(InitException) {
   VVVVertex::doinit();
-   theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
-  if(!theUEDBase)
+  tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!model)
     throw InitException() << "UEDW0W1W1Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theSinW = sqrt(theUEDBase->sin2ThetaW());
+  theSinW = sqrt(model->sin2ThetaW());
   theCosW = sqrt( 1. - sqr(theSinW) );
-  theSinThetaOne = theUEDBase->sinThetaOne();
+  theSinThetaOne = model->sinThetaOne();
   theCosThetaOne = sqrt( 1. - sqr(theSinThetaOne));
   orderInGs(0);
   orderInGem(1);
 }
 
 void UEDW0W1W1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinW << theCosW << theSinThetaOne 
-     << theCosThetaOne;
+  os << theSinW << theCosW << theSinThetaOne << theCosThetaOne;
 }
 
 void UEDW0W1W1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinW >> theCosW >> theSinThetaOne 
-     >> theCosThetaOne;
+  is >> theSinW >> theCosW >> theSinThetaOne >> theCosThetaOne;
 }
 
 ClassDescription<UEDW0W1W1Vertex> UEDW0W1W1Vertex::initUEDW0W1W1Vertex;
@@ -116,7 +114,7 @@ void UEDW0W1W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   }
   if( q2 != theq2last ) {
     theq2last = q2;
-    theElast = sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2));
+    theElast = electroMagneticCoupling(q2);
   }
   
   if( smID != theSMlast || kkparticle != theKKlast ) { 

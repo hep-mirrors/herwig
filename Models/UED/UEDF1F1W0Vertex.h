@@ -96,7 +96,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -114,16 +114,6 @@ private:
   UEDF1F1W0Vertex & operator=(const UEDF1F1W0Vertex &);
 
 private:
-
-  /**
-   * A pointer to the UEDBase object
-   */
-  tUEDBasePtr theUEDBase;
-
-  /**
-   * The value if \f$\sin\theta_W\f$
-   */
-  double theSinThW;
 
   /**
    * The value of the inverse radius

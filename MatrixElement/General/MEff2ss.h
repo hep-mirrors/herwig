@@ -13,11 +13,11 @@
 //
 
 #include "GeneralHardME.h"
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
@@ -26,12 +26,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::FFSVertexPtr;
-using ThePEG::Helicity::FFVVertexPtr;
-using ThePEG::Helicity::VSSVertex;
-using ThePEG::Helicity::FFTVertexPtr;
-using ThePEG::Helicity::SSTVertexPtr;
-using ThePEG::Helicity::VSSVertexPtr;
 using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::ScalarWaveFunction;
@@ -136,7 +130,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 protected:
@@ -192,19 +186,19 @@ private:
    * Storage for dynamically cast vertices for a diagram with intermediate
    * fermion
    */
-  vector<pair<FFSVertexPtr, FFSVertexPtr> > theFerm;
+  vector<pair<AbstractFFSVertexPtr, AbstractFFSVertexPtr> > theFerm;
 
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * vector
    */
-  vector<pair<FFVVertexPtr, VSSVertexPtr> > theVec;
+  vector<pair<AbstractFFVVertexPtr, AbstractVSSVertexPtr> > theVec;
   
   /**
    * Storage for dynamically cast vertices for a diagram with intermediate
    * tensor
    */
-  vector<pair<FFTVertexPtr, SSTVertexPtr> > theTen;
+  vector<pair<AbstractFFTVertexPtr, AbstractSSTVertexPtr> > theTen;
 };
 
 }

@@ -38,17 +38,7 @@ SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
   setList(first,second,third,fourth);
 }
 
-void SSGGSQSQVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS;
-}
-
-void SSGGSQSQVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS;
-  _couplast = 0.;
-  _q2last = 0.*GeV2;
-}
-
-ClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;
+NoPIOClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;
 // Definition of the static class description member.
 
 void SSGGSQSQVertex::Init() {
@@ -61,8 +51,8 @@ void SSGGSQSQVertex::Init() {
 void SSGGSQSQVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr, tcPDPtr,
 				 tcPDPtr) { 
   if(q2 != _q2last) {
-    double alphaStr = _theSS->alphaS(q2);
-    _couplast = 4.*Constants::pi*alphaStr;
+    _couplast = sqr(strongCoupling(q2));
+    _q2last = q2;
   }
   setNorm(_couplast);
 }

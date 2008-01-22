@@ -97,7 +97,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -113,11 +113,6 @@ private:
    * In fact, it should not even be implemented.
    */
   SSWSSVertex & operator=(const SSWSSVertex &);
-
-  /**
-   * Pointer to the MSSM object
-   */
-  tMSSMPtr _theSS;
 
   /**
    * Value of \f$sin(\theta_w)\f$

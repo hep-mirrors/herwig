@@ -16,14 +16,14 @@ void NMSSM::persistentOutput(PersistentOStream & os) const {
   os << theHiggsAMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
      << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV) << _ffhvertex 
      << _wwhvertex << _whhvertex << _gogohvertex << _hhhvertex 
-     << _hssvertex;
+     << _hssvertex;// << _gghvertex;
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
   is >> theHiggsAMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
      >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV) >> _ffhvertex 
      >> _wwhvertex >> _whhvertex >> _gogohvertex >> _hhhvertex 
-     >> _hssvertex;
+     >> _hssvertex;// >> _gghvertex;
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -63,6 +63,11 @@ void NMSSM::Init() {
     ("Vertex/NMSSMHSS",
      "The coupling of a pair of sfermions to a higgs in the NMSSM",
      &NMSSM::_hssvertex, false, false, true, false, false);
+
+  static Reference<NMSSM,AbstractVVSVertex> interfaceVertexNMSSMGGH
+    ("Vertex/NMSSMGGH",
+     "The coupling of a higgs to 2 gluons in the NMSSM.",
+     &NMSSM::_gghvertex, false, false, true, false, false);
 }
 
 void NMSSM::extractParameters(bool checkmodel) {

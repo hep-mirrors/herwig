@@ -17,20 +17,10 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-using namespace ThePEG::Helicity;
 using namespace Herwig;
+using namespace ThePEG::Helicity;
 
-void UEDP0H1H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase;
-}
-
-void UEDP0H1H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-}
-
-ClassDescription<UEDP0H1H1Vertex> UEDP0H1H1Vertex::initUEDP0H1H1Vertex;
+NoPIOClassDescription<UEDP0H1H1Vertex> UEDP0H1H1Vertex::initUEDP0H1H1Vertex;
 // Definition of the static class description member.
 
 void UEDP0H1H1Vertex::Init() {
@@ -58,8 +48,7 @@ void UEDP0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   if(kkhiggs == 5100037) {
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = 
-	Complex(0., 1.)*sqrt(4.*Constants::pi*theUEDBase->alphaEM(q2));
+      theCoupLast = Complex(0., 1.)*electroMagneticCoupling(q2);
     }
     setNorm(theCoupLast);
   }

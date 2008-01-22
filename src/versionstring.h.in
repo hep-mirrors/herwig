@@ -1,4 +1,4 @@
-#include "Herwig++/Utilities/HerwigVersion.h"
+#include "Herwig++/Config/Herwig.h"
 
 void setVersionString() {
   Herwig::HerwigVersion::versionstring = "@HERWIGVERSIONSTRING@";

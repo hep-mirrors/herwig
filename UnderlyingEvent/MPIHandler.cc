@@ -142,13 +142,13 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   unsigned int i(1);
   double P(0.0), AvgN(0.0);
   Length bmax(500.0*sqrt(millibarn));
-
+  if(theAlgorithm > 0) bmax = 10*sqrt(millibarn);
   //currently only one UE process is possible so check that.
   assert(UEXSecs.size() == 1);
   ofstream file;
   file.open("probs.test");
   file << "hard process xsec: "
-       << dynamic_ptr_cast<tStdEHPtr>(eventHandler())->integratedXSec()/millibarn
+       << eventHandler()->integratedXSec()/millibarn
        << endl;             
 
   file << "UE process[0] xsec: " 
@@ -174,7 +174,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       theMultiplicities.insert(P, i-1);
       file << i-1 << " " << P << endl;
       i++;
-    } while ( (i < 100) && (i < 5 || P > 1.e-15) );
+    } while ( (i < 70) && (i < 5 || P > 1.e-15) );
   }
   file.close();  
 }

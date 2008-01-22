@@ -23,11 +23,6 @@ inline IBPtr UEDF1F0G1Vertex::fullclone() const {
 
 inline void UEDF1F0G1Vertex::doinit() throw(InitException) {
   FFVVertex::doinit();
-  theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
-  if(!theUEDBase)
-    throw InitException() << "UEDF1F0G0Vertex::doinit() - The pointer to "
-			  << "the UEDBase object is null!"
-			  << Exception::runerror;
   orderInGs(1);
   orderInGem(0);
 }

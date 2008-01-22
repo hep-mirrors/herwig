@@ -7,32 +7,73 @@
 #include "GeneralThreeBodyDecayer.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 using namespace Herwig;
 
+/**
+ *  A struct to order the particles in the same way as in the DecayMode's
+ */
+struct ParticleOrdering {
+  bool operator()(PDPtr p1, PDPtr p2) {
+    return abs(p1->id()) > abs(p2->id()) ||
+      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+  }
+};
+
+/**
+ * A set of ParticleData objects ordered as for the DecayMode's
+ */
+typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
+
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _diagrams << _colour << _nflow;
+  os << _incoming << _outgoing << _diagrams << _colour << _nflow << _widthopt;
 }
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _diagrams >> _colour >> _nflow;
+  is >> _incoming >> _outgoing >> _diagrams >> _colour >> _nflow >> _widthopt;
 }
 
-AbstractClassDescription<GeneralThreeBodyDecayer> GeneralThreeBodyDecayer::initGeneralThreeBodyDecayer;
+AbstractClassDescription<GeneralThreeBodyDecayer> 
+GeneralThreeBodyDecayer::initGeneralThreeBodyDecayer;
 // Definition of the static class description member.
 
 void GeneralThreeBodyDecayer::Init() {
 
   static ClassDocumentation<GeneralThreeBodyDecayer> documentation
-    ("There is no documentation for the GeneralThreeBodyDecayer class");
+    ("The GeneralThreeBodyDecayer class is the base class for the implementation of"
+     " all three body decays based on spin structures in Herwig++.");
+
+  static Switch<GeneralThreeBodyDecayer,unsigned int> interfaceWidthOption
+    ("WidthOption",
+     "Option for the treatment of the widths of the intermediates",
+     &GeneralThreeBodyDecayer::_widthopt, 1, false, false);
+  static SwitchOption interfaceWidthOptionFixed
+    (interfaceWidthOption,
+     "Fixed",
+     "Use fixed widths",
+     1);
+  static SwitchOption interfaceWidthOptionRunning
+    (interfaceWidthOption,
+     "Running",
+     "Use running widths",
+     2);
+  static SwitchOption interfaceWidthOptionZero
+    (interfaceWidthOption,
+     "Zero",
+     "Set the widths to zero",
+     3);
 
 }
 
 int  GeneralThreeBodyDecayer::
-modeNumber(bool & cc, tcPDPtr in, const PDVector & out) const {
+modeNumber(bool & cc, tcPDPtr in, const PDVector & outin) const {
+  OrderedParticles outb(outin.begin(),outin.end());
+  PDVector out(outb.begin(),outb.end());
   // check number of outgoing particles
   if(out.size()!=3) return -1;
   // check incoming particle
@@ -42,8 +83,8 @@ modeNumber(bool & cc, tcPDPtr in, const PDVector & out) const {
   for(unsigned int ix=0;ix<3;++ix) {
     if(out[ix]!=_outgoing[ix]) 
       allowed.first  = false;
-    if( ( out[ix]->CC() && out[ix]->CC() == _outgoing[ix] ) ||
-	(!out[ix]->CC() && out[ix]       == _outgoing[ix] ) )
+    if( !(( out[ix]->CC() && out[ix]->CC() == _outgoing[ix] ) ||
+	  (!out[ix]->CC() && out[ix]       == _outgoing[ix] )) )
       allowed.second = false;
   }
   if(allowed.first  && in->id() == _incoming->id()) {
@@ -69,13 +110,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   _diagrams = process;
   _colour   = factors;
   _nflow    = ncf;
-  cerr << "testing in the setdecayinfo " << _diagrams.size() << "\n";
-  for(unsigned int ix=0;ix<_outgoing.size();++ix) {
-    cerr << "testing outgoing " << _outgoing[ix] << "\n";
-  }
   for(unsigned int ix=0;ix<_diagrams.size();++ix) {
-    cerr << "testing in the loop " << _diagrams[ix].outgoing 
-	 << " " << _diagrams[ix].channelType << "\n";
     unsigned int iy=0;
     for(;iy<3;++iy) 
       if(_diagrams[ix].outgoing == _outgoing[iy]->id()) break;
@@ -102,6 +137,7 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
   for(unsigned int ix=0;ix<_diagrams.size();++ix) {
     if(_diagrams[ix].channelType==TBDiagram::fourPoint||
        _diagrams[ix].channelType==TBDiagram::UNDEFINED) continue;
+    if(_diagrams[ix].intermediate->width()==0.*MeV) continue;
     // create the new channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
     if(_diagrams[ix].channelType==TBDiagram::channel23) {
@@ -119,10 +155,11 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
     mode->addChannel(newchannel);
     ++nmode;
   }
+  if(nmode==0) throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
+				 << "doinit()" << Exception::runerror;
   // add the mode
   vector<double> wgt(nmode,1./double(nmode));
   addMode(mode,1.,wgt);
-  cerr << *this;
 }
 
 double GeneralThreeBodyDecayer::
@@ -188,3 +225,126 @@ Energy GeneralThreeBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   return _widthcalc->partialWidth(sqr(inpart.second));
 }
 
+void GeneralThreeBodyDecayer::
+colourConnections(const Particle & parent,
+		  const ParticleVector & out) const {
+  // extract colour of the incoming and outgoing particles
+  PDT::Colour inColour(parent.data().iColour());
+  vector<PDT::Colour> outColour;
+  vector<int> singlet,octet,triplet,antitriplet;
+  for(unsigned int ix=0;ix<out.size();++ix) {
+    outColour.push_back(out[ix]->data().iColour());
+    if     (outColour.back() == PDT::Colour0    )     singlet.push_back(ix); 
+    else if(outColour.back() == PDT::Colour3    )     triplet.push_back(ix);
+    else if(outColour.back() == PDT::Colour3bar ) antitriplet.push_back(ix);
+    else if(outColour.back() == PDT::Colour8    )     octet  .push_back(ix);
+  }
+  // colour neutral decaying particle
+  if     ( inColour == PDT::Colour0) {
+    // options are all neutral or triplet/antitriplet+ neutral
+    if(singlet.size()==3) {
+      return;
+    }
+    else if(singlet.size()==1&&triplet.size()==1&&antitriplet.size()==1) {
+      out[triplet[0]]->antiColourNeighbour(out[antitriplet[0]]);
+    }
+    else throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for singlet decaying particle" 
+      << Exception::runerror;
+    
+  }
+  // colour triplet decaying particle
+  else if( inColour == PDT::Colour3) {
+    if(singlet.size()==2&&triplet.size()==1) {
+      out[triplet[0]]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for triplet decaying particle" 
+      << Exception::runerror;
+  }
+  else if( inColour == PDT::Colour3bar) {
+    if(singlet.size()==2&&antitriplet.size()==1) {
+      out[antitriplet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for anti-triplet decaying particle" 
+      << Exception::runerror;
+  }
+  else if( inColour == PDT::Colour8) {
+    if(triplet.size()==1&&antitriplet.size()==1&&singlet.size()==1) {
+      out[    triplet[0]]->incomingColour    (const_ptr_cast<tPPtr>(&parent));
+      out[antitriplet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else throw Exception() 
+      << "Unknown colour structure in GeneralThreeBodyDecayer::"
+      << "colourConnections() for octet decaying particle" 
+      << Exception::runerror;
+  }
+}
+
+void GeneralThreeBodyDecayer::
+constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
+			    vector<Energy> & inwidth, vector<double> & inpow,
+			    vector<double> & inweights) const {
+  Energy min = incoming()->mass();
+  int nchannel(0);
+  pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
+			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
+  for(unsigned int ix=0;ix<getProcessInfo().size();++ix) {
+    Energy deltam(min);
+    if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
+    int itype(0);
+    if     (getProcessInfo()[ix].channelType==TBDiagram::channel23) {
+      deltam -= outgoing()[0]->mass();
+      itype = 3;
+    }
+    else if(getProcessInfo()[ix].channelType==TBDiagram::channel13) {
+      deltam -= outgoing()[1]->mass();
+      itype = 2;
+    }
+    else if(getProcessInfo()[ix].channelType==TBDiagram::channel12) {
+      deltam -= outgoing()[2]->mass();
+      itype = 1;
+    }
+    deltam -= getProcessInfo()[ix].intermediate->mass();
+    if(deltam<0.*GeV&&getProcessInfo()[ix].intermediate->width()>0.*MeV) {
+      if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
+      else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
+    }
+    if(deltam<0.*GeV) continue;
+    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma &&
+       getProcessInfo()[ix].intermediate->width()>0.*MeV) {
+      intype.push_back(itype);
+      inpow.push_back(0.);
+      inmass.push_back(getProcessInfo()[ix].intermediate->mass());
+      inwidth.push_back(getProcessInfo()[ix].intermediate->width());
+    }
+    else if(getProcessInfo()[ix].intermediate->id()==ParticleID::gamma) {
+      intype.push_back(itype);
+      inpow.push_back(-2.);
+      inmass.push_back(-1.*GeV);
+      inwidth.push_back(-1.*GeV);
+    }
+    ++nchannel;
+  }
+  for(unsigned int ix=1;ix<4;++ix) {
+    if(imin[ix].first>=0) {
+      intype.push_back(ix);
+      if(getProcessInfo()[imin[ix].first].intermediate->id()!=ParticleID::gamma) {
+	inpow.push_back(0.);
+	inmass.push_back(getProcessInfo()[imin[ix].first].intermediate->mass());
+	inwidth.push_back(getProcessInfo()[imin[ix].first].intermediate->width());
+      }
+      else {
+	inpow.push_back(-2.);
+	inmass.push_back(-1.*GeV);
+	inwidth.push_back(-1.*GeV);
+      }
+      ++nchannel;
+    }
+  }
+  inweights = vector<double>(nchannel,1./double(nchannel));
+}

@@ -28,7 +28,7 @@ public:
   /**
    * The default constructor.
    */
-  inline NMSSMHSFSFVertex();
+  NMSSMHSFSFVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{

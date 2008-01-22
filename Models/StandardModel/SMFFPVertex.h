@@ -29,15 +29,10 @@ class SMFFPVertex: public FFVVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline SMFFPVertex();
-
-  //@}
-public:
+  SMFFPVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -93,7 +88,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   
 private:
   
@@ -108,11 +103,6 @@ private:
   SMFFPVertex & operator=(const SMFFPVertex &);
   
 private:
-
-  /**
-   * Pointer to the Standard Model object.
-   */
-  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.

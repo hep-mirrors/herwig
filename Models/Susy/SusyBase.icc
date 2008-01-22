@@ -93,5 +93,16 @@ inline tAbstractSSSVertexPtr SusyBase::vertexHSS() const {
   return theHSFSFVertex;
 }
 
+inline void SusyBase::neutralinoMix(MixingMatrixPtr in) {
+  theNMix=in;
 }
 
+inline void SusyBase::charginoUMix(MixingMatrixPtr in) {
+  theUMix =in;
+}
+
+inline void SusyBase::charginoVMix(MixingMatrixPtr in) {
+  theVMix=in;
+}
+
+}

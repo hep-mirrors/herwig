@@ -1,7 +1,7 @@
 SUBDIRS = SplittingFunctions Couplings Nason Fortran \
           Default CKKW Base .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = -module -version-info 4:1:0
+HwShower_la_LDFLAGS = -module -version-info 4:2:0
 HwShower_la_LIBADD = SplittingFunctions/libHwSplitting.la \
                      Couplings/libHwCouplings.la \
                      Default/libHwDefaultShower.la \

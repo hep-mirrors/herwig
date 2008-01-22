@@ -37,19 +37,24 @@ void MEfv2fs::doinit() throw(InitException) {
  for(size_t ix = 0; ix < ndiags; ++ix) {
    HPDiagram curr = getProcessInfo()[ix];
    if(curr.channelType == HPDiagram::tChannel) {
-     FFSVertexPtr ffs = dynamic_ptr_cast<FFSVertexPtr>(curr.vertices.first);
+     AbstractFFSVertexPtr ffs = 
+       dynamic_ptr_cast<AbstractFFSVertexPtr>(curr.vertices.first);
      if( curr.intermediate->iSpin() == PDT::Spin0 ) {
-       VSSVertexPtr vss = dynamic_ptr_cast<VSSVertexPtr>(curr.vertices.second);
+       AbstractVSSVertexPtr vss = 
+	 dynamic_ptr_cast<AbstractVSSVertexPtr>(curr.vertices.second);
        theScaV[ix] =  make_pair(ffs, vss); 
      }
      else {
-       FFVVertexPtr ffv = dynamic_ptr_cast<FFVVertexPtr>(curr.vertices.second);
+       AbstractFFVVertexPtr ffv = 
+	 dynamic_ptr_cast<AbstractFFVVertexPtr>(curr.vertices.second);
        theFermV[ix] = make_pair(ffs, ffv);
      }
    }
    else {
-     FFVVertexPtr ffv = dynamic_ptr_cast<FFVVertexPtr>(curr.vertices.first);
-     FFSVertexPtr ffs = dynamic_ptr_cast<FFSVertexPtr>(curr.vertices.second);
+     AbstractFFVVertexPtr ffv = 
+       dynamic_ptr_cast<AbstractFFVVertexPtr>(curr.vertices.first);
+     AbstractFFSVertexPtr ffs = 
+       dynamic_ptr_cast<AbstractFFSVertexPtr>(curr.vertices.second);
      theFermV[ix] = make_pair(ffs, ffv); 
    }
  }

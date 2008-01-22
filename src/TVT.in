@@ -70,6 +70,7 @@ cd /Herwig/Generators
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
 # insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

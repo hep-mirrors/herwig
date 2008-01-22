@@ -125,11 +125,6 @@ private:
   SSGOGOHVertex & operator=(const SSGOGOHVertex &);
 
 private:
-  
-  /**
-   * A pointer to the MSSM object.
-   */
-  tMSSMPtr theMSSM;
 
   /**
    * The mass of the \f$W\f$.
@@ -165,11 +160,6 @@ private:
    * The matrix \f$Q_{ij}^{''}\f$ 
    */
   vector<vector<Complex> > theQijdp; 
-
-  /**
-   * The value of \f$\sin\theta_W\f$
-   */
-  double theSw;
 
   /**
    * The value of \f$\sin\alpha\f$ 

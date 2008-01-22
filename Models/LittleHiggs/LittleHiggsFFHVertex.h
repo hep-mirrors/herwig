@@ -108,11 +108,6 @@ private:
 private:
 
   /**
-   *  Model
-   */
-  cLittleHiggsModelPtr _model;
-
-  /**
    * Storage of the couplings.
    */
   //@{

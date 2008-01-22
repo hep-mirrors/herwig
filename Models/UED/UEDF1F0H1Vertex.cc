@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(), theMw(), 
-				     theSinThetaW(0.), theq2Last(),
+				     theSinThetaW(0.), theq2Last(-1.*GeV2),
 				     theCoupLast(0.), theLeftLast(0.),
 				     theRightLast(0.), theKKLast(0),
 				     theSMLast(0) {
@@ -59,21 +59,27 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(), theMw(),
   setList(anti, ferm, kkhiggs);
 }
 
+void UEDF1F0H1Vertex::doinit() throw(InitException) {
+  FFSVertex::doinit();
+  tUEDBasePtr UEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!UEDBase)
+    throw InitException() << "UEDF1F0H1Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  theRadius = UEDBase->compactRadius();
+  theSinThetaW = sqrt(UEDBase->sin2ThetaW());
+  theMw = getParticleData(24)->mass();
+  orderInGs(0);
+  orderInGem(1);
+}
+
 
 void UEDF1F0H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << ounit(theRadius,1/GeV) << ounit(theMw,GeV) 
-     << theSinThetaW ;
+  os << ounit(theRadius,1/GeV) << ounit(theMw,GeV) << theSinThetaW ;
 }
 
 void UEDF1F0H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> iunit(theRadius,1/GeV) >> iunit(theMw,GeV)
-     >> theSinThetaW;
-  theq2Last = 0.*GeV2;
-  theCoupLast = 0.;
-  theLeftLast = 0.;
-  theRightLast = 0.;
-  theKKLast = 0;
-  theSMLast = 0;
+  is >> iunit(theRadius,1/GeV) >> iunit(theMw,GeV) >> theSinThetaW;
 }
 
 ClassDescription<UEDF1F0H1Vertex> UEDF1F0H1Vertex::initUEDF1F0H1Vertex;
@@ -138,9 +144,8 @@ void UEDF1F0H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       (smferm >= 11 && smferm <= 16) ) {
     if(q2 != theq2Last) {
       theq2Last = q2;
-      theCoupLast = sqrt(2.*Constants::pi*theUEDBase->alphaEM(q2))/theSinThetaW;
-      theCoupLast *= theRadius/sqrt(1. + theMw*theMw*theRadius*theRadius) 
-	* UnitRemoval::E;
+      theCoupLast = sqrt(0.5)*weakCoupling(q2);
+      theCoupLast *= theRadius/sqrt(1. + sqr(theMw*theRadius)) * UnitRemoval::E;
     }
     setNorm(theCoupLast);
     if(kkferm != theKKLast || abs(smferm) != theSMLast) {
