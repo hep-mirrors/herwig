@@ -11,14 +11,7 @@
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LeptonDalitzAnalysis.tcc"
-#endif
-
-
 using namespace Herwig;
-
-LeptonDalitzAnalysis::~LeptonDalitzAnalysis() {}
 
 void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   // Rotate to CMS, extract final state particles and call analyze(particles).

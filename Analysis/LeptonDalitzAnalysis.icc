@@ -6,11 +6,6 @@
 
 namespace Herwig {
 
-inline LeptonDalitzAnalysis::LeptonDalitzAnalysis() {}
-
-inline LeptonDalitzAnalysis::LeptonDalitzAnalysis(const LeptonDalitzAnalysis & x)
-  : AnalysisHandler(x) {}
-
 inline IBPtr LeptonDalitzAnalysis::clone() const {
   return new_ptr(*this);
 }

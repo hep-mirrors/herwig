@@ -26,26 +26,6 @@ class LeptonDalitzAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline LeptonDalitzAnalysis();
-
-  /**
-   * The copy constructor.
-   */
-  inline LeptonDalitzAnalysis(const LeptonDalitzAnalysis &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~LeptonDalitzAnalysis();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
   /**
