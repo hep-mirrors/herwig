@@ -19,8 +19,16 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the Decay_QtildaShowerKinematics1to2 class.
+/** \ingroup Shower
+ *
+ *  This (concrete) class provides the specific decay shower
+ *  kinematics information.
+ *
+ *  @see QtildaShowerKinematics1to2
+ *  @see IS_QtildaShowerKinematics1to2
+ *  @see FS_QtildaShowerKinematics1to2
+ *  @see KinematicsReconstructor
+ *
  */
 class Decay_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
 

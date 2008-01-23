@@ -22,7 +22,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Shower
+ *
  *  The ShowerModel class is a container for all the objects needed to implement a
  *  specific model of the shower evolution, as opposed to those which are independent
  *  of the evolution.
