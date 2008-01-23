@@ -98,13 +98,16 @@ PDFVeto(const Energy2 t, const double x,
     pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
 
   assert(pdf);
-  // remember: pdf's q is cut in pdf class.  should probably be done here! 
-  // this would correspond to QSPAC in F-HERWIG.     
+
+  Energy2 theScale = t;
+
+  if (theScale < sqr(ShowerHandler::currentHandler()->pdfFreezingScale()))
+    theScale = sqr(ShowerHandler::currentHandler()->pdfFreezingScale());
 
   double newpdf(0.0), oldpdf(0.0);
   //different treatment of MPI ISR is done via CascadeHandler::resetPDFs()
-  newpdf=pdf->xfx(beam,parton0,t,x/z());
-  oldpdf=pdf->xfx(beam,parton1,t,x);
+  newpdf=pdf->xfx(beam,parton0,theScale,x/z());
+  oldpdf=pdf->xfx(beam,parton1,theScale,x);
 
   
   if(newpdf<=0.) return true;

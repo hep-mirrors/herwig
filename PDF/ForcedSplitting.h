@@ -39,7 +39,8 @@ using namespace ThePEG;
  *  branching back to a valence parton. After these partons have been produced a quark or
  *  diquark is produced to give the remaining valence content of the incoming hadron.
  *
- *  The forced branching are generated using a scale between QSpac and EmissionRange times
+ *  The forced branching are generated using a scale between _forcedSplitScale as set by the
+ *  HwRemDecayer object and EmissionRange times
  *  the minimum scale. The energy fractions are then distributed using
  *  \f[\frac{\alpha_S}{2\pi}\frac{P(z)}{z}f(x/z,\tilde{q})\f]
  *  with the massless splitting functions.
@@ -54,7 +55,9 @@ public:
   /**
    * The default constructor.
    */
-  inline ForcedSplitting();
+  inline ForcedSplitting()
+    : _kinCutoff(0.75*GeV), _forcedSplitScale(2.5*GeV), _range(1.1),
+      _zbin(0.05), _ybin(0.), _nbinmax(100) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -124,17 +127,17 @@ public:
   /**
    * Set the beam particle.
    */
-  inline void setBeam(tcPPtr beam) const;
+  inline void setBeam(tcPPtr beam) const {
+    _beam = beam;
+  }
 
   /**
    * Set the PDF to use.
    */
-  inline void setPDF(tcPDFPtr pdf) const;
-
-  /**
-   * Set the ThePEG::BeamParticleData object of the current hadron.
-   */
-  inline Energy getQspac() const;
+  inline void setPDF(tcPDFPtr pdf, const Energy forcedSplitScale) const {
+    _pdf = pdf;
+    _forcedSplitScale = forcedSplitScale;
+  }
 
 protected:
 
@@ -144,13 +147,17 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {
+    return new_ptr(*this);
+  }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {
+    return new_ptr(*this);
+  }
   //@}
 
 protected:
@@ -160,7 +167,10 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  inline virtual void doinit() throw(InitException) {
+    Interfaced::doinit();
+    _ybin=0.25/_zbin;
+  }
 
 
 private:
@@ -185,14 +195,14 @@ private:
    Energy _kinCutoff;
 
   /**
+   * Start of evolution
+   */
+  mutable Energy _forcedSplitScale;
+
+  /**
    *  Range for emission
    */
   double _range;
-
-  /**
-   *  Start of the evolution
-   */
-  Energy _qspac;
 
   /**
    *  Size of the bins in z for the interpolation
@@ -262,7 +272,5 @@ struct ClassTraits<Herwig::ForcedSplitting>
 /** @endcond */
 
 }
-
-#include "ForcedSplitting.icc"
 
 #endif /* HERWIG_ForcedSplitting_H */
