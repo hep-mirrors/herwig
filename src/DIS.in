@@ -41,6 +41,8 @@ cd /Herwig/Generators
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
 # insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
+# set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption 1
 

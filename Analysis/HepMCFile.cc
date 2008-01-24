@@ -29,14 +29,15 @@ using namespace ThePEG;
 using namespace Herwig;
 
 HepMCFile::HepMCFile() 
-  : _eventNumber(1), _format(1), _filename() {}
+  : _eventNumber(1), _format(1), _filename(), _unitchoice() {}
 
 // Cannot copy streams. 
 // Let doinitrun() take care of their initialization.
 HepMCFile::HepMCFile(const HepMCFile & x) 
   : AnalysisHandler(x), 
     _eventNumber(x._eventNumber), _format(x._format), 
-    _filename(x._filename), _hepmcio(), _hepmcdump() {}
+    _filename(x._filename), _hepmcio(), _hepmcdump(), 
+    _unitchoice(x._unitchoice) {}
 
 IBPtr HepMCFile::clone() const {
   return new_ptr(*this);
@@ -84,7 +85,16 @@ void HepMCFile::dofinish() {
 
 void HepMCFile::analyze(tEventPtr event, long, int, int) {
   if (event->number() > _eventNumber) return;
-  HepMC::GenEvent * hepmc = HepMCConverter<HepMC::GenEvent>::convert(*event);
+
+  Energy eUnit;
+  switch (_unitchoice) {
+  default: eUnit = GeV; break;
+  case 1:  eUnit = MeV; break;
+  }
+
+  HepMC::GenEvent * hepmc 
+    = HepMCConverter<HepMC::GenEvent>::convert(*event, false,
+					       eUnit, millimeter);
   if (_hepmcio)
     _hepmcio->write_event(hepmc);
   else
@@ -93,11 +103,11 @@ void HepMCFile::analyze(tEventPtr event, long, int, int) {
 }
 
 void HepMCFile::persistentOutput(PersistentOStream & os) const {
-  os << _eventNumber << _format << _filename;
+  os << _eventNumber << _format << _filename << _unitchoice;
 }
 
 void HepMCFile::persistentInput(PersistentIStream & is, int) {
-  is >> _eventNumber >> _format >> _filename;
+  is >> _eventNumber >> _format >> _filename >> _unitchoice;
 }
 
 
@@ -149,4 +159,19 @@ void HepMCFile::Init() {
     ("Filename", "Name of the output file",
      &HepMCFile::_filename, "");
 
+  
+  static Switch<HepMCFile,int> interfaceUnits
+    ("Units",
+     "Unit choice for energy and length",
+     &HepMCFile::_unitchoice, 0, false, false);
+  static SwitchOption interfaceUnitsGeV_mm
+    (interfaceUnits,
+     "GeV_mm",
+     "Use GeV and mm as units.",
+     0);
+  static SwitchOption interfaceUnitsMeV_mm
+    (interfaceUnits,
+     "MeV_mm",
+     "Use MeV and mm as units.",
+     1);
 }

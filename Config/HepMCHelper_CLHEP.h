@@ -28,28 +28,27 @@ struct HepMCTraits<HepMC::GenEvent>
    * @param status The status
    */
   static ParticleT * newParticle(const Lorentz5Momentum & p,
-				 long id, int status) {
-    // Note that according to the documentation the momentum is stored in a
-    // HepLorentzVector in GeV (event though the CLHEP standard is MeV).
-    CLHEP::HepLorentzVector p_GeV(p.x()/GeV, 
-				  p.y()/GeV,
-				  p.z()/GeV,
-				  p.e()/GeV);
-    ParticleT * genp = new ParticleT(p_GeV, id, status);
-    genp->setGeneratedMass(p.mass()/GeV);
+				 long id, int status, Energy unit) {
+    CLHEP::HepLorentzVector p_unit(p.x()/unit, 
+				   p.y()/unit,
+				   p.z()/unit,
+				   p.e()/unit);
+    ParticleT * genp = new ParticleT(p_unit, id, status);
+    genp->setGeneratedMass(p.mass()/unit);
     return genp;
   }
 
   /**
    *  Set the position
    */
-  static void setPosition(VertexT & v, const LorentzPoint & p) {
+  static void setPosition(VertexT & v, const LorentzPoint & p, 
+			  Length unit) {
     // We assume that the position is measured in millimeters.
-    CLHEP::HepLorentzVector p_mm(p.x()/mm, 
-				 p.y()/mm,
-				 p.z()/mm,
-				 p.t()/mm);
-    v.set_position(p_mm);
+    CLHEP::HepLorentzVector p_unit(p.x()/unit, 
+				   p.y()/unit,
+				   p.z()/unit,
+				   p.t()/unit);
+    v.set_position(p_unit);
   }
 };
 }
