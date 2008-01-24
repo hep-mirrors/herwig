@@ -16,6 +16,7 @@ namespace Herwig {
 inline Reweighter::Reweighter()
   : Interfaced(),
     _vetoHighest(true),
+    _highestNotHarder(true),
     _MEalpha(1.)
 {}
 
@@ -25,6 +26,10 @@ inline tJetMeasurePtr Reweighter::resolution () const {
 
 inline bool Reweighter::vetoHighest () const {
   return _vetoHighest;
+}
+
+inline bool Reweighter::highestNotHarder () const {
+  return _highestNotHarder;
 }
 
 inline void Reweighter::MEalpha (double a) {

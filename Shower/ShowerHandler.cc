@@ -699,9 +699,11 @@ double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
     throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
 		      << Exception::eventerror;
   
-  double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
+  CascadeHistory theHistory = _reconstructor->history();
+
+  double weight = _reweighter->reweight(theHistory,out.size(),minMult,maxMult);
   
-  _evolver->initCKKWShower(out.size(),maxMult);
+  _evolver->initCKKWShower(theHistory,out.size(),maxMult);
   
   return weight;
 

@@ -27,12 +27,12 @@ DefaultCKKWVeto::~DefaultCKKWVeto() {}
 
 void DefaultCKKWVeto::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-  os << _resolution << _enabled;
+  os << _resolution << _enabled << _optResolution;
 }
 
 void DefaultCKKWVeto::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-  is >> _resolution >> _enabled;
+  is >> _resolution >> _enabled >> _optResolution;
 }
 
 ClassDescription<DefaultCKKWVeto> DefaultCKKWVeto::initDefaultCKKWVeto;

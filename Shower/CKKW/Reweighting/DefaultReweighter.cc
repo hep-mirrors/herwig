@@ -120,7 +120,10 @@ void DefaultReweighter::Init() {
 
 }
 
-double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int mult, unsigned int minmult) {
+double DefaultReweighter::sudakovReweight (CascadeHistory history,
+					   unsigned int mult,
+					   unsigned int minmult,
+					   unsigned int maxmult) {
 
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
   generator()->log() << "== DefaultReweighter::sudakovReweight" << endl;
@@ -130,14 +133,23 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 
   if (mult == minmult && _sudakovUnweight) return weight;
 
+  Energy2 toScale = 0.*GeV2;
+
   for (vector<ClusteringParticlePtr>::iterator p = history.reconstructed.begin();
        p != history.reconstructed.end(); ++p) {
     if (!(**p).noReweight() && (**p).pData().colour != (**p).pData().antiColour) {
+
+      if (highestNotHarder() && !(**p).splitting() && mult == maxmult
+	  && history.softestMEScale > (**p).splittingScale())
+	toScale = history.softestMEScale;
+      else
+	toScale = (**p).splittingScale();
+
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
       generator()->log() << "reweighting for clustering particle "
 			 << *p << endl
 			 << "from Q/GeV = " << sqrt((**p).productionScale())/GeV
-			 << " to q/GeV = " << sqrt((**p).splittingScale())/GeV << endl;
+			 << " to q/GeV = " << sqrt(toScale)/GeV << endl;
 #endif
       pair<long,bool> sudakovKey;
       sudakovKey.first = (**p).pData().partonId.PDGId;
@@ -148,7 +160,7 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
       for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	  s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	if (!gotone) gotone = true;
-	double sweight = (*(s->second))((**p).productionScale(),(**p).splittingScale());
+	double sweight = (*(s->second))((**p).productionScale(),toScale);
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
 	generator()->log() << "using sudakov " << s->second << " weight = " << sweight << endl;
 #endif
@@ -187,9 +199,16 @@ double DefaultReweighter::sudakovReweight (CascadeHistory history, unsigned int 
 	for(multimap<pair<long,bool>,DefaultSudakovPtr>::iterator s = _sudakovMap.lower_bound(sudakovKey);
 	    s != _sudakovMap.upper_bound(sudakovKey); ++s) {
 	  if (!gotone) gotone = true;
-	  double sweight = (*(s->second))((**p).productionScale(),
-					  resolution()
-					  ->minResolvableScale(sudakovKey.first,sudakovKey.second));
+
+	  // use softest ME scale on highest multiplicity,
+	  //  otherwise resolution scale
+	  if (highestNotHarder() && mult == maxmult &&
+	      history.softestMEScale > resolution()->minResolvableScale(sudakovKey.first,sudakovKey.second))
+	    toScale = history.softestMEScale;
+	  else
+	    toScale = resolution()->minResolvableScale(sudakovKey.first,sudakovKey.second);
+
+	  double sweight = (*(s->second))((**p).productionScale(),toScale);
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
 	  generator()->log() << "using sudakov " << s->second << " weight = " << sweight << endl;
 #endif
