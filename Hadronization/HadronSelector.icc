@@ -74,7 +74,8 @@ inline HadronSelector::HadronInfo::HadronInfo(long idin,tPDPtr datain,
 {}
 
 inline bool HadronSelector::HadronInfo::operator<(const HadronInfo &x) const {
-  return mass < x.mass; 
+  if(mass!=x.mass) return mass < x.mass;
+  else return id < x.id;
 }
 
 inline Energy HadronSelector::massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
