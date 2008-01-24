@@ -12,6 +12,7 @@
 //
 
 #include "HepMCFile.h"
+#include <config.h>
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -20,7 +21,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <HepMCHelper.h>
+#ifdef HAVE_HEPMC_IO_GENEVENT_H
 #include "HepMC/IO_GenEvent.h"
+#endif
 #include "HepMC/IO_AsciiParticles.h"
 #include "HepMC/IO_Ascii.h"
 #include "HepMC/IO_ExtendedAscii.h"
@@ -56,9 +59,11 @@ void HepMCFile::doinitrun() {
 
   switch ( _format ) {
   default: 
+#ifdef HAVE_HEPMC_IO_GENEVENT_H
     _hepmcio = new HepMC::IO_GenEvent(_filename.c_str(), ios::out); 
     break;
   case 2: 
+#endif
     _hepmcio = new HepMC::IO_AsciiParticles(_filename.c_str(), ios::out); 
     break;
   case 3: 
@@ -129,11 +134,13 @@ void HepMCFile::Init() {
     ("Format",
      "Output format (1 = GenEvent, 2 = AsciiParticles, 3 = Ascii, 4 = ExtendedAscii, 5 = HepMC dump)",
      &HepMCFile::_format, 1, false, false);
+#ifdef HAVE_HEPMC_IO_GENEVENT_H
   static SwitchOption interfaceFormatGenEvent
     (interfaceFormat,
      "GenEvent",
      "IO_GenEvent format",
      1);
+#endif
   static SwitchOption interfaceFormatAsciiParticles
     (interfaceFormat,
      "AsciiParticles",
