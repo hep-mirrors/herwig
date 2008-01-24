@@ -28,11 +28,11 @@ using namespace std;
 using namespace Herwig;
 
 void DrellYanHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _power << _preqqbar << _preqg << _pregqbar;
+  os << _alphaS << _power << _preqqbar << _preqg << _pregqbar << ounit( _min_pt,GeV );
 }
 
 void DrellYanHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _power >> _preqqbar >> _preqg >> _pregqbar;
+  is >> _alphaS >> _power >> _preqqbar >> _preqg >> _pregqbar >> iunit( _min_pt, GeV );
 }
 
 ClassDescription<DrellYanHardGenerator> DrellYanHardGenerator::initDrellYanHardGenerator;
@@ -70,6 +70,13 @@ void DrellYanHardGenerator::Init() {
     ("Prefactorgqbar",
      "The prefactor for the sampling of the g qbar channel",
      &DrellYanHardGenerator::_pregqbar, 3.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<DrellYanHardGenerator, Energy> interfacePtMin
+    ("minPt",
+     "The pt cut on hardest emision generation"
+     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
+     &DrellYanHardGenerator::_min_pt, GeV, 2.*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
 }
 
@@ -227,7 +234,8 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // and set the maximum pt for the radiation
   set<NasonBranchingPtr> hard=nasontree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-    particlesToShower[ix]->maximumpT(_pt);
+    if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt);
+    else particlesToShower[ix]->maximumpT(_min_pt);
     for(set<NasonBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->_particle->id()&&
@@ -348,7 +356,7 @@ double DrellYanHardGenerator::getResult(int emis_type, Energy pt, double yj) {
 bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew, 
 				     int & emis_type){
   // pt cut-off
-  Energy minp = 0.1*GeV;  
+  // Energy minp = 0.1*GeV;  
   // maximum pt (half of centre-of-mass energy)
   Energy maxp = 0.5*generator()->maximumCMEnergy();
   // set pt of emission to zero
@@ -375,7 +383,7 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
       reject = UseRandom::rnd()>wgt;
       //no emission event if p goes past p min - basically set to outside
       //of the histogram bounds (hopefully hist object just ignores it)
-      if(pt<minp){
+      if(pt<_min_pt){
 	pt=0.0*GeV;
 	reject = false;
       }
@@ -390,10 +398,8 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
     }
   }
   //was this an (overall) no emission event?
-  if(_pt<minp){ 
+  if(_pt<_min_pt){ 
     _pt=0.0*GeV;
-    _yj=-10;
-    _yb=-10;
     emis_type = 3;
   }
   (*_htype)+=double(emis_type)+0.5;

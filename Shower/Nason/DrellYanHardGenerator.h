@@ -257,6 +257,12 @@ private:
   Energy _pt;
   //@}
 
+/**
+   *  The transverse momentum of the jet
+   */
+  Energy _min_pt;
+  //@}
+
   /**
    *  Parameters for plots and debugging, will be deleted in final version
    */
