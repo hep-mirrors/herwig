@@ -101,9 +101,14 @@ public:
 
   /**
    * Return true, if the given branching is resolvable.
-   * This is used for vetoing shower emissions.
+   * This is used for vetoing shower emissions. An
+   * optional resolution scale may be supplied. If this
+   * is set to zero, the predefined resolution is to be used.
    */
-  virtual bool resolvable (tcShowerParticlePtr, const Branching&, bool initial = false) = 0;
+  virtual bool resolvable (tcShowerParticlePtr,
+			   const Branching&,
+			   bool initial = false,
+			   Energy2 resolution = 0.*GeV2) = 0;
 
   /**
    * Return the bounds on the clustering momentum

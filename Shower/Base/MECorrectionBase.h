@@ -24,8 +24,10 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the MECorrectionBase class.
+/**\ingroup Shower
+ *
+ * This is the base class for all matrix element corrections
+ * used inside parton showers.
  *
  * @see \ref MECorrectionBaseInterfaces "The interfaces"
  * defined for MECorrectionBase.

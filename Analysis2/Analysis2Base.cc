@@ -261,8 +261,7 @@ void Analysis2Base::insert (const string& name,
       vector<pair<double,double> > binning;
       double bi = binlower;
       for(unsigned int i = 0; i< numbins; ++i) {
-	binning.push_back(make_pair(bi,bi*pow(10.,c*i)));
-	bi *= pow(10.,c*i);
+	binning.push_back(make_pair(bi*pow(10.,c*i),bi*pow(10.,c*(i+1))));
       }
       insertObservable(name,new_ptr(Histogram2(binning,"Herwig++")),options);
     }

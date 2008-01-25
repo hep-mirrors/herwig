@@ -489,8 +489,10 @@ void HadronSelector::constructHadronTable() {
       continue;
     // Don't include non-hadrons or antiparticles
     if(pid < 100) continue;
-    // K_0S and K_0L not made make K0 and Kbar0
+    // remove diffractive particles
     if(pspin == 0) continue;
+    // K_0S and K_0L not made make K0 and Kbar0
+    if(pid==ParticleID::K_S0||pid==ParticleID::K_L0) continue;
     // Debugging options
     // Only include those with 2J+1 less than...5
     if(_trial==2 && pspin >= 5) continue;

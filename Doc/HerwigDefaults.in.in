@@ -1,3 +1,5 @@
+# @configure_input@
+#
 # output interfaces for documentation
 # the following need to come first
 library HwWeakCurrents.so

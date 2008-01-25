@@ -168,6 +168,11 @@ private:
    *  The HepMC dump file
    */
   ofstream _hepmcdump;
+
+  /**
+   * Selector for the choice of units
+   */
+  int _unitchoice;
 };
 
 }

@@ -68,9 +68,10 @@ public:
   inline virtual bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr, const Branching&);
 
   /**
-   * Enable the veto.
+   * Enable the veto. An optional resolution
+   * scale may be given.
    */
-  inline void enable (bool en = true);
+  inline void enable (Energy2 resolution = 0.*GeV2);
 
   /**
    * Disable the veto.
@@ -169,6 +170,12 @@ private:
    * True, if the veto is enabled
    */
   bool _enabled;
+
+  /**
+   * A dynamically set resolution scale
+   * overriding _resolution's scale
+   */
+  Energy2 _optResolution;
 
   /**
    * The static object used to initialize the description of this class.

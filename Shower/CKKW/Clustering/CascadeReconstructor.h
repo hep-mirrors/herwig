@@ -64,6 +64,11 @@ using namespace ThePEG;
      */
     tCKKWHardProcessPtr hard;
 
+    /**
+     * The softest QCD scale within the clusterings
+     */
+    Energy2 softestMEScale;
+
 #ifdef HERWIG_DEBUG_CKKW_GRAPHVIZ
 
     /**

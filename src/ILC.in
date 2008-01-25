@@ -45,6 +45,7 @@ set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
 # set /Herwig/Analysis/HepMCFile:Format GenEvent
+# set /Herwig/Analysis/HepMCFile:Units GeV_mm
 
 ##################################################
 # Save run for later usage with 'Herwig++ run'

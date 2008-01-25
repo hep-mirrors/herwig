@@ -109,7 +109,7 @@ canHandle(tcPDPtr particle, tcPDPtr parton) const {
   return ( HadronMatcher::Check(*particle) && StandardQCDPartonMatcher::Check(*parton));
 }
 
-void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
+void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step, Energy forcedSplitScale) {
   if(!theForcedSplitter) return;
   tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
 
@@ -123,6 +123,7 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step) {
   theX.first = 0.0;
   theX.second = 0.0;
   theRems = rems;
+  _forcedSplitScale = forcedSplitScale;
 
   if( (theRems.first  && parent(theRems.first ) != beam.first ) ||
       (theRems.second && parent(theRems.second) != beam.second) )
@@ -153,9 +154,9 @@ void HwRemDecayer::split(tPPtr parton, HadronContent & content,
   ColinePtr cl;
   //set the beam object to access its momentum.
   theForcedSplitter->setBeam(beam);
-  theForcedSplitter->setPDF(pdf);
+  theForcedSplitter->setPDF(pdf,_forcedSplitScale);
 
-  Energy oldQ(theForcedSplitter->getQspac());
+  Energy oldQ(_forcedSplitScale);
   
   //do nothing if already valence quark
   if(first && content.isValenceQuark(parton)){ 

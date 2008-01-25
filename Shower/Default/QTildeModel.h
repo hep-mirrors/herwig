@@ -19,7 +19,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Shower
  * The QTildeModel class inherits from the ShowerModel class and implements the
  * checkConsistency member for the default Herwig++ Shower.
  *

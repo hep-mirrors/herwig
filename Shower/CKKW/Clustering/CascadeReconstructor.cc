@@ -227,7 +227,15 @@ bool CascadeReconstructor::reconstruct (PPair in, pair<double,double> x, Particl
 }
 
 CascadeHistory CascadeReconstructor::history () const {
-  CascadeHistory result = { _clusterings, _particles, _currentParticles, _hard  };
+  CascadeHistory result = { _clusterings, _particles, _currentParticles, _hard, 0.*GeV2  };
+  for (list<ClusteringPtr>::const_iterator c = _clusterings.begin();
+       c != _clusterings.end(); ++c) {
+    // remember clusterings are ordered in _clusterings
+    if ((**c).clusteringConfiguration()->interaction() == ClusteringInteractionType::QCD) {
+      result.softestMEScale = (**c).scale();
+      break;
+    }
+  }
   return result;
 }
 

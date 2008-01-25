@@ -12,6 +12,7 @@
 //
 
 #include "HepMCFile.h"
+#include <config.h>
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
@@ -20,7 +21,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <HepMCHelper.h>
+#ifdef HAVE_HEPMC_IO_GENEVENT_H
 #include "HepMC/IO_GenEvent.h"
+#endif
 #include "HepMC/IO_AsciiParticles.h"
 #include "HepMC/IO_Ascii.h"
 #include "HepMC/IO_ExtendedAscii.h"
@@ -29,14 +32,15 @@ using namespace ThePEG;
 using namespace Herwig;
 
 HepMCFile::HepMCFile() 
-  : _eventNumber(1), _format(1), _filename() {}
+  : _eventNumber(1), _format(1), _filename(), _unitchoice() {}
 
 // Cannot copy streams. 
 // Let doinitrun() take care of their initialization.
 HepMCFile::HepMCFile(const HepMCFile & x) 
   : AnalysisHandler(x), 
     _eventNumber(x._eventNumber), _format(x._format), 
-    _filename(x._filename), _hepmcio(), _hepmcdump() {}
+    _filename(x._filename), _hepmcio(), _hepmcdump(), 
+    _unitchoice(x._unitchoice) {}
 
 IBPtr HepMCFile::clone() const {
   return new_ptr(*this);
@@ -55,9 +59,11 @@ void HepMCFile::doinitrun() {
 
   switch ( _format ) {
   default: 
+#ifdef HAVE_HEPMC_IO_GENEVENT_H
     _hepmcio = new HepMC::IO_GenEvent(_filename.c_str(), ios::out); 
     break;
   case 2: 
+#endif
     _hepmcio = new HepMC::IO_AsciiParticles(_filename.c_str(), ios::out); 
     break;
   case 3: 
@@ -84,7 +90,16 @@ void HepMCFile::dofinish() {
 
 void HepMCFile::analyze(tEventPtr event, long, int, int) {
   if (event->number() > _eventNumber) return;
-  HepMC::GenEvent * hepmc = HepMCConverter<HepMC::GenEvent>::convert(*event);
+
+  Energy eUnit;
+  switch (_unitchoice) {
+  default: eUnit = GeV; break;
+  case 1:  eUnit = MeV; break;
+  }
+
+  HepMC::GenEvent * hepmc 
+    = HepMCConverter<HepMC::GenEvent>::convert(*event, false,
+					       eUnit, millimeter);
   if (_hepmcio)
     _hepmcio->write_event(hepmc);
   else
@@ -93,11 +108,11 @@ void HepMCFile::analyze(tEventPtr event, long, int, int) {
 }
 
 void HepMCFile::persistentOutput(PersistentOStream & os) const {
-  os << _eventNumber << _format << _filename;
+  os << _eventNumber << _format << _filename << _unitchoice;
 }
 
 void HepMCFile::persistentInput(PersistentIStream & is, int) {
-  is >> _eventNumber >> _format >> _filename;
+  is >> _eventNumber >> _format >> _filename >> _unitchoice;
 }
 
 
@@ -119,11 +134,13 @@ void HepMCFile::Init() {
     ("Format",
      "Output format (1 = GenEvent, 2 = AsciiParticles, 3 = Ascii, 4 = ExtendedAscii, 5 = HepMC dump)",
      &HepMCFile::_format, 1, false, false);
+#ifdef HAVE_HEPMC_IO_GENEVENT_H
   static SwitchOption interfaceFormatGenEvent
     (interfaceFormat,
      "GenEvent",
      "IO_GenEvent format",
      1);
+#endif
   static SwitchOption interfaceFormatAsciiParticles
     (interfaceFormat,
      "AsciiParticles",
@@ -149,4 +166,19 @@ void HepMCFile::Init() {
     ("Filename", "Name of the output file",
      &HepMCFile::_filename, "");
 
+  
+  static Switch<HepMCFile,int> interfaceUnits
+    ("Units",
+     "Unit choice for energy and length",
+     &HepMCFile::_unitchoice, 0, false, false);
+  static SwitchOption interfaceUnitsGeV_mm
+    (interfaceUnits,
+     "GeV_mm",
+     "Use GeV and mm as units.",
+     0);
+  static SwitchOption interfaceUnitsMeV_mm
+    (interfaceUnits,
+     "MeV_mm",
+     "Use MeV and mm as units.",
+     1);
 }

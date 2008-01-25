@@ -10,7 +10,7 @@
 #define ROOT_INTERFACE_H_
 
 // This is the declaration of the RootInterface class.
-#include "Herwig++/Utilities/HerwigRun.h"
+#include <iostream>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -19,7 +19,6 @@
 namespace Herwig {
 
 using namespace std;
-using namespace ThePEG;
 
 /** \ingroup Interfaces
  * 

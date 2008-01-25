@@ -67,7 +67,7 @@ public:
    * Perform the reweighting. It calls the Sudakov
    * reweighting and then the alpha_s reweighting.
    */
-  double reweight (CascadeHistory, unsigned int, unsigned int);
+  double reweight (CascadeHistory, unsigned int, unsigned int, unsigned int);
   
   /**
    * Analyze the given cascade history
@@ -101,7 +101,7 @@ public:
    * Perform the Sudakov reweighting. The default
    * returns 1.
    */
-  virtual double sudakovReweight (CascadeHistory, unsigned int, unsigned int);
+  virtual double sudakovReweight (CascadeHistory, unsigned int, unsigned int, unsigned int);
 
   //@}
 
@@ -118,6 +118,12 @@ public:
    * to be vetoed.
    */
   inline bool vetoHighest () const;
+
+  /**
+   * Return true, if the matching scale for the highest multiplicity
+   * is set dynamically from the softest matrix element scale
+   */
+  inline bool highestNotHarder () const;
 
   /**
    * Return the fixed running coupling the
@@ -232,6 +238,12 @@ private:
    * True, if the highest multiplicity is to be vetoed.
    */
   bool _vetoHighest;
+
+  /**
+   * True, if the matching scale for the highest multiplicity
+   * is set dynamically from the softest matrix element scale
+   */
+  bool _highestNotHarder;
 
   /**
    * The fixed coupling the matrix elements

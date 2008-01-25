@@ -159,6 +159,8 @@ if test "x$with_hepmc" != "xno"; then
 	AC_MSG_ERROR([Use '--with-hepmc=' to set a path or use '--without-hepmc'.])
 	])
 	
+	AC_CHECK_HEADERS([HepMC/IO_GenEvent.h])
+
 	LIBS="$oldLIBS"
 	LDFLAGS="$oldLDFLAGS"
 	CPPFLAGS="$oldCPPFLAGS"

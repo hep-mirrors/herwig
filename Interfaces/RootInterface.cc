@@ -20,10 +20,10 @@ void RootInterface::init(string filename, string treename){
 
 void RootInterface::finish(){
   if (tree->GetFileNumber() !=0) {
-    std::cout << "trying to write and close last file..." << std::endl;
+    cout << "trying to write and close last file..." << endl;
     gFile->Write();
     gFile->Close();
-    std::cout << "closed the last file" << std::endl;
+    cout << "closed the last file" << endl;
     chain->Add("*.root");
     chain->MakeClass();
   } else {

@@ -212,11 +212,10 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   }
      
   // Extract the id and particle pointer of the two components of the cluster.
-
-    tPPtr ptr1 = ptr->particle(0);
-    tPPtr ptr2 = ptr->particle(1);
-    tcPDPtr ptr1data = ptr1->dataPtr();
-    tcPDPtr ptr2data = ptr2->dataPtr();
+  tPPtr ptr1 = ptr->particle(0);
+  tPPtr ptr2 = ptr->particle(1);
+  tcPDPtr ptr1data = ptr1->dataPtr();
+  tcPDPtr ptr2data = ptr2->dataPtr();
   
   bool isHad1FlavSpecial    = false;
   bool cluDirHad1      = _clDirLight;
@@ -327,8 +326,9 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
       // calculate rotation to z axis
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(uSmear_v3.z())));
-      rot.setRotate(-acos(uSmear_v3.z()),
-		    Axis(-uSmear_v3.y()/sinth,uSmear_v3.x()/sinth,0.));
+      if(uSmear_v3.perp2()/uSmear_v3.z()>1e-10)
+	rot.setRotate(-acos(uSmear_v3.z()),
+		      Axis(-uSmear_v3.y()/sinth,uSmear_v3.x()/sinth,0.));
       // + random azimuthal rotation
       rot.rotateZ(UseRandom::rnd()*twopi);
       // set direction in rotated frame

@@ -19,12 +19,15 @@ namespace Herwig {
 
 inline DefaultCKKWVeto::DefaultCKKWVeto()
   : ShowerVeto(),
-    _enabled(true)
+    _enabled(true),
+    _optResolution(0.*GeV2)
 {}
 
 inline DefaultCKKWVeto::DefaultCKKWVeto (DefaultJetMeasurePtr res)
   : ShowerVeto(ShowerVetoType::Emission),
-    _resolution(res)
+    _resolution(res),
+    _enabled(true),
+    _optResolution(0.*GeV2)
 {}
 
 inline IBPtr DefaultCKKWVeto::clone() const {
@@ -38,7 +41,7 @@ inline IBPtr DefaultCKKWVeto::fullclone() const {
 
 inline bool DefaultCKKWVeto::vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr p, const Branching& br) {
   if(_enabled) {
-    bool veto = _resolution->resolvable(p,br);
+    bool veto = _resolution->resolvable(p,br,false,_optResolution);
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
     generator()->log() << "time like CKKW veto ... " << endl;
     generator()->log() << br.ids[0] << " -> " << br.ids[1] << " " << br.ids[2] << endl
@@ -58,7 +61,7 @@ inline bool DefaultCKKWVeto::vetoTimeLike (tcShowerProgenitorPtr, tcShowerPartic
 
 inline bool DefaultCKKWVeto::vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr p, const Branching& br) {
   if(_enabled) {
-    bool veto = _resolution->resolvable(p,br,true);
+    bool veto = _resolution->resolvable(p,br,true,_optResolution);
 #ifdef HERWIG_DEBUG_CKKW_EXTREME
     generator()->log() << "time like CKKW veto ... " << endl;
     generator()->log() << br.ids[0] << " -> " << br.ids[1] << " " << br.ids[2] << endl
@@ -76,9 +79,9 @@ inline bool DefaultCKKWVeto::vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParti
   }
 }
 
-inline void DefaultCKKWVeto::enable (bool en) { _enabled = en; }
+inline void DefaultCKKWVeto::enable (Energy2 scale) { _enabled = true; _optResolution = scale; }
 
-inline void DefaultCKKWVeto::disable () { enable(false); }
+inline void DefaultCKKWVeto::disable () { _enabled = false; _optResolution = 0.*GeV2; }
 
 inline void DefaultCKKWVeto::eventGenerator(tEGPtr eg) {
   setGenerator(eg);
