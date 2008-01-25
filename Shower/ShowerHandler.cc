@@ -81,7 +81,7 @@ IBPtr ShowerHandler::fullclone() const {
 }
 
 ShowerHandler::ShowerHandler() : 
-  theOrderSecondaries(true), theMPIOnOff(true), 
+  theOrderSecondaries(true), theMPIOnOff(true), _pdfFreezingScale(2.5*GeV),
   _maxtry(10), theSubProcess(tSubProPtr()) {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
@@ -139,14 +139,14 @@ void ShowerHandler::dofinish(){
   if(theMPIHandler) theMPIHandler->finalize();
 }
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << _evolver << theRemDec << _maxtry << _inputparticlesDecayInShower
+  os << _evolver << theRemDec << ounit(_pdfFreezingScale,GeV) << _maxtry << _inputparticlesDecayInShower
      << _particlesDecayInShower << theOrderSecondaries 
      << theMPIOnOff << theMPIHandler << theSubProcess 
      << _useCKKW << _reconstructor << _reweighter;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _evolver >> theRemDec >> _maxtry
+  is >> _evolver >> theRemDec >> iunit(_pdfFreezingScale,GeV) >> _maxtry
      >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> theOrderSecondaries 
      >> theMPIOnOff >> theMPIHandler >> theSubProcess
@@ -172,6 +172,13 @@ void ShowerHandler::Init() {
 		     "A reference to the Remnant Decayer object", 
 		     &Herwig::ShowerHandler::theRemDec,
 		     false, false, true, false);
+
+
+  static Parameter<ShowerHandler,Energy> interfacePDFFreezingScale
+    ("PDFFreezingScale",
+     "The PDF freezing scale",
+     &ShowerHandler::_pdfFreezingScale, GeV, 2.5*GeV, 2.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
   static Parameter<ShowerHandler,unsigned int> interfaceMaxTry
     ("MaxTry",
@@ -265,7 +272,8 @@ void ShowerHandler::cascade() {
  
   pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incbins));
 
-  theRemDec->initialize(remnants, *currentStep());
+  // set the starting scale of the forced splitting to the PDF freezing scale
+  theRemDec->initialize(remnants, *currentStep(),pdfFreezingScale());
 
   //do the first forcedSplitting
   try {
@@ -691,9 +699,11 @@ double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
     throw Exception() << "Shower : ShowerHandler::reweightCKKW : no cascade history could be obtained."
 		      << Exception::eventerror;
   
-  double weight = _reweighter->reweight(_reconstructor->history(),out.size(),minMult);
+  CascadeHistory theHistory = _reconstructor->history();
+
+  double weight = _reweighter->reweight(theHistory,out.size(),minMult,maxMult);
   
-  _evolver->initCKKWShower(out.size(),maxMult);
+  _evolver->initCKKWShower(theHistory,out.size(),maxMult);
   
   return weight;
 
