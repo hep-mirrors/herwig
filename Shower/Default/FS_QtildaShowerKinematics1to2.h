@@ -26,6 +26,7 @@ using namespace ThePEG;
  *
  *  @see QtildaShowerKinematics1to2
  *  @see IS_QtildaShowerKinematics1to2
+ *  @see Decay_QtildaShowerKinematics1to2
  *  @see KinematicsReconstructor
  */
 class FS_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {

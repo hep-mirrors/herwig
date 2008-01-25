@@ -94,7 +94,7 @@ public:
   /**
    * Perform the Sudakov reweighting.
    */
-  virtual double sudakovReweight (CascadeHistory, unsigned int, unsigned int);
+  virtual double sudakovReweight (CascadeHistory, unsigned int, unsigned int, unsigned int);
 
   /**@name Methods used for setup. */
   //@{

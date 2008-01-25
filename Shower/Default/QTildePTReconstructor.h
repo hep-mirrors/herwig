@@ -12,8 +12,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the RelativePtReconstructor class.
+/**\ingroup Shower
+ *
  *
  * @see \ref RelativePtReconstructorInterfaces "The interfaces"
  * defined for RelativePtReconstructor.

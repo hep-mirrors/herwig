@@ -13,8 +13,8 @@ EXTRA_DIST = mrst
 
 pkglib_LTLIBRARIES += HwRemDecayer.la
 HwRemDecayer_la_SOURCES = \
-HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh \
-ForcedSplitting.h ForcedSplitting.icc ForcedSplitting.cc ForcedSplitting.fh
+HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh \
+ForcedSplitting.h ForcedSplitting.cc ForcedSplitting.fh
 
 HwRemDecayer_la_LDFLAGS = -module -version-info 3:0:0
 

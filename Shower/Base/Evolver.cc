@@ -207,28 +207,21 @@ void Evolver::useCKKW (CascadeReconstructorPtr cr, ReweighterPtr rew) {
 
 }
 
-void Evolver::initCKKWShower (unsigned int currentMult, unsigned int maxMult) {
+void Evolver::initCKKWShower (const CascadeHistory& hist, unsigned int currentMult, unsigned int maxMult) {
 
   _ckkwVeto->eventGenerator(generator());
 
   // disable the veto for maximum multiplicity,
   // if wanted.
 
-#ifdef HERWIG_DEBUG_CKKW_EXTREME
-  generator()->log() << "== Evolver::initCKKWShower (" << currentMult << ", " << maxMult << ")" << endl;
-#endif
-
   if(!_reweighter->vetoHighest() && currentMult == maxMult) {
-#ifdef HERWIG_DEBUG_CKKW_EXTREME
-    generator()->log() << "max multiplicity and no vetoes on max multiplicity" << endl;
-#endif
     _ckkwVeto->disable();
   }
   else {
-#ifdef HERWIG_DEBUG_CKKW_EXTREME
-    generator()->log() << "veto will be applied." << endl;
-#endif
-    _ckkwVeto->enable();
+    if (_reweighter->highestNotHarder() && currentMult == maxMult)
+      _ckkwVeto->enable(hist.softestMEScale);
+    else
+      _ckkwVeto->enable();
   }
 
 }

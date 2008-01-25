@@ -106,7 +106,7 @@ public:
   /**
    * Do several checks and initialization, for remnantdecay inside ShowerHandler.
    */
-  void initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step);
+  void initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step, Energy forcedSplitScale);
 
   /**
    * Perform the acual forced splitting.
@@ -131,13 +131,17 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {
+    return new_ptr(*this);
+  }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {
+    return new_ptr(*this);
+  }
   //@}
 
 private:
@@ -270,6 +274,12 @@ private:
    * in the Remnant-Remnant CMF after all have been decayed.
    */
   pair<RemPPtr, RemPPtr> theRems;
+
+  /**
+   * The PDF freezing scale as set in ShowerHandler
+   */
+  Energy _forcedSplitScale;
+
 };
 
 }
@@ -308,7 +318,5 @@ struct ClassTraits<Herwig::HwRemDecayer>
 /** @endcond */
 
 }
-
-#include "HwRemDecayer.icc"
 
 #endif /* HERWIG_HwRemDecayer_H */

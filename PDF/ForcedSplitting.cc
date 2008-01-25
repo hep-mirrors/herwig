@@ -27,12 +27,12 @@
 using namespace Herwig;
 
 void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_kinCutoff, GeV) << _range << ounit(_qspac, GeV) 
+  os << ounit(_kinCutoff, GeV) << _range
      << _zbin << _ybin << _nbinmax << _alpha;
 }
 
 void ForcedSplitting::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_kinCutoff, GeV) >> _range >> iunit(_qspac, GeV) 
+  is >> iunit(_kinCutoff, GeV) >> _range
      >> _zbin >> _ybin >> _nbinmax >> _alpha;
 }
 
@@ -73,13 +73,6 @@ void ForcedSplitting::Init() {
     ("AlphaS",
      "Pointer to object to calculate the strong coupling",
      &ForcedSplitting::_alpha, false, false, true, false, false);
-
-
-  static Parameter<ForcedSplitting,Energy> interfaceQSpac
-    ("QSpac",
-     "The starting scale for the evolution in the forced splitting",
-     &ForcedSplitting::_qspac, GeV, 2.5*GeV, 0.5*GeV, 10.0*GeV,
-     false, false, Interface::limited);
 
 }
 
@@ -172,7 +165,9 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
       // calculate splitting function
       double pdfval(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
-      pdfval=_pdf->xfx(beam,gluon,sqr(q),lastx*zr);
+      // SP as q is always less than forcedSplitScale, the pdf scale is fixed
+      // pdfval=_pdf->xfx(beam,gluon,sqr(q),lastx*zr);
+      pdfval=_pdf->xfx(beam,gluon,sqr(_forcedSplitScale),lastx*zr);
       // SG: this is symmetric in z <-> 1-z
       psum+=pdfval*az*0.5*(sqr(zz)+sqr(wz));
     }
@@ -181,7 +176,9 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
       // calculate splitting function
       double pdfval(0.0);
       // SG modified this, should be x/z rather than x/(1-z)! 
-      pdfval=_pdf->xfx(beam,parton->dataPtr(),sqr(q),lastx*zr);
+      // SP as q is always less than forcedSplitScale, the pdf scale is fixed
+      // pdfval=_pdf->xfx(beam,parton->dataPtr(),sqr(q),lastx*zr);
+      pdfval=_pdf->xfx(beam,parton->dataPtr(),sqr(_forcedSplitScale),lastx*zr);
       // SG this splitting function has to have a 1/z pole! 
       psum+=pdfval*az*4./3.*(1.+sqr(wz))*zr;
     }

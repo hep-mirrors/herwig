@@ -89,7 +89,7 @@ public:
    * The cascade history is available through
    * the reconstructor object.
    */
-  virtual void initCKKWShower (unsigned int currentMult, unsigned int maxMult);
+  virtual void initCKKWShower (const CascadeHistory&, unsigned int currentMult, unsigned int maxMult);
 
   /**
    * Perform the shower of a decay

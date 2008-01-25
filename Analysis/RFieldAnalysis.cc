@@ -19,6 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
+
 class Jet{
 
 public:
@@ -99,6 +100,55 @@ vector<Jet> getJets(vector<tPPtr> particles, double R=0.7){
   return result;
 }
 
+
+/**
+ * A somewhat more sophisticated fastCDFSim than using a finite
+ * acceptance constant over pt. It is extracted from plot 19 in 
+ * CDF/DOC/MIN BIAS/CDFR/8593
+ * Track selection and counting efficiency in minimum bias, by
+ * N. Moggi, M. Mussini, F. Rimondi
+ */
+bool keep(Energy ){
+  double acceptance(1.0);
+/* 
+  if( pt < 0.5*GeV)
+    acceptance /= 1.5;
+
+  if( pt > 0.5*GeV && pt <= 1.0*GeV )
+    acceptance /= 1.2;
+
+  if( pt > 1.0*GeV && pt <= 1.5*GeV )
+    acceptance /= 1.14;
+
+  if( pt > 1.5*GeV && pt <= 2.0*GeV )
+    acceptance /= 1.1;
+
+  if( pt > 2.0*GeV && pt <= 2.5*GeV )
+    acceptance /= 1.073;
+
+  if( pt > 2.5*GeV && pt <= 3.0*GeV )
+    acceptance /= 1.054;
+
+  if( pt > 3.0*GeV && pt <= 4.0*GeV )
+    acceptance /= 1.040;
+
+  if( pt > 4.0*GeV && pt <= 5.0*GeV )
+    acceptance /= 1.029;
+
+  if( pt > 5.0*GeV )
+    acceptance /= 1.02;
+*/
+
+  //use constant acceptance again
+  acceptance = 0.92;
+
+  if(UseRandom::rnd() < acceptance)
+    return true;
+  else
+    return false;
+}
+
+
 RFieldAnalysis::~RFieldAnalysis() {}
 
 void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
@@ -111,19 +161,22 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
   int nchTow(0), nchTrans(0), nchAway(0);
   double ptsumTow(0.0), ptsumTrans(0.0), ptsumAway(0.0);
   double dphi(0.0), pt1(0.0);
+  Energy pt(0.0*GeV);
   
   for (tPVector::const_iterator pit = particles.begin(); pit != particles.end(); ++pit){
       /** Select only the charged particles  */
       if( ChargedSelector::Check(**pit) ){
-          //CDF detector simulation:
-          if(UseRandom::rnd() < 0.08) continue;
 
 	  p = (**pit).momentum();
+          pt = p.perp();
+          //CDF detector simulation:
+          if(!keep(pt)) continue;
+
 	  /**
 	     Select the particles according the noted selection cuts and do the
 	     analysis (towards away and transverse region) only on this set of particles.
 	  */
-	  if ( fabs( p.eta() ) < 1 && p.perp() > 0.5*GeV )
+	  if ( fabs( p.eta() ) < 1 && pt > 0.5*GeV )
 	      selection.push_back( *pit );
       
 	  nch++;//number of all charged particles

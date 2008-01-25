@@ -32,13 +32,15 @@ Reweighter::~Reweighter() {}
 void Reweighter::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
   os << _resolution << _reconstructor 
-     << _vetoHighest << _MEalpha << _showerAlpha;
+     << _vetoHighest << _highestNotHarder
+     << _MEalpha << _showerAlpha;
 }
 
 void Reweighter::persistentInput(PersistentIStream & is, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
   is >> _resolution >> _reconstructor
-     >> _vetoHighest >> _MEalpha >> _showerAlpha;
+     >> _vetoHighest >> _highestNotHarder
+     >> _MEalpha >> _showerAlpha;
 }
 
 AbstractClassDescription<Reweighter> Reweighter::initReweighter;
@@ -75,6 +77,22 @@ void Reweighter::Init() {
     (interfaceVetoHighest,
      "No",
      "Switch off vetoing highest multiplicity.",
+     false);
+
+
+  static Switch<Reweighter,bool> interfaceHighestNotHarder
+    ("HighestNotHarder",
+     "Switch on/off 'shower in highest multiplicity not harder than ME' strategy",
+     &Reweighter::_highestNotHarder, true, false, false);
+  static SwitchOption interfaceHighestNotHarderYes
+    (interfaceHighestNotHarder,
+     "Yes",
+     "Allow shower emissions up to the softest scale of the highest multiplicity ME",
+     true);
+  static SwitchOption interfaceHighestNotHarderNo
+    (interfaceHighestNotHarder,
+     "No",
+     "Do not allow shower emissions above the matching scale",
      false);
 
 }
@@ -164,13 +182,13 @@ void Reweighter::unresolvedCut (PPair in, PVector out) {
 
 }
 
-double Reweighter::reweight (CascadeHistory history, unsigned int mult, unsigned int minmult) {
+double Reweighter::reweight (CascadeHistory history, unsigned int mult, unsigned int minmult, unsigned int maxmult) {
 #ifdef HERWIG_DEBUG_CKKW
   generator()->log() << "== Reweighter::reweight" << endl;
 #endif
   double weight = 1.;
   analyzeHistory(history);
-  weight *= sudakovReweight(history,mult,minmult);
+  weight *= sudakovReweight(history,mult,minmult,maxmult);
   weight *= couplingReweight(history);
 #ifdef HERWIG_DEBUG_CKKW
   generator()->log() << "CKKW weight is " << weight << endl;
@@ -229,6 +247,6 @@ double Reweighter::couplingReweight (CascadeHistory history) {
   return weight;
 }
 
-double Reweighter::sudakovReweight (CascadeHistory, unsigned int, unsigned int) {
+double Reweighter::sudakovReweight (CascadeHistory, unsigned int, unsigned int, unsigned int) {
   return 1.;
 }

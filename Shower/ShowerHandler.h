@@ -101,6 +101,27 @@ public:
 
 public:
 
+  /**@name Methods related to PDF freezing */
+  //@{
+
+  /**
+   * Set the PDF freezing scale
+   */
+  inline void pdfFreezingScale (Energy scale) {
+    _pdfFreezingScale = scale;
+  }
+
+  /**
+   * Get the PDF freezing scale
+   */
+  inline Energy pdfFreezingScale () const {
+    return _pdfFreezingScale;
+  }
+
+  //@}
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -298,6 +319,11 @@ private:
    *  Pointer to the HwRemDecayer
    */
   HwRemDecPtr theRemDec;
+
+  /**
+   * The PDF freezing scale
+   */
+  Energy _pdfFreezingScale;
 
   /**
    *  Maximum number of attempts for the
