@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General Susy UED LH LittleHiggsTParity
+SUBDIRS = RSModel  StandardModel General Susy UED LH LHTP

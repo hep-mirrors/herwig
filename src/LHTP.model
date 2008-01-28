@@ -164,7 +164,7 @@ makeanti nu_taumTbar nu_taumT
 mkdir /Herwig/NewPhysics/LHTP
 cd /Herwig/NewPhysics/LHTP
 
-create Herwig::LHTPModel Model HwLHTP.so
+create Herwig::LHTPModel Model HwLHTPModel.so
 
 # SM couplings
 set Model:QCD/RunningAlphaS /Herwig/AlphaS
