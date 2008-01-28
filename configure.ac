@@ -94,7 +94,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
-		Models/LittleHiggs/Makefile
+		Models/LH/Makefile
+		Models/LittleHiggsTParity/Makefile
 		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile

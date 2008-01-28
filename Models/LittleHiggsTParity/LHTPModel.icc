@@ -1,0 +1,54 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the LHTPModel class.
+//
+
+namespace Herwig {
+
+inline LHTPModel::LHTPModel()
+  : _f(0.5*TeV), _salpha(sqrt(0.500)), _calpha(0.), _sbeta(0.), _cbeta(0.),
+    _kappa(1.), _mh(120.*GeV), _v(246.*GeV),_g(sqrt(0.43)), _gp(sqrt(0.12))
+{}
+
+inline IBPtr LHTPModel::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr LHTPModel::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline Energy LHTPModel::vev() const {
+  return _v;
+}
+
+inline Energy LHTPModel::f() const {
+  return _f;
+}
+
+inline double LHTPModel::sinAlpha() const {
+  return _salpha;
+}
+
+inline double LHTPModel::cosAlpha() const {
+  return _calpha;
+}
+
+inline double LHTPModel::sinBeta() const {
+  return _sbeta;
+}
+
+inline double LHTPModel::cosBeta() const {
+  return _cbeta;
+}
+
+inline double LHTPModel::sinThetaH() const {
+  return _sthetaH;
+}
+
+inline double LHTPModel::cosThetaH() const {
+  return _cthetaH;
+}
+
+}
