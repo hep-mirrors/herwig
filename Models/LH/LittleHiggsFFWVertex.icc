@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
-// the LittleHiggsFFWVertex class.
+// the LHFFWVertex class.
 //
 
 namespace Herwig {
 
-inline IBPtr LittleHiggsFFWVertex::clone() const {
+inline IBPtr LHFFWVertex::clone() const {
   return new_ptr(*this);
 }
 
-inline IBPtr LittleHiggsFFWVertex::fullclone() const {
+inline IBPtr LHFFWVertex::fullclone() const {
   return new_ptr(*this);
 }
 

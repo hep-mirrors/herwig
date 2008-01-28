@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsWWWVertex class.
+// functions of the LHWWWVertex class.
 //
 
 #include "LittleHiggsWWWVertex.h"
@@ -11,25 +11,26 @@
 
 using namespace Herwig;
 
-void LittleHiggsWWWVertex::persistentOutput(PersistentOStream & os) const {
+void LHWWWVertex::persistentOutput(PersistentOStream & os) const {
   os << _corr; 
 }
 
-void LittleHiggsWWWVertex::persistentInput(PersistentIStream & is, int) {
+void LHWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _corr; 
 }
 
-ClassDescription<LittleHiggsWWWVertex> LittleHiggsWWWVertex::initLittleHiggsWWWVertex;
+ClassDescription<LHWWWVertex> LHWWWVertex::initLHWWWVertex;
 // Definition of the static class description member.
 
-void LittleHiggsWWWVertex::Init() {
+void LHWWWVertex::Init() {
 
-  static ClassDocumentation<LittleHiggsWWWVertex> documentation
-    ("There is no documentation for the LittleHiggsWWWVertex class");
+  static ClassDocumentation<LHWWWVertex> documentation
+    ("The LHWWWVertex class implements the triple electroweak"
+     " gauge boson couplings in the Little Higgs model.");
 
 }
 
-LittleHiggsWWWVertex::LittleHiggsWWWVertex() : _couplast(0.),_q2last(0.*GeV2) {
+LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(0.*GeV2) {
   // particles
   vector<int> first,second,third;
   first.push_back(24);
@@ -77,13 +78,13 @@ LittleHiggsWWWVertex::LittleHiggsWWWVertex() : _couplast(0.),_q2last(0.*GeV2) {
   setList(first,second,third);
 }
 
-void LittleHiggsWWWVertex::doinit() throw(InitException) {
+void LHWWWVertex::doinit() throw(InitException) {
   // model
-  cLittleHiggsModelPtr model = 
-    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  cLHModelPtr model = 
+    dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) 
-    throw InitException() << "Must be using the LittleHiggsModel "
-			  << " in LittleHiggsWWWVertex::doinit()"
+    throw InitException() << "Must be using the LHModel "
+			  << " in LHWWWVertex::doinit()"
 			  << Exception::runerror;
   // correction factors for the different interactions
   double sw(sqrt(model->sin2ThetaW())),cw(sqrt(1.-model->sin2ThetaW()));
@@ -125,7 +126,7 @@ void LittleHiggsWWWVertex::doinit() throw(InitException) {
 }
 
 // couplings for the WWW vertex
-void LittleHiggsWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = electroMagneticCoupling(q2);

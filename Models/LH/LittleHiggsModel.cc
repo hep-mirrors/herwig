@@ -15,77 +15,77 @@
 
 using namespace Herwig;
 
-void LittleHiggsModel::persistentOutput(PersistentOStream & os) const {
+void LHModel::persistentOutput(PersistentOStream & os) const {
   os << _g << _gp << _cott << _tantp << ounit(_v,GeV) << _lamratio
-     << ounit(_mH,GeV) << _vacratio << ounit(_f,GeV) 
+     << ounit(_mH,GeV) << _vacratio << ounit(_f,GeV) << _s0 << _c0
      << _lambda1 << _lambda2 << _s << _c << _sp << _cp;
 }
 
-void LittleHiggsModel::persistentInput(PersistentIStream & is, int) {
+void LHModel::persistentInput(PersistentIStream & is, int) {
   is >> _g >> _gp >> _cott >> _tantp >> iunit(_v,GeV)  >> _lamratio
-     >> iunit(_mH,GeV) >> _vacratio >> iunit(_f,GeV) 
+     >> iunit(_mH,GeV) >> _vacratio >> iunit(_f,GeV)  >> _s0 >> _c0
      >> _lambda1 >> _lambda2 >> _s >> _c >> _sp >> _cp;
 }
 
-ClassDescription<LittleHiggsModel> LittleHiggsModel::initLittleHiggsModel;
+ClassDescription<LHModel> LHModel::initLHModel;
 // Definition of the static class description member.
 
-void LittleHiggsModel::Init() {
+void LHModel::Init() {
 
-  static ClassDocumentation<LittleHiggsModel> documentation
-    ("The LittleHiggsModel class");
+  static ClassDocumentation<LHModel> documentation
+    ("The LHModel class");
 
-  static Parameter<LittleHiggsModel,double> interfacegCoupling
+  static Parameter<LHModel,double> interfacegCoupling
     ("gCoupling",
      "The g coupling",
-     &LittleHiggsModel::_g,  sqrt(0.43), 0.0, 1.,
+     &LHModel::_g,  sqrt(0.43), 0.0, 1.,
      false, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,double> interfacegPrimeCoupling
+  static Parameter<LHModel,double> interfacegPrimeCoupling
     ("gPrimeCoupling",
      "The g' coupling",
-     &LittleHiggsModel::_gp, sqrt(0.12), 0.0, 1.,
+     &LHModel::_gp, sqrt(0.12), 0.0, 1.,
      false, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,double> interfaceCotTheta
+  static Parameter<LHModel,double> interfaceCotTheta
     ("CotTheta",
      "The cotangent of the theta mixing angle",
-     &LittleHiggsModel::_cott, 1.0, 0.1, 10.,
+     &LHModel::_cott, 1.0, 0.1, 10.,
      false, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,double> interfaceTanThetaPrime
+  static Parameter<LHModel,double> interfaceTanThetaPrime
     ("TanThetaPrime",
      "The tangent of the theta' mixing angle",
-     &LittleHiggsModel::_tantp, 1.0, 0.1, 10.0,
+     &LHModel::_tantp, 1.0, 0.1, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,Energy> interfacef
+  static Parameter<LHModel,Energy> interfacef
     ("f",
      "The scale of the non-linear sigma-model",
-     &LittleHiggsModel::_f, TeV, 3.*TeV, 0.0*TeV, 10.0*TeV,
+     &LHModel::_f, TeV, 3.*TeV, 0.0*TeV, 10.0*TeV,
      true, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,double> interfaceLambdaRatio
+  static Parameter<LHModel,double> interfaceLambdaRatio
     ("LambdaRatio",
      "The ratio lambda_2/lambda_1 of the top Yukawa couplings.",
-     &LittleHiggsModel::_lamratio, 1.0, 0.01, 100.,
+     &LHModel::_lamratio, 1.0, 0.01, 100.,
      false, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,double> interfaceVEVRatio
+  static Parameter<LHModel,double> interfaceVEVRatio
     ("VEVRatio",
      "The ratio of the vacuum expection values v'/v",
-     &LittleHiggsModel::_vacratio, 0.05, 0.0, 10.0,
+     &LHModel::_vacratio, 0.05, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Parameter<LittleHiggsModel,Energy> interfacemH
+  static Parameter<LHModel,Energy> interfacemH
     ("mH",
      "The mass of the lightest Higgs",
-     &LittleHiggsModel::_mH, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
+     &LHModel::_mH, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
      false, false, Interface::limited);
 
 }
 
-void LittleHiggsModel::doinit() throw(InitException) {
+void LHModel::doinit() throw(InitException) {
   // compute the parameters of the model
   // W and Z masses
   Energy mw(getParticleData(ParticleID::Wplus)->mass()),
@@ -120,6 +120,8 @@ void LittleHiggsModel::doinit() throw(InitException) {
   double r = 8.*_f/_v*_vacratio;
   double lamh = 2.*sqr(_mH/_v)/(1./r-0.25*r)/r;
   Energy2 MPhi2 = lamh*sqr(_f);
+  _s0 = 2.*sqrt(2.)*_vacratio;
+  _c0 = 1.-4.*sqr(_vacratio);
   // set the masses of the new particles
   resetMass( 32,sqrt(MAH2));
   resetMass( 33,sqrt(MZH2));
@@ -137,7 +139,7 @@ void LittleHiggsModel::doinit() throw(InitException) {
   StandardModel::doinit();
 }
 
-void LittleHiggsModel::resetMass(long id, Energy mass) {
+void LHModel::resetMass(long id, Energy mass) {
   tPDPtr part = getParticleData(id);
   if(!part) return;
   part->init();

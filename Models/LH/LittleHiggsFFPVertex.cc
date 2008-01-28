@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsFFPVertex class.
+// functions of the LHFFPVertex class.
 //
 
 #include "LittleHiggsFFPVertex.h"
@@ -12,7 +12,7 @@
 
 using namespace Herwig;
 
-LittleHiggsFFPVertex::LittleHiggsFFPVertex() 
+LHFFPVertex::LHFFPVertex() 
   : _couplast(0.), _q2last(-1.*GeV2) {
   // PDG codes for the particles
   vector<int> first,second,third;
@@ -49,31 +49,32 @@ LittleHiggsFFPVertex::LittleHiggsFFPVertex()
   setList(first,second,third);
 }
 
-void LittleHiggsFFPVertex::persistentOutput(PersistentOStream & os) const {
-  os << _charge <<  _gv << _ga;
+void LHFFPVertex::persistentOutput(PersistentOStream & os) const {
+  os << _charge <<  _gl << _gr;
 }
 
-void LittleHiggsFFPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _charge >>  _gv >> _ga;
+void LHFFPVertex::persistentInput(PersistentIStream & is, int) {
+  is >> _charge >>  _gl >> _gr;
 }
 
-ClassDescription<LittleHiggsFFPVertex> LittleHiggsFFPVertex::initLittleHiggsFFPVertex;
+ClassDescription<LHFFPVertex> LHFFPVertex::initLHFFPVertex;
 // Definition of the static class description member.
 
-void LittleHiggsFFPVertex::Init() {
+void LHFFPVertex::Init() {
 
-  static ClassDocumentation<LittleHiggsFFPVertex> documentation
-    ("There is no documentation for the LittleHiggsFFPVertex class");
+  static ClassDocumentation<LHFFPVertex> documentation
+    ("The LHFFPVertex class implements the couplings of the fermions to"
+     " the photon and A_H in the Little Higgs model");
 
 }
 
-void LittleHiggsFFPVertex::doinit() throw(InitException) {
+void LHFFPVertex::doinit() throw(InitException) {
   FFVVertex::doinit();
-  cLittleHiggsModelPtr model = 
-    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  cLHModelPtr model = 
+    dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) 
-    throw InitException() << "Must be using the LittleHiggsModel "
-			  << " in LittleHiggsFFPVertex::doinit()"
+    throw InitException() << "Must be using the LHModel "
+			  << " in LHFFPVertex::doinit()"
 			  << Exception::runerror;
   // charges
   _charge.resize(17);  
@@ -101,7 +102,7 @@ void LittleHiggsFFPVertex::doinit() throw(InitException) {
   double gve   = pre*(2.*ye-9./5.+1.5*cp2);
   double gae   = pre*(-0.2+0.5*cp2);
   // neutrinos
-  double gvv   = pre*(ye-0.8+0.5*cp2);
+  double gvv   = pre*(-0.2+0.5*cp2);
   double gav   = pre*( 0.2-0.5*cp2);
   // light top
   double gvtll = pre*(2.*yu+17./15.-5./6.*cp2-0.2*xL);
@@ -113,34 +114,34 @@ void LittleHiggsFFPVertex::doinit() throw(InitException) {
   // heavy top
   double gvthh = pre*(2.*yu+14./15.-4./3.*cp2+0.2*xL);
   double gathh = pre*0.2*xL;
-  _ga.resize(17);
-  _gv.resize(17);
+  _gl.resize(17);
+  _gr.resize(17);
   for(unsigned int ix=1;ix<4;++ix) {
-    _gv[2*ix-1]  = gvd;
-    _ga[2*ix-1]  = gad;
-    _gv[2*ix ]   = gvu;
-    _ga[2*ix ]   = gau;
-    _gv[2*ix+9 ] = gve;
-    _ga[2*ix+9 ] = gae;
-    _gv[2*ix+10] = gvv;
-    _ga[2*ix+10] = gav;
+    _gr[2*ix-1]  = gvd+gad;
+    _gl[2*ix-1]  = gvd-gad;
+    _gr[2*ix ]   = gvu+gau;
+    _gl[2*ix ]   = gvu-gau;
+    _gr[2*ix+9 ] = gve+gae;
+    _gl[2*ix+9 ] = gve-gae;
+    _gr[2*ix+10] = gvv+gav;
+    _gl[2*ix+10] = gvv-gav;
   }
   // light top
-  _gv[6] = gvtll;
-  _ga[6] = gatll;
+  _gr[6] = gvtll+gatll;
+  _gl[6] = gvtll-gatll;
   // mixed top
-  _gv[7] = gvtlh;
-  _ga[7] = gatlh;
+  _gr[7] = gvtlh+gatlh;
+  _gl[7] = gvtlh-gatlh;
   // heavy top
-  _gv[8] = gvthh;
-  _ga[8] = gathh;
+  _gr[8] = gvthh+gathh;
+  _gl[8] = gvthh-gathh;
   // order in strong and em coupling
   orderInGem(1);
   orderInGs(0);
 }
 
 // coupling for FFP vertex
-void LittleHiggsFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+void LHFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = -electroMagneticCoupling(q2);
@@ -152,19 +153,19 @@ void LittleHiggsFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c
   if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)||iferm==8) {
     // photon
     if(c->id()==ParticleID::gamma) {
-      setLeft(_charge[iferm]);
+      setLeft (_charge[iferm]);
       setRight(_charge[iferm]);
     }
     // heavy photon
     else {
       int ianti = abs(b->id());
       if(ianti==iferm) {
-	setRight(_gv[iferm]+_ga[iferm]);
-	setLeft (_gv[iferm]-_ga[iferm]);
+	setRight(-_gr[iferm]);
+	setLeft (-_gl[iferm]);
       }
       else {
-	setRight(_gv[7]+_ga[7]);
-	setLeft (_gv[7]-_ga[7]);
+	setRight(_gr[7]);
+	setLeft (_gl[7]);
       }
     }
   }

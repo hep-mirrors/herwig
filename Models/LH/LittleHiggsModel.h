@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_LittleHiggsModel_H
-#define HERWIG_LittleHiggsModel_H
+#ifndef HERWIG_LHModel_H
+#define HERWIG_LHModel_H
 //
-// This is the declaration of the LittleHiggsModel class.
+// This is the declaration of the LHModel class.
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
@@ -13,19 +13,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LittleHiggsModel class.
+ * Here is the documentation of the LHModel class.
  *
- * @see \ref LittleHiggsModelInterfaces "The interfaces"
- * defined for LittleHiggsModel.
+ * @see \ref LHModelInterfaces "The interfaces"
+ * defined for LHModel.
  */
-class LittleHiggsModel: public StandardModel {
+class LHModel: public StandardModel {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline LittleHiggsModel();
+  inline LHModel();
 
 public:
 
@@ -90,6 +90,16 @@ public:
   inline double cosThetaPrime() const;
 
   /**
+   *  The sine of the Higgs mixing angle
+   */
+  inline double sinTheta0() const;
+
+  /**
+   *  The cosine of the Higgs mixing angle
+   */
+  inline double cosTheta0() const;
+
+  /**
    *  The vacuum expection value
    */
   inline Energy vev() const;
@@ -147,13 +157,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<LittleHiggsModel> initLittleHiggsModel;
+  static ClassDescription<LHModel> initLHModel;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LittleHiggsModel & operator=(const LittleHiggsModel &);
+  LHModel & operator=(const LHModel &);
 
 private:
 
@@ -230,6 +240,16 @@ private:
    *  The cosine of the \f$\theta'\f$ mixing angle
    */
   double _cp;
+
+  /**
+   *  The sine of the Higgs mixing angle
+   */
+  double _s0;
+
+  /**
+   *  The cosine of the Higgs mixing angle
+   */
+  double _c0;
   //@}
 
 };
@@ -243,28 +263,28 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LittleHiggsModel. */
+ *  base classes of LHModel. */
 template <>
-struct BaseClassTrait<Herwig::LittleHiggsModel,1> {
-  /** Typedef of the first base class of LittleHiggsModel. */
+struct BaseClassTrait<Herwig::LHModel,1> {
+  /** Typedef of the first base class of LHModel. */
   typedef Herwig::StandardModel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LittleHiggsModel class and the shared object where it is defined. */
+ *  the LHModel class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LittleHiggsModel>
-  : public ClassTraitsBase<Herwig::LittleHiggsModel> {
+struct ClassTraits<Herwig::LHModel>
+  : public ClassTraitsBase<Herwig::LHModel> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::LittleHiggsModel"; }
+  static string className() { return "Herwig::LHModel"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * LittleHiggsModel is implemented. It may also include several, space-separated,
-   * libraries if the class LittleHiggsModel depends on other classes (base classes
+   * LHModel is implemented. It may also include several, space-separated,
+   * libraries if the class LHModel depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwLittleHiggsModel.so"; }
+  static string library() { return "HwLHModel.so"; }
 };
 
 /** @endcond */
@@ -273,4 +293,4 @@ struct ClassTraits<Herwig::LittleHiggsModel>
 
 #include "LittleHiggsModel.icc"
 
-#endif /* HERWIG_LittleHiggsModel_H */
+#endif /* HERWIG_LHModel_H */

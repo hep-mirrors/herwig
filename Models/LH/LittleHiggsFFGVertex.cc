@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsFFGVertex class.
+// functions of the LHFFGVertex class.
 //
 
 #include "LittleHiggsFFGVertex.h"
@@ -12,19 +12,20 @@
 
 using namespace Herwig;
 
-NoPIOClassDescription<LittleHiggsFFGVertex> 
-LittleHiggsFFGVertex::initLittleHiggsFFGVertex;
+NoPIOClassDescription<LHFFGVertex> 
+LHFFGVertex::initLHFFGVertex;
 // Definition of the static class description member.
 
-void LittleHiggsFFGVertex::Init() {
+void LHFFGVertex::Init() {
 
-  static ClassDocumentation<LittleHiggsFFGVertex> documentation
-    ("There is no documentation for the LittleHiggsFFGVertex class");
+  static ClassDocumentation<LHFFGVertex> documentation
+    ("The LHFFGVertex class implements the coupling of the quarks"
+     " to the gluon in the Little Higgs model");
 
 }
 
 // coupling for FFG vertex
-void LittleHiggsFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+void LHFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = -strongCoupling(q2);
@@ -38,12 +39,12 @@ void LittleHiggsFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
     setRight(1.);
   }
   else
-    throw HelicityConsistencyError() << "LittleHiggsFFGVertex::setCoupling" 
+    throw HelicityConsistencyError() << "LHFFGVertex::setCoupling" 
 				     << "Unknown particle in gluon vertex" 
 				     << Exception::runerror;
 }
 
-LittleHiggsFFGVertex::LittleHiggsFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
+LHFFGVertex::LHFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   // PDG codes for the particles
   vector<int> first,second,third;
   for(unsigned int ix=1;ix<9;++ix) {
@@ -55,7 +56,7 @@ LittleHiggsFFGVertex::LittleHiggsFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   setList(first,second,third);
 }
   
-void LittleHiggsFFGVertex::doinit() throw(InitException) {
+void LHFFGVertex::doinit() throw(InitException) {
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

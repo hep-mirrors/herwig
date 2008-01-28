@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsFFZVertex class.
+// functions of the LHFFZVertex class.
 //
 
 #include "LittleHiggsFFZVertex.h"
@@ -12,25 +12,27 @@
 
 using namespace Herwig;
 
-void LittleHiggsFFZVertex::persistentOutput(PersistentOStream & os) const {
+void LHFFZVertex::persistentOutput(PersistentOStream & os) const {
   os << _gl << _gr << _glH << _grH;
 }
 
-void LittleHiggsFFZVertex::persistentInput(PersistentIStream & is, int) {
+void LHFFZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _gl >> _gr >> _glH >> _grH;
 }
 
-ClassDescription<LittleHiggsFFZVertex> LittleHiggsFFZVertex::initLittleHiggsFFZVertex;
+ClassDescription<LHFFZVertex> LHFFZVertex::initLHFFZVertex;
 // Definition of the static class description member.
 
-void LittleHiggsFFZVertex::Init() {
+void LHFFZVertex::Init() {
 
-  static ClassDocumentation<LittleHiggsFFZVertex> documentation
-    ("There is no documentation for the LittleHiggsFFZVertex class");
+  static ClassDocumentation<LHFFZVertex> documentation
+    ("The LHFFZVertex class implements the couplings of the Z and Z_H in"
+     " the Little Higgs model to the fermions, both of the Standard Model"
+     " and the additional heavy top.");
 
 }
 
-LittleHiggsFFZVertex::LittleHiggsFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
+LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
   // PDG codes for the particles
   vector<int> first,second,third;
   // the quarks
@@ -44,16 +46,19 @@ LittleHiggsFFZVertex::LittleHiggsFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) 
   }
   first.push_back( -8);
   second.push_back( 8);
-  third.push_back(23);
-  first.push_back( -8);
-  second.push_back( 8);
-  third.push_back(33);
+  third.push_back (23);
   first.push_back( -6);
   second.push_back( 8);
-  third.push_back(23);
+  third.push_back (23);
   first.push_back( -8);
   second.push_back( 6);
-  third.push_back(33);
+  third.push_back (23);
+  first.push_back( -6);
+  second.push_back( 8);
+  third.push_back (33);
+  first.push_back( -8);
+  second.push_back( 6);
+  third.push_back (33);
   // the leptons
   for(unsigned int ix=11;ix<17;++ix) {
     first.push_back(-ix);
@@ -66,38 +71,35 @@ LittleHiggsFFZVertex::LittleHiggsFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) 
   setList(first,second,third);
 }
 
-void LittleHiggsFFZVertex::doinit() throw(InitException) {
+void LHFFZVertex::doinit() throw(InitException) {
   FFVVertex::doinit();
-  cLittleHiggsModelPtr model = 
-    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
-  if(!model) 
-    throw InitException() << "Must be using the LittleHiggsModel "
-			  << " in LittleHiggsFFZVertex::doinit()"
-			  << Exception::runerror;
+  cLHModelPtr model = dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
+  if(!model) throw InitException() << "Must be using the LHModel "
+				   << " in LHFFZVertex::doinit()"
+				   << Exception::runerror;
   double sw2(model->sin2ThetaW());
   double sw(sqrt(sw2)),cw(sqrt(1.-sw2));
-  double pre =-0.5/sqrt(sw2*(1.-sw2));
+  double pre =-0.5/sw/cw;
   double s (model->sinTheta()     ),c (model->cosTheta()     );
   double sp(model->sinThetaPrime()),cp(model->cosThetaPrime());
   double sp2(sqr(sp)),cp2(sqr(cp));
   double xW(-0.5/cw*s*c*(sqr(c)-sqr(s)));
-  double xB(-2.5/sw*sp*cp*(sqr(cp)-sqr(sp)));
+  double xB(-2.5/sw*sp*cp*(cp2-sp2));
   double yu  = -0.4, ye  =  0.6;
   double vf(model->vev()/model->f());
   double xL(sqr(model->lambda1())/(sqr(model->lambda1())+sqr(model->lambda2())));
   double vu  = pre*( 0.5-4./3.*sw2-sqr(vf)*(+0.5*cw*xW*c/s
-					    +sw*xB/sp/cp*(2.*yu+7./15.  -cp2/6.))); 
+					    +sw*xB/sp/cp*(2.*yu+7./15.  -cp2/6.)));
   double vd  = pre*(-0.5+2./3.*sw2-sqr(vf)*(-0.5*cw*xW*c/s
 					    +sw*xB/sp/cp*(2.*yu+11./15. +cp2/6.))); 
   double ve  = pre*(-0.5+2.*   sw2-sqr(vf)*(-0.5*cw*xW*c/s
 					    +sw*xB/sp/cp*(2.*ye-9./5. +1.5*cp2))); 
   double vv  = pre*(+0.5          -sqr(vf)*(+0.5*cw*xW*c/s
-					    +sw*xB/sp/cp*(   ye-4./5. +0.5*cp2))); 
-  double au  = pre*(-0.5-sqr(vf)*(-0.5*cw*xW*c/s+sw*xB/sp/cp*(+0.2-0.5*cp2))); 
-  double ad  = pre*( 0.5-sqr(vf)*(+0.5*cw*xW*c/s+sw*xB/sp/cp*(-0.2+0.5*cp2))); 
-  double ae  = pre*( 0.5-sqr(vf)*(+0.5*cw*xW*c/s+sw*xB/sp/cp*(-0.2+0.5*cp2))); 
-  double av  = pre*(-0.5-sqr(vf)*(-0.5*cw*xW*c/s+sw*xB/sp/cp*(+0.2-0.5*cp2))); 
-  
+					    +sw*xB/sp/cp*(   ye-4./5. +0.5*cp2)));
+  double au  = pre*(-0.5-sqr(vf)*(-0.5*cw*xW*c/s+sw*xB/sp/cp*(0.2-0.5*cp2)));
+  double ad  = pre*( 0.5-sqr(vf)*(+0.5*cw*xW*c/s-sw*xB/sp/cp*(0.2-0.5*cp2)));
+  double ae  = pre*( 0.5-sqr(vf)*(+0.5*cw*xW*c/s-sw*xB/sp/cp*(0.2-0.5*cp2)));
+  double av  = pre*(-0.5-sqr(vf)*(-0.5*cw*xW*c/s+sw*xB/sp/cp*(0.2-0.5*cp2)));
   double vtl  = pre*( 0.5-4./3.*sw2-sqr(vf)*(-0.5*sqr(xL)+0.5*cw*xW*c/s
 					     +sw*xB/sp/cp*(2.*yu+9./5.-1.5*cp2
 							   +(7./15.-2.*cp2/3.)*xL)));
@@ -163,10 +165,10 @@ void LittleHiggsFFZVertex::doinit() throw(InitException) {
   orderInGs(0);
 }
 
-void LittleHiggsFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
+void LHFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    _couplast = -electroMagneticCoupling(q2);
+    _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);
@@ -197,7 +199,7 @@ void LittleHiggsFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c)
     }
   }
   else
-    throw HelicityConsistencyError() << "LittleHiggsFFZVertex::setCoupling "
+    throw HelicityConsistencyError() << "LHFFZVertex::setCoupling "
 				     << "Unknown particle in Z vertex"
 				     << a->PDGName() << " " << b->PDGName()
 				     << " " << c->PDGName()

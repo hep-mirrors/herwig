@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LHFFWVertex class.
+//
+#ifndef HERWIG_LHFFWVertex_FH
+#define HERWIG_LHFFWVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LHFFWVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LHFFWVertex,LHFFWVertexPtr);
+
+}
+
+#endif

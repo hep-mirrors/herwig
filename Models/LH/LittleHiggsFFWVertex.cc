@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsFFWVertex class.
+// functions of the LHFFWVertex class.
 //
 
 #include "LittleHiggsFFWVertex.h"
@@ -13,7 +13,7 @@
 
 using namespace Herwig;
 
-LittleHiggsFFWVertex::LittleHiggsFFWVertex() 
+LHFFWVertex::LHFFWVertex() 
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.), _q2last(0.*GeV2),
     _corrL(0.),_corrH(0.),_tcorrL(0.),_tcorrH(0.),_tHcorrL(0.), _tHcorrH(0.) {
   // particles for the vertex
@@ -76,33 +76,33 @@ LittleHiggsFFWVertex::LittleHiggsFFWVertex()
   setList(first,second,third);
 }
 
-void LittleHiggsFFWVertex::persistentOutput(PersistentOStream & os) const {
+void LHFFWVertex::persistentOutput(PersistentOStream & os) const {
   os << _ckm << _corrL << _corrH << _tcorrL << _tcorrH << _tHcorrL << _tHcorrH;
 }
 
-void LittleHiggsFFWVertex::persistentInput(PersistentIStream & is, int) {
+void LHFFWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _ckm >> _corrL >> _corrH >> _tcorrL >> _tcorrH >> _tHcorrL >> _tHcorrH;
 }
 
-ClassDescription<LittleHiggsFFWVertex> LittleHiggsFFWVertex::initLittleHiggsFFWVertex;
+ClassDescription<LHFFWVertex> LHFFWVertex::initLHFFWVertex;
 // Definition of the static class description member.
 
-void LittleHiggsFFWVertex::Init() {
+void LHFFWVertex::Init() {
 
-  static ClassDocumentation<LittleHiggsFFWVertex> documentation
-    ("The LittleHiggsFFWVertex class implements the vertices for"
+  static ClassDocumentation<LHFFWVertex> documentation
+    ("The LHFFWVertex class implements the vertices for"
      " the coupling of the W and heavy W to the Standard Model "
      "fermions and the heavy top quark in the Little Higgs model");
 
 }
   
-void LittleHiggsFFWVertex::doinit() throw(InitException) {
+void LHFFWVertex::doinit() throw(InitException) {
   ThePEG::Helicity::FFVVertex::doinit();
-  cLittleHiggsModelPtr model = 
-    dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+  cLHModelPtr model = 
+    dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) 
-    throw InitException() << "Must be using the LittleHiggsModel "
-			  << " in LittleHiggsFFWVertex::doinit()"
+    throw InitException() << "Must be using the LHModel "
+			  << " in LHFFWVertex::doinit()"
 			  << Exception::runerror;
   // cast the CKM object to the HERWIG one
   ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
@@ -110,7 +110,7 @@ void LittleHiggsFFWVertex::doinit() throw(InitException) {
     transient_const_pointer>(generator()->standardModel()->CKM());
   if(!hwCKM) 
     throw InitException() << "Must have access to the Herwig::StandardCKM object"
-			  << "for the CKM matrix in LittleHiggsFFWVertex::doinit()"
+			  << "for the CKM matrix in LHFFWVertex::doinit()"
 			  << Exception::runerror;
   _ckm = hwCKM->getUnsquaredMatrix(model->families());
   // compute the correction factors
@@ -128,11 +128,11 @@ void LittleHiggsFFWVertex::doinit() throw(InitException) {
   orderInGs(0);
 }
 
-void LittleHiggsFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, 
+void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, 
 				       tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    _couplast    = sqrt(0.5)*weakCoupling(q2);
+    _couplast    = -sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }
   setNorm(_couplast);
@@ -163,7 +163,7 @@ void LittleHiggsFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
       id = (iferm+1)/2;
     }
     if( iu<1 || iu>3 || id<1 || id>3)
-      throw HelicityConsistencyError() << "LittleHiggsFFWVertex::setCoupling "
+      throw HelicityConsistencyError() << "LHFFWVertex::setCoupling "
 				       << "Unknown particle in W vertex" 
 				       << Exception::runerror;
     setLeft(_ckm[iu-1][id-1]);
@@ -174,7 +174,7 @@ void LittleHiggsFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
     setLeft(1.);
   }
   else
-    throw HelicityConsistencyError() << "LittleHiggsFFWVertex::setCoupling "
+    throw HelicityConsistencyError() << "LHFFWVertex::setCoupling "
 				     << "Unknown particle in W vertex" 
 				     << Exception::runerror;
   // correction factors
