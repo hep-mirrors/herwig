@@ -5,9 +5,9 @@
 // This is the declaration of the LHFFHVertex class.
 //
 
-#include "LittleHiggsModel.h"
+#include "LHModel.h"
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "LittleHiggsFFHVertex.fh"
+#include "LHFFHVertex.fh"
 
 namespace Herwig {
 
@@ -176,6 +176,6 @@ struct ClassTraits<Herwig::LHFFHVertex>
 
 }
 
-#include "LittleHiggsFFHVertex.icc"
+#include "LHFFHVertex.icc"
 
 #endif /* HERWIG_LHFFHVertex_H */

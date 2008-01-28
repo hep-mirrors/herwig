@@ -1,20 +1,20 @@
 pkglib_LTLIBRARIES = HwLHModel.la
 HwLHModel_la_SOURCES = \
-LittleHiggsModel.fh LittleHiggsModel.cc  \
-LittleHiggsModel.h  LittleHiggsModel.icc \
-LittleHiggsFFZVertex.fh LittleHiggsFFZVertex.cc  \
-LittleHiggsFFZVertex.h  LittleHiggsFFZVertex.icc \
-LittleHiggsFFPVertex.fh LittleHiggsFFPVertex.cc  \
-LittleHiggsFFPVertex.h  LittleHiggsFFPVertex.icc \
-LittleHiggsFFGVertex.fh LittleHiggsFFGVertex.cc  \
-LittleHiggsFFGVertex.h  LittleHiggsFFGVertex.icc \
-LittleHiggsFFWVertex.fh LittleHiggsFFWVertex.cc  \
-LittleHiggsFFWVertex.h  LittleHiggsFFWVertex.icc \
-LittleHiggsWWWVertex.fh LittleHiggsWWWVertex.cc  \
-LittleHiggsWWWVertex.h  LittleHiggsWWWVertex.icc \
-LittleHiggsFFHVertex.fh LittleHiggsFFHVertex.cc  \
-LittleHiggsFFHVertex.h  LittleHiggsFFHVertex.icc 
-
-#LittleHiggsWWHVertex.fh LittleHiggsWWHVertex.cc  \
-#LittleHiggsWWHVertex.h  LittleHiggsWWHVertex.icc 
+LHModel.fh LHModel.cc  \
+LHModel.h  LHModel.icc \
+LHFFZVertex.fh LHFFZVertex.cc  \
+LHFFZVertex.h  LHFFZVertex.icc \
+LHFFPVertex.fh LHFFPVertex.cc  \
+LHFFPVertex.h  LHFFPVertex.icc \
+LHFFGVertex.fh LHFFGVertex.cc  \
+LHFFGVertex.h  LHFFGVertex.icc \
+LHFFWVertex.fh LHFFWVertex.cc  \
+LHFFWVertex.h  LHFFWVertex.icc \
+LHWWWVertex.fh LHWWWVertex.cc  \
+LHWWWVertex.h  LHWWWVertex.icc \
+LHFFHVertex.fh LHFFHVertex.cc  \
+LHFFHVertex.h  LHFFHVertex.icc \
+\
+LHWWHVertex.fh LHWWHVertex.cc  \
+LHWWHVertex.h  LHWWHVertex.icc 
 HwLHModel_la_LDFLAGS = -module -version-info 3:0:0

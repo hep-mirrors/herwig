@@ -1,37 +1,37 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsWWHVertex class.
+// functions of the LHWWHVertex class.
 //
 
-#include "LittleHiggsWWHVertex.h"
+#include "LHWWHVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-void LittleHiggsWWHVertex::persistentOutput(PersistentOStream & os) const {
+void LHWWHVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(_coup,GeV);
 }
 
-void LittleHiggsWWHVertex::persistentInput(PersistentIStream & is, int) {
+void LHWWHVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_coup,GeV);
 }
 
-ClassDescription<LittleHiggsWWHVertex> LittleHiggsWWHVertex::initLittleHiggsWWHVertex;
+ClassDescription<LHWWHVertex> LHWWHVertex::initLHWWHVertex;
 // Definition of the static class description member.
 
-void LittleHiggsWWHVertex::Init() {
+void LHWWHVertex::Init() {
 
-  static ClassDocumentation<LittleHiggsWWHVertex> documentation
-    ("The LittleHiggsWWHVertex class implements the coupling of two electroweak"
+  static ClassDocumentation<LHWWHVertex> documentation
+    ("The LHWWHVertex class implements the coupling of two electroweak"
      " gauge bosons to a Higgs boson in the Little Higgs Model including the "
      "additional heavy photon, Z and W bosons and the triplet Higgs bosons.");
 
 }
 
-LittleHiggsWWHVertex::LittleHiggsWWHVertex() 
+LHWWHVertex::LHWWHVertex() 
   : _couplast(0.), _q2last(0.*GeV2) {
   // particles
   vector<int> first,second,third;
@@ -179,13 +179,13 @@ LittleHiggsWWHVertex::LittleHiggsWWHVertex()
   setList(first,second,third);
 }
 
-void LittleHiggsWWHVertex::doinit() throw(InitException) {
+void LHWWHVertex::doinit() throw(InitException) {
   // model
- cLittleHiggsModelPtr model = 
-   dynamic_ptr_cast<cLittleHiggsModelPtr>(generator()->standardModel());
+ cLHModelPtr model = 
+   dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) 
-    throw InitException() << "Must be using the LittleHiggsModel "
-			  << " in LittleHiggsWWHVertex::doinit()"
+    throw InitException() << "Must be using the LHModel "
+			  << " in LHWWHVertex::doinit()"
 			  << Exception::runerror;
   // order in the couplings
   orderInGem(1);
@@ -236,7 +236,7 @@ void LittleHiggsWWHVertex::doinit() throw(InitException) {
   _coup[26] =-fact*2.*vr*(sqr(c)-sqr(s))/s/c;
 }
 
-void LittleHiggsWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+void LHWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = electroMagneticCoupling(q2);
@@ -259,7 +259,7 @@ void LittleHiggsWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c
     else if((ibos[0]==33&&ibos[1]==32) ||
 	    (ibos[0]==32&&ibos[1]==33)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[8]);
     else 
-      throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
+      throw HelicityConsistencyError() << "LHWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex "
 				       << a->PDGName() << " " << b->PDGName() << " "
 				       << c->PDGName() 
@@ -280,7 +280,7 @@ void LittleHiggsWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c
 	    (ibos[0]==32&&ibos[1]==33)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[16]);
     else if((ibos[0]==32&&ibos[1]==32)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[17]);
     else 
-      throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
+      throw HelicityConsistencyError() << "LHWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex " 
 				       << a->PDGName() << " " << b->PDGName() << " "
 				       << c->PDGName() 
@@ -300,7 +300,7 @@ void LittleHiggsWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c
     else if((ibos[0]==34&&ibos[1]==33) ||
 	    (ibos[0]==33&&ibos[1]==34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[23]);
     else 
-      throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
+      throw HelicityConsistencyError() << "LHWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex " 
 				       << a->PDGName() << " " << b->PDGName() << " "
 				       << c->PDGName() 
@@ -314,14 +314,14 @@ void LittleHiggsWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c
     else if((ibos[0]==34&&ibos[1]==24) ||
 	    (ibos[0]==24&&ibos[1]==34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[24]);
     else 
-      throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
+      throw HelicityConsistencyError() << "LHWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex " 
 				       << a->PDGName() << " " << b->PDGName() << " "
 				       << c->PDGName() 
 				       << Exception::runerror;
   }
   else 
-    throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
+    throw HelicityConsistencyError() << "LHWWHVertex::setCoupling "
 				     << "Invalid particles in WWH Vertex " 
 				     << a->PDGName() << " " << b->PDGName() << " "
 				     << c->PDGName() 

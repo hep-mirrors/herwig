@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "LittleHiggsModel.fh"
+#include "LHModel.fh"
 
 namespace Herwig {
 
@@ -291,6 +291,6 @@ struct ClassTraits<Herwig::LHModel>
 
 }
 
-#include "LittleHiggsModel.icc"
+#include "LHModel.icc"
 
 #endif /* HERWIG_LHModel_H */

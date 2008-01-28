@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the LittleHiggsModel class.
+// functions of the LHModel class.
 //
 
-#include "LittleHiggsModel.h"
+#include "LHModel.h"
 #include "ThePEG/Repository/BaseRepository.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Switch.h"

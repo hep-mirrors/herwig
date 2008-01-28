@@ -4,7 +4,7 @@
 // functions of the LHFFZVertex class.
 //
 
-#include "LittleHiggsFFZVertex.h"
+#include "LHFFZVertex.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"

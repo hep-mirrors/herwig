@@ -1,34 +1,34 @@
 // -*- C++ -*-
-#ifndef HERWIG_LittleHiggsWWHVertex_H
-#define HERWIG_LittleHiggsWWHVertex_H
+#ifndef HERWIG_LHFFGVertex_H
+#define HERWIG_LHFFGVertex_H
 //
-// This is the declaration of the LittleHiggsWWHVertex class.
+// This is the declaration of the LHFFGVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "LittleHiggsModel.h"
-#include "LittleHiggsWWHVertex.fh"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.fh"
+#include "LHFFGVertex.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The LittleHiggsWWHVertex class implements the couplings of two electroweak
- * gauge bosons to a Higgs boson in the Little Higgs model including the additional
- * heavy photon, Z and W bosons in the model and the triplet Higgs bosons.
+ * The LHFFGVertex class implements the couplings of the 
+ * quarks and additional heavy top to the gluon in the Little Higgs
+ * model.
  *
- * @see \ref LittleHiggsWWHVertexInterfaces "The interfaces"
- * defined for LittleHiggsWWHVertex.
+ * @see \ref LHFFGVertexInterfaces "The interfaces"
+ * defined for LHFFGVertex.
  */
-class LittleHiggsWWHVertex: public Helicity::VVSVertex {
+class LHFFGVertex: public Helicity::FFVVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline LittleHiggsWWHVertex();
+  LHFFGVertex();
   
   /**
    * Calculate the couplings. 
@@ -38,24 +38,6 @@ public:
    * @param part3 The ParticleData pointer for the third  particle.
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -100,14 +82,14 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<LittleHiggsWWHVertex> initLittleHiggsWWHVertex;
+  static NoPIOClassDescription<LHFFGVertex> initLHFFGVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LittleHiggsWWHVertex & operator=(const LittleHiggsWWHVertex &);
-
+  LHFFGVertex & operator=(const LHFFGVertex &);
+  
 private:
 
   /**
@@ -115,7 +97,7 @@ private:
    */
   //@{
   /**
-   *  The last value of the electroweak coupling calculated.
+   *  The last value of the strong coupling calculated.
    */
   Complex _couplast;
 
@@ -123,11 +105,6 @@ private:
    *  The scale \f$q^2\f$ at which the coupling was last evaluated.
    */
   Energy2 _q2last;
-
-  /**
-   *  Couplings for the different interactions
-   */
-  vector<Energy> _coup;
   //@}
 
 };
@@ -141,24 +118,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LittleHiggsWWHVertex. */
+ *  base classes of LHFFGVertex. */
 template <>
-struct BaseClassTrait<Herwig::LittleHiggsWWHVertex,1> {
-  /** Typedef of the first base class of LittleHiggsWWHVertex. */
-  typedef Helicity::VVSVertex NthBase;
+struct BaseClassTrait<Herwig::LHFFGVertex,1> {
+  /** Typedef of the first base class of LHFFGVertex. */
+  typedef Helicity::FFVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LittleHiggsWWHVertex class and the shared object where it is defined. */
+ *  the LHFFGVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LittleHiggsWWHVertex>
-  : public ClassTraitsBase<Herwig::LittleHiggsWWHVertex> {
+struct ClassTraits<Herwig::LHFFGVertex>
+  : public ClassTraitsBase<Herwig::LHFFGVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::LittleHiggsWWHVertex"; }
+  static string className() { return "Herwig::LHFFGVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * LittleHiggsWWHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LittleHiggsWWHVertex depends on other classes (base classes
+   * LHFFGVertex is implemented. It may also include several, space-separated,
+   * libraries if the class LHFFGVertex depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -169,6 +146,6 @@ struct ClassTraits<Herwig::LittleHiggsWWHVertex>
 
 }
 
-#include "LittleHiggsWWHVertex.icc"
+#include "LHFFGVertex.icc"
 
-#endif /* HERWIG_LittleHiggsWWHVertex_H */
+#endif /* HERWIG_LHFFGVertex_H */

@@ -4,7 +4,7 @@
 // functions of the LHFFHVertex class.
 //
 
-#include "LittleHiggsFFHVertex.h"
+#include "LHFFHVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
