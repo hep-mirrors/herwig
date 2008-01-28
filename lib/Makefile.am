@@ -21,8 +21,7 @@ $(THEPEGLIB) -ldl
 
 if WANT_LOOPTOOLS
 Herwig_la_LIBADD += \
-$(top_builddir)/Looptools/libHwLooptools.la \
-$(top_builddir)/Looptools/libHwLooptoolsHelper.la
+$(top_builddir)/Looptools/libHwLooptoolsXFC.la ## $(top_builddir)/Looptools/libHwLooptoolsCFC.la
 Herwig_la_LDFLAGS += $(FLIBS)
 endif
 
