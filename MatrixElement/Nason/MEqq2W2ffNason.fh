@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEqq2W2ffNason class.
+//
+#ifndef HERWIG_MEqq2W2ffNason_FH
+#define HERWIG_MEqq2W2ffNason_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEqq2W2ffNason;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEqq2W2ffNason,MEqq2W2ffNasonPtr);
+
+}
+
+#endif

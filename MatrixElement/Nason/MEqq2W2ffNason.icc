@@ -1,0 +1,29 @@
+// -*- C++ -*-
+//
+// MEqq2W2ffNason.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the MEqq2W2ffNason class.
+//
+
+namespace Herwig {
+
+  inline MEqq2W2ffNason::MEqq2W2ffNason() : _maxflavour(5), _plusminus(0), _process(0),   
+					    _contrib(1), _a(0.5),_p(0.7), x_h(100), v_h(100), 
+					    x_pos_h(100), v_pos_h(100), x_neg_h(100), v_neg_h(100), _eps(1e-8)
+  {}
+  
+  inline IBPtr MEqq2W2ffNason::clone() const {
+    return new_ptr(*this);
+  }
+  
+  inline IBPtr MEqq2W2ffNason::fullclone() const {
+    return new_ptr(*this);
+  }
+  
+}
