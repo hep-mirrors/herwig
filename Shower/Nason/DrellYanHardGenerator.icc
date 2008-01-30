@@ -7,7 +7,8 @@
 namespace Herwig {
 
 inline DrellYanHardGenerator::DrellYanHardGenerator() : _power(2.0),_preqqbar(5.),
-							_preqg(3.),_pregqbar(3.)
+							_preqg(3.),_pregqbar(3.),
+							_min_pt(2.*GeV)
 {}
 
 inline IBPtr DrellYanHardGenerator::clone() const {
