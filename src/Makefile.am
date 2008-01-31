@@ -6,7 +6,7 @@ Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h \
 HerwigVersion.cc
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
-Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\""
+Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\""
 
 bin_SCRIPTS = herwig-config
 
