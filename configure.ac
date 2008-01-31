@@ -5,7 +5,7 @@ AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_HEADERS([Config/config.h])
-
+AC_PRESERVE_HELP_ORDER
 AC_CANONICAL_HOST
 
 case "${host}" in
@@ -83,6 +83,8 @@ HERWIG_COMPILERFLAGS
 
 HERWIG_CHECK_ABS_BUG
 
+HERWIG_ENABLE_MODELS
+
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
 
@@ -149,5 +151,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Makefile])
 
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
+
+HERWIG_OVERVIEW
 
 AC_OUTPUT

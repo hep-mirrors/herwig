@@ -25,14 +25,13 @@ $(top_builddir)/Looptools/libHwLooptoolsXFC.la ## $(top_builddir)/Looptools/libH
 Herwig_la_LDFLAGS += $(FLIBS)
 endif
 
-all-local: done-all-links
+all-local: do-links
 
-done-all-links: | Herwig.la
-	if test ! -L Herwig++ ; then $(LN_S) . Herwig++ ; fi
-	find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
--not -name 'lib*' -not -path '$(top_builddir)/lib/*' -exec $(LN_S) \{\} \;
-	$(LN_S) .libs/Herwig.so .libs/Herwig.so.* .
-	echo "stamp" > done-all-links
+do-links: | Herwig.la
+	@if test ! -L Herwig++ ; then $(LN_S) . Herwig++ ; fi
+	@find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
+-not -name 'lib*' -not -path '$(top_builddir)/lib/*' -exec $(LN_S) -f \{\} \;
+	@$(LN_S) -f .libs/Herwig.so .libs/Herwig.so.* .
 
 clean-local:
-	rm -f *.so *.so.* done-all-links
+	rm -f *.so *.so.*

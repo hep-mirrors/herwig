@@ -617,3 +617,66 @@ AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])
 AC_SUBST(AM_FFLAGS,  ["$debugflags"])
 AC_SUBST(AM_LDFLAGS)
 ])
+
+AC_DEFUN([HERWIG_ENABLE_MODELS],
+[
+AC_MSG_CHECKING([for BSM models to include])
+
+AC_ARG_ENABLE(models,
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are mssm, nmssm, ued, rs, lh, lhtp, or 'all'.]),
+        [],
+        [enable_models=all]
+        )
+if test "x$enable_models" = "xyes" -o "x$enable_models" = "xall"; then
+   all=yes
+fi
+AC_MSG_RESULT([$enable_models])
+
+if test ! "$all"; then
+   oldIFS="$IFS"
+   IFS=","
+   for i in $enable_models; do
+       declare $i=yes
+   done
+   IFS="$oldIFS"
+fi
+
+if test "$nmssm"; then
+   mssm=yes
+fi
+
+AC_SUBST([CREATE_BSM_ANALYSIS],["# create"])
+if test "$mssm" -a "$ued"; then
+   CREATE_BSM_ANALYSIS="create"
+fi
+
+AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
+AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
+AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
+AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
+AM_CONDITIONAL(WANT_LH,[test "$lh" -o "$all"])
+AM_CONDITIONAL(WANT_LHTP,[test "$lhtp" -o "$all"])
+])
+
+AC_DEFUN([HERWIG_OVERVIEW],
+[
+echo    "*****************************************************"
+echo    "*** $PACKAGE_STRING configuration summary"
+echo    "***"
+echo 	"*** BSM models:		$enable_models"
+echo    "*** Looptools:		$enable_looptools"
+echo 	"*** Herwig debug mode:	$enable_debug"
+echo    "***"
+echo    "*** ThePEG:		$with_thepeg"
+echo    "*** ThePEG headers:	$with_thepeg_headers"
+echo    "***"
+echo    "*** CLHEP:		$with_clhep"
+echo    "*** HepMC:		$with_hepmc"
+echo    "***"
+echo    "*** KtJet:		$with_ktjet"
+echo    "*** FastJet:		$with_fastjet"
+echo	"***"
+echo    "*** ROOT interface:	$with_root"
+echo 	"*** EvtGen interface:	$with_evtgen"
+echo    "*****************************************************"
+])

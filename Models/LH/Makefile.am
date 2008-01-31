@@ -1,4 +1,6 @@
+if WANT_LH
 pkglib_LTLIBRARIES = HwLHModel.la
+endif
 HwLHModel_la_SOURCES = \
 LHModel.fh LHModel.cc  \
 LHModel.h  LHModel.icc \

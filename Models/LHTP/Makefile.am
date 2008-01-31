@@ -1,4 +1,6 @@
+if WANT_LHTP
 pkglib_LTLIBRARIES = HwLHTPModel.la
+endif
 HwLHTPModel_la_SOURCES = \
 LHTPModel.fh     LHTPModel.cc      LHTPModel.h      LHTPModel.icc  \
 LHTPWWHVertex.fh LHTPWWHVertex.cc  LHTPWWHVertex.h  LHTPWWHVertex.icc \

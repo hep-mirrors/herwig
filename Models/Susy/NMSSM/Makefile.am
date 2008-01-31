@@ -1,4 +1,6 @@
+if WANT_NMSSM
 pkglib_LTLIBRARIES = HwNMSSM.la
+endif
 HwNMSSM_la_SOURCES =  \
 NMSSM.cc  NMSSM.h  NMSSM.icc NMSSM.fh \
 NMSSMFFHVertex.h NMSSMFFHVertex.fh NMSSMFFHVertex.icc NMSSMFFHVertex.cc\
