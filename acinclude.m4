@@ -623,7 +623,7 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 AC_MSG_CHECKING([for BSM models to include])
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are mssm, nmssm, ued, rs, lh, lhtp, or 'all'.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs lh lhtp) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
