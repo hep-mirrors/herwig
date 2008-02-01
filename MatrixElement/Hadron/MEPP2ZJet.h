@@ -329,7 +329,7 @@ struct ClassTraits<Herwig::MEPP2ZJet>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so"; }
+  static string library() { return "HwMEWZJet.so"; }
 };
 
 /** @endcond */
@@ -337,8 +337,5 @@ struct ClassTraits<Herwig::MEPP2ZJet>
 }
 
 #include "MEPP2ZJet.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2ZJet.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2ZJet_H */

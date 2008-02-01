@@ -24,8 +24,8 @@ using namespace Herwig;
 
 void MEPP2WJet::doinit() throw(InitException) {
   MEBase::doinit();
-  _wplus=getParticleData(ThePEG::ParticleID::Wplus);
-  _wminus=getParticleData(ThePEG::ParticleID::Wminus);
+  _wplus  = getParticleData(ThePEG::ParticleID::Wplus );
+  _wminus = getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer
   ThePEG::Ptr<Herwig::StandardModel>::transient_const_pointer 
     hwsm=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardModel>
@@ -163,6 +163,30 @@ void MEPP2WJet::Init() {
      "Only include outgoing c bbar/ b cbar",
      11);
 
+  static Switch<MEPP2WJet,unsigned int> interfaceWidthOption
+    ("WidthOption",
+     "The option for handling the width of the off-shell W boson",
+     &MEPP2WJet::_widthopt, 1, false, false);
+  static SwitchOption interfaceWidthOptionAllFixed
+    (interfaceWidthOption,
+     "AllFixed",
+     "Use a fixed width for the W in both the numerator and denominator."
+     " This is achieved by dividing out the running width which is "
+     "effectively included in the full matrix element calculation.",
+     0);
+  static SwitchOption interfaceWidthOptionFixedDenominator
+    (interfaceWidthOption,
+     "FixedDenominator",
+     "Use a fxied with in the W propagator but the full matrix element"
+     " in the numerator",
+     1);
+  static SwitchOption interfaceWidthOptionAllRunning
+    (interfaceWidthOption,
+     "AllRunning",
+     "Use a running width in the W propagator and the full matrix "
+     "element in the numerator",
+     2);
+
 }
 
 void MEPP2WJet::getDiagrams() const {
@@ -272,10 +296,10 @@ void MEPP2WJet::getDiagrams() const {
 		       3, qPos2,  4, lNeg1, 4, lNeg2, -10)));
 	}
 	if(wplus) {
-	  add(new_ptr((Tree2toNDiagram(3), qNeg2, qNeg2, g,     1, _wplus,
-		       3, qPos2,  4, lPos1, 4, lPos2, -11)));
-	  add(new_ptr((Tree2toNDiagram(2), qNeg2,  g, 1, qNeg2, 3, _wplus,
-		       3, qPos2,  4, lPos1, 4, lPos2, -12)));
+	  add(new_ptr((Tree2toNDiagram(3), qPos2, qNeg2, g,     1, _wplus,
+		       3, qNeg2,  4, lPos1, 4, lPos2, -11)));
+	  add(new_ptr((Tree2toNDiagram(2), qPos2,  g, 1, qPos2, 3, _wplus,
+		       3, qNeg2,  4, lPos1, 4, lPos2, -12)));
 	}
       }
     }
@@ -291,36 +315,36 @@ unsigned int MEPP2WJet::orderInAlphaEW() const {
 }
 
 void MEPP2WJet::persistentOutput(PersistentOStream & os) const {
-  os << _theFFWVertex << _theQQGVertex << _wplus 
+  os << _theFFWVertex << _theQQGVertex << _wplus << _widthopt
      << _wminus << _process << _maxflavour << _plusminus << _wdec;
 }
 
 void MEPP2WJet::persistentInput(PersistentIStream & is, int) {
-  is >> _theFFWVertex >> _theQQGVertex >> _wplus 
+  is >> _theFFWVertex >> _theQQGVertex >> _wplus >> _widthopt
      >> _wminus >> _process >> _maxflavour >> _plusminus >> _wdec;
 }
 
 int MEPP2WJet::nDim() const {
-  return 1;
+  return 5;
 }
 
 Selector<const ColourLines *>
 MEPP2WJet::colourGeometries(tcDiagPtr diag) const {
   // colour lines for q qbar -> W g
   static const ColourLines cqqbar[4]={ColourLines("1 -2 5,-3 -5"),
-				ColourLines("1 5, -5 2 -3"),
-				ColourLines("1 -2 5,-3 -5,6 -7"),
-				ColourLines("1 5, -5 2 -3,6 -7")};
+				      ColourLines("1 5, -5 2 -3"),
+				      ColourLines("1 -2 5,-3 -5,6 -7"),
+				      ColourLines("1 5, -5 2 -3,6 -7")};
   // colour lines for q g -> W q
   static const ColourLines cqg   [4]={ColourLines("1 2 -3,3 5"),
-				ColourLines("1 -2,2 3 5"),
-				ColourLines("1 2 -3,3 5,6 -7"),
-				ColourLines("1 -2,2 3 5,6 -7")};
+				      ColourLines("1 -2,2 3 5"),
+				      ColourLines("1 2 -3,3 5,6 -7"),
+				      ColourLines("1 -2,2 3 5,6 -7")};
   // colour lines for qbar q -> W qbar
   static const ColourLines cqbarg[4]={ColourLines("-1 -2 3,-3 -5"),
-				ColourLines("-1 2,-2 -3 -5"),
-				ColourLines("-1 -2 3,-3 -5,6 -7"),
-				ColourLines("-1 2,-2 -3 -5,6 -7")};
+				      ColourLines("-1 2,-2 -3 -5"),
+				      ColourLines("-1 -2 3,-3 -5,6 -7"),
+				      ColourLines("-1 2,-2 -3 -5,6 -7")};
   // select the correct line
   unsigned int icol = mePartonData()[3]->coloured() ? 2 : 0;
   Selector<const ColourLines *> sel;
@@ -363,19 +387,21 @@ MEPP2WJet::diagrams(const DiagramVector & diags) const {
 }
 
 Energy2 MEPP2WJet::scale() const {
-  // this is the transverse mass of the gauge boson
-  Lorentz5Momentum ptemp=meMomenta()[3]+meMomenta()[4];
-  return ptemp.perp2()+ptemp.m2();
+  return _scale;
 }
 
 CrossSection MEPP2WJet::dSigHatDR() const {
   return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
 }
 
-bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
+bool MEPP2WJet::generateKinematics(const double * r) {
+  // initialize jacobian
   jacobian(1.);
   // cms energy
   Energy ecm=sqrt(sHat());
+  // find the right W pointer
+  tcPDPtr wdata = mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge() > 0 ? 
+    _wplus :_wminus; 
   // first generate the mass of the off-shell gauge boson
   // minimum mass of the 
   tcPDVector ptemp;
@@ -387,29 +413,31 @@ bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
   Energy ptmin = lastCuts().minKT(mePartonData()[2]);
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
+  if(maxMass2<=0.*GeV2||minMass2<0.*GeV2) return false;
+  // also impose the limits from the ParticleData object
+  minMass2 = max(minMass2,sqr(wdata->massMin()));
+  maxMass2 = min(maxMass2,sqr(wdata->massMax()));
+  // return if not kinematically possible
   if(minMass2>maxMass2) return false;
-  // find the right W pointer
-  int icharge=mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge();
-  tcPDPtr wdata= icharge>0 ? _wplus :_wminus; 
   // generation of the mass
-  Energy M=wdata->mass(),Gamma=wdata->width();
-  Energy2 M2=sqr(M),MG=(M*Gamma);
+  Energy  M(wdata->mass()),Gamma(wdata->width());
+  Energy2 M2(sqr(M)),MG(M*Gamma);
   double rhomin=atan((minMass2-M2)/MG);
   double rhomax=atan((maxMass2-M2)/MG);
-  double rho=rhomin+UseRandom::rnd()*(rhomax-rhomin);
-  Energy2 mw2=M2+MG*tan(rho);
-  Energy mw=sqrt(mw2);
+  _mw2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
+  Energy mw=sqrt(_mw2);
   // jacobian
-  jacobian(jacobian()*(sqr(mw2-M2)+sqr(MG))/MG*(rhomax-rhomin)/sHat());
+  jacobian(jacobian()*(sqr(_mw2-M2)+sqr(MG))/MG*(rhomax-rhomin)/sHat());
   // set the masses of the outgoing particles in the 2-2 scattering
   meMomenta()[2].setMass(0.*MeV);
   Lorentz5Momentum pw(mw);
   // generate the polar angle of the hard scattering
-  double ctmin = -1.0, ctmax = 1.0;
-  Energy q = 0.0*GeV;
+  double ctmin(-1.0), ctmax(1.0);
+  Energy q(0.0*GeV);
   try {
     q = SimplePhaseSpace::getMagnitude(sHat(), meMomenta()[2].mass(),mw);
-  } catch ( ImpossibleKinematics ) {
+  }
+  catch ( ImpossibleKinematics ) {
     return false;
   }
   Energy2 pq = sqrt(sHat())*q;
@@ -420,25 +448,28 @@ bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
     ctmax = min(ctmax,  sqrt(ctm));
   }
   if ( ctmin >= ctmax ) return false;
-  double cth = getCosTheta(ctmin, ctmax, r);
+  double cth = getCosTheta(ctmin, ctmax, r[0]);
+  // momenta of particle in hard scattering
   Energy pt = q*sqrt(1.0-sqr(cth));
-  double phi=UseRandom::rnd()*2.0*Constants::pi;
+  double phi=2.0*Constants::pi*r[2];
   meMomenta()[2].setVect(Momentum3( pt*sin(phi), pt*cos(phi), q*cth));
   pw.setVect(            Momentum3(-pt*sin(phi),-pt*cos(phi),-q*cth));
   meMomenta()[2].rescaleEnergy();
   pw.rescaleEnergy();
+  // set the scale
+  _scale = _mw2+sqr(pt);
   // generate the momenta of the Z decay products
   meMomenta()[3].setMass(mePartonData()[3]->mass());
   meMomenta()[4].setMass(mePartonData()[4]->mass());
   Energy q2 = 0.0*GeV;
   try {
-    q2 = SimplePhaseSpace::getMagnitude(mw2, meMomenta()[3].mass(),
+    q2 = SimplePhaseSpace::getMagnitude(_mw2, meMomenta()[3].mass(),
 					meMomenta()[4].mass());
   } catch ( ImpossibleKinematics ) {
     return false;
   }
-  double cth2 =-1.+2.*UseRandom::rnd();
-  double phi2=Constants::twopi*UseRandom::rnd();
+  double cth2 =-1.+2.*r[3];
+  double phi2=Constants::twopi*r[4];
   Energy pt2 =q2*sqrt(1.-sqr(cth2));
   Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.*MeV,
 					    meMomenta()[3].mass()),
@@ -467,17 +498,17 @@ bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
   return true;	    
 }
 
-double MEPP2WJet::getCosTheta(double ctmin, double ctmax, const double * r) {
+double MEPP2WJet::getCosTheta(double ctmin, double ctmax, const double r) {
   double cth = 0.0;
   double zmin = 0.5*(1.0 - ctmax);
   double zmax = 0.5*(1.0 - ctmin);
   if ( zmin <= 0.0 || zmax >= 1.0 ) {
     jacobian((ctmax - ctmin)*jacobian());
-    cth = ctmin + (*r)*(ctmax-ctmin);
+    cth = ctmin + r*(ctmax-ctmin);
   } else {
     double A1 = (2.0*zmax - 1.0)/(zmax*(1.0-zmax));
     double A0 = (2.0*zmin - 1.0)/(zmin*(1.0-zmin));
-    double A = *r*(A1 - A0) + A0;
+    double A = r*(A1 - A0) + A0;
     double z = A < 2.0? 2.0/(sqrt(sqr(A) + 4.0) + 2 - A):
       0.5*(A - 2.0 + sqrt(sqr(A) + 4.0))/A;
     cth = 1.0 - 2.0*z;
@@ -498,7 +529,7 @@ double MEPP2WJet::me2() const {
     lmout.reset(ix);lm.push_back(lmout);
     lpout.reset(ix);lp.push_back(lpout);
   }
-  // q g to q Z
+  // q g to q W
   if(mePartonData()[0]->id()<=6&&mePartonData()[0]->id()>0&&
      mePartonData()[1]->id()==ParticleID::g) {
     // polarization states for the particles
@@ -515,7 +546,7 @@ double MEPP2WJet::me2() const {
     }
     output=qgME(fin,gin,fout,lm,lp);
   }
-  // qbar g to qbar Z
+  // qbar g to qbar W
   else if(mePartonData()[0]->id()>=-6&&mePartonData()[0]->id()<0&&
 	  mePartonData()[1]->id()==ParticleID::g) {
     vector<SpinorBarWaveFunction>  ain;
@@ -531,7 +562,7 @@ double MEPP2WJet::me2() const {
     }
     output=qbargME(ain,gin,aout,lm,lp);
   }
-  // q qbar to g Z
+  // q qbar to g W
   else {
     vector<SpinorWaveFunction>     fin;
     vector<SpinorBarWaveFunction>  ain;
@@ -546,6 +577,15 @@ double MEPP2WJet::me2() const {
     }
     output=qqbarME(fin,ain,gout,lm,lp);
   }
+  // off-shell factor if needed
+  if(_widthopt==0) {
+    Energy m1(meMomenta()[3].mass()),m2(meMomenta()[4].mass());
+    Energy2 m12(sqr(m1)),m22(sqr(m2));
+    Energy2 den = 2.*_mw2-m12-m22+6.*m1*m2-sqr(m12-m22)/_mw2;
+    Energy2 M2(sqr(_wminus->mass()));
+    Energy2 num = 2.*M2  -m12-m22+6.*m1*m2-sqr(m12-m22)/M2  ;
+    output *=num/den;
+  }
   return output*sHat();
 }
 
@@ -554,28 +594,22 @@ InvEnergy2 MEPP2WJet::qqbarME(vector<SpinorWaveFunction> & fin,
 			      vector<VectorWaveFunction> & gout,
 			      vector<SpinorBarWaveFunction> & lm,
 			      vector<SpinorWaveFunction> & lp,
-			      bool calc) const
-{
-  // scale
-  Energy2 mt2=scale();
+			      bool calc) const {
+  unsigned int wopt = _widthopt==2 ? 2 : 1;
   // if calculation spin corrections construct the me
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 					     PDT::Spin1,PDT::Spin1Half,
-					     PDT::Spin1Half));}
+					     PDT::Spin1Half));
   // some integers
   unsigned int ihel1,ihel2,ohel1,ohel2,ohel3;
   // find the right W pointer
-  int icharge=mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge();
-  tcPDPtr wdata= icharge>0 ? _wplus :_wminus; 
+  tcPDPtr wdata = mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge() > 0
+    ? _wplus :_wminus; 
   // compute the W current for speed
   VectorWaveFunction bcurr[2][2];
-  Lorentz5Momentum pw=-lp[0].getMomentum()-lm[0].getMomentum();
-  pw.rescaleMass();
   for(ohel2=0;ohel2<2;++ohel2) {
     for(ohel3=0;ohel3<2;++ohel3) {
-      // photon current
-      bcurr[ohel2][ohel3]=
-	_theFFWVertex->evaluate(pw.mass2(),1,wdata,lp[ohel3],lm[ohel2]);
+      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,wopt,wdata,lp[ohel3],lm[ohel2]);
     }
   }
   double me[3]={0.,0.,0.};
@@ -586,23 +620,23 @@ InvEnergy2 MEPP2WJet::qqbarME(vector<SpinorWaveFunction> & fin,
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
 	// intermediates for the diagrams
- 	inters=_theQQGVertex->evaluate(mt2,5,mePartonData()[0],
+ 	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gout[ohel1]);
-	interb=_theQQGVertex->evaluate(mt2,5,mePartonData()[1],
+	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[1],
 				       ain[ihel2],gout[ohel1]);
  	for(ohel2=0;ohel2<2;++ohel2) {
  	  for(ohel3=0;ohel3<2;++ohel3) {
-	    diag[0] = _theFFWVertex->evaluate(pw.mass2(),fin[ihel1],interb,
+	    diag[0] = _theFFWVertex->evaluate(_mw2,fin[ihel1],interb,
 					      bcurr[ohel2][ohel3]);
-	    diag[1] = _theFFWVertex->evaluate(pw.mass2(),inters,ain[ihel2],
+	    diag[1] = _theFFWVertex->evaluate(_mw2,inters,ain[ihel2],
 					      bcurr[ohel2][ohel3]);
 	    // diagram contributions
-	    me[1]+=real(diag[0]*conj(diag[0]));
-	    me[2]+=real(diag[1]*conj(diag[1]));
+	    me[1] += norm(diag[0]);
+	    me[2] += norm(diag[1]);
 	    // total
-	    diag[0]+=diag[1];
-	    me[0]+=real(diag[0]*conj(diag[0]));
-	    if(calc) _me(ihel1,ihel2,2*ohel1,ohel2,ohel3)=diag[0];
+	    diag[0] += diag[1];
+	    me[0]   += norm(diag[0]);
+	    if(calc) _me(ihel1,ihel2,2*ohel1,ohel2,ohel3) = diag[0];
 	  }
 	}
       }
@@ -611,8 +645,8 @@ InvEnergy2 MEPP2WJet::qqbarME(vector<SpinorWaveFunction> & fin,
   // results
   // initial state spin and colour average
   double colspin=1./9./4.;
-  // and c_F N_c from matrix element
-  colspin *=4.;
+  // and C_F N_c from matrix element
+  colspin *= 4.;
   // colour factor for the W decay
   if(mePartonData()[3]->coloured()) colspin*=3.;
   DVector save;
@@ -629,28 +663,22 @@ InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
 			   vector<SpinorBarWaveFunction> & fout,
 			   vector<SpinorBarWaveFunction> & lm,
 			   vector<SpinorWaveFunction> & lp,
-			   bool calc) const
-{
-  // scale
-  Energy2 mt2=scale();
+			   bool calc) const {
+  unsigned int wopt = _widthopt==2 ? 2 : 1;
   // if calculation spin corrections construct the me
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin1Half,
-					     PDT::Spin1Half,
-					     PDT::Spin1Half));}
+  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+					     PDT::Spin1Half,PDT::Spin1Half,
+					     PDT::Spin1Half));
   // find the right W pointer
-  int icharge=mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge();
-  tcPDPtr wdata= icharge>0 ? _wplus :_wminus; 
+  tcPDPtr wdata = mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge() > 0 ? 
+    _wplus :_wminus; 
   // some integers
   unsigned int ihel1,ihel2,ohel1,ohel2,ohel3;
   // compute the leptonic W current for speed
   VectorWaveFunction bcurr[2][2];
-  Lorentz5Momentum pw=meMomenta()[3]+meMomenta()[4];
-  pw.rescaleMass();
   for(ohel2=0;ohel2<2;++ohel2) {
     for(ohel3=0;ohel3<2;++ohel3) {
-       bcurr[ohel2][ohel3]=
-	_theFFWVertex->evaluate(pw.mass2(),1,wdata,lp[ohel3],lm[ohel2]);
+      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,wopt,wdata,lp[ohel3],lm[ohel2]);
     }
   }
   // compute the matrix elements
@@ -662,23 +690,23 @@ InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
 	// intermediates for the diagrams
-	interb=_theQQGVertex->evaluate(mt2,5,mePartonData()[2],
+	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[2],
 				       fout[ohel1],gin[ihel2]);
-	inters=_theQQGVertex->evaluate(mt2,5,mePartonData()[0],
+	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);
 	for(ohel2=0;ohel2<2;++ohel2) {
 	  for(ohel3=0;ohel3<2;++ohel3) {
-	    diag[0]=_theFFWVertex->evaluate(pw.mass2(),fin[ihel1],interb,
+	    diag[0]=_theFFWVertex->evaluate(_mw2,fin[ihel1],interb,
 					    bcurr[ohel2][ohel3]);
-	    diag[1]=_theFFWVertex->evaluate(pw.mass2(),inters,fout[ohel1],
+	    diag[1]=_theFFWVertex->evaluate(_mw2,inters,fout[ohel1],
 					    bcurr[ohel2][ohel3]);
 	    // diagram contributions
-	    me[1]+=real(diag[0]*conj(diag[0]));
-	    me[2]+=real(diag[1]*conj(diag[1]));
+	    me[1] += norm(diag[0]);
+	    me[2] += norm(diag[1]);
 	    // total
-	    diag[0]+=diag[1];
-	    me[0]+=real(diag[0]*conj(diag[0]));
-	    if(calc) _me(ihel1,2*ihel2,ohel1,ohel2,ohel3)=diag[0];
+	    diag[0] += diag[1];
+	    me[0]   += norm(diag[0]);
+	    if(calc) _me(ihel1,2*ihel2,ohel1,ohel2,ohel3) = diag[0];
 	  }
 	}
       }
@@ -687,7 +715,7 @@ InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
   // results
   // initial state spin and colour average
   double colspin=1./24./4.;
-  // and c_F N_c from matrix element
+  // and C_F N_c from matrix element
   colspin *=4.;
   // colour factor for the W decay
   if(mePartonData()[3]->coloured()) colspin*=3.;
@@ -705,28 +733,22 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
 			     vector<SpinorWaveFunction> & fout,
 			     vector<SpinorBarWaveFunction> & lm,
 			     vector<SpinorWaveFunction> & lp,
-			     bool calc) const
-{
-  // the scale
-  Energy2 mt2=scale();
+			     bool calc) const {
+  unsigned int wopt = _widthopt==2 ? 2 : 1;
   // if calculation spin corrections construct the me
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin1Half,
-					     PDT::Spin1Half,
-					     PDT::Spin1Half));}
+  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+					     PDT::Spin1Half,PDT::Spin1Half,
+					     PDT::Spin1Half));
   // find the right W pointer
-  int icharge=mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge();
-  tcPDPtr wdata= icharge>0 ? _wplus :_wminus; 
+  tcPDPtr wdata = mePartonData()[3]->iCharge()+mePartonData()[4]->iCharge() > 0 ?
+    _wplus :_wminus; 
   // some integers
   unsigned int ihel1,ihel2,ohel1,ohel2,ohel3;
   // compute the leptonic W current for speed
   VectorWaveFunction bcurr[2][2];
-  Lorentz5Momentum pw=meMomenta()[3]+meMomenta()[4];
-  pw.rescaleMass();
   for(ohel2=0;ohel2<2;++ohel2) {
     for(ohel3=0;ohel3<2;++ohel3) {
-      bcurr[ohel2][ohel3]=
-	_theFFWVertex->evaluate(pw.mass2(),1,wdata,lp[ohel3],lm[ohel2]);
+      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,wopt,wdata,lp[ohel3],lm[ohel2]);
     }
   }
   // compute the matrix elements
@@ -738,23 +760,23 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
     for(ihel2=0;ihel2<2;++ihel2) {
       for(ohel1=0;ohel1<2;++ohel1) {
 	// intermediates for the diagrams
-	inters=_theQQGVertex->evaluate(mt2,5,mePartonData()[2],
+	inters=_theQQGVertex->evaluate(_scale,5,mePartonData()[2],
 				       fout[ohel1],gin[ihel2]);
-	interb=_theQQGVertex->evaluate(mt2,5,mePartonData()[0],
+	interb=_theQQGVertex->evaluate(_scale,5,mePartonData()[0],
 				       fin[ihel1],gin[ihel2]);
 	for(ohel2=0;ohel2<2;++ohel2) {
 	  for(ohel3=0;ohel3<2;++ohel3) {
-	    diag[0]= _theFFWVertex->evaluate(pw.mass2(),inters,fin[ihel1],
+	    diag[0]= _theFFWVertex->evaluate(_mw2,inters,fin[ihel1],
 					     bcurr[ohel2][ohel3]);
-	    diag[1]= _theFFWVertex->evaluate(pw.mass2(),fout[ohel1],interb,
+	    diag[1]= _theFFWVertex->evaluate(_mw2,fout[ohel1],interb,
 					     bcurr[ohel2][ohel3]);
 	    // diagram contributions
-	    me[1]+=real(diag[0]*conj(diag[0]));
-	    me[2]+=real(diag[1]*conj(diag[1]));
+	    me[1] += norm(diag[0]);
+	    me[2] += norm(diag[1]);
 	    // total
-	    diag[0]+=diag[1];
-	    me[0]+=real(diag[0]*conj(diag[0]));
-	    if(calc) _me(ihel1,2*ihel2,ohel1,ohel2,ohel3)=diag[0];
+	    diag[0] += diag[1];
+	    me[0]   += norm(diag[0]);
+	    if(calc) _me(ihel1,2*ihel2,ohel1,ohel2,ohel3) = diag[0];
 	  }
 	}
       }
@@ -763,8 +785,8 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   // results
   // initial state spin and colour average
   double colspin=1./24./4.;
-  // and c_F N_c from matrix element
-  colspin *=4.;
+  // and C_F N_c from matrix element
+  colspin *= 4.;
   // colour factor for the W decay
   if(mePartonData()[3]->coloured()) colspin*=3.;
   DVector save;
@@ -776,8 +798,7 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   return me[0] * UnitRemoval::InvE2;
 }
 
-void MEPP2WJet::constructVertex(tSubProPtr sub)
-{
+void MEPP2WJet::constructVertex(tSubProPtr sub) {
   // extract the particles in the hard process
   ParticleVector hard(5);
   // incoming
@@ -840,7 +861,6 @@ void MEPP2WJet::constructVertex(tSubProPtr sub)
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<5;++ix) {
+  for(unsigned int ix=0;ix<5;++ix)
     dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
-  }
 }
