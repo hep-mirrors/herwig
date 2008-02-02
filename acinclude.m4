@@ -433,6 +433,17 @@ else
     fi
     AC_MSG_RESULT([$ROOTINCLUDE])
 
+    LIBS="$LIBS $ROOTLIBS"
+    LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
+    CPPFLAGS="$CPPFLAGS $ROOTINCLUDE"
+
+    AC_MSG_CHECKING([that ROOT works])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <TCanvas.h>]],
+    	[[TCanvas c("c1", "");]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
+     	AC_MSG_ERROR([Use '--with-root=' to set the path to your ROOT installation.\
+	If it doesn't work anyhow, you eventually have to set the ROOTSYS environment variable.])
+    ])
+
     AC_SUBST(ROOTLIBS)
     AC_SUBST(ROOTLIBPATH)
     AC_SUBST(ROOTPATH)
