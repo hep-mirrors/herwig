@@ -433,6 +433,10 @@ else
     fi
     AC_MSG_RESULT([$ROOTINCLUDE])
 
+
+    oldLIBS="$LIBS"
+    oldLDFLAGS="$LDFLAGS"
+    oldCPPFLAGS="$CPPFLAGS"
     LIBS="$LIBS $ROOTLIBS"
     LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
     CPPFLAGS="$CPPFLAGS $ROOTINCLUDE"
@@ -443,6 +447,10 @@ else
      	AC_MSG_ERROR([Use '--with-root=' to set the path to your ROOT installation.\
 	If it doesn't work anyhow, you eventually have to set the ROOTSYS environment variable.])
     ])
+
+    LIBS="$oldLIBS"
+    LDFLAGS="$oldLDFLAGS"
+    CPPFLAGS="$oldCPPFLAGS"
 
     AC_SUBST(ROOTLIBS)
     AC_SUBST(ROOTLIBPATH)
