@@ -11,4 +11,6 @@ StandardSelectors.cc StandardSelectors.h StandardSelectors.icc \
 Histogram.cc Histogram.fh Histogram.h Histogram.icc \
 GaussianIntegrator.cc GaussianIntegrator.h \
 GaussianIntegrator.icc GaussianIntegrator.tcc \
-Statistic.h
+Statistic.h \
+GSLIntegrator.h \
+GSLIntegrator.icc GSLIntegrator.tcc
