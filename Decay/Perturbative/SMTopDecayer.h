@@ -70,6 +70,28 @@ public:
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
 		     const ParticleVector & decay) const;
+
+  /**
+   * Method to return an object to calculate the 3 (or higher body) partial width
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
+   */
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
+  
+  /**
+   * The differential three body decay rate with one integral performed.
+   * @param imode The mode for which the matrix element is needed.
+   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
+   * @param s  The invariant mass which still needs to be integrate over.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
+   */
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
+				      const Energy2 s, const Energy m1,
+				      const Energy m2, const Energy m3) const;
+
   /**
    * Output the setup information for the particle database
    * @param os The stream to output the information to
@@ -102,6 +124,14 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /**
+   *  The integrand for the integrate partial width
+   */
+  Energy6 dGammaIntegrand(Energy2 mffb2, Energy2 mbf2, Energy mt, Energy mb, 
+			  Energy mf, Energy mfb, Energy mw) const;
 
 protected:
 
@@ -172,6 +202,10 @@ private:
   vector<double> _wleptonwgt;
   //@}
 
+  /**
+   *  Pointer to the \f$W^\pm\f$
+   */
+  PDPtr _wplus;
 };
 
 }

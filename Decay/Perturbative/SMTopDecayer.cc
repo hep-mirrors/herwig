@@ -19,7 +19,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-
+#include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -110,11 +110,11 @@ ParticleVector SMTopDecayer::decay(const Particle & parent,
 }   
  
 void SMTopDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _wvertex << _wquarkwgt << _wleptonwgt; 
+  os << _wvertex << _wquarkwgt << _wleptonwgt << _wplus; 
 }
   
 void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _wvertex >> _wquarkwgt >> _wleptonwgt;
+  is >> _wvertex >> _wquarkwgt >> _wleptonwgt >> _wplus;
 }
   
 ClassDescription<SMTopDecayer> SMTopDecayer::initSMTopDecayer;
@@ -205,7 +205,7 @@ double SMTopDecayer::me2(bool vertex, const int,
   }
   ME(topMe);
   double output = (topMe.contract(rhot)).real();
-  if(abs(decay[1]->id())<=4){output *=3.;}
+  if(abs(decay[1]->id())<=6) output *=3.;
   return output;
 }
 
@@ -219,7 +219,7 @@ void SMTopDecayer::doinit() throw(InitException) {
   //initialise
   _wvertex->init();
   //set up decay modes
-  tPDPtr Wplus(getParticleData(ParticleID::Wplus));
+  _wplus = getParticleData(ParticleID::Wplus);
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr Wchannel;
   PDVector extpart(4);
@@ -233,7 +233,7 @@ void SMTopDecayer::doinit() throw(InitException) {
     mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
     Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-    Wchannel->addIntermediate(Wplus,0,0.0,2,3);
+    Wchannel->addIntermediate(_wplus,0,0.0,2,3);
     Wchannel->init();
     mode->addChannel(Wchannel);
     addMode(mode,_wleptonwgt[(i-11)/2],wgt);
@@ -249,7 +249,7 @@ void SMTopDecayer::doinit() throw(InitException) {
 	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
 	Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
 	Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-	Wchannel->addIntermediate(Wplus,0,0.0,2,3);
+	Wchannel->addIntermediate(_wplus,0,0.0,2,3);
 	Wchannel->init();
 	mode->addChannel(Wchannel);
 	addMode(mode,_wquarkwgt[iz],wgt);
@@ -287,4 +287,101 @@ void SMTopDecayer::doinitrun() {
       else     _wquarkwgt [ix-3] = mode(ix)->maxWeight();
     }
   }
+}
+
+WidthCalculatorBasePtr SMTopDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
+  // identify W decay products
+  int sign = dm.parent()->id() > 0 ? 1 : -1;
+  int iferm(0),ianti(0);
+  for(ParticleMSet::const_iterator pit=dm.products().begin();
+      pit!=dm.products().end();++pit) {
+    int id = (**pit).id();
+    if(id*sign != ParticleID::b) {
+      if   (id*sign > 0 ) iferm = id*sign;
+      else                ianti = id*sign;
+    }
+  }
+  assert(iferm!=0&&ianti!=0);
+  // work out which mode we are doing
+  int imode(-1);
+  for(unsigned int ix=0;ix<numberModes();++ix) {
+    if(mode(ix)->externalParticles(2)->id() == ianti &&
+       mode(ix)->externalParticles(3)->id() == iferm ) {
+      imode = ix;
+      break;
+    }
+  }
+  assert(imode>=0);
+  // get the masses we need
+  Energy m[3] = {mode(imode)->externalParticles(1)->mass(),
+		 mode(imode)->externalParticles(3)->mass(),
+		 mode(imode)->externalParticles(2)->mass()};
+  return 
+    new_ptr(ThreeBodyAllOn1IntegralCalculator<SMTopDecayer>
+	    (3,_wplus->mass(),_wplus->width(),0.0,*this,imode,m[0],m[1],m[2]));
+}
+
+InvEnergy SMTopDecayer::threeBodydGammads(const int imode, const Energy2 mt2,
+					  const Energy2 mffb2, const Energy mb,
+					  const Energy mf, const Energy mfb) const {
+  Energy mffb(sqrt(mffb2));
+  Energy mw(_wplus->mass());
+  Energy2 mw2(sqr(mw)),gw2(sqr(_wplus->width()));
+  Energy mt(sqrt(mt2));
+  Energy Eb  = 0.5*(mt2-mffb2-sqr(mb))/mffb;
+  Energy Ef  = 0.5*(mffb2-sqr(mfb)+sqr(mf))/mffb;
+  Energy Ebm = sqrt(sqr(Eb)-sqr(mb));
+  Energy Efm = sqrt(sqr(Ef)-sqr(mf));
+  Energy2 upp = sqr(Eb+Ef)-sqr(Ebm-Efm);
+  Energy2 low = sqr(Eb+Ef)-sqr(Ebm+Efm);
+  InvEnergy width=(dGammaIntegrand(mffb2,upp,mt,mb,mf,mfb,mw)-
+		   dGammaIntegrand(mffb2,low,mt,mb,mf,mfb,mw))
+    /32./mt2/mt/8/pow(Constants::pi,3)/(sqr(mffb2-mw2)+mw2*gw2);
+  // couplings
+  width *= 0.25*sqr(4.*Constants::pi*generator()->standardModel()->alphaEM(mt2)/
+		    generator()->standardModel()->sin2ThetaW());
+  width *= generator()->standardModel()->CKM(*mode(imode)->externalParticles(0),
+					     *mode(imode)->externalParticles(1));
+  if(abs(mode(imode)->externalParticles(2)->id())<=6) {
+    width *=3.;
+    if(abs(mode(imode)->externalParticles(2)->id())%2==0)
+      width *=generator()->standardModel()->CKM(*mode(imode)->externalParticles(2),
+						*mode(imode)->externalParticles(3));
+    else
+      width *=generator()->standardModel()->CKM(*mode(imode)->externalParticles(3),
+						*mode(imode)->externalParticles(2));
+  }
+  // final spin average
+  assert(!isnan(width*GeV));
+  return 0.5*width;
+}
+
+Energy6 SMTopDecayer::dGammaIntegrand(Energy2 mffb2, Energy2 mbf2, Energy mt,
+				      Energy mb, Energy mf, Energy mfb, Energy mw) const {
+  Energy2 mt2(sqr(mt)) ,mb2(sqr(mb)) ,mf2(sqr(mf )),mfb2(sqr(mfb )),mw2(sqr(mw ));
+  Energy4 mt4(sqr(mt2)),mb4(sqr(mb2)),mf4(sqr(mf2)),mfb4(sqr(mfb2)),mw4(sqr(mw2));
+  return -mbf2 * ( + 6 * mb2 * mf2 * mfb2 * mffb2    +   6 * mb2 * mt2 * mfb2 * mffb2 
+		   + 6 * mb2 * mt2 * mf2  * mffb2    +  12 * mb2 * mt2 * mf2 * mfb2 
+		   - 3  * mb2 * mfb4  * mffb2        +   3 * mb2 * mf2 * mffb2 * mffb2 
+		   - 3  * mb2 * mf4   * mffb2        -   6 * mb2 * mt2 * mfb4 
+		   - 6  * mb2 * mt2 * mf4            -   3 * mb4 * mfb2 * mffb2 
+		   - 3  * mb4 * mf2 * mffb2          -   6 * mb4 * mf2 * mfb2
+		   + 3  * mt4 * mf4                  +   3 * mb4 * mfb4 
+		   + 3  * mb4 * mf4                  +   3 * mt4 * mfb4
+		   + 3  * mb2 * mfb2 * mffb2 * mffb2 +   3 * mt2 * mfb2 * mffb2 * mffb2 
+		   - 3  * mt2 * mfb4 * mffb2         +   3 * mt2 * mf2 * mffb2 * mffb2 
+		   - 3  * mt2 * mf4 * mffb2          -   3 * mt4 * mfb2 * mffb2 
+		   - 3  * mt4 * mf2 * mffb2          -   6 * mt4 * mf2 * mfb2 
+		   + 6  * mt2 * mf2 * mfb2 * mffb2   +  12 * mt2 * mf2 * mw4 
+		   + 12 * mb2 * mfb2 * mw4           +  12 * mb2 * mt2 * mw4 
+		   + 6  * mw2 * mt2 * mfb2 * mbf2    -  12 * mw2 * mt2 * mf2 * mffb2 
+		   - 6  * mw2 * mt2 * mf2 * mbf2     -  12 * mw2 * mt2 * mf2 * mfb2 
+		   - 12 * mw2 * mb2  * mfb2 * mffb2  -   6 * mw2 * mb2 * mfb2 * mbf2 
+		   + 6  * mw2 * mb2  * mf2 * mbf2    -  12 * mw2 * mb2 * mf2 * mfb2 
+		   - 12 * mw2 * mb2 * mt2 * mfb2     -  12 * mw2 * mb2 * mt2 * mf2 
+		   + 12 * mf2 * mfb2 * mw4           +   4 * mbf2 * mbf2 * mw4 
+		   -  6 * mfb2 * mbf2 * mw4          -   6 * mf2 * mbf2 * mw4 
+		   -  6 * mt2 * mbf2 * mw4           -   6 * mb2 * mbf2 * mw4 
+		   + 12 * mw2 * mt2 * mf4            +  12 * mw2 * mt4 * mf2 
+		   + 12 * mw2 * mb2 * mfb4           +  12 * mw2 * mb4 * mfb2) /mw4 / 3.;
 }

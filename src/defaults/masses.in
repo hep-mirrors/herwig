@@ -1185,6 +1185,7 @@ set chi_c22Pmass:Particle /Herwig/Particles/chi_c2(2P)
 set chi_c22Pmass:BreitWignerShape 0
 set chi_c22Pmass:MaximumWeight 1.15598
 set chi_c22Pmass:NGenerate 100
+
 set /Herwig/Particles/chi_c2(2P):Mass_generator chi_c22Pmass
 #
 create Herwig::GenericMassGenerator  kappa0mass
@@ -1240,4 +1241,14 @@ set K_2(1820)+Mass:NGenerate 100
 
 set /Herwig/Particles/K_2(1820)+:Mass_generator K_2(1820)+Mass
 set /Herwig/Particles/K_2(1820)-:Mass_generator K_2(1820)+Mass
+#
+create Herwig::GenericMassGenerator  TopMass
+set TopMass:Particle /Herwig/Particles/t 
+set TopMass:BreitWignerShape 0
+set TopMass:MaximumWeight 0.985846
+set TopMass:NGenerate 100
+set TopMass:WidthOption 0
+
+set /Herwig/Particles/t:Mass_generator TopMass
+set /Herwig/Particles/tbar:Mass_generator TopMass
 #
