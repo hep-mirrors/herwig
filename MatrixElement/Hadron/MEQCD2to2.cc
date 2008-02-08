@@ -30,7 +30,7 @@ using namespace Herwig;
 
 void MEQCD2to2::doinit() throw(InitException) {
   // call the base class
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
@@ -39,10 +39,9 @@ void MEQCD2to2::doinit() throw(InitException) {
     _gggvertex = hwsm->vertexGGG();
     _ggggvertex = hwsm->vertexGGGG();
   }
-  else
-    {throw InitException() << "Wrong type of StandardModel object in "
-			   << "MEQCD2to2::doinit() the Herwig++ version must be used" 
-			   << Exception::runerror;}
+  else throw InitException() << "Wrong type of StandardModel object in "
+			     << "MEQCD2to2::doinit() the Herwig++ version must be used" 
+			     << Exception::runerror;
   // get the particle data objects
   _gluon=getParticleData(ParticleID::g);
   for(int ix=1;ix<=int(_maxflavour);++ix) {
@@ -54,80 +53,6 @@ void MEQCD2to2::doinit() throw(InitException) {
 Energy2 MEQCD2to2::scale() const {
   Energy2 s(sHat()),u(uHat()),t(tHat());
   return 2.*s*t*u/(s*s+t*t+u*u);
-}
-
-bool MEQCD2to2::generateKinematics(const double * r) {
-  double ctmin = -1.0;
-  double ctmax = 1.0;
-  meMomenta()[2].setMass(0.*GeV);
-  meMomenta()[3].setMass(0.*GeV);
-
-
-  Energy q = 0.0*GeV;
-  try {
-    q = SimplePhaseSpace::
-      getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
-  } catch ( ImpossibleKinematics ) {
-    return false;
-  }
-
-  Energy e = sqrt(sHat())/2.0;
-		    
-  Energy2 m22 = meMomenta()[2].mass2();
-  Energy2 m32 = meMomenta()[3].mass2();
-  Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e1e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e0e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 e1e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 pq = 2.0*e*q;
-
-  Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-
-  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
-   		     lastCuts().minKT(mePartonData()[3]));
-  if ( ptmin > 0.0*GeV ) {
-    double ctm = 1.0 - sqr(ptmin/q);
-    if ( ctm <= 0.0 ) return false;
-    ctmin = max(ctmin, -sqrt(ctm));
-    ctmax = min(ctmax, sqrt(ctm));
-  }
-
-  if ( ctmin >= ctmax ) return false;
-    
-  double cth = getCosTheta(ctmin, ctmax, r);
-
-  Energy pt = q*sqrt(1.0-sqr(cth));
-  phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setVect(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
-
-  meMomenta()[3].setVect(Momentum3(-pt*sin(phi()),-pt*cos(phi()), -q*cth));
-
-  meMomenta()[2].rescaleEnergy();
-  meMomenta()[3].rescaleEnergy();
-
-  vector<LorentzMomentum> out(2);
-  out[0] = meMomenta()[2];
-  out[1] = meMomenta()[3];
-  tcPDVector tout(2);
-  tout[0] = mePartonData()[2];
-  tout[1] = mePartonData()[3];
-  if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
-    return false;
-
-  tHat(pq*cth + m22 - e0e2);
-  uHat(m22 + m32 - sHat() - tHat());
-  jacobian((pq/sHat())*Constants::pi*jacobian());
-  return true;
 }
 
 void MEQCD2to2::persistentOutput(PersistentOStream & os) const {
@@ -162,7 +87,6 @@ void MEQCD2to2::Init() {
      "The maximum flavour of the quarks in the process",
      &MEQCD2to2::_maxflavour, 5, 1, 5,
      false, false, Interface::limited);
-
 
   static Switch<MEQCD2to2,unsigned int> interfaceProcess
     ("Process",
@@ -230,55 +154,47 @@ double MEQCD2to2::gg2qqbarME(vector<VectorWaveFunction> &g1,
 			     vector<VectorWaveFunction> &g2,
 			     vector<SpinorBarWaveFunction> & q,
 			     vector<SpinorWaveFunction> & qbar,
-			     unsigned int iflow) const
-{
+			     unsigned int iflow) const {
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
-  if(iflow!=0)
-    {_me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
-				       PDT::Spin1Half,PDT::Spin1Half));}
+  if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
+						 PDT::Spin1Half,PDT::Spin1Half));
   // calculate the matrix element
   double output(0.),sumdiag[3]={0.,0.,0.},sumflow[2]={0.,0.};
   Complex diag[3],flow[2];
   VectorWaveFunction interv;
   SpinorWaveFunction inters;
-  for(unsigned int ihel1=0;ihel1<2;++ihel1)
-    { 
-      for(unsigned int ihel2=0;ihel2<2;++ihel2)
-	{
-	  interv=_gggvertex->evaluate(mt,5,_gluon,g1[ihel1],g2[ihel2]);
-	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
-	    { 
-	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
-		{
-		  //first t-channel diagram
-		  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
-					       qbar[ohel2],g2[ihel2]);
-		  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
-		  //second t-channel diagram
-		  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
-					       qbar[ohel2],g1[ihel1]);
-		  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
-		  // s-channel diagram
-		  diag[2]=_qqgvertex->evaluate(mt,qbar[ohel2],q[ohel1],interv);
-		  // colour flows
-		  flow[0]=diag[0]+diag[2];
-		  flow[1]=diag[1]-diag[2];
-		  // sums
-		  for(unsigned int ix=0;ix<3;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  for(unsigned int ix=0;ix<2;++ix)
-		    {sumflow[ix]+=real(flow[ix]*conj(flow[ix]));}
-		  // total
-		  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
-				-0.25*flow[0]*conj(flow[1]));
-		  // store the me if needed
-		  if(iflow!=0){_me(2*ihel1,2*ihel2,ohel1,ohel2)=flow[iflow-1];}
-		}
-	    }
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      interv=_gggvertex->evaluate(mt,5,_gluon,g1[ihel1],g2[ihel2]);
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  //first t-channel diagram
+	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+				       qbar[ohel2],g2[ihel2]);
+	  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
+	  //second t-channel diagram
+	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+				       qbar[ohel2],g1[ihel1]);
+	  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
+	  // s-channel diagram
+	  diag[2]=_qqgvertex->evaluate(mt,qbar[ohel2],q[ohel1],interv);
+	  // colour flows
+	  flow[0]=diag[0]+diag[2];
+	  flow[1]=diag[1]-diag[2];
+	  // sums
+	  for(unsigned int ix=0;ix<3;++ix) sumdiag[ix] += norm(diag[ix]);
+	  for(unsigned int ix=0;ix<2;++ix) sumflow[ix] += norm(flow[ix]);
+	  // total
+	  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
+			-0.25*flow[0]*conj(flow[1]));
+	  // store the me if needed
+	  if(iflow!=0) _me(2*ihel1,2*ihel2,ohel1,ohel2)=flow[iflow-1];
 	}
+      }
     }
+  }
   // test code vs me from ESW
   //Energy2 u(uHat()),t(tHat()),s(sHat());
   //double alphas(4.*pi*SM().alphaS(mt));
@@ -297,55 +213,47 @@ double MEQCD2to2::qqbar2ggME(vector<SpinorWaveFunction> & q,
 			     vector<SpinorBarWaveFunction> & qbar,
 			     vector<VectorWaveFunction> &g1,
 			     vector<VectorWaveFunction> &g2,
-			     unsigned int iflow) const
-{
+			     unsigned int iflow) const {
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
-  if(iflow!=0)
-    {_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-				       PDT::Spin1,PDT::Spin1));}
+  if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+						 PDT::Spin1,PDT::Spin1));
   // calculate the matrix element
   double output(0.),sumdiag[3]={0.,0.,0.},sumflow[2]={0.,0.};
   Complex diag[3],flow[2];
   VectorWaveFunction interv;
   SpinorWaveFunction inters;
-  for(unsigned int ihel1=0;ihel1<2;++ihel1)
-    { 
-      for(unsigned int ihel2=0;ihel2<2;++ihel2)
-	{
-	  interv=_qqgvertex->evaluate(mt,5,_gluon,q[ihel1],qbar[ihel2]);
-	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
-	    { 
-	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
-		{
-		  // first t-channel diagram
-		  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
-					      q[ihel1],g1[ohel1]);
-		  diag[0]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g2[ohel2]);
-		  // second t-channel diagram
-		  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
-					      q[ihel1],g2[ohel2]);
-		  diag[1]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g1[ohel1]);
-		  // s-channel diagram
-		  diag[2]=_gggvertex->evaluate(mt,g1[ohel1],g2[ohel2],interv);
-		  // colour flows
-		  flow[0]=diag[0]-diag[2];
-		  flow[1]=diag[1]+diag[2];
-		  // sums
-		  for(unsigned int ix=0;ix<3;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  for(unsigned int ix=0;ix<2;++ix)
-		    {sumflow[ix]+=real(flow[ix]*conj(flow[ix]));}
-		  // total
-		  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
-				-0.25*flow[0]*conj(flow[1]));
-		  // store the me if needed
-		  if(iflow!=0){_me(ihel1,ihel2,2*ohel1,2*ohel2)=flow[iflow-1];}
-		}
-	    }
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      interv=_qqgvertex->evaluate(mt,5,_gluon,q[ihel1],qbar[ihel2]);
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // first t-channel diagram
+	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
+				      q[ihel1],g1[ohel1]);
+	  diag[0]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g2[ohel2]);
+	  // second t-channel diagram
+	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
+				      q[ihel1],g2[ohel2]);
+	  diag[1]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g1[ohel1]);
+	  // s-channel diagram
+	  diag[2]=_gggvertex->evaluate(mt,g1[ohel1],g2[ohel2],interv);
+	  // colour flows
+	  flow[0]=diag[0]-diag[2];
+	  flow[1]=diag[1]+diag[2];
+	  // sums
+	  for(unsigned int ix=0;ix<3;++ix) sumdiag[ix] += norm(diag[ix]);
+	  for(unsigned int ix=0;ix<2;++ix) sumflow[ix] += norm(flow[ix]);
+	  // total
+	  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
+			-0.25*flow[0]*conj(flow[1]));
+	  // store the me if needed
+	  if(iflow!=0) _me(ihel1,ihel2,2*ohel1,2*ohel2)=flow[iflow-1];
 	}
+      }
     }
+  }
   // test code vs me from ESW
   //Energy2 u(uHat()),t(tHat()),s(sHat());
   //double alphas(4.*pi*SM().alphaS(mt));
@@ -364,55 +272,47 @@ double MEQCD2to2::qg2qgME(vector<SpinorWaveFunction> & qin,
 			  vector<VectorWaveFunction> &g2,
 			  vector<SpinorBarWaveFunction> & qout,
 			  vector<VectorWaveFunction> &g4,
-			  unsigned int iflow) const
-{
+			  unsigned int iflow) const {
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
-  if(iflow!=0)
-    {_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-				       PDT::Spin1Half,PDT::Spin1));}
+  if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+						 PDT::Spin1Half,PDT::Spin1));
   // calculate the matrix element
-   double output(0.),sumdiag[3]={0.,0.,0.},sumflow[2]={0.,0.};
-   Complex diag[3],flow[2];
-   VectorWaveFunction interv;
-   SpinorWaveFunction inters,inters2;
-   for(unsigned int ihel1=0;ihel1<2;++ihel1)
-     { 
-       for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
-	  inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
-				      qin[ihel1],g2[ihel2]);
- 	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
- 	    { 
- 	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
- 		{
-		  // s-channel diagram
-		  diag[0]=_qqgvertex->evaluate(mt,inters,qout[ohel1],g4[ohel2]);
-		  // first t-channel
-		  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
-					       qin[ihel1],g4[ohel2]);
-		  diag[1]=_qqgvertex->evaluate(mt,inters2,qout[ohel1],g2[ihel2]);
-		  // second t-channel
-		  interv=_qqgvertex->evaluate(mt,5,_gluon,qin[ihel1],qout[ohel1]);
-		  diag[2]=_gggvertex->evaluate(mt,g2[ihel2],g4[ohel2],interv);
-		  // colour flows
-		  flow[0]=diag[0]-diag[2];
-		  flow[1]=diag[1]+diag[2];
-		  // sums
-		  for(unsigned int ix=0;ix<3;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  for(unsigned int ix=0;ix<2;++ix)
-		    {sumflow[ix]+=real(flow[ix]*conj(flow[ix]));}
-		  // total
-		  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
-				-0.25*flow[0]*conj(flow[1]));
-		  // store the me if needed
-		  if(iflow!=0){_me(ihel1,2*ihel2,ohel1,2*ohel2)=flow[iflow-1];}
-		}
-	    }
+  double output(0.),sumdiag[3]={0.,0.,0.},sumflow[2]={0.,0.};
+  Complex diag[3],flow[2];
+  VectorWaveFunction interv;
+  SpinorWaveFunction inters,inters2;
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+				  qin[ihel1],g2[ihel2]);
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // s-channel diagram
+	  diag[0]=_qqgvertex->evaluate(mt,inters,qout[ohel1],g4[ohel2]);
+	  // first t-channel
+	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+				       qin[ihel1],g4[ohel2]);
+	  diag[1]=_qqgvertex->evaluate(mt,inters2,qout[ohel1],g2[ihel2]);
+	  // second t-channel
+	  interv=_qqgvertex->evaluate(mt,5,_gluon,qin[ihel1],qout[ohel1]);
+	  diag[2]=_gggvertex->evaluate(mt,g2[ihel2],g4[ohel2],interv);
+	  // colour flows
+	  flow[0]=diag[0]-diag[2];
+	  flow[1]=diag[1]+diag[2];
+	  // sums
+	  for(unsigned int ix=0;ix<3;++ix) sumdiag[ix] += norm(diag[ix]);
+	  for(unsigned int ix=0;ix<2;++ix) sumflow[ix] += norm(flow[ix]);
+	  // total
+	  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
+			-0.25*flow[0]*conj(flow[1]));
+	  // store the me if needed
+	  if(iflow!=0) _me(ihel1,2*ihel2,ohel1,2*ohel2)=flow[iflow-1];
 	}
-     }
+      }
+    }
+  }
   // test code vs me from ESW
   //Energy2 u(uHat()),t(tHat()),s(sHat());
   //double alphas(4.*pi*SM().alphaS(mt));
@@ -424,9 +324,8 @@ double MEQCD2to2::qg2qgME(vector<SpinorWaveFunction> & qin,
   sumdiag[_flow%2]=0.;
   _diagram=10+UseRandom::rnd3(sumdiag[0],sumdiag[1],sumdiag[2]);
   // final part of colour and spin factors
-   return output/18.;
+  return output/18.;
 }
-
 
 double MEQCD2to2::gg2ggME(vector<VectorWaveFunction> &g1,vector<VectorWaveFunction> &g2,
 			  vector<VectorWaveFunction> &g3,vector<VectorWaveFunction> &g4,
@@ -477,11 +376,11 @@ double MEQCD2to2::gg2ggME(vector<VectorWaveFunction> &g1,vector<VectorWaveFuncti
   // spin, colour and identical particle factorsxs
   output /= 4.*64.*2.;
   // test code vs me from ESW
-//   Energy2 u(uHat()),t(tHat()),s(sHat());
-//   using Constants::pi;
-//   double alphas(4.*pi*SM().alphaS(mt));
-//   cerr << "testing matrix element "
-//        << 1./output*9./4.*(3.-t*u/s/s-s*u/t/t-s*t/u/u)*sqr(alphas) << endl;
+  //   Energy2 u(uHat()),t(tHat()),s(sHat());
+  //   using Constants::pi;
+  //   double alphas(4.*pi*SM().alphaS(mt));
+  //   cerr << "testing matrix element "
+  //        << 1./output*9./4.*(3.-t*u/s/s-s*u/t/t-s*t/u/u)*sqr(alphas) << endl;
   // select a colour flow
   _flow=1+UseRandom::rnd3(sumflow[0],sumflow[1],sumflow[2]);
   // and diagram
@@ -496,55 +395,47 @@ double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
 				vector<VectorWaveFunction> &g2,
 				vector<SpinorWaveFunction> & qout,
 				vector<VectorWaveFunction> &g4,
-				unsigned int iflow) const
-{
+				unsigned int iflow) const {
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
-  if(iflow!=0)
-    {_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-				       PDT::Spin1Half,PDT::Spin1));}
+  if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+						 PDT::Spin1Half,PDT::Spin1));
   // calculate the matrix element
-   double output(0.),sumdiag[3]={0.,0.,0.},sumflow[2]={0.,0.};
-   Complex diag[3],flow[2];
-   VectorWaveFunction interv;
-   SpinorBarWaveFunction inters,inters2;
-   for(unsigned int ihel1=0;ihel1<2;++ihel1)
-     { 
-       for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
- 	  inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
-				      qin[ihel1],g2[ihel2]);
- 	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
- 	    { 
- 	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
- 		{
-		  // s-channel diagram
- 		  diag[0]=_qqgvertex->evaluate(mt,qout[ohel1],inters,g4[ohel2]);
-		  // first t-channel
-		  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
-					       qin[ihel1],g4[ohel2]);
-		  diag[1]=_qqgvertex->evaluate(mt,qout[ohel1],inters2,g2[ihel2]);
-		  // second t-channel
-		  interv=_qqgvertex->evaluate(mt,5,_gluon,qout[ohel1],qin[ihel1]);
-		  diag[2]=_gggvertex->evaluate(mt,g2[ihel2],g4[ohel2],interv);
-		  // colour flows
-		  flow[0]=diag[0]+diag[2];
-		  flow[1]=diag[1]-diag[2];
-		  // sums
-		  for(unsigned int ix=0;ix<3;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  for(unsigned int ix=0;ix<2;++ix)
-		    {sumflow[ix]+=real(flow[ix]*conj(flow[ix]));}
-		  // total
-		  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
-				-0.25*flow[0]*conj(flow[1]));
-		  // store the me if needed
-		  if(iflow!=0){_me(ihel1,2*ihel2,ohel1,2*ohel2)=flow[iflow-1];}
-		}
-	    }
+  double output(0.),sumdiag[3]={0.,0.,0.},sumflow[2]={0.,0.};
+  Complex diag[3],flow[2];
+  VectorWaveFunction interv;
+  SpinorBarWaveFunction inters,inters2;
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+				  qin[ihel1],g2[ihel2]);
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // s-channel diagram
+	  diag[0]=_qqgvertex->evaluate(mt,qout[ohel1],inters,g4[ohel2]);
+	  // first t-channel
+	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+				       qin[ihel1],g4[ohel2]);
+	  diag[1]=_qqgvertex->evaluate(mt,qout[ohel1],inters2,g2[ihel2]);
+	  // second t-channel
+	  interv=_qqgvertex->evaluate(mt,5,_gluon,qout[ohel1],qin[ihel1]);
+	  diag[2]=_gggvertex->evaluate(mt,g2[ihel2],g4[ohel2],interv);
+	  // colour flows
+	  flow[0]=diag[0]+diag[2];
+	  flow[1]=diag[1]-diag[2];
+	  // sums
+	  for(unsigned int ix=0;ix<3;++ix) sumdiag[ix] += norm(diag[ix]);
+	  for(unsigned int ix=0;ix<2;++ix) sumflow[ix] += norm(flow[ix]);
+	  // total
+	  output +=real(flow[0]*conj(flow[0])+flow[1]*conj(flow[1])
+			-0.25*flow[0]*conj(flow[1]));
+	  // store the me if needed
+	  if(iflow!=0) _me(ihel1,2*ihel2,ohel1,2*ohel2)=flow[iflow-1];
 	}
-     }
+      }
+    }
+  }
   // test code vs me from ESW
   //Energy2 u(uHat()),t(tHat()),s(sHat());
   //double alphas(4.*pi*SM().alphaS(mt));
@@ -556,84 +447,75 @@ double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
   sumdiag[_flow%2]=0.;
   _diagram=13+UseRandom::rnd3(sumdiag[0],sumdiag[1],sumdiag[2]);
   // final part of colour and spin factors
-   return output/18.;
+  return output/18.;
 }
 
 double MEQCD2to2::qq2qqME(vector<SpinorWaveFunction> & q1,
 			  vector<SpinorWaveFunction> & q2,
 			  vector<SpinorBarWaveFunction> & q3,
 			  vector<SpinorBarWaveFunction> & q4,
-			  unsigned int iflow) const
-{
+			  unsigned int iflow) const {
   // identify special case of identical quarks
   bool identical(q1[0].id()==q2[0].id());
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
-  if(iflow!=0)
-    {_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-				       PDT::Spin1Half,PDT::Spin1Half));}
+  if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+						 PDT::Spin1Half,PDT::Spin1Half));
   // calculate the matrix element
   double output(0.),sumdiag[2]={0.,0.};
   Complex diag[2];
   VectorWaveFunction interv;
-   for(unsigned int ihel1=0;ihel1<2;++ihel1)
-     { 
-       for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
-  	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
-  	    { 
-  	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
-  		{
-		  // first diagram
-		  interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q3[ohel1]);
-		  diag[0] = _qqgvertex->evaluate(mt,q2[ihel2],q4[ohel2],interv);
-		  // second diagram if identical
-		  if(identical)
-		    {
-		      interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q4[ohel2]);
-		      diag[1]=_qqgvertex->evaluate(mt,q2[ihel2],q3[ohel1],interv);
-		    }
-		  else diag[1]=0.;
-		  // sum of diagrams
-		  for(unsigned int ix=0;ix<2;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  // total
-		  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
-				+2./3.*diag[0]*conj(diag[1]));
-		  // store the me if needed
-		  if(iflow!=0){_me(ihel1,ihel2,ohel1,ohel2)=diag[iflow-1];}
-		}
-	    }
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // first diagram
+	  interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q3[ohel1]);
+	  diag[0] = _qqgvertex->evaluate(mt,q2[ihel2],q4[ohel2],interv);
+	  // second diagram if identical
+	  if(identical) {
+	    interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q4[ohel2]);
+	    diag[1]=_qqgvertex->evaluate(mt,q2[ihel2],q3[ohel1],interv);
+	  }
+	  else diag[1]=0.;
+	  // sum of diagrams
+	  for(unsigned int ix=0;ix<2;++ix) sumdiag[ix] += norm(diag[ix]);
+	  // total
+	  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
+			+2./3.*diag[0]*conj(diag[1]));
+	  // store the me if needed
+	  if(iflow!=0) _me(ihel1,ihel2,ohel1,ohel2)=diag[iflow-1];
 	}
-     }
-   // identical particle symmetry factor if needed
-   if(identical){output*=0.5;}
-   // test code vs me from ESW
-   //Energy2 u(uHat()),t(tHat()),s(sHat());
-   //double alphas(4.*pi*SM().alphaS(mt));
-   //if(identical)
-   //  {cerr << "testing matrix element A "
-   //   << 18./output*0.5*(4./9.*((s*s+u*u)/t/t+(s*s+t*t)/u/u)
-   //		       -8./27.*s*s/u/t)*sqr(alphas) << endl;}
-   //else
-   //  {cerr << "testing matrix element B "
-   //	   << 18./output*(4./9.*(s*s+u*u)/t/t)*sqr(alphas) << endl;}
-   //select a colour flow
-   _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
-   // select a diagram ensuring it is one of those in the selected colour flow
-   sumdiag[_flow%2]=0.;
-   _diagram=16+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
-   // final part of colour and spin factors
-   return output/18.;
+      }
+    }
+  }
+  // identical particle symmetry factor if needed
+  if(identical) output*=0.5;
+  // test code vs me from ESW
+  //Energy2 u(uHat()),t(tHat()),s(sHat());
+  //double alphas(4.*pi*SM().alphaS(mt));
+  //if(identical)
+  //  {cerr << "testing matrix element A "
+  //   << 18./output*0.5*(4./9.*((s*s+u*u)/t/t+(s*s+t*t)/u/u)
+  //		       -8./27.*s*s/u/t)*sqr(alphas) << endl;}
+  //else
+  //  {cerr << "testing matrix element B "
+  //	   << 18./output*(4./9.*(s*s+u*u)/t/t)*sqr(alphas) << endl;}
+  //select a colour flow
+  _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  // select a diagram ensuring it is one of those in the selected colour flow
+  sumdiag[_flow%2]=0.;
+  _diagram=16+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  // final part of colour and spin factors
+  return output/18.;
 }
 
 double MEQCD2to2::qbarqbar2qbarqbarME(vector<SpinorBarWaveFunction> & q1,
 				      vector<SpinorBarWaveFunction> & q2,
 				      vector<SpinorWaveFunction> & q3,
 				      vector<SpinorWaveFunction> & q4,
-				      unsigned int iflow) const
-{
+				      unsigned int iflow) const {
   // identify special case of identical quarks
   bool identical(q1[0].id()==q2[0].id());
   // scale
@@ -646,249 +528,221 @@ double MEQCD2to2::qbarqbar2qbarqbarME(vector<SpinorBarWaveFunction> & q1,
   double output(0.),sumdiag[2]={0.,0.};
   Complex diag[2];
   VectorWaveFunction interv;
-  for(unsigned int ihel1=0;ihel1<2;++ihel1)
-    { 
-      for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
-  	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
-  	    { 
-  	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
-  		{
-		  // first diagram
-		  interv = _qqgvertex->evaluate(mt,5,_gluon,q3[ohel1],q1[ihel1]);
- 		  diag[0] = _qqgvertex->evaluate(mt,q4[ohel2],q2[ihel2],interv);
- 		  // second diagram if identical
-		  if(identical)
-		    {
-		      interv = _qqgvertex->evaluate(mt,5,_gluon,q4[ohel2],q1[ihel1]);
-		      diag[1]=_qqgvertex->evaluate(mt,q3[ohel1],q2[ihel2],interv);
-		    }
-		  else diag[1]=0.;
-		  // sum of diagrams
-		  for(unsigned int ix=0;ix<2;++ix)
-		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
-		  // total
-		  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
-				+2./3.*diag[0]*conj(diag[1]));
-		  // store the me if needed
-		  if(iflow!=0){_me(ihel1,ihel2,ohel1,ohel2)=diag[iflow-1];}
-		}
-	    }
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // first diagram
+	  interv = _qqgvertex->evaluate(mt,5,_gluon,q3[ohel1],q1[ihel1]);
+	  diag[0] = _qqgvertex->evaluate(mt,q4[ohel2],q2[ihel2],interv);
+	  // second diagram if identical
+	  if(identical) {
+	    interv = _qqgvertex->evaluate(mt,5,_gluon,q4[ohel2],q1[ihel1]);
+	    diag[1]=_qqgvertex->evaluate(mt,q3[ohel1],q2[ihel2],interv);
+	  }
+	  else diag[1]=0.;
+	  // sum of diagrams
+	  for(unsigned int ix=0;ix<2;++ix) sumdiag[ix] += norm(diag[ix]);
+	  // total
+	  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
+			+2./3.*diag[0]*conj(diag[1]));
+	  // store the me if needed
+	  if(iflow!=0) _me(ihel1,ihel2,ohel1,ohel2)=diag[iflow-1];
 	}
-     }
-   // identical particle symmetry factor if needed
-   if(identical){output*=0.5;}
-   // test code vs me from ESW
-//    Energy2 u(uHat()),t(tHat()),s(sHat());
-//    double alphas(4.*pi*SM().alphaS(mt));
-//    if(identical)
-//      {cerr << "testing matrix element A "
-//       << 18./output*0.5*(4./9.*((s*s+u*u)/t/t+(s*s+t*t)/u/u)
-//    		       -8./27.*s*s/u/t)*sqr(alphas) << endl;}
-//    else
-//      {cerr << "testing matrix element B "
-//    	   << 18./output*(4./9.*(s*s+u*u)/t/t)*sqr(alphas) << endl;}
-   //select a colour flow
-   _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
-   // select a diagram ensuring it is one of those in the selected colour flow
-   sumdiag[_flow%2]=0.;
-   _diagram=18+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
-   // final part of colour and spin factors
-   return output/18.;
+      }
+    }
+  }
+  // identical particle symmetry factor if needed
+  if(identical){output*=0.5;}
+  // test code vs me from ESW
+  //    Energy2 u(uHat()),t(tHat()),s(sHat());
+  //    double alphas(4.*pi*SM().alphaS(mt));
+  //    if(identical)
+  //      {cerr << "testing matrix element A "
+  //       << 18./output*0.5*(4./9.*((s*s+u*u)/t/t+(s*s+t*t)/u/u)
+  //    		       -8./27.*s*s/u/t)*sqr(alphas) << endl;}
+  //    else
+  //      {cerr << "testing matrix element B "
+  //    	   << 18./output*(4./9.*(s*s+u*u)/t/t)*sqr(alphas) << endl;}
+  //select a colour flow
+  _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  // select a diagram ensuring it is one of those in the selected colour flow
+  sumdiag[_flow%2]=0.;
+  _diagram=18+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  // final part of colour and spin factors
+  return output/18.;
 }
 
 double MEQCD2to2::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
 				vector<SpinorBarWaveFunction> & q2,
 				vector<SpinorBarWaveFunction> & q3,
 				vector<SpinorWaveFunction>    & q4,
-				unsigned int iflow) const
-{
+				unsigned int iflow) const {
   // type of process
   bool diagon[2]={q1[0].id()== -q2[0].id(),q1[0].id()== q3[0].id()};
   // scale
   Energy2 mt(scale());
   // matrix element to be stored
-  if(iflow!=0)
-    {_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-				       PDT::Spin1Half,PDT::Spin1Half));}
+  if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+						 PDT::Spin1Half,PDT::Spin1Half));
   // calculate the matrix element
   double output(0.),sumdiag[2]={0.,0.};
   Complex diag[2];
   VectorWaveFunction interv;
-  for(unsigned int ihel1=0;ihel1<2;++ihel1)
-    { 
-      for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
-	  for(unsigned int ohel1=0;ohel1<2;++ohel1)
-  	    { 
-  	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
-  		{
- 		  // first diagram
-		  if(diagon[0])
-		    {
-		      interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q2[ihel2]);
-		      diag[0] = _qqgvertex->evaluate(mt,q4[ohel2],q3[ohel1],interv);
-		    }
-		  else diag[0]=0.;
-  		  // second diagram
- 		  if(diagon[1])
- 		    {
- 		      interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q3[ohel1]);
- 		      diag[1]=_qqgvertex->evaluate(mt,q4[ohel2],q2[ihel2],interv);
- 		    }
- 		  else diag[1]=0.;
- 		  // sum of diagrams
- 		  for(unsigned int ix=0;ix<2;++ix)
- 		    {sumdiag[ix]+=real(diag[ix]*conj(diag[ix]));}
- 		  // total
-		  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
- 				+2./3.*diag[0]*conj(diag[1]));
- 		  // store the me if needed
- 		  if(iflow!=0){_me(ihel1,ihel2,ohel1,ohel2)=diag[iflow-1];}
- 		}
- 	    }
- 	}
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
+	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
+	  // first diagram
+	  if(diagon[0]) {
+	    interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q2[ihel2]);
+	    diag[0] = _qqgvertex->evaluate(mt,q4[ohel2],q3[ohel1],interv);
+	  }
+	  else diag[0]=0.;
+	  // second diagram
+	  if(diagon[1]) {
+	    interv = _qqgvertex->evaluate(mt,5,_gluon,q1[ihel1],q3[ohel1]);
+	    diag[1]=_qqgvertex->evaluate(mt,q4[ohel2],q2[ihel2],interv);
+	  }
+	  else diag[1]=0.;
+	  // sum of diagrams
+	  for(unsigned int ix=0;ix<2;++ix) sumdiag[ix] += norm(diag[ix]);
+	  // total
+	  output +=real(diag[0]*conj(diag[0])+diag[1]*conj(diag[1])
+			+2./3.*diag[0]*conj(diag[1]));
+	  // store the me if needed
+	  if(iflow!=0){_me(ihel1,ihel2,ohel1,ohel2)=diag[iflow-1];}
+	}
+      }
     }
-    // test code vs me from ESW
-//     Energy2 u(uHat()),t(tHat()),s(sHat());
-//     double alphas(4.*pi*SM().alphaS(mt));
-//     if(diagon[0]&&diagon[1])
-//       {
-// 	cerr << "testing matrix element A " 
-// 	     << q1[0].id() << " " << q2[0].id() << " -> " 
-// 	     << q3[0].id() << " " << q4[0].id() << " " 
-// 	     << 18./output*0.5*(4./9.*((s*s+u*u)/t/t+(u*u+t*t)/s/s)
-// 				-8./27.*u*u/s/t)*sqr(alphas) << endl;
-//       }
-//     else if(diagon[0])
-//       {
-// 	cerr << "testing matrix element B " 
-// 	     << q1[0].id() << " " << q2[0].id() << " -> " 
-// 	     << q3[0].id() << " " << q4[0].id() << " "
-// 	     << 18./output*(4./9.*(t*t+u*u)/s/s)*sqr(alphas) << endl;
-//       }
-//     else if(diagon[1])
-//       {
-// 	cerr << "testing matrix element C " 
-// 	     << q1[0].id() << " " << q2[0].id() << " -> " 
-// 	     << q3[0].id() << " " << q4[0].id() << " "
-// 	     << 18./output*(4./9.*(s*s+u*u)/t/t)*sqr(alphas) << endl;
-//       }
-    //select a colour flow
-    _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
-    // select a diagram ensuring it is one of those in the selected colour flow
-    sumdiag[_flow%2]=0.;
-    _diagram=20+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
-    // final part of colour and spin factors
-    return output/18.;
+  }
+  // test code vs me from ESW
+//   Energy2 u(uHat()),t(tHat()),s(sHat());
+//   double alphas(4.*pi*SM().alphaS(mt));
+//   if(diagon[0]&&diagon[1]) {
+//     cerr << "testing matrix element A " 
+// 	 << q1[0].id() << " " << q2[0].id() << " -> " 
+// 	 << q3[0].id() << " " << q4[0].id() << " " 
+// 	 << 18./output*0.5*(4./9.*((s*s+u*u)/t/t+(u*u+t*t)/s/s)
+// 			    -8./27.*u*u/s/t)*sqr(alphas) << endl;
+//   }
+//   else if(diagon[0]) {
+//     cerr << "testing matrix element B " 
+// 	 << q1[0].id() << " " << q2[0].id() << " -> " 
+// 	 << q3[0].id() << " " << q4[0].id() << " "
+// 	 << 18./output*(4./9.*(t*t+u*u)/s/s)*sqr(alphas) << endl;
+//   }
+//   else if(diagon[1]) {
+//     cerr << "testing matrix element C " 
+// 	 << q1[0].id() << " " << q2[0].id() << " -> " 
+// 	 << q3[0].id() << " " << q4[0].id() << " "
+// 	 << 18./output*(4./9.*(s*s+u*u)/t/t)*sqr(alphas) << endl;
+//   }
+  //select a colour flow
+  _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  // select a diagram ensuring it is one of those in the selected colour flow
+  sumdiag[_flow%2]=0.;
+  _diagram=20+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
+  // final part of colour and spin factors
+  return output/18.;
 }
 
 void MEQCD2to2::getDiagrams() const {
   // gg-> gg subprocess
-  if(_process==0||_process==1)
-    {
+  if(_process==0||_process==1) {
+    // s-channel
+    add(new_ptr((Tree2toNDiagram(2),_gluon,_gluon, 1, _gluon,
+		 3,_gluon, 3, _gluon, -1)));
+    // first  t-channel
+    add(new_ptr((Tree2toNDiagram(3),_gluon,_gluon,_gluon,
+		 1,_gluon, 2,_gluon,-2)));
+    // second t-channel
+    add(new_ptr((Tree2toNDiagram(3),_gluon,_gluon,_gluon,
+		 2,_gluon, 1,_gluon,-3)));
+  }
+  // processes involving one quark line
+  for(unsigned int ix=0;ix<_maxflavour;++ix) {
+    // gg -> q qbar subprocesses
+    if(_process==0||_process==2) {
+      // first t-channel
+      add(new_ptr((Tree2toNDiagram(3),_gluon,_antiquark[ix],_gluon,
+		   1,_quark[ix], 2,_antiquark[ix],-4)));
+      // interchange
+      add(new_ptr((Tree2toNDiagram(3),_gluon,_antiquark[ix],_gluon,
+		   2,_quark[ix], 1,_antiquark[ix],-5)));
       // s-channel
       add(new_ptr((Tree2toNDiagram(2),_gluon,_gluon, 1, _gluon,
-		   3,_gluon, 3, _gluon, -1)));
-      // first  t-channel
-      add(new_ptr((Tree2toNDiagram(3),_gluon,_gluon,_gluon,
-		   1,_gluon, 2,_gluon,-2)));
+		   3,_quark[ix], 3, _antiquark[ix], -6)));
+    }
+    // q qbar -> g g subprocesses
+    if(_process==0||_process==3) {
+      // first t-channel
+      add(new_ptr((Tree2toNDiagram(3),_quark[ix],_antiquark[ix],_antiquark[ix],
+		   1,_gluon, 2,_gluon,-7)));
       // second t-channel
-      add(new_ptr((Tree2toNDiagram(3),_gluon,_gluon,_gluon,
-		   2,_gluon, 1,_gluon,-3)));
+      add(new_ptr((Tree2toNDiagram(3),_quark[ix],_antiquark[ix],_antiquark[ix],
+		   2,_gluon, 1,_gluon,-8)));
+      // s-channel
+      add(new_ptr((Tree2toNDiagram(2),_quark[ix], _antiquark[ix],
+		   1, _gluon, 3, _gluon, 3, _gluon,-9)));
     }
-  // processes involving one quark line
-  for(unsigned int ix=0;ix<_maxflavour;++ix)
-    {
-      // gg -> q qbar subprocesses
-      if(_process==0||_process==2)
-	{
-	  // first t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_gluon,_antiquark[ix],_gluon,
-		       1,_quark[ix], 2,_antiquark[ix],-4)));
-	  // interchange
-	  add(new_ptr((Tree2toNDiagram(3),_gluon,_antiquark[ix],_gluon,
-		       2,_quark[ix], 1,_antiquark[ix],-5)));
-	  // s-channel
-	  add(new_ptr((Tree2toNDiagram(2),_gluon,_gluon, 1, _gluon,
-		       3,_quark[ix], 3, _antiquark[ix], -6)));
-	}
-      // q qbar -> g g subprocesses
-      if(_process==0||_process==3)
-	{
-	  // first t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_quark[ix],_antiquark[ix],_antiquark[ix],
-		       1,_gluon, 2,_gluon,-7)));
-	  // second t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_quark[ix],_antiquark[ix],_antiquark[ix],
-		       2,_gluon, 1,_gluon,-8)));
-	  // s-channel
-	  add(new_ptr((Tree2toNDiagram(2),_quark[ix], _antiquark[ix],
-		       1, _gluon, 3, _gluon, 3, _gluon,-9)));
-	}
-      // q g -> q g subprocesses
-      if(_process==0||_process==4)
-	{
-	  // s-channel
-	  add(new_ptr((Tree2toNDiagram(2),_quark[ix], _gluon,
-		       1, _quark[ix], 3, _quark[ix], 3, _gluon,-10)));
-	  // quark t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_quark[ix],_quark[ix],_gluon,
-		        2,_quark[ix],1,_gluon,-11)));
-	  // gluon t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_gluon,
-		       1,_quark[ix],2,_gluon,-12)));
-	}
-      // qbar g -> qbar g subprocesses
-      if(_process==0||_process==5)
-	{
-	  // s-channel
-	  add(new_ptr((Tree2toNDiagram(2),_antiquark[ix], _gluon,
-		       1, _antiquark[ix], 3, _antiquark[ix], 3, _gluon,-13)));
-	  // quark t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_antiquark[ix],_gluon,
-		        2,_antiquark[ix],1,_gluon,-14)));
-	  // gluon t-channel
-	  add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_gluon,
-		       1,_antiquark[ix],2,_gluon,-15)));
-	}
-      // processes involving two quark lines
-      for(unsigned int iy=0;iy<_maxflavour;++iy)
-	{
-	  // q q -> q q subprocesses
-	  if(_process==0||_process==6)
-	    {
-	      // gluon t-channel
-	      add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_quark[iy],
-			   1,_quark[ix],2,_quark[iy],-16)));
-	      // exchange for identical quarks
-	      if(ix==iy)
-		add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_quark[iy],
-			     2,_quark[ix],1,_quark[iy],-17)));
-	    }
-	  // qbar qbar -> qbar qbar subprocesses
-	  if(_process==0||_process==7)
-	    {
-	      // gluon t-channel
-	      add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_antiquark[iy],
-			   1,_antiquark[ix],2,_antiquark[iy],-18)));
-	      // exchange for identical quarks
-	      if(ix==iy)
-		add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_antiquark[iy],
-			     2,_antiquark[ix],1,_antiquark[iy],-19)));
-	    }
-	  // q qbar -> q qbar
-	  if(_process==0||_process==8)
-	    {
-	      // gluon s-channel
-	      add(new_ptr((Tree2toNDiagram(2),_quark[ix], _antiquark[ix],
-			   1, _gluon, 3, _quark[iy], 3, _antiquark[iy],-20)));
-	      // gluon t-channel
-	      add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_antiquark[iy],
-			   1,_quark[ix],2,_antiquark[iy],-21)));
-	    }
-	}
+    // q g -> q g subprocesses
+    if(_process==0||_process==4) {
+      // s-channel
+      add(new_ptr((Tree2toNDiagram(2),_quark[ix], _gluon,
+		   1, _quark[ix], 3, _quark[ix], 3, _gluon,-10)));
+      // quark t-channel
+      add(new_ptr((Tree2toNDiagram(3),_quark[ix],_quark[ix],_gluon,
+		   2,_quark[ix],1,_gluon,-11)));
+      // gluon t-channel
+      add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_gluon,
+		   1,_quark[ix],2,_gluon,-12)));
     }
+    // qbar g -> qbar g subprocesses
+    if(_process==0||_process==5) {
+      // s-channel
+      add(new_ptr((Tree2toNDiagram(2),_antiquark[ix], _gluon,
+		   1, _antiquark[ix], 3, _antiquark[ix], 3, _gluon,-13)));
+      // quark t-channel
+      add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_antiquark[ix],_gluon,
+		   2,_antiquark[ix],1,_gluon,-14)));
+      // gluon t-channel
+      add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_gluon,
+		   1,_antiquark[ix],2,_gluon,-15)));
+    }
+    // processes involving two quark lines
+    for(unsigned int iy=0;iy<_maxflavour;++iy) {
+      // q q -> q q subprocesses
+      if(_process==0||_process==6) {
+	// gluon t-channel
+	add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_quark[iy],
+		     1,_quark[ix],2,_quark[iy],-16)));
+	// exchange for identical quarks
+	if(ix==iy)
+	  add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_quark[iy],
+		       2,_quark[ix],1,_quark[iy],-17)));
+      }
+      // qbar qbar -> qbar qbar subprocesses
+      if(_process==0||_process==7) {
+	// gluon t-channel
+	add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_antiquark[iy],
+		     1,_antiquark[ix],2,_antiquark[iy],-18)));
+	// exchange for identical quarks
+	if(ix==iy)
+	  add(new_ptr((Tree2toNDiagram(3),_antiquark[ix],_gluon,_antiquark[iy],
+		       2,_antiquark[ix],1,_antiquark[iy],-19)));
+      }
+      // q qbar -> q qbar
+      if(_process==0||_process==8) {
+	// gluon s-channel
+	add(new_ptr((Tree2toNDiagram(2),_quark[ix], _antiquark[ix],
+		     1, _gluon, 3, _quark[iy], 3, _antiquark[iy],-20)));
+	// gluon t-channel
+	add(new_ptr((Tree2toNDiagram(3),_quark[ix],_gluon,_antiquark[iy],
+		     1,_quark[ix],2,_antiquark[iy],-21)));
+      }
+    }
+  }
 }
 
 
@@ -1019,183 +873,162 @@ double MEQCD2to2::me2() const {
   // total matrix element
   double me(0.);
   // gg initiated processes
-  if(mePartonData()[0]->id()==ParticleID::g&&mePartonData()[1]->id()==ParticleID::g)
-    {
-      // gg -> gg
-      if(mePartonData()[2]->id()==ParticleID::g)
-	{
-	  VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-	  VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
-	  VectorWaveFunction      g3w(meMomenta()[2],mePartonData()[2],outgoing);
-	  VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
-	  vector<VectorWaveFunction> g1,g2,g3,g4;
-	  for(unsigned int ix=0;ix<2;++ix)
-	    {
-	      g1w.reset(2*ix);g1.push_back(g1w);
-	      g2w.reset(2*ix);g2.push_back(g2w);
-	      g3w.reset(2*ix);g3.push_back(g3w);
-	      g4w.reset(2*ix);g4.push_back(g4w);
-	    }
-	  // calculate the matrix element
-	  me = gg2ggME(g1,g2,g3,g4,0);
-	}
-      // gg -> q qbar
-      else
-	{
-	  VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-	  VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
-	  SpinorBarWaveFunction    qw(meMomenta()[2],mePartonData()[2],outgoing);
-	  SpinorWaveFunction    qbarw(meMomenta()[3],mePartonData()[3],outgoing);
-	  vector<VectorWaveFunction> g1,g2;
-	  vector<SpinorBarWaveFunction> q;
-	  vector<SpinorWaveFunction> qbar;
-	  for(unsigned int ix=0;ix<2;++ix)
-	    {
-	      g1w.reset(2*ix);g1.push_back(g1w);
-	      g2w.reset(2*ix);g2.push_back(g2w);
-	      qw.reset(ix);q.push_back(qw);
-	      qbarw.reset(ix);qbar.push_back(qbarw);
-	    }
-	  // calculate the matrix element
-	  me=gg2qqbarME(g1,g2,q,qbar,0);
-	}
+  if(mePartonData()[0]->id()==ParticleID::g&&mePartonData()[1]->id()==ParticleID::g) {
+    // gg -> gg
+    if(mePartonData()[2]->id()==ParticleID::g) {
+      VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
+      VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
+      VectorWaveFunction      g3w(meMomenta()[2],mePartonData()[2],outgoing);
+      VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
+      vector<VectorWaveFunction> g1,g2,g3,g4;
+      for(unsigned int ix=0;ix<2;++ix) {
+	g1w.reset(2*ix);g1.push_back(g1w);
+	g2w.reset(2*ix);g2.push_back(g2w);
+	g3w.reset(2*ix);g3.push_back(g3w);
+	g4w.reset(2*ix);g4.push_back(g4w);
+      }
+      // calculate the matrix element
+      me = gg2ggME(g1,g2,g3,g4,0);
     }
+    // gg -> q qbar
+    else {
+      VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
+      VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
+      SpinorBarWaveFunction    qw(meMomenta()[2],mePartonData()[2],outgoing);
+      SpinorWaveFunction    qbarw(meMomenta()[3],mePartonData()[3],outgoing);
+      vector<VectorWaveFunction> g1,g2;
+      vector<SpinorBarWaveFunction> q;
+      vector<SpinorWaveFunction> qbar;
+      for(unsigned int ix=0;ix<2;++ix) {
+	g1w.reset(2*ix);g1.push_back(g1w);
+	g2w.reset(2*ix);g2.push_back(g2w);
+	qw.reset(ix);q.push_back(qw);
+	qbarw.reset(ix);qbar.push_back(qbarw);
+      }
+      // calculate the matrix element
+      me=gg2qqbarME(g1,g2,q,qbar,0);
+    }
+  }
   // quark first processes
-  else if(mePartonData()[0]->id()>0)
-    {
-      // q g -> q g
-      if(mePartonData()[1]->id()==ParticleID::g)
-	{
-	  SpinorWaveFunction     qinw(meMomenta()[0],mePartonData()[0],incoming);
-	  VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
-	  SpinorBarWaveFunction qoutw(meMomenta()[2],mePartonData()[2],outgoing);
-	  VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
-	  vector<VectorWaveFunction> g2,g4;
-	  vector<SpinorWaveFunction> qin;
-	  vector<SpinorBarWaveFunction> qout;
-	  for(unsigned int ix=0;ix<2;++ix)
-	    {
-	      qinw.reset(ix);qin.push_back(qinw);
-	      g2w.reset(2*ix);g2.push_back(g2w);
-	      qoutw.reset(ix);qout.push_back(qoutw);
-	      g4w.reset(2*ix);g4.push_back(g4w);
-	    }
-	  // calculate the matrix element
-	  me = qg2qgME(qin,g2,qout,g4,0);
-	}
-      else if(mePartonData()[1]->id()<0)
-	{
-	  // q qbar initiated processes( q qbar -> gg)
-	  if(mePartonData()[2]->id()==ParticleID::g)
-	    {
-	      SpinorWaveFunction       qw(meMomenta()[0],mePartonData()[0],incoming);
-	      SpinorBarWaveFunction qbarw(meMomenta()[1],mePartonData()[1],incoming);
-	      VectorWaveFunction      g1w(meMomenta()[2],mePartonData()[2],outgoing);
-	      VectorWaveFunction      g2w(meMomenta()[3],mePartonData()[3],outgoing);
-	      vector<VectorWaveFunction> g1,g2;
-	      vector<SpinorWaveFunction> q;
-	      vector<SpinorBarWaveFunction> qbar;
-	      for(unsigned int ix=0;ix<2;++ix)
-		{
-		  qw.reset(ix);q.push_back(qw);
-		  qbarw.reset(ix);qbar.push_back(qbarw);
-		  g1w.reset(2*ix);g1.push_back(g1w);
-		  g2w.reset(2*ix);g2.push_back(g2w);
-		}
-	      // calculate the matrix element
-	      me = qqbar2ggME(q,qbar,g1,g2,0);
-	    }
-	  // q qbar to q qbar 
-	  else
-	    {
-	      SpinorWaveFunction    q1w(meMomenta()[0],mePartonData()[0],incoming);
-	      SpinorBarWaveFunction q2w(meMomenta()[1],mePartonData()[1],incoming);
-	      SpinorBarWaveFunction q3w(meMomenta()[2],mePartonData()[2],outgoing);
-	      SpinorWaveFunction    q4w(meMomenta()[3],mePartonData()[3],outgoing);
-	      vector<SpinorWaveFunction>    q1,q4;
-	      vector<SpinorBarWaveFunction> q2,q3;
-	      for(unsigned int ix=0;ix<2;++ix)
-		{
-		  q1w.reset(ix);q1.push_back(q1w);
-		  q2w.reset(ix);q2.push_back(q2w);
-		  q3w.reset(ix);q3.push_back(q3w);
-		  q4w.reset(ix);q4.push_back(q4w);
-		}
-	      // calculate the matrix element
-	      me = qqbar2qqbarME(q1,q2,q3,q4,0);
-	    }
-	}
-      // q q -> q q 
-      else if(mePartonData()[1]->id()>0)
-	{
-	  SpinorWaveFunction    q1w(meMomenta()[0],mePartonData()[0],incoming);
-	  SpinorWaveFunction    q2w(meMomenta()[1],mePartonData()[1],incoming);
-	  SpinorBarWaveFunction q3w(meMomenta()[2],mePartonData()[2],outgoing);
-	  SpinorBarWaveFunction q4w(meMomenta()[3],mePartonData()[3],outgoing);
-	  vector<SpinorWaveFunction>    q1,q2;
-	  vector<SpinorBarWaveFunction> q3,q4;
-	  for(unsigned int ix=0;ix<2;++ix)
-	    {
-	      q1w.reset(ix);q1.push_back(q1w);
-	      q2w.reset(ix);q2.push_back(q2w);
-	      q3w.reset(ix);q3.push_back(q3w);
-	      q4w.reset(ix);q4.push_back(q4w);
-	    }
-	  // calculate the matrix element
-	  me = qq2qqME(q1,q2,q3,q4,0);
-	}
+  else if(mePartonData()[0]->id()>0) {
+    // q g -> q g
+    if(mePartonData()[1]->id()==ParticleID::g) {
+      SpinorWaveFunction     qinw(meMomenta()[0],mePartonData()[0],incoming);
+      VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
+      SpinorBarWaveFunction qoutw(meMomenta()[2],mePartonData()[2],outgoing);
+      VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
+      vector<VectorWaveFunction> g2,g4;
+      vector<SpinorWaveFunction> qin;
+      vector<SpinorBarWaveFunction> qout;
+      for(unsigned int ix=0;ix<2;++ix) {
+	qinw.reset(ix);qin.push_back(qinw);
+	g2w.reset(2*ix);g2.push_back(g2w);
+	qoutw.reset(ix);qout.push_back(qoutw);
+	g4w.reset(2*ix);g4.push_back(g4w);
+      }
+      // calculate the matrix element
+      me = qg2qgME(qin,g2,qout,g4,0);
     }
+    else if(mePartonData()[1]->id()<0) {
+      // q qbar initiated processes( q qbar -> gg)
+      if(mePartonData()[2]->id()==ParticleID::g) {
+	SpinorWaveFunction       qw(meMomenta()[0],mePartonData()[0],incoming);
+	SpinorBarWaveFunction qbarw(meMomenta()[1],mePartonData()[1],incoming);
+	VectorWaveFunction      g1w(meMomenta()[2],mePartonData()[2],outgoing);
+	VectorWaveFunction      g2w(meMomenta()[3],mePartonData()[3],outgoing);
+	vector<VectorWaveFunction> g1,g2;
+	vector<SpinorWaveFunction> q;
+	vector<SpinorBarWaveFunction> qbar;
+	for(unsigned int ix=0;ix<2;++ix) {
+	  qw.reset(ix);q.push_back(qw);
+	  qbarw.reset(ix);qbar.push_back(qbarw);
+	  g1w.reset(2*ix);g1.push_back(g1w);
+	  g2w.reset(2*ix);g2.push_back(g2w);
+	}
+	// calculate the matrix element
+	me = qqbar2ggME(q,qbar,g1,g2,0);
+      }
+      // q qbar to q qbar 
+      else {
+	SpinorWaveFunction    q1w(meMomenta()[0],mePartonData()[0],incoming);
+	SpinorBarWaveFunction q2w(meMomenta()[1],mePartonData()[1],incoming);
+	SpinorBarWaveFunction q3w(meMomenta()[2],mePartonData()[2],outgoing);
+	SpinorWaveFunction    q4w(meMomenta()[3],mePartonData()[3],outgoing);
+	vector<SpinorWaveFunction>    q1,q4;
+	vector<SpinorBarWaveFunction> q2,q3;
+	for(unsigned int ix=0;ix<2;++ix) {
+	  q1w.reset(ix);q1.push_back(q1w);
+	  q2w.reset(ix);q2.push_back(q2w);
+	  q3w.reset(ix);q3.push_back(q3w);
+	  q4w.reset(ix);q4.push_back(q4w);
+	}
+	// calculate the matrix element
+	me = qqbar2qqbarME(q1,q2,q3,q4,0);
+      }
+    }
+    // q q -> q q 
+    else if(mePartonData()[1]->id()>0) {
+      SpinorWaveFunction    q1w(meMomenta()[0],mePartonData()[0],incoming);
+      SpinorWaveFunction    q2w(meMomenta()[1],mePartonData()[1],incoming);
+      SpinorBarWaveFunction q3w(meMomenta()[2],mePartonData()[2],outgoing);
+      SpinorBarWaveFunction q4w(meMomenta()[3],mePartonData()[3],outgoing);
+      vector<SpinorWaveFunction>    q1,q2;
+      vector<SpinorBarWaveFunction> q3,q4;
+      for(unsigned int ix=0;ix<2;++ix) {
+	q1w.reset(ix);q1.push_back(q1w);
+	q2w.reset(ix);q2.push_back(q2w);
+	q3w.reset(ix);q3.push_back(q3w);
+	q4w.reset(ix);q4.push_back(q4w);
+      }
+      // calculate the matrix element
+      me = qq2qqME(q1,q2,q3,q4,0);
+    }
+  }
   // antiquark first processes
-  else if(mePartonData()[0]->id()<0)
-    {
-      // qbar g -> qbar g
-      if(mePartonData()[1]->id()==ParticleID::g)
-	{
-	  SpinorBarWaveFunction  qinw(meMomenta()[0],mePartonData()[0],incoming);
-	  VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
-	  SpinorWaveFunction    qoutw(meMomenta()[2],mePartonData()[2],outgoing);
-	  VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
-	  vector<VectorWaveFunction> g2,g4;
-	  vector<SpinorBarWaveFunction> qin;
-	  vector<SpinorWaveFunction> qout;
-	  for(unsigned int ix=0;ix<2;++ix)
-	    {
-	      qinw.reset(ix);qin.push_back(qinw);
-	      g2w.reset(2*ix);g2.push_back(g2w);
-	      qoutw.reset(ix);qout.push_back(qoutw);
-	      g4w.reset(2*ix);g4.push_back(g4w);	      
-	    }
-	  // calculate the matrix element
-	  me = qbarg2qbargME(qin,g2,qout,g4,0);
-	}
-      // qbar qbar -> qbar qbar
-      else if(mePartonData()[1]->id()<0)
-	{
-	  SpinorBarWaveFunction q1w(meMomenta()[0],mePartonData()[0],incoming);
-	  SpinorBarWaveFunction q2w(meMomenta()[1],mePartonData()[1],incoming);
-	  SpinorWaveFunction    q3w(meMomenta()[2],mePartonData()[2],outgoing);
-	  SpinorWaveFunction    q4w(meMomenta()[3],mePartonData()[3],outgoing);
-	  vector<SpinorBarWaveFunction> q1,q2;
-	  vector<SpinorWaveFunction>    q3,q4;
-	  for(unsigned int ix=0;ix<2;++ix)
-	    {
-	      q1w.reset(ix);q1.push_back(q1w);
-	      q2w.reset(ix);q2.push_back(q2w);
-	      q3w.reset(ix);q3.push_back(q3w);
-	      q4w.reset(ix);q4.push_back(q4w);
-	    }
-	  // calculate the matrix element
-	  me = qbarqbar2qbarqbarME(q1,q2,q3,q4,0);
-	}
+  else if(mePartonData()[0]->id()<0) {
+    // qbar g -> qbar g
+    if(mePartonData()[1]->id()==ParticleID::g) {
+      SpinorBarWaveFunction  qinw(meMomenta()[0],mePartonData()[0],incoming);
+      VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
+      SpinorWaveFunction    qoutw(meMomenta()[2],mePartonData()[2],outgoing);
+      VectorWaveFunction      g4w(meMomenta()[3],mePartonData()[3],outgoing);
+      vector<VectorWaveFunction> g2,g4;
+      vector<SpinorBarWaveFunction> qin;
+      vector<SpinorWaveFunction> qout;
+      for(unsigned int ix=0;ix<2;++ix) {
+	qinw.reset(ix);qin.push_back(qinw);
+	g2w.reset(2*ix);g2.push_back(g2w);
+	qoutw.reset(ix);qout.push_back(qoutw);
+	g4w.reset(2*ix);g4.push_back(g4w);	      
+      }
+      // calculate the matrix element
+      me = qbarg2qbargME(qin,g2,qout,g4,0);
     }
-  else
-    {throw Exception() << "unknown process " << Exception::abortnow;}
+    // qbar qbar -> qbar qbar
+    else if(mePartonData()[1]->id()<0) {
+      SpinorBarWaveFunction q1w(meMomenta()[0],mePartonData()[0],incoming);
+      SpinorBarWaveFunction q2w(meMomenta()[1],mePartonData()[1],incoming);
+      SpinorWaveFunction    q3w(meMomenta()[2],mePartonData()[2],outgoing);
+      SpinorWaveFunction    q4w(meMomenta()[3],mePartonData()[3],outgoing);
+      vector<SpinorBarWaveFunction> q1,q2;
+      vector<SpinorWaveFunction>    q3,q4;
+      for(unsigned int ix=0;ix<2;++ix) {
+	q1w.reset(ix);q1.push_back(q1w);
+	q2w.reset(ix);q2.push_back(q2w);
+	q3w.reset(ix);q3.push_back(q3w);
+	q4w.reset(ix);q4.push_back(q4w);
+      }
+      // calculate the matrix element
+      me = qbarqbar2qbarqbarME(q1,q2,q3,q4,0);
+    }
+  }
+  else throw Exception() << "Unknown process in MEQCD2to2::me2()" 
+			 << Exception::abortnow;
   // return the answer  
   return me;
 }
 
-void MEQCD2to2::constructVertex(tSubProPtr sub)
-{
+void MEQCD2to2::constructVertex(tSubProPtr sub) {
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -1204,127 +1037,115 @@ void MEQCD2to2::constructVertex(tSubProPtr sub)
   // order of particles
   unsigned int order[4]={0,1,2,3};
   // identify the process and calculate the matrix element
-  if(hard[0]->id()==ParticleID::g&&hard[1]->id()==ParticleID::g)
-    {
-      // gg -> gg
-      if(hard[2]->id()==ParticleID::g)
-	{
-	  vector<VectorWaveFunction> g1,g2,g3,g4;
-	  VectorWaveFunction(g1,hard[0],incoming,false,true,true);
-	  VectorWaveFunction(g2,hard[1],incoming,false,true,true);
-	  VectorWaveFunction(g3,hard[2],outgoing,true ,true,true);
-	  VectorWaveFunction(g4,hard[3],outgoing,true ,true,true);
-	  g1[1]=g1[2];g2[1]=g2[2];g3[1]=g3[2];g4[1]=g4[2];
-	  gg2ggME(g1,g2,g3,g4,_flow);
-	}
-      // gg -> q qbar
-      else 
-	{
-	  if(hard[2]->id()<0) {order[2]=3;order[3]=2;}
-	  vector<VectorWaveFunction> g1,g2;
-	  vector<SpinorBarWaveFunction> q;
-	  vector<SpinorWaveFunction> qbar;
-	  VectorWaveFunction(     g1,hard[      0 ],incoming,false,true,true);
-	  VectorWaveFunction(     g2,hard[      1 ],incoming,false,true,true);
-	  SpinorBarWaveFunction(q   ,hard[order[2]],outgoing,true ,true);
-	  SpinorWaveFunction(   qbar,hard[order[3]],outgoing,true ,true);
-	  g1[1]=g1[2];g2[1]=g2[2];
-	  gg2qqbarME(g1,g2,q,qbar,_flow);
-	}
+  if(hard[0]->id()==ParticleID::g&&hard[1]->id()==ParticleID::g) {
+    // gg -> gg
+    if(hard[2]->id()==ParticleID::g) {
+      vector<VectorWaveFunction> g1,g2,g3,g4;
+      VectorWaveFunction(g1,hard[0],incoming,false,true,true);
+      VectorWaveFunction(g2,hard[1],incoming,false,true,true);
+      VectorWaveFunction(g3,hard[2],outgoing,true ,true,true);
+      VectorWaveFunction(g4,hard[3],outgoing,true ,true,true);
+      g1[1]=g1[2];g2[1]=g2[2];g3[1]=g3[2];g4[1]=g4[2];
+      gg2ggME(g1,g2,g3,g4,_flow);
     }
-  else if(hard[0]->id()==ParticleID::g||hard[1]->id()==ParticleID::g)
-    {
-      if(hard[0]->id()==ParticleID::g){order[0]=1;order[1]=0;}
-      if(hard[2]->id()==ParticleID::g){order[2]=3;order[3]=2;}
-      // q g -> q g 
-      if(hard[order[0]]->id()>0)
-	{
-	  vector<VectorWaveFunction> g2,g4;
-	  vector<SpinorWaveFunction> qin;
-	  vector<SpinorBarWaveFunction> qout;
-	  SpinorWaveFunction(    qin,hard[order[0]],incoming,false,true);
-	  VectorWaveFunction(     g2,hard[order[1]],incoming,false,true,true);
-	  SpinorBarWaveFunction(qout,hard[order[2]],outgoing,true ,true);
-	  VectorWaveFunction(     g4,hard[order[3]],outgoing,true ,true,true);
-	  g2[1]=g2[2];g4[1]=g4[2];
-	  qg2qgME(qin,g2,qout,g4,_flow);
-	}
-      // qbar g -> qbar g
-      else
-	{
-	  vector<VectorWaveFunction> g2,g4;
-	  vector<SpinorBarWaveFunction> qin;
-	  vector<SpinorWaveFunction> qout;
-	  SpinorBarWaveFunction( qin,hard[order[0]],incoming,false,true);
-	  VectorWaveFunction(     g2,hard[order[1]],incoming,false,true,true);
-	  SpinorWaveFunction(   qout,hard[order[2]],outgoing,true ,true);
-	  VectorWaveFunction(     g4,hard[order[3]],outgoing,true ,true,true);
-	  g2[1]=g2[2];g4[1]=g4[2];
-	  qbarg2qbargME(qin,g2,qout,g4,_flow);
-	}
+    // gg -> q qbar
+    else {
+      if(hard[2]->id()<0) swap(order[2],order[3]);
+      vector<VectorWaveFunction> g1,g2;
+      vector<SpinorBarWaveFunction> q;
+      vector<SpinorWaveFunction> qbar;
+      VectorWaveFunction(     g1,hard[      0 ],incoming,false,true,true);
+      VectorWaveFunction(     g2,hard[      1 ],incoming,false,true,true);
+      SpinorBarWaveFunction(q   ,hard[order[2]],outgoing,true ,true);
+      SpinorWaveFunction(   qbar,hard[order[3]],outgoing,true ,true);
+      g1[1]=g1[2];g2[1]=g2[2];
+      gg2qqbarME(g1,g2,q,qbar,_flow);
     }
-  else if(hard[0]->id()>0||hard[1]->id()>0)
-    {
-      if(hard[2]->id()==ParticleID::g)
-	{
-	  if(hard[0]->id()<0){order[0]=1;order[1]=0;}
-	  vector<SpinorBarWaveFunction> qbar;
-	  vector<SpinorWaveFunction> q;
-	  vector<VectorWaveFunction> g3,g4;
-	  SpinorWaveFunction(    q  ,hard[order[0]],incoming,false,true);
-	  SpinorBarWaveFunction(qbar,hard[order[1]],incoming,false,true);
-	  VectorWaveFunction(     g3,hard[      2 ],outgoing,true ,true,true);
-	  VectorWaveFunction(     g4,hard[      3 ],outgoing,true ,true,true);
-	  g3[1]=g3[2];g4[1]=g4[2];
-	  qqbar2ggME(q,qbar,g3,g4,_flow);
-	}
-      // q q -> q q 
-      else if(hard[0]->id()>0&&hard[1]->id()>0)
-	{
-	  if(hard[2]->id()!=hard[0]->id()){order[2]=3;order[3]=2;}
-	  vector<SpinorWaveFunction> q1,q2;
-	  vector<SpinorBarWaveFunction> q3,q4;
-	  SpinorWaveFunction(   q1,hard[order[0]],incoming,false,true);
-	  SpinorWaveFunction(   q2,hard[order[1]],incoming,false,true);
-	  SpinorBarWaveFunction(q3,hard[order[2]],outgoing,true ,true);
-	  SpinorBarWaveFunction(q4,hard[order[3]],outgoing,true ,true);
-	  qq2qqME(q1,q2,q3,q4,_flow);
-	}
-      // q qbar -> q qbar
-      else
-	{
-	  if(hard[0]->id()<0){order[0]=1;order[1]=0;}
-	  if(hard[2]->id()<0){order[2]=3;order[3]=2;}
-	  vector<SpinorWaveFunction>    q1,q4;
-	  vector<SpinorBarWaveFunction> q2,q3;
-	  SpinorWaveFunction(   q1,hard[order[0]],incoming,false,true);
-	  SpinorBarWaveFunction(q2,hard[order[1]],incoming,false,true);
-	  SpinorBarWaveFunction(q3,hard[order[2]],outgoing,true ,true);
-	  SpinorWaveFunction(   q4,hard[order[3]],outgoing,true ,true);
-	  qqbar2qqbarME(q1,q2,q3,q4,_flow);
-	}
+  }
+  else if(hard[0]->id()==ParticleID::g||hard[1]->id()==ParticleID::g) {
+    if(hard[0]->id()==ParticleID::g) swap(order[0],order[1]);
+    if(hard[2]->id()==ParticleID::g) swap(order[2],order[3]);
+    // q g -> q g 
+    if(hard[order[0]]->id()>0) {
+      vector<VectorWaveFunction> g2,g4;
+      vector<SpinorWaveFunction> qin;
+      vector<SpinorBarWaveFunction> qout;
+      SpinorWaveFunction(    qin,hard[order[0]],incoming,false,true);
+      VectorWaveFunction(     g2,hard[order[1]],incoming,false,true,true);
+      SpinorBarWaveFunction(qout,hard[order[2]],outgoing,true ,true);
+      VectorWaveFunction(     g4,hard[order[3]],outgoing,true ,true,true);
+      g2[1]=g2[2];g4[1]=g4[2];
+      qg2qgME(qin,g2,qout,g4,_flow);
     }
-  else if (hard[0]->id()<0&&hard[1]->id()<0)
-    {
-      if(hard[2]->id()!=hard[0]->id()){order[2]=3;order[3]=2;}
-      vector<SpinorBarWaveFunction> q1,q2;
-      vector<SpinorWaveFunction> q3,q4;
-      SpinorBarWaveFunction(q1,hard[order[0]],incoming,false,true);
+    // qbar g -> qbar g
+    else {
+      vector<VectorWaveFunction> g2,g4;
+      vector<SpinorBarWaveFunction> qin;
+      vector<SpinorWaveFunction> qout;
+      SpinorBarWaveFunction( qin,hard[order[0]],incoming,false,true);
+      VectorWaveFunction(     g2,hard[order[1]],incoming,false,true,true);
+      SpinorWaveFunction(   qout,hard[order[2]],outgoing,true ,true);
+      VectorWaveFunction(     g4,hard[order[3]],outgoing,true ,true,true);
+      g2[1]=g2[2];g4[1]=g4[2];
+      qbarg2qbargME(qin,g2,qout,g4,_flow);
+    }
+  }
+  else if(hard[0]->id()>0||hard[1]->id()>0) {
+    if(hard[2]->id()==ParticleID::g) {
+      if(hard[0]->id()<0) swap(order[0],order[1]);
+      vector<SpinorBarWaveFunction> qbar;
+      vector<SpinorWaveFunction> q;
+      vector<VectorWaveFunction> g3,g4;
+      SpinorWaveFunction(    q  ,hard[order[0]],incoming,false,true);
+      SpinorBarWaveFunction(qbar,hard[order[1]],incoming,false,true);
+      VectorWaveFunction(     g3,hard[      2 ],outgoing,true ,true,true);
+      VectorWaveFunction(     g4,hard[      3 ],outgoing,true ,true,true);
+      g3[1]=g3[2];g4[1]=g4[2];
+      qqbar2ggME(q,qbar,g3,g4,_flow);
+    }
+    // q q -> q q 
+    else if(hard[0]->id()>0&&hard[1]->id()>0) {
+      if(hard[2]->id()!=hard[0]->id()) swap(order[2],order[3]);
+      vector<SpinorWaveFunction> q1,q2;
+      vector<SpinorBarWaveFunction> q3,q4;
+      SpinorWaveFunction(   q1,hard[order[0]],incoming,false,true);
+      SpinorWaveFunction(   q2,hard[order[1]],incoming,false,true);
+      SpinorBarWaveFunction(q3,hard[order[2]],outgoing,true ,true);
+      SpinorBarWaveFunction(q4,hard[order[3]],outgoing,true ,true);
+      qq2qqME(q1,q2,q3,q4,_flow);
+    }
+    // q qbar -> q qbar
+    else {
+      if(hard[0]->id()<0) swap(order[0],order[1]);
+      if(hard[2]->id()<0) swap(order[2],order[3]);
+      vector<SpinorWaveFunction>    q1,q4;
+      vector<SpinorBarWaveFunction> q2,q3;
+      SpinorWaveFunction(   q1,hard[order[0]],incoming,false,true);
       SpinorBarWaveFunction(q2,hard[order[1]],incoming,false,true);
-      SpinorWaveFunction(   q3,hard[order[2]],outgoing,true ,true);
+      SpinorBarWaveFunction(q3,hard[order[2]],outgoing,true ,true);
       SpinorWaveFunction(   q4,hard[order[3]],outgoing,true ,true);
-      qbarqbar2qbarqbarME(q1,q2,q3,q4,_flow);
+      qqbar2qqbarME(q1,q2,q3,q4,_flow);
     }
-  else
-    {throw Exception() << "Unknown process in MEQCD2to2::constructVertex()"
-			<< Exception::runerror;}
+  }
+  else if (hard[0]->id()<0&&hard[1]->id()<0) {
+    if(hard[2]->id()!=hard[0]->id()) swap(order[2],order[3]);
+    vector<SpinorBarWaveFunction> q1,q2;
+    vector<SpinorWaveFunction> q3,q4;
+    SpinorBarWaveFunction(q1,hard[order[0]],incoming,false,true);
+    SpinorBarWaveFunction(q2,hard[order[1]],incoming,false,true);
+    SpinorWaveFunction(   q3,hard[order[2]],outgoing,true ,true);
+    SpinorWaveFunction(   q4,hard[order[3]],outgoing,true ,true);
+    qbarqbar2qbarqbarME(q1,q2,q3,q4,_flow);
+  }
+  else throw Exception() << "Unknown process in MEQCD2to2::constructVertex()"
+			 << Exception::runerror;
   // get the spin info objects
   for(unsigned int ix=0;ix<4;++ix)
-    {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
+    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
+  for(unsigned int ix=0;ix<4;++ix) spin[ix]->setProductionVertex(hardvertex);
 }

@@ -13,8 +13,10 @@
 
 namespace Herwig {
 
-inline MEPP2GammaGamma::MEPP2GammaGamma() : _maxflavour(5),_process(0) 
-{}
+inline MEPP2GammaGamma::MEPP2GammaGamma() : _maxflavour(5),_process(0) {
+  massOption(true,0);
+  massOption(true,0);
+}
 
 inline IBPtr MEPP2GammaGamma::clone() const {
   return new_ptr(*this);
@@ -24,8 +26,7 @@ inline IBPtr MEPP2GammaGamma::fullclone() const {
   return new_ptr(*this);
 }
 
-inline Complex MEPP2GammaGamma::ggme(Energy2 s,Energy2 t,Energy2 u) const
-{
+inline Complex MEPP2GammaGamma::ggme(Energy2 s,Energy2 t,Energy2 u) const {
   double ltu(log(abs(t/u)));
   double frac1((t-u)/s),frac2((sqr(t)+sqr(u))/sqr(s));
   double thetatu = (t/u<0) ? 0 : 1;
@@ -35,4 +36,5 @@ inline Complex MEPP2GammaGamma::ggme(Energy2 s,Energy2 t,Energy2 u) const
   return Complex(1.+frac1*ltu+0.5*frac2*(sqr(ltu)+sqr(pi)*thetatu),
 		 -pi*(thetat-thetau)*(frac1+frac2*ltu));
 }
+
 }

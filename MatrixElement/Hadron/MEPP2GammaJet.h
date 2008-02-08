@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2GammaJet class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -32,19 +32,14 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2GammaJetInterfaces "The interfaces"
  * defined for MEPP2GammaJet.
  */
-class MEPP2GammaJet: public ME2to2Base {
+class MEPP2GammaJet: public HwME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEPP2GammaJet();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -98,15 +93,6 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   * Generate internal degrees of freedom given 'nDim()' uniform
-   * random numbers in the interval ]0,1[. To help the phase space
-   * generator, the 'dSigHatDR()' should be a smooth function of these
-   * numbers, although this is not strictly necessary. Return
-   * false if the chosen points failed the kinematical cuts.
-   */
-  virtual bool generateKinematics(const double * r);
 
   /**
    *  Construct the vertex of spin correlations.
@@ -287,7 +273,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2GammaJet,1> {
   /** Typedef of the first base class of MEPP2GammaJet. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -312,8 +298,5 @@ struct ClassTraits<Herwig::MEPP2GammaJet>
 }
 
 #include "MEPP2GammaJet.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2GammaJet.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2GammaJet_H */

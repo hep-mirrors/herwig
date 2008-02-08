@@ -16,6 +16,7 @@ $(top_builddir)/Utilities/libHwUtils.la \
 $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
+$(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(THEPEGLIB) -ldl
 
