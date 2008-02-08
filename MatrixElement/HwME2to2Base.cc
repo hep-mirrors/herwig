@@ -52,8 +52,8 @@ bool HwME2to2Base::generateKinematics(const double * r) {
 		      << Exception::runerror;
   }
   else {
-    mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[0]->mass();
-    mass[1] = _massopt1==0 ? 0.*GeV : mePartonData()[0]->mass();
+    mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[2]->mass();
+    mass[1] = _massopt1==0 ? 0.*GeV : mePartonData()[3]->mass();
   }
   for ( int i = 2, N = meMomenta().size(); i < N; ++i ) {
     meMomenta()[i] = Lorentz5Momentum(mass[i-2]);

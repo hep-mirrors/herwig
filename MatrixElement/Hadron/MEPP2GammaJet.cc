@@ -41,7 +41,7 @@ void MEPP2GammaJet::doinit() throw(InitException) {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
 }
 
 void MEPP2GammaJet::getDiagrams() const {

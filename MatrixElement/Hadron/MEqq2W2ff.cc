@@ -31,7 +31,7 @@
 using namespace Herwig;
 
 void MEqq2W2ff::doinit() throw(InitException) {
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
   _wp=getParticleData(ThePEG::ParticleID::Wplus);
   _wm=getParticleData(ThePEG::ParticleID::Wminus);
   // cast the SM pointer to the Herwig SM pointer

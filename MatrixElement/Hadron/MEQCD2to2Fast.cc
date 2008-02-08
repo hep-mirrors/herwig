@@ -33,80 +33,6 @@ Energy2 MEQCD2to2Fast::scale() const {
   return 2.*s*t*u/(s*s+t*t+u*u);
 }
 
-bool MEQCD2to2Fast::generateKinematics(const double * r) {
-  double ctmin = -1.0;
-  double ctmax = 1.0;
-  meMomenta()[2].setMass(0.*GeV);
-  meMomenta()[3].setMass(0.*GeV);
-
-
-  Energy q = 0.0*GeV;
-  try {
-    q = SimplePhaseSpace::
-      getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
-  } catch ( ImpossibleKinematics ) {
-    return false;
-  }
-
-  Energy e = sqrt(sHat())/2.0;
-		    
-  Energy2 m22 = meMomenta()[2].mass2();
-  Energy2 m32 = meMomenta()[3].mass2();
-  Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e1e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e0e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 e1e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 pq = 2.0*e*q;
-
-  Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-
-  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
-   		     lastCuts().minKT(mePartonData()[3]));
-  if ( ptmin > 0.0*GeV ) {
-    double ctm = 1.0 - sqr(ptmin/q);
-    if ( ctm <= 0.0 ) return false;
-    ctmin = max(ctmin, -sqrt(ctm));
-    ctmax = min(ctmax, sqrt(ctm));
-  }
-
-  if ( ctmin >= ctmax ) return false;
-    
-  double cth = getCosTheta(ctmin, ctmax, r);
-
-  Energy pt = q*sqrt(1.0-sqr(cth));
-  phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setVect(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
-
-  meMomenta()[3].setVect(Momentum3(-pt*sin(phi()),-pt*cos(phi()), -q*cth));
-
-  meMomenta()[2].rescaleEnergy();
-  meMomenta()[3].rescaleEnergy();
-
-  vector<LorentzMomentum> out(2);
-  out[0] = meMomenta()[2];
-  out[1] = meMomenta()[3];
-  tcPDVector tout(2);
-  tout[0] = mePartonData()[2];
-  tout[1] = mePartonData()[3];
-  if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
-    return false;
-
-  tHat(pq*cth + m22 - e0e2);
-  uHat(m22 + m32 - sHat() - tHat());
-  jacobian((pq/sHat())*Constants::pi*jacobian());
-  return true;
-}
-
 void MEQCD2to2Fast::persistentOutput(PersistentOStream & os) const {
   os << _maxflavour << _process;
 }
@@ -137,7 +63,6 @@ void MEQCD2to2Fast::Init() {
      "The maximum flavour of the quarks in the process",
      &MEQCD2to2Fast::_maxflavour, 5, 1, 5,
      false, false, Interface::limited);
-
 
   static Switch<MEQCD2to2Fast,unsigned int> interfaceProcess
     ("Process",

@@ -23,6 +23,28 @@
 
 using namespace Herwig;
 
+void MEee2gZ2qq::doinit() throw(InitException) {
+  HwME2to2Base::doinit();
+  if(_minflav>_maxflav)
+    throw InitException() << "The minimum flavour " << _minflav  
+			  << "must be lower the than maximum flavour " << _maxflav
+			  << " in MEee2gZ2qq::doinit() " 
+			  << Exception::runerror;
+  // set the particle data objects
+  _Z0=getParticleData(ThePEG::ParticleID::Z0);
+  _gamma=getParticleData(ThePEG::ParticleID::gamma);
+  // cast the SM pointer to the Herwig SM pointer
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  // do the initialisation
+  if(hwsm) {
+    _theFFZVertex = hwsm->vertexFFZ();
+    _theFFPVertex = hwsm->vertexFFP();
+  }
+  else throw InitException() << "Wrong type of StandardModel object in "
+			     << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
+			     << Exception::runerror;
+}
+
 void MEee2gZ2qq::getDiagrams() const {
   // specific the diagrams
   tcPDPtr ep = getParticleData(ParticleID::eplus);
@@ -105,12 +127,10 @@ void MEee2gZ2qq::Init() {
 }
 
 double MEee2gZ2qq::me2() const {
-  int ie,ip,iqk,iqb;
+  int ie(0),ip(1),iqk(2),iqb(3);
   // get the order right
-  if(mePartonData()[0]->id()==11){ie=0;ip=1;}
-  else                           {ie=1;ip=0;}
-  if(mePartonData()[2]->id()>0)  {iqk=2;iqb=3;}
-  else                           {iqk=3;iqb=2;}
+  if(mePartonData()[0]->id()!=11) swap(ie,ip);
+  if(mePartonData()[2]->id()<0)   swap(iqk,iqb);
   // compute the spinors
   vector<SpinorWaveFunction> fin,aout;
   vector<SpinorBarWaveFunction>  ain,fout;
@@ -164,37 +184,37 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
   // sum over helicities to get the matrix element
   unsigned int inhel1,inhel2,outhel1,outhel2;
   double total[3]={0.,0.};
-   for(inhel1=0;inhel1<2;++inhel1) {
-     for(inhel2=0;inhel2<2;++inhel2) {
-       // intermediate Z
-       interZ = _theFFZVertex->evaluate(sHat(),1,_Z0,fin[inhel1],ain[inhel2]);
-       // intermediate photon
-       interG = _theFFPVertex->evaluate(sHat(),1,_gamma,fin[inhel1],ain[inhel2]);
-       for(outhel1=0;outhel1<2;++outhel1) {
-	 for(outhel2=0;outhel2<2;++outhel2) {		
-	   // first the Z exchange diagram
-	   diag1 = _theFFZVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
-					   interZ);
-	   // then the photon exchange diagram
-	   diag2 = _theFFPVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
-					   interG);
-	   // add up squares of individual terms
-	   total[1] += real(diag1*conj(diag1));
-	   total[2] += real(diag2*conj(diag2));
-	   // the full thing including interference
-	   diag1+=diag2;
-	   total[0] += real(diag1*conj(diag1));
-	   output(inhel1,inhel2,outhel1,outhel2)=diag1;
-	 }
-       }
-     }
-   }
-   // results
-   for(int ix=0;ix<3;++ix){total[ix]*=0.75;}
-   cont = total[2];
-   BW   = total[1];
-   me   = total[0];
-   return output;
+  for(inhel1=0;inhel1<2;++inhel1) {
+    for(inhel2=0;inhel2<2;++inhel2) {
+      // intermediate Z
+      interZ = _theFFZVertex->evaluate(sHat(),1,_Z0,fin[inhel1],ain[inhel2]);
+      // intermediate photon
+      interG = _theFFPVertex->evaluate(sHat(),1,_gamma,fin[inhel1],ain[inhel2]);
+      for(outhel1=0;outhel1<2;++outhel1) {
+	for(outhel2=0;outhel2<2;++outhel2) {		
+	  // first the Z exchange diagram
+	  diag1 = _theFFZVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
+					  interZ);
+	  // then the photon exchange diagram
+	  diag2 = _theFFPVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
+					  interG);
+	  // add up squares of individual terms
+	  total[1] += real(diag1*conj(diag1));
+	  total[2] += real(diag2*conj(diag2));
+	  // the full thing including interference
+	  diag1+=diag2;
+	  total[0] += real(diag1*conj(diag1));
+	  output(inhel1,inhel2,outhel1,outhel2)=diag1;
+	}
+      }
+    }
+  }
+  // results
+  for(int ix=0;ix<3;++ix){total[ix]*=0.75;}
+  cont = total[2];
+  BW   = total[1];
+  me   = total[0];
+  return output;
 }
 
 void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
@@ -218,7 +238,6 @@ void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
   // set the matrix element for the vertex
   hardvertex->ME(prodme);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix) {
+  for(unsigned int ix=0;ix<4;++ix)
     dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
-  }
 }

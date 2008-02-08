@@ -20,7 +20,10 @@ using namespace Herwig;
 GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
 				 theDiagrams(0), theNDiags(0), 
 				 theColour(0), theNcf(0) , 
-				 theDebug(false) {}
+				 theDebug(false) {
+  massOption(true ,1);
+  massOption(false,1);
+}
   
 void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
 				   const vector<vector<double> > & factors,

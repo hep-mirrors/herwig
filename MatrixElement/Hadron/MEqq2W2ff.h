@@ -12,7 +12,7 @@
 // This is the declaration of the MEqq2W2ff class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -31,7 +31,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEqq2W2ffInterfaces "The interfaces"
  * defined for MEqq2W2ff.
  */
-class MEqq2W2ff: public ME2to2Base {
+class MEqq2W2ff: public HwME2to2Base {
 
 public:
 
@@ -248,7 +248,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEqq2W2ff,1> {
   /** Typedef of the first base class of MEqq2W2ff. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -269,8 +269,5 @@ struct ClassTraits<Herwig::MEqq2W2ff>
 }
 
 #include "MEqq2W2ff.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEqq2W2ff.tcc"
-#endif
 
 #endif /* HERWIG_MEqq2W2ff_H */

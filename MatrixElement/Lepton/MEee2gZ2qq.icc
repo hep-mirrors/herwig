@@ -13,8 +13,10 @@
 
 namespace Herwig {
 
-inline MEee2gZ2qq::MEee2gZ2qq() : _minflav(1),_maxflav(5) 
-{}
+inline MEee2gZ2qq::MEee2gZ2qq() : _minflav(1),_maxflav(5)  {
+  massOption(true ,1);
+  massOption(false,1);
+}
 
 inline IBPtr MEee2gZ2qq::clone() const {
   return new_ptr(*this);
@@ -24,30 +26,6 @@ inline IBPtr MEee2gZ2qq::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MEee2gZ2qq::doinit() throw(InitException) {
-  ME2to2Base::doinit();
-  if(_minflav>_maxflav)
-    {throw InitException() << "The minimum flavour " << _minflav  
-			   << "must be lower the than maximum flavour " << _maxflav
-			   << " in MEee2gZ2qq::doinit() " 
-			   << Exception::runerror;}
-  // set the particle data objects
-  _Z0=getParticleData(ThePEG::ParticleID::Z0);
-  _gamma=getParticleData(ThePEG::ParticleID::gamma);
-  // cast the SM pointer to the Herwig SM pointer
-  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
-  // do the initialisation
-  if(hwsm)
-    {
-      _theFFZVertex = hwsm->vertexFFZ();
-      _theFFPVertex = hwsm->vertexFFP();
-    }
-  else
-    {throw InitException() << "Wrong type of StandardModel object in "
-			   << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
-			   << Exception::runerror;}
-}
-
 inline void MEee2gZ2qq::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
@@ -55,11 +33,11 @@ inline void MEee2gZ2qq::rebind(const TranslationMap & trans)
   _theFFPVertex = trans.translate(_theFFPVertex);
   _Z0           = trans.translate(_Z0);
   _gamma        = trans.translate(_gamma);
-  ME2to2Base::rebind(trans);
+  HwME2to2Base::rebind(trans);
 }
 
 inline IVector MEee2gZ2qq::getReferences() {
-  IVector ret = ME2to2Base::getReferences();
+  IVector ret = HwME2to2Base::getReferences();
   ret.push_back(_theFFZVertex);
   ret.push_back(_theFFPVertex);
   ret.push_back(_Z0          );
