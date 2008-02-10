@@ -15,27 +15,29 @@ using namespace ThePEG;
 
 namespace Herwig {
 
-inline VectorBosonQQbarHardGenerator::VectorBosonQQbarHardGenerator() : _alphaS_max(2.0)
-{}
+  inline VectorBosonQQbarHardGenerator::VectorBosonQQbarHardGenerator() : _alphaS_max(2.0)
+  {}
 
 
-inline IBPtr VectorBosonQQbarHardGenerator::clone() const {
-  return new_ptr(*this);
-}
+  inline IBPtr VectorBosonQQbarHardGenerator::clone() const {
+    return new_ptr(*this);
+  }
 
-inline IBPtr VectorBosonQQbarHardGenerator::fullclone() const {
-  return new_ptr(*this);
-}
+  inline IBPtr VectorBosonQQbarHardGenerator::fullclone() const {
+    return new_ptr(*this);
+  }
 
-inline bool VectorBosonQQbarHardGenerator::inRange() {
+  inline bool VectorBosonQQbarHardGenerator::inRange() {
+    
+    if(_xb>1.||_xb<0.) return 0;
+    if(_xc>1.||_xc<0.) return 0;
+    if(_xb+_xc < 1.) return 0;
+    if((1.-_xb)*(1.-_xc)<_Qg*_Qg/_s) return 0;
+    return 1;
+  }
   
-  if(_xb>1.||_xb<0.) return 0;
-  if(_xc>1.||_xc<0.) return 0;
-  if(_xb+_xc < 1.) return 0;
-  //JT- changed back to massless PS bound as was giving some NAN errors in IMR
-  //  if(_xb+_xc < 1.-_Qg*_Qg/_s) return 0;
-  if((1.-_xb)*(1.-_xc)<_Qg*_Qg/_s) return 0;
-  return 1;
-}
+  inline bool VectorBosonQQbarHardGenerator::FinalStateNason(){
+    return true;
+  }
 
 }

@@ -6,10 +6,13 @@
 
 namespace Herwig {
 
-inline HardestEmissionGenerator::HardestEmissionGenerator() {}
+  inline HardestEmissionGenerator::HardestEmissionGenerator() {}
 
-inline tEvolverPtr HardestEmissionGenerator::evolver() {
-  return _evolver;
+  inline tEvolverPtr HardestEmissionGenerator::evolver() {
+    return _evolver;
+  }
+  inline bool HardestEmissionGenerator::FinalStateNason(){
+  return true;
 }
-
+ 
 }

@@ -53,6 +53,11 @@ public:
   virtual bool canHandle(ShowerTreePtr);
   //@}
 
+  /**
+   *  Member to tell other classe whether doing FS or IS nason matching
+   */
+  inline bool FinalStateNason();
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -194,13 +199,15 @@ private:
   int _iemitter;
   int _ispectator;
 
-  HistogramPtr  _hyb;
-  HistogramPtr  _hplow;
-  HistogramPtr  _hphigh;
-  HistogramPtr  _hy;
-  HistogramPtr  _hthrust;
-  HistogramPtr  _hthrustlow;
-  HistogramPtr  _hmass;
+  HistogramPtr _hyb;
+  HistogramPtr _hplow;
+  HistogramPtr _hphigh;
+  HistogramPtr _hy;
+  HistogramPtr _hthrust;
+  HistogramPtr _hthrustlow;
+  HistogramPtr _hmass;
+  HistogramPtr _hptVeto;
+  HistogramPtr _hptVetoLow;
   /**
    *  vector of points for scatter plot
    */

@@ -50,6 +50,11 @@ public:
    */
   virtual bool canHandle(ShowerTreePtr);
   //@}
+  
+   /**
+   *  Member to tell other classes if does Nason IS or FS matching
+   */
+  inline bool FinalStateNason();
 
 public:
 
