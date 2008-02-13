@@ -150,7 +150,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
   currentTree()->hasShowered(true);
 
   // test that generated pt after IMR and MR  matches original n+1 of hardest
-  if(_hardonly && _hardgenerator[0]->FinalStateNason() && _nasontree) {
+  if(_hardonly && _nasontree) {
     // extract the particles from end point of the shower
     map<int,PPtr> outgoing;
     //loop over all final state particles in particlesToShower
@@ -190,26 +190,15 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	 abs(pdiff.y()) > eps ||
 	 abs(pdiff.z()) > eps ||
 	 abs(pdiff.t()) > eps ) {
-	cerr << "testing recon problem " << *outgoing[outb[ix]->id()] << "\n"
-	     << "                      " << pdiff/GeV << "\n";
-	cerr << "testing " << abs(pdiff.x())/eps  << " "
-	     << abs(pdiff.y())/eps  << " "
-	     << abs(pdiff.z())/eps  << " "
-	     << abs(pdiff.t())/eps  << "\n";
+	generator()->log() << "testing recon problem " << *outgoing[outb[ix]->id()] << "\n"
+			   << "                      " << pdiff/GeV << "\n";
+	generator()->log() << "testing " << abs(pdiff.x())/eps  << " "
+			   << abs(pdiff.y())/eps  << " "
+			   << abs(pdiff.z())/eps  << " "
+			   << abs(pdiff.t())/eps  << "\n";
       }
     }
   }
-  
-
-
-
-
-
-
-
-
-
-
 }
 
 void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
@@ -281,55 +270,62 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
   currentTree()->hasShowered( true );
 
 
-  if( _hardonly && !_hardgenerator[0]->FinalStateNason() && _nasontree ) {
+  if( _hardonly && _nasontree ) {
     // extract the particles from end point of the shower
-    map< int, PPtr > outgoing;
-    //loop over all final state particles in particlesToShower
+    vector<ShowerParticlePtr> partons;
     for(unsigned int ix = 0; ix < particlesToShower.size(); ++ix) {
       if(  particlesToShower[ix]->progenitor()->isFinalState() ) continue;
-      //insert 3 outgoing particles into outgoing map
-      PPtr temp = particlesToShower[ix]->progenitor();
-      if( !temp->siblings().empty() ) {
-	//add the one sibling
-	PPtr sibling = *( temp->siblings().begin() );
-       	outgoing.insert( make_pair( sibling->id(), sibling  ) );
-      }
-      outgoing.insert( make_pair( temp->id(), temp ) );
-    }
-  
-    // extract the particles from the nason tree
-    vector<PPtr> outb;
-    //loop through nason branchings creating n+1 nason particles in outb
-    for(set<NasonBranchingPtr>::const_iterator it = 
-	  _nasontree->branchings().begin();
-	it != _nasontree->branchings().end(); 
-	++it)  {
-      if( (**it)._parent ){
-	//add off shell particle
-	outb.push_back( (**it)._particle );
-	//add the emitted jet - long way of finding sibling of offshell
-	for( vector<NasonBranchingPtr>::const_iterator jt = (**it)._parent->_children.begin();
-	     jt != (**it)._parent->_children.end(); 
-	     ++jt ) {
-	  if( (*jt) != (*it) ) outb.push_back( (**jt)._particle );
+      ShowerParticlePtr incoming=particlesToShower[ix]->progenitor();
+      if(!incoming->parents().empty()&&incoming->parents()[0]->dataPtr()->coloured()) {
+	ShowerParticlePtr incoming2=dynamic_ptr_cast<ShowerParticlePtr>(incoming->parents()[0]);
+	if(incoming2) {
+	  partons.push_back(incoming2);
+	  for(unsigned int iy=0;iy<incoming2->children().size();++iy) {
+	    ShowerParticlePtr child = dynamic_ptr_cast<ShowerParticlePtr>(incoming2->children()[iy]);
+	    if(child&&child!=incoming) partons.push_back(child);
+	  }
+	}
+	else {
+	  partons.push_back(incoming);
 	}
       }
-      //add the spectator
-      else if( ! (**it)._particle->isFinalState() ) {
-	outb.push_back( (**it)._particle );
+      else {
+	partons.push_back(incoming);
       }
     }
-    cerr<<"particles from nasontree:\n";
-    for(unsigned int ix = 0; ix < outb.size(); ++ix) {
-      cerr<<*(outb[ix])<<"\n";
+//     for(vector<ShowerParticlePtr>::const_iterator it=partons.begin();it!=partons.end();++it) {
+//       generator()->log() << "testing partons " << **it << "\n";
+//     }
+    // extract the particles from the nason tree
+    vector<ShowerParticlePtr> nason;
+    for(set<NasonBranchingPtr>::const_iterator it = _nasontree->incoming().begin();
+	it != _nasontree->incoming().end(); ++it) {
+      nason.push_back((*it)->_particle);
+      for(unsigned int ix=0;ix<(*it)->_children.size();++ix) {
+	if((*it)->_children[ix]->_incoming) continue;
+	nason.push_back((*it)->_children[ix]->_particle);
+      }
     }
-    cerr<<"particles from end of shower:\n";
-    for(    map<int,PPtr>::const_iterator it = 
-	      outgoing.begin();
-	    it != outgoing.end(); 
-	    ++it )  {
-      cerr<< *(it->second)<<"\n";
-    }       
+//     for(vector<ShowerParticlePtr>::const_iterator it=nason.begin();it!=nason.end();++it) {
+//       generator()->log() << "testing nason  " << **it << "\n";
+//     }
+    static Energy eps = 1e-5*GeV;
+    for(unsigned int ix=0;ix<partons.size();++ix) {
+      for(unsigned int iy=0;iy<nason.size();++iy) {
+	if(nason[iy]->isFinalState()!=partons[ix]->isFinalState()) continue;
+	if(nason[iy]->id()!=partons[ix]->id()) continue;
+	Lorentz5Momentum pdiff=nason[iy]->momentum()-partons[ix]->momentum();
+	if(abs(pdiff.x()) > eps || abs(pdiff.y()) > eps ||
+	   abs(pdiff.z()) > eps || abs(pdiff.t()) > eps ) {
+	  generator()->log() << "testing recon problem " << *partons[ix] << "\n"
+	       << "                      " << pdiff/GeV << "\n";
+	  generator()->log() << "testing " << abs(pdiff.x())/eps  << " "
+			     << abs(pdiff.y())/eps  << " "
+			     << abs(pdiff.z())/eps  << " "
+			     << abs(pdiff.t())/eps  << "\n";
+	}
+      }
+    }
   }
 }
 
@@ -605,12 +601,14 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
     // for the reconstruction of kinematics, parent/child
     // relationships are according to the branching process:
     // now continue the shower
-    bool emitted;
-    if( branch->_parent ) {
-      emitted = truncatedSpaceLikeShower( newParent, beam, branch->_parent );
-    }
-    else {
-      emitted = spaceLikeShower( newParent, beam );
+    bool emitted=false;
+    if(!_hardonly) {
+      if( branch->_parent ) {
+	emitted = truncatedSpaceLikeShower( newParent, beam, branch->_parent );
+      }
+      else {
+	emitted = spaceLikeShower( newParent, beam );
+      }
     }
     if( !emitted ) {
       if( intrinsicpT().find( progenitor() ) == intrinsicpT().end() ) {
@@ -624,6 +622,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
       }
     }
     particle->showerKinematics()->updateChildren( newParent, theChildren );
+    if(_hardonly) return true;
     // perform the shower of the final-state particle
     if( timelike->_children.empty() ) {
       timeLikeShower( otherChild );

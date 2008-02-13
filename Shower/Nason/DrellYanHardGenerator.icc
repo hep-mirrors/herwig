@@ -12,16 +12,12 @@ inline DrellYanHardGenerator::DrellYanHardGenerator() : _power(2.0),_preqqbar(5.
 							_min_pt(2.*GeV)
 {}
 
-  inline IBPtr DrellYanHardGenerator::clone() const {
-    return new_ptr(*this);
-  }
-
-  inline IBPtr DrellYanHardGenerator::fullclone() const {
-    return new_ptr(*this);
-  }
-
-  inline bool DrellYanHardGenerator::FinalStateNason() {
-    return false;
-  }
+inline IBPtr DrellYanHardGenerator::clone() const {
+  return new_ptr(*this);
+}
+  
+inline IBPtr DrellYanHardGenerator::fullclone() const {
+  return new_ptr(*this);
+}
 
 }

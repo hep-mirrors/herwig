@@ -52,6 +52,7 @@ public:
    * Access the incoming branchings
    */
   inline set<NasonBranchingPtr> & incoming();
+
 private:
 
   /**

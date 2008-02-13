@@ -902,14 +902,16 @@ bool QTildeReconstructor::reconstructHardShower(NasonTreePtr hard,EvolverPtr) co
   double boost[2];
   for(unsigned int ix=0;ix<2;++ix) {
     boost[ix] = getBeta(alpha   [ix]+beta   [ix], alpha[ix]   -beta   [ix], 
-		       alphanew[ix]+betanew[ix], alphanew[ix]-betanew[ix]);
+			alphanew[ix]+betanew[ix], alphanew[ix]-betanew[ix]);
     if (pq[0].z() > 0*MeV) beta[ix]*=-1.;
+  }
+  // apply the boost the the particles
+  // first incoming particle
+  if(order) {
+    swap(pq[0],pq[1]);
   }
   // now apply the boosts
   Boost betaboost(0.,0.,boost[0]);
-  // apply the boost the the particles
-  // first incoming particle
-  if(order) swap(pq[0],pq[1]);
   LorentzRotation R;
   R.boost(betaboost);
   branchings=hard->incoming();

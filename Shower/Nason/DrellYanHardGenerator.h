@@ -50,11 +50,6 @@ public:
    */
   virtual bool canHandle(ShowerTreePtr);
   //@}
-  
-   /**
-   *  Member to tell other classes if does Nason IS or FS matching
-   */
-  inline bool FinalStateNason();
 
 public:
 
@@ -105,23 +100,10 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
   virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
   //@}
 
   /**
@@ -134,27 +116,6 @@ protected:
    */
   double getResult(int emis_type, Energy pt, double yj);
 
-
-  void TestBbar();
-  
-  double H_fn( double x1, double x2, Energy2 Mll );
-
-  double K_gq( double x1, double x2, Energy2 Mll );
-
-  double K_qg( double x1, double x2, Energy2 Mll );
-
-
-  
-
-  bool BBarInRange( Energy2 M11, double yll, double x, double v );
-
-  double BBarWgt( Energy2 M11, double yll, double x, double v );
-
-  //some test_fns (delete)
-
-  double test_fn(double x, double y);
-
-  void dotest();
  
   
   /**
@@ -262,45 +223,11 @@ private:
   Energy _pt;
   //@}
 
-/**
+  /**
    *  The transverse momentum of the jet
    */
   Energy _min_pt;
   //@}
-
-  /**
-   *  Parameters for plots and debugging, will be deleted in final version
-   */
-  //@{
-  double _max[3];
-  /**
-   *  The power for the overestimate of the true distribution
-   */
-  int _count[4];
-
-  HistogramPtr  _hyb;
-  HistogramPtr  _hplow;
-  HistogramPtr  _hphigh;
-  HistogramPtr  _hyj;
-  HistogramPtr  _htype;
-  HistogramPtr  _weighta,_weightb,_weightc;
-  HistogramPtr _hbbar;
-  HistogramPtr _hbbarDileptonMass;
-
-
-  //test histograms
-  HistogramPtr _hbornyb;
-  HistogramPtr _hbbarx;
-  HistogramPtr _hbbarv;
-  /**
-   *  vector of points for scatter plot
-   */
-  std::vector<double> _ptplot;
-  std::vector<double> _yjplot;
-  std::vector<double> _xplot;
-  std::vector<double> _yplot;
-  //@}
-
 };
 
 }
