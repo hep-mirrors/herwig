@@ -51,6 +51,8 @@ FivePionCurrent::FivePionCurrent() {
   _garhopi=6.*GeV;
   _faaf=4.*GeV;
   _ffpipi=5.*GeV;
+  _presigma = 0./GeV2/GeV;      
+  _preomega = 0./GeV2/GeV2/GeV2/GeV;
 }
 
 inline void FivePionCurrent::doinit() throw(InitException) {
