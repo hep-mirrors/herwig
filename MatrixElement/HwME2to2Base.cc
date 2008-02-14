@@ -19,6 +19,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -34,27 +35,110 @@ void HwME2to2Base::setKinematics() {
 bool HwME2to2Base::generateKinematics(const double * r) {
   Energy mass[2];
   // generate the masses of the particles
+  double mjac(1.);
   if(_massopt1==2&&_massopt2==2) {
-    throw Exception() << "Both off-shell not yet handled in "
-		      << "HwME2to2Base::generateKinematics "
-		      << Exception::runerror;
+    // minimum masses of the outgoing particles
+    Energy ecm = sqrt(sHat());
+    Energy mmin[2]  = {mePartonData()[2]->massMin(),
+		       mePartonData()[3]->massMin()};
+    // not kinematically possible return
+    if(ecm<mmin[0]+mmin[1]) return false;
+    // maximum masses of the outgoing particles, including kinematic limit
+    Energy mmax[2]  = {min(mePartonData()[2]->massMax(),ecm-mmin[1]),
+		       min(mePartonData()[3]->massMax(),ecm-mmin[0])};
+    // generate the mass of the first particle
+    if(mmax[0]<mmin[0]) return false;
+    tGenericMassGeneratorPtr gen1= mePartonData()[2]->massGenerator() ?
+      dynamic_ptr_cast<tGenericMassGeneratorPtr>(mePartonData()[2]->massGenerator()) :
+      tGenericMassGeneratorPtr();
+    if(gen1) {
+      double jtemp(0.);
+      mass[0] = gen1->mass(*mePartonData()[2],jtemp,mmin[0],mmax[0],r[1]);
+      mjac *= jtemp;
+    }
+    else {
+      Energy mon(mePartonData()[2]->mass()),width(mePartonData()[2]->width());
+      double rhomin = atan((sqr(mmin[0])-sqr(mon))/mon/width);
+      double rhomax = atan((sqr(mmax[0])-sqr(mon))/mon/width);
+      mass[0] = sqrt(mon*width*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(mon));
+      mjac *= (rhomax-rhomin)/Constants::pi;
+    }
+    // generate the mass of the second particle
+    mmax[1] = min(mmax[1],ecm-mass[0]);
+    if(mmax[1]<mmin[1]) return false;
+    tGenericMassGeneratorPtr gen2 = mePartonData()[3]->massGenerator() ?
+      dynamic_ptr_cast<tGenericMassGeneratorPtr>(mePartonData()[3]->massGenerator()) :
+      tGenericMassGeneratorPtr();
+    if(gen2) {
+      double jtemp(0.);
+      mass[1] = gen2->mass(*mePartonData()[3],jtemp,mmin[1],mmax[1],r[2]);
+      mjac *= jtemp;
+    }
+    else {
+      Energy mon(mePartonData()[3]->mass()),width(mePartonData()[3]->width());
+      double rhomin = atan((sqr(mmin[1])-sqr(mon))/mon/width);
+      double rhomax = atan((sqr(mmax[1])-sqr(mon))/mon/width);
+      mass[1] = sqrt(mon*width*tan(rhomin+r[2]*(rhomax-rhomin))+sqr(mon));
+      mjac *= (rhomax-rhomin);
+    }
   }
   else if(_massopt1==2) {
-    mass[1] = _massopt1==0 ? 0.*GeV : mePartonData()[0]->mass();
-    throw Exception() << "First particle off-shell not yet handled in "
-		      << "HwME2to2Base::generateKinematics "
-		      << Exception::runerror;
+    mass[1] = _massopt2==0 ? 0.*GeV : mePartonData()[3]->mass();
+    Energy ecm = sqrt(sHat());
+    Energy mmin  = mePartonData()[2]->massMin();
+    // not kinematically possible return
+    if(ecm<mmin+mass[1]) return false;
+    // maximum masses of the outgoing particle, including kinematic limit
+    Energy mmax  = min(mePartonData()[2]->massMax(),ecm-mass[1]);
+    // generate the mass of the particle
+    if(mmax<mmin) return false;
+    tGenericMassGeneratorPtr gen = mePartonData()[2]->massGenerator() ?
+      dynamic_ptr_cast<tGenericMassGeneratorPtr>(mePartonData()[2]->massGenerator()) :
+      tGenericMassGeneratorPtr();
+    if(gen) {
+      double jtemp(0.);
+      mass[0] = gen->mass(*mePartonData()[2],jtemp,mmin,mmax,r[1]);
+      mjac *= jtemp;
+    }
+    else {
+      Energy mon(mePartonData()[2]->mass()),width(mePartonData()[2]->width());
+      double rhomin = atan((sqr(mmin)-sqr(mon))/mon/width);
+      double rhomax = atan((sqr(mmax)-sqr(mon))/mon/width);
+      mass[0] = sqrt(mon*width*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(mon));
+      mjac *= (rhomax-rhomin)/Constants::pi;
+    }
   }
   else if(_massopt2==2) {
-    mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[0]->mass();
-    throw Exception() << "Second particle off-shell not yet handled in "
-		      << "HwME2to2Base::generateKinematics "
-		      << Exception::runerror;
+    mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[2]->mass();
+    Energy ecm = sqrt(sHat());
+    Energy mmin  = mePartonData()[3]->massMin();
+    // not kinematically possible return
+    if(ecm<mmin+mass[0]) return false;
+    // maximum masses of the outgoing particle, including kinematic limit
+    Energy mmax  = min(mePartonData()[2]->massMax(),ecm-mass[0]);
+    // generate the mass of the particle
+    if(mmax<mmin) return false;
+    tGenericMassGeneratorPtr gen = mePartonData()[3]->massGenerator() ?
+      dynamic_ptr_cast<tGenericMassGeneratorPtr>(mePartonData()[3]->massGenerator()) :
+      tGenericMassGeneratorPtr();
+    if(gen) {
+      double jtemp(0.);
+      mass[1] = gen->mass(*mePartonData()[3],jtemp,mmin,mmax,r[1]);
+      mjac *= jtemp;
+    }
+    else {
+      Energy mon(mePartonData()[3]->mass()),width(mePartonData()[3]->width());
+      double rhomin = atan((sqr(mmin)-sqr(mon))/mon/width);
+      double rhomax = atan((sqr(mmax)-sqr(mon))/mon/width);
+      mass[1] = sqrt(mon*width*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(mon));
+      mjac *= (rhomax-rhomin)/Constants::pi;
+    }
   }
   else {
     mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[2]->mass();
-    mass[1] = _massopt1==0 ? 0.*GeV : mePartonData()[3]->mass();
+    mass[1] = _massopt2==0 ? 0.*GeV : mePartonData()[3]->mass();
   }
+  // set up the momenta
   for ( int i = 2, N = meMomenta().size(); i < N; ++i ) {
     meMomenta()[i] = Lorentz5Momentum(mass[i-2]);
   }
@@ -136,16 +220,17 @@ bool HwME2to2Base::generateKinematics(const double * r) {
 
   tHat(pq*cth + m22 - e0e2);
   uHat(m22 + m32 - sHat() - tHat());
-  jacobian((pq/sHat())*Constants::pi*jacobian());
-  return true;
+  jacobian((pq/sHat())*Constants::pi*jacobian()*mjac);
+  // compute the rescaled momenta 
+  return rescaleMomenta(meMomenta(),mePartonData());
 }
 
 void HwME2to2Base::persistentOutput(PersistentOStream & os) const {
-  os << _massopt1 << _massopt2;
+  os << _massopt1 << _massopt2 << _rescaleOption;
 }
 
 void HwME2to2Base::persistentInput(PersistentIStream & is, int) {
-  is >> _massopt1 >> _massopt2;
+  is >> _massopt1 >> _massopt2 >> _rescaleOption;
 }
 
 AbstractClassDescription<HwME2to2Base> HwME2to2Base::initHwME2to2Base;
@@ -157,4 +242,41 @@ void HwME2to2Base::Init() {
     ("The ME2to2Base class may be used as a base class "
      "for all \\f$2\\rightarrow 2\\f$ matrix elements.");
 
+}
+
+bool HwME2to2Base::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
+				  const cPDVector & data) {
+  assert(momenta.size()==4&&data.size()==4);
+  // default just use the ones we generated
+  _rescaledMomenta=momenta;
+  if(_rescaleOption==1) return true;
+  Energy mnew[2];
+  if(_rescaleOption==0) {
+    mnew[0] = 0.*GeV;
+    mnew[1] = 0.*GeV;
+  }
+  else if(_rescaleOption==2) {
+    mnew[0] = data[2]->mass();
+    mnew[1] = data[3]->mass();
+  }
+  else if(_rescaleOption==3) {
+    if(abs(data[2]->id())!=abs(data[3]->id())) return true;
+    mnew[0] = 0.5*(momenta[2].mass()+momenta[3].mass());
+    mnew[1] = mnew[0];
+  }
+  Lorentz5Momentum pcm(momenta[2]+momenta[3]);
+  Energy m0=pcm.m();
+  if(m0<mnew[0]+mnew[1]) return false;
+  Boost bv = pcm.boostVector();
+  _rescaledMomenta[2].boost(bv);
+  _rescaledMomenta[2].setMass(mnew[0]);
+  _rescaledMomenta[2].setE(0.5*(sqr(m0)+sqr(mnew[0])-sqr(mnew[1]))/m0);
+  _rescaledMomenta[2].rescaleRho();
+  _rescaledMomenta[2].boost(-bv);
+  _rescaledMomenta[3].boost(bv);
+  _rescaledMomenta[3].setMass(mnew[1]);
+  _rescaledMomenta[3].setE(0.5*(sqr(m0)-sqr(mnew[0])+sqr(mnew[1]))/m0);
+  _rescaledMomenta[3].rescaleRho();
+  _rescaledMomenta[2].boost(-bv);
+  return true;
 }

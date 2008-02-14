@@ -250,6 +250,17 @@ private:
   unsigned int _process;
 
   /**
+   *  Option for the treatment of bottom and lighter
+   *  quark masses
+   */
+  unsigned int _bottomopt;
+
+  /**
+   *  Option for the treatment of top quark masses
+   */
+  unsigned int _topopt;
+
+  /**
    *  Colour flow
    */
   mutable unsigned int _flow;

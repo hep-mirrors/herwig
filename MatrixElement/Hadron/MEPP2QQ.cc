@@ -27,7 +27,17 @@ using namespace Herwig;
 
 void MEPP2QQ::doinit() throw(InitException) {
   HwME2to2Base::doinit();
-  // get the vedrtex pointers from the SM object
+  // handling of masses
+  if(_quarkflavour==6) {
+    massOption(true ,_topopt);
+    massOption(false,_topopt);
+  }
+  else {
+    massOption(true ,_bottomopt);
+    massOption(false,_bottomopt);
+  }
+
+  // get the vertex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm) {
@@ -52,13 +62,13 @@ Energy2 MEPP2QQ::scale() const {
 }
 
 void MEPP2QQ::persistentOutput(PersistentOStream & os) const {
-  os << _gggvertex << _qqgvertex << _quarkflavour << _process 
-     << _gluon << _quark << _antiquark;
+  os << _gggvertex << _qqgvertex << _quarkflavour << _bottomopt << _topopt
+     << _process << _gluon << _quark << _antiquark;
 }
 
 void MEPP2QQ::persistentInput(PersistentIStream & is, int) {
-  is >> _gggvertex >> _qqgvertex >> _quarkflavour >> _process
-     >> _gluon >> _quark >> _antiquark;
+  is >> _gggvertex >> _qqgvertex >> _quarkflavour >> _bottomopt >> _topopt
+     >> _process >> _gluon >> _quark >> _antiquark;
 }
 
 unsigned int MEPP2QQ::orderInAlphaS() const {
@@ -107,6 +117,38 @@ void MEPP2QQ::Init() {
      "qbarqbar2qbarqbar",
      "Include only qbar qbar -> qbar qbar processes",
      2);
+
+  static Switch<MEPP2QQ,unsigned int> interfaceTopMassOption
+    ("TopMassOption",
+     "Option for the treatment of the top quark mass",
+     &MEPP2QQ::_topopt, 1, false, false);
+  static SwitchOption interfaceTopMassOptionOnMassShell
+    (interfaceTopMassOption,
+     "OnMassShell",
+     "The top is produced on its mass shell",
+     1);
+  static SwitchOption interfaceTopMassOption2
+    (interfaceTopMassOption,
+     "OffShell",
+     "The top is generated off-shell using the mass and width generator.",
+     2);
+
+  static Switch<MEPP2QQ,unsigned int> interfaceBottomMassOption
+    ("BottomMassOption",
+     "Option for the treatment of bottom and lighter quark masses",
+     &MEPP2QQ::_bottomopt, 1, false, false);
+  static SwitchOption interfaceBottomMassOptionOnMassShell
+    (interfaceBottomMassOption,
+     "OnMassShell",
+     "The bottom is produced on its mass shell, the this mass used everywhere",
+     1);
+  static SwitchOption interfaceBottomMassOptionZeroMass
+    (interfaceBottomMassOption,
+     "ZeroMass",
+     "The bottom is generated on mass shell, but zero mass is used in"
+     " the matrix element",
+     0);
+
 }
 
 Selector<MEBase::DiagramIndex>
@@ -127,6 +169,7 @@ double MEPP2QQ::gg2qqbarME(vector<VectorWaveFunction> &g1,
 			   unsigned int iflow) const {
   // scale
   Energy2 mt(scale());
+  Energy mass = q[0].mass();
   // matrix element to be stored
   if(iflow!=0) _me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
 						 PDT::Spin1Half,PDT::Spin1Half));
@@ -142,11 +185,11 @@ double MEPP2QQ::gg2qqbarME(vector<VectorWaveFunction> &g1,
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  //first t-channel diagram
 	  inters =_qqgvertex->evaluate(mt,1,qbar[ohel2].getParticle(),
-				       qbar[ohel2],g2[ihel2]);
+				       qbar[ohel2],g2[ihel2],mass);
 	  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
 	  //second t-channel diagram
 	  inters =_qqgvertex->evaluate(mt,1,qbar[ohel2].getParticle(),
-				       qbar[ohel2],g1[ihel1]);
+				       qbar[ohel2],g1[ihel1],mass);
 	  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
 	  // s-channel diagram
 	  diag[2]=_qqgvertex->evaluate(mt,qbar[ohel2],q[ohel1],interv);
@@ -298,10 +341,10 @@ double MEPP2QQ::me2() const {
   double me(0.);
   // gg initiated processes
   if(mePartonData()[0]->id()==ParticleID::g&&mePartonData()[1]->id()==ParticleID::g) {
-    VectorWaveFunction      g1w(meMomenta()[0],mePartonData()[0],incoming);
-    VectorWaveFunction      g2w(meMomenta()[1],mePartonData()[1],incoming);
-    SpinorBarWaveFunction    qw(meMomenta()[2],mePartonData()[2],outgoing);
-    SpinorWaveFunction    qbarw(meMomenta()[3],mePartonData()[3],outgoing);
+    VectorWaveFunction      g1w(rescaledMomenta()[0],mePartonData()[0],incoming);
+    VectorWaveFunction      g2w(rescaledMomenta()[1],mePartonData()[1],incoming);
+    SpinorBarWaveFunction    qw(rescaledMomenta()[2],mePartonData()[2],outgoing);
+    SpinorWaveFunction    qbarw(rescaledMomenta()[3],mePartonData()[3],outgoing);
     vector<VectorWaveFunction> g1,g2;
     vector<SpinorBarWaveFunction> q;
     vector<SpinorWaveFunction> qbar;
@@ -316,10 +359,10 @@ double MEPP2QQ::me2() const {
   }
   // q qbar to q qbar 
   else {
-    SpinorWaveFunction    q1w(meMomenta()[0],mePartonData()[0],incoming);
-    SpinorBarWaveFunction q2w(meMomenta()[1],mePartonData()[1],incoming);
-    SpinorBarWaveFunction q3w(meMomenta()[2],mePartonData()[2],outgoing);
-    SpinorWaveFunction    q4w(meMomenta()[3],mePartonData()[3],outgoing);
+    SpinorWaveFunction    q1w(rescaledMomenta()[0],mePartonData()[0],incoming);
+    SpinorBarWaveFunction q2w(rescaledMomenta()[1],mePartonData()[1],incoming);
+    SpinorBarWaveFunction q3w(rescaledMomenta()[2],mePartonData()[2],outgoing);
+    SpinorWaveFunction    q4w(rescaledMomenta()[3],mePartonData()[3],outgoing);
     vector<SpinorWaveFunction>    q1,q4;
     vector<SpinorBarWaveFunction> q2,q3;
     for(unsigned int ix=0;ix<2;++ix) {
@@ -339,38 +382,76 @@ void MEPP2QQ::constructVertex(tSubProPtr sub) {
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
-  hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
-  hard.push_back(sub->outgoing()[0]);hard.push_back(sub->outgoing()[1]);
-  // order of particles
-  unsigned int order[4]={0,1,2,3};
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  hard.push_back(sub->outgoing()[1]);
   // identify the process and calculate the matrix element
   if(hard[0]->id()==ParticleID::g&&hard[1]->id()==ParticleID::g) {
-    if(hard[2]->id()<0) swap(order[2],order[3]);
+    if(hard[2]->id()<0) swap(hard[2],hard[3]);
     vector<VectorWaveFunction> g1,g2;
     vector<SpinorBarWaveFunction> q;
     vector<SpinorWaveFunction> qbar;
-    VectorWaveFunction(     g1,hard[      0 ],incoming,false,true,true);
-    VectorWaveFunction(     g2,hard[      1 ],incoming,false,true,true);
-    SpinorBarWaveFunction(q   ,hard[order[2]],outgoing,true ,true);
-    SpinorWaveFunction(   qbar,hard[order[3]],outgoing,true ,true);
+    // off-shell wavefunctions for the spin correlations
+    VectorWaveFunction(     g1,hard[0],incoming,false,true,true);
+    VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
+    SpinorBarWaveFunction(q   ,hard[2],outgoing,true ,true);
+    SpinorWaveFunction(   qbar,hard[3],outgoing,true ,true);
     g1[1]=g1[2];g2[1]=g2[2];
+    // on-shell for matrix element
+    vector<Lorentz5Momentum> momenta;
+    cPDVector data;
+    for(unsigned int ix=0;ix<4;++ix) {
+      momenta.push_back(hard[ix]->momentum());
+      data   .push_back(hard[ix]->dataPtr());
+    }
+    rescaleMomenta(momenta,data);
+    VectorWaveFunction      g1w(rescaledMomenta()[0],data[0],incoming);
+    VectorWaveFunction      g2w(rescaledMomenta()[1],data[1],incoming);
+    SpinorBarWaveFunction    qw(rescaledMomenta()[2],data[2],outgoing);
+    SpinorWaveFunction    qbarw(rescaledMomenta()[3],data[3],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+      g1w.reset(2*ix); g1  [ix] = g1w  ;
+      g2w.reset(2*ix); g2  [ix] = g2w  ;
+      qw.reset(ix);    q   [ix] = qw   ;
+      qbarw.reset(ix); qbar[ix] = qbarw;
+    }
     gg2qqbarME(g1,g2,q,qbar,_flow);
   }
   // q qbar -> q qbar
   else {
-    if(hard[0]->id()<0) swap(order[0],order[1]);
-    if(hard[2]->id()<0) swap(order[2],order[3]);
+    if(hard[0]->id()<0) swap(hard[0],hard[1]);
+    if(hard[2]->id()<0) swap(hard[2],hard[3]);
     vector<SpinorWaveFunction>    q1,q4;
     vector<SpinorBarWaveFunction> q2,q3;
-    SpinorWaveFunction(   q1,hard[order[0]],incoming,false,true);
-    SpinorBarWaveFunction(q2,hard[order[1]],incoming,false,true);
-    SpinorBarWaveFunction(q3,hard[order[2]],outgoing,true ,true);
-    SpinorWaveFunction(   q4,hard[order[3]],outgoing,true ,true);
+    // off-shell for spin correlations
+    SpinorWaveFunction(   q1,hard[0],incoming,false,true);
+    SpinorBarWaveFunction(q2,hard[1],incoming,false,true);
+    SpinorBarWaveFunction(q3,hard[2],outgoing,true ,true);
+    SpinorWaveFunction(   q4,hard[3],outgoing,true ,true);
+    // on-shell for matrix element
+    vector<Lorentz5Momentum> momenta;
+    cPDVector data;
+    for(unsigned int ix=0;ix<4;++ix) {
+      momenta.push_back(hard[ix]->momentum());
+      data   .push_back(hard[ix]->dataPtr());
+    }
+    rescaleMomenta(momenta,data);
+    SpinorWaveFunction    q1w(rescaledMomenta()[0],data[0],incoming);
+    SpinorBarWaveFunction q2w(rescaledMomenta()[1],data[1],incoming);
+    SpinorBarWaveFunction q3w(rescaledMomenta()[2],data[2],outgoing);
+    SpinorWaveFunction    q4w(rescaledMomenta()[3],data[3],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+      q1w.reset(ix);q1[ix] = q1w;
+      q2w.reset(ix);q2[ix] = q2w;
+      q3w.reset(ix);q3[ix] = q3w;
+      q4w.reset(ix);q4[ix] = q4w;
+    }
     qqbar2qqbarME(q1,q2,q3,q4,_flow);
   }
   // get the spin info objects
   for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
+    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex

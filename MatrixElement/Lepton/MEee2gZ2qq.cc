@@ -13,6 +13,7 @@
 
 #include "MEee2gZ2qq.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -25,6 +26,9 @@ using namespace Herwig;
 
 void MEee2gZ2qq::doinit() throw(InitException) {
   HwME2to2Base::doinit();
+  massOption(true ,_massopt);
+  massOption(false,_massopt);
+  rescalingOption(3);
   if(_minflav>_maxflav)
     throw InitException() << "The minimum flavour " << _minflav  
 			  << "must be lower the than maximum flavour " << _maxflav
@@ -97,12 +101,12 @@ MEee2gZ2qq::colourGeometries(tcDiagPtr ) const {
 
 void MEee2gZ2qq::persistentOutput(PersistentOStream & os) const {
   os << _theFFZVertex << _theFFPVertex << _Z0 << _gamma << _minflav 
-     << _maxflav;
+     << _maxflav << _massopt;
 }
 
 void MEee2gZ2qq::persistentInput(PersistentIStream & is, int) {
   is >> _theFFZVertex >> _theFFPVertex >> _Z0 >> _gamma >> _minflav 
-     >> _maxflav;
+     >> _maxflav >> _massopt;
 }
 
 ClassDescription<MEee2gZ2qq> MEee2gZ2qq::initMEee2gZ2qq;
@@ -124,6 +128,21 @@ void MEee2gZ2qq::Init() {
      &MEee2gZ2qq::_maxflav, 5, 1, 6,
      false, false, Interface::limited);
 
+  static Switch<MEee2gZ2qq,unsigned int> interfaceTopMassOption
+    ("TopMassOption",
+     "Option for the treatment of the top quark mass",
+     &MEee2gZ2qq::_massopt, 1, false, false);
+  static SwitchOption interfaceTopMassOptionOnMassShell
+    (interfaceTopMassOption,
+     "OnMassShell",
+     "The top is produced on its mass shell",
+     1);
+  static SwitchOption interfaceTopMassOption2
+    (interfaceTopMassOption,
+     "OffShell",
+     "The top is generated off-shell using the mass and width generator.",
+     2);
+
 }
 
 double MEee2gZ2qq::me2() const {
@@ -134,10 +153,10 @@ double MEee2gZ2qq::me2() const {
   // compute the spinors
   vector<SpinorWaveFunction> fin,aout;
   vector<SpinorBarWaveFunction>  ain,fout;
-  SpinorWaveFunction    ein  (meMomenta()[ie ],mePartonData()[ie ],incoming);
-  SpinorBarWaveFunction pin  (meMomenta()[ip ],mePartonData()[ip ],incoming);
-  SpinorBarWaveFunction qkout(meMomenta()[iqk],mePartonData()[iqk],outgoing);
-  SpinorWaveFunction    qbout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
+  SpinorWaveFunction    ein  (rescaledMomenta()[ie ],mePartonData()[ie ],incoming);
+  SpinorBarWaveFunction pin  (rescaledMomenta()[ip ],mePartonData()[ip ],incoming);
+  SpinorBarWaveFunction qkout(rescaledMomenta()[iqk],mePartonData()[iqk],outgoing);
+  SpinorWaveFunction    qbout(rescaledMomenta()[iqb],mePartonData()[iqb],outgoing);
   for(unsigned int ix=0;ix<2;++ix) {
     ein.reset(ix)  ;fin.push_back( ein  );
     pin.reset(ix)  ;ain.push_back( pin  );
@@ -220,16 +239,38 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
 void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
   // extract the particles in the hard process
   ParticleVector hard;
-  hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
-  hard.push_back(sub->outgoing()[0]);hard.push_back(sub->outgoing()[1]);
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  hard.push_back(sub->outgoing()[1]);
   if(hard[0]->id()<hard[1]->id()) swap(hard[0],hard[1]);
   if(hard[2]->id()<hard[3]->id()) swap(hard[2],hard[3]);
   vector<SpinorWaveFunction>    fin,aout;
   vector<SpinorBarWaveFunction> ain,fout;
+  // get wave functions for off-shell momenta for later on
   SpinorWaveFunction(   fin ,hard[0],incoming,false,true);
   SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
   SpinorBarWaveFunction(fout,hard[2],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[3],outgoing,true ,true);
+  // now rescale the momenta and compute the matrix element with the
+  // rescaled momenta for correlations
+  vector<Lorentz5Momentum> momenta;
+  cPDVector data;
+  for(unsigned int ix=0;ix<4;++ix) {
+    momenta.push_back(hard[ix]->momentum());
+    data   .push_back(hard[ix]->dataPtr());
+  }
+  rescaleMomenta(momenta,data);
+  SpinorWaveFunction    ein  (rescaledMomenta()[0],data[0],incoming);
+  SpinorBarWaveFunction pin  (rescaledMomenta()[1],data[1],incoming);
+  SpinorBarWaveFunction qkout(rescaledMomenta()[2],data[2],outgoing);
+  SpinorWaveFunction    qbout(rescaledMomenta()[3],data[3],outgoing);
+  for(unsigned int ix=0;ix<2;++ix) {
+    ein.reset(ix)  ; fin [ix] = ein  ;
+    pin.reset(ix)  ; ain [ix] = pin  ;
+    qkout.reset(ix); fout[ix] = qkout;
+    qbout.reset(ix); aout[ix] = qbout;
+  }
   // calculate the matrix element
   double me,cont,BW;
   ProductionMatrixElement prodme=HelicityME(fin,ain,fout,aout,me,cont,BW);

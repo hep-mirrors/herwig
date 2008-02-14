@@ -98,6 +98,24 @@ public:
    */
   inline void massOption(bool first, unsigned int iopt);
 
+  /**
+   * Set the treatment of the rescaling of the momenta for 
+   * the matrix element calculation
+   * @param iopt The rescaling option
+   */
+  inline void rescalingOption(unsigned int iopt);
+
+  /**
+   *  rescale the momenta for the computation of the helicity matrix element
+   */
+  bool rescaleMomenta(const vector<Lorentz5Momentum> &,
+		      const cPDVector &);
+
+  /**
+   *  Access to the rescaled momenta
+   */
+  inline const vector<Lorentz5Momentum> & rescaledMomenta() const;
+
 private:
 
   /**
@@ -122,6 +140,15 @@ private:
    */
   unsigned int _massopt2;
 
+  /**
+   *  Produced to produce rescaled momenta
+   */
+  unsigned int _rescaleOption;
+
+  /**
+   *  Rescaled momenta for use in ME calculations
+   */
+  vector<Lorentz5Momentum> _rescaledMomenta;
 };
 
 }

@@ -13,10 +13,8 @@
 
 namespace Herwig {
 
-inline MEee2gZ2qq::MEee2gZ2qq() : _minflav(1),_maxflav(5)  {
-  massOption(true ,1);
-  massOption(false,1);
-}
+inline MEee2gZ2qq::MEee2gZ2qq() : _minflav(1), _maxflav(5), _massopt(1)  
+{}
 
 inline IBPtr MEee2gZ2qq::clone() const {
   return new_ptr(*this);

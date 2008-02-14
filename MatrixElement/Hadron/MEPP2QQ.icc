@@ -13,9 +13,8 @@
 
 namespace Herwig {
 
-inline MEPP2QQ::MEPP2QQ() : _quarkflavour(6), _process(0) {
-  massOption(true ,1);
-  massOption(false,1);
+inline MEPP2QQ::MEPP2QQ() : _quarkflavour(6), _process(0),
+			    _bottomopt(1), _topopt(1) {
 }
 
 inline IBPtr MEPP2QQ::clone() const {

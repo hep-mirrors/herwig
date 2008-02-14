@@ -13,7 +13,7 @@
 namespace Herwig {
 
 inline HwME2to2Base::HwME2to2Base() 
-  : _massopt1(1), _massopt2(1)
+  : _massopt1(1), _massopt2(1), _rescaleOption(1)
 {}
 
 inline void HwME2to2Base::massOption(bool first, unsigned int iopt) {
@@ -21,4 +21,11 @@ inline void HwME2to2Base::massOption(bool first, unsigned int iopt) {
   else      _massopt2 = iopt;
 }
 
+inline void HwME2to2Base::rescalingOption(unsigned int iopt) {
+  _rescaleOption=iopt;
+}
+
+inline const vector<Lorentz5Momentum> & HwME2to2Base::rescaledMomenta() const {
+  return _rescaledMomenta;
+}
 }

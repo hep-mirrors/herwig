@@ -244,6 +244,11 @@ private:
    */
    unsigned int _maxflav;
 
+  /**
+   *  Option for the treatment of the top quark mass
+   */
+  unsigned int _massopt;
+
 };
 
 }
