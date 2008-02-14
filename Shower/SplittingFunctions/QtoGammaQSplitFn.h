@@ -1,55 +1,42 @@
 // -*- C++ -*-
+#ifndef HERWIG_QtoGammaQSplitFn_H
+#define HERWIG_QtoGammaQSplitFn_H
 //
-// GtoQQbarSplitFn.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_GtoQQbarSplitFn_H
-#define HERWIG_GtoQQbarSplitFn_H
-//
-// This is the declaration of the GtoQQbarSplitFn class.
+// This is the declaration of the QtoGammaQSplitFn class.
 //
 
 #include "SplittingFunction.h"
-#include "GtoQQbarSplitFn.fh"
+#include "QtoGammaQSplitFn.fh"
 
 namespace Herwig {
-
 using namespace ThePEG;
 
-/**\ingroup Shower
+/**
+ * The QtoGammaQSplitFn class
+ * provides the concrete implementation of the exact leading-order 
+ * splitting function for \f$q\to \gamma q\f$.
  *
- * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f$g\to q\bar{q}\f$. 
- *
- * In this case the splitting function is given by
- * \f[P(z,t) =T_R\left(1-2z(1-z)+2\frac{m_q^2}{t}\right),\f]
- * where \f$T_R=\frac12\f$
+ *  In this case the splitting function is given by
+ * \f[P(z,t) = \left(\frac{2(1-z)+z^2}{z}-2\frac{m^2_q}t\right).\f]
  * Our choice for the overestimate is 
- * \f[P_{\rm over}(z) = T_R,\f]
+ * \f[P_{\rm over}(z) = 2\frac1z,\f]
  * therefore the integral is
- * \f[\int P_{\rm over}(z) {\rm d}z =T_Rz,\f]
+ * \f[\int P_{\rm over}(z) {\rm d}z = 2\ln z,\f]
  * and its inverse is
- * \f[\frac{r}{T_R}\f]
+ * \f[\exp\left(\frac{r}{2}\right).\f]
  *
- * @see \ref GtoQQbarSplitFnInterfaces "The interfaces"
- * defined for GtoQQbarSplitFn.
+ *  @see SplittingFunction
+ *
  */
-class GtoQQbarSplitFn: public SplittingFunction {
+class QtoGammaQSplitFn: public SplittingFunction {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline GtoQQbarSplitFn();
-  //@}
+  inline QtoGammaQSplitFn();
 
-public:
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -63,7 +50,7 @@ public:
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P\f$.
+   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
@@ -71,7 +58,7 @@ public:
    */
   virtual double P(const double z, const Energy2 t, const IdList & ids,
 		   const bool mass) const;
-  
+
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -79,12 +66,12 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) const; 
+  virtual double overestimateP(const double z, const IdList & ids) const;   
 
   /**
    * The concrete implementation of the
    * the ratio of the splitting function to the overestimate, i.e.
-   * \f$P(z,\tilde{q}^2)/P_{\rm over}(z)\f$.
+   * \f$P(z,t)/P_{\rm over}(z)\f$.
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
@@ -102,8 +89,8 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double integOverP(const double z,  const IdList & ids, 
-			    unsigned int PDFfactor=0) const;
+  virtual double integOverP(const double z, const IdList & ids, 
+			       unsigned int PDFfactor=0) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
@@ -113,7 +100,7 @@ public:
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */ 
-  virtual double invIntegOverP(const double r,  const IdList & ids, 
+  virtual double invIntegOverP(const double r, const IdList & ids, 
 			       unsigned int PDFfactor=0) const;
   //@}
 
@@ -163,13 +150,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<GtoQQbarSplitFn> initGtoQQbarSplitFn;
+  static NoPIOClassDescription<QtoGammaQSplitFn> initQtoGammaQSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  GtoQQbarSplitFn & operator=(const GtoQQbarSplitFn &);
+  QtoGammaQSplitFn & operator=(const QtoGammaQSplitFn &);
 
 };
 
@@ -182,24 +169,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of GtoQQbarSplitFn. */
+ *  base classes of QtoGammaQSplitFn. */
 template <>
-struct BaseClassTrait<Herwig::GtoQQbarSplitFn,1> {
-  /** Typedef of the first base class of GtoQQbarSplitFn. */
+struct BaseClassTrait<Herwig::QtoGammaQSplitFn,1> {
+  /** Typedef of the first base class of QtoGammaQSplitFn. */
   typedef Herwig::SplittingFunction NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the GtoQQbarSplitFn class and the shared object where it is defined. */
+ *  the QtoGammaQSplitFn class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::GtoQQbarSplitFn>
-  : public ClassTraitsBase<Herwig::GtoQQbarSplitFn> {
+struct ClassTraits<Herwig::QtoGammaQSplitFn>
+  : public ClassTraitsBase<Herwig::QtoGammaQSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::GtoQQbarSplitFn"; }
+  static string className() { return "Herwig::QtoGammaQSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * GtoQQbarSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class GtoQQbarSplitFn depends on other classes (base classes
+   * QtoGammaQSplitFn is implemented. It may also include several, space-separated,
+   * libraries if the class QtoGammaQSplitFn depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -210,9 +197,6 @@ struct ClassTraits<Herwig::GtoQQbarSplitFn>
 
 }
 
-#include "GtoQQbarSplitFn.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GtoQQbarSplitFn.tcc"
-#endif
+#include "QtoGammaQSplitFn.icc"
 
-#endif /* HERWIG_GtoQQbarSplitFn_H */
+#endif /* HERWIG_QtoGammaQSplitFn_H */

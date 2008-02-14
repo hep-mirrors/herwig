@@ -48,7 +48,8 @@ double GtoGGSplitFn::ratioP(const double z, const Energy2, const IdList &,
   return sqr(1.-z*(1.-z));
 }
 
-double GtoGGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+double GtoGGSplitFn::invIntegOverP(const double r, const IdList & ,
+				   unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return 1./(1.+exp(-r/3.)); 
@@ -61,7 +62,8 @@ double GtoGGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const
   }
 } 
 
-double GtoGGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+double GtoGGSplitFn::integOverP(const double z, const IdList & ,
+				unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return 3.*log(z/(1.-z)); 

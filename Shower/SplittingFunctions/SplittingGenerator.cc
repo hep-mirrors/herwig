@@ -291,7 +291,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.id());
   // if no possible branching return
-  if(_bbranchings.find(index) == _bbranchings.end()) 
+  if(_bbranchings.find(index) == _bbranchings.end())
     return Branching(ShoKinPtr(), IdList());
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
@@ -307,7 +307,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
       kinematics=newKin;
       ids = cit->second.second;
     }
-  } 
+  }
   // return empty branching if nothing happened
   if(!kinematics) return Branching(ShoKinPtr(), IdList());
   // initialize the ShowerKinematics 

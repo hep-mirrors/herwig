@@ -13,7 +13,7 @@
 
 namespace Herwig {
 
-  inline QtoGQSplitFn::QtoGQSplitFn() : SplittingFunction(ShowerIndex::QCD,1) 
+inline QtoGQSplitFn::QtoGQSplitFn() : SplittingFunction(ShowerIndex::QCD,1) 
 {}
 
 inline IBPtr QtoGQSplitFn::clone() const {

@@ -91,8 +91,8 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
-  t = guesst(told,0,enhance,_ids[1]==_ids[2]);
-  z(guessz(0)); 
+  t = guesst(told,0,_ids,enhance,_ids[1]==_ids[2]);
+  z(guessz(0,_ids)); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
   if(t<tmin) {
@@ -109,8 +109,8 @@ bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
   // guess values of t and z
-  t = guesst(told,1,enhance,_ids[1]==_ids[2]); 
-  z(guessz(1)); 
+  t = guesst(told,1,_ids,enhance,_ids[1]==_ids[2]); 
+  z(guessz(1,_ids)); 
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
   if(t<tmin) {
@@ -297,8 +297,8 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   }
   zLimits(limits);
   // guess values of t and z
-  t = guesst(told,2,enhance,_ids[1]==_ids[2]); 
-  z(guessz(2)); 
+  t = guesst(told,2,_ids,enhance,_ids[1]==_ids[2]); 
+  z(guessz(2,_ids)); 
   // actual values for z-limits
   limits=make_pair(sqr(minmass/_masses[0]),
 		   1.-_kinCutoff/sqrt(t-_masssquared[0])

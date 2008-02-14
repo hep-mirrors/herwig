@@ -57,7 +57,8 @@ double QtoQGSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 } 
 
-double QtoQGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+double QtoQGSplitFn::integOverP(const double z, const IdList & ,
+				unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
     return -8./3.*log(1.-z);
@@ -72,7 +73,8 @@ double QtoQGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
   } 
 }
 
-double QtoQGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+double QtoQGSplitFn::invIntegOverP(const double r, const IdList & ,
+				   unsigned int PDFfactor) const {
   switch (PDFfactor) {
   case 0:
     return 1. - exp(- 3.*r/8.); 
