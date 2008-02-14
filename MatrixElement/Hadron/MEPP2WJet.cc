@@ -167,17 +167,10 @@ void MEPP2WJet::Init() {
     ("WidthOption",
      "The option for handling the width of the off-shell W boson",
      &MEPP2WJet::_widthopt, 1, false, false);
-  static SwitchOption interfaceWidthOptionAllFixed
-    (interfaceWidthOption,
-     "AllFixed",
-     "Use a fixed width for the W in both the numerator and denominator."
-     " This is achieved by dividing out the running width which is "
-     "effectively included in the full matrix element calculation.",
-     0);
   static SwitchOption interfaceWidthOptionFixedDenominator
     (interfaceWidthOption,
      "FixedDenominator",
-     "Use a fxied with in the W propagator but the full matrix element"
+     "Use a fixed with in the W propagator but the full matrix element"
      " in the numerator",
      1);
   static SwitchOption interfaceWidthOptionAllRunning
@@ -191,8 +184,8 @@ void MEPP2WJet::Init() {
 
 void MEPP2WJet::getDiagrams() const {
   // which intgermediates to include
-  bool wplus =_plusminus==0||_plusminus==1;
-  bool wminus=_plusminus==0||_plusminus==2;
+  bool wplus  = _plusminus==0 || _plusminus==1;
+  bool wminus = _plusminus==0 || _plusminus==2;
   // possible incoming and outgoing particles
   typedef std::vector<pair<long,long> > Pairvector;
   // possible parents
@@ -422,8 +415,8 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   // generation of the mass
   Energy  M(wdata->mass()),Gamma(wdata->width());
   Energy2 M2(sqr(M)),MG(M*Gamma);
-  double rhomin=atan((minMass2-M2)/MG);
-  double rhomax=atan((maxMass2-M2)/MG);
+  double rhomin = atan((minMass2-M2)/MG);
+  double rhomax = atan((maxMass2-M2)/MG);
   _mw2=M2+MG*tan(rhomin+r[1]*(rhomax-rhomin));
   Energy mw=sqrt(_mw2);
   // jacobian
@@ -458,7 +451,7 @@ bool MEPP2WJet::generateKinematics(const double * r) {
   pw.rescaleEnergy();
   // set the scale
   _scale = _mw2+sqr(pt);
-  // generate the momenta of the Z decay products
+  // generate the momenta of the W decay products
   meMomenta()[3].setMass(mePartonData()[3]->mass());
   meMomenta()[4].setMass(mePartonData()[4]->mass());
   Energy q2 = 0.0*GeV;
@@ -577,15 +570,6 @@ double MEPP2WJet::me2() const {
     }
     output=qqbarME(fin,ain,gout,lm,lp);
   }
-  // off-shell factor if needed
-  if(_widthopt==0) {
-    Energy m1(meMomenta()[3].mass()),m2(meMomenta()[4].mass());
-    Energy2 m12(sqr(m1)),m22(sqr(m2));
-    Energy2 den = 2.*_mw2-m12-m22+6.*m1*m2-sqr(m12-m22)/_mw2;
-    Energy2 M2(sqr(_wminus->mass()));
-    Energy2 num = 2.*M2  -m12-m22+6.*m1*m2-sqr(m12-m22)/M2  ;
-    output *=num/den;
-  }
   return output*sHat();
 }
 
@@ -595,7 +579,6 @@ InvEnergy2 MEPP2WJet::qqbarME(vector<SpinorWaveFunction> & fin,
 			      vector<SpinorBarWaveFunction> & lm,
 			      vector<SpinorWaveFunction> & lp,
 			      bool calc) const {
-  unsigned int wopt = _widthopt==2 ? 2 : 1;
   // if calculation spin corrections construct the me
   if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 					     PDT::Spin1,PDT::Spin1Half,
@@ -609,7 +592,8 @@ InvEnergy2 MEPP2WJet::qqbarME(vector<SpinorWaveFunction> & fin,
   VectorWaveFunction bcurr[2][2];
   for(ohel2=0;ohel2<2;++ohel2) {
     for(ohel3=0;ohel3<2;++ohel3) {
-      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,wopt,wdata,lp[ohel3],lm[ohel2]);
+      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,_widthopt,wdata,
+						    lp[ohel3],lm[ohel2]);
     }
   }
   double me[3]={0.,0.,0.};
@@ -664,7 +648,6 @@ InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
 			   vector<SpinorBarWaveFunction> & lm,
 			   vector<SpinorWaveFunction> & lp,
 			   bool calc) const {
-  unsigned int wopt = _widthopt==2 ? 2 : 1;
   // if calculation spin corrections construct the me
   if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
 					     PDT::Spin1Half,PDT::Spin1Half,
@@ -678,7 +661,8 @@ InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
   VectorWaveFunction bcurr[2][2];
   for(ohel2=0;ohel2<2;++ohel2) {
     for(ohel3=0;ohel3<2;++ohel3) {
-      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,wopt,wdata,lp[ohel3],lm[ohel2]);
+      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,_widthopt,wdata,
+						    lp[ohel3],lm[ohel2]);
     }
   }
   // compute the matrix elements
@@ -734,7 +718,6 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
 			     vector<SpinorBarWaveFunction> & lm,
 			     vector<SpinorWaveFunction> & lp,
 			     bool calc) const {
-  unsigned int wopt = _widthopt==2 ? 2 : 1;
   // if calculation spin corrections construct the me
   if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
 					     PDT::Spin1Half,PDT::Spin1Half,
@@ -748,7 +731,8 @@ InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   VectorWaveFunction bcurr[2][2];
   for(ohel2=0;ohel2<2;++ohel2) {
     for(ohel3=0;ohel3<2;++ohel3) {
-      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,wopt,wdata,lp[ohel3],lm[ohel2]);
+      bcurr[ohel2][ohel3] = _theFFWVertex->evaluate(_mw2,_widthopt,wdata,
+						    lp[ohel3],lm[ohel2]);
     }
   }
   // compute the matrix elements

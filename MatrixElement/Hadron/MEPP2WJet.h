@@ -263,7 +263,7 @@ private:
   //@}
 
   /**
-   *  Pointers to the W ParticleData objects
+   *  @name Pointers to the W ParticleData objects
    */
   //@{
   /**
@@ -278,7 +278,7 @@ private:
   //@}
 
   /**
-   *  Switches to control the particles in the hard process
+   * @name Switches to control the particles in the hard process
    */
   //@{
   /**
@@ -354,7 +354,7 @@ struct ClassTraits<Herwig::MEPP2WJet>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEWZJet.so"; }
+  static string library() { return "HwMEHadron.so"; }
 };
 
 /** @endcond */

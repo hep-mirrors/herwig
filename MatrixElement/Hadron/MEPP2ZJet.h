@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
 
 /**
  * The MEPP2ZJet class implements the matrix element for the production
- * of a Z boson + a jet including the decay of the Z including gamma/Z 
+ * of a Z boson + a jet including the decay of the Z including \f$Z/\gamma\f$ 
  * interference
  *
  * @see \ref MEPP2ZJetInterfaces "The interfaces"
@@ -148,7 +148,7 @@ protected:
    * Used internally by generateKinematics, after calculating the
    * limits on cos(theta).
    */
-  double getCosTheta(double cthmin, double cthmax, const double * r);
+  double getCosTheta(double cthmin, double cthmax, const double r);
 
   /**
    *  Matrix elements for the different subprocesses
@@ -163,10 +163,11 @@ protected:
    * @param lp    Spinors for outgoing antilepton
    * @param me    Whether or not to calculate the matrix element for spin correlations
    **/
-  double qqbarME(vector<SpinorWaveFunction> & fin, vector<SpinorBarWaveFunction> & ain,
-		 vector<VectorWaveFunction> & gout,
-		 vector<SpinorBarWaveFunction> & lm, vector<SpinorWaveFunction> & lp,
-		 bool me=false) const;
+  InvEnergy2 qqbarME(vector<SpinorWaveFunction> & fin,
+		     vector<SpinorBarWaveFunction> & ain,
+		     vector<VectorWaveFunction> & gout,
+		     vector<SpinorBarWaveFunction> & lm, vector<SpinorWaveFunction> & lp,
+		     bool me=false) const;
 
   /**
    * Matrix element for \f$qg\to Z/\gamma q\f$.
@@ -177,11 +178,11 @@ protected:
    * @param lp    Spinors for outgoing antilepton
    * @param me   Whether or not to calculate the matrix element for spin correlations
    **/
-  double qgME(vector<SpinorWaveFunction> & fin,vector<VectorWaveFunction> & gin,
-	      vector<SpinorBarWaveFunction> & fout,
-	      vector<SpinorBarWaveFunction> & lm, vector<SpinorWaveFunction> & lp,
-	      bool me=false) const;
-
+  InvEnergy2 qgME(vector<SpinorWaveFunction> & fin,vector<VectorWaveFunction> & gin,
+		  vector<SpinorBarWaveFunction> & fout,
+		  vector<SpinorBarWaveFunction> & lm, vector<SpinorWaveFunction> & lp,
+		  bool me=false) const;
+  
   /**
    * Matrix element for \f$\bar{q}g\to Z/\gamma\bar{q}\f$.
    * @param fin  Spinors for incoming antiquark
@@ -191,10 +192,11 @@ protected:
    * @param lp    Spinors for outgoing antilepton
    * @param me   Whether or not to calculate the matrix element for spin correlations
    **/
-  double qbargME(vector<SpinorBarWaveFunction> & fin,vector<VectorWaveFunction> & gin,
-		 vector<SpinorWaveFunction> & fout,
-		 vector<SpinorBarWaveFunction> & lm, vector<SpinorWaveFunction> & lp,
-		 bool me=false) const;
+  InvEnergy2 qbargME(vector<SpinorBarWaveFunction> & fin,
+		     vector<VectorWaveFunction> & gin,
+		     vector<SpinorWaveFunction> & fout,
+		     vector<SpinorBarWaveFunction> & lm, vector<SpinorWaveFunction> & lp,
+		     bool me=false) const;
   //@}
 
 protected:
@@ -223,7 +225,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -243,6 +245,10 @@ private:
 private:
 
   /**
+   *  Vertices for the helicity amplitude calculation
+   */
+  //@{
+  /**
    *  Pointer to the Z vertex
    */
   AbstractFFVVertexPtr _theFFZVertex;
@@ -256,7 +262,12 @@ private:
    *  Pointer to the \f$qqg\f$ vertex
    */
   AbstractFFVVertexPtr _theQQGVertex;
+  //@}
 
+  /**
+   *  @name Pointers to the \f$Z^0\f$ and \f$\gamma\f$ ParticleData objects
+   */
+  //@{
   /**
    *  Pointer to the Z ParticleData object
    */
@@ -266,7 +277,12 @@ private:
    *  Pointer to the photon ParticleData object
    */
   tcPDPtr _gamma;
+  //@}
 
+  /**
+   * @name Switches to control the particles in the hard process
+   */
+  //@{
   /**
    *  Subprocesses to include
    */
@@ -288,6 +304,12 @@ private:
   unsigned int _gammaZ;
 
   /**
+   *  Option for the treatment of the W off-shell effects
+   */
+  unsigned int _widthopt;
+  //@}
+
+  /**
    *  Probability of selecting \f$1/s^2\f$ for the jacobian
    *  transformation of the boson mass
    */
@@ -297,6 +319,16 @@ private:
    * Matrix element for spin correlations
    */
   ProductionMatrixElement _me;
+
+  /**
+   *  Storage of the scale to avoid the need to recalculate
+   */
+  Energy2 _scale;
+  
+  /**
+   *  Storage of the off-shell Z mass to avoid the need to recalculate
+   */
+  Energy2 _mz2;
 };
 
 }
@@ -329,7 +361,7 @@ struct ClassTraits<Herwig::MEPP2ZJet>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEWZJet.so"; }
+  static string library() { return "HwMEHadron.so"; }
 };
 
 /** @endcond */
