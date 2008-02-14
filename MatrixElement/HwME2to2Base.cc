@@ -53,7 +53,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
       tGenericMassGeneratorPtr();
     if(gen1) {
       double jtemp(0.);
-      mass[0] = gen1->mass(*mePartonData()[2],jtemp,mmin[0],mmax[0],r[1]);
+      mass[0] = gen1->mass(jtemp,*mePartonData()[2],mmin[0],mmax[0],r[1]);
       mjac *= jtemp;
     }
     else {
@@ -71,7 +71,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
       tGenericMassGeneratorPtr();
     if(gen2) {
       double jtemp(0.);
-      mass[1] = gen2->mass(*mePartonData()[3],jtemp,mmin[1],mmax[1],r[2]);
+      mass[1] = gen2->mass(jtemp,*mePartonData()[3],mmin[1],mmax[1],r[2]);
       mjac *= jtemp;
     }
     else {
@@ -97,7 +97,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
       tGenericMassGeneratorPtr();
     if(gen) {
       double jtemp(0.);
-      mass[0] = gen->mass(*mePartonData()[2],jtemp,mmin,mmax,r[1]);
+      mass[0] = gen->mass(jtemp,*mePartonData()[2],mmin,mmax,r[1]);
       mjac *= jtemp;
     }
     else {
@@ -123,7 +123,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
       tGenericMassGeneratorPtr();
     if(gen) {
       double jtemp(0.);
-      mass[1] = gen->mass(*mePartonData()[3],jtemp,mmin,mmax,r[1]);
+      mass[1] = gen->mass(jtemp,*mePartonData()[3],mmin,mmax,r[1]);
       mjac *= jtemp;
     }
     else {

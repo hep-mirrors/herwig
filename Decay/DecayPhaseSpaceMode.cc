@@ -496,7 +496,7 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
     low=_extpart[notdone[iloc]]->mass()-_extpart[notdone[iloc]]->widthLoCut();
     mlow-=low;
     mass[notdone[iloc]]=
-      _massgen[notdone[iloc]]->mass(*_extpart[notdone[iloc]],wgttemp,low,inmass-mlow);
+      _massgen[notdone[iloc]]->mass(wgttemp,*_extpart[notdone[iloc]],low,inmass-mlow);
     wgt*=wgttemp;
     mlow+=mass[notdone[iloc]];
     notdone.erase(notdone.begin()+iloc);

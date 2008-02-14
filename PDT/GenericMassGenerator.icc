@@ -43,7 +43,7 @@ inline Energy GenericMassGenerator::mass(const ParticleData & in,
   int ntry=0; double wgt=0.;
   do {
     ++ntry;
-    output=mass(in,wgt,low,upp,3);
+    output=mass(wgt,in,low,upp,3);
     if(wgt>_maxwgt) _maxwgt=wgt;
   }
   while(_maxwgt*(UseRandom::rnd())>wgt&&ntry<_ngenerate);
@@ -51,24 +51,24 @@ inline Energy GenericMassGenerator::mass(const ParticleData & in,
 }
 
 // return the mass with a weight	 
-inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt,
+inline Energy GenericMassGenerator::mass(double & wgt, const ParticleData &in,
 					 double r) const {
-  return mass(in,wgt,_lowermass,_uppermass,r);
+  return mass(wgt,in,_lowermass,_uppermass,r);
 }
 
-inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt,
+inline Energy GenericMassGenerator::mass(double & wgt, const ParticleData &in,
 					 int shape,double r) const  {
-  return mass(in,wgt,_lowermass,_uppermass,shape,r);
+  return mass(wgt,in,_lowermass,_uppermass,shape,r);
 }
 
-inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt, 
+inline Energy GenericMassGenerator::mass(double & wgt,const ParticleData &in, 
 					 const Energy low,const Energy upp,
 					 double r) const {
-  return mass(in,wgt,low,upp,_BWshape,r);
+  return mass(wgt,in,low,upp,_BWshape,r);
 }
 
 // member that does the work
-inline Energy GenericMassGenerator::mass(const ParticleData &,double & wgt, 
+inline Energy GenericMassGenerator::mass(double & wgt,const ParticleData &, 
 					 const Energy low,const Energy upp,
 					 int shape, double r) const {
   // calculate the mass square using fixed width BW

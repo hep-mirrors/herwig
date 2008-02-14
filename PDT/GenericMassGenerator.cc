@@ -161,10 +161,10 @@ void GenericMassGenerator::doinit() throw(InitException) {
     Energy mdummy;
     // perform the initialisation
     for(int ix=0;ix<_ninitial;++ix) {
-      mdummy=mass(*_particle,wgt,3);
-      swgt+=wgt;
-      sqwgt+=wgt*wgt;
-      if(wgt>_maxwgt){_maxwgt=wgt;}
+      mdummy=mass(wgt,*_particle,3);
+      swgt  += wgt;
+      sqwgt += sqr(wgt);
+      if(wgt>_maxwgt) _maxwgt=wgt;
     }
     swgt=swgt/_ninitial;
     sqwgt=sqrt(max(0.,sqwgt/_ninitial-swgt*swgt)/_ninitial);

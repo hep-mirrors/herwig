@@ -111,7 +111,7 @@ public:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
+  inline Energy mass(double & wgt, const ParticleData & part, 
 		     double r=UseRandom::rnd()) const;
 
   /**
@@ -123,7 +123,7 @@ public:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
+  inline Energy mass(double & wgt, const ParticleData & part,
 		     const Energy low,const Energy upp,
 		     double r=UseRandom::rnd()) const;
 
@@ -183,7 +183,7 @@ protected:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
+  inline Energy mass(double & wgt, const ParticleData & part,
 		     const Energy low,const Energy upp, int shape,
 		     double r=UseRandom::rnd()) const;
 
@@ -195,7 +195,7 @@ protected:
    * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt,int shape,
+  inline Energy mass(double & wgt, const ParticleData & part, int shape,
 		     double r=UseRandom::rnd()) const;
 
   /**
