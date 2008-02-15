@@ -379,6 +379,11 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
 		     lastCuts().minKT(_z0));
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
+  if(maxMass2<=0.*GeV2||minMass2<0.*GeV2) return false;
+  // also impose the limits from the ParticleData object
+  minMass2 = max(minMass2,sqr(_z0->massMin()));
+  maxMass2 = min(maxMass2,sqr(_z0->massMax()));
+  // also impose the limits from the ParticleData object
   if(maxMass2<minMass2) return false;
   // generation of the mass
   Energy  M(_z0->mass()),Gamma(_z0->width());
