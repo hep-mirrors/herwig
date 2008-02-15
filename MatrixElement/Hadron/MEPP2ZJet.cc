@@ -375,7 +375,8 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   Energy2 minMass2 = max(lastCuts().minSij(mePartonData()[3],mePartonData()[4]),
 			 lastCuts().minS(ptemp));
   // minimum pt of the jet
-  Energy ptmin = lastCuts().minKT(mePartonData()[2]);
+  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
+		     lastCuts().minKT(_z0));
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
   if(maxMass2<minMass2) return false;
