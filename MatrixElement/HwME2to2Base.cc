@@ -277,6 +277,6 @@ bool HwME2to2Base::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
   _rescaledMomenta[3].setMass(mnew[1]);
   _rescaledMomenta[3].setE(0.5*(sqr(m0)-sqr(mnew[0])+sqr(mnew[1]))/m0);
   _rescaledMomenta[3].rescaleRho();
-  _rescaledMomenta[2].boost(-bv);
+  _rescaledMomenta[3].boost(-bv);
   return true;
 }
