@@ -528,9 +528,9 @@ double MEPP2ZJet::me2() const {
     VectorWaveFunction    glin (meMomenta()[1],mePartonData()[1],incoming);
     SpinorWaveFunction    qbout(meMomenta()[2],mePartonData()[2],outgoing);
     for(unsigned int ix=0;ix<2;++ix) {
-      qbin.reset(ix) ; ain.push_back(qbin);
-      glin.reset(2*ix) ; gin.push_back(glin);
-      qbout.reset(ix);aout.push_back(qbout);
+      qbin .reset(ix  ); ain .push_back(qbin );
+      glin .reset(2*ix); gin .push_back(glin );
+      qbout.reset(ix  ); aout.push_back(qbout);
     }
     output=qbargME(ain,gin,aout,lm,lp);
   }
@@ -780,10 +780,10 @@ InvEnergy2 MEPP2ZJet::qbargME(vector<SpinorBarWaveFunction> & fin,
 	    me[1] += norm(diag[0]);
 	    me[2] += norm(diag[1]);
 	    me[3] += norm(diag[2]);
-	    me[4] += real(diag[3]);
+	    me[4] += norm(diag[3]);
 	    // total
 	    diag[0] += diag[1] + diag[2] + diag[3];
-	    me[0]   += real(diag[0]);
+	    me[0]   += norm(diag[0]);
 	    if(calc) _me(ihel1,2*ihel2,ohel1,ohel2,ohel3) = diag[0];
 	  }
 	}
