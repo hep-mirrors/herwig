@@ -26,8 +26,21 @@ GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
-DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc 
+
+pkglib_LTLIBRARIES += HwTest.la                                               
+HwTest_la_LDFLAGS = -module -version-info 4:0:0                               
+HwTest_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwTest_la_SOURCES = \
+TVTpt.cc TVTpt.fh \
+TVTpt.h TVTpt.icc
+
+pkglib_LTLIBRARIES += HwBbarAnalysis.la
+HwBbarAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwBbarAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwBbarAnalysis_la_SOURCES = \
+BbarAnalysis.cc BbarAnalysis.fh \
+BbarAnalysis.h BbarAnalysis.icc
 
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
@@ -136,3 +149,10 @@ RFieldAnalysis.h \
 RFieldAnalysis.cc RFieldAnalysis.icc \
 MPIMultiplicity.h MPIMultiplicity.fh \
 MPIMultiplicity.icc MPIMultiplicity.cc
+
+pkglib_LTLIBRARIES += HwDzeroAnalysis.la
+  HwDzeroAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+  HwDzeroAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+  HwDzeroAnalysis_la_SOURCES = \
+  DzeroZpTAnalysis.cc DzeroZpTAnalysis.fh \
+  DzeroZpTAnalysis.h DzeroZpTAnalysis.icc
