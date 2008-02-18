@@ -26,14 +26,8 @@ GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
 GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc 
-
-pkglib_LTLIBRARIES += HwTest.la                                               
-HwTest_la_LDFLAGS = -module -version-info 4:0:0                               
-HwTest_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwTest_la_SOURCES = \
-TVTpt.cc TVTpt.fh \
-TVTpt.h TVTpt.icc
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
+DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
 
 pkglib_LTLIBRARIES += HwBbarAnalysis.la
 HwBbarAnalysis_la_LDFLAGS = -module -version-info 4:0:0
