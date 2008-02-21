@@ -368,7 +368,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   jacobian(p2/mv/8./sqr(pi)*jacobian());
   // jacobian factor for the gauge boson
   jacobian((sqr(sqr(mv)-sqr(vec->mass()))+sqr(vec->mass()*vec->width()))/
-	   (vec->mass()*vec->width())*jacobian()/sHat());<< "\n";
+	   (vec->mass()*vec->width())*jacobian()/sHat());
   return true;
 }
 
