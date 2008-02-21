@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -27,13 +28,13 @@
 using namespace Herwig;
 
 void SMHiggsWidthGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _widthopt << ounit(_mw,GeV) << ounit(_mz,GeV) 
+  os << _widthopt << _offshell << ounit(_mw,GeV) << ounit(_mz,GeV) 
      << ounit(_gamw,GeV) << ounit(_gamz,GeV) << ounit(_qmass,GeV) 
      << ounit(_lmass,GeV) << _sw2 << _ca << _cf;
 }
 
 void SMHiggsWidthGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _widthopt >> iunit(_mw,GeV) >> iunit(_mz,GeV) 
+  is >> _widthopt >> _offshell >> iunit(_mw,GeV) >> iunit(_mz,GeV) 
      >> iunit(_gamw,GeV) >> iunit(_gamz,GeV) >> iunit(_qmass,GeV) 
      >> iunit(_lmass,GeV) >> _sw2 >> _ca >> _cf;
 }
@@ -70,6 +71,13 @@ void SMHiggsWidthGenerator::Init() {
      "LO",
      "LO Higgs width (formula taken from The \"Higgs Hunter's Guide\")",
      3);
+
+  static Parameter<SMHiggsWidthGenerator,double> interfaceOffShell
+    ("OffShell",
+     "Number of times the width the Higgs is allowed to be off-shell",
+     &SMHiggsWidthGenerator::_offshell, 10., 0.01, 100.0,
+     false, false, Interface::limited);
+
 }
 
 bool SMHiggsWidthGenerator::accept(const ParticleData & in) const {
@@ -331,6 +339,11 @@ void SMHiggsWidthGenerator::doinit() throw(InitException) {
   double ncolour = generator()->standardModel()->Nc();
   _ca = ncolour;
   _cf = (sqr(ncolour)-1.0)/(2.0*_ca);
+  // reset the width and set the limits
+  tPDPtr h0=getParticleData(ParticleID::h0);
+  Energy wid = width(*h0,h0->mass());
+  h0->width(wid);
+  h0->widthCut(_offshell*wid);
 }
 
 pair<Energy,Energy> SMHiggsWidthGenerator::width(Energy scale, const ParticleData & p) const {
