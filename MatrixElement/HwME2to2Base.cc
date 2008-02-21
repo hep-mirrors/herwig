@@ -115,7 +115,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
     // not kinematically possible return
     if(ecm<mmin+mass[0]) return false;
     // maximum masses of the outgoing particle, including kinematic limit
-    Energy mmax  = min(mePartonData()[2]->massMax(),ecm-mass[0]);
+    Energy mmax  = min(mePartonData()[3]->massMax(),ecm-mass[0]);
     // generate the mass of the particle
     if(mmax<mmin) return false;
     tGenericMassGeneratorPtr gen = mePartonData()[3]->massGenerator() ?
