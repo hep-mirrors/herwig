@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the ME2toVH class.
+// functions of the MEfftoVH class.
 //
 
-#include "ME2toVH.h"
+#include "MEfftoVH.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -20,30 +20,30 @@
 
 using namespace Herwig;
 
-void ME2toVH::persistentOutput(PersistentOStream & os) const {
+void MEfftoVH::persistentOutput(PersistentOStream & os) const {
   os << _shapeopt << _wplus << _wminus << _z0 
      << _vertexFFW << _vertexFFZ << _vertexWWH
      << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass;
 }
 
-void ME2toVH::persistentInput(PersistentIStream & is, int) {
+void MEfftoVH::persistentInput(PersistentIStream & is, int) {
   is >> _shapeopt >> _wplus >> _wminus >> _z0 
      >> _vertexFFW >> _vertexFFZ >> _vertexWWH
      >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
 }
 
-AbstractClassDescription<ME2toVH> ME2toVH::initME2toVH;
+AbstractClassDescription<MEfftoVH> MEfftoVH::initMEfftoVH;
 // Definition of the static class description member.
 
-void ME2toVH::Init() {
+void MEfftoVH::Init() {
 
-  static ClassDocumentation<ME2toVH> documentation
-    ("The ME2toVH class is the base class for the Bjirken process f fbar -> V H");
+  static ClassDocumentation<MEfftoVH> documentation
+    ("The MEfftoVH class is the base class for the Bjirken process f fbar -> V H");
 
-  static Switch<ME2toVH,unsigned int> interfaceShapeOption
+  static Switch<MEfftoVH,unsigned int> interfaceShapeOption
     ("ShapeScheme",
      "Option for the treatment of the Higgs resonance shape",
-     &ME2toVH::_shapeopt, 1, false, false);
+     &MEfftoVH::_shapeopt, 2, false, false);
   static SwitchOption interfaceStandardShapeFixed
     (interfaceShapeOption,
      "FixedBreitWigner",
@@ -57,28 +57,28 @@ void ME2toVH::Init() {
 
 }
 
-unsigned int ME2toVH::orderInAlphaS() const {
+unsigned int MEfftoVH::orderInAlphaS() const {
   return 0;
 }
 
-unsigned int ME2toVH::orderInAlphaEW() const {
+unsigned int MEfftoVH::orderInAlphaEW() const {
   return 3;
 }
 
-Energy2 ME2toVH::scale() const {
+Energy2 MEfftoVH::scale() const {
   return sHat();
 }
 
-int ME2toVH::nDim() const {
+int MEfftoVH::nDim() const {
   return 5;
 }
 
-void ME2toVH::setKinematics() {
+void MEfftoVH::setKinematics() {
   MEBase::setKinematics();
 }
 
 Selector<MEBase::DiagramIndex>
-ME2toVH::diagrams(const DiagramVector & diags) const {
+MEfftoVH::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
     sel.insert(1.0, i);
@@ -86,7 +86,7 @@ ME2toVH::diagrams(const DiagramVector & diags) const {
 }
 
 Selector<const ColourLines *>
-ME2toVH::colourGeometries(tcDiagPtr ) const {
+MEfftoVH::colourGeometries(tcDiagPtr ) const {
   static ColourLines c1("");
   static ColourLines c2("6 -7");
   static ColourLines c3("1 -2");
@@ -103,7 +103,7 @@ ME2toVH::colourGeometries(tcDiagPtr ) const {
   return sel;
 }
 
-void ME2toVH::doinit() throw(InitException) {
+void MEfftoVH::doinit() throw(InitException) {
   MEBase::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
@@ -114,7 +114,7 @@ void ME2toVH::doinit() throw(InitException) {
     _vertexWWH = hwsm->vertexWWH();
   }
   else throw InitException() << "Wrong type of StandardModel object in "
-			     << "ME2toVH::doinit() the Herwig++"
+			     << "MEfftoVH::doinit() the Herwig++"
 			     << " version must be used" 
 			     << Exception::runerror;
   // get the particle data objects for the intermediates
@@ -123,17 +123,17 @@ void ME2toVH::doinit() throw(InitException) {
   _z0     = getParticleData(ParticleID::Z0);
   tcPDPtr h0=getParticleData(ParticleID::h0);
   _mh = h0->mass();
-  _wh = h0->generateWidth(_mh);
+  _wh = h0->width();
   if(h0->massGenerator()) {
     _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
   }
   if(_shapeopt==2&&!_hmass) throw InitException()
-    << "If using the mass generator for the line shape in ME2toVH::doinit()"
+    << "If using the mass generator for the line shape in MEfftoVH::doinit()"
     << "the mass generator must be an instance of the SMHiggsMassGenerator class"
     << Exception::runerror;
 }
 
-double ME2toVH::me2() const {
+double MEfftoVH::me2() const {
   vector<SpinorWaveFunction>    fin,aout;
   vector<SpinorBarWaveFunction> ain,fout;
   SpinorWaveFunction       q(meMomenta()[0],mePartonData()[0],incoming);
@@ -149,7 +149,7 @@ double ME2toVH::me2() const {
   return helicityME(fin,ain,fout,aout,false)*sHat()*UnitRemoval::InvE2;
 }
 
-double ME2toVH::helicityME(vector<SpinorWaveFunction>    & fin ,
+double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
 			   vector<SpinorBarWaveFunction> & ain ,
 			   vector<SpinorBarWaveFunction> & fout,
 			   vector<SpinorWaveFunction>    & aout,
@@ -183,7 +183,8 @@ double ME2toVH::helicityME(vector<SpinorWaveFunction>    & fin ,
       // boson decay piece
       for(ohel1=0;ohel1<2;++ohel1) {
 	for(ohel2=0;ohel2<2;++ohel2) {
-	  diag = vertex->evaluate(mb2,aout[ohel2],fout[ohel1],inter[1]);
+	  diag = vertex->evaluate(sqr(inter[1].getParticle()->mass()),
+				  aout[ohel2],fout[ohel1],inter[1]);
 	  me += norm(diag);
 	  if(calc) menew(ihel1,ihel2,0,ohel1,ohel2) = diag;
 	}
@@ -200,7 +201,7 @@ double ME2toVH::helicityME(vector<SpinorWaveFunction>    & fin ,
   return me;
 }
 
-void ME2toVH::constructVertex(tSubProPtr sub) {
+void MEfftoVH::constructVertex(tSubProPtr sub) {
   SpinfoPtr spin[5];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -236,7 +237,7 @@ void ME2toVH::constructVertex(tSubProPtr sub) {
   }
 }
 
-bool ME2toVH::generateKinematics(const double * r) {
+bool MEfftoVH::generateKinematics(const double * r) {
   using Constants::pi;
   // workout the ID of the vector boson
   tcPDPtr vec = mePartonData()[0]->iCharge()+mePartonData()[1]->iCharge()!=0
@@ -247,11 +248,11 @@ bool ME2toVH::generateKinematics(const double * r) {
   double jac(1.);
   if(UseRandom::rndbool()) {
     // generate the mass of the Higgs
-    Energy2 mhmax2 = sqr(2.*e-vec->massMin());
-    Energy2 mhmin2 =0.*GeV2;
-    if(mhmax2<=mhmin2) return false;
-    double rhomin = atan((mhmin2-sqr(_mh))/_mh/_wh);
-    double rhomax = atan((mhmax2-sqr(_mh))/_mh/_wh);
+    Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
+    Energy mhmin = max(0.*GeV             ,mePartonData()[2]->massMin());
+    if(mhmax<=mhmin) return false;
+    double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
+    double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
     mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
     jac *= rhomax-rhomin;
     // generate the mass of the vector boson
@@ -275,11 +276,11 @@ bool ME2toVH::generateKinematics(const double * r) {
 	      +sqr(vec->mass()));
     jac *= rhomax-rhomin;
     // generate the mass of the Higgs
-    Energy2 mhmax2 = sqr(2.*e-mv);
-    Energy2 mhmin2 =0.*GeV2;
-    if(mhmax2<=mhmin2) return false;
-    rhomin = atan((mhmin2-sqr(_mh))/_mh/_wh);
-    rhomax = atan((mhmax2-sqr(_mh))/_mh/_wh);
+    Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
+    Energy mhmin = max(0.*GeV ,mePartonData()[2]->massMin());
+    if(mhmax<=mhmin) return false;
+    rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
+    rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
     mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
     jac *= rhomax-rhomin;
   }
@@ -364,14 +365,14 @@ bool ME2toVH::generateKinematics(const double * r) {
   // decay piece
   Energy p2 = Kinematics::pstarTwoBodyDecay(mv,meMomenta()[3].mass(),
 					    meMomenta()[4].mass());
-  jacobian(p2/mv/16./sqr(pi)*jacobian());
+  jacobian(p2/mv/8./sqr(pi)*jacobian());
   // jacobian factor for the gauge boson
-  jacobian((sqr(sqr(mv)-sqr(vec->mass()))+sqr(vec->mass()*_wh))/
-	   (vec->mass()*vec->width())*jacobian()/sHat());
+  jacobian((sqr(sqr(mv)-sqr(vec->mass()))+sqr(vec->mass()*vec->width()))/
+	   (vec->mass()*vec->width())*jacobian()/sHat());<< "\n";
   return true;
 }
 
-CrossSection ME2toVH::dSigHatDR() const {
+CrossSection MEfftoVH::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
   InvEnergy2 bwfact;
@@ -389,7 +390,7 @@ CrossSection ME2toVH::dSigHatDR() const {
   return jac1*me2()*jacobian()/(16.0*sqr(pi)*sHat())*sqr(hbarc);
 }
 
-double ME2toVH::getCosTheta(double ctmin, double ctmax, double r) {
+double MEfftoVH::getCosTheta(double ctmin, double ctmax, double r) {
   double cth = 0.0;
   if ( ctmin <= -1.0 && ctmax >= 1.0 ) {
     jacobian((ctmax - ctmin));

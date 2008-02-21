@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2WH class.
 //
 
-#include "Herwig++/MatrixElement/General/ME2toVH.h"
+#include "Herwig++/MatrixElement/MEfftoVH.h"
 #include "MEPP2WH.fh"
 
 namespace Herwig {
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref MEPP2WHInterfaces "The interfaces"
  * defined for MEPP2WH.
  */
-class MEPP2WH: public ME2toVH {
+class MEPP2WH: public MEfftoVH {
 
 public:
 
@@ -125,7 +125,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2WH,1> {
   /** Typedef of the first base class of MEPP2WH. */
-  typedef Herwig::ME2toVH NthBase;
+  typedef Herwig::MEfftoVH NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

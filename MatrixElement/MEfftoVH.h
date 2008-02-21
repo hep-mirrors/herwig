@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_ME2toVH_H
-#define HERWIG_ME2toVH_H
+#ifndef HERWIG_MEfftoVH_H
+#define HERWIG_MEfftoVH_H
 //
-// This is the declaration of the ME2toVH class.
+// This is the declaration of the MEfftoVH class.
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
@@ -10,27 +10,27 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
-#include "ME2toVH.fh"
+#include "MEfftoVH.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The ME2toVH class is the base class for \f$f\bar{f}\to VH\f$ processes. 
+ * The MEfftoVH class is the base class for \f$f\bar{f}\to VH\f$ processes. 
  * This base class handles the phase-space integration while
  * the inheriting classes implement the matrix element
  *
- * @see \ref ME2toVHInterfaces "The interfaces"
- * defined for ME2toVH.
+ * @see \ref MEfftoVHInterfaces "The interfaces"
+ * defined for MEfftoVH.
  */
-class ME2toVH: public MEBase {
+class MEfftoVH: public MEBase {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline ME2toVH();
+  inline MEfftoVH();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -204,13 +204,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class with persistent data.
    */
-  static AbstractClassDescription<ME2toVH> initME2toVH;
+  static AbstractClassDescription<MEfftoVH> initMEfftoVH;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ME2toVH & operator=(const ME2toVH &);
+  MEfftoVH & operator=(const MEfftoVH &);
 
 private:
 
@@ -290,26 +290,26 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of ME2toVH. */
+ *  base classes of MEfftoVH. */
 template <>
-struct BaseClassTrait<Herwig::ME2toVH,1> {
-  /** Typedef of the first base class of ME2toVH. */
+struct BaseClassTrait<Herwig::MEfftoVH,1> {
+  /** Typedef of the first base class of MEfftoVH. */
   typedef MEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the ME2toVH class and the shared object where it is defined. */
+ *  the MEfftoVH class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::ME2toVH>
-  : public ClassTraitsBase<Herwig::ME2toVH> {
+struct ClassTraits<Herwig::MEfftoVH>
+  : public ClassTraitsBase<Herwig::MEfftoVH> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::ME2toVH"; }
+  static string className() { return "Herwig::MEfftoVH"; }
 };
 
 /** @endcond */
 
 }
 
-#include "ME2toVH.icc"
+#include "MEfftoVH.icc"
 
-#endif /* HERWIG_ME2toVH_H */
+#endif /* HERWIG_MEfftoVH_H */

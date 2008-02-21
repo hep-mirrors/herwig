@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEfftoVH class.
+//
+#ifndef HERWIG_MEfftoVH_FH
+#define HERWIG_MEfftoVH_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEfftoVH;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEfftoVH,MEfftoVHPtr);
+
+}
+
+#endif
