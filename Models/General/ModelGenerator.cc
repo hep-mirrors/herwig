@@ -214,16 +214,16 @@ void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
   ofs << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
       << parent->mass()/GeV << "  Total Width (GeV): " 
       << parent->width()/GeV << endl;
-  ofs << std::left << std::setw(48) << '#' << "Partial Width/GeV\tBR\n"; 
+  ofs << std::left << std::setw(40) << '#' 
+      << std::left << std::setw(20) << "Partial Width/GeV"
+      << "BR\n"; 
   Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
   Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
   for(; dit != dend; ++dit)
-    ofs << std::setw(48) << (*dit).second->tag() 
-	<< (*dit).second->brat()*parent->width()/GeV << "\t"
-	<< (*dit).second->brat() 
-	<< '\n';
+    ofs << std::left << std::setw(40) << (*dit).second->tag() 
+	<< std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
+	<< (*dit).second->brat() << '\n';
   ofs << "#\n#";
-  
 }
 
 void ModelGenerator::createWidthGenerator(tPDPtr p) {
