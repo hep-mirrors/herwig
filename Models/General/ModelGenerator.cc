@@ -48,7 +48,12 @@ ClassDescription<ModelGenerator> ModelGenerator::initModelGenerator;
 void ModelGenerator::Init() {
 
   static ClassDocumentation<ModelGenerator> documentation
-    ("There is no documentation for the ModelGenerator class");
+    ("This class controls the the use of BSM physics.",
+     "BSM physics was produced using the algorithm of "
+     "\\cite{Gigg2007:cr}",
+     "\\bibitem{Gigg:2007cr} M.~Gigg and P.~Richardson, \n"
+     "Eur.\\ Phys.\\ J.\\  C {\\bf 51} (2007) 989.\n"
+     "%%CITATION = EPHJA,C51,989;%%");
   
   static Reference<ModelGenerator,Herwig::HardProcessConstructor> 
     interfaceHardProcessConstructor
@@ -152,6 +157,7 @@ void ModelGenerator::Init() {
 
 void ModelGenerator::doinit() throw(InitException) {
   Interfaced::doinit();
+  useMe();
   if(_theHPConstructor) {
     _theHPConstructor->init();
     _theHPConstructor->constructDiagrams();
