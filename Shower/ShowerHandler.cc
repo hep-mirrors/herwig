@@ -221,6 +221,9 @@ void ShowerHandler::Init() {
      "flag to switch the ordering of the additional interactions on or off",
      &ShowerHandler::theOrderSecondaries, 1, false, false);
 
+  desc = "This option has been removed, due to its negligible impact.";
+  static Deleted<ShowerHandler> delint2("OrderSecondaries", desc);
+
   static SwitchOption interfaceOrderSecondaries0                             
     (interfaceOrderSecondaries,
      "No",
