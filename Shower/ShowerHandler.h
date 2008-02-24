@@ -332,6 +332,12 @@ private:
   unsigned int _maxtry;
 
   /**
+   *  Maximum number of attempts for the regeneration of an additional
+   *  scattering, before the number of scatters is reduced.
+   */
+  unsigned int _maxtryMPI;
+
+  /**
    *  PDG codes of the particles which decay during showering
    *  this is fast storage for use during running
    */
