@@ -7,8 +7,7 @@
 namespace Herwig {
 
 inline GeneralThreeBodyDecayer::GeneralThreeBodyDecayer() 
-  : _widthopt(1)
-{}
+  : _widthopt(1), _reftag(""), _reftagcc("") {}
 
 inline const vector<TBDiagram> & GeneralThreeBodyDecayer::getProcessInfo() const {
   return _diagrams;
