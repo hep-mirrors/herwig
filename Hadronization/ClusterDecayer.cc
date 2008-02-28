@@ -144,7 +144,7 @@ static Parameter<ClusterDecayer,double>
     (interfaceOnShell,
      "Yes",
      "Produce the hadrons on shell",
-     false);
+     true);
   static SwitchOption interfaceOnShellOffShell
     (interfaceOnShell,
      "No",
