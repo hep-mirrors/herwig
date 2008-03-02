@@ -7,6 +7,8 @@ VectorBosonQQBarMECorrection.icc VectorBosonQQBarMECorrection.cc\
 TopDecayMECorrection.h TopDecayMECorrection.fh  \
 TopDecayMECorrection.icc TopDecayMECorrection.cc \
 DrellYanMECorrection.h DrellYanMECorrection.fh \
-DrellYanMECorrection.icc DrellYanMECorrection.cc
+DrellYanMECorrection.icc DrellYanMECorrection.cc \
+GGtoHMECorrection.h GGtoHMECorrection.fh \
+GGtoHMECorrection.icc GGtoHMECorrection.cc
 
 libHwDefaultMECorrections_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)
