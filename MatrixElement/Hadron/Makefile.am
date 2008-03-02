@@ -11,7 +11,8 @@ MEPP2Higgs.h MEPP2Higgs.icc MEPP2Higgs.fh MEPP2Higgs.cc\
 MEPP2WH.h MEPP2WH.icc MEPP2WH.fh MEPP2WH.cc\
 MEPP2ZH.h MEPP2ZH.icc MEPP2ZH.fh MEPP2ZH.cc\
 MEPP2WJet.cc  MEPP2WJet.fh  MEPP2WJet.h  MEPP2WJet.icc  \
-MEPP2ZJet.cc  MEPP2ZJet.fh  MEPP2ZJet.h  MEPP2ZJet.icc
+MEPP2ZJet.cc  MEPP2ZJet.fh  MEPP2ZJet.h  MEPP2ZJet.icc\
+MEPP2HiggsVBF.h MEPP2HiggsVBF.icc MEPP2HiggsVBF.fh MEPP2HiggsVBF.cc
 HwMEHadron_la_LDFLAGS = -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwMEHadronFast.la
