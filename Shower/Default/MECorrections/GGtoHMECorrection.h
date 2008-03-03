@@ -336,6 +336,18 @@ private:
    *  Weights for the channels as a vector
    */
   vector<double> _channelweights;
+
+  /**
+   *  Power for the \f$\frac{{\rm d}\hat{s}}{\hat{s}^n}\f$ importance sampling
+   *  of the \f$gg\f$ component 
+   */
+  double _ggpow;
+
+  /**
+   *  Power for the \f$\frac{{\rm d}\hat{s}}{\hat{s}^n}\f$ importance sampling
+   *  of the \f$qg\f$ and \f$\bar{q}g\f$ components 
+   */
+  double _qgpow;
   
   /**
    *  Number of weights greater than 1
@@ -356,6 +368,8 @@ private:
    *  Maximum weight
    */
   double _maxwgt;
+
+  vector<pair<double,double> > _dalitz,_dalitz2;
 
 };
 

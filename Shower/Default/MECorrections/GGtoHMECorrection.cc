@@ -19,12 +19,12 @@ using namespace Herwig;
 const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-20*GeV2);
 
 void GGtoHMECorrection::persistentOutput(PersistentOStream & os) const {
-  os << _minloop << _maxloop << _massopt
+  os << _minloop << _maxloop << _massopt << _ggpow << _qgpow
      << _channelwgtA << _channelwgtB << _channelweights;
 }
 
 void GGtoHMECorrection::persistentInput(PersistentIStream & is, int) {
-  is >> _minloop >> _maxloop >> _massopt
+  is >> _minloop >> _maxloop >> _massopt >> _ggpow >> _qgpow
      >> _channelwgtA >> _channelwgtB >> _channelweights;
 }
 
@@ -34,10 +34,81 @@ void GGtoHMECorrection::doinit() throw(InitException) {
   _channelweights.push_back(1./total);
   _channelweights.push_back(_channelweights.back()+_channelwgtA/total);
   _channelweights.push_back(_channelweights.back()+_channelwgtB/total);
+  for(unsigned int ix=0;ix<_channelweights.size();++ix)
+    cerr << "testing weights " << _channelweights[ix] << "\n";
 }
 
 void GGtoHMECorrection::dofinish() {
   MECorrectionBase::dofinish();
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
+  outfile << "SET FONT DUPLEX\n";
+  outfile << "SET ORDER X Y\n";
+  outfile << "TITLE BOTTOM \"sbar\"\n";
+  outfile << "TITLE LEFT \"tbar\"\n";
+  outfile << "SET LIMITS X 1 10 Y -10 0\n";
+  double kappa[2]={1.,1.};
+  double shat,that;
+  for(shat=1.;shat<10.;shat+=0.01)
+    {
+      that=kappa[0]*(1.-shat)/(kappa[0]+shat);
+      outfile << shat << " " << that << "\n";
+    }
+  outfile << "join red\n"; 
+  for(shat=1.;shat<10.;shat+=0.01)
+    {
+      that=shat*(1.-shat)/(kappa[1]+shat);
+      outfile << shat << " " << that << "\n";
+    }
+  outfile << "join blue\n";
+  for(shat=1.;shat<10.;shat+=0.01)
+    {
+      that=(1.-shat);
+      outfile << shat << " " << that << "\n";
+    }
+  outfile << "join\n";
+  for(unsigned int ix=0;ix<_dalitz.size();++ix) {
+    outfile << _dalitz[ix].first << "\t" << _dalitz[ix].second << "\n";
+    if(ix%50000==0&&ix>0) outfile << "PLOT\n";
+  }
+  outfile << "PLOT\n";
+  for(unsigned int ix=0;ix<_dalitz2.size();++ix) {
+    outfile << _dalitz2[ix].first << "\t" << _dalitz2[ix].second << "\n";
+    if(ix%50000==0&&ix>0) outfile << "PLOT RED\n";
+  }
+  if(!_dalitz2.empty()) outfile << "PLOT RED\n";
+  outfile << "NEW FRAME\n";
+  outfile << "SET FONT DUPLEX\n";
+  outfile << "SET ORDER X Y\n";
+  outfile << "TITLE BOTTOM \"sbar\"\n";
+  outfile << "TITLE LEFT \"tbar\"\n";
+  outfile << "SET LIMITS X 1 500 Y -500 0\n";
+  for(shat=1.;shat<500.;shat+=0.1) {
+    that=kappa[0]*(1.-shat)/(kappa[0]+shat);
+    outfile << shat << " " << that << "\n";
+  }
+  outfile << "join red\n"; 
+  for(shat=1.;shat<500.;shat+=0.1) {
+    that=shat*(1.-shat)/(kappa[1]+shat);
+    outfile << shat << " " << that << "\n";
+  }
+  outfile << "join blue\n";
+  for(shat=1.;shat<500.;shat+=0.1) {
+    that=(1.-shat);
+    outfile << shat << " " << that << "\n";
+  }
+  outfile << "join\n";
+  for(unsigned int ix=0;ix<_dalitz.size();++ix) {
+    outfile << _dalitz[ix].first << "\t" << _dalitz[ix].second << "\n";
+    if(ix%50000==0&&ix>0) outfile << "PLOT\n";
+  }
+  outfile << "PLOT\n";
+  for(unsigned int ix=0;ix<_dalitz2.size();++ix) {
+    outfile << _dalitz2[ix].first << "\t" << _dalitz2[ix].second << "\n";
+    if(ix%50000==0&&ix>0) outfile << "PLOT RED\n";
+  }
+  if(!_dalitz2.empty()) outfile << "PLOT RED\n";
+  outfile.close();
   if(_ntry==0) return;
   generator()->log() << "GGtoHMECorrection when applying the hard correction "
 		     << "generated " << _ntry << " trial emissions of which "
@@ -87,22 +158,35 @@ void GGtoHMECorrection::Init() {
      "Use the heavy mass limit",
      1);
 
-  static Parameter<GGtoHMECorrection,double> interfaceQQbarChannelWeight
+  static Parameter<GGtoHMECorrection,double> interfaceQGChannelWeight
     ("QGChannelWeight",
      "The relative weights of the g g and q g channels for selection."
      " This is a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction"
      " of events with weight > 1.",
-     &GGtoHMECorrection::_channelwgtA, 0.12, 0., 1.e10,
+     &GGtoHMECorrection::_channelwgtA, 0.45, 0., 1.e10,
      false, false, Interface::limited);
 
-  static Parameter<GGtoHMECorrection,double> interfaceQGChannelWeight
+  static Parameter<GGtoHMECorrection,double> interfaceQbarGChannelWeight
     ("QbarGChannelWeight",
      "The relative weights of the g g abd qbar g channels for selection."
      " This is a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction",
-     &GGtoHMECorrection::_channelwgtB, 2., 0., 1.e10,
+     &GGtoHMECorrection::_channelwgtB, 0.15, 0., 1.e10,
      false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection,double> interfaceGGPower
+    ("GGPower",
+     "Power for the phase-space sampling of the gg channel",
+     &GGtoHMECorrection::_ggpow, 1.6, 1.0, 3.0,
+     false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection,double> interfaceQGPower
+    ("QGPower",
+     "Power for the phase-space sampling of the qg and qbarg channels",
+     &GGtoHMECorrection::_qgpow, 1.6, 1.0, 3.0,
+     false, false, Interface::limited);
+
 }
 
 bool GGtoHMECorrection::canHandle(ShowerTreePtr tree, double & initial,
@@ -440,19 +524,21 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
   double rn(UseRandom::rnd());
   Energy2 shat(0.*GeV2),uhat(0.*GeV2),that(0.*GeV2);
   double weight(0.),xnew[2]={1.,1.};
-  // generate the value of s according to 1/s^2
-  shat = smax*smin/(smin+UseRandom::rnd()*(smax-smin));
-  Energy2 jacobian = sqr(shat)*(1./smin-1./smax);
-  double sbar=shat/_mh2;
-  // calculate limits on that
-  Energy2 tmax=_mh2*kappa[0]*(1.-sbar)/(kappa[0]+sbar);
-  Energy2 tmin=shat*(1.-sbar)/(kappa[1]+sbar);
-  // calculate the limits on uhat
-  Energy2 umax(_mh2-shat-tmin),umin(_mh2-shat-tmax);
-  // check inside phase space
-  if(tmax<tmin||umax<umin) return false;
   // gg -> H g
   if(rn<_channelweights[0]) {
+    // generate the value of s according to 1/s^n
+    double rhomax(pow(smin/_mh2,1.-_ggpow)),rhomin(pow(smax/_mh2,1.-_ggpow));
+    double rho = rhomin+UseRandom::rnd()*(rhomax-rhomin);
+    shat = _mh2*pow(rho,1./(1.-_ggpow));
+    Energy2 jacobian = _mh2/(_ggpow-1.)*(rhomax-rhomin)*pow(shat/_mh2,_ggpow);
+    double sbar=shat/_mh2;
+    // calculate limits on that
+    Energy2 tmax=_mh2*kappa[0]*(1.-sbar)/(kappa[0]+sbar);
+    Energy2 tmin=shat*(1.-sbar)/(kappa[1]+sbar);
+    // calculate the limits on uhat
+    Energy2 umax(_mh2-shat-tmin),umin(_mh2-shat-tmax);
+    // check inside phase space
+    if(tmax<tmin||umax<umin) return false;
     // generate t and u according to 1/t+1/u
     // generate in 1/t
     if(UseRandom::rndbool(0.5)) {
@@ -488,6 +574,19 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
   }
   // incoming quark or antiquark
   else {
+    // generate the value of s according to 1/s^n
+    double rhomax(pow(smin/_mh2,1.-_qgpow)),rhomin(pow(smax/_mh2,1.-_qgpow));
+    double rho = rhomin+UseRandom::rnd()*(rhomax-rhomin);
+    shat = _mh2*pow(rho,1./(1.-_qgpow));
+    Energy2 jacobian = _mh2/(_qgpow-1.)*(rhomax-rhomin)*pow(shat/_mh2,_qgpow);
+    double sbar=shat/_mh2;
+    // calculate limits on that
+    Energy2 tmax=_mh2*kappa[0]*(1.-sbar)/(kappa[0]+sbar);
+    Energy2 tmin=shat*(1.-sbar)/(kappa[1]+sbar);
+    // calculate the limits on uhat
+    Energy2 umax(_mh2-shat-tmin),umin(_mh2-shat-tmax);
+    // check inside phase space
+    if(tmax<tmin||umax<umin) return false;
     // generate t
     bool order(UseRandom::rndbool());
     Energy4 jacobian2;
@@ -556,9 +655,11 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     ++_nover;
     _maxwgt=max(_maxwgt,weight);
     weight=1.;
+    _dalitz2.push_back(make_pair(shat/_mh2,that/_mh2));
   }
   if(UseRandom::rnd()>weight) return false;
   ++_ngen;
+  _dalitz.push_back(make_pair(shat/_mh2,that/_mh2));
   // construct the momenta 
   Energy roots = 0.5*sqrt(s);
   Energy pt = sqrt(uhat*that/shat);
@@ -666,7 +767,8 @@ Energy2 GGtoHMECorrection::qbargME(Energy2 s, Energy2 t, Energy2 u) {
   else {
     output =-4.*(sqr(s)+sqr(t))/u/9.;
   }
-  return output;
+  // final colour/spin factors
+  return output/24.;
 }
 
 Energy4 GGtoHMECorrection::loME() {
@@ -697,11 +799,11 @@ tPDPtr GGtoHMECorrection::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
     }
   }
   else {
-    for(unsigned int ix=1;ix<=5;++ix) {
+    for(int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(-ix));
       weights.push_back(pdf->xfx(beam,partons.back(),scale,x));
+      pdfweight += weights.back();
     }
-    pdfweight += weights.back();
   }
   double wgt=UseRandom::rnd()*pdfweight;
   for(unsigned int ix=0;ix<weights.size();++ix) {
