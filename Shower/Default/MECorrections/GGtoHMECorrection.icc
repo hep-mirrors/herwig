@@ -9,7 +9,8 @@ namespace Herwig {
 inline GGtoHMECorrection::GGtoHMECorrection() : _minloop(6),_maxloop(6),_massopt(0),  
 						_channelwgtA(0.80),
 						_channelwgtB(0.20),
-						_nover(0),_maxwgt(0.)
+						_nover(0),_ntry(0),_ngen(0),
+						_maxwgt(0.)
 {}
 
 inline IBPtr GGtoHMECorrection::clone() const {

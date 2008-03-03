@@ -32,12 +32,16 @@ void GGtoHMECorrection::doinit() throw(InitException) {
   MECorrectionBase::doinit();
   double total = 1.+_channelwgtA+_channelwgtB;
   _channelweights.push_back(1./total);
-  _channelweights.push_back(_channelwgtA/total);
-  _channelweights.push_back(_channelwgtB/total);
+  _channelweights.push_back(_channelweights.back()+_channelwgtA/total);
+  _channelweights.push_back(_channelweights.back()+_channelwgtB/total);
 }
 
 void GGtoHMECorrection::dofinish() {
   MECorrectionBase::dofinish();
+  if(_ntry==0) return;
+  generator()->log() << "GGtoHMECorrection when applying the hard correction "
+		     << "generated " << _ntry << " trial emissions of which "
+		     << _ngen << " were accepted\n";
   if(_nover==0) return;
   generator()->log() << "GGtoHMECorrection when applying the hard correction " 
 		     << _nover << " weights larger than one were generated of which"
@@ -89,7 +93,7 @@ void GGtoHMECorrection::Init() {
      " This is a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction"
      " of events with weight > 1.",
-     &GGtoHMECorrection::_channelwgtA, 0.12, 0., 100.,
+     &GGtoHMECorrection::_channelwgtA, 0.12, 0., 1.e10,
      false, false, Interface::limited);
 
   static Parameter<GGtoHMECorrection,double> interfaceQGChannelWeight
@@ -97,7 +101,7 @@ void GGtoHMECorrection::Init() {
      "The relative weights of the g g abd qbar g channels for selection."
      " This is a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction",
-     &GGtoHMECorrection::_channelwgtB, 2., 0., 100.,
+     &GGtoHMECorrection::_channelwgtB, 2., 0., 1.e10,
      false, false, Interface::limited);
 }
 
@@ -136,6 +140,7 @@ bool GGtoHMECorrection::canHandle(ShowerTreePtr tree, double & initial,
 }
 
 void GGtoHMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
+  useMe();
   assert(tree->outgoingLines().size()==1);
   // get gluons and Higgs
   // get the gluons
@@ -402,6 +407,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
 				  vector<Lorentz5Momentum> & pnew, 
 				  pair<double,double> & xout,
 				  tPDPtr & out) {
+  ++_ntry;
   // calculate the limits on s
   Energy mh(higgs->mass());
   _mh2=sqr(mh);
@@ -506,7 +512,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
       itype = 1;
       // q g -> H q
       if(!order) {
-	out = quarkFlavour(pdf[0],scale,x[0],beams[0],fxnew[0],false);
+	out = quarkFlavour(pdf[0],scale,xnew[0],beams[0],fxnew[0],false);
 	fxnew[1]=pdf[1]->xfx(beams[1],gluons[1]->dataPtr(),scale,xnew[1]);
 	iemit = 0;
 	mewgt = qgME(shat,uhat,that)/lome*_mh2/sqr(shat);
@@ -514,7 +520,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
       // g q -> H q
       else {
 	fxnew[0]=pdf[0]->xfx(beams[0],gluons[0]->dataPtr(),scale,xnew[0]);
-	out = quarkFlavour(pdf[1],scale,x[1],beams[1],fxnew[1],false);
+	out = quarkFlavour(pdf[1],scale,xnew[1],beams[1],fxnew[1],false);
 	iemit = 1;
 	mewgt = qgME(shat,that,uhat)/lome*_mh2/sqr(shat);
       }
@@ -524,7 +530,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
       itype=2;
       // qbar g -> H qbar
       if(!order) {
-	out = quarkFlavour(pdf[0],scale,x[0],beams[0],fxnew[0],true);
+	out = quarkFlavour(pdf[0],scale,xnew[0],beams[0],fxnew[0],true);
 	fxnew[1]=pdf[1]->xfx(beams[1],gluons[1]->dataPtr(),scale,xnew[1]);
 	iemit = 0;
 	mewgt = qbargME(shat,uhat,that)/lome*_mh2/sqr(shat);
@@ -532,14 +538,14 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
       // g qbar -> H qbar
       else {
 	fxnew[0]=pdf[0]->xfx(beams[0],gluons[0]->dataPtr(),scale,xnew[0]);
-	out = quarkFlavour(pdf[1],scale,x[1],beams[1],fxnew[1],true);
+	out = quarkFlavour(pdf[1],scale,xnew[1],beams[1],fxnew[1],true);
 	iemit = 1;
 	mewgt = qbargME(shat,that,uhat)/lome*_mh2/sqr(shat);
       }
       jacobian2/=(_channelweights[2]-_channelweights[1]);
     }
-    // weight
-    weight = jacobian2*mewgt;
+    // weight (factor of 2 as pick q(bar)g or gq(bar)
+    weight = 2.*jacobian2*mewgt;
     // pdf part of the weight
     weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
     // finally coupling and different channel pieces
@@ -552,6 +558,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     weight=1.;
   }
   if(UseRandom::rnd()>weight) return false;
+  ++_ngen;
   // construct the momenta 
   Energy roots = 0.5*sqrt(s);
   Energy pt = sqrt(uhat*that/shat);

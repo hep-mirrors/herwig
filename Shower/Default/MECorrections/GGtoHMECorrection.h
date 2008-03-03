@@ -343,6 +343,16 @@ private:
   unsigned int _nover;
 
   /**
+   *  Number of attempts
+   */
+  unsigned int _ntry;
+
+  /**
+   *  Number which suceed
+   */
+  unsigned int _ngen;
+
+  /**
    *  Maximum weight
    */
   double _maxwgt;
