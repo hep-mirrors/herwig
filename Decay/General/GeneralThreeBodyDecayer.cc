@@ -31,11 +31,13 @@ struct ParticleOrdering {
 typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
 void GeneralThreeBodyDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _diagrams << _colour << _nflow << _widthopt;
+  os << _incoming << _outgoing << _diagrams << _colour << _nflow << _widthopt
+     << _reftag << _reftagcc;
 }
 
 void GeneralThreeBodyDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _diagrams >> _colour >> _nflow >> _widthopt;
+  is >> _incoming >> _outgoing >> _diagrams >> _colour >> _nflow >> _widthopt
+     >> _reftag >> _reftagcc;;
 }
 
 AbstractClassDescription<GeneralThreeBodyDecayer> 
@@ -72,31 +74,25 @@ void GeneralThreeBodyDecayer::Init() {
 
 int  GeneralThreeBodyDecayer::
 modeNumber(bool & cc, tcPDPtr in, const PDVector & outin) const {
-  OrderedParticles outb(outin.begin(),outin.end());
-  PDVector out(outb.begin(),outb.end());
+  assert( !_reftag.empty() && !_reftagcc.empty() );
   // check number of outgoing particles
-  if(out.size()!=3) return -1;
-  // check incoming particle
-  if(abs(in->id())!=_incoming->id()) return false;
-  // check outgoing particles
-  pair<bool,bool> allowed=make_pair(true,true);
-  for(unsigned int ix=0;ix<3;++ix) {
-    if(out[ix]!=_outgoing[ix]) 
-      allowed.first  = false;
-    if( !(( out[ix]->CC() && out[ix]->CC() == _outgoing[ix] ) ||
-	  (!out[ix]->CC() && out[ix]       == _outgoing[ix] )) )
-      allowed.second = false;
+  if( outin.size() != 3 || abs(in->id()) != _incoming->id() ) return -1;
+  OrderedParticles testmode(outin.begin(), outin.end());
+  OrderedParticles::const_iterator dit = testmode.begin();
+  string testtag(in->PDGName() + "->");
+  for( unsigned int i = 1; dit != testmode.end(); ++dit, ++i) {
+    testtag += (**dit).PDGName();
+    if( i != 3 ) testtag += string(",");
   }
-  if(allowed.first  && in->id() == _incoming->id()) {
+  if( testtag == _reftag ) {
     cc = false;
     return 0;
   }
-  if(allowed.second && ( (!in->CC() && in->id() ==  _incoming->id()) ||
-			 ( in->CC() && in->id() == -_incoming->id()) )) {
+  else if ( testtag == _reftagcc ) {
     cc = true;
-    return 0.;
+    return 0;
   }
-  return -1;
+  else return -1;
 }
 
 void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
@@ -110,6 +106,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   _diagrams = process;
   _colour   = factors;
   _nflow    = ncf;
+  assert( _outgoing.size() == 3 );
   for(unsigned int ix=0;ix<_diagrams.size();++ix) {
     unsigned int iy=0;
     for(;iy<3;++iy) 
@@ -121,6 +118,29 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 	  ( iy == 2 && outgoing[0]->id() != _diagrams[ix].outgoingPair.first) ) 
 	swap(_diagrams[ix].outgoingPair.first, _diagrams[ix].outgoingPair.second);
     }
+  }
+
+  //Construct reference tags for testing in modeNumber function
+  OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
+  OrderedParticles::const_iterator dit = refmode.begin();
+  _reftag = _incoming->PDGName() + "->";
+  for( unsigned int i = 1; dit != refmode.end(); ++dit, ++i) {
+    _reftag += (**dit).PDGName();
+    if( i != 3 )  _reftag += string(",");
+  }
+  //CC-mode
+  refmode.clear();
+  _reftagcc = _incoming->CC() ? _incoming->CC()->PDGName() : 
+    _incoming->PDGName();
+  _reftagcc += "->";
+  for( unsigned int i = 0;  i < 3; ++i ) {
+    if( _outgoing[i]->CC() ) refmode.insert( _outgoing[i]->CC() );
+    else refmode.insert( _outgoing[i] );
+  }
+  dit = refmode.begin();
+  for( unsigned int i = 1; dit != refmode.end(); ++dit , ++i) {
+    _reftagcc += (**dit).PDGName();
+    if( i != 3 ) _reftagcc += string(",");
   }
 }
 

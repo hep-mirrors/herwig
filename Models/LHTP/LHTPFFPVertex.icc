@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the LHTPFFPVertex class.
+//
+
+namespace Herwig {
+
+inline IBPtr LHTPFFPVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr LHTPFFPVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

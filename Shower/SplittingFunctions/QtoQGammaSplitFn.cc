@@ -37,12 +37,12 @@ double QtoQGammaSplitFn::P(const double z, const Energy2 t,
     Energy m = getParticleData(ids[0])->mass();
     val-=2.*sqr(m)/t;
   }
-  double charge=getParticleData(ids[0])->iCharge()*3.;
+  double charge=getParticleData(ids[0])->iCharge()/3.;
   return sqr(charge)*val;; 
 }
 
 double QtoQGammaSplitFn::overestimateP(const double z, const IdList & ids) const {
-  double charge=getParticleData(ids[0])->iCharge()*3.;
+  double charge=getParticleData(ids[0])->iCharge()/3.;
   return 2.*sqr(charge)/(1.-z); 
 }
 
@@ -56,10 +56,12 @@ double QtoQGammaSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val; 
 }
 
-double QtoQGammaSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+double QtoQGammaSplitFn::integOverP(const double z, const IdList & ids,
+				    unsigned int PDFfactor) const {
+  double charge=getParticleData(ids[0])->iCharge()/3.;
   switch(PDFfactor) {
   case 0:
-    return -2.*log(1.-z); 
+    return -2.*sqr(charge)*log(1.-z); 
   case 1:
   case 2:
   case 3:
@@ -69,10 +71,12 @@ double QtoQGammaSplitFn::integOverP(const double z, unsigned int PDFfactor) cons
   }
 }
 
-double QtoQGammaSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+double QtoQGammaSplitFn::invIntegOverP(const double r, const IdList & ids,
+				       unsigned int PDFfactor) const {
+  double charge=getParticleData(ids[0])->iCharge()/3.;
   switch(PDFfactor) {
   case 0:
-    return 1. - exp(-0.5*r); 
+    return 1. - exp(-0.5*r/sqr(charge)); 
   case 1:
   case 2:
   case 3:

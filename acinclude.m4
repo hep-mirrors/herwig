@@ -1,6 +1,7 @@
 # check for gcc bug http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34130
 AC_DEFUN([HERWIG_CHECK_ABS_BUG],
 [
+AC_REQUIRE([HERWIG_COMPILERFLAGS])
 if test "$GCC" = "yes"; then
 AC_MSG_CHECKING([for gcc abs bug])
 AC_RUN_IFELSE(
@@ -432,6 +433,25 @@ else
     fi
     AC_MSG_RESULT([$ROOTINCLUDE])
 
+
+    oldLIBS="$LIBS"
+    oldLDFLAGS="$LDFLAGS"
+    oldCPPFLAGS="$CPPFLAGS"
+    LIBS="$LIBS $ROOTLIBS"
+    LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
+    CPPFLAGS="$CPPFLAGS $ROOTINCLUDE"
+
+    AC_MSG_CHECKING([that ROOT works])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <TCanvas.h>]],
+    	[[TCanvas c("c1", "");]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
+     	AC_MSG_ERROR([Use '--with-root=' to set the path to your ROOT installation.\
+	If it doesn't work anyhow, you eventually have to set the ROOTSYS environment variable.])
+    ])
+
+    LIBS="$oldLIBS"
+    LDFLAGS="$oldLDFLAGS"
+    CPPFLAGS="$oldCPPFLAGS"
+
     AC_SUBST(ROOTLIBS)
     AC_SUBST(ROOTLIBPATH)
     AC_SUBST(ROOTPATH)
@@ -452,12 +472,37 @@ AM_CONDITIONAL(WANT_LIBROOT, test ! x"$with_root" = "xno")
 dnl ##### LOOPTOOLS #####
 AC_DEFUN([HERWIG_LOOPTOOLS],
 [
+AC_REQUIRE([AC_PROG_F77])
+AC_REQUIRE([AC_F77_LIBRARY_LDFLAGS])
+AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([HERWIG_COMPILERFLAGS])
+
 AC_MSG_CHECKING([whether to build Looptools dependent parts])
 AC_ARG_ENABLE(looptools,
         AC_HELP_STRING([--disable-looptools],[turn off Looptools-dependent parts]),
         [],
         [enable_looptools=yes]
         )
+
+if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
+   case "${host}" in
+      x86_64-*)
+	AM_FFLAGS="$AM_FFLAGS -fdefault-integer-8"
+      	;;
+   esac
+
+   AC_LANG_PUSH([Fortran 77])
+   	oldFFLAGS="$FFLAGS"
+   	FFLAGS="$AM_FFLAGS"
+   	AC_COMPILE_IFELSE(
+	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
+		[],
+		[enable_looptools="needs gfortran on 64bit machines"]
+	)
+	FFLAGS="$oldFFLAGS"
+   AC_LANG_POP([Fortran 77])
+fi
+
 AC_MSG_RESULT([$enable_looptools])
 AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 ])
@@ -536,9 +581,13 @@ GSLLIBS=""
 AC_ARG_WITH(gsl,
         AC_HELP_STRING([--with-gsl=DIR],[location of gsl installation @<:@default=system libs@:>@]),
         [],
-	[with_gsl=no])
+	[with_gsl=system])
 
 if test "x$with_gsl" = "xno"; then
+AC_MSG_ERROR([libgsl is required. Please install the GNU scientific library and header files.])
+fi
+
+if test "x$with_gsl" = "xsystem"; then
 	AC_MSG_RESULT([in system libraries])
 	oldlibs="$LIBS"
 	AC_CHECK_LIB(m,main)
@@ -561,7 +610,6 @@ else
 	fi
 fi
 
-dnl AM_CONDITIONAL(HAVE_GSL,[test "x$with_hepmc" != "xno"])
 AC_SUBST(GSLINCLUDE)
 AC_SUBST(GSLLIBS)
 ])
@@ -616,4 +664,69 @@ AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])
 AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])
 AC_SUBST(AM_FFLAGS,  ["$debugflags"])
 AC_SUBST(AM_LDFLAGS)
+])
+
+AC_DEFUN([HERWIG_ENABLE_MODELS],
+[
+AC_MSG_CHECKING([for BSM models to include])
+
+AC_ARG_ENABLE(models,
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs lh lhtp) or --disable-models to turn them all off.]),
+        [],
+        [enable_models=all]
+        )
+if test "x$enable_models" = "xyes" -o "x$enable_models" = "xall"; then
+   all=yes
+fi
+AC_MSG_RESULT([$enable_models])
+
+if test ! "$all"; then
+   oldIFS="$IFS"
+   IFS=","
+   for i in $enable_models; do
+       declare $i=yes
+   done
+   IFS="$oldIFS"
+fi
+
+if test "$nmssm"; then
+   mssm=yes
+fi
+
+AC_SUBST([CREATE_BSM_ANALYSIS],["# create"])
+if test "$mssm" -a "$ued"; then
+   CREATE_BSM_ANALYSIS="create"
+fi
+
+AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
+AM_CONDITIONAL(WANT_NMSSM,[test "$nmssm" -o "$all"])
+AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
+AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
+AM_CONDITIONAL(WANT_LH,[test "$lh" -o "$all"])
+AM_CONDITIONAL(WANT_LHTP,[test "$lhtp" -o "$all"])
+])
+
+AC_DEFUN([HERWIG_OVERVIEW],
+[
+echo    "*****************************************************"
+echo    "*** $PACKAGE_STRING configuration summary"
+echo    "***"
+echo 	"*** BSM models:		$enable_models"
+echo    "*** Looptools:		$enable_looptools"
+echo 	"*** Herwig debug mode:	$enable_debug"
+echo    "***"
+echo    "*** GSL:		$with_gsl"
+echo    "***"
+echo    "*** ThePEG:		$with_thepeg"
+echo    "*** ThePEG headers:	$with_thepeg_headers"
+echo    "***"
+echo    "*** CLHEP:		$with_clhep"
+echo    "*** HepMC:		$with_hepmc"
+echo    "***"
+echo    "*** KtJet:		$with_ktjet"
+echo    "*** FastJet:		$with_fastjet"
+echo	"***"
+echo    "*** ROOT interface:	$with_root"
+echo 	"*** EvtGen interface:	$with_evtgen"
+echo    "*****************************************************"
 ])

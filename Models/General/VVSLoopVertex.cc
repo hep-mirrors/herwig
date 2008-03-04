@@ -44,7 +44,7 @@ ClassDescription<VVSLoopVertex> VVSLoopVertex::initVVSLoopVertex;
 void VVSLoopVertex::Init() {
 
   static ClassDocumentation<VVSLoopVertex> documentation
-    ("The VVSLoopVertex class calculates the tenosr integral"
+    ("The VVSLoopVertex class calculates the tensor integral"
      " coefficients using Looptools.");
 
 }
@@ -62,7 +62,7 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
     Complex lc = couplings[i].first;
     if(type[i] == PDT::Spin1Half) {
       Complex C0 = C0i(cc0,pv1s,pv2s,ps2,mls,mls,mls); 
-      int theC = Cget(ps2,pv2s,pv1s,
+      long theC = Cget(ps2,pv2s,pv1s,
 		      mls,mls,mls);
       Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
       Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
@@ -78,7 +78,7 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
       f += 4.*(lc - couplings[i].second)*lmass*C0;
     }
     else if(type[i] == PDT::Spin1) {
-      int theC = Cget(ps2,pv2s,pv1s,mls,mls,mls);
+      long theC = Cget(ps2,pv2s,pv1s,mls,mls,mls);
       Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
       Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
       Complex C12 = Cval(cc12,theC);
@@ -197,10 +197,12 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
 	      + (2.*mls - pv1s)*(2.*mls - pv2s)*ps2)*C11 )/mls3;
     }    
     else if(type[i] == PDT::Spin0) {
-      int theC = Cget(ps2,pv2s,pv1s,
+      long theC = Cget(ps2,pv2s,pv1s,
 		      mls,mls,mls);
-      Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
-      Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
+      Complex C1 = Cval(cc1,theC);
+      Complex C2 = Cval(cc2,theC);
+      Complex C00 = Cval(cc00,theC);
+      Complex C11 = Cval(cc11,theC);
       Complex C12 = Cval(cc12,theC);
       Complex C22 = Cval(cc22,theC);
       Complex Cz = C0(pv1s,pv2s,ps2,mls,mls,mls);

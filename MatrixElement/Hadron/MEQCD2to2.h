@@ -12,7 +12,7 @@
 // This is the declaration of the MEQCD2to2 class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
@@ -32,19 +32,14 @@ using namespace ThePEG::Helicity;
  * @see \ref MEQCD2to2Interfaces "The interfaces"
  * defined for MEQCD2to2.
  */
-class MEQCD2to2: public ME2to2Base {
+class MEQCD2to2: public HwME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEQCD2to2();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -73,16 +68,6 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
 
   /**
    * Add all possible diagrams with the add() function.
@@ -114,7 +99,6 @@ public:
    */
   virtual void constructVertex(tSubProPtr);
   //@}
-
 
 public:
 
@@ -394,7 +378,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEQCD2to2,1> {
   /** Typedef of the first base class of MEQCD2to2. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -419,8 +403,5 @@ struct ClassTraits<Herwig::MEQCD2to2>
 }
 
 #include "MEQCD2to2.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEQCD2to2.tcc"
-#endif
 
 #endif /* HERWIG_MEQCD2to2_H */

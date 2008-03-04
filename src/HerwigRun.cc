@@ -51,7 +51,6 @@ HerwigRun::HerwigRun(int argc, char **argv)
     Status = ERROR;
     return;
   }
-
   for ( int iarg = 2; iarg < argc; ++iarg ) {
     std::string arg = argv[iarg];
     if ( arg == "-r" ) repo = argv[++iarg];
@@ -82,6 +81,10 @@ HerwigRun::HerwigRun(int argc, char **argv)
     // debugging breakpoint
     breakThePEG();
     {
+#ifdef HERWIG_PKGLIBDIR
+      std::string pkglibdir(HERWIG_PKGLIBDIR);
+      DynamicLoader::appendPath(pkglibdir);
+#endif
       HoldFlag<> setup(InterfaceBase::NoReadOnly);
       Repository::read(repoin, cout);
       Repository::update();

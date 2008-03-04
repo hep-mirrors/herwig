@@ -354,6 +354,11 @@ private:
    *  The powers n0 for the FORTRAN interpolation
    */
   static double n0[np+1];
+
+  /**
+   *  where or not initialized
+   */
+  static bool initialized;
 };
 
 }

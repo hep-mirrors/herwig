@@ -41,7 +41,7 @@ void MEPP2GammaJet::doinit() throw(InitException) {
 			     << " version must be used" 
 			     << Exception::runerror;
   // call the base class
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
 }
 
 void MEPP2GammaJet::getDiagrams() const {
@@ -91,11 +91,10 @@ MEPP2GammaJet::diagrams(const DiagramVector & diags) const {
   diag1 = meInfo()[0];
   diag2 = meInfo()[1];
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    {
-      if      ( abs(diags[i]->id())%2 == 1 ) sel.insert(diag1, i);
-      else                                   sel.insert(diag2, i);
-    }
+  for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+    if      ( abs(diags[i]->id())%2 == 1 ) sel.insert(diag1, i);
+    else                                   sel.insert(diag2, i);
+  }
   return sel;
 }
 
@@ -161,27 +160,26 @@ MEPP2GammaJet::colourGeometries(tcDiagPtr diag) const {
   static const ColourLines qbarg2("-1 2, -2 -3 -5");
   // only one flow per diagram so insert the right one
   Selector<const ColourLines *> sel;  
-  switch (diag->id())
-    {
-    case -1 :
-      sel.insert(1.0, &qqbar1);
-      break;
-    case -2 :
-      sel.insert(1.0, &qqbar2);
-      break;
-    case -3 :
-      sel.insert(1.0, &qg1);
-      break;
-    case -4 :
-      sel.insert(1.0, &qg2);
-      break;
-    case -5 :
-      sel.insert(1.0, &qbarg1);
-      break;
-    case -6 :
-      sel.insert(1.0, &qbarg2);
-      break;
-    }
+  switch (diag->id()) {
+  case -1 :
+    sel.insert(1.0, &qqbar1);
+    break;
+  case -2 :
+    sel.insert(1.0, &qqbar2);
+    break;
+  case -3 :
+    sel.insert(1.0, &qg1);
+    break;
+  case -4 :
+    sel.insert(1.0, &qg2);
+    break;
+  case -5 :
+    sel.insert(1.0, &qbarg1);
+    break;
+  case -6 :
+    sel.insert(1.0, &qbarg2);
+    break;
+  }
   return sel;
 }
 
@@ -189,29 +187,27 @@ double MEPP2GammaJet::me2() const {
   // total matrix element and the various components
   double me(0.);
   // first case, q qbar to gluon photon
-  if(mePartonData()[0]->id()==-mePartonData()[1]->id())
-    {
-      // order of the particles
-      unsigned int iq(1),iqb(0),ip(3),ig(2);
-      if(mePartonData()[0]->id()>0){iq=0;iqb=1;}
-      if(mePartonData()[2]->id()==ParticleID::g){ig=2;ip=3;}
-      // calculate the spinors and polarization vectors
-      vector<SpinorWaveFunction> fin;
-      vector<SpinorBarWaveFunction>  ain;
-      vector<VectorWaveFunction> pout,gout;
-      SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
-      SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
-      VectorWaveFunction   glout(meMomenta()[ig ],mePartonData()[ig ],outgoing);
-      VectorWaveFunction   phout(meMomenta()[ip ],mePartonData()[ip ],outgoing);
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)    ; fin.push_back( qin );
-	  qbin.reset(ix)   ; ain.push_back( qbin);
-	  glout.reset(2*ix);gout.push_back(glout);
-	  phout.reset(2*ix);pout.push_back(phout);
-	}
-      // calculate the matrix element
-      me = qqbarME(fin,ain,gout,pout,false)/9.;
+  if(mePartonData()[0]->id()==-mePartonData()[1]->id()) {
+    // order of the particles
+    unsigned int iq(1),iqb(0),ip(3),ig(2);
+    if(mePartonData()[0]->id()>0)              swap(iq,iqb);
+    if(mePartonData()[3]->id()==ParticleID::g) swap(ig, ip);
+    // calculate the spinors and polarization vectors
+    vector<SpinorWaveFunction> fin;
+    vector<SpinorBarWaveFunction>  ain;
+    vector<VectorWaveFunction> pout,gout;
+    SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
+    SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
+    VectorWaveFunction   glout(meMomenta()[ig ],mePartonData()[ig ],outgoing);
+    VectorWaveFunction   phout(meMomenta()[ip ],mePartonData()[ip ],outgoing);
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)    ; fin.push_back( qin );
+      qbin.reset(ix)   ; ain.push_back( qbin);
+      glout.reset(2*ix);gout.push_back(glout);
+      phout.reset(2*ix);pout.push_back(phout);
+    }
+    // calculate the matrix element
+    me = qqbarME(fin,ain,gout,pout,false)/9.;
 //       Energy2 mt(scale());
 //       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt)*
 // 	sqr(mePartonData()[0]->charge());
@@ -221,30 +217,28 @@ double MEPP2GammaJet::me2() const {
 //  	   << me << "  " 
 //  	   << me2 << " " << me/me2
 //  	   << endl;
+  }
+  else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id()) {
+    // order of the particles
+    unsigned int iqin(0),iqout(2),ip(3),ig(1);
+    if(mePartonData()[0]->id()==ParticleID::g    ) swap(iqin,ig);
+    if(mePartonData()[2]->id()==ParticleID::gamma) swap(ip,iqout);
+    // calculate the spinors and polarization vectors
+    vector<SpinorWaveFunction> fin;
+    vector<SpinorBarWaveFunction>  fout;
+    vector<VectorWaveFunction> pout,gin;
+    SpinorWaveFunction     qin (meMomenta()[iqin ],mePartonData()[iqin ],incoming);
+    SpinorBarWaveFunction  qout(meMomenta()[iqout],mePartonData()[iqout],outgoing);
+    VectorWaveFunction     glin(meMomenta()[ig   ],mePartonData()[ig   ],incoming);  
+    VectorWaveFunction    phout(meMomenta()[ip   ],mePartonData()[ip   ],outgoing); 
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)    ;fin.push_back(  qin );
+      qout.reset(ix)   ;fout.push_back( qout);
+      glin.reset(2*ix) ;gin.push_back(  glin);
+      phout.reset(2*ix);pout.push_back(phout);
     }
-  else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id())
-    {
-      // order of the particles
-      unsigned int iqin(0),iqout(2),ip(3),ig(1);
-      if(mePartonData()[0]->id()==ParticleID::g    ){iqin=1;ig=0;}
-      if(mePartonData()[2]->id()==ParticleID::gamma){ip=2;iqout=3;}
-      // calculate the spinors and polarization vectors
-      vector<SpinorWaveFunction> fin;
-      vector<SpinorBarWaveFunction>  fout;
-      vector<VectorWaveFunction> pout,gin;
-      SpinorWaveFunction     qin (meMomenta()[iqin ],mePartonData()[iqin ],incoming);
-      SpinorBarWaveFunction  qout(meMomenta()[iqout],mePartonData()[iqout],outgoing);
-      VectorWaveFunction     glin(meMomenta()[ig   ],mePartonData()[ig   ],incoming);  
-      VectorWaveFunction    phout(meMomenta()[ip   ],mePartonData()[ip   ],outgoing); 
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)    ;fin.push_back(  qin );
-	  qout.reset(ix)   ;fout.push_back( qout);
-	  glin.reset(2*ix) ;gin.push_back(  glin);
-	  phout.reset(2*ix);pout.push_back(phout);
-	}
-      // calculate the matrix element
-      me = qgME(fin,gin,pout,fout,false)/24.;
+    // calculate the matrix element
+    me = qgME(fin,gin,pout,fout,false)/24.;
 //       Energy2 mt(scale());
 //       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
 //       Energy2 s(sHat()),t(tHat()),u(uHat());
@@ -254,30 +248,28 @@ double MEPP2GammaJet::me2() const {
 // 	   << me << "  " 
 // 	   << me2 << " " << me/me2
 // 	   << endl; 
+  }
+  else {
+    // order of the particles
+    unsigned int iqin(0),iqout(2),ip(3),ig(1);
+    if(mePartonData()[0]->id()==ParticleID::g    ) swap(iqin,ig);
+    if(mePartonData()[2]->id()==ParticleID::gamma) swap(ip,iqout);
+    // calculate the spinors and polarization vectors
+    vector<SpinorBarWaveFunction> ain;
+    vector<SpinorWaveFunction>  aout;
+    vector<VectorWaveFunction> pout,gin;
+    SpinorBarWaveFunction  qin (meMomenta()[iqin ],mePartonData()[iqin ],incoming);
+    SpinorWaveFunction     qout(meMomenta()[iqout],mePartonData()[iqout],outgoing);
+    VectorWaveFunction     glin(meMomenta()[ig   ],mePartonData()[ig   ],incoming);  
+    VectorWaveFunction    phout(meMomenta()[ip   ],mePartonData()[ip   ],outgoing); 
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)    ;ain.push_back(  qin );
+      qout.reset(ix)   ;aout.push_back( qout);
+      glin.reset(2*ix) ;gin.push_back(  glin);
+      phout.reset(2*ix);pout.push_back(phout);
     }
-  else
-    {
-      // order of the particles
-      unsigned int iqin(0),iqout(2),ip(3),ig(1);
-      if(mePartonData()[0]->id()==ParticleID::g    ){iqin=1;ig=0;}
-      if(mePartonData()[2]->id()==ParticleID::gamma){ip=2;iqout=3;}
-      // calculate the spinors and polarization vectors
-      vector<SpinorBarWaveFunction> ain;
-      vector<SpinorWaveFunction>  aout;
-      vector<VectorWaveFunction> pout,gin;
-      SpinorBarWaveFunction  qin (meMomenta()[iqin ],mePartonData()[iqin ],incoming);
-      SpinorWaveFunction     qout(meMomenta()[iqout],mePartonData()[iqout],outgoing);
-      VectorWaveFunction     glin(meMomenta()[ig   ],mePartonData()[ig   ],incoming);  
-      VectorWaveFunction    phout(meMomenta()[ip   ],mePartonData()[ip   ],outgoing); 
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)    ;ain.push_back(  qin );
-	  qout.reset(ix)   ;aout.push_back( qout);
-	  glin.reset(2*ix) ;gin.push_back(  glin);
-	  phout.reset(2*ix);pout.push_back(phout);
-	}
-      // calculate the matrix element
-      me=qbargME(ain,gin,pout,aout,false)/24.;
+    // calculate the matrix element
+    me=qbargME(ain,gin,pout,aout,false)/24.;
 //       Energy2 mt(scale());
 //       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
 //       Energy2 s(sHat()),t(tHat()),u(uHat());
@@ -287,7 +279,7 @@ double MEPP2GammaJet::me2() const {
 // 	   << me << "  " 
 // 	   << me2 << " " << me/me2
 // 	   << endl; 
-    }
+  }
   return me;
 }
 
@@ -326,9 +318,9 @@ double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
 	  diag[1] = _gluonvertex->evaluate(mt,inter,ain[inhel2],gout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
-	  diag1 +=real(diag[0]*conj(diag[0]));
-	  diag2 +=real(diag[1]*conj(diag[1]));
-	  me    +=real(diag[2]*conj(diag[2]));
+	  diag1 +=norm(diag[0]);
+	  diag2 +=norm(diag[1]);
+	  me    +=norm(diag[2]);
 	  // matrix element
 	  if(calc) newme(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
 	}
@@ -382,9 +374,9 @@ double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
 	  diag[1]=_photonvertex->evaluate(0.*GeV2,inter,fout[outhel2],pout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
-	  diag1 +=real(diag[0]*conj(diag[0]));
-	  diag2 +=real(diag[1]*conj(diag[1]));
-	  me    +=real(diag[2]*conj(diag[2]));
+	  diag1 +=norm(diag[0]);
+	  diag2 +=norm(diag[1]);
+	  me    +=norm(diag[2]);
 	  // matrix element
 	  if(calc) newme(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
 	}
@@ -439,9 +431,9 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
 	  diag[1]=_photonvertex->evaluate(0.*GeV2,aout[outhel2],inter,pout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
-	  diag1 +=real(diag[0]*conj(diag[0]));
-	  diag2 +=real(diag[1]*conj(diag[1]));
-	  me    +=real(diag[2]*conj(diag[2]));
+	  diag1 +=norm(diag[0]);
+	  diag2 +=norm(diag[1]);
+	  me    +=norm(diag[2]);
 	  // matrix element
 	  if(calc) newme(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
 	}
@@ -460,83 +452,7 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
   return me;
 }
 
-
-bool MEPP2GammaJet::generateKinematics(const double * r) {
-  double ctmin = -1.0;
-  double ctmax = 1.0;
-  meMomenta()[2].setMass(0.*GeV);
-  meMomenta()[3].setMass(0.*GeV);
-
-
-  Energy q = 0.0*GeV;
-  try {
-    q = SimplePhaseSpace::
-      getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
-  } catch ( ImpossibleKinematics ) {
-    return false;
-  }
-
-  Energy e = sqrt(sHat())/2.0;
-		    
-  Energy2 m22 = meMomenta()[2].mass2();
-  Energy2 m32 = meMomenta()[3].mass2();
-  Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e1e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e0e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 e1e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 pq = 2.0*e*q;
-
-  Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-
-  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
-   		     lastCuts().minKT(mePartonData()[3]));
-  if ( ptmin > 0.0*GeV ) {
-    double ctm = 1.0 - sqr(ptmin/q);
-    if ( ctm <= 0.0 ) return false;
-    ctmin = max(ctmin, -sqrt(ctm));
-    ctmax = min(ctmax, sqrt(ctm));
-  }
-
-  if ( ctmin >= ctmax ) return false;
-    
-  double cth = getCosTheta(ctmin, ctmax, r);
-
-  Energy pt = q*sqrt(1.0-sqr(cth));
-  phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setVect(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
-
-  meMomenta()[3].setVect(Momentum3(-pt*sin(phi()),-pt*cos(phi()), -q*cth));
-
-  meMomenta()[2].rescaleEnergy();
-  meMomenta()[3].rescaleEnergy();
-
-  vector<LorentzMomentum> out(2);
-  out[0] = meMomenta()[2];
-  out[1] = meMomenta()[3];
-  tcPDVector tout(2);
-  tout[0] = mePartonData()[2];
-  tout[1] = mePartonData()[3];
-  if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
-    return false;
-
-  tHat(pq*cth + m22 - e0e2);
-  uHat(m22 + m32 - sHat() - tHat());
-  jacobian((pq/sHat())*Constants::pi*jacobian());
-  return true;
-}
-
-void MEPP2GammaJet::constructVertex(tSubProPtr sub)
-{
+void MEPP2GammaJet::constructVertex(tSubProPtr sub) {
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -545,54 +461,51 @@ void MEPP2GammaJet::constructVertex(tSubProPtr sub)
   // order of particles
   unsigned int order[4]={0,1,2,3};
   // identify the process and calculate matrix element
-  if(hard[0]->id()==ParticleID::g||hard[1]->id()==ParticleID::g)
-    {
-      if(hard[0]->id()==ParticleID::g    ){order[0]=1;order[1]=0;}
-      if(hard[3]->id()==ParticleID::gamma){order[2]=3;order[3]=2;}
-      if(hard[order[0]]->id()>0)
-	{
-	  vector<SpinorWaveFunction> q;
-	  vector<SpinorBarWaveFunction>  qb;
-	  vector<VectorWaveFunction> p,g;
-	  SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
-	  VectorWaveFunction   (g ,hard[order[1]],incoming,false,true,true);
-	  VectorWaveFunction   (p ,hard[order[2]],outgoing,true ,true,true);
-	  SpinorBarWaveFunction(qb,hard[order[3]],outgoing,true,true);
-	  qgME(q,g,p,qb,true);
-	}
-      else
-	{
-	  vector<SpinorWaveFunction> q;
-	  vector<SpinorBarWaveFunction>  qb;
-	  vector<VectorWaveFunction> p,g;
-	  SpinorBarWaveFunction(qb,hard[order[0]],incoming,false,true);
-	  VectorWaveFunction   (g ,hard[order[1]],incoming,false,true,true);
-	  VectorWaveFunction   (p ,hard[order[2]],outgoing,true ,true,true);
-	  SpinorWaveFunction   (q ,hard[order[3]],outgoing,true,true);
-	  qbargME(qb,g,p,q,true);
-	}
-    }
-  else
-    {
-      if(hard[0]->id()<0){order[0]=1;order[1]=0;}
-      if(hard[2]->id()==ParticleID::gamma){order[2]=3;order[3]=2;}
+  if(hard[0]->id()==ParticleID::g||hard[1]->id()==ParticleID::g) {
+    if(hard[0]->id()==ParticleID::g    ) swap(order[0],order[1]);
+    if(hard[3]->id()==ParticleID::gamma) swap(order[2],order[3]);
+    if(hard[order[0]]->id()>0) {
       vector<SpinorWaveFunction> q;
       vector<SpinorBarWaveFunction>  qb;
       vector<VectorWaveFunction> p,g;
       SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
-      SpinorBarWaveFunction(qb,hard[order[1]],incoming,false,true);
-      VectorWaveFunction   (g ,hard[order[2]],outgoing,true ,true,true);
-      VectorWaveFunction   (p ,hard[order[3]],outgoing,true ,true,true);
-      p[1]=p[2];g[1]=g[2];
-      qqbarME(q,qb,g,p,true);
+      VectorWaveFunction   (g ,hard[order[1]],incoming,false,true,true);
+      VectorWaveFunction   (p ,hard[order[2]],outgoing,true ,true,true);
+      SpinorBarWaveFunction(qb,hard[order[3]],outgoing,true,true);
+      qgME(q,g,p,qb,true);
     }
+    else {
+      vector<SpinorWaveFunction> q;
+      vector<SpinorBarWaveFunction>  qb;
+      vector<VectorWaveFunction> p,g;
+      SpinorBarWaveFunction(qb,hard[order[0]],incoming,false,true);
+      VectorWaveFunction   (g ,hard[order[1]],incoming,false,true,true);
+      VectorWaveFunction   (p ,hard[order[2]],outgoing,true ,true,true);
+      SpinorWaveFunction   (q ,hard[order[3]],outgoing,true,true);
+      qbargME(qb,g,p,q,true);
+    }
+  }
+  else {
+    if(hard[0]->id()<0)                  swap(order[0],order[1]);
+    if(hard[2]->id()==ParticleID::gamma) swap(order[2],order[3]);
+    vector<SpinorWaveFunction> q;
+    vector<SpinorBarWaveFunction>  qb;
+    vector<VectorWaveFunction> p,g;
+    SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
+    SpinorBarWaveFunction(qb,hard[order[1]],incoming,false,true);
+    VectorWaveFunction   (g ,hard[order[2]],outgoing,true ,true,true);
+    VectorWaveFunction   (p ,hard[order[3]],outgoing,true ,true,true);
+    p[1]=p[2];g[1]=g[2];
+    qqbarME(q,qb,g,p,true);
+  }
   // get the spin info objects
   for(unsigned int ix=0;ix<4;++ix)
-    {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
+    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
+  for(unsigned int ix=0;ix<4;++ix) 
+    spin[ix]->setProductionVertex(hardvertex);
 }

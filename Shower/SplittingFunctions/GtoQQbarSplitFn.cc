@@ -56,7 +56,8 @@ double GtoQQbarSplitFn::ratioP(const double z, const Energy2 t,
   return val;
 }
 
-double GtoQQbarSplitFn::integOverP(const double z, unsigned int PDFfactor) const { 
+double GtoQQbarSplitFn::integOverP(const double z, const IdList & ,
+				   unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
     return z/2.; 
@@ -72,7 +73,8 @@ double GtoQQbarSplitFn::integOverP(const double z, unsigned int PDFfactor) const
   }
 }
 
-double GtoQQbarSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+double GtoQQbarSplitFn::invIntegOverP(const double r, const IdList & ,
+				      unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return 2.*r; 

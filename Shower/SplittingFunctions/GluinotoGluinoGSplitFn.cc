@@ -59,7 +59,8 @@ double GluinotoGluinoGSplitFn::ratioP(const double z, const Energy2 t,
   return 0.5*val;
 } 
 
-double GluinotoGluinoGSplitFn::integOverP(const double z, unsigned int PDFfactor) const {
+double GluinotoGluinoGSplitFn::integOverP(const double z, const IdList & ,
+					  unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return -6.*log(1.-z); 
@@ -72,7 +73,8 @@ double GluinotoGluinoGSplitFn::integOverP(const double z, unsigned int PDFfactor
   }
 }
 
-double GluinotoGluinoGSplitFn::invIntegOverP(const double r, unsigned int PDFfactor) const {
+double GluinotoGluinoGSplitFn::invIntegOverP(const double r, const IdList & ,
+					     unsigned int PDFfactor) const {
   switch(PDFfactor) {
   case 0:
     return 1. - exp(-r/6.); 

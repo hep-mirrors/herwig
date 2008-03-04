@@ -280,10 +280,10 @@ setup Omega*_cccbar- -4444 Omega*_cccbar- 4.915940 0.0 0.0 0.10 -6 0 4 0
 defaultparticle Omega*_cccbar- 
 makeanti Omega*_ccc++ Omega*_cccbar- 
 create ThePEG::ParticleData Sigma_b- 
-setup Sigma_b- 5112 Sigma_b- 5.80 0.0 0.0 0.0 -3 0 2 0
+setup Sigma_b- 5112 Sigma_b- 5.80 0.001 0.0 0.0 -3 0 2 0
 defaultparticle Sigma_b- 
 create ThePEG::ParticleData Sigma_bbar+ 
-setup Sigma_bbar+ -5112 Sigma_bbar+ 5.80 0.0 0.0 0.0 3 0 2 0
+setup Sigma_bbar+ -5112 Sigma_bbar+ 5.80 0.001 0.0 0.0 3 0 2 0
 defaultparticle Sigma_bbar+ 
 makeanti Sigma_b- Sigma_bbar+ 
 create ThePEG::ParticleData Sigma*_b- 
@@ -315,10 +315,10 @@ setup Xi_bcbar0 -5142 Xi_bcbar0 7.005750 0.0 0.0 0.3870 0 0 2 0
 defaultparticle Xi_bcbar0 
 makeanti Xi_bc0 Xi_bcbar0 
 create ThePEG::ParticleData Sigma_b0 
-setup Sigma_b0 5212 Sigma_b0 5.80 0.0 0.0 0.0 0 0 2 0
+setup Sigma_b0 5212 Sigma_b0 5.80 0.001 0.0 0.0 0 0 2 0
 defaultparticle Sigma_b0 
 create ThePEG::ParticleData Sigma_bbar0 
-setup Sigma_bbar0 -5212 Sigma_bbar0 5.80 0.0 0.0 0.0 0 0 2 0
+setup Sigma_bbar0 -5212 Sigma_bbar0 5.80 0.001 0.0 0.0 0 0 2 0
 defaultparticle Sigma_bbar0 
 makeanti Sigma_b0 Sigma_bbar0 
 create ThePEG::ParticleData Sigma*_b0 
@@ -329,10 +329,10 @@ setup Sigma*_bbar0 -5214 Sigma*_bbar0 5.810 0.0 0.0 0.0 0 0 4 0
 defaultparticle Sigma*_bbar0 
 makeanti Sigma*_b0 Sigma*_bbar0 
 create ThePEG::ParticleData Sigma_b+ 
-setup Sigma_b+ 5222 Sigma_b+ 5.80 0.0 0.0 0.0 3 0 2 0
+setup Sigma_b+ 5222 Sigma_b+ 5.80 0.001 0.0 0.0 3 0 2 0
 defaultparticle Sigma_b+ 
 create ThePEG::ParticleData Sigma_bbar- 
-setup Sigma_bbar- -5222 Sigma_bbar- 5.80 0.0 0.0 0.0 -3 0 2 0
+setup Sigma_bbar- -5222 Sigma_bbar- 5.80 0.001 0.0 0.0 -3 0 2 0
 defaultparticle Sigma_bbar- 
 makeanti Sigma_b+ Sigma_bbar- 
 create ThePEG::ParticleData Sigma*_b+ 

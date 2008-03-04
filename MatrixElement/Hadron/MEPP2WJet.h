@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
 
 /**
  * The MEPP2WJet class implements the matrix element for the production of
- * a W boson and a jet including the decay of the Z.
+ * a W boson and a jet including the decay of the W.
  *
  * @see \ref MEPP2WJetInterfaces "The interfaces"
  * defined for MEPP2WJet.
@@ -147,7 +147,7 @@ protected:
    * Used internally by generateKinematics, after calculating the
    * limits on cos(theta).
    */
-  double getCosTheta(double cthmin, double cthmax, const double * r);
+  double getCosTheta(double cthmin, double cthmax, const double r);
 
   /**
    *  Matrix elements for the different subprocesses
@@ -228,7 +228,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -263,7 +263,7 @@ private:
   //@}
 
   /**
-   *  Pointers to the W ParticleData objects
+   *  @name Pointers to the W ParticleData objects
    */
   //@{
   /**
@@ -278,7 +278,7 @@ private:
   //@}
 
   /**
-   *  Switches to control the particles in the hard process
+   * @name Switches to control the particles in the hard process
    */
   //@{
   /**
@@ -300,12 +300,27 @@ private:
    *  W decay modes
    */
   unsigned int _wdec;
+
+  /**
+   *  Option for the treatment of the W off-shell effects
+   */
+  unsigned int _widthopt;
   //@}
 
   /**
    * Matrix element for spin correlations
    */
   ProductionMatrixElement _me;
+
+  /**
+   *  Storage of the scale to avoid the need to recalculate
+   */
+  Energy2 _scale;
+  
+  /**
+   *  Storage of the off-shell W mass to avoid the need to recalculate
+   */
+  Energy2 _mw2;
 
 };
 
@@ -347,8 +362,5 @@ struct ClassTraits<Herwig::MEPP2WJet>
 }
 
 #include "MEPP2WJet.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2WJet.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2WJet_H */

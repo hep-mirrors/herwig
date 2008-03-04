@@ -206,8 +206,5 @@ struct ClassTraits<Herwig::O2AlphaS>
 }
 
 #include "O2AlphaS.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "O2AlphaS.tcc"
-#endif
 
 #endif /* HERWIG_O2AlphaS_H */

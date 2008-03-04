@@ -5,6 +5,7 @@ SplittingFunction.h SplittingFunction.icc SplittingFunction.fh SplittingFunction
 GtoGGSplitFn.cc GtoGGSplitFn.h GtoGGSplitFn.icc GtoGGSplitFn.fh\
 QtoQGSplitFn.cc QtoQGSplitFn.h QtoQGSplitFn.icc QtoQGSplitFn.fh\
 QtoQGammaSplitFn.cc QtoQGammaSplitFn.h QtoQGammaSplitFn.icc QtoQGammaSplitFn.fh\
+QtoGammaQSplitFn.cc QtoGammaQSplitFn.h QtoGammaQSplitFn.icc QtoGammaQSplitFn.fh\
 GtoQQbarSplitFn.cc GtoQQbarSplitFn.h GtoQQbarSplitFn.icc GtoQQbarSplitFn.fh \
 QtoGQSplitFn.cc QtoGQSplitFn.h QtoGQSplitFn.icc QtoGQSplitFn.fh \
 PhitoPhiGSplitFn.cc PhitoPhiGSplitFn.h PhitoPhiGSplitFn.icc PhitoPhiGSplitFn.fh \

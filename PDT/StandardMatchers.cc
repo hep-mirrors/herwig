@@ -27,6 +27,8 @@ void dummy() {
   static MatchPhoton m00;
   static MatchTop    m01;
   static MatchHadron m02;
+  static MatchWBoson m03;
+  static MatchZBoson m04;
 }
 
 }

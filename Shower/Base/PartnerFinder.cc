@@ -211,7 +211,7 @@ bool PartnerFinder::setQEDInitialEvolutionScales(const ShowerParticleVector &,
   throw Exception() << "PartnerFinder::setQEDInitialEvolutionScales "
 		    << "implementation is not correct.\nMust match charge "
 		    << "partners, not colour partners.\n"
-		    << "Turn off QED in Shower.in" 
+		    << "Turn off QED in Shower.in\n" 
 		    << Exception::runerror;
 
 
@@ -238,7 +238,8 @@ bool PartnerFinder::setEWKInitialEvolutionScales(const ShowerParticleVector &,
 }
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialEvolutionScales(const ShowerPPair &particlePair, const bool isDecayCase) {
+calculateInitialEvolutionScales(const ShowerPPair &particlePair,
+				const bool isDecayCase) {
   bool FS1=FS(particlePair.first),FS2= FS(particlePair.second);
 
   if(FS1 && FS2)

@@ -19633,16 +19633,16 @@ set BtosgammaMass:Spectrum 99 1.04156e-05
 set BtosgammaKagan:HadronicMass BtosgammaMass 
 
 #
-create Herwig::SMTopDecayer Top
-set Top:QuarkWeights 0 1.8
-set Top:QuarkWeights 1 0.1
-set Top:QuarkWeights 2 0.1
-set Top:QuarkWeights 3 1.8
-set Top:QuarkWeights 4 1.e-05
-set Top:QuarkWeights 5 0.001
-set Top:LeptonWeights 0 0.65
-set Top:LeptonWeights 1 0.65
-set Top:LeptonWeights 2 0.60
+create Herwig::SMTopDecayer  Top
+set Top:QuarkWeights 0 3.
+set Top:QuarkWeights 1 3.
+set Top:QuarkWeights 2 3.
+set Top:QuarkWeights 3 3.
+set Top:QuarkWeights 4 1.5e-05
+set Top:QuarkWeights 5 3.
+set Top:LeptonWeights 0 3.
+set Top:LeptonWeights 1 3.
+set Top:LeptonWeights 2 3.
 set Top:Iteration 1
 set Top:Ntry 500
 set Top:Points 10000

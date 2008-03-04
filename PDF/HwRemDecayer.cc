@@ -106,7 +106,9 @@ bool HwRemDecayer::multiCapable() const {
 
 bool HwRemDecayer::
 canHandle(tcPDPtr particle, tcPDPtr parton) const {
-  return ( HadronMatcher::Check(*particle) && StandardQCDPartonMatcher::Check(*parton));
+  return ( HadronMatcher::Check(*particle) && 
+	   (StandardQCDPartonMatcher::Check(*parton)||
+	    parton->id()==ParticleID::gamma ));
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step, Energy forcedSplitScale) {

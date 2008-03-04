@@ -76,7 +76,8 @@ Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
     Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
 					outb.second);
-    Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm/(8.*Constants::pi);
+    Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm /
+      (24.*Constants::pi);
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer

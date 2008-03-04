@@ -1,4 +1,6 @@
+if WANT_UED
 pkglib_LTLIBRARIES = HwUED.la
+endif
 HwUED_la_SOURCES = \
 UEDBase.cc UEDBase.h UEDBase.icc UEDBase.fh \
 UEDF1F1Z0Vertex.cc UEDF1F1Z0Vertex.h UEDF1F1Z0Vertex.icc UEDF1F1Z0Vertex.fh \

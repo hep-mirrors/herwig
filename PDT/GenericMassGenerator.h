@@ -108,9 +108,11 @@ public:
    * Return a mass with the weight using the default limits.
    * @param part The particle data pointer of the particle.
    * @param wgt The weight for this mass.
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt) const;
+  inline Energy mass(double & wgt, const ParticleData & part, 
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Return a mass with the weight using the specified limits.
@@ -118,10 +120,12 @@ public:
    * @param low The lower limit on the particle's mass.
    * @param upp The upper limit on the particle's mass.
    * @param wgt The weight for this mass.
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
-		     const Energy low,const Energy upp) const;
+  inline Energy mass(double & wgt, const ParticleData & part,
+		     const Energy low,const Energy upp,
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Weight for the factor.
@@ -176,19 +180,23 @@ protected:
    * @param upp The upper limit on the particle's mass.
    * @param wgt The weight for this mass.
    * @param shape The type of shape to use
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt, 
-		     const Energy low,const Energy upp, int shape) const;
+  inline Energy mass(double & wgt, const ParticleData & part,
+		     const Energy low,const Energy upp, int shape,
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Return a mass with the weight using the default limits.
    * @param part The particle data pointer of the particle.
    * @param wgt The weight for this mass.
    * @param shape The type of shape to use
+   * @param r   The random number used for the weight
    * @return The mass of the particle instance.
    */
-  inline Energy mass(const ParticleData & part,double & wgt,int shape) const;
+  inline Energy mass(double & wgt, const ParticleData & part, int shape,
+		     double r=UseRandom::rnd()) const;
 
   /**
    * Weight for the factor.

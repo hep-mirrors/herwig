@@ -16,7 +16,6 @@ cd /Herwig/Shower
 
 create Herwig::ShowerHandler ShowerHandler
 set ShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
-set ShowerHandler:OrderSecondaries Yes
 set ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 
 #####################################
@@ -140,7 +139,7 @@ create Herwig::QtoGQSplitFn QtoGQSplitFn
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon
 set SudakovCommon:Alpha AlphaQCD
-set SudakovCommon:cutoffKinScale 3.00*GeV
+set SudakovCommon:cutoffKinScale 2.80*GeV
 set SudakovCommon:CutoffQCDMassScale 0.75*GeV
 set SudakovCommon:CutoffQEDMassScale 0.75*GeV
 set SudakovCommon:CutoffEWKMassScale 91.0*GeV

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEee2HiggsVBF class.
+//
+#ifndef HERWIG_MEee2HiggsVBF_FH
+#define HERWIG_MEee2HiggsVBF_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEee2HiggsVBF;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEee2HiggsVBF,MEee2HiggsVBFPtr);
+
+}
+
+#endif

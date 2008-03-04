@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LHWWHVertex class.
+//
+#ifndef HERWIG_LHWWHVertex_FH
+#define HERWIG_LHWWHVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LHWWHVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LHWWHVertex,LHWWHVertexPtr);
+
+}
+
+#endif

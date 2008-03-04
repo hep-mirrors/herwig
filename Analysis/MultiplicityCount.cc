@@ -176,7 +176,6 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   event->selectFinalState(inserter(particles));
 
   map <long,long> eventcount;
-  eventcount.insert(make_pair(0,0));
 
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
@@ -185,7 +184,6 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
       ++eventcount[0];
     
     long ID = abs( (*it)->id() );
-    _finalstatecount.insert(make_pair(ID,0));
     ++_finalstatecount[ID];
   }
 
@@ -199,7 +197,6 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     long ID = (*it)->id();
-    _collisioncount.insert(make_pair(ID,0));
     ++_collisioncount[ID];
   }
 
@@ -245,7 +242,6 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
     }
     
     if (_data.find(ID) != _data.end()) {
-      eventcount.insert(make_pair(ID,0));
       ++eventcount[ID];
       
       if (_makeHistograms 

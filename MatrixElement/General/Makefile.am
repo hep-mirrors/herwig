@@ -9,6 +9,5 @@ MEfv2vf.h MEfv2vf.fh MEfv2vf.icc MEfv2vf.cc \
 MEvv2vv.h MEvv2vv.fh MEvv2vv.icc MEvv2vv.cc \
 HardVertex.fh HardVertex.h HardVertex.icc HardVertex.cc \
 ProductionMatrixElement.h ProductionMatrixElement.icc ProductionMatrixElement.cc \
-MEff2vs.h MEff2vs.fh MEff2vs.icc MEff2vs.cc \
-ME2toVH.h ME2toVH.fh ME2toVH.icc ME2toVH.cc
+MEff2vs.h MEff2vs.fh MEff2vs.icc MEff2vs.cc
 

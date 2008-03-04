@@ -283,23 +283,25 @@ protected:
   /**
    * Value of the energy fraction for the veto algorithm
    * @param iopt The option for calculating z
+   * @param ids The PDG codes of the particles in the splitting
    * - 0 is final-state
    * - 1 is initial-state for the hard process
    * - 2 is initial-state for particle decays
    */
-  inline double guessz (unsigned int iopt) const;
+  inline double guessz (unsigned int iopt, const IdList &ids) const;
 
   /**
    *  Value of the scale for the veto algorithm
    * @param t1 The starting valoe of the scale
    * @param iopt The option for calculating t 
+   * @param ids The PDG codes of the particles in the splitting
    * - 0 is final-state
    * - 1 is initial-state for the hard process
    * - 2 is initial-state for particle decays
    * @param enhance The radiation enhancement factor
    * @param identical Whether or not the outgoing particles are identical
    */
-  inline Energy2 guesst (Energy2 t1,unsigned int iopt,
+  inline Energy2 guesst (Energy2 t1,unsigned int iopt, const IdList &ids,
 			 double enhance, bool identical) const;
 
   /**

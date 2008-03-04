@@ -32,7 +32,7 @@ insert SimpleQCD:MatrixElements[0] MEQCD2to2
 # Cuts on the hard process
 ##################################################
 cd /Herwig/Cuts
-set JetKtCut:MinKT 20.0*GeV
+set JetKtCut:MinKT 15.0*GeV
 set LeptonKtCut:MinKT 50.0*GeV
 set PhotonKtCut:MinKT 20.0*GeV
 
@@ -42,7 +42,7 @@ set PhotonKtCut:MinKT 20.0*GeV
 cd /Herwig/Analysis
 # create Herwig::GraphvizPlot Plot
 create Herwig::RFieldAnalysis RField HwMPIAnalysis.so
-set RField:LowerBorder 30.0
+set RField:LowerBorder 20.0
 set RField:UpperBorder 50.0
 
 # set the directory where the data files are stored. The files are
@@ -50,7 +50,12 @@ set RField:UpperBorder 50.0
 # Default is the directory where you run Herwig++
 # set RField:Dir /foo/dir
 
+create Herwig::MPIMultiplicity MPIMult
+set MPIMult:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+set MPIMult:ShowerHandler /Herwig/Shower/ShowerHandler
+
 insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 RField
+insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 2 MPIMult
 
 
 ##################################################

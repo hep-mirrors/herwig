@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the LHWWHVertex class.
+//
+
+namespace Herwig {
+
+inline IBPtr LHWWHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr LHWWHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

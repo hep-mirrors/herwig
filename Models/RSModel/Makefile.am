@@ -1,4 +1,6 @@
+if WANT_RS
 pkglib_LTLIBRARIES = HwRSModel.la
+endif
 HwRSModel_la_SOURCES = RSModel.fh RSModel.cc  RSModel.h  RSModel.icc\
 RSModelFFGRVertex.cc RSModelFFGRVertex.h RSModelFFGRVertex.icc RSModelFFVGRVertex.cc\
 RSModelFFVGRVertex.h RSModelFFVGRVertex.icc RSModelSSGRVertex.cc RSModelSSGRVertex.h\

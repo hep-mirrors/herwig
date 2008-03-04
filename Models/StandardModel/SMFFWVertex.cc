@@ -12,11 +12,14 @@
 //
 
 #include "SMFFWVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/StandardModel/CKMBase.h"
+#include "Herwig++/Models/StandardModel/StandardCKM.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
@@ -57,20 +60,20 @@ SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),
 }
 
 void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theCKM << _ckm;
+  os << _ckm;
 }
   
 void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theCKM >> _ckm;
+  is >> _ckm;
 }
   
 void SMFFWVertex::doinit() throw(InitException) {
   ThePEG::Helicity::FFVVertex::doinit();
-  _theCKM = generator()->standardModel()->CKM();
+  Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one
   ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
     hwCKM = ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::
-    transient_const_pointer>(_theCKM);
+    transient_const_pointer>(CKM);
   if(hwCKM) {
     vector< vector<Complex > > CKM;
     CKM = hwCKM->getUnsquaredMatrix(generator()->standardModel()->families());
@@ -124,14 +127,10 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
       iu = ianti/2;
       id = (iferm+1)/2;
     }
-    if( iu<1 || iu>3 || id<1 || id>3) {
+    if( iu<1 || iu>3 || id<1 || id>3)
       throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
 				       << "Unknown particle in W vertex" 
-				       << Exception::warning;
-      setLeft(0.);
-      setRight(0.);
-      return;
-    }
+				       << Exception::runerror;
     setLeft(_ckm[iu-1][id-1]);
     setRight(0.);
   }
@@ -140,15 +139,11 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
     setLeft(1.);
     setRight(0.);
   }
-  else {
-    throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
-				     << "Unknown particle in W vertex" 
-				     << Exception::warning;
-    setLeft(0.);setRight(0.);
-  }
+  else throw HelicityConsistencyError() << "SMFFWVertex::setCoupling "
+					<< "Unknown particle in W vertex" 
+					<< Exception::runerror;
 }
- 
-}
+
 
 
 
