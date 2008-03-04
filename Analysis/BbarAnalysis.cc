@@ -29,7 +29,7 @@ Histogram eta3_h(-3.,3.,100)     ,pt3_h(0.,100.,100);
 Histogram eta4_h(-3.,3.,100)     ,pt4_h(0.,100.,100);
 Histogram eta5_h(-3.,3.,100)     ,pt5_h(0.,100.,100);
 Histogram eta34_h(-3.,3.,100)    ,y34_h(-4.,4.,80);
-Histogram m34_h(0.,200.,40)     ,m345_h(0.,200.,40);
+Histogram m34_h(0.,200.,40);//     ,m345_h(0.,200.,40);
 
 BbarAnalysis::~BbarAnalysis() {}
 
@@ -56,7 +56,7 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   }
 
   Energy2 _mll2 = ( pos + elec ).m2();
-  Energy m345 = 0. * GeV;
+  //Energy m345 = 0. * GeV;
   double y34 = ( pos + elec ).rapidity();
 
 
@@ -65,11 +65,11 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   cos4_h.addWeighted(pos.cosTheta(),1.);
   eta3_h.addWeighted(elec.eta(),1.);
   eta4_h.addWeighted(pos.eta(),1.);
-  pt3_h.addWeighted(elec.perp(),1.);
-  pt4_h.addWeighted(pos.perp(),1.);
+  pt3_h.addWeighted(elec.perp()/GeV,1.);
+  pt4_h.addWeighted(pos.perp()/GeV,1.);
   y34_h.addWeighted(y34,1.);
   m34_h.addWeighted(sqrt(_mll2)/GeV,1.);
-  m345_h.addWeighted(sqrt(m345),1.);
+  //m345_h.addWeighted(sqrt(m345),1.);
 
   AnalysisHandler::analyze(particles);
 }
@@ -113,7 +113,7 @@ void BbarAnalysis::dofinish() {
   eta4_h.normaliseToCrossSection();
   pt3_h.normaliseToCrossSection();
   pt4_h.normaliseToCrossSection();
-  m345_h.normaliseToCrossSection();
+  //m345_h.normaliseToCrossSection();
 
   ofstream outfile("BbarAnalysis_hists.top");
   using namespace HistogramOptions;
@@ -136,7 +136,7 @@ void BbarAnalysis::dofinish() {
   m34_h.topdrawOutput(outfile,Frame,"RED","m34 distribution: all wgts");
 
 
-  m345_h.topdrawOutput(outfile,Frame,"RED","m345 distribution: all wgts");
+  //m345_h.topdrawOutput(outfile,Frame,"RED","m345 distribution: all wgts");
 
   outfile.close();
 }
