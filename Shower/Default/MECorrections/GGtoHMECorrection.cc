@@ -16,15 +16,15 @@
 
 using namespace Herwig;
 
-const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-20*GeV2);
+const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-10*GeV2);
 
 void GGtoHMECorrection::persistentOutput(PersistentOStream & os) const {
-  os << _minloop << _maxloop << _massopt << _ggpow << _qgpow
+  os << _minloop << _maxloop << _massopt << _ggpow << _qgpow << _enhance
      << _channelwgtA << _channelwgtB << _channelweights;
 }
 
 void GGtoHMECorrection::persistentInput(PersistentIStream & is, int) {
-  is >> _minloop >> _maxloop >> _massopt >> _ggpow >> _qgpow
+  is >> _minloop >> _maxloop >> _massopt >> _ggpow >> _qgpow >> _enhance
      >> _channelwgtA >> _channelwgtB >> _channelweights;
 }
 
@@ -187,6 +187,12 @@ void GGtoHMECorrection::Init() {
      &GGtoHMECorrection::_qgpow, 1.6, 1.0, 3.0,
      false, false, Interface::limited);
 
+  static Parameter<GGtoHMECorrection,double> interfaceEnhancementFactor
+    ("InitialEnhancementFactor",
+     "The enhancement factor for initial-state radiation in the shower to ensure"
+     " the weight for the matrix element correction is less than one.",
+     &GGtoHMECorrection::_enhance, 1.1, 1.0, 10.0,
+     false, false, Interface::limited);
 }
 
 bool GGtoHMECorrection::canHandle(ShowerTreePtr tree, double & initial,
@@ -218,7 +224,7 @@ bool GGtoHMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   // extract the Higgs mass and store it
   _mh2=sqr(part[0]->mass());
   // can handle it
-  initial = 1.;
+  initial = _enhance;
   final   = 1.;
   return true;
 }
@@ -813,56 +819,58 @@ tPDPtr GGtoHMECorrection::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
   assert(false);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 bool GGtoHMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					      ShowerParticlePtr parent,Branching br) {
-  return false;
   if(parent->isFinalState()) return false;
   // check if me correction should be applied
-//   long id[2]={initial->id(),parent->id()};
-//   if(id[0]!=id[1]||id[1]==ParticleID::g) return false;
-//   // get the pT
-//   Energy pT=br.kinematics->pT();
-//   // check if hardest so far
-//   if(pT<initial->pT()) return false;
-//   // compute the invariants
-//   double kappa(sqr(br.kinematics->scale())/_mb2),z(br.kinematics->z());
-//   Energy2 shat(_mb2/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*_mb2),uhat(-(1.-z)*shat);
-//   // check which type of process
-//   // g qbar 
-//   double wgt(1.);
-//   if(id[0]>0&&br.ids[0]==ParticleID::g)
-//     wgt=_mb2/(shat+uhat)*(sqr(_mb2-that)+sqr(_mb2-shat))/(sqr(shat+uhat)+sqr(uhat));
-//   else if(id[0]>0&&br.ids[0]==id[0])
-//     wgt=_mb2/(shat+uhat)*(sqr(_mb2-uhat)+sqr(_mb2-that))/(sqr(shat)+sqr(shat+uhat));
-//   else if(id[0]<0&&br.ids[0]==ParticleID::g)
-//     wgt=_mb2/(shat+uhat)*(sqr(_mb2-that)+sqr(_mb2-shat))/(sqr(shat+uhat)+sqr(uhat));
-//   else if(id[0]<0&&br.ids[0]==-id[0])
-//     wgt=_mb2/(shat+uhat)*(sqr(_mb2-uhat)+sqr(_mb2-that))/(sqr(shat)+sqr(shat+uhat));
-//   else return false;
-//   if(wgt<.0||wgt>1.) generator()->log() << "Soft ME correction weight too large or "
-// 					<< "negative in GGtoHMECorrection::"
-// 					<< "softMatrixElementVeto()soft weight " 
-// 					<< " sbar = " << shat/_mb2 
-// 					<< " tbar = " << that/_mb2 
-// 					<< "weight = " << wgt << "\n";
-//   // if not vetoed
-//   if(UseRandom::rndbool(wgt)) {
-//     initial->pT(pT);
-//     return false;
-//   }
-//   // otherwise
-//   parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
-//   return true;
+  long id[2]={initial->id(),parent->id()};
+  // must have started as a gluon
+  if(id[0]!=ParticleID::g) return false;
+  // must be a gluon going into the hard process
+  if(br.ids[1]!=ParticleID::g) return false;
+  // get the pT
+  Energy pT=br.kinematics->pT();
+  // check if hardest so far
+  if(pT<initial->pT()) return false;
+  // compute the invariants
+  double kappa(sqr(br.kinematics->scale())/_mh2),z(br.kinematics->z());
+  Energy2 shat(_mh2/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*_mh2),uhat(-(1.-z)*shat);
+  // check which type of process
+  Energy2 me;
+  // g g
+  if(br.ids[0]==ParticleID::g&&br.ids[2]==ParticleID::g) {
+    double split = 6.*(z/(1.-z)+(1.-z)/z+z*(1.-z));
+    me = ggME(shat,that,uhat)/split;
+  }
+  // q g
+  else if(br.ids[0] >=  1 && br.ids[0] <=  5 && br.ids[2]==br.ids[0]) {
+    double split = 4./3./z*(1.+sqr(1.-z));
+    me = qgME(shat,uhat,that)/split;
+  }
+  // qbar g
+  else if(br.ids[0] <= -1 && br.ids[0] >= -5 && br.ids[2]==br.ids[0]) {
+    double split = 4./3./z*(1.+sqr(1.-z));
+    me = qbargME(shat,uhat,that)/split;
+  }
+  else {
+    return false;
+  }
+  InvEnergy2 pre = 0.125/Constants::pi/loME()*sqr(_mh2)*that/shat/(shat+uhat);
+  double wgt = -pre*me/_enhance;
+  if(wgt<.0||wgt>1.) generator()->log() << "Soft ME correction weight too large or "
+					<< "negative in GGtoHMECorrection::"
+					<< "softMatrixElementVeto()\n soft weight " 
+					<< " sbar = " << shat/_mh2 
+					<< " tbar = " << that/_mh2 
+					<< "weight = " << wgt << " for "
+					<< br.ids[0] << " " << br.ids[1] << " "
+					<< br.ids[2] << "\n";
+  // if not vetoed
+  if(UseRandom::rndbool(wgt)) {
+    initial->pT(pT);
+    return false;
+  }
+  // otherwise
+  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+  return true;
 }

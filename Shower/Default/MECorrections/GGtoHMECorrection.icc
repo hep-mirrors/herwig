@@ -7,9 +7,8 @@
 namespace Herwig {
 
 inline GGtoHMECorrection::GGtoHMECorrection() : _minloop(6),_maxloop(6),_massopt(0),  
-						_channelwgtA(0.45),
-						_channelwgtB(0.15),
-						_ggpow(1.6), _qgpow(1.6),
+						_channelwgtA(0.45),_channelwgtB(0.15),
+						_ggpow(1.6), _qgpow(1.6),_enhance(1.1),
 						_nover(0),_ntry(0),_ngen(0),
 						_maxwgt(0.)
 {}
@@ -72,8 +71,8 @@ inline complex<InvEnergy4> GGtoHMECorrection::D(Energy2 s,Energy2 t, Energy2,
   double xp=0.5*(st+root)/st,xm=1-xp;
   output = 2.*(-dIntegral(mf2,s,xp)-dIntegral(mf2,t,xp)
 	       +dIntegral(mf2,_mh2,xp)+log(-xm/xp)
-	       *(log((mf2+_epsi)*(mf2+_epsi-_mh2*xp*xm)/
-		     (mf2+_epsi-s*xp*xm)/(mf2+_epsi-t*xp*xm))));
+	       *(log((mf2+_epsi)/GeV2)-log((mf2+_epsi-s*xp*xm)/GeV2)
+		 +log((mf2+_epsi-_mh2*xp*xm)/GeV2)-log((mf2+_epsi-t*xp*xm)/GeV2)));
   return output/root;
 }
   

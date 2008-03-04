@@ -348,6 +348,11 @@ private:
    *  of the \f$qg\f$ and \f$\bar{q}g\f$ components 
    */
   double _qgpow;
+
+  /**
+   *  The enhancement factor for initial-state radiation
+   */
+  double _enhance;
   
   /**
    *  Number of weights greater than 1
