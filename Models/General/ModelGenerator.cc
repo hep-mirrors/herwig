@@ -248,6 +248,9 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   //set the generator interfaces in the ParticleData object
   generator()->preinitInterface(p, "Mass_generator","set", mn);
   generator()->preinitInterface(p, "Width_generator","set", wn);
+  //allow the branching fraction of this particle type to vary
+  p->variableRatio(true);
+  if( p->CC() ) p->CC()->variableRatio(true);
   
   //initialize the generators
   generator()->preinitInterface(mgen, "Initialize", "set", "Yes");
