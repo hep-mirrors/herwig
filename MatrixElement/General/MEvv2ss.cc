@@ -233,6 +233,10 @@ void MEvv2ss::constructVertex(tSubProPtr sub) {
   ext[2] = sub->outgoing()[0];
   ext[3] = sub->outgoing()[1];
   
+  //Ensure particles are in the same order as specified in the diagrams
+  if( ext[0]->id() != getIncoming().first ) swap(ext[0], ext[1]);
+  if( ext[2]->id() != getOutgoing().first ) swap(ext[2], ext[3]);
+
   VBVector v1, v2;
   VectorWaveFunction(v1, ext[0], incoming, false, true, true);
   VectorWaveFunction(v2, ext[1], incoming, false, true, true);
