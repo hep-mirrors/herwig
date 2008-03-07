@@ -45,7 +45,7 @@ inline ShowerModelPtr Evolver::showerModel() const {
 }
 
 inline bool Evolver::ipTon() const {
-  return _iptrms != 0.0*MeV || ( _beta == 1.0 && _gamma != 0.0*MeV );
+  return _iptrms != 0.0*MeV || ( _beta == 1.0 && _gamma != 0.0*MeV && _iptmax !=0.0*MeV );
 }
 
 inline bool Evolver::MECOn() const {
