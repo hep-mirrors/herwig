@@ -609,8 +609,6 @@ double MEqq2W2ffNason::Ltilde_qq(double x, double v) const {
   double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
   double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
 
-  //if(oldq<_eps || oldqbar < _eps) return 0.;
-
   return( newq * newqbar / oldq / oldqbar );
 
 }
