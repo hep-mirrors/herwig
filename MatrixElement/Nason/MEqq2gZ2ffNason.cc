@@ -461,8 +461,8 @@ double MEqq2gZ2ffNason::NLOweight() const {
   double wgt          = 1.+(wqq+wqg+wgqbar);
 
   //trick to try and reduce neg wgt contribution
-  if(_xt<1-_eps) {
-    wgt += _a*(1./pow(1-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
+  if(_xt<1.-_eps) {
+    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
   }
 
   no_wgts ++;
@@ -485,8 +485,8 @@ double MEqq2gZ2ffNason::NLOweight() const {
     v_neg_h[v_bin] += wgt;
   }
 
-  if(lastY()>maxy)maxy=lastY();
-  if(lastY()<miny)miny=lastY();
+  if(lastY()>maxy) maxy=lastY();
+  if(lastY()<miny) miny=lastY();
 
   if(wgt > _max_wgt){
     // cerr<<"maxwgt = "<<wgt<<" at xt = "<<_xt<<", vt = "<< _v<<"\n";
