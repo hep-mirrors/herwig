@@ -166,7 +166,6 @@ protected:
   
   mutable double _max_wgt;
  
-  //cut off for pdfs
   mutable double  _xb_a,_xb_b,_alphaS,_TF,_CF;
   mutable Energy2 _mll2,_mu2;
   mutable tcPDPtr _parton_a,_parton_b,_gluon;
@@ -184,9 +183,9 @@ protected:
     double Fcal_qg(double x, double v) const;
     double Fcal_gq(double x, double v) const;
     double Fcal_qq(double x, double v) const;
-    double Ftilde_qg(double xt, double v) const;
-    double Ftilde_gq(double xt, double v) const;
-    double Ftilde_qq(double xt, double v) const;
+    double Ftilde_qg() const;
+    double Ftilde_gq() const;
+    double Ftilde_qq() const;
     double Ctilde_qg(double x, double v) const;
     double Ctilde_gq(double x, double v) const;
     double Ctilde_qq(double x, double v) const;
@@ -333,14 +332,20 @@ private:
    */
   //@{
   /**
-   *   The \f$x\f$ variable
+   *   The \f$\tilde{x}\f$ variable
    */
   double _xt;
 
   /**
-   *  The \f$\tilde{v}
+   *  The \f$v\f$ angular variable
    */
   double _v;
+
+  /**
+   *   The \f$x\f$ variables derived from \f$\tilde{x}\f$ and \f$v\f$ 
+   */
+  mutable double   _x_xt_v,_x__1_v,_x__1_0,_x__1_1,_x_xt_0,_x_xt_1;
+
   //@}
 
   /**
