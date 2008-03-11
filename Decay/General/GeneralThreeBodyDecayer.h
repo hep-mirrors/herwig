@@ -36,6 +36,15 @@ public:
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const;
+
+  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle
@@ -100,6 +109,7 @@ public:
   void setDecayInfo(PDPtr incoming,vector<PDPtr> outgoing,
 		    const vector<TBDiagram> & process,
 		    const vector<DVector> & factors,
+		    const vector<DVector> & Ncfactors,
 		    const unsigned int ncf);
 
 public:
@@ -169,6 +179,16 @@ protected:
   inline const vector<DVector> & getColourFactors() const;
 
   /**
+   * Return the matrix of colour factors 
+   */
+  inline const vector<DVector> & getLargeNcColourFactors() const;
+
+  /**
+   *  Get the mapping between the phase-space channel and the diagram
+   */
+  inline const vector<unsigned int> & diagramMap() const;
+
+  /**
    *  Option for the handling of the widths of the intermediate particles
    */
   inline unsigned int widthOption() const;
@@ -188,6 +208,16 @@ protected:
   void constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 				   vector<Energy> & inwidth, vector<double> & inpow,
 				   vector<double> & inweights) const;
+
+  /**
+   *  Set the colour flow
+   */
+  inline void colourFlow(unsigned int) const;
+
+  /**
+   *  Set the colour flow
+   */
+  inline unsigned int const & colourFlow() const;
 
 private:
 
@@ -221,9 +251,19 @@ private:
   vector<TBDiagram> _diagrams;
 
   /**
+   *  Map between the diagrams and the phase-space channels
+   */
+  vector<unsigned int> _diagmap;
+
+  /**
    * Store colour factors for ME calc.
    */
   vector<DVector> _colour;
+
+  /**
+   *  Store cololur factors for ME calc at large N_c
+   */
+  vector<DVector> _colourLargeNC;
 
   /**
    * The number of colourflows.
@@ -253,6 +293,11 @@ private:
    * this Decayer
    */
   string _reftagcc;
+
+  /**
+   *  The colour flow
+   */
+  mutable unsigned int _iflow;
 };
 
 }

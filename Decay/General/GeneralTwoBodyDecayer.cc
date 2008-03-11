@@ -23,6 +23,24 @@
 
 using namespace Herwig;
 
+ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
+					      const PDVector & children) const {
+  // return empty vector if products heavier than parent
+  Energy mout(0.*GeV);
+  for(PDVector::const_iterator it=children.begin();
+      it!=children.end();++it) mout+=(**it).massMin();
+  if(mout>parent.mass()) return ParticleVector();
+  // generate the decay
+  bool cc;
+  int imode=modeNumber(cc,parent.dataPtr(),children);
+  // generate the kinematics
+  ParticleVector decay=generate(generateIntermediates(),cc,imode,parent);
+  // make the colour connections
+  colourConnections(parent, decay);
+  // return the answer
+  return decay;
+}
+
 void GeneralTwoBodyDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   if(!_theVertex) throw InitException() << "GeneralTwoBodyDecayer::doinit() - "

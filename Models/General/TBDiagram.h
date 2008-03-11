@@ -68,8 +68,11 @@ struct TBDiagram {
   /** Enum of channel type */
   Channel channelType;
 
-  /** Store colour flow information */
-  vector<CFPair> colourFlow;
+  /** Store colour flow at \f$N_c=3\f$ information */
+  mutable vector<CFPair> colourFlow;
+
+  /** Store colour flow at \f$N_c=\infty\f$ information */
+  mutable vector<CFPair> largeNcColourFlow;
 
   /** Store the ids in a vector for easy use of comparison operator. */
   vector<long> ids;
