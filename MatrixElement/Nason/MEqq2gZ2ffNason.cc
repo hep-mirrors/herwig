@@ -698,14 +698,14 @@ double MEqq2gZ2ffNason::Ftilde_gq(double xt, double v) const {
 }
 double MEqq2gZ2ffNason::Ftilde_qq(double xt, double v) const {
     return 
-	( Fcal_qq(x(xt,v),v) - Fcal_qq(x(1.,v),v)
-	- Fcal_qq(x(xt,1.),1.) + Fcal_qq(x(1.,1.),1.)
+	( Fcal_qq(x(xt, v), v) - Fcal_qq(1.,v)
+	- Fcal_qq(x(xt,1.),1.) + Fcal_qq(1.,1.)
 	) / ((1.-xt)*(1.-v))
-      + ( Fcal_qq(x(xt,v),v) - Fcal_qq(x(1.,v),v)
-        - Fcal_qq(x(xt,0.),0.) + Fcal_qq(x(1.,0.),0.)
+      + ( Fcal_qq(x(xt, v), v) - Fcal_qq(1.,v)
+        - Fcal_qq(x(xt,0.),0.) + Fcal_qq(1.,0.)
         ) / ((1.-xt)*v)
-      + ( Fcal_qq(x(1.,v),v)*log(1.-xbar(v)) - Fcal_qq(x(1.,1.),1.)*log(1.-xbar(1.))
+      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,1.)*log(1.-xbar(1.))
         )/(1.-v)
-      + ( Fcal_qq(x(1.,v),v)*log(1.-xbar(v)) - Fcal_qq(x(1.,0.),0.)*log(1.-xbar(0.))
+      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,0.)*log(1.-xbar(0.))
 	)/v;
 }
