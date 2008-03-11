@@ -601,6 +601,8 @@ double MEqq2gZ2ffNason::xbar(double v) const {
     return max(xbar1,xbar2);
 }
 double MEqq2gZ2ffNason::Ltilde_qq(double x, double v) const {
+  if(x==1.) return 1.;
+
   double xa(x_a(x,v));
   double xb(x_b(x,v));
 
@@ -669,43 +671,36 @@ double MEqq2gZ2ffNason::Ctilde_qq(double x, double v) const {
     return (_alphaS*_CF/(2.*pi))*(1.-xbar(v))*wgt;    
 }
 double MEqq2gZ2ffNason::Fcal_qq(double x, double v) const {
-    using Constants::pi;
     double tmp = (sqr(1.-x)*(1.-2.*v*(1.-v))+2.*x)/x;
-    return (_alphaS*_CF/(2.*pi))
-	  *tmp*Ltilde_qq(x,v);
+    return tmp*Ltilde_qq(x,v);
 }
 double MEqq2gZ2ffNason::Fcal_qg(double x, double v) const {
-    using Constants::pi;
     double tmp = 2.*x*(1.-x)*v+sqr((1.-x)*v)+sqr(x)+sqr(1.-x);
-    return (_alphaS*_TF/(2.*pi))
-	*((1.-xbar(v))/x)
-	*tmp*Ltilde_qg(x,v);
+    return ((1.-xbar(v))/x)*tmp*Ltilde_qg(x,v);
 }
 double MEqq2gZ2ffNason::Fcal_gq(double x, double v) const {
-    using Constants::pi;
     double tmp = 2.*x*(1.-x)*(1.-v)+sqr((1.-x)*(1.-v))+sqr(x)+sqr(1.-x);
-    return (_alphaS*_TF/(2.*pi))
-	*((1.-xbar(v))/x)
-	*tmp*Ltilde_gq(x,v);
+    return ((1.-xbar(v))/x)*tmp*Ltilde_gq(x,v);
 }
 double MEqq2gZ2ffNason::Ftilde_qg(double xt, double v) const {
-    return ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
-	   )/v;
+    using Constants::pi;
+    double tmp = ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
+	         )/v;
+    return (_alphaS*_TF/(2.*pi))*tmp;
 }
 double MEqq2gZ2ffNason::Ftilde_gq(double xt, double v) const {
-    return ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
-	   )/(1.-v);
+    using Constants::pi;
+    double tmp = ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
+	         )/(1.-v);
+    return (_alphaS*_TF/(2.*pi))*tmp;
 }
 double MEqq2gZ2ffNason::Ftilde_qq(double xt, double v) const {
-    return 
-	( Fcal_qq(x(xt, v), v) - Fcal_qq(1.,v)
-	- Fcal_qq(x(xt,1.),1.) + Fcal_qq(1.,1.)
-	) / ((1.-xt)*(1.-v))
-      + ( Fcal_qq(x(xt, v), v) - Fcal_qq(1.,v)
-        - Fcal_qq(x(xt,0.),0.) + Fcal_qq(1.,0.)
-        ) / ((1.-xt)*v)
-      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,1.)*log(1.-xbar(1.))
-        )/(1.-v)
-      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,0.)*log(1.-xbar(0.))
-	)/v;
+    using Constants::pi;
+    double tmp = 
+        ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
+      +   ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v
+	)/(1.-xt)
+      + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
+      + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v;
+    return (_alphaS*_CF/(2.*pi))*tmp;
 }
