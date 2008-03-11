@@ -427,34 +427,24 @@ double MEqq2gZ2ffNason::NLOweight() const {
     swap(_hadron_A,_hadron_B);
   }
 
-  // Calculate x values once and for all:
-  // WARNING!!! This will only be done right if _xb_a, _xb_b are already set
-  // correctly so bear this in mind if you want to move these lines about.
-  _x_xt_v=x(_xt,_v);
-  _x__1_v=x( 1.,_v);
-  _x__1_0=x( 1.,0.);
-  _x__1_1=x( 1.,1.);
-  _x_xt_0=x(_xt,0.);
-  _x_xt_1=x(_xt,1.);
-
   // Calculate alpha_S, CF, TF etc:
   _alphaS = SM().alphaS(scale());
   _CF = 4./3.; _TF = 0.5;
   // Calculate the invariant mass of the dilepton pair
-  _mll2 = _x_xt_v*sHat();
+  _mll2 = x(_xt,_v)*sHat();
   _mu2  = scale();
 
   // Calculate the integrand:
   double wqqvirt      = Vtilde_qq();
-  double wqqcollin    = Ctilde_qq(_x_xt_1,1.) + Ctilde_qq(_x_xt_0,0.);
+  double wqqcollin    = Ctilde_qq(x(_xt,1.),1.) + Ctilde_qq(x(_xt,0.),0.);
   double wqqreal      = Ftilde_qq();
   double wqq          = wqqvirt+wqqcollin+wqqreal;
 
-  double wqgcollin    = Ctilde_qg(_x_xt_0,0.);
+  double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
   double wqgreal      = Ftilde_qg();
   double wqg          = wqgreal+wqgcollin;
 
-  double wgqbarcollin = Ctilde_gq(_x_xt_1,1.);
+  double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
   double wgqbarreal   = Ftilde_gq();
   double wgqbar       = wgqbarreal+wgqbarcollin;
 
@@ -699,23 +689,23 @@ double MEqq2gZ2ffNason::Fcal_gq(double x, double v) const {
 	*tmp*Ltilde_gq(x,v);
 }
 double MEqq2gZ2ffNason::Ftilde_qg() const {
-    return ( Fcal_qg(_x_xt_v,_v) - Fcal_qg(_x_xt_0,0.)
+    return ( Fcal_qg(x(_xt,_v),_v) - Fcal_qg(x(_xt,0.),0.)
 	   )/_v;
 }
 double MEqq2gZ2ffNason::Ftilde_gq() const {
-    return ( Fcal_gq(_x_xt_v,_v) - Fcal_gq(_x_xt_1,1.)
+    return ( Fcal_gq(x(_xt,_v),_v) - Fcal_gq(x(_xt,1.),1.)
 	   )/(1.-_v);
 }
 double MEqq2gZ2ffNason::Ftilde_qq() const {
     return 
-	( Fcal_qq(_x_xt_v,_v) - Fcal_qq(_x__1_v,_v)
-	- Fcal_qq(_x_xt_1,1.) + Fcal_qq(_x__1_1,1.)
+	( Fcal_qq(x(_xt,_v),_v) - Fcal_qq(x(1.,_v),_v)
+	- Fcal_qq(x(_xt,1.),1.) + Fcal_qq(x(1.,1.),1.)
 	) / ((1.-_xt)*(1.-_v))
-      + ( Fcal_qq(_x_xt_v,_v) - Fcal_qq(_x__1_v,_v)
-        - Fcal_qq(_x_xt_0,0.) + Fcal_qq(_x__1_0,0.)
+      + ( Fcal_qq(x(_xt,_v),_v) - Fcal_qq(x(1.,_v),_v)
+        - Fcal_qq(x(_xt,0.),0.) + Fcal_qq(x(1.,0.),0.)
         ) / ((1.-_xt)*_v)
-      + ( Fcal_qq(_x__1_v,_v)*log(1.-xbar(_v)) - Fcal_qq(_x__1_1,1.)*log(1.-xbar(1.))
+      + ( Fcal_qq(x(1.,_v),_v)*log(1.-xbar(_v)) - Fcal_qq(x(1.,1.),1.)*log(1.-xbar(1.))
         )/(1.-_v)
-      + ( Fcal_qq(_x__1_v,_v)*log(1.-xbar(_v)) - Fcal_qq(_x__1_0,0.)*log(1.-xbar(0.))
+      + ( Fcal_qq(x(1.,_v),_v)*log(1.-xbar(_v)) - Fcal_qq(x(1.,0.),0.)*log(1.-xbar(0.))
 	)/_v;
 }

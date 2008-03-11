@@ -341,11 +341,6 @@ private:
    */
   double _v;
 
-  /**
-   *   The \f$x\f$ variables derived from \f$\tilde{x}\f$ and \f$v\f$ 
-   */
-  mutable double   _x_xt_v,_x__1_v,_x__1_0,_x__1_1,_x_xt_0,_x_xt_1;
-
   //@}
 
   /**
