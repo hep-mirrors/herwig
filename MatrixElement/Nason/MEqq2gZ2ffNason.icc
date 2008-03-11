@@ -7,9 +7,16 @@
 namespace Herwig {
 
 inline MEqq2gZ2ffNason::MEqq2gZ2ffNason() : 
-    _maxflavour(5),_gammaZ(0),_process(0),
-    _contrib(1), _a(0.5),_p(0.7), x_h(100), v_h(100), 
-    x_pos_h(100), v_pos_h(100), x_neg_h(100), v_neg_h(100), _eps(1e-8)
+    _maxflavour(5) ,_gammaZ(0)         ,_process(0),
+    _contrib(1)    ,  _a(0.5)          ,_p(0.7)    , 
+    x_h(100)       , v_h(100)          , 
+    x_pos_h(100)   , v_pos_h(100)      ,
+    x_neg_h(100)   , v_neg_h(100)      ,
+    xba_h(100)     , xba_pos_h(100)    , xba_neg_h(100),
+    xbb_h(100)     , xbb_pos_h(100)    , xbb_neg_h(100),
+    shatovrs_h(100),shatovrs_pos_h(100), shatovrs_neg_h(100),
+    y_h(100)       , y_pos_h(100)      , y_neg_h(100),
+    _eps(1.0e-8)
 {}
 
 inline IBPtr MEqq2gZ2ffNason::clone() const {

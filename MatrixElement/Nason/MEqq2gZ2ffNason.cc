@@ -441,10 +441,12 @@ double MEqq2gZ2ffNason::NLOweight() const {
   double wqq          = wqqvirt+wqqcollin+wqqreal;
 
   double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
+//  double wqgcollin    = Ctilde_qg_trick(x(_xt,0.),0.);
   double wqgreal      = Ftilde_qg(_xt,_v);
   double wqg          = wqgreal+wqgcollin;
 
   double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
+//  double wgqbarcollin = Ctilde_gq_trick(x(_xt,1.),1.);
   double wgqbarreal   = Ftilde_gq(_xt,_v);
   double wgqbar       = wgqbarreal+wgqbarcollin;
 
@@ -458,21 +460,30 @@ double MEqq2gZ2ffNason::NLOweight() const {
   no_wgts ++;
   if( wgt < 0. ) no_negwgts ++;
 
-  // MCFM histograms:
-
-  //fill hist bins
-  int x_bin = int( 100. * _xt );
-  int v_bin = int( 100. * _v );
-  x_h[x_bin] += wgt;
-  v_h[v_bin] += wgt;
- 
+  // Fill histogram bins
+  int x_bin        = int(100.*_xt);
+  int v_bin        = int(100.*_v);
+  int xba_bin      = int(100.*_xb_a);
+  int xbb_bin      = int(100.*_xb_b);
+  int shatovrs_bin = int(100.*_xb_a*_xb_b);
+  x_h[x_bin]     += wgt;
+  v_h[v_bin]     += wgt;
+  xba_h[xba_bin] += wgt;
+  xbb_h[xbb_bin] += wgt;
+  shatovrs_h[shatovrs_bin] += wgt;
   if ( wgt > 0. ) {
     x_pos_h[x_bin] += wgt;
     v_pos_h[v_bin] += wgt;
+    xba_pos_h[xba_bin] += wgt;
+    xbb_pos_h[xbb_bin] += wgt;
+    shatovrs_pos_h[shatovrs_bin] += wgt;
   } 
   else if( wgt < 0. ) {
     x_neg_h[x_bin] += wgt;
     v_neg_h[v_bin] += wgt;
+    xba_neg_h[xba_bin] += wgt;
+    xbb_neg_h[xbb_bin] += wgt;
+    shatovrs_neg_h[shatovrs_bin] += wgt;
   }
 
   if(lastY()>maxy) maxy=lastY();
@@ -482,96 +493,9 @@ double MEqq2gZ2ffNason::NLOweight() const {
     // cerr<<"maxwgt = "<<wgt<<" at xt = "<<_xt<<", vt = "<< _v<<"\n";
     _max_wgt = wgt;
   }
+
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
-void MEqq2gZ2ffNason::dofinish() {
-  cerr << "\n";
-  cerr << "a = " << _a << "\n";
-  cerr << "Y ranged from "    << miny << " to " << maxy << "\n";
-  cerr << "total wgts = " << no_wgts    << "\n"
-       << "neg   wgts = " << no_negwgts << "\n";
-  cerr << "percentage neg wgts = " << double(no_negwgts)/double(no_wgts)*100. << "% \n"; 
-
-  ME2to2Base::dofinish();
-  string fname = generator()->filename() + string("-") + name() + string(".top");
-  ofstream outfile(fname.c_str());
-  
-  //output mcfm histograms
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"xt distribution: all wgts\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"xt\"\n";
-  double step = 1. / 100.;
-  double x=0.;
-  for( unsigned int ix = 0; ix < x_h.size(); ++ix ) {
-    x += step;
-    outfile << x << "\t" << x_h[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"xt distribution: pos wgts\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"xt\"\n";
-  step = 1. / 100.;
-  x=0.;
-  for( unsigned int ix = 0; ix < x_pos_h.size(); ++ix ) {
-    x += step;
-    outfile << x << "\t" << x_pos_h[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"xt distribution: neg wgts\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"xt\"\n";
-  step = 1. / 100.;
-  x=0.;
-  for( unsigned int ix = 0; ix < x_neg_h.size(); ++ix ) {
-    x += step;
-    outfile << x << "\t" << x_neg_h[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"v distribution: all wgts\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  step = 1. / 100.;
-  x=0.;
-  for( unsigned int ix = 0; ix < v_h.size(); ++ix ) {
-    x += step;
-    outfile << x << "\t" << v_h[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"v distribution: pos wgts\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  step = 1. / 100.;
-  x=0.;
-  for( unsigned int ix = 0; ix < v_pos_h.size(); ++ix ) {
-    x += step;
-    outfile << x << "\t" << v_pos_h[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-
-  outfile << "NEW FRAME\n";
-  outfile << "TITLE TOP \"v distribution: neg wgts\"\n";
-  outfile << "TITLE LEFT \"weight\"\n";
-  outfile << "TITLE BOTTOM \"v\"\n";
-  step = 1. / 100.;
-  x=0.;
-  for( unsigned int ix = 0; ix < v_neg_h.size(); ++ix ) {
-    x += step;
-    outfile << x << "\t" << v_neg_h[ix].mean() << "\n";
-  }
-  outfile << "HIST\n";
-
-  outfile.close();
-}
-
 double MEqq2gZ2ffNason::x(double xt, double v) const {
     double x0(xbar(v));
     return x0+(1.-x0)*xt;
@@ -641,7 +565,6 @@ double MEqq2gZ2ffNason::Ltilde_gq(double x, double v) const {
   return( newg1 * newqbar / oldq / oldqbar );
 }
 double MEqq2gZ2ffNason::Vtilde_qq() const {
-    using Constants::pi;
     return (_alphaS*_CF/(2.*pi))
           *(-3.*log(_mu2/_mll2)+(2.*pi*pi/3.)-8.);
 }
@@ -649,19 +572,16 @@ double MEqq2gZ2ffNason::Ccalbar_qg(double x) const {
     return (sqr(x)+sqr(1.-x))*(log(_mll2/(_mu2*x))+2.*log(1.-x))+2.*x*(1.-x);
 }
 double MEqq2gZ2ffNason::Ctilde_qg(double x, double v) const {
-    using Constants::pi;
     return  (_alphaS*_TF/(2.*pi))
 	  * ((1.-xbar(v))/x)
 	  * Ccalbar_qg(x)*Ltilde_qg(x,v);
 }
 double MEqq2gZ2ffNason::Ctilde_gq(double x, double v) const {
-    using Constants::pi;
     return  (_alphaS*_TF/(2.*pi))
 	  * ((1.-xbar(v))/x)
           * Ccalbar_qg(x)*Ltilde_gq(x,v);
 }
 double MEqq2gZ2ffNason::Ctilde_qq(double x, double v) const {
-    using Constants::pi;
     double wgt 
        = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Ltilde_qq(x,v)
        -  4.*log(1.-x)/(1.-x)
@@ -683,19 +603,16 @@ double MEqq2gZ2ffNason::Fcal_gq(double x, double v) const {
     return ((1.-xbar(v))/x)*tmp*Ltilde_gq(x,v);
 }
 double MEqq2gZ2ffNason::Ftilde_qg(double xt, double v) const {
-    using Constants::pi;
     double tmp = ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
 	         )/v;
     return (_alphaS*_TF/(2.*pi))*tmp;
 }
 double MEqq2gZ2ffNason::Ftilde_gq(double xt, double v) const {
-    using Constants::pi;
     double tmp = ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
 	         )/(1.-v);
     return (_alphaS*_TF/(2.*pi))*tmp;
 }
 double MEqq2gZ2ffNason::Ftilde_qq(double xt, double v) const {
-    using Constants::pi;
     double tmp = 
         ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
       +   ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v
@@ -704,3 +621,232 @@ double MEqq2gZ2ffNason::Ftilde_qq(double xt, double v) const {
       + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v;
     return (_alphaS*_CF/(2.*pi))*tmp;
 }
+
+
+double MEqq2gZ2ffNason::Ctilde_qg_trick(double x, double v) const {
+    double ctilde_qg_minus_ct = (_alphaS*_TF/(2.*pi))*((1.-xbar(v))/x) 
+	                      * Ccalbar_qg(x)*(Ltilde_qg(x,v)-Ltilde_qg(1.,0.));
+    double integrated_ct = (_alphaS*_TF/(2.*pi))
+	                 * ( ((_xb_b-2.)*_xb_b+0.5*log(_xb_b))*log(_xb_b)
+			   + 2.*ReLi2(_xb_b)
+			   + 0.5-pi*pi/3.
+			   - 2.*sqr(1.-_xb_b)*log(1.-_xb_b)
+			   - 0.5*(4.-3.*_xb_b)*_xb_b
+			   - (sqr(1.-_xb_b)+log(_xb_b))*log(_mll2/_mu2)
+                           )*Ltilde_qg(1.,0.);
+    return ctilde_qg_minus_ct + integrated_ct;
+}
+double MEqq2gZ2ffNason::Ctilde_gq_trick(double x, double v) const {
+    double ctilde_gq_minus_ct = (_alphaS*_TF/(2.*pi))*((1.-xbar(v))/x)
+	                      * Ccalbar_qg(x)*(Ltilde_gq(x,v)-Ltilde_gq(1.,1.));
+    double integrated_ct = (_alphaS*_TF/(2.*pi))
+	                 * ( ((_xb_a-2.)*_xb_a+0.5*log(_xb_a))*log(_xb_a)
+			   + 2.*ReLi2(_xb_a)
+			   + 0.5-pi*pi/3.
+			   - 2.*sqr(1.-_xb_a)*log(1.-_xb_a)
+			   - 0.5*(4.-3.*_xb_a)*_xb_a
+			   - (sqr(1.-_xb_a)+log(_xb_a))*log(_mll2/_mu2)
+                           )*Ltilde_gq(1.,1.);
+    return ctilde_gq_minus_ct + integrated_ct;
+}
+
+void MEqq2gZ2ffNason::dofinish() {
+  cerr << "\n";
+  cerr << "a = " << _a << "\n";
+  cerr << "Y ranged from "    << miny << " to " << maxy << "\n";
+  cerr << "total wgts = " << no_wgts    << "\n"
+       << "neg   wgts = " << no_negwgts << "\n";
+  cerr << "percentage neg wgts = " << double(no_negwgts)/double(no_wgts)*100. << "% \n"; 
+
+  ME2to2Base::dofinish();
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
+  
+  //output xt histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"xt distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"xt\"\n";
+  double step = 1. / 100.;
+  double x=0.;
+  for( unsigned int ix = 0; ix < x_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << x_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"xt distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"xt\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < x_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << x_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"xt distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"xt\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < x_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << x_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  //output v histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"v distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"v\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < v_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << v_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"v distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"v\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < v_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << v_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"v distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"v\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < v_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << v_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  //output _xb_a histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a (born) distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xba_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xba_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a (born) distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xba_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xba_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a (born) distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xba_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xba_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  //output _xb_a histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_b (born) distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xbb_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xbb_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_b (born) distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xbb_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xbb_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_b (born) distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xbb_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xbb_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  //output shatovrs histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a*x_b (born) distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a*x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < shatovrs_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << shatovrs_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a*x_b (born) distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a*x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < shatovrs_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << shatovrs_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a*x_b (born) distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a*x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < shatovrs_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << shatovrs_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile.close();
+}
+

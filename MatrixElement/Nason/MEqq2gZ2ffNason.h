@@ -12,6 +12,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Utilities/Statistic.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "MEqq2gZ2ffNason.fh"
 
@@ -19,6 +20,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+using Constants::pi;
+using Math::ReLi2;
 
 /**
  * The MEqq2gZ2ffNason class implements the products of Standard Model
@@ -189,6 +192,8 @@ protected:
     double Ctilde_qg(double x, double v) const;
     double Ctilde_gq(double x, double v) const;
     double Ctilde_qq(double x, double v) const;
+    double Ctilde_qg_trick(double x, double v) const;
+    double Ctilde_gq_trick(double x, double v) const;
 
 protected:
 
@@ -320,6 +325,10 @@ private:
    * account the acdc sampling
    */
   mutable vector<Statistic> x_h, v_h, x_pos_h, v_pos_h, x_neg_h, v_neg_h;
+  mutable vector<Statistic> xba_h, xba_pos_h, xba_neg_h;
+  mutable vector<Statistic> xbb_h, xbb_pos_h, xbb_neg_h;
+  mutable vector<Statistic> shatovrs_h, shatovrs_pos_h, shatovrs_neg_h;
+  mutable vector<Statistic> y_h, y_pos_h, y_neg_h;
 
   /**
    *  The cut-off on the pdfs
