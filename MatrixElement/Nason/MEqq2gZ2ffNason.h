@@ -183,9 +183,9 @@ protected:
     double Fcal_qg(double x, double v) const;
     double Fcal_gq(double x, double v) const;
     double Fcal_qq(double x, double v) const;
-    double Ftilde_qg() const;
-    double Ftilde_gq() const;
-    double Ftilde_qq() const;
+    double Ftilde_qg(double xt, double v) const;
+    double Ftilde_gq(double xt, double v) const;
+    double Ftilde_qq(double xt, double v) const;
     double Ctilde_qg(double x, double v) const;
     double Ctilde_gq(double x, double v) const;
     double Ctilde_qq(double x, double v) const;

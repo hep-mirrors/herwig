@@ -437,15 +437,15 @@ double MEqq2gZ2ffNason::NLOweight() const {
   // Calculate the integrand:
   double wqqvirt      = Vtilde_qq();
   double wqqcollin    = Ctilde_qq(x(_xt,1.),1.) + Ctilde_qq(x(_xt,0.),0.);
-  double wqqreal      = Ftilde_qq();
+  double wqqreal      = Ftilde_qq(_xt,_v);
   double wqq          = wqqvirt+wqqcollin+wqqreal;
 
   double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
-  double wqgreal      = Ftilde_qg();
+  double wqgreal      = Ftilde_qg(_xt,_v);
   double wqg          = wqgreal+wqgcollin;
 
   double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
-  double wgqbarreal   = Ftilde_gq();
+  double wgqbarreal   = Ftilde_gq(_xt,_v);
   double wgqbar       = wgqbarreal+wgqbarcollin;
 
   double wgt          = 1.+(wqq+wqg+wgqbar);
@@ -688,24 +688,24 @@ double MEqq2gZ2ffNason::Fcal_gq(double x, double v) const {
 	*((1.-xbar(v))/x)
 	*tmp*Ltilde_gq(x,v);
 }
-double MEqq2gZ2ffNason::Ftilde_qg() const {
-    return ( Fcal_qg(x(_xt,_v),_v) - Fcal_qg(x(_xt,0.),0.)
-	   )/_v;
+double MEqq2gZ2ffNason::Ftilde_qg(double xt, double v) const {
+    return ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
+	   )/v;
 }
-double MEqq2gZ2ffNason::Ftilde_gq() const {
-    return ( Fcal_gq(x(_xt,_v),_v) - Fcal_gq(x(_xt,1.),1.)
-	   )/(1.-_v);
+double MEqq2gZ2ffNason::Ftilde_gq(double xt, double v) const {
+    return ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
+	   )/(1.-v);
 }
-double MEqq2gZ2ffNason::Ftilde_qq() const {
+double MEqq2gZ2ffNason::Ftilde_qq(double xt, double v) const {
     return 
-	( Fcal_qq(x(_xt,_v),_v) - Fcal_qq(x(1.,_v),_v)
-	- Fcal_qq(x(_xt,1.),1.) + Fcal_qq(x(1.,1.),1.)
-	) / ((1.-_xt)*(1.-_v))
-      + ( Fcal_qq(x(_xt,_v),_v) - Fcal_qq(x(1.,_v),_v)
-        - Fcal_qq(x(_xt,0.),0.) + Fcal_qq(x(1.,0.),0.)
-        ) / ((1.-_xt)*_v)
-      + ( Fcal_qq(x(1.,_v),_v)*log(1.-xbar(_v)) - Fcal_qq(x(1.,1.),1.)*log(1.-xbar(1.))
-        )/(1.-_v)
-      + ( Fcal_qq(x(1.,_v),_v)*log(1.-xbar(_v)) - Fcal_qq(x(1.,0.),0.)*log(1.-xbar(0.))
-	)/_v;
+	( Fcal_qq(x(xt,v),v) - Fcal_qq(x(1.,v),v)
+	- Fcal_qq(x(xt,1.),1.) + Fcal_qq(x(1.,1.),1.)
+	) / ((1.-xt)*(1.-v))
+      + ( Fcal_qq(x(xt,v),v) - Fcal_qq(x(1.,v),v)
+        - Fcal_qq(x(xt,0.),0.) + Fcal_qq(x(1.,0.),0.)
+        ) / ((1.-xt)*v)
+      + ( Fcal_qq(x(1.,v),v)*log(1.-xbar(v)) - Fcal_qq(x(1.,1.),1.)*log(1.-xbar(1.))
+        )/(1.-v)
+      + ( Fcal_qq(x(1.,v),v)*log(1.-xbar(v)) - Fcal_qq(x(1.,0.),0.)*log(1.-xbar(0.))
+	)/v;
 }
