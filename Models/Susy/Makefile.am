@@ -1,5 +1,7 @@
 SUBDIRS = NMSSM
+if WANT_MSSM
 pkglib_LTLIBRARIES = HwSusy.la
+endif
 HwSusy_la_SOURCES = SusyBase.cc  SusyBase.h  SusyBase.icc SusyBase.fh \
  MSSM.cc  MSSM.h  MSSM.icc MSSM.fh\
 MixingMatrix.h MixingMatrix.fh MixingMatrix.icc MixingMatrix.cc\

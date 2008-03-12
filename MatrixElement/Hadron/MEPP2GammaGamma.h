@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2GammaGamma class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -32,19 +32,14 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2GammaGammaInterfaces "The interfaces"
  * defined for MEPP2GammaGamma.
  */
-class MEPP2GammaGamma: public ME2to2Base {
+class MEPP2GammaGamma: public HwME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEPP2GammaGamma();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -256,7 +251,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2GammaGamma,1> {
   /** Typedef of the first base class of MEPP2GammaGamma. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -281,8 +276,5 @@ struct ClassTraits<Herwig::MEPP2GammaGamma>
 }
 
 #include "MEPP2GammaGamma.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2GammaGamma.tcc"
-#endif
 
 #endif /* HERWIG_MEPP2GammaGamma_H */

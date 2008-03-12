@@ -231,10 +231,11 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   double zmin=cutOff(ids[1])/qnow;
   double zmax=1.-cutOff(ids[2])/qnow;
   cerr << "testing limits " << zmin << " " << zmax << "\n";
-  double fmax(splittingFn()->integOverP(zmax)),fmin(splittingFn()->integOverP(zmin));
+  double fmax(splittingFn()->integOverP(zmax,ids));
+  double fmin(splittingFn()->integOverP(zmin,ids));
   double z;
   do {
-    z=splittingFn()->invIntegOverP(fmin+UseRandom::rnd()*(fmax-fmin));
+    z=splittingFn()->invIntegOverP(fmin+UseRandom::rnd()*(fmax-fmin),ids);
   }
   while(splittingFn()->ratioP(z,sqr(qnow),ids,false)<=UseRandom::rnd());
   cerr << "testing selected " << z << endl;

@@ -5,7 +5,7 @@ AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_HEADERS([Config/config.h])
-
+dnl AC_PRESERVE_HELP_ORDER
 AC_CANONICAL_HOST
 
 case "${host}" in
@@ -42,12 +42,6 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
-## needed for looptools
-AC_PROG_F77
-AC_F77_LIBRARY_LDFLAGS
-AC_PROG_CC
-##
-
 ## can be removed eventually
 AC_DISABLE_STATIC
 
@@ -57,11 +51,14 @@ AC_PROG_LIBTOOL
 dnl ####################################
 dnl ####################################
 
+dnl for Doc/fixinterfaces.pl
 AC_PATH_PROG(PERL, perl)
 
 HERWIG_CHECK_GSL
 
 HERWIG_CHECK_THEPEG
+
+HERWIG_COMPILERFLAGS
 
 HERWIG_LOOPTOOLS
 
@@ -79,9 +76,9 @@ HERWIG_CHECK_EVTGEN
 
 HERWIG_VERSIONSTRING
 
-HERWIG_COMPILERFLAGS
-
 HERWIG_CHECK_ABS_BUG
+
+HERWIG_ENABLE_MODELS
 
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
@@ -94,7 +91,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Susy/Makefile
 		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
-		Models/LittleHiggs/Makefile
+		Models/LH/Makefile
+		Models/LHTP/Makefile
 		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
@@ -151,5 +149,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Makefile])
 
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
+
+HERWIG_OVERVIEW
 
 AC_OUTPUT

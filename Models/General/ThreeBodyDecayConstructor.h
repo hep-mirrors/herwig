@@ -113,7 +113,8 @@ protected:
    *  Create the decayer
    * @param The diagrams for the decay
    */
-  GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams) const;
+  GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams, 
+					   bool inter) const;
 
   /**
    * Contruct the classname and object name for the Decayer
@@ -128,15 +129,17 @@ protected:
    *  Create the DecayMode from the diagrams
    * @param diagrams The diagrams
    */
-  void createDecayMode(const vector<TBDiagram> & diagrams);
+  void createDecayMode(const vector<TBDiagram> & diagrams, bool inter);
 
   /**
    * Get the correct colour factor matrix.
    * @param extpart Vector of external ParticleData pointers
    * @param ncf Set the number of colourflows.
    */
-  vector<DVector> getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
-				   unsigned int & ncf) const;
+  pair<vector<DVector>,vector<DVector> >
+  getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing, 
+		   const vector<TBDiagram> & diagrams,
+		   unsigned int & ncf) const;
 
 public:
 
@@ -201,6 +204,11 @@ private:
    *  Whether or not to remove on-shell diagrams
    */
   bool _removeOnShell;
+
+  /**
+   *  Option for the inclusion of intermediates
+   */
+  unsigned int _interopt;
 
   /**
    *  How to treat the widths of the intermediate particles

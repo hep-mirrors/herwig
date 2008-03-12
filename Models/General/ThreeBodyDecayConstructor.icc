@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline ThreeBodyDecayConstructor::ThreeBodyDecayConstructor() 
-  : _removeOnShell(true), _widthopt(1)
+  : _removeOnShell(true), _interopt(0), _widthopt(1)
 {}
 
 inline IBPtr ThreeBodyDecayConstructor::clone() const {

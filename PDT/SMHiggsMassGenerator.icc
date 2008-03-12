@@ -31,9 +31,10 @@ inline InvEnergy2 SMHiggsMassGenerator::BreitWignerWeight(Energy q,int shape) co
   Energy2 q2 = sqr(q);
   Energy4 sq=sqr(q2-sqr(nominalMass()));
   Energy2 num = widths.first*q;
-  if(_shape==1) num *= pow<4,1>(nominalMass()/q);
+  double fact = 1.;
+  if(_shape==1) fact *= pow<4,1>(nominalMass()/q);
   if(shape==3) num=GeV2;
-  return num/Constants::pi/(sq+sqr(widths.second*sqr(nominalMass())/q));
+  return num*fact/Constants::pi/(sq+sqr(widths.second*q)*fact);
 }
 
 inline double SMHiggsMassGenerator::weight(Energy q,int shape) const {

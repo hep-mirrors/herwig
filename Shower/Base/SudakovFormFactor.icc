@@ -63,11 +63,11 @@ inline void SudakovFormFactor::zLimits(pair<double,double> in) {
   _zlimits=in;
 }
 
-inline double SudakovFormFactor::guessz (unsigned int iopt) const {
+inline double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
   unsigned int pdfopt = iopt!=1 ? 0 : _pdffactor;
-  double lower = _splittingFn->integOverP(_zlimits.first,pdfopt);
+  double lower = _splittingFn->integOverP(_zlimits.first,ids,pdfopt);
   return _splittingFn->invIntegOverP
-    (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second,pdfopt) - lower),pdfopt);
+    (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second,ids,pdfopt) - lower),ids,pdfopt);
 }
  
 inline bool SudakovFormFactor::SplittingFnVeto(const Energy2 t, 
@@ -82,16 +82,17 @@ inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
 }
 
 inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
+					 const IdList &ids,
 					 double enhance,bool ident) const {
   unsigned int pdfopt = iopt!=1 ? 0 : _pdffactor;
   double c =
-    1./((_splittingFn->integOverP(_zlimits.second,pdfopt) -
-	 _splittingFn->integOverP(_zlimits.first ,pdfopt))* 
+    1./((_splittingFn->integOverP(_zlimits.second,ids,pdfopt) -
+	 _splittingFn->integOverP(_zlimits.first ,ids,pdfopt))* 
 	_alpha->overestimateValue()/Constants::twopi*enhance);
   assert(iopt<=2);
   if(iopt==1) {
     c/=_pdfmax;
-    if(ident) c*=2;
+    if(ident) c*=0.5;
   }
   else if(iopt==2) c*=-1.;
   if(_splittingFn->interactionOrder()==1) {

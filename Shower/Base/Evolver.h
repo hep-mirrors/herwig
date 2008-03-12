@@ -477,9 +477,16 @@ private:
    * Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))
    */
   Energy _gamma;
+
+  /**
+   * Upper bound on intrinsic pT for inverse quadratic
+   */
+  Energy _iptmax;
+
   /**
    *  The progenitor of the current shower
    */
+
   ShowerProgenitorPtr _progenitor;
 
   /**

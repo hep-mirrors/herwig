@@ -82,7 +82,7 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   theOrderSecondaries(true), theMPIOnOff(true), _pdfFreezingScale(2.5*GeV),
-  _maxtry(10), theSubProcess(tSubProPtr()) {
+  _maxtry(10),_maxtryMPI(10), theSubProcess(tSubProPtr()) {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
   _inputparticlesDecayInShower.push_back( 1000002 ); //  SUSY_u_L 
@@ -139,15 +139,16 @@ void ShowerHandler::dofinish(){
   if(theMPIHandler) theMPIHandler->finalize();
 }
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << _evolver << theRemDec << ounit(_pdfFreezingScale,GeV) << _maxtry << _inputparticlesDecayInShower
+  os << _evolver << theRemDec << ounit(_pdfFreezingScale,GeV) << _maxtry 
+     << _maxtryMPI << _inputparticlesDecayInShower
      << _particlesDecayInShower << theOrderSecondaries 
      << theMPIOnOff << theMPIHandler << theSubProcess 
      << _useCKKW << _reconstructor << _reweighter;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _evolver >> theRemDec >> iunit(_pdfFreezingScale,GeV) >> _maxtry
-     >> _inputparticlesDecayInShower
+  is >> _evolver >> theRemDec >> iunit(_pdfFreezingScale,GeV) >> _maxtry 
+     >> _maxtryMPI >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> theOrderSecondaries 
      >> theMPIOnOff >> theMPIHandler >> theSubProcess
      >> _useCKKW >> _reconstructor >> _reweighter;  
@@ -186,6 +187,12 @@ void ShowerHandler::Init() {
      &ShowerHandler::_maxtry, 10, 1, 100,
      false, false, Interface::limited);
 
+  static Parameter<ShowerHandler,unsigned int> interfaceMaxTryMPI
+    ("MaxTryMPI",
+     "The maximum number of regeneration attempts for an additional scattering",
+     &ShowerHandler::_maxtryMPI, 10, 0, 100,
+     false, false, Interface::limited);
+
   static ParVector<ShowerHandler,long> interfaceDecayInShower
     ("DecayInShower",
      "PDG codes of the particles to be decayed in the shower",
@@ -220,6 +227,9 @@ void ShowerHandler::Init() {
     ("OrderSecondaries", 
      "flag to switch the ordering of the additional interactions on or off",
      &ShowerHandler::theOrderSecondaries, 1, false, false);
+
+  desc = "This option has been removed, due to its negligible impact.";
+  static Deleted<ShowerHandler> delint2("OrderSecondaries", desc);
 
   static SwitchOption interfaceOrderSecondaries0                             
     (interfaceOrderSecondaries,
@@ -297,12 +307,12 @@ void ShowerHandler::cascade() {
               new_ptr(MPIPDF(secondPDF().pdf())));
   resetPDFs(newpdf);
 
-  unsigned int ptveto(1), veto(1);
+  unsigned int ptveto(1), veto(0);
   unsigned int max(getMPIHandler()->multiplicity());
   //  cerr << "\n\n" << max << " additional scatters requested\n";
   for(unsigned int i=0; i<max; i++){
     //check how often this scattering has been regenerated
-    if(veto > 10) break;
+    if(veto > _maxtryMPI) break;
 
     //    cerr << "Try scattering " << i << " for the " << veto
     //  << " time\n";
@@ -370,7 +380,7 @@ void ShowerHandler::cascade() {
 			<< Exception::runerror;
 
     //reset veto counter
-    veto = 1;
+    veto = 0;
   }
 
   theRemDec->finalize();

@@ -91,6 +91,47 @@ struct HadronMatcher: public MatcherType {
 /** Gives a MatcherBase class based on HadronMatcher. */
 typedef Matcher<HadronMatcher> MatchHadron;
 
+/**
+ * A Matcher class which matches W bosons quarks
+ */
+struct WBosonMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef WBosonMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) {
+    return abs(pd.id())==ParticleID::Wplus;
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "WBoson"; }
+};
+
+/**
+ * Gives a MatcherBase class based on WBosonMatcher. 
+ */
+typedef Matcher<WBosonMatcher> MatchWBoson;
+
+/**
+ * A Matcher class which matches W bosons quarks
+ */
+struct ZBosonMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef ZBosonMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) {
+    return abs(pd.id())==ParticleID::Z0;
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "ZBoson"; }
+};
+
+/**
+ * Gives a MatcherBase class based on ZBosonMatcher. 
+ */
+typedef Matcher<ZBosonMatcher> MatchZBoson;
+
+
 }
 
 #endif /* Herwig_StandardMatchers_H */

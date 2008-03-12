@@ -7,8 +7,7 @@
 namespace Herwig {
 
 inline GeneralThreeBodyDecayer::GeneralThreeBodyDecayer() 
-  : _widthopt(1)
-{}
+  : _widthopt(1), _reftag(""), _reftagcc("") {}
 
 inline const vector<TBDiagram> & GeneralThreeBodyDecayer::getProcessInfo() const {
   return _diagrams;
@@ -31,8 +30,24 @@ GeneralThreeBodyDecayer::getColourFactors() const {
   return _colour;
 }
 
+inline const vector<vector<double> > & 
+GeneralThreeBodyDecayer::getLargeNcColourFactors() const {
+  return _colourLargeNC;
+}
+
 inline unsigned int GeneralThreeBodyDecayer::widthOption() const {
   return _widthopt;
 }
 
+inline const vector<unsigned int> & GeneralThreeBodyDecayer::diagramMap() const {
+  return _diagmap;
+}
+  
+inline void GeneralThreeBodyDecayer::colourFlow(unsigned int flow) const {
+  _iflow=flow;
+}
+
+inline unsigned int const & GeneralThreeBodyDecayer::colourFlow() const {
+  return _iflow;
+}
 }

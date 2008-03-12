@@ -30,7 +30,7 @@
 using namespace Herwig;
 
 void MEqq2gZ2ff::doinit() throw(InitException) {
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
   _z0=getParticleData(ThePEG::ParticleID::Z0);
   _gamma=getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
@@ -342,11 +342,11 @@ void MEqq2gZ2ff::constructVertex(tSubProPtr sub) {
   qqbarME(fin,ain,fout,aout,true);
   // get the spin info objects
   for(unsigned int ix=0;ix<4;++ix)
-    {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
+    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
+  for(unsigned int ix=0;ix<4;++ix) spin[ix]->setProductionVertex(hardvertex);
 }

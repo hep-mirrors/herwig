@@ -11,6 +11,7 @@
 
 // This is the declaration of the RootInterface class.
 #include <iostream>
+#include <map>
 
 #include "TFile.h"
 #include "TTree.h"

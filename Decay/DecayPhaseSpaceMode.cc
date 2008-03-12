@@ -370,11 +370,10 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   // find the intermediate particles
   else {
     // select the channel
-    int ichannew(selectChannel(inpart,particles));
-    for(ix=0;ix<particles.size();++ix)
-      {particles[ix]->boost(boostv);}
+    _ichannel = selectChannel(inpart,particles);
+    for(ix=0;ix<particles.size();++ix) particles[ix]->boost(boostv);
     // generate the particle vector
-    _channels[ichannew]->generateIntermediates(cc,inpart,particles);
+    _channels[_ichannel]->generateIntermediates(cc,inpart,particles);
   }
   return particles;
 }
@@ -496,7 +495,7 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
     low=_extpart[notdone[iloc]]->mass()-_extpart[notdone[iloc]]->widthLoCut();
     mlow-=low;
     mass[notdone[iloc]]=
-      _massgen[notdone[iloc]]->mass(*_extpart[notdone[iloc]],wgttemp,low,inmass-mlow);
+      _massgen[notdone[iloc]]->mass(wgttemp,*_extpart[notdone[iloc]],low,inmass-mlow);
     wgt*=wgttemp;
     mlow+=mass[notdone[iloc]];
     notdone.erase(notdone.begin()+iloc);

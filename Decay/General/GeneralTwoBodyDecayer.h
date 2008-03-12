@@ -52,6 +52,15 @@ public:
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const Particle & parent,
+			       const PDVector & children) const;
+
+  /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
    * @param parent The decaying particle

@@ -22,4 +22,5 @@ GeneralCurrentDecayer.cc \
 FFVCurrentDecayer.h FFVCurrentDecayer.icc FFVCurrentDecayer.fh \
 FFVCurrentDecayer.cc \
 FtoFFFDecayer.h FtoFFFDecayer.fh FtoFFFDecayer.icc FtoFFFDecayer.cc \
-StoSFFDecayer.h StoSFFDecayer.fh StoSFFDecayer.icc StoSFFDecayer.cc
+StoSFFDecayer.h StoSFFDecayer.fh StoSFFDecayer.icc StoSFFDecayer.cc \
+StoFFVDecayer.h StoFFVDecayer.fh StoFFVDecayer.icc StoFFVDecayer.cc

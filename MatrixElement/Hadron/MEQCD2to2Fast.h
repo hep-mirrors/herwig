@@ -12,7 +12,7 @@
 // This is the declaration of the MEQCD2to2Fast class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
@@ -35,7 +35,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEQCD2to2FastInterfaces "The interfaces"
  * defined for MEQCD2to2Fast.
  */
-class MEQCD2to2Fast: public ME2to2Base {
+class MEQCD2to2Fast: public HwME2to2Base {
 
 public:
 
@@ -71,16 +71,6 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
 
   /**
    * Add all possible diagrams with the add() function.
@@ -249,7 +239,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEQCD2to2Fast,1> {
   /** Typedef of the first base class of MEQCD2to2Fast. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

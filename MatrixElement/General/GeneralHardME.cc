@@ -20,7 +20,10 @@ using namespace Herwig;
 GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
 				 theDiagrams(0), theNDiags(0), 
 				 theColour(0), theNcf(0) , 
-				 theDebug(false) {}
+				 theDebug(false) {
+  massOption(true ,1);
+  massOption(false,1);
+}
   
 void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
 				   const vector<vector<double> > & factors,
@@ -33,6 +36,22 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   theNDiags = alldiagrams.size();
   theNcf = ncf;
   theDebug = debug;
+
+  //OffShell options
+  pair<bool, bool> offshell(make_pair(false, false));
+  if( getParticleData(theOutgoing.first)->widthGenerator() ) {
+    offshell.first = true;
+    massOption(true, 2);
+  }
+  if( getParticleData(theOutgoing.second)->widthGenerator() ) {
+    offshell.second = true;
+    massOption(false, 2);
+  }
+
+  if( offshell.first == true &&  offshell.second == true &&
+      abs(theOutgoing.first) == abs(theOutgoing.second)  )
+    rescalingOption(3);
+
 }
 
 

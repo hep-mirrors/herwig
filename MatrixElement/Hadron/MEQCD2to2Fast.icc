@@ -13,7 +13,10 @@
 
 namespace Herwig {
 
-inline MEQCD2to2Fast::MEQCD2to2Fast():_maxflavour(5),_process(0) {}
+inline MEQCD2to2Fast::MEQCD2to2Fast():_maxflavour(5),_process(0) {
+  massOption(true ,0);
+  massOption(false,0);
+}
 
 inline IBPtr MEQCD2to2Fast::clone() const {
   return new_ptr(*this);

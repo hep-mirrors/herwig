@@ -6,7 +6,7 @@ Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h \
 HerwigVersion.cc
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
-Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\""
+Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\""
 
 bin_SCRIPTS = herwig-config
 
@@ -52,8 +52,18 @@ CLEANFILES = HerwigDefaults.rpo \
 HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/Analysis.in $(top_builddir)/lib/*.so
 	./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in --exitonerror
 
-check-local: check-LHC check-LEP check-TVT check-ILC check-LHC-MSSM \
-	check-LHC-MUED check-LHC-RS
+check_BSM=
+if WANT_MSSM
+check_BSM += check-LHC-MSSM
+endif
+if WANT_UED
+check_BSM += check-LHC-MUED
+endif
+if WANT_RS
+check_BSM += check-LHC-RS
+endif
+
+check-local: check-LHC check-LEP check-TVT check-ILC $(check_BSM)
 
 link-helper-files:
 	@for i in $(HELPERFILES); do \

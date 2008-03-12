@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2qq class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -35,7 +35,7 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2qqInterfaces "The interfaces"
  * defined for MEee2gZ2qq.
  */
-class MEee2gZ2qq: public ME2to2Base {
+class MEee2gZ2qq: public HwME2to2Base {
 
 public:
 
@@ -156,7 +156,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -244,6 +244,11 @@ private:
    */
    unsigned int _maxflav;
 
+  /**
+   *  Option for the treatment of the top quark mass
+   */
+  unsigned int _massopt;
+
 };
 
 }
@@ -259,7 +264,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2gZ2qq,1> {
   /** Typedef of the first base class of MEee2gZ2qq. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -13,7 +13,10 @@
 
 namespace Herwig {
 
-  inline MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {}
+inline MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
+  massOption(true ,0);
+  massOption(false,0);
+}
 
 inline IBPtr MEPP2GammaJet::clone() const {
   return new_ptr(*this);
@@ -26,13 +29,13 @@ inline IBPtr MEPP2GammaJet::fullclone() const {
 inline void MEPP2GammaJet::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  ME2to2Base::rebind(trans);
+  HwME2to2Base::rebind(trans);
   _gluonvertex =trans.translate(_gluonvertex );
   _photonvertex=trans.translate(_photonvertex);
 }
 
 inline IVector MEPP2GammaJet::getReferences() {
-  IVector ret = ME2to2Base::getReferences();
+  IVector ret = HwME2to2Base::getReferences();
   ret.push_back(_gluonvertex);
   ret.push_back(_photonvertex);
   return ret;

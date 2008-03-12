@@ -276,6 +276,7 @@ double MRST::pdfValue(double x, Energy2 q2,
     }
   }
   output = max(output,0.);
+  assert(!isnan(output));
   return output;
 }
 
@@ -439,7 +440,7 @@ void MRST::initialize(bool reread) {
   double xxd,d1d2,cl[16],x[16],d1,d2,y[5],y1[5],y2[5],y12[5];
 
   // Set xx and qq to the logs of their values. Makes entering below easier
-  if(xx[1] == 1E-5) {
+  if(!initialized) {
     for(int n=1; n<=nx; n++) xx[n] = log10(xx[n]);
     for(int n=1; n<=nq; n++) qq[n] = log10(qq[n]);
   }
@@ -484,7 +485,7 @@ void MRST::initialize(bool reread) {
      datafile.close();
      // calculate the FORTRAN interpolation
      for(int jj=1;jj<=ntenth-1;++jj) {
-       xxb[jj] = log10(xxb[jj]/xxb[ntenth])+xxb[ntenth];
+       if(!initialized) xxb[jj] = log10(xxb[jj]/xxb[ntenth])+xxb[ntenth];
        for(int ii=1;ii<=np;++ii) {
 	 if(ii==5||ii==7) continue;
 	 for(int kk=1;kk<=nq;++kk) {
@@ -698,9 +699,12 @@ void MRST::initialize(bool reread) {
       } //m
     } //n
   } // i
-  for(int jj=1;jj<=ntenth-1;++jj) {
-    xxb[jj] = log10(xxb[jj]/xxb[ntenth])+xxb[ntenth];
+  if(!initialized) {
+    for(int jj=1;jj<=ntenth-1;++jj) {
+      xxb[jj] = log10(xxb[jj]/xxb[ntenth])+xxb[ntenth];
+    }
   }
+  initialized = true;
 }
 
 double MRST::xx[] =
@@ -731,3 +735,5 @@ double MRST::qqb[] =
 
 double MRST::n0[] =
   {0,3,4,5,9,9,9,9,9};
+
+bool MRST::initialized = false;

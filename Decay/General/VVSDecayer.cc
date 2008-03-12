@@ -55,8 +55,6 @@ double VVSDecayer::me2(bool vertex, const int , const Particle & inpart,
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
-  // make the colour connections
-  colourConnections(inpart, decay);
   // return the answer
   return output;
 }
@@ -74,7 +72,7 @@ Energy VVSDecayer::partialWidth(PMPair inpart, PMPair outa,
     Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
 					outb.second);
     Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm/
-      (8.*Constants::pi)/scale*UnitRemoval::E2;
+      (24.*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer

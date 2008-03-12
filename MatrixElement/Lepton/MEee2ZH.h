@@ -5,7 +5,7 @@
 // This is the declaration of the MEee2ZH class.
 //
 
-#include "Herwig++/MatrixElement/General/ME2toVH.h"
+#include "Herwig++/MatrixElement/MEfftoVH.h"
 #include "MEee2ZH.fh"
 
 namespace Herwig {
@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref MEee2ZHInterfaces "The interfaces"
  * defined for MEee2ZH.
  */
-class MEee2ZH: public ME2toVH {
+class MEee2ZH: public MEfftoVH {
 
 public:
 
@@ -28,7 +28,7 @@ public:
    */
   inline MEee2ZH();
 
-  /** @name Virtual functions required by the ME2toVH class. */
+  /** @name Virtual functions required by the MEfftoVH class. */
   //@{
   /**
    * Add all possible diagrams with the add() function.
@@ -91,7 +91,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2ZH,1> {
   /** Typedef of the first base class of MEee2ZH. */
-  typedef Herwig::ME2toVH NthBase;
+  typedef Herwig::MEfftoVH NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

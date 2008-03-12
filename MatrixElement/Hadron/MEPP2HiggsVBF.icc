@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEPP2HiggsVBF class.
+//
+
+namespace Herwig {
+
+  inline MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5) {}
+
+inline IBPtr MEPP2HiggsVBF::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEPP2HiggsVBF::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

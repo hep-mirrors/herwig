@@ -12,9 +12,6 @@
 // This is the declaration of the SMFFWVertex class.
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/StandardModel/CKMBase.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -107,11 +104,6 @@ private:
   SMFFWVertex & operator=(const SMFFWVertex &);
 
 private:
-
-  /**
-   * Pointer to the CKM object.
-   */
-  Ptr<CKMBase>::transient_pointer _theCKM;
 
   /**
    * Storage of the couplings.

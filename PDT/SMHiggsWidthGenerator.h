@@ -178,6 +178,11 @@ private:
   unsigned int _widthopt;
 
   /**
+   *  Number of times the width the Higgs is allowed to be off-shell
+   */
+  double _offshell;
+
+  /**
    *  Particle properties extracged at initialization
    */
   //@{

@@ -40,32 +40,31 @@ void MEPP2GammaGamma::doinit() throw(InitException) {
   // do the initialisation
   if(hwsm)
     {_photonvertex = hwsm->vertexFFP();}
-  else
-    {throw InitException() << "Wrong type of StandardModel object in "
-			   << "MEPP2GammaGamma::doinit() the Herwig++ version must be used" 
-			   << Exception::runerror;}
+  else throw InitException() << "Wrong type of StandardModel object in "
+			     << "MEPP2GammaGamma::doinit() the Herwig++"
+			     << " version must be used" 
+			     << Exception::runerror;
   // call the base class
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
 }
 
 void MEPP2GammaGamma::getDiagrams() const {
   // diagrams for q qbar to gamma gamma
   tcPDPtr p = getParticleData(ParticleID::gamma);
-  if(_process==0||_process==1)
-    {
-      for ( int i = 1; i <= 5; ++i ) {
-	tcPDPtr q = getParticleData(i);
-	tcPDPtr qb = q->CC();
-	// t channel
-	add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 1, p, 2, p, -1)));
-	// u channel
-	add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 2, p, 1, p, -2)));
-      }
+  if(_process==0||_process==1) {
+    for ( int i = 1; i <= 5; ++i ) {
+      tcPDPtr q = getParticleData(i);
+      tcPDPtr qb = q->CC();
+      // t channel
+      add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 1, p, 2, p, -1)));
+      // u channel
+      add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 2, p, 1, p, -2)));
     }
+  }
   // diagrams for g g to gamma gamma (this is garbage)
   tcPDPtr g = getParticleData(ParticleID::g);
   if(_process==0||_process==2)
-    {add(new_ptr((Tree2toNDiagram(2), g, g, 1, p, 3, p, 3, p, -3)));}
+    add(new_ptr((Tree2toNDiagram(2), g, g, 1, p, 3, p, 3, p, -3)));
 }
 
 Energy2 MEPP2GammaGamma::scale() const {
@@ -145,45 +144,41 @@ double MEPP2GammaGamma::me2() const {
   // total matrix element
   double me(0.);
   // g g to gamma gamma
-  if(mePartonData()[0]->id()==ParticleID::g)
-    {
-      VectorWaveFunction    g1in(meMomenta()[0],mePartonData()[0],incoming);
-      VectorWaveFunction    g2in(meMomenta()[1],mePartonData()[1],incoming);
-      VectorWaveFunction   p1out(meMomenta()[2],mePartonData()[2],outgoing);
-      VectorWaveFunction   p2out(meMomenta()[3],mePartonData()[3],outgoing);
-      vector<VectorWaveFunction> g1,g2,p1,p2;
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  g1in.reset(2*ix) ;g1.push_back( g1in);
-	  g2in.reset(2*ix) ;g2.push_back( g2in);
-	  p1out.reset(2*ix);p1.push_back(p1out);
-	  p2out.reset(2*ix);p2.push_back(p2out);
-	}
-      // calculate the matrix element
-      me = ggME(g1,g2,p1,p2,false);
+  if(mePartonData()[0]->id()==ParticleID::g) {
+    VectorWaveFunction    g1in(meMomenta()[0],mePartonData()[0],incoming);
+    VectorWaveFunction    g2in(meMomenta()[1],mePartonData()[1],incoming);
+    VectorWaveFunction   p1out(meMomenta()[2],mePartonData()[2],outgoing);
+    VectorWaveFunction   p2out(meMomenta()[3],mePartonData()[3],outgoing);
+    vector<VectorWaveFunction> g1,g2,p1,p2;
+    for(unsigned int ix=0;ix<2;++ix) {
+      g1in.reset(2*ix) ;g1.push_back( g1in);
+      g2in.reset(2*ix) ;g2.push_back( g2in);
+      p1out.reset(2*ix);p1.push_back(p1out);
+      p2out.reset(2*ix);p2.push_back(p2out);
     }
+    // calculate the matrix element
+    me = ggME(g1,g2,p1,p2,false);
+  }
   // q qbar to gamma gamma
-  else
-    {
-      unsigned int iq(1),iqb(0);
-      if(mePartonData()[0]->id()>0){iq=0;iqb=1;}
-      SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
-      SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
-      VectorWaveFunction   p1out(meMomenta()[ 2 ],mePartonData()[ 2 ],outgoing);
-      VectorWaveFunction   p2out(meMomenta()[ 3 ],mePartonData()[ 3 ],outgoing);
-      vector<SpinorWaveFunction> fin;
-      vector<SpinorBarWaveFunction>  ain;
-      vector<VectorWaveFunction> p1,p2;
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)    ;fin.push_back( qin );
-	  qbin.reset(ix)   ;ain.push_back( qbin);
-	  p1out.reset(2*ix); p1.push_back(p1out);
-	  p2out.reset(2*ix); p2.push_back(p2out);
-	}
-      // calculate the matrix element
-      me= qqbarME(fin,ain,p1,p2,false);
+  else {
+    unsigned int iq(1),iqb(0);
+    if(mePartonData()[0]->id()>0){iq=0;iqb=1;}
+    SpinorWaveFunction    qin (meMomenta()[iq ],mePartonData()[iq ],incoming);
+    SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
+    VectorWaveFunction   p1out(meMomenta()[ 2 ],mePartonData()[ 2 ],outgoing);
+    VectorWaveFunction   p2out(meMomenta()[ 3 ],mePartonData()[ 3 ],outgoing);
+    vector<SpinorWaveFunction> fin;
+    vector<SpinorBarWaveFunction>  ain;
+    vector<VectorWaveFunction> p1,p2;
+    for(unsigned int ix=0;ix<2;++ix) {
+      qin.reset(ix)    ;fin.push_back( qin );
+      qbin.reset(ix)   ;ain.push_back( qbin);
+      p1out.reset(2*ix); p1.push_back(p1out);
+      p2out.reset(2*ix); p2.push_back(p2out);
     }
+    // calculate the matrix element
+    me= qqbarME(fin,ain,p1,p2,false);
+  }
   return me;
 }
 
@@ -221,9 +216,9 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
 	  diag[1] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],p1[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
-	  diag1 +=real(diag[0]*conj(diag[0]));
-	  diag2 +=real(diag[1]*conj(diag[1]));
-	  me    +=real(diag[2]*conj(diag[2]));
+	  diag1 += norm(diag[0]);
+	  diag2 += norm(diag[1]);
+	  me    += norm(diag[2]);
 	  // matrix element
 	  if(calc) newme(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
 	}
@@ -250,8 +245,7 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
 			     vector<VectorWaveFunction>    &,
 			     vector<VectorWaveFunction>    &,
 			     vector<VectorWaveFunction>    &,
-			     bool calc) const
-{
+			     bool calc) const {
   // we probably need some basis rotation here ?????
   // get the scales
   Energy2 s(sHat()),u(uHat()),t(tHat());
@@ -322,8 +316,7 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
   return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(0.*GeV2));
 }
 
-void MEPP2GammaGamma::constructVertex(tSubProPtr sub)
-{
+void MEPP2GammaGamma::constructVertex(tSubProPtr sub) {
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -333,34 +326,33 @@ void MEPP2GammaGamma::constructVertex(tSubProPtr sub)
   unsigned int order[4]={0,1,2,3};
   // identify the process and calculate matrix element
   vector<VectorWaveFunction> g1,g2,p1,p2;
-  if(hard[0]->id()==ParticleID::g)
-     {
-       VectorWaveFunction   (g1,hard[order[0]],incoming,false,true,true);
-       VectorWaveFunction   (g2,hard[order[1]],incoming,false,true,true);
-       VectorWaveFunction   (p1,hard[order[2]],outgoing,true ,true,true);
-       VectorWaveFunction   (p2,hard[order[3]],outgoing,true ,true,true);
-       g1[1]=g1[2];g2[1]=g2[2];p1[1]=p1[2];p2[1]=p2[2];
-       ggME(g1,g2,p1,p2,true);
-     }
-  else
-    {
-      if(hard[order[0]]->id()<0){order[0]=1;order[1]=0;}
-      vector<SpinorWaveFunction> q;
-      vector<SpinorBarWaveFunction>  qb;
-       SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
-       SpinorBarWaveFunction(qb,hard[order[1]],incoming,false,true);
-       VectorWaveFunction   (p1,hard[order[2]],outgoing,true ,true,true);
-       VectorWaveFunction   (p2,hard[order[3]],outgoing,true ,true,true);
-       p1[1]=p1[2];p2[1]=p2[2];
-       qqbarME(q,qb,p1,p2,true);
-    }
+  if(hard[0]->id()==ParticleID::g) {
+    VectorWaveFunction   (g1,hard[order[0]],incoming,false,true,true);
+    VectorWaveFunction   (g2,hard[order[1]],incoming,false,true,true);
+    VectorWaveFunction   (p1,hard[order[2]],outgoing,true ,true,true);
+    VectorWaveFunction   (p2,hard[order[3]],outgoing,true ,true,true);
+    g1[1]=g1[2];g2[1]=g2[2];p1[1]=p1[2];p2[1]=p2[2];
+    ggME(g1,g2,p1,p2,true);
+  }
+  else {
+    if(hard[order[0]]->id()<0) swap(order[0],order[1]);
+    vector<SpinorWaveFunction> q;
+    vector<SpinorBarWaveFunction>  qb;
+    SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
+    SpinorBarWaveFunction(qb,hard[order[1]],incoming,false,true);
+    VectorWaveFunction   (p1,hard[order[2]],outgoing,true ,true,true);
+    VectorWaveFunction   (p2,hard[order[3]],outgoing,true ,true,true);
+    p1[1]=p1[2];p2[1]=p2[2];
+    qqbarME(q,qb,p1,p2,true);
+  }
   // get the spin info objects
   for(unsigned int ix=0;ix<4;++ix)
-    {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
+    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(_me);
   // set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
+  for(unsigned int ix=0;ix<4;++ix)
+    spin[ix]->setProductionVertex(hardvertex);
 }

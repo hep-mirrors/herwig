@@ -48,7 +48,12 @@ ClassDescription<ModelGenerator> ModelGenerator::initModelGenerator;
 void ModelGenerator::Init() {
 
   static ClassDocumentation<ModelGenerator> documentation
-    ("There is no documentation for the ModelGenerator class");
+    ("This class controls the the use of BSM physics.",
+     "BSM physics was produced using the algorithm of "
+     "\\cite{Gigg2007:cr}",
+     "\\bibitem{Gigg:2007cr} M.~Gigg and P.~Richardson, \n"
+     "Eur.\\ Phys.\\ J.\\  C {\\bf 51} (2007) 989.\n"
+     "%%CITATION = EPHJA,C51,989;%%");
   
   static Reference<ModelGenerator,Herwig::HardProcessConstructor> 
     interfaceHardProcessConstructor
@@ -152,16 +157,7 @@ void ModelGenerator::Init() {
 
 void ModelGenerator::doinit() throw(InitException) {
   Interfaced::doinit();
-  if(_theHPConstructor) {
-    _theHPConstructor->init();
-    _theHPConstructor->constructDiagrams();
-  }
-  if(_theRPConstructor) {
-    _theRPConstructor->init();
-    _theRPConstructor->constructResonances();
-  }
-  if( _theParticles.empty() ) return;
-
+  useMe();
   //create mass and width generators for the requested particles
   PDVector::iterator pit, pend;
   if( _theOffsel == 0 ) {
@@ -191,6 +187,7 @@ void ModelGenerator::doinit() throw(InitException) {
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
     parent->touch();
+    parent->reset();
     parent->update();
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
@@ -207,22 +204,33 @@ void ModelGenerator::doinit() throw(InitException) {
     }
     if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
+  //Now construct hard processes given that we know which
+  //objects have running widths
+  if(_theHPConstructor) {
+    _theHPConstructor->init();
+    _theHPConstructor->constructDiagrams();
+  }
+  if(_theRPConstructor) {
+    _theRPConstructor->init();
+    _theRPConstructor->constructResonances();
+  }
+
 }
 
 void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
   ofs << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
       << parent->mass()/GeV << "  Total Width (GeV): " 
       << parent->width()/GeV << endl;
-  ofs << std::left << std::setw(48) << '#' << "Partial Width/GeV\tBR\n"; 
+  ofs << std::left << std::setw(40) << '#' 
+      << std::left << std::setw(20) << "Partial Width/GeV"
+      << "BR\n"; 
   Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
   Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
   for(; dit != dend; ++dit)
-    ofs << std::setw(48) << (*dit).second->tag() 
-	<< (*dit).second->brat()*parent->width()/GeV << "\t"
-	<< (*dit).second->brat() 
-	<< '\n';
+    ofs << std::left << std::setw(40) << (*dit).second->tag() 
+	<< std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
+	<< (*dit).second->brat() << '\n';
   ofs << "#\n#";
-  
 }
 
 void ModelGenerator::createWidthGenerator(tPDPtr p) {
@@ -240,6 +248,9 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   //set the generator interfaces in the ParticleData object
   generator()->preinitInterface(p, "Mass_generator","set", mn);
   generator()->preinitInterface(p, "Width_generator","set", wn);
+  //allow the branching fraction of this particle type to vary
+  p->variableRatio(true);
+  if( p->CC() ) p->CC()->variableRatio(true);
   
   //initialize the generators
   generator()->preinitInterface(mgen, "Initialize", "set", "Yes");

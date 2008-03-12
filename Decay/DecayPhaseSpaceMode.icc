@@ -140,4 +140,7 @@ inline void DecayPhaseSpaceMode::setPartialWidth(int in) {
   _partial=in;
 }
 
+inline unsigned int  DecayPhaseSpaceMode::selectedChannel() const {
+  return _ichannel;
+}
 }

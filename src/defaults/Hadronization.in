@@ -54,26 +54,26 @@ set ClusterDecayer:HadronSelector HadronSelector
 set ColourReconnector:ColourReconnection No
 
 # Clustering parameters for light quarks
-set ClusterFissioner:ClMaxLight  3.1*GeV
+set ClusterFissioner:ClMaxLight  3.15*GeV
 set ClusterFissioner:ClPowLight  2.0
-set ClusterFissioner:PSplitLight 1.27
+set ClusterFissioner:PSplitLight 1.20
 set ClusterDecayer:ClDirLight 1
 set ClusterDecayer:ClSmrLight 0.78
 
 # Clustering parameters for b-quarks
 set ClusterFissioner:ClMaxBottom  3.1*GeV
-set ClusterFissioner:ClPowBottom  1.15
+set ClusterFissioner:ClPowBottom  1.18
 set ClusterFissioner:PSplitBottom 1.00
 set ClusterDecayer:ClDirBottom 1
-set ClusterDecayer:ClSmrBottom 0.78
+set ClusterDecayer:ClSmrBottom 0.10
 set LightClusterDecayer:SingleHadronLimitBottom 0.16
 
 # Clustering parameters for c-quarks
-set ClusterFissioner:ClMaxCharm  3.1*GeV
+set ClusterFissioner:ClMaxCharm  3.00*GeV
 set ClusterFissioner:ClPowCharm  1.52
-set ClusterFissioner:PSplitCharm 1.05
+set ClusterFissioner:PSplitCharm 1.18
 set ClusterDecayer:ClDirCharm 1
-set ClusterDecayer:ClSmrCharm 0.45
+set ClusterDecayer:ClSmrCharm 0.26
 set LightClusterDecayer:SingleHadronLimitCharm 0.0
 
 # Clustering parameters for exotic quarks
@@ -88,10 +88,10 @@ set LightClusterDecayer:SingleHadronLimitExotic 0.1
 # 
 set HadronSelector:PwtDquark  1.0
 set HadronSelector:PwtUquark  1.0
-set HadronSelector:PwtSquark  0.7
+set HadronSelector:PwtSquark  0.68
 set HadronSelector:PwtCquark  1.0
 set HadronSelector:PwtBquark  1.0
-set HadronSelector:PwtDIquark 0.54
-set HadronSelector:SngWt      1.0
-set HadronSelector:DecWt      0.64
+set HadronSelector:PwtDIquark 0.52
+set HadronSelector:SngWt      0.96
+set HadronSelector:DecWt      0.61
 set HadronSelector:Mode 1

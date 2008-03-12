@@ -48,8 +48,12 @@ double VVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   vector<VectorWaveFunction> inwave,vec1,vec2;
   VectorWaveFunction(inwave,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);
-  VectorWaveFunction(vec1,decay[0],outgoing,true,false,vertex);
-  VectorWaveFunction(vec2,decay[1],outgoing,true,false,vertex);
+  bool massless[2];
+  for(unsigned int ix=0;ix<2;++ix) 
+    massless[ix] = (decay[ix]->id()==ParticleID::gamma ||
+		    decay[ix]->id()==ParticleID::g);
+  VectorWaveFunction(vec1,decay[0],outgoing,true,massless[0],vertex);
+  VectorWaveFunction(vec2,decay[1],outgoing,true,massless[1],vertex);
   Energy2 scale(inpart.mass()*inpart.mass());
   DecayMatrixElement newme(PDT::Spin1,PDT::Spin1,PDT::Spin1);
   unsigned int iv1,iv2,iv3;
@@ -66,8 +70,6 @@ double VVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
-  // make the colour connections
-  colourConnections(inpart, decay);
   // return the answer
   return output;
 }
@@ -86,7 +88,7 @@ Energy VVVDecayer::partialWidth(PMPair inpart, PMPair outa,
       /4./mu1sq/mu2sq;
     Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
 					outb.second);
-    Energy pWidth = norm(_perturbativeVertex->getNorm())*me2*pcm/8./Constants::pi;
+    Energy pWidth = norm(_perturbativeVertex->getNorm())*me2*pcm/24./Constants::pi;
     // colour factor
     pWidth *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer

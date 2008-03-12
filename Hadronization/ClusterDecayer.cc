@@ -144,7 +144,7 @@ static Parameter<ClusterDecayer,double>
     (interfaceOnShell,
      "Yes",
      "Produce the hadrons on shell",
-     false);
+     true);
   static SwitchOption interfaceOnShellOffShell
     (interfaceOnShell,
      "No",
@@ -326,7 +326,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
       // calculate rotation to z axis
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(uSmear_v3.z())));
-      if(uSmear_v3.perp2()/uSmear_v3.z()>1e-10)
+      if(abs(uSmear_v3.perp2()/uSmear_v3.z())>1e-10)
 	rot.setRotate(-acos(uSmear_v3.z()),
 		      Axis(-uSmear_v3.y()/sinth,uSmear_v3.x()/sinth,0.));
       // + random azimuthal rotation

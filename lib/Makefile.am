@@ -16,24 +16,23 @@ $(top_builddir)/Utilities/libHwUtils.la \
 $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
+$(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(THEPEGLIB) -ldl
 
 if WANT_LOOPTOOLS
 Herwig_la_LIBADD += \
-$(top_builddir)/Looptools/libHwLooptools.la \
-$(top_builddir)/Looptools/libHwLooptoolsHelper.la
+$(top_builddir)/Looptools/libHwLooptoolsXFC.la ## $(top_builddir)/Looptools/libHwLooptoolsCFC.la
 Herwig_la_LDFLAGS += $(FLIBS)
 endif
 
-all-local: done-all-links
+all-local: do-links
 
-done-all-links: | Herwig.la
-	if test ! -L Herwig++ ; then $(LN_S) . Herwig++ ; fi
-	find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
--not -name 'lib*' -not -path '$(top_builddir)/lib/*' -exec $(LN_S) \{\} \;
-	$(LN_S) .libs/Herwig.so .libs/Herwig.so.* .
-	echo "stamp" > done-all-links
+do-links: | Herwig.la
+	@if test ! -L Herwig++ ; then $(LN_S) . Herwig++ ; fi
+	@find $(top_builddir) \( -name '*.so.*' -or -name '*.so' \) \
+-not -name 'lib*' -not -path '$(top_builddir)/lib/*' -exec $(LN_S) -f \{\} \;
+	@$(LN_S) -f .libs/Herwig.so .libs/Herwig.so.* .
 
 clean-local:
-	rm -f *.so *.so.* done-all-links
+	rm -f *.so *.so.*

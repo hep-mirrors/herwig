@@ -131,12 +131,14 @@ public:
    * Purely virtual method which should return the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z         The energy fraction.
+   * @param ids The PDG codes for the particles in the splitting.
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    *                  
    */
-  virtual double integOverP(const double z, unsigned int PDFfactor=0) const = 0; 
+  virtual double integOverP(const double z, const IdList & ids, 
+			    unsigned int PDFfactor=0) const = 0; 
 
   /**
    * Purely virtual method which should return the inverse of the 
@@ -144,11 +146,13 @@ public:
    * overestimated splitting function, \f$P_{\rm over}\f$ which is used to
    * generate the value of \f$z\f$.
    * @param r Value of the splitting function to be inverted
+   * @param ids The PDG codes for the particles in the splitting.
    * @param PDFfactor Which additional factor to include for the PDF
    *                  0 is no additional factor,
    *                  1 is \f$1/z\f$, 2 is \f$1/(1-z)\f$ and 3 is \f$1/z/(1-z)\f$
    */
-  virtual double invIntegOverP(const double r, unsigned int PDFfactor=0) const = 0;
+  virtual double invIntegOverP(const double r, const IdList & ids, 
+			       unsigned int PDFfactor=0) const = 0;
   //@}
 
   /**

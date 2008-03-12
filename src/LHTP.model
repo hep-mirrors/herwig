@@ -1,0 +1,216 @@
+##################################################
+# Common setup for Little Higgs models with T-parity
+#
+#
+# This file does not contain anything that 
+# users need to touch. User settings are in 
+# ???-LHTP.in
+#
+###################################################
+#
+#  Create particle content
+#
+###################################################
+cd /Herwig/Particles
+#
+# using PDG number for excited gauge bosons A_H=Z' Z_H=Z'' W_H=W'
+#
+create ThePEG::ParticleData A_H
+setup A_H 32 A_H 500.0 14.548480 145.484840 0.0 0 0 3 0
+defaultparticle A_H 
+create ThePEG::ParticleData Z_H 
+setup Z_H 33 Z_H 900.0 0.0 0.0 0.0 0 0 3 0
+defaultparticle Z_H 
+create ThePEG::ParticleData W_H+ 
+setup W_H+ 34 W_H+ 500.0 16.67080 166.708010 0.0 3 0 3 0
+defaultparticle W_H+ 
+create ThePEG::ParticleData W_H- 
+setup W_H- -34 W_H- 500.0 16.67080 166.708010 0.0 -3 0 3 0
+defaultparticle W_H- 
+makeanti W_H+ W_H- 
+#
+# extra top quark using 4th generation number
+#
+create ThePEG::ParticleData TpT 
+setup TpT 8 TpT 1000.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle TpT 
+create ThePEG::ParticleData TpTbar 
+setup TpTbar -8 TpTbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle TpTbar 
+makeanti TpT TpTbar  
+#
+# triplet Higgs bosons (Phi0,PhiP,Phi+/- using numbers
+#                       for doublet + Phi++/-- 38)
+create ThePEG::ParticleData Phi0
+setup Phi0 35 Phi0 1000.0 0. 0. 0.0 0 0 1 0
+defaultparticle Phi0
+create ThePEG::ParticleData PhiP
+setup PhiP 36 PhiP 1000.0 0. 0. 0.0 0 0 1 0
+defaultparticle PhiP
+create ThePEG::ParticleData Phi+
+setup Phi+ 37 Phi+ 1000.0 0. 0. 0.0 3 0 1 0
+defaultparticle Phi+
+create ThePEG::ParticleData Phi-
+setup Phi- -37 Phi- 1000.0 0. 0. 0.0 -3 0 1 0
+defaultparticle Phi-
+makeanti Phi+ Phi-
+create ThePEG::ParticleData Phi++
+setup Phi++ 38 Phi++ 1000.0 0. 0. 0.0 +6 0 1 0
+defaultparticle Phi++
+create ThePEG::ParticleData Phi--
+setup Phi-- -38 Phi-- 1000.0 0. 0. 0.0 -6 0 1 0
+defaultparticle Phi--
+makeanti Phi++ Phi--
+#
+#  T-odd particles using numbers for excited particles
+#
+create ThePEG::ParticleData dmT 
+setup dmT 4000001 dmT 1000.0 0.0 0.0 0.0 -1 3 2 0
+defaultparticle dmT 
+create ThePEG::ParticleData dmTbar 
+setup dmTbar -4000001 dmTbar 1000.0 0.0 0.0 0.0 1 -3 2 0
+defaultparticle dmTbar 
+makeanti dmT dmTbar  
+create ThePEG::ParticleData umT 
+setup umT 4000002 umT 1000.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle umT 
+create ThePEG::ParticleData umTbar 
+setup umTbar -4000002 umTbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle umTbar 
+makeanti umT umTbar  
+create ThePEG::ParticleData smT 
+setup smT 4000003 smT 1000.0 0.0 0.0 0.0 -1 3 2 0
+defaultparticle smT 
+create ThePEG::ParticleData smTbar 
+setup smTbar -4000003 smTbar 1000.0 0.0 0.0 0.0 1 -3 2 0
+defaultparticle smTbar 
+makeanti smT smTbar  
+create ThePEG::ParticleData cmT 
+setup cmT 4000004 cmT 1000.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle cmT 
+create ThePEG::ParticleData cmTbar 
+setup cmTbar -4000004 cmTbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle cmTbar 
+makeanti cmT cmTbar  
+create ThePEG::ParticleData bmT 
+setup bmT 4000005 bmT 1000.0 0.0 0.0 0.0 -1 3 2 0
+defaultparticle bmT 
+create ThePEG::ParticleData bmTbar 
+setup bmTbar -4000005 bmTbar 1000.0 0.0 0.0 0.0 1 -3 2 0
+defaultparticle bmTbar 
+makeanti bmT bmTbar  
+create ThePEG::ParticleData tmT 
+setup tmT 4000006 tmT 1000.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle tmT 
+create ThePEG::ParticleData tmTbar 
+setup tmTbar -4000006 tmTbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle tmTbar 
+makeanti tmT tmTbar  
+create ThePEG::ParticleData TmT 
+setup TmT 4000008 TmT 1000.0 0.0 0.0 0.0 2 3 2 0
+defaultparticle TmT 
+create ThePEG::ParticleData TmTbar 
+setup TmTbar -4000008 TmTbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
+defaultparticle TmTbar 
+makeanti TmT TmTbar  
+create ThePEG::ParticleData emT-
+setup emT- 4000011 emT- 1000. 0.  0 0 -3 0 2 1 
+defaultparticle emT-
+create ThePEG::ParticleData emT+
+setup emT+ -4000011 emT+ 1000. 0.  0 0  3 0 2 1 
+defaultparticle emT+
+makeanti emT+ emT-
+create ThePEG::ParticleData muemT-
+setup muemT- 4000013 muemT- 1000. 0. 0 0 -3 0 2 1 
+defaultparticle muemT-
+create ThePEG::ParticleData muemT+
+setup muemT+ -4000013 muemT+ 1000. 0. 0 0 3 0 2 1 
+defaultparticle muemT+
+makeanti muemT+ muemT-
+create ThePEG::ParticleData taumT+
+setup taumT+ -4000015 taumT+ 1000. 0. 0 0 3 0 2 0 
+defaultparticle taumT+
+create ThePEG::ParticleData taumT-
+setup taumT- 4000015 taumT- 1000. 0. 0 0 -3 0 2 0 
+defaultparticle taumT-
+makeanti taumT- taumT+
+create ThePEG::ParticleData nu_emT
+setup nu_emT 4000012 nu_emT 0 0.  0 0 0 0 2 1 
+defaultparticle nu_emT
+create ThePEG::ParticleData nu_emTbar
+setup nu_emTbar -4000012 nu_emTbar 0 0.  0 0 0 0 2 1 
+defaultparticle nu_emTbar
+makeanti nu_emTbar nu_emT
+create ThePEG::ParticleData nu_mumT
+setup nu_mumT 4000014 nu_mumT 0 0.  0 0 0 0 2 1 
+defaultparticle nu_mumT
+create ThePEG::ParticleData nu_mumTbar
+setup nu_mumTbar -4000014 nu_mumTbar 0 0.  0 0 0 0 2 1 
+defaultparticle nu_mumTbar
+makeanti nu_mumTbar nu_mumT
+create ThePEG::ParticleData nu_taumT
+setup nu_taumT 4000016 nu_taumT 0 0.  0 0 0 0 2 1 
+defaultparticle nu_taumT
+create ThePEG::ParticleData nu_taumTbar
+setup nu_taumTbar -4000016 nu_taubar 0 0.  0 0 0 0 2 1 
+defaultparticle nu_taumTbar
+makeanti nu_taumTbar nu_taumT
+###################################################
+#
+#  Main directory and model object
+#
+###################################################
+
+mkdir /Herwig/NewPhysics/LHTP
+cd /Herwig/NewPhysics/LHTP
+
+create Herwig::LHTPModel Model HwLHTPModel.so
+
+# SM couplings
+set Model:QCD/RunningAlphaS /Herwig/AlphaS
+set Model:EW/RunningAlphaEM /Herwig/AlphaEM
+set Model:EW/CKM /Herwig/CKM
+set Model:RunningMass /Herwig/RunningMass
+###################################################
+#
+#  Vertices
+#
+###################################################
+mkdir /Herwig/Vertices/LHTP
+cd /Herwig/Vertices/LHTP
+create Herwig::LHTPFFGVertex FFGVertex
+create Herwig::LHTPFFPVertex FFPVertex
+create Herwig::LHTPFFWVertex FFWVertex
+
+
+cd /Herwig/NewPhysics/LHTP
+# SM vertices
+set Model:Vertex/FFG /Herwig/Vertices/LHTP/FFGVertex
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+
+
+
+
+
+set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFW /Herwig/Vertices/LHTP/FFWVertex
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
+set Model:Vertex/FFP /Herwig/Vertices/LHTP/FFPVertex
+set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
+set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
+set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+
+cd /Herwig/NewPhysics
+insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
+insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
+
+# Set up the model framework
+set LHTP/Model:ModelGenerator NewModel
+
+cd /Herwig/Generators
+# Choose Little Higgs over SM
+set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
+set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/LHTP/Model
