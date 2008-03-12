@@ -275,8 +275,6 @@ double StoSFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
       ptotal-=pflows[ix];
     }
   }
-  // make the colour connections
-  colourConnections(inpart, decay);
   // return the matrix element squared
   return me2;
 }

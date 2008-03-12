@@ -29,8 +29,6 @@ using ThePEG::Helicity::outgoing;
 
 void MEff2vv::doinit() throw(InitException) {
   GeneralHardME::doinit();
-  Energy mC = getParticleData(getOutgoing().first)->mass();
-  Energy mD = getParticleData(getOutgoing().second)->mass();
   HPCount ndiags(numberOfDiags());
   theFerm.resize(ndiags); theVec.resize(ndiags);
   theTen.resize(ndiags);
@@ -141,7 +139,7 @@ MEff2vv::ff2vvME(const SpinorVector & sp, const SpinorBarVector sbar,
 						       interS);
 	      }
 	      else if(current.intermediate->iSpin() == PDT::Spin1) {
-		interV = theVec[ix].first->evaluate(q2, 5, offshell, sp[if1], 
+		interV = theVec[ix].first->evaluate(q2, 1, offshell, sp[if1], 
 						    sbar[if2]);
  		diag[ix] = theVec[ix].second->evaluate(q2, v1[vh1], 
 						       v2[vh2], interV);
@@ -268,7 +266,10 @@ void MEff2vv::constructVertex(tSubProPtr sub) {
   ext[1] = sub->incoming().second;
   ext[2] = sub->outgoing()[0];
   ext[3] = sub->outgoing()[1];
-  if( ext[0]->id() < ext[1]->id() ) swap(ext[0], ext[1]);
+  
+  //Ensure correct particle ordering
+  if( ext[0]->id() != getIncoming().first ) swap(ext[0], ext[1]);
+  if( ext[2]->id() != getOutgoing().first ) swap(ext[2], ext[3]);
 
   vector<SpinorWaveFunction> sp;
   SpinorWaveFunction(sp, ext[0], incoming, false, true);

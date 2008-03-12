@@ -78,6 +78,8 @@ void FtoFFFDecayer::doinit() throw(InitException) {
 double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 			   const ParticleVector & decay) const {
   const vector<vector<double> > cfactors(getColourFactors());
+  const vector<vector<double> > nfactors(getLargeNcColourFactors());
+  const size_t ncf(numberOfFlows());
   Energy2 scale(sqr(inpart.mass()));
   // spin density matrix
   RhoDMatrix rhoin(PDT::Spin1Half);
@@ -85,6 +87,7 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
   // get the wavefunctions for all the particles
   pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > inwave;
   pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outwave[3];
+
   // incoming particle
   SpinorWaveFunction(inwave.first,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     Helicity::incoming,true,vertex);
@@ -117,10 +120,11 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
     }
   }
   bool ferm = inpart.id()>0; 
-  const size_t ncf(numberOfFlows());
-  vector<Complex> flows(ncf, Complex(0.)); 
+  vector<Complex> flows(ncf, Complex(0.)),largeflows(ncf, Complex(0.)); 
   static const unsigned int out2[3]={1,0,0},out3[3]={2,2,1};
   vector<DecayMatrixElement> mes(ncf,DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+							PDT::Spin1Half,PDT::Spin1Half));
+  vector<DecayMatrixElement> mel(ncf,DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
 							PDT::Spin1Half,PDT::Spin1Half));
   unsigned int ihel[4];
   for(ihel[0] = 0; ihel[0] < 2; ++ihel[0]) {
@@ -128,10 +132,14 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
       for(ihel[2] = 0; ihel[2] < 2; ++ihel[2]) {
 	for(ihel[3] = 0; ihel[3] < 2; ++ihel[3]) {
 	  flows = vector<Complex>(ncf, Complex(0.));
-	  int nchan=-1;
+	  largeflows = vector<Complex>(ncf, Complex(0.));
 	  unsigned int idiag=0;
 	  for(vector<TBDiagram>::const_iterator dit=getProcessInfo().begin();
 	      dit!=getProcessInfo().end();++dit) {
+	    if(ichan>=0&&diagramMap()[ichan]!=idiag) {
+	      ++idiag;
+	      continue;
+	    }
 	    // the sign from normal ordering
 	    double sign = ferm ? 1. : -1;
 	    // outgoing wavefunction and NO sign
@@ -162,9 +170,6 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	      w2 = outwave[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
 	      w3 = outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
-	    // channels if selecting
-	    ++nchan;
-	    if(ichan>0&&ichan!=nchan) continue;
 	    tcPDPtr offshell = dit->intermediate;
 	    Complex diag;
 	    // intermediate scalar
@@ -192,43 +197,69 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    // apply NO sign
 	    diag *= sign;
 	    // matrix element for the different colour flows
-	    for(unsigned iy = 0; iy < dit->colourFlow.size(); ++iy) {
-	      flows[dit->colourFlow[iy].first - 1] += 
-		dit->colourFlow[iy].second * diag;
+	    if(ichan<0) {
+	      for(unsigned iy = 0; iy < dit->colourFlow.size(); ++iy) {
+		flows[dit->colourFlow[iy].first - 1] += 
+		  dit->colourFlow[iy].second * diag;
+	      }
+	      for(unsigned iy = 0; iy < dit->largeNcColourFlow.size(); ++iy) {
+		largeflows[dit->largeNcColourFlow[iy].first - 1] += 
+		  dit->largeNcColourFlow[iy].second * diag;
+	      }
+	    }
+	    else {
+	      for(unsigned iy = 0; iy < dit->colourFlow.size(); ++iy) {
+		if(dit->colourFlow[iy].first - 1!=colourFlow()) continue;
+		flows[dit->colourFlow[iy].first - 1] += 
+		  dit->colourFlow[iy].second * diag;
+	      }
+	      for(unsigned iy = 0; iy < dit->largeNcColourFlow.size(); ++iy) {
+		if(dit->colourFlow[iy].first - 1!=colourFlow()) continue;
+		largeflows[dit->largeNcColourFlow[iy].first - 1] += 
+		  dit->largeNcColourFlow[iy].second * diag;
+	      }
 	    }
 	    ++idiag;
 	  }
 	  // now add the flows to the me2 with appropriate colour factors
 	  for(unsigned int ix = 0; ix < ncf; ++ix) {
-	    mes[ix](ihel[0],ihel[1],ihel[2],ihel[3]) = flows[ix];
+	    mes[ix](ihel[0],ihel[1],ihel[2],ihel[3]) =      flows[ix];
+	    mel[ix](ihel[0],ihel[1],ihel[2],ihel[3]) = largeflows[ix];
 	  }
 	}
       }
     }
   }
-  vector<double> pflows(ncf,0.);
   double me2(0.);
-  for(unsigned int ix = 0; ix < ncf; ++ix) {
-    for(unsigned int iy = 0; iy < ncf; ++ iy) {
-      double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rhoin)).real();
-      if(ix==iy) pflows[ix] += con;
-      me2 += con;
-    }
-  }
-  // select the matrix element according to the colour flow
-  if(vertex) {
-    double ptotal(std::accumulate(pflows.begin(),pflows.end(),0.));
-    ptotal *=UseRandom::rnd();
-    for(unsigned int ix=0;ix<pflows.size();++ix) {
-      if(ptotal<=pflows[ix]) {
-	ME(mes[ix]);
-	break;
+  if(ichan<0) {
+    vector<double> pflows(ncf,0.);
+    for(unsigned int ix = 0; ix < ncf; ++ix) {
+      for(unsigned int iy = 0; iy < ncf; ++ iy) {
+	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rhoin)).real();
+	me2 += con;
+	if(ix==iy) {
+	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],rhoin)).real();
+	  pflows[ix] += con;
+	}
       }
-      ptotal-=pflows[ix];
+    }
+    if(vertex) {
+      double ptotal(std::accumulate(pflows.begin(),pflows.end(),0.));
+      ptotal *=UseRandom::rnd();
+      for(unsigned int ix=0;ix<pflows.size();++ix) {
+	if(ptotal<=pflows[ix]) {
+	  colourFlow(ix);
+	  ME(mes[ix]);
+	  break;
+	}
+	ptotal-=pflows[ix];
+      }
     }
   }
-  // make the colour connections
-  colourConnections(inpart, decay);
+  else {
+    unsigned int iflow = colourFlow();
+    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],rhoin)).real();
+  }
   // return the matrix element squared
   return me2;
 }

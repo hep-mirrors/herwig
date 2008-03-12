@@ -147,6 +147,11 @@ public:
    */
   inline void setWeights(const vector<double> & in) const;
 
+  /**
+   *  Access to the selected channel
+   */
+  inline unsigned int selectedChannel() const;
+
 protected:
 
   /** @name Set-up, Initialization and Access Members */
@@ -384,6 +389,11 @@ private:
    *  The mass generators for the outgoing particles.
    */
   vector<cGenericMassGeneratorPtr> _massgen;
+
+  /**
+   *  The selected channel
+   */
+  mutable unsigned int _ichannel;
 };
 
   /**

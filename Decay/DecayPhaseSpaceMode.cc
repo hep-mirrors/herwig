@@ -370,11 +370,10 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   // find the intermediate particles
   else {
     // select the channel
-    int ichannew(selectChannel(inpart,particles));
-    for(ix=0;ix<particles.size();++ix)
-      {particles[ix]->boost(boostv);}
+    _ichannel = selectChannel(inpart,particles);
+    for(ix=0;ix<particles.size();++ix) particles[ix]->boost(boostv);
     // generate the particle vector
-    _channels[ichannew]->generateIntermediates(cc,inpart,particles);
+    _channels[_ichannel]->generateIntermediates(cc,inpart,particles);
   }
   return particles;
 }

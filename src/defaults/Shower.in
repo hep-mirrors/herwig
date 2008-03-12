@@ -50,7 +50,7 @@ set Evolver:SplittingGenerator SplittingGenerator
 set Evolver:IntrinsicPtGaussian 2.2*GeV
 set Evolver:IntrinsicPtBeta  	0
 set Evolver:IntrinsicPtGamma 	0*GeV
-
+set Evolver:IntrinsicPtIptmax   0*GeV
 #############################################################
 # Main control switches for the parton shower.
 #

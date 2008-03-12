@@ -86,8 +86,6 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
-  // make the colour connections
-  colourConnections(inpart, decay);
   // return the answer
   return output;
 }

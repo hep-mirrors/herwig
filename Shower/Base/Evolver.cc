@@ -39,14 +39,14 @@ using namespace Herwig;
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode
-     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << _vetoes
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes
      << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode
-     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> _vetoes
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes
      >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
 }
 
@@ -134,6 +134,12 @@ void Evolver::Init() {
      "Parameter for inverse quadratic:\n"
      "2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
      &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<Evolver, Energy> ifaceiptmax
+    ("IntrinsicPtIptmax",
+     "Upper bound on intrinsic pT for inverse quadratic",
+     &Evolver::_iptmax,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
 
   static RefVector<Evolver,ShowerVeto> ifaceVetoes
@@ -242,7 +248,7 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
       ipt=_iptrms*sqrt(-log(UseRandom::rnd()));
     }
     else {
-      ipt=_gamma*tan(Constants::pi*UseRandom::rnd()/2.);
+       ipt=_gamma*sqrt(pow(1.+sqr(_iptmax/_gamma), UseRandom::rnd())-1.);
     }
     pair<Energy,double> pt = make_pair(ipt,UseRandom::rnd()*Constants::twopi);
     _intrinsic[particlesToShower[ix]] = pt;

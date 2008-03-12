@@ -158,16 +158,6 @@ void ModelGenerator::Init() {
 void ModelGenerator::doinit() throw(InitException) {
   Interfaced::doinit();
   useMe();
-  if(_theHPConstructor) {
-    _theHPConstructor->init();
-    _theHPConstructor->constructDiagrams();
-  }
-  if(_theRPConstructor) {
-    _theRPConstructor->init();
-    _theRPConstructor->constructResonances();
-  }
-  if( _theParticles.empty() ) return;
-
   //create mass and width generators for the requested particles
   PDVector::iterator pit, pend;
   if( _theOffsel == 0 ) {
@@ -214,6 +204,17 @@ void ModelGenerator::doinit() throw(InitException) {
     }
     if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
+  //Now construct hard processes given that we know which
+  //objects have running widths
+  if(_theHPConstructor) {
+    _theHPConstructor->init();
+    _theHPConstructor->constructDiagrams();
+  }
+  if(_theRPConstructor) {
+    _theRPConstructor->init();
+    _theRPConstructor->constructResonances();
+  }
+
 }
 
 void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
@@ -247,6 +248,9 @@ void ModelGenerator::createWidthGenerator(tPDPtr p) {
   //set the generator interfaces in the ParticleData object
   generator()->preinitInterface(p, "Mass_generator","set", mn);
   generator()->preinitInterface(p, "Width_generator","set", wn);
+  //allow the branching fraction of this particle type to vary
+  p->variableRatio(true);
+  if( p->CC() ) p->CC()->variableRatio(true);
   
   //initialize the generators
   generator()->preinitInterface(mgen, "Initialize", "set", "Yes");

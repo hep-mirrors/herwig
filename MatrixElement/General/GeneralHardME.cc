@@ -36,6 +36,22 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   theNDiags = alldiagrams.size();
   theNcf = ncf;
   theDebug = debug;
+
+  //OffShell options
+  pair<bool, bool> offshell(make_pair(false, false));
+  if( getParticleData(theOutgoing.first)->widthGenerator() ) {
+    offshell.first = true;
+    massOption(true, 2);
+  }
+  if( getParticleData(theOutgoing.second)->widthGenerator() ) {
+    offshell.second = true;
+    massOption(false, 2);
+  }
+
+  if( offshell.first == true &&  offshell.second == true &&
+      abs(theOutgoing.first) == abs(theOutgoing.second)  )
+    rescalingOption(3);
+
 }
 
 
