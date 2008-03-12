@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FtoFVVDecayer class.
+//
+#ifndef HERWIG_FtoFVVDecayer_FH
+#define HERWIG_FtoFVVDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class FtoFVVDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::FtoFVVDecayer,FtoFVVDecayerPtr);
+
+}
+
+#endif

@@ -330,14 +330,17 @@ DecayerClassName(tcPDPtr incoming, const OrderedParticles & outgoing,
   objname   += "Decayer";
   if(incoming->iSpin()==PDT::Spin0) {
     if(ns==1&&nf==2) classname += "StoSFFDecayer";
+    else if(nf==2&&nv==1) classname += "StoFFVDecayer";
     else             classname  = "";
   }
   else if(incoming->iSpin()==PDT::Spin1Half) {
     if(nf==3) classname += "FtoFFFDecayer";
+    else if(nf==1&&nv==2) classname += "FtoFVVDecayer";
     else      classname  = "";
   }
   else if(incoming->iSpin()==PDT::Spin1) {
-    classname="";
+    if(nf==2&&nv==1) classname += "VtoFFVDecayer";
+    else classname = "";
   }
   else {
     classname="";
