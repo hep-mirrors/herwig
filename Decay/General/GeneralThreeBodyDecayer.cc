@@ -314,10 +314,18 @@ colourConnections(const Particle & parent,
   for(unsigned int ix=0;ix<outgoing.size();++ix) {
     outColour.push_back(outgoing[ix]->data().iColour());
     switch(outColour.back()) {
-    case PDT::Colour0   :     singlet.push_back(ix);break;
-    case PDT::Colour3   :     triplet.push_back(ix);break;
-    case PDT::Colour3bar: antitriplet.push_back(ix);break;
-    case PDT::Colour8   :     octet  .push_back(ix);break;
+    case PDT::Colour0   :     
+      singlet.push_back(ix);
+      break;
+    case PDT::Colour3   :     
+      triplet.push_back(ix);
+      break;
+    case PDT::Colour3bar: 
+      antitriplet.push_back(ix);
+      break;
+    case PDT::Colour8   :     
+      octet.push_back(ix);
+      break;
     default:
       throw Exception() << "Unknown colour for particle in GeneralThreeBodyDecayer::"
 			<< "colourConnections()" << Exception::runerror;
@@ -344,6 +352,7 @@ colourConnections(const Particle & parent,
   }
   // colour triplet decaying particle
   else if( inColour == PDT::Colour3) {
+
     if(singlet.size()==2&&triplet.size()==1) {
       outgoing[triplet[0]]->incomingColour(const_ptr_cast<tPPtr>(&parent));
       if(inter&&inter->coloured()) 
@@ -358,9 +367,11 @@ colourConnections(const Particle & parent,
 	  case PDT::Colour8:
 	    inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
 	    outgoing[triplet[1]]->colourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour triplet in GeneralThreeBodyDecayer::"
+			      << "decaying colour triplet in "
+			      << "GeneralThreeBodyDecayer::"
 			      << "colourConnections()" << Exception::runerror;
 	  }
 	}
@@ -373,9 +384,11 @@ colourConnections(const Particle & parent,
 	  case PDT::Colour8:
 	    inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
 	    outgoing[triplet[0]]->colourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour triplet in GeneralThreeBodyDecayer::"
+			      << "decaying colour triplet in "
+			      << "GeneralThreeBodyDecayer::"
 			      << "colourConnections()" << Exception::runerror;
 	  }
 	}
@@ -398,7 +411,8 @@ colourConnections(const Particle & parent,
 	  switch (inter->dataPtr()->iColour()) {
 	  case PDT::Colour8:
 	    inter->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	    outgoing[antitriplet[1]]->colourLine()->addColoured(inter);
+	    outgoing[antitriplet[1]]->antiColourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
 			      << "decaying colour antitriplet in"
@@ -409,15 +423,17 @@ colourConnections(const Particle & parent,
       }
       else {
 	outgoing[antitriplet[1]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	outgoing[triplet[1]]->antiColourNeighbour(outgoing[antitriplet[0]]);
+	outgoing[triplet[0]]->antiColourNeighbour(outgoing[antitriplet[0]]);
 	if(inter&&inter->coloured()) {
 	  switch (inter->dataPtr()->iColour()) {
 	  case PDT::Colour8:
 	    inter->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	    outgoing[antitriplet[0]]->colourLine()->addColoured(inter);
+	    outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour antitriplet in GeneralThreeBodyDecayer::"
+			      << "decaying colour antitriplet in "
+			      << "GeneralThreeBodyDecayer::"
 			      << "colourConnections()" << Exception::runerror;
 	  }
 	}
@@ -434,6 +450,12 @@ colourConnections(const Particle & parent,
       outgoing[antitriplet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
       if(inter&&inter->coloured()) {
 	switch (inter->dataPtr()->iColour()) {
+	case PDT::Colour3:
+	  outgoing[triplet[0]]->colourLine()->addColoured(inter);
+	  break;
+	case PDT::Colour3bar:
+	  outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
+	  break;
 	default:
 	  throw Exception() << "Unknown colour for intermediate for "
 			    << "decaying colour octet in GeneralThreeBodyDecayer::"
