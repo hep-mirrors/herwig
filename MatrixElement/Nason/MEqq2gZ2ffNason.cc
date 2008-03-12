@@ -652,6 +652,7 @@ double MEqq2gZ2ffNason::Ctilde_gq_trick(double x, double v) const {
 
 void MEqq2gZ2ffNason::dofinish() {
   cerr << "\n";
+  cerr << "alphaS = " << _alphaS << "\n";
   cerr << "a = " << _a << "\n";
   cerr << "Y ranged from "    << miny << " to " << maxy << "\n";
   cerr << "total wgts = " << no_wgts    << "\n"
