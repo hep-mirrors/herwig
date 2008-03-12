@@ -23,6 +23,4 @@ FFVCurrentDecayer.h FFVCurrentDecayer.icc FFVCurrentDecayer.fh \
 FFVCurrentDecayer.cc \
 FtoFFFDecayer.h FtoFFFDecayer.fh FtoFFFDecayer.icc FtoFFFDecayer.cc \
 StoSFFDecayer.h StoSFFDecayer.fh StoSFFDecayer.icc StoSFFDecayer.cc \
-StoFFVDecayer.h StoFFVDecayer.fh StoFFVDecayer.icc StoFFVDecayer.cc \
-VtoFFVDecayer.h VtoFFVDecayer.fh VtoFFVDecayer.icc VtoFFVDecayer.cc \
-FtoFVVDecayer.h FtoFVVDecayer.fh FtoFVVDecayer.icc FtoFVVDecayer.cc
+StoFFVDecayer.h StoFFVDecayer.fh StoFFVDecayer.icc StoFFVDecayer.cc

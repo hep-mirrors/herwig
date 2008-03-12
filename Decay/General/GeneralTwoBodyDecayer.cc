@@ -66,11 +66,10 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
       if( pb->id() == pid ) swap(pa, pb);
       if( pc->id() == pid ) swap(pa, pc);
       //allowed on-shell decay?
-      if( m1 <= pb->massMin() + pc->massMin() ) continue;
+      if( m1 <= pb->mass() + pc->mass() ) continue;
       //vertices are defined with all particles incoming
       if( pb->CC() ) pb = pb->CC();
       if( pc->CC() ) pc = pc->CC();
-      if( pb->id() == pid || pc->id() == pid ) continue;
       //store ids so that the decayer knows what it is allowed to 
       //decay
       _inpart.push_back(pid); _outparta.push_back(pb->id());
