@@ -19,8 +19,13 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
 						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
   if(_channelmass[_thechannel] > 0*MeV) {
-    _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
-					 _channelwidth[_thechannel]*tan(x));
+    if(_channelwidth[_thechannel] > 0*MeV) {
+      _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
+					   _channelwidth[_thechannel]*tan(x));
+    }
+    else {
+      _souter = sqr(_channelmass[_thechannel])*(1.+1./x);
+    }
   }
   else {
     _souter = UnitRemoval::E2 * pow(x,1./(_channelpower[_thechannel]+1.));
@@ -88,10 +93,15 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
     }
     InvEnergy2 term; 
     if(_channelmass[ix] > 0*MeV) {
-      rm2 = sqr(_channelmass[ix]);
-      rw2 = sqr(_channelwidth[ix]);
-      Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
-      term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
+      if(_channelwidth[ix] > 0*MeV) {
+	rm2 = sqr(_channelmass[ix]);
+	rw2 = sqr(_channelwidth[ix]);
+	Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
+	term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
+      }
+      else {
+	term = sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
+      }
     }
     else {
       term = UnitRemoval::InvE2 * _channelweights[ix]*(_channelpower[ix]+1.)*
@@ -136,10 +146,17 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     double rupp, rlow;
     // transform them
     if(_channelmass[ix] > 0*MeV) {
-      rupp = atan((upp-_channelmass[ix]*_channelmass[ix])/
-		  _channelmass[ix]/_channelwidth[ix]);
-      rlow =  atan((low-_channelmass[ix]*_channelmass[ix])/
-		   _channelmass[ix]/_channelwidth[ix]);
+      if(_channelwidth[ix] > 0*MeV) {
+	rupp = atan((upp-_channelmass[ix]*_channelmass[ix])/
+		    _channelmass[ix]/_channelwidth[ix]);
+	rlow =  atan((low-_channelmass[ix]*_channelmass[ix])/
+		     _channelmass[ix]/_channelwidth[ix]);
+      }
+      else {
+	Energy2 m2=sqr(_channelmass[ix]);
+	rupp = m2/(low-m2);
+	rlow = m2/(upp-m2);
+      }
     }
     else {
       rupp = pow(upp*UnitRemoval::InvE2, _channelpower[ix]+1.);
