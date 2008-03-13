@@ -81,18 +81,18 @@ double MEff2vs::me2() const {
   SpinorVector ina(2);
   SpinorBarVector inb(2);
   VBVector outa(3);
-  ScalarWaveFunction sca(meMomenta()[3], mePartonData()[3], Complex(1.),
+  ScalarWaveFunction sca(rescaledMomenta()[3], mePartonData()[3], Complex(1.),
 			 outgoing);
   for(unsigned int ih = 0; ih < 2; ++ih) {
-    ina[ih] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], 
+    ina[ih] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], 
 				 ih, incoming);
-    inb[ih] = SpinorBarWaveFunction(meMomenta()[1], mePartonData()[1], 
+    inb[ih] = SpinorBarWaveFunction(rescaledMomenta()[1], mePartonData()[1], 
 				    ih, incoming);
-    outa[2*ih] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 
+    outa[2*ih] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 
 				    2*ih, outgoing);
   }
   if( mePartonData()[2]->mass() > 0.0*MeV ) {
-    outa[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 
+    outa[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 
 				 1, outgoing);
   }
   double full_me(0.);
@@ -243,8 +243,33 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
   VBVector vec;
   bool mv(hdp[2]->dataPtr()->mass() == 0.0*MeV);
   VectorWaveFunction(vec, hdp[2], outgoing, true, mv,true);
-  if( mv ) vec[1] = vec[2];
   ScalarWaveFunction sca(hdp[3], outgoing, true, true);
+
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = hdp[i]->dataPtr();
+    momenta[i] = hdp[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+
+  SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
+  SpinorBarWaveFunction sbr(rescaledMomenta()[1], data[1],incoming);
+  VectorWaveFunction vr(rescaledMomenta()[2], data[2], mv, outgoing);
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+    spr.reset(ihel);
+    sp[ihel] = spr;
+    sbr.reset(ihel);
+    spbar[ihel] = sbr;
+    vr.reset(2*ihel);
+    vec[2*ihel] = vr;
+  }
+  if( !mv ) {
+    vr.reset(1);
+    vec[1] = vr;
+  }
+  sca = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
   
   double dummy(0.);
   ProductionMatrixElement prodme = ffb2vsHeME(sp, spbar, vec, sca, dummy);

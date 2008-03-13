@@ -70,21 +70,27 @@ void MEvv2vv::doinit() throw(InitException) {
 double MEvv2vv::me2() const {
   VBVector va(2), vb(2), vc(3), vd(3);  
   for(unsigned int i = 0; i < 2; ++i) {
-    va[i] = VectorWaveFunction(meMomenta()[0], mePartonData()[0], 2*i, incoming);
-    vb[i] = VectorWaveFunction(meMomenta()[1], mePartonData()[1], 2*i, incoming);
+    va[i] = VectorWaveFunction(rescaledMomenta()[0], mePartonData()[0], 2*i, 
+			       incoming);
+    vb[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*i, 
+			       incoming);
   }
   //always 0 and 2 polarisations
   for(unsigned int i = 0; i < 2; ++i) {
-    vc[2*i] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 2*i, outgoing);
-    vd[2*i] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 2*i, outgoing);
+    vc[2*i] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 2*i, 
+				 outgoing);
+    vd[2*i] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 2*i, 
+				 outgoing);
   }
   bool mc  = !(mePartonData()[2]->mass() > 0.*MeV);
   //massive vector, also 1
   if( !mc )
-    vc[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, outgoing);
+    vc[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
+			       outgoing);
   bool md  = !(mePartonData()[3]->mass() > 0.*MeV);
   if( !md ) 
-    vd[1] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 1, outgoing);
+    vd[1] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 1, 
+			       outgoing);
   double full_me(0.);
   vv2vvHeME(va, vb, vc, mc, vd, md, full_me);
 
@@ -103,6 +109,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
+  const Energy mass = vout1[0].mass();
   vector<Complex> diag(ndiags, Complex(0.));
   vector<double> me(ndiags, 0.);
   ScalarWaveFunction interS; VectorWaveFunction interV;
@@ -121,7 +128,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	    if(!offshell) continue;
 	    if(current.channelType == HPDiagram::sChannel) {
 	      if(offshell->iSpin() == PDT::Spin1) {
-		interV = theVecV[ix].first->evaluate(q2, 3, offshell,
+		interV = theVecV[ix].first->evaluate(q2, 1, offshell,
 						     vin1[ihel1], vin2[ihel2]);
 		diag[ix] = theVecV[ix].second->evaluate(q2, vout1[ohel1],
 							vout2[ohel2], interV);
@@ -139,7 +146,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	      if(offshell->iSpin() == PDT::Spin1) {
 		if(current.ordered.second) {
 		  interV = theVecV[ix].first->evaluate(q2, 3, offshell, vin1[ihel1],
-						       vout1[ohel1]);
+						       vout1[ohel1], mass);
 		  diag[ix] = theVecV[ix].second->evaluate(q2, vin2[ihel2], interV, 
 							  vout2[ohel2]);
 		  diag[ix] += theFPVertex->evaluate(q2, 0, vin1[ihel1], vin2[ihel2], 
@@ -147,7 +154,7 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 		}
 		else {
 		  interV = theVecV[ix].first->evaluate(q2, 3, offshell, vin2[ihel2],
-						       vout1[ohel1]);
+						       vout1[ohel1], mass);
 		  diag[ix] = theVecV[ix].second->evaluate(q2, vin1[ihel1], interV, 
 							  vout2[ohel2]);
 		  diag[ix] += theFPVertex->evaluate(q2, 0, vin2[ihel2], vin1[ihel1],
@@ -157,13 +164,13 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
 	      else if(offshell->iSpin() == PDT::Spin2) {
 		if(current.ordered.second) {
 		  interT = theTenV[ix].first->evaluate(q2, 3, offshell, vin1[ihel1],
-						       vout1[ohel1]);
+						       vout1[ohel1], mass);
 		  diag[ix] = theTenV[ix].second->evaluate(q2, vin2[ihel2], 
 							  vout2[ohel2], interT);
 		}
 		else {
 		  interT = theTenV[ix].first->evaluate(q2, 3, offshell, vin2[ihel2],
-						       vout1[ohel1]);
+						       vout1[ohel1], mass);
 		  diag[ix] = theTenV[ix].second->evaluate(q2, vin1[ihel1], 
 							  vout2[ohel2], interT);
 		}
@@ -309,17 +316,46 @@ void MEvv2vv::constructVertex(tSubProPtr sub) {
   //function to calculate me2 expects massless incoming vectors
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
-  v1[1] = v1[2]; 
-  v2[1] = v2[2];
   bool mc  = !(ext[2]->data().mass() > 0.*MeV);
   bool md  = !(ext[3]->data().mass() > 0.*MeV);
   VectorWaveFunction(v3, ext[2], outgoing, true, mc, true);
   VectorWaveFunction(v4, ext[3], outgoing, true, md, true);
-  if( mc ) v3[1] = v3[2];
-  if( md ) v4[1] = v4[2];
     
   double dummy(0.);
 
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = ext[i]->dataPtr();
+    momenta[i] = ext[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+
+  VectorWaveFunction vr1(rescaledMomenta()[0], data[0], incoming);
+  VectorWaveFunction vr2(rescaledMomenta()[1], data[1], incoming);
+  VectorWaveFunction vr3(rescaledMomenta()[2], data[2], outgoing);
+  VectorWaveFunction vr4(rescaledMomenta()[3], data[3], outgoing);
+
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {
+    vr1.reset(2*ihel);
+    v1[ihel] = vr1;
+    vr2.reset(2*ihel);
+    v2[ihel] = vr2;
+
+    vr3.reset(2*ihel);
+    v3[2*ihel] = vr3;
+    vr4.reset(2*ihel);
+    v4[2*ihel] = vr4;
+  }
+  if( !mc ) {
+    vr3.reset(1);
+    v3[1] = vr3;
+  }
+  if( !md ) {
+    vr4.reset(1);
+    v4[1] = vr4;
+  }
   ProductionMatrixElement pme = vv2vvHeME(v1, v2, v3, mc, v4, md, dummy);
 
 #ifndef NDEBUG
