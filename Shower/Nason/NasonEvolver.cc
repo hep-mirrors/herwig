@@ -76,8 +76,6 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
   // set up the shower
   vector<ShowerProgenitorPtr> particlesToShower = setupShower(false);
   setupMaximumScales(tree, particlesToShower);
-  // generate the intrinsic p_T once and for all
-  generateIntrinsicpT(particlesToShower);
   // main showering loop
   unsigned int ntry(0);
   do {
@@ -207,6 +205,8 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
   // set up the shower
   vector<ShowerProgenitorPtr> particlesToShower = setupShower(true);
   setupMaximumScales( tree, particlesToShower );
+  // generate the intrinsic p_T once and for all
+  generateIntrinsicpT(particlesToShower);
   unsigned int ntry(0);
   do {
     // clear results of last attempt
