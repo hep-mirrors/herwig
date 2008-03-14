@@ -65,13 +65,7 @@ namespace Herwig {
      */
     virtual void analyze(tEventPtr event, long ieve, int loop, int state);
     
-    /**
-     * Transform the event to the desired Lorentz frame and return the
-     * corresponding LorentzRotation.
-     * @param event a pointer to the Event to be transformed.
-     * @return the LorentzRotation used in the transformation.
-     */
-    virtual LorentzRotation transform(tEventPtr event) const;
+   
     
 
   public:
@@ -137,6 +131,8 @@ namespace Herwig {
   private:
     //pt histogram
     HistogramPtr  _hpt;
+    HistogramPtr  _hptLow;
+
   
     /**
      * The static object used to initialize the description of this class.
