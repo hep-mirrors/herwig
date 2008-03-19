@@ -136,13 +136,15 @@ MEqq2gZ2ffNason::colourGeometries(tcDiagPtr) const {
 
 void MEqq2gZ2ffNason::persistentOutput(PersistentOStream & os) const {
   os << _maxflavour << _gammaZ << _process << _theFFZVertex << _theFFPVertex 
-     << _gamma << _z0 << _contrib << _a << _p;
+     << _gamma << _z0 << _contrib << _nlo_alphaS_opt << _fixed_alphaS
+     << _a << _p;
 }
 
 void MEqq2gZ2ffNason::persistentInput(PersistentIStream & is, int) { 
   is >> _maxflavour >> _gammaZ >> _process
      >> _theFFZVertex >> _theFFPVertex 
-     >> _gamma >> _z0 >> _contrib >> _a >> _p; 
+     >> _gamma >> _z0 >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS
+     >> _a >> _p; 
 }
 
 ClassDescription<MEqq2gZ2ffNason> MEqq2gZ2ffNason::initMEqq2gZ2ffNason;
@@ -291,6 +293,27 @@ void MEqq2gZ2ffNason::Init() {
      "Generate the negative contribution to the full NLO cross section",
      2);
 
+  static Switch<MEqq2gZ2ffNason,unsigned int> interfaceNLOalphaSopt
+    ("NLOalphaSopt",
+     "Whether to use a fixed or a running QCD coupling for the NLO weight",
+     &MEqq2gZ2ffNason::_nlo_alphaS_opt, 0, false, false);
+  static SwitchOption interfaceNLOalphaSoptRunningAlphaS
+    (interfaceNLOalphaSopt,
+     "RunningAlphaS",
+     "Use the usual running QCD coupling evaluated at scale scale()",
+     0);
+  static SwitchOption interfaceNLOalphaSoptFixedAlphaS
+    (interfaceNLOalphaSopt,
+     "FixedAlphaS",
+     "Use a constant QCD coupling for comparison/debugging purposes",
+     1);
+
+  static Parameter<MEqq2gZ2ffNason,double> interfaceFixedNLOalphaS
+    ("FixedNLOalphaS",
+     "The value of alphaS to use for the nlo weight if _nlo_alphaS_opt=1",
+     &MEqq2gZ2ffNason::_fixed_alphaS, 0.115895, 0., 1.0,
+     false, false, Interface::limited);
+
   static Parameter<MEqq2gZ2ffNason,double> interfaceCorrectionCoefficient
     ("CorrectionCoefficient",
      "The magnitude of the correction term to reduce the negative contribution",
@@ -428,10 +451,11 @@ double MEqq2gZ2ffNason::NLOweight() const {
   }
 
   // Calculate alpha_S, CF, TF etc:
-  _alphaS = SM().alphaS(scale());
+  if(_nlo_alphaS_opt==1) _alphaS = _fixed_alphaS;
+  else _alphaS = SM().alphaS(scale());
   _CF = 4./3.; _TF = 0.5;
   // Calculate the invariant mass of the dilepton pair
-  _mll2 = x(_xt,_v)*sHat();
+  _mll2 = sHat();
   _mu2  = scale();
 
   // Calculate the integrand:

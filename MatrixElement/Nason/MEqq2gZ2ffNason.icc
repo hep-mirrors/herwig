@@ -8,7 +8,8 @@ namespace Herwig {
 
 inline MEqq2gZ2ffNason::MEqq2gZ2ffNason() : 
     _maxflavour(5) ,_gammaZ(0)         ,_process(0),
-    _contrib(1)    ,  _a(0.5)          ,_p(0.7)    , 
+    _contrib(1)    ,_nlo_alphaS_opt(0) ,_fixed_alphaS(0.115895),
+    _a(0.5)        ,_p(0.7)            , 
     x_h(100)       , v_h(100)          , 
     x_pos_h(100)   , v_pos_h(100)      ,
     x_neg_h(100)   , v_neg_h(100)      ,

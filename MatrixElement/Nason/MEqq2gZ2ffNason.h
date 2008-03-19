@@ -311,6 +311,16 @@ private:
   unsigned int _contrib;
 
   /**
+   *  Whether to use a fixed or a running QCD coupling for the NLO weight
+   */
+  unsigned int _nlo_alphaS_opt;
+
+  /**
+   *  The value of alphaS to use for the nlo weight if _nloalphaSopt=1
+   */
+  double _fixed_alphaS;
+
+  /**
    *  The magnitude of the correction term to reduce the negative contribution
    */
   double _a;
