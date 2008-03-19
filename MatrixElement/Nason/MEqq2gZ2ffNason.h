@@ -1,4 +1,11 @@
 // -*- C++ -*-
+//
+// MEqq2gZ2ffNason.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
 #ifndef HERWIG_MEqq2gZ2ffNason_H
 #define HERWIG_MEqq2gZ2ffNason_H
 //
@@ -39,6 +46,9 @@ public:
    * The default constructor.
    */
   inline MEqq2gZ2ffNason();
+
+  
+public:
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -174,26 +184,26 @@ protected:
   mutable tcPDPtr _parton_a,_parton_b,_gluon;
   mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A,_hadron_B;
    
-    double x(double xt, double v) const;
-    double x_a(double x, double v) const;
-    double x_b(double x, double v) const;
-    double xbar(double v) const;
-    double Ltilde_qg(double x, double v) const;
-    double Ltilde_gq(double x, double v) const;
-    double Ltilde_qq(double x, double v) const;
-    double Vtilde_qq() const;
-    double Ccalbar_qg(double x) const;
-    double Fcal_qg(double x, double v) const;
-    double Fcal_gq(double x, double v) const;
-    double Fcal_qq(double x, double v) const;
-    double Ftilde_qg(double xt, double v) const;
-    double Ftilde_gq(double xt, double v) const;
-    double Ftilde_qq(double xt, double v) const;
-    double Ctilde_qg(double x, double v) const;
-    double Ctilde_gq(double x, double v) const;
-    double Ctilde_qq(double x, double v) const;
-    double Ctilde_qg_trick(double x, double v) const;
-    double Ctilde_gq_trick(double x, double v) const;
+  double x(double xt, double v) const;
+  double x_a(double x, double v) const;
+  double x_b(double x, double v) const;
+  double xbar(double v) const;
+  double Ltilde_qg(double x, double v) const;
+  double Ltilde_gq(double x, double v) const;
+  double Ltilde_qq(double x, double v) const;
+  double Vtilde_qq() const;
+  double Ccalbar_qg(double x) const;
+  double Fcal_qg(double x, double v) const;
+  double Fcal_gq(double x, double v) const;
+  double Fcal_qq(double x, double v) const;
+  double Ftilde_qg(double xt, double v) const;
+  double Ftilde_gq(double xt, double v) const;
+  double Ftilde_qq(double xt, double v) const;
+  double Ctilde_qg(double x, double v) const;
+  double Ctilde_gq(double x, double v) const;
+  double Ctilde_qq(double x, double v) const;
+  double Ctilde_qg_trick(double x, double v) const;
+  double Ctilde_gq_trick(double x, double v) const;
 
 protected:
 
@@ -404,5 +414,8 @@ struct ClassTraits<Herwig::MEqq2gZ2ffNason>
 }
 
 #include "MEqq2gZ2ffNason.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "MEqq2gZ2ffNason.tcc"
+#endif
 
 #endif /* HERWIG_MEqq2gZ2ffNason_H */

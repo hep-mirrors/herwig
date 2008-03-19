@@ -13,17 +13,26 @@
 
 namespace Herwig {
 
-  inline MEqq2W2ffNason::MEqq2W2ffNason() : _maxflavour(5), _plusminus(0), _process(0),   
-					    _contrib(1), _a(0.5),_p(0.7), x_h(100), v_h(100), 
-					    x_pos_h(100), v_pos_h(100), x_neg_h(100), v_neg_h(100), _eps(1e-8)
-  {}
+inline MEqq2W2ffNason::MEqq2W2ffNason() : 
+    _maxflavour(5) ,_plusminus(0)      ,_process(0),
+    _contrib(1)    ,_nlo_alphaS_opt(0) ,_fixed_alphaS(0.115895),
+    _a(0.5)        ,_p(0.7)            , 
+    x_h(100)       , v_h(100)          , 
+    x_pos_h(100)   , v_pos_h(100)      ,
+    x_neg_h(100)   , v_neg_h(100)      ,
+    xba_h(100)     , xba_pos_h(100)    , xba_neg_h(100),
+    xbb_h(100)     , xbb_pos_h(100)    , xbb_neg_h(100),
+    shatovrs_h(100),shatovrs_pos_h(100), shatovrs_neg_h(100),
+    y_h(100)       , y_pos_h(100)      , y_neg_h(100),
+    _eps(1.0e-8)
+{}
   
-  inline IBPtr MEqq2W2ffNason::clone() const {
-    return new_ptr(*this);
-  }
+inline IBPtr MEqq2W2ffNason::clone() const {
+  return new_ptr(*this);
+}
   
-  inline IBPtr MEqq2W2ffNason::fullclone() const {
-    return new_ptr(*this);
-  }
+inline IBPtr MEqq2W2ffNason::fullclone() const {
+  return new_ptr(*this);
+}
   
 }

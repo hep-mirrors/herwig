@@ -17,6 +17,8 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -47,6 +49,16 @@ void MEqq2W2ffNason::doinit() throw(InitException) {
     throw InitException() << "Must be the Herwig++ StandardModel class in "
 			  << "MEqq2W2ffNason::doinit" << Exception::abortnow;
 }
+
+void MEqq2W2ffNason::doinitrun() {  
+  maxy = 0.;
+  miny = 0.;
+  no_wgts = 0;
+  no_negwgts = 0;
+
+}
+
+
 
 void MEqq2W2ffNason::getDiagrams() const {
   // which intgermediates to include
@@ -128,17 +140,17 @@ void MEqq2W2ffNason::getDiagrams() const {
 }
 
 Energy2 MEqq2W2ffNason::scale() const {
-  // return sHat();
+  // Checked sqrt(sHat)-sqrt(lastX1()*lastX2()*lastS())<1 MeV for 10K events. 
   return 10000.0*GeV2;
-
+//  return sHat();
 }
 
 double MEqq2W2ffNason::me2() const {
   vector<SpinorWaveFunction>    fin,aout;
   vector<SpinorBarWaveFunction> ain,fout;
-  SpinorWaveFunction    q   (meMomenta()[0],mePartonData()[0],incoming);
+  SpinorWaveFunction       q(meMomenta()[0],mePartonData()[0],incoming);
   SpinorBarWaveFunction qbar(meMomenta()[1],mePartonData()[1],incoming);
-  SpinorBarWaveFunction f   (meMomenta()[2],mePartonData()[2],outgoing);
+  SpinorBarWaveFunction    f(meMomenta()[2],mePartonData()[2],outgoing);
   SpinorWaveFunction    fbar(meMomenta()[3],mePartonData()[3],outgoing);
   for(unsigned int ix=0;ix<2;++ix) {
     q.reset(ix)   ; fin.push_back(q);
@@ -176,12 +188,14 @@ MEqq2W2ffNason::colourGeometries(tcDiagPtr) const {
 
 void MEqq2W2ffNason::persistentOutput(PersistentOStream & os) const {
   os << _maxflavour << _plusminus << _process << _theFFWVertex 
-     << _wp << _wm << _contrib << _a << _p;
+     << _wp << _wm << _contrib << _nlo_alphaS_opt << _fixed_alphaS
+     << _a << _p;
 }
 
-void MEqq2W2ffNason::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _plusminus >> _process >> _theFFWVertex 
-     >> _wp >> _wm >> _contrib >> _a >> _p;
+void MEqq2W2ffNason::persistentInput(PersistentIStream & is, int) { 
+  is >> _maxflavour >> _plusminus >> _process >> _theFFWVertex  
+     >> _wp >> _wm >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS
+     >> _a >> _p; 
 }
 
 ClassDescription<MEqq2W2ffNason> MEqq2W2ffNason::initMEqq2W2ffNason;
@@ -303,6 +317,27 @@ void MEqq2W2ffNason::Init() {
      "NegativeNLO",
      "Generate the negative contribution to the full NLO cross section",
      2);
+
+  static Switch<MEqq2W2ffNason,unsigned int> interfaceNLOalphaSopt
+    ("NLOalphaSopt",
+     "Whether to use a fixed or a running QCD coupling for the NLO weight",
+     &MEqq2W2ffNason::_nlo_alphaS_opt, 0, false, false);
+  static SwitchOption interfaceNLOalphaSoptRunningAlphaS
+    (interfaceNLOalphaSopt,
+     "RunningAlphaS",
+     "Use the usual running QCD coupling evaluated at scale scale()",
+     0);
+  static SwitchOption interfaceNLOalphaSoptFixedAlphaS
+    (interfaceNLOalphaSopt,
+     "FixedAlphaS",
+     "Use a constant QCD coupling for comparison/debugging purposes",
+     1);
+
+  static Parameter<MEqq2W2ffNason,double> interfaceFixedNLOalphaS
+    ("FixedNLOalphaS",
+     "The value of alphaS to use for the nlo weight if _nlo_alphaS_opt=1",
+     &MEqq2W2ffNason::_fixed_alphaS, 0.115895, 0., 1.0,
+     false, false, Interface::limited);
 
   static Parameter<MEqq2W2ffNason,double> interfaceCorrectionCoefficient
     ("CorrectionCoefficient",
@@ -429,10 +464,11 @@ double MEqq2W2ffNason::NLOweight() const {
   }
 
   // Calculate alpha_S, CF, TF etc:
-  _alphaS = SM().alphaS(scale());
+  if(_nlo_alphaS_opt==1) _alphaS = _fixed_alphaS;
+  else _alphaS = SM().alphaS(scale());
   _CF = 4./3.; _TF = 0.5;
   // Calculate the invariant mass of the dilepton pair
-  _mll2 = x(_xt,_v)*sHat();
+  _mll2 = sHat();
   _mu2  = scale();
 
   // Calculate the integrand:
@@ -442,40 +478,53 @@ double MEqq2W2ffNason::NLOweight() const {
   double wqq          = wqqvirt+wqqcollin+wqqreal;
 
   double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
+//  double wqgcollin    = Ctilde_qg_trick(x(_xt,0.),0.);
   double wqgreal      = Ftilde_qg(_xt,_v);
   double wqg          = wqgreal+wqgcollin;
 
   double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
+//  double wgqbarcollin = Ctilde_gq_trick(x(_xt,1.),1.);
   double wgqbarreal   = Ftilde_gq(_xt,_v);
   double wgqbar       = wgqbarreal+wgqbarcollin;
 
   double wgt          = 1.+(wqq+wqg+wgqbar);
 
   //trick to try and reduce neg wgt contribution
-  if(_xt<1-_eps) {
-    wgt += _a*(1./pow(1-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
+  if(_xt<1.-_eps) {
+    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
   }
   
   no_wgts ++;
   if( wgt < 0. ) no_negwgts ++;
 
-  //fill hist bins
-  int x_bin = int( 100. * _xt );
-  int v_bin = int( 100. * _v );
-  x_h[x_bin] += wgt;
-  v_h[v_bin] += wgt;
- 
+  // Fill histogram bins
+  int x_bin        = int(100.*_xt);
+  int v_bin        = int(100.*_v);
+  int xba_bin      = int(100.*_xb_a);
+  int xbb_bin      = int(100.*_xb_b);
+  int shatovrs_bin = int(100.*_xb_a*_xb_b);
+  x_h[x_bin]     += wgt;
+  v_h[v_bin]     += wgt;
+  xba_h[xba_bin] += wgt;
+  xbb_h[xbb_bin] += wgt;
+  shatovrs_h[shatovrs_bin] += wgt;
   if ( wgt > 0. ) {
     x_pos_h[x_bin] += wgt;
     v_pos_h[v_bin] += wgt;
+    xba_pos_h[xba_bin] += wgt;
+    xbb_pos_h[xbb_bin] += wgt;
+    shatovrs_pos_h[shatovrs_bin] += wgt;
   } 
   else if( wgt < 0. ) {
     x_neg_h[x_bin] += wgt;
     v_neg_h[v_bin] += wgt;
+    xba_neg_h[xba_bin] += wgt;
+    xbb_neg_h[xbb_bin] += wgt;
+    shatovrs_neg_h[shatovrs_bin] += wgt;
   }
 
-  if(lastY()>maxy)maxy=lastY();
-  if(lastY()<miny)miny=lastY();
+  if(lastY()>maxy) maxy=lastY();
+  if(lastY()<miny) miny=lastY();
 
   if(wgt > _max_wgt){
     // cerr<<"maxwgt = "<<wgt<<" at xt = "<<_xt<<", vt = "<< _v<<"\n";
@@ -483,8 +532,164 @@ double MEqq2W2ffNason::NLOweight() const {
   }
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
+
+double MEqq2W2ffNason::x(double xt, double v) const {
+    double x0(xbar(v));
+    return x0+(1.-x0)*xt;
+}
+double MEqq2W2ffNason::x_a(double x, double v) const {
+    if(x==1.) return _xb_a;
+    if(v==0.) return _xb_a;
+    if(v==1.) return _xb_a/x;
+    return (_xb_a/sqrt(x))*sqrt((1.-(1.-x)*(1.-v))/(1.-(1.-x)*v));
+}
+double MEqq2W2ffNason::x_b(double x, double v) const {
+    if(x==1.) return _xb_b;
+    if(v==0.) return _xb_b/x;
+    if(v==1.) return _xb_b;
+    return (_xb_b/sqrt(x))*sqrt((1.-(1.-x)*v)/(1.-(1.-x)*(1.-v)));
+}
+double MEqq2W2ffNason::xbar(double v) const {
+    double xba2(sqr(_xb_a)), xbb2(sqr(_xb_b)), omv(-999.);
+    double xbar1(-999.), xbar2(-999.);
+    if(v==1.) return _xb_a;
+    if(v==0.) return _xb_b;
+    omv = 1.-v;
+    xbar1=4.*  v*xba2/
+	(sqrt(sqr(1.+xba2)*4.*sqr(omv)+16.*(1.-2.*omv)*xba2)+2.*omv*(1.-_xb_a)*(1.+_xb_a));
+    xbar2=4.*omv*xbb2/
+	(sqrt(sqr(1.+xbb2)*4.*sqr(  v)+16.*(1.-2.*  v)*xbb2)+2.*  v*(1.-_xb_b)*(1.+_xb_b));
+    return max(xbar1,xbar2);
+}
+double MEqq2W2ffNason::Ltilde_qq(double x, double v) const {
+  if(x==1.) return 1.;
+
+  double xa(x_a(x,v));
+  double xb(x_b(x,v));
+
+  double newq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
+  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
+
+  double oldq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
+  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
+
+  return( newq * newqbar / oldq / oldqbar );
+
+}
+double MEqq2W2ffNason::Ltilde_qg(double x, double v) const {
+  double xa(x_a(x,v));
+  double xb(x_b(x,v));
+  
+  double newq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
+  double newg2   = (_hadron_B->pdf()->xfx(_hadron_B,_gluon   ,scale(),   xb)/   xb);
+    
+  double oldq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
+  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
+
+  return( newq * newg2 / oldq / oldqbar );
+
+}
+double MEqq2W2ffNason::Ltilde_gq(double x, double v) const {
+  double xa(x_a(x,v));
+  double xb(x_b(x,v));
+
+  double newg1   = (_hadron_A->pdf()->xfx(_hadron_A,_gluon   ,scale(),   xa)/   xa);
+  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
+
+  double oldq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
+  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
+
+  return( newg1 * newqbar / oldq / oldqbar );
+}
+double MEqq2W2ffNason::Vtilde_qq() const {
+    return (_alphaS*_CF/(2.*pi))
+          *(-3.*log(_mu2/_mll2)+(2.*pi*pi/3.)-8.);
+}
+double MEqq2W2ffNason::Ccalbar_qg(double x) const {
+    return (sqr(x)+sqr(1.-x))*(log(_mll2/(_mu2*x))+2.*log(1.-x))+2.*x*(1.-x);
+}
+double MEqq2W2ffNason::Ctilde_qg(double x, double v) const {
+    return  (_alphaS*_TF/(2.*pi))
+	  * ((1.-xbar(v))/x)
+	  * Ccalbar_qg(x)*Ltilde_qg(x,v);
+}
+double MEqq2W2ffNason::Ctilde_gq(double x, double v) const {
+    return  (_alphaS*_TF/(2.*pi))
+	  * ((1.-xbar(v))/x)
+          * Ccalbar_qg(x)*Ltilde_gq(x,v);
+}
+double MEqq2W2ffNason::Ctilde_qq(double x, double v) const {
+    double wgt 
+       = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Ltilde_qq(x,v)
+       -  4.*log(1.-x)/(1.-x)
+       +  2./(1.-xbar(v))*log(1.-xbar(v))*log(1.-xbar(v))
+       + (2./(1.-xbar(v))*log(1.-xbar(v))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Ltilde_qq(x,v))
+	 *log(_mll2/_mu2);
+    return (_alphaS*_CF/(2.*pi))*(1.-xbar(v))*wgt;    
+}
+double MEqq2W2ffNason::Fcal_qq(double x, double v) const {
+    double tmp = (sqr(1.-x)*(1.-2.*v*(1.-v))+2.*x)/x;
+    return tmp*Ltilde_qq(x,v);
+}
+double MEqq2W2ffNason::Fcal_qg(double x, double v) const {
+    double tmp = 2.*x*(1.-x)*v+sqr((1.-x)*v)+sqr(x)+sqr(1.-x);
+    return ((1.-xbar(v))/x)*tmp*Ltilde_qg(x,v);
+}
+double MEqq2W2ffNason::Fcal_gq(double x, double v) const {
+    double tmp = 2.*x*(1.-x)*(1.-v)+sqr((1.-x)*(1.-v))+sqr(x)+sqr(1.-x);
+    return ((1.-xbar(v))/x)*tmp*Ltilde_gq(x,v);
+}
+double MEqq2W2ffNason::Ftilde_qg(double xt, double v) const {
+    double tmp = ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
+	         )/v;
+    return (_alphaS*_TF/(2.*pi))*tmp;
+}
+double MEqq2W2ffNason::Ftilde_gq(double xt, double v) const {
+    double tmp = ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
+	         )/(1.-v);
+    return (_alphaS*_TF/(2.*pi))*tmp;
+}
+double MEqq2W2ffNason::Ftilde_qq(double xt, double v) const {
+    double tmp = 
+        ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
+      +   ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v
+	)/(1.-xt)
+      + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
+      + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v;
+    return (_alphaS*_CF/(2.*pi))*tmp;
+}
+
+
+double MEqq2W2ffNason::Ctilde_qg_trick(double x, double v) const {
+    double ctilde_qg_minus_ct = (_alphaS*_TF/(2.*pi))*((1.-xbar(v))/x) 
+	                      * Ccalbar_qg(x)*(Ltilde_qg(x,v)-Ltilde_qg(1.,0.));
+    double integrated_ct = (_alphaS*_TF/(2.*pi))
+	                 * ( ((_xb_b-2.)*_xb_b+0.5*log(_xb_b))*log(_xb_b)
+			   + 2.*ReLi2(_xb_b)
+			   + 0.5-pi*pi/3.
+			   - 2.*sqr(1.-_xb_b)*log(1.-_xb_b)
+			   - 0.5*(4.-3.*_xb_b)*_xb_b
+			   - (sqr(1.-_xb_b)+log(_xb_b))*log(_mll2/_mu2)
+                           )*Ltilde_qg(1.,0.);
+    return ctilde_qg_minus_ct + integrated_ct;
+}
+double MEqq2W2ffNason::Ctilde_gq_trick(double x, double v) const {
+    double ctilde_gq_minus_ct = (_alphaS*_TF/(2.*pi))*((1.-xbar(v))/x)
+	                      * Ccalbar_qg(x)*(Ltilde_gq(x,v)-Ltilde_gq(1.,1.));
+    double integrated_ct = (_alphaS*_TF/(2.*pi))
+	                 * ( ((_xb_a-2.)*_xb_a+0.5*log(_xb_a))*log(_xb_a)
+			   + 2.*ReLi2(_xb_a)
+			   + 0.5-pi*pi/3.
+			   - 2.*sqr(1.-_xb_a)*log(1.-_xb_a)
+			   - 0.5*(4.-3.*_xb_a)*_xb_a
+			   - (sqr(1.-_xb_a)+log(_xb_a))*log(_mll2/_mu2)
+                           )*Ltilde_gq(1.,1.);
+    return ctilde_gq_minus_ct + integrated_ct;
+}
+
 void MEqq2W2ffNason::dofinish() {
   cerr << "\n";
+  cerr << "alphaS = " << _alphaS << "\n";
   cerr << "a = " << _a << "\n";
   cerr << "Y ranged from "    << miny << " to " << maxy << "\n";
   cerr << "total wgts = " << no_wgts    << "\n"
@@ -495,7 +700,7 @@ void MEqq2W2ffNason::dofinish() {
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   
-
+  //output xt histogram
   outfile << "NEW FRAME\n";
   outfile << "TITLE TOP \"xt distribution: all wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
@@ -532,6 +737,7 @@ void MEqq2W2ffNason::dofinish() {
   }
   outfile << "HIST\n";
 
+  //output v histogram
   outfile << "NEW FRAME\n";
   outfile << "TITLE TOP \"v distribution: all wgts\"\n";
   outfile << "TITLE LEFT \"weight\"\n";
@@ -568,147 +774,117 @@ void MEqq2W2ffNason::dofinish() {
   }
   outfile << "HIST\n";
 
+  //output _xb_a histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a (born) distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xba_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xba_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a (born) distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xba_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xba_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a (born) distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xba_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xba_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  //output _xb_a histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_b (born) distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xbb_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xbb_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_b (born) distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xbb_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xbb_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_b (born) distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < xbb_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << xbb_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  //output shatovrs histogram
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a*x_b (born) distribution: all wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a*x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < shatovrs_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << shatovrs_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a*x_b (born) distribution: pos wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a*x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < shatovrs_pos_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << shatovrs_pos_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
+  outfile << "NEW FRAME\n";
+  outfile << "TITLE TOP \"x_a*x_b (born) distribution: neg wgts\"\n";
+  outfile << "TITLE LEFT \"weight\"\n";
+  outfile << "TITLE BOTTOM \"x_a*x_b (born)\"\n";
+  step = 1. / 100.;
+  x=0.;
+  for( unsigned int ix = 0; ix < shatovrs_neg_h.size(); ++ix ) {
+    x += step;
+    outfile << x << "\t" << shatovrs_neg_h[ix].mean() << "\n";
+  }
+  outfile << "HIST\n";
+
   outfile.close();
 }
 
-double MEqq2W2ffNason::x(double xt, double v) const {
-    double x0(xbar(v));
-    return x0+(1.-x0)*xt;
-}
-double MEqq2W2ffNason::x_a(double x, double v) const {
-    if(x==1.) return _xb_a;
-    if(v==0.) return _xb_a;
-    if(v==1.) return _xb_a/x;
-    return (_xb_a/sqrt(x))*sqrt((1.-(1.-x)*(1.-v))/(1.-(1.-x)*v));
-}
-double MEqq2W2ffNason::x_b(double x, double v) const {
-    if(x==1.) return _xb_b;
-    if(v==0.) return _xb_b/x;
-    if(v==1.) return _xb_b;
-    return (_xb_b/sqrt(x))*sqrt((1.-(1.-x)*v)/(1.-(1.-x)*(1.-v)));
-}
-double MEqq2W2ffNason::xbar(double v) const {
-    double xba2(sqr(_xb_a)), xbb2(sqr(_xb_b)), omv(-999.);
-    double xbar1(-999.), xbar2(-999.);
-    if(v==1.) return _xb_a;
-    if(v==0.) return _xb_b;
-    omv = 1.-v;
-    xbar1=4.*  v*xba2/
-	(sqrt(sqr(1.+xba2)*4.*sqr(omv)+16.*(1.-2.*omv)*xba2)+2.*omv*(1.-_xb_a)*(1.+_xb_a));
-    xbar2=4.*omv*xbb2/
-	(sqrt(sqr(1.+xbb2)*4.*sqr(  v)+16.*(1.-2.*  v)*xbb2)+2.*  v*(1.-_xb_b)*(1.+_xb_b));
-    return max(xbar1,xbar2);
-}
-double MEqq2W2ffNason::Ltilde_qq(double x, double v) const {
-  double xa(x_a(x,v));
-  double xb(x_b(x,v));
-
-  double newq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
-  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
-
-  double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
-  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
-
-  return( newq * newqbar / oldq / oldqbar );
-
-}
-double MEqq2W2ffNason::Ltilde_qg(double x, double v) const {
-  double xa(x_a(x,v));
-  double xb(x_b(x,v));
-  
-  double newq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
-  double newg2 = (_hadron_B->pdf()->xfx(_hadron_B,_gluon   ,scale(),   xb)/   xb);
-    
-  double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
-  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
-
-  // if(oldq < _eps || oldqbar < _eps) return 0.;
- 
-  return( newq * newg2 / oldq / oldqbar );
-
-}
-double MEqq2W2ffNason::Ltilde_gq(double x, double v) const {
-  double xa(x_a(x,v));
-  double xb(x_b(x,v));
-
-  double newg1 = (_hadron_A->pdf()->xfx(_hadron_A,_gluon   ,scale(),   xa)/   xa);
-  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
-
-  double oldq = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a);
-  double oldqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b);
-
-  // if(oldq < _eps || oldqbar < _eps) return 0.;
-
-  return( newg1 * newqbar / oldq / oldqbar );
-}
-double MEqq2W2ffNason::Vtilde_qq() const {
-    using Constants::pi;
-    return (_alphaS*_CF/(2.*pi))
-          *(-3.*log(_mu2/_mll2)+(2.*pi*pi/3.)-8.);
-}
-double MEqq2W2ffNason::Ccalbar_qg(double x) const {
-    return (sqr(x)+sqr(1.-x))*(log(_mll2/(_mu2*x))+2.*log(1.-x))+2.*x*(1.-x);
-}
-double MEqq2W2ffNason::Ctilde_qg(double x, double v) const {
-    using Constants::pi;
-    return  (_alphaS*_TF/(2.*pi))
-	  * ((1.-xbar(v))/x)
-	  * Ccalbar_qg(x)*Ltilde_qg(x,v);
-}
-double MEqq2W2ffNason::Ctilde_gq(double x, double v) const {
-    using Constants::pi;
-    return  (_alphaS*_TF/(2.*pi))
-	  * ((1.-xbar(v))/x)
-          * Ccalbar_qg(x)*Ltilde_gq(x,v);
-}
-double MEqq2W2ffNason::Ctilde_qq(double x, double v) const {
-    using Constants::pi;
-    double wgt 
-       = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Ltilde_qq(x,v)
-       -  4.*log(1.-x)/(1.-x)
-       +  2./(1.-xbar(v))*log(1.-xbar(v))*log(1.-xbar(v))
-       + (2./(1.-xbar(v))*log(1.-xbar(v))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Ltilde_qq(x,v))
-	 *log(_mll2/_mu2);
-    return (_alphaS*_CF/(2.*pi))*(1.-xbar(v))*wgt;    
-}
-double MEqq2W2ffNason::Fcal_qq(double x, double v) const {
-    using Constants::pi;
-    double tmp = (sqr(1.-x)*(1.-2.*v*(1.-v))+2.*x)/x;
-    return (_alphaS*_CF/(2.*pi))
-	  *tmp*Ltilde_qq(x,v);
-}
-double MEqq2W2ffNason::Fcal_qg(double x, double v) const {
-    using Constants::pi;
-    double tmp = 2.*x*(1.-x)*v+sqr((1.-x)*v)+sqr(x)+sqr(1.-x);
-    return (_alphaS*_TF/(2.*pi))
-	*((1.-xbar(v))/x)
-	*tmp*Ltilde_qg(x,v);
-}
-double MEqq2W2ffNason::Fcal_gq(double x, double v) const {
-    using Constants::pi;
-    double tmp = 2.*x*(1.-x)*(1.-v)+sqr((1.-x)*(1.-v))+sqr(x)+sqr(1.-x);
-    return (_alphaS*_TF/(2.*pi))
-	*((1.-xbar(v))/x)
-	*tmp*Ltilde_gq(x,v);
-}
-double MEqq2W2ffNason::Ftilde_qg(double xt, double v) const {
-    return ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
-	   )/v;
-}
-double MEqq2W2ffNason::Ftilde_gq(double xt, double v) const {
-    return ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
-	   )/(1.-v);
-}
-double MEqq2W2ffNason::Ftilde_qq(double xt, double v) const {
-    return 
-	( Fcal_qq(x(xt, v), v) - Fcal_qq(1., v)
-	- Fcal_qq(x(xt,1.),1.) + Fcal_qq(1.,1.)
-	) / ((1.-xt)*(1.-v))
-      + ( Fcal_qq(x(xt, v), v) - Fcal_qq(1., v)
-        - Fcal_qq(x(xt,0.),0.) + Fcal_qq(1.,0.)
-        ) / ((1.-xt)*v)
-      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,1.)*log(1.-xbar(1.))
-        )/(1.-v)
-      + ( Fcal_qq(1.,v)*log(1.-xbar(v)) - Fcal_qq(1.,0.)*log(1.-xbar(0.))
-	)/v;
-}

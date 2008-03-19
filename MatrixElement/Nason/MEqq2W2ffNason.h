@@ -19,6 +19,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Utilities/Statistic.h"
+#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "MEqq2W2ffNason.fh"
 
@@ -26,6 +27,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+using Constants::pi;
+using Math::ReLi2;
 
 /**
  * The MEqq2W2ffNason class implements the matrix element for \f$q\bar{q'}\to W^\pm\f$
@@ -47,10 +50,10 @@ public:
 public:
 
   /**
-  * Initialize this object. Called in the run phase just before
-  * a run begins.
-  */
-  //virtual void doinitrun();
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -109,13 +112,12 @@ public:
    *  Construct the vertex of spin correlations.
    */
   virtual void constructVertex(tSubProPtr);
-  //@}
-
   /**
    * The number of internal degreed of freedom used in the matrix
    * element.
    */
   virtual int nDim() const;
+
   /**
    * Generate internal degrees of freedom given 'nDim()' uniform
    * random numbers in the interval ]0,1[. To help the phase space
@@ -168,14 +170,13 @@ protected:
 		 vector<SpinorWaveFunction>    & aout,
 		 bool me) const;
 
-   /**
+  /**
    *  Calculate the correction weight
    */
   double NLOweight() const;
   
   mutable double _max_wgt;
  
-  //cut off for pdfs
   mutable double  _xb_a,_xb_b,_alphaS,_TF,_CF;
   mutable Energy2 _mll2,_mu2;
   mutable tcPDPtr _parton_a,_parton_b,_gluon;
@@ -199,6 +200,8 @@ protected:
   double Ctilde_qg(double x, double v) const;
   double Ctilde_gq(double x, double v) const;
   double Ctilde_qq(double x, double v) const;
+  double Ctilde_qg_trick(double x, double v) const;
+  double Ctilde_gq_trick(double x, double v) const;
 
 protected:
 
@@ -226,8 +229,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-  //@}
+  virtual void doinit() throw(InitException);
 
   /**
    * Finalize this object. Called in the run phase just after a
@@ -258,7 +260,7 @@ private:
   AbstractFFVVertexPtr  _theFFWVertex;
 
   /**
-   *  Pointers to the intermediates resonances
+   *  Pointers to the intermediate resonances
    */
   //@{
   /**
@@ -298,9 +300,23 @@ private:
   ProductionMatrixElement _me;
 
   /**
+   *  Parameters for the NLO weight
+   */
+  //@{
+  /**
    *  Whether to generate the positive, negative or leading order contribution
    */
   unsigned int _contrib;
+
+  /**
+   *  Whether to use a fixed or a running QCD coupling for the NLO weight
+   */
+  unsigned int _nlo_alphaS_opt;
+
+  /**
+   *  The value of alphaS to use for the nlo weight if _nloalphaSopt=1
+   */
+  double _fixed_alphaS;
 
   /**
    *  The magnitude of the correction term to reduce the negative contribution
@@ -317,6 +333,10 @@ private:
    * account the acdc sampling
    */
   mutable vector<Statistic> x_h, v_h, x_pos_h, v_pos_h, x_neg_h, v_neg_h;
+  mutable vector<Statistic> xba_h, xba_pos_h, xba_neg_h;
+  mutable vector<Statistic> xbb_h, xbb_pos_h, xbb_neg_h;
+  mutable vector<Statistic> shatovrs_h, shatovrs_pos_h, shatovrs_neg_h;
+  mutable vector<Statistic> y_h, y_pos_h, y_neg_h;
 
   /**
    *  The cut-off on the pdfs
@@ -329,14 +349,15 @@ private:
    */
   //@{
   /**
-   *   The \f$x\f$ variable
+   *   The \f$\tilde{x}\f$ variable
    */
   double _xt;
 
   /**
-   *  The \f$\tilde{v}
+   *  The \f$v\f$ angular variable
    */
   double _v;
+
   //@}
 
   /**
