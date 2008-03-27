@@ -273,7 +273,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   // find maximum pt from hard process, the maximum pt from all
   // outgoing coloured lines (this is simpler and more general than
   // 2stu/(s^2+t^2+u^2)).
-  Energy ptmax = -1.0*GeV, pt = 0.0*GeV;
+  Energy ptmax = -1.0*GeV, pt = 0.0*GeV, mass = 0.0*GeV, ptest = 0.0*GeV;
 
   if (isPartonic) {
     map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -281,8 +281,10 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     for(; cjt!=hard->outgoingLines().end(); ++cjt) {
       if (cjt->first->progenitor()->coloured()) {
 	pt = cjt->first->progenitor()->momentum().perp();
-	if (pt > ptmax) {
-	  ptmax = pt;      
+	mass = cjt->first->progenitor()->momentum().m();
+	ptest = sqrt(pt*pt + mass*mass);      
+	if (ptest > ptmax) {
+	  ptmax = ptest;
 	}
       }
     }
