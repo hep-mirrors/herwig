@@ -270,31 +270,45 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     }
   }
 
-  // find maximum pt from hard process, the maximum pt from all
-  // outgoing coloured lines (this is simpler and more general than
-  // 2stu/(s^2+t^2+u^2)).
+  // find maximum pt from hard process, the maximum pt from all outgoing
+  // coloured lines (this is simpler and more general than
+  // 2stu/(s^2+t^2+u^2)).  Maximum scale for scattering processes will
+  // be transverse mass.
   Energy ptmax = -1.0*GeV, pt = 0.0*GeV, mass = 0.0*GeV, ptest = 0.0*GeV;
 
   if (isPartonic) {
-    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-    cjt = hard->outgoingLines().begin();
-    for(; cjt!=hard->outgoingLines().end(); ++cjt) {
-      if (cjt->first->progenitor()->coloured()) {
-	pt = cjt->first->progenitor()->momentum().perp();
-	mass = cjt->first->progenitor()->momentum().m();
-	ptest = sqrt(pt*pt + mass*mass);      
-	if (ptest > ptmax) {
-	  ptmax = ptest;
+    if (hard->isHard()) {
+      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+      cjt = hard->outgoingLines().begin();
+      for(; cjt!=hard->outgoingLines().end(); ++cjt) {
+	if (cjt->first->progenitor()->coloured()) {
+	  pt = cjt->first->progenitor()->momentum().perp();
+	  mass = cjt->first->progenitor()->momentum().m();
+	  ptest = sqrt(pt*pt + mass*mass);      
+	  if (ptest > ptmax) {
+	    ptmax = ptest;
+	  }
 	}
       }
-    }
-    // if there are no coloured FS particles, use shat as maximum
-    if (ptmax < 0.0*GeV) {
-      ptmax = pcm.m(); 
+      // if there are no coloured FS particles, use shat as maximum
+      if (ptmax < 0.0*GeV) {
+	ptmax = pcm.m(); 
+      }
+    } else {
+      // must be a decay, incoming() is the decaying particle. 
+      ptmax = hard->incomingLines().begin()->first
+	->progenitor()->momentum().m(); 
     }
   } else {
-    // if no coloured IS use shat as well
-    ptmax = pcm.m();
+    if (hard->isHard()) {
+      // if no coloured IS use shat as well
+      ptmax = pcm.m();
+    } else {
+      // must be a decay, incoming() is the decaying particle. Use its
+      // mass as maximum scale.
+      ptmax = hard->incomingLines().begin()->first
+	->progenitor()->momentum().m();       
+    }
   }
   
   // set maxHardPt for all progenitors.  For partonic processes this
