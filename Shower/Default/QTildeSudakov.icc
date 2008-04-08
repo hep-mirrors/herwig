@@ -29,10 +29,18 @@ inline IBPtr QTildeSudakov::fullclone() const {
 }
 
 inline Energy QTildeSudakov::kinematicCutOff(Energy scale,Energy mq) const {
+  // KMH - Hack here to decrease the cut-off below 0.3 (remove the "max"),
+  // or just "return scale", which would mean that the cutoffKinScale's in
+  // Shower.in really are the shower cut offs.
+  //  return scale;
   return max((scale -_a*mq)/_b,_c);
 }
 
 inline Energy QTildeSudakov::kinScale() const {
+  // KMH - This number is specified for each type of splitting in Shower.in
+  // where it is pretty much 2.3 GeV for them all. It then determines
+  // _kinCutOff which is set by QTildeSudakov::kinematicCutOff, which
+  // takes this number as it's first input.
   return _kinCutoffScale;
 }
 
