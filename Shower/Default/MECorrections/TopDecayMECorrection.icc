@@ -93,13 +93,13 @@ inline double TopDecayMECorrection::xab(double xgb,
 			 ktmktrpktmktrm);
     xab = (0.5/(kt-xgb+_g))*(kt*(1.+_a-_c+_g-xgb)-lambda)
       + (0.5/(kt+xgb*(1.-kt)-_g))*(kt*(1.+_a-_c+_g-xgb)+lambda);
-    if(isnan(xab))
-      throw Exception() << "TopMECorrection::xab: Warning complex x_a value tan(phi)="
-			<< "  xgb    = " << xgb 
-			<< "  xab    = " << xab    
-			<< "  toggle = " << toggle 
-			<< "  ktmktrpktmktrm = "   << ktmktrpktmktrm 
-			<< Exception::eventerror;
+    if(isnan(xab)) 
+	throw Exception() << "TopMECorrection::xab complex x_a value.\n"
+			  << "  xgb    = " << xgb    << "\n"
+			  << "  xab    = " << xab    << "\n"
+			  << "  toggle = " << toggle << "\n"
+			  << "  ktmktrpktmktrm = "   << ktmktrpktmktrm 
+			  << Exception::eventerror;
   }
   return xab;
 }
@@ -257,11 +257,20 @@ inline double TopDecayMECorrection::deadRegionxgxa(double ktb,double ktc)
       _xg=xgmin*xgmax/(xgmin+UseRandom::rnd()*(xgmax-xgmin));
   } else {
       _xg=xgmin*xgmax/pow((  pow(xgmin,_xg_sampling-1.)
-                           + UseRandom::rnd()*(pow(xgmax,_xg_sampling-1.) 
-                                              -pow(xgmin,_xg_sampling-1.))
-                          ),1./(_xg_sampling-1.));
+			    + UseRandom::rnd()*(pow(xgmax,_xg_sampling-1.)
+					       -pow(xgmin,_xg_sampling-1.))
+			   ),1./(_xg_sampling-1.));
   }
   // Here we set the bounds on _xa for given _xg.
+  if(_xg<xgmin||xgmin>xgmax) 
+      throw Exception() << "TopMECorrection::deadRegionxgxa:\n"
+			<< "upper xg bound is less than the lower xg bound.\n"
+			<< "\n_xg         = " << _xg 
+			<< "\n2.*sqrt(_g) = " << 2.*sqrt(_g) 
+			<< "\n_a  = " << _a  << "  ma = " << sqrt(_a*_mt*_mt) 
+			<< "\n_c  = " << _c  << "  mc = " << sqrt(_c*_mt*_mt) 
+			<< "\n_g  = " << _g  << "  mg = " << sqrt(_g*_mt*_mt) 
+			<< Exception::eventerror;
   double xamin(approxDeadMinxa(_xg,ktb,ktc));
   double xamax(approxDeadMaxxa(_xg,ktb,ktc));
   // Are the bounds sensible? If not return.
