@@ -93,13 +93,13 @@ inline double TopDecayMECorrection::xab(double xgb,
 			 ktmktrpktmktrm);
     xab = (0.5/(kt-xgb+_g))*(kt*(1.+_a-_c+_g-xgb)-lambda)
       + (0.5/(kt+xgb*(1.-kt)-_g))*(kt*(1.+_a-_c+_g-xgb)+lambda);
-    if(isnan(xab)) {
-      cerr << "TopMECorrection::xab: Warning complex x_a value.\n"
-	   << "  xgb    = " << xgb    << "\n"
-	   << "  xab    = " << xab    << "\n"
-	   << "  toggle = " << toggle << "\n"
-	   << "  ktmktrpktmktrm = "   << ktmktrpktmktrm <<endl;
-    }
+    if(isnan(xab))
+      throw Exception() << "TopMECorrection::xab: Warning complex x_a value tan(phi)="
+			<< "  xgb    = " << xgb 
+			<< "  xab    = " << xab    
+			<< "  toggle = " << toggle 
+			<< "  ktmktrpktmktrm = "   << ktmktrpktmktrm 
+			<< Exception::eventerror;
   }
   return xab;
 }
