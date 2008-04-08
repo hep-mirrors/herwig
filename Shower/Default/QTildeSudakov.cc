@@ -140,10 +140,6 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
 						   double enhance) {
   if(startingScale<=cutoffQScale(interactionType())) ShoKinPtr();
-  // KMH - cutoffQScale(interactionType()) returns the value of 
-  // CutoffQCDMassScale given in the Shower.in for each splitting function.
-  // It seems to be pretty much 0.75 GeV for all of them.
-
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   _q = Energy();
@@ -237,18 +233,12 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
     _masses.push_back(getParticleData(_ids[ix])->mass());
   _kinCutoff=
     kinematicCutOff(kinScale(),*std::max_element(_masses.begin(),_masses.end()));
-  // KMH - So this _kinCutOff is really what's meant by Q_g in the New Variables
-  // and the Herwig++ 1.0 papers.
   for(ix=0;ix<_masses.size();++ix)
     {
       _masses[ix]=max(_kinCutoff,_masses[ix]);
       _masssquared.push_back(sqr(_masses[ix]));
       if(ix>0) tmin=max(_masssquared[ix],tmin);
     }
-  // KMH - .. which makes tmin equal to the \mu^2 variable in the New Variables
-  // and Herwig++ 1.0 papers. Sometimes sqrt(tmin) can be 175000MeV, which 
-  // arises for the case of g->ttbar splittings - so turn off g->ttbar final
-  // splittings in the Shower.in and these 175000MeV's go away.  
 }
 
 ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
@@ -346,8 +336,6 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t)
     limits.first   = 1.-0.5*sqrt(_masssquared[1]/t);
   }
   else {
-    // KMH - we never get in here in b-bbar at LEP, in fact I don't see
-    // how we'd ever get in here.
     limits.first  = _masssquared[1]/t;
     limits.second = 1.-_masssquared[2]/t; 
   }
