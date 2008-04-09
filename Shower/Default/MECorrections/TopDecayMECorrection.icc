@@ -267,9 +267,9 @@ inline double TopDecayMECorrection::deadRegionxgxa(double ktb,double ktc)
 			<< "upper xg bound is less than the lower xg bound.\n"
 			<< "\n_xg         = " << _xg 
 			<< "\n2.*sqrt(_g) = " << 2.*sqrt(_g) 
-			<< "\n_a  = " << _a  << "  ma = " << sqrt(_a*_mt*_mt) 
-			<< "\n_c  = " << _c  << "  mc = " << sqrt(_c*_mt*_mt) 
-			<< "\n_g  = " << _g  << "  mg = " << sqrt(_g*_mt*_mt) 
+			<< "\n_a  = " << _a  << "  ma = " << sqrt(_a*_mt*_mt/GeV2) 
+			<< "\n_c  = " << _c  << "  mc = " << sqrt(_c*_mt*_mt/GeV2) 
+			<< "\n_g  = " << _g  << "  mg = " << sqrt(_g*_mt*_mt/GeV2) 
 			<< Exception::eventerror;
   double xamin(approxDeadMinxa(_xg,ktb,ktc));
   double xamax(approxDeadMaxxa(_xg,ktb,ktc));
