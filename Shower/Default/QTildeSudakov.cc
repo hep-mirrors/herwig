@@ -325,9 +325,9 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
   initialize(ids,tmin,false);
   // final-state branching
   if(iopt==0) {
-    Energy2 scale=(sqr(pt)-_masssquared[1]*(1.-zin)-_masssquared[2]*zin);
-    if(ids[0]==ParticleID::g) scale-=zin*(1.-zin)*_masssquared[0];
-    scale /=zin*(1-zin);
+    Energy2 scale=(sqr(pt)+_masssquared[1]*(1.-zin)+_masssquared[2]*zin);
+    if(ids[0]!=ParticleID::g) scale -= zin*(1.-zin)*_masssquared[0];
+    scale /= sqr(zin*(1-zin));
     return scale<=0.*MeV2 ? sqrt(tmin) : sqrt(scale);
   }
   else if(iopt==1) {
