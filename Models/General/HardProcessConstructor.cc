@@ -218,7 +218,11 @@ void HardProcessConstructor::constructDiagrams() {
       long fs = theOutgoing[os]->id();
       for(size_t iv = 0; iv < theNv; ++iv) {
 	tVertexBasePtr vertexA = theModel->vertex(iv);
-	if( !theAllDiagrams && vertexA->orderInGs() == 0 ) 
+
+	//This skips an effective vertex and the EW ones if 
+	// we only want the strong diagrams
+	if( (vertexA->orderInGs() + vertexA->orderInGem() == 3) ||
+	    (!theAllDiagrams && vertexA->orderInGs() == 0) ) 
 	  continue;
 
 	if(vertexA->getNpoint() == 3) {
