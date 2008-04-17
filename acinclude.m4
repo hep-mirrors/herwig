@@ -627,7 +627,7 @@ AC_DEFUN([HERWIG_COMPILERFLAGS],
 [
 AC_REQUIRE([HERWIG_CHECK_THEPEG])
 
-AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE"
+AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE \$(GSLINCLUDE)" 
 
 AC_MSG_CHECKING([for debugging mode])
 AC_ARG_ENABLE(debug,
