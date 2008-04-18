@@ -92,11 +92,13 @@ using namespace Herwig;
 
 DefaultSudakov::~DefaultSudakov() {
   if (_data_allocated) {
-    delete _qvalues;
-    delete _ivalues;
+    delete [] _qvalues;
+    delete [] _ivalues;
   }
-  if (_interpolation_allocated) gsl_spline_free (_spline);
-  if (_interpolation_allocated) gsl_interp_accel_free (_acc);
+  if (_interpolation_allocated) {
+    gsl_spline_free (_spline);
+    gsl_interp_accel_free (_acc);
+  }
 }
 
 void DefaultSudakov::persistentOutput(PersistentOStream & os) const {

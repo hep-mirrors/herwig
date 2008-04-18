@@ -80,8 +80,10 @@ void HepMCFile::doinitrun() {
 }
 
 void HepMCFile::dofinish() {
-  if (_hepmcio)
+  if (_hepmcio) {
     delete _hepmcio;
+    _hepmcio = 0;
+  }
   else
     _hepmcdump.close();
   AnalysisHandler::dofinish();

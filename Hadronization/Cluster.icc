@@ -21,12 +21,12 @@ namespace Herwig {
     return clone();
   }
 
-  inline void * Cluster::operator new(size_t) {
-    return FixedAllocator<Cluster>::allocate();
+  inline void * Cluster::operator new(size_t s) {
+    return ::operator new(s);
   }
 
   inline void Cluster::operator delete(void * p, size_t) {
-    FixedAllocator<Cluster>::deallocate(p);
+    ::operator delete(p);
   }
 
   inline int Cluster::numComponents() const {

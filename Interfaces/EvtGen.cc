@@ -952,7 +952,7 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
   }
   // delete the EvtGen particle
   part->deleteDaughters();
-  delete part;
+  delete part; part = 0;
   // change stream back
   cout.rdbuf(temp[0]);
   cerr.rdbuf(temp[1]);

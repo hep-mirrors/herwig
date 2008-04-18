@@ -483,26 +483,24 @@ AC_ARG_ENABLE(looptools,
         [],
         [enable_looptools=yes]
         )
-
-if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
-   case "${host}" in
-      x86_64-*)
-	AM_FFLAGS="$AM_FFLAGS -fdefault-integer-8"
-      	;;
-   esac
-
-   AC_LANG_PUSH([Fortran 77])
-   	oldFFLAGS="$FFLAGS"
-   	FFLAGS="$AM_FFLAGS"
-   	AC_COMPILE_IFELSE(
-	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
-		[],
-		[enable_looptools="needs gfortran on 64bit machines"]
-	)
-	FFLAGS="$oldFFLAGS"
-   AC_LANG_POP([Fortran 77])
-fi
-
+##if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
+##   case "${host}" in
+##      x86_64-*)
+##	AM_FFLAGS="$AM_FFLAGS -fdefault-integer-8"
+##      	;;
+##   esac
+##
+##   AC_LANG_PUSH([Fortran 77])
+##   	oldFFLAGS="$FFLAGS"
+##   	FFLAGS="$AM_FFLAGS"
+##   	AC_COMPILE_IFELSE(
+##	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
+##		[],
+##		[enable_looptools="needs gfortran on 64bit machines"]
+##	)
+##	FFLAGS="$oldFFLAGS"
+##  AC_LANG_POP([Fortran 77])
+##fi
 AC_MSG_RESULT([$enable_looptools])
 AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 ])

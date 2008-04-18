@@ -6,7 +6,7 @@ MRST.cc MRST.h MRST.icc
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
 
-HwMRST_la_LDFLAGS = -module -version-info 3:0:0
+HwMRST_la_LDFLAGS = -module -version-info 4:0:0
 
 EXTRA_DIST = mrst
 
@@ -15,7 +15,7 @@ HwRemDecayer_la_SOURCES = \
 HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh \
 ForcedSplitting.h ForcedSplitting.cc ForcedSplitting.fh
 
-HwRemDecayer_la_LDFLAGS = -module -version-info 3:0:0
+HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
 
 pkglib_LTLIBRARIES += HwMPIPDF.la
 HwMPIPDF_la_SOURCES = \

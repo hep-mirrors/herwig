@@ -2,7 +2,7 @@ SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
                      HwMPIAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 5:0:0
+HwAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
@@ -37,7 +37,7 @@ HwAnalysis_la_LIBADD += $(HEPMCLIBS)
 endif
 
 
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:1:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.fh \
 BFragmentationAnalysisHandler.h BFragmentationAnalysisHandler.icc \

@@ -174,7 +174,6 @@ void ShowerHandler::Init() {
 		     &Herwig::ShowerHandler::theRemDec,
 		     false, false, true, false);
 
-
   static Parameter<ShowerHandler,Energy> interfacePDFFreezingScale
     ("PDFFreezingScale",
      "The PDF freezing scale",
@@ -261,7 +260,7 @@ void ShowerHandler::cascade() {
 
   lastXC = dynamic_ptr_cast<StdXCombPtr>(lastXCombPtr());
   sub = eventHandler()->currentCollision()->primarySubProcess();
-
+  
   //first shower the hard process
   try {
     incs = cascade(sub);
@@ -513,12 +512,18 @@ cascade(tSubProPtr sub) {
   }
   // if loop exited because of too many tries, throw event away
   if (countFailures >= _maxtry) {
+    _hard=ShowerTreePtr();
+    _decay.clear();
+    _done.clear();
     throw Exception() << "Too many tries for main while loop "
 		      << "in ShowerHandler::cascade()." 
 		      << Exception::eventerror; 	
   }
   //enter the particles in the event record
   fillEventRecord();
+  _hard=ShowerTreePtr();
+  _decay.clear();
+  _done.clear();
   //non hadronic case:
   if (!HadronMatcher::Check(*generator()->eventHandler()->incoming().first ) && 
       !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )

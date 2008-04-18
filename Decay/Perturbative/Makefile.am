@@ -5,7 +5,7 @@ HwPerturbativeDecay_la_SOURCES = \
  SMWZGammaDecayer.cc  SMWZGammaDecayer.fh \
  SMWZGammaDecayer.h  SMWZGammaDecayer.icc\
  SMTopDecayer.cc SMTopDecayer.fh SMTopDecayer.h SMTopDecayer.icc
-HwPerturbativeDecay_la_LDFLAGS = -module -version-info 3:0:0
+HwPerturbativeDecay_la_LDFLAGS = -module -version-info 3:1:0
 
 HwPerturbativeHiggsDecay_la_SOURCES = \
  SMHiggsFermionsDecayer.cc  SMHiggsFermionsDecayer.fh  \
