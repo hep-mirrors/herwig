@@ -11,9 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
-typedef struct { double part[1]; } Real;
 
-typedef struct { Real re, im; } Complex;
+typedef struct { double re, im; } Complex;
 
 static int SignBit(const int i)
 {
@@ -26,27 +25,25 @@ static long PtrDiff(const void *a, const void *b)
 }
 
 
-long cachelookup_(const Real *para, double *base,
-  void (*calc)(const Real *, Complex *, const int *),
-  const int *npara, const int *nval)
+long cachelookup_(const double *para, double *base,
+  void (*calc)(const double *, Complex *, const long *),
+  const long *npara, const long *nval)
 {
-  const int one = 1;
-
   typedef struct node {
     struct node *next[2], *succ;
-    int serial;
-    Real para[*npara];
+    long serial;
+    double para[*npara];
     Complex val[*nval];
   } Node;
 
-#define base_valid (int *)&base[0]
+#define base_valid (long *)&base[0]
 #define base_last (Node ***)&base[1]
 #define base_first (Node **)&base[2]
 
-  const int valid = *base_valid;
+  const long valid = *base_valid;
   Node **last = *base_last;
   Node **next = base_first;
-  Node *node;
+  Node *node = NULL;
 
   if( last == NULL ) last = next;
 
@@ -81,6 +78,7 @@ long cachelookup_(const Real *para, double *base,
   node->next[1] = NULL;
 
   memcpy(node->para, para, sizeof(node->para));
+  static const long one = 1;
   calc(node->para, node->val, &one);
 
 found:
