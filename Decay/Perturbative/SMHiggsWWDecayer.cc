@@ -272,8 +272,8 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
   if(Z0) output*=0.5;
   // divide by width if needed
   if(_hwidth) {
-    if(Z0) output *=UnitRemoval::E/_hwidth->partialWidth(inpart.mass(),11);
-    else   output *=UnitRemoval::E/_hwidth->partialWidth(inpart.mass(),10);
+    if(Z0) output *=inpart.data().width()/_hwidth->partialWidth(inpart.mass(),11);
+    else   output *=inpart.data().width()/_hwidth->partialWidth(inpart.mass(),10);
   }
   // return the answer
   return output;

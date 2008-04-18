@@ -184,12 +184,12 @@ protected:
   /**
    * Get the number of diagrams in this process
    */
-  inline const HPCount numberOfDiags() const;
+  inline HPCount numberOfDiags() const;
   
   /**
    * Access number of colour flows
    */
-  inline const size_t numberOfFlows() const;
+  inline size_t numberOfFlows() const;
 
   /**
    * Whether to print the debug information 

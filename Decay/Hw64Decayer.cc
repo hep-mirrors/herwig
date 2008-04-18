@@ -62,7 +62,7 @@ void Hw64Decayer::Init() {
 ClassDescription<Hw64Decayer> Hw64Decayer::initHw64Decayer;
 
 bool Hw64Decayer::accept(tcPDPtr, const PDVector & children) const  {
-  return children.size()<=4;
+  return children.size() <= 3;
 }
 
 ParticleVector Hw64Decayer::decay(const Particle & p, 
@@ -174,11 +174,6 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
 				 products[2]);
     }
   }  
-  // Four Body Decay
-  else if(numProds == 4) {
-    Kinematics::fourBodyDecay(p.momentum(), products[0], products[1], 
-			      products[2], products[3]);
-  }
   if(products[0] == Lorentz5Momentum()) return ParticleVector();
   cPDVector productParticles(numProds);
   for(unsigned int ix=0;ix<numProds;++ix) {

@@ -23,6 +23,12 @@ MPIPDF.h MPIPDF.icc MPIPDF.cc MPIPDF.fh
 
 HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
 
+pkglib_LTLIBRARIES += HwSatPDF.la
+HwSatPDF_la_SOURCES = \
+SatPDF.h SatPDF.cc SatPDF.fh
+
+HwSatPDF_la_LDFLAGS = -module -version-info 1:0:0
+
 if WANT_LOCAL_PDF
 install-data-local:
 	for i in `find $(srcdir)/mrst -name '*.dat'`; \

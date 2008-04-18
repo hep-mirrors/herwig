@@ -175,10 +175,11 @@ public:
    * @param beam The beam particle
    * @return The Branching struct for the branching
    */
-  Branching chooseBackwardBranching(ShowerParticle & particle,
-				    PPtr beam,
-				    double enhance,
-				    Ptr<BeamParticleData>::transient_const_pointer beam) const;
+  Branching 
+  chooseBackwardBranching(ShowerParticle & particle,
+			  PPtr beam,
+			  double enhance,
+			  Ptr<BeamParticleData>::transient_const_pointer) const;
   //@}
 
 public:

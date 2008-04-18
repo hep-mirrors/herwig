@@ -279,7 +279,7 @@ void EtaPiPiGammaDecayer::Init() {
      "The decays of $\\eta,\\eta'\\to\\pi^+\\pi^-\\gamma$ were simulated"
      " using the matrix elements from \\cite{Venugopal:1998fq,Holstein:2001bt}",
      "\\bibitem{Venugopal:1998fq} E.~P.~Venugopal and B.~R.~Holstein,\n"
-     "Phys.\\ Rev.\\  D {\bf 57} (1998) 4397 [arXiv:hep-ph/9710382].\n"
+     "Phys.\\ Rev.\\  D {\\bf 57} (1998) 4397 [arXiv:hep-ph/9710382].\n"
      "%%CITATION = PHRVA,D57,4397;%%\n"
      "\\bibitem{Holstein:2001bt} B.~R.~Holstein,\n"
      " Phys.\\ Scripta {\\bf T99} (2002) 55 [arXiv:hep-ph/0112150].\n"

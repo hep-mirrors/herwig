@@ -639,12 +639,6 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 void 
 HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   if ( process.empty() ) return;
-//   if( HwDebug::level == HwDebug::full ) {
-//     for(HPDVector::size_type d = 0; d < process.size(); ++d) {
-//       cout << process[d] << '\n';
-//     }
-//     cout << "---------------------------" << endl;  
-//   }
   tcPDVector extpart(4);
   extpart[0] = getParticleData(process[0].incoming.first);
   extpart[1] = getParticleData(process[0].incoming.second);

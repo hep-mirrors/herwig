@@ -14,6 +14,7 @@
 #include "Histogram2Output.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "Herwig++/Utilities/HerwigStrategy.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "Histogram2Output.tcc"
@@ -67,7 +68,7 @@ void Histogram2Output::initialize (const string& name) {
 void Histogram2Output::put (Histogram2Ptr histo, const Histogram2Options& options, const string&) {
 
   currentOStream () << "# The following histograms have been produced by\n"
-		    << "# by Herwig++ " << HerwigVersion::versionstring << "\n"
+		    << "# by Herwig++ " << HerwigStrategy::version << "\n"
 		    << "# unless a channel is explictly marked as data.\n"
 		    << "# A model used is refered to " << _mctitle << "\n"
 		    << "# Please be reminded of the MCNet guidelines, which\n"

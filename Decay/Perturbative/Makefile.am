@@ -14,5 +14,5 @@ HwPerturbativeHiggsDecay_la_SOURCES = \
  SMHiggsGGHiggsPPDecayer.h SMHiggsGGHiggsPPDecayer.icc\
  SMHiggsWWDecayer.cc  SMHiggsWWDecayer.fh  \
  SMHiggsWWDecayer.h  SMHiggsWWDecayer.icc  
-HwPerturbativeHiggsDecay_la_LDFLAGS = -module -version-info 3:0:0
+HwPerturbativeHiggsDecay_la_LDFLAGS = -module -version-info 3:1:0
 

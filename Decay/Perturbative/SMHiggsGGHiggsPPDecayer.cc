@@ -127,9 +127,9 @@ double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int,
   // normalize if width generator
   if(_hwidth) {
     if(decay[0]->id() == ParticleID::g) 
-      output *=UnitRemoval::E/_hwidth->partialWidth(part.mass(),13);
+      output *= part.data().width()/_hwidth->partialWidth(part.mass(),13);
     else
-      output *=UnitRemoval::E/_hwidth->partialWidth(part.mass(),12);
+      output *= part.data().width()/_hwidth->partialWidth(part.mass(),12);
   }
   return output;
 }

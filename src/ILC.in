@@ -17,8 +17,11 @@
 # Any repository setting can be modified here
 ###################################################
 cd /Herwig/MatrixElements
+insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
 set MEee2gZ2qq:MinimumFlavour 6
 set MEee2gZ2qq:MaximumFlavour 6
+# higgs+Z
+# insert SimpleEE:MatrixElements[0] MEee2ZH
 
 ##################################################
 # Technical parameters for this run

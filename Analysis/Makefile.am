@@ -103,7 +103,7 @@ BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:1:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \

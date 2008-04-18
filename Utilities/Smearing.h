@@ -12,12 +12,7 @@
 //
 // This is the declaration of the Smearing class.
 
-#include "Herwig++/Config/Herwig.h"
-
-
 namespace Herwig {
-
-  using namespace ThePEG;
 
   /** \ingroup Utilities
    *

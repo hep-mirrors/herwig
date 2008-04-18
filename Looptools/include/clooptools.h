@@ -10,6 +10,8 @@
 #ifndef HERWIG_clooptools_h_
 #define HERWIG_clooptools_h_
 
+#define FORTRAN(s) s##_
+
 struct DOUBLE_COMPLEX { double re, im; };
 typedef const DOUBLE_COMPLEX CDOUBLE_COMPLEX;
 
@@ -33,50 +35,50 @@ typedef std::complex<double> double_complex;
 
 extern "C" {
 
-extern void a0sub_(DOUBLE_COMPLEX *result, AARGS(const double *));
-// extern void a0subc_(DOUBLE_COMPLEX *result, AARGS(CDOUBLE_COMPLEX *));
-extern void a00sub_(DOUBLE_COMPLEX *result, AARGS(const double *));
-// extern void a00subc_(DOUBLE_COMPLEX *result, AARGS(CDOUBLE_COMPLEX *));
+extern void FORTRAN(a0sub)(DOUBLE_COMPLEX *result, AARGS(const double *));
+// extern void FORTRAN(a0subc)(DOUBLE_COMPLEX *result, AARGS(CDOUBLE_COMPLEX *));
+extern void FORTRAN(a00sub)(DOUBLE_COMPLEX *result, AARGS(const double *));
+// extern void FORTRAN(a00subc)(DOUBLE_COMPLEX *result, AARGS(CDOUBLE_COMPLEX *));
 
-extern long bget_(BARGS(const double *));
-// extern long bgetc_(BARGS(CDOUBLE_COMPLEX *));
+extern int FORTRAN(bget)(BARGS(const double *));
+// extern int FORTRAN(bgetc)(BARGS(CDOUBLE_COMPLEX *));
 
-extern void c0sub_(DOUBLE_COMPLEX *result, CARGS(const double *));
-// extern void c0subc_(DOUBLE_COMPLEX *result, CARGS(CDOUBLE_COMPLEX *));
-extern long cget_(CARGS(const double *));
-// extern long cgetc_(CARGS(CDOUBLE_COMPLEX *));
+extern void FORTRAN(c0sub)(DOUBLE_COMPLEX *result, CARGS(const double *));
+// extern void FORTRAN(c0subc)(DOUBLE_COMPLEX *result, CARGS(CDOUBLE_COMPLEX *));
+extern int FORTRAN(cget)(CARGS(const double *));
+// extern int FORTRAN(cgetc)(CARGS(CDOUBLE_COMPLEX *));
 
-extern void d0sub_(DOUBLE_COMPLEX *result, DARGS(const double *));
-// extern void d0subc_(DOUBLE_COMPLEX *result, DARGS(CDOUBLE_COMPLEX *));
-extern long dget_(DARGS(const double *));
-// extern long dgetc_(DARGS(CDOUBLE_COMPLEX *));
+extern void FORTRAN(d0sub)(DOUBLE_COMPLEX *result, DARGS(const double *));
+// extern void FORTRAN(d0subc)(DOUBLE_COMPLEX *result, DARGS(CDOUBLE_COMPLEX *));
+extern int FORTRAN(dget)(DARGS(const double *));
+// extern int FORTRAN(dgetc)(DARGS(CDOUBLE_COMPLEX *));
 
-extern void e0sub_(DOUBLE_COMPLEX *result, EARGS(const double *));
-// extern void e0subc_(DOUBLE_COMPLEX *result, EARGS(CDOUBLE_COMPLEX *));
-extern long eget_(EARGS(const double *));
-// extern long egetc_(EARGS(CDOUBLE_COMPLEX *));
+extern void FORTRAN(e0sub)(DOUBLE_COMPLEX *result, EARGS(const double *));
+// extern void FORTRAN(e0subc)(DOUBLE_COMPLEX *result, EARGS(CDOUBLE_COMPLEX *));
+extern int FORTRAN(eget)(EARGS(const double *));
+// extern int FORTRAN(egetc)(EARGS(CDOUBLE_COMPLEX *));
 
-extern void li2sub_(DOUBLE_COMPLEX *result, const double *x);
-extern void li2csub_(DOUBLE_COMPLEX *result, CDOUBLE_COMPLEX *x);
+extern void FORTRAN(li2sub)(DOUBLE_COMPLEX *result, const double *x);
+extern void FORTRAN(li2csub)(DOUBLE_COMPLEX *result, CDOUBLE_COMPLEX *x);
 
-extern void ffini_(void);
-extern void ffexi_(void);
+extern void FORTRAN(ffini)(void);
+extern void FORTRAN(ffexi)(void);
 
-extern void clearcache_(void);
-extern void markcache_(void);
-extern void restorecache_(void);
+extern void FORTRAN(clearcache)(void);
+extern void FORTRAN(markcache)(void);
+extern void FORTRAN(restorecache)(void);
 
 extern struct {		/* MUST match common block ltvars in lt.h! */
   DOUBLE_COMPLEX cache[8][2];
   DOUBLE_COMPLEX savedptr[8];
   double maxdev;
-  long serial, warndigits, errdigits, versionkey;
-  long debugkey, debugfrom, debugto;
-} ltvars_;
+  int serial, warndigits, errdigits, versionkey;
+  int debugkey, debugfrom, debugto;
+} FORTRAN(ltvars);
 
 extern struct {		/* MUST match common block ffregul in ff.h! */
   double mudim, delta, lambda;
-} ffregul_;
+} FORTRAN(ffregul);
 
 }
 
@@ -162,59 +164,59 @@ enum {
 inline double_complex A0(AARGS(const double ))
 {
   DOUBLE_COMPLEX result;
-  a0sub_(&result, AARGS(&));
+  FORTRAN(a0sub)(&result, AARGS(&));
   return ToComplex(result);
 }
 
 // inline double_complex A0C(AARGS(const double_complex ))
 // {
 //   DOUBLE_COMPLEX result;
-//   a0subc_(&result, AARGS(_Fcp_));
+//   FORTRAN(a0subc)(&result, AARGS(_Fcp_));
 //   return ToComplex(result);
 // }
 
 inline double_complex A00(AARGS(const double ))
 {
   DOUBLE_COMPLEX result;
-  a00sub_(&result, AARGS(&));
+  FORTRAN(a00sub)(&result, AARGS(&));
   return ToComplex(result);
 }
 
 // inline double_complex A00C(AARGS(const double_complex ))
 // {
 //   DOUBLE_COMPLEX result;
-//   a00subc_(&result, AARGS(_Fcp_));
+//   FORTRAN(a00subc)(&result, AARGS(_Fcp_));
 //   return ToComplex(result);
 // }
 
 /****************************************************************/
 
-inline long Bget(BARGS(const double ))
+inline int Bget(BARGS(const double ))
 {
-  return bget_(BARGS(&));
+  return FORTRAN(bget)(BARGS(&));
 }
 
-// inline long BgetC(BARGS(const double_complex ))
+// inline int BgetC(BARGS(const double_complex ))
 // {
-//   return bgetc_(BARGS(_Fcp_));
+//   return FORTRAN(bgetc)(BARGS(_Fcp_));
 // }
 
-inline DOUBLE_COMPLEX *Bcache(const long integral)
-  { return &ltvars_.cache[0][integral]; }
+inline DOUBLE_COMPLEX *Bcache(const int integral)
+  { return &FORTRAN(ltvars).cache[0][integral]; }
 
-inline DOUBLE_COMPLEX *BcacheC(const long integral)
-  { return &ltvars_.cache[1][integral]; }
+inline DOUBLE_COMPLEX *BcacheC(const int integral)
+  { return &FORTRAN(ltvars).cache[1][integral]; }
 
-inline double_complex Bval(const long i, const long integral)
+inline double_complex Bval(const int i, const int integral)
   { return ToComplex(Bcache(integral)[i]); }
 
-inline double_complex BvalC(const long i, const long integral)
+inline double_complex BvalC(const int i, const int integral)
   { return ToComplex(BcacheC(integral)[i]); }
 
-inline double_complex B0i(const long i, BARGS(const double ))
+inline double_complex B0i(const int i, BARGS(const double ))
   { return Bval(i, Bget(BARGS())); }
 
-// inline double_complex B0iC(const long i, BARGS(const double_complex ))
+// inline double_complex B0iC(const int i, BARGS(const double_complex ))
 //   { return BvalC(i, BgetC(BARGS())); }
 
 inline double_complex B0(BARGS(const double ))
@@ -264,43 +266,43 @@ inline double_complex DB11(BARGS(const double ))
 inline double_complex C0(CARGS(const double ))
 {
   DOUBLE_COMPLEX result;
-  c0sub_(&result, CARGS(&));
+  FORTRAN(c0sub)(&result, CARGS(&));
   return ToComplex(result);
 }
 
 // inline double_complex C0C(CARGS(const double_complex ))
 // {
 //   DOUBLE_COMPLEX result;
-//   c0subc_(&result, CARGS(_Fcp_));
+//   FORTRAN(c0subc)(&result, CARGS(_Fcp_));
 //   return ToComplex(result);
 // }
 
-inline long Cget(CARGS(const double ))
+inline int Cget(CARGS(const double ))
 {
-  return cget_(CARGS(&));
+  return FORTRAN(cget)(CARGS(&));
 }
 
-// inline long CgetC(CARGS(const double_complex ))
+// inline int CgetC(CARGS(const double_complex ))
 // {
-//   return cgetc_(CARGS(_Fcp_));
+//   return FORTRAN(cgetc)(CARGS(_Fcp_));
 // }
 
-inline DOUBLE_COMPLEX *Ccache(const long integral)
-  { return &ltvars_.cache[2][integral]; }
+inline DOUBLE_COMPLEX *Ccache(const int integral)
+  { return &FORTRAN(ltvars).cache[2][integral]; }
 
-inline DOUBLE_COMPLEX *CcacheC(const long integral)
-  { return &ltvars_.cache[3][integral]; }
+inline DOUBLE_COMPLEX *CcacheC(const int integral)
+  { return &FORTRAN(ltvars).cache[3][integral]; }
 
-inline double_complex Cval(const long i, const long integral)
+inline double_complex Cval(const int i, const int integral)
   { return ToComplex(Ccache(integral)[i]); }
 
-inline double_complex CvalC(const long i, const long integral)
+inline double_complex CvalC(const int i, const int integral)
   { return ToComplex(CcacheC(integral)[i]); }
 
-inline double_complex C0i(const long i, CARGS(const double ))
+inline double_complex C0i(const int i, CARGS(const double ))
   { return Cval(i, Cget(CARGS())); }
 
-// inline double_complex C0iC(const long i, CARGS(const double_complex ))
+// inline double_complex C0iC(const int i, CARGS(const double_complex ))
 //   { return CvalC(i, CgetC(CARGS())); }
 
 /****************************************************************/
@@ -308,43 +310,43 @@ inline double_complex C0i(const long i, CARGS(const double ))
 inline double_complex D0(DARGS(const double ))
 {
   DOUBLE_COMPLEX result;
-  d0sub_(&result, DARGS(&));
+  FORTRAN(d0sub)(&result, DARGS(&));
   return ToComplex(result);
 }
 
 // inline double_complex D0C(DARGS(const double_complex ))
 // {
 //   DOUBLE_COMPLEX result;
-//   d0subc_(&result, DARGS(&));
+//   FORTRAN(d0subc)(&result, DARGS(&));
 //   return ToComplex(result);
 // }
 
-inline long Dget(DARGS(const double ))
+inline int Dget(DARGS(const double ))
 {
-  return dget_(DARGS(&));
+  return FORTRAN(dget)(DARGS(&));
 }
 
-// inline long DgetC(DARGS(const double_complex ))
+// inline int DgetC(DARGS(const double_complex ))
 // {
-//   return dgetc_(DARGS(_Fcp_));
+//   return FORTRAN(dgetc)(DARGS(_Fcp_));
 // }
 
-inline DOUBLE_COMPLEX *Dcache(const long integral)
-  { return &ltvars_.cache[4][integral]; }
+inline DOUBLE_COMPLEX *Dcache(const int integral)
+  { return &FORTRAN(ltvars).cache[4][integral]; }
 
-inline DOUBLE_COMPLEX *DcacheC(const long integral)
-  { return &ltvars_.cache[5][integral]; }
+inline DOUBLE_COMPLEX *DcacheC(const int integral)
+  { return &FORTRAN(ltvars).cache[5][integral]; }
 
-inline double_complex Dval(const long i, const long integral)
+inline double_complex Dval(const int i, const int integral)
   { return ToComplex(Dcache(integral)[i]); }
 
-inline double_complex DvalC(const long i, const long integral)
+inline double_complex DvalC(const int i, const int integral)
   { return ToComplex(DcacheC(integral)[i]); }
 
-inline double_complex D0i(const long i, DARGS(const double ))
+inline double_complex D0i(const int i, DARGS(const double ))
   { return Dval(i, Dget(DARGS())); }
 
-// inline double_complex D0iC(const long i, DARGS(const double_complex ))
+// inline double_complex D0iC(const int i, DARGS(const double_complex ))
 //   { return DvalC(i, DgetC(DARGS())); }
 
 /****************************************************************/
@@ -352,43 +354,43 @@ inline double_complex D0i(const long i, DARGS(const double ))
 inline double_complex E0(EARGS(const double ))
 {
   DOUBLE_COMPLEX result;
-  e0sub_(&result, EARGS(&));
+  FORTRAN(e0sub)(&result, EARGS(&));
   return ToComplex(result);
 }
 
 // inline double_complex E0C(EARGS(const double_complex ))
 // {
 //   DOUBLE_COMPLEX result;
-//   e0subc_(&result, EARGS(&));
+//   FORTRAN(e0subc)(&result, EARGS(&));
 //   return ToComplex(result);
 // }
 
-inline long Eget(EARGS(const double ))
+inline int Eget(EARGS(const double ))
 {
-  return eget_(EARGS(&));
+  return FORTRAN(eget)(EARGS(&));
 }
 
-// inline long EgetC(EARGS(const double_complex ))
+// inline int EgetC(EARGS(const double_complex ))
 // {
-//   return egetc_(EARGS(_Fcp_));
+//   return FORTRAN(egetc)(EARGS(_Fcp_));
 // }
 
-inline DOUBLE_COMPLEX *Ecache(const long integral)
-  { return &ltvars_.cache[6][integral]; }
+inline DOUBLE_COMPLEX *Ecache(const int integral)
+  { return &FORTRAN(ltvars).cache[6][integral]; }
 
-inline DOUBLE_COMPLEX *EcacheC(const long integral)
-  { return &ltvars_.cache[7][integral]; }
+inline DOUBLE_COMPLEX *EcacheC(const int integral)
+  { return &FORTRAN(ltvars).cache[7][integral]; }
 
-inline double_complex Eval(const long i, const long integral)
+inline double_complex Eval(const int i, const int integral)
   { return ToComplex(Ecache(integral)[i]); }
 
-inline double_complex EvalC(const long i, const long integral)
+inline double_complex EvalC(const int i, const int integral)
   { return ToComplex(EcacheC(integral)[i]); }
 
-inline double_complex E0i(const long i, EARGS(const double ))
+inline double_complex E0i(const int i, EARGS(const double ))
   { return Eval(i, Eget(EARGS())); }
 
-// inline double_complex E0iC(const long i, EARGS(const double_complex ))
+// inline double_complex E0iC(const int i, EARGS(const double_complex ))
 //   { return EvalC(i, EgetC(EARGS())); }
 
 /****************************************************************/
@@ -396,98 +398,98 @@ inline double_complex E0i(const long i, EARGS(const double ))
 inline double_complex Li2(const double x)
 {
   DOUBLE_COMPLEX result;
-  li2sub_(&result, &x);
+  FORTRAN(li2sub)(&result, &x);
   return ToComplex(result);
 }
 
 // inline double_complex Li2C(const double_complex x)
 // {
 //   DOUBLE_COMPLEX result;
-//   li2csub_(&result, _Fcp_(x));
+//   FORTRAN(li2csub)(&result, _Fcp_(x));
 //   return ToComplex(result);
 // }
 
 /****************************************************************/
 
-#define clearcache clearcache_
-#define markcache markcache_
-#define restorecache restorecache_
-// #define ffini ffini_
-// #define ffexi ffexi_
+#define clearcache FORTRAN(clearcache)
+#define markcache FORTRAN(markcache)
+#define restorecache FORTRAN(restorecache)
+// #define ffini FORTRAN(ffini)
+// #define ffexi FORTRAN(ffexi)
 
 
 inline void setmudim(const double mudim)
 {
-  ffregul_.mudim = mudim;
+  FORTRAN(ffregul).mudim = mudim;
   clearcache();
 }
 
-inline double getmudim() { return ffregul_.mudim; }
+inline double getmudim() { return FORTRAN(ffregul).mudim; }
 
 
 inline void setdelta(const double delta)
 {
-  ffregul_.delta = delta;
+  FORTRAN(ffregul).delta = delta;
   clearcache();
 }
 
-inline double getdelta() { return ffregul_.delta; }
+inline double getdelta() { return FORTRAN(ffregul).delta; }
 
 
 inline void setlambda(const double lambda)
 {
-  ffregul_.lambda = lambda;
+  FORTRAN(ffregul).lambda = lambda;
   clearcache();
 }
 
-inline double getlambda() { return ffregul_.lambda; }
+inline double getlambda() { return FORTRAN(ffregul).lambda; }
 
 
 inline void setmaxdev(const double maxdev)
 {
-  ltvars_.maxdev = maxdev;
+  FORTRAN(ltvars).maxdev = maxdev;
 }
 
-inline double getmaxdev() { return ltvars_.maxdev; }
+inline double getmaxdev() { return FORTRAN(ltvars).maxdev; }
 
 
-inline void setwarndigits(const long warndigits)
+inline void setwarndigits(const int warndigits)
 {
-  ltvars_.warndigits = warndigits;
+  FORTRAN(ltvars).warndigits = warndigits;
 }
 
-inline long getwarndigits() { return ltvars_.warndigits; }
+inline int getwarndigits() { return FORTRAN(ltvars).warndigits; }
 
 
-inline void seterrdigits(const long errdigits)
+inline void seterrdigits(const int errdigits)
 {
-  ltvars_.errdigits = errdigits;
+  FORTRAN(ltvars).errdigits = errdigits;
 }
 
-inline long geterrdigits() { return ltvars_.errdigits; }
+inline int geterrdigits() { return FORTRAN(ltvars).errdigits; }
 
 
-inline void setversionkey(const long versionkey)
+inline void setversionkey(const int versionkey)
 {
-  ltvars_.versionkey = versionkey;
+  FORTRAN(ltvars).versionkey = versionkey;
   clearcache();
 }
 
-inline long getversionkey() { return ltvars_.versionkey; }
+inline int getversionkey() { return FORTRAN(ltvars).versionkey; }
 
 
-inline void setdebugkey(const long debugkey)
+inline void setdebugkey(const int debugkey)
 {
-  ltvars_.debugkey = debugkey;
+  FORTRAN(ltvars).debugkey = debugkey;
 }
 
-inline long getdebugkey() { return ltvars_.debugkey; }
+inline int getdebugkey() { return FORTRAN(ltvars).debugkey; }
 
 
-inline void setdebugrange(const long debugfrom, const long debugto)
+inline void setdebugrange(const int debugfrom, const int debugto)
 {
-  ltvars_.debugfrom = debugfrom;
-  ltvars_.debugto = debugto;
+  FORTRAN(ltvars).debugfrom = debugfrom;
+  FORTRAN(ltvars).debugto = debugto;
 }
 
   }

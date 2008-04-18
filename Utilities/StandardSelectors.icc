@@ -14,7 +14,8 @@
 inline bool WeakBHadronSelector::check(const Particle & p) const
 {
   unsigned int id=abs(p.id());
-  if (!(id > 510 && id < 532 || id > 5121 && id < 5555)) return false; 
+  if (!( ( id > 510 && id < 532 ) || ( id > 5121 && id < 5555 ) ) )
+    return false; 
   switch(id)
     {
     case  511: // B0

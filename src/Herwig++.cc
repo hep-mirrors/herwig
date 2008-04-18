@@ -7,10 +7,8 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "HerwigRun.h"
-#include "versionstring.h"
 
 int main(int argc, char * argv[]) {
-  setVersionString();
   // HerwigRun's constructor does all the work
   try {
     Herwig::HerwigRun hw(argc, argv);

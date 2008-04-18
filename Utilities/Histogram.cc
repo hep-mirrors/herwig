@@ -12,12 +12,12 @@
 //
 
 #include "Histogram.h"
+#include "HerwigStrategy.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Config/Herwig.h"
 
 using namespace Herwig;
 NoPIOClassDescription<Histogram> Histogram::initHistogram;
@@ -56,8 +56,8 @@ void Histogram::topdrawOutput(ostream & out,
     out << "TITLE LEFT \""   << left      << "\"\n";
     out << "CASE       \""   << leftcase  << "\"\n";
     out << (errorbars ? "SET ORDER X Y DX DY \n" : "SET ORDER X Y DX\n");
-    if (HerwigVersion::versionstring != "") {
-      out << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
+    if (HerwigStrategy::version != "") {
+      out << "TITLE RIGHT \"" << HerwigStrategy::version << "\"\n";
       out << "CASE        \"\"\n";
     }
     if(_havedata) out << "SET AXIS BOTTOM OFF\n";
