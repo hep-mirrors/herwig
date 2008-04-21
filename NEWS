@@ -1,5 +1,6 @@
 Herwig++ News				(emacs -*- outline -*- format)
-* Herwig++-2.2.0 release: 2008-04-18 (tagged at SVN r)
+
+* Herwig++-2.2.0 release: 2008-04-18 (tagged at SVN r3195)
 ** Major release: now as stand-alone library
    Herwig++ is now a stand-alone dlopen() plugin to ThePEG.
    No compile-time linking to Herwig code is required. The Herwig++
@@ -17,11 +18,8 @@ Herwig++ News				(emacs -*- outline -*- format)
    Fixed by using default allocators in Herwig++, and the
    Repository::cleanup() method in ThePEG 1.2.0. 
 
-** Ticket #147: Looptools with 64bit g77
-   ****************CHECK*IF*STILL*PROBLEMATIC**************
-
 ** Ticket #157: broken gsl library path on some 64bit systems
-   ****************NOT*FIXED*YET***************************
+   Paths with lib64 are correctly identified now.
 
 ** Ticket #159: p_t spectrum of ttbar pair
    Fixed identical particle multiplier in Sudakov form factor.
@@ -39,18 +37,22 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** Higgs width fixes
 
-** GGtoHMECorr
-
 ** SatPDF
+   Optionally, the PDF extrapolation behaviour outside a given range 
+   can now be specified.
 
-** gcc 4.3.0
-   Herwig++ compiles cleanly with the new gcc 4.3 series.
+** gcc 4.3
+   Herwig++-2.2 compiles cleanly with the new gcc 4.3 series.
+
+
 
 
 * Herwig++-2.1.4 release: 2008-03-03 (tagged at SVN r3024)
 ** Ticket #152: Vertex positions
    All vertex positions of unphysical particles are set to zero until
    a fix for the previous nonsensical values can be implemented.
+
+
 
 
 * Herwig++-2.1.3 release: 2008-02-25 (tagged at SVN r2957)
