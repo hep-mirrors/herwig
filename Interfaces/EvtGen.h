@@ -349,6 +349,11 @@ private:
    *  Particles for which to output the EvtGen decays
    */
   vector<long> _convid;
+
+  /**
+   *  Whether or not to redirect cout and cerr when EvtGen is running
+   */
+  bool _redirect;
 };
 
 }
