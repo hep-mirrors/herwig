@@ -144,9 +144,16 @@ RFieldAnalysis.cc RFieldAnalysis.icc \
 MPIMultiplicity.h MPIMultiplicity.fh \
 MPIMultiplicity.icc MPIMultiplicity.cc
 
-pkglib_LTLIBRARIES += HwDzeroAnalysis.la
-  HwDzeroAnalysis_la_LDFLAGS = -module -version-info 4:0:0
-  HwDzeroAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-  HwDzeroAnalysis_la_SOURCES = \
-  DzeroZpTAnalysis.cc DzeroZpTAnalysis.fh \
-  DzeroZpTAnalysis.h DzeroZpTAnalysis.icc
+pkglib_LTLIBRARIES += HwZpt.la
+HwZpt_la_LDFLAGS = -module -version-info 4:0:0
+HwZpt_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwZpt_la_SOURCES = \
+ZpTRun2.cc ZpTRun2.h \
+ZpTRun1.cc ZpTRun1.h 
+
+
+pkglib_LTLIBRARIES += HwZrap.la
+HwZrap_la_LDFLAGS = -module -version-info 4:0:0
+HwZrap_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwZrap_la_SOURCES = \
+Zrapidity.cc Zrapidity.h 
