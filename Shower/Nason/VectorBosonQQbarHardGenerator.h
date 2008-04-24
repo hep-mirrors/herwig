@@ -123,7 +123,7 @@ protected:
 
 private:
 
-  void getEvent();
+  bool getEvent();
  
   /**
    * Constructs the post-emission momenta of q, qbar, g

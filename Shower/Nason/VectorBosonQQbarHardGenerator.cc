@@ -25,11 +25,11 @@
 using namespace Herwig;
 
 void VectorBosonQQbarHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _alphaS_max;
+  os << _alphaS << _alphaS_max << ounit( _Qg, GeV );
 }
 
 void VectorBosonQQbarHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _alphaS_max;
+  is >> _alphaS >> _alphaS_max >> iunit( _Qg, GeV );
 }
 
 ClassDescription<VectorBosonQQbarHardGenerator> VectorBosonQQbarHardGenerator::initVectorBosonQQbarHardGenerator;
@@ -45,7 +45,12 @@ void VectorBosonQQbarHardGenerator::Init() {
     ("ShowerAlpha",
      "The object calculating the strong coupling constant",
      &VectorBosonQQbarHardGenerator::_alphaS, false, false, true, false, false);
-
+  
+  static Parameter<VectorBosonQQbarHardGenerator, Energy> interfacePtMin
+    ("minPt",
+     "The pt cut on hardest emision generation",
+     &VectorBosonQQbarHardGenerator::_Qg, GeV, 1.*GeV, 0*GeV, 100000.0*GeV,
+     false, false, Interface::limited);
 }
 
 NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
@@ -98,10 +103,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     << "VectorBosonQQbarHardGenerator::generateHardest()" 
     << Exception::runerror;
   // Get all the gluon mass assuming massless quarks: 
-  _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
+  // _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
   // Generate emission and change _quark[0,1] and _g to momenta
   // of q, qbar and g after the hardest emission:
-  getEvent();
+  if(!getEvent()) return NasonTreePtr();
+
   // now we need to assign the emitter based on evolution scales
   // rather than for the correlations
   _iemitter   = _quark[0]*_g>_quark[1]*_g ? 1 : 0;
@@ -171,7 +177,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
-  // Calculate partonic event shapes from hard emission event?
+  // Calculate partonic event shapes from hard emission event
   double thrust = _iemitter == 0 ? _xb : _xc;
   _ptplot.push_back(_pt/GeV);
   _yplot.push_back(_y);
@@ -185,7 +191,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // reset the momenta to ensure correct momenta after shower recon
   // if emitter for Kliess trick and shower are different
   for(map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator 
-	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
+  	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
     mit->first->set5Momentum(mit->second->_shower);
   // return the tree
   return nasontree;
@@ -272,14 +278,12 @@ void VectorBosonQQbarHardGenerator::doinitrun() {
   HardestEmissionGenerator::doinitrun();
 }
 
-//private functions-internal workings
-
-void VectorBosonQQbarHardGenerator::getEvent(){
+bool VectorBosonQQbarHardGenerator::getEvent(){
 
   
   Energy pt_min = _Qg;  
   Energy pt_max = 0.5*sqrt(_s);
-// Define over valued y_max & y_min according to the associated pt_min cut.
+  // Define over valued y_max & y_min according to the associated pt_min cut.
   double y_max  =  acosh(pt_max/pt_min);
   double y_min  = -acosh(pt_max/pt_min);
   double wgt;
@@ -305,22 +309,21 @@ void VectorBosonQQbarHardGenerator::getEvent(){
       cerr << "exact = "<< getResult() << "   crude = " << 
 	prefactor*GeV/_pt << endl;
     }
-    // No emission event if pt goes past pt_min - basically set to outside
-    // of the histogram bounds (hopefully hist object just ignores it).
+    // No emission event if pt goes past pt_min.
     if(_pt<pt_min) {
       _pt = 0. * GeV; 
-      reject = false;
+      return false;
     }
   } while (reject);
   
 // _z and _ktild are the z & \tilde{kappa} variables in the new variables
 // paper, for the final-final colour connnection with massless partons (b=c=0).
-  if(UseRandom::rnd()<sqr(_xb)/(sqr(_xb)+sqr(_xc))) {
+  if(UseRandom::rnd() < sqr(_xb) / (sqr(_xb) + sqr(_xc))) {
     _iemitter   = 1;
     _ispectator = 0;
     _z = (_xc+_xb-1.)/_xb; 
     _ktild = (1.-_xb)/_z/(1.-_z); 
-  } else{
+  } else {
     _iemitter   = 0;
     _ispectator = 1;
     _z = (_xb+_xc-1.)/_xc;
@@ -331,13 +334,12 @@ void VectorBosonQQbarHardGenerator::getEvent(){
      
   //construct vectors in com z frame
   constructVectors();
+  return true;
 }
 
 double VectorBosonQQbarHardGenerator::getResult() {
   double res = 4. / 3. / Constants::pi * _pt / _s *
     ( sqr ( _xb ) + sqr( _xc ) ) / ( 1. - _xb ) / ( 1. -_xc ) * GeV;
-  //res *= _alphaS->value( sqr( _pt ) );
-  // KH - shouldn't we use the ACTUAL pt inside alphaS instead i.e. 
   double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
   res *= _alphaS->value( sqr( _pt )*(_xb+_xc-1.)/xfact2 );
   return res;
@@ -372,7 +374,7 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   // KH - Check no emission events - they gave nans before here
   // Rotation for the azimuthal correlation
   LorentzRotation r;
-  r.setRotate( twopi, _quark[_ispectator].vect().unit());
+  r.setRotate( twopi*UseRandom::rnd(), _quark[_ispectator].vect().unit());
   _quark[_iemitter] = r*_quark[_iemitter];
   _g = r*_g;
   //boost constructed vectors into the event frame

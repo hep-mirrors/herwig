@@ -14,7 +14,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline VectorBosonQQbarHardGenerator::VectorBosonQQbarHardGenerator() : _alphaS_max(2.0)
+  inline VectorBosonQQbarHardGenerator::VectorBosonQQbarHardGenerator() : _alphaS_max(2.0), _Qg(1.*GeV)
 {}
 
 
