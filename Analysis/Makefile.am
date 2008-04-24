@@ -11,8 +11,8 @@ EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
 EventShapesMasterAnalysis.h EventShapesMasterAnalysis.icc \
 BasicConsistency.cc BasicConsistency.fh \
 BasicConsistency.h BasicConsistency.icc \
-MultiplicityCount.cc MultiplicityCount.fh \
-MultiplicityCount.h MultiplicityCount.icc \
+LEPMultiplicityCount.cc LEPMultiplicityCount.h \
+MultiplicityInfo.h \
 LEPBMultiplicity.cc LEPBMultiplicity.fh \
 LEPBMultiplicity.h LEPBMultiplicity.icc \
 SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
@@ -98,7 +98,9 @@ BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
 a1DecayAnalysis.h a1DecayAnalysis.icc \
 a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
-BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc
+BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
+Upsilon4SSpectrumAnalysis.h Upsilon4SSpectrumAnalysis.cc \
+Upsilon4SMultiplicityCount.h Upsilon4SMultiplicityCount.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
