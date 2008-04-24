@@ -379,9 +379,12 @@ void BELLECharmAnalysis::doinitrun() {
   double norm(0.);
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DstarResAdata[ix]+DstarResBdata[ix];
+      data[ix]  = DstarResAdata[ix]+DstarResBdata[ix]
+	        -(DstarContAdata[ix]+DstarContBdata[ix]);
       error[ix] = sqrt(sqr(DstarResAerror[ix])+sqr(DstarResAsyst[ix])+
-		       sqr(DstarResBerror[ix])+sqr(DstarResBsyst[ix]));
+		       sqr(DstarResBerror[ix])+sqr(DstarResBsyst[ix])+
+		       sqr(DstarContAerror[ix])+sqr(DstarContAsyst[ix])+
+		       sqr(DstarContBerror[ix])+sqr(DstarContBsyst[ix]));
     }
     else {
       data[ix]  = DstarContAdata[ix]+DstarContBdata[ix];
@@ -472,8 +475,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DstarResCdata[ix];
-      error[ix] = sqrt(sqr(DstarResCerror[ix])+sqr(DstarResCsyst[ix]));
+      data[ix]  = DstarResCdata[ix]-DstarContCdata[ix];
+      error[ix] = sqrt(sqr(DstarResCerror[ix])+sqr(DstarResCsyst[ix])+
+		       sqr(DstarContCerror[ix])+sqr(DstarContCsyst[ix]));
     }
     else {
       data[ix]  = DstarContCdata[ix];
@@ -563,8 +567,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = D0Resdata[ix];
-      error[ix] = sqrt(sqr(D0Reserror[ix])+sqr(D0Ressyst[ix]));
+      data[ix]  = D0Resdata[ix]-D0Contdata[ix];
+      error[ix] = sqrt(sqr(D0Reserror[ix])+sqr(D0Ressyst[ix])+
+		       sqr(D0Conterror[ix])+sqr(D0Contsyst[ix]));
     }
     else {
       data[ix]  = D0Contdata[ix];
@@ -654,8 +659,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DplusResdata[ix];
-      error[ix] = sqrt(sqr(DplusReserror[ix])+sqr(DplusRessyst[ix]));
+      data[ix]  = DplusResdata[ix]-DplusContdata[ix];
+      error[ix] = sqrt(sqr(DplusReserror[ix])+sqr(DplusRessyst[ix])+
+		       sqr(DplusConterror[ix])+sqr(DplusContsyst[ix]));
     }
     else {
       data[ix]  = DplusContdata[ix];
@@ -745,8 +751,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = DsResdata[ix];
-      error[ix] = sqrt(sqr(DsReserror[ix])+sqr(DsRessyst[ix]));
+      data[ix]  = DsResdata[ix]-DsContdata[ix];
+      error[ix] = sqrt(sqr(DsReserror[ix])+sqr(DsRessyst[ix])+
+		       sqr(DsConterror[ix])+sqr(DsContsyst[ix]));
     }
     else {
       data[ix]  = DsContdata[ix];
@@ -836,8 +843,9 @@ void BELLECharmAnalysis::doinitrun() {
   norm=0.;
   for(unsigned int ix=0;ix<60;++ix) {
     if(_onshell) {
-      data[ix]  = LambdaResdata[ix];
-      error[ix] = sqrt(sqr(LambdaReserror[ix])+sqr(LambdaRessyst[ix]));
+      data[ix]  = LambdaResdata[ix]-LambdaContdata[ix];
+      error[ix] = sqrt(sqr(LambdaReserror[ix])+sqr(LambdaRessyst[ix])+
+		       sqr(LambdaConterror[ix])+sqr(LambdaContsyst[ix]));
     }
     else {
       data[ix]  = LambdaContdata[ix];
