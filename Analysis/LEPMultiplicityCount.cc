@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// MultiplicityCount.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// LEPMultiplicityCount.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MultiplicityCount class.
+// functions of the LEPMultiplicityCount class.
 //
 
-#include "MultiplicityCount.h"
+#include "LEPMultiplicityCount.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -28,25 +28,15 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-string MultiplicityInfo::bargraph()
-{
-  if (obsMultiplicity == 0.0) return "     ?     ";
-  else if (nSigma() >= 6.0)  return "-----|---->";
-  else if (nSigma() >= 5.0)  return "-----|----*";
-  else if (nSigma() >= 4.0)  return "-----|---*-";
-  else if (nSigma() >= 3.0)  return "-----|--*--";
-  else if (nSigma() >= 2.0)  return "-----|-*---";
-  else if (nSigma() >= 1.0)  return "-----|*----";
-  else if (nSigma() > -1.0)  return "-----*-----";
-  else if (nSigma() > -2.0)  return "----*|-----";
-  else if (nSigma() > -3.0)  return "---*-|-----";
-  else if (nSigma() > -4.0)  return "--*--|-----";
-  else if (nSigma() > -5.0)  return "-*---|-----";
-  else if (nSigma() > -6.0)  return "*----|-----";
-  else                        return "<----|-----";
+IBPtr LEPMultiplicityCount::clone() const {
+  return new_ptr(*this);
 }
 
-MultiplicityCount::MultiplicityCount() : _makeHistograms(false)
+IBPtr LEPMultiplicityCount::fullclone() const {
+  return new_ptr(*this);
+}
+
+LEPMultiplicityCount::LEPMultiplicityCount() : _makeHistograms(false)
 {
   // Average particle multiplicities in hadronic Z decay
   // PDG 2006 with 2007 partial update
@@ -170,7 +160,7 @@ namespace {
 }
 
 
-void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
+void LEPMultiplicityCount::analyze(tEventPtr event, long, int, int) {
 
   set<tcPPtr> particles;
   event->selectFinalState(inserter(particles));
@@ -262,9 +252,9 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   }
 }
 
-void MultiplicityCount::analyze(const tPVector & ) {}
+void LEPMultiplicityCount::analyze(const tPVector & ) {}
 
-void MultiplicityCount::dofinish() {
+void LEPMultiplicityCount::dofinish() {
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
 
@@ -362,40 +352,40 @@ void MultiplicityCount::dofinish() {
   AnalysisHandler::dofinish();
 }
 
-ClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
+ClassDescription<LEPMultiplicityCount> LEPMultiplicityCount::initLEPMultiplicityCount;
 // Definition of the static class description member.
 
-void MultiplicityCount::Init() {
+void LEPMultiplicityCount::Init() {
 
-  static ParVector<MultiplicityCount,long> interfaceparticlecodes
+  static ParVector<LEPMultiplicityCount,long> interfaceparticlecodes
     ("ParticleCodes",
      "The PDG code for the particles",
-     &MultiplicityCount::_particlecodes,
+     &LEPMultiplicityCount::_particlecodes,
      0, 0, 0, -10000000, 10000000, false, false, true);
 
-  static ParVector<MultiplicityCount,double> interfaceMultiplicity
+  static ParVector<LEPMultiplicityCount,double> interfaceMultiplicity
     ("Multiplicity",
      "The multiplicity for the particle",
-     &MultiplicityCount::_multiplicity,
+     &LEPMultiplicityCount::_multiplicity,
      0, 0, 0, 0., 1000., false, false, true);
 
-  static ParVector<MultiplicityCount,double> interfaceError
+  static ParVector<LEPMultiplicityCount,double> interfaceError
     ("Error",
      "The error on the multiplicity for the particle",
-     &MultiplicityCount::_error,
+     &LEPMultiplicityCount::_error,
      0, 0, 0, 0., 1000., false, false, true);
 
-  static ParVector<MultiplicityCount,unsigned int> interfaceSpecies
+  static ParVector<LEPMultiplicityCount,unsigned int> interfaceSpecies
     ("Species",
      "The type of particle",
-     &MultiplicityCount::_species,
+     &LEPMultiplicityCount::_species,
      0, 0, other, 0, other, false, false, true);
 
 
-  static Switch<MultiplicityCount,bool> interfaceHistograms
+  static Switch<LEPMultiplicityCount,bool> interfaceHistograms
     ("Histograms",
      "Set to On if detailed histograms are required.",
-     &MultiplicityCount::_makeHistograms, false, true, false);
+     &LEPMultiplicityCount::_makeHistograms, false, true, false);
   static SwitchOption interfaceHistogramsOn
     (interfaceHistograms,
      "Yes",
@@ -407,15 +397,15 @@ void MultiplicityCount::Init() {
      "Do not generate histograms.",
      false);
 
-  static ClassDocumentation<MultiplicityCount> documentation
-    ("The MultiplicityCount class count the multiplcities of final-state particles"
+  static ClassDocumentation<LEPMultiplicityCount> documentation
+    ("The LEPMultiplicityCount class count the multiplcities of final-state particles"
      " and compares them with LEP data.");
 }
 
-void MultiplicityCount::persistentOutput(PersistentOStream & os) const {
+void LEPMultiplicityCount::persistentOutput(PersistentOStream & os) const {
   os << _particlecodes << _multiplicity << _error << _species << _makeHistograms;
 }
 
-void MultiplicityCount::persistentInput(PersistentIStream & is, int) {
+void LEPMultiplicityCount::persistentInput(PersistentIStream & is, int) {
   is >> _particlecodes >> _multiplicity >> _error >> _species >> _makeHistograms;
 }
