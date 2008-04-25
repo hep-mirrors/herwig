@@ -151,6 +151,12 @@ HwZpt_la_SOURCES = \
 ZpTRun2.cc ZpTRun2.h \
 ZpTRun1.cc ZpTRun1.h 
 
+pkglib_LTLIBRARIES += HwWpt.la
+HwWpt_la_LDFLAGS = -module -version-info 4:0:0
+HwWpt_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwWpt_la_SOURCES = \
+Wpt.cc Wpt.h 
+
 
 pkglib_LTLIBRARIES += HwZrap.la
 HwZrap_la_LDFLAGS = -module -version-info 4:0:0
