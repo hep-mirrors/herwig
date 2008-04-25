@@ -54,6 +54,7 @@ void VectorBosonQQbarHardGenerator::Init() {
 }
 
 NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
+
   // Get the progenitors: Q and Qbar.
   ShowerProgenitorPtr 
     QProgenitor    = tree->outgoingLines().begin()->first,
@@ -62,20 +63,29 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   vector<tcPDPtr> partons(2);
   partons[0] = QProgenitor->progenitor()->dataPtr();
   partons[1] = QbarProgenitor->progenitor()->dataPtr();
+
   // momentum of the partons
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
+
   // PDG codes of the partons
   int q_id   (abs(QProgenitor->progenitor()->id()   ));
   int qbar_id(abs(QbarProgenitor->progenitor()->id()));
+
   // Get the gauge boson.
   PPtr boson = tree->incomingLines().begin()->first->copy();
+
+  // Get the gauge boson mass.
+  _s = (_quark[0]+_quark[1])*(_quark[0]+_quark[1]);
+
   // Get data for the gluon.
   tcPDPtr gluon_data = getParticleData(ParticleID::g);
+
   // Get the list of possible branchings.
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
+
   // Find the sudakovs for the q/qbar->q/qbarg branchings.
   SudakovPtr q_sudakov,qbar_sudakov;
   // quark
@@ -97,36 +107,51 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
       break; 	    
     }
   }
+
   // Check sudakovs got created:
   if(!q_sudakov||!qbar_sudakov) throw Exception() 
     << "No Sudakov for the hard emission in "
     << "VectorBosonQQbarHardGenerator::generateHardest()" 
     << Exception::runerror;
+
   // Get all the gluon mass assuming massless quarks: 
   // _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
-  // Generate emission and change _quark[0,1] and _g to momenta
-  // of q, qbar and g after the hardest emission:
+
+  // Generate emission and set _quark[0,1] and _g to be the 
+  // momenta of q, qbar and g after the hardest emission:
   if(!getEvent()) return NasonTreePtr();
 
-  // now we need to assign the emitter based on evolution scales
+  // Ensure the energies are greater than the constituent masses:
+  for (int i=0; i<2; i++)
+     if (_quark[i].e() < partons[i]->constituentMass()) return NasonTreePtr();
+  if (_g.e() < gluon_data->constituentMass()) return NasonTreePtr();
+
+  // Set masses as done in VectorBosonQQbarMECorrection:
+  for (int i=0; i<2; i++) _quark[i].setMass(partons[i]->mass());
+  _g.setMass(0.*MeV);
+
+  // assign the emitter based on evolution scales
   // rather than for the correlations
   _iemitter   = _quark[0]*_g>_quark[1]*_g ? 1 : 0;
   _ispectator = _iemitter==1              ? 0 : 1; 
+
   // Set the sudakov for the q/qbar->q/qbarg branching.
   SudakovPtr sudakov = _iemitter==0 ? q_sudakov : qbar_sudakov;
+
   // Make the particles for the NasonTree:
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
-  emitter->set5Momentum(_quark[_iemitter]); 
   ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons[_ispectator],true)));
-  spectator->set5Momentum(_quark[_ispectator]);  
   ShowerParticlePtr gluon(new_ptr(ShowerParticle(gluon_data,true)));
-  gluon->set5Momentum(_g);  
   ShowerParticlePtr vboson(new_ptr(ShowerParticle(boson->dataPtr(),false)));
-  vboson->set5Momentum(boson->momentum());  
   ShowerParticlePtr parent(new_ptr(ShowerParticle(partons[_iemitter],true)));
+  emitter->set5Momentum(_quark[_iemitter]); 
+  spectator->set5Momentum(_quark[_ispectator]);  
+  gluon->set5Momentum(_g);  
+  vboson->set5Momentum(boson->momentum());  
   Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
+
   // Create the vectors of NasonBranchings to create the NasonTree:
   vector<NasonBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
@@ -149,19 +174,21 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     allBranchings.push_back(spectatorBranch);
     allBranchings.push_back(emitterBranch);
   }
-  // Incoming boson add to allBranchings
+  // Add incoming boson to allBranchings
   allBranchings.push_back(spaceBranchings.back());
-  // Make the tree
+
+  // Make the NasonTree from the NasonBranching vectors.
   NasonTreePtr nasontree = new_ptr(NasonTree(allBranchings,spaceBranchings));
 	
-  // Connect the particles with the branchings in the NasonTree
-  // and set the maximum pt for the radiation
+  // Set the maximum pt for all other emissions
   double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
   Energy ptveto = _pt *sqrt((_xb+_xc-1.)/xfact2);
-  //if no emission event set ptveto to minpt = _Qg
+  // If we have a no-emission event set ptveto to minpt = _Qg
   if( _pt < _Qg ) ptveto = _Qg;
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
+
+  // Connect the particles with the branchings in the NasonTree
   nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
   nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
 
@@ -177,23 +204,15 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
-  // Calculate partonic event shapes from hard emission event
-  double thrust = _iemitter == 0 ? _xb : _xc;
-  _ptplot.push_back(_pt/GeV);
-  _yplot.push_back(_y);
-  _xbplot.push_back(_xb);
-  _xcplot.push_back(_xc);
-  (*_hthrust) += 1.-thrust;
-  (*_hthrustlow) += 1.-thrust;
-  (*_hy) += _y;
-  (*_hplow) += _pt/GeV;
-  (*_hphigh) += _pt/GeV;
-  // reset the momenta to ensure correct momenta after shower recon
-  // if emitter for Kliess trick and shower are different
+
+  // --- KMH --- why don't we do the next step in recnostructDecayShower? 
+  // Reset the momenta to ensure the correct momenta after shower recon
+  // if emitter for Kleiss trick and shower are different
   for(map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator 
   	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
     mit->first->set5Momentum(mit->second->_shower);
-  // return the tree
+
+  // Return the NasonTree
   return nasontree;
 }
 
@@ -266,8 +285,6 @@ void VectorBosonQQbarHardGenerator::dofinish() {
 }
 
 void VectorBosonQQbarHardGenerator::doinitrun() {
-  _s = sqr( generator()->maximumCMEnergy() );
-
   _alphaS_max = _alphaS->overestimateValue();
 
   _hthrust = new_ptr( Histogram( 0., 0.5, 100) );
