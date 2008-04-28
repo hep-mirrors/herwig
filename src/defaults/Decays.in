@@ -18,6 +18,8 @@ create Herwig::HwDecayHandler DecayHandler
 #
 #######################################################
 read decayers.in
+
+cd /Herwig/Particles
 read quark_decays.in
 read baryon_decays.in
 read boson_decays.in

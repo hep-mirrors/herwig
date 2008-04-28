@@ -157,6 +157,7 @@ cd /Herwig/Generators
 # (see the Doxygen documentation)
 # Currently it only provides the LaTeX reference to Herwig++
 create Herwig::HerwigStrategy DefaultStrategy
+set DefaultStrategy:LocalParticlesDir /Herwig/Particles
 
 # Now the LEPGenerator
 create ThePEG::EventGenerator LEPGenerator
@@ -177,6 +178,7 @@ create ThePEG::EventGenerator DISGenerator
 set DISGenerator:RandomNumberGenerator /Herwig/Random
 set DISGenerator:StandardModelParameters /Herwig/Model
 set DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
+set DISGenerator:Strategy DefaultStrategy
 
 ############################################
 # The default cuts
@@ -193,3 +195,5 @@ set DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
 ##########################################
 read Analysis.in
 read Analysis2.in
+
+cd /

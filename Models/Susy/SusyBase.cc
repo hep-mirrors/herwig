@@ -23,6 +23,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/MassGenerator.h"
 #include "ThePEG/PDT/WidthGenerator.h"
+#include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
 
@@ -183,12 +184,10 @@ void SusyBase::readSetup(istream & is) throw(SetupException) {
   h0->massGenerator(MassGenPtr());
   DecaySet::const_iterator dit = h0->decayModes().begin();
   DecaySet::const_iterator dend = h0->decayModes().end();
-  ostringstream os;
-  os << 0.0;
   for( ; dit != dend; ++dit ) {
     const InterfaceBase * ifb = 
       BaseRepository::FindInterface(*dit, "BranchingRatio");
-    ifb->exec(**dit, "set", os.str());
+    ifb->exec(**dit, "set", "0.0");
     ifb = BaseRepository::FindInterface(*dit, "OnOff");
     ifb->exec(**dit, "set", "Off");
   }

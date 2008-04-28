@@ -28,8 +28,6 @@ cd /Herwig/Particles
 
 create ThePEG::ParticleData R0 
 setup R0 40 R0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
-defaultparticle R0 
 create ThePEG::ParticleData Rbar0 
 setup Rbar0 -40 Rbar0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
-defaultparticle Rbar0 
 makeanti R0 Rbar0 
