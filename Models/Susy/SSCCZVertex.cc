@@ -61,6 +61,8 @@ void SSCCZVertex::doinit() throw(InitException) {
 			  << "A mixing matrix pointer is null.  U: " 
 			  << _theU << "  V: " << _theV
 			  << Exception::abortnow;
+  orderInGs(0);
+  orderInGem(1);
 }
 
 void SSCCZVertex::persistentOutput(PersistentOStream & os) const {

@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
-AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
+AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
 AC_CONFIG_HEADERS([Config/config.h])
 dnl AC_PRESERVE_HELP_ORDER

@@ -84,6 +84,8 @@ void SSWHHVertex::doinit() throw(InitException) {
   thesbma = sinb*cosa - sina*cosb;
   thecbma = cosa*cosb + sina*sinb;
 
+  orderInGs(0);
+  orderInGem(1);
 }
 
 void SSWHHVertex::persistentOutput(PersistentOStream & os) const {

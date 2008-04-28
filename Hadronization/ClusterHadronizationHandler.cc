@@ -223,4 +223,25 @@ handle(EventHandler & ch, const tPVector & tagged,
     assert(_underlyingEventHandler);
     ch.performStep(_underlyingEventHandler,Hint::Default());
   }
+  // zero all positions
+  // extract all particles from the event
+  tEventPtr event=ch.currentEvent();
+  vector<tPPtr> particles;
+  particles.reserve(256);
+  event->select(back_inserter(particles), ThePEG::AllSelector());
+  // and the final-state particles
+  set<tPPtr> finalstate;
+  event->selectFinalState(inserter(finalstate));
+  for(vector<tPPtr>::const_iterator pit=particles.begin();
+      pit!=particles.end();++pit) {
+    // if a final-state particle just zero production
+    if(finalstate.find(*pit)!=finalstate.end()) {
+      (**pit).setVertex(LorentzPoint());
+    }
+    // if not zero the lot
+    else {
+      (**pit).setVertex(LorentzPoint());
+      (**pit).setLifeLength(LorentzDistance());
+    }
+  }
 }

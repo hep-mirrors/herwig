@@ -15,6 +15,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "ThePEG/Utilities/Throw.h"
+#include "Herwig++/Utilities/HerwigStrategy.h"
 
 using namespace Herwig;
 
@@ -483,7 +484,7 @@ void Histogram2::store (const string& name) {
 
   os << "<?xml version=\"1.0\"?>" << endl;
   os << "<HerwigHistogram version=\"1.0\" herwigversion=\""
-     << HerwigVersion::versionstring << "\" name=\"" << Named::name() << "\">" << endl;
+     << HerwigStrategy::version << "\" name=\"" << Named::name() << "\">" << endl;
   os << "<!--" << endl
      << "  WARNING" << endl
      << "  Though this is valid XML, the Histogram2 class will" << endl

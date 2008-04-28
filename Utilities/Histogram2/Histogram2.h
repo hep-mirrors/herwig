@@ -19,8 +19,6 @@
 
 #include "ThePEG/Utilities/StringUtils.h"
 
-#include "Herwig++/Config/Herwig.h"
-
 namespace Herwig {
 
 using namespace ThePEG;

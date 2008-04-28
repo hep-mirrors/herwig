@@ -21,7 +21,7 @@ inline const vector<PDPtr> & GeneralThreeBodyDecayer::outgoing() const {
   return _outgoing;
 }
  
-inline const unsigned int GeneralThreeBodyDecayer::numberOfFlows() const {
+inline unsigned int GeneralThreeBodyDecayer::numberOfFlows() const {
   return _nflow;
 }
 

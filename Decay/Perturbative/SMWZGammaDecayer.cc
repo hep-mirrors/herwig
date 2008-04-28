@@ -118,7 +118,7 @@ void SMWZGammaDecayer::doinit() throw(InitException) {
       if(_wvertex->allowed(-ix,iy,ParticleID::Wminus)) {
 	extpart[1] = getParticleData(-ix);
 	extpart[2] = getParticleData( iy);
-	mode = new DecayPhaseSpaceMode(extpart,this);
+	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
 	addMode(mode,_Wquarkwgt[iz],wgt);
 	++iz;
       }
@@ -134,7 +134,7 @@ void SMWZGammaDecayer::doinit() throw(InitException) {
     if(_wvertex->allowed(-ix,ix+1,ParticleID::Wminus)) {
       extpart[1] = getParticleData(-ix);
       extpart[2] = getParticleData(ix+1);
-      mode = new DecayPhaseSpaceMode(extpart,this);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
       addMode(mode,_Wleptonwgt[(ix-11)/2],wgt);
     }
     else {

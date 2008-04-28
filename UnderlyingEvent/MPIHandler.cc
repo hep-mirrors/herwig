@@ -57,7 +57,7 @@ void MPIHandler::finalize() {
     statistics("UE.out");
 }
 void MPIHandler::initialize() {
-  
+  useMe();
   theHandler = generator()->currentEventHandler(); 
   //stop if the EventHandler is not present:
   assert(theHandler);
@@ -279,7 +279,13 @@ ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
 void MPIHandler::Init() {
 
   static ClassDocumentation<MPIHandler> documentation
-    ("There is soon documentation for the MPIHandler class");
+    ("The MPIHandler class is the main administrator of the multiple interaction model", 
+     "The underlying event was simulated with an eikonal model for multiple partonic interactions."
+     "Details can be found in Ref.~\\cite{Bahr:2008dy}.", 
+     "\\bibitem{Bahr:2008dy}"
+     "M.~Bahr, S.~Gieseke, and M.~H. Seymour, "
+     "{\\it {Simulation of multiple partonic interactions in Herwig++}}, "
+     "arXiv:0803.3633.");
 
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",

@@ -78,23 +78,23 @@ double MEff2ff::me2() const {
   vector<SpinorBarWaveFunction> spbA(2), spbB(2);
   if( ina->id() > 0 && inb->id() < 0) {
     for(unsigned int ih = 0; ih < 2; ++ih) {
-      spA[ih] = SpinorWaveFunction(meMomenta()[0], ina, ih, 
+      spA[ih] = SpinorWaveFunction(rescaledMomenta()[0], ina, ih, 
 				   incoming);
-      spbA[ih] = SpinorBarWaveFunction(meMomenta()[1], inb, ih, 
+      spbA[ih] = SpinorBarWaveFunction(rescaledMomenta()[1], inb, ih, 
 				       incoming);
-      spB[ih] = SpinorWaveFunction(meMomenta()[3], outb, ih, outgoing);
-      spbB[ih] = SpinorBarWaveFunction(meMomenta()[2], outa, ih, outgoing);
+      spB[ih] = SpinorWaveFunction(rescaledMomenta()[3], outb, ih, outgoing);
+      spbB[ih] = SpinorBarWaveFunction(rescaledMomenta()[2], outa, ih, outgoing);
     }
     if(majorana) {
       vector<SpinorWaveFunction> spC(2);
       vector<SpinorBarWaveFunction> spbC(2);
       for(unsigned int ih = 0; ih < 2; ++ih) {
-	spC[ih] = SpinorWaveFunction(meMomenta()[2], outa, ih, outgoing);
-	spbC[ih] = SpinorBarWaveFunction(meMomenta()[3], outb, ih, outgoing);
+	spC[ih] = SpinorWaveFunction(rescaledMomenta()[2], outa, ih, outgoing);
+	spbC[ih] = SpinorBarWaveFunction(rescaledMomenta()[3], outb, ih, outgoing);
       }
       ffb2mfmfHeME(spA, spbA, spbB, spB, spC, spbC, full_me);
-      SpinorWaveFunction spOut2(meMomenta()[2], outa, outgoing);
-      SpinorBarWaveFunction spbarOut2(meMomenta()[3], outb, outgoing);
+      SpinorWaveFunction spOut2(rescaledMomenta()[2], outa, outgoing);
+      SpinorBarWaveFunction spbarOut2(rescaledMomenta()[3], outb, outgoing);
      }
     else {
       ffb2ffbHeME(spA, spbA, spbB, spB, full_me); 
@@ -104,13 +104,13 @@ double MEff2ff::me2() const {
     SpinorVector spA(2), spB(2);
     SpinorBarVector spbA(2), spbB(2);
     for(unsigned int ih = 0; ih < 2; ++ih) {
-      spA[ih] = SpinorWaveFunction(meMomenta()[0], ina, ih,
+      spA[ih] = SpinorWaveFunction(rescaledMomenta()[0], ina, ih,
 				   incoming);
-      spB[ih] = SpinorWaveFunction(meMomenta()[1], inb, ih,
+      spB[ih] = SpinorWaveFunction(rescaledMomenta()[1], inb, ih,
 				   incoming);
-      spbA[ih] = SpinorBarWaveFunction(meMomenta()[2], outa, ih,
+      spbA[ih] = SpinorBarWaveFunction(rescaledMomenta()[2], outa, ih,
 				       outgoing);
-      spbB[ih] = SpinorBarWaveFunction(meMomenta()[3], outb, ih,
+      spbB[ih] = SpinorBarWaveFunction(rescaledMomenta()[3], outb, ih,
 				       outgoing);
     }
     ff2ffHeME(spA, spB, spbA, spbB, full_me);
@@ -119,13 +119,13 @@ double MEff2ff::me2() const {
     SpinorVector spA(2), spB(2);
     SpinorBarVector spbA(2), spbB(2);
     for(unsigned int ih = 0; ih < 2; ++ih) {
-      spbA[ih] = SpinorBarWaveFunction(meMomenta()[0], ina, ih,
+      spbA[ih] = SpinorBarWaveFunction(rescaledMomenta()[0], ina, ih,
 				       incoming);
-      spbB[ih] = SpinorBarWaveFunction(meMomenta()[1], inb, ih,
+      spbB[ih] = SpinorBarWaveFunction(rescaledMomenta()[1], inb, ih,
 				   incoming);
-      spA[ih] = SpinorWaveFunction(meMomenta()[2], outa, ih,
+      spA[ih] = SpinorWaveFunction(rescaledMomenta()[2], outa, ih,
 				   outgoing);
-      spB[ih] = SpinorWaveFunction(meMomenta()[3], outb, ih,
+      spB[ih] = SpinorWaveFunction(rescaledMomenta()[3], outb, ih,
 				   outgoing);
     }
     fbfb2fbfbHeME(spbA, spbB, spA, spB, full_me);
@@ -697,6 +697,15 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   if( hardpro[2]->id() != getOutgoing().first )
     swap(hardpro[2], hardpro[3]);
 
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = hardpro[i]->dataPtr();
+    momenta[i] = hardpro[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+
   double dummy(0.);
   //pick which process we are doing
   if( hardpro[0]->id() > 0) {
@@ -705,6 +714,11 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     SpinorBarVector spbB;
     SpinorWaveFunction(spA, hardpro[0], incoming, false, true);
     SpinorBarWaveFunction(spbB, hardpro[2], outgoing,true, true);
+
+    //ME spinors
+    SpinorWaveFunction sp1r(rescaledMomenta()[0], data[0], incoming);
+    SpinorBarWaveFunction spb2r(rescaledMomenta()[2], data[2], outgoing);
+
     //majorana
     if(!hardpro[2]->dataPtr()->CC() || hardpro[2]->id() == 1000024 || 
        hardpro[2]->id() == 1000037) {
@@ -712,15 +726,30 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       SpinorBarVector spbA, spbC;
       SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
       SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
-      for(unsigned int ix=0;ix<2;++ix) {
-	spC.push_back(SpinorWaveFunction(-spbB[ix].getMomentum(),
-					 spbB[ix].getParticle(),
-					 spbB[ix].wave().bar().conjugate(),
-					 spbB[ix].direction()));
-	spbC.push_back(SpinorBarWaveFunction(-spB[ix].getMomentum(),
-					     spB[ix].getParticle(),
-					     spB[ix].wave().bar().conjugate(),
-					     spB[ix].direction()));
+      //ME spinors
+      SpinorBarWaveFunction spb1r(rescaledMomenta()[1], data[1], incoming);
+      SpinorWaveFunction sp2r(rescaledMomenta()[3], data[3], outgoing);
+
+      for( unsigned int ihel = 0; ihel < 2; ++ihel ) {
+	sp1r.reset(ihel);
+	spA[ihel] = sp1r;
+	spb1r.reset(ihel);
+	spbA[ihel] = spb1r;
+	
+	spb2r.reset(ihel);
+	spbB[ihel] = spb2r;
+	sp2r.reset(ihel);
+	spB[ihel] = sp2r;
+
+	//extra spinors
+	spC.push_back(SpinorWaveFunction(-spbB[ihel].getMomentum(),
+					 spbB[ihel].getParticle(),
+					 spbB[ihel].wave().bar().conjugate(),
+					 spbB[ihel].direction()));
+	spbC.push_back(SpinorBarWaveFunction(-spB[ihel].getMomentum(),
+					     spB[ihel].getParticle(),
+					     spB[ihel].wave().bar().conjugate(),
+					     spB[ihel].direction()));
       }
       ProductionMatrixElement prodME = ffb2mfmfHeME(spA, spbA, spbB, spB, spC, 
 						    spbC, dummy);
@@ -737,6 +766,23 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       SpinorBarVector spbA;
       SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
       SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
+
+      //ME spinors
+      SpinorBarWaveFunction spb1r(rescaledMomenta()[1], data[1], incoming);
+      SpinorWaveFunction sp2r(rescaledMomenta()[3], data[3], outgoing);
+
+      for( unsigned int ihel = 0; ihel < 2; ++ihel ) {
+	sp1r.reset(ihel);
+	spA[ihel] = sp1r;
+	spb1r.reset(ihel);
+	spbA[ihel] = spb1r;
+	
+	spb2r.reset(ihel);
+	spbB[ihel] = spb2r;
+	sp2r.reset(ihel);
+	spB[ihel] = sp2r;
+      }
+      
       ProductionMatrixElement prodME = ffb2ffbHeME(spA, spbA, spbB, spB,
 						   dummy);
       HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -751,6 +797,22 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       SpinorBarVector spbA;
       SpinorWaveFunction(spB,hardpro[1],incoming, false, true);
       SpinorBarWaveFunction(spbA, hardpro[3], outgoing, true, true);
+
+      SpinorWaveFunction sp2r(rescaledMomenta()[1], data[1], incoming);
+      SpinorBarWaveFunction spb1r(rescaledMomenta()[3], data[3], outgoing);
+
+      for( unsigned int ihel = 0; ihel < 2; ++ihel ) {
+	sp1r.reset(ihel);
+	spA[ihel] = sp1r;
+	sp2r.reset(ihel);
+	spB[ihel] = sp2r;
+
+	spb2r.reset(ihel);
+	spbB[ihel] = spb2r;
+	spb1r.reset(ihel);
+	spbA[ihel] = spb1r;
+	
+      }
 
       ProductionMatrixElement prodME = ff2ffHeME(spA, spB, spbB, spbA,
 						 dummy);
@@ -770,6 +832,24 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     SpinorWaveFunction(spA, hardpro[2], outgoing, true, true);
     SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
 
+    //ME spinors
+    SpinorBarWaveFunction spb1r(rescaledMomenta()[0], data[0], incoming);
+    SpinorBarWaveFunction spb2r(rescaledMomenta()[1], data[1], incoming);
+    SpinorWaveFunction sp1r(rescaledMomenta()[2], data[2], outgoing);
+    SpinorWaveFunction sp2r(rescaledMomenta()[3], data[3], outgoing);
+    
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {
+      spb1r.reset(ihel);
+      spbA[ihel] = spb1r;
+      spb2r.reset(ihel);
+      spbB[ihel] = spb2r;
+      
+      sp1r.reset(ihel);
+      spA[ihel] = sp1r;
+      sp2r.reset(ihel);
+      spB[ihel] = sp2r;
+    }
+    
     ProductionMatrixElement prodME = fbfb2fbfbHeME(spbA, spbB, spA, spB,
 						   dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());

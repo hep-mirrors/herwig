@@ -45,10 +45,14 @@ using namespace ThePEG::Helicity;
 
 void EvtGen::doinitrun() {
   Interfaced::doinitrun();
-  std::streambuf *psbuf = generator()->log().rdbuf();
-  std::streambuf *temp[2] = {cout.rdbuf(),cerr.rdbuf()};
-  cout.rdbuf(psbuf);
-  cerr.rdbuf(psbuf);
+  std::streambuf *temp[2];
+  if(_redirect) {
+    std::streambuf *psbuf = generator()->log().rdbuf();
+    temp[0] = cout.rdbuf();
+    temp[1] = cerr.rdbuf();
+    cout.rdbuf(psbuf);
+    cerr.rdbuf(psbuf);
+  }
   // output the EvtGen initialization info to the log file
   generator()->log() << "Initializing EvtGen \n";
   // set up the random number generator for EvtGen
@@ -79,18 +83,22 @@ void EvtGen::doinitrun() {
   }
   // that's the lot
   generator()->log() << "Finished initialisation of EvtGen \n";
-  cout.rdbuf(temp[0]);
-  cerr.rdbuf(temp[1]);
+  if(_redirect) {
+    cout.rdbuf(temp[0]);
+    cerr.rdbuf(temp[1]);
+  }
 }
 
 // persistent output
 void EvtGen::persistentOutput(PersistentOStream & os) const {
-  os << _decayname << _pdtname << _maxtry << _maxunwgt << _checkconv << _convid;
+  os << _decayname << _pdtname << _maxtry << _maxunwgt << _checkconv << _convid
+     << _redirect;
 }
 
 // persistent input
 void EvtGen::persistentInput(PersistentIStream & is, int) { 
-  is >> _decayname >> _pdtname >> _maxtry >> _maxunwgt >> _checkconv >> _convid;
+  is >> _decayname >> _pdtname >> _maxtry >> _maxunwgt >> _checkconv >> _convid
+     >> _redirect;
 }
 
 ClassDescription<EvtGen> EvtGen::initEvtGen;
@@ -148,6 +156,23 @@ void EvtGen::Init() {
      &EvtGen::_convid, -1, long(0), 0, 0,
      false, false, Interface::nolimits);
 
+  static Switch<EvtGen,bool> interfaceRedirect
+    ("Redirect",
+     "By default cerr and cout are redirected when EvtGen is running to"
+     " allow us to catch errors, due to EvtGen's poor internal error "
+     "handling. This can be a problem for debugging and so can be switched off.",
+     &EvtGen::_redirect, true, false, false, false);
+  static SwitchOption interfaceRedirectYes
+    (interfaceRedirect,
+     "Yes",
+     "Redirect the output",
+     true);
+  static SwitchOption interfaceRedirectNo
+    (interfaceRedirect,
+     "No",
+     "Don't redirect the output",
+     false);
+
 }
 
 ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
@@ -167,7 +192,7 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
     // special for EvtGen particles like string we don't need to include
     else if(id==90) {
       // check if needs to be decayed by EvtGen
-      if(EvtPDL::getStdHep(daug->getId())==92) {
+      if(EvtPDL::getStdHep(daug->getId())==92||daug->isDecayed()) {
 	// add the particles
 	ParticleVector temp(decayProducts(daug,spin));
 	for(unsigned int iy=0;iy<temp.size();++iy) output.push_back(temp[iy]);
@@ -887,81 +912,93 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
 			     const DecayMode & dm) const {
   // redirect cout to the log file
   ostringstream stemp;
-  std::streambuf *psbuf[2] ={generator()->log().rdbuf(),stemp.rdbuf()};
-  std::streambuf *temp[2] = {cout.rdbuf(),cerr.rdbuf()};
-  cout.rdbuf(psbuf[0]);
-  cerr.rdbuf(psbuf[1]);
-  // create the particle from EvtGen using the PDG code, set's id and momentum
-  // and spin information
-  EvtParticle *part = EvtGenParticle(parent);
-  //
-  // need to think about EvtGen mixing here
-  //
-  // select the EvtGen decayer to use
-  EvtDecayBase *decayer;
-  // if given a Matcher let EvtGen pick the decay mode
-  if(dm.wildProductMatcher()) { 
-    decayer = EvtDecayTable::GetDecayFunc(part);
+  std::streambuf *temp[2];
+  if(_redirect) {
+    std::streambuf *psbuf[2] ={generator()->log().rdbuf(),stemp.rdbuf()};
+    temp[0] = cout.rdbuf();
+    temp[1] = cerr.rdbuf();
+    cout.rdbuf(psbuf[0]);
+    cerr.rdbuf(psbuf[1]);
   }
-  // otherwise we should pick one
-  else {
-    int imode(EvtGenChannel(dm));
-    EvtId parID(EvtGenID(parent.id()));
-    decayer = EvtDecayTable::getDecay(parID.getAlias(),imode);
-    part->setChannel(imode);
+  ParticleVector output;
+  try {
+    // create the particle from EvtGen using the PDG code, set's id and momentum
+    // and spin information
+    EvtParticle *part = EvtGenParticle(parent);
+    //
+    // need to think about EvtGen mixing here
+    //
+    // select the EvtGen decayer to use
+    EvtDecayBase *decayer;
+    // if given a Matcher let EvtGen pick the decay mode
+    if(dm.wildProductMatcher()) { 
+      decayer = EvtDecayTable::GetDecayFunc(part);
+    }
+    // otherwise we should pick one
+    else {
+      int imode(EvtGenChannel(dm));
+      EvtId parID(EvtGenID(parent.id()));
+      decayer = EvtDecayTable::getDecay(parID.getAlias(),imode);
+      part->setChannel(imode);
+    }
+    // must be a decayer
+    if(!decayer) throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
+				   << Exception::runerror;
+    // If there are already daughters, then this step is already done!
+    // figure out the masses
+    if ( part->getNDaug() == 0 ) part->generateMassTree();
+    // perform decay
+    decayer->makeDecay(part,recursive);
+    // cast the decayer
+    EvtDecayAmp *damp  = dynamic_cast<EvtDecayAmp*>(decayer);
+    // translate the decay products
+    output=decayProducts(part,damp);
+    // set spin information if needed
+    tSpinfoPtr pspin(getSpinInfo(parent));
+    // if has spin information translate it
+    if(damp) {
+      ParticleVector products;
+      unsigned int nbeforerad=decayer->getNDaug();
+      for(unsigned int ix=0;ix<nbeforerad;++ix) products.push_back(output[ix]);
+      constructVertex(parent,products,damp);
+    }
+    // otherwise
+    else {
+      pspin->setDeveloped(true);
+      RhoDMatrix rhotemp(pspin->iSpin());
+      rhotemp.average();
+      pspin->DMatrix()=rhotemp;
+    }
+    pspin->decayed(true);
+    if(recursive) {
+      pspin->setDeveloped(true);
+      pspin->DMatrix()=ThePEGSpinDensity(part->getSpinDensityBackward(),
+					 ThePEGID(part->getId()));
+    }
+    // delete the EvtGen particle
+    part->deleteDaughters();
+    delete part; 
+    part = 0;
   }
-  // must be a decayer
-  if(!decayer) {
+  catch ( ... ) {
+    // change stream back
+    if(_redirect) {
+      cout.rdbuf(temp[0]);
+      cerr.rdbuf(temp[1]);
+    }
+    throw;
+  }
+  // change stream back
+  if(_redirect) {
     cout.rdbuf(temp[0]);
     cerr.rdbuf(temp[1]);
-    throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
-		      << Exception::runerror;
+    string stemp2=stemp.str();
+    if(stemp2.length()>0)
+      throw Exception() << "EvtGen report error in EvtGen::decay "
+			<< "killing event\n"
+			<< "Error was " << stemp2 
+			<< Exception::eventerror;
   }
-  // If there are already daughters, then this step is already done!
-  // figure out the masses
-  if ( part->getNDaug() == 0 ) {
-    part->generateMassTree();
-  }
-  // perform decay
-  decayer->makeDecay(part,recursive);
-  // cast the decayer
-  EvtDecayAmp *damp  = dynamic_cast<EvtDecayAmp*>(decayer);
-  // translate the decay products
-  ParticleVector output=decayProducts(part,damp);
-  // set spin information if needed
-  tSpinfoPtr pspin(getSpinInfo(parent));
-  // if has spin information translate it
-  if(damp) {
-    ParticleVector products;
-    unsigned int nbeforerad=decayer->getNDaug();
-    for(unsigned int ix=0;ix<nbeforerad;++ix) products.push_back(output[ix]);
-    constructVertex(parent,products,damp);
-  }
-  // otherwise
-  else {
-    pspin->setDeveloped(true);
-    RhoDMatrix rhotemp(pspin->iSpin());
-    rhotemp.average();
-    pspin->DMatrix()=rhotemp;
-  }
-  pspin->decayed(true);
-  if(recursive) {
-    pspin->setDeveloped(true);
-    pspin->DMatrix()=ThePEGSpinDensity(part->getSpinDensityBackward(),
-				       ThePEGID(part->getId()));
-  }
-  // delete the EvtGen particle
-  part->deleteDaughters();
-  delete part;
-  // change stream back
-  cout.rdbuf(temp[0]);
-  cerr.rdbuf(temp[1]);
-  string stemp2=stemp.str();
-  if(stemp2.length()>0) 
-    throw Exception() << "EvtGen report error in EvtGen::decay "
-  		      << "killing event\n"
-  		      << "Error was " << stemp2 
-  		      << Exception::eventerror;
   // return the decay products
   return output;
 }

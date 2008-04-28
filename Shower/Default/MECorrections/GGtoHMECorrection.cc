@@ -34,81 +34,10 @@ void GGtoHMECorrection::doinit() throw(InitException) {
   _channelweights.push_back(1./total);
   _channelweights.push_back(_channelweights.back()+_channelwgtA/total);
   _channelweights.push_back(_channelweights.back()+_channelwgtB/total);
-  for(unsigned int ix=0;ix<_channelweights.size();++ix)
-    cerr << "testing weights " << _channelweights[ix] << "\n";
 }
 
 void GGtoHMECorrection::dofinish() {
   MECorrectionBase::dofinish();
-  string fname = generator()->filename() + string("-") + name() + string(".top");
-  ofstream outfile(fname.c_str());
-  outfile << "SET FONT DUPLEX\n";
-  outfile << "SET ORDER X Y\n";
-  outfile << "TITLE BOTTOM \"sbar\"\n";
-  outfile << "TITLE LEFT \"tbar\"\n";
-  outfile << "SET LIMITS X 1 10 Y -10 0\n";
-  double kappa[2]={1.,1.};
-  double shat,that;
-  for(shat=1.;shat<10.;shat+=0.01)
-    {
-      that=kappa[0]*(1.-shat)/(kappa[0]+shat);
-      outfile << shat << " " << that << "\n";
-    }
-  outfile << "join red\n"; 
-  for(shat=1.;shat<10.;shat+=0.01)
-    {
-      that=shat*(1.-shat)/(kappa[1]+shat);
-      outfile << shat << " " << that << "\n";
-    }
-  outfile << "join blue\n";
-  for(shat=1.;shat<10.;shat+=0.01)
-    {
-      that=(1.-shat);
-      outfile << shat << " " << that << "\n";
-    }
-  outfile << "join\n";
-  for(unsigned int ix=0;ix<_dalitz.size();++ix) {
-    outfile << _dalitz[ix].first << "\t" << _dalitz[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT\n";
-  }
-  outfile << "PLOT\n";
-  for(unsigned int ix=0;ix<_dalitz2.size();++ix) {
-    outfile << _dalitz2[ix].first << "\t" << _dalitz2[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT RED\n";
-  }
-  if(!_dalitz2.empty()) outfile << "PLOT RED\n";
-  outfile << "NEW FRAME\n";
-  outfile << "SET FONT DUPLEX\n";
-  outfile << "SET ORDER X Y\n";
-  outfile << "TITLE BOTTOM \"sbar\"\n";
-  outfile << "TITLE LEFT \"tbar\"\n";
-  outfile << "SET LIMITS X 1 500 Y -500 0\n";
-  for(shat=1.;shat<500.;shat+=0.1) {
-    that=kappa[0]*(1.-shat)/(kappa[0]+shat);
-    outfile << shat << " " << that << "\n";
-  }
-  outfile << "join red\n"; 
-  for(shat=1.;shat<500.;shat+=0.1) {
-    that=shat*(1.-shat)/(kappa[1]+shat);
-    outfile << shat << " " << that << "\n";
-  }
-  outfile << "join blue\n";
-  for(shat=1.;shat<500.;shat+=0.1) {
-    that=(1.-shat);
-    outfile << shat << " " << that << "\n";
-  }
-  outfile << "join\n";
-  for(unsigned int ix=0;ix<_dalitz.size();++ix) {
-    outfile << _dalitz[ix].first << "\t" << _dalitz[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT\n";
-  }
-  outfile << "PLOT\n";
-  for(unsigned int ix=0;ix<_dalitz2.size();++ix) {
-    outfile << _dalitz2[ix].first << "\t" << _dalitz2[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT RED\n";
-  }
-  if(!_dalitz2.empty()) outfile << "PLOT RED\n";
-  outfile.close();
   if(_ntry==0) return;
   generator()->log() << "GGtoHMECorrection when applying the hard correction "
 		     << "generated " << _ntry << " trial emissions of which "
@@ -817,6 +746,7 @@ tPDPtr GGtoHMECorrection::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
     wgt -= weights[ix];
   }
   assert(false);
+  return tPDPtr();
 }
 
 bool GGtoHMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,

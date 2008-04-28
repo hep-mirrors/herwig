@@ -1,4 +1,4 @@
-## libHwShowerKinematics.la will go into HwShower.so
+## libHwDefaultMECorrections.la will go into HwShower.so
 noinst_LTLIBRARIES = libHwDefaultMECorrections.la
 libHwDefaultMECorrections_la_SOURCES = \
 QTildeMECorrection.icc QTildeMECorrection.fh QTildeMECorrection.h QTildeMECorrection.cc\

@@ -65,18 +65,18 @@ void MEfv2fs::doinit() throw(InitException) {
 double MEfv2fs::me2() const {
   //massless vector
   VecWFVector vecIn(2);
-  ScalarWaveFunction scaOut(meMomenta()[3], mePartonData()[3],
+  ScalarWaveFunction scaOut(rescaledMomenta()[3], mePartonData()[3],
 			    Complex(1.,0.), outgoing);
   double fullme(0.);
   if( mePartonData()[0]->id() > 0 ) {
     SpinorVector spIn(2);
     SpinorBarVector spbOut(2);
     for(size_t ih = 0; ih < 2; ++ih) {
-      spIn[ih] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], ih,
+      spIn[ih] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], ih,
 				    incoming);
-      spbOut[ih] = SpinorBarWaveFunction(meMomenta()[2], mePartonData()[2], ih,
+      spbOut[ih] = SpinorBarWaveFunction(rescaledMomenta()[2], mePartonData()[2], ih,
 					 outgoing);
-      vecIn[ih] = VectorWaveFunction(meMomenta()[1], mePartonData()[1], 2*ih,
+      vecIn[ih] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*ih,
 				     incoming);
     }
     fv2fbsHeME(spIn, vecIn, spbOut, scaOut, fullme);
@@ -85,11 +85,11 @@ double MEfv2fs::me2() const {
     SpinorBarVector spbIn(2);
     SpinorVector spOut(2);
     for(size_t ih = 0; ih < 2; ++ih) {
-      spbIn[ih] = SpinorBarWaveFunction(meMomenta()[0], mePartonData()[0], ih,
+      spbIn[ih] = SpinorBarWaveFunction(rescaledMomenta()[0], mePartonData()[0], ih,
 					incoming);
-      spOut[ih] = SpinorWaveFunction(meMomenta()[2], mePartonData()[2], ih,
+      spOut[ih] = SpinorWaveFunction(rescaledMomenta()[2], mePartonData()[2], ih,
 				     outgoing);
-      vecIn[ih] = VectorWaveFunction(meMomenta()[1], mePartonData()[1], 2*ih,
+      vecIn[ih] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*ih,
 				     incoming);
     }
     fbv2fsHeME(spbIn, vecIn, spOut, scaOut, fullme);
@@ -337,6 +337,15 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
   //in the vector
   vecIn[1] = vecIn[2];
   ScalarWaveFunction scaOut(external[3], outgoing, true, true);
+
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = external[i]->dataPtr();
+    momenta[i] = external[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
   double dummy(0.);
   if( external[0]->id() > 0 ) {
     SpinorVector spIn;
@@ -344,6 +353,19 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
     SpinorBarVector spbOut;
     SpinorBarWaveFunction(spbOut, external[2], outgoing, true, true);
 
+    SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
+    VectorWaveFunction vr(rescaledMomenta()[1], data[1], incoming);
+    SpinorBarWaveFunction sbr(rescaledMomenta()[2], data[2], outgoing);
+
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+      spr.reset(ihel);
+      spIn[ihel] = spr;
+      vr.reset(2*ihel);
+      vecIn[ihel] = vr;
+      sbr.reset(ihel);
+      spbOut[ihel] = sbr;
+    }
+    scaOut = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
     ProductionMatrixElement prodME = fv2fbsHeME(spIn, vecIn, spbOut, 
 						scaOut, dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());
@@ -357,6 +379,19 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
     SpinorBarWaveFunction(spbIn, external[0], incoming, false, true);
     SpinorVector spOut;
     SpinorWaveFunction(spOut, external[2], outgoing, true, true);
+
+    SpinorBarWaveFunction sbr(rescaledMomenta()[0], data[0], incoming);
+    VectorWaveFunction vr(rescaledMomenta()[1], data[1], incoming);
+    SpinorWaveFunction spr(rescaledMomenta()[2], data[2], outgoing);
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+      sbr.reset(ihel);
+      spbIn[ihel] = sbr;
+      vr.reset(2*ihel);
+      vecIn[ihel] = vr;
+      spr.reset(ihel);
+      spOut[ihel] = spr;
+    }
+    scaOut = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
     ProductionMatrixElement prodME = fbv2fsHeME(spbIn, vecIn, spOut, 
 						scaOut, dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());

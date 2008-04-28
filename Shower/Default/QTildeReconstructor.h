@@ -210,7 +210,7 @@ protected:
    * @param root_s Centre-of-mass energy
    * @param jets The jets
    */
-  const double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
+  double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
 
   /**
    *  Calculate the rescaling factors for the jets in a particle decay where

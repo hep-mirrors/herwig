@@ -171,7 +171,7 @@ protected:
   /**
    *  Number of colour flows
    */
-  inline const unsigned int numberOfFlows() const;
+  inline unsigned int numberOfFlows() const;
 
   /**
    * Return the matrix of colour factors 

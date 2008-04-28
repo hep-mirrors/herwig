@@ -105,7 +105,7 @@ int PScalar4FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   // find the first fermion
   ix=0;
   do {
-    if(id[ix]>0&!done[ix]) {
+    if( id[ix]>0 && !done[ix] ) {
       done[ix]=true;
       idtemp=id[ix];
     }
@@ -116,13 +116,12 @@ int PScalar4FermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
   // find its antiparticle
   ix=0;
   do {
-    if(id[ix]==-idtemp&!done[ix]) {
+    if( id[ix]==-idtemp && !done[ix] ) {
       done[ix]=true;
       idl1=idtemp;
     }
     ++ix;
-  }
-  while(ix<4&&idl1<0);
+  } while( ix<4 && idl1<0 );
   if(idl1<0) return -1;
   // find the second particle antiparticle pair
   idtemp=-1;

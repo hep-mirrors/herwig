@@ -18,8 +18,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-class ThePEG::Particle;   // forward declaration
-
 /** \ingroup Hadronization
  *  \class ClusterDecayer
  *  \brief This class decays the "normal" clusters

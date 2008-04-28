@@ -42,6 +42,11 @@ public:
    * @param argv string
    */
   HerwigRun(int argc, char **argv);
+
+  /**
+   * Destructor
+   */
+  ~HerwigRun();
   //@}
   
   /**

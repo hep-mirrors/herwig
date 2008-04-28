@@ -12,7 +12,6 @@
 //
 // This is the declaration of the CheckId class.
 
-#include "Herwig++/Config/Herwig.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include <ThePEG/PDT/EnumParticles.h>

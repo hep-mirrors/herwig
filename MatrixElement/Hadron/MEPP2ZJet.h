@@ -318,7 +318,7 @@ private:
   /**
    * Matrix element for spin correlations
    */
-  ProductionMatrixElement _me;
+  mutable ProductionMatrixElement _me;
 
   /**
    *  Storage of the scale to avoid the need to recalculate

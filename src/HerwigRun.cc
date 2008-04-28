@@ -7,7 +7,6 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "HerwigRun.h"
-#include "Herwig++/Config/Herwig.h"
 #include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/SystemUtils.h>
 #include <ThePEG/Utilities/StringUtils.h>
@@ -77,13 +76,16 @@ HerwigRun::HerwigRun(int argc, char **argv)
     else
       run = arg;
   }
+  if ( Debug::level ) Debug::unmaskFpuErrors();
   if ( Status == INIT ) {
     // debugging breakpoint
     breakThePEG();
     {
 #ifdef HERWIG_PKGLIBDIR
-      std::string pkglibdir(HERWIG_PKGLIBDIR);
-      DynamicLoader::appendPath(pkglibdir);
+      DynamicLoader::appendPath(HERWIG_PKGLIBDIR);
+#endif
+#ifdef THEPEG_PKGLIBDIR
+      DynamicLoader::appendPath(THEPEG_PKGLIBDIR);
 #endif
       HoldFlag<> setup(InterfaceBase::NoReadOnly);
       Repository::read(repoin, cout);
@@ -98,16 +100,17 @@ HerwigRun::HerwigRun(int argc, char **argv)
     if ( repo.empty() ) {
       repo = "HerwigDefaults.rpo";
       ifstream test(repo.c_str());
+#ifdef HERWIG_PKGDATADIR
       if (!test) {
-	repo = HerwigVersion::pkgdatadir + "/HerwigDefaults.rpo";
+	repo = string(HERWIG_PKGDATADIR) + "/HerwigDefaults.rpo";
       }
+#endif
       test.close();
     }
     Repository::load(repo);
     breakThePEG();
     if ( run.size() && run != "-" ) {
-      ifstream is(run.c_str());
-      Repository::read(is, std::cout);
+      Repository::read(run, std::cout);
     } else {
       Repository::read(std::cin, std::cout, "Herwig++> ");
     }
@@ -224,7 +227,6 @@ void HerwigRun::printHelp(std::ostream &out) {
       << "==============================================================\n"
       << "-N      - Set number of events in the run\n"
       << "-d      - Sets the ThePEG debug level (see ThePEG::Debug)\n"
-      << "-dHw    - Sets the Herwig debug level (see Herwig::Debug)\n"
       << "-r      - Changes the repository file from HerwigDefaults.rpo\n"
       << "-i      - Changes the repo input file from HerwigDefaults.in\n"
       << "-l      - Adds path to dynamically load library (to end)\n"
@@ -238,3 +240,6 @@ bool HerwigRun::preparedToRun() {
   if(eventGenerator()) return true;
   else return false;
 }
+
+HerwigRun::~HerwigRun() { Repository::cleanup(); }
+

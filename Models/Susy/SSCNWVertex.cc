@@ -62,6 +62,8 @@ void SSCNWVertex::doinit() throw(InitException) {
 			  << "A mixing matrix pointer is null."
 			  << " N: " << _theN << " U: " << _theU << " V: "
 			  << _theV << Exception::abortnow;
+  orderInGs(0);
+  orderInGem(1);
 }
 
 void SSCNWVertex::persistentOutput(PersistentOStream & os) const {

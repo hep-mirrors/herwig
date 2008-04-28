@@ -2,7 +2,7 @@ SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
                      HwMPIAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 5:0:0
+HwAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
@@ -11,8 +11,8 @@ EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
 EventShapesMasterAnalysis.h EventShapesMasterAnalysis.icc \
 BasicConsistency.cc BasicConsistency.fh \
 BasicConsistency.h BasicConsistency.icc \
-MultiplicityCount.cc MultiplicityCount.fh \
-MultiplicityCount.h MultiplicityCount.icc \
+LEPMultiplicityCount.cc LEPMultiplicityCount.h \
+MultiplicityInfo.h \
 LEPBMultiplicity.cc LEPBMultiplicity.fh \
 LEPBMultiplicity.h LEPBMultiplicity.icc \
 SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
@@ -44,7 +44,7 @@ HwAnalysis_la_LIBADD += $(HEPMCLIBS)
 endif
 
 
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:0:0
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:1:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.fh \
 BFragmentationAnalysisHandler.h BFragmentationAnalysisHandler.icc \
@@ -105,12 +105,14 @@ BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
 a1DecayAnalysis.h a1DecayAnalysis.icc \
 a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
-BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc
+BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
+Upsilon4SSpectrumAnalysis.h Upsilon4SSpectrumAnalysis.cc \
+Upsilon4SMultiplicityCount.h Upsilon4SMultiplicityCount.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:1:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \

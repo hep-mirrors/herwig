@@ -14,7 +14,6 @@
 #include "KtJet/KtLorentzVector.h"
 #include "KtJet/KtEvent.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Config/Herwig.h"
 #include "ThePEG/Repository/Strategy.fh"
 #include <fstream>
 #include <map>

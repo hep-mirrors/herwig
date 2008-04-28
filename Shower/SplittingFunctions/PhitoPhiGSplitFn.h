@@ -20,7 +20,6 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Shower
- *
  * This class provides the concrete implementation of the exact leading-order
  * splitting function for \f$\phi\to \phi g\f$.
  *

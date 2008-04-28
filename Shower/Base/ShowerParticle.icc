@@ -13,12 +13,12 @@
 
 namespace Herwig {
 
-inline void * ShowerParticle::operator new(size_t) {
-  return FixedAllocator<ShowerParticle>::allocate();
+inline void * ShowerParticle::operator new(size_t s) {
+  return ::operator new(s);
 }
  
 inline void ShowerParticle::operator delete(void * p, size_t) {
-  FixedAllocator<ShowerParticle>::deallocate(p);
+  ::operator delete(p);
 }
 
 inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert,

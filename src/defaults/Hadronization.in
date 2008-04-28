@@ -10,10 +10,8 @@
 cd /Herwig/Particles
 create ThePEG::ParticleData Cluster
 setup Cluster 81 Cluster 0.00990 0.0 0.0 0.0  0 0  0  0
-defaultparticle Cluster
 create ThePEG::ParticleData Remnant
 setup Remnant 82 Remnant 0.00990 0.0 0.0 0.0  0 0  0  0
-defaultparticle Remnant
 
 mkdir /Herwig/Hadronization
 cd /Herwig/Hadronization

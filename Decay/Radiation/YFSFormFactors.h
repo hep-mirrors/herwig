@@ -14,7 +14,6 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig++/Utilities/Maths.h"
-#include "Herwig++/Config/Herwig.h"
 
 namespace Herwig {
 

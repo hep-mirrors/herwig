@@ -12,11 +12,10 @@
 //
 
 #include "Smearing.h"
-#include <ThePEG/Repository/UseRandom.h>
+#include "ThePEG/Repository/UseRandom.h"
 
+using namespace ThePEG;
 using namespace Herwig;
-// using namespace ThePEG;
-
 
 bool Smearing::gaussianSmearing(const double mean, 
 				const double sigma, 

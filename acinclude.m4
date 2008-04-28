@@ -483,7 +483,6 @@ AC_ARG_ENABLE(looptools,
         [],
         [enable_looptools=yes]
         )
-
 if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
    case "${host}" in
       x86_64-*)
@@ -500,9 +499,8 @@ if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
 		[enable_looptools="needs gfortran on 64bit machines"]
 	)
 	FFLAGS="$oldFFLAGS"
-   AC_LANG_POP([Fortran 77])
+  AC_LANG_POP([Fortran 77])
 fi
-
 AC_MSG_RESULT([$enable_looptools])
 AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 ])
@@ -600,7 +598,11 @@ if test "x$with_gsl" = "xsystem"; then
 	GSLLIBS="$LIBS"
 	LIBS=$oldlibs
 else
-	if test -e "$with_gsl/lib/libgsl.a" -a -d "$with_gsl/include/gsl"; then
+	if test "`uname -m`" = "x86_64" -a -e "$with_gsl/lib64/libgsl.a" -a -d "$with_gsl/include/gsl"; then
+		AC_MSG_RESULT([found in $with_gsl])
+		GSLLIBS="-L$with_gsl/lib64 -R$with_gsl/lib64 -lgslcblas -lgsl"
+		GSLINCLUDE="-I$with_gsl/include"
+	elif test -e "$with_gsl/lib/libgsl.a" -a -d "$with_gsl/include/gsl"; then
 		AC_MSG_RESULT([found in $with_gsl])
 		GSLLIBS="-L$with_gsl/lib -R$with_gsl/lib -lgslcblas -lgsl"
 		GSLINCLUDE="-I$with_gsl/include"
@@ -651,12 +653,6 @@ if test -n "$GCC"; then
 		debugflags="$debugflags -fno-inline"
 		AM_CPPFLAGS="$AM_CPPFLAGS -D_GLIBCXX_DEBUG"
 	fi
-
-	# don't know how else to do this. see bug #14
-	case "${host}" in
-	*-linux*)	AM_LDFLAGS="$AM_LDFLAGS -Wl,--disable-new-dtags" ;;
-	*)		;;
-	esac
 fi
 
 AC_SUBST(AM_CPPFLAGS)

@@ -29,6 +29,9 @@ create Herwig::MEee2gZ2qq MEee2gZ2qq
 set MEee2gZ2qq:MinimumFlavour 1
 set MEee2gZ2qq:MaximumFlavour 5
 
+# e+e- -> ZH
+create Herwig::MEee2ZH MEee2ZH
+
 ############################################################
 #  hadron-hadron matrix elements
 ############################################################
@@ -58,7 +61,21 @@ create Herwig::MEPP2HiggsJet   MEHiggsJet
 create Herwig::MEQCD2to2       MEQCD2to2
 
 # qqbar/gg -> t tbar
-create Herwig::MEPP2QQ         MEHeavyQuark        
+create Herwig::MEPP2QQ         MEHeavyQuark     
+
+# W+jet
+create Herwig::MEPP2WJet MEWJet
+set MEWJet:WDecay Leptons
+
+# Z+jet
+create Herwig::MEPP2ZJet MEZJet
+set MEZJet:ZDecay ChargedLeptons
+
+# PP->ZH
+create Herwig::MEPP2ZH MEPP2ZH
+
+# PP->WH
+create Herwig::MEPP2WH MEPP2WH
 
 ##########################################################
 # DIS matrix elements
@@ -73,7 +90,6 @@ create Herwig::MENeutralCurrentDIS MEDISNC
 # For e+e-
 ##########################################################
 create ThePEG::SubProcessHandler SimpleEE
-insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
 set SimpleEE:PartonExtractor /Herwig/Partons/EEExtractor
 
 ##########################################################

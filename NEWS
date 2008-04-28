@@ -1,5 +1,99 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.2.0 release: 2008-04-18 (tagged at SVN r3195)
+** Major release: now as stand-alone library
+   Herwig++ is now a stand-alone dlopen() plugin to ThePEG.
+   No compile-time linking to Herwig code is required. The Herwig++
+   binary is a simple executable steering ThePEG, which can
+   be replaced by other frontends (such as setupThePEG / runThePEG).  
+
+** New matrix elements
+   p p   -> W + jet / Z + jet / W + higgs / Z + higgs
+   e+ e- -> Z + higgs
+
+** Looptools 
+   Updated to version 2.2.
+
+** Ticket #141: segfault from using 'run' command
+   Fixed by using default allocators in Herwig++, and the
+   Repository::cleanup() method in ThePEG 1.2.0. 
+
+** Ticket #157: broken gsl library path on some 64bit systems
+   Paths with lib64 are correctly identified now.
+
+** Ticket #159: p_t spectrum of ttbar pair
+   Fixed identical particle multiplier in Sudakov form factor.
+
+** Ticket #161: glibc segfault
+   Rare segfault in MPI handler fixed.
+
+** Ticket #165: rare infinite loop in four-body decay
+   All 4-body decays without dedicated decayers now use the Mambo algorithm.
+   A loop guard has been introduced to 3-body decays to avoid infinite retries.
+
+** Ticket #166: rare infinite loop in top ME correction
+   These very rare events (O(1) in 10^7) close to mass threshold
+   now are discarded.
+
+** Higgs width fixes
+
+** SatPDF
+   Optionally, the PDF extrapolation behaviour outside a given range 
+   can now be specified.
+
+** gcc 4.3
+   Herwig++-2.2 compiles cleanly with the new gcc 4.3 series.
+
+
+
+
+* Herwig++-2.1.4 release: 2008-03-03 (tagged at SVN r3024)
+** Ticket #152: Vertex positions
+   All vertex positions of unphysical particles are set to zero until
+   a fix for the previous nonsensical values can be implemented.
+
+
+
+
+* Herwig++-2.1.3 release: 2008-02-25 (tagged at SVN r2957)
+** Ticket #129: Baryon decays
+   Fix for baryon decay modes.
+
+** Ticket #131: HepMC
+   Check if IO_GenEvent exists
+
+** Ticket #134: Hadronization
+   Smearing of hadron directions in cluster decay fixed.
+
+** Ticket #137: HepMC
+   HepMC conversion allows specification of energy and length units to
+   be used. 
+
+** Ticket #139: Neutral kaons
+   Ratio K_L / K_S corrected.
+
+** Ticket #140 / #141: Crash on shutdown
+   Event generation from the 'read' stage or an interface now shuts
+   down cleanly. Fixes a crash bug introduced in 2.1.1 which affected
+   external APIs to ThePEG / Herwig.
+
+** Ticket #146: BSM models can be disabled
+   To save build time, some or all of the BSM models can be disabled
+   using the '--enable-models' configure switch.
+
+** Reorganised .model files
+   The .model files now include the model-specific particles, too.
+
+** Re-tune
+   Re-tuned hadronization parameters to LEP data. 
+
+** Other fixes in
+   QSPAC implementation in Shower; Multi-parton interaction tuning;
+   MRST initialization
+
+
+
+
 * Herwig++-2.1.2 release: 2008-01-05 (tagged at SVN r2694)
 ** Ticket #127
    Thanks to a patch submitted by Fred Stober, HepMCFile now can
@@ -10,6 +104,9 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** Other fixes in
    CKKW Qtilde clusterers, BSM width cut, SUSY mixing matrices.
+
+
+
 
 * Herwig++-2.1.1 release: 2007-12-08 (tagged at SVN r2589)
 ** Bug #123
@@ -29,6 +126,9 @@ Herwig++ News				(emacs -*- outline -*- format)
 ** MPIHandler
    Fixed call order ambiguity.
 
+
+
+
 * Herwig++-2.1.0 release: 2007-11-20 (tagged at SVN r2542)
 ** Major new release
    Herwig++-2.1 includes significant improvements, including
@@ -37,6 +137,9 @@ Herwig++ News				(emacs -*- outline -*- format)
 
    For an overview of the changes, please see the release note
    arXiv:0711.3137
+
+
+
 
 * Herwig++-2.0.3 release: 2007-08-21 (tagged at SVN r2101)
 
@@ -48,6 +151,9 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** unlisted
    Updated version of MultiplicityCount analysis handler.
+
+
+
 
 * Herwig++-2.0.2 release: 2007-07-06 (tagged at SVN r1716)
 
@@ -62,6 +168,9 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** unlisted
    Detailed documentation in .in files
+
+
+
 
 * Herwig++-2.0.1 release: 2006-12-05 (tagged at SVN r1195)
 
@@ -104,6 +213,7 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** unlisted
    removed f'_0 from particle list, decays were not handled
+
 
 
 

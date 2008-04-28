@@ -65,31 +65,33 @@ double MEfv2vf::me2() const {
   bool mc = !(mePartonData()[2]->mass() > 0.*MeV);
   if(mePartonData()[0]->id() > 0) {
     for(unsigned int i = 0; i < 2; ++i) {
-      sp[i] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], i, incoming);
-      vecIn[i] = VectorWaveFunction(meMomenta()[1], mePartonData()[1], 2*i, 
+      sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i, 
+				 incoming);
+      vecIn[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*i, 
 				    incoming);
-      vecOut[2*i] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 2*i, 
+      vecOut[2*i] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 2*i, 
 				     outgoing);
-      spb[i] = SpinorBarWaveFunction(meMomenta()[3], mePartonData()[3], i, 
+      spb[i] = SpinorBarWaveFunction(rescaledMomenta()[3], mePartonData()[3], i, 
 				     outgoing);
     }
     if( !mc )
-      vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
+      vecOut[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
     fv2vfHeME(sp, vecIn, vecOut, mc, spb, fullme);
   }
   else {
     for(unsigned int i = 0; i < 2; ++i) {
-      spb[i] = SpinorBarWaveFunction(meMomenta()[0], mePartonData()[0], i, 
+      spb[i] = SpinorBarWaveFunction(rescaledMomenta()[0], mePartonData()[0], i, 
 				     incoming);
-      vecIn[i] = VectorWaveFunction(meMomenta()[1], mePartonData()[1], 2*i, 
+      vecIn[i] = VectorWaveFunction(rescaledMomenta()[1], mePartonData()[1], 2*i, 
 				    incoming);
-      vecOut[2*i] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 2*i, 
+      vecOut[2*i] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 2*i, 
 				     outgoing);
-      sp[i] = SpinorWaveFunction(meMomenta()[3], mePartonData()[3], i, outgoing);
+      sp[i] = SpinorWaveFunction(rescaledMomenta()[3], mePartonData()[3], i, 
+				 outgoing);
     }
     if( !mc )
-      vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
+      vecOut[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
     fbv2vfbHeME(spb, vecIn, vecOut, mc, sp, fullme);
   }
@@ -342,13 +344,41 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
   v1[1] = v1[2];
   bool mc = !(ext[2]->data().mass() > 0.*MeV);
   VectorWaveFunction(v3, ext[2], outgoing, true, mc, true);
-  if( mc ) v3[1] = v3[2];
   SpinorVector sp;  SpinorBarVector sbar;
   double dummy(0.);
   HardVertexPtr hv = new_ptr(HardVertex());
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = ext[i]->dataPtr();
+    momenta[i] = ext[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+  
+  VectorWaveFunction vir(rescaledMomenta()[1], data[1], incoming);
+  VectorWaveFunction vor(rescaledMomenta()[2], data[2], outgoing);
+
   if( ext[0]->id() > 0 ) {
     SpinorWaveFunction(sp, ext[0], incoming, false, true);
     SpinorBarWaveFunction(sbar, ext[3], outgoing, true, true);
+
+    SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
+    SpinorBarWaveFunction sbr(rescaledMomenta()[3], data[3], outgoing);
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+      spr.reset(ihel);
+      sp[ihel] = spr;
+      vir.reset(2*ihel);
+      v1[ihel] = vir;
+      vor.reset(2*ihel);
+      v3[2*ihel] = vor;
+      sbr.reset(ihel);
+      sbar[ihel] = sbr;
+    }
+    if( !mc ) {
+      vor.reset(1);
+      v3[1] = vor;
+    }
     ProductionMatrixElement pme = fv2vfHeME(sp, v1, v3, mc, sbar, dummy);
     hv->ME(pme);
     for(unsigned int i = 0; i < 4; ++i) 
@@ -357,6 +387,23 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
   else {
     SpinorBarWaveFunction(sbar, ext[0], incoming, false, true);
     SpinorWaveFunction(sp, ext[3], outgoing, true, true);
+
+    SpinorBarWaveFunction sbr(rescaledMomenta()[0], data[0], incoming);
+    SpinorWaveFunction spr(rescaledMomenta()[3], data[3], outgoing);
+    for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+      sbr.reset(ihel);
+      sbar[ihel] = sbr;
+      vir.reset(2*ihel);
+      v1[ihel] = vir;
+      vor.reset(2*ihel);
+      v3[2*ihel] = vor;
+      spr.reset(ihel);
+      sp[ihel] = spr;
+    }
+    if( !mc ) {
+      vor.reset(1);
+      v3[1] = vor;
+    }
     ProductionMatrixElement pme = fbv2vfbHeME(sbar, v1, v3, mc, sp, dummy);
     hv->ME(pme);
     for(unsigned int i = 0; i < 4; ++i) 

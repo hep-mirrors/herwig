@@ -28,7 +28,7 @@ EvtGenRandom.h \
 EvtGenDecayer.cc EvtGenDecayer.fh \
 EvtGenDecayer.h EvtGenDecayer.icc 
 HwEvtGen_la_LIBADD = -L$(EVTGENPATH)/lib  -levtgenlhc
-HwEvtGen_la_LDFLAGS = -R$(EVTGENPATH)/lib -module -version-info 2:0:0
+HwEvtGen_la_LDFLAGS = -R$(EVTGENPATH)/lib -module -version-info 2:1:0
 HwEvtGen_la_CXXFLAGS = $(AM_CXXFLAGS) -Wno-non-virtual-dtor -Wno-unused
 HwEvtGen_la_CPPFLAGS = $(AM_CPPFLAGS) -I$(EVTGENPATH)
 

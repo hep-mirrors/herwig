@@ -13,8 +13,7 @@ DIRLINKS = $(top_srcdir)/Analysis \
            $(top_srcdir)/UnderlyingEvent \
            $(top_srcdir)/Utilities
 
-CONFIGHEADERS = $(top_srcdir)/Config/Herwig.h
-HEPMCHELPER = $(top_builddir)/Config/HepMCHelper.h
+CONFIGHEADERS = $(top_builddir)/Config/HepMCHelper.h
 
 LOOPTOOLHEADERS = $(top_srcdir)/Looptools/include/clooptools.h
 

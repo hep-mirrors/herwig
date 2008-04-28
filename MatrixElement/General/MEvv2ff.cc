@@ -67,13 +67,13 @@ double MEvv2ff::me2() const {
   VBVector v1(2), v2(2);
   SpinorVector sp(2); SpinorBarVector sbar(2);
   for( size_t i = 0; i < 2; ++i ) {
-    v1[i] = VectorWaveFunction(meMomenta()[0],mePartonData()[0], 2*i,
+    v1[i] = VectorWaveFunction(rescaledMomenta()[0],mePartonData()[0], 2*i,
 			       incoming);
-    v2[i] = VectorWaveFunction(meMomenta()[1],mePartonData()[1], 2*i,
+    v2[i] = VectorWaveFunction(rescaledMomenta()[1],mePartonData()[1], 2*i,
 			       incoming);
-    sbar[i] = SpinorBarWaveFunction(meMomenta()[2], mePartonData()[2], i,
+    sbar[i] = SpinorBarWaveFunction(rescaledMomenta()[2], mePartonData()[2], i,
 				    outgoing);
-    sp[i] = SpinorWaveFunction(meMomenta()[3], mePartonData()[3], i,
+    sp[i] = SpinorWaveFunction(rescaledMomenta()[3], mePartonData()[3], i,
 			       outgoing);
   }
   double full_me(0.);
@@ -93,6 +93,7 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
   const HPCount ndiags(numberOfDiags());
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors = getColourFactors();
+  const Energy mass = sp[0].mass();
   //vectors to store results
   vector<double> me(ndiags, 0.);
   vector<Complex> diag(ndiags, Complex(0.));
@@ -117,13 +118,13 @@ MEvv2ff::vv2ffME(const VBVector & v1, const VBVector & v2,
 	       offshell->iSpin() == PDT::Spin1Half) {
 	      if(current.ordered.second) {
 		interF = theFerm[ix].second->evaluate(q2, 3, offshell, sp[of2], 
-						      v2[iv2]);
+						      v2[iv2], mass);
 		diag[ix] = theFerm[ix].first->evaluate(q2, interF, sbar[of1], 
 						       v1[iv1]);
 	      }
 	      else {
 		interF = theFerm[ix].second->evaluate(q2, 3, offshell, sp[of2], 
-						      v1[iv1]);
+						      v1[iv1], mass);
 		diag[ix] = theFerm[ix].first->evaluate(q2, interF, sbar[of1], 
 						       v2[iv2]);
 	      }
@@ -268,6 +269,30 @@ void MEvv2ff::constructVertex(tSubProPtr sub) {
   SpinorBarWaveFunction(sbar, ext[2], outgoing, true, true);
   SpinorVector sp;
   SpinorWaveFunction(sp, ext[3], outgoing, true, true);
+
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = ext[i]->dataPtr();
+    momenta[i] = ext[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+
+  VectorWaveFunction v1r(rescaledMomenta()[0], data[0], incoming),
+    v2r(rescaledMomenta()[1], data[1], incoming);
+  SpinorBarWaveFunction sbr(rescaledMomenta()[2], data[2], outgoing);
+  SpinorWaveFunction spr(rescaledMomenta()[3], data[3], outgoing);
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+    v1r.reset(2*ihel);
+    v1[ihel] = v1r;
+    v2r.reset(2*ihel);
+    v2[ihel] = v2r;
+    sbr.reset(ihel);
+    sbar[ihel] = sbr;
+    spr.reset(ihel);
+    sp[ihel] = spr;
+  }
   double dummy(0.);
   ProductionMatrixElement pme = vv2ffME(v1, v2, sbar, sp, dummy);
 
