@@ -68,7 +68,7 @@ bool WeakPartonicDecayer::accept(tcPDPtr parent, const PDVector & prod) const {
 ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 					  const PDVector & children) const {
   ParticleVector partons;
-  for(unsigned int ix=0;ix<partons.size();++ix) {
+  for(unsigned int ix=0;ix<children.size();++ix) {
     partons.push_back(children[ix]->produceParticle());
   }
   // these products have the mass but should have constituent mass
