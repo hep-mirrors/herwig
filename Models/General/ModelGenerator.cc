@@ -187,7 +187,6 @@ void ModelGenerator::doinit() throw(InitException) {
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
     parent->touch();
-    parent->reset();
     parent->update();
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
