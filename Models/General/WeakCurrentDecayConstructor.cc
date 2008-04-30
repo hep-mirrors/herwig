@@ -144,12 +144,12 @@ void WeakCurrentDecayConstructor::DecayList(const vector<PDPtr> & part) {
     }
   }
   //ParticleData objects need updating 
-  for(unsigned int ip= 0; ip < np; ++ip) {
-    PDPtr pdp = part[ip];
-    pdp->touch();
-    pdp->update();
-    if(pdp->CC()) pdp->CC()->synchronize();
-  }
+//   for(unsigned int ip= 0; ip < np; ++ip) {
+//     PDPtr pdp = part[ip];
+//     pdp->touch();
+//     pdp->update();
+//     if(pdp->CC()) pdp->CC()->synchronize();
+//   }
 }
   
 vector<PDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
