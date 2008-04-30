@@ -130,6 +130,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   for (int i=0; i<2; i++) _quark[i].setMass(partons[i]->mass());
   _g.setMass(0.*MeV);
 
+  // Now the quarks have mass entry equal to their current mass
+  // but E^2-p^2=0 still for q qbar g. Maybe should do rescaleRho now? 
+
   // assign the emitter based on evolution scales
   // rather than for the correlations - we might want to try 
   // making this choice in the same way as VectorBosonQQbarMECorrection
@@ -185,8 +188,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Set the maximum pt for all other emissions
   double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
   Energy ptveto = _pt *sqrt((_xb+_xc-1.)/xfact2);
-  // If we have a no-emission event set ptveto to minpt = _Qg
-  if( _pt < _Qg ) ptveto = _Qg;
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
 
