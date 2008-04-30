@@ -12,7 +12,7 @@ case "${host}" in
   *-darwin[[0156]].*) 
     AC_MSG_ERROR([Herwig++ requires OS X 10.3 or later])
     ;;
-  *-darwin*) 
+  *-darwin7.*) 
     if test "x$MACOSX_DEPLOYMENT_TARGET" != "x10.3"; then 
       AC_MSG_ERROR(
       [Please add 'MACOSX_DEPLOYMENT_TARGET=10.3' to the configure line.]) 
