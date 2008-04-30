@@ -113,7 +113,6 @@ void Upsilon4SMultiplicityCount::doinitrun() {
   _data[211]  = MultiplicityInfo( 2.*3.58   , 2.*0.07   , lightMeson);
   _data[111]  = MultiplicityInfo( 2.*2.35   , 2.*0.11   , lightMeson);
   _data[221]  = MultiplicityInfo( 2.*0.176  , 2.*0.016  , lightMeson);
-  _data[331]  = MultiplicityInfo( 2.*0.00042, 2.*0.00009, lightMeson);
   _data[213]  = MultiplicityInfo( 2.*0.21   , 2.*0.05   , lightMeson);
   _data[333]  = MultiplicityInfo( 2.*0.0342 , 2.*0.0013 , lightMeson);
   // baryons
