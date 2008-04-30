@@ -205,7 +205,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
 
-  // --- KMH --- why don't we do the next step in recnostructDecayShower? 
+  // KMH - why don't we do the next step in reconstructDecayShower? 
   // Reset the momenta to ensure the correct momenta after shower recon
   // if emitter for Kleiss trick and shower are different
   for(map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator 
@@ -374,21 +374,25 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   eventFrame.invert();
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * twopi;
-  //KH - remind me to check these.
   // momentum of emitter
   _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
   _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
   _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
   _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
+  _quark[_iemitter].setMass(0.*MeV);
+  _quark[_iemitter].rescaleMass();
   // momentum of spectator
   _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
   _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
+  _quark[_ispectator].setMass(0.*MeV);
+  _quark[_ispectator].rescaleMass();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
-  // KH - Check no emission events - they gave nans before here
+  _g.setMass(0.*MeV);
+  _g.rescaleMass();
   // Rotation for the azimuthal correlation
   LorentzRotation r;
   r.setRotate( twopi*UseRandom::rnd(), _quark[_ispectator].vect().unit());
