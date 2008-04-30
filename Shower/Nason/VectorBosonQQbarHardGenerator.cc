@@ -391,19 +391,19 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
   _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
   _quark[_iemitter].setMass(0.*MeV);
-  _quark[_iemitter].rescaleMass();
+  _quark[_iemitter].rescaleRho();
   // momentum of spectator
   _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
   _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
   _quark[_ispectator].setMass(0.*MeV);
-  _quark[_ispectator].rescaleMass();
+  _quark[_ispectator].rescaleRho();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
   _g.setMass(0.*MeV);
-  _g.rescaleMass();
+  _g.rescaleRho();
   //boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
