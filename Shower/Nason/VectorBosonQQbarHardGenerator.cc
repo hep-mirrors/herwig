@@ -131,7 +131,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   _g.setMass(0.*MeV);
 
   // assign the emitter based on evolution scales
-  // rather than for the correlations
+  // rather than for the correlations - we might want to try 
+  // making this choice in the same way as VectorBosonQQbarMECorrection
+  // (based on relative pT's). 
   _iemitter   = _quark[0]*_g>_quark[1]*_g ? 1 : 0;
   _ispectator = _iemitter==1              ? 0 : 1; 
 
@@ -335,6 +337,14 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
   
 // _z and _ktild are the z & \tilde{kappa} variables in the new variables
 // paper, for the final-final colour connnection with massless partons (b=c=0).
+
+// Seymour's "Simple Prescription..." paper says that b or c retains 
+// it's parton model direction with relative prob xb^2 or xc^2 respectively.
+// The thing retaining it's parton level direction is _the_spectator_ the 
+// thing absorbing the transverse recoil is _the_emitter_. If xb->1 it means
+// the gluon and particle c are collinear, and acollinear to b, implying 
+// particle c did the emitting, so for xb>>xc xb is the spectator, xc is the 
+// emitter, so select xb as spectator with relative prob xb^2/(xb^2+xc^2)
   if(UseRandom::rnd() < sqr(_xb) / (sqr(_xb) + sqr(_xc))) {
     _iemitter   = 1;
     _ispectator = 0;
@@ -364,13 +374,14 @@ double VectorBosonQQbarHardGenerator::getResult() {
 
 void VectorBosonQQbarHardGenerator::constructVectors(){
   using Constants::twopi;
+  using Constants::pi;
   Lorentz5Momentum test[2]={_quark[0],_quark[1]};
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent():
   LorentzRotation eventFrame((_quark[0]+_quark[1]).findBoostToCM() );
-  Lorentz5Momentum quark = eventFrame*_quark[_iemitter];
-  eventFrame.rotateZ(-quark.phi());
-  eventFrame.rotateY(-quark.theta());
+  Lorentz5Momentum spectator = eventFrame*_quark[_ispectator];
+  eventFrame.rotateZ(-spectator.phi());
+  eventFrame.rotateY(-spectator.theta()-pi);
   eventFrame.invert();
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * twopi;
@@ -393,11 +404,6 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   _g.setT(sqrt(_s)+_g.t());
   _g.setMass(0.*MeV);
   _g.rescaleMass();
-  // Rotation for the azimuthal correlation
-  LorentzRotation r;
-  r.setRotate( twopi*UseRandom::rnd(), _quark[_ispectator].vect().unit());
-  _quark[_iemitter] = r*_quark[_iemitter];
-  _g = r*_g;
   //boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
