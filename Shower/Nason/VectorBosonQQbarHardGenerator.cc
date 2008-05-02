@@ -207,35 +207,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
 
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-  // KMH - happy to here...just bear in mind://
-  // just must have that partons[0], quark[0]//
-  // and allBranchings[0] associated to the  //
-  // _quark_ and partons[1], quark[1] and    //
-  // allBranchings[1] associated to the      //
-  // _antiquark_ . allBranchings[2] should be//
-  // the vector boson NasonBranching.        //
-  // Obviously reconstructDecayShower and    //
-  // getEvent need checking and the next     //
-  // for(...) looks weird.                   //
-  // I'm not sure about the assignment       //
-  // of emitter/spectator based on pq.g vs   //
-  // pqbar.g - shouldn't this be more like   //
-  // whichever one has the smallest qtilde?  //
-  // Also does the truncated shower know it  //
-  // should not do anything if the POWHEG    //
-  // emission is in the dead region, and, in //
-  // the same case, does the normal shower   //
-  // start from the usual normal shower start//
-  // scale - if it doesn't then the q and    //
-  // qbar shower phase spaces might overlap  //
-  // in the soft region (?) - double counting//
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-
   // KMH - why don't we do the next step in reconstructDecayShower? 
   // Reset the momenta to ensure the correct momenta after shower recon
   // if emitter for Kleiss trick and shower are different
