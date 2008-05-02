@@ -82,6 +82,8 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
     // clear results of last attempt
     if(ntry!=0) {
       currentTree()->clear();
+      // KMH - In 10000 LEP nason events (no trunc shower) we got
+      // in here 200 times leading to a call of setColourPartners(false).
       setColourPartners(false);
     }
     // initial-state radiation
@@ -133,8 +135,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	  }
 	}
 	else {
-	  progenitor()->hasEmitted( _hardonly ? false :
-		timeLikeShower( particlesToShower[ix]->progenitor() ) );
+	  progenitor()->hasEmitted(false);
 	}
       }
     }
@@ -208,6 +209,9 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
   // generate the intrinsic p_T once and for all
   generateIntrinsicpT(particlesToShower);
   unsigned int ntry(0);
+  // KMH - For LEP nason runs all that comes in is three particles in 
+  // particlesToShower 1st is e+ 2nd is e- 3rd is 99% Z0 and 1% gamma. 
+  // _nasontree is always null (no nasontree's in here).
   do {
     // clear results of last attempt
     if(ntry!=0) {

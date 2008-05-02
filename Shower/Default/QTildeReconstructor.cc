@@ -89,6 +89,11 @@ void QTildeReconstructor::Init() {
 bool QTildeReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 		       unsigned int iopt) const {
+  // KMH - if a Z0/gamma comes in here it is _always_ a 
+  // reconstruction fixed point and it always has no parents
+  // i.e. particleJetParent->parents().empty() = true. So we go 
+  // straight to the block under "otherwise" with emitted=false, then return.
+  // if this is not a fixed point in the reconstruction
   if(!particleJetParent)
     throw Exception() << "must have a particle in Kinematics"
 		      << "Reconstructor::reconstructTimeLikeJet"
@@ -153,6 +158,8 @@ reconstructHardJets(ShowerTreePtr hard,
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
+  // KMH - For LEP we only ever get e+ e- and Z0/gamma in ShowerHardJets[0,1,2]
+  // respectively (ShowerHardJets.size()==3 always).
   try {
     if(_reconopt==0) {
       bool radiated[2] = {false,false};
@@ -184,6 +191,8 @@ reconstructHardJets(ShowerTreePtr hard,
       if(boostRest.mag()>1.||boostNewF.mag()>1.) return false;
       // final-state reconstruction
       // check if in CMF frame
+      // KMH - For LEP.in with NoPDF p_cm[0]=p_cm[1]=(0.,0.,0.,91.2), exactly, 
+      // always.
       Boost beta_cm = p_cm[1].findBoostToCM();
       bool gottaBoost = (beta_cm.mag() > 1e-12);
       // check if any radiation
@@ -209,6 +218,20 @@ reconstructHardJets(ShowerTreePtr hard,
 	k = solveKfactor(p_cm[1].mag(), jetKinematics);
 	if(k< 0.) return false;
       }
+      // KMH - For LEP nason runs radiated[0]=radiated[1]=atLeastOnce=0!
+      // so we don't go in solveKfactor. And jetKinematics.size() = 1 (
+      // jetKinematics only contains the Z/gamma). Generally the jetKinematics
+      // object holds all the final state progenitors, then it boosts it 
+      // to the final-state COM then sends that off
+      // to reconstructTimeLikeJet whence it comes back with a "p" (original)
+      // and it's reconstructed momentum "q". The k factor is then solved for,
+      // and then the boost is worked out that does the mapping of q onto
+      // reshuffled q (below). Finally a bit is added onto that boost which 
+      // undoes the first boost that took us to the final-state COM. 
+      //  For nason, the only thing any of this works
+      // on is the Z/gamma for which there is no rescaling, nothing - they
+      // come out with exactly the same momentum they entered within 
+      // numerical precision.
       // perform the rescaling and boosts
       for(JetKinVect::iterator it = jetKinematics.begin();
 	  it != jetKinematics.end(); ++it) {

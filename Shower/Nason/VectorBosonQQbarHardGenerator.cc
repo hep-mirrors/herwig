@@ -60,6 +60,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     QProgenitor    = tree->outgoingLines().begin()->first,
     QbarProgenitor = tree->outgoingLines().rbegin()->first;
   if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
+  _partons.resize(2);
   _partons[0] = QProgenitor->progenitor()->dataPtr();
   _partons[1] = QbarProgenitor->progenitor()->dataPtr();
 
@@ -203,9 +204,43 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   greenLine->addColoured(parent,_iemitter);
   greenLine->addColoured(spectator,_ispectator);
 
+
+  cout << "\n\n\n\n\n" << endl;
+  cout << _quark[0]/GeV << endl;
+  cout << _quark[1]/GeV << endl;
+  cout << _g       /GeV << endl;
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
+
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+  // KMH - happy to here...just bear in mind://
+  // just must have that partons[0], quark[0]//
+  // and allBranchings[0] associated to the  //
+  // _quark_ and partons[1], quark[1] and    //
+  // allBranchings[1] associated to the      //
+  // _antiquark_ . allBranchings[2] should be//
+  // the vector boson NasonBranching.        //
+  // Obviously reconstructDecayShower and    //
+  // getEvent need checking and the next     //
+  // for(...) looks weird.                   //
+  // I'm not sure about the assignment       //
+  // of emitter/spectator based on pq.g vs   //
+  // pqbar.g - shouldn't this be more like   //
+  // whichever one has the smallest qtilde?  //
+  // Also does the truncated shower know it  //
+  // should not do anything if the POWHEG    //
+  // emission is in the dead region, and, in //
+  // the same case, does the normal shower   //
+  // start from the usual normal shower start//
+  // scale - if it doesn't then the q and    //
+  // qbar shower phase spaces might overlap  //
+  // in the soft region (?) - double counting//
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
 
   // KMH - why don't we do the next step in reconstructDecayShower? 
   // Reset the momenta to ensure the correct momenta after shower recon
@@ -336,14 +371,14 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
   } while (reject);
   
 // _z and _ktild are the z & \tilde{kappa} variables in the new variables
-// paper, for the final-final colour connnection with massless partons (b=c=0).
+// paper, for the final-final colour connnection with massless partons (q=qb=0).
 
-// Seymour's "Simple Prescription..." paper says that b or c retains 
+// Seymour's "Simple Prescription..." paper says that q or qb retains 
 // it's parton model direction with relative prob xq^2 or xqb^2 respectively.
 // The thing retaining it's parton level direction is _the_spectator_ the 
 // thing absorbing the transverse recoil is _the_emitter_. If xq->1 it means
-// the gluon and particle c are collinear, and acollinear to b, implying 
-// particle c did the emitting, so for xq>>xqb xq is the spectator, xqb is the 
+// the gluon and particle qb are collinear, and acollinear to q, implying 
+// qb did the emitting, so for xq>>xqb xq is the spectator, xqb is the 
 // emitter, so select xq as spectator with relative prob xq^2/(xq^2+xqb^2)
   if(UseRandom::rnd() < sqr(_xq) / (sqr(_xq) + sqr(_xqb))) {
     _iemitter   = 1;
@@ -375,6 +410,7 @@ double VectorBosonQQbarHardGenerator::getResult() {
 void VectorBosonQQbarHardGenerator::constructVectors(){
   using Constants::twopi;
   using Constants::pi;
+
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent():
   LorentzRotation eventFrame((_quark[0]+_quark[1]).findBoostToCM() );
@@ -382,27 +418,75 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   eventFrame.rotateZ(-spectator.phi());
   eventFrame.rotateY(-spectator.theta()-pi);
   eventFrame.invert();
+
+  // Get the reduced (current) masses:
+  double mu_e,mu_s,mu_g;
+//   mu_e = _partons[_iemitter]->mass()/sqrt(_s);
+//   mu_s = _partons[_ispectator]->mass()/sqrt(_s);
+//   mu_g = 0.;
+  mu_e = 0.;
+  mu_s = 0.;
+  mu_g = 0.;
+
+  // Get the Dalitz variables:
+  double x_e, x_s, x_g;
+  x_e = _iemitter==0   ? _xq : _xqb;
+  x_s = _ispectator==0 ? _xq : _xqb;
+  x_g = 2.0 - x_e - x_s;
+
+  // Get the energies and momenta:
+  Energy en_e, en_s, en_g;
+  en_e = 0.5*sqrt(_s)*x_e;
+  en_s = 0.5*sqrt(_s)*x_s;
+  en_g = 0.5*sqrt(_s)*x_g;
+  Energy p_e, p_s, p_g;
+  p_e = 0.5*sqrt(_s*(x_e-2.*mu_e)*(x_e+2.*mu_e));
+  p_s = 0.5*sqrt(_s*(x_s-2.*mu_s)*(x_s+2.*mu_s));
+  p_g = 0.5*sqrt(_s*(x_g-2.*mu_g)*(x_g+2.*mu_g));
+  
+  // Get the cosines and sines w.r.t spectator:
+  double c_sg,s_sg,c_se,s_se;
+  c_se  = (en_s*en_e - 0.5*_s*(1.0 - mu_e*mu_e - mu_s*mu_s + mu_g*mu_g - x_g))
+          /(p_s*p_e);
+  s_se  = sqrt((1.-c_se)*(1.+c_se));
+  c_sg  = (en_s*en_g - 0.5*_s*(1.0 + mu_e*mu_e - mu_s*mu_s - mu_g*mu_g - x_e))
+          /(p_s*p_g);
+  s_sg  = sqrt((1.-c_sg)*(1.+c_sg));
+
+  if(isnan(en_e/GeV)) cout << "en_e = " << en_e/GeV << endl;
+  if(isnan(en_s/GeV)) cout << "en_s = " << en_s/GeV << endl;
+  if(isnan(en_g/GeV)) cout << "en_g = " << en_g/GeV << endl;
+  if(isnan(p_e/GeV)) cout << "p_e = " << p_e/GeV << endl;
+  if(isnan(p_s/GeV)) cout << "p_s = " << p_s/GeV << endl;
+  if(isnan(p_g/GeV)) cout << "p_g = " << p_g/GeV << endl;
+  if(isnan(c_se)) cout << "c_se = " << c_se << endl;
+  if(isnan(s_se)) cout << "s_se = " << s_se << endl;
+  if(isnan(c_sg)) cout << "c_sg = " << c_sg << endl;
+  if(isnan(s_sg)) cout << "s_sg = " << s_sg << endl;
+
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * twopi;  
+
   // momentum of emitter
-  _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
-  _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
-  _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
-  _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
-  _quark[_iemitter].setMass(0.*MeV);
+  _quark[_iemitter].setT(en_e);
+  _quark[_iemitter].setX(p_e*s_se*cos(_phi));
+  _quark[_iemitter].setY(p_e*s_se*sin(_phi));
+  _quark[_iemitter].setZ(p_e*c_se);
+  _quark[_iemitter].setMass(_partons[_iemitter]->mass());
   _quark[_iemitter].rescaleRho();
   // momentum of spectator
-  _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
+  _quark[_ispectator].setT(en_s);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
-  _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
-  _quark[_ispectator].setMass(0.*MeV);
+  _quark[_ispectator].setZ(p_s);
+  _quark[_ispectator].setMass(_partons[_ispectator]->mass());
   _quark[_ispectator].rescaleRho();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
   _g.setMass(0.*MeV);
   _g.rescaleRho();
+
   //boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
