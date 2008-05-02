@@ -131,7 +131,7 @@ private:
   void constructVectors();
 
   /** Returns the value of the radiative cross section (R(v,r)/B(v))
-   *for the current (_xb,_xc)
+   *for the current (_xq,_xqb)
    */
   double getResult();
 
@@ -167,10 +167,10 @@ private:
   double _alphaS_max;  
 
   /**
-   *The dalitz variables (xb,xc)
+   *The dalitz variables (xq,xqb)
    */
-  double _xb;
-  double _xc;
+  double _xq;
+  double _xqb;
 
   /**
    * The gluon mass (Q_g) i.e. the cut off on pt, assuming massless quarks.
@@ -208,8 +208,8 @@ private:
    */
   std::vector<double> _ptplot;
   std::vector<double> _yplot;
-  std::vector<double> _xbplot;
-  std::vector<double> _xcplot;
+  std::vector<double> _xqplot;
+  std::vector<double> _xqbplot;
 
   // The quark momenta and data pointers
   vector<Lorentz5Momentum> _quark;

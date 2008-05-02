@@ -185,8 +185,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   NasonTreePtr nasontree = new_ptr(NasonTree(allBranchings,spaceBranchings));
 	
   // Set the maximum pt for all other emissions
-  double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
-  Energy ptveto = _pt *sqrt((_xb+_xc-1.)/xfact2);
+  double xfact2 = _xq>_xqb ? sqr(_xq) : sqr(_xqb);
+  Energy ptveto = _pt *sqrt((_xq+_xqb-1.)/xfact2);
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
 
@@ -206,6 +206,35 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
+
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+  // KMH - happy to here...just bear in mind://
+  // just must have that partons[0], quark[0]//
+  // and allBranchings[0] associated to the  //
+  // _quark_ and partons[1], quark[1] and    //
+  // allBranchings[1] associated to the      //
+  // _antiquark_ . allBranchings[2] should be//
+  // the vector boson NasonBranching.        //
+  // Obviously reconstructDecayShower and    //
+  // getEvent need checking and the next     //
+  // for(...) looks weird.                   //
+  // I'm not sure about the assignment       //
+  // of emitter/spectator based on pq.g vs   //
+  // pqbar.g - shouldn't this be more like   //
+  // whichever one has the smallest qtilde?  //
+  // Also does the truncated shower know it  //
+  // should not do anything if the POWHEG    //
+  // emission is in the dead region, and, in //
+  // the same case, does the normal shower   //
+  // start from the usual normal shower start//
+  // scale - if it doesn't then the q and    //
+  // qbar shower phase spaces might overlap  //
+  // in the soft region (?) - double counting//
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
+  /////////////////////////////////////////////
 
   // KMH - why don't we do the next step in reconstructDecayShower? 
   // Reset the momenta to ensure the correct momenta after shower recon
@@ -315,8 +344,8 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     _pt = last_pt*pow(UseRandom::rnd(),1./(prefactor*(y_max-y_min)));
     _y  = UseRandom::rnd()*(y_max-y_min)+y_min;
     
-    _xb = 1.-_pt/sqrt(_s)*exp(-_y);
-    _xc = 1.-_pt/sqrt(_s)*exp( _y);
+    _xq = 1.-_pt/sqrt(_s)*exp(-_y);
+    _xqb = 1.-_pt/sqrt(_s)*exp( _y);
 
     last_pt = _pt;
 
@@ -339,22 +368,22 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
 // paper, for the final-final colour connnection with massless partons (b=c=0).
 
 // Seymour's "Simple Prescription..." paper says that b or c retains 
-// it's parton model direction with relative prob xb^2 or xc^2 respectively.
+// it's parton model direction with relative prob xq^2 or xqb^2 respectively.
 // The thing retaining it's parton level direction is _the_spectator_ the 
-// thing absorbing the transverse recoil is _the_emitter_. If xb->1 it means
+// thing absorbing the transverse recoil is _the_emitter_. If xq->1 it means
 // the gluon and particle c are collinear, and acollinear to b, implying 
-// particle c did the emitting, so for xb>>xc xb is the spectator, xc is the 
-// emitter, so select xb as spectator with relative prob xb^2/(xb^2+xc^2)
-  if(UseRandom::rnd() < sqr(_xb) / (sqr(_xb) + sqr(_xc))) {
+// particle c did the emitting, so for xq>>xqb xq is the spectator, xqb is the 
+// emitter, so select xq as spectator with relative prob xq^2/(xq^2+xqb^2)
+  if(UseRandom::rnd() < sqr(_xq) / (sqr(_xq) + sqr(_xqb))) {
     _iemitter   = 1;
     _ispectator = 0;
-    _z = (_xc+_xb-1.)/_xb; 
-    _ktild = (1.-_xb)/_z/(1.-_z); 
+    _z = (_xqb+_xq-1.)/_xq; 
+    _ktild = (1.-_xq)/_z/(1.-_z); 
   } else {
     _iemitter   = 0;
     _ispectator = 1;
-    _z = (_xb+_xc-1.)/_xc;
-    _ktild = (1.-_xc)/_z/(1.-_z);
+    _z = (_xq+_xqb-1.)/_xqb;
+    _ktild = (1.-_xqb)/_z/(1.-_z);
   }
 
   _k = _z*(1.-_z)*sqrt(_ktild);
@@ -366,9 +395,9 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
 
 double VectorBosonQQbarHardGenerator::getResult() {
   double res = 4. / 3. / Constants::pi * _pt / _s *
-    ( sqr ( _xb ) + sqr( _xc ) ) / ( 1. - _xb ) / ( 1. -_xc ) * GeV;
-  double xfact2 = _xb>_xc ? sqr(_xb) : sqr(_xc);
-  res *= _alphaS->value( sqr( _pt )*(_xb+_xc-1.)/xfact2 );
+    ( sqr ( _xq ) + sqr( _xqb ) ) / ( 1. - _xq ) / ( 1. -_xqb ) * GeV;
+  double xfact2 = _xq>_xqb ? sqr(_xq) : sqr(_xqb);
+  res *= _alphaS->value( sqr( _pt )*(_xq+_xqb-1.)/xfact2 );
   return res;
 }
 
