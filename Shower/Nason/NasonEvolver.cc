@@ -134,7 +134,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	}
 	else {
 	  progenitor()->hasEmitted( _hardonly ? false :
-                timeLikeShower( particlesToShower[ix]->progenitor() ) );
+               timeLikeShower( particlesToShower[ix]->progenitor() ) );
 	}
       }
     }

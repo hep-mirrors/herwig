@@ -376,7 +376,6 @@ double VectorBosonQQbarHardGenerator::getResult() {
 void VectorBosonQQbarHardGenerator::constructVectors(){
   using Constants::twopi;
   using Constants::pi;
-
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent():
   LorentzRotation eventFrame((_quark[0]+_quark[1]).findBoostToCM() );
@@ -384,74 +383,28 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   eventFrame.rotateZ(-spectator.phi());
   eventFrame.rotateY(-spectator.theta()-pi);
   eventFrame.invert();
-
-  // Get the reduced (current) masses:
-  double mu_e,mu_s,mu_g;
-//   mu_e = _partons[_iemitter]->mass()/sqrt(_s);
-//   mu_s = _partons[_ispectator]->mass()/sqrt(_s);
-//   mu_g = 0.;
-  mu_e = 0.;
-  mu_s = 0.;
-  mu_g = 0.;
-
-  // Get the Dalitz variables:
-  double x_e, x_s, x_g;
-  x_e = _iemitter==0   ? _xq : _xqb;
-  x_s = _ispectator==0 ? _xq : _xqb;
-  x_g = 2.0 - x_e - x_s;
-
-  // Get the energies and momenta:
-  Energy en_e, en_s, en_g;
-  en_e = 0.5*sqrt(_s)*x_e;
-  en_s = 0.5*sqrt(_s)*x_s;
-  en_g = 0.5*sqrt(_s)*x_g;
-  Energy p_e, p_s, p_g;
-  p_e = 0.5*sqrt(_s*(x_e-2.*mu_e)*(x_e+2.*mu_e));
-  p_s = 0.5*sqrt(_s*(x_s-2.*mu_s)*(x_s+2.*mu_s));
-  p_g = 0.5*sqrt(_s*(x_g-2.*mu_g)*(x_g+2.*mu_g));
-  
-  // Get the cosines and sines w.r.t spectator:
-  double c_sg,s_sg,c_se,s_se;
-  c_se  = (en_s*en_e - 0.5*_s*(1.0 - mu_e*mu_e - mu_s*mu_s + mu_g*mu_g - x_g))
-          /(p_s*p_e);
-  s_se  = sqrt((1.-c_se)*(1.+c_se));
-  c_sg  = (en_s*en_g - 0.5*_s*(1.0 + mu_e*mu_e - mu_s*mu_s - mu_g*mu_g - x_e))
-          /(p_s*p_g);
-  s_sg  = sqrt((1.-c_sg)*(1.+c_sg));
-
-  if(isnan(en_e/GeV)) cout << "en_e = " << en_e/GeV << endl;
-  if(isnan(en_s/GeV)) cout << "en_s = " << en_s/GeV << endl;
-  if(isnan(en_g/GeV)) cout << "en_g = " << en_g/GeV << endl;
-  if(isnan(p_e/GeV)) cout << "p_e = " << p_e/GeV << endl;
-  if(isnan(p_s/GeV)) cout << "p_s = " << p_s/GeV << endl;
-  if(isnan(p_g/GeV)) cout << "p_g = " << p_g/GeV << endl;
-  if(isnan(c_se)) cout << "c_se = " << c_se << endl;
-  if(isnan(s_se)) cout << "s_se = " << s_se << endl;
-  if(isnan(c_sg)) cout << "c_sg = " << c_sg << endl;
-  if(isnan(s_sg)) cout << "s_sg = " << s_sg << endl;
-
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * twopi;  
-
   // momentum of emitter
-  _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
-  _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
-  _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
-  _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
-  _quark[_iemitter].setMass(0.*MeV);
+  _quark[_iemitter].setT(en_e);
+  _quark[_iemitter].setX(p_e*s_se*cos(_phi));
+  _quark[_iemitter].setY(p_e*s_se*sin(_phi));
+  _quark[_iemitter].setZ(p_e*c_se);
+  _quark[_iemitter].setMass(_partons[_iemitter]->mass());
   _quark[_iemitter].rescaleRho();
   // momentum of spectator
-  _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
+  _quark[_ispectator].setT(en_s);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
-  _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
-  _quark[_ispectator].setMass(0.*MeV);
+  _quark[_ispectator].setZ(p_s);
+  _quark[_ispectator].setMass(_partons[_ispectator]->mass());
   _quark[_ispectator].rescaleRho();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
   _g.setMass(0.*MeV);
   _g.rescaleRho();
+
   //boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];

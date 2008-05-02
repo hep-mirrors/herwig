@@ -209,6 +209,7 @@ reconstructHardJets(ShowerTreePtr hard,
 	k = solveKfactor(p_cm[1].mag(), jetKinematics);
 	if(k< 0.) return false;
       }
+      // perform the rescaling and boosts
       for(JetKinVect::iterator it = jetKinematics.begin();
 	  it != jetKinematics.end(); ++it) {
 	LorentzRotation Trafo = LorentzRotation(); 
