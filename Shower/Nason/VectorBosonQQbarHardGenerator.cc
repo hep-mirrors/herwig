@@ -204,43 +204,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   greenLine->addColoured(parent,_iemitter);
   greenLine->addColoured(spectator,_ispectator);
 
-
-  cout << "\n\n\n\n\n" << endl;
-  cout << _quark[0]/GeV << endl;
-  cout << _quark[1]/GeV << endl;
-  cout << _g       /GeV << endl;
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructDecayShower(nasontree,evolver());
-
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-  // KMH - happy to here...just bear in mind://
-  // just must have that partons[0], quark[0]//
-  // and allBranchings[0] associated to the  //
-  // _quark_ and partons[1], quark[1] and    //
-  // allBranchings[1] associated to the      //
-  // _antiquark_ . allBranchings[2] should be//
-  // the vector boson NasonBranching.        //
-  // Obviously reconstructDecayShower and    //
-  // getEvent need checking and the next     //
-  // for(...) looks weird.                   //
-  // I'm not sure about the assignment       //
-  // of emitter/spectator based on pq.g vs   //
-  // pqbar.g - shouldn't this be more like   //
-  // whichever one has the smallest qtilde?  //
-  // Also does the truncated shower know it  //
-  // should not do anything if the POWHEG    //
-  // emission is in the dead region, and, in //
-  // the same case, does the normal shower   //
-  // start from the usual normal shower start//
-  // scale - if it doesn't then the q and    //
-  // qbar shower phase spaces might overlap  //
-  // in the soft region (?) - double counting//
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
-  /////////////////////////////////////////////
 
   // KMH - why don't we do the next step in reconstructDecayShower? 
   // Reset the momenta to ensure the correct momenta after shower recon
@@ -468,25 +434,24 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   _phi = UseRandom::rnd() * twopi;  
 
   // momentum of emitter
-  _quark[_iemitter].setT(en_e);
-  _quark[_iemitter].setX(p_e*s_se*cos(_phi));
-  _quark[_iemitter].setY(p_e*s_se*sin(_phi));
-  _quark[_iemitter].setZ(p_e*c_se);
-  _quark[_iemitter].setMass(_partons[_iemitter]->mass());
+  _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
+  _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
+  _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
+  _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
+  _quark[_iemitter].setMass(0.*MeV);
   _quark[_iemitter].rescaleRho();
   // momentum of spectator
-  _quark[_ispectator].setT(en_s);
+  _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
-  _quark[_ispectator].setZ(p_s);
-  _quark[_ispectator].setMass(_partons[_ispectator]->mass());
+  _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
+  _quark[_ispectator].setMass(0.*MeV);
   _quark[_ispectator].rescaleRho();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
   _g.setMass(0.*MeV);
   _g.rescaleRho();
-
   //boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
