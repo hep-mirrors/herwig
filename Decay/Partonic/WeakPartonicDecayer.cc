@@ -21,6 +21,7 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
 
@@ -133,22 +134,47 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
   else if(partons.size()==4) {
     // set masses of products
     Lorentz5Momentum pout[4],pin(parent.momentum());
-    for(unsigned int ix=0;ix<4;++ix){pout[ix].setMass(partons[ix]->mass());}
+    for(unsigned int ix=0;ix<4;++ix) pout[ix].setMass(partons[ix]->mass());
     double xs(partons[3]->mass()/pin.e()),xb(1.-xs);
     pout[3]=xs*pin;
     // Get the particle quark that is decaying
     long idQ, idSpec;
     idSpec = partons[3]->id();
-    idQ = (parent.id()/1000)%10;
-    if(!idQ) idQ = (parent.id()/100)%10;
+    idQ = (abs(parent.id())/1000)%10;
+    if(!idQ) idQ = (abs(parent.id())/100)%10;
     // Now the odd case of a B_c where the c decays, not the b
-    if(idSpec == idQ) idQ = (parent.id()/10)%10;
+    if(abs(idSpec) == idQ) idQ = (abs(parent.id())/10)%10;
+    // change sign if antiquark
+    if((idSpec>0&&idSpec<6)||idSpec<-6) idQ = -idQ;
     // momentum of the decaying quark
     PPtr inter = getParticleData(idQ)->produceParticle(parent.momentum()*xb);
     // include matrix element
     // only the phase space factor don't bother with the W propagator
-    if(MECode==100)
-      Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2],&VAWt);
+    if(MECode==100) {
+      // charges of the exchanged W boson
+      int c1 = inter->data().iCharge()-partons[2]->data().iCharge();
+      int c2 = partons[0]->data().iCharge()+partons[1]->data().iCharge();
+      // normal decay
+      if(c1==c2&&abs(c1)==3)
+	Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2],&VAWt);
+      // colour rearranged decay
+      else {
+	int c3 = inter->data().iCharge()-partons[1]->data().iCharge();
+	int c4 = partons[0]->data().iCharge()+partons[2]->data().iCharge();
+	if(c3==c4&&abs(c3)==3)
+	  Kinematics::threeBodyDecay(inter->momentum(),pout[2],pout[0],pout[1],&VAWt);
+	else {
+	  generator()->log() << "Unknown order for colour rearranged decay"
+			     << " in WeakPartonicDecayer::decay()\n";
+	  generator()->log() << c1 << " " << c2 << " " << c3 << " " << c4 << "\n";
+	  generator()->log() << parent << "\n" << *inter << "\n";
+	  for(unsigned int ix=0;ix<4;++ix) generator()->log() << *partons[ix] << "\n";
+	  throw Exception()  << "Unknown order for colour rearranged decay"
+			     << " in WeakPartonicDecayer::decay() "
+			     << Exception::runerror;
+	}
+      }
+    }
     // flat phase space
     else
       Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2]);

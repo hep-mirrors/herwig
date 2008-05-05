@@ -1514,7 +1514,7 @@ decaymode B+->D-,rho+,pi+; 0.002 1 /Herwig/Decays/DecayME0
 decaymode B+->D*-,rho+,pi+; 0.002 1 /Herwig/Decays/DecayME0
 decaymode B+->D*_2bar0,tau+,nu_tau; 0.002 1 /Herwig/Decays/ISGW2
 decaymode B+->D'_1bar0,tau+,nu_tau; 0.002 1 /Herwig/Decays/ISGW2
-decaymode B+->e+,nu_e,u,ubar; 0.001948 1 /Herwig/Decays/WeakPartonic100
+decaymode B+->e+,nu_e,ubar,u; 0.001948 1 /Herwig/Decays/WeakPartonic100
 decaymode B+->mu+,nu_mu,ubar,u; 0.001948 1 /Herwig/Decays/WeakPartonic100
 decaymode B+->Jpsi,K_1+; 0.0018 1 /Herwig/Decays/ISGW2Hadronic
 decaymode B+->D_s*+,Dbar0,pi0; 0.0018 1 /Herwig/Decays/DecayME0
@@ -3042,8 +3042,8 @@ decaymode B-->D*_20,tau-,nu_taubar; 0.002 1 /Herwig/Decays/ISGW2
 decaymode B-->D*+,rho-,pi-; 0.002 1 /Herwig/Decays/DecayME0
 decaymode B-->D+,rho-,pi-; 0.002 1 /Herwig/Decays/DecayME0
 decaymode B-->D+,pi0,pi-,pi-; 0.002 1 /Herwig/Decays/Mambo
-decaymode B-->mu-,nu_mubar,ubar,u; 0.001948 1 /Herwig/Decays/WeakPartonic100
-decaymode B-->e-,nu_ebar,ubar,u; 0.001948 1 /Herwig/Decays/WeakPartonic100
+decaymode B-->mu-,nu_mubar,u,ubar; 0.001948 1 /Herwig/Decays/WeakPartonic100
+decaymode B-->e-,nu_ebar,u,ubar; 0.001948 1 /Herwig/Decays/WeakPartonic100
 decaymode B-->Jpsi,K_1-; 0.0018 1 /Herwig/Decays/ISGW2Hadronic
 decaymode B-->D*0,Dbar0,K-; 0.0018 1 /Herwig/Decays/DecayME0
 decaymode B-->dbar,d,s,ubar; 0.0018 1 /Herwig/Decays/WeakPartonic0
