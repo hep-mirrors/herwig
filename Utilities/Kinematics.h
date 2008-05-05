@@ -12,7 +12,6 @@
 
 // This is the declaration of the Kinematics class.
 
-#include "Herwig++/Config/Herwig.h"
 #include "ThePEG/Vectors/ThreeVector.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
 
@@ -75,23 +74,6 @@ namespace Herwig {
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       double (*fcn)(Energy2,Energy2,Energy2,InvEnergy4) = NULL);
 
-
-    /**
-     * Again as the name implies, this is an isotropic four-body decay.
-     * The return value indicates success or failure.
-     */
-    static bool fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
-			      Lorentz5Momentum &p2, Lorentz5Momentum &p3,
-			      Lorentz5Momentum &p4);
-
-    /**
-     * Again as the name implies, this is an isotropic five-body decay.
-     * The return value indicates success or failure.
-     */
-    static bool fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
-			      Lorentz5Momentum &p2, Lorentz5Momentum &p3,
-			      Lorentz5Momentum &p4, Lorentz5Momentum &p5);
-
     /**
      * For the two body decay  M -> m1 + m2  it gives the module of the 
      * 3-momentum of the decay product in the rest frame of M.
@@ -133,6 +115,11 @@ namespace Herwig {
      * In fact, it should not even be implemented.
      */
     Kinematics & operator=(const Kinematics & x);
+
+    /**
+     *  Maximum number of attempts to generate a 3, 4 or 5 body decay.
+     */
+    static const unsigned int _ntry=100;
 
   };
 

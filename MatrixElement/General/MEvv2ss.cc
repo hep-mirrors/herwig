@@ -70,14 +70,14 @@ void MEvv2ss::doinit() throw(InitException) {
 double MEvv2ss::me2() const {
   VBVector v1(2), v2(2);
   for( size_t i = 0; i < 2; ++i ) {
-    v1[i] = VectorWaveFunction(meMomenta()[0],mePartonData()[0], 2*i,
+    v1[i] = VectorWaveFunction(rescaledMomenta()[0],mePartonData()[0], 2*i,
 			       incoming);
-    v2[i] = VectorWaveFunction(meMomenta()[1],mePartonData()[1], 2*i,
+    v2[i] = VectorWaveFunction(rescaledMomenta()[1],mePartonData()[1], 2*i,
 			       incoming);
   }
-  ScalarWaveFunction sca1(meMomenta()[2],mePartonData()[2],
+  ScalarWaveFunction sca1(rescaledMomenta()[2],mePartonData()[2],
 			  Complex(1.,0.),outgoing);
-  ScalarWaveFunction sca2(meMomenta()[3],mePartonData()[3],
+  ScalarWaveFunction sca2(rescaledMomenta()[3],mePartonData()[3],
 			  Complex(1.,0.),outgoing);
   double full_me(0.);
   vv2ssME(v1, v2, sca1, sca2, full_me);
@@ -97,6 +97,8 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
   const size_t ncf(numberOfFlows());
   const Energy2 m2(scale());
   const vector<vector<double> > cfactors = getColourFactors();
+  const Energy masst = sca1.mass();
+  const Energy massu = sca2.mass();
   vector<double> me(ndiags,0.);
   vector<Complex> flows(ncf, Complex(0.)), diag(ndiags, Complex(0.));
   ScalarWaveFunction interS; VectorWaveFunction interV;
@@ -123,12 +125,12 @@ MEvv2ss::vv2ssME(const VBVector & v1, const VBVector & v2,
 	  if(current.channelType == HPDiagram::tChannel) {
 	    if(current.ordered.second) {
 	      interS = theSca[ix].first->evaluate(m2, 3, offshell, v1[iv1], 
-						  sca1);
+						  sca1, masst);
 	      diag[ix] = theSca[ix].second->evaluate(m2, v2[iv2], interS, sca2);
 	    }
 	    else {
 	      interS = theSca[ix].first->evaluate(m2, 3, offshell, v1[iv1], 
-						  sca2);
+						  sca2, massu);
 	      diag[ix] = theSca[ix].second->evaluate(m2, v2[iv2], interS, sca1);
 	    }
 	  }
@@ -248,6 +250,25 @@ void MEvv2ss::constructVertex(tSubProPtr sub) {
   ScalarWaveFunction sca1(ext[2], outgoing, true, true);
   ScalarWaveFunction sca2(ext[3], outgoing, true, true);
 
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = ext[i]->dataPtr();
+    momenta[i] = ext[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+
+  VectorWaveFunction v1r(rescaledMomenta()[0], data[0], incoming),
+    v2r(rescaledMomenta()[1], data[1], incoming);
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+    v1r.reset(2*ihel);
+    v1[ihel] = v1r;
+    v2r.reset(2*ihel);
+    v2[ihel] = v2r;
+  }
+  sca1 = ScalarWaveFunction(rescaledMomenta()[2], data[2], outgoing);
+  sca2 = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
   double dummy(0.);
   ProductionMatrixElement pme = vv2ssME(v1, v2, sca1, sca2, dummy);
 

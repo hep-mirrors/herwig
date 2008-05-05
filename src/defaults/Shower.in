@@ -89,17 +89,6 @@ set SplittingGenerator:FSR_EWK Yes
 #
 # Really.
 #############################################################
-
-#
-
-#
-
-#
-
-#
-
-#
-
 #
 #  create the matrix element corrections
 # 
@@ -117,6 +106,11 @@ set TopME:Coupling AlphaQCD
 create Herwig::DrellYanMECorrection DrellYan
 insert ShowerModel:MECorrections 2  DrellYan
 set DrellYan:Coupling AlphaQCD
+
+# higgs
+create Herwig::GGtoHMECorrection GGtoHME
+insert ShowerModel:MECorrections 3 GGtoHME
+set GGtoHME:Coupling AlphaQCD
 #
 # a few default values
 set Evolver:MECorrMode 1

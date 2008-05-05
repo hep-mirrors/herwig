@@ -1,5 +1,5 @@
-## libPDT.la will go into libHwDecay.so
-## libHwBaryonWidth.la goes into HwBaryonDecay.so
+## libHwPDT.la will go into libHwDecay.so
+
 noinst_LTLIBRARIES = libHwPDT.la libHwBaryonWidth.la
 libHwPDT_la_SOURCES = \
 GenericMassGenerator.cc GenericMassGenerator.fh \

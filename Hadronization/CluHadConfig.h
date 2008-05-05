@@ -9,7 +9,7 @@
 #ifndef HERWIG_CluHadConfig_H
 #define HERWIG_CluHadConfig_H
 
-#include "Herwig++/Config/Herwig.h"
+#include "ThePEG/Config/ThePEG.h"
 #include "Cluster.fh"
 #include "ClusterDecayer.fh"
 #include "ClusterFissioner.fh"

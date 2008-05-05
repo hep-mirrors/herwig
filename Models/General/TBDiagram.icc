@@ -60,7 +60,8 @@ inline bool operator==(const TBDiagram & x, const TBDiagram & y) {
 inline PersistentOStream & operator<<(PersistentOStream & os, 
 				      const TBDiagram & x) {
   os << x.incoming << x.outgoing << x.outgoingPair << x.intermediate
-     << x.vertices << x.channelType << x.colourFlow << x.ids;
+     << x.vertices << x.channelType << x.colourFlow << x.largeNcColourFlow
+     << x.ids;
   return os;
 }
 
@@ -68,7 +69,7 @@ inline PersistentIStream & operator>>(PersistentIStream & is,
 				      TBDiagram & x) {
   int chan;
   is >> x.incoming >> x.outgoing >> x.outgoingPair >> x.intermediate
-     >> x.vertices >> chan >> x.colourFlow >> x.ids;
+     >> x.vertices >> chan >> x.colourFlow >> x.largeNcColourFlow >> x.ids;
   x.channelType = TBDiagram::Channel(chan);
   return is;
 }

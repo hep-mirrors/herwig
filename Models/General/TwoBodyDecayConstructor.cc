@@ -176,17 +176,18 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
   tEGPtr eg = generator();
   for(unsigned int ix = 0; ix < decays.size(); ++ix ) {
     tPDPtr pb(decays[ix].second.first), pc(decays[ix].second.second);
-    string tag = inpart->PDGName() + "->" + pb->PDGName() +
-      "," + pc->PDGName() + ";";
+    string tag = inpart->name() + "->" + pb->name() +
+      "," + pc->name() + ";";
     //now create DecayMode objects that do not already exist      
     tDMPtr dm = eg->findDecayMode(tag);
     if ( !dm ) {
-      tag = inpart->PDGName() + "->" + pc->PDGName() +
-	"," + pb->PDGName() + ";";
+      tag = inpart->name() + "->" + pc->name() +
+	"," + pb->name() + ";";
       dm = eg->findDecayMode(tag);
     }
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = eg->preinitCreateDecayMode(tag);
+
       if(ndm) {
 	eg->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());

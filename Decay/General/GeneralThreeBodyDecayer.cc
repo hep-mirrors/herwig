@@ -97,9 +97,9 @@ modeNumber(bool & cc, tcPDPtr in, const PDVector & outin) const {
   if( outin.size() != 3 || abs(in->id()) != _incoming->id() ) return -1;
   OrderedParticles testmode(outin.begin(), outin.end());
   OrderedParticles::const_iterator dit = testmode.begin();
-  string testtag(in->PDGName() + "->");
+  string testtag(in->name() + "->");
   for( unsigned int i = 1; dit != testmode.end(); ++dit, ++i) {
-    testtag += (**dit).PDGName();
+    testtag += (**dit).name();
     if( i != 3 ) testtag += string(",");
   }
   if( testtag == _reftag ) {
@@ -142,15 +142,15 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   // Construct reference tags for testing in modeNumber function
   OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
   OrderedParticles::const_iterator dit = refmode.begin();
-  _reftag = _incoming->PDGName() + "->";
+  _reftag = _incoming->name() + "->";
   for( unsigned int i = 1; dit != refmode.end(); ++dit, ++i) {
-    _reftag += (**dit).PDGName();
+    _reftag += (**dit).name();
     if( i != 3 )  _reftag += string(",");
   }
   //CC-mode
   refmode.clear();
-  _reftagcc = _incoming->CC() ? _incoming->CC()->PDGName() : 
-    _incoming->PDGName();
+  _reftagcc = _incoming->CC() ? _incoming->CC()->name() : 
+    _incoming->name();
   _reftagcc += "->";
   for( unsigned int i = 0;  i < 3; ++i ) {
     if( _outgoing[i]->CC() ) refmode.insert( _outgoing[i]->CC() );
@@ -158,7 +158,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   }
   dit = refmode.begin();
   for( unsigned int i = 1; dit != refmode.end(); ++dit , ++i) {
-    _reftagcc += (**dit).PDGName();
+    _reftagcc += (**dit).name();
     if( i != 3 ) _reftagcc += string(",");
   }
 }
@@ -176,7 +176,6 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
   for(unsigned int ix=0;ix<_diagrams.size();++ix) {
     if(_diagrams[ix].channelType==TBDiagram::fourPoint||
        _diagrams[ix].channelType==TBDiagram::UNDEFINED) continue;
-    if(_diagrams[ix].intermediate->width()==0.*MeV) continue;
     // create the new channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
     if(_diagrams[ix].channelType==TBDiagram::channel23) {
@@ -195,8 +194,12 @@ void GeneralThreeBodyDecayer::doinit() throw(InitException) {
     mode->addChannel(newchannel);
     ++nmode;
   }
-  if(nmode==0) throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
-				 << "doinit()" << Exception::runerror;
+  if(nmode==0) {
+    string mode = extpart[0]->PDGName() + "->";
+    for(unsigned int ix=1;ix<extpart.size();++ix) mode += extpart[ix]->PDGName() + " ";
+    throw Exception() << "No decay channels in GeneralThreeBodyDecayer::"
+		      << "doinit() for " << mode << "\n" << Exception::runerror;
+  }
   // add the mode
   vector<double> wgt(nmode,1./double(nmode));
   addMode(mode,1.,wgt);
@@ -256,9 +259,9 @@ Energy GeneralThreeBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   if(inpart.second<outa.second+outb.second+outc.second) return 0.*GeV;
   // create the object to calculate the width if it doesn't all ready exist
   if(!_widthcalc) {
-    string tag = _incoming->PDGName() + "->";
-    tag += _outgoing[0]->PDGName() + "," + _outgoing[1]->PDGName() + ","
-      + _outgoing[2]->PDGName() + ";";
+    string tag = _incoming->name() + "->";
+    tag += _outgoing[0]->name() + "," + _outgoing[1]->name() + ","
+      + _outgoing[2]->name() + ";";
     DMPtr dm = generator()->findDecayMode(tag);
     _widthcalc = threeBodyMEIntegrator(*dm);
   }
@@ -311,10 +314,18 @@ colourConnections(const Particle & parent,
   for(unsigned int ix=0;ix<outgoing.size();++ix) {
     outColour.push_back(outgoing[ix]->data().iColour());
     switch(outColour.back()) {
-    case PDT::Colour0   :     singlet.push_back(ix);break;
-    case PDT::Colour3   :     triplet.push_back(ix);break;
-    case PDT::Colour3bar: antitriplet.push_back(ix);break;
-    case PDT::Colour8   :     octet  .push_back(ix);break;
+    case PDT::Colour0   :     
+      singlet.push_back(ix);
+      break;
+    case PDT::Colour3   :     
+      triplet.push_back(ix);
+      break;
+    case PDT::Colour3bar: 
+      antitriplet.push_back(ix);
+      break;
+    case PDT::Colour8   :     
+      octet.push_back(ix);
+      break;
     default:
       throw Exception() << "Unknown colour for particle in GeneralThreeBodyDecayer::"
 			<< "colourConnections()" << Exception::runerror;
@@ -341,6 +352,7 @@ colourConnections(const Particle & parent,
   }
   // colour triplet decaying particle
   else if( inColour == PDT::Colour3) {
+
     if(singlet.size()==2&&triplet.size()==1) {
       outgoing[triplet[0]]->incomingColour(const_ptr_cast<tPPtr>(&parent));
       if(inter&&inter->coloured()) 
@@ -355,9 +367,11 @@ colourConnections(const Particle & parent,
 	  case PDT::Colour8:
 	    inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
 	    outgoing[triplet[1]]->colourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour triplet in GeneralThreeBodyDecayer::"
+			      << "decaying colour triplet in "
+			      << "GeneralThreeBodyDecayer::"
 			      << "colourConnections()" << Exception::runerror;
 	  }
 	}
@@ -370,9 +384,11 @@ colourConnections(const Particle & parent,
 	  case PDT::Colour8:
 	    inter->incomingColour(const_ptr_cast<tPPtr>(&parent));
 	    outgoing[triplet[0]]->colourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour triplet in GeneralThreeBodyDecayer::"
+			      << "decaying colour triplet in "
+			      << "GeneralThreeBodyDecayer::"
 			      << "colourConnections()" << Exception::runerror;
 	  }
 	}
@@ -395,7 +411,8 @@ colourConnections(const Particle & parent,
 	  switch (inter->dataPtr()->iColour()) {
 	  case PDT::Colour8:
 	    inter->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	    outgoing[antitriplet[1]]->colourLine()->addColoured(inter);
+	    outgoing[antitriplet[1]]->antiColourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
 			      << "decaying colour antitriplet in"
@@ -406,15 +423,17 @@ colourConnections(const Particle & parent,
       }
       else {
 	outgoing[antitriplet[1]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	outgoing[triplet[1]]->antiColourNeighbour(outgoing[antitriplet[0]]);
+	outgoing[triplet[0]]->antiColourNeighbour(outgoing[antitriplet[0]]);
 	if(inter&&inter->coloured()) {
 	  switch (inter->dataPtr()->iColour()) {
 	  case PDT::Colour8:
 	    inter->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
-	    outgoing[antitriplet[0]]->colourLine()->addColoured(inter);
+	    outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
+	    break;
 	  default:
 	    throw Exception() << "Unknown colour for intermediate for "
-			      << "decaying colour antitriplet in GeneralThreeBodyDecayer::"
+			      << "decaying colour antitriplet in "
+			      << "GeneralThreeBodyDecayer::"
 			      << "colourConnections()" << Exception::runerror;
 	  }
 	}
@@ -431,6 +450,12 @@ colourConnections(const Particle & parent,
       outgoing[antitriplet[0]]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
       if(inter&&inter->coloured()) {
 	switch (inter->dataPtr()->iColour()) {
+	case PDT::Colour3:
+	  outgoing[triplet[0]]->colourLine()->addColoured(inter);
+	  break;
+	case PDT::Colour3bar:
+	  outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
+	  break;
 	default:
 	  throw Exception() << "Unknown colour for intermediate for "
 			    << "decaying colour octet in GeneralThreeBodyDecayer::"
@@ -453,7 +478,8 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
   int nchannel(0);
   pair<int,Energy> imin[4]={make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV),
 			    make_pair(-1,-1.*GeV),make_pair(-1,-1.*GeV)};
-  for(unsigned int ix=0;ix<getProcessInfo().size();++ix) {
+  for(unsigned int iy=0;iy<_diagmap.size();++iy) {
+    unsigned int ix=_diagmap[iy];
     Energy deltam(min);
     if(getProcessInfo()[ix].channelType==TBDiagram::fourPoint) continue;
     int itype(0);
@@ -475,20 +501,20 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
     }
     if(deltam<0.*GeV) continue;
-    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma &&
-       getProcessInfo()[ix].intermediate->width()>0.*MeV) {
+    if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
       intype.push_back(itype);
       inpow.push_back(0.);
       inmass.push_back(getProcessInfo()[ix].intermediate->mass());
       inwidth.push_back(getProcessInfo()[ix].intermediate->width());
+      ++nchannel;
     }
     else if(getProcessInfo()[ix].intermediate->id()==ParticleID::gamma) {
       intype.push_back(itype);
       inpow.push_back(-2.);
       inmass.push_back(-1.*GeV);
       inwidth.push_back(-1.*GeV);
+      ++nchannel;
     }
-    ++nchannel;
   }
   for(unsigned int ix=1;ix<4;++ix) {
     if(imin[ix].first>=0) {

@@ -218,7 +218,11 @@ void HardProcessConstructor::constructDiagrams() {
       long fs = theOutgoing[os]->id();
       for(size_t iv = 0; iv < theNv; ++iv) {
 	tVertexBasePtr vertexA = theModel->vertex(iv);
-	if( !theAllDiagrams && vertexA->orderInGs() == 0 ) 
+
+	//This skips an effective vertex and the EW ones if 
+	// we only want the strong diagrams
+	if( (vertexA->orderInGs() + vertexA->orderInGem() == 3) ||
+	    (!theAllDiagrams && vertexA->orderInGs() == 0) ) 
 	  continue;
 
 	if(vertexA->getNpoint() == 3) {
@@ -635,12 +639,6 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 void 
 HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   if ( process.empty() ) return;
-//   if( HwDebug::level == HwDebug::full ) {
-//     for(HPDVector::size_type d = 0; d < process.size(); ++d) {
-//       cout << process[d] << '\n';
-//     }
-//     cout << "---------------------------" << endl;  
-//   }
   tcPDVector extpart(4);
   extpart[0] = getParticleData(process[0].incoming.first);
   extpart[1] = getParticleData(process[0].incoming.second);

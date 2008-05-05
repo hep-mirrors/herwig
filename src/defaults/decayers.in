@@ -19653,23 +19653,23 @@ create Herwig::SMHiggsFermionsDecayer  Hff
 set Hff:MaxWeights 0 0
 set Hff:MaxWeights 1 0
 set Hff:MaxWeights 2 0
-set Hff:MaxWeights 3 0.25
-set Hff:MaxWeights 4 0.25
-set Hff:MaxWeights 5 0.28
-set Hff:MaxWeights 6 0.40
-set Hff:MaxWeights 7 0.40
-set Hff:MaxWeights 8 0.40
-set Hff:Iteration 10
+set Hff:MaxWeights 3 1.
+set Hff:MaxWeights 4 1.
+set Hff:MaxWeights 5 1.
+set Hff:MaxWeights 6 1.2
+set Hff:MaxWeights 7 1.2
+set Hff:MaxWeights 8 1.2
+set Hff:Iteration 1
 set Hff:Ntry 500
 set Hff:Points 10000
 set Hff:GenerateIntermediates 0 
 
 #
 create Herwig::SMHiggsWWDecayer  HWW
-set HWW:WMaximum 0 40.
-set HWW:ZMaximum 0 40.
-set HWW:WMaximum 1 28.
-set HWW:ZMaximum 1 28.
+set HWW:WMaximum 0 90.
+set HWW:ZMaximum 0 50.
+set HWW:WMaximum 1 4.5
+set HWW:ZMaximum 1 4.5
 set HWW:Iteration 1
 set HWW:Ntry 2000
 set HWW:Points 10000

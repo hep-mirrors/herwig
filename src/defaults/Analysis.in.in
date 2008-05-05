@@ -42,7 +42,7 @@ create Herwig::HiggsJetAnalysis  HiggsJet
 #  (switched off by default)
 #
 # hadron multiplicities compared to LEP data
-create Herwig::MultiplicityCount Multiplicity HwLEPAnalysis.so
+create Herwig::LEPMultiplicityCount LEPMultiplicity HwLEPAnalysis.so
 # b fractions in specific hadrons
 create Herwig::LEPBMultiplicity BMultiplicity HwLEPAnalysis.so
 # b fragmentation functions

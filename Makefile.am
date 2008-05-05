@@ -4,8 +4,7 @@ SUBDIRS = include \
 	UnderlyingEvent Interfaces Analysis Analysis2 Looptools \
 	lib src Doc
 
-noinst_HEADERS = Config/Herwig.h Config/HepMCHelper_CLHEP.h \
-	Config/HepMCHelper_HepMC.h
+noinst_HEADERS = Config/HepMCHelper_CLHEP.h Config/HepMCHelper_HepMC.h
 
 EXTRA_DIST=GUIDELINES
 

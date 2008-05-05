@@ -24,6 +24,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
+#include "Herwig++/Utilities/HerwigStrategy.h"
+
 using namespace Herwig;
 
 GnuplotOutput::~GnuplotOutput() {}
@@ -161,15 +163,15 @@ void GnuplotOutput::put (Histogram2Ptr histo, const Histogram2Options& out, cons
   string svnversion = "";
   string releaseversion = "";
 
-  if (HerwigVersion::versionstring.find("SVN") != string::npos)
+  if (HerwigStrategy::version.find("SVN") != string::npos)
     releaseversion = "";
   else {
-    releaseversion = HerwigVersion::versionstring;
+    releaseversion = HerwigStrategy::version;
     releaseversion.replace(0,9,"");
   }
 
   if (releaseversion == "") {
-    svnversion = HerwigVersion::versionstring;
+    svnversion = HerwigStrategy::version;
     svnversion.replace(0,9,"");
   }
 

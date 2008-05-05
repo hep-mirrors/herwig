@@ -96,8 +96,10 @@ bool CheckId::hasBottom(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
     return 
       abs(id1) == ThePEG::ParticleID::b    ||
       isDiquarkWithB(par1)                 ||
-      MesonMatcher::Check(id1)  && (abs(id1)/100)%10  == ThePEG::ParticleID::b ||
-      BaryonMatcher::Check(id1) && (abs(id1)/1000)%10 == ThePEG::ParticleID::b;
+      ( MesonMatcher::Check(id1)  
+	&& (abs(id1)/100)%10  == ThePEG::ParticleID::b ) ||
+      ( BaryonMatcher::Check(id1) 
+	&& (abs(id1)/1000)%10 == ThePEG::ParticleID::b );
   } 
   else {
     long id2 = par2 ? par2->id() : 0;
@@ -116,13 +118,13 @@ bool CheckId::hasCharm(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
     return
       abs(id1) == ThePEG::ParticleID::c     ||
       isDiquarkWithC(par1)                  ||
-      MesonMatcher::Check(id1) && 
+      ( MesonMatcher::Check(id1) && 
         ((abs(id1)/100)%10 == ThePEG::ParticleID::c ||
-	 (abs(id1)/10)%10 == ThePEG::ParticleID::c) ||
-      BaryonMatcher::Check(id1) && 
+	 (abs(id1)/10)%10 == ThePEG::ParticleID::c) ) ||
+      ( BaryonMatcher::Check(id1) && 
         ((abs(id1)/1000)%10 == ThePEG::ParticleID::c  ||
 	 (abs(id1)/100)%10  == ThePEG::ParticleID::c  ||
-	 (abs(id1)/10)%10   == ThePEG::ParticleID::c);
+	 (abs(id1)/10)%10   == ThePEG::ParticleID::c) );
   } 
   else {
  long id2 = par2 ? par1->id(): 0;

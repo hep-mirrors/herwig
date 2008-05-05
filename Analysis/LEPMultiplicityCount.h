@@ -1,107 +1,43 @@
 // -*- C++ -*-
 //
-// MultiplicityCount.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// LEPMultiplicityCount.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_MultiplicityCount_H
-#define HERWIG_MultiplicityCount_H
+#ifndef HERWIG_LEPMultiplicityCount_H
+#define HERWIG_LEPMultiplicityCount_H
 //
-// This is the declaration of the MultiplicityCount class.
+// This is the declaration of the LEPMultiplicityCount class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "Herwig++/Utilities/Statistic.h"
-#include "MultiplicityCount.fh"
-
+#include "MultiplicityInfo.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- *  Enumeration for species of particle
- */
-enum ParticleSpecies 
-{
-  lightMeson=0,strangeMeson,lightBaryon,other
-};
 
 /**
- *  Struct for the multiplcity data
- */
-struct MultiplicityInfo
-{
-  /**
-   *  Default constructor
-   * @param mult  The observed multiplcity.
-   * @param error The error on the observed multiplicity
-   * @param type  The type of particle
-   */
-  inline MultiplicityInfo(double mult=0.,double error=0.,
-			  ParticleSpecies type=other);
-
-  /**
-   *  The observed multiplicity
-   */
-  double obsMultiplicity;
-
-  /**
-   *  The error on the observed multiplicity
-   */
-  double obsError;
-
-  /**
-   *  The type of particle
-   */
-  ParticleSpecies type;
-
-  /**
-   *  Simulation statistics for particles of this type
-   */
-  Statistic count;
-
-  /**
-   *  The average number per event
-   */
-  double simMultiplicity();
-
-  /**
-   *  The error on the average number per event
-   */
-  double simError();
-
-  /**
-   *  Is the result more than \f$3\sigma\f$ from the experimental result
-   */
-  double nSigma();
-
-  /**
-   * Plot standard error in a simple barchart
-   */
-  string bargraph();
-};
-
-/**
- * The MultiplicityCount class is designed to count particle multiplicities and
+ * The LEPMultiplicityCount class is designed to count particle multiplicities and
  * compare them to LEP data.
  *
- * @see \ref MultiplicityCountInterfaces "The interfaces"
- * defined for MultiplicityCount.
+ * @see \ref LEPMultiplicityCountInterfaces "The interfaces"
+ * defined for LEPMultiplicityCount.
  */
-class MultiplicityCount: public AnalysisHandler {
+class LEPMultiplicityCount: public AnalysisHandler {
 
 public:
 
   /**
    * The default constructor.
    */
-  MultiplicityCount();
+  LEPMultiplicityCount();
 
 public:
 
@@ -170,13 +106,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -196,13 +132,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MultiplicityCount> initMultiplicityCount;
+  static ClassDescription<LEPMultiplicityCount> initLEPMultiplicityCount;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MultiplicityCount & operator=(const MultiplicityCount &);
+  LEPMultiplicityCount & operator=(const LEPMultiplicityCount &);
 
 private:
 
@@ -268,22 +204,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MultiplicityCount. */
+ *  base classes of LEPMultiplicityCount. */
 template <>
-struct BaseClassTrait<Herwig::MultiplicityCount,1> {
-  /** Typedef of the first base class of MultiplicityCount. */
+struct BaseClassTrait<Herwig::LEPMultiplicityCount,1> {
+  /** Typedef of the first base class of LEPMultiplicityCount. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MultiplicityCount class and the shared object where it is defined. */
+ *  the LEPMultiplicityCount class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MultiplicityCount>
-  : public ClassTraitsBase<Herwig::MultiplicityCount> {
+struct ClassTraits<Herwig::LEPMultiplicityCount>
+  : public ClassTraitsBase<Herwig::LEPMultiplicityCount> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MultiplicityCount"; }
+  static string className() { return "Herwig::LEPMultiplicityCount"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MultiplicityCount class and any other class on which it depends
+   *  access to the LEPMultiplicityCount class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwAnalysis.so"; }
 };
@@ -292,6 +228,4 @@ struct ClassTraits<Herwig::MultiplicityCount>
 
 }
 
-#include "MultiplicityCount.icc"
-
-#endif /* HERWIG_MultiplicityCount_H */
+#endif /* HERWIG_LEPMultiplicityCount_H */

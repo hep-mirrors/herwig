@@ -66,14 +66,14 @@ double MEff2ss::me2() const {
   SpinorVector sp(2);
   SpinorBarVector sbar(2);
   for( unsigned int i = 0; i < 2; ++i ) {
-    sp[i] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], i,
+    sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i,
 			       incoming);
-    sbar[i] = SpinorBarWaveFunction(meMomenta()[1], mePartonData()[1], i,
+    sbar[i] = SpinorBarWaveFunction(rescaledMomenta()[1], mePartonData()[1], i,
 				    incoming);
   }
-  ScalarWaveFunction sca1(meMomenta()[2], mePartonData()[2],
+  ScalarWaveFunction sca1(rescaledMomenta()[2], mePartonData()[2],
 			  Complex(1.), outgoing);
-  ScalarWaveFunction sca2(meMomenta()[3], mePartonData()[3],
+  ScalarWaveFunction sca2(rescaledMomenta()[3], mePartonData()[3],
 			  Complex(1.), outgoing);
   double full_me(0.);
   ff2ssME(sp, sbar, sca1, sca2, full_me);  
@@ -251,25 +251,43 @@ void MEff2ss::constructVertex(tSubProPtr sub) {
   if( ext[0]->id() != mePartonData()[0]->id() ) swap(ext[0], ext[1]);
   if( ext[2]->id() != mePartonData()[2]->id() ) swap(ext[2], ext[3]);
 
+  //First calculate wave functions with off-shell momenta
+  //to calculate correct spin information
   SpinorVector sp;
   SpinorWaveFunction(sp, ext[0], incoming, false, true);
   SpinorBarVector sbar;
   SpinorBarWaveFunction(sbar, ext[1], incoming, false, true);
   ScalarWaveFunction sca1(ext[2], outgoing, true, true);
   ScalarWaveFunction sca2(ext[3], outgoing, true, true);
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = ext[i]->dataPtr();
+    momenta[i] = ext[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+  SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
+  SpinorBarWaveFunction sbr(rescaledMomenta()[1], data[1],incoming);
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+    spr.reset(ihel);
+    sp[ihel] = spr;
 
+    sbr.reset(ihel);
+    sbar[ihel] = sbr;
+  }
+  sca1 = ScalarWaveFunction(rescaledMomenta()[2], data[2], outgoing);
+  sca2 = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
   double dummy(0.);
   ProductionMatrixElement pme = ff2ssME(sp, sbar, sca1, sca2, dummy);
-
 #ifndef NDEBUG
   if( debugME() ) debug(dummy);
 #endif
-
   HardVertexPtr hv = new_ptr(HardVertex());
   hv->ME(pme);
   for(unsigned int i = 0; i < 4; ++i )
     dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
-
+  
 }
 
 void MEff2ss::debug(double me2) const {

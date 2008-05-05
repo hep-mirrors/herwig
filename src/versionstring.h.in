@@ -1,7 +1,0 @@
-// versionstring.h. Generated from versionstring.h.in by Makefile.am
-
-#include "Herwig++/Config/Herwig.h"
-
-void setVersionString() {
-  Herwig::HerwigVersion::versionstring = "@HERWIGVERSIONSTRING@";
-}

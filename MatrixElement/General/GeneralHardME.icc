@@ -30,11 +30,11 @@ inline pair<long,long> GeneralHardME::getOutgoing() const {
   return theOutgoing;
 }
 
-inline const GeneralHardME::HPCount GeneralHardME::numberOfDiags() const {
+inline GeneralHardME::HPCount GeneralHardME::numberOfDiags() const {
   return theNDiags;
 }								    
 
-inline const size_t GeneralHardME::numberOfFlows() const {
+inline size_t GeneralHardME::numberOfFlows() const {
   return theNcf;
 }
 

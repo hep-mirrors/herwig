@@ -2,12 +2,11 @@ SUBDIRS = defaults
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++
-Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h \
-HerwigVersion.cc
+Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
-Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_DATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\""
-
+Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
+-DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
 HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model RS.model
@@ -18,34 +17,10 @@ INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-RS.in \
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
 
-########## SVN version string. Only use in cc files! ####################
-EXTRA_DIST = versionstring.h.in
-BUILT_SOURCES = versionstring.h
-if USE_SVNVERSION # # # # # #
-version:
-	@svnversion -n $(top_srcdir) > version.tmp.new
-
-version.tmp: version
-	@if ! diff -q version.tmp{.new,}; then mv -f version.tmp{.new,}; fi
-
-versionstring.h: version.tmp versionstring.h.in
-	@echo "creating versionstring.h"
-	@sed s%@HERWIGVERSIONSTRING@%"$(PACKAGE_STRING) `cd $(top_srcdir); svn info | grep URL | sed s@.*herwig/@@` r`cat version.tmp`"% \
-	  $(srcdir)/versionstring.h.in > versionstring.h
-else # # # # # # # # # # # # #
-versionstring.h:
-	@echo "creating versionstring.h"
-	@sed s%@HERWIGVERSIONSTRING@%"$(PACKAGE_STRING)"% \
-	  $(srcdir)/versionstring.h.in > versionstring.h
-	@touch versionstring.h
-endif # # # # # # # # # # # # # 
-########################################################################
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
-  versionstring.h version.tmp \
-  version.tmp.new multi.test \
-  *.output probs.test
+  multi.test *.output probs.test
 
 ## checking targets ##
 
@@ -88,8 +63,25 @@ valgrind-read:
 valgrind-run:
 	$(VALGRIND) ./Herwig++ run -N1 LHC.run &> /tmp/valgrind-run.log
 
+SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
+THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
+
 install-data-hook:
-	./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo --exitonerror
+	@echo Creating repository
+	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo --exitonerror
+##	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
+##		then echo Registering with ThePEG; \
+##		"$(SETUPTHEPEG)" --init \
+##		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
+##		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+##		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
+##	fi
 
 uninstall-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+##	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
+##		then echo Unregistering with ThePEG; \
+##		"$(SETUPTHEPEG)" --init defaults/HerwigCleanup.in \
+##		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+##		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
+##	fi

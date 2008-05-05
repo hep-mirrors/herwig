@@ -1054,7 +1054,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     double aptemp = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
     double amtemp = fn/rmbmtX/rmbmtY;
     // light meson
-    if(ifls<3&&ifl1<3||(ifl1==ifls)) {
+    if( ( ifls<3 && ifl1<3 ) || ( ifl1==ifls ) ) {
       f     =-ftemp *mtildeY*betaY*(1./mum
 				   +ms*mtildeX*(wt-1.)/betaY/betaY*
 				   ((5.+wt)/6./mq-0.5/mum*ms/mtildeX*

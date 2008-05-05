@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SatPDF class.
+//
+#ifndef HERWIG_SatPDF_FH
+#define HERWIG_SatPDF_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class SatPDF;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SatPDF,SatPDFPtr);
+
+}
+
+#endif

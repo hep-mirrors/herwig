@@ -15,6 +15,8 @@
 #
 ###################################################################
 
+globallibrary Herwig.so
+
 ###################################################################
 # The repository contains its own internal directory structure to
 # keep track of created objects. (This is entirely independent of 
@@ -150,23 +152,33 @@ cd /Herwig/Generators
 # that will be called with the 'run' command to start the event 
 # generation (see LEP.in, LHC.in, TVT.in or LHC.in for examples)
 #################################################################
+
+# The Strategy objects can be used for default settings
+# (see the Doxygen documentation)
+# Currently it only provides the LaTeX reference to Herwig++
+create Herwig::HerwigStrategy DefaultStrategy
+set DefaultStrategy:LocalParticlesDir /Herwig/Particles
+
 # Now the LEPGenerator
 create ThePEG::EventGenerator LEPGenerator
 set LEPGenerator:RandomNumberGenerator /Herwig/Random
 set LEPGenerator:StandardModelParameters /Herwig/Model
 set LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
+set LEPGenerator:Strategy DefaultStrategy
 
 # And the LHCGenerator
 create ThePEG::EventGenerator LHCGenerator
 set LHCGenerator:RandomNumberGenerator /Herwig/Random
 set LHCGenerator:StandardModelParameters /Herwig/Model
 set LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
+set LHCGenerator:Strategy DefaultStrategy
 
 # And the DISGenerator
 create ThePEG::EventGenerator DISGenerator
 set DISGenerator:RandomNumberGenerator /Herwig/Random
 set DISGenerator:StandardModelParameters /Herwig/Model
 set DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
+set DISGenerator:Strategy DefaultStrategy
 
 ############################################
 # The default cuts
@@ -183,3 +195,5 @@ set DISGenerator:EventHandler:Cuts /Herwig/Cuts/DISCuts
 ##########################################
 read Analysis.in
 read Analysis2.in
+
+cd /

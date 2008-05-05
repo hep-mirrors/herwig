@@ -313,9 +313,10 @@ reconstructHardJets(ShowerTreePtr hard,
   return true;
 }
 
-const double 
+double 
 QTildeReconstructor::solveKfactor(const Energy & root_s, 
-				      const JetKinVect & jets) const {
+				  const JetKinVect & jets) const
+{
   Energy2 s = sqr(root_s);
   // must be at least two jets
   if ( jets.size() < 2) return -1.0;

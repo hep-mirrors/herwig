@@ -248,8 +248,7 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
 	}
       }
     }
-  }
-  while(wgt<(_maxwgt*UseRandom::rnd())&&ntry<_maxtry);
+  } while (wgt<(_maxwgt*UseRandom::rnd()) && ntry<_maxtry);
   if(ntry>=_maxtry) {
     generator()->log() << "IFDipole Failed to generate QED radiation for the decay " 
 		       << p.PDGName() << " -> " 
@@ -554,8 +553,8 @@ double IFDipole::meWeight(ParticleVector children)
         // if cos is less    than zero use result accurate as cos->-1
         else
           { ombc=1.-beta1*_cosphot[i]; }
-        if((_qnewprf[_map[0]].z()>Energy())&&(_qprf[_map[0]].z()<Energy())||
-           (_qnewprf[_map[0]].z()<Energy())&&(_qprf[_map[0]].z()>Energy())) {
+        if(((_qnewprf[_map[0]].z()>Energy())&&(_qprf[_map[0]].z()<Energy()))||
+           ((_qnewprf[_map[0]].z()<Energy())&&(_qprf[_map[0]].z()>Energy()))) {
           pik    = _qnewprf[_map[0]].e()*_lprf[i].e()*opbc;
           dipole = sqr(beta1*_sinphot[i]/(opbc*_lprf[i].e()));
         } else {

@@ -14,7 +14,8 @@
 namespace Herwig {
 
 inline EvtGen::EvtGen() : _decayname("./DECAY.DEC"), _pdtname("./evt.pdl"), 
-			  _maxtry(1000), _maxunwgt(10000), _checkconv(false) 
+			  _maxtry(1000), _maxunwgt(10000), _checkconv(false),
+			  _redirect(true)
 {}
 
 inline IBPtr EvtGen::clone() const {

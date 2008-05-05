@@ -96,7 +96,7 @@ void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
 	extpart[1]=lep[iy];
 	extpart[2]=nubar[iy];
       }
-      mode = new DecayPhaseSpaceMode(extpart,this);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
       if(iy==0)      wgt = _maxweighte[ix];
       else if(iy==1) wgt = _maxweightmu[ix];
       else           wgt = _maxweighttau[ix];

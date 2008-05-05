@@ -12,12 +12,12 @@
 //
 
 #include "Histogram.h"
+#include "HerwigStrategy.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Config/Herwig.h"
 
 using namespace Herwig;
 NoPIOClassDescription<Histogram> Histogram::initHistogram;
@@ -56,8 +56,8 @@ void Histogram::topdrawOutput(ostream & out,
     out << "TITLE LEFT \""   << left      << "\"\n";
     out << "CASE       \""   << leftcase  << "\"\n";
     out << (errorbars ? "SET ORDER X Y DX DY \n" : "SET ORDER X Y DX\n");
-    if (HerwigVersion::versionstring != "") {
-      out << "TITLE RIGHT \"" << HerwigVersion::versionstring << "\"\n";
+    if (HerwigStrategy::version != "") {
+      out << "TITLE RIGHT \"" << HerwigStrategy::version << "\"\n";
       out << "CASE        \"\"\n";
     }
     if(_havedata) out << "SET AXIS BOTTOM OFF\n";
@@ -345,7 +345,7 @@ void Histogram::chiSquared(double & chisq,
     double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
     double error = _bins[ix].dataerror;
     if(error>0.) {
-      if(error/_bins[ix].data < minfrac) error = minfrac*_bins[ix].data;
+      if(abs(error/_bins[ix].data) < minfrac) error = minfrac*_bins[ix].data;
       double var=sqr(error)
 	+ _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
       chisq += sqr(_bins[ix].data - value) / var;

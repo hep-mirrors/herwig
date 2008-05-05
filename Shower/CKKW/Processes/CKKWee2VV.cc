@@ -74,10 +74,10 @@ bool CKKWee2VV::reachedHard (const vector<ClusteringParticleData>& particles) co
   long v1Id=0; long v2Id =0;
 
   for (unsigned int i = 0; i< 4; ++i)
-    if (i != goteMinus || i != gotePlus)
+    if (i != goteMinus || i != gotePlus) {
       if (v1Id ==0) v1Id = particles[i].partonId.PDGId;
       else v2Id = particles[i].partonId.PDGId;
-
+    }
   if (particles[v1Id].partonId.state != ClusteringParticleState::final ||
       particles[v2Id].partonId.state != ClusteringParticleState::final) return false;
 

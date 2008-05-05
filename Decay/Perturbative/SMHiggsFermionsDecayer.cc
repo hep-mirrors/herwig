@@ -165,9 +165,9 @@ double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpa
   // normalize if width generator
   if(_hwidth) {
     if(id<=6) 
-      output *=UnitRemoval::E/_hwidth->partialWidth(inpart.mass(),id);
+      output *= inpart.data().width()/_hwidth->partialWidth(inpart.mass(),id);
     else if(id>=11&&id<=15&&(id-9)%2==0) 
-      output *=UnitRemoval::E/_hwidth->partialWidth(inpart.mass(),(id+3)/2);
+      output *= inpart.data().width()/_hwidth->partialWidth(inpart.mass(),(id+3)/2);
   }
   // test of the partial width
   /*

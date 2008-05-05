@@ -40,10 +40,17 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
     return 0.5*(lower+upper);
   // use a Breit-Wigner
   if(_jactype[ires]==0) {
-    double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
-    double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
-    double rho = rhomin+rhomax*UseRandom::rnd();
-    mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
+    if(_intmwidth[ires]!=0.*GeV2) {
+      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
+      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      double rho = rhomin+rhomax*UseRandom::rnd();
+      mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
+    }
+    else {
+      mass = sqrt(_intmass2[ires]+
+		  (sqr(lower)-_intmass2[ires])*(sqr(upper)-_intmass2[ires])/
+		  (sqr(lower)-_intmass2[ires]-UseRandom::rnd()*(sqr(lower)-sqr(upper))));
+    }
   }
   // use a power-law
   else if(_jactype[ires]==1) {
@@ -75,11 +82,17 @@ inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
 				 << moff/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
-  if(_jactype[ires]==0) { 
-    double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
-    double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
-    Energy2 moff2=moff*moff-_intmass2[ires];
-    wgt = _intmwidth[ires]/rhomax/(moff2*moff2+_intmwidth[ires]*_intmwidth[ires]);
+  if(_jactype[ires]==0) {
+    if(_intmwidth[ires]!=0.*GeV2) {
+      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
+      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      Energy2 moff2=moff*moff-_intmass2[ires];
+      wgt = _intmwidth[ires]/rhomax/(moff2*moff2+_intmwidth[ires]*_intmwidth[ires]);
+    }
+    else {
+      wgt = 1./((sqr(upper)-sqr(lower))*sqr(sqr(moff)-_intmass2[ires])/
+		(sqr(lower)-_intmass2[ires])/(sqr(upper)-_intmass2[ires]));
+    }
   } 
   // power law
   else if(_jactype[ires]==1) {

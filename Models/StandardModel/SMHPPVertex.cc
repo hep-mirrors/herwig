@@ -92,8 +92,6 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
       << "SMHPPVertex::setCoupling() - The particle content of this vertex "
       << "is incorrect: " << part1->id() << " " << part2->id() << " "
       << part3->id() << Exception::runerror;
-  orderInGs(0);
-  orderInGem(3);
   unsigned int Qminloop = _minloop;
   unsigned int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
