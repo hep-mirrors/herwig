@@ -211,12 +211,10 @@ private:
   std::vector<double> _xqplot;
   std::vector<double> _xqbplot;
 
-  // The quark momenta and data pointers
+  // The quark momenta, mass and data pointers
   vector<Lorentz5Momentum> _quark;
-  vector<tcPDPtr> _partons;
-  // The gluon momentum and data pointer
+  // The gluon momentum
   Lorentz5Momentum _g;
-  tcPDPtr _gluon_data;
 
 };
 

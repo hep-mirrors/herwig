@@ -60,14 +60,17 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     QProgenitor    = tree->outgoingLines().begin()->first,
     QbarProgenitor = tree->outgoingLines().rbegin()->first;
   if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
-  _partons.resize(2);
-  _partons[0] = QProgenitor->progenitor()->dataPtr();
-  _partons[1] = QbarProgenitor->progenitor()->dataPtr();
+  vector<tcPDPtr> partons(2);
+  partons[0] = QProgenitor->progenitor()->dataPtr();
+  partons[1] = QbarProgenitor->progenitor()->dataPtr();
 
   // momentum of the partons
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
+  // masses of the partons once and for all of the hard generator.
+  _quark[0].setMass(partons[0]->constituentMass());
+  _quark[1].setMass(partons[1]->constituentMass());
 
   // PDG codes of the partons
   int q_id   (abs(QProgenitor->progenitor()->id()   ));
@@ -80,7 +83,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   _s = (_quark[0]+_quark[1])*(_quark[0]+_quark[1]);
 
   // Get data for the gluon.
-  _gluon_data = getParticleData(ParticleID::g);
+  tcPDPtr gluon_data = getParticleData(ParticleID::g);
 
   // Get the list of possible branchings.
   BranchingList branchings = 
@@ -93,7 +96,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   for(BranchingList::const_iterator cit = branchings.lower_bound(q_index);
       cit != branchings.upper_bound(q_index); ++cit ) {
     IdList ids = cit->second.second;
-    if(ids[0]==q_id&&ids[1]==q_id&&ids[2]==_gluon_data->id()) {
+    if(ids[0]==q_id&&ids[1]==q_id&&ids[2]==gluon_data->id()) {
       q_sudakov = cit->second.first;
       break; 	    
     }
@@ -102,7 +105,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   for(BranchingList::const_iterator cit = branchings.lower_bound(qbar_index);
       cit != branchings.upper_bound(qbar_index); ++cit ) {
     IdList ids = cit->second.second;
-    if(ids[0]==qbar_id&&ids[1]==qbar_id&&ids[2]==_gluon_data->id()) {
+    if(ids[0]==qbar_id&&ids[1]==qbar_id&&ids[2]==gluon_data->id()) {
       qbar_sudakov = cit->second.first;
       break; 	    
     }
@@ -123,11 +126,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   // Ensure the energies are greater than the constituent masses:
   for (int i=0; i<2; i++)
-     if (_quark[i].e() < _partons[i]->constituentMass()) return NasonTreePtr();
-  if (_g.e() < _gluon_data->constituentMass()) return NasonTreePtr();
+     if (_quark[i].e() < partons[i]->constituentMass()) return NasonTreePtr();
+  if (_g.e() < gluon_data->constituentMass()) return NasonTreePtr();
 
   // Set masses as done in VectorBosonQQbarMECorrection:
-  for (int i=0; i<2; i++) _quark[i].setMass(_partons[i]->mass());
+  for (int i=0; i<2; i++) _quark[i].setMass(partons[i]->mass());
   _g.setMass(0.*MeV);
 
   // Now the quarks have mass entry equal to their current mass
@@ -144,11 +147,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   SudakovPtr sudakov = _iemitter==0 ? q_sudakov : qbar_sudakov;
 
   // Make the particles for the NasonTree:
-  ShowerParticlePtr emitter(new_ptr(ShowerParticle(_partons[_iemitter],true)));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(_partons[_ispectator],true)));
-  ShowerParticlePtr gluon(new_ptr(ShowerParticle(_gluon_data,true)));
+  ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
+  ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons[_ispectator],true)));
+  ShowerParticlePtr gluon(new_ptr(ShowerParticle(gluon_data,true)));
   ShowerParticlePtr vboson(new_ptr(ShowerParticle(boson->dataPtr(),false)));
-  ShowerParticlePtr parent(new_ptr(ShowerParticle(_partons[_iemitter],true)));
+  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons[_iemitter],true)));
   emitter->set5Momentum(_quark[_iemitter]); 
   spectator->set5Momentum(_quark[_ispectator]);  
   gluon->set5Momentum(_g);  
