@@ -63,14 +63,18 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   vector<tcPDPtr> partons(2);
   partons[0] = QProgenitor->progenitor()->dataPtr();
   partons[1] = QbarProgenitor->progenitor()->dataPtr();
+  // Get data for the gluon.
+  tcPDPtr gluon_data = getParticleData(ParticleID::g);
 
   // momentum of the partons
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
-  // masses of the partons once and for all of the hard generator.
-  _quark[0].setMass(partons[0]->constituentMass());
-  _quark[1].setMass(partons[1]->constituentMass());
+  // Set the existing mass entries in partons 5 vectors with the
+  // once and for all.
+  _quark[0].setMass(partons[0]->mass());
+  _quark[1].setMass(partons[1]->mass());
+  _g.setMass(0.*MeV);
 
   // PDG codes of the partons
   int q_id   (abs(QProgenitor->progenitor()->id()   ));
@@ -81,9 +85,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   // Get the gauge boson mass.
   _s = (_quark[0]+_quark[1])*(_quark[0]+_quark[1]);
-
-  // Get data for the gluon.
-  tcPDPtr gluon_data = getParticleData(ParticleID::g);
 
   // Get the list of possible branchings.
   BranchingList branchings = 
@@ -128,13 +129,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   for (int i=0; i<2; i++)
      if (_quark[i].e() < partons[i]->constituentMass()) return NasonTreePtr();
   if (_g.e() < gluon_data->constituentMass()) return NasonTreePtr();
-
-  // Set masses as done in VectorBosonQQbarMECorrection:
-  for (int i=0; i<2; i++) _quark[i].setMass(partons[i]->mass());
-  _g.setMass(0.*MeV);
-
-  // Now the quarks have mass entry equal to their current mass
-  // but E^2-p^2=0 still for q qbar g. Maybe should do rescaleRho now? 
 
   // assign the emitter based on evolution scales
   // rather than for the correlations - we might want to try 
@@ -339,13 +333,14 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     }
   } while (reject);
   
-// Seymour's "Simple Prescription..." paper says that q or qb retains 
-// it's parton model direction with relative prob xq^2 or xqb^2 respectively.
-// The thing retaining it's parton level direction is _the_spectator_ the 
-// thing absorbing the transverse recoil is _the_emitter_. If xq->1 it means
-// the gluon and particle qb are collinear, and acollinear to q, implying 
-// qb did the emitting, so for xq>>xqb xq is the spectator, xqb is the 
-// emitter, so select xq as spectator with relative prob xq^2/(xq^2+xqb^2)
+  // Mike's "Simple Prescription..." paper says that q or qb retains 
+  // it's parton model direction with relative prob xq^2 or xqb^2 
+  // respectively. _the_spectator_ retains it's parton model direction
+  // but the transverse recoil is absorbed by the _the_emitter_. 
+  // For xq->1 the gluon and particle qb are collinear, and acollinear 
+  // to q, implying qb did the emitting, so for xq>>xqb xq is the 
+  // spectator, xqb is the emitter, so select xq as spectator with prob 
+  // xq^2/(xq^2+xqb^2)
   UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
     _iemitter = 1: _iemitter = 0 ; 
   _ispectator = !_iemitter;
@@ -416,19 +411,16 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   _quark[_iemitter].setX(p_e*s_se*cos(_phi));
   _quark[_iemitter].setY(p_e*s_se*sin(_phi));
   _quark[_iemitter].setZ(-p_e*c_se);
-  _quark[_iemitter].setMass(mu_e*sqrt(_s));
   _quark[_iemitter].rescaleRho();
   // momentum of spectator
   _quark[_ispectator].setT(en_s);
   _quark[_ispectator].setX(0.*MeV);
   _quark[_ispectator].setY(0.*MeV);
   _quark[_ispectator].setZ(-p_s);
-  _quark[_ispectator].setMass(mu_s*sqrt(_s));
   _quark[_ispectator].rescaleRho();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
-  _g.setMass(mu_g*sqrt(_s));
   _g.rescaleRho();
   //boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
