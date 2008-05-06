@@ -15,7 +15,6 @@
 cd /Herwig/Particles
 create /ThePEG/ParticleData Graviton
 setup Graviton 39 Graviton 500.0 0.0 0.0 0.0 0 0 5 0
-defaultparticle Graviton
 ###################################################
 #
 #  Main directory and model object
