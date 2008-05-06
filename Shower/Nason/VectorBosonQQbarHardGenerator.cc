@@ -319,7 +319,7 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     _pt = last_pt*pow(UseRandom::rnd(),1./(prefactor*(y_max-y_min)));
     _y  = UseRandom::rnd()*(y_max-y_min)+y_min;
     
-    _xq = 1.-_pt/sqrt(_s)*exp(-_y);
+    _xq  = 1.-_pt/sqrt(_s)*exp(-_y);
     _xqb = 1.-_pt/sqrt(_s)*exp( _y);
 
     last_pt = _pt;
@@ -339,9 +339,6 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     }
   } while (reject);
   
-// _z and _ktild are the z & \tilde{kappa} variables in the new variables
-// paper, for the final-final colour connnection with massless partons (q=qb=0).
-
 // Seymour's "Simple Prescription..." paper says that q or qb retains 
 // it's parton model direction with relative prob xq^2 or xqb^2 respectively.
 // The thing retaining it's parton level direction is _the_spectator_ the 
@@ -349,20 +346,10 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
 // the gluon and particle qb are collinear, and acollinear to q, implying 
 // qb did the emitting, so for xq>>xqb xq is the spectator, xqb is the 
 // emitter, so select xq as spectator with relative prob xq^2/(xq^2+xqb^2)
-  if(UseRandom::rnd() < sqr(_xq) / (sqr(_xq) + sqr(_xqb))) {
-    _iemitter   = 1;
-    _ispectator = 0;
-    _z = (_xqb+_xq-1.)/_xq; 
-    _ktild = (1.-_xq)/_z/(1.-_z); 
-  } else {
-    _iemitter   = 0;
-    _ispectator = 1;
-    _z = (_xq+_xqb-1.)/_xqb;
-    _ktild = (1.-_xqb)/_z/(1.-_z);
-  }
+  UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
+    _iemitter = 1: _iemitter = 0 ; 
+  _ispectator = !_iemitter;
 
-  _k = _z*(1.-_z)*sqrt(_ktild);
-     
   //construct vectors in com z frame
   constructVectors();
   return true;

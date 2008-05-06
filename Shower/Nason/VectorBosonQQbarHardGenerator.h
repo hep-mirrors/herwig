@@ -184,10 +184,7 @@ private:
   //com energy
   Energy2 _s;
  
-  // The Herwig variables, used for momentum reconstruction
-  double _ktild;
-  double _k;
-  double _z;
+  // The phi angle of the rotation of emitter-gluon plane
   double _phi;
 
   // iemit = 0 quark emission: =1 antiquark emission
