@@ -2204,7 +2204,7 @@ decaymode Bbar0->cbar,s,u,dbar; 0.004 1 /Herwig/Decays/WeakPartonic100
 decaymode Bbar0->D_s-,D0,pi+; 0.0037 1 /Herwig/Decays/DecayME0
 decaymode Bbar0->D_s*-,D0,pi+; 0.0037 1 /Herwig/Decays/DecayME0
 decaymode Bbar0->D*+,Dbar0,K-; 0.0031 1 /Herwig/Decays/DecayME0
-decaymode Bbar0->ubar,d,u,dbar; 0.003 1 /Herwig/Decays/Mambo
+decaymode Bbar0->ubar,d,u,dbar; 0.003 1 /Herwig/Decays/WeakPartonic0
 decaymode Bbar0->D_s-,D+,pi+,pi-; 0.003 1 /Herwig/Decays/Mambo
 decaymode Bbar0->D_s*-,D+,pi+,pi-; 0.003 1 /Herwig/Decays/Mambo
 decaymode Bbar0->cs_0,ud_0bar; 0.009 1 /Herwig/Decays/WeakPartonic0
