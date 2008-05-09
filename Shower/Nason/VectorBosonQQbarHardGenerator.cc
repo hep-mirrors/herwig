@@ -130,6 +130,15 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
      if (_quark[i].e() < partons[i]->constituentMass()) return NasonTreePtr();
   if (_g.e() < gluon_data->constituentMass()) return NasonTreePtr();
 
+  // Set masses as done in VectorBosonQQbarMECorrection
+  // (note this was already done at the start and the mass
+  // component of the five-vector is never changed from that 
+  // starting value, but just in case someone rewrites the
+  // code above we include the following as in the MECorr code):
+  _quark[0].setMass(partons[0]->mass());
+  _quark[1].setMass(partons[1]->mass());
+  _g.setMass(0.*MeV);
+
   // assign the emitter based on evolution scales
   // rather than for the correlations - we might want to try 
   // making this choice in the same way as VectorBosonQQbarMECorrection
@@ -315,6 +324,7 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     
     _xq  = 1.-_pt/sqrt(_s)*exp(-_y);
     _xqb = 1.-_pt/sqrt(_s)*exp( _y);
+    _xg  = 2.-_xq-_xqb;
 
     last_pt = _pt;
 
@@ -361,70 +371,82 @@ double VectorBosonQQbarHardGenerator::getResult() {
 void VectorBosonQQbarHardGenerator::constructVectors(){
   using Constants::twopi;
   using Constants::pi;
-  // Find the boost to lab frame that should be applied to particles
-  // generated in c.o.m frame by getEvent():
+  // Find the boost from the lab to the c.o.m with the spectator 
+  // along the -z axis, and then invert it.
   LorentzRotation eventFrame((_quark[0]+_quark[1]).findBoostToCM() );
   Lorentz5Momentum spectator = eventFrame*_quark[_ispectator];
   eventFrame.rotateZ(-spectator.phi());
   eventFrame.rotateY(-spectator.theta()-pi);
   eventFrame.invert();
 
+  // Get the COM energy:
+  Energy rts(sqrt(_s));
+
   // Extract the reduced (constituent) masses:
-  double mu_e,mu_s,mu_g;
-//   mu_e = _quark[_iemitter]->mass()/sqrt(_s);
-//   mu_s = _quark[_ispectator]->mass()/sqrt(_s);
-//   mu_g = 0.;
-  mu_e = 0.;
-  mu_s = 0.;
-  mu_g = 0.;
+  double mu_e(_quark[_iemitter].mass()/rts);
+  double mu_s(_quark[_ispectator].mass()/rts);
+  double mu_g(_g.mass()/rts);
+
+  // Get masses to avoid floating point errors later.
+  Energy init_g_mass(_g.mass());
+  Energy init_e_mass(_quark[_iemitter].mass());
+  Energy init_s_mass(_quark[_ispectator].mass());
 
   // Get the Dalitz variables:
-  double x_e, x_s, x_g;
-  x_e = _iemitter==0   ? _xq : _xqb;
-  x_s = _ispectator==0 ? _xq : _xqb;
-  x_g = 2.0 - x_e - x_s;
+  double xe, xs, xg, b_xe, b_xs, b_xg;
+  xe   = _iemitter==0   ? _xq : _xqb;
+  xs   = _ispectator==0 ? _xq : _xqb;
+  xg   = _xg;
+  b_xe = _iemitter==0   ? _b_xq : _b_xqb;
+  b_xs = _ispectator==0 ? _b_xq : _b_xqb;
+  b_xg = _b_xg;
 
-  // Get the energies and momenta:
-  Energy en_e, en_s, en_g;
-  en_e = 0.5*sqrt(_s)*x_e;
-  en_s = 0.5*sqrt(_s)*x_s;
-  en_g = 0.5*sqrt(_s)*x_g;
-  Energy p_e, p_s, p_g;
-  p_e = 0.5*sqrt(_s*(x_e-2.*mu_e)*(x_e+2.*mu_e));
-  p_s = 0.5*sqrt(_s*(x_s-2.*mu_s)*(x_s+2.*mu_s));
-  p_g = 0.5*sqrt(_s*(x_g-2.*mu_g)*(x_g+2.*mu_g));
-  
-  // Get the cosines and sines w.r.t spectator:
-  double c_sg,s_sg,c_se,s_se;
-  c_se  = (en_s*en_e - 0.5*_s*(1.0 - mu_e*mu_e - mu_s*mu_s + mu_g*mu_g - x_g))
-          /(p_s*p_e);
-  s_se  = sqrt((1.-c_se)*(1.+c_se));
-  c_sg  = (en_s*en_g - 0.5*_s*(1.0 + mu_e*mu_e - mu_s*mu_s - mu_g*mu_g - x_e))
-          /(p_s*p_g);
-  s_sg  = sqrt((1.-c_sg)*(1.+c_sg));
+  // Get the cosines and sines of emitter w.r.t spectator:
+  double c_se,s_se;
+  c_se  = (xe*xs - 2.*(1.0 - mu_e*mu_e - mu_s*mu_s + mu_g*mu_g - xg))
+          /(b_xs*b_xe);
+  s_se  = _rt_mlambda/(2.*b_xe*b_xs);
+
+  if(abs(c_se)>1.||abs(s_se)>1.) {
+    throw Exception() 
+      << "VectorBosonQQBarHardGenerator::constructVectors()"
+      << "angle between emitter and spectator not physical." 
+      << Exception::abortnow; 
+  }
 
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * twopi;  
 
   // momentum of emitter
-  _quark[_iemitter].setT(en_e);
-  _quark[_iemitter].setX(p_e*s_se*cos(_phi));
-  _quark[_iemitter].setY(p_e*s_se*sin(_phi));
-  _quark[_iemitter].setZ(-p_e*c_se);
+  _quark[_iemitter].setT( 0.5*rts * xe);
+  _quark[_iemitter].setX( 0.5*rts * b_xe*s_se*cos(_phi));
+  _quark[_iemitter].setY( 0.5*rts * b_xe*s_se*sin(_phi));
+  _quark[_iemitter].setZ(-0.5*rts * b_xe*c_se);
   _quark[_iemitter].rescaleRho();
   // momentum of spectator
-  _quark[_ispectator].setT(en_s);
-  _quark[_ispectator].setX(0.*MeV);
-  _quark[_ispectator].setY(0.*MeV);
-  _quark[_ispectator].setZ(-p_s);
+  _quark[_ispectator].setT( 0.5*rts * xs);
+  _quark[_ispectator].setX( 0.*MeV);
+  _quark[_ispectator].setY( 0.*MeV);
+  _quark[_ispectator].setZ(-0.5*rts * b_xs);
   _quark[_ispectator].rescaleRho();
   // momentum of gluon
   _g=-_quark[0]-_quark[1];
   _g.setT(sqrt(_s)+_g.t());
+  _g.setMass(init_g_mass);
   _g.rescaleRho();
-  //boost constructed vectors into the event frame
+  // boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
   _g        = eventFrame * _g;
+
+  // need to reset masses because for whatever reason the boost  
+  // touches the mass component of the five-vector and can make  
+  // zero mass objects acquire a floating point negative mass(!).
+  _g.setMass(init_g_mass);
+  _quark[_iemitter].setMass(init_e_mass);
+  _quark[_ispectator].setMass(init_s_mass);
+  _g.rescaleRho();
+  _quark[_iemitter].rescaleRho();
+  _quark[_ispectator].rescaleRho();
 }
 

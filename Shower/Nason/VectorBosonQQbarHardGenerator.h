@@ -167,13 +167,34 @@ private:
   double _alphaS_max;  
 
   /**
-   *The dalitz variables (xq,xqb)
+   *  The dalitz variables (xq,xqb,xg=2-xq-xqb). These are
+   *  the COM energies of the q,qb,g divided by 0.5*sqrt(_s).
    */
   double _xq;
   double _xqb;
+  double _xg;
 
   /**
-   * The gluon mass (Q_g) i.e. the cut off on pt, assuming massless quarks.
+   *  The COM 3-momenta and of the q,qb,g divided by 0.5*sqrt(_s).
+   *  These are used in checking phase space constraints as well
+   *  as constructing emissions. This is beta (velocity) times 
+   *  xq/xqb/xg hence the variable name.
+   */
+  double _b_xq;
+  double _b_xqb;
+  double _b_xg;
+
+  /**
+   *  _rt_mlambda/(2.*_b_xi*_b_xj) gives the sine of the angle 
+   *  between i & j in the COM frame. It is equal to the square
+   *  root of the Kallen function taking as its 3 arguments
+   *  the rescaled 3-momenta _b_xq^2, _b_xqb^2, _b_xg^2. It 
+   *  it is therefore importantly used in calculating relative pT's.
+   */
+  double _rt_mlambda;
+
+  /**
+   *  The gluon mass (Q_g) i.e. the cut off on pt, assuming massless quarks.
    */
   Energy _Qg;
 
