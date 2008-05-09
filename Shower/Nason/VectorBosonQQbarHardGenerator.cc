@@ -361,10 +361,13 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
 }
 
 double VectorBosonQQbarHardGenerator::getResult() {
+  // alpha_S is evaluated a scale given by the pT of
+  // the emitter relative to the spectator - emitter and
+  // spectator are chosen in perhaps not the optimal way.
   double res = 4. / 3. / Constants::pi * _pt / _s *
     ( sqr ( _xq ) + sqr( _xqb ) ) / ( 1. - _xq ) / ( 1. -_xqb ) * GeV;
-  double xfact2 = _xq>_xqb ? sqr(_xq) : sqr(_xqb);
-  res *= _alphaS->value( sqr( _pt )*(1.-_xg)/xfact2 );
+  double b_xs2  = _xq>_xqb ? sqr(_b_xq) : sqr(_b_xqb);
+  res *= _alphaS->value(_s*sqr(_rt_mlambda)/(16.*b_xs2));
   return res;
 }
 
