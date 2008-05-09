@@ -364,7 +364,7 @@ double VectorBosonQQbarHardGenerator::getResult() {
   double res = 4. / 3. / Constants::pi * _pt / _s *
     ( sqr ( _xq ) + sqr( _xqb ) ) / ( 1. - _xq ) / ( 1. -_xqb ) * GeV;
   double xfact2 = _xq>_xqb ? sqr(_xq) : sqr(_xqb);
-  res *= _alphaS->value( sqr( _pt )*(_xq+_xqb-1.)/xfact2 );
+  res *= _alphaS->value( sqr( _pt )*(1.-_xg)/xfact2 );
   return res;
 }
 

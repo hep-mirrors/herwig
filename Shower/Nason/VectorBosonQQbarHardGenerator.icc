@@ -49,16 +49,9 @@ inline bool VectorBosonQQbarHardGenerator::inRange() {
   if(_xq >(1.+(mu_q -mu_qb-mu_g )*(mu_q +mu_qb+mu_g ))) return 0;
   if(_xqb>(1.+(mu_qb-mu_q -mu_g )*(mu_qb+mu_q +mu_g ))) return 0;
 
-  // Check if we are in the phase space:
-
-  // --- special case if all partons are massless:
-  if(_quark[0].mass()==0.*MeV&&_quark[1].mass()==0.*MeV
-     &&_g.mass()==0.*MeV&&-1.*(1.-_xq)*(1.-_xqb)*(1.-_xg)>=0.) 
-    return 0;
-
-  // --- general case if all q and qbar are massive 
-  // (this is a manipulation of the Kallen function 
-  // lambda(b_xq2,b_xqb2,b_xg2)):
+  // Check if we are in the phase space (this
+  // is a manipulation of the Kallen function 
+  // function lambda(b_xq2,b_xqb2,b_xg2)):
   //  _rt_mlambda = sqr(b_xq2) + sqr(b_xqb2) + sqr(b_xg2)
   //          - 2.*(b_xq2*b_xqb2 + b_xq2*b_xg2 + b_xqb2*b_xg2);
   _rt_mlambda = (_b_xq +_b_xqb+_b_xg )
