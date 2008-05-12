@@ -22,6 +22,14 @@
 
 using namespace Herwig;
 
+IBPtr BtoSGammaDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr BtoSGammaDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
   // should be three decay products
   if(children.size()!=3) return false;

@@ -25,6 +25,16 @@
 
 using namespace Herwig;
 
+HeavyDecayer::HeavyDecayer() : MECode(0) {} 
+
+IBPtr HeavyDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr HeavyDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 void HeavyDecayer::Init() {
 
   static ClassDocumentation<HeavyDecayer> documentation

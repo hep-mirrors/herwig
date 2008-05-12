@@ -12,12 +12,7 @@
 // This is the declaration of the QuarkoniumDecayer class.
 //
 
-#include <ThePEG/Config/ThePEG.h>
 #include <PartonicDecayerBase.h>
-#include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Repository/Strategy.fh>
-#include <fstream>
 
 namespace Herwig {
 using namespace ThePEG;
@@ -59,7 +54,7 @@ public:
   /**
    * Standard ctors and dtor
    */
-  inline QuarkoniumDecayer();
+  QuarkoniumDecayer();
 
   /**
    * Check if this decayer can perfom the decay for a particular mode
@@ -111,12 +106,12 @@ protected:
    /**
     * Standard clone methods
     */
-   inline virtual IBPtr clone() const;
+   virtual IBPtr clone() const;
 
    /**
     * Standard clone methods
     */
-   inline virtual IBPtr fullclone() const;
+   virtual IBPtr fullclone() const;
 
 private:
 
@@ -173,7 +168,5 @@ struct ClassTraits<Herwig::QuarkoniumDecayer>:
 /** @endcond */
 
 }
-
-#include "QuarkoniumDecayer.icc"
 
 #endif /* HERWIG_QuarkoniumDecayer_H */
