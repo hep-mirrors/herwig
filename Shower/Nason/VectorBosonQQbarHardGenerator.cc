@@ -21,6 +21,8 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+
 
 using namespace Herwig;
 
@@ -60,9 +62,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     QProgenitor    = tree->outgoingLines().begin()->first,
     QbarProgenitor = tree->outgoingLines().rbegin()->first;
   if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
-  vector<tcPDPtr> partons(2);
-  partons[0] = QProgenitor->progenitor()->dataPtr();
-  partons[1] = QbarProgenitor->progenitor()->dataPtr();
+  _partons.resize(2);
+  _partons[0] = QProgenitor->progenitor()->dataPtr();
+  _partons[1] = QbarProgenitor->progenitor()->dataPtr();
   // Get data for the gluon.
   tcPDPtr gluon_data = getParticleData(ParticleID::g);
 
@@ -72,8 +74,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   _quark[1]=QbarProgenitor->copy()->momentum();
   // Set the existing mass entries in partons 5 vectors with the
   // once and for all.
-  _quark[0].setMass(partons[0]->mass());
-  _quark[1].setMass(partons[1]->mass());
+  _quark[0].setMass(_partons[0]->mass());
+  _quark[1].setMass(_partons[1]->mass());
   _g.setMass(0.*MeV);
 
   // PDG codes of the partons
@@ -81,7 +83,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   int qbar_id(abs(QbarProgenitor->progenitor()->id()));
 
   // Get the gauge boson.
-  PPtr boson = tree->incomingLines().begin()->first->copy();
+  _boson = tree->incomingLines().begin()->first->copy();
 
   // Get the gauge boson mass.
   _s = (_quark[0]+_quark[1])*(_quark[0]+_quark[1]);
@@ -127,7 +129,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   // Ensure the energies are greater than the constituent masses:
   for (int i=0; i<2; i++)
-     if (_quark[i].e() < partons[i]->constituentMass()) return NasonTreePtr();
+     if (_quark[i].e() < _partons[i]->constituentMass()) return NasonTreePtr();
   if (_g.e() < gluon_data->constituentMass()) return NasonTreePtr();
 
   // Set masses as done in VectorBosonQQbarMECorrection
@@ -135,8 +137,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // component of the five-vector is never changed from that 
   // starting value, but just in case someone rewrites the
   // code above we include the following as in the MECorr code):
-  _quark[0].setMass(partons[0]->mass());
-  _quark[1].setMass(partons[1]->mass());
+  _quark[0].setMass(_partons[0]->mass());
+  _quark[1].setMass(_partons[1]->mass());
   _g.setMass(0.*MeV);
 
   // assign the emitter based on evolution scales
@@ -150,15 +152,15 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   SudakovPtr sudakov = _iemitter==0 ? q_sudakov : qbar_sudakov;
 
   // Make the particles for the NasonTree:
-  ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
-  ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons[_ispectator],true)));
+  ShowerParticlePtr emitter(new_ptr(ShowerParticle(_partons[_iemitter],true)));
+  ShowerParticlePtr spectator(new_ptr(ShowerParticle(_partons[_ispectator],true)));
   ShowerParticlePtr gluon(new_ptr(ShowerParticle(gluon_data,true)));
-  ShowerParticlePtr vboson(new_ptr(ShowerParticle(boson->dataPtr(),false)));
-  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons[_iemitter],true)));
+  ShowerParticlePtr vboson(new_ptr(ShowerParticle(_boson->dataPtr(),false)));
+  ShowerParticlePtr parent(new_ptr(ShowerParticle(_partons[_iemitter],true)));
   emitter->set5Momentum(_quark[_iemitter]); 
   spectator->set5Momentum(_quark[_ispectator]);  
   gluon->set5Momentum(_g);  
-  vboson->set5Momentum(boson->momentum());  
+  vboson->set5Momentum(_boson->momentum());  
   Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
@@ -361,13 +363,69 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
 }
 
 double VectorBosonQQbarHardGenerator::getResult() {
-  // alpha_S is evaluated a scale given by the pT of
-  // the emitter relative to the spectator - emitter and
-  // spectator are chosen in perhaps not the optimal way.
-  double res = 4. / 3. / Constants::pi * _pt / _s *
-    ( sqr ( _xq ) + sqr( _xqb ) ) / ( 1. - _xq ) / ( 1. -_xqb ) * GeV;
-  double b_xs2  = _xq>_xqb ? sqr(_b_xq) : sqr(_b_xqb);
-  res *= _alphaS->value(_s*sqr(_rt_mlambda)/(16.*b_xs2));
+  using Constants::pi;
+  double CF = 4. / 3.; 
+  // factor to get exact pt for argument of alphaS
+  double xfact2 = _xq>_xqb ? sqr(_xq) : sqr(_xqb);
+
+  //dimensionless quark mass squared M^2/s
+  double rho = sqr( _partons[0]->mass() ) /_s;
+  //set to zero for testing
+  //  rho = 0.;
+
+  //Vector and axial couplings- depends on quarks and Vector Boson type
+  double sin2ThetaW = generator()->standardModel()->sin2ThetaW();
+  
+  //the vector and axial coupings
+  double Vf, Af;
+  double T3f, Qf;
+  //down type quark
+  if( abs( _partons[0]->id() ) == 1 || abs( _partons[0]->id() ) == 3 ||
+      abs( _partons[0]->id() ) == 5 ){
+    T3f = - 1. / 2.;
+    Qf = - 1. / 3.;
+  }
+  //up type quark
+  else {
+    T3f =  1. / 2.;
+    Qf =  2. / 3.;
+  }
+
+  //sets the couplings according to whether intermediate was a photon or Z
+  if( _boson->dataPtr()->id() == 23 ){
+    Vf = T3f - 2. * Qf * sin2ThetaW;
+    Af = T3f;
+  }
+  else{
+    Vf = 1.;
+    Af = 0.;
+  }
+
+  //common factors in couplings and flux factors ignored
+  //notation from hep-ph/0310083v2
+  //born contribution in massive quark case
+  double sigB =  sqr( Vf ) * ( 1. + 2. * rho ) + sqr( Af ) * ( 1. - 4. *  rho ) ;
+
+  //Traces for the radiative contribution
+  //Vector current trace
+  double TrA =  ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) 
+		 + 2. * rho * ( sqr( 5. - _xq - _xqb ) - 19. + 4. * rho ) ) 
+    / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. - 4. * rho )
+    + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
+    ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) );
+  //Vector current trace
+		 double TrV =  ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) - 8. * rho * ( 1. + 2. * rho ) ) 
+		   / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. + 2. * rho )
+		   + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
+		   ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) );
+
+  //radiative contribution in quark massive case
+  double sigR = _alphaS->value( sqr( _pt )*(_xq+_xqb-1.)/xfact2 ) * CF / 2. / pi 
+    * ( sqr( Vf ) * TrV + sqr( Af ) * TrA ) 
+    * 2. * _pt / _s * GeV;
+
+  double res = sigR / sigB;
+
   return res;
 }
 

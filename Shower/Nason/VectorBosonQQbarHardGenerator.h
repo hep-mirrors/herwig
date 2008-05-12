@@ -205,7 +205,10 @@ private:
   //com energy
   Energy2 _s;
  
-  // The phi angle of the rotation of emitter-gluon plane
+  // The Herwig variables, used for momentum reconstruction
+  double _ktild;
+  double _k;
+  double _z;
   double _phi;
 
   // iemit = 0 quark emission: =1 antiquark emission
@@ -229,10 +232,13 @@ private:
   std::vector<double> _xqplot;
   std::vector<double> _xqbplot;
 
-  // The quark momenta, mass and data pointers
+  // The quark momenta and data pointers
   vector<Lorentz5Momentum> _quark;
-  // The gluon momentum
+  vector<tcPDPtr> _partons;
+  PPtr _boson;
+  // The gluon momentum and data pointer
   Lorentz5Momentum _g;
+  tcPDPtr _gluon_data;
 
 };
 
