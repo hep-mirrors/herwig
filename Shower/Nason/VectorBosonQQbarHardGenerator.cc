@@ -125,8 +125,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   // Generate emission and set _quark[0,1] and _g to be the 
   // momenta of q, qbar and g after the hardest emission:
-  if(!getEvent()) return NasonTreePtr();
-
+  if(!getEvent()){
+    generator()->log() << "generateHardest: NO emission was generated\n";
+    QProgenitor->maximumpT(0.*GeV);
+    QbarProgenitor->maximumpT(0.*GeV);
+    return NasonTreePtr();
+  }
   // Ensure the energies are greater than the constituent masses:
   for (int i=0; i<2; i++)
      if (_quark[i].e() < _partons[i]->constituentMass()) return NasonTreePtr();
@@ -371,7 +375,7 @@ double VectorBosonQQbarHardGenerator::getResult() {
   //dimensionless quark mass squared M^2/s
   double rho = sqr( _partons[0]->mass() ) /_s;
   //set to zero for testing
-  //  rho = 0.;
+  rho = 0.;
 
   //Vector and axial couplings- depends on quarks and Vector Boson type
   double sin2ThetaW = generator()->standardModel()->sin2ThetaW();
