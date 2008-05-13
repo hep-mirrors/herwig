@@ -36,7 +36,10 @@ public:
   /**
    * The default constructor.
    */
-  inline ModelGenerator();
+  inline ModelGenerator() : _theParticles(0), _theOffshell(0),
+			    _theOffsel(0), _theBRnorm(true),
+			    _theNpoints(50), _theIorder(1),
+			    _theBWshape(0) {}
 
 public:
 
@@ -89,13 +92,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -113,6 +116,14 @@ private:
   ModelGenerator & operator=(const ModelGenerator &);
 
 private:
+
+  /**
+   * Check the decay modes a given particle type. This checks whether
+   * the decay has quarks in the final state and that they can be put on
+   * mass-shell during the shower.
+   * @param parent The parent particle
+   */
+  void checkDecays(PDPtr parent);
 
   /**
    * Write out the spectrum of masses and decay modes
@@ -214,7 +225,5 @@ struct ClassTraits<Herwig::ModelGenerator>
 /** @endcond */
 
 }
-
-#include "ModelGenerator.icc"
 
 #endif /* HERWIG_ModelGenerator_H */

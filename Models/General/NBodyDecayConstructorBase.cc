@@ -118,7 +118,7 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
     //need to reweight current branching fractions if there are any
     for(DecaySet::const_iterator dit = modes.begin(); 
 	dit != modes.end(); ++dit) {
-      if( **dit == *dm ) continue; 
+      if( **dit == *dm || !(**dit).on() ) continue; 
       double newbrat = ((**dit).brat())*currentwidth/newWidth;
       ostringstream brf;
       brf << newbrat;
