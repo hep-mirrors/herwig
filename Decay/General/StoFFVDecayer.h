@@ -10,7 +10,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "StoFFVDecayer.fh"
 
 namespace Herwig {
   using namespace ThePEG;

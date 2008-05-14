@@ -15,7 +15,6 @@
 #include "NBodyDecayConstructorBase.h"
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.fh"
-#include "TwoBodyDecayConstructor.fh"
 
 namespace Herwig {
 using namespace ThePEG;

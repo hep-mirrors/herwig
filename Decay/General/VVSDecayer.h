@@ -8,7 +8,6 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "VVSDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;

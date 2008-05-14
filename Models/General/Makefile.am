@@ -5,14 +5,11 @@ DecayConstructor.cc DecayConstructor.h DecayConstructor.fh  \
 NBodyDecayConstructorBase.cc NBodyDecayConstructorBase.h \
 NBodyDecayConstructorBase.fh \
 TwoBodyDecayConstructor.cc TwoBodyDecayConstructor.h \
-TwoBodyDecayConstructor.fh \
 HardProcessConstructor.h HardProcessConstructor.fh \
 HardProcessConstructor.cc \
 HPDiagram.h HPDiagram.icc \
-ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.fh \
-ThreeBodyDecayConstructor.cc \
-WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.fh \
-WeakCurrentDecayConstructor.cc \
+ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.cc \
+WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.cc \
 ResonantProcessConstructor.cc ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
 VVSLoopVertex.fh VVSLoopVertex.h \

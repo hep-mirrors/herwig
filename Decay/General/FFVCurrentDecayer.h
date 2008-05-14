@@ -15,7 +15,6 @@
 #include "GeneralCurrentDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "FFVCurrentDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;

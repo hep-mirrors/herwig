@@ -3,23 +3,23 @@ libHwGeneralDecay_la_SOURCES = \
 GeneralTwoBodyDecayer.h GeneralTwoBodyDecayer.fh GeneralTwoBodyDecayer.cc \
 GeneralThreeBodyDecayer.h GeneralThreeBodyDecayer.fh \
 GeneralThreeBodyDecayer.cc \
-FFSDecayer.h FFSDecayer.fh FFSDecayer.cc \
-FFVDecayer.h FFVDecayer.fh FFVDecayer.cc \
-SFFDecayer.h SFFDecayer.fh SFFDecayer.cc \
-SSSDecayer.h SSSDecayer.fh SSSDecayer.cc \
-SSVDecayer.h SSVDecayer.fh SSVDecayer.cc \
-SVVDecayer.h SVVDecayer.fh SVVDecayer.cc \
-TFFDecayer.h TFFDecayer.fh TFFDecayer.cc \
-TSSDecayer.h TSSDecayer.fh TSSDecayer.cc \
-TVVDecayer.h TVVDecayer.fh TVVDecayer.cc \
-VFFDecayer.h VFFDecayer.fh VFFDecayer.cc \
-VSSDecayer.h VSSDecayer.fh VSSDecayer.cc \
-VVSDecayer.h VVSDecayer.fh VVSDecayer.cc \
-VVVDecayer.h VVVDecayer.fh VVVDecayer.cc \
+FFSDecayer.h  FFSDecayer.cc \
+FFVDecayer.h  FFVDecayer.cc \
+SFFDecayer.h  SFFDecayer.cc \
+SSSDecayer.h  SSSDecayer.cc \
+SSVDecayer.h  SSVDecayer.cc \
+SVVDecayer.h  SVVDecayer.cc \
+TFFDecayer.h  TFFDecayer.cc \
+TSSDecayer.h  TSSDecayer.cc \
+TVVDecayer.h  TVVDecayer.cc \
+VFFDecayer.h  VFFDecayer.cc \
+VSSDecayer.h  VSSDecayer.cc \
+VVSDecayer.h  VVSDecayer.cc \
+VVVDecayer.h  VVVDecayer.cc \
 GeneralCurrentDecayer.h GeneralCurrentDecayer.fh GeneralCurrentDecayer.cc \
-FFVCurrentDecayer.h FFVCurrentDecayer.fh FFVCurrentDecayer.cc \
-FtoFFFDecayer.h FtoFFFDecayer.fh FtoFFFDecayer.cc \
-StoSFFDecayer.h StoSFFDecayer.fh StoSFFDecayer.cc \
-StoFFVDecayer.h StoFFVDecayer.fh StoFFVDecayer.cc \
-VtoFFVDecayer.h VtoFFVDecayer.fh VtoFFVDecayer.cc \
-FtoFVVDecayer.h FtoFVVDecayer.fh FtoFVVDecayer.cc 
+FFVCurrentDecayer.h FFVCurrentDecayer.cc \
+FtoFFFDecayer.h FtoFFFDecayer.cc \
+StoSFFDecayer.h StoSFFDecayer.cc \
+StoFFVDecayer.h StoFFVDecayer.cc \
+VtoFFVDecayer.h VtoFFVDecayer.cc \
+FtoFVVDecayer.h FtoFVVDecayer.cc 

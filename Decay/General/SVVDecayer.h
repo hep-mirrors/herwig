@@ -17,7 +17,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.fh"
-#include "SVVDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;

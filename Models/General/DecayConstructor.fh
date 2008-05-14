@@ -8,9 +8,15 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-  using namespace ThePEG;
+
   class DecayConstructor;
-ThePEG_DECLARE_POINTERS(DecayConstructor,DecayConstructorPtr);
+
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DecayConstructor,DecayConstructorPtr);
 
 }
 

@@ -12,7 +12,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFTVertex.h"
-#include "StoSFFDecayer.fh"
 
 namespace Herwig {
   using namespace ThePEG;

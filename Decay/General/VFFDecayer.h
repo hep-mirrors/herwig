@@ -15,7 +15,6 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "VFFDecayer.fh"
 
 
 namespace Herwig {
