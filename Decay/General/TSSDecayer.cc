@@ -23,6 +23,20 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+IBPtr TSSDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr TSSDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void TSSDecayer::doinit() throw(InitException) {
+  GeneralTwoBodyDecayer::doinit();
+  _perturbativeVertex = dynamic_ptr_cast<SSTVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractSSTVertexPtr>(getVertex());
+}
+
 void TSSDecayer::persistentOutput(PersistentOStream & os) const {
   os << _abstractVertex << _perturbativeVertex;
 }

@@ -35,7 +35,8 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralCurrentDecayer();
+  inline GeneralCurrentDecayer() : 
+    _maxmass(5.*GeV), _theGF(1.16639E-5/GeV2) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -119,23 +120,23 @@ protected:
    *  Access to the map between the number of the mode and the modes in
    *  the current
    */
-  inline vector<unsigned int> modeMap() const;
+  inline vector<unsigned int> modeMap() const {  return _modemap; }
 
   /**
    *  Access to the weak current
    */
-  inline WeakDecayCurrentPtr weakCurrent() const;
+  inline WeakDecayCurrentPtr weakCurrent() const { return _current; }
 
   /**
    *  Access to the Fermi constant
    */
-  inline InvEnergy2 GF() const;  
+  inline InvEnergy2 GF() const { return _theGF; }
 
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const;
+  inline VertexBasePtr getVertex() const { return _theVertex; }
 
 private:
 
@@ -181,7 +182,7 @@ private:
   /**
    * Fermi coupling constant, \f$G_F\f$.
    */
-  InvEnergy2 _GF;
+  InvEnergy2 _theGF;
 
   /**
    * mapping of the modes to the currents
@@ -238,6 +239,5 @@ struct ClassTraits<Herwig::GeneralCurrentDecayer>
 
 }
 
-#include "GeneralCurrentDecayer.icc"
 
 #endif /* HERWIG_GeneralCurrentDecayer_H */

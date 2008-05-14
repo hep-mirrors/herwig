@@ -35,7 +35,9 @@ public:
   /**
    * The default constructor.
    */
-  inline NBodyDecayConstructorBase();
+  inline NBodyDecayConstructorBase() : 
+    _init(true),_iteration(1), _points(1000), _info(false), 
+    _createmodes(true) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -65,27 +67,27 @@ protected:
   /**
    * Whether to initialize decayers or not
    */
-  inline bool initialize() const;
+  inline bool initialize() const { return _init; }
   
   /**
    * Number of iterations if initializing (default 1)
    */
-  inline int iteration() const;
+  inline int iteration() const { return _iteration; }
 
   /**
    * Number of points to do in initialization
    */
-  inline int points() const;
+  inline int points() const { return _points; }
 
   /**
    * Whether to output information on the decayers 
    */
-  inline bool info() const;
+  inline bool info() const { return _info; }
 
   /**
    * Whether to create the DecayModes as well as the Decayer objects 
    */
-  inline bool createDecayModes() const;
+  inline bool createDecayModes() const { return _createmodes; }
 
 public:
 
@@ -187,7 +189,5 @@ struct ClassTraits<Herwig::NBodyDecayConstructorBase>
 /** @endcond */
 
 }
-
-#include "NBodyDecayConstructorBase.icc"
 
 #endif /* HERWIG_NBodyDecayConstructorBase_H */

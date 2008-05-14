@@ -44,7 +44,7 @@ public:
   /**
    * The default constructor.
    */
-  TwoBodyDecayConstructor();
+  inline TwoBodyDecayConstructor() :  _theExistingDecayers(0) {}
 
   /**
    * Function used to determine allowed decaymodes
@@ -86,13 +86,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -180,7 +180,5 @@ struct ClassTraits<Herwig::TwoBodyDecayConstructor>
 /** @endcond */
 
 }
-
-#include "TwoBodyDecayConstructor.icc"
 
 #endif /* HERWIG_TwoBodyDecayConstructor_H */

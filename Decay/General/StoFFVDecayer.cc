@@ -15,6 +15,14 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
+IBPtr StoFFVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr StoFFVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 void StoFFVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _sca << _fer << _vec;
 }

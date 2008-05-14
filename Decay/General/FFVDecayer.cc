@@ -24,6 +24,25 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+FFVDecayer::FFVDecayer() {
+  addToSearchList(0);
+  addToSearchList(1);
+}
+
+IBPtr FFVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr FFVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void FFVDecayer::doinit() throw(InitException) {
+  _perturbativeVertex = dynamic_ptr_cast<FFVVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractFFVVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
 void FFVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _abstractVertex << _perturbativeVertex;
 }

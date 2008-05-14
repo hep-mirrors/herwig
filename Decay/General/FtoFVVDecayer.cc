@@ -14,6 +14,14 @@
 
 using namespace Herwig;
 
+IBPtr FtoFVVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr FtoFVVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 void FtoFVVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _sca << _fer << _vec << _ten;
 }

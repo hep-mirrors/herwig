@@ -15,6 +15,14 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
+IBPtr VtoFFVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr VtoFFVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 void VtoFFVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _sca << _fer << _vec << _ten;
 }

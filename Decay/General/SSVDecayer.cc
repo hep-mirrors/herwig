@@ -23,6 +23,25 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+SSVDecayer::SSVDecayer() {
+  addToSearchList(1);
+  addToSearchList(2);
+}
+
+IBPtr SSVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SSVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void SSVDecayer::doinit() throw(InitException) {
+  _perturbativeVertex = dynamic_ptr_cast<VSSVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVSSVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
 void SSVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _abstractVertex << _perturbativeVertex;
 }

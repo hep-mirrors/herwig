@@ -21,6 +21,40 @@
 
 using namespace Herwig;
 
+IBPtr ResonantProcessConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ResonantProcessConstructor::fullclone() const {
+  return new_ptr(*this);
+}
+
+void ResonantProcessConstructor::doinit() throw(InitException) {
+  Interfaced::doinit();
+  EGPtr eg = generator();
+  theModel = dynamic_ptr_cast<HwSMPtr>(eg->standardModel());
+  if(!theModel)
+    throw InitException() << "ResonantProcessConstructor:: doinit() - "
+			  << "The model pointer is null!"
+			  << Exception::abortnow;
+  if(eg->eventHandler()) {
+    string subProcessName = 
+      eg->preinitInterface(eg->eventHandler(), "SubProcessHandlers", "get","");
+   theSubProcess = eg->getObject<SubProcessHandler>(subProcessName);
+   if(!theSubProcess)
+     throw InitException() << "ResonantProcessConstructor:: doinit() - "
+			   << "There was an error getting the SubProcessHandler "
+			   << "from the current event handler. "
+			   << Exception::abortnow;
+  }
+  else
+    throw
+      InitException() << "ResonantProcessConstructor:: doinit() - "
+		      << "The eventHandler pointer was null therefore "
+		      << "could not get SubProcessHandler pointer " 
+		      << Exception::abortnow;
+}
+
 void ResonantProcessConstructor::persistentOutput(PersistentOStream & os) const {
   os << theIncoming << theIntermediates << theOutgoing << theModel 
      << theSubProcess;

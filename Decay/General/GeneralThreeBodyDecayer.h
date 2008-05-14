@@ -31,7 +31,8 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralThreeBodyDecayer();
+  inline GeneralThreeBodyDecayer() :
+    _widthopt(1), _reftag(""), _reftagcc("") {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -156,42 +157,48 @@ protected:
    * Access the TBDiagrams that store the required information
    * to create the diagrams
    */
-  inline const vector<TBDiagram> & getProcessInfo() const;
+  inline const vector<TBDiagram> & getProcessInfo() const {
+    return _diagrams;
+  }
 
   /**
    *  Incoming particle
    */
-  inline PDPtr incoming() const;
+  inline PDPtr incoming() const { return _incoming; }
 
   /**
    *  Outgoing particles
    */
-  inline const vector<PDPtr> & outgoing() const;
+  inline const vector<PDPtr> & outgoing() const {  return _outgoing; }
  
   /**
    *  Number of colour flows
    */
-  inline unsigned int numberOfFlows() const;
+  inline unsigned int numberOfFlows() const { return _nflow; }
 
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getColourFactors() const;
+  inline const vector<DVector> & getColourFactors() const {  return _colour; }
 
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getLargeNcColourFactors() const;
+  inline const vector<DVector> & getLargeNcColourFactors() const {
+    return _colourLargeNC;
+  }
 
   /**
    *  Get the mapping between the phase-space channel and the diagram
    */
-  inline const vector<unsigned int> & diagramMap() const;
+  inline const vector<unsigned int> & diagramMap() const { 
+    return _diagmap; 
+  }
 
   /**
    *  Option for the handling of the widths of the intermediate particles
    */
-  inline unsigned int widthOption() const;
+  inline unsigned int widthOption() const { return _widthopt; }
 
   /**
    * Set colour connections
@@ -211,13 +218,14 @@ protected:
 
   /**
    *  Set the colour flow
+   * @param The value for the colour flow
    */
-  inline void colourFlow(unsigned int) const;
+  inline void colourFlow(unsigned int flow) const { _iflow = flow; }
 
   /**
    *  Set the colour flow
    */
-  inline unsigned int const & colourFlow() const;
+  inline unsigned int const & colourFlow() const { return _iflow; }
 
 private:
 
@@ -329,6 +337,5 @@ struct ClassTraits<Herwig::GeneralThreeBodyDecayer>
 
 }
 
-#include "GeneralThreeBodyDecayer.icc"
 
 #endif /* HERWIG_GeneralThreeBodyDecayer_H */

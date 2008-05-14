@@ -1,28 +1,25 @@
 noinst_LTLIBRARIES = libHwGeneralDecay.la
 libHwGeneralDecay_la_SOURCES = \
-GeneralTwoBodyDecayer.h GeneralTwoBodyDecayer.icc \
-GeneralTwoBodyDecayer.fh GeneralTwoBodyDecayer.cc \
-GeneralThreeBodyDecayer.h GeneralThreeBodyDecayer.icc \
-GeneralThreeBodyDecayer.fh GeneralThreeBodyDecayer.cc \
-FFSDecayer.h FFSDecayer.icc FFSDecayer.fh FFSDecayer.cc \
-FFVDecayer.h FFVDecayer.icc FFVDecayer.fh FFVDecayer.cc \
-SFFDecayer.h SFFDecayer.icc SFFDecayer.fh SFFDecayer.cc \
-SSSDecayer.h SSSDecayer.icc SSSDecayer.fh SSSDecayer.cc \
-SSVDecayer.h SSVDecayer.icc SSVDecayer.fh SSVDecayer.cc \
-SVVDecayer.h SVVDecayer.icc SVVDecayer.fh SVVDecayer.cc \
-TFFDecayer.h TFFDecayer.icc TFFDecayer.fh TFFDecayer.cc \
-TSSDecayer.h TSSDecayer.icc TSSDecayer.fh TSSDecayer.cc \
-TVVDecayer.h TVVDecayer.icc TVVDecayer.fh TVVDecayer.cc \
-VFFDecayer.h VFFDecayer.icc VFFDecayer.fh VFFDecayer.cc \
-VSSDecayer.h VSSDecayer.icc VSSDecayer.fh VSSDecayer.cc \
-VVSDecayer.h VVSDecayer.icc VVSDecayer.fh VVSDecayer.cc \
-VVVDecayer.h VVVDecayer.icc VVVDecayer.fh VVVDecayer.cc \
-GeneralCurrentDecayer.h GeneralCurrentDecayer.icc GeneralCurrentDecayer.fh \
-GeneralCurrentDecayer.cc \
-FFVCurrentDecayer.h FFVCurrentDecayer.icc FFVCurrentDecayer.fh \
-FFVCurrentDecayer.cc \
-FtoFFFDecayer.h FtoFFFDecayer.fh FtoFFFDecayer.icc FtoFFFDecayer.cc \
-StoSFFDecayer.h StoSFFDecayer.fh StoSFFDecayer.icc StoSFFDecayer.cc \
-StoFFVDecayer.h StoFFVDecayer.fh StoFFVDecayer.icc StoFFVDecayer.cc \
-VtoFFVDecayer.h VtoFFVDecayer.fh VtoFFVDecayer.icc VtoFFVDecayer.cc \
-FtoFVVDecayer.h FtoFVVDecayer.fh FtoFVVDecayer.icc FtoFVVDecayer.cc 
+GeneralTwoBodyDecayer.h GeneralTwoBodyDecayer.fh GeneralTwoBodyDecayer.cc \
+GeneralThreeBodyDecayer.h GeneralThreeBodyDecayer.fh \
+GeneralThreeBodyDecayer.cc \
+FFSDecayer.h FFSDecayer.fh FFSDecayer.cc \
+FFVDecayer.h FFVDecayer.fh FFVDecayer.cc \
+SFFDecayer.h SFFDecayer.fh SFFDecayer.cc \
+SSSDecayer.h SSSDecayer.fh SSSDecayer.cc \
+SSVDecayer.h SSVDecayer.fh SSVDecayer.cc \
+SVVDecayer.h SVVDecayer.fh SVVDecayer.cc \
+TFFDecayer.h TFFDecayer.fh TFFDecayer.cc \
+TSSDecayer.h TSSDecayer.fh TSSDecayer.cc \
+TVVDecayer.h TVVDecayer.fh TVVDecayer.cc \
+VFFDecayer.h VFFDecayer.fh VFFDecayer.cc \
+VSSDecayer.h VSSDecayer.fh VSSDecayer.cc \
+VVSDecayer.h VVSDecayer.fh VVSDecayer.cc \
+VVVDecayer.h VVVDecayer.fh VVVDecayer.cc \
+GeneralCurrentDecayer.h GeneralCurrentDecayer.fh GeneralCurrentDecayer.cc \
+FFVCurrentDecayer.h FFVCurrentDecayer.fh FFVCurrentDecayer.cc \
+FtoFFFDecayer.h FtoFFFDecayer.fh FtoFFFDecayer.cc \
+StoSFFDecayer.h StoSFFDecayer.fh StoSFFDecayer.cc \
+StoFFVDecayer.h StoFFVDecayer.fh StoFFVDecayer.cc \
+VtoFFVDecayer.h VtoFFVDecayer.fh VtoFFVDecayer.cc \
+FtoFVVDecayer.h FtoFVVDecayer.fh FtoFVVDecayer.cc 

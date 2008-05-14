@@ -24,8 +24,13 @@
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
 
-TwoBodyDecayConstructor::TwoBodyDecayConstructor():
-  _theExistingDecayers(0) {}
+IBPtr TwoBodyDecayConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr TwoBodyDecayConstructor::fullclone() const {
+  return new_ptr(*this);
+}
 
 void TwoBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _theExistingDecayers;

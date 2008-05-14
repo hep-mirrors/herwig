@@ -23,12 +23,14 @@ using namespace Herwig;
 
 void GeneralCurrentDecayer::persistentOutput(PersistentOStream & os) const {
   os << _theVertex << _inpart << _outpart << _current << ounit(_maxmass,GeV)
-     << ounit(_GF,1/GeV2) << _modemap << _modestart << _wgtloc << _wgtmax << _weights;
+     << ounit(_theGF,1/GeV2) << _modemap << _modestart << _wgtloc 
+     << _wgtmax << _weights;
 }
 
 void GeneralCurrentDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _theVertex >> _inpart >> _outpart >> _current >> iunit(_maxmass,GeV)
-     >> iunit(_GF,1/GeV2) >> _modemap >> _modestart >> _wgtloc >> _wgtmax >> _weights;
+     >> iunit(_theGF,1/GeV2) >> _modemap >> _modestart >> _wgtloc 
+     >> _wgtmax >> _weights;
 }
 
 AbstractClassDescription<GeneralCurrentDecayer> GeneralCurrentDecayer::initGeneralCurrentDecayer;
@@ -71,8 +73,8 @@ void GeneralCurrentDecayer::Init() {
   static Parameter<GeneralCurrentDecayer,InvEnergy2> interfaceGFermi
     ("GFermi",
      "The Fermi coupling constant",
-     &GeneralCurrentDecayer::_GF, 1./GeV2, 1.16639E-5/GeV2, 0./GeV2, 1.e-3/GeV2,
-     false, false, false);
+     &GeneralCurrentDecayer::_theGF, 1./GeV2, 1.16639E-5/GeV2, 0./GeV2, 
+     1.e-3/GeV2, false, false, false);
 }
 
 int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent, 

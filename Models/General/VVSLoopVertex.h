@@ -25,7 +25,9 @@ public:
   /**
    * The default constructor.
    */
-  inline VVSLoopVertex();
+  inline VVSLoopVertex() : masses(0), type(0), couplings(0), theNpart(0) {
+    kinematics(true);
+  }
 
   /** 
    * Calculate couplings
@@ -71,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -124,7 +126,7 @@ protected:
   /**
    * Set the number of particles in the loop 
    */
-  inline void setNParticles(unsigned int npart);
+  void setNParticles(unsigned int npart) { theNpart = npart; }
 
 private:
 
@@ -177,7 +179,5 @@ struct ClassTraits<Herwig::VVSLoopVertex>
 /** @endcond */
 
 }
-
-#include "VVSLoopVertex.icc"
 
 #endif /* HERWIG_VVSLoopVertex_H */
