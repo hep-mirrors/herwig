@@ -198,8 +198,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   NasonTreePtr nasontree = new_ptr(NasonTree(allBranchings,spaceBranchings));
 	
   // Set the maximum pt for all other emissions
-  double xfact2 = _xq>_xqb ? sqr(_xq) : sqr(_xqb);
-  Energy ptveto = _pt *sqrt((_xq+_xqb-1.)/xfact2);
+  double b_xs;
+  b_xs = _ispectator==0 ? _b_xq : _b_xqb;
+  Energy ptveto(sqrt(_s)*_rt_mlambda/(4.*b_xs));
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
 
@@ -334,6 +335,18 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
 
     last_pt = _pt;
 
+    // Mike's "Simple Prescription..." paper says that q or qb retains 
+    // it's parton model direction with relative prob xq^2 or xqb^2 
+    // respectively. _the_spectator_ retains it's parton model direction
+    // but the transverse recoil is absorbed by the _the_emitter_. 
+    // For xq->1 the gluon and particle qb are collinear, and acollinear 
+    // to q, implying qb did the emitting, so for xq>>xqb xq is the 
+    // spectator, xqb is the emitter, so select xq as spectator with prob 
+    // xq^2/(xq^2+xqb^2)
+    UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
+      _iemitter = 1: _iemitter = 0 ; 
+    _ispectator = !_iemitter;
+
     wgt    = getResult()/(prefactor*GeV/_pt);
     reject = !inRange() || UseRandom::rnd()>wgt;
     
@@ -349,18 +362,6 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     }
   } while (reject);
   
-  // Mike's "Simple Prescription..." paper says that q or qb retains 
-  // it's parton model direction with relative prob xq^2 or xqb^2 
-  // respectively. _the_spectator_ retains it's parton model direction
-  // but the transverse recoil is absorbed by the _the_emitter_. 
-  // For xq->1 the gluon and particle qb are collinear, and acollinear 
-  // to q, implying qb did the emitting, so for xq>>xqb xq is the 
-  // spectator, xqb is the emitter, so select xq as spectator with prob 
-  // xq^2/(xq^2+xqb^2)
-  UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
-    _iemitter = 1: _iemitter = 0 ; 
-  _ispectator = !_iemitter;
-
   //construct vectors in com z frame
   constructVectors();
   return true;
@@ -403,12 +404,6 @@ double VectorBosonQQbarHardGenerator::getResult() {
     Af = 0.;
   }
 
-  // Previously we had these four lines ant then return res;
-  //  double res = 4. / 3. / Constants::pi * _pt / _s * 
-  //    ( sqr ( _xq ) + sqr( _xqb ) ) / ( 1. - _xq ) / ( 1. -_xqb ) * GeV; 
-  //  double b_xs2  = _xq>_xqb ? sqr(_b_xq) : sqr(_b_xqb); 
-  //  res *= _alphaS->value(_s*sqr(_rt_mlambda)/(16.*b_xs2));
-
   //common factors in couplings and flux factors ignored
   //notation from hep-ph/0310083v2
   //born contribution in massive quark case
@@ -437,7 +432,7 @@ double VectorBosonQQbarHardGenerator::getResult() {
   // alpha_S is evaluated a scale given by the pT of
   // the emitter relative to the spectator - emitter and
   // spectator are chosen in perhaps not the optimal way.
-  double b_xs2  = _xq>_xqb ? sqr(_b_xq) : sqr(_b_xqb);
+  double b_xs2  = _ispectator==0 ? sqr(_b_xq) : sqr(_b_xqb);
   double sigR = _alphaS->value(_s*sqr(_rt_mlambda)/(16.*b_xs2)) * CF / 2. / pi 
     * ( sqr( Vf ) * TrV + sqr( Af ) * TrA ) 
     * 2. * _pt / _s * GeV;
