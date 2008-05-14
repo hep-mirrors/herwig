@@ -109,9 +109,13 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
     // 1 -> 3 decays
     vector<TwoBodyPrototype> prototypes;
     for(unsigned int iv = 0; iv < nv; ++iv) {
+      VertexBasePtr vertex = model->vertex(iv);
+      //skip an effective vertex
+      if( vertex->orderInGs() + vertex->orderInGem() == 3 ) 
+	continue;
       for(unsigned int il = 0; il < 3; ++il) { 
 	vector<TwoBodyPrototype> temp = 
-	  createPrototypes(parent, model->vertex(iv), il);
+	  createPrototypes(parent, vertex, il);
 	if(!temp.empty()) prototypes.insert(prototypes.end(),
 					    temp.begin(),temp.end());
       }
@@ -121,9 +125,13 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
     vector<TBDiagram> diagrams;
     for(unsigned int ix=0;ix<prototypes.size();++ix) {
       for(unsigned int iv = 0; iv < nv; ++iv) {
+	VertexBasePtr vertex = model->vertex(iv);
+	//skip an effective vertex
+	if( vertex->orderInGs() + vertex->orderInGem() == 3 ) 
+	  continue;
 	for(unsigned int il = 0; il < 3; ++il) { 
 	  vector<TBDiagram> temp = expandPrototype(prototypes[ix],
-						   model->vertex(iv), il);
+						   vertex, il);
 	  if(!temp.empty()) diagrams.insert(diagrams.end(),temp.begin(),
 					    temp.end());
 	}
@@ -175,6 +183,7 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 	if(_removeOnShell) continue;
 	possibleOnShell=true;
       }
+
       // check if should be added to an existing decaymode
       bool added=false;
       for(unsigned int iy=0;iy<modes.size();++iy) {
@@ -245,13 +254,14 @@ createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
 vector<TBDiagram> ThreeBodyDecayConstructor::
 expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) {
   vector<TBDiagram> decays;
+  if( vertex->getNpoint() != 3 ) return decays;
   // loop over the outgoing particles
   for(unsigned int ix=0;ix<2;++ix) {
     tPDPtr dec   = proto.outgoing.first ;
     tPDPtr other = proto.outgoing.second;
     if(ix==1) swap(dec,other);
     int id = dec->id();
-    if( !vertex->incoming(id) || vertex->getNpoint() != 3 ) continue;
+    if( !vertex->incoming(id) ) continue;
     PDVector decaylist = vertex->search(list, id);
     PDVector::size_type nd = decaylist.size();
     for( PDVector::size_type i = 0; i < nd; i += 3 ) {
@@ -360,12 +370,12 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   // incoming particle is now unstable
   inpart->stable(false);
   // construct the tag for the decay mode
-  string tag = inpart->PDGName() + "->";
+  string tag = inpart->name() + "->";
   unsigned int iprod=0;
   for(OrderedParticles::const_iterator it=outgoing.begin();
       it!=outgoing.end();++it) {
     ++iprod;
-    tag += (**it).PDGName();
+    tag += (**it).name();
     if(iprod!=3) tag += ",";
   }
   tag += ";";

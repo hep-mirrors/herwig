@@ -19,26 +19,11 @@ LOOPTOOLHEADERS = $(top_srcdir)/Looptools/include/clooptools.h
 
 CLEANFILES = done-all-links 
 
-BUILDINSRC = test "$(top_srcdir)" == "$(top_builddir)"
-
-done-all-links: $(DIRLINKS) $(CONFIGHEADERS) $(HEPMCHELPER) $(LOOPTOOLHEADERS)
+done-all-links: $(DIRLINKS) $(CONFIGHEADERS) $(LOOPTOOLHEADERS)
 	mkdir -p Herwig++/Config Herwig++/Looptools
-	if test "$(top_srcdir)" == "$(top_builddir)" ; then \
-	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++ ; \
-	else \
-	$(LN_S) -f $(DIRLINKS) Herwig++ ; \
-	fi
-	if test "$(top_srcdir)" == "$(top_builddir)" ; then \
-	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) Herwig++/Config ; \
-	else \
-	$(LN_S) -f $(CONFIGHEADERS) Herwig++/Config ; \
-	fi
-	if test "$(top_srcdir)" == "$(top_builddir)" ; then \
-	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools ; \
-	else \
-	$(LN_S) -f $(LOOPTOOLHEADERS) Herwig++/Looptools ; \
-	fi
-	$(LN_S) -f $(addprefix ../../, $(HEPMCHELPER)) Herwig++/Config
+	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++
+	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) Herwig++/Config
+	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools
 	touch done-all-links
 
 install-data-local:

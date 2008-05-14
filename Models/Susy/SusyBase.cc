@@ -175,7 +175,7 @@ void SusyBase::readSetup(istream & is) throw(SetupException) {
     << "SusyBase::readSetup - An error occurred in opening the "
     << "spectrum file \"" << filename << "\". A SUSY model cannot be "
     << "run without this."
-    << Exception::abortnow; 
+    << Exception::runerror; 
 
   //Before reading the spectrum/decay files the SM higgs 
   //decay modes, mass and width generators need to be turned off.
@@ -233,7 +233,7 @@ void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {
   if(!ifs)
     throw SetupException() 
       << "SusyBase::readBlock() - The input stream is in a bad state"
-      << Exception::abortnow;
+      << Exception::runerror;
   string line;
   ParamMap store;
   // special for the alpha block
@@ -282,12 +282,12 @@ void SusyBase::readDecay(ifstream & ifs,
   if(!inpart)  {
     throw SetupException() 
     << "SusyBase::readDecay() - A ParticleData object with the PDG code "
-    << parent << " does not exist. " << Exception::abortnow;
+    << parent << " does not exist. " << Exception::runerror;
     return;
   }
   inpart->width(width*GeV);
   inpart->widthCut(5.*width*GeV);
-  string tag = "decaymode " + inpart->PDGName() + "->";
+  string tag = "decaymode " + inpart->name() + "->";
   string line;
   while(getline(ifs, line)) {
     if(line[0] == '#') {
@@ -299,20 +299,40 @@ void SusyBase::readDecay(ifstream & ifs,
     double brat(0.);
     unsigned int nda(0);
     is >> brat >> nda;
-    tcPDVector products(nda);
-    vector<long>::size_type i(0);
-    while(is && ++i < nda + 1) {
+    tcPDVector products;
+    vector<long>::size_type npr(0);
+    while( true ) {
       long t;
       is >> t;
+      if( is.fail() ) break; 
+      if( t == abs(parent) ) {
+	throw SetupException() 
+	  << "An error occurred while read a decay of the " 
+	  << inpart->PDGName() << ". One of its products has the same PDG code "
+	  << "as the parent particle. Please check the SLHA file.\n"
+	  << Exception::runerror;
+      }
       tcPDPtr p = getParticleData(t);
       if( !p ) {
 	throw SetupException()
 	  << "SusyBase::readDecay() - An unknown PDG code has been encounterd "
 	  << "while reading a decay mode. ID: " << t
-	  << Exception::abortnow;
+	  << Exception::runerror;
 	products.resize(0);
       }
-      else products[i - 1] = p;
+      else {
+	products.push_back(p);
+	++npr;
+      }
+    }
+    if( npr != nda ) {
+      throw SetupException()
+	<< "SusyBase::readDecay - While reading a decay of the " 
+	<< inpart->PDGName() << " from an SLHA file, an inconsistency "
+	<< "between the number of decay products and the value in "
+	<< "the 'NDA' column was found. Please check if the spectrum "
+	<< "file is correct.\n"
+	<< Exception::warning;
     }
     if( products.size() > 0 ) {
       inpart->stable(false);
@@ -321,10 +341,6 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
-  inpart->touch();
-  inpart->update();
-  if(inpart->CC())
-    inpart->CC()->synchronize();
 }
 
 const MixingVector
@@ -333,7 +349,7 @@ SusyBase::readMatrix(ifstream & ifs,
   if(!ifs)
     throw SetupException() 
       << "SusyBase::readMatrix() - The input stream is in a bad state."
-      << Exception::abortnow;
+      << Exception::runerror;
   string line;
   unsigned int rowmax(0), colmax(0);
   MixingVector values;
@@ -364,7 +380,7 @@ void SusyBase::createDecayMode(string tag, tcPDVector products,
   cmd << tag;
   tcPDVector::size_type nda = products.size();
   for(tcPDVector::size_type i = 0; i < nda; ++i) {
-    cmd << products[i]->PDGName();
+    cmd << products[i]->name();
     if( i != nda - 1 ) cmd << ",";
     else cmd << ";";
   }
@@ -429,7 +445,7 @@ void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
   }
   else
     throw SetupException() << "Cannot find correct title for mixing matrix "
-			   << name << Exception::abortnow;
+			   << name << Exception::runerror;
 }
 
 void SusyBase::resetRepositoryMasses() {
@@ -437,7 +453,7 @@ void SusyBase::resetRepositoryMasses() {
   if(fit==_parameters.end()) 
     throw Exception() << "BLOCK MASS not found in input file"
 		      << " can't set masses of SUSY particles"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   ParamMap theMasses = fit->second;
   for(ParamMap::iterator it = theMasses.begin(); it != theMasses.end(); 
       ++it) {
@@ -472,7 +488,7 @@ void SusyBase::adjustMixingMatrix(long id) {
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The neutralino mixing matrix pointer "
-			     << "is null!" << Exception::abortnow;
+			     << "is null!" << Exception::runerror;
     break;
   case 1000024 :
   case 1000037 : 
@@ -481,13 +497,13 @@ void SusyBase::adjustMixingMatrix(long id) {
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The U-Type chargino mixing matrix pointer "
-			     << "is null!" << Exception::abortnow;
+			     << "is null!" << Exception::runerror;
     if(theVMix)
       theVMix->adjustPhase(id);
     else 
       throw SetupException() << "SusyBase::adjustMixingMatrix - "
 			     << "The V-Type chargino mixing matrix pointer "
-			     << "is null!" << Exception::abortnow;
+			     << "is null!" << Exception::runerror;
     break;
   default : 
     throw SetupException() 
@@ -495,7 +511,7 @@ void SusyBase::adjustMixingMatrix(long id) {
       << "phase for a particle that does not have a mixing matrix "
       << "associated with it. " << id << " must have a negative mass in "
       << "the spectrum file, this should only occur for particles that mix."
-      << Exception::abortnow;
+      << Exception::runerror;
   }
 }
 
@@ -523,12 +539,12 @@ void SusyBase::extractParameters(bool checkmodel) {
   if(pit==_parameters.end()) 
     throw Exception() << "BLOCK MINPAR not found in " 
 		      << "SusyBase::extractParameters()"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   // extract tan beta
   ParamMap::const_iterator it = pit->second.find(3);
   if(it==pit->second.end()) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   _tanbeta=it->second;
   // extract parameters from hmix
   pit=_parameters.find("hmix");
@@ -549,7 +565,7 @@ void SusyBase::extractParameters(bool checkmodel) {
   if( pit == _parameters.end() )
     throw Exception() << "BLOCK MSOFT not found in " 
 		      << "SusyBase::extractParameters()"
-		      << Exception::abortnow;
+		      << Exception::runerror;
   it = pit->second.find(1);
   theMone = it->second*GeV;
   it = pit->second.find(2);
@@ -559,6 +575,6 @@ void SusyBase::extractParameters(bool checkmodel) {
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"
-		      << " from it" << Exception::abortnow;
+		      << " from it" << Exception::runerror;
   }
 }

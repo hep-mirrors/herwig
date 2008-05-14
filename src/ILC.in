@@ -37,6 +37,7 @@ set LEPGenerator:MaxErrors 10000
 # ILC physics parameters (override defaults) 
 ##################################################
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 ##################################################
 #  Useful analysis handlers for HepMC related output

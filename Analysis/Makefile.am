@@ -107,7 +107,8 @@ a1DecayAnalysis.fh a1DecayAnalysis.cc  \
 BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
 BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
 Upsilon4SSpectrumAnalysis.h Upsilon4SSpectrumAnalysis.cc \
-Upsilon4SMultiplicityCount.h Upsilon4SMultiplicityCount.cc
+Upsilon4SMultiplicityCount.h Upsilon4SMultiplicityCount.cc \
+BabarBDecayAnalysis.h BabarBDecayAnalysis.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET

@@ -24,6 +24,10 @@
 
 using namespace Herwig;
 
+PartonicDecayerBase::PartonicDecayerBase() : _exclusive(true), 
+					     _partontries(100), _inter(false)
+{}
+
 ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
 					  const Particle & p) const {
   // handling of the decay including the special features of the

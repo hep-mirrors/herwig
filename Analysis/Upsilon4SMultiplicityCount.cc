@@ -113,8 +113,7 @@ void Upsilon4SMultiplicityCount::doinitrun() {
   _data[211]  = MultiplicityInfo( 2.*3.58   , 2.*0.07   , lightMeson);
   _data[111]  = MultiplicityInfo( 2.*2.35   , 2.*0.11   , lightMeson);
   _data[221]  = MultiplicityInfo( 2.*0.176  , 2.*0.016  , lightMeson);
-  _data[331]  = MultiplicityInfo( 2.*0.00042, 2.*0.00009, lightMeson);
-  _data[213]  = MultiplicityInfo( 2.*0.21   , 2.*0.05   , lightMeson);
+  _data[113]  = MultiplicityInfo( 2.*0.21   , 2.*0.05   , lightMeson);
   _data[333]  = MultiplicityInfo( 2.*0.0342 , 2.*0.0013 , lightMeson);
   // baryons
   _data[2212] = MultiplicityInfo( 2.*0.08   , 2.*0.004  , lightBaryon);
@@ -122,10 +121,10 @@ void Upsilon4SMultiplicityCount::doinitrun() {
   _data[3312] = MultiplicityInfo( 2.*0.0027 , 2.*0.006  , lightBaryon);
   _data[4122] = MultiplicityInfo( 2.*0.045  , 2.*0.012  , other);
   _data[4112] = MultiplicityInfo( 4.*0.0046 , 4.*0.0024 , other);
-  _data[4222] = MultiplicityInfo( 4.*0.0042 , 4.*0.0042 , other);
+  _data[4222] = MultiplicityInfo( 4.*0.0042 , 4.*0.0024 , other);
   // charmonium
   _data[443]    = MultiplicityInfo( 2.*0.01094, 2.*0.00032, other);
-  _data[100443] = MultiplicityInfo( 2.*0.0037 , 2.*0.00021, other);
+  _data[100443] = MultiplicityInfo( 2.*0.00307, 2.*0.00021, other);
   _data[20443]  = MultiplicityInfo( 2.*0.00386, 2.*0.00027, other);
   _data[445]    = MultiplicityInfo( 2.*0.0013 , 2.*0.0004 , other);
   // D+, D0, D_s+

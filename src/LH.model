@@ -14,43 +14,31 @@
 cd /Herwig/Particles
 create ThePEG::ParticleData A_H
 setup A_H 32 A_H 500.0 0. 0. 0.0 0 0 3 0
-defaultparticle A_H 
 create ThePEG::ParticleData Z_H 
 setup Z_H 33 Z_H 900.0 0.0 0.0 0.0 0 0 3 0
-defaultparticle Z_H 
 create ThePEG::ParticleData W_H+ 
 setup W_H+ 34 W_H+ 500.0 0. 0. 0.0 3 0 3 0
-defaultparticle W_H+ 
 create ThePEG::ParticleData W_H- 
 setup W_H- -34 W_H- 500.0 0. 0. 0.0 -3 0 3 0
-defaultparticle W_H- 
 makeanti W_H+ W_H- 
 create ThePEG::ParticleData T 
 setup T 8 T 1000.0 0.0 0.0 0.0 2 3 2 0
-defaultparticle T 
 create ThePEG::ParticleData Tbar 
 setup Tbar -8 Tbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
-defaultparticle Tbar 
 makeanti T Tbar  
 create ThePEG::ParticleData Phi0
 setup Phi0 35 Phi0 1000.0 0. 0. 0.0 0 0 1 0
-defaultparticle Phi0
 create ThePEG::ParticleData PhiP
 setup PhiP 36 PhiP 1000.0 0. 0. 0.0 0 0 1 0
-defaultparticle PhiP
 create ThePEG::ParticleData Phi+
 setup Phi+ 37 Phi+ 1000.0 0. 0. 0.0 3 0 1 0
-defaultparticle Phi+
 create ThePEG::ParticleData Phi-
 setup Phi- -37 Phi- 1000.0 0. 0. 0.0 -3 0 1 0
-defaultparticle Phi-
 makeanti Phi+ Phi-
 create ThePEG::ParticleData Phi++
 setup Phi++ 38 Phi++ 1000.0 0. 0. 0.0 +6 0 1 0
-defaultparticle Phi++
 create ThePEG::ParticleData Phi--
 setup Phi-- -38 Phi-- 1000.0 0. 0. 0.0 -6 0 1 0
-defaultparticle Phi--
 makeanti Phi++ Phi--
 
 ###################################################

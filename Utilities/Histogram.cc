@@ -345,7 +345,7 @@ void Histogram::chiSquared(double & chisq,
     double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
     double error = _bins[ix].dataerror;
     if(error>0.) {
-      if(error/_bins[ix].data < minfrac) error = minfrac*_bins[ix].data;
+      if(abs(error/_bins[ix].data) < minfrac) error = minfrac*_bins[ix].data;
       double var=sqr(error)
 	+ _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
       chisq += sqr(_bins[ix].data - value) / var;

@@ -144,7 +144,8 @@ bool CheckId::isExotic(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
 return 
   ( (id1/1000000)% 10 != 0 && (id1/1000000)% 10 != 9 ) ||
   ( (id2/1000000)% 10 != 0 && (id2/1000000)% 10 != 9 ) ||
-  ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 );
+  ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 ) ||
+  abs(id1)==6||abs(id2)==6;
 }
 
 bool CheckId::isDiquarkWithB(tcPDPtr par1) {

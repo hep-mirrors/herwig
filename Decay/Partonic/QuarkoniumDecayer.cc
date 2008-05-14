@@ -24,6 +24,16 @@
 
 using namespace Herwig;
 
+QuarkoniumDecayer::QuarkoniumDecayer() : MECode(0) {} 
+
+IBPtr QuarkoniumDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr QuarkoniumDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 void QuarkoniumDecayer::Init() {
   
   static ClassDocumentation<QuarkoniumDecayer> documentation

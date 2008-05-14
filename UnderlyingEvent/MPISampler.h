@@ -101,6 +101,12 @@ public:
   virtual CrossSection integratedXSec() const;
 
   /**
+   * Return the error on the total integrated cross section determined
+   * from the Monte Carlo sampling so far.
+   */
+  virtual CrossSection integratedXSecErr() const;
+
+  /**
    * Return the overestimated integrated cross section.
    */
   virtual CrossSection maxXSec() const;

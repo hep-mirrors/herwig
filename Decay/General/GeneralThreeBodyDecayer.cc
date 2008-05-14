@@ -97,9 +97,9 @@ modeNumber(bool & cc, tcPDPtr in, const PDVector & outin) const {
   if( outin.size() != 3 || abs(in->id()) != _incoming->id() ) return -1;
   OrderedParticles testmode(outin.begin(), outin.end());
   OrderedParticles::const_iterator dit = testmode.begin();
-  string testtag(in->PDGName() + "->");
+  string testtag(in->name() + "->");
   for( unsigned int i = 1; dit != testmode.end(); ++dit, ++i) {
-    testtag += (**dit).PDGName();
+    testtag += (**dit).name();
     if( i != 3 ) testtag += string(",");
   }
   if( testtag == _reftag ) {
@@ -142,15 +142,15 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   // Construct reference tags for testing in modeNumber function
   OrderedParticles refmode(_outgoing.begin(), _outgoing.end());
   OrderedParticles::const_iterator dit = refmode.begin();
-  _reftag = _incoming->PDGName() + "->";
+  _reftag = _incoming->name() + "->";
   for( unsigned int i = 1; dit != refmode.end(); ++dit, ++i) {
-    _reftag += (**dit).PDGName();
+    _reftag += (**dit).name();
     if( i != 3 )  _reftag += string(",");
   }
   //CC-mode
   refmode.clear();
-  _reftagcc = _incoming->CC() ? _incoming->CC()->PDGName() : 
-    _incoming->PDGName();
+  _reftagcc = _incoming->CC() ? _incoming->CC()->name() : 
+    _incoming->name();
   _reftagcc += "->";
   for( unsigned int i = 0;  i < 3; ++i ) {
     if( _outgoing[i]->CC() ) refmode.insert( _outgoing[i]->CC() );
@@ -158,7 +158,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   }
   dit = refmode.begin();
   for( unsigned int i = 1; dit != refmode.end(); ++dit , ++i) {
-    _reftagcc += (**dit).PDGName();
+    _reftagcc += (**dit).name();
     if( i != 3 ) _reftagcc += string(",");
   }
 }
@@ -259,9 +259,9 @@ Energy GeneralThreeBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   if(inpart.second<outa.second+outb.second+outc.second) return 0.*GeV;
   // create the object to calculate the width if it doesn't all ready exist
   if(!_widthcalc) {
-    string tag = _incoming->PDGName() + "->";
-    tag += _outgoing[0]->PDGName() + "," + _outgoing[1]->PDGName() + ","
-      + _outgoing[2]->PDGName() + ";";
+    string tag = _incoming->name() + "->";
+    tag += _outgoing[0]->name() + "," + _outgoing[1]->name() + ","
+      + _outgoing[2]->name() + ";";
     DMPtr dm = generator()->findDecayMode(tag);
     _widthcalc = threeBodyMEIntegrator(*dm);
   }

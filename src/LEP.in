@@ -33,6 +33,7 @@ set LEPGenerator:MaxErrors 10000
 # LEP physics parameters (override defaults) 
 ##################################################
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 cd /Herwig/Generators
 ##################################################

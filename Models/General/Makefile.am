@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libHwModelGenerator.la
 libHwModelGenerator_la_SOURCES = \
-ModelGenerator.h ModelGenerator.fh ModelGenerator.icc ModelGenerator.cc\
+ModelGenerator.h ModelGenerator.fh ModelGenerator.cc\
 DecayConstructor.cc DecayConstructor.h \
 DecayConstructor.fh DecayConstructor.icc \
 NBodyDecayConstructorBase.cc NBodyDecayConstructorBase.h \

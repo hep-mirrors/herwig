@@ -71,5 +71,6 @@ set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 10
 set LEPGenerator:MaxErrors 10000
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 800.0
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 
 saverun ILC-MSSM LEPGenerator
