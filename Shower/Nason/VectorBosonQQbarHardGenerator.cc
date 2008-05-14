@@ -403,24 +403,36 @@ double VectorBosonQQbarHardGenerator::getResult() {
     Af = 0.;
   }
 
+  // Previously we had these four lines ant then return res;
+  //  double res = 4. / 3. / Constants::pi * _pt / _s * 
+  //    ( sqr ( _xq ) + sqr( _xqb ) ) / ( 1. - _xq ) / ( 1. -_xqb ) * GeV; 
+  //  double b_xs2  = _xq>_xqb ? sqr(_b_xq) : sqr(_b_xqb); 
+  //  res *= _alphaS->value(_s*sqr(_rt_mlambda)/(16.*b_xs2));
+
   //common factors in couplings and flux factors ignored
   //notation from hep-ph/0310083v2
   //born contribution in massive quark case
-  double sigB =  sqr( Vf ) * ( 1. + 2. * rho ) + sqr( Af ) * ( 1. - 4. *  rho ) ;
+  double sigB =  sqr(Vf)*(1.+2.*rho)+sqr(Af)*(1.-4.*rho);
 
   //Traces for the radiative contribution
-  //Vector current trace
-  double TrA =  ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) 
-		 + 2. * rho * ( sqr( 5. - _xq - _xqb ) - 19. + 4. * rho ) ) 
+  double TrA(0.),TrV(0.);
+  //Axial current trace
+  TrA = rho!=0. ? 
+    ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) 
+      + 2. * rho * ( sqr( 5. - _xq - _xqb ) - 19. + 4. * rho ) ) 
     / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. - 4. * rho )
     + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
-    ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) );
+    ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) ) 
+    : (_xq*_xq+_xqb*_xqb)/((1.-_xq)*(1.-_xqb)); 
   //Vector current trace
-		 double TrV =  ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) - 8. * rho * ( 1. + 2. * rho ) ) 
-		   / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. + 2. * rho )
-		   + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
-		   ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) );
-
+  TrV = rho!=0. ? 
+    ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) 
+      - 8. * rho * ( 1. + 2. * rho ) ) 
+    / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. + 2. * rho )
+    + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
+    ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) )
+    : TrA; 
+  
   // Radiative contribution in quark massive case.
   // alpha_S is evaluated a scale given by the pT of
   // the emitter relative to the spectator - emitter and
