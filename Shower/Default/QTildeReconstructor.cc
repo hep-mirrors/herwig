@@ -750,7 +750,17 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
   // boost all the momenta to the rest frame of the decaying particle
   Boost boostv=-pin[0].boostVector();
   for(unsigned int ix=0;ix<pout.size();++ix) pout[ix].boost(boostv);
-  double lambda=inverseRescaleingFactor(pout,mon,pin[0].mass());
+  double lambda;
+  if(pout.size()==2) { 
+    Energy rts(pin[0].m()); 
+    double mu_q1(pout[0].m()/rts), mu_q2(pout[1].m()/rts);
+    double mu_p1(mon[0]/rts)     , mu_p2(mon[1]/rts);
+    lambda = sqrt(
+       ((1.+mu_q1+mu_q2)*(1.-mu_q1-mu_q2)*(mu_q1-1.-mu_q2)*(mu_q2-1.-mu_q1))
+      /((1.+mu_p1+mu_p2)*(1.-mu_p1-mu_p2)*(mu_p1-1.-mu_p2)*(mu_p2-1.-mu_p1)));
+  } else {
+    lambda=inverseRescaleingFactor(pout,mon,pin[0].mass());
+  }
   if(isnan(lambda)) {
     cerr << "\n\n\nQTildeReconstructor::reconstructDecayShower \n";
     cerr << "lambda = " << lambda << "\n";
@@ -835,7 +845,7 @@ inverseRescaleingFactor(vector<Lorentz5Momentum> pout,
     // compute new energies
     Energy sum(0.*MeV);
     for(unsigned int ix=0;ix<pout.size();++ix) {
-      root[ix] = sqrt(pmag[ix]/sqr(lambda)-sqr(mon[ix]));
+      root[ix] = sqrt(pmag[ix]/sqr(lambda)+sqr(mon[ix]));
       sum+=root[ix];
     }
     // if accuracy reached exit
