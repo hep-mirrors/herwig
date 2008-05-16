@@ -737,6 +737,12 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
   vector<Energy> mon;
   set<NasonBranchingPtr>::iterator cit;
   set<NasonBranchingPtr> branchings=decay->branchings();
+  // The for-loop goes over all _progenitors_ and stores their momenta
+  // and _on-shell_ masses (for quarks it's the current mass), so e.g.
+  // for 2 body decays it has 3 loops (1 for each decay product and 1 
+  // for the decaying particle). The momenta need not be on-shell. For 
+  // input from Nason hardest emission generators one progenitor should 
+  // be off-shell and the others should be on-shell.
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if((*cit)->_particle->isFinalState()) {
       pout.push_back((*cit)->_particle->momentum());
@@ -807,6 +813,8 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
  	break;
       }
     }
+    // If there are only two final-state particles this boost should do
+    // nothing, since then we should already have (*cit)->_p=-branch->_p.
     Boost boost=((*cit)->_p+branch->_p).findBoostToCM();
     Lorentz5Momentum pcm = branch->_p;
     pcm.boost(boost);
@@ -817,12 +825,15 @@ bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if(!(*cit)->_particle->isFinalState()) continue;
     Energy2 dot=(*cit)->_p*(*cit)->_n;
-    double beta = 0.5*(sqr((*cit)->_particle->mass())-sqr((*cit)->_p.mass()))/dot;
+    double beta = 0.5*((*cit)->_particle->momentum().m2()-sqr((*cit)->_p.mass()))/dot;
     Lorentz5Momentum qnew=(*cit)->_p+beta*(*cit)->_n;
     qnew.rescaleMass();
+    // qnew is the unshuffled momentum in the rest frame of the _p basis vectors,
+    // for the simple case Z->q qbar g this was checked against analytic formulae.
     // compute the boost
     LorentzRotation A=LorentzRotation(boostv);
     LorentzRotation R=solveBoost(qnew,A*(*cit)->_particle->momentum())*A;
+    // when R is applied to (*cit)->_particle->momentum() you get qnew (checked).
     (*cit)->setMomenta(R,1.0,Lorentz5Momentum());
   }
   return true;
