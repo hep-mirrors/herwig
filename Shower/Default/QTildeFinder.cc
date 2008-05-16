@@ -186,7 +186,13 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   Energy Q   = sqrt(Q2);
   double b = p1.mass2()/Q2;
   double c = p2.mass2()/Q2;
-  double lam=2.*p1.vect().mag()/Q;
+  // KMH & PR - 16 May 2008 - swapped lambda calculation from 
+  // double lam=2.*p1.vect().mag()/Q; to sqrt(kallen(1,b,c)), 
+  // which should be identical for p1 & p2 onshell in their COM
+  // but in the inverse construction for the Nason method, this
+  // was not the case, leading to misuse. 
+  double lam=sqrt((1.+sqrt(b)+sqrt(c))*(1.-sqrt(b)-sqrt(c))
+                 *(sqrt(b)-1.-sqrt(c))*(sqrt(c)-1.-sqrt(b)));
   // symmetric case
   unsigned int iopt=finalFinalConditions();
   Energy firstQ,secondQ;
