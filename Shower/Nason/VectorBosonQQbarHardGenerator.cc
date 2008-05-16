@@ -166,7 +166,13 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   gluon->set5Momentum(_g);  
   vboson->set5Momentum(_boson->momentum());  
   Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
-  parentMomentum.rescaleMass();
+  parentMomentum.setMass(_partons[_iemitter]->mass());
+  // ATTENTION! 
+  // The mass component of the parent's 5 momentum is set
+  // to carry the _on-shell_ mass. If this is not the case
+  // then the QCD evolution scale will be set wrongly (using
+  // the off-shell mass) in the call to 
+  // setQCDInitialEvolutionScales from reconstructDecayShower.
   parent->set5Momentum(parentMomentum);
 
   // Create the vectors of NasonBranchings to create the NasonTree:
@@ -216,6 +222,41 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   greenLine->addColoured(gluon,_iemitter);
   greenLine->addColoured(parent,_iemitter);
   greenLine->addColoured(spectator,_ispectator);
+
+// // Some debugging equipement - to calculate unshuffled momenta
+// // in the rest frame of _quark[0]+_quark[1]. I.E. this calculates the 
+// // qnew vectors in reconstructDecayShower.
+//   generator()->log() << "\n\n\nVectorBosonQQbarHardenerator::generateHardest()"
+// 		     << endl;
+//   vector<Lorentz5Momentum> kh_quark; kh_quark.resize(2);
+//   LorentzRotation eventFrame((QProgenitor->copy()->momentum()
+// 		  +QbarProgenitor->copy()->momentum()).findBoostToCM());
+//   kh_quark[0]=eventFrame*QProgenitor->copy()->momentum();
+//   kh_quark[1]=eventFrame*QbarProgenitor->copy()->momentum();
+//   kh_quark[0].setMass(_partons[0]->mass());
+//   kh_quark[1].setMass(_partons[1]->mass());
+//   Energy2 pe2,ps2,qe2,qs2;
+//   pe2=sqr(_partons[  _iemitter]->mass());
+//   ps2=sqr(_partons[_ispectator]->mass());
+//   qe2=(_quark[  _iemitter]+_g).m2();
+//   qs2= _quark[_ispectator].m2();
+//   Energy rts(sqrt(_s));
+//   Energy pem(_partons[ _iemitter]->mass()),psm(_partons[_ispectator]->mass());
+//   Energy qem((_quark[_iemitter]+_g).m()),qsm(_quark[_ispectator].m());
+//   Energy4 lam((rts+pem+psm)*(rts-pem-psm)*(pem-rts-psm)*(psm-rts-pem));
+//   Energy2 bcoeff = _s - pe2 -ps2;
+//   double beta_e,beta_s;
+//   beta_e = (-bcoeff+sqrt(lam+4.*ps2*qe2))/(2.*ps2);
+//   beta_s = (-bcoeff+sqrt(lam+4.*pe2*qs2))/(2.*pe2);
+//   Lorentz5Momentum qe(kh_quark[  _iemitter]+beta_e*kh_quark[_ispectator]);
+//   Lorentz5Momentum qs(kh_quark[_ispectator]+beta_s*kh_quark[  _iemitter]);
+//   generator()->log() << "\n"; 
+//   generator()->log() << "qs " << qs/GeV 
+// 		     << "   " << sqrt(qs.mass2())/GeV 
+// 		     << "   " << sqrt(qs.m2())/GeV << "\n";
+//   generator()->log() << "qe " << qe/GeV 
+// 		     << "   " << sqrt(qe.mass2())/GeV 
+// 		     << "   " << sqrt(qe.m2())/GeV << "\n\n";
 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
@@ -351,9 +392,10 @@ bool VectorBosonQQbarHardGenerator::getEvent(){
     reject = !inRange() || UseRandom::rnd()>wgt;
     
     if(inRange()&&wgt>1.) { 
-      cerr << "VectorBosonQQbarHardGenerator::getEvent() excess weight.\n";
-      cerr << "exact = "<< getResult() << "   crude = " << 
-	prefactor*GeV/_pt << endl;
+      generator()->log() << "VectorBosonQQbarHardGenerator::getEvent() " 
+			 << "excess weight.\n";
+      generator()->log() << "exact = "<< getResult() << "   crude = " 
+			 << prefactor*GeV/_pt << endl;
     }
     // No emission event if pt goes past pt_min.
     if(_pt<pt_min) {
