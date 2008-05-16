@@ -23,8 +23,17 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "BSMWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
+#include "ThePEG/Repository/BaseRepository.h"
 
 using namespace Herwig;
+
+IBPtr ModelGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ModelGenerator::fullclone() const {
+  return new_ptr(*this);
+}
 
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << _theHPConstructor << _theDecayConstructor << _theParticles 
@@ -186,8 +195,13 @@ void ModelGenerator::doinit() throw(InitException) {
   pend = _theParticles.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
+    // Check decays for ones where quarks cannot be put on constituent
+    // mass-shell
+    checkDecays(parent);
     parent->touch();
     parent->update();
+    if( parent->CC() ) parent->CC()->synchronize();
+
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
       parent->width(0.0*MeV);
@@ -214,6 +228,45 @@ void ModelGenerator::doinit() throw(InitException) {
     _theRPConstructor->constructResonances();
   }
 
+}
+
+void ModelGenerator::checkDecays(PDPtr parent) {
+  DecaySet::iterator dit = parent->decayModes().begin();
+  DecaySet::iterator dend = parent->decayModes().end();
+  Energy oldwidth(parent->width()), newwidth(parent->width());
+  bool rescalebrat(false);
+  for(; dit != dend; ++dit ) {
+    if( !(**dit).on() ) continue;
+    Energy release((**dit).parent()->mass());
+    PDVector::const_iterator pit = (**dit).orderedProducts().begin();
+    PDVector::const_iterator pend =(**dit).orderedProducts().end();
+    for( ; pit != pend; ++pit ) {
+      release -= (**pit).constituentMass();
+    }
+    if( release < 0.*MeV ) {
+      rescalebrat = true;
+      newwidth -= (**dit).brat()*oldwidth;
+      generator()->preinitInterface(*dit, "OnOff", "set", "Off");
+      generator()->preinitInterface(*dit, "BranchingRatio", 
+				    "set", "0.0");
+    }
+  }
+
+  if( rescalebrat ) {
+    dit = parent->decayModes().begin();
+    dend = parent->decayModes().end();
+    for( ; dit != dend; ++dit ) {
+      if( !(**dit).on() ) continue;
+      double newbrat = ((**dit).brat())*oldwidth/newwidth;
+      ostringstream brf;
+      brf << newbrat;
+      generator()->preinitInterface(*dit, "BranchingRatio",
+				    "set", brf.str());
+    }
+    parent->width(newwidth);
+    parent->widthCut(5*newwidth);
+  }
+  
 }
 
 void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {

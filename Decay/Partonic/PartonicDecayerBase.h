@@ -20,7 +20,6 @@
 #include "Herwig++/Hadronization/LightClusterDecayer.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "Herwig++/Hadronization/Cluster.h"
-#include "PartonicDecayerBase.fh"
 
 namespace Herwig {
 
@@ -44,7 +43,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PartonicDecayerBase();
+  PartonicDecayerBase();
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -218,7 +217,5 @@ struct ClassTraits<Herwig::PartonicDecayerBase>
 /** @endcond */
 
 }
-
-#include "PartonicDecayerBase.icc"
 
 #endif /* HERWIG_PartonicDecayerBase_H */

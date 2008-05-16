@@ -184,7 +184,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   vector<double> bins,data,error;
   bins  = vector<double>( x1, x1+50);
   data  = vector<double>( y1, y1+49);
-  error = vector<double>(sy1,sy1+49);
+  error = vector<double>(st1,st1+49);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -213,7 +213,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x1, x1+50);
   data  = vector<double>( y2, y2+49);
-  error = vector<double>(sy2,sy2+49);
+  error = vector<double>(st2,st2+49);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -247,7 +247,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x3, x3+46);
   data  = vector<double>( y3, y3+45);
-  error = vector<double>(sy3,sy3+45);
+  error = vector<double>(st3,st3+45);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -273,7 +273,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x4, x4+27);
   data  = vector<double>( y4, y4+26);
-  error = vector<double>(sy4,sy4+26);
+  error = vector<double>(st4,st4+26);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -295,7 +295,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x5, x5+20);
   data  = vector<double>( y5, y5+19);
-  error = vector<double>(sy5,sy5+19);
+  error = vector<double>(st5,st5+19);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -315,7 +315,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x5, x5+20);
   data  = vector<double>( y6, y6+19);
-  error = vector<double>(sy6,sy6+19);
+  error = vector<double>(st6,st6+19);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -345,7 +345,7 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x7, x7+21);
   data  = vector<double>( y7, y7+20);
-  error = vector<double>(sy7,sy7+20);
+  error = vector<double>(st7,st7+20);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
@@ -371,11 +371,11 @@ void Upsilon4SSpectrumAnalysis::doinitrun() {
   }
   bins  = vector<double>( x8, x8+31);
   data  = vector<double>( y8, y8+30);
+  error  = vector<double>(st8,st8+30);
   for(unsigned int ix=0;ix<data.size();++ix) {
     data[ix]/=total;
     error[ix]/=total;
   }
-  error = vector<double>(sy8,sy8+30);
  _spectrumpi0 = new_ptr(Histogram(bins,data,error));
 }
 

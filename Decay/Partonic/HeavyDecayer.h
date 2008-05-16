@@ -10,12 +10,7 @@
 #define HERWIG_HeavyDecayer_H
 // This is the declaration of the HeavyDecayer class.
 
-#include <ThePEG/Config/ThePEG.h>
 #include <PartonicDecayerBase.h>
-#include <ThePEG/Interface/Interfaced.h>
-#include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Repository/Strategy.fh>
-#include <fstream>
 
 namespace Herwig {
 
@@ -56,7 +51,7 @@ public:
   /**
    * Default constructor
    */
-  inline HeavyDecayer();
+  HeavyDecayer();
 
   /**
    * Check if this decayer can perfom the decay for a particular mode
@@ -180,7 +175,5 @@ struct ClassTraits<Herwig::HeavyDecayer>: public ClassTraitsBase<Herwig::HeavyDe
 /** @endcond */
 
 }
-
-#include "HeavyDecayer.icc"
 
 #endif /* HERWIG_HeavyDecayer_H */
