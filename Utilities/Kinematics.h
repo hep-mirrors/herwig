@@ -12,6 +12,7 @@
 
 // This is the declaration of the Kinematics class.
 
+#include <ThePEG/Config/ThePEG.h>
 #include "ThePEG/Vectors/ThreeVector.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
 

@@ -12,6 +12,25 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+VVSDecayer::VVSDecayer() {
+  addToSearchList(0);
+  addToSearchList(1);
+}
+
+IBPtr VVSDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr VVSDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void VVSDecayer::doinit() throw(InitException) {
+  _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
 void VVSDecayer::persistentOutput(PersistentOStream & os) const {
   os << _abstractVertex << _perturbativeVertex;
 }
@@ -64,14 +83,20 @@ Energy VVSDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return Energy();
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
-    _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first, outa.first,
-				     outb.first);
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
-    double me2 = 2.+0.25*sqr(1.+mu1sq-mu2sq)/mu1sq;
+    if( outb.first->iSpin() == PDT::Spin0 )
+      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first, 
+				       outa.first, outb.first);
+    else {
+      _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first, 
+				       outb.first, outa.first);
+      swap(mu1sq, mu2sq);
+    }
+    double me2 = 2. + 0.25*sqr(1. + mu1sq - mu2sq)/mu1sq;
     Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
 					outb.second);
-    Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm/
+    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/
       (24.*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);

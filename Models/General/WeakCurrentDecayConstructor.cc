@@ -26,6 +26,30 @@
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
 
+IBPtr WeakCurrentDecayConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr WeakCurrentDecayConstructor::fullclone() const {
+  return new_ptr(*this);
+}
+
+void WeakCurrentDecayConstructor::doinit() throw(InitException) {
+  NBodyDecayConstructorBase::doinit();
+  _theModel = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>
+    (generator()->standardModel());
+  unsigned int isize=_part1.size();
+  if(isize!=_part1.size()||isize!=_part2.size()||isize!=_part3.size()||
+     isize!=_part4.size()||isize!=_part5.size()||isize!=_norm .size()||
+     isize!=_current.size())
+    throw InitException() << "Invalid sizes for the decay mode vectors in "
+			  << " WeakCurrentDecayConstructor " 
+			  << _part1.size() << " " << _part2.size() << " " 
+			  << _part3.size() << " " << _part4.size() << " "
+			  << _part5.size() << " " << _norm .size() << " " 
+			  << _current.size() << Exception::runerror;
+}
+
 void WeakCurrentDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _theExistingDecayers << _init << _iteration << _points << ounit(_masscut,GeV)
      << _part1 << _part2 << _part3 << _part4 << _part5 << _norm << _current;

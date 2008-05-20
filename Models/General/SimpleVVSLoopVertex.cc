@@ -9,6 +9,14 @@
 
 using namespace Herwig;
 
+IBPtr SimpleVVSLoopVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SimpleVVSLoopVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
 NoPIOClassDescription<SimpleVVSLoopVertex> SimpleVVSLoopVertex::initSimpleVVSLoopVertex;
 // Definition of the static class description member.
 
@@ -19,7 +27,6 @@ void SimpleVVSLoopVertex::Init() {
      " coefficients using Looptools.");
 
 }
-
   
 void SimpleVVSLoopVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr,tcPDPtr) {
   Complex loop(0.);

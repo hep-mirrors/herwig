@@ -14,6 +14,14 @@
 
 using namespace Herwig;
 
+IBPtr FtoFFFDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr FtoFFFDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
 void FtoFFFDecayer::persistentOutput(PersistentOStream & os) const {
   os << _sca << _vec << _ten;
 }

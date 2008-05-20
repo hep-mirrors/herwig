@@ -14,6 +14,13 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace Looptools;
 
+IBPtr VVSLoopVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr VVSLoopVertex::fullclone() const {
+  return new_ptr(*this);
+}
 
 void VVSLoopVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(masses,GeV) << type << couplings << theNpart;

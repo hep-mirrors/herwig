@@ -54,6 +54,14 @@ HardProcessConstructor::HardProcessConstructor() :
   
 }
 
+IBPtr HardProcessConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr HardProcessConstructor::fullclone() const {
+  return new_ptr(*this);
+}
+
 void HardProcessConstructor::doinit() throw(InitException) {
   Interfaced::doinit();
   theNout = theOutgoing.size();

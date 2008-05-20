@@ -13,10 +13,9 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "BasicConsistency.fh"
 
 namespace Herwig {
-  using namespace ThePEG;
+using namespace ThePEG;
 
 /**
  * Here is the documentation of the BasicConsistency class.
@@ -31,7 +30,7 @@ public:
   /**
    * The default constructor.
    */
-  inline BasicConsistency();
+  BasicConsistency();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -89,13 +88,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -103,10 +102,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -144,6 +149,12 @@ private:
    *  Check for clusters in  the final-state
    */
   bool _checkcluster;
+
+  /**
+   *  Check the branching ratios
+   */
+  bool _checkBR;
+
 };
 
 }
@@ -178,7 +189,5 @@ struct ClassTraits<Herwig::BasicConsistency>
 /** @endcond */
 
 }
-
-#include "BasicConsistency.icc"
 
 #endif /* THEPEG_BasicConsistency_H */

@@ -18,6 +18,14 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
+
+IBPtr DecayConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr DecayConstructor::fullclone() const {
+  return new_ptr(*this);
+}
   
 void DecayConstructor::persistentOutput(PersistentOStream & os) const {
    os << _theNBodyDecayConstructors;

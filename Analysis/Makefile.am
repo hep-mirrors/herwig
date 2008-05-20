@@ -9,8 +9,7 @@ HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
 EventShapesMasterAnalysis.h EventShapesMasterAnalysis.icc \
-BasicConsistency.cc BasicConsistency.fh \
-BasicConsistency.h BasicConsistency.icc \
+BasicConsistency.cc BasicConsistency.h \
 LEPMultiplicityCount.cc LEPMultiplicityCount.h \
 MultiplicityInfo.h \
 LEPBMultiplicity.cc LEPBMultiplicity.fh \

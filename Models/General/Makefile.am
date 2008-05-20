@@ -1,25 +1,20 @@
 noinst_LTLIBRARIES = libHwModelGenerator.la
 libHwModelGenerator_la_SOURCES = \
 ModelGenerator.h ModelGenerator.fh ModelGenerator.cc\
-DecayConstructor.cc DecayConstructor.h \
-DecayConstructor.fh DecayConstructor.icc \
+DecayConstructor.cc DecayConstructor.h DecayConstructor.fh  \
 NBodyDecayConstructorBase.cc NBodyDecayConstructorBase.h \
-NBodyDecayConstructorBase.fh NBodyDecayConstructorBase.icc \
+NBodyDecayConstructorBase.fh \
 TwoBodyDecayConstructor.cc TwoBodyDecayConstructor.h \
-TwoBodyDecayConstructor.fh TwoBodyDecayConstructor.icc \
-HardProcessConstructor.h HardProcessConstructor.icc \
-HardProcessConstructor.fh HardProcessConstructor.cc \
+HardProcessConstructor.h HardProcessConstructor.fh \
+HardProcessConstructor.cc \
 HPDiagram.h HPDiagram.icc \
-ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.fh \
-ThreeBodyDecayConstructor.icc ThreeBodyDecayConstructor.cc \
-WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.fh \
-WeakCurrentDecayConstructor.icc WeakCurrentDecayConstructor.cc \
+ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.cc \
+WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.cc \
 ResonantProcessConstructor.cc ResonantProcessConstructor.h \
-ResonantProcessConstructor.icc ResonantProcessConstructor.fh \
+ResonantProcessConstructor.fh \
 VVSLoopVertex.fh VVSLoopVertex.h \
-VVSLoopVertex.icc VVSLoopVertex.cc \
+VVSLoopVertex.cc \
 SimpleVVSLoopVertex.fh SimpleVVSLoopVertex.h \
-SimpleVVSLoopVertex.icc SimpleVVSLoopVertex.cc \
-BSMWidthGenerator.h  BSMWidthGenerator.icc \
-BSMWidthGenerator.fh BSMWidthGenerator.cc \
+SimpleVVSLoopVertex.cc \
+BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
 TBDiagram.h TBDiagram.icc

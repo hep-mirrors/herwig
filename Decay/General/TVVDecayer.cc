@@ -24,6 +24,20 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+IBPtr TVVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr TVVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void TVVDecayer::doinit() throw(InitException) {
+  GeneralTwoBodyDecayer::doinit();
+  _perturbativeVertex = dynamic_ptr_cast<VVTVertexPtr>        (getVertex());
+  _abstractVertex     = dynamic_ptr_cast<AbstractVVTVertexPtr>(getVertex());
+}
+
 void TVVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _abstractVertex << _perturbativeVertex;
 }
