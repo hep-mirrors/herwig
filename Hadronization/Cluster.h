@@ -85,16 +85,6 @@ public:
    * Also a constructor where a particle is given not a cluster.
    */
   Cluster(const Particle &);
-
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void * operator new(size_t);
-  
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void operator delete(void *, size_t);
   //@}
 
   /**

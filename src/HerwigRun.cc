@@ -8,8 +8,7 @@
 //
 #include "HerwigRun.h"
 #include <ThePEG/Utilities/DynamicLoader.h>
-#include <ThePEG/Utilities/SystemUtils.h>
-#include <ThePEG/Utilities/StringUtils.h>
+#include <ThePEG/Utilities/Debug.h>
 #include <ThePEG/Repository/Repository.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 
