@@ -27,7 +27,8 @@ GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
 HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
-DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
+DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc \
+LesHouchesOutput.h LesHouchesOutput.cc
 
 pkglib_LTLIBRARIES += HwBbarAnalysis.la
 HwBbarAnalysis_la_LDFLAGS = -module -version-info 4:0:0
