@@ -172,6 +172,10 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
   }
   // 4-body decays
   else if(partons.size()==4) {  
+    // swap 0 and 1 if needed
+    if(partons[1]->dataPtr()->iColour()!=PDT::Colour0&&
+       partons[1]->dataPtr()->iColour()!=partons[2]->dataPtr()->iColour())
+      swap(partons[0],partons[1]);
     // get the momenta of the decaying quark and the spectator
     Lorentz5Momentum pin(parent.momentum());
     double xs(partons[3]->mass()/pin.e()),xb(1.-xs);
@@ -195,13 +199,13 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
     vector<Lorentz5Momentum> pout(3,Lorentz5Momentum());
     for(unsigned int ix=0;ix<3;++ix) pout[ix].setMass(partons[ix]->mass());
     // charges of the exchanged boson and check if colour rearranged
-    int c1 = dec        ->iCharge()-children[2]->iCharge();
-    int c2 = children[0]->iCharge()+children[1]->iCharge();
+    int c1 = dec                  ->iCharge()-partons[2]->dataPtr()->iCharge();
+    int c2 = partons[0]->dataPtr()->iCharge()+partons[1]->dataPtr()->iCharge();
     bool rearranged = !(c1==c2&&abs(c1)==3);
     if(MECode==0) rearranged=false;
     if(rearranged) {
-      int c3 = dec        ->iCharge()-children[1]->iCharge();
-      int c4 = children[0]->iCharge()+children[2]->iCharge();
+      int c3 = dec                  ->iCharge()-partons[1]->dataPtr()->iCharge();
+      int c4 = partons[0]->dataPtr()->iCharge()+partons[2]->dataPtr()->iCharge();
       if(!(c3==c4&&abs(c3)==3)) {
 	generator()->log() << "Unknown order for colour rearranged decay"
 			   << " in WeakPartonicDecayer::decay()\n";

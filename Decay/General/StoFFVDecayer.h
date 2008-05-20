@@ -10,7 +10,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "StoFFVDecayer.fh"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -78,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -160,6 +159,5 @@ struct ClassTraits<Herwig::StoFFVDecayer>
 
 }
 
-#include "StoFFVDecayer.icc"
 
 #endif /* THEPEG_StoFFVDecayer_H */

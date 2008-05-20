@@ -9,7 +9,6 @@
 #include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "TBDiagram.h"
 #include "Herwig++/Decay/General/GeneralThreeBodyDecayer.fh"
-#include "ThreeBodyDecayConstructor.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -77,7 +76,8 @@ public:
   /**
    * The default constructor.
    */
-  inline ThreeBodyDecayConstructor();
+  inline ThreeBodyDecayConstructor() : 
+    _removeOnShell(true), _interopt(0), _widthopt(1) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -175,13 +175,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -245,7 +245,5 @@ struct ClassTraits<Herwig::ThreeBodyDecayConstructor>
 /** @endcond */
 
 }
-
-#include "ThreeBodyDecayConstructor.icc"
 
 #endif /* HERWIG_ThreeBodyDecayConstructor_H */

@@ -25,6 +25,27 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+IBPtr SVVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SVVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void SVVDecayer::doinit() throw(InitException) {
+  GeneralTwoBodyDecayer::doinit();
+  _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(getVertex());
+  _generalVertex      = dynamic_ptr_cast<GeneralVVSVertexPtr >(getVertex());
+  _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr        >(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
+void SVVDecayer::doinitrun() {
+  getVertex()->initrun();
+  GeneralTwoBodyDecayer::doinitrun();
+}
+
 void SVVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _abstractVertex << _generalVertex << _perturbativeVertex;
 }
@@ -59,10 +80,12 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
   Energy2 scale(inpart.mass()*inpart.mass());
   unsigned int iv1,iv2;
-  for(iv2=0;iv2<3;++iv2) {
+  for(iv2 = 0; iv2 < 3; ++iv2) {
+    if( massb && iv2 == 1 ) ++iv2;
     for(iv1=0;iv1<3;++iv1) {
-      newME(0,iv1,iv2) = _abstractVertex->evaluate(scale,vOut1[iv1],
-						   vOut2[iv2],inwave);
+      if( massa && iv1 == 1) ++iv1;
+      newME(0, iv1, iv2) = _abstractVertex->evaluate(scale,vOut1[iv1],
+						     vOut2[iv2],inwave);
     }
   }
   ME(newME);
@@ -84,10 +107,16 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
     double m1pm2 = mu1sq + mu2sq;
-    double me2 = ( m1pm2*(m1pm2 - 2.) + 8.*mu1sq*mu2sq + 1.)/4./mu1sq/mu2sq;
+    double me2(0.); 
+    if( mu1sq > 0. && mu2sq > 0.)
+      me2 = ( m1pm2*(m1pm2 - 2.) + 8.*mu1sq*mu2sq + 1.)/4./mu1sq/mu2sq;
+    else if( mu1sq == 0. || mu2sq == 0. )
+      me2 = 3.;
+    else 
+      me2 = 4.;
+    
     Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
 					outb.second);
-    
     Energy output = norm(_perturbativeVertex->getNorm())*
       me2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor

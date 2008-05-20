@@ -15,7 +15,6 @@
 #include "GeneralCurrentDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "FFVCurrentDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -29,13 +28,6 @@ using Helicity::FFVVertexPtr;
  */
 class FFVCurrentDecayer: public GeneralCurrentDecayer {
 
-public:
-
-  /**
-   * The default constructor.
-   */
-  inline FFVCurrentDecayer();
-  
 public:
 
   /** @name Virtual functions required by the Decayer class. */
@@ -95,13 +87,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 
@@ -114,7 +106,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -125,7 +117,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
+  virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
@@ -133,7 +125,7 @@ protected:
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 
@@ -188,6 +180,5 @@ struct ClassTraits<Herwig::FFVCurrentDecayer>
 
 }
 
-#include "FFVCurrentDecayer.icc"
 
 #endif /* HERWIG_FFVCurrentDecayer_H */

@@ -19,7 +19,13 @@
 
 using namespace Herwig;
 
-BSMWidthGenerator::~BSMWidthGenerator() {}
+IBPtr BSMWidthGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr BSMWidthGenerator::fullclone() const {
+  return new_ptr(*this);
+}
 
 void BSMWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << theModes;

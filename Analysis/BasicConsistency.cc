@@ -19,6 +19,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/EnumParticles.h"
+#include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -29,6 +30,19 @@ using namespace ThePEG;
 // by almost all headers through Interfaced.h ?
 extern "C" int isnan(double) throw();
 extern "C" int isinf(double) throw();
+
+BasicConsistency::BasicConsistency() 
+  : _epsmom(0.0*MeV),_checkquark(true), _checkcharge(true),
+    _checkcluster(true), _checkBR(true)
+{}
+
+IBPtr BasicConsistency::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr BasicConsistency::fullclone() const {
+  return new_ptr(*this);
+}
 
 void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   set<tcPPtr> particles;
@@ -132,9 +146,6 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 		       << *event;
   }
 
-
-
-
   if (mag > _epsmom)
     _epsmom = mag;
 
@@ -149,7 +160,6 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 
   if (abs(ptotal.z()) > _epsmom)
     _epsmom = abs(ptotal.z());
-
 
   particles.clear();
 
@@ -197,11 +207,11 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 }
 
 void BasicConsistency::persistentOutput(PersistentOStream & os) const {
-  os << _checkquark << _checkcharge << _checkcluster;
+  os << _checkquark << _checkcharge << _checkcluster << _checkBR;
 }
 
 void BasicConsistency::persistentInput(PersistentIStream & is, int) {
-  is >> _checkquark >> _checkcharge >> _checkcluster;
+  is >> _checkquark >> _checkcharge >> _checkcluster >> _checkBR;
 }
 
 ClassDescription<BasicConsistency> BasicConsistency::initBasicConsistency;
@@ -258,5 +268,44 @@ void BasicConsistency::Init() {
      "Don't check for clusters",
      false);
 
+  static Switch<BasicConsistency,bool> interfaceCheckBranchingRatios
+    ("CheckBranchingRatios",
+     "Check whether the branching ratios of the particles add up to one.",
+     &BasicConsistency::_checkBR, true, false, false);
+  static SwitchOption interfaceCheckBranchingRatiosYes
+    (interfaceCheckBranchingRatios,
+     "Yes",
+     "Perform the check",
+     true);
+  static SwitchOption interfaceCheckBranchingRatiosNo
+    (interfaceCheckBranchingRatios,
+     "No",
+     "Don't perform the check",
+     false);
+
 }
 
+void BasicConsistency::dofinish() {
+  AnalysisHandler::dofinish();
+  cout << "\nBasicConsistency: maximum 4-momentum violation: " 
+       << _epsmom/MeV << " MeV\n";
+}
+
+void BasicConsistency::doinitrun() {
+  AnalysisHandler::doinitrun();
+  static double eps=1e-12;
+  for(ParticleMap::const_iterator it=generator()->particles().begin();
+      it!=generator()->particles().end();++it) {
+    if(it->second->stable()) continue;
+    double total(0.);
+    for(DecaySet::const_iterator dit=it->second->decayModes().begin();
+	dit!=it->second->decayModes().end();++dit) {
+      if((**dit).on()) total +=(**dit).brat();
+    }
+    if(abs(total-1.)>eps) {
+      cerr << "Warning: Total BR for " 
+	   << it->second->PDGName() 
+	   << " does not add up to one sum = " << total << "\n";
+    }
+  }
+}

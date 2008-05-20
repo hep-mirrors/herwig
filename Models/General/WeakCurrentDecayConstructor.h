@@ -38,7 +38,9 @@ public:
   /**
    * The default constructor.
    */
-  inline WeakCurrentDecayConstructor();
+  inline WeakCurrentDecayConstructor() :
+    _theExistingDecayers(0),_init(true),_iteration(5),_points(10000),
+    _masscut(5.*GeV) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -81,13 +83,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -99,7 +101,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -264,7 +266,5 @@ struct ClassTraits<Herwig::WeakCurrentDecayConstructor>
 /** @endcond */
 
 }
-
-#include "WeakCurrentDecayConstructor.icc"
 
 #endif /* HERWIG_WeakCurrentDecayConstructor_H */

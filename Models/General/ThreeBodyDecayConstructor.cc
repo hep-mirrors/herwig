@@ -18,6 +18,14 @@
 
 using namespace Herwig;
 
+IBPtr ThreeBodyDecayConstructor::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ThreeBodyDecayConstructor::fullclone() const {
+  return new_ptr(*this);
+}
+
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _removeOnShell << _interopt << _widthopt;
 }

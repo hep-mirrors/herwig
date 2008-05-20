@@ -31,6 +31,32 @@ using ThePEG::Helicity::Direction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
+IBPtr FFVCurrentDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr FFVCurrentDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+void FFVCurrentDecayer::doinit() throw(InitException) {
+  _theFFVPtr = dynamic_ptr_cast<FFVVertexPtr>(getVertex());
+  GeneralCurrentDecayer::doinit();
+}
+
+
+void FFVCurrentDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _theFFVPtr = trans.translate(_theFFVPtr);
+  GeneralCurrentDecayer::rebind(trans);
+}
+
+IVector FFVCurrentDecayer::getReferences() {
+  IVector ret = GeneralCurrentDecayer::getReferences();
+  ret.push_back(_theFFVPtr);
+  return ret;
+}
+
 void FFVCurrentDecayer::persistentOutput(PersistentOStream & os) const {
   os << _theFFVPtr;
 }

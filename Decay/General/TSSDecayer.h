@@ -15,7 +15,6 @@
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "TSSDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -37,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  inline TSSDecayer();
+  inline TSSDecayer() { addToSearchList(2); }
 
 public:
 
@@ -97,13 +96,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -115,7 +114,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -174,6 +173,5 @@ struct ClassTraits<Herwig::TSSDecayer>
 
 }
 
-#include "TSSDecayer.icc"
 
 #endif /* HERWIG_TSSDecayer_H */

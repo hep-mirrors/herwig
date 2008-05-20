@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralTwoBodyDecayer();
+  inline GeneralTwoBodyDecayer() : _thelist(0,0), _maxweight(1,1.) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -119,19 +119,21 @@ protected:
   /** Set list to search
    * @param ilist 
    */
-  inline void addToSearchList(unsigned int ilist);
+  inline void addToSearchList(unsigned int ilist) { 
+    _thelist.push_back(ilist); 
+  }
   
   /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
-  inline VertexBasePtr getVertex() const;
+  inline VertexBasePtr getVertex() const { return _theVertex; }
 
   /**
    * Set integration weight
    * @param wgt Maximum integration weight 
    */
-  inline void setWeight(const vector<double> & wgt); 
+  inline void setWeight(const vector<double> & wgt) { _maxweight = wgt; }
 
   /**
    * Set colour connections
@@ -268,6 +270,5 @@ struct ClassTraits<Herwig::GeneralTwoBodyDecayer>
 
 }
 
-#include "GeneralTwoBodyDecayer.icc"
 
 #endif /* HERWIG_GeneralTwoBodyDecayer_H */

@@ -27,7 +27,10 @@ public:
   /**
    * The default constructor.
    */
-  inline SimpleVVSLoopVertex();
+  inline SimpleVVSLoopVertex() : masses(0), type(0), couplings(0),
+				 theNpart(0) { 
+    kinematics(true); 
+  }
 
   /** 
    * Calculate couplings
@@ -36,7 +39,8 @@ public:
    *@param part2 ParticleData pointer to first particle
    *@param part3 ParticleData pointer to first particle
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2, tcPDPtr part3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2, 
+			   tcPDPtr part3);
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -67,7 +71,8 @@ protected:
   Complex W2(Energy2 s, Energy2 mf2) const;
 
   /**
-   *  The \f$I_q\f$ function of V.D.Berger and R.N.Phillips Collider Physics, p .434
+   *  The \f$I_q\f$ function of V.D.Berger and R.N.Phillips 
+   * Collider Physics, p .434
    * N.B. is not used in the code...
    * @param mh The Higgs mass (invariant)
    * @param mf The fermion mass
@@ -83,13 +88,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -159,7 +164,5 @@ struct ClassTraits<Herwig::SimpleVVSLoopVertex>
 /** @endcond */
 
 }
-
-#include "SimpleVVSLoopVertex.icc"
 
 #endif /* HERWIG_SimpleVVSLoopVertex_H */
