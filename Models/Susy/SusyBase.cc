@@ -27,6 +27,17 @@
 
 using namespace Herwig;
 
+SusyBase::SusyBase() : _tanbeta(0), _mu(0.*MeV), theMone(0.*MeV), theMtwo(0.*MeV),
+		       theMthree(0.*MeV) {}
+
+IBPtr SusyBase::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SusyBase::fullclone() const {
+  return new_ptr(*this);
+}
+
 void SusyBase::doinit() throw(InitException) {
   addVertex(theWSFSFVertex);
   addVertex(theNFSFVertex);
@@ -287,8 +298,7 @@ void SusyBase::readDecay(ifstream & ifs,
   }
   inpart->width(width*GeV);
   inpart->widthCut(5.*width*GeV);
-  string tag = "decaymode " + inpart->name() + "->";
-  string line;
+  string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
   while(getline(ifs, line)) {
     if(line[0] == '#') {
       if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -297,10 +307,8 @@ void SusyBase::readDecay(ifstream & ifs,
     }
     istringstream is(line);
     double brat(0.);
-    unsigned int nda(0);
+    unsigned int nda(0),npr(0);
     is >> brat >> nda;
-    tcPDVector products;
-    vector<long>::size_type npr(0);
     while( true ) {
       long t;
       is >> t;
@@ -318,11 +326,10 @@ void SusyBase::readDecay(ifstream & ifs,
 	  << "SusyBase::readDecay() - An unknown PDG code has been encounterd "
 	  << "while reading a decay mode. ID: " << t
 	  << Exception::runerror;
-	products.resize(0);
       }
       else {
-	products.push_back(p);
 	++npr;
+	tag += p->name() + ",";
       }
     }
     if( npr != nda ) {
@@ -334,9 +341,11 @@ void SusyBase::readDecay(ifstream & ifs,
 	<< "file is correct.\n"
 	<< Exception::warning;
     }
-    if( products.size() > 0 ) {
+    if( npr > 1 ) {
       inpart->stable(false);
-      createDecayMode(tag, products, brat);
+      tag.replace(tag.size() - 1, 1, ";");
+      createDecayMode(prefix + tag, brat);
+      tag.clear();
     }
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
@@ -374,17 +383,9 @@ SusyBase::readMatrix(ifstream & ifs,
   return values;
 }
 
-void SusyBase::createDecayMode(string tag, tcPDVector products,
-			       double brat) const {
+void SusyBase::createDecayMode(string tag, double brat) const {
   ostringstream cmd;
-  cmd << tag;
-  tcPDVector::size_type nda = products.size();
-  for(tcPDVector::size_type i = 0; i < nda; ++i) {
-    cmd << products[i]->name();
-    if( i != nda - 1 ) cmd << ",";
-    else cmd << ";";
-  }
-  cmd << string(" ") <<  brat << string(" 1 /Herwig/Decays/Mambo");
+  cmd << tag << string(" ") << brat << string(" 1 /Herwig/Decays/Mambo");
   Repository::exec(cmd.str(), cerr);
 }
 

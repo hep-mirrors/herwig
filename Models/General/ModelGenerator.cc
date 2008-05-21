@@ -244,6 +244,10 @@ void ModelGenerator::checkDecays(PDPtr parent) {
       release -= (**pit).constituentMass();
     }
     if( release < 0.*MeV ) {
+      cerr << "Warning: The shower cannot be generated using this decay " 
+	   << (**dit).tag() << " because it is too close to threshold. It "
+	   << "will be switched off and the branching fractions of the "
+	   << "remaining modes rescaled.\n";
       rescalebrat = true;
       newwidth -= (**dit).brat()*oldwidth;
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
@@ -251,7 +255,6 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 				    "set", "0.0");
     }
   }
-
   if( rescalebrat ) {
     dit = parent->decayModes().begin();
     dend = parent->decayModes().end();

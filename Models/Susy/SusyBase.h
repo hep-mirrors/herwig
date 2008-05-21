@@ -47,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SusyBase();
+  SusyBase();
 
 public:
 
@@ -56,42 +56,48 @@ public:
   /**
    * Value of \f$\tan\beta\f$.
    */
-  inline double tanBeta() const;
+  inline double tanBeta() const { return _tanbeta; }
 
   /**
    * Value of \f$\mu\f$ parameter.
    */
-  inline Energy muParameter() const;
+  inline Energy muParameter() const { return _mu; }
 
   /**
    * Value of soft breaking mass for the bino
    */
-  inline Energy softMOne() const;
+  inline Energy softMOne() const { return theMone; }
 
   /**
    * Value of soft breaking mass for the wino
    */
-  inline Energy softMTwo() const;
+  inline Energy softMTwo() const { return theMtwo; }
 
   /**
    * Value of soft breaking mass for the gluino
    */
-  inline Energy softMThree() const;
+  inline Energy softMThree() const { return theMthree; }
 
   /**
    * The neutralino mixing matrix
    */
-  inline const MixingMatrixPtr & neutralinoMix() const;
+  inline const MixingMatrixPtr & neutralinoMix() const { 
+    return theNMix;
+  }
 
   /**
    * The U-type chargino mixing matrix
    */
-  inline const MixingMatrixPtr & charginoUMix() const;
+  inline const MixingMatrixPtr & charginoUMix() const {
+    return theUMix;
+  }
 
   /**
    * The V-type chargino mixing matrix
    */
-  inline const MixingMatrixPtr & charginoVMix() const;
+  inline const MixingMatrixPtr & charginoVMix() const {
+    return theVMix;
+  }
   //@}
 
 public:
@@ -125,37 +131,51 @@ public:
   /**
    * Pointer to the MSSM fermion-antifermion-higgs vertex 
    */
-  virtual inline tAbstractFFSVertexPtr vertexFFH() const;
+  virtual inline tAbstractFFSVertexPtr vertexFFH() const {
+    return theSSFFHVertex;
+  }
   
   /**
    * Pointer to the MSSM double gauge boson-higgs vertex 
    */
-  virtual inline tAbstractVVSVertexPtr vertexWWH() const;
+  virtual inline tAbstractVVSVertexPtr vertexWWH() const {
+    return theSSWWHVertex;
+  }
   
   /**
    * Pointer to the MSSM effective higgs-gluon-gluon vertex
    */
-  virtual inline tAbstractVVSVertexPtr vertexHGG() const;
+  virtual inline tAbstractVVSVertexPtr vertexHGG() const {
+    return theSSHGGVertex;
+  }
 
   /**
    * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
    */
-  virtual inline tAbstractVSSVertexPtr vertexWHH() const;
+  virtual inline tAbstractVSSVertexPtr vertexWHH() const {
+    return theWHHVertex;
+  }
 
   /**
    * Pointer to the higgs coupling to a pair of gauginos
    */
-  virtual inline tAbstractFFSVertexPtr vertexGOGOH() const;
+  virtual inline tAbstractFFSVertexPtr vertexGOGOH() const {
+    return theGOGOHVertex;
+  }
 
   /**
    * Pointer to the triple higgs vertex
    */
-  virtual inline tAbstractSSSVertexPtr vertexHHH() const;
+  virtual inline tAbstractSSSVertexPtr vertexHHH() const {
+    return theHHHVertex;
+  }
 
   /**
    * Pointer to higgs-sfermion-sfermion vertex 
    */
-  virtual inline tAbstractSSSVertexPtr vertexHSS() const;
+  virtual inline tAbstractSSSVertexPtr vertexHSS() const {
+    return theHSFSFVertex;
+  }
   //@}
 
 protected:
@@ -195,12 +215,11 @@ private:
 
   /**
    * Create a DecayMode object in the repository
-   * @param tag string containing first portion of tag including '->'
-   * @param products Decay products
+   * @param tag The tag identifying the decay mode including the prefix
+   * 'decaymode'
    * @param brat Branching ratio of this mode 
    */
-  void createDecayMode(string tag, tcPDVector products,
-		       double brat) const;
+  void createDecayMode(string tag, double brat) const;
 
 protected:
 
@@ -244,28 +263,32 @@ protected:
   /**
    *  Parameter blocks
    */
-  inline const map<string,ParamMap> & parameters() const;
+  inline const map<string,ParamMap> & parameters() const {
+    return _parameters;
+  }
 
   /**
    *  Mixing blocks
    */
-  inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const;
+  inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const {
+    return _mixings;
+  }
   //@}
 
   /**
    * Reset neutralino mixing matrix
    */
-  inline void neutralinoMix(MixingMatrixPtr);
+  inline void neutralinoMix(MixingMatrixPtr nm) { theNMix = nm; }
 
   /**
    * Reset the U-type chargino mixing matrix
    */
-  inline void charginoUMix(MixingMatrixPtr);
+  inline void charginoUMix(MixingMatrixPtr um) { theUMix = um; }
 
   /**
    *  Reset the V-type chargino mixing matrix
    */
-  inline void charginoVMix(MixingMatrixPtr);
+  inline void charginoVMix(MixingMatrixPtr vm) { theVMix = vm; }
   
 protected:
 
@@ -275,13 +298,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -502,6 +525,5 @@ struct ClassTraits<Herwig::SusyBase>
 
 }
 
-#include "SusyBase.icc"
 
 #endif /* HERWIG_SusyBase_H */
