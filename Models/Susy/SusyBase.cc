@@ -299,6 +299,7 @@ void SusyBase::readDecay(ifstream & ifs,
   inpart->width(width*GeV);
   inpart->widthCut(5.*width*GeV);
   string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
+  double brsum(0.);
   while(getline(ifs, line)) {
     if(line[0] == '#') {
       if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -309,6 +310,7 @@ void SusyBase::readDecay(ifstream & ifs,
     double brat(0.);
     unsigned int nda(0),npr(0);
     is >> brat >> nda;
+    brsum += brat;
     while( true ) {
       long t;
       is >> t;
@@ -350,6 +352,11 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
+  if( abs(brsum - 1.) > 1e-12 ) {
+    cerr << "Warning: The total branching ratio for " << inpart->PDGName()
+	 << " from the spectrum file does not sum to 1. The branching fractions"
+	 << " will be rescaled.\n\n";
+  }
 }
 
 const MixingVector
@@ -385,7 +392,8 @@ SusyBase::readMatrix(ifstream & ifs,
 
 void SusyBase::createDecayMode(string tag, double brat) const {
   ostringstream cmd;
-  cmd << tag << string(" ") << brat << string(" 1 /Herwig/Decays/Mambo");
+  cmd << tag << string(" ") 
+      << setprecision(13) << brat << string(" 1 /Herwig/Decays/Mambo");
   Repository::exec(cmd.str(), cerr);
 }
 

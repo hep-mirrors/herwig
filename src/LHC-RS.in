@@ -33,9 +33,6 @@ insert ResConstructor:Outgoing 1 /Herwig/Particles/W+
 insert ResConstructor:Outgoing 2 /Herwig/Particles/Z0
 insert ResConstructor:Outgoing 3 /Herwig/Particles/gamma
 
-# only graviton to calculate decays for
-insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
-
 # coupling
 set RS/Model:Lambda_pi 10000*GeV
 

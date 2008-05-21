@@ -231,10 +231,12 @@ void ModelGenerator::doinit() throw(InitException) {
 }
 
 void ModelGenerator::checkDecays(PDPtr parent) {
+  if( parent->stable() ) return;
   DecaySet::iterator dit = parent->decayModes().begin();
   DecaySet::iterator dend = parent->decayModes().end();
-  Energy oldwidth(parent->width()), newwidth(parent->width());
+  Energy oldwidth(parent->width()), newwidth(0.*MeV);
   bool rescalebrat(false);
+  double brsum(0.);
   for(; dit != dend; ++dit ) {
     if( !(**dit).on() ) continue;
     Energy release((**dit).parent()->mass());
@@ -249,20 +251,26 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 	   << "will be switched off and the branching fractions of the "
 	   << "remaining modes rescaled.\n";
       rescalebrat = true;
-      newwidth -= (**dit).brat()*oldwidth;
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
       generator()->preinitInterface(*dit, "BranchingRatio", 
 				    "set", "0.0");
     }
+    else {
+      brsum += (**dit).brat();
+      newwidth += (**dit).brat()*oldwidth;
+    }
   }
-  if( rescalebrat ) {
+  if( rescalebrat || (abs(brsum - 1.) > 1e-12) ) {
     dit = parent->decayModes().begin();
     dend = parent->decayModes().end();
+    double factor = oldwidth/newwidth;
+    brsum = 0.;
     for( ; dit != dend; ++dit ) {
       if( !(**dit).on() ) continue;
-      double newbrat = ((**dit).brat())*oldwidth/newwidth;
+      double newbrat = ((**dit).brat())*factor;
+      brsum += newbrat;
       ostringstream brf;
-      brf << newbrat;
+      brf << setprecision(13) << newbrat;
       generator()->preinitInterface(*dit, "BranchingRatio",
 				    "set", brf.str());
     }

@@ -203,8 +203,47 @@ set Model:Vertex/Z0H1H1 /Herwig/Vertices/MUED/UED_Z0H1H1
 set Model:Vertex/W0A1H1 /Herwig/Vertices/MUED/UED_W0A1H1
 set Model:Vertex/Z0A1h1 /Herwig/Vertices/MUED/UED_Z0A1h1
 set Model:Vertex/W0W1W1 /Herwig/Vertices/MUED/UED_W0W1W1
+###################################################
+#
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
 
-# Set up the shower
+set TwoBodyDC:CreateDecayModes Yes
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/KK1_d_L
+insert NewModel:DecayParticles 1 /Herwig/Particles/KK1_u_L
+insert NewModel:DecayParticles 2 /Herwig/Particles/KK1_s_L
+insert NewModel:DecayParticles 3 /Herwig/Particles/KK1_c_L
+insert NewModel:DecayParticles 4 /Herwig/Particles/KK1_b_1
+insert NewModel:DecayParticles 5 /Herwig/Particles/KK1_t_1
+insert NewModel:DecayParticles 6 /Herwig/Particles/KK1_d_R
+insert NewModel:DecayParticles 7 /Herwig/Particles/KK1_u_R
+insert NewModel:DecayParticles 8 /Herwig/Particles/KK1_s_R
+insert NewModel:DecayParticles 9 /Herwig/Particles/KK1_c_R
+insert NewModel:DecayParticles 10 /Herwig/Particles/KK1_b_2
+insert NewModel:DecayParticles 11 /Herwig/Particles/KK1_t_2
+insert NewModel:DecayParticles 12 /Herwig/Particles/KK1_e_L-
+insert NewModel:DecayParticles 13 /Herwig/Particles/KK1_nu_eL
+insert NewModel:DecayParticles 14 /Herwig/Particles/KK1_mu_L-
+insert NewModel:DecayParticles 15 /Herwig/Particles/KK1_nu_muL
+insert NewModel:DecayParticles 16 /Herwig/Particles/KK1_tau_1-
+insert NewModel:DecayParticles 17 /Herwig/Particles/KK1_nu_tauL
+insert NewModel:DecayParticles 18 /Herwig/Particles/KK1_e_R-
+insert NewModel:DecayParticles 19 /Herwig/Particles/KK1_mu_R-
+insert NewModel:DecayParticles 20 /Herwig/Particles/KK1_tau_2-
+insert NewModel:DecayParticles 21 /Herwig/Particles/KK1_g
+insert NewModel:DecayParticles 22 /Herwig/Particles/KK1_Z0
+insert NewModel:DecayParticles 23 /Herwig/Particles/KK1_W+
+insert NewModel:DecayParticles 24 /Herwig/Particles/KK1_h0
+insert NewModel:DecayParticles 25 /Herwig/Particles/KK1_A0
+insert NewModel:DecayParticles 26 /Herwig/Particles/KK1_H+
+###################################################
+#
+#  Shower stuff for coloured sparticles
+#
+###################################################
 cd /Herwig/Shower
 insert ShowerHandler:DecayInShower 0 5100001
 insert ShowerHandler:DecayInShower 1 5100002
@@ -246,15 +285,22 @@ set SplittingGenerator:AddFinalSplitting KK1_s_R->KK1_s_R,g; QtoQGSudakov
 set SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
 set SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
 set SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
-
+###################################################
+#
+#  Setting to ensure spin correlations
+#  and generation of processes and decays
+#
+###################################################
 cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
 insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
-
 # Set up the model framework
 set MUED/Model:ModelGenerator NewModel
-
+###################################################
+#
+#  Choose MSSM over SM
+#
+###################################################
 cd /Herwig/Generators
-# Choose MUED over SM
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MUED/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MUED/Model
