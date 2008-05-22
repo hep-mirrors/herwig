@@ -1,4 +1,7 @@
 SUBDIRS = defaults
+
+AUTOMAKE_OPTIONS = -Wno-portability
+
 defaultsdir = ${pkgdatadir}/defaults
 
 bin_PROGRAMS = Herwig++

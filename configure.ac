@@ -1,9 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.59])
 AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([Config/config.h])
 dnl AC_PRESERVE_HELP_ORDER
 AC_CANONICAL_HOST
@@ -33,20 +34,17 @@ if test "x$FFLAGS" = "x"; then
 fi
 dnl ==========================================
 
-AC_LANG(C++)
+AC_LANG([C++])
 
-AM_INIT_AUTOMAKE([1.9])
+AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
 dnl Checks for programs.
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
-## can be removed eventually
-AC_DISABLE_STATIC
-
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
+LT_PREREQ([2.2])
+LT_INIT([disable-static dlopen pic-only])
 
 dnl ####################################
 dnl ####################################
