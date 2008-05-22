@@ -32,7 +32,7 @@ commonCPPFLAGS = $(AM_CPPFLAGS) -I$(srcdir)/include
 libHwLooptoolsXFC_la_SOURCES = $(theXFCSOURCES)
 libHwLooptoolsXFC_la_CPPFLAGS = $(commonCPPFLAGS) 
 libHwLooptoolsXFC_la_CFLAGS = $(AM_CFLAGS) -std=c99
-libHwLooptoolsXFC_la_FFLAGS = $(AM_FFLAGS)
+libHwLooptoolsXFC_la_FCFLAGS = $(AM_FCFLAGS)
 
 libHwLooptoolsCFC_la_SOURCES = $(theCFCSOURCES)
 libHwLooptoolsCFC_la_CPPFLAGS = $(commonCPPFLAGS) -DCOMPLEXPARA
@@ -48,4 +48,4 @@ libHwLooptoolsCFC_la_CPPFLAGS = $(commonCPPFLAGS) -DCOMPLEXPARA
 ## libHwLooptoolsHelper2_la_SOURCES = clooptools.cc
 EXTRA_PROGRAMS = tester
 tester_SOURCES = tester.cc
-tester_LDADD = libHwLooptoolsXFC.la $(FLIBS)
+tester_LDADD = libHwLooptoolsXFC.la $(FCLIBS)
