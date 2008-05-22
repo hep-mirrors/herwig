@@ -30,7 +30,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEfftoVH();
+  MEfftoVH() : _shapeopt(2), _mh(), _wh() {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -173,17 +173,17 @@ protected:
   /**
    *  Access to the \f$W^+\f$ data
    */ 
-  inline PDPtr WPlus() const;
+  PDPtr WPlus() const { return _wplus; }
 
   /**
    *  Access to the \f$W^-\f$ data
    */ 
-  inline PDPtr WMinus() const;
+  PDPtr WMinus() const { return _wminus; }
 
   /**
    *  Access to the \f$Z^0\f$ data
    */ 
-  inline PDPtr Z0() const;
+  PDPtr Z0() const { return _z0; }
   //@}
 
 protected:
@@ -309,7 +309,5 @@ struct ClassTraits<Herwig::MEfftoVH>
 /** @endcond */
 
 }
-
-#include "MEfftoVH.icc"
 
 #endif /* HERWIG_MEfftoVH_H */

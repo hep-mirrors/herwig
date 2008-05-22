@@ -26,7 +26,12 @@ using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-DtoKPiPiCLEO::DtoKPiPiCLEO() {
+DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(), 
+			       _c1K1430m(), _c1K14300(), _c1rho1700(), _c1K1680(), 
+			       _c2Kstarp(), _c2rho(), _c2omega(), _c2Kstarm(),
+			       _c2f980(), _c2f2(), _c2f1370(), _c2K14300(),
+			       _c2K14302(), _c2K1680(), _c2NR(), _rD0(), _rres()
+{
   // use local values for masses and widths
   _localparameters=true;
   // masses and widths

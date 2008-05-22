@@ -31,7 +31,9 @@ namespace {
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
 
-FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() {
+FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
+							   _mpic2(), _mpi02(), _prho()
+{
   // set the number of modes
   addDecayMode(2,-1);
   addDecayMode(2,-1);
