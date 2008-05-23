@@ -43,6 +43,9 @@ AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
+dnl modified search order
+AC_PROG_FC([gfortran g95 g77 xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
+
 LT_PREREQ([2.2])
 LT_INIT([disable-static dlopen pic-only])
 
