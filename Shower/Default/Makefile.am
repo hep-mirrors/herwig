@@ -3,7 +3,7 @@ SUBDIRS = MECorrections .
 noinst_LTLIBRARIES = libHwDefaultShower.la
 libHwDefaultShower_la_LIBADD = MECorrections/libHwDefaultMECorrections.la
 libHwDefaultShower_la_SOURCES = \
-QTildeSudakov.cc QTildeSudakov.h QTildeSudakov.icc QTildeSudakov.fh \
+QTildeSudakov.cc QTildeSudakov.h QTildeSudakov.fh \
 QTildeModel.cc QTildeModel.h QTildeModel.icc QTildeModel.fh \
 Decay_QtildaShowerKinematics1to2.cc Decay_QtildaShowerKinematics1to2.fh\
 Decay_QtildaShowerKinematics1to2.h  Decay_QtildaShowerKinematics1to2.icc \

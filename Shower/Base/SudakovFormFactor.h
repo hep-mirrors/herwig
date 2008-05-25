@@ -281,8 +281,8 @@ protected:
    * @param enhance The radiation enhancement factor
    * @param identical Whether or not the outgoing particles are identical
    */
-  inline Energy2 guesst (Energy2 t1,unsigned int iopt, const IdList &ids,
-			 double enhance, bool identical) const;
+  Energy2 guesst (Energy2 t1,unsigned int iopt, const IdList &ids,
+		  double enhance, bool identical) const;
 
   /**
    * Veto on the PDF for the initial-state shower

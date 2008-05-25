@@ -26,15 +26,11 @@ ClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
 // Definition of the static class description member.
 
 void QTildeSudakov::persistentOutput(PersistentOStream & os) const {
-  os << _a << _b << ounit(_c,GeV) 
-     << ounit(_kinCutoffScale,GeV) << ounit(_cutoffQCDMassScale,GeV)
-     << ounit(_cutoffQEDMassScale,GeV) << ounit(_cutoffEWKMassScale,GeV);
+  os << _a << _b << ounit(_c,GeV) << ounit(_kinCutoffScale,GeV);
 }
 
 void QTildeSudakov::persistentInput(PersistentIStream & is, int) {
-  is >> _a >> _b >> iunit(_c,GeV) 
-     >> iunit(_kinCutoffScale,GeV) >> iunit(_cutoffQCDMassScale,GeV)
-     >> iunit(_cutoffQEDMassScale,GeV) >> iunit(_cutoffEWKMassScale,GeV);
+  is >> _a >> _b >> iunit(_c,GeV) >> iunit(_kinCutoffScale,GeV);
 }
 
 void QTildeSudakov::Init() {
@@ -67,22 +63,6 @@ void QTildeSudakov::Init() {
 		       " space (unit [GeV])",
 		       &QTildeSudakov::_kinCutoffScale, GeV, 
 		       2.3*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
-
-  static Parameter<QTildeSudakov,Energy>
-    interfaceCutoffQCD ("CutoffQCDMassScale",
-			"low energy cutoff mass scale for QCD radiation  (unit [GeV])",
-			&QTildeSudakov::_cutoffQCDMassScale, GeV, 
-			0.0*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
-  static Parameter<QTildeSudakov,Energy>
-    interfaceCutoffQED ("CutoffQEDMassScale",
-			"low energy cutoff mass scale for QED radiation  (unit [GeV])",
-			&QTildeSudakov::_cutoffQEDMassScale, GeV, 
-			0.0005*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
-  static Parameter<QTildeSudakov,Energy>
-    interfaceCutoffEWK ("CutoffEWKMassScale",
-			"low energy cutoff mass scale for EWK radiation  (unit [GeV])",
-			&QTildeSudakov::_cutoffEWKMassScale, GeV, 
-			91.0*GeV, 0.0*GeV, 1000.0*GeV,false,false,false);
 
 }
 
@@ -139,7 +119,6 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
 						   double enhance) {
-  if(startingScale<=cutoffQScale(interactionType())) ShoKinPtr();
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   _q = Energy();

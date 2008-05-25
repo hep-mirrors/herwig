@@ -157,3 +157,30 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
   }
   if(add) _particles.push_back(in);
 }
+
+Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
+					 const IdList &ids,
+					 double enhance,bool ident) const {
+  unsigned int pdfopt = iopt!=1 ? 0 : _pdffactor;
+  double c =
+    1./((_splittingFn->integOverP(_zlimits.second,ids,pdfopt) -
+	 _splittingFn->integOverP(_zlimits.first ,ids,pdfopt))* 
+	_alpha->overestimateValue()/Constants::twopi*enhance);
+  assert(iopt<=2);
+  if(iopt==1) {
+    c/=_pdfmax;
+    if(ident) c*=0.5;
+  }
+  else if(iopt==2) c*=-1.;
+  if(_splittingFn->interactionOrder()==1) {
+    return t1*pow(UseRandom::rnd(),c);
+  }
+  else {
+    assert(false && "Units are dubious here.");
+    int nm(splittingFn()->interactionOrder()-1);
+    c/=Math::powi(_alpha->overestimateValue()/Constants::twopi,nm);
+    return t1 /       pow (1. - nm*c*log(UseRandom::rnd()) 
+			   * Math::powi(t1*UnitRemoval::InvE2,nm)
+			   ,1./double(nm));
+  }
+}

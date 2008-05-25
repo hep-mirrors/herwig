@@ -34,8 +34,12 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeSudakov();
-
+  inline QTildeSudakov() :_a(0.3), _b(2.3), _c(0.3*GeV),
+			  _kinCutoffScale( 2.3*GeV ),
+			  _cutoffQCDMassScale( 1.0*GeV ),
+			  _cutoffQEDMassScale( 0.51*MeV ),
+			  _cutoffEWKMassScale( 91.0*GeV ) {}
+  
   /**
    *  Members to generate the scale of the next branching
    */
@@ -184,20 +188,15 @@ protected:
   /**
    *  The kinematic scale
    */
-  inline Energy kinScale() const;
+  inline Energy kinScale() const {return _kinCutoffScale;}
 
   /**
    * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
    * @param scale The scale \f$\delta\f$
    * @param mq The quark mass \f$m_q\f$.
    */
-  inline Energy kinematicCutOff(Energy scale, Energy mq) const;
-
-  /**
-   * It returns the low energy cutoff \f$\tilde{q}\f$ scale for the 
-   * interaction type specified in input.
-   */
-  inline Energy cutoffQScale(const ShowerIndex::InteractionType interaction) const;
+  inline Energy kinematicCutOff(Energy scale, Energy mq) const 
+  {return max((scale -_a*mq)/_b,_c);}
 
 protected:
 
@@ -207,13 +206,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -335,7 +334,5 @@ struct ClassTraits<Herwig::QTildeSudakov>
 /** @endcond */
 
 }
-
-#include "QTildeSudakov.icc"
 
 #endif /* HERWIG_QTildeSudakov_H */
