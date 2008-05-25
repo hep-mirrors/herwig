@@ -35,10 +35,7 @@ public:
    * The default constructor.
    */
   inline QTildeSudakov() :_a(0.3), _b(2.3), _c(0.3*GeV),
-			  _kinCutoffScale( 2.3*GeV ),
-			  _cutoffQCDMassScale( 1.0*GeV ),
-			  _cutoffQEDMassScale( 0.51*MeV ),
-			  _cutoffEWKMassScale( 91.0*GeV ) {}
+			  _kinCutoffScale( 2.3*GeV ) {}
   
   /**
    *  Members to generate the scale of the next branching
@@ -198,6 +195,11 @@ protected:
   inline Energy kinematicCutOff(Energy scale, Energy mq) const 
   {return max((scale -_a*mq)/_b,_c);}
 
+  /**
+   *  Construct the kinematics objects
+   */
+  ShoKinPtr constructKinematics(int iopt);
+
 protected:
 
   /** @name Clone Methods. */
@@ -275,11 +277,6 @@ private:
    *  The mass squared of the particles in the current branching
    */
   vector<Energy2> _masssquared;
-
-  /**
-   *  Kinematic cut-off
-   */
-  Energy _kinCutoff;
 
   /** 
    * Low-energy cutoff mass scale for QCD radiation

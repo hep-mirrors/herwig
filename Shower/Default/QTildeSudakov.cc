@@ -141,14 +141,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   phi(Constants::twopi*UseRandom::rnd());
   if(_q < Energy()) return ShoKinPtr();
   // construct the ShowerKinematics object
-  FS_QtildaShowerKinematics1to2Ptr showerKin = 
-    new_ptr(FS_QtildaShowerKinematics1to2());
-  showerKin->scale(_q);
-  showerKin->z(z());
-  showerKin->phi(phi());
-  showerKin->pT(pT());
-  showerKin->splittingFn(splittingFn());
-  return showerKin;
+  return constructKinematics(0);
 }
 
 ShoKinPtr QTildeSudakov::
@@ -175,7 +168,7 @@ generateNextSpaceBranching(const Energy startingQ,
   Energy2 t(tmax),pt2(0.*GeV2);
   do {
     if(!guessSpaceLike(t,tmin,x,enhance)) break;
-    pt2=sqr(1.-z())*t-z()*sqr(_kinCutoff);
+    pt2=sqr(1.-z())*t-z()*_masssquared[2];
   }
   while(z() > zLimits().second || 
 	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
@@ -186,18 +179,10 @@ generateNextSpaceBranching(const Energy startingQ,
   phi(Constants::twopi*UseRandom::rnd());
   pT(sqrt(pt2));
   // create the ShowerKinematics and return it
-  IS_QtildaShowerKinematics1to2Ptr 
-    showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
-  showerKin->scale(_q);
-  showerKin->z(z());
-  showerKin->phi(phi());
-  showerKin->pT(pT());
-  showerKin->splittingFn(splittingFn());
-  return showerKin;
+  return constructKinematics(1);
 }
 
-void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
-{
+void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc) {
   _ids=ids;
   if(cc) {
     for(unsigned int ix=0;ix<ids.size();++ix) {
@@ -210,14 +195,13 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
   unsigned int ix;
   for(ix=0;ix<_ids.size();++ix)
     _masses.push_back(getParticleData(_ids[ix])->mass());
-  _kinCutoff=
+  Energy kinCutoff=
     kinematicCutOff(kinScale(),*std::max_element(_masses.begin(),_masses.end()));
-  for(ix=0;ix<_masses.size();++ix)
-    {
-      _masses[ix]=max(_kinCutoff,_masses[ix]);
-      _masssquared.push_back(sqr(_masses[ix]));
-      if(ix>0) tmin=max(_masssquared[ix],tmin);
-    }
+  for(ix=0;ix<_masses.size();++ix) {
+    _masses[ix]=max(kinCutoff,_masses[ix]);
+    _masssquared.push_back(sqr(_masses[ix]));
+    if(ix>0) tmin=max(_masssquared[ix],tmin);
+  }
 }
 
 ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
@@ -243,23 +227,16 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     if(!guessDecay(t,tmax,minmass,enhance)) break;
   while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
 	alphaSVeto(sqr(1.-z())*t)||
-	sqr(1.-z())*(t-_masssquared[0])<z()*sqr(_kinCutoff)||
+	sqr(1.-z())*(t-_masssquared[0])<z()*_masssquared[2]||
 	t*(1.-z())>_masssquared[0]-sqr(minmass));
   if(t > Energy2()) {
     _q = sqrt(t);
-    pT(sqrt(sqr(1.-z())*(t-_masssquared[0])-z()*sqr(_kinCutoff)));
+    pT(sqrt(sqr(1.-z())*(t-_masssquared[0])-z()*_masssquared[2]));
   }
   else return ShoKinPtr();
   phi(Constants::twopi*UseRandom::rnd());
   // create the ShowerKinematics object
-  Decay_QtildaShowerKinematics1to2Ptr showerKin = 
-    new_ptr(Decay_QtildaShowerKinematics1to2());
-  showerKin->scale(_q);
-  showerKin->z(z());
-  showerKin->phi(phi());
-  showerKin->pT(pT());
-  showerKin->splittingFn(splittingFn());
-  return showerKin;
+  return constructKinematics(2);
 }
 
 bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
@@ -268,8 +245,8 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   Energy2 told = t;
   // overestimated limits on z
   pair<double,double> limits=make_pair(sqr(minmass/_masses[0]),
-				       1.-_kinCutoff/sqrt(tmax-_masssquared[0])
-				       +0.5*sqr(_kinCutoff)/(tmax-_masssquared[0]));
+				       1.-_masses[2]/sqrt(tmax-_masssquared[0])
+				       +0.5*_masssquared[2]/(tmax-_masssquared[0]));
   if(zLimits().second<zLimits().first) {
     t=-1.0*GeV2;
     return false;
@@ -280,8 +257,8 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   z(guessz(2,_ids)); 
   // actual values for z-limits
   limits=make_pair(sqr(minmass/_masses[0]),
-		   1.-_kinCutoff/sqrt(t-_masssquared[0])
-		   +0.5*sqr(_kinCutoff)/(t-_masssquared[0]));
+		   1.-_masses[2]/sqrt(t-_masssquared[0])
+		   +0.5*_masssquared[2]/(t-_masssquared[0]));
   zLimits(limits);
   if(t>tmax||zLimits().second<zLimits().first) {
     t=-1.0*GeV2;
@@ -291,8 +268,7 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
     return true; 
 } 
 
-bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t)
-{
+bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
   // special case for gluon radiating
   pair<double,double> limits;
   if(_ids[0]==ParticleID::g) {
@@ -322,12 +298,11 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t)
   return true;
 }
 
-bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x)
-{
+bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
   pair<double,double> limits;
   // compute the limits
   limits.first = x;
-  double yy = 1.+0.5*sqr(_kinCutoff)/t;
+  double yy = 1.+0.5*_masssquared[2]/t;
   limits.second = yy - sqrt(sqr(yy)-1.); 
   // return false if lower>upper
   zLimits(limits);
@@ -337,4 +312,28 @@ bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x)
   }
   else
     return true;
+}
+
+ShoKinPtr QTildeSudakov::constructKinematics(int iopt) {
+  ShoKinPtr showerKin;
+  switch(iopt) {
+    // time-like
+  case 0:
+    showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
+    break;
+    // space-like
+  case 1:
+    showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+    break;
+    // decay
+  case 2:
+    showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
+    break;
+  }
+  showerKin->scale(_q);
+  showerKin->z(z());
+  showerKin->phi(phi());
+  showerKin->pT(pT());
+  showerKin->splittingFn(splittingFn());
+  return showerKin;
 }
