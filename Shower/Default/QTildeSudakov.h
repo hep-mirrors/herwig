@@ -34,8 +34,9 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeSudakov() :_a(0.3), _b(2.3), _c(0.3*GeV),
-			  _kinCutoffScale( 2.3*GeV ) {}
+  inline QTildeSudakov() : cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
+			   kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
+			   vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(0.*GeV2) {}
   
   /**
    *  Members to generate the scale of the next branching
@@ -185,7 +186,7 @@ protected:
   /**
    *  The kinematic scale
    */
-  inline Energy kinScale() const {return _kinCutoffScale;}
+  inline Energy kinScale() const {return kinCutoffScale_;}
 
   /**
    * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
@@ -193,7 +194,7 @@ protected:
    * @param mq The quark mass \f$m_q\f$.
    */
   inline Energy kinematicCutOff(Energy scale, Energy mq) const 
-  {return max((scale -_a*mq)/_b,_c);}
+  {return max((scale -a_*mq)/b_,c_);}
 
   /**
    *  Construct the kinematics objects
@@ -217,6 +218,18 @@ protected:
   inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
+protected:
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 private:
 
   /**
@@ -234,64 +247,85 @@ private:
 private:
 
   /**
-   *  Parameters for the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
+   *  Option for the type of cut-off to be applied
+   */
+  unsigned int cutOffOption_;
+
+  /**
+   *  Parameters for the default Herwig++ cut-off option, i.e. the parameters for
+   *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
    */
   //@{
   /**
    *  The \f$a\f$ parameter
    */
-  double _a;
+  double a_;
 
   /**
    *  The \f$b\f$ parameter
    */
-  double _b;
+  double b_;
 
   /**
    *  The \f$c\f$ parameter
    */
-  Energy _c;
-  //@}
+  Energy c_;
 
   /**
    * Kinematic cutoff used in the parton shower phase space. 
    */
-  Energy _kinCutoffScale; 
+  Energy kinCutoffScale_;
+  //@} 
 
+   /**
+    *  Parameters for the FORTRAN-like cut-off
+    */ 
+  //@{
+  /**
+   *  The virtualilty cut-off for gluons
+   */
+  Energy vgcut_;
+  
+  /**
+   *  The virtuality cut-off for everything else
+   */
+  Energy vqcut_;
+  //@}
+
+  /**
+   *  Parameters for the \f$p_T\f$ cut-off 
+   */
+  //@{
+  /**
+   *  The minimum \f$p_T\f$ for the branching
+   */
+  Energy pTmin_;
+  
+  /**
+   *  The square of the minimum \f$p_T\f$
+   */
+  Energy2 pT2min_;
+  //@}
+  
   /**
    *  The evolution scale, \f$\tilde{q}\f$.
    */
-  Energy _q;
+  Energy q_;
 
   /**
    *  The Ids of the particles in the current branching
    */
-  IdList _ids;
+  IdList ids_;
 
   /**
    *  The masses of the particles in the current branching
    */
-  vector<Energy> _masses;
+  vector<Energy> masses_;
 
   /**
    *  The mass squared of the particles in the current branching
    */
-  vector<Energy2> _masssquared;
-
-  /** 
-   * Low-energy cutoff mass scale for QCD radiation
-   */
-  Energy _cutoffQCDMassScale;
- 
-  /**
-   * Low-energy cutoff mass scale for QED radiation
-   */
-  Energy _cutoffQEDMassScale;
-
-  /**
-   * Low-energy cutoff mass scale for EWK radiation
-   */
-  Energy _cutoffEWKMassScale;
+  vector<Energy2> masssquared_;
 
 };
 
