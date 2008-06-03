@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// MEqq2W2ffNason.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEqq2W2ffPowheg.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEqq2W2ffNason class.
+// functions of the MEqq2W2ffPowheg class.
 //
 
-#include "MEqq2W2ffNason.h"
+#include "MEqq2W2ffPowheg.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -36,7 +36,7 @@
 
 using namespace Herwig;
 
-void MEqq2W2ffNason::doinit() throw(InitException) {
+void MEqq2W2ffPowheg::doinit() throw(InitException) {
   ME2to2Base::doinit();
   _wp=getParticleData(ThePEG::ParticleID::Wplus);
   _wm=getParticleData(ThePEG::ParticleID::Wminus);
@@ -47,10 +47,10 @@ void MEqq2W2ffNason::doinit() throw(InitException) {
     _theFFWVertex = hwsm->vertexFFW();
   else
     throw InitException() << "Must be the Herwig++ StandardModel class in "
-			  << "MEqq2W2ffNason::doinit" << Exception::abortnow;
+			  << "MEqq2W2ffPowheg::doinit" << Exception::abortnow;
 }
 
-void MEqq2W2ffNason::doinitrun() {  
+void MEqq2W2ffPowheg::doinitrun() {  
   maxy = 0.;
   miny = 0.;
   no_wgts = 0;
@@ -60,7 +60,7 @@ void MEqq2W2ffNason::doinitrun() {
 
 
 
-void MEqq2W2ffNason::getDiagrams() const {
+void MEqq2W2ffPowheg::getDiagrams() const {
   // which intgermediates to include
   bool wplus =_plusminus==0||_plusminus==1;
   bool wminus=_plusminus==0||_plusminus==2;
@@ -139,13 +139,13 @@ void MEqq2W2ffNason::getDiagrams() const {
   }
 }
 
-Energy2 MEqq2W2ffNason::scale() const {
+Energy2 MEqq2W2ffPowheg::scale() const {
   // Checked sqrt(sHat)-sqrt(lastX1()*lastX2()*lastS())<1 MeV for 10K events. 
   return 10000.0*GeV2;
 //  return sHat();
 }
 
-double MEqq2W2ffNason::me2() const {
+double MEqq2W2ffPowheg::me2() const {
   vector<SpinorWaveFunction>    fin,aout;
   vector<SpinorBarWaveFunction> ain,fout;
   SpinorWaveFunction       q(meMomenta()[0],mePartonData()[0],incoming);
@@ -161,23 +161,23 @@ double MEqq2W2ffNason::me2() const {
   return qqbarME(fin,ain,fout,aout,false);
 }
 
-unsigned int MEqq2W2ffNason::orderInAlphaS() const {
+unsigned int MEqq2W2ffPowheg::orderInAlphaS() const {
   return 0;
 }
 
-unsigned int MEqq2W2ffNason::orderInAlphaEW() const {
+unsigned int MEqq2W2ffPowheg::orderInAlphaEW() const {
   return 2;
 }
 
 Selector<MEBase::DiagramIndex>
-MEqq2W2ffNason::diagrams(const DiagramVector &) const {
+MEqq2W2ffPowheg::diagrams(const DiagramVector &) const {
   Selector<DiagramIndex> sel;
   sel.insert(1.0, 0);
   return sel;
 }
 
 Selector<const ColourLines *>
-MEqq2W2ffNason::colourGeometries(tcDiagPtr) const {
+MEqq2W2ffPowheg::colourGeometries(tcDiagPtr) const {
   static const ColourLines c1("1 -2");
   static const ColourLines c2("1 -2,4 -5");
   Selector<const ColourLines *> sel;
@@ -186,38 +186,38 @@ MEqq2W2ffNason::colourGeometries(tcDiagPtr) const {
   return sel;
 }
 
-void MEqq2W2ffNason::persistentOutput(PersistentOStream & os) const {
+void MEqq2W2ffPowheg::persistentOutput(PersistentOStream & os) const {
   os << _maxflavour << _plusminus << _process << _theFFWVertex 
      << _wp << _wm << _contrib << _nlo_alphaS_opt << _fixed_alphaS
      << _a << _p;
 }
 
-void MEqq2W2ffNason::persistentInput(PersistentIStream & is, int) { 
+void MEqq2W2ffPowheg::persistentInput(PersistentIStream & is, int) { 
   is >> _maxflavour >> _plusminus >> _process >> _theFFWVertex  
      >> _wp >> _wm >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS
      >> _a >> _p; 
 }
 
-ClassDescription<MEqq2W2ffNason> MEqq2W2ffNason::initMEqq2W2ffNason;
+ClassDescription<MEqq2W2ffPowheg> MEqq2W2ffPowheg::initMEqq2W2ffPowheg;
 // Definition of the static class description member.
 
-void MEqq2W2ffNason::Init() {
+void MEqq2W2ffPowheg::Init() {
 
-    static ClassDocumentation<MEqq2W2ffNason> documentation
-    ("The MEqq2W2ffNason class implements the matrix element for"
+    static ClassDocumentation<MEqq2W2ffPowheg> documentation
+    ("The MEqq2W2ffPowheg class implements the matrix element for"
      "q qbar to Standard Model fermions via W exchange using helicity amplitude"
      "techniques");
 
-  static Parameter<MEqq2W2ffNason,unsigned int> interfaceMaxFlavour
+  static Parameter<MEqq2W2ffPowheg,unsigned int> interfaceMaxFlavour
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
-      &MEqq2W2ffNason::_maxflavour, 5, 0, 5, false, false, true);
+      &MEqq2W2ffPowheg::_maxflavour, 5, 0, 5, false, false, true);
 
-  static Switch<MEqq2W2ffNason,unsigned int> interfacePlusMinus
+  static Switch<MEqq2W2ffPowheg,unsigned int> interfacePlusMinus
     ("Wcharge",
      "Which intermediate W bosons to include",
-     &MEqq2W2ffNason::_plusminus, 0, false, false);
+     &MEqq2W2ffPowheg::_plusminus, 0, false, false);
   static SwitchOption interfacePlusMinusAll
     (interfacePlusMinus,
      "Both",
@@ -234,10 +234,10 @@ void MEqq2W2ffNason::Init() {
      "Only include W-",
      2);
 
-  static Switch<MEqq2W2ffNason,unsigned int> interfaceProcess
+  static Switch<MEqq2W2ffPowheg,unsigned int> interfaceProcess
     ("Process",
      "Which processes to include",
-     &MEqq2W2ffNason::_process, 0, false, false);
+     &MEqq2W2ffPowheg::_process, 0, false, false);
   static SwitchOption interfaceProcessAll
     (interfaceProcess,
      "All",
@@ -298,10 +298,10 @@ void MEqq2W2ffNason::Init() {
      "CharmBottom",
      "Only include outgoing c bbar/ b cbar",
      11);
-   static Switch<MEqq2W2ffNason,unsigned int> interfaceContribution
+   static Switch<MEqq2W2ffPowheg,unsigned int> interfaceContribution
     ("Contribution",
      "Which contributions to the cross section to include",
-     &MEqq2W2ffNason::_contrib, 1, false, false);
+     &MEqq2W2ffPowheg::_contrib, 1, false, false);
   static SwitchOption interfaceContributionLeadingOrder
     (interfaceContribution,
      "LeadingOrder",
@@ -318,10 +318,10 @@ void MEqq2W2ffNason::Init() {
      "Generate the negative contribution to the full NLO cross section",
      2);
 
-  static Switch<MEqq2W2ffNason,unsigned int> interfaceNLOalphaSopt
+  static Switch<MEqq2W2ffPowheg,unsigned int> interfaceNLOalphaSopt
     ("NLOalphaSopt",
      "Whether to use a fixed or a running QCD coupling for the NLO weight",
-     &MEqq2W2ffNason::_nlo_alphaS_opt, 0, false, false);
+     &MEqq2W2ffPowheg::_nlo_alphaS_opt, 0, false, false);
   static SwitchOption interfaceNLOalphaSoptRunningAlphaS
     (interfaceNLOalphaSopt,
      "RunningAlphaS",
@@ -333,27 +333,27 @@ void MEqq2W2ffNason::Init() {
      "Use a constant QCD coupling for comparison/debugging purposes",
      1);
 
-  static Parameter<MEqq2W2ffNason,double> interfaceFixedNLOalphaS
+  static Parameter<MEqq2W2ffPowheg,double> interfaceFixedNLOalphaS
     ("FixedNLOalphaS",
      "The value of alphaS to use for the nlo weight if _nlo_alphaS_opt=1",
-     &MEqq2W2ffNason::_fixed_alphaS, 0.115895, 0., 1.0,
+     &MEqq2W2ffPowheg::_fixed_alphaS, 0.115895, 0., 1.0,
      false, false, Interface::limited);
 
-  static Parameter<MEqq2W2ffNason,double> interfaceCorrectionCoefficient
+  static Parameter<MEqq2W2ffPowheg,double> interfaceCorrectionCoefficient
     ("CorrectionCoefficient",
      "The magnitude of the correction term to reduce the negative contribution",
-     &MEqq2W2ffNason::_a, 0.5, -10., 10.0,
+     &MEqq2W2ffPowheg::_a, 0.5, -10., 10.0,
      false, false, Interface::limited);
 
-  static Parameter<MEqq2W2ffNason,double> interfaceCorrectionPower
+  static Parameter<MEqq2W2ffPowheg,double> interfaceCorrectionPower
     ("CorrectionPower",
      "The power of the correction term to reduce the negative contribution",
-     &MEqq2W2ffNason::_p, 0.7, 0.0, 1.0,
+     &MEqq2W2ffPowheg::_p, 0.7, 0.0, 1.0,
      false, false, Interface::limited);
 
 }
 
-double MEqq2W2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
+double MEqq2W2ffPowheg::qqbarME(vector<SpinorWaveFunction>    & fin ,
 			  vector<SpinorBarWaveFunction> & ain ,
 			  vector<SpinorBarWaveFunction> & fout,
 			  vector<SpinorWaveFunction>    & aout,
@@ -402,7 +402,7 @@ double MEqq2W2ffNason::qqbarME(vector<SpinorWaveFunction>    & fin ,
   return me*NLOweight()*colspin;
 }
 
-void MEqq2W2ffNason::constructVertex(tSubProPtr sub) {
+void MEqq2W2ffPowheg::constructVertex(tSubProPtr sub) {
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;
@@ -430,11 +430,11 @@ void MEqq2W2ffNason::constructVertex(tSubProPtr sub) {
   for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
 }
 
-int MEqq2W2ffNason::nDim() const {
+int MEqq2W2ffPowheg::nDim() const {
   return 3;
 }
 
-bool MEqq2W2ffNason::generateKinematics(const double * r) {
+bool MEqq2W2ffPowheg::generateKinematics(const double * r) {
   _xt=*(r+1);
   _v =*(r+2);
   //_xt=UseRandom::rnd();
@@ -442,7 +442,7 @@ bool MEqq2W2ffNason::generateKinematics(const double * r) {
   return ME2to2Base::generateKinematics(r);
 }
 
-double MEqq2W2ffNason::NLOweight() const {
+double MEqq2W2ffPowheg::NLOweight() const {
 
   // If only leading order is required return 1:
   if(_contrib==0) return 1.;
@@ -533,23 +533,23 @@ double MEqq2W2ffNason::NLOweight() const {
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
-double MEqq2W2ffNason::x(double xt, double v) const {
+double MEqq2W2ffPowheg::x(double xt, double v) const {
     double x0(xbar(v));
     return x0+(1.-x0)*xt;
 }
-double MEqq2W2ffNason::x_a(double x, double v) const {
+double MEqq2W2ffPowheg::x_a(double x, double v) const {
     if(x==1.) return _xb_a;
     if(v==0.) return _xb_a;
     if(v==1.) return _xb_a/x;
     return (_xb_a/sqrt(x))*sqrt((1.-(1.-x)*(1.-v))/(1.-(1.-x)*v));
 }
-double MEqq2W2ffNason::x_b(double x, double v) const {
+double MEqq2W2ffPowheg::x_b(double x, double v) const {
     if(x==1.) return _xb_b;
     if(v==0.) return _xb_b/x;
     if(v==1.) return _xb_b;
     return (_xb_b/sqrt(x))*sqrt((1.-(1.-x)*v)/(1.-(1.-x)*(1.-v)));
 }
-double MEqq2W2ffNason::xbar(double v) const {
+double MEqq2W2ffPowheg::xbar(double v) const {
     double xba2(sqr(_xb_a)), xbb2(sqr(_xb_b)), omv(-999.);
     double xbar1(-999.), xbar2(-999.);
     if(v==1.) return _xb_a;
@@ -561,7 +561,7 @@ double MEqq2W2ffNason::xbar(double v) const {
 	(sqrt(sqr(1.+xbb2)*4.*sqr(  v)+16.*(1.-2.*  v)*xbb2)+2.*  v*(1.-_xb_b)*(1.+_xb_b));
     return max(xbar1,xbar2);
 }
-double MEqq2W2ffNason::Ltilde_qq(double x, double v) const {
+double MEqq2W2ffPowheg::Ltilde_qq(double x, double v) const {
   if(x==1.) return 1.;
 
   double xa(x_a(x,v));
@@ -576,7 +576,7 @@ double MEqq2W2ffNason::Ltilde_qq(double x, double v) const {
   return( newq * newqbar / oldq / oldqbar );
 
 }
-double MEqq2W2ffNason::Ltilde_qg(double x, double v) const {
+double MEqq2W2ffPowheg::Ltilde_qg(double x, double v) const {
   double xa(x_a(x,v));
   double xb(x_b(x,v));
   
@@ -589,7 +589,7 @@ double MEqq2W2ffNason::Ltilde_qg(double x, double v) const {
   return( newq * newg2 / oldq / oldqbar );
 
 }
-double MEqq2W2ffNason::Ltilde_gq(double x, double v) const {
+double MEqq2W2ffPowheg::Ltilde_gq(double x, double v) const {
   double xa(x_a(x,v));
   double xb(x_b(x,v));
 
@@ -601,24 +601,24 @@ double MEqq2W2ffNason::Ltilde_gq(double x, double v) const {
 
   return( newg1 * newqbar / oldq / oldqbar );
 }
-double MEqq2W2ffNason::Vtilde_qq() const {
+double MEqq2W2ffPowheg::Vtilde_qq() const {
     return (_alphaS*_CF/(2.*pi))
           *(-3.*log(_mu2/_mll2)+(2.*pi*pi/3.)-8.);
 }
-double MEqq2W2ffNason::Ccalbar_qg(double x) const {
+double MEqq2W2ffPowheg::Ccalbar_qg(double x) const {
     return (sqr(x)+sqr(1.-x))*(log(_mll2/(_mu2*x))+2.*log(1.-x))+2.*x*(1.-x);
 }
-double MEqq2W2ffNason::Ctilde_qg(double x, double v) const {
+double MEqq2W2ffPowheg::Ctilde_qg(double x, double v) const {
     return  (_alphaS*_TF/(2.*pi))
 	  * ((1.-xbar(v))/x)
 	  * Ccalbar_qg(x)*Ltilde_qg(x,v);
 }
-double MEqq2W2ffNason::Ctilde_gq(double x, double v) const {
+double MEqq2W2ffPowheg::Ctilde_gq(double x, double v) const {
     return  (_alphaS*_TF/(2.*pi))
 	  * ((1.-xbar(v))/x)
           * Ccalbar_qg(x)*Ltilde_gq(x,v);
 }
-double MEqq2W2ffNason::Ctilde_qq(double x, double v) const {
+double MEqq2W2ffPowheg::Ctilde_qq(double x, double v) const {
     double wgt 
        = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Ltilde_qq(x,v)
        -  4.*log(1.-x)/(1.-x)
@@ -627,29 +627,29 @@ double MEqq2W2ffNason::Ctilde_qq(double x, double v) const {
 	 *log(_mll2/_mu2);
     return (_alphaS*_CF/(2.*pi))*(1.-xbar(v))*wgt;    
 }
-double MEqq2W2ffNason::Fcal_qq(double x, double v) const {
+double MEqq2W2ffPowheg::Fcal_qq(double x, double v) const {
     double tmp = (sqr(1.-x)*(1.-2.*v*(1.-v))+2.*x)/x;
     return tmp*Ltilde_qq(x,v);
 }
-double MEqq2W2ffNason::Fcal_qg(double x, double v) const {
+double MEqq2W2ffPowheg::Fcal_qg(double x, double v) const {
     double tmp = 2.*x*(1.-x)*v+sqr((1.-x)*v)+sqr(x)+sqr(1.-x);
     return ((1.-xbar(v))/x)*tmp*Ltilde_qg(x,v);
 }
-double MEqq2W2ffNason::Fcal_gq(double x, double v) const {
+double MEqq2W2ffPowheg::Fcal_gq(double x, double v) const {
     double tmp = 2.*x*(1.-x)*(1.-v)+sqr((1.-x)*(1.-v))+sqr(x)+sqr(1.-x);
     return ((1.-xbar(v))/x)*tmp*Ltilde_gq(x,v);
 }
-double MEqq2W2ffNason::Ftilde_qg(double xt, double v) const {
+double MEqq2W2ffPowheg::Ftilde_qg(double xt, double v) const {
     double tmp = ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.)
 	         )/v;
     return (_alphaS*_TF/(2.*pi))*tmp;
 }
-double MEqq2W2ffNason::Ftilde_gq(double xt, double v) const {
+double MEqq2W2ffPowheg::Ftilde_gq(double xt, double v) const {
     double tmp = ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.)
 	         )/(1.-v);
     return (_alphaS*_TF/(2.*pi))*tmp;
 }
-double MEqq2W2ffNason::Ftilde_qq(double xt, double v) const {
+double MEqq2W2ffPowheg::Ftilde_qq(double xt, double v) const {
     double tmp = 
         ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
       +   ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v
@@ -660,7 +660,7 @@ double MEqq2W2ffNason::Ftilde_qq(double xt, double v) const {
 }
 
 
-double MEqq2W2ffNason::Ctilde_qg_trick(double x, double v) const {
+double MEqq2W2ffPowheg::Ctilde_qg_trick(double x, double v) const {
     double ctilde_qg_minus_ct = (_alphaS*_TF/(2.*pi))*((1.-xbar(v))/x) 
 	                      * Ccalbar_qg(x)*(Ltilde_qg(x,v)-Ltilde_qg(1.,0.));
     double integrated_ct = (_alphaS*_TF/(2.*pi))
@@ -673,7 +673,7 @@ double MEqq2W2ffNason::Ctilde_qg_trick(double x, double v) const {
                            )*Ltilde_qg(1.,0.);
     return ctilde_qg_minus_ct + integrated_ct;
 }
-double MEqq2W2ffNason::Ctilde_gq_trick(double x, double v) const {
+double MEqq2W2ffPowheg::Ctilde_gq_trick(double x, double v) const {
     double ctilde_gq_minus_ct = (_alphaS*_TF/(2.*pi))*((1.-xbar(v))/x)
 	                      * Ccalbar_qg(x)*(Ltilde_gq(x,v)-Ltilde_gq(1.,1.));
     double integrated_ct = (_alphaS*_TF/(2.*pi))
@@ -687,7 +687,7 @@ double MEqq2W2ffNason::Ctilde_gq_trick(double x, double v) const {
     return ctilde_gq_minus_ct + integrated_ct;
 }
 
-void MEqq2W2ffNason::dofinish() {
+void MEqq2W2ffPowheg::dofinish() {
   cerr << "\n";
   cerr << "alphaS = " << _alphaS << "\n";
   cerr << "a = " << _a << "\n";

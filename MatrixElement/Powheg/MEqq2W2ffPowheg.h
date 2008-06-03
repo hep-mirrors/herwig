@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
-// MEqq2W2ffNason.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEqq2W2ffPowheg.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_MEqq2W2ffNason_H
-#define HERWIG_MEqq2W2ffNason_H
+#ifndef HERWIG_MEqq2W2ffPowheg_H
+#define HERWIG_MEqq2W2ffPowheg_H
 //
-// This is the declaration of the MEqq2W2ffNason class.
+// This is the declaration of the MEqq2W2ffPowheg class.
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
@@ -21,7 +21,7 @@
 #include "Herwig++/Utilities/Statistic.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "MEqq2W2ffNason.fh"
+#include "MEqq2W2ffPowheg.fh"
 
 namespace Herwig {
 
@@ -31,20 +31,20 @@ using Constants::pi;
 using Math::ReLi2;
 
 /**
- * The MEqq2W2ffNason class implements the matrix element for \f$q\bar{q'}\to W^\pm\f$
+ * The MEqq2W2ffPowheg class implements the matrix element for \f$q\bar{q'}\to W^\pm\f$
  * including the decay of the \f$W^\pm\f$ to Standard Model fermions.
  *
- * @see \ref MEqq2W2ffNasonInterfaces "The interfaces"
- * defined for MEqq2W2ffNason.
+ * @see \ref MEqq2W2ffPowhegInterfaces "The interfaces"
+ * defined for MEqq2W2ffPowheg.
  */
-class MEqq2W2ffNason: public ME2to2Base {
+class MEqq2W2ffPowheg: public ME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEqq2W2ffNason();
+  inline MEqq2W2ffPowheg();
 
   
 public:
@@ -244,13 +244,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEqq2W2ffNason> initMEqq2W2ffNason;
+  static ClassDescription<MEqq2W2ffPowheg> initMEqq2W2ffPowheg;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEqq2W2ffNason & operator=(const MEqq2W2ffNason &);
+  MEqq2W2ffPowheg & operator=(const MEqq2W2ffPowheg &);
 
 private:
 
@@ -379,33 +379,30 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEqq2W2ffNason. */
+ *  base classes of MEqq2W2ffPowheg. */
 template <>
-struct BaseClassTrait<Herwig::MEqq2W2ffNason,1> {
-  /** Typedef of the first base class of MEqq2W2ffNason. */
+struct BaseClassTrait<Herwig::MEqq2W2ffPowheg,1> {
+  /** Typedef of the first base class of MEqq2W2ffPowheg. */
   typedef ME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEqq2W2ffNason class and the shared object where it is defined. */
+ *  the MEqq2W2ffPowheg class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEqq2W2ffNason>
-  : public ClassTraitsBase<Herwig::MEqq2W2ffNason> {
+struct ClassTraits<Herwig::MEqq2W2ffPowheg>
+  : public ClassTraitsBase<Herwig::MEqq2W2ffPowheg> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEqq2W2ffNason"; }
+  static string className() { return "Herwig::MEqq2W2ffPowheg"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEqq2W2ffNason class and any other class on which it depends
+   *  access to the MEqq2W2ffPowheg class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwNasonME.so"; }
+  static string library() { return "HwPowhegME.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "MEqq2W2ffNason.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEqq2W2ffNason.tcc"
-#endif
+#include "MEqq2W2ffPowheg.icc"
 
-#endif /* HERWIG_MEqq2W2ffNason_H */
+#endif /* HERWIG_MEqq2W2ffPowheg_H */

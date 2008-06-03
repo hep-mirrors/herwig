@@ -1,21 +1,21 @@
 // -*- C++ -*-
 //
-// This is the forward declaration of the MEqq2gZ2ffNason class.
+// This is the forward declaration of the MEqq2gZ2ffPowheg class.
 //
-#ifndef HERWIG_MEqq2gZ2ffNason_FH
-#define HERWIG_MEqq2gZ2ffNason_FH
+#ifndef HERWIG_MEqq2gZ2ffPowheg_FH
+#define HERWIG_MEqq2gZ2ffPowheg_FH
 
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
 
-class MEqq2gZ2ffNason;
+class MEqq2gZ2ffPowheg;
 
 }
 
 namespace ThePEG {
 
-ThePEG_DECLARE_POINTERS(Herwig::MEqq2gZ2ffNason,MEqq2gZ2ffNasonPtr);
+ThePEG_DECLARE_POINTERS(Herwig::MEqq2gZ2ffPowheg,MEqq2gZ2ffPowhegPtr);
 
 }
 
