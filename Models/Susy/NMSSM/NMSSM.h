@@ -54,7 +54,7 @@ public:
   inline Energy lambdaVEV() const;
   
   /**
-   * Soft trilinear \f$S\H_2 H_1\f$ coupling
+   * Soft trilinear \f$SH_2 H_1\f$ coupling
    */
   inline Energy trilinearLambda() const;
 
@@ -192,7 +192,7 @@ private:
   double _kappa;
 
   /**
-   * Soft trilinear \f$S\H_2 H_1\f$ coupling
+   * Soft trilinear \f$SH_2 H_1\f$ coupling
    */
   Energy _theAlambda;
 
