@@ -1,4 +1,4 @@
-SUBDIRS = General Lepton Hadron DIS Nason
+SUBDIRS = General Lepton Hadron DIS Powheg
 
 noinst_LTLIBRARIES = libHwME.la 
 
