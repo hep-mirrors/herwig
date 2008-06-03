@@ -68,4 +68,8 @@ inline tReweighterPtr ShowerHandler::reweighter () const {
   return _reweighter;
 }
 
+inline tEvolverPtr ShowerHandler::evolver() const {
+  return _evolver;
+}
+
 }

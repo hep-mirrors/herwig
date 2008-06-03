@@ -247,6 +247,11 @@ protected:
    */
   bool decayProduct(tPPtr) const;
 
+  /**
+   *  Access to the Evolver
+   */
+  inline tEvolverPtr evolver() const;
+
 protected:
 
   /** @name Standard Interfaced functions. */
