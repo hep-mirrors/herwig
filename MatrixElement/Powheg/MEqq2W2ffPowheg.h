@@ -21,7 +21,6 @@
 #include "Herwig++/Utilities/Statistic.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "MEqq2W2ffPowheg.fh"
 
 namespace Herwig {
 
