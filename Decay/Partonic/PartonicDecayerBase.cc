@@ -33,7 +33,7 @@ ParticleVector PartonicDecayerBase::decay(const DecayMode & dm,
   // handling of the decay including the special features of the
   // DecayMode  
   // get the primary products
-  PDVector products=dm.orderedProducts();
+  tPDVector products=dm.orderedProducts();
   // add products for which the decay mode is all ready specified
   if(!dm.cascadeProducts().empty()) 
     throw Exception() << "PartonicDecayerBase::decay() cannot handle"

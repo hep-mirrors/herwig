@@ -20,15 +20,15 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(0.*GeV2), theCoupLast(0.) {
-  vector<int> anti, ferm, boson(24, 5100021);
+  vector<long> anti, ferm, boson(24, 5100021);
   //QQ
-  for(int i = 1; i < 7; ++i) {
+  for(long i = 1; i < 7; ++i) {
     anti.push_back(-i);
     ferm.push_back(i + 5100000);
     anti.push_back(-(i + 5100000));
     ferm.push_back(i);
   }
-  for(int i = 1; i < 7; ++i) {
+  for(long i = 1; i < 7; ++i) {
     anti.push_back(-i);
     ferm.push_back(i + 6100000);
     anti.push_back(-(i + 6100000));

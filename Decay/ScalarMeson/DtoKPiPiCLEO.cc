@@ -126,7 +126,7 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   tPDPtr f2      = getParticleData(ParticleID::f_2);
   DecayPhaseSpaceChannelPtr newchannel;
   // D0 -> K- pi+ pi0
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::D0);
   extpart[1]=getParticleData(ParticleID::Kminus);
   extpart[2]=getParticleData(ParticleID::piplus);
@@ -855,14 +855,14 @@ void DtoKPiPiCLEO::Init() {
 }
 
 int DtoKPiPiCLEO::modeNumber(bool & cc,tcPDPtr parent,
-			     const PDVector & children) const {
+			     const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D0
   if(abs(id0)!=ParticleID::D0) return -1;
   cc = id0==ParticleID::Dbar0;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
   for( ;pit!=children.end();++pit) {
     id0=(**pit).id();

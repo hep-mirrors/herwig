@@ -78,7 +78,7 @@ void GeneralCurrentDecayer::Init() {
 }
 
 int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const {
+			 const tPDVector & children) const {
   vector<long> id;
   id.push_back(parent->id());
   for(unsigned int ix=0;ix<children.size();++ix) id.push_back(children[ix]->id());
@@ -92,8 +92,8 @@ void GeneralCurrentDecayer::doinit() throw(InitException) {
   _modemap.clear();
   _modestart.clear();
   // extract the possible particles for the modes
-  vector<PDPtr> all       = _theVertex->search(0,ParticleID::Wplus);
-  vector<PDPtr> particles = _theVertex->search(1,ParticleID::Wplus);
+  vector<tPDPtr> all       = _theVertex->search(0,ParticleID::Wplus);
+  vector<tPDPtr> particles = _theVertex->search(1,ParticleID::Wplus);
   for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
   particles =_theVertex->search(2,ParticleID::Wplus);
   for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
@@ -112,7 +112,7 @@ void GeneralCurrentDecayer::doinit() throw(InitException) {
     // set up the phase-space channels
     DecayPhaseSpaceModePtr mode;
     DecayPhaseSpaceChannelPtr channel;
-    PDVector extpart,ptemp;
+    tPDVector extpart,ptemp;
     extpart.push_back(part[0]);
     extpart.push_back(part[1]);
     Energy mdiff(part[0]->mass()-part[1]->mass());

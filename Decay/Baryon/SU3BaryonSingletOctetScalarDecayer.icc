@@ -69,7 +69,7 @@ inline void SU3BaryonSingletOctetScalarDecayer::doinit() throw(InitException) {
   // set up the decay modes
   setupModes(1);
   // set up the phase space and the couplings
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   double wgtmax;
   vector<double> wgt(0);

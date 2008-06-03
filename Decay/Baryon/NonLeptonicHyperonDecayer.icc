@@ -48,7 +48,7 @@ inline void NonLeptonicHyperonDecayer::doinit() throw(InitException) {
 			   << "NonLeptonicHyperonDecayer::doinit()" 
 			   << Exception::runerror;}
   // set up the decay modes
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   double wgtmax;
   vector<double> wgt(0);

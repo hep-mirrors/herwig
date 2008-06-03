@@ -116,7 +116,7 @@ private:
    * @param iv Row number in _theExistingDecayers member
    * @return vector of ParticleData ptrs
    */
-  vector<PDPtr> createModes(const PDPtr inpart,
+  vector<tPDPtr> createModes(const PDPtr inpart,
 			    const VertexBasePtr vert,
 			    unsigned int ilist,
 			    unsigned int iv);
@@ -138,7 +138,7 @@ private:
    * @param decayer The decayer responsible for this decay
    */
   void createDecayMode(PDPtr inpart,
-		       const PDVector & decays,
+		       const tPDVector & decays,
 		       map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> decayer);
 
   /**

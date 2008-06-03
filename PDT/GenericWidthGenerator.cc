@@ -13,7 +13,6 @@
 
 #include "GenericWidthGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
@@ -23,6 +22,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/Repository.h"
+#include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/StringUtils.h"
 
 using namespace Herwig;
 
@@ -47,15 +48,31 @@ void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
 ClassDescription<GenericWidthGenerator> GenericWidthGenerator::initGenericWidthGenerator;
 // Definition of the static class description member.
 
+void GenericWidthGenerator::setParticle(string p) {
+  _theParticle = Repository::findParticle(StringUtils::basename(p));
+  if ( ! _theParticle ) 
+    Throw<InterfaceException>() 
+      << "Could not set Particle interface "
+      << "for the object \"" << name()
+      << "\". Particle \"" << StringUtils::basename(p) << "\" not found."
+      << Exception::runerror;
+}
+
+string GenericWidthGenerator::getParticle() const {
+  return _theParticle ? _theParticle->fullName() : "";
+}
+
 void GenericWidthGenerator::Init() {
 
   static ClassDocumentation<GenericWidthGenerator> documentation
     ("The GenericWidthGenerator class is the base class for running widths");
 
-  static Reference<GenericWidthGenerator,ParticleData> interfaceParticle
+  static Parameter<GenericWidthGenerator,string> interfaceParticle
     ("Particle",
      "The particle for which this is the width generator",
-     &GenericWidthGenerator::_theParticle, false, false, true, false, false);
+     0, "", true, false,
+     &GenericWidthGenerator::setParticle, 
+     &GenericWidthGenerator::getParticle);
 
   static Switch<GenericWidthGenerator,bool> interfaceInitialize
     ("Initialize",
@@ -706,6 +723,19 @@ void GenericWidthGenerator::doinitrun() {
   // set up the interpolators
   setInterpolators();
 }
+
+void GenericWidthGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _theParticle = trans.translate(_theParticle);
+  WidthGenerator::rebind(trans);
+}
+
+IVector GenericWidthGenerator::getReferences() {
+  IVector ret = WidthGenerator::getReferences();
+  ret.push_back(_theParticle);
+  return ret;
+}
+
 
 Length GenericWidthGenerator::lifeTime(const ParticleData &, Energy m, Energy w) const {
   if(m<_theParticle->massMin()) w = width(*_theParticle,_theParticle->massMin());

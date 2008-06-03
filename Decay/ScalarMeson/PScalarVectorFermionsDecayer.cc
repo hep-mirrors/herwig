@@ -75,7 +75,7 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
     throw InitException() << "Inconsistent parameters in PScalarVectorFermionsDecayer"
 			  << Exception::abortnow;
   // create the integration channel for each mode 
-  PDVector extpart(4);
+  tPDVector extpart(4);
   tPDPtr gamma(getParticleData(ParticleID::gamma));
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
@@ -103,14 +103,14 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
 }
 
 int PScalarVectorFermionsDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const PDVector & children) const {
+					   const tPDVector & children) const {
   int imode(-1);
   // must be three outgoing particles
   if(children.size()!=3) return imode;
   // ids of the particles
   int id0(parent->id()),idf[2],idv(0);
   unsigned int nf(0);
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   for( ;pit!=children.end();++pit) {
     if((**pit).iSpin()==PDT::Spin1) {
       idv=(**pit).id();

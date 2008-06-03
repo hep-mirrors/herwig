@@ -46,8 +46,8 @@ void LHFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
 
 LHFFGVertex::LHFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second,third;
-  for(unsigned int ix=1;ix<9;++ix) {
+  vector<long> first,second,third;
+  for(int ix=1;ix<9;++ix) {
     if(ix==7) ++ix;
     first.push_back(-ix);
     second.push_back(ix);

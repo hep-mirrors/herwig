@@ -30,7 +30,7 @@ IBPtr BtoSGammaDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
+bool BtoSGammaDecayer::accept(tcPDPtr , const tPDVector & children) const {
   // should be three decay products
   if(children.size()!=3) return false;
   // photon should be last
@@ -46,7 +46,7 @@ bool BtoSGammaDecayer::accept(tcPDPtr , const PDVector & children) const {
 }
 
 ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
-				       const PDVector & prod) const {
+				       const tPDVector & prod) const {
   ParticleVector children;
   for(unsigned int ix=0;ix<prod.size();++ix) {
     children.push_back(prod[ix]->produceParticle());

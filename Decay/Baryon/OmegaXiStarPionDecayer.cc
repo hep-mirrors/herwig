@@ -15,7 +15,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 int OmegaXiStarPionDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   int imode(-1);
   // must be two outgoing particles
   if(children.size()!=2){return imode;}

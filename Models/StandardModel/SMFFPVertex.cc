@@ -21,15 +21,15 @@ using namespace ThePEG;
 
 SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(-1.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(22);
   }
   // the leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(22);

@@ -17,7 +17,7 @@ using namespace ThePEG::Helicity;
 NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
 				   _q2last(0.*MeV2), _couplast(0.) {
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // codes for the neutral higgs
   int ieven[3]={25,35,45};
   int iodd [2]={36,46};

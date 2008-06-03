@@ -110,7 +110,7 @@ public:
    * @param ia The PDG code for the antiquark
    * @return The external particles for the current.
    */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
+  virtual tPDVector particles(int icharge, unsigned int imode, int iq, int ia);
 
   /**
    * Output the setup information for the particle database

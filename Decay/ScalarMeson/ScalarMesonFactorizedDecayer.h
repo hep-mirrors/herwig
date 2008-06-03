@@ -56,7 +56,7 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -64,7 +64,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -177,7 +177,7 @@ private:
    * @param loc The location of the duplicate mode
    * @param cc  If the duplicate is the charge conjugate
    */
-  void findModes(unsigned int imode,vector<PDVector> & particles,
+  void findModes(unsigned int imode,vector<tPDVector> & particles,
 		 vector<unsigned int> & loc,vector<bool> & cc);
 
 private:

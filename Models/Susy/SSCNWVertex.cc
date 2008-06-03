@@ -23,17 +23,17 @@ using namespace Herwig;
 SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(0.*GeV2), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
 			     _rightlast(0.) {
-  vector<int> first, second, third;
+  vector<long> first, second, third;
   //iw == -1 outgoing W-, iw == +1 outgoing W+
   for(int iw = -1; iw < 2; iw += 2) {
     for(unsigned int ine = 0; ine < 5; ++ine) {
-      int neu(1000022);
+      long neu(1000022);
       if(ine == 1) neu = 1000023;
       if(ine == 2) neu = 1000025;
       if(ine == 3) neu = 1000035;
       if(ine == 4) neu = 1000045;
       for(unsigned int ic = 0; ic < 2; ++ic) {
-	int cha(1000024);
+	long cha(1000024);
 	if(ic == 1) cha = 1000037;
 	first.push_back(-iw*cha);
 	second.push_back(neu);

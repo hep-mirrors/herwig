@@ -25,9 +25,9 @@ void LHTPFFGVertex::Init() {
 LHTPFFGVertex::LHTPFFGVertex() 
   : _couplast(0.), _q2last(0.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second;
+  vector<long> first,second;
   // SM quarks
-  for(unsigned int ix=1;ix<6;++ix) {
+  for(int ix=1;ix<6;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
   }
@@ -35,13 +35,13 @@ LHTPFFGVertex::LHTPFFGVertex()
   first.push_back(-8);
   second.push_back(8);
   // T odd quarks
-  for(unsigned int ix=1;ix<4000006;++ix) {
+  for(long ix=4000001;ix<4000006;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
   }
   first.push_back(-4000008);
   second.push_back(4000008);
-  vector<int> third(first.size(),21);
+  vector<long> third(first.size(),21);
   setList(first,second,third);
 }
   

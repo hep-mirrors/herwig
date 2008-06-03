@@ -20,7 +20,7 @@ SU3BaryonSingletOctetPhotonDecayer::~SU3BaryonSingletOctetPhotonDecayer()
 {}
 
 int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   if(_outgoingB.size()==0){setupModes(0);}
   // must be two outgoing particles
@@ -164,7 +164,7 @@ void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const
   // decays of the excited lambda
   outtemp.push_back(_sigma0);factor.push_back(_C/sqrt(2.));
   outtemp.push_back(_lambda);factor.push_back(_C/sqrt(6.));
-  PDVector extpart(2);extpart[0]=getParticleData(_elambda);
+  tPDVector extpart(2);extpart[0]=getParticleData(_elambda);
   int inspin(extpart[0]->iSpin()),outspin;
   for(unsigned int ix=0;ix<outtemp.size();++ix)
     {

@@ -90,7 +90,7 @@ void VectorMeson3PionDecayer::doinit() throw(InitException) {
 			  << Exception::abortnow;
   // calculate the parameters 
   // set the external particles
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[1]=getParticleData(ParticleID::pi0);
   extpart[2]=getParticleData(ParticleID::piplus);
   extpart[3]=getParticleData(ParticleID::piminus);
@@ -199,14 +199,14 @@ void VectorMeson3PionDecayer::doinit() throw(InitException) {
 }
 
 int VectorMeson3PionDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					const PDVector & children) const {
+					const tPDVector & children) const {
   cc=false;
   // must be three outgoing particles
   if(children.size()!=3) return -1;
   // check the id's of the outgoing particles
   int id;
   unsigned int npi0(0),npip(0),npim(0);
-  PDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pit  = children.begin();
   for(;pit!=children.end();++pit) {
     id = (*pit)->id();
     if(id==ParticleID::pi0)          ++npi0;

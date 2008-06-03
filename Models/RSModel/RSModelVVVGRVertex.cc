@@ -19,27 +19,26 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2,0.0), _q2last(2,0.*GeV2) {
-  vector<int> first,second,third,fourth;
+RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2), _q2last(2) {
+  vector<long> first,second,third,fourth;
   first.push_back(24);
   second.push_back(-24);
   third.push_back(22);
   fourth.push_back(39);
+
   first.push_back(24);
   second.push_back(-24);
   third.push_back(23);
   fourth.push_back(39);
+
   first.push_back(21);
   second.push_back(21);
   third.push_back(21);
   fourth.push_back(39);
+
   setList(first,second,third,fourth);
   _theKappa=InvEnergy();
-  _couplast[0]=0.;
-  _couplast[1]=0.;
- _q2last[0]=0.*GeV2;
- _q2last[1]=0.*GeV2;
- _zfact=0.;
+  _zfact=0.;
 }
 
 void RSModelVVVGRVertex::doinit() throw(InitException) {

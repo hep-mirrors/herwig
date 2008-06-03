@@ -90,7 +90,7 @@ void ExcitedLambdaStrongDecayer::doinit() throw(InitException) {
 			  << "::doinit()" << Exception::abortnow;
   }
   // set-up for the phase-space
-  PDVector extpart(4);
+  tPDVector extpart(4);
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr channel;
   vector<double>::iterator start,end;
@@ -999,10 +999,10 @@ void ExcitedLambdaStrongDecayer::dataBaseOutput(ofstream & , bool) const{
 }
 
 int ExcitedLambdaStrongDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const PDVector & children) const {
+					   const tPDVector & children) const {
   int idout(0),id,imode(-1);
   unsigned int npi0(0),ix(0);
-  PDVector::const_iterator pit(children.begin());
+  tPDVector::const_iterator pit(children.begin());
   for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::pi0){++npi0;}

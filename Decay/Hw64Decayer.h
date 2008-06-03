@@ -54,14 +54,14 @@ public:
    * return true if this decayer can perfom the decay specified by the
    * given decay mode.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * for a given decay mode and a given particle instance, perform the
    * decay and return the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database

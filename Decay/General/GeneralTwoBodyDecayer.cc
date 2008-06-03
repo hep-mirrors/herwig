@@ -24,10 +24,10 @@
 using namespace Herwig;
 
 ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
-					      const PDVector & children) const {
+					      const tPDVector & children) const {
   // return empty vector if products heavier than parent
   Energy mout(0.*GeV);
-  for(PDVector::const_iterator it=children.begin();
+  for(tPDVector::const_iterator it=children.begin();
       it!=children.end();++it) mout+=(**it).massMin();
   if(mout>parent.mass()) return ParticleVector();
   // generate the decay
@@ -47,21 +47,21 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
 					<< "Null vertex pointer!\n";  
   _theVertex->init();
   vector<double> wgt(0);  
-  PDVector parents = _theVertex->getIncoming();
-  PDVector::size_type np = parents.size();
-  PDVector extpart(3);
+  tPDVector parents = _theVertex->getIncoming();
+  tPDVector::size_type np = parents.size();
+  tPDVector extpart(3);
   for( tPDVector::size_type i = 0; i < np; ++i ) {
     tPDPtr inpart = parents[i];
     long pid = inpart->id();
     if( pid < 0 ) continue;
     Energy m1 = inpart->mass();
-    PDVector decaylist;
+    tPDVector decaylist;
     for(unsigned int il = 0; il< _thelist.size(); ++il) {
-      PDVector temp = _theVertex->search(_thelist[il], pid);
-      decaylist.insert(decaylist.end(),temp.begin(),temp.end());
+       tPDVector temp = _theVertex->search(_thelist[il], pid);
+       decaylist.insert(decaylist.end(),temp.begin(),temp.end());
     }
-    PDVector::size_type ndec = decaylist.size();
-    for( PDVector::size_type j = 0; j < ndec; j +=3 ) {
+    tPDVector::size_type ndec = decaylist.size();
+    for( tPDVector::size_type j = 0; j < ndec; j +=3 ) {
       tPDPtr pa(decaylist[j]), pb(decaylist[j + 1]), pc(decaylist[j + 2]);
       if( pb->id() == pid ) swap(pa, pb);
       if( pc->id() == pid ) swap(pa, pc);
@@ -101,7 +101,7 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
 }
 
 int GeneralTwoBodyDecayer::modeNumber(bool & cc, tcPDPtr parent, 
-				      const PDVector & children) const {
+				      const tPDVector & children) const {
   long parentID = parent->id();
   long id1 = children[0]->id();
   long id2 = children[1]->id();
@@ -446,7 +446,7 @@ double GeneralTwoBodyDecayer::colourFactor(tcPDPtr in, tcPDPtr out1,
 Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa, 
 					   PMPair outb) const {
   // select the number of the mode
-  PDVector children;
+  tPDVector children;
   children.push_back(const_ptr_cast<PDPtr>(outa.first));
   children.push_back(const_ptr_cast<PDPtr>(outb.first));
   bool cc;

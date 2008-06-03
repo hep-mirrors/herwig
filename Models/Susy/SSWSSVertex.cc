@@ -23,10 +23,10 @@ using namespace Herwig;
 SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.), 
 				  _ulast(0), _dlast(0), _gblast(0),
 				  _factlast(0.) {
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   //W-
   //LL-squarks
-  for(unsigned int ix=1000001;ix<1000006;ix+=2) {
+  for(long ix=1000001;ix<1000006;ix+=2) {
     first.push_back(-24);
     second.push_back(ix+1);
     third.push_back(-ix);
@@ -45,7 +45,7 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   third.push_back(-2000005);
  
   //LL-sleptons
-  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
+  for(long ix=1000011;ix<1000016;ix+=2) {
     first.push_back(-24);
     second.push_back(-ix);
     third.push_back(ix+1);
@@ -55,7 +55,7 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   second.push_back(-2000015);
   third.push_back(1000016);
   //W+
-  for(unsigned int ix=1000001;ix<1000006;ix+=2) {
+  for(long ix=1000001;ix<1000006;ix+=2) {
     first.push_back(24);
     second.push_back(-(ix+1));
     third.push_back(ix);
@@ -75,7 +75,7 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   third.push_back(2000005);
 
   //LL-sleptons
-  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
+  for(long ix=1000011;ix<1000016;ix+=2) {
     first.push_back(24);
     second.push_back(ix);
     third.push_back(-ix-1);
@@ -87,13 +87,13 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   
   //---Z0----
 //LL-sleptons
-  for(unsigned int ix=1000011;ix<1000017;++ix) {
+  for(long ix=1000011;ix<1000017;++ix) {
     first.push_back(23);
     second.push_back(ix);
     third.push_back(-ix);
   }
   //RR-sleptons
-  for(unsigned int ix=2000011;ix<2000016;ix+=2) {
+  for(long ix=2000011;ix<2000016;ix+=2) {
     first.push_back(23);
     second.push_back(ix);
     third.push_back(-ix);
@@ -108,13 +108,13 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   third.push_back(2000015);
    
   //LL squarks
-  for(unsigned int ix=1000001;ix<1000007;++ix) {
+  for(long ix=1000001;ix<1000007;++ix) {
     first.push_back(23);
     second.push_back(ix);
     third.push_back(-ix);
   }
   //RR squarks
-  for(unsigned int ix=2000001;ix<2000007;++ix) {
+  for(long ix=2000001;ix<2000007;++ix) {
     first.push_back(23);
     second.push_back(ix);
     third.push_back(-ix);
@@ -139,23 +139,23 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   
   //----gamma----
   //sleptons
-  for(unsigned int ix=1000011;ix<1000016;ix+=2) {
+  for(long ix=1000011;ix<1000016;ix+=2) {
     first.push_back(22);
     second.push_back(ix);
     third.push_back(-ix);
   }
-  for(unsigned int ix=2000011;ix<2000016;ix+=2) {
+  for(long ix=2000011;ix<2000016;ix+=2) {
     first.push_back(22);
     second.push_back(ix);
     third.push_back(-ix);
   }
   //squarks
-  for(unsigned int ix=1000001;ix<1000007;++ix) {
+  for(long ix=1000001;ix<1000007;++ix) {
     first.push_back(22);
     second.push_back(ix);
     third.push_back(-ix);
   }
-  for(unsigned int ix=2000001;ix<2000007;++ix) {
+  for(long ix=2000001;ix<2000007;++ix) {
     first.push_back(22);
     second.push_back(ix);
     third.push_back(-ix);

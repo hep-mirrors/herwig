@@ -33,10 +33,10 @@
 using namespace Herwig; 
 
 ParticleVector DecayIntegrator::decay(const Particle & parent,
-				      const PDVector & children) const {
+				      const tPDVector & children) const {
   // return empty vector if products heavier than parent
   Energy mout(0.*GeV);
-  for(PDVector::const_iterator it=children.begin();
+  for(tPDVector::const_iterator it=children.begin();
       it!=children.end();++it) mout+=(**it).massMin();
   if(mout>parent.mass()) return ParticleVector();
   // generate the decay

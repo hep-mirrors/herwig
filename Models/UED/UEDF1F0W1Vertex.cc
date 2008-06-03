@@ -28,10 +28,10 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
 				     theCouplast(0.), theLlast(0.),
 				     theRlast(0.), theGBlast(0), 
 				     theKKlast(0), theSMlast(0) {
-  vector<int> ferm, anti, wboson;
+  vector<long> ferm, anti, wboson;
   //outgoing W+
-  for(unsigned int i = 2; i < 7; i += 2) {
-    for(unsigned int j = 1; j < 6; j += 2) {
+  for(long i = 2; i < 7; i += 2) {
+    for(long j = 1; j < 6; j += 2) {
       anti.push_back(-i);
       ferm.push_back(5100000 + j);
       wboson.push_back(5100024);
@@ -40,7 +40,7 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
       wboson.push_back(5100024);
     }
   }
-  for(unsigned int i = 11; i < 17; i += 2) {
+  for(long i = 11; i < 17; i += 2) {
     anti.push_back(-i - 1);
     ferm.push_back(5100000 + i);
     wboson.push_back(5100024);
@@ -49,8 +49,8 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
     wboson.push_back(5100024);
   }
   //outgoing W-
-  for(unsigned int i = 1; i < 6; i += 2) {
-    for(unsigned int j = 2 ; j < 7; j += 2) {
+  for(long i = 1; i < 6; i += 2) {
+    for(long j = 2 ; j < 7; j += 2) {
       anti.push_back(-i);
       ferm.push_back(5100000 + j);
       wboson.push_back(-5100024);
@@ -59,7 +59,7 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
       wboson.push_back(-5100024);
     }
   }
-  for(unsigned int i = 11; i < 17; i += 2) {
+  for(long i = 11; i < 17; i += 2) {
     anti.push_back(-i);
     ferm.push_back(5100001 + i);
     wboson.push_back(-5100024);
@@ -68,7 +68,7 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
     wboson.push_back(-5100024);
   }
   long boson[2] = {5100022,5100023}; 
-  for(unsigned int b = 0; b < 2; ++b) { 
+  for(long b = 0; b < 2; ++b) { 
     //QQ
     for(int i = 1; i < 7; ++i) {
       anti.push_back(-i);

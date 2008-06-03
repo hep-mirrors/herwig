@@ -61,12 +61,12 @@ void Hw64Decayer::Init() {
 
 ClassDescription<Hw64Decayer> Hw64Decayer::initHw64Decayer;
 
-bool Hw64Decayer::accept(tcPDPtr, const PDVector & children) const  {
+bool Hw64Decayer::accept(tcPDPtr, const tPDVector & children) const  {
   return children.size() <= 3;
 }
 
 ParticleVector Hw64Decayer::decay(const Particle & p, 
-				  const PDVector & children) const {
+				  const tPDVector & children) const {
   // storage for the decay products and number of decay products
   ParticleVector rval;
   unsigned int numProds(children.size());

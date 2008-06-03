@@ -97,7 +97,7 @@ void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
 			   << "RadiativeHeavyBaryonDecayer::doinit()" 
 			   << Exception::abortnow;}
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   // the decay modes
   extpart[2]=getParticleData(ParticleID::gamma);
@@ -111,7 +111,7 @@ void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
 }
 
 int RadiativeHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					    const PDVector & children) const {
+					    const tPDVector & children) const {
   int imode(-1);
   // must be two outgoing particles
   if(children.size()!=2){return imode;}

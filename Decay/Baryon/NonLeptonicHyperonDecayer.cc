@@ -58,7 +58,7 @@ NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer()
 NonLeptonicHyperonDecayer::~NonLeptonicHyperonDecayer() {}
 
 int NonLeptonicHyperonDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   // must be two outgoing pa4rticles
   if(children.size()!=2) return imode;

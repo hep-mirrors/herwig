@@ -59,12 +59,12 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
+	$(VALGRIND) ./Herwig++ init -d 1 -L$(top_builddir)/lib -i defaults/HerwigDefaults.in \
 &> /tmp/valgrind-init.log
 valgrind-read:
-	$(VALGRIND) ./Herwig++ read LHC.in &> /tmp/valgrind-read.log
+	$(VALGRIND) ./Herwig++ read -d 1 LHC.in &> /tmp/valgrind-read.log
 valgrind-run:
-	$(VALGRIND) ./Herwig++ run -N1 LHC.run &> /tmp/valgrind-run.log
+	$(VALGRIND) ./Herwig++ run -d 1 -N5 LHC.run &> /tmp/valgrind-run.log
 
 SETUPTHEPEG=$(THEPEGPATH)/bin/setupThePEG
 THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo

@@ -225,7 +225,7 @@ void StrongHeavyBaryonDecayer::doinit() throw(InitException) {
 			   << "::doinit()" << Exception::abortnow;}
   // add the various decay modes
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   // the decay modes
   for(unsigned int ix=0;ix<_incoming.size();++ix)
@@ -403,7 +403,7 @@ void StrongHeavyBaryonDecayer::persistentInput(PersistentIStream & is, int) {
 }
 
 int StrongHeavyBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   if(children.size()!=2){return imode;}
   // ids of the particles

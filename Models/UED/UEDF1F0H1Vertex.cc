@@ -24,8 +24,8 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(), theMw(),
 				     theCoupLast(0.), theLeftLast(0.),
 				     theRightLast(0.), theKKLast(0),
 				     theSMLast(0) {
-  vector<int> anti, ferm, kkhiggs;
-  for(unsigned int i = 1; i < 6; i += 2) {
+  vector<long> anti, ferm, kkhiggs;
+  for(long i = 1; i < 6; i += 2) {
     //outgoing H+
     anti.push_back(-(5100001 + i));
     ferm.push_back(i);

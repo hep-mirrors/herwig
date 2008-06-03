@@ -67,7 +67,7 @@ void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
     throw InitException() << "Inconsistent parameters in PScalarLeptonNeutrinoDecayer"
 			  << Exception::abortnow;
   // create the integration channels
-  PDVector extpart(3);  
+  tPDVector extpart(3);  
   tPDPtr nu[3]={getParticleData(ParticleID::nu_e),
 		getParticleData(ParticleID::nu_mu),
 		getParticleData(ParticleID::nu_tau)};
@@ -106,13 +106,13 @@ void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
 }
 
 int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					     const PDVector & children) const {
+					     const tPDVector & children) const {
   int imode(-1);
   if(children.size()!=2) return imode;
   // ids of the particles
   int id0(parent->id()),id0bar(id0);
   if(parent->CC()){id0bar=-id0;}
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int id;
   unsigned ilep(4);
   for(;pit!=children.end();++pit) {

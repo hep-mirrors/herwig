@@ -34,9 +34,9 @@ void LHFFZVertex::Init() {
 
 LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(23);
@@ -60,7 +60,7 @@ LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
   second.push_back( 6);
   third.push_back (33);
   // the leptons
-  for(unsigned int ix=11;ix<17;++ix) {
+  for(int ix=11;ix<17;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(23);

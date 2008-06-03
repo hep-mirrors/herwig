@@ -15,9 +15,10 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/Throw.h"
+#include "ThePEG/Utilities/Rebinder.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -43,16 +44,20 @@ void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
 ClassDescription<GenericMassGenerator> GenericMassGenerator::initGenericMassGenerator;
 // Definition of the static class description member.
 
+
 void GenericMassGenerator::Init() {
 
   static ClassDocumentation<GenericMassGenerator> documentation
     ("The GenericMassGenerator class is the main class for"
      " mass generation in Herwig++.");
 
-  static Reference<GenericMassGenerator,ParticleData> interfaceParticle
+  static Parameter<GenericMassGenerator,string> interfaceParticle
     ("Particle",
      "The particle data object for this class",
-     &GenericMassGenerator::_particle, false, false, true, false, false);
+     0, "", true, false, 
+     &GenericMassGenerator::setParticle, 
+     &GenericMassGenerator::getParticle);
+
 
   static Switch<GenericMassGenerator,bool> interfaceInitialize
     ("Initialize",
@@ -130,11 +135,9 @@ void GenericMassGenerator::Init() {
 }
 
 bool GenericMassGenerator::accept(const ParticleData & in) const {
-  if(!_particle){return false;}
-  bool allowed=false;
-  if(in.id()==_particle->id()){allowed=true;}
-  else if(_particle->CC()&&(_particle->CC())->id()==in.id()){allowed=true;}
-  return allowed;
+  if(!_particle) return false;
+  return in.id() == _particle->id() || 
+    ( _particle->CC() && _particle->CC()->id() == in.id() );
 }
 
 void GenericMassGenerator::doinit() throw(InitException) {
@@ -189,4 +192,32 @@ void GenericMassGenerator::dofinish() {
     dataBaseOutput(output,true);
   }
   MassGenerator::dofinish();
+}
+
+void GenericMassGenerator::setParticle(string p) {
+  _particle = Repository::findParticle(StringUtils::basename(p));
+  if ( ! _particle ) 
+    Throw<InterfaceException>() 
+      << "Could not set Particle interface "
+      << "for the object \"" << name()
+      << "\". Particle \"" << StringUtils::basename(p) << "\" not found."
+      << Exception::runerror;
+}
+
+string GenericMassGenerator::getParticle() const {
+  return _particle ? _particle->fullName() : "";
+}
+
+void GenericMassGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _particle = trans.translate(_particle);
+  _antiparticle = trans.translate(_antiparticle);
+  MassGenerator::rebind(trans);
+}
+
+IVector GenericMassGenerator::getReferences() {
+  IVector ret = MassGenerator::getReferences();
+  ret.push_back(_particle);
+  ret.push_back(_antiparticle);
+  return ret;
 }

@@ -244,6 +244,25 @@ protected:
    * run has ended. Used eg. to write out statistics.
    */
   virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  virtual IVector getReferences();
   //@}
 
 private:
@@ -278,14 +297,24 @@ protected:
 private:
  
   /**
+   * Helper function for the interface
+   */
+  void setParticle(string);
+
+  /**
+   * Helper function for the interface
+   */
+  string getParticle() const;
+
+  /**
    * Pointer to the particle
    */
-  PDPtr _particle;
+  tPDPtr _particle;
 
   /**
    * Pointer to the anti-particle
    */
-  PDPtr _antiparticle;
+  tPDPtr _antiparticle;
 
   /**
    * Lower limit on the particle's mass

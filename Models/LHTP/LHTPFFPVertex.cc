@@ -41,15 +41,15 @@ LHTPFFPVertex::LHTPFFPVertex() :
   _coupd(0.), _coupu(0.), _coupe(0.), _coupnu(0.),
   _tmtpL(0.), _tmtpR(0.), _tmtL(0.), _tmtR(0.) {
   // PDG codes for the particles
-  vector<int> first,second;
+  vector<long> first,second;
   // interactions with the photon
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
   }
   // the leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix);
   }
@@ -57,22 +57,22 @@ LHTPFFPVertex::LHTPFFPVertex() :
 //   first.push_back(-8);
 //   second.push_back(8);
 //   // the T-odd quarks
-//   for(unsigned int ix=4000001;ix<4000007;++ix) {
+//   for(long ix=4000001;ix<4000007;++ix) {
 //     first.push_back(-ix);
 //     second.push_back(ix);
 //   }
 //   // the T-odd leptons
-//   for(unsigned int ix=4000011;ix<4000017;ix+=2) {
+//   for(long ix=4000011;ix<4000017;ix+=2) {
 //     first.push_back(-ix);
 //     second.push_back(ix);
 //   }
 //   // extra top quark
 //   first.push_back(-4000008);
 //   second.push_back(4000008);
-  vector<int> third(first.size(),22);
+  vector<long> third(first.size(),22);
 //   // interactions with A_H
 //   // quark and T-odd quark
-//   for(unsigned int ix=1;ix<7;++ix) {
+//   for(long ix=1;ix<7;++ix) {
 //     first.push_back(-ix-4000000);
 //     second.push_back(ix);
 //     third.push_back(32);
@@ -81,7 +81,7 @@ LHTPFFPVertex::LHTPFFPVertex() :
 //     third.push_back(32);
 //   }
 //   // leptons and T-odd leptons
-//   for(unsigned int ix=11;ix<17;ix+=2) {
+//   for(long ix=11;ix<17;ix+=2) {
 //     first.push_back(-ix-4000000);
 //     second.push_back(ix);
 //     third.push_back(32);

@@ -17,11 +17,11 @@ LHFFWVertex::LHFFWVertex()
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.), _q2last(0.*GeV2),
     _corrL(0.),_corrH(0.),_tcorrL(0.),_tcorrH(0.),_tHcorrL(0.), _tHcorrH(0.) {
   // particles for the vertex
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // particles for outgoing W-
   // quarks
-  for(unsigned int ix=1;ix<6;ix+=2) {
-    for(unsigned int iy=2;iy<7;iy+=2) {
+  for(int ix=1;ix<6;ix+=2) {
+    for(int iy=2;iy<7;iy+=2) {
       first.push_back(-ix);
       second.push_back(iy);
       third.push_back(-24);
@@ -31,7 +31,7 @@ LHFFWVertex::LHFFWVertex()
     }
   }
   // leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix+1);
     third.push_back(-24);
@@ -41,8 +41,8 @@ LHFFWVertex::LHFFWVertex()
   }
   // particles for outgoing W+
   // quarks
-  for(unsigned int ix=2;ix<7;ix+=2) {
-    for(unsigned int iy=1;iy<6;iy+=2) {
+  for(int ix=2;ix<7;ix+=2) {
+    for(int iy=1;iy<6;iy+=2) {
       first.push_back(-ix);
       second.push_back(iy);
       third.push_back(24);
@@ -52,7 +52,7 @@ LHFFWVertex::LHFFWVertex()
     }
   }
   // leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix-1);
     second.push_back(ix);
     third.push_back(24);

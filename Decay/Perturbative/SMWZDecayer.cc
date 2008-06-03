@@ -67,7 +67,7 @@ void SMWZDecayer::doinit() throw(InitException) {
   _zvertex->init();
   // now set up the decay modes
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   vector<double> wgt(0);
   // the Z decay modes
   extpart[0]=getParticleData(ParticleID::Z0);
@@ -81,7 +81,7 @@ void SMWZDecayer::doinit() throw(InitException) {
       if(!_zvertex->allowed(-iy,iy,ParticleID::Z0)) {
 	cerr << _zvertex->fullName() << "\n";
 	cerr << "testing zvertex allowed " << iy << " " << ParticleID::Z0 << "\n";
-	throw InitException() << "SMWZDecayer::doinit() the Z vertex" 
+	throw InitException() << "SMWZDecayer::doinit() the Z vertex " 
 			      << "cannot handle all the modes" 
 			      << Exception::abortnow;
       }
@@ -124,11 +124,11 @@ void SMWZDecayer::doinit() throw(InitException) {
 }
 
 int SMWZDecayer::modeNumber(bool & cc,tcPDPtr parent, 
-			    const PDVector & children) const {
+			    const tPDVector & children) const {
   int imode(-1);
   if(children.size()!=2) return imode;
   int id0=parent->id();
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();

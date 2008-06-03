@@ -21,7 +21,7 @@ using namespace ThePEG::Helicity;
 SMWWHVertex::SMWWHVertex() 
   : _couplast(0.), _q2last(0.*GeV2), _mw(0.*GeV), _zfact(0.) {
   // particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   first.push_back(24);  
   second.push_back(-24);
   third.push_back(25);  

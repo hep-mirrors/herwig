@@ -22,7 +22,7 @@ using namespace Herwig;
 
 UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
 				     theq2Last(), theCoupLast(0.) {
-  vector<int> wboson(2), higgsA(2), higgsH(2);
+  vector<long> wboson(2), higgsA(2), higgsH(2);
   wboson[0] = 24;
   higgsA[0] = 5100036;
   higgsH[0] = -5100037;

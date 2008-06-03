@@ -30,15 +30,15 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
 				 theq2Last(0.*MeV2), theHLast(0), theSF1Last(0),
 				 theSF2Last(0) {
   
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   int higgs = 25;
   //h0,H0
   for(unsigned int i = 0; i < 2; ++i) {
     if( i == 1 ) higgs = 35;
     //quarks
     for(unsigned int j = 1; j < 7; ++j) {
-      int lj = 1000000 + j;
-      int rj = 2000000 + j;
+      long lj = 1000000 + j;
+      long rj = 2000000 + j;
       //LLbar
       first.push_back(higgs);
       second.push_back(lj);
@@ -57,8 +57,8 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
       third.push_back(-lj);
     }
     for(unsigned int j = 11; j < 17; ++j) {
-      int lj = 1000000 + j;
-      int rj = 2000000 + j;
+      long lj = 1000000 + j;
+      long rj = 2000000 + j;
       first.push_back(higgs);
       second.push_back(lj);
       third.push_back(-lj);
@@ -79,8 +79,8 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
   }
   //A0
   for(unsigned int j = 1; j < 7; ++j) {
-    int lj = 1000000 + j;
-    int rj = 2000000 + j;
+    long lj = 1000000 + j;
+    long rj = 2000000 + j;
     //LRbar
     first.push_back(36);
     second.push_back(lj);
@@ -91,8 +91,8 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
     third.push_back(-lj);
   }
   for(unsigned int j = 11; j < 17; j += 2) {
-    int lj = 1000000 + j;
-    int rj = 2000000 + j;
+    long lj = 1000000 + j;
+    long rj = 2000000 + j;
     first.push_back(36);
     second.push_back(lj);
     third.push_back(-rj);
@@ -101,8 +101,8 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
     third.push_back(-lj);
   }
   //outgoing H+
-   for(unsigned int ii = 2; ii < 7; ii += 2) {
-     for(unsigned int ij = 1; ij < 6; ij += 2) {
+   for(long ii = 2; ii < 7; ii += 2) {
+     for(long ij = 1; ij < 6; ij += 2) {
        
        //LL
        first.push_back(37);
@@ -122,7 +122,7 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
        third.push_back(-2000000 - ii);
      }
    }
-   for(unsigned int ii = 11; ii < 17; ii += 2) {
+   for(long ii = 11; ii < 17; ii += 2) {
      first.push_back(37);
      second.push_back(1000000 + ii);
      third.push_back(-1000001 - ii);
@@ -131,8 +131,8 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
      third.push_back(-1000001 - ii);
    }
    //outgoing H-
-   for(unsigned int ii = 2; ii < 7; ii += 2) {
-     for(unsigned int ij = 1; ij < 6; ij += 2) {
+   for(long ii = 2; ii < 7; ii += 2) {
+     for(long ij = 1; ij < 6; ij += 2) {
        //LL
        first.push_back(-37);
        second.push_back(1000000 + ii);
@@ -152,7 +152,7 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
 
      }
    }
-   for(unsigned int ii = 11; ii < 17; ii += 2) {
+   for(long ii = 11; ii < 17; ii += 2) {
      first.push_back(-37);
      second.push_back(1000001 + ii);
      third.push_back(-1000000 - ii);

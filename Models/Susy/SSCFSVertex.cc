@@ -23,11 +23,11 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
 			    _q2last(), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   long chargino[2] = {1000024, 1000037};
   for(unsigned int ic = 0; ic < 2; ++ic) {
     //quarks 
-    for(unsigned int ix = 1; ix < 7; ++ix) {
+    for(long ix = 1; ix < 7; ++ix) {
       if( ix % 2 == 0 ) {
 	first.push_back(-chargino[ic]);
 	second.push_back(ix);
@@ -64,7 +64,7 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
       }
     }
     //leptons
-    for(unsigned int ix = 11; ix < 16; ++ix) {
+    for(long ix = 11; ix < 16; ++ix) {
       if( ix % 2 == 0 ) {
 	first.push_back(-chargino[ic]);
 	second.push_back(ix);

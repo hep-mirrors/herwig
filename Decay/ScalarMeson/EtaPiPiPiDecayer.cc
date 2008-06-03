@@ -66,7 +66,7 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
     throw InitException() << "Inconsistent parameters in EtaPiPiPiDecayer::doinit()"
 			  << Exception::runerror;
   // external particles for the modes
-  PDVector extneut(4),extcharged(4);
+  tPDVector extneut(4),extcharged(4);
   extneut[1]    = getParticleData(ParticleID::pi0);
   extneut[2]    = getParticleData(ParticleID::pi0);
   extcharged[1] = getParticleData(ParticleID::piplus);
@@ -102,10 +102,10 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
 }
 
 int EtaPiPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				 const PDVector & children) const {
+				 const tPDVector & children) const {
   if(children.size()!=3) return -1;
   unsigned int npi0(0),npip(0),npim(0); int id,iother(0);
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   for( ;pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)           ++npip;

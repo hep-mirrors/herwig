@@ -240,8 +240,8 @@ void ModelGenerator::checkDecays(PDPtr parent) {
   for(; dit != dend; ++dit ) {
     if( !(**dit).on() ) continue;
     Energy release((**dit).parent()->mass());
-    PDVector::const_iterator pit = (**dit).orderedProducts().begin();
-    PDVector::const_iterator pend =(**dit).orderedProducts().end();
+    tPDVector::const_iterator pit = (**dit).orderedProducts().begin();
+    tPDVector::const_iterator pend =(**dit).orderedProducts().end();
     for( ; pit != pend; ++pit ) {
       release -= (**pit).constituentMass();
     }
