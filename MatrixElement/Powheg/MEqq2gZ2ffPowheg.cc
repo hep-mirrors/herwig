@@ -520,29 +520,29 @@ double MEqq2gZ2ffPowheg::NLOweight() const {
   if(lastY()>maxy) maxy=lastY();
   if(lastY()<miny) miny=lastY();
 
-  if(wgt > _max_wgt){
-    // cerr<<"maxwgt = "<<wgt<<" at xt = "<<_xt<<", vt = "<< _v<<"\n";
-    _max_wgt = wgt;
-  }
 
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
+
 double MEqq2gZ2ffPowheg::x(double xt, double v) const {
-    double x0(xbar(v));
-    return x0+(1.-x0)*xt;
+  double x0(xbar(v));
+  return x0+(1.-x0)*xt;
 }
+
 double MEqq2gZ2ffPowheg::x_a(double x, double v) const {
     if(x==1.) return _xb_a;
     if(v==0.) return _xb_a;
     if(v==1.) return _xb_a/x;
     return (_xb_a/sqrt(x))*sqrt((1.-(1.-x)*(1.-v))/(1.-(1.-x)*v));
 }
+
 double MEqq2gZ2ffPowheg::x_b(double x, double v) const {
     if(x==1.) return _xb_b;
     if(v==0.) return _xb_b/x;
     if(v==1.) return _xb_b;
     return (_xb_b/sqrt(x))*sqrt((1.-(1.-x)*v)/(1.-(1.-x)*(1.-v)));
 }
+
 double MEqq2gZ2ffPowheg::xbar(double v) const {
     double xba2(sqr(_xb_a)), xbb2(sqr(_xb_b)), omv(-999.);
     double xbar1(-999.), xbar2(-999.);

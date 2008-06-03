@@ -44,8 +44,18 @@ public:
   /**
    * The default constructor.
    */
-  inline MEqq2gZ2ffPowheg();
-
+  inline MEqq2gZ2ffPowheg() : 
+    _maxflavour(5) ,_gammaZ(0)         ,_process(0),
+    _contrib(1)    ,_nlo_alphaS_opt(0) ,_fixed_alphaS(0.115895),
+    _a(0.5)        ,_p(0.7)            , 
+    x_h(100)       , v_h(100)          , 
+    x_pos_h(100)   , v_pos_h(100)      ,
+    x_neg_h(100)   , v_neg_h(100)      ,
+    xba_h(100)     , xba_pos_h(100)    , xba_neg_h(100),
+    xbb_h(100)     , xbb_pos_h(100)    , xbb_neg_h(100),
+    shatovrs_h(100),shatovrs_pos_h(100), shatovrs_neg_h(100),
+    y_h(100)       , y_pos_h(100)      , y_neg_h(100),
+    _eps(1.0e-8) {}
   
 public:
 
@@ -175,13 +185,6 @@ protected:
    *  Calculate the correction weight
    */
   double NLOweight() const;
-  
-  mutable double _max_wgt;
- 
-  mutable double  _xb_a,_xb_b,_alphaS,_TF,_CF;
-  mutable Energy2 _mll2,_mu2;
-  mutable tcPDPtr _parton_a,_parton_b,_gluon;
-  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A,_hadron_B;
    
   double x(double xt, double v) const;
   double x_a(double x, double v) const;
@@ -212,13 +215,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -254,6 +257,11 @@ private:
   MEqq2gZ2ffPowheg & operator=(const MEqq2gZ2ffPowheg &);
 
 private:
+ 
+  mutable double  _xb_a,_xb_b,_alphaS,_TF,_CF;
+  mutable Energy2 _mll2,_mu2;
+  mutable tcPDPtr _parton_a,_parton_b,_gluon;
+  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A,_hadron_B;
 
   /**
    *  Pointer to the vertices for the helicity calculations
@@ -411,7 +419,5 @@ struct ClassTraits<Herwig::MEqq2gZ2ffPowheg>
 /** @endcond */
 
 }
-
-#include "MEqq2gZ2ffPowheg.icc"
 
 #endif /* HERWIG_MEqq2gZ2ffPowheg_H */

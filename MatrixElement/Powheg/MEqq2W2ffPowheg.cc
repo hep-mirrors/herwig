@@ -526,10 +526,6 @@ double MEqq2W2ffPowheg::NLOweight() const {
   if(lastY()>maxy) maxy=lastY();
   if(lastY()<miny) miny=lastY();
 
-  if(wgt > _max_wgt){
-    // cerr<<"maxwgt = "<<wgt<<" at xt = "<<_xt<<", vt = "<< _v<<"\n";
-    _max_wgt = wgt;
-  }
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
