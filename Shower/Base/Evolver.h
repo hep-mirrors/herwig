@@ -479,6 +479,11 @@ private:
   Energy _gamma;
 
   /**
+   *  Limit the number of emissions for testing
+   */
+  unsigned int _limitEmissions;
+
+  /**
    * Upper bound on intrinsic pT for inverse quadratic
    */
   Energy _iptmax;
@@ -565,6 +570,16 @@ private:
 #endif
 
   //@}
+
+  /**
+   *  number of IS emissions
+   */
+  unsigned int _nis;
+
+  /**
+   *  Number of FS emissions
+   */
+  unsigned int _nfs;
 
 };
 

@@ -14,6 +14,7 @@
 namespace Herwig {
 
 inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
+			    _limitEmissions(0),
 			    _initialenhance(1.), _finalenhance(1.), _useCKKW(false)
 {}
 
