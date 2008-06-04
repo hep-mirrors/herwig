@@ -59,7 +59,7 @@ void a1SimpleDecayer::doinit() throw(InitException) {
 		    getParticleData(30113)};
   tPDPtr rhom[3] = {getParticleData(-213),getParticleData(-100213),
 		    getParticleData(-30213)};
-  PDVector extpart(4);
+  tPDVector extpart(4);
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
   // decay mode a_1+ -> pi+ pi0 pi0
@@ -284,12 +284,12 @@ void a1SimpleDecayer::Init() {
 }
 
 int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   if(children.size()!=3) return -1;
   int id(parent->id());
   // check the pions
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   int idtemp,npi0(0),npiplus(0),npiminus(0);
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();

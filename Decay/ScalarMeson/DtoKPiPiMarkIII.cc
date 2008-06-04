@@ -352,7 +352,7 @@ void DtoKPiPiMarkIII::doinit() throw(InitException) {
   tPDPtr rho0  = getParticleData(ParticleID::rho0      );
   tPDPtr rhop  = getParticleData(ParticleID::rhoplus   );
   // D0 -> K- pi+ pi0
-  PDVector extpart(4);
+  tPDVector extpart(4);
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
   extpart[0]=getParticleData(ParticleID::D0);
@@ -504,14 +504,14 @@ void DtoKPiPiMarkIII::doinit() throw(InitException) {
 }
 
 int DtoKPiPiMarkIII::modeNumber(bool & cc, tcPDPtr parent, 
-				const PDVector & children) const {
+				const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D0 or D+
   if(abs(id0)!=ParticleID::D0&&abs(id0)!=ParticleID::Dplus) return -1;
   cc = id0<0;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
   int id;
   for( ;pit!=children.end();++pit) {

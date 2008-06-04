@@ -124,7 +124,7 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.

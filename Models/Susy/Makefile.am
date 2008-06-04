@@ -2,7 +2,7 @@ SUBDIRS = NMSSM RPV
 if WANT_MSSM
 pkglib_LTLIBRARIES = HwSusy.la
 endif
-HwSusy_la_SOURCES = SusyBase.cc  SusyBase.h  SusyBase.icc SusyBase.fh \
+HwSusy_la_SOURCES = SusyBase.cc  SusyBase.h SusyBase.fh \
  MSSM.cc  MSSM.h  MSSM.icc MSSM.fh\
 MixingMatrix.h MixingMatrix.fh MixingMatrix.icc MixingMatrix.cc\
 SSCFSVertex.cc SSCFSVertex.fh SSCFSVertex.h SSCFSVertex.icc \

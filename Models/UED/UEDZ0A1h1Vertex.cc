@@ -22,8 +22,8 @@ using namespace Herwig;
 
 UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
 				     theq2Last(0.*GeV2), theCoupLast(0.) {
-  setList(vector<int>(1, 23), vector<int>(1, 5100036), 
-	  vector<int>(1, 5100025));
+  setList(vector<long>(1, 23), vector<long>(1, 5100036), 
+	  vector<long>(1, 5100025));
 }
 
 void UEDZ0A1h1Vertex::doinit() throw(InitException) {

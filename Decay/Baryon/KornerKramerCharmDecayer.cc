@@ -469,7 +469,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
   // testing only
   pre = _GF*0.974/sqrt(2.);
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   unsigned int iy;
   for(unsigned int ix=0;ix<isize;++ix)
@@ -636,7 +636,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 }
 
 int KornerKramerCharmDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					 const PDVector & children) const {
+					 const tPDVector & children) const {
   int imode(-1);
   // must be two outgoing particles
   if(children.size()!=2){return imode;}

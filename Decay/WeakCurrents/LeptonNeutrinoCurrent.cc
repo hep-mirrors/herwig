@@ -61,10 +61,10 @@ bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
+tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
 					  int,int)
 {
-  PDVector output(2);
+  tPDVector output(2);
   if(icharge==3)
     {
       int id = -11-2*imode;

@@ -35,39 +35,39 @@ LHFFHVertex::LHFFHVertex()
   _masslast[0] = 0.*GeV; 
   _masslast[1] = 0.*GeV; 
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(25);
   }
   // the leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(25);
   }
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(35);
   }
   // the leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(35);
   }
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(36);
   }
   // the leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(36);

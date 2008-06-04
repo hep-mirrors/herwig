@@ -25,7 +25,7 @@ SMHGGVertex::SMHGGVertex()
   :_couplast(0.),_q2last(0.*GeV2),_mw(),massopt(1),_minloop(6),
    _maxloop(6),_CoefRepresentation(1) {
   //PDG codes for particles at vertices
-  vector<int> first(1,21),second(1,21),third(1,25);
+  vector<long> first(1,21),second(1,21),third(1,25);
   setList(first,second,third);
 }
 

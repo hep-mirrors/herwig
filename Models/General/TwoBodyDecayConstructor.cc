@@ -85,10 +85,10 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
   if( id < 0 || !vertex->incoming(id) || vertex->getNpoint() != 3 )
     return vector<TwoBodyDecay>();
   Energy m1(inpart->mass());
-  PDVector decaylist = vertex->search(list, id);
+  tPDVector decaylist = vertex->search(list, id);
   vector<TwoBodyDecay> decays;
-  PDVector::size_type nd = decaylist.size();
-  for( PDVector::size_type i = 0; i < nd; i += 3 ) {
+  tPDVector::size_type nd = decaylist.size();
+  for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
     tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
     if( pb->id() == id ) swap(pa, pb);
     if( pc->id() == id ) swap(pa, pc);

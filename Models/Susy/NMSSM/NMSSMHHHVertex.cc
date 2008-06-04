@@ -19,7 +19,7 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _s2b(0.), _c2b(0.), _v1(0.*MeV),
 				   _v2(0.*MeV), _q2last(0.*MeV2),
 				   _glast(0.) {
-  vector<int> first, second, third;
+  vector<long> first, second, third;
   //CP-even Higgs
   first.push_back(25); second.push_back(35); third.push_back(45);
   for( unsigned int i = 25; i < 46; i += 10 ) {

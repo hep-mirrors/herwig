@@ -13,9 +13,11 @@
 
 namespace Herwig {
 
-inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
+inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
+			    _iptrms(), _beta(), _gamma(), _iptmax(),  
 			    _limitEmissions(0),
-			    _initialenhance(1.), _finalenhance(1.), _useCKKW(false)
+			    _initialenhance(1.), _finalenhance(1.), _useCKKW(false),
+			    _theUseCKKW(false)
 {}
 
 inline IBPtr Evolver::clone() const {

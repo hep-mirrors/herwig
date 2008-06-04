@@ -19,7 +19,7 @@ using namespace ThePEG;
 SU3BaryonOctetDecupletScalarDecayer::~SU3BaryonOctetDecupletScalarDecayer() {}
 
 int SU3BaryonOctetDecupletScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   if(_incomingB.size()==0){setupModes(0);}
   // must be two outgoing particles
@@ -362,7 +362,7 @@ void SU3BaryonOctetDecupletScalarDecayer::setupModes(unsigned int iopt) const
   // set up the modes
   Energy m0,m1;
   int inspin,outspin;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   for(unsigned int ix=0;ix<outtemp.size();++ix)
     {
       if(outtemp[ix]!=0&&intemp[ix]!=0&&mestemp[ix]!=0)

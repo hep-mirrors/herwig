@@ -38,7 +38,7 @@ void BtoCharmoniumDecayer::Init() {
 
 }
 
-bool BtoCharmoniumDecayer::accept(tcPDPtr parent, const PDVector & prod) const {
+bool BtoCharmoniumDecayer::accept(tcPDPtr parent, const tPDVector & prod) const {
   // must be three decay products
   if(prod.size()!=3) return false;
   // check we can find the flavours of the quarks in the decaying meson
@@ -67,7 +67,7 @@ bool BtoCharmoniumDecayer::accept(tcPDPtr parent, const PDVector & prod) const {
 }
 
 ParticleVector BtoCharmoniumDecayer::decay(const Particle & parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   // make the particles
   ParticleVector partons;
   for(unsigned int ix=0;ix<children.size();++ix) {

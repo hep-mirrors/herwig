@@ -27,9 +27,9 @@ SSHHHVertex::SSHHHVertex() : theMw(0.*MeV), theZfact(0.*MeV), theSw(0.),
 			     theS2b(0.), theC2b(0.), theElast(0.),
 			     theq2last(0.*MeV2) 
 {
-  vector<int> first, second, third;
+  vector<long> first, second, third;
   int sec = 35;
-  for(unsigned int h = 25; h < 36; h += 10) {
+  for(long h = 25; h < 36; h += 10) {
     //self-coupling
     first.push_back(h);
     second.push_back(h);

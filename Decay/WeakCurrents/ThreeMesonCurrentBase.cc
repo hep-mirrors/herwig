@@ -173,8 +173,8 @@ void ThreeMesonCurrentBase::dataBaseOutput(ofstream & output,bool header,
   WeakDecayCurrent::dataBaseOutput(output,header,create);
 }
 
-PDVector ThreeMesonCurrentBase::particles(int icharge, unsigned int imode,int,int) {
-  PDVector extpart(3);
+tPDVector ThreeMesonCurrentBase::particles(int icharge, unsigned int imode,int,int) {
+  tPDVector extpart(3);
   if(imode==0) {
     extpart[0]=getParticleData(ParticleID::piminus);
     extpart[1]=getParticleData(ParticleID::piminus);

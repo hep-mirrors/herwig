@@ -24,15 +24,17 @@
 using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _splittingFn << _alpha << _pdfmax << _particles
-     << _a << _b << ounit(_c,GeV) << ounit(_kinCutoffScale,GeV)
-     << _pdffactor;
+  os << splittingFn_ << alpha_ << pdfmax_ << particles_ << pdffactor_
+     << a_ << b_ << ounit(c_,GeV) << ounit(kinCutoffScale_,GeV) << cutOffOption_
+     << ounit(vgcut_,GeV) << ounit(vqcut_,GeV) 
+     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingFn >> _alpha >> _pdfmax >> _particles 
-     >> _a >> _b >> iunit(_c,GeV) >> iunit(_kinCutoffScale,GeV)
-     >> _pdffactor;
+  is >> splittingFn_ >> alpha_ >> pdfmax_ >> particles_ >> pdffactor_
+     >> a_ >> b_ >> iunit(c_,GeV) >> iunit(kinCutoffScale_,GeV) >> cutOffOption_
+     >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV) 
+     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
@@ -47,19 +49,19 @@ void SudakovFormFactor::Init() {
   static Reference<SudakovFormFactor,SplittingFunction>
     interfaceSplittingFunction("SplittingFunction",
 			       "A reference to the SplittingFunction object",
-			       &Herwig::SudakovFormFactor::_splittingFn,
+			       &Herwig::SudakovFormFactor::splittingFn_,
 			       false, false, true, false);
 
   static Reference<SudakovFormFactor,ShowerAlpha>
     interfaceAlpha("Alpha",
 		   "A reference to the Alpha object",
-		   &Herwig::SudakovFormFactor::_alpha,
+		   &Herwig::SudakovFormFactor::alpha_,
 		   false, false, true, false);
 
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::_pdfmax, 35.0, 1.0, 4000.0,
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 4000.0,
      false, false, Interface::limited);
 
   static Parameter<SudakovFormFactor,double> interfaceaParameter
@@ -90,7 +92,7 @@ void SudakovFormFactor::Init() {
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
     ("PDFFactor",
      "Include additional factors in the overestimate for the PDFs",
-     &SudakovFormFactor::_pdffactor, 0, false, false);
+     &SudakovFormFactor::pdffactor_, 0, false, false);
   static SwitchOption interfacePDFFactorOff
     (interfacePDFFactor,
      "Off",
@@ -111,6 +113,25 @@ void SudakovFormFactor::Init() {
      "OverZOneMinusZ",
      "Include an additional factor of 1/z/(1-z)",
      3);
+  
+  static Parameter<SudakovFormFactor,Energy> interfaceGluonVirtualityCut
+    ("GluonVirtualityCut",
+     "For the FORTRAN cut-off option the minimum virtuality of the gluon",
+     &SudakovFormFactor::vgcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<SudakovFormFactor,Energy> interfaceQuarkVirtualityCut
+    ("QuarkVirtualityCut",
+     "For the FORTRAN cut-off option the minimum virtuality added to"
+     " the mass for particles other than the gluon",
+     &SudakovFormFactor::vqcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+  
+  static Parameter<SudakovFormFactor,Energy> interfacepTmin
+    ("pTmin",
+     "The minimum pT if using a cut-off on the pT",
+     &SudakovFormFactor::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 }
 
 bool SudakovFormFactor::
@@ -143,8 +164,8 @@ PDFVeto(const Energy2 t, const double x,
   if(oldpdf<=0.) return false;
   double ratio = newpdf/oldpdf;
 
-  double maxpdf(_pdfmax);
-  switch (_pdffactor) {
+  double maxpdf(pdfmax_);
+  switch (pdffactor_) {
   case 1:
     maxpdf /= z();
     break;
@@ -169,11 +190,11 @@ PDFVeto(const Energy2 t, const double x,
 
 void SudakovFormFactor::addSplitting(const IdList & in) {
   bool add=true;
-  for(unsigned int ix=0;ix<_particles.size();++ix) {
-    if(_particles[ix].size()==in.size()) {
+  for(unsigned int ix=0;ix<particles_.size();++ix) {
+    if(particles_[ix].size()==in.size()) {
       bool match=true;
       for(unsigned int iy=0;iy<in.size();++iy) {
-	if(_particles[ix][iy]!=in[iy]) {
+	if(particles_[ix][iy]!=in[iy]) {
 	  match=false;
 	  break;
 	}
@@ -184,5 +205,45 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
       }
     }
   }
-  if(add) _particles.push_back(in);
+  if(add) particles_.push_back(in);
+}
+
+Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
+					 const IdList &ids,
+					 double enhance,bool ident) const {
+  unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
+  double c =
+    1./((splittingFn_->integOverP(zlimits_.second,ids,pdfopt) -
+	 splittingFn_->integOverP(zlimits_.first ,ids,pdfopt))* 
+	alpha_->overestimateValue()/Constants::twopi*enhance);
+  assert(iopt<=2);
+  if(iopt==1) {
+    c/=pdfmax_;
+    if(ident) c*=0.5;
+  }
+  else if(iopt==2) c*=-1.;
+  if(splittingFn_->interactionOrder()==1) {
+    return t1*pow(UseRandom::rnd(),c);
+  }
+  else {
+    assert(false && "Units are dubious here.");
+    int nm(splittingFn()->interactionOrder()-1);
+    c/=Math::powi(alpha_->overestimateValue()/Constants::twopi,nm);
+    return t1 /       pow (1. - nm*c*log(UseRandom::rnd()) 
+			   * Math::powi(t1*UnitRemoval::InvE2,nm)
+			   ,1./double(nm));
+  }
+}
+
+double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
+  unsigned int pdfopt = iopt!=1 ? 0 : pdffactor_;
+  double lower = splittingFn_->integOverP(zlimits_.first,ids,pdfopt);
+  return splittingFn_->invIntegOverP
+    (lower + UseRandom::rnd()*(splittingFn_->integOverP(zlimits_.second,ids,pdfopt) - 
+			       lower),ids,pdfopt);
+}
+
+void SudakovFormFactor::doinit() throw(InitException) {
+  Interfaced::doinit();
+  pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : 0.*GeV2; 
 }

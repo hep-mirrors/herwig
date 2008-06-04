@@ -15,7 +15,7 @@ using namespace ThePEG;
 
 inline RSModelSSGRVertex::RSModelSSGRVertex() 
 {
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   first.push_back(25);second.push_back(25);third.push_back(39);
   setList(first,second,third);
   _theKappa=InvEnergy();

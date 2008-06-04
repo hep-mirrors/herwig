@@ -74,11 +74,11 @@ void LHTPFFWVertex::doinit() throw(InitException) {
 LHTPFFWVertex::LHTPFFWVertex()
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.),_q2last(0.*sqr(MeV))  {
   // particles for the vertex
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // particles for outgoing W-
   // quarks
-  for(unsigned int ix=1;ix<6;ix+=2) {
-    for(unsigned int iy=2;iy<7;iy+=2) {
+  for(int ix=1;ix<6;ix+=2) {
+    for(int iy=2;iy<7;iy+=2) {
       first.push_back(-ix);
       second.push_back(iy);
       third.push_back(-24);
@@ -89,19 +89,19 @@ LHTPFFWVertex::LHTPFFWVertex()
   second.push_back( 8);
   third.push_back(-24);
   // leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix);
     second.push_back(ix+1);
     third.push_back(-24);
   }
   // T-odd quarks
-  for(unsigned int ix=2;ix<7;ix+=2) {
+  for(long ix=2;ix<7;ix+=2) {
     first.push_back(-ix+1-4000000);
     second.push_back(ix+4000000);
     third.push_back(-24);
   }
   // T-odd leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(long ix=11;ix<17;ix+=2) {
     first.push_back(-ix-4000000);
     second.push_back(ix+1+4000000);
     third.push_back(-24);
@@ -109,8 +109,8 @@ LHTPFFWVertex::LHTPFFWVertex()
   // T-odd leptons
   // particles for outgoing W+
   // quarks
-  for(unsigned int ix=2;ix<7;ix+=2) {
-    for(unsigned int iy=1;iy<6;iy+=2) {
+  for(int ix=2;ix<7;ix+=2) {
+    for(int iy=1;iy<6;iy+=2) {
       first .push_back(-ix);
       second.push_back( iy);
       third .push_back( 24);
@@ -121,26 +121,26 @@ LHTPFFWVertex::LHTPFFWVertex()
   second.push_back( 5);
   third .push_back(24);
   // leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(int ix=11;ix<17;ix+=2) {
     first.push_back(-ix-1);
     second.push_back(ix);
     third.push_back(24);
   }
   // T-odd quarks
-  for(unsigned int ix=2;ix<9;ix+=2) {
+  for(long ix=2;ix<9;ix+=2) {
     first.push_back(-ix-4000000);
     second.push_back(ix-1+4000000 );
     third.push_back(24);
   }
   // T-odd leptons
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(long ix=11;ix<17;ix+=2) {
     first.push_back(-ix-1-4000000);
     second.push_back(ix+4000000);
     third.push_back(24);
   }
   // particles for w_H-
   // quark and T-odd quark
-  for(unsigned int ix=1;ix<6;ix+=2) {
+  for(long ix=1;ix<6;ix+=2) {
     first.push_back(-ix-4000000);
     second.push_back(ix+1);
     third.push_back(-34);
@@ -149,7 +149,7 @@ LHTPFFWVertex::LHTPFFWVertex()
     third.push_back(-34);
   }
   // lepton and T-odd lepton
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(long ix=11;ix<17;ix+=2) {
     first.push_back(-ix-4000000);
     second.push_back(ix+1);
     third.push_back(-34);
@@ -159,7 +159,7 @@ LHTPFFWVertex::LHTPFFWVertex()
   }
   // particles for w_h+
   // quark and T-odd quark
-  for(unsigned int ix=1;ix<6;ix+=2) {
+  for(long ix=1;ix<6;ix+=2) {
     first.push_back( ix+4000000);
     second.push_back(-ix-1);
     third.push_back( 34);
@@ -168,7 +168,7 @@ LHTPFFWVertex::LHTPFFWVertex()
     third.push_back( 34);
   }
   // leptons and T-odd lepton
-  for(unsigned int ix=11;ix<17;ix+=2) {
+  for(long ix=11;ix<17;ix+=2) {
     first.push_back(-ix-1-4000000);
     second.push_back(ix);
     third.push_back(34);

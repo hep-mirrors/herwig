@@ -21,7 +21,7 @@ using namespace ThePEG;
 
 SMGGGGVertex::SMGGGGVertex() : _couplast(0.),_q2last() {
   // particles
-  vector<int> first,second,third,fourth;
+  vector<long> first,second,third,fourth;
   first.push_back(21);
   second.push_back(21);
   third.push_back(21);

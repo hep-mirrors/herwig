@@ -113,10 +113,7 @@ namespace {
     SameIncomingAs(tcPDPair in) : a(in.first->id()), b(in.second->id())  {}
     bool operator()(tcPDPair ppair) const {
       long id1(ppair.first->id()), id2(ppair.second->id());
-      if( ( id1 == a && id2 == b ) || ( id1 == b && id2 == a ) )
-	return true;
-      else
-	return false;
+      return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
     }
   private:
     long a, b;
@@ -282,16 +279,16 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
   //Have 2 incoming particle and a vertex, find the possible offshell
   //particles
   pair<long,long> inc = make_pair(inpp.first->id(), inpp.second->id());
-  PDSet offshells = search(vertex, inpp.first->id(), incoming,
+  tPDSet offshells = search(vertex, inpp.first->id(), incoming,
 			   inpp.second->id(), incoming, outgoing);
-  PDSet::const_iterator it;
+  tPDSet::const_iterator it;
   for(it = offshells.begin(); it != offshells.end(); ++it) {
     for(size_t iv = 0; iv < theNv; ++iv) {
       tVertexBasePtr vertexB = theModel->vertex(iv);
       if( vertexB->getNpoint() != 3) continue;
       if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
       
-      PDSet final;
+      tPDSet final;
       if( vertexB->outgoing(fs) &&
 	  vertexB->incoming((*it)->id()) )
 	final = search(vertexB, (*it)->id(), incoming, fs,
@@ -309,15 +306,15 @@ void HardProcessConstructor::
 createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
   pair<long,long> inc = make_pair(inpp.first->id(), inpp.second->id());
   //first try a with c
-  PDSet offshells = search(vertex, inpp.first->id(), incoming, fs,
+  tPDSet offshells = search(vertex, inpp.first->id(), incoming, fs,
 			   outgoing, outgoing);
-  PDSet::const_iterator it;
+  tPDSet::const_iterator it;
   for(it = offshells.begin(); it != offshells.end(); ++it) {
      for(size_t iv = 0; iv < theNv; ++iv) {
        tVertexBasePtr vertexB = theModel->vertex(iv);
        if( vertexB->getNpoint() != 3 ) continue;
        if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
-       PDSet final;
+       tPDSet final;
        if( vertexB->incoming(inc.second) )
 	 final = search(vertexB, inc.second, incoming, (*it)->id(),
 			incoming, outgoing);
@@ -335,7 +332,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
        if( vertexB->getNpoint() != 3 ) continue;
        if(!theAllDiagrams && vertexB->orderInGs() == 0) continue;
 
-       PDSet final;
+       tPDSet final;
        if( vertexB->incoming(inc.first) )
 	 final = search(vertexB, inc.first, incoming, (*it)->id(),
 			outgoing, outgoing);
@@ -349,10 +346,10 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 
 void HardProcessConstructor::makeFourPointDiagrams(long parta, long partb,
 						   long partc, VBPtr vert) {
-  PDSet ext = search(vert, parta, incoming, partb,incoming, partc, outgoing);
+  tPDSet ext = search(vert, parta, incoming, partb,incoming, partc, outgoing);
   if( ext.empty() ) return;
   IDPair in(parta, partb);
-  for(PDSet::const_iterator iter=ext.begin(); iter!=ext.end();
+  for(tPDSet::const_iterator iter=ext.begin(); iter!=ext.end();
       ++iter) {
     HPDiagram nhp(in,make_pair(partc, (*iter)->id()));
     nhp.vertices = make_pair(vert, vert);
@@ -366,10 +363,10 @@ void HardProcessConstructor::makeFourPointDiagrams(long parta, long partb,
 }
 
 void 
-HardProcessConstructor::makeDiagrams(IDPair in, long out1, const PDSet & out2, 
+HardProcessConstructor::makeDiagrams(IDPair in, long out1, const tPDSet & out2, 
 				     PDPtr inter, HPDiagram::Channel chan, 
 				     VBPair vertexpair, BPair cross) {
-  for(PDSet::const_iterator it = out2.begin(); it != out2.end(); ++it) {
+  for(tPDSet::const_iterator it = out2.begin(); it != out2.end(); ++it) {
     HPDiagram nhp( in,make_pair(out1, (*it)->id()) );
     nhp.intermediate = inter;
     nhp.vertices = vertexpair;
@@ -383,16 +380,16 @@ HardProcessConstructor::makeDiagrams(IDPair in, long out1, const PDSet & out2,
   }
 }
 
-set<PDPtr> 
+set<tPDPtr> 
 HardProcessConstructor::search(VBPtr vertex, long part1, direction d1, 
 			       long part2, direction d2, direction d3) {
-  if(vertex->getNpoint() != 3) return PDSet();
+  if(vertex->getNpoint() != 3) return tPDSet();
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
-  PDVector ext;
-  PDSet third;
+  tPDVector ext;
+  tPDSet third;
   for(unsigned int ix = 0;ix < 3; ++ix) {
-    PDVector pdlist = vertex->search(ix, part1);
+    tPDVector pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0; ix < ext.size(); ix += 3) {
@@ -420,18 +417,18 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
   return third;
 }
 
-set<PDPtr>
+set<tPDPtr>
 HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
 			       long part2, direction d2, long part3, direction d3,
 			       direction d4) {
-  if(vertex->getNpoint() != 4) return PDSet();
+  if(vertex->getNpoint() != 4) return tPDSet();
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
   if(d3 == incoming && getParticleData(part3)->CC()) part3 = -part3;
-  PDVector ext;
-  PDSet fourth;
+  tPDVector ext;
+  tPDSet fourth;
   for(unsigned int ix = 0;ix < 4; ++ix) {
-    PDVector pdlist = vertex->search(ix, part1);
+    tPDVector pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0;ix < ext.size(); ix += 4) {

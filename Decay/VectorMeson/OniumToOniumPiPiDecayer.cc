@@ -113,7 +113,7 @@ void OniumToOniumPiPiDecayer::doinit() throw(InitException) {
     _cC.push_back(complex<InvEnergy2>(_reC[ix],_imC[ix]));
   }
   // construct the decay channels
-  PDVector extpart(4);
+  tPDVector extpart(4);
   tPDPtr pip(getParticleData(ParticleID::piplus ));
   tPDPtr pim(getParticleData(ParticleID::piminus));
   tPDPtr pi0(getParticleData(ParticleID::pi0    ));
@@ -262,14 +262,14 @@ void OniumToOniumPiPiDecayer::Init() {
 }
 
 int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					const PDVector & children) const {
+					const tPDVector & children) const {
   cc=false;
   int imode(-1);
   long idin(parent->id());
   if(children.size()!=3) return -1;
   unsigned int npip(0),npim(0),npi0(0);
   long idother(0),id;
-  for(PDVector::const_iterator pit=children.begin();
+  for(tPDVector::const_iterator pit=children.begin();
       pit!=children.end();++pit) {
     id=(**pit).id();
     if(id==ParticleID::piplus)       ++npip;

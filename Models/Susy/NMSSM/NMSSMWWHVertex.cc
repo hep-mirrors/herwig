@@ -17,7 +17,7 @@ using namespace ThePEG::Helicity;
 NMSSMWWHVertex::NMSSMWWHVertex() 
   : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) {
   int id[3]={25,35,45};
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   for(unsigned int ix=0;ix<3;++ix) {
     first .push_back(  24  );
     second.push_back( -24  );

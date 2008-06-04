@@ -1,9 +1,10 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ([2.59])
 AC_INIT([Herwig++],[SVN],[herwig@projects.hepforge.org],[Herwig++])
 AC_CONFIG_SRCDIR([Utilities/HerwigStrategy.cc])
 AC_CONFIG_AUX_DIR([Config])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([Config/config.h])
 dnl AC_PRESERVE_HELP_ORDER
 AC_CANONICAL_HOST
@@ -28,25 +29,25 @@ if test "x$CFLAGS" = "x"; then
    CFLAGS=-O2
 fi
 dnl Looptools manual requires no optimization
-if test "x$FFLAGS" = "x"; then
-   FFLAGS=-O0
+if test "x$FCFLAGS" = "x"; then
+   FCFLAGS=-O0
 fi
 dnl ==========================================
 
-AC_LANG(C++)
+AC_LANG([C++])
 
-AM_INIT_AUTOMAKE([1.9])
+AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
 dnl Checks for programs.
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
-## can be removed eventually
-AC_DISABLE_STATIC
+dnl modified search order
+AC_PROG_FC([gfortran g95 g77 xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
 
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
+LT_PREREQ([2.2])
+LT_INIT([disable-static dlopen pic-only])
 
 dnl ####################################
 dnl ####################################

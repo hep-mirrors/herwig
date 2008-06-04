@@ -13,14 +13,6 @@
 
 namespace Herwig {
 
-inline void * ShowerParticle::operator new(size_t s) {
-  return ::operator new(s);
-}
- 
-inline void ShowerParticle::operator delete(void * p, size_t) {
-  ::operator delete(p);
-}
-
 inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert,
 				      bool fs, bool tls)
   : Particle(x),

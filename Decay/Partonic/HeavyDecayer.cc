@@ -58,7 +58,7 @@ void HeavyDecayer::Init() {
 
 ClassDescription<HeavyDecayer> HeavyDecayer::initHeavyDecayer;
 
-bool HeavyDecayer::accept(tcPDPtr parent, const PDVector & children) const { 
+bool HeavyDecayer::accept(tcPDPtr parent, const tPDVector & children) const { 
   long id = parent->id();
   int flav1, flav2;
   if((id / 1000)%10) {
@@ -74,7 +74,7 @@ bool HeavyDecayer::accept(tcPDPtr parent, const PDVector & children) const {
 }
 
 ParticleVector HeavyDecayer::decay(const Particle & p,
-				   const PDVector & children) const {
+				   const tPDVector & children) const {
   ParticleVector partons;
   for(unsigned int ix=0;ix<children.size();++ix) {
     partons.push_back(children[ix]->produceParticle());

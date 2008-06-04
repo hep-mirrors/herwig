@@ -174,7 +174,7 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
     for(size_t iv = 0; iv < nvertices; ++iv) {
       VBPtr vertex2 = theModel->vertex(iv);
       if(vertex2->getNpoint() > 3) continue;
-      PDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
+      tPDSet outb = search(vertex2, partc->id(), incoming, outa->id(), outgoing,
 			  outgoing);
       makeResonantDiagrams(in, partc, outa->id(), outb, 
 			   make_pair(vertex, vertex2));
@@ -183,9 +183,9 @@ constructVertex2(IDPair in, VertexBasePtr vertex,
 }
 
 void ResonantProcessConstructor::
-makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const PDSet & out, 
+makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const tPDSet & out, 
 		     VBPair vertpair) {
-  for(PDSet::const_iterator ita = out.begin(); ita != out.end(); ++ita) {
+  for(tPDSet::const_iterator ita = out.begin(); ita != out.end(); ++ita) {
     if( abs(outa) == abs(offshell->id()) || 
 	abs((*ita)->id()) == abs(offshell->id())) continue;
     HPDiagram newdiag(in,make_pair(outa, (*ita)->id()) );
@@ -197,15 +197,15 @@ makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, const PDSet & out,
   }
 }
 	
-set<PDPtr> 
+set<tPDPtr> 
 ResonantProcessConstructor::search(VBPtr vertex, long part1, direction d1, 
 				   long part2, direction d2, direction d3) {
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
-  PDVector ext;
-  PDSet third;
+  tPDVector ext;
+  tPDSet third;
   for(unsigned int ix = 0;ix < 3; ++ix) {
-    PDVector pdlist = vertex->search(ix, part1);
+    tPDVector pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0; ix < ext.size(); ix += 3) {

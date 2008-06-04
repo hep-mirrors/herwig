@@ -54,8 +54,8 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
 
 SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second,third;
-  for(unsigned int ix=1;ix<7;++ix) {
+  vector<long> first,second,third;
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(21);

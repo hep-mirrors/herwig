@@ -22,7 +22,7 @@ $(THEPEGLIB) -ldl
 
 if WANT_LOOPTOOLS
 Herwig_la_LIBADD += $(top_builddir)/Looptools/libHwLooptoolsXFC.la
-Herwig_la_LDFLAGS += $(FLIBS)
+Herwig_la_LDFLAGS += $(FCLIBS)
 endif
 
 all-local: done-all-links

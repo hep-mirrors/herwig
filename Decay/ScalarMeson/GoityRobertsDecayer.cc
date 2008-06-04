@@ -309,7 +309,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   // the channels
   vector<DecayPhaseSpaceChannelPtr> channel;
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3),ptemp;
+  tPDVector extpart(3),ptemp;
   // first B- to D+ pi-
   extpart[0]=getParticleData(ParticleID::Bminus);
   extpart[1]=getParticleData(ParticleID::Dplus);
@@ -769,14 +769,14 @@ void GoityRobertsDecayer::dataBaseOutput(ofstream & output, bool header) const {
 }
 
 bool GoityRobertsDecayer::accept(tcPDPtr parent,
-				 const PDVector & children) const {
+				 const tPDVector & children) const {
   if(!_current) return false;
   bool allowed(false);
   int id0(parent->id()),idtemp,idD(0),idp(0);
   vector<int> idother;
   // check number of decay products
   if(children.size()!=4) return false;
-  PDVector::const_iterator pit(children.begin()),pend(children.end());
+  tPDVector::const_iterator pit(children.begin()),pend(children.end());
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
     if(abs(idtemp)<=16){idother.push_back(idtemp);}
@@ -815,10 +815,10 @@ bool GoityRobertsDecayer::accept(tcPDPtr parent,
 }
 
 int  GoityRobertsDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				     const PDVector & children) const {
+				     const tPDVector & children) const {
   // find the ids of the particles for the decay current
-  PDVector::const_iterator pit = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pend = children.end();
   int id0(parent->id()),idD(0),idtemp;
   vector<int> idother;
   // find the pdg code for the D meson

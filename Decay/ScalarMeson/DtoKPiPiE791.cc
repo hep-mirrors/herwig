@@ -100,7 +100,7 @@ void DtoKPiPiE791::doinit() throw(InitException) {
   tPDPtr k1680  = getParticleData(-30313);
   tPDPtr k892   = getParticleData(ParticleID::Kstarbar0);
   // external particles
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::Dplus);
   extpart[1]=getParticleData(ParticleID::Kminus);
   extpart[2]=getParticleData(ParticleID::piplus);
@@ -581,14 +581,14 @@ void DtoKPiPiE791::persistentInput(PersistentIStream & is, int) {
 }
 
 int DtoKPiPiE791::modeNumber(bool & cc,tcPDPtr parent, 
-			     const PDVector & children) const {
+			     const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D+/-
   if(abs(id0)!=ParticleID::Dplus) return -1;
   cc = id0==ParticleID::Dminus;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int isign = cc ? -1 : 1;
   unsigned int npip(0),nkm(0);
   for( ;pit!=children.end();++pit) {

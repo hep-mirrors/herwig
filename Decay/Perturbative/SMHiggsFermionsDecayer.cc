@@ -58,7 +58,7 @@ void SMHiggsFermionsDecayer::doinit() throw(InitException) {
   // set up the decay modes
   vector<double> wgt(0);
   unsigned int imode=0;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   int iy;
   extpart[0]=higgs;
@@ -76,9 +76,9 @@ void SMHiggsFermionsDecayer::doinit() throw(InitException) {
   }
 }
   
-bool SMHiggsFermionsDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool SMHiggsFermionsDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   if(parent->id()!=ParticleID::h0||children.size()!=2) return false;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
@@ -89,9 +89,9 @@ bool SMHiggsFermionsDecayer::accept(tcPDPtr parent, const PDVector & children) c
 }
 
 ParticleVector SMHiggsFermionsDecayer::decay(const Particle & parent,
-					     const PDVector & children) const {
+					     const tPDVector & children) const {
   // id's of the decaying particles
-  PDVector::const_iterator pit(children.begin());
+  tPDVector::const_iterator pit(children.begin());
   int id1((**pit).id());
   int imode=-1;
   if(abs(id1)<=6)                     imode = abs(id1)-1;

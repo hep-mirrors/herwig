@@ -64,6 +64,16 @@ set Model:Vertex/VVGR  /Herwig/Vertices/RS/RS_VVGRVertex
 set Model:Vertex/VVVGR /Herwig/Vertices/RS/RS_VVVGRVertex
 ###################################################
 #
+#  Set up spin correlation Decayers
+#
+###################################################
+cd /Herwig/NewPhysics
+
+set TwoBodyDC:CreateDecayModes Yes
+
+insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
+###################################################
+#
 #  Setting to ensure spin correlations
 #  and generation of processes and decays
 #

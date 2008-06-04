@@ -153,7 +153,7 @@ void WeakCurrentDecayConstructor::DecayList(const vector<PDPtr> & part) {
   _theExistingDecayers.
     resize(nv,vector<map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> >
 	   (3,map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr>()));
-  PDVector decays;
+  tPDVector decays;
   unsigned int np = part.size();
   for(unsigned int ipart = 0; ipart < np; ++ipart) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
@@ -176,19 +176,19 @@ void WeakCurrentDecayConstructor::DecayList(const vector<PDPtr> & part) {
 //   }
 }
   
-vector<PDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
+vector<tPDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
 						       const VertexBasePtr vert,
 						       unsigned int ilist,
 						       unsigned int iv) {
   int id = inpart->id();
   if( id < 0 || !vert->incoming(id) || vert->getNpoint() != 3 )
-    return PDVector();
+    return tPDVector();
   Energy m1(inpart->mass());
-  vector<PDPtr> decaylist;
+  vector<tPDPtr> decaylist;
   decaylist = vert->search(ilist,id);
-  PDVector::size_type nd = decaylist.size();
-  PDVector decays;
-  for( PDVector::size_type i = 0; i < nd; i += 3 ) {
+  tPDVector::size_type nd = decaylist.size();
+  tPDVector decays;
+  for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
     tPDPtr pa(decaylist[i]), pb(decaylist.at(i + 1)), 
       pc(decaylist.at(i + 2));
     if( pb->id() == id ) swap(pa, pb);
@@ -298,7 +298,7 @@ void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
 }
 
 void WeakCurrentDecayConstructor::
-createDecayMode(PDPtr inpart, const PDVector & decays,
+createDecayMode(PDPtr inpart, const tPDVector & decays,
 		map<WeakDecayCurrentPtr,GeneralCurrentDecayerPtr> decayers) {
   if(decays.empty()) {
     throw NBodyDecayConstructorError() 

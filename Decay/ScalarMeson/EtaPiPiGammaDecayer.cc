@@ -208,7 +208,7 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
     }
   }
   // set up the modes
-  PDVector extpart;extpart.resize(4);
+  tPDVector extpart;extpart.resize(4);
   extpart[1] = getParticleData(ParticleID::piplus);
   extpart[2] = getParticleData(ParticleID::piminus);
   extpart[3] = getParticleData(ParticleID::gamma);
@@ -227,13 +227,13 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
 }
 
 int EtaPiPiGammaDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				    const PDVector & children) const {
+				    const tPDVector & children) const {
   int imode(-1);
   // check number of external particles
   if(children.size()!=3){return imode;}
   // check the outgoing particles
   unsigned int npip(0),npim(0),ngamma(0);
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int id;
   for(;pit!=children.end();++pit) {
     id=(**pit).id();

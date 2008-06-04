@@ -376,7 +376,7 @@ void DtoKPiPiCabibboFOCUS::doinit() throw(InitException) {
   tPDPtr f980    = getParticleData(ParticleID::f_0);
   tPDPtr rho1450 = getParticleData(100113);
   // D+ -> K+ pi- pi+
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::Dplus  );
   extpart[1]=getParticleData(ParticleID::Kplus  );
   extpart[2]=getParticleData(ParticleID::piminus);
@@ -503,13 +503,13 @@ void DtoKPiPiCabibboFOCUS::doinit() throw(InitException) {
 }
 
 int DtoKPiPiCabibboFOCUS::modeNumber(bool & cc,tcPDPtr parent, 
-			      const PDVector & children) const {
+			      const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D+/- or D_s+/-
   if(abs(id0)!=ParticleID::Dplus  &&
      abs(id0)!=ParticleID::D_splus) return -1;
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   cc = id0<0;
   int isign = cc ? -1 : 1;
   unsigned int npip(0),npim(0),nkp(0);

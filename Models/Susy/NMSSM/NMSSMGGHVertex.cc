@@ -17,7 +17,7 @@ NMSSMGGHVertex::NMSSMGGHVertex() :
   _masslast(make_pair(0.*MeV,0.*MeV)), _q2last(0.*MeV2), _couplast(0.), 
   _hlast(0), _recalc(true) {
   //PDG codes for particles at vertices
-  vector<int> gluon(5,21), third(5);
+  vector<long> gluon(5,21), third(5);
   third[0] = 25;
   third[1] = 35;
   third[2] = 36;

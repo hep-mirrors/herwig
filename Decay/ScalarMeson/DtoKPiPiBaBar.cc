@@ -279,7 +279,7 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
   tPDPtr sigma   = getParticleData(9000221);
   // construct the channels for the decay
   DecayPhaseSpaceChannelPtr newchannel;
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::D0);
   extpart[1]=getParticleData(ParticleID::Kbar0);
   extpart[2]=getParticleData(ParticleID::piplus);
@@ -1183,14 +1183,14 @@ void DtoKPiPiBaBar::Init() {
 }
 
 int DtoKPiPiBaBar::modeNumber(bool & cc,tcPDPtr parent, 
-			      const PDVector & children) const {
+			      const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D0
   if(abs(id0)!=ParticleID::D0) return -1;
   cc = id0==ParticleID::Dbar0;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nk(0);
   for( ;pit!=children.end();++pit) {
     id0=(**pit).id();

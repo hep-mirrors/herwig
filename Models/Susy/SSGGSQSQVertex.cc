@@ -20,16 +20,16 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
-  vector<int> first,second,third,fourth;
+  vector<long> first,second,third,fourth;
   //L-L squarks
-  for(unsigned int ix=1000001;ix<1000007;++ix) {
+  for(long ix=1000001;ix<1000007;++ix) {
     first.push_back(21);
     second.push_back(21);
     third.push_back(ix);
     fourth.push_back(-ix);
   }
   //R-R squarks
-  for(unsigned int ix=2000001;ix<2000007;++ix) {
+  for(long ix=2000001;ix<2000007;++ix) {
     first.push_back(21);
     second.push_back(21);
     third.push_back(ix);

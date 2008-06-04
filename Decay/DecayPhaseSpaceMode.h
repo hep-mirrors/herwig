@@ -75,7 +75,7 @@ public:
    * @param in The particle data objects for the external particles
    * @param intin A pointer to the DecayIntegrator class using this mode.
    */
-  inline DecayPhaseSpaceMode(PDVector in, tcDecayIntegratorPtr intin);
+  inline DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin);
   //@}
 
   /**
@@ -373,7 +373,7 @@ private:
   /**
    * External particles
    */
-  PDVector _extpart;
+  tPDVector _extpart;
 
   /**
    * Which of the partial widths of the incoming particle to use

@@ -25,7 +25,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-bool MamboDecayer::accept(tcPDPtr, const PDVector & ) const {
+bool MamboDecayer::accept(tcPDPtr, const tPDVector & ) const {
   return true;
 }
 
@@ -59,7 +59,7 @@ void MamboDecayer::Init() {
 }
 
 ParticleVector MamboDecayer::decay(const Particle & parent,
-				   const PDVector & children) const {
+				   const tPDVector & children) const {
   useMe();
   const int N = children.size();
   ParticleVector out(N);
@@ -94,7 +94,7 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
   
   //set output momenta
   int iter  =  0;
-  for(PDVector::const_iterator it=children.begin();iter<N;
+  for(tPDVector::const_iterator it=children.begin();iter<N;
       ++iter,++it) {
     out[iter] = (*it)->produceParticle(productMomentum[iter]);
   }

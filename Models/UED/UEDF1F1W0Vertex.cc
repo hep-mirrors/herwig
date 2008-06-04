@@ -24,42 +24,42 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(),
 				    theQ2Last(0.0*GeV2), theCoupLast(0.), 
 				    theLeftLast(0.), thefermALast(0),
 				    thefermBLast(0) {
-  vector<int> anti, ferm, wboson;
+  vector<long> anti, ferm, wboson;
   //outgoing W+
-  for(unsigned int i = 2; i < 7; i += 2) {
-    for(unsigned int j = 1; j < 6; j += 2) {
+  for(long i = 2; i < 7; i += 2) {
+    for(long j = 1; j < 6; j += 2) {
       anti.push_back(-(5100000 + i));
       ferm.push_back(5100000 + j);
       wboson.push_back(24);
     }
   }
-  for(unsigned int i = 2; i < 7; i += 2) {
-    for(unsigned int j = 1; j < 6; j += 2) {
+  for(long i = 2; i < 7; i += 2) {
+    for(long j = 1; j < 6; j += 2) {
       anti.push_back(-(6100000 + i));
       ferm.push_back(6100000 + j);
       wboson.push_back(24);
     }
   }
-  for(unsigned int i = 11; i < 17; i += 2) {
+  for(long i = 11; i < 17; i += 2) {
     anti.push_back(-(5100001 + i));
     ferm.push_back(5100000 + i);
     wboson.push_back(24);
   }
   //outgoing W-
-  for(unsigned int i = 1; i < 6; i += 2) {
-     for(unsigned int j = 2 ; j < 7; j += 2) {
+  for(long i = 1; i < 6; i += 2) {
+     for(long j = 2 ; j < 7; j += 2) {
        anti.push_back(-(5100000 + i));
        ferm.push_back(5100000 + j);
        wboson.push_back(-24);
      }
   }
-  for(unsigned int i = 11; i < 17; i += 2) {
+  for(long i = 11; i < 17; i += 2) {
     anti.push_back(-(5100000 + i));
     ferm.push_back(5100001 + i);
     wboson.push_back(-24);
   }
-  for(unsigned int i = 1; i < 6; i += 2) {
-     for(unsigned int j = 2 ; j < 7; j += 2) {
+  for(long i = 1; i < 6; i += 2) {
+     for(long j = 2 ; j < 7; j += 2) {
        anti.push_back(-(6100000 + i));
        ferm.push_back(6100000 + j);
        wboson.push_back(-24);

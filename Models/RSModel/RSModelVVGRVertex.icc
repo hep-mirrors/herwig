@@ -16,7 +16,7 @@ using namespace ThePEG;
 
 inline RSModelVVGRVertex::RSModelVVGRVertex() 
 {
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   first.push_back(23);second.push_back( 23);third.push_back(39);
   first.push_back(22);second.push_back( 22);third.push_back(39);
   first.push_back(24);second.push_back(-24);third.push_back(39);

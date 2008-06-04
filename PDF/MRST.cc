@@ -13,6 +13,7 @@
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/Interface/Switch.h>
 #include <istream>
 #include <iostream>
@@ -109,7 +110,7 @@ double MRST::pdfValue(double x, Energy2 q2,
   else if(q2>qsqmax) q2=qsqmax;
   // c++ interpolation
   double output(0.);
-  if(_inter&&x<0.8) {
+  if(_inter==0||(_inter==2&&x<_xswitch)) {
     // interpolation is in logx, log qsq:
     double xxx=log10(x);
     double qsq=log10(q2/GeV2);
@@ -281,11 +282,11 @@ double MRST::pdfValue(double x, Energy2 q2,
 }
 
 void MRST::persistentOutput(PersistentOStream &out) const {
-  out << _file << data << fdata << _inter;
+  out << _file << data << fdata << _inter << _xswitch;
 }
 
 void MRST::persistentInput(PersistentIStream & in, int) {
-  in >> _file >> data >> fdata >> _inter;
+  in >> _file >> data >> fdata >> _inter >> _xswitch;
   initialize(false);
 }
 
@@ -293,27 +294,38 @@ void MRST::Init() {
 
   static ClassDocumentation<MRST> documentation("Implementation of the MRST PDFs");
 
-  static Switch<MRST,bool> interfaceInterpolation
+  static Switch<MRST,unsigned int> interfaceInterpolation
     ("Interpolation",
      "Whether to use cubic or linear (C++ or FORTRAN) interpolation",
-     &MRST::_inter, true, false, false);
+     &MRST::_inter, 2, false, false);
   static SwitchOption interfaceInterpolationCubic
     (interfaceInterpolation,
      "Cubic",
      "Use cubic interpolation",
-     true);
+     0);
   static SwitchOption interfaceInterpolationLinear
     (interfaceInterpolation,
      "Linear",
      "Use Linear Interpolation",
-     false);
+     1);;
+  static SwitchOption interfaceInterpolationMixed
+    (interfaceInterpolation,
+     "Mixed",
+     "Use cubic below xswitch and linear interpolation above",
+     2);
+
+  static Parameter<MRST,double> interfaceXSwitch
+    ("XSwitch",
+     "Value of x to switch from cubic to linear interpolation",
+     &MRST::_xswitch, 0.8, 0.0, 1.0,
+     false, false, Interface::limited);
 
 }
 
 void MRST::doinitrun() {
   PDFBase::doinitrun();
 #ifdef MRST_TESTING
-  bool intersave=_inter;
+  unsigned int intersave=_inter;
   tPDPtr proton=getParticleData(ParticleID::pplus);
   for(unsigned int itype=0;itype<8;++itype) {
     tPDPtr parton;
@@ -386,7 +398,7 @@ void MRST::doinitrun() {
       else if(itype==7)
 	output << "TITLE TOP \" gluon   distribution for q=" 
 	       <<  q/GeV << "\"\n";
-      _inter=false;
+      _inter=0;
       for(double xl=log(xmin)+xstep;xl<=log(xmax);xl+=xstep) {
 	double x=exp(xl);
 	double val=xfl(proton,parton,q*q,-xl);
@@ -394,14 +406,22 @@ void MRST::doinitrun() {
 	output << x << '\t' << val << '\n';
       }
       output << "JOIN RED" << endl;
-      _inter=true;
+      _inter=1;
       for(double xl=log(xmin)+xstep;xl<=log(xmax);xl+=xstep) {
 	double x=exp(xl);
 	double val=xfl(proton,parton,q*q,-xl);
 	if(val>1e5) val=1e5;
 	output << x << '\t' << val << '\n';
       }
-      output << "JOIN" << endl;
+      output << "JOIN BLUE" << endl;
+      _inter=2;
+      for(double xl=log(xmin)+xstep;xl<=log(xmax);xl+=xstep) {
+	double x=exp(xl);
+	double val=xfl(proton,parton,q*q,-xl);
+	if(val>1e5) val=1e5;
+	output << x << '\t' << val << '\n';
+      }
+      output << "JOIN GREEN" << endl;
     }
   }
   _inter=intersave;
@@ -466,7 +486,8 @@ void MRST::initialize(bool reread) {
 					      << "in MRST::initialize()"
 					      << Exception::runerror;
 	 for(int ii=1;ii<=np;++ii) {
-	   fdata[ii][nn][mm] = data[ii][nn][mm]/pow(1.-xxb[nn],n0[ii]);
+	   fdata[ii][nn][mm] = _inter==0 ? 0. :
+	     data[ii][nn][mm]/pow(1.-xxb[nn],n0[ii]);
 	 }
        }
      }
@@ -489,7 +510,8 @@ void MRST::initialize(bool reread) {
        for(int ii=1;ii<=np;++ii) {
 	 if(ii==5||ii==7) continue;
 	 for(int kk=1;kk<=nq;++kk) {
-	   fdata[ii][jj][kk] = log10( fdata[ii][jj][kk] / fdata[ii][ntenth][kk] ) + 
+	   fdata[ii][jj][kk] = _inter==0 ? 0. : 
+	     log10( fdata[ii][jj][kk] / fdata[ii][ntenth][kk] ) + 
 	     fdata[ii][ntenth][kk];
 	 }
        }

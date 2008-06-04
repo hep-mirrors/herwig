@@ -26,7 +26,12 @@ using ThePEG::Helicity::ScalarWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-DtoKPiPiCLEO::DtoKPiPiCLEO() {
+DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(), 
+			       _c1K1430m(), _c1K14300(), _c1rho1700(), _c1K1680(), 
+			       _c2Kstarp(), _c2rho(), _c2omega(), _c2Kstarm(),
+			       _c2f980(), _c2f2(), _c2f1370(), _c2K14300(),
+			       _c2K14302(), _c2K1680(), _c2NR(), _rD0(), _rres()
+{
   // use local values for masses and widths
   _localparameters=true;
   // masses and widths
@@ -121,7 +126,7 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   tPDPtr f2      = getParticleData(ParticleID::f_2);
   DecayPhaseSpaceChannelPtr newchannel;
   // D0 -> K- pi+ pi0
-  PDVector extpart(4);
+  tPDVector extpart(4);
   extpart[0]=getParticleData(ParticleID::D0);
   extpart[1]=getParticleData(ParticleID::Kminus);
   extpart[2]=getParticleData(ParticleID::piplus);
@@ -850,14 +855,14 @@ void DtoKPiPiCLEO::Init() {
 }
 
 int DtoKPiPiCLEO::modeNumber(bool & cc,tcPDPtr parent,
-			     const PDVector & children) const {
+			     const tPDVector & children) const {
   int id0(parent->id());
   // incoming particle must be D0
   if(abs(id0)!=ParticleID::D0) return -1;
   cc = id0==ParticleID::Dbar0;
   // must be three decay products
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npip(0),npim(0),nkm(0),nk0(0),npi0(0);
   for( ;pit!=children.end();++pit) {
     id0=(**pit).id();

@@ -23,7 +23,7 @@ using namespace Herwig;
 
 bool HwDecayerBase::accept(const DecayMode & dm) const {
   // get the primary products
-  PDVector products=dm.orderedProducts();
+  tPDVector products=dm.orderedProducts();
   // add products for which the decay mode is all ready specified
   if(!dm.cascadeProducts().empty()) {
     for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();
@@ -40,7 +40,7 @@ ParticleVector HwDecayerBase::decay(const DecayMode & dm,
   // handling of the decay including the special features of the
   // DecayMode  
   // get the primary products
-  PDVector products=dm.orderedProducts();
+  tPDVector products=dm.orderedProducts();
   // add products for which the decay mode is all ready specified
   if(!dm.cascadeProducts().empty()) {
     for(ModeMSet::const_iterator mit=dm.cascadeProducts().begin();

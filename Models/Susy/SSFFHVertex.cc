@@ -26,13 +26,13 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV),
 			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
 			     theLLast(0.0), theRLast(0.0), theHLast(0), 
 			     theFLast(0), theGlast(0.), theq2last() {
-  vector<int> first, second, third;
-  for(unsigned int h = 0; h < 3; ++h) {
+  vector<long> first, second, third;
+  for(long h = 0; h < 3; ++h) {
     //neutral higgs
     int higgs = h==0 ? 25 : 35;
     if( h == 2 ) ++higgs;
     //3rd generation quarks
-    for(unsigned int i = 5; i < 7; ++i) {
+    for(long i = 5; i < 7; ++i) {
       first.push_back(-i);
       second.push_back(i);
       third.push_back(higgs);

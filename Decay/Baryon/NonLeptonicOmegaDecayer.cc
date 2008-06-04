@@ -49,7 +49,7 @@ void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
 			       +_hpi*_mpi0*_mpi0/2./(_MK0*_MK0-_mpi0*_mpi0));
   _B[2] = 0./MeV;
   // set up the decay modes
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   double wgtmax;
   vector<double> wgt(0);
@@ -66,7 +66,7 @@ void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
 }
 
 int NonLeptonicOmegaDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   // must be two outgoing particles
   if(children.size()!=2){return imode;}

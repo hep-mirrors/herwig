@@ -19,5 +19,6 @@ set /Herwig/Particles/pbar-:PDF MRST
 
 # NLO PDFs (needed for NLO matrix elements)
 create Herwig::MRST MRST-NLO HwMRST.so
+set MRST-NLO:Interpolation Cubic
 setup MRST-NLO @HERWIG_PDF_NLO@
 set MRST-NLO:RemnantHandler HadronRemnants

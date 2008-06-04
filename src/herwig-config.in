@@ -3,7 +3,7 @@
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-datarootdir = @datarootdir@
+datarootdir=@datarootdir@
 
 tmp=$(echo $* | egrep -- '--\<help\>|-\<h\>')
 if test $# -eq 0 || test -n "$tmp"; then
@@ -17,8 +17,6 @@ if test $# -eq 0 || test -n "$tmp"; then
     echo "  --datadir      : show the path to the directory containing shared data"
     echo "  --libdir       : show the path to the directory containing the libraries"
     echo "  --includedir   : show the path to the directory containing the headers"
-    echo "  --libname      : show the main library name, suitable for use with -l"
-
     echo "  --cppflags     : show the required CPPFLAGS for building against Herwig++"
     echo "  --ldflags      : show the required LDFLAGS for linking against Herwig++"
     echo "  --ldlibs       : show the required libraries for linking against Herwig++"
@@ -38,18 +36,12 @@ test -n "$tmp" && echo @libdir@/@PACKAGE_TARNAME@
 tmp=$(echo "$*" | egrep -- '--\<includedir\>')
 test -n "$tmp" && echo @includedir@
 
-tmp=$(echo "$*" | egrep -- '--\<libname\>')
-test -n "$tmp" && echo Herwig
-
-
-
-
 tmp=$(echo "$*" | egrep -- '--\<cppflags\>')
 test -n "$tmp" && echo -I@includedir@ @THEPEGINCLUDE@
 
 tmp=$(echo "$*" | egrep -- '--\<ldflags\>')
-test -n "$tmp" && echo -L@libdir@/@PACKAGE_TARNAME@ @THEPEGLDFLAGS@
+test -n "$tmp" && echo @THEPEGLDFLAGS@
 
 tmp=$(echo "$*" | egrep -- '--\<ldlibs\>')
-test -n "$tmp" && echo -lHerwig @THEPEGLIB@
+test -n "$tmp" && echo @THEPEGLIB@
 

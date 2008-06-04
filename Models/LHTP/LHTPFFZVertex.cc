@@ -37,7 +37,7 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
 				 _coupe(0.), _coupnu(0.),
 				 _couplast(0.0), _q2last(0.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // Z
   // the quarks
   for(unsigned int ix=1;ix<7;++ix) {
@@ -57,13 +57,13 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
   second.push_back(+6);
   third.push_back(23);
   // the leptons
-  for(unsigned int ix=11;ix<17;++ix) {
+  for(int ix=11;ix<17;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(23);
   }
   // the T-odd quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(long ix=1;ix<7;++ix) {
     first.push_back(-ix-4000000);
     second.push_back(ix+4000000);
     third.push_back(23);
@@ -72,14 +72,14 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
   second.push_back(+4000008);
   third.push_back(23);
   // the T-odd leptons
-  for(unsigned int ix=11;ix<17;++ix) {
+  for(long ix=11;ix<17;++ix) {
     first.push_back(-ix-4000000);
     second.push_back(ix+4000000);
     third.push_back(23);
   }
   // Z_H
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(long ix=1;ix<7;++ix) {
     first.push_back(-ix-4000000);
     second.push_back(ix);
     third.push_back(33);
@@ -100,7 +100,7 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
   second.push_back(-4000008);
   third .push_back(33);
   // the leptons
-  for(unsigned int ix=11;ix<17;++ix) {
+  for(long ix=11;ix<17;++ix) {
     first.push_back(-ix-4000000);
     second.push_back(ix);
     third.push_back(33);

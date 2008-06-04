@@ -37,7 +37,7 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
   // and the form factors
   _form->init();
   // the channels
-  PDVector extpart,ptemp;
+  tPDVector extpart,ptemp;
   _modemap.clear();
   double maxweight;
   vector<double> channelwgts(1,1.);
@@ -84,12 +84,12 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
 }
 
 bool SemiLeptonicScalarDecayer::accept(tcPDPtr parent, 
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   // find the non-lepton
   int imes(0),idtemp,idin(parent->id());
   vector<int> idother; bool dummy;
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
     if(abs(idtemp)>16) imes=idtemp;
@@ -102,10 +102,10 @@ bool SemiLeptonicScalarDecayer::accept(tcPDPtr parent,
 }
 
 int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const PDVector & children) const {
+					   const tPDVector & children) const {
   // find the ids of the particles for the decay current
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   int idtemp,imes(0),idin(parent->id());
   vector<int> idother;
   cc=false;

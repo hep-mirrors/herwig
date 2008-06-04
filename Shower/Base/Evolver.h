@@ -479,14 +479,14 @@ private:
   Energy _gamma;
 
   /**
-   *  Limit the number of emissions for testing
-   */
-  unsigned int _limitEmissions;
-
-  /**
    * Upper bound on intrinsic pT for inverse quadratic
    */
   Energy _iptmax;
+
+  /**
+   *  Limit the number of emissions for testing
+   */
+  unsigned int _limitEmissions;
 
   /**
    *  The progenitor of the current shower

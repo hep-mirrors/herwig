@@ -1020,7 +1020,7 @@ void DtoPiPiPiFOCUS::doinit() throw(InitException) {
 
 }
 int DtoPiPiPiFOCUS::modeNumber(bool & ,tcPDPtr , 
-			      const PDVector & ) const {return -999;}
+			      const tPDVector & ) const {return -999;}
 
 double DtoPiPiPiFOCUS::me2(bool, const int, const Particle &,
 			   const ParticleVector & ) const {return -1;}

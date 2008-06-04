@@ -35,7 +35,7 @@ public:
    * @param children The decay products
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
-			 const PDVector & children) const;
+			 const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

@@ -35,7 +35,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * For a given decay mode and a given particle instance, perform the
@@ -44,7 +44,7 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Output the setup information for the particle database
