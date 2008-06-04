@@ -40,6 +40,8 @@ endif
 
 check-local: check-LHC check-LEP check-TVT check-ILC $(check_BSM)
 
+check-Powheg: check-LHC-Powheg check-TVT-Powheg
+
 link-helper-files:
 	@for i in $(HELPERFILES); do \
 	if test -f $(srcdir)/$$i -a ! -e $$i; then \

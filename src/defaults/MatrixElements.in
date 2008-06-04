@@ -78,6 +78,17 @@ create Herwig::MEPP2ZH MEPP2ZH
 create Herwig::MEPP2WH MEPP2WH
 
 ##########################################################
+# Hadron-Hadron NLO matrix elements in the Powheg scheme
+##########################################################
+library HwPowhegME.so
+
+# q qbar -> gamma/Z -> l+l-
+create Herwig::MEqq2gZ2ffPowheg PowhegMEqq2gZ2ff
+
+# q qbar to W -> l nu
+create Herwig::MEqq2W2ffPowheg PowhegMEqq2W2ff
+
+##########################################################
 # DIS matrix elements
 ##########################################################
 
