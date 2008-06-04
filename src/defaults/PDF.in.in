@@ -16,3 +16,8 @@ setup MRST @HERWIG_PDF_DEFAULT@
 set MRST:RemnantHandler HadronRemnants
 set /Herwig/Particles/p+:PDF MRST
 set /Herwig/Particles/pbar-:PDF MRST
+
+# NLO PDFs (needed for NLO matrix elements)
+create Herwig::MRST MRST-NLO HwMRST.so
+setup MRST-NLO @HERWIG_PDF_NLO@
+set MRST-NLO:RemnantHandler HadronRemnants
