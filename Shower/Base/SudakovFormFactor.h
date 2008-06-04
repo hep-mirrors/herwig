@@ -131,7 +131,11 @@ public:
   /**
    * The default constructor.
    */
-  inline SudakovFormFactor();
+  inline SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
+			       cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
+			       kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
+			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(0.*GeV2),
+			       z_( 0.0 ),phi_(0.0), pT_() {}
 
   /**
    *  Members to generate the scale of the next branching
@@ -192,17 +196,18 @@ public:
   /** 
    * Return the pointer to the SplittingFunction object.
    */
-  inline tSplittingFnPtr splittingFn() const;
+  inline tSplittingFnPtr splittingFn() const { return splittingFn_; }
 
   /**
    * Return the pointer to the ShowerAlpha object.
    */
-  inline tShowerAlphaPtr alpha() const;
+  inline tShowerAlphaPtr alpha() const { return alpha_; }
 
   /**
    *  The type of interaction
    */
-  inline ShowerIndex::InteractionType interactionType() const;
+  inline ShowerIndex::InteractionType interactionType() const
+  {return splittingFn_->interactionType();}
   //@}
 
 public:
@@ -214,17 +219,17 @@ public:
   /**
    *  The energy fraction
    */
-  inline double z() const;
+  inline double z() const { return z_; }
 
   /**
    *  The azimuthal angle
    */
-  inline double phi() const;
+  inline double phi() const { return phi_; }
 
   /**
    *  The transverse momentum
    */
-  inline Energy pT() const;
+  inline Energy pT() const { return pT_; }
   //@}
 
 public:
@@ -254,6 +259,18 @@ public:
   static void Init();
 
 protected:
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
+protected:
 
   /**
    *  Methods to implement the veto algorithm to generate the scale of 
@@ -268,7 +285,7 @@ protected:
    * - 1 is initial-state for the hard process
    * - 2 is initial-state for particle decays
    */
-  inline double guessz (unsigned int iopt, const IdList &ids) const;
+  double guessz (unsigned int iopt, const IdList &ids) const;
 
   /**
    *  Value of the scale for the veto algorithm
@@ -307,14 +324,17 @@ protected:
    */
   inline bool SplittingFnVeto(const Energy2 t, 
 			      const IdList &ids, 
-			      const bool mass) const;
+			      const bool mass) const 
+  { return UseRandom::rnd()>splittingFn_->ratioP(z_, t, ids,mass); }
 
   /**
    *  The veto on the coupling constant
    * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
    * @return true if vetoed
    */
-  inline bool alphaSVeto(const Energy2 pt2) const;
+  inline bool alphaSVeto(const Energy2 pt2) const 
+  {return UseRandom::rnd() > Math::powi(alpha_->ratio(pt2),
+					splittingFn_->interactionOrder());}
   //@}
 
   /**
@@ -324,17 +344,17 @@ protected:
   /**
    *  The energy fraction
    */
-  inline void z(double);
+  inline void z(double in) { z_=in; }
 
   /**
    *  The azimuthal angle
    */
-  inline void phi(double);
+  inline void phi(double in) { phi_=in; }
 
   /**
    *  The transverse momentum
    */
-  inline void pT(Energy);
+  inline void pT(Energy in) { pT_=in; }
   //@}
 
   /**
@@ -344,12 +364,12 @@ protected:
   /**
    * Get the limits
    */
-  inline pair<double,double> zLimits() const;
+  inline pair<double,double> zLimits() const { return zlimits_;}
 
   /**
    * Set the limits
    */
-  inline void zLimits(pair<double,double> );
+  inline void zLimits(pair<double,double> in) { zlimits_=in; }
   //@}
 
   /**
@@ -360,12 +380,55 @@ protected:
   /**
    *  Access the potential branchings
    */
-  inline vector<IdList> particles() const;
+  inline vector<IdList> particles() const { return particles_; }
 
   /**
    *  Get the option for the PDF factor
    */
-  inline unsigned int PDFFactor() const;
+  inline unsigned int PDFFactor() const { return pdffactor_; }
+
+  /**
+   * @name Methods for the cut-off
+   */
+  //@{
+  /**
+   *  The option being used
+   */
+  inline unsigned int cutOffOption() const { return cutOffOption_; }
+
+  /**
+   *  The kinematic scale
+   */
+  inline Energy kinScale() const {return kinCutoffScale_;}
+
+  /**
+   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
+   * @param scale The scale \f$\delta\f$
+   * @param mq The quark mass \f$m_q\f$.
+   */
+  inline Energy kinematicCutOff(Energy scale, Energy mq) const 
+  {return max((scale -a_*mq)/b_,c_);}
+
+  /**
+   *  The virtualilty cut-off for gluons
+   */
+  inline Energy vgCut() const { return vgcut_; }
+  
+  /**
+   *  The virtuality cut-off for everything else
+   */
+  inline Energy vqCut() const { return vqcut_; }
+
+  /**
+   *  The minimum \f$p_T\f$ for the branching
+   */
+  inline Energy const pTmin() const { return pTmin_; }
+  
+  /**
+   *  The square of the minimum \f$p_T\f$
+   */
+  inline Energy2 const pT2min() const { return pT2min_; }
+  //@}
 
 private:
 
@@ -386,28 +449,91 @@ private:
   /**
    *  Pointer to the splitting function for this Sudakov form factor
    */
-  SplittingFnPtr _splittingFn;
+  SplittingFnPtr splittingFn_;
 
   /**
    *  Pointer to the coupling for this Sudakov form factor
    */
-  ShowerAlphaPtr _alpha;
+  ShowerAlphaPtr alpha_;
 
   /**
    * Maximum value of the PDF weight
    */
-  double _pdfmax;
+  double pdfmax_;
 
   /**
    * List of the particles this Sudakov is used for to aid in setting up
    * interpolation tables if needed
    */
-  vector<IdList> _particles;
+  vector<IdList> particles_;
 
   /**
    *  Option for the inclusion of a factor \f$1/(1-z)\f$ in the PDF estimate
    */
-  unsigned _pdffactor;
+  unsigned pdffactor_;
+
+private:
+
+  /**
+   *  Option for the type of cut-off to be applied
+   */
+  unsigned int cutOffOption_;
+
+  /**
+   *  Parameters for the default Herwig++ cut-off option, i.e. the parameters for
+   *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
+   */
+  //@{
+  /**
+   *  The \f$a\f$ parameter
+   */
+  double a_;
+
+  /**
+   *  The \f$b\f$ parameter
+   */
+  double b_;
+
+  /**
+   *  The \f$c\f$ parameter
+   */
+  Energy c_;
+
+  /**
+   * Kinematic cutoff used in the parton shower phase space. 
+   */
+  Energy kinCutoffScale_;
+  //@} 
+
+   /**
+    *  Parameters for the FORTRAN-like cut-off
+    */ 
+  //@{
+  /**
+   *  The virtualilty cut-off for gluons
+   */
+  Energy vgcut_;
+  
+  /**
+   *  The virtuality cut-off for everything else
+   */
+  Energy vqcut_;
+  //@}
+
+  /**
+   *  Parameters for the \f$p_T\f$ cut-off 
+   */
+  //@{
+  /**
+   *  The minimum \f$p_T\f$ for the branching
+   */
+  Energy pTmin_;
+  
+  /**
+   *  The square of the minimum \f$p_T\f$
+   */
+  Energy2 pT2min_;
+  //@}
 
 private:
 
@@ -419,17 +545,17 @@ private:
   /**
    *  The energy fraction
    */
-  double _z;
+  double z_;
 
   /**
    *  The azimuthal angle
    */
-  double _phi;
+  double phi_;
 
   /**
    *  The transverse momentum
    */
-  Energy _pT;
+  Energy pT_;
   //@}
 
 private:
@@ -437,7 +563,7 @@ private:
   /**
    *  The limits of \f$z\f$ in the splitting
    */
-  pair<double,double> _zlimits;
+  pair<double,double> zlimits_;
 };
 
 }
@@ -476,10 +602,5 @@ struct ClassTraits<Herwig::SudakovFormFactor>
 /** @endcond */
 
 }
-
-#include "SudakovFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SudakovFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_SudakovFormFactor_H */

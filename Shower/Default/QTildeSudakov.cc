@@ -26,16 +26,10 @@ using namespace Herwig;
 ClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
 // Definition of the static class description member.
 
-void QTildeSudakov::persistentOutput(PersistentOStream & os) const {
-  os << a_ << b_ << ounit(c_,GeV) << ounit(kinCutoffScale_,GeV) << cutOffOption_
-     << ounit(vgcut_,GeV) << ounit(vqcut_,GeV) 
-     << ounit(pTmin_,GeV) << ounit(pT2min_,GeV2);
+void QTildeSudakov::persistentOutput(PersistentOStream & ) const {
 }
 
-void QTildeSudakov::persistentInput(PersistentIStream & is, int) {
-  is >> a_ >> b_ >> iunit(c_,GeV) >> iunit(kinCutoffScale_,GeV) >> cutOffOption_
-     >> iunit(vgcut_,GeV) >> iunit(vqcut_,GeV) 
-     >> iunit(pTmin_,GeV) >> iunit(pT2min_,GeV2);
+void QTildeSudakov::persistentInput(PersistentIStream & , int) {
 }
 
 void QTildeSudakov::Init() {
@@ -43,71 +37,6 @@ void QTildeSudakov::Init() {
   static ClassDocumentation<QTildeSudakov> documentation
     ("The QTildeSudakov class implements the Sudakov form factor for ordering it"
      " qtilde");
-
-  static Parameter<QTildeSudakov,double> interfaceaParameter
-    ("aParameter",
-     "The a parameter for the kinematic cut-off",
-     &QTildeSudakov::a_, 0.3, -10.0, 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeSudakov,double> interfacebParameter
-    ("bParameter",
-     "The b parameter for the kinematic cut-off",
-     &QTildeSudakov::b_, 2.3, -10.0, 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeSudakov,Energy> interfacecParameter
-    ("cParameter",
-     "The c parameter for the kinematic cut-off",
-     &QTildeSudakov::c_, GeV, 0.3*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeSudakov,Energy>
-    interfaceKinScale ("cutoffKinScale",
-		       "kinematic cutoff scale for the parton shower phase"
-		       " space (unit [GeV])",
-		       &QTildeSudakov::kinCutoffScale_, GeV, 
-		       2.3*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
-
-  static Switch<QTildeSudakov,unsigned int> interfaceCutOffOption
-    ("CutOffOption",
-     "The type of cut-off to use to end the shower",
-     &QTildeSudakov::cutOffOption_, 0, false, false);
-  static SwitchOption interfaceCutOffOptionDefault
-    (interfaceCutOffOption,
-     "Default",
-     "Use the standard Herwig++ cut-off on virtualities with the minimum"
-     " virtuality depending on the mass of the branching particle",
-     0);
-  static SwitchOption interfaceCutOffOptionFORTRAN
-    (interfaceCutOffOption,
-     "FORTRAN",
-     "Use a FORTRAN-like cut-off on virtualities",
-     1);
-  static SwitchOption interfaceCutOffOptionpT
-    (interfaceCutOffOption,
-     "pT",
-     "Use a cut on the minimum allowed pT",
-     2);
-  
-  static Parameter<QTildeSudakov,Energy> interfaceGluonVirtualityCut
-    ("GluonVirtualityCut",
-     "For the FORTRAN cut-off option the minimum virtuality of the gluon",
-     &QTildeSudakov::vgcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-  
-  static Parameter<QTildeSudakov,Energy> interfaceQuarkVirtualityCut
-    ("QuarkVirtualityCut",
-     "For the FORTRAN cut-off option the minimum virtuality added to"
-     " the mass for particles other than the gluon",
-     &QTildeSudakov::vqcut_, GeV, 0.85*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-  
-  static Parameter<QTildeSudakov,Energy> interfacepTmin
-    ("pTmin",
-     "The minimum pT if using a cut-off on the pT",
-     &QTildeSudakov::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
-     false, false, Interface::limited);
   
 }
 
@@ -154,12 +83,11 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
   Energy2 pt2=sqr(z()*(1.-z()))*t-masssquared_[1]*(1.-z())-masssquared_[2]*z();
   if(ids_[0]!=ParticleID::g) pt2+=z()*(1.-z())*masssquared_[0];
   // if pt2<0 veto
-  if(pt2<pT2min_) return true;
+  if(pt2<pT2min()) return true;
   // otherwise calculate pt and return
   pT(sqrt(pt2));
   return false;
 }
-
  
 ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   const IdList &ids,const bool cc,
@@ -218,7 +146,7 @@ generateNextSpaceBranching(const Energy startingQ,
   while(z() > zLimits().second || 
 	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
 	alphaSVeto(sqr(1.-z())*t) || 
-	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min_ );
+	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
   if(t > Energy2() && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
   phi(Constants::twopi*UseRandom::rnd());
@@ -237,7 +165,7 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
   masses_.clear();
   masssquared_.clear();
   tmin=Energy2();
-  if(cutOffOption_ == 0) {
+  if(cutOffOption() == 0) {
     for(unsigned int ix=0;ix<ids_.size();++ix)
       masses_.push_back(getParticleData(ids_[ix])->mass());
     Energy kinCutoff=
@@ -245,16 +173,16 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
     for(unsigned int ix=0;ix<masses_.size();++ix)
       masses_[ix]=max(kinCutoff,masses_[ix]);
   }
-  else if(cutOffOption_ == 1) {
+  else if(cutOffOption() == 1) {
     for(unsigned int ix=0;ix<ids_.size();++ix) {
       masses_.push_back(getParticleData(ids_[ix])->mass());
-      masses_.back() += ids_[ix]==ParticleID::g ? vgcut_ : vqcut_;
+      masses_.back() += ids_[ix]==ParticleID::g ? vgCut() : vqCut();
     }
   }
-  else if(cutOffOption_ == 2) {
+  else if(cutOffOption() == 2) {
     for(unsigned int ix=0;ix<ids_.size();++ix) 
       masses_.push_back(getParticleData(ids_[ix])->mass());
-    tmin = 4.*pT2min_;
+    tmin = 4.*pT2min();
   }
   else {
     throw Exception() << "Unknown option for the cut-off"
@@ -292,7 +220,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   }
   while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
 	alphaSVeto(sqr(1.-z())*t) ||
-	pt2<pT2min_ ||
+	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
   if(t > Energy2()) {
     q_ = sqrt(t);
@@ -343,21 +271,21 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
       return false;
     }
     // overestimate of the limits
-    limits.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min_)/t)));
+    limits.first  = 0.5*(1.-sqrt(1.-4.*sqrt((masssquared_[1]+pT2min())/t)));
     limits.second = 1.-limits.first;
   }
   // special case for radiated particle is gluon 
   else if(ids_[2]==ParticleID::g) {
-    limits.first  =    sqrt((masssquared_[1]+pT2min_)/t);
-    limits.second = 1.-sqrt((masssquared_[2]+pT2min_)/t);
+    limits.first  =    sqrt((masssquared_[1]+pT2min())/t);
+    limits.second = 1.-sqrt((masssquared_[2]+pT2min())/t);
   }
   else if(ids_[1]==ParticleID::g) {
-    limits.second  =    sqrt((masssquared_[2]+pT2min_)/t);
-    limits.first   = 1.-sqrt((masssquared_[1]+pT2min_)/t);
+    limits.second  =    sqrt((masssquared_[2]+pT2min())/t);
+    limits.first   = 1.-sqrt((masssquared_[1]+pT2min())/t);
   }
   else {
-    limits.first  =    (masssquared_[1]+pT2min_)/t;
-    limits.second = 1.-(masssquared_[2]+pT2min_)/t; 
+    limits.first  =    (masssquared_[1]+pT2min())/t;
+    limits.second = 1.-(masssquared_[2]+pT2min())/t; 
   }
   if(limits.first>=limits.second) {
     t=-1.*GeV2;
@@ -372,7 +300,7 @@ bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
   // compute the limits
   limits.first = x;
   double yy = 1.+0.5*masssquared_[2]/t;
-  limits.second = yy - sqrt(sqr(yy)-1.+pT2min_/t); 
+  limits.second = yy - sqrt(sqr(yy)-1.+pT2min()/t); 
   // return false if lower>upper
   zLimits(limits);
   if(limits.second<limits.first) {
@@ -409,9 +337,4 @@ ShoKinPtr QTildeSudakov::constructKinematics(int iopt) {
   showerKin->pT(pT());
   showerKin->splittingFn(splittingFn());
   return showerKin;
-}
-
-void QTildeSudakov::doinit() throw(InitException) {
-  SudakovFormFactor::doinit();
-  pT2min_ = cutOffOption_==2 ? sqr(pTmin_) : 0.*GeV2; 
 }

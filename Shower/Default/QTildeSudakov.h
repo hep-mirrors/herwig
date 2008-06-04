@@ -34,9 +34,7 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeSudakov() : cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
-			   kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			   vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(0.*GeV2) {}
+  inline QTildeSudakov() {}
   
   /**
    *  Members to generate the scale of the next branching
@@ -184,19 +182,6 @@ protected:
   bool computeSpaceLikeLimits(Energy2 & scale, double x);
 
   /**
-   *  The kinematic scale
-   */
-  inline Energy kinScale() const {return kinCutoffScale_;}
-
-  /**
-   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
-   * @param scale The scale \f$\delta\f$
-   * @param mq The quark mass \f$m_q\f$.
-   */
-  inline Energy kinematicCutOff(Energy scale, Energy mq) const 
-  {return max((scale -a_*mq)/b_,c_);}
-
-  /**
    *  Construct the kinematics objects
    */
   ShoKinPtr constructKinematics(int iopt);
@@ -218,18 +203,6 @@ protected:
   inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
-protected:
-  
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-  //@}
-
 private:
 
   /**
@@ -245,67 +218,6 @@ private:
   QTildeSudakov & operator=(const QTildeSudakov &);
 
 private:
-
-  /**
-   *  Option for the type of cut-off to be applied
-   */
-  unsigned int cutOffOption_;
-
-  /**
-   *  Parameters for the default Herwig++ cut-off option, i.e. the parameters for
-   *  the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
-   */
-  //@{
-  /**
-   *  The \f$a\f$ parameter
-   */
-  double a_;
-
-  /**
-   *  The \f$b\f$ parameter
-   */
-  double b_;
-
-  /**
-   *  The \f$c\f$ parameter
-   */
-  Energy c_;
-
-  /**
-   * Kinematic cutoff used in the parton shower phase space. 
-   */
-  Energy kinCutoffScale_;
-  //@} 
-
-   /**
-    *  Parameters for the FORTRAN-like cut-off
-    */ 
-  //@{
-  /**
-   *  The virtualilty cut-off for gluons
-   */
-  Energy vgcut_;
-  
-  /**
-   *  The virtuality cut-off for everything else
-   */
-  Energy vqcut_;
-  //@}
-
-  /**
-   *  Parameters for the \f$p_T\f$ cut-off 
-   */
-  //@{
-  /**
-   *  The minimum \f$p_T\f$ for the branching
-   */
-  Energy pTmin_;
-  
-  /**
-   *  The square of the minimum \f$p_T\f$
-   */
-  Energy2 pT2min_;
-  //@}
   
   /**
    *  The evolution scale, \f$\tilde{q}\f$.
