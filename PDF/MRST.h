@@ -306,7 +306,12 @@ private:
   /**
    *  Use FORTRAN or C++ MRST interpolation
    */
-  bool _inter;
+  unsigned _inter;
+
+  /**
+   *  X value to switch from cubic to linear
+   */
+  double _xswitch;
 
   /**
    *  The name of the file
