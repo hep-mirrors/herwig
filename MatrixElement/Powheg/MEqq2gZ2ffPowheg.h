@@ -12,22 +12,12 @@
 // This is the declaration of the MEqq2gZ2ffPowheg class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "Herwig++/MatrixElement/Hadron/MEqq2gZ2ff.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Utilities/Statistic.h"
-#include "Herwig++/Utilities/Maths.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
-using namespace ThePEG::Helicity;
-using Constants::pi;
-using Math::ReLi2;
 
 /**
  * The MEqq2gZ2ffPowheg class implements the products of Standard Model
@@ -37,91 +27,22 @@ using Math::ReLi2;
  * @see \ref MEqq2gZ2ffPowhegInterfaces "The interfaces"
  * defined for MEqq2gZ2ffPowheg.
  */
-class MEqq2gZ2ffPowheg: public ME2to2Base {
+class MEqq2gZ2ffPowheg: public MEqq2gZ2ff {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEqq2gZ2ffPowheg() : 
-    _maxflavour(5) ,_gammaZ(0)         ,_process(0),
-    _contrib(1)    ,_nlo_alphaS_opt(0) ,_fixed_alphaS(0.115895),
-    _a(0.5)        ,_p(0.7)            , 
-    x_h(100)       , v_h(100)          , 
-    x_pos_h(100)   , v_pos_h(100)      ,
-    x_neg_h(100)   , v_neg_h(100)      ,
-    xba_h(100)     , xba_pos_h(100)    , xba_neg_h(100),
-    xbb_h(100)     , xbb_pos_h(100)    , xbb_neg_h(100),
-    shatovrs_h(100),shatovrs_pos_h(100), shatovrs_neg_h(100),
-    y_h(100)       , y_pos_h(100)      , y_neg_h(100),
-    _eps(1.0e-8) {}
-  
-public:
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
+  MEqq2gZ2ffPowheg();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
-  /**
-   * Return the order in \f$\alpha_S\f$ in which this matrix
-   * element is given.
-   */
-  virtual unsigned int orderInAlphaS() const;
-
-  /**
-   * Return the order in \f$\alpha_{EW}\f$ in which this matrix
-   * element is given.
-   */
-  virtual unsigned int orderInAlphaEW() const;
-
-  /**
-   * The matrix element for the kinematical configuration
-   * previously provided by the last call to setKinematics(), suitably
-   * scaled by sHat() to give a dimension-less number.
-   * @return the matrix element scaled with sHat() to give a
-   * dimensionless number.
-   */
-  virtual double me2() const;
-
   /**
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
 
-  /**
-   * Add all possible diagrams with the add() function.
-   */
-  virtual void getDiagrams() const;
-
-  /**
-   * Get diagram selector. With the information previously supplied with the
-   * setKinematics method, a derived class may optionally
-   * override this method to weight the given diagrams with their
-   * (although certainly not physical) relative probabilities.
-   * @param dv the diagrams to be weighted.
-   * @return a Selector relating the given diagrams to their weights.
-   */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
-
-  /**
-   * Return a Selector with possible colour geometries for the selected
-   * diagram weighted by their relative probabilities.
-   * @param diag the diagram chosen.
-   * @return the possible colour geometries weighted by their
-   * relative probabilities.
-   */
-  virtual Selector<const ColourLines *>
-  colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
   /**
    * The number of internal degreed of freedom used in the matrix
    * element.
@@ -136,6 +57,13 @@ public:
    * false if the chosen points failed the kinematical cuts.
    */
   virtual bool generateKinematics(const double * r);
+
+  /**
+   * Return the matrix element for the kinematical configuation
+   * previously provided by the last call to setKinematics(). Uses
+   * me().
+   */
+  virtual CrossSection dSigHatDR() const;
   //@}
 
 
@@ -168,20 +96,6 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$q\bar{q}\to \gamma/Z \to f\bar{f}\f$.
-   * @param fin  Spinors for incoming quark
-   * @param ain  Spinors for incoming antiquark
-   * @param fout Spinors for incoming quark
-   * @param aout Spinors for incoming antiquark
-   * @param me  Whether or not to calculate the matrix element for spin correlations
-   */
-  double qqbarME(vector<SpinorWaveFunction>    & fin ,
-		 vector<SpinorBarWaveFunction> & ain ,
-		 vector<SpinorBarWaveFunction> & fout,
-		 vector<SpinorWaveFunction>    & aout,
-		 bool me) const;
-
-  /**
    *  Calculate the correction weight
    */
   double NLOweight() const;
@@ -204,8 +118,6 @@ protected:
   double Ctilde_qg(double x, double v) const;
   double Ctilde_gq(double x, double v) const;
   double Ctilde_qq(double x, double v) const;
-  double Ctilde_qg_trick(double x, double v) const;
-  double Ctilde_gq_trick(double x, double v) const;
 
 protected:
 
@@ -234,12 +146,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
   //@}
 
 private:
@@ -258,65 +164,67 @@ private:
 
 private:
  
-  mutable double  _xb_a,_xb_b,_alphaS,_TF,_CF;
-  mutable Energy2 _mll2,_mu2;
-  mutable tcPDPtr _parton_a,_parton_b,_gluon;
-  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A,_hadron_B;
+  /**
+   *  The momentum fraction of the first parton in the Born process
+   */
+  mutable double _xb_a;
 
   /**
-   *  Pointer to the vertices for the helicity calculations
+   *  The momentum fraction of the second parton in the Born process
    */
-  //@{
-  /**
-   *  Pointer to the Z vertex
-   */
-  AbstractFFVVertexPtr _theFFZVertex;
+  mutable double _xb_b;
 
   /**
-   *  Pointer to the photon vertex
+   *  The ParticleData object for the first parton in the Born process
    */
-  AbstractFFVVertexPtr _theFFPVertex;
-  //@}
+  mutable tcPDPtr _parton_a;
 
   /**
-   *  Pointers to the intermediate resonances
+   *  The ParticleData object for the second parton in the Born process
    */
-  //@{
-  /**
-   *  Pointer to the Z ParticleData object
-   */
-  tcPDPtr _z0;
+  mutable tcPDPtr _parton_b;
 
   /**
-   *  Pointer to the photon ParticleData object
+   *  The BeamParticleData object for the first  hadron
    */
-  tcPDPtr _gamma;
-  //@}
+  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A;
 
   /**
-   *  Switches to control the particles in the hard process
+   *  The BeamParticleData object for the second hadron
    */
-  //@{
-  /**
-   *  Allowed flavours for the incoming quarks
-   */
-  unsigned int _maxflavour;
+  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_B;
+ 
+  mutable double  _alphaS;
 
   /**
-   *  Whether to include both \f$Z^0\f$ and \f$\gamma\f$ or only one
+   *  the ParticleData object for the gluon
    */
-  unsigned int _gammaZ;
-  
-  /**
-   *  Which processes to include
-   */
-  unsigned int _process;
-  //@}
+  tcPDPtr _gluon;
 
   /**
-   * Matrix element for spin correlations
+   * The \f$T_R\f$ colour factor
    */
-  ProductionMatrixElement _me;
+  double _TR;
+
+  /**
+   *  The \f$C_F\f$ colour factor
+   */
+  double _CF;
+
+  /**
+   *  The value of \f$\frac{\alpha_S}{2\pi}\f$ used for the calculation
+   */
+  mutable double _alphaS2Pi;
+
+  /**
+   *  The mass squared of the lepton pair
+   */
+  mutable Energy2 _mll2;
+
+  /**  
+   * The renormalization/factorization scale
+   */
+  mutable Energy2 _mu2;
 
   /**
    *  Parameters for the NLO weight
@@ -348,21 +256,31 @@ private:
   double _p;
 
   /**
-   * Histograms implemented as vectors of statistics to take into 
-   * account the acdc sampling
-   */
-  mutable vector<Statistic> x_h, v_h, x_pos_h, v_pos_h, x_neg_h, v_neg_h;
-  mutable vector<Statistic> xba_h, xba_pos_h, xba_neg_h;
-  mutable vector<Statistic> xbb_h, xbb_pos_h, xbb_neg_h;
-  mutable vector<Statistic> shatovrs_h, shatovrs_pos_h, shatovrs_neg_h;
-  mutable vector<Statistic> y_h, y_pos_h, y_neg_h;
-
-  /**
-   *  The cut-off on the pdfs
+   *  Cut-off for the correction function
    */
   double _eps;
-
   //@}
+
+  /**
+   *  Choice of the scale
+   */
+  //@{
+  /**
+   *  Type of scale
+   */
+  unsigned int _scaleopt;
+
+  /**
+   *  Fixed scale if used
+   */
+  Energy _fixedScale;
+
+  /**
+   *  Prefactor if variable scale used
+   */
+  double _scaleFact;
+  //@}
+
   /**
    *  Radiation variables
    */
@@ -376,15 +294,32 @@ private:
    *  The \f$v\f$ angular variable
    */
   double _v;
-
   //@}
 
   /**
-   * Statistics & Histograms for testing.
+   *  Values of the PDF's before radiation
    */
-  mutable int no_wgts;
-  mutable int no_negwgts;
-  mutable double maxy, miny;
+  //@{
+  /**
+   *  For the quark
+   */
+  mutable double _oldq;
+
+  /**
+   *  For the antiquark
+   */
+  mutable double _oldqbar;
+  //@}
+
+  /**
+   *  Various kinematics variables cached to speed it up
+   */
+  //@{
+  /**
+   *  \f$\bar{x}(v)\f$
+   */
+  mutable double _xbarv;
+  //@}
 };
 
 }
@@ -400,7 +335,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEqq2gZ2ffPowheg,1> {
   /** Typedef of the first base class of MEqq2gZ2ffPowheg. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::MEqq2gZ2ff NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -413,7 +348,7 @@ struct ClassTraits<Herwig::MEqq2gZ2ffPowheg>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2gZ2ffPowheg class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwPowhegME.so"; }
+  static string library() { return "HwHadronME.so HwPowhegME.so"; }
 };
 
 /** @endcond */
