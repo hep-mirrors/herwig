@@ -14,6 +14,8 @@
 
 using namespace Herwig;
 
+MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5) {}
+
 void MEPP2HiggsVBF::getDiagrams() const {
   // get the quark particle data objects as we'll bew using them
   tcPDPtr q[6],qbar[6];

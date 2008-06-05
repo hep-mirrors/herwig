@@ -29,6 +29,11 @@
 
 using namespace Herwig;
 
+MEqq2gZ2ff::MEqq2gZ2ff() : _maxflavour(5), _gammaZ(0), _process(0) {
+  massOption(true ,1);
+  massOption(false,1);
+}
+
 void MEqq2gZ2ff::doinit() throw(InitException) {
   HwME2to2Base::doinit();
   _z0=getParticleData(ThePEG::ParticleID::Z0);

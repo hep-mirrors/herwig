@@ -37,9 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEqq2W2ff();
-
-public:
+  MEqq2W2ff();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -82,7 +80,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -151,13 +149,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -169,7 +167,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -266,7 +264,5 @@ struct ClassTraits<Herwig::MEqq2W2ff>
 /** @endcond */
 
 }
-
-#include "MEqq2W2ff.icc"
 
 #endif /* HERWIG_MEqq2W2ff_H */

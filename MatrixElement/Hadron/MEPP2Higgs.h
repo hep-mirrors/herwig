@@ -42,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEPP2Higgs();
+  MEPP2Higgs();
 
   /**
    * Return the matrix element for the kinematical configuation
@@ -110,7 +110,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -160,13 +160,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -321,7 +321,5 @@ struct ClassTraits<Herwig::MEPP2Higgs>
 /** @endcond */
 
 }
-
-#include "MEPP2Higgs.icc"
 
 #endif /* HERWIG_MEPP2Higgs_H */
