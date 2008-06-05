@@ -93,27 +93,94 @@ public:
 protected:
 
   /**
-   *  Calculate the correction weight
+   * Calculate the correction weight with which leading-order
+   * configurations are re-weighted.
    */
   double NLOweight() const;
-   
+  /**
+   * Calculate the variable \f$x=M_{B}^2/s\f$ from the integration variables. 
+   */
   double x(double xt, double v) const;
+  /**
+   * Calculate the momentum fraction of the first parton. 
+   */
   double x_a(double x, double v) const;
+  /**
+   * Calculate the momentum fraction of second parton. 
+   */
   double x_b(double x, double v) const;
+  /**
+   * Calculate the minimum of \f$x\f$. 
+   */
   double xbar(double v) const;
+  /**
+   * Calculate the ratio of the radiative luminosity funcion to the
+   * Born luminosity function for the \f$qg\f$ initiated channel. 
+   */
   double Ltilde_qg(double x, double v) const;
+  /**
+   * Calculate the ratio of the radiative luminosity funcion to the
+   * Born luminosity function for the \f$g\bar{q}\f$ initiated channel. 
+   */
   double Ltilde_gq(double x, double v) const;
+  /**
+   * Calculate the ratio of the radiative luminosity funcion to the
+   * Born luminosity function for the \f$q\bar{q}\f$ initiated channel. 
+   */
   double Ltilde_qq(double x, double v) const;
+  /**
+   * Calculate the soft-virtual contribution to the NLO weight. 
+   */
   double Vtilde_qq() const;
+  /**
+   * Function for calculation of the \f$g\bar{q}\f$ and \f$g\bar{q}\f$ 
+   * initiated real contribution.
+   */
   double Ccalbar_qg(double x) const;
+  /**
+   * Function for calculation of the \f$qg\f$ 
+   * initiated real contribution.
+   */
   double Fcal_qg(double x, double v) const;
+  /**
+   * Function for calculation of the \f$g\bar{q}\f$ initiated real
+   * contribution.
+   */
   double Fcal_gq(double x, double v) const;
+  /**
+   * Function for calculation of the \f$q\bar{q}\f$ initiated real
+   * contribution.
+   */
   double Fcal_qq(double x, double v) const;
+  /**
+   * Function for calculation of the \f$qg\f$ initiated real
+   * contribution.
+   */
   double Ftilde_qg(double xt, double v) const;
+  /**
+   * Function for calculation of the \f$g\bar{q}\f$ initiated real
+   * contribution.
+   */
   double Ftilde_gq(double xt, double v) const;
+  /**
+   * Function for calculation of the \f$q\bar{q}\f$ initiated real
+   * contribution.
+   */
   double Ftilde_qq(double xt, double v) const;
+  /**
+   * Function for calculation of the \f$qg\f$ initiated real
+   * contribution.
+   */
   double Ctilde_qg(double x, double v) const;
+  /**
+   * Function for calculation of the \f$g\bar{q}\f$ initiated real
+   * contribution.
+   */
   double Ctilde_gq(double x, double v) const;
+  /**
+   * Function for calculation of the \f$q\bar{q}\f$ initiated real
+   * contribution.
+   */
   double Ctilde_qq(double x, double v) const;
 
 protected:
