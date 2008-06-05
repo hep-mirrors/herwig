@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/MatrixElement/Hadron/MEqq2gZ2ff.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
@@ -193,8 +192,6 @@ private:
    *  The BeamParticleData object for the second hadron
    */
   mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_B;
- 
-  mutable double  _alphaS;
 
   /**
    *  the ParticleData object for the gluon
@@ -310,16 +307,6 @@ private:
    */
   mutable double _oldqbar;
   //@}
-
-  /**
-   *  Various kinematics variables cached to speed it up
-   */
-  //@{
-  /**
-   *  \f$\bar{x}(v)\f$
-   */
-  mutable double _xbarv;
-  //@}
 };
 
 }
@@ -348,7 +335,7 @@ struct ClassTraits<Herwig::MEqq2gZ2ffPowheg>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2gZ2ffPowheg class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwHadronME.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
 };
 
 /** @endcond */

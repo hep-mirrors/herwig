@@ -27,12 +27,13 @@ using namespace Herwig;
 using Herwig::Math::ReLi2;
  
 MEqq2gZ2ffPowheg::MEqq2gZ2ffPowheg() : 
-    _contrib(1)    ,_nlo_alphaS_opt(0) ,_fixed_alphaS(0.115895),
-    _a(0.5)        ,_p(0.7), _eps(1.0e-8), _scaleopt(0),
-    _fixedScale(100.*GeV), _scaleFact(1.) {
+  _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
+  _fixedScale(100.*GeV), _scaleFact(1.) {
   massOption(true ,1);
   massOption(false,1);
 }
+
 void MEqq2gZ2ffPowheg::doinit() throw(InitException) {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
