@@ -29,7 +29,7 @@ install-data-hook:
 	rm -f $(DESTDIR)$(defaultsdir)/PDF.in
 	sed -e 's,@HERWIG_PDF_DEFAULT\@,$(installname),' \
              $(srcdir)/PDF.in.in > $(srcdir)/PDF.in.tmp
-	sed -e 's,@HERWIG_PDF_DEFAULT\@,$(installname),' \
+	sed -e 's,@HERWIG_PDF_NLO\@,$(installnameNLO),' \
              $(srcdir)/PDF.in.tmp > $(DESTDIR)$(defaultsdir)/PDF.in
 	rm -f $(srcdir)/PDF.in.tmp
 else
