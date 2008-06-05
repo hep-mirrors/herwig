@@ -9,6 +9,21 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Config/Pointers.h"
+#include "NasonTree.h"
+
+namespace Herwig {
+
+  class NasonCKKWHandler;
+
+}
+//declaration of thepeg ptr
+namespace ThePEG {
+
+  ThePEG_DECLARE_POINTERS(Herwig::NasonCKKWHandler,NasonCKKWHandlerPtr);
+
+}
 
 namespace Herwig {
 
@@ -46,6 +61,13 @@ public:
   virtual void cascade();
 
 public:
+
+  /**
+   *  access to the nason tree object
+   */
+  inline NasonTreePtr getNasonTree(){
+    return _theNasonTree;
+  }
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -102,6 +124,37 @@ protected:
 private:
 
   /**
+   * Clusters the partons and creates a branching history
+   * by combining the 2 particles with smallest
+   * jet measure out of all allowed pairings until we are left 
+   * with \f$q\bar{q}\f$.
+   */
+  bool doClustering( ParticleVector theParts, PPtr vb );
+  
+  /**
+   * Checks to see that the splitting is allowed.
+   */
+  bool splittingAllowed( ShowerParticlePtr part_i,
+			 ShowerParticlePtr part_j,
+			 int qq_pairs);
+  
+  
+  /**
+   * Checks to see that the splitting is allowed and finds the
+   * Sudakov form factor for the splitting.
+   */
+  bool getSud( int * qq_pairs, long * emmitter_id,
+	       SudakovPtr clusterSudakov,
+	       ShowerParticlePtr part_i, 
+	       ShowerParticlePtr part_j ) ;
+  
+  /**
+   * Returns the durham jet measure, yij, for the two particles. 
+   */
+  double getJetMeasure(ShowerParticlePtr part_i, ShowerParticlePtr part_j);
+  
+  
+  /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
@@ -116,9 +169,19 @@ private:
 private:
 
   /**
+   *  The nason tree
+   */
+  NasonTreePtr _theNasonTree;
+
+  /**
    *  Number of points for the interpolation tables
    */
   unsigned int _npoint;
+
+  /**
+   *  Centre of mass energy
+   */
+  Energy2 _s;
 
   /**
    *  Map containing the sudakovs for the final-state particles
@@ -165,3 +228,5 @@ struct ClassTraits<Herwig::NasonCKKWHandler>
 }
 
 #endif /* HERWIG_NasonCKKWHandler_H */
+
+
