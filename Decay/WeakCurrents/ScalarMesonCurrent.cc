@@ -121,9 +121,9 @@ bool ScalarMesonCurrent::createMode(int icharge,unsigned int imode,
 }
 
 // outgoing particles 
-PDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia) {
+tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, int ia) {
   tPDPtr part(getParticleData(_id[imode]));
-  PDVector output;
+  tPDVector output;
   if(icharge==int(part->iCharge())) {
     if(icharge==0) {
       int iqb,iab; 

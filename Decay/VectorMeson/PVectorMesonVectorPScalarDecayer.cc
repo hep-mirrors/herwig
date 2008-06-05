@@ -34,7 +34,7 @@ void PVectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 			  << Exception::abortnow;
   // set up the integration channels
   vector<double> wgt(0);
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0]=getParticleData(_incoming[ix]);
@@ -222,7 +222,7 @@ PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
 }
 
 int PVectorMesonVectorPScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-						 const PDVector & children) const {
+						 const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;

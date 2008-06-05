@@ -34,7 +34,7 @@ inline IBPtr OmegaXiStarPionDecayer::fullclone() const {
 inline void OmegaXiStarPionDecayer::doinit() throw(InitException) {
   Baryon1MesonDecayerBase::doinit();
   // set up the phase space
-  PDVector extpart(3);
+  tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   vector<double> wgt(0);
   extpart[0]=getParticleData(_idin);

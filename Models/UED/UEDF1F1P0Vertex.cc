@@ -24,9 +24,9 @@ UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(0.*GeV2),
 				     thefermLast(0), theLRLast(0.0), 
 				     theCharges(3) {
   //lists
-  vector<int> ferm, anti, photon(18, 22);
+  vector<long> ferm, anti, photon(18, 22);
   //quarks
-  for(unsigned int i = 1; i < 7; ++i) {
+  for(long i = 1; i < 7; ++i) {
     //left
     ferm.push_back(5100000 + i);
     anti.push_back(-5100000 - i);
@@ -34,7 +34,7 @@ UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(0.*GeV2),
     ferm.push_back(6100000 + i);
     anti.push_back(-6100000 - i);
   }
-  for(unsigned int i = 11; i < 17; i += 2) {
+  for(long i = 11; i < 17; i += 2) {
     //left
     ferm.push_back(5100000 + i);
     anti.push_back(-5100000 - i);

@@ -18,9 +18,9 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
 				       _q2last(0.*MeV2), _couplast(0.) {
   int ieven[3]={25,35,45};
   int iodd [2]={36,46};
-  int ichar[2]={1000024,1000037};
-  int ineut[5]={1000022,1000023,1000025,1000035,1000045};
-  vector<int> first,second,third;
+  long ichar[2]={1000024,1000037};
+  long ineut[5]={1000022,1000023,1000025,1000035,1000045};
+  vector<long> first,second,third;
   // CP-even charginos
   for(unsigned int ix=0;ix<2;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {

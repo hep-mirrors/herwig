@@ -53,7 +53,7 @@ public:
    * @param children The decay products
    * @return true If this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const = 0;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const = 0;
   
   /**
    *  Perform the decay of the particle to the specified decay products
@@ -62,7 +62,7 @@ public:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const = 0;
+			       const tPDVector & children) const = 0;
 
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.

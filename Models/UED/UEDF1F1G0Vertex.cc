@@ -22,9 +22,9 @@ using namespace Herwig;
 
 UEDF1F1G0Vertex::UEDF1F1G0Vertex() 
   : theq2Last(0.*GeV2), theCoupLast(0.) {
-  vector<int> anti, ferm, boson(12, 21);
+  vector<long> anti, ferm, boson(12, 21);
   //QQ
-  for(int i = 5100001; i < 6100007; ++i) {
+    for(long i = 5100001; i < 6100007; ++i) {
     if(i == 5100007) i += 999994;
     anti.push_back(-i);
     ferm.push_back(i);

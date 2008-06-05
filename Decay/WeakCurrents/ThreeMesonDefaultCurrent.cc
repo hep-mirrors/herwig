@@ -628,7 +628,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
-  PDVector extpart(particles(1,imode,iq,ia));
+  tPDVector extpart(particles(1,imode,iq,ia));
   Energy min(0.*MeV);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;

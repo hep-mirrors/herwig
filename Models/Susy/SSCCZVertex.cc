@@ -23,12 +23,12 @@ using namespace Herwig;
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
 			     _q2last(), _id1last(0), _id2last(0),
 			     _leftlast(0.), _rightlast(0.), _gblast(0){
-  vector<int> first, second, third;
+  vector<long> first, second, third;
   for(unsigned int ix = 0; ix < 2; ++ix) {
-    int ic1(1000024);
+    long ic1(1000024);
     if(ix == 1) ic1 = 1000037;
     for(unsigned int iy = 0; iy < 2; ++iy) {
-      int ic2(1000024);
+      long ic2(1000024);
       if(iy == 1) ic2 = 1000037;
       first.push_back(-ic1);
       second.push_back(ic2);

@@ -23,11 +23,11 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 			     _sb(0.), _cb(0.), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
 			     _id2last(0) {
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
   for(unsigned int nl = 0; nl < 5; ++nl) {
     //quarks
-    for(unsigned int ix=1;ix<7;++ix){
+    for(long ix=1;ix<7;++ix){
       first.push_back(neut[nl]);
       second.push_back(ix);
       third.push_back(-(1000000+ix));
@@ -43,7 +43,7 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
       third.push_back((2000000+ix));
     }
     //leptons
-    for(unsigned int ix=11;ix<17;++ix){
+    for(long ix=11;ix<17;++ix){
       first.push_back(neut[nl]);
       second.push_back(ix);
       third.push_back(-(1000000+ix));

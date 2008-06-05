@@ -73,7 +73,7 @@ void SMHiggsWWDecayer::doinit() throw(InitException) {
     tPDPtr wminus = getParticleData(ParticleID::Wminus);
     DecaySelector wpDecay =  wplus->decaySelector();
     DecaySelector wmDecay = wminus->decaySelector();
-    PDVector extpart(5);
+    tPDVector extpart(5);
     extpart[0]=h0;
     DecayPhaseSpaceModePtr mode;
     DecayPhaseSpaceChannelPtr newchannel;
@@ -81,13 +81,13 @@ void SMHiggsWWDecayer::doinit() throw(InitException) {
     unsigned int imode=0;
     for(DecaySelector::const_iterator wp=wpDecay.begin();wp!=wpDecay.end();++wp) {
       // extract the decay products of W+
-      PDVector prod=(*wp).second->orderedProducts();
+      tPDVector prod=(*wp).second->orderedProducts();
       if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
       extpart[1]=prod[0];
       extpart[2]=prod[1];
       for(DecaySelector::const_iterator wm=wmDecay.begin();wm!=wmDecay.end();++wm) {
 	// extract the decay products of W-
-	PDVector prod=(*wm).second->orderedProducts();
+	tPDVector prod=(*wm).second->orderedProducts();
 	if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
 	extpart[3]=prod[0];
 	extpart[4]=prod[1];
@@ -117,13 +117,13 @@ void SMHiggsWWDecayer::doinit() throw(InitException) {
     DecaySelector Z0Decay = Z0->decaySelector();
     for(DecaySelector::const_iterator z1=Z0Decay.begin();z1!=Z0Decay.end();++z1) {
       // extract the decay products of Z0
-      PDVector prod=(*z1).second->orderedProducts();
+      tPDVector prod=(*z1).second->orderedProducts();
       if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
       extpart[1]=prod[0];
       extpart[2]=prod[1];
       for(DecaySelector::const_iterator z2=Z0Decay.begin();z2!=Z0Decay.end();++z2) {
 	// extract the decay products of Z0
-	PDVector prod=(*z2).second->orderedProducts();
+	tPDVector prod=(*z2).second->orderedProducts();
 	if(prod[0]->id()<prod[1]->id()) swap(prod[0],prod[1]);
 	extpart[3]=prod[0];
 	extpart[4]=prod[1];
@@ -151,12 +151,12 @@ void SMHiggsWWDecayer::doinit() throw(InitException) {
   }
 }
 
-bool SMHiggsWWDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool SMHiggsWWDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   // if not two decay products return false
   if(children.size()!=2) return false;
   // if not decaying higgs return false
   if(parent->id()!=ParticleID::h0) return false;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
@@ -178,7 +178,7 @@ void SMHiggsWWDecayer::persistentInput(PersistentIStream & is, int) {
 }
 
 ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   // select the decay modes of the gauge bosons
   unsigned int imode;
   if(abs(children[0]->id())==ParticleID::Wplus)

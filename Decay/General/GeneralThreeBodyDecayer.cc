@@ -73,10 +73,10 @@ void GeneralThreeBodyDecayer::Init() {
 }
 
 ParticleVector GeneralThreeBodyDecayer::decay(const Particle & parent,
-					      const PDVector & children) const {
+					      const tPDVector & children) const {
   // return empty vector if products heavier than parent
   Energy mout(0.*GeV);
-  for(PDVector::const_iterator it=children.begin();
+  for(tPDVector::const_iterator it=children.begin();
       it!=children.end();++it) mout+=(**it).massMin();
   if(mout>parent.mass()) return ParticleVector();
   // generate the decay
@@ -91,7 +91,7 @@ ParticleVector GeneralThreeBodyDecayer::decay(const Particle & parent,
 }
 
 int  GeneralThreeBodyDecayer::
-modeNumber(bool & cc, tcPDPtr in, const PDVector & outin) const {
+modeNumber(bool & cc, tcPDPtr in, const tPDVector & outin) const {
   assert( !_reftag.empty() && !_reftagcc.empty() );
   // check number of outgoing particles
   if( outin.size() != 3 || abs(in->id()) != _incoming->id() ) return -1;
@@ -166,7 +166,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
 void GeneralThreeBodyDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // create the phase space integrator
-  PDVector extpart(1,_incoming);
+  tPDVector extpart(1,_incoming);
   extpart.insert(extpart.end(),_outgoing.begin(),_outgoing.end());
   // create the integration channels for the decay
   DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this)));

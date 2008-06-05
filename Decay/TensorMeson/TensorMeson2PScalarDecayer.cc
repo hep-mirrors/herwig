@@ -161,7 +161,7 @@ void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
   // set up the integration channels
   vector<double> wgt(0);
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     extpart[0]=getParticleData(_incoming[ix]);
     extpart[1]=getParticleData(_outgoing1[ix]);
@@ -175,7 +175,7 @@ void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
 }
 
 int TensorMeson2PScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					   const PDVector & children) const {
+					   const tPDVector & children) const {
   if(children.size()!=2) return -1;
   int id(parent->id());
   int idbar = parent->CC() ? parent->CC()->id() : id;

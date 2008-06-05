@@ -24,9 +24,9 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,
 				     theq2Last(0.*GeV2), theCoupLast(0.), 
 				     theLeftLast(0.), theRightLast(0.) {
-  vector<int> anti, ferm, boson(25, 23);
+  vector<long> anti, ferm, boson(25, 23);
   //QQ, uu, dd
-  for(int i = 5100001; i < 6100007; ++i) {
+  for(long i = 5100001; i < 6100007; ++i) {
     if(i == 5100007) i += 999994;
     anti.push_back(-i);
     ferm.push_back(i);
@@ -37,11 +37,11 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(),
   anti.push_back(-5100005); ferm.push_back(6100005); 
   anti.push_back(-6100005); ferm.push_back(5100005); 
   //leptons
-  for(int i = 5100011; i < 5100017; ++i) {
+  for(long i = 5100011; i < 5100017; ++i) {
     anti.push_back(-i);
     ferm.push_back(i);
   }
-  for(int i = 6100011; i < 6100017; i +=2) {
+  for(long i = 6100011; i < 6100017; i +=2) {
     anti.push_back(-i);
     ferm.push_back(i);
   }

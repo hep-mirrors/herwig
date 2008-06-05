@@ -18,12 +18,12 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   _lambdaVEV(0.*MeV), _v1(0.*MeV), _v2(0.*MeV), _sw(0.), _cw(0.), 
   _mw(0.*MeV), _mz(0.*MeV), _sb(0.), _cb(0.), _tb(0.), _q2last(0.*MeV2), 
   _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) {
-  vector<int> first, second, third;
+  vector<long> first, second, third;
   //CP even
   int even[3] = {25, 35, 45};
-  for( unsigned int h = 0; h < 3; ++h ) {
+  for(size_t h = 0; h < 3; ++h ) {
     //squarks
-    for( unsigned int q = 1; q < 7; ++q) {
+    for(long q = 1; q < 7; ++q) {
       //11
       first.push_back(even[h]);
       second.push_back(-1000000 - q);
@@ -42,7 +42,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
       third.push_back(1000000 + q);
     }
     //sleptons
-    for( unsigned int l = 11; l < 17; ++l) {
+    for(long l = 11; l < 17; ++l) {
       //11
       first.push_back(even[h]);
       second.push_back(-1000000 - l);
@@ -66,9 +66,9 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   }
   //CP odd
   int odd[2] = {36, 46};
-  for( unsigned int h = 0; h < 2; ++h ) {
+  for(size_t h = 0; h < 2; ++h ) {
     //squarks
-    for( unsigned int q = 1; q < 7; ++q) {
+    for(long q = 1; q < 7; ++q) {
       //12
       first.push_back(odd[h]);
       second.push_back(-1000000 - q);
@@ -79,7 +79,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
       third.push_back(1000000 + q);
     }
     //sleptons
-    for( unsigned int l = 11; l < 17; l += 2) {
+    for(long l = 11; l < 17; l += 2) {
       //12
       first.push_back(odd[h]);
       second.push_back(-1000000 - l);
@@ -92,7 +92,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   }
   //charged higgs
   //squarks
-  for( unsigned int q = 1; q < 4; ++q ) {
+  for(long q = 1; q < 4; ++q ) {
     //H-
     //LL
     first.push_back(-37);
@@ -131,7 +131,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   }
   //sleptons
   //easier as there are no right handed sneutrinos
-  for( unsigned int l = 11; l < 16; l +=2 ) {
+  for(long l = 11; l < 16; l +=2 ) {
     //H-
     //LL
     first.push_back(-37);

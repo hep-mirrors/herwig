@@ -119,6 +119,7 @@ inline DecayMap GenericWidthGenerator::rate(const ParticleData & in) const {
 
 inline bool GenericWidthGenerator::accept(const ParticleData & in) const {
   if(!_theParticle) return false;
-  return &in==_theParticle||(in.CC()&&in.CC()==_theParticle);
+  return in.id() == _theParticle->id() ||
+    ( in.CC() && in.CC()->id() == _theParticle->id() );
 }
 }

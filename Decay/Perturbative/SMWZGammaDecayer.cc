@@ -47,7 +47,7 @@ void SMWZGammaDecayer::doinit() throw(InitException) {
   }
   // now set up the decay modes
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(4);
+  tPDVector extpart(4);
   // the Z decay modes
   extpart[0]=getParticleData(ParticleID::Z0);
   extpart[3]=getParticleData(ParticleID::gamma);
@@ -192,12 +192,12 @@ void SMWZGammaDecayer::Init() {
 }
 
 int SMWZGammaDecayer::modeNumber(bool & cc,tcPDPtr parent, 
-				 const PDVector & children) const {
+				 const tPDVector & children) const {
   cc = false;
   int imode(-1);
   int id0(parent->id());
   if(children.size()!=3){return imode;}
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();

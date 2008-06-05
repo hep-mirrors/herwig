@@ -13,7 +13,7 @@
 
 namespace Herwig {
 
-inline MRST::MRST() : _inter(true),
+  inline MRST::MRST() : _inter(2), _xswitch(0.8),
 		      data(np+1,vector<vector<double> >
 			   (nx+1,vector<double>
 			    (nq+1,0.0))),

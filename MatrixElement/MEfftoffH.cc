@@ -45,7 +45,7 @@ void MEfftoffH::Init() {
   static SwitchOption interfaceStandardShapeFixed
     (interfaceShapeOption,
      "FixedBreitWigner",
-     "Breit-Wigner s-channel resonanse",
+     "Breit-Wigner s-channel resonance",
      1);
   static SwitchOption interfaceStandardShapeRunning
     (interfaceShapeOption,
@@ -294,12 +294,12 @@ bool MEfftoffH::generateKinematics(const double * r) {
     if(mhmax<=mhmin) return false;
     double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
     double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
-    mh = sqrt(_mh*_wh*tan(rhomin+r[0]*(rhomax-rhomin))+sqr(_mh));
+    mh = sqrt(_mh*_wh*tan(rhomin+r[4]*(rhomax-rhomin))+sqr(_mh));
     jacobian(jacobian()*(rhomax-rhomin));
   }
   // generate p1 by transform to eta = 1-2p1/sqrt s
   // and generate according to deta/eta
-  double eta = pow(mh/roots,2.*r[1]);
+  double eta = pow(mh/roots,2.*r[0]);
   jacobian(-jacobian()*eta*2.*log(mh/roots));
   Energy p1 = 0.5*roots*(1.-eta);
   // generate the value of cos theta 1
@@ -312,11 +312,11 @@ bool MEfftoffH::generateKinematics(const double * r) {
     ctmin = max(ctmin, -sqrt(ctm));
     ctmax = min(ctmax,  sqrt(ctm));
   }
-  ctheta[0] = getCosTheta(ctmin,ctmax, r[2]);
+  ctheta[0] = getCosTheta(ctmin,ctmax, r[1]);
   // and cos theta 2
-  ctheta[1] = getCosTheta(ctmin,ctmax, r[3]);
+  ctheta[1] = getCosTheta(ctmin,ctmax, r[2]);
   // generate azimuthal angle between 1 and 2
-  double phi12 = r[4]*Constants::twopi;
+  double phi12 = r[3]*Constants::twopi;
   // sins
   double stheta[2] = {sqrt(1.-sqr(ctheta[0])),sqrt(1.-sqr(ctheta[1]))};
   // and angle between them
@@ -368,15 +368,15 @@ CrossSection MEfftoffH::dSigHatDR() const {
   InvEnergy2 bwfact;
   Energy moff =meMomenta()[4].mass();
   if(_shapeopt==1) {
-    tcPDPtr h0 = mePartonData()[2]->id()==ParticleID::h0 ?
-      mePartonData()[2] : mePartonData()[3];
+    tPDPtr h0 = getParticleData(ParticleID::h0);
     bwfact = h0->generateWidth(moff)*moff/pi/
       (sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh));
   }
   else if(_shapeopt==2) {
     bwfact = _hmass->BreitWignerWeight(moff,0);
   }
-  double jac1 = bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh);
+  double jac1 = _shapeopt!=0 ? 
+    double( bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh)) : 1.;
   // cross section
   return jac1*me2()*jacobian()/pow(Constants::twopi,3)/32.*sqr(hbarc)/sHat();
 }

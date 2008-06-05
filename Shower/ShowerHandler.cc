@@ -82,7 +82,7 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   theOrderSecondaries(true), theMPIOnOff(true), _pdfFreezingScale(2.5*GeV),
-  _maxtry(10),_maxtryMPI(10), theSubProcess(tSubProPtr()) {
+  _maxtry(10),_maxtryMPI(10), theSubProcess(tSubProPtr()), _useCKKW(false) {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
   _inputparticlesDecayInShower.push_back( 1000002 ); //  SUSY_u_L 

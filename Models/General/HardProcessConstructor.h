@@ -37,7 +37,7 @@ class HardProcessConstructor: public Interfaced {
 public:
 
   /** Set of ParticleData pointers */
-  typedef set<PDPtr> PDSet;
+  typedef set<tPDPtr> tPDSet;
 
   /** Vector of HPDiagrams. */
   typedef vector<HPDiagram> HPDVector;
@@ -157,7 +157,7 @@ private:
    * @param d3 required direction of 3rd state (default = outgoing)
    * @return container of third particles
    */
-  PDSet search(VertexBasePtr vertex, long part1, direction d1, 
+  tPDSet search(VertexBasePtr vertex, long part1, direction d1, 
 	       long part2, direction d2, direction d3 = outgoing);    
 
   /**
@@ -173,7 +173,7 @@ private:
    * @param d4 Required direction of fourth state (default = outgoing)
    * @return container of fourth particles
    */
-  PDSet search(VertexBasePtr vertex, long part1, direction d1, long part2,
+  tPDSet search(VertexBasePtr vertex, long part1, direction d1, long part2,
 	       direction d2, long part3, direction d3, 
 	       direction d4 = outgoing);
   
@@ -203,7 +203,7 @@ private:
    * @param vertices pair of vertices for the diagram
    * @param order The order
    */
-  void makeDiagrams(IDPair in, long out1, const PDSet & out2, PDPtr inter,
+  void makeDiagrams(IDPair in, long out1, const tPDSet & out2, PDPtr inter,
 		    HPDiagram::Channel chan, VBPair vertices, BPair order);
   
   /**

@@ -61,7 +61,7 @@ void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
   }
   // set up the phsae space for the decays
   tPDPtr eta[2]={getParticleData(ParticleID::eta),getParticleData(ParticleID::etaprime)};
-  PDVector extpart;extpart.resize(4);
+  tPDVector extpart;extpart.resize(4);
   extpart[1] = getParticleData(ParticleID::pi0);
   extpart[2] = getParticleData(ParticleID::gamma);
   extpart[3] = getParticleData(ParticleID::gamma);
@@ -84,11 +84,11 @@ void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
 }
 
 int EtaPiGammaGammaDecayer::modeNumber(bool & cc,tcPDPtr parent,
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   cc=false;
   int id;
   if(children.size()!=3) return -1;
-  PDVector::const_iterator pit = children.begin();
+  tPDVector::const_iterator pit = children.begin();
   unsigned int npi0(0),ngamma(0);
   for( ;pit!=children.end();++pit) {
     id=(**pit).id();

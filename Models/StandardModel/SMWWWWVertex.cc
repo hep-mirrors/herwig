@@ -22,7 +22,7 @@ using namespace ThePEG;
 SMWWWWVertex::SMWWWWVertex() 
   : _couplast(0.0), _q2last(), _vfact(4,0.0), _sw2(0.), _cw2(0.) {
   // particles
-  vector<int> first,second,third,fourth;
+  vector<long> first,second,third,fourth;
   first.push_back(24);
   first.push_back(23);
   first.push_back(22);

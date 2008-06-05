@@ -19,7 +19,7 @@ using namespace ThePEG;
 SU3BaryonOctetOctetPhotonDecayer::~SU3BaryonOctetOctetPhotonDecayer() {}
 
 int SU3BaryonOctetOctetPhotonDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   int imode(-1);
   if(_incomingB.size()==0){setupModes(0);}
   // must be two outgoing particles
@@ -271,7 +271,7 @@ void SU3BaryonOctetOctetPhotonDecayer::setupModes(unsigned int iopt) const
   intemp.push_back(_exi0);outtemp.push_back(_xi0);
   factor.push_back(-2.*_ld/3.);
   int inspin,outspin;
-  PDVector extpart(2);
+  tPDVector extpart(2);
   for(unsigned int ix=0;ix<intemp.size();++ix)
     {
       if(intemp[ix]!=0&&outtemp[ix]!=0)

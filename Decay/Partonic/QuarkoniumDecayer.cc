@@ -59,12 +59,12 @@ void QuarkoniumDecayer::Init() {
 
 ClassDescription<QuarkoniumDecayer> QuarkoniumDecayer::initQuarkoniumDecayer;
 
-bool QuarkoniumDecayer::accept(tcPDPtr, const PDVector & children) const {
+bool QuarkoniumDecayer::accept(tcPDPtr, const tPDVector & children) const {
   return (children.size() == 3 || children.size() == 2);
 }
 
 ParticleVector QuarkoniumDecayer::decay(const Particle & p,
-					const PDVector & children) const {
+					const tPDVector & children) const {
   ParticleVector partons;
   for(unsigned int ix=0;ix<children.size();++ix) {
     partons.push_back(children[ix]->produceParticle());

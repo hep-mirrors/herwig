@@ -47,8 +47,8 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   // find all the possible modes
   vector<unsigned int> tformmap[2],tcurrmap[2];
   vector<int> inquark,outquark,currq,curra;
-  vector<PDVector> particles;
-  PDVector extpart,ptemp;
+  vector<tPDVector> particles;
+  tPDVector extpart,ptemp;
   Energy min,minb;
   // loop over the modes in the form factors and currents
   for(iform=0;iform<_form.size();++iform) {
@@ -245,7 +245,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
       }
       addMode(mode,maxweight,channelwgts);
       // resize the duplicate modes to remove them
-      for(iy=0;iy<modeloc.size();++iy) particles[modeloc[iy]]=PDVector(0);
+      for(iy=0;iy<modeloc.size();++iy) particles[modeloc[iy]] = tPDVector();
       break;
     }
   }
@@ -271,12 +271,12 @@ void ScalarMesonFactorizedDecayer::doinitrun() {
 }
 
 bool ScalarMesonFactorizedDecayer::accept(tcPDPtr parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   // N.B. this is a necessary but not sufficient test
   bool allowed(false),dummy;
   // find the ids of the particles
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   vector<int> ids,idcurr;
   int id(parent->id());
   for( ; pit!=pend;++pit) ids.push_back((**pit).id());
@@ -307,7 +307,7 @@ bool ScalarMesonFactorizedDecayer::accept(tcPDPtr parent,
 }
 
 int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					     const PDVector & children) const {
+					     const tPDVector & children) const {
   int imode(-1);
   // id's of the particles and CC
   // of the parent
@@ -315,8 +315,8 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
   if(parent->CC()){id0bar=parent->CC()->id();}
   // of the products
   vector<int> ids,idbars;
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   for( ;pit!=pend;++pit) {
     ids.push_back((**pit).id());
     if((**pit).CC()) idbars.push_back((**pit).CC()->id());
@@ -610,7 +610,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 }
   
 void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
-					     vector<PDVector> & particles,
+					     vector<tPDVector> & particles,
 					     vector<unsigned int> & loc,
 					     vector<bool> & cc) {
   unsigned int ix,iy,nfound,iz;

@@ -34,7 +34,7 @@ void LHWWHVertex::Init() {
 LHWWHVertex::LHWWHVertex() 
   : _couplast(0.), _q2last(0.*GeV2) {
   // particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // W_L W_L H
   first.push_back(  24);
   second.push_back(-24);

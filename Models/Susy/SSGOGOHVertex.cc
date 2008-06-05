@@ -31,10 +31,10 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
 				 theLLast(0.0), theRLast(0.0), theHLast(0),
 				 theID1Last(0), theID2Last(0), theq2last() {
-  vector<int> first, second, third;
-  int neu[4] = {1000022, 1000023, 1000025, 1000035};
-  int chg[2] = {1000024, 1000037};
-  int higgs[3] =  {25, 35, 36};
+  vector<long> first, second, third;
+  long neu[4] = {1000022, 1000023, 1000025, 1000035};
+  long chg[2] = {1000024, 1000037};
+  long higgs[3] =  {25, 35, 36};
   for(unsigned int i = 0; i < 4; ++i) {
     //neutralinos
     for(unsigned int j = 0; j < 4; ++j) {

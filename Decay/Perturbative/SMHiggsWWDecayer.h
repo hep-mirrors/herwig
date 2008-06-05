@@ -54,7 +54,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  virtual bool accept(tcPDPtr parent, const PDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * For a given decay mode and a given particle instance, perform the
@@ -63,12 +63,12 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const Particle & parent,
-			       const PDVector & children) const;
+			       const tPDVector & children) const;
 
   /**
    * Which of the possible decays is required
    */
-  virtual int modeNumber(bool &, tcPDPtr, const PDVector & ) const {return -1;}
+  virtual int modeNumber(bool &, tcPDPtr, const tPDVector & ) const {return -1;}
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

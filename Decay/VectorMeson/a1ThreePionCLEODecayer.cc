@@ -88,7 +88,7 @@ void a1ThreePionCLEODecayer::doinit() throw(InitException) {
   // the f_0
   tPDPtr f0=getParticleData(10221);
   // set up the integration channels
-  PDVector extpart(4);
+  tPDVector extpart(4);
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
   // decay mode a_10 -> pi0 pi0 pi0
@@ -352,12 +352,12 @@ inline void a1ThreePionCLEODecayer::doinitrun() {
 }
 
 int a1ThreePionCLEODecayer::modeNumber(bool & cc,tcPDPtr parent,
-				       const PDVector & children) const {
+				       const tPDVector & children) const {
   if(children.size()!=3) return -1;
   int id(parent->id());
   // check the pions
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   int idtemp,npi0(0),npiplus(0),npiminus(0);
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();

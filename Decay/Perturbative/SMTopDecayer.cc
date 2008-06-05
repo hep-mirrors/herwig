@@ -39,10 +39,10 @@ SMTopDecayer::SMTopDecayer()
   generateIntermediates(true);
 }
   
-bool SMTopDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool SMTopDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   if(abs(parent->id()) != ParticleID::t) return false;
   int id0(0),id1(0),id2(0);
-  for(PDVector::const_iterator it = children.begin();
+  for(tPDVector::const_iterator it = children.begin();
       it != children.end();++it) {
     int id=(**it).id(),absid(abs(id));
     if(absid==ParticleID::b&&double(id)/double(parent->id())>0) {
@@ -80,9 +80,9 @@ bool SMTopDecayer::accept(tcPDPtr parent, const PDVector & children) const {
 }
   
 ParticleVector SMTopDecayer::decay(const Particle & parent,
-				   const PDVector & children) const {
+				   const tPDVector & children) const {
   int id1(0),id2(0);
-  for(PDVector::const_iterator it = children.begin();
+  for(tPDVector::const_iterator it = children.begin();
       it != children.end();++it) {
     int id=(**it).id(),absid=abs(id);
     if(absid == ParticleID::b && double(id)/double(parent.id())>0) continue;
@@ -222,7 +222,7 @@ void SMTopDecayer::doinit() throw(InitException) {
   _wplus = getParticleData(ParticleID::Wplus);
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr Wchannel;
-  PDVector extpart(4);
+  tPDVector extpart(4);
   vector<double> wgt(1,1.0);
   extpart[0] = getParticleData(ParticleID::t);
   extpart[1] = getParticleData(ParticleID::b);

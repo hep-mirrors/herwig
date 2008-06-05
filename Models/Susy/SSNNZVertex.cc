@@ -24,16 +24,16 @@ using namespace Herwig;
 SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.) {
-  vector<int> first, second, third(25, 23);
+  vector<long> first, second, third(25, 23);
   for(unsigned int i = 0; i < 5; ++i) {
-    int neu1;
+    long neu1;
     if(i == 0) neu1 = 1000022;
     else if(i == 1) neu1 = 1000023;
     else if(i == 2) neu1 = 1000025;
     else if(i == 3)  neu1 = 1000035;
     else neu1 = 1000045;
     for(unsigned int j = 0; j < 5; ++j) {
-      int neu2;
+      long neu2;
       if(j == 0) neu2 = 1000022;
       else if(j == 1) neu2 = 1000023;
       else if(j == 2) neu2 = 1000025;

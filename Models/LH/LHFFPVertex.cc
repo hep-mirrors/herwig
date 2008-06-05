@@ -15,9 +15,9 @@ using namespace Herwig;
 LHFFPVertex::LHFFPVertex() 
   : _couplast(0.), _q2last(-1.*GeV2) {
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // the quarks
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(22);
@@ -38,7 +38,7 @@ LHFFPVertex::LHFFPVertex()
   second.push_back( 6);
   third.push_back(32);
   // the leptons
-  for(unsigned int ix=11;ix<17;++ix) {
+  for(int ix=11;ix<17;++ix) {
     first.push_back(-ix);
     second.push_back(ix);
     third.push_back(22);

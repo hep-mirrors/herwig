@@ -70,6 +70,7 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   _f0mag=0.77;_f0phase=-0.54*pi;_f0coup=0.;
   // initialize the a_1 width
   _initializea1=false;
+  _a1opt=true;
   double  a1q2in[200]={0      ,15788.6,31577.3,47365.9,63154.6,78943.2,
 		       94731.9,110521 ,126309 ,142098 ,157886 ,173675 ,
 		       189464 ,205252 ,221041 ,236830 ,252618 ,268407 ,     
@@ -721,7 +722,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
 				      DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if(!acceptMode(imode)){return false;}
   int iq(0),ia(0);
-  PDVector extpart=particles(1,imode,iq,ia);
+  tPDVector extpart=particles(1,imode,iq,ia);
   Energy min(0.*MeV);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;

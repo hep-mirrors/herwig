@@ -196,8 +196,8 @@ bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int,
 }
 
 // the particles produced by the current
-PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int) {
-  PDVector extpart;
+tPDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int) {
+  tPDVector extpart;
   if(abs(icharge)!=3) return extpart;
   if(icharge==3)       extpart.push_back(getParticleData(ParticleID::piplus));
   else if(icharge==-3) extpart.push_back(getParticleData(ParticleID::piminus));

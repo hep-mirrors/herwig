@@ -38,7 +38,7 @@ void TauDecayer::doinit() throw(InitException) {
   // set up the phase-space channels
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr channel;
-  PDVector extpart,ptemp;
+  tPDVector extpart,ptemp;
   extpart.push_back(getParticleData(ParticleID::tauminus));
   extpart.push_back(getParticleData(ParticleID::nu_tau));
   Energy mtau(extpart[0]->mass());
@@ -88,13 +88,13 @@ void TauDecayer::doinit() throw(InitException) {
   _current->update();
 }
   
-bool TauDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool TauDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   bool allowed(false);
   // find the neutrino 
   int idnu(0),idtemp,idin(parent->id());
   vector<int> idother;
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();
     if(abs(idtemp)==16) idnu=idtemp; 
@@ -108,10 +108,10 @@ bool TauDecayer::accept(tcPDPtr parent, const PDVector & children) const {
 }
 
 
-int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const PDVector & children) const {
+int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children) const {
   int imode(-1);
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   int idtemp;vector<int> idother;
   for( ; pit!=pend;++pit) {
     idtemp=(**pit).id();

@@ -41,7 +41,7 @@ IBPtr WeakPartonicDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-bool WeakPartonicDecayer::accept(tcPDPtr parent, const PDVector & prod) const {
+bool WeakPartonicDecayer::accept(tcPDPtr parent, const tPDVector & prod) const {
   // check we can find the flavours of the quarks in the decaying meson
   long id = parent->id();
   int flav1, flav2;
@@ -83,7 +83,7 @@ bool WeakPartonicDecayer::accept(tcPDPtr parent, const PDVector & prod) const {
 }
 
 ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
-					  const PDVector & children) const {
+					  const tPDVector & children) const {
   static tcPDPtr gluon=getParticleData(ParticleID::g);
   // make the particles
   ParticleVector partons;

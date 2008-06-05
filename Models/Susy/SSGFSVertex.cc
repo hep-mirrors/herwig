@@ -21,23 +21,23 @@ using namespace Herwig;
 
 SSGFSVertex::SSGFSVertex() :_q2last(0.*sqr(MeV)),_couplast(0.), 
 			    _id1last(0), _id2last(0) {
-  vector<int> first,second,third;
-  for(unsigned int ix=1;ix<7;++ix) {
+  vector<long> first,second,third;
+  for(long ix=1;ix<7;++ix) {
     first.push_back(1000021);
     second.push_back(ix);
     third.push_back(-(ix+1000000));
   }
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(long ix=1;ix<7;++ix) {
     first.push_back(1000021);
     second.push_back(ix);
     third.push_back(-(ix+2000000));
   }
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(long ix=1;ix<7;++ix) {
     first.push_back(1000021);
     second.push_back(-ix);
     third.push_back(ix+1000000);
   }
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(long ix=1;ix<7;++ix) {
     first.push_back(1000021);
     second.push_back(-ix);
     third.push_back(ix+2000000);

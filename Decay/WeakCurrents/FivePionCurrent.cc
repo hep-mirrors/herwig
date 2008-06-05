@@ -585,13 +585,13 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int) {
+tPDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int) {
   // particle data objects for the pions
-  PDPtr piplus (getParticleData(ParticleID::piplus ));
-  PDPtr pi0    (getParticleData(ParticleID::pi0    ));
-  PDPtr piminus(getParticleData(ParticleID::piminus));
+  tPDPtr piplus (getParticleData(ParticleID::piplus ));
+  tPDPtr pi0    (getParticleData(ParticleID::pi0    ));
+  tPDPtr piminus(getParticleData(ParticleID::piminus));
   if(icharge==3) swap(piplus,piminus);
-  PDVector output(5);
+  tPDVector output(5);
   // all charged
   if(imode==0) {
     output[0]=piminus;

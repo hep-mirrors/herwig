@@ -735,7 +735,9 @@ int HadronSelector::signHadron(tcPDPtr idQ1, tcPDPtr idQ2,
 	if (dominant < 0 || idHad%10 == 0) sign = +1;
 	else if(dominant > 0)              sign = -1;
       } 
-      else if(idQa==ParticleID::u && idQb==ParticleID::c) {
+      else if(idQa==ParticleID::u && idQb==ParticleID::c||
+	      idQa==ParticleID::u && idQb==ParticleID::t||
+	      idQa==ParticleID::c && idQb==ParticleID::t) {
 	if     (dominant > 0) sign = +1;
 	else if(dominant < 0) sign = -1;
       } 

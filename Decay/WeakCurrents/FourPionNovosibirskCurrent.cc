@@ -31,7 +31,9 @@ namespace {
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
 
-FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() {
+FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
+							   _mpic2(), _mpi02(), _prho()
+{
   // set the number of modes
   addDecayMode(2,-1);
   addDecayMode(2,-1);
@@ -752,9 +754,9 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,int,int) {
-  if(abs(icharge)!=3) return PDVector();
-  PDVector output(4);
+tPDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,int,int) {
+  if(abs(icharge)!=3) return tPDVector();
+  tPDVector output(4);
   if(imode==1) {
     output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::piplus);

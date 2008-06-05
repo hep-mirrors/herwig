@@ -134,9 +134,6 @@ create Herwig::QtoGQSplitFn QtoGQSplitFn
 create Herwig::QTildeSudakov SudakovCommon
 set SudakovCommon:Alpha AlphaQCD
 set SudakovCommon:cutoffKinScale 2.80*GeV
-set SudakovCommon:CutoffQCDMassScale 0.75*GeV
-set SudakovCommon:CutoffQEDMassScale 0.75*GeV
-set SudakovCommon:CutoffEWKMassScale 91.0*GeV
 set SudakovCommon:PDFmax 1.0
 
 cp SudakovCommon QtoQGSudakov

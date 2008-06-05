@@ -23,7 +23,7 @@ UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
 				     theSinThetaOne(0.), theCosThetaOne(0.),
 				     theq2last(), theElast(0.), theCouplast(0.),
 				     theSMlast(0), theKKlast(0) {
-  vector<int> first(6), second(6), third(6);
+  vector<long> first(6), second(6), third(6);
   first[0] = 22;
   second[0] = -5100024;
   third[0] = 5100024;

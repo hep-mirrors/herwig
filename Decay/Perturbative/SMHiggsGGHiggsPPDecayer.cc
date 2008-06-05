@@ -24,7 +24,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-bool SMHiggsGGHiggsPPDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool SMHiggsGGHiggsPPDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   bool acc(false);
   int idp = parent->id();
   int id0 = children[0]->id();
@@ -38,7 +38,7 @@ bool SMHiggsGGHiggsPPDecayer::accept(tcPDPtr parent, const PDVector & children) 
 }
 
 ParticleVector SMHiggsGGHiggsPPDecayer::decay(const Particle & parent,
-					      const PDVector & children) const {
+					      const tPDVector & children) const {
   int imode(0);
   if(children[0]->id() == ParticleID::gamma && 
      children[1]->id() == ParticleID::gamma)
@@ -157,7 +157,7 @@ void SMHiggsGGHiggsPPDecayer::doinit() throw(InitException) {
   }
   //set up decay modes
   DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
+  tPDVector extpart(3);
   vector<double> wgt(0);
   //glu,glu mode
   extpart[0] = getParticleData(ParticleID::h0);

@@ -20,11 +20,11 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
 				   _masslast(make_pair(0.*MeV,0*MeV)),
 				   _couplast(0.) {
   // PDG codes for the particles
-  vector<int> first,second,third;
+  vector<long> first,second,third;
   // the quarks and neutral higgs
   int in[5]={25,35,45,36,46};
   for(unsigned int iy=0;iy<5;++iy) {
-    for(unsigned int ix=1;ix<7;++ix) {
+    for(int ix=1;ix<7;++ix) {
       first.push_back(-ix);
       second.push_back(ix);
       third.push_back(in[iy]);
@@ -39,13 +39,13 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
     }
   }
   // the quarks  and the charged higgs
-  for(unsigned int ix=0;ix<3;++ix) {
+  for(int ix=0;ix<3;++ix) {
     first.push_back(2*ix);
     second.push_back(-2*ix-1);
     third.push_back(-37);
   }
   // the leptons and the charged higgs
-  for(unsigned int ix=0;ix<3;++ix) {
+  for(int ix=0;ix<3;++ix) {
     first.push_back(2*ix+12);
     second.push_back(-2*ix-11);
     third.push_back(-37);

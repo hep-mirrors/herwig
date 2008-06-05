@@ -63,15 +63,6 @@ public:
 
   /** @name Construction and descruction functions. */
   //@{
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void * operator new(size_t);
- 
-  /**
-   * Particle uses the FixedSizeAllocator for (de)allocation.
-   */
-  inline void operator delete(void *, size_t);
 
   /**
    * Standard Constructor. Note that the default constructor is

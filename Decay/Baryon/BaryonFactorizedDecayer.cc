@@ -43,8 +43,8 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
   // find all the possible modes
   vector<unsigned int> tformmap,tcurrmap;
   vector<int> inquark,outquark,currq,curra;
-  vector<PDVector> particles;
-  PDVector extpart,extpartb,ptemp;
+  vector<tPDVector> particles;
+  tPDVector extpart,extpartb,ptemp;
   Energy min,minb;
   int iq,ia,spect1,spect2,inq,outq,id0,id1,Wcharge,ispin,ospin;
   for(iform=0;iform<_form->numberOfFactors();++iform)
@@ -221,19 +221,19 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
 	    }
 	  addMode(mode,maxweight,channelwgts);
 	  // resize the duplicate modes to remove them
-	  for(iy=0;iy<modeloc.size();++iy){particles[modeloc[iy]]=PDVector(0);}
+	  for(iy=0;iy<modeloc.size();++iy){particles[modeloc[iy]]=tPDVector();}
 	  break;
 	}
     }
 }
 
-bool BaryonFactorizedDecayer::accept(tcPDPtr parent, const PDVector & children) const {
+bool BaryonFactorizedDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
   bool allowed=false;
   unsigned int iform(0),ix;
   int idin(parent->id()),ibaryon,foundb,id0,id1;
   vector<int> idall,idother;
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit){idall.push_back((**pit).id());}
   // loop over the particles in the form factor
   do
@@ -260,12 +260,12 @@ bool BaryonFactorizedDecayer::accept(tcPDPtr parent, const PDVector & children) 
 }
 
 int BaryonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
-					const PDVector & children) const {
+					const tPDVector & children) const {
   unsigned int ix,iy;
   int idin(parent->id()),ibaryon,foundb,id0,id1,icurr(-1),iform(0);
   vector<int> idall,idother;
-  PDVector::const_iterator pit  = children.begin();
-  PDVector::const_iterator pend = children.end();
+  tPDVector::const_iterator pit  = children.begin();
+  tPDVector::const_iterator pend = children.end();
   for( ; pit!=pend;++pit){idall.push_back((**pit).id());}
   // loop over the particles in the form factor
   do
@@ -668,9 +668,9 @@ double BaryonFactorizedDecayer::halfThreeHalf(bool vertex, const int ichan,
 }
 
 void BaryonFactorizedDecayer::findModes(unsigned int imode,
-					     vector<PDVector> & particles,
-					     vector<unsigned int> & loc,
-					     vector<bool> & cc)
+					vector<tPDVector> & particles,
+					vector<unsigned int> & loc,
+					vector<bool> & cc)
 {
   unsigned int ix,iy,nfound,iz;
   // resize the vectors

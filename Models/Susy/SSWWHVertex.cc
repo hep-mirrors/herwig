@@ -26,7 +26,7 @@ SSWWHVertex::SSWWHVertex() : theh0Wfact(0.*MeV), theH0Wfact(0.*MeV),
 			     theCoupLast(0.*MeV), theElast(0.0),
 			     theq2last(0.*MeV2), theHlast(0), 
 			     theGBlast(0) {
-  vector<int> first, second, third;
+  vector<long> first, second, third;
   //ZZh0
   first.push_back(23);
   second.push_back(23);

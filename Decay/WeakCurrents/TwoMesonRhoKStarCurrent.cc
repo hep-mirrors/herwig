@@ -379,10 +379,10 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
+tPDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
 					    int,int) {
-  if(abs(icharge)!=3) return PDVector();
-  PDVector output(2);
+  if(abs(icharge)!=3) return tPDVector();
+  tPDVector output(2);
   if(imode==0) {
     output[0]=getParticleData(ParticleID::piplus);
     output[1]=getParticleData(ParticleID::pi0);

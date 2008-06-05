@@ -244,10 +244,10 @@ createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
   int id = inpart->id();
   if( id < 0 || !vertex->incoming(id) || vertex->getNpoint() != 3 )
     return vector<TwoBodyPrototype>();
-  PDVector decaylist = vertex->search(list, id);
+  tPDVector decaylist = vertex->search(list, id);
   vector<TwoBodyPrototype> decays;
-  PDVector::size_type nd = decaylist.size();
-  for( PDVector::size_type i = 0; i < nd; i += 3 ) {
+  tPDVector::size_type nd = decaylist.size();
+  for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
     tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
     if( pb->id() == id ) swap(pa, pb);
     if( pc->id() == id ) swap(pa, pc);
@@ -270,9 +270,9 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
     if(ix==1) swap(dec,other);
     int id = dec->id();
     if( !vertex->incoming(id) ) continue;
-    PDVector decaylist = vertex->search(list, id);
-    PDVector::size_type nd = decaylist.size();
-    for( PDVector::size_type i = 0; i < nd; i += 3 ) {
+    tPDVector decaylist = vertex->search(list, id);
+    tPDVector::size_type nd = decaylist.size();
+    for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
       tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
       if( pb->id() == id ) swap(pa, pb);
       if( pc->id() == id ) swap(pa, pc);

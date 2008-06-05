@@ -472,8 +472,8 @@ AM_CONDITIONAL(WANT_LIBROOT, test ! x"$with_root" = "xno")
 dnl ##### LOOPTOOLS #####
 AC_DEFUN([HERWIG_LOOPTOOLS],
 [
-AC_REQUIRE([AC_PROG_F77])
-AC_REQUIRE([AC_F77_LIBRARY_LDFLAGS])
+AC_REQUIRE([AC_PROG_FC])
+AC_REQUIRE([AC_FC_LIBRARY_LDFLAGS])
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([HERWIG_COMPILERFLAGS])
 
@@ -486,23 +486,29 @@ AC_ARG_ENABLE(looptools,
 if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
    case "${host}" in
       x86_64-*)
-	AM_FFLAGS="$AM_FFLAGS -fdefault-integer-8"
+	AM_FCFLAGS="$AM_FCFLAGS -fdefault-integer-8"
       	;;
    esac
 
-   AC_LANG_PUSH([Fortran 77])
-   	oldFFLAGS="$FFLAGS"
-   	FFLAGS="$AM_FFLAGS"
+   AC_LANG_PUSH([Fortran])
+   	oldFCFLAGS="$FCFLAGS"
+   	FCFLAGS="$AM_FCFLAGS"
    	AC_COMPILE_IFELSE(
 	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
 		[],
 		[enable_looptools="needs gfortran on 64bit machines"]
 	)
-	FFLAGS="$oldFFLAGS"
-  AC_LANG_POP([Fortran 77])
+	FCFLAGS="$oldFCFLAGS"
+  AC_LANG_POP([Fortran])
 fi
 AC_MSG_RESULT([$enable_looptools])
 AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
+
+AC_SUBST([F77],[$FC])
+AC_SUBST([FFLAGS],[$FCFLAGS])
+AC_SUBST([AM_FFLAGS],[$AM_FCFLAGS])
+AC_SUBST([FLIBS],[$FCLIBS])
+
 ])
 
 dnl ##### PDF PATH #####
@@ -658,7 +664,7 @@ fi
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS,  ["$warnflags $debugflags"])
 AC_SUBST(AM_CXXFLAGS,["$warnflags $debugflags"])
-AC_SUBST(AM_FFLAGS,  ["$debugflags"])
+AC_SUBST(AM_FCFLAGS,  ["$debugflags"])
 AC_SUBST(AM_LDFLAGS)
 ])
 

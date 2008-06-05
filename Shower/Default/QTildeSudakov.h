@@ -34,8 +34,8 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeSudakov();
-
+  inline QTildeSudakov() {}
+  
   /**
    *  Members to generate the scale of the next branching
    */
@@ -191,22 +191,9 @@ protected:
   bool computeSpaceLikeLimits(Energy2 & scale, double x);
 
   /**
-   *  The kinematic scale
+   *  Construct the kinematics objects
    */
-  inline Energy kinScale() const;
-
-  /**
-   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
-   * @param scale The scale \f$\delta\f$
-   * @param mq The quark mass \f$m_q\f$.
-   */
-  inline Energy kinematicCutOff(Energy scale, Energy mq) const;
-
-  /**
-   * It returns the low energy cutoff \f$\tilde{q}\f$ scale for the 
-   * interaction type specified in input.
-   */
-  inline Energy cutoffQScale(const ShowerIndex::InteractionType interaction) const;
+  ShoKinPtr constructKinematics(int iopt);
 
 protected:
 
@@ -216,13 +203,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -240,71 +227,26 @@ private:
   QTildeSudakov & operator=(const QTildeSudakov &);
 
 private:
-
-  /**
-   *  Parameters for the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
-   */
-  //@{
-  /**
-   *  The \f$a\f$ parameter
-   */
-  double _a;
-
-  /**
-   *  The \f$b\f$ parameter
-   */
-  double _b;
-
-  /**
-   *  The \f$c\f$ parameter
-   */
-  Energy _c;
-  //@}
-
-  /**
-   * Kinematic cutoff used in the parton shower phase space. 
-   */
-  Energy _kinCutoffScale; 
-
+  
   /**
    *  The evolution scale, \f$\tilde{q}\f$.
    */
-  Energy _q;
+  Energy q_;
 
   /**
    *  The Ids of the particles in the current branching
    */
-  IdList _ids;
+  IdList ids_;
 
   /**
    *  The masses of the particles in the current branching
    */
-  vector<Energy> _masses;
+  vector<Energy> masses_;
 
   /**
    *  The mass squared of the particles in the current branching
    */
-  vector<Energy2> _masssquared;
-
-  /**
-   *  Kinematic cut-off
-   */
-  Energy _kinCutoff;
-
-  /** 
-   * Low-energy cutoff mass scale for QCD radiation
-   */
-  Energy _cutoffQCDMassScale;
- 
-  /**
-   * Low-energy cutoff mass scale for QED radiation
-   */
-  Energy _cutoffQEDMassScale;
-
-  /**
-   * Low-energy cutoff mass scale for EWK radiation
-   */
-  Energy _cutoffEWKMassScale;
+  vector<Energy2> masssquared_;
 
 };
 
@@ -344,7 +286,5 @@ struct ClassTraits<Herwig::QTildeSudakov>
 /** @endcond */
 
 }
-
-#include "QTildeSudakov.icc"
 
 #endif /* HERWIG_QTildeSudakov_H */

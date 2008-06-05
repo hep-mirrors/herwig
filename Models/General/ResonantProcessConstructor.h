@@ -37,7 +37,7 @@ class ResonantProcessConstructor: public Interfaced {
 public:
 
   /** Set of ParticleData pointers */
-  typedef set<PDPtr> PDSet;
+  typedef set<tPDPtr> tPDSet;
 
   /** Vector of HPDiagrams. */
   typedef vector<HPDiagram> HPDVector;
@@ -129,7 +129,7 @@ private:
    * Function to create the appropriate diagrams
    */
   void makeResonantDiagrams(IDPair in, PDPtr offshell, long outa, 
-			    const PDSet & out, VBPair vertices);
+			    const tPDSet & out, VBPair vertices);
   
   /**
    * Given a vertex and 2 particle id's find the possible states
@@ -142,7 +142,7 @@ private:
    * @param d3 required direction of 3rd state (default = outgoing)
    * @return container of third particles
    */
-  PDSet search(VertexBasePtr vertex, long part1, direction d1, 
+  tPDSet search(VertexBasePtr vertex, long part1, direction d1, 
 	       long part2, direction d2, direction d3 = outgoing);
 
   /** 

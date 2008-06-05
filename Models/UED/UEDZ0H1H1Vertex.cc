@@ -22,8 +22,8 @@ using namespace Herwig;
 
 UEDZ0H1H1Vertex::UEDZ0H1H1Vertex() : theCosThetaW(0.), theCosTheta2W(0.), theMw2(), 
 				     theR2(), theq2Last(0.*MeV2), theCoupLast(0.) {
-  setList(vector<int>(1, 23), vector<int>(1, 5100037), 
-	  vector<int>(1, -5100037));
+  setList(vector<long>(1, 23), vector<long>(1, 5100037), 
+	  vector<long>(1, -5100037));
 }
 
 void UEDZ0H1H1Vertex::doinit() throw(InitException) {
