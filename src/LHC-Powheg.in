@@ -16,6 +16,12 @@ set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 10000
 
 ##################################################
+#  Need to use an NLO PDF
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+
+##################################################
 # LHC physics parameters (override defaults here) 
 ##################################################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0

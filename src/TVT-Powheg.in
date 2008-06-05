@@ -20,6 +20,12 @@ set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
 
 ##################################################
+#  Need to use an NLO PDF
+##################################################
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+
+##################################################
 # Tevatron physics parameters (override defaults) 
 ##################################################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
