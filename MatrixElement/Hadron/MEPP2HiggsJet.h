@@ -21,7 +21,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
-#include "MEPP2HiggsJet.fh"
 
 namespace Herwig {
 using namespace ThePEG;

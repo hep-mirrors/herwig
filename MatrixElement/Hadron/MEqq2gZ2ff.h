@@ -17,7 +17,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "MEqq2gZ2ff.fh"
 
 namespace Herwig {
 
@@ -82,7 +81,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected

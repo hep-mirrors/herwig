@@ -18,7 +18,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "MEPP2GammaGamma.fh"
 
 namespace Herwig {
 

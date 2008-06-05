@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/MatrixElement/MEfftoffH.h"
-#include "MEPP2HiggsVBF.fh"
 
 namespace Herwig {
 

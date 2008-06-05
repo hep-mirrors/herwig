@@ -22,7 +22,6 @@
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
-#include "MEPP2Higgs.fh"
 
 namespace Herwig {
 using namespace ThePEG;

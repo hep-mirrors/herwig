@@ -11,7 +11,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "MEPP2WJet.fh"
 
 namespace Herwig {
 

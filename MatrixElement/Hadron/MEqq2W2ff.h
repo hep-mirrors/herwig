@@ -17,7 +17,6 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "MEqq2W2ff.fh"
 
 namespace Herwig {
 
