@@ -57,9 +57,44 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   //   need to implement this here
   //
   // change the hard process
-  generator()->log() << *lastXCombPtr()->subProcess() << "\n";
-  generator()->log() << "testing got to the exit!!!!!!! " << flush;
-  exit(0);
+  // remove the outgoing particles from the SubProcess
+  ParticleVector outgoing = lastXCombPtr()->subProcess()->outgoing();
+  for(unsigned int ix=0;ix<outgoing.size();++ix) {
+    lastXCombPtr()->subProcess()->removeEntry(outgoing[ix]);
+    tParticleVector parents=outgoing[ix]->parents();
+    for(unsigned int iy=0;iy<parents.size();++iy)
+      parents[iy]->abandonChild(outgoing[ix]);
+  }
+  // add new ones based on the NasonTree
+  map<ColinePtr,ColinePtr> colourMap;
+  for(set<NasonBranchingPtr>::const_iterator it=nasonTree->branchings().begin();
+      it!=nasonTree->branchings().end();++it) {
+    if((**it)._incoming) continue;
+    generator()->log() << *(**it)._particle << "\n";
+    PPtr newParticle = new_ptr(Particle((**it)._particle->dataPtr()));
+    newParticle->set5Momentum((**it)._shower);
+    if((**it)._particle->colourLine()) {
+      map<ColinePtr,ColinePtr>::iterator loc 
+	= colourMap.find((**it)._particle->colourLine());
+      if(loc!=colourMap.end()) loc->second->addColoured(newParticle);
+      else {
+	ColinePtr newLine=new_ptr(ColourLine());
+	colourMap[(**it)._particle->colourLine()]=newLine;
+	newLine->addColoured(newParticle);
+      }
+    }
+    if((**it)._particle->antiColourLine()) {
+      map<ColinePtr,ColinePtr>::iterator loc 
+	= colourMap.find((**it)._particle->antiColourLine());
+      if(loc!=colourMap.end()) loc->second->addAntiColoured(newParticle);
+      else {
+	ColinePtr newLine=new_ptr(ColourLine());
+	colourMap[(**it)._particle->antiColourLine()]=newLine;
+	newLine->addAntiColoured(newParticle);
+      }
+    }
+    lastXCombPtr()->subProcess()->addOutgoing(newParticle);
+  }
   return 1.;
 }
 
