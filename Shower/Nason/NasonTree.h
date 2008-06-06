@@ -200,9 +200,13 @@ inline ostream & operator<<(ostream & os, const NasonTree & x) {
       it!=x._branchings.end();++it) {
     os << "Hard Particle: " << *(**it)._particle << " has Sudakov " 
        << (**it)._sudakov << "\n";
+    os << "It's colour lines are " << (**it)._particle->colourLine() << "\t" 
+       <<  (**it)._particle->antiColourLine() << "\n";
     for(unsigned int iy=0;iy<(**it)._children.size();++iy) {
       os << "\t Children : " << *(**it)._children[iy]->_particle
 	 << "\n";
+      os << "It's colour lines are " << (**it)._children[iy]->_particle->colourLine() << "\t" 
+	 <<  (**it)._children[iy]->_particle->antiColourLine() << "\n";
     }
   }
   for(set<NasonBranchingPtr>::const_iterator it=x._spacelike.begin();
@@ -212,6 +216,8 @@ inline ostream & operator<<(ostream & os, const NasonTree & x) {
     for(unsigned int iy=0;iy<(**it)._children.size();++iy) {
       os << "\t Children: " << *(**it)._children[iy]->_particle
 	 << "\n";
+      os << "It's colour lines are " << (**it)._children[iy]->_particle->colourLine() << "\t" 
+	 <<  (**it)._children[iy]->_particle->antiColourLine() << "\n";
     }
   }
   return os;
