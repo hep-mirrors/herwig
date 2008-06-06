@@ -15,7 +15,8 @@ VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc \
 CSVectorBosonQQbarHardGenerator.h   CSVectorBosonQQbarHardGenerator.fh \
 CSVectorBosonQQbarHardGenerator.icc CSVectorBosonQQbarHardGenerator.cc \
 NasonCKKWHandler.h NasonCKKWHandler.cc \
-QTildeSudakovIntegrator.h QTildeSudakovIntegrator.cc QTildeSudakovIntegrator.icc
+QTildeSudakovIntegrator.h QTildeSudakovIntegrator.cc QTildeSudakovIntegrator.icc\
+CKKWHardGenerator.cc  CKKWHardGenerator.h
 
 
 HwNasonShower_la_LDFLAGS = -module
