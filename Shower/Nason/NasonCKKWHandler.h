@@ -129,7 +129,7 @@ private:
    * jet measure out of all allowed pairings until we are left 
    * with \f$q\bar{q}\f$.
    */
-  bool doClustering( ParticleVector theParts, PPtr vb );
+  NasonTreePtr doClustering( ParticleVector theParts, PPtr vb );
   
   /**
    * Checks to see that the splitting is allowed.
@@ -138,15 +138,18 @@ private:
 			 ShowerParticlePtr part_j,
 			 int qq_pairs);
   
+  /**
+   *  Sort's out the colour lines
+   */
+  void fixColours(tPPtr parent, tPPtr child1, tPPtr child2);
   
   /**
    * Checks to see that the splitting is allowed and finds the
    * Sudakov form factor for the splitting.
    */
-  bool getSud( int * qq_pairs, long * emmitter_id,
-	       SudakovPtr clusterSudakov,
-	       ShowerParticlePtr part_i, 
-	       ShowerParticlePtr part_j ) ;
+  SudakovPtr getSud(int & qq_pairs, long & emmitter_id,
+		    ShowerParticlePtr part_i, 
+		    ShowerParticlePtr part_j ) ;
   
   /**
    * Returns the durham jet measure, yij, for the two particles. 
