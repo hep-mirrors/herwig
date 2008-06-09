@@ -12,6 +12,8 @@
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Config/Pointers.h"
 #include "NasonTree.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+
 
 namespace Herwig {
 
@@ -103,6 +105,15 @@ protected:
    */
   virtual void doinitrun();
   //@}
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
 
 protected:
 
@@ -189,7 +200,36 @@ private:
   /**
    *  Map containing the sudakovs for the final-state particles
    */
-  multimap<long,pair<Interpolator<double,Energy>::Ptr,Interpolator<Energy,double>::Ptr> > _fbranchings;
+  multimap< long, pair < Interpolator<double,Energy>::Ptr,Interpolator<Energy,double>::Ptr>  > _fbranchings;
+  
+ 
+  /**
+   * Map containing particle and the resolution parameter of 
+   * external partons.
+   */
+  map< ShowerParticlePtr, double > _theExternals;
+
+  /**
+   * Map containing all nodes with the ingoing partons and their clustered jet 
+   * parameter (this is the the intermediates and their ending node).
+   */
+  map< NasonBranchingPtr, double > _theNodes;
+  
+  /**
+   * Map containing all intermediate partons and 
+   * their start and end node resolution parameters.
+   */
+  map< long, pair<double, double> > _theIntermediates;
+  
+  /**
+   * Map between the cluster number and the jet parameter.
+   */
+  map< int, double > _theJetParameters;
+  
+  /**
+   *  Pointer to the object calculating the strong coupling
+   */
+  ShowerAlphaPtr _alphaS;
 
 };
 

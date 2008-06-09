@@ -14,6 +14,7 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "QTildeSudakovIntegrator.h"
 #include "NasonTree.h"
+#include "ThePEG/Interface/Reference.h"
 
 
 using namespace Herwig;
@@ -29,9 +30,11 @@ IBPtr NasonCKKWHandler::fullclone() const {
 }
 
 void NasonCKKWHandler::persistentOutput(PersistentOStream & os) const {
+  os  << _alphaS;
 }
 
 void NasonCKKWHandler::persistentInput(PersistentIStream & is, int) {
+  is  >> _alphaS;
 }
 
 ClassDescription<NasonCKKWHandler> NasonCKKWHandler::initNasonCKKWHandler;
@@ -41,23 +44,74 @@ void NasonCKKWHandler::Init() {
 
   static ClassDocumentation<NasonCKKWHandler> documentation
     ("There is no documentation for the NasonCKKWHandler class");
-
+  static Reference<NasonCKKWHandler,ShowerAlpha> interfaceShowerAlpha
+    ("ShowerAlpha",
+     "The object calculating the strong coupling constant",
+     &NasonCKKWHandler::_alphaS, false, false, true, false, false);
 }
 
 double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
+
   PPair in = lastXCombPtr()->subProcess()->incoming();
   ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
   PPtr vBoson = lastXCombPtr()->subProcess()->intermediates()[0];
   _s = lastXCombPtr()->lastS();
-  // cluster the event into a NasonTree
+
   NasonTreePtr nasonTree = doClustering( out, vBoson );
   if(!nasonTree) return 0.;
-  // compute the CKKW weight
-  //
-  //   need to implement this here
-  //
-  // change the hard process
-  // remove the outgoing particles from the SubProcess
+
+  // cerr<<"finished do clustering \n";
+
+  //the jet resolution parameter used in MG generation
+  //Q1 is the lower scale and should be used as a cut off 
+  //  double y_ini = 0.001;
+  Energy Q = sqrt( _s );
+  //  Energy Q1 = sqrt( y_ini ) * Q;
+
+  //the Sudakov weight factor
+  double SudWgt = 1.;
+  
+  //include the sud factor for each external line
+  
+  for( map<ShowerParticlePtr,double>::const_iterator cit 
+	 = _theExternals.begin();
+       cit != _theExternals.end(); ++cit ) {
+    //itererate over all matching sudakovs (only 1 except for gluon)
+    multimap< long, pair < Interpolator<double,Energy>::Ptr,
+      Interpolator<Energy,double>::Ptr >  >::const_iterator cjt;
+    for( cjt =  _fbranchings.lower_bound( abs( cit->first->id() ) );
+	 cjt != _fbranchings.upper_bound( abs( cit->first->id() ) );
+	 ++cjt ) {
+      SudWgt *= (* cjt->second.first )( sqrt( cit->second ) * Q );
+    }
+  }
+
+
+  //include the intermediate line wgts
+  for( map< long, pair< double, double > >::const_iterator cit 
+	 = _theIntermediates.begin();
+       cit != _theIntermediates.end(); ++cit ) {
+
+    //itererate over all matching sudakovs (only 1 except for gluon)
+    multimap< long, pair < Interpolator< double, Energy >::Ptr, Interpolator<Energy,double>::Ptr > >::const_iterator cjt;
+    for( cjt =  _fbranchings.lower_bound( abs( cit->first ) );
+	 cjt != _fbranchings.upper_bound( abs( cit->first ) );
+	 ++cjt ) {
+      SudWgt *= (* cjt->second.first )( sqrt( cit->second.first  ) * Q );
+      SudWgt /= (* cjt->second.first )( sqrt( cit->second.second ) * Q );
+    }
+  }
+ 
+  double alphaWgt = 1.;
+  //need to add the alphaS weight
+  //the alphaS ratio evaluated at all nodal values
+  for( map<NasonBranchingPtr,double>::const_iterator cit 
+	 = _theNodes.begin();
+       cit != _theNodes.end(); ++cit ) {
+    alphaWgt *= _alphaS->ratio( cit->second * sqr( Q ) );
+  }
+
+  //update the sub process 
   ParticleVector outgoing = lastXCombPtr()->subProcess()->outgoing();
   for(unsigned int ix=0;ix<outgoing.size();++ix) {
     lastXCombPtr()->subProcess()->removeEntry(outgoing[ix]);
@@ -95,70 +149,76 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
     }
     lastXCombPtr()->subProcess()->addOutgoing(newParticle);
   }
-  return 1.;
+
+  return SudWgt;
 }
 
 void NasonCKKWHandler::doinitrun() {
+  
   ShowerHandler::doinitrun();
-//   // integrator for the outer integral
-//   GaussianIntegrator outer;
-//   // get the final-state branchings from the evolver
-//   ofstream output("test.top");
-//   output << "SET FONT DUPLEX\n";
-//   for(BranchingList::const_iterator 
-//         it = evolver()->splittingGenerator()->finalStateBranchings().begin();
-//         it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
-//     Ptr<QTildeSudakovIntegrator>::pointer integrator = 
-//       new_ptr(QTildeSudakovIntegrator(it->second));
-//     cerr << "testing sudakov " << it->second.first->fullName() << "\t"
-// 	 << it->second.second[0] << "\t"
-// 	 << it->second.second[1] << "\t"
-// 	 << it->second.second[2] << "\n";
-//     Energy qtildemax=generator()->maximumCMEnergy();
-//     Energy qtildemin=integrator->minimumScale();
-//     vector<double> sud;
-//     vector<Energy> scale;
-//     sud.push_back(0.); scale.push_back(qtildemin);
-//     Energy currentScale=qtildemin;
-//     double fact = pow(qtildemax/qtildemin,1./(_npoint-1));
-//     for(unsigned int ix=1;ix<_npoint;++ix) {
-//       currentScale *= fact;
-//       double currentSud = integrator->value(currentScale,scale.back());
-//       scale.push_back(currentScale);
-//       sud.push_back(sud.back()+currentSud);
-//       cerr << "testing values " << scale.back()/GeV << "\t" << sud.back() << " " << exp(-sud.back()) << "\n";
-//     }
-//     // convert to the Sudakov
-//     for(unsigned int ix=0;ix<sud.size();++ix) {
-//       sud[ix] = exp(-sud[ix]);
-//     }
-//     // construct the Interpolators
-//     Interpolator<double,Energy>::Ptr intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
-//     Interpolator<Energy,double>::Ptr ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
-//     _fbranchings.insert(make_pair(it->first,make_pair(intq,ints)));
 
+   // integrator for the outer integral
+   GaussianIntegrator outer;
+   // get the final-state branchings from the evolver
+   ofstream output("test.top");
+   output << "SET FONT DUPLEX\n";
+   for(BranchingList::const_iterator 
+	 it = evolver()->splittingGenerator()->finalStateBranchings().begin();
+       it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
+     Ptr<QTildeSudakovIntegrator>::pointer integrator = 
+       new_ptr(QTildeSudakovIntegrator(it->second));
+     cerr << "testing sudakov " << it->second.first->fullName() << "\t"
+ 	 << it->second.second[0] << "\t"
+ 	 << it->second.second[1] << "\t"
+ 	 << it->second.second[2] << "\n";
+     Energy qtildemax=generator()->maximumCMEnergy();
+     Energy qtildemin=integrator->minimumScale();
+     vector<double> sud;
+     vector<Energy> scale;
+     sud.push_back(0.); scale.push_back(qtildemin);
+     Energy currentScale=qtildemin;
+     double fact = pow(qtildemax/qtildemin,1./(_npoint-1));
+     for(unsigned int ix=1;ix<_npoint;++ix) {
+       currentScale *= fact;
+       double currentSud = integrator->value(currentScale,scale.back());
+       scale.push_back(currentScale);
+       sud.push_back(sud.back()+currentSud);
+       cerr << "testing values " << scale.back()/GeV << "\t" << sud.back() << " " << exp(-sud.back()) << "\n";
+     }
+     // convert to the Sudakov
+     for(unsigned int ix=0;ix<sud.size();++ix) {
+       sud[ix] = exp(-sud[ix]);
+     }
+     // construct the Interpolators
+     Interpolator<double,Energy>::Ptr intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
+     Interpolator<Energy,double>::Ptr ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
+     _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
 
+     output << "NEWFRAME\n";
+     output << "TITLE TOP \"Sudakov for " << getParticleData(it->second.second[0])->PDGName() << " -> "
+ 	   << getParticleData(it->second.second[1])->PDGName() << " "
+ 	   << getParticleData(it->second.second[2])->PDGName() << "\"\n";
+     for(unsigned int ix=0;ix<sud.size();++ix)
+       output << scale[ix]/GeV << " " << sud[ix] << "\n";
+     output << "JOIN RED\n" << flush;
+ //     HistogramPtr temp(new_ptr(Histogram(0.,100.,200)));
 
+ //     double slst = (*intq)(91.2*GeV);
+ //     for(unsigned int ix=0;ix<100000000;++ix) {
+ //       double snow = slst/UseRandom::rnd();
+ //       if(snow>=1.) continue;
+ //       Energy qnow = (*ints)(snow);
+ //       *temp +=qnow/GeV;
+ //     }
+ //     using namespace HistogramOptions;
+ //     temp->topdrawOutput(output,Frame);
+   }
+}
 
-//     output << "NEWFRAME\n";
-//     output << "TITLE TOP \"Sudakov for " << getParticleData(it->second.second[0])->PDGName() << " -> "
-// 	   << getParticleData(it->second.second[1])->PDGName() << " "
-// 	   << getParticleData(it->second.second[2])->PDGName() << "\"\n";
-//     for(unsigned int ix=0;ix<sud.size();++ix)
-//       output << scale[ix]/GeV << " " << sud[ix] << "\n";
-//     output << "JOIN RED\n" << flush;
-// //     HistogramPtr temp(new_ptr(Histogram(0.,100.,200)));
-
-// //     double slst = (*intq)(91.2*GeV);
-// //     for(unsigned int ix=0;ix<100000000;++ix) {
-// //       double snow = slst/UseRandom::rnd();
-// //       if(snow>=1.) continue;
-// //       Energy qnow = (*ints)(snow);
-// //       *temp +=qnow/GeV;
-// //     }
-// //     using namespace HistogramOptions;
-// //     temp->topdrawOutput(output,Frame);
-//   }
+void NasonCKKWHandler::doinit() throw(InitException) {
+  
+  ShowerHandler::doinit();
+ 
 }
 
 void NasonCKKWHandler::cascade() {
@@ -241,6 +301,10 @@ SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
 
 NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts, 
 					     PPtr vb ) {
+  _theNodes.clear();
+  _theExternals.clear();
+  _theIntermediates.clear();
+
   int qq_pairs = 0;
   map <ShowerParticlePtr,NasonBranchingPtr> theParticles;
   tcPDPtr particle_data;
@@ -253,7 +317,13 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     if( currentParticle->id() > 0 && currentParticle->id() < 7 ) qq_pairs++;
     theParticles.insert(make_pair(currentParticle, 
 				  new_ptr( NasonBranching( currentParticle, SudakovPtr(),
-							   NasonBranchingPtr(),false ) ) ) );  
+							   NasonBranchingPtr(),false ) ) ) );
+    //insert all particles into externals and initialise all
+    //jet res parameters to 1
+    cerr<< "external: \n"
+	<< currentParticle << "\n";
+    _theExternals.insert( make_pair( currentParticle, 1. ) );
+    
     if(currentParticle->dataPtr()->iColour()==PDT::Colour3||
        currentParticle->dataPtr()->iColour()==PDT::Colour8) {
       ColinePtr newline = new_ptr(ColourLine());
@@ -283,14 +353,18 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
       }
     }
     long thePartId;
-    SudakovPtr theSudakov=getSud( qq_pairs, thePartId,
-				  clusterPair.first, clusterPair.second ); 
+    SudakovPtr theSudakov = getSud( qq_pairs, thePartId,
+				    clusterPair.first, clusterPair.second ); 
     if( !theSudakov ){
       cerr << "can't find the sudakov in: \n";
       cerr << *clusterPair.first<<"\n"
 	   << *clusterPair.second<<"\n";
       cerr << "with qq_pairs = " << qq_pairs <<"\n";
     }
+
+    cerr << "clustering with yij = "<< yij_min <<":  "<< *clusterPair.first<<"\n"
+	 << *clusterPair.second<<"\n";
+
     generator()->log() << "testing sudakov?? " << theSudakov << "\n";
     Lorentz5Momentum pairMomentum = clusterPair.first->momentum() + 
       clusterPair.second->momentum();
@@ -299,23 +373,62 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     
     //creates emitter particle
     ShowerParticlePtr clustered = new_ptr( ShowerParticle( particle_data, true ) );
-    clustered->set5Momentum( pairMomentum );
-
-    NasonBranchingPtr clusteredBranch(new_ptr(NasonBranching( clustered, theSudakov,
-							      NasonBranchingPtr(),false)));
-    fixColours(clustered,clusterPair.first,clusterPair.second);
+    clustered->set5Momentum( pairMomentum );   
+ 
+    //decide which particle was created (ie which was only resolvable 
+    //at this scale) from ids (if q->qg) or magnitudes
+    int created;
+    //are we clustering quarks
+    if( abs( clusterPair.first->id() )  < 7 || 
+	abs( clusterPair.second->id() ) < 7 ){
+      if( abs( thePartId ) ==
+	  abs( clusterPair.first->id() ) )  created = 1;
+      else if( abs( thePartId ) ==
+	       abs( clusterPair.second->id() ) )  created = 2;
+      //clustering q qbar
+      else{
+	if( clusterPair.first->momentum().mag() > 
+	    clusterPair.second->momentum().mag() ) created = 1;
+	else created = 2;
+      }
+    }
+    else{
+      	if( clusterPair.first->momentum().mag() > 
+	    clusterPair.second->momentum().mag() ) created = 1;
+	else created = 2;
+    }
+  
+    NasonBranchingPtr clusteredBranch( new_ptr( NasonBranching( clustered, theSudakov,
+								NasonBranchingPtr(), false ) ) );
+    fixColours( clustered, clusterPair.first, clusterPair.second );
     theParticles.insert( make_pair( clustered, clusteredBranch ) );
-    clusteredBranch->addChild( theParticles.find( clusterPair.first )->second  );
-    clusteredBranch->addChild( theParticles.find( clusterPair.second )->second );
-    theParticles.erase( clusterPair.first );
+    
+    //add children in the correct order
+    if( created == 2 ){
+      clusteredBranch->addChild( theParticles.find( clusterPair.first )
+				 ->second  );
+      clusteredBranch->addChild( theParticles.find( clusterPair.second )
+				 ->second );
+    }
+    else{
+      clusteredBranch->addChild( theParticles.find( clusterPair.second )
+				 ->second  );
+      clusteredBranch->addChild( theParticles.find( clusterPair.first )
+				 ->second );
+    }
+
+    _theNodes.insert( make_pair( clusteredBranch, yij_min ) );
+
+    theParticles.erase( clusterPair.first  );
     theParticles.erase( clusterPair.second );
   
   }
   vector<NasonBranchingPtr> theBranchings;
-  for(  map<ShowerParticlePtr, NasonBranchingPtr>::iterator it = theParticles.begin(); 
-	it != theParticles.end(); ++it){ 
+  for(  map<ShowerParticlePtr, NasonBranchingPtr>::iterator it = 
+	  theParticles.begin(); 
+	it != theParticles.end(); ++it ) 
     theBranchings.push_back( it->second );
-  }
+  
   // fix for e+e- to match up the colours of the q qbar pair
   if(theBranchings[0]->_particle->dataPtr()->iColour()==PDT::Colour3) {
     ColinePtr temp = theBranchings[1]->_particle->antiColourLine();
@@ -342,12 +455,54 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
   generator()->log() << *nasontree << "\n" << flush;
 
   // Calculate the shower variables
-  evolver()->showerModel()->kinematicsReconstructor()->
-    reconstructDecayShower(nasontree,evolver());
+  //  evolver()->showerModel()->kinematicsReconstructor()->
+  //  reconstructDecayShower(nasontree,evolver());
+  
   generator()->log() << "testing hard momenta for the shower\n";
-  for(unsigned int ix=0;ix<theBranchings.size();++ix) {
-    generator()->log() << "testing " << theBranchings[ix]->_shower/GeV << "\t"
-		       << theBranchings[ix]->_shower.m()/GeV << "\n";
+  for( unsigned int jx = 0; jx < theBranchings.size(); ++jx ) {
+    generator()->log() << "testing " << theBranchings[jx]->_shower/GeV << "\t"
+		       << theBranchings[jx]->_shower.m()/GeV << "\n";
+  }
+
+ 
+
+  //set the scales at which the externals are resolved
+  for( map<NasonBranchingPtr,double>::const_iterator cit 
+	 = _theNodes.begin();
+       cit != _theNodes.end(); ++cit ) {
+    NasonBranchingPtr currentExternal = cit->first;
+    //loop until the  assosiated external particle is found
+    do {
+      if( ! currentExternal ) break;
+      currentExternal = currentExternal->_children[0];
+    } while( _theExternals.find( currentExternal->branchingParticle() ) ==
+	     _theExternals.end() );
+
+    if( _theExternals.find( currentExternal->branchingParticle() ) !=
+	_theExternals.end() )
+      _theExternals.find( currentExternal->branchingParticle() )->
+	second = cit->second;
+    else cerr<<"doClustering()::can't find an external \n"
+	     << currentExternal->branchingParticle()
+	     << "\n";    
+  }
+  //get the intermediates
+  for( map<NasonBranchingPtr,double>::const_iterator cit 
+	 = _theNodes.begin();
+       cit != _theNodes.end(); ++cit ) {
+    //end scale and intermediate are given by theNodes
+    double endScale = cit->second;
+    double startScale = 1.;
+    long intID = cit->first->branchingParticle()->id();
+    //get start scale from parton
+    if( cit->first->_parent ) {
+      NasonBranchingPtr intParent = cit->first;
+      if( _theNodes.find( cit->first ) !=
+	  _theNodes.end() )
+	startScale = _theNodes.find( cit->first )->second;
+      else cerr<<"doClustering()::can't find start of intermediate with parents \n";
+    }
+    _theIntermediates.insert( make_pair( intID, make_pair( startScale, endScale ) ) );
   }
   return nasontree;
 }
