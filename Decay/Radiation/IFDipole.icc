@@ -44,20 +44,6 @@ inline void IFDipole::doinit() throw(InitException) {
           *log(_emax/_emin);
 }
 
-// poisson
-inline int IFDipole::poisson(double average)
-{
-  int n(0),n_factorial(1);
-  double x(UseRandom::rnd()*exp(average)),sum(1.);
-  while (x>=sum)
-    {
-      ++n;
-      n_factorial *= n;   
-      sum += pow(average,n)/n_factorial;
-    };
-  return n;
-}
-
 inline double IFDipole::exactDipoleWeight(double beta1, double ombeta1,
 					  unsigned int iphot)
 {
