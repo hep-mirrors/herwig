@@ -30,11 +30,11 @@ IBPtr NasonCKKWHandler::fullclone() const {
 }
 
 void NasonCKKWHandler::persistentOutput(PersistentOStream & os) const {
-  os  << _alphaS << _sudopt << _sudname;
+  os  << _alphaS << _sudopt << _sudname << _JetMeasureMode;
 }
 
 void NasonCKKWHandler::persistentInput(PersistentIStream & is, int) {
-  is  >> _alphaS >> _sudopt >> _sudname;
+  is  >> _alphaS >> _sudopt >> _sudname >> _JetMeasureMode;
 }
 
 ClassDescription<NasonCKKWHandler> NasonCKKWHandler::initNasonCKKWHandler;
@@ -77,6 +77,16 @@ void NasonCKKWHandler::Init() {
      &NasonCKKWHandler::_sudname, "sudakov.data",
      false, false);
 
+  static Switch<NasonCKKWHandler, unsigned int> ifaceJetMeasureMode
+    ("JetMeasure",
+     "Choice of the jet measure algorithm",
+     &NasonCKKWHandler::_JetMeasureMode, 0, false, false);
+  
+  static SwitchOption Durham
+    (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
+  
+  static SwitchOption LUCLUS
+    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 1);
 }
 
 double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
@@ -86,8 +96,8 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   PPtr vBoson = lastXCombPtr()->subProcess()->intermediates()[0];
   _s = lastXCombPtr()->lastS();
 
-  NasonTreePtr nasonTree = doClustering( out, vBoson );
-  if(!nasonTree) return 0.;
+  NasonTreePtr _theNasonTree = doClustering( out, vBoson );
+  if(!_theNasonTree) return 0.;
 
   // cerr<<"finished do clustering \n";
 
@@ -150,8 +160,8 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   }
   // add new ones based on the NasonTree
   map<ColinePtr,ColinePtr> colourMap;
-  for(set<NasonBranchingPtr>::const_iterator it=nasonTree->branchings().begin();
-      it!=nasonTree->branchings().end();++it) {
+  for(set<NasonBranchingPtr>::const_iterator it=_theNasonTree->branchings().begin();
+      it!=_theNasonTree->branchings().end();++it) {
     if((**it)._incoming) continue;
     generator()->log() << *(**it)._particle << "\n";
     PPtr newParticle = new_ptr(Particle((**it)._particle->dataPtr()));
@@ -312,10 +322,22 @@ double NasonCKKWHandler::getJetMeasure(ShowerParticlePtr part_i,
   double yij;
   double costheta = part_i->momentum().vect().dot( part_j->momentum().vect() ) 
     / part_i->momentum().vect().mag() / part_j->momentum().vect().mag();
-  if( sqr( part_i->momentum().e() ) > sqr( part_j->momentum().e() ) )
-    yij = 2. * sqr( part_j->momentum().e() ) * ( 1. - costheta ) / _s ;
-  else
-    yij = 2. * sqr( part_i->momentum().e() ) * ( 1. - costheta ) / _s ;
+  switch( _JetMeasureMode ){
+  case 0:
+    if( sqr( part_i->momentum().e() ) > sqr( part_j->momentum().e() ) )
+      yij = 2. * sqr( part_j->momentum().e() ) * ( 1. - costheta ) / _s ;
+    else
+      yij = 2. * sqr( part_i->momentum().e() ) * ( 1. - costheta ) / _s ;
+    break;
+  case 1:
+    yij = 2. * sqr( part_i->momentum().e() * part_j->momentum().e() /
+		    ( part_i->momentum().e() + part_j->momentum().e() ) )
+      * ( 1. - costheta );
+    break;
+  default:
+    yij = 1.;
+    break;
+  }
   return yij;
 }
 

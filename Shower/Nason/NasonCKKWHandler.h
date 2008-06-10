@@ -235,7 +235,11 @@ private:
    *  Filename for the Sudakov table
    */
   string _sudname;
-
+  
+  /**
+   * The jet measure algorithm we are using.
+   */
+  unsigned int _JetMeasureMode;
 };
 
 }
