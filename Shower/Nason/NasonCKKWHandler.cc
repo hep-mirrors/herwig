@@ -5,7 +5,11 @@
 //
 
 #include "NasonCKKWHandler.h"
+#include "ThePEG/Utilities//CFileLineReader.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
@@ -14,12 +18,8 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "QTildeSudakovIntegrator.h"
 #include "NasonTree.h"
-#include "ThePEG/Interface/Reference.h"
-
 
 using namespace Herwig;
-
-NasonCKKWHandler::~NasonCKKWHandler() {}
 
 IBPtr NasonCKKWHandler::clone() const {
   return new_ptr(*this);
@@ -30,11 +30,11 @@ IBPtr NasonCKKWHandler::fullclone() const {
 }
 
 void NasonCKKWHandler::persistentOutput(PersistentOStream & os) const {
-  os  << _alphaS;
+  os  << _alphaS << _sudopt << _sudname;
 }
 
 void NasonCKKWHandler::persistentInput(PersistentIStream & is, int) {
-  is  >> _alphaS;
+  is  >> _alphaS >> _sudopt >> _sudname;
 }
 
 ClassDescription<NasonCKKWHandler> NasonCKKWHandler::initNasonCKKWHandler;
@@ -43,11 +43,40 @@ ClassDescription<NasonCKKWHandler> NasonCKKWHandler::initNasonCKKWHandler;
 void NasonCKKWHandler::Init() {
 
   static ClassDocumentation<NasonCKKWHandler> documentation
-    ("There is no documentation for the NasonCKKWHandler class");
+    ("The NasonCKKWHandler class manages the implementation of the CKKW approach using"
+     "the truncated shower.");
+
   static Reference<NasonCKKWHandler,ShowerAlpha> interfaceShowerAlpha
     ("ShowerAlpha",
      "The object calculating the strong coupling constant",
      &NasonCKKWHandler::_alphaS, false, false, true, false, false);
+
+  static Switch<NasonCKKWHandler,unsigned int> interfaceSudakovOption
+    ("SudakovOption",
+     "Option for the initialisation of the Sudakov tables",
+     &NasonCKKWHandler::_sudopt, 0, false, false);
+  static SwitchOption interfaceSudakovOptionWrite
+    (interfaceSudakovOption,
+     "Write",
+     "Calculate the Sudakov and write the table to a file",
+     1);
+  static SwitchOption interfaceSudakovOptionRead
+    (interfaceSudakovOption,
+     "Read",
+     "Read the Sudakov table from a file",
+     2);
+  static SwitchOption interfaceSudakovOptionCompute
+    (interfaceSudakovOption,
+     "Compute",
+     "Calculate the Sudakov but don't write the table",
+     0);
+
+  static Parameter<NasonCKKWHandler,string> interfaceSudakovName
+    ("SudakovName",
+     "Name for the file containing the Sudakov form factors",
+     &NasonCKKWHandler::_sudname, "sudakov.data",
+     false, false);
+
 }
 
 double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
@@ -149,58 +178,112 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
     }
     lastXCombPtr()->subProcess()->addOutgoing(newParticle);
   }
-
-  return SudWgt;
+  return SudWgt * alphaWgt;
 }
 
 void NasonCKKWHandler::doinitrun() {
-  
   ShowerHandler::doinitrun();
-
-   // integrator for the outer integral
-   GaussianIntegrator outer;
-   // get the final-state branchings from the evolver
-   ofstream output("test.top");
-   output << "SET FONT DUPLEX\n";
-   for(BranchingList::const_iterator 
-	 it = evolver()->splittingGenerator()->finalStateBranchings().begin();
-       it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
-     Ptr<QTildeSudakovIntegrator>::pointer integrator = 
-       new_ptr(QTildeSudakovIntegrator(it->second));
-     cerr << "testing sudakov " << it->second.first->fullName() << "\t"
- 	 << it->second.second[0] << "\t"
- 	 << it->second.second[1] << "\t"
- 	 << it->second.second[2] << "\n";
-     Energy qtildemax=generator()->maximumCMEnergy();
-     Energy qtildemin=integrator->minimumScale();
-     vector<double> sud;
-     vector<Energy> scale;
-     sud.push_back(0.); scale.push_back(qtildemin);
-     Energy currentScale=qtildemin;
-     double fact = pow(qtildemax/qtildemin,1./(_npoint-1));
-     for(unsigned int ix=1;ix<_npoint;++ix) {
-       currentScale *= fact;
-       double currentSud = integrator->value(currentScale,scale.back());
-       scale.push_back(currentScale);
-       sud.push_back(sud.back()+currentSud);
-       cerr << "testing values " << scale.back()/GeV << "\t" << sud.back() << " " << exp(-sud.back()) << "\n";
-     }
-     // convert to the Sudakov
-     for(unsigned int ix=0;ix<sud.size();++ix) {
-       sud[ix] = exp(-sud[ix]);
-     }
-     // construct the Interpolators
-     Interpolator<double,Energy>::Ptr intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
-     Interpolator<Energy,double>::Ptr ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
-     _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
-
-     output << "NEWFRAME\n";
-     output << "TITLE TOP \"Sudakov for " << getParticleData(it->second.second[0])->PDGName() << " -> "
- 	   << getParticleData(it->second.second[1])->PDGName() << " "
- 	   << getParticleData(it->second.second[2])->PDGName() << "\"\n";
-     for(unsigned int ix=0;ix<sud.size();++ix)
-       output << scale[ix]/GeV << " " << sud[ix] << "\n";
-     output << "JOIN RED\n" << flush;
+  // integrator for the outer integral
+  GaussianIntegrator outer;
+  // get the final-state branchings from the evolver
+  if(_sudopt!=2) {
+    ofstream sudFileOutput;
+    if(_sudopt==1) sudFileOutput.open(_sudname.c_str());
+    for(BranchingList::const_iterator 
+	  it = evolver()->splittingGenerator()->finalStateBranchings().begin();
+	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
+      // class to return the integrated factor in the exponent
+      Ptr<QTildeSudakovIntegrator>::pointer integrator = 
+	new_ptr(QTildeSudakovIntegrator(it->second));
+      if(_sudopt==1) sudFileOutput << it->second.first->fullName() << "\t"
+				   << it->second.second[0] << "\t"
+				   << it->second.second[1] << "\t"
+				   << it->second.second[2] << "\n";
+      Energy qtildemax = generator()->maximumCMEnergy();
+      Energy qtildemin = integrator->minimumScale();
+      vector<double> sud;
+      vector<Energy> scale;
+      sud.push_back(0.); scale.push_back(qtildemin);
+      Energy currentScale=qtildemin;
+      double fact = pow(qtildemax/qtildemin,1./(_npoint-1));
+      for(unsigned int ix=1;ix<_npoint;++ix) {
+	currentScale *= fact;
+	double currentSud = integrator->value(currentScale,scale.back());
+	scale.push_back(currentScale);
+	sud.push_back(sud.back()+currentSud);
+      }
+      // convert to the Sudakov
+      for(unsigned int ix=0;ix<sud.size();++ix) sud[ix] = exp(-sud[ix]);
+      // construct the Interpolators
+      Interpolator<double,Energy>::Ptr 
+	intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
+      Interpolator<Energy,double>::Ptr 
+	ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
+      _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
+      if(_sudopt==1) {
+	sudFileOutput << scale.size() << "\n";
+	for(unsigned int ix=0;ix<scale.size();++ix)
+	  sudFileOutput << setprecision(18) << scale[ix]/GeV << "\t" << sud[ix] << "\n";
+      }
+    }
+    sudFileOutput.close();
+  }
+  else {
+    CFileLineReader file(_sudname);
+    while(file.readline()) {
+      string line = file.getline(), name;
+      istringstream is;
+      is.str(line);
+      IdList ids(3);
+      is >> name >> ids[0] >> ids[1] >> ids[2];
+      file.readline();
+      vector<Energy> scale;
+      vector<double> sud;
+      unsigned int isize;
+      double temp[2];
+      is.str(file.getline());
+      is >> isize;
+      for(unsigned int ix=0;ix<isize;++ix) {
+	file.readline();
+	is.str(file.getline());
+	is >> temp[0] >> temp[1];
+	scale.push_back(temp[0]*GeV);
+	sud.push_back(temp[1]);
+	cerr << "testing " << scale.back()/GeV << " " << sud.back() << "\n";
+      }
+      BranchingList::const_iterator it,
+	start = evolver()->splittingGenerator()->finalStateBranchings().lower_bound(ids[0]),
+	end   = evolver()->splittingGenerator()->finalStateBranchings().upper_bound(ids[0]);
+      for(it=start;it!=end;++it) {
+	if(it->second.first->fullName()==name&&
+	   it->second.second[0]==ids[0]&&
+	   it->second.second[1]==ids[1]&&
+	   it->second.second[2]==ids[2]) {
+	  // construct the Interpolators
+	  Interpolator<double,Energy>::Ptr 
+	    intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
+	  Interpolator<Energy,double>::Ptr 
+	    ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
+	  _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
+	  break;
+	}
+      }
+      if(it==end) {
+	cerr << "testing fails\n";
+      }
+    }
+  }
+//   ofstream output("sudakovs.top");
+//   for(BranchingList::const_iterator 
+// 	it = evolver()->splittingGenerator()->finalStateBranchings().begin();
+//       it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
+//      output << "NEWFRAME\n";
+//      output << "TITLE TOP \"Sudakov for " << getParticleData(it->second.second[0])->PDGName() << " -> "
+//  	   << getParticleData(it->second.second[1])->PDGName() << " "
+//  	   << getParticleData(it->second.second[2])->PDGName() << "\"\n";
+//      for(unsigned int ix=0;ix<sud.size();++ix)
+//        output << scale[ix]/GeV << " " << sud[ix] << "\n";
+//      output << "JOIN RED\n" << flush;
  //     HistogramPtr temp(new_ptr(Histogram(0.,100.,200)));
 
  //     double slst = (*intq)(91.2*GeV);
@@ -212,7 +295,6 @@ void NasonCKKWHandler::doinitrun() {
  //     }
  //     using namespace HistogramOptions;
  //     temp->topdrawOutput(output,Frame);
-   }
 }
 
 void NasonCKKWHandler::doinit() throw(InitException) {

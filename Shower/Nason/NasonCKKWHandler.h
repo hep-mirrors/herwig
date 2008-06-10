@@ -45,12 +45,7 @@ public:
   /**
    * The default constructor.
    */
-  NasonCKKWHandler() : _npoint(200) {}
-
-  /**
-   *  Destructor
-   */
-  virtual ~NasonCKKWHandler();
+  NasonCKKWHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data") {}
 
   /**
    * Perform CKKW reweighting
@@ -230,6 +225,16 @@ private:
    *  Pointer to the object calculating the strong coupling
    */
   ShowerAlphaPtr _alphaS;
+
+  /**
+   *  Option for the Sudakov table
+   */
+  unsigned int _sudopt;
+
+  /**
+   *  Filename for the Sudakov table
+   */
+  string _sudname;
 
 };
 
