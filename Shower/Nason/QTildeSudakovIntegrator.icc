@@ -10,6 +10,6 @@ inline double InnerSudakovIntegrand::operator() (double z) const {
 }
 
 inline Energy QTildeSudakovIntegrator::minimumScale() const {
-  return _qtildemin;
+  return qtildemin_;
 }
 }

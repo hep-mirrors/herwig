@@ -102,62 +102,62 @@ private:
   /**
    * The coupling
    */
-  ShowerAlphaPtr _coupling;
+  ShowerAlphaPtr coupling_;
   
   /**
    * The Spltting function
    */
-  SplittingFnPtr _splittingFunction;
+  SplittingFnPtr splittingFunction_;
   
   /**
    *  The particles
    */
-  IdList _ids;
+  IdList ids_;
 
   /**
    *  Integrand of the inner integral
    */
-  InnerSudakovIntegrand _inner;
+  InnerSudakovIntegrand inner_;
 
   /**
    *  Gaussian integrator for the inner integral
    */
-  GaussianIntegrator _innerIntegrator;
+  GaussianIntegrator innerIntegrator_;
 
   /**
    *  Gaussian integrator for the outer integral
    */
-  GaussianIntegrator _outerIntegrator;
+  GaussianIntegrator outerIntegrator_;
 
   /**
    *  The masses of the particles in the current branching
    */
-  vector<Energy> _masses;
+  vector<Energy> masses_;
 
   /**
    *  The mass squared of the particles in the current branching
    */
-  vector<Energy2> _masssquared;
+  vector<Energy2> masssquared_;
 
   /**
-   *  Kinematic cut-off
+   *  The minimum \f$p_T\f$ for the branching
    */
-  Energy _kinCutoff;
+  Energy pTmin_;
 
   /**
    *  Maximum scale for the Sudakov being integrated
    */
-  Energy _qtildeh;
+  Energy qtildeh_;
 
   /**
    *  Minimum scale for the Sudakov being integrated
    */
-  Energy _qtildemin;
+  Energy qtildemin_;
   
   /**
    *  The value of \f$\tilde{q}\f$ for the current integral
    */
-  mutable Energy _qtilde;
+  mutable Energy qtilde_;
 
 };
 
