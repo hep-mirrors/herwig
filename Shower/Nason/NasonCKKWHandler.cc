@@ -30,11 +30,11 @@ IBPtr NasonCKKWHandler::fullclone() const {
 }
 
 void NasonCKKWHandler::persistentOutput(PersistentOStream & os) const {
-  os  << _alphaS << _sudopt << _sudname << _JetMeasureMode;
+  os  << _alphaS << _sudopt << _sudname << _jetMeasureMode;
 }
 
 void NasonCKKWHandler::persistentInput(PersistentIStream & is, int) {
-  is  >> _alphaS >> _sudopt >> _sudname >> _JetMeasureMode;
+  is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode;
 }
 
 ClassDescription<NasonCKKWHandler> NasonCKKWHandler::initNasonCKKWHandler;
@@ -80,7 +80,7 @@ void NasonCKKWHandler::Init() {
   static Switch<NasonCKKWHandler, unsigned int> ifaceJetMeasureMode
     ("JetMeasure",
      "Choice of the jet measure algorithm",
-     &NasonCKKWHandler::_JetMeasureMode, 0, false, false);
+     &NasonCKKWHandler::_jetMeasureMode, 0, false, false);
   
   static SwitchOption Durham
     (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
@@ -259,7 +259,6 @@ void NasonCKKWHandler::doinitrun() {
 	is >> temp[0] >> temp[1];
 	scale.push_back(temp[0]*GeV);
 	sud.push_back(temp[1]);
-	cerr << "testing " << scale.back()/GeV << " " << sud.back() << "\n";
       }
       BranchingList::const_iterator it,
 	start = evolver()->splittingGenerator()->finalStateBranchings().lower_bound(ids[0]),
@@ -322,7 +321,7 @@ double NasonCKKWHandler::getJetMeasure(ShowerParticlePtr part_i,
   double yij;
   double costheta = part_i->momentum().vect().dot( part_j->momentum().vect() ) 
     / part_i->momentum().vect().mag() / part_j->momentum().vect().mag();
-  switch( _JetMeasureMode ){
+  switch( _jetMeasureMode ){
   case 0:
     if( sqr( part_i->momentum().e() ) > sqr( part_j->momentum().e() ) )
       yij = 2. * sqr( part_j->momentum().e() ) * ( 1. - costheta ) / _s ;
@@ -331,7 +330,7 @@ double NasonCKKWHandler::getJetMeasure(ShowerParticlePtr part_i,
     break;
   case 1:
     yij = 2. * sqr( part_i->momentum().e() * part_j->momentum().e() /
-		    ( part_i->momentum().e() + part_j->momentum().e() ) )
+		    ( part_i->momentum().e() + part_j->momentum().e() ) )/_s
       * ( 1. - costheta );
     break;
   default:
@@ -383,7 +382,6 @@ SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
   else {
     emmitter_id = 21;
   }
-
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
 
@@ -559,8 +557,8 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
   generator()->log() << *nasontree << "\n" << flush;
 
   // Calculate the shower variables
-  //  evolver()->showerModel()->kinematicsReconstructor()->
-  //  reconstructDecayShower(nasontree,evolver());
+  evolver()->showerModel()->kinematicsReconstructor()->
+    reconstructDecayShower(nasontree,evolver());
   
   generator()->log() << "testing hard momenta for the shower\n";
   for( unsigned int jx = 0; jx < theBranchings.size(); ++jx ) {

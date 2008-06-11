@@ -45,7 +45,8 @@ public:
   /**
    * The default constructor.
    */
-  NasonCKKWHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data") {}
+  NasonCKKWHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data"),
+		       _jetMeasureMode(0) {}
 
   /**
    * Perform CKKW reweighting
@@ -239,7 +240,7 @@ private:
   /**
    * The jet measure algorithm we are using.
    */
-  unsigned int _JetMeasureMode;
+  unsigned int _jetMeasureMode;
 };
 
 }
