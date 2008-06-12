@@ -55,7 +55,30 @@ void CKKWHardGenerator::Init() {
 NasonTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
   //Get the NasonTree from the CKKW handler.
   NasonTreePtr nasontree = _CKKWh->getNasonTree();
-	
+  vector<ShowerProgenitorPtr> progenitors = tree->extractProgenitors();
+  // connect the trees up
+  for(unsigned int ix=0;ix<progenitors.size();++ix) {
+    bool match(false);
+    for(set<NasonBranchingPtr>::iterator it=nasontree->branchings().begin();
+	it!=nasontree->branchings().end();++it) {
+      if((**it)._particle->id()!=progenitors[ix]->progenitor()->id()) continue;
+      cerr << *progenitors[ix]->progenitor() << "\n";
+      nasontree->connect(progenitors[ix]->progenitor(),*it);
+      match = true;
+    }
+    if(!match) return NasonTreePtr();
+  }
+
+
+
+
+
+
+
+
+
+
+
   // Set the maximum pt for all other emissions
   // how should this be done for ckkw???
   // Energy ptveto(sqrt(_s)*_rt_mlambda/(4.*b_xs));
@@ -75,47 +98,10 @@ NasonTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
   // greenLine->addColoured(parent,_iemitter);
   // greenLine->addColoured(spectator,_ispectator);
 
-  // Calculate the shower variables:
-  evolver()->showerModel()->kinematicsReconstructor()->
-    reconstructDecayShower( nasontree, evolver() );
-
-  // KMH - why don't we do the next step in reconstructDecayShower? 
-  // Reset the momenta to ensure the correct momenta after shower recon
-  // if emitter for Kleiss trick and shower are different
-  for(map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator 
-  	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
-    mit->first->set5Momentum(mit->second->_shower);
-
   // Return the NasonTree
   return nasontree;
 }
 
-//this is exactly as it was  for VectorBoson...
 bool CKKWHardGenerator::canHandle(ShowerTreePtr tree) {
-  if(tree->incomingLines().size()!=1) return false;    
-  if((tree->incomingLines().begin()->first->id()==22)&&
-  (tree->incomingLines().begin()->first->progenitor()->id()==23)) return false;
-
-  //commented out the lines on outgoing particles since these are not currently
-  //set correctly in the showerTree
-
-  // map<ShowerProgenitorPtr,tShowerParticlePtr> outgoing=tree->outgoingLines();
-  //  if(outgoing.size()!=2) return false;
-  // if(abs(outgoing.begin()->first->progenitor()->id())>6)  return false;
-  // if(outgoing.begin()->first->progenitor()->id()!=
-  //   -1*outgoing.rbegin()->first->progenitor()->id())     return false;
   return true;
-}
-
-void CKKWHardGenerator::doinit() throw(InitException) {
-  HardestEmissionGenerator::doinit();
-}
-
-void CKKWHardGenerator::dofinish() {
-  HardestEmissionGenerator::dofinish();
-
-}
-
-void CKKWHardGenerator::doinitrun() {
-  HardestEmissionGenerator::doinitrun();
 }

@@ -63,7 +63,7 @@ public:
   /**
    *  access to the nason tree object
    */
-  inline NasonTreePtr getNasonTree(){
+  inline NasonTreePtr getNasonTree() {
     return _theNasonTree;
   }
 
@@ -155,8 +155,8 @@ private:
    * Sudakov form factor for the splitting.
    */
   SudakovPtr getSud(int & qq_pairs, long & emmitter_id,
-		    ShowerParticlePtr part_i, 
-		    ShowerParticlePtr part_j ) ;
+		    ShowerParticlePtr & part_i, 
+		    ShowerParticlePtr & part_j ) ;
   
   /**
    * Returns the durham jet measure, yij, for the two particles. 

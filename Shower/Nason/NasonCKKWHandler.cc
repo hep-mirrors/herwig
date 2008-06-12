@@ -96,7 +96,7 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   PPtr vBoson = lastXCombPtr()->subProcess()->intermediates()[0];
   _s = lastXCombPtr()->lastS();
 
-  NasonTreePtr _theNasonTree = doClustering( out, vBoson );
+  _theNasonTree = doClustering( out, vBoson );
   if(!_theNasonTree) return 0.;
 
   // cerr<<"finished do clustering \n";
@@ -109,7 +109,9 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
 
   //the Sudakov weight factor
   double SudWgt = 1.;
-  
+
+//this is exactly as it was  for VectorBoson...
+//this is exactly as it was  for VectorBoson...  
   //include the sud factor for each external line
   
   for( map<ShowerParticlePtr,double>::const_iterator cit 
@@ -188,6 +190,7 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
     }
     lastXCombPtr()->subProcess()->addOutgoing(newParticle);
   }
+  cerr << "testing at set " << this << " " << this->fullName() << _theNasonTree << "\n";
   return SudWgt * alphaWgt;
 }
 
@@ -358,8 +361,8 @@ bool NasonCKKWHandler:: splittingAllowed( ShowerParticlePtr part_i,
 // finds the id of the emitting particle and sudakov for the desired clustering
 
 SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
-				      ShowerParticlePtr part_i, 
-				      ShowerParticlePtr part_j ) {
+				      ShowerParticlePtr & part_i, 
+				      ShowerParticlePtr & part_j ) {
   // g 2 q qbar or an incorrect qq type
   if ( abs ( part_i->id() ) < 7 && abs ( part_j->id() ) < 7 ) { 
     if ( abs ( part_i->id() ) != abs ( part_j->id() )  ) return SudakovPtr();
@@ -389,12 +392,16 @@ SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
   for(BranchingList::const_iterator cit = branchings.lower_bound( abs(emmitter_id) );
       cit != branchings.upper_bound( abs(emmitter_id) ); ++cit ) {
     IdList ids = cit->second.second;
-    if( abs( ids[0] ) == abs( emmitter_id ) 
-	&& ( ( abs(ids[1]) == abs( part_i->id() ) 
-	       && abs( ids[2] ) == abs( part_j->id() ) ) ||
-	     ( abs( ids[1] ) == abs( part_j->id() ) 
-	       && abs( ids[2] ) == abs( part_i->id() ) ) ) ) {
-      return cit->second.first;
+    if( abs( ids[0] ) == abs( emmitter_id ) ) {
+      if( abs(ids[1]) == abs(part_i->id()) && 
+	  abs(ids[2]) == abs(part_j->id()) ) {
+	return cit->second.first;
+      }
+      if( abs(ids[1]) == abs(part_j->id()) && 
+	  abs(ids[2]) == abs(part_i->id())  ) {
+	swap(part_i,part_j);
+	return cit->second.first;
+      }
     }
   }
   return SudakovPtr();
@@ -475,55 +482,22 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     
     //creates emitter particle
     ShowerParticlePtr clustered = new_ptr( ShowerParticle( particle_data, true ) );
-    clustered->set5Momentum( pairMomentum );   
- 
-    //decide which particle was created (ie which was only resolvable 
-    //at this scale) from ids (if q->qg) or magnitudes
-    int created;
-    //are we clustering quarks
-    if( abs( clusterPair.first->id() )  < 7 || 
-	abs( clusterPair.second->id() ) < 7 ){
-      if( abs( thePartId ) ==
-	  abs( clusterPair.first->id() ) )  created = 1;
-      else if( abs( thePartId ) ==
-	       abs( clusterPair.second->id() ) )  created = 2;
-      //clustering q qbar
-      else{
-	if( clusterPair.first->momentum().mag() > 
-	    clusterPair.second->momentum().mag() ) created = 1;
-	else created = 2;
-      }
-    }
-    else{
-      	if( clusterPair.first->momentum().mag() > 
-	    clusterPair.second->momentum().mag() ) created = 1;
-	else created = 2;
-    }
+    clustered->set5Momentum( pairMomentum );
   
     NasonBranchingPtr clusteredBranch( new_ptr( NasonBranching( clustered, theSudakov,
 								NasonBranchingPtr(), false ) ) );
     fixColours( clustered, clusterPair.first, clusterPair.second );
     theParticles.insert( make_pair( clustered, clusteredBranch ) );
     
-    //add children in the correct order
-    if( created == 2 ){
-      clusteredBranch->addChild( theParticles.find( clusterPair.first )
-				 ->second  );
-      clusteredBranch->addChild( theParticles.find( clusterPair.second )
-				 ->second );
-    }
-    else{
-      clusteredBranch->addChild( theParticles.find( clusterPair.second )
-				 ->second  );
-      clusteredBranch->addChild( theParticles.find( clusterPair.first )
-				 ->second );
-    }
-
+    //add children
+    clusteredBranch->addChild(theParticles.find(clusterPair.first )->second);
+    clusteredBranch->addChild(theParticles.find(clusterPair.second)->second);
+    
     _theNodes.insert( make_pair( clusteredBranch, yij_min ) );
-
+    
     theParticles.erase( clusterPair.first  );
     theParticles.erase( clusterPair.second );
-  
+    
   }
   vector<NasonBranchingPtr> theBranchings;
   for(  map<ShowerParticlePtr, NasonBranchingPtr>::iterator it = 
