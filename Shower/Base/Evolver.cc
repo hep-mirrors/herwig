@@ -294,8 +294,6 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 		  ->lastXCombPtr()->lastScale() );
   } else {
     
-    cout << "not hardVetoXComb()\n";
-
     if (isPartonic) {
       if (hard->isHard()) {
 	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
