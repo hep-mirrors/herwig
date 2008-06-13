@@ -117,13 +117,13 @@ void Evolver::Init() {
     (ifaceHardVetoMode,"Final","only FS emissions vetoed", 3);
 
   static Switch<Evolver, unsigned int> ifaceHardVetoRead
-    ("HardVetoRead",
+    ("HardVetoScaleSource",
      "If hard veto scale is to be read",
      &Evolver::_hardVetoRead, 0, false, false);
-  static SwitchOption HVRoff
-    (ifaceHardVetoRead,"No","not read but determined", 0);
-  static SwitchOption HVRon
-    (ifaceHardVetoRead,"Yes","read from XComb", 1);
+  static SwitchOption HVRcalc
+    (ifaceHardVetoRead,"Calculate","Calculate from hard process", 0);
+  static SwitchOption HVRread
+    (ifaceHardVetoRead,"Read","Read from XComb->lastScale", 1);
 
   static Parameter<Evolver, Energy> ifaceiptrms
     ("IntrinsicPtGaussian",
@@ -284,7 +284,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   // coloured lines (this is simpler and more general than
   // 2stu/(s^2+t^2+u^2)).  Maximum scale for scattering processes will
   // be transverse mass.
-  Energy ptmax = -1.0*GeV, pt = 0.0*GeV, mass = 0.0*GeV, ptest = 0.0*GeV;
+  Energy ptmax = -1.0*GeV, ptest = 0.0*GeV;
 
   if (hardVetoXComb()) {
     // hepeup.SCALUP is written into the lastXComb by the
@@ -300,9 +300,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	cjt = hard->outgoingLines().begin();
 	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
 	  if (cjt->first->progenitor()->coloured()) {
-	    pt = cjt->first->progenitor()->momentum().perp();
-	    mass = cjt->first->progenitor()->momentum().m();
-	    ptest = sqrt(pt*pt + mass*mass);      
+	    ptest = cjt->first->progenitor()->momentum().mt();
 	    if (ptest > ptmax) {
 	      ptmax = ptest;
 	    }
