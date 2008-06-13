@@ -29,6 +29,7 @@
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
 #include "MECorrectionBase.h"
+#include "ThePEG/Handlers/XComb.h"
 
 #include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
 #include "Herwig++/Shower/CKKW/Reweighting/DefaultReweighter.h"
@@ -38,14 +39,14 @@ using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode
+     << _meCorrMode << _hardVetoMode << _hardVetoRead
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes
      << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode
+     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes
      >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
 }
@@ -114,6 +115,15 @@ void Evolver::Init() {
     (ifaceHardVetoMode,"Initial", "only IS emissions vetoed", 2);
   static SwitchOption HVFS
     (ifaceHardVetoMode,"Final","only FS emissions vetoed", 3);
+
+  static Switch<Evolver, unsigned int> ifaceHardVetoRead
+    ("HardVetoRead",
+     "If hard veto scale is to be read",
+     &Evolver::_hardVetoRead, 0, false, false);
+  static SwitchOption HVRoff
+    (ifaceHardVetoRead,"No","not read but determined", 0);
+  static SwitchOption HVRon
+    (ifaceHardVetoRead,"Yes","read from XComb", 1);
 
   static Parameter<Evolver, Energy> ifaceiptrms
     ("IntrinsicPtGaussian",
@@ -276,38 +286,49 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   // be transverse mass.
   Energy ptmax = -1.0*GeV, pt = 0.0*GeV, mass = 0.0*GeV, ptest = 0.0*GeV;
 
-  if (isPartonic) {
-    if (hard->isHard()) {
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-      cjt = hard->outgoingLines().begin();
-      for(; cjt!=hard->outgoingLines().end(); ++cjt) {
-	if (cjt->first->progenitor()->coloured()) {
-	  pt = cjt->first->progenitor()->momentum().perp();
-	  mass = cjt->first->progenitor()->momentum().m();
-	  ptest = sqrt(pt*pt + mass*mass);      
-	  if (ptest > ptmax) {
-	    ptmax = ptest;
+  if (hardVetoXComb()) {
+    // hepeup.SCALUP is written into the lastXComb by the
+    // LesHouchesReader itself - use this by user's choice. 
+    // Can be more general than this.  
+    ptmax = sqrt( ShowerHandler::currentHandler()
+		  ->lastXCombPtr()->lastScale() );
+  } else {
+    
+    cout << "not hardVetoXComb()\n";
+
+    if (isPartonic) {
+      if (hard->isHard()) {
+	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+	cjt = hard->outgoingLines().begin();
+	for(; cjt!=hard->outgoingLines().end(); ++cjt) {
+	  if (cjt->first->progenitor()->coloured()) {
+	    pt = cjt->first->progenitor()->momentum().perp();
+	    mass = cjt->first->progenitor()->momentum().m();
+	    ptest = sqrt(pt*pt + mass*mass);      
+	    if (ptest > ptmax) {
+	      ptmax = ptest;
+	    }
 	  }
 	}
-      }
-      // if there are no coloured FS particles, use shat as maximum
-      if (ptmax < 0.0*GeV) {
-	ptmax = pcm.m(); 
+	// if there are no coloured FS particles, use shat as maximum
+	if (ptmax < 0.0*GeV) {
+	  ptmax = pcm.m(); 
+	}
+      } else {
+	// must be a decay, incoming() is the decaying particle. 
+	ptmax = hard->incomingLines().begin()->first
+	  ->progenitor()->momentum().m(); 
       }
     } else {
-      // must be a decay, incoming() is the decaying particle. 
-      ptmax = hard->incomingLines().begin()->first
-	->progenitor()->momentum().m(); 
-    }
-  } else {
-    if (hard->isHard()) {
-      // if no coloured IS use shat as well
-      ptmax = pcm.m();
-    } else {
-      // must be a decay, incoming() is the decaying particle. Use its
-      // mass as maximum scale.
-      ptmax = hard->incomingLines().begin()->first
-	->progenitor()->momentum().m();       
+      if (hard->isHard()) {
+	// if no coloured IS use shat as well
+	ptmax = pcm.m();
+      } else {
+	// must be a decay, incoming() is the decaying particle. Use its
+	// mass as maximum scale.
+	ptmax = hard->incomingLines().begin()->first
+	  ->progenitor()->momentum().m();       
+      }
     }
   }
   
