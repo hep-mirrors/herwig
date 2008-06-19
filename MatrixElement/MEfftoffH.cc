@@ -302,10 +302,13 @@ bool MEfftoffH::generateKinematics(const double * r) {
   double eta = pow(mh/roots,2.*r[0]);
   jacobian(-jacobian()*eta*2.*log(mh/roots));
   Energy p1 = 0.5*roots*(1.-eta);
-  // generate the value of cos theta 1
+  // generate the value of cos theta2 first as no cut
   double ctheta[2];
-  Energy ptmin = lastCuts().minKT(mePartonData()[2]);
   double ctmin = -1.0,ctmax = 1.0;
+  // cos theta 2
+  ctheta[1] = getCosTheta(ctmin,ctmax, r[2]);
+  // generate the value of cos theta 1
+  Energy ptmin = lastCuts().minKT(mePartonData()[2]);
   if( ptmin > 0.*GeV ) {
     double ctm = 1.0 - sqr(ptmin/p1);
     if ( ctm <= 0.0 ) return false;
@@ -313,8 +316,6 @@ bool MEfftoffH::generateKinematics(const double * r) {
     ctmax = min(ctmax,  sqrt(ctm));
   }
   ctheta[0] = getCosTheta(ctmin,ctmax, r[1]);
-  // and cos theta 2
-  ctheta[1] = getCosTheta(ctmin,ctmax, r[2]);
   // generate azimuthal angle between 1 and 2
   double phi12 = r[3]*Constants::twopi;
   // sins
