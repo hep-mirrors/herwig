@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/MatrixElement/MEfftoffH.h"
-#include "MEPP2HiggsVBF.fh"
 
 namespace Herwig {
 
@@ -25,9 +24,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEPP2HiggsVBF();
-
-public:
+  MEPP2HiggsVBF();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -72,13 +69,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 private:
@@ -140,7 +137,5 @@ struct ClassTraits<Herwig::MEPP2HiggsVBF>
 /** @endcond */
 
 }
-
-#include "MEPP2HiggsVBF.icc"
 
 #endif /* HERWIG_MEPP2HiggsVBF_H */

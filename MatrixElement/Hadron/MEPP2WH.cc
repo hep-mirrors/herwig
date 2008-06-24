@@ -16,6 +16,9 @@
 
 using namespace Herwig;
 
+MEPP2WH::MEPP2WH() :_maxflavour(5), _plusminus(0)
+{}
+
 ClassDescription<MEPP2WH> MEPP2WH::initMEPP2WH;
 // Definition of the static class description member.
 

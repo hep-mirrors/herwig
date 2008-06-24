@@ -25,6 +25,12 @@
 
 using namespace Herwig;
 
+MEPP2Higgs::MEPP2Higgs() : shapeopt(2),
+			   processopt(1),
+			   minflavouropt(4),
+			   maxflavouropt(5), _mh(0.*GeV),_wh(0.*GeV)
+{}
+
 ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 // Definition of the static class description member.
 
