@@ -142,7 +142,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _evolver << theRemDec << ounit(_pdfFreezingScale,GeV) << _maxtry 
      << _maxtryMPI << _inputparticlesDecayInShower
      << _particlesDecayInShower << theOrderSecondaries 
-     << theMPIOnOff << theMPIHandler << theSubProcess 
+     << theMPIOnOff << theMPIHandler
      << _useCKKW << _reconstructor << _reweighter;
 }
 
@@ -150,7 +150,7 @@ void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> _evolver >> theRemDec >> iunit(_pdfFreezingScale,GeV) >> _maxtry 
      >> _maxtryMPI >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> theOrderSecondaries 
-     >> theMPIOnOff >> theMPIHandler >> theSubProcess
+     >> theMPIOnOff >> theMPIHandler 
      >> _useCKKW >> _reconstructor >> _reweighter;  
 }
 
@@ -253,10 +253,24 @@ void ShowerHandler::Init() {
 }
 
 void ShowerHandler::cascade() {
+  // get the parton bins
+  tPPair incs=eventHandler()->currentCollision()->primarySubProcess()->incoming();
+  PBIPair incbins = make_pair(lastExtractor()->partonBinInstance(incs.first),
+			      lastExtractor()->partonBinInstance(incs.second));
+  // check the collision is of the beam particles
+  bool btotal(false);
+  LorentzRotation rtotal;
+  _incoming = make_pair(incbins.first  ? incbins.first ->particle() : incs.first,
+			incbins.second ? incbins.second->particle() : incs.second);
+  // and if not boost collision to the right frame
+  if(_incoming.first  != eventHandler()->currentCollision()->incoming().first ||
+     _incoming.second != eventHandler()->currentCollision()->incoming().second ) {
+    btotal = true;
+    boostCollision(false);
+  }
   theHandler = this;
   tStdXCombPtr lastXC;
   SubProPtr sub;
-  tPPair incs;
 
   lastXC = dynamic_ptr_cast<StdXCombPtr>(lastXCombPtr());
   sub = eventHandler()->currentCollision()->primarySubProcess();
@@ -271,19 +285,16 @@ void ShowerHandler::cascade() {
                       << " attempts in Evolver::showerHardProcess()"
                       << Exception::eventerror;
   }
-
-  PBIPair incbins = make_pair(lastExtractor()->partonBinInstance(incs.first),
-			      lastExtractor()->partonBinInstance(incs.second));
-
-  if(!HadronMatcher::Check(*generator()->eventHandler()->incoming().first ) &&
-     !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )
+  // if a non-hadron collision return (both incoming non-hadronic)
+  if((!incbins.first||!HadronMatcher::Check(incbins.first ->particle()->data()))&&
+     ( !incbins.second||!HadronMatcher::Check(incbins.second->particle()->data()))) {
+    if(btotal) boostCollision(true);
     return;
- 
+  }
+  // get the remnants for hadronic collision
   pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incbins));
-
   // set the starting scale of the forced splitting to the PDF freezing scale
-  theRemDec->initialize(remnants, *currentStep(),pdfFreezingScale());
-
+  theRemDec->initialize(remnants, _incoming, *currentStep(),pdfFreezingScale());
   //do the first forcedSplitting
   try {
     theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
@@ -294,11 +305,13 @@ void ShowerHandler::cascade() {
                       << "ShowerHandler::cascade()" 
                       << Exception::eventerror;   
   }
-
+  // if no MPI or either of the incoming particles is non-hadronic return
   if( !IsMPIOn() ) {
     theRemDec->finalize();
+    if(btotal) boostCollision(true);
     return;
   }
+  // generate the multiple scatters
 
   //use modified pdf's now:
   const pair <PDFPtr, PDFPtr> newpdf = 
@@ -308,7 +321,6 @@ void ShowerHandler::cascade() {
 
   unsigned int ptveto(1), veto(0);
   unsigned int max(getMPIHandler()->multiplicity());
-  //  cerr << "\n\n" << max << " additional scatters requested\n";
   for(unsigned int i=0; i<max; i++){
     //check how often this scattering has been regenerated
     if(veto > _maxtryMPI) break;
@@ -319,14 +331,13 @@ void ShowerHandler::cascade() {
     //generate PSpoint
     lastXC = getMPIHandler()->generate();
     sub = lastXC->construct();
-
-    //If Algorithm=1 additional scatters of the signal type with pt > ptmin have to be vetoed
+    //If Algorithm=1 additional scatters of the signal type
+    // with pt > ptmin have to be vetoed
     //with probability 1/(m+1), where m is the number of occurances in this event
     if( getMPIHandler()->Algorithm() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
       Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
-
       if(pt > ptmin && UseRandom::rnd() < 1./(ptveto+1) ){
         ptveto++;
         i--;
@@ -340,25 +351,25 @@ void ShowerHandler::cascade() {
     try{
       //Run the Shower. If not possible veto the scattering
       incs = cascade(sub);
-    }catch(ShowerTriesVeto){
-
+    } 
+    //discard this extra scattering, but try the next one
+    catch(ShowerTriesVeto){
       newStep()->removeSubProcess(sub);
       //regenerate the scattering
       veto++;
       i--;
       continue;      
     }
-
     try{
       //do the forcedSplitting
       theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
                                          secondPDF().pdf()), false);
-
       //check if there is enough energy to extract
       if( (remnants.first->momentum() - incs.first->momentum()).e() < 1.0e-3*MeV ||
 	  (remnants.second->momentum() - incs.second->momentum()).e() < 1.0e-3*MeV )
 	throw ExtraScatterVeto();
-    }catch(ExtraScatterVeto){
+    }
+    catch (ExtraScatterVeto) {
       //remove all particles associated with the subprocess
       newStep()->removeParticle(incs.first);
       newStep()->removeParticle(incs.second);
@@ -383,6 +394,7 @@ void ShowerHandler::cascade() {
   }
 
   theRemDec->finalize();
+  if(btotal) boostCollision(true);
   theHandler = 0;
 }
 
@@ -524,10 +536,10 @@ cascade(tSubProPtr sub) {
   _hard=ShowerTreePtr();
   _decay.clear();
   _done.clear();
-  //non hadronic case:
-  if (!HadronMatcher::Check(*generator()->eventHandler()->incoming().first ) && 
-      !HadronMatcher::Check(*generator()->eventHandler()->incoming().second) )
-    return eventHandler()->currentCollision()->incoming();
+  // non hadronic case return
+  if (!HadronMatcher::Check(_incoming.first ->data()) && 
+      !HadronMatcher::Check(_incoming.second->data()) )
+    return _incoming;
 
   // remake the remnants (needs to be after the colours are sorted
   //                       out in the insertion into the event record)
@@ -536,9 +548,8 @@ cascade(tSubProPtr sub) {
   //Return the new pair of incoming partons. remakeRemnant is not
   //necessary here, because the secondary interactions are not yet
   //connected to the remnants.
-  tPPair inc = generator()->currentEvent()->incoming();
-  return make_pair(findFirstParton(sub->incoming().first, inc),
-		   findFirstParton(sub->incoming().second, inc));
+  return make_pair(findFirstParton(sub->incoming().first ),
+		   findFirstParton(sub->incoming().second));
 }
 
 PPtr ShowerHandler::findParent(PPtr original, bool & isHard, 
@@ -555,92 +566,88 @@ PPtr ShowerHandler::findParent(PPtr original, bool & isHard,
 }
 
 ShowerHandler::RemPair 
-ShowerHandler::getRemnants(PBIPair incbins){
+ShowerHandler::getRemnants(PBIPair incbins) {
   RemPair remnants;
-  if( HadronMatcher::Check(*incbins.first->particleData()) &&  
-      incbins. first->remnants().size() != 1)
-    throw Exception() << "Wrong number of Remnants "
-		      << "in ShowerHandler::getRemnants() for first particle." 
-		      << Exception::runerror;
-  if( HadronMatcher::Check(*incbins.second->particleData()) &&  
-      incbins. second->remnants().size() != 1)
-    throw Exception() << "Wrong number of Remnants "
-		      << "in ShowerHandler::getRemnants() for second particle." 
-		      << Exception::runerror;
-
-  remnants.first  = incbins.first->remnants().empty() ? tRemPPtr() :
-    dynamic_ptr_cast<tRemPPtr>(incbins.first->remnants()[0] );
-  if(remnants.first) {
-    //remove existing colour lines from the remnants
-    if(remnants.first->colourLine()) 
-      remnants.first->colourLine()->removeColoured(remnants.first);
-    if(remnants.first->antiColourLine()) 
-      remnants.first->antiColourLine()->removeAntiColoured(remnants.first);
-    //copy the remnants to the current step, as they may be changed now
-    if ( remnants.first->birthStep() != newStep() ) {
-      RemPPtr newrem = new_ptr(*remnants.first);
-      newStep()->addDecayProduct(remnants.first, newrem, false);
-      remnants.first = newrem;
+  // first beam particle
+  if(incbins.first) {
+    if( HadronMatcher::Check(*incbins.first->particleData()) &&  
+	incbins. first->remnants().size() != 1)
+      throw Exception() << "Wrong number of Remnants "
+			<< "in ShowerHandler::getRemnants() for first particle." 
+			<< Exception::runerror;
+    remnants.first  = incbins.first->remnants().empty() ? tRemPPtr() :
+      dynamic_ptr_cast<tRemPPtr>(incbins.first->remnants()[0] ); 
+    if(remnants.first) {
+      ParticleVector children=remnants.first->children();
+      for(unsigned int ix=0;ix<children.size();++ix) {
+	if(children[ix]->dataPtr()==remnants.first->dataPtr()) 
+	  remnants.first = dynamic_ptr_cast<RemPPtr>(children[ix]);
+      } 
+      //remove existing colour lines from the remnants
+      if(remnants.first->colourLine()) 
+	remnants.first->colourLine()->removeColoured(remnants.first);
+      if(remnants.first->antiColourLine()) 
+	remnants.first->antiColourLine()->removeAntiColoured(remnants.first);
     }
   }
-  remnants.second = incbins.second->remnants().empty() ? tRemPPtr() :
-    dynamic_ptr_cast<tRemPPtr>(incbins.second->remnants()[0] );
-  if(remnants.second) {
-    //remove existing colour lines from the remnants
-    if(remnants.second->colourLine()) 
-      remnants.second->colourLine()->removeColoured(remnants.second);
-    if(remnants.second->antiColourLine()) 
-      remnants.second->antiColourLine()->removeAntiColoured(remnants.second);
-    //copy the remnants to the current step, as they may be changed now
-    if ( remnants.second->birthStep() != newStep() ) {
-      RemPPtr newrem = new_ptr(*remnants.second);
-      newStep()->addDecayProduct(remnants.second, newrem, false);
-      remnants.second = newrem;
+  else {
+    remnants.first = tRemPPtr();
+  }
+  // seconnd beam particle
+  if(incbins.second) {
+    if( HadronMatcher::Check(*incbins.second->particleData()) &&  
+	incbins. second->remnants().size() != 1)
+      throw Exception() << "Wrong number of Remnants "
+			<< "in ShowerHandler::getRemnants() for second particle." 
+			<< Exception::runerror;
+    remnants.second = incbins.second->remnants().empty() ? tRemPPtr() :
+      dynamic_ptr_cast<tRemPPtr>(incbins.second->remnants()[0] );
+    if(remnants.second) {
+      ParticleVector children=remnants.second->children();
+      for(unsigned int ix=0;ix<children.size();++ix) {
+	if(children[ix]->dataPtr()==remnants.second->dataPtr()) 
+	  remnants.second = dynamic_ptr_cast<RemPPtr>(children[ix]);
+      } 
+      //remove existing colour lines from the remnants
+      if(remnants.second->colourLine()) 
+	remnants.second->colourLine()->removeColoured(remnants.second);
+      if(remnants.second->antiColourLine()) 
+	remnants.second->antiColourLine()->removeAntiColoured(remnants.second);
     }
   }
-
+  else {
+    remnants.second = tRemPPtr();
+  }
   if(remnants.first || remnants.second ) return remnants;
   else throw Exception() << "Remnants are not accessable "
 			 << "in ShowerHandler::getRemnants()." 
 			 << Exception::runerror;
 }
 
-tPPair ShowerHandler::remakeRemnant(tPPair oldp){                     
+tPPair ShowerHandler::remakeRemnant(tPPair oldp){
+  // get the parton extractor
   PartonExtractor & pex = *lastExtractor();
-  tPPair inc = generator()->currentEvent()->incoming();
-  
-  tPPair newp = make_pair(findFirstParton(oldp.first, inc), 
-			  findFirstParton(oldp.second, inc));
-
+  // get the new partons
+  tPPair newp = make_pair(findFirstParton(oldp.first ), 
+			  findFirstParton(oldp.second));
+  // if the same do nothing
   if(newp == oldp) return oldp;
-  // Get the momentum of the new partons before remnant extraction
-  // For normal remnants this does not change, but in general it may
-  Lorentz5Momentum p1 = newp.first->momentum();
-  Lorentz5Momentum p2 = newp.second->momentum();
-  
   // Creates the new remnants and returns the new PartonBinInstances
   PBIPair newbins = pex.newRemnants(oldp, newp, newStep());
   newStep()->addIntermediate(newp.first);
   newStep()->addIntermediate(newp.second);
-
-  // Boosting the remnants is only necessary if the momentum of the
-  // incoming has changed, which is not normally true. The two last
-  // flags should be false if the first and/or last side do not have
-  // remnants at all. It returns an overall boost which should be
-  // applied to all partons in the shower.
-  //LorentzRotation tot = pex.boostRemnants(newbins, p1, p2, true, true);
-
+  // return the new partona
   return newp;
-
 }
 
-PPtr ShowerHandler::findFirstParton(tPPtr seed, tPPair incoming) const{
+PPtr ShowerHandler::findFirstParton(tPPtr seed) const{
+  if(seed->parents().empty()) return seed;
   tPPtr parent = seed->parents()[0];
   //if no parent there this is a loose end which will 
   //be connected to the remnant soon.
-  if(!parent || parent == incoming.first || 
-     parent == incoming.second ) return seed;
-  else return findFirstParton(parent, incoming);
+  if(!parent || parent == _incoming.first || 
+     parent == _incoming.second ) return seed;
+  else return findFirstParton(parent);
 }
 
 bool ShowerHandler::decayProduct(tPPtr particle) const {
@@ -723,3 +730,37 @@ double ShowerHandler::reweightCKKW(int minMult, int maxMult) {
   return weight;
 
 }
+
+namespace {
+
+void addChildren(tPPtr in,set<tPPtr> particles) {
+  particles.insert(in);
+  for(unsigned int ix=0;ix<in->children().size();++ix)
+    addChildren(in->children()[ix],particles);
+}
+}
+
+void ShowerHandler::boostCollision(bool boost) {
+  // calculate boost from lab to rest
+  if(!boost) {
+    Lorentz5Momentum ptotal=_incoming.first ->momentum()+_incoming.second->momentum();
+    _boost = LorentzRotation(-ptotal.boostVector());
+    Axis axis((_boost*_incoming.first ->momentum()).vect().unit());
+    if(axis.perp2()>0.) {
+      double sinth(sqrt(1.-sqr(axis.z())));
+      _boost.rotate(acos(-axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    }
+  }
+  // first call performs the boost and second inverse
+  // get the particles to be boosted 
+  set<tPPtr> particles;
+  addChildren(_incoming.first,particles);
+  addChildren(_incoming.second,particles);
+  // apply the boost
+  for(set<tPPtr>::const_iterator cit=particles.begin();
+      cit!=particles.end();++cit) {
+    (*cit)->transform(_boost);
+  }
+  if(!boost) _boost.invert();
+}
+

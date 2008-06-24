@@ -71,6 +71,18 @@ set MassCut:CComb All
 set MassCut:MinM 20.*GeV
 set MassCut:MaxM 14000.*GeV
 
+# create a cut on Q^2 for neutral current DIS
+create ThePEG::SimpleDISCut NeutralCurrentCut SimpleDISCut.so
+set NeutralCurrentCut:MinQ2 20.
+set NeutralCurrentCut:Current Neutral
+
+# create a cut on Q^2 for charged current DIS
+create ThePEG::SimpleDISCut ChargedCurrentCut SimpleDISCut.so
+set ChargedCurrentCut:MinQ2 20.
+set ChargedCurrentCut:Current Charged
+
+# create a cut of Q^2 for charged current DIS
+
 # insert into hadron cuts
 insert QCDCuts:OneCuts[0] JetKtCut
 insert QCDCuts:OneCuts[1] PhotonKtCut
@@ -85,5 +97,5 @@ create ThePEG::Cuts DISCuts
 set DISCuts:ScaleMin 1.0*GeV
 set DISCuts:X1Min 1.0e-5
 set DISCuts:X2Min 1.0e-5
-set DISCuts:MHatMin 20.*GeV
-insert DISCuts:OneCuts[0] JetKtCut
+insert DISCuts:TwoCuts[0] NeutralCurrentCut
+insert DISCuts:TwoCuts[1] ChargedCurrentCut

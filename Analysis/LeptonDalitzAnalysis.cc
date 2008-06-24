@@ -6,19 +6,12 @@
 
 #include "LeptonDalitzAnalysis.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LeptonDalitzAnalysis.tcc"
-#endif
-
 
 using namespace Herwig;
-
-LeptonDalitzAnalysis::~LeptonDalitzAnalysis() {}
 
 void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   // Rotate to CMS, extract final state particles and call analyze(particles).
@@ -26,117 +19,98 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
   if(_nout>50000) return;
   tPVector final=event->primaryCollision()->step(1)->getFinalState();
   tPVector quark,anti,gluon;
-  for(unsigned int ix=0;ix<final.size();++ix)
-    {
-      tPPtr part=final[ix],last=part->parents()[0];
-      do
-	{
-	  part=last;
-	  if(part->parents().empty()) last=tPPtr();
-	  else last=part->parents()[0];
-	}
-      while(!part->parents().empty()&&
-	    dynamic_ptr_cast<ShowerParticlePtr>(last));
-      if(part->id()==22||part->id()==23&&final[ix]->previous())
-	  part=final[ix];
-      if(part->id()>0&&part->id()<=6) quark.push_back(final[ix]);
-      else if(part->id()<0&&part->id()>=-6) anti.push_back(final[ix]);
-      else if(part->id()==21) gluon.push_back(final[ix]);
+  for(unsigned int ix=0;ix<final.size();++ix) {
+    tPPtr part=final[ix],last=part->parents()[0];
+    do {
+      part=last;
+      last = part->parents().empty() ? last=tPPtr() : part->parents()[0];
     }
+    while(!part->parents().empty()&&
+	  dynamic_ptr_cast<ShowerParticlePtr>(last));
+    if(part->id()==22||part->id()==23&&final[ix]->previous())
+      part=final[ix];
+    if(part->id()>0&&part->id()<=6)       quark.push_back(final[ix]);
+    else if(part->id()<0&&part->id()>=-6)  anti.push_back(final[ix]);
+    else if(part->id()==21)               gluon.push_back(final[ix]);
+  }
   // quark jets
   Lorentz5Momentum pquark[2],panti[2];
   double ycut[2]={0.,0.};
-  if(gluon.size()!=0)
-    {
-      Energy eq(0.*MeV),eg(0.*MeV),ea(0.*MeV);
-      for(unsigned int ix=0;ix<quark.size();++ix)
-	eq+=quark[ix]->momentum().e();
-      for(unsigned int ix=0;ix<anti.size();++ix)
-	ea+=anti[ix]->momentum().e();
-      for(unsigned int ix=0;ix<gluon.size();++ix)
-	eg+=gluon[ix]->momentum().e();
-      ++_nout;
-      eg+=eq+ea;
-      _output[1].push_back(make_pair(2.*eq/eg,2.*ea/eg));
-      return;
+  if(gluon.size()!=0) {
+    Energy eq(0.*MeV),eg(0.*MeV),ea(0.*MeV);
+    for(unsigned int ix=0;ix<quark.size();++ix)
+      eq+=quark[ix]->momentum().e();
+    for(unsigned int ix=0;ix<anti.size();++ix)
+      ea+=anti[ix]->momentum().e();
+    for(unsigned int ix=0;ix<gluon.size();++ix)
+      eg+=gluon[ix]->momentum().e();
+    ++_nout;
+    eg+=eq+ea;
+    _output[1].push_back(make_pair(2.*eq/eg,2.*ea/eg));
+    return;
+  }
+  else if(quark.size()>1) {
+    _kint.clearMap();
+    KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(quark), 1, 1, 1);
+    ev.findJetsN(2);
+    vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
+    ycut[0]=ev.getDMerge(1);
+    int nquark[2]={0,0},iq;
+    for(int ix=0;ix<ev.getNConstituents();++ix) {
+      // find jet
+      iq=ktjets[1].contains(*ev.getConstituents()[ix]);
+      if(quark[ix]->id()<0) --nquark[iq];
+      else if(quark[ix]->id()<=6) ++nquark[iq];
     }
-  else if(quark.size()>1)
-    {
-      _kint.clearMap();
-      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(quark), 1, 1, 1);
-      ev.findJetsN(2);
-      vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
-      ycut[0]=ev.getDMerge(1);
-      int nquark[2]={0,0},iq;
-      for(int ix=0;ix<ev.getNConstituents();++ix)
-	{
-	  // find jet
-	  iq=ktjets[1].contains(*ev.getConstituents()[ix]);
-	  if(quark[ix]->id()<0) --nquark[iq];
-	  else if(quark[ix]->id()<=6) ++nquark[iq];
-	}
-      if(nquark[0]>nquark[1])
-	{
-	  pquark[0] = KtJetInterface::convert(ktjets[0]);
-	  pquark[1] = KtJetInterface::convert(ktjets[1]);
-	}
-      else
-	{
-	  pquark[1] = KtJetInterface::convert(ktjets[0]);
-	  pquark[0] = KtJetInterface::convert(ktjets[1]);
-	}
-    }
+    pquark[0] = KtJetInterface::convert(ktjets[0]);
+    pquark[1] = KtJetInterface::convert(ktjets[1]);
+    if(nquark[0]<=nquark[1]) swap(pquark[0],pquark[1]);
+  }
   // antiquark jets
-  if(anti.size()>1)
-    {
-      _kint.clearMap();
-      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(anti), 1, 1, 1);
-      ev.findJetsN(2);
-      vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
-      ycut[1]=ev.getDMerge(1);
-      int nanti[2]={0,0},iq;
-      for(int ix=0;ix<ev.getNConstituents();++ix)
-	{
-	  // find jet
-	  iq=ktjets[1].contains(*ev.getConstituents()[ix]);
-	  if(anti[ix]->id()<0) --nanti[iq];
-	  else if(anti[ix]->id()<=6) ++nanti[iq];
-	}
-      if(nanti[0]<nanti[1])
-	{
-	  panti[0] = KtJetInterface::convert(ktjets[0]);
-	  panti[1] = KtJetInterface::convert(ktjets[1]);
-	}
-      else
-	{
-	  panti[1] = KtJetInterface::convert(ktjets[0]);
-	  panti[0] = KtJetInterface::convert(ktjets[1]);
-	}
+  if(anti.size()>1) {
+    _kint.clearMap();
+    KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(anti), 1, 1, 1);
+    ev.findJetsN(2);
+    vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
+    ycut[1]=ev.getDMerge(1);
+    int nanti[2]={0,0},iq;
+    for(int ix=0;ix<ev.getNConstituents();++ix) {
+      // find jet
+      iq=ktjets[1].contains(*ev.getConstituents()[ix]);
+      if(anti[ix]->id()<0) --nanti[iq];
+      else if(anti[ix]->id()<=6) ++nanti[iq];
     }
+    if(nanti[0]<nanti[1])
+      {
+	panti[0] = KtJetInterface::convert(ktjets[0]);
+	panti[1] = KtJetInterface::convert(ktjets[1]);
+      }
+    else
+      {
+	panti[1] = KtJetInterface::convert(ktjets[0]);
+	panti[0] = KtJetInterface::convert(ktjets[1]);
+      }
+  }
   double x[2];
-  if(quark.size()==1&&anti.size()==1)
-    {
-      x[0]=1.0;
-      x[1]=1.0;
-    }
-  else if(quark.size()==1&&anti.size()>1)
-    {
-      Energy x0 = quark[0]->momentum().e();
-      Energy x1 = panti[0].e();
-      Energy sum = x0+x1+panti[1].e();
-      x[0] = x0 * 2./sum;
-      x[1] = x1 * 2./sum;
-    }
-  else if(quark.size()>1&&anti.size()==1)
-    {
-      Energy x0=pquark[0].e();
-      Energy x1=anti[0]->momentum().e();
-      Energy sum=x0+x1+pquark[1].e();
-      x[0] = x0 * 2./sum;
-      x[1] = x1 * 2./sum;
-    }
-  else if(quark.size()>1&&anti.size()>1)
-    {
+  if(quark.size()==1&&anti.size()==1) {
+    x[0]=1.0;
+    x[1]=1.0;
+  }
+  else if(quark.size()==1&&anti.size()>1) {
+    Energy x0  = quark[0]->momentum().e();
+    Energy x1  = panti[0].e();
+    Energy sum = x0 + x1 + panti[1].e();
+    x[0] = x0 * 2./sum;
+    x[1] = x1 * 2./sum;
+  }
+  else if(quark.size()>1&&anti.size()==1) {
+    Energy x0  = pquark[0].e();
+    Energy x1  = anti[0]->momentum().e();
+    Energy sum = x0 + x1 + pquark[1].e();
+    x[0] = x0 * 2./sum;
+    x[1] = x1 * 2./sum;
+  }
+  else if(quark.size()>1&&anti.size()>1) {
       Energy x0, x1, sum;
       if(ycut[0]>ycut[1])
 	{

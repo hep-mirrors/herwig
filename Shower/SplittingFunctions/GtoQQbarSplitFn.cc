@@ -60,7 +60,7 @@ double GtoQQbarSplitFn::integOverP(const double z, const IdList & ,
 				   unsigned int PDFfactor) const { 
   switch(PDFfactor) {
   case 0:
-    return z/2.; 
+    return 0.5*z; 
   case 1:
     return 0.5*log(z);
   case 2:

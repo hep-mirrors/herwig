@@ -375,8 +375,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
 }
 
 bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
-						 ShowerParticlePtr parent,Branching br)
-{
+						 ShowerParticlePtr parent,Branching br) {
   if(parent->isFinalState()) return false;
   // check if me correction should be applied
   long id[2]={initial->id(),parent->id()};

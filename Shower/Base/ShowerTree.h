@@ -200,6 +200,11 @@ public:
    */
   inline vector<ShowerProgenitorPtr> extractProgenitors();
 
+  /**
+   *  Access to the outgoing particles
+   */
+  inline const set<tShowerParticlePtr> & forwardParticles() const;
+
 protected:
 
   /**

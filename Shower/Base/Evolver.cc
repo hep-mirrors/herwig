@@ -39,14 +39,14 @@ using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _hardVetoRead
+     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes
      << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead
+     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes
      >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
 }
@@ -158,6 +158,25 @@ void Evolver::Init() {
      &Evolver::_vetoes, -1,
      false,false,true,true,false);
 
+  static Switch<Evolver,unsigned int> interfaceLimitEmissions
+    ("LimitEmissions",
+     "Limit the number and type of emissions for testing",
+     &Evolver::_limitEmissions, 0, false, false);
+  static SwitchOption interfaceLimitEmissionsNoLimit
+    (interfaceLimitEmissions,
+     "NoLimit",
+     "Allow an arbitrary number of emissions",
+     0);
+  static SwitchOption interfaceLimitEmissionsOneInitialStateEmission
+    (interfaceLimitEmissions,
+     "OneInitialStateEmission",
+     "Allow one emission in the initial state and none in the final state",
+     1);
+  static SwitchOption interfaceLimitEmissionsOneFinalStateEmission
+    (interfaceLimitEmissions,
+     "OneFinalStateEmission",
+     "Allow one emission in the final state and none in the initial state",
+     2);
 
  }
 
@@ -340,6 +359,8 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 void Evolver::showerHardProcess(ShowerTreePtr hard) {
   // set the current tree
   _currenttree=hard;
+  _nis = 0;
+  _nfs = 0;
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
   // setup the maximum scales for the shower, given by the hard process
   if (hardVetoOn()) {
@@ -354,10 +375,21 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
     if(ntry!=0) {
       _currenttree->clear();
       setColourPartners(true);
+      _nis = 0;
+      _nfs = 0;
     }
     // initial-state radiation
     if(_splittingGenerator->isISRadiationON()) {
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      unsigned int istart=UseRandom::irnd(particlesToShower.size());
+      unsigned int istop = particlesToShower.size();
+      for(unsigned int ix=istart;ix<=istop;++ix) {
+	if(ix==particlesToShower.size()) {
+	  if(istart!=0) {
+	    istop = istart-1;
+	    ix=0;
+	  }
+	  else break;
+	}
 	// only consider initial-state particles
 	if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// get the PDF
@@ -382,7 +414,16 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
     }
     // final-state radiation
     if(_splittingGenerator->isFSRadiationON()) {
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      unsigned int istart=UseRandom::irnd(particlesToShower.size());
+      unsigned int istop = particlesToShower.size();
+      for(unsigned int ix=istart;ix<=istop;++ix) {
+	if(ix==particlesToShower.size()) {
+	  if(istart!=0) {
+	    istop = istart-1;
+	    ix=0;
+	  }
+	  else break;
+	}
 	// only consider final-state particles
 	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// perform shower
@@ -441,6 +482,8 @@ void Evolver::hardMatrixElementCorrection() {
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
+  // don't do anything if not needed
+  if(_limitEmissions == 1 || ( _limitEmissions == 2 && _nfs != 0) ) return false;
   bool vetoed = true;
   Branching fb;
   while (vetoed) {
@@ -517,6 +560,9 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     _currenttree->updateFinalStateShowerProduct(_progenitor,
 						particle,theChildren);
   _currenttree->addFinalStateBranching(particle,theChildren);
+  // update number of emissions
+  ++_nfs;
+  if(_limitEmissions!=0) return true;
   // shower the first  particle
   //
   //  need to set rho here
@@ -532,6 +578,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 }
 
 bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
+  // don't do anything if not needed
+  if(_limitEmissions == 2  || ( _limitEmissions == 1 && _nis != 0 ) ) return false;
   bool vetoed(true);
   Branching bb;
   // generate branching
@@ -601,7 +649,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // for the reconstruction of kinematics, parent/child
   // relationships are according to the branching process:
   // now continue the shower
-  bool emitted=spaceLikeShower(newParent,beam);
+  bool emitted = _limitEmissions==0 ? spaceLikeShower(newParent,beam) : false;
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
@@ -615,6 +663,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
     }
   }
   particle->showerKinematics()->updateChildren(newParent, theChildren);
+  if(_limitEmissions!=0) return true;
   // perform the shower of the final-state particle
   timeLikeShower(otherChild);
   // return the emitted
@@ -662,12 +711,18 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     }
     // final-state radiation
     if(_splittingGenerator->isFSRadiationON()) {
-      for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-	// only consider final-state particles
-	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
+      vector<unsigned int> iloc;
+      for(unsigned int ix=0;ix<particlesToShower.size();++ix)
+	if(particlesToShower[ix]->progenitor()->isFinalState()) iloc.push_back(ix);
+      if(iloc.empty()) break;
+      unsigned int istart=UseRandom::irnd(iloc.size()),ix=istart;
+      while (true) {
 	// perform shower
-	_progenitor=particlesToShower[ix];
-	_progenitor->hasEmitted(timeLikeShower(particlesToShower[ix]->progenitor()));
+	_progenitor=particlesToShower[iloc[ix]];
+	_progenitor->hasEmitted(timeLikeShower(_progenitor->progenitor()));
+	++ix;
+	if(ix==iloc.size()) ix=0;
+	if(ix==istart) break;
       }
     }
   }
@@ -802,16 +857,15 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
 
   // generate the hard matrix element correction if needed
   // don't do this if we are doing CKKW
-  if (!_theUseCKKW)
-    hardMatrixElementCorrection();
+  if (!_theUseCKKW) hardMatrixElementCorrection();
   // get the particles to be showered
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=_currenttree->incomingLines().begin();
       cit!=_currenttree->incomingLines().end();++cit)
     particlesToShower.push_back(((*cit).first));
-  assert((particlesToShower.size()==1&&!hard)
-	 ||(particlesToShower.size()==2&&hard));
+  assert( (particlesToShower.size()==1 && !hard ) ||
+	  (particlesToShower.size()==2 &&  hard ) );
   // outgoing particles
   for(cjt=_currenttree->outgoingLines().begin();
       cjt!=_currenttree->outgoingLines().end();++cjt)

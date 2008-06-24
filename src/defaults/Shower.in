@@ -29,7 +29,7 @@ create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
 create Herwig::QTildeReconstructor KinematicsReconstructor
 
-set /Herwig/Partons/ForcedSplitting:AlphaS AlphaQCD
+set /Herwig/Partons/RemnantDecayer:AlphaS AlphaQCD
 
 set ShowerHandler:Evolver Evolver
 set ShowerModel:PartnerFinder PartnerFinder

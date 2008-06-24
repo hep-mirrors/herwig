@@ -211,8 +211,5 @@ struct ClassTraits<Herwig::GtoQQbarSplitFn>
 }
 
 #include "GtoQQbarSplitFn.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GtoQQbarSplitFn.tcc"
-#endif
 
 #endif /* HERWIG_GtoQQbarSplitFn_H */

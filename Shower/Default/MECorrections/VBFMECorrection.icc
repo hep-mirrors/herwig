@@ -1,0 +1,166 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VBFMECorrection class.
+//
+
+namespace Herwig {
+
+inline VBFMECorrection::VBFMECorrection() : _procprob(0.5),
+					    _nover(0), _ntry(0), _ngen(0),
+					    _maxwgt(make_pair(0.,0.))
+{}
+
+inline IBPtr VBFMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VBFMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
+  
+inline double VBFMECorrection::A(tcPDPtr qin1, tcPDPtr qout1,
+				 tcPDPtr qin2, tcPDPtr ) {
+  double output;
+  // charged current
+  if(qin1->id()!=qout1->id()) {
+    output = 2;
+  }
+  // neutral current
+  else {
+    double cvl,cal,cvq,caq;
+    if(abs(qin2->id())%2==0) {
+      cvl = generator()->standardModel()->vu();
+      cal = generator()->standardModel()->au();
+    }
+    else {
+      cvl = generator()->standardModel()->vd();
+      cal = generator()->standardModel()->ad();
+    }
+    if(abs(qin1->id())%2==0) {
+      cvq = generator()->standardModel()->vu();
+      caq = generator()->standardModel()->au();
+    }
+    else {
+      cvq = generator()->standardModel()->vd();
+      caq = generator()->standardModel()->ad();
+    }
+    output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
+  }
+  if(qin1->id()<0) output *= -1.;
+  if(qin2->id()<0) output *= -1;
+  return output;
+}
+
+inline vector<double> VBFMECorrection::ComptonME(double xp, double x2, double xperp,
+						 double A, LorentzVector<double> l,
+						 LorentzVector<double> m) {
+  vector<double> output(6,0.);
+  double cos2 =   x2 /sqrt(sqr(x2)+sqr(xperp));
+  double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
+  // no phi dependence
+  output[0] = l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*A*cos2*(l.z()*m.t()-l.t()*m.z());
+  // cos(phi)
+  output[1] = -sin2*(l.x()*m.t()+l.t()*m.x())+sin2*(l.x()*m.z()-l.z()*m.x());
+  // cos(phi)^2
+  output[2] = +sqr(sin2)*l.x()*m.x();
+  // sin(phi)
+  output[3] = -l.t()*sin2*m.y()-0.5*A*cos2*sin2*l.z()*m.y();
+  // sin(phi)^2
+  output[4] = 0.;
+  // sin(phi)cos(phi)
+  output[5] = +sqr(sin2)*m.y()*l.x();
+  // additional factors
+  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
+  double fact = sqr(xp)*(sqr(x2)+sqr(xperp))/denom;
+  for(unsigned int ix=0;ix<output.size();++ix) output[ix] *=fact;
+  output[0] += 1.;
+  return output;
+}
+
+inline double VBFMECorrection::generateComptonPoint(double &xp, double & zp) {
+  static const double maxwgt = 50.;
+  double wgt,xperp2,x2;
+  do {
+    xp  = UseRandom::rnd();
+    double zpmin = xp, zpmax = 1./(1.+xp*(1.-xp));
+    zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
+    wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
+    if(UseRandom::rndbool()) swap(xp,zp);
+    xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
+    x2     = 1.-(1.-zp)/xp;
+    wgt *= 2.*(1.+sqr(xp)*(sqr(x2)+1.5*xperp2))/(1.-xp)/(1.-zp);
+    if(wgt>maxwgt) cerr << "testing violates compton max " << wgt << "\n";
+  }
+  while(wgt<UseRandom::rnd()*maxwgt);
+  return _comptonint/((1.+sqr(xp)*(sqr(x2)+1.5*xperp2))/(1.-xp)/(1.-zp));
+}
+
+inline double VBFMECorrection::generateBGFPoint(double &xp, double & zp) {
+  static const double maxwgt = 2.,npow=0.4,ac=1.0;
+  double wgt;
+  do {
+    double rho = UseRandom::rnd();
+    xp = 1.-pow(rho,1./(1.-npow));
+    wgt = (sqr(xp)+ac+sqr(1.-xp));
+    if(wgt>1.+ac) cerr << "testing violates BGF maxA " << wgt << "\n";
+  }
+  while(wgt<UseRandom::rnd()*(1.+ac));
+  double xpwgt = -((6.-5.*npow+sqr(npow))*ac-3.*npow+sqr(npow)+4) 
+    /(sqr(npow)*(npow-6.)+11.*npow-6.);
+  xpwgt *= pow(1.-xp,npow)/wgt;
+  double xp2(sqr(xp)),lxp(log(xp)),xp4(sqr(xp2)),lxp1(log(1.-xp));
+  double zpwgt = (2.*xp4*(lxp+lxp1-3.)+4.*xp*xp2*(3.-lxp-lxp1)
+		  +xp2*(-13.+lxp+lxp1)+xp*(+7.+lxp+lxp1)-lxp-lxp1-1.)/(1.+xp-xp2);
+  double wgt2;
+  do {
+    double zpmax = 1./(1.+xp*(1.-xp)), zpmin = 1.-zpmax;
+    zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
+    wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
+    double x1 = -1./xp;
+    double x2 = 1.-(1.-zp)/xp;
+    double x3 = 2.+x1-x2;
+    double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
+    wgt2 = sqr(xp)/(1.-zp)*(sqr(x3)+sqr(x2)+3.*xperp2);
+    wgt *= wgt2;
+    if(wgt>maxwgt*zpwgt) cerr << "testing violates BGF maxB " << wgt/xpwgt << "\n";
+  }
+  while(wgt<UseRandom::rnd()*maxwgt);
+  return zpwgt*xpwgt/wgt2;
+}
+
+inline vector<double> VBFMECorrection::BGFME(double xp, double x2, double x3,
+					     double xperp, double A,  
+					     LorentzVector<double> l,
+					     LorentzVector<double> m) {
+  vector<double> output(6,0.);
+  double cos2  =   x2 /sqrt(sqr(x2)+sqr(xperp));
+  double sin2  = xperp/sqrt(sqr(x2)+sqr(xperp));
+  double fact2 = sqr(xp)*(sqr(x2)+sqr(xperp));
+  double cos3  =   x3 /sqrt(sqr(x3)+sqr(xperp));
+  double sin3  = xperp/sqrt(sqr(x3)+sqr(xperp));
+  double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp));
+  // no phi dependence
+  output[0] = fact3*(+l.t()*m.t()-l.z()*m.z()*sqr(cos3)+0.5*A*cos3*(l.z()*m.t()-l.t()*m.z()))
+             +fact2*(+l.t()*m.t()-l.z()*m.z()*sqr(cos2)+0.5*A*cos2*(l.z()*m.t()-l.t()*m.z()));
+  // cos(phi)
+  output[1] = fact3*(+sin3*(l.x()*m.t()+l.t()*m.x())-0.5*A*cos3*sin3*(l.x()*m.z()-l.z()*m.x()))
+             +fact2*(-sin2*(l.x()*m.t()+l.t()*m.x())+0.5*A*cos2*sin2*(l.x()*m.z()-l.z()*m.x()));
+  // cos(phi)^2
+  output[2] = fact3*(+sqr(sin3)*l.x()*m.x())
+             +fact2*(+sqr(sin2)*l.x()*m.x());
+  // sin(phi)
+  output[3] = fact3*(+l.t()*sin3*m.y()+0.5*A*cos3*sin3*l.z()*m.y())
+             +fact2*(-l.t()*sin2*m.y()-0.5*A*cos2*sin2*l.z()*m.y());
+  // sin(phi)^2
+  output[4] = 0.;
+  // sin(phi)cos(phi)
+  output[5] = fact3*(+sqr(sin3)*m.y()*l.x())
+             +fact2*(+sqr(sin2)*m.y()*l.x());
+  // additional factors
+  double denom = -l.z()*m.z()+l.t()*m.t()+0.5*A*(l.t()*m.z()-l.z()*m.t());
+  for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= denom;
+  return output;
+}
+
+}

@@ -127,10 +127,10 @@ set LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
 # Create DISHandler
 create ThePEG::StandardEventHandler DISHandler 
 create ThePEG::LuminosityFunction DISLuminosity
-set DISHandler:BeamA /Herwig/Particles/e-
-set DISLuminosity:BeamEMaxA 30.*GeV
-set DISHandler:BeamB /Herwig/Particles/p+
-set DISLuminosity:BeamEMaxB 920.*GeV
+set DISHandler:BeamA /Herwig/Particles/p+
+set DISLuminosity:BeamEMaxA 920.*GeV
+set DISHandler:BeamB /Herwig/Particles/e-
+set DISLuminosity:BeamEMaxB 30.*GeV
 set DISHandler:LuminosityFunction DISLuminosity
 insert DISHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleDIS
 set DISHandler:Sampler /Herwig/ACDCSampler
