@@ -281,6 +281,11 @@ protected:
    * veto hard emissions in FS shower?
    */
   inline bool hardVetoFS() const;
+
+  /**
+   * veto hard emissions according to lastScale from XComb? 
+   */
+  inline bool hardVetoXComb() const;
   //@}
 
   /**
@@ -464,6 +469,11 @@ private:
   unsigned int _hardVetoMode; 
 
   /**
+   * Hard veto to be read switch
+   */
+  unsigned int _hardVetoRead; 
+
+  /**
    * rms intrinsic pT of Gaussian distribution
    */
   Energy _iptrms;
@@ -491,7 +501,6 @@ private:
   /**
    *  The progenitor of the current shower
    */
-
   ShowerProgenitorPtr _progenitor;
 
   /**

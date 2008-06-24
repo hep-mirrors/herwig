@@ -7,8 +7,10 @@
 namespace Herwig {
 
 inline MENeutralCurrentDIS::MENeutralCurrentDIS() 
-  : _minflavour(1), _maxflavour(5), _gammaZ(0)
-{}
+  : _minflavour(1), _maxflavour(5), _gammaZ(0) {
+  massOption(true ,1);
+  massOption(false,0);
+}
 
 inline IBPtr MENeutralCurrentDIS::clone() const {
   return new_ptr(*this);

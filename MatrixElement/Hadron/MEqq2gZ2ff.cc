@@ -69,7 +69,7 @@ void MEqq2gZ2ff::getDiagrams() const {
 	  || (ix%2==0 && (ix-10)/2==_process-7)
 	  || (ix%2==1 && (ix-9)/2 ==_process-4)
 	  );
-    // if not a validf process continue
+    // if not a valid process continue
     if(!(quark||lepton)) continue;
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();

@@ -23,7 +23,7 @@ pkgdata_DATA = Makefile-UserModules
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
-  multi.test *.output probs.test
+  multi.test *.output probs.test chisq.value
 
 ## checking targets ##
 
@@ -53,6 +53,14 @@ link-helper-files:
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< --exitonerror
 	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N100 --exitonerror
+
+## Chisquare report ##
+EXTRA_SCRIPTS = sum_chisq
+
+chisq.value : $(srcdir)/CHISQ.in HerwigDefaults.rpo sum_chisq
+	./Herwig++ read $< --exitonerror
+	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N10000 --exitonerror
+	@./sum_chisq $(notdir $(subst .in,.log,$<)) > $@
 
 ## valgrind targets ##
 

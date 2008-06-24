@@ -352,10 +352,11 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
-  if( abs(brsum - 1.) > 1e-12 ) {
+  if( abs(brsum - 1.) > 1e-8 ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
 	 << " from the spectrum file does not sum to 1. The branching fractions"
-	 << " will be rescaled.\n\n";
+	 << " will be rescaled.\n";
+    cerr << setprecision(13) << abs(brsum - 1.) << "\n";
   }
 }
 

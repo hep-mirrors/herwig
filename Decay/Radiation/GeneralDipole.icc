@@ -66,20 +66,6 @@ inline double GeneralDipole::nbar(unsigned int i,unsigned int j)
     }
 }
 
-// poisson
-inline int GeneralDipole::poisson(double average)
-{
-  int n(0),n_factorial(1);
-  double x(UseRandom::rnd()*exp(average)),sum(1.);
-  while (x>=sum)
-    {
-      ++n;
-      n_factorial *= n;   
-      sum += pow(average,n)/n_factorial;
-    };
-  return n;
-}
-
 inline void GeneralDipole::reweightDipole()
 {
   // reweight the dipoles

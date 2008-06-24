@@ -13,8 +13,9 @@
 
 namespace Herwig {
 
-inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1),
-			    _iptrms(), _beta(), _gamma(), _iptmax(),  
+inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
+			    _hardVetoRead(0),
+			    _iptrms(0.*GeV), _beta(0.), _gamma(0.*GeV), _iptmax(),
 			    _limitEmissions(0),
 			    _initialenhance(1.), _finalenhance(1.), _useCKKW(false),
 			    _theUseCKKW(false)
@@ -73,6 +74,10 @@ inline bool Evolver::hardVetoIS() const {
 
 inline bool Evolver::hardVetoFS() const {
   return (_hardVetoMode == 1 || _hardVetoMode > 2); 
+}
+
+inline bool Evolver::hardVetoXComb() const {
+  return (_hardVetoRead == 1); 
 }
 
 inline double Evolver::initialStateRadiationEnhancementFactor() const {

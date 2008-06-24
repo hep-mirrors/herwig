@@ -355,7 +355,7 @@ double FFDipole::makePhotons(Boost boostv,ParticleVector children)
   double aver(YFSFormFactors::nbarFF(beta1,ombeta1,beta2,ombeta2,_charge,
 				     _emax,_emin,_dipoleopt==1));
   // calculate the number of photons using the poisson
-  _multiplicity = poisson(aver);
+  _multiplicity = UseRandom::rndPoisson(aver);
   // calculate the first part of the YFS factor
   // (N.B. crude form factor is just exp(-aver) to get a poisson)
   _yfswgt*=exp(aver);

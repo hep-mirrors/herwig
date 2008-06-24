@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PartonExtractor class.
+//
+#ifndef HERWIG_PartonExtractor_FH
+#define HERWIG_PartonExtractor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class PartonExtractor;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::PartonExtractor,PartonExtractorPtr);
+
+}
+
+#endif

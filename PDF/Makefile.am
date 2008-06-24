@@ -1,20 +1,30 @@
-pkglib_LTLIBRARIES =
+pkglib_LTLIBRARIES = 
+
+noinst_LTLIBRARIES = libHwPDF.la 
+libHwPDF_la_SOURCES = \
+PartonExtractor.cc PartonExtractor.h \
+PartonExtractor.icc PartonExtractor.fh
+
 pkglib_LTLIBRARIES += HwMRST.la
 HwMRST_la_SOURCES = \
 MRST.cc MRST.h MRST.icc 
-# add this to produce tests of the PDFs
-#HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
-
 HwMRST_la_LDFLAGS = -module -version-info 4:0:0
+
+pkglib_LTLIBRARIES += HwLeptonPDF.la
+HwLeptonPDF_la_SOURCES = \
+WeiszackerWilliamsPDF.cc WeiszackerWilliamsPDF.h \
+WeiszackerWilliamsPDF.icc WeiszackerWilliamsPDF.fh\
+LeptonRemnant.cc LeptonRemnant.h LeptonRemnant.icc LeptonRemnant.fh
+HwLeptonPDF_la_LDFLAGS = -module -version-info 3:0:0
+
 
 EXTRA_DIST = mrst
 
 pkglib_LTLIBRARIES += HwRemDecayer.la
 HwRemDecayer_la_SOURCES = \
-HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh \
-ForcedSplitting.h ForcedSplitting.cc ForcedSplitting.fh
+HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh
 
 HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
 

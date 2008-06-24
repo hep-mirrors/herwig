@@ -96,6 +96,8 @@ set MEqq2gZ2ff:Process 2
 
 # neutral current
 create Herwig::MENeutralCurrentDIS MEDISNC
+# charged current
+create Herwig::MEChargedCurrentDIS MEDISCC
 
 ##########################################################
 # Set up the Subprocesses

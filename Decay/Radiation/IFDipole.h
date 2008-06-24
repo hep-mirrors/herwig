@@ -118,14 +118,6 @@ protected:
   inline double nbar(double beta1,double ombeta1);
 
   /**
-   * Return the photon multiplicity according to a Poissonian Distribution
-   * with the supplied average
-   * @param average The average
-   * @return A value from tghe poisson distribution
-   */
-  inline int poisson(double average);
-
-  /**
    * Generate the momentum of a photon 
    * @param beta1 The velocity, \f$\beta_1\f$, of the first charged particle
    * @param ombeta1 One minus the velocity, \f$1-\beta_1\f$, of the first 

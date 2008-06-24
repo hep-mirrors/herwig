@@ -8,8 +8,6 @@ set NoPDF:RemnantHandler NoRemnants
 create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so
 
 create Herwig::HwRemDecayer RemnantDecayer HwRemDecayer.so
-create Herwig::ForcedSplitting ForcedSplitting
-set RemnantDecayer:ForcedSplitter ForcedSplitting
 
 create ThePEG::SoftRemnantHandler HadronRemnants
 set HadronRemnants:RemnantDecayer RemnantDecayer

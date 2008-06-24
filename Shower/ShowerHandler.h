@@ -224,7 +224,7 @@ protected:
   /**
    * Find the parton extracted from the incoming particle after ISR
    */
-  PPtr findFirstParton(tPPtr seed, tPPair incoming) const;
+  PPtr findFirstParton(tPPtr seed) const;
 
   /**
    * Fix Remnant connections after ISR
@@ -251,6 +251,12 @@ protected:
    *  Access to the Evolver
    */
   inline tEvolverPtr evolver() const;
+
+  /**
+   *  Boost all the particles in the collision so that the collision always occurs
+   * in the rest frame with the incoming particles along the z axis
+   */
+  void boostCollision(bool boost);
 
 protected:
 
@@ -360,6 +366,11 @@ private:
   ShowerTreePtr _hard;
 
   /**
+   *  The incoming beam particles for the current collision
+   */
+  tPPair _incoming;
+
+  /**
    *  The ShowerTree for the decays
    */
   multimap<Energy,ShowerTreePtr> _decay;
@@ -383,6 +394,11 @@ private:
    *  pointer to "this", the current ShowerHandler.
    */
   static ShowerHandler * theHandler;
+
+  /**
+   *  Boost to get back to the lab
+   */
+  LorentzRotation _boost;
 
 public:
 

@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# this is very hard-coded to the exact format of CHISQ.log
+
+grep '^Chi Square' $1 | grep -v ' nan ' | sed 's!.* = \(.*\) for \(.*\) degrees .*!\1 \2!' | awk ' { sum1+=$1; sum2+=$2}
+ END { chipdof=sum1/sum2; printf("YVALUE = %g\n", chipdof) } '

@@ -117,6 +117,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Hadron/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
+                MatrixElement/GammaGamma/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile

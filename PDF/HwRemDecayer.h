@@ -16,20 +16,35 @@
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/SubProcess.h"
-#include "ForcedSplitting.h"
+#include "ThePEG/PDF/BeamParticleData.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "HwRemDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 /**
- * Here is the documentation of the HwRemDecayer class. This
- * class is responsible for the decay of the remnants. Additional 
- * secondary scatter have to be evolved backwards to a gluon, the
+ * The HwRemDecayer class is responsible for the decay of the remnants. Additional 
+ * secondary scatters have to be evolved backwards to a gluon, the
  * first/hard interaction has to be evolved back to a valence quark.
- * This is necessary because the Cluster Hadronization can only cope
- * with diquarks as remnants. All this is generated inside this class,
- * which main methods are then called by the ShowerHandler. The kinematics
- * of the splittings is calculated inside ForcedSplitting.
+ * This is all generated inside this class,
+ * which main methods are then called by the ShowerHandler.
+ *
+ * A simple forced splitting algorithm is used.
+ * This takes the Remnant object produced from the PDF and backward
+ * evolution (hadron - parton) and produce partons with the remaining 
+ * flavours and with the correct colour connections.
+ *
+ * The algorithim operates by starting with the parton which enters the hard process.
+ * If this is from the sea there is a forced branching to produce the antiparticle
+ * from a gluon branching. If the parton entering the hard process was a gluon, or
+ * a gluon was produced from the first step of the algorithm, there is then a further
+ * branching back to a valence parton. After these partons have been produced a quark or
+ * diquark is produced to give the remaining valence content of the incoming hadron.
+ *
+ * The forced branching are generated using a scale between QSpac and EmissionRange times
+ * the minimum scale. The energy fractions are then distributed using
+ * \f[\frac{\alpha_S}{2\pi}\frac{P(z)}{z}f(x/z,\tilde{q})\f]
+ * with the massless splitting functions.
  *
  * \author Manuel B\"ahr
  *
@@ -45,6 +60,11 @@ public:
 
 public:
 
+  /**
+   * The default constructor.
+   */
+  inline HwRemDecayer();
+
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
@@ -53,19 +73,19 @@ public:
    * @param dm the DecayMode describing the decay.
    * @return true if this decayer can handle the given mode, otherwise false.
    */
-  virtual bool accept(const DecayMode & dm) const;
+  inline virtual bool accept(const DecayMode & dm) const;
 
   /**
    * Return true if this decayer can handle the extraction of the \a   
    * extracted parton from the given \a particle.   
    */  
-  virtual bool canHandle(tcPDPtr parent, tcPDPtr extracted) const;  
+  inline virtual bool canHandle(tcPDPtr parent, tcPDPtr extracted) const;  
 
   /**   
    * Return true if this decayed can extract more than one parton from   
    * a particle.   
    */  
-  virtual bool multiCapable() const;
+  inline virtual bool multiCapable() const;
 
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
@@ -106,7 +126,8 @@ public:
   /**
    * Do several checks and initialization, for remnantdecay inside ShowerHandler.
    */
-  void initialize(pair<tRemPPtr, tRemPPtr> rems, Step & step, Energy forcedSplitScale);
+  void initialize(pair<tRemPPtr, tRemPPtr> rems, tPPair beam, Step & step,
+		  Energy forcedSplitScale);
 
   /**
    * Perform the acual forced splitting.
@@ -123,6 +144,11 @@ public:
    */
   void finalize();
 
+  /**
+   *  Find the children
+   */
+  void findChildren(tPPtr,vector<PPtr> &) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -131,17 +157,25 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {
-    return new_ptr(*this);
-  }
+  inline virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {
-    return new_ptr(*this);
-  }
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -164,16 +198,12 @@ private:
    * Simple struct to store info about baryon quark and di-quark                
    * constituents.                                                              
    */                                                                           
-  struct HadronContent {                                                        
-    /**
-     * Randomly choose a valence flavour from \a flav.
-     */
-    int getValence();
+  struct HadronContent {
 
     /**
      * manually extract the valence flavour \a id.
      */
-    void extract(int id);
+    inline void extract(int id);
 
     /**
      * Return a proper particle ID assuming that \a id has been removed
@@ -185,12 +215,12 @@ private:
      * Method to determine whether \a parton is a quark from the sea.
      * @return TRUE if \a parton is neither a valence quark nor a gluon.
      */
-    bool isSeaQuark(tcPPtr parton) const;
+    inline bool isSeaQuark(tcPPtr parton) const;
 
     /**
      * Method to determine whether \a parton is a valence quark.
      */
-    bool isValenceQuark(tcPPtr parton) const;
+    inline bool isValenceQuark(tcPPtr parton) const;
 
     /** The valence flavours of the corresponding baryon. */                    
     vector<int> flav;                                                           
@@ -199,7 +229,10 @@ private:
     int extracted;
 
     /** -1 if the particle is an anti-particle. +1 otherwise. */                
-    int sign;                                                                   
+    int sign;
+
+    /** The ParticleData objects of the hadron */
+    tcPDPtr hadron;
   }; 
 
   /**
@@ -235,9 +268,26 @@ private:
   void setRemMasses() const;
 
   /**
-   * This is a pointer to the Herwig::ForcedSplitting object
+   * This creates a parton from the remaining flavours of the hadron. The
+   * last parton used was a valance parton, so only 2 (or 1, if meson) flavours
+   * remain to be used.
    */
-  ForcedSplittingPtr theForcedSplitter; 
+  inline PPtr finalSplit(const tRemPPtr rem, long remID, Lorentz5Momentum) const;
+
+  /**
+   * This takes the particle and find a splitting for np -> p + child and 
+   * creates the correct kinematics and connects for such a split. This
+   * Splitting has an upper bound on qtilde given by the energy argument
+   * @param rem The Remnant
+   * @param child The PDG code for the outgoing particle
+   * @param oldQ  The maximum scale for the evolution
+   * @param oldx  The fraction of the hadron's momentum carried by the last parton
+   * @param pf    The momentum of the last parton at input and after branching at output
+   * @param p     The total emitted momentum
+   */
+  PPtr forceSplit(const tRemPPtr rem, long child, Energy &oldQ, double &oldx, 
+		  Lorentz5Momentum &pf, Lorentz5Momentum &p,
+		  HadronContent & content) const;
 
   /**
    * A flag which indicates, whether the extracted valence quark was a 
@@ -276,11 +326,63 @@ private:
   pair<RemPPtr, RemPPtr> theRems;
 
   /**
+   *  The beam particle data for the current incoming hadron
+   */
+  mutable tcPPtr theBeam;
+
+  /**
+   *  the beam data
+   */
+  mutable Ptr<BeamParticleData>::const_pointer theBeamData;
+
+  /** 
+   *  The PDF for the current initial-state shower 
+   */ 
+  mutable tcPDFPtr _pdf; 
+  
+private:
+
+  /**
+   *  The kinematic cut-off
+   */
+  Energy _kinCutoff;
+  
+  /**
    * The PDF freezing scale as set in ShowerHandler
    */
   Energy _forcedSplitScale;
 
+  /**
+   *  Range for emission
+   */
+  double _range;
+
+  /**
+   *  Size of the bins in z for the interpolation
+   */
+  double _zbin;
+
+  /**
+   *  Size of the bins in y for the interpolation
+   */
+  double _ybin;
+
+  /**
+   *  Maximum number of bins for the z interpolation
+   */
+  int _nbinmax;
+
+  /**
+   *  Pointer to the object calculating the QCD coupling
+   */
+  ShowerAlphaPtr _alpha; 
+
+  /**
+   *  Option for the DIS remnant
+   */
+  unsigned int DISRemnantOpt_;
 };
+
 
 }
 
@@ -318,5 +420,7 @@ struct ClassTraits<Herwig::HwRemDecayer>
 /** @endcond */
 
 }
+
+#include "HwRemDecayer.icc"
 
 #endif /* HERWIG_HwRemDecayer_H */

@@ -186,8 +186,5 @@ struct ClassTraits<Herwig::LeptonDalitzAnalysis>
 }
 
 #include "LeptonDalitzAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LeptonDalitzAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_LeptonDalitzAnalysis_H */

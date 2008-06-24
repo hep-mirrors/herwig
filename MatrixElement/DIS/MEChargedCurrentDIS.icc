@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEChargedCurrentDIS class.
+//
+
+namespace Herwig {
+
+inline MEChargedCurrentDIS::MEChargedCurrentDIS() 
+  : _maxflavour(6), _massopt(0) {
+  massOption(true ,1);
+  massOption(false,_massopt);
+}
+
+inline IBPtr MEChargedCurrentDIS::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEChargedCurrentDIS::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

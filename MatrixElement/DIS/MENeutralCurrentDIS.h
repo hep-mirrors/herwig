@@ -5,7 +5,7 @@
 // This is the declaration of the MENeutralCurrentDIS class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -17,12 +17,15 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MENeutralCurrentDIS class.
+ * The MENeutralCurrentDIS class provides the matrix elements for
+ * neutral current DIS.
+ *
+ *  For consistency both the incoming and outgoing quarks are assumed to be massless.
  *
  * @see \ref MENeutralCurrentDISInterfaces "The interfaces"
  * defined for MENeutralCurrentDIS.
  */
-class MENeutralCurrentDIS: public ME2to2Base {
+class MENeutralCurrentDIS: public HwME2to2Base {
 
 public:
 
@@ -58,16 +61,6 @@ public:
    * Return the scale associated with the last set phase space point.
    */
   virtual Energy2 scale() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
 
   /**
    * Add all possible diagrams with the add() function.
@@ -261,7 +254,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MENeutralCurrentDIS,1> {
   /** Typedef of the first base class of MENeutralCurrentDIS. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -727,16 +727,16 @@ void ShowerTree::clear() {
   // if a hard process
   else {
     for(cjt=_incomingLines.begin();cjt!=_incomingLines.end();++cjt) {
-      PPtr parent=cjt->first->original()->parents()[0];
+      tPPtr parent = cjt->first->original()->parents().empty() ? 
+	tPPtr() : cjt->first->original()->parents()[0];
       ShowerParticlePtr temp=
 	new_ptr(ShowerParticle(*cjt->first->copy(),
 			       cjt->first->progenitor()->perturbative(),
 			       cjt->first->progenitor()->isFinalState()));
       fixColour(temp);
       temp->x(cjt->first->progenitor()->x());
-      assert(parent);
       cjt->first->hasEmitted(false);
-      if(!(cjt->first->progenitor()==cjt->second)&&cjt->second)
+      if(!(cjt->first->progenitor()==cjt->second)&&cjt->second&&parent)
 	parent->abandonChild(cjt->second);
       cjt->first->progenitor(temp);
       _incomingLines[cjt->first]=temp;
@@ -761,8 +761,7 @@ void ShowerTree::resetShowerProducts() {
     _forward.insert(cjt->second);
 }
 
-void ShowerTree::updateAfterShower(multimap<Energy,ShowerTreePtr> & decay)
-{
+void ShowerTree::updateAfterShower(multimap<Energy,ShowerTreePtr> & decay) {
   // update the links
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::iterator tit;
