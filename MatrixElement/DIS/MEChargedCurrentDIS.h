@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_MENeutralCurrentDIS_H
-#define HERWIG_MENeutralCurrentDIS_H
+#ifndef HERWIG_MEChargedCurrentDIS_H
+#define HERWIG_MEChargedCurrentDIS_H
 //
-// This is the declaration of the MENeutralCurrentDIS class.
+// This is the declaration of the MEChargedCurrentDIS class.
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
@@ -10,29 +10,31 @@
 #include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "MENeutralCurrentDIS.fh"
+#include "MEChargedCurrentDIS.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MENeutralCurrentDIS class provides the matrix elements for
- * neutral current DIS.
+ * The MEChargedCurrentDIS class provides the matrix elements for
+ * charged current DIS.
  *
- *  For consistency both the incoming and outgoing quarks are assumed to be massless.
+ *  By default both the incoming and outgong quarks are assumed to be massless
+ *  although the mass of the outgoing quark can be included if required. This
+ *  option should be used if top production is included.
  *
- * @see \ref MENeutralCurrentDISInterfaces "The interfaces"
- * defined for MENeutralCurrentDIS.
+ * @see \ref MEChargedCurrentDISInterfaces "The interfaces"
+ * defined for MEChargedCurrentDIS.
  */
-class MENeutralCurrentDIS: public HwME2to2Base {
+class MEChargedCurrentDIS: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MENeutralCurrentDIS();
+  inline MEChargedCurrentDIS();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -75,7 +77,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -92,6 +94,7 @@ public:
    */
   virtual void constructVertex(tSubProPtr);
   //@}
+
 
 public:
 
@@ -138,19 +141,6 @@ protected:
 		    bool lorder, bool qorder,
 		    bool me) const;
 
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-  //@}
-
 protected:
 
   /** @name Clone Methods. */
@@ -168,77 +158,68 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MENeutralCurrentDIS> initMENeutralCurrentDIS;
+  static ClassDescription<MEChargedCurrentDIS> initMEChargedCurrentDIS;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MENeutralCurrentDIS & operator=(const MENeutralCurrentDIS &);
+  MEChargedCurrentDIS & operator=(const MEChargedCurrentDIS &);
 
 private:
 
   /**
-   *  Pointer to the vertices for the helicity calculations
+   *  Pointer to the vertex for the helicity calculations
    */
-  //@{
-  /**
-   *  Pointer to the Z vertex
-   */
-  AbstractFFVVertexPtr _theFFZVertex;
+  AbstractFFVVertexPtr _theFFWVertex;
 
   /**
-   *  Pointer to the photon vertex
-   */
-  AbstractFFVVertexPtr _theFFPVertex;
-  //@}
-
-  /**
-   *  Pointers to the intermediate resonances
-   */
-  //@{
-  /**
-   *  Pointer to the Z ParticleData object
-   */
-  tcPDPtr _z0;
-
-  /**
-   *  Pointer to the photon ParticleData object
-   */
-  tcPDPtr _gamma;
-  //@}
-
-  /**
-   *  Switches to control the particles in the hard process
-   */
-  //@{
-  /**
-   *  Minimumflavour of the incoming quarks
-   */
-  unsigned int _minflavour;
-
-  /**
-   *  Maximum flavour of the incoming quarks
+   *  The allowed flavours of the incoming quarks
    */
   unsigned int _maxflavour;
 
   /**
-   *  Whether to include both \f$Z^0\f$ and \f$\gamma\f$ or only one
+   *  Option for the mass of the outgoing quarks
    */
-  unsigned int _gammaZ;
-  //@}
+  unsigned int _massopt;
 
   /**
    * Matrix element for spin correlations
    */
   ProductionMatrixElement _me;
 
+  /**
+   *  Pointers to the intermediates resonances
+   */
+  //@{
+  /**
+   *  Pointer to the \f$W^+\f$
+   */
+  tcPDPtr _wp;
+
+  /**
+   *  Pointer to the \f$W^-\f$
+   */
+  tcPDPtr _wm;
+  //@}
 };
 
 }
@@ -250,24 +231,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MENeutralCurrentDIS. */
+ *  base classes of MEChargedCurrentDIS. */
 template <>
-struct BaseClassTrait<Herwig::MENeutralCurrentDIS,1> {
-  /** Typedef of the first base class of MENeutralCurrentDIS. */
+struct BaseClassTrait<Herwig::MEChargedCurrentDIS,1> {
+  /** Typedef of the first base class of MEChargedCurrentDIS. */
   typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MENeutralCurrentDIS class and the shared object where it is defined. */
+ *  the MEChargedCurrentDIS class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MENeutralCurrentDIS>
-  : public ClassTraitsBase<Herwig::MENeutralCurrentDIS> {
+struct ClassTraits<Herwig::MEChargedCurrentDIS>
+  : public ClassTraitsBase<Herwig::MEChargedCurrentDIS> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MENeutralCurrentDIS"; }
+  static string className() { return "Herwig::MEChargedCurrentDIS"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MENeutralCurrentDIS is implemented. It may also include several, space-separated,
-   * libraries if the class MENeutralCurrentDIS depends on other classes (base classes
+   * MEChargedCurrentDIS is implemented. It may also include several, space-separated,
+   * libraries if the class MEChargedCurrentDIS depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -278,6 +259,6 @@ struct ClassTraits<Herwig::MENeutralCurrentDIS>
 
 }
 
-#include "MENeutralCurrentDIS.icc"
+#include "MEChargedCurrentDIS.icc"
 
-#endif /* HERWIG_MENeutralCurrentDIS_H */
+#endif /* HERWIG_MEChargedCurrentDIS_H */

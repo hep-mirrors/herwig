@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEGammaGamma2ff class.
+//
+#ifndef HERWIG_MEGammaGamma2ff_FH
+#define HERWIG_MEGammaGamma2ff_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEGammaGamma2ff;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEGammaGamma2ff,MEGammaGamma2ffPtr);
+
+}
+
+#endif

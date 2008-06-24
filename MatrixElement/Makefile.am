@@ -1,4 +1,4 @@
-SUBDIRS = General Lepton Hadron DIS
+SUBDIRS = General Lepton Hadron DIS GammaGamma
 
 noinst_LTLIBRARIES = libHwME.la 
 
