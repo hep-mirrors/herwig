@@ -256,31 +256,6 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
   return me;
 }
 
-double MEfftoffH::getCosTheta(double ctmin, double ctmax, double r) {
-  double cth = 0.0;
-  if ( ctmin <= -1.0 && ctmax >= 1.0 ) {
-    jacobian((ctmax - ctmin)*jacobian());
-    cth = ctmin + r*(ctmax-ctmin);
-  } else if ( ctmin <= -1.0 ) {
-    cth = 1.0 - (1.0 - ctmax)*pow((1.0 - ctmin)/(1.0 - ctmax), r);
-    jacobian((log((1.0 - ctmin)/(1.0 - ctmax))*(1.0 - cth))*jacobian());
-  } else if ( ctmax >= 1.0 ) {
-    cth = -1.0 + (1.0 + ctmin)*pow((1.0 + ctmax)/(1.0 + ctmin), r);
-    jacobian((log((1.0 + ctmax)/(1.0 + ctmin))*(1.0 + cth))*jacobian());
-  } else {
-    double zmin = 0.5*(1.0 - ctmax);
-    double zmax = 0.5*(1.0 - ctmin);
-    double A1 = (2.0*zmax - 1.0)/(zmax*(1.0-zmax));
-    double A0 = (2.0*zmin - 1.0)/(zmin*(1.0-zmin));
-    double A = r*(A1 - A0) + A0;
-    double z = A < 2.0? 2.0/(sqrt(sqr(A) + 4.0) + 2 - A):
-      0.5*(A - 2.0 + sqrt(sqr(A) + 4.0))/A;
-    cth = 1.0 - 2.0*z;
-    jacobian((2.0*(A1 - A0)*sqr(z)*sqr(1.0 - z)/(sqr(z) + sqr(1.0 - z)))*jacobian());
-  }
-  return cth;
-} 
-
 bool MEfftoffH::generateKinematics(const double * r) {
   // set the jacobian to 1
   jacobian(1.);
@@ -305,17 +280,11 @@ bool MEfftoffH::generateKinematics(const double * r) {
   // generate the value of cos theta2 first as no cut
   double ctheta[2];
   double ctmin = -1.0,ctmax = 1.0;
+  // cos theta 1
+  ctheta[0] = ctmin+r[1]*(ctmax-ctmin);
   // cos theta 2
-  ctheta[1] = getCosTheta(ctmin,ctmax, r[2]);
-  // generate the value of cos theta 1
-  Energy ptmin = lastCuts().minKT(mePartonData()[2]);
-  if( ptmin > 0.*GeV ) {
-    double ctm = 1.0 - sqr(ptmin/p1);
-    if ( ctm <= 0.0 ) return false;
-    ctmin = max(ctmin, -sqrt(ctm));
-    ctmax = min(ctmax,  sqrt(ctm));
-  }
-  ctheta[0] = getCosTheta(ctmin,ctmax, r[1]);
+  ctheta[1] = ctmin+r[2]*(ctmax-ctmin);
+  jacobian(sqr(ctmax-ctmin)*jacobian());
   // generate azimuthal angle between 1 and 2
   double phi12 = r[3]*Constants::twopi;
   // sins
