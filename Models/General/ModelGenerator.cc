@@ -198,7 +198,7 @@ void ModelGenerator::doinit() throw(InitException) {
     // Check decays for ones where quarks cannot be put on constituent
     // mass-shell
     checkDecays(parent);
-    parent->touch();
+    parent->reset();
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
 
