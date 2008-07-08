@@ -26,7 +26,9 @@
 #endif
 #include "HepMC/IO_AsciiParticles.h"
 #include "HepMC/IO_Ascii.h"
+#ifdef HAVE_HEPMC_IO_EXTENDEDASCII_H
 #include "HepMC/IO_ExtendedAscii.h"
+#endif
 
 using namespace ThePEG;
 using namespace Herwig;
@@ -69,9 +71,11 @@ void HepMCFile::doinitrun() {
   case 3: 
     _hepmcio = new HepMC::IO_Ascii(_filename.c_str(), ios::out); 
     break;
+#ifdef HAVE_HEPMC_IO_EXTENDEDASCII_H
   case 4: 
     _hepmcio = new HepMC::IO_ExtendedAscii(_filename.c_str(), ios::out); 
     break;
+#endif
   case 5: 
     _hepmcio = 0; 
     _hepmcdump.open(_filename.c_str()); 
@@ -153,11 +157,13 @@ void HepMCFile::Init() {
      "Ascii",
      "IO_Ascii format",
      3);
+#ifdef HAVE_HEPMC_IO_EXTENDEDASCII_H
   static SwitchOption interfaceFormatExtendedAscii
     (interfaceFormat,
      "ExtendedAscii",
      "IO_ExtendedAscii format",
      4);
+#endif
   static SwitchOption interfaceFormatDump
     (interfaceFormat,
      "Dump",
