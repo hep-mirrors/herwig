@@ -37,6 +37,8 @@ void SMHPPVertex::doinit() throw(InitException) {
       << "SMHGGVertex::doinit() - The pointer to the SM object is null."
       << Exception::abortnow;
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  orderInGs(0);
+  orderInGem(3);
   VVSLoopVertex::doinit();
 }
 
