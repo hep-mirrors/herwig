@@ -12,6 +12,14 @@
 
 using namespace Herwig;
 
+IBPtr LHTPWWHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LHTPWWHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
 void LHTPWWHVertex::persistentOutput(PersistentOStream & os) const {
   os << ounit(_coup,GeV);
 }
@@ -34,8 +42,7 @@ void LHTPWWHVertex::Init() {
 
 }
 
-LHTPWWHVertex::LHTPWWHVertex() 
-  : _couplast(0.), _q2last(0.*GeV2) {
+LHTPWWHVertex::LHTPWWHVertex() : _couplast(0.), _q2last(0.*GeV2) {
   // particles
   vector<long> first,second,third;
   // W_L W_L H
@@ -58,42 +65,55 @@ LHTPWWHVertex::LHTPWWHVertex()
   first.push_back(  32);
   second.push_back( 32);
   third.push_back(  25);
-  // Z_H Z_L H
-  first.push_back(  23);
-  second.push_back( 33);
-  third.push_back(  25);
+
+
+  // Z_H Z_L H --- VIOLATES T-parity
+//   first.push_back(  23);
+//   second.push_back( 33);
+//   third.push_back(  25);
+
+
+
   // Z_H A_H H
   first.push_back(  33);
   second.push_back( 32);
   third.push_back(  25);
-  // W_L W_L Phi0
-  first.push_back(  24);
-  second.push_back(-24);
-  third.push_back(  35);
-  // Z_L Z_L Phi0
-  first.push_back(  23);
-  second.push_back( 23);
-  third.push_back(  35);
+
+  // W_L W_L Phi0 --- VIOLATES T-parity
+//   first.push_back(  24);
+//   second.push_back(-24);
+//   third.push_back(  35);
+//   // Z_L Z_L Phi0
+//   first.push_back(  23);
+//   second.push_back( 23);
+//   third.push_back(  35);
+
+
   // Z_L Z_H Phi0
   first.push_back(  23);
   second.push_back( 33);
   third.push_back(  35);
-  // W_H W_H Phi0
-  first.push_back(  34);
-  second.push_back(-34);
-  third.push_back(  35);
+
+  // W_H W_H Phi0 -- VIOLATES T-parity
+//   first.push_back(  34);
+//   second.push_back(-34);
+//   third.push_back(  35);
+
+
   // A_H Z_L Phi0
   first.push_back(  32);
   second.push_back( 23);
   third.push_back(  35);
-  // W_L Z_L Phi-
-  first.push_back(  24);
-  second.push_back( 23);
-  third.push_back( -37);
-  first.push_back( -24);
-  second.push_back( 23);
-  third.push_back(  37);
-  // W_H Z_L Phi-
+
+  // W_L Z_L Phi- --- VIOLATES T-parity 
+//   first.push_back(  24);
+//   second.push_back( 23);
+//   third.push_back( -37);
+//   first.push_back( -24);
+//   second.push_back( 23);
+//   third.push_back(  37);
+
+  // W_H Z_L Phi- 
   first.push_back(  34);
   second.push_back( 23);
   third.push_back( -37);
@@ -107,34 +127,40 @@ LHTPWWHVertex::LHTPWWHVertex()
   first.push_back( -24);
   second.push_back( 32);
   third.push_back(  37);
-  // W_H A_H Phi-
-  first.push_back(  34);
-  second.push_back( 32);
-  third.push_back( -37);
-  first.push_back( -34);
-  second.push_back( 32);
-  third.push_back(  37);
-  // W_L Z_H Phi-
+
+  // W_H A_H Phi- --- VIOLATES T-parity
+//   first.push_back(  34);
+//   second.push_back( 32);
+//   third.push_back( -37);
+//   first.push_back( -34);
+//   second.push_back( 32);
+//   third.push_back(  37);
+
+  // W_L Z_H Phi- 
   first.push_back(  24);
   second.push_back( 33);
   third.push_back( -37);
   first.push_back( -24);
   second.push_back( 33);
   third.push_back(  37);
-  // W_H Z_H Phi-
-  first.push_back(  34);
-  second.push_back( 33);
-  third.push_back( -37);
-  first.push_back( -34);
-  second.push_back( 33);
-  third.push_back(  37);
-  // W_H A_L Phi-
+
+  // W_H Z_H Phi- --- VIOLATES T-parity
+//   first.push_back(  34);
+//   second.push_back( 33);
+//   third.push_back( -37);
+//   first.push_back( -34);
+//   second.push_back( 33);
+//   third.push_back(  37);
+
+  // W_H A_L Phi- 
   first.push_back(  34);
   second.push_back( 22);
   third.push_back( -37);
   first.push_back( -34);
   second.push_back( 22);
   third.push_back(  37);
+  
+  setList(first, second, third);
 }
 
 void LHTPWWHVertex::doinit() throw(InitException) {
@@ -180,19 +206,26 @@ void LHTPWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,
 					      tcPDPtr b, tcPDPtr c) {
   // first the overall normalisation
   if(q2!=_q2last) {
-    _couplast = electroMagneticCoupling(q2);
+    _couplast = sqr(electroMagneticCoupling(q2));
     _q2last=q2;
   }
-  int ih = abs(c->id());
-  int ibos[2]={abs(a->id()),abs(b->id())};
-  if(ih==25) {
-    if     ( ibos[0]==24&&ibos[1]==24     ) setNorm(UnitRemoval::InvE *_couplast*_coup[0]);
-    else if( ibos[0]==23&&ibos[1]==23     ) setNorm(UnitRemoval::InvE *_couplast*_coup[1]);
-    else if( ibos[0]==34&&ibos[1]==34     ) setNorm(UnitRemoval::InvE *_couplast*_coup[2]);
-    else if( ibos[0]==33&&ibos[1]==33     ) setNorm(UnitRemoval::InvE *_couplast*_coup[3]);
-    else if( ibos[0]==32&&ibos[1]==32     ) setNorm(UnitRemoval::InvE *_couplast*_coup[4]);
-    else if((ibos[0]==33&&ibos[1]==32) ||
-	    (ibos[0]==32&&ibos[1]==33)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[5]);
+  long ih = abs(c->id());
+  long ibos[2]={abs(a->id()),abs(b->id())};
+  
+  if(ih == 25) {
+    if( ibos[0] == 24 && ibos[1] == 24) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[0]);
+    else if( ibos[0] == 23 && ibos[1] == 23     ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[1]);
+    else if( ibos[0] == 34 && ibos[1] == 34     ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[2]);
+    else if( ibos[0] == 33 && ibos[1] == 33     ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[3]);
+    else if( ibos[0] == 32 && ibos[1] == 32     ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[4]);
+    else if((ibos[0] == 33 && ibos[1] == 32) ||
+	    (ibos[0] == 32 && ibos[1] == 33)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[5]);
     else 
       throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex "
@@ -200,14 +233,16 @@ void LHTPWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,
 				       << c->PDGName() 
 				       << Exception::runerror;
   }
-  else if(ih==35) {
-    if     ( ibos[0]==24&&ibos[1]==24     ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 6]);
-    else if( ibos[0]==34&&ibos[1]==34     ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 7]);
-    else if( ibos[0]==23&&ibos[1]==23     ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 8]);
-    else if((ibos[0]==23&&ibos[1]==33) ||
-	    (ibos[0]==33&&ibos[1]==23)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 9]);
-    else if((ibos[0]==23&&ibos[1]==32) ||
-	    (ibos[0]==32&&ibos[1]==23)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[10]);
+  else if(ih == 35) {
+    //    if     ( ibos[0] == 24 && ibos[1] == 24     ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 6]);
+    //    if( ibos[0] == 34 && ibos[1] == 34     ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 7]);
+    //else if( ibos[0] == 23 && ibos[1] == 23     ) setNorm(UnitRemoval::InvE *_couplast*_coup[ 8]);
+    if((ibos[0] == 23 && ibos[1] == 33) ||
+       (ibos[0] == 33 && ibos[1] == 23)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[ 9]);
+    else if((ibos[0] == 23 && ibos[1] == 32) ||
+	    (ibos[0] == 32 && ibos[1] == 23)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[10]);
     else 
       throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex " 
@@ -215,26 +250,30 @@ void LHTPWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,
 				       << c->PDGName() 
 				       << Exception::runerror;
   }
-  else if(ih==37) {
-    if     ((ibos[0]==24&&ibos[1]==23) ||
-	    (ibos[0]==23&&ibos[1]==24)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[11]);
-    else if((ibos[0]==34&&ibos[1]==23) ||
-	    (ibos[0]==23&&ibos[1]==34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[12]);
-    else if((ibos[0]==24&&ibos[1]==32) ||
-	    (ibos[0]==32&&ibos[1]==24)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[13]);
-    else if((ibos[0]==34&&ibos[1]==32) ||
-	    (ibos[0]==32&&ibos[1]==34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[14]);
-    else if((ibos[0]==24&&ibos[1]==33) ||
-	    (ibos[0]==33&&ibos[1]==24)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[15]);
-    else if((ibos[0]==34&&ibos[1]==33) ||
-	    (ibos[0]==33&&ibos[1]==34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[16]);
-    else if((ibos[0]==34&&ibos[1]==22) ||
-	    (ibos[0]==22&&ibos[1]==34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[17]);
+  else if(ih == 37) {
+//     if     ((ibos[0] == 24 && ibos[1] == 23) ||
+// 	    (ibos[0] == 23 && ibos[1] == 24)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[11]);
+    if((ibos[0] == 34 && ibos[1] == 23) ||
+       (ibos[0] == 23 && ibos[1] == 34)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[12]);
+    else if((ibos[0] == 24 && ibos[1] == 32) ||
+	    (ibos[0] == 32 && ibos[1] == 24)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[13]);
+    //     if((ibos[0] == 34 && ibos[1] == 32) ||
+//        (ibos[0] == 32 && ibos[1] == 34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[14]);
+    else if((ibos[0] == 24 && ibos[1] == 33) ||
+       (ibos[0] == 33 && ibos[1] == 24)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[15]);
+//     else if((ibos[0] == 34 && ibos[1] == 33) ||
+// 	    (ibos[0] == 33 && ibos[1] == 34)    ) setNorm(UnitRemoval::InvE *_couplast*_coup[16]);
+    else if((ibos[0] == 34 && ibos[1] == 22) ||
+	    (ibos[0] == 22 && ibos[1] == 34)    ) 
+      setNorm(UnitRemoval::InvE *_couplast*_coup[17]);
     else 
-      throw HelicityConsistencyError() << "LittleHiggsWWHVertex::setCoupling "
-				       << "Invalid particles in WWH Vertex " 
-				       << a->PDGName() << " " << b->PDGName() << " "
-				       << c->PDGName() 
-				       << Exception::runerror;
+      throw HelicityConsistencyError() 
+	<< "LittleHiggsWWHVertex::setCoupling "
+	<< "Invalid particles in WWH Vertex " 
+	<< a->PDGName() << " " << b->PDGName() << " " << c->PDGName() 
+	<< Exception::runerror;
   }
 }

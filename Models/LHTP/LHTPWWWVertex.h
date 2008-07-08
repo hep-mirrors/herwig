@@ -1,43 +1,36 @@
 // -*- C++ -*-
-#ifndef HERWIG_LHTPWWHVertex_H
-#define HERWIG_LHTPWWHVertex_H
+#ifndef HERWIG_LHTPWWWVertex_H
+#define HERWIG_LHTPWWWVertex_H
 //
-// This is the declaration of the LHTPWWHVertex class.
+// This is the declaration of the LHTPWWWVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "LHTPWWHVertex.fh"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "LHTPWWWVertex.fh"
 
 namespace Herwig {
-
 using namespace ThePEG;
-
+using namespace ThePEG::Helicity;
 /**
- * The LittleHiggsWWHVertex class implements the couplings of two electroweak
- * gauge bosons to a Higgs boson in the Little Higgs model with T-parity
- * including the additional
- * heavy photon, Z and W bosons in the model and the triplet Higgs bosons.
+ * This is the coupling of vector bosons to each other in the
+ * Littlest Higgs model with T-parity. It inherits from the 
+ * Standard Model WWW vertex to use its setCoupling member
+ * for the SM gauge boson self-couplings.
  *
- * @see \ref LHTPWWHVertexInterfaces "The interfaces"
- * defined for LHTPWWHVertex.
+ * @see \ref LHTPWWWVertexInterfaces "The interfaces"
+ * defined for LHTPWWWVertex.
  */
-  class LHTPWWHVertex: public Helicity::VVSVertex {
+class LHTPWWWVertex: public VVVVertex {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
-  LHTPWWHVertex();
-  
-  /**
-   * Calculate the couplings. 
-   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
-   * @param part1 The ParticleData pointer for the first  particle.
-   * @param part2 The ParticleData pointer for the second particle.
-   * @param part3 The ParticleData pointer for the third  particle.
-   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+  LHTPWWWVertex();
+  //@}
 
 public:
 
@@ -65,6 +58,15 @@ public:
    */
   static void Init();
 
+  /**
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param a The ParticleData pointer for the first  particle.
+   * @param b The ParticleData pointer for the second particle.
+   * @param c The ParticleData pointer for the third  particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c);
+
 protected:
 
   /** @name Clone Methods. */
@@ -73,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -100,36 +102,30 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<LHTPWWHVertex> initLHTPWWHVertex;
+  static ClassDescription<LHTPWWWVertex> initLHTPWWWVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LHTPWWHVertex & operator=(const LHTPWWHVertex &);
+  LHTPWWWVertex & operator=(const LHTPWWWVertex &);
 
 private:
+  
+  /**
+   * The value of the coupling when it was last evaluated.
+   */
+  Complex couplast_;
 
   /**
-   * Storage of the couplings.
+   * The scale where the coulpling was last evaluated 
    */
-  //@{
-  /**
-   *  The last value of the electroweak coupling calculated.
-   */
-  Complex _couplast;
+  Energy2 q2last_;
 
   /**
-   *  The scale \f$q^2\f$ at which the coupling was last evaluated.
+   * The couplings for the various possible interactions
    */
-  Energy2 _q2last;
-
-  /**
-   *  Couplings for the different interactions
-   */
-  vector<Energy> _coup;
-  //@}
-
+  vector<double> couplings_;
 };
 
 }
@@ -141,24 +137,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LHTPWWHVertex. */
+ *  base classes of LHTPWWWVertex. */
 template <>
-struct BaseClassTrait<Herwig::LHTPWWHVertex,1> {
-  /** Typedef of the first base class of LHTPWWHVertex. */
-  typedef Helicity::VVSVertex NthBase;
+struct BaseClassTrait<Herwig::LHTPWWWVertex,1> {
+  /** Typedef of the first base class of LHTPWWWVertex. */
+  typedef Helicity::VVVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LHTPWWHVertex class and the shared object where it is defined. */
+ *  the LHTPWWWVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LHTPWWHVertex>
-  : public ClassTraitsBase<Herwig::LHTPWWHVertex> {
+struct ClassTraits<Herwig::LHTPWWWVertex>
+  : public ClassTraitsBase<Herwig::LHTPWWWVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::LHTPWWHVertex"; }
+  static string className() { return "Herwig::LHTPWWWVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * LHTPWWHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class LHTPWWHVertex depends on other classes (base classes
+   * LHTPWWWVertex is implemented. It may also include several, space-separated,
+   * libraries if the class LHTPWWWVertex depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -169,4 +165,4 @@ struct ClassTraits<Herwig::LHTPWWHVertex>
 
 }
 
-#endif /* HERWIG_LHTPWWHVertex_H */
+#endif /* HERWIG_LHTPWWWVertex_H */

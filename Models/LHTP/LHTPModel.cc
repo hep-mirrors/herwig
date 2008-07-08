@@ -9,9 +9,13 @@
 #include "ThePEG/Repository/BaseRepository.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "gsl/gsl_multiroots.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
+#include <algorithm>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -50,6 +54,18 @@ int top_equation(const gsl_vector * x, void *params, gsl_vector *f ) {
   return GSL_SUCCESS;
 }
 
+}
+
+LHTPModel::LHTPModel()
+  : _f(0.5*TeV), _salpha(sqrt(0.500)), _calpha(0.), _sbeta(0.), _cbeta(0.),
+    _kappa(1.), _mh(120.*GeV), _v(246.*GeV),_g(sqrt(0.43)), _gp(sqrt(0.12)) {}
+
+IBPtr LHTPModel::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LHTPModel::fullclone() const {
+  return new_ptr(*this);
 }
 
 void LHTPModel::persistentOutput(PersistentOStream & os) const {
@@ -95,13 +111,12 @@ void LHTPModel::Init() {
      "The mass of the lightest Higgs boson",
      &LHTPModel::_mh, GeV, 120.0*GeV, 100.0*GeV, 1000.0*GeV,
      false, false, Interface::limited);
-
 }
 
 void LHTPModel::resetMass(long id, Energy mass) {
   tPDPtr part = getParticleData(id);
   if(!part) return;
-  part->init();
+  //  part->init();
   const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
   ostringstream os;
   os << abs(mass/GeV);
@@ -110,6 +125,9 @@ void LHTPModel::resetMass(long id, Energy mass) {
 
 void LHTPModel::doinit() throw(InitException) {
   StandardModel::doinit();
+  string name = CurrentGenerator::current().filename() +
+    string("-BSMModelInfo.out");
+  ofstream dummy(name.c_str());
   using Constants::pi;
   // compute the parameters of the model
   // W and Z masses
@@ -153,7 +171,7 @@ void LHTPModel::doinit() throw(InitException) {
   resetMass( -8      , MTp  );
   resetMass(  4000008, MTm  );
   resetMass( -4000008, MTm  );
-  // masses of the Higgs bosons
+  //  masses of the Higgs bosons
   resetMass( 25      , _mh  );
   resetMass( 35      , MPhi );
   resetMass( 36      , MPhi );
@@ -162,31 +180,31 @@ void LHTPModel::doinit() throw(InitException) {
   resetMass( 38      , MPhi );
   resetMass(-38      , MPhi );
   // masses of the T-odd quarks
-  resetMass( 40000001, Mdm  );
-  resetMass(-40000001, Mdm  );
-  resetMass( 40000002, Mum  );
-  resetMass(-40000002, Mum  );
-  resetMass( 40000003, Mdm  );
-  resetMass(-40000003, Mdm  );
-  resetMass( 40000004, Mum  );
-  resetMass(-40000004, Mum  );
-  resetMass( 40000005, Mdm  );
-  resetMass(-40000005, Mdm  );
-  resetMass( 40000006, Mum  );
-  resetMass(-40000006, Mum  );
+  resetMass( 4000001, Mdm  );
+  resetMass(-4000001, Mdm  );
+  resetMass( 4000002, Mum  );
+  resetMass(-4000002, Mum  );
+  resetMass( 4000003, Mdm  );
+  resetMass(-4000003, Mdm  );
+  resetMass( 4000004, Mum  );
+  resetMass(-4000004, Mum  );
+  resetMass( 4000005, Mdm  );
+  resetMass(-4000005, Mdm  );
+  resetMass( 4000006, Mum  );
+  resetMass(-4000006, Mum  );
   // masses of the T-odd leptons
-  resetMass( 40000011, Mlm  );
-  resetMass(-40000011, Mlm  );
-  resetMass( 40000012, Mnm  );
-  resetMass(-40000012, Mnm  );
-  resetMass( 40000013, Mlm  );
-  resetMass(-40000013, Mlm  );
-  resetMass( 40000014, Mnm  );
-  resetMass(-40000014, Mnm  );
-  resetMass( 40000015, Mlm  );
-  resetMass(-40000015, Mlm  );
-  resetMass( 40000016, Mnm  );
-  resetMass(-40000016, Mnm  );
+  resetMass( 4000011, Mlm  );
+  resetMass(-4000011, Mlm  );
+  resetMass( 4000012, Mnm  );
+  resetMass(-4000012, Mnm  );
+  resetMass( 4000013, Mlm  );
+  resetMass(-4000013, Mlm  );
+  resetMass( 4000014, Mnm  );
+  resetMass(-4000014, Mnm  );
+  resetMass( 4000015, Mlm  );
+  resetMass(-4000015, Mlm  );
+  resetMass( 4000016, Mnm  );
+  resetMass(-4000016, Mnm  );
 }
 
 void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
@@ -197,7 +215,6 @@ void LHTPModel::topMixing(Energy & MTp, Energy & MTm) {
   double lambda1(mt/_v/_calpha), lambda2(mt/_salpha/_v);
   MTp = lambda1/_salpha*_f;
   MTm = lambda1/_salpha*_calpha*_f;
-  cerr << "testing heavy masses A " << MTp/GeV << " " << MTm/GeV << "\n";
   // special case where denominator of tan 2 alpha eqn is zero
   if(abs(_salpha-sqrt(0.5))<1e-4) {
     double a = 0.25*(2.*sqr(sv)+sqr(1.+cv));

@@ -16,13 +16,13 @@ cd /Herwig/Particles
 # using PDG number for excited gauge bosons A_H=Z' Z_H=Z'' W_H=W'
 #
 create ThePEG::ParticleData A_H
-setup A_H 32 A_H 500.0 14.548480 145.484840 0.0 0 0 3 0
+setup A_H 32 A_H 1000. 0.0 0.0 0.0 0 0 3 0
 create ThePEG::ParticleData Z_H 
-setup Z_H 33 Z_H 900.0 0.0 0.0 0.0 0 0 3 0
+setup Z_H 33 Z_H 1000. 0.0 0.0 0.0 0 0 3 0
 create ThePEG::ParticleData W_H+ 
-setup W_H+ 34 W_H+ 500.0 16.67080 166.708010 0.0 3 0 3 0
+setup W_H+ 34 W_H+ 1000.0 0.0 0.0 0.0 3 0 3 0
 create ThePEG::ParticleData W_H- 
-setup W_H- -34 W_H- 500.0 16.67080 166.708010 0.0 -3 0 3 0
+setup W_H- -34 W_H- 1000.0 0.0 0.0 0.0 -3 0 3 0
 makeanti W_H+ W_H- 
 #
 # extra top quark using 4th generation number
@@ -88,34 +88,34 @@ create ThePEG::ParticleData TmTbar
 setup TmTbar -4000008 TmTbar 1000.0 0.0 0.0 0.0 -2 -3 2 0
 makeanti TmT TmTbar  
 create ThePEG::ParticleData emT-
-setup emT- 4000011 emT- 1000. 0.  0 0 -3 0 2 1 
+setup emT- 4000011 emT- 1000. 0.0 0.0 0.0 -3 0 2 0 
 create ThePEG::ParticleData emT+
-setup emT+ -4000011 emT+ 1000. 0.  0 0  3 0 2 1 
-makeanti emT+ emT-
+setup emT+ -4000011 emT+ 1000. 0.0 0.0 0.0 3 0 2 0
+makeanti emT- emT+
 create ThePEG::ParticleData muemT-
-setup muemT- 4000013 muemT- 1000. 0. 0 0 -3 0 2 1 
+setup muemT- 4000013 muemT- 1000. 0.0 0.0 0.0 -3 0 2 0
 create ThePEG::ParticleData muemT+
-setup muemT+ -4000013 muemT+ 1000. 0. 0 0 3 0 2 1 
+setup muemT+ -4000013 muemT+ 1000. 0. 0.0 0.0 3 0 2 0 
 makeanti muemT+ muemT-
 create ThePEG::ParticleData taumT+
-setup taumT+ -4000015 taumT+ 1000. 0. 0 0 3 0 2 0 
+setup taumT+ -4000015 taumT+ 1000. 0.0 0.0 0.0 3 0 2 0 
 create ThePEG::ParticleData taumT-
-setup taumT- 4000015 taumT- 1000. 0. 0 0 -3 0 2 0 
+setup taumT- 4000015 taumT- 1000. 0.0 0.0 0.0 -3 0 2 0 
 makeanti taumT- taumT+
 create ThePEG::ParticleData nu_emT
-setup nu_emT 4000012 nu_emT 0 0.  0 0 0 0 2 1 
+setup nu_emT 4000012 nu_emT 1000. 0.0 0.0 0.0 0 0 2 0
 create ThePEG::ParticleData nu_emTbar
-setup nu_emTbar -4000012 nu_emTbar 0 0.  0 0 0 0 2 1 
+setup nu_emTbar -4000012 nu_emTbar 1000 0.0 0.0 0.0 0 0 2 0
 makeanti nu_emTbar nu_emT
 create ThePEG::ParticleData nu_mumT
-setup nu_mumT 4000014 nu_mumT 0 0.  0 0 0 0 2 1 
+setup nu_mumT 4000014 nu_mumT 1000. 0.0 0.0 0.0 0 0 2 0
 create ThePEG::ParticleData nu_mumTbar
-setup nu_mumTbar -4000014 nu_mumTbar 0 0.  0 0 0 0 2 1 
+setup nu_mumTbar -4000014 nu_mumTbar 0.0 0.0 0.0 0 0 0 2 0
 makeanti nu_mumTbar nu_mumT
 create ThePEG::ParticleData nu_taumT
-setup nu_taumT 4000016 nu_taumT 0 0.  0 0 0 0 2 1 
+setup nu_taumT 4000016 nu_taumT 1000. 0.0 0.0 0.0 0 0 2 0
 create ThePEG::ParticleData nu_taumTbar
-setup nu_taumTbar -4000016 nu_taubar 0 0.  0 0 0 0 2 1 
+setup nu_taumTbar -4000016 nu_taumTbar 1000. 0.0 0.0 0.0 0 0 2 0
 makeanti nu_taumTbar nu_taumT
 ###################################################
 #
@@ -143,27 +143,32 @@ cd /Herwig/Vertices/LHTP
 create Herwig::LHTPFFGVertex FFGVertex
 create Herwig::LHTPFFPVertex FFPVertex
 create Herwig::LHTPFFWVertex FFWVertex
-
+create Herwig::LHTPFFZVertex FFZVertex
+create Herwig::LHTPWWHVertex WWHVertex
+create Herwig::LHTPWWWVertex WWWVertex
 
 cd /Herwig/NewPhysics/LHTP
-# SM vertices
 set Model:Vertex/FFG /Herwig/Vertices/LHTP/FFGVertex
-set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
-set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-
-
-
-
-
-set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
+set Model:Vertex/FFZ /Herwig/Vertices/LHTP/FFZVertex
 set Model:Vertex/FFW /Herwig/Vertices/LHTP/FFWVertex
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
 set Model:Vertex/FFP /Herwig/Vertices/LHTP/FFPVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
-set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
+set Model:Vertex/WWH /Herwig/Vertices/LHTP/WWHVertex
+set Model:Vertex/WWW /Herwig/Vertices/LHTP/WWWVertex
+
+# Not implemented LHTP yet
+set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
 set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
+
+## Also vertices that have no SM equivalent
+# - WHH
+# - HHH
+
+# No LHTP equivalent
+set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
+set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
+
 
 cd /Herwig/NewPhysics
 insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
