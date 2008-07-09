@@ -52,7 +52,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual NasonTreePtr generateHardest(ShowerTreePtr);
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
 
   /**
    *  Member to decide if the inheriting class can handle this process
@@ -96,12 +96,12 @@ protected:
   /**
    *  Member to generate the hardest emission for a hard process
    */
-  NasonTreePtr generateHard(ShowerTreePtr);
+  HardTreePtr generateHard(ShowerTreePtr);
 
   /**
    *  Member to generate the hardest emission for a decay process
    */
-  NasonTreePtr generateDecay(ShowerTreePtr);
+  HardTreePtr generateDecay(ShowerTreePtr);
   //@}
 
   /**
