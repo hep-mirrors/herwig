@@ -8,7 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "Herwig++/Shower/Nason/HardestEmissionGenerator.h"
+#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "ThePEG/Repository/UseRandom.h"

@@ -121,9 +121,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile
-		Shower/Nason/Makefile
-		Shower/Nason/HardGenerators/Makefile
-		Shower/Nason/Matching/Makefile
+		Shower/Powheg/Makefile
+		Shower/Powheg/HardGenerators/Makefile
+		Shower/Powheg/Matching/Makefile
 		Shower/Fortran/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile

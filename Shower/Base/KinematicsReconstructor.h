@@ -16,7 +16,7 @@
 #include "ShowerParticle.h"
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
-#include "Herwig++/Shower/Nason/NasonTree.h"
+#include "Herwig++/Shower/Powheg/NasonTree.h"
 #include "Evolver.fh"
 #include "KinematicsReconstructor.fh"
 #include <cassert>

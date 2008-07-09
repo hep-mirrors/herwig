@@ -5,7 +5,7 @@
 // This is the declaration of the CSVectorBosonQQbarHardGenerator class.
 //
 
-#include "Herwig++/Shower/Nason/HardestEmissionGenerator.h"
+#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "CSVectorBosonQQbarHardGenerator.fh"
 
