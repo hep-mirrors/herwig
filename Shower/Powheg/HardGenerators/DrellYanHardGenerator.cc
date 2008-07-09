@@ -193,35 +193,35 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
 				 << "DrellYanHardGenerator::generateHardest()" 
 				 << Exception::runerror;
-  vector<NasonBranchingPtr> nasonin,nasonhard;
+  vector<HardBranchingPtr> nasonin,nasonhard;
   // create the branchings for the incoming particles
-  nasonin.push_back(new_ptr(NasonBranching(newparticles[0],
+  nasonin.push_back(new_ptr(HardBranching(newparticles[0],
 					   iemit==0 ? sudakov : SudakovPtr(),
-					   NasonBranchingPtr(),true)));
-  nasonin.push_back(new_ptr(NasonBranching(newparticles[1],
+					   HardBranchingPtr(),true)));
+  nasonin.push_back(new_ptr(HardBranching(newparticles[1],
 					   iemit==1 ? sudakov : SudakovPtr(),
-					   NasonBranchingPtr(),true)));
+					   HardBranchingPtr(),true)));
   // create the branching for the emitted jet
-  nasonin[iemit]->addChild(new_ptr(NasonBranching(newparticles[2],SudakovPtr(),
+  nasonin[iemit]->addChild(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 						   nasonin[iemit],false)));
   // intermediate IS particle
-  nasonhard.push_back(new_ptr(NasonBranching(newparticles[4],SudakovPtr(),
+  nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
 					nasonin[iemit],true)));
   nasonin[iemit]->addChild(nasonhard.back());
   // add other particle
   nasonhard.push_back(nasonin[iemit==0 ? 1 : 0]);
   // outgoing boson
-  nasonhard.push_back(new_ptr(NasonBranching(newparticles[3],SudakovPtr(),
-					NasonBranchingPtr(),false)));
+  nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
+					HardBranchingPtr(),false)));
   // make the tree
   HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
-  set<NasonBranchingPtr> hard=nasontree->branchings();
+  set<HardBranchingPtr> hard=nasontree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt);
     else particlesToShower[ix]->maximumpT(_min_pt);
-    for(set<NasonBranchingPtr>::const_iterator mit=hard.begin();
+    for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->_particle->id()&&
 	 particlesToShower[ix]->progenitor()->isFinalState()!=(*mit)->_incoming) {
@@ -229,7 +229,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
 	if((*mit)->_incoming) {
 	  (*mit)->_beam=particlesToShower[ix]->original()->parents()[0];
 	}
-	NasonBranchingPtr parent=(*mit)->_parent;
+	HardBranchingPtr parent=(*mit)->_parent;
 	while(parent) {
 	  parent->_beam=particlesToShower[ix]->original()->parents()[0];
 	  parent=parent->_parent;

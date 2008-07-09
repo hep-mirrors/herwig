@@ -9,13 +9,13 @@
 
 using namespace Herwig;
 
-HardTree::HardTree(vector<NasonBranchingPtr> branchings,
-		     vector<NasonBranchingPtr> spacelike) {
+HardTree::HardTree(vector<HardBranchingPtr> branchings,
+		     vector<HardBranchingPtr> spacelike) {
   _branchings.insert(branchings.begin(),branchings.end());
   _spacelike .insert(spacelike .begin(),spacelike .end());
 }
 
-void NasonBranching::setMomenta(LorentzRotation R,double aparent,
+void HardBranching::setMomenta(LorentzRotation R,double aparent,
 				Lorentz5Momentum ptparent) {
   _original=R*_particle->momentum();
   // compute the shower variables

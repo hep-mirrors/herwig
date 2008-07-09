@@ -248,7 +248,7 @@ struct ClassTraits<Herwig::pTSudakov>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNasonShower.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */
@@ -256,8 +256,5 @@ struct ClassTraits<Herwig::pTSudakov>
 }
 
 #include "pTSudakov.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "pTSudakov.tcc"
-#endif
 
 #endif /* HERWIG_pTSudakov_H */

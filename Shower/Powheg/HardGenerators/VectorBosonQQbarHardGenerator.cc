@@ -41,7 +41,7 @@ void VectorBosonQQbarHardGenerator::Init() {
 
   static ClassDocumentation<VectorBosonQQbarHardGenerator> documentation
     ("The VectorBosonQQbarHardGenerator class generates the hardest emission for"
-     "vector boson decays to fermion-antifermion events in the Nason approach");
+     "vector boson decays to fermion-antifermion events in the POWHEG approach");
 
   static Reference<VectorBosonQQbarHardGenerator,ShowerAlpha> interfaceShowerAlpha
     ("ShowerAlpha",
@@ -175,20 +175,20 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // setQCDInitialEvolutionScales from reconstructDecayShower.
   parent->set5Momentum(parentMomentum);
 
-  // Create the vectors of NasonBranchings to create the HardTree:
-  vector<NasonBranchingPtr> spaceBranchings,allBranchings;
+  // Create the vectors of HardBranchings to create the HardTree:
+  vector<HardBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
-  spaceBranchings.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
-						 NasonBranchingPtr(),true)));
+  spaceBranchings.push_back(new_ptr(HardBranching(vboson,SudakovPtr(),
+						 HardBranchingPtr(),true)));
   // Outgoing particles from hard emission:
-  NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(spectator,
-				    SudakovPtr(),NasonBranchingPtr(),false)));
-  NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(parent,
-				    sudakov,NasonBranchingPtr(),false)));
-  emitterBranch->addChild(new_ptr(NasonBranching(emitter, 
-				    SudakovPtr(),NasonBranchingPtr(),false)));
-  emitterBranch->addChild(new_ptr(NasonBranching(gluon,
-				    SudakovPtr(),NasonBranchingPtr(),false)));
+  HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,
+				    SudakovPtr(),HardBranchingPtr(),false)));
+  HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,
+				    sudakov,HardBranchingPtr(),false)));
+  emitterBranch->addChild(new_ptr(HardBranching(emitter, 
+				    SudakovPtr(),HardBranchingPtr(),false)));
+  emitterBranch->addChild(new_ptr(HardBranching(gluon,
+				    SudakovPtr(),HardBranchingPtr(),false)));
   if(_iemitter==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);
@@ -200,7 +200,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Add incoming boson to allBranchings
   allBranchings.push_back(spaceBranchings.back());
 
-  // Make the HardTree from the NasonBranching vectors.
+  // Make the HardTree from the HardBranching vectors.
   HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings));
 	
   // Set the maximum pt for all other emissions
@@ -265,7 +265,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // KMH - why don't we do the next step in reconstructDecayShower? 
   // Reset the momenta to ensure the correct momenta after shower recon
   // if emitter for Kleiss trick and shower are different
-  for(map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator 
+  for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
   	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
     mit->first->set5Momentum(mit->second->_shower);
 

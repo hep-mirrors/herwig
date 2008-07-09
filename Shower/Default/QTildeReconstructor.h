@@ -107,7 +107,7 @@ public:
   /**
    *  Methods to reconstruct the variables used to generate the
    *  shower given the particles produced.
-   *  This is needed for the CKKW and Nason approaches
+   *  This is needed for the CKKW and POWHEG approaches
    */
   //@{
   /**

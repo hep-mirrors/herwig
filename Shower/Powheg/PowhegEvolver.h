@@ -1,12 +1,12 @@
 // -*- C++ -*-
-#ifndef HERWIG_NasonEvolver_H
-#define HERWIG_NasonEvolver_H
+#ifndef HERWIG_PowhegEvolver_H
+#define HERWIG_PowhegEvolver_H
 //
-// This is the declaration of the NasonEvolver class.
+// This is the declaration of the PowhegEvolver class.
 //
 
 #include "Herwig++/Shower/Base/Evolver.h"
-#include "NasonEvolver.h"
+#include "PowhegEvolver.h"
 #include "HardestEmissionGenerator.h"
 #include "Herwig++/Utilities/Histogram.h"
 
@@ -16,19 +16,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the NasonEvolver class.
+ * Here is the documentation of the PowhegEvolver class.
  *
- * @see \ref NasonEvolverInterfaces "The interfaces"
- * defined for NasonEvolver.
+ * @see \ref PowhegEvolverInterfaces "The interfaces"
+ * defined for PowhegEvolver.
  */
-class NasonEvolver: public Evolver {
+class PowhegEvolver: public Evolver {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline NasonEvolver();
+  inline PowhegEvolver();
 
   /**
    *  Member to perform the shower
@@ -101,10 +101,10 @@ protected:
    * @param particle The particle to be showered
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
-				       NasonBranchingPtr branch);
+				       HardBranchingPtr branch);
  
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-					NasonBranchingPtr branch); 
+					HardBranchingPtr branch); 
 
 protected:
 
@@ -153,13 +153,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<NasonEvolver> initNasonEvolver;
+  static ClassDescription<PowhegEvolver> initPowhegEvolver;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  NasonEvolver & operator=(const NasonEvolver &);
+  PowhegEvolver & operator=(const PowhegEvolver &);
 
 private:
 
@@ -206,34 +206,34 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of NasonEvolver. */
+ *  base classes of PowhegEvolver. */
 template <>
-struct BaseClassTrait<Herwig::NasonEvolver,1> {
-  /** Typedef of the first base class of NasonEvolver. */
+struct BaseClassTrait<Herwig::PowhegEvolver,1> {
+  /** Typedef of the first base class of PowhegEvolver. */
   typedef Herwig::Evolver NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the NasonEvolver class and the shared object where it is defined. */
+ *  the PowhegEvolver class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::NasonEvolver>
-  : public ClassTraitsBase<Herwig::NasonEvolver> {
+struct ClassTraits<Herwig::PowhegEvolver>
+  : public ClassTraitsBase<Herwig::PowhegEvolver> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::NasonEvolver"; }
+  static string className() { return "Herwig::PowhegEvolver"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * NasonEvolver is implemented. It may also include several, space-separated,
-   * libraries if the class NasonEvolver depends on other classes (base classes
+   * PowhegEvolver is implemented. It may also include several, space-separated,
+   * libraries if the class PowhegEvolver depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNasonShower.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "NasonEvolver.icc"
+#include "PowhegEvolver.icc"
 
-#endif /* HERWIG_NasonEvolver_H */
+#endif /* HERWIG_PowhegEvolver_H */

@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the CKKWHardGenerator class.
+// functions of the ExternalHardGenerator class.
 //
 
-#include "CKKWHardGenerator.h"
+#include "ExternalHardGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -25,43 +25,43 @@
 
 using namespace Herwig;
 
-void CKKWHardGenerator::persistentOutput(PersistentOStream & os) const {
+void ExternalHardGenerator::persistentOutput(PersistentOStream & os) const {
   os << _CKKWh;
 }
 
-void CKKWHardGenerator::persistentInput(PersistentIStream & is, int) {
+void ExternalHardGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _CKKWh;
 }
 
-ClassDescription<CKKWHardGenerator> CKKWHardGenerator::initCKKWHardGenerator;
+ClassDescription<ExternalHardGenerator> ExternalHardGenerator::initExternalHardGenerator;
 // Definition of the static class description member.
 
-void CKKWHardGenerator::Init() {
+void ExternalHardGenerator::Init() {
 
-  static ClassDocumentation<CKKWHardGenerator> documentation
-    ("The CKKWHardGenerator class generates the hardest emission for"
-     "vector boson decays to fermion-antifermion events in the Nason approach");
+  static ClassDocumentation<ExternalHardGenerator> documentation
+    ("The ExternalHardGenerator class generates the hardest emission for"
+     "vector boson decays to fermion-antifermion events in the POWHEG approach");
 
-  static Reference<CKKWHardGenerator, NasonCKKWHandler> interfaceCKKWHandler
+  static Reference<ExternalHardGenerator, PowhegHandler> interfaceCKKWHandler
     ("CKKWHandler",
-     "The cascade handler for NasonCKKW",
-     &CKKWHardGenerator::_CKKWh, false, false,
+     "The cascade handler for Powheg",
+     &ExternalHardGenerator::_CKKWh, false, false,
      true, false);
 
 }
 
-HardTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
+HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   //Get the HardTree from the CKKW handler.
-  HardTreePtr nasontree = _CKKWh->getHardTree();
+  HardTreePtr hardtree = _CKKWh->getHardTree();
   vector<ShowerProgenitorPtr> progenitors = tree->extractProgenitors();
   // connect the trees up
   for(unsigned int ix=0;ix<progenitors.size();++ix) {
     bool match(false);
-    for(set<NasonBranchingPtr>::iterator it=nasontree->branchings().begin();
-	it!=nasontree->branchings().end();++it) {
+    for(set<HardBranchingPtr>::iterator it=hardtree->branchings().begin();
+	it!=hardtree->branchings().end();++it) {
       if((**it)._particle->id()!=progenitors[ix]->progenitor()->id()) continue;
       cerr << *progenitors[ix]->progenitor() << "\n";
-      nasontree->connect(progenitors[ix]->progenitor(),*it);
+      hardtree->connect(progenitors[ix]->progenitor(),*it);
       match = true;
     }
     if(!match) return HardTreePtr();
@@ -84,8 +84,8 @@ HardTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
   // QbarProgenitor->maximumpT(ptveto);
 
   // Connect the particles with the branchings in the HardTree
-  // nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
-  // nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
+  // hardtree->connect(QProgenitor->progenitor(),allBranchings[0]);
+  // hardtree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
 
   // Create the two colour lines and connect the particles:
   // ColinePtr blueLine  = new_ptr(ColourLine());
@@ -97,9 +97,9 @@ HardTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
   // greenLine->addColoured(spectator,_ispectator);
 
   // Return the HardTree
-  return nasontree;
+  return hardtree;
 }
 
-bool CKKWHardGenerator::canHandle(ShowerTreePtr tree) {
+bool ExternalHardGenerator::canHandle(ShowerTreePtr tree) {
   return true;
 }

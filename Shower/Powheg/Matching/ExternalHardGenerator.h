@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_CKKWHardGenerator_H
-#define HERWIG_CKKWHardGenerator_H
+#ifndef HERWIG_ExternalHardGenerator_H
+#define HERWIG_ExternalHardGenerator_H
 //
-// This is the declaration of the CKKWHardGenerator class.
+// This is the declaration of the ExternalHardGenerator class.
 //
 
 #include <iostream>
@@ -15,7 +15,7 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
-#include "NasonCKKWHandler.h"
+#include "PowhegHandler.h"
 
 
 
@@ -24,19 +24,19 @@ namespace Herwig {
 using namespace ThePEG;
 using namespace std;
 /**
- * Here is the documentation of the CKKWHardGenerator class.
+ * Here is the documentation of the ExternalHardGenerator class.
  *
- * @see \ref CKKWHardGeneratorInterfaces "The interfaces"
- * defined for CKKWHardGenerator.
+ * @see \ref ExternalHardGeneratorInterfaces "The interfaces"
+ * defined for ExternalHardGenerator.
  */
-class CKKWHardGenerator: public HardestEmissionGenerator {
+class ExternalHardGenerator: public HardestEmissionGenerator {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline CKKWHardGenerator()
+  inline ExternalHardGenerator()
   {}
 
   /**
@@ -106,21 +106,21 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<CKKWHardGenerator> 
-  initCKKWHardGenerator;
+  static ClassDescription<ExternalHardGenerator> 
+  initExternalHardGenerator;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  CKKWHardGenerator & operator=(const CKKWHardGenerator &);
+  ExternalHardGenerator & operator=(const ExternalHardGenerator &);
 
 private:
   
   /**
    * Pointer to the CKKW handler from which the nasonTree is obtained
    */
-  NasonCKKWHandlerPtr _CKKWh;
+  PowhegHandlerPtr _CKKWh;
 
 };
 
@@ -133,34 +133,34 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of CKKWHardGenerator. */
+ *  base classes of ExternalHardGenerator. */
 template <>
-struct BaseClassTrait<Herwig::CKKWHardGenerator,1> {
-  /** Typedef of the first base class of CKKWHardGenerator. */
+struct BaseClassTrait<Herwig::ExternalHardGenerator,1> {
+  /** Typedef of the first base class of ExternalHardGenerator. */
   typedef Herwig::HardestEmissionGenerator NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the CKKWHardGenerator class and the shared object where it is defined. */
+ *  the ExternalHardGenerator class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::CKKWHardGenerator>
-  : public ClassTraitsBase<Herwig::CKKWHardGenerator> {
+struct ClassTraits<Herwig::ExternalHardGenerator>
+  : public ClassTraitsBase<Herwig::ExternalHardGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::CKKWHardGenerator"; }
+  static string className() { return "Herwig::ExternalHardGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * CKKWHardGenerator is implemented. 
+   * ExternalHardGenerator is implemented. 
    * It may also include several, space-separated,
-   * libraries if the class CKKWHardGenerator depends
+   * libraries if the class ExternalHardGenerator depends
    * on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNasonShower.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_CKKWHardGenerator_H */
+#endif /* HERWIG_ExternalHardGenerator_H */

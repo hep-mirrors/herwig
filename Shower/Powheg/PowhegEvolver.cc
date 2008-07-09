@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the NasonEvolver class.
+// functions of the PowhegEvolver class.
 //
 
-#include "NasonEvolver.h"
+#include "PowhegEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/RefVector.h"
@@ -23,32 +23,32 @@
 
 using namespace Herwig;
 
-void NasonEvolver::persistentOutput(PersistentOStream & os) const {
+void PowhegEvolver::persistentOutput(PersistentOStream & os) const {
   os << _hardgenerator << _hardonly << _trunc_Mode;
 }
 
-void NasonEvolver::persistentInput(PersistentIStream & is, int) {
+void PowhegEvolver::persistentInput(PersistentIStream & is, int) {
   is >> _hardgenerator >> _hardonly >> _trunc_Mode;
 }
 
-ClassDescription<NasonEvolver> NasonEvolver::initNasonEvolver;
+ClassDescription<PowhegEvolver> PowhegEvolver::initPowhegEvolver;
 // Definition of the static class description member.
 
-void NasonEvolver::Init() {
+void PowhegEvolver::Init() {
 
-  static ClassDocumentation<NasonEvolver> documentation
-    ("The NasonEvolver implements the Nason approach to MC@NLO");
+  static ClassDocumentation<PowhegEvolver> documentation
+    ("The PowhegEvolver implements the POWHEG approach to MC@NLO");
 
-  static RefVector<NasonEvolver,HardestEmissionGenerator> interfaceHardGenerator
+  static RefVector<PowhegEvolver,HardestEmissionGenerator> interfaceHardGenerator
     ("HardGenerator",
      "The objects responsible for generating the hardestr emission",
-     &NasonEvolver::_hardgenerator, -1, false, false, true, false, false);
+     &PowhegEvolver::_hardgenerator, -1, false, false, true, false, false);
 
-  static Switch<NasonEvolver,bool> interfaceHardOnly
+  static Switch<PowhegEvolver,bool> interfaceHardOnly
     ("HardOnly",
      "Only generate the emission supplied by the hardest emission"
      " generator, for testing only.",
-     &NasonEvolver::_hardonly, false, false, false);
+     &PowhegEvolver::_hardonly, false, false, false);
   static SwitchOption interfaceHardOnlyNo
     (interfaceHardOnly,
      "No",
@@ -59,9 +59,9 @@ void NasonEvolver::Init() {
      "Yes",
      "Only the hardest emission",
      true);
-  static Switch<NasonEvolver,bool> interfaceTruncMode
+  static Switch<PowhegEvolver,bool> interfaceTruncMode
     ("TruncatedShower", "Include the truncated shower?", 
-     &NasonEvolver::_trunc_Mode, 1, false, false);
+     &PowhegEvolver::_trunc_Mode, 1, false, false);
   static SwitchOption interfaceTruncMode0
     (interfaceTruncMode,"No","Truncated Shower is OFF", 0);
   static SwitchOption interfaceTruncMode1
@@ -70,7 +70,7 @@ void NasonEvolver::Init() {
 }
 
 
-void NasonEvolver::showerDecay(ShowerTreePtr tree) {
+void PowhegEvolver::showerDecay(ShowerTreePtr tree) {
   // set the tree
   currentTree(tree);
   // set up the shower
@@ -109,7 +109,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 //       }
 //     }
     // final-state radiation
-    map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator mit,eit;
+    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator mit,eit;
     if(_nasontree) eit=_nasontree->particles().end();
     if(isFSRadiationON()) {
       for( unsigned int ix=0; ix < particlesToShower.size(); ++ix ) {
@@ -143,7 +143,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 	maximumTries()>++ntry);
   if(maximumTries()==ntry) 
     throw Exception() << "Failed to generate the shower after "
-		      << ntry << " attempts in NasonEvolver::showerDecay()"
+		      << ntry << " attempts in PowhegEvolver::showerDecay()"
 		      << Exception::eventerror;
   currentTree()->hasShowered(true);
 
@@ -166,11 +166,11 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
     }
     // extract the particles from the nason tree
     vector<PPtr> outb;
-    for(set<NasonBranchingPtr>::const_iterator it = 
+    for(set<HardBranchingPtr>::const_iterator it = 
 	  _nasontree->branchings().begin();
 	it != _nasontree->branchings().end(); ++it)  {
       if(!(**it)._children.empty()) {
-	for(vector<NasonBranchingPtr>::const_iterator jt=(**it)._children.begin();
+	for(vector<HardBranchingPtr>::const_iterator jt=(**it)._children.begin();
 	    jt!=(**it)._children.end();++jt) {
 	  outb.push_back((**jt)._particle);
 	}
@@ -199,7 +199,7 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
   }
 }
 
-void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
+void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
   // set the tree
   currentTree(tree);
   // set up the shower
@@ -215,7 +215,7 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
       setColourPartners(true);
     }
     // initial-state radiation
-    map<ShowerParticlePtr,tNasonBranchingPtr>::const_iterator mit,eit;
+    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator mit,eit;
     if(_nasontree) eit=_nasontree->particles().end();
     if(isISRadiationON()) {
       for( unsigned int ix=0; ix < particlesToShower.size(); ++ix ) {
@@ -265,7 +265,7 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
  	maximumTries() > ++ntry );
   if( maximumTries() == ntry ) throw Exception() << "Failed to generate thPersistency shower after "
 						 << ntry 
-						 << " attempts in NasonEvolver::showerHardProcess()"
+						 << " attempts in PowhegEvolver::showerHardProcess()"
 						 << Exception::eventerror;
   currentTree()->hasShowered( true );
 
@@ -298,7 +298,7 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
 //     }
     // extract the particles from the nason tree
     vector<ShowerParticlePtr> nason;
-    for(set<NasonBranchingPtr>::const_iterator it = _nasontree->incoming().begin();
+    for(set<HardBranchingPtr>::const_iterator it = _nasontree->incoming().begin();
 	it != _nasontree->incoming().end(); ++it) {
       nason.push_back((*it)->_particle);
       for(unsigned int ix=0;ix<(*it)->_children.size();++ix) {
@@ -329,7 +329,7 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
   }
 }
 
-vector<ShowerProgenitorPtr> NasonEvolver::setupShower( bool hard ) {
+vector<ShowerProgenitorPtr> PowhegEvolver::setupShower( bool hard ) {
   // set the colour partners
   setColourPartners(hard);
   // generate the hardest emission
@@ -355,7 +355,7 @@ vector<ShowerProgenitorPtr> NasonEvolver::setupShower( bool hard ) {
   return particlesToShower;
 }
 
-void NasonEvolver::hardestEmission() {
+void PowhegEvolver::hardestEmission() {
   // see if there is an appropriate hard emission generator
   HardestEmissionGeneratorPtr currenthard = HardestEmissionGeneratorPtr();
   for( unsigned int ix = 0; ix < _hardgenerator.size(); ++ix ) {
@@ -377,7 +377,7 @@ void NasonEvolver::hardestEmission() {
 	for(cjt=currentTree()->outgoingLines().begin();
 	    cjt!=currentTree()->outgoingLines().end();++cjt)
 	  {output << cjt->first->progenitor()->PDGName() << " ";}
-	output << "in NasonEvolver::hardestEmission()\n";
+	output << "in PowhegEvolver::hardestEmission()\n";
 	throw Exception() << output << Exception::runerror;
       }
     }
@@ -392,8 +392,8 @@ void NasonEvolver::hardestEmission() {
   _nasontree = currenthard->generateHardest( currentTree() );
 }
 
-bool NasonEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
-					    NasonBranchingPtr branch ) {
+bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
+					    HardBranchingPtr branch ) {
   bool vetoed = true;
   Branching fb;
   unsigned int iout;
@@ -531,8 +531,8 @@ bool NasonEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
   return true;
 }
 
-bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
-					    NasonBranchingPtr branch) {
+bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
+					    HardBranchingPtr branch) {
   bool vetoed(true);
   Branching bb;
   // generate branching
@@ -571,7 +571,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   if( !bb.kinematics ) {
     //do the hard emission
     double z(0.);
-    NasonBranchingPtr timelike;
+    HardBranchingPtr timelike;
     for( unsigned int ix = 0; ix < branch->_children.size(); ++ix ) {
       if( !branch->_children[ix]->_incoming ) {
           timelike = branch->_children[ix];
@@ -670,7 +670,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   return true;
 }
 
-void NasonEvolver::dofinish() {
+void PowhegEvolver::dofinish() {
  ofstream hist_out("truncated_emissions.top");
   using namespace HistogramOptions;
 
@@ -684,7 +684,7 @@ void NasonEvolver::dofinish() {
 			  " " );
 }
 
-void NasonEvolver::doinitrun() {
+void PowhegEvolver::doinitrun() {
   _hTrunc = new_ptr( Histogram( 0., 10., 10) ); 
   Evolver::doinitrun();
 }

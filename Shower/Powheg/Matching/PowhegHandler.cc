@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the NasonCKKWHandler class.
+// functions of the PowhegHandler class.
 //
 
-#include "NasonCKKWHandler.h"
+#include "PowhegHandler.h"
 #include "ThePEG/Utilities//CFileLineReader.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
@@ -20,40 +20,40 @@
 
 using namespace Herwig;
 
-IBPtr NasonCKKWHandler::clone() const {
+IBPtr PowhegHandler::clone() const {
   return new_ptr(*this);
 }
 
-IBPtr NasonCKKWHandler::fullclone() const {
+IBPtr PowhegHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-void NasonCKKWHandler::persistentOutput(PersistentOStream & os) const {
+void PowhegHandler::persistentOutput(PersistentOStream & os) const {
   os  << _alphaS << _sudopt << _sudname << _jetMeasureMode;
 }
 
-void NasonCKKWHandler::persistentInput(PersistentIStream & is, int) {
+void PowhegHandler::persistentInput(PersistentIStream & is, int) {
   is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode;
 }
 
-ClassDescription<NasonCKKWHandler> NasonCKKWHandler::initNasonCKKWHandler;
+ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
 // Definition of the static class description member.
 
-void NasonCKKWHandler::Init() {
+void PowhegHandler::Init() {
 
-  static ClassDocumentation<NasonCKKWHandler> documentation
-    ("The NasonCKKWHandler class manages the implementation of the CKKW approach using"
+  static ClassDocumentation<PowhegHandler> documentation
+    ("The PowhegHandler class manages the implementation of the CKKW approach using"
      "the truncated shower.");
 
-  static Reference<NasonCKKWHandler,ShowerAlpha> interfaceShowerAlpha
+  static Reference<PowhegHandler,ShowerAlpha> interfaceShowerAlpha
     ("ShowerAlpha",
      "The object calculating the strong coupling constant",
-     &NasonCKKWHandler::_alphaS, false, false, true, false, false);
+     &PowhegHandler::_alphaS, false, false, true, false, false);
 
-  static Switch<NasonCKKWHandler,unsigned int> interfaceSudakovOption
+  static Switch<PowhegHandler,unsigned int> interfaceSudakovOption
     ("SudakovOption",
      "Option for the initialisation of the Sudakov tables",
-     &NasonCKKWHandler::_sudopt, 0, false, false);
+     &PowhegHandler::_sudopt, 0, false, false);
   static SwitchOption interfaceSudakovOptionWrite
     (interfaceSudakovOption,
      "Write",
@@ -70,16 +70,16 @@ void NasonCKKWHandler::Init() {
      "Calculate the Sudakov but don't write the table",
      0);
 
-  static Parameter<NasonCKKWHandler,string> interfaceSudakovName
+  static Parameter<PowhegHandler,string> interfaceSudakovName
     ("SudakovName",
      "Name for the file containing the Sudakov form factors",
-     &NasonCKKWHandler::_sudname, "sudakov.data",
+     &PowhegHandler::_sudname, "sudakov.data",
      false, false);
 
-  static Switch<NasonCKKWHandler, unsigned int> ifaceJetMeasureMode
+  static Switch<PowhegHandler, unsigned int> ifaceJetMeasureMode
     ("JetMeasure",
      "Choice of the jet measure algorithm",
-     &NasonCKKWHandler::_jetMeasureMode, 0, false, false);
+     &PowhegHandler::_jetMeasureMode, 0, false, false);
   
   static SwitchOption Durham
     (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
@@ -88,7 +88,7 @@ void NasonCKKWHandler::Init() {
     (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 1);
 }
 
-double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
+double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
 
   PPair in = lastXCombPtr()->subProcess()->incoming();
   ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
@@ -145,7 +145,7 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   double alphaWgt = 1.;
   //need to add the alphaS weight
   //the alphaS ratio evaluated at all nodal values
-  for( map<NasonBranchingPtr,double>::const_iterator cit 
+  for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
        cit != _theNodes.end(); ++cit ) {
     alphaWgt *= _alphaS->ratio( cit->second * sqr( Q ) );
@@ -161,7 +161,7 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   }
   // add new ones based on the HardTree
   map<ColinePtr,ColinePtr> colourMap;
-  for(set<NasonBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
+  for(set<HardBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
       it!=_theHardTree->branchings().end();++it) {
     if((**it)._incoming) continue;
     generator()->log() << *(**it)._particle << "\n";
@@ -193,7 +193,7 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   return SudWgt * alphaWgt;
 }
 
-void NasonCKKWHandler::doinitrun() {
+void PowhegHandler::doinitrun() {
   ShowerHandler::doinitrun();
   // integrator for the outer integral
   GaussianIntegrator outer;
@@ -308,17 +308,17 @@ void NasonCKKWHandler::doinitrun() {
  //     temp->topdrawOutput(output,Frame);
 }
 
-void NasonCKKWHandler::doinit() throw(InitException) {
+void PowhegHandler::doinit() throw(InitException) {
   
   ShowerHandler::doinit();
  
 }
 
-void NasonCKKWHandler::cascade() {
+void PowhegHandler::cascade() {
   ShowerHandler::cascade();
 }
 
-double NasonCKKWHandler::getJetMeasure(ShowerParticlePtr part_i,
+double PowhegHandler::getJetMeasure(ShowerParticlePtr part_i,
 				       ShowerParticlePtr part_j){
   double yij;
   double costheta = part_i->momentum().vect().dot( part_j->momentum().vect() ) 
@@ -343,7 +343,7 @@ double NasonCKKWHandler::getJetMeasure(ShowerParticlePtr part_i,
 }
 
 //given two particles returns value of durham jet algorithm
-bool NasonCKKWHandler:: splittingAllowed( ShowerParticlePtr part_i,
+bool PowhegHandler:: splittingAllowed( ShowerParticlePtr part_i,
 					  ShowerParticlePtr part_j,
 					  int  qq_pairs ) {
   // g 2 q qbar or an incorrect qq type
@@ -359,7 +359,7 @@ bool NasonCKKWHandler:: splittingAllowed( ShowerParticlePtr part_i,
 
 // finds the id of the emitting particle and sudakov for the desired clustering
 
-SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
+SudakovPtr PowhegHandler:: getSud( int & qq_pairs, long & emmitter_id,
 				      ShowerParticlePtr & part_i, 
 				      ShowerParticlePtr & part_j ) {
   // g 2 q qbar or an incorrect qq type
@@ -407,14 +407,14 @@ SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
 }
 
 
-HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts, 
+HardTreePtr PowhegHandler::doClustering( ParticleVector theParts, 
 					     PPtr vb ) {
   _theNodes.clear();
   _theExternals.clear();
   _theIntermediates.clear();
 
   int qq_pairs = 0;
-  map <ShowerParticlePtr,NasonBranchingPtr> theParticles;
+  map <ShowerParticlePtr,HardBranchingPtr> theParticles;
   tcPDPtr particle_data;
   ShowerParticlePtr vBoson = new_ptr( ShowerParticle( *vb, 1, false, false ) );
   //loops through the FS particles and create naon branchings
@@ -424,8 +424,8 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     //    currentParticle->rescaleMass();
     if( currentParticle->id() > 0 && currentParticle->id() < 7 ) qq_pairs++;
     theParticles.insert(make_pair(currentParticle, 
-				  new_ptr( NasonBranching( currentParticle, SudakovPtr(),
-							   NasonBranchingPtr(),false ) ) ) );
+				  new_ptr( HardBranching( currentParticle, SudakovPtr(),
+							   HardBranchingPtr(),false ) ) ) );
     //insert all particles into externals and initialise all
     //jet res parameters to 1
     cerr<< "external: \n"
@@ -448,9 +448,9 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     double yij_min = 1.;
     pair< ShowerParticlePtr, ShowerParticlePtr > clusterPair;
     //loops over all pairs of particles in theParticles
-    for( map<ShowerParticlePtr, NasonBranchingPtr>::iterator ita = theParticles.begin();
+    for( map<ShowerParticlePtr, HardBranchingPtr>::iterator ita = theParticles.begin();
 	 ita != theParticles.end() ; ita++ ) {
-      for( map<ShowerParticlePtr, NasonBranchingPtr>::iterator itb = theParticles.begin();
+      for( map<ShowerParticlePtr, HardBranchingPtr>::iterator itb = theParticles.begin();
 	   itb != ita; itb++) {
 	double yij = getJetMeasure( ita->first, itb->first );
 	if( yij < yij_min && splittingAllowed( ita->first, itb->first, qq_pairs )  ) {
@@ -483,8 +483,8 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     ShowerParticlePtr clustered = new_ptr( ShowerParticle( particle_data, true ) );
     clustered->set5Momentum( pairMomentum );
   
-    NasonBranchingPtr clusteredBranch( new_ptr( NasonBranching( clustered, theSudakov,
-								NasonBranchingPtr(), false ) ) );
+    HardBranchingPtr clusteredBranch( new_ptr( HardBranching( clustered, theSudakov,
+								HardBranchingPtr(), false ) ) );
     fixColours( clustered, clusterPair.first, clusterPair.second );
     theParticles.insert( make_pair( clustered, clusteredBranch ) );
     
@@ -498,8 +498,8 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     theParticles.erase( clusterPair.second );
     
   }
-  vector<NasonBranchingPtr> theBranchings;
-  for(  map<ShowerParticlePtr, NasonBranchingPtr>::iterator it = 
+  vector<HardBranchingPtr> theBranchings;
+  for(  map<ShowerParticlePtr, HardBranchingPtr>::iterator it = 
 	  theParticles.begin(); 
 	it != theParticles.end(); ++it ) 
     theBranchings.push_back( it->second );
@@ -513,9 +513,9 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     ColinePtr temp = theBranchings[0]->_particle->antiColourLine();
     theBranchings[1]->_particle->colourLine()->join(temp);
   }
-  vector<NasonBranchingPtr> spaceBranchings;
-  spaceBranchings.push_back( new_ptr( NasonBranching( vBoson, SudakovPtr(),
-						      NasonBranchingPtr(), 
+  vector<HardBranchingPtr> spaceBranchings;
+  spaceBranchings.push_back( new_ptr( HardBranching( vBoson, SudakovPtr(),
+						      HardBranchingPtr(), 
 						      true ) ) );
   theBranchings.push_back( spaceBranchings.back() );
   HardTreePtr nasontree = new_ptr( HardTree( theBranchings,
@@ -523,7 +523,7 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
 
   //should I connect the branchings to the particles
   //doesn't do anything unless showerParticles come from showertree
-  for(  map<ShowerParticlePtr, NasonBranchingPtr>::iterator it = theParticles.begin(); 
+  for(  map<ShowerParticlePtr, HardBranchingPtr>::iterator it = theParticles.begin(); 
 	it != theParticles.end(); ++it){ 
     nasontree->connect( it->first, it->second );
   }
@@ -542,10 +542,10 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
  
 
   //set the scales at which the externals are resolved
-  for( map<NasonBranchingPtr,double>::const_iterator cit 
+  for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
        cit != _theNodes.end(); ++cit ) {
-    NasonBranchingPtr currentExternal = cit->first;
+    HardBranchingPtr currentExternal = cit->first;
     //loop until the  assosiated external particle is found
     do {
       if( ! currentExternal ) break;
@@ -562,7 +562,7 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
 	     << "\n";    
   }
   //get the intermediates
-  for( map<NasonBranchingPtr,double>::const_iterator cit 
+  for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
        cit != _theNodes.end(); ++cit ) {
     //end scale and intermediate are given by theNodes
@@ -571,7 +571,7 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
     long intID = cit->first->branchingParticle()->id();
     //get start scale from parton
     if( cit->first->_parent ) {
-      NasonBranchingPtr intParent = cit->first;
+      HardBranchingPtr intParent = cit->first;
       if( _theNodes.find( cit->first ) !=
 	  _theNodes.end() )
 	startScale = _theNodes.find( cit->first )->second;
@@ -582,7 +582,7 @@ HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
   return nasontree;
 }
 
-void NasonCKKWHandler::fixColours(tPPtr parent, tPPtr child1, tPPtr child2) {
+void PowhegHandler::fixColours(tPPtr parent, tPPtr child1, tPPtr child2) {
   // the different possible cases
   if(parent->dataPtr()->iColour()==PDT::Colour3&&
      child1->dataPtr()->iColour()==PDT::Colour3&&
@@ -643,7 +643,7 @@ void NasonCKKWHandler::fixColours(tPPtr parent, tPPtr child1, tPPtr child2) {
   else {
     generator()->log() << "testing in fixcolurs " << *parent << "\n" << *child1 << "\n"
 		       << *child2 << "\n" << flush;
-    throw Exception() << "Unknown colour in NasonCKKWHandler::fixColours()"
+    throw Exception() << "Unknown colour in PowhegHandler::fixColours()"
 		      << Exception::runerror;
   }
 }

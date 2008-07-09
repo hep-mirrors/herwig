@@ -253,7 +253,7 @@ struct ClassTraits<Herwig::DefaultEmissionGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNasonShower.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */

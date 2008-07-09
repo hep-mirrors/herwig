@@ -7,7 +7,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
-#include "NasonEvolver.fh"
+#include "PowhegEvolver.fh"
 #include "ThePEG/Utilities/Rebinder.h"
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "HardestEmissionGenerator.fh"
@@ -26,9 +26,9 @@ using namespace ThePEG;
 class HardestEmissionGenerator: public Interfaced {
 
 /**
- * The NasonEvolver is a friend to set the pointer to the Evolver
+ * The PowhegEvolver is a friend to set the pointer to the Evolver
  */
-friend class NasonEvolver;
+friend class PowhegEvolver;
 
 public:
 
@@ -169,7 +169,7 @@ struct ClassTraits<Herwig::HardestEmissionGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNasonShower.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */

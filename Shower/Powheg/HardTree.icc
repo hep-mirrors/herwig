@@ -6,33 +6,33 @@
 
 namespace Herwig {
 
-inline NasonBranching::NasonBranching(ShowerParticlePtr particle,
+inline HardBranching::HardBranching(ShowerParticlePtr particle,
 				      SudakovPtr sudakov,
-				      tNasonBranchingPtr parent,bool incoming) 
+				      tHardBranchingPtr parent,bool incoming) 
   : _particle(particle), _incoming(incoming), _parent(parent),
     _sudakov(sudakov)
 {}
 
-inline void NasonBranching::addChild(NasonBranchingPtr child) {
+inline void HardBranching::addChild(HardBranchingPtr child) {
   _children.push_back(child);
 }
 
-inline ShowerParticlePtr NasonBranching::branchingParticle() {
+inline ShowerParticlePtr HardBranching::branchingParticle() {
     return _particle;
 }
 
-inline map<ShowerParticlePtr,tNasonBranchingPtr> & HardTree::particles() { 
+inline map<ShowerParticlePtr,tHardBranchingPtr> & HardTree::particles() { 
   return _particles;
 }
 
-inline set<NasonBranchingPtr> & HardTree::branchings() {
+inline set<HardBranchingPtr> & HardTree::branchings() {
   return _branchings;
 }
-inline set<NasonBranchingPtr> & HardTree::incoming() {
+inline set<HardBranchingPtr> & HardTree::incoming() {
   return _spacelike;
 }
 
-inline void HardTree::connect(ShowerParticlePtr particle,NasonBranchingPtr branching) {
+inline void HardTree::connect(ShowerParticlePtr particle,HardBranchingPtr branching) {
   if(_branchings.find(branching)==_branchings.end()) return;
   _particles[particle]=branching;
 }

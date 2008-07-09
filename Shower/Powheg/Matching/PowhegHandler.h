@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_NasonCKKWHandler_H
-#define HERWIG_NasonCKKWHandler_H
+#ifndef HERWIG_PowhegHandler_H
+#define HERWIG_PowhegHandler_H
 //
-// This is the declaration of the NasonCKKWHandler class.
+// This is the declaration of the PowhegHandler class.
 //
 
 #include "Herwig++/Shower/ShowerHandler.h"
@@ -17,13 +17,13 @@
 
 namespace Herwig {
 
-  class NasonCKKWHandler;
+  class PowhegHandler;
 
 }
 //declaration of thepeg ptr
 namespace ThePEG {
 
-  ThePEG_DECLARE_POINTERS(Herwig::NasonCKKWHandler,NasonCKKWHandlerPtr);
+  ThePEG_DECLARE_POINTERS(Herwig::PowhegHandler,PowhegHandlerPtr);
 
 }
 
@@ -33,19 +33,19 @@ using namespace ThePEG;
 
 
 /**
- * Here is the documentation of the NasonCKKWHandler class.
+ * Here is the documentation of the PowhegHandler class.
  *
- * @see \ref NasonCKKWHandlerInterfaces "The interfaces"
- * defined for NasonCKKWHandler.
+ * @see \ref PowhegHandlerInterfaces "The interfaces"
+ * defined for PowhegHandler.
  */
-class NasonCKKWHandler: public ShowerHandler {
+class PowhegHandler: public ShowerHandler {
 
 public:
 
   /**
    * The default constructor.
    */
-  NasonCKKWHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data"),
+  PowhegHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data"),
 		       _jetMeasureMode(0) {}
 
   /**
@@ -168,13 +168,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<NasonCKKWHandler> initNasonCKKWHandler;
+  static ClassDescription<PowhegHandler> initPowhegHandler;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  NasonCKKWHandler & operator=(const NasonCKKWHandler &);
+  PowhegHandler & operator=(const PowhegHandler &);
 
 private:
 
@@ -209,7 +209,7 @@ private:
    * Map containing all nodes with the ingoing partons and their clustered jet 
    * parameter (this is the the intermediates and their ending node).
    */
-  map< NasonBranchingPtr, double > _theNodes;
+  map< HardBranchingPtr, double > _theNodes;
   
   /**
    * Map containing all intermediate partons and 
@@ -252,34 +252,34 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of NasonCKKWHandler. */
+ *  base classes of PowhegHandler. */
 template <>
-struct BaseClassTrait<Herwig::NasonCKKWHandler,1> {
-  /** Typedef of the first base class of NasonCKKWHandler. */
+struct BaseClassTrait<Herwig::PowhegHandler,1> {
+  /** Typedef of the first base class of PowhegHandler. */
   typedef Herwig::ShowerHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the NasonCKKWHandler class and the shared object where it is defined. */
+ *  the PowhegHandler class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::NasonCKKWHandler>
-  : public ClassTraitsBase<Herwig::NasonCKKWHandler> {
+struct ClassTraits<Herwig::PowhegHandler>
+  : public ClassTraitsBase<Herwig::PowhegHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::NasonCKKWHandler"; }
+  static string className() { return "Herwig::PowhegHandler"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * NasonCKKWHandler is implemented. It may also include several, space-separated,
-   * libraries if the class NasonCKKWHandler depends on other classes (base classes
+   * PowhegHandler is implemented. It may also include several, space-separated,
+   * libraries if the class PowhegHandler depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwNasonShower.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_NasonCKKWHandler_H */
+#endif /* HERWIG_PowhegHandler_H */
 
 

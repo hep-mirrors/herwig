@@ -17,7 +17,7 @@ using namespace ThePEG;
 
 /**
  * The HardTree class is designed to contain the information required
- * to implement the Nason approach for Monte Carlo at next-to-leading order.
+ * to implement the POWHEG approach for Monte Carlo at next-to-leading order.
  */
 class HardTree : public Base {
 
@@ -31,27 +31,27 @@ public:
   /**
    * The default constructor.
    */
-  HardTree(vector<NasonBranchingPtr>,vector<NasonBranchingPtr>);
+  HardTree(vector<HardBranchingPtr>,vector<HardBranchingPtr>);
 
   /**
    *  Match particles in the ShowerTree to branchings in the HardTree
    */
-  inline void connect(ShowerParticlePtr,NasonBranchingPtr);
+  inline void connect(ShowerParticlePtr,HardBranchingPtr);
   
   /**
-   *  Access the map between the ShowerParticle and the NasonBranching
+   *  Access the map between the ShowerParticle and the HardBranching
    */
-  inline map<ShowerParticlePtr,tNasonBranchingPtr> & particles();
+  inline map<ShowerParticlePtr,tHardBranchingPtr> & particles();
 
   /**
    *  Access the set of branchings
    */
-  inline set<NasonBranchingPtr> & branchings();
+  inline set<HardBranchingPtr> & branchings();
   
   /**
    * Access the incoming branchings
    */
-  inline set<NasonBranchingPtr> & incoming();
+  inline set<HardBranchingPtr> & incoming();
 
 private:
 
@@ -61,26 +61,26 @@ private:
   ShowerTreePtr _tree;
 
   /**
-   *  Map from the particles in the ShowerTree to the NasonBranchings
+   *  Map from the particles in the ShowerTree to the HardBranchings
    */
-  map<ShowerParticlePtr,tNasonBranchingPtr> _particles;
+  map<ShowerParticlePtr,tHardBranchingPtr> _particles;
 
   /**
-   *  The NasonBranchings in the hard process
+   *  The HardBranchings in the hard process
    */
-  set<NasonBranchingPtr> _branchings;
+  set<HardBranchingPtr> _branchings;
 
   /**
-   *  The NasonBranchings which initiate the space-like showers
+   *  The HardBranchings which initiate the space-like showers
    */
-  set<NasonBranchingPtr> _spacelike;
+  set<HardBranchingPtr> _spacelike;
 };
 
 /**
- * The NasonBranching class is designed to contain the information needed for
- * an individual branching in the Nason approach
+ * The HardBranching class is designed to contain the information needed for
+ * an individual branching in the POWHEG approach
  */
-class NasonBranching : public Base {
+class HardBranching : public Base {
 
   /**
    *  The HardTree is friend
@@ -96,15 +96,15 @@ public:
    * @param parent   The parent for the branching
    * @param incoming Whether the particle is incoming or outgoing
    */
-  inline NasonBranching(ShowerParticlePtr particle,
+  inline HardBranching(ShowerParticlePtr particle,
 			SudakovPtr sudakov,
-			tNasonBranchingPtr parent,bool incoming);
+			tHardBranchingPtr parent,bool incoming);
 
   /**
    * Add a child of the branching
    * @param child The child of the branching
    */
-  inline void addChild(NasonBranchingPtr child);
+  inline void addChild(HardBranchingPtr child);
 
   /**
    * Return the ShowerParticlePtr of the branching particle.
@@ -176,7 +176,7 @@ public:
   /**
    *  The parent of the branching
    */
-  tNasonBranchingPtr _parent;
+  tHardBranchingPtr _parent;
 
   /**
    *  The Sudakov form-factor
@@ -186,7 +186,7 @@ public:
   /**
    * The children
    */
-  vector<NasonBranchingPtr> _children;
+  vector<HardBranchingPtr> _children;
 
   /**
    *  The beam particle
@@ -196,7 +196,7 @@ public:
 
 inline ostream & operator<<(ostream & os, const HardTree & x) {
   os << "Output of HardTree " << &x << "\n";
-  for(set<NasonBranchingPtr>::const_iterator it=x._branchings.begin();
+  for(set<HardBranchingPtr>::const_iterator it=x._branchings.begin();
       it!=x._branchings.end();++it) {
     os << "Hard Particle: " << *(**it)._particle << " has Sudakov " 
        << (**it)._sudakov << "\n";
@@ -209,7 +209,7 @@ inline ostream & operator<<(ostream & os, const HardTree & x) {
 	 <<  (**it)._children[iy]->_particle->antiColourLine() << "\n";
     }
   }
-  for(set<NasonBranchingPtr>::const_iterator it=x._spacelike.begin();
+  for(set<HardBranchingPtr>::const_iterator it=x._spacelike.begin();
       it!=x._spacelike.end();++it) {
     os << "SpaceLike: " << *(**it)._particle << " has Sudakov" 
        << (**it)._sudakov << "\n";

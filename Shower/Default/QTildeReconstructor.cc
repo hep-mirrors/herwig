@@ -646,13 +646,13 @@ bool QTildeReconstructor::reconstructDecayShower(HardTreePtr decay,
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
   vector<Energy> mon;
-  set<NasonBranchingPtr>::iterator cit;
-  set<NasonBranchingPtr> branchings=decay->branchings();
+  set<HardBranchingPtr>::iterator cit;
+  set<HardBranchingPtr> branchings=decay->branchings();
   // The for-loop goes over all _progenitors_ and stores their momenta
   // and _on-shell_ masses (for quarks it's the current mass), so e.g.
   // for 2 body decays it has 3 loops (1 for each decay product and 1 
   // for the decaying particle). The momenta need not be on-shell. For 
-  // input from Nason hardest emission generators one progenitor should 
+  // input from POWHEG hardest emission generators one progenitor should 
   // be off-shell and the others should be on-shell.
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if((*cit)->_particle->isFinalState()) {
@@ -715,8 +715,8 @@ bool QTildeReconstructor::reconstructDecayShower(HardTreePtr decay,
     // find the partner branchings
     tShowerParticlePtr partner=(*cit)->_particle->partners()[ShowerIndex::QCD];
     if(!partner) continue;
-    tNasonBranchingPtr branch;
-    set<NasonBranchingPtr>::iterator cjt;
+    tHardBranchingPtr branch;
+    set<HardBranchingPtr>::iterator cjt;
     for(cjt=branchings.begin();cjt!=branchings.end();++cjt){
       if(cjt==cit) continue;
       if((*cjt)->_particle==partner) {
@@ -794,8 +794,8 @@ bool QTildeReconstructor::reconstructHardShower(HardTreePtr hard,EvolverPtr) con
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
   vector<Lorentz5Momentum> pq;
-  set<NasonBranchingPtr>::iterator cit;
-  set<NasonBranchingPtr> branchings=hard->branchings();
+  set<HardBranchingPtr>::iterator cit;
+  set<HardBranchingPtr> branchings=hard->branchings();
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if((*cit)->_particle->isFinalState()) {
       pout.push_back((*cit)->_particle->momentum());

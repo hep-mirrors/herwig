@@ -8,7 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "NasonEvolver.h"
+#include "PowhegEvolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
@@ -23,7 +23,7 @@ void HardestEmissionGenerator::Init() {
 
   static ClassDocumentation<HardestEmissionGenerator> documentation
     ("The HardestEmissionGenerator class is the base class for the generation"
-     "of the hardest emission in the Nason shower approach");
+     "of the hardest emission in the POWHEG shower approach");
 
 }
 

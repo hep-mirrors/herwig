@@ -193,13 +193,13 @@ HardTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
 	}
       }
     }
-    vector<NasonBranchingPtr> hard;
+    vector<HardBranchingPtr> hard;
     for(unsigned int ix=0;ix<newparticles.size();++ix) {
-      hard.push_back(new_ptr(NasonBranching(newparticles[ix],SudakovPtr(),
-					    NasonBranchingPtr(),false)));
+      hard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+					    HardBranchingPtr(),false)));
     }
     // create the HardTree
-    HardTreePtr nasontree=new_ptr(HardTree(hard,vector<NasonBranchingPtr>()));
+    HardTreePtr nasontree=new_ptr(HardTree(hard,vector<HardBranchingPtr>()));
     // connect the ShowerParticles with the branchings
     // and set the maximum pt for the radiation
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
@@ -334,24 +334,24 @@ HardTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   newemitter->set5Momentum(pb);
   ShowerParticlePtr emitted(   new_ptr(ShowerParticle(pdata[1],true)));
   emitted->set5Momentum(pg);
-  // create the NasonBranching objects
-  vector<NasonBranchingPtr> hard;
-  tNasonBranchingPtr nasonemit;
+  // create the HardBranching objects
+  vector<HardBranchingPtr> hard;
+  tHardBranchingPtr nasonemit;
   for(unsigned int ix=0;ix<newparticles.size();++ix) {
     if(ix!=iemit) {
-      hard.push_back(new_ptr(NasonBranching(newparticles[ix],SudakovPtr(),
-					    NasonBranchingPtr(),false)));
+      hard.push_back(new_ptr(HardBranching(newparticles[ix],SudakovPtr(),
+					    HardBranchingPtr(),false)));
     }
     else {
-      hard.push_back(new_ptr(NasonBranching(newparticles[ix],sudakov,
-					    NasonBranchingPtr(),false)));
+      hard.push_back(new_ptr(HardBranching(newparticles[ix],sudakov,
+					    HardBranchingPtr(),false)));
       nasonemit = hard.back();
     }
   }
-  nasonemit->addChild(new_ptr(NasonBranching(newemitter,SudakovPtr(),nasonemit,false)));
-  nasonemit->addChild(new_ptr(NasonBranching(emitted   ,SudakovPtr(),nasonemit,false)));
+  nasonemit->addChild(new_ptr(HardBranching(newemitter,SudakovPtr(),nasonemit,false)));
+  nasonemit->addChild(new_ptr(HardBranching(emitted   ,SudakovPtr(),nasonemit,false)));
   // create the HardTree
-  HardTreePtr nasontree=new_ptr(HardTree(hard,vector<NasonBranchingPtr>()));
+  HardTreePtr nasontree=new_ptr(HardTree(hard,vector<HardBranchingPtr>()));
   // reconstruct the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->reconstructDecayShower(nasontree,
 									      evolver());
