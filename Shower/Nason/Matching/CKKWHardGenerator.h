@@ -15,7 +15,7 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
-#include "Herwig++/Shower/Nason/NasonCKKWHandler.h"
+#include "NasonCKKWHandler.h"
 
 
 

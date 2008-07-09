@@ -22,10 +22,8 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Shower/Nason/NasonCKKWHandler.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 
 void CKKWHardGenerator::persistentOutput(PersistentOStream & os) const {
   os << _CKKWh;

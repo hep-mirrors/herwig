@@ -17,7 +17,6 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "QTildeSudakovIntegrator.h"
-#include "NasonTree.h"
 
 using namespace Herwig;
 

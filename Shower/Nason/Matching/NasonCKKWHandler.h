@@ -11,7 +11,7 @@
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Config/Pointers.h"
-#include "NasonTree.h"
+#include "Herwig++/Shower/Nason/NasonTree.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 
