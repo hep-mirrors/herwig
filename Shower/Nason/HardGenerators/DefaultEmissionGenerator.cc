@@ -15,7 +15,7 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "pTSudakov.h"
-#include "NasonTree.h"
+#include "Herwig++/Shower/Nason/NasonTree.h"
 
 using namespace Herwig;
 

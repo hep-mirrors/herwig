@@ -5,7 +5,7 @@
 // This is the declaration of the DefaultEmissionGenerator class.
 //
 
-#include "HardestEmissionGenerator.h"
+#include "Herwig++/Shower/Nason/HardestEmissionGenerator.h"
 #include "pTSudakov.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Utilities/Histogram.h"

@@ -28,7 +28,7 @@ using namespace Herwig;
 
 namespace {
 
-  enum SystemType { UNDEFINED=-1, II, IF, F ,I };
+enum SystemType { UNDEFINED=-1, II, IF, F ,I };
 
 struct ColourSingletSystem {
 

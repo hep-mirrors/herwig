@@ -15,7 +15,7 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/ShowerHandler.h"
-#include "DefaultEmissionGenerator.h"
+#include "Herwig++/Shower/Nason/HardGenerators/DefaultEmissionGenerator.h"
 #include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
 #include "NasonTree.h"
 #include "Herwig++/Utilities/Histogram.h"
