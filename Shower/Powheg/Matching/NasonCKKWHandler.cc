@@ -95,8 +95,8 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
   PPtr vBoson = lastXCombPtr()->subProcess()->intermediates()[0];
   _s = lastXCombPtr()->lastS();
 
-  _theNasonTree = doClustering( out, vBoson );
-  if(!_theNasonTree) return 0.;
+  _theHardTree = doClustering( out, vBoson );
+  if(!_theHardTree) return 0.;
 
   // cerr<<"finished do clustering \n";
 
@@ -159,10 +159,10 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
     for(unsigned int iy=0;iy<parents.size();++iy)
       parents[iy]->abandonChild(outgoing[ix]);
   }
-  // add new ones based on the NasonTree
+  // add new ones based on the HardTree
   map<ColinePtr,ColinePtr> colourMap;
-  for(set<NasonBranchingPtr>::const_iterator it=_theNasonTree->branchings().begin();
-      it!=_theNasonTree->branchings().end();++it) {
+  for(set<NasonBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
+      it!=_theHardTree->branchings().end();++it) {
     if((**it)._incoming) continue;
     generator()->log() << *(**it)._particle << "\n";
     PPtr newParticle = new_ptr(Particle((**it)._particle->dataPtr()));
@@ -189,7 +189,7 @@ double NasonCKKWHandler::reweightCKKW(int minMult, int maxMult) {
     }
     lastXCombPtr()->subProcess()->addOutgoing(newParticle);
   }
-  cerr << "testing at set " << this << " " << this->fullName() << _theNasonTree << "\n";
+  cerr << "testing at set " << this << " " << this->fullName() << _theHardTree << "\n";
   return SudWgt * alphaWgt;
 }
 
@@ -407,7 +407,7 @@ SudakovPtr NasonCKKWHandler:: getSud( int & qq_pairs, long & emmitter_id,
 }
 
 
-NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts, 
+HardTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts, 
 					     PPtr vb ) {
   _theNodes.clear();
   _theExternals.clear();
@@ -518,7 +518,7 @@ NasonTreePtr NasonCKKWHandler::doClustering( ParticleVector theParts,
 						      NasonBranchingPtr(), 
 						      true ) ) );
   theBranchings.push_back( spaceBranchings.back() );
-  NasonTreePtr nasontree = new_ptr( NasonTree( theBranchings,
+  HardTreePtr nasontree = new_ptr( HardTree( theBranchings,
 					       spaceBranchings ) );
 
   //should I connect the branchings to the particles

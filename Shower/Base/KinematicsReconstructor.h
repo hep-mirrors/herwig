@@ -16,7 +16,7 @@
 #include "ShowerParticle.h"
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
-#include "Herwig++/Shower/Powheg/NasonTree.h"
+#include "Herwig++/Shower/Powheg/HardTree.h"
 #include "Evolver.fh"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
@@ -99,14 +99,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower for a decay process
    */
-  virtual bool reconstructDecayShower(NasonTreePtr decay,EvolverPtr) const=0;
+  virtual bool reconstructDecayShower(HardTreePtr decay,EvolverPtr) const=0;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool reconstructHardShower(NasonTreePtr hard,EvolverPtr) const=0;
+  virtual bool reconstructHardShower(HardTreePtr hard,EvolverPtr) const=0;
   //@}
 
 public:

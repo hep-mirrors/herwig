@@ -17,7 +17,7 @@
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/Powheg/HardGenerators/DefaultEmissionGenerator.h"
 #include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
-#include "NasonTree.h"
+#include "HardTree.h"
 #include "Herwig++/Utilities/Histogram.h"
 
 
@@ -386,7 +386,7 @@ void NasonEvolver::hardestEmission() {
     }
   }
   // if no suitable generator return
-  _nasontree=NasonTreePtr();
+  _nasontree=HardTreePtr();
   if(!currenthard) return;
   // generate the hardest emission
   _nasontree = currenthard->generateHardest( currentTree() );

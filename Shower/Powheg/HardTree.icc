@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
-// the NasonTree class.
+// the HardTree class.
 //
 
 namespace Herwig {
@@ -21,18 +21,18 @@ inline ShowerParticlePtr NasonBranching::branchingParticle() {
     return _particle;
 }
 
-inline map<ShowerParticlePtr,tNasonBranchingPtr> & NasonTree::particles() { 
+inline map<ShowerParticlePtr,tNasonBranchingPtr> & HardTree::particles() { 
   return _particles;
 }
 
-inline set<NasonBranchingPtr> & NasonTree::branchings() {
+inline set<NasonBranchingPtr> & HardTree::branchings() {
   return _branchings;
 }
-inline set<NasonBranchingPtr> & NasonTree::incoming() {
+inline set<NasonBranchingPtr> & HardTree::incoming() {
   return _spacelike;
 }
 
-inline void NasonTree::connect(ShowerParticlePtr particle,NasonBranchingPtr branching) {
+inline void HardTree::connect(ShowerParticlePtr particle,NasonBranchingPtr branching) {
   if(_branchings.find(branching)==_branchings.end()) return;
   _particles[particle]=branching;
 }

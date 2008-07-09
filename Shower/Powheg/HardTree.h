@@ -1,40 +1,40 @@
 // -*- C++ -*-
-#ifndef HERWIG_NasonTree_H
-#define HERWIG_NasonTree_H
+#ifndef HERWIG_HardTree_H
+#define HERWIG_HardTree_H
 //
-// This is the declaration of the NasonTree class.
+// This is the declaration of the HardTree class.
 //
 
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
-#include "NasonTree.fh"
+#include "HardTree.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The NasonTree class is designed to contain the information required
+ * The HardTree class is designed to contain the information required
  * to implement the Nason approach for Monte Carlo at next-to-leading order.
  */
-class NasonTree : public Base {
+class HardTree : public Base {
 
   /**
    *  Output operator for testing
    */
-  friend ostream & operator<<(ostream &, const NasonTree & );
+  friend ostream & operator<<(ostream &, const HardTree & );
 
 public:
 
   /**
    * The default constructor.
    */
-  NasonTree(vector<NasonBranchingPtr>,vector<NasonBranchingPtr>);
+  HardTree(vector<NasonBranchingPtr>,vector<NasonBranchingPtr>);
 
   /**
-   *  Match particles in the ShowerTree to branchings in the NasonTree
+   *  Match particles in the ShowerTree to branchings in the HardTree
    */
   inline void connect(ShowerParticlePtr,NasonBranchingPtr);
   
@@ -83,9 +83,9 @@ private:
 class NasonBranching : public Base {
 
   /**
-   *  The NasonTree is friend
+   *  The HardTree is friend
    */
-  friend class NasonTree;
+  friend class HardTree;
 
 public:
 
@@ -194,8 +194,8 @@ public:
   PPtr _beam;
 };
 
-inline ostream & operator<<(ostream & os, const NasonTree & x) {
-  os << "Output of NasonTree " << &x << "\n";
+inline ostream & operator<<(ostream & os, const HardTree & x) {
+  os << "Output of HardTree " << &x << "\n";
   for(set<NasonBranchingPtr>::const_iterator it=x._branchings.begin();
       it!=x._branchings.end();++it) {
     os << "Hard Particle: " << *(**it)._particle << " has Sudakov " 
@@ -225,6 +225,6 @@ inline ostream & operator<<(ostream & os, const NasonTree & x) {
 
 }
 
-#include "NasonTree.icc"
+#include "HardTree.icc"
 
-#endif /* HERWIG_NasonTree_H */
+#endif /* HERWIG_HardTree_H */

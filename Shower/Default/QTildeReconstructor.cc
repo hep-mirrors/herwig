@@ -640,7 +640,7 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
   return ix<100;
 }
 
-bool QTildeReconstructor::reconstructDecayShower(NasonTreePtr decay,
+bool QTildeReconstructor::reconstructDecayShower(HardTreePtr decay,
 						 EvolverPtr evolver) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
@@ -789,7 +789,7 @@ inverseRescaleingFactor(vector<Lorentz5Momentum> pout,
 }
 
 
-bool QTildeReconstructor::reconstructHardShower(NasonTreePtr hard,EvolverPtr) const {
+bool QTildeReconstructor::reconstructHardShower(HardTreePtr hard,EvolverPtr) const {
   // extract the incoming particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;

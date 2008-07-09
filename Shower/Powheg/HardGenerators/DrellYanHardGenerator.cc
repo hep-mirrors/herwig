@@ -80,7 +80,7 @@ void DrellYanHardGenerator::Init() {
      false, false, Interface::limited);
 }
 
-NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
+HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // get the particles to be showered
   _beams.clear();
   _partons.clear();
@@ -126,10 +126,10 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   vector<Lorentz5Momentum> pnew;
   int emission_type(-1);
   // generate the hard emission and return if no emission 
-  if(!getEvent(pnew,emission_type)) return NasonTreePtr();
-  // construct the NasonTree object needed to perform the showers
+  if(!getEvent(pnew,emission_type)) return HardTreePtr();
+  // construct the HardTree object needed to perform the showers
   ShowerParticleVector newparticles;
-  // make the particles for the NasonTree
+  // make the particles for the HardTree
   tcPDPtr gluon=getParticleData(ParticleID::g);
   // create the partons
   int iemit;
@@ -214,7 +214,7 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   nasonhard.push_back(new_ptr(NasonBranching(newparticles[3],SudakovPtr(),
 					NasonBranchingPtr(),false)));
   // make the tree
-  NasonTreePtr nasontree=new_ptr(NasonTree(nasonhard,nasonin));
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   set<NasonBranchingPtr> hard=nasontree->branchings();

@@ -61,7 +61,7 @@ bool CSVectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
   return true;
 }
 
-NasonTreePtr CSVectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
+HardTreePtr CSVectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   cerr << *generator()->currentEvent();
   // Get the progenitors: Q and Qbar.
   vector<tcPDPtr> partons(2);
@@ -101,7 +101,7 @@ NasonTreePtr CSVectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree
   generate(s,theta,phi);
 
   cerr << "testing in generate hardest\n";
-  return NasonTreePtr();
+  return HardTreePtr();
 }
 
 void CSVectorBosonQQbarHardGenerator::generate(Energy2 s,double theta,

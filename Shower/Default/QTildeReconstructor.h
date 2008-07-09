@@ -115,14 +115,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool reconstructDecayShower(NasonTreePtr decay,EvolverPtr) const;
+  virtual bool reconstructDecayShower(HardTreePtr decay,EvolverPtr) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool reconstructHardShower(NasonTreePtr hard,EvolverPtr) const;
+  virtual bool reconstructHardShower(HardTreePtr hard,EvolverPtr) const;
   //@}
 
 protected:

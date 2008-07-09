@@ -11,7 +11,7 @@
 #include "ThePEG/Utilities/Rebinder.h"
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "HardestEmissionGenerator.fh"
-#include "NasonTree.fh"
+#include "HardTree.fh"
 
 namespace Herwig {
 
@@ -46,7 +46,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual NasonTreePtr generateHardest(ShowerTreePtr)=0;
+  virtual HardTreePtr generateHardest(ShowerTreePtr)=0;
 
   /**
    *  Member to decide if the inheriting class can handle this process

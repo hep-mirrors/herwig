@@ -15,7 +15,7 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "pTSudakov.h"
-#include "Herwig++/Shower/Powheg/NasonTree.h"
+#include "Herwig++/Shower/Powheg/HardTree.h"
 
 using namespace Herwig;
 
@@ -106,12 +106,12 @@ void DefaultEmissionGenerator::dofinish() {
   output << "plot\n";
 }
 
-NasonTreePtr DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree) {
+HardTreePtr DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree) {
   if(tree->isDecay()) return generateDecay(tree);
   else                return generateHard (tree);
 }
 
-NasonTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
+HardTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -125,10 +125,10 @@ NasonTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
   for(cjt=tree->outgoingLines().begin();
       cjt!=tree->outgoingLines().end();++cjt)
     particlesToShower.push_back((*cjt).first);
-  return NasonTreePtr();
+  return HardTreePtr();
 }
 
-NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
+HardTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -198,8 +198,8 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
       hard.push_back(new_ptr(NasonBranching(newparticles[ix],SudakovPtr(),
 					    NasonBranchingPtr(),false)));
     }
-    // create the NasonTree
-    NasonTreePtr nasontree=new_ptr(NasonTree(hard,vector<NasonBranchingPtr>()));
+    // create the HardTree
+    HardTreePtr nasontree=new_ptr(HardTree(hard,vector<NasonBranchingPtr>()));
     // connect the ShowerParticles with the branchings
     // and set the maximum pt for the radiation
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
@@ -266,7 +266,7 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
 
 
 
-  // copy all the particles to make the NasonTree
+  // copy all the particles to make the HardTree
   map<ColinePtr,ColinePtr> colourmap;
   vector<ShowerParticlePtr> newparticles;
   map<ColinePtr,ColinePtr>::iterator lineit;
@@ -350,8 +350,8 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   }
   nasonemit->addChild(new_ptr(NasonBranching(newemitter,SudakovPtr(),nasonemit,false)));
   nasonemit->addChild(new_ptr(NasonBranching(emitted   ,SudakovPtr(),nasonemit,false)));
-  // create the NasonTree
-  NasonTreePtr nasontree=new_ptr(NasonTree(hard,vector<NasonBranchingPtr>()));
+  // create the HardTree
+  HardTreePtr nasontree=new_ptr(HardTree(hard,vector<NasonBranchingPtr>()));
   // reconstruct the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->reconstructDecayShower(nasontree,
 									      evolver());

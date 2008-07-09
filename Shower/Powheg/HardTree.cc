@@ -1,15 +1,15 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the NasonTree class.
+// functions of the HardTree class.
 //
 
-#include "NasonTree.h"
+#include "HardTree.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 
-NasonTree::NasonTree(vector<NasonBranchingPtr> branchings,
+HardTree::HardTree(vector<NasonBranchingPtr> branchings,
 		     vector<NasonBranchingPtr> spacelike) {
   _branchings.insert(branchings.begin(),branchings.end());
   _spacelike .insert(spacelike .begin(),spacelike .end());

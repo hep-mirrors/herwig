@@ -46,7 +46,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual NasonTreePtr generateHardest(ShowerTreePtr);
+  virtual HardTreePtr generateHardest(ShowerTreePtr);
 
   /**
    *  Member to decide if the inheriting class can handle this process

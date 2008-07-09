@@ -50,9 +50,9 @@ void CKKWHardGenerator::Init() {
 
 }
 
-NasonTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
-  //Get the NasonTree from the CKKW handler.
-  NasonTreePtr nasontree = _CKKWh->getNasonTree();
+HardTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
+  //Get the HardTree from the CKKW handler.
+  HardTreePtr nasontree = _CKKWh->getHardTree();
   vector<ShowerProgenitorPtr> progenitors = tree->extractProgenitors();
   // connect the trees up
   for(unsigned int ix=0;ix<progenitors.size();++ix) {
@@ -64,7 +64,7 @@ NasonTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
       nasontree->connect(progenitors[ix]->progenitor(),*it);
       match = true;
     }
-    if(!match) return NasonTreePtr();
+    if(!match) return HardTreePtr();
   }
 
 
@@ -83,7 +83,7 @@ NasonTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
   // QProgenitor   ->maximumpT(ptveto);
   // QbarProgenitor->maximumpT(ptveto);
 
-  // Connect the particles with the branchings in the NasonTree
+  // Connect the particles with the branchings in the HardTree
   // nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
   // nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
 
@@ -96,7 +96,7 @@ NasonTreePtr CKKWHardGenerator::generateHardest(ShowerTreePtr tree) {
   // greenLine->addColoured(parent,_iemitter);
   // greenLine->addColoured(spectator,_ispectator);
 
-  // Return the NasonTree
+  // Return the HardTree
   return nasontree;
 }
 

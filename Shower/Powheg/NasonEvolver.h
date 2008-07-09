@@ -169,9 +169,9 @@ private:
   vector<HardestEmissionGeneratorPtr> _hardgenerator;
 
   /**
-   *  The NasonTree currently being showered
+   *  The HardTree currently being showered
    */
-  NasonTreePtr _nasontree;
+  HardTreePtr _nasontree;
 
   /**
    *  Only generate the emission from the hardest emission

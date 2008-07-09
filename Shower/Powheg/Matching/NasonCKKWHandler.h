@@ -11,7 +11,7 @@
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Config/Pointers.h"
-#include "Herwig++/Shower/Powheg/NasonTree.h"
+#include "Herwig++/Shower/Powheg/HardTree.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 
 
@@ -63,8 +63,8 @@ public:
   /**
    *  access to the nason tree object
    */
-  inline NasonTreePtr getNasonTree() {
-    return _theNasonTree;
+  inline HardTreePtr getHardTree() {
+    return _theHardTree;
   }
 
   /** @name Functions used by the persistent I/O system. */
@@ -136,7 +136,7 @@ private:
    * jet measure out of all allowed pairings until we are left 
    * with \f$q\bar{q}\f$.
    */
-  NasonTreePtr doClustering( ParticleVector theParts, PPtr vb );
+  HardTreePtr doClustering( ParticleVector theParts, PPtr vb );
   
   /**
    * Checks to see that the splitting is allowed.
@@ -181,7 +181,7 @@ private:
   /**
    *  The nason tree
    */
-  NasonTreePtr _theNasonTree;
+  HardTreePtr _theHardTree;
 
   /**
    *  Number of points for the interpolation tables

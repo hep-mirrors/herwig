@@ -12,7 +12,7 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
-#include "NasonTree.h"
+#include "HardTree.h"
 
 using namespace Herwig;
 
