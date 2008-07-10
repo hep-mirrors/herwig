@@ -223,16 +223,16 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
     else particlesToShower[ix]->maximumpT(_min_pt);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
-      if(particlesToShower[ix]->progenitor()->id()==(*mit)->_particle->id()&&
-	 particlesToShower[ix]->progenitor()->isFinalState()!=(*mit)->_incoming) {
+      if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
+	 particlesToShower[ix]->progenitor()->isFinalState()!=(*mit)->incoming()) {
 	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
-	if((*mit)->_incoming) {
-	  (*mit)->_beam=particlesToShower[ix]->original()->parents()[0];
+	if((*mit)->incoming()) {
+	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
 	}
-	HardBranchingPtr parent=(*mit)->_parent;
+	HardBranchingPtr parent=(*mit)->parent();
 	while(parent) {
-	  parent->_beam=particlesToShower[ix]->original()->parents()[0];
-	  parent=parent->_parent;
+	  parent->beam(particlesToShower[ix]->original()->parents()[0]);
+	  parent=parent->parent();
 	};
       }
     }

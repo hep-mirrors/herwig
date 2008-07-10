@@ -65,3 +65,9 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   }
 }
 
+HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
+			     tHardBranchingPtr parent,bool incoming) 
+  : _particle(particle), _incoming(incoming), _parent(parent),
+    _sudakov(sudakov)
+{}
+

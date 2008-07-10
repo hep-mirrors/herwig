@@ -267,7 +267,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // if emitter for Kleiss trick and shower are different
   for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
   	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
-    mit->first->set5Momentum(mit->second->_shower);
+    mit->first->set5Momentum(mit->second->showerMomentum());
 
   // Return the HardTree
   return nasontree;

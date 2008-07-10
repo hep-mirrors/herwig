@@ -24,7 +24,7 @@ class HardTree : public Base {
   /**
    *  Output operator for testing
    */
-  friend ostream & operator<<(ostream &, const HardTree & );
+  friend ostream & operator << (ostream &, const HardTree & );
 
 public:
 
@@ -36,22 +36,26 @@ public:
   /**
    *  Match particles in the ShowerTree to branchings in the HardTree
    */
-  inline void connect(ShowerParticlePtr,HardBranchingPtr);
+  inline void connect(ShowerParticlePtr particle, HardBranchingPtr branching) {
+    if(_branchings.find(branching)==_branchings.end()) return;
+    _particles[particle]=branching;
+  }
   
   /**
    *  Access the map between the ShowerParticle and the HardBranching
    */
-  inline map<ShowerParticlePtr,tHardBranchingPtr> & particles();
+  inline map<ShowerParticlePtr,tHardBranchingPtr> & particles() 
+  {return _particles;}
 
   /**
    *  Access the set of branchings
    */
-  inline set<HardBranchingPtr> & branchings();
+  inline set<HardBranchingPtr> & branchings() {return _branchings;}
   
   /**
    * Access the incoming branchings
    */
-  inline set<HardBranchingPtr> & incoming();
+  inline set<HardBranchingPtr> & incoming() {return _spacelike;}
 
 private:
 
@@ -74,6 +78,7 @@ private:
    *  The HardBranchings which initiate the space-like showers
    */
   set<HardBranchingPtr> _spacelike;
+
 };
 
 /**
@@ -96,22 +101,176 @@ public:
    * @param parent   The parent for the branching
    * @param incoming Whether the particle is incoming or outgoing
    */
-  inline HardBranching(ShowerParticlePtr particle,
-			SudakovPtr sudakov,
-			tHardBranchingPtr parent,bool incoming);
+  HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
+		tHardBranchingPtr parent,bool incoming);
 
   /**
    * Add a child of the branching
    * @param child The child of the branching
    */
-  inline void addChild(HardBranchingPtr child);
+  inline void addChild(HardBranchingPtr child) {_children.push_back(child);}
 
   /**
-   * Return the ShowerParticlePtr of the branching particle.
+   *  Set the momenta of the particles
    */
-  inline ShowerParticlePtr branchingParticle();
+  void setMomenta(LorentzRotation R, double alpha, Lorentz5Momentum pt);
 
-  void setMomenta(LorentzRotation R,double alpha,Lorentz5Momentum pt);
+  /**
+   *  Set and get members for the private member variables
+   */
+  //@{
+  /**
+   * Return the branching particle.
+   */
+  inline tShowerParticlePtr branchingParticle() const {return _particle;}
+
+  /**
+   * Set the branching particle
+   */
+  inline void branchingParticle(ShowerParticlePtr in) {_particle=in;}
+
+  /**
+   * Get the original momentum
+   */
+  inline const Lorentz5Momentum & original() const {return _original;}
+
+  /**
+   * Set the original momentum
+   */
+  inline void original(const Lorentz5Momentum & in) {_original=in;}
+
+  /**
+   *  Get the p reference vector
+   */
+  inline const Lorentz5Momentum & pVector() const {return _p;}
+
+  /**
+   *  Set the p reference vector
+   */
+  inline void pVector(const Lorentz5Momentum & in) {_p=in;}
+
+  /**
+   *  Get the n reference vector
+   */
+  inline const Lorentz5Momentum & nVector() const {return _n;}
+
+  /**
+   *  Set the n reference vector
+   */
+  inline void nVector(const Lorentz5Momentum & in) {_n=in;}
+
+  /**
+   *  Get the transverse momentum vector
+   */
+  inline const Lorentz5Momentum & qPerp() const {return _qt;}
+
+  /**
+   *  Set the transverse momentum vector
+   */
+  inline void qPerp(const Lorentz5Momentum & in) {_qt=in;}
+
+  /**
+   *  Get the momentum the particle should have as the start of a shower
+   */
+  inline const Lorentz5Momentum & showerMomentum() const {return _shower;}
+
+  /**
+   *  Get the momentum the particle should have as the start of a shower
+   */
+  inline void showerMomentum(const Lorentz5Momentum & in ) {_shower=in;}
+
+  /**
+   *  Get the transverse momentum
+   */
+  inline Energy pT() const {return _pt;}
+
+  /**
+   *  Set the transverse momentum
+   */
+  inline void pT(Energy in) { _pt=in;}
+
+  /**
+   *  Get whether the branching is incoming or outgoing
+   */
+  inline bool incoming() const {return _incoming;}
+
+  /**
+   *  Set whether the branching is incoming or outgoing
+   */
+  inline void incoming(bool in) {_incoming=in;}
+
+  /**
+   *  The parent of the branching
+   */
+  inline tHardBranchingPtr parent() const {return _parent;}
+
+  /**
+   *  The parent of the branching
+   */
+  inline void parent(tHardBranchingPtr in) {_parent=in;}
+
+  /**
+   *  The Sudakov form-factor
+   */
+  inline SudakovPtr sudakov() const {return _sudakov;}
+
+  /**
+   *  The Sudakov form-factor
+   */
+  inline void sudakov(SudakovPtr in) {_sudakov=in;}
+
+  /**
+   *  Get the beam particle
+   */
+  inline PPtr beam() const {return _beam;}
+
+  /**
+   *  Set the beam particle
+   */
+  inline void beam(PPtr in) {_beam=in;}
+
+  /**
+   * The children
+   */
+  inline vector<HardBranchingPtr> & children() {return _children;}
+  //@}
+
+  /**
+   *  Information on the Shower variables for the branching
+   */
+  //@{
+  /**
+   *  Get the evolution scale
+   */
+  inline Energy scale() const {return _scale;}
+
+  /**
+   *  The evolution scale
+   */
+  inline void scale(Energy in) {_scale=in;}
+
+  /**
+   *  The energy fraction
+   */
+  inline double z() const {return _z;}
+
+  /**
+   *  The energy fraction
+   */
+  inline void z(double in) {_z=in;}
+
+  /**
+   *  The azimthual angle
+   */
+  inline double phi() const {return _phi;}
+
+  /**
+   *  The azimthual angle
+   */
+  inline void phi(double in) {_phi=in;}
+  //@}
+
+private:
 
   /**
    *  The branching particle
@@ -198,33 +357,33 @@ inline ostream & operator<<(ostream & os, const HardTree & x) {
   os << "Output of HardTree " << &x << "\n";
   for(set<HardBranchingPtr>::const_iterator it=x._branchings.begin();
       it!=x._branchings.end();++it) {
-    os << "Hard Particle: " << *(**it)._particle << " has Sudakov " 
-       << (**it)._sudakov << "\n";
-    os << "It's colour lines are " << (**it)._particle->colourLine() << "\t" 
-       <<  (**it)._particle->antiColourLine() << "\n";
-    for(unsigned int iy=0;iy<(**it)._children.size();++iy) {
-      os << "\t Children : " << *(**it)._children[iy]->_particle
+    os << "Hard Particle: " << *(**it).branchingParticle() << " has Sudakov " 
+       << (**it).sudakov() << "\n";
+    os << "It's colour lines are " << (**it).branchingParticle()->colourLine() << "\t" 
+       <<  (**it).branchingParticle()->antiColourLine() << "\n";
+    for(unsigned int iy=0;iy<(**it).children().size();++iy) {
+      os << "\t Children : " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";
-      os << "It's colour lines are " << (**it)._children[iy]->_particle->colourLine() << "\t" 
-	 <<  (**it)._children[iy]->_particle->antiColourLine() << "\n";
+      os << "It's colour lines are " 
+	 << (**it).children()[iy]->branchingParticle()->colourLine() << "\t" 
+	 <<  (**it).children()[iy]->branchingParticle()->antiColourLine() << "\n";
     }
   }
   for(set<HardBranchingPtr>::const_iterator it=x._spacelike.begin();
       it!=x._spacelike.end();++it) {
-    os << "SpaceLike: " << *(**it)._particle << " has Sudakov" 
-       << (**it)._sudakov << "\n";
-    for(unsigned int iy=0;iy<(**it)._children.size();++iy) {
-      os << "\t Children: " << *(**it)._children[iy]->_particle
+    os << "SpaceLike: " << *(**it).branchingParticle() << " has Sudakov" 
+       << (**it).sudakov() << "\n";
+    for(unsigned int iy=0;iy<(**it).children().size();++iy) {
+      os << "\t Children: " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";
-      os << "It's colour lines are " << (**it)._children[iy]->_particle->colourLine() << "\t" 
-	 <<  (**it)._children[iy]->_particle->antiColourLine() << "\n";
+      os << "It's colour lines are " 
+	 << (**it).children()[iy]->branchingParticle()->colourLine() << "\t" 
+	 <<  (**it).children()[iy]->branchingParticle()->antiColourLine() << "\n";
     }
   }
   return os;
 }
 
 }
-
-#include "HardTree.icc"
 
 #endif /* HERWIG_HardTree_H */

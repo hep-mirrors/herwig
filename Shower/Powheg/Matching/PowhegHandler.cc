@@ -163,27 +163,27 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   map<ColinePtr,ColinePtr> colourMap;
   for(set<HardBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
       it!=_theHardTree->branchings().end();++it) {
-    if((**it)._incoming) continue;
-    generator()->log() << *(**it)._particle << "\n";
-    PPtr newParticle = new_ptr(Particle((**it)._particle->dataPtr()));
-    newParticle->set5Momentum((**it)._shower);
-    if((**it)._particle->colourLine()) {
+    if((**it).incoming()) continue;
+    generator()->log() << *(**it).branchingParticle() << "\n";
+    PPtr newParticle = new_ptr(Particle((**it).branchingParticle()->dataPtr()));
+    newParticle->set5Momentum((**it).showerMomentum());
+    if((**it).branchingParticle()->colourLine()) {
       map<ColinePtr,ColinePtr>::iterator loc 
-	= colourMap.find((**it)._particle->colourLine());
+	= colourMap.find((**it).branchingParticle()->colourLine());
       if(loc!=colourMap.end()) loc->second->addColoured(newParticle);
       else {
 	ColinePtr newLine=new_ptr(ColourLine());
-	colourMap[(**it)._particle->colourLine()]=newLine;
+	colourMap[(**it).branchingParticle()->colourLine()]=newLine;
 	newLine->addColoured(newParticle);
       }
     }
-    if((**it)._particle->antiColourLine()) {
+    if((**it).branchingParticle()->antiColourLine()) {
       map<ColinePtr,ColinePtr>::iterator loc 
-	= colourMap.find((**it)._particle->antiColourLine());
+	= colourMap.find((**it).branchingParticle()->antiColourLine());
       if(loc!=colourMap.end()) loc->second->addAntiColoured(newParticle);
       else {
 	ColinePtr newLine=new_ptr(ColourLine());
-	colourMap[(**it)._particle->antiColourLine()]=newLine;
+	colourMap[(**it).branchingParticle()->antiColourLine()]=newLine;
 	newLine->addAntiColoured(newParticle);
       }
     }
@@ -505,13 +505,13 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
     theBranchings.push_back( it->second );
   
   // fix for e+e- to match up the colours of the q qbar pair
-  if(theBranchings[0]->_particle->dataPtr()->iColour()==PDT::Colour3) {
-    ColinePtr temp = theBranchings[1]->_particle->antiColourLine();
-    theBranchings[0]->_particle->colourLine()->join(temp);
+  if(theBranchings[0]->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
+    ColinePtr temp = theBranchings[1]->branchingParticle()->antiColourLine();
+    theBranchings[0]->branchingParticle()->colourLine()->join(temp);
   }
   else {
-    ColinePtr temp = theBranchings[0]->_particle->antiColourLine();
-    theBranchings[1]->_particle->colourLine()->join(temp);
+    ColinePtr temp = theBranchings[0]->branchingParticle()->antiColourLine();
+    theBranchings[1]->branchingParticle()->colourLine()->join(temp);
   }
   vector<HardBranchingPtr> spaceBranchings;
   spaceBranchings.push_back( new_ptr( HardBranching( vBoson, SudakovPtr(),
@@ -535,8 +535,8 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
   
   generator()->log() << "testing hard momenta for the shower\n";
   for( unsigned int jx = 0; jx < theBranchings.size(); ++jx ) {
-    generator()->log() << "testing " << theBranchings[jx]->_shower/GeV << "\t"
-		       << theBranchings[jx]->_shower.m()/GeV << "\n";
+    generator()->log() << "testing " << theBranchings[jx]->showerMomentum()/GeV << "\t"
+		       << theBranchings[jx]->showerMomentum().m()/GeV << "\n";
   }
 
  
@@ -549,7 +549,7 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
     //loop until the  assosiated external particle is found
     do {
       if( ! currentExternal ) break;
-      currentExternal = currentExternal->_children[0];
+      currentExternal = currentExternal->children()[0];
     } while( _theExternals.find( currentExternal->branchingParticle() ) ==
 	     _theExternals.end() );
 
@@ -570,7 +570,7 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
     double startScale = 1.;
     long intID = cit->first->branchingParticle()->id();
     //get start scale from parton
-    if( cit->first->_parent ) {
+    if( cit->first->parent() ) {
       HardBranchingPtr intParent = cit->first;
       if( _theNodes.find( cit->first ) !=
 	  _theNodes.end() )

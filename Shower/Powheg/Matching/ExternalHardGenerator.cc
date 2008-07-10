@@ -59,7 +59,7 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
     bool match(false);
     for(set<HardBranchingPtr>::iterator it=hardtree->branchings().begin();
 	it!=hardtree->branchings().end();++it) {
-      if((**it)._particle->id()!=progenitors[ix]->progenitor()->id()) continue;
+      if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
       cerr << *progenitors[ix]->progenitor() << "\n";
       hardtree->connect(progenitors[ix]->progenitor(),*it);
       match = true;

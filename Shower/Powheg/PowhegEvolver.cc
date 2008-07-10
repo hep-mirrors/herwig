@@ -119,7 +119,7 @@ void PowhegEvolver::showerDecay(ShowerTreePtr tree) {
 	progenitor( particlesToShower[ix] );
 	if( _nasontree ) {
 	  mit = _nasontree->particles().find( progenitor()->progenitor() );
-	  if( mit != eit && !mit->second->_children.empty() ) {
+	  if( mit != eit && !mit->second->children().empty() ) {
 	     //produce the truncated emissions and histogram the number of emissions
 	    _truncEmissions = 0;
 	    progenitor()->hasEmitted( truncatedTimeLikeShower(
@@ -169,14 +169,14 @@ void PowhegEvolver::showerDecay(ShowerTreePtr tree) {
     for(set<HardBranchingPtr>::const_iterator it = 
 	  _nasontree->branchings().begin();
 	it != _nasontree->branchings().end(); ++it)  {
-      if(!(**it)._children.empty()) {
-	for(vector<HardBranchingPtr>::const_iterator jt=(**it)._children.begin();
-	    jt!=(**it)._children.end();++jt) {
-	  outb.push_back((**jt)._particle);
+      if(!(**it).children().empty()) {
+	for(vector<HardBranchingPtr>::const_iterator jt=(**it).children().begin();
+	    jt!=(**it).children().end();++jt) {
+	  outb.push_back((**jt).branchingParticle());
 	}
       }
-      else if((**it)._particle->isFinalState()) {
-	outb.push_back((**it)._particle);
+      else if((**it).branchingParticle()->isFinalState()) {
+	outb.push_back((**it).branchingParticle());
       }
     }
     static Energy eps = 1e-5*GeV;
@@ -232,12 +232,12 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
 	//vgbbb
 	if( _nasontree ) mit = _nasontree->
 			  particles().find( progenitor()->progenitor() );
-	if( _nasontree && mit != eit && mit->second->_parent ) {
+	if( _nasontree && mit != eit && mit->second->parent() ) {
 	  progenitor()->
 	    hasEmitted( truncatedSpaceLikeShower( particlesToShower[ix]->progenitor(),
 						  particlesToShower[ix]->
 						  original()->parents()[0],
-						  mit->second->_parent ) );
+						  mit->second->parent() ) );
 	}
 	else {
 	  progenitor()->hasEmitted( _hardonly ? false :
@@ -247,7 +247,6 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
 	}
       }
     }
-   
     // final-state radiation
     if( isFSRadiationON() ) {
       for( unsigned int ix = 0; ix < particlesToShower.size(); ++ix ) {
@@ -300,10 +299,10 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
     vector<ShowerParticlePtr> nason;
     for(set<HardBranchingPtr>::const_iterator it = _nasontree->incoming().begin();
 	it != _nasontree->incoming().end(); ++it) {
-      nason.push_back((*it)->_particle);
-      for(unsigned int ix=0;ix<(*it)->_children.size();++ix) {
-	if((*it)->_children[ix]->_incoming) continue;
-	nason.push_back((*it)->_children[ix]->_particle);
+      nason.push_back((*it)->branchingParticle());
+      for(unsigned int ix=0;ix<(*it)->children().size();++ix) {
+	if((*it)->children()[ix]->incoming()) continue;
+	nason.push_back((*it)->children()[ix]->branchingParticle());
       }
     }
 //     for(vector<ShowerParticlePtr>::const_iterator it=nason.begin();it!=nason.end();++it) {
@@ -403,7 +402,7 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     vetoed = !isTruncatedShowerON();
     fb=splittingGenerator()->chooseForwardBranching(*particle,1.);
     // check haven't evolved too far
-    if(!fb.kinematics||fb.kinematics->scale()<branch->_scale) {
+    if(!fb.kinematics||fb.kinematics->scale()<branch->scale()) {
       fb=Branching();
       break;
     }
@@ -433,7 +432,7 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     // hardest line veto
     if(zsplit<0.5) vetoed=true;
     // angular ordering veto
-    if(fb.kinematics->scale()<branch->_scale/zsplit) vetoed=true;
+    if(fb.kinematics->scale()<branch->scale()/zsplit) vetoed=true;
     // pt veto
     if(fb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
     // no truncated shower if only generating hardest emission
@@ -447,17 +446,17 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
   if(!fb.kinematics) {
     // construct the kinematics for the hard emission
     ShoKinPtr showerKin=
-      branch->_sudakov->createFinalStateBranching(branch->_scale,
-						  branch->_children[0]->_z,
-						  branch->_phi,
-						  branch->_children[0]->_pt);
-    particle->setEvolutionScale( ShowerIndex::QCD,branch->_scale );
+      branch->sudakov()->createFinalStateBranching(branch->scale(),
+						   branch->children()[0]->z(),
+						   branch->phi(),
+						   branch->children()[0]->pT());
+    particle->setEvolutionScale( ShowerIndex::QCD,branch->scale() );
     showerKin->initialize( *particle,PPtr() );
     IdList idlist(3);
     idlist[0] = particle->id();
-    idlist[1] = branch->_children[0]->_particle->id();
-    idlist[2] = branch->_children[1]->_particle->id();
-    fb = Branching( showerKin, idlist, branch->_sudakov );
+    idlist[1] = branch->children()[0]->branchingParticle()->id();
+    idlist[2] = branch->children()[1]->branchingParticle()->id();
+    fb = Branching( showerKin, idlist, branch->sudakov() );
     // Assign the shower kinematics to the emitting particle.
     particle->setShowerKinematics( fb.kinematics );
     // Assign the splitting function to the emitting particle. 
@@ -466,10 +465,10 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     // the emitting particle; set the parent/child relationship
     // if same as definition create particles, otherwise create cc
     ShowerParticleVector theChildren;
-    theChildren.push_back(new_ptr(ShowerParticle(branch->_children[0]->
-						 _particle->dataPtr(),true)));
-    theChildren.push_back(new_ptr(ShowerParticle(branch->_children[1]->
-						 _particle->dataPtr(),true)));
+    theChildren.push_back(new_ptr(ShowerParticle(branch->children()[0]->
+						 branchingParticle()->dataPtr(),true)));
+    theChildren.push_back(new_ptr(ShowerParticle(branch->children()[1]->
+						 branchingParticle()->dataPtr(),true)));
     particle->showerKinematics()->updateChildren(particle, theChildren);
     // update the history if needed
     if(particle==currentTree()->getFinalStateShowerProduct(progenitor()))
@@ -480,21 +479,21 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     //
     //  need to set rho here
     //
-    if( branch->_children[0]->_children.empty() ) {
+    if( branch->children()[0]->children().empty() ) {
       timeLikeShower(theChildren[0]);
     }
     else {
-      truncatedTimeLikeShower( theChildren[0],branch->_children[0] );
+      truncatedTimeLikeShower( theChildren[0],branch->children()[0] );
     } 
     // shower the second particle
     //
     //   need to set rho here
     //
-    if( branch->_children[1]->_children.empty() ) {
+    if( branch->children()[1]->children().empty() ) {
       timeLikeShower( theChildren[1] );
     }
     else {
-      truncatedTimeLikeShower( theChildren[1],branch->_children[1] );
+      truncatedTimeLikeShower( theChildren[1],branch->children()[1] );
     }
     return true;
   }
@@ -540,7 +539,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   while (vetoed) {
     if( isTruncatedShowerON() ) vetoed = false;
     bb = splittingGenerator()->chooseBackwardBranching( *particle, beam, 1., beamParticle() );
-    if( !bb.kinematics || bb.kinematics->scale() < branch->_scale ) {
+    if( !bb.kinematics || bb.kinematics->scale() < branch->scale() ) {
       bb = Branching();
       break;
     }
@@ -564,7 +563,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     //hardest only switch
     if( _hardonly ) vetoed = true;
     // angular ordering veto
-    if( bb.kinematics->scale() < branch->_scale / zsplit ) vetoed = true;
+    if( bb.kinematics->scale() < branch->scale() / zsplit ) vetoed = true;
     //reset scale if vetoed
     if( vetoed ) particle->setEvolutionScale( ShowerIndex::QCD, bb.kinematics->scale() );
   }
@@ -572,25 +571,26 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     //do the hard emission
     double z(0.);
     HardBranchingPtr timelike;
-    for( unsigned int ix = 0; ix < branch->_children.size(); ++ix ) {
-      if( !branch->_children[ix]->_incoming ) {
-          timelike = branch->_children[ix];
+    for( unsigned int ix = 0; ix < branch->children().size(); ++ix ) {
+      if( !branch->children()[ix]->incoming() ) {
+          timelike = branch->children()[ix];
       }
-      if( branch->_children[ix]->_incoming ) z = branch->_children[ix]->_z;
+      if( branch->children()[ix]->incoming() ) z = branch->children()[ix]->z();
     }
     ShoKinPtr kinematics =
-      branch->_sudakov->createInitialStateBranching( branch->_scale, z, branch->_phi,
-						     branch->_children[0]->_pt );
+      branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
+						      branch->children()[0]->pT() );
     kinematics->initialize( *particle, beam );
    // assign the splitting function and shower kinematics
     particle->setShowerKinematics( kinematics );
     // For the time being we are considering only 1->2 branching
     // Now create the actual particles, make the otherChild a final state
     // particle, while the newParent is not
-    ShowerParticlePtr newParent = new_ptr( ShowerParticle( branch->_particle->dataPtr(),
-						           false ) );
-    ShowerParticlePtr otherChild = new_ptr( ShowerParticle( timelike->_particle->dataPtr(),
-							    true, true ) );
+    ShowerParticlePtr newParent = 
+      new_ptr( ShowerParticle( branch->branchingParticle()->dataPtr(), false ) );
+    ShowerParticlePtr otherChild = 
+      new_ptr( ShowerParticle( timelike->branchingParticle()->dataPtr(),
+			       true, true ) );
     ShowerParticleVector theChildren;
     theChildren.push_back( particle ); 
     theChildren.push_back( otherChild );
@@ -603,8 +603,8 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     // now continue the shower
     bool emitted=false;
     if(!_hardonly) {
-      if( branch->_parent ) {
-	emitted = truncatedSpaceLikeShower( newParent, beam, branch->_parent );
+      if( branch->parent() ) {
+	emitted = truncatedSpaceLikeShower( newParent, beam, branch->parent() );
       }
       else {
 	emitted = spaceLikeShower( newParent, beam );
@@ -624,7 +624,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     particle->showerKinematics()->updateChildren( newParent, theChildren );
     if(_hardonly) return true;
     // perform the shower of the final-state particle
-    if( timelike->_children.empty() ) {
+    if( timelike->children().empty() ) {
       timeLikeShower( otherChild );
     }
     else {
