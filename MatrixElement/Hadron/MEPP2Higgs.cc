@@ -25,7 +25,9 @@
 
 using namespace Herwig;
 
-MEPP2Higgs::MEPP2Higgs() : scaleopt(1),
+MEPP2Higgs::MEPP2Higgs() : widthopt(1),
+			   usersWidth(0.00468456293*GeV),
+			   scaleopt(1),
                            mu_F(100.*GeV),
                            shapeopt(2),
 			   processopt(1),
@@ -37,15 +39,17 @@ ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 // Definition of the static class description member.
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
-  os << hggvertex << ffhvertex << theSM << scaleopt << ounit(mu_F,GeV) 
-     << shapeopt << processopt 
-     << minflavouropt << maxflavouropt << _hmass << ounit(_mh,GeV) << ounit(_wh,GeV);
+  os << hggvertex << ffhvertex << theSM << widthopt << ounit(usersWidth,GeV) 
+     << scaleopt << ounit(mu_F,GeV) << shapeopt << processopt 
+     << minflavouropt << maxflavouropt << _hmass << ounit(_mh,GeV) 
+     << ounit(_wh,GeV);
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
-  is >> hggvertex >> ffhvertex >> theSM >> scaleopt >> iunit(mu_F,GeV) 
-     >> shapeopt >> processopt 
-     >> minflavouropt >> maxflavouropt >> _hmass >> iunit(_mh,GeV) >> iunit(_wh,GeV);
+  is >> hggvertex >> ffhvertex >> theSM >> widthopt >> iunit(usersWidth,GeV) 
+     >> scaleopt >> iunit(mu_F,GeV) >> shapeopt >> processopt 
+     >> minflavouropt >> maxflavouropt >> _hmass >> iunit(_mh,GeV) 
+     >> iunit(_wh,GeV);
 }
 
 void MEPP2Higgs::Init() {
@@ -53,6 +57,27 @@ void MEPP2Higgs::Init() {
   static ClassDocumentation<MEPP2Higgs> documentation
     ("The MEPP2Higgs class implements the matrix elements for"
      " Higgs production (with decay H->W-W+) in hadron-hadron collisions.");
+
+  static Switch<MEPP2Higgs,unsigned int> interfaceWidthOption
+    ("WidthOption",
+     "Option to allow user to specify the width",
+     &MEPP2Higgs::widthopt, 1, false, false);
+  static SwitchOption interfaceWidthGenerator
+    (interfaceWidthOption,
+     "WidthGenerator",
+     "Herwig++/ThePEG calculates the width (default)",
+     1);
+  static SwitchOption interfaceSpecifyWidth
+    (interfaceWidthOption,
+     "SpecifyWidth",
+     "The user can set the width manually setting interface MyHiggsWidth",
+     2);
+
+  static Parameter<MEPP2Higgs,Energy> interfaceMyHiggsWidth
+    ("MyHiggsWidth",
+     "Value to use when overriding widthGenerator with interface WidthOption",
+     &MEPP2Higgs::usersWidth, GeV, 0.00468456293*GeV, 0.0*GeV, 10.0*GeV,
+     true, false, Interface::limited);
 
   static Switch<MEPP2Higgs,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
@@ -138,7 +163,7 @@ void MEPP2Higgs::doinit() throw(InitException) {
   // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
   _mh = h0->mass();
-  _wh = h0->generateWidth(_mh);
+  _wh = widthopt==2 ? usersWidth : h0->generateWidth(_mh);
   if(h0->massGenerator()) {
     _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
   }
@@ -196,11 +221,15 @@ void MEPP2Higgs::getDiagrams() const {
 CrossSection MEPP2Higgs::dSigHatDR() const {
   using Constants::pi;
   InvEnergy2 bwfact;
+  if(widthopt==2) {
+    bwfact = _wh*sqrt(sHat())/pi/(sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+    double cs = me2()*jacobian()*pi*double(UnitRemoval::E4 * bwfact/sHat());
+    return UnitRemoval::InvE2 * sqr(hbarc) * cs;
+  }  
   if(shapeopt==1) {
     bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
       (sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
-  }
-  else {
+  } else {
     bwfact = _hmass->BreitWignerWeight(sqrt(sHat()),0);
   }
   double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
