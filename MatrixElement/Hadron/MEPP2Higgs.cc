@@ -25,7 +25,9 @@
 
 using namespace Herwig;
 
-MEPP2Higgs::MEPP2Higgs() : shapeopt(2),
+MEPP2Higgs::MEPP2Higgs() : scaleopt(1),
+                           mu_F(100.*GeV),
+                           shapeopt(2),
 			   processopt(1),
 			   minflavouropt(4),
 			   maxflavouropt(5), _mh(0.*GeV),_wh(0.*GeV)
@@ -35,12 +37,14 @@ ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 // Definition of the static class description member.
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
-  os << hggvertex << ffhvertex << theSM << shapeopt << processopt 
+  os << hggvertex << ffhvertex << theSM << scaleopt << ounit(mu_F,GeV) 
+     << shapeopt << processopt 
      << minflavouropt << maxflavouropt << _hmass << ounit(_mh,GeV) << ounit(_wh,GeV);
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
-  is >> hggvertex >> ffhvertex >> theSM >> shapeopt >> processopt 
+  is >> hggvertex >> ffhvertex >> theSM >> scaleopt >> iunit(mu_F,GeV) 
+     >> shapeopt >> processopt 
      >> minflavouropt >> maxflavouropt >> _hmass >> iunit(_mh,GeV) >> iunit(_wh,GeV);
 }
 
@@ -49,6 +53,27 @@ void MEPP2Higgs::Init() {
   static ClassDocumentation<MEPP2Higgs> documentation
     ("The MEPP2Higgs class implements the matrix elements for"
      " Higgs production (with decay H->W-W+) in hadron-hadron collisions.");
+
+  static Switch<MEPP2Higgs,unsigned int> interfaceFactorizationScaleOption
+    ("FactorizationScaleOption",
+     "Option for the choice of factorization scale",
+     &MEPP2Higgs::scaleopt, 1, false, false);
+  static SwitchOption interfaceDynamic
+    (interfaceFactorizationScaleOption,
+     "Dynamic",
+     "Dynamic factorization scale equal to the current sqrt(sHat())",
+     1);
+  static SwitchOption interfaceFixed
+    (interfaceFactorizationScaleOption,
+     "Fixed",
+     "Use a fixed factorization scale set with FactorizationScaleValue",
+     2);
+
+  static Parameter<MEPP2Higgs,Energy> interfaceFactorizationScaleValue
+    ("FactorizationScaleValue",
+     "Value to use in the event of a fixed factorization scale",
+     &MEPP2Higgs::mu_F, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
+     true, false, Interface::limited);
 
   static Switch<MEPP2Higgs,unsigned int> interfaceShapeOption
     ("ShapeScheme",
@@ -132,7 +157,7 @@ unsigned int MEPP2Higgs::orderInAlphaEW() const {
 }
 
 Energy2 MEPP2Higgs::scale() const {
-  return sHat();
+  return scaleopt == 1 ? sHat() : sqr(mu_F);
 }
 
 int MEPP2Higgs::nDim() const {

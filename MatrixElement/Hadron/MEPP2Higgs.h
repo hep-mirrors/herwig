@@ -226,6 +226,16 @@ private:
 private:
 
   /**
+   * Selects a dynamic (sHat) or fixed factorization scale
+   */
+  unsigned int scaleopt;
+
+  /**
+   * The value associated to the fixed factorization scale option
+   */
+  Energy mu_F;
+
+  /**
    * Defines the Higgs resonance shape
    */
   unsigned int shapeopt;
