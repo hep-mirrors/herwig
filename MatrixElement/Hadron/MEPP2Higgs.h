@@ -228,42 +228,42 @@ private:
   /**
    * Selects a HW++/ThePEG widthGenerator width of a fixed user input width
    */
-  unsigned int widthopt;
+  unsigned int widthopt_;
 
   /**
    * The value associated to the fixed width option
    */
-  Energy usersWidth;
+  Energy usersWidth_;
 
   /**
    * Selects a dynamic (sHat) or fixed factorization scale
    */
-  unsigned int scaleopt;
+  unsigned int scaleopt_;
 
   /**
    * The value associated to the fixed factorization scale option
    */
-  Energy mu_F;
+  Energy mu_F_;
 
   /**
    * Defines the Higgs resonance shape
    */
-  unsigned int shapeopt;
+  unsigned int shapeopt_;
 
   /**
    * The processes to be included (GG->H and/or qq->H)
    */
-  unsigned int processopt;
+  unsigned int processopt_;
 
   /**
    * Minimum flavour of incoming quarks
    */
-  unsigned int minflavouropt;
+  unsigned int minflavouropt_;
 
   /**
    * Maximum flavour of incoming quarks
    */
-  unsigned int maxflavouropt;
+  unsigned int maxflavouropt_;
 
   /**
    * Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess
@@ -273,7 +273,7 @@ private:
   /**
    * Matrix element for spin correlations
    */
-  ProductionMatrixElement _me;
+  ProductionMatrixElement me_;
 
   /**
    * Pointer to the H->2gluons vertex (used in gg->H)
@@ -293,17 +293,17 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
+  SMHiggsMassGeneratorPtr hmass_;
 
   /**
    *  On-shell mass for the higgs
    */
-  Energy _mh;
+  Energy mh_;
 
   /**
    *  On-shell width for the higgs
    */
-  Energy _wh;
+  Energy wh_;
 };
 
 }

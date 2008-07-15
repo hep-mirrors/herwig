@@ -25,31 +25,31 @@
 
 using namespace Herwig;
 
-MEPP2Higgs::MEPP2Higgs() : widthopt(1),
-			   usersWidth(0.00468456293*GeV),
-			   scaleopt(1),
-                           mu_F(100.*GeV),
-                           shapeopt(2),
-			   processopt(1),
-			   minflavouropt(4),
-			   maxflavouropt(5), _mh(0.*GeV),_wh(0.*GeV)
+MEPP2Higgs::MEPP2Higgs() : widthopt_(1),
+			   usersWidth_(0.00468456293*GeV),
+			   scaleopt_(1),
+                           mu_F_(100.*GeV),
+                           shapeopt_(2),
+			   processopt_(1),
+			   minflavouropt_(4),
+			   maxflavouropt_(5), mh_(0.*GeV),wh_(0.*GeV)
 {}
 
 ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;
 // Definition of the static class description member.
 
 void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
-  os << hggvertex << ffhvertex << theSM << widthopt << ounit(usersWidth,GeV) 
-     << scaleopt << ounit(mu_F,GeV) << shapeopt << processopt 
-     << minflavouropt << maxflavouropt << _hmass << ounit(_mh,GeV) 
-     << ounit(_wh,GeV);
+  os << hggvertex << ffhvertex << theSM << widthopt_ << ounit(usersWidth_,GeV) 
+     << scaleopt_ << ounit(mu_F_,GeV) << shapeopt_ << processopt_ 
+     << minflavouropt_ << maxflavouropt_ << hmass_ << ounit(mh_,GeV) 
+     << ounit(wh_,GeV);
 }
 
 void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
-  is >> hggvertex >> ffhvertex >> theSM >> widthopt >> iunit(usersWidth,GeV) 
-     >> scaleopt >> iunit(mu_F,GeV) >> shapeopt >> processopt 
-     >> minflavouropt >> maxflavouropt >> _hmass >> iunit(_mh,GeV) 
-     >> iunit(_wh,GeV);
+  is >> hggvertex >> ffhvertex >> theSM >> widthopt_ >> iunit(usersWidth_,GeV) 
+     >> scaleopt_ >> iunit(mu_F_,GeV) >> shapeopt_ >> processopt_ 
+     >> minflavouropt_ >> maxflavouropt_ >> hmass_ >> iunit(mh_,GeV) 
+     >> iunit(wh_,GeV);
 }
 
 void MEPP2Higgs::Init() {
@@ -61,7 +61,7 @@ void MEPP2Higgs::Init() {
   static Switch<MEPP2Higgs,unsigned int> interfaceWidthOption
     ("WidthOption",
      "Option to allow user to specify the width",
-     &MEPP2Higgs::widthopt, 1, false, false);
+     &MEPP2Higgs::widthopt_, 1, false, false);
   static SwitchOption interfaceWidthGenerator
     (interfaceWidthOption,
      "WidthGenerator",
@@ -76,13 +76,13 @@ void MEPP2Higgs::Init() {
   static Parameter<MEPP2Higgs,Energy> interfaceMyHiggsWidth
     ("MyHiggsWidth",
      "Value to use when overriding widthGenerator with interface WidthOption",
-     &MEPP2Higgs::usersWidth, GeV, 0.00468456293*GeV, 0.0*GeV, 10.0*GeV,
+     &MEPP2Higgs::usersWidth_, GeV, 0.00468456293*GeV, 0.0*GeV, 10.0*GeV,
      true, false, Interface::limited);
 
   static Switch<MEPP2Higgs,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
      "Option for the choice of factorization scale",
-     &MEPP2Higgs::scaleopt, 1, false, false);
+     &MEPP2Higgs::scaleopt_, 1, false, false);
   static SwitchOption interfaceDynamic
     (interfaceFactorizationScaleOption,
      "Dynamic",
@@ -97,13 +97,13 @@ void MEPP2Higgs::Init() {
   static Parameter<MEPP2Higgs,Energy> interfaceFactorizationScaleValue
     ("FactorizationScaleValue",
      "Value to use in the event of a fixed factorization scale",
-     &MEPP2Higgs::mu_F, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
+     &MEPP2Higgs::mu_F_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
      true, false, Interface::limited);
 
   static Switch<MEPP2Higgs,unsigned int> interfaceShapeOption
     ("ShapeScheme",
      "Option for the treatment of the Higgs resonance shape",
-     &MEPP2Higgs::shapeopt, 1, false, false);
+     &MEPP2Higgs::shapeopt_, 1, false, false);
   static SwitchOption interfaceStandardShapeFixed
     (interfaceShapeOption,
      "FixedBreitWigner",
@@ -118,7 +118,7 @@ void MEPP2Higgs::Init() {
   static Switch<MEPP2Higgs,unsigned int> interfaceProcess
     ("Process",
      "Which subprocesses to include",
-     &MEPP2Higgs::processopt, 1, false, false);
+     &MEPP2Higgs::processopt_, 1, false, false);
   static SwitchOption interfaceProcessAll
     (interfaceProcess,
      "All",
@@ -138,13 +138,13 @@ void MEPP2Higgs::Init() {
   static Parameter<MEPP2Higgs,unsigned int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The minimum flavour of the incoming quarks in the hard process",
-     &MEPP2Higgs::minflavouropt, 4, 3, 5,
+     &MEPP2Higgs::minflavouropt_, 4, 3, 5,
      false, false, Interface::limited);
 
   static Parameter<MEPP2Higgs,unsigned int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The maximum flavour of the incoming quarks in the hard process",
-     &MEPP2Higgs::maxflavouropt, 5, 3, 5,
+     &MEPP2Higgs::maxflavouropt_, 5, 3, 5,
      false, false, Interface::limited);
 }
 
@@ -162,12 +162,12 @@ void MEPP2Higgs::doinit() throw(InitException) {
   ffhvertex = theSM->vertexFFH();
   // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
-  _mh = h0->mass();
-  _wh = widthopt==2 ? usersWidth : h0->generateWidth(_mh);
+  mh_ = h0->mass();
+  wh_ = widthopt_==2 ? usersWidth_ : h0->generateWidth(mh_);
   if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+    hmass_=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
   }
-  if(shapeopt==2&&!_hmass) throw InitException()
+  if(shapeopt_==2&&!hmass_) throw InitException()
     << "If using the mass generator for the line shape in MEPP2Higgs::doinit()"
     << "the mass generator must be an instance of the SMHiggsMassGenerator class"
     << Exception::runerror;
@@ -182,7 +182,7 @@ unsigned int MEPP2Higgs::orderInAlphaEW() const {
 }
 
 Energy2 MEPP2Higgs::scale() const {
-  return scaleopt == 1 ? sHat() : sqr(mu_F);
+  return scaleopt_ == 1 ? sHat() : sqr(mu_F_);
 }
 
 int MEPP2Higgs::nDim() const {
@@ -204,13 +204,13 @@ bool MEPP2Higgs::generateKinematics(const double *) {
 void MEPP2Higgs::getDiagrams() const {
   tcPDPtr h0=getParticleData(ParticleID::h0);
   // gg -> H process
-  if(processopt==1||processopt==3) {
+  if(processopt_==1||processopt_==3) {
     tcPDPtr g=getParticleData(ParticleID::g);
     add(new_ptr((Tree2toNDiagram(2), g, g, 1, h0, -1)));
   }
   // q qbar -> H processes
-  if(processopt==1||processopt==2) {
-    for (unsigned int i = minflavouropt; i <= maxflavouropt; ++i) {
+  if(processopt_==1||processopt_==2) {
+    for (unsigned int i = minflavouropt_; i <= maxflavouropt_; ++i) {
       tcPDPtr q = getParticleData(i);
       tcPDPtr qb = q->CC();
     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, h0, -2)));
@@ -221,16 +221,16 @@ void MEPP2Higgs::getDiagrams() const {
 CrossSection MEPP2Higgs::dSigHatDR() const {
   using Constants::pi;
   InvEnergy2 bwfact;
-  if(widthopt==2) {
-    bwfact = _wh*sqrt(sHat())/pi/(sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+  if(widthopt_==2) {
+    bwfact = wh_*sqrt(sHat())/pi/(sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
     double cs = me2()*jacobian()*pi*double(UnitRemoval::E4 * bwfact/sHat());
     return UnitRemoval::InvE2 * sqr(hbarc) * cs;
   }  
-  if(shapeopt==1) {
+  if(shapeopt_==1) {
     bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
-      (sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+      (sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
   } else {
-    bwfact = _hmass->BreitWignerWeight(sqrt(sHat()),0);
+    bwfact = hmass_->BreitWignerWeight(sqrt(sHat()),0);
   }
   double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
   return UnitRemoval::InvE2 * sqr(hbarc) * cs;
@@ -344,7 +344,7 @@ void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   // construct the vertex
   HardVertexPtr hardvertex = new_ptr(HardVertex());
   // set the matrix element for the vertex
-  hardvertex->ME(_me);
+  hardvertex->ME(me_);
   // set the pointers and to and from the vertex
   for(unsigned int i = 0; i < 3; ++i) {
     dynamic_ptr_cast<SpinfoPtr>(hard[i]->spinInfo())->setProductionVertex(hardvertex);
@@ -365,7 +365,7 @@ double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1,
       if(calc) newme(2*i, 2*j, 0) = diag;
     }
   }
-  if(calc) _me.reset(newme);
+  if(calc) me_.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
   return me2/32.;
 }
@@ -385,7 +385,7 @@ double MEPP2Higgs::qqME(vector<SpinorWaveFunction> & fin,
       if(calc) newme(i, j, 0) = diag;
     }
   }
-  if(calc) _me.reset(newme);
+  if(calc) me_.reset(newme);
   // final colour/spin factors
   return me2/12.;
 }
