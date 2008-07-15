@@ -48,13 +48,17 @@ Energy2 MEqq2W2ffPowheg::scale() const {
 }
 
 void MEqq2W2ffPowheg::persistentOutput(PersistentOStream & os) const {
-  os << _contrib << _nlo_alphaS_opt << _fixed_alphaS << _a << _p << _gluon
-     << _TR << _CF << _scaleopt << ounit(_fixedScale,GeV) << _scaleFact;
+  os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
+     << _a         << _p              << _gluon
+     << _TR        << _CF             << _scaleopt       
+     << ounit(_fixedScale,GeV)        << _scaleFact;
 }
 
 void MEqq2W2ffPowheg::persistentInput(PersistentIStream & is, int) { 
-  is >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS >> _a >> _p >> _gluon
-     >> _TR >> _CF >> _scaleopt >> iunit(_fixedScale,GeV) >> _scaleFact;
+  is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
+     >> _a         >> _p              >> _gluon
+     >> _TR        >> _CF             >> _scaleopt 
+     >> iunit(_fixedScale,GeV)        >> _scaleFact;
 }
 
 ClassDescription<MEqq2W2ffPowheg> MEqq2W2ffPowheg::initMEqq2W2ffPowheg;
