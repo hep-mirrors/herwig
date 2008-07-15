@@ -29,11 +29,13 @@ IBPtr PowhegHandler::fullclone() const {
 }
 
 void PowhegHandler::persistentOutput(PersistentOStream & os) const {
-  os  << _alphaS << _sudopt << _sudname << _jetMeasureMode;
+  os  << _alphaS << _sudopt << _sudname 
+      << _jetMeasureMode <<  _yini << _alphaSMG;
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
-  is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode;
+  is  >> _alphaS >> _sudopt >> _sudname 
+      >> _jetMeasureMode >> _yini >> _alphaSMG;;
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -86,10 +88,21 @@ void PowhegHandler::Init() {
   
   static SwitchOption LUCLUS
     (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 1);
+
+  static Parameter<PowhegHandler,double> interfaceMergeScale
+    ("MergeScale",
+     "The CKKW merging scale, yini",
+     &PowhegHandler::_yini, 0.001, 0.0, 1.0,
+     false, false, Interface::limited );
+
+   static Parameter<PowhegHandler,double> interfaceAlphaSMG
+    ("alphaSMG",
+     "The fixed alphas used in MG event generation",
+     &PowhegHandler::_alphaSMG, 0.118, 0.0, 1.0,
+     false, false, Interface::limited );
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
-
   PPair in = lastXCombPtr()->subProcess()->incoming();
   ParticleVector out  = lastXCombPtr()->subProcess()->outgoing();
   PPtr vBoson = lastXCombPtr()->subProcess()->intermediates()[0];
@@ -98,22 +111,15 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   _theHardTree = doClustering( out, vBoson );
   if(!_theHardTree) return 0.;
 
-  // cerr<<"finished do clustering \n";
-
-  //the jet resolution parameter used in MG generation
-  //Q1 is the lower scale and should be used as a cut off 
-  //  double y_ini = 0.001;
   Energy Q = sqrt( _s );
-  //  Energy Q1 = sqrt( y_ini ) * Q;
+ 
 
   //the Sudakov weight factor
   double SudWgt = 1.;
 
-//this is exactly as it was  for VectorBoson...
-//this is exactly as it was  for VectorBoson...  
   //include the sud factor for each external line
   
-  for( map<ShowerParticlePtr,double>::const_iterator cit 
+  for( map<ShowerParticlePtr, pair< double, Energy> >::const_iterator cit 
 	 = _theExternals.begin();
        cit != _theExternals.end(); ++cit ) {
     //itererate over all matching sudakovs (only 1 except for gluon)
@@ -122,13 +128,13 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     for( cjt =  _fbranchings.lower_bound( abs( cit->first->id() ) );
 	 cjt != _fbranchings.upper_bound( abs( cit->first->id() ) );
 	 ++cjt ) {
-      SudWgt *= (* cjt->second.first )( sqrt( cit->second ) * Q );
+      SudWgt *= (* cjt->second.first )( cit->second.second );
     }
   }
 
 
   //include the intermediate line wgts
-  for( map< long, pair< double, double > >::const_iterator cit 
+  for( map< long, pair< pair< double, Energy >, pair< double, Energy > > >::const_iterator cit 
 	 = _theIntermediates.begin();
        cit != _theIntermediates.end(); ++cit ) {
 
@@ -137,18 +143,18 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     for( cjt =  _fbranchings.lower_bound( abs( cit->first ) );
 	 cjt != _fbranchings.upper_bound( abs( cit->first ) );
 	 ++cjt ) {
-      SudWgt *= (* cjt->second.first )( sqrt( cit->second.first  ) * Q );
-      SudWgt /= (* cjt->second.first )( sqrt( cit->second.second ) * Q );
+      SudWgt *= (* cjt->second.first )( cit->second.first.second );
+      SudWgt /= (* cjt->second.first )( cit->second.second.second );
     }
   }
  
   double alphaWgt = 1.;
-  //need to add the alphaS weight
+ 
   //the alphaS ratio evaluated at all nodal values
   for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
        cit != _theNodes.end(); ++cit ) {
-    alphaWgt *= _alphaS->ratio( cit->second * sqr( Q ) );
+    alphaWgt *= _alphaS->value( cit->second * sqr( Q ) ) / _alphaSMG;
   }
 
   //update the sub process 
@@ -206,7 +212,7 @@ void PowhegHandler::doinitrun() {
 	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
       // class to return the integrated factor in the exponent
       Ptr<QTildeSudakovIntegrator>::pointer integrator = 
-	new_ptr(QTildeSudakovIntegrator(it->second));
+	new_ptr( QTildeSudakovIntegrator(it->second, _yini * sqrt( _s ) ) );
       if(_sudopt==1) sudFileOutput << it->second.first->fullName() << "\t"
 				   << it->second.second[0] << "\t"
 				   << it->second.second[1] << "\t"
@@ -416,6 +422,12 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
   int qq_pairs = 0;
   map <ShowerParticlePtr,HardBranchingPtr> theParticles;
   tcPDPtr particle_data;
+
+  //this bit gives seg fault when accessing *vb
+  cerr<<"vb = "<<vb<<":\n";
+  cerr<<*vb<<"\n";
+  
+
   ShowerParticlePtr vBoson = new_ptr( ShowerParticle( *vb, 1, false, false ) );
   //loops through the FS particles and create naon branchings
   for( unsigned int i = 0; i < theParts.size(); i++){
@@ -430,7 +442,8 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
     //jet res parameters to 1
     cerr<< "external: \n"
 	<< currentParticle << "\n";
-    _theExternals.insert( make_pair( currentParticle, 1. ) );
+    _theExternals.insert( make_pair( currentParticle, 
+				     make_pair( 1., sqrt( _s ) ) ) );
     
     if(currentParticle->dataPtr()->iColour()==PDT::Colour3||
        currentParticle->dataPtr()->iColour()==PDT::Colour8) {
@@ -443,6 +456,7 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
       newline->addAntiColoured(currentParticle);
     }
   }
+  cerr<<"2 \n";
   // loops clustering until we get down to qqbar
   while( theParticles.size() > 2 ){
     double yij_min = 1.;
@@ -518,21 +532,21 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
 						      HardBranchingPtr(), 
 						      true ) ) );
   theBranchings.push_back( spaceBranchings.back() );
-  HardTreePtr nasontree = new_ptr( HardTree( theBranchings,
+  HardTreePtr powhegtree = new_ptr( HardTree( theBranchings,
 					       spaceBranchings ) );
 
   //should I connect the branchings to the particles
   //doesn't do anything unless showerParticles come from showertree
   for(  map<ShowerParticlePtr, HardBranchingPtr>::iterator it = theParticles.begin(); 
 	it != theParticles.end(); ++it){ 
-    nasontree->connect( it->first, it->second );
+    powhegtree->connect( it->first, it->second );
   }
-  generator()->log() << *nasontree << "\n" << flush;
+  generator()->log() << *powhegtree << "\n" << flush;
 
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
-    reconstructDecayShower(nasontree,evolver());
-  
+    reconstructDecayShower(powhegtree,evolver());
+
   generator()->log() << "testing hard momenta for the shower\n";
   for( unsigned int jx = 0; jx < theBranchings.size(); ++jx ) {
     generator()->log() << "testing " << theBranchings[jx]->showerMomentum()/GeV << "\t"
@@ -554,9 +568,13 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
 	     _theExternals.end() );
 
     if( _theExternals.find( currentExternal->branchingParticle() ) !=
-	_theExternals.end() )
+	_theExternals.end() ){
       _theExternals.find( currentExternal->branchingParticle() )->
-	second = cit->second;
+	second.first = cit->second;
+      _theExternals.find( currentExternal->branchingParticle() )->
+	second.second = cit->first->scale();
+    }
+   
     else cerr<<"doClustering()::can't find an external \n"
 	     << currentExternal->branchingParticle()
 	     << "\n";    
@@ -565,21 +583,29 @@ HardTreePtr PowhegHandler::doClustering( ParticleVector theParts,
   for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
        cit != _theNodes.end(); ++cit ) {
+
     //end scale and intermediate are given by theNodes
-    double endScale = cit->second;
-    double startScale = 1.;
+    double endY = cit->second;
+    double startY = 1.;
+    Energy endScale = cit->first->scale();
+    Energy startScale = sqrt( _s );
+
     long intID = cit->first->branchingParticle()->id();
     //get start scale from parton
     if( cit->first->parent() ) {
       HardBranchingPtr intParent = cit->first;
       if( _theNodes.find( cit->first ) !=
-	  _theNodes.end() )
-	startScale = _theNodes.find( cit->first )->second;
+	  _theNodes.end() ){
+	startScale = _theNodes.find( cit->first )->first->scale();
+	startY = _theNodes.find( cit->first )->second;
+      }
       else cerr<<"doClustering()::can't find start of intermediate with parents \n";
     }
-    _theIntermediates.insert( make_pair( intID, make_pair( startScale, endScale ) ) );
+    _theIntermediates.insert( make_pair( intID, 
+					 make_pair( make_pair( startY, startScale ), 
+						    make_pair( endY, endScale  ) ) ) );
   }
-  return nasontree;
+  return powhegtree;
 }
 
 void PowhegHandler::fixColours(tPPtr parent, tPPtr child1, tPPtr child2) {

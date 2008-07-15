@@ -63,7 +63,7 @@ public:
   /**
    *  Constructor from a branching element
    */
-  QTildeSudakovIntegrator(const BranchingElement &);
+  QTildeSudakovIntegrator(const BranchingElement &, Energy MergeScale);
 
   /**
    *  Return the value
@@ -158,6 +158,11 @@ private:
    *  The value of \f$\tilde{q}\f$ for the current integral
    */
   mutable Energy qtilde_;
+  
+  /**
+   *  The CKKW merge scale (durham kt)
+   */
+  mutable Energy mergeScale_;
 
 };
 

@@ -46,7 +46,7 @@ public:
    * The default constructor.
    */
   PowhegHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data"),
-		       _jetMeasureMode(0) {}
+		    _jetMeasureMode(0), _yini(0.001), _alphaSMG(0.118) {}
 
   /**
    * Perform CKKW reweighting
@@ -61,7 +61,7 @@ public:
 public:
 
   /**
-   *  access to the nason tree object
+   *  access to the hard tree object
    */
   inline HardTreePtr getHardTree() {
     return _theHardTree;
@@ -179,7 +179,7 @@ private:
 private:
 
   /**
-   *  The nason tree
+   *  The hard tree
    */
   HardTreePtr _theHardTree;
 
@@ -198,12 +198,11 @@ private:
    */
   multimap< long, pair < Interpolator<double,Energy>::Ptr,Interpolator<Energy,double>::Ptr>  > _fbranchings;
   
- 
   /**
    * Map containing particle and the resolution parameter of 
    * external partons.
    */
-  map< ShowerParticlePtr, double > _theExternals;
+  map< ShowerParticlePtr, pair< double, Energy > > _theExternals;
 
   /**
    * Map containing all nodes with the ingoing partons and their clustered jet 
@@ -213,10 +212,11 @@ private:
   
   /**
    * Map containing all intermediate partons and 
-   * their start and end node resolution parameters.
+   * their start and end node resolution parameters ( y and qtilde ).
    */
-  map< long, pair<double, double> > _theIntermediates;
-  
+  map< long, pair< pair< double, Energy > , pair< double, Energy > > > 
+  _theIntermediates;
+
   /**
    * Map between the cluster number and the jet parameter.
    */
@@ -241,6 +241,16 @@ private:
    * The jet measure algorithm we are using.
    */
   unsigned int _jetMeasureMode;
+
+  /**
+   * The ckkw merging scale
+   */
+  double _yini;
+
+  /**
+   * The fixed alphaS value that was used to generate mad graph events
+   */
+  double _alphaSMG;
 };
 
 }
