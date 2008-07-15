@@ -161,37 +161,50 @@ protected:
    * configurations are re-weighted.
    */
   double NLOweight() const;
-  /**
-   * Calculate the variable \f$x=M_{B}^2/s\f$ from the integration variables. 
-   */
-  double x(double xt, double v) const;
-  /**
-   * Calculate the momentum fraction of the first parton. 
-   */
-  double x_a(double x, double v) const;
-  /**
-   * Calculate the momentum fraction of second parton. 
-   */
-  double x_b(double x, double v) const;
+
   /**
    * Calculate the minimum of \f$x\f$. 
    */
-  double xbar(double v) const;
+  double xbar(double y) const;
+
   /**
-   * Calculate the ratio of the radiative luminosity funcion to the
-   * Born luminosity function for the \f$qg\f$ initiated channel. 
+   * Calculate auxiliary function of \f$\bar{x}(y)\f$, \f$\bar{\eta}(y)\f$. 
    */
-  double Ltilde_qg(double x, double v) const;
+  double etabar(double y) const;
+
   /**
-   * Calculate the ratio of the radiative luminosity funcion to the
-   * Born luminosity function for the \f$g\bar{q}\f$ initiated channel. 
+   * Calculate the variable \f$x=p^{2}/s\f$ from the integration variables. 
    */
-  double Ltilde_gq(double x, double v) const;
+  double x(double xt, double y) const;
+
   /**
-   * Calculate the ratio of the radiative luminosity funcion to the
-   * Born luminosity function for the \f$q\bar{q}\f$ initiated channel. 
+   * Calculate the momentum fraction of the plus  parton. 
    */
-  double Ltilde_qq(double x, double v) const;
+  double xp(double x, double y) const;
+
+  /**
+   * Calculate the momentum fraction of the minus parton. 
+   */
+  double xm(double x, double y) const;
+
+  /**
+   * Calculate the ratio of the NLO luminosity to the LO
+   * luminosity function for the \f$gg\f$ initiated channel. 
+   */
+  double Lhat_gg(double x, double y) const;
+
+  /**
+   * Calculate the ratio of the NLO luminosity to the LO
+   * luminosity function for the \f$gq\f$ initiated channel. 
+   */
+  double Lhat_gq(double x, double y) const;
+
+  /**
+   * Calculate the ratio of the NLO luminosity to the LO
+   * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
+   */
+  double Lhat_qq(double x, double y) const;
+
   /**
    * Calculate the soft-virtual contribution to the NLO weight. 
    */
@@ -202,40 +215,35 @@ protected:
    */
   double Ccalbar_qg(double x) const;
   /**
-   * Function for calculation of the \f$qg\f$ 
+   * Function for calculation of the \f$gg\f$ 
    * initiated real contribution.
    */
-  double Fcal_qg(double x, double v) const;
+  double Rcal_gg(double x, double y) const;
   /**
    * Function for calculation of the \f$g\bar{q}\f$ initiated real
    * contribution.
    */
-  double Fcal_gq(double x, double v) const;
+  double Rcal_gq(double x, double y) const;
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Fcal_qq(double x, double v) const;
+  double Rcal_qq(double x, double y) const;
   /**
-   * Function for calculation of the \f$qg\f$ initiated real
+   * Function for calculation of the \f$gg\f$ initiated real
    * contribution.
    */
-  double Ftilde_qg(double xt, double v) const;
+  double Rtilde_gg(double xt, double y) const;
   /**
-   * Function for calculation of the \f$g\bar{q}\f$ initiated real
+   * Function for calculation of the \f$gq\f$ initiated real
    * contribution.
    */
-  double Ftilde_gq(double xt, double v) const;
+  double Rtilde_gq(double xt, double y) const;
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Ftilde_qq(double xt, double v) const;
-  /**
-   * Function for calculation of the \f$qg\f$ initiated real
-   * contribution.
-   */
-  double Ctilde_qg(double x, double v) const;
+  double Rtilde_qq(double xt, double y) const;
   /**
    * Function for calculation of the \f$g\bar{q}\f$ initiated real
    * contribution.
@@ -323,64 +331,84 @@ private:
    */
 
   /**
-   *  The momentum fraction of the first parton in the Born process
+   *  The momentum fraction of the plus  parton in the Born process
    */
-  mutable double _xb_a;
+  mutable double xbp_;
 
   /**
-   *  The momentum fraction of the second parton in the Born process
+   *  The momentum fraction of the minus parton in the Born process
    */
-  mutable double _xb_b;
+  mutable double xbm_;
 
   /**
-   *  The ParticleData object for the first parton in the Born process
+   *  The momentum fraction of the plus  parton in the NLO process
    */
-  mutable tcPDPtr _parton_a;
+  mutable double xp_;
 
   /**
-   *  The ParticleData object for the second parton in the Born process
+   *  The momentum fraction of the minus parton in the NLO process
    */
-  mutable tcPDPtr _parton_b;
+  mutable double xm_;
 
   /**
-   *  The BeamParticleData object for the first  hadron
+   *  The ParticleData object for the plus  parton in the Born process
    */
-  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A;
+  mutable tcPDPtr parton_a_;
 
   /**
-   *  The BeamParticleData object for the second hadron
+   *  The ParticleData object for the minus parton in the Born process
    */
-  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_B;
+  mutable tcPDPtr parton_b_;
 
   /**
-   *  the ParticleData object for the gluon
+   *  the ParticleData object for the radiated final state parton
    */
-  tcPDPtr _gluon;
+  tcPDPtr parton_c_;
+
+  /**
+   *  the ParticleData object for the initial state quark
+   */
+  tcPDPtr quark_;
+
+  /**
+   *  the ParticleData object for the initial state anti quark
+   */
+  tcPDPtr antiquark_;
+
+  /**
+   *  The BeamParticleData object for the plus  hadron
+   */
+  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
+
+  /**
+   *  The BeamParticleData object for the minus hadron
+   */
+  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
 
   /**
    * The \f$T_R\f$ colour factor
    */
-  double _TR;
+  double TR_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
-  double _CF;
+  double CF_;
 
   /**
    *  The value of \f$\frac{\alpha_S}{2\pi}\f$ used for the calculation
    */
-  mutable double _alphaS2Pi;
+  mutable double alphaS2Pi_;
 
   /**
-   *  The mass squared of the lepton pair
+   *  The invariant mass of the particles defining the LO final state
    */
-  mutable Energy2 _mll2;
+  mutable Energy2 p2_;
 
   /**  
-   * The renormalization/factorization scale
+   * The renormalization / factorization scale
    */
-  mutable Energy2 _mu2;
+  mutable Energy2 mu2_;
 
   /**
    *  Parameters for the NLO weight
@@ -389,32 +417,32 @@ private:
   /**
    *  Whether to generate the positive, negative or leading order contribution
    */
-  unsigned int _contrib;
+  unsigned int contrib_;
 
   /**
    *  Whether to use a fixed or a running QCD coupling for the NLO weight
    */
-  unsigned int _nlo_alphaS_opt;
+  unsigned int nlo_alphaS_opt_;
 
   /**
    *  The value of alphaS to use for the nlo weight if _nloalphaSopt=1
    */
-  double _fixed_alphaS;
+  double fixed_alphaS_;
 
   /**
    *  The magnitude of the correction term to reduce the negative contribution
    */
-  double _a;
+  double a_;
 
   /**
    *  The power of the correction term to reduce the negative contribution
    */
-  double _p;
+  double p_;
 
   /**
    *  Cut-off for the correction function
    */
-  double _eps;
+  double eps_;
   //@}
 
   /**
@@ -424,12 +452,12 @@ private:
   /**
    *   The \f$\tilde{x}\f$ variable
    */
-  double _xt;
+  double xt_;
 
   /**
    *  The \f$v\f$ angular variable
    */
-  double _v;
+  double v_;
   //@}
 
   /**
@@ -439,12 +467,8 @@ private:
   /**
    *  For the quark
    */
-  mutable double _oldq;
+  mutable double oldlumi_;
 
-  /**
-   *  For the antiquark
-   */
-  mutable double _oldqbar;
   //@}
 
 private:
@@ -452,47 +476,47 @@ private:
   /**
    * Selects a HW++/ThePEG widthGenerator width of a fixed user input width
    */
-  unsigned int widthopt;
+  unsigned int widthopt_;
 
   /**
    * The value associated to the fixed width option
    */
-  Energy usersWidth;
+  Energy usersWidth_;
 
   /**
    * Selects a dynamic (sHat) or fixed factorization scale
    */
-  unsigned int scaleopt;
+  unsigned int scaleopt_;
 
   /**
    * The value associated to the fixed factorization scale option
    */
-  Energy mu_F;
+  Energy mu_F_;
 
   /**
    *  Prefactor if variable scale used
    */
-  double _scaleFact;
+  double scaleFact_;
 
   /**
    * Defines the Higgs resonance shape
    */
-  unsigned int shapeopt;
+  unsigned int shapeopt_;
 
   /**
    * The processes to be included (GG->H and/or qq->H)
    */
-  unsigned int processopt;
+  unsigned int processopt_;
 
   /**
    * Minimum flavour of incoming quarks
    */
-  unsigned int minflavouropt;
+  unsigned int minflavouropt_;
 
   /**
    * Maximum flavour of incoming quarks
    */
-  unsigned int maxflavouropt;
+  unsigned int maxflavouropt_;
 
   /**
    * Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess
@@ -502,7 +526,7 @@ private:
   /**
    * Matrix element for spin correlations
    */
-  ProductionMatrixElement _me;
+  ProductionMatrixElement me_;
 
   /**
    * Pointer to the H->2gluons vertex (used in gg->H)
@@ -522,17 +546,17 @@ private:
   /**
    *  The mass generator for the Higgs
    */
-  SMHiggsMassGeneratorPtr _hmass;
+  SMHiggsMassGeneratorPtr hmass_;
 
   /**
    *  On-shell mass for the higgs
    */
-  Energy _mh;
+  Energy mh_;
 
   /**
    *  On-shell width for the higgs
    */
-  Energy _wh;
+  Energy wh_;
 };
 
 }

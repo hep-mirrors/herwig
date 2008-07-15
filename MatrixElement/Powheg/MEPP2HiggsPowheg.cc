@@ -26,35 +26,35 @@
 using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 
-  _contrib(1) , _nlo_alphaS_opt(0) , _fixed_alphaS(0.11803463),
-  _a(0.5)     , _p(0.7)            , _eps(1.0e-8)      ,
-  widthopt(1) ,  usersWidth(0.00468456293*GeV)         ,
-  scaleopt(1) ,  mu_F(100.*GeV)    , _scaleFact(1.)    ,
-  shapeopt(2) ,  processopt(1)     ,  minflavouropt(4) , maxflavouropt(5), 
-  _mh(0.*GeV) , _wh(0.*GeV)
+  contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.11803463),
+  a_(0.5)     ,  p_(0.7)            , eps_(1.0e-8)      ,
+  widthopt_(1),  usersWidth_(0.00468456293*GeV)         ,
+  scaleopt_(1),  mu_F_(100.*GeV)    , scaleFact_(1.)    ,
+  shapeopt_(2),  processopt_(1)     ,  minflavouropt_(4), maxflavouropt_(5), 
+  mh_(0.*GeV) ,  wh_(0.*GeV)
 {}
 
 ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
 // Definition of the static class description member.
 
 void MEPP2HiggsPowheg::persistentOutput(PersistentOStream & os) const {
-  os << hggvertex      << ffhvertex       << theSM 
-     << _contrib       << _nlo_alphaS_opt << _fixed_alphaS 
-     << _a             << _p              << _eps
-     << widthopt       << ounit(usersWidth,GeV) 
-     << scaleopt       << ounit(mu_F,GeV) << _scaleFact    << shapeopt      
-     << processopt     << minflavouropt   << maxflavouropt << _hmass        
-     << ounit(_mh,GeV) << ounit(_wh,GeV);
+  os << hggvertex      << ffhvertex        << theSM 
+     << contrib_       << nlo_alphaS_opt_  << fixed_alphaS_ 
+     << a_             << p_               << eps_
+     << widthopt_      << ounit(usersWidth_,GeV) 
+     << scaleopt_      << ounit(mu_F_,GeV) << scaleFact_     << shapeopt_      
+     << processopt_    << minflavouropt_   << maxflavouropt_ << hmass_        
+     << ounit(mh_,GeV) << ounit(wh_,GeV);
 }
 
 void MEPP2HiggsPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> hggvertex      >> ffhvertex       >> theSM 
-     >> _contrib       >> _nlo_alphaS_opt >> _fixed_alphaS 
-     >> _a             >> _p              >> _eps
-     >> widthopt       >> iunit(usersWidth,GeV) 
-     >> scaleopt       >> iunit(mu_F,GeV) >> _scaleFact    >> shapeopt      
-     >> processopt     >> minflavouropt   >> maxflavouropt >> _hmass        
-     >> iunit(_mh,GeV) >> iunit(_wh,GeV);
+  is >> hggvertex      >> ffhvertex        >> theSM 
+     >> contrib_       >> nlo_alphaS_opt_  >> fixed_alphaS_ 
+     >> a_             >> p_               >> eps_
+     >> widthopt_      >> iunit(usersWidth_,GeV) 
+     >> scaleopt_      >> iunit(mu_F_,GeV) >> scaleFact_     >> shapeopt_      
+     >> processopt_    >> minflavouropt_   >> maxflavouropt_ >> hmass_     
+     >> iunit(mh_,GeV) >> iunit(wh_,GeV);
 }
 
 void MEPP2HiggsPowheg::Init() {
@@ -66,7 +66,7 @@ void MEPP2HiggsPowheg::Init() {
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceContribution
     ("Contribution",
      "Which contributions to the cross section to include",
-     &MEPP2HiggsPowheg::_contrib, 1, false, false);
+     &MEPP2HiggsPowheg::contrib_, 1, false, false);
   static SwitchOption interfaceContributionLeadingOrder
     (interfaceContribution,
      "LeadingOrder",
@@ -86,7 +86,7 @@ void MEPP2HiggsPowheg::Init() {
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceNLOalphaSopt
     ("NLOalphaSopt",
      "Whether to use a fixed or a running QCD coupling for the NLO weight",
-     &MEPP2HiggsPowheg::_nlo_alphaS_opt, 0, false, false);
+     &MEPP2HiggsPowheg::nlo_alphaS_opt_, 0, false, false);
   static SwitchOption interfaceNLOalphaSoptRunningAlphaS
     (interfaceNLOalphaSopt,
      "RunningAlphaS",
@@ -100,26 +100,26 @@ void MEPP2HiggsPowheg::Init() {
 
   static Parameter<MEPP2HiggsPowheg,double> interfaceFixedNLOalphaS
     ("FixedNLOalphaS",
-     "The value of alphaS to use for the nlo weight if _nlo_alphaS_opt=1",
-     &MEPP2HiggsPowheg::_fixed_alphaS, 0.11803463, 0., 1.0,
+     "The value of alphaS to use for the nlo weight if nlo_alphaS_opt_=1",
+     &MEPP2HiggsPowheg::fixed_alphaS_, 0.11803463, 0., 1.0,
      false, false, Interface::limited);
 
   static Parameter<MEPP2HiggsPowheg,double> interfaceCorrectionCoefficient
     ("CorrectionCoefficient",
      "The magnitude of the correction term to reduce the negative contribution",
-     &MEPP2HiggsPowheg::_a, 0.5, -10., 10.0,
+     &MEPP2HiggsPowheg::a_, 0.5, -10., 10.0,
      false, false, Interface::limited);
 
   static Parameter<MEPP2HiggsPowheg,double> interfaceCorrectionPower
     ("CorrectionPower",
      "The power of the correction term to reduce the negative contribution",
-     &MEPP2HiggsPowheg::_p, 0.7, 0.0, 1.0,
+     &MEPP2HiggsPowheg::p_, 0.7, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceWidthOption
     ("WidthOption",
      "Option to allow user to specify the width",
-     &MEPP2HiggsPowheg::widthopt, 1, false, false);
+     &MEPP2HiggsPowheg::widthopt_, 1, false, false);
   static SwitchOption interfaceWidthGenerator
     (interfaceWidthOption,
      "WidthGenerator",
@@ -134,13 +134,13 @@ void MEPP2HiggsPowheg::Init() {
   static Parameter<MEPP2HiggsPowheg,Energy> interfaceMyHiggsWidth
     ("MyHiggsWidth",
      "Value to use when overriding widthGenerator with interface WidthOption",
-     &MEPP2HiggsPowheg::usersWidth, GeV, 0.00468456293*GeV, 0.0*GeV, 10.0*GeV,
+     &MEPP2HiggsPowheg::usersWidth_, GeV, 0.00468456293*GeV, 0.0*GeV, 10.0*GeV,
      true, false, Interface::limited);
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
      "Option for the choice of factorization scale",
-     &MEPP2HiggsPowheg::scaleopt, 1, false, false);
+     &MEPP2HiggsPowheg::scaleopt_, 1, false, false);
   static SwitchOption interfaceDynamic
     (interfaceFactorizationScaleOption,
      "Dynamic",
@@ -155,19 +155,19 @@ void MEPP2HiggsPowheg::Init() {
   static Parameter<MEPP2HiggsPowheg,Energy> interfaceFactorizationScaleValue
     ("FactorizationScaleValue",
      "Value to use in the event of a fixed factorization scale",
-     &MEPP2HiggsPowheg::mu_F, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
+     &MEPP2HiggsPowheg::mu_F_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
      true, false, Interface::limited);
 
   static Parameter<MEPP2HiggsPowheg,double> interfaceScaleFactor
     ("ScaleFactor",
      "The factor used before sHat if using a running scale",
-     &MEPP2HiggsPowheg::_scaleFact, 1.0, 0.0, 10.0,
+     &MEPP2HiggsPowheg::scaleFact_, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceShapeOption
     ("ShapeScheme",
      "Option for the treatment of the Higgs resonance shape",
-     &MEPP2HiggsPowheg::shapeopt, 1, false, false);
+     &MEPP2HiggsPowheg::shapeopt_, 1, false, false);
   static SwitchOption interfaceStandardShapeFixed
     (interfaceShapeOption,
      "FixedBreitWigner",
@@ -182,7 +182,7 @@ void MEPP2HiggsPowheg::Init() {
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceProcess
     ("Process",
      "Which subprocesses to include",
-     &MEPP2HiggsPowheg::processopt, 1, false, false);
+     &MEPP2HiggsPowheg::processopt_, 1, false, false);
   static SwitchOption interfaceProcessAll
     (interfaceProcess,
      "All",
@@ -202,20 +202,20 @@ void MEPP2HiggsPowheg::Init() {
   static Parameter<MEPP2HiggsPowheg,unsigned int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The minimum flavour of the incoming quarks in the hard process",
-     &MEPP2HiggsPowheg::minflavouropt, 4, 3, 5,
+     &MEPP2HiggsPowheg::minflavouropt_, 4, 3, 5,
      false, false, Interface::limited);
 
   static Parameter<MEPP2HiggsPowheg,unsigned int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The maximum flavour of the incoming quarks in the hard process",
-     &MEPP2HiggsPowheg::maxflavouropt, 5, 3, 5,
+     &MEPP2HiggsPowheg::maxflavouropt_, 5, 3, 5,
      false, false, Interface::limited);
 }
 
 void MEPP2HiggsPowheg::doinit() throw(InitException) {
   // 2 thing for the NLO correction
-  _CF = 4./3.; 
-  _TR = 0.5;
+  CF_ = 4./3.; 
+  TR_ = 0.5;
   // MEPP2HiggsPowheg.cc::doinit() resumes here:
   MEBase::doinit();
   // get the vertex pointers from the SM object
@@ -230,12 +230,12 @@ void MEPP2HiggsPowheg::doinit() throw(InitException) {
   ffhvertex = theSM->vertexFFH();
   // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
-  _mh = h0->mass();
-  _wh = widthopt==2 ? usersWidth : h0->generateWidth(_mh);
+  mh_ = h0->mass();
+  wh_ = widthopt_==2 ? usersWidth_ : h0->generateWidth(mh_);
   if(h0->massGenerator()) {
-    _hmass=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
+    hmass_=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
   }
-  if(shapeopt==2&&!_hmass) throw InitException()
+  if(shapeopt_==2&&!hmass_) throw InitException()
     << "If using the mass generator for the line shape in MEPP2HiggsPowheg::doinit()"
     << "the mass generator must be an instance of the SMHiggsMassGenerator class"
     << Exception::runerror;
@@ -250,7 +250,7 @@ unsigned int MEPP2HiggsPowheg::orderInAlphaEW() const {
 }
 
 Energy2 MEPP2HiggsPowheg::scale() const {
-  return scaleopt == 1 ?  _scaleFact*sHat() : sqr(mu_F);
+  return scaleopt_ == 1 ?  scaleFact_*sHat() : sqr(mu_F_);
 }
 
 int MEPP2HiggsPowheg::nDim() const {
@@ -272,13 +272,13 @@ bool MEPP2HiggsPowheg::generateKinematics(const double *) {
 void MEPP2HiggsPowheg::getDiagrams() const {
   tcPDPtr h0=getParticleData(ParticleID::h0);
   // gg -> H process
-  if(processopt==1||processopt==3) {
+  if(processopt_==1||processopt_==3) {
     tcPDPtr g=getParticleData(ParticleID::g);
     add(new_ptr((Tree2toNDiagram(2), g, g, 1, h0, -1)));
   }
   // q qbar -> H processes
-  if(processopt==1||processopt==2) {
-    for (unsigned int i = minflavouropt; i <= maxflavouropt; ++i) {
+  if(processopt_==1||processopt_==2) {
+    for (unsigned int i = minflavouropt_; i <= maxflavouropt_; ++i) {
       tcPDPtr q = getParticleData(i);
       tcPDPtr qb = q->CC();
     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, h0, -2)));
@@ -289,16 +289,16 @@ void MEPP2HiggsPowheg::getDiagrams() const {
 CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
   using Constants::pi;
   InvEnergy2 bwfact;
-  if(widthopt==2) {
-    bwfact = _wh*sqrt(sHat())/pi/(sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+  if(widthopt_==2) {
+    bwfact = wh_*sqrt(sHat())/pi/(sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
     double cs = me2()*jacobian()*pi*double(UnitRemoval::E4 * bwfact/sHat());
     return UnitRemoval::InvE2 * sqr(hbarc) * cs;
   }  
-  if(shapeopt==1) {
+  if(shapeopt_==1) {
     bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
-      (sqr(sHat()-sqr(_mh))+sqr(_mh*_wh));
+      (sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
   } else {
-    bwfact = _hmass->BreitWignerWeight(sqrt(sHat()),0);
+    bwfact = hmass_->BreitWignerWeight(sqrt(sHat()),0);
   }
   double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
   return UnitRemoval::InvE2 * sqr(hbarc) * cs;
@@ -412,7 +412,7 @@ void MEPP2HiggsPowheg::constructVertex(tSubProPtr sub) {
   // construct the vertex
   HardVertexPtr hardvertex = new_ptr(HardVertex());
   // set the matrix element for the vertex
-  hardvertex->ME(_me);
+  hardvertex->ME(me_);
   // set the pointers and to and from the vertex
   for(unsigned int i = 0; i < 3; ++i) {
     dynamic_ptr_cast<SpinfoPtr>(hard[i]->spinInfo())->setProductionVertex(hardvertex);
@@ -433,7 +433,7 @@ double MEPP2HiggsPowheg::ggME(vector<VectorWaveFunction> g1,
       if(calc) newme(2*i, 2*j, 0) = diag;
     }
   }
-  if(calc) _me.reset(newme);
+  if(calc) me_.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
   return me2/32.;
 }
@@ -453,169 +453,173 @@ double MEPP2HiggsPowheg::qqME(vector<SpinorWaveFunction> & fin,
       if(calc) newme(i, j, 0) = diag;
     }
   }
-  if(calc) _me.reset(newme);
+  if(calc) me_.reset(newme);
   // final colour/spin factors
   return me2/12.;
 }
 
 double MEPP2HiggsPowheg::NLOweight() const {
   // If only leading order is required return 1:
-  if(_contrib==0) return 1.;
+  if(contrib_==0) return 1.;
   // Get particle data for QCD particles:
-  _parton_a=mePartonData()[0];
-  _parton_b=mePartonData()[1];
+  parton_a_=mePartonData()[0];
+  parton_b_=mePartonData()[1];
   // get BeamParticleData objects for PDF's
-  _hadron_A=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
+  hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().first->dataPtr());
-  _hadron_B=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
+  hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().second->dataPtr());
-  // If necessary swap the particle data vectors so that _xb_a, 
+  // If necessary swap the particle data vectors so that xbp_, 
   // mePartonData[0], beam[0] relate to the inbound quark: 
-  if(!(lastPartons().first ->dataPtr()==_parton_a&&
-       lastPartons().second->dataPtr()==_parton_b)) {
-    swap(_xb_a    ,_xb_b);
-    swap(_hadron_A,_hadron_B);
+  if(!(lastPartons().first ->dataPtr()==parton_a_&&
+       lastPartons().second->dataPtr()==parton_b_)) {
+    swap(xbp_     ,xbm_     );
+    swap(hadron_A_,hadron_B_);
   }
   // calculate the PDF's for the Born process
-  _oldq    = _hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),_xb_a)/_xb_a;
-  _oldqbar = _hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),_xb_b)/_xb_b;
+  oldlumi_ = hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xbp_)/xbp_
+           * hadron_B_->pdf()->xfx(hadron_B_,parton_b_,scale(),xbm_)/xbm_;
   // Calculate alpha_S
-  _alphaS2Pi = _nlo_alphaS_opt==1 ? _fixed_alphaS : SM().alphaS(scale());
-  _alphaS2Pi /= 2.*Constants::pi;
+  alphaS2Pi_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
+  alphaS2Pi_ /= 2.*Constants::pi;
   // Calculate the invariant mass of the dilepton pair
-  _mll2 = sHat();
-  _mu2  = scale();
+  p2_  = sHat();
+  mu2_ = scale();
   // Calculate the integrand
+  double wgt;
   // q qbar contribution
-  double wqqvirt      = Vtilde_qq();
-  double wqqcollin    = Ctilde_qq(x(_xt,1.),1.) + Ctilde_qq(x(_xt,0.),0.);
-  double wqqreal      = Ftilde_qq(_xt,_v);
-  double wqq          = wqqvirt+wqqcollin+wqqreal;
-  // q g contribution
-  double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
-  double wqgreal      = Ftilde_qg(_xt,_v);
-  double wqg          = wqgreal+wqgcollin;
-  // g qbar contribution
-  double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
-  double wgqbarreal   = Ftilde_gq(_xt,_v);
-  double wgqbar       = wgqbarreal+wgqbarcollin;
-  // total
-  double wgt          = 1.+(wqq+wqg+wgqbar);
+//   double wqqvirt      = Vtilde_qq();
+//   double wqqcollin    = Ctilde_qq(x(_xt,1.),1.) + Ctilde_qq(x(_xt,0.),0.);
+//   double wqqreal      = Ftilde_qq(_xt,_v);
+//   double wqq          = wqqvirt+wqqcollin+wqqreal;
+//   // q g contribution
+//   double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
+//   double wqgreal      = Ftilde_qg(_xt,_v);
+//   double wqg          = wqgreal+wqgcollin;
+//   // g qbar contribution
+//   double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
+//   double wgqbarreal   = Ftilde_gq(_xt,_v);
+//   double wgqbar       = wgqbarreal+wgqbarcollin;
+//   // total
+//   wgt                 = 1.+(wqq+wqg+wgqbar);
   //trick to try and reduce neg wgt contribution
-  if(_xt<1.-_eps)
-    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
+  if(xt_<1.-eps_)
+    wgt += a_*(1./pow(1.-xt_,p_)-(1.-pow(eps_,1.-p_))/(1.-p_)/(1.-eps_));
   // return the answer
-  return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
+  return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
-double MEPP2HiggsPowheg::x(double xt, double v) const {
-  double x0(xbar(v));
-  return x0+(1.-x0)*xt;
-}
-
-double MEPP2HiggsPowheg::x_a(double x, double v) const {
-  if(x==1.) return _xb_a;
-  if(v==0.) return _xb_a;
-  if(v==1.) return _xb_a/x;
-  return (_xb_a/sqrt(x))*sqrt((1.-(1.-x)*(1.-v))/(1.-(1.-x)*v));
-}
-
-double MEPP2HiggsPowheg::x_b(double x, double v) const {
-  if(x==1.) return _xb_b;
-  if(v==0.) return _xb_b/x;
-  if(v==1.) return _xb_b;
-  return (_xb_b/sqrt(x))*sqrt((1.-(1.-x)*v)/(1.-(1.-x)*(1.-v)));
-}
-
-double MEPP2HiggsPowheg::xbar(double v) const {
-  double xba2(sqr(_xb_a)), xbb2(sqr(_xb_b)), omv(-999.);
-  double xbar1(-999.), xbar2(-999.);
-  if(v==1.) return _xb_a;
-  if(v==0.) return _xb_b;
-  omv = 1.-v;
-  xbar1=4.*  v*xba2/
-    (sqrt(sqr(1.+xba2)*4.*sqr(omv)+16.*(1.-2.*omv)*xba2)+2.*omv*(1.-_xb_a)*(1.+_xb_a));
-  xbar2=4.*omv*xbb2/
-    (sqrt(sqr(1.+xbb2)*4.*sqr(  v)+16.*(1.-2.*  v)*xbb2)+2.*  v*(1.-_xb_b)*(1.+_xb_b));
+double MEPP2HiggsPowheg::xbar(double y) const {
+  double xbp2(sqr(xbp_)), xbm2(sqr(xbm_));
+  double omy(-999.)     , opy( 999.)     ;
+  double xbar1(-999.)   , xbar2(-999.)   ;
+  if(y== 1.) return xbp_;
+  if(y==-1.) return xbm_;
+  omy = 1.-y; 
+  opy = 1.+y;
+  xbar1=2.*opy*xbp2/
+    (sqrt(sqr(1.+xbp2)*sqr(omy)+16.*y*xbp2)+omy*(1.-xbp_)*(1.+xbp_));
+  xbar2=2.*omy*xbm2/
+    (sqrt(sqr(1.+xbm2)*sqr(opy)-16.*y*xbm2)+opy*(1.-xbm_)*(1.+xbm_));
   return max(xbar1,xbar2);
 }
 
-double MEPP2HiggsPowheg::Ltilde_qq(double x, double v) const {
+double MEPP2HiggsPowheg::etabar(double y) const {
+  return sqrt(1.-xbar(y));
+}
+
+double MEPP2HiggsPowheg::x(double xt, double y) const {
+  double x0(xbar(y));
+  return x0+(1.-x0)*xt;
+}
+
+double MEPP2HiggsPowheg::xp(double x, double y) const {
+  if(x== 1.) return xbp_  ;
+  if(y==-1.) return xbp_  ;
+  if(y== 1.) return xbp_/x;
+  return (xbp_/sqrt(x))*sqrt((2.-(1.-x)*(1.-y))/(2.-(1.-x)*(1.+y)));
+}
+
+double MEPP2HiggsPowheg::xm(double x, double y) const {
+  if(x== 1.) return xbm_  ;
+  if(y==-1.) return xbm_/x;
+  if(y== 1.) return xbm_  ;
+  return (xbm_/sqrt(x))*sqrt((2.-(1.-x)*(1.+y))/(2.-(1.-x)*(1.-y)));
+}
+
+double MEPP2HiggsPowheg::Lhat_gg(double x, double y) const {
   if(x==1.) return 1.;
-  double xa(x_a(x,v)),xb(x_b(x,v));
-  double newq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
-  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
-  return( newq * newqbar / _oldq / _oldqbar );
+  double newlumi(-999.);
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_)/xp_)
+          * (hadron_B_->pdf()->xfx(hadron_B_,parton_b_,scale(),xm_)/xm_);
+  return newlumi / oldlumi_;
 }
 
-double MEPP2HiggsPowheg::Ltilde_qg(double x, double v) const {
-  double xa(x_a(x,v)),xb(x_b(x,v));
-  double newq    = (_hadron_A->pdf()->xfx(_hadron_A,_parton_a,scale(),   xa)/   xa);
-  double newg2   = (_hadron_B->pdf()->xfx(_hadron_B,_gluon   ,scale(),   xb)/   xb);
-  return( newq * newg2 / _oldq / _oldqbar );
+double MEPP2HiggsPowheg::Lhat_gq(double x, double y) const {
+  double newlumi(-999.);
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_)/xp_)
+          * (hadron_B_->pdf()->xfx(hadron_B_,parton_c_,scale(),xm_)/xm_);
+  return newlumi / oldlumi_;
 }
 
-double MEPP2HiggsPowheg::Ltilde_gq(double x, double v) const {
-  double xa(x_a(x,v)),xb(x_b(x,v));
-  double newg1   = (_hadron_A->pdf()->xfx(_hadron_A,_gluon   ,scale(),   xa)/   xa);
-  double newqbar = (_hadron_B->pdf()->xfx(_hadron_B,_parton_b,scale(),   xb)/   xb);
-  return( newg1 * newqbar / _oldq / _oldqbar );
+double MEPP2HiggsPowheg::Lhat_qq(double x, double y) const {
+  double newlumi(-999.);
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,quark_    ,scale(),xp_)/xp_)
+          * (hadron_B_->pdf()->xfx(hadron_B_,antiquark_,scale(),xm_)/xm_);
+  return newlumi / oldlumi_;
 }
 
 double MEPP2HiggsPowheg::Vtilde_qq() const {
-  return _alphaS2Pi*_CF*(-3.*log(_mu2/_mll2)+(2.*sqr(Constants::pi)/3.)-8.);
+  return alphaS2Pi_*CF_*(-3.*log(mu2_/p2_)+(2.*sqr(Constants::pi)/3.)-8.);
 }
 
 double MEPP2HiggsPowheg::Ccalbar_qg(double x) const {
-  return (sqr(x)+sqr(1.-x))*(log(_mll2/(_mu2*x))+2.*log(1.-x))+2.*x*(1.-x);
+  return (sqr(x)+sqr(1.-x))*(log(p2_/(mu2_*x))+2.*log(1.-x))+2.*x*(1.-x);
 }
 
-double MEPP2HiggsPowheg::Ctilde_qg(double x, double v) const {
-  return  _alphaS2Pi*_TR * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_qg(x,v);
+double MEPP2HiggsPowheg::Ctilde_gq(double x, double y) const {
+  return  alphaS2Pi_*TR_ * ((1.-xbar(y))/x) * Ccalbar_qg(x)*Lhat_gq(x,y);
 }
 
-double MEPP2HiggsPowheg::Ctilde_gq(double x, double v) const {
-  return  _alphaS2Pi*_TR * ((1.-xbar(v))/x) * Ccalbar_qg(x)*Ltilde_gq(x,v);
-}
-
-double MEPP2HiggsPowheg::Ctilde_qq(double x, double v) const {
+double MEPP2HiggsPowheg::Ctilde_qq(double x, double y) const {
   double wgt 
-    = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Ltilde_qq(x,v)
+    = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Lhat_qq(x,y)
     -  4.*log(1.-x)/(1.-x)
-    +  2./(1.-xbar(v))*log(1.-xbar(v))*log(1.-xbar(v))
-    + (2./(1.-xbar(v))*log(1.-xbar(v))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Ltilde_qq(x,v))
-    *log(_mll2/_mu2);
-  return _alphaS2Pi*_CF*(1.-xbar(v))*wgt;    
+    +  2./(1.-xbar(y))*log(1.-xbar(y))*log(1.-xbar(y))
+    + (2./(1.-xbar(y))*log(1.-xbar(y))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Lhat_qq(x,y))
+    *log(p2_/mu2_);
+  return alphaS2Pi_*CF_*(1.-xbar(y))*wgt;    
 }
 
-double MEPP2HiggsPowheg::Fcal_qq(double x, double v) const {
-  return (sqr(1.-x)*(1.-2.*v*(1.-v))+2.*x)/x*Ltilde_qq(x,v);
+double MEPP2HiggsPowheg::Rcal_gg(double x, double y) const {
+  return ((1.-xbar(y))/x)*
+    (2.*x*(1.-x)*(1.-y)+sqr((1.-x)*(1.-y))+sqr(x)+sqr(1.-x))*Lhat_gg(x,y);
 }
 
-double MEPP2HiggsPowheg::Fcal_qg(double x, double v) const {
-  return ((1.-xbar(v))/x)*
-    (2.*x*(1.-x)*v+sqr((1.-x)*v)+sqr(x)+sqr(1.-x))*Ltilde_qg(x,v);
+double MEPP2HiggsPowheg::Rcal_gq(double x, double y) const {
+  return ((1.-xbar(y))/x)*
+    (2.*x*(1.-x)*(1.-y)+sqr((1.-x)*(1.-y))+sqr(x)+sqr(1.-x))*Lhat_gq(x,y);
 }
 
-double MEPP2HiggsPowheg::Fcal_gq(double x, double v) const {
-  return ((1.-xbar(v))/x)*
-    (2.*x*(1.-x)*(1.-v)+sqr((1.-x)*(1.-v))+sqr(x)+sqr(1.-x))*Ltilde_gq(x,v);
+double MEPP2HiggsPowheg::Rcal_qq(double x, double y) const {
+  return ((1.-xbar(y))/x)*
+    (2.*x*(1.-x)*(1.-y)+sqr((1.-x)*(1.-y))+sqr(x)+sqr(1.-x))*Lhat_qq(x,y);
 }
 
-double MEPP2HiggsPowheg::Ftilde_qg(double xt, double v) const {
-  return _alphaS2Pi*_TR*
-    ( Fcal_qg(x(xt,v),v) - Fcal_qg(x(xt,0.),0.) )/v;
+double MEPP2HiggsPowheg::Rtilde_gg(double xt, double y) const {
+  return alphaS2Pi_*TR_*
+    ( Rcal_gg(x(xt,y),y) - Rcal_gg(x(xt,1.),1.) )/(1.-y);
 }
 
-double MEPP2HiggsPowheg::Ftilde_gq(double xt, double v) const {
-  return _alphaS2Pi*_TR*
-    ( Fcal_gq(x(xt,v),v) - Fcal_gq(x(xt,1.),1.) )/(1.-v);
+double MEPP2HiggsPowheg::Rtilde_gq(double xt, double y) const {
+  return alphaS2Pi_*TR_*
+    ( Rcal_gq(x(xt,y),y) - Rcal_gq(x(xt,0.),0.) )/y;
 }
 
-double MEPP2HiggsPowheg::Ftilde_qq(double xt, double v) const {
-  return _alphaS2Pi*_CF*
-    (( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)+
-       ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v )/(1.-xt)
-     + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
-     + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v);
+double MEPP2HiggsPowheg::Rtilde_qq(double xt, double y) const {
+  return alphaS2Pi_*CF_*
+    (( ( Rcal_qq(x(xt, y), y) - Rcal_qq(x(xt,1.),1.) ) / (1.-y)+
+       ( Rcal_qq(x(xt, y), y) - Rcal_qq(x(xt,0.),0.) ) / y )/(1.-xt)
+     + ( log(1.-xbar(y)) - log(1.-xbp_))*2./(1.-y)
+     + ( log(1.-xbar(y)) - log(1.-xbm_))*2./y);
 }
