@@ -206,9 +206,15 @@ protected:
   double Lhat_qq(double x, double y) const;
 
   /**
-   * Calculate the soft-virtual contribution to the NLO weight. 
+   * Calculate the universal soft-virtual contribution to the NLO weight. 
    */
-  double Vtilde_qq() const;
+  double Vtilde_universal() const;
+
+  /**
+   * The regular part of the virtual correction matrix element(s) 
+   */
+  double M_V_regular() const;
+
   /**
    * Function for calculation of the \f$g\bar{q}\f$ and \f$g\bar{q}\f$ 
    * initiated real contribution.
@@ -331,6 +337,11 @@ private:
    */
 
   /**
+   *  The value of the leading order gg->H matrix element
+   */
+  mutable double ggME_;
+
+  /**
    *  The momentum fraction of the plus  parton in the Born process
    */
   mutable double xbp_;
@@ -341,14 +352,14 @@ private:
   mutable double xbm_;
 
   /**
-   *  The momentum fraction of the plus  parton in the NLO process
+   *  The sqrt(1-xbp_)
    */
-  mutable double xp_;
+  mutable double etabarp_;
 
   /**
-   *  The momentum fraction of the minus parton in the NLO process
+   *  The sqrt(1-xbm_)
    */
-  mutable double xm_;
+  mutable double etabarm_;
 
   /**
    *  The ParticleData object for the plus  parton in the Born process
@@ -368,12 +379,12 @@ private:
   /**
    *  the ParticleData object for the initial state quark
    */
-  tcPDPtr quark_;
+  tcPDPtr q_   ;
 
   /**
    *  the ParticleData object for the initial state anti quark
    */
-  tcPDPtr antiquark_;
+  tcPDPtr qbar_;
 
   /**
    *  The BeamParticleData object for the plus  hadron
@@ -386,14 +397,29 @@ private:
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
 
   /**
-   * The \f$T_R\f$ colour factor
+   *  The \f$C_A\f$ colour factor
    */
-  double TR_;
+  double CA_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
   double CF_;
+
+  /**
+   * The \f$T_R\f$ colour factor
+   */
+  double TR_;
+
+  /**
+   * Number of light flavours (in the beta function beta0_)
+   */
+  double nlf_;
+
+  /**
+   * (Proportional to) The beta function
+   */
+  double beta0_;
 
   /**
    *  The value of \f$\frac{\alpha_S}{2\pi}\f$ used for the calculation
@@ -455,9 +481,9 @@ private:
   double xt_;
 
   /**
-   *  The \f$v\f$ angular variable
+   *  The \f$y\f$ angular variable
    */
-  double v_;
+  double y_;
   //@}
 
   /**

@@ -213,9 +213,9 @@ void MEPP2HiggsPowheg::Init() {
 }
 
 void MEPP2HiggsPowheg::doinit() throw(InitException) {
-  // 2 thing for the NLO correction
-  CF_ = 4./3.; 
-  TR_ = 0.5;
+  // Set colour factors:
+  CA_    = 3. ;  CF_  = 4./3. ;  TR_  = 0.5 ;  nlf_ = 5. ;
+  beta0_ = (11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi);
   // MEPP2HiggsPowheg.cc::doinit() resumes here:
   MEBase::doinit();
   // get the vertex pointers from the SM object
@@ -254,10 +254,12 @@ Energy2 MEPP2HiggsPowheg::scale() const {
 }
 
 int MEPP2HiggsPowheg::nDim() const {
-  return 0;
+  return 2;
 }
 
-bool MEPP2HiggsPowheg::generateKinematics(const double *) {
+bool MEPP2HiggsPowheg::generateKinematics(const double * r) {
+  xt_=*(r  );
+  y_ =*(r+1) * 2. - 1.;
   Lorentz5Momentum pout = meMomenta()[0] + meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2].setMass(pout.mass());
@@ -287,6 +289,9 @@ void MEPP2HiggsPowheg::getDiagrams() const {
 }
 
 CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
+  // Get Born momentum fractions xbp_ and xbm_:
+  xbp_ = lastX1(); etabarp_ = sqrt(1.-xbp_);
+  xbm_ = lastX2(); etabarm_ = sqrt(1.-xbm_);
   using Constants::pi;
   InvEnergy2 bwfact;
   if(widthopt_==2) {
@@ -435,7 +440,8 @@ double MEPP2HiggsPowheg::ggME(vector<VectorWaveFunction> g1,
   }
   if(calc) me_.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
-  return me2/32.;
+  ggME_ = me2/32.;
+  return ggME_;
 }
 
 
@@ -470,7 +476,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
   hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().second->dataPtr());
   // If necessary swap the particle data vectors so that xbp_, 
-  // mePartonData[0], beam[0] relate to the inbound quark: 
+  // mePartonData[0], beam[0] relate to the inbound gluon: 
   if(!(lastPartons().first ->dataPtr()==parton_a_&&
        lastPartons().second->dataPtr()==parton_b_)) {
     swap(xbp_     ,xbm_     );
@@ -486,25 +492,22 @@ double MEPP2HiggsPowheg::NLOweight() const {
   p2_  = sHat();
   mu2_ = scale();
   // Calculate the integrand
-  double wgt;
-  // q qbar contribution
-//   double wqqvirt      = Vtilde_qq();
-//   double wqqcollin    = Ctilde_qq(x(_xt,1.),1.) + Ctilde_qq(x(_xt,0.),0.);
+  double wgt(0.);
+//   // gg contribution
+//   double wggvirt      = Vtilde_gg();
+//   double wggcollin    = Ctilde_gg(x(_xt, 1.), 1.) 
+//                       + Ctilde_gg(x(_xt,-1.),-1.);
+//   double wggreal      = Ftilde_gg(_xt,_y);
+//   double wgg          = wggvirt+wggcollin+wggreal;
+//   // g q contribution
+//   double wgqcollin    = Ctilde_gq(x(_xt,0.),0.);
+//   double wgqreal      = Ftilde_gq(_xt,_y);
+//   double wgq          = wgqreal+wgqcollin;
+//   // q qbar contribution
 //   double wqqreal      = Ftilde_qq(_xt,_v);
-//   double wqq          = wqqvirt+wqqcollin+wqqreal;
-//   // q g contribution
-//   double wqgcollin    = Ctilde_qg(x(_xt,0.),0.);
-//   double wqgreal      = Ftilde_qg(_xt,_v);
-//   double wqg          = wqgreal+wqgcollin;
-//   // g qbar contribution
-//   double wgqbarcollin = Ctilde_gq(x(_xt,1.),1.);
-//   double wgqbarreal   = Ftilde_gq(_xt,_v);
-//   double wgqbar       = wgqbarreal+wgqbarcollin;
+//   double wqq          = wqqreal+wqqcollin;
 //   // total
-//   wgt                 = 1.+(wqq+wqg+wgqbar);
-  //trick to try and reduce neg wgt contribution
-  if(xt_<1.-eps_)
-    wgt += a_*(1./pow(1.-xt_,p_)-(1.-pow(eps_,1.-p_))/(1.-p_)/(1.-eps_));
+//   wgt                 = 1.+(wgg+wgq+wqq);
   // return the answer
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
@@ -550,27 +553,40 @@ double MEPP2HiggsPowheg::xm(double x, double y) const {
 double MEPP2HiggsPowheg::Lhat_gg(double x, double y) const {
   if(x==1.) return 1.;
   double newlumi(-999.);
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_)/xp_)
-          * (hadron_B_->pdf()->xfx(hadron_B_,parton_b_,scale(),xm_)/xm_);
+  double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_x_y)/xp_x_y)
+          * (hadron_B_->pdf()->xfx(hadron_B_,parton_b_,scale(),xm_x_y)/xm_x_y);
   return newlumi / oldlumi_;
 }
 
 double MEPP2HiggsPowheg::Lhat_gq(double x, double y) const {
   double newlumi(-999.);
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_)/xp_)
-          * (hadron_B_->pdf()->xfx(hadron_B_,parton_c_,scale(),xm_)/xm_);
+  double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_x_y)/xp_x_y)
+          * (hadron_B_->pdf()->xfx(hadron_B_,parton_c_,scale(),xm_x_y)/xm_x_y);
   return newlumi / oldlumi_;
 }
 
 double MEPP2HiggsPowheg::Lhat_qq(double x, double y) const {
   double newlumi(-999.);
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,quark_    ,scale(),xp_)/xp_)
-          * (hadron_B_->pdf()->xfx(hadron_B_,antiquark_,scale(),xm_)/xm_);
+  double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,q_       ,scale(),xp_x_y)/xp_x_y)
+          * (hadron_B_->pdf()->xfx(hadron_B_,qbar_    ,scale(),xm_x_y)/xm_x_y);
   return newlumi / oldlumi_;
 }
 
-double MEPP2HiggsPowheg::Vtilde_qq() const {
-  return alphaS2Pi_*CF_*(-3.*log(mu2_/p2_)+(2.*sqr(Constants::pi)/3.)-8.);
+double MEPP2HiggsPowheg::Vtilde_universal() const {
+  return  alphaS2Pi_*CA_ * ( log(p2_/mu2_)*( 2.*(2.*Constants::pi*beta0_/CA_)
+			       	           + 4.*(log(etabarp_)+log(etabarm_)))
+                           + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
+			   - 2.*sqr(Constants::pi)/3.);
+}
+
+double MEPP2HiggsPowheg::M_V_regular() const {
+  return alphaS2Pi_*CA_*(  11./3.
+			+  4.*sqr(Constants::pi)/3.
+			- (4.*Constants::pi*beta0_/CA_)*log(p2_/mu2_)
+			)*ggME_;
 }
 
 double MEPP2HiggsPowheg::Ccalbar_qg(double x) const {
