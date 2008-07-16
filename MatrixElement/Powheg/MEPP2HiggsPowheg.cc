@@ -26,6 +26,8 @@
 using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 
+  CF_(4./3.)  ,  CA_(3.)            , TR_(1./2.)        , nlf_(5.)          ,
+  beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.11803463),
   widthopt_(1),  usersWidth_(0.00468456293*GeV)         ,
   scaleopt_(1),  mu_F_(100.*GeV)    , scaleFact_(1.)    ,
@@ -198,10 +200,6 @@ void MEPP2HiggsPowheg::Init() {
 }
 
 void MEPP2HiggsPowheg::doinit() throw(InitException) {
-  // Set colour factors:
-  CA_    = 3. ;  CF_  = 4./3. ;  TR_  = 0.5 ;  nlf_ = 5. ;
-  beta0_ = (11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi);
-  // MEPP2HiggsPowheg.cc::doinit() resumes here:
   MEBase::doinit();
   // get the vertex pointers from the SM object
   theSM = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
@@ -327,7 +325,8 @@ double MEPP2HiggsPowheg::me2() const {
       gin2.reset(2*i);
       g2.push_back(gin2);
     }
-    output = ggME(g1,g2,hout,false);
+    output   = ggME(g1,g2,hout,false);
+    lo_ggME_ = output;
   } else {
     if (mePartonData()[0]->id() == -mePartonData()[1]->id()) {
       SpinorWaveFunction    qin (meMomenta()[0],mePartonData()[0],incoming);
@@ -427,8 +426,7 @@ double MEPP2HiggsPowheg::ggME(vector<VectorWaveFunction> g1,
   }
   if(calc) me_.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
-  lo_ggME_ = me2/32.;
-  return lo_ggME_;
+  return me2/32.;
 }
 
 
@@ -466,23 +464,38 @@ double MEPP2HiggsPowheg::NLOweight() const {
            * hadron_B_->pdf()->xfx(hadron_B_,b_lo_,scale(),xbm_)/xbm_;
   // Calculate alpha_S
   alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
+  // Particle data objects for the new plus and minus colliding partons.
+  tcPDPtr a_nlo, b_nlo;
+
   // Calculate the integrand
   double wgt(0.);
-//   // gg contribution
-//   double wggvirt      = Vtilde_gg();
-//   double wggcollin    = Ctilde_gg(x(_xt, 1.), 1.) 
-//                       + Ctilde_gg(x(_xt,-1.),-1.);
-//   double wggreal      = Ftilde_gg(_xt,_y);
-//   double wgg          = wggvirt+wggcollin+wggreal;
-//   // g q contribution
-//   double wgqcollin    = Ctilde_gq(x(_xt,0.),0.);
-//   double wgqreal      = Ftilde_gq(_xt,_y);
-//   double wgq          = wgqreal+wgqcollin;
-//   // q qbar contribution
-//   double wqqreal      = Ftilde_qq(_xt,_v);
-//   double wqq          = wqqreal+wqqcollin;
-//   // total
-//   wgt                 = 1.+(wgg+wgq+wqq);
+  // gg contribution
+  a_nlo=getParticleData(ParticleID::g);
+  b_nlo=getParticleData(ParticleID::g);
+  double wggvirt      = Vtilde_universal() + M_V_regular()/lo_ggME_;
+  double wggcollin    = Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_, 1.) 
+                      + Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,-1.);
+  double wggreal      = Rtilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,y_);
+  double wgg          = wggvirt + wggcollin + wggreal;
+  // g q contribution
+  a_nlo=getParticleData(ParticleID::g);
+  double wgqcollin(0.), wgqreal(0.), wgq(0.);
+  for(unsigned int ix=1; ix<=nlf_; ++ix) {
+    b_nlo=getParticleData(ix);
+    wgqcollin    += Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
+    wgqreal      += Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
+    wgq          += wgqreal+wgqcollin;
+  }
+  // q qbar contribution
+  double wqqreal(0.), wqq(0.);
+  for(unsigned int ix=1; ix<=nlf_; ++ix) {
+    a_nlo=getParticleData( ix);
+    b_nlo=getParticleData(-ix);
+    wqqreal      = Rtilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_,y_);
+    wqq          = wqqreal;
+  }
+  // total
+  wgt                 = 1.+(wgg+wgq+wqq);
   // return the answer
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
@@ -528,11 +541,6 @@ double MEPP2HiggsPowheg::xbar(double y) const {
 
 double MEPP2HiggsPowheg::etabar(double y) const {
   return sqrt(1.-xbar(y));
-}
-
-double MEPP2HiggsPowheg::x(double xt, double y) const {
-  double x0(xbar(y));
-  return x0+(1.-x0)*xt;
 }
 
 double MEPP2HiggsPowheg::xp(double x, double y) const {
@@ -674,25 +682,25 @@ double MEPP2HiggsPowheg::M_R_gq(double xt, double y) const {
 			)*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::Rcal_Ltilde_qq_on_x(tcPDPtr a , tcPDPtr b,
+double MEPP2HiggsPowheg::Rtilde_Ltilde_qq_on_x(tcPDPtr a , tcPDPtr b,
 					     double  xt, double y ) const {
   return   M_R_qq(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
 	 - M_R_qq( 1.,y)*Lhat_ab(a,b,     1.,y);
 }
 
-double MEPP2HiggsPowheg::Rcal_Ltilde_gg_on_x(tcPDPtr a , tcPDPtr b, 
+double MEPP2HiggsPowheg::Rtilde_Ltilde_gg_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
   return   M_R_gg(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
 	 - M_R_gg( 1.,y)*Lhat_ab(a,b,     1.,y);
 }
 
-double MEPP2HiggsPowheg::Rcal_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b, 
+double MEPP2HiggsPowheg::Rtilde_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
   return   M_R_gq(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
 	 - M_R_gq( 1.,y)*Lhat_ab(a,b,     1.,y);
 }
 
-double MEPP2HiggsPowheg::Rcal_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b, 
+double MEPP2HiggsPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
   return   M_R_qg(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
 	 - M_R_qg( 1.,y)*Lhat_ab(a,b,     1.,y);

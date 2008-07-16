@@ -160,6 +160,21 @@ protected:
    *  Parameters for the NLO weight
    */
 
+  /**
+   *  The colour factors
+   */
+  double CF_ , CA_ , TR_;
+
+  /**
+   * Number of light flavours (in the beta function beta0_)
+   */
+  double nlf_;
+
+  /**
+   * (Proportional to) The beta function
+   */
+  double beta0_;
+
   //@{
   /**
    *  Whether to generate the positive, negative or leading order contribution
@@ -238,9 +253,9 @@ protected:
   mutable tcPDPtr a_lo_, b_lo_;
 
   /**
-   *  the ParticleData object for the radiated final state parton
+   *  The ParticleData object for the plus and minus nlo partons
    */
-  tcPDPtr nlo_c_;
+  mutable tcPDPtr a_nlo_, b_nlo_;
 
   /**
    *  the ParticleData object for the initial state quark
@@ -262,30 +277,6 @@ protected:
    */
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
 
-  /**
-   *  The \f$C_A\f$ colour factor
-   */
-  double CA_;
-
-  /**
-   *  The \f$C_F\f$ colour factor
-   */
-  double CF_;
-
-  /**
-   * The \f$T_R\f$ colour factor
-   */
-  double TR_;
-
-  /**
-   * Number of light flavours (in the beta function beta0_)
-   */
-  double nlf_;
-
-  /**
-   * (Proportional to) The beta function
-   */
-  double beta0_;
 
   /**
    *  The value of \f$\alpha_S\f$ used for the calculation
@@ -300,7 +291,7 @@ protected:
 
   /**
    * Invariants required for the evaluation of next-to-leading order
-   * quantities. 
+   * quantities (Frixione et al. NPB.383 WZ production at colliders). 
    */
   Energy2 s(double xt, double y)      const ; 
   Energy2 tk(double xt, double y)     const ;
@@ -402,22 +393,22 @@ protected:
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Rcal_Ltilde_qq_on_x(tcPDPtr a , tcPDPtr b, double xt, double y) const;
+  double Rtilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
   /**
    * Function for calculation of the \f$qq\f$ 
    * initiated real contribution.
    */
-  double Rcal_Ltilde_gg_on_x(tcPDPtr a , tcPDPtr b, double xt, double y) const;
+  double Rtilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
   /**
    * Function for calculation of the \f$qg\f$ initiated real
    * contribution.
    */
-  double Rcal_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b, double xt, double y) const;
+  double Rtilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
   /**
    * Function for calculation of the \f$gq\f$ initiated real
    * contribution.
    */
-  double Rcal_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b, double xt, double y) const;
+  double Rtilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
 protected:
   /** @name Clone Methods. */
