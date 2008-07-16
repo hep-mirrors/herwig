@@ -27,7 +27,6 @@ using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.11803463),
-  a_(0.5)     ,  p_(0.7)            , eps_(1.0e-8)      ,
   widthopt_(1),  usersWidth_(0.00468456293*GeV)         ,
   scaleopt_(1),  mu_F_(100.*GeV)    , scaleFact_(1.)    ,
   shapeopt_(2),  processopt_(1)     ,  minflavouropt_(4), maxflavouropt_(5), 
@@ -40,7 +39,6 @@ ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
 void MEPP2HiggsPowheg::persistentOutput(PersistentOStream & os) const {
   os << hggvertex      << ffhvertex        << theSM 
      << contrib_       << nlo_alphaS_opt_  << fixed_alphaS_ 
-     << a_             << p_               << eps_
      << widthopt_      << ounit(usersWidth_,GeV) 
      << scaleopt_      << ounit(mu_F_,GeV) << scaleFact_     << shapeopt_      
      << processopt_    << minflavouropt_   << maxflavouropt_ << hmass_        
@@ -50,7 +48,6 @@ void MEPP2HiggsPowheg::persistentOutput(PersistentOStream & os) const {
 void MEPP2HiggsPowheg::persistentInput(PersistentIStream & is, int) {
   is >> hggvertex      >> ffhvertex        >> theSM 
      >> contrib_       >> nlo_alphaS_opt_  >> fixed_alphaS_ 
-     >> a_             >> p_               >> eps_
      >> widthopt_      >> iunit(usersWidth_,GeV) 
      >> scaleopt_      >> iunit(mu_F_,GeV) >> scaleFact_     >> shapeopt_      
      >> processopt_    >> minflavouropt_   >> maxflavouropt_ >> hmass_     
@@ -102,18 +99,6 @@ void MEPP2HiggsPowheg::Init() {
     ("FixedNLOalphaS",
      "The value of alphaS to use for the nlo weight if nlo_alphaS_opt_=1",
      &MEPP2HiggsPowheg::fixed_alphaS_, 0.11803463, 0., 1.0,
-     false, false, Interface::limited);
-
-  static Parameter<MEPP2HiggsPowheg,double> interfaceCorrectionCoefficient
-    ("CorrectionCoefficient",
-     "The magnitude of the correction term to reduce the negative contribution",
-     &MEPP2HiggsPowheg::a_, 0.5, -10., 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<MEPP2HiggsPowheg,double> interfaceCorrectionPower
-    ("CorrectionPower",
-     "The power of the correction term to reduce the negative contribution",
-     &MEPP2HiggsPowheg::p_, 0.7, 0.0, 1.0,
      false, false, Interface::limited);
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceWidthOption
@@ -290,8 +275,7 @@ void MEPP2HiggsPowheg::getDiagrams() const {
 
 CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
   // Get Born momentum fractions xbp_ and xbm_:
-  xbp_ = lastX1(); etabarp_ = sqrt(1.-xbp_);
-  xbm_ = lastX2(); etabarm_ = sqrt(1.-xbm_);
+  get_born_variables();
   using Constants::pi;
   InvEnergy2 bwfact;
   if(widthopt_==2) {
@@ -440,8 +424,8 @@ double MEPP2HiggsPowheg::ggME(vector<VectorWaveFunction> g1,
   }
   if(calc) me_.reset(newme);
   // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
-  ggME_ = me2/32.;
-  return ggME_;
+  lo_ggME_ = me2/32.;
+  return lo_ggME_;
 }
 
 
@@ -468,8 +452,8 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(contrib_==0) return 1.;
   // Get particle data for QCD particles:
-  parton_a_=mePartonData()[0];
-  parton_b_=mePartonData()[1];
+  a_lo_=mePartonData()[0];
+  b_lo_=mePartonData()[1];
   // get BeamParticleData objects for PDF's
   hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().first->dataPtr());
@@ -477,20 +461,16 @@ double MEPP2HiggsPowheg::NLOweight() const {
     (lastParticles().second->dataPtr());
   // If necessary swap the particle data vectors so that xbp_, 
   // mePartonData[0], beam[0] relate to the inbound gluon: 
-  if(!(lastPartons().first ->dataPtr()==parton_a_&&
-       lastPartons().second->dataPtr()==parton_b_)) {
+  if(!(lastPartons().first ->dataPtr()==a_lo_&&
+       lastPartons().second->dataPtr()==b_lo_)) {
     swap(xbp_     ,xbm_     );
     swap(hadron_A_,hadron_B_);
   }
   // calculate the PDF's for the Born process
-  oldlumi_ = hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xbp_)/xbp_
-           * hadron_B_->pdf()->xfx(hadron_B_,parton_b_,scale(),xbm_)/xbm_;
+  oldlumi_ = hadron_A_->pdf()->xfx(hadron_A_,a_lo_,scale(),xbp_)/xbp_
+           * hadron_B_->pdf()->xfx(hadron_B_,b_lo_,scale(),xbm_)/xbm_;
   // Calculate alpha_S
-  alphaS2Pi_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
-  alphaS2Pi_ /= 2.*Constants::pi;
-  // Calculate the invariant mass of the dilepton pair
-  p2_  = sHat();
-  mu2_ = scale();
+  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
   // Calculate the integrand
   double wgt(0.);
 //   // gg contribution
@@ -510,6 +490,92 @@ double MEPP2HiggsPowheg::NLOweight() const {
 //   wgt                 = 1.+(wgg+wgq+wqq);
   // return the answer
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
+}
+
+void MEPP2HiggsPowheg::get_born_variables() const {
+  xbp_ = lastX1(); etabarp_ = sqrt(1.-xbp_);
+  xbm_ = lastX2(); etabarm_ = sqrt(1.-xbm_);
+  p2_    = sHat();
+  s2_    = p2_;
+  if(meMomenta().size()==4) {
+    p12_    = meMomenta()[1].m2();
+    p22_    = meMomenta()[2].m2();
+    theta1_= acos(meMomenta()[2].z()/meMomenta()[2].vect().mag());
+    theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
+  }
+  return;
+}
+Energy2 MEPP2HiggsPowheg::s(double xt, double y) const {
+  return  p2_/x(xt,y);
+}
+
+Energy2 MEPP2HiggsPowheg::tk(double xt, double y) const {
+  double  x_xt_y(x(xt,y));
+  return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.-y);
+}
+
+Energy2 MEPP2HiggsPowheg::uk(double xt, double y) const {
+  double  x_xt_y(x(xt,y));
+  return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.+y);
+}
+
+double MEPP2HiggsPowheg::betax(double xt, double y) const {
+  double  x_xt_y(x(xt,y));
+  Energy2 s_xt_y(s(xt,y));
+  return   sqrt(1.-sqr(sqrt(p12_)+sqrt(p22_))/x_xt_y/s_xt_y)
+	 * sqrt(1.-sqr(sqrt(p12_)-sqrt(p22_))/x_xt_y/s_xt_y);
+}
+
+double MEPP2HiggsPowheg::v1(double xt, double y) const {
+  return   betax(xt,y)/(1.-(p22_-p12_)/x(xt,y)/s(xt,y));
+}
+
+double MEPP2HiggsPowheg::v2(double xt, double y) const {
+  return   betax(xt,y)/(1.+(p22_-p12_)/x(xt,y)/s(xt,y));
+}
+
+double MEPP2HiggsPowheg::cpsi(double xt, double y) const {
+  Energy2 s_xt_y(s(xt,y));
+  return 1.- s_xt_y 
+           / 2.
+           / ((s_xt_y+tk(xt,y))/2./sqrt(s2_)*(s_xt_y +uk(xt,y))/2./sqrt(s2_));
+}
+
+double MEPP2HiggsPowheg::cpsipr(double xt, double y) const {
+  Energy2 tk_xt_y(tk(xt,y));
+  return 1.+ tk_xt_y
+           / 2.
+           / ((s(xt,y)+tk_xt_y)/2./sqrt(s2_)*-(tk_xt_y+uk(xt,y))/2./sqrt(s2_));
+}
+
+Energy2 MEPP2HiggsPowheg::q1(double xt, double y) const {
+  return p12_ - 0.5*(s(xt,y)+tk(xt,y))
+                   *betax(xt,y)/v1(xt,y)*(1.-v1(xt,y)*cos(theta1_));
+}
+
+Energy2 MEPP2HiggsPowheg::q2(double xt, double y) const {
+  return p22_ - 0.5*(s(xt,y)+uk(xt,y))
+                   *betax(xt,y)/v2(xt,y)
+                   *(1.+ v2(xt,y)*cos(theta2_)*sin(theta1_)
+                                *sqrt(1.-sqr(cpsi(xt,y)))
+		       + v2(xt,y)*cos(theta1_)*cpsi(xt,y)
+ 	            );
+}
+
+Energy2 MEPP2HiggsPowheg::q1hat(double xt, double y) const {
+  return p12_ + p22_ - s(xt,y)  - tk(xt,y) - q1(xt,y);
+}
+
+Energy2 MEPP2HiggsPowheg::q2hat(double xt, double y) const {
+  return p12_ + p22_ - s(xt,y)  - uk(xt,y) - q2(xt,y);
+}
+
+Energy2 MEPP2HiggsPowheg::w1(double xt, double y) const {
+  return p12_ - q1(xt,y)  + q2(xt,y) - tk(xt,y);
+}
+
+Energy2 MEPP2HiggsPowheg::w2(double xt, double y) const {
+  return p22_ + q1(xt,y)  - q2(xt,y) - uk(xt,y);
 }
 
 double MEPP2HiggsPowheg::xbar(double y) const {
@@ -550,130 +616,155 @@ double MEPP2HiggsPowheg::xm(double x, double y) const {
   return (xbm_/sqrt(x))*sqrt((2.-(1.-x)*(1.+y))/(2.-(1.-x)*(1.-y)));
 }
 
-double MEPP2HiggsPowheg::Lhat_gg(double x, double y) const {
-  if(x==1.) return 1.;
+double MEPP2HiggsPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const {
   double newlumi(-999.);
   double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_x_y)/xp_x_y)
-          * (hadron_B_->pdf()->xfx(hadron_B_,parton_b_,scale(),xm_x_y)/xm_x_y);
-  return newlumi / oldlumi_;
-}
-
-double MEPP2HiggsPowheg::Lhat_gq(double x, double y) const {
-  double newlumi(-999.);
-  double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,parton_a_,scale(),xp_x_y)/xp_x_y)
-          * (hadron_B_->pdf()->xfx(hadron_B_,parton_c_,scale(),xm_x_y)/xm_x_y);
-  return newlumi / oldlumi_;
-}
-
-double MEPP2HiggsPowheg::Lhat_qq(double x, double y) const {
-  double newlumi(-999.);
-  double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,q_       ,scale(),xp_x_y)/xp_x_y)
-          * (hadron_B_->pdf()->xfx(hadron_B_,qbar_    ,scale(),xm_x_y)/xm_x_y);
+  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),xp_x_y)/xp_x_y)
+          * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),xm_x_y)/xm_x_y);
   return newlumi / oldlumi_;
 }
 
 double MEPP2HiggsPowheg::Vtilde_universal() const {
-  return  alphaS2Pi_*CA_ * ( log(p2_/mu2_)*( 2.*(2.*Constants::pi*beta0_/CA_)
-			       	           + 4.*(log(etabarp_)+log(etabarm_)))
-                           + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
-			   - 2.*sqr(Constants::pi)/3.);
+  return  alphaS_/2./Constants::pi*CA_ 
+        * ( log(p2_/sqr(mu_F_))*( 2.*(2.*Constants::pi*beta0_/CA_)
+	     	          + 4.*(log(etabarp_)+log(etabarm_)))
+	                  + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
+	                  - 2.*sqr(Constants::pi)/3.
+	  );
 }
 
-double MEPP2HiggsPowheg::Ctilde_Ltilde_qq_on_x(double xt,double y) const {
-  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gg::y value not allowed."; }
-  double x_pm      = x(xt,y);
+double MEPP2HiggsPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b, 
+					       double xt, double y ) const {
+  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qq::y value not allowed."; }
+  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
+    cout << "\nCtilde_qq::for Cqq^plus  a must be a quark! id = ",a->id();
+  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
+    cout << "\nCtilde_qq::for Cqq^minus b must be a quark! id = ",b->id();
+  double x_pm      = y == 1  ? xbp_     : xbm_     ;
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+  return ( ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
        	     + 2.*log(1.-xt)/(1.-xt)
              )*CF_*(1.+sqr(x_pm)) 
 	   + sqr(etabar_pm)*CF_*(1.-x_pm)
-	   )*Lhat_qq(x_pm,y)
-	 - ( ( (1./(1.-xt))*log(p2_/mu2_     )+4.*log(etabar_pm)/(1.-xt)
+	   )*Lhat_ab(a,b,x_pm,y)
+	 - ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)     )+4.*log(etabar_pm)/(1.-xt)
        	     + 2.*log(1.-xt)/(1.-xt)
              )*CF_*2. 
 	   )
          )/x_pm;
 }
 
-double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(double xt,double y) const {
+double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(tcPDPtr a, tcPDPtr b, 
+					       double xt, double y ) const {
   if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gg::y value not allowed."; }
-  double x_pm      = x(xt,y);
+  if(y== 1.&&a->id()!=21) 
+    cout << "\nCtilde_gg::for Cgg^plus  a must be a gluon! id = ",a->id();
+  if(y==-1.&&b->id()!=21) 
+    cout << "\nCtilde_gg::for Cgg^minus b must be a gluon! id = ",b->id();
+  double x_pm      = y == 1  ? xbp_     : xbm_     ;
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+  return ( ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
        	     + 2.*log(1.-xt)/(1.-xt)
              )*2.*CA_*(x_pm+sqr(1.-x_pm)/x_pm+x_pm*sqr(1.-x_pm))
 
-	   )*Lhat_gg(x_pm,y)
-         - ( ( (1./(1.-xt))*log(p2_/mu2_     )+4.*log(etabar_pm)/(1.-xt)
+	   )*Lhat_ab(a,b,x_pm,y)
+         - ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)     )+4.*log(etabar_pm)/(1.-xt)
 	     + 2.*log(1.-xt)/(1.-xt)
 	     )*2.*CA_
 	   )
          ) / x_pm;
 }
 
-double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(double xt,double y) const {
+double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b, 
+					       double xt, double y ) const {
   if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
-  double x_pm      = x(xt,y);
+  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
+    cout << "\nCtilde_qg::for Cqg^plus  a must be a quark! id = ",a->id();
+  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
+    cout << "\nCtilde_qg::for Cqg^minus b must be a quark! id = ",b->id();
+  double x_pm      = y == 1  ? xbp_     : xbm_     ;
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+  return ( ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
        	     + 2.*log(1.-xt)/(1.-xt)
              )*(1.-x_pm)*CF_*(1.+sqr(1.-x_pm))/x_pm
 	   + sqr(etabar_pm)*CF_*x_pm
-	   )*Lhat_qg(x_pm,y)
+	   )*Lhat_ab(a,b,x_pm,y)
          ) / x_pm;
 }
 
-double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(double xt,double y) const {
-  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
-  double x_pm      = x(xt,y);
+double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b, 
+					       double xt, double y ) const {
+  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gq::y value not allowed."; }
+  if(y== 1.&&a->id()!=21)
+    cout << "\nCtilde_gq::for Cgq^plus  a must be a gluon! id = ",a->id();
+  if(y==-1.&&b->id()!=21)
+    cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = ",b->id();
+  double x_pm      = y == 1  ? xbp_     : xbm_     ;
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+  return ( ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
        	     + 2.*log(1.-xt)/(1.-xt)
              )*(1.-x_pm)*TR_*(sqr(x_pm)+sqr(1.-x_pm))
 	   + sqr(etabar_pm)*TR_*2.*x_pm*(1.-x_pm)
-	   )*Lhat_gq(x_pm,y)
+	   )*Lhat_ab(a,b,x_pm,y)
          ) / x_pm;
 }
 
 double MEPP2HiggsPowheg::M_V_regular() const {
-  return alphaS2Pi_*CA_*(  11./3.
+  return alphaS_/2./Constants::pi*CA_*
+                        (  11./3.
 			+  4.*sqr(Constants::pi)/3.
-			- (4.*Constants::pi*beta0_/CA_)*log(p2_/mu2_)
-			)*ggME_;
+			- (4.*Constants::pi*beta0_/CA_)*log(p2_/sqr(mu_UV_))
+			)*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::Rcal_gg(double x, double y) const {
-  return ((1.-xbar(y))/x)*
-    (2.*x*(1.-x)*(1.-y)+sqr((1.-x)*(1.-y))+sqr(x)+sqr(1.-x))*Lhat_gg(x,y);
+double MEPP2HiggsPowheg::M_R_qq(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*
+                        ( 0.
+                        )*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::Rcal_gq(double x, double y) const {
-  return ((1.-xbar(y))/x)*
-    (2.*x*(1.-x)*(1.-y)+sqr((1.-x)*(1.-y))+sqr(x)+sqr(1.-x))*Lhat_gq(x,y);
+double MEPP2HiggsPowheg::M_R_gg(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*
+                        ( 0.
+			)*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::Rcal_qq(double x, double y) const {
-  return ((1.-xbar(y))/x)*
-    (2.*x*(1.-x)*(1.-y)+sqr((1.-x)*(1.-y))+sqr(x)+sqr(1.-x))*Lhat_qq(x,y);
+double MEPP2HiggsPowheg::M_R_qg(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*
+                        ( 0.
+			)*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::Rtilde_gg(double xt, double y) const {
-  return alphaS2Pi_*TR_*
-    ( Rcal_gg(x(xt,y),y) - Rcal_gg(x(xt,1.),1.) )/(1.-y);
+double MEPP2HiggsPowheg::M_R_gq(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*
+                        ( 0.
+			)*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::Rtilde_gq(double xt, double y) const {
-  return alphaS2Pi_*TR_*
-    ( Rcal_gq(x(xt,y),y) - Rcal_gq(x(xt,0.),0.) )/y;
+double MEPP2HiggsPowheg::Rcal_Ltilde_qq_on_x(tcPDPtr a , tcPDPtr b,
+					     double  xt, double y ) const {
+  return   M_R_qq(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
+	 - M_R_qq( 1.,y)*Lhat_ab(a,b,     1.,y);
 }
 
-double MEPP2HiggsPowheg::Rtilde_qq(double xt, double y) const {
-  return alphaS2Pi_*CF_*
-    (( ( Rcal_qq(x(xt, y), y) - Rcal_qq(x(xt,1.),1.) ) / (1.-y)+
-       ( Rcal_qq(x(xt, y), y) - Rcal_qq(x(xt,0.),0.) ) / y )/(1.-xt)
-     + ( log(1.-xbar(y)) - log(1.-xbp_))*2./(1.-y)
-     + ( log(1.-xbar(y)) - log(1.-xbm_))*2./y);
+double MEPP2HiggsPowheg::Rcal_Ltilde_gg_on_x(tcPDPtr a , tcPDPtr b, 
+					     double  xt, double y ) const {
+  return   M_R_gg(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
+	 - M_R_gg( 1.,y)*Lhat_ab(a,b,     1.,y);
 }
+
+double MEPP2HiggsPowheg::Rcal_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b, 
+					     double  xt, double y ) const {
+  return   M_R_gq(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
+	 - M_R_gq( 1.,y)*Lhat_ab(a,b,     1.,y);
+}
+
+double MEPP2HiggsPowheg::Rcal_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b, 
+					     double  xt, double y ) const {
+  return   M_R_qg(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
+	 - M_R_qg( 1.,y)*Lhat_ab(a,b,     1.,y);
+}
+
+
+
+
