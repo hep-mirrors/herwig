@@ -76,7 +76,8 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    */
   virtual bool setQCDInitialEvolutionScales(const ShowerParticleVector &particles,
-					    const bool isDecayCase);
+					    const bool isDecayCase,
+					    const bool setPartners=true);
 
   /**
    * Set the initial QED scales
@@ -84,7 +85,8 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    */
   virtual bool setQEDInitialEvolutionScales(const ShowerParticleVector &particles,
-					    const bool isDecayCase);
+					    const bool isDecayCase,
+					    const bool setPartners=true);
 
   /**
    * Set the initial electroweak scales
@@ -92,7 +94,8 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    */
   virtual bool setEWKInitialEvolutionScales(const ShowerParticleVector &particles,
-					    const bool isDecayCase);
+					    const bool isDecayCase,
+					    const bool setPartners=true);
   //@}
 
 public:
@@ -136,7 +139,7 @@ protected:
    *  General method to calculate the initial evolution scales
    */
   virtual pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &,
-                                           const bool isDecayCase);
+							      const bool isDecayCase);
 
   /**
    *  Calculate the initial evolution scales for two final-state particles
