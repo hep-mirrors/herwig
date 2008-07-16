@@ -89,7 +89,7 @@ public:
    */
   static void Init();
 
- protected:
+protected:
 
   /**
    *  Set the treatment of the outgoing masses

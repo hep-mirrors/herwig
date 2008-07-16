@@ -30,6 +30,7 @@ int HwME2to2Base::nDim() const {
 
 void HwME2to2Base::setKinematics() {
   ME2to2Base::setKinematics();
+  rescaleMomenta(meMomenta(),mePartonData());
 }
 
 bool HwME2to2Base::generateKinematics(const double * r) {
@@ -221,8 +222,25 @@ bool HwME2to2Base::generateKinematics(const double * r) {
   tHat(pq*cth + m22 - e0e2);
   uHat(m22 + m32 - sHat() - tHat());
   jacobian((pq/sHat())*Constants::pi*jacobian()*mjac);
-  // compute the rescaled momenta 
-  return rescaleMomenta(meMomenta(),mePartonData());
+  if(_rescaleOption==1) return true;
+  Energy mnew[2];
+  if(_rescaleOption==0) {
+    mnew[0] = 0.*GeV;
+    mnew[1] = 0.*GeV;
+  }
+  else if(_rescaleOption==2) {
+    mnew[0] = mePartonData()[2]->mass();
+    mnew[1] = mePartonData()[3]->mass();
+  }
+  else if(_rescaleOption==3) {
+    if(abs(mePartonData()[2]->id())!=
+       abs(mePartonData()[3]->id())) return true;
+    mnew[0] = 0.5*(meMomenta()[2].mass()+meMomenta()[3].mass());
+    mnew[1] = mnew[0];
+  }
+  if((meMomenta()[2]+meMomenta()[3]).m() < mnew[0] + mnew[1] )
+    return false;
+  return true;
 }
 
 void HwME2to2Base::persistentOutput(PersistentOStream & os) const {
