@@ -253,30 +253,10 @@ protected:
   mutable tcPDPtr a_lo_, b_lo_;
 
   /**
-   *  The ParticleData object for the plus and minus nlo partons
-   */
-  mutable tcPDPtr a_nlo_, b_nlo_;
-
-  /**
-   *  the ParticleData object for the initial state quark
-   */
-  tcPDPtr q_   ;
-
-  /**
-   *  the ParticleData object for the initial state anti quark
-   */
-  tcPDPtr qbar_;
-
-  /**
-   *  The BeamParticleData object for the plus  hadron
+   *  The BeamParticleData object for the plus and minus direction hadrons
    */
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
-
-  /**
-   *  The BeamParticleData object for the minus hadron
-   */
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
-
 
   /**
    *  The value of \f$\alpha_S\f$ used for the calculation
