@@ -23,6 +23,12 @@
 
 using namespace Herwig;
 
+void PowhegEvolver::doinit() throw(InitException) {
+  Evolver::doinit();
+  for(unsigned int ix=0;ix<_hardgenerator.size();++ix)
+    _hardgenerator[ix]->setEvolver(this);
+}
+
 void PowhegEvolver::persistentOutput(PersistentOStream & os) const {
   os << _hardgenerator << _hardonly << _trunc_Mode;
 }
@@ -120,12 +126,8 @@ void PowhegEvolver::showerDecay(ShowerTreePtr tree) {
 	if( _nasontree ) {
 	  mit = _nasontree->particles().find( progenitor()->progenitor() );
 	  if( mit != eit && !mit->second->children().empty() ) {
-	     //produce the truncated emissions and histogram the number of emissions
-	    _truncEmissions = 0;
 	    progenitor()->hasEmitted( truncatedTimeLikeShower(
 			  particlesToShower[ix]->progenitor(), mit->second ) );
-	    //add 0.5 to make sure we put in correct bin
-	    (*_hTrunc) += double( _truncEmissions ) + 0.5;
 	  } 
 	  else {
 	    progenitor()->hasEmitted( _hardonly ? false :
@@ -209,7 +211,7 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
   generateIntrinsicpT(particlesToShower);
   unsigned int ntry(0);
   do {
-    // clear results of last attempt
+    // clear results of last attempt and reset colour partners
     if(ntry!=0) {
       currentTree()->clear();
       setColourPartners(true);
@@ -262,16 +264,15 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
   while(!showerModel()->kinematicsReconstructor()->
 	reconstructHardJets( tree, intrinsicpT() ) &&
  	maximumTries() > ++ntry );
-  if( maximumTries() == ntry ) throw Exception() << "Failed to generate thPersistency shower after "
-						 << ntry 
-						 << " attempts in PowhegEvolver::showerHardProcess()"
-						 << Exception::eventerror;
+  if( maximumTries() == ntry ) 
+    throw Exception() << "Failed to generate thPersistency shower after " << ntry 
+		      << " attempts in PowhegEvolver::showerHardProcess()"
+		      << Exception::eventerror;
   currentTree()->hasShowered( true );
-
-
+  // test the momenta are the same
   if( _hardonly && _nasontree ) {
     // extract the particles from end point of the shower
-    vector<ShowerParticlePtr> partons;
+    list<ShowerParticlePtr> partons;
     for(unsigned int ix = 0; ix < particlesToShower.size(); ++ix) {
       if(  particlesToShower[ix]->progenitor()->isFinalState() ) continue;
       ShowerParticlePtr incoming=particlesToShower[ix]->progenitor();
@@ -292,11 +293,8 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
 	partons.push_back(incoming);
       }
     }
-//     for(vector<ShowerParticlePtr>::const_iterator it=partons.begin();it!=partons.end();++it) {
-//       generator()->log() << "testing partons " << **it << "\n";
-//     }
     // extract the particles from the nason tree
-    vector<ShowerParticlePtr> nason;
+    list<ShowerParticlePtr> nason;
     for(set<HardBranchingPtr>::const_iterator it = _nasontree->incoming().begin();
 	it != _nasontree->incoming().end(); ++it) {
       nason.push_back((*it)->branchingParticle());
@@ -305,34 +303,44 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
 	nason.push_back((*it)->children()[ix]->branchingParticle());
       }
     }
-//     for(vector<ShowerParticlePtr>::const_iterator it=nason.begin();it!=nason.end();++it) {
-//       generator()->log() << "testing nason  " << **it << "\n";
-//     }
-    static Energy eps = 1e-5*GeV;
-    for(unsigned int ix=0;ix<partons.size();++ix) {
-      for(unsigned int iy=0;iy<nason.size();++iy) {
-	if(nason[iy]->isFinalState()!=partons[ix]->isFinalState()) continue;
-	if(nason[iy]->id()!=partons[ix]->id()) continue;
-	Lorentz5Momentum pdiff=nason[iy]->momentum()-partons[ix]->momentum();
+    static Energy eps = 1e-4*GeV;
+    list<ShowerParticlePtr>::iterator it1,it2,it3;
+    for(it1=partons.begin();it1!=partons.end();++it1) {
+      Energy2 delta(1e30*GeV2);
+      it3=nason.end();
+      for(it2=nason.begin();it2!=nason.end();++it2) {
+	if((**it1).isFinalState()!=(**it2).isFinalState()) continue;
+	if((**it1).id()!=(**it2).id()) continue;
+	Lorentz5Momentum pdiff=(**it1).momentum()-(**it2).momentum();
+	Energy2 test = sqr(pdiff.x())+sqr(pdiff.y())+sqr(pdiff.z())+sqr(pdiff.t());
+	if(test<delta) {
+	  delta=test;
+	  it3=it2;
+	}
+      }
+      if(it3!=nason.end()) {
+	Lorentz5Momentum pdiff=(**it1).momentum()-(**it3).momentum();
 	if(abs(pdiff.x()) > eps || abs(pdiff.y()) > eps ||
 	   abs(pdiff.z()) > eps || abs(pdiff.t()) > eps ) {
-	  generator()->log() << "testing recon problem " << *partons[ix] << "\n"
-	       << "                      " << pdiff/GeV << "\n";
-	  generator()->log() << "testing " << abs(pdiff.x())/eps  << " "
-			     << abs(pdiff.y())/eps  << " "
-			     << abs(pdiff.z())/eps  << " "
-			     << abs(pdiff.t())/eps  << "\n";
-	}
+	  generator()->log() << "testing recon problem " << **it1 << "\n"
+			     << "                      " << **it3 << "\n"
+			     << "                      " << pdiff/GeV << "\n";
+	  nason.erase(it3);
+	} 
+      }
+      else {
+	generator()->log() << "recon problem - no match for \n"
+			   << **it1;
       }
     }
   }
 }
 
 vector<ShowerProgenitorPtr> PowhegEvolver::setupShower( bool hard ) {
-  // set the colour partners
-  setColourPartners(hard);
   // generate the hardest emission
   hardestEmission();
+  // set the colour partners
+  setColourPartners(hard);
   // get the particles to be showered
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -439,8 +447,6 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     if(_hardonly) vetoed = true;
     // if vetoed reset scale
     if(vetoed) particle->setEvolutionScale(ShowerIndex::QCD,fb.kinematics->scale());
-    //if truncated emission is accepted add one to the count
-    if( !vetoed )  _truncEmissions++;
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -573,7 +579,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     HardBranchingPtr timelike;
     for( unsigned int ix = 0; ix < branch->children().size(); ++ix ) {
       if( !branch->children()[ix]->incoming() ) {
-          timelike = branch->children()[ix];
+	timelike = branch->children()[ix];
       }
       if( branch->children()[ix]->incoming() ) z = branch->children()[ix]->z();
     }
@@ -581,7 +587,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
       branch->sudakov()->createInitialStateBranching( branch->scale(), z, branch->phi(),
 						      branch->children()[0]->pT() );
     kinematics->initialize( *particle, beam );
-   // assign the splitting function and shower kinematics
+    // assign the splitting function and shower kinematics
     particle->setShowerKinematics( kinematics );
     // For the time being we are considering only 1->2 branching
     // Now create the actual particles, make the otherChild a final state
@@ -670,21 +676,51 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   return true;
 }
 
-void PowhegEvolver::dofinish() {
- ofstream hist_out("truncated_emissions.top");
-  using namespace HistogramOptions;
-
-  _hTrunc->topdrawOutput( hist_out, Frame,
-			  "BLACK",
-			  "frequency of truncated emissions", 
-			  " ", 
-			  " ",
-			  " ", 
-			  "truncated emissions", 
-			  " " );
-}
-
-void PowhegEvolver::doinitrun() {
-  _hTrunc = new_ptr( Histogram( 0., 10., 10) ); 
-  Evolver::doinitrun();
+void PowhegEvolver::setColourPartners(bool hard) {
+  // if no hard tree use the methid in the base class
+  if(!_nasontree) {
+    Evolver::setColourPartners(hard);
+    return;
+  }
+  // match the particles in the ShowerTree and NasonTree
+  if(!_nasontree->connect(currentTree()))
+    throw Exception() << "Can't match trees in "
+		      << "PowhegEvolver::setColourPartners()"
+		      << Exception::eventerror;
+  // sort out the colour partners
+  vector<ShowerParticlePtr> particles;
+  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+  for(cit=currentTree()->incomingLines().begin();
+      cit!=currentTree()->incomingLines().end();++cit)
+    particles.push_back(cit->first->progenitor());
+  // outgoing particles
+  for(cjt=currentTree()->outgoingLines().begin();
+      cjt!=currentTree()->outgoingLines().end();++cjt)
+    particles.push_back(cjt->first->progenitor());
+  // find the partner
+  for(unsigned int ix=0;ix<particles.size();++ix) {
+    if(!particles[ix]->dataPtr()->coloured()) continue;
+    tHardBranchingPtr partner = 
+      _nasontree->particles()[particles[ix]]->colourPartner();
+    for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator
+	  it=_nasontree->particles().begin();
+	it!=_nasontree->particles().end();++it) {
+      if(it->second==partner) {
+	particles[ix]->setPartner(ShowerIndex::QCD,it->first);
+      }
+    }
+    if(!particles[ix]->partners()[ShowerIndex::QCD]) 
+      throw Exception() << "Can't match partners in "
+			<< "PowhegEvolver::setColourPartners()"
+			<< Exception::eventerror;
+  }
+  // Set the initial evolution scales
+  if(splittingGenerator()->isInteractionON(ShowerIndex::QCD))
+    showerModel()->partnerFinder()->
+      setQCDInitialEvolutionScales(particles,!hard,false);
+  if(splittingGenerator()->isInteractionON(ShowerIndex::QED))
+    showerModel()->partnerFinder()->setQEDInitialEvolutionScales(particles,!hard);
+  if(splittingGenerator()->isInteractionON(ShowerIndex::EWK))
+    showerModel()->partnerFinder()->setEWKInitialEvolutionScales(particles,!hard);
 }

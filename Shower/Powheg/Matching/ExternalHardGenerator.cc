@@ -51,55 +51,15 @@ void ExternalHardGenerator::Init() {
 }
 
 HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
-  //Get the HardTree from the CKKW handler.
+  // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
-  vector<ShowerProgenitorPtr> progenitors = tree->extractProgenitors();
-  // connect the trees up
-  for(unsigned int ix=0;ix<progenitors.size();++ix) {
-    bool match(false);
-    for(set<HardBranchingPtr>::iterator it=hardtree->branchings().begin();
-	it!=hardtree->branchings().end();++it) {
-      if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
-      cerr << *progenitors[ix]->progenitor() << "\n";
-      hardtree->connect(progenitors[ix]->progenitor(),*it);
-      match = true;
-    }
-    if(!match) return HardTreePtr();
-  }
-
-
-
-
-
-
-
-
-
-
-
-  // Set the maximum pt for all other emissions
-  // how should this be done for ckkw???
-  // Energy ptveto(sqrt(_s)*_rt_mlambda/(4.*b_xs));
-  // QProgenitor   ->maximumpT(ptveto);
-  // QbarProgenitor->maximumpT(ptveto);
-
-  // Connect the particles with the branchings in the HardTree
-  // hardtree->connect(QProgenitor->progenitor(),allBranchings[0]);
-  // hardtree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
-
-  // Create the two colour lines and connect the particles:
-  // ColinePtr blueLine  = new_ptr(ColourLine());
-  // ColinePtr greenLine = new_ptr(ColourLine());
-  // blueLine->addColoured(emitter,_iemitter);
-  // blueLine->addColoured(gluon,_ispectator);
-  // greenLine->addColoured(gluon,_iemitter);
-  // greenLine->addColoured(parent,_iemitter);
-  // greenLine->addColoured(spectator,_ispectator);
-
+  if(!hardtree) return HardTreePtr();
+  // check the trees match
+  if(!hardtree->connect(tree)) return HardTreePtr();
   // Return the HardTree
   return hardtree;
 }
 
-bool ExternalHardGenerator::canHandle(ShowerTreePtr tree) {
+bool ExternalHardGenerator::canHandle(ShowerTreePtr) {
   return true;
 }

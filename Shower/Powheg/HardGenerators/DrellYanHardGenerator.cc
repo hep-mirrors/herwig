@@ -125,7 +125,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   }
   vector<Lorentz5Momentum> pnew;
   int emission_type(-1);
-  // generate the hard emission and return if no emission 
+  // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) return HardTreePtr();
   // construct the HardTree object needed to perform the showers
   ShowerParticleVector newparticles;
@@ -163,8 +163,6 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(_partons[iemit],false)));
   newparticles.back()->set5Momentum(poff);
-
-
   // find the sudakov for the branching
   BranchingList branchings=evolver()->splittingGenerator()->initialStateBranchings();
   long index = abs(_partons[iemit]->id());
@@ -208,6 +206,9 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
 					nasonin[iemit],true)));
   nasonin[iemit]->addChild(nasonhard.back());
+  // set the colour partners
+  nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
+  nasonin[iemit==0 ? 1 : 0]->colourPartner(nasonhard.back());
   // add other particle
   nasonhard.push_back(nasonin[iemit==0 ? 1 : 0]);
   // outgoing boson
@@ -240,7 +241,6 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
     reconstructHardShower(nasontree,evolver());
-
   return nasontree;
 }
    
@@ -269,14 +269,13 @@ bool DrellYanHardGenerator::canHandle(ShowerTreePtr tree) {
      !(part[0]->id()!=ParticleID::gamma||part[0]->id()!=ParticleID::Z0||
        abs(part[0]->id())==ParticleID::Wplus))
     return false;
-  else if(tree->outgoingLines().size()==2)
-    {
-      if(part[0]->parents().empty()||part[1]->parents().empty()) return false;
-      if(part[0]->parents()[0]!=part[1]->parents()[0]) return false;
-      if(!(part[0]->parents()[0]->id()==ParticleID::gamma||
-	   part[0]->parents()[0]->id()==ParticleID::Z0||
-	   abs(part[0]->parents()[0]->id())==ParticleID::Wplus)) return false;
-    }
+  else if(tree->outgoingLines().size()==2) {
+    if(part[0]->parents().empty()||part[1]->parents().empty()) return false;
+    if(part[0]->parents()[0]!=part[1]->parents()[0]) return false;
+    if(!(part[0]->parents()[0]->id()==ParticleID::gamma||
+	 part[0]->parents()[0]->id()==ParticleID::Z0||
+	 abs(part[0]->parents()[0]->id())==ParticleID::Wplus)) return false;
+  }
   // can handle it
   return true;
 }

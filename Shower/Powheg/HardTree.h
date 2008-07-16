@@ -36,10 +36,16 @@ public:
   /**
    *  Match particles in the ShowerTree to branchings in the HardTree
    */
-  inline void connect(ShowerParticlePtr particle, HardBranchingPtr branching) {
-    if(_branchings.find(branching)==_branchings.end()) return;
+  inline bool connect(ShowerParticlePtr particle, HardBranchingPtr branching) {
+    if(_branchings.find(branching)==_branchings.end()) return false;
     _particles[particle]=branching;
+    return true;
   }
+
+  /**
+   *  Match the prticles in the ShowerTree to the branchings in the HardTree
+   */
+  bool connect(ShowerTreePtr);
   
   /**
    *  Access the map between the ShowerParticle and the HardBranching
@@ -113,7 +119,13 @@ public:
   /**
    *  Set the momenta of the particles
    */
-  void setMomenta(LorentzRotation R, double alpha, Lorentz5Momentum pt);
+  void setMomenta(LorentzRotation R, double alpha, Lorentz5Momentum pt,
+		  bool setMomentum=true);
+
+  /**
+   *  Use the Sudakov to fix the colours
+   */
+  void fixColours();
 
   /**
    *  Set and get members for the private member variables
@@ -270,6 +282,22 @@ public:
   inline void phi(double in) {_phi=in;}
   //@}
 
+  /**
+   *  Colour partners
+   */
+  //@{
+  /**
+   *  Get the colour partner
+   */
+  inline HardBranchingPtr colourPartner() const {return _partner;}
+
+  /**
+   *  The colour partner of the branching
+   */
+  inline void colourPartner(tHardBranchingPtr in) {_partner=in;}
+
+  //@}
+
 private:
 
   /**
@@ -351,6 +379,11 @@ private:
    *  The beam particle
    */
   PPtr _beam;
+
+  /**
+   *  The colour partner
+   */
+  HardBranchingPtr _partner;
 };
 
 inline ostream & operator<<(ostream & os, const HardTree & x) {
@@ -373,12 +406,15 @@ inline ostream & operator<<(ostream & os, const HardTree & x) {
       it!=x._spacelike.end();++it) {
     os << "SpaceLike: " << *(**it).branchingParticle() << " has Sudakov" 
        << (**it).sudakov() << "\n";
+    os << "It's colour lines are " 
+       << (**it).branchingParticle()->colourLine() << "\t" 
+       << (**it).branchingParticle()->antiColourLine() << "\n";
     for(unsigned int iy=0;iy<(**it).children().size();++iy) {
       os << "\t Children: " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";
       os << "It's colour lines are " 
 	 << (**it).children()[iy]->branchingParticle()->colourLine() << "\t" 
-	 <<  (**it).children()[iy]->branchingParticle()->antiColourLine() << "\n";
+	 << (**it).children()[iy]->branchingParticle()->antiColourLine() << "\n";
     }
   }
   return os;

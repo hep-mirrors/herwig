@@ -8,7 +8,6 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "PowhegEvolver.h"
 #include "HardestEmissionGenerator.h"
-#include "Herwig++/Utilities/Histogram.h"
 
 
 namespace Herwig {
@@ -28,7 +27,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PowhegEvolver();
+  inline PowhegEvolver() : _hardonly(false), _trunc_Mode(true) {}
 
   /**
    *  Member to perform the shower
@@ -43,13 +42,12 @@ public:
    * Perform the shower of a decay
    */
   virtual void showerDecay(ShowerTreePtr);
- 
+  
   /**
    * Is the truncated shower on?
    */
-  inline bool isTruncatedShowerON() const;
-
- //@}
+  inline bool isTruncatedShowerON() const {return _trunc_Mode;}
+  //@}
 
 public:
 
@@ -88,6 +86,12 @@ protected:
   vector<ShowerProgenitorPtr> setupShower(bool hard);
 
   /**
+   *  set the colour partners
+   */
+  virtual void setColourPartners(bool hard);
+
+
+  /**
    *  Generate the hardest emission
    */
   virtual void hardestEmission();
@@ -106,6 +110,8 @@ protected:
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
 					HardBranchingPtr branch); 
 
+
+
 protected:
 
   /** @name Clone Methods. */
@@ -114,13 +120,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -132,20 +138,8 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
-    /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
-  //@}
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
 
 private:
 
@@ -183,12 +177,6 @@ private:
    *  Truncated shower switch
    */
   bool _trunc_Mode;
-
-   /**
-   *  Histogram object to record the number of truncated emissions
-   */
-  HistogramPtr _hTrunc;
-  
   
   /**
    *  Count of the number of truncated emissions
@@ -233,7 +221,5 @@ struct ClassTraits<Herwig::PowhegEvolver>
 /** @endcond */
 
 }
-
-#include "PowhegEvolver.icc"
 
 #endif /* HERWIG_PowhegEvolver_H */
