@@ -179,7 +179,7 @@ protected:
   /**
    *  set the colour partners
    */
-  void setColourPartners(bool hard);
+  virtual void setColourPartners(bool hard);
 
   /**
    *  Methods to perform the evolution of an individual particle, including
