@@ -304,9 +304,28 @@ protected:
    *  Perform the reconstruction of a system with only final-state
    *  particles
    */
+  void reconstructFinalStateShower(bool & applyBoost,
+				   Boost & toRest, Boost & fromRest,
+				   HardTreePtr,
+				   vector<HardBranchingPtr>,
+				   EvolverPtr ) const;
+  
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
   void reconstructInitialInitialSystem(bool & applyBoost,
 				       Boost & toRest, Boost & fromRest,
 				       vector<ShowerProgenitorPtr>) const;
+  
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
+  void reconstructInitialInitialShower(bool & applyBoost,
+				       Boost & toRest, Boost & fromRest,
+				       HardTreePtr,
+				       vector<HardBranchingPtr> ) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed
