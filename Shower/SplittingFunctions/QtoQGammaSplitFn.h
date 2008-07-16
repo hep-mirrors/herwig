@@ -13,7 +13,6 @@
 //
 
 #include "SplittingFunction.h"
-#include "QtoQGammaSplitFn.fh"
 
 namespace Herwig {
 
@@ -40,16 +39,11 @@ class QtoQGammaSplitFn: public SplittingFunction {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline QtoQGammaSplitFn();
-  //@}
-
-public:
-
+  inline QtoQGammaSplitFn() : SplittingFunction(ShowerIndex::QED,1) {}
+  
   /**
    *  Concrete implementation of the method to determine whether this splitting
    *  function can be used for a given set of particles.
@@ -146,13 +140,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -207,10 +201,5 @@ struct ClassTraits<Herwig::QtoQGammaSplitFn>
 /** @endcond */
 
 }
-
-#include "QtoQGammaSplitFn.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGammaSplitFn.tcc"
-#endif
 
 #endif /* HERWIG_QtoQGammaSplitFn_H */

@@ -13,7 +13,6 @@
 //
 
 #include "SplittingFunction.h"
-#include "QtoQGSplitFn.fh"
 
 namespace Herwig {
 
@@ -44,7 +43,7 @@ public:
   /**
    * The default constructor.
    */
-  inline QtoQGSplitFn();
+  inline QtoQGSplitFn()  : SplittingFunction(ShowerIndex::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -142,13 +141,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -203,7 +202,5 @@ struct ClassTraits<Herwig::QtoQGSplitFn>
 /** @endcond */
 
 }
-
-#include "QtoQGSplitFn.icc"
 
 #endif /* HERWIG_QtoQGSplitFn_H */

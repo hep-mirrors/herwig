@@ -62,7 +62,9 @@ public:
    * @param a All splitting functions must have an interaction type
    * @param b All splitting functions must have an interaction order
    */
-  inline SplittingFunction(ShowerIndex::InteractionType a, unsigned int b);
+  inline SplittingFunction(ShowerIndex::InteractionType a, unsigned int b)
+    : Interfaced(), _interactionType(a), _interactionorder(b) {}
+
   //@}
 
 public:
@@ -74,12 +76,14 @@ public:
   /**
    *  Return the type of the interaction
    */
-  inline ShowerIndex::InteractionType interactionType() const;
+  inline ShowerIndex::InteractionType interactionType() const 
+  {return _interactionType;}
 
   /**
    *  Return the order of the splitting function in the interaction
    */
-  inline unsigned int interactionOrder() const;
+  inline unsigned int interactionOrder() const
+  {return _interactionorder;}
   //@}
 
   /**
@@ -241,7 +245,5 @@ struct ClassTraits<Herwig::SplittingFunction>
 /** @endcond */
 
 }
-
-#include "SplittingFunction.icc"
 
 #endif /* HERWIG_SplittingFunction_H */
