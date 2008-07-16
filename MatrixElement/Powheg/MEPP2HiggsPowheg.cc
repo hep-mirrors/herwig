@@ -582,29 +582,67 @@ double MEPP2HiggsPowheg::Vtilde_universal() const {
 			   - 2.*sqr(Constants::pi)/3.);
 }
 
+double MEPP2HiggsPowheg::Ctilde_Ltilde_qq_on_x(double xt,double y) const {
+  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gg::y value not allowed."; }
+  double x_pm      = x(xt,y);
+  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
+  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+       	     + 2.*log(1.-xt)/(1.-xt)
+             )*CF_*(1.+sqr(x_pm)) 
+	   + sqr(etabar_pm)*CF_*(1.-x_pm)
+	   )*Lhat_qq(x_pm,y)
+	 - ( ( (1./(1.-xt))*log(p2_/mu2_     )+4.*log(etabar_pm)/(1.-xt)
+       	     + 2.*log(1.-xt)/(1.-xt)
+             )*CF_*2. 
+	   )
+         )/x_pm;
+}
+
+double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(double xt,double y) const {
+  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gg::y value not allowed."; }
+  double x_pm      = x(xt,y);
+  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
+  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+       	     + 2.*log(1.-xt)/(1.-xt)
+             )*2.*CA_*(x_pm+sqr(1.-x_pm)/x_pm+x_pm*sqr(1.-x_pm))
+
+	   )*Lhat_gg(x_pm,y)
+         - ( ( (1./(1.-xt))*log(p2_/mu2_     )+4.*log(etabar_pm)/(1.-xt)
+	     + 2.*log(1.-xt)/(1.-xt)
+	     )*2.*CA_
+	   )
+         ) / x_pm;
+}
+
+double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(double xt,double y) const {
+  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
+  double x_pm      = x(xt,y);
+  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
+  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+       	     + 2.*log(1.-xt)/(1.-xt)
+             )*(1.-x_pm)*CF_*(1.+sqr(1.-x_pm))/x_pm
+	   + sqr(etabar_pm)*CF_*x_pm
+	   )*Lhat_qg(x_pm,y)
+         ) / x_pm;
+}
+
+double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(double xt,double y) const {
+  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
+  double x_pm      = x(xt,y);
+  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
+  return ( ( ( (1./(1.-xt))*log(p2_/mu2_/x_pm)+4.*log(etabar_pm)/(1.-xt)
+       	     + 2.*log(1.-xt)/(1.-xt)
+             )*(1.-x_pm)*TR_*(sqr(x_pm)+sqr(1.-x_pm))
+	   + sqr(etabar_pm)*TR_*2.*x_pm*(1.-x_pm)
+	   )*Lhat_gq(x_pm,y)
+         ) / x_pm;
+}
+
 double MEPP2HiggsPowheg::M_V_regular() const {
   return alphaS2Pi_*CA_*(  11./3.
 			+  4.*sqr(Constants::pi)/3.
 			- (4.*Constants::pi*beta0_/CA_)*log(p2_/mu2_)
 			)*ggME_;
-}
-
-double MEPP2HiggsPowheg::Ccalbar_qg(double x) const {
-  return (sqr(x)+sqr(1.-x))*(log(p2_/(mu2_*x))+2.*log(1.-x))+2.*x*(1.-x);
-}
-
-double MEPP2HiggsPowheg::Ctilde_gq(double x, double y) const {
-  return  alphaS2Pi_*TR_ * ((1.-xbar(y))/x) * Ccalbar_qg(x)*Lhat_gq(x,y);
-}
-
-double MEPP2HiggsPowheg::Ctilde_qq(double x, double y) const {
-  double wgt 
-    = ((1.-x)/x+(1.+x*x)/(1.-x)/x*(2.*log(1.-x)-log(x)))*Lhat_qq(x,y)
-    -  4.*log(1.-x)/(1.-x)
-    +  2./(1.-xbar(y))*log(1.-xbar(y))*log(1.-xbar(y))
-    + (2./(1.-xbar(y))*log(1.-xbar(y))-2./(1.-x)+(1.+x*x)/x/(1.-x)*Lhat_qq(x,y))
-    *log(p2_/mu2_);
-  return alphaS2Pi_*CF_*(1.-xbar(y))*wgt;    
 }
 
 double MEPP2HiggsPowheg::Rcal_gg(double x, double y) const {

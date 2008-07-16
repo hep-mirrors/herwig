@@ -189,9 +189,21 @@ protected:
 
   /**
    * Calculate the ratio of the NLO luminosity to the LO
+   * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
+   */
+  double Lhat_qq(double x, double y) const;
+
+  /**
+   * Calculate the ratio of the NLO luminosity to the LO
    * luminosity function for the \f$gg\f$ initiated channel. 
    */
   double Lhat_gg(double x, double y) const;
+
+  /**
+   * Calculate the ratio of the NLO luminosity to the LO
+   * luminosity function for the \f$qg\f$ initiated channel. 
+   */
+  double Lhat_qg(double x, double y) const;
 
   /**
    * Calculate the ratio of the NLO luminosity to the LO
@@ -200,15 +212,33 @@ protected:
   double Lhat_gq(double x, double y) const;
 
   /**
-   * Calculate the ratio of the NLO luminosity to the LO
-   * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
-   */
-  double Lhat_qq(double x, double y) const;
-
-  /**
    * Calculate the universal soft-virtual contribution to the NLO weight. 
    */
   double Vtilde_universal() const;
+
+  /**
+   * Function for calculation of the \f$q\bar{q}\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_qq_on_x(double xt, double y) const;
+
+  /**
+   * Function for calculation of the \f$gg\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_gg_on_x(double xt, double y) const;
+
+  /**
+   * Function for calculation of the \f$qg\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_qg_on_x(double xt, double y) const;
+
+  /**
+   * Function for calculation of the \f$gq\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_gq_on_x(double xt, double y) const;
 
   /**
    * The regular part of the virtual correction matrix element(s) 
@@ -250,16 +280,6 @@ protected:
    * contribution.
    */
   double Rtilde_qq(double xt, double y) const;
-  /**
-   * Function for calculation of the \f$g\bar{q}\f$ initiated real
-   * contribution.
-   */
-  double Ctilde_gq(double x, double v) const;
-  /**
-   * Function for calculation of the \f$q\bar{q}\f$ initiated real
-   * contribution.
-   */
-  double Ctilde_qq(double x, double v) const;
 
 protected:
   /** @name Clone Methods. */
