@@ -13,7 +13,6 @@
 
 #include "IS_QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
@@ -72,7 +71,6 @@ updateParent(const tShowerParticlePtr theParent,
 void IS_QtildaShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
 		  const ParticleVector theChildren ) const {
-  
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
   // get shower variables from 1st child in order to keep notation

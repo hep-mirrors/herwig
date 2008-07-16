@@ -36,7 +36,7 @@ public:
   /**
    * Default constructor
    */
-  inline FS_QtildaShowerKinematics1to2();
+  inline FS_QtildaShowerKinematics1to2() {}
 
   /**
    *  The updateChildren, updateParent and updateLast
@@ -100,10 +100,5 @@ private:
 };
 
 }
-
-#include "FS_QtildaShowerKinematics1to2.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FS_QtildaShowerKinematics1to2.tcc"
-#endif
 
 #endif /* HERWIG_FS_QtildaShowerKinematics1to2_H */
