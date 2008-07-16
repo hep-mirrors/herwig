@@ -243,8 +243,10 @@ int MEPP2HiggsPowheg::nDim() const {
 }
 
 bool MEPP2HiggsPowheg::generateKinematics(const double * r) {
+  // Generate the radiative integration variables:
   xt_=*(r  );
   y_ =*(r+1) * 2. - 1.;
+  // Continue with lo matrix element code:
   Lorentz5Momentum pout = meMomenta()[0] + meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2].setMass(pout.mass());
@@ -274,7 +276,9 @@ void MEPP2HiggsPowheg::getDiagrams() const {
 }
 
 CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
+  // Extract information on the lo process to use in the nlo calculation:
   get_born_variables();
+  // Continue with the lo matrix element code:
   using Constants::pi;
   InvEnergy2 bwfact;
   if(widthopt_==2) {
@@ -450,14 +454,6 @@ double MEPP2HiggsPowheg::qqME(vector<SpinorWaveFunction> & fin,
 double MEPP2HiggsPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(contrib_==0) return 1.;
-  // Get particle data for QCD particles:
-  a_lo_=mePartonData()[0];
-  b_lo_=mePartonData()[1];
-  // get BeamParticleData objects for PDF's
-  hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
-    (lastParticles().first->dataPtr());
-  hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
-    (lastParticles().second->dataPtr());
   // If necessary swap the particle data vectors so that xbp_, 
   // mePartonData[0], beam[0] relate to the inbound gluon: 
   if(!(lastPartons().first ->dataPtr()==a_lo_&&
@@ -466,7 +462,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
     swap(hadron_A_,hadron_B_);
   }
   // calculate the PDF's for the Born process
-  oldlumi_ = hadron_A_->pdf()->xfx(hadron_A_,a_lo_,scale(),xbp_)/xbp_
+  lo_lumi_ = hadron_A_->pdf()->xfx(hadron_A_,a_lo_,scale(),xbp_)/xbp_
            * hadron_B_->pdf()->xfx(hadron_B_,b_lo_,scale(),xbm_)/xbm_;
   // Calculate alpha_S
   alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
@@ -492,8 +488,18 @@ double MEPP2HiggsPowheg::NLOweight() const {
 }
 
 void MEPP2HiggsPowheg::get_born_variables() const {
+  // Particle data for QCD particles:
+  a_lo_=mePartonData()[0];
+  b_lo_=mePartonData()[1];
+  // BeamParticleData objects for PDF's
+  hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
+    (lastParticles().first->dataPtr());
+  hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
+    (lastParticles().second->dataPtr());
+  // Leading order momentum fractions and associated etabar's
   xbp_ = lastX1(); etabarp_ = sqrt(1.-xbp_);
   xbm_ = lastX2(); etabarm_ = sqrt(1.-xbm_);
+  // Assign Born variables
   p2_    = sHat();
   s2_    = p2_;
   if(meMomenta().size()==4) {
@@ -503,78 +509,6 @@ void MEPP2HiggsPowheg::get_born_variables() const {
     theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
   }
   return;
-}
-Energy2 MEPP2HiggsPowheg::s(double xt, double y) const {
-  return  p2_/x(xt,y);
-}
-
-Energy2 MEPP2HiggsPowheg::tk(double xt, double y) const {
-  double  x_xt_y(x(xt,y));
-  return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.-y);
-}
-
-Energy2 MEPP2HiggsPowheg::uk(double xt, double y) const {
-  double  x_xt_y(x(xt,y));
-  return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.+y);
-}
-
-double MEPP2HiggsPowheg::betax(double xt, double y) const {
-  double  x_xt_y(x(xt,y));
-  Energy2 s_xt_y(s(xt,y));
-  return   sqrt(1.-sqr(sqrt(p12_)+sqrt(p22_))/x_xt_y/s_xt_y)
-	 * sqrt(1.-sqr(sqrt(p12_)-sqrt(p22_))/x_xt_y/s_xt_y);
-}
-
-double MEPP2HiggsPowheg::v1(double xt, double y) const {
-  return   betax(xt,y)/(1.-(p22_-p12_)/x(xt,y)/s(xt,y));
-}
-
-double MEPP2HiggsPowheg::v2(double xt, double y) const {
-  return   betax(xt,y)/(1.+(p22_-p12_)/x(xt,y)/s(xt,y));
-}
-
-double MEPP2HiggsPowheg::cpsi(double xt, double y) const {
-  Energy2 s_xt_y(s(xt,y));
-  return 1.- s_xt_y 
-           / 2.
-           / ((s_xt_y+tk(xt,y))/2./sqrt(s2_)*(s_xt_y +uk(xt,y))/2./sqrt(s2_));
-}
-
-double MEPP2HiggsPowheg::cpsipr(double xt, double y) const {
-  Energy2 tk_xt_y(tk(xt,y));
-  return 1.+ tk_xt_y
-           / 2.
-           / ((s(xt,y)+tk_xt_y)/2./sqrt(s2_)*-(tk_xt_y+uk(xt,y))/2./sqrt(s2_));
-}
-
-Energy2 MEPP2HiggsPowheg::q1(double xt, double y) const {
-  return p12_ - 0.5*(s(xt,y)+tk(xt,y))
-                   *betax(xt,y)/v1(xt,y)*(1.-v1(xt,y)*cos(theta1_));
-}
-
-Energy2 MEPP2HiggsPowheg::q2(double xt, double y) const {
-  return p22_ - 0.5*(s(xt,y)+uk(xt,y))
-                   *betax(xt,y)/v2(xt,y)
-                   *(1.+ v2(xt,y)*cos(theta2_)*sin(theta1_)
-                                *sqrt(1.-sqr(cpsi(xt,y)))
-		       + v2(xt,y)*cos(theta1_)*cpsi(xt,y)
- 	            );
-}
-
-Energy2 MEPP2HiggsPowheg::q1hat(double xt, double y) const {
-  return p12_ + p22_ - s(xt,y)  - tk(xt,y) - q1(xt,y);
-}
-
-Energy2 MEPP2HiggsPowheg::q2hat(double xt, double y) const {
-  return p12_ + p22_ - s(xt,y)  - uk(xt,y) - q2(xt,y);
-}
-
-Energy2 MEPP2HiggsPowheg::w1(double xt, double y) const {
-  return p12_ - q1(xt,y)  + q2(xt,y) - tk(xt,y);
-}
-
-Energy2 MEPP2HiggsPowheg::w2(double xt, double y) const {
-  return p22_ + q1(xt,y)  - q2(xt,y) - uk(xt,y);
 }
 
 double MEPP2HiggsPowheg::xbar(double y) const {
@@ -616,11 +550,11 @@ double MEPP2HiggsPowheg::xm(double x, double y) const {
 }
 
 double MEPP2HiggsPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const {
-  double newlumi(-999.);
+  double nlo_lumi(-999.);
   double xp_x_y(xp(x,y)),xm_x_y(xm(x,y));
-  newlumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),xp_x_y)/xp_x_y)
-          * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),xm_x_y)/xm_x_y);
-  return newlumi / oldlumi_;
+  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),xp_x_y)/xp_x_y)
+           * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),xm_x_y)/xm_x_y);
+  return nlo_lumi / lo_lumi_;
 }
 
 double MEPP2HiggsPowheg::Vtilde_universal() const {

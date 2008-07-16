@@ -1,0 +1,89 @@
+// -*- C++ -*-
+//
+// MEPP2HiggsPowheg.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the MEPP2HiggsPowheg class.
+//
+
+namespace Herwig {
+
+inline Energy2 MEPP2HiggsPowheg::s(double xt, double y) const {
+  return  p2_/x(xt,y);
+}
+
+inline Energy2 MEPP2HiggsPowheg::tk(double xt, double y) const {
+  double  x_xt_y(x(xt,y));
+  return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.-y);
+}
+
+inline Energy2 MEPP2HiggsPowheg::uk(double xt, double y) const {
+  double  x_xt_y(x(xt,y));
+  return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.+y);
+}
+
+inline double MEPP2HiggsPowheg::betax(double xt, double y) const {
+  double  x_xt_y(x(xt,y));
+  Energy2 s_xt_y(s(xt,y));
+  return   sqrt(1.-sqr(sqrt(p12_)+sqrt(p22_))/x_xt_y/s_xt_y)
+	 * sqrt(1.-sqr(sqrt(p12_)-sqrt(p22_))/x_xt_y/s_xt_y);
+}
+
+inline double MEPP2HiggsPowheg::v1(double xt, double y) const {
+  return   betax(xt,y)/(1.-(p22_-p12_)/x(xt,y)/s(xt,y));
+}
+
+inline double MEPP2HiggsPowheg::v2(double xt, double y) const {
+  return   betax(xt,y)/(1.+(p22_-p12_)/x(xt,y)/s(xt,y));
+}
+
+inline double MEPP2HiggsPowheg::cpsi(double xt, double y) const {
+  Energy2 s_xt_y(s(xt,y));
+  return 1.- s_xt_y 
+           / 2.
+           / ((s_xt_y+tk(xt,y))/2./sqrt(s2_)*(s_xt_y +uk(xt,y))/2./sqrt(s2_));
+}
+
+inline double MEPP2HiggsPowheg::cpsipr(double xt, double y) const {
+  Energy2 tk_xt_y(tk(xt,y));
+  return 1.+ tk_xt_y
+           / 2.
+           / ((s(xt,y)+tk_xt_y)/2./sqrt(s2_)*-(tk_xt_y+uk(xt,y))/2./sqrt(s2_));
+}
+
+inline Energy2 MEPP2HiggsPowheg::q1(double xt, double y) const {
+  return p12_ - 0.5*(s(xt,y)+tk(xt,y))
+                   *betax(xt,y)/v1(xt,y)*(1.-v1(xt,y)*cos(theta1_));
+}
+
+inline Energy2 MEPP2HiggsPowheg::q2(double xt, double y) const {
+  return p22_ - 0.5*(s(xt,y)+uk(xt,y))
+                   *betax(xt,y)/v2(xt,y)
+                   *(1.+ v2(xt,y)*cos(theta2_)*sin(theta1_)
+                                *sqrt(1.-sqr(cpsi(xt,y)))
+		       + v2(xt,y)*cos(theta1_)*cpsi(xt,y)
+ 	            );
+}
+
+inline Energy2 MEPP2HiggsPowheg::q1hat(double xt, double y) const {
+  return p12_ + p22_ - s(xt,y)  - tk(xt,y) - q1(xt,y);
+}
+
+inline Energy2 MEPP2HiggsPowheg::q2hat(double xt, double y) const {
+  return p12_ + p22_ - s(xt,y)  - uk(xt,y) - q2(xt,y);
+}
+
+inline Energy2 MEPP2HiggsPowheg::w1(double xt, double y) const {
+  return p12_ - q1(xt,y)  + q2(xt,y) - tk(xt,y);
+}
+
+inline Energy2 MEPP2HiggsPowheg::w2(double xt, double y) const {
+  return p22_ + q1(xt,y)  - q2(xt,y) - uk(xt,y);
+}
+
+}

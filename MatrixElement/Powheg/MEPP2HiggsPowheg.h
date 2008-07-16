@@ -159,6 +159,7 @@ protected:
   /**
    *  Parameters for the NLO weight
    */
+
   //@{
   /**
    *  Whether to generate the positive, negative or leading order contribution
@@ -194,7 +195,7 @@ protected:
   /**
    *  Values of the PDF's before radiation
    */
-  mutable double oldlumi_;
+  mutable double lo_lumi_;
 
   /**
    *  The value of the leading order gg->H matrix element
@@ -612,5 +613,7 @@ struct ClassTraits<Herwig::MEPP2HiggsPowheg>
 /** @endcond */
 
 }
+
+#include "MEPP2HiggsPowheg.icc"
 
 #endif /* HERWIG_MEPP2HiggsPowheg_H */
