@@ -352,22 +352,22 @@ protected:
   /**
    * The matrix element q + qbar -> n + g 
    */
-  double M_R_qq(double xt, double y) const;
+  InvEnergy2 M_R_qq(double xt, double y) const;
 
   /**
    * The matrix element g + g    -> n + g
    */
-  double M_R_gg(double xt, double y) const;
+  InvEnergy2 M_R_gg(double xt, double y) const;
 
   /**
    * The matrix element q + g    -> n + q 
    */
-  double M_R_qg(double xt, double y) const;
+  InvEnergy2 M_R_qg(double xt, double y) const;
 
   /**
    * The matrix element g + q    -> n + q 
    */
-  double M_R_gq(double xt, double y) const;
+  InvEnergy2 M_R_gq(double xt, double y) const;
 
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real

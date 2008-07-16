@@ -462,8 +462,9 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // calculate the PDF's for the Born process
   lo_lumi_ = hadron_A_->pdf()->xfx(hadron_A_,a_lo_,scale(),xbp_)/xbp_
            * hadron_B_->pdf()->xfx(hadron_B_,b_lo_,scale(),xbm_)/xbm_;
-  // Calculate alpha_S
+  // Calculate alpha_S and alpha_S/(2*pi)
   alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
+  double alsOn2pi(alphaS_/2./Constants::pi);
   // Particle data objects for the new plus and minus colliding partons.
   tcPDPtr a_nlo, b_nlo;
 
@@ -473,17 +474,19 @@ double MEPP2HiggsPowheg::NLOweight() const {
   a_nlo=getParticleData(ParticleID::g);
   b_nlo=getParticleData(ParticleID::g);
   double wggvirt      = Vtilde_universal() + M_V_regular()/lo_ggME_;
-  double wggcollin    = Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_, 1.) 
-                      + Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,-1.);
-  double wggreal      = Rtilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,y_);
+  double wggcollin    = alsOn2pi
+                      * ( Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_, 1.) 
+                        + Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,-1.));
+  double wggreal      = alsOn2pi
+                      * Rtilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,y_);
   double wgg          = wggvirt + wggcollin + wggreal;
   // g q contribution
   a_nlo=getParticleData(ParticleID::g);
   double wgqcollin(0.), wgqreal(0.), wgq(0.);
   for(unsigned int ix=1; ix<=nlf_; ++ix) {
     b_nlo=getParticleData(ix);
-    wgqcollin    += Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
-    wgqreal      += Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
+    wgqcollin    += alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
+    wgqreal      += alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq          += wgqreal+wgqcollin;
   }
   // q qbar contribution
@@ -491,7 +494,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
   for(unsigned int ix=1; ix<=nlf_; ++ix) {
     a_nlo=getParticleData( ix);
     b_nlo=getParticleData(-ix);
-    wqqreal      = Rtilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_,y_);
+    wqqreal      = alsOn2pi*Rtilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_,y_);
     wqq          = wqqreal;
   }
   // total
@@ -662,53 +665,163 @@ double MEPP2HiggsPowheg::M_V_regular() const {
 			)*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::M_R_qq(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*
-                        ( 0.
-                        )*lo_ggME_;
+InvEnergy2 MEPP2HiggsPowheg::M_R_qq(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*32./9./sqr(p2_)/s(xt,y)
+           *( sqr(tk(xt,y)) + sqr(uk(xt,y))
+            )*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::M_R_gg(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*
-                        ( 0.
-			)*lo_ggME_;
+InvEnergy2 MEPP2HiggsPowheg::M_R_gg(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*3./sqr(p2_)/s(xt,y)/tk(xt,y)/uk(xt,y)
+           *( sqr(sqr(p2_    )) + sqr(sqr(s( xt,y)))
+	    + sqr(sqr(tk(xt,y))) + sqr(sqr(uk(xt,y)))
+            )*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::M_R_qg(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*
-                        ( 0.
-			)*lo_ggME_;
+InvEnergy2 MEPP2HiggsPowheg::M_R_qg(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)/tk(xt,y)
+           *( sqr(s(xt,y)) + sqr(uk(xt,y))
+            )*lo_ggME_;
 }
 
-double MEPP2HiggsPowheg::M_R_gq(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*
-                        ( 0.
-			)*lo_ggME_;
+InvEnergy2 MEPP2HiggsPowheg::M_R_gq(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)/uk(xt,y)
+           *( sqr(s(xt,y)) + sqr(tk(xt,y))
+            )*lo_ggME_;
 }
 
 double MEPP2HiggsPowheg::Rtilde_Ltilde_qq_on_x(tcPDPtr a , tcPDPtr b,
 					     double  xt, double y ) const {
-  return   M_R_qq(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
-	 - M_R_qq( 1.,y)*Lhat_ab(a,b,     1.,y);
+  return ( ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_qq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt , 1.)*uk(xt , 1.)/s(xt , 1.)
+	   * M_R_qq(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_qq( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1., 1.)*uk( 1., 1.)/s( 1., 1.)
+           * M_R_qq( 1., 1.)*Lhat_ab(a,b,        1., 1.)
+
+           )*2./(1.-y)/(1.-xt)
+	 + ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_qq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt ,-1.)*uk(xt ,-1.)/s(xt ,-1.)
+	   * M_R_qq(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_qq( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1.,-1.)*uk( 1.,-1.)/s( 1.,-1.)
+           * M_R_qq( 1.,-1.)*Lhat_ab(a,b,        1.,-1.)
+
+           ) )*2./(1.+y)/(1.-xt)
+         / lo_ggME_ / 8. / Constants::pi / alphaS_;
 }
 
 double MEPP2HiggsPowheg::Rtilde_Ltilde_gg_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
-  return   M_R_gg(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
-	 - M_R_gg( 1.,y)*Lhat_ab(a,b,     1.,y);
+  return ( ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_gg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt , 1.)*uk(xt , 1.)/s(xt , 1.)
+	   * M_R_gg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_gg( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1., 1.)*uk( 1., 1.)/s( 1., 1.)
+           * M_R_gg( 1., 1.)*Lhat_ab(a,b,        1., 1.)
+
+           )*2./(1.-y)/(1.-xt)
+	 + ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_gg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt ,-1.)*uk(xt ,-1.)/s(xt ,-1.)
+	   * M_R_gg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_gg( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1.,-1.)*uk( 1.,-1.)/s( 1.,-1.)
+           * M_R_gg( 1.,-1.)*Lhat_ab(a,b,        1.,-1.)
+
+           ) )*2./(1.+y)/(1.-xt)
+         / lo_ggME_ / 8. / Constants::pi / alphaS_;
 }
 
 double MEPP2HiggsPowheg::Rtilde_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
-  return   M_R_gq(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
-	 - M_R_gq( 1.,y)*Lhat_ab(a,b,     1.,y);
+  return ( ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt , 1.)*uk(xt , 1.)/s(xt , 1.)
+	   * M_R_qg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_qg( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1., 1.)*uk( 1., 1.)/s( 1., 1.)
+           * M_R_qg( 1., 1.)*Lhat_ab(a,b,        1., 1.)
+
+           )*2./(1.-y)/(1.-xt)
+	 + ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt ,-1.)*uk(xt ,-1.)/s(xt ,-1.)
+	   * M_R_qg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_qg( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1.,-1.)*uk( 1.,-1.)/s( 1.,-1.)
+           * M_R_qg( 1.,-1.)*Lhat_ab(a,b,        1.,-1.)
+
+           ) )*2./(1.+y)/(1.-xt)
+         / lo_ggME_ / 8. / Constants::pi / alphaS_;
 }
 
 double MEPP2HiggsPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
-  return   M_R_qg(xt ,y)*Lhat_ab(a,b,x(xt,y),y)
-	 - M_R_qg( 1.,y)*Lhat_ab(a,b,     1.,y);
-}
+  return ( ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt , 1.)*uk(xt , 1.)/s(xt , 1.)
+	   * M_R_qg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_qg( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1., 1.)*uk( 1., 1.)/s( 1., 1.)
+           * M_R_qg( 1., 1.)*Lhat_ab(a,b,        1., 1.)
+
+           )*2./(1.-y)/(1.-xt)
+	 + ( 
+	     tk(xt ,y  )*uk(xt ,y  )/s(xt ,y  )
+	   * M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+
+  	   - tk(xt ,-1.)*uk(xt ,-1.)/s(xt ,-1.)
+	   * M_R_qg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+
+	   - tk( 1.,y  )*uk( 1.,y  )/s( 1.,y  )
+           * M_R_qg( 1.,y  )*Lhat_ab(a,b,        1.,y  )
+
+	   + tk( 1.,-1.)*uk( 1.,-1.)/s( 1.,-1.)
+           * M_R_qg( 1.,-1.)*Lhat_ab(a,b,        1.,-1.)
+
+           ) )*2./(1.+y)/(1.-xt)
+         / lo_ggME_ / 8. / Constants::pi / alphaS_;
+} 
+
 
 
 
