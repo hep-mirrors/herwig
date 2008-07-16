@@ -28,7 +28,7 @@ using namespace Herwig;
 MEPP2Higgs::MEPP2Higgs() : 
 
   widthopt_(1),  usersWidth_(0.00468456293*GeV)         ,
-  scaleopt_(1),  mu_F_(100.*GeV)    , scaleFact_(1.)    ,
+  scaleopt_(1),  mu_F_(100.*GeV)                        ,
   shapeopt_(2),  processopt_(1)     ,  minflavouropt_(4), maxflavouropt_(5), 
   mh_(0.*GeV) ,  wh_(0.*GeV)
 {}
@@ -40,7 +40,7 @@ void MEPP2Higgs::persistentOutput(PersistentOStream & os) const {
   os << hggvertex      << ffhvertex        << theSM 
 
      << widthopt_      << ounit(usersWidth_,GeV) 
-     << scaleopt_      << ounit(mu_F_,GeV) << scaleFact_     << shapeopt_      
+     << scaleopt_      << ounit(mu_F_,GeV)                   << shapeopt_      
      << processopt_    << minflavouropt_   << maxflavouropt_ << hmass_        
      << ounit(mh_,GeV) << ounit(wh_,GeV);
 }
@@ -49,7 +49,7 @@ void MEPP2Higgs::persistentInput(PersistentIStream & is, int) {
   is >> hggvertex      >> ffhvertex        >> theSM 
 
      >> widthopt_      >> iunit(usersWidth_,GeV) 
-     >> scaleopt_      >> iunit(mu_F_,GeV) >> scaleFact_     >> shapeopt_      
+     >> scaleopt_      >> iunit(mu_F_,GeV)                   >> shapeopt_      
      >> processopt_    >> minflavouropt_   >> maxflavouropt_ >> hmass_     
      >> iunit(mh_,GeV) >> iunit(wh_,GeV);
 }
