@@ -274,7 +274,6 @@ void MEPP2HiggsPowheg::getDiagrams() const {
 }
 
 CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
-  // Get Born momentum fractions xbp_ and xbm_:
   get_born_variables();
   using Constants::pi;
   InvEnergy2 bwfact;
