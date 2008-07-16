@@ -571,7 +571,11 @@ double MEPP2HiggsPowheg::Vtilde_universal() const {
 	     	          + 4.*(log(etabarp_)+log(etabarm_)))
 	                  + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
 	                  - 2.*sqr(Constants::pi)/3.
-	  );
+	  )
+        + alphaS_/2./Constants::pi*CA_ 
+        * ( 8./(1.+y_)*log(etabar(y_)/etabarm_)
+     	  + 8./(1.-y_)*log(etabar(y_)/etabarp_)
+          );
 }
 
 double MEPP2HiggsPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b, 
