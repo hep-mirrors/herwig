@@ -505,8 +505,8 @@ double MEPP2HiggsPowheg::NLOweight() const {
   double wgqcollin(0.)   , wgqreal(0.)   , wgq(0.)   ;
   for(unsigned int ix=1; ix<=nlf_; ++ix) {
     b_nlo=getParticleData( ix);
-    wgqcollin         = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
-    wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
+    wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
+    wgqreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
     b_nlo=getParticleData(-ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
@@ -540,6 +540,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
   }
   // total
   wgt                 = 1.+(wgg+wgq+wqqbar);
+  return wgt;
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
