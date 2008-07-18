@@ -518,8 +518,9 @@ double MEPP2HiggsPowheg::NLOweight() const {
     wqq          = wqqreal;
   }
   // total
-  wgt                 = 1.+(wgg+wgq+wqq);
-  return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
+  //  wgt                 = 1.+(wgg+wgq+wqq);
+  return wgt                 = wgq;
+  //  return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
 void MEPP2HiggsPowheg::get_born_variables() const {
@@ -612,9 +613,9 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
   double x_pm      = x(xt,y);
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
   return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	     + 2.*log(1.-xt)/(1.-xt)
+       	   + 2.*log(1.-xt)/(1.-xt)
            )*CF_*(1.+sqr(x_pm)) 
-	    + sqr(etabar_pm)*CF_*(1.-x_pm)
+	 + sqr(etabar_pm)*CF_*(1.-x_pm)
 	 )*Lhat_ab(a,b,x_pm,y) / x_pm
        - ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)     )+4.*log(etabar_pm)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
@@ -655,12 +656,11 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b,
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	     + 2.*log(1.-xt)/(1.-xt)
-             )*(1.-x_pm)*CF_*(1.+sqr(1.-x_pm))/x_pm
-	   + sqr(etabar_pm)*CF_*x_pm
-	   )*Lhat_ab(a,b,x_pm,y)
-         ) / x_pm;
+  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
+       	   + 2.*log(1.-xt)/(1.-xt)
+           )*(1.-x_pm)*CF_*(1.+sqr(1.-x_pm))/x_pm
+	 + sqr(etabar_pm)*CF_*x_pm
+	 )*Lhat_ab(a,b,x_pm,y) / x_pm;
 }
 
 double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b, 
@@ -674,12 +674,11 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	     + 2.*log(1.-xt)/(1.-xt)
-             )*(1.-x_pm)*TR_*(sqr(x_pm)+sqr(1.-x_pm))
-	   + sqr(etabar_pm)*TR_*2.*x_pm*(1.-x_pm)
-	   )*Lhat_ab(a,b,x_pm,y)
-         ) / x_pm;
+  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
+       	   + 2.*log(1.-xt)/(1.-xt)
+           )*(1.-x_pm)*TR_*(sqr(x_pm)+sqr(1.-x_pm))
+	 + sqr(etabar_pm)*TR_*2.*x_pm*(1.-x_pm)
+	 )*Lhat_ab(a,b,x_pm,y) / x_pm;
 }
 
 double MEPP2HiggsPowheg::M_V_regular() const {
