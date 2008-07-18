@@ -350,24 +350,24 @@ protected:
   double M_V_regular() const;
 
   /**
-   * The matrix element q + qbar -> n + g 
+   * The matrix element q + qbar -> n + g times tk*uk 
    */
-  InvEnergy2 M_R_qq(double xt, double y) const;
+  Energy2 t_u_M_R_qq(double xt, double y) const;
 
   /**
-   * The matrix element g + g    -> n + g
+   * The matrix element g + g    -> n + g times tk*uk 
    */
-  InvEnergy2 M_R_gg(double xt, double y) const;
+  Energy2 t_u_M_R_gg(double xt, double y) const;
 
   /**
-   * The matrix element q + g    -> n + q 
+   * The matrix element q + g    -> n + q times tk*uk 
    */
-  InvEnergy2 M_R_qg(double xt, double y) const;
+  Energy2 t_u_M_R_qg(double xt, double y) const;
 
   /**
-   * The matrix element g + q    -> n + q 
+   * The matrix element g + q    -> n + q times tk*uk 
    */
-  InvEnergy2 M_R_gq(double xt, double y) const;
+  Energy2 t_u_M_R_gq(double xt, double y) const;
 
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
