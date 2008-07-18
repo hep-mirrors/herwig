@@ -540,7 +540,6 @@ double MEPP2HiggsPowheg::NLOweight() const {
   }
   // total
   wgt                 = 1.+(wgg+wgq+wqqbar);
-  return wgt;
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
