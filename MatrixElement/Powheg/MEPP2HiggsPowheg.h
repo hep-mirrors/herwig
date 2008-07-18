@@ -352,7 +352,12 @@ protected:
   /**
    * The matrix element q + qbar -> n + g times tk*uk 
    */
-  Energy2 t_u_M_R_qq(double xt, double y) const;
+  Energy2 t_u_M_R_qqbar(double xt, double y) const;
+
+  /**
+   * The matrix element qbar + q -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_qbarq(double xt, double y) const;
 
   /**
    * The matrix element g + g    -> n + g times tk*uk 
@@ -373,7 +378,12 @@ protected:
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Rtilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Rtilde_Ltilde_qqbar_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$\bar{q}q\f$ initiated real
+   * contribution.
+   */
+  double Rtilde_Ltilde_qbarq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
   /**
    * Function for calculation of the \f$qq\f$ 
    * initiated real contribution.
