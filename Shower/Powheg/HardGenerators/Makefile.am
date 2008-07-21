@@ -3,8 +3,8 @@ noinst_LTLIBRARIES = libHwPowhegHard.la
 libHwPowhegHard_la_SOURCES = \
 VectorBosonQQbarHardGenerator.h   VectorBosonQQbarHardGenerator.fh \
 VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc\
-DrellYanHardGenerator.h DrellYanHardGenerator.fh \
-DrellYanHardGenerator.icc DrellYanHardGenerator.cc  \
+DrellYanHardGenerator.h DrellYanHardGenerator.cc  \
+GGtoHHardGenerator.h GGtoHHardGenerator.cc  \
 CSVectorBosonQQbarHardGenerator.h   CSVectorBosonQQbarHardGenerator.fh \
 CSVectorBosonQQbarHardGenerator.icc CSVectorBosonQQbarHardGenerator.cc \
 pTSudakov.h pTSudakov.icc pTSudakov.fh pTSudakov.cc  \
