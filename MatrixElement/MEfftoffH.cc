@@ -249,9 +249,6 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
 // 			      standardModel()->sin2ThetaW(),3)*mw2/sqr(t1)/sqr(t2)*
 //     (meMomenta()[0]*meMomenta()[3])*(meMomenta()[1]*meMomenta()[2]);
 //   cerr << "testing matrix element " << me/metest*UnitRemoval::InvE2 << "\n";
-  // incoming colour factor
-  if(mePartonData()[0]->coloured()) me /= 3.;
-  if(mePartonData()[1]->coloured()) me /= 3.;
   if(calc) _me.reset(menew);
   return me;
 }
@@ -272,6 +269,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
     mh = sqrt(_mh*_wh*tan(rhomin+r[4]*(rhomax-rhomin))+sqr(_mh));
     jacobian(jacobian()*(rhomax-rhomin));
   }
+  if(mh>roots) return false;
   // generate p1 by transform to eta = 1-2p1/sqrt s
   // and generate according to deta/eta
   double eta = pow(mh/roots,2.*r[0]);
