@@ -506,10 +506,10 @@ double MEPP2HiggsPowheg::NLOweight() const {
   for(unsigned int ix=1; ix<=nlf_; ++ix) {
     b_nlo=getParticleData( ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
-    wgqreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
+    wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
     b_nlo=getParticleData(-ix);
-    wgqcollin         = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
+    wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
   }
@@ -539,7 +539,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
     wqqbar       += wqqbarreal;
   }
   // total
-  wgt                 = 1.+(wgg+wgq+wqqbar);
+  wgt                 = 1.+(wgg+wgq+wqg+wqqbar);
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
@@ -671,7 +671,7 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b,
   if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
     cout << "\nCtilde_qg::for Cqg^plus  a must be a quark! id = " 
 	 << a->id() << "\n";
-  if(y==-1.&&!(abs(b->id())>0&&b->id()!=21)) 
+  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
     cout << "\nCtilde_qg::for Cqg^minus b must be a quark! id = "
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);

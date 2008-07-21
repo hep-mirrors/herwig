@@ -25,10 +25,10 @@ using namespace ThePEG;
 using namespace std;
 
 Histogram cos3_h(-1.,1.,100)     ,cos4_h(-1.,1.,100);
-Histogram eta3_h(-3.,3.,100)     ,pt3_h(0.,100.,100);
-Histogram eta4_h(-3.,3.,100)     ,pt4_h(0.,100.,100);
-Histogram eta5_h(-3.,3.,100)     ,pt5_h(0.,100.,100);
-Histogram eta34_h(-3.,3.,100)    ,y34_h(-4.,4.,80);
+Histogram eta3_h(-4.,4.,100)     ,pt3_h(0.,100.,100);
+Histogram eta4_h(-4.,4.,100)     ,pt4_h(0.,100.,100);
+Histogram eta5_h(-4.,4.,100)     ,pt5_h(0.,100.,100);
+Histogram eta34_h(-4.,4.,100)    ,y34_h(-4.,4.,80);
 Histogram m34_h(0.,200.,40);//     ,m345_h(0.,200.,40);
 
 BbarAnalysis::~BbarAnalysis() {}
