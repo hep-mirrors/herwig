@@ -8,16 +8,14 @@
 #include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "DrellYanHardGenerator.fh"
-#include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 using namespace std;
 /**
- * Here is the documentation of the DrellYanHardGenerator class.
+ * The DrellYanHardGenerator class implements the hardest emission
+ * in the POWHEG scheme for Drell-Yan production of vector bosons.
  *
  * @see \ref DrellYanHardGeneratorInterfaces "The interfaces"
  * defined for DrellYanHardGenerator.
@@ -85,15 +83,14 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
-
 
 protected:
 
@@ -106,6 +103,8 @@ protected:
   virtual void doinitrun();
   //@}
 
+protected:
+
   /**
    * Returns the matrix element for a given type of process,
    * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
@@ -115,9 +114,7 @@ protected:
    * @param yj The rapidity of the jet
    */
   double getResult(int emis_type, Energy pt, double yj);
-
  
-  
   /**
    *  generates the hardest emission (yj,p)
    * @param pnew The momenta of the new particles
@@ -227,7 +224,6 @@ private:
    *  The transverse momentum of the jet
    */
   Energy _min_pt;
-  //@}
 };
 
 }
@@ -266,7 +262,5 @@ struct ClassTraits<Herwig::DrellYanHardGenerator>
 /** @endcond */
 
 }
-
-#include "DrellYanHardGenerator.icc"
 
 #endif /* HERWIG_DrellYanHardGenerator_H */

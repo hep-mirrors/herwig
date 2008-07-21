@@ -20,12 +20,16 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
-#include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
 using namespace std;
 
 using namespace Herwig;
+
+DrellYanHardGenerator::DrellYanHardGenerator() : _power(2.0),_preqqbar(5.),
+						 _preqg(3.),_pregqbar(3.),
+						 _min_pt(2.*GeV)
+{}
 
 void DrellYanHardGenerator::persistentOutput(PersistentOStream & os) const {
   os << _alphaS << _power << _preqqbar << _preqg << _pregqbar << ounit( _min_pt,GeV );
@@ -84,15 +88,12 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // get the particles to be showered
   _beams.clear();
   _partons.clear();
-
   // find the incoming particles
   ShowerParticleVector incoming;
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   _quarkplus = true;
   vector<ShowerProgenitorPtr> particlesToShower;
-
   //progenitor particles are produced in z direction.
-
   for( cit = tree->incomingLines().begin(); cit != tree->incomingLines().end(); ++cit ) {
     incoming.push_back( cit->first->progenitor() );
     _beams.push_back( cit->first->beam() );
@@ -221,7 +222,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   set<HardBranchingPtr> hard=nasontree->branchings();
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if( _pt < _min_pt ) particlesToShower[ix]->maximumpT(_min_pt);
-    else particlesToShower[ix]->maximumpT(_min_pt);
+    else particlesToShower[ix]->maximumpT(_pt);
     for(set<HardBranchingPtr>::const_iterator mit=hard.begin();
 	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
@@ -330,7 +331,7 @@ double DrellYanHardGenerator::getResult(int emis_type, Energy pt, double yj) {
   }
   res*=_alphaS->ratio(scale);
   return res;
- } 
+} 
 
 bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew, 
 				     int & emis_type){
