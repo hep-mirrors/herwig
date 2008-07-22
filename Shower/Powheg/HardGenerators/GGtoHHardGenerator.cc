@@ -275,6 +275,8 @@ HardTreePtr GGtoHHardGenerator::generateHardest(ShowerTreePtr tree) {
  	mit!=hard.end();++mit) {
       if(particlesToShower[ix]->progenitor()->id()==(*mit)->branchingParticle()->id()&&
  	 particlesToShower[ix]->progenitor()->isFinalState()!=(*mit)->incoming()) {
+	if(particlesToShower[ix]->progenitor()->momentum().z()/
+	   (*mit)->branchingParticle()->momentum().z()<0.) continue;
  	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
  	if((*mit)->incoming()) {
  	  (*mit)->beam(particlesToShower[ix]->original()->parents()[0]);
@@ -348,8 +350,7 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   // hadron-hadron cmf
   Energy2 s=sqr(generator()->maximumCMEnergy());
   // transverse energy
-  Energy2 m2(sqr(_mass));
-  Energy et=sqrt(m2+sqr(_pt));
+  Energy et=sqrt(_mh2+sqr(_pt));
   // first calculate all the kinematic variables
   // longitudinal real correction fractions
   double x  = _pt*exp( _yj)/sqrt(s)+et*exp( _yh)/sqrt(s);
