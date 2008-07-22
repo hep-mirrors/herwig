@@ -45,7 +45,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
     // get the pt vector
     Lorentz5Momentum vect=_children[0]->_qt;
     Boost beta_bb = -(_p+ _n).boostVector();
-    Lorentz5Momentum p_bb = _p; 
+    Lorentz5Momentum p_bb = _p;
     vect.boost(beta_bb);
     p_bb.boost( beta_bb );
     Axis axis(p_bb.vect().unit());
@@ -69,22 +69,15 @@ bool HardTree::connect(ShowerTreePtr shower) {
   _particles.clear();
   // extract the progenitors from the ShowerTree
   vector<ShowerProgenitorPtr> progenitors = shower->extractProgenitors();
-  CurrentGenerator::log() << "testing sizes " << branchings().size() << " "
-			  << progenitors.size();
   // connect the trees up
   for(set<HardBranchingPtr>::iterator it=branchings().begin();
       it!=branchings().end();++it) {
     Energy2 dmin(1e30*GeV2);
-    tShowerParticlePtr partner;  
-    CurrentGenerator::log() << "testing looking for " 
-			    << *(**it).branchingParticle() << "\n"; 
+    tShowerParticlePtr partner;   
     for(unsigned int ix=0;ix<progenitors.size();++ix) {
-      CurrentGenerator::log() << "looking at " << *progenitors[ix]->progenitor() << "\n";
       if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
-      CurrentGenerator::log() << "after A\n";
       if((**it).branchingParticle()->isFinalState()!=
 	 progenitors[ix]->progenitor()->isFinalState()) continue;
-      CurrentGenerator::log() << "after A\n";
       Energy2 dtest = 
 	sqr(progenitors[ix]->progenitor()->momentum().x()-(**it).showerMomentum().x())+
 	sqr(progenitors[ix]->progenitor()->momentum().y()-(**it).showerMomentum().y())+
@@ -108,11 +101,7 @@ bool HardTree::connect(ShowerTreePtr shower) {
     }
   }
   // return false if not matched
-  CurrentGenerator::log() << "testing got to end " << particles().size() << " "
-		     << progenitors.size() << "\n";
-  bool output = particles().size()==progenitors.size();
-  CurrentGenerator::log() << "testing answer " << output << "\n";
-  return output;
+  return particles().size()==progenitors.size();
 }
 
 HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,

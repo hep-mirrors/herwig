@@ -289,7 +289,7 @@ public:
   /**
    *  Get the colour partner
    */
-  inline HardBranchingPtr colourPartner() const {return _partner;}
+  inline tHardBranchingPtr colourPartner() const {return _partner;}
 
   /**
    *  The colour partner of the branching
@@ -383,7 +383,7 @@ private:
   /**
    *  The colour partner
    */
-  HardBranchingPtr _partner;
+  tHardBranchingPtr _partner;
 };
 
 inline ostream & operator<<(ostream & os, const HardTree & x) {
