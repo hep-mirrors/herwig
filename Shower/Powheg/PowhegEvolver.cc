@@ -265,7 +265,7 @@ void PowhegEvolver::showerHardProcess(ShowerTreePtr tree) {
 	reconstructHardJets( tree, intrinsicpT() ) &&
  	maximumTries() > ++ntry );
   if( maximumTries() == ntry ) 
-    throw Exception() << "Failed to generate thPersistency shower after " << ntry 
+    throw Exception() << "Failed to generate the shower after " << ntry 
 		      << " attempts in PowhegEvolver::showerHardProcess()"
 		      << Exception::eventerror;
   currentTree()->hasShowered( true );
