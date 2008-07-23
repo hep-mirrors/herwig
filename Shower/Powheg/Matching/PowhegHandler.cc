@@ -74,6 +74,11 @@ void PowhegHandler::Init() {
      "Compute",
      "Calculate the Sudakov but don't write the table",
      0);
+  static SwitchOption interfaceSudakovOptionNo
+    (interfaceSudakovOption,
+     "No",
+     "Not using the Sudakov's don't do anything",
+     3);
 
   static Parameter<PowhegHandler,string> interfaceSudakovName
     ("SudakovName",
@@ -225,6 +230,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
 
 void PowhegHandler::doinitrun() {
   ShowerHandler::doinitrun();
+  if(_sudopt==3) return;
   // integrator for the outer integral
   GaussianIntegrator outer;
   // get the final-state branchings from the evolver
@@ -496,7 +502,6 @@ HardTreePtr PowhegHandler::doClustering() {
       newline->addAntiColoured(currentParticle);
     }
   }
-  cerr<<"2 \n";
   // loops clustering until we get down to qqbar
   while( theParticles.size() > 2 ){
     double yij_min = 1.;
