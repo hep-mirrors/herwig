@@ -15,6 +15,14 @@
 
 using namespace Herwig;
 
+IBPtr LHTPFFWVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LHTPFFWVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
 void LHTPFFWVertex::persistentOutput(PersistentOStream & os) const {
   os << _ckm << _salpha << _calpha << _sbeta << _cbeta;
 }
@@ -68,7 +76,7 @@ void LHTPFFWVertex::doinit() throw(InitException) {
   _cbeta  = model->cosBeta();
   orderInGem(1);
   orderInGs(0);
-  cerr << *this;
+  //  cerr << *this;
 }
 
 LHTPFFWVertex::LHTPFFWVertex()
@@ -77,8 +85,8 @@ LHTPFFWVertex::LHTPFFWVertex()
   vector<long> first,second,third;
   // particles for outgoing W-
   // quarks
-  for(int ix=1;ix<6;ix+=2) {
-    for(int iy=2;iy<7;iy+=2) {
+  for(int ix = 1; ix < 6; ix += 2) {
+    for(int iy = 2; iy < 7; iy += 2) {
       first.push_back(-ix);
       second.push_back(iy);
       third.push_back(-24);
@@ -89,28 +97,28 @@ LHTPFFWVertex::LHTPFFWVertex()
   second.push_back( 8);
   third.push_back(-24);
   // leptons
-  for(int ix=11;ix<17;ix+=2) {
+  for(int ix = 11; ix < 17; ix += 2) {
     first.push_back(-ix);
-    second.push_back(ix+1);
+    second.push_back(ix + 1);
     third.push_back(-24);
   }
   // T-odd quarks
-  for(long ix=2;ix<7;ix+=2) {
-    first.push_back(-ix+1-4000000);
-    second.push_back(ix+4000000);
+  for(long ix = 4000002; ix < 4000007; ix += 2) {
+    first.push_back(-ix + 1);
+    second.push_back(ix);
     third.push_back(-24);
   }
   // T-odd leptons
-  for(long ix=11;ix<17;ix+=2) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix+1+4000000);
+  for(long ix = 4000011; ix < 4000017; ix += 2) {
+    first.push_back(-ix);
+    second.push_back(ix + 1);
     third.push_back(-24);
   }
   // T-odd leptons
   // particles for outgoing W+
   // quarks
-  for(int ix=2;ix<7;ix+=2) {
-    for(int iy=1;iy<6;iy+=2) {
+  for(int ix = 2; ix < 7; ix += 2) {
+    for(int iy = 1; iy < 6; iy += 2) {
       first .push_back(-ix);
       second.push_back( iy);
       third .push_back( 24);
@@ -121,26 +129,26 @@ LHTPFFWVertex::LHTPFFWVertex()
   second.push_back( 5);
   third .push_back(24);
   // leptons
-  for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix-1);
+  for(int ix = 11; ix < 17; ix += 2) {
+    first.push_back(-ix - 1);
     second.push_back(ix);
     third.push_back(24);
   }
   // T-odd quarks
-  for(long ix=2;ix<9;ix+=2) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix-1+4000000 );
+  for(long ix = 4000002; ix < 4000009; ix += 2) {
+    first.push_back(-ix);
+    second.push_back(ix-1);
     third.push_back(24);
   }
   // T-odd leptons
-  for(long ix=11;ix<17;ix+=2) {
-    first.push_back(-ix-1-4000000);
-    second.push_back(ix+4000000);
+  for(long ix = 4000011; ix < 4000017; ix += 2) {
+    first.push_back(-ix-1);
+    second.push_back(ix);
     third.push_back(24);
   }
   // particles for w_H-
   // quark and T-odd quark
-  for(long ix=1;ix<6;ix+=2) {
+  for(int ix = 1; ix < 6; ix += 2) {
     first.push_back(-ix-4000000);
     second.push_back(ix+1);
     third.push_back(-34);
@@ -149,7 +157,7 @@ LHTPFFWVertex::LHTPFFWVertex()
     third.push_back(-34);
   }
   // lepton and T-odd lepton
-  for(long ix=11;ix<17;ix+=2) {
+  for(int ix = 11;ix < 17; ix += 2) {
     first.push_back(-ix-4000000);
     second.push_back(ix+1);
     third.push_back(-34);
@@ -159,21 +167,21 @@ LHTPFFWVertex::LHTPFFWVertex()
   }
   // particles for w_h+
   // quark and T-odd quark
-  for(long ix=1;ix<6;ix+=2) {
-    first.push_back( ix+4000000);
-    second.push_back(-ix-1);
-    third.push_back( 34);
-    first.push_back( ix);
-    second.push_back(-ix-1-4000000);
+  for(int ix = 1;ix < 6;ix += 2) {
+    first.push_back(ix + 4000000);
+    second.push_back(-ix - 1);
+    third.push_back(34);
+    first.push_back(ix);
+    second.push_back(-ix - 4000001);
     third.push_back( 34);
   }
   // leptons and T-odd lepton
-  for(long ix=11;ix<17;ix+=2) {
-    first.push_back(-ix-1-4000000);
+  for(int ix = 11; ix < 17; ix += 2) {
+    first.push_back(-ix - 4000001);
     second.push_back(ix);
     third.push_back(34);
-    first.push_back(-ix-1);
-    second.push_back(ix+4000000);
+    first.push_back(-ix - 1);
+    second.push_back(ix + 4000000);
     third.push_back(34);
   }
   setList(first,second,third);
@@ -190,12 +198,12 @@ void LHTPFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
   setNorm(_couplast);
   // SM W boson
   if(abs(c->id())==ParticleID::Wplus) {
-    int ia(abs(a->id())),ib(abs(b->id()));
+    long ia(abs(a->id())),ib(abs(b->id()));
     // quarks
-    if(ia>=1 && ia <=6 && ib>=1 && ib<=6 ) {
+    if(ia >= 1 && ia <= 6 && ib >= 1 && ib <= 6 ) {
       int iu,id;
       // up type first
-      if(ia%2==0) {
+      if(ia % 2 == 0) {
 	iu = ia/2;
 	id = (ib+1)/2;
       }
@@ -208,16 +216,16 @@ void LHTPFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
 	throw HelicityConsistencyError() << "LHTPFFWVertex::setCoupling "
 					 << "Unknown particle in W vertex" 
 					 << Exception::runerror;
-      if(ia!=6&&ib!=6) setLeft(_ckm[iu-1][id-1]);
-      else             setLeft(_ckm[iu-1][id-1]*_cbeta);
+      if(ia != 6 && ib != 6) setLeft(_ckm[iu-1][id-1]);
+      else setLeft(_ckm[iu-1][id-1]*_cbeta);
       setRight(0.);
     }
-    else if(ia==8||ib==8) {
+    else if(ia == 8|| ib == 8) {
       setLeft(-_sbeta);
       setRight(0.);
     }
     // leptons
-    else if(ia>=11 && ia <=16) {
+    else if( ia >= 11 && ia <= 16) {
       setLeft(1.);
       setRight(0.);
     }

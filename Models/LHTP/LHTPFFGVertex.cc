@@ -11,6 +11,14 @@
 
 using namespace Herwig;
 
+IBPtr LHTPFFGVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr LHTPFFGVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
 NoPIOClassDescription<LHTPFFGVertex> 
 LHTPFFGVertex::initLHTPFFGVertex;
 // Definition of the static class description member.
@@ -27,7 +35,7 @@ LHTPFFGVertex::LHTPFFGVertex()
   // PDG codes for the particles
   vector<long> first,second;
   // SM quarks
-  for(int ix=1;ix<6;++ix) {
+  for(int ix = 1; ix < 7; ++ix) {
     first.push_back(-ix);
     second.push_back(ix);
   }
@@ -35,7 +43,7 @@ LHTPFFGVertex::LHTPFFGVertex()
   first.push_back(-8);
   second.push_back(8);
   // T odd quarks
-  for(long ix=4000001;ix<4000006;++ix) {
+  for(long ix = 4000001; ix < 4000006; ++ix) {
     first.push_back(-ix);
     second.push_back(ix);
   }
@@ -61,6 +69,7 @@ void LHTPFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   setNorm(_couplast);
   // the left and right couplings
   int iferm=abs(a->id());
+  if( iferm > 8 ) iferm -= 4000000;
   if((iferm>=1 && iferm<=8)) {
     setLeft(1.);
     setRight(1.);

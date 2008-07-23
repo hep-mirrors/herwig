@@ -161,6 +161,7 @@ if test "x$with_hepmc" != "xno"; then
 	])
 	
 	AC_CHECK_HEADERS([HepMC/IO_GenEvent.h])
+	AC_CHECK_HEADERS([HepMC/IO_ExtendedAscii.h])
 
 	LIBS="$oldLIBS"
 	LDFLAGS="$oldLDFLAGS"

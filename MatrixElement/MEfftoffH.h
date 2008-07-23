@@ -161,12 +161,6 @@ protected:
 		    bool me) const;
 
   /**
-   * Used internally by generateKinematics, after calculating the
-   * limits on cos(theta).
-   */
-  virtual double getCosTheta(double cthmin, double cthmax, double r);
-
-  /**
    *  Access to the vector ParticleData objects
    */
   //@{

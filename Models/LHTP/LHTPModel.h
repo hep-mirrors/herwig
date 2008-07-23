@@ -24,7 +24,7 @@ public:
   /**
    * The default constructor.
    */
-  inline LHTPModel();
+  LHTPModel();
 
   /**
    *  Access to the parameters of the model
@@ -33,42 +33,42 @@ public:
   /**
    *  The vacuum expection value
    */
-  inline Energy vev() const;
+  Energy vev() const { return _v; }
 
   /**
    *  The \f$f\f$ scale of the non-linear \f$\sigma\f$-model
    */
-  inline Energy f() const;
+  Energy f() const { return _f; }
 
   /**
    *  \f$\sin\alpha\f$
    */
-  inline double sinAlpha() const;
+  double sinAlpha() const { return _salpha; }
 
   /**
    *  \f$\cos\alpha\f$
    */
-  inline double cosAlpha() const;
+  double cosAlpha() const { return _calpha; }
 
   /**
    *  \f$\sin\beta\f$
    */
-  inline double sinBeta() const;
+  double sinBeta() const { return _sbeta; }
 
   /**
    *  \f$\cos\beta\f$
    */
-  inline double cosBeta() const;
+  double cosBeta() const { return _cbeta; }
 
   /**
    *  \f$\sin\theta_H\f$
    */
-  inline double sinThetaH() const;
+  double sinThetaH() const { return _sthetaH; }
 
   /**
    *  \f$\cos\theta_H\f$
    */
-  inline double cosThetaH() const;
+  double cosThetaH() const { return _cthetaH; }
   //@}
 
 public:
@@ -112,13 +112,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -262,13 +262,11 @@ struct ClassTraits<Herwig::LHTPModel>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwLHTP.so"; }
+  static string library() { return "HwLHTPModel.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "LHTPModel.icc"
 
 #endif /* THEPEG_LHTPModel_H */

@@ -6,6 +6,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "LHTPFFWVertex.fh"
 
 namespace Herwig {
@@ -72,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -181,13 +182,11 @@ struct ClassTraits<Herwig::LHTPFFWVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwLHTP.so"; }
+  static string library() { return "HwLHTPModel.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "LHTPFFWVertex.icc"
 
 #endif /* HERWIG_LHTPFFWVertex_H */
