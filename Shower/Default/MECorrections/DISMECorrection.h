@@ -7,7 +7,6 @@
 
 #include "QTildeMECorrection.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "DISMECorrection.fh"
 
 namespace Herwig {
 

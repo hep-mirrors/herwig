@@ -15,8 +15,6 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/ShowerHandler.h"
-#include "Herwig++/Shower/Powheg/HardGenerators/DefaultEmissionGenerator.h"
-#include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
 #include "HardTree.h"
 #include "Herwig++/Utilities/Histogram.h"
 
@@ -368,29 +366,22 @@ void PowhegEvolver::hardestEmission() {
   for( unsigned int ix = 0; ix < _hardgenerator.size(); ++ix ) {
     if( !_hardgenerator[ix]->canHandle( currentTree() ) ) continue;
     if( currenthard ) {
-      if( dynamic_ptr_cast< DefaultEmissionGeneratorPtr > ( currenthard ) ) {
-	currenthard = _hardgenerator[ix];
-      }
-      else if( !dynamic_ptr_cast< DefaultEmissionGeneratorPtr >( _hardgenerator[ix] ) ) {
-	ostringstream output;
-	output << "There is more than one possible hard emission generator"
-	       << " which could be used for ";
-	map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-	for(cit=currentTree()->incomingLines().begin();
-	    cit!=currentTree()->incomingLines().end();++cit)
-	  {output << cit->first->progenitor()->PDGName() << " ";}
-	output << " -> ";
-	for(cjt=currentTree()->outgoingLines().begin();
-	    cjt!=currentTree()->outgoingLines().end();++cjt)
-	  {output << cjt->first->progenitor()->PDGName() << " ";}
-	output << "in PowhegEvolver::hardestEmission()\n";
-	throw Exception() << output << Exception::runerror;
-      }
+      ostringstream output;
+      output << "There is more than one possible hard emission generator"
+	     << " which could be used for ";
+      map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+      for(cit=currentTree()->incomingLines().begin();
+	  cit!=currentTree()->incomingLines().end();++cit)
+	{output << cit->first->progenitor()->PDGName() << " ";}
+      output << " -> ";
+      for(cjt=currentTree()->outgoingLines().begin();
+	  cjt!=currentTree()->outgoingLines().end();++cjt)
+	{output << cjt->first->progenitor()->PDGName() << " ";}
+      output << "in PowhegEvolver::hardestEmission()\n";
+      throw Exception() << output << Exception::runerror;
     }
-    else {
-      currenthard=_hardgenerator[ix];
-    }
+    currenthard=_hardgenerator[ix];
   }
   // if no suitable generator return
   _nasontree=HardTreePtr();

@@ -14,8 +14,6 @@
 
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "QTildeReconstructor.fh"
-#include <cassert>
 
 namespace Herwig {
 
@@ -26,6 +24,7 @@ using namespace ThePEG;
  *  showering
  */
 struct JetKinStruct {
+
   /**
    *  Parent particle of the jet
    */
@@ -56,6 +55,10 @@ typedef vector<JetKinStruct> JetKinVect;
  * In the case of multi-step showering, there will be not unnecessary
  * kinematical reconstructions. 
  *
+ * There is also the option of taking a set of momenta for the particles
+ * and inverting the reconstruction to give the evolution variables for the
+ * shower.
+ *
  * Notice:
  * - although we often use the term "jet" in either methods or variables names,
  *   or in comments, which could appear applicable only for QCD showering,
@@ -75,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  inline QTildeReconstructor();
+  inline QTildeReconstructor() : _reconopt(0) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -105,7 +108,9 @@ public:
   //@}
 
   /**
-   *  Methods to reconstruct the variables used to generate the
+   *  Methods to invert the reconstruction of the shower for
+   *  a scattering or decay process and calculate
+   *  the variables used to generate the
    *  shower given the particles produced.
    *  This is needed for the CKKW and POWHEG approaches
    */
@@ -115,15 +120,41 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool reconstructDecayShower(HardTreePtr decay,EvolverPtr) const;
+  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool reconstructHardShower(HardTreePtr hard,EvolverPtr) const;
+  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr) const;
   //@}
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
 
 protected:
 
@@ -163,34 +194,6 @@ protected:
    */
   bool reconstructDecayJet(const tShowerParticlePtr particleJetParent) const;
   //@}
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
-protected:
 
   /**
    * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
@@ -240,21 +243,21 @@ protected:
    * @param root_s The centre-of-mass energy
    * @param jets The jets
    */
-  inline Energy momConsEq(const double & k, const Energy & root_s,
+  Energy momConsEq(const double & k, const Energy & root_s,
 			  const JetKinVect & jets) const;
 
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  inline LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
-				    const Lorentz5Momentum & oldp) const;
-
+  LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldp) const;
+  
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  inline LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
-				    const Lorentz5Momentum & oldq) const;
-
+  LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldq) const;
+  
   /**
    *  Recursively boost the initial-state shower
    * @param p The particle
@@ -279,7 +282,8 @@ protected:
    * from (E, same perp, q).
    */
   inline double getBeta(const double E, const double q, 
-			const double Ep, const double qp) const;
+			const double Ep, const double qp) const
+  {return (q*E-qp*Ep)/(sqr(qp)+sqr(E));}
 
   /**
    *  Find the colour partners of a particle to identify the colour singlet
@@ -340,13 +344,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -417,7 +421,5 @@ struct ClassTraits<Herwig::QTildeReconstructor>
 /** @endcond */
 
 }
-
-#include "QTildeReconstructor.icc"
 
 #endif /* HERWIG_QTildeReconstructor_H */

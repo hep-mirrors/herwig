@@ -184,14 +184,14 @@ void FortranReconstructor::reconstructTimeLikeMass(tShowerParticlePtr parent) co
 //       PPAR(2,2)=0.
 //       END
 
-bool FortranReconstructor::reconstructDecayShower(HardTreePtr,
+bool FortranReconstructor::deconstructDecayJets(HardTreePtr,
 						  EvolverPtr) const {
-  throw Exception() << "FortranReconstructor::reconstructDecayShower not "
+  throw Exception() << "FortranReconstructor::deconstructDecayJets() not "
 		    << "implemented " << Exception::runerror;
 }
 
-bool FortranReconstructor::reconstructHardShower(HardTreePtr, EvolverPtr) const {
-  throw Exception() << "FortranReconstructor::reconstructHardShower() "
+bool FortranReconstructor::deconstructHardJets(HardTreePtr, EvolverPtr) const {
+  throw Exception() << "FortranReconstructor::deconstructHardJets() "
 		    << "not yet implemented"
 		    << Exception::runerror;
 }

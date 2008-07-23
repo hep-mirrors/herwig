@@ -13,7 +13,6 @@
 //
 
 #include "QTildeMECorrection.h"
-#include "DrellYanMECorrection.fh"
 
 namespace Herwig {
 

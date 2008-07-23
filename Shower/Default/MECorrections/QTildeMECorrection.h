@@ -14,7 +14,6 @@
 
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
-#include "QTildeMECorrection.fh"
 
 namespace Herwig {
 
@@ -90,10 +89,5 @@ struct ClassTraits<Herwig::QTildeMECorrection>
 /** @endcond */
 
 }
-
-#include "QTildeMECorrection.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeMECorrection.tcc"
-#endif
 
 #endif /* HERWIG_QTildeMECorrection_H */

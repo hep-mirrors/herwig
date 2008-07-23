@@ -11,7 +11,6 @@
 #include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
-#include "VectorBosonQQbarHardGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"

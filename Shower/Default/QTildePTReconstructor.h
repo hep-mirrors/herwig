@@ -1,12 +1,11 @@
 // -*- C++ -*-
-#ifndef HERWIG_RelativePtReconstructor_H
-#define HERWIG_RelativePtReconstructor_H
+#ifndef HERWIG_QTildePTReconstructor_H
+#define HERWIG_QTildePTReconstructor_H
 //
-// This is the declaration of the RelativePtReconstructor class.
+// This is the declaration of the QTildePTReconstructor class.
 //
 
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "RelativePtReconstructor.fh"
 
 namespace Herwig {
 
@@ -15,10 +14,10 @@ using namespace ThePEG;
 /**\ingroup Shower
  *
  *
- * @see \ref RelativePtReconstructorInterfaces "The interfaces"
- * defined for RelativePtReconstructor.
+ * @see \ref QTildePTReconstructorInterfaces "The interfaces"
+ * defined for QTildePTReconstructor.
  */
-class RelativePtReconstructor: public KinematicsReconstructor {
+class QTildePTReconstructor: public KinematicsReconstructor {
 
 public:
 
@@ -27,7 +26,7 @@ public:
   /**
    * The default constructor.
    */
-  inline RelativePtReconstructor();
+  inline QTildePTReconstructor() : _massopt(0) {}
   //@}
 
 public:
@@ -97,7 +96,8 @@ protected:
   /**
    *  Calculate the off-shell mass of a particle
    */
-  inline void calculateMass(const tShowerParticlePtr particleJetParent) const;
+  inline void calculateMass(const tShowerParticlePtr particleJetParent) const
+  {}
 
 protected:
 
@@ -107,13 +107,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -122,13 +122,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<RelativePtReconstructor> initRelativePtReconstructor;
+  static ClassDescription<QTildePTReconstructor> initQTildePTReconstructor;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  RelativePtReconstructor & operator=(const RelativePtReconstructor &);
+  QTildePTReconstructor & operator=(const QTildePTReconstructor &);
 
 private:
 
@@ -148,24 +148,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of RelativePtReconstructor. */
+ *  base classes of QTildePTReconstructor. */
 template <>
-struct BaseClassTrait<Herwig::RelativePtReconstructor,1> {
-  /** Typedef of the first base class of RelativePtReconstructor. */
+struct BaseClassTrait<Herwig::QTildePTReconstructor,1> {
+  /** Typedef of the first base class of QTildePTReconstructor. */
   typedef Herwig::KinematicsReconstructor NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the RelativePtReconstructor class and the shared object where it is defined. */
+ *  the QTildePTReconstructor class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::RelativePtReconstructor>
-  : public ClassTraitsBase<Herwig::RelativePtReconstructor> {
+struct ClassTraits<Herwig::QTildePTReconstructor>
+  : public ClassTraitsBase<Herwig::QTildePTReconstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::RelativePtReconstructor"; }
+  static string className() { return "Herwig::QTildePTReconstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * RelativePtReconstructor is implemented. It may also include several, space-separated,
-   * libraries if the class RelativePtReconstructor depends on other classes (base classes
+   * QTildePTReconstructor is implemented. It may also include several, space-separated,
+   * libraries if the class QTildePTReconstructor depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -176,9 +176,4 @@ struct ClassTraits<Herwig::RelativePtReconstructor>
 
 }
 
-#include "RelativePtReconstructor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RelativePtReconstructor.tcc"
-#endif
-
-#endif /* HERWIG_RelativePtReconstructor_H */
+#endif /* HERWIG_QTildePTReconstructor_H */

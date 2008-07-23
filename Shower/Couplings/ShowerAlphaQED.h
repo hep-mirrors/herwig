@@ -13,7 +13,6 @@
 //
 
 #include "ShowerAlpha.h"
-#include "ShowerAlphaQED.fh"
 
 namespace Herwig {
 
@@ -41,7 +40,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlphaQED();
+  inline ShowerAlphaQED() : ShowerAlpha(), _alpha(1./137.) {}
   //@}
 
 public:
@@ -107,13 +106,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -184,10 +183,5 @@ struct ClassTraits<Herwig::ShowerAlphaQED>
 /** @endcond */
 
 }
-
-#include "ShowerAlphaQED.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerAlphaQED.tcc"
-#endif
 
 #endif /* HERWIG_ShowerAlphaQED_H */

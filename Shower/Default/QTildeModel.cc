@@ -46,19 +46,19 @@ void QTildeModel::Init() {
 
 void QTildeModel::checkConsistency() throw(InitException) {
   // check KinematicsReconstructor
-  if(!dynamic_ptr_cast<QTildeReconstructorPtr>(kinematicsReconstructor()))
+  if(!dynamic_ptr_cast<Ptr<QTildeReconstructor>::pointer>(kinematicsReconstructor()))
     Throw<InitException>() << "KinematicsReconstructor must be either "
 			 << "QTildeKinematicsReconstructor or a class inheriting from it"
 			 << "in QTildeModel::checkConsistency()";
   // check PartnerFinder
-  if(!dynamic_ptr_cast<QTildeFinderPtr>(partnerFinder()))
+  if(!dynamic_ptr_cast<Ptr<QTildeFinder>::pointer>(partnerFinder()))
     Throw<InitException>() << "PartnerFinder must be either "
 			   << "QTildeFinder or a class inheriting from it"
 			   << "in QTildeModel::checkConsistency()";
   // Sudakov form factors
   vector<SudakovPtr>::const_iterator sit;
   for(sit=sudakovFormFactors().begin();sit!=sudakovFormFactors().end();++sit) {
-    if(!dynamic_ptr_cast<QTildeSudakovPtr>(*sit))
+    if(!dynamic_ptr_cast<Ptr<QTildeSudakov>::pointer>(*sit))
       Throw<InitException>() << "SudakovFormFactors must be either "
 			     << "QTildeSudakov or a class inheriting from it"
 			     << "in QTildeModel::checkConsistency()"; 
@@ -67,7 +67,7 @@ void QTildeModel::checkConsistency() throw(InitException) {
   // check KinematicsReconstructor
   vector<MECorrectionPtr>::const_iterator mit;
   for(mit=meCorrections().begin();mit!=meCorrections().end();++mit) {
-  if(!dynamic_ptr_cast<QTildeMECorrectionPtr>(*mit)) {
+    if(!dynamic_ptr_cast<Ptr<QTildeMECorrection>::pointer>(*mit)) {
     Throw<InitException>() << "meCorrections must be either "
 			   << "TildeMECorrection or a class inheriting from it"
 			   << "in QTildeModel::checkConsistency()"; 

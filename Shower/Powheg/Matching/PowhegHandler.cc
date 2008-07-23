@@ -585,7 +585,7 @@ HardTreePtr PowhegHandler::doClustering() {
   }
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
-    reconstructDecayShower(powhegtree,evolver());
+    deconstructDecayJets(powhegtree,evolver());
 
   generator()->log() << "testing hard momenta for the shower\n";
   for( unsigned int jx = 0; jx < theBranchings.size(); ++jx ) {
@@ -880,7 +880,7 @@ HardTreePtr PowhegHandler::generalClustering() {
     createColourFlow(newTree,jt->diagram);
     // Calculate the shower variables
     evolver()->showerModel()->kinematicsReconstructor()->
-      reconstructHardShower(newTree,evolver());
+      deconstructHardJets(newTree,evolver());
     if(checkTree(newTree)) break; 
     trees.erase(jt);
   }

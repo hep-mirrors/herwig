@@ -13,7 +13,6 @@
 //
 
 #include "QTildeMECorrection.h"
-#include "VectorBosonQQBarMECorrection.fh"
 
 namespace Herwig {
 

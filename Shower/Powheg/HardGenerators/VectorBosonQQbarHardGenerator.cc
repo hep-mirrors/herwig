@@ -172,7 +172,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // to carry the _on-shell_ mass. If this is not the case
   // then the QCD evolution scale will be set wrongly (using
   // the off-shell mass) in the call to 
-  // setQCDInitialEvolutionScales from reconstructDecayShower.
+  // setQCDInitialEvolutionScales from deconstructDecayJets.
   parent->set5Momentum(parentMomentum);
 
   // Create the vectors of HardBranchings to create the HardTree:
@@ -225,7 +225,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
 
 // // Some debugging equipement - to calculate unshuffled momenta
 // // in the rest frame of _quark[0]+_quark[1]. I.E. this calculates the 
-// // qnew vectors in reconstructDecayShower.
+// // qnew vectors in deconstructDecayJets.
 //   generator()->log() << "\n\n\nVectorBosonQQbarHardenerator::generateHardest()"
 // 		     << endl;
 //   vector<Lorentz5Momentum> kh_quark; kh_quark.resize(2);
@@ -260,9 +260,9 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
-    reconstructDecayShower(nasontree,evolver());
+    deconstructDecayJets(nasontree,evolver());
 
-  // KMH - why don't we do the next step in reconstructDecayShower? 
+  // KMH - why don't we do the next step in deconstructDecayJets? 
   // Reset the momenta to ensure the correct momenta after shower recon
   // if emitter for Kleiss trick and shower are different
   for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 

@@ -13,7 +13,6 @@
 //
 
 #include "QtildaShowerKinematics1to2.h"
-#include "FS_QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {
 

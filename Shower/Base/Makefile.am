@@ -2,8 +2,7 @@
 noinst_LTLIBRARIES = libHwShowerBase.la
 libHwShowerBase_la_SOURCES = \
 SudakovFormFactor.cc SudakovFormFactor.h SudakovFormFactor.fh \
-KinematicsReconstructor.cc  KinematicsReconstructor.h \
-KinematicsReconstructor.icc KinematicsReconstructor.fh \
+KinematicsReconstructor.cc  KinematicsReconstructor.h KinematicsReconstructor.fh \
 ShowerModel.cc ShowerModel.h ShowerModel.icc ShowerModel.fh \
 MECorrectionBase.cc MECorrectionBase.h MECorrectionBase.icc MECorrectionBase.fh \
 PartnerFinder.h PartnerFinder.fh PartnerFinder.cc PartnerFinder.icc \

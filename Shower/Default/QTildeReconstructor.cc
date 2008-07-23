@@ -23,6 +23,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -659,8 +660,8 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
   return ix<100;
 }
 
-bool QTildeReconstructor::reconstructDecayShower(HardTreePtr decay,
-						 EvolverPtr evolver) const {
+bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
+					       EvolverPtr evolver) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
@@ -698,7 +699,7 @@ bool QTildeReconstructor::reconstructDecayShower(HardTreePtr decay,
     lambda=inverseRescaleingFactor(pout,mon,pin[0].mass());
   }
   if(isnan(lambda)) {
-    cerr << "\n\n\nQTildeReconstructor::reconstructDecayShower \n";
+    cerr << "\n\n\nQTildeReconstructor::deconstructDecayJets \n";
     cerr << "lambda = " << lambda << "\n";
     cerr << "particles in the branchings including any children:\n";
     for(cit=branchings.begin();cit!=branchings.end();++cit) {
@@ -810,9 +811,8 @@ inverseRescaleingFactor(vector<Lorentz5Momentum> pout,
   return lambda;
 }
 
-
-bool QTildeReconstructor::reconstructHardShower(HardTreePtr tree,
-						EvolverPtr evolver) const {
+bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
+					      EvolverPtr evolver) const {
   // old recon method
   if(_reconopt==0) {
     // extract incoming and outgoing particles
@@ -976,6 +976,36 @@ bool QTildeReconstructor::addIntrinsicPt(vector<ShowerProgenitorPtr> jets) const
     added = true;
   }
   return added;
+}
+
+LorentzRotation QTildeReconstructor::
+solveBoost(const double k, const Lorentz5Momentum & newq, 
+	   const Lorentz5Momentum & oldp ) const {
+  Energy q = newq.vect().mag(); 
+  Energy2 qs = sqr(q); 
+  Energy2 Q2 = newq.mass2(); 
+  Energy kp = k*(oldp.vect().mag()); 
+  Energy2 kps = sqr(kp);
+  double betam = (q*newq.e() - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
+  Boost beta = -betam*(k/kp)*oldp.vect();
+  // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
+  Vector3<Energy2> ax = newq.vect().cross( oldp.vect() ); 
+  double delta = newq.vect().angle( oldp.vect() );
+  LorentzRotation R;
+  using Constants::pi;
+  if ( ax.mag2()/GeV2/MeV2 > 1e-16 ) {
+    R.rotate( delta, unitVector(ax) ).boost( beta );
+  } 
+  else if(abs(delta-pi)/pi < 0.001) {
+    double phi=2.*pi*UseRandom::rnd();
+    Axis axis(cos(phi),sin(phi),0.);
+    axis.rotateUz(newq.vect().unit());
+    R.rotate(delta,axis).boost( beta );
+  }
+  else {
+    R.boost( beta );
+  } 
+  return R;
 }
 
 LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q, 
@@ -1238,7 +1268,7 @@ reconstructFinalStateShower(bool & applyBoost,Boost & toRest, Boost & fromRest,
     lambda=inverseRescaleingFactor(pout,mon,pin.mass());
   }
   if(isnan(lambda)) {
-    cerr << "\n\n\nQTildeReconstructor::reconstructDecayShower \n";
+    cerr << "\n\n\nQTildeReconstructor::deconstructDecayJets \n";
     cerr << "lambda = " << lambda << "\n";
     cerr << "particles in the branchings including any children:\n";
     for(cit=jets.begin();cit!=jets.end();++cit) {
@@ -1353,5 +1383,33 @@ reconstructFinalStateShower(bool & applyBoost,Boost & toRest, Boost & fromRest,
     LorentzRotation A=LorentzRotation(toRest);
     LorentzRotation R=solveBoost(qnew,A*(*cjt)->branchingParticle()->momentum())*A;
     (*cjt)->setMomenta(R,1.0,Lorentz5Momentum());  
+  }
+}
+
+Energy QTildeReconstructor::momConsEq(const double & k, 
+				      const Energy & root_s, 
+				      const JetKinVect & jets) const {
+  static Energy2 eps=1e-9*GeV2;
+  Energy dum = Energy();
+  Energy2 dum2;
+  for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
+    dum2 = (it->q).m2() + sqr(k)*(it->p).vect().mag2();
+    if(dum2 < Energy2()) {
+      if(dum2 < -eps) throw KinematicsReconstructionVeto();
+      dum2 = Energy2();
+    }
+    dum += sqrt(dum2);
+  }
+  return( dum - root_s ); 
+}
+
+void QTildeReconstructor::boostChain(tPPtr p, const LorentzRotation &bv,
+				     tPPtr & parent) const {
+  if(!p->parents().empty()) boostChain(p->parents()[0], bv,parent);
+  else parent=p;
+  p->transform(bv);
+  if(p->children().size()==2) {
+    if(dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]))
+      p->children()[1]->deepTransform(bv);
   }
 }

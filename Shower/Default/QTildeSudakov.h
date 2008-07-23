@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
-#include "QTildeSudakov.fh"
 
 namespace Herwig {
 

@@ -331,9 +331,9 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
   }
 }
 
-ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z, double phi, Energy pt) {
-  FS_QtildaShowerKinematics1to2Ptr showerKin = 
-    new_ptr(FS_QtildaShowerKinematics1to2());
+ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
+						   double phi, Energy pt) {
+  ShoKinPtr showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);
@@ -344,8 +344,7 @@ ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z, double
 
 ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 						     double phi, Energy pt) {
-  IS_QtildaShowerKinematics1to2Ptr 
-    showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+  ShoKinPtr showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);
   showerKin->phi(phi);

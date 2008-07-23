@@ -55,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlpha();
+  inline ShowerAlpha() : _scaleFactor( 1.0 ) {}
   //@}
 
 public:
@@ -94,13 +94,12 @@ public:
    * whereas different values can be useful for systematics evaluation 
    * for Initial State radiation or Final State radiation effects.
    */
-  inline double scaleFactor() const;
+  inline double scaleFactor() const {return _scaleFactor;}
 
   /**
    * Initialize this coupling.
    */
-  virtual inline void initialize ();
-
+  virtual inline void initialize () {}
   //@}
 
 public:
@@ -188,10 +187,5 @@ struct ClassTraits<Herwig::ShowerAlpha>
 /** @endcond */
 
 }
-
-#include "ShowerAlpha.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerAlpha.tcc"
-#endif
 
 #endif /* HERWIG_ShowerAlpha_H */

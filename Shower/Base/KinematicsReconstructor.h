@@ -89,7 +89,9 @@ public:
   //@}
 
   /**
-   *  Methods to reconstruct the variables used to generate the
+   *  Methods to invert the reconstruction of the shower for
+   *  a scattering or decay process and calculate
+   *  the variables used to generate the
    *  shower given the particles produced.
    *  This is needed for the CKKW and POWHEG approaches
    */
@@ -99,14 +101,14 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower for a decay process
    */
-  virtual bool reconstructDecayShower(HardTreePtr decay,EvolverPtr) const=0;
+  virtual bool deconstructDecayJets(HardTreePtr decay,EvolverPtr) const=0;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool reconstructHardShower(HardTreePtr hard,EvolverPtr) const=0;
+  virtual bool deconstructHardJets(HardTreePtr hard,EvolverPtr) const=0;
   //@}
 
 public:
@@ -170,10 +172,5 @@ struct ClassTraits<Herwig::KinematicsReconstructor>
 /** @endcond */
 
 }
-
-#include "KinematicsReconstructor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KinematicsReconstructor.tcc"
-#endif
 
 #endif /* HERWIG_KinematicsReconstructor_H */

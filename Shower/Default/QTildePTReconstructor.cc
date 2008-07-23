@@ -1,45 +1,40 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the RelativePtReconstructor class.
+// functions of the QTildePTReconstructor class.
 //
 
-#include "RelativePtReconstructor.h"
+#include "QTildePTReconstructor.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RelativePtReconstructor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Kinematics/QtildaShowerKinematics1to2.h"
 using namespace Herwig;
 
-void RelativePtReconstructor::persistentOutput(PersistentOStream & os) const {
+void QTildePTReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _massopt;
 }
 
-void RelativePtReconstructor::persistentInput(PersistentIStream & is, int) {
+void QTildePTReconstructor::persistentInput(PersistentIStream & is, int) {
   is >> _massopt;
 }
 
-ClassDescription<RelativePtReconstructor> RelativePtReconstructor::initRelativePtReconstructor;
+ClassDescription<QTildePTReconstructor> QTildePTReconstructor::initQTildePTReconstructor;
 // Definition of the static class description member.
 
-void RelativePtReconstructor::Init() {
+void QTildePTReconstructor::Init() {
 
-  static ClassDocumentation<RelativePtReconstructor> documentation
-    ("There is no documentation for the RelativePtReconstructor class");
+  static ClassDocumentation<QTildePTReconstructor> documentation
+    ("There is no documentation for the QTildePTReconstructor class");
 
 
-  static Switch<RelativePtReconstructor,unsigned int> interfaceMassOption
+  static Switch<QTildePTReconstructor,unsigned int> interfaceMassOption
     ("MassOption",
      "Option for the translation between qtilde and mass",
-     &RelativePtReconstructor::_massopt, 0, false, false);
+     &QTildePTReconstructor::_massopt, 0, false, false);
   static SwitchOption interfaceMassOptionMass
     (interfaceMassOption,
      "Mass",
@@ -53,7 +48,7 @@ void RelativePtReconstructor::Init() {
 
 }
 
-bool RelativePtReconstructor::
+bool QTildePTReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 		       unsigned int iopt) const {
   if(!particleJetParent)
@@ -116,7 +111,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
   return emitted;
 }
 
-bool RelativePtReconstructor::
+bool QTildePTReconstructor::
 reconstructHardJets(ShowerTreePtr hard) const
 {
   //cerr << "testing start of main recon " << endl;
@@ -201,7 +196,7 @@ reconstructHardJets(ShowerTreePtr hard) const
   }
   return true;
 }
-void RelativePtReconstructor::
+void QTildePTReconstructor::
 generateTimeLikeMomenta(const tShowerParticlePtr particleJetParent,bool first) const
 {
 

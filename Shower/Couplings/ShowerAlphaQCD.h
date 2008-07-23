@@ -14,7 +14,6 @@
 
 #include "ShowerAlpha.h"
 #include "ThePEG/Config/Constants.h"
-#include "ShowerAlphaQCD.fh"
 
 namespace Herwig {
 

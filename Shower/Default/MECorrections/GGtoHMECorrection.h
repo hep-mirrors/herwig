@@ -7,7 +7,6 @@
 
 #include "QTildeMECorrection.h"
 #include "Herwig++/Utilities/Maths.h"
-#include "GGtoHMECorrection.fh"
 
 namespace Herwig {
 

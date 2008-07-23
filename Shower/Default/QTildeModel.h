@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/Shower/Base/ShowerModel.h"
-#include "QTildeModel.fh"
 
 namespace Herwig {
 
@@ -29,11 +28,6 @@ using namespace ThePEG;
 class QTildeModel: public ShowerModel {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  inline QTildeModel();
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -120,10 +114,5 @@ struct ClassTraits<Herwig::QTildeModel>
 /** @endcond */
 
 }
-
-#include "QTildeModel.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeModel.tcc"
-#endif
 
 #endif /* HERWIG_QTildeModel_H */
