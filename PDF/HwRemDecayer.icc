@@ -1,0 +1,93 @@
+// -*- C++ -*-
+//
+// HwRemDecayer.icc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// Copyright (C) 2002-2007 The Herwig Collaboration
+//
+// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
+// Please respect the MCnet academic guidelines, see GUIDELINES for details.
+//
+//
+// This is the implementation of the inlined member functions of
+// the HwRemDecayer class.
+//  
+#include "Herwig++/PDT/StandardMatchers.h"
+#include "ThePEG/PDT/StandardMatchers.h"
+
+namespace Herwig {
+
+inline HwRemDecayer::HwRemDecayer() : _kinCutoff(0.75*GeV), 
+				      _forcedSplitScale(2.5*GeV),
+				      _range(1.1),
+				      _zbin(0.05),_ybin(0.),
+				      _nbinmax(100),
+				      DISRemnantOpt_(0)
+{}
+
+inline IBPtr HwRemDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr HwRemDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline bool HwRemDecayer::HadronContent::isSeaQuark(tcPPtr parton) const{
+  return ((parton->id() != ParticleID::g) && ( !isValenceQuark(parton) ) );
+}
+
+inline bool HwRemDecayer::HadronContent::isValenceQuark(tcPPtr parton) const{
+  int id(sign*parton->id());
+  return find(flav.begin(),flav.end(),id) != flav.end();
+}
+
+inline bool HwRemDecayer::accept(const DecayMode &) const {
+  return true;
+}
+
+inline bool HwRemDecayer::multiCapable() const {  
+  return true;
+}
+
+inline bool HwRemDecayer::
+canHandle(tcPDPtr particle, tcPDPtr parton) const {
+  if(!StandardQCDPartonMatcher::Check(*parton)) return false;
+  return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma;
+}
+
+inline PPtr HwRemDecayer::finalSplit(const tRemPPtr rem, long remID, 
+				     Lorentz5Momentum usedMomentum) const {
+  // Create the remnant and set its momentum, also reset all of the decay 
+  // products from the hadron
+  PPtr remnant = new_ptr(Particle(getParticleData(remID)));
+  Lorentz5Momentum prem(rem->momentum()-usedMomentum);
+  prem.setMass(getParticleData(remID)->constituentMass());
+  prem.rescaleEnergy();
+  remnant->set5Momentum(prem);
+  // Add the remnant to the step, but don't do colour connections
+  thestep->addDecayProduct(rem,remnant,false);
+  return remnant;
+}
+
+inline void HwRemDecayer::HadronContent::extract(int id) {
+  for(unsigned int i=0; i<flav.size(); i++) {
+    if(id == sign*flav[i]){
+      if(hadron->id() == ParticleID::gamma) {
+	flav[0] =  id;
+	flav[1] = -id;
+	extracted = 0;
+	flav.resize(2);
+      }
+      else {
+	extracted = i;
+      }
+      break;
+    }
+  }      
+}
+
+inline void HwRemDecayer::doinit() throw(InitException) {
+  Interfaced::doinit();
+  _ybin=0.25/_zbin;
+}
+
+}

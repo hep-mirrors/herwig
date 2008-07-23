@@ -19,7 +19,6 @@
 #include "Herwig++/Decay/General/GeneralCurrentDecayer.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
-#include "WeakCurrentDecayConstructor.fh"
 
 namespace Herwig {
 

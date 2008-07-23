@@ -99,16 +99,7 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-protected
-:
-  /**
-   * Return the photon multiplicity according to a Poissonian Distribution
-   * with the supplied average
-   * @param average The average
-   * @return A value from tghe poisson distribution
-   */
-  inline int poisson(double average);
-
+protected:
   /**
    * Average crude photon multiplicity for a given dipole
    * @param i First particle in the dipole

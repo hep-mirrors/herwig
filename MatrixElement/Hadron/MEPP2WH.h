@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/MatrixElement/MEfftoVH.h"
-#include "MEPP2WH.fh"
 
 namespace Herwig {
 
@@ -25,7 +24,7 @@ public:
   /**
    *  Default constructor
    */
-  inline MEPP2WH();
+  MEPP2WH();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -70,13 +69,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 private:
@@ -148,7 +147,5 @@ struct ClassTraits<Herwig::MEPP2WH>
 /** @endcond */
 
 }
-
-#include "MEPP2WH.icc"
 
 #endif /* HERWIG_MEPP2WH_H */

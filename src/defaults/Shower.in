@@ -29,7 +29,7 @@ create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
 create Herwig::QTildeReconstructor KinematicsReconstructor
 
-set /Herwig/Partons/ForcedSplitting:AlphaS AlphaQCD
+set /Herwig/Partons/RemnantDecayer:AlphaS AlphaQCD
 
 set ShowerHandler:Evolver Evolver
 set ShowerModel:PartnerFinder PartnerFinder
@@ -41,13 +41,13 @@ set Evolver:SplittingGenerator SplittingGenerator
 # Intrinsic pT
 #
 # Recommended: 
-# 2.2 GeV for Tevatron W/Z production.
-# 5.7 GeV for LHC W/Z production
-# ( assuming a linear correlation between Iptrms and ln(shat/S) )
+# 1.9 GeV for Tevatron W/Z production.
+# 2.1 GeV for LHC W/Z production at 10 TeV
+# 2.2 GeV for LHC W/Z production at 14 TeV
 #
 # Set all parameters to 0 to disable
 ##################################################################
-set Evolver:IntrinsicPtGaussian 2.2*GeV
+set Evolver:IntrinsicPtGaussian 1.9*GeV
 set Evolver:IntrinsicPtBeta  	0
 set Evolver:IntrinsicPtGamma 	0*GeV
 set Evolver:IntrinsicPtIptmax   0*GeV

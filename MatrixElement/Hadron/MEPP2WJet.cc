@@ -22,6 +22,10 @@
 
 using namespace Herwig;
 
+MEPP2WJet::MEPP2WJet() : _process(0), _maxflavour(5), _plusminus(0),
+			 _wdec(0), _widthopt(1)
+{}
+
 void MEPP2WJet::doinit() throw(InitException) {
   MEBase::doinit();
   _wplus  = getParticleData(ThePEG::ParticleID::Wplus );

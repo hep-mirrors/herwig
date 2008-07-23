@@ -15,6 +15,9 @@
 
 using namespace Herwig;
 
+MEPP2ZH::MEPP2ZH() : _maxflavour(5)
+{}
+
 void MEPP2ZH::getDiagrams() const {
   tPDPtr higgs = getParticleData(ParticleID::h0);
   // find possible Z decays

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LeptonRemnant class.
+//
+#ifndef HERWIG_LeptonRemnant_FH
+#define HERWIG_LeptonRemnant_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LeptonRemnant;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LeptonRemnant,LeptonRemnantPtr);
+
+}
+
+#endif

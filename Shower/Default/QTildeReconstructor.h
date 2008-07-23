@@ -107,13 +107,6 @@ public:
 protected:
 
   /**
-   *  Reconstruct the initial state jets
-   */
-  virtual bool reconstructISJets(Lorentz5Momentum pcm,
-				 const vector<ShowerProgenitorPtr> & ShowerHardJets,
-				 Boost & boostRest, Boost & boostNewF) const;
-
-  /**
    *  Methods to reconstruct the kinematics of individual jets
    */
   //@{
@@ -261,7 +254,22 @@ protected:
    *  Perform the reconstruction of a system with one incoming and at least one
    *  outgoing particle
    */
-  bool reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
+  void reconstructInitialFinalSystem(vector<ShowerProgenitorPtr>) const;
+
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
+  void reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest, 
+				   vector<ShowerProgenitorPtr>) const;
+  
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
+  void reconstructInitialInitialSystem(bool & applyBoost,
+				       Boost & toRest, Boost & fromRest,
+				       vector<ShowerProgenitorPtr>) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed

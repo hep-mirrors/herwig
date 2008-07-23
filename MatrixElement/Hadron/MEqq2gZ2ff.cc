@@ -29,6 +29,11 @@
 
 using namespace Herwig;
 
+MEqq2gZ2ff::MEqq2gZ2ff() : _maxflavour(5), _gammaZ(0), _process(0) {
+  massOption(true ,1);
+  massOption(false,1);
+}
+
 void MEqq2gZ2ff::doinit() throw(InitException) {
   HwME2to2Base::doinit();
   _z0=getParticleData(ThePEG::ParticleID::Z0);
@@ -64,7 +69,7 @@ void MEqq2gZ2ff::getDiagrams() const {
 	  || (ix%2==0 && (ix-10)/2==_process-7)
 	  || (ix%2==1 && (ix-9)/2 ==_process-4)
 	  );
-    // if not a validf process continue
+    // if not a valid process continue
     if(!(quark||lepton)) continue;
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();

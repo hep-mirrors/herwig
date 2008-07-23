@@ -28,6 +28,26 @@
 
 using namespace Herwig;
 
+MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
+  massOption(true ,0);
+  massOption(false,0);
+}
+
+void MEPP2GammaJet::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  HwME2to2Base::rebind(trans);
+  _gluonvertex =trans.translate(_gluonvertex );
+  _photonvertex=trans.translate(_photonvertex);
+}
+
+IVector MEPP2GammaJet::getReferences() {
+  IVector ret = HwME2to2Base::getReferences();
+  ret.push_back(_gluonvertex);
+  ret.push_back(_photonvertex);
+  return ret;
+}
+
 void MEPP2GammaJet::doinit() throw(InitException) {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());

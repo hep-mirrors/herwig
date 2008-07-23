@@ -323,7 +323,7 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
   // calculate the average photon multiplicity
   double aver(nbar(beta1,ombeta1));
   // calculate the number of photons using the poisson
-  _multiplicity = poisson(aver);
+  _multiplicity = UseRandom::rndPoisson(aver);
   // calculate the first part of the YFS factor
   _yfswgt/=crudeYFSFormFactor(beta1,ombeta1); 
   // generate the photon momenta with respect to q1 

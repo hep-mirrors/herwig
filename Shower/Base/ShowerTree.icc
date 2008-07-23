@@ -106,4 +106,7 @@ inline vector<ShowerProgenitorPtr> ShowerTree::extractProgenitors() {
   return ShowerHardJets;
 }
 
+inline const set<tShowerParticlePtr> &  ShowerTree::forwardParticles() const {
+  return _forward;
+}
 }

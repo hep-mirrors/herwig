@@ -30,6 +30,11 @@
 
 using namespace Herwig;
 
+MEqq2W2ff::MEqq2W2ff() : _maxflavour(5), _plusminus(0), _process(0) {
+  massOption(true ,1);
+  massOption(false,1);
+}
+
 void MEqq2W2ff::doinit() throw(InitException) {
   HwME2to2Base::doinit();
   _wp=getParticleData(ThePEG::ParticleID::Wplus);

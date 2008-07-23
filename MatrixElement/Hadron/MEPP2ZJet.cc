@@ -22,6 +22,10 @@
 
 using namespace Herwig;
 
+MEPP2ZJet::MEPP2ZJet() : _process(0), _maxflavour(5), _zdec(0),
+			 _gammaZ(0), _widthopt(1), _pprob(0.5)
+{}
+
 void MEPP2ZJet::doinit() throw(InitException) {
   MEBase::doinit();
   _z0    = getParticleData(ThePEG::ParticleID::Z0   );

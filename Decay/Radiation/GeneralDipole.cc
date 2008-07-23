@@ -457,7 +457,7 @@ double GeneralDipole::makePhotons()
 	  // check if the dipole exists and has right charge
 	  if(_zij[ix][iy]<0)
 	    {
-	      nemit=poisson(_nbar[ix][iy]);
+	      nemit=UseRandom::rndPoisson(_nbar[ix][iy]);
 	      // generate multiplicity using poisson
 	      _yfswgt*=exp(_nbar[ix][iy]);
 	      // if any photons produce them

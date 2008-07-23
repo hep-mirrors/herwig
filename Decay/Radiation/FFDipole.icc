@@ -29,20 +29,6 @@ inline IBPtr FFDipole::fullclone() const {
   return new_ptr(*this);
 }
 
-// poisson
-inline int FFDipole::poisson(double average)
-{
-  int n(0),n_factorial(1);
-  double x(UseRandom::rnd()*exp(average)),sum(1.);
-  while (x>=sum)
-    {
-      ++n;
-      n_factorial *= n;   
-      sum += pow(average,n)/n_factorial;
-    };
-  return n;
-}
-
 inline double FFDipole::exactDipoleWeight(double beta1, double ombeta1,
 					  double beta2, double ombeta2,
 					  unsigned int iphot)

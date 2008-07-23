@@ -277,6 +277,11 @@ protected:
    * veto hard emissions in FS shower?
    */
   inline bool hardVetoFS() const;
+
+  /**
+   * veto hard emissions according to lastScale from XComb? 
+   */
+  inline bool hardVetoXComb() const;
   //@}
 
   /**
@@ -420,6 +425,11 @@ private:
   unsigned int _hardVetoMode; 
 
   /**
+   * Hard veto to be read switch
+   */
+  unsigned int _hardVetoRead; 
+
+  /**
    * rms intrinsic pT of Gaussian distribution
    */
   Energy _iptrms;
@@ -440,9 +450,13 @@ private:
   Energy _iptmax;
 
   /**
+   *  Limit the number of emissions for testing
+   */
+  unsigned int _limitEmissions;
+
+  /**
    *  The progenitor of the current shower
    */
-
   ShowerProgenitorPtr _progenitor;
 
   /**
@@ -522,6 +536,16 @@ private:
 
   //@}
 
+  /**
+   *  number of IS emissions
+   */
+  unsigned int _nis;
+
+  /**
+   *  Number of FS emissions
+   */
+  unsigned int _nfs;
+
 };
 
 }
@@ -562,8 +586,5 @@ struct ClassTraits<Herwig::Evolver>
 }
 
 #include "Evolver.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Evolver.tcc"
-#endif
 
 #endif /* HERWIG_Evolver_H */

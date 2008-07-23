@@ -26,7 +26,36 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig++/MatrixElement/General/HardVertex.h"
 
-using namespace Herwig;
+using namespace Herwig;MEQCD2to2::MEQCD2to2():_maxflavour(5),_process(0) {
+  massOption(true ,0);
+  massOption(false,0);
+}
+
+void MEQCD2to2::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _ggggvertex = trans.translate(_ggggvertex);
+  _gggvertex  = trans.translate( _gggvertex);
+  _qqgvertex  = trans.translate( _qqgvertex);
+  _gluon      = trans.translate( _gluon);
+  for(unsigned int ix=0;ix<_quark.size();++ix) 
+    {_quark[ix]=trans.translate(_quark[ix]);}
+  for(unsigned int ix=0;ix<_antiquark.size();++ix)
+    {_antiquark[ix]=trans.translate(_quark[ix]);}
+  HwME2to2Base::rebind(trans);
+}
+
+IVector MEQCD2to2::getReferences() {
+  IVector ret = HwME2to2Base::getReferences();
+  ret.push_back(_ggggvertex);
+  ret.push_back(_gggvertex);
+  ret.push_back(_qqgvertex);
+  ret.push_back(_gluon);
+  for(unsigned int ix=0;ix<_quark.size();++ix)
+    {ret.push_back(_quark[ix]);}
+  for(unsigned int ix=0;ix<_antiquark.size();++ix)
+    {ret.push_back(_antiquark[ix]);}
+  return ret;
+}
 
 void MEQCD2to2::doinit() throw(InitException) {
   // call the base class

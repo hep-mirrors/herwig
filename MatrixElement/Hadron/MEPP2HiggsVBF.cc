@@ -14,6 +14,8 @@
 
 using namespace Herwig;
 
+MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5) {}
+
 void MEPP2HiggsVBF::getDiagrams() const {
   // get the quark particle data objects as we'll bew using them
   tcPDPtr q[6],qbar[6];
@@ -59,7 +61,11 @@ void MEPP2HiggsVBF::getDiagrams() const {
 		     parentpair[iy].first->CC(), 1,
 		     parentpair[ix].second, 4, parentpair[iy].second->CC(),
 		     2, higgs,-1)));
-// 	// qbar1 qbar2 -> qbar1' qbar2' h
+	add(new_ptr((Tree2toNDiagram(4), parentpair[ix].second->CC(), WMinus(), WPlus(), 
+		     parentpair[iy].second, 1,
+		     parentpair[ix].first->CC(), 4, parentpair[iy].first,
+		     2, higgs,-1)));
+	// qbar1 qbar2 -> qbar1' qbar2' h
 	add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first->CC(), WPlus(), WMinus(), 
 		     parentpair[iy].second->CC(), 1,
 		     parentpair[ix].second->CC(), 4, parentpair[iy].first->CC(),
@@ -69,14 +75,14 @@ void MEPP2HiggsVBF::getDiagrams() const {
   }
   // ZZ processes
   if(process()==0||process()==2) {
-    for(unsigned int ix=1;ix<_maxflavour;++ix) {
+    for(unsigned int ix=0;ix<_maxflavour;++ix) {
       for(unsigned int iy=ix;iy<_maxflavour;++iy) {
 	// q    q    -> q    q    H
 	add(new_ptr((Tree2toNDiagram(4), q[ix], Z0(), Z0(), q[iy], 
 		     1, q[ix], 4, q[iy], 2, higgs,-2))); 
 	// qbar qbar -> qbar qbar H
-	add(new_ptr((Tree2toNDiagram(4), q[ix], Z0(), Z0(), q[iy], 
-		     1, q[ix], 4, q[iy], 2, higgs,-2)));
+	add(new_ptr((Tree2toNDiagram(4), qbar[ix], Z0(), Z0(), qbar[iy], 
+		     1, qbar[ix], 4, qbar[iy], 2, higgs,-2)));
       }
       // q    qbar -> q    qbar H
       for(unsigned int iy=0;iy<_maxflavour;++iy) {

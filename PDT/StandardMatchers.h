@@ -12,6 +12,8 @@
 
 
 #include "ThePEG/PDT/Matcher.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {
@@ -77,13 +79,31 @@ struct HadronMatcher: public MatcherType {
   typedef HadronMatcher CC;
   /** The main static function to check if a given particle type \a pd
       matches. */
-  static bool Check(const ParticleData & pd) { return Check(pd.id()); }
+  static bool Check(const ParticleData & pd) {
+    if(pd.id()!=ParticleID::gamma) return Check(pd.id()); 
+    else {
+      Ptr<BeamParticleData>::const_pointer beam = 
+	dynamic_ptr_cast< Ptr<BeamParticleData>::const_pointer>(&pd);
+      if(!beam) return false;
+      if(!beam->pdf()) return false;
+      return true;
+    }
+  }
   /** The main static function to check if a given particle with type
       \a id matches. */
   static bool Check(long id) {
-    return 
+    bool hadron = 
       ((id/10)%10 && (id/100)%10 && (id/1000)%10 == 0) ||
       ((id/10)%10 && (id/100)%10 && (id/1000)%10);
+    if(hadron) return true;
+    // special for gamma when acting like a hadron
+    if(id!=ParticleID::gamma) return false;
+    tcPDPtr gamma = CurrentGenerator::current().getParticleData(ParticleID::gamma);
+    Ptr<BeamParticleData>::const_pointer beam = 
+      dynamic_ptr_cast< Ptr<BeamParticleData>::const_pointer>(gamma);
+    if(!beam) return false;
+    if(!beam->pdf()) return false;
+    return true;
   }
   /** A simplified but unique class name. */
   static string className() { return "Hadron"; }

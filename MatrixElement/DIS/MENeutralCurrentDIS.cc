@@ -14,30 +14,25 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/MatrixElement/General/HardVertex.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
 using namespace Herwig;
 
 void MENeutralCurrentDIS::doinit() throw(InitException) {
-  ME2to2Base::doinit();
-  _z0=getParticleData(ThePEG::ParticleID::Z0);
-  _gamma=getParticleData(ThePEG::ParticleID::gamma);
+  HwME2to2Base::doinit();
+  _z0    = getParticleData(ThePEG::ParticleID::Z0);
+  _gamma = getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
-  // do the initialisation
-  if(hwsm) {
-    _theFFZVertex = hwsm->vertexFFZ();
-    _theFFPVertex = hwsm->vertexFFP();
-  }
-  else
-    throw InitException() << "Must be the Herwig++ StandardModel class in "
-			  << "MENeutralCurrentDIS::doinit" << Exception::abortnow;
+  if(!hwsm) throw InitException() 
+    << "Must be the Herwig++ StandardModel class in "
+    << "MENeutralCurrentDIS::doinit" << Exception::abortnow;
+  // vertices
+  _theFFZVertex = hwsm->vertexFFZ();
+  _theFFPVertex = hwsm->vertexFFP();
 }
 
 void MENeutralCurrentDIS::getDiagrams() const {
@@ -52,99 +47,31 @@ void MENeutralCurrentDIS::getDiagrams() const {
       for(unsigned int iy=_minflavour;iy<=_maxflavour;++iy) {
 	tPDPtr quark = getParticleData(iy);
 	// lepton quark scattering via gamma and Z
-	if(gamma) add(new_ptr((Tree2toNDiagram(3), lep, _gamma, quark, 1, lep, 2, quark, -1)));
-	if(Z0)    add(new_ptr((Tree2toNDiagram(3), lep, _z0   , quark, 1, lep, 2, quark, -2)));
+	if(gamma) add(new_ptr((Tree2toNDiagram(3), lep, _gamma, quark,
+			       1, lep, 2, quark, -1)));
+	if(Z0)    add(new_ptr((Tree2toNDiagram(3), lep, _z0   , quark,
+			       1, lep, 2, quark, -2)));
 	// lepton antiquark scattering via gamma and Z
 	quark = quark->CC();
-	if(gamma) add(new_ptr((Tree2toNDiagram(3), lep, _gamma, quark, 1, lep, 2, quark, -3)));
-	if(Z0)    add(new_ptr((Tree2toNDiagram(3), lep, _z0   , quark, 1, lep, 2, quark, -4)));
+	if(gamma) add(new_ptr((Tree2toNDiagram(3), lep, _gamma, quark,
+			       1, lep, 2, quark, -3)));
+	if(Z0)    add(new_ptr((Tree2toNDiagram(3), lep, _z0   , quark,
+			       1, lep, 2, quark, -4)));
       }
     }
   }
 }
 
 Energy2 MENeutralCurrentDIS::scale() const {
-  return sHat();
-}
-
-bool MENeutralCurrentDIS::generateKinematics(const double * r) {
-  double ctmin = -1.0;
-  double ctmax =  1.0;
-  meMomenta()[3].setMass(0.*GeV);
-
-  Energy q = 0.0*GeV;
-  try {
-    q = SimplePhaseSpace::
-      getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
-  } catch ( ImpossibleKinematics ) {
-    return false;
-  }
-
-  Energy e = sqrt(sHat())/2.0;
-		    
-  Energy2 m22 = meMomenta()[2].mass2();
-  Energy2 m32 = meMomenta()[3].mass2();
-  Energy2 e0e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e1e2 = 2.0*e*sqrt(sqr(q) + m22);
-  Energy2 e0e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 e1e3 = 2.0*e*sqrt(sqr(q) + m32);
-  Energy2 pq = 2.0*e*q;
-
-  Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
-
-  thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-
-  Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
-   		     lastCuts().minKT(mePartonData()[3]));
-  if ( ptmin > 0.0*GeV ) {
-    double ctm = 1.0 - sqr(ptmin/q);
-    if ( ctm <= 0.0 ) return false;
-    ctmin = max(ctmin, -sqrt(ctm));
-    ctmax = min(ctmax, sqrt(ctm));
-  }
-
-  if ( ctmin >= ctmax ) return false;
-    
-  double cth = getCosTheta(ctmin, ctmax, r);
-
-  Energy pt = q*sqrt(1.0-sqr(cth));
-  phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setVect(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
-
-  meMomenta()[3].setVect(Momentum3(-pt*sin(phi()),-pt*cos(phi()), -q*cth));
-
-  meMomenta()[2].rescaleEnergy();
-  meMomenta()[3].rescaleEnergy();
-
-  vector<LorentzMomentum> out(2);
-  out[0] = meMomenta()[2];
-  out[1] = meMomenta()[3];
-  tcPDVector tout(2);
-  tout[0] = mePartonData()[2];
-  tout[1] = mePartonData()[3];
-  if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
-    return false;
-
-  tHat(pq*cth + m22 - e0e2);
-  uHat(m22 + m32 - sHat() - tHat());
-  jacobian((pq/sHat())*Constants::pi*jacobian());
-  return true;
+  return -tHat();
 }
 
 unsigned int MENeutralCurrentDIS::orderInAlphaS() const {
-  return 1;
+  return 0;
 }
 
 unsigned int MENeutralCurrentDIS::orderInAlphaEW() const {
-  return 1;
+  return 2;
 }
 
 Selector<const ColourLines *>
@@ -233,40 +160,40 @@ double MENeutralCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
   ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
 				PDT::Spin1Half,PDT::Spin1Half);
   // which intermediates to include
-  bool gamma=_gammaZ==0||_gammaZ==1;
-  bool Z0   =_gammaZ==0||_gammaZ==2;
+  bool gamma = _gammaZ==0 || _gammaZ==1;
+  bool Z0    = _gammaZ==0 || _gammaZ==2;
   // declare the variables we need
-  unsigned int ihel1,ihel2,ohel1,ohel2;
-  VectorWaveFunction inter[2],test;
+  VectorWaveFunction inter[2];
   double me[3]={0.,0.,0.};
   Complex diag1,diag2;
   // sum over helicities to get the matrix element
   unsigned int hel[4];
-  for(ihel1=0;ihel1<2;++ihel1) {
-    for(ihel2=0;ihel2<2;++ihel2) {
+  unsigned int lhel1,lhel2,qhel1,qhel2;
+  for(lhel1=0;lhel1<2;++lhel1) {
+    for(lhel2=0;lhel2<2;++lhel2) {
       // intermediate for photon
-      if(gamma) inter[0]=_theFFPVertex->evaluate(mb2,1,_gamma,f1[ihel1],a1[ihel2]);
+      if(gamma) inter[0]=_theFFPVertex->evaluate(mb2,1,_gamma,f1[lhel1],a1[lhel2]);
       // intermediate for Z
-      if(Z0)    inter[1]=_theFFZVertex->evaluate(mb2,1,_z0   ,f1[ihel1],a1[ihel2]);
-      for(ohel1=0;ohel1<2;++ohel1) {
-	for(ohel2=0;ohel2<2;++ohel2) {
-	  hel[0] = ihel1;
-	  hel[1] = ohel1;
-	  hel[2] = ihel2;
-	  hel[3] = ohel2;
+      if(Z0)    inter[1]=_theFFZVertex->evaluate(mb2,1,_z0   ,f1[lhel1],a1[lhel2]);
+      for(qhel1=0;qhel1<2;++qhel1) {
+	for(qhel2=0;qhel2<2;++qhel2) {
+	  hel[0] = lhel1;
+	  hel[1] = qhel1;
+	  hel[2] = lhel2;
+	  hel[3] = qhel2;
 	  if(!lorder) swap(hel[0],hel[2]);
 	  if(!qorder) swap(hel[1],hel[3]);
 	  // first the photon exchange diagram
 	  diag1 = gamma ?
-	    _theFFPVertex->evaluate(mb2,f2[ohel1],a2[ohel2],inter[0]) : 0.;
+	    _theFFPVertex->evaluate(mb2,f2[qhel1],a2[qhel2],inter[0]) : 0.;
 	  // then the Z exchange diagram
 	  diag2 = Z0 ?
-	    _theFFZVertex->evaluate(mb2,f2[ohel1],a2[ohel2],inter[1]) : 0.;
+	    _theFFZVertex->evaluate(mb2,f2[qhel1],a2[qhel2],inter[1]) : 0.;
 	  // add up squares of individual terms
 	  me[1] += norm(diag1);
 	  me[2] += norm(diag2);
 	  // the full thing including interference
-	  diag1 +=diag2;
+	  diag1 += diag2;
 	  me[0] += norm(diag1);
 	  if(calc) menew(hel[0],hel[1],hel[2],hel[3]) = diag1;
 	}
@@ -274,14 +201,19 @@ double MENeutralCurrentDIS::helicityME(vector<SpinorWaveFunction>    & f1,
     }
   }
   // spin and colour factor
-  double colspin=0.25;
+  double colspin = 0.25;
   // results
-  for(int ix=0;ix<3;++ix) me[ix]*=colspin;
+  for(int ix=0;ix<3;++ix) me[ix] *= colspin;
   DVector save;
   save.push_back(me[1]);
   save.push_back(me[2]);
   meInfo(save);
   if(calc) _me.reset(menew);
+  // analytic expression for testing
+//   double test = 8.*sqr(4.*Constants::pi*generator()->standardModel()->alphaEM(mb2))*
+//     sqr(double(mePartonData()[1]->iCharge())/3.)/sqr(tHat())
+//     *(sqr(sHat())+sqr(uHat())+4.*sqr(mePartonData()[0]->mass())*tHat())/4.;
+//   cerr << "testing me " << me[0]/test << "\n";
   return me[0];
 }
 
