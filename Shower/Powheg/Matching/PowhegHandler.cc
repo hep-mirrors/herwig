@@ -74,11 +74,6 @@ void PowhegHandler::Init() {
      "Compute",
      "Calculate the Sudakov but don't write the table",
      0);
-  static SwitchOption interfaceSudakovOptionNo
-    (interfaceSudakovOption,
-     "No",
-     "Not using the Sudakov's don't do anything",
-     3);
 
   static Parameter<PowhegHandler,string> interfaceSudakovName
     ("SudakovName",
@@ -135,7 +130,9 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   // cluster the event
   _theHardTree = doClustering();
   // return if fails
-  if(!_theHardTree) return 1.;
+  if(!_theHardTree) {
+    return 0.;
+  }
   // compute the Sudakov weight
   double SudWgt = _lepton ? sudakovWeight() : 1.;
   //update the sub process
@@ -154,6 +151,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       if((**it).incoming()) continue;
       PPtr newParticle = new_ptr(Particle((**it).branchingParticle()->dataPtr()));
       newParticle->set5Momentum((**it).showerMomentum());
+      //do colour connections
       if((**it).branchingParticle()->colourLine()) {
 	map<ColinePtr,ColinePtr>::iterator loc 
 	  = colourMap.find((**it).branchingParticle()->colourLine());
@@ -224,13 +222,43 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
-  // return the weight
   return SudWgt;
 }
 
+void PowhegHandler::dofinish() {
+  ShowerHandler::dofinish();
+  string fname = generator()->filename() + string("-") 
+    + string("wgts.top");
+  ofstream output(fname.c_str());
+  using namespace HistogramOptions;
+
+  _hSud->topdrawOutput(output,Frame,
+		       "RED",
+		       "Sudakov wgts",
+		       "",
+		       "freq",
+		       "",
+		       "wgt",
+		       "");
+  _halphaS->topdrawOutput(output,Frame,
+		       "RED",
+		       "AlphaS wgts",
+		       "",
+		       "freq",
+		       "",
+		       "wgt",
+		       "");
+  
+
+}
+
+
 void PowhegHandler::doinitrun() {
-  ShowerHandler::doinitrun();
-  if(_sudopt==3) return;
+  ShowerHandler::doinitrun();  
+  //initialise histograms
+  _hSud = new_ptr(Histogram(0.,2.,100));
+  _halphaS = new_ptr(Histogram(0.,2.,100));
+
   // integrator for the outer integral
   GaussianIntegrator outer;
   // get the final-state branchings from the evolver
@@ -464,7 +492,27 @@ HardTreePtr PowhegHandler::doClustering() {
 
 
   ParticleVector theParts  = lastXCombPtr()->subProcess()->outgoing();
-  if(lastXCombPtr()->subProcess()->intermediates().empty()) return HardTreePtr();
+
+  //create and add an intermediate here?
+  //make the particle with the PPair from subprocess()->incoming();
+  
+  //make an intermediate and add to subprocess if not read in
+  if(lastXCombPtr()->subProcess()->intermediates().empty()) {
+    return HardTreePtr();
+    PPair theIncomings =  lastXCombPtr()->subProcess()->incoming();
+    //set intermediate to Z
+    long intermediate_id = 23;
+    PPtr theIntermediate = new_ptr( Particle( getParticleData( intermediate_id ) ) );
+    theIntermediate->set5Momentum( theIncomings.first->momentum() +
+				   theIncomings.second->momentum() );
+    //add the intermediate - parent/child relations should be updated
+    lastXCombPtr()->subProcess()->addIntermediate( theIntermediate );
+    cerr<<"added intermediate\n"
+	<< *theIntermediate<<"\n";
+
+  }
+ 
+    
   PPtr vb = lastXCombPtr()->subProcess()->intermediates()[0];
   _s = lastXCombPtr()->lastS();
 
@@ -489,7 +537,7 @@ HardTreePtr PowhegHandler::doClustering() {
     //insert all particles into externals and initialise all
     //jet res parameters to 1
     _theExternals.insert( make_pair( currentParticle, 
-				     make_pair( 1., sqrt( _s ) ) ) );
+				     make_pair( 1., HardBranchingPtr() ) ) );
     
     if(currentParticle->dataPtr()->iColour()==PDT::Colour3||
        currentParticle->dataPtr()->iColour()==PDT::Colour8) {
@@ -550,7 +598,17 @@ HardTreePtr PowhegHandler::doClustering() {
     
     theParticles.erase( clusterPair.first  );
     theParticles.erase( clusterPair.second );
-    
+
+    //search the externals for each of the 2 particles being clustered
+    //if found update the yij scale and nason branching of each external
+    if( _theExternals.find( clusterPair.first ) != _theExternals.end() ){
+      _theExternals.find( clusterPair.first )->second.first = yij_min;
+      _theExternals.find( clusterPair.first )->second.second = clusteredBranch;
+    }
+    if( _theExternals.find( clusterPair.second ) != _theExternals.end() ){
+      _theExternals.find( clusterPair.second )->second.first = yij_min;
+      _theExternals.find( clusterPair.second )->second.second = clusteredBranch;
+    }
   }
   vector<HardBranchingPtr> theBranchings;
   for(  map<ShowerParticlePtr, HardBranchingPtr>::iterator it = 
@@ -592,31 +650,7 @@ HardTreePtr PowhegHandler::doClustering() {
     generator()->log() << "testing " << theBranchings[jx]->showerMomentum()/GeV << "\t"
 		       << theBranchings[jx]->showerMomentum().m()/GeV << "\n";
   }
-  //set the scales at which the externals are resolved
-  for( map<HardBranchingPtr,double>::const_iterator cit 
-	 = _theNodes.begin();
-       cit != _theNodes.end(); ++cit ) {
-    HardBranchingPtr currentExternal = cit->first;
-    //loop until the  assosiated external particle is found
-    do {
-      if( ! currentExternal ) break;
-      currentExternal = currentExternal->children()[0];
-    } while( _theExternals.find( currentExternal->branchingParticle() ) ==
-	     _theExternals.end() );
-
-    if( _theExternals.find( currentExternal->branchingParticle() ) !=
-	_theExternals.end() ){
-      _theExternals.find( currentExternal->branchingParticle() )->
-	second.first = cit->second;
-      _theExternals.find( currentExternal->branchingParticle() )->
-	second.second = cit->first->scale();
-    }
-   
-    else cerr<<"doClustering()::can't find an external \n"
-	     << currentExternal->branchingParticle()
-	     << "\n";
-  }
-  //get the intermediates
+  //get the intermediates - there is one intermediate for each node
   for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
        cit != _theNodes.end(); ++cit ) {
@@ -628,15 +662,14 @@ HardTreePtr PowhegHandler::doClustering() {
     Energy startScale = sqrt( _s );
 
     long intID = cit->first->branchingParticle()->id();
-    //get start scale from parton
+    //get start scale from parent of the hardBranching
     if( cit->first->parent() ) {
-      HardBranchingPtr intParent = cit->first;
-      if( _theNodes.find( cit->first ) !=
-	  _theNodes.end() ){
-	startScale = _theNodes.find( cit->first )->first->scale();
+      HardBranchingPtr intParent = cit->first->parent();
+      if( _theNodes.find( intParent ) != _theNodes.end() ){
+	startScale = intParent->scale() * cit->first->z();
 	startY = _theNodes.find( cit->first )->second;
       }
-      else cerr<<"doClustering()::can't find start of intermediate with parents \n";
+      else cerr<<"doClustering()::can't find the parent of the intermediate in nason branchings\n";
     }
     _theIntermediates.insert( make_pair( intID, 
 					 make_pair( make_pair( startY, startScale ), 
@@ -880,7 +913,7 @@ HardTreePtr PowhegHandler::generalClustering() {
     createColourFlow(newTree,jt->diagram);
     // Calculate the shower variables
     evolver()->showerModel()->kinematicsReconstructor()->
-      deconstructHardJets(newTree,evolver());
+      deconstructDecayJets(newTree,evolver());
     if(checkTree(newTree)) break; 
     trees.erase(jt);
   }
@@ -1177,15 +1210,12 @@ void PowhegHandler::createColourFlow(HardTreePtr tree,
 }
 
 double PowhegHandler::sudakovWeight() {
-  //the jet resolution parameter used in MG generation
-  //Q1 is the lower scale and should be used as a cut off 
-  //  double y_ini = 0.001;
+
   Energy Q = sqrt( _s );
-  //  Energy Q1 = sqrt( y_ini ) * Q;
   //the Sudakov weight factor
   double SudWgt = 1.;
   //include the sud factor for each external line
-  for( map<ShowerParticlePtr,pair<double,Energy> >::const_iterator cit 
+  for( map<ShowerParticlePtr,pair<double,HardBranchingPtr> >::const_iterator cit 
 	 = _theExternals.begin();
        cit != _theExternals.end(); ++cit ) {
     //itererate over all matching sudakovs (only 1 except for gluon)
@@ -1194,9 +1224,24 @@ double PowhegHandler::sudakovWeight() {
     for( cjt =  _fbranchings.lower_bound( abs( cit->first->id() ) );
 	 cjt != _fbranchings.upper_bound( abs( cit->first->id() ) );
 	 ++cjt ) {
-      SudWgt *= (* cjt->second.first )( cit->second.second );
+      Energy scale = sqrt( _s );
+      if( cit->second.second ){
+	//is the external 1st or second child (decide which z to use)
+	if( cit->first == 
+	    cit->second.second->children()[0]->branchingParticle() )
+	  scale =  cit->second.second->scale()* 
+	    cit->second.second->children()[0]->z();
+	else if(  cit->first == 
+		  cit->second.second->children()[1]->branchingParticle() )
+	  scale =  cit->second.second->scale()* 
+	    cit->second.second->children()[1]->z();
+	else cerr<<"could not find child in external HardBranching \n";
+      }
+      if(scale > Q) scale = Q;
+      SudWgt *= (* cjt->second.first )( scale );
     }
   }
+  if(SudWgt > 1.) cerr<<"sudakov from externals > 1!!\n";
   //include the intermediate line wgts
   for( map< long, pair< pair< double, Energy >, pair< double, Energy > > >::const_iterator cit 
 	 = _theIntermediates.begin();
@@ -1207,8 +1252,13 @@ double PowhegHandler::sudakovWeight() {
     for( cjt =  _fbranchings.lower_bound( abs( cit->first ) );
 	 cjt != _fbranchings.upper_bound( abs( cit->first ) );
 	 ++cjt ) {
-      SudWgt *= (* cjt->second.first )( cit->second.first .second );
-      SudWgt /= (* cjt->second.first )( cit->second.second.second );
+      Energy scale =  cit->second.first.second;
+      if(scale > Q ) scale = Q;
+      
+      double internal_wgt = (* cjt->second.first )( scale );
+      scale =  cit->second.second.second;
+      if(scale > Q ) scale = Q;
+      internal_wgt /= (* cjt->second.first )( scale );
     }
   }
   double alphaWgt = 1.;
@@ -1217,6 +1267,13 @@ double PowhegHandler::sudakovWeight() {
   for(map<HardBranchingPtr,double>::const_iterator cit=_theNodes.begin();
       cit != _theNodes.end(); ++cit ) {
     alphaWgt *= _alphaS->value( cit->second * sqr( Q ) ) / _alphaSMG;
+  }
+  (*_hSud) += SudWgt;
+  (*_halphaS) += alphaWgt;
+  if( SudWgt*alphaWgt > 1. ) {
+     cerr<<"weight exceeded 1 in PowhegHandler::reweight() !!! \n";
+     cerr<<"  alpha wgt = "<<alphaWgt
+    	<<"\n  sudWgt = "<<SudWgt;
   }
   return SudWgt*alphaWgt;
 }

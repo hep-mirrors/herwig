@@ -5,6 +5,7 @@
 // This is the declaration of the PowhegHandler class.
 //
 
+#include "Herwig++/Utilities/Histogram.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Utilities/Interpolator.h"
@@ -98,6 +99,13 @@ public:
     return _theHardTree;
   }
 
+  /**
+   *  access to the merging scale
+   */
+  inline Energy getMergeScale() {
+    return sqrt( _yini * _s );
+  }
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -126,6 +134,11 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
+
+  virtual void dofinish();
+
+
+
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
@@ -253,7 +266,7 @@ private:
    * Map containing particle and the resolution parameter of 
    * external partons.
    */
-  map< ShowerParticlePtr, pair< double, Energy > > _theExternals;
+  map< ShowerParticlePtr, pair< double, HardBranchingPtr > > _theExternals;
 
   /**
    * Map containing all nodes with the ingoing partons and their clustered jet 
@@ -323,6 +336,17 @@ private:
    * The fixed alphaS value that was used to generate mad graph events
    */
   double _alphaSMG;
+
+  /**
+   * Histogram of Sudakov weights
+   */
+  HistogramPtr _hSud;
+
+  /**
+   * Histogram of alphaS weights
+   */
+  HistogramPtr _halphaS;
+
 };
 
 }
