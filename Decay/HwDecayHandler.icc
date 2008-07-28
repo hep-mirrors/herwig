@@ -25,4 +25,11 @@ inline IBPtr HwDecayHandler::fullclone() const {
   return new_ptr(*this);
 }
 
+inline void HwDecayHandler::develop(tPPtr particle) const {
+  if(!particle->spinInfo()) return;
+  Helicity::tcSpinfoPtr hwspin = 
+    dynamic_ptr_cast<Helicity::tcSpinfoPtr>(particle->spinInfo());
+  if(hwspin) hwspin->setDeveloped(true);
+}
+
 }
