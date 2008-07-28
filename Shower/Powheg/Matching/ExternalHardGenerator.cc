@@ -51,8 +51,21 @@ void ExternalHardGenerator::Init() {
 }
 
 HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
+  
+  ShowerProgenitorPtr 
+    QProgenitor    = tree->outgoingLines().begin()->first,
+    QbarProgenitor = tree->outgoingLines().rbegin()->first;
+  if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
+
   // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
+  Energy kt_merge = _CKKWh->getMergeScale();
+
+  //add pt vetos
+  //n.b these are currently in terms of durham kt - should change veto
+  QProgenitor->maximumpT(kt_merge);
+  QbarProgenitor->maximumpT(kt_merge);
+
   if(!hardtree) return HardTreePtr();
   // check the trees match
   if(!hardtree->connect(tree)) return HardTreePtr();
