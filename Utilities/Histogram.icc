@@ -14,7 +14,7 @@
 namespace Herwig {
 
 inline Histogram::Histogram(double lower, double upper, unsigned int nbin) 
-  : _globalStats(), _havedata(false), _bins(nbin+2),_prefactor(1.)
+  : _globalStats(), _havedata(false), _bins(nbin+2),_prefactor(1.),_total(0.)
 {
   if (upper<lower)
     swap(upper,lower);
@@ -31,7 +31,7 @@ inline Histogram::Histogram(double lower, double upper, unsigned int nbin)
 }
 
 inline Histogram::Histogram(vector<double> limits)
-  : _globalStats(), _havedata(false), _bins(limits.size()+1), _prefactor(1.)
+  : _globalStats(), _havedata(false), _bins(limits.size()+1), _prefactor(1.),_total(0.)
 {
   _bins[0].limit=-1.e100;
   for (size_t i=1; i<=limits.size(); ++i)
@@ -40,7 +40,7 @@ inline Histogram::Histogram(vector<double> limits)
 
 inline Histogram::Histogram(vector<double> limits, vector<double> data,
 			    vector<double> dataerror)
-  : _globalStats(), _havedata(true), _bins(limits.size()+1), _prefactor(1.)
+  : _globalStats(), _havedata(true), _bins(limits.size()+1), _prefactor(1.),_total(0.)
 {
   _bins[0].limit=-1.e100;
   for (size_t i=1; i<=limits.size(); ++i)
@@ -76,6 +76,7 @@ inline void Histogram::addWeighted(double input, double weight) {
   _bins[ibin-1].contents   += weight;
   _bins[ibin-1].contentsSq += sqr(weight);
   _globalStats += weight * input;
+  _total += weight;
 }
 
 inline unsigned int Histogram::numberOfBins() const { 
