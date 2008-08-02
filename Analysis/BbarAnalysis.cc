@@ -24,12 +24,14 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace std;
 
-Histogram cos3_h(-1.,1.,100)     ,cos4_h(-1.,1.,100);
-Histogram eta3_h(-4.,4.,100)     ,pt3_h(0.,100.,100);
-Histogram eta4_h(-4.,4.,100)     ,pt4_h(0.,100.,100);
-Histogram eta5_h(-4.,4.,100)     ,pt5_h(0.,100.,100);
-Histogram eta34_h(-4.,4.,100)    ,y34_h(-4.,4.,80);
-Histogram m34_h(0.,200.,40);//     ,m345_h(0.,200.,40);
+Histogram cos3_h(-1.,1.,100),eta3_h(-4.,4.,100)   ,pt3_h(0.,100.,100);
+Histogram cos4_h(-1.,1.,100),eta4_h(-4.,4.,100)   ,pt4_h(0.,100.,100);
+Histogram cos5_h(-1.,1.,100),eta5_h(-4.,4.,100)   ,pt5_h(0.,100.,100);
+Histogram cos6_h(-1.,1.,100),eta6_h(-4.,4.,100)   ,pt6_h(0.,100.,100);
+Histogram y34_h(-2.,2.,80)  ,eta34_h(-4.,4.,100)  ,m34wz_h(70.,100.,100 );
+Histogram                                          m34h_h(110.,120.,100 );
+Histogram y56_h(-2.,2.,80)  ,eta56_h(-4.,4.,100)  ,m56_h(110.,120.,100 );
+Histogram y3456_h(-2.,2.,80),eta3456_h(-4.,4.,100),m3456_h(190.,230.,40 );
 
 BbarAnalysis::~BbarAnalysis() {}
 
@@ -45,31 +47,61 @@ LorentzRotation BbarAnalysis::transform(tEventPtr event) const {
 }
 
 void BbarAnalysis::analyze(const tPVector & particles) {
-  Lorentz5Momentum elec;
-  Lorentz5Momentum pos;
+  Lorentz5Momentum pl, plbar;
+  Lorentz5Momentum pb, pbbar;
+  tPPtr l, lbar;
+  tPPtr b, bbar;
 
-
-  //find and store all FS electron / positron momenta
-  for ( int i = 0; i <  particles.size(); ++i ){
-    if( particles[i]->id() > 10 && particles[i]->id() < 16) elec = particles[i]->momentum();
-    if( particles[i]->id() < -10 && particles[i]->id() > -16 ) pos = particles[i]->momentum();
+  // Find and store all lepton and antilepton pairs
+  // and likewise any b-bbar pairs.
+  for (unsigned int i = 0; i <  particles.size(); ++i ){
+    if(particles[i]->id()> 10&&particles[i]->id()< 17) 
+      l    = particles[i];
+    if(particles[i]->id()<-10&&particles[i]->id()>-17) 
+      lbar = particles[i];
+    if(particles[i]->id()== 5) b    = particles[i];
+    if(particles[i]->id()==-5) bbar = particles[i];
   }
+  if(l&&lbar&&l->parents()[0]!=lbar->parents()[0]) 
+    cout << "warning: leptons have different parents!!\n\n" << endl;
+  if(b&&bbar&&b->parents()[0]!=bbar->parents()[0]) 
+    cout << "warning: b's     have different parents!!\n\n" << endl;
 
-  Energy2 _mll2 = ( pos + elec ).m2();
-  //Energy m345 = 0. * GeV;
-  double y34 = ( pos + elec ).rapidity();
+  pl    = l->momentum()   ;
+  plbar = lbar->momentum();
+  if(b   ) pb    = b->momentum()   ;
+  if(bbar) pbbar = bbar->momentum();
 
+  // Lepton:
+  cos3_h.addWeighted(pl.cosTheta(),1.);
+  eta3_h.addWeighted(pl.eta(),1.);
+  pt3_h.addWeighted(pl.perp()/GeV,1.);
+  // Anti-lepton:
+  cos4_h.addWeighted(plbar.cosTheta(),1.);
+  eta4_h.addWeighted(plbar.eta(),1.);
+  pt4_h.addWeighted(plbar.perp()/GeV,1.);
+  // b-quark:
+  cos5_h.addWeighted(pb.cosTheta(),1.);
+  eta5_h.addWeighted(pb.eta(),1.);
+  pt5_h.addWeighted(pb.perp()/GeV,1.);
+  // Anti-b-quark:
+  cos6_h.addWeighted(pbbar.cosTheta(),1.);
+  eta6_h.addWeighted(pbbar.eta(),1.);
+  pt6_h.addWeighted(pbbar.perp()/GeV,1.);
+  // Vector boson or Higgs boson depending on process:
+  y34_h.addWeighted((pl+plbar).rapidity(),1.);
+  eta34_h.addWeighted((pl+plbar).eta(),1.);
+  m34wz_h.addWeighted(sqrt((pl+plbar).m2())/GeV,1.);
+  m34h_h.addWeighted(sqrt((pl+plbar).m2())/GeV,1.);
+  // Higgs bosons only:
+  y56_h.addWeighted((pb+pbbar).rapidity(),1.);
+  eta56_h.addWeighted((pb+pbbar).eta(),1.);
+  m56_h.addWeighted(sqrt((pb+pbbar).m2())/GeV,1.);
+  // Everything added up:
+  y3456_h.addWeighted((pl+plbar+pb+pbbar).rapidity(),1.);
+  eta3456_h.addWeighted((pl+plbar+pb+pbbar).eta(),1.);
+  m3456_h.addWeighted(sqrt((pl+plbar+pb+pbbar).m2())/GeV,1.);
 
-
-  cos3_h.addWeighted(elec.cosTheta(),1.);
-  cos4_h.addWeighted(pos.cosTheta(),1.);
-  eta3_h.addWeighted(elec.eta(),1.);
-  eta4_h.addWeighted(pos.eta(),1.);
-  pt3_h.addWeighted(elec.perp()/GeV,1.);
-  pt4_h.addWeighted(pos.perp()/GeV,1.);
-  y34_h.addWeighted(y34,1.);
-  m34_h.addWeighted(sqrt(_mll2)/GeV,1.);
-  //m345_h.addWeighted(sqrt(m345),1.);
 
   AnalysisHandler::analyze(particles);
 }
@@ -102,41 +134,72 @@ void BbarAnalysis::Init() {
 
 void BbarAnalysis::dofinish() {
   AnalysisHandler::dofinish();
+  ofstream file;
+  string fname = generator()->filename()+string("_")+name()+string(".top");
 
-  //normalise all these histograms
-
-  y34_h.normaliseToCrossSection();
-  m34_h.normaliseToCrossSection();
+  // Normalise the histograms
+  // Lepton:
   cos3_h.normaliseToCrossSection();
-  cos4_h.normaliseToCrossSection();
   eta3_h.normaliseToCrossSection();
-  eta4_h.normaliseToCrossSection();
   pt3_h.normaliseToCrossSection();
+  // Anti-lepton:
+  cos4_h.normaliseToCrossSection();
+  eta4_h.normaliseToCrossSection();
   pt4_h.normaliseToCrossSection();
-  //m345_h.normaliseToCrossSection();
+  // b-quark:
+  cos5_h.normaliseToCrossSection();
+  eta5_h.normaliseToCrossSection();
+  pt5_h.normaliseToCrossSection();
+  // Anti-b-quark:
+  cos6_h.normaliseToCrossSection();
+  eta6_h.normaliseToCrossSection();
+  pt6_h.normaliseToCrossSection();
+  // Vector boson or Higgs boson depending on process:
+  y34_h.normaliseToCrossSection();
+  eta34_h.normaliseToCrossSection();
+  m34wz_h.normaliseToCrossSection();
+  m34h_h.normaliseToCrossSection();
+  // Higgs bosons only:
+  y56_h.normaliseToCrossSection();
+  eta56_h.normaliseToCrossSection();
+  m56_h.normaliseToCrossSection();
+  // Everything added up:
+  y3456_h.normaliseToCrossSection();
+  eta3456_h.normaliseToCrossSection();
+  m3456_h.normaliseToCrossSection();
 
-  ofstream outfile("BbarAnalysis_hists.top");
+  file.open(fname.c_str());
   using namespace HistogramOptions;
 
-  cos3_h.topdrawOutput(outfile,Frame,"RED","cos3 distribution: all wgts");
- 
-  cos4_h.topdrawOutput(outfile,Frame,"RED","cos4 distribution: all wgts");
+  // Lepton:
+  cos3_h.topdrawOutput(file,Frame,"RED","cos3 distribution: all wgts");
+  eta3_h.topdrawOutput(file,Frame,"RED","eta3 distribution: all wgts");
+  pt3_h.topdrawOutput(file,Frame,"RED","pt3 distribution: all wgts");
+  // Anti-lepton:
+  cos4_h.topdrawOutput(file,Frame,"RED","cos4 distribution: all wgts");
+  eta4_h.topdrawOutput(file,Frame,"RED","eta4 distribution: all wgts");
+  pt4_h.topdrawOutput(file,Frame,"RED","pt4 distribution: all wgts");
+  // b-quark:
+  cos5_h.topdrawOutput(file,Frame,"RED","cos5 distribution: all wgts");
+  eta5_h.topdrawOutput(file,Frame,"RED","eta5 distribution: all wgts");
+  pt5_h.topdrawOutput(file,Frame,"RED","pt5 distribution: all wgts");
+  // Anti-b-quark:
+  cos6_h.topdrawOutput(file,Frame,"RED","cos6 distribution: all wgts");
+  eta6_h.topdrawOutput(file,Frame,"RED","eta6 distribution: all wgts");
+  pt6_h.topdrawOutput(file,Frame,"RED","pt6 distribution: all wgts");
+  // Vector boson or Higgs boson depending on process:
+  y34_h.topdrawOutput(file,Frame,"RED","y34 distribution: all wgts");
+  eta34_h.topdrawOutput(file,Frame,"RED","eta34 distribution: all wgts");
+  m34wz_h.topdrawOutput(file,Frame,"RED","m34 low  mass: all wgts");
+  m34h_h.topdrawOutput(file,Frame,"RED","m34 high mass: all wgts");
+  // Higgs bosons only:
+  y56_h.topdrawOutput(file,Frame,"RED","y56 distribution: all wgts");
+  eta56_h.topdrawOutput(file,Frame,"RED","eta56 distribution: all wgts");
+  m56_h.topdrawOutput(file,Frame,"RED","m56 distribution: all wgts");
+  // Everything added up:
+  y3456_h.topdrawOutput(file,Frame,"RED","y3456 distribution: all wgts");
+  eta3456_h.topdrawOutput(file,Frame,"RED","eta3456 distribution: all wgts");
+  m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
 
-  eta3_h.topdrawOutput(outfile,Frame,"RED","eta3 distribution: all wgts");
- 
-  eta4_h.topdrawOutput(outfile,Frame,"RED","eta4 distribution: all wgts");
- 
-  pt3_h.topdrawOutput(outfile,Frame,"RED","pt3 distribution: all wgts");
- 
-  pt4_h.topdrawOutput(outfile,Frame,"RED","pt4 distribution: all wgts");
- 
-
-  y34_h.topdrawOutput(outfile,Frame,"RED","y34 distribution: all wgts");
- 
-  m34_h.topdrawOutput(outfile,Frame,"RED","m34 distribution: all wgts");
-
-
-  //m345_h.topdrawOutput(outfile,Frame,"RED","m345 distribution: all wgts");
-
-  outfile.close();
+  file.close();
 }
