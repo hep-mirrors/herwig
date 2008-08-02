@@ -18,6 +18,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
@@ -29,10 +30,9 @@ MEPP2HiggsPowheg::MEPP2HiggsPowheg() :
   CF_(4./3.)  ,  CA_(3.)            , TR_(1./2.)        , nlf_(5.)          ,
   beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
-  widthopt_(1),  usersWidth_(0.00468456293*GeV)         ,
   scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.)   ,
   shapeopt_(2),  processopt_(1)     ,  minflavouropt_(4), maxflavouropt_(5), 
-  mh_(0.*GeV) ,  wh_(0.*GeV)
+  mh_(0.*GeV) ,  wh_(0.*GeV)        ,  h_br_(1.)
 {}
 
 ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
@@ -41,21 +41,19 @@ ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
 void MEPP2HiggsPowheg::persistentOutput(PersistentOStream & os) const {
   os << hggvertex      << ffhvertex        << theSM 
      << contrib_       << nlo_alphaS_opt_  << fixed_alphaS_ 
-     << widthopt_      << ounit(usersWidth_,GeV) 
      << scaleopt_      << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)   
      << scaleFact_     << shapeopt_      
      << processopt_    << minflavouropt_   << maxflavouropt_ << hmass_        
-     << ounit(mh_,GeV) << ounit(wh_,GeV);
+     << ounit(mh_,GeV) << ounit(wh_,GeV)   << h_br_;
 }
 
 void MEPP2HiggsPowheg::persistentInput(PersistentIStream & is, int) {
   is >> hggvertex      >> ffhvertex        >> theSM 
      >> contrib_       >> nlo_alphaS_opt_  >> fixed_alphaS_ 
-     >> widthopt_      >> iunit(usersWidth_,GeV) 
      >> scaleopt_      >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)  
      >> scaleFact_     >> shapeopt_      
      >> processopt_    >> minflavouropt_   >> maxflavouropt_ >> hmass_     
-     >> iunit(mh_,GeV) >> iunit(wh_,GeV);
+     >> iunit(mh_,GeV) >> iunit(wh_,GeV)   >> h_br_;
 }
 
 void MEPP2HiggsPowheg::Init() {
@@ -104,27 +102,6 @@ void MEPP2HiggsPowheg::Init() {
      "The value of alphaS to use for the nlo weight if nlo_alphaS_opt_=1",
      &MEPP2HiggsPowheg::fixed_alphaS_, 0.11803463, 0., 1.0,
      false, false, Interface::limited);
-
-  static Switch<MEPP2HiggsPowheg,unsigned int> interfaceWidthOption
-    ("WidthOption",
-     "Option to allow user to specify the width",
-     &MEPP2HiggsPowheg::widthopt_, 1, false, false);
-  static SwitchOption interfaceWidthGenerator
-    (interfaceWidthOption,
-     "WidthGenerator",
-     "Herwig++/ThePEG calculates the width (default)",
-     1);
-  static SwitchOption interfaceSpecifyWidth
-    (interfaceWidthOption,
-     "SpecifyWidth",
-     "The user can set the width manually setting interface MyHiggsWidth",
-     2);
-
-  static Parameter<MEPP2HiggsPowheg,Energy> interfaceMyHiggsWidth
-    ("MyHiggsWidth",
-     "Value to use when overriding widthGenerator with interface WidthOption",
-     &MEPP2HiggsPowheg::usersWidth_, GeV, 0.00468456293*GeV, 0.0*GeV, 10.0*GeV,
-     true, false, Interface::limited);
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
@@ -222,7 +199,7 @@ void MEPP2HiggsPowheg::doinit() throw(InitException) {
   // get the mass generator for the higgs
   PDPtr h0 = getParticleData(ParticleID::h0);
   mh_ = h0->mass();
-  wh_ = widthopt_==2 ? usersWidth_ : h0->generateWidth(mh_);
+  wh_ = h0->generateWidth(mh_);
   if(h0->massGenerator()) {
     hmass_=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
   }
@@ -230,6 +207,20 @@ void MEPP2HiggsPowheg::doinit() throw(InitException) {
     << "If using the mass generator for the line shape in MEPP2HiggsPowheg::doinit()"
     << "the mass generator must be an instance of the SMHiggsMassGenerator class"
     << Exception::runerror;
+
+  // If the width is equal to the nominal width we check that the decay 
+  // modes of the Higgs are in fact all on. h_br_ is computed as the sum 
+  // of branching ratios for decays which are On only. h_br_ later multiplies 
+  // the return value in dSigHatDR. If the width is not the nominal width 
+  // h_br_ just stays equal to 1, and the code here has no effect.
+  if(wh_==h0->width()) {
+    h_br_ = 0.;
+    for(DecaySet::const_iterator it=h0->decayModes().begin();it!=h0->decayModes().end();++it) {
+      tDMPtr mode=*it;
+      if(!mode->on()||mode->orderedProducts().size()!=2) continue;
+      h_br_ += mode->brat();
+    }
+  }
 }
 
 unsigned int MEPP2HiggsPowheg::orderInAlphaS() const {
@@ -287,11 +278,6 @@ CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
   // Continue with the lo matrix element code:
   using Constants::pi;
   InvEnergy2 bwfact;
-  if(widthopt_==2) {
-    bwfact = wh_*sqrt(sHat())/pi/(sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
-    double cs = me2()*jacobian()*pi*double(UnitRemoval::E4 * bwfact/sHat());
-    return UnitRemoval::InvE2 * sqr(hbarc) * cs;
-  }  
   if(shapeopt_==1) {
     bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
       (sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
@@ -299,7 +285,7 @@ CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
     bwfact = hmass_->BreitWignerWeight(sqrt(sHat()),0);
   }
   double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
-  return UnitRemoval::InvE2 * sqr(hbarc) * cs;
+  return UnitRemoval::InvE2 * sqr(hbarc) * cs * h_br_;
 }
 
 double MEPP2HiggsPowheg::me2() const {
