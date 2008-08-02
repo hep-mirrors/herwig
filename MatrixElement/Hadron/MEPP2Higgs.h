@@ -226,16 +226,6 @@ private:
 private:
 
   /**
-   * Selects a HW++/ThePEG widthGenerator width of a fixed user input width
-   */
-  unsigned int widthopt_;
-
-  /**
-   * The value associated to the fixed width option
-   */
-  Energy usersWidth_;
-
-  /**
    * Selects a dynamic (sHat) or fixed factorization scale
    */
   unsigned int scaleopt_;
