@@ -76,9 +76,9 @@ public:
   /**
    * The default constructor.
    */
-  PowhegHandler() : _npoint(200), _sudopt(0), _sudname("sudakov.data"),
+  PowhegHandler() : _npoint(1000), _sudopt(0), _sudname("sudakov.data"),
 		    _jetMeasureMode(0),_lepton(true)
-		  , _yini(0.001), _alphaSMG(0.118) {}
+		  , _yini(0.001), _alphaSMG(0.118), _max_qtilde( 1000.*GeV ) {}
 
   /**
    * Perform CKKW reweighting
@@ -104,6 +104,13 @@ public:
    */
   inline Energy getMergeScale() {
     return sqrt( _yini * _s );
+  }
+
+  /**
+   *  access to the jet measure definition being used
+   */
+  inline unsigned int jetMeasureMode() {
+    return _jetMeasureMode;
   }
 
   /** @name Functions used by the persistent I/O system. */
@@ -181,6 +188,9 @@ private:
    * with \f$q\bar{q}\f$.
    */
   HardTreePtr doClustering();
+  
+  double Sud( Energy scale, long id );
+
 
   HardTreePtr generalClustering();
   BranchingElement allowedFinalStateBranching
@@ -342,10 +352,33 @@ private:
    */
   HistogramPtr _hSud;
 
+   /**
+   * Histogram of Sudakov weights
+   */
+  HistogramPtr _hSudU;
+  /**
+   * Histogram of Sudakov weights
+   */
+  HistogramPtr _hSudD;
+ /**
+   * Histogram of Sudakov weights
+   */
+  HistogramPtr _hSudS;
+  /**
+   * Histogram of Sudakov weights
+   */
+  HistogramPtr _hSudG;
+  
+
   /**
    * Histogram of alphaS weights
    */
   HistogramPtr _halphaS;
+
+  /**
+   * maximum qtilde scale for sudakov interpolation tables
+   */
+  Energy _max_qtilde;
 
 };
 

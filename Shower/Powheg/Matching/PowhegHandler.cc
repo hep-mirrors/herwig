@@ -33,12 +33,14 @@ IBPtr PowhegHandler::fullclone() const {
 
 void PowhegHandler::persistentOutput(PersistentOStream & os) const {
   os  << _alphaS << _sudopt << _sudname << _jetMeasureMode << _allowedInitial
-      << _allowedFinal << _matrixElement << _lepton <<  _yini << _alphaSMG;
+      << _allowedFinal << _matrixElement << _lepton <<  _yini << _alphaSMG
+      << _npoint <<  ounit( _max_qtilde, GeV );
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
   is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode >> _allowedInitial
-      >> _allowedFinal >> _matrixElement >> _lepton >> _yini >> _alphaSMG;
+      >> _allowedFinal >> _matrixElement >> _lepton >> _yini >> _alphaSMG
+      >> _npoint >> iunit( _max_qtilde, GeV );
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -124,6 +126,17 @@ void PowhegHandler::Init() {
      "The matrix element class for the core 2->2 process",
      &PowhegHandler::_matrixElement, false, false, true, true, false);
 
+  static Parameter<PowhegHandler,unsigned int> interfaceInterpPoints
+    ("InterpolatorPoints",
+     "The number of points used for sudakov interpolation tables",
+     &PowhegHandler::_npoint, 0, 1000000, 1000,
+     false, false, Interface::limited );
+
+  static Parameter<PowhegHandler, Energy> interfaceMaxQTilde
+    ("maxQTilde",
+     "The maximum QTilde scale for sudakov interpolation tables",
+     &PowhegHandler::_max_qtilde, GeV, 1.*GeV, 1000000.*GeV, 1000.*GeV,
+     false, false, Interface::limited);
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
@@ -222,6 +235,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
+  //  cerr<<"sudakov wgt is: "<<SudWgt<<"\n";
   return SudWgt;
 }
 
@@ -240,6 +254,8 @@ void PowhegHandler::dofinish() {
 		       "",
 		       "wgt",
 		       "");
+ 
+     
   _halphaS->topdrawOutput(output,Frame,
 		       "RED",
 		       "AlphaS wgts",
@@ -248,8 +264,6 @@ void PowhegHandler::dofinish() {
 		       "",
 		       "wgt",
 		       "");
-  
-
 }
 
 
@@ -258,6 +272,10 @@ void PowhegHandler::doinitrun() {
   //initialise histograms
   _hSud = new_ptr(Histogram(0.,2.,100));
   _halphaS = new_ptr(Histogram(0.,2.,100));
+  _hSudU = new_ptr(Histogram(0.,100.,100));
+  _hSudD = new_ptr(Histogram(0.,100.,100));
+  _hSudS = new_ptr(Histogram(0.,100.,100));
+  _hSudG = new_ptr(Histogram(0.,100.,100));
 
   // integrator for the outer integral
   GaussianIntegrator outer;
@@ -270,12 +288,12 @@ void PowhegHandler::doinitrun() {
 	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
       // class to return the integrated factor in the exponent
       Ptr<QTildeSudakovIntegrator>::pointer integrator = 
-	new_ptr( QTildeSudakovIntegrator(it->second, _yini * sqrt( _s ) ) );
+	new_ptr( QTildeSudakovIntegrator(it->second, _yini * sqrt( _s ), _jetMeasureMode ) );
       if(_sudopt==1) sudFileOutput << it->second.first->fullName() << "\t"
 				   << it->second.second[0] << "\t"
 				   << it->second.second[1] << "\t"
 				   << it->second.second[2] << "\n";
-      Energy qtildemax = generator()->maximumCMEnergy();
+      Energy qtildemax = _max_qtilde;
       Energy qtildemin = integrator->minimumScale();
       vector<double> sud;
       vector<Energy> scale;
@@ -348,28 +366,6 @@ void PowhegHandler::doinitrun() {
       }
     }
   }
-//   ofstream output("sudakovs.top");
-//   for(BranchingList::const_iterator 
-// 	it = evolver()->splittingGenerator()->finalStateBranchings().begin();
-//       it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
-//      output << "NEWFRAME\n";
-//      output << "TITLE TOP \"Sudakov for " << getParticleData(it->second.second[0])->PDGName() << " -> "
-//  	   << getParticleData(it->second.second[1])->PDGName() << " "
-//  	   << getParticleData(it->second.second[2])->PDGName() << "\"\n";
-//      for(unsigned int ix=0;ix<sud.size();++ix)
-//        output << scale[ix]/GeV << " " << sud[ix] << "\n";
-//      output << "JOIN RED\n" << flush;
- //     HistogramPtr temp(new_ptr(Histogram(0.,100.,200)));
-
- //     double slst = (*intq)(91.2*GeV);
- //     for(unsigned int ix=0;ix<100000000;++ix) {
- //       double snow = slst/UseRandom::rnd();
- //       if(snow>=1.) continue;
- //       Energy qnow = (*ints)(snow);
- //       *temp +=qnow/GeV;
- //     }
- //     using namespace HistogramOptions;
- //     temp->topdrawOutput(output,Frame);
 }
 
 void PowhegHandler::doinit() throw(InitException) {
@@ -390,6 +386,7 @@ void PowhegHandler::doinit() throw(InitException) {
       it != evolver()->splittingGenerator()->initialStateBranchings().end(); ++it) {
     _allowedInitial.insert(make_pair(it->second.second[0],it->second));
   }
+
 }
 
 void PowhegHandler::cascade() {
@@ -493,9 +490,6 @@ HardTreePtr PowhegHandler::doClustering() {
 
   ParticleVector theParts  = lastXCombPtr()->subProcess()->outgoing();
 
-  //create and add an intermediate here?
-  //make the particle with the PPair from subprocess()->incoming();
-  
   //make an intermediate and add to subprocess if not read in
   if(lastXCombPtr()->subProcess()->intermediates().empty()) {
     return HardTreePtr();
@@ -515,7 +509,6 @@ HardTreePtr PowhegHandler::doClustering() {
     
   PPtr vb = lastXCombPtr()->subProcess()->intermediates()[0];
   _s = lastXCombPtr()->lastS();
-
 
   _theNodes.clear();
   _theExternals.clear();
@@ -598,7 +591,13 @@ HardTreePtr PowhegHandler::doClustering() {
     
     theParticles.erase( clusterPair.first  );
     theParticles.erase( clusterPair.second );
-
+    /*
+      cerr<<"\n\n clustered particles: \n"
+	  << * clusterPair.first <<" \n and\n"
+	  << * clusterPair.second << "\n into \n"
+	  << * clustered <<"\n "
+	  <<"scale of clustering was "<<yij_min<<"\n";
+    */
     //search the externals for each of the 2 particles being clustered
     //if found update the yij scale and nason branching of each external
     if( _theExternals.find( clusterPair.first ) != _theExternals.end() ){
@@ -635,12 +634,7 @@ HardTreePtr PowhegHandler::doClustering() {
   theBranchings.push_back( spaceBranchings.back() );
   HardTreePtr powhegtree = new_ptr( HardTree( theBranchings,
 					       spaceBranchings ) );
-  //should I connect the branchings to the particles
-  //doesn't do anything unless showerParticles come from showertree
-  for(  map<ShowerParticlePtr, HardBranchingPtr>::iterator it = theParticles.begin(); 
-	it != theParticles.end(); ++it){ 
-    powhegtree->connect( it->first, it->second );
-  }
+
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructDecayJets(powhegtree,evolver());
@@ -663,14 +657,23 @@ HardTreePtr PowhegHandler::doClustering() {
 
     long intID = cit->first->branchingParticle()->id();
     //get start scale from parent of the hardBranching
+    //is there a parent hardbranching
     if( cit->first->parent() ) {
       HardBranchingPtr intParent = cit->first->parent();
+      //find the parent
       if( _theNodes.find( intParent ) != _theNodes.end() ){
 	startScale = intParent->scale() * cit->first->z();
 	startY = _theNodes.find( cit->first )->second;
       }
       else cerr<<"doClustering()::can't find the parent of the intermediate in nason branchings\n";
     }
+    //the parent was a q or qbar from hard sub process
+    //set scale to that of the showerparticle
+    else {
+      startScale = cit->first->branchingParticle()
+	->evolutionScales()[ ShowerIndex::QCD ];
+    }
+    if ( startScale < endScale ) endScale = startScale;
     _theIntermediates.insert( make_pair( intID, 
 					 make_pair( make_pair( startY, startScale ), 
 						    make_pair( endY, endScale  ) ) ) );
@@ -1209,71 +1212,79 @@ void PowhegHandler::createColourFlow(HardTreePtr tree,
       it!=tree->branchings().end();++it) (**it).fixColours();
 }
 
-double PowhegHandler::sudakovWeight() {
+double PowhegHandler::Sud( Energy scale, long id ){
+  //upper limit on scale 
+  double sudwgt = 1.;
+  Energy scale_cut = 1000*GeV;
+  multimap< long, pair < Interpolator<double,Energy>::Ptr,
+    Interpolator<Energy,double>::Ptr >  >::const_iterator cjt;
+  for( cjt =  _fbranchings.lower_bound( abs( id ) );
+       cjt != _fbranchings.upper_bound( abs( id ) );
+       ++cjt ) {
+    if( scale < scale_cut ) sudwgt *= (* cjt->second.first )( scale );
+    else sudwgt *= (* cjt->second.first )( scale_cut );
+  }
+  return sudwgt;
+}
 
-  Energy Q = sqrt( _s );
-  //the Sudakov weight factor
+double PowhegHandler::sudakovWeight() {
   double SudWgt = 1.;
   //include the sud factor for each external line
-  for( map<ShowerParticlePtr,pair<double,HardBranchingPtr> >::const_iterator cit 
-	 = _theExternals.begin();
+  for( map<ShowerParticlePtr,pair<double,HardBranchingPtr> >::const_iterator cit = _theExternals.begin();
        cit != _theExternals.end(); ++cit ) {
-    //itererate over all matching sudakovs (only 1 except for gluon)
-    multimap< long, pair < Interpolator<double,Energy>::Ptr,
-      Interpolator<Energy,double>::Ptr >  >::const_iterator cjt;
-    for( cjt =  _fbranchings.lower_bound( abs( cit->first->id() ) );
-	 cjt != _fbranchings.upper_bound( abs( cit->first->id() ) );
-	 ++cjt ) {
-      Energy scale = sqrt( _s );
-      if( cit->second.second ){
-	//is the external 1st or second child (decide which z to use)
-	if( cit->first == 
-	    cit->second.second->children()[0]->branchingParticle() )
-	  scale =  cit->second.second->scale()* 
-	    cit->second.second->children()[0]->z();
-	else if(  cit->first == 
-		  cit->second.second->children()[1]->branchingParticle() )
-	  scale =  cit->second.second->scale()* 
-	    cit->second.second->children()[1]->z();
-	else cerr<<"could not find child in external HardBranching \n";
-      }
-      if(scale > Q) scale = Q;
-      SudWgt *= (* cjt->second.first )( scale );
+  
+    Energy scale= sqrt( _s );
+    if( cit->second.second ){
+      if( cit->first == 
+	  cit->second.second->children()[0]->branchingParticle() )
+	scale =  cit->second.second->scale()* 
+	  cit->second.second->children()[0]->z();
+      else if(  cit->first == 
+		cit->second.second->children()[1]->branchingParticle() )
+	scale =  cit->second.second->scale()* 
+	  cit->second.second->children()[1]->z();
+      else cerr<<"could not find child in external HardBranching \n";
     }
+    else{
+      vector<Energy> theScales = cit->first->evolutionScales();
+      scale = theScales[ ShowerIndex::QCD ];
+    }
+    SudWgt *= Sud( scale, cit->first->id() );  
   }
-  if(SudWgt > 1.) cerr<<"sudakov from externals > 1!!\n";
+  
+  if(SudWgt > 1.1) cerr<<"\n\n\nsudakov from externals > 1!!\n\n\n";
   //include the intermediate line wgts
   for( map< long, pair< pair< double, Energy >, pair< double, Energy > > >::const_iterator cit 
 	 = _theIntermediates.begin();
        cit != _theIntermediates.end(); ++cit ) {
-    //itererate over all matching sudakovs (only 1 except for gluon)
-    multimap< long, pair < Interpolator< double, Energy >::Ptr,
-      Interpolator<Energy,double>::Ptr > >::const_iterator cjt;
-    for( cjt =  _fbranchings.lower_bound( abs( cit->first ) );
-	 cjt != _fbranchings.upper_bound( abs( cit->first ) );
-	 ++cjt ) {
-      Energy scale =  cit->second.first.second;
-      if(scale > Q ) scale = Q;
-      
-      double internal_wgt = (* cjt->second.first )( scale );
-      scale =  cit->second.second.second;
-      if(scale > Q ) scale = Q;
-      internal_wgt /= (* cjt->second.first )( scale );
-    }
+    
+    Energy scale =  cit->second.first.second;
+    
+    double internal_wgt = Sud( scale, cit->first );
+    scale =  cit->second.second.second;
+    if(scale > cit->second.first.second ) cerr <<"scales wrong way round!\n";
+    internal_wgt /= Sud( scale, cit->first );
+    if(internal_wgt > 1.1 || internal_wgt < 0.)cerr<<"\n\nbig internal weight of "<< internal_wgt
+						   <<"\nnum scale = "
+						   <<cit->second.first.second / GeV
+						   <<"\nden scale = "
+						   <<cit->second.second.second /GeV
+						   <<"\n\n";
   }
+ 
   double alphaWgt = 1.;
   //need to add the alphaS weight
   //the alphaS ratio evaluated at all nodal values
   for(map<HardBranchingPtr,double>::const_iterator cit=_theNodes.begin();
       cit != _theNodes.end(); ++cit ) {
-    alphaWgt *= _alphaS->value( cit->second * sqr( Q ) ) / _alphaSMG;
+    alphaWgt *= _alphaS->value( cit->second * _s ) / _alphaSMG;
   }
   (*_hSud) += SudWgt;
   (*_halphaS) += alphaWgt;
-  if( SudWgt*alphaWgt > 1. ) {
-     cerr<<"weight exceeded 1 in PowhegHandler::reweight() !!! \n";
-     cerr<<"  alpha wgt = "<<alphaWgt
-    	<<"\n  sudWgt = "<<SudWgt;
+  if( SudWgt > 1.1 ) {
+    cerr<<"\n\nweight exceeded 1 in PowhegHandler::reweight() !!! \n";
+    cerr<<"  alpha wgt = "<<alphaWgt
+    	<<"\n  sudWgt = "<<SudWgt<<"\n\n";
   }
   return SudWgt*alphaWgt;
 }
