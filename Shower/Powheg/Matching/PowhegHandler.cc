@@ -288,7 +288,7 @@ void PowhegHandler::doinitrun() {
 	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
       // class to return the integrated factor in the exponent
       Ptr<QTildeSudakovIntegrator>::pointer integrator = 
-	new_ptr( QTildeSudakovIntegrator(it->second, _yini * sqrt( _s ), _jetMeasureMode ) );
+	new_ptr( QTildeSudakovIntegrator(it->second, sqrt( _yini * _s ), _jetMeasureMode ) );
       if(_sudopt==1) sudFileOutput << it->second.first->fullName() << "\t"
 				   << it->second.second[0] << "\t"
 				   << it->second.second[1] << "\t"
