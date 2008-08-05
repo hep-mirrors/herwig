@@ -8,7 +8,6 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/EventRecord/Event.h"
-#include "SemiLeptonicDPiAnalysis.fh"
 
 namespace Herwig {
 
@@ -23,11 +22,6 @@ using namespace ThePEG;
 class SemiLeptonicDPiAnalysis: public AnalysisHandler {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  inline SemiLeptonicDPiAnalysis();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -106,13 +100,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -132,7 +126,7 @@ protected:
   /**
    *  Find the stable decay products
    */
-  inline void findChildren(tPPtr,ParticleVector &);
+  void findChildren(tPPtr,ParticleVector &);
 
 private:
 
@@ -223,7 +217,5 @@ struct ClassTraits<Herwig::SemiLeptonicDPiAnalysis>
 /** @endcond */
 
 }
-
-#include "SemiLeptonicDPiAnalysis.icc"
 
 #endif /* HERWIG_SemiLeptonicDPiAnalysis_H */

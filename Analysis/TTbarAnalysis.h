@@ -14,7 +14,6 @@
        
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "TTbarAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
@@ -36,15 +35,10 @@ class TTbarAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline TTbarAnalysis();
-  //@}
-
-public:
+  TTbarAnalysis();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -107,13 +101,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -124,7 +118,7 @@ protected:
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
 
 private:
 
@@ -220,10 +214,5 @@ struct ClassTraits<Herwig::TTbarAnalysis>
 /** @endcond */
 
 }
-
-#include "TTbarAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TTbarAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_TTbarAnalysis_H */

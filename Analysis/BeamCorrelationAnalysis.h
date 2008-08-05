@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "BeamCorrelationAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
@@ -14,7 +13,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the BeamCorrelationAnalysis class.
+ * The documentation of the BeamCorrelationAnalysis class
+ * is designed to plot the angle in the lab frame of an outgoing particle
+ * w.r.t to an incoming particle to test the spin correlations.
  *
  * @see \ref BeamCorrelationAnalysisInterfaces "The interfaces"
  * defined for BeamCorrelationAnalysis.
@@ -43,8 +44,6 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -65,13 +64,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -108,7 +107,7 @@ private:
   vector<int> _outgoing;
 
   /**
-   *  PDG code of the outgoing particle
+   *  PDG code of the incoming particle
    */
   vector<int> _incoming;
 
@@ -155,7 +154,5 @@ struct ClassTraits<Herwig::BeamCorrelationAnalysis>
 /** @endcond */
 
 }
-
-#include "BeamCorrelationAnalysis.icc"
 
 #endif /* HERWIG_BeamCorrelationAnalysis_H */

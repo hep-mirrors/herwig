@@ -14,14 +14,14 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "BELLECharmAnalysis.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the BELLECharmAnalysis class.
+ * The BELLECharmAnalysis class is designed to compared the results of
+ * Herwig++ at 10.52 GeV with data from the BELLE experiment.
  *
  * @see \ref BELLECharmAnalysisInterfaces "The interfaces"
  * defined for BELLECharmAnalysis.
@@ -33,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline BELLECharmAnalysis();
+  inline BELLECharmAnalysis() : _onshell(false) {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -104,13 +104,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -230,6 +230,11 @@ private:
    */
   Statistic _statLambda;
   //@}
+
+  /**
+   *  The weight for an event
+   */
+  double _weight;
 };
 
 }
@@ -268,7 +273,5 @@ struct ClassTraits<Herwig::BELLECharmAnalysis>
 /** @endcond */
 
 }
-
-#include "BELLECharmAnalysis.icc"
 
 #endif /* HERWIG_BELLECharmAnalysis_H */

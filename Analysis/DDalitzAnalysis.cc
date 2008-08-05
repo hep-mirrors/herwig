@@ -14,6 +14,19 @@
 
 using namespace Herwig;
 
+  
+void DDalitzAnalysis::
+findChildren(tPPtr part,ParticleVector & prod) {
+  if(part->children().empty()) {
+    prod.push_back(part);
+  }
+  else {
+    for(unsigned ix=0;ix<part->children().size();++ix) {
+      findChildren(part->children()[ix],prod);
+    }
+  }
+}
+
 void DDalitzAnalysis::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);

@@ -7,30 +7,24 @@ HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
 HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
-EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
-EventShapesMasterAnalysis.h EventShapesMasterAnalysis.icc \
+EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.h \
 BasicConsistency.cc BasicConsistency.h \
 LEPMultiplicityCount.cc LEPMultiplicityCount.h \
 MultiplicityInfo.h \
-LEPBMultiplicity.cc LEPBMultiplicity.fh \
+LEPBMultiplicity.cc\
 LEPBMultiplicity.h LEPBMultiplicity.icc \
-SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
-SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc\
-TTbarAnalysis.h TTbarAnalysis.fh \
-TTbarAnalysis.icc TTbarAnalysis.cc\
-LPairAnalysis.h LPairAnalysis.fh \
-LPairAnalysis.icc LPairAnalysis.cc\
-GammaGammaAnalysis.h GammaGammaAnalysis.fh \
-GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
-GammaJetAnalysis.h GammaJetAnalysis.fh \
-GammaJetAnalysis.icc GammaJetAnalysis.cc\
-HiggsJetAnalysis.h HiggsJetAnalysis.fh \
-HiggsJetAnalysis.icc HiggsJetAnalysis.cc \
-DrellYanPT.h DrellYanPT.fh DrellYanPT.icc DrellYanPT.cc
+SimpleLHCAnalysis.h SimpleLHCAnalysis.cc\
+TTbarAnalysis.h TTbarAnalysis.cc\
+LPairAnalysis.h LPairAnalysis.cc\
+GammaGammaAnalysis.h GammaGammaAnalysis.cc\
+GammaJetAnalysis.h GammaJetAnalysis.cc\
+HiggsJetAnalysis.h HiggsJetAnalysis.cc \
+DrellYanPT.h DrellYanPT.cc
 
 if HAVE_HEPMC
-HwAnalysis_la_SOURCES += GraphvizPlot.h GraphvizPlot.fh \
-GraphvizPlot.icc GraphvizPlot.cc HepMCFile.h HepMCFile.cc
+HwAnalysis_la_SOURCES +=  \
+GraphvizPlot.h GraphvizPlot.cc \
+HepMCFile.h    HepMCFile.cc
 HwAnalysis_la_CPPFLAGS += $(HEPMCINCLUDE)
 HwAnalysis_la_LIBADD += $(HEPMCLIBS)
 endif
@@ -38,66 +32,38 @@ endif
 
 HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:1:0
 HwLEPAnalysis_la_SOURCES = \
-BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.fh \
-BFragmentationAnalysisHandler.h BFragmentationAnalysisHandler.icc \
-SingleParticleAnalysis.cc SingleParticleAnalysis.fh\
-SingleParticleAnalysis.h SingleParticleAnalysis.icc \
-LEPEventShapes.cc LEPEventShapes.fh LEPEventShapes.h LEPEventShapes.icc \
-IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.fh \
-IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc \
-DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh \
-DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc \
-BELLECharmAnalysis.h BELLECharmAnalysis.icc \
-BELLECharmAnalysis.fh BELLECharmAnalysis.cc \
-CLEOCharmAnalysis.h CLEOCharmAnalysis.icc \
-CLEOCharmAnalysis.fh CLEOCharmAnalysis.cc
+BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.h\
+SingleParticleAnalysis.cc SingleParticleAnalysis.h\
+LEPEventShapes.cc LEPEventShapes.h\
+IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.h\
+DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.h \
+BELLECharmAnalysis.h BELLECharmAnalysis.cc\
+CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 
 HwDecayAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 HwDecayAnalysis_la_SOURCES = \
-TauTo2MesonAnalysis.h TauTo2MesonAnalysis.icc \
-TauTo2MesonAnalysis.fh TauTo2MesonAnalysis.cc \
-TauToLeptonsAnalysis.h TauToLeptonsAnalysis.icc \
-TauToLeptonsAnalysis.fh TauToLeptonsAnalysis.cc \
-TauTo3MesonAnalysis.h TauTo3MesonAnalysis.icc \
-TauTo3MesonAnalysis.fh TauTo3MesonAnalysis.cc \
-TauTo4MesonAnalysis.h TauTo4MesonAnalysis.icc \
-TauTo4MesonAnalysis.fh TauTo4MesonAnalysis.cc \
-Tau5Pion.h Tau5Pion.icc \
-Tau5Pion.fh Tau5Pion.cc \
-TauCorrelationAnalysis.h TauCorrelationAnalysis.icc \
-TauCorrelationAnalysis.fh TauCorrelationAnalysis.cc \
-EtaDecayAnalysis.h EtaDecayAnalysis.icc \
-EtaDecayAnalysis.fh EtaDecayAnalysis.cc \
-SemiLeptonicDecayAnalysis.h SemiLeptonicDecayAnalysis.icc \
-SemiLeptonicDecayAnalysis.fh SemiLeptonicDecayAnalysis.cc \
-OmegaPhi3PionAnalysis.h OmegaPhi3PionAnalysis.icc \
-OmegaPhi3PionAnalysis.fh OmegaPhi3PionAnalysis.cc \
-VffGammaAnalysis.h VffGammaAnalysis.icc \
-VffGammaAnalysis.fh VffGammaAnalysis.cc  \
-VPPGammaAnalysis.h VPPGammaAnalysis.icc \
-VPPGammaAnalysis.fh VPPGammaAnalysis.cc  \
-PScalarVectorFermionsAnalysis.h PScalarVectorFermionsAnalysis.icc \
-PScalarVectorFermionsAnalysis.fh PScalarVectorFermionsAnalysis.cc \
-VectorPScalarFermionsAnalysis.h VectorPScalarFermionsAnalysis.icc \
-VectorPScalarFermionsAnalysis.fh VectorPScalarFermionsAnalysis.cc \
-Pi4ElectronAnalysis.h Pi4ElectronAnalysis.icc \
-Pi4ElectronAnalysis.fh Pi4ElectronAnalysis.cc  \
-BtoSGammaAnalysis.h BtoSGammaAnalysis.icc \
-BtoSGammaAnalysis.fh BtoSGammaAnalysis.cc   \
-ZPhotonsAnalysis.h ZPhotonsAnalysis.icc \
-ZPhotonsAnalysis.fh ZPhotonsAnalysis.cc \
-DDalitzAnalysis.h DDalitzAnalysis.icc \
-DDalitzAnalysis.fh DDalitzAnalysis.cc  \
-SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.icc \
-SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc  \
-OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.icc \
-OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc\
-BeamCorrelationAnalysis.h BeamCorrelationAnalysis.icc \
-BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
-a1DecayAnalysis.h a1DecayAnalysis.icc \
-a1DecayAnalysis.fh a1DecayAnalysis.cc  \
-BranchingRatioAnalysis.h BranchingRatioAnalysis.icc \
-BranchingRatioAnalysis.fh BranchingRatioAnalysis.cc \
+TauTo2MesonAnalysis.h TauTo2MesonAnalysis.cc \
+TauToLeptonsAnalysis.h TauToLeptonsAnalysis.cc \
+TauTo3MesonAnalysis.h TauTo3MesonAnalysis.cc \
+TauTo4MesonAnalysis.h TauTo4MesonAnalysis.cc \
+Tau5Pion.h Tau5Pion.cc \
+TauCorrelationAnalysis.h TauCorrelationAnalysis.cc \
+EtaDecayAnalysis.h EtaDecayAnalysis.cc \
+SemiLeptonicDecayAnalysis.h SemiLeptonicDecayAnalysis.cc \
+OmegaPhi3PionAnalysis.h OmegaPhi3PionAnalysis.cc \
+VffGammaAnalysis.h VffGammaAnalysis.cc  \
+VPPGammaAnalysis.h VPPGammaAnalysis.cc  \
+PScalarVectorFermionsAnalysis.h PScalarVectorFermionsAnalysis.cc \
+VectorPScalarFermionsAnalysis.h VectorPScalarFermionsAnalysis.cc \
+Pi4ElectronAnalysis.h Pi4ElectronAnalysis.cc  \
+BtoSGammaAnalysis.h BtoSGammaAnalysis.cc   \
+ZPhotonsAnalysis.h ZPhotonsAnalysis.cc \
+DDalitzAnalysis.h DDalitzAnalysis.cc  \
+SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.cc  \
+OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.cc\
+BeamCorrelationAnalysis.h BeamCorrelationAnalysis.cc  \
+a1DecayAnalysis.h a1DecayAnalysis.cc  \
+BranchingRatioAnalysis.h BranchingRatioAnalysis.cc \
 Upsilon4SSpectrumAnalysis.h Upsilon4SSpectrumAnalysis.cc \
 Upsilon4SMultiplicityCount.h Upsilon4SMultiplicityCount.cc \
 BabarBDecayAnalysis.h BabarBDecayAnalysis.cc
@@ -109,14 +75,11 @@ HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:1:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
-LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh \
+LEPFourJetsAnalysis.cc\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
-LEPJetAnalysis.cc LEPJetAnalysis.fh \
-LEPJetAnalysis.h LEPJetAnalysis.icc \
-LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
-LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
-TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
-TopDalitzAnalysis.h TopDalitzAnalysis.icc
+LEPJetAnalysis.cc LEPJetAnalysis.h\
+LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.h \
+TopDalitzAnalysis.cc TopDalitzAnalysis.h
 
 #code which also depends on ROOT
 if WANT_LIBROOT
@@ -125,8 +88,7 @@ HwUEAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwUEAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) $(ROOTINCLUDE)
 HwUEAnalysis_la_LIBADD = $(KTJETLIBS) $(ROOTLIBS)
 HwUEAnalysis_la_SOURCES = \
-UEobservables.cc UEobservables.fh \
-UEobservables.h UEobservables.icc 
+UEobservables.cc UEobservables.h
 endif
 endif
 
@@ -134,7 +96,5 @@ HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwMPIAnalysis_la_LIBADD =
 HwMPIAnalysis_la_SOURCES = \
-RFieldAnalysis.h \
-RFieldAnalysis.cc RFieldAnalysis.icc \
-MPIMultiplicity.h MPIMultiplicity.fh \
-MPIMultiplicity.icc MPIMultiplicity.cc
+RFieldAnalysis.h RFieldAnalysis.cc \
+MPIMultiplicity.h MPIMultiplicity.cc

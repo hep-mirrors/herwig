@@ -7,7 +7,6 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "ZPhotonsAnalysis.fh"
 
 namespace Herwig {
 
@@ -26,7 +25,7 @@ public:
   /**
    *  Default constructor
    */
-  ZPhotonsAnalysis();
+  ZPhotonsAnalysis() : _iferm(11) {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -97,13 +96,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -211,7 +210,5 @@ struct ClassTraits<Herwig::ZPhotonsAnalysis>
 /** @endcond */
 
 }
-
-#include "ZPhotonsAnalysis.icc"
 
 #endif /* HERWIG_ZPhotonsAnalysis_H */

@@ -13,7 +13,6 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "LEPBMultiplicity.fh"
 
 namespace Herwig {
 
@@ -81,7 +80,9 @@ struct BranchingInfo {
 };
 
 /**
- * Here is the documentation of the LEPBBranching class.
+ * The LEPBBMultiplicity class is designed to compare the production
+ * rates of \f$B^+\f$, \f$B^0\f$, \f$B^0_s\f$ and B-baryons in
+ * B events at LEP
  *
  * @see \ref LEPBMultiplicityInterfaces "The interfaces"
  * defined for LEPBMultiplicity.
@@ -137,13 +138,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:

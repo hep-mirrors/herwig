@@ -10,10 +10,8 @@
 #include "Herwig++/Interfaces/RootInterface.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
-#include "UEobservables.fh"
-
 namespace Herwig {
-    using namespace ThePEG;
+using namespace ThePEG;
 
 /**
  * Here is the documentation of the UEobservables class.
@@ -30,12 +28,12 @@ public:
   /**
    * The default constructor.
    */
-  inline UEobservables();
+  UEobservables();
 
   /**
    * The copy constructor.
    */
-  inline UEobservables(const UEobservables &);
+  UEobservables(const UEobservables &);
 
   /**
    * The destructor.
@@ -122,13 +120,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -195,15 +193,15 @@ private:
 
 private:
 
-    /**
-     * This is a pointer to the ShowerHandler object for switch of UE
-     */
-    ShowerHandlerPtr theShowerHandler;
-
-    /**
-     *  Object to save data in ROOT
-     */
-    RootInterface theRootData;
+  /**
+   * This is a pointer to the ShowerHandler object for switch of UE
+   */
+  ShowerHandlerPtr theShowerHandler;
+  
+  /**
+   *  Object to save data in ROOT
+   */
+  RootInterface theRootData;
 };
 
 }
@@ -238,10 +236,5 @@ struct ClassTraits<Herwig::UEobservables>
 /** @endcond */
 
 }
-
-#include "UEobservables.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "UEobservables.tcc"
-#endif
 
 #endif /* THEPEG_UEobservables_H */

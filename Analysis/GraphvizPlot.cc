@@ -15,14 +15,9 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Event.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GraphvizPlot.tcc"
-#endif
 #include "ThePEG/Repository/EventGenerator.h"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include <HepMCHelper.h>
 
 using namespace ThePEG;
@@ -30,6 +25,16 @@ using namespace Herwig;
 
 namespace {
   const string header = "digraph test {\nrankdir=LR;\nranksep=1.5;\n";
+}
+
+void GraphvizPlot::dofinish() {
+  AnalysisHandler::dofinish();
+  cout << "\nGraphvizPlot: plots can be generated like this:\n"
+       << "GraphvizPlot: 'dot -Tpng " 
+       << generator()->filename() 
+       << '-'
+       << name() 
+       << "-NNN.dot > plot.png'";
 }
 
 void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
@@ -115,7 +120,6 @@ void GraphvizPlot::persistentOutput(PersistentOStream & os) const {
 void GraphvizPlot::persistentInput(PersistentIStream & is, int) {
   is >> _eventNumber;
 }
-
 
 ClassDescription<GraphvizPlot> GraphvizPlot::initGraphvizPlot;
 // Definition of the static class description member.

@@ -8,7 +8,6 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/EventRecord/Particle.h"
-#include "DDalitzAnalysis.fh"
 
 namespace Herwig {
 
@@ -23,11 +22,6 @@ using namespace ThePEG;
 class DDalitzAnalysis: public AnalysisHandler {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  inline DDalitzAnalysis();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -103,7 +97,7 @@ protected:
   /**
    *  Find the stable decay products
    */
-  inline void findChildren(tPPtr,ParticleVector &);
+  void findChildren(tPPtr,ParticleVector &);
 
 protected:
 
@@ -113,13 +107,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 protected:
 
@@ -346,7 +340,5 @@ struct ClassTraits<Herwig::DDalitzAnalysis>
 /** @endcond */
 
 }
-
-#include "DDalitzAnalysis.icc"
 
 #endif /* HERWIG_DDalitzAnalysis_H */

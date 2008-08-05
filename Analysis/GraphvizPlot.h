@@ -14,7 +14,6 @@
 
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "GraphvizPlot.fh"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -34,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GraphvizPlot();
+  inline GraphvizPlot() : _eventNumber(1) {}
   //@}
 
 public:
@@ -109,13 +108,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -123,16 +122,10 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  //  inline virtual void doinitrun();
-
-  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
 
 private:
@@ -190,10 +183,5 @@ struct ClassTraits<Herwig::GraphvizPlot>
 /** @endcond */
 
 }
-
-#include "GraphvizPlot.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GraphvizPlot.tcc"
-#endif
 
 #endif /* THEPEG_GraphvizPlot_H */

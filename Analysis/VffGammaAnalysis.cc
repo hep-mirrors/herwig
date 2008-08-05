@@ -15,7 +15,16 @@
 
 using namespace Herwig;
 
-void VffGammaAnalysis::analyze(tEventPtr event, long , int loop, int state) {
+VffGammaAnalysis::VffGammaAnalysis() {
+  // c cbar mesons
+  _id.push_back(443);_id.push_back(100443);_id.push_back(30443);
+  // b bbar mesons
+  _id.push_back(553);_id.push_back(100553);
+  _id.push_back(200553);_id.push_back(300553);
+}
+
+void VffGammaAnalysis::analyze(tEventPtr event, long ,
+			       int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);
   // find all particles

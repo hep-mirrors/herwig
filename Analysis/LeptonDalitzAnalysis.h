@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "LeptonDalitzAnalysis.fh"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "KtJet/KtJet.h"
@@ -87,13 +86,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -184,7 +183,5 @@ struct ClassTraits<Herwig::LeptonDalitzAnalysis>
 /** @endcond */
 
 }
-
-#include "LeptonDalitzAnalysis.icc"
 
 #endif /* HERWIG_LeptonDalitzAnalysis_H */

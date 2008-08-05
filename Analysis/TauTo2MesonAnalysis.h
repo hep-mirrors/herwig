@@ -8,7 +8,6 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "TauTo2MesonAnalysis.fh"
 
 namespace Herwig {
 
@@ -73,13 +72,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -182,7 +181,5 @@ struct ClassTraits<Herwig::TauTo2MesonAnalysis>
 /** @endcond */
 
 }
-
-#include "TauTo2MesonAnalysis.icc"
 
 #endif /* HERWIG_TauTo2MesonAnalysis_H */

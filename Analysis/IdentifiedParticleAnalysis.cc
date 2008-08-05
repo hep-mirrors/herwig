@@ -22,54 +22,76 @@
 
 using namespace Herwig;
 
-void IdentifiedParticleAnalysis::analyze(const tPVector &) {
+int IdentifiedParticleAnalysis::getFlavour(const tPVector &pv) {
+  tPVector::const_iterator it;
+  for(it = pv.begin(); it!=pv.end(); it++) 
+    if (abs((*it)->id()) < 7) break; 
+  return abs((*it)->id());
+}
+
+void IdentifiedParticleAnalysis::
+analyze(tEventPtr event, long ieve, int loop, int state) {
+  AnalysisHandler::analyze(event, ieve, loop, state);
+  if ( loop > 0 || state != 0 || !event ) return;
   // get the final-state
-  tcEventPtr event=generator()->currentEvent();
   tPVector hadrons=event->getFinalState();
   // get the partons 
-  tPVector partons=event->primaryCollision()->steps()[0]->getFinalState();
+  tPVector partons=event->primaryCollision()->steps()[0]->
+    getFinalState();
   int flav = getFlavour(partons);
   Energy Emax = 0.5*generator()->maximumCMEnergy();  
-  for (tPVector::iterator it = hadrons.begin(); it != hadrons.end(); ++it ) {
+  for (tPVector::iterator it = hadrons.begin(); 
+       it != hadrons.end(); ++it ) {
     // only looking at charged particles
     if(!(*it)->data().charged()) continue;
     // all particles
-    double xp = _shapes->getX((*it)->momentum(), Emax); 
-    *_xpa += xp;
+    double xp = getX((*it)->momentum(), Emax);
+    double pp = (*it)->momentum().vect().mag()/GeV;
+    _xpa->addWeighted(xp,event->weight());
     if(abs((*it)->id()) == ParticleID::piplus) {
-      *_pipma += xp;
-      *_pipm += (*it)->momentum().vect().mag()/GeV; 
+      _pipma->addWeighted(xp,event->weight());
+      _pipm ->addWeighted(pp,event->weight()); 
     } 
     else if(abs((*it)->id()) == ParticleID::Kplus) {
-      *_kpma += xp; 
-      *_kpm += (*it)->momentum().vect().mag()/GeV;
+      _kpma->addWeighted(xp,event->weight()); 
+      _kpm ->addWeighted(pp,event->weight());
     }
     else if(abs((*it)->id()) == ParticleID::pplus) {
-      *_ppma += xp; 
-      *_ppm += (*it)->momentum().vect().mag()/GeV;
+      _ppma->addWeighted(xp,event->weight()); 
+      _ppm ->addWeighted(pp,event->weight());
     }
     switch(flav) {
     case 1:
     case 2:
     case 3:
-      *_xpl += xp; 
-      if(abs((*it)->id()) == ParticleID::piplus)     *_pipml += xp;
-      else if(abs((*it)->id()) == ParticleID::Kplus) *_kpml  += xp;
-      else if(abs((*it)->id()) == ParticleID::pplus) *_ppml  += xp;
-      *_udsxp += xp;
-      if (xp > 0) *_udsxip += -log(xp);
+      _xpl ->addWeighted(xp,event->weight()); 
+      if(abs((*it)->id()) == ParticleID::piplus)     
+	_pipml->addWeighted(xp,event->weight());
+      else if(abs((*it)->id()) == ParticleID::Kplus) 
+	_kpml ->addWeighted(xp,event->weight());
+      else if(abs((*it)->id()) == ParticleID::pplus) 
+	_ppml ->addWeighted(xp,event->weight());
+      _udsxp->addWeighted(xp,event->weight());
+      if (xp > 0) 
+	_udsxip->addWeighted( -log(xp),event->weight());
       break;
     case 4: 
-      *_xpc += xp; 
-      if(abs((*it)->id()) == ParticleID::piplus) *_pipmc += xp; 
-      else if(abs((*it)->id()) == ParticleID::Kplus) *_kpmc += xp; 
-      else if(abs((*it)->id()) == ParticleID::pplus) *_ppmc += xp;
+      _xpc->addWeighted(xp,event->weight()); 
+      if(abs((*it)->id()) == ParticleID::piplus)
+	_pipmc->addWeighted(xp,event->weight()); 
+      else if(abs((*it)->id()) == ParticleID::Kplus)
+	_kpmc ->addWeighted(xp,event->weight()); 
+      else if(abs((*it)->id()) == ParticleID::pplus) 
+	_ppmc ->addWeighted(xp,event->weight());
       break;
     case 5:
-      *_xpb += xp; 
-      if(abs((*it)->id()) == ParticleID::piplus) *_pipmb += xp;
-      else if(abs((*it)->id()) == ParticleID::Kplus) *_kpmb += xp;
-      else if(abs((*it)->id()) == ParticleID::pplus) *_ppmb += xp;
+      _xpb ->addWeighted(xp,event->weight()); 
+      if(abs((*it)->id()) == ParticleID::piplus) 
+	_pipmb ->addWeighted(xp,event->weight());
+      else if(abs((*it)->id()) == ParticleID::Kplus) 
+	_kpmb ->addWeighted(xp,event->weight());
+      else if(abs((*it)->id()) == ParticleID::pplus) 
+	_ppmb ->addWeighted(xp,event->weight());
       break;
     default:
       break;
@@ -87,119 +109,101 @@ void IdentifiedParticleAnalysis::analyze(const tPVector &) {
       it != allparticles.end(); ++it) {
     // lambda's
     long id = abs( (*it)->id());
-    double xp;
+    double xe = (*it)->momentum().e()/Emax;
+    double xp = (*it)->momentum().vect().mag()/Emax;
     switch(id) {
     case ParticleID::Lambda0:
-      *_lpm += (*it)->momentum().vect().mag()/Emax;
+      _lpm ->addWeighted( xp,event->weight());
       break;
     case ParticleID::Kstarplus:
-      *_xpKstarplus += (*it)->momentum().vect().mag()/Emax;
+      _xpKstarplus ->addWeighted( xp,event->weight());
       break;
     case ParticleID::Ximinus:
-      *_xpXiminus += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xiXiminus += -log(xp);
+      _xpXiminus ->addWeighted( xe,event->weight());
+      _xiXiminus ->addWeighted( -log(xp),event->weight());
       break;
     case ParticleID::Sigmastarplus:
-      *_xpSigmaplus += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xiSigmaplus += -log(xp);
+      _xpSigmaplus ->addWeighted( xe,event->weight());
+      _xiSigmaplus ->addWeighted( -log(xp),event->weight());
       break;
     case ParticleID::Sigmastarminus:
-      *_xpSigmaminus += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xiSigmaminus += -log(xp);
+      _xpSigmaminus ->addWeighted( xe,event->weight());
+      _xiSigmaminus ->addWeighted( -log(xp),event->weight());
       break;
     case ParticleID::Xistar0:
-      *_xpXi0 += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xiXi0 += -log(xp);
+      _xpXi0 ->addWeighted( xe,event->weight());
+      _xiXi0 ->addWeighted( -log(xp),event->weight());
       break;
     case 3124: // lambda(1520)
-      *_xpLambda1520 += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xiLambda1520 +=-log(xp);
+      _xpLambda1520 ->addWeighted( xe,event->weight());
+      _xiLambda1520 ->addWeighted(-log(xp),event->weight());
       break;
     case ParticleID::Deltaplus2:
-      *_xeDelta += (*it)->momentum().e()/Emax;
+      _xeDelta ->addWeighted(xe,event->weight());
       break;
     case ParticleID::f_0:
-      *_xpf980 +=(*it)->momentum().vect().mag()/Emax;
+      _xpf980 ->addWeighted(xp,event->weight());
       break;
     case ParticleID::f_2:
-      *_xpf2 +=(*it)->momentum().vect().mag()/Emax;
+      _xpf2 ->addWeighted(xp,event->weight());
       break;
     case ParticleID::phi:
-      *_xpphi +=(*it)->momentum().vect().mag()/Emax;
+      _xpphi ->addWeighted(xp,event->weight());
       break;
     case ParticleID::Kstar0:
-      *_xpKstar0 +=(*it)->momentum().vect().mag()/Emax;
+      _xpKstar0 ->addWeighted(xp,event->weight());
       break;
     case ParticleID::D0:
-      *_xeD0 += (*it)->momentum().e()/Emax;
+      _xeD0 ->addWeighted( xe,event->weight());
       break;
     case ParticleID::Dstarplus:
-      *_xeDstar += (*it)->momentum().e()/Emax;
+      _xeDstar ->addWeighted( xe,event->weight());
       break;
     case ParticleID::rho0:
-      *_xerho0 += (*it)->momentum().e()/Emax;
+      _xerho0 ->addWeighted( xe,event->weight());
       break;
     case ParticleID::pi0:
-      *_xepi0 += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xipi0 +=-log(xp);
+      _xepi0 ->addWeighted( xe,event->weight());
+      xp = xp,event->weight();
+      _xipi0 ->addWeighted(-log(xp),event->weight());
     case ParticleID::eta:
-      *_xeeta += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xieta +=-log(xp);
+      _xeeta ->addWeighted( xe,event->weight());
+      xp = xp,event->weight();
+      _xieta ->addWeighted(-log(xp),event->weight());
     case ParticleID::etaprime:
-      *_xeetap += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xietap +=-log(xp);
+      _xeetap ->addWeighted( xe,event->weight());
+      xp = xp,event->weight();
+      _xietap ->addWeighted(-log(xp),event->weight());
     case ParticleID::rhoplus:
-      *_xerhop += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xirhop +=-log(xp);
+      _xerhop ->addWeighted( xe,event->weight());
+      xp = xp,event->weight();
+      _xirhop ->addWeighted(-log(xp),event->weight());
     case ParticleID::omega:
-      *_xeomega += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xiomega +=-log(xp);
+      _xeomega ->addWeighted( xe,event->weight());
+      xp = xp,event->weight();
+      _xiomega ->addWeighted(-log(xp),event->weight());
     case ParticleID::a_0plus:
-      *_xea_0p += (*it)->momentum().e()/Emax;
-      xp = (*it)->momentum().vect().mag()/Emax;
-      *_xia_0p +=-log(xp);
+      _xea_0p ->addWeighted( xe,event->weight());
+      xp = xp,event->weight();
+      _xia_0p ->addWeighted(-log(xp),event->weight());
     case ParticleID::K0:
     case ParticleID::K_S0:
     case ParticleID::K_L0:
-      *_xpK0+=(*it)->momentum().vect().mag()/Emax;
+      _xpK0->addWeighted(xp,event->weight());
     }
   }
 }
 
-void IdentifiedParticleAnalysis::persistentOutput(PersistentOStream & os) const {
-  os << _shapes;
-}
-
-void IdentifiedParticleAnalysis::persistentInput(PersistentIStream & is, int) {
-  is >> _shapes;
-}
-
-ClassDescription<IdentifiedParticleAnalysis> 
+NoPIOClassDescription<IdentifiedParticleAnalysis> 
 IdentifiedParticleAnalysis::initIdentifiedParticleAnalysis;
 // Definition of the static class description member.
 
 void IdentifiedParticleAnalysis::Init() {
 
   static ClassDocumentation<IdentifiedParticleAnalysis> documentation
-    ("The IdentifiedParticleAnalysis class compares identified particle spectra with Z"
-     " pole data");
-
-  static Reference<IdentifiedParticleAnalysis,EventShapes> interfaceEventShapes
-    ("EventShapes",
-     "Pointer to the object which calculates the event shapes",
-     &IdentifiedParticleAnalysis::_shapes, false, false, true, false, false);
+    ("The IdentifiedParticleAnalysis class compares identified"
+     " particle spectra with Z pole data");
 }
-
 
 void IdentifiedParticleAnalysis::dofinish() {
   AnalysisHandler::dofinish();

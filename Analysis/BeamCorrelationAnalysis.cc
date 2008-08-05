@@ -39,7 +39,8 @@ void BeamCorrelationAnalysis::analyze(tEventPtr event, long ieve, int loop, int 
     if(outgoing[ix]->id()>0) out=outgoing[ix];
   }
   if(!in||!out) return;
-  *_angle[iloc] +=in->momentum().angle(out->momentum());
+  _angle[iloc]->addWeighted(in->momentum().angle(out->momentum()),
+			    event->weight());
 }
 
 NoPIOClassDescription<BeamCorrelationAnalysis> 

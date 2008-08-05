@@ -12,6 +12,27 @@
 
 using namespace Herwig;
 
+VPPGammaAnalysis::VPPGammaAnalysis() {
+  _id.push_back(ParticleID::rho0);
+  _outgoing1.push_back(ParticleID::piplus);
+  _outgoing2.push_back(ParticleID::piminus);
+  _id.push_back(ParticleID::phi);
+  _outgoing1.push_back(ParticleID::piplus);
+  _outgoing2.push_back(ParticleID::piminus);
+  _id.push_back(ParticleID::Jpsi);
+  _outgoing1.push_back(ParticleID::piplus);
+  _outgoing2.push_back(ParticleID::piminus);
+  _id.push_back(ParticleID::phi);
+  _outgoing1.push_back(ParticleID::Kplus);
+  _outgoing2.push_back(ParticleID::Kminus);
+  _id.push_back(ParticleID::Jpsi);
+  _outgoing1.push_back(ParticleID::Kplus);
+  _outgoing2.push_back(ParticleID::Kminus);
+  _id.push_back(ParticleID::Kstar0);
+  _outgoing1.push_back(ParticleID::Kplus);
+  _outgoing2.push_back(ParticleID::piminus);
+}
+
 void VPPGammaAnalysis::analyze(tEventPtr event, long, int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event);

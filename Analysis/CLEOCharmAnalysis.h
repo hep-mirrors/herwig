@@ -14,14 +14,14 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "CLEOCharmAnalysis.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the CLEOCharmAnalysis class.
+ * The CLEOCharmAnalysis class compares the results of Herwig++ at 10.52 GeV
+ * with data on Charm hadron spectra from the CLEO experiment
  *
  * @see \ref CLEOCharmAnalysisInterfaces "The interfaces"
  * defined for CLEOCharmAnalysis.
@@ -29,11 +29,6 @@ using namespace ThePEG;
 class CLEOCharmAnalysis: public AnalysisHandler {
 
 public:
-
-  /**
-   * The default constructor.
-   */
-  inline CLEOCharmAnalysis();
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -88,13 +83,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -159,6 +154,11 @@ private:
    *  CMF energy squared
    */
   Energy2 _s;
+
+  /**
+   *  The weight for the event
+   */
+  double _weight;
 };
 
 }
@@ -197,7 +197,5 @@ struct ClassTraits<Herwig::CLEOCharmAnalysis>
 /** @endcond */
 
 }
-
-#include "CLEOCharmAnalysis.icc"
 
 #endif /* HERWIG_CLEOCharmAnalysis_H */

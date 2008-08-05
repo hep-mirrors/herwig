@@ -7,7 +7,6 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "OniumToOniumPiPiAnalysis.fh"
 
 namespace Herwig {
 
@@ -78,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -173,7 +172,5 @@ struct ClassTraits<Herwig::OniumToOniumPiPiAnalysis>
 /** @endcond */
 
 }
-
-#include "OniumToOniumPiPiAnalysis.icc"
 
 #endif /* HERWIG_OniumToOniumPiPiAnalysis_H */

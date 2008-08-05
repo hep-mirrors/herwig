@@ -8,17 +8,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RFieldAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 using namespace ThePEG;
-
 
 class Jet{
 
@@ -148,8 +142,22 @@ bool keep(Energy ){
     return false;
 }
 
+RFieldAnalysis::RFieldAnalysis(): thelow(30), 
+				  theup(50), theDir(".") {}
 
-RFieldAnalysis::~RFieldAnalysis() {}
+
+void RFieldAnalysis::doinitrun() {
+  AnalysisHandler::doinitrun();
+  //equal size bins from thelow to theup
+  for(int i=0; i<(theup-thelow); i++){
+    theNTow.push_back(Statistic());
+    theNTrans.push_back(Statistic());
+    theNAway.push_back(Statistic());
+    thePtsumTow.push_back(Statistic());
+    thePtsumTrans.push_back(Statistic());
+    thePtsumAway.push_back(Statistic());
+  }
+}
 
 void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;

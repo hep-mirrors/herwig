@@ -22,6 +22,14 @@
 
 using namespace Herwig;
 
+SimpleLHCAnalysis::SimpleLHCAnalysis() :
+  _ptZ(4,Histogram(0.,250.,250)), 
+  _ptWp(4,Histogram(0.,250.,250)), 
+  _ptWm(4,Histogram(0.,250.,250)), 
+  _mZ(0.,250.,250), _mWp(0.,250.,250), _mWm(0.,250.,250), 
+  _rapZ(-10.,10.,100),_rapWp(-10.,10.,100),_rapWm(-10.,10.,100),
+  _phiZ(-3.2,3.2,100),_phiWp(-3.2,3.2,100),_phiWm(-3.2,3.2,100) {}
+
 void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
@@ -44,37 +52,37 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	pz=(*iter)->momentum();
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
-	if(mz>20.&&mz<80.)        (_ptZ[1])+=(pt);
-	else if (mz>80.&&mz<100.) (_ptZ[2])+=(pt);
-	else if (mz>100.)         (_ptZ[3])+=(pt);
-	(_ptZ[0])+=(pt);
-	(_mZ)+=(mz);
-	(_rapZ)+=pz.rapidity();
-	(_phiZ)+=pz.phi();
+	if(mz>20.&&mz<80.)        _ptZ[1].addWeighted(pt,event->weight());
+	else if (mz>80.&&mz<100.) _ptZ[2].addWeighted(pt,event->weight());
+	else if (mz>100.)         _ptZ[3].addWeighted(pt,event->weight());
+	_ptZ[0].addWeighted(pt           ,event->weight());
+	_mZ    .addWeighted(mz           ,event->weight());
+	_rapZ  .addWeighted(pz.rapidity(),event->weight());
+	_phiZ  .addWeighted(pz.phi()     ,event->weight());
       } 
       else if ((**iter).id()==ParticleID::Wplus) {
 	pz=(*iter)->momentum();
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
-	if(mz>20.&&mz<80.)        (_ptWp[1])+=(pt);
-	else if (mz>80.&&mz<100.) (_ptWp[2])+=(pt);
-	else if (mz>100.)         (_ptWp[3])+=(pt);
-	(_ptWp[0])+=(pt);
-	(_mWp)+=(mz);
-	(_rapWp)+=pz.rapidity();
-	(_phiWp)+=pz.phi();
+	if(mz>20.&&mz<80.)        _ptWp[1].addWeighted(pt,event->weight());
+	else if (mz>80.&&mz<100.) _ptWp[2].addWeighted(pt,event->weight());
+	else if (mz>100.)         _ptWp[3].addWeighted(pt,event->weight());
+	_ptWp[0].addWeighted(pt           ,event->weight());
+	_mWp    .addWeighted(mz           ,event->weight());
+	_rapWp  .addWeighted(pz.rapidity(),event->weight());
+	_phiWp  .addWeighted(pz.phi()     ,event->weight());
       } 
       else if ((**iter).id()==ParticleID::Wminus) {
 	pz=(*iter)->momentum();
 	double pt = pz.perp()/GeV;
 	double mz = pz.mass()/GeV;
-	if(mz>20.&&mz<80.)        (_ptWm[1])+=(pt);
-	else if (mz>80.&&mz<100.) (_ptWm[2])+=(pt);
-	else if (mz>100.)         (_ptWm[3])+=(pt);
-	(_ptWm[0])+=(pt);
-	(_mWm)+=(mz);
-	(_rapWm)+=pz.rapidity();
-	(_phiWm)+=pz.phi();
+	if(mz>20.&&mz<80.)        (_ptWm[1]).addWeighted(pt,event->weight());
+	else if (mz>80.&&mz<100.) (_ptWm[2]).addWeighted(pt,event->weight());
+	else if (mz>100.)         (_ptWm[3]).addWeighted(pt,event->weight());
+	_ptWm[0].addWeighted(pt           ,event->weight());
+	_mWm    .addWeighted(mz           ,event->weight());
+	_rapWm  .addWeighted(pz.rapidity(),event->weight());
+	_phiWm  .addWeighted(pz.phi()     ,event->weight());
       }
     }
   }

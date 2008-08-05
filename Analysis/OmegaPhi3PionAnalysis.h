@@ -7,7 +7,6 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "OmegaPhi3PionAnalysis.fh"
 
 namespace Herwig {
 
@@ -26,7 +25,7 @@ public:
   /**
    *  Default Constructor
    */
-  inline OmegaPhi3PionAnalysis();
+  inline OmegaPhi3PionAnalysis() : _nmax(50000) {}
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
@@ -81,13 +80,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -209,7 +208,5 @@ struct ClassTraits<Herwig::OmegaPhi3PionAnalysis>
 /** @endcond */
 
 }
-
-#include "OmegaPhi3PionAnalysis.icc"
 
 #endif /* HERWIG_OmegaPhi3PionAnalysis_H */

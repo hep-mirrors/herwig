@@ -10,19 +10,31 @@
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "KtJet/KtEvent.h"
 #include "KtJet/KtLorentzVector.h"
-
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "UEobservables.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 using namespace ThePEG;
 
+UEobservables::UEobservables() {}
+
+UEobservables::UEobservables(const UEobservables & x)
+  : AnalysisHandler(x), theShowerHandler(x.theShowerHandler) {}
+
 UEobservables::~UEobservables() {}
+
+void UEobservables::dofinish() {
+  AnalysisHandler::dofinish();
+  theRootData.finish();
+}
+
+void UEobservables::doinitrun() {
+  AnalysisHandler::doinitrun();
+  string gen(generator()->filename());
+  gen = gen.substr(2, gen.size());
+  //string pt(gen.substr(gen.rfind("-")+1, gen.size()));
+  theRootData.init((gen+".root").c_str(),gen.c_str());
+}
 
 void UEobservables::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
