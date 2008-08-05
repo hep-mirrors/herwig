@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/MatrixElement/MEfftoVH.h"
-#include "MEee2ZH.fh"
 
 namespace Herwig {
 

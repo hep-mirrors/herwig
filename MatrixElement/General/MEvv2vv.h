@@ -18,8 +18,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVTVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.h"
-#include "ProductionMatrixElement.h"
-#include "MEvv2vv.fh"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -41,13 +40,6 @@ public:
    *  Typedef for VectorWaveFunction
    */
   typedef vector<VectorWaveFunction> VBVector;
-
-public:
-
-  /**
-   * The default constructor.
-   */
-  inline MEvv2vv();
 
 public:
 
@@ -141,13 +133,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -228,7 +220,5 @@ struct ClassTraits<Herwig::MEvv2vv>
 /** @endcond */
 
 }
-
-#include "MEvv2vv.icc"
 
 #endif /* HERWIG_MEvv2vv_H */

@@ -20,7 +20,7 @@
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/SpinInfo.h"
-#include "HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;

@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"

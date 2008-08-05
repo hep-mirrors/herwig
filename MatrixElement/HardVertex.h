@@ -47,12 +47,14 @@ public:
   /**
    * Get the matrix element
    */
-  inline const ProductionMatrixElement & ME() const;
+  inline const ProductionMatrixElement & ME() const 
+  {return _matrixelement;}
 
   /**
    * Set the matrix element
    */
-  inline void ME(const ProductionMatrixElement &) const;
+  inline void ME(const ProductionMatrixElement & in) const
+  {_matrixelement.reset(in);}
   //@}
   
 public:
@@ -131,7 +133,5 @@ struct ClassTraits<Herwig::HardVertex>
 /** @endcond */
   
 }
-
-#include "HardVertex.icc"
 
 #endif /* HERWIG_HardVertex_H */

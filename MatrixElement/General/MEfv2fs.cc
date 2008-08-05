@@ -15,7 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Helicity/SpinInfo.h"
 #include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"

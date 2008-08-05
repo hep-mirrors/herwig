@@ -17,11 +17,10 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.fh"
-#include "MEfv2fs.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -56,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEfv2fs();
+  inline MEfv2fs() : theScaV(0), theFermV(0) {}
 
 public:
 
@@ -176,13 +175,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -241,7 +240,5 @@ struct ClassTraits<Herwig::MEfv2fs>
 /** @endcond */
 
 }
-
-#include "MEfv2fs.icc"
 
 #endif /* HERWIG_MEfv2fs_H */

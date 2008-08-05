@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
 #include "ThePEG/Helicity/SpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;

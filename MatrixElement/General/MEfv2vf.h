@@ -13,13 +13,12 @@
 //
 
 #include "GeneralHardME.h"
-#include "ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
-#include "MEfv2vf.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -44,13 +43,6 @@ public:
 
   /** A vector of VectorWaveFunctions. */
   typedef vector<Helicity::VectorWaveFunction> VBVector;
-
-public:
-
-  /**
-   * The default constructor.
-   */
-  inline MEfv2vf();
 
 public:
 
@@ -171,13 +163,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -239,7 +231,5 @@ struct ClassTraits<Herwig::MEfv2vf>
 /** @endcond */
 
 }
-
-#include "MEfv2vf.icc"
 
 #endif /* HERWIG_MEfv2vf_H */

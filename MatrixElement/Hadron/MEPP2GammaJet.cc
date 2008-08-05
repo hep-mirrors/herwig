@@ -19,7 +19,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"

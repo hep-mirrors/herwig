@@ -18,7 +18,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include<numeric>
 
 using namespace Herwig;
