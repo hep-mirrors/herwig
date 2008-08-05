@@ -14,9 +14,14 @@ double QTildeSudakovIntegrator::innerIntegrand(double z) const {
   // compute the pt
   Energy2 pt2=sqr(z*(1.-z))*sqr(qtilde_)-masssquared_[1]*(1.-z)-masssquared_[2]*z;
   if(ids_[0]!=ParticleID::g) pt2+=z*(1.-z)*masssquared_[0];
-  // if pt2<0 veto
-  // if(pt2<sqr(pTmin_)) return 0.;
-  if(pt2<sqr( max( z, 1. - z ) * mergeScale_ ) ) return 0.;
+
+  if( jetMeasureMode_ == 0 ){
+    if( pt2 < sqr( max( z, 1. - z ) * mergeScale_ ) ) return 0.;
+  }
+  else {
+    if( pt2 < sqr( mergeScale_ ) ) return 0.;
+  }
+
   // return the answer
   Energy2 t = z*(1.-z)*sqr(qtilde_);
   return 0.5/pi*coupling_->value(sqr(z*(1.-z)*qtilde_))*
@@ -24,8 +29,10 @@ double QTildeSudakovIntegrator::innerIntegrand(double z) const {
 }
 
 QTildeSudakovIntegrator::QTildeSudakovIntegrator(const BranchingElement & br,
-						 Energy MergeScale ) {
+						 Energy MergeScale,
+						 unsigned int jetMeasureMode) {
   mergeScale_ = MergeScale; 
+  jetMeasureMode_ = jetMeasureMode;
   // get the id list
   ids_ = br.second;
   // get the coupling

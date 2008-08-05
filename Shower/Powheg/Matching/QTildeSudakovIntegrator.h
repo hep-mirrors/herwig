@@ -63,7 +63,8 @@ public:
   /**
    *  Constructor from a branching element
    */
-  QTildeSudakovIntegrator(const BranchingElement &, Energy MergeScale);
+  QTildeSudakovIntegrator(const BranchingElement &, Energy MergeScale, 
+			  unsigned int jetMeasureMode);
 
   /**
    *  Return the value
@@ -164,6 +165,10 @@ private:
    */
   mutable Energy mergeScale_;
 
+  /**
+   *  The CKKW jet definition begin used
+   */
+  mutable unsigned int jetMeasureMode_;
 };
 
 }
