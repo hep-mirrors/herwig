@@ -14,7 +14,9 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Utilities/Exception.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "NBodyDecayConstructorBase.fh"
+#include "DecayConstructor.fh"
 
 namespace Herwig {
 
@@ -28,6 +30,23 @@ using namespace ThePEG;
  * @see \ref NBodyDecayConstructorBaseInterfaces "The interfaces"
  * defined for NBodyDecayConstructor. 
  */
+
+/**
+ *  A struct to order the particles in the same way as in the DecayMode's
+ */
+struct ParticleOrdering {
+  bool operator()(PDPtr p1, PDPtr p2) {
+    return abs(p1->id()) > abs(p2->id()) ||
+      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
+      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
+  }
+};
+
+/**
+ * A set of ParticleData objects ordered as for the DecayMode's
+ */
+typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
+
 class NBodyDecayConstructorBase: public Interfaced {
 
 public:
@@ -42,9 +61,17 @@ public:
   /**
    * Function used to determine allowed decaymodes, to be implemented
    * in derived class.
-   *@param part vector of ParticleData pointers containing particles in model
+   * @param particles vector of ParticleData pointers containing 
+   * particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part)=0;
+  virtual void DecayList(const vector<PDPtr> & particles) = 0;
+
+  /**
+   * Set the pointer to the DecayConstrcutor
+   */
+  inline void decayConstructor(tDecayConstructorPtr d) { 
+    _decayConstructor = d;
+  }
 
 protected:
   
@@ -89,6 +116,14 @@ protected:
    */
   inline bool createDecayModes() const { return _createmodes; }
 
+  /**
+   * Get the pointer to the DecayConstructor object
+   */
+  inline tDecayConstructorPtr decayConstructor() const { 
+    return _decayConstructor;
+  }
+
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -121,7 +156,8 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class with persistent data.
    */
-  static AbstractClassDescription<NBodyDecayConstructorBase> initNBodyDecayConstructorBase;
+  static AbstractClassDescription<NBodyDecayConstructorBase> 
+  initNBodyDecayConstructorBase;
 
   /**
    * The assignment operator is private and must never be called.
@@ -155,6 +191,11 @@ private:
    * Whether to create the DecayModes as well as the Decayer objects 
    */
   bool _createmodes;
+  
+  /**
+   * A pointer to the DecayConstructor object 
+   */
+  tDecayConstructorPtr _decayConstructor;
 };
 
   /** An Exception class that can be used by all inheriting classes to

@@ -44,22 +44,6 @@ struct TwoBodyPrototype {
 };
 
 /**
- *  A struct to order the particles in the same way as in the DecayMode's
- */
-struct ParticleOrdering {
-  bool operator()(PDPtr p1, PDPtr p2) {
-    return abs(p1->id()) > abs(p2->id()) ||
-      ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
-      ( p1->id() == p2->id() && p1->fullName() > p2->fullName() );
-  }
-};
-
-/**
- * A set of ParticleData objects ordered as for the DecayMode's
- */
-typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
-
-/**
  * The ThreeBodyDecayConstructor class inherits from the dummy base class
  * NBodyDecayConstructorBase and implements the necessary functions in
  * order to create the 3 body decaymodes for a given set of vertices

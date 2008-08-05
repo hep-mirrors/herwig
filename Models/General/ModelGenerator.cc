@@ -187,8 +187,10 @@ void ModelGenerator::doinit() throw(InitException) {
     createWidthGenerator(*pit);
 
   //create decayers and decaymodes (if necessary)
-  if( _theDecayConstructor )
+  if( _theDecayConstructor ) {
+    _theDecayConstructor->init();
     _theDecayConstructor->createDecayers(_theParticles);
+  }
 
   // write out decays with spin correlations and set particles
   // that have no decay modes to stable.
