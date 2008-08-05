@@ -140,33 +140,55 @@ void BbarAnalysis::dofinish() {
   // Normalise the histograms
   // Lepton:
   cos3_h.normaliseToCrossSection();
+  cos3_h.prefactor(cos3_h.prefactor()*1.e6);
   eta3_h.normaliseToCrossSection();
+  eta3_h.prefactor(eta3_h.prefactor()*1.e6);
   pt3_h.normaliseToCrossSection();
+  pt3_h.prefactor(pt3_h.prefactor()*1.e6);
   // Anti-lepton:
   cos4_h.normaliseToCrossSection();
+  cos4_h.prefactor(cos4_h.prefactor()*1.e6);
   eta4_h.normaliseToCrossSection();
+  eta4_h.prefactor(eta4_h.prefactor()*1.e6);
   pt4_h.normaliseToCrossSection();
+  pt4_h.prefactor(pt4_h.prefactor()*1.e6);
   // b-quark:
   cos5_h.normaliseToCrossSection();
+  cos5_h.prefactor(cos5_h.prefactor()*1.e6);
   eta5_h.normaliseToCrossSection();
+  eta5_h.prefactor(eta5_h.prefactor()*1.e6);
   pt5_h.normaliseToCrossSection();
+  pt5_h.prefactor(pt5_h.prefactor()*1.e6);
   // Anti-b-quark:
   cos6_h.normaliseToCrossSection();
+  cos6_h.prefactor(cos6_h.prefactor()*1.e6);
   eta6_h.normaliseToCrossSection();
+  eta6_h.prefactor(eta6_h.prefactor()*1.e6);
   pt6_h.normaliseToCrossSection();
+  pt6_h.prefactor(pt6_h.prefactor()*1.e6);
   // Vector boson or Higgs boson depending on process:
   y34_h.normaliseToCrossSection();
+  y34_h.prefactor(y34_h.prefactor()*1.e6);
   eta34_h.normaliseToCrossSection();
+  eta34_h.prefactor(eta34_h.prefactor()*1.e6);
   m34wz_h.normaliseToCrossSection();
+  m34wz_h.prefactor(m34wz_h.prefactor()*1.e6);
   m34h_h.normaliseToCrossSection();
+  m34h_h.prefactor(m34h_h.prefactor()*1.e6);
   // Higgs bosons only:
   y56_h.normaliseToCrossSection();
+  y56_h.prefactor(y56_h.prefactor()*1.e6);
   eta56_h.normaliseToCrossSection();
+  eta56_h.prefactor(eta56_h.prefactor()*1.e6);
   m56_h.normaliseToCrossSection();
+  m56_h.prefactor(m56_h.prefactor()*1.e6);
   // Everything added up:
   y3456_h.normaliseToCrossSection();
+  y3456_h.prefactor(y3456_h.prefactor()*1.e6);
   eta3456_h.normaliseToCrossSection();
+  eta3456_h.prefactor(eta3456_h.prefactor()*1.e6);
   m3456_h.normaliseToCrossSection();
+  m3456_h.prefactor(m3456_h.prefactor()*1.e6);
 
   file.open(fname.c_str());
   using namespace HistogramOptions;
