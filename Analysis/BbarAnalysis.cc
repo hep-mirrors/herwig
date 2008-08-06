@@ -62,13 +62,26 @@ void BbarAnalysis::analyze(const tPVector & particles) {
     if(particles[i]->id()== 5) b    = particles[i];
     if(particles[i]->id()==-5) bbar = particles[i];
   }
-  if(l&&lbar&&l->parents()[0]!=lbar->parents()[0]) 
-    cout << "warning: leptons have different parents!!\n\n" << endl;
-  if(b&&bbar&&b->parents()[0]!=bbar->parents()[0]) 
-    cout << "warning: b's     have different parents!!\n\n" << endl;
 
-  pl    = l->momentum()   ;
-  plbar = lbar->momentum();
+  // Forbid analysis of events containing only a single lepton / b quark:
+  if((l&&!lbar)||(lbar&&!l)) throw Exception() 
+    << "BbarAnalysis::analyze\n"
+    << "Cannot have just one lepton." << Exception::abortnow;
+  if((b&&!bbar)||(bbar&&!b)) throw Exception() 
+    << "BbarAnalysis::analyze\n"
+    << "Cannot have just one b/bbar quark." << Exception::abortnow;
+
+  // Forbid analysis of events where leptons pairs and/or b's do not
+  // have the same parent:
+  if(l&&lbar&&l->parents()[0]!=lbar->parents()[0]) throw Exception() 
+    << "BbarAnalysis::analyze\n"
+    << "Leptons should have the same parent." << Exception::abortnow;
+  if(b&&bbar&&b->parents()[0]!=bbar->parents()[0]) throw Exception() 
+    << "BbarAnalysis::analyze\n"
+    << "b's should have the same parent.    " << Exception::abortnow;
+
+  if(l)    pl    = l->momentum()   ;
+  if(lbar) plbar = lbar->momentum();
   if(b   ) pb    = b->momentum()   ;
   if(bbar) pbbar = bbar->momentum();
 
