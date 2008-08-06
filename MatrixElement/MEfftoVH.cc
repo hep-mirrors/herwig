@@ -10,6 +10,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
@@ -23,13 +24,29 @@ using namespace Herwig;
 void MEfftoVH::persistentOutput(PersistentOStream & os) const {
   os << _shapeopt << _wplus << _wminus << _z0 
      << _vertexFFW << _vertexFFZ << _vertexWWH
-     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass;
+  ////////////////////////////////////////////////////////
+  // ATTENTION  !!! h_br_ IS A TEMPORARY FIX FOR THE    //
+  // BBAR VALIDATION !!! DO NOT MERGE TO THE TRUNK!     //
+  // A more robust way of including the Higgs branching //
+  // in the cross section should be adopted in the long //
+  // term. Deleting all instances of h_br_ instances    //
+  // should effectively reproduce the trunk.            //
+     << ounit(_mh,GeV) << ounit(_wh,GeV) << _hmass << h_br_;
+  ////////////////////////////////////////////////////////
 }
 
 void MEfftoVH::persistentInput(PersistentIStream & is, int) {
   is >> _shapeopt >> _wplus >> _wminus >> _z0 
      >> _vertexFFW >> _vertexFFZ >> _vertexWWH
-     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass;
+  ////////////////////////////////////////////////////////
+  // ATTENTION  !!! h_br_ IS A TEMPORARY FIX FOR THE    //
+  // BBAR VALIDATION !!! DO NOT MERGE TO THE TRUNK!     //
+  // A more robust way of including the Higgs branching //
+  // in the cross section should be adopted in the long //
+  // term. Deleting all instances of h_br_ instances    //
+  // should effectively reproduce the trunk.            //
+     >> iunit(_mh,GeV) >> iunit(_wh,GeV) >> _hmass >> h_br_;
+  ////////////////////////////////////////////////////////
 }
 
 AbstractClassDescription<MEfftoVH> MEfftoVH::initMEfftoVH;
@@ -131,6 +148,27 @@ void MEfftoVH::doinit() throw(InitException) {
     << "If using the mass generator for the line shape in MEfftoVH::doinit()"
     << "the mass generator must be an instance of the SMHiggsMassGenerator class"
     << Exception::runerror;
+  ////////////////////////////////////////////////////////
+  // ATTENTION  !!! h_br_ IS A TEMPORARY FIX FOR THE    //
+  // BBAR VALIDATION !!! DO NOT MERGE TO THE TRUNK!     //
+  // A more robust way of including the Higgs branching //
+  // in the cross section should be adopted in the long //
+  // term. Deleting all instances of h_br_ instances    //
+  // should effectively reproduce the trunk.            //
+  // If the width is equal to the nominal width we check that the decay 
+  // modes of the Higgs are in fact all on. h_br_ is computed as the sum 
+  // of branching ratios for decays which are On only. h_br_ later multiplies 
+  // the return value in dSigHatDR. If the width is not the nominal width 
+  // h_br_ just stays equal to 1, and the code here has no effect.
+  if(_wh==h0->width()) {
+    h_br_ = 0.;
+    for(DecaySet::const_iterator it=h0->decayModes().begin();it!=h0->decayModes().end();++it) {
+      tDMPtr mode=*it;
+      if(!mode->on()||mode->orderedProducts().size()!=2) continue;
+      h_br_ += mode->brat();
+    }
+  }
+  ////////////////////////////////////////////////////////
 }
 
 double MEfftoVH::me2() const {
@@ -387,7 +425,15 @@ CrossSection MEfftoVH::dSigHatDR() const {
   }
   double jac1 = bwfact*(sqr(sqr(moff)-sqr(_mh))+sqr(_mh*_wh))/(_mh*_wh);
   // answer
-  return jac1*me2()*jacobian()/(16.0*sqr(pi)*sHat())*sqr(hbarc);
+  ////////////////////////////////////////////////////////
+  // ATTENTION  !!! h_br_ IS A TEMPORARY FIX FOR THE    //
+  // BBAR VALIDATION !!! DO NOT MERGE TO THE TRUNK!     //
+  // A more robust way of including the Higgs branching //
+  // in the cross section should be adopted in the long //
+  // term. Deleting all instances of h_br_ instances    //
+  // should effectively reproduce the trunk.            //
+  return jac1*me2()*jacobian()/(16.0*sqr(pi)*sHat())*sqr(hbarc) * h_br_;
+  ////////////////////////////////////////////////////////
 }
 
 double MEfftoVH::getCosTheta(double ctmin, double ctmax, double r) {

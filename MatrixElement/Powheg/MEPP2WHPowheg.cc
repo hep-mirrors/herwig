@@ -341,9 +341,11 @@ double MEPP2WHPowheg::NLOweight() const {
   double wgqbar       = wgqbarreal+wgqbarcollin;
   // total
   double wgt          = 1.+(wqq+wqg+wgqbar);
-  //trick to try and reduce neg wgt contribution
-  if(_xt<1.-_eps)
-    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
+  // KMH - 06/08 - This seems to give wrong NLO results for 
+  // associated Higgs so I'm omitting it.
+  //  //trick to try and reduce neg wgt contribution
+  //  if(_xt<1.-_eps)
+  //    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
   // return the answer
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }

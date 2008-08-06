@@ -269,6 +269,22 @@ private:
    */
   Energy _wh;
 
+  ////////////////////////////////////////////////////////
+  // ATTENTION  !!! h_br_ IS A TEMPORARY FIX FOR THE    //
+  // BBAR VALIDATION !!! DO NOT MERGE TO THE TRUNK!     //
+  // A more robust way of including the Higgs branching // 
+  // in the cross section should be adopted in the long //
+  // term. Deleting all instances of h_br_ instances    // 
+  // should effectively reproduce the trunk.            //
+  /**
+   *  Total branching for the allowed decays; this compensates
+   *  for the fact that the SMHiggsWidthGenerator currently does
+   *  take account of whether decay modes are switched On / Off 
+   *  when using the WidthScheme=Fixed option.
+   */
+  double h_br_;
+  ////////////////////////////////////////////////////////
+
   /**
    *  The mass generator for the Higgs
    */
