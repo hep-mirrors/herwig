@@ -50,6 +50,7 @@ void FtoFFFDecayer::doinit() throw(InitException) {
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
+    if( offshell->CC() ) offshell = offshell->CC();
     if(offshell->iSpin() == PDT::Spin0) {
       AbstractFFSVertexPtr vert1 = dynamic_ptr_cast<AbstractFFSVertexPtr>
 	(current.vertices.first);
