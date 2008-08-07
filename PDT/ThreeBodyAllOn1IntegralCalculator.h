@@ -13,7 +13,7 @@
 #include "WidthCalculatorBase.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "Herwig++/Utilities/GSLIntegrator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -86,9 +86,9 @@ public:
    * @return The value of the inner integrand.
    */
   Energy operator ()(double argument) const;
-  /** Argument type for the GaussianIntegrator */
+  /** Argument type for the GSLIntegrator */
   typedef double ArgType;
-  /** Return type for the GaussianIntegrator */
+  /** Return type for the GSLIntegrator */
   typedef Energy ValType;
 
 private:
@@ -145,7 +145,7 @@ private:
   /**
    * the integrator
    */
-  GaussianIntegrator _integrator;
+  GSLIntegrator _integrator;
 
 };
 }
