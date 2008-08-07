@@ -494,7 +494,10 @@ double MEPP2HiggsPowheg::NLOweight() const {
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
-    b_nlo=getParticleData(-ix);
+    // Bizarre fix to work on 64 bit (minus_ix)...
+    int minus_ix; 
+    minus_ix = -1*ix;
+    b_nlo=getParticleData(minus_ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
@@ -507,7 +510,10 @@ double MEPP2HiggsPowheg::NLOweight() const {
     wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
     wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wqg              += wqgreal+wqgcollin;
-    a_nlo=getParticleData(-ix);
+    // Bizarre fix to work on 64 bit (minus_ix)...
+    int minus_ix; 
+    minus_ix = -1*ix;
+    a_nlo=getParticleData(minus_ix);
     wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
     wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wqg              += wqgreal+wqgcollin;
@@ -515,11 +521,14 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // q qbar + qbar q contributions
   double wqqbarreal(0.), wqqbar(0.);
   for(unsigned int ix=1; ix<=nlf_; ++ix) {
+    // Bizarre fix to work on 64 bit (minus_ix)...
+    int minus_ix; 
+    minus_ix = -1*ix;
     a_nlo=getParticleData( ix);
-    b_nlo=getParticleData(-ix);
+    b_nlo=getParticleData(minus_ix);
     wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qqbar_on_x(a_nlo,b_nlo,xt_,y_);
     wqqbar       += wqqbarreal;
-    a_nlo=getParticleData(-ix);
+    a_nlo=getParticleData(minus_ix);
     b_nlo=getParticleData( ix);
     wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qbarq_on_x(a_nlo,b_nlo,xt_,y_);
     wqqbar       += wqqbarreal;
