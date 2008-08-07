@@ -67,9 +67,11 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   if((l&&!lbar)||(lbar&&!l)) throw Exception() 
     << "BbarAnalysis::analyze\n"
     << "Cannot have just one lepton." << Exception::abortnow;
-  if((b&&!bbar)||(bbar&&!b)) throw Exception() 
-    << "BbarAnalysis::analyze\n"
-    << "Cannot have just one b/bbar quark." << Exception::abortnow;
+  // The following is removed to not abort gg->H events where
+  // a single b can result from H->WW->bxxxx.
+  //   if((b&&!bbar)||(bbar&&!b)) throw Exception() 
+  //     << "BbarAnalysis::analyze\n"
+  //     << "Cannot have just one b/bbar quark." << Exception::abortnow;
 
   // Forbid analysis of events where leptons pairs and/or b's do not
   // have the same parent:
