@@ -168,6 +168,7 @@ create Herwig::UEDF1F1W0Vertex UED_F1F1W
 create Herwig::UEDF1F1G0Vertex UED_F1F1G0
 create Herwig::UEDF1F0G1Vertex UED_F1F0G1
 create Herwig::UEDF1F0W1Vertex UED_F1F0W1
+create Herwig::UEDF1F0H1Vertex UED_F1F0H1
 create Herwig::UEDG1G1G0Vertex UED_G1G1G0
 create Herwig::UEDG0G0G1G1Vertex UED_G0G0G1G1
 create Herwig::UEDP0H1H1Vertex UED_P0H1H1
@@ -196,6 +197,7 @@ set Model:Vertex/F1F1W /Herwig/Vertices/MUED/UED_F1F1W
 set Model:Vertex/F1F1G0 /Herwig/Vertices/MUED/UED_F1F1G0
 set Model:Vertex/F1F0G1 /Herwig/Vertices/MUED/UED_F1F0G1
 set Model:Vertex/F1F0W1 /Herwig/Vertices/MUED/UED_F1F0W1
+set Model:Vertex/F1F0H1 /Herwig/Vertices/MUED/UED_F1F0H1
 set Model:Vertex/G1G1G0 /Herwig/Vertices/MUED/UED_G1G1G0
 set Model:Vertex/G0G0G1G1 /Herwig/Vertices/MUED/UED_G0G0G1G1
 set Model:Vertex/P0H1H1 /Herwig/Vertices/MUED/UED_P0H1H1
@@ -205,9 +207,34 @@ set Model:Vertex/Z0A1h1 /Herwig/Vertices/MUED/UED_Z0A1h1
 set Model:Vertex/W0W1W1 /Herwig/Vertices/MUED/UED_W0W1W1
 ###################################################
 #
-#  Set up spin correlation Decayers
+#  Set up spin correlation Decayers and remove SM
+#  Higgs related things
 #
 ###################################################
+cd /Herwig/Particles
+
+set h0:Width_generator NULL
+set h0:Mass_generator NULL
+
+set h0/h0->b,bbar;:OnOff Off
+set h0/h0->b,bbar;:BranchingRatio 0.0
+set h0/h0->W+,W-;:OnOff Off
+set h0/h0->W+,W-;:BranchingRatio 0.0
+set h0/h0->tau-,tau+;:OnOff Off 
+set h0/h0->tau-,tau+;:BranchingRatio 0.0 
+set h0/h0->g,g;:OnOff Off 
+set h0/h0->g,g;:BranchingRatio 0.0 
+set h0/h0->c,cbar;:OnOff Off
+set h0/h0->c,cbar;:BranchingRatio 0.0
+set h0/h0->Z0,Z0;:OnOff Off
+set h0/h0->Z0,Z0;:BranchingRatio 0.0
+set h0/h0->gamma,gamma;:OnOff Off
+set h0/h0->gamma,gamma;:BranchingRatio 0.0
+set h0/h0->mu-,mu+;:OnOff Off
+set h0/h0->mu-,mu+;:BranchingRatio 0.0
+set h0/h0->t,tbar;:OnOff Off
+set h0/h0->t,tbar;:BranchingRatio 0.0
+
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
@@ -236,9 +263,10 @@ insert NewModel:DecayParticles 20 /Herwig/Particles/KK1_tau_2-
 insert NewModel:DecayParticles 21 /Herwig/Particles/KK1_g
 insert NewModel:DecayParticles 22 /Herwig/Particles/KK1_Z0
 insert NewModel:DecayParticles 23 /Herwig/Particles/KK1_W+
-insert NewModel:DecayParticles 24 /Herwig/Particles/KK1_h0
-insert NewModel:DecayParticles 25 /Herwig/Particles/KK1_A0
-insert NewModel:DecayParticles 26 /Herwig/Particles/KK1_H+
+insert NewModel:DecayParticles 24 /Herwig/Particles/h0
+insert NewModel:DecayParticles 25 /Herwig/Particles/KK1_h0
+insert NewModel:DecayParticles 26 /Herwig/Particles/KK1_A0
+insert NewModel:DecayParticles 27 /Herwig/Particles/KK1_H+
 ###################################################
 #
 #  Shower stuff for coloured sparticles
