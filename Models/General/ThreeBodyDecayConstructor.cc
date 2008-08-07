@@ -397,7 +397,6 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   tag += ";";
   tDMPtr dm = generator()->findDecayMode(tag);
   if( decayConstructor()->disableDecayMode(tag) ) {
-    cerr << "Disabling \"" << tag << "\"\n";
     // If mode alread exists, ie has been read from file, 
     // disable it
     if( dm ) {
