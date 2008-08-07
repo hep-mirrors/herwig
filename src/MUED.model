@@ -238,6 +238,7 @@ set h0/h0->t,tbar;:BranchingRatio 0.0
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes Yes
+set ThreeBodyDC:CreateDecayModes Yes
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/KK1_d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/KK1_u_L

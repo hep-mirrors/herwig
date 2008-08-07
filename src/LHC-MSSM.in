@@ -46,6 +46,16 @@ insert HPConstructor:Outgoing 3 /Herwig/Particles/~d_Lbar
 # spectrum file is an example using SPheno 2.2.3
 setup MSSM/Model SPhenoSPS1a.spc
 
+# To disable a particular decay mode, add it's tag to the DisableModes
+# interface of the DecayConstructor object, i.e.
+#insert DecayConstructor:DisableModes 0 ~u_L->~chi_20,u;
+#insert DecayConstructor:DisableModes 1 ~chi_20->~e_R-,e+;
+# etc ...
+
+# To set a minimum allowed branching fraction (the default is shown)
+#set NewModel:MinimumBR 1e-6
+
+
 # Intrinsic pT tune extrapolated to LHC energy
 set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 
