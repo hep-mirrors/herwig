@@ -18,6 +18,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::Direction;
 
 /**
  * This is the implementation of the Feynman rule for the coupling
@@ -48,9 +49,12 @@ public:
    *@param part1 The first interacting particle 
    *@param part2 The second interacting particle 
    *@param part3 The third interacting particle 
+   *@param d1 The direction for the first  particle.
+   *@param d2 The direction for the second particle.
+   *@param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-			   tcPDPtr part3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
+			   Direction d1,Direction d2, Direction d3);
 
 protected:
 

@@ -126,7 +126,8 @@ void LHWWWVertex::doinit() throw(InitException) {
 }
 
 // couplings for the WWW vertex
-void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+void LHWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
+			      Direction,Direction,Direction) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = electroMagneticCoupling(q2);

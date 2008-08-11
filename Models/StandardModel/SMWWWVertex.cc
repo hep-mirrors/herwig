@@ -38,10 +38,24 @@ void SMWWWVertex::Init() {
 }
     
 // couplings for the WWW vertex
-void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
+void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
+			      Direction d1,Direction d2,Direction d3) {
+  using ThePEG::Helicity::intermediate;
   int ida=a->id();
   int idb=b->id();
   int idc=c->id();
+  if(abs(ida)!=24&&idb!=-idc) {
+    if(d2!=intermediate) idc=-idc;
+    if(d3!=intermediate) idb=-idb;
+  }
+  else if(abs(idb)!=24&&ida!=idc) {
+    if(d3!=intermediate) ida=-ida;
+    if(d1!=intermediate) idc=-idc;
+  }
+  else if(ida!=-idb) {
+    if(d2!=intermediate) ida=-ida;
+    if(d1!=intermediate) idb=-idb;
+  }
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = electroMagneticCoupling(q2);
@@ -65,11 +79,13 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   else
     throw Helicity::HelicityConsistencyError() 
       << "SMWWWVertex::setCoupling "
-      << "Invalid particles in WWW Vertex" 
+      << "Invalid particles in WWW Vertex"
+      << a->PDGName() << " " << b->PDGName() << " " << c->PDGName() 
       << Exception::runerror;
 }
 
-SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.), _q2last(0.*GeV2) {
+SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.), 
+			     _q2last(sqr(Constants::MaxEnergy)) {
   // particles
   vector<long> first,second,third;
   first.push_back(24);

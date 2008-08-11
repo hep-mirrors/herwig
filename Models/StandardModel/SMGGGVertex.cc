@@ -45,7 +45,8 @@ void SMGGGVertex::Init() {
 }
 
 // couplings for the GGG vertex
-void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr) {
+void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr,
+			      Direction,Direction,Direction) {
   // first the overall normalisation
   if(q2!=_q2last) {
     _couplast = strongCoupling(q2);

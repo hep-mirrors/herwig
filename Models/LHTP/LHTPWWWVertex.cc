@@ -95,7 +95,7 @@ void LHTPWWWVertex::doinit() throw(InitException) {
 }
 
 void LHTPWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-				tcPDPtr c) {
+				tcPDPtr c,Direction,Direction,Direction) {
   if(q2 != q2last_) {
     couplast_ = electroMagneticCoupling(q2);
     q2last_ = q2;

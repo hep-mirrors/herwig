@@ -11,6 +11,8 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+using ThePEG::Helicity::Direction;
+
 /**
  * This is the coupling of vector bosons to each other in the
  * Littlest Higgs model with T-parity. It inherits from the 
@@ -64,8 +66,12 @@ public:
    * @param a The ParticleData pointer for the first  particle.
    * @param b The ParticleData pointer for the second particle.
    * @param c The ParticleData pointer for the third  particle.
+   * @param d1 The direction for the first  particle.
+   * @param d2 The direction for the second particle.
+   * @param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c);
+  virtual void setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c,
+			   Direction d1,Direction d2, Direction d3);
 
 protected:
 

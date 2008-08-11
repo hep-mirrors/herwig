@@ -31,7 +31,7 @@ void UEDG1G1G0Vertex::Init() {
 }
 
 void UEDG1G1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2, 
-				  tcPDPtr part3) {
+				  tcPDPtr part3,Direction,Direction,Direction) {
   long id1(part1->id()), id2(part2->id()), id3(part3->id());
   if( (id1 == ParticleID::g && id2 == 5100021 && id3 == 5100021) ||
       (id2 == ParticleID::g && id1 == 5100021 && id3 == 5100021) ||
