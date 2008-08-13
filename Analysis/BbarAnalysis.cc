@@ -24,14 +24,14 @@ using namespace Herwig;
 using namespace ThePEG;
 using namespace std;
 
-Histogram cos3_h(-1.,1.,100),eta3_h(-4.,4.,100)   ,pt3_h(0.,100.,100);
-Histogram cos4_h(-1.,1.,100),eta4_h(-4.,4.,100)   ,pt4_h(0.,100.,100);
-Histogram cos5_h(-1.,1.,100),eta5_h(-4.,4.,100)   ,pt5_h(0.,100.,100);
-Histogram cos6_h(-1.,1.,100),eta6_h(-4.,4.,100)   ,pt6_h(0.,100.,100);
-Histogram y34_h(-2.,2.,80)  ,eta34_h(-4.,4.,100)  ,m34wz_h(70.,100.,100 );
-Histogram                                          m34h_h(110.,120.,100 );
-Histogram y56_h(-2.,2.,80)  ,eta56_h(-4.,4.,100)  ,m56_h(110.,120.,100 );
-Histogram y3456_h(-2.,2.,80),eta3456_h(-4.,4.,100),m3456_h(190.,230.,40 );
+Histogram cos3_h(-1.,1.,100),eta3_h(-6.,6.,120)   ,pt3_h(0.,200.,100);
+Histogram cos4_h(-1.,1.,100),eta4_h(-6.,6.,120)   ,pt4_h(0.,200.,100);
+Histogram cos5_h(-1.,1.,100),eta5_h(-6.,6.,120)   ,pt5_h(0.,200.,100);
+Histogram cos6_h(-1.,1.,100),eta6_h(-6.,6.,120)   ,pt6_h(0.,200.,100);
+Histogram y34_h(-6.,6.,120)  ,eta34_h(-6.,6.,120)  ,m34wz_h(70.,100.,100 );
+Histogram                                          m34h_h(114.,116.,100 );
+Histogram y56_h(-6.,6.,120)  ,eta56_h(-6.,6.,120)  ,m56_h(114.,116.,100 );
+Histogram y3456_h(-6.,6.,120),eta3456_h(-6.,6.,120),m3456_h(100.,1000.,90 );
 
 BbarAnalysis::~BbarAnalysis() {}
 
