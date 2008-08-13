@@ -55,6 +55,9 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   // Find and store all lepton and antilepton pairs
   // and likewise any b-bbar pairs.
   for (unsigned int i = 0; i <  particles.size(); ++i ){
+    // Avoid anything that might've come from a remnant decay.
+    if(particles[i]->parents().size()>0&&particles[i]->parents()[0]->id()==82)
+      continue;
     if(particles[i]->id()> 10&&particles[i]->id()< 17) 
       l    = particles[i];
     if(particles[i]->id()<-10&&particles[i]->id()>-17) 
@@ -63,24 +66,10 @@ void BbarAnalysis::analyze(const tPVector & particles) {
     if(particles[i]->id()==-5) bbar = particles[i];
   }
 
-  // Forbid analysis of events containing only a single lepton / b quark:
+  // Forbid analysis of events containing only a single lepton:
   if((l&&!lbar)||(lbar&&!l)) throw Exception() 
     << "BbarAnalysis::analyze\n"
     << "Cannot have just one lepton." << Exception::abortnow;
-  // The following is removed to not abort gg->H events where
-  // a single b can result from H->WW->bxxxx.
-  //   if((b&&!bbar)||(bbar&&!b)) throw Exception() 
-  //     << "BbarAnalysis::analyze\n"
-  //     << "Cannot have just one b/bbar quark." << Exception::abortnow;
-
-  // Forbid analysis of events where leptons pairs and/or b's do not
-  // have the same parent:
-  if(l&&lbar&&l->parents()[0]!=lbar->parents()[0]) throw Exception() 
-    << "BbarAnalysis::analyze\n"
-    << "Leptons should have the same parent." << Exception::abortnow;
-  if(b&&bbar&&b->parents()[0]!=bbar->parents()[0]) throw Exception() 
-    << "BbarAnalysis::analyze\n"
-    << "b's should have the same parent.    " << Exception::abortnow;
 
   if(l)    pl    = l->momentum()   ;
   if(lbar) plbar = lbar->momentum();
