@@ -112,6 +112,13 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   else {
     boson = tree->outgoingLines().begin()->first->copy()->parents()[0];
   }
+  if(!boson) throw Exception() 
+    << "DrellYanHardGenerator::generateHardest()\n"
+    << "boson pointer is null." << Exception::abortnow;
+  if(!(abs(boson->id())==ParticleID::Wplus||boson->id()==ParticleID::Z0||
+       boson->id()==ParticleID::gamma)) throw Exception() 
+	 << "DrellYanHardGenerator::generateHardest()\n" 
+	 << "boson does not point to a Z/W/gamma !" << Exception::abortnow;
 
   // calculate the rapidity of the boson
   _yb = 0.5 * log((boson->momentum().e()+boson->momentum().z())/
