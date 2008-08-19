@@ -14,6 +14,10 @@
 
 using namespace Herwig;
 
+WeiszackerWilliamsPDF::WeiszackerWilliamsPDF() 
+  : _q2min(0.*GeV2), _q2max(4.*GeV2)
+{}
+
 bool WeiszackerWilliamsPDF::canHandleParticle(tcPDPtr particle) const {
   return ( abs(particle->id()) == ParticleID::eminus ||
 	   abs(particle->id()) == ParticleID::muminus );
@@ -24,12 +28,12 @@ cPDVector WeiszackerWilliamsPDF::partons(tcPDPtr) const {
   return cPDVector(1,getParticleData(ParticleID::gamma));
 }
 
-double WeiszackerWilliamsPDF::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+double WeiszackerWilliamsPDF::xfl(tcPDPtr particle, tcPDPtr parton, Energy2,
                       double l, Energy2 ) const {
   if(parton->id()!=ParticleID::gamma) return 0.;
   double x(exp(-l));
-  return 0.5*SM().alphaEM()/Constants::pi*(1.+sqr(1.-x))/x
-    *log(partonScale/sqr(particle->mass()));
+  // remember this is x fx so no x in the denominator!!
+  return 0.5*SM().alphaEM()/Constants::pi*(1.+sqr(1.-x));
 }
 
 double WeiszackerWilliamsPDF::xfvl(tcPDPtr, tcPDPtr, Energy2, double,
@@ -67,19 +71,20 @@ double WeiszackerWilliamsPDF::
 flattenScale(tcPDPtr a, tcPDPtr b, const PDFCuts & c,
 	     double l, double z, double & jacobian) const {
   double x = exp(-l);
-  Energy2 qqmax = min(_q2max,sqr(x)*c.sMax());
-  Energy2 qqmin = max(_q2min,sqr(x)*sqr(a->mass())/(1.-x));
+  Energy2 qqmax = min(_q2max,0.25*sqr(x)*c.sMax());
+  Energy2 qqmin = max(_q2min,sqr(x*a->mass())/(1.-x));
   if(qqmin>=qqmax) {
     jacobian = 0.;
     return 0.;
   }
-  double low(log(qqmin/c.sMax())),upp(log(qqmax/c.sMax()));
-  jacobian *= upp-low;
+  double low(log(qqmin/c.scaleMaxL(l))),upp(log(qqmax/c.scaleMaxL(l)));
+  // jacobian factor
+  jacobian *= log(qqmax/qqmin);
   return exp(low+z*(upp-low));
 }
 
 double WeiszackerWilliamsPDF::flattenL(tcPDPtr, tcPDPtr, const PDFCuts & c,
 			 double z, double & jacobian) const {
   jacobian *= c.lMax() - c.lMin();
-  return c.lMin() + z*jacobian;
+  return c.lMin() + z*(c.lMax() - c.lMin());
 }

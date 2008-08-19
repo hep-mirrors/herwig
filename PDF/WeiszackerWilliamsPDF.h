@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/PDF/PDFBase.h"
-#include "WeiszackerWilliamsPDF.fh"
 
 namespace Herwig {
 
@@ -25,7 +24,7 @@ public:
   /**
    *  Default constructor
    */
-  inline WeiszackerWilliamsPDF();
+  WeiszackerWilliamsPDF();
 
   /** @name Virtual functions to be overridden by sub-classes. */
   //@{
@@ -110,13 +109,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -183,7 +182,5 @@ struct ClassTraits<Herwig::WeiszackerWilliamsPDF>
 /** @endcond */
 
 }
-
-#include "WeiszackerWilliamsPDF.icc"
 
 #endif /* HERWIG_WeiszackerWilliamsPDF_H */
