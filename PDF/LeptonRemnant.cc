@@ -61,27 +61,23 @@ generate(PartonBinInstance & pb, const double *,
   // photon into hard process and lepton remnant
   if ( pb.particleData() != pb.partonData() && 
        pb.partonData()->id() == ParticleID::gamma) {
-    cerr << "testing in generate A\n";
-    exit(0);
-//   if ( pb.eps() < minX ) {
-//     pb.remnants(PVector());
-//     return parent;
-//   }
-//   LorentzMomentum p(0.0*GeV, 0.0*GeV, parent.rho(), parent.e());
-//   TransverseMomentum qt;
-//   Energy2 qt2 = 0.0*GeV2;
-//   if ( scale >= 0.0*GeV2 ) {
-//     qt2 = pb.eps()*(pb.xi()*parent.m2() + scale);
-//     double phi = rnd(2.0*Constants::pi);
-//     qt = TransverseMomentum(sqrt(qt2)*cos(phi), sqrt(qt2)*sin(phi));
-//   }
-//   Energy pl = p.plus()*pb.eps();
-//   LorentzMomentum prem = lightCone(pl, qt2/pl, qt);
-//   prem.rotateY(parent.theta());
-//   prem.rotateZ(parent.phi());
-//   PPtr rem = photon->produceParticle(prem, 0.0*GeV);
-//   pb.remnants(PVector(1, rem));
-//   return parent - rem->momentum();
+    Energy  ppl = pb.xi()*(abs(parent.z())+parent.t());
+    Energy2 qt2 = pb.eps()*scale-sqr(pb.xi()*parent.m());
+    Energy  pmi = (qt2-scale)/ppl;
+    Lorentz5Momentum pgam;
+    pgam.setMass(-sqrt(scale));
+    pgam.setT(0.5*(ppl+pmi));
+    pgam.setZ(0.5*(ppl-pmi));
+    if(parent.z()<0.*GeV) pgam.z() *=-1.;
+    double phi = rnd(2.0*Constants::pi);
+    pgam.setX(sqrt(qt2)*cos(phi));
+    pgam.setY(sqrt(qt2)*sin(phi));
+    pgam.rotateY(parent.theta());
+    pgam.rotateZ(parent.phi());
+    Lorentz5Momentum prem=parent-pgam;
+    PPtr rem = pb.particleData()->produceParticle(prem, pb.particleData()->mass());
+    pb.remnants(PVector(1, rem));
+    return pgam;
   }
   else if( pb.particleData() == pb.partonData() ) {
     if ( pb.eps() < minX ) {
@@ -118,21 +114,23 @@ generate(PartonBinInstance & pb, const double *, Energy2 scale, Energy2,
   // photon into hard process and lepton remnant
   if ( pb.particleData() != pb.partonData() && 
        pb.partonData()->id() == ParticleID::gamma) {
-    LorentzMomentum p(0.0*GeV, 0.0*GeV, parent.rho(), parent.e());
-    TransverseMomentum qt;
-    Energy2 qt2 = 0.0*GeV2;
-    if ( scale >= 0.0*GeV2 ) {
-      qt2 = pb.eps()*(pb.xi()*parent.m2() + scale);
-      double phi = rnd(2.0*Constants::pi);
-      qt = TransverseMomentum(sqrt(qt2)*cos(phi), sqrt(qt2)*sin(phi));
-    }
-    Energy pl = p.plus()*pb.eps();
-    LorentzMomentum prem = lightCone(pl, qt2/pl, qt);
-    prem.rotateY(parent.theta());
-    prem.rotateZ(parent.phi());
+    Energy  ppl = pb.xi()*(abs(parent.z())+parent.t());
+    Energy2 qt2 = pb.eps()*scale-sqr(pb.xi()*parent.m());
+    Energy  pmi = (qt2-scale)/ppl;
+    Lorentz5Momentum pgam;
+    pgam.setMass(-sqrt(scale));
+    pgam.setT(0.5*(ppl+pmi));
+    pgam.setZ(0.5*(ppl-pmi));
+    if(parent.z()<0.*GeV) pgam.z() *=-1.;
+    double phi = rnd(2.0*Constants::pi);
+    pgam.setX(sqrt(qt2)*cos(phi));
+    pgam.setY(sqrt(qt2)*sin(phi));
+    pgam.rotateY(parent.theta());
+    pgam.rotateZ(parent.phi());
+    Lorentz5Momentum prem=parent-pgam;
     PPtr rem = pb.particleData()->produceParticle(prem, pb.particleData()->mass());
     pb.remnants(PVector(1, rem));
-    return parent - rem->momentum();
+    return pgam;
   }
   else if ( pb.particleData() == pb.partonData() ) {
     if ( pb.eps() < minX ) {
