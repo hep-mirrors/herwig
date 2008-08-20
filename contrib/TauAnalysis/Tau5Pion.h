@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_TauToLeptonsAnalysis_H
-#define HERWIG_TauToLeptonsAnalysis_H
+#ifndef HERWIG_Tau5Pion_H
+#define HERWIG_Tau5Pion_H
 //
-// This is the declaration of the TauToLeptonsAnalysis class.
+// This is the declaration of the Tau5Pion class.
 //
 
 #include "ThePEG/Repository/CurrentGenerator.h"
@@ -14,12 +14,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the TauToLeptonsAnalysis class.
+ * Here is the documentation of the Tau5Pion class.
  *
- * @see \ref TauToLeptonsAnalysisInterfaces "The interfaces"
- * defined for TauToLeptonsAnalysis.
+ * @see \ref Tau5PionInterfaces "The interfaces"
+ * defined for Tau5Pion.
  */
-class TauToLeptonsAnalysis: public AnalysisHandler {
+class Tau5Pion: public AnalysisHandler {
 
 public:
 
@@ -97,25 +97,95 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<TauToLeptonsAnalysis> initTauToLeptonsAnalysis;
+  static NoPIOClassDescription<Tau5Pion> initTau5Pion;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TauToLeptonsAnalysis & operator=(const TauToLeptonsAnalysis &);
+  Tau5Pion & operator=(const Tau5Pion &);
 
 private:
 
   /**
-   *  Histogram for the electron final state
+   *  Histograms for the \f$\pi\pi\f$ masses
    */
-  HistogramPtr _emode;
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipi1;
 
   /**
-   *  Histogram for the muon final state
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
    */
-  HistogramPtr _mmode;
+  vector<HistogramPtr> _pipi2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipi3;
+  //@}
+
+  /**
+   *  Histograms for the \f$\pi\pi\pi\f$ masses
+   */
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipi1;
+
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  vector<HistogramPtr> _pipipi2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipi3;
+  //@}
+
+  /**
+   *  Histograms for the \f$\pi\pi\pi\pi\f$ masses
+   */
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipipi1;
+
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  vector<HistogramPtr> _pipipipi2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipipi3;
+  //@}
+
+  /**
+   *  Histograms for the total hadronic mass
+   */
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  HistogramPtr _q1;
+
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  HistogramPtr _q2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  HistogramPtr _q3;
+  //@}
 };
 
 }
@@ -127,32 +197,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of TauToLeptonsAnalysis. */
+ *  base classes of Tau5Pion. */
 template <>
-struct BaseClassTrait<Herwig::TauToLeptonsAnalysis,1> {
-  /** Typedef of the first base class of TauToLeptonsAnalysis. */
+struct BaseClassTrait<Herwig::Tau5Pion,1> {
+  /** Typedef of the first base class of Tau5Pion. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the TauToLeptonsAnalysis class and the shared object where it is defined. */
+ *  the Tau5Pion class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::TauToLeptonsAnalysis>
-  : public ClassTraitsBase<Herwig::TauToLeptonsAnalysis> {
+struct ClassTraits<Herwig::Tau5Pion>
+  : public ClassTraitsBase<Herwig::Tau5Pion> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::TauToLeptonsAnalysis"; }
+  static string className() { return "Herwig::Tau5Pion"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * TauToLeptonsAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class TauToLeptonsAnalysis depends on other classes (base classes
+   * Tau5Pion is implemented. It may also include several, space-separated,
+   * libraries if the class Tau5Pion depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDecayAnalysis.so"; }
+  static string library() { return "HwTauAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_TauToLeptonsAnalysis_H */
+#endif /* HERWIG_Tau5Pion_H */

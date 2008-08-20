@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_TauCorrelationAnalysis_H
-#define HERWIG_TauCorrelationAnalysis_H
+#ifndef HERWIG_TauTo2MesonAnalysis_H
+#define HERWIG_TauTo2MesonAnalysis_H
 //
-// This is the declaration of the TauCorrelationAnalysis class.
+// This is the declaration of the TauTo2MesonAnalysis class.
 //
 
 #include "ThePEG/Repository/CurrentGenerator.h"
@@ -14,17 +14,19 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The documentation of the TauCorrelationAnalysis class is designed to 
- * perform some analysis of the distributions of tau decay products in
- * Higgs decays.
+ * The TauTo2MesonAnalysis class is designed to perform the analysis of the 
+ * mass distribution of the hadronic decay products of the \f$\tau\f$ in the decays
+ * \f$\tau^\pm\to\nu_\tau\{\pi^\pm\pi^0,K^\pm\pi^0,K^0\pi^\pm,K^\pm\eta,K^\pm K^0\}\f$.
+ * In order to work the \f$\pi^0\f$, \f$K^0\f$, \f$K^\pm\f$ and \f$\eta\f$ should be
+ * set stable.
  *
- * The analysis of the pion decays is based on hep-ph/0202007 and the 
- * rho decays is based on hep-ph/0204292.
+ * The mass spectrum of the \f$pi^\pm\pi^0\f$ final state is compared to CLEO and
+ * BELLE data.
  *
- * @see \ref TauCorrelationAnalysisInterfaces "The interfaces"
- * defined for TauCorrelationAnalysis.
+ * @see \ref TauTo2MesonAnalysisInterfaces "The interfaces"
+ * defined for TauTo2MesonAnalysis.
  */
-class TauCorrelationAnalysis: public AnalysisHandler {
+class TauTo2MesonAnalysis: public AnalysisHandler {
 
 public:
 
@@ -49,18 +51,7 @@ public:
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
+  using AnalysisHandler::analyze;
   //@}
 
 public:
@@ -90,6 +81,9 @@ protected:
   inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
+
+protected:
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -107,67 +101,48 @@ protected:
   virtual void dofinish();
   //@}
 
-protected:
-
-  /**
-   *  Methods to perform the analysis
-   */
-  //@{
-  /**
-   * Analyze the given particle for correlations with pi.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  void analyzePi(tPPtr particle);
-  /**
-   * Analyze the given particle for correlations with rho.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  void analyzeRho(tPPtr particle);
-  //@}
-
 private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
+   * Indicates that this is a concrete class.
    */
-  static NoPIOClassDescription<TauCorrelationAnalysis> initTauCorrelationAnalysis;
+  static NoPIOClassDescription<TauTo2MesonAnalysis> initTauTo2MesonAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TauCorrelationAnalysis & operator=(const TauCorrelationAnalysis &);
+  TauTo2MesonAnalysis & operator=(const TauTo2MesonAnalysis &);
 
 private:
 
   /**
-   *  Histogram of the \f$\phi\f$ angle in 
-   *  \f$H\to\tau^+\tau^-\to\pi^+\bar{\nu}_tau\pi^-\nu_tau\f$
-   */
-  HistogramPtr _phi;
-
-  /**
-   * Histogram of the \f$\delta\f$ angle in 
-   *  \f$H\to\tau^+\tau^-\to\pi^+\bar{\nu}_tau\pi^-\nu_tau\f$
-   */
-  HistogramPtr _delta;
-
-  /**
-   * Histogram of the \f$\phi\f$ angle in 
-   *  \f$H\to\tau^+\tau^-\to\rho^+\bar{\nu}_tau\rho^-\nu_tau\f$
+   *  Histograms for the mass plots
    */
   //@{
   /**
-   *  First angle
+   *  Mass of the pions in \f$\tau\pm\to\nu_\tau\pi^0\pi^\pm\f$ compared to BELLE
+   * and CLEO data.
    */
-  HistogramPtr _rhoangle1;
+  HistogramPtr _m2pipiBELLE,_mpipiCLEO;
 
   /**
-   *  Second angle
+   *  Mass of the Kaons and pions in \f$\tau\to K\pi\f$
    */
-  HistogramPtr _rhoangle2;
+  HistogramPtr _m2KpiA,_m2KpiB,_mKpiA,_mKpiB,_m2KpiC,_m2KpiD;
+
+  /**
+   *  Mass of the \f$K\eta\f$
+   */
+  HistogramPtr _m2Keta,_mKeta;
+
+  /**
+   *  Mass of the \f$KK\f$
+   */
+  HistogramPtr _m2KK,_mKK;
   //@}
+
 };
 
 }
@@ -179,32 +154,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of TauCorrelationAnalysis. */
+ *  base classes of TauTo2MesonAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::TauCorrelationAnalysis,1> {
-  /** Typedef of the first base class of TauCorrelationAnalysis. */
+struct BaseClassTrait<Herwig::TauTo2MesonAnalysis,1> {
+  /** Typedef of the first base class of TauTo2MesonAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the TauCorrelationAnalysis class and the shared object where it is defined. */
+ *  the TauTo2MesonAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::TauCorrelationAnalysis>
-  : public ClassTraitsBase<Herwig::TauCorrelationAnalysis> {
+struct ClassTraits<Herwig::TauTo2MesonAnalysis>
+  : public ClassTraitsBase<Herwig::TauTo2MesonAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::TauCorrelationAnalysis"; }
+  static string className() { return "Herwig::TauTo2MesonAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * TauCorrelationAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class TauCorrelationAnalysis depends on other classes (base classes
+   * TauTo2MesonAnalysis is implemented. It may also include several, space-separated,
+   * libraries if the class TauTo2MesonAnalysis depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDecayAnalysis.so"; }
+  static string library() { return "HwTauAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_TauCorrelationAnalysis_H */
+#endif /* HERWIG_TauTo2MesonAnalysis_H */

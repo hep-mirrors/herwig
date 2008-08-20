@@ -42,12 +42,6 @@ CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 
 HwDecayAnalysis_la_LDFLAGS = -module -version-info 1:0:0
 HwDecayAnalysis_la_SOURCES = \
-TauTo2MesonAnalysis.h TauTo2MesonAnalysis.cc \
-TauToLeptonsAnalysis.h TauToLeptonsAnalysis.cc \
-TauTo3MesonAnalysis.h TauTo3MesonAnalysis.cc \
-TauTo4MesonAnalysis.h TauTo4MesonAnalysis.cc \
-Tau5Pion.h Tau5Pion.cc \
-TauCorrelationAnalysis.h TauCorrelationAnalysis.cc \
 EtaDecayAnalysis.h EtaDecayAnalysis.cc \
 SemiLeptonicDecayAnalysis.h SemiLeptonicDecayAnalysis.cc \
 OmegaPhi3PionAnalysis.h OmegaPhi3PionAnalysis.cc \

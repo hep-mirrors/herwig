@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_TauTo2MesonAnalysis_H
-#define HERWIG_TauTo2MesonAnalysis_H
+#ifndef HERWIG_TauToLeptonsAnalysis_H
+#define HERWIG_TauToLeptonsAnalysis_H
 //
-// This is the declaration of the TauTo2MesonAnalysis class.
+// This is the declaration of the TauToLeptonsAnalysis class.
 //
 
 #include "ThePEG/Repository/CurrentGenerator.h"
@@ -14,19 +14,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The TauTo2MesonAnalysis class is designed to perform the analysis of the 
- * mass distribution of the hadronic decay products of the \f$\tau\f$ in the decays
- * \f$\tau^\pm\to\nu_\tau\{\pi^\pm\pi^0,K^\pm\pi^0,K^0\pi^\pm,K^\pm\eta,K^\pm K^0\}\f$.
- * In order to work the \f$\pi^0\f$, \f$K^0\f$, \f$K^\pm\f$ and \f$\eta\f$ should be
- * set stable.
+ * Here is the documentation of the TauToLeptonsAnalysis class.
  *
- * The mass spectrum of the \f$pi^\pm\pi^0\f$ final state is compared to CLEO and
- * BELLE data.
- *
- * @see \ref TauTo2MesonAnalysisInterfaces "The interfaces"
- * defined for TauTo2MesonAnalysis.
+ * @see \ref TauToLeptonsAnalysisInterfaces "The interfaces"
+ * defined for TauToLeptonsAnalysis.
  */
-class TauTo2MesonAnalysis: public AnalysisHandler {
+class TauToLeptonsAnalysis: public AnalysisHandler {
 
 public:
 
@@ -81,9 +74,6 @@ protected:
   inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
-
-protected:
-
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -105,44 +95,27 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class.
+   * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<TauTo2MesonAnalysis> initTauTo2MesonAnalysis;
+  static NoPIOClassDescription<TauToLeptonsAnalysis> initTauToLeptonsAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TauTo2MesonAnalysis & operator=(const TauTo2MesonAnalysis &);
+  TauToLeptonsAnalysis & operator=(const TauToLeptonsAnalysis &);
 
 private:
 
   /**
-   *  Histograms for the mass plots
+   *  Histogram for the electron final state
    */
-  //@{
-  /**
-   *  Mass of the pions in \f$\tau\pm\to\nu_\tau\pi^0\pi^\pm\f$ compared to BELLE
-   * and CLEO data.
-   */
-  HistogramPtr _m2pipiBELLE,_mpipiCLEO;
+  HistogramPtr _emode;
 
   /**
-   *  Mass of the Kaons and pions in \f$\tau\to K\pi\f$
+   *  Histogram for the muon final state
    */
-  HistogramPtr _m2KpiA,_m2KpiB,_mKpiA,_mKpiB,_m2KpiC,_m2KpiD;
-
-  /**
-   *  Mass of the \f$K\eta\f$
-   */
-  HistogramPtr _m2Keta,_mKeta;
-
-  /**
-   *  Mass of the \f$KK\f$
-   */
-  HistogramPtr _m2KK,_mKK;
-  //@}
-
+  HistogramPtr _mmode;
 };
 
 }
@@ -154,32 +127,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of TauTo2MesonAnalysis. */
+ *  base classes of TauToLeptonsAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::TauTo2MesonAnalysis,1> {
-  /** Typedef of the first base class of TauTo2MesonAnalysis. */
+struct BaseClassTrait<Herwig::TauToLeptonsAnalysis,1> {
+  /** Typedef of the first base class of TauToLeptonsAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the TauTo2MesonAnalysis class and the shared object where it is defined. */
+ *  the TauToLeptonsAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::TauTo2MesonAnalysis>
-  : public ClassTraitsBase<Herwig::TauTo2MesonAnalysis> {
+struct ClassTraits<Herwig::TauToLeptonsAnalysis>
+  : public ClassTraitsBase<Herwig::TauToLeptonsAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::TauTo2MesonAnalysis"; }
+  static string className() { return "Herwig::TauToLeptonsAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * TauTo2MesonAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class TauTo2MesonAnalysis depends on other classes (base classes
+   * TauToLeptonsAnalysis is implemented. It may also include several, space-separated,
+   * libraries if the class TauToLeptonsAnalysis depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDecayAnalysis.so"; }
+  static string library() { return "HwTauAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_TauTo2MesonAnalysis_H */
+#endif /* HERWIG_TauToLeptonsAnalysis_H */

@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_TauTo4MesonAnalysis_H
-#define HERWIG_TauTo4MesonAnalysis_H
+#ifndef HERWIG_TauCorrelationAnalysis_H
+#define HERWIG_TauCorrelationAnalysis_H
 //
-// This is the declaration of the TauTo4MesonAnalysis class.
+// This is the declaration of the TauCorrelationAnalysis class.
 //
 
 #include "ThePEG/Repository/CurrentGenerator.h"
@@ -14,12 +14,17 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the TauTo4MesonAnalysis class.
+ * The documentation of the TauCorrelationAnalysis class is designed to 
+ * perform some analysis of the distributions of tau decay products in
+ * Higgs decays.
  *
- * @see \ref TauTo4MesonAnalysisInterfaces "The interfaces"
- * defined for TauTo4MesonAnalysis.
+ * The analysis of the pion decays is based on hep-ph/0202007 and the 
+ * rho decays is based on hep-ph/0204292.
+ *
+ * @see \ref TauCorrelationAnalysisInterfaces "The interfaces"
+ * defined for TauCorrelationAnalysis.
  */
-class TauTo4MesonAnalysis: public AnalysisHandler {
+class TauCorrelationAnalysis: public AnalysisHandler {
 
 public:
 
@@ -44,7 +49,18 @@ public:
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
 
-  using AnalysisHandler::analyze;
+  /**
+   * Analyze the given vector of particles. The default version calls
+   * analyze(tPPtr) for each of the particles.
+   * @param particles the vector of pointers to particles to be analyzed
+   */
+  virtual void analyze(const tPVector & particles);
+
+  /**
+   * Analyze the given particle.
+   * @param particle pointer to the particle to be analyzed.
+   */
+  virtual void analyze(tPPtr particle);
   //@}
 
 public:
@@ -91,36 +107,67 @@ protected:
   virtual void dofinish();
   //@}
 
+protected:
+
+  /**
+   *  Methods to perform the analysis
+   */
+  //@{
+  /**
+   * Analyze the given particle for correlations with pi.
+   * @param particle pointer to the particle to be analyzed.
+   */
+  void analyzePi(tPPtr particle);
+  /**
+   * Analyze the given particle for correlations with rho.
+   * @param particle pointer to the particle to be analyzed.
+   */
+  void analyzeRho(tPPtr particle);
+  //@}
+
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<TauTo4MesonAnalysis> initTauTo4MesonAnalysis;
+  static NoPIOClassDescription<TauCorrelationAnalysis> initTauCorrelationAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TauTo4MesonAnalysis & operator=(const TauTo4MesonAnalysis &);
+  TauCorrelationAnalysis & operator=(const TauCorrelationAnalysis &);
 
 private:
 
   /**
-   *  Histograms for the \f$\pi\pi\f$ mass distributions
+   *  Histogram of the \f$\phi\f$ angle in 
+   *  \f$H\to\tau^+\tau^-\to\pi^+\bar{\nu}_tau\pi^-\nu_tau\f$
    */
-  vector<HistogramPtr> _mpipi;
+  HistogramPtr _phi;
 
   /**
-   *  Histograms for the \f$\pi\pi\pi\f$ mass distributions
+   * Histogram of the \f$\delta\f$ angle in 
+   *  \f$H\to\tau^+\tau^-\to\pi^+\bar{\nu}_tau\pi^-\nu_tau\f$
    */
-  vector<HistogramPtr> _mpipipi;
+  HistogramPtr _delta;
 
   /**
-   *  Histograms for the \f$\pi\pi\pi\pi\f$ mass distributions
+   * Histogram of the \f$\phi\f$ angle in 
+   *  \f$H\to\tau^+\tau^-\to\rho^+\bar{\nu}_tau\rho^-\nu_tau\f$
    */
-  vector<HistogramPtr> _mpipipipi;
+  //@{
+  /**
+   *  First angle
+   */
+  HistogramPtr _rhoangle1;
+
+  /**
+   *  Second angle
+   */
+  HistogramPtr _rhoangle2;
+  //@}
 };
 
 }
@@ -132,32 +179,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of TauTo4MesonAnalysis. */
+ *  base classes of TauCorrelationAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::TauTo4MesonAnalysis,1> {
-  /** Typedef of the first base class of TauTo4MesonAnalysis. */
+struct BaseClassTrait<Herwig::TauCorrelationAnalysis,1> {
+  /** Typedef of the first base class of TauCorrelationAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the TauTo4MesonAnalysis class and the shared object where it is defined. */
+ *  the TauCorrelationAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::TauTo4MesonAnalysis>
-  : public ClassTraitsBase<Herwig::TauTo4MesonAnalysis> {
+struct ClassTraits<Herwig::TauCorrelationAnalysis>
+  : public ClassTraitsBase<Herwig::TauCorrelationAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::TauTo4MesonAnalysis"; }
+  static string className() { return "Herwig::TauCorrelationAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * TauTo4MesonAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class TauTo4MesonAnalysis depends on other classes (base classes
+   * TauCorrelationAnalysis is implemented. It may also include several, space-separated,
+   * libraries if the class TauCorrelationAnalysis depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwDecayAnalysis.so"; }
+  static string library() { return "HwTauAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_TauTo4MesonAnalysis_H */
+#endif /* HERWIG_TauCorrelationAnalysis_H */
