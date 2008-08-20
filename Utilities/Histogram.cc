@@ -78,7 +78,7 @@ void Histogram::topdrawOutput(ostream & out,
   // work out the y points
   vector<double> yout;
   double ymax=-9.8765e34,ymin=9.8765e34;
-  unsigned int numPoints = _globalStats.numberOfPoints();
+  double numPoints = _total;
   if (numPoints == 0) ++numPoints;
 
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {

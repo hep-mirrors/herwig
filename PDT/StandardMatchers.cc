@@ -29,6 +29,7 @@ void dummy() {
   static MatchHadron m02;
   static MatchWBoson m03;
   static MatchZBoson m04;
+  static MatchHiggsBoson m05;
 }
 
 }

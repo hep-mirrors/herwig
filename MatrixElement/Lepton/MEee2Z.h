@@ -18,7 +18,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Utilities/Rebinder.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"

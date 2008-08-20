@@ -16,6 +16,7 @@ create ThePEG::Matcher<Photon> Photon
 create ThePEG::Matcher<Top> Top
 create ThePEG::Matcher<WBoson> WBoson
 create ThePEG::Matcher<ZBoson> ZBoson
+create ThePEG::Matcher<HiggsBoson> HiggsBoson
 
 mkdir /Herwig/Cuts
 cd /Herwig/Cuts
@@ -63,6 +64,12 @@ create ThePEG::SimpleKTCut ZBosonKtCut SimpleKTCut.so
 set ZBosonKtCut:Matcher /Herwig/Matchers/ZBoson
 set ZBosonKtCut:MinKT 0.0*GeV
 
+# cut on Higgs bosons
+create ThePEG::SimpleKTCut HiggsBosonKtCut SimpleKTCut.so
+set HiggsBosonKtCut:Matcher /Herwig/Matchers/HiggsBoson
+set HiggsBosonKtCut:MinKT 0.0*GeV
+
+
 # create a cut on the invariant mass of lepton pairs
 create ThePEG::V2LeptonsCut MassCut V2LeptonsCut.so
 set MassCut:MaxM 14000.*GeV
@@ -90,6 +97,7 @@ insert QCDCuts:OneCuts[2] LeptonKtCut
 insert QCDCuts:OneCuts[3] TopKtCut
 insert QCDCuts:OneCuts[4] WBosonKtCut
 insert QCDCuts:OneCuts[5] ZBosonKtCut
+insert QCDCuts:OneCuts[6] HiggsBosonKtCut
 insert QCDCuts:MultiCuts[0] MassCut
 
 # cuts for DIS

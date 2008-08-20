@@ -19,12 +19,10 @@
 #include "ThePEG/PDT/Decayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/EventRecord/Step.h"
 #include "ThePEG/EventRecord/Collision.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/SpinInfo.h"
 #include "DecayIntegrator.h"
 #include "DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/EnumParticles.h"
@@ -45,9 +43,8 @@ handle(EventHandler &, const tPVector & tagged,
 	parents.push_back(tagged[i]);
       }
       // if stable and has spinInfo set the developed flag
-      else if(tagged[i]->spinInfo()) {
-	tcSpinfoPtr hwspin=dynamic_ptr_cast<tcSpinfoPtr>(tagged[i]->spinInfo());
-	if(hwspin) hwspin->setDeveloped(true);
+      else {
+	develop(tagged[i]);
       }
     }
   }
@@ -67,6 +64,14 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
   throw(Veto, Exception) {
   long ntry = 0;
   tcSpinfoPtr hwspin;
+  if ( maxLifeTime() >= 0.0*mm ) {
+    if( ( lifeTimeOption() && parent->lifeLength().tau() > maxLifeTime())||
+	(!lifeTimeOption() && parent->data().cTau()      > maxLifeTime()) ) {
+      parent->setLifeLength(Distance());
+      develop(parent);
+      return;
+    }
+  }
   while ( true ) {
     // exit if fails
     if ( ++ntry >= maxLoop() ) 
@@ -112,9 +117,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	  performDecay(children[i], s);
 	}
 	// if stable and has spinInfo set up decay matrices etc.
-	else if(children[i]->spinInfo()) {
-	  hwspin=dynamic_ptr_cast<tcSpinfoPtr>(children[i]->spinInfo());
-	  if(hwspin) hwspin->setDeveloped(true);
+	else {
+	  develop(children[i]);
 	}
       }
       // sort out the spinInfo for the parent after the decays
@@ -155,11 +159,7 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
       performDecay(parent->children()[i], s);
     }
     else if(parent->children()[i]->data().stable()) {
-      if((parent->children()[i])->spinInfo()) {
-	tcSpinfoPtr hwspin=
-	  ThePEG::dynamic_ptr_cast<tcSpinfoPtr>(parent->children()[i]->spinInfo());
-	if(hwspin) hwspin->setDeveloped(true);
-      }
+      develop(parent->children()[i]);
     }
   }
   return;

@@ -85,7 +85,7 @@ void UEDW0W1W1Vertex::Init() {
 }
 
 void UEDW0W1W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-				  tcPDPtr part3) {
+				  tcPDPtr part3,Direction,Direction,Direction) {
   long id1(abs(part1->id())), id2(abs(part2->id())), id3(abs(part3->id())), 
     smID(0), kkparticle(0);
   double perm(-1.);

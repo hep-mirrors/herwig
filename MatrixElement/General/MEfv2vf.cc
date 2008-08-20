@@ -17,7 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;

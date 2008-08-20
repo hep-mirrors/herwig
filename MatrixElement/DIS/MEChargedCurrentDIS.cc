@@ -13,13 +13,19 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
 using namespace Herwig;
+
+MEChargedCurrentDIS::MEChargedCurrentDIS() 
+  : _maxflavour(6), _massopt(0) {
+  massOption(true ,1);
+  massOption(false,_massopt);
+}
 
 void MEChargedCurrentDIS::doinit() throw(InitException) {
   HwME2to2Base::doinit();

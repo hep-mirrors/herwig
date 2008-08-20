@@ -63,7 +63,12 @@ public:
   /**
    * The default constructor.
    */
-  inline HwRemDecayer();
+  inline HwRemDecayer() : ptmin_(-1.*GeV), maxtrySoft_(10), 
+			  colourDisrupt_(0.0), 
+			  _kinCutoff(0.75*GeV), 
+			  _forcedSplitScale(2.5*GeV),
+			  _range(1.1), _zbin(0.05),_ybin(0.),
+			  _nbinmax(100), DISRemnantOpt_(0) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -99,6 +104,12 @@ public:
 
 public:
 
+  /** 
+   * struct that is used to catch exceptions which are thrown
+   * due to energy conservation issues of additional soft scatters
+   */
+  struct ExtraSoftScatterVeto {};
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -130,6 +141,13 @@ public:
 		  Energy forcedSplitScale);
 
   /**
+   * Initialize the soft scattering machinery.
+   * @param ptmin = the pt cutoff used in the UE model
+   * @param beta = slope of the soft pt-spectrum
+   */
+  void initSoftInteractions(Energy ptmin, InvEnergy2 beta);
+
+  /**
    * Perform the acual forced splitting.
    * @param partons is a pair of ThePEG::Particle pointers which store the final 
    * partons on which the shower ends.
@@ -141,8 +159,11 @@ public:
   /**
    * Perform the final creation of the diquarks. Set the remnant masses and do 
    * all colour connections.
+   * @param colourDisrupt = variable to control how many "hard" scatters
+   * are colour isolated
+   * @param softInt = parameter for the number of soft scatters
    */
-  void finalize();
+  void finalize(double colourDisrupt=0.0, unsigned int softInt=0);
 
   /**
    *  Find the children
@@ -256,11 +277,19 @@ private:
 	     Lorentz5Momentum & used, PartnerMap & partners, tcPDFPtr pdf, bool first);
 
   /**
-   * Do all colour connections.
+   * Merge the colour lines of two particles
+   * @param p1 = Pointer to particle 1
+   * @param p2 = Pointer to particle 2
+   * @param anti = flag to indicate, if (anti)colour was extracted as first parton.
+   */
+  void mergeColour(tPPtr p1, tPPtr p2, bool anti) const;
+
+  /**
+   * Set the colour connections.
    * @param partners = Object that holds the information which particles to connect.
    * @param anti = flag to indicate, if (anti)colour was extracted as first parton.
    */
-  void fixColours(PartnerMap partners, bool anti) const;
+  void fixColours(PartnerMap partners, bool anti, double disrupt) const;
 
   /**
    * Set the momenta of the Remnants properly and boost the decay particles.
@@ -273,6 +302,7 @@ private:
    * remain to be used.
    */
   inline PPtr finalSplit(const tRemPPtr rem, long remID, Lorentz5Momentum) const;
+
 
   /**
    * This takes the particle and find a splitting for np -> p + child and 
@@ -288,6 +318,36 @@ private:
   PPtr forceSplit(const tRemPPtr rem, long child, Energy &oldQ, double &oldx, 
 		  Lorentz5Momentum &pf, Lorentz5Momentum &p,
 		  HadronContent & content) const;
+
+  /** @name Soft interaction methods. */
+  //@{
+
+  /**
+   * Produce pt values according to dN/dp_T = N p_T exp(-beta_*p_T^2)
+   */
+  Energy softPt() const;
+
+  /**
+   * Get the 2 pairs of 5Momenta for the scattering. Needs calling of
+   * initSoftInteractions.
+   */
+  void softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2, 
+		      Lorentz5Momentum &g1, Lorentz5Momentum &g2) const;
+
+  /**
+   * Create N soft gluon interactions
+   */
+  void doSoftInteractions(unsigned int N);
+
+  /**
+   * Method to add a particle to the step
+   * @param parent = pointer to the parent particle
+   * @param id = Particle ID of the newly created particle
+   * @param p = Lorentz5Momentum of the new particle
+   */
+  tPPtr addParticle(tcPPtr parent, long id, Lorentz5Momentum p) const;
+
+  //@}
 
   /**
    * A flag which indicates, whether the extracted valence quark was a 
@@ -342,6 +402,41 @@ private:
   
 private:
 
+  /** @name Soft interaction variables. */
+  //@{
+
+  /**
+   * Pair of soft Remnant pointers, i.e. Diquarks.
+   */
+  tPPair softRems_;
+
+  /**
+   * ptcut of the UE model
+   */
+  Energy ptmin_;
+
+  /**
+   * slope of the soft pt-spectrum: dN/dp_T = N p_T exp(-beta*p_T^2)
+   */
+  InvEnergy2 beta_;
+
+  /**
+   *  Maximum number of attempts for the regeneration of an additional
+   *  soft scattering, before the number of scatters is reduced.
+   */
+  unsigned int maxtrySoft_;
+
+  /**
+   * Variable to store the relative number of colour disrupted
+   * connections to additional soft subprocesses.
+   */
+  double colourDisrupt_;
+
+  //@}
+
+  /** @name Forced splitting variables. */
+  //@{
+
   /**
    *  The kinematic cut-off
    */
@@ -381,6 +476,9 @@ private:
    *  Option for the DIS remnant
    */
   unsigned int DISRemnantOpt_;
+
+  //@}
+
 };
 
 

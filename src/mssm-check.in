@@ -21,12 +21,6 @@ insert HPConstructor:Outgoing 7 /Herwig/Particles/~d_Rbar
 insert HPConstructor:Outgoing 8 /Herwig/Particles/~g
 
 setup MSSM/Model SPhenoSPS1a.spc
-set TwoBodyDC:CreateDecayModes No
-insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
-insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L
-insert NewModel:DecayParticles 2 /Herwig/Particles/~chi_20
-insert NewModel:DecayParticles 3 /Herwig/Particles/~chi_2+
-insert NewModel:DecayParticles 4 /Herwig/Particles/~e_R-
 
 cd /Herwig/EventHandlers
 set LHCHandler:CascadeHandler NULL

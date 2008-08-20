@@ -8,9 +8,8 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
-#include "MEfftoVH.fh"
 
 namespace Herwig {
 using namespace ThePEG;

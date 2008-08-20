@@ -24,7 +24,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;MEQCD2to2::MEQCD2to2():_maxflavour(5),_process(0) {
   massOption(true ,0);

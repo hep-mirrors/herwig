@@ -39,7 +39,7 @@ public:
   inline ModelGenerator() : _theParticles(0), _theOffshell(0),
 			    _theOffsel(0), _theBRnorm(true),
 			    _theNpoints(50), _theIorder(1),
-			    _theBWshape(0) {}
+			    _theBWshape(0), brMin_(1e-6) {}
 
 public:
 
@@ -194,6 +194,11 @@ private:
    * The shape of the Breit-Wigner used in the mass generation
    */
   int _theBWshape;
+
+  /**
+   * The minimum branching ratio to use 
+   */
+  double brMin_;
   //@}
 };
 

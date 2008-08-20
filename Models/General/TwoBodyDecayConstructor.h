@@ -21,15 +21,39 @@ using namespace ThePEG;
 using Helicity::VertexType;
 using Helicity::VertexBasePtr;
 
-/**
- * A two body decay mode 
- */
-typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
+//typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
+
+  /**
+   * A two body decay mode 
+   */
+  struct TwoBodyDecay {
+    
+  public:
+    
+    TwoBodyDecay(tPDPtr pa, tPDPtr pb, tPDPtr pc) : parent_(pa) {
+      ParticleOrdering order;
+      if( order(pb, pc) ) {
+	children_.first = pb;
+	children_.second = pc;
+      }
+      else {
+	children_.first = pc;
+	children_.second = pb;
+      }
+    }
+    
+    tPDPtr parent_;
+    tPDPair children_;
+    
+  private:
+    
+    TwoBodyDecay();
+  };
 
 /**
  * The TwoBodyDecayConstructor class inherits from the dummy base class
  * NBodyDecayConstructorBase and implements the necessary functions in
- * order to create the 2 body decaymodes for a given set of vertices
+ * order to create the 2 body decay modes for a given set of vertices
  * stored in a Model class.
  *
  * @see \ref TwoBodyDecayConstructorInterfaces "The interfaces"
@@ -37,7 +61,7 @@ typedef pair<tPDPtr, tPDPair> TwoBodyDecay;
  * @see NBodyDecayConstructor
  **/
 class TwoBodyDecayConstructor: public NBodyDecayConstructorBase {
-  
+
 public:
 
   /**

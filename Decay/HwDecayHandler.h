@@ -12,6 +12,8 @@
 // This is the declaration of the HwDecayHandler class.
 //
 #include "ThePEG/Handlers/DecayHandler.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/Helicity/SpinInfo.h"
 #include "HwDecayHandler.fh"
 
 namespace Herwig {
@@ -116,6 +118,13 @@ protected:
    */
   inline virtual IBPtr fullclone() const;
   //@}
+
+protected:
+
+  /**
+   *  Develop a stable particle
+   */
+  inline void develop(tPPtr particle) const;
 
 private:
 

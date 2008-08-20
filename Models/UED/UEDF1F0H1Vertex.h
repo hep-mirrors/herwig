@@ -126,9 +126,19 @@ private:
   Energy theMw;
 
   /**
+   * The mass of the \f$Z\f$-boson.
+   */
+  Energy theMz;
+
+  /**
    * The value of \f$\sin\Theta_W\f$.
    */
   double theSinThetaW;
+
+  /**
+   * The value of \f$\cos\Theta_W\f$.
+   */
+  double theCosThetaW;
 
   /**
    * The scale at which the coupling was last evaluated. 
@@ -151,14 +161,20 @@ private:
   Complex theRightLast;
 
   /**
-   * The PDG code of the KK fermion that the coupling was last evaluated for.
+   * The PDG code of the 1st particle at the vertex when it was last evaluated
    */
-  long theKKLast;
+  long theAntiLast;
 
   /**
-   * The PDG code of the SM fermion that the coupling was last evaluated for.
+   * The PDG code of the 2nd particle at the vertex when it was last evaluated
    */
-  long theSMLast;
+  long theFermLast;
+
+  /**
+   * The PDG code of the Higgs  particle at the vertex when it was last 
+   * evaluated
+   */
+  long theHLast;
 };
 }
 

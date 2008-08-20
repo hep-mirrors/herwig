@@ -25,7 +25,7 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 

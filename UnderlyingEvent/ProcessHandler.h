@@ -447,7 +447,7 @@ struct ClassTraits<Herwig::ProcessHandler>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the ProcessHandler class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwMPI.so"; }
+  static string library() { return "SimpleKTCut.so HwMPI.so"; }
 };
 
 /** @endcond */

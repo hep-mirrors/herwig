@@ -269,7 +269,7 @@ void ProcessHandler::doinitrun() {
 
   double weight(0);
   //sample N PSpoints to get an estimate of the xsec
-  for(unsigned int i=0; i<1000; i++){
+  for(unsigned int i=0; i<100000; i++){
     weight = sampler()->generate();
     tStdXCombPtr lastXC = select(sampler()->lastBin(), weight);
   }
@@ -320,7 +320,7 @@ void ProcessHandler::statistics(ostream & os, Stat & tot) const {
     return;
   }
 
-  os << line << "Statistics for event handler \'" << name() << "\':\n"
+  os //<< line << "Statistics for event handler \'" << name() << "\':\n"
      << "                                       "
      << "generated    number of    Cross-section\n"
      << "                                       "

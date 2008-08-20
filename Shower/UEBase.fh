@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the UEBase class.
+//
+#ifndef HERWIG_UEBase_FH
+#define HERWIG_UEBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+//create typedefs for c, t, tc, UEBasePtr's:
+ThePEG_DECLARE_CLASS_POINTERS(UEBase,UEBasePtr);
+
+}
+#endif

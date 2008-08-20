@@ -46,23 +46,10 @@ class RFieldAnalysis: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline RFieldAnalysis();
-
-  /**
-   * The copy constructor.
-   */
-  inline RFieldAnalysis(const RFieldAnalysis &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~RFieldAnalysis();
-  //@}
+  RFieldAnalysis();
 
 public:
 
@@ -143,61 +130,31 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
   virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -287,7 +244,5 @@ struct ClassTraits<Herwig::RFieldAnalysis>
 /** @endcond */
 
 }
-
-#include "RFieldAnalysis.icc"
 
 #endif /* THEPEG_RFieldAnalysis_H */

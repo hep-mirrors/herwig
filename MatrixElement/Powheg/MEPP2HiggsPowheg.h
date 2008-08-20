@@ -21,7 +21,7 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.h"
 #include "Herwig++/PDT/SMHiggsMassGenerator.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {

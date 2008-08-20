@@ -305,6 +305,11 @@ private:
    *  Prefactors to multiply the output by
    */
   double _prefactor;
+
+  /**
+   *  Total entry
+   */
+  double _total;
 };
 
 }

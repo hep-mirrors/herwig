@@ -11,7 +11,7 @@
 // This is the declaration of the ThreeBodyAllOnCalculator class.
 
 #include "WidthCalculatorBase.h"
-#include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "Herwig++/Utilities/GSLIntegrator.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 
@@ -27,9 +27,9 @@ class ThreeBodyAllOnCalculator;
  *  The ThreeBodyAllOnCalculator class is designed to integrate 
  *  a three-body matrix element in which all the outgoing particles are
  *  on-shell to give the partial width. A multi-channel type approach is
- *  used together with gaussian quadrature.
+ *  used together with a GSL integration subroutine.
  *
- * @see GaussianIntegral
+ * @see GSLIntegrator
  * @see ThreeBodyAllOnOuter
  * @see ThreeBodyAllOnIner
  *
@@ -57,9 +57,9 @@ struct Outer {
    * Retreive function value
    */
   inline Energy4 operator ()(double argument) const;
-  /** Argument type for the GaussianIntegrator */
+  /** Argument type for the GSLIntegrator */
   typedef double ArgType;
-  /** Return type for the GaussianIntegrator */
+  /** Return type for the GSLIntegrator */
   typedef Energy4 ValType;
 
   /**
@@ -68,9 +68,9 @@ struct Outer {
   typename Ptr<Herwig::ThreeBodyAllOnCalculator<T> >::const_pointer _integrand;
   
   /**
-   * gaussian integrator
+   * GSL integration class
    */
-  GaussianIntegrator _integrator;
+  GSLIntegrator _integrator;
 };
 
 public:
@@ -142,9 +142,9 @@ public:
    * @return The value of the inner integrand.
    */
   Energy2 operator ()(Energy2 argument) const;
-  /** Argument type for the GaussianIntegrator */
+  /** Argument type for the GSLIntegrator */
   typedef Energy2 ArgType;
-  /** Return type for the GaussianIntegrator */
+  /** Return type for the GSLIntegrator */
   typedef Energy2 ValType;
 
 
@@ -228,7 +228,7 @@ private:
   /**
    * member to do the integration
    */
-  GaussianIntegrator _integrator;
+  GSLIntegrator _integrator;
 };
 }
 

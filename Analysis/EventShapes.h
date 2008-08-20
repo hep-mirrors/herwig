@@ -36,26 +36,6 @@ class EventShapes: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline EventShapes();
-
-  /**
-   * The copy constructor.
-   */
-  inline EventShapes(const EventShapes &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~EventShapes();
-  //@}
-
-public:
-
   /**
    *  Member to reset the particles to be considered
    */
@@ -213,10 +193,6 @@ public:
    *  Single particle variables which do not depend on event shapes axes
    */
   //@{
-  /**
-   *  Ratio of momentum to beam momentum
-   */
-  inline double getX(const Lorentz5Momentum & p, const Energy & Ebeam);
 
   /**
    *  The scaled momentum \f$\xi=-\log\left( p/E_{\rm beam}\right)\f$.
@@ -295,22 +271,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -327,13 +287,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -372,7 +332,7 @@ private:
   /**
    *  Calculate the hemisphere masses and jet broadenings
    */
-  inline void calcHemisphereMasses();
+  void calcHemisphereMasses();
 
   /**
    * Calculate the thrust and related axes
@@ -432,7 +392,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<EventShapes> initEventShapes;
+  static NoPIOClassDescription<EventShapes> initEventShapes;
 
   /**
    * The assignment operator is private and must never be called.

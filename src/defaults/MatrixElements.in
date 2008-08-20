@@ -60,6 +60,9 @@ create Herwig::MEPP2HiggsJet   MEHiggsJet
 # QCD 2-to-2
 create Herwig::MEQCD2to2       MEQCD2to2
 
+# MinBias
+create Herwig::MEMinBias MEMinBias
+
 # qqbar/gg -> t tbar
 create Herwig::MEPP2QQ         MEHeavyQuark     
 

@@ -18,7 +18,7 @@ inline bool ShowerHandler::decayInShower(const long id) const {
 	   _particlesDecayInShower.end() ); 
 }
 
-inline tMPIHPtr ShowerHandler::getMPIHandler() const {  
+inline tUEBasePtr ShowerHandler::getMPIHandler() const {  
   if(!theMPIHandler)
     throw Exception() << "The reference to the MPIHandler is set to zero."
 		      << "So this call to ShowerHandler::getMPIHandler() should "

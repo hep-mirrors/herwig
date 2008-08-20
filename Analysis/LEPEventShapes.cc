@@ -22,7 +22,8 @@
 
 using namespace Herwig;
 
-void LEPEventShapes::analyze(tEventPtr event, long ieve, int loop, int state) {
+void LEPEventShapes::analyze(tEventPtr event, long ieve,
+			     int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
   if ( loop > 0 || state != 0 || !event ) return;
   // get the final-state particles

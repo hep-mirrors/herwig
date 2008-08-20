@@ -13,13 +13,7 @@
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Repository/UseRandom.h"
 
 namespace Herwig {
 using namespace ThePEG;

@@ -63,6 +63,7 @@ void StoFFVDecayer::doinit() throw(InitException) {
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
+    if( offshell->CC() ) offshell = offshell->CC();
     if(offshell->iSpin() == PDT::Spin0) {
       AbstractVSSVertexPtr vert1 = dynamic_ptr_cast<AbstractVSSVertexPtr>
 	(current.vertices.first);
@@ -207,6 +208,7 @@ double StoFFVDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	      diag =  sign*_fer[idiag].second->
 		evaluate(scale,outspin[iferm].first [h2],inters, outVector[v1]);
 	    }
+
 	  }
 	  // intermediate vector
 	  else if(offshell->iSpin() == PDT::Spin1) {
@@ -267,7 +269,7 @@ double StoFFVDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	  }
 	  else if( ivec == 2 ) {
 	    mes[ix](0, s1, s2, v1) = flows[ix];
-	    mel[ix](0, s1, v1, s2) = largeflows[ix];
+	    mel[ix](0, s1, s2, v1) = largeflows[ix];
 	  }
 	}
       }

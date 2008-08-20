@@ -1,6 +1,6 @@
 ##################################################
 # File to run R.Fields TVT analyses [Phys.Rev.D65:092002,2002]
-# writes the Chi^2 values to the log file: TVTUEcheck.log 
+# writes the Chi^2 values to the log file: TVTUE.log 
 # usage: Herwig++ read TVTUE.in
 ##################################################
 
@@ -9,53 +9,56 @@
 ##################################################
 cd /Herwig/Shower 
 # Switch for JIMMY
-#set ShowerHandler:MPIHandler NULL
+set ShowerHandler:MPIHandler NULL
 
 cd /Herwig/UnderlyingEvent
-# set KtCut:MinKT 2.2
+# set KtCut:MinKT 3.8
 # This should always be 2*MinKT!!
-# set UECuts:MHatMin 5.0
+# set UECuts:MHatMin 7.6
 
 # set the inverse hadron radius in GeV^2
-# set MPIHandler:InvRadius 1.3
+# set MPIHandler:InvRadius 2.2
+
 # set the algorithm
 # needs to be changed because signal is same than UE (QCD)
-set MPIHandler:Algorithm 1 
+# if no QCD process present: -1
+set MPIHandler:IdenticalToUE 0
 
 ##################################################
 # Change hard process ME's
 ##################################################
 cd /Herwig/MatrixElements
-insert SimpleQCD:MatrixElements[0] MEQCD2to2
+insert SimpleQCD:MatrixElements[0] MEMinBias
 
 ##################################################
 # Cuts on the hard process
 ##################################################
 cd /Herwig/Cuts
-set JetKtCut:MinKT 15.0*GeV
-set LeptonKtCut:MinKT 50.0*GeV
-set PhotonKtCut:MinKT 20.0*GeV
+set JetKtCut:MinKT 15*GeV
+set QCDCuts:MHatMin 30.*GeV
+set QCDCuts:X1Min 1.0e-2
+set QCDCuts:X2Min 1.0e-2
 
 ##################################################
 # Analysis Handlers
 ##################################################
 cd /Herwig/Analysis
 # create Herwig::GraphvizPlot Plot
-create Herwig::RFieldAnalysis RField HwMPIAnalysis.so
-set RField:LowerBorder 20.0
-set RField:UpperBorder 50.0
+#create Herwig::RFieldAnalysis RField HwMPIAnalysis.so
+#set RField:LowerBorder 20.0
+#set RField:UpperBorder 50.0
 
-# set the directory where the data files are stored. The files are
-# in $(Herwigsrc)/Analysis/TVTUEdata/
-# Default is the directory where you run Herwig++
-# set RField:Dir /foo/dir
+## set the directory where the data files are stored. The files are
+## in $(Herwigsrc)/Analysis/TVTUEdata/
+## Default is the directory where you run Herwig++
+## set RField:Dir /foo/dir
 
-create Herwig::MPIMultiplicity MPIMult
-set MPIMult:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
-set MPIMult:ShowerHandler /Herwig/Shower/ShowerHandler
+#create Herwig::MPIMultiplicity MPIMult
+#set MPIMult:MPIHandler /Herwig/UnderlyingEvent/MPIHandler
+#set MPIMult:ShowerHandler /Herwig/Shower/ShowerHandler
 
-insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 RField
-insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 2 MPIMult
+#insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 1 RField
+#insert /Herwig/Generators/LHCGenerator:AnalysisHandlers 2 MPIMult
 
 
 ##################################################
@@ -75,4 +78,8 @@ set LHCGenerator:MaxErrors 1000000
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 
-saverun TVTUEcheck LHCGenerator
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+
+saverun TVTUE LHCGenerator

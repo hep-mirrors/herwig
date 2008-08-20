@@ -13,27 +13,12 @@
 
 #include "EventShapes.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EventShapes.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-EventShapes::~EventShapes() {}
-
-void EventShapes::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void EventShapes::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<EventShapes> EventShapes::initEventShapes;
+NoPIOClassDescription<EventShapes> EventShapes::initEventShapes;
 // Definition of the static class description member.
 
 void EventShapes::Init() {
@@ -41,6 +26,34 @@ void EventShapes::Init() {
   static ClassDocumentation<EventShapes> documentation
     ("There is no documentation for the EventShapes class");
 
+}
+
+void EventShapes::calcHemisphereMasses() {
+  Lorentz5Momentum pos, neg;
+  Energy pden(0.*MeV),epos(0.*MeV),eneg(0.*MeV);
+  for(unsigned int ix=0;ix<_pv.size();++ix)
+    {
+      if(_pv[ix].vect() * thrustAxis() > 0.*MeV)
+	{
+	  pos  += _pv[ix];
+	  epos += _pv[ix].perp(thrustAxis()); 
+	}
+      else
+	{
+	  neg  += _pv[ix];
+	  eneg += _pv[ix].perp(thrustAxis()); 
+	}
+      pden += _pv[ix].vect().mag();	 
+    }
+  // denominator and masses
+  Energy2 den(sqr(pos.e()+neg.e()));
+  _mPlus = pos.m2()/den;
+  _mMinus = neg.m2()/den;
+  if (_mPlus < _mMinus) swap(_mPlus, _mMinus);
+  // jet broadening
+  _bPlus  = 0.5*epos/pden;
+  _bMinus = 0.5*eneg/pden;
+  if (_bPlus < _bMinus) swap(_bPlus, _bMinus);
 }
 
 vector<double> EventShapes::eigenvalues(const double T[3][3]) {

@@ -18,6 +18,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::Direction;
 
 /**
  * The coupling for the \f$ W\,W^{(1)}Z^{(1)}\f$ and  \f$ W\,W^{(1)}\gamma^{(1)}\f$ 
@@ -67,10 +68,13 @@ public:
    *@param part1 The first interacting particle 
    *@param part2 The second interacting particle 
    *@param part3 The third interacting particle 
+   *@param d1 The direction for the first  particle.
+   *@param d2 The direction for the second particle.
+   *@param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-			   tcPDPtr part3);
-
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
+			   Direction d1,Direction d2, Direction d3);
+  
 protected:
 
   /** @name Clone Methods. */

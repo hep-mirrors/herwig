@@ -21,8 +21,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-string BranchingInfo::bargraph(long N, BranchingInfo den)
-{
+string BranchingInfo::bargraph(long N, BranchingInfo den) {
   if (obsBranching == 0.0) return "     ?     ";
   else if (nSigma(N,den) >= 6.0)  return "-----|---->";
   else if (nSigma(N,den) >= 5.0)  return "-----|----*";

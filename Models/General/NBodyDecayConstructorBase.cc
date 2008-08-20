@@ -19,16 +19,16 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
+#include "DecayConstructor.h"
 using namespace Herwig; 
 using namespace ThePEG;
 
 void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const {
-  os << _init << _iteration << _points << _info;
+  os << _init << _iteration << _points << _info << _decayConstructor;
 }
 
 void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
-  is >> _init >> _iteration >> _points >> _info;
+  is >> _init >> _iteration >> _points >> _info >> _decayConstructor;
 }
 
 AbstractClassDescription<NBodyDecayConstructorBase> 

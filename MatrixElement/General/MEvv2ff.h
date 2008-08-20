@@ -20,8 +20,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ProductionMatrixElement.h"
-#include "MEvv2ff.fh"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -51,13 +50,6 @@ public:
 
   /** A vector of SpinorBarWaveFunction objects. */
   typedef vector<SpinorBarWaveFunction> SpinorBarVector;
-
-public:
-
-  /**
-   * The default constructor.
-   */
-  inline MEvv2ff();
 
 public:
 
@@ -155,13 +147,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -227,7 +219,5 @@ struct ClassTraits<Herwig::MEvv2ff>
 /** @endcond */
 
 }
-
-#include "MEvv2ff.icc"
 
 #endif /* HERWIG_MEvv2ff_H */

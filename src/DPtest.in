@@ -1,0 +1,139 @@
+##################################################
+# File to test double parton scattering
+# usage: Herwig++ read DPtest.in && Herwig++ run DPtest.run -Nxxxx
+##################################################
+
+##################################################
+# Change hard process ME's
+##################################################
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] MEGammaJet
+
+##################################################
+# Cuts on the hard process
+##################################################
+cd /Herwig/Cuts
+set JetKtCut:MinKT 30.0*GeV
+#set LeptonKtCut:MinKT 50.0*GeV
+set PhotonKtCut:MinKT 30.0*GeV
+set PhotonKtCut:MinEta -2.
+set PhotonKtCut:MaxEta  2.
+
+##################################################
+# Additional hard interactions
+##################################################
+
+# A additional hard interaction requires a cuts object that defines the
+# cuts on the interaction and a SubProcessHandler that has a
+# MatrixElement Reference and a PartonExtractor (which is the same for
+# all)
+
+
+cd /Herwig/UnderlyingEvent
+########cuts############
+# cut on pt. Without a specific matcher object, it works on all particles
+create ThePEG::SimpleKTCut DPKtCut SimpleKTCut.so
+set DPKtCut:MinKT 20
+
+# create the cuts object for DP1
+create ThePEG::Cuts DP1Cuts
+# This should always be 2*MinKT!!
+set DP1Cuts:MHatMin 40
+set DP1Cuts:MHatMax 10000000.0
+
+insert DP1Cuts:OneCuts 0 DPKtCut
+#########################
+
+########subprocesses#####
+create ThePEG::SubProcessHandler DP1
+insert DP1:MatrixElements 0 /Herwig/MatrixElements/MEQCD2to2
+set DP1:PartonExtractor /Herwig/Partons/QCDExtractor
+
+#create ThePEG::SubProcessHandler DP2
+#insert DP2:MatrixElements 0 /Herwig/MatrixElements/MEqq2gZ2ff
+#set DP2:PartonExtractor /Herwig/Partons/QCDExtractor
+#########################
+
+# set the subprocesses and corresponding cuts
+# 0 is reserved for the "usual" underlying events
+# Each SubProcessHandler must be accompanied by a Cuts object!
+
+insert MPIHandler:SubProcessHandlers 1 DP1
+insert MPIHandler:Cuts 1 DP1Cuts
+
+# In principal there is an arbitrary number of additional subprocess
+# possible. In practice however more than one, will be very
+# rare. Nevertheless the interface is flexible enough to cover any case.
+
+#insert MPIHandler:SubProcessHandlers 2 DP2
+#insert MPIHandler:Cuts 2 DP1Cuts
+
+# now set what multiplicities you want. index = 0 means the first
+# ADDITIONAL hard process
+
+# this is SubProcessHandler 1 with multiplicity 1
+insert MPIHandler:additionalMultiplicities 0 1
+
+# this is SubProcessHandler 2 with multiplicity 1
+#insert MPIHandler:additionalMultiplicities 1 1 
+
+
+##################################################
+# Switches for hard underlying event
+##################################################
+cd /Herwig/Shower 
+# Switch MPI off
+# set ShowerHandler:MPIHandler NULL
+
+cd /Herwig/UnderlyingEvent
+
+# set which process is identical to the UE one (QCD dijets) This is very
+# important, as it will influence the multiplicity of the
+# UnderlyingEvent processes.
+
+# In our case: The first additional hard process is the QCD dijet one.
+set MPIHandler:IdenticalToUE 1
+
+# Control ptmin and mu2.
+
+# set KtCut:MinKT 3.8
+# This should always be 2*MinKT!!
+# set UECuts:MHatMin 7.6
+
+# set the inverse hadron radius in GeV^2
+# set MPIHandler:InvRadius 2.2
+
+
+cd /Herwig/Generators
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at
+# configure time and the graphviz program 'dot' to produce a plot)
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+#set /Herwig/Analysis/HepMCFile:PrintEvent 100
+#set /Herwig/Analysis/HepMCFile:Format GenEvent
+#set /Herwig/Analysis/HepMCFile:Units GeV_mm
+
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 1000000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 1000000
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+
+#set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+#set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
+
+saverun DPtest LHCGenerator

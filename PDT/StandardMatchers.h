@@ -112,7 +112,7 @@ struct HadronMatcher: public MatcherType {
 typedef Matcher<HadronMatcher> MatchHadron;
 
 /**
- * A Matcher class which matches W bosons quarks
+ * A Matcher class which matches W bosons
  */
 struct WBosonMatcher: public MatcherType {
   /** Typedef the class matching the complex conjugate particles. */
@@ -132,7 +132,7 @@ struct WBosonMatcher: public MatcherType {
 typedef Matcher<WBosonMatcher> MatchWBoson;
 
 /**
- * A Matcher class which matches W bosons quarks
+ * A Matcher class which matches Z bosons
  */
 struct ZBosonMatcher: public MatcherType {
   /** Typedef the class matching the complex conjugate particles. */
@@ -151,7 +151,25 @@ struct ZBosonMatcher: public MatcherType {
  */
 typedef Matcher<ZBosonMatcher> MatchZBoson;
 
+/**
+ * A Matcher class which matches Higgs bosons
+ */
+struct HiggsBosonMatcher: public MatcherType {
+  /** Typedef the class matching the complex conjugate particles. */
+  typedef HiggsBosonMatcher CC;
+  /** The main static function to check if a given particle type \a pd
+      matches. */
+  static bool Check(const ParticleData & pd) {
+    return abs(pd.id())==ParticleID::h0;
+  }
+  /** A simplified but unique class name. */
+  static string className() { return "HiggsBoson"; }
+};
 
+/**
+ * Gives a MatcherBase class based on HiggsBosonMatcher. 
+ */
+typedef Matcher<HiggsBosonMatcher> MatchHiggsBoson;
 }
 
 #endif /* Herwig_StandardMatchers_H */

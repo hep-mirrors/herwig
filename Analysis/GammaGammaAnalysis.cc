@@ -17,17 +17,39 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GammaGammaAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
+GammaGammaAnalysis::GammaGammaAnalysis() :
+  _ptharder(0.,250.,100), _ptsofter(0.,250.,100), _ptpair(0.,250.,100), 
+  _Eharder(0.,3000.,100), _Esofter(0.,3000.,100), _Epair(0.,6000.,100), 
+  _rapharder(-12.,12.,120), _rapsofter(-12.,12.,120), _rappair(-12.,12.,120), 
+  _phiharder(-Constants::pi,Constants::pi,50), 
+  _phisofter(-Constants::pi,Constants::pi,50), 
+  _deltaphi(-Constants::pi,Constants::pi,100), 
+  _mpair(0,1000,100)  {}
 
-GammaGammaAnalysis::~GammaGammaAnalysis() {}
+void GammaGammaAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
+  using namespace HistogramOptions;
+  _ptharder.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt harder");
+  _ptsofter.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt softer");
+  _ptpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","pt pair");
+  _Eharder.topdrawOutput(outfile,Frame|Ylog,"BLACK","E harder");
+  _Esofter.topdrawOutput(outfile,Frame|Ylog,"BLACK","E softer");
+  _Epair.topdrawOutput(outfile,Frame|Ylog,"BLACK","E pair");
+  _rapharder.topdrawOutput(outfile,Frame,"BLACK","y harder");
+  _rapsofter.topdrawOutput(outfile,Frame,"BLACK","y softer");
+  _rappair.topdrawOutput(outfile,Frame,"BLACK","y pair");
+  _phiharder.topdrawOutput(outfile,Frame,"BLACK","phi harder");
+  _phisofter.topdrawOutput(outfile,Frame,"BLACK","phi softer");
+  _deltaphi.topdrawOutput(outfile,Frame,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,Frame|Ylog,"BLACK","M pair");
+  outfile.close();
+}
 
 namespace {
   inline Lorentz5Momentum getMomentum(tcPPtr particle) {

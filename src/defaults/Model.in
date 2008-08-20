@@ -47,11 +47,13 @@ create Herwig::HardProcessConstructor HPConstructor
 create Herwig::ResonantProcessConstructor ResConstructor
 create Herwig::DecayConstructor DecayConstructor
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
+create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 
 set NewModel:HardProcessConstructor HPConstructor
 set NewModel:DecayConstructor DecayConstructor
 set NewModel:ResonantProcessConstructor ResConstructor
 insert DecayConstructor:NBodyDecayConstructors[0] TwoBodyDC
+insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
 
 # Required to decay the particles before showering so as to keep
 # the spin correlations in the decay

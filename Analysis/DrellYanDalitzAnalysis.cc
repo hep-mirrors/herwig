@@ -8,17 +8,10 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanDalitzAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-DrellYanDalitzAnalysis::~DrellYanDalitzAnalysis() {}
 
 void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);

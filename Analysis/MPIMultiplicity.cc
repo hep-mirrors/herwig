@@ -13,7 +13,17 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-MPIMultiplicity::~MPIMultiplicity() {}
+MPIMultiplicity::MPIMultiplicity() : 
+  theRealMult(-0.5, 20.5, 21), theRequestedMult(-0.5, 20.5, 21) {}
+
+void MPIMultiplicity::dofinish() {
+  AnalysisHandler::dofinish();
+  if(!theShowerHandler->IsMPIOn()) return;
+  string fname = generator()->filename() + string("-") + name() + string(".dat");
+  ofstream outfile(fname.c_str());
+  theRealMult.simpleOutput(outfile, false);
+  theRequestedMult.simpleOutput(outfile, false);
+}
 
 void MPIMultiplicity::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;

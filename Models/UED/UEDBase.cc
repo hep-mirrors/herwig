@@ -46,6 +46,7 @@ void UEDBase::doinit() throw(InitException) {
   addVertex(theF1F1P0Vertex);
   addVertex(theF1F1W0Vertex);
   addVertex(theF1F0W1Vertex);
+  addVertex(theF1F0H1Vertex);
   addVertex(theP0H1H1Vertex);
   addVertex(theZ0H1H1Vertex);
   addVertex(theW0A1H1Vertex);
@@ -57,20 +58,20 @@ void UEDBase::persistentOutput(PersistentOStream & os) const {
   os << theRadCorr << ounit(theInvRadius, GeV) << theLambdaR 
      << theF1F1Z0Vertex << theF1F1G0Vertex << theF1F0G1Vertex
      << theG1G1G0Vertex << theG0G0G1G1Vertex << theF1F1P0Vertex
-     << theF1F1W0Vertex << theF1F0W1Vertex << theP0H1H1Vertex 
-     << theZ0H1H1Vertex << theW0A1H1Vertex << theZ0A1h1Vertex 
-     << theW0W1W1Vertex << ounit(theVeV,GeV) << ounit(theMbarH, GeV) 
-     << theSinThetaOne;
+     << theF1F1W0Vertex << theF1F0W1Vertex << theF1F0H1Vertex 
+     << theP0H1H1Vertex << theZ0H1H1Vertex << theW0A1H1Vertex 
+     << theZ0A1h1Vertex << theW0W1W1Vertex << ounit(theVeV,GeV) 
+     << ounit(theMbarH, GeV) << theSinThetaOne;
 }
 
 void UEDBase::persistentInput(PersistentIStream & is, int) {
   is >> theRadCorr >> iunit(theInvRadius, GeV) >> theLambdaR
      >> theF1F1Z0Vertex >> theF1F1G0Vertex >> theF1F0G1Vertex
      >> theG1G1G0Vertex >> theG0G0G1G1Vertex >> theF1F1P0Vertex
-     >> theF1F1W0Vertex >> theF1F0W1Vertex >> theP0H1H1Vertex 
-     >> theZ0H1H1Vertex >> theW0A1H1Vertex >> theZ0A1h1Vertex 
-     >> theW0W1W1Vertex >> iunit(theVeV,GeV) >> iunit(theMbarH, GeV) 
-     >> theSinThetaOne;
+     >> theF1F1W0Vertex >> theF1F0W1Vertex >> theF1F0H1Vertex 
+     >> theP0H1H1Vertex >> theZ0H1H1Vertex >> theW0A1H1Vertex 
+     >> theZ0A1h1Vertex >> theW0W1W1Vertex >> iunit(theVeV,GeV) 
+     >> iunit(theMbarH, GeV) >> theSinThetaOne;
 
 }
 
@@ -162,6 +163,11 @@ void UEDBase::Init() {
      "The F1F0W1 UED Vertex",
      &UEDBase::theF1F0W1Vertex, false, false, true, false, false);
 
+  static Reference<UEDBase,Helicity::AbstractFFSVertex> interfaceF1F0H1
+    ("Vertex/F1F0H1",
+     "The F1F0H1 UED Vertex",
+     &UEDBase::theF1F0H1Vertex, false, false, true, false, false);
+
   static Reference<UEDBase,Helicity::AbstractVSSVertex> interfaceP0H1H1
     ("Vertex/P0H1H1",
      "The P0H1H1 UED Vertex",
@@ -246,7 +252,7 @@ void UEDBase::bosonMasses(const unsigned int n) {
 
   //Z and gamma are a mixture of Bn and W3n
   deltaGB = -g_em2*invRad2*norm*( 39.*zeta3/2./pi2 + nnlogLR/3. );
-  Energy2 mz2 = sqr(getParticleData(23)->mass());  
+  Energy2 mz2 = sqr(getParticleData(23)->mass());
   Energy2 fp = 0.5*(mz2 + deltaGB + deltaGW + 2.*nmass2);
   Energy2 sp = 0.5*sqrt( sqr(deltaGB - deltaGW - 2.*mw2 + mz2)
 			 - 4.*mw2*(mw2 - mz2) );

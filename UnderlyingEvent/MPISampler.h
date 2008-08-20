@@ -298,7 +298,7 @@ struct ClassTraits<Herwig::MPISampler>: public ClassTraitsBase<Herwig::MPISample
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwMPI.so"; }
+  static string library() { return "SimpleKTCut.so HwMPI.so"; }
 
 };
 

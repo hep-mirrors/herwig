@@ -82,7 +82,8 @@ IBPtr ShowerHandler::fullclone() const {
 
 ShowerHandler::ShowerHandler() : 
   theOrderSecondaries(true), theMPIOnOff(true), _pdfFreezingScale(2.5*GeV),
-  _maxtry(10),_maxtryMPI(10), theSubProcess(tSubProPtr()), _useCKKW(false) {
+  _maxtry(10),_maxtryMPI(10),_maxtryDP(10), theSubProcess(tSubProPtr()), 
+  _useCKKW(false) {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
   _inputparticlesDecayInShower.push_back( 1000002 ); //  SUSY_u_L 
@@ -127,7 +128,11 @@ ShowerHandler::ShowerHandler() :
 void ShowerHandler::doinitrun(){
   CascadeHandler::doinitrun();
   //can't use IsMPIOn here, because the EventHandler is not set at that stage
-  if(theMPIHandler) theMPIHandler->initialize();
+  if(theMPIHandler){ 
+    theMPIHandler->initialize();
+    theRemDec->initSoftInteractions(theMPIHandler->Ptmin(), theMPIHandler->beta());
+  }
+
 
   if (_useCKKW) {
     _reweighter->initialize();
@@ -140,7 +145,7 @@ void ShowerHandler::dofinish(){
 }
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _evolver << theRemDec << ounit(_pdfFreezingScale,GeV) << _maxtry 
-     << _maxtryMPI << _inputparticlesDecayInShower
+     << _maxtryMPI << _maxtryDP << _inputparticlesDecayInShower
      << _particlesDecayInShower << theOrderSecondaries 
      << theMPIOnOff << theMPIHandler
      << _useCKKW << _reconstructor << _reweighter;
@@ -148,7 +153,7 @@ void ShowerHandler::persistentOutput(PersistentOStream & os) const {
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
   is >> _evolver >> theRemDec >> iunit(_pdfFreezingScale,GeV) >> _maxtry 
-     >> _maxtryMPI >> _inputparticlesDecayInShower
+     >> _maxtryMPI >> _maxtryDP >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> theOrderSecondaries 
      >> theMPIOnOff >> theMPIHandler 
      >> _useCKKW >> _reconstructor >> _reweighter;  
@@ -192,13 +197,19 @@ void ShowerHandler::Init() {
      &ShowerHandler::_maxtryMPI, 10, 0, 100,
      false, false, Interface::limited);
 
+  static Parameter<ShowerHandler,unsigned int> interfaceMaxTryDP
+    ("MaxTryDP",
+     "The maximum number of regeneration attempts for an additional hard scattering",
+     &ShowerHandler::_maxtryDP, 10, 0, 100,
+     false, false, Interface::limited);
+
   static ParVector<ShowerHandler,long> interfaceDecayInShower
     ("DecayInShower",
      "PDG codes of the particles to be decayed in the shower",
      &ShowerHandler::_inputparticlesDecayInShower, -1, 0l, -10000000l, 10000000l,
      false, false, Interface::limited);
 
-  static Reference<ShowerHandler,MPIHandler> interfaceMPIHandler
+  static Reference<ShowerHandler,UEBase> interfaceMPIHandler
     ("MPIHandler",
      "The object that admisinsters all additional semihard partonic scatterings.",
      &ShowerHandler::theMPIHandler, false, false, true, true);
@@ -294,7 +305,8 @@ void ShowerHandler::cascade() {
   // get the remnants for hadronic collision
   pair<tRemPPtr,tRemPPtr> remnants(getRemnants(incbins));
   // set the starting scale of the forced splitting to the PDF freezing scale
-  theRemDec->initialize(remnants, _incoming, *currentStep(),pdfFreezingScale());
+  theRemDec->initialize(remnants, _incoming, *currentStep(), pdfFreezingScale());
+
   //do the first forcedSplitting
   try {
     theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
@@ -319,14 +331,81 @@ void ShowerHandler::cascade() {
               new_ptr(MPIPDF(secondPDF().pdf())));
   resetPDFs(newpdf);
 
+  /**
+   * additional "hard" processes
+   */
+  unsigned int multSecond(0), tries(0);
+
+  for(unsigned int i=1; i <= getMPIHandler()->additionalHardProcs(); i++){
+    //this is the loop over additional hard scatters (most of the time
+    //only one, but who knows...
+
+    //counter for regeneration
+    multSecond = 0;
+
+    while( multSecond < getMPIHandler()->multiplicity(i) ){
+      lastXC = getMPIHandler()->generate(i);
+      sub = lastXC->construct();
+      //add to the EventHandler's list
+      newStep()->addSubProcess(sub);
+
+      tries++;
+      multSecond++;
+      if(tries == _maxtryDP)
+	throw Exception() << "Failed to establish the requested number " 
+			  << "of additional hard processes. If this error "
+			  << "occurs often, your selection of additional "
+			  << "scatter is probably unphysical"
+			  << Exception::eventerror;
+	
+      try{
+	//Run the Shower. If not possible veto the event
+	incs = cascade(sub);
+      }catch(ShowerTriesVeto &veto){
+	throw Exception() << "Failed to generate the shower of " 
+			  << "a secondary hard process after "
+			  << veto.theTries
+			  << " attempts in Evolver::showerHardProcess()"
+			  << Exception::eventerror;
+      }
+      try{
+	//do the forcedSplitting
+	theRemDec->doSplit(incs, make_pair(firstPDF().pdf(), 
+					   secondPDF().pdf()), false);
+	
+	//check if there is enough energy to extract
+	if( (remnants.first->momentum() - incs.first->momentum()).e() < 1.0e-3*MeV ||
+	    (remnants.second->momentum() - incs.second->momentum()).e() < 1.0e-3*MeV )
+	  throw ExtraScatterVeto();
+      }catch(ExtraScatterVeto){
+	//remove all particles associated with the subprocess
+	newStep()->removeParticle(incs.first);
+	newStep()->removeParticle(incs.second);
+	//remove the subprocess from the list
+	newStep()->removeSubProcess(sub);
+	
+	//regenerate the scattering
+	multSecond--;
+	continue;
+      }      
+      //connect with the remnants but don't set Remnant colour,
+      //because that causes problems due to the multiple colour lines.
+      if ( !remnants.first->extract(incs.first, false) ||
+	   !remnants.second->extract(incs.second, false) )
+	throw Exception() << "Remnant extraction failed in "
+			  << "ShowerHandler::cascade()" 
+			  << Exception::runerror;
+    }
+  }
+  /**
+   * the underlying event processes
+   */
   unsigned int ptveto(1), veto(0);
   unsigned int max(getMPIHandler()->multiplicity());
+
   for(unsigned int i=0; i<max; i++){
     //check how often this scattering has been regenerated
     if(veto > _maxtryMPI) break;
-
-    //    cerr << "Try scattering " << i << " for the " << veto
-    //  << " time\n";
 
     //generate PSpoint
     lastXC = getMPIHandler()->generate();
@@ -337,8 +416,7 @@ void ShowerHandler::cascade() {
     if( getMPIHandler()->Algorithm() == 1 ){
       //get the pT
       Energy pt = sub->outgoing().front()->momentum().perp();
-      Energy ptmin = lastCutsPtr()->minKT(sub->outgoing().front()->dataPtr());
-      if(pt > ptmin && UseRandom::rnd() < 1./(ptveto+1) ){
+      if(pt > getMPIHandler()->PtForVeto() && UseRandom::rnd() < 1./(ptveto+1) ){
         ptveto++;
         i--;
         continue;
@@ -393,7 +471,9 @@ void ShowerHandler::cascade() {
     veto = 0;
   }
 
-  theRemDec->finalize();
+  theRemDec->finalize(getMPIHandler()->colourDisrupt(), 
+		      getMPIHandler()->softMultiplicity());
+  if(btotal) boostCollision(true);
   if(btotal) boostCollision(true);
   theHandler = 0;
 }

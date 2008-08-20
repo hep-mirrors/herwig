@@ -57,8 +57,6 @@ set LEPEvent:EventShapes LEPShapes
 insert Shapes:Slaves 0 LEPEvent
 # LEP identified particles
 create Herwig::IdentifiedParticleAnalysis LEPIdent
-set LEPIdent:EventShapes LEPShapes
-insert Shapes:Slaves 0 LEPIdent
 # LEP single particle analysis
 create Herwig::SingleParticleAnalysis LEPSingle
 set LEPSingle:EventShapes LEPShapes

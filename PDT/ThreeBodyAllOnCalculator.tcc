@@ -19,7 +19,7 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
 						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
   if(_channelmass[_thechannel] > 0*MeV) {
-    if(_channelwidth[_thechannel] > 0*MeV) {
+    if(_channelwidth[_thechannel] > 1e-8*MeV) {
       _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
 					   _channelwidth[_thechannel]*tan(x));
     }
@@ -55,8 +55,10 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
 
 template <class T>
 Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
+  assert(!isnan(y/MeV2)); 
   // set up the values of the s variables
-  Energy2 s12(0.*MeV2),s23(0.*MeV2),s13(0.*MeV2),m2sum=_m2[0]+_m2[1]+_m2[2]+_m2[3];
+  Energy2 s12(0.*MeV2),s23(0.*MeV2),s13(0.*MeV2),
+    m2sum(_m2[0]+_m2[1]+_m2[2]+_m2[3]);
   switch(_channeltype[_thechannel]) {
   case 1:
     s12 = _souter;
@@ -91,9 +93,10 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
       sjac = s23;
       break;
     }
+    assert(!isnan(sjac/MeV2));
     InvEnergy2 term; 
     if(_channelmass[ix] > 0*MeV) {
-      if(_channelwidth[ix] > 0*MeV) {
+      if(_channelwidth[ix] > 1e-8*MeV) {
 	rm2 = sqr(_channelmass[ix]);
 	rw2 = sqr(_channelwidth[ix]);
 	Energy4 tmp = sqr(sjac-rm2) + rw2*rm2;
@@ -146,7 +149,7 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     double rupp, rlow;
     // transform them
     if(_channelmass[ix] > 0*MeV) {
-      if(_channelwidth[ix] > 0*MeV) {
+      if(_channelwidth[ix] > 1e-8*MeV) {
 	rupp = atan((upp-_channelmass[ix]*_channelmass[ix])/
 		    _channelmass[ix]/_channelwidth[ix]);
 	rlow =  atan((low-_channelmass[ix]*_channelmass[ix])/
@@ -162,9 +165,9 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
       rupp = pow(upp*UnitRemoval::InvE2, _channelpower[ix]+1.);
       rlow = pow(low*UnitRemoval::InvE2, _channelpower[ix]+1.);
     }
-    // perform the integral using my Gaussian quadature class
+    // perform the integral using GSLIntegrator class
     _thechannel=ix;
-    GaussianIntegrator intb;
+    GSLIntegrator intb;
     sum +=  _channelweights[ix] * intb.value(outer,rlow,rupp);
   }
   // final factors
