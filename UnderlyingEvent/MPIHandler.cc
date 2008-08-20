@@ -212,34 +212,6 @@ void MPIHandler::initialize() {
 
   Probs(UEXSecs);
   UEXSecs.clear();
-  /*
-  if(Algorithm()==0){
-  
-    //check out the eikonalization -1=inelastic, -2=total xsec
-    Eikonalization integrand(this, tot.xSec(), -1);
-    Eikonalization integrand_tot(this, tot.xSec(), -2);
-    GSLIntegrator integrator;
-
-    string line = "======================================="
-      "=======================================\n";
-  
-    CrossSection inel(integrator.value(integrand, Length(), 1000.*sqrt(millibarn))), 
-      total(integrator.value(integrand_tot, Length(), 1000.*sqrt(millibarn)));
-
-    file << "\nEikonalization results:\n"
-         << setw(79)
-         << "Cross-section (mb)\n"
-         << line << "Inelastic cross-section" << setw(55) 
-         << inel/millibarn << endl
-         << "Total pp->X cross-section" << setw(53)
-         << total/millibarn << endl << line 
-         << "Average number of MPI" << setw(57) << tot.xSec()/inel << endl;
-
-    file.close();
-  }
-  
-  */
-
 }
 
 
@@ -284,6 +256,19 @@ void MPIHandler::statistics(string os) const {
 	 << avgNhard_ << endl
 	 << "Average soft multiplicity:           "
 	 << avgNsoft_ << endl;
+  }else{
+    file << line
+	 << "Eikonalized and soft cross sections:\n\n"
+	 << "Model parameters:                    "
+	 << "ptmin:   " << Ptmin_/GeV << " GeV"
+      	 << ", mu2: " << invRadius_/sqr(1.*GeV) << " GeV2\n"
+	 << "                                     "
+	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
+	 << " GeV" << endl
+	 << "hard inclusive cross section (mb):   "
+	 << hardXSec_/millibarn << endl
+	 << "Average hard multiplicity:           "
+	 << avgNhard_ << endl;
   }
 
   file.close();
