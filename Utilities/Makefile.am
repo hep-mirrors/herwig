@@ -12,8 +12,8 @@ Histogram.cc Histogram.fh Histogram.h Histogram.icc \
 GaussianIntegrator.cc GaussianIntegrator.h \
 GaussianIntegrator.icc GaussianIntegrator.tcc \
 Statistic.h HerwigStrategy.cc HerwigStrategy.h \
-GSLIntegrator.h \
-GSLIntegrator.icc GSLIntegrator.tcc
+GSLIntegrator.h GSLIntegrator.tcc \
+GSLBisection.h GSLBisection.tcc
 
 ########## SVN version string. Only use in cc files! ####################
 EXTRA_DIST = versionstring.h.in

@@ -302,7 +302,7 @@ struct ClassTraits<Herwig::ShowerAlphaQCD>
    * libraries will be dynamically linked in the order they are
    * specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

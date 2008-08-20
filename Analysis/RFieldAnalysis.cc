@@ -14,36 +14,83 @@
 using namespace Herwig;
 using namespace ThePEG;
 
+double mapPhiPI(const double dphi){//map phi to -pi,pi
+  if (dphi > Constants::pi || dphi < -Constants::pi ){ 
+    if(dphi > Constants::pi)
+      return dphi - 2*Constants::pi;
+    else
+      return dphi + 2*Constants::pi;
+  }else{
+    return dphi;
+  }
+}
+
+double phiDiffPI(const double phi1, const double phi2){
+    double dphi = fabs( phi1 - phi2 );
+    return fabs(mapPhiPI(dphi));
+}
+
 class Jet{
 
 public:
 
+typedef vector<pair<double, Energy> > phiptlist;
+
   Jet(){
     ptsum = 0.0*GeV; 
-    ptweighted_phi = 0.0*GeV; 
     ptweighted_eta = 0.0*GeV;
+    calcphi = true;
   }
   void add(const Lorentz5Momentum &p){
-    ptweighted_phi += p.perp()*p.phi();
     ptweighted_eta += p.perp()*p.eta();
     ptsum += p.perp();
+    phipt.push_back(make_pair(p.phi(), p.perp()));
+    calcphi = true;
   } 
+
   bool isInCircle(const Lorentz5Momentum &p, double R){
     double deta = eta() - p.eta();
     double phi1 = phi();
     double phi2 = p.phi();
-    double dphi = fabs( phi1 - phi2 );
-    if (dphi > Constants::pi) dphi = fabs( dphi - 2*Constants::pi );
+    double dphi = phiDiffPI(phi1, phi2);
+    /*
+    cerr << "check dR for: eta: " << p.eta() << " pt: " << p.perp()/GeV
+	 << " phi: " << p.phi() << endl;
+    cerr << "check dR: " << sqrt(sqr(deta)+sqr(dphi)) << endl;
+    */
     if( (sqr(deta) + sqr(dphi)) < sqr(R) ) return true;
     return false;
   }
   Energy perp() const {return ptsum;}
-  double phi() const {return ptweighted_phi/ptsum;}
+  double phi() {
+    if(!calcphi) return _phi;
+
+    double phi1( phipt.front().first );
+    double phi = phi1;
+
+    //cerr << "entering phi()....\n";
+    
+    //cerr << "seed: " << phi1 << " " << phipt.front().second/GeV << endl;
+
+    phiptlist::const_iterator it = phipt.begin();
+    it++;
+    while(it != phipt.end()){
+      phi += it->second/ptsum*mapPhiPI(it->first - phi1);
+      //cerr << "loop: " << it->first << " " << it->second/GeV << endl;
+      ++it;
+    }
+    //cerr << "result: " << phi << " " << mapPhiPI(phi) << endl;
+    _phi = mapPhiPI(phi);
+    calcphi = false;//avoid calculating phi twice
+    return _phi;
+  }
   double eta() const {return ptweighted_eta/ptsum;}
 
 private:
+  bool calcphi;
+  double _phi;
+  phiptlist phipt;
   Energy ptsum;
-  Energy ptweighted_phi;
   Energy ptweighted_eta;
 };
 
@@ -55,7 +102,7 @@ typedef multimap<double, Jet> Jetptlist;
  */
 vector<Jet> getJets(vector<tPPtr> particles, double R=0.7){
   ptlist tracks;
-  ptlist::iterator t1, t2;
+  ptlist::iterator t1, t2, t3;
   Jetptlist tmp;
   vector<Jet> result;
   
@@ -79,7 +126,7 @@ vector<Jet> getJets(vector<tPPtr> particles, double R=0.7){
     while (t2 != tracks.end()) {
       if( curjet.isInCircle(t2->second->momentum(), R) ){
         curjet.add(t2->second->momentum());
-        tracks.erase(t2);
+	tracks.erase(t2);
       }
       ++t2;
     }    
@@ -87,10 +134,10 @@ vector<Jet> getJets(vector<tPPtr> particles, double R=0.7){
 //    cerr << "Jet with ptsum: " << curjet.perp()/GeV << endl;
   }
 
-  for(Jetptlist::iterator jit=tmp.begin(); jit!=tmp.end(); ++jit)
+  for(Jetptlist::iterator jit=tmp.begin(); jit!=tmp.end(); ++jit){
     result.push_back(jit->second);
-
-//  cerr << "return result: " << result[0].perp()/GeV << endl;
+    //    cerr << "Jet axis: pt: " << -jit->first << " phi: " << jit->second.phi() << endl;
+  }
   return result;
 }
 
@@ -168,9 +215,9 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
   int nch(0);//number of all charged particles
   int nchTow(0), nchTrans(0), nchAway(0);
   double ptsumTow(0.0), ptsumTrans(0.0), ptsumAway(0.0);
-  double dphi(0.0), pt1(0.0);
+  double dphi(0.0), pt1(0.0), philead(0.0);
   Energy pt(0.0*GeV);
-  
+
   for (tPVector::const_iterator pit = particles.begin(); pit != particles.end(); ++pit){
       /** Select only the charged particles  */
       if( ChargedSelector::Check(**pit) ){
@@ -178,15 +225,18 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
 	  p = (**pit).momentum();
           pt = p.perp();
           //CDF detector simulation:
-          if(!keep(pt)) continue;
-
+	  if(!keep(pt)) continue;
+	  
 	  /**
 	     Select the particles according the noted selection cuts and do the
 	     analysis (towards away and transverse region) only on this set of particles.
 	  */
-	  if ( fabs( p.eta() ) < 1 && pt > 0.5*GeV )
+	  if ( fabs( p.eta() ) < 1 && pt > 0.5*GeV ){
 	      selection.push_back( *pit );
-      
+	      //	      cerr << p.eta() << " " << pt/GeV << " " 
+	      //		   << p.phi() << endl;
+	  }      
+
 	  nch++;//number of all charged particles
       }
   }
@@ -198,34 +248,37 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
 
       vector<Jet> jets = getJets(selection);
       //Get the leading jet (largest pt)
-      vector<Jet>::const_iterator itr = jets.begin();
+      vector<Jet>::iterator itr = jets.begin();
 
       pt1 = itr->perp()/GeV;//leading jet scalar ptsum of constituent particles
-      
+      philead = itr->phi();
+
+      //      cerr << "Hw-leadingjet: " << philead << " " << pt1 << endl;
       //overflow or underflow
       if(pt1 < (double)thelow || pt1 > (double)theup) return;
       //get the bin number
       int id((int)(floor(pt1))-thelow);
-      
+
+      //      cerr << "herwig: ljet " << pt1 << " " << itr->phi() << endl;
+      //cerr << "-------------------------------------------\n";
+
       for (tPVector::const_iterator pit = selection.begin(); pit != selection.end(); ++pit){
 
 	  p = (**pit).momentum();
-
-	  dphi = fabs( p.phi() - itr->phi() )*180.0/Constants::pi;
-	  if (dphi > 180) dphi = fabs( dphi - 360.0 );
+	  dphi = phiDiffPI(p.phi(), philead);//*180.0/Constants::pi;
       
           //Towards region
-	  if( dphi < 60 ){
+	  if( dphi < Constants::pi/3.0 ){
             nchTow++;
             ptsumTow += p.perp()/GeV;
           }
           //Transverse region
-	  if( dphi > 60 && dphi < 120 ){
+	  if( dphi > Constants::pi/3.0 && dphi < 2.0*Constants::pi/3.0 ){
             nchTrans++;
             ptsumTrans += p.perp()/GeV;
 	  }
           //Away region
-	  if( dphi > 120 ){
+	  if( dphi > 2.0*Constants::pi/3.0 ){
             nchAway++;
             ptsumAway += p.perp()/GeV;            
           }

@@ -20,7 +20,7 @@
 #include "ThePEG/PDT/RemnantDecayer.h"
 #include "ThePEG/EventRecord/RemnantParticle.h"
 
-#include "Herwig++/UnderlyingEvent/MPIHandler.h" 
+#include "Herwig++/Shower/UEBase.h" 
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
@@ -296,7 +296,7 @@ private:
    * an exception is thrown, because it should only be called after
    * checking with IsMPIOn.
    */
-  inline tMPIHPtr getMPIHandler() const;
+  inline tUEBasePtr getMPIHandler() const;
 
   /**
    * Switch for Multi Parton Interactions to be ordered
@@ -312,7 +312,7 @@ private:
    * a MPIHandler to administer the creation of several (semihard) 
    * partonic interactions.
    */
-  MPIHPtr theMPIHandler;
+  UEBasePtr theMPIHandler;
 
 private:
 
@@ -342,6 +342,12 @@ private:
    *  scattering, before the number of scatters is reduced.
    */
   unsigned int _maxtryMPI;
+
+  /**
+   *  Maximum number of attempts for the regeneration of an additional
+   *  hard scattering, before this event is vetoed.
+   */
+  unsigned int _maxtryDP;
 
   /**
    *  PDG codes of the particles which decay during showering
@@ -469,7 +475,7 @@ struct ClassTraits<Herwig::ShowerHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */

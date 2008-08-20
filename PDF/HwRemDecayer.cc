@@ -13,103 +13,52 @@
 
 #include "HwRemDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include <ThePEG/Interface/Reference.h>  
-#include <ThePEG/Interface/Reference.h>
-#include <ThePEG/Interface/Switch.h>
-#include "Herwig++/Shower/ShowerHandler.h"
+#include "ThePEG/Interface/Reference.h"  
+#include "ThePEG/Interface/Parameter.h"  
+#include "ThePEG/Interface/Switch.h"  
 #include "ThePEG/Utilities/UtilityBase.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Utilities/Throw.h"
 
+#include "Herwig++/Shower/ShowerHandler.h"
+
 using namespace Herwig;
 
-void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_kinCutoff, GeV) << _range 
-     << _zbin << _ybin << _nbinmax << _alpha << DISRemnantOpt_;
-}
+const bool dbg = false;
 
-void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_kinCutoff, GeV) >> _range 
-     >> _zbin >> _ybin >> _nbinmax >> _alpha >> DISRemnantOpt_;
-}
+namespace{
+  void reShuffle(Lorentz5Momentum &p1, Lorentz5Momentum &p2, Energy m1, Energy m2){
 
-ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
-// Definition of the static class description member.
+    Lorentz5Momentum ptotal(p1+p2);
+    ptotal.rescaleMass();
 
-void HwRemDecayer::Init() {
+    if( ptotal.m() < m1+m2 ) {
+      if(dbg)
+	cerr << "Not enough energy to perform reshuffling \n";
+      throw HwRemDecayer::ExtraSoftScatterVeto();
+    }
 
-  static ClassDocumentation<HwRemDecayer> documentation
-    ("The HwRemDecayer class decays the remnant for Herwig++");
+    Boost boostv = -ptotal.boostVector();
+    ptotal.boost(boostv);
 
-  static Parameter<HwRemDecayer,double> interfaceZBinSize
-    ("ZBinSize",
-     "The size of the vbins in z for the interpolation of the splitting function.",
-     &HwRemDecayer::_zbin, 0.05, 0.001, 0.1,
-     false, false, Interface::limited);
+    p1.boost(boostv);
+    // set the masses and energies,
+    p1.setMass(m1);
+    p1.setE(0.5/ptotal.m()*(ptotal.m2()+sqr(m1)-sqr(m2)));
+    p1.rescaleRho();
+    // boost back to the lab
+    p1.boost(-boostv);
 
-  static Parameter<HwRemDecayer,int> interfaceMaxBin
-    ("MaxBin",
-     "Maximum number of z bins",
-     &HwRemDecayer::_nbinmax, 100, 10, 1000,
-     false, false, Interface::limited);
-
-  static Reference<HwRemDecayer,ShowerAlpha> interfaceAlphaS
-    ("AlphaS",
-     "Pointer to object to calculate the strong coupling",
-     &HwRemDecayer::_alpha, false, false, true, false, false);
-
-  static Parameter<HwRemDecayer,Energy> interfaceKinCutoff
-    ("KinCutoff",
-     "Parameter kinCutoff used to constrain qtilde",
-     &HwRemDecayer::_kinCutoff, GeV, 0.75*GeV, 0.5*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<HwRemDecayer,double> interfaceEmissionRange
-    ("EmissionRange",
-     "Factor above the minimum possible value in which the forced splitting is allowed.",
-     &HwRemDecayer::_range, 1.1, 1.0, 10.0,
-     false, false, Interface::limited);
-
-
-  static Switch<HwRemDecayer,unsigned int> interfaceDISRemnantOption
-    ("DISRemnantOption",
-     "Options for the treatment of the remnant in DIS",
-     &HwRemDecayer::DISRemnantOpt_, 0, false, false);
-  static SwitchOption interfaceDISRemnantOptionDefault
-    (interfaceDISRemnantOption,
-     "Default",
-     "Use the minimum number of particles needed to take the recoil"
-     " and allow the lepton to be used if needed",
-     0);
-  static SwitchOption interfaceDISRemnantOptionNoLepton
-    (interfaceDISRemnantOption,
-     "NoLepton",
-     "Use the minimum number of particles needed to take the recoil but"
-     " veto events where the lepton kinematics would need to be altered",
-     1);
-  static SwitchOption interfaceDISRemnantOptionAllParticles
-    (interfaceDISRemnantOption,
-     "AllParticles",
-     "Use all particles in the colour connected system to take the recoil"
-     " and use the lepton if needed.",
-     2);
-  static SwitchOption interfaceDISRemnantOptionAllParticlesNoLepton
-    (interfaceDISRemnantOption,
-     "AllParticlesNoLepton",
-     "Use all the particles in the colour connected system to take the"
-     " recoil but don't use the lepton.",
-     3);
-
-}
-
-ParticleVector HwRemDecayer::decay(const DecayMode &, 
-				   const Particle &, Step &) const {
-  throw Exception() << "HwRemDecayer::decay(...) "
-		    << "must not be called explicitely."
-		    << Exception::runerror;
+    p2.boost(boostv);
+    // set the masses and energies,
+    p2.setMass(m2);
+    p2.setE(0.5/ptotal.m()*(ptotal.m2()+sqr(m2)-sqr(m1)));
+    p2.rescaleRho();
+    // boost back to the lab
+    p2.boost(-boostv);
+  }
 }
 
 void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, tPPair beam, Step & step,
@@ -134,6 +83,100 @@ void HwRemDecayer::initialize(pair<tRemPPtr, tRemPPtr> rems, tPPair beam, Step &
     throw Exception() << "Remnant order wrong in "
 		      << "HwRemDecayer::initialize(...)"
 		      << Exception::runerror; 
+  return;
+}
+
+void HwRemDecayer::split(tPPtr parton, HadronContent & content, 
+			 tRemPPtr rem, Lorentz5Momentum & used, 
+			 PartnerMap &partners, tcPDFPtr pdf, bool first) {
+  theBeam = parent(rem);
+  theBeamData = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
+    (theBeam->dataPtr());
+
+  if(rem==theRems.first)
+    theX.first  += parton->momentum().rho()/theBeam->momentum().rho();
+  else
+    theX.second += parton->momentum().rho()/theBeam->momentum().rho();
+
+  double check = rem==theRems.first ? theX.first : theX.second;
+
+  if(1.0-check < 1e-3) throw ShowerHandler::ExtraScatterVeto();
+
+  bool anti;
+  Lorentz5Momentum lastp(parton->momentum());
+  int lastID(parton->id());
+  ColinePtr cl;
+  Energy oldQ(_forcedSplitScale);
+  _pdf = pdf;
+  //do nothing if already valence quark
+  if(first && content.isValenceQuark(parton)) { 
+    //set the extracted value, because otherwise no RemID could be generated.
+    content.extract(lastID);
+    // add the particle to the colour partners
+    partners.push_back(make_pair(parton, tPPtr()));
+    //set the sign
+    anti = parton->hasAntiColour();
+    if(rem==theRems.first) theanti.first  = anti;
+    else                   theanti.second = anti;
+    return;
+  }
+  //or gluon for secondaries
+  else if(!first && lastID == ParticleID::g){
+    partners.push_back(make_pair(parton, tPPtr()));
+    return; 
+  }
+  // if a sea quark.antiquark forced splitting to a gluon
+  // Create the new parton with its momentum and parent/child relationship set
+  PPtr newSea;
+  if( lastID != ParticleID::g ) {
+    newSea = forceSplit(rem, -lastID, oldQ, 
+			rem==theRems.first ? theX.first : theX.second,
+			lastp, used,content);
+    cl = new_ptr(ColourLine());
+    if(newSea->id() > 0) cl->addColoured(newSea);
+    else cl->addAntiColoured(newSea);
+    // if a secondard scatter finished so return
+    if(!first){
+      partners.push_back(make_pair(parton, newSea));
+      return;
+    }
+  }
+  // otherwise evolve back to valence
+  if( !content.isValenceQuark(parton) ) {
+    // final valence splitting
+    PPtr newValence = forceSplit(rem, 0, oldQ,
+				 rem==theRems.first ? theX.first : theX.second,
+				 lastp, used, content);
+    // extract from the hadron to allow remnant to be determined
+    content.extract(newValence->id());
+    // case of a gluon going into the hard subprocess
+    if( lastID == ParticleID::g ) {
+      partners.push_back(make_pair(parton, tPPtr()));
+      anti = newValence->hasAntiColour();
+      if(rem==theRems.first) theanti.first  = anti;
+      else                   theanti.second = anti;
+      parton->colourLine(!anti)->addColoured(newValence, anti);
+      return;
+    }
+    //The valence quark will always be connected to the sea quark with opposite sign
+    tcPPtr particle;
+    if(lastID*newValence->id() < 0){
+      particle = parton;
+      partners.push_back(make_pair(newSea, tPPtr()));
+    } 
+    else {
+      particle = newSea;
+      partners.push_back(make_pair(parton, tPPtr()));
+    }
+    anti = newValence->hasAntiColour();
+    if(rem==theRems.first) theanti.first  = anti;
+    else                   theanti.second = anti;
+    
+    if(particle->colourLine()) 
+      particle->colourLine()->addAntiColoured(newValence);
+    if(particle->antiColourLine()) 
+      particle->antiColourLine()->addColoured(newValence);  
+  }
   return;
 }
 
@@ -239,176 +282,67 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> 
   }
 }
 
-void HwRemDecayer::finalize() {
-  PPtr diquark;
-  //Do the final Rem->Diquark or Rem->quark "decay"
-  if(theRems.first) {
-    diquark = finalSplit(theRems.first, theContent.first.RemID(), 
-			 theUsed.first);
-    theMaps.first.push_back(make_pair(diquark, tPPtr()));
-  }
-  if(theRems.second) {
-    diquark = finalSplit(theRems.second, theContent.second.RemID(), 
-			 theUsed.second);
-    theMaps.second.push_back(make_pair(diquark, tPPtr()));
-  }
-  setRemMasses();
-  if(theRems.first)  fixColours(theMaps.first , theanti.first );
-  if(theRems.second) fixColours(theMaps.second, theanti.second);
-}
-
-HwRemDecayer::HadronContent
-HwRemDecayer::getHadronContent(tcPPtr hadron) const {
-  HadronContent hc;
-  hc.hadron = hadron->dataPtr();
-  long id(hadron->id());
-  // baryon
-  if(BaryonMatcher::Check(hadron->data())) {
-    hc.sign = id < 0? -1: 1;
-    hc.flav.push_back((id = abs(id)/10)%10);
-    hc.flav.push_back((id /= 10)%10);
-    hc.flav.push_back((id /= 10)%10);
-    hc.extracted = -1;
-  }
-  else if(hadron->data().id()==ParticleID::gamma) {
-    hc.sign = 1;
-    for(int ix=1;ix<6;++ix) {
-      hc.flav.push_back( ix);
-      hc.flav.push_back(-ix);
-    }
-  }
-  return hc;
-}
-
-long HwRemDecayer::HadronContent::RemID() const{
-  if(extracted == -1)
-    throw Exception() << "Try to build a Diquark id without "
-		      << "having extracted something in "
-		      << "HwRemDecayer::RemID(...)"
-		      << Exception::runerror;
-  //the hadron was a meson or photon
-  if(flav.size()==2) return sign*flav[(extracted+1)%2];
- 
-  long remId;
-  int id1(sign*flav[(extracted+1)%3]), 
-    id2(sign*flav[(extracted+2)%3]),
-    sign(0), spin(0);
-
-  if (abs(id1) > abs(id2)) swap(id1, id2);
-  sign = (id1 < 0) ? -1 : 1; // Needed for the spin 0/1 part
-  remId = id2*1000+id1*100;
-  // Now decide if we have spin 0 diquark or spin 1 diquark 
-  if(id1 == id2) spin = 3; // spin 1                  
-  else spin = 1; // otherwise spin 0  
-  remId += sign*spin;  
-  return remId;
-}
-
-void HwRemDecayer::split(tPPtr parton, HadronContent & content, 
-			 tRemPPtr rem, Lorentz5Momentum & used, 
-			 PartnerMap &partners, tcPDFPtr pdf, bool first) {
-  theBeam = parent(rem);
-  theBeamData = dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
-    (theBeam->dataPtr());
-
-  if(rem==theRems.first)
-    theX.first  += parton->momentum().rho()/theBeam->momentum().rho();
-  else
-    theX.second += parton->momentum().rho()/theBeam->momentum().rho();
-
-  double check = rem==theRems.first ? theX.first : theX.second;
-
-  if(1.0-check < 1e-3) throw ShowerHandler::ExtraScatterVeto();
-
-  bool anti;
-  Lorentz5Momentum lastp(parton->momentum());
-  int lastID(parton->id());
-  ColinePtr cl;
-  Energy oldQ(_forcedSplitScale);
-  _pdf = pdf;
-  //do nothing if already valence quark
-  if(first && content.isValenceQuark(parton)) { 
-    //set the extracted value, because otherwise no RemID could be generated.
-    content.extract(lastID);
-    // add the particle to the colour partners
-    partners.push_back(make_pair(parton, tPPtr()));
-    //set the sign
-    anti = parton->hasAntiColour();
-    if(rem==theRems.first) theanti.first  = anti;
-    else                   theanti.second = anti;
-    return;
-  }
-  //or gluon for secondaries
-  else if(!first && lastID == ParticleID::g){
-    partners.push_back(make_pair(parton, tPPtr()));
-    return; 
-  }
-  // if a sea quark.antiquark forced splitting to a gluon
-  // Create the new parton with its momentum and parent/child relationship set
-  PPtr newSea;
-  if( lastID != ParticleID::g ) {
-    newSea = forceSplit(rem, -lastID, oldQ, 
-			rem==theRems.first ? theX.first : theX.second,
-			lastp, used,content);
-    cl = new_ptr(ColourLine());
-    if(newSea->id() > 0) cl->addColoured(newSea);
-    else cl->addAntiColoured(newSea);
-    // if a secondard scatter finished so return
-    if(!first){
-      partners.push_back(make_pair(parton, newSea));
-      return;
-    }
-  }
-  // otherwise evolve back to valence
-  if( !content.isValenceQuark(parton) ) {
-    // final valence splitting
-    PPtr newValence = forceSplit(rem, 0, oldQ,
-				 rem==theRems.first ? theX.first : theX.second,
-				 lastp, used, content);
-    // extract from the hadron to allow remnant to be determined
-    content.extract(newValence->id());
-    // case of a gluon going into the hard subprocess
-    if( lastID == ParticleID::g ) {
-      partners.push_back(make_pair(parton, tPPtr()));
-      anti = newValence->hasAntiColour();
-      if(rem==theRems.first) theanti.first  = anti;
-      else                   theanti.second = anti;
-      parton->colourLine(!anti)->addColoured(newValence, anti);
-      return;
-    }
-    //The valence quark will always be connected to the sea quark with opposite sign
-    tcPPtr particle;
-    if(lastID*newValence->id() < 0){
-      particle = parton;
-      partners.push_back(make_pair(newSea, tPPtr()));
-    } 
-    else {
-      particle = newSea;
-      partners.push_back(make_pair(parton, tPPtr()));
-    }
-    anti = newValence->hasAntiColour();
-    if(rem==theRems.first) theanti.first  = anti;
-    else                   theanti.second = anti;
-    
-    if(particle->colourLine()) 
-      particle->colourLine()->addAntiColoured(newValence);
-    if(particle->antiColourLine()) 
-      particle->antiColourLine()->addColoured(newValence);  
-  }
-  return;
-}
-
-void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
-  PartnerMap::const_iterator prev;
-  tPPtr pnew, pold;
+void HwRemDecayer::mergeColour(tPPtr pold, tPPtr pnew, bool anti) const {
   ColinePtr clnew, clold;
+  
+  //save the corresponding colour lines
+  clold = pold->colourLine(anti);
+  clnew = pnew->colourLine(!anti);
+
+  assert(clold);
+    
+  if(clnew){//there is already a colour line (not the final diquark)
+
+    if( (clnew->coloured().size() + clnew->antiColoured().size()) > 1 ){
+      if( (clold->coloured().size() + clold->antiColoured().size()) > 1 ){
+	//join the colour lines
+	//I don't use the join method, because potentially only (anti)coloured
+	//particles belong to one colour line
+	if(clold!=clnew){//procs are not already connected
+	  while ( !clnew->coloured().empty() ) {
+	    tPPtr p = clnew->coloured()[0];
+	    clnew->removeColoured(p);
+	    clold->addColoured(p);
+	  }
+	  while ( !clnew->antiColoured().empty() ) {
+	    tPPtr p = clnew->antiColoured()[0];
+	    clnew->removeAntiColoured(p);
+	    clold->addAntiColoured(p);
+	  }
+	}
+
+      }else{
+	//if pold is the only member on it's 
+	//colour line, remove it.
+	clold->removeColoured(pold, anti);
+	//and add it to clnew
+	clnew->addColoured(pold, anti);
+      }    
+    }else{//pnnew is the only member on it's colour line.
+      clnew->removeColoured(pnew, !anti);
+      clold->addColoured(pnew, !anti);
+    }
+  }else{//there is no coline at all for pnew
+    clold->addColoured(pnew, !anti);
+  }
+}
+
+void HwRemDecayer::fixColours(PartnerMap partners, bool anti, 
+			      double colourDisrupt) const {
+  PartnerMap::iterator prev;
+  tPPtr pnew, pold;
 
   assert(partners.size()>=2);
-  for(PartnerMap::iterator it=partners.begin(); 
-      it!=partners.end(); it++){
-    if(it==partners.begin()) continue;
-    prev = it - 1;
 
+  PartnerMap::iterator it=partners.begin();
+  while(it != partners.end()){
+    //skip the first one to have a partner
+    if(it==partners.begin()){
+      it++;
+      continue;
+    }
+    
+    prev = it - 1;
     //determine the particles to work with
     pold = prev->first;
     if(prev->second){
@@ -424,49 +358,31 @@ void HwRemDecayer::fixColours(PartnerMap partners, bool anti) const {
     }
     assert(pnew);
 
+    // Implement the disruption of colour connections
+    if( it != partners.end()-1 ){//last one is diquark-has to be connected
+      
+      //has to be inside the if statement, so that the probability is
+      //correctly counted:
+      if( UseRandom::rnd() < colourDisrupt ){
 
-    //save the corresponding colour lines
-    clold = pold->colourLine(anti);
-    clnew = pnew->colourLine(!anti);
+	if(!it->second){//check, whether we have a gluon
+	  mergeColour(pnew, pnew, anti);
+	}else{
+	  if(pnew==it->first)//be careful about the order
+	    mergeColour(it->second, it->first, anti);
+	  else
+	    mergeColour(it->first, it->second, anti);
+	}
 
-    assert(clold);
-
-    
-    if(clnew){//there is already a colour line (not the final diquark)
-
-      if( (clnew->coloured().size() + clnew->antiColoured().size()) > 1 ){
-        if( (clold->coloured().size() + clold->antiColoured().size()) > 1 ){
-          //join the colour lines
-          //I don't use the join method, because potentially only (anti)coloured
-          //particles belong to one colour line
-	  if(clold!=clnew){//procs are not already connected
-	    while ( !clnew->coloured().empty() ) {
-	      tPPtr p = clnew->coloured()[0];
-	      clnew->removeColoured(p);
-	      clold->addColoured(p);
-	    }
-	    while ( !clnew->antiColoured().empty() ) {
-	      tPPtr p = clnew->antiColoured()[0];
-	      clnew->removeAntiColoured(p);
-	      clold->addAntiColoured(p);
-	    }
-	  }
-
-        }else{
-          //if pold is the only member on it's 
-          //colour line, remove it.
-          clold->removeColoured(pold, anti);
-          //and add it to clnew
-          clnew->addColoured(pold, anti);
-        }    
-      }else{//pnnew is the only member on it's colour line.
-        clnew->removeColoured(pnew, !anti);
-        clold->addColoured(pnew, !anti);
+	it = partners.erase(it);
+	continue;
       }
-    }else{//there is no coline at all for pnew
-      clold->addColoured(pnew, !anti);
+
     }
+    // regular merging
+    mergeColour(pold, pnew, anti);
     //end of loop
+    it++;
   }
   return;
 }
@@ -775,6 +691,302 @@ void HwRemDecayer::setRemMasses() const {
   }
 }
 
+void HwRemDecayer::initSoftInteractions(Energy ptmin, InvEnergy2 beta){
+  ptmin_ = ptmin;
+  beta_ = beta;
+}
+
+Energy HwRemDecayer::softPt() const {
+  Energy2 pt2(0*GeV2);
+  double xmin(0.0), xmax(1.0), x(0);
+
+  if(beta_ == 0/GeV2){
+    return UseRandom::rnd(0.0,(double)(ptmin_/GeV))*GeV;
+  }
+
+  if(beta_ < 0.0/GeV2){
+    xmin = 1.0;
+    xmax = exp( -beta_*sqr(ptmin_) );    
+  }else{
+    xmin = exp( -beta_*sqr(ptmin_) );    
+    xmax = 1.0;
+  }
+  x = UseRandom::rnd(xmin, xmax);
+  pt2 = 1.0/beta_ * log(1/x);
+  
+  if( pt2 < 0*GeV2 || pt2 > sqr(ptmin_) )
+    throw Exception() << "HwRemDecayer::softPt generation of pt "
+                      << "outside allowed range [0," << ptmin_/GeV << "]."
+                      << Exception::runerror; 
+
+  return sqrt(pt2);
+}
+
+void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2, 
+				  Lorentz5Momentum &g1, Lorentz5Momentum &g2) const {
+
+  const Energy mg(0.75*GeV);
+  g1 = Lorentz5Momentum();
+  g2 = Lorentz5Momentum();
+  //All necessary variables for the two soft gluons
+  Energy pt(softPt()), pz(0.0*GeV);
+  Energy2 pz2(0.*GeV2);
+  double phi(UseRandom::rnd(2.*Constants::pi));
+  double x_g1(0.0), x_g2(0.0);
+  
+  //Get the external momenta
+  tcPPair beam(generator()->currentEventHandler()->currentCollision()->incoming());
+  Lorentz5Momentum P1(beam.first->momentum()), P2(beam.second->momentum());
+
+  if(dbg){
+    cerr << "new event --------------------\n"
+	 << *(beam.first) << *(softRems_.first) 
+	 << "-------------------\n"
+	 << *(beam.second) << *(softRems_.second) << endl;
+  }
+
+  //Get x_g1 and x_g2
+  //first limits
+  double xmin  = sqr(ptmin_)/4.0/(P1+P2).m2();
+  double x1max = (r1.e()+abs(r1.z()))/(P1.e() + abs(P1.z()));
+  double x2max = (r2.e()+abs(r2.z()))/(P2.e() + abs(P2.z()));
+  //now generate according to 1/x
+  x_g1 = xmin * exp(UseRandom::rnd(log(x1max/xmin)));
+  x_g2 = xmin * exp(UseRandom::rnd(log(x2max/xmin)));
+
+  if(dbg)
+    cerr << x1max << " " << x_g1 << endl << x2max << " " << x_g2 << endl;
+
+  Lorentz5Momentum ig1, ig2, cmf;
+
+  ig1 = x_g1*P1;
+  ig2 = x_g2*P2;
+
+  ig1.setMass(mg);
+  ig2.setMass(mg);
+  ig1.rescaleEnergy();
+  ig2.rescaleEnergy();
+
+  cmf = ig1 + ig2;
+  //boost vector from cmf to lab
+  Boost boostv(cmf.boostVector());
+
+  //outgoing gluons in cmf
+  g1.setMass(mg);
+  g2.setMass(mg);
+
+  g1.setX(pt*cos(phi));
+  g2.setX(-pt*cos(phi));
+  g1.setY(pt*sin(phi));
+  g2.setY(-pt*sin(phi));
+  
+  pz2 = cmf.m2()/4 - sqr(mg) - sqr(pt);
+
+  if(pz2/GeV2 < 0.0){
+    if(dbg)
+      cerr << "EXCEPTION not enough energy...." << endl;
+    throw ExtraSoftScatterVeto();
+  }
+
+  if(UseRandom::rndbool())
+    pz = sqrt(pz2);
+  else
+    pz = -sqrt(pz2);
+
+  if(dbg)
+    cerr << "pz has been calculated to: " << pz/GeV << endl;
+
+
+  g1.setZ(pz);
+  g2.setZ(-pz);
+  g1.rescaleEnergy();
+  g2.rescaleEnergy();
+
+  if(dbg){
+    cerr << "check inv mass in cmf frame: " << (g1+g2).m()/GeV 
+	 << " vs. lab frame: " << (ig1+ig2).m()/GeV << endl;
+  }
+
+  g1.boost(boostv);
+  g2.boost(boostv);
+
+  //recalc the remnant momenta
+  Lorentz5Momentum r1old(r1), r2old(r2);
+  r1 -= ig1;
+  r2 -= ig2;
+
+  try{
+    reShuffle(r1, r2, r1old.m(), r2old.m());
+  }catch(ExtraSoftScatterVeto){
+    r1 = r1old;
+    r2 = r2old;
+    throw ExtraSoftScatterVeto();
+  }
+
+
+  if(dbg){
+    cerr << "remnant 1,2 momenta: " << r1/GeV << "--" << r2/GeV << endl;
+    cerr << "remnant 1,2 masses: " << r1.m()/GeV << " " << r2.m()/GeV << endl;
+    cerr << "check momenta in the lab..." << (-r1old-r2old+r1+r2+g1+g2)/GeV << endl;
+  }
+}
+
+void HwRemDecayer::doSoftInteractions(unsigned int N) {
+  if(!softRems_.first || !softRems_.second)
+    throw Exception() << "HwRemDecayer::doSoftInteractions: no "
+                      << "Remnants available."
+                      << Exception::runerror; 
+
+  if( ptmin_ == -1.*GeV )
+    throw Exception() << "HwRemDecayer::doSoftInteractions: init "
+                      << "code has not been called! call initSoftInteractions."
+                      << Exception::runerror; 
+
+  Lorentz5Momentum g1, g2;
+  Lorentz5Momentum r1(softRems_.first->momentum()), r2(softRems_.second->momentum());
+  unsigned int tries(1), i(0);
+
+  for(i=0; i<N; i++){
+    //check how often this scattering has been regenerated
+    if(tries > maxtrySoft_) break;
+
+    if(dbg){
+      cerr << "new try \n" << *softRems_.first << *softRems_.second << endl;
+    }
+
+    try{
+      softKinematics(r1, r2, g1, g2);
+
+    }catch(ExtraSoftScatterVeto){
+      tries++;
+      i--;
+      continue;
+    }
+  
+    PPair oldrems = softRems_;
+    PPair gluons = make_pair(addParticle(softRems_.first, ParticleID::g, g1), 
+			     addParticle(softRems_.second, ParticleID::g, g2));
+    //now reset the remnants with the new ones
+    softRems_.first = addParticle(softRems_.first, softRems_.first->id(), r1);
+    softRems_.second = addParticle(softRems_.second, softRems_.second->id(), r2);
+
+    //do the colour connections
+    pair<bool, bool> anti = make_pair(oldrems.first->hasAntiColour(),
+				      oldrems.second->hasAntiColour());
+
+    ColinePtr cl1 = new_ptr(ColourLine());
+    ColinePtr cl2 = new_ptr(ColourLine());
+    if( UseRandom::rnd() < colourDisrupt_ ){//this is the member variable, i.e. SOFT colour disruption
+      //connect the remnants independent of the gluons
+      oldrems.first->colourLine(anti.first)->addColoured(softRems_.first, anti.first);
+      oldrems.second->colourLine(anti.second)->addColoured(softRems_.second, anti.second);
+      //connect the gluons to each other
+      cl1->addColoured(gluons.first);
+      cl1->addAntiColoured(gluons.second);
+      cl2->addColoured(gluons.second);
+      cl2->addAntiColoured(gluons.first);	
+    }else{
+      //connect the remnants to the gluons
+      oldrems.first->colourLine(anti.first)->addColoured(gluons.first, anti.first);
+      oldrems.second->colourLine(anti.second)->addColoured(gluons.second, anti.second);
+      //and the remaining colour line to the final remnant
+      cl1->addColoured(softRems_.first, anti.first);
+      cl1->addColoured(gluons.first, !anti.first);
+      cl2->addColoured(softRems_.second, anti.second);
+      cl2->addColoured(gluons.second, !anti.second);
+    }
+
+    //reset counter
+    tries = 1;
+  }
+
+  if(dbg)
+    cerr << "generated " << i << "th soft scatters\n";
+
+}
+
+void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
+  PPair diquarks;
+  //Do the final Rem->Diquark or Rem->quark "decay"
+  if(theRems.first) {
+    diquarks.first = finalSplit(theRems.first, theContent.first.RemID(), 
+				theUsed.first);
+    theMaps.first.push_back(make_pair(diquarks.first, tPPtr()));
+
+  if(theRems.second) {
+    diquarks.second = finalSplit(theRems.second, theContent.second.RemID(), 
+				 theUsed.second);
+    theMaps.second.push_back(make_pair(diquarks.second, tPPtr()));
+  }
+  setRemMasses();
+  if(theRems.first) fixColours(theMaps.first, theanti.first, colourDisrupt);
+  if(theRems.second) fixColours(theMaps.second, theanti.second, colourDisrupt);
+
+  if( !theRems.first || !theRems.second ) return;
+  //stop here if we don't have two remnants
+  softRems_ = diquarks;
+  doSoftInteractions(softInt);
+  }
+}
+
+
+HwRemDecayer::HadronContent
+HwRemDecayer::getHadronContent(tcPPtr hadron) const {
+  HadronContent hc;
+  hc.hadron = hadron->dataPtr();
+  long id(hadron->id());
+  // baryon
+  if(BaryonMatcher::Check(hadron->data())) {
+    hc.sign = id < 0? -1: 1;
+    hc.flav.push_back((id = abs(id)/10)%10);
+    hc.flav.push_back((id /= 10)%10);
+    hc.flav.push_back((id /= 10)%10);
+    hc.extracted = -1;
+  }
+  else if(hadron->data().id()==ParticleID::gamma) {
+    hc.sign = 1;
+    for(int ix=1;ix<6;++ix) {
+      hc.flav.push_back( ix);
+      hc.flav.push_back(-ix);
+    }
+  }
+  return hc;
+}
+
+long HwRemDecayer::HadronContent::RemID() const{
+  if(extracted == -1)
+    throw Exception() << "Try to build a Diquark id without "
+		      << "having extracted something in "
+		      << "HwRemDecayer::RemID(...)"
+		      << Exception::runerror;
+  //the hadron was a meson or photon
+  if(flav.size()==2) return sign*flav[(extracted+1)%2];
+ 
+  long remId;
+  int id1(sign*flav[(extracted+1)%3]), 
+    id2(sign*flav[(extracted+2)%3]),
+    sign(0), spin(0);
+
+  if (abs(id1) > abs(id2)) swap(id1, id2);
+  sign = (id1 < 0) ? -1 : 1; // Needed for the spin 0/1 part
+  remId = id2*1000+id1*100;
+  // Now decide if we have spin 0 diquark or spin 1 diquark 
+  if(id1 == id2) spin = 3; // spin 1                  
+  else spin = 1; // otherwise spin 0  
+  remId += sign*spin;  
+  return remId;
+}
+
+
+tPPtr HwRemDecayer::addParticle(tcPPtr parent, long id, Lorentz5Momentum p) const {
+
+  PPtr newp = new_ptr(Particle(getParticleData(id)));
+  newp->set5Momentum(p);
+  // Add the new remnant to the step, but don't do colour connections
+  thestep->addDecayProduct(parent,newp,false);
+  return newp;
+}
+
 void HwRemDecayer::findChildren(tPPtr part,vector<PPtr> & particles) const {
   if(part->children().empty()) particles.push_back(part);
   else {
@@ -782,3 +994,104 @@ void HwRemDecayer::findChildren(tPPtr part,vector<PPtr> & particles) const {
       findChildren(part->children()[ix],particles);
   }
 }
+
+ParticleVector HwRemDecayer::decay(const DecayMode &, 
+				   const Particle &, Step &) const {
+  throw Exception() << "HwRemDecayer::decay(...) "
+		    << "must not be called explicitely."
+		    << Exception::runerror;
+}
+
+void HwRemDecayer::persistentOutput(PersistentOStream & os) const {
+  os << ounit(_kinCutoff, GeV) << _range 
+     << _zbin << _ybin << _nbinmax << _alpha << DISRemnantOpt_
+     << maxtrySoft_ << colourDisrupt_;
+}
+
+void HwRemDecayer::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(_kinCutoff, GeV) >> _range 
+     >> _zbin >> _ybin >> _nbinmax >> _alpha >> DISRemnantOpt_
+     >> maxtrySoft_ >> colourDisrupt_;
+}
+
+ClassDescription<HwRemDecayer> HwRemDecayer::initHwRemDecayer;
+// Definition of the static class description member.
+
+void HwRemDecayer::Init() {
+
+  static ClassDocumentation<HwRemDecayer> documentation
+    ("The HwRemDecayer class decays the remnant for Herwig++");
+
+  static Parameter<HwRemDecayer,double> interfaceZBinSize
+    ("ZBinSize",
+     "The size of the vbins in z for the interpolation of the splitting function.",
+     &HwRemDecayer::_zbin, 0.05, 0.001, 0.1,
+     false, false, Interface::limited);
+
+  static Parameter<HwRemDecayer,int> interfaceMaxBin
+    ("MaxBin",
+     "Maximum number of z bins",
+     &HwRemDecayer::_nbinmax, 100, 10, 1000,
+     false, false, Interface::limited);
+
+  static Reference<HwRemDecayer,ShowerAlpha> interfaceAlphaS
+    ("AlphaS",
+     "Pointer to object to calculate the strong coupling",
+     &HwRemDecayer::_alpha, false, false, true, false, false);
+
+  static Parameter<HwRemDecayer,Energy> interfaceKinCutoff
+    ("KinCutoff",
+     "Parameter kinCutoff used to constrain qtilde",
+     &HwRemDecayer::_kinCutoff, GeV, 0.75*GeV, 0.5*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<HwRemDecayer,double> interfaceEmissionRange
+    ("EmissionRange",
+     "Factor above the minimum possible value in which the forced splitting is allowed.",
+     &HwRemDecayer::_range, 1.1, 1.0, 10.0,
+     false, false, Interface::limited);
+
+
+  static Switch<HwRemDecayer,unsigned int> interfaceDISRemnantOption
+    ("DISRemnantOption",
+     "Options for the treatment of the remnant in DIS",
+     &HwRemDecayer::DISRemnantOpt_, 0, false, false);
+  static SwitchOption interfaceDISRemnantOptionDefault
+    (interfaceDISRemnantOption,
+     "Default",
+     "Use the minimum number of particles needed to take the recoil"
+     " and allow the lepton to be used if needed",
+     0);
+  static SwitchOption interfaceDISRemnantOptionNoLepton
+    (interfaceDISRemnantOption,
+     "NoLepton",
+     "Use the minimum number of particles needed to take the recoil but"
+     " veto events where the lepton kinematics would need to be altered",
+     1);
+  static SwitchOption interfaceDISRemnantOptionAllParticles
+    (interfaceDISRemnantOption,
+     "AllParticles",
+     "Use all particles in the colour connected system to take the recoil"
+     " and use the lepton if needed.",
+     2);
+  static SwitchOption interfaceDISRemnantOptionAllParticlesNoLepton
+    (interfaceDISRemnantOption,
+     "AllParticlesNoLepton",
+     "Use all the particles in the colour connected system to take the"
+     " recoil but don't use the lepton.",
+     3);
+
+  static Parameter<HwRemDecayer,unsigned int> interfaceMaxTrySoft
+    ("MaxTrySoft",
+     "The maximum number of regeneration attempts for an additional soft scattering",
+     &HwRemDecayer::maxtrySoft_, 10, 0, 100,
+     false, false, Interface::limited);
+
+  static Parameter<HwRemDecayer,double> interfacecolourDisrupt
+    ("colourDisrupt",
+     "Fraction of connections to additional soft subprocesses, which are colour disrupted.",
+     &HwRemDecayer::colourDisrupt_, 
+     0.0, 0.0, 1.0, 
+     false, false, Interface::limited);
+}
+
