@@ -52,16 +52,6 @@ LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
 LEPJetAnalysis.cc LEPJetAnalysis.h\
 LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.h \
 TopDalitzAnalysis.cc TopDalitzAnalysis.h
-
-#code which also depends on ROOT
-if WANT_LIBROOT
-pkglib_LTLIBRARIES += HwUEAnalysis.la
-HwUEAnalysis_la_LDFLAGS = -module -version-info 4:0:0
-HwUEAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) $(ROOTINCLUDE)
-HwUEAnalysis_la_LIBADD = $(KTJETLIBS) $(ROOTLIBS)
-HwUEAnalysis_la_SOURCES = \
-UEobservables.cc UEobservables.h
-endif
 endif
 
 HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
