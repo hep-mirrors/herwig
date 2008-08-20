@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "MultiplicityInfo.h"
+#include "Herwig++/Analysis/MultiplicityInfo.h"
 
 namespace Herwig {
 using namespace ThePEG;

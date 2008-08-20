@@ -1,6 +1,6 @@
 SUBDIRS = BSM
 
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la \
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la \
                      HwMPIAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
@@ -39,28 +39,6 @@ IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.h\
 DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.h \
 BELLECharmAnalysis.h BELLECharmAnalysis.cc\
 CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
-
-HwDecayAnalysis_la_LDFLAGS = -module -version-info 1:0:0
-HwDecayAnalysis_la_SOURCES = \
-EtaDecayAnalysis.h EtaDecayAnalysis.cc \
-SemiLeptonicDecayAnalysis.h SemiLeptonicDecayAnalysis.cc \
-OmegaPhi3PionAnalysis.h OmegaPhi3PionAnalysis.cc \
-VffGammaAnalysis.h VffGammaAnalysis.cc  \
-VPPGammaAnalysis.h VPPGammaAnalysis.cc  \
-PScalarVectorFermionsAnalysis.h PScalarVectorFermionsAnalysis.cc \
-VectorPScalarFermionsAnalysis.h VectorPScalarFermionsAnalysis.cc \
-Pi4ElectronAnalysis.h Pi4ElectronAnalysis.cc  \
-BtoSGammaAnalysis.h BtoSGammaAnalysis.cc   \
-ZPhotonsAnalysis.h ZPhotonsAnalysis.cc \
-DDalitzAnalysis.h DDalitzAnalysis.cc  \
-SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.cc  \
-OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.cc\
-BeamCorrelationAnalysis.h BeamCorrelationAnalysis.cc  \
-a1DecayAnalysis.h a1DecayAnalysis.cc  \
-BranchingRatioAnalysis.h BranchingRatioAnalysis.cc \
-Upsilon4SSpectrumAnalysis.h Upsilon4SSpectrumAnalysis.cc \
-Upsilon4SMultiplicityCount.h Upsilon4SMultiplicityCount.cc \
-BabarBDecayAnalysis.h BabarBDecayAnalysis.cc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
