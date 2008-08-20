@@ -474,7 +474,6 @@ void ShowerHandler::cascade() {
   theRemDec->finalize(getMPIHandler()->colourDisrupt(), 
 		      getMPIHandler()->softMultiplicity());
   if(btotal) boostCollision(true);
-  if(btotal) boostCollision(true);
   theHandler = 0;
 }
 
