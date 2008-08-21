@@ -29,7 +29,7 @@ HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
 
 pkglib_LTLIBRARIES += HwMPIPDF.la
 HwMPIPDF_la_SOURCES = \
-MPIPDF.h MPIPDF.cc MPIPDF.fh \
+MPIPDF.h MPIPDF.cc MPIPDF.fh MPIPDF.icc \
 MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
 
 HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
