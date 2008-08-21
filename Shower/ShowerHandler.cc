@@ -131,7 +131,8 @@ void ShowerHandler::doinitrun(){
   //can't use IsMPIOn here, because the EventHandler is not set at that stage
   if(theMPIHandler){ 
     theMPIHandler->initialize();
-    theRemDec->initSoftInteractions(theMPIHandler->Ptmin(), theMPIHandler->beta());
+    if(theMPIHandler->softInt())
+      theRemDec->initSoftInteractions(theMPIHandler->Ptmin(), theMPIHandler->beta());
   }
 
 
