@@ -126,6 +126,8 @@ void MPIHandler::initialize() {
     else
       algorithm_ = 0;
 
+    if(PtOfQCDProc_ == 0*GeV)//pure MinBias mode
+      algorithm_ = -1;
   }
 
   //Init all subprocesses
@@ -320,7 +322,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
     avgNsoft_ = 0.0;
     bmax = 10.0*sqrt(millibarn);
     do{//loop over hard ints
-      if(Algorithm()>0 && iH==0) continue;
+      if(Algorithm()>-1 && iH==0) continue;
       iS = 0;
       do{//loop over soft ints
 
@@ -332,7 +334,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	  P = integrator.value(integrand, Length(), bmax) / inel;
 	}
 	//store the probability
-	if(Algorithm()>0){
+	if(Algorithm()>-1){
 	  theMultiplicities.insert(P, make_pair(iH-1, iS));
 	  avgNhard_ += P*(iH-1);
 	  file << iH-1 << " " << iS << " " << P << endl;
@@ -370,7 +372,7 @@ Length Eikonalization::operator() (Length b) const {
   //inelastic cross section
   if(theoption == -1) return fac * ( 1 - exp(- 2.0 * chiTot) );
 
-  if(theoption > 0){
+  if(theoption >= 0){
     //encode multiplicities as: N_hard*100 + N_soft   
     Nhard = theoption/100;
     Nsoft = theoption%100;
