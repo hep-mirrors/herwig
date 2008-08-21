@@ -20,7 +20,7 @@ using namespace Herwig;
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 void MEMinBias::getDiagrams() const {
-  int maxflav(5);
+  int maxflav(2);
   tcPDPtr ph = getParticleData(ParticleID::gamma);
 
   for ( int i = 1; i <= maxflav; ++i ) {
@@ -36,15 +36,16 @@ void MEMinBias::getDiagrams() const {
       //qqb -> qqb
       add(new_ptr((Tree2toNDiagram(3), q1, ph, q2b, 1, q1, 2, q2b, -2)));
       //qbq -> qbq
-      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2, 1, q1b, 2, q2, -3)));
+      //      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2, 1, q1b, 2, q2, -3)));
       //qbqb -> qbqb
-      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2b, 1, q1b, 2, q2b, -4)));
+      add(new_ptr((Tree2toNDiagram(3), q1b, ph, q2b, 1, q1b, 2, q2b, -3)));
     }
   }
 }
 
 Energy2 MEMinBias::scale() const {
-  return sqr(2*GeV);
+  //set the scale high as long as I have no pure valence pdf
+  return sqr(100*GeV);
 }
 
 int MEMinBias::nDim() const {
@@ -98,9 +99,6 @@ unsigned int MEMinBias::orderInAlphaEW() const {
 
 Selector<MEBase::DiagramIndex>
 MEMinBias::diagrams(const DiagramVector & diags) const {
-  // This example corresponds to the diagrams specified in the example
-  // in the getDiagrams() function.
-
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
     sel.insert(1.0, i);
@@ -113,7 +111,7 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
 
   static ColourLines qq("1 4, 3 5");
   static ColourLines qqb("1 4, -3 -5");
-  static ColourLines qbq("-1 -4, 3 5");
+  //  static ColourLines qbq("-1 -4, 3 5");
   static ColourLines qbqb("-1 -4, -3 -5");
 
   Selector<const ColourLines *> sel;
@@ -125,14 +123,13 @@ MEMinBias::colourGeometries(tcDiagPtr diag) const {
   case -2:
     sel.insert(1.0, &qqb);
     break;
+    //  case -3:
+    // sel.insert(1.0, &qbq);
+    //break;
   case -3:
-    sel.insert(1.0, &qbq);
-    break;
-  case -4:
     sel.insert(1.0, &qbqb);
     break;
   }
-
   return sel;
 }
 
