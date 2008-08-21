@@ -15,7 +15,6 @@ HwMRST_la_LDFLAGS = -module -version-info 4:0:0
 pkglib_LTLIBRARIES += HwLeptonPDF.la
 HwLeptonPDF_la_SOURCES = \
 WeiszackerWilliamsPDF.cc WeiszackerWilliamsPDF.h \
-WeiszackerWilliamsPDF.icc WeiszackerWilliamsPDF.fh\
 LeptonRemnant.cc LeptonRemnant.h LeptonRemnant.icc LeptonRemnant.fh
 HwLeptonPDF_la_LDFLAGS = -module -version-info 3:0:0
 
