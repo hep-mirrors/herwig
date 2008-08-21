@@ -311,7 +311,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
 
-    iH = 1; 
+    iH = 0; 
 
     Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);//get the inel xsec
     CrossSection inel = integrator.value(inelint, Length(), bmax);
@@ -320,6 +320,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
     avgNsoft_ = 0.0;
     bmax = 10.0*sqrt(millibarn);
     do{//loop over hard ints
+      if(Algorithm()>0 && iH==0) continue;
       iS = 0;
       do{//loop over soft ints
 
@@ -330,13 +331,19 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	}else{
 	  P = integrator.value(integrand, Length(), bmax) / inel;
 	}
-	avgNhard_ += P*(iH-1);
+	//store the probability
+	if(Algorithm()>0){
+	  theMultiplicities.insert(P, make_pair(iH-1, iS));
+	  avgNhard_ += P*(iH-1);
+	  file << iH-1 << " " << iS << " " << P << endl;
+	}else{
+	  theMultiplicities.insert(P, make_pair(iH, iS));
+	  avgNhard_ += P*(iH);
+	  file << iH << " " << iS << " " << P << endl;
+	}
 	avgNsoft_ += P*iS;
 	if(iS==0)
 	  P0 = P;
-	//store the probability
-	theMultiplicities.insert(P, make_pair(iH-1, iS));
-	file << iH-1 << " " << iS << " " << P << endl;
 
 	iS++;
       } while ( (iS < maxScatters_) && (iS < 5 || P > 1.e-15 ) && softInt_ );
