@@ -20,7 +20,7 @@ using namespace Herwig;
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 void MEMinBias::getDiagrams() const {
-  int maxflav(2);
+  int maxflav(5);
   tcPDPtr ph = getParticleData(ParticleID::gamma);
 
   for ( int i = 1; i <= maxflav; ++i ) {
@@ -44,12 +44,11 @@ void MEMinBias::getDiagrams() const {
 }
 
 Energy2 MEMinBias::scale() const {
-  //set the scale high as long as I have no pure valence pdf
-  return sqr(100*GeV);
+  return sqr(10*GeV);
 }
 
 int MEMinBias::nDim() const {
-  return 1;
+  return 0;
 }
 
 void MEMinBias::setKinematics() {
