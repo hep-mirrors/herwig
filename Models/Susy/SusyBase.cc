@@ -345,7 +345,6 @@ void SusyBase::readDecay(ifstream & ifs,
 	<< Exception::warning;
     }
     if( npr > 1 ) {
-      inpart->stable(false);
       tag.replace(tag.size() - 1, 1, ";");
       createDecayMode(prefix + tag, brat);
       tag.clear();

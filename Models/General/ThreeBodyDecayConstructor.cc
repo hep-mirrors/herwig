@@ -384,7 +384,6 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
   // incoming particle is now unstable
-  inpart->stable(false);
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;
@@ -418,16 +417,18 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
     if(ndm) {
       generator()->preinitInterface(ndm, "Decayer", "set",
  				    decayer->fullName());
-      generator()->preinitInterface(ndm, "OnOff", "set", "1");
+      generator()->preinitInterface(ndm, "OnOff", "set", "On");
       OrderedParticles::const_iterator pit=outgoing.begin();
       tPDPtr pa = *pit; ++pit;
       tPDPtr pb = *pit; ++pit;
       tPDPtr pc = *pit;
+      cerr << "Calculing width for \"" << tag << "\" ... ";
       Energy width = 
 	decayer->partialWidth(make_pair(inpart,inpart->mass()),
 			      make_pair(pa,pa->mass()) , 
 			      make_pair(pb,pb->mass()) , 
 			      make_pair(pc,pc->mass()));
+      cerr << width/GeV << "\n";
       setBranchingRatio(ndm, width);
     }
     else

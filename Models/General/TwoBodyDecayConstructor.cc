@@ -178,7 +178,6 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
       << "pointer is null!\n"
       << Exception::runerror;
   tPDPtr inpart = decays[0].parent_;
-  inpart->stable(false);
   tEGPtr eg = generator();
   vector<TwoBodyDecay>::const_iterator dend = decays.end();
   for( vector<TwoBodyDecay>::const_iterator dit = decays.begin();
@@ -205,7 +204,7 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
       if(ndm) {
 	eg->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
-	eg->preinitInterface(ndm, "OnOff", "set", "1");
+	eg->preinitInterface(ndm, "OnOff", "set", "On");
 	Energy width = 
 	  decayer->partialWidth(make_pair(inpart,inpart->mass()),
 				make_pair(pb,pb->mass()) , 

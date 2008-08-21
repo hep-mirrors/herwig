@@ -192,8 +192,7 @@ void ModelGenerator::doinit() throw(InitException) {
     _theDecayConstructor->createDecayers(_theParticles);
   }
 
-  // write out decays with spin correlations and set particles
-  // that have no decay modes to stable.
+  // write out decays with spin correlations
   string filename = CurrentGenerator::current().filename() + 
     string("-BSMModelInfo.out");
   ofstream ofs(filename.c_str(), ios::out|ios::app);
@@ -203,24 +202,20 @@ void ModelGenerator::doinit() throw(InitException) {
   pend = _theParticles.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
-    cerr << "Checking width and decay length " << parent->width()/MeV
-	 << " MeV   " << parent->cTau()/mm << " mm\n";
     // Check decays for ones where quarks cannot be put on constituent
     // mass-shell
     checkDecays(parent);
     parent->reset();
     parent->update();
     if( parent->CC() ) parent->CC()->synchronize();
-
+    
     if( parent->decaySelector().empty() ) {
-      parent->stable(true);
       parent->width(0.0*MeV);
       parent->massGenerator(tGenericMassGeneratorPtr());
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }
-    else
-      writeDecayModes(ofs, parent);
-
+    writeDecayModes(ofs, parent);
+    ofs << "#\n";
     if( parent->massGenerator() ) {
       parent->massGenerator()->reset();
       ofs << "# " <<parent->PDGName() << " will be considered off-shell.\n#";
@@ -299,13 +294,17 @@ void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
   ofs << std::left << std::setw(40) << '#' 
       << std::left << std::setw(20) << "Partial Width/GeV"
       << "BR\n"; 
+  if( parent->stable() ) {
+    ofs << "Either the 'Stable' switch has been set or no decay modes "
+	<< "could be created\n";
+    return;
+  }
   Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
   Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
   for(; dit != dend; ++dit)
     ofs << std::left << std::setw(40) << (*dit).second->tag() 
 	<< std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
 	<< (*dit).second->brat() << '\n';
-  ofs << "#\n#";
 }
 
 void ModelGenerator::createWidthGenerator(tPDPtr p) {
