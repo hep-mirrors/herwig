@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General Susy UED LH LHTP
+SUBDIRS = RSModel  StandardModel General Susy UED
