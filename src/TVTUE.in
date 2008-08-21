@@ -24,18 +24,25 @@ cd /Herwig/UnderlyingEvent
 # if no QCD process present: -1
 set MPIHandler:IdenticalToUE 0
 
+# Set the details of the soft model
+set MPIHandler:softInt Yes
+set MPIHandler:twoComp Yes
+
+
 ##################################################
 # Change hard process ME's
 ##################################################
 cd /Herwig/MatrixElements
 insert SimpleQCD:MatrixElements[0] MEMinBias
+#insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+#insert SimpleQCD:MatrixElements[0] MEQCD2to2
 
 ##################################################
 # Cuts on the hard process
 ##################################################
 cd /Herwig/Cuts
-set JetKtCut:MinKT 15*GeV
-set QCDCuts:MHatMin 30.*GeV
+set JetKtCut:MinKT 4*GeV
+set QCDCuts:MHatMin 8.*GeV
 set QCDCuts:X1Min 1.0e-2
 set QCDCuts:X2Min 1.0e-2
 
