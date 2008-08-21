@@ -9,7 +9,7 @@
 ##################################################
 cd /Herwig/Shower 
 # Switch for JIMMY
-set ShowerHandler:MPIHandler NULL
+#set ShowerHandler:MPIHandler NULL
 
 cd /Herwig/UnderlyingEvent
 # set KtCut:MinKT 3.8
@@ -28,7 +28,6 @@ set MPIHandler:IdenticalToUE 0
 set MPIHandler:softInt Yes
 set MPIHandler:twoComp Yes
 
-
 ##################################################
 # Change hard process ME's
 ##################################################
@@ -41,10 +40,13 @@ insert SimpleQCD:MatrixElements[0] MEMinBias
 # Cuts on the hard process
 ##################################################
 cd /Herwig/Cuts
-set JetKtCut:MinKT 4*GeV
-set QCDCuts:MHatMin 8.*GeV
-set QCDCuts:X1Min 1.0e-2
-set QCDCuts:X2Min 1.0e-2
+set JetKtCut:MinKT 0.0*GeV
+# MHatMin = 2*MinKT
+set QCDCuts:MHatMin 0.0*GeV
+
+# Need this cut for min bias
+set QCDCuts:X1Min 0.01
+set QCDCuts:X2Min 0.01
 
 ##################################################
 # Analysis Handlers
@@ -85,8 +87,8 @@ set LHCGenerator:MaxErrors 1000000
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 
-set LHCGenerator:EventHandler:CascadeHandler NULL
-set LHCGenerator:EventHandler:HadronizationHandler NULL
-set LHCGenerator:EventHandler:DecayHandler NULL
+#set LHCGenerator:EventHandler:CascadeHandler NULL
+#set LHCGenerator:EventHandler:HadronizationHandler NULL
+#set LHCGenerator:EventHandler:DecayHandler NULL
 
 saverun TVTUE LHCGenerator
