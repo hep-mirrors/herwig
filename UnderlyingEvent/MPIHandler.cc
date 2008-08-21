@@ -322,7 +322,10 @@ void MPIHandler::Probs(XSVector UEXSecs) {
     avgNsoft_ = 0.0;
     bmax = 10.0*sqrt(millibarn);
     do{//loop over hard ints
-      if(Algorithm()>-1 && iH==0) continue;
+      if(Algorithm()>-1 && iH==0){
+	iH++;
+	continue;
+      }
       iS = 0;
       do{//loop over soft ints
 
