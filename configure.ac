@@ -91,7 +91,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
-		Decay/Baryon/Makefile
 		Decay/VectorMeson/Makefile
 		Decay/Perturbative/Makefile
                 Decay/ScalarMeson/Makefile
