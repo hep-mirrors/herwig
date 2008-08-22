@@ -422,13 +422,11 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
       tPDPtr pa = *pit; ++pit;
       tPDPtr pb = *pit; ++pit;
       tPDPtr pc = *pit;
-      cerr << "Calculing width for \"" << tag << "\" ... ";
       Energy width = 
 	decayer->partialWidth(make_pair(inpart,inpart->mass()),
 			      make_pair(pa,pa->mass()) , 
 			      make_pair(pb,pb->mass()) , 
 			      make_pair(pc,pc->mass()));
-      cerr << width/GeV << "\n";
       setBranchingRatio(ndm, width);
     }
     else
