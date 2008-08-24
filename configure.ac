@@ -71,10 +71,6 @@ HERWIG_CHECK_KTJET
 
 HERWIG_CHECK_FASTJET
 
-HERWIG_CHECK_ROOT
-
-HERWIG_CHECK_EVTGEN
-
 HERWIG_VERSIONSTRING
 
 HERWIG_CHECK_ABS_BUG
@@ -99,7 +95,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
-		Decay/Baryon/Makefile
 		Decay/VectorMeson/Makefile
 		Decay/Perturbative/Makefile
                 Decay/ScalarMeson/Makefile

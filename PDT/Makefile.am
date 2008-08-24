@@ -1,6 +1,6 @@
 ## libHwPDT.la will go into libHwDecay.so
 
-noinst_LTLIBRARIES = libHwPDT.la libHwBaryonWidth.la
+noinst_LTLIBRARIES = libHwPDT.la
 libHwPDT_la_SOURCES = \
 GenericMassGenerator.cc GenericMassGenerator.fh \
 GenericMassGenerator.h GenericMassGenerator.icc \
@@ -25,8 +25,3 @@ SMHiggsWidthGenerator.cc SMHiggsWidthGenerator.fh \
 SMHiggsWidthGenerator.h SMHiggsWidthGenerator.icc \
 SMHiggsMassGenerator.cc SMHiggsMassGenerator.fh \
 SMHiggsMassGenerator.h SMHiggsMassGenerator.icc
-
-
-libHwBaryonWidth_la_SOURCES = \
-BaryonWidthGenerator.cc BaryonWidthGenerator.fh \
-BaryonWidthGenerator.h BaryonWidthGenerator.icc

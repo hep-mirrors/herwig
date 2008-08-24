@@ -81,7 +81,7 @@ public:
   MPIHandler(): softMult_(0), identicalToUE_(-1), 
 		PtOfQCDProc_(-1.0*GeV), Ptmin_(-1.0*GeV), 
 		hardXSec_(0*millibarn), softXSec_(0*millibarn), 
-		softMu2_(0*GeV2), beta_(100/GeV2), 
+		softMu2_(0*GeV2), beta_(100.0/GeV2), 
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
 		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0) {}
@@ -101,6 +101,11 @@ public:
    * @return true if for this beam setup MPI can be generated
    */
   virtual bool beamOK() const;
+
+  /**
+   * Return true or false depending on whether soft interactions are enabled.
+   */
+  virtual bool softInt() const {return softInt_;}
 
   /**
    * Get the soft multiplicity from the pretabulated multiplicity
@@ -207,7 +212,7 @@ public:
    * Return the slope of the soft pt spectrum as calculated.
    */
   virtual InvEnergy2 beta() const {
-    if(beta_ != 100/GeV2)
+    if(beta_ != 100.0/GeV2)
       return beta_;
     else
       throw Exception() << "MPIHandler::beta called without initialization"

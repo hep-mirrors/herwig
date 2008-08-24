@@ -13,7 +13,7 @@ GaussianIntegrator.cc GaussianIntegrator.h \
 GaussianIntegrator.icc GaussianIntegrator.tcc \
 Statistic.h HerwigStrategy.cc HerwigStrategy.h \
 GSLIntegrator.h GSLIntegrator.tcc \
-GSLBisection.h GSLBisection.tcc
+GSLBisection.h GSLBisection.tcc GSLHelper.h
 
 ########## SVN version string. Only use in cc files! ####################
 EXTRA_DIST = versionstring.h.in

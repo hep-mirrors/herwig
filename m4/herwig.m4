@@ -394,82 +394,6 @@ fi
 AM_CONDITIONAL(WANT_LIBFASTJET,[test ! -z "$FASTJETPATH"])
 ])
 
-dnl ##### ROOT #####
-AC_DEFUN([HERWIG_CHECK_ROOT],[
-
-ROOTPATH=""
-ROOTLIBPATH=""
-ROOTLIBS=""
-ROOTINCLUDE=""
-LOAD_ROOT=""
-
-AC_MSG_CHECKING([for ROOT])
-
-
-AC_ARG_WITH(root,
-        AC_HELP_STRING([--with-root=DIR],[location of ROOT installation]),
-        [],
-        [with_root=no])
-
-if test "x$with_root" = "xno"; then
-  AC_MSG_RESULT([not required])
-else
-
-  ROOTPATH="$with_root"
-
-  if test -f $ROOTPATH/bin/root-config; then
-
-    AC_MSG_RESULT([$ROOTPATH])
-
-    AC_MSG_CHECKING([for ROOTLIBS])
-    if test -z "$ROOTLIBS"; then
-      ROOTLIBS=`$ROOTPATH/bin/root-config --libs`
-      ROOTLIBPATH=`$ROOTPATH/bin/root-config --libdir`
-    fi
-    AC_MSG_RESULT([$ROOTLIBS])
-
-    AC_MSG_CHECKING([for ROOTINCLUDE])
-    if test -z "$ROOTINCLUDE"; then
-      ROOTINCLUDE="`$ROOTPATH/bin/root-config --cflags` -Wno-long-long"
-    fi
-    AC_MSG_RESULT([$ROOTINCLUDE])
-
-
-    oldLIBS="$LIBS"
-    oldLDFLAGS="$LDFLAGS"
-    oldCPPFLAGS="$CPPFLAGS"
-    LIBS="$LIBS $ROOTLIBS"
-    LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
-    CPPFLAGS="$CPPFLAGS $ROOTINCLUDE"
-
-    AC_MSG_CHECKING([that ROOT works])
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <TCanvas.h>]],
-    	[[TCanvas c("c1", "");]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
-     	AC_MSG_ERROR([Use '--with-root=' to set the path to your ROOT installation.\
-	If it doesn't work anyhow, you eventually have to set the ROOTSYS environment variable.])
-    ])
-
-    LIBS="$oldLIBS"
-    LDFLAGS="$oldLDFLAGS"
-    CPPFLAGS="$oldCPPFLAGS"
-
-    AC_SUBST(ROOTLIBS)
-    AC_SUBST(ROOTLIBPATH)
-    AC_SUBST(ROOTPATH)
-    AC_SUBST(ROOTINCLUDE)
-
-	LOAD_ROOT="read Root.in"
-	AC_SUBST(LOAD_ROOT)
-
-  else
-    AC_MSG_ERROR([root-config not found...aborting])    
-  fi
-
-fi
-AM_CONDITIONAL(WANT_LIBROOT, test ! x"$with_root" = "xno")
-
-])
-
 dnl ##### LOOPTOOLS #####
 AC_DEFUN([HERWIG_LOOPTOOLS],
 [
@@ -537,47 +461,6 @@ AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
 AC_SUBST(HERWIG_PDF_DEFAULT)
 AC_SUBST(HERWIG_PDF_NLO)
 ])
-
-dnl ##### EVTGEN #####
-AC_DEFUN([HERWIG_CHECK_EVTGEN],
-[
-AC_MSG_CHECKING([for EVTGEN])
-AC_ARG_WITH(evtgen,
-        AC_HELP_STRING([--with-evtgen=DIR],[installation path of EvtGen]),
-        [],
-        [with_evtgen=no])
-
-EVTGENPATH=
-LOAD_EVTGEN=""
-
-if test "x$with_evtgen" = "xno"; then
-	AC_MSG_RESULT([not required])
-else
-	AC_MSG_RESULT([$with_evtgen])
-
-	oldLIBS="$LIBS"
-	tmpcxxflags=$CXXFLAGS
-
-	# Now lets see if the libraries work properly
-	
-
-	CXXFLAGS="$CXXFLAGS -L${with_evtgen}/lib"
-
-	AC_CHECK_LIB([evtgenlhc],[abort],
-		[],
-		[
-			AC_MSG_ERROR([libevtgenlhc could not be found at ${with_evtgen}/lib])
-		])
-	LIBS="$oldLIBS"
-	CXXFLAGS=$tmpcxxflags
-	EVTGENPATH=$with_evtgen
-	LOAD_EVTGEN="library HwEvtGen.so"
-fi
-AM_CONDITIONAL(WANT_EVTGEN,[test "x$with_evtgen" != "xno"])
-AC_SUBST(EVTGENPATH)
-AC_SUBST(LOAD_EVTGEN)
-])]
-
 
 dnl ###### GSL ######
 AC_DEFUN([HERWIG_CHECK_GSL],
@@ -736,8 +619,5 @@ echo    "*** HepMC:		$with_hepmc"
 echo    "***"
 echo    "*** KtJet:		$with_ktjet"
 echo    "*** FastJet:		$with_fastjet"
-echo	"***"
-echo    "*** ROOT interface:	$with_root"
-echo 	"*** EvtGen interface:	$with_evtgen"
 echo    "*****************************************************"
 ])

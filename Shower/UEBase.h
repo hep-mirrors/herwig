@@ -64,6 +64,11 @@ public:
   virtual bool beamOK() const = 0;
 
   /**
+   * Return true or false depending on whether soft interactions are enabled.
+   */
+  virtual bool softInt() const {return false;}
+
+  /**
    * Return the value of the pt cutoff.
    */
   virtual Energy Ptmin() const = 0;
