@@ -27,18 +27,9 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Cuts/Cuts.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
-using ThePEG::Helicity::FermionSpinPtr;
-using ThePEG::Helicity::VectorSpinPtr;
-using ThePEG::Helicity::VertexPtr;
-using ThePEG::Helicity::FermionSpinInfo;
-using ThePEG::Helicity::VectorSpinInfo;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::DiracRep;
-using ThePEG::Helicity::HaberDRep;
-using ThePEG::Helicity::HELASDRep;
-using ThePEG::Helicity::defaultDRep;
 
 void MEee2Z::getDiagrams() const {
   tcPDPtr Z0 = getParticleData(ParticleID::Z0);
@@ -191,4 +182,13 @@ ProductionMatrixElement MEee2Z::HelicityME(vector<SpinorWaveFunction> fin,
   aver=me/4.;
   return output;
 }
+
+void MEee2Z::doinit() throw(InitException) {
+  MEBase::doinit();
+  tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  // do the initialisation
+  if(hwsm)
+    { _theFFZVertex = hwsm->vertexFFZ();}
+  else
+    {throw InitException();}
 }

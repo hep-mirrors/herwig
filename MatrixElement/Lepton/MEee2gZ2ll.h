@@ -38,7 +38,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEee2gZ2ll();
+  inline MEee2gZ2ll() : _allowed(0) {}
 
 public:
 
@@ -83,7 +83,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -136,13 +136,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -154,7 +154,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -165,7 +165,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
+  virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
@@ -173,7 +173,7 @@ protected:
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 private:
@@ -274,10 +274,5 @@ struct ClassTraits<Herwig::MEee2gZ2ll>
 /** @endcond */
 
 }
-
-#include "MEee2gZ2ll.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEee2gZ2ll.tcc"
-#endif
 
 #endif /* HERWIG_MEee2gZ2ll_H */
