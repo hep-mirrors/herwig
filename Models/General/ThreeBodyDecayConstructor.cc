@@ -410,7 +410,8 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
     // create the decayer
     GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
     if(!decayer) {
-      cerr << "Can't create the decayer for " << tag << " so mode not created\n";
+      //cerr << "Can't create the decayer for " << tag 
+      //<< " so mode not created\n";
       return;
     }
     tDMPtr ndm = generator()->preinitCreateDecayMode(tag);

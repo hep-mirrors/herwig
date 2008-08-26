@@ -34,6 +34,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Herwig++/PDF/MPIPDF.h"
+#include "Herwig++/PDF/MinBiasPDF.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
@@ -130,7 +131,8 @@ void ShowerHandler::doinitrun(){
   //can't use IsMPIOn here, because the EventHandler is not set at that stage
   if(theMPIHandler){ 
     theMPIHandler->initialize();
-    theRemDec->initSoftInteractions(theMPIHandler->Ptmin(), theMPIHandler->beta());
+    if(theMPIHandler->softInt())
+      theRemDec->initSoftInteractions(theMPIHandler->Ptmin(), theMPIHandler->beta());
   }
 
 
@@ -326,9 +328,32 @@ void ShowerHandler::cascade() {
   // generate the multiple scatters
 
   //use modified pdf's now:
-  const pair <PDFPtr, PDFPtr> newpdf = 
-    make_pair(new_ptr(MPIPDF(firstPDF().pdf())), 
-              new_ptr(MPIPDF(secondPDF().pdf())));
+  pair <PDFPtr, PDFPtr> newpdf; 
+  //first have to check for MinBiasPDF
+  if(dynamic_ptr_cast<tcMinBiasPDFPtr>(firstPDF().pdf()))
+    newpdf.first = new_ptr(
+			   MPIPDF(
+				  dynamic_ptr_cast<tcMinBiasPDFPtr>
+				  (firstPDF().pdf())->originalPDF()
+				  ));
+  else
+    newpdf.first = new_ptr(
+			   MPIPDF(
+				  firstPDF().pdf()
+				  ));
+
+  if(dynamic_ptr_cast<tcMinBiasPDFPtr>(secondPDF().pdf()))
+    newpdf.second = new_ptr(
+			   MPIPDF(
+				  dynamic_ptr_cast<tcMinBiasPDFPtr>
+				  (secondPDF().pdf())->originalPDF()
+				  ));
+  else
+    newpdf.second = new_ptr(
+			   MPIPDF(
+				  secondPDF().pdf()
+				  ));
+
   resetPDFs(newpdf);
 
   /**
@@ -473,7 +498,6 @@ void ShowerHandler::cascade() {
 
   theRemDec->finalize(getMPIHandler()->colourDisrupt(), 
 		      getMPIHandler()->softMultiplicity());
-  if(btotal) boostCollision(true);
   if(btotal) boostCollision(true);
   theHandler = 0;
 }

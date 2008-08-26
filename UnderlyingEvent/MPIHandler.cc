@@ -126,6 +126,8 @@ void MPIHandler::initialize() {
     else
       algorithm_ = 0;
 
+    if(PtOfQCDProc_ == 0*GeV)//pure MinBias mode
+      algorithm_ = -1;
   }
 
   //Init all subprocesses
@@ -212,34 +214,6 @@ void MPIHandler::initialize() {
 
   Probs(UEXSecs);
   UEXSecs.clear();
-  /*
-  if(Algorithm()==0){
-  
-    //check out the eikonalization -1=inelastic, -2=total xsec
-    Eikonalization integrand(this, tot.xSec(), -1);
-    Eikonalization integrand_tot(this, tot.xSec(), -2);
-    GSLIntegrator integrator;
-
-    string line = "======================================="
-      "=======================================\n";
-  
-    CrossSection inel(integrator.value(integrand, Length(), 1000.*sqrt(millibarn))), 
-      total(integrator.value(integrand_tot, Length(), 1000.*sqrt(millibarn)));
-
-    file << "\nEikonalization results:\n"
-         << setw(79)
-         << "Cross-section (mb)\n"
-         << line << "Inelastic cross-section" << setw(55) 
-         << inel/millibarn << endl
-         << "Total pp->X cross-section" << setw(53)
-         << total/millibarn << endl << line 
-         << "Average number of MPI" << setw(57) << tot.xSec()/inel << endl;
-
-    file.close();
-  }
-  
-  */
-
 }
 
 
@@ -284,6 +258,19 @@ void MPIHandler::statistics(string os) const {
 	 << avgNhard_ << endl
 	 << "Average soft multiplicity:           "
 	 << avgNsoft_ << endl;
+  }else{
+    file << line
+	 << "Eikonalized and soft cross sections:\n\n"
+	 << "Model parameters:                    "
+	 << "ptmin:   " << Ptmin_/GeV << " GeV"
+      	 << ", mu2: " << invRadius_/sqr(1.*GeV) << " GeV2\n"
+	 << "                                     "
+	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
+	 << " GeV" << endl
+	 << "hard inclusive cross section (mb):   "
+	 << hardXSec_/millibarn << endl
+	 << "Average hard multiplicity:           "
+	 << avgNhard_ << endl;
   }
 
   file.close();
@@ -326,7 +313,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
 
-    iH = 1; 
+    iH = 0; 
 
     Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);//get the inel xsec
     CrossSection inel = integrator.value(inelint, Length(), bmax);
@@ -335,6 +322,10 @@ void MPIHandler::Probs(XSVector UEXSecs) {
     avgNsoft_ = 0.0;
     bmax = 10.0*sqrt(millibarn);
     do{//loop over hard ints
+      if(Algorithm()>-1 && iH==0){
+	iH++;
+	continue;
+      }
       iS = 0;
       do{//loop over soft ints
 
@@ -345,13 +336,19 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	}else{
 	  P = integrator.value(integrand, Length(), bmax) / inel;
 	}
-	avgNhard_ += P*(iH-1);
+	//store the probability
+	if(Algorithm()>-1){
+	  theMultiplicities.insert(P, make_pair(iH-1, iS));
+	  avgNhard_ += P*(iH-1);
+	  file << iH-1 << " " << iS << " " << P << endl;
+	}else{
+	  theMultiplicities.insert(P, make_pair(iH, iS));
+	  avgNhard_ += P*(iH);
+	  file << iH << " " << iS << " " << P << endl;
+	}
 	avgNsoft_ += P*iS;
 	if(iS==0)
 	  P0 = P;
-	//store the probability
-	theMultiplicities.insert(P, make_pair(iH-1, iS));
-	file << iH-1 << " " << iS << " " << P << endl;
 
 	iS++;
       } while ( (iS < maxScatters_) && (iS < 5 || P > 1.e-15 ) && softInt_ );
@@ -378,7 +375,7 @@ Length Eikonalization::operator() (Length b) const {
   //inelastic cross section
   if(theoption == -1) return fac * ( 1 - exp(- 2.0 * chiTot) );
 
-  if(theoption > 0){
+  if(theoption >= 0){
     //encode multiplicities as: N_hard*100 + N_soft   
     Nhard = theoption/100;
     Nsoft = theoption%100;

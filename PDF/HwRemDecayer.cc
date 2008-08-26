@@ -832,6 +832,7 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
 }
 
 void HwRemDecayer::doSoftInteractions(unsigned int N) {
+  if(N == 0) return;
   if(!softRems_.first || !softRems_.second)
     throw Exception() << "HwRemDecayer::doSoftInteractions: no "
                       << "Remnants available."

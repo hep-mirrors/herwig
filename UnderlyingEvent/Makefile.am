@@ -4,7 +4,7 @@ HwUA5_la_LDFLAGS= -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwMPI.la
 HwMPI_la_SOURCES = MPISampler.cc MPISampler.h MPISampler.icc \
-	MPISampler.fh MPIHandler.cc MPIHandler.icc \
+	MPISampler.fh MPIHandler.cc \
 	MPIHandler.fh MPIHandler.h \
 	ProcessHandler.cc ProcessHandler.icc \
 	ProcessHandler.fh ProcessHandler.h \

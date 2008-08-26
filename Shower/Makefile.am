@@ -10,6 +10,6 @@ HwShower_la_LIBADD = SplittingFunctions/libHwSplitting.la \
 		     $(GSLLIBS)
 HwShower_la_SOURCES = ShowerConfig.h \
 ShowerHandler.h ShowerHandler.fh ShowerHandler.icc ShowerHandler.cc \
-UEBase.h UEBase.cc
+UEBase.h UEBase.cc UEBase.fh
 
 HwShower_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)
