@@ -384,8 +384,6 @@ void ThreeBodyDecayConstructor::
 createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   // incoming particle
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
-//   if( abs(inpart->id()) != 5100005 && abs(inpart->id()) != 6100005 )
-//     return;
   // outgoing particles
   OrderedParticles outgoing;
   outgoing.insert(getParticleData(diagrams[0].outgoing));
@@ -395,13 +393,11 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;
-  Energy release(inpart->mass());
   for(OrderedParticles::const_iterator it = outgoing.begin();
       it != outgoing.end(); ++it) {
     ++iprod;
     tag += (**it).name();
     if(iprod != 3) tag += ",";
-    release -= (**it).mass();
   }
   tag += ";";
   tDMPtr dm = generator()->findDecayMode(tag);
