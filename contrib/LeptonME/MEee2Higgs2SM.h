@@ -1,48 +1,43 @@
 // -*- C++ -*-
 //
-// MEee2VectorMeson.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEee2Higgs2SM.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef THEPEG_MEee2VectorMeson_H
-#define THEPEG_MEee2VectorMeson_H
+#ifndef HERWIG_MEee2Higgs2SM_H
+#define HERWIG_MEee2Higgs2SM_H
 //
-// This is the declaration of the MEee2VectorMeson class.
+// This is the declaration of the MEee2Higgs2SM class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/PDT/GenericMassGenerator.fh"
+#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-using Helicity::SpinorWaveFunction;
-using Helicity::SpinorBarWaveFunction;
-using Helicity::VectorWaveFunction;
-
 /**
- * The MEee2VectorMeson class is designed to produce neutral vector mesons
- * in \f$e^+e^-\f$ collisions and is primarily intended to test the hadronic
- * decay package.
+ * The MEee2Higgs2SM class implements the production of an \f$s\f$-channel
+ * Higgs in \f$e^+e^-\f$ collisions in order to allow easy tests of Higgs
+ * decays. It should not be used for physics studies.
  *
- * @see \ref MEee2VectorMesonInterfaces "The interfaces"
- * defined for MEee2VectorMeson.
+ * @see \ref MEee2Higgs2SMInterfaces "The interfaces"
+ * defined for MEee2Higgs2SM.
  */
-class MEee2VectorMeson: public MEBase {
+class MEee2Higgs2SM: public ME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2VectorMeson();
+  inline MEee2Higgs2SM() : _allowed(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -73,37 +68,6 @@ public:
   virtual Energy2 scale() const;
 
   /**
-   * Set the typed and momenta of the incoming and outgoing partons to
-   * be used in subsequent calls to me() and colourGeometries()
-   * according to the associated XComb object. If the function is
-   * overridden in a sub class the new function must call the base
-   * class one first.
-   */
-  virtual void setKinematics();
-
-  /**
-   * The number of internal degrees of freedom used in the matrix
-   * element.
-   */
-  virtual int nDim() const;
-
-  /**
-   * Generate internal degrees of freedom given nDim() uniform
-   * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
-   * generator, the dSigHatDR should be a smooth function of these
-   * numbers, although this is not strictly necessary.
-   * @param r a pointer to the first of nDim() consecutive random numbers.
-   * @return true if the generation succeeded, otherwise false.
-   */
-  virtual bool generateKinematics(const double * r);
-
-  /**
-   * Return the matrix element squared differential in the variables
-   * given by the last call to generateKinematics().
-   */
-  virtual CrossSection dSigHatDR() const;
-
-  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -116,7 +80,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -129,11 +93,10 @@ public:
   colourGeometries(tcDiagPtr diag) const;
 
   /**
-   *  Set up the spin correlations 
+   * set up the spin correlations
    */
   virtual void constructVertex(tSubProPtr sub);
   //@}
-
 
 public:
 
@@ -169,13 +132,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -187,53 +150,73 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  virtual IVector getReferences();
   //@}
 
-private:
-  
+private: 
+
   /**
-   *  Member to return the helicity amplitudes
+   *  The matrix element
+   * @param fin The incoming spinor wavefunction
+   * @param ain The incoming spinorbar wavefunction
+   * @param fout The outgoing spinor bar wavefunction
+   * @param aout The outgoing spinor wavefunction
+   * @param me The spin averaged matrix element
    */
   ProductionMatrixElement HelicityME(vector<SpinorWaveFunction> fin,
 				     vector<SpinorBarWaveFunction> ain,
-				     vector<VectorWaveFunction> vout,double& me) const;
+				     vector<SpinorBarWaveFunction> fout,
+				     vector<SpinorWaveFunction> aout,double& me) const;
+  
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEee2VectorMeson> initMEee2VectorMeson;
+  static ClassDescription<MEee2Higgs2SM> initMEee2Higgs2SM;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2VectorMeson & operator=(const MEee2VectorMeson &);
+  MEee2Higgs2SM & operator=(const MEee2Higgs2SM &);
 
 private:
 
   /**
-   *  The vector meson being produced
+   *  Pointer to the Higgs vertex
    */
-  PDPtr _vector;
+  AbstractFFSVertexPtr _theFFHVertex;
 
   /**
-   *  The coupling
+   * Allowed outgoing particles
    */
-  double _coupling;
+  int _allowed;
 
   /**
-   *  Use the mass generator for the line shape
+   *  Pointer to the Higgs ParticleData object
    */
-  bool _lineshape;
-
-  /**
-   *  Pointer to the mass generator for the Higgs
-   */
-  GenericMassGeneratorPtr _massgen;
-
+  PDPtr _h0;
 };
 
 }
@@ -245,33 +228,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEee2VectorMeson. */
+ *  base classes of MEee2Higgs2SM. */
 template <>
-struct BaseClassTrait<Herwig::MEee2VectorMeson,1> {
-  /** Typedef of the first base class of MEee2VectorMeson. */
-  typedef MEBase NthBase;
+struct BaseClassTrait<Herwig::MEee2Higgs2SM,1> {
+  /** Typedef of the first base class of MEee2Higgs2SM. */
+  typedef ME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEee2VectorMeson class and the shared object where it is defined. */
+ *  the MEee2Higgs2SM class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEee2VectorMeson>
-  : public ClassTraitsBase<Herwig::MEee2VectorMeson> {
+struct ClassTraits<Herwig::MEee2Higgs2SM>
+  : public ClassTraitsBase<Herwig::MEee2Higgs2SM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2VectorMeson"; }
+  static string className() { return "Herwig::MEee2Higgs2SM"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEee2VectorMeson is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2VectorMeson depends on other classes (base classes
+   * MEee2Higgs2SM is implemented. It may also include several, space-separated,
+   * libraries if the class MEee2Higgs2SM depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMELepton.so"; }
+  static string library() { return "LeptonME.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "MEee2VectorMeson.icc"
-#endif /* THEPEG_MEee2VectorMeson_H */
+#endif /* HERWIG_MEee2Higgs2SM_H */

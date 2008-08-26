@@ -1,21 +1,15 @@
 // -*- C++ -*-
+#ifndef HERWIG_MEGammaP2Jets_H
+#define HERWIG_MEGammaP2Jets_H
 //
-// MEee2Higgs2SM.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_MEee2Higgs2SM_H
-#define HERWIG_MEee2Higgs2SM_H
-//
-// This is the declaration of the MEee2Higgs2SM class.
+// This is the declaration of the MEGammaP2Jets class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
 namespace Herwig {
@@ -23,21 +17,20 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The MEee2Higgs2SM class implements the production of an \f$s\f$-channel
- * Higgs in \f$e^+e^-\f$ collisions in order to allow easy tests of Higgs
- * decays. It should not be used for physics studies.
+ * The MEGammaP2Jets class implements the matrix elements for 
+ * pointlike gamma+hadron -> jets.
  *
- * @see \ref MEee2Higgs2SMInterfaces "The interfaces"
- * defined for MEee2Higgs2SM.
+ * @see \ref MEGammaP2JetsInterfaces "The interfaces"
+ * defined for MEGammaP2Jets.
  */
-class MEee2Higgs2SM: public ME2to2Base {
+class MEGammaP2Jets: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2Higgs2SM();
+  MEGammaP2Jets();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -80,7 +73,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -91,11 +84,55 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+  //@}
+
+protected:
 
   /**
-   * set up the spin correlations
+   *  Members to calculate the matrix elements
    */
-  virtual void constructVertex(tSubProPtr sub);
+  //@{
+  /**
+   * Matrix element for \f$\gamma g\to q \bar{q}\f$.
+   * @param gmin Polarization vectors for the incoming photon 
+   * @param glin Polarization vectors for the incoming gluon
+   * @param fout Spinors for the outgoing quark
+   * @param aout Spinors for the outgoing antiquark
+   * @param calc  Whether or not to calculate the matrix element for spin correlations
+   */
+  double gammagluonME(vector<VectorWaveFunction> & gmin,
+		      vector<VectorWaveFunction> & glin,
+		      vector<SpinorBarWaveFunction> & fout, 
+		      vector<SpinorWaveFunction> & aout,
+		      bool calc) const;
+
+  /**
+   * Matrix element for \f$\gamma q\to g q\f$.
+   * @param gmin Polarization vectors for the incoming photon
+   * @param fin  Spinors for the incoming quark
+   * @param gout Polarization vectors for the outgong gluon
+   * @param fout Spinors for the outgoing quark
+   * @param calc  Whether or not to calculate the matrix element for spin correlations
+   */
+  double gammaquarkME(vector<VectorWaveFunction> & gmin,
+		      vector<SpinorWaveFunction> & fin,
+		      vector<VectorWaveFunction> & gout,
+		      vector<SpinorBarWaveFunction> & fout,
+		      bool calc) const;
+
+  /**
+   * Matrix element for \f$\gamma q\to g q\f$.
+   * @param gmin Polarization vectors for the incoming photon
+   * @param fin  Spinors for the incoming antiquark
+   * @param gout Polarization vectors for the outgong gluon
+   * @param fout Spinors for the outgoing antiquark
+   * @param calc  Whether or not to calculate the matrix element for spin correlations
+   */
+  double gammaantiquarkME(vector<VectorWaveFunction> & gmin,
+			  vector<SpinorBarWaveFunction> & fin,
+			  vector<VectorWaveFunction> & gout,
+			  vector<SpinorWaveFunction> & fout,
+			  bool calc) const;
   //@}
 
 public:
@@ -132,13 +169,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -151,72 +188,54 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
-private: 
-
-  /**
-   *  The matrix element
-   * @param fin The incoming spinor wavefunction
-   * @param ain The incoming spinorbar wavefunction
-   * @param fout The outgoing spinor bar wavefunction
-   * @param aout The outgoing spinor wavefunction
-   * @param me The spin averaged matrix element
-   */
-  ProductionMatrixElement HelicityME(vector<SpinorWaveFunction> fin,
-				     vector<SpinorBarWaveFunction> ain,
-				     vector<SpinorBarWaveFunction> fout,
-				     vector<SpinorWaveFunction> aout,double& me) const;
-  
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEee2Higgs2SM> initMEee2Higgs2SM;
+  static ClassDescription<MEGammaP2Jets> initMEGammaP2Jets;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2Higgs2SM & operator=(const MEee2Higgs2SM &);
+  MEGammaP2Jets & operator=(const MEGammaP2Jets &);
 
 private:
 
   /**
-   *  Pointer to the Higgs vertex
+   *  Pointer to the quark-antiquark-gluon vertex
    */
-  AbstractFFSVertexPtr _theFFHVertex;
+  AbstractFFVVertexPtr _gluonvertex;
 
   /**
-   * Allowed outgoing particles
+   *  Pointer to the quark-antiquark-photon vertex
    */
-  int _allowed;
+  AbstractFFVVertexPtr _photonvertex;
 
   /**
-   *  Pointer to the Higgs ParticleData object
+   *  Allowed processes
    */
-  PDPtr _h0;
+  unsigned int _process;
+
+  /**
+   *  Minimum flavour
+   */
+  int _minflavour;
+
+  /**
+   *  Maximum flavour
+   */
+  int _maxflavour;
+  
+  /**
+   * Matrix element for spin correlations
+   */
+  ProductionMatrixElement _me;
+
 };
 
 }
@@ -228,34 +247,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEee2Higgs2SM. */
+ *  base classes of MEGammaP2Jets. */
 template <>
-struct BaseClassTrait<Herwig::MEee2Higgs2SM,1> {
-  /** Typedef of the first base class of MEee2Higgs2SM. */
-  typedef ME2to2Base NthBase;
+struct BaseClassTrait<Herwig::MEGammaP2Jets,1> {
+  /** Typedef of the first base class of MEGammaP2Jets. */
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEee2Higgs2SM class and the shared object where it is defined. */
+ *  the MEGammaP2Jets class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEee2Higgs2SM>
-  : public ClassTraitsBase<Herwig::MEee2Higgs2SM> {
+struct ClassTraits<Herwig::MEGammaP2Jets>
+  : public ClassTraitsBase<Herwig::MEGammaP2Jets> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2Higgs2SM"; }
+  static string className() { return "Herwig::MEGammaP2Jets"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEee2Higgs2SM is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2Higgs2SM depends on other classes (base classes
+   * MEGammaP2Jets is implemented. It may also include several, space-separated,
+   * libraries if the class MEGammaP2Jets depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMELepton.so"; }
+  static string library() { return "HwMEGammaHadron.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "MEee2Higgs2SM.icc"
-
-#endif /* HERWIG_MEee2Higgs2SM_H */
+#endif /* HERWIG_MEGammaP2Jets_H */
