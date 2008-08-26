@@ -22,11 +22,6 @@ class MEee2ZH: public MEfftoVH {
 
 public:
 
-  /**
-   * The default constructor.
-   */
-  inline MEee2ZH();
-
   /** @name Virtual functions required by the MEfftoVH class. */
   //@{
   /**
