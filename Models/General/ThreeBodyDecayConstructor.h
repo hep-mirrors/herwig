@@ -61,7 +61,8 @@ public:
    * The default constructor.
    */
   inline ThreeBodyDecayConstructor() : 
-    _removeOnShell(true), _interopt(0), _widthopt(1) {}
+    _removeOnShell(true), _interopt(0), _widthopt(1), 
+    _minReleaseFraction(1e-3) {}
 
   /**
    * Function used to determine allowed decaymodes, to be implemented
@@ -199,6 +200,11 @@ private:
    */
   unsigned int _widthopt;
 
+  /**
+   * The minimum energy release for a three-body decay as a 
+   * fraction of the parent mass
+   */
+  double _minReleaseFraction;
 };
 
 }
