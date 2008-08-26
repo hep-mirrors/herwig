@@ -217,7 +217,7 @@ struct ClassTraits<Herwig::MEGammaGamma2ff>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEGamma.so"; }
+  static string library() { return "HwMEGammaGamma.so"; }
 };
 
 /** @endcond */

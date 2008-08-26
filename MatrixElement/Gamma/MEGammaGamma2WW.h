@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef THEPEG_MEGammaGamma2WW_H
-#define THEPEG_MEGammaGamma2WW_H
+#ifndef HERWIG_MEGammaGamma2WW_H
+#define HERWIG_MEGammaGamma2WW_H
 //
 // This is the declaration of the MEGammaGamma2WW class.
 //
@@ -223,11 +223,11 @@ struct ClassTraits<Herwig::MEGammaGamma2WW>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEGamma.so"; }
+  static string library() { return "HwMEGammaGamma.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* THEPEG_MEGammaGamma2WW_H */
+#endif /* HERWIG_MEGammaGamma2WW_H */
