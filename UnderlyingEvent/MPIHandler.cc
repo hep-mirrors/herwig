@@ -149,7 +149,6 @@ void MPIHandler::initialize() {
     GSLBisection rootFinder;
 
     if(twoComp_){
-      cerr << "start twoComp model\n";
       //two component model
       /*
       GSLMultiRoot eqSolver;
@@ -301,14 +300,6 @@ void MPIHandler::Probs(XSVector UEXSecs) {
   //only one UE process will be drawn from a probability distribution,
   //so check that.
   assert(UEXSecs.size() == 1);
-  ofstream file;
-  file.open("probs.test");
-  file << "hard process xsec: "
-       << eventHandler()->integratedXSec()/millibarn
-       << endl;             
-
-  file << "UE process[0] xsec: " 
-       << UEXSecs.front()/millibarn << endl; 
 
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
@@ -340,11 +331,9 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	if(Algorithm()>-1){
 	  theMultiplicities.insert(P, make_pair(iH-1, iS));
 	  avgNhard_ += P*(iH-1);
-	  file << iH-1 << " " << iS << " " << P << endl;
 	}else{
 	  theMultiplicities.insert(P, make_pair(iH, iS));
 	  avgNhard_ += P*(iH);
-	  file << iH << " " << iS << " " << P << endl;
 	}
 	avgNsoft_ += P*iS;
 	if(iS==0)
@@ -355,9 +344,6 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       iH++;
     } while ( (iH < maxScatters_) && (iH < 5 || P0 > 1.e-15) );
   }
-  file << "avgN(hard) = " << avgNhard_ << endl;
-  file << "avgN(soft) = " << avgNsoft_ << endl;
-  file.close();  
 }
 
 
