@@ -261,7 +261,7 @@ createMatrixElement(const HPDiagram & diag) const {
   extpart[2] = getParticleData(diag.outgoing.first);
   extpart[3] = getParticleData(diag.outgoing.second);
   string objectname ("/Herwig/MatrixElements/");
-  string classname = MEClassname(extpart, objectname);
+  string classname = MEClassname(extpart, diag.intermediate, objectname);
   GeneralHardMEPtr matrixElement = dynamic_ptr_cast<GeneralHardMEPtr>
     (generator()->preinitCreate(classname, objectname));
   if( !matrixElement ) {
@@ -272,7 +272,7 @@ createMatrixElement(const HPDiagram & diag) const {
       << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
       << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
       << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
-      << ".  Constructed class name: \"" << classname << "\""
+      << ".  Constructed class name: \"" << classname << "\"\n"
       << Exception::warning;
     return;
   }
@@ -283,8 +283,9 @@ createMatrixElement(const HPDiagram & diag) const {
 				"insert", matrixElement->fullName()); 
 }
 
-string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
-					       string & objname) const {
+string ResonantProcessConstructor::
+MEClassname(const vector<tcPDPtr> & extpart, tcPDPtr inter,
+	    string & objname) const {
  string classname("Herwig::ME");
   for(vector<tcPDPtr>::size_type ix = 0; ix < extpart.size(); ++ix) {
     if(ix == 2) classname += "2";
@@ -298,7 +299,8 @@ string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
 	<< extpart[ix]->PDGName() << " while constructing MatrixElement "
 	<< "classname " << extpart[ix]->iSpin() << Exception::warning;
   }
-  objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2" 
+  objname += "ME" + extpart[0]->PDGName() + extpart[1]->PDGName() + "2"
+    + inter->PDGName() + "2"
     + extpart[2]->PDGName() + extpart[3]->PDGName();
   return classname;  
 }

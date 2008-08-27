@@ -158,7 +158,8 @@ private:
   /**
    * Create the correct classname and objectname for a matrix element 
    */
-  string MEClassname(const tcPDVector & extpart, string & objname) const;
+  string MEClassname(const tcPDVector & extpart, tcPDPtr inter,
+		     string & objname) const;
 
   /**
    * Return colour factor for given process
