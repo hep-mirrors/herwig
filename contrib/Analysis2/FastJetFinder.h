@@ -1,21 +1,23 @@
 // -*- C++ -*-
 //
-// KtJetFinder.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// FastJetFinder.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_KtJetFinder_H
-#define HERWIG_KtJetFinder_H
+#ifndef HERWIG_FastJetFinder_H
+#define HERWIG_FastJetFinder_H
 //
-// This is the declaration of the KtJetFinder class.
+// This is the declaration of the FastJetFinder class.
 //
 
-#include "Herwig++/Analysis2/JetFinder.h"
-#include "KtJetFinder.fh"
+#include "JetFinder.h"
+#include "FastJetFinder.fh"
 
-#include "KtJet/KtEvent.h"
+#include "fastjet/JetDefinition.hh"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 
 #include <memory>
 
@@ -24,15 +26,17 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**\ingroup Analysis2
- *
- * Interface to KtJet
+ * 
+ * A jet finder using the FastJetFinder library.
+ * See the <a href="http://www.lpthe.jussieu.fr/~salam/fastjet">FastJet</a>
+ * homepage for details.
  *
  * @author Simon Plaetzer
  *
- * @see \ref KtJetFinderInterfaces "The interfaces"
- * defined for KtJetFinder.
+ * @see \ref FastJetFinderInterfaces "The interfaces"
+ * defined for FastJetFinder.
  */
-class KtJetFinder: public JetFinder {
+class FastJetFinder: public JetFinder {
 
 public:
 
@@ -41,27 +45,25 @@ public:
   /**
    * The default constructor.
    */
-  inline KtJetFinder();
+  inline FastJetFinder();
 
   /**
-   * The copy constructor.
+   * The copy constructor
    */
-  inline KtJetFinder(const KtJetFinder &);
+  inline FastJetFinder (const FastJetFinder&);
 
   /**
    * The destructor.
    */
-  virtual ~KtJetFinder();
+  virtual ~FastJetFinder();
   //@}
 
 public:
 
   /**
    * Set the event to be analysed.
-   * The implementation of this method may
-   * also do some conversion.
    */
-  virtual void use (tcEventPtr, bool);
+  virtual void use (tcEventPtr,bool);
 
   /**@name Jet finding */
   //@{
@@ -74,7 +76,7 @@ public:
   /**
    * Do exclusive jet-finding for nJets jets
    */
-  virtual inline void findJetsN (unsigned int nJets);
+  virtual inline  void findJetsN (unsigned int nJets);
 
   /**
    * Do jet-finding up to the resolution scale
@@ -100,59 +102,58 @@ public:
 
 public:
 
-  /**@name KtJet options */
+  /**@name FastJet options */
   //@{
 
   /**
-   * Get the collision type
+   * Get the jet finder
    */
-  inline int collisionType () const;
-
-  /**
-   * Get the distance scheme
-   */
-  inline int distanceScheme () const;
+  inline int jetFinder () const;
 
   /**
    * Get the recombination scheme
    */
   inline int recombinationScheme () const;
 
+  /**
+   * Get the startegy
+   */
+  inline int strategy () const;
+
+  /**
+   * Get the jet definition
+   */
+  inline const fastjet::JetDefinition& jetDefintion () const;
+
   //@}
 
 protected:
 
   /**
-   * Convert event to KtLorentzVector vector
+   * Convert event to FastJet pseudojet vector
    */
   void convert ();
 
   /**
-   * Convert KtLorenztVector vector to vector
-   * of Lorentz5Momenta
+   * Convert pseudojet vector to vector of Lorentz5Momenta
    */
-  void convert (const vector<KtJet::KtLorentzVector>&);
+  void convert (const vector<fastjet::PseudoJet>&);
 
   /**
-   * Perform clustering in exclusive mode.
+   * Perform clustering
    */
   void cluster ();
 
   /**
-   * Perform clustering in inclusive mode.
+   * Return the vector of pseudojets from
+   * given event.
    */
-  void clusterInclusive ();
+  inline const vector<fastjet::PseudoJet>& lastPseudojets () const;
 
   /**
-   * Return the vector of KtLorenztVector's obtained
-   * from the last event.
+   * Return the last cluster sequence obtained.
    */
-  inline const vector<KtJet::KtLorentzVector>& lastMomenta () const;
-
-  /**
-   * Return the last KtEvent obtained.
-   */
-  inline const KtJet::KtEvent& lastKtEvent () const;
+  inline const fastjet::ClusterSequence& lastClusterSequence () const;
 
 public:
 
@@ -202,17 +203,36 @@ protected:
 // InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
 
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  //@}
+
 private:
 
   /**
-   * The collision type
+   * The jet finder
    */
-  int _collisionType;
+  int _jetFinder;
 
   /**
-   * The distance scheme
+   * The strategy used for jet finding
    */
-  int _distanceScheme;
+  int _strategy;
 
   /**
    * The recombination scheme
@@ -220,26 +240,37 @@ private:
   int _recombinationScheme;
 
   /**
-   * KtLorentzVector's from last event
+   * The last pseudojet vector
    */
-  vector<KtJet::KtLorentzVector> _lastMomenta;
+  vector<fastjet::PseudoJet> _lastPseudojets;
 
   /**
-   * Last KtEvent obtained
+   * The last obtained cluster sequence.
    */
-  std::auto_ptr<KtJet::KtEvent> _lastKtEvent;
+  std::auto_ptr<fastjet::ClusterSequence> _lastClusterSequence;
+
+  /**
+   * The fastjet::JetDefinition to be used
+   */
+  fastjet::JetDefinition _jetDefinition;
+
+  /**
+   * The visible energy squared as obtained by
+   * squaring the sum of final state momenta.
+   */
+  Energy2 _E2vis;
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<KtJetFinder> initKtJetFinder;
+  static ClassDescription<FastJetFinder> initFastJetFinder;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KtJetFinder & operator=(const KtJetFinder &);
+  FastJetFinder & operator=(const FastJetFinder &);
 
 };
 
@@ -252,37 +283,37 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of KtJetFinder. */
+ *  base classes of FastJetFinder. */
 template <>
-struct BaseClassTrait<Herwig::KtJetFinder,1> {
-  /** Typedef of the first base class of KtJetFinder. */
+struct BaseClassTrait<Herwig::FastJetFinder,1> {
+  /** Typedef of the first base class of FastJetFinder. */
   typedef Herwig::JetFinder NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the KtJetFinder class and the shared object where it is defined. */
+ *  the FastJetFinder class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::KtJetFinder>
-  : public ClassTraitsBase<Herwig::KtJetFinder> {
+struct ClassTraits<Herwig::FastJetFinder>
+  : public ClassTraitsBase<Herwig::FastJetFinder> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::KtJetFinder"; }
+  static string className() { return "Herwig::FastJetFinder"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * KtJetFinder is implemented. It may also include several, space-separated,
-   * libraries if the class KtJetFinder depends on other classes (base classes
+   * FastJetFinder is implemented. It may also include several, space-separated,
+   * libraries if the class FastJetFinder depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwKtJetFinder.so"; }
+  static string library() { return "Analysis2.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "KtJetFinder.icc"
+#include "FastJetFinder.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KtJetFinder.tcc"
+// #include "FastJetFinder.tcc"
 #endif
 
-#endif /* HERWIG_KtJetFinder_H */
+#endif /* HERWIG_FastJetFinder_H */

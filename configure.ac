@@ -122,7 +122,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/CKKW/Makefile
                 Shower/Makefile
                 Utilities/Makefile
-		Utilities/Histogram2/Makefile
                 Hadronization/Makefile
 		lib/Makefile
 		include/Makefile
@@ -134,8 +133,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Looptools/Makefile
 		Analysis/Makefile
 		Analysis/BSM/Makefile
-		Analysis2/Makefile
-                Analysis2/Data/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		Makefile])
