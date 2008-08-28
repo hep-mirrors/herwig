@@ -2,6 +2,7 @@
 #
 # output interfaces for documentation
 # the following need to come first
+globallibrary Herwig.so
 library HwWeakCurrents.so
 library HwSusy.so
 #
@@ -11,9 +12,10 @@ library HwBSMAnalysis.so
 library HwFormFactors.so
 library HwLEPAnalysis.so
 library HwMamboDecay.so
-library HwMEFast.so
-library HwME.so
-library HwMPIPDF.so
+library HwMEHadronFast.so
+library HwMEHadron.so
+library HwMELepton.so
+library SimpleKTCut.so
 library HwMPI.so
 library HwMRST.so
 library HwPartonicDecay.so
@@ -21,6 +23,7 @@ library HwPerturbativeDecay.so
 library HwPerturbativeHiggsDecay.so
 library HwRemDecayer.so
 library HwRSModel.so
+library HwMPIPDF.so
 library HwShower.so
 library HwSMDecay.so
 library HwTauDecay.so
@@ -28,7 +31,5 @@ library HwTMDecay.so
 library HwUA5.so
 library HwUED.so
 library HwVMDecay.so
-@LOAD_EVTGEN@
 @LOAD_KTJET@
-@LOAD_ROOT@
 doxygendump Herwig:: AllInterfaces.h
