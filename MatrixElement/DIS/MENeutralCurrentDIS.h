@@ -7,10 +7,9 @@
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "MENeutralCurrentDIS.fh"
 
 namespace Herwig {
 
@@ -32,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MENeutralCurrentDIS();
+  MENeutralCurrentDIS();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -159,13 +158,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -277,7 +276,5 @@ struct ClassTraits<Herwig::MENeutralCurrentDIS>
 /** @endcond */
 
 }
-
-#include "MENeutralCurrentDIS.icc"
 
 #endif /* HERWIG_MENeutralCurrentDIS_H */

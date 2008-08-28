@@ -23,6 +23,7 @@
 using namespace Herwig;
 
 void BELLECharmAnalysis::analyze(tEventPtr event, long, int, int) {
+  _weight = event->weight();
   _s = (event->incoming().first ->momentum()+
 	event->incoming().second->momentum()).m2();  
   set<tPPtr> particles;
@@ -52,28 +53,28 @@ void BELLECharmAnalysis::analyze(tPPtr particle) {
     sqrt(0.25*_s-sqr(particle->mass()));
   int id = abs(particle->id());
   if(id==ParticleID::Dstarplus) {
-    *_histDstarplus += xp;
-    _statDstar      += 1.;
+    _histDstarplus  ->addWeighted( xp,_weight);
+    _statDstar      += _weight;
   }
   else if(id==ParticleID::Dstar0) {
-    *_histDstar0    += xp;
-    _statDstar      += 1.;
+    _histDstar0     ->addWeighted( xp,_weight);
+    _statDstar      += _weight;
   }
   else if(id==ParticleID::D0) {
-    *_histD0        += xp;
-    _statD          += 1.;
+    _histD0         ->addWeighted( xp,_weight);
+    _statD          += _weight;
   }
   else if(id==ParticleID::Dplus) {
-    *_histDplus     += xp;
-    _statD          += 1.;
+    _histDplus      ->addWeighted( xp,_weight);
+    _statD          += _weight;
   }
   else if(id==ParticleID::D_splus) {
-    *_histDs        += xp;
-    _statDs         += 1.;
+    _histDs         ->addWeighted( xp,_weight);
+    _statDs         += _weight;
   }
   else if(id==ParticleID::Lambda_cplus) {
-    *_histLambda    += xp;
-    _statLambda     += 1.;
+    _histLambda     ->addWeighted( xp,_weight);
+    _statLambda     += _weight;
   }
 }
 

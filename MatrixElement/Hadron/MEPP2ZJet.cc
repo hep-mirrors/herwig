@@ -18,7 +18,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 

@@ -24,7 +24,6 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
 
 using namespace Herwig;
 

@@ -15,14 +15,6 @@
 
 namespace Herwig {
 
-inline HwRemDecayer::HwRemDecayer() : _kinCutoff(0.75*GeV), 
-				      _forcedSplitScale(2.5*GeV),
-				      _range(1.1),
-				      _zbin(0.05),_ybin(0.),
-				      _nbinmax(100),
-				      DISRemnantOpt_(0)
-{}
-
 inline IBPtr HwRemDecayer::clone() const {
   return new_ptr(*this);
 }

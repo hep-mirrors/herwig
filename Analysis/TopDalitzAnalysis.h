@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "TopDalitzAnalysis.fh"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "Herwig++/Utilities/Histogram.h"
@@ -33,12 +32,12 @@ public:
   /**
    * The default constructor.
    */
-  inline TopDalitzAnalysis();
+  TopDalitzAnalysis();
 
   /**
    * The copy constructor.
    */
-  inline TopDalitzAnalysis(const TopDalitzAnalysis &);
+  TopDalitzAnalysis(const TopDalitzAnalysis &);
   //@}
 
 public:
@@ -162,13 +161,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -180,7 +179,7 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
@@ -258,10 +257,5 @@ struct ClassTraits<Herwig::TopDalitzAnalysis>
 /** @endcond */
 
 }
-
-#include "TopDalitzAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TopDalitzAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_TopDalitzAnalysis_H */

@@ -16,6 +16,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::Direction;
 
 /** \ingroup Helicity
  *
@@ -44,8 +45,12 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
+   * @param d1 The direction for the first  particle.
+   * @param d2 The direction for the second particle.
+   * @param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
+			   Direction d1,Direction d2, Direction d3);
 
 protected:
   

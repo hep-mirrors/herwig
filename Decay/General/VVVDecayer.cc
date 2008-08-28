@@ -99,7 +99,7 @@ Energy VVVDecayer::partialWidth(PMPair inpart, PMPair outa,
   if( inpart.second < outa.second + outb.second  ) return Energy();
   if(_perturbativeVertex) {
     _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				     outa.first, outb.first);
+				     outa.first, outb.first,incoming,outgoing,outgoing);
     double mu1(outa.second/inpart.second), mu1sq(sqr(mu1)),
       mu2(outb.second/inpart.second), mu2sq(sqr(mu2));
     double me2 = 

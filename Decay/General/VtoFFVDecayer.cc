@@ -64,6 +64,7 @@ void VtoFFVDecayer::doinit() throw(InitException) {
   for(unsigned int ix = 0;ix < ndiags; ++ix) {
     TBDiagram current = getProcessInfo()[ix];
     tcPDPtr offshell = current.intermediate;
+    if( offshell->CC() ) offshell = offshell->CC();
     if(offshell->iSpin() == PDT::Spin0) {
       AbstractVVSVertexPtr vert1 = dynamic_ptr_cast<AbstractVVSVertexPtr>
 	(current.vertices.first);

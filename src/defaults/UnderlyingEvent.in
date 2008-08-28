@@ -5,27 +5,29 @@
 mkdir /Herwig/UnderlyingEvent
 cd /Herwig/UnderlyingEvent
 
-########cuts############
-# cut on pt. Without a specific matcher object, it works on all particles
-create ThePEG::SimpleKTCut KtCut SimpleKTCut.so
-set KtCut:MinKT 3.8
+######## cuts #################################################
+library SimpleKTCut.so
+
+# cut on pt. Without a specific matcher object, it works on all
+# particles
+create ThePEG::SimpleKTCut KtCut
+set KtCut:MinKT 2.5
 
 # create the cuts object for the Underlying Event
 create ThePEG::Cuts UECuts
 # This should always be 2*MinKT!!
-set UECuts:MHatMin 7.6
-set UECuts:MHatMax 10000000.0
+set UECuts:MHatMin 5.0
 
 insert UECuts:OneCuts 0 KtCut
-#########################
 
-########subprocesses#####
-create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEHadronFast.so
+######## subprocess ###########################################
 create ThePEG::SubProcessHandler FastQCD
+
+create Herwig::MEQCD2to2Fast MEQCD2to2Fast HwMEHadronFast.so
 insert FastQCD:MatrixElements 0 MEQCD2to2Fast
 set FastQCD:PartonExtractor /Herwig/Partons/QCDExtractor
-#########################
 
+######## MPI Handler ##########################################
 library HwMPI.so
 create Herwig::MPIHandler MPIHandler
 
@@ -33,11 +35,9 @@ create Herwig::MPIHandler MPIHandler
 insert MPIHandler:SubProcessHandlers 0 FastQCD
 insert MPIHandler:Cuts 0 UECuts
 
-# set the inverse hadron radius
-set MPIHandler:InvRadius 2.2
+# The inverse hadron radius
+set MPIHandler:InvRadius 3.0
 
-# set the algorithm
-# 0 = UE and signal with comparable cross section
-# 1 = signal cross section much smaller than UE xsec (same processes)
-# 2 = signal cross section much smaller than UE xsec (different processes)
-set MPIHandler:Algorithm 2
+# Set the details of the soft model
+set MPIHandler:softInt No
+set MPIHandler:twoComp Yes

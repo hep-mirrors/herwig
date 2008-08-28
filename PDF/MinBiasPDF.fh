@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MinBiasPDF class.
+//
+#ifndef HERWIG_MinBiasPDF_FH
+#define HERWIG_MinBiasPDF_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MinBiasPDF;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MinBiasPDF,MinBiasPDFPtr);
+
+}
+
+#endif

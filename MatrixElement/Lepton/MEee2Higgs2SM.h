@@ -14,10 +14,9 @@
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "MEee2Higgs2SM.fh"
 
 namespace Herwig {
 

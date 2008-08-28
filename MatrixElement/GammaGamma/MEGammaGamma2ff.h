@@ -5,32 +5,32 @@
 // This is the declaration of the MEGammaGamma2ff class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
-#include "MEGammaGamma2ff.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEGammaGamma2ff class.
+ * The MEGammaGamma2ff class provides the matrix elements for
+ * \f$\gamma\gamma\to f \bar{f}\f$.
  *
  * @see \ref MEGammaGamma2ffInterfaces "The interfaces"
  * defined for MEGammaGamma2ff.
  */
-class MEGammaGamma2ff: public ME2to2Base {
+class MEGammaGamma2ff: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEGammaGamma2ff();
+  MEGammaGamma2ff();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -86,7 +86,6 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
-
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -134,13 +133,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -224,7 +223,5 @@ struct ClassTraits<Herwig::MEGammaGamma2ff>
 /** @endcond */
 
 }
-
-#include "MEGammaGamma2ff.icc"
 
 #endif /* HERWIG_MEGammaGamma2ff_H */

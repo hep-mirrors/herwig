@@ -286,9 +286,9 @@ void SusyBase::readDecay(ifstream & ifs,
       ifs.peek() == 'd' || ifs.peek() == 'b' ) return;
   istringstream iss(decay);
   string dummy;
-  long parent;
-  double width;
-  iss >> dummy >> parent >> width;
+  long parent(0);
+  Energy width(0.*MeV);
+  iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getParticleData(parent);
   if(!inpart)  {
     throw SetupException() 
@@ -296,8 +296,9 @@ void SusyBase::readDecay(ifstream & ifs,
     << parent << " does not exist. " << Exception::runerror;
     return;
   }
-  inpart->width(width*GeV);
-  inpart->widthCut(5.*width*GeV);
+  inpart->width(width);
+  if( width > 0.0*MeV ) inpart->cTau(hbarc/width);
+  inpart->widthCut(5.*width);
   string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
   double brsum(0.);
   while(getline(ifs, line)) {

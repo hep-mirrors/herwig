@@ -6,22 +6,30 @@
 
 #include "DrellYanPT.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanPT.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-DrellYanPT::~DrellYanPT() {}
+DrellYanPT::DrellYanPT()
+ : _Zpt(0.,250.,250), _Wppt(0.,250.,250), _Wmpt(0.,250.,250) {}
+
+void DrellYanPT::dofinish() {
+  AnalysisHandler::dofinish();
+  ofstream outZ ("pt_Z.dat");
+  _Zpt.normaliseToCrossSection();
+  _Zpt.simpleOutput(outZ,true);
+  ofstream outWm ("pt_Wm.dat");
+  _Wmpt.normaliseToCrossSection();
+  _Wmpt.simpleOutput(outWm,true);
+  ofstream outWp ("pt_Wp.dat");
+  _Wppt.normaliseToCrossSection();
+  _Wppt.simpleOutput(outWp,true);
+}
 
 void DrellYanPT::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);

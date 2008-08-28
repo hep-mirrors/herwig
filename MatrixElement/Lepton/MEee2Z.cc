@@ -22,7 +22,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/VectorSpinInfo.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Cuts/Cuts.h"

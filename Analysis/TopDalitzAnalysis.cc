@@ -9,11 +9,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TopDalitzAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
@@ -21,6 +16,34 @@
 #include "Herwig++/Utilities/Maths.h"
 
 using namespace Herwig;
+
+TopDalitzAnalysis::TopDalitzAnalysis()
+  : _deltaR(0.7,2.7,100),_logy3(-4.,-1.,120),
+    _xb_bquark(0.0,1.05,200),_xb_bquark_peak(0.8,1.05,200),
+    _xB_Bhad(0.0,1.05,100) {}
+
+TopDalitzAnalysis::TopDalitzAnalysis(const TopDalitzAnalysis & x)
+  : AnalysisHandler(x) {}
+
+void TopDalitzAnalysis::doinitrun() {
+  AnalysisHandler::doinitrun();
+  string basename = generator()->filename() + string("-") + name();
+  _output[0].open((basename+".top").c_str());
+  _output[0] << "SET FONT DUPLEX\n";
+  _output[0] << "SET LIMITS X 0 1 Y 0.9 1.3\n";
+  _output[0] << "TITLE BOTTOM \"X011\"\n";
+  _output[0] << "CASE         \" X X\"\n";
+  _output[0] << "TITLE LEFT \"X021\"\n";
+  _output[0] << "CASE       \" X X\"\n";
+
+  _nout=0;
+
+  _output[1].open((basename+"-DeltaR.top").c_str());
+  _output[2].open((basename+"-logy3.top").c_str());
+  _output[3].open((basename+"-xb_bquark.top").c_str());
+  _output[4].open((basename+"-xb_bquark_peak.top").c_str());
+  _output[5].open((basename+"-xB_Bhad.top").c_str());
+}
 
 void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
   // Gets all the particles in the primaryCollision step(1)

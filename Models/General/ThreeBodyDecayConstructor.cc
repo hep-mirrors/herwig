@@ -15,6 +15,7 @@
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Interface/Switch.h"
+#include "DecayConstructor.h"
 
 using namespace Herwig;
 
@@ -150,26 +151,27 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
     vector< vector<TBDiagram> > modes;
     Energy min = particles[ip]->mass();
     bool possibleOnShell(false);
-    for(vector<TBDiagram>::const_iterator dit=diagrams.begin();
-	dit!=diagrams.end();++dit) {
-      Energy mout[3] = {getParticleData(dit->outgoing           )->constituentMass(),
-			getParticleData(dit->outgoingPair.first )->constituentMass(),
-			getParticleData(dit->outgoingPair.second)->constituentMass()};
+    for(vector<TBDiagram>::const_iterator dit = diagrams.begin();
+	dit != diagrams.end(); ++dit) {
+      Energy mout[3] = 
+	{getParticleData(dit->outgoing)->constituentMass(),
+	 getParticleData(dit->outgoingPair.first)->constituentMass(),
+	 getParticleData(dit->outgoingPair.second)->constituentMass()};
       // remove processes which aren't kinematically allowed
-      if(min<=mout[0]+mout[1]+mout[2]) continue;
+      if(min <= mout[0] + mout[1] + mout[2]) continue;
       // remove QED and QCD radiation diagrams
       // radiation from intermediate
-      if((dit->outgoingPair.first ==dit->intermediate->id()&&
+      if((dit->outgoingPair.first ==dit->intermediate->id() &&
 	  (dit->outgoingPair.second==ParticleID::g ||
 	   dit->outgoingPair.second==ParticleID::gamma ))||
-	 (dit->outgoingPair.second==dit->intermediate->id()&&
+	 (dit->outgoingPair.second==dit->intermediate->id() &&
 	  (dit->outgoingPair.first ==ParticleID::g ||
 	   dit->outgoingPair.first ==ParticleID::gamma ))) continue;
       // radiation from the parent
       if((dit->outgoing ==dit->incoming&&
 	  (dit->intermediate->id()==ParticleID::g ||
 	   dit->intermediate->id()==ParticleID::gamma ))||
-	 (dit->intermediate->id()==dit->incoming&&
+	 (dit->intermediate->id()==dit->incoming &&
 	  (dit->outgoing ==ParticleID::g ||
 	   dit->outgoing ==ParticleID::gamma ))) continue;
       // remove weak decays of quarks other than top
@@ -178,8 +180,8 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 	   abs(dit->outgoingPair.second)==ParticleID::Wplus)||
 	  (StandardQCDPartonMatcher::Check(dit->outgoingPair.second)&&
 	   abs(dit->outgoingPair.first)==ParticleID::Wplus))) continue;
-      // remove processes where one of the outgoing particles has the same id as the
-      // incoming particles
+      // remove processes where one of the outgoing particles has the 
+      //same id as the incoming particles
       if(abs(particles[ip]->id()) == abs(dit->outgoing           ) ||
 	 abs(particles[ip]->id()) == abs(dit->outgoingPair.first ) ||
 	 abs(particles[ip]->id()) == abs(dit->outgoingPair.second) ) continue;
@@ -187,19 +189,19 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       // on shell
       Energy mint = dit->intermediate->mass();
       if( min> ( mout[0] + mint ) &&
-	  mint > ( mout[1]+mout[2] )) {
+	  mint > ( mout[1] + mout[2] )) {
 	if(_removeOnShell) continue;
-	possibleOnShell=true;
+	possibleOnShell = true;
       }
 
       // check if should be added to an existing decaymode
-      bool added=false;
-      for(unsigned int iy=0;iy<modes.size();++iy) {
+      bool added = false;
+      for(unsigned int iy = 0; iy < modes.size(); ++iy) {
 	if(modes[iy][0].sameDecay(*dit)) {
 	  added = true;
-	  bool already=false;
-	  for(unsigned int iz=0;iz<modes[iy].size();++iz) {
-	    if(modes[iy][iz]==*dit) {
+	  bool already = false;
+	  for(unsigned int iz = 0; iz < modes[iy].size(); ++iz) {
+	    if( modes[iy][iz] == *dit) {
 	      already = true;
 	      break;
 	    }
@@ -233,10 +235,16 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 //       }
 //     }
     // now we need to create the decayers for the mode
-    for(unsigned int ix=0;ix<modes.size();++ix) {
-      createDecayMode(modes[ix],((possibleOnShell&&_interopt==0)||_interopt==1));
+    bool inter(false);
+    if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
+      inter = true;
+    vector< vector<TBDiagram> >::const_iterator mend = modes.end();	  
+    for( vector< vector<TBDiagram> >::const_iterator mit = modes.begin();
+	 mit != mend; ++mit ) {
+      createDecayMode(*mit, inter);
     }
-  }
+  }// end of particle loop
+
 }
 
 vector<TwoBodyPrototype> ThreeBodyDecayConstructor::
@@ -293,7 +301,7 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
 }
 
 GeneralThreeBodyDecayerPtr ThreeBodyDecayConstructor::
-createDecayer(const vector<TBDiagram> & diagrams,bool inter) const {
+createDecayer(const vector<TBDiagram> & diagrams, bool inter) const {
   if(diagrams.empty()) return GeneralThreeBodyDecayerPtr();
   // extract the external particles for the process
   PDPtr incoming = getParticleData(diagrams[0].incoming);
@@ -372,7 +380,7 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   tPDPtr inpart = getParticleData(diagrams[0].incoming);
   // outgoing particles
   OrderedParticles outgoing;
-  outgoing.insert(getParticleData(diagrams[0].outgoing           ));
+  outgoing.insert(getParticleData(diagrams[0].outgoing));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.first ));
   outgoing.insert(getParticleData(diagrams[0].outgoingPair.second));
   // incoming particle is now unstable
@@ -380,20 +388,30 @@ createDecayMode(const vector<TBDiagram> & diagrams, bool inter) {
   // construct the tag for the decay mode
   string tag = inpart->name() + "->";
   unsigned int iprod=0;
-  for(OrderedParticles::const_iterator it=outgoing.begin();
-      it!=outgoing.end();++it) {
+  for(OrderedParticles::const_iterator it = outgoing.begin();
+      it != outgoing.end(); ++it) {
     ++iprod;
     tag += (**it).name();
-    if(iprod!=3) tag += ",";
+    if(iprod != 3) tag += ",";
   }
   tag += ";";
   tDMPtr dm = generator()->findDecayMode(tag);
+  if( decayConstructor()->disableDecayMode(tag) ) {
+    // If mode alread exists, ie has been read from file, 
+    // disable it
+    if( dm ) {
+      generator()->preinitInterface(dm, "BranchingRatio", "set", "0.0");
+      generator()->preinitInterface(dm, "OnOff", "set", "Off");
+    }
+    return;
+  }
   // create mode if needed
   if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
     // create the decayer
     GeneralThreeBodyDecayerPtr decayer = createDecayer(diagrams,inter);
     if(!decayer) {
-      cerr << "Can't create the decayer for " << tag << " so mode not created\n";
+      //cerr << "Can't create the decayer for " << tag 
+      //<< " so mode not created\n";
       return;
     }
     tDMPtr ndm = generator()->preinitCreateDecayMode(tag);

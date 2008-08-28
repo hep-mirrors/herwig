@@ -14,8 +14,10 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+
 #include "UEDBase.fh"
 
 namespace Herwig {
@@ -281,6 +283,11 @@ private:
    * The \f$\bar{f}^{(1)}f^{(0)}W^{(1)}\f$
    */
   AbstractFFVVertexPtr theF1F0W1Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(0)}H^{(1)}\f$
+   */
+  AbstractFFSVertexPtr theF1F0H1Vertex;
 
   /**
    * The \f$ A^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$

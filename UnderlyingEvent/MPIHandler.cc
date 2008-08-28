@@ -19,16 +19,16 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Deleted.h"
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
-
-#include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/Cuts/SimpleKTCut.h"
 
 #include "gsl/gsl_sf_bessel.h"
-
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "MPIHandler.tcc"
@@ -39,23 +39,34 @@
 
 using namespace Herwig;
 
-MPIHandler::MPIHandler()
-  : theAlgorithm(2) {}
-
-MPIHandler::MPIHandler(const MPIHandler & x)
-  : Interfaced(x), 
-    theHandler(x.theHandler), theSubProcesses(x.theSubProcesses),
-    theCuts(x.theCuts), theProcessHandlers(x.theProcessHandlers),
-    theMultiplicities(x.theMultiplicities),
-    theAlgorithm(x.theAlgorithm), theInvRadius(x.theInvRadius) {}
+bool MPIHandler::beamOK() const {
+  return (HadronMatcher::Check(*eventHandler()->incoming().first)  &&
+	  HadronMatcher::Check(*eventHandler()->incoming().second) );
+}
 
 
-MPIHandler::~MPIHandler() {}
+tStdXCombPtr MPIHandler::generate(unsigned int sel) {
+  //generate a certain process
+  if(sel+1 > processHandlers().size())
+    throw Exception() << "MPIHandler::generate called with argument out of range"
+                      << Exception::runerror;
+
+  return processHandlers()[sel]->generate();
+}
+
+IBPtr MPIHandler::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MPIHandler::fullclone() const {
+  return new_ptr(*this);
+}
 
 void MPIHandler::finalize() {
   if( beamOK() )
     statistics("UE.out");
 }
+
 void MPIHandler::initialize() {
   useMe();
   theHandler = generator()->currentEventHandler(); 
@@ -69,55 +80,137 @@ void MPIHandler::initialize() {
 		       << "Events will be produced without MPI.\n";
     return;
   }
+  numSubProcs_ = subProcesses().size();
 
-
-  if( subProcesses().size() != cuts().size() ) 
+  if( numSubProcs_ != cuts().size() ) 
     throw Exception() << "MPIHandler::each SubProcess needs a Cuts Object"
 		      << "ReferenceVectors are not equal in size"
 		      << Exception::runerror;
 
-  for(unsigned int i=0; i<cuts().size(); i++){
+  if( additionalMultiplicities_.size()+1 != numSubProcs_ )
+    throw Exception() << "MPIHandler: each additional SubProcess needs "
+		      << "a multiplicity assigned. This can be done in with "
+		      << "insert MPIHandler:additionalMultiplicities 0 1"
+		      << Exception::runerror;
+
+  //identicalToUE_ = 0 hard process is identical to ue, -1 no one
+  if( identicalToUE_ > (int)numSubProcs_ || identicalToUE_ < -1 )
+    throw Exception() << "MPIHandler:identicalToUE has disallowed value"
+		      << Exception::runerror;
+
+  tcPDPtr gluon=getParticleData(ParticleID::g);
+  //determine ptmin
+  Ptmin_ = cuts()[0]->minKT(gluon);
+
+
+  if(identicalToUE_ == -1){
+    algorithm_ = 2;
+  }else{
+    if(identicalToUE_ == 0){
+      //Need to work a bit, in case of LesHouches events for QCD2to2
+      if( dynamic_ptr_cast<Ptr<StandardEventHandler>::pointer>(eventHandler()) ){
+	PtOfQCDProc_ = dynamic_ptr_cast
+	  <Ptr<StandardEventHandler>::pointer>(eventHandler())->cuts()->minKT(gluon);
+      }else{
+	if(PtOfQCDProc_ == -1.0*GeV)
+	  throw Exception() << "MPIHandler: You need to specify the pt cutoff "
+			    << "used to in the LesHouches file for QCD2to2 events"
+			    << Exception::runerror;
+      }
+    }else{
+      PtOfQCDProc_ = cuts()[identicalToUE_]->minKT(gluon);
+    }
+
+    if(PtOfQCDProc_ > 2*Ptmin_)
+      algorithm_ = 1;
+    else
+      algorithm_ = 0;
+
+    if(PtOfQCDProc_ == 0*GeV)//pure MinBias mode
+      algorithm_ = -1;
+  }
+
+  //Init all subprocesses
+  for(unsigned int i=0; i<numSubProcs_; i++){
     theProcessHandlers.push_back(new_ptr(ProcessHandler()));
     processHandlers().back()->initialize(subProcesses()[i], 
-					 cuts()[i], theHandler);
+					 cuts()[i], eventHandler());
+    processHandlers().back()->initrun();
   }
-
-
-  for(unsigned int i=0; i<cuts().size(); i++)
-    processHandlers()[i]->initrun();
-
-  /*
-  if(Algorithm()==0){
-  
-    //check out the eikonalization -1=inelastic, -2=total xsec
-    Eikonalization integrand(this, tot.xSec(), -1);
-    Eikonalization integrand_tot(this, tot.xSec(), -2);
-    GaussianIntegrator integrator;
-
-    string line = "======================================="
-      "=======================================\n";
-  
-    CrossSection inel(integrator.value(integrand, Length(), 1000.*sqrt(millibarn))), 
-      total(integrator.value(integrand_tot, Length(), 1000.*sqrt(millibarn)));
-
-    file << "\nEikonalization results:\n"
-         << setw(79)
-         << "Cross-section (mb)\n"
-         << line << "Inelastic cross-section" << setw(55) 
-         << inel/millibarn << endl
-         << "Total pp->X cross-section" << setw(53)
-         << total/millibarn << endl << line 
-         << "Average number of MPI" << setw(57) << tot.xSec()/inel << endl;
-
-    file.close();
-  }
-  
-  */
-
 
   //now calculate the individual Probabilities
   XSVector UEXSecs;
   UEXSecs.push_back(processHandlers()[0]->integratedXSec());
+  //save the hard cross section
+  hardXSec_ = UEXSecs.front();
+
+  //determine sigma_soft and beta
+  if(softInt_){//check that soft ints are requested
+    GSLBisection rootFinder;
+
+    if(twoComp_){
+      cerr << "start twoComp model\n";
+      //two component model
+      /*
+      GSLMultiRoot eqSolver;
+      slopeAndTotalXSec eq(this);
+      pair<CrossSection, Energy2> res = eqSolver.value(eq, 10*millibarn, 0.6*GeV2);
+      softXSec_ = res.first;
+      softMu2_ = res.second;
+      */
+      slopeBisection fs(this);
+      try{
+	softMu2_ = rootFinder.value(fs, 0.3*GeV2, 1.*GeV2);
+	softXSec_ = fs.softXSec();
+      }catch(GSLBisection::IntervalError){
+	throw Exception() << "MPIHandler parameter choice is unable to reproduce "
+			  << "the total cross section. Please check arXiv:0806.2949 "
+			  << "for the allowed parameter space."
+			  << Exception::runerror;
+      }
+
+    }else{
+      //single component model
+      TotalXSecBisection fn(this);
+      try{
+	softXSec_ = rootFinder.value(fn, 0*millibarn, 5000*millibarn);
+      }catch(GSLBisection::IntervalError){
+	throw Exception() << "MPIHandler parameter choice is unable to reproduce "
+			  << "the total cross section. Please check arXiv:0806.2949 "
+			  << "for the allowed parameter space."
+			  << Exception::runerror;
+      }
+    }
+
+    //now get the differential cross section at ptmin
+    ProHdlPtr qcd = new_ptr(ProcessHandler());
+    Energy eps = 0.1*GeV;
+    Energy ptminPlus = Ptmin_ + eps;
+    
+    Ptr<SimpleKTCut>::pointer ktCut = new_ptr(SimpleKTCut(ptminPlus));
+    ktCut->init();
+    ktCut->initrun();
+
+    CutsPtr qcdCut = new_ptr(Cuts(2*ptminPlus));
+    qcdCut->add(dynamic_ptr_cast<tOneCutPtr>(ktCut));
+    qcdCut->init();
+    qcdCut->initrun();
+      
+    qcd->initialize(subProcesses()[0], qcdCut, eventHandler());
+    qcd->initrun();
+    
+    // ds/dp_T^2 = 1/2/p_T ds/dp_T
+    DiffXSec hardPlus = (hardXSec_-qcd->integratedXSec())/(2*Ptmin_*eps);
+    
+    betaBisection fn2(softXSec_, hardPlus, Ptmin_);
+    try{
+      beta_ = rootFinder.value(fn2, -10/GeV2, 2/GeV2);
+    }catch(GSLBisection::IntervalError){
+      throw Exception() << "MPIHandler: slope of soft pt spectrum couldn't be "
+			<< "determined."
+			<< Exception::runerror;    
+    }
+  }
 
   Probs(UEXSecs);
   UEXSecs.clear();
@@ -127,23 +220,86 @@ void MPIHandler::initialize() {
 void MPIHandler::statistics(string os) const {
   ofstream file;
   file.open(os.c_str());
+  string line = "======================================="
+    "=======================================\n";
 
   for(unsigned int i=0; i<cuts().size(); i++){
     Stat tot;
-    file << "Process " << i << ":\n";
+    if(i == 0)
+      file << "Statistics for the UE process: \n";
+    else
+      file << "Statistics for additional hard Process " << i << ": \n";
+
     processHandlers()[i]->statistics(file, tot);
     file << "\n";
   }
+
+  if(softInt_){
+    file << line
+	 << "Eikonalized and soft cross sections:\n\n"
+	 << "Model parameters:                    "
+	 << "ptmin:   " << Ptmin_/GeV << " GeV"
+      	 << ", mu2: " << invRadius_/sqr(1.*GeV) << " GeV2\n"
+	 << "                                     "
+	 << "DL mode: " << DLmode_
+	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
+	 << " GeV" << endl
+	 << "hard inclusive cross section (mb):   "
+	 << hardXSec_/millibarn << endl
+	 << "soft inclusive cross section (mb):   "
+	 << softXSec_/millibarn << endl
+	 << "total cross section (mb):            "
+	 << totalXSecExp()/millibarn << endl
+	 << "soft inv radius (GeV2):              "
+	 << softMu2_/GeV2 << endl
+	 << "slope of soft pt spectrum (1/GeV2):  "
+	 << beta_*sqr(1.*GeV) << endl
+	 << "Average hard multiplicity:           "
+	 << avgNhard_ << endl
+	 << "Average soft multiplicity:           "
+	 << avgNsoft_ << endl;
+  }else{
+    file << line
+	 << "Eikonalized and soft cross sections:\n\n"
+	 << "Model parameters:                    "
+	 << "ptmin:   " << Ptmin_/GeV << " GeV"
+      	 << ", mu2: " << invRadius_/sqr(1.*GeV) << " GeV2\n"
+	 << "                                     "
+	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
+	 << " GeV" << endl
+	 << "hard inclusive cross section (mb):   "
+	 << hardXSec_/millibarn << endl
+	 << "Average hard multiplicity:           "
+	 << avgNhard_ << endl;
+  }
+
   file.close();
 }
 
+unsigned int MPIHandler::multiplicity(unsigned int sel){
+  if(sel==0){//draw from the pretabulated distribution
+    MPair m = theMultiplicities.select(UseRandom::rnd());
+    softMult_ = m.second;
+    return m.first;
+  }else{ //fixed multiplicities for the additional hard scatters
+    if(additionalMultiplicities_.size() < sel)
+      throw Exception() << "MPIHandler::multiplicity: process index "
+			<< "is out of range"
+			<< Exception::runerror;
+
+    return additionalMultiplicities_[sel-1];
+  }
+}
+
+
 void MPIHandler::Probs(XSVector UEXSecs) {
-  GaussianIntegrator integrator;
-  unsigned int i(1);
-  double P(0.0), AvgN(0.0);
+  GSLIntegrator integrator;
+  unsigned int iH(1), iS(0);
+  double P(0.0);
+  double P0(0.0);//the probability for i hard and zero soft scatters
   Length bmax(500.0*sqrt(millibarn));
-  if(theAlgorithm > 0) bmax = 10*sqrt(millibarn);
-  //currently only one UE process is possible so check that.
+  //only one UE process will be drawn from a probability distribution,
+  //so check that.
   assert(UEXSecs.size() == 1);
   ofstream file;
   file.open("probs.test");
@@ -156,53 +312,84 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 
   for ( XSVector::const_iterator it = UEXSecs.begin();
         it != UEXSecs.end(); ++it ) {
-    i = 1;
-    Eikonalization inelint(this, *it, -1);//get the inel xsec
-    do{
-      //      cout << "debug: add integrand i = " << i << endl;
-      Eikonalization integrand(this, *it, i);
-      
-      if(i>10) bmax = 10.0*sqrt(millibarn);
-      if(theAlgorithm > 0){
-	P = integrator.value(integrand, Length(), bmax)/(*it);
-      }else{
-	P = integrator.value(integrand, Length(), bmax) /
-	integrator.value(inelint, Length(), bmax);
+
+    iH = 0; 
+
+    Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);//get the inel xsec
+    CrossSection inel = integrator.value(inelint, Length(), bmax);
+
+    avgNhard_ = 0.0;
+    avgNsoft_ = 0.0;
+    bmax = 10.0*sqrt(millibarn);
+    do{//loop over hard ints
+      if(Algorithm()>-1 && iH==0){
+	iH++;
+	continue;
       }
-      AvgN += P*(i-1);
-      //store the probability
-      theMultiplicities.insert(P, i-1);
-      file << i-1 << " " << P << endl;
-      i++;
-    } while ( (i < 70) && (i < 5 || P > 1.e-15) );
+      iS = 0;
+      do{//loop over soft ints
+
+	Eikonalization integrand(this, iH*100+iS, *it, softXSec_, softMu2_);
+      
+	if(Algorithm() > 0){
+	  P = integrator.value(integrand, Length(), bmax) / *it;
+	}else{
+	  P = integrator.value(integrand, Length(), bmax) / inel;
+	}
+	//store the probability
+	if(Algorithm()>-1){
+	  theMultiplicities.insert(P, make_pair(iH-1, iS));
+	  avgNhard_ += P*(iH-1);
+	  file << iH-1 << " " << iS << " " << P << endl;
+	}else{
+	  theMultiplicities.insert(P, make_pair(iH, iS));
+	  avgNhard_ += P*(iH);
+	  file << iH << " " << iS << " " << P << endl;
+	}
+	avgNsoft_ += P*iS;
+	if(iS==0)
+	  P0 = P;
+
+	iS++;
+      } while ( (iS < maxScatters_) && (iS < 5 || P > 1.e-15 ) && softInt_ );
+      iH++;
+    } while ( (iH < maxScatters_) && (iH < 5 || P0 > 1.e-15) );
   }
+  file << "avgN(hard) = " << avgNhard_ << endl;
+  file << "avgN(soft) = " << avgNsoft_ << endl;
   file.close();  
 }
 
 
 // calculate the integrand
 Length Eikonalization::operator() (Length b) const {
-  //fac is just: db^2=fac*db despite that large number
-  unsigned int n(0);
+  unsigned int Nhard(0), Nsoft(0);
+  //fac is just: d^2b=fac*db despite that large number
   Length fac(Constants::twopi*b);
-  CrossSection sigma(theUneikXSec);
-  InvArea Ab(theHandler->OverlapFunction(b));
+  
+  double chiTot(( theHandler->OverlapFunction(b)*hardXSec_ + 
+		  theHandler->OverlapFunction(b, softMu2_)*softXSec_ ) / 2.0);
 
   //total cross section wanted
-  if(theoption == -2) return 2 * fac * ( 1 - exp(-Ab*sigma / 2.) );
-
+  if(theoption == -2) return 2 * fac * ( 1 - exp(-chiTot) );
   //inelastic cross section
-  if(theoption == -1) return   fac * ( 1 - exp(-Ab*sigma) );
+  if(theoption == -1) return fac * ( 1 - exp(- 2.0 * chiTot) );
 
-  //P_n*sigma. Described in MPIHandler.h
-  if(theoption > 0){
-    n=theoption;
-    if(theHandler->theAlgorithm > 0)
-      return fac / theHandler->factorial(n-1) * pow(Ab*sigma, double(n)) 
-	* exp(-Ab*sigma);
-    else
-      return fac / theHandler->factorial(n) * pow(Ab*sigma, double(n)) 
-	* exp(-Ab*sigma);
+  if(theoption >= 0){
+    //encode multiplicities as: N_hard*100 + N_soft   
+    Nhard = theoption/100;
+    Nsoft = theoption%100;
+
+    if(theHandler->Algorithm() > 0){
+      //P_n*sigma_hard: n-1 extra scatters + 1 hard scatterer != hardXSec_
+      return fac * Nhard * theHandler->poisson(b, hardXSec_, Nhard) *
+	theHandler->poisson(b, softXSec_, Nsoft, softMu2_);
+    }else{
+      //P_n*sigma_inel: n extra scatters
+      return fac * theHandler->poisson(b, hardXSec_, Nhard) *
+	theHandler->poisson(b, softXSec_, Nsoft, softMu2_);
+    }
+
   }else{
     throw Exception() << "Parameter theoption in Struct Eikonalization in " 
 		      << "MPIHandler.cc has not allowed value"
@@ -211,8 +398,33 @@ Length Eikonalization::operator() (Length b) const {
   }
 }
 
+InvEnergy2 slopeBisection::operator() (Energy2 softMu2) const {
+  GSLBisection root;
+  //single component model
+  TotalXSecBisection fn(handler_, softMu2);
+  try{
+    softXSec_ = root.value(fn, 0*millibarn, 5000*millibarn);
+  }catch(GSLBisection::IntervalError){
+    throw Exception() << "MPIHandler 2-Component model didn't work out."
+		      << Exception::runerror;
+  }
+  return handler_->slopeDiff(softXSec_, softMu2);
+}
+
+LengthDiff slopeInt::operator() (Length b) const {
+  //fac is just: d^2b=fac*db
+  Length fac(Constants::twopi*b);
+  
+  double chiTot(( handler_->OverlapFunction(b)*hardXSec_ + 
+		  handler_->OverlapFunction(b, softMu2_)*softXSec_ ) / 2.0);
+
+  InvEnergy2 b2 = sqr(b/hbarc);
+  //B*sigma_tot
+  return fac * b2 * ( 1 - exp(-chiTot) );
+}
+
 double MPIHandler::factorial (unsigned int n) const {
-  static unsigned int max(100);
+
   double f[] = {1.,1.,2.,6.,24.,120.,720.,5040.,40320.,362880.,3.6288e6,
 		3.99168e7,4.790016e8,6.2270208e9,8.71782912e10,1.307674368e12,
 		2.0922789888e13,3.55687428096e14,6.402373705728e15,1.21645100408832e17,
@@ -244,33 +456,115 @@ double MPIHandler::factorial (unsigned int n) const {
 		1.03299784882391e148,9.9167793487095e149,9.61927596824821e151,
 		9.42689044888325e153,9.33262154439442e155,9.33262154439442e157};
 
-  if(n > max) 
+  if(n > maxScatters_) 
         throw Exception() << "MPIHandler::factorial called with too large argument"
                       << Exception::runerror;
   else
     return f[n];
 }
 
-InvArea MPIHandler::OverlapFunction(Length b) const {
-  InvLength mu = sqrt(theInvRadius)/hbarc;
+InvArea MPIHandler::OverlapFunction(Length b, Energy2 mu2) const {
+  if(mu2 == 0*GeV2)
+    mu2 = invRadius_;
+
+  InvLength mu = sqrt(mu2)/hbarc;
   return (sqr(mu)/96/Constants::pi)*pow(mu*b, 3)*(gsl_sf_bessel_Kn(3, mu*b));
 }
 
-double MPIHandler::poisson(Length b, CrossSection sigma, unsigned int N) const {
-  return pow(OverlapFunction(b)*sigma, (double)N)/factorial(N)
-    *exp(-OverlapFunction(b)*sigma);
+double MPIHandler::poisson(Length b, CrossSection sigma, unsigned int N, Energy2 mu2) const {
+  if(sigma > 0*millibarn){
+    return pow(OverlapFunction(b, mu2)*sigma, (double)N)/factorial(N)
+      *exp(-OverlapFunction(b, mu2)*sigma);
+  }else{
+    return (N==0) ? 1.0 : 0.0;
+  }
+}
+
+CrossSection MPIHandler::totalXSecDiff(CrossSection softXSec, 
+				       Energy2 softMu2) const {
+  GSLIntegrator integrator;
+  Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
+  Length bmax = 500.0*sqrt(millibarn);
+
+  CrossSection tot = integrator.value(integrand, Length(), bmax);
+  return (tot-totalXSecExp());
+}
+
+InvEnergy2 MPIHandler::slopeDiff(CrossSection softXSec, 
+				 Energy2 softMu2) const {
+  GSLIntegrator integrator;
+  Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
+  Length bmax = 500.0*sqrt(millibarn);
+
+  CrossSection tot = integrator.value(integrand, Length(), bmax);
+  
+  slopeInt integrand2(this, hardXSec_, softXSec, softMu2);
+  
+  return integrator.value(integrand2, Length(), bmax)/tot - slopeExp();
+}
+
+CrossSection MPIHandler::totalXSecExp() const {
+  double pom_old = 0.0808;
+  CrossSection coef_old = 21.7*millibarn;
+  double pom_new_hard = 0.452;
+  CrossSection coef_new_hard = 0.0139*millibarn;
+  double pom_new_soft = 0.0667;
+  CrossSection coef_new_soft = 24.22*millibarn;
+
+  Energy energy(generator()->maximumCMEnergy());
+
+  switch(DLmode_){
+  case 1://old DL extrapolation
+    return coef_old * pow(energy/GeV, 2*pom_old);
+    break;
+
+  case 2://old DL extrapolation fixed to CDF
+    return 81.8*millibarn * pow(energy/1800.0/GeV, 2*pom_old);
+    break;
+    
+  case 3://new DL extrapolation
+    return coef_new_hard * pow(energy/GeV, 2*pom_new_hard) + 
+      coef_new_soft * pow(energy/GeV, 2*pom_new_soft);
+    break;
+    
+  default:
+    throw Exception() << "MPIHandler::totalXSecExp non-existing mode selected"
+                      << Exception::runerror;   
+  }
+}
+
+InvEnergy2 MPIHandler::slopeExp() const{
+  //Currently return the slope as calculated in the pomeron fit by
+  //Donnachie & Landshoff
+  Energy energy(generator()->maximumCMEnergy());
+  //slope at
+  Energy e_0 = 1800*GeV;
+  InvEnergy2 b_0 = 17/GeV2;
+  return b_0 + log(energy/e_0)/GeV2;
 }
 
 void MPIHandler::persistentOutput(PersistentOStream & os) const {
-  os << theMultiplicities << theHandler
+  os << theMultiplicities << theHandler 
      << theSubProcesses << theCuts << theProcessHandlers
-     << theAlgorithm << ounit(theInvRadius, GeV2);
+     << additionalMultiplicities_ << identicalToUE_ 
+     << ounit(PtOfQCDProc_, GeV) << ounit(Ptmin_, GeV) 
+     << ounit(hardXSec_, millibarn) << ounit(softXSec_, millibarn)
+     << ounit(beta_, 1/GeV2)
+     << algorithm_ << ounit(invRadius_, GeV2)
+     << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
+     << DLmode_;
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
-  is >> theMultiplicities >> theHandler
+  is >> theMultiplicities >> theHandler 
      >> theSubProcesses >> theCuts >> theProcessHandlers
-     >> theAlgorithm >> iunit(theInvRadius, GeV2);
+     >> additionalMultiplicities_ >> identicalToUE_ 
+     >> iunit(PtOfQCDProc_, GeV) >> iunit(Ptmin_, GeV)
+     >> iunit(hardXSec_, millibarn) >> iunit(softXSec_, millibarn)
+     >> iunit(beta_, 1/GeV2)
+     >> algorithm_ >> iunit(invRadius_, GeV2)
+     >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
+     >> DLmode_;
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
@@ -287,6 +581,7 @@ void MPIHandler::Init() {
      "{\\it {Simulation of multiple partonic interactions in Herwig++}}, "
      "arXiv:0803.3633.");
 
+  
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",
      "The list of sub-process handlers used in this EventHandler. ",
@@ -301,17 +596,79 @@ void MPIHandler::Init() {
   static Parameter<MPIHandler,Energy2> interfaceInvRadius
     ("InvRadius",
      "The inverse hadron radius squared used in the overlap function",
-     &MPIHandler::theInvRadius, GeV2, 1.3*GeV2, 0.2*GeV2, 4.0*GeV2,
+     &MPIHandler::invRadius_, GeV2, 2.0*GeV2, 0.2*GeV2, 4.0*GeV2,
      true, false, Interface::limited);
 
+  static ParVector<MPIHandler,int> interfaceadditionalMultiplicities
+    ("additionalMultiplicities",
+     "specify the multiplicities of secondary hard processes (multiple parton scattering)",
+     &MPIHandler::additionalMultiplicities_, 
+     -1, 0, 0, 3,
+     false, false, true);
+
+  static Parameter<MPIHandler,int> interfaceIdenticalToUE
+    ("IdenticalToUE",
+     "Specify which of the hard processes is identical to the UE one (QCD dijets)",
+     &MPIHandler::identicalToUE_, -1, 0, 0,
+     false, false, Interface::nolimits);
+
+  static Parameter<MPIHandler,Energy> interfacePtOfQCDProc
+    ("PtOfQCDProc",
+     "Specify the value of the pt cutoff for the process that is identical to the UE one",
+     &MPIHandler::PtOfQCDProc_, GeV, -1.0*GeV, 0*GeV, 0*GeV,
+     false, false, Interface::nolimits);
+
+  static Parameter<MPIHandler,double> interfacecolourDisrupt
+    ("colourDisrupt",
+     "Fraction of connections to additional subprocesses, which are colour disrupted.",
+     &MPIHandler::colourDisrupt_, 
+     0.0, 0.0, 1.0, 
+     false, false, Interface::limited);
+
+  
+  static Switch<MPIHandler,bool> interfacesoftInt
+    ("softInt",
+     "Switch to enable soft interactions",
+     &MPIHandler::softInt_, true, false, false);
+
+  static SwitchOption interfacesoftIntYes
+    (interfacesoftInt,
+     "Yes",
+     "enable the two component model",
+     true);
+  static SwitchOption interfacesoftIntNo
+    (interfacesoftInt,
+     "No",
+     "disable the model",
+     false);
+
+
+  static Switch<MPIHandler,bool> interfacetwoComp
+    ("twoComp",
+     "switch to enable the model with a different radius for soft interactions",
+     &MPIHandler::twoComp_, true, false, false);
+
+  static SwitchOption interfacetwoCompYes
+    (interfacetwoComp,
+     "Yes",
+     "enable the two component model",
+     true);
+  static SwitchOption interfacetwoCompNo
+    (interfacetwoComp,
+     "No",
+     "disable the model",
+     false);
+
+  //outdated interfaces....
+  string desc("The supported way of determining in which mode the ");
+  desc += "MPI model runs is by setting MPIHandler:IdenticalToUE.";
+  static Deleted<MPIHandler> delint("Algorithm", desc);
 
   static Switch<MPIHandler,int> interfaceAlgorithm
     ("Algorithm",
-     "This option determines in which mode the UE algorithm runs. "
-     "0 for UE under low pt jets, 1 for UE(jets) under highpt jets, "
-     "2 for efficient generation "
-     "of UE activity with a rare signal process.",
-     &MPIHandler::theAlgorithm, 2, false, false);
+     "This option is outdated and only kept for backward compatibility."
+     "One should rather set MPIHandler:IdenticalToUE",
+     &MPIHandler::algorithm_, 2, false, false);
 
   static SwitchOption interfaceAlgorithm0
     (interfaceAlgorithm,
@@ -332,4 +689,5 @@ void MPIHandler::Init() {
      "Signal process has a much smaller cross section "
      "than UE and is a different process.",
      2);
+
 }

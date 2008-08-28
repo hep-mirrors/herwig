@@ -21,7 +21,8 @@ using namespace Herwig;
 
 void CLEOCharmAnalysis::analyze(tEventPtr event, long, int, int) {
   _s = (event->incoming().first ->momentum()+
-	event->incoming().second->momentum()).m2();  
+	event->incoming().second->momentum()).m2();
+  _weight = event->weight();
   set<tPPtr> particles;
   StepVector steps = event->primaryCollision()->steps();
   for ( StepVector::const_iterator it = steps.begin()+2;
@@ -49,16 +50,16 @@ void CLEOCharmAnalysis::analyze(tPPtr particle) {
     sqrt(0.25*_s-sqr(particle->mass()));
   int id = abs(particle->id());
   if(id==ParticleID::Dstarplus) {
-    *_histDstarplus += xp;
+    _histDstarplus->addWeighted(xp,_weight);
   }
   else if(id==ParticleID::Dstar0) {
-    *_histDstar0    += xp;
+    _histDstar0   ->addWeighted(xp,_weight);
   }
   else if(id==ParticleID::D0) {
-    *_histD0        += xp;
+    _histD0       ->addWeighted(xp,_weight);
   }
   else if(id==ParticleID::Dplus) {
-    *_histDplus     += xp;
+    _histDplus    ->addWeighted(xp,_weight);
   }
 }
 

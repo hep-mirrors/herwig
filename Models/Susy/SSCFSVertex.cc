@@ -64,7 +64,7 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
       }
     }
     //leptons
-    for(long ix = 11; ix < 16; ++ix) {
+    for(long ix = 11; ix < 17; ++ix) {
       if( ix % 2 == 0 ) {
 	first.push_back(-chargino[ic]);
 	second.push_back(ix);
@@ -155,9 +155,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     smfermion = part2;
   }
   //overall normalisation
-  double gew = weakCoupling(q2);
-  setNorm(-gew);
-
+  setNorm(-weakCoupling(q2));
   if( ichg != _id1last || ism != _id2last || isc != _id3last ) {
     _id1last = ichg;
     _id2last = ism;
@@ -221,6 +219,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
     }
   }//end of coupling calculation
+
   //determine the helicity order of the vertex
   tcPDPtr incoming;
   switch( iinc ) {
@@ -260,5 +259,4 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       setRight(_rightlast);
     }
   }
-  	 
 }

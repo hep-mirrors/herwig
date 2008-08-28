@@ -16,14 +16,15 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/EventRecord/Event.h"
-#include "BFragmentationAnalysisHandler.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the BFragmentationAnalysisHandler class.
+ * The BFragmentationAnalysisHandler class is designed to compare
+ * the fragmentation function for weakly decaying B hadrons with data
+ * from SLD and ALEPH.
  *
  * @see \ref BFragmentationAnalysisHandlerInterfaces "The interfaces"
  * defined for BFragmentationAnalysisHandler.
@@ -91,13 +92,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -158,6 +159,11 @@ private:
    */
   Energy _emax;
 
+  /**
+   *  The weight for the event
+   */
+  double _weight;
+
 };
 
 }
@@ -192,7 +198,5 @@ struct ClassTraits<Herwig::BFragmentationAnalysisHandler>
 /** @endcond */
 
 }
-
-#include "BFragmentationAnalysisHandler.icc"
 
 #endif /* HERWIG_BFragmentationAnalysisHandler_H */

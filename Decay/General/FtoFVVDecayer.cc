@@ -188,6 +188,7 @@ double  FtoFVVDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    continue;
 	  }
 	  tcPDPtr offshell = (*dit).intermediate;
+	  if( offshell->CC() ) offshell = offshell->CC();
 	  Complex diag;
 	  if( offshell->iSpin() == PDT::Spin1Half ) {
 	    //Need make sure we connect the correct particles 

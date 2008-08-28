@@ -95,7 +95,7 @@ ParticleVector SMHiggsFermionsDecayer::decay(const Particle & parent,
   int id1((**pit).id());
   int imode=-1;
   if(abs(id1)<=6)                     imode = abs(id1)-1;
-  else if(abs(id1)>=11&&abs(id1)<=16) imode = (abs(id1)-11)/2+5;
+  else if(abs(id1)>=11&&abs(id1)<=16) imode = (abs(id1)-11)/2+6;
   ParticleVector output(generate(false,false,imode,parent));
   // set up the colour flow
   if(output[0]->hasColour())      output[0]->antiColourNeighbour(output[1]);

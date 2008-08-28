@@ -13,14 +13,6 @@
 
 namespace Herwig {
 
-inline IBPtr LEPBMultiplicity::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr LEPBMultiplicity::fullclone() const {
-  return new_ptr(*this);
-}
-
 inline BranchingInfo::BranchingInfo(double inmult,double inerror)
   : obsBranching(inmult), obsError(inerror), actualCount(0), 
     sumofsquares(0.0)

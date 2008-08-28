@@ -244,6 +244,7 @@ set Model:Vertex/SSHGG /Herwig/Vertices/MSSM/MSSM_HGG
 cd /Herwig/NewPhysics
 
 set TwoBodyDC:CreateDecayModes No
+set ThreeBodyDC:CreateDecayModes No
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/~d_L
 insert NewModel:DecayParticles 1 /Herwig/Particles/~u_L

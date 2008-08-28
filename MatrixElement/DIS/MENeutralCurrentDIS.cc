@@ -13,13 +13,19 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 
 using namespace Herwig;
+
+MENeutralCurrentDIS::MENeutralCurrentDIS() 
+  : _minflavour(1), _maxflavour(5), _gammaZ(0) {
+  massOption(true ,1);
+  massOption(false,0);
+}
 
 void MENeutralCurrentDIS::doinit() throw(InitException) {
   HwME2to2Base::doinit();

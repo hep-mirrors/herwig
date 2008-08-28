@@ -13,6 +13,11 @@
 
 using namespace Herwig;
 
+void LeptonDalitzAnalysis::doinitrun() {
+  AnalysisHandler::doinitrun();
+  _nout=0;
+}
+
 void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   // Rotate to CMS, extract final state particles and call analyze(particles).
   AnalysisHandler::analyze(event, ieve, loop, state);

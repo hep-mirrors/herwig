@@ -20,7 +20,8 @@ using namespace Herwig;
 using namespace ThePEG;
 
 SMWWWWVertex::SMWWWWVertex() 
-  : _couplast(0.0), _q2last(), _vfact(4,0.0), _sw2(0.), _cw2(0.) {
+  : _couplast(0.0), _q2last(sqr(Constants::MaxEnergy)), 
+    _vfact(4,0.0), _sw2(0.), _cw2(0.) {
   // particles
   vector<long> first,second,third,fourth;
   first.push_back(24);
@@ -70,8 +71,6 @@ void SMWWWWVertex::persistentOutput(PersistentOStream & os) const {
 void SMWWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _gamma >> _Z0 >> _wplus >> _wminus
      >> _vfact >> _sw2 >> _cw2;
-  _couplast = 0.;
-  _q2last = 0.*GeV2;
 }
 
 ClassDescription<SMWWWWVertex>SMWWWWVertex::initSMWWWWVertex;

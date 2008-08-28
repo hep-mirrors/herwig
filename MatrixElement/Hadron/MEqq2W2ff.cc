@@ -25,7 +25,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 #include <cassert>
 
 using namespace Herwig;

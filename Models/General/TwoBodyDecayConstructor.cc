@@ -20,6 +20,7 @@
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "DecayConstructor.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
@@ -97,7 +98,7 @@ createModes(tPDPtr inpart, VertexBasePtr vertex,
     //vertices are defined with all particles incoming
     if( pb->CC() ) pb = pb->CC();
     if( pc->CC() ) pc = pc->CC();
-    decays.push_back( make_pair(inpart, make_pair(pb, pc)) );
+    decays.push_back( TwoBodyDecay(inpart,pb, pc) );
   }
   if( !decays.empty() )
     createDecayer(vertex,list,iv);
@@ -176,20 +177,28 @@ createDecayMode(const vector<TwoBodyDecay> & decays,
       << "TwoBodyDecayConstructor::createDecayMode - The decayer "
       << "pointer is null!\n"
       << Exception::runerror;
-  tPDPtr inpart = decays[0].first;
+  tPDPtr inpart = decays[0].parent_;
   inpart->stable(false);
   tEGPtr eg = generator();
-  for(unsigned int ix = 0; ix < decays.size(); ++ix ) {
-    tPDPtr pb(decays[ix].second.first), pc(decays[ix].second.second);
-    string tag = inpart->name() + "->" + pb->name() +
-      "," + pc->name() + ";";
-    //now create DecayMode objects that do not already exist      
+  vector<TwoBodyDecay>::const_iterator dend = decays.end();
+  for( vector<TwoBodyDecay>::const_iterator dit = decays.begin();
+       dit != dend; ++dit ) {
+    tPDPtr pb((*dit).children_.first), pc((*dit).children_.second);
+    string tag = inpart->name() + "->" + pb->name() + "," + 
+      pc->name() + ";";
+    // Does it exist already ?
     tDMPtr dm = eg->findDecayMode(tag);
-    if ( !dm ) {
-      tag = inpart->name() + "->" + pc->name() +
-	"," + pb->name() + ";";
-      dm = eg->findDecayMode(tag);
+    // Check if tag is one that should be disabled
+    if( decayConstructor()->disableDecayMode(tag) ) {
+      // If mode alread exists, ie has been read from file, 
+      // disable it
+      if( dm ) {
+	eg->preinitInterface(dm, "BranchingRatio", "set", "0.0");
+	eg->preinitInterface(dm, "OnOff", "set", "Off");
+      }
+      continue;
     }
+    //now create DecayMode objects that do not already exist      
     if( createDecayModes() && (!dm || inpart->id() == ParticleID::h0) ) {
       tDMPtr ndm = eg->preinitCreateDecayMode(tag);
 

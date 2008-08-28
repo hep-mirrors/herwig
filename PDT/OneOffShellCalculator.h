@@ -14,7 +14,7 @@
 #include "GenericMassGenerator.h"
 #include "WidthCalculatorBase.h"
 #include "OneOffShellCalculator.fh"
-#include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "Herwig++/Utilities/GSLIntegrator.h"
 
 
 namespace Herwig {
@@ -42,9 +42,9 @@ struct OneOffShellIntegrand  {
    * return the value
    */
   inline  Energy operator ()(double argument) const;
-  /** Argument type for the GaussianIntegrator */
+  /** Argument type for the GSLIntegrator */
   typedef double ArgType;
-  /** Return type for the GaussianIntegrator */
+  /** Return type for the GSLIntegrator */
   typedef Energy ValType;
 
   /**
@@ -174,7 +174,7 @@ private:
   /**
    * integrator
    */
-  GaussianIntegrator _integrator;
+  GSLIntegrator _integrator;
 
   /**
    * the mass squared of the decaying particle

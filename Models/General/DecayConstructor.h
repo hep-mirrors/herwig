@@ -21,9 +21,10 @@ using namespace ThePEG;
   
 /** 
  * The DecayConstructor class is an interfaced class that stores a 
- * vector of 2,3 body decay constructors and calls the appropriate 
- * function to create the decayers and decaymodes in the 
- * NBodyDecayConstructor
+ * vector of NBodyDecayConstructor objects and calls the appropriate 
+ * function to create the decayers and decaymodes. There is also an interface
+ * to add decay mode tags of the form a->b,c,...; which will not
+ * be created.
  * 
  * @see \ref DecayConstructorInterfaces "The interfaces"
  * defined for DecayConstructor. 
@@ -36,7 +37,8 @@ public:
   /**
    * The default constructor.
    */
-  inline DecayConstructor() : _theNBodyDecayConstructors(0) {}
+  inline DecayConstructor() : _theNBodyDecayConstructors(0), 
+			      _disableDMTags(0) {}
 
 public:
 
@@ -66,10 +68,30 @@ public:
 
   /**
    * Function to create decayers
-   * @param part vector of ParticleData pointers to particles contained
+   * @param particles vector of ParticleData pointers to particles contained
    * in model
    */
-  void createDecayers(const vector<PDPtr> & part);
+  void createDecayers(const vector<PDPtr> & particles);
+
+  /**
+   * Check whether the decay mode given is one that should not be
+   * created
+   * @param tag The decay mode tag, a->b,c,d,...;
+   */
+  bool disableDecayMode(string tag) const;
+
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
 
 protected:
 
@@ -109,6 +131,11 @@ private:
    * decays.
    */
    vector<NBodyDecayConstructorBasePtr> _theNBodyDecayConstructors;
+
+  /**
+   * A list of DecayMode tags that are not to be created 
+   */
+  vector<string> _disableDMTags;
 };
 
 }

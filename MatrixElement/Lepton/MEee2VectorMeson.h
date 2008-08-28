@@ -14,11 +14,10 @@
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "Herwig++/PDT/GenericMassGenerator.fh"
-#include "Herwig++/MatrixElement/General/ProductionMatrixElement.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "MEee2VectorMeson.fh"
 
 namespace Herwig {
 

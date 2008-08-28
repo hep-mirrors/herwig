@@ -14,10 +14,14 @@
 #include "DecayConstructor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Repository/BaseRepository.h"
+#include <iterator>
 
 using namespace Herwig;
+using namespace ThePEG;
 
 IBPtr DecayConstructor::clone() const {
   return new_ptr(*this);
@@ -46,16 +50,87 @@ void DecayConstructor::Init() {
   static RefVector<DecayConstructor,Herwig::NBodyDecayConstructorBase> 
     interfaceNBodyDecayConstructors
     ("NBodyDecayConstructors",
-     "Vector of references to N BodyDecayConstructors",
+     "Vector of references to NBodyDecayConstructors",
      &DecayConstructor::_theNBodyDecayConstructors, -1, false, false, true,
      false, false);
 
+  
+  static ParVector<DecayConstructor,string> interfaceDisableModes
+    ("DisableModes",
+     "A list of decay modes to disable",
+     &DecayConstructor::_disableDMTags, -1, string(""), string(""), string(""),
+     false, false, Interface::nolimits);
+
 }
 
-void DecayConstructor::createDecayers(const vector<PDPtr> & part) {
-  for(unsigned int ix=0;ix < _theNBodyDecayConstructors.size();++ix) {
-    _theNBodyDecayConstructors[ix]->init();
-    _theNBodyDecayConstructors[ix]->DecayList(part);
+/** A helper function for for_each to sort the decay mode tags into the 
+ *  standard order.
+ */
+namespace {
+
+  void adjustFSOrder(string & tag) {
+    string::size_type sep = tag.find(">");
+    string head = tag.substr(0, sep + 1);
+    string products = tag.substr(sep + 1);
+    OrderedParticles finalstate;
+    bool loopbreak(true);
+    while ( loopbreak ) {
+      sep = products.find(",");
+      string child;
+      if( sep != string::npos ) {
+	child = products.substr(0, sep);
+	products = products.substr(sep + 1);
+      }
+      else {
+	child = string(products.begin(), products.end() - 1);
+	loopbreak = false;
+      }
+      PDPtr p = BaseRepository::GetObject<PDPtr>
+	(string("/Herwig/Particles/" + child));
+      if( p ) finalstate.insert(p);
+    }
+    if( finalstate.empty() ) return;
+    tag = head;
+    OrderedParticles::const_iterator iend = finalstate.end();
+    OrderedParticles::size_type count(0), npr(finalstate.size());
+    for( OrderedParticles::const_iterator it = finalstate.begin(); 
+	 it != iend;  ++it ) {
+      tag += (**it).name();
+      if( ++count != npr ) tag += string(",");
+    }
+    tag += string(";");
+   }
+}
+
+void DecayConstructor::doinit() throw(InitException) {
+  Interfaced::doinit();
+  //Need to check that the stored decay mode tags have the
+  //products in the standard order
+  for_each( _disableDMTags.begin(), _disableDMTags.end(), adjustFSOrder );
+}
+
+void DecayConstructor::createDecayers(const PDVector & particles) {
+  if ( particles.empty() || _theNBodyDecayConstructors.empty() ) return;
+  typedef vector<NBodyDecayConstructorBasePtr>::iterator NBDecayIterator;
+  NBDecayIterator it =  _theNBodyDecayConstructors.begin();
+  NBDecayIterator iend = _theNBodyDecayConstructors.end();
+  for( ; it != iend; ++it ) {
+    (**it).init();
+    (**it).decayConstructor(this);
+    (**it).DecayList(particles);
   }
 }
 
+bool DecayConstructor::disableDecayMode(string tag) const {
+  if( _disableDMTags.empty() ) return false;
+  vector<string>::const_iterator dit = _disableDMTags.begin();
+  vector<string>::const_iterator dend = _disableDMTags.end();
+  bool disable(false);
+  for( ; dit != dend; ++dit ) {
+    if( *dit == tag ) {
+      disable = true;
+      break;
+    }
+  }
+  return disable;
+}

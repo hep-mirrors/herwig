@@ -38,13 +38,13 @@ IBPtr ModelGenerator::fullclone() const {
 void ModelGenerator::persistentOutput(PersistentOStream & os) const {
   os << _theHPConstructor << _theDecayConstructor << _theParticles 
      << _theRPConstructor << _theOffshell << _theOffsel << _theBRnorm
-     << _theNpoints << _theIorder << _theBWshape;
+     << _theNpoints << _theIorder << _theBWshape << brMin_;
 }
 
 void ModelGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _theHPConstructor >> _theDecayConstructor >> _theParticles
      >> _theRPConstructor >> _theOffshell >> _theOffsel >> _theBRnorm
-     >> _theNpoints >> _theIorder >> _theBWshape;
+     >> _theNpoints >> _theIorder >> _theBWshape >> brMin_;
 }
 
 bool ModelGenerator::preInitialize() const {
@@ -162,6 +162,12 @@ void ModelGenerator::Init() {
      "NoNumerator",
      "Neglect the numerator factors",
      3);
+  
+  static Parameter<ModelGenerator,double> interfaceMinimumBR
+    ("MinimumBR",
+     "The minimum branching fraction to include",
+     &ModelGenerator::brMin_, 1e-6, 0.0, 1.0,
+     false, false, Interface::limited);
 }
 
 void ModelGenerator::doinit() throw(InitException) {
@@ -181,8 +187,10 @@ void ModelGenerator::doinit() throw(InitException) {
     createWidthGenerator(*pit);
 
   //create decayers and decaymodes (if necessary)
-  if( _theDecayConstructor )
+  if( _theDecayConstructor ) {
+    _theDecayConstructor->init();
     _theDecayConstructor->createDecayers(_theParticles);
+  }
 
   // write out decays with spin correlations and set particles
   // that have no decay modes to stable.
@@ -195,6 +203,8 @@ void ModelGenerator::doinit() throw(InitException) {
   pend = _theParticles.end();
   for( ; pit != pend; ++pit) {
     tPDPtr parent = *pit;
+    // cerr << "Checking width and decay length " << parent->width()/MeV
+    // 	 << " MeV   " << parent->cTau()/mm << " mm\n";
     // Check decays for ones where quarks cannot be put on constituent
     // mass-shell
     checkDecays(parent);
@@ -245,11 +255,12 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     for( ; pit != pend; ++pit ) {
       release -= (**pit).constituentMass();
     }
-    if( release < 0.*MeV ) {
-      cerr << "Warning: The shower cannot be generated using this decay " 
-	   << (**dit).tag() << " because it is too close to threshold. It "
-	   << "will be switched off and the branching fractions of the "
-	   << "remaining modes rescaled.\n";
+    if( (**dit).brat() < brMin_ || release < 0.*MeV ) {
+      if( release < 0.*MeV )
+	cerr << "Warning: The shower cannot be generated using this decay " 
+	     << (**dit).tag() << " because it is too close to threshold. It "
+	     << "will be switched off and the branching fractions of the "
+	     << "remaining modes rescaled.\n";
       rescalebrat = true;
       generator()->preinitInterface(*dit, "OnOff", "set", "Off");
       generator()->preinitInterface(*dit, "BranchingRatio", 
@@ -275,6 +286,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 				    "set", brf.str());
     }
     parent->width(newwidth);
+    if( newwidth > 0.0*MeV ) parent->cTau(hbarc/newwidth);
     parent->widthCut(5*newwidth);
   }
   

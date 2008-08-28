@@ -23,7 +23,7 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/MatrixElement/General/HardVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 using namespace ThePEG;

@@ -13,7 +13,9 @@
 //
 
 #include "ThePEG/Pointer/ReferenceCounted.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "gsl/gsl_integration.h"
+#include "gsl/gsl_errno.h"
 
 namespace Herwig {
 
@@ -42,19 +44,18 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * Default Constructor
-   */
-  inline GSLIntegrator();
-
+   * Default Constructor uses values in GSL manual as parameters
+   **/
+  GSLIntegrator() : _abserr(1.0E-35), _relerr(5.E-5), _nbins(1000) {}
+  
   /**
    * Specify all the parameters.
    * @param abserr Absolute error.
    * @param relerr Relative error.
-   * @param binwidth Width of the bin as a fraction of the integration region.
-   * @param maxint Maximum number of intervals
-   * @param maxeval Maximum number of function evaluations
+   * @param nbins Number of bins
    */
-  inline GSLIntegrator(double abserr, double relerr, int nbins);
+  GSLIntegrator(double abserr, double relerr, int nbins) :
+    _abserr(abserr), _relerr(relerr), _nbins(nbins) {}
   //@}
 
   /**
@@ -93,7 +94,6 @@ private:
 
 }
 
-#include "GSLIntegrator.icc"
 #include "GSLIntegrator.tcc"
 
 #endif /* HERWIG_GSLIntegrator_H */

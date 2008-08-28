@@ -19,16 +19,16 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
+#include "DecayConstructor.h"
 using namespace Herwig; 
 using namespace ThePEG;
 
 void NBodyDecayConstructorBase::persistentOutput(PersistentOStream & os ) const {
-  os << _init << _iteration << _points << _info;
+  os << _init << _iteration << _points << _info << _decayConstructor;
 }
 
 void NBodyDecayConstructorBase::persistentInput(PersistentIStream & is , int) {
-  is >> _init >> _iteration >> _points >> _info;
+  is >> _init >> _iteration >> _points >> _info >> _decayConstructor;
 }
 
 AbstractClassDescription<NBodyDecayConstructorBase> 
@@ -107,6 +107,7 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
   double dmbrat(0.);
   if( modes.size() == 1 ) {
     parent->width(pwidth);
+    if( pwidth > 0.0*MeV ) parent->cTau(hbarc/pwidth);
     parent->widthCut(5.*pwidth);
     dmbrat = 1.;
   }
@@ -114,6 +115,7 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
     Energy currentwidth(parent->width());
     Energy newWidth(currentwidth + pwidth);
     parent->width(newWidth);
+    if( newWidth > 0.0*MeV ) parent->cTau(hbarc/newWidth);
     parent->widthCut(5.*newWidth);
     //need to reweight current branching fractions if there are any
     double factor(currentwidth/newWidth);
