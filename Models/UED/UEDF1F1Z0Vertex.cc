@@ -84,27 +84,17 @@ void UEDF1F1Z0Vertex::Init() {
 
 void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				  tcPDPtr part3) {
-  long iferm(0), ianti(0);
-  if(part1->id() == ParticleID::Z0) {
-    iferm = part2->id();
-    ianti = part3->id();
-    if(iferm < 0) swap(iferm, ianti);
+  if( part3->id() != 23 ) {
+    setNorm(0.0);
+    setLeft(0.0);
+    setRight(0.0);  
+    throw HelicityLogicalError()
+      << "UEDF1F1Z0Vertex::setCoupling - The vector boson in this vertex "
+      << "is not a Z^0 boson. ID: " << part3->id() << "\n"
+      << Exception::warning;
+    return;
   }
-  else if(part2->id() == ParticleID::Z0) {
-    iferm = part1->id();
-    ianti = part3->id();
-    if(iferm < 0) swap(iferm, ianti);
-  }
-  else if(part3->id() == ParticleID::Z0) {
-    iferm = part2->id();
-    ianti = part1->id();
-    if(iferm < 0) swap(iferm, ianti);
-  }
-  else
-    throw HelicityConsistencyError() << "UEDFFZ0Vertex::setCoupling - "
-				     << "There is no Z boson in this vertex!"
-				     << Exception::runerror;
-  ianti = abs(ianti);
+  long ianti(abs(part1->id())), iferm(abs(part2->id()));
   bool ferma = (iferm >= 5100001 && iferm <= 5100006) ||
     (iferm >= 6100001 && iferm <= 6100006) || 
     (iferm >= 5100011 && iferm <= 5100016) ||
@@ -125,9 +115,8 @@ void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       int stateB = iferm/1000000;
       long smID = (stateA == 6) ? ianti - 6100000 : ianti - 5100000;
       // L/R mixing
-      double beta = getParticleData(smID)->mass()*theRadius;
-      double gamma = beta*beta/(1. + beta*beta);
-      double sin2al = 0.5 - 0.5*sqrt(1. - gamma);
+      double alpha = atan(getParticleData(smID)->mass()*theRadius)/2.;
+      double sin2al = sqr(sin(alpha));
       double cos2al = 1. - sin2al;
       
       if(stateA == 5 && stateB == 5) {
