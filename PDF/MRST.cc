@@ -78,30 +78,23 @@ cPDVector MRST::partons(tcPDPtr p) const {
   return ret;
 }
 
-double MRST::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		 double l, Energy2 particleScale) const {
-  double x(exp(-l));
-  return xfx(particle,parton,partonScale,x,0.0,particleScale);
-}
-
 double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                  double x, double, Energy2) const {
-  return pdfValue(x, partonScale, particle, parton);
-}
-
-double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		  double l, Energy2 particleScale) const {
-  double x = exp(-l);
-  return xfvx(particle,parton,partonScale,x,0.0,particleScale);
+  return pdfValue(x, partonScale, particle, parton,Total);
 }
 
 double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                   double x, double, Energy2) const {
-  return pdfValue(x, partonScale, particle, parton, true);
+  return pdfValue(x, partonScale, particle, parton,Valence);
+}
+
+double MRST::xfsx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+                  double x, double, Energy2) const {
+  return pdfValue(x, partonScale, particle, parton,Sea);
 }
 
 double MRST::pdfValue(double x, Energy2 q2, 
-		      tcPDPtr particle, tcPDPtr parton, bool valenceOnly) const {
+		      tcPDPtr particle, tcPDPtr parton, PDFType type) const {
   // reset x  to min or max if outside range
   if(x<xmin)      x=xmin;
   else if(x>xmax) x=xmax;
@@ -126,7 +119,7 @@ double MRST::pdfValue(double x, Energy2 q2,
     bool anti = particle->id() < 0;
     bool neutron = abs(particle->id()) == ParticleID::n0;
     
-    if (valenceOnly) {
+    if (type==Valence) {
       switch(parton->id()) {
       case ParticleID::u:
 	output= (neutron? 
@@ -149,7 +142,35 @@ double MRST::pdfValue(double x, Energy2 q2,
 		 (anti? lookup(dnValence,n,m,u,t): 0.0));
 	break;
       }
-    } else {
+    } 
+    else if(type==Sea) {
+      switch(parton->id()) {
+      case ParticleID::b:
+      case ParticleID::bbar:
+	output= lookup(bot,n,m,u,t);
+	break;
+      case ParticleID::c:
+      case ParticleID::cbar:
+	output= lookup(chm,n,m,u,t);
+	break;
+      case ParticleID::s:
+      case ParticleID::sbar:
+	output= lookup(str,n,m,u,t);
+	break;
+      case ParticleID::u:
+      case ParticleID::ubar:
+	output= (neutron? lookup(dnSea,n,m,u,t) : lookup(upSea,n,m,u,t));
+	break;
+      case ParticleID::d:
+      case ParticleID::dbar:
+	output= (neutron? lookup(upSea,n,m,u,t) : lookup(dnSea,n,m,u,t));
+	break;
+      case ParticleID::g:
+	output= lookup(glu,n,m,u,t);
+	break;
+      }
+    }
+    else if(type==Total) {
       switch(parton->id()) {
       case ParticleID::b:
       case ParticleID::bbar:
@@ -213,7 +234,7 @@ double MRST::pdfValue(double x, Energy2 q2,
     }
     bool anti = particle->id() < 0;
     bool neutron = abs(particle->id()) == ParticleID::n0;
-    if (valenceOnly) {
+    if (type==Valence) {
       switch(parton->id()) {
       case ParticleID::u:
 	output= (neutron? 
@@ -236,7 +257,35 @@ double MRST::pdfValue(double x, Energy2 q2,
 		 (anti? g[2]: 0.0));
 	break;
       }
-    } else {
+    } 
+    else if(type==Sea) {
+      switch(parton->id()) {
+      case ParticleID::b:
+      case ParticleID::bbar:
+	output= g[7];
+	break;
+      case ParticleID::c:
+      case ParticleID::cbar:
+	output= g[5];
+	break;
+      case ParticleID::s:
+      case ParticleID::sbar:
+	output= g[6];
+	break;
+      case ParticleID::u:
+      case ParticleID::ubar:
+	output= (neutron ? g[8] : g[4] );
+	break;
+      case ParticleID::d:
+      case ParticleID::dbar:
+	output= (neutron?  g[4] : g[8] );
+	break;
+      case ParticleID::g:
+	output= g[3];
+	break;
+      }
+    }
+    else if(type==Total) {
       switch(parton->id()) {
       case ParticleID::b:
       case ParticleID::bbar:

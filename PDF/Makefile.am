@@ -15,14 +15,14 @@ HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
 
 pkglib_LTLIBRARIES += HwMPIPDF.la
 HwMPIPDF_la_SOURCES = \
-MPIPDF.h MPIPDF.cc MPIPDF.fh MPIPDF.icc \
+MPIPDF.h MPIPDF.cc MPIPDF.fh \
 MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
 
 HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwSatPDF.la
 HwSatPDF_la_SOURCES = \
-SatPDF.h SatPDF.cc SatPDF.fh
+SatPDF.h SatPDF.cc
 
 HwSatPDF_la_LDFLAGS = -module -version-info 1:0:0
 
