@@ -65,7 +65,7 @@ void FFSDecayer::Init() {
 double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin1Half);
-  rhoin.average();
+  
   vector<SpinorWaveFunction> wave;
   vector<SpinorBarWaveFunction> barWave;
   unsigned int iferm(0),iscal(1);

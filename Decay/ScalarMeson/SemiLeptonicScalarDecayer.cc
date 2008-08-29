@@ -271,7 +271,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       newME(ihel)= lepton[lhel].dot(hadron[mhel])*_GF;
     }
   }
-  RhoDMatrix temp(PDT::Spin0); temp.average();
+  RhoDMatrix temp(PDT::Spin0); 
   // store the matrix element
   ME(newME);
   double ckm(1.);

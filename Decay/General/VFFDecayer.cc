@@ -60,7 +60,7 @@ void VFFDecayer::Init() {
 
 double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin1);
   vector<VectorWaveFunction> inwave;
   VectorWaveFunction(inwave,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);

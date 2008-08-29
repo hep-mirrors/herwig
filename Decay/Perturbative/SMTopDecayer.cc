@@ -145,7 +145,7 @@ double SMTopDecayer::me2(bool vertex, const int,
 			 const Particle & inpart,
 			 const ParticleVector & decay) const {
   RhoDMatrix rhot(PDT::Spin1Half);
-  rhot.average();   //diagonalise  
+     //diagonalise  
   DecayMatrixElement topMe(PDT::Spin1Half,PDT::Spin1Half,
 			   PDT::Spin1Half,PDT::Spin1Half);
   Energy2 scale(inpart.mass()*inpart.mass());

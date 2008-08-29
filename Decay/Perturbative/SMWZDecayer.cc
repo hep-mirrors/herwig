@@ -207,7 +207,7 @@ void SMWZDecayer::Init() {
 double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
 			const ParticleVector & decay) const {
   // get/calculate the spin info for the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin1);
   vector<VectorWaveFunction> inwave;
   VectorWaveFunction(inwave,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);

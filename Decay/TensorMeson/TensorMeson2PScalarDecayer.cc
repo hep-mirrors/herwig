@@ -261,7 +261,7 @@ double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
 				       const ParticleVector & decay) const {
   vector<LorentzTensor<double> > inten;
   // wave functions etc for the incoming particle
-  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin2);
   TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);
   // set up the spin information for the decay products

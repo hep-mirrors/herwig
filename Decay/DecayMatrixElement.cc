@@ -35,7 +35,7 @@ RhoDMatrix DecayMatrixElement::calculateDMatrix(vector<RhoDMatrix> rhoout) {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
-  RhoDMatrix output(_inspin);output.zero();
+  RhoDMatrix output(_inspin, false);
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
@@ -70,7 +70,7 @@ RhoDMatrix DecayMatrixElement::calculateRhoMatrix(int id,RhoDMatrix rhoin,
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
-  RhoDMatrix output(_outspin[id]); output.zero();
+  RhoDMatrix output(_outspin[id], false);
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;

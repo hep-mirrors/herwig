@@ -67,7 +67,7 @@ void SVVDecayer::Init() {
 double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin0);
-  rhoin.average();
+  
   //vectors of wavefunctions to store all helicities
   vector<VectorWaveFunction> vOut1,vOut2;
   ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),rhoin,

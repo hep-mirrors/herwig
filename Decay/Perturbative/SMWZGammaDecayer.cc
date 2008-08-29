@@ -226,7 +226,7 @@ double SMWZGammaDecayer::me2(bool vertex, const int ichan, const Particle & inpa
   if(inpart.spinInfo()) {
     inspin = dynamic_ptr_cast<tcVectorSpinPtr>(inpart.spinInfo());
   }
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin1);
   VectorWaveFunction inwave[3];
   // if the spin info object exists use it
   if(inspin&&inpart.spinInfo()) {

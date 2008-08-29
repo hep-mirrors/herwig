@@ -54,7 +54,7 @@ void FFVDecayer::persistentInput(PersistentIStream & is, int) {
 double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin1Half);
-  rhoin.average();
+  
   DecayMatrixElement newME(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
   Energy2 scale(inpart.mass()*inpart.mass());
   vector<SpinorWaveFunction> wave;

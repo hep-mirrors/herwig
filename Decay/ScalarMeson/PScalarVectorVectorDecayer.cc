@@ -183,7 +183,7 @@ double PScalarVectorVectorDecayer::me2(bool vertex, const int,
   }
   ME(newME);
   RhoDMatrix rhoin(PDT::Spin0); 
-  rhoin.average();
+  
   // test of the matrix element
 //   double test = 2.*sqr(fact*inpart.mass())*
 //     sqr(Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),decay[1]->mass()));

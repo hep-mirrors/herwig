@@ -169,7 +169,7 @@ double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
   }
   ME(newME);
   RhoDMatrix rhoin(PDT::Spin0);
-  rhoin.average();
+  
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
