@@ -98,7 +98,7 @@ double  FtoFVVDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 			   const ParticleVector & decay) const {
   // spin density matrix
   RhoDMatrix rhoin(PDT::Spin1Half);
-  rhoin.average();
+  
   //Set up wave-functions
   bool ferm( inpart.id() > 0 );
   //incoming

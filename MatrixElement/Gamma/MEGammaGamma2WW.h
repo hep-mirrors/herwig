@@ -1,46 +1,35 @@
 // -*- C++ -*-
+#ifndef HERWIG_MEGammaGamma2WW_H
+#define HERWIG_MEGammaGamma2WW_H
 //
-// MEee2gZ2ll.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-#ifndef HERWIG_MEee2gZ2ll_H
-#define HERWIG_MEee2gZ2ll_H
-//
-// This is the declaration of the MEee2gZ2ll class.
+// This is the declaration of the MEGammaGamma2WW class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
- * The MEee2gZ2ll class provides the matrix element for 
- * \f$e^+e^-\to\ell^+\ell^-\f$. N.B. for the production of \f$e^+e^-\f$
- * only the \f$s\f$-channel Z and photon diagrams are included.
+ * The MEGammaGamma2WW class provides the matrix elements for
+ * \f$\gamma\gamma\to f \bar{f}\f$.
  *
- * @see \ref MEee2gZ2llInterfaces "The interfaces"
- * defined for MEee2gZ2ll.
+ * @see \ref MEGammaGamma2WWInterfaces "The interfaces"
+ * defined for MEGammaGamma2WW.
  */
-class MEee2gZ2ll: public ME2to2Base {
+class MEGammaGamma2WW : public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2gZ2ll() : _allowed(0) {}
-
-public:
+  MEGammaGamma2WW();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -94,13 +83,7 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
-
-  /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
   //@}
-
 
 public:
 
@@ -130,19 +113,34 @@ public:
 
 protected:
 
+  /**
+   * Matrix element for \f$\gamma\gamma\to q\bar{q}\f$
+   * @param p1   The wavefunctions for the first  incoming photon
+   * @param p2   The wavefunctions for the second incoming photon
+   * @param f    The wavefunction  for the outgoing fermion
+   * @param fbar The wavefunction  for the outgoing antifermion
+   * @param calc Whether or not to calculate the matrix element
+   */
+  double helicityME(vector<VectorWaveFunction> & p1,
+		    vector<VectorWaveFunction> & p2,
+		    vector<VectorWaveFunction> & w1,
+		    vector<VectorWaveFunction> & w2, bool calc) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -155,46 +153,7 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  virtual IVector getReferences();
   //@}
-
-private:
-
-  /**
-   * Member to calculate the matrix element
-   * @param fin  Spinors for incoming fermion
-   * @param ain  Spinors for incoming antifermion
-   * @param fout Spinors for outgoing fermion
-   * @param aout Spinors for outgong antifermion
-   * @param me   Spin summed Matrix element
-   * @param cont The continuum piece of the matrix element
-   * @param BW   The Z piece of the matrix element
-   */
-  ProductionMatrixElement HelicityME(vector<SpinorWaveFunction>    & fin,
-				     vector<SpinorBarWaveFunction> & ain,
-				     vector<SpinorBarWaveFunction> & fout,
-				     vector<SpinorWaveFunction>    & aout,
-				     double & me,
-				     double & cont,
-				     double & BW ) const;
 
 private:
 
@@ -202,40 +161,36 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEee2gZ2ll> initMEee2gZ2ll;
+  static ClassDescription<MEGammaGamma2WW> initMEGammaGamma2WW;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2gZ2ll & operator=(const MEee2gZ2ll &);
+  MEGammaGamma2WW & operator=(const MEGammaGamma2WW &);
 
 private:
 
   /**
-   *  Pointer to the fermion-antifermion Z vertex
+   *  Treatment of the the W mass
    */
-  AbstractFFVVertexPtr _theFFZVertex;
-  
-  /**
-   *  Pointer to the fermion-antifermion photon vertex
-   */
-  AbstractFFVVertexPtr _theFFPVertex;
+  unsigned int _massOption;
 
   /**
-   *  Pointer to the particle data object for the Z
+   *  Pointer to the gammaWW vertex
    */
-  PDPtr _Z0;
+  AbstractVVVVertexPtr _theWWWVertex;
 
   /**
-   *  Pointer to the particle data object for the photon
+   *  Pointer to the gammagammaWW vertex
    */
-  PDPtr _gamma;
-    
+  AbstractVVVVVertexPtr _theWWWWVertex;
+
   /**
-   * The allowed outgoing
+   *  Matrix element
    */
-  int _allowed;
+  mutable ProductionMatrixElement _me;
+
 };
 
 }
@@ -247,32 +202,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEee2gZ2ll. */
+ *  base classes of MEGammaGamma2WW. */
 template <>
-struct BaseClassTrait<Herwig::MEee2gZ2ll,1> {
-  /** Typedef of the first base class of MEee2gZ2ll. */
-  typedef ME2to2Base NthBase;
+struct BaseClassTrait<Herwig::MEGammaGamma2WW,1> {
+  /** Typedef of the first base class of MEGammaGamma2WW. */
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEee2gZ2ll class and the shared object where it is defined. */
+ *  the MEGammaGamma2WW class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEee2gZ2ll>
-  : public ClassTraitsBase<Herwig::MEee2gZ2ll> {
+struct ClassTraits<Herwig::MEGammaGamma2WW>
+  : public ClassTraitsBase<Herwig::MEGammaGamma2WW> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2gZ2ll"; }
+  static string className() { return "Herwig::MEGammaGamma2WW"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEee2gZ2ll is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2gZ2ll depends on other classes (base classes
+   * MEGammaGamma2WW is implemented. It may also include several, space-separated,
+   * libraries if the class MEGammaGamma2WW depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMELepton.so"; }
+  static string library() { return "HwMEGammaGamma.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEee2gZ2ll_H */
+#endif /* HERWIG_MEGammaGamma2WW_H */

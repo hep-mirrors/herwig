@@ -78,7 +78,7 @@ void FFVCurrentDecayer::Init() {
 double FFVCurrentDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 			      const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin1Half);
-  rhoin.average();
+  
   Energy2 scale(inpart.mass()*inpart.mass());
   vector<SpinorWaveFunction> wave;
   vector<SpinorBarWaveFunction> barWave;

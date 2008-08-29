@@ -1,35 +1,36 @@
 // -*- C++ -*-
-#ifndef THEPEG_MEGammaGamma2WW_H
-#define THEPEG_MEGammaGamma2WW_H
+#ifndef HERWIG_MEGammaGamma2ff_H
+#define HERWIG_MEGammaGamma2ff_H
 //
-// This is the declaration of the MEGammaGamma2WW class.
+// This is the declaration of the MEGammaGamma2ff class.
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
-#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
-#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 
 namespace Herwig {
+
 using namespace ThePEG;
-using namespace ThePEG::Helicity;
 
 /**
- * The MEGammaGamma2WW class provides the matrix elements for
+ * The MEGammaGamma2ff class provides the matrix elements for
  * \f$\gamma\gamma\to f \bar{f}\f$.
  *
- * @see \ref MEGammaGamma2WWInterfaces "The interfaces"
- * defined for MEGammaGamma2WW.
+ * @see \ref MEGammaGamma2ffInterfaces "The interfaces"
+ * defined for MEGammaGamma2ff.
  */
-class MEGammaGamma2WW : public HwME2to2Base {
+class MEGammaGamma2ff: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEGammaGamma2WW();
+  MEGammaGamma2ff();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -121,11 +122,9 @@ protected:
    * @param fbar The wavefunction  for the outgoing antifermion
    * @param calc Whether or not to calculate the matrix element
    */
-  double helicityME(vector<VectorWaveFunction> & p1,
-		    vector<VectorWaveFunction> & p2,
-		    vector<VectorWaveFunction> & w1,
-		    vector<VectorWaveFunction> & w2, bool calc) const;
-
+  double helicityME(vector<VectorWaveFunction> &p1,vector<VectorWaveFunction> &p2,
+		    vector<SpinorBarWaveFunction> & f,
+		    vector<SpinorWaveFunction> & fbar, bool calc) const;
 protected:
 
   /** @name Clone Methods. */
@@ -134,13 +133,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -161,30 +160,25 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEGammaGamma2WW> initMEGammaGamma2WW;
+  static ClassDescription<MEGammaGamma2ff> initMEGammaGamma2ff;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEGammaGamma2WW & operator=(const MEGammaGamma2WW &);
+  MEGammaGamma2ff & operator=(const MEGammaGamma2ff &);
 
 private:
+  
+  /**
+   *  Which processes to include
+   */
+  unsigned int _process;
 
   /**
-   *  Treatment of the the W mass
+   *  Pointer to the photon vertex
    */
-  unsigned int _massOption;
-
-  /**
-   *  Pointer to the gammaWW vertex
-   */
-  AbstractVVVVertexPtr _theWWWVertex;
-
-  /**
-   *  Pointer to the gammagammaWW vertex
-   */
-  AbstractVVVVVertexPtr _theWWWWVertex;
+  AbstractFFVVertexPtr _theFFPVertex;
 
   /**
    *  Matrix element
@@ -202,32 +196,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEGammaGamma2WW. */
+ *  base classes of MEGammaGamma2ff. */
 template <>
-struct BaseClassTrait<Herwig::MEGammaGamma2WW,1> {
-  /** Typedef of the first base class of MEGammaGamma2WW. */
-  typedef Herwig::HwME2to2Base NthBase;
+struct BaseClassTrait<Herwig::MEGammaGamma2ff,1> {
+  /** Typedef of the first base class of MEGammaGamma2ff. */
+  typedef ME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEGammaGamma2WW class and the shared object where it is defined. */
+ *  the MEGammaGamma2ff class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEGammaGamma2WW>
-  : public ClassTraitsBase<Herwig::MEGammaGamma2WW> {
+struct ClassTraits<Herwig::MEGammaGamma2ff>
+  : public ClassTraitsBase<Herwig::MEGammaGamma2ff> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEGammaGamma2WW"; }
+  static string className() { return "Herwig::MEGammaGamma2ff"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEGammaGamma2WW is implemented. It may also include several, space-separated,
-   * libraries if the class MEGammaGamma2WW depends on other classes (base classes
+   * MEGammaGamma2ff is implemented. It may also include several, space-separated,
+   * libraries if the class MEGammaGamma2ff depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEGamma.so"; }
+  static string library() { return "HwMEGammaGamma.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* THEPEG_MEGammaGamma2WW_H */
+#endif /* HERWIG_MEGammaGamma2ff_H */

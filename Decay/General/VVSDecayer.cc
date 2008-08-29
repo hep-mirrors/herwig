@@ -55,7 +55,7 @@ double VVSDecayer::me2(bool vertex, const int , const Particle & inpart,
   bool massless = ( decay[0]->id()==ParticleID::gamma || 
 		    decay[0]->id()==ParticleID::g );
   RhoDMatrix rhoin(PDT::Spin1);
-  rhoin.average();
+  
   vector<VectorWaveFunction> inwave,outwave;
   VectorWaveFunction(inwave,const_ptr_cast<tPPtr>(&inpart),incoming,true,
 		     false,vertex);

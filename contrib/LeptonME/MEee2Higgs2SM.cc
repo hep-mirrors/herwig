@@ -260,3 +260,18 @@ void MEee2Higgs2SM::constructVertex(tSubProPtr sub) {
     dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
   }
 }
+
+void MEee2Higgs2SM::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  _theFFHVertex = trans.translate(_theFFHVertex);
+  _h0        = trans.translate(_h0);
+  ME2to2Base::rebind(trans);
+}
+
+IVector MEee2Higgs2SM::getReferences() {
+  IVector ret = ME2to2Base::getReferences();
+  ret.push_back(_theFFHVertex);
+  ret.push_back(_h0);
+  return ret;
+}

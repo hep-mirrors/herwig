@@ -9,7 +9,6 @@ Herwig_la_LDFLAGS += $(THEPEGLDFLAGS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
-$(top_builddir)/PDF/libHwPDF.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
 $(top_builddir)/Decay/Radiation/libHwDecRad.la \

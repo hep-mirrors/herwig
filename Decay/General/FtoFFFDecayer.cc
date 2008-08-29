@@ -92,7 +92,7 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
   Energy2 scale(sqr(inpart.mass()));
   // spin density matrix
   RhoDMatrix rhoin(PDT::Spin1Half);
-  rhoin.average();
+  
   // get the wavefunctions for all the particles
   pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > inwave;
   pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outwave[3];

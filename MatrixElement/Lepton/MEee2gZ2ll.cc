@@ -235,3 +235,40 @@ void MEee2gZ2ll::constructVertex(tSubProPtr sub) {
     dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
   }
 }
+
+void MEee2gZ2ll::doinit() throw(InitException) {
+  ME2to2Base::doinit();
+  // set the particle data objects
+  _Z0=getParticleData(ThePEG::ParticleID::Z0);
+  _gamma=getParticleData(ThePEG::ParticleID::gamma);
+  // cast the SM pointer to the Herwig SM pointer
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
+  // do the initialisation
+  if(hwsm) {
+    _theFFZVertex = hwsm->vertexFFZ();
+    _theFFPVertex = hwsm->vertexFFP();
+  }
+  else {
+    throw InitException() << "Wrong type of StandardModel object in "
+			  << "MEee2gZ2ll::doinit() the Herwig++ version must be used"
+			  << Exception::runerror;
+  }
+}
+
+void MEee2gZ2ll::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _theFFZVertex = trans.translate(_theFFZVertex);
+  _theFFPVertex = trans.translate(_theFFPVertex);
+  _Z0           = trans.translate(_Z0);
+  _gamma        = trans.translate(_gamma);
+  ME2to2Base::rebind(trans);
+}
+
+IVector MEee2gZ2ll::getReferences() {
+  IVector ret = ME2to2Base::getReferences();
+  ret.push_back(_theFFZVertex);
+  ret.push_back(_theFFPVertex);
+  ret.push_back(_Z0          );
+  ret.push_back(_gamma       );
+  return ret;
+}

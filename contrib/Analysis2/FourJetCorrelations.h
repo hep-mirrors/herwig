@@ -12,7 +12,7 @@
 // This is the declaration of the FourJetCorrelations class.
 //
 
-#include "Herwig++/Analysis2/Analysis2Base.h"
+#include "Analysis2Base.h"
 #include "FourJetCorrelations.fh"
 
 namespace Herwig {
@@ -212,7 +212,7 @@ struct ClassTraits<Herwig::FourJetCorrelations>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwAnalysis2.so"; }
+  static string library() { return "Analysis2.so"; }
 };
 
 /** @endcond */

@@ -1,6 +1,4 @@
-SUBDIRS = Histogram2 .
 noinst_LTLIBRARIES = libHwUtils.la
-libHwUtils_la_LIBADD = Histogram2/libHwHistogram2.la
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
 Interpolator.tcc Interpolator.h \

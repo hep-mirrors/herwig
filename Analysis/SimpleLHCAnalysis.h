@@ -39,7 +39,7 @@ public:
    */
   SimpleLHCAnalysis();
 
-  /** @Name Virtual Functions required by the AnalysisHandler class. */
+  /** @name Virtual Functions required by the AnalysisHandler class. */
   //@{
   /**
    * Analyze a given Event. Note that a fully generated event

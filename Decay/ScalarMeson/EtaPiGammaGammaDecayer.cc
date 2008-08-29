@@ -284,7 +284,7 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
   }
   // contract the whole thing
   ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin0);
   /*
   double me(newME.contract(rhoin).real());
   Energy M(inpart.mass()),M2(M*M);

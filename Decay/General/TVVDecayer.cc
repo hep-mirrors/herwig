@@ -59,7 +59,7 @@ void TVVDecayer::Init() {
 double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin2);
-  rhoin.average();
+  
   vector<LorentzTensor<double> > in;
   bool massa(decay[0]->mass()==0*MeV),massb(decay[1]->mass()==0*MeV);
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),

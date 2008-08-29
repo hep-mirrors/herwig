@@ -112,7 +112,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Hadron/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
-                MatrixElement/GammaGamma/Makefile
+                MatrixElement/Gamma/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile
@@ -126,7 +126,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/CKKW/Makefile
                 Shower/Makefile
                 Utilities/Makefile
-		Utilities/Histogram2/Makefile
                 Hadronization/Makefile
 		lib/Makefile
 		include/Makefile
@@ -138,8 +137,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Looptools/Makefile
 		Analysis/Makefile
 		Analysis/BSM/Makefile
-		Analysis2/Makefile
-                Analysis2/Data/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
 		Makefile])

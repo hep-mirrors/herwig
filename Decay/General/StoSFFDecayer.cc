@@ -114,7 +114,7 @@ double StoSFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
   Energy2 scale(sqr(inpart.mass()));
   // spin density matrix
   RhoDMatrix rhoin(PDT::Spin0);
-  rhoin.average();
+  
   // get the wavefunctions for all the particles
   ScalarWaveFunction inScalar(const_ptr_cast<tPPtr>(&inpart),rhoin,
 			      Helicity::incoming,true,vertex);

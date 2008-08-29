@@ -178,7 +178,7 @@ void TauDecayer::Init() {
 double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
 		       const ParticleVector & decay) const {
   // spin density matrix for the decaying particle
-  RhoDMatrix temp(PDT::Spin1Half);temp.average();
+  RhoDMatrix temp(PDT::Spin1Half);
   // storage for the wavefunctions of the tau and neutrino
   vector<LorentzSpinor<SqrtEnergy> > wave;
   vector<LorentzSpinorBar<SqrtEnergy> > wavebar;

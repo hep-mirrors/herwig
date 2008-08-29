@@ -12,7 +12,7 @@
 // This is the declaration of the GnuplotOutput class.
 //
 
-#include "Herwig++/Utilities/Histogram2/Histogram2Output.h"
+#include "Histogram2Output.h"
 #include "GnuplotOutput.fh"
 
 namespace Herwig {
@@ -214,7 +214,7 @@ struct ClassTraits<Herwig::GnuplotOutput>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwAnalysis2.so"; }
+  static string library() { return "Analysis2.so"; }
 };
 
 /** @endcond */

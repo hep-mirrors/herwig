@@ -282,3 +282,22 @@ void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
   for(unsigned int ix=0;ix<4;++ix)
     dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
 }
+
+void MEee2gZ2qq::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  _theFFZVertex = trans.translate(_theFFZVertex);
+  _theFFPVertex = trans.translate(_theFFPVertex);
+  _Z0           = trans.translate(_Z0);
+  _gamma        = trans.translate(_gamma);
+  HwME2to2Base::rebind(trans);
+}
+
+IVector MEee2gZ2qq::getReferences() {
+  IVector ret = HwME2to2Base::getReferences();
+  ret.push_back(_theFFZVertex);
+  ret.push_back(_theFFPVertex);
+  ret.push_back(_Z0          );
+  ret.push_back(_gamma       );
+  return ret;
+}
