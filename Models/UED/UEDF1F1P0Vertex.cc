@@ -99,7 +99,7 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     setNorm(theCoupLast);
     if(iferm != thefermLast) {
       thefermLast = iferm;
-      unsigned int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 51000000;
+      int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 5100000;
       if(smtype >= 11) 
 	theLRLast = theCharges[0];
       else

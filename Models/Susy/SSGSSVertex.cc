@@ -53,7 +53,7 @@ void SSGSSVertex::Init() {
 
 void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 			      tcPDPtr part2, tcPDPtr part3) {
-  unsigned int isf(0);
+  long isf(0);
   if(part1->id() == ParticleID::g) {
     isf = abs(part2->id());
   }
