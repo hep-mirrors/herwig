@@ -154,18 +154,18 @@ double MEee2VV::me2() const {
 }
 
 double MEee2VV::helicityME(vector<SpinorWaveFunction>    & f1,
-				  vector<SpinorBarWaveFunction> & a1,
-				  vector<VectorWaveFunction>    & v1,
-				  vector<VectorWaveFunction>    & v2,
-				  bool calc) const {
+			   vector<SpinorBarWaveFunction> & a1,
+			   vector<VectorWaveFunction>    & v1,
+			   vector<VectorWaveFunction>    & v2,
+			   bool calc) const {
   double output(0.);
   vector<double> me(3,0.0);
   ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,
 				PDT::Spin1,PDT::Spin1);
   // e+e- > Z Z 
-  if(mePartonData()[2]->id()==ParticleID::Z0) {
+  if(v1[0].getParticle()->id()==ParticleID::Z0) {
     tcPDPtr em  = getParticleData(ParticleID::eminus);
-    vector<Complex> diag(3,0.0);
+    vector<Complex> diag(2,0.0);
     SpinorWaveFunction inter;
     for(unsigned int ihel1=0;ihel1<2;++ihel1) {
       for(unsigned int ihel2=0;ihel2<2;++ihel2) {
@@ -214,7 +214,7 @@ double MEee2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 	      _vertexFFW->evaluate(scale(),inter_nu_e,a1[ihel2],v2[ohel2]);
 	    // individual diagrams
 	    for (size_t ii=0; ii<3; ++ii) me[ii] += std::norm(diag[ii]);
-	    // full matrix element
+ 	    // full matrix element
 	    diag[0] += diag[1]+diag[2];
 	    output += std::norm(diag[0]);
 	    // storage of the matrix element for spin correlations
@@ -246,34 +246,36 @@ MEee2VV::diagrams(const DiagramVector & diags) const {
 }
 
 double MEee2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
-  double rand = *r;
-  Energy2 m12 = sqr(meMomenta()[2].mass());
-  Energy2 m22 = sqr(meMomenta()[3].mass());
-  Energy2 D1 = sHat()-m12-m22;
-  Energy4 lambda = sqr(D1) - 4*m12*m22;
-  double D =  D1 / sqrt(lambda);
-  if(abs(mePartonData()[2]->id())==ParticleID::Wplus) {
-    double fraction = (D-ctmax)/(D-ctmin);
-    double costh = D - (D - ctmin) * pow(fraction, rand);
-    jacobian((costh - D) * log(fraction));
-    return costh;
-  }
-  else {
-    double prob = 0.5;
-    double costh;
-    double fraction1 = (D-ctmax)/(D-ctmin);
-    double fraction2 = (D+ctmin)/(D+ctmax);
-    if(rand<=prob) {
-      rand /=prob;
-      costh = D - (D - ctmin) * pow(fraction1, rand);
-    }
-    else {
-      rand = (rand-prob)/(1.-prob);
-      costh =-D + (D + ctmax) * pow(fraction2, rand);
-    }
-    jacobian(1./(prob     /((costh - D) * log(fraction1))-
-		 (1.-prob)/((costh + D) * log(fraction2))));
-    return costh;
-  }
+//   double rand = *r;
+//   Energy2 m12 = sqr(meMomenta()[2].mass());
+//   Energy2 m22 = sqr(meMomenta()[3].mass());
+//   Energy2 D1 = sHat()-m12-m22;
+//   Energy4 lambda = sqr(D1) - 4*m12*m22;
+//   double D =  D1 / sqrt(lambda);
+//   if(abs(mePartonData()[2]->id())==ParticleID::Wplus) {
+//     double fraction = (D-ctmax)/(D-ctmin);
+//     double costh = D - (D - ctmin) * pow(fraction, rand);
+//     jacobian((costh - D) * log(fraction));
+//     return costh;
+//   }
+//   else {
+//     double prob = 0.5;
+//     double costh;
+//     double fraction1 = (D-ctmax)/(D-ctmin);
+//     double fraction2 = (D+ctmin)/(D+ctmax);
+//     if(rand<=prob) {
+//       rand /=prob;
+//       costh = D - (D - ctmin) * pow(fraction1, rand);
+//     }
+//     else {
+//       rand = (rand-prob)/(1.-prob);
+//       costh =-D + (D + ctmax) * pow(fraction2, rand);
+//     }
+//     jacobian(1./(prob     /((costh - D) * log(fraction1))-
+// 		 (1.-prob)/((costh + D) * log(fraction2))));
+//     return costh;
+//   }
+  jacobian(ctmax-ctmin);
+  return ctmin+*r*(ctmax-ctmin);
 }
 

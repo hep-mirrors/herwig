@@ -119,11 +119,11 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\toW^+W^-\to f\bar{f} f\bar{f}\f$.
+   * Matrix element for \f$f\bar{f}\to W^+W^-/Z^0Z^0\f$.
    * @param f1  Spinors for the incoming fermion
    * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param v1  Polarization vector for the 1st outgoing boson
+   * @param v2  Polarization vector for the 2nd outgoing boson
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double helicityME(vector<SpinorWaveFunction>    & f1,
