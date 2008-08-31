@@ -34,8 +34,8 @@ Histogram eta5_h(-6.,6.,100)    , pt5_h(0.,200.,100)  ;
 Histogram eta6_h(-6.,6.,100)    , pt6_h(0.,200.,100)  ;
 Histogram eta56_h(-6.,6.,100)   , y56_h(-5.,5.,100)   , pt56_h(0.,150.,30);
 Histogram m56_h(114.95,115.05,100)  ;
-Histogram y3456_h(-4.,4.,80)    , m3456_h(0.,1000.,100);
-Histogram HT_h(0.,500.,25)      ;
+Histogram yall_h(-4.,4.,80)     , mall_h(0.,1000.,100);
+Histogram HTall_h(0.,500.,25)   ;
 
 BbarAnalysis::~BbarAnalysis() {}
 
@@ -51,9 +51,11 @@ LorentzRotation BbarAnalysis::transform(tEventPtr event) const {
 }
 
 void BbarAnalysis::analyze(const tPVector & particles) {
-  Lorentz5Momentum pl, plbar;
-  Lorentz5Momentum pb, pbbar;
-  Lorentz5Momentum pgluon   ;
+  Lorentz5Momentum pl(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum plbar(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum pb(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum pbbar(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum pgluon(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
   tPPtr l, lbar;
   tPPtr b, bbar;
   tPPtr gluon;
@@ -118,13 +120,15 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   eta6_h.addWeighted(pbbar.eta(),1.);
   pt6_h.addWeighted(pbbar.perp()/GeV,1.);
   // Higgs bosons only:
-  y56_h.addWeighted(pH.rapidity(),1.);
   eta56_h.addWeighted(pH.eta(),1.);
+  y56_h.addWeighted(pH.rapidity(),1.);
   pt56_h.addWeighted(pH.perp()/GeV,1.);
   m56_h.addWeighted(sqrt(pH.m2())/GeV,1.);
   // Everything added up:
-  y3456_h.addWeighted(pVStar.rapidity(),1.);
-  m3456_h.addWeighted(sqrt(pVStar.m2())/GeV,1.);
+  HTall_h.addWeighted((pl.perp()+plbar.perp()
+		      +pb.perp()+pbbar.perp()+pgluon.perp())/GeV,1.);
+  yall_h.addWeighted((pVStar+pgluon).rapidity(),1.);
+  mall_h.addWeighted(sqrt((pVStar+pgluon).m2())/GeV,1.);
 
 
   AnalysisHandler::analyze(particles);
@@ -203,19 +207,21 @@ void BbarAnalysis::dofinish() {
   pt6_h.normaliseToCrossSection();
   pt6_h.prefactor(pt6_h.prefactor()*1.e6);
   // Higgs bosons only:
-  y56_h.normaliseToCrossSection();
-  y56_h.prefactor(y56_h.prefactor()*1.e6);
   eta56_h.normaliseToCrossSection();
   eta56_h.prefactor(eta56_h.prefactor()*1.e6);
+  y56_h.normaliseToCrossSection();
+  y56_h.prefactor(y56_h.prefactor()*1.e6);
   pt56_h.normaliseToCrossSection();
   pt56_h.prefactor(pt56_h.prefactor()*1.e6);
   m56_h.normaliseToCrossSection();
   m56_h.prefactor(m56_h.prefactor()*1.e6);
   // Everything added up:
-  y3456_h.normaliseToCrossSection();
-  y3456_h.prefactor(y3456_h.prefactor()*1.e6);
-  m3456_h.normaliseToCrossSection();
-  m3456_h.prefactor(m3456_h.prefactor()*1.e6);
+  HTall_h.normaliseToCrossSection();
+  HTall_h.prefactor(HTall_h.prefactor()*1.e6);
+  yall_h.normaliseToCrossSection();
+  yall_h.prefactor(yall_h.prefactor()*1.e6);
+  mall_h.normaliseToCrossSection();
+  mall_h.prefactor(mall_h.prefactor()*1.e6);
 
   file.open(fname.c_str());
   using namespace HistogramOptions;
@@ -245,13 +251,14 @@ void BbarAnalysis::dofinish() {
   eta6_h.topdrawOutput(file,Frame,"RED","eta6 distribution: all wgts");
   pt6_h.topdrawOutput(file,Frame,"RED","pt6 distribution: all wgts");
   // Higgs bosons only:
-  y56_h.topdrawOutput(file,Frame,"RED","y56 distribution: all wgts");
   eta56_h.topdrawOutput(file,Frame,"RED","eta56 distribution: all wgts");
+  y56_h.topdrawOutput(file,Frame,"RED","y56 distribution: all wgts");
   pt56_h.topdrawOutput(file,Frame,"RED","eta56 distribution: all wgts");
   m56_h.topdrawOutput(file,Frame,"RED","m56 distribution: all wgts");
   // Everything added up:
-  y3456_h.topdrawOutput(file,Frame,"RED","y3456 distribution: all wgts");
-  m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
+  HTall_h.topdrawOutput(file,Frame,"RED","HTall distribution: all wgts");
+  yall_h.topdrawOutput(file,Frame,"RED","yall distribution: all wgts");
+  mall_h.topdrawOutput(file,Frame,"RED","mall distribution: all wgts");
 
   file.close();
 }
