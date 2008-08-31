@@ -88,11 +88,15 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   pV     = pl+plbar;
   pH     = pb+pbbar;
   pVStar = pV+pH   ;
+  Lorentz5Momentum pVrest(0.*GeV,0.*GeV,0.*GeV,pV.m(),pV.m());
+  Lorentz5Momentum pl_Vrest, plbar_Vrest;
+  pl_Vrest    = boostx(pl   , pV, pVrest);
+  plbar_Vrest = boostx(plbar, pV, pVrest);
 
   // Lepton:
-  cos3_h.addWeighted(pl.cosTheta(),1.);
+  cos3_h.addWeighted(pl_Vrest.cosTheta(),1.);
   // Anti-lepton:
-  cos4_h.addWeighted(plbar.cosTheta(),1.);
+  cos4_h.addWeighted(plbar_Vrest.cosTheta(),1.);
   // Scalar sum of lepton pts:
   HT34_h.addWeighted((pl.perp()+plbar.perp())/GeV,1.);
   // Lepton:
@@ -250,4 +254,48 @@ void BbarAnalysis::dofinish() {
   m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
 
   file.close();
+}
+
+
+Lorentz5Momentum BbarAnalysis::boostx(Lorentz5Momentum p_in, 
+				      Lorentz5Momentum pt, 
+				      Lorentz5Momentum ptt){
+  // Boost input vector p_in to output vector p_out using the same
+  // transformation as required to boost massive vector pt to ptt
+  Lorentz5Momentum p_tmp,p_out;
+  Vector3<double> beta;
+  Energy  mass, bdotp;
+  double  gam;
+
+  if (pt.m2()<0.*GeV2) {
+    throw Exception() << "pt.m2()<0. in boostx, pt.m2() = "
+		      << pt.m2()/GeV2 
+		      << Exception::runerror;
+  }
+  mass = sqrt(pt.m2());
+
+  // boost to the rest frame of pt
+  gam = pt.e()/mass;
+
+  beta  = -pt.vect()*(1./pt.e());
+  bdotp =  beta*p_in.vect();
+
+  Lorentz5Momentum tmp_vec;
+  tmp_vec.setVect(beta*gam*((p_in.e()+gam*(p_in.e()+bdotp))/(1.+gam)));
+  tmp_vec.setE(0.*GeV);
+  tmp_vec.setMass(0.*GeV);
+  p_tmp = p_in + tmp_vec;
+  p_tmp.setE(gam*(p_in.e()+bdotp));
+
+  // boost from rest frame of pt to frame in which pt is identical
+  // with ptt, thus completing the transformation
+  gam   =  ptt.e()/mass;
+  beta  =  ptt/ptt.e();
+  bdotp =  beta*p_tmp.vect();
+
+  p_out.setVect(p_tmp.vect()+gam*beta*((p_out.e()+p_tmp.e())/(1.+gam)));
+  p_out.setE(gam*(p_tmp.e()+bdotp));
+  p_out.rescaleMass();
+
+  return p_out;
 }

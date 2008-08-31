@@ -114,8 +114,6 @@ namespace Herwig {
      */
     static void Init();
     
-    
-    
     /**
      * Finalize this object. Called in the run phase just after a
      * run has ended. Used eg. to write out statistics.
@@ -123,6 +121,14 @@ namespace Herwig {
     virtual void dofinish();
     
   protected:
+    
+    /**
+     * Function to return a specific boost to the rest frame of the 
+     * leptons to histogram the polar angles in this frame. This is 
+     * verbatim c++ translation of mcfm/src/Singletop/boostx.f.
+     */
+    Lorentz5Momentum boostx(Lorentz5Momentum p_in, Lorentz5Momentum pt,
+			    Lorentz5Momentum ptt);
     
     /** @name Clone Methods. */
     //@{
