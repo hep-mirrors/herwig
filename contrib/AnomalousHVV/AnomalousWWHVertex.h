@@ -178,7 +178,7 @@ struct ClassTraits<Herwig::AnomalousWWHVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "AnomalousWWHVertex.so"; }
+  static string library() { return "AnomalousHVV.so"; }
 };
 
 /** @endcond */

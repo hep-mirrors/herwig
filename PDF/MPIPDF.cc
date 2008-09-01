@@ -29,6 +29,16 @@ using namespace ThePEG;
 
 MPIPDF::~MPIPDF() {}
 
+
+IBPtr MPIPDF::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MPIPDF::fullclone() const {
+  return new_ptr(*this);
+}
+
+
 bool MPIPDF::canHandleParticle(tcPDPtr particle) const {
   assert(thePDF);
   return thePDF->canHandleParticle(particle);
@@ -39,19 +49,20 @@ cPDVector MPIPDF::partons(tcPDPtr particle) const {
   return thePDF->partons(particle);
 }
 
-double MPIPDF::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-                      double l, Energy2 particleScale) const {
+double MPIPDF::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		   double x, double eps, Energy2 particleScale) const {
   // returns the density with removed valence part.
   assert(thePDF);
-  return thePDF->xfl(particle, parton, partonScale, l, particleScale)-
-    thePDF->xfvl(particle, parton, partonScale, l, particleScale);
+  return thePDF->xfsx(particle, parton, partonScale, 
+		      x, eps, particleScale);
 }
 
-double MPIPDF::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double l, Energy2 particleScale) const {
+double MPIPDF::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		    double x, double eps, Energy2 particleScale) const {
   // Here we should return the actual valence density.
   assert(thePDF);
-  return thePDF->xfvl(particle, parton, partonScale, l, particleScale);
+  return thePDF->xfvx(particle, parton, partonScale, 
+		      x, eps, particleScale);
 }
 
 
@@ -69,7 +80,8 @@ ClassDescription<MPIPDF> MPIPDF::initMPIPDF;
 void MPIPDF::Init() {
 
   static ClassDocumentation<MPIPDF> documentation
-    ("There is no documentation for the MPIPDF class");
+    ("The MPIPDF class wraps other PDF classes to provide "
+     "sea-quark-only PDFs.");
 
 }
 

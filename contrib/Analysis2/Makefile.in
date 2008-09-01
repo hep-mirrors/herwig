@@ -9,10 +9,13 @@
 #
 
 # location of include files
-THEPEGINCLUDE = -I/home/richardn/montecarlo/c++/ThePEG/trunk
-CLHEPINCLUDE  = -I/home/richardn/montecarlo/c++/utilities/include
-HERWIGINCLUDE = -I/home/richardn/montecarlo/c++/Herwig++/trunk
-INCLUDE = $(THEPEGINCLUDE) $(CLHEPINCLUDE) $(HERWIGINCLUDE)
+THEPEGINCLUDE=
+CLHEPINCLUDE=
+GSLINCLUDE=
+HERWIGINCLUDE=
+FASTJETINCLUDE=
+KTJETINCLUDE=
+INCLUDE = $(THEPEGINCLUDE) $(CLHEPINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE) $(FASTJETINCLUDE) $(KTJETINCLUDE)
 #
 # C++ flags
 # 

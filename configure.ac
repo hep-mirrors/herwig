@@ -112,7 +112,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Hadron/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
-                MatrixElement/Gamma/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile
@@ -139,6 +138,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Analysis/BSM/Makefile
 		src/Makefile-UserModules
 		src/defaults/Analysis.in
+		contrib/Makefile
+		contrib/make_makefiles.sh
 		Makefile])
 
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])

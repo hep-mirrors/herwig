@@ -9,10 +9,11 @@
 #
 
 # location of include files
-THEPEGINCLUDE = -I/home/richardn/montecarlo/c++/ThePEG/trunk
-CLHEPINCLUDE  = -I/home/richardn/montecarlo/c++/utilities/include
-HERWIGINCLUDE = -I/home/richardn/montecarlo/c++/Herwig++/trunk
-INCLUDE = $(THEPEGINCLUDE) $(CLHEPINCLUDE) $(HERWIGINCLUDE)
+THEPEGINCLUDE =
+GSLINCLUDE  =
+HERWIGINCLUDE =
+EVTGENINCLUDE =-I/home/richardn/montecarlo/c++/evtgen/evtgenlhc
+INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE) $(EVTGENINCLUDE)
 #
 # C++ flags
 # 
@@ -21,14 +22,14 @@ CXXFLAGS = -O2
 
 ALLCCFILES=$(shell echo *.cc)
 
-default : LeptonME.so
+default : HwEvtGen.so
 
 %.o : %.cc %.h
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
 
-LeptonME.so: MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o
+HwEvtGen.so: EvtGen.o  EvtGenDecayer.o
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
-	MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o -shared -o LeptonME.so
+		  EvtGen.o  EvtGenDecayer.o -shared -o HwEvtGen.so
 
 clean:
-	rm -f $(ALLCCFILES:.cc=.o) LeptonME.so
+	rm -f $(ALLCCFILES:.cc=.o) HwEvtGen.so
