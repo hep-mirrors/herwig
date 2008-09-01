@@ -9,10 +9,10 @@
 #
 
 # location of include files
-THEPEGINCLUDE = -I/home/richardn/montecarlo/c++/ThePEG/trunk
-CLHEPINCLUDE  = -I/home/richardn/montecarlo/c++/utilities/include
-HERWIGINCLUDE = -I/home/richardn/montecarlo/c++/Herwig++/trunk
-INCLUDE = $(THEPEGINCLUDE) $(CLHEPINCLUDE) $(HERWIGINCLUDE)
+THEPEGINCLUDE =
+GSLINCLUDE  =
+HERWIGINCLUDE =
+INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
 #
 # C++ flags
 # 
@@ -36,7 +36,3 @@ RadiativeZPrime.so : AnomalousVVVVertex.o  RadiativeZPrimeModel.o  FFZPrimeVerte
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.o) RadiativeZPrime.so
-
-Zprime.tar.gz: 
-	tar czf ./Zprime.tar.gz *.cc *.icc *.fh *.h Makefile LHC-RadiativeZPrime.in \
-	RadiativeZPrime.model

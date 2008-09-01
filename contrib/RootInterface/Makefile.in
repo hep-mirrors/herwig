@@ -1,0 +1,37 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+# You can find plugins here: INSERT URL
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+# these come from the Herwig config
+THEPEGINCLUDE =
+GSLINCLUDE  =
+HERWIGINCLUDE =
+# these need to be added by hand
+ROOTPATH = 
+ROOTINCLUDE  =-I$(ROOTPATH)/include
+ROOTLIB = -L$(ROOTPATH)/ 
+# total include
+INCLUDE = $(ROOTINCLUDE) $(THEPEGINCLUDE) $(GSLINCLUDE)  $(HERWIGINCLUDE)
+#
+# C++ flags
+# 
+CXX = g++
+CXXFLAGS = -O2
+
+ALLCCFILES=$(shell echo *.cc)
+
+
+all : RootInterface.so
+
+%.so : %.cc %.h 
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -shared $(ROOTLIB) $< -o $@  
+
+clean:
+	rm -f $(ALLCCFILES:.cc=.so)
