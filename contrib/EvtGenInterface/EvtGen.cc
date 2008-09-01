@@ -233,13 +233,13 @@ RhoDMatrix EvtGen::ThePEGSpinDensity(const EvtSpinDensity & rho, int id) const {
   unsigned int ix,iy;
   // special for neutrinos
   if(abs(id)%2==0&&abs(id)>=12&&abs(id)<=16) {
-    output.iSpin(PDT::Spin1Half);output.zero();
+    output = RhoDMatrix(PDT::Spin1Half, false);
     if(id>0) output(0,0)=ThePEGComplex(rho.Get(0,0));
     else     output(1,1)=ThePEGComplex(rho.Get(0,0));
   }
   // special for photons
   else if(id==ParticleID::gamma) {
-    output.iSpin(PDT::Spin1);output.zero();
+    output = RhoDMatrix(PDT::Spin1, false);
     for(ix=0;ix<2;++ix) {
       for(iy=0;iy<2;++iy) output(2*ix,2*iy)=ThePEGComplex(rho.Get(ix,iy));
     }
@@ -248,14 +248,13 @@ RhoDMatrix EvtGen::ThePEGSpinDensity(const EvtSpinDensity & rho, int id) const {
   else {
     unsigned int ndim(abs(rho.GetDim()));
     if(ndim!=0) {
-      output.iSpin(PDT::Spin(ndim));
+      output = RhoDMatrix(PDT::Spin(ndim));
       for(ix=0;ix<ndim;++ix) {
 	for(iy=0;iy<ndim;++iy) output(ix,iy)=ThePEGComplex(rho.Get(ix,iy));
       }
     }
     else if(ndim==0) {
-      output.iSpin(PDT::Spin0);
-      output.average();
+      output = RhoDMatrix(PDT::Spin0);
     }
   }
   return output;
@@ -966,7 +965,6 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
     else {
       pspin->setDeveloped(true);
       RhoDMatrix rhotemp(pspin->iSpin());
-      rhotemp.average();
       pspin->DMatrix()=rhotemp;
     }
     pspin->decayed(true);

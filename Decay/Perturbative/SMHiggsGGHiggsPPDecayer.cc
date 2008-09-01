@@ -90,7 +90,7 @@ double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int,
 				    const Particle & part,
 				    const ParticleVector & decay) const {
   RhoDMatrix rhoH(PDT::Spin0);
-  rhoH.average();
+  
   vector<VectorWaveFunction> V1,V2;
   ScalarWaveFunction hwave(const_ptr_cast<tPPtr>(&part),
 			   rhoH,incoming,true,vertex);

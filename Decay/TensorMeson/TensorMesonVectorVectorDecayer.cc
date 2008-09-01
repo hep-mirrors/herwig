@@ -196,7 +196,7 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
 					   const ParticleVector & decay) const {
   // wave functions etc for the incoming particle
   vector<LorentzTensor<double> > inten;
-  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin2);
   TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);
   // wave functions for the decay products

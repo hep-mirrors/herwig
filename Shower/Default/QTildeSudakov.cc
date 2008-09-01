@@ -321,7 +321,7 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
   SpinfoPtr inspin(getMapping(rho,mapping,particle,kinematics));
   // map the rho matrix to the shower basis
   RhoDMatrix rhop(rho.iSpin());
-  rhop.output();
+  cout << rhop << "\n";
   for(int ixa=0;ixa<rho.iSpin();++ixa) {
     for(int ixb=0;ixb<rho.iSpin();++ixb) {
       for(int iya=0;iya<rho.iSpin();++iya) {

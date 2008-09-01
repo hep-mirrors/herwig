@@ -34,20 +34,11 @@ public:
 
   /** @name Standard constructors and destructors. */
   //@{
-  /**
-   * The default constructor, which shouldn't be called
-   */
-  inline MPIPDF();
 
   /**
    * The constructor which takes a PDF object as argument, to work with.
    */
-  inline MPIPDF(tcPDFPtr orig);
-
-  /**
-   * The copy constructor.
-   */
-  inline MPIPDF(const MPIPDF &);
+  MPIPDF(tcPDFPtr orig = tcPDFPtr()) : thePDF(orig) {}
 
   /**
    * The destructor.
@@ -73,23 +64,28 @@ public:
 
   /**
    * The density. Return the pdf for the given \a parton inside the
-   * given \a particle for the virtuality \a partonScale and
-   * logarithmic momentum fraction \a l \f$(l=\log(1/x)\f$. The \a
-   * particle is assumed to have a virtuality \a particleScale.
+   * given \a particle for the virtuality \a partonScale and momentum
+   * fraction \a x. The \a particle is assumed to have a virtuality \a
+   * particleScale. For MPIPDF, only the sea quark densities
+   * are included here!
    */
-  virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double l, Energy2 particleScale = 0.0*GeV2) const;
+  virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		     double x, double eps = 0.0,
+		     Energy2 particleScale = 0.0*GeV2) const;
+
 
   /**
    * The valence density. Return the pdf for the given cvalence \a
    * parton inside the given \a particle for the virtuality \a
-   * partonScale and logarithmic momentum fraction \a l
-   * \f$(l=\log(1/x)\f$. The \a particle is assumed to have a
-   * virtuality \a particleScale. If not overidden by a sub class this
-   * will return zero.
+   * partonScale and momentum fraction \a x. The \a particle is
+   * assumed to have a virtuality \a particleScale. If not overidden
+   * by a sub class this implementation will assume that the
+   * difference between a quark and anti-quark distribution is due do
+   * valense quarks, but return zero for anything else.
    */
-  virtual double xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-		     double l, Energy2 particleScale = 0.0*GeV2) const;
+  virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
+		      double x, double eps = 0.0,
+		      Energy2 particleScale = 0.0*GeV2) const;
   //@}
 
 
@@ -127,13 +123,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 
@@ -197,10 +193,5 @@ struct ClassTraits<Herwig::MPIPDF>
 /** @endcond */
 
 }
-
-#include "MPIPDF.icc"
-#ifndef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "MPIPDF.tcc"
-#endif
 
 #endif /* HERWIG_MPIPDF_H */

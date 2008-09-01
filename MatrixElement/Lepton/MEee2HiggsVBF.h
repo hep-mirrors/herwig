@@ -48,13 +48,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -109,10 +109,5 @@ struct ClassTraits<Herwig::MEee2HiggsVBF>
 /** @endcond */
 
 }
-
-#include "MEee2HiggsVBF.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEee2HiggsVBF.tcc"
-#endif
 
 #endif /* HERWIG_MEee2HiggsVBF_H */

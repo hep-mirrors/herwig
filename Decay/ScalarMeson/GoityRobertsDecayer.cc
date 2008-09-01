@@ -1063,7 +1063,7 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
       }
     }
   }
-  RhoDMatrix temp(PDT::Spin0); temp.average();
+  RhoDMatrix temp(PDT::Spin0); 
   // store the matrix element
   ME(newME);
   double me=0.5*(newME.contract(temp)).real()*md*mb*SM().CKM(1,2)*sqr(inpart.mass()*_GF);

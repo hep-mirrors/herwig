@@ -329,7 +329,7 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
     }
   }
   ME(newME);
-  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);rhoin.average();
+  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);
   double me=newME.contract(rhoin).real();
   if(identical) me *= 0.25;
   return me;

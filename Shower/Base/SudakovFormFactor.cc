@@ -240,7 +240,7 @@ SpinfoPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
   // if the particle is final-state and not from the hard process
   if(!particle.perturbative() && particle.isFinalState()) {
     // mapping is the identity
-    mapping=RhoDMatrix(particle.dataPtr()->iSpin());mapping.average();
+    mapping=RhoDMatrix(particle.dataPtr()->iSpin());
     output=dynamic_ptr_cast<SpinfoPtr>(particle.spinInfo());
     // should have spin info
     if(!output) {

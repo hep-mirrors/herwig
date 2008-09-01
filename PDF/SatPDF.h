@@ -13,7 +13,6 @@
 //
 
 #include "ThePEG/PDF/PDFBase.h"
-#include "SatPDF.fh"
 
 namespace Herwig {
 using namespace ThePEG;

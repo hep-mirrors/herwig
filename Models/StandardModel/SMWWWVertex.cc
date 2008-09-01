@@ -52,7 +52,7 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
     if(d3!=intermediate) ida=-ida;
     if(d1!=intermediate) idc=-idc;
   }
-  else if(ida!=-idb) {
+  else if(abs(idc)!=24&&ida!=-idb) {
     if(d2!=intermediate) ida=-ida;
     if(d1!=intermediate) idb=-idb;
   }

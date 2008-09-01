@@ -40,7 +40,7 @@ cd /Herwig/Generators
 #  Useful analysis handlers for LEP physics
 ##################################################
 # particle multiplicities
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Multiplicity
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPMultiplicity
 # b multiplicities
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
 # b fragmentation functions
@@ -49,9 +49,9 @@ cd /Herwig/Generators
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
 # identified particle spectra
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
-# four jet analysis
+# four jet analysis (needs KtJet installed)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
-# general jet analysis
+# general jet analysis (needs KtJet installed)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
 
 ##################################################

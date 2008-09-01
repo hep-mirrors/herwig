@@ -1,0 +1,33 @@
+#!/bin/bash
+# script to put the HERWIG and THEPEG paths into the simple makefiles,
+# for everything else the user is on their own!
+# loop over all the files
+
+THEPEGINCLUDE="@THEPEGINCLUDE@"
+CLHEPINCLUDE="@CLHEPINCLUDE@"
+GSLINCLUDE="@GSLINCLUDE@"
+FASTJETINCLUDE="@FASTJETINCLUDE@"
+KTJETINCLUDE="@KTJETINCLUDE@"
+HERWIGINCLUDE=-I@prefix@/include/
+HEPMCINCLUDE="@HEPMCINCLUDE@"
+HEPMCLIBS="@HEPMCLIBS@"
+for i in *
+do
+# if a directory
+  if [ -d $i ]; then
+# check input files exists
+      file=$i/Makefile.in
+      if [ -e $file ]; then
+	  file2=`echo $file | sed s!\.in!!`
+	  echo 'Making ' $file2
+	  sed "s!THEPEGINCLUDE.*\=!THEPEGINCLUDE=$THEPEGINCLUDE!" < $file | \
+	  sed "s!CLHEPINCLUDE.*\=!CLHEPINCLUDE=$CLHEPINCLUDE!" | \
+	  sed "s!HERWIGINCLUDE.*\=!HERWIGINCLUDE=$HERWIGINCLUDE!" | \
+	  sed "s!GSLINCLUDE.*\=!GSLINCLUDE=$GSLINCLUDE!" | \
+	  sed "s!KTJETINCLUDE.*\=!KTJETINCLUDE=$KTJETINCLUDE!" | \
+	  sed "s!FASTJETINCLUDE.*\=!FASTJETINCLUDE=$FASTJETINCLUDE!" | \
+	  sed "s!HEPMCINCLUDE.*\=!HEPMCINCLUDE=$HEPMCINCLUDE!" | \
+	  sed "s!HEPMCLIBS.*\=!HEPMCLIBS=$HEPMCLIBS!" > $file2
+      fi
+  fi
+done

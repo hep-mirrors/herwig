@@ -307,7 +307,7 @@ private:
 
   /**
    * Method to calculate the poisson probability for expectation value
-   * <n> = A(b)*sigma, and multiplicity N.
+   * \f$<n> = A(b)\sigma\f$, and multiplicity N.
    */
   double poisson(Length b, CrossSection sigma, 
 		 unsigned int N, Energy2 mu2=0*GeV2) const;
@@ -443,8 +443,8 @@ private:
   Energy2 softMu2_;
 
   /**
-   * slope to the non-perturbative pt spectrum: d\sigma/dp_T^2 = A \exp
-   * (- beta p_T^2). Its value is determined durint initialization.
+   * slope to the non-perturbative pt spectrum: \f$d\sigma/dp_T^2 = A \exp
+   * (- beta p_T^2)\f$. Its value is determined durint initialization.
    */
   InvEnergy2 beta_;
   /**
