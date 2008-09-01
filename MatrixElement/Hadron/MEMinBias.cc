@@ -20,7 +20,7 @@ using namespace Herwig;
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 
 void MEMinBias::getDiagrams() const {
-  int maxflav(5);
+  int maxflav(2);
   tcPDPtr ph = getParticleData(ParticleID::gamma);
 
   for ( int i = 1; i <= maxflav; ++i ) {
