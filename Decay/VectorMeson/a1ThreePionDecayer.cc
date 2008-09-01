@@ -480,7 +480,7 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
 			       const Particle & inpart,
 			       const ParticleVector & decay) const {
   // wavefunctions for the decaying particles
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin1);
   vector<LorentzPolarizationVector> invec;
   VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);

@@ -202,7 +202,7 @@ protected:
   inline complex<Energy> me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2) const;
 
   /**
-   *  The \f%F(x)\f$ function for the leading-order result
+   *  The \f$F(x)\f$ function for the leading-order result
    */
   inline Complex F(double x);
   //@}

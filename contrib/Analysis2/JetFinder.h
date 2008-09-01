@@ -340,7 +340,7 @@ struct ClassTraits<Herwig::JetFinder>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwAnalysis2.so"; }
+  static string library() { return "Analysis2.so"; }
 };
 
 /** @endcond */

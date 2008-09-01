@@ -253,7 +253,7 @@ double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
     }
   }
   ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin0);
 //   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy mass = idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();

@@ -28,11 +28,11 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 }
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _removeOnShell << _interopt << _widthopt;
+  os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _removeOnShell >> _interopt >> _widthopt;
+  is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -79,7 +79,6 @@ void ThreeBodyDecayConstructor::Init() {
      "Set the widths to zero",
      3);
 
-
   static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceIntermediateOption
     ("IntermediateOption",
      "Option for the inclusion of intermediates in the event",
@@ -99,7 +98,13 @@ void ThreeBodyDecayConstructor::Init() {
      "OnlyIfOnShell",
      "Only if there are on-shell diagrams",
      0);
-
+  
+  static Parameter<ThreeBodyDecayConstructor,double> interfaceMinReleaseFraction
+    ("MinReleaseFraction",
+     "The minimum energy release for a three-body decay, as a "
+     "fraction of the parent mass.",
+     &ThreeBodyDecayConstructor::_minReleaseFraction, 1e-3, 0.0, 1.0,
+     false, false, Interface::limited);
 }
 
 void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
@@ -157,8 +162,9 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 	{getParticleData(dit->outgoing)->constituentMass(),
 	 getParticleData(dit->outgoingPair.first)->constituentMass(),
 	 getParticleData(dit->outgoingPair.second)->constituentMass()};
-      // remove processes which aren't kinematically allowed
-      if(min <= mout[0] + mout[1] + mout[2]) continue;
+      // remove processes which aren't kinematically allowed within
+      if( min - mout[0] - mout[1] - mout[2] < _minReleaseFraction * min )
+	continue;
       // remove QED and QCD radiation diagrams
       // radiation from intermediate
       if((dit->outgoingPair.first ==dit->intermediate->id() &&

@@ -9,6 +9,7 @@
 #include "Rivet/AnalysisHandler.hh"
 
 namespace Herwig {
+using namespace ThePEG;
 
 /**
  * Here is the documentation of the RivetAnalysis class.

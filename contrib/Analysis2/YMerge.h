@@ -12,7 +12,7 @@
 // This is the declaration of the YMerge class.
 //
 
-#include "Herwig++/Analysis2/Analysis2Base.h"
+#include "Analysis2Base.h"
 #include "YMerge.fh"
 
 namespace Herwig {
@@ -191,7 +191,7 @@ struct ClassTraits<Herwig::YMerge>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwAnalysis2.so"; }
+  static string library() { return "Analysis2.so"; }
 };
 
 /** @endcond */

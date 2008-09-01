@@ -521,10 +521,9 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
 }
 
 void HardProcessConstructor::assignToCF(HPDiagram & diag) {
-
   if(diag.channelType == HPDiagram::tChannel) {
     if(diag.ordered.second) tChannelCF(diag);
-    else uChannelCF(diag);
+    else                    uChannelCF(diag);
   }
   else if(diag.channelType == HPDiagram::sChannel)
     sChannelCF(diag);
@@ -632,7 +631,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
     }
   }
   else {
-    if(outa == PDT::Colour0)
+    if(outa == PDT::Colour0 || outb == PDT::Colour0 )
       cfv[0] = make_pair(1, 1);
     else
       cfv[0] = make_pair(2, 1);

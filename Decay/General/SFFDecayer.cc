@@ -59,7 +59,7 @@ void SFFDecayer::Init() {
 double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin0);
-  rhoin.average();
+  
   ScalarWaveFunction inwave =
     ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),rhoin,
 		       incoming,true,vertex);

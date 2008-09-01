@@ -266,7 +266,7 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
     }	  
   }
   ME(newME);
-  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);rhoin.average();
+  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);
   double me = newME.contract(rhoin).real();
 //   //code to test the matrix element against the analytic result
 //   Energy   m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};

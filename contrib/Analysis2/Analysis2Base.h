@@ -14,14 +14,11 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Analysis2Base.fh"
-
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-
 #include "ThePEG/Utilities/StringUtils.h"
-
-#include "Herwig++/Utilities/Histogram2/Histogram2.h"
-#include "Herwig++/Utilities/Histogram2/Histogram2Output.h"
+#include "Histogram2.h"
+#include "Histogram2Output.h"
 #include "JetFinder.h"
 
 namespace Herwig {
@@ -445,7 +442,7 @@ struct ClassTraits<Herwig::Analysis2Base>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwAnalysis2.so"; }
+  static string library() { return "Analysis2.so"; }
 };
 
 /** @endcond */
@@ -453,8 +450,5 @@ struct ClassTraits<Herwig::Analysis2Base>
 }
 
 #include "Analysis2Base.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Analysis2Base.tcc"
-#endif
 
 #endif /* HERWIG_Analysis2Base_H */

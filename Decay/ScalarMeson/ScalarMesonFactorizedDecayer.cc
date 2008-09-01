@@ -605,7 +605,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   // store the matrix element
   ME(newME);
   // perform the contraction
-  RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin0);
   return 0.5*(newME.contract(rhoin)).real();
 }
   

@@ -1,23 +1,9 @@
-pkglib_LTLIBRARIES = 
-
-noinst_LTLIBRARIES = libHwPDF.la 
-libHwPDF_la_SOURCES = \
-PartonExtractor.cc PartonExtractor.h \
-PartonExtractor.icc PartonExtractor.fh
-
-pkglib_LTLIBRARIES += HwMRST.la
+pkglib_LTLIBRARIES = HwMRST.la
 HwMRST_la_SOURCES = \
 MRST.cc MRST.h MRST.icc 
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
 HwMRST_la_LDFLAGS = -module -version-info 4:0:0
-
-pkglib_LTLIBRARIES += HwLeptonPDF.la
-HwLeptonPDF_la_SOURCES = \
-WeiszackerWilliamsPDF.cc WeiszackerWilliamsPDF.h \
-LeptonRemnant.cc LeptonRemnant.h LeptonRemnant.icc LeptonRemnant.fh
-HwLeptonPDF_la_LDFLAGS = -module -version-info 3:0:0
-
 
 EXTRA_DIST = mrst
 
@@ -29,14 +15,14 @@ HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
 
 pkglib_LTLIBRARIES += HwMPIPDF.la
 HwMPIPDF_la_SOURCES = \
-MPIPDF.h MPIPDF.cc MPIPDF.fh MPIPDF.icc \
+MPIPDF.h MPIPDF.cc MPIPDF.fh \
 MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
 
 HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwSatPDF.la
 HwSatPDF_la_SOURCES = \
-SatPDF.h SatPDF.cc SatPDF.fh
+SatPDF.h SatPDF.cc
 
 HwSatPDF_la_LDFLAGS = -module -version-info 1:0:0
 

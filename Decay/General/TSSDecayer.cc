@@ -59,7 +59,7 @@ void TSSDecayer::Init() {
 double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin2);
-  rhoin.average();
+  
   vector<LorentzTensor<double> > in;
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);

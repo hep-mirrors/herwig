@@ -258,7 +258,7 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
 
 Selector<const ColourLines *>
 MEfv2fs::colourGeometries(tcDiagPtr diag) const {
-  static vector<ColourLines> cl(10);
+  static vector<ColourLines> cl(14);
   //38->83
   cl[0] = ColourLines("1 4, -4 2 -3, 3 5");
   cl[1] = ColourLines("1 -2, 2 3 4, 5 -4 ");
@@ -273,6 +273,12 @@ MEfv2fs::colourGeometries(tcDiagPtr diag) const {
   //3b8->13b
   cl[8] = ColourLines("-1 2 3, -3 -5");
   cl[9] = ColourLines("-1 2, -5 -3 -2");
+  //38->31
+  cl[10] = ColourLines("1 2 -3, 3 4");
+  cl[11] = ColourLines("1-2, 2 3 4");
+  //3b8->3b1
+  cl[12] = ColourLines("-1 2 3, -3 -4");
+  cl[13] = ColourLines("-1 2, -4 -3 -2");
   vector<ColourLines>::size_type offset;
   if(mePartonData()[0]->id() > 0 && 
      mePartonData()[2]->iColour() == PDT::Colour8 ) offset = 0;
@@ -280,7 +286,12 @@ MEfv2fs::colourGeometries(tcDiagPtr diag) const {
 	  mePartonData()[2]->iColour() == PDT::Colour8 ) offset = 3;
   else if(mePartonData()[0]->id() > 0 && 
 	  mePartonData()[2]->iColour() == PDT::Colour0 ) offset = 6;
-  else offset = 8;
+  else if(mePartonData()[0]->id() < 0 && 
+	  mePartonData()[2]->iColour() == PDT::Colour0 ) offset = 8;
+  else if(mePartonData()[0]->id() > 0 && 
+	  mePartonData()[3]->iColour() == PDT::Colour0 ) offset = 10;
+  else if(mePartonData()[0]->id() < 0 && 
+	  mePartonData()[3]->iColour() == PDT::Colour0 ) offset = 12;
   HPDiagram current = getProcessInfo().at(abs(diag->id()) - 1); 
   Selector<const ColourLines *> sel;
   if(current.channelType == HPDiagram::tChannel && 

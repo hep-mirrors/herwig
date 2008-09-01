@@ -293,7 +293,7 @@ double OniumToOniumPiPiDecayer::me2(bool vertex, const int,
 				    const ParticleVector & decay) const {
   useMe();
   // polarization vector of the incoming onium resonance
-  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin1);
   vector<LorentzPolarizationVector> vin;
   VectorWaveFunction(vin,rhoin,const_ptr_cast<tPPtr>(&inpart),
  		     incoming,true,false,vertex);

@@ -41,7 +41,7 @@ RhoDMatrix ProductionMatrixElement::calculateDMatrix(int id, RhoDMatrix rhoin,
   // vectors for the helicities
   vector<unsigned int> ihel1(_outspin.size()+2),ihel2(_outspin.size()+2);
   // rhomatrix to be returned
-  RhoDMatrix output(_inspin[id]); output.zero();
+  RhoDMatrix output(_inspin[id], false);
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
@@ -91,7 +91,7 @@ RhoDMatrix ProductionMatrixElement::calculateRhoMatrix(int id,
   // vectors for the helicities
   vector<unsigned int> ihel1(_outspin.size()+2),ihel2(_outspin.size()+2);
   // rhomatrix to be returned
-  RhoDMatrix output(_outspin[id]); output.zero();
+  RhoDMatrix output(_outspin[id], false);
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
