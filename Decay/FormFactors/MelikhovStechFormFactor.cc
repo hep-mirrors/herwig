@@ -596,142 +596,143 @@ void MelikhovStechFormFactor::dataBaseOutput(ofstream & output,bool header,
 					     bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::MelikhovStechFormFactor " 
-		    << fullName() << " \n";
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+		    << name() << " \n";
+  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << fullName() << ":FPlus0 " 
+      output << "set " << name() << ":FPlus0 " 
 	     << ix << "  " << _fplus0[ix] << "\n";
-      output << "set " << fullName() << ":F+sigma_1 " 
+      output << "set " << name() << ":F+sigma_1 " 
 	     << ix << "  " << _sigma1fp[ix] << "\n";
-      output << "set " << fullName() << ":F+sigma_2 " 
+      output << "set " << name() << ":F+sigma_2 " 
 	     << ix << "  " << _sigma2fp[ix] << "\n";
-      output << "set " << fullName() << ":F00 " 
+      output << "set " << name() << ":F00 " 
 	     << ix << "  " << _f00[ix] << "\n";
-      output << "set " << fullName() << ":F0sigma_1 " 
+      output << "set " << name() << ":F0sigma_1 " 
 	     << ix << "  " << _sigma1f0[ix] << "\n";
-      output << "set " << fullName() << ":F0sigma_2 " 
+      output << "set " << name() << ":F0sigma_2 " 
 	     << ix << "  " << _sigma2f0[ix] << "\n";
-      output << "set " << fullName() << ":FT0 " 
+      output << "set " << name() << ":FT0 " 
 	     << ix << "  " << _fT0[ix] << "\n";
-      output << "set " << fullName() << ":FTsigma_1 " 
+      output << "set " << name() << ":FTsigma_1 " 
 	     << ix << "  " << _sigma1fT[ix] << "\n";
-      output << "set " << fullName() << ":FTsigma_2 " 
+      output << "set " << name() << ":FTsigma_2 " 
 	     << ix << "  " << _sigma2fT[ix] << "\n";
-      output << "set " << fullName() << ":V00 " 
+      output << "set " << name() << ":V00 " 
 	     << ix << "  " << _V0[ix] << "\n";
-      output << "set " << fullName() << ":V0sigma_1 " 
+      output << "set " << name() << ":V0sigma_1 " 
 	     << ix << "  " << _sigma1V0[ix] << "\n";
-      output << "set " << fullName() << ":V0sigma_2 " 
+      output << "set " << name() << ":V0sigma_2 " 
 	     << ix << "  " << _sigma2V0[ix] << "\n";
-      output << "set " << fullName() << ":A00 " 
+      output << "set " << name() << ":A00 " 
 	     << ix << "  " << _A00[ix] << "\n";
-      output << "set " << fullName() << ":A0sigma_1 " 
+      output << "set " << name() << ":A0sigma_1 " 
 	     << ix << "  " << _sigma1A0[ix] << "\n";
-      output << "set " << fullName() << ":A0sigma_2 " 
+      output << "set " << name() << ":A0sigma_2 " 
 	     << ix << "  " << _sigma2A0[ix] << "\n";
-      output << "set " << fullName() << ":A10 " 
+      output << "set " << name() << ":A10 " 
 	     << ix << "  " << _A10[ix] << "\n";
-      output << "set " << fullName() << ":A1sigma_1 " 
+      output << "set " << name() << ":A1sigma_1 " 
 	     << ix << "  " << _sigma1A1[ix] << "\n";
-      output << "set " << fullName() << ":A1sigma_2 " 
+      output << "set " << name() << ":A1sigma_2 " 
 	     << ix << "  " << _sigma2A1[ix] << "\n";
-      output << "set " << fullName() << ":A20 " 
+      output << "set " << name() << ":A20 " 
 	     << ix << "  " << _A20[ix] << "\n";
-      output << "set " << fullName() << ":A2sigma_1 " 
+      output << "set " << name() << ":A2sigma_1 " 
 	     << ix << "  " << _sigma1A2[ix] << "\n";
-      output << "set " << fullName() << ":A2sigma_2 " 
+      output << "set " << name() << ":A2sigma_2 " 
 	     << ix << "  " << _sigma2A2[ix] << "\n";
-      output << "set " << fullName() << ":T10 " 
+      output << "set " << name() << ":T10 " 
 	     << ix << "  " << _T10[ix] << "\n";
-      output << "set " << fullName() << ":T1sigma_1 " 
+      output << "set " << name() << ":T1sigma_1 " 
 	     << ix << "  " << _sigma1T1[ix] << "\n";
-      output << "set " << fullName() << ":T1sigma_2 " 
+      output << "set " << name() << ":T1sigma_2 " 
 	     << ix << "  " << _sigma2T1[ix] << "\n";
-      output << "set " << fullName() << ":T20 " 
+      output << "set " << name() << ":T20 " 
 	     << ix << "  " << _T20[ix] << "\n";
-      output << "set " << fullName() << ":T2sigma_1 " 
+      output << "set " << name() << ":T2sigma_1 " 
 	     << ix << "  " << _sigma1T2[ix] << "\n";
-      output << "set " << fullName() << ":T2sigma_2 " 
+      output << "set " << name() << ":T2sigma_2 " 
 	     << ix << "  " << _sigma2T2[ix] << "\n";
-      output << "set " << fullName() << ":T30 " 
+      output << "set " << name() << ":T30 " 
 	     << ix << "  " << _T30[ix] << "\n";
-      output << "set " << fullName() << ":T3sigma_1 " 
+      output << "set " << name() << ":T3sigma_1 " 
 	     << ix << "  " << _sigma1T3[ix] << "\n";
-      output << "set " << fullName() << ":T3sigma_2 " 
+      output << "set " << name() << ":T3sigma_2 " 
 	     << ix << "  " << _sigma2T3[ix] << "\n";
-      output << "set " << fullName() << ":MassP " 
+      output << "set " << name() << ":MassP " 
 	     << ix << "  " << _massP[ix]/GeV << "\n";
-      output << "set " << fullName() << ":MassV " 
+      output << "set " << name() << ":MassV " 
 	     << ix << "  " << _massV[ix]/GeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":FPlus0 " 
+      output << "insert " << name() << ":FPlus0 " 
 	     << ix << "  " << _fplus0[ix] << "\n";
-      output << "insert " << fullName() << ":F+sigma_1 " 
+      output << "insert " << name() << ":F+sigma_1 " 
 	     << ix << "  " << _sigma1fp[ix] << "\n";
-      output << "insert " << fullName() << ":F+sigma_2 " 
+      output << "insert " << name() << ":F+sigma_2 " 
 	     << ix << "  " << _sigma2fp[ix] << "\n";
-      output << "insert " << fullName() << ":F00 " 
+      output << "insert " << name() << ":F00 " 
 	     << ix << "  " << _f00[ix] << "\n";
-      output << "insert " << fullName() << ":F0sigma_1 " 
+      output << "insert " << name() << ":F0sigma_1 " 
 	     << ix << "  " << _sigma1f0[ix] << "\n";
-      output << "insert " << fullName() << ":F0sigma_2 " 
+      output << "insert " << name() << ":F0sigma_2 " 
 	     << ix << "  " << _sigma2f0[ix] << "\n";
-      output << "insert " << fullName() << ":FT0 " 
+      output << "insert " << name() << ":FT0 " 
 	     << ix << "  " << _fT0[ix] << "\n";
-      output << "insert " << fullName() << ":FTsigma_1 " 
+      output << "insert " << name() << ":FTsigma_1 " 
 	     << ix << "  " << _sigma1fT[ix] << "\n";
-      output << "insert " << fullName() << ":FTsigma_2 " 
+      output << "insert " << name() << ":FTsigma_2 " 
 	     << ix << "  " << _sigma2fT[ix] << "\n";
-      output << "insert " << fullName() << ":V00 " 
+      output << "insert " << name() << ":V00 " 
 	     << ix << "  " << _V0[ix] << "\n";
-      output << "insert " << fullName() << ":V0sigma_1 " 
+      output << "insert " << name() << ":V0sigma_1 " 
 	     << ix << "  " << _sigma1V0[ix] << "\n";
-      output << "insert " << fullName() << ":V0sigma_2 " 
+      output << "insert " << name() << ":V0sigma_2 " 
 	     << ix << "  " << _sigma2V0[ix] << "\n";
-      output << "insert " << fullName() << ":A00 " 
+      output << "insert " << name() << ":A00 " 
 	     << ix << "  " << _A00[ix] << "\n";
-      output << "insert " << fullName() << ":A0sigma_1 " 
+      output << "insert " << name() << ":A0sigma_1 " 
 	     << ix << "  " << _sigma1A0[ix] << "\n";
-      output << "insert " << fullName() << ":A0sigma_2 " 
+      output << "insert " << name() << ":A0sigma_2 " 
 	     << ix << "  " << _sigma2A0[ix] << "\n";
-      output << "insert " << fullName() << ":A10 " 
+      output << "insert " << name() << ":A10 " 
 	     << ix << "  " << _A10[ix] << "\n";
-      output << "insert " << fullName() << ":A1sigma_1 " 
+      output << "insert " << name() << ":A1sigma_1 " 
 	     << ix << "  " << _sigma1A1[ix] << "\n";
-      output << "insert " << fullName() << ":A1sigma_2 " 
+      output << "insert " << name() << ":A1sigma_2 " 
 	     << ix << "  " << _sigma2A1[ix] << "\n";
-      output << "insert " << fullName() << ":A20 " 
+      output << "insert " << name() << ":A20 " 
 	     << ix << "  " << _A20[ix] << "\n";
-      output << "insert " << fullName() << ":A2sigma_1 " 
+      output << "insert " << name() << ":A2sigma_1 " 
 	     << ix << "  " << _sigma1A2[ix] << "\n";
-      output << "insert " << fullName() << ":A2sigma_2 " 
+      output << "insert " << name() << ":A2sigma_2 " 
 	     << ix << "  " << _sigma2A2[ix] << "\n";
-      output << "insert " << fullName() << ":T10 " 
+      output << "insert " << name() << ":T10 " 
 	     << ix << "  " << _T10[ix] << "\n";
-      output << "insert " << fullName() << ":T1sigma_1 " 
+      output << "insert " << name() << ":T1sigma_1 " 
 	     << ix << "  " << _sigma1T1[ix] << "\n";
-      output << "insert " << fullName() << ":T1sigma_2 " 
+      output << "insert " << name() << ":T1sigma_2 " 
 	     << ix << "  " << _sigma2T1[ix] << "\n";
-      output << "insert " << fullName() << ":T20 " 
+      output << "insert " << name() << ":T20 " 
 	     << ix << "  " << _T20[ix] << "\n";
-      output << "insert " << fullName() << ":T2sigma_1 " 
+      output << "insert " << name() << ":T2sigma_1 " 
 	     << ix << "  " << _sigma1T2[ix] << "\n";
-      output << "insert " << fullName() << ":T2sigma_2 " 
+      output << "insert " << name() << ":T2sigma_2 " 
 	     << ix << "  " << _sigma2T2[ix] << "\n";
-      output << "insert " << fullName() << ":T30 " 
+      output << "insert " << name() << ":T30 " 
 	     << ix << "  " << _T30[ix] << "\n";
-      output << "insert " << fullName() << ":T3sigma_1 " 
+      output << "insert " << name() << ":T3sigma_1 " 
 	     << ix << "  " << _sigma1T3[ix] << "\n";
-      output << "insert " << fullName() << ":T3sigma_2 " 
+      output << "insert " << name() << ":T3sigma_2 " 
 	     << ix << "  " << _sigma2T3[ix] << "\n";
-      output << "insert " << fullName() << ":MassP " 
+      output << "insert " << name() << ":MassP " 
 	     << ix << "  " << _massP[ix]/GeV << "\n";
-      output << "insert " << fullName() << ":MassV " 
+      output << "insert " << name() << ":MassV " 
 	     << ix << "  " << _massV[ix]/GeV << "\n";
     }
   }
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -14,7 +14,6 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "DtoKPiPiCLEO.fh"
 
 namespace Herwig {
 
@@ -107,10 +106,11 @@ protected:
    * @param mres The on-shell mass of the intermediate resonance
    * @param wres The width         of the intermediate resonance
    */
-  inline Complex amplitude(int ispin, bool f0, Energy mD, 
-			   Energy mA , Energy mB , Energy mC ,
-			   Energy mAB, Energy mAC, Energy mBC,
-			   Energy mres, Energy wres) const;
+  Complex amplitude(int ispin, bool f0, Energy mD, 
+		    Energy mA , Energy mB , Energy mC ,
+		    Energy mAB, Energy mAC, Energy mBC,
+		    Energy mres, Energy wres) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -119,13 +119,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -700,7 +700,5 @@ struct ClassTraits<Herwig::DtoKPiPiCLEO>
 /** @endcond */
 
 }
-
-#include "DtoKPiPiCLEO.icc"
 
 #endif /* HERWIG_DtoKPiPiCLEO_H */

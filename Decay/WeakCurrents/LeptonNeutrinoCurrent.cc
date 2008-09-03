@@ -137,7 +137,7 @@ unsigned int LeptonNeutrinoCurrent::decayMode(vector<int> idout) {
 void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::LeptonNeutrinoCurrent " << fullName() 
+  if(create) output << "create Herwig::LeptonNeutrinoCurrent " << name() 
 		    << "  HwWeakCurrents.so\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;

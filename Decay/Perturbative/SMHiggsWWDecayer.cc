@@ -282,8 +282,8 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
 void SMHiggsWWDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<2;++ix) {
-    os << "set " << fullName() << ":WMaximum "    << ix << " " << _wmax[ix]  << "\n";
-    os << "set " << fullName() << ":ZMaximum "    << ix << " " << _zmax[ix]  << "\n";
+    os << "set " << name() << ":WMaximum "    << ix << " " << _wmax[ix]  << "\n";
+    os << "set " << name() << ":ZMaximum "    << ix << " " << _zmax[ix]  << "\n";
   }
   DecayIntegrator::dataBaseOutput(os,false);
   if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;

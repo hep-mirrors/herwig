@@ -992,86 +992,86 @@ void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":OmegaMass "          << _momega/MeV   << "\n";
-  output << "set " << fullName() << ":f980Mass "           << _mf980/MeV    << "\n";
-  output << "set " << fullName() << ":f_2Mass "            << _mf2/MeV      << "\n";
-  output << "set " << fullName() << ":f1370Mass "          << _mf1370/MeV   << "\n";
-  output << "set " << fullName() << ":K_01430Mass "        << _mK14300/MeV  << "\n";
-  output << "set " << fullName() << ":K_21430Mass "        << _mK14302/MeV  << "\n";
-  output << "set " << fullName() << ":Kstar1680Mass "      << _mK1680/MeV   << "\n";
-  output << "set " << fullName() << ":rho1700Mass "        << _mrho1700/MeV << "\n";
-  output << "set " << fullName() << ":Kstar0892Mass "      << _mK8920/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892AMass "  << _mK892A/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892BMass "  << _mK892B/MeV   << "\n";
-  output << "set " << fullName() << ":RhoPlusMass "        << _mrhoA/MeV    << "\n";
-  output << "set " << fullName() << ":Rho0Mass "           << _mrhoB/MeV    << "\n";
-  output << "set " << fullName() << ":OmegaWidth "         << _womega/MeV   << "\n";
-  output << "set " << fullName() << ":f980Width "          << _wf980/MeV    << "\n";
-  output << "set " << fullName() << ":f_2Width "           << _wf2/MeV      << "\n";
-  output << "set " << fullName() << ":f1370Width "         << _wf1370/MeV   << "\n";
-  output << "set " << fullName() << ":K_01430Width "       << _wK14300/MeV  << "\n";
-  output << "set " << fullName() << ":K_21430Width "       << _wK14302/MeV  << "\n";
-  output << "set " << fullName() << ":Kstar1680Width "     << _wK1680/MeV   << "\n";
-  output << "set " << fullName() << ":rho1700Width "       << _wrho1700/MeV << "\n";
-  output << "set " << fullName() << ":Kstar0892Width "     << _wK8920/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892AWidth " << _wK892A/MeV   << "\n";
-  output << "set " << fullName() << ":KstarPlus892BWidth " << _wK892B/MeV   << "\n";
-  output << "set " << fullName() << ":RhoPlusWidth "       << _wrhoA/MeV    << "\n";
-  output << "set " << fullName() << ":Rho0Width "          << _wrhoB/MeV    << "\n";
-  output << "set " << fullName() << ":gPi " << _gpi << "\n";
-  output << "set " << fullName() << ":gK " << _gK << "\n";
-  output << "set " << fullName() << ":f0Option " << _f0opt << "\n";
-  output << "set " << fullName() << ":ChargedNonResonantAmplitude " << _a1NR << "\n";
-  output << "set " << fullName() << ":ChargedNonResonantPhase " << _phi1NR<< "\n";
-  output << "set " << fullName() << ":ChargedRhoAmplitude " << _a1rho<< "\n";
-  output << "set " << fullName() << ":ChargedRhoPhase " << _phi1rho<< "\n";
-  output << "set " << fullName() << ":ChargedKStarMinusAmplitude " << _a1Kstarm<< "\n";
-  output << "set " << fullName() << ":ChargedKStarMinusPhase " << _phi1Kstarm<< "\n";
-  output << "set " << fullName() << ":ChargedKStar0Amplitude " << _a1Kstar0<< "\n";
-  output << "set " << fullName() << ":ChargedKStar0Phase " << _phi1Kstar0<< "\n";
-  output << "set " << fullName() << ":ChargedK_0MinusAmplitude " 
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":OmegaMass "          << _momega/MeV   << "\n";
+  output << "set " << name() << ":f980Mass "           << _mf980/MeV    << "\n";
+  output << "set " << name() << ":f_2Mass "            << _mf2/MeV      << "\n";
+  output << "set " << name() << ":f1370Mass "          << _mf1370/MeV   << "\n";
+  output << "set " << name() << ":K_01430Mass "        << _mK14300/MeV  << "\n";
+  output << "set " << name() << ":K_21430Mass "        << _mK14302/MeV  << "\n";
+  output << "set " << name() << ":Kstar1680Mass "      << _mK1680/MeV   << "\n";
+  output << "set " << name() << ":rho1700Mass "        << _mrho1700/MeV << "\n";
+  output << "set " << name() << ":Kstar0892Mass "      << _mK8920/MeV   << "\n";
+  output << "set " << name() << ":KstarPlus892AMass "  << _mK892A/MeV   << "\n";
+  output << "set " << name() << ":KstarPlus892BMass "  << _mK892B/MeV   << "\n";
+  output << "set " << name() << ":RhoPlusMass "        << _mrhoA/MeV    << "\n";
+  output << "set " << name() << ":Rho0Mass "           << _mrhoB/MeV    << "\n";
+  output << "set " << name() << ":OmegaWidth "         << _womega/MeV   << "\n";
+  output << "set " << name() << ":f980Width "          << _wf980/MeV    << "\n";
+  output << "set " << name() << ":f_2Width "           << _wf2/MeV      << "\n";
+  output << "set " << name() << ":f1370Width "         << _wf1370/MeV   << "\n";
+  output << "set " << name() << ":K_01430Width "       << _wK14300/MeV  << "\n";
+  output << "set " << name() << ":K_21430Width "       << _wK14302/MeV  << "\n";
+  output << "set " << name() << ":Kstar1680Width "     << _wK1680/MeV   << "\n";
+  output << "set " << name() << ":rho1700Width "       << _wrho1700/MeV << "\n";
+  output << "set " << name() << ":Kstar0892Width "     << _wK8920/MeV   << "\n";
+  output << "set " << name() << ":KstarPlus892AWidth " << _wK892A/MeV   << "\n";
+  output << "set " << name() << ":KstarPlus892BWidth " << _wK892B/MeV   << "\n";
+  output << "set " << name() << ":RhoPlusWidth "       << _wrhoA/MeV    << "\n";
+  output << "set " << name() << ":Rho0Width "          << _wrhoB/MeV    << "\n";
+  output << "set " << name() << ":gPi " << _gpi << "\n";
+  output << "set " << name() << ":gK " << _gK << "\n";
+  output << "set " << name() << ":f0Option " << _f0opt << "\n";
+  output << "set " << name() << ":ChargedNonResonantAmplitude " << _a1NR << "\n";
+  output << "set " << name() << ":ChargedNonResonantPhase " << _phi1NR<< "\n";
+  output << "set " << name() << ":ChargedRhoAmplitude " << _a1rho<< "\n";
+  output << "set " << name() << ":ChargedRhoPhase " << _phi1rho<< "\n";
+  output << "set " << name() << ":ChargedKStarMinusAmplitude " << _a1Kstarm<< "\n";
+  output << "set " << name() << ":ChargedKStarMinusPhase " << _phi1Kstarm<< "\n";
+  output << "set " << name() << ":ChargedKStar0Amplitude " << _a1Kstar0<< "\n";
+  output << "set " << name() << ":ChargedKStar0Phase " << _phi1Kstar0<< "\n";
+  output << "set " << name() << ":ChargedK_0MinusAmplitude " 
 	 << _a1K1430m/GeV2 << "\n";
-  output << "set " << fullName() << ":ChargedK_0MinusPhase " << _phi1K1430m<< "\n";
-  output << "set " << fullName() << ":ChargedK_00Amplitude " 
+  output << "set " << name() << ":ChargedK_0MinusPhase " << _phi1K1430m<< "\n";
+  output << "set " << name() << ":ChargedK_00Amplitude " 
 	 << _a1K14300/GeV2 << "\n";
-  output << "set " << fullName() << ":ChargedK_00Phase " << _phi1K14300<< "\n";
-  output << "set " << fullName() << ":ChargedRho1700Amplitude " << _a1rho1700<< "\n";
-  output << "set " << fullName() << ":ChargedRho1700Phase " << _phi1rho1700<< "\n";
-  output << "set " << fullName() << ":ChargedK1680MinusAmplitude " << _a1K1680<< "\n";
-  output << "set " << fullName() << ":ChargedK1680MinusPhase " << _phi1K1680<< "\n";
-  output << "set " << fullName() << ":NeutralKStarPlusAmplitude " << _a2Kstarp<< "\n";
-  output << "set " << fullName() << ":NeutralKStarPlusPhase " << _phi2Kstarp<< "\n";
-  output << "set " << fullName() << ":NeutralRhoAmplitude " << _a2rho<< "\n";
-  output << "set " << fullName() << ":NeutralRhoPhase " << _phi2rho<< "\n";
-  output << "set " << fullName() << ":NeutralOmegaAmplitude " << _a2omega<< "\n";
-  output << "set " << fullName() << ":NeutralOmegaPhase " <<_phi2omega << "\n";
-  output << "set " << fullName() << ":NeutralKStarMinusAmplitude " << _a2Kstarm<< "\n";
-  output << "set " << fullName() << ":NeutralKStarMinusPhase " << _phi2Kstarm<< "\n";
-  output << "set " << fullName() << ":Neutralf980Amplitude " << _a2f980/GeV2<< "\n";
-  output << "set " << fullName() << ":Neutralf980Phase " << _phi2f980<< "\n";
-  output << "set " << fullName() << ":Neutralf2Amplitude " << _a2f2*GeV2<< "\n";
-  output << "set " << fullName() << ":Neutralf2Phase " << _phi2f2<< "\n";
-  output << "set " << fullName() << ":Neutralf1370Amplitude " << _a2f1370/GeV2<< "\n";
-  output << "set " << fullName() << ":Neutralf1370Phase " << _phi2f1370<< "\n";
-  output << "set " << fullName() << ":NeutralKK_0MinusAmplitude " 
+  output << "set " << name() << ":ChargedK_00Phase " << _phi1K14300<< "\n";
+  output << "set " << name() << ":ChargedRho1700Amplitude " << _a1rho1700<< "\n";
+  output << "set " << name() << ":ChargedRho1700Phase " << _phi1rho1700<< "\n";
+  output << "set " << name() << ":ChargedK1680MinusAmplitude " << _a1K1680<< "\n";
+  output << "set " << name() << ":ChargedK1680MinusPhase " << _phi1K1680<< "\n";
+  output << "set " << name() << ":NeutralKStarPlusAmplitude " << _a2Kstarp<< "\n";
+  output << "set " << name() << ":NeutralKStarPlusPhase " << _phi2Kstarp<< "\n";
+  output << "set " << name() << ":NeutralRhoAmplitude " << _a2rho<< "\n";
+  output << "set " << name() << ":NeutralRhoPhase " << _phi2rho<< "\n";
+  output << "set " << name() << ":NeutralOmegaAmplitude " << _a2omega<< "\n";
+  output << "set " << name() << ":NeutralOmegaPhase " <<_phi2omega << "\n";
+  output << "set " << name() << ":NeutralKStarMinusAmplitude " << _a2Kstarm<< "\n";
+  output << "set " << name() << ":NeutralKStarMinusPhase " << _phi2Kstarm<< "\n";
+  output << "set " << name() << ":Neutralf980Amplitude " << _a2f980/GeV2<< "\n";
+  output << "set " << name() << ":Neutralf980Phase " << _phi2f980<< "\n";
+  output << "set " << name() << ":Neutralf2Amplitude " << _a2f2*GeV2<< "\n";
+  output << "set " << name() << ":Neutralf2Phase " << _phi2f2<< "\n";
+  output << "set " << name() << ":Neutralf1370Amplitude " << _a2f1370/GeV2<< "\n";
+  output << "set " << name() << ":Neutralf1370Phase " << _phi2f1370<< "\n";
+  output << "set " << name() << ":NeutralKK_0MinusAmplitude " 
 	 << _a2K14300/GeV2 << "\n";
-  output << "set " << fullName() << ":NeutralKK_0MinusPhase " << _phi2K14300 << "\n";
-  output << "set " << fullName() << ":NeutralKK_2MinusAmplitude " 
+  output << "set " << name() << ":NeutralKK_0MinusPhase " << _phi2K14300 << "\n";
+  output << "set " << name() << ":NeutralKK_2MinusAmplitude " 
 	 << _a2K14302*GeV2<< "\n";
-  output << "set " << fullName() << ":NeutralKK_2MinusPhase " << _phi2K14302 << "\n";
-  output << "set " << fullName() << ":NeutralK1680MinusAmplitude " << _a2K1680<< "\n";
-  output << "set " << fullName() << ":NeutralK1680MinusPhase " << _phi2K1680<< "\n";
-  output << "set " << fullName() << ":NeutralNonResonantAmplitude " << _a2NR<< "\n";
-  output << "set " << fullName() << ":NeutralNonResonantPhase " << _phi2NR << "\n";
-  output << "set " << fullName() << ":DRadius " << _rD0*GeV << "\n";
-  output << "set " << fullName() << ":ResonanceRadius " << _rres*GeV << "\n";
+  output << "set " << name() << ":NeutralKK_2MinusPhase " << _phi2K14302 << "\n";
+  output << "set " << name() << ":NeutralK1680MinusAmplitude " << _a2K1680<< "\n";
+  output << "set " << name() << ":NeutralK1680MinusPhase " << _phi2K1680<< "\n";
+  output << "set " << name() << ":NeutralNonResonantAmplitude " << _a2NR<< "\n";
+  output << "set " << name() << ":NeutralNonResonantPhase " << _phi2NR << "\n";
+  output << "set " << name() << ":DRadius " << _rD0*GeV << "\n";
+  output << "set " << name() << ":ResonanceRadius " << _rres*GeV << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeights " 
+    output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights " 
+    output << "insert " << name() << ":Weights " 
 	   << ix << " " << _weights[ix] << "\n";
   }
   if(header) {
@@ -1091,4 +1091,52 @@ void DtoKPiPiCLEO::doinitrun() {
       ++iy;
     }
   }
+}
+
+Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
+					Energy mA , Energy mB , Energy mC ,
+					Energy mAB, Energy mAC, Energy mBC,
+					Energy mres, Energy wres) const{
+  // compute the production momenta
+  Energy pDR  = Kinematics::CMMomentum(mD,mres,mC);
+  Energy pDAB = Kinematics::CMMomentum(mD,mAB ,mC);
+  // and the decay momenta
+  Energy pAB = Kinematics::CMMomentum(mAB ,mA,mB);
+  Energy pR  = Kinematics::CMMomentum(mres,mA,mB);
+  double Fd(1.),Fr(1.),s(1.);
+  switch(ispin) {
+  case 0:
+    // default values of parameters are correct
+    break;
+  case 1:
+    Fr = sqrt((1.+sqr(_rres*pR ))/(1.+sqr(_rres*pAB )));
+    Fd = sqrt((1.+sqr(_rD0 *pDR))/(1.+sqr(_rD0 *pDAB)));
+    s = ((mAC-mBC)*(mAC+mBC)+(mD-mC)*(mD+mC)*(mB-mA)*(mB+mA)/sqr(mres))/GeV2;
+    break;
+  case 2:
+    Fr = sqrt((9.+3.*sqr(_rres*pR  )+Math::powi(_rres*pR  ,4))/
+	      (9.+3.*sqr(_rres*pAB )+Math::powi(_rres*pAB ,4)));
+    Fd = sqrt((9.+3.*sqr(_rD0 *pDR )+Math::powi(_rD0 *pDR ,4))/
+	      (9.+3.*sqr(_rD0 *pDAB)+Math::powi(_rD0 *pDAB,4)));
+    s = sqr(((mBC-mAC)*(mBC+mAC)+(mD-mC)*(mD+mC)*(mA-mB)*(mA+mB)/sqr(mres))/GeV2)
+      -(mAB*mAB-2.*mD*mD-2.*mC*mC+sqr((mD-mC)*(mD+mC))/sqr(mres))*
+       (mAB*mAB-2.*mA*mA-2.*mB*mB+sqr((mA-mB)*(mA+mB))/sqr(mres))/3./GeV2/GeV2;
+    break;
+  default:
+    throw Exception() << "D0toKPiPiCLEO::amplitude spin is too high ispin = " 
+		      << ispin << Exception::runerror;
+  }
+  // calculate the width term
+  complex<Energy2> bw;
+  if(!f0) {
+    Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres)/mAB;
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mwid);
+  }
+  else {
+    Energy Gamma_pi = _gpi*sqrt(0.25*sqr(mAB)-sqr(_mpi));
+    Energy Gamma_K  = 0.5*_gK *(sqrt(0.25*sqr(mAB)-sqr(_mkp))+
+				sqrt(0.25*sqr(mAB)-sqr(_mk0)));
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mres*(Gamma_pi+Gamma_K));
+  }
+  return s*Fr*Fd*GeV2/bw;
 }

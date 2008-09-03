@@ -548,85 +548,86 @@ void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " 
+      output << "set " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << endl;
-      output << "set " << fullName() << ":Coupling " 
+      output << "set " << name() << ":Coupling " 
 	     << ix << " " << _coupling[ix]*GeV << endl;
-      output << "set " << fullName() << ":DirectCoupling " 
+      output << "set " << name() << ":DirectCoupling " 
 	     << ix << " " << _directcoupling[ix] << endl;
-      output << "set " << fullName() << ":Rho2Coupling " 
+      output << "set " << name() << ":Rho2Coupling " 
 	     << ix << " " << _rho2coupling[ix] << endl;
-      output << "set " << fullName() << ":Rho3Coupling " 
+      output << "set " << name() << ":Rho3Coupling " 
 	     << ix << " " << _rho3coupling[ix] << endl;
-      output << "set " << fullName() << ":DirectPhase " 
+      output << "set " << name() << ":DirectPhase " 
 	     << ix << " " << _directphase[ix] << endl;
-      output << "set " << fullName() << ":Rho2Phase " 
+      output << "set " << name() << ":Rho2Phase " 
 	     << ix << " " << _rho2phase[ix] << endl;
-      output << "set " << fullName() << ":Rho3Phase " 
+      output << "set " << name() << ":Rho3Phase " 
 	     << ix << " " << _rho3phase[ix] << endl;
-      output << "set " << fullName() << ":MaxWeight " 
+      output << "set " << name() << ":MaxWeight " 
 	     << ix << " " << _maxwgt[ix] << endl;
-      output << "set " << fullName() << ":Rho1Weight " 
+      output << "set " << name() << ":Rho1Weight " 
 	     << ix << " " << _rho1wgt[ix] << endl;
-      output << "set " << fullName() << ":Rho2Weight " 
+      output << "set " << name() << ":Rho2Weight " 
 	     << ix << " " << _rho2wgt[ix] << endl;
-      output << "set " << fullName() << ":Rho3Weight " 
+      output << "set " << name() << ":Rho3Weight " 
 	     << ix << " " << _rho3wgt[ix] << endl;
-      output << "set " << fullName() << ":Rho1Mass " 
+      output << "set " << name() << ":Rho1Mass " 
 	     << ix << " " << _rho1mass[ix]/GeV << endl;
-      output << "set " << fullName() << ":Rho2Mass " 
+      output << "set " << name() << ":Rho2Mass " 
 	     << ix << " " << _rho2mass[ix]/GeV<< endl;
-      output << "set " << fullName() << ":Rho3Mass " 
+      output << "set " << name() << ":Rho3Mass " 
 	     << ix << " " << _rho3mass[ix]/GeV<< endl;
-      output << "set " << fullName() << ":Rho1Width " 
+      output << "set " << name() << ":Rho1Width " 
 	     << ix << " " << _rho1width[ix]/GeV << endl;
-      output << "set " << fullName() << ":Rho2Width " 
+      output << "set " << name() << ":Rho2Width " 
 	     << ix << " " << _rho2width[ix]/GeV << endl;
-      output << "set " << fullName() << ":Rho3Width " 
+      output << "set " << name() << ":Rho3Width " 
 	     << ix << " " << _rho3width[ix]/GeV << endl;
-      output << "set " << fullName() << ":DefaultParameters " 
+      output << "set " << name() << ":DefaultParameters " 
 	     << ix << " " << _defaultmass[ix] << endl;
     }
     else {
-      output << "insert " << fullName() << ":Incoming " 
+      output << "insert " << name() << ":Incoming " 
 	     << ix << " " << _incoming[ix] << endl;
-      output << "insert " << fullName() << ":Coupling " 
+      output << "insert " << name() << ":Coupling " 
 	     << ix << " " << _coupling[ix]*GeV << endl;
-      output << "insert " << fullName() << ":DirectCoupling " 
+      output << "insert " << name() << ":DirectCoupling " 
 	     << ix << " " << _directcoupling[ix] << endl;
-      output << "insert " << fullName() << ":Rho2Coupling " 
+      output << "insert " << name() << ":Rho2Coupling " 
 	     << ix << " " << _rho2coupling[ix] << endl;
-      output << "insert " << fullName() << ":Rho3Coupling " 
+      output << "insert " << name() << ":Rho3Coupling " 
 	     << ix << " " << _rho3coupling[ix] << endl;
-      output << "insert " << fullName() << ":DirectPhase " 
+      output << "insert " << name() << ":DirectPhase " 
 	     << ix << " " << _directphase[ix] << endl;
-      output << "insert " << fullName() << ":Rho2Phase " 
+      output << "insert " << name() << ":Rho2Phase " 
 	     << ix << " " << _rho2phase[ix] << endl;
-      output << "insert " << fullName() << ":Rho3Phase " 
+      output << "insert " << name() << ":Rho3Phase " 
 	     << ix << " " << _rho3phase[ix] << endl;
-      output << "insert " << fullName() << ":MaxWeight " 
+      output << "insert " << name() << ":MaxWeight " 
 	     << ix << " " << _maxwgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho1Weight " 
+      output << "insert " << name() << ":Rho1Weight " 
 	     << ix << " " << _rho1wgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho2Weight " 
+      output << "insert " << name() << ":Rho2Weight " 
 	     << ix << " " << _rho2wgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho3Weight " 
+      output << "insert " << name() << ":Rho3Weight " 
 	     << ix << " " << _rho3wgt[ix] << endl;
-      output << "insert " << fullName() << ":Rho1Mass " 
+      output << "insert " << name() << ":Rho1Mass " 
 	     << ix << " " << _rho1mass[ix]/GeV << endl;
-      output << "insert " << fullName() << ":Rho2Mass " 
+      output << "insert " << name() << ":Rho2Mass " 
 	     << ix << " " << _rho2mass[ix]/GeV<< endl;
-      output << "insert " << fullName() << ":Rho3Mass " 
+      output << "insert " << name() << ":Rho3Mass " 
 	     << ix << " " << _rho3mass[ix]/GeV<< endl;
-      output << "insert " << fullName() << ":Rho1Width " 
+      output << "insert " << name() << ":Rho1Width " 
 	     << ix << " " << _rho1width[ix]/GeV << endl;
-      output << "insert " << fullName() << ":Rho2Width " 
+      output << "insert " << name() << ":Rho2Width " 
 	     << ix << " " << _rho2width[ix]/GeV << endl;
-      output << "insert " << fullName() << ":Rho3Width " 
+      output << "insert " << name() << ":Rho3Width " 
 	     << ix << " " << _rho3width[ix]/GeV << endl;
-      output << "insert " << fullName() << ":DefaultParameters " 
+      output << "insert " << name() << ":DefaultParameters " 
 	     << ix << " " << _defaultmass[ix] << endl;
     }
   }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header){output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;}
 }

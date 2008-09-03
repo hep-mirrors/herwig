@@ -544,123 +544,123 @@ void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output,bool header,
 						bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BallZwickyVectorFormFactor " 
-		    << fullName() << " \n";
-  output << "set " << fullName() << ":CutOff " << _cutoff/GeV2 << "\n";
+		    << name() << " \n";
+  output << "set " << name() << ":CutOff " << _cutoff/GeV2 << "\n";
   for(unsigned int ix=0;ix<_Vr1.size();++ix) {
     if(ix<initialModes()) {
-      output << "set " << fullName() << ":Vr_1 "  << ix << "  " 
+      output << "set " << name() << ":Vr_1 "  << ix << "  " 
 	     << _Vr1[ix]  << "\n";
-      output << "set " << fullName() << ":Vr_2 "  << ix << "  " 
+      output << "set " << name() << ":Vr_2 "  << ix << "  " 
 	     << _Vr2[ix]  << "\n";
-      output << "set " << fullName() << ":A0r_1 "  << ix << "  " 
+      output << "set " << name() << ":A0r_1 "  << ix << "  " 
 	     << _A0r1[ix] << "\n";
-      output << "set " << fullName() << ":A0r_2 "  << ix << "  " 
+      output << "set " << name() << ":A0r_2 "  << ix << "  " 
 	     << _A0r2[ix] << "\n";
-      output << "set " << fullName() << ":A1r_1 "  << ix << "  " 
+      output << "set " << name() << ":A1r_1 "  << ix << "  " 
 	     << _A1r1[ix] << "\n";
-      output << "set " << fullName() << ":A1r_2 "  << ix << "  " 
+      output << "set " << name() << ":A1r_2 "  << ix << "  " 
 	     << _A1r2[ix] << "\n";
-      output << "set " << fullName() << ":A2r_1 "  << ix << "  " 
+      output << "set " << name() << ":A2r_1 "  << ix << "  " 
 	     << _A2r1[ix] << "\n";
-      output << "set " << fullName() << ":A2r_2 "  << ix << "  " 
+      output << "set " << name() << ":A2r_2 "  << ix << "  " 
 	     << _A2r2[ix] << "\n";
-      output << "set " << fullName() << ":T1r_1 "  << ix << "  " 
+      output << "set " << name() << ":T1r_1 "  << ix << "  " 
 	     << _T1r1[ix] << "\n";
-      output << "set " << fullName() << ":T1r_2 "  << ix << "  " 
+      output << "set " << name() << ":T1r_2 "  << ix << "  " 
 	     << _T1r2[ix] << "\n";
-      output << "set " << fullName() << ":T2r_1 "  << ix << "  " 
+      output << "set " << name() << ":T2r_1 "  << ix << "  " 
 	     << _T2r1[ix] << "\n";
-      output << "set " << fullName() << ":T2r_2 "  << ix << "  " 
+      output << "set " << name() << ":T2r_2 "  << ix << "  " 
 	     << _T2r2[ix] << "\n";
-      output << "set " << fullName() << ":T3r_1 "  << ix << "  " 
+      output << "set " << name() << ":T3r_1 "  << ix << "  " 
 	     << _T3r1[ix] << "\n";
-      output << "set " << fullName() << ":T3r_2 "  << ix << "  " 
+      output << "set " << name() << ":T3r_2 "  << ix << "  " 
 	     << _T3r2[ix] << "\n";
-      output << "set " << fullName() << ":VmR2 "  << ix 
+      output << "set " << name() << ":VmR2 "  << ix 
 	     << "  " << _VmR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":Vmfit2 "  << ix 
+      output << "set " << name() << ":Vmfit2 "  << ix 
 	     << "  " << _Vmfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A0mR2 "  << ix 
+      output << "set " << name() << ":A0mR2 "  << ix 
 	     << "  " << _A0mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A0mfit2 "  << ix 
+      output << "set " << name() << ":A0mfit2 "  << ix 
 	     << "  " << _A0mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A1mR2 "  << ix 
+      output << "set " << name() << ":A1mR2 "  << ix 
 	     << "  " << _A1mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A1mfit2 "  << ix 
+      output << "set " << name() << ":A1mfit2 "  << ix 
 	     << "  " << _A1mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A2mR2 "  << ix 
+      output << "set " << name() << ":A2mR2 "  << ix 
 	     << "  " << _A2mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A2mfit2 "  << ix 
+      output << "set " << name() << ":A2mfit2 "  << ix 
 	     << "  " << _A2mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T1mR2 "  << ix 
+      output << "set " << name() << ":T1mR2 "  << ix 
 	     << "  " << _T1mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T1mfit2 "  << ix 
+      output << "set " << name() << ":T1mfit2 "  << ix 
 	     << "  " << _T1mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T2mR2 "  << ix 
+      output << "set " << name() << ":T2mR2 "  << ix 
 	     << "  " << _T2mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T2mfit2 "  << ix 
+      output << "set " << name() << ":T2mfit2 "  << ix 
 	     << "  " << _T2mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T3mR2 "  << ix 
+      output << "set " << name() << ":T3mR2 "  << ix 
 	     << "  " << _T3mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T3mfit2 "  << ix 
+      output << "set " << name() << ":T3mfit2 "  << ix 
 	     << "  " << _T3mfit2[ix]/GeV2 << "\n";
     }
     else {
-      output << "set " << fullName() << ":Vr_1 "  << ix << "  " 
+      output << "set " << name() << ":Vr_1 "  << ix << "  " 
 	     << _Vr1[ix] << "\n";
-      output << "set " << fullName() << ":Vr_2 "  << ix << "  " 
+      output << "set " << name() << ":Vr_2 "  << ix << "  " 
 	     << _Vr2[ix] << "\n";
-      output << "set " << fullName() << ":A0r_1 "  << ix << "  " 
+      output << "set " << name() << ":A0r_1 "  << ix << "  " 
 	     << _A0r1[ix] << "\n";
-      output << "set " << fullName() << ":A0r_2 "  << ix << "  " 
+      output << "set " << name() << ":A0r_2 "  << ix << "  " 
 	     << _A0r2[ix] << "\n";
-      output << "set " << fullName() << ":A1r_1 "  << ix << "  " 
+      output << "set " << name() << ":A1r_1 "  << ix << "  " 
 	     << _A1r1[ix] << "\n";
-      output << "set " << fullName() << ":A1r_2 "  << ix << "  " 
+      output << "set " << name() << ":A1r_2 "  << ix << "  " 
 	     << _A1r2[ix] << "\n";
-      output << "set " << fullName() << ":A2r_1 "  << ix << "  " 
+      output << "set " << name() << ":A2r_1 "  << ix << "  " 
 	     << _A2r1[ix] << "\n";
-      output << "set " << fullName() << ":A2r_2 "  << ix << "  " 
+      output << "set " << name() << ":A2r_2 "  << ix << "  " 
 	     << _A2r2[ix] << "\n";
-      output << "set " << fullName() << ":T1r_1 "  << ix << "  " 
+      output << "set " << name() << ":T1r_1 "  << ix << "  " 
 	     << _T1r1[ix] << "\n";
-      output << "set " << fullName() << ":T1r_2 "  << ix << "  " 
+      output << "set " << name() << ":T1r_2 "  << ix << "  " 
 	     << _T1r2[ix] << "\n";
-      output << "set " << fullName() << ":T2r_1 "  << ix << "  " 
+      output << "set " << name() << ":T2r_1 "  << ix << "  " 
 	     << _T2r1[ix] << "\n";
-      output << "set " << fullName() << ":T2r_2 "  << ix << "  " 
+      output << "set " << name() << ":T2r_2 "  << ix << "  " 
 	     << _T2r2[ix] << "\n";
-      output << "set " << fullName() << ":T3r_1 "  << ix << "  " 
+      output << "set " << name() << ":T3r_1 "  << ix << "  " 
 	     << _T3r1[ix] << "\n";
-      output << "set " << fullName() << ":T3r_2 "  << ix << "  " 
+      output << "set " << name() << ":T3r_2 "  << ix << "  " 
 	     << _T3r2[ix] << "\n";
-      output << "set " << fullName() << ":VmR2 "  << ix 
+      output << "set " << name() << ":VmR2 "  << ix 
 	     << "  " << _VmR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":Vmfit2 "  << ix 
+      output << "set " << name() << ":Vmfit2 "  << ix 
 	     << "  " << _Vmfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A0mR2 "  << ix 
+      output << "set " << name() << ":A0mR2 "  << ix 
 	     << "  " << _A0mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A0mfit2 "  << ix 
+      output << "set " << name() << ":A0mfit2 "  << ix 
 	     << "  " << _A0mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A1mR2 "  << ix 
+      output << "set " << name() << ":A1mR2 "  << ix 
 	     << "  " << _A1mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A1mfit2 "  << ix 
+      output << "set " << name() << ":A1mfit2 "  << ix 
 	     << "  " << _A1mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A2mR2 "  << ix 
+      output << "set " << name() << ":A2mR2 "  << ix 
 	     << "  " << _A2mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":A2mfit2 "  << ix 
+      output << "set " << name() << ":A2mfit2 "  << ix 
 	     << "  " << _A2mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T1mR2 "  << ix 
+      output << "set " << name() << ":T1mR2 "  << ix 
 	     << "  " << _T1mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T1mfit2 "  << ix 
+      output << "set " << name() << ":T1mfit2 "  << ix 
 	     << "  " << _T1mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T2mR2 "  << ix 
+      output << "set " << name() << ":T2mR2 "  << ix 
 	     << "  " << _T2mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T2mfit2 "  << ix 
+      output << "set " << name() << ":T2mfit2 "  << ix 
 	     << "  " << _T2mfit2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T3mR2 "  << ix 
+      output << "set " << name() << ":T3mR2 "  << ix 
 	     << "  " << _T3mR2[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":T3mfit2 "  << ix 
+      output << "set " << name() << ":T3mfit2 "  << ix 
 	     << "  " << _T3mfit2[ix]/GeV2 << "\n";
     }
   }

@@ -81,9 +81,13 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
     // select the decay mode
     tDMPtr   dm(parent->data().selectMode(*parent));
     // check we found a decay mode and it had a decayer
-    if ( !dm ) throw Exception() << "No DecayModes for " << parent->PDGName()
-				 << " in HwDecayHandler::performDecay" 
-				 << Exception::eventerror;
+    if ( !dm ) {
+      generator()->log() << *generator()->currentEvent() << "\n";
+      generator()->log() << *parent << "\n";
+      throw Exception() << "No DecayModes for " << parent->PDGName()
+			<< " in HwDecayHandler::performDecay" 
+			<< Exception::eventerror;
+    }
     if ( !dm->decayer() ) throw Exception() << "No decayer for DecayMode of " 
 					    << parent->PDGName()
 					    << " in HwDecayHandler::performDecay" 

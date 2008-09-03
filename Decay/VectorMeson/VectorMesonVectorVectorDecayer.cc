@@ -253,27 +253,27 @@ void VectorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "set " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":Outgoing1 " << ix << " " 
+      output << "set " << name() << ":Outgoing1 " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "set " << fullName() << ":Outgoing2 " << ix << " " 
+      output << "set " << name() << ":Outgoing2 " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "set " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "set " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":Outgoing1 " << ix << " " 
+      output << "insert " << name() << ":Outgoing1 " << ix << " " 
 	     << _outgoing1[ix] << "\n";
-      output << "insert " << fullName() << ":Outgoing2 " << ix << " " 
+      output << "insert " << name() << ":Outgoing2 " << ix << " " 
 	     << _outgoing2[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }

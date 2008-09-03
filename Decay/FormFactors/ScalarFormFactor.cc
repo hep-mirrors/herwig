@@ -123,34 +123,34 @@ void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2,unsigned int,int,int,
 void  ScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
 				       bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::ScalarFormFactor " << fullName() << " \n";
+  if(create) output << "create Herwig::ScalarFormFactor " << name() << " \n";
   for(unsigned int ix=0;ix<_incomingid.size();++ix) {
     if(ix<_numbermodes) {
-      output << "set " << fullName() << ":Incoming "  << ix << " " 
+      output << "set " << name() << ":Incoming "  << ix << " " 
 	     << _incomingid[ix] << "\n";
-      output << "set " << fullName() << ":Outgoing "  << ix << " " 
+      output << "set " << name() << ":Outgoing "  << ix << " " 
 	     << _outgoingid[ix] << "\n";
-      output << "set " << fullName() << ":Spin "      << ix << " " 
+      output << "set " << name() << ":Spin "      << ix << " " 
 	     << _outgoingJ[ix] << "\n";
-      output << "set " << fullName() << ":Spectator " << ix << " " 
+      output << "set " << name() << ":Spectator " << ix << " " 
 	     << _spectator[ix] << "\n";
-      output << "set " << fullName() << ":InQuark "   << ix << " " 
+      output << "set " << name() << ":InQuark "   << ix << " " 
 	     << _inquark[ix] << "\n";
-      output << "set " << fullName() << ":OutQuark "  << ix << " " 
+      output << "set " << name() << ":OutQuark "  << ix << " " 
 	     << _outquark[ix]<< "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming "  << ix << " " 
+      output << "insert " << name() << ":Incoming "  << ix << " " 
 	     << _incomingid[ix] << "\n";
-      output << "insert " << fullName() << ":Outgoing "  << ix << " " 
+      output << "insert " << name() << ":Outgoing "  << ix << " " 
 	     << _outgoingid[ix] << "\n";
-      output << "insert " << fullName() << ":Spin "      << ix << " " 
+      output << "insert " << name() << ":Spin "      << ix << " " 
 	     << _outgoingJ[ix] << "\n";
-      output << "insert " << fullName() << ":Spectator " << ix << " "
+      output << "insert " << name() << ":Spectator " << ix << " "
 	     << _spectator[ix] << "\n";
-      output << "insert " << fullName() << ":InQuark "   << ix << " " 
+      output << "insert " << name() << ":InQuark "   << ix << " " 
 	     << _inquark[ix] << "\n";
-      output << "insert " << fullName() << ":OutQuark "  << ix << " " 
+      output << "insert " << name() << ":OutQuark "  << ix << " " 
 	     << _outquark[ix]<< "\n";
     }
   }

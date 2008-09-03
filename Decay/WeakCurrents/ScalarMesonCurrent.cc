@@ -208,22 +208,22 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
     output << "update decayers set parameters=\"";
   }
   if(create) {
-    output << "create Herwig::ScalarMesonCurrent " << fullName() 
+    output << "create Herwig::ScalarMesonCurrent " << name() 
 	   << " HwWeakCurrents.so\n";
   }
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   unsigned int ix;
   for(ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":ID " << ix 
+      output << "set " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "set " << fullName() << ":Decay_Constant " << ix 
+      output << "set " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":ID " << ix 
+      output << "insert " << name() << ":ID " << ix 
 	     << " " << _id[ix] << "\n";
-      output << "insert " << fullName() << ":Decay_Constant " << ix 
+      output << "insert " << name() << ":Decay_Constant " << ix 
 	     << " " << _decay_constant[ix]/MeV << "\n";
     }
   }

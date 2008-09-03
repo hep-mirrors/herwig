@@ -23,6 +23,14 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void EtaPiPiPiDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
 EtaPiPiPiDecayer::EtaPiPiPiDecayer() 
   : _incoming(6), _outgoing(6), _charged(6), _prefactor(6),
     _a(6), _b(6), _c(6), _maxweight(6) {
@@ -302,39 +310,39 @@ void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming   " << ix << " "
+      output << "set " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << fullName() << ":Outgoing  " << ix << " "
+      output << "set " << name() << ":Outgoing  " << ix << " "
 	     << _outgoing[ix]  << "\n";
-      output << "set " << fullName() << ":Charged " << ix << " "
+      output << "set " << name() << ":Charged " << ix << " "
 		 << _charged[ix]  << "\n";
-      output << "set " << fullName() << ":Prefactor " << ix << " "
+      output << "set " << name() << ":Prefactor " << ix << " "
 	     << _prefactor[ix]  << "\n";
-      output << "set " << fullName() << ":a " << ix << " "
+      output << "set " << name() << ":a " << ix << " "
 	     << _a[ix]  << "\n";
-      output << "set " << fullName() << ":b " << ix << " "
+      output << "set " << name() << ":b " << ix << " "
 	     << _b[ix]  << "\n";
-      output << "set " << fullName() << ":c " << ix << " "
+      output << "set " << name() << ":c " << ix << " "
 	     << _c[ix]  << "\n";
-      output << "set " << fullName() << ":MaxWeight  " << ix << " "
+      output << "set " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming   " << ix << " "
+      output << "insert " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "insert " << fullName() << ":Outgoing  " << ix << " "
+      output << "insert " << name() << ":Outgoing  " << ix << " "
 	     << _outgoing[ix]  << "\n";
-      output << "insert " << fullName() << ":Charged " << ix << " "
+      output << "insert " << name() << ":Charged " << ix << " "
 	     << _charged[ix]  << "\n";
-      output << "insert " << fullName() << ":Prefactor " << ix << " "
+      output << "insert " << name() << ":Prefactor " << ix << " "
 	     << _prefactor[ix]  << "\n";
-      output << "insert " << fullName() << ":a " << ix << " "
+      output << "insert " << name() << ":a " << ix << " "
 	     << _a[ix]  << "\n";
-      output << "insert " << fullName() << ":b " << ix << " "
+      output << "insert " << name() << ":b " << ix << " "
 	     << _b[ix]  << "\n";
-      output << "insert " << fullName() << ":c " << ix << " "
+      output << "insert " << name() << ":c " << ix << " "
 	     << _c[ix]  << "\n";
-      output << "insert " << fullName() << ":MaxWeight  " << ix << " "
+      output << "insert " << name() << ":MaxWeight  " << ix << " "
 	     << _maxweight[ix]  << "\n";
     }
   }

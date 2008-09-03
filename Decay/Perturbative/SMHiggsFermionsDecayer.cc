@@ -190,11 +190,12 @@ void SMHiggsFermionsDecayer::dataBaseOutput(ofstream & os,bool header) const {
   if(header) os << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    os << "set " << fullName() << ":MaxWeights " << ix << " "
+    os << "set " << name() << ":MaxWeights " << ix << " "
 	   << _maxwgt[ix] << "\n";
   }
   DecayIntegrator::dataBaseOutput(os,false);
-  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) os << "\n\" where BINARY ThePEGName=\"" 
+		<< fullName() << "\";" << endl;
 }
 
 void SMHiggsFermionsDecayer::doinitrun() {

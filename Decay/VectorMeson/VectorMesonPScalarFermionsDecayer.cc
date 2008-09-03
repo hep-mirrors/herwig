@@ -386,49 +386,49 @@ void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output,
   DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming   " << ix << "  " 
+      output << "set " << name() << ":Incoming   " << ix << "  " 
 	     << _incoming[ix]   << "\n";
-      output << "set " << fullName() << ":OutgoingPseudoScalar  " 
+      output << "set " << name() << ":OutgoingPseudoScalar  " 
 	     << ix << "  " << _outgoingP[ix]  << "\n";
-      output << "set " << fullName() << ":OutgoingFermion  " 
+      output << "set " << name() << ":OutgoingFermion  " 
 	     << ix << "  " << _outgoingf[ix]  << "\n";
-      output << "set " << fullName() << ":OutgoingAntiFermion " 
+      output << "set " << name() << ":OutgoingAntiFermion " 
 	     << ix << "  " << _outgoinga[ix]  << "\n";
-      output << "set " << fullName() << ":Coupling   " << ix << "  " 
+      output << "set " << name() << ":Coupling   " << ix << "  " 
 	     << _coupling[ix]*MeV   << "\n";
-      output << "set " << fullName() << ":MaxWeight  " << ix << "  " 
+      output << "set " << name() << ":MaxWeight  " << ix << "  " 
 	     << _maxweight[ix]  << "\n";
-      output << "set " << fullName() << ":Weight  "    << ix << "  " 
+      output << "set " << name() << ":Weight  "    << ix << "  " 
 	     << _weight[ix]  << "\n";
-      output << "set " << fullName() << ":IncludeVMD " << ix << "  " 
+      output << "set " << name() << ":IncludeVMD " << ix << "  " 
 	     << _includeVMD[ix] << "\n";
-      output << "set " << fullName() << ":VMDID      " << ix << "  " 
+      output << "set " << name() << ":VMDID      " << ix << "  " 
 	     << _VMDid[ix]      << "\n";
-      output << "set " << fullName() << ":VMDmass    " << ix << "  " 
+      output << "set " << name() << ":VMDmass    " << ix << "  " 
 	     << _VMDmass[ix]/MeV    << "\n";
-      output << "set " << fullName() << ":VMDwidth   " << ix << "  " 
+      output << "set " << name() << ":VMDwidth   " << ix << "  " 
 	     << _VMDwidth[ix]/MeV   << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming   " << ix << "  " 
+      output << "insert " << name() << ":Incoming   " << ix << "  " 
 	     << _incoming[ix]   << "\n";
-      output << "insert " << fullName() << ":OutgoingPseudoScalar  " 
+      output << "insert " << name() << ":OutgoingPseudoScalar  " 
 	     << ix << "  " << _outgoingP[ix]  << "\n";
-      output << "insert " << fullName() << ":OutgoingFermion  " 
+      output << "insert " << name() << ":OutgoingFermion  " 
 	     << ix << "  " << _outgoingf[ix]  << "\n";
-      output << "insert " << fullName() << ":OutgoingAntiFermion " 
+      output << "insert " << name() << ":OutgoingAntiFermion " 
 	     << ix << "  " << _outgoinga[ix]  << "\n";
-      output << "insert " << fullName() << ":Coupling   " << ix << "  " 
+      output << "insert " << name() << ":Coupling   " << ix << "  " 
 	     << _coupling[ix]*MeV   << "\n";
-      output << "insert " << fullName() << ":Weight  "    << ix << "  " 
+      output << "insert " << name() << ":Weight  "    << ix << "  " 
 	     << _weight[ix]  << "\n";
-      output << "insert " << fullName() << ":IncludeVMD " << ix << "  " 
+      output << "insert " << name() << ":IncludeVMD " << ix << "  " 
 	     << _includeVMD[ix] << "\n";
-      output << "insert " << fullName() << ":VMDID      " << ix << "  " 
+      output << "insert " << name() << ":VMDID      " << ix << "  " 
 	     << _VMDid[ix]      << "\n";
-      output << "insert " << fullName() << ":VMDmass    " << ix << "  " 
+      output << "insert " << name() << ":VMDmass    " << ix << "  " 
 	     << _VMDmass[ix]/MeV    << "\n";
-      output << "insert " << fullName() << ":VMDwidth   " << ix << "  " 
+      output << "insert " << name() << ":VMDwidth   " << ix << "  " 
 	     << _VMDwidth[ix]/MeV   << "\n";
     }
   }
