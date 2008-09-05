@@ -4,7 +4,7 @@ SUBDIRS = include \
 	UnderlyingEvent Interfaces Analysis Looptools \
 	lib src Doc Contrib
 
-noinst_HEADERS = Config/HepMCHelper_CLHEP.h Config/HepMCHelper_HepMC.h
+noinst_HEADERS = Config/HepMCHelper.h
 
 EXTRA_DIST=GUIDELINES
 
