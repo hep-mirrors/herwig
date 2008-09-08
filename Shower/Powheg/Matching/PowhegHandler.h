@@ -76,9 +76,9 @@ public:
   /**
    * The default constructor.
    */
-  PowhegHandler() : _npoint(1000), _sudopt(0), _sudname("sudakov.data"),
+  PowhegHandler() : _npoint(100), _sudopt(0), _sudname("sudakov.data"),
 		    _jetMeasureMode(0),_lepton(true)
-		  , _yini(0.001), _alphaSMG(0.118), _max_qtilde( 1000.*GeV ) {}
+		  , _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ) {}
 
   /**
    * Perform CKKW reweighting
@@ -271,7 +271,7 @@ private:
    */
   multimap< long, pair < Interpolator<double,Energy>::Ptr,
 			 Interpolator<Energy,double>::Ptr>  > _fbranchings;
-  
+
   /**
    * Map containing particle and the resolution parameter of 
    * external partons.
@@ -347,28 +347,10 @@ private:
    */
   double _alphaSMG;
 
-  /**
-   * Histogram of Sudakov weights
+  /**`
+   * Histogram of sudakov weights
    */
   HistogramPtr _hSud;
-
-   /**
-   * Histogram of Sudakov weights
-   */
-  HistogramPtr _hSudU;
-  /**
-   * Histogram of Sudakov weights
-   */
-  HistogramPtr _hSudD;
- /**
-   * Histogram of Sudakov weights
-   */
-  HistogramPtr _hSudS;
-  /**
-   * Histogram of Sudakov weights
-   */
-  HistogramPtr _hSudG;
-  
 
   /**
    * Histogram of alphaS weights

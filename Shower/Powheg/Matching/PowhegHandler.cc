@@ -9,6 +9,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -129,13 +130,13 @@ void PowhegHandler::Init() {
   static Parameter<PowhegHandler,unsigned int> interfaceInterpPoints
     ("InterpolatorPoints",
      "The number of points used for sudakov interpolation tables",
-     &PowhegHandler::_npoint, 0, 1000000, 1000,
+     &PowhegHandler::_npoint, 100, 0, 1000000,
      false, false, Interface::limited );
 
   static Parameter<PowhegHandler, Energy> interfaceMaxQTilde
     ("maxQTilde",
      "The maximum QTilde scale for sudakov interpolation tables",
-     &PowhegHandler::_max_qtilde, GeV, 1.*GeV, 1000000.*GeV, 1000.*GeV,
+     &PowhegHandler::_max_qtilde, GeV, 91.2*GeV, 1.*GeV, 1000000.*GeV,
      false, false, Interface::limited);
 }
 
@@ -235,7 +236,6 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
-  //  cerr<<"sudakov wgt is: "<<SudWgt<<"\n";
   return SudWgt;
 }
 
@@ -244,6 +244,7 @@ void PowhegHandler::dofinish() {
   string fname = generator()->filename() + string("-") 
     + string("wgts.top");
   ofstream output(fname.c_str());
+
   using namespace HistogramOptions;
 
   _hSud->topdrawOutput(output,Frame,
@@ -269,14 +270,11 @@ void PowhegHandler::dofinish() {
 
 void PowhegHandler::doinitrun() {
   ShowerHandler::doinitrun();  
-  //initialise histograms
+  _s = sqr( generator()->maximumCMEnergy() );
+
   _hSud = new_ptr(Histogram(0.,2.,100));
   _halphaS = new_ptr(Histogram(0.,2.,100));
-  _hSudU = new_ptr(Histogram(0.,100.,100));
-  _hSudD = new_ptr(Histogram(0.,100.,100));
-  _hSudS = new_ptr(Histogram(0.,100.,100));
-  _hSudG = new_ptr(Histogram(0.,100.,100));
-
+ 
   // integrator for the outer integral
   GaussianIntegrator outer;
   // get the final-state branchings from the evolver
@@ -286,7 +284,7 @@ void PowhegHandler::doinitrun() {
     for(BranchingList::const_iterator 
 	  it = evolver()->splittingGenerator()->finalStateBranchings().begin();
 	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
-      // class to return the integrated factor in the exponent
+   
       Ptr<QTildeSudakovIntegrator>::pointer integrator = 
 	new_ptr( QTildeSudakovIntegrator(it->second, sqrt( _yini * _s ), _jetMeasureMode ) );
       if(_sudopt==1) sudFileOutput << it->second.first->fullName() << "\t"
@@ -295,11 +293,14 @@ void PowhegHandler::doinitrun() {
 				   << it->second.second[2] << "\n";
       Energy qtildemax = _max_qtilde;
       Energy qtildemin = integrator->minimumScale();
+    
       vector<double> sud;
+    
       vector<Energy> scale;
       sud.push_back(0.); scale.push_back(qtildemin);
-      Energy currentScale=qtildemin;
-      double fact = pow(qtildemax/qtildemin,1./(_npoint-1));
+
+      Energy currentScale = qtildemin;
+      double fact = pow(qtildemax/qtildemin,1./double(_npoint-1));
       for(unsigned int ix=1;ix<_npoint;++ix) {
 	currentScale *= fact;
 	double currentSud = integrator->value(currentScale,scale.back());
@@ -307,13 +308,18 @@ void PowhegHandler::doinitrun() {
 	sud.push_back(sud.back()+currentSud);
       }
       // convert to the Sudakov
-      for(unsigned int ix=0;ix<sud.size();++ix) sud[ix] = exp(-sud[ix]);
+      for(unsigned int ix=0;ix<sud.size();++ix) {
+	sud[ix] = exp(-sud[ix]);
+      }
+   
       // construct the Interpolators
       Interpolator<double,Energy>::Ptr 
 	intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
       Interpolator<Energy,double>::Ptr 
 	ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
+   
       _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
+  
       if(_sudopt==1) {
 	sudFileOutput << scale.size() << "\n";
 	for(unsigned int ix=0;ix<scale.size();++ix)
@@ -366,6 +372,7 @@ void PowhegHandler::doinitrun() {
       }
     }
   }
+
 }
 
 void PowhegHandler::doinit() throw(InitException) {
@@ -508,8 +515,6 @@ HardTreePtr PowhegHandler::doClustering() {
  
     
   PPtr vb = lastXCombPtr()->subProcess()->intermediates()[0];
-  _s = lastXCombPtr()->lastS();
-
   _theNodes.clear();
   _theExternals.clear();
   _theIntermediates.clear();
