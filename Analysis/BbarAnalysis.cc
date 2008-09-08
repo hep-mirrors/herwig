@@ -56,10 +56,10 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   Lorentz5Momentum plbar(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
   Lorentz5Momentum pb(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
   Lorentz5Momentum pbbar(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
-  Lorentz5Momentum pgluon(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum pemission(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
   tPPtr l, lbar;
   tPPtr b, bbar;
-  tPPtr gluon;
+  tPPtr emission;
 
   // Find and store all lepton and antilepton pairs
   // and likewise any b-bbar pairs.
@@ -71,9 +71,16 @@ void BbarAnalysis::analyze(const tPVector & particles) {
       l    = particles[i];
     if(particles[i]->id()<-10&&particles[i]->id()>-17) 
       lbar = particles[i];
-    if(particles[i]->id()== 5) b     = particles[i];
-    if(particles[i]->id()==-5) bbar  = particles[i];
-    if(particles[i]->id()==21) gluon = particles[i];
+    if(particles[i]->id()== 5&&
+       particles[i]->parents().size()>0&&
+       particles[i]->parents()[0]->id()!=21) b     = particles[i];
+    if(particles[i]->id()==-5&&
+       particles[i]->parents().size()>0&&
+       particles[i]->parents()[0]->id()!=21) bbar  = particles[i];
+    if(particles[i]->id()==21) emission = particles[i];
+    if(!emission&& particles[i]->parents().size()>0&&
+       particles[i]->parents()[0]->id()==21)
+      emission = particles[i];
   }
 
   // Forbid analysis of events containing only a single lepton:
@@ -81,11 +88,11 @@ void BbarAnalysis::analyze(const tPVector & particles) {
     << "BbarAnalysis::analyze\n"
     << "Cannot have just one lepton." << Exception::abortnow;
 
-  if(l)     pl     = l->momentum()    ;
-  if(lbar)  plbar  = lbar->momentum() ;
-  if(b   )  pb     = b->momentum()    ;
-  if(bbar)  pbbar  = bbar->momentum() ;
-  if(gluon) pgluon = gluon->momentum();
+  if(l)        pl        = l->momentum()    ;
+  if(lbar)     plbar     = lbar->momentum() ;
+  if(b   )     pb        = b->momentum()    ;
+  if(bbar)     pbbar     = bbar->momentum() ;
+  if(emission) pemission = emission->momentum();
 
   Lorentz5Momentum pV, pH, pVStar, p5, p6;
   pV     = pl+plbar;
@@ -129,16 +136,16 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   eta6_h.addWeighted(p6.eta(),1.);
   pt6_h.addWeighted(p6.perp()/GeV,1.);
   // Higgs bosons only:
-  eta567_h.addWeighted((pH+pgluon).eta(),1.);
-  y567_h.addWeighted((pH+pgluon).rapidity(),1.);
-  pt567_h.addWeighted((pH+pgluon).perp()/GeV,1.);
-  m567_h.addWeighted(sqrt((pH+pgluon).m2())/GeV,1.);
+  eta567_h.addWeighted((pH+pemission).eta(),1.);
+  y567_h.addWeighted((pH+pemission).rapidity(),1.);
+  pt567_h.addWeighted((pH+pemission).perp()/GeV,1.);
+  m567_h.addWeighted(sqrt((pH+pemission).m2())/GeV,1.);
   // Everything added up:
   HTall_h.addWeighted((pl.perp()+plbar.perp()
-		      +pb.perp()+pbbar.perp()+pgluon.perp())/GeV,1.);
-  yall_h.addWeighted((pVStar+pgluon).rapidity(),1.);
-  mall_h.addWeighted(sqrt((pVStar+pgluon).m2())/GeV,1.);
-  // Everything added up except the gluon:
+		      +pb.perp()+pbbar.perp()+pemission.perp())/GeV,1.);
+  yall_h.addWeighted((pVStar+pemission).rapidity(),1.);
+  mall_h.addWeighted(sqrt((pVStar+pemission).m2())/GeV,1.);
+  // Everything added up except the emission:
   y3456_h.addWeighted(pVStar.rapidity(),1.);
   m3456_h.addWeighted(sqrt(pVStar.m2())/GeV,1.);
 
@@ -234,7 +241,7 @@ void BbarAnalysis::dofinish() {
   yall_h.prefactor(yall_h.prefactor()*1.e6);
   mall_h.normaliseToCrossSection();
   mall_h.prefactor(mall_h.prefactor()*1.e6);
-  // Everything added up except the gluon:
+  // Everything added up except the emission:
   y3456_h.normaliseToCrossSection();
   y3456_h.prefactor(y3456_h.prefactor()*1.e6);
   m3456_h.normaliseToCrossSection();
@@ -276,7 +283,7 @@ void BbarAnalysis::dofinish() {
   HTall_h.topdrawOutput(file,Frame,"RED","HTall distribution: all wgts");
   yall_h.topdrawOutput(file,Frame,"RED","yall distribution: all wgts");
   mall_h.topdrawOutput(file,Frame,"RED","mall distribution: all wgts");
-  // Everything added up except the gluon:
+  // Everything added up except the emission:
   y3456_h.topdrawOutput(file,Frame,"RED","y3456 distribution: all wgts");
   m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
 
