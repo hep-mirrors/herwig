@@ -66,7 +66,7 @@ void MPIMultiplicity::Init() {
      "A reference to the ShowerHandler",
      &MPIMultiplicity::theShowerHandler, true, false, true, false, false);
   
-  static Reference<MPIMultiplicity,MPIHandler> interfaceMPIHandler
+  static Reference<MPIMultiplicity,UEBase> interfaceMPIHandler
     ("MPIHandler",
      "A reference to the MPIHandler",
      &MPIMultiplicity::theMPIHandler, true, false, true, false, false);
