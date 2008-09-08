@@ -64,7 +64,7 @@ void PowhegEvolver::Init() {
      "Only the hardest emission",
      true);
   static Switch<PowhegEvolver,bool> interfaceTruncMode
-    ("TruncatedShower", "Include the truncated shower?", 
+    ("Truncatedhower", "Include the truncated shower?", 
      &PowhegEvolver::_trunc_Mode, 1, false, false);
   static SwitchOption interfaceTruncMode0
     (interfaceTruncMode,"No","Truncated Shower is OFF", 0);
@@ -433,7 +433,12 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     // angular ordering veto
     if(fb.kinematics->scale()<branch->scale()/zsplit) vetoed=true;
     // pt veto
-    if(fb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
+
+    //add durham pt option here
+    Energy ptVeto = progenitor()->maximumpT();
+    if( fb.kinematics && ptVetoDefinition() == 0 )
+      ptVeto *= max( fb.kinematics->z(), 1. - fb.kinematics->z() );
+    if( fb.kinematics->pT() > ptVeto ) vetoed = true;
     // no truncated shower if only generating hardest emission
     if(_hardonly) vetoed = true;
     // if vetoed reset scale
@@ -529,6 +534,7 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
 
 bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 					    HardBranchingPtr branch) {
+  cerr<<"in truncated space shower \n";
   bool vetoed(true);
   Branching bb;
   // generate branching
@@ -556,7 +562,10 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     // if doesn't carry most of momentum
     if( zsplit < 0.5 ) vetoed=true;
     // pt veto
-    if( bb.kinematics->pT() > progenitor()->maximumpT() ) vetoed = true;
+    Energy ptVeto = progenitor()->maximumpT();
+    if( bb.kinematics && ptVetoDefinition() == 0 )
+      ptVeto *= max( bb.kinematics->z(), 1. - bb.kinematics->z() );
+    if( bb.kinematics->pT() > ptVeto ) vetoed = true;
     //hardest only switch
     if( _hardonly ) vetoed = true;
     // angular ordering veto
@@ -568,8 +577,12 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     //do the hard emission
     double z(0.);
     HardBranchingPtr timelike;
+    cerr<<"hard branching info \n";
+    cerr<<"emitter id = "<< branch->branchingParticle()->id()<<"\n";
     for( unsigned int ix = 0; ix < branch->children().size(); ++ix ) {
+      cerr<<"child id = "<< branch->children()[ix]->branchingParticle()->id()<<"\n";
       if( !branch->children()[ix]->incoming() ) {
+       	cerr<<"last child is timelike \n";
 	timelike = branch->children()[ix];
       }
       if( branch->children()[ix]->incoming() ) z = branch->children()[ix]->z();
