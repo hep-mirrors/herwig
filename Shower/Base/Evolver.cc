@@ -39,28 +39,36 @@ using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
+     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions << _ptVetoDefinition
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes
-     << _reconstructor << _reweighter << _ckkwVeto << _useCKKW;
+     << _reconstructor << _reweighter << _ckkwVeto << _useCKKW << _y_cut;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
+     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions >> _ptVetoDefinition
      >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes
-     >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW;
+     >> _reconstructor >> _reweighter >> _ckkwVeto >> _useCKKW >> _y_cut;
 }
 
 void Evolver::doinitrun() {
+  
   Interfaced::doinitrun();
   for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
     showerModel()->meCorrections()[ix]->evolver(this);
   }
+  
 #ifdef HERWIG_CHECK_VETOES
   _vetoed_points.timelike.open("vetoed_timelike.dat");
   _vetoed_points.spacelike.open("vetoed_spacelike.dat");
   _vetoed_points.spacelike_decay.open("vetoed_spacelike_decay.dat");
 #endif
+}
+
+
+void Evolver::dofinish() {
+
+  Interfaced::dofinish();
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -177,6 +185,34 @@ void Evolver::Init() {
      "OneFinalStateEmission",
      "Allow one emission in the final state and none in the initial state",
      2);
+
+  static Switch<Evolver, unsigned int> ifaceJetMeasureMode
+    ("JetMeasure",
+     "Choice of the jet measure algorithm",
+     &Evolver::_ptVetoDefinition, 1, false, false);
+  
+  static SwitchOption Durham
+    (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
+  
+  static SwitchOption LUCLUS
+    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 1);
+
+  static Parameter<Evolver,double> interfacePtCut
+    ("JetCut",
+     "The jet cut (in durham or shower definition)",
+     &Evolver::_y_cut, 1.1, 0., 1.1,
+     false, false, Interface::limited );
+
+  /*
+  static Switch<Evolver, unsigned int> ifacePtVetoDefinition
+    ("PtVetoDefinition",
+     "Choice of the pt deinition used in pt veto",
+     &Evolver::_ptVetoDefinition, 0, false, false);
+  static SwitchOption PtDefShower
+    (ifacePtVetoDefinition,"Shower","shower pt definition", 0);
+  static SwitchOption PtDefDurham
+    (ifacePtVetoDefinition,"Durham","durham pt", 1);
+  */
 }
 
 void Evolver::useCKKW (CascadeReconstructorPtr cr, ReweighterPtr rew) {
@@ -502,7 +538,20 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
       if (vetoed) continue;
     }
-    if(fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
+    Energy ptVeto;
+    if( _y_cut > 1. )
+      ptVeto = _progenitor->maximumpT();
+    //if set use the y_cut pt veto with the appropriate pt_veto definition
+    else
+      ptVeto = sqrt(  ShowerHandler::currentHandler()
+		      ->lastXCombPtr()->lastS() * _y_cut );
+ 
+    if( fb.kinematics && _ptVetoDefinition == 0 ) 
+      ptVeto *= max( fb.kinematics->z(), 1. - fb.kinematics->z() );
+    if( fb.kinematics && fb.kinematics->pT() > ptVeto ){
+      vetoed = true;
+      particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
+    }
 
     if (fb.kinematics && !_vetoes.empty()) {
       for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
@@ -534,6 +583,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     //
     return false;
   }
+
   // has emitted
   // Assign the shower kinematics to the emitting particle.
   particle->setShowerKinematics(fb.kinematics);
@@ -601,7 +651,19 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
       if (vetoed) continue;
     }
-    if(bb.kinematics && bb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
+    Energy ptVeto;
+    if( _y_cut > 1. )
+      ptVeto = _progenitor->maximumpT();
+    //if set use the y_cut pt veto with the appropriate pt_veto definition
+    else
+      ptVeto = sqrt(  ShowerHandler::currentHandler()
+		      ->lastXCombPtr()->lastS() * _y_cut );
+    if( bb.kinematics && _ptVetoDefinition == 0 ) 
+      ptVeto *= max( bb.kinematics->z(), 1. - bb.kinematics->z() );
+    if( bb.kinematics && bb.kinematics->pT() > ptVeto ) {
+      vetoed = true;
+      particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
+    }
 
     if (bb.kinematics && _vetoes.size()) {
       for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();
@@ -752,7 +814,13 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
       if (vetoed) continue;
     }
-    if(fb.kinematics && fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
+    Energy ptVeto = _progenitor->maximumpT();
+    if( fb.kinematics && _ptVetoDefinition == 0 ) 
+      ptVeto *= max( fb.kinematics->z(), 1. - fb.kinematics->z() );
+    if( fb.kinematics && fb.kinematics->pT() > ptVeto ) {
+      vetoed = true;
+      particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
+    }
 
     if (fb.kinematics && _vetoes.size()) {
       for (vector<ShowerVetoPtr>::iterator v = _vetoes.begin();

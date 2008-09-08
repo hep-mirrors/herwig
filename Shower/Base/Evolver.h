@@ -379,6 +379,11 @@ protected:
    */
   void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
 
+  /**
+   *  Access to the Pt definition being used for the pt veto 
+   */
+  inline unsigned int ptVetoDefinition(){ return _ptVetoDefinition; }
+
 protected:
 
   /** @name Clone Methods. */
@@ -405,6 +410,9 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+
+  virtual void dofinish();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -499,6 +507,11 @@ private:
   unsigned int _limitEmissions;
 
   /**
+   * The pt definition being used for in the pt veto
+   */
+  unsigned int _ptVetoDefinition;
+
+  /**
    *  The progenitor of the current shower
    */
   ShowerProgenitorPtr _progenitor;
@@ -572,6 +585,8 @@ private:
    */
   bool _theUseCKKW;
 
+  double _y_cut;
+
 #ifdef HERWIG_CHECK_VETOES
 
   vetoed_points _vetoed_points;
@@ -622,7 +637,7 @@ struct ClassTraits<Herwig::Evolver>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
 };
 
 /** @endcond */
