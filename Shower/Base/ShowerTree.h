@@ -19,6 +19,7 @@
 #include "ShowerTree.fh"
 
 namespace Herwig {
+  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
   
 using namespace ThePEG;
  
@@ -29,8 +30,8 @@ using namespace ThePEG;
  *  needs to be showered.
  *
  */
-class ShowerTree : public Base
-{
+class ShowerTree : public Base {
+
 public:
 
   /**
@@ -43,14 +44,14 @@ public:
    * @param decay Map into which the trees for any unstable particles are inserted
    */
   ShowerTree(const ParticleVector & out,
-	     multimap<Energy,ShowerTreePtr> & decay);
+	     ShowerDecayMap & decay);
   
   /**
    *  Constructor for a decay
    * @param in The decaying particle
    * @param decay Map into which the trees for any unstable particles are inserted
    */
-  ShowerTree(PPtr in, multimap<Energy,ShowerTreePtr> & decay);
+  ShowerTree(PPtr in, ShowerDecayMap & decay);
   //@}
 
 public:
@@ -61,7 +62,13 @@ public:
    * @param ISR Whether or not ISR is switched on
    * @param FSR Whether or not FSR is switched on
    */
-  inline void fillEventRecord(StepPtr pstep,bool ISR,bool FSR);
+  void fillEventRecord(StepPtr pstep,bool ISR,bool FSR) {
+    if(_wasHard) 
+      insertHard(pstep,ISR,FSR);
+    else         
+      insertDecay(pstep,ISR,FSR);
+  }
+  
 
   /**
    * Set the parent tree to this tree for trees which come from this one.
@@ -74,7 +81,7 @@ public:
    * @param decay The map of widths and ShowerTrees for the decays so that
    * any unstable decay products can be added.
    */
-  void decay(multimap<Energy,ShowerTreePtr> & decay);
+  void decay(ShowerDecayMap & decay);
 
   /**
    * Access methods for the type of interaction
@@ -83,12 +90,13 @@ public:
   /**
    *  Whether or not this is a scattering process
    */
-  bool isHard() const;
+  bool isHard() const { return _wasHard; } 
+
 
   /**
    *  Whether or not this is a decay.
    */
-  bool isDecay() const;
+  bool isDecay() const { return !_wasHard; }
   //@}
 
   /**
@@ -98,23 +106,27 @@ public:
   /**
    *  Was the hard matrix element correction applied
    */
-  inline bool hardMatrixElementCorrection() const;
+  bool hardMatrixElementCorrection() const { return _hardMECorrection; }
 
   /**
    *  Set whether or not the hard matrix element correction was applied
    */ 
-  inline void hardMatrixElementCorrection(bool in);
+  void hardMatrixElementCorrection(bool in) { _hardMECorrection=in; }
   //@}
 
   /**
    *  Get the incoming shower particles
    */
-  inline map<ShowerProgenitorPtr,ShowerParticlePtr> & incomingLines();
+  map<ShowerProgenitorPtr,ShowerParticlePtr> & incomingLines() {
+    return _incomingLines; 
+  }
 
   /**
    *  Get the outgoing shower particles
    */
-  inline map<ShowerProgenitorPtr,tShowerParticlePtr> & outgoingLines();
+  map<ShowerProgenitorPtr,tShowerParticlePtr> & outgoingLines() {
+    return _outgoingLines; 
+  }
 
   /**
    *  Update the shower product for a final-state particle
@@ -132,7 +144,10 @@ public:
   /**
    *  Get the current final shower product for a final-state particle
    */
-  inline tShowerParticlePtr getFinalStateShowerProduct(ShowerProgenitorPtr progenitor);
+  tShowerParticlePtr getFinalStateShowerProduct(ShowerProgenitorPtr progenitor) {
+    return _outgoingLines.find(progenitor)==_outgoingLines.end()
+      ? tShowerParticlePtr() : _outgoingLines[progenitor];
+  }
 
   /**
    * Add a final-state branching. This method removes the parent of the branching
@@ -140,8 +155,8 @@ public:
    * @param parent The parent for the branching
    * @param children The outgoing particles in the branching
    */
-  inline void addFinalStateBranching(ShowerParticlePtr parent,
-				     const ShowerParticleVector & children);
+  void addFinalStateBranching(ShowerParticlePtr parent,
+			      const ShowerParticleVector & children);
 
   /**
    *  Add an initial-state branching. This method removes the oldParent of the
@@ -151,9 +166,9 @@ public:
    * @param newParent The initial-state particle resulting from the backward evolution
    * @param otherChild The final-state particle produced in the evolution.
    */
-  inline void addInitialStateBranching(ShowerParticlePtr oldParent,
-				       ShowerParticlePtr newParent,
-				       ShowerParticlePtr otherChild);
+  void addInitialStateBranching(ShowerParticlePtr oldParent,
+				ShowerParticlePtr newParent,
+				ShowerParticlePtr otherChild);
 
   /**
    *  Member called at the end of the shower of a tree to perform a number of
@@ -161,7 +176,7 @@ public:
    *  @param decay The map of widths and ShowerTrees for the decays so that
    *  any unstable decay products can be added.
    */
-  void updateAfterShower(multimap<Energy,ShowerTreePtr> & decay);
+  void updateAfterShower(ShowerDecayMap & decay);
 
   /**
    *  Access and set the flag for whether this tree has been showered
@@ -170,18 +185,18 @@ public:
   /**
    *  Access the flag
    */
-  inline bool hasShowered() const;
+  bool hasShowered() const { return _hasShowered; }
 
   /**
    *  Set the flag
    */
-  inline void hasShowered(bool);
+  void hasShowered(bool in) { _hasShowered=in; }
   //@}
 
   /**
    *  Access the parent tree
    */
-  inline ShowerTreePtr parent() const;
+  ShowerTreePtr parent() const { return _parent; }
 
   /**
    *  Clear all the shower products so that the event can be reshowered
@@ -198,12 +213,12 @@ public:
   /**
    *  Extract the progenitors for the reconstruction
    */
-  inline vector<ShowerProgenitorPtr> extractProgenitors();
+  vector<ShowerProgenitorPtr> extractProgenitors();
 
   /**
    *  Access to the outgoing particles
    */
-  inline const set<tShowerParticlePtr> & forwardParticles() const;
+  const set<tShowerParticlePtr> & forwardParticles() const { return _forward; }
 
 protected:
 
@@ -265,7 +280,7 @@ protected:
    *  to its ColourLine
    * @param part The particle
    */
-  inline void fixColour(tShowerParticlePtr part);
+  void fixColour(tShowerParticlePtr part);
  
 private:
   
@@ -330,7 +345,5 @@ private:
   bool _hasShowered;
 };
 }
-
-#include "ShowerTree.icc"
 
 #endif

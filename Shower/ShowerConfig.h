@@ -59,6 +59,12 @@ using namespace ThePEG;
    */
   typedef vector<long> IdList;
 
+  /**
+   *  Enum for the type of interaction
+   */
+  namespace ShowerInteraction {
+    enum Type { UNDEFINED=-1, QCD };
+  }
 }
 
 #endif // HERWIG_ShowerConfig_H 

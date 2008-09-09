@@ -113,12 +113,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Default/MECorrections/Makefile
 		Shower/Default/Makefile
 		Shower/Base/Makefile
-		Shower/CKKW/Clustering/Makefile
-		Shower/CKKW/Reweighting/Makefile
-		Shower/CKKW/Vertices/Makefile
-		Shower/CKKW/Processes/Makefile
-		Shower/CKKW/Qtilde/Makefile
-		Shower/CKKW/Makefile
+		Shower/Powheg/Makefile
+		Shower/Powheg/HardGenerators/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

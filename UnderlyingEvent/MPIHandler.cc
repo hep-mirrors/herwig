@@ -301,7 +301,7 @@ unsigned int MPIHandler::multiplicity(unsigned int sel){
     MPair m = theMultiplicities.select(UseRandom::rnd());
     softMult_ = m.second;
     return m.first;
-  }else{ //fixed multiplicities for the additional hard scatters
+  } else{ //fixed multiplicities for the additional hard scatters
     if(additionalMultiplicities_.size() < sel)
       throw Exception() << "MPIHandler::multiplicity: process index "
 			<< "is out of range"

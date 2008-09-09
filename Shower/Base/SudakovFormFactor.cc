@@ -88,6 +88,28 @@ void SudakovFormFactor::Init() {
      "OverZOneMinusZ",
      "Include an additional factor of 1/z/(1-z)",
      3);
+
+  static Switch<SudakovFormFactor,unsigned int> interfaceCutOffOption
+    ("CutOffOption",
+     "The type of cut-off to use to end the shower",
+     &SudakovFormFactor::cutOffOption_, 0, false, false);
+  static SwitchOption interfaceCutOffOptionDefault
+    (interfaceCutOffOption,
+     "Default",
+     "Use the standard Herwig++ cut-off on virtualities with the minimum"
+     " virtuality depending on the mass of the branching particle",
+     0);
+  static SwitchOption interfaceCutOffOptionFORTRAN
+    (interfaceCutOffOption,
+     "FORTRAN",
+     "Use a FORTRAN-like cut-off on virtualities",
+     1);
+  static SwitchOption interfaceCutOffOptionpT
+    (interfaceCutOffOption,
+     "pT",
+     "Use a cut on the minimum allowed pT",
+     2);
+
   static Parameter<SudakovFormFactor,double> interfaceaParameter
     ("aParameter",
      "The a parameter for the kinematic cut-off",
@@ -112,27 +134,6 @@ void SudakovFormFactor::Init() {
 		       " space (unit [GeV])",
 		       &SudakovFormFactor::kinCutoffScale_, GeV, 
 		       2.3*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
-
-  static Switch<SudakovFormFactor,unsigned int> interfaceCutOffOption
-    ("CutOffOption",
-     "The type of cut-off to use to end the shower",
-     &SudakovFormFactor::cutOffOption_, 0, false, false);
-  static SwitchOption interfaceCutOffOptionDefault
-    (interfaceCutOffOption,
-     "Default",
-     "Use the standard Herwig++ cut-off on virtualities with the minimum"
-     " virtuality depending on the mass of the branching particle",
-     0);
-  static SwitchOption interfaceCutOffOptionFORTRAN
-    (interfaceCutOffOption,
-     "FORTRAN",
-     "Use a FORTRAN-like cut-off on virtualities",
-     1);
-  static SwitchOption interfaceCutOffOptionpT
-    (interfaceCutOffOption,
-     "pT",
-     "Use a cut on the minimum allowed pT",
-     2);
   
   static Parameter<SudakovFormFactor,Energy> interfaceGluonVirtualityCut
     ("GluonVirtualityCut",

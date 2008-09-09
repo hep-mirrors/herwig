@@ -13,28 +13,18 @@
 
 #include "PTVeto.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PTVeto.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-PTVeto::~PTVeto() {}
-
 void PTVeto::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
   os << ounit(_maxPT,GeV) << ounit(_minPT,GeV) << _vetoTimelike << _vetoSpacelike;
 }
 
 void PTVeto::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
   is >> iunit(_maxPT,GeV) >> iunit(_minPT,GeV) >> _vetoTimelike >> _vetoSpacelike;
 }
 

@@ -13,26 +13,18 @@
 
 #include "ShowerVeto.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerVeto.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/EnumIO.h"
 
 using namespace Herwig;
 
-ShowerVeto::~ShowerVeto() {}
-
 void ShowerVeto::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-  os << _vetoType;
+  os << oenum(_vetoType);
 }
 
 void ShowerVeto::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-  is >> _vetoType;
+  is >> ienum(_vetoType);
 }
 
 AbstractClassDescription<ShowerVeto> ShowerVeto::initShowerVeto;

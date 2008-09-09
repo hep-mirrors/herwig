@@ -13,7 +13,6 @@
 //
 
 #include "SplittingFunction.h"
-#include "GtoQQbarSplitFn.fh"
 
 namespace Herwig {
 
@@ -41,15 +40,10 @@ class GtoQQbarSplitFn: public SplittingFunction {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline GtoQQbarSplitFn();
-  //@}
-
-public:
+  inline GtoQQbarSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -148,13 +142,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -203,13 +197,11 @@ struct ClassTraits<Herwig::GtoQQbarSplitFn>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "GtoQQbarSplitFn.icc"
 
 #endif /* HERWIG_GtoQQbarSplitFn_H */

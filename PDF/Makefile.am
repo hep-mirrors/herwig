@@ -7,18 +7,16 @@ HwMRST_la_LDFLAGS = -module -version-info 4:0:0
 
 EXTRA_DIST = mrst
 
-pkglib_LTLIBRARIES += HwRemDecayer.la
-HwRemDecayer_la_SOURCES = \
+## bound into HwShower.la
+noinst_LTLIBRARIES = libHwRemDecayer.la
+libHwRemDecayer_la_SOURCES = \
 HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh
 
-HwRemDecayer_la_LDFLAGS = -module -version-info 4:0:0
-
-pkglib_LTLIBRARIES += HwMPIPDF.la
-HwMPIPDF_la_SOURCES = \
+## bound into HwShower.la
+noinst_LTLIBRARIES += libHwMPIPDF.la
+libHwMPIPDF_la_SOURCES = \
 MPIPDF.h MPIPDF.cc MPIPDF.fh \
 MinBiasPDF.h MinBiasPDF.cc MinBiasPDF.fh
-
-HwMPIPDF_la_LDFLAGS = -module -version-info 3:0:0
 
 pkglib_LTLIBRARIES += HwSatPDF.la
 HwSatPDF_la_SOURCES = \

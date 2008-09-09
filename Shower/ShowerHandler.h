@@ -14,19 +14,12 @@
 
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "ThePEG/Handlers/StandardXComb.h"
-#include "ThePEG/EventRecord/SubProcess.h"
-#include "ThePEG/PDT/RemnantData.h"
-#include "ThePEG/PDT/RemnantDecayer.h"
-#include "ThePEG/EventRecord/RemnantParticle.h"
-
 #include "Herwig++/Shower/UEBase.h" 
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
-#include "Herwig++/PDF/HwRemDecayer.h"
-#include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.fh"
-#include "Herwig++/Shower/CKKW/Reweighting/Reweighter.fh"
+#include "Herwig++/PDF/HwRemDecayer.fh"
+#include "ThePEG/EventRecord/RemnantParticle.fh"
 #include "ShowerHandler.fh"
 
 namespace Herwig {
@@ -65,8 +58,8 @@ public:
 public:
 
   /**
-   * The main method which manages the multiple interactions and starts the shower by calling
-   * cascade(sub, lastXC).
+   * The main method which manages the multiple interactions and starts
+   * the shower by calling cascade(sub, lastXC).
    */
   virtual void cascade();
 
@@ -75,49 +68,19 @@ public:
    * is in the list of those that should be decayed during the showering
    * showering.
    */
-  inline bool decayInShower(const long id) const;
-
-public:
-
-  /**@name Methods related to ME/PS merging */
-  //@{
-
-  /**
-   * Perform CKKW reweighting
-   */
-  virtual double reweightCKKW(int minMult, int maxMult);
-
-  /**
-   * Return the cascade reconstructor
-   */
-  inline tCascadeReconstructorPtr cascadeReconstructor () const;
-
-  /**
-   * Return the reweighter
-   */
-  inline tReweighterPtr reweighter () const;
-
-  //@}
+  bool decaysInShower(const long id) const {
+    return ( particlesDecayInShower_.find( abs(id) ) != 
+	     particlesDecayInShower_.end() ); 
+  }
 
 public:
 
   /**@name Methods related to PDF freezing */
   //@{
-
-  /**
-   * Set the PDF freezing scale
-   */
-  inline void pdfFreezingScale (Energy scale) {
-    _pdfFreezingScale = scale;
-  }
-
   /**
    * Get the PDF freezing scale
    */
-  inline Energy pdfFreezingScale () const {
-    return _pdfFreezingScale;
-  }
-
+  Energy pdfFreezingScale() const {return pdfFreezingScale_;}
   //@}
 
 public:
@@ -146,6 +109,7 @@ public:
    */
   static void Init();
 
+public:
 
   /** @name Functions to access information. */
   //@{
@@ -153,26 +117,27 @@ public:
   /**
    * Return true if currently the primary subprocess is showered.
    */
-  inline bool FirstInt() const;
+  bool firstInteraction() const {
+    return ( subProcess_ == 
+	     eventHandler()->currentCollision()->primarySubProcess() );
+  }
 
   /**
    * Return the currently used SubProcess.
    */
-  inline tSubProPtr currentSubProcess() const;
-
-  /**
-   * Return true if hard multiple parton interactions are ordered 
-   * according to their scale.
-   */
-  inline bool IsOrdered() const;
+  tSubProPtr currentSubProcess() const {
+    assert(subProcess_);
+    return subProcess_;
+  }
 
   /**
    * Return true if multiple parton interactions are switched on 
    * and can be used for this beam setup.
    */
-  inline bool IsMPIOn() const;
+  bool isMPIOn() const {
+    return MPIHandler_ && MPIHandler_->beamOK();
+  }
   //@}
-
 
 protected:
 
@@ -243,9 +208,19 @@ protected:
   void makeRemnants();
 
   /**
+   *  Reset the PDF's after the hard collision has been showered
+   */
+  void setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf);
+
+  /**
    *  Test for decay products
    */
   bool decayProduct(tPPtr) const;
+
+  /**
+   *  Access to the Evolver
+   */
+  tEvolverPtr evolver() const;
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs
@@ -291,115 +266,109 @@ private:
   ShowerHandler & operator=(const ShowerHandler &);
 
 private:
-  /**
-   * Access function for the MPIHandler. If it is a zero pointer
-   * an exception is thrown, because it should only be called after
-   * checking with IsMPIOn.
-   */
-  inline tUEBasePtr getMPIHandler() const;
 
   /**
-   * Switch for Multi Parton Interactions to be ordered
+   * Access function for the MPIHandler, it should only be called after
+   * checking with isMPIOn.
    */
-  bool theOrderSecondaries;
+  tUEBasePtr getMPIHandler() const {  
+    assert(MPIHandler_);
+    return MPIHandler_;    
+  }
 
-  /**
-   * Switch for Multi Parton Interactions. Not used any more.
-   */
-  bool theMPIOnOff;
+private:
 
   /**
    * a MPIHandler to administer the creation of several (semihard) 
    * partonic interactions.
    */
-  UEBasePtr theMPIHandler;
-
-private:
+  UEBasePtr MPIHandler_;
 
   /**
    *  Pointer to the evolver
    */
-  EvolverPtr _evolver;
+  EvolverPtr evolver_;
 
   /**
    *  Pointer to the HwRemDecayer
    */
-  HwRemDecPtr theRemDec;
+  HwRemDecPtr remDec_;
 
   /**
    * The PDF freezing scale
    */
-  Energy _pdfFreezingScale;
+  Energy pdfFreezingScale_;
 
   /**
    *  Maximum number of attempts for the
    *   main showering loop
    */
-  unsigned int _maxtry;
+  unsigned int maxtry_;
 
   /**
    *  Maximum number of attempts for the regeneration of an additional
    *  scattering, before the number of scatters is reduced.
    */
-  unsigned int _maxtryMPI;
+  unsigned int maxtryMPI_;
 
   /**
    *  Maximum number of attempts for the regeneration of an additional
    *  hard scattering, before this event is vetoed.
    */
-  unsigned int _maxtryDP;
+  unsigned int maxtryDP_;
 
   /**
    *  PDG codes of the particles which decay during showering
    *  this is fast storage for use during running
    */
-  set<long> _particlesDecayInShower;
+  set<long> particlesDecayInShower_;
 
   /**
    *  PDG codes of the particles which decay during showering
    *  this is a vector that is interfaced so they can be changed
    */
-  vector<long> _inputparticlesDecayInShower;
+  vector<long> inputparticlesDecayInShower_;
 
   /**
    *  The ShowerTree for the hard process
    */
-  ShowerTreePtr _hard;
+  ShowerTreePtr hard_;
 
   /**
    *  The incoming beam particles for the current collision
    */
-  tPPair _incoming;
+  tPPair incoming_;
 
   /**
    *  The ShowerTree for the decays
    */
-  multimap<Energy,ShowerTreePtr> _decay;
+  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
+  ShowerDecayMap decay_;
 
   /**
    *  The ShowerTrees for which the initial shower 
    */
-  vector<ShowerTreePtr> _done;
+  vector<ShowerTreePtr> done_;
 
   /**
    *  Const pointer to the current step
    */
-  tcStepPtr _current;
+  tcStepPtr current_;
 
   /**
    *  Const pointer to the currently handeled ThePEG::SubProcess
    */
-  tSubProPtr theSubProcess;
+  tSubProPtr subProcess_;
 
   /**
    *  pointer to "this", the current ShowerHandler.
    */
-  static ShowerHandler * theHandler;
+  static ShowerHandler * currentHandler_;
 
   /**
    *  Boost to get back to the lab
    */
-  LorentzRotation _boost;
+  LorentzRotation boost_;
 
 public:
 
@@ -416,33 +385,20 @@ public:
    */
   struct ShowerTriesVeto {
     /** variable to store the number of attempts */
-    int theTries;
+    const int tries;
 
     /** constructor */
-    ShowerTriesVeto(int tries){theTries = tries;}
+    ShowerTriesVeto(int t) : tries(t) {}
   };
 
   /**
    *  pointer to "this", the current ShowerHandler.
    */
-  static inline const ShowerHandler * currentHandler();
+  static const ShowerHandler * currentHandler() {
+    assert(currentHandler_);
+    return currentHandler_;
+  }
 
-private:
-
-  /**
-   * Wether or not to use CKKW
-   */
-  bool _useCKKW;
-
-  /**
-   * The cascade reconstructor used for ME/PS merging
-   */
-  CascadeReconstructorPtr _reconstructor;
-
-  /**
-   * The reweighter used for ME/PS merging
-   */
-  ReweighterPtr _reweighter;
 };
 
 }
@@ -475,16 +431,11 @@ struct ClassTraits<Herwig::ShowerHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerHandler.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerHandler.tcc"
-#endif
 
 #endif /* HERWIG_ShowerHandler_H */

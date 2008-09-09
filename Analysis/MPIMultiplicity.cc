@@ -18,7 +18,7 @@ MPIMultiplicity::MPIMultiplicity() :
 
 void MPIMultiplicity::dofinish() {
   AnalysisHandler::dofinish();
-  if(!theShowerHandler->IsMPIOn()) return;
+  if(!theShowerHandler->isMPIOn()) return;
   string fname = generator()->filename() + string("-") + name() + string(".dat");
   ofstream outfile(fname.c_str());
   theRealMult.simpleOutput(outfile, false);
@@ -27,7 +27,7 @@ void MPIMultiplicity::dofinish() {
 
 void MPIMultiplicity::analyze(tEventPtr event, long , int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
-  if(!theShowerHandler->IsMPIOn()) return;
+  if(!theShowerHandler->isMPIOn()) return;
   theRealMult += generator()->eventHandler()->currentCollision()->subProcesses().size()-1;
   theRequestedMult += theMPIHandler->multiplicity();
 }

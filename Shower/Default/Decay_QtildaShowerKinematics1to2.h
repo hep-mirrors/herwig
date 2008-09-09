@@ -13,7 +13,6 @@
 //
 
 #include "QtildaShowerKinematics1to2.h"
-#include "Decay_QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {
 
@@ -33,11 +32,6 @@ using namespace ThePEG;
 class Decay_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
 
 public:
-
-  /**
-   * Default constructor 
-   */
-  inline Decay_QtildaShowerKinematics1to2();
 
   /**
    *  The updateChildren, updateParent and updateLast
@@ -100,10 +94,5 @@ private:
 };
 
 }
-
-#include "Decay_QtildaShowerKinematics1to2.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Decay_QtildaShowerKinematics1to2.tcc"
-#endif
 
 #endif /* HERWIG_Decay_QtildaShowerKinematics1to2_H */

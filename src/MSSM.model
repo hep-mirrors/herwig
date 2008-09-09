@@ -328,3 +328,44 @@ set MSSM/Model:ModelGenerator NewModel
 cd /Herwig/Generators
 set LEPGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
 set LHCGenerator:StandardModelParameters  /Herwig/NewPhysics/MSSM/Model
+
+###################################################
+#
+#  Get Shower to decay SUSY particles
+#
+###################################################
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000001 #  SUSY_d_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000002 #  SUSY_u_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000003 #  SUSY_s_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000004 #  SUSY_c_L 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000005 #  SUSY_b_1 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000006 #  SUSY_t_1 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000011 #  SUSY_e_Lminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000012 #  SUSY_nu_eL 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000013 #  SUSY_mu_Lminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000014 #  SUSY_nu_muL 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000015 #  SUSY_tau_1minus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000016 #  SUSY_nu_tauL 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000021 #  SUSY_g 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000022 #  SUSY_chi_10 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000023 #  SUSY_chi_20 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000024 #  SUSY_chi_1plus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000025 #  SUSY_chi_30 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000035 #  SUSY_chi_40 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000037 #  SUSY_chi_2plus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  1000039 #  SUSY_gravitino 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000001 #  SUSY_d_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000002 #  SUSY_u_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000003 #  SUSY_s_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000004 #  SUSY_c_R 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000005 #  SUSY_b_2 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000006 #  SUSY_t_2 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000011 #  SUSY_e_Rminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000012 #  SUSY_nu_eR 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000013 #  SUSY_mu_Rminus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000014 #  SUSY_nu_muR 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000015 #  SUSY_tau_2minus 
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  2000016 #  SUSY_nu_tauR
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  35      #  H0
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  36      #  A0
+insert /Herwig/Shower/ShowerHandler:DecayInShower 0  37      #  H+
