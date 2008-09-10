@@ -25,6 +25,17 @@
 
 using namespace Herwig;
 
+DrellYanMECorrection::DrellYanMECorrection() 
+  : _channelwgtA(0.12), _channelwgtB(2.00), _nover(0), _maxwgt(0.) {}
+
+IBPtr DrellYanMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr DrellYanMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
+
 void DrellYanMECorrection::doinit() throw(InitException) {
   MECorrectionBase::doinit();
   _channelweights.push_back(_channelwgtA/(1.+_channelwgtA));
@@ -137,18 +148,19 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   }
   // get the gauge bosons
   PPtr boson;
-  if(tree->outgoingLines().size()==1)
-    {boson=tree->outgoingLines().begin()->first->copy();}
-  else
-    {boson=tree->outgoingLines().begin()->first->copy()->parents()[0];}
+  if(tree->outgoingLines().size()==1) {
+    boson=tree->outgoingLines().begin()->first->copy();
+  }
+  else {
+    boson=tree->outgoingLines().begin()->first->copy()->parents()[0];
+  }
   // ensure that the quark is first
   bool quarkfirst(true);
-  if(incoming[0]->id()<incoming[1]->id())
-    {
-      quarkfirst=false;
-      swap(incoming[0],incoming[1]);
-      swap(beams[0],beams[1]);
-    }
+  if(incoming[0]->id()<incoming[1]->id()) {
+    quarkfirst=false;
+    swap(incoming[0],incoming[1]);
+    swap(beams[0],beams[1]);
+  }
   // calculate the momenta
   unsigned int iemit,itype;
   vector<Lorentz5Momentum> pnew;
@@ -190,7 +202,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
       newline->addColoured(newq);
       newline->addColoured(newg);
       col->addAntiColoured(newg);
-	  col->addAntiColoured(newa);
+      col->addAntiColoured(newa);
     }
     else {
       newline->addAntiColoured(newa);
@@ -383,7 +395,7 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // get the pT
   Energy pT=br.kinematics->pT();
   // check if hardest so far
-  if(pT<initial->pT()) return false;
+  if(pT<initial->highestpT()) return false;
   // compute the invariants
   double kappa(sqr(br.kinematics->scale())/_mb2),z(br.kinematics->z());
   Energy2 shat(_mb2/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*_mb2),uhat(-(1.-z)*shat);
@@ -407,11 +419,11 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< "weight = " << wgt << "\n";
   // if not vetoed
   if(UseRandom::rndbool(wgt)) {
-    initial->pT(pT);
+    initial->highestpT(pT);
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+  parent->setEvolutionScale(br.kinematics->scale());
   return true;
 }
 
@@ -551,7 +563,7 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks,
   if(UseRandom::rnd()>weight) return false;
   // construct the momenta in the rest frame of the boson
   Lorentz5Momentum pb(0.*MeV,0.*MeV,0.*MeV,mb,mb),pspect,pg,pemit;
-  double cos3;
+  double cos3 = 0.0;
   if(itype==0)
     {
       pg     = Lorentz5Momentum(0.*MeV,0.*MeV,0.*MeV,0.5*(shat-_mb2)/mb,0.*MeV);
@@ -589,48 +601,43 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks,
 	  cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
 	}
     }
+
   // rotate the gluon
-  double sin3(sqrt(1.-sqr(cos3))),phi(Constants::twopi*UseRandom::rnd());
+  double sin3(sqrt(1.-sqr(cos3)));
+  double phi(Constants::twopi*UseRandom::rnd());
   pg.setX(pg.e()*sin3*cos(phi));
   pg.setY(pg.e()*sin3*sin(phi));
   pg.setZ(pg.e()*cos3);
-  if(itype==0)
-    {pemit=pb+pg-pspect;}
-  else
-    {
-      if(iemit==1)
-	pemit=pb+pspect-pg;
-      else
-	pemit=pspect+pg-pb;
-    }
+  if(itype==0) {
+    pemit=pb+pg-pspect;
+  }
+  else {
+    if(iemit==1) pemit=pb+pspect-pg;
+    else         pemit=pspect+pg-pb;
+  }
   pemit.rescaleMass();
   // find the new CMF
   Lorentz5Momentum pp[2];
-  if(itype==0)
-    {
-      if(iemit==1)
-	{
-	  pp[0]=pemit;
-	  pp[1]=pspect;
-	}
-      else
-	{
-	  pp[0]=pspect;
-	  pp[1]=pemit;
-	}
+  if(itype==0) {
+    if(iemit==1) {
+      pp[0]=pemit;
+      pp[1]=pspect;
     }
-  else if(itype==1)
-    {
-      pp[1]=pg;
-      if(iemit==1) pp[0]=pemit;
-      else         pp[0]=pspect;
+    else {
+      pp[0]=pspect;
+      pp[1]=pemit;
     }
-  else
-    {
-      pp[0]=pg;
-      if(iemit==1) pp[1]=pemit;
-      else         pp[1]=pspect;
-    }
+  }
+  else if(itype==1) {
+    pp[1]=pg;
+    if(iemit==1) pp[0]=pemit;
+    else         pp[0]=pspect;
+  }
+  else {
+    pp[0]=pg;
+    if(iemit==1) pp[1]=pemit;
+    else         pp[1]=pspect;
+  }
   Lorentz5Momentum pz= quarkplus ? pp[0] : pp[1];
   pp[0]/=xnew[0];
   pp[1]/=xnew[1];

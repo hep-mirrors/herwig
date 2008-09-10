@@ -13,7 +13,6 @@
 //
 
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
-#include "QTildeSudakov.fh"
 
 namespace Herwig {
 
@@ -85,7 +84,7 @@ public:
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc, double enhance,
- 					       tcBeamPtr beam);
+					       tcBeamPtr beam);
   //@}
 
   /**
@@ -96,6 +95,30 @@ public:
    */
   virtual double generatePhi(ShowerParticle & particle,const IdList & ids,
 			     ShoKinPtr kinematics);
+
+  /**
+   *  Method to return the evolution scale given the
+   *  transverse momentum, \f$p_T\f$ and \f$z\f$.
+   */
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
+
+  /**
+   *  Method to create the ShowerKinematics object for a final-state branching
+   */
+  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
+					      double phi, Energy pt);
+
+  /**
+   *  Method to create the ShowerKinematics object for an initial-state branching
+   */
+  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
+						double phi, Energy pt);
+
+  /**
+   *  Method to create the ShowerKinematics object for a decay branching
+   */
+  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
+					 double phi, Energy pt);
 
 public:
 
@@ -190,11 +213,6 @@ protected:
    */
   bool computeSpaceLikeLimits(Energy2 & scale, double x);
 
-  /**
-   *  Construct the kinematics objects
-   */
-  ShoKinPtr constructKinematics(int iopt);
-
 protected:
 
   /** @name Clone Methods. */
@@ -218,7 +236,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class with persistent data.
    */
-  static ClassDescription<QTildeSudakov> initQTildeSudakov;
+  static NoPIOClassDescription<QTildeSudakov> initQTildeSudakov;
 
   /**
    * The assignment operator is private and must never be called.
@@ -280,7 +298,7 @@ struct ClassTraits<Herwig::QTildeSudakov>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

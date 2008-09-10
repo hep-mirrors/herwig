@@ -177,7 +177,7 @@ struct ClassTraits<Herwig::LeptonDalitzAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

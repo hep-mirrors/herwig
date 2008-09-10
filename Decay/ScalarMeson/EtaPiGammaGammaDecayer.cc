@@ -24,6 +24,14 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void EtaPiGammaGammaDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    _etamax  = mode(0)->maxWeight();
+    _etapmax = mode(1)->maxWeight();
+  }
+}
+
 EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   : _grhoomega(12.924/GeV), _fpi(130.7*MeV),_rhomass(771.1*MeV),
     _rhowidth(149.2*MeV),_grho(_rhomass/_fpi),_mpi(0.*MeV),_rhoconst(0.),
@@ -350,16 +358,16 @@ void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output,
 					    bool header) const {
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":grhoomega " << _grhoomega*GeV << "\n";
-  output << "set " << fullName() << ":Fpi " << _fpi/MeV  << "\n";
-  output << "set " << fullName() << ":grho " << _grho << "\n";
-  output << "set " << fullName() << ":RhoMass " << _rhomass/MeV << "\n";
-  output << "set " << fullName() << ":RhoWidth " << _rhowidth/MeV << "\n";
-  output << "set " << fullName() << ":RatioFpiF8 " << _ratiofpif8 << "\n";
-  output << "set " << fullName() << ":RatioFpiF0 " << _ratiofpif0 << "\n";
-  output << "set " << fullName() << ":Theta " << _theta  << "\n";
-  output << "set " << fullName() << ":EtaMax " << _etamax << "\n";
-  output << "set " << fullName() << ":EtaPrimeMax " << _etapmax << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":grhoomega " << _grhoomega*GeV << "\n";
+  output << "set " << name() << ":Fpi " << _fpi/MeV  << "\n";
+  output << "set " << name() << ":grho " << _grho << "\n";
+  output << "set " << name() << ":RhoMass " << _rhomass/MeV << "\n";
+  output << "set " << name() << ":RhoWidth " << _rhowidth/MeV << "\n";
+  output << "set " << name() << ":RatioFpiF8 " << _ratiofpif8 << "\n";
+  output << "set " << name() << ":RatioFpiF0 " << _ratiofpif0 << "\n";
+  output << "set " << name() << ":Theta " << _theta  << "\n";
+  output << "set " << name() << ":EtaMax " << _etamax << "\n";
+  output << "set " << name() << ":EtaPrimeMax " << _etapmax << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

@@ -53,7 +53,7 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     // rotate to have z-axis parallel to p
     // this rotation changed by PR to a different rotation with the same effect
     // but different azimuthal angle to make implementing spin correlations easier
-    //dq.rotateUz( p_bb.vect()/p_bb.vect().mag() );
+    //    dq.rotateUz( unitVector(p_bb.vect()) );
     Axis axis(p_bb.vect().unit());
     if(axis.perp2()>0.) {
       LorentzRotation rot;

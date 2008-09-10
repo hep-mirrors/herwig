@@ -13,7 +13,6 @@
 //
 
 #include "QTildeMECorrection.h"
-#include "TopDecayMECorrection.fh"
 
 namespace Herwig {
 
@@ -33,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline TopDecayMECorrection();
+  TopDecayMECorrection();
 
   /**
    *  Members to override those in the base class and implemented 
@@ -82,19 +81,19 @@ private:
   /**
    *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
-  inline double xgbr(int);
+  double xgbr(int);
 
   /**
    *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
-  inline double ktr(double,int);
+  double ktr(double,int);
 
   /**
    *  This function determines \f$x_{a}\f$ as a function of \f$x_{g}\f$ 
    *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
-  inline double xab(double,double,int);
+  double xab(double,double,int);
 
   /**
    *  This function determines the point (\f$x_{g}\f$) where the condition that 
@@ -102,19 +101,19 @@ private:
    *  \f$\tilde{\kappa}\f$ where, again, \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
-  inline double xgbcut(double);
+  double xgbcut(double);
 
   /**
    *  This function determines the minimum value of \f$x_{a}\f$ 
    *  for a given \f$\tilde{\kappa}\f$ where \f$\kappa\f$ pertains to
    *  emissions from the c.
    */
-  inline double xaccut(double);
+  double xaccut(double);
 
   /**
    *  This function is auxiliary to the function \f$x_{g}\f$ (hXGC).
    */
-  inline double z(double,double,int,int); 
+  double z(double,double,int,int); 
 
   /**
    *  This function determines \f$x_{g}\f$ as a function of \f$x_{a}\f$ 
@@ -125,7 +124,7 @@ private:
    *  function for the special case of the full phase space, in which
    *  case the fifth argument \f$\kappa\f$ is irrelevant.
    */
-  inline double xgc(double,double,int,int); 
+  double xgc(double,double,int,int); 
 
   /**
    *  This function, \f$x_{g,c=0}^{-1}\f$, returns \f$x_{a}\f$ as a function 
@@ -133,39 +132,39 @@ private:
    *  (the b-quark). The third input is \f$\tilde{\kappa}\f$ which pertains 
    *  to emissions from c.
    */
-  inline double xginvc0(double,double); 
+  double xginvc0(double,double); 
 
   /**
    *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
-  inline double approxDeadMaxxa(double,double,double); 
+  double approxDeadMaxxa(double,double,double); 
 
   /**
    *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
-  inline double approxDeadMinxa(double,double,double); 
+  double approxDeadMinxa(double,double,double); 
 
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are in the allowed region, the kinematically accessible phase 
    *  space.
    */
-  inline bool inTheAllowedRegion(double,double); 
+  bool inTheAllowedRegion(double,double); 
 
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are exactly in the approximate dead region.
    */
-  inline bool inTheApproxDeadRegion(double,double,
+  bool inTheApproxDeadRegion(double,double,
                                     double,double); 
 
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are exactly in the dead region.
    */
-  inline bool inTheDeadRegion(double,double,
+  bool inTheDeadRegion(double,double,
                               double,double); 
 
   /**
@@ -173,7 +172,7 @@ private:
    *  according to \f$\left(1+a-x_{a}\right)^{-1}x_{g}^{-2}\f$ in the 
    *  approximate dead region.  
    */
-  inline double deadRegionxgxa(double,double); 
+  double deadRegionxgxa(double,double); 
 
   /**
    *  This rotation takes a 5-momentum and returns a rotation matrix 
@@ -181,7 +180,7 @@ private:
    *  make it point in the +Z direction. Finally it performs a randomn
    *  rotation about the z-axis.
    */
-  inline LorentzRotation rotateToZ(Lorentz5Momentum);
+  LorentzRotation rotateToZ(Lorentz5Momentum);
 
 public:
 
@@ -217,13 +216,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -366,16 +365,11 @@ struct ClassTraits<Herwig::TopDecayMECorrection>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "TopDecayMECorrection.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TopDecayMECorrection.tcc"
-#endif
 
 #endif /* HERWIG_TopDecayMECorrection_H */

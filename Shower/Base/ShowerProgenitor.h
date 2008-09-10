@@ -43,85 +43,121 @@ public:
    * @param pT The \f$p_t\f$ of the hardest emission
    * @param emitted Whether or not the particle has radiated
    */
-  inline ShowerProgenitor(PPtr original,PPtr copy, ShowerParticlePtr particle,
-			  Energy pT=0.*MeV,bool emitted=false);
-
+  ShowerProgenitor(PPtr original,PPtr copy, ShowerParticlePtr particle,
+		   Energy pT=0.*MeV,bool emitted=false)
+    : _original(original), _copy(copy), _perturbative(true),
+      _particle(particle), _highestpT(pT), _maxpT(Constants::MaxEnergy), 
+      _maxHardPt(0.0*GeV), _hasEmitted(emitted) {
+    // get the BeamParticleData object
+    if ( original->parents().empty() ) {
+      _beam=dynamic_ptr_cast<tcBeamPtr>(original->dataPtr());
+    } 
+    else {
+      _beam=dynamic_ptr_cast<tcBeamPtr>(original->parents()[0]->dataPtr());
+    }
+  }
+  
   /**
    *  Access to the particle
    */
-  inline ShowerParticlePtr progenitor() const;
+  ShowerParticlePtr progenitor() const { return _particle; }
 
   /**
    *  Set the particle
    */
-  inline void progenitor(ShowerParticlePtr);
+  void progenitor(ShowerParticlePtr in) { _particle=in; }
 
   /**
    *  Access to the original particle
    */
-  inline PPtr original() const;
+  PPtr original() const { return _original; }
 
   /**
    *  Access to the colour isolated copy
    */
-  inline PPtr copy() const;
+  PPtr copy() const { return _copy; }
 
   /**
    * Set the copy
    */
-  inline void copy(PPtr);
+  void copy(PPtr in) { _copy=in; }
 
   /**
    *  Whether the particle came from the hard process or was added by
    *  the matrix element correction
    */
-  inline bool perturbative() const;
+  bool perturbative() const { return _perturbative; }
 
   /**
    *  Whether the particle came from the hard process or was added by
    *  the matrix element correction
    */
-  inline void perturbative(bool);
+  void perturbative(bool in) { _perturbative=in; }
 
+  /**
+   *  Set/Get methods for the hardest \f$p_T\f$ so far
+   */
+  //@{
   /**
    *  Access the \f$p_T\f$ of the hardest emission so far
    */
-  inline Energy pT() const;
+  Energy highestpT() const { return _highestpT; }
 
   /**
    *  Set the \f$p_T\f$ of the hardest emission so far
    */
-  inline void pT(Energy);
+  void highestpT(Energy in) { _highestpT=in; }
+  //@}
 
+  /**
+   *  Set/Get methods for the maximum \f$p_T\f$ 
+   */
+  //@{
+  /**
+   *  Access the maximum \f$p_T\f$ for radiation
+   */
+  Energy maximumpT() const { return _maxpT; }
+
+  /**
+   *  Set the maximum \f$p_T\f$ for radiation
+   */
+  void maximumpT(Energy in) { _maxpT=in; }
+  //@}
+
+  /**
+   * Set/Get methods for whether the particle has radiated
+   */
+  //@{
   /**
    *  Access the maximum hard \f$p_T\f$, given by the hard process
    */
-  inline Energy maxHardPt() const;
+  Energy maxHardPt() const { return _maxHardPt; }
 
   /**
    *  Set the maximum hard \f$p_T\f$, given by the hard process
    */
-  inline void maxHardPt(Energy);
+  void maxHardPt(Energy in) { _maxHardPt = in; }
 
   /**
    *  Has this particle radiated
    */
-  inline bool hasEmitted() const;
+  bool hasEmitted() const { return _hasEmitted; }
 
   /**
    *  Set whether or not this particle has radiated
    */
-  inline void hasEmitted(bool);
+  void hasEmitted(bool in) { _hasEmitted=in; }
+  //@}
 
   /**
    *  The id of the particle
    */
-  inline long id() const;
+  long id() const { return _particle->id(); }
 
   /**
    *  The BeamParticleData object
    */
-  inline tcBeamPtr beam();
+  tcBeamPtr beam() { return _beam; }
 
 private:
 
@@ -147,9 +183,14 @@ private:
   ShowerParticlePtr _particle;
 
   /**
-   *  \f$p_T\f$ of the current emmision
+   *  Highest \f$p_T\f$ emitted in the shower from this particle
    */
-  Energy _highestPt;
+  Energy _highestpT;
+
+  /**
+   *  Maximum allowed \f$p_T\f$ for emission from this particle
+   */
+  Energy _maxpT;
 
   /**
    *  maximum hard \f$p_T\f$ from the hard process
@@ -168,7 +209,5 @@ private:
 
 };
 }
-
-#include "ShowerProgenitor.icc"
 
 #endif /* HERWIG_ShowerProgenitor_H */

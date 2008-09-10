@@ -14,7 +14,6 @@
 
 #include "ShowerAlpha.h"
 #include "ThePEG/Config/Constants.h"
-#include "ShowerAlphaQCD.fh"
 
 namespace Herwig {
 
@@ -39,7 +38,12 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlphaQCD();
+  ShowerAlphaQCD() : ShowerAlpha(), 
+		     _qmin(0.630882*GeV), _asType(1), _asMaxNP(1.0), 
+		     _thresholds(4), _lambda(4),
+		     _nloop(3),_lambdaopt(false),_thresopt(false),
+		     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
+		     _maxtry(100),_alphamin(0.) {}
 
 public:
 
@@ -69,13 +73,13 @@ public:
   /**
    * Initialize this coupling.
    */
-  virtual inline void initialize ();
+  virtual void initialize() { doinit(); }
 
   /**
    * A command to initialize the coupling and write
    * its value at the scale given by the argument (in GeV)
    */
-  inline string value (string);
+  string value(string);
 
   //@}
 
@@ -83,7 +87,11 @@ public:
    *  Get the value of \f$\Lambda_{\rm QCd}\f$
    *  @param nf number of flavours
    */
-  inline Energy lambdaQCD(unsigned int nf);
+  Energy lambdaQCD(unsigned int nf) {
+    if      (nf <= 3)        return _lambda[0];
+    else if (nf==4 || nf==5) return _lambda[nf-3];
+    else                     return _lambda[3];
+  }
 
 public:
 
@@ -119,13 +127,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 
@@ -153,7 +161,7 @@ private:
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  inline double alphaS(Energy q, Energy lam, int nf) const; 
+  double alphaS(Energy q, Energy lam, int nf) const; 
 
   /**
    * The derivative of \f$\alpha_S\f$ with respect to \f$\ln(Q^2/\Lambda^2)\f$
@@ -161,7 +169,7 @@ private:
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  inline double derivativealphaS(Energy q, Energy lam, int nf) const; 
+  double derivativealphaS(Energy q, Energy lam, int nf) const; 
 
   /**
    * Compute the value of \f$Lambda\f$ needed to get the input value of
@@ -171,14 +179,14 @@ private:
    * @param alpha The input coupling
    * @param nflav The number of flavours
    */
-  inline Energy computeLambda(Energy match, double alpha, unsigned int nflav) const;
+  Energy computeLambda(Energy match, double alpha, unsigned int nflav) const;
 
   /**
    * Return the value of \f$\Lambda\f$ and the number of flavours at the scale.
    * @param q The scale
    * @return The number of flavours at the scale and \f$\Lambda\f$.
    */
-  inline pair<short, Energy> getLamNfTwoLoop(Energy q) const;
+  pair<short, Energy> getLamNfTwoLoop(Energy q) const;
   //@}
 
 private:
@@ -302,13 +310,11 @@ struct ClassTraits<Herwig::ShowerAlphaQCD>
    * libraries will be dynamically linked in the order they are
    * specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerAlphaQCD.icc"
 
 #endif /* HERWIG_ShowerAlphaQCD_H */

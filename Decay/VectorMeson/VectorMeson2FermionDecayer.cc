@@ -334,29 +334,30 @@ void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " "
+      output << "set " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingFermion " << ix << " "
+      output << "set " << name() << ":OutgoingFermion " << ix << " "
 	     << _outgoingf[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingAntiFermion "  << ix << " "
+      output << "set " << name() << ":OutgoingAntiFermion "  << ix << " "
 	     << _outgoinga[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " "
+      output << "set " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix] << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " "
+      output << "set " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " "
+      output << "insert " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingFermion "  << ix << " "
+      output << "insert " << name() << ":OutgoingFermion "  << ix << " "
 	     << _outgoingf[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingAntiFermion "  << ix << " "
+      output << "insert " << name() << ":OutgoingAntiFermion "  << ix << " "
 	     << _outgoinga[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " "
+      output << "insert " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix] << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " "
+      output << "insert " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

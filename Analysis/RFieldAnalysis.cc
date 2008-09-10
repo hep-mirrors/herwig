@@ -189,9 +189,6 @@ bool keep(Energy ){
     return false;
 }
 
-RFieldAnalysis::RFieldAnalysis(): thelow(30), 
-				  theup(50), theDir(".") {}
-
 
 void RFieldAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
@@ -289,6 +286,11 @@ void RFieldAnalysis::analyze(tEventPtr event, long , int loop, int state) {
       thePtsumTow[id]   += ptsumTow;
       thePtsumTrans[id] += ptsumTrans;
       thePtsumAway[id]  += ptsumAway;
+
+      //debug histogram for the low pt bins
+      if(id < 3 && nchTrans > 0)
+          theRealMult += generator()->eventHandler()->currentCollision()->subProcesses().size()-1;
+
   }
 }
 
@@ -311,6 +313,10 @@ void RFieldAnalysis::dofinish() {
 
   generator()->log() << "Total Chi^2: " << tot.first << "/" << tot.second 
                      << " = " << tot.first/tot.second << endl;
+
+  string fname = "low-pt-extraMult.dat";
+  ofstream outfile(fname.c_str());
+  theRealMult.simpleOutput(outfile, false);
 }
 
 void RFieldAnalysis::chisq(vector<Statistic> mc, string ascii, pair<double, int> &tot){

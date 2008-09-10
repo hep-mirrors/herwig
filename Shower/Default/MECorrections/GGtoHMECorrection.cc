@@ -5,6 +5,8 @@
 //
 
 #include "GGtoHMECorrection.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -17,6 +19,22 @@
 using namespace Herwig;
 
 const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-10*GeV2);
+
+GGtoHMECorrection::GGtoHMECorrection() 
+  : _minloop(6),_maxloop(6),_massopt(0),  
+    _channelwgtA(0.45),_channelwgtB(0.15),
+    _ggpow(1.6), _qgpow(1.6),_enhance(1.1),
+    _nover(0),_ntry(0),_ngen(0),
+    _maxwgt(0.) {}
+
+IBPtr GGtoHMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr GGtoHMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
+
 
 void GGtoHMECorrection::persistentOutput(PersistentOStream & os) const {
   os << _minloop << _maxloop << _massopt << _ggpow << _qgpow << _enhance
@@ -761,7 +779,7 @@ bool GGtoHMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // get the pT
   Energy pT=br.kinematics->pT();
   // check if hardest so far
-  if(pT<initial->pT()) return false;
+  if(pT<initial->highestpT()) return false;
   // compute the invariants
   double kappa(sqr(br.kinematics->scale())/_mh2),z(br.kinematics->z());
   Energy2 shat(_mh2/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*_mh2),uhat(-(1.-z)*shat);
@@ -797,10 +815,98 @@ bool GGtoHMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 					<< br.ids[2] << "\n";
   // if not vetoed
   if(UseRandom::rndbool(wgt)) {
-    initial->pT(pT);
+    initial->highestpT(pT);
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+  parent->setEvolutionScale(br.kinematics->scale());
   return true;
+}
+
+
+Complex GGtoHMECorrection::B(Energy2 s,Energy2 mf2) const {
+  Complex output,pii(0.,Constants::pi);
+  double rat=s/(4.*mf2);
+  if(s<0.*GeV2)
+    output=2.-2.*sqrt(1.-1./rat)*log(sqrt(-rat)+sqrt(1.-rat));
+  else if(s>=0.*GeV2&&rat<1.)
+    output=2.-2.*sqrt(1./rat-1.)*asin(sqrt(rat));
+  else
+    output=2.-sqrt(1.-1./rat)*(2.*log(sqrt(rat)+sqrt(rat-1.))-pii);
+  return output;
+}
+
+complex<InvEnergy2> GGtoHMECorrection::C(Energy2 s,Energy2 mf2) const {
+  complex<InvEnergy2> output;
+  Complex pii(0.,Constants::pi);
+  double rat=s/(4.*mf2);
+  if(s<0.*GeV2)
+    output=2.*sqr(log(sqrt(-rat)+sqrt(1.-rat)))/s;
+  else if(s>=0.*GeV2&&rat<1.)
+    output=-2.*sqr(asin(sqrt(rat)))/s;
+  else {
+    double cosh=log(sqrt(rat)+sqrt(rat-1.));
+    output=2.*(sqr(cosh)-sqr(Constants::pi)/4.-pii*cosh)/s;
+  }
+  return output;
+}
+  
+Complex GGtoHMECorrection::dIntegral(Energy2 a, Energy2 b, double y0) const {
+  Complex output;
+  if(b==0.*GeV2) output=0.;
+  else {
+    Complex y1=0.5*(1.+sqrt(1.-4.*(a+_epsi)/b));
+    Complex y2=1.-y1;
+    Complex z1=y0/(y0-y1);
+    Complex z2=(y0-1.)/(y0-y1);
+    Complex z3=y0/(y0-y2);
+    Complex z4=(y0-1.)/(y0-y2);
+    output=Math::Li2(z1)-Math::Li2(z2)+Math::Li2(z3)-Math::Li2(z4);
+  }
+  return output;
+}
+
+complex<InvEnergy4> GGtoHMECorrection::D(Energy2 s,Energy2 t, Energy2,
+						Energy2 mf2) const {
+  Complex output,pii(0.,Constants::pi);
+  Energy4 st=s*t;
+  Energy4 root=sqrt(sqr(st)-4.*st*mf2*(s+t-_mh2));
+  double xp=0.5*(st+root)/st,xm=1-xp;
+  output = 2.*(-dIntegral(mf2,s,xp)-dIntegral(mf2,t,xp)
+	       +dIntegral(mf2,_mh2,xp)+log(-xm/xp)
+	       *(log((mf2+_epsi)/GeV2)-log((mf2+_epsi-s*xp*xm)/GeV2)
+		 +log((mf2+_epsi-_mh2*xp*xm)/GeV2)-log((mf2+_epsi-t*xp*xm)/GeV2)));
+  return output/root;
+}
+  
+complex<Energy> GGtoHMECorrection::me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2,
+					      unsigned int i ,unsigned int j ,unsigned int k ,
+					      unsigned int i1,unsigned int j1,unsigned int k1) const {
+  Energy2 s1(s-_mh2),t1(t-_mh2),u1(u-_mh2);
+  return mf2*4.*sqrt(2.*s*t*u)*(-4.*(1./(u*t)+1./(u*u1)+1./(t*t1))
+				-4.*((2.*s+t)*_bi[k]/sqr(u1)+(2.*s+u)*_bi[j]/sqr(t1))/s
+				-(s-4.*mf2)*(s1*_ci[i1]+(u-s)*_ci[j1]+(t-s)*_ci[k1])/(s*t*u)
+				-8.*mf2*(_ci[j1]/(t*t1)+_ci[k1]/(u*u1))
+				+0.5*(s-4.*mf2)*(s*t*_di[k]+u*s*_di[j]-u*t*_di[i])/(s*t*u)
+				+4.*mf2*_di[i]/s
+				-2.*(u*_ci[k]+t*_ci[j]+u1*_ci[k1]+t1*_ci[j1]-u*t*_di[i])/sqr(s));
+}
+
+complex<Energy> GGtoHMECorrection::me2(Energy2 s,Energy2 t,Energy2 u,
+					      Energy2 mf2) const {
+  Energy2 s1(s-_mh2),t1(t-_mh2),u1(u-_mh2);
+  return mf2*4.*sqrt(2.*s*t*u)*(4.*_mh2+(_mh2-4.*mf2)*(s1*_ci[4]+t1*_ci[5]+u1*_ci[6])
+				-0.5*(_mh2-4.*mf2)*(s*t*_di[3]+u*s*_di[2]+u*t*_di[1]) )/
+    (s*t*u);
+}
+
+Complex GGtoHMECorrection::F(double x) {
+  if(x<.25) {
+    double root = sqrt(1.-4.*x);
+    Complex pii(0.,Constants::pi);
+    return 0.5*sqr(log((1.+root)/(1.-root))-pii);
+  }
+  else {
+    return -2.*sqr(asin(0.5/sqrt(x)));
+  }
 }

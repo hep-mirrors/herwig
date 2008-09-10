@@ -13,14 +13,6 @@
 
 namespace Herwig {
 
-inline IBPtr DtoKPiPiE691::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr DtoKPiPiE691::fullclone() const {
-  return new_ptr(*this);
-}
-
 inline double DtoKPiPiE691::decayAngle(const Lorentz5Momentum & pparent,
 				       const Lorentz5Momentum & pres,
 				       const Lorentz5Momentum & p1) const{
@@ -35,8 +27,7 @@ inline double DtoKPiPiE691::decayAngle(const Lorentz5Momentum & pparent,
 }
 
 inline Complex DtoKPiPiE691::amplitude(int ispin, double costheta,Energy mAB,
-				       Energy wres, Energy mres
-				       ) const {
+				       Energy wres, Energy mres) const {
   double s;
   switch(ispin) {
   case 0:

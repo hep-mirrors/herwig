@@ -47,17 +47,7 @@ using namespace ThePEG;
  */
 class ShowerModel: public Interfaced {
 
-public:
-
-  /**
-   * The default constructor.
-   */
-  inline ShowerModel();
-
-  /**
-   * The destructor
-   */
-  virtual ~ShowerModel();
+public:  
 
   /**
    *  Access methods to access the objects
@@ -66,22 +56,25 @@ public:
   /**
    *  Access to the KinematicsReconstructor object
    */
-  inline tKinematicsReconstructorPtr kinematicsReconstructor() const;
+  tKinematicsReconstructorPtr kinematicsReconstructor() const { return _reconstructor; }
 
   /**
    *  Access to the PartnerFinder object
    */
-  inline tPartnerFinderPtr partnerFinder() const;
+  tPartnerFinderPtr partnerFinder() const {
+    useMe();
+    return _partnerfinder;
+  }
 
   /**
    *  Access to the SudakovFormFactor objects
    */
-  inline const vector<SudakovPtr> & sudakovFormFactors() const;
+  const vector<SudakovPtr> & sudakovFormFactors() const { return _sudakovs; }
 
   /**
    *  Access to the MECorrection objects
    */
-  inline const vector<MECorrectionPtr> & meCorrections() const;
+  const vector<MECorrectionPtr> & meCorrections() const { return _mecorrections; }
   //@}
 
 public:
@@ -126,7 +119,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -202,16 +195,11 @@ struct ClassTraits<Herwig::ShowerModel>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerModel.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerModel.tcc"
-#endif
 
 #endif /* HERWIG_ShowerModel_H */

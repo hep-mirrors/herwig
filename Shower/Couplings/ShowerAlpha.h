@@ -55,7 +55,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerAlpha();
+  inline ShowerAlpha() : _scaleFactor( 1.0 ) {}
   //@}
 
 public:
@@ -80,7 +80,7 @@ public:
   virtual double overestimateValue() const = 0;
 
   /**
-   *  Virtual method which returns the ratrio of the running alpha
+   *  Virtual method which returns the ratio of the running alpha
    * value at the input scale to the overestimated value.
    * @param scale The scale
    * @return The ratio
@@ -94,13 +94,12 @@ public:
    * whereas different values can be useful for systematics evaluation 
    * for Initial State radiation or Final State radiation effects.
    */
-  inline double scaleFactor() const;
+  inline double scaleFactor() const {return _scaleFactor;}
 
   /**
    * Initialize this coupling.
    */
-  virtual inline void initialize ();
-
+  virtual inline void initialize () {}
   //@}
 
 public:
@@ -182,16 +181,11 @@ struct ClassTraits<Herwig::ShowerAlpha>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerAlpha.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerAlpha.tcc"
-#endif
 
 #endif /* HERWIG_ShowerAlpha_H */

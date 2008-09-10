@@ -26,21 +26,14 @@
 using namespace Herwig;
 using ThePEG::Helicity::VertexPtr;
 
-ClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
+NoPIOClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
 // Definition of the static class description member.
-
-void QTildeSudakov::persistentOutput(PersistentOStream & ) const {
-}
-
-void QTildeSudakov::persistentInput(PersistentIStream & , int) {
-}
 
 void QTildeSudakov::Init() {
 
   static ClassDocumentation<QTildeSudakov> documentation
     ("The QTildeSudakov class implements the Sudakov form factor for ordering it"
      " qtilde");
-  
 }
 
 bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
@@ -82,7 +75,7 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
   // still inside PS, return true if outside
   // check vs overestimated limits
   if(z() < zLimits().first || z() > zLimits().second) return true;
-  // compute the pt
+  // compute the pts
   Energy2 pt2=sqr(z()*(1.-z()))*t-masssquared_[1]*(1.-z())-masssquared_[2]*z();
   if(ids_[0]!=ParticleID::g) pt2+=z()*(1.-z())*masssquared_[0];
   // if pt2<0 veto
@@ -116,8 +109,8 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   else q_ = -1.*MeV;
   phi(Constants::twopi*UseRandom::rnd());
   if(q_ < Energy()) return ShoKinPtr();
-  // construct the ShowerKinematics object
-  return constructKinematics(0);
+  // return the ShowerKinematics object
+  return createFinalStateBranching(q_,z(),phi(),pT()); 
 }
 
 ShoKinPtr QTildeSudakov::
@@ -155,7 +148,7 @@ generateNextSpaceBranching(const Energy startingQ,
   phi(Constants::twopi*UseRandom::rnd());
   pT(sqrt(pt2));
   // create the ShowerKinematics and return it
-  return constructKinematics(1);
+  return createInitialStateBranching(q_,z(),phi(),pT());
 }
 
 void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc) {
@@ -232,7 +225,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   else return ShoKinPtr();
   phi(Constants::twopi*UseRandom::rnd());
   // create the ShowerKinematics object
-  return constructKinematics(2);
+  return createDecayBranching(q_,z(),phi(),pT());
 }
 
 bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
@@ -410,30 +403,56 @@ double QTildeSudakov::generatePhi(ShowerParticle & particle,const IdList & ids,
 //   }
 // }
 
-ShoKinPtr QTildeSudakov::constructKinematics(int iopt) {
-  ShoKinPtr showerKin;
-  switch(iopt) {
-    // time-like
-  case 0:
-    showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
-    break;
-    // space-like
-  case 1:
-    showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
-    break;
-    // decay
-  case 2:
-    showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
-    break;
-  default:
-    throw Exception() << "Unknown type of branching in "
-		      << "QTildeSudakov::constructKinematics()"
-		      << Exception::runerror;
+Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
+				     unsigned int iopt) {
+  Energy2 tmin;
+  initialize(ids,tmin,false);
+  // final-state branching
+  if(iopt==0) {
+    Energy2 scale=(sqr(pt)+masssquared_[1]*(1.-zin)+masssquared_[2]*zin);
+    if(ids[0]!=ParticleID::g) scale -= zin*(1.-zin)*masssquared_[0];
+    scale /= sqr(zin*(1-zin));
+    return scale<=0.*MeV2 ? sqrt(tmin) : sqrt(scale);
   }
-  showerKin->scale(q_);
-  showerKin->z(z());
-  showerKin->phi(phi());
-  showerKin->pT(pT());
+  else if(iopt==1) {
+    Energy2 scale=(sqr(pt)+zin*masssquared_[2])/sqr(1.-zin);
+    return scale<=0.*MeV2 ? sqrt(tmin) : sqrt(scale);
+  }
+  else {
+    throw Exception() << "Unknown option in QTildeSudakov::calculateScale() "
+		      << "iopt = " << iopt << Exception::runerror;
+  }
+}
+
+ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
+						   double phi, Energy pt) {
+  ShoKinPtr showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
+  showerKin->scale(scale);
+  showerKin->z(z);
+  showerKin->phi(phi);
+  showerKin->pT(pt);
+  showerKin->splittingFn(splittingFn());
+  return showerKin;
+}
+
+ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
+						     double phi, Energy pt) {
+  ShoKinPtr showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+  showerKin->scale(scale);
+  showerKin->z(z);
+  showerKin->phi(phi);
+  showerKin->pT(pt);
+  showerKin->splittingFn(splittingFn());
+  return showerKin;
+}
+
+ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
+						     double phi, Energy pt) {
+  ShoKinPtr  showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
+  showerKin->scale(scale);
+  showerKin->z(z);
+  showerKin->phi(phi);
+  showerKin->pT(pt);
   showerKin->splittingFn(splittingFn());
   return showerKin;
 }

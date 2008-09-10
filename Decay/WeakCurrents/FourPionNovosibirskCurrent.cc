@@ -910,33 +910,34 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
 						bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::FourPionNovosibirskCurrent " 
-		    << fullName() << " HwWeakCurrents.so\n";
-  output << "set " << fullName() << ":rhoMass "    << _rhomass/GeV << "\n";
-  output << "set " << fullName() << ":a1Mass  "    << _a1mass/GeV  << "\n";
-  output << "set " << fullName() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
-  output << "set " << fullName() << ":omegaMass  " << _omegamass/GeV  << "\n";
-  output << "set " << fullName() << ":rhoWidth "    << _rhowidth/GeV << "\n";
-  output << "set " << fullName() << ":a1Width  "    << _a1width/GeV  << "\n";
-  output << "set " << fullName() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
-  output << "set " << fullName() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
-  output << "set " << fullName() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << fullName() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
-  output << "set " << fullName() << ":SigmaMagnitude "  <<  _zmag << "\n";
-  output << "set " << fullName() << ":SigmaPhase " << _zphase  << "\n";
-  output << "set " << fullName() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
-  output << "set " << fullName() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << fullName() << ":Initializea1 " <<  _initializea1 << "\n";
+		    << name() << " HwWeakCurrents.so\n";
+  output << "set " << name() << ":rhoMass "    << _rhomass/GeV << "\n";
+  output << "set " << name() << ":a1Mass  "    << _a1mass/GeV  << "\n";
+  output << "set " << name() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
+  output << "set " << name() << ":omegaMass  " << _omegamass/GeV  << "\n";
+  output << "set " << name() << ":rhoWidth "    << _rhowidth/GeV << "\n";
+  output << "set " << name() << ":a1Width  "    << _a1width/GeV  << "\n";
+  output << "set " << name() << ":sigmaWidth  " << _sigmawidth/GeV  << "\n";
+  output << "set " << name() << ":omegaWidth  " << _omegawidth/GeV  << "\n";
+  output << "set " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "set " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "set " << name() << ":SigmaMagnitude "  <<  _zmag << "\n";
+  output << "set " << name() << ":SigmaPhase " << _zphase  << "\n";
+  output << "set " << name() << ":Lambda2 "  <<  _lambda2/GeV2 << "\n";
+  output << "set " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "set " << name() << ":Initializea1 " <<  _initializea1 << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) output << "set ";
     else       output << "insert ";
-    output << fullName() << ":a1RunningWidth " << ix << " " 
+    output << name() << ":a1RunningWidth " << ix << " " 
 	   << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
     if(ix<200) output << "set ";
     else       output << "insert ";
-    output << fullName() << ":a1RunningQ2 " << ix << " " << _a1runq2[ix]/GeV2 << "\n";
+    output << name() << ":a1RunningQ2 " << ix << " " << _a1runq2[ix]/GeV2 << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

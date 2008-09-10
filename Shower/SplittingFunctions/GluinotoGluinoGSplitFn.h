@@ -13,7 +13,6 @@
 //
 
 #include "SplittingFunction.h"
-#include "GluinotoGluinoGSplitFn.fh"
 
 namespace Herwig {
 
@@ -44,7 +43,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GluinotoGluinoGSplitFn();
+  inline GluinotoGluinoGSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -142,13 +141,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -197,16 +196,11 @@ struct ClassTraits<Herwig::GluinotoGluinoGSplitFn>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "GluinotoGluinoGSplitFn.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "GluinotoGluinoGSplitFn.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GluinotoGluinoGSplitFn.tcc"
-#endif
 
 #endif /* HERWIG_GluinotoGluinoGSplitFn_H */

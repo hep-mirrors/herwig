@@ -79,7 +79,7 @@ void DecayIntegrator::Init() {
   static Parameter<DecayIntegrator,int> interfacePoints
     ("Points",
      "number of phase space points to generate in the initialisation.",
-     &DecayIntegrator::_npoint, 10000, 100, 1000000000,
+     &DecayIntegrator::_npoint, 10000, 1, 1000000000,
      false, false, true);
   
   static Parameter<DecayIntegrator,int> interfaceNtry
@@ -146,7 +146,7 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int 
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
   if(initialize()) CurrentGenerator::current().log() 
-    << "Start of the initialisation for " << this->fullName() << "\n";
+    << "Start of the initialisation for " << this->name() << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix) {
     if(!_modes[ix]) continue;
     _modes[ix]->initrun();
@@ -320,11 +320,11 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
 void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  output << "set " << name() << ":Iteration " << _niter << "\n";
+  output << "set " << name() << ":Ntry " << _ntry << "\n";
+  output << "set " << name() << ":Points " << _npoint << "\n";
   //if(_photongen){;}
-  output << "set " << fullName() << ":GenerateIntermediates " << _generateinter << " \n";
+  output << "set " << name() << ":GenerateIntermediates " << _generateinter << " \n";
   // footer for MySQL
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";

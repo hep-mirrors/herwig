@@ -539,54 +539,54 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":fpi             " << _fpi/MeV         << "\n";
-  output << "set " << fullName() << ":RhoMass         " << _mrho/MeV        << "\n";
-  output << "set " << fullName() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":OmnesC          " << _cconst          << "\n";
-  output << "set " << fullName() << ":OmnesA          " << _aconst*GeV2     << "\n";
-  output << "set " << fullName() << ":InitializeOmnes " << _initialize      << "\n";
-  output << "set " << fullName() << ":OmnesPoints     " << _npoints         << "\n";
-  output << "set " << fullName() << ":OmnesCut        " << _epscut/MeV      << "\n";
+  output << "set " << name() << ":fpi             " << _fpi/MeV         << "\n";
+  output << "set " << name() << ":RhoMass         " << _mrho/MeV        << "\n";
+  output << "set " << name() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":OmnesC          " << _cconst          << "\n";
+  output << "set " << name() << ":OmnesA          " << _aconst*GeV2     << "\n";
+  output << "set " << name() << ":InitializeOmnes " << _initialize      << "\n";
+  output << "set " << name() << ":OmnesPoints     " << _npoints         << "\n";
+  output << "set " << name() << ":OmnesCut        " << _epscut/MeV      << "\n";
   for(unsigned int ix=0;ix<2;++ix) {
-    output << "set " << fullName() << ":Incoming    " << ix << "  " 
+    output << "set " << name() << ":Incoming    " << ix << "  " 
 	   << _incoming[ix]    << "\n";
-    output << "set " << fullName() << ":Coupling    " << ix << "  " 
+    output << "set " << name() << ":Coupling    " << ix << "  " 
 	   << _coupling[ix]    << "\n";
-    output << "set " << fullName() << ":MaxWeight   " << ix << "  " 
+    output << "set " << name() << ":MaxWeight   " << ix << "  " 
 	   << _maxweight[ix]   << "\n";
-    output << "set " << fullName() << ":Option      " << ix << "  " 
+    output << "set " << name() << ":Option      " << ix << "  " 
 	   << _option[ix]      << "\n";
   }
   for(unsigned int ix=0;ix<_energy.size();++ix) {
     if(ix<_nsizea) {
-      output << "set " << fullName() << ":Phase_Energy " << ix << "  " 
+      output << "set " << name() << ":Phase_Energy " << ix << "  " 
 	     << _energy[ix]/MeV << "\n";
-      output << "set " << fullName() << ":Phase_Shift  " << ix << "  " 
+      output << "set " << name() << ":Phase_Shift  " << ix << "  " 
 	     << _phase[ix]  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Phase_Energy " << ix << "  " 
+      output << "insert " << name() << ":Phase_Energy " << ix << "  " 
 	     << _energy[ix]/MeV << "\n";
-      output << "insert " << fullName() << ":Phase_Shift  " << ix << "  " 
+      output << "insert " << name() << ":Phase_Shift  " << ix << "  " 
 	     << _phase[ix]  << "\n";
     }
   }
   for(unsigned int ix=0;ix<_omnesenergy.size();++ix) {
       if(ix<_nsizeb) {
-	output << "set " << fullName() << ":OmnesEnergy " << ix << "  " 
+	output << "set " << name() << ":OmnesEnergy " << ix << "  " 
 	       << _omnesenergy[ix]/MeV << "\n";
-	output << "set " << fullName() << ":OmnesReal " << ix << "  " 
+	output << "set " << name() << ":OmnesReal " << ix << "  " 
 	       << _omnesfunctionreal[ix] << "\n";
-	output << "set " << fullName() << ":OmnesImag " << ix << "  " 
+	output << "set " << name() << ":OmnesImag " << ix << "  " 
 	       << _omnesfunctionimag [ix] << "\n";
       }
       else {
-	output << "insert " << fullName() << ":OmnesEnergy " << ix << "  " 
+	output << "insert " << name() << ":OmnesEnergy " << ix << "  " 
 	       << _omnesenergy[ix]/MeV << "\n";
-	output << "insert " << fullName() << ":OmnesReal " << ix << "  " 
+	output << "insert " << name() << ":OmnesReal " << ix << "  " 
 	       << _omnesfunctionreal[ix] << "\n";
-	output << "insert " << fullName() << ":OmnesImag " << ix << "  " 
+	output << "insert " << name() << ":OmnesImag " << ix << "  " 
 	       << _omnesfunctionimag [ix] << "\n";
       }
   }

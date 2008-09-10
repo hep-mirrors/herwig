@@ -734,35 +734,35 @@ void GoityRobertsDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header){output << "update decayers set parameters=\"";}
   DecayIntegrator::dataBaseOutput(output,false);
   _current->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":Current " << _current->fullName() << " \n";
-  output << "set " << fullName() << ":IncludeDstar " << _includeDstar << " \n";
-  output << "set " << fullName() << ":IncludeD** " << _includeDstarstar << " \n";
-  output << "set " << fullName() << ":Beta1S " << _beta1S/GeV << " \n";
-  output << "set " << fullName() << ":Beta2S " << _beta2S/GeV << " \n";
-  output << "set " << fullName() << ":Beta1P " << _beta1P/GeV << " \n";
-  output << "set " << fullName() << ":Beta1D " << _beta1D/GeV << " \n";
-  output << "set " << fullName() << ":fpi " << _fpi/MeV << " \n";
-  output << "set " << fullName() << ":DeltaM2S " << _deltaM2S/GeV << " \n";
-  output << "set " << fullName() << ":DeltaM1P " << _deltaM1P/GeV << " \n";
-  output << "set " << fullName() << ":DeltaM1D " << _deltaM1D/GeV << " \n";
-  output << "set " << fullName() << ":Gamma2S " << _gamma2S/GeV << " \n";
-  output << "set " << fullName() << ":Gamma1P " << _gamma1P/GeV << " \n";
-  output << "set " << fullName() << ":Gamma1D " << _gamma1D/GeV << " \n";
-  output << "set " << fullName() << ":Lambdabar " << _lambdabar/GeV << " \n";
-  output << "set " << fullName() << ":g " << _g << " \n";
-  output << "set " << fullName() << ":Alpha1 " << _alpha1 << " \n";
-  output << "set " << fullName() << ":Alpha2 " << _alpha2 << " \n";
-  output << "set " << fullName() << ":Alpha3 " << _alpha3 << " \n";
+  output << "set " << name() << ":Current " << _current->name() << " \n";
+  output << "set " << name() << ":IncludeDstar " << _includeDstar << " \n";
+  output << "set " << name() << ":IncludeD** " << _includeDstarstar << " \n";
+  output << "set " << name() << ":Beta1S " << _beta1S/GeV << " \n";
+  output << "set " << name() << ":Beta2S " << _beta2S/GeV << " \n";
+  output << "set " << name() << ":Beta1P " << _beta1P/GeV << " \n";
+  output << "set " << name() << ":Beta1D " << _beta1D/GeV << " \n";
+  output << "set " << name() << ":fpi " << _fpi/MeV << " \n";
+  output << "set " << name() << ":DeltaM2S " << _deltaM2S/GeV << " \n";
+  output << "set " << name() << ":DeltaM1P " << _deltaM1P/GeV << " \n";
+  output << "set " << name() << ":DeltaM1D " << _deltaM1D/GeV << " \n";
+  output << "set " << name() << ":Gamma2S " << _gamma2S/GeV << " \n";
+  output << "set " << name() << ":Gamma1P " << _gamma1P/GeV << " \n";
+  output << "set " << name() << ":Gamma1D " << _gamma1D/GeV << " \n";
+  output << "set " << name() << ":Lambdabar " << _lambdabar/GeV << " \n";
+  output << "set " << name() << ":g " << _g << " \n";
+  output << "set " << name() << ":Alpha1 " << _alpha1 << " \n";
+  output << "set " << name() << ":Alpha2 " << _alpha2 << " \n";
+  output << "set " << name() << ":Alpha3 " << _alpha3 << " \n";
   for(ix=0;ix<_wgtloc.size();++ix) {
-    output << "insert " << fullName() << ":WeightLocation " << ix << " " 
+    output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";
   }
   for(ix=0;ix<_wgtmax.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight "  << ix << " " 
+    output << "insert " << name() << ":MaximumWeight "  << ix << " " 
 	   << _wgtmax[ix] << "\n";
   }
   for(ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights "        << ix << " " 
+    output << "insert " << name() << ":Weights "        << ix << " " 
 	   << _weights[ix] << "\n";
   }
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
@@ -1069,4 +1069,24 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   double me=0.5*(newME.contract(temp)).real()*md*mb*SM().CKM(1,2)*sqr(inpart.mass()*_GF);
   if(abs(decay[1]->id())==ParticleID::piplus) me*=2.;
   return me;
+}
+
+void GoityRobertsDecayer::calculateFormFactors(double omega,double & xi,
+						      double & xi1,double & rho1,
+						      double & rho2) const {
+  double w2(omega*omega);
+  Energy2 beta2  = sqr(_beta1S   );
+  Energy2 lam2   = sqr(_lambdabar);
+  Energy2 betaSP = beta2+sqr(_beta1P);
+  Energy2 betaSD = beta2+sqr(_beta1D);
+  double fact = -0.25*lam2*(w2-1.)/beta2;
+  // s-wave
+  xi   =                  exp(fact);
+  xi1  = sqrt(2./3.)*fact*exp(fact);
+  // p-wave
+  rho1 = sqrt(0.5 )*_lambdabar/_beta1S*pow(2.*_beta1S*_beta1P/betaSP,2.5)*
+    exp(- 0.5*lam2*(w2-1.)/betaSP);
+  // d-wave
+  rho2 = sqrt(0.125)*lam2/beta2*       pow(2.*_beta1S*_beta1D/betaSD,3.5)*
+    exp(- 0.5*lam2*(w2-1.)/betaSD);
 }

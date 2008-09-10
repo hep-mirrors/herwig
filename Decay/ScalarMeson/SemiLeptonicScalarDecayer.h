@@ -14,7 +14,6 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/FormFactors/ScalarFormFactor.h"
 #include "Herwig++/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
-#include "SemiLeptonicScalarDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -41,7 +40,7 @@ public:
   /**
    * Default constructor.
    */
-  inline SemiLeptonicScalarDecayer();
+  SemiLeptonicScalarDecayer();
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -49,7 +48,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
   
   /**
    * Which of the possible decays is required
@@ -109,13 +108,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -133,7 +132,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -217,7 +216,5 @@ struct ClassTraits<Herwig::SemiLeptonicScalarDecayer>
 /** @endcond */
 
 }
-
-#include "SemiLeptonicScalarDecayer.icc"
 
 #endif /* HERWIG_SemiLeptonicScalarDecayer_H */

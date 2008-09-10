@@ -25,6 +25,21 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void PScalarLeptonNeutrinoDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  unsigned int iz(0),ix,iy;
+  if(initialize()) {
+    for(ix=0;ix<_incoming.size();++ix) {
+      for(iy=0;iy<_leptons[ix];++iy) {
+	if(iy==0)      _maxweighte  [ix] = mode(iz)->maxWeight();
+	else if(iy==1) _maxweightmu [ix] = mode(iz)->maxWeight();
+	else if(iy==2) _maxweighttau[ix] = mode(iz)->maxWeight();
+	++iz;
+      }
+    }
+  }
+}
+
 PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() 
   : _incoming(6), _decayconstant(6), _leptons(6), _maxweighte(6), 
     _maxweightmu(6), _maxweighttau(6), _GF(1.16637E-5/GeV2) {
@@ -271,34 +286,34 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi " << _GF*GeV2 << "\n";
+  output << "set " << name() << ":GFermi " << _GF*GeV2 << "\n";
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming   " << ix << " "
+      output << "set " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "set " << fullName() << ":Leptons    " << ix << " "
+      output << "set " << name() << ":Leptons    " << ix << " "
 	     << _leptons[ix]   << "\n";
-      output << "set " << fullName() << ":MaxWeightElectron " << ix << " "
+      output << "set " << name() << ":MaxWeightElectron " << ix << " "
 	     << _maxweighte[ix]   << "\n";
-      output << "set " << fullName() << ":MaxWeightMuon "     << ix << " "
+      output << "set " << name() << ":MaxWeightMuon "     << ix << " "
 	     << _maxweightmu[ix]   << "\n";
-      output << "set " << fullName() << ":MaxWeightTau "      << ix << " "
+      output << "set " << name() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
-      output << "set " << fullName() << ":DecayConstant "     << ix << " "
+      output << "set " << name() << ":DecayConstant "     << ix << " "
 	     << _decayconstant[ix]/MeV  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming   " << ix << " "
+      output << "insert " << name() << ":Incoming   " << ix << " "
 	     << _incoming[ix]   << "\n";
-      output << "insert " << fullName() << ":Leptons    " << ix << " "
+      output << "insert " << name() << ":Leptons    " << ix << " "
 	     << _leptons[ix]   << "\n";
-      output << "insert " << fullName() << ":MaxWeightElectron " << ix << " "
+      output << "insert " << name() << ":MaxWeightElectron " << ix << " "
 	     << _maxweighte[ix]   << "\n";
-      output << "insert " << fullName() << ":MaxWeightMuon "     << ix << " "
+      output << "insert " << name() << ":MaxWeightMuon "     << ix << " "
 	     << _maxweightmu[ix]   << "\n";
-      output << "insert " << fullName() << ":MaxWeightTau "      << ix << " "
+      output << "insert " << name() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
-      output << "insert " << fullName() << ":DecayConstant "     << ix << " "
+      output << "insert " << name() << ":DecayConstant "     << ix << " "
 	     << _decayconstant[ix]/MeV  << "\n";
     }
   }

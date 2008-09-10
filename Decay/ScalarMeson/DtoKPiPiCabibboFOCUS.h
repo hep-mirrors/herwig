@@ -7,7 +7,6 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "DtoKPiPiCabibboFOCUS.fh"
 
 namespace Herwig {
 

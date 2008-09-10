@@ -30,6 +30,23 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() : _GF(1.16639E-5/GeV2) {
+  // intermediates
+  generateIntermediates(true);
+}
+
+void SemiLeptonicScalarDecayer::doinitrun() {
+  _current->initrun();
+  _form->initrun();
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    _maxwgt.clear();
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      _maxwgt.push_back(mode(ix)->maxWeight());
+    }
+  }
+}
+
 void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // make sure the current got initialised
@@ -288,14 +305,14 @@ void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output,
 					       bool header) const {
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi "   << _GF*GeV2 << "\n";
+  output << "set " << name() << ":GFermi "   << _GF*GeV2 << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight " << ix << " " 
+    output << "insert " << name() << ":MaximumWeight " << ix << " " 
 	   << _maxwgt[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":Current " << _current->fullName() << " \n";
+  output << "set " << name() << ":Current " << _current->name() << " \n";
   _form->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":FormFactor " << _form->fullName() << " \n";
+  output << "set " << name() << ":FormFactor " << _form->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

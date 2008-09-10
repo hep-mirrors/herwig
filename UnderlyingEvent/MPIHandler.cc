@@ -63,8 +63,10 @@ IBPtr MPIHandler::fullclone() const {
 }
 
 void MPIHandler::finalize() {
-  if( beamOK() )
-    statistics("UE.out");
+  if( beamOK() ){
+    string fname = generator()->filename() + string("-UE.out");
+    statistics(fname);
+  }
 }
 
 void MPIHandler::initialize() {
@@ -212,9 +214,30 @@ void MPIHandler::initialize() {
   }
 
   Probs(UEXSecs);
+  //MultDistribution("probs.test");
   UEXSecs.clear();
 }
 
+void MPIHandler::MultDistribution(string filename) const {
+  ofstream file;
+  double p(0.0), pold(0.0);
+  file.open(filename.c_str());
+  //theMultiplicities  
+  Selector<MPair>::const_iterator it = theMultiplicities.begin();
+
+  while(it != theMultiplicities.end()){
+    p = it->first;
+    file << it->second.first << " " << it->second.second
+	 << " " << p-pold << endl;
+    it++;
+    pold = p;
+  }
+
+  file << "sum of all probabilities: " << theMultiplicities.sum() 
+       << endl;
+
+  file.close();
+}
 
 void MPIHandler::statistics(string os) const {
   ofstream file;
@@ -280,7 +303,7 @@ unsigned int MPIHandler::multiplicity(unsigned int sel){
     MPair m = theMultiplicities.select(UseRandom::rnd());
     softMult_ = m.second;
     return m.first;
-  }else{ //fixed multiplicities for the additional hard scatters
+  } else{ //fixed multiplicities for the additional hard scatters
     if(additionalMultiplicities_.size() < sel)
       throw Exception() << "MPIHandler::multiplicity: process index "
 			<< "is out of range"
@@ -319,6 +342,10 @@ void MPIHandler::Probs(XSVector UEXSecs) {
       }
       iS = 0;
       do{//loop over soft ints
+	if( ( Algorithm() == -1 && iS==0 && iH==0 ) ){
+	  iS++;
+	  continue;
+	}
 
 	Eikonalization integrand(this, iH*100+iS, *it, softXSec_, softMu2_);
       

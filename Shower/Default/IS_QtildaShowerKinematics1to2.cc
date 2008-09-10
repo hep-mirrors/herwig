@@ -13,7 +13,6 @@
 
 #include "IS_QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
@@ -51,9 +50,8 @@ void IS_QtildaShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
 	     const ShowerParticleVector theChildren ) const {
   // no z for angular ordering in backward branchings
-  const ShowerIndex::InteractionType inter=splittingFn()->interactionType();
-  theParent->setEvolutionScale(inter, scale());
-  theChildren[1]->setEvolutionScale(inter, (1.-z())*scale());
+  theParent->setEvolutionScale(scale());
+  theChildren[1]->setEvolutionScale((1.-z())*scale());
   // set proper colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
   // set proper parent/child relationships
@@ -72,7 +70,6 @@ updateParent(const tShowerParticlePtr theParent,
 void IS_QtildaShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
 		  const ParticleVector theChildren ) const {
-  
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
   // get shower variables from 1st child in order to keep notation
@@ -120,8 +117,7 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   assert(particle.perturbative()!=2);
   if(particle.perturbative()==1) {
     // find the partner and its momentum
-    ShowerIndex::InteractionType type=splittingFn()->interactionType();
-    ShowerParticlePtr partner=particle.partners()[type];
+    ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
     if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     if(partner->isFinalState()) {

@@ -843,151 +843,152 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
 					   bool header,bool create) const {
   if(header) os << "update decayers set parameters=\"";
   if(create) os << "create Herwig::KaonThreeMesonCurrent " 
-		<< fullName() << " HwWeakCurrents.so\n";
+		<< name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rho1wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":AxialRhoWeight " << ix 
+      os << "set " << name() << ":AxialRhoWeight " << ix 
 	 << " " << _rho1wgts[ix] << "\n";
     }
     else {
-      os << "insert " << fullName() << ":AxialRhoWeight " << ix 
+      os << "insert " << name() << ":AxialRhoWeight " << ix 
 	 << " " << _rho1wgts[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_kstar1wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":AxialKStarWeight " << ix 
+      os << "set " << name() << ":AxialKStarWeight " << ix 
 	 << " " << _kstar1wgts[ix] << "\n";}
     else {
-      os << "insert " << fullName() << ":AxialKStarWeight " << ix 
+      os << "insert " << name() << ":AxialKStarWeight " << ix 
 	 << " " << _kstar1wgts[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rho2wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":VectorRhoWeight " << ix 
+      os << "set " << name() << ":VectorRhoWeight " << ix 
 	 << " " << _rho2wgts[ix] << "\n";
     }
     else {
-      os << "insert " << fullName() << ":VectorRhoWeight " << ix 
+      os << "insert " << name() << ":VectorRhoWeight " << ix 
 	 << " " << _rho2wgts[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_kstar2wgts.size();++ix) {
     if(ix<3) {
-      os << "set " << fullName() << ":VectorKStarWeight " << ix 
+      os << "set " << name() << ":VectorKStarWeight " << ix 
 	 << " " << _kstar2wgts[ix] << "\n";}
     else {
-      os << "insert " << fullName() << ":VectorKStarWeight " << ix 
+      os << "insert " << name() << ":VectorKStarWeight " << ix 
 	 << " " << _kstar2wgts[ix] << "\n";
     }
   }
-  os << "set " << fullName() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
-  os << "set " << fullName() << ":EpsOmega " << _epsomega << "\n";
-  os << "set " << fullName() << ":Initializea1 " << _initializea1 << "\n";
-  os << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
-  os << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
-  os << "set " << fullName() << ":a1Parameters " << _a1parameters << "\n";
-  os << "set " << fullName() << ":K1Parameters " << _k1parameters << "\n";
-  os << "set " << fullName() << ":OmegaParameters " << _omegaopt << "\n";
-  os << "set " << fullName() << ":a1WidthOption " << _a1opt << "\n";
+  os << "set " << name() << ":OmegaKStarWeight " << _omegaKstarwgt << "\n";
+  os << "set " << name() << ":EpsOmega " << _epsomega << "\n";
+  os << "set " << name() << ":Initializea1 " << _initializea1 << "\n";
+  os << "set " << name() << ":RhoParameters " << _rhoparameters << "\n";
+  os << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  os << "set " << name() << ":a1Parameters " << _a1parameters << "\n";
+  os << "set " << name() << ":K1Parameters " << _k1parameters << "\n";
+  os << "set " << name() << ":OmegaParameters " << _omegaopt << "\n";
+  os << "set " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    os << "set " << fullName() << ":a1RunningWidth " << ix 
+    os << "set " << name() << ":a1RunningWidth " << ix 
 	   << " " << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    os << "set " << fullName() << ":a1RunningQ2 " << ix 
+    os << "set " << name() << ":a1RunningQ2 " << ix 
 	   << " " << _a1runq2[ix]/GeV2 << "\n";
   }
-  os << "set " << fullName() << ":A1Width " << _a1width/GeV << "\n";
-  os << "set " << fullName() << ":A1Mass " << _a1mass/GeV << "\n";
-  os << "set " << fullName() << ":OmegaWidth " << _omegawidth/GeV << "\n";
-  os << "set " << fullName() << ":OmegaMass " << _omegamass/GeV << "\n";
-  os << "set " << fullName() << ":PhiWidth " << _phiwidth/GeV << "\n";
-  os << "set " << fullName() << ":PhiMass " << _phimass/GeV << "\n";
-  os << "set " << fullName() << ":FPi " << _fpi/MeV << "\n";
+  os << "set " << name() << ":A1Width " << _a1width/GeV << "\n";
+  os << "set " << name() << ":A1Mass " << _a1mass/GeV << "\n";
+  os << "set " << name() << ":OmegaWidth " << _omegawidth/GeV << "\n";
+  os << "set " << name() << ":OmegaMass " << _omegamass/GeV << "\n";
+  os << "set " << name() << ":PhiWidth " << _phiwidth/GeV << "\n";
+  os << "set " << name() << ":PhiMass " << _phimass/GeV << "\n";
+  os << "set " << name() << ":FPi " << _fpi/MeV << "\n";
   for(unsigned int ix=0;ix<_k1mass.size();++ix) {
     if(ix<2) {
-      os << "set " << fullName() << ":K1Masses " << ix 
+      os << "set " << name() << ":K1Masses " << ix 
 	 << " " << _k1mass[ix]/GeV << "\n";
     }
     else {
-      os << "insert " << fullName() << ":K1Masses " << ix 
+      os << "insert " << name() << ":K1Masses " << ix 
 	 << " " << _k1mass[ix]/GeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_k1width.size();++ix) {
     if(ix<2) {
-      os << "set " << fullName() << ":K1Widths " << ix 
+      os << "set " << name() << ":K1Widths " << ix 
 	 << " " << _k1width[ix]/GeV << "\n";
     }
     else {
-      os << "insert " << fullName() << ":K1Widths " << ix 
+      os << "insert " << name() << ":K1Widths " << ix 
 	 << " " << _k1width[ix]/GeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rho1mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoAxialMasses " << ix 
+    if(ix<3) os << "set " << name() << ":RhoAxialMasses " << ix 
 		<< " " << _rho1mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": RhoAxialMasses" << ix 
+    else     os << "insert " << name() << ": RhoAxialMasses" << ix 
 		<< " " << _rho1mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho1width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoAxialWidths " << ix 
+    if(ix<3) os << "set " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":RhoAxialWidths " << ix 
+    else     os << "insert " << name() << ":RhoAxialWidths " << ix 
 		    << " " << _rho1width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho2mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoVectorMasses " << ix 
+    if(ix<3) os << "set " << name() << ":RhoVectorMasses " << ix 
 		<< " " << _rho2mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": RhoVectorMasses" << ix 
+    else     os << "insert " << name() << ": RhoVectorMasses" << ix 
 		<< " " << _rho2mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rho2width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":RhoVectorWidths " << ix 
+    if(ix<3) os << "set " << name() << ":RhoVectorWidths " << ix 
 		    << " " << _rho2width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":RhoVectorWidths " << ix 
+    else     os << "insert " << name() << ":RhoVectorWidths " << ix 
 		    << " " << _rho2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarAxialMasses " << ix 
+    if(ix<3) os << "set " << name() << ":KstarAxialMasses " << ix 
 		<< " " << _kstar1mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": KstarAxialMasses" << ix 
+    else     os << "insert " << name() << ": KstarAxialMasses" << ix 
 		<< " " << _kstar1mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar1width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarAxialWidths " << ix 
+    if(ix<3) os << "set " << name() << ":KstarAxialWidths " << ix 
 		    << " " << _kstar1width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":KstarAxialWidths " << ix 
+    else     os << "insert " << name() << ":KstarAxialWidths " << ix 
 		    << " " << _kstar1width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar2mass.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarVectorMasses " << ix 
+    if(ix<3) os << "set " << name() << ":KstarVectorMasses " << ix 
 		<< " " << _kstar2mass[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ": KstarVectorMasses" << ix 
+    else     os << "insert " << name() << ": KstarVectorMasses" << ix 
 		<< " " << _kstar2mass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstar2width.size();++ix) {
-    if(ix<3) os << "set " << fullName() << ":KstarVectorWidths " << ix 
+    if(ix<3) os << "set " << name() << ":KstarVectorWidths " << ix 
 		    << " " << _kstar2width[ix]/GeV << "\n";
-    else     os << "insert " << fullName() << ":KstarVectorWidths " << ix 
+    else     os << "insert " << name() << ":KstarVectorWidths " << ix 
 		    << " " << _kstar2width[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_k1wgta.size();++ix) {
-    if(ix<2) os << "set " << fullName() << ":K1WeightKStarPi " << ix
+    if(ix<2) os << "set " << name() << ":K1WeightKStarPi " << ix
 		<< " " << _k1wgta[ix] << "\n";
-    else     os << "insert " << fullName() << ":K1WeightKStarPi " << ix
+    else     os << "insert " << name() << ":K1WeightKStarPi " << ix
 		<< " " << _k1wgta[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_k1wgtb.size();++ix) {
-    if(ix<2) os << "set " << fullName() << ":K1WeightRhoK " << ix
+    if(ix<2) os << "set " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
-    else     os << "insert " << fullName() << ":K1WeightRhoK " << ix
+    else     os << "insert " << name() << ":K1WeightRhoK " << ix
 		<< " " << _k1wgtb[ix] << "\n";
   }
   ThreeMesonCurrentBase::dataBaseOutput(os,false,false);
-  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+  if(header) os << "\n\" where BINARY ThePEGName=\"" 
+		<< fullName() << "\";" << endl;
 }  
 
 void KaonThreeMesonCurrent::doinit() throw(InitException) {

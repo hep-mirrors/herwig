@@ -376,7 +376,8 @@ CrossSection MEfftoVH::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
   InvEnergy2 bwfact;
-  Energy moff =meMomenta()[2].mass();if(_shapeopt==1) {
+  Energy moff =meMomenta()[2].mass();
+  if(_shapeopt==1) {
     tcPDPtr h0 = mePartonData()[2]->id()==ParticleID::h0 ?
       mePartonData()[2] : mePartonData()[3];
     bwfact = h0->generateWidth(moff)*moff/pi/

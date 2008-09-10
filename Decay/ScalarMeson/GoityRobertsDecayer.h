@@ -7,7 +7,6 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
-#include "GoityRobertsDecayer.fh"
 
 namespace Herwig {
 
@@ -46,7 +45,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -102,13 +101,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -153,8 +152,8 @@ private:
    * @param rho1  The \f$\rho_1(\omega)\f$ form factor.
    * @param rho2  The \f$\rho_2(\omega)\f$ form factor.
    */
-  inline void calculateFormFactors(double omega,double & xi,double & xi1,
-				   double & rho1,double & rho2) const;
+  void calculateFormFactors(double omega,double & xi,double & xi1,
+			    double & rho1,double & rho2) const;
 
 private:
 
@@ -335,7 +334,5 @@ struct ClassTraits<Herwig::GoityRobertsDecayer>
 /** @endcond */
 
 }
-
-#include "GoityRobertsDecayer.icc"
 
 #endif /* HERWIG_GoityRobertsDecayer_H */

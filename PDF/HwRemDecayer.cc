@@ -1092,7 +1092,7 @@ void HwRemDecayer::Init() {
     ("colourDisrupt",
      "Fraction of connections to additional soft subprocesses, which are colour disrupted.",
      &HwRemDecayer::colourDisrupt_, 
-     0.0, 0.0, 1.0, 
+     1.0, 0.0, 1.0, 
      false, false, Interface::limited);
 }
 

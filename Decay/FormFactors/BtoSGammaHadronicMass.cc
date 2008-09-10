@@ -55,9 +55,9 @@ void BtoSGammaHadronicMass::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BtoSGammaHadronicMass " 
-		    << fullName() << " \n";
-  output << "set " << fullName() << ":MinimumMass " << _minMass/GeV << " \n";
-  output << "set " << fullName() << ":MaximumMass " << _maxMass/GeV << " \n";
+		    << name() << " \n";
+  output << "set " << name() << ":MinimumMass " << _minMass/GeV << " \n";
+  output << "set " << name() << ":MaximumMass " << _maxMass/GeV << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

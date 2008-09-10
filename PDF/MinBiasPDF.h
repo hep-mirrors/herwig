@@ -192,15 +192,11 @@ struct ClassTraits<Herwig::MinBiasPDF>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#ifndef HERWIG_TEMPLATES_IN_CC_FILE
-// #include "MinBiasPDF.tcc"
-#endif
 
 #endif /* HERWIG_MinBiasPDF_H */
