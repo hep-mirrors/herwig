@@ -63,8 +63,10 @@ IBPtr MPIHandler::fullclone() const {
 }
 
 void MPIHandler::finalize() {
-  if( beamOK() )
-    statistics("UE.out");
+  if( beamOK() ){
+    string fname = generator()->filename() + string("-UE.out");
+    statistics(fname);
+  }
 }
 
 void MPIHandler::initialize() {
