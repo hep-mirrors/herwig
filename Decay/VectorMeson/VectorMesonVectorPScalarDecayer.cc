@@ -424,29 +424,30 @@ void VectorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " "
+      output << "set " << name() << ":Incoming " << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingVector " << ix << " "
+      output << "set " << name() << ":OutgoingVector " << ix << " "
 	     << _outgoingV[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
+      output << "set " << name() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " "
+      output << "set " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix]*MeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " "
+      output << "set " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming "  << ix << " "
+      output << "insert " << name() << ":Incoming "  << ix << " "
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingVector " << ix << " "
+      output << "insert " << name() << ":OutgoingVector " << ix << " "
 	     << _outgoingV[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
+      output << "insert " << name() << ":OutgoingPScalar " << ix << " "
 	     << _outgoingP[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " "
+      output << "insert " << name() << ":Coupling " << ix << " "
 	     << _coupling[ix]*MeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " "
+      output << "insert " << name() << ":MaxWeight " << ix << " "
 	     << _maxweight[ix] << "\n";
     }
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -98,3 +98,5 @@ uninstall-hook:
 ##		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
 ##		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
 ##	fi
+
+include $(top_srcdir)/Utilities/Makefile.am.versionstring

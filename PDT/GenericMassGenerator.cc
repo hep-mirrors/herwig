@@ -176,12 +176,12 @@ void GenericMassGenerator::doinit() throw(InitException) {
   
 void GenericMassGenerator::dataBaseOutput(ofstream & output, bool header) {
   if(header) output << "update Mass_Generators set parameters=\"";
-  output << "set " << fullName() << ":BreitWignerShape "   << _BWshape << "\n";
-  output << "set " << fullName() << ":MaximumWeight " << _maxwgt    << "\n";
-  output << "set " << fullName() << ":NGenerate "   << _ngenerate << "\n";
-  output << "set " << fullName() << ":WidthOption " << _widthopt << "\n";
+  output << "set " << name() << ":BreitWignerShape "   << _BWshape << "\n";
+  output << "set " << name() << ":MaximumWeight " << _maxwgt    << "\n";
+  output << "set " << name() << ":NGenerate "   << _ngenerate << "\n";
+  output << "set " << name() << ":WidthOption " << _widthopt << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
-		    << fullName() << "\";" << endl;
+		    << name() << "\";" << endl;
 }
 
 void GenericMassGenerator::dofinish() {

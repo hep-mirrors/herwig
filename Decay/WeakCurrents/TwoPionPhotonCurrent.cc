@@ -25,11 +25,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::outgoing;
 
 void TwoPionPhotonCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();
@@ -282,33 +278,33 @@ unsigned int TwoPionPhotonCurrent::decayMode(vector<int>) {
 void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::TwoPionPhotonCurrent " << fullName() 
+  if(create) output << "create Herwig::TwoPionPhotonCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "set " << fullName() << ":RhoParameters "    << _rhoparameters << "\n";
-  output << "set " << fullName() << ":omegaParameters "    << _omegaparameters << "\n";
-  output << "set " << fullName() << ":omegamass "    << _omegamass/GeV << "\n";
-  output << "set " << fullName() << ":omegawidth "    << _omegawidth/GeV << "\n";
-  output << "set " << fullName() << ":grho "    << _grho/GeV2 << "\n";
-  output << "set " << fullName() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
-  output << "set " << fullName() << ":IntegrationMass "  << _intmass/GeV  << "\n";
-  output << "set " << fullName() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
+  output << "set " << name() << ":RhoParameters "    << _rhoparameters << "\n";
+  output << "set " << name() << ":omegaParameters "    << _omegaparameters << "\n";
+  output << "set " << name() << ":omegamass "    << _omegamass/GeV << "\n";
+  output << "set " << name() << ":omegawidth "    << _omegawidth/GeV << "\n";
+  output << "set " << name() << ":grho "    << _grho/GeV2 << "\n";
+  output << "set " << name() << ":grhoomegapi "    << _grhoomegapi*GeV << "\n";
+  output << "set " << name() << ":IntegrationMass "  << _intmass/GeV  << "\n";
+  output << "set " << name() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
   unsigned int ix;
   for(ix=0;ix<_resweights.size();++ix) {
-    if(ix<3) output << "set " << fullName() << ":Weights " << ix 
+    if(ix<3) output << "set " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
-    else     output << "insert " << fullName() << ":Weights " << ix 
+    else     output << "insert " << name() << ":Weights " << ix 
 		    << " " << _resweights[ix] << "\n";
   }
   for(ix=0;ix<_rhomasses.size();++ix) {
-    if(ix<2) output << "set " << fullName() << ":RhoMasses " << ix 
+    if(ix<2) output << "set " << name() << ":RhoMasses " << ix 
 		    << " " << _rhomasses[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix 
+    else     output << "insert " << name() << ":RhoMasses " << ix 
 		    << " " << _rhomasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_rhowidths.size();++ix) {
-    if(ix<2) output << "set " << fullName() << ":RhoWidths " << ix 
+    if(ix<2) output << "set " << name() << ":RhoWidths " << ix 
 		    << " " << _rhowidths[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix 
+    else     output << "insert " << name() << ":RhoWidths " << ix 
 		    << " " << _rhowidths[ix]/MeV << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);

@@ -440,34 +440,34 @@ Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
 void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::BtoSGammaKagan " << fullName() << " \n";
-  output << "set " << fullName() << ":TopMass "    << _mt/GeV << " \n";
-  output << "set " << fullName() << ":BottomMass " << _mb/GeV << " \n";
-  output << "set " << fullName() << ":CharmMass "  << _mc/GeV << " \n";
-  output << "set " << fullName() << ":StrangeMassRatio " << _msovermb << " \n";
-  output << "set " << fullName() << ":WMass " << _mw/GeV << " \n";
-  output << "set " << fullName() << ":ZMass " << _mz/GeV << " \n";
-  output << "set " << fullName() << ":Lambda2 " << _lambda2/GeV2 << " \n";
-  output << "set " << fullName() << ":BMesonMass " << _MB/GeV << " \n";
-  output << "set " << fullName() << ":Mu " << _mub/GeV << " \n";
-  output << "set " << fullName() << ":Delta " << _deltacut << " \n";
-  output << "set " << fullName() << ":Lambda1 " << _fermilambda1/GeV2 << " \n";
-  output << "set " << fullName() << ":alpha " << _alpha << " \n";
-  output << "set " << fullName() << ":CKM " << _ckm << " \n";
-  output << "set " << fullName() << ":FermiNormalisation " << _ferminorm*GeV << " \n";
-  output << "set " << fullName() << ":MaximumTries " << _maxtry << " \n";
-  output << "set " << fullName() << ":ycut " << _ycut << " \n";
-  output << "set " << fullName() << ":NSpectrum " <<  _nspect << " \n";
+  if(create) output << "create Herwig::BtoSGammaKagan " << name() << " \n";
+  output << "set " << name() << ":TopMass "    << _mt/GeV << " \n";
+  output << "set " << name() << ":BottomMass " << _mb/GeV << " \n";
+  output << "set " << name() << ":CharmMass "  << _mc/GeV << " \n";
+  output << "set " << name() << ":StrangeMassRatio " << _msovermb << " \n";
+  output << "set " << name() << ":WMass " << _mw/GeV << " \n";
+  output << "set " << name() << ":ZMass " << _mz/GeV << " \n";
+  output << "set " << name() << ":Lambda2 " << _lambda2/GeV2 << " \n";
+  output << "set " << name() << ":BMesonMass " << _MB/GeV << " \n";
+  output << "set " << name() << ":Mu " << _mub/GeV << " \n";
+  output << "set " << name() << ":Delta " << _deltacut << " \n";
+  output << "set " << name() << ":Lambda1 " << _fermilambda1/GeV2 << " \n";
+  output << "set " << name() << ":alpha " << _alpha << " \n";
+  output << "set " << name() << ":CKM " << _ckm << " \n";
+  output << "set " << name() << ":FermiNormalisation " << _ferminorm*GeV << " \n";
+  output << "set " << name() << ":MaximumTries " << _maxtry << " \n";
+  output << "set " << name() << ":ycut " << _ycut << " \n";
+  output << "set " << name() << ":NSpectrum " <<  _nspect << " \n";
   for(unsigned int ix=0;ix<_mHinter.size();++ix) {
-    if(ix<100) output << "set " << fullName() << ":mHValues " << ix << " " 
+    if(ix<100) output << "set " << name() << ":mHValues " << ix << " " 
 		      << _mHinter[ix]/GeV << " \n";
-    else       output << "insert " << fullName() << ":mHValues " << ix << " " 
+    else       output << "insert " << name() << ":mHValues " << ix << " " 
 		      << _mHinter[ix]/GeV << " \n";
   }
   for(unsigned int ix=0;ix<_spectrum.size();++ix) {
-    if(ix<100) output << "set " << fullName() << ":Spectrum " << ix << " " 
+    if(ix<100) output << "set " << name() << ":Spectrum " << ix << " " 
 		      << _spectrum[ix]*GeV << " \n";
-    else       output << "insert " << fullName() << ":Spectrum " << ix << " " 
+    else       output << "insert " << name() << ":Spectrum " << ix << " " 
 		      << _spectrum[ix]*GeV << " \n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 

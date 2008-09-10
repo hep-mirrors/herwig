@@ -147,8 +147,9 @@ void MelikhovFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
 void MelikhovFormFactor::dataBaseOutput(ofstream & output,bool header,
 					bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::MelikhovFormFactor " << fullName() << " \n";
-  output << "set " << fullName() << ":Fit " << _ifit << " \n";
+  if(create) output << "create Herwig::MelikhovFormFactor " << name() << " \n";
+  output << "set " << name() << ":Fit " << _ifit << " \n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

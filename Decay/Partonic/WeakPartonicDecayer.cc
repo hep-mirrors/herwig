@@ -468,7 +468,7 @@ void WeakPartonicDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":MECode " << MECode << " \n";
+  output << "set " << name() << ":MECode " << MECode << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

@@ -7,6 +7,7 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "HerwigRun.h"
+#include "versionstring.h"
 #include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/Debug.h>
 #include <ThePEG/Repository/Repository.h>
@@ -44,7 +45,13 @@ HerwigRun::HerwigRun(int argc, char **argv)
     printHelp(std::cout);
     Status = SUCCESS;
     return;
-  } else {
+  } 
+  else if ( runType == "-v" || runType == "--version" ) {
+    std::cout << versionstring << std::endl;
+    Status = SUCCESS;
+    return;
+  }
+  else {
     std::cerr << "Usage: " << argv[0] << usage;
     Status = ERROR;
     return;

@@ -8,6 +8,7 @@
 #include "ThePEG/Vectors/Lorentz5Vector.h" 
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Utilities/Statistic.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
@@ -49,7 +50,8 @@ public:
   /**
    * The default constructor.
    */
-  RFieldAnalysis();
+  RFieldAnalysis() : thelow(30), theup(50), theDir("."), 
+                     theRealMult(-0.5, 10.5, 11) {}
 
 public:
 
@@ -210,6 +212,11 @@ private:
   /**  p_Tsum in away region */
   vector<Statistic> thePtsumAway;
 
+  /**
+   * Histogram for the real extra scatter multiplicity
+   */
+  Histogram theRealMult;
+
 };
 
 }
@@ -238,7 +245,7 @@ struct ClassTraits<Herwig::RFieldAnalysis>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the RFieldAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwMPIAnalysis.so"; }
+  static string library() { return "HwShower.so HwMPIAnalysis.so"; }
 };
 
 /** @endcond */

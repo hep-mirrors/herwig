@@ -641,69 +641,69 @@ void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // parameters
-  output << "set " << fullName() << ":KmPipPipNonResonantMagnitude " 
+  output << "set " << name() << ":KmPipPipNonResonantMagnitude " 
 	 << _a1NR      << "\n";
-  output << "set " << fullName() << ":KmPipPipNonResonantPhase     " 
+  output << "set " << name() << ":KmPipPipNonResonantPhase     " 
 	 << _phi1NR    << "\n";
-  output << "set " << fullName() << ":KmPipPipK892Magnitude        " 
+  output << "set " << name() << ":KmPipPipK892Magnitude        " 
 	 << _a1K892    << "\n";
-  output << "set " << fullName() << ":KmPipPipK892Phase            " 
+  output << "set " << name() << ":KmPipPipK892Phase            " 
 	 << _phi1K892  << "\n";
-  output << "set " << fullName() << ":KmPipPipK1430Magnitude       " 
+  output << "set " << name() << ":KmPipPipK1430Magnitude       " 
 	 << _a1K1430   << "\n";
-  output << "set " << fullName() << ":KmPipPipK1430Phase           " 
+  output << "set " << name() << ":KmPipPipK1430Phase           " 
 	 << _phi1K1430 << "\n";
-  output << "set " << fullName() << ":KmPipPipK1680Magnitude       " 
+  output << "set " << name() << ":KmPipPipK1680Magnitude       " 
 	 << _a1K1680   << "\n";
-  output << "set " << fullName() << ":KmPipPipK1680Phase           " 
+  output << "set " << name() << ":KmPipPipK1680Phase           " 
 	 << _phi1K1680 << "\n";
-  output << "set " << fullName() << ":KmPipPi0NonResonantMagnitude " 
+  output << "set " << name() << ":KmPipPi0NonResonantMagnitude " 
 	 << _a2NR      << "\n";
-  output << "set " << fullName() << ":KmPipPi0NonResonantPhase     " 
+  output << "set " << name() << ":KmPipPi0NonResonantPhase     " 
 	 << _phi2NR    << "\n";
-  output << "set " << fullName() << ":KmPipPi0K8920Magnitude       " 
+  output << "set " << name() << ":KmPipPi0K8920Magnitude       " 
 	 << _a2K8920   << "\n";
-  output << "set " << fullName() << ":KmPipPi0K8920Phase           " 
+  output << "set " << name() << ":KmPipPi0K8920Phase           " 
 	 << _phi2K8920 << "\n";
-  output << "set " << fullName() << ":KmPipPi0K892mMagnitude       " 
+  output << "set " << name() << ":KmPipPi0K892mMagnitude       " 
 	 << _a2K892m   << "\n";
-  output << "set " << fullName() << ":KmPipPi0K892mPhase           " 
+  output << "set " << name() << ":KmPipPi0K892mPhase           " 
 	 << _phi2K892m << "\n";
-  output << "set " << fullName() << ":KmPipPi0RhoMagnitude         " 
+  output << "set " << name() << ":KmPipPi0RhoMagnitude         " 
 	 << _a2rho     << "\n";
-  output << "set " << fullName() << ":KmPipPi0RhoPhase             " 
+  output << "set " << name() << ":KmPipPi0RhoPhase             " 
 	 << _phi2rho   << "\n";
-  output << "set " << fullName() << ":K0PipPimNonResonantMagnitude " 
+  output << "set " << name() << ":K0PipPimNonResonantMagnitude " 
 	 << _a3NR      << "\n";
-  output << "set " << fullName() << ":K0PipPimNonResonantPhase     " 
+  output << "set " << name() << ":K0PipPimNonResonantPhase     " 
 	 << _phi3NR    << "\n";
-  output << "set " << fullName() << ":K0PipPimK892Magnitude        " 
+  output << "set " << name() << ":K0PipPimK892Magnitude        " 
 	 << _a3K892    << "\n";
-  output << "set " << fullName() << ":K0PipPimK892Phase            " 
+  output << "set " << name() << ":K0PipPimK892Phase            " 
 	 << _phi3K892  << "\n";
-  output << "set " << fullName() << ":K0PipPimRhoMagnitude         " 
+  output << "set " << name() << ":K0PipPimRhoMagnitude         " 
 	 << _a3rho     << "\n";
-  output << "set " << fullName() << ":K0PipPimRhoPhase             " 
+  output << "set " << name() << ":K0PipPimRhoPhase             " 
 	 << _phi3rho   << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":K8920Mass      " << _mK8920/GeV << "\n";
-  output << "set " << fullName() << ":K8920Width     " << _wK8920/GeV << "\n";
-  output << "set " << fullName() << ":K892MinusMass  " << _mK892m/GeV << "\n";
-  output << "set " << fullName() << ":K892MinusWidth " << _wK892m/GeV << "\n";
-  output << "set " << fullName() << ":K1680Mass      " << _mK1680/GeV << "\n";
-  output << "set " << fullName() << ":K1680Width     " << _wK1680/GeV << "\n";
-  output << "set " << fullName() << ":K1430Mass      " << _mK1430/GeV << "\n";
-  output << "set " << fullName() << ":K1430Width     " << _wK1430/GeV << "\n";
-  output << "set " << fullName() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
-  output << "set " << fullName() << ":Rho0Width      " << _wrho0 /GeV << "\n";
-  output << "set " << fullName() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
-  output << "set " << fullName() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":K8920Mass      " << _mK8920/GeV << "\n";
+  output << "set " << name() << ":K8920Width     " << _wK8920/GeV << "\n";
+  output << "set " << name() << ":K892MinusMass  " << _mK892m/GeV << "\n";
+  output << "set " << name() << ":K892MinusWidth " << _wK892m/GeV << "\n";
+  output << "set " << name() << ":K1680Mass      " << _mK1680/GeV << "\n";
+  output << "set " << name() << ":K1680Width     " << _wK1680/GeV << "\n";
+  output << "set " << name() << ":K1430Mass      " << _mK1430/GeV << "\n";
+  output << "set " << name() << ":K1430Width     " << _wK1430/GeV << "\n";
+  output << "set " << name() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
+  output << "set " << name() << ":Rho0Width      " << _wrho0 /GeV << "\n";
+  output << "set " << name() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
+  output << "set " << name() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeights " 
+    output << "insert " << name() << ":MaximumWeights " 
 	   << ix << " " << _maxwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights " 
+    output << "insert " << name() << ":Weights " 
 	   << ix << " " << _weights[ix] << "\n";
   }
   if(header) {

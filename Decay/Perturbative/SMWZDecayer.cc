@@ -79,7 +79,7 @@ void SMWZDecayer::doinit() throw(InitException) {
       if(iy==6) continue;
       // check that the combination of particles is allowed
       if(!_zvertex->allowed(-iy,iy,ParticleID::Z0)) {
-	cerr << _zvertex->fullName() << "\n";
+	cerr << _zvertex->name() << "\n";
 	cerr << "testing zvertex allowed " << iy << " " << ParticleID::Z0 << "\n";
 	throw InitException() << "SMWZDecayer::doinit() the Z vertex " 
 			      << "cannot handle all the modes" 
@@ -265,22 +265,23 @@ void SMWZDecayer::dataBaseOutput(ofstream & output,
 				 bool header) const {
   if(header) output << "update decayers set parameters=\"";
   for(unsigned int ix=0;ix<_zquarkwgt.size();++ix) {
-    output << "set " << fullName() << ":ZquarkMax " << ix << " "
+    output << "set " << name() << ":ZquarkMax " << ix << " "
 	   << _zquarkwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_zleptonwgt.size();++ix) {
-    output << "set " << fullName() << ":ZleptonMax " << ix << " "
+    output << "set " << name() << ":ZleptonMax " << ix << " "
 	   << _zleptonwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_wquarkwgt.size();++ix) {
-    output << "set " << fullName() << ":WquarkMax " << ix << " "
+    output << "set " << name() << ":WquarkMax " << ix << " "
 	   << _wquarkwgt[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_wleptonwgt.size();++ix) {
-    output << "set " << fullName() << ":WleptonMax " << ix << " "
+    output << "set " << name() << ":WleptonMax " << ix << " "
 	   << _wleptonwgt[ix] << "\n";
   }
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

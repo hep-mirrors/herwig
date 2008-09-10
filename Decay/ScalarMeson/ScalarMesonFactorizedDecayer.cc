@@ -28,6 +28,26 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+
+ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer() 
+// default values of the couplings (taken from ZPC34, 103)
+  : _GF(1.16639E-5/GeV2), _a1b(1.10), _a2b(-0.24), _a1c(1.30), _a2c(-0.55) { 
+  // intermediates
+  generateIntermediates(true);
+}
+
+void ScalarMesonFactorizedDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _ckm = trans.translate(_ckm);
+  DecayIntegrator::rebind(trans);
+}
+
+IVector ScalarMesonFactorizedDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  ret.push_back(_ckm);
+  return ret;
+}
+
 inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // get the ckm object
@@ -375,7 +395,7 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
     for(unsigned int ix=0;ix<children.size();++ix) 
       mode += children[ix]->PDGName() +",";
     throw DecayIntegratorError() << "Unable to find the mode " << mode << " in " 
-				 << fullName() 
+				 << name() 
 				 << " ScalarMesonFactorizedDecayer::decay()" 
 				 << Exception::abortnow;
   }
@@ -680,32 +700,33 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output,
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi "    << _GF*GeV2 << "\n";
-  output << "set " << fullName() << ":a1Bottom "  << _a1b << "\n";
-  output << "set " << fullName() << ":a2Bottom "  << _a2b << "\n";
-  output << "set " << fullName() << ":a1Charm "   << _a1c << "\n";
-  output << "set " << fullName() << ":a2Charm "   << _a2c << "\n";
+  output << "set " << name() << ":GFermi "    << _GF*GeV2 << "\n";
+  output << "set " << name() << ":a1Bottom "  << _a1b << "\n";
+  output << "set " << name() << ":a2Bottom "  << _a2b << "\n";
+  output << "set " << name() << ":a1Charm "   << _a1c << "\n";
+  output << "set " << name() << ":a2Charm "   << _a2c << "\n";
   for(ix=0;ix<_current.size();++ix) {
     _current[ix]->dataBaseOutput(output,false,true);
-    output << "insert " << fullName() << ":Currents " << ix << " " 
-	   << _current[ix]->fullName() << " \n";
+    output << "insert " << name() << ":Currents " << ix << " " 
+	   << _current[ix]->name() << " \n";
   }
   for(ix=0;ix<_form.size();++ix) {
     _form[ix]->dataBaseOutput(output,false,true);
-    output << "insert " << fullName() << ":FormFactors " << ix << " " 
-	   << _form[ix]->fullName() << " \n";
+    output << "insert " << name() << ":FormFactors " << ix << " " 
+	   << _form[ix]->name() << " \n";
   }
   for(ix=0;ix<_wgtloc.size();++ix) {
-    output << "insert " << fullName() << ":WeightLocation " << ix << " " 
+    output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";
   }
   for(ix=0;ix<_wgtmax.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight "  << ix << " " 
+    output << "insert " << name() << ":MaximumWeight "  << ix << " " 
 	   << _wgtmax[ix] << "\n";
   }
   for(ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights "        << ix << " " 
+    output << "insert " << name() << ":Weights "        << ix << " " 
 	   << _weights[ix] << "\n";
   }
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

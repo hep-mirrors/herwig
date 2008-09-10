@@ -8,7 +8,6 @@
 # in your own input files!
 ############################################################
 library HwMPI.so
-library HwMPIPDF.so
 library HwShower.so
 
 mkdir /Herwig/Shower
@@ -23,7 +22,6 @@ set ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 #####################################
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
-create Herwig::ShowerAlphaQED AlphaQED
 create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
@@ -53,31 +51,9 @@ set Evolver:IntrinsicPtGamma 	0*GeV
 set Evolver:IntrinsicPtIptmax   0*GeV
 #############################################################
 # Main control switches for the parton shower.
-#
-# Read this as a 2x3 matrix with FSR/ISR being the rows 
-# and QCD/QED/EWK as columns. The switches allow detailed
-# control over whole rows and columns or individual entries.
 #############################################################
-
-# These switch a whole row on and off:
 set SplittingGenerator:ISR Yes
 set SplittingGenerator:FSR Yes
-
-# These switch a whole column on and off (QED and EWK are not implemented):
-set SplittingGenerator:QCDinteractions Yes
-set SplittingGenerator:QEDinteractions No
-set SplittingGenerator:EWKinteractions No
-
-# These switches are for each entry individually.
-# If their column or row is No, they are not considered.
-set SplittingGenerator:ISR_QCD Yes
-set SplittingGenerator:ISR_QED Yes
-set SplittingGenerator:ISR_EWK Yes
-
-set SplittingGenerator:FSR_QCD Yes
-set SplittingGenerator:FSR_QED Yes
-set SplittingGenerator:FSR_EWK Yes
-#
 #############################################################
 
 
@@ -115,7 +91,6 @@ set GGtoHME:Coupling AlphaQCD
 # a few default values
 set Evolver:MECorrMode 1
 set AlphaQCD:ScaleFactor 1.0
-set AlphaQED:ScaleFactor 1.0
 set AlphaQCD:NPAlphaS 2
 set AlphaQCD:Qmin 0.935
 set AlphaQCD:NumberOfLoops 3
@@ -127,7 +102,6 @@ set AlphaQCD:AlphaMZ 0.127
 create Herwig::QtoQGSplitFn QtoQGSplitFn
 create Herwig::GtoQQbarSplitFn GtoQQbarSplitFn
 create Herwig::GtoGGSplitFn GtoGGSplitFn
-create Herwig::QtoQGammaSplitFn QtoQGammaSplitFn
 create Herwig::QtoGQSplitFn QtoGQSplitFn
 #
 # Now the Sudakovs
@@ -167,8 +141,6 @@ cp SudakovCommon dtoGdSudakov
 set dtoGdSudakov:SplittingFunction QtoGQSplitFn
 set dtoGdSudakov:PDFFactor OverOneMinusZ
 
-cp SudakovCommon QtoQGammaSudakov
-set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
 
 #
 # Now add the final splittings
@@ -188,13 +160,6 @@ set SplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
 set SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
 set SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
 set SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
-#
-set SplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
-set SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that particle a is the particle given and we backward branch to

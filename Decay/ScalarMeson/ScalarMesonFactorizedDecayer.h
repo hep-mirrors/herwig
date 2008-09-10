@@ -15,7 +15,6 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
 #include "Herwig++/Decay/FormFactors/ScalarFormFactor.h"
-#include "ScalarMesonFactorizedDecayer.fh"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
@@ -43,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ScalarMesonFactorizedDecayer();
+  ScalarMesonFactorizedDecayer();
 
 public:
 
@@ -64,7 +63,7 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -121,13 +120,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -156,7 +155,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
+  virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
@@ -164,7 +163,7 @@ protected:
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 
@@ -329,7 +328,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "ScalarMesonFactorizedDecayer.icc"
 
 #endif /* HERWIG_ScalarMesonFactorizedDecayer_H */

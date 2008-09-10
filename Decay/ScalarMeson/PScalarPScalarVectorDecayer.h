@@ -13,7 +13,6 @@
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "PScalarPScalarVectorDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -113,13 +112,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -137,7 +136,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -226,7 +225,5 @@ struct ClassTraits<Herwig::PScalarPScalarVectorDecayer>
 /** @endcond */
 
 }
-
-#include "PScalarPScalarVectorDecayer.icc"
 
 #endif /* HERWIG_PScalarPScalarVectorDecayer_H */

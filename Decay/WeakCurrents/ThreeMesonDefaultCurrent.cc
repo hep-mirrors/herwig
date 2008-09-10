@@ -931,96 +931,97 @@ void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
 					      bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::ThreeMesonDefaultCurrent " 
-		    << fullName() << " HwWeakCurrents.so\n";
+		    << name() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":F123RhoWeight " << ix << " " << _rhoF123wgts[ix] << "\n";
+    output << name() << ":F123RhoWeight " << ix << " " << _rhoF123wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123wgts.size();++ix) {
     if(ix<1) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":F123KstarWeight " << ix << " " 
+    output << name() << ":F123KstarWeight " << ix << " " 
 	   << _kstarF123wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":F5RhoWeight " << ix << " " << _rhoF5wgts[ix] << "\n";
+    output << name() << ":F5RhoWeight " << ix << " " << _rhoF5wgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5wgts.size();++ix) {
     if(ix<1) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":F5KstarWeight " << ix << " " << _kstarF5wgts[ix] << "\n";
+    output << name() << ":F5KstarWeight " << ix << " " << _kstarF5wgts[ix] << "\n";
   }
-  output << "set " << fullName() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
-  output << "set " << fullName() << ":Initializea1 "    << _initializea1    << "\n";
-  output << "set " << fullName() << ":RhoParameters "   << _rhoparameters   << "\n";
-  output << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
-  output << "set " << fullName() << ":a1Parameters "    << _a1parameters    << "\n";
-  output << "set " << fullName() << ":K1Parameters "    << _k1parameters    << "\n";
-  output << "set " << fullName() << ":a1WidthOption "   << _a1opt           << "\n";
+  output << "set " << name() << ":RhoKstarWgt "     << _rhoKstarwgt     << "\n";
+  output << "set " << name() << ":Initializea1 "    << _initializea1    << "\n";
+  output << "set " << name() << ":RhoParameters "   << _rhoparameters   << "\n";
+  output << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "set " << name() << ":a1Parameters "    << _a1parameters    << "\n";
+  output << "set " << name() << ":K1Parameters "    << _k1parameters    << "\n";
+  output << "set " << name() << ":a1WidthOption "   << _a1opt           << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
-    output << "set " << fullName() << ":a1RunningWidth " << ix 
+    output << "set " << name() << ":a1RunningWidth " << ix 
 	   << " " << _a1runwidth[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
-    output << "set " << fullName() << ":a1RunningQ2 " << ix 
+    output << "set " << name() << ":a1RunningQ2 " << ix 
 	   << " " << _a1runq2[ix]/GeV2 << "\n";
   }
-  output << "set " << fullName() << ":A1Width " << _a1width/GeV << "\n";
-  output << "set " << fullName() << ":A1Mass "  << _a1mass/GeV  << "\n";
-  output << "set " << fullName() << ":K1Width " << _k1width/GeV << "\n";
-  output << "set " << fullName() << ":K1Mass "  << _k1mass/GeV  << "\n";
-  output << "set " << fullName() << ":FPi "     << _fpi/MeV     << "\n";
+  output << "set " << name() << ":A1Width " << _a1width/GeV << "\n";
+  output << "set " << name() << ":A1Mass "  << _a1mass/GeV  << "\n";
+  output << "set " << name() << ":K1Width " << _k1width/GeV << "\n";
+  output << "set " << name() << ":K1Mass "  << _k1mass/GeV  << "\n";
+  output << "set " << name() << ":FPi "     << _fpi/MeV     << "\n";
   for(unsigned int ix=0;ix<_rhoF123masses.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":rhoF123masses " << ix 
+    output << name() << ":rhoF123masses " << ix 
 	   << " " << _rhoF123masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF123widths.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":rhoF123widths " << ix << " " 
+    output << name() << ":rhoF123widths " << ix << " " 
 	   << _rhoF123widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5masses.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":rhoF5masses " << ix << " " 
+    output << name() << ":rhoF5masses " << ix << " " 
 	   << _rhoF5masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhoF5widths.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":rhoF5widths " << ix << " " 
+    output << name() << ":rhoF5widths " << ix << " " 
 	   << _rhoF5widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123masses.size();++ix) {
     if(ix<1) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KstarF123masses " << ix << " " 
+    output << name() << ":KstarF123masses " << ix << " " 
 	   << _kstarF123masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF123widths.size();++ix) {
     if(ix<1) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KstarF123widths " << ix << " " 
+    output << name() << ":KstarF123widths " << ix << " " 
 	   << _kstarF123widths[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5masses.size();++ix) {
     if(ix<1) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KstarF5masses " << ix << " " 
+    output << name() << ":KstarF5masses " << ix << " " 
 	   << _kstarF5masses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_kstarF5widths.size();++ix) {
     if(ix<1) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KstarF5widths " << ix << " " 
+    output << name() << ":KstarF5widths " << ix << " " 
 	   << _kstarF5widths[ix]/GeV << "\n";
   }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

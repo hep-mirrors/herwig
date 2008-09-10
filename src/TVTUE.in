@@ -12,12 +12,12 @@ cd /Herwig/Shower
 #set ShowerHandler:MPIHandler NULL
 
 cd /Herwig/UnderlyingEvent
-# set KtCut:MinKT 3.8
+set KtCut:MinKT 3.0
 # This should always be 2*MinKT!!
-# set UECuts:MHatMin 7.6
+set UECuts:MHatMin 6.0
 
 # set the inverse hadron radius in GeV^2
-# set MPIHandler:InvRadius 2.2
+set MPIHandler:InvRadius 1.0
 
 # set the algorithm
 # needs to be changed because signal is same than UE (QCD)
@@ -37,14 +37,14 @@ insert SimpleQCD:MatrixElements[0] MEMinBias
 #insert SimpleQCD:MatrixElements[0] MEQCD2to2
 
 ##################################################
-# Cuts on the hard process
+# Cuts on the hard process. MUST be ZERO for MinBias
 ##################################################
 cd /Herwig/Cuts
 set JetKtCut:MinKT 0.0*GeV
 # MHatMin = 2*MinKT
 set QCDCuts:MHatMin 0.0*GeV
 
-# Need this cut for min bias
+# Need this cut only for min bias
 set QCDCuts:X1Min 0.01
 set QCDCuts:X2Min 0.01
 
@@ -54,8 +54,8 @@ set QCDCuts:X2Min 0.01
 cd /Herwig/Analysis
 # create Herwig::GraphvizPlot Plot
 #create Herwig::RFieldAnalysis RField HwMPIAnalysis.so
-#set RField:LowerBorder 20.0
-#set RField:UpperBorder 50.0
+#set RField:LowerBorder 0.0
+#set RField:UpperBorder 10.0
 
 ## set the directory where the data files are stored. The files are
 ## in $(Herwigsrc)/Analysis/TVTUEdata/

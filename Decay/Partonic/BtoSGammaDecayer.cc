@@ -112,8 +112,8 @@ void BtoSGammaDecayer::dataBaseOutput(ofstream & output, bool header) const {
   // parameters for the PartonicDecayerBase base class
   PartonicDecayerBase::dataBaseOutput(output,false);
   _hadronicmass->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":HadronicMass " 
-	 << _hadronicmass->fullName() << " \n";
+  output << "set " << name() << ":HadronicMass " 
+	 << _hadronicmass->name() << " \n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

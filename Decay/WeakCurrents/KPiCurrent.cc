@@ -357,46 +357,47 @@ bool KPiCurrent::createMode(int icharge,unsigned int imode,
 void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
 				bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::KPiCurrent " << fullName() 
+  if(create) output << "create Herwig::KPiCurrent " << name() 
 		    << " HeWeakCurrents.so\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Transverse "      << _transverse << "\n";
-  output << "set " << fullName() << ":cV " << _cV << "\n";
-  output << "set " << fullName() << ":cS " << _cS << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":Transverse "      << _transverse << "\n";
+  output << "set " << name() << ":cV " << _cV << "\n";
+  output << "set " << name() << ":cS " << _cS << "\n";
   for(unsigned int ix=0;ix<_vecmag.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":VectorMagnitude " << ix << " " << _vecmag[ix]   << "\n";
+    output << name() << ":VectorMagnitude " << ix << " " << _vecmag[ix]   << "\n";
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":VectorPhase "     << ix << " " << _vecphase[ix] << "\n";
+    output << name() << ":VectorPhase "     << ix << " " << _vecphase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_scamag.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":ScalarMagnitude " << ix << " " << _scamag[ix]  << "\n";
+    output << name() << ":ScalarMagnitude " << ix << " " << _scamag[ix]  << "\n";
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":ScalarPhase "     << ix << " " << _scaphase[ix] << "\n";
+    output << name() << ":ScalarPhase "     << ix << " " << _scaphase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_vecmass.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":VectorMass "  << ix << " " << _vecmass[ix]/MeV  << "\n";
+    output << name() << ":VectorMass "  << ix << " " << _vecmass[ix]/MeV  << "\n";
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":VectorWidth " << ix << " " << _vecwidth[ix]/MeV << "\n";
+    output << name() << ":VectorWidth " << ix << " " << _vecwidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_scamass.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":ScalarMass "  << ix << " " << _scamass[ix]/MeV  << "\n";
+    output << name() << ":ScalarMass "  << ix << " " << _scamass[ix]/MeV  << "\n";
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":ScalarWidth " << ix << " " << _scawidth[ix]/MeV << "\n";
+    output << name() << ":ScalarWidth " << ix << " " << _scawidth[ix]/MeV << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
 vector<LorentzPolarizationVectorE> 
