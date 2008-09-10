@@ -64,7 +64,7 @@ struct Branching {
   /**
    *  The SudakovFormFactor for the branching
    */
-  SudakovPtr sudakov;
+  tSudakovPtr sudakov;
 
   /**
    *  Constructor for the struct
@@ -72,7 +72,7 @@ struct Branching {
    * @param c PDG codes of the particles in the branching
    * @param d The SudakovFormFactor for the branching
    */
-  Branching(ShoKinPtr a, IdList c,SudakovPtr d) : kinematics(a), ids(c), sudakov(d) {}
+  Branching(ShoKinPtr a, IdList c,tSudakovPtr d) : kinematics(a), ids(c), sudakov(d) {}
 
   /**
    *  Default constructor
@@ -103,7 +103,6 @@ struct Branching {
  *  -  Similarly having the \f$\rho-D\f$ matrix and the SplittingFunction pointer
  *     it should be possible to implement the spin correlations.
  *     
- *  @see ShowerIndex
  *  @see SudakovFormFactor
  *  @see SplitFun
  *
@@ -119,7 +118,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SplittingGenerator();
+  SplittingGenerator() : _isr_Mode(1), _fsr_Mode(1) {}
   //@}
 
 public:
@@ -159,7 +158,7 @@ public:
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
-				 vector<Energy> maxscale,
+				 Energy maxscale,
 				 Energy minmass,double enhance) const; 
 
   /**
@@ -195,37 +194,14 @@ public:
    */
   //@{
   /**
-   * It returns true/false if interaction type specified in input is on/off.
-   */
-  inline bool isInteractionON(const ShowerIndex::InteractionType interaction) const;
-
-  /**
    * It returns true/false if the initial-state radiation is on/off.
    */
-  inline bool isISRadiationON() const;  
+  bool isISRadiationON() const { return _isr_Mode; }
 
   /**
    * It returns true/false if the final-state radiation is on/off.
    */
-  inline bool isFSRadiationON() const;  
-
-  /**
-   * It returns true/false if the initial-state radiation for the
-   * specified interaction type is on/off. However, they return false, 
-   * regardless of the switch, if either the corresponding interaction switch 
-   * (see method isInteractionON) is off, or if the global initial or final 
-   * state radiation (see overloaded methods above without argument) is off.
-   */
-  inline bool isISRadiationON(const ShowerIndex::InteractionType interaction) const;  
-
-  /**
-   * It returns true/false if the final-state radiation for the
-   * specified interaction type is on/off. However, they return false, 
-   * regardless of the switch, if either the corresponding interaction switch 
-   * (see method isInteractionON) is off, or if the global initial or final 
-   * state radiation (see overloaded methods above without argument) is off.
-   */
-  inline bool isFSRadiationON(const ShowerIndex::InteractionType interaction) const;
+  bool isFSRadiationON() const { return _fsr_Mode; }
   //@}
 
   /**
@@ -236,12 +212,12 @@ public:
   /**
    *  Add a final-state splitting
    */
-  inline string addFinalSplitting(string);
+  string addFinalSplitting(string arg) { return addSplitting(arg,true); }
 
   /**
    *  Add an initial-state splitting
    */
-  inline string addInitialSplitting(string);
+  string addInitialSplitting(string arg) { return addSplitting(arg,false); }
   //@}
 
   /**
@@ -251,12 +227,12 @@ public:
   /**
    *  Access the final-state branchings
    */
-  inline BranchingList const & finalStateBranchings() const;
+  const BranchingList & finalStateBranchings() const { return _fbranchings; }
 
   /**
    *  Access the initial-state branchings
    */
-  inline BranchingList const & initialStateBranchings() const;
+  const BranchingList & initialStateBranchings() const { return _bbranchings; }
   //@}
 
 public:
@@ -293,13 +269,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -315,7 +291,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  inline virtual void rebind(const TranslationMap & trans)
+  virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
@@ -323,7 +299,7 @@ protected:
    * object.
    * @return a vector of pointers.
    */
-  inline virtual IVector getReferences();
+  virtual IVector getReferences();
   //@}
 
 private:
@@ -343,8 +319,7 @@ private:
    * @param p The p reference vector
    * @param n The n reference vector
    */
-  void finalStateBasisVectors(ShowerParticle particle,
-			      ShowerIndex::InteractionType type, Lorentz5Momentum & p,
+  void finalStateBasisVectors(ShowerParticle particle, Lorentz5Momentum & p,
 			      Lorentz5Momentum & n) const;
 
   /**
@@ -375,59 +350,14 @@ private:
    */
   //@{
   /**
-   *  Is QCD on/off
-   */
-  bool _qcdinteractionMode;
-
-  /**
-   *  Is QED on/off
-   */
-  bool _qedinteractionMode;
-
-  /**
-   *  Is electroweak on/off
-   */
-  bool _ewkinteractionMode;
-
-  /**
    *  Is inqitial-state radiation on/off
    */
   bool _isr_Mode;
 
   /**
-   *  is initial-state QCD radiation on/off
-   */
-  bool _isr_qcdMode;
-
-  /**
-   *  is initial-state QED radiation on/off
-   */
-  bool _isr_qedMode;
-
-  /**
-   *  is initial-state electroweak radiation on/off
-   */
-  bool _isr_ewkMode;
-
-  /**
    *  Is final-state radiation on/off
    */
   bool _fsr_Mode;
-
-  /**
-   *  Is final-state QCD radiation on/off
-   */
-  bool _fsr_qcdMode;
-
-  /**
-   *  Is final-state QED radiation on/off
-   */
-  bool _fsr_qedMode;
-
-  /**
-   *  Is final-state electroweak radiation on/off
-   */
-  bool _fsr_ewkMode;
   //@}
 
   /**
@@ -471,16 +401,11 @@ struct ClassTraits<Herwig::SplittingGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "SplittingGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SplittingGenerator.tcc"
-#endif
 
 #endif /* HERWIG_SplittingGenerator_H */

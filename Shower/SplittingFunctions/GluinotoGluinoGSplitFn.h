@@ -43,7 +43,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GluinotoGluinoGSplitFn() : SplittingFunction(ShowerIndex::QCD,1) {}
+  inline GluinotoGluinoGSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -196,7 +196,7 @@ struct ClassTraits<Herwig::GluinotoGluinoGSplitFn>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

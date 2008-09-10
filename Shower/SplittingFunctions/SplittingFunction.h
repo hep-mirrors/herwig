@@ -15,7 +15,6 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {
@@ -62,9 +61,8 @@ public:
    * @param a All splitting functions must have an interaction type
    * @param b All splitting functions must have an interaction order
    */
-  inline SplittingFunction(ShowerIndex::InteractionType a, unsigned int b)
+  inline SplittingFunction(ShowerInteraction::Type a, unsigned int b)
     : Interfaced(), _interactionType(a), _interactionorder(b) {}
-
   //@}
 
 public:
@@ -76,7 +74,7 @@ public:
   /**
    *  Return the type of the interaction
    */
-  inline ShowerIndex::InteractionType interactionType() const 
+  inline ShowerInteraction::Type interactionType() const 
   {return _interactionType;}
 
   /**
@@ -201,7 +199,7 @@ private:
   /**
    *  The interaction type for the splitting function.
    */
-  const ShowerIndex::InteractionType _interactionType;
+  const ShowerInteraction::Type _interactionType;
 
   /**
    *  The order of the splitting function in the coupling
@@ -239,7 +237,7 @@ struct ClassTraits<Herwig::SplittingFunction>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

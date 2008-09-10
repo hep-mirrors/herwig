@@ -43,7 +43,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GtoQQbarSplitFn() : SplittingFunction(ShowerIndex::QCD,1) {}
+  inline GtoQQbarSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -197,7 +197,7 @@ struct ClassTraits<Herwig::GtoQQbarSplitFn>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

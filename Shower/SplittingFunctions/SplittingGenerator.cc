@@ -25,18 +25,21 @@
 
 using namespace Herwig;
 
+IBPtr SplittingGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SplittingGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+
 void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _qcdinteractionMode << _qedinteractionMode << _ewkinteractionMode
-     << _isr_Mode << _isr_qcdMode << _isr_qedMode << _isr_ewkMode     
-     << _fsr_Mode << _fsr_qcdMode << _fsr_qedMode << _fsr_ewkMode
-     << _bbranchings << _fbranchings;
+  os << _isr_Mode << _fsr_Mode << _bbranchings << _fbranchings;
 }
 
 void SplittingGenerator::persistentInput(PersistentIStream & is, int) {
-  is >>	_qcdinteractionMode >> _qedinteractionMode >> _ewkinteractionMode
-     >>	_isr_Mode >> _isr_qcdMode >> _isr_qedMode >> _isr_ewkMode 
-     >> _fsr_Mode >> _fsr_qcdMode >> _fsr_qedMode >> _fsr_ewkMode
-     >> _bbranchings >> _fbranchings;
+  is >>	_isr_Mode >> _fsr_Mode >> _bbranchings >> _fbranchings;
 }
 
 ClassDescription<SplittingGenerator> SplittingGenerator::initSplittingGenerator;
@@ -48,33 +51,6 @@ void SplittingGenerator::Init() {
     ("There class is responsible for initializing the Sudakov form factors ",
      "and generating splittings.");
 
-  static Switch<SplittingGenerator, bool> interfaceQCDinteractionMode
-    ("QCDinteractions",
-     "Should shower include QCD interactions",
-     &SplittingGenerator::_qcdinteractionMode, 1, false, false);
-  static SwitchOption interfaceQCDinteractionMode0
-    (interfaceQCDinteractionMode,"No","QCD interaction is Off", 0);
-  static SwitchOption interfaceQCDinteractionMode1
-    (interfaceQCDinteractionMode,"Yes","QCD interaction is On", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceQEDinteractionMode
-    ("QEDinteractions",
-     "Should shower include QED interactions",
-     &SplittingGenerator::_qedinteractionMode, 0, false, false);
-  static SwitchOption interfaceQEDinteractionMode0
-    (interfaceQEDinteractionMode,"No","QED interaction is Off", 0);
-  static SwitchOption interfaceQEDinteractionMode1
-    (interfaceQEDinteractionMode,"Yes","QED interaction is On", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceEWKinteractionMode
-    ("EWKinteractions",
-     "Should shower include EWK interactions",
-     &SplittingGenerator::_ewkinteractionMode, 0, false, false);
-  static SwitchOption interfaceEWKinteractionMode0
-    (interfaceEWKinteractionMode,"No","EWK interaction is OFF", 0);
-  static SwitchOption interfaceEWKinteractionMode1
-    (interfaceEWKinteractionMode,"Yes","EWK interaction is ON", 1);
-
   static Switch<SplittingGenerator, bool> interfaceISRMode
     ("ISR",
      "Include initial-state radiation?",
@@ -83,33 +59,6 @@ void SplittingGenerator::Init() {
     (interfaceISRMode,"No","ISR (Initial State Radiation) is OFF", 0);
   static SwitchOption interfaceISRMode1
     (interfaceISRMode,"Yes","ISR (Initial State Radiation) is ON", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceISR_qcdMode
-    ("ISR_QCD",
-     "Include initial-state QCD radiation?",
-     &SplittingGenerator::_isr_qcdMode, 1, false, false);
-  static SwitchOption interfaceISR_qcdMode0
-    (interfaceISR_qcdMode,"No","QCD ISR is OFF", 0);
-  static SwitchOption interfaceISR_qcdMode1
-    (interfaceISR_qcdMode,"Yes","QCD ISR is ON", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceISR_qedMode
-    ("ISR_QED",
-     "Include initial-state QED radiation?",
-     &SplittingGenerator::_isr_qedMode, 1, false, false);
-  static SwitchOption interfaceISR_qedMode0
-    (interfaceISR_qedMode,"No","QED ISR is OFF", 0);
-  static SwitchOption interfaceISR_qedMode1
-    (interfaceISR_qedMode,"Yes","QED ISR is ON", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceISR_ewkMode
-    ("ISR_EWK",
-     "Include initial-state EWK radiation?",
-     &SplittingGenerator::_isr_ewkMode, 1, false, false);
-  static SwitchOption interfaceISR_ewkMode0
-    (interfaceISR_ewkMode,"No","EWK ISR is OFF", 0);
-  static SwitchOption interfaceISR_ewkMode1
-    (interfaceISR_ewkMode,"Yes","EWK ISR is ON", 1);
 
   static Switch<SplittingGenerator, bool> interfaceFSRMode
     ("FSR",
@@ -120,40 +69,12 @@ void SplittingGenerator::Init() {
   static SwitchOption interfaceFSRMode1
     (interfaceFSRMode,"Yes","FSR (Final State Radiation) is ON", 1);
 
-  static Switch<SplittingGenerator, bool> interfaceFSR_qcdMode
-    ("FSR_QCD",
-     "Include final-state QCD radiation?",
-     &SplittingGenerator::_fsr_qcdMode, 1, false, false);
-  static SwitchOption interfaceFSR_qcdMode0
-    (interfaceFSR_qcdMode,"No","QCD FSR is OFF", 0);
-  static SwitchOption interfaceFSR_qcdMode1
-    (interfaceFSR_qcdMode,"Yes","QCD FSR is ON", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceFSR_qedMode
-    ("FSR_QED",
-     "Include final-state QED radiation?",
-     &SplittingGenerator::_fsr_qedMode, 1, false, false);
-  static SwitchOption interfaceFSR_qedMode0
-    (interfaceFSR_qedMode,"No","QED FSR is OFF", 0);
-  static SwitchOption interfaceFSR_qedMode1
-    (interfaceFSR_qedMode,"Yes","QED FSR is ON", 1);
-
-  static Switch<SplittingGenerator, bool> interfaceFSR_ewkMode
-    ("FSR_EWK",
-     "Include final-state EWK radiation?",
-     &SplittingGenerator::_fsr_ewkMode, 1, false, false);
-
-  static SwitchOption interfaceFSR_ewkMode0
-    (interfaceFSR_ewkMode,"No","EWK FSR is OFF", 0);
-
-  static SwitchOption interfaceFSR_ewkMode1
-    (interfaceFSR_ewkMode,"Yes","EWK FSR is ON", 1);
-
   static Command<SplittingGenerator> interfaceAddSplitting
     ("AddFinalSplitting",
      "Adds another splitting to the list of splittings considered "
      "in the shower. Command is a->b,c; Sudakov",
      &SplittingGenerator::addFinalSplitting);
+
   static Command<SplittingGenerator> interfaceAddInitialSplitting
     ("AddInitialSplitting",
      "Adds another splitting to the list of initial splittings to consider "
@@ -197,11 +118,11 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
 }
 
 void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool final) {
-  if(isISRadiationON(s->splittingFn()->interactionType()) && !final) {
+  if(isISRadiationON() && !final) {
     _bbranchings.insert(BranchingInsert(ids[1],BranchingElement(s,ids)));
     s->addSplitting(ids);
   }
-  if(isFSRadiationON(s->splittingFn()->interactionType()) && final) {
+  if(isFSRadiationON() &&  final) {
     _fbranchings.insert(BranchingInsert(ids[0],BranchingElement(s,ids)));
     s->addSplitting(ids);
   }
@@ -221,16 +142,15 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
-    ShowerIndex::InteractionType i = cit->second.first->interactionType();
     // check size of scales beforehand...
     ShoKinPtr newKin= cit->second.first->
-      generateNextTimeBranching(particle.evolutionScales()[i], 
+      generateNextTimeBranching(particle.evolutionScale(), 
 				cit->second.second,particle.id()!=cit->first,
 				enhance);
     if(!newKin) continue;
     // select highest scale 
     if(newKin->scale() > newQ && 
-       newKin->scale() <= particle.evolutionScales()[i]) {
+       newKin->scale() <= particle.evolutionScale()) {
       kinematics=newKin;
       newQ = newKin->scale();
       ids = cit->second.second;
@@ -246,7 +166,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 }
 
 Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
-						   vector<Energy> stoppingScale,
+						   Energy stoppingScale,
 						   Energy minmass,
 						   double enhance) const {
   Energy newQ = Constants::MaxEnergy;
@@ -261,16 +181,15 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit)  {
-    ShowerIndex::InteractionType i = cit->second.first->interactionType();
     ShoKinPtr newKin;
-    if(particle.evolutionScales()[i] < stoppingScale[i]) 
+    if(particle.evolutionScale() < stoppingScale) 
       newKin = cit->second.first->
-	generateNextDecayBranching(particle.evolutionScales()[i],
-				   stoppingScale[i],minmass,
+	generateNextDecayBranching(particle.evolutionScale(),
+				   stoppingScale,minmass,
 				   cit->second.second,
 				   particle.id()!=cit->first,enhance);
     if(!newKin) continue;
-    if(newKin->scale() < newQ && newKin->scale() > particle.evolutionScales()[i]) {
+    if(newKin->scale() < newQ && newKin->scale() > particle.evolutionScale()) {
       newQ = newKin->scale();
       ids = cit->second.second;
       kinematics=newKin;
@@ -301,9 +220,8 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
-    ShowerIndex::InteractionType i = cit->second.first->interactionType(); 
     ShoKinPtr newKin=cit->second.first->
-      generateNextSpaceBranching(particle.evolutionScales()[i],
+      generateNextSpaceBranching(particle.evolutionScale(),
 				 cit->second.second, particle.x(),
 				 particle.id()!=cit->first,enhance,beam);
     if(!newKin) continue;
@@ -321,5 +239,25 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
   kinematics->initialize(particle,beamparticle);
   // return the answer
   return Branching(kinematics, ids,sudakov);
+}
+
+void SplittingGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  BranchingList::iterator cit;
+  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
+    {(cit->second).first=trans.translate((cit->second).first);}
+  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
+    {(cit->second).first=trans.translate((cit->second).first);}
+  Interfaced::rebind(trans);
+}
+
+IVector SplittingGenerator::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  BranchingList::iterator cit;
+  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
+    {ret.push_back((cit->second).first);}
+  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
+    {ret.push_back((cit->second).first);}
+  return ret;
 }
 
