@@ -15,14 +15,13 @@ void FortranShowerKinematics::updateChildren(const tShowerParticlePtr theParent,
     throw Exception() << "FortranShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
   // get the interaction type
-  const ShowerIndex::InteractionType interaction = splittingFn()->interactionType();
   // if parent not from the shower set up
   if(theParent->showerParameters().empty()) {
     // DGRELL is resize intended here? The argument may not be 
     // used if there is a value already there.
     theParent->showerParameters().resize(1,1.);
     theParent->showerVariables().resize(5,0.*MeV);
-    theParent->showerVariables()[0]=theParent->evolutionScales()[interaction];
+    theParent->showerVariables()[0]=theParent->evolutionScale();
   }
   Energy dqtilde = scale();
   double dz = z(); 
@@ -30,8 +29,8 @@ void FortranShowerKinematics::updateChildren(const tShowerParticlePtr theParent,
   theChildren[0]->showerVariables().resize(5,0.*MeV);
   theChildren[1]->showerVariables().resize(5,0.*MeV);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
-  theChildren[0]->setEvolutionScale(interaction, dz*dqtilde);
-  theChildren[1]->setEvolutionScale(interaction, (1.-dz)*dqtilde);
+  theChildren[0]->setEvolutionScale(dz*dqtilde);
+  theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
   // calculate and set xi
   double xi = sqr(dqtilde/theParent->showerVariables()[0]);
   theChildren[0]->showerParameters().resize(1,xi);
@@ -66,11 +65,9 @@ void FortranShowerKinematics::reconstructChildren(const tShowerParticlePtr thePa
 void FortranShowerKinematics::reconstructParent(const tShowerParticlePtr theParent, 
 		       const ParticleVector theChildren) const {
   // calculate the mass of the parent
-  ShowerIndex::InteractionType
-    inter=theParent->showerKinematics()->splittingFn()->interactionType();
   tShowerParticlePtr c1=dynamic_ptr_cast<tShowerParticlePtr>(theChildren[0]);
   tShowerParticlePtr c2=dynamic_ptr_cast<tShowerParticlePtr>(theChildren[1]);
-  Energy2 exi=c1->evolutionScales()[inter]*c2->evolutionScales()[inter];
+  Energy2 exi=c1->evolutionScale()*c2->evolutionScale();
   Energy2 m2=exi+sqr(theChildren[0]->mass())+sqr(theChildren[1]->mass());
   // calculate three-momentum of the parent
   Energy2 pisq=sqr(theParent->showerVariables()[0])-m2;

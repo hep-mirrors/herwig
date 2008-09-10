@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline VectorBosonQQBarMECorrection();
+  VectorBosonQQBarMECorrection() {}
 
 public:
 
@@ -82,17 +82,17 @@ private:
   /**
    *  Set the \f$\rho\f$ parameter
    */
-  inline void setRho(double);
+  void setRho(double);
 
   /**
    *  Set the \f$\tilde{\kappa}\f$ parameters symmetrically 
    */
-  inline void setKtildeSymm();
+  void setKtildeSymm();
 
   /**
    * Set second \f$\tilde{\kappa}\f$, given the first.
    */
-  inline void setKtilde2();
+  void setKtilde2();
 
   /**
    *  Translate the variables from \f$x_q,x_{\bar{q}}\f$ to \f$\tilde{\kappa},z\f$
@@ -101,12 +101,12 @@ private:
   /**
    *  Calculate \f$z\f$.
    */
-  inline double getZfromX(double, double);
+  double getZfromX(double, double);
 
   /**
    *  Calculate \f$\tilde{\kappa}\f$.
    */
-  inline double getKfromX(double, double);
+  double getKfromX(double, double);
   //@}
 
   /**
@@ -116,7 +116,7 @@ private:
    * @param x \f$x_{q}\f$
    * @param xbar \f$x_{\bar{q}}\f$
    */
-  inline void getXXbar(double kt, double z, double & x, double & xbar);
+  void getXXbar(double kt, double z, double & x, double & xbar);
 
   /**
    *  Soft weight
@@ -153,7 +153,7 @@ private:
   /**
    * ????
    */
-  inline double u(double);
+  double u(double);
 
   /**
    *  Vector and axial vector parts of the matrix element
@@ -174,7 +174,7 @@ private:
    * @param x1 \f$x_1\f$
    * @param x2 \f$x_2\f$
    */
-  inline double PS(double x1, double x2);
+  double PS(double x1, double x2);
   //@}
 
 public:
@@ -195,13 +195,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -286,16 +286,11 @@ struct ClassTraits<Herwig::VectorBosonQQBarMECorrection>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "VectorBosonQQBarMECorrection.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorBosonQQBarMECorrection.tcc"
-#endif
 
 #endif /* HERWIG_VectorBosonQQBarMECorrection_H */

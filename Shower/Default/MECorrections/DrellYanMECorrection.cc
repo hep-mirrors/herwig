@@ -25,6 +25,17 @@
 
 using namespace Herwig;
 
+DrellYanMECorrection::DrellYanMECorrection() 
+  : _channelwgtA(0.12), _channelwgtB(2.00), _nover(0), _maxwgt(0.) {}
+
+IBPtr DrellYanMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr DrellYanMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
+
 void DrellYanMECorrection::doinit() throw(InitException) {
   MECorrectionBase::doinit();
   _channelweights.push_back(_channelwgtA/(1.+_channelwgtA));
@@ -412,7 +423,7 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+  parent->setEvolutionScale(br.kinematics->scale());
   return true;
 }
 

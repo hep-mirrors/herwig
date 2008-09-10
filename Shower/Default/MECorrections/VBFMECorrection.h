@@ -7,6 +7,7 @@
 
 #include "QTildeMECorrection.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
 

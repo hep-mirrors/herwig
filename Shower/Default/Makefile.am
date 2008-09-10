@@ -13,4 +13,3 @@ QtildaShowerKinematics1to2.h  \
 QTildeFinder.cc QTildeFinder.h\
 QTildeReconstructor.cc QTildeReconstructor.h
 
-libHwDefaultShower_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)

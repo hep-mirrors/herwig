@@ -42,7 +42,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PhitoPhiGSplitFn() : SplittingFunction(ShowerIndex::QCD,1) {}s
+  PhitoPhiGSplitFn() : SplittingFunction(ShowerInteraction::QCD,1) {}
 
   /**
    *  Concrete implementation of the method to determine whether this splitting

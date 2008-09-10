@@ -15,19 +15,23 @@
 #include "Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
 
 using namespace Herwig;
 
-AbstractClassDescription<MECorrectionBase> MECorrectionBase::initMECorrectionBase;
+AbstractClassDescription<MECorrectionBase> 
+MECorrectionBase::initMECorrectionBase;
 // Definition of the static class description member.
 
 void MECorrectionBase::Init() {
 
   static ClassDocumentation<MECorrectionBase> documentation
-    ("The MECorrectionBase class is base class for implementation of the classic"
+    ("The MECorrectionBase class is base class for"
+     " implementation of the classic"
      " matrix element correction in Herwig++");
 
   static Reference<MECorrectionBase,ShowerAlpha> interfaceCoupling

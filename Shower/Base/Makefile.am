@@ -3,16 +3,14 @@ noinst_LTLIBRARIES = libHwShowerBase.la
 libHwShowerBase_la_SOURCES = \
 SudakovFormFactor.cc SudakovFormFactor.h SudakovFormFactor.fh \
 KinematicsReconstructor.cc  KinematicsReconstructor.h KinematicsReconstructor.fh \
-ShowerModel.cc ShowerModel.h ShowerModel.icc ShowerModel.fh \
-MECorrectionBase.cc MECorrectionBase.h MECorrectionBase.icc MECorrectionBase.fh \
-PartnerFinder.h PartnerFinder.fh PartnerFinder.cc PartnerFinder.icc \
-ShowerParticle.cc  ShowerParticle.fh  ShowerParticle.h  ShowerParticle.icc \
-Evolver.h Evolver.fh Evolver.icc Evolver.cc \
-ShowerKinematics.fh  ShowerKinematics.h  ShowerKinematics.icc ShowerKinematics.cc \
-ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc \
-ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc \
-ShowerVertex.fh ShowerVertex.h ShowerVertex.icc ShowerVertex.cc \
-ShowerVeto.h ShowerVeto.fh ShowerVeto.icc ShowerVeto.cc \
-PTVeto.h PTVeto.fh PTVeto.icc PTVeto.cc
-
-libHwShowerBase_la_CPPFLAGS=$(AM_CPPFLAGS) $(GSLINCLUDE)
+ShowerModel.cc ShowerModel.h ShowerModel.fh \
+MECorrectionBase.cc MECorrectionBase.h MECorrectionBase.fh \
+PartnerFinder.h PartnerFinder.fh PartnerFinder.cc \
+ShowerParticle.cc  ShowerParticle.fh  ShowerParticle.h \
+Evolver.h Evolver.fh Evolver.cc \
+ShowerKinematics.fh  ShowerKinematics.h ShowerKinematics.cc \
+ShowerTree.h ShowerTree.fh ShowerTree.cc \
+ShowerProgenitor.fh ShowerProgenitor.h \
+ShowerVeto.h ShowerVeto.fh ShowerVeto.cc \
+PTVeto.h PTVeto.cc\
+HardTree.h HardTree.fh HardTree.cc

@@ -69,8 +69,7 @@ void PartnerFinder::Init() {
 
 }
 
-
-bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &particles,
+bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
 						 const bool setPartners) {
   // set the partners and the scales
@@ -92,7 +91,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
     // Notice that this definition exclude the special case of baryon-violating
     // processes (as in R-parity Susy), which will show up as particles
     // without candidate colour partners, and that we will be treated a part later
-    // (this means that no modifications of the following loop is needed!)
+    // (this means that no modifications of the following loop is needed!)
     ShowerParticleVector::const_iterator cit, cjt;
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
       if(!(*cit)->data().coloured()) continue;
@@ -170,19 +169,17 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
 					isDecayCase);
       switch(_approach) {
       case 0: // Totally random
-	(*cit)->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
-	(*cit)->setPartner(ShowerIndex::QCD, partners[position]);
+	(*cit)->setEvolutionScale(pairScales.first);
+	(*cit)->setPartner(partners[position]);
 	break;
       case 1: // Partner is also set, if it has already been set, pick 50/50
-	if(!(*cit)->partners()[ShowerIndex::QCD] || UseRandom::rndbool()) {
-	  (*cit)->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
-	  (*cit)->setPartner(ShowerIndex::QCD, partners[position]);
+	if(!(*cit)->partner() || UseRandom::rndbool()) {
+	  (*cit)->setEvolutionScale(pairScales.first);
+	  (*cit)->setPartner(partners[position]);
 	}
-	if(!partners[position]->partners()[ShowerIndex::QCD] ||
-	   UseRandom::rndbool()) {
-	  partners[position]->setEvolutionScale(ShowerIndex::QCD, 
-						pairScales.second);
-	  partners[position]->setPartner(ShowerIndex::QCD, *cit);
+	if(!partners[position]->partner() || UseRandom::rndbool()) {
+	  partners[position]->setEvolutionScale(pairScales.second);
+	  partners[position]->setPartner(*cit);
 	}
 	break;
       default:
@@ -198,57 +195,14 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
     for(ShowerParticleVector::const_iterator cit = particles.begin();
 	cit != particles.end(); ++cit) {
       if(!(**cit).dataPtr()->coloured()) continue;
-      tShowerParticlePtr partner = (**cit).partners()[ShowerIndex::QCD];
+      tShowerParticlePtr partner = (**cit).partner();
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
 					isDecayCase);
-      (*cit)->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
+      (*cit)->setEvolutionScale(pairScales.first);
     }
   }
   return true;
-}
-
-bool PartnerFinder::setQEDInitialEvolutionScales(const ShowerParticleVector &,
-						 const bool, const bool) {
-
-  // ***LOOKHERE*** To be implemented only if you want to have electromagnetic
-  //               bremsstrahlung. You should use the data() method of
-  //               the ShowerParticle objects to access to their properties
-  //               like the electric charge, and then find the partners.
-  //               For each find pair of partners, call
-  //                    calculateInitialEvolutionScales
-  //               and then fills:
-  //                    particle1->evolutionScales()[ ShowerIndex::QED ] = scale; 
-  //                    particle2->evolutionScales()[ ShowerIndex::QED ] = scale; 
-  //                    particle1->partners()[ ShowerIndex::QED ] = particle2; 
-  //                    particle2->partners()[ ShowerIndex::QED ] = particle1; 
-  throw Exception() << "PartnerFinder::setQEDInitialEvolutionScales "
-		    << "implementation is not correct.\nMust match charge "
-		    << "partners, not colour partners.\n"
-		    << "Turn off QED in Shower.in\n" 
-		    << Exception::runerror;
-
-
-  return false;
-}
-
-bool PartnerFinder::setEWKInitialEvolutionScales(const ShowerParticleVector &,
-						 const bool, const bool) {
-  // ***LOOKHERE*** To be implemented only if you want to have electroweak
-  //               bremsstrahlung. You should use the data() method of
-  //               the ShowerParticle objects to access to their properties
-  //               like the electroweak charge, and then find the partners.
-  //               For each find pair of partners, call
-  //                    calculateInitialEvolutionScales
-  //               and then fills:
-  //                    particle1->evolutionScales()[ ShowerIndex::EWK ] = scale; 
-  //                    particle2->evolutionScales()[ ShowerIndex::EWK ] = scale; 
-  //                    particle1->partners()[ ShowerIndex::EWK ] = particle2; 
-  //                    particle2->partners()[ ShowerIndex::EWK ] = particle1; 
-  throw Exception() << "PartnerFinder::setEWKInitialEvolutionScales not "
-		    << "implemented.\nTurn off EWK in Shower.in" 
-		    << Exception::runerror;
-  return false;
 }
 
 pair<Energy,Energy> PartnerFinder::

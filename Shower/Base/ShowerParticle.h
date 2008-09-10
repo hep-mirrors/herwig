@@ -16,7 +16,6 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.fh"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ShowerKinematics.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "ShowerParticle.fh"
 
 namespace Herwig {
@@ -54,7 +53,6 @@ using namespace ThePEG;
    *
    *  @see Particle
    *  @see ShowerConfig
-   *  @see ShowerIndex
    *  @see ShowerKinematics
    */
 class ShowerParticle: public Particle {
@@ -71,17 +69,22 @@ public:
    * @param fs  Whether or not the particle is an inital or final-state particle
    * @param tls Whether or not the particle initiates a time-like shower
    */
-  inline ShowerParticle(tcEventPDPtr,bool fs, bool tls=false);
+  ShowerParticle(tcEventPDPtr x, bool fs, bool tls=false) 
+    : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
+      _perturbative(0), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
+      _scale(0.*MeV), _thePEGBase() {}
 
   /**
    * Copy constructor from a ThePEG Particle
-   * @param part ThePEG particle
+   * @param x ThePEG particle
    * @param pert Where the particle came from
    * @param fs Whether or not the particle is an inital or final-state particle
    * @param tls Whether or not the particle initiates a time-like shower
    */
-  inline ShowerParticle(const Particle & part,unsigned int pert,
-			bool fs, bool tls=false);
+  ShowerParticle(const Particle & x, unsigned int pert, bool fs, bool tls=false)
+    : Particle(x), _isFinalState(fs), _reconstructionFixedPoint( false ),
+    _perturbative(pert), _initiatesTLS(tls), _x(1.0), _showerKinematics(),
+    _scale(0.*MeV), _thePEGBase(&x) {}
   //@}
 
 public:
@@ -94,20 +97,20 @@ public:
    * Access the flag that tells if the particle is final state
    * or initial state.
    */
-  inline bool isFinalState() const;
+  bool isFinalState() const { return _isFinalState; }
 
   /**
    * Access the flag that tells if the particle is initiating a
    * time like shower when it has been emitted in an initial state shower.
    */
-  inline bool initiatesTLS() const;
+  bool initiatesTLS() const { return _initiatesTLS; }
 
   /**
    * Access the flag which tells us where the particle came from
    * This is 0 for a particle produced in the shower, 1 if the particle came
    * from the hard sub-process and 2 is it came from a decay.
    */
-  inline unsigned int perturbative() const;
+  unsigned int perturbative() const { return _perturbative; }
   //@}
 
   /**
@@ -117,12 +120,12 @@ public:
   /**
    *  For an initial state particle get the fraction of the beam momentum
    */
-  inline void x(double x);
+  void x(double x) { _x = x; }
 
   /**
    *  For an initial state particle set the fraction of the beam momentum
    */
-  inline double x() const;
+  double x() const { return _x; }
   //@}
 
   /**
@@ -132,12 +135,13 @@ public:
   /**
    * Access/ the ShowerKinematics object.
    */
-  inline const ShoKinPtr & showerKinematics() const;
+  const ShoKinPtr & showerKinematics() const { return _showerKinematics; }
+
 
   /**
    * Set the ShowerKinematics object.
    */
-  void setShowerKinematics(const ShoKinPtr);
+  void setShowerKinematics(const ShoKinPtr in) { _showerKinematics = in; }
   //@}
 
   /**
@@ -145,30 +149,28 @@ public:
    */
   //@{
   /**
-   * Return (a const reference to) the vector of evolution scales
-   * (\f$\tilde{q}\f$ scales)
+   * Return the evolution scale \f$\tilde{q}\f$
    */
-  inline const vector<Energy> & evolutionScales() const;
+  Energy evolutionScale() const { return _scale; }
+
+
 
   /**
-   *  Set the evolution \f$\tilde{q}\f$ scale for a given interaction type
+   *  Set the evolution \f$\tilde{q}\f$ scale
    */
-  inline void setEvolutionScale(const ShowerIndex::InteractionType, 
-				const Energy);
+  void setEvolutionScale(Energy scale) { _scale = scale; }
+
 
   /** 
-   * Return a vector of (pointers to) the partners corresponding to each 
-   * considered interaction types (QCD, QED, EWK,...) defined in ShowerIndex. 
-   * The vector of (pointers to) the partners is needed only as the
-   * most general way to decide in which frame the shower is described.
+   * Return the partner
    */
-  inline const tShowerParticleVector & partners() const;
+  tShowerParticlePtr partner() const { return _partner; }
+
 
   /**
-   * Set the partner for the specified interaction.
+   * Set the partner
    */
-  inline void setPartner(const ShowerIndex::InteractionType, 
-			 const tShowerParticlePtr);
+  void setPartner(const tShowerParticlePtr partner) { _partner = partner; } 
   //@}
 
   /**
@@ -186,12 +188,12 @@ public:
   /**
    *  Get the flag
    */
-  inline bool isReconstructionFixedPoint() const;
+  bool isReconstructionFixedPoint() const { return _reconstructionFixedPoint || children().empty(); }
 
   /**
    *  Set the flag
    */
-  inline void setReconstructionFixedPoint(const bool);
+  void setReconstructionFixedPoint(const bool in) { _reconstructionFixedPoint = in; }
   //@}
 
   /**
@@ -200,43 +202,33 @@ public:
    */
   //@{
   /**
-   *  Access the vector containing dimensionless variables
-   */
-  //inline vector<double> & showerParameters() const;
-
-  /**
    *  Set the vector containing dimensionless variables
    */
-  inline vector<double> & showerParameters();
-
-  /**
-   *  Access the vector containing the dimensionful variables
-   */
-  //inline vector<Energy> & showerVariables() const;
+  vector<double> & showerParameters() { return _parameters; }
 
   /**
    *  Set the vector containing dimensionful variables
    */
-  inline vector<Energy> & showerVariables();
+  vector<Energy> & showerVariables() { return _variables; }
   //@}
 
   /**
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
-  inline const tcPPtr getThePEGBase() const;
+  const tcPPtr getThePEGBase() const { return _thePEGBase; }
 
 protected:
 
   /**
    * Standard clone function.
    */
-  inline virtual PPtr clone() const;
+  virtual PPtr clone() const;
 
   /**
    * Standard clone function.
    */
-  inline virtual PPtr fullclone() const;
+  virtual PPtr fullclone() const;
 
 private:
 
@@ -297,12 +289,12 @@ private:
   /**
    *  Evolution scales
    */
-  vector<Energy> _scales;
+  Energy _scale;
 
   /**
    *  Partners
    */
-  tShowerParticleVector _partners;
+  tShowerParticlePtr _partner;
 
   /**
    *  Pointer to ThePEG Particle this ShowerParticle was created from
@@ -340,10 +332,5 @@ struct ClassTraits<Herwig::ShowerParticle>
 /** @endcond */
 
 }
-
-#include "ShowerParticle.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerParticle.tcc"
-#endif
 
 #endif /* HERWIG_ShowerParticle_H */

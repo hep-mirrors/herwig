@@ -37,7 +37,7 @@ public:
   /**
    * The default constructor.
    */
-  inline DrellYanMECorrection();
+  DrellYanMECorrection();
 
   /**
    *  Members to override those in the base class and implemented 
@@ -127,13 +127,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -231,16 +231,11 @@ struct ClassTraits<Herwig::DrellYanMECorrection>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "DrellYanMECorrection.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanMECorrection.tcc"
-#endif
 
 #endif /* HERWIG_DrellYanMECorrection_H */

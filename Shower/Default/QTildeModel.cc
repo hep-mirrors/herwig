@@ -68,9 +68,9 @@ void QTildeModel::checkConsistency() throw(InitException) {
   vector<MECorrectionPtr>::const_iterator mit;
   for(mit=meCorrections().begin();mit!=meCorrections().end();++mit) {
     if(!dynamic_ptr_cast<Ptr<QTildeMECorrection>::pointer>(*mit)) {
-    Throw<InitException>() << "meCorrections must be either "
-			   << "TildeMECorrection or a class inheriting from it"
-			   << "in QTildeModel::checkConsistency()"; 
-  }
+      Throw<InitException>() << "meCorrections must be either "
+			     << "TildeMECorrection or a class inheriting from it"
+			     << "in QTildeModel::checkConsistency()"; 
+    }
   }
 }

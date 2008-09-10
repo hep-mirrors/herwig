@@ -14,7 +14,6 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerVeto.fh"
-
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ShowerTree.fh"
@@ -23,33 +22,11 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
-  namespace ShowerVetoType {
-
-    /**\ingroup Shower
-     * Define types of ShowerVetoes
-     */
-    enum ShowerVetoType {
-      /**
-       * Throw away emission, if veto encountered. Set the scale to
-       * the scale of vetoed emission.
-       */
-      Emission = 1,
-      /**
-       * Throw away showering
-       */
-      Shower,
-      /**
-       * Throw away event
-       */
-      Event
-    };
-  }
-
-  /**\ingroup Shower
-   * Exception class for vetoing a showering
-   */
-  struct VetoShower { };
+  
+/**\ingroup Shower
+ * Exception class for vetoing a showering
+ */
+struct VetoShower { };
 
 /**\ingroup Shower
  * ShowerVeto is a general interface for performing
@@ -61,29 +38,37 @@ using namespace ThePEG;
 class ShowerVeto: public Interfaced {
 
 public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
+  
   /**
-   * The default constructor.
+   * Define types of ShowerVetoes
    */
-  inline ShowerVeto();
+  enum ShowerVetoType {
+    /**
+     * Throw away emission, if veto encountered. Set the scale to
+     * the scale of vetoed emission.
+     */
+    Emission = 1,
+    /**
+     * Throw away showering
+     */
+    Shower,
+    /**
+     * Throw away event
+     */
+    Event
+  };
+
+public:
 
   /**
    * Constructor giving the behaviour of this veto
    */
-  inline explicit ShowerVeto (int vetoType);
+  ShowerVeto (ShowerVetoType vetoType) : _vetoType(vetoType) {}
 
   /**
-   * The copy constructor.
+   * Return the type of this veto
    */
-  inline ShowerVeto(const ShowerVeto &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerVeto();
-  //@}
+  ShowerVetoType vetoType () const {return _vetoType;}
 
 public:
 
@@ -111,32 +96,21 @@ public:
    */
   static void Init();
 
-
-public:
-
-  /**
-   * Return the type of this veto
-   */
-  inline int vetoType () const;
-
 public:
 
   /**
    * Return true, if the selected emission off the given
    * particle and progenitor is vetoed.
    */
-  virtual bool vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr, const Branching&) = 0;
+  virtual bool vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
+			     const Branching&) = 0;
 
   /**
    * Return true, if the selected emission off the given
    * particle and progenitor is vetoed.
    */
-  virtual bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr, const Branching&) = 0;
-
-
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
-
+  virtual bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
+			      const Branching&) = 0;
 
 private:
 
@@ -157,7 +131,7 @@ private:
   /**
    * The type of this veto.
    */
-  int _vetoType;
+  ShowerVetoType _vetoType;
 
 };
 
@@ -191,16 +165,11 @@ struct ClassTraits<Herwig::ShowerVeto>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerVeto.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerVeto.tcc"
-#endif
 
 #endif /* HERWIG_ShowerVeto_H */

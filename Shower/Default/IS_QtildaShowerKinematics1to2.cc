@@ -50,9 +50,8 @@ void IS_QtildaShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
 	     const ShowerParticleVector theChildren ) const {
   // no z for angular ordering in backward branchings
-  const ShowerIndex::InteractionType inter=splittingFn()->interactionType();
-  theParent->setEvolutionScale(inter, scale());
-  theChildren[1]->setEvolutionScale(inter, (1.-z())*scale());
+  theParent->setEvolutionScale(scale());
+  theChildren[1]->setEvolutionScale((1.-z())*scale());
   // set proper colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
   // set proper parent/child relationships
@@ -118,8 +117,7 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   assert(particle.perturbative()!=2);
   if(particle.perturbative()==1) {
     // find the partner and its momentum
-    ShowerIndex::InteractionType type=splittingFn()->interactionType();
-    ShowerParticlePtr partner=particle.partners()[type];
+    ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
     if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     if(partner->isFinalState()) {

@@ -11,7 +11,7 @@
 #include "ThePEG/Utilities/Rebinder.h"
 #include "Herwig++/Shower/Base/Evolver.fh"
 #include "HardestEmissionGenerator.fh"
-#include "HardTree.fh"
+#include "Herwig++/Shower/Base/HardTree.fh"
 
 namespace Herwig {
 
@@ -35,7 +35,7 @@ public:
   /**
    * The default constructor.
    */
-  inline HardestEmissionGenerator();
+  HardestEmissionGenerator() {}
 
 public:
 
@@ -85,7 +85,7 @@ protected:
   /**
    *  Access to the Evolver
    */
-  inline tEvolverPtr evolver();
+  tEvolverPtr evolver() { return _evolver; }
 
 protected:
 
@@ -175,7 +175,5 @@ struct ClassTraits<Herwig::HardestEmissionGenerator>
 /** @endcond */
 
 }
-
-#include "HardestEmissionGenerator.icc"
 
 #endif /* HERWIG_HardestEmissionGenerator_H */

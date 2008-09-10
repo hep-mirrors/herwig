@@ -23,14 +23,8 @@
 
 using namespace Herwig;
 
-ClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
+NoPIOClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
 // Definition of the static class description member.
-
-void QTildeSudakov::persistentOutput(PersistentOStream & ) const {
-}
-
-void QTildeSudakov::persistentInput(PersistentIStream & , int) {
-}
 
 void QTildeSudakov::Init() {
 
@@ -228,7 +222,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   else return ShoKinPtr();
   phi(Constants::twopi*UseRandom::rnd());
   // create the ShowerKinematics object
-  return constructKinematics(2);
+  return createDecayBranching(q_,z(),phi(),pT());
 }
 
 bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
@@ -353,30 +347,13 @@ ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
   return showerKin;
 }
 
-ShoKinPtr QTildeSudakov::constructKinematics(int iopt) {
-  ShoKinPtr showerKin;
-  switch(iopt) {
-    // time-like
-  case 0:
-    showerKin = new_ptr(FS_QtildaShowerKinematics1to2());
-    break;
-    // space-like
-  case 1:
-    showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
-    break;
-    // decay
-  case 2:
-    showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
-    break;
-  default:
-    throw Exception() << "Unknown type of branching in "
-		      << "QTildeSudakov::constructKinematics()"
-		      << Exception::runerror;
-  }
-  showerKin->scale(q_);
-  showerKin->z(z());
-  showerKin->phi(phi());
-  showerKin->pT(pT());
+ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
+						     double phi, Energy pt) {
+  ShoKinPtr  showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
+  showerKin->scale(scale);
+  showerKin->z(z);
+  showerKin->phi(phi);
+  showerKin->pT(pt);
   showerKin->splittingFn(splittingFn());
   return showerKin;
 }

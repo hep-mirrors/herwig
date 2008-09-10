@@ -105,6 +105,12 @@ public:
   virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
 						double phi, Energy pt);
 
+  /**
+   *  Method to create the ShowerKinematics object for a decay branching
+   */
+  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
+					 double phi, Energy pt);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -198,11 +204,6 @@ protected:
    */
   bool computeSpaceLikeLimits(Energy2 & scale, double x);
 
-  /**
-   *  Construct the kinematics objects
-   */
-  ShoKinPtr constructKinematics(int iopt);
-
 protected:
 
   /** @name Clone Methods. */
@@ -226,7 +227,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class with persistent data.
    */
-  static ClassDescription<QTildeSudakov> initQTildeSudakov;
+  static NoPIOClassDescription<QTildeSudakov> initQTildeSudakov;
 
   /**
    * The assignment operator is private and must never be called.
@@ -288,7 +289,7 @@ struct ClassTraits<Herwig::QTildeSudakov>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

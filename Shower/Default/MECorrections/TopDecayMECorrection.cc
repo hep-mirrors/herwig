@@ -23,7 +23,21 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
+extern "C" int isnan(double) throw();
+
 using namespace Herwig;
+
+TopDecayMECorrection::TopDecayMECorrection() 
+  : _xg_sampling(1.5), 
+    _initialenhance(1.),  _finalenhance(2.3), _useMEforT2(true) {}
+
+IBPtr TopDecayMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr TopDecayMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
     os << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2;
@@ -139,12 +153,12 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   for(cjt = tree->incomingLines().begin();
       cjt!= tree->incomingLines().end();++cjt) {
     if(abs(cjt->first->progenitor()->id())==6)
-      ktb=sqr(cjt->first->progenitor()->evolutionScales()[0]/_mt); 
+      ktb=sqr(cjt->first->progenitor()->evolutionScale()/_mt); 
   }
   for(cit = tree->outgoingLines().begin();
       cit!= tree->outgoingLines().end();++cit) {
     if(abs(cit->first->progenitor()->id())==5)
-      ktc=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
+      ktc=sqr(cit->first->progenitor()->evolutionScale()/_mt); 
   }
   if (ktb<=0.||ktc<=0.) {
     throw Exception() 
@@ -411,7 +425,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	  if(!veto) initial->highestpT(pt);
 	}
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+      if(veto) parent->setEvolutionScale(br.kinematics->scale());
       // return the veto
       return veto;
     }
@@ -435,7 +449,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 			     << "\nz =  " << z  << "\nkappa = " << kappa
 			     << "\nxa = " << xa 
 			     << "\nroot^2= " << root;
-	  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+	  parent->setEvolutionScale(br.kinematics->scale());
 	  return true;
       } 
       root=sqrt(root);
@@ -459,7 +473,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // if not vetoed reset max
       if(!veto) initial->highestpT(pt);
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+      if(veto) parent->setEvolutionScale(br.kinematics->scale());
       // return the veto
       return veto;
     }
@@ -475,4 +489,291 @@ double TopDecayMECorrection::me(double xw,double xg)
   double wgt=-_c*xg2/prop+(1.-_a+_c)*xg-(prop*(1 - xg)+xg2)
     +(0.5*(1.+2.*_a+_c)*sqr(prop-xg)*xg+2.*_a*prop*xg2)/denom;
   return wgt/(lambda*prop);
+}
+
+
+// This function is auxiliary to the xab function.
+double TopDecayMECorrection::xgbr(int toggle) 
+{ 
+  return 1.+toggle*sqrt(_a)-_c*(1.-toggle*sqrt(_a))/(1.-_a);
+}
+
+// This function is auxiliary to the xab function.
+double TopDecayMECorrection::ktr(double xgb, int toggle) 
+{ 
+  return 2.*xgb/
+    (xgb+toggle*sqrt((1.-1./_a)
+		     *(xgb-xgbr( 1))
+		     *(xgb-xgbr(-1))));
+}
+
+// Function xab determines xa (2*W energy fraction) for a given value
+// of xg (2*gluon energy fraction) and kappa tilde (q tilde squared over
+// m_top squared). Hence this function allows you to draw 1: the total
+// phase space volume in the xa vs xg plane 2: for a given value of 
+// kappa tilde (i.e. starting evolution scale) the associated contour 
+// in the xa vs xg plane (and hence the regions that either shower can 
+// populate). This calculation is done assuming the emission came from
+// the top quark i.e. kappa tilde here is the q tilde squared of the TOP
+// quark divided by m_top squared. 
+double TopDecayMECorrection::xab(double xgb,
+                                        double kt, int toggle) 
+{ 
+  double xab;
+  if(toggle==2) {
+    // This applies for g==0.&&kt==ktr(a,c,0.,xgb,1).
+    xab = -2.*_a*(xgb-2.)/(1.+_a-_c-xgb);
+  } else if(toggle==1) {
+    // This applies for kt==1&&g==0.
+    double lambda = sqrt(sqr(xgb-1.+_a+_c)-4.*_a*_c);
+    xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
+      + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
+  } else {
+    // This is the form of xab FOR _g=0.
+    double ktmktrpktmktrm = ( sqr(xgb*kt-2.*xgb)
+			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1))
+			      *(xgb-xgbr(-1))
+			      )/
+      (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1))
+       *(xgb-xgbr(-1))
+       );
+    double lambda = sqrt((sqr(1.-_a-_c-xgb)-4.*_a*_c)*
+			 ktmktrpktmktrm);
+    xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
+      + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
+  }
+  if(isnan(xab)) {
+    double ktmktrpktmktrm = ( sqr(xgb*kt-2.*(xgb-_g))
+			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
+			      *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
+			      )/
+      (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
+       *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
+       );
+    double lambda = sqrt((xgb-1.+sqr(sqrt(_a)+sqrt(_c-_g)))
+			 *(xgb-1.+sqr(sqrt(_a)-sqrt(_c-_g)))*
+			 ktmktrpktmktrm);
+    xab = (0.5/(kt-xgb+_g))*(kt*(1.+_a-_c+_g-xgb)-lambda)
+      + (0.5/(kt+xgb*(1.-kt)-_g))*(kt*(1.+_a-_c+_g-xgb)+lambda);
+    if(isnan(xab)) 
+	throw Exception() << "TopMECorrection::xab complex x_a value.\n"
+			  << "  xgb    = " << xgb    << "\n"
+			  << "  xab    = " << xab    << "\n"
+			  << "  toggle = " << toggle << "\n"
+			  << "  ktmktrpktmktrm = "   << ktmktrpktmktrm 
+			  << Exception::eventerror;
+  }
+  return xab;
+}
+
+// xgbcut is the point along the xg axis where the upper bound on the 
+// top quark (i.e. b) emission phase space goes back on itself in the 
+// xa vs xg plane i.e. roughly mid-way along the xg axis in
+// the xa vs xg Dalitz plot.
+double TopDecayMECorrection::xgbcut(double kt) 
+{ 
+  double lambda2 = 1.+_a*_a+_c*_c-2.*_a-2.*_c-2.*_a*_c; 
+  double num1    = kt*kt*(1.-_a-_c);
+  double num2    = 2.*kt*sqrt(_a*(kt*kt*_c+lambda2*(kt-1.)));
+  return (num1-num2)/(kt*kt-4.*_a*(kt-1.));
+}
+
+double TopDecayMECorrection::xaccut(double kt) 
+{ 
+    return 1.+_a-_c-0.25*kt;
+}
+
+double TopDecayMECorrection::z(double xac, double kt, 
+                                      int toggle1, int toggle2) 
+{ 
+  double z = -1.0;
+  if(toggle2==0) { 
+    z = (kt+toggle1*sqrt(kt*(kt-4.*(1.+_a-_c-xac))))/(2.*kt); 
+  } else if(toggle2==1) {
+    z = ((1.+_a+_c-xac)+toggle1*(1.+_a-_c-xac))
+      /(2.*(1.+_a-xac));
+  } else if(toggle2==2) {
+    z = 0.5;
+  } else {
+    throw Exception() << "Cannot determine z in TopDecayMECorrection::z()"
+		      << Exception::eventerror;
+  }
+  return z;
+}
+
+double TopDecayMECorrection::xgc(double xac, double kt, 
+                                        int toggle1, int toggle2) 
+{ 
+    return (2.-xac)*(1.-0.5*(1.+_c/(1.+_a-xac)))
+          -(z(xac,kt,toggle1,toggle2)-0.5*(1.+_c/(1.+_a-xac)))
+          *sqrt(xac*xac-4.*_a);
+}
+
+double TopDecayMECorrection::xginvc0(double xg , double kt) 
+{ 
+  double u,v,output;
+  u = 2.*_a*_a*_a-66.*_a*_a
+     +9.*xg*kt*_a+18.*kt*_a
+     -66.*_a+27.*xg*xg*kt
+     -45.*xg*kt+18.*kt+2.;
+  v = -_a*_a-14.*_a-3.*xg*kt+3.*kt-1.;
+  double u2=u*u,v3=v*v*v;
+  if(u>0.&&(-4.*v3-u2)>0.)      output = cos(  atan(sqrt(-4.*v3-u2)/u)/3.);
+  else if(u>0.&&(-4.*v3-u2)<0.) output = cosh(atanh(sqrt( 4.*v3+u2)/u)/3.);
+  else                          output = cos(( atan(sqrt(-4.*v3-u2)/u)
+					       +Constants::pi)/3.);
+  return ( 1.+_a +2.*sqrt(-v)*output)/3.;
+}
+
+double TopDecayMECorrection::approxDeadMaxxa(double xg,double ktb,double ktc) 
+{
+  double maxxa(0.);
+  double x  = min(xginvc0(xg,ktc),
+		  xab(xg,(2.*xg-2.*_g)/(xg-sqrt(xg*xg-4.*_g)),0));
+  double y(-9999999999.);
+  if(xg>2.*sqrt(_g)&&xg<=xgbcut(ktb)) {
+      y = max(xab(xg,ktb,0),xab(xg,1.,1));
+  } else if(xg>=xgbcut(ktb)&&xg<=1.-sqr(sqrt(_a)+sqrt(_c))) {
+      y = max(xab(xg,ktr(xg,1),2),xab(xg,1.,1));
+  }
+  if(xg>2.*sqrt(_g)&&xg<=1.-sqr(sqrt(_a)+sqrt(_c))) {
+    if(x>=y) { maxxa =  x       ; }
+    else     { maxxa = -9999999.; }
+  } else {
+    maxxa = -9999999.;
+  }
+  return maxxa;
+}
+
+double TopDecayMECorrection::approxDeadMinxa(double xg,double ktb,double ktc) 
+{
+  double minxa(0.);
+  double x  = min(xginvc0(xg,ktc),
+		  xab(xg,(2.*xg-2.*_g)/(xg-sqrt(xg*xg-4.*_g)),0));
+  double y(-9999999999.);
+  if(xg>2.*sqrt(_g)&&xg<=xgbcut(ktb)) {
+      y = max(xab(xg,ktb,0),xab(xg,1.,1));
+  } else if(xg>=xgbcut(ktb)&&xg<=1.-sqr(sqrt(_a)+sqrt(_c))) {
+      if(_useMEforT2) y = xab(xg,1.,1);
+      else            y = max(xab(xg,ktr(xg,1),2),xab(xg,1.,1));
+  }
+  if(xg>2.*sqrt(_g)&&xg<=1.-sqr(sqrt(_a)+sqrt(_c))) {
+      if(x>=y) { minxa =  y  ; }
+      else     { minxa = 9999999.; }
+  } else {
+      minxa = 9999999.;
+  }
+  return minxa;
+}
+
+// This function returns true if the phase space point (xg,xa) is in the 
+// kinematically allowed phase space.
+bool TopDecayMECorrection::inTheAllowedRegion(double xg , double xa)
+{
+    bool output(true);
+    if(xg<2.*sqrt(_g)||xg>1.-sqr(sqrt(_a)+sqrt(_c)))      output = false;
+    if(xa<xab(xg,1.,1))                                   output = false;
+    if(xa>xab(xg,(2.*xg-2.*_g)/(xg-sqrt(xg*xg-4.*_g)),0)) output = false;
+    return output;
+}
+
+// This function returns true if the phase space point (xg,xa) is in the 
+// approximate (overestimated) dead region.
+bool TopDecayMECorrection::inTheApproxDeadRegion(double xg , double xa,
+                                                        double ktb, double ktc)
+{
+    bool output(true);
+    if(!inTheAllowedRegion(xg,xa))       output = false;
+    if(xa<approxDeadMinxa(xg,ktb,ktc))   output = false;
+    if(xa>approxDeadMaxxa(xg,ktb,ktc))   output = false;
+    return output;
+}
+
+// This function returns true if the phase space point (xg,xa) is in the 
+// dead region.
+bool TopDecayMECorrection::inTheDeadRegion(double xg , double xa,
+                                                  double ktb, double ktc)
+{
+    bool output(true);
+    if(!inTheApproxDeadRegion(xg,xa,ktb,ktc)) output = false;
+    if(xa>xaccut(ktc)) {
+	if(xg<xgc(xaccut(ktc),ktc, 1,2)&&
+           xg>xgc(xa,ktc, 1,0)) { output = false; } 
+	if(xg>xgc(xaccut(ktc),ktc,-1,2)&&
+           xg<xgc(xa,ktc,-1,0)) { output = false; } 
+    } 
+    return output;
+}
+
+// This function attempts to generate a phase space point in the dead
+// region and returns the associated phase space volume factor needed for
+// the associated event weight.
+double TopDecayMECorrection::deadRegionxgxa(double ktb,double ktc)
+{
+  _xg=0.;
+  _xa=0.;
+  // Here we set limits on xg and generate a value inside the bounds.
+  double xgmin(2.*sqrt(_g)),xgmax(1.-sqr(sqrt(_a)+sqrt(_c)));
+  // Generate _xg.
+  if(_xg_sampling==2.) {
+      _xg=xgmin*xgmax/(xgmin+UseRandom::rnd()*(xgmax-xgmin));
+  } else {
+      _xg=xgmin*xgmax/pow((  pow(xgmin,_xg_sampling-1.)
+			    + UseRandom::rnd()*(pow(xgmax,_xg_sampling-1.)
+					       -pow(xgmin,_xg_sampling-1.))
+			   ),1./(_xg_sampling-1.));
+  }
+  // Here we set the bounds on _xa for given _xg.
+  if(_xg<xgmin||xgmin>xgmax) 
+      throw Exception() << "TopMECorrection::deadRegionxgxa:\n"
+			<< "upper xg bound is less than the lower xg bound.\n"
+			<< "\n_xg         = " << _xg 
+			<< "\n2.*sqrt(_g) = " << 2.*sqrt(_g) 
+			<< "\n_a  = " << _a  << "  ma = " << sqrt(_a*_mt*_mt/GeV2) 
+			<< "\n_c  = " << _c  << "  mc = " << sqrt(_c*_mt*_mt/GeV2) 
+			<< "\n_g  = " << _g  << "  mg = " << sqrt(_g*_mt*_mt/GeV2) 
+			<< Exception::eventerror;
+  double xamin(approxDeadMinxa(_xg,ktb,ktc));
+  double xamax(approxDeadMaxxa(_xg,ktb,ktc));
+  // Are the bounds sensible? If not return.
+  if(xamax<=xamin) return -1.;
+  _xa=1.+_a-(1.+_a-xamax)*pow((1.+_a-xamin)/(1.+_a-xamax),UseRandom::rnd());
+  // If outside the allowed region return -1.
+  if(!inTheDeadRegion(_xg,_xa,ktb,ktc)) return -1.;
+  // The integration volume for the weight
+  double xg_vol,xa_vol; 
+  if(_xg_sampling==2.) {
+      xg_vol = (xgmax-xgmin)
+             / (xgmax*xgmin);
+  } else {
+      xg_vol = (pow(xgmax,_xg_sampling-1.)-pow(xgmin,_xg_sampling-1.))
+	     / ((_xg_sampling-1.)*pow(xgmax*xgmin,_xg_sampling-1.));
+  }
+  xa_vol = log((1.+_a-xamin)/(1.+_a-xamax));
+  // Here we return the integral volume factor multiplied by the part of the 
+  // weight left over which is not included in the BRACES function, i.e.
+  // the part of _xg^-2 which is not absorbed in the integration measure.
+  return xg_vol*xa_vol*pow(_xg,_xg_sampling-2.);
+}
+
+LorentzRotation TopDecayMECorrection::rotateToZ(Lorentz5Momentum v) {
+  // compute the rotation matrix
+  LorentzRotation trans;
+  // rotate so in z-y plane
+  trans.rotateZ(-atan2(v.y(),v.x()));
+  // rotate so along Z
+  trans.rotateY(-acos(v.z()/v.vect().mag()));
+  // generate random rotation
+  double c,s,cs;
+  do
+    {
+      c = 2.*UseRandom::rnd()-1.;
+      s = 2.*UseRandom::rnd()-1.;
+      cs = c*c+s*s;
+    }
+  while(cs>1.||cs==0.);
+  double cost=(c*c-s*s)/cs,sint=2.*c*s/cs;
+  // apply random azimuthal rotation
+  trans.rotateZ(atan2(sint,cost));
+  return trans;
 }

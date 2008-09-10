@@ -16,7 +16,7 @@
 #include "ShowerParticle.h"
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
-#include "Herwig++/Shower/Powheg/HardTree.h"
+#include "HardTree.h"
 #include "Evolver.fh"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
@@ -74,8 +74,8 @@ public:
    * hard subprocess system.
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
-				   map<tShowerProgenitorPtr,
-				   pair<Energy,double> > pt) const=0;
+				   const map<tShowerProgenitorPtr,
+				   pair<Energy,double> > & pt) const=0;
 
   /**
    * Given the ShowerTree for a decay shower
@@ -166,7 +166,7 @@ struct ClassTraits<Herwig::KinematicsReconstructor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

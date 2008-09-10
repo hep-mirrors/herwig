@@ -48,7 +48,9 @@ public:
   /**
    * The default constructor.
    */
-  inline ShowerKinematics();
+  ShowerKinematics() : Base(), _isTheJetStartingPoint( false ),
+		       _scale(), _z( 0.0 ), _phi( 0.0 ), _pt(),
+		       _splitFun() {}
 
   /**
    *  The updateChildren and updateParent
@@ -135,7 +137,7 @@ public:
    * @param particle The branching particle
    * @param parent The bema particle for the jet if needed
    */
-  inline virtual void initialize(ShowerParticle & particle,PPtr parent);
+  virtual void initialize(ShowerParticle & particle,PPtr parent);
   //@}
 
 public:
@@ -173,42 +175,42 @@ public:
   /**
    * Access the scale of the splitting.
    */
-  inline Energy scale() const;
+  Energy scale() const { return _scale; }
 
   /**
    * Set the scale of the splitting.
    */
-  inline void scale(const Energy);
+  void scale(const Energy in) { _scale=in; }
 
   /**
    *  Access the energy fraction, \f$z\f$.
    */
-  inline double z() const;
+  double z() const { return _z; }
 
   /**
    *  Set the energy fraction, \f$z\f$.
    */
-  inline void z(const double);
+  void z(const double in) { _z=in; }
 
   /**
    *  Access the azimuthal angle, \f$\phi\f$.
    */
-  inline double phi() const;
+  double phi() const { return _phi; }
 
   /**
    *  Set the azimuthal angle, \f$\phi\f$.
    */
-  inline void phi(const double);
+  void phi(const double in) { _phi=in; }
 
   /**
    *  Access the relative \f$p_T\f$ for the branching
    */
-  inline Energy pT() const;
+  Energy pT() const { return _pt; }
 
   /**
    *  Set the relative \f$p_T\f$ for the branching
    */
-  inline void pT(const Energy);
+  void pT(const Energy in) { _pt=in; }
   //@}
 
   /**
@@ -218,13 +220,13 @@ public:
    * Access the SplittingFunction object responsible of the 
    * eventual branching of this particle.
    */
-  inline tSplittingFnPtr splittingFn() const;
+  tSplittingFnPtr splittingFn() const { return _splitFun; }
 
   /**
    * Set the SplittingFunction object responsible of the 
    * eventual branching of this particle.
    */
-  inline void splittingFn(const tSplittingFnPtr);
+  void splittingFn(const tSplittingFnPtr sf) { _splitFun=sf; }
   //@}
 
 private:
@@ -298,13 +300,11 @@ struct ClassTraits<Herwig::ShowerKinematics>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "ShowerKinematics.icc"
 
 #endif /* HERWIG_ShowerKinematics_H */

@@ -13,6 +13,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <numeric>
 #include "Herwig++/Utilities/Maths.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/StandardMatchers.h"
 
 using namespace Herwig;
 
@@ -662,6 +664,6 @@ bool DISMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
     return false;
   }
   // otherwise
-  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+  parent->setEvolutionScale(br.kinematics->scale());
   return true;
 }

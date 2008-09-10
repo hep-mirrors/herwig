@@ -32,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline DrellYanHardGenerator();
+  DrellYanHardGenerator();
 
   /**
    *  Implementation of virtual members from HardestEmissionGenerator
@@ -83,13 +83,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -256,7 +256,7 @@ struct ClassTraits<Herwig::DrellYanHardGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "DrellYanHardGenerator.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */

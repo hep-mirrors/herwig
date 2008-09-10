@@ -13,7 +13,6 @@
 //
 
 #include "ShowerVeto.h"
-#include "PTVeto.fh"
 
 namespace Herwig {
 
@@ -39,17 +38,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PTVeto();
-
-  /**
-   * The copy constructor.
-   */
-  inline PTVeto(const PTVeto &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~PTVeto();
+  inline PTVeto() : ShowerVeto(ShowerVeto::Emission) {}
   //@}
 
 public:
@@ -84,13 +73,22 @@ public:
    * Return true, if the selected emission off the given
    * particle and progenitor is vetoed.
    */
-  virtual inline bool vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr, const Branching&);
+  virtual bool vetoTimeLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
+			     const Branching&b ) {
+    return _vetoTimelike && b.kinematics->pT() > _maxPT &&
+      b.kinematics->pT() < _minPT;
+  }
 
   /**
    * Return true, if the selected emission off the given
    * particle and progenitor is vetoed.
    */
-  virtual inline bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr, const Branching&);
+  virtual bool vetoSpaceLike (tcShowerProgenitorPtr, tcShowerParticlePtr,
+			      const Branching & b) {
+    return _vetoSpacelike && b.kinematics->pT() > _maxPT &&
+      b.kinematics->pT() < _minPT;
+  }
+
 
 
 protected:
@@ -101,19 +99,28 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
+private:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<PTVeto> initPTVeto;
 
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  PTVeto & operator=(const PTVeto &);
 
 private:
 
@@ -136,18 +143,6 @@ private:
    * Apply the veto to spacelike showering
    */
   bool _vetoSpacelike;
-
-  /**
-   * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
-   */
-  static ClassDescription<PTVeto> initPTVeto;
-
-  /**
-   * The assignment operator is private and must never be called.
-   * In fact, it should not even be implemented.
-   */
-  PTVeto & operator=(const PTVeto &);
 
 };
 
@@ -181,16 +176,11 @@ struct ClassTraits<Herwig::PTVeto>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "PTVeto.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PTVeto.tcc"
-#endif
 
 #endif /* HERWIG_PTVeto_H */

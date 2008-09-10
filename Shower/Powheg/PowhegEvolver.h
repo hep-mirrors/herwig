@@ -27,29 +27,7 @@ public:
   /**
    * The default constructor.
    */
-  inline PowhegEvolver() : _hardonly(false), _trunc_Mode(true) {}
-
-  /**
-   *  Member to perform the shower
-   */
-  //@{
-  /**
-   * Perform the shower of the hard process
-   */
-  virtual void showerHardProcess(ShowerTreePtr);
-
-  /**
-   * Perform the shower of a decay
-   */
-  virtual void showerDecay(ShowerTreePtr);
-  
-  /**
-   * Is the truncated shower on?
-   */
-  inline bool isTruncatedShowerON() const {return _trunc_Mode;}
-  //@}
-
-public:
+  PowhegEvolver() : _hardonly(false), _trunc_Mode(true) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -78,18 +56,34 @@ public:
 protected:
 
   /**
+   *  Start the shower of a timelike particle
+   */
+  virtual bool startTimeLikeShower();
+
+  /**
+   *  Start the shower of a spacelike particle
+   */
+  virtual bool startSpaceLikeShower(PPtr);
+
+protected:
+  
+  /**
+   * Is the truncated shower on?
+   */
+  bool isTruncatedShowerON() const {return _trunc_Mode;}
+
+  /**
    * Extract the particles to be showered, set the evolution scales
    * and apply the hard matrix element correction
    * @param hard Whether this is a hard process or decay
    * @return The particles to be showered
    */
-  vector<ShowerProgenitorPtr> setupShower(bool hard);
+  virtual vector<ShowerProgenitorPtr> setupShower(bool hard);
 
   /**
    *  set the colour partners
    */
   virtual void setColourPartners(bool hard);
-
 
   /**
    *  Generate the hardest emission
@@ -97,20 +91,16 @@ protected:
   virtual void hardestEmission();
 
   /**
-   * It does the forward evolution of the time-like input particle
-   * (and recursively for all its radiation products).
-   * accepting only emissions which conforms to the showerVariables
-   * and soft matrix element correction pointed by meCorrectionPtr.
-   * If at least one emission has occurred then the method returns true.
-   * @param particle The particle to be showered
+   * Truncated shower from a time-like particle
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch);
  
+  /**
+   * Truncated shower from a space-like particle
+   */
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-					HardBranchingPtr branch); 
-
-
+					HardBranchingPtr branch);
 
 protected:
 
@@ -120,13 +110,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -223,3 +213,4 @@ struct ClassTraits<Herwig::PowhegEvolver>
 }
 
 #endif /* HERWIG_PowhegEvolver_H */
+

@@ -111,14 +111,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile
+		Shower/Base/Makefile
 		Shower/Powheg/Makefile
 		Shower/Powheg/HardGenerators/Makefile
 		Shower/Powheg/Matching/Makefile
 		Shower/Fortran/Makefile
-		Shower/Default/Makefile
-		Shower/Base/Makefile
-		Shower/Powheg/Makefile
-		Shower/Powheg/HardGenerators/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

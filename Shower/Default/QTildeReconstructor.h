@@ -93,8 +93,8 @@ public:
    * hard subprocess system.
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
-				   map<tShowerProgenitorPtr,
-				   pair<Energy,double> > pt) const;
+				   const map<tShowerProgenitorPtr,
+				   pair<Energy,double> > & pt) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -234,8 +234,8 @@ protected:
    * @param mon  The on-shell masses
    * @param roots The mass of the decaying particle
    */
-  double inverseRescaleingFactor(vector<Lorentz5Momentum> pout,
-				 vector<Energy> mon,Energy roots) const;
+  double inverseRescalingFactor(vector<Lorentz5Momentum> pout,
+				vector<Energy> mon,Energy roots) const;
 
   /**
    * Check the rescaling conserves momentum
@@ -308,8 +308,7 @@ protected:
    *  Perform the reconstruction of a system with only final-state
    *  particles
    */
-  void reconstructFinalStateShower(bool & applyBoost,
-				   Boost & toRest, Boost & fromRest,
+  void reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
 				   EvolverPtr ) const;
@@ -330,6 +329,11 @@ protected:
 				       Boost & toRest, Boost & fromRest,
 				       HardTreePtr,
 				       vector<HardBranchingPtr> ) const;
+
+  /**
+   *  Reconstruction of a general coloured system
+   */
+  void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed
@@ -415,7 +419,7 @@ struct ClassTraits<Herwig::QTildeReconstructor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

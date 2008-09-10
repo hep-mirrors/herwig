@@ -14,7 +14,8 @@
 #include "ThePEG/Config/Pointers.h"
 #include "Herwig++/Shower/Powheg/HardTree.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "ThePEG/MatrixElement/MEBase.fh"
+#include "ThePEG/MatrixElement/MEBase.h"
+#include "ThePEG/MatrixElement/DiagramBase.fh"
 
 
 namespace Herwig {

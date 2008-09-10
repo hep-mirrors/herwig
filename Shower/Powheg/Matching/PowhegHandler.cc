@@ -19,7 +19,8 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "QTildeSudakovIntegrator.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/PDF/HwRemDecayer.h"
 #include <queue>
 
 using namespace Herwig;
@@ -675,8 +676,7 @@ HardTreePtr PowhegHandler::doClustering() {
     //the parent was a q or qbar from hard sub process
     //set scale to that of the showerparticle
     else {
-      startScale = cit->first->branchingParticle()
-	->evolutionScales()[ ShowerIndex::QCD ];
+      startScale = cit->first->branchingParticle()->evolutionScale();
     }
     if ( startScale < endScale ) endScale = startScale;
     _theIntermediates.insert( make_pair( intID, 
@@ -1251,8 +1251,7 @@ double PowhegHandler::sudakovWeight() {
       else cerr<<"could not find child in external HardBranching \n";
     }
     else{
-      vector<Energy> theScales = cit->first->evolutionScales();
-      scale = theScales[ ShowerIndex::QCD ];
+      scale = cit->first->evolutionScale();
     }
     SudWgt *= Sud( scale, cit->first->id() );  
   }

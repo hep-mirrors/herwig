@@ -28,10 +28,9 @@ typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
 /** \ingroup Shower
  *
  *  This class is responsible of two related tasks: 
- *  -  it finds the partners (pairs of ShowerParticle objects)
- *      for each interaction types (QCD,QED,EWK...).
- *  -   for each pair of partners (and interaction therefore)
- *       it sets the initial evolution scales of both of them.
+ *  -  it finds the partners 
+ *  -  for each pair of partners (and interaction therefore)
+ *      it sets the initial evolution scales of both of them.
  *
  *  In general the finding of the partners is performed by this class but
  *  the calculation of the initial evolution scales should be implemented
@@ -51,13 +50,13 @@ public:
   /**
    * The default constructor.
    */
-  inline PartnerFinder();
+  PartnerFinder() : _approach(0) {}
 
   /**
    * Given in input a collection of particles (ShowerParticle objects),
    * each of these methods set the initial evolution scales of those particles, 
-   * between the ones given in input, that do not have yet their evolution scale set, 
-   * according to a given interaction type (QCD, QED, EWK,...). 
+   * between the ones given in input, that do not have yet their
+   * evolution scale set. 
    * The input collection of particles can be either the full collection of 
    * showering particles (kept in the main class ShowerHandler,
    * in the case isDecayCase is false, or simply, in the case isDecayCase 
@@ -71,31 +70,13 @@ public:
    */
   //@{
   /**
-   * Set the initial QCD scales
+   * Set the initial scales
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */
-  virtual bool setQCDInitialEvolutionScales(const ShowerParticleVector &particles,
-					    const bool isDecayCase,
-					    const bool setPartners=true);
-
-  /**
-   * Set the initial QED scales
-   * @param particles        The particles to be considered
-   * @param isDecayCase      Whether or not this is a decay
-   */
-  virtual bool setQEDInitialEvolutionScales(const ShowerParticleVector &particles,
-					    const bool isDecayCase,
-					    const bool setPartners=true);
-
-  /**
-   * Set the initial electroweak scales
-   * @param particles        The particles to be considered
-   * @param isDecayCase      Whether or not this is a decay
-   */
-  virtual bool setEWKInitialEvolutionScales(const ShowerParticleVector &particles,
-					    const bool isDecayCase,
-					    const bool setPartners=true);
+  virtual bool setInitialEvolutionScales(const ShowerParticleVector &particles,
+					 const bool isDecayCase,
+					 const bool setPartners=true);
   //@}
 
 public:
@@ -212,16 +193,11 @@ struct ClassTraits<Herwig::PartnerFinder>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "PartnerFinder.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PartnerFinder.tcc"
-#endif
 
 #endif /* HERWIG_PartnerFinder_H */

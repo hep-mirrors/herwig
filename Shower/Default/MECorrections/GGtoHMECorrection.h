@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GGtoHMECorrection();
+  GGtoHMECorrection();
 
   /**
    *  Members to override those in the base class and implemented 
@@ -148,14 +148,14 @@ protected:
    * @param s The scale
    * @param mf2 The fermion mass squared.
    */
-  inline Complex B(Energy2 s,Energy2 mf2) const;
+  Complex B(Energy2 s,Energy2 mf2) const;
 
   /**
    *  The \f$C(s)\f$ function of NBP339 (1990) 38-66
    * @param s The scale
    * @param mf2 The fermion mass squared.
    */
-  inline complex<InvEnergy2> C(Energy2 s,Energy2 mf2) const;
+  complex<InvEnergy2> C(Energy2 s,Energy2 mf2) const;
 
   /**
    *  The \f$C(s)\f$ function of NBP339 (1990) 38-66
@@ -164,7 +164,7 @@ protected:
    * @param u The \f$u\f$ invariant
    * @param mf2 The fermion mass squared
    */
-  inline complex<InvEnergy4> D(Energy2 s,Energy2 t, Energy2 u,Energy2 mf2) const;
+  complex<InvEnergy4> D(Energy2 s,Energy2 t, Energy2 u,Energy2 mf2) const;
 
   /**
    * The integral \f$\int\frac{dy}{y-y_0}\log(a-i\epsilon-b y(1-y))\f$
@@ -173,7 +173,7 @@ protected:
    * @param b  The parameter \f$b\f$.
    * @param y0 The parameter \f$y_0\f$.
    */
-  inline Complex dIntegral(Energy2 a, Energy2 b, double y0) const;
+  Complex dIntegral(Energy2 a, Energy2 b, double y0) const;
 
   /**
    *  The \f$M_{+++}\f$ matrix element of NBP339 (1990) 38-66.
@@ -188,7 +188,7 @@ protected:
    * @param j1 Which of the stored values to use for \f$C_1(t)\f$.
    * @param k1 Which of the stored values to use for \f$C_1(u)\f$.
    */
-  inline complex<Energy> me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2,
+  complex<Energy> me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2,
 			     unsigned int i,unsigned int j, unsigned int k,
 			     unsigned int i1,unsigned int j1, unsigned int k1) const;
 
@@ -199,12 +199,12 @@ protected:
    * @param u   The \f$u\f$ invariant
    * @param mf2 The fermion mass squared.
    */
-  inline complex<Energy> me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2) const;
+  complex<Energy> me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2) const;
 
   /**
    *  The \f$F(x)\f$ function for the leading-order result
    */
-  inline Complex F(double x);
+  Complex F(double x);
   //@}
 
   /**
@@ -222,13 +222,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -407,13 +407,11 @@ struct ClassTraits<Herwig::GGtoHMECorrection>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "GGtoHMECorrection.icc"
 
 #endif /* HERWIG_GGtoHMECorrection_H */

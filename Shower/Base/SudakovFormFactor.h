@@ -15,7 +15,6 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
@@ -207,12 +206,6 @@ public:
    * Return the pointer to the ShowerAlpha object.
    */
   inline tShowerAlphaPtr alpha() const { return alpha_; }
-
-  /**
-   *  The type of interaction
-   */
-  inline ShowerIndex::InteractionType interactionType() const
-  {return splittingFn_->interactionType();}
   //@}
 
 public:
@@ -612,32 +605,6 @@ private:
    *  The limits of \f$z\f$ in the splitting
    */
   pair<double,double> zlimits_;
-
-protected:
-  /**
-   *  Parameters for the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
-   */
-  //@{
-  /**
-   *  The \f$a\f$ parameter
-   */
-  double _a;
-
-  /**
-   *  The \f$b\f$ parameter
-   */
-  double _b;
-
-  /**
-   *  The \f$c\f$ parameter
-   */
-  Energy _c;
-  //@}
-
-  /**
-   * Kinematic cutoff used in the parton shower phase space. 
-   */
-  Energy _kinCutoffScale;
 };
 
 }
@@ -670,7 +637,7 @@ struct ClassTraits<Herwig::SudakovFormFactor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

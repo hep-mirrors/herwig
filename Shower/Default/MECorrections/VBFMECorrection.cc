@@ -11,6 +11,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include <numeric>
 #include "Herwig++/Utilities/Maths.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/StandardMatchers.h"
 
 using namespace Herwig;
 
@@ -43,7 +45,7 @@ bool VBFMECorrection::canHandle(ShowerTreePtr tree,double & initial,
 				double & final,EvolverPtr evolver) {
   // two incoming particles
   if(tree->incomingLines().size()!=2) return false;
-  // three outgoing particles
+  // three outgoing particlesShowerIndex::QCD,
   if(tree->outgoingLines().size()!=3) return false;
   // extract the incoming quarks
   vector<PPtr> incoming;
