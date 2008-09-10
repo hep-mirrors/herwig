@@ -2,9 +2,9 @@ SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
 	UnderlyingEvent Interfaces Analysis Looptools \
-	lib src Doc contrib
+	lib src Doc Contrib
 
-noinst_HEADERS = Config/HepMCHelper_CLHEP.h Config/HepMCHelper_HepMC.h
+noinst_HEADERS = Config/HepMCHelper.h
 
 EXTRA_DIST=GUIDELINES
 

@@ -236,21 +236,22 @@ void PartonicDecayerBase::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
   if(header) output << "update decayers set parameters=\"";
   // parameters
-  output << "set  " << fullName() << ":PartonSplitter " 
-	 << _partonSplitter->fullName() << " \n";
-  output << "set  " << fullName() << ":ClusterFinder " 
-	 << _clusterFinder->fullName() << " \n";
-  output << "set  " << fullName() << ":ColourReconnector " 
-	 << _colourReconnector->fullName() << " \n";
-  output << "set  " << fullName() << ":ClusterFissioner " 
-	 << _clusterFissioner->fullName() << " \n";
-  output << "set  " << fullName() << ":LightClusterDecayer " 
-	 << _lightClusterDecayer->fullName() << " \n";
-  output << "set  " << fullName() << ":ClusterDecayer " 
-	 << _clusterDecayer->fullName() << " \n";
-  output << "set  " << fullName() << ":Exclusive " <<  _exclusive<< " \n";
-  output << "set  " << fullName() << ":Intermediates " << _inter << " \n";
-  output << "set  " << fullName() << ":Partonic_Tries " << _partontries << " \n";
+  output << "set  " << name() << ":PartonSplitter " 
+	 << _partonSplitter->name() << " \n";
+  output << "set  " << name() << ":ClusterFinder " 
+	 << _clusterFinder->name() << " \n";
+  output << "set  " << name() << ":ColourReconnector " 
+	 << _colourReconnector->name() << " \n";
+  output << "set  " << name() << ":ClusterFissioner " 
+	 << _clusterFissioner->name() << " \n";
+  output << "set  " << name() << ":LightClusterDecayer " 
+	 << _lightClusterDecayer->name() << " \n";
+  output << "set  " << name() << ":ClusterDecayer " 
+	 << _clusterDecayer->name() << " \n";
+  output << "set  " << name() << ":Exclusive " <<  _exclusive<< " \n";
+  output << "set  " << name() << ":Intermediates " << _inter << " \n";
+  output << "set  " << name() << ":Partonic_Tries " << _partontries << " \n";
   // footer for MySQL
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -294,6 +294,12 @@ private:
    *  @param UEXSecs is(are) the inclusiv cross section(s) for the UE process(es).
    */
   void Probs(XSVector UEXSecs);
+
+  /**
+   * Debug method to check the individual probabilities.
+   * @param filename is the file the output gets written to
+   */
+  void MultDistribution(string filename) const;
   
   /**
    * Return the value of the Overlap function A(b) for a given impact 

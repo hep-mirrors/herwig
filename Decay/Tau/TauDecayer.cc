@@ -260,20 +260,20 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":GFermi "    << _gf*GeV2 << "\n";
+  output << "set " << name() << ":GFermi "    << _gf*GeV2 << "\n";
   for(ix=0;ix<_wgtloc.size();++ix) {
-    output << "insert " << fullName() << ":WeightLocation " << ix << " " 
+    output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";
   }
   for(ix=0;ix<_wgtmax.size();++ix) {
-    output << "insert " << fullName() << ":MaximumWeight "  << ix << " " 
+    output << "insert " << name() << ":MaximumWeight "  << ix << " " 
 	   << _wgtmax[ix] << "\n";
   }
   for(ix=0;ix<_weights.size();++ix) {
-    output << "insert " << fullName() << ":Weights "        << ix << " " 
+    output << "insert " << name() << ":Weights "        << ix << " " 
 	   << _weights[ix] << "\n";
   }
   _current->dataBaseOutput(output,false,true);
-  output << "set " << fullName() << ":WeakCurrent " << _current->fullName() << " \n";
+  output << "set " << name() << ":WeakCurrent " << _current->name() << " \n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }

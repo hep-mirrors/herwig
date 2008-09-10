@@ -25,14 +25,17 @@
 
 using namespace Herwig;
 
-ShowerModel::~ShowerModel() {}
-
 void ShowerModel::persistentOutput(PersistentOStream & os) const {
   os << _reconstructor << _partnerfinder << _sudakovs << _mecorrections;
 }
 
 void ShowerModel::persistentInput(PersistentIStream & is, int) {
   is >> _reconstructor >> _partnerfinder >> _sudakovs >> _mecorrections;
+}
+
+void ShowerModel::doinit() throw(InitException) {
+  Interfaced::doinit();
+  checkConsistency();
 }
 
 AbstractClassDescription<ShowerModel> ShowerModel::initShowerModel;

@@ -15,7 +15,6 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
-#include "QTildeFinder.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -36,8 +35,8 @@ public:
   /**
    * The default constructor.
    */
-  inline QTildeFinder();
-
+  inline QTildeFinder() :  _finalFinalConditions(0),
+			   _initialFinalDecayConditions(0) {}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -102,7 +101,8 @@ protected:
    * - 2 is maximal emmision from the anticoloured particle
    * - 3 is randomly selected maximal emmision
    */
-  inline unsigned int finalFinalConditions() const;
+  inline unsigned int finalFinalConditions() const 
+  {return _finalFinalConditions;}
 
   /**
    * Initial conditions for the shower of an initial-final decay colour connection
@@ -110,7 +110,8 @@ protected:
    * - 1 is maximal emission from the decay product
    * - 2 is the smooth choice
    */
-  inline unsigned int initialFinalDecayConditions() const;
+  inline unsigned int initialFinalDecayConditions() const
+  {return _initialFinalDecayConditions;}
   //@}
 
 protected:
@@ -121,13 +122,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -204,16 +205,11 @@ struct ClassTraits<Herwig::QTildeFinder>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "QTildeFinder.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeFinder.tcc"
-#endif
 
 #endif /* HERWIG_QTildeFinder_H */

@@ -24,8 +24,6 @@ updateChildren(const tShowerParticlePtr theParent,
   if(theChildren.size() != 2)
     throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
-  // get the interaction type
-  const ShowerIndex::InteractionType interaction = splittingFn()->interactionType();
   // copy scales etc
   Energy dqtilde = scale();
   double dz = z(); 
@@ -41,8 +39,8 @@ updateChildren(const tShowerParticlePtr theParent,
   theChildren[1]->showerVariables() .resize(3);
   theChildren[1]->showerParameters().resize(2);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
-  theChildren[0]->setEvolutionScale(interaction, dz*dqtilde);
-  theChildren[1]->setEvolutionScale(interaction, (1.-dz)*dqtilde);
+  theChildren[0]->setEvolutionScale(dz*dqtilde);
+  theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=     dz *theParent->showerParameters()[0];
   theChildren[1]->showerParameters()[0]= (1.-dz)*theParent->showerParameters()[0];
@@ -85,11 +83,11 @@ void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass > 0.*GeV  ?  mass : theLast->data().constituentMass(); 
+  Energy theMass = mass > 0.*GeV  ?  mass : theLast->data().constituentMass();
   theLast->showerParameters()[1]=
     (sqr(theMass) + sqr(theLast->showerVariables()[2]) 
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
-    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );   
+    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );
   // set that new momentum
   theLast->set5Momentum(sudakov2Momentum( theLast->showerParameters()[0],
 					  theLast->showerParameters()[1], 
@@ -99,13 +97,11 @@ void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
 
 void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   // set the basis vectors
-  ShowerIndex::InteractionType type=splittingFn()->interactionType();
   Lorentz5Momentum p,n;
   if(particle.perturbative()!=0) {
     // find the partner and its momentum
-    ShowerParticlePtr partner=particle.partners()[type];
+    ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
-    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     // momentum of the emitting particle
     p = particle.momentum();
     Lorentz5Momentum pcm;

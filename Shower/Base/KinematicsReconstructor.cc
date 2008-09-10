@@ -16,9 +16,9 @@
 
 using namespace Herwig;
 
-AbstractNoPIOClassDescription<KinematicsReconstructor> KinematicsReconstructor::initKinematicsReconstructor;
+AbstractNoPIOClassDescription<KinematicsReconstructor> 
+KinematicsReconstructor::initKinematicsReconstructor;
 // Definition of the static class description member.
-
 
 void KinematicsReconstructor::Init() {
 

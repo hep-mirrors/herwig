@@ -13,7 +13,6 @@
 //
 
 #include "QtildaShowerKinematics1to2.h"
-#include "IS_QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {
 
@@ -38,7 +37,7 @@ public:
   /**
    *  Construct in terms of the basis states
    */
-  inline IS_QtildaShowerKinematics1to2();
+  inline IS_QtildaShowerKinematics1to2() {}
   //@}
 
 public:
@@ -110,10 +109,5 @@ private:
 };
 
 }
-
-#include "IS_QtildaShowerKinematics1to2.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IS_QtildaShowerKinematics1to2.tcc"
-#endif
 
 #endif /* HERWIG_IS_QtildaShowerKinematics1to2_H */

@@ -859,112 +859,113 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header){output << "update decayers set parameters=\"";}
   if(create) {
-    output << "create Herwig::ThreePionCLEOCurrent " << fullName() 
+    output << "create Herwig::ThreePionCLEOCurrent " << name() 
 	   << " HwWeakCurrents.so\n";
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoMasses " << ix 
+      output << "set    " << name() << ":RhoMasses " << ix 
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoMasses " << ix 
+      output << "insert " << name() << ":RhoMasses " << ix 
 	     << " " << _rhomass[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoWidths " << ix 
+      output << "set    " << name() << ":RhoWidths " << ix 
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoWidths " << ix 
+      output << "insert " << name() << ":RhoWidths " << ix 
 	     << " " << _rhowidth[ix]/MeV << "\n";
     }
   }
-  output << "set " << fullName() << ":f_2Mass " << _f2mass/GeV << "\n";
-  output << "set " << fullName() << ":f_2Width " << _f2width/GeV << "\n";
-  output << "set " << fullName() << ":f_0Mass " << _f0mass/GeV << "\n";
-  output << "set " << fullName() << ":f_0Width " << _f0width/GeV << "\n";
-  output << "set " << fullName() << ":sigmaMass " << _sigmamass/GeV << "\n";
-  output << "set " << fullName() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
-  output << "set " << fullName() << ":a1Mass " << _a1mass/GeV << "\n";
-  output << "set " << fullName() << ":a1Width " <<_a1width /GeV << "\n";
-  output << "set " << fullName() << ":KaonMass " << _mK/GeV << "\n";
-  output << "set " << fullName() << ":KStarMass " << _mKstar/GeV << "\n";
-  output << "set " << fullName() << ":KaonCoupling " << _gammk << "\n";
-  output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
-  output << "set " << fullName() << ":a1WidthOption " << _a1opt << "\n";
+  output << "set " << name() << ":f_2Mass " << _f2mass/GeV << "\n";
+  output << "set " << name() << ":f_2Width " << _f2width/GeV << "\n";
+  output << "set " << name() << ":f_0Mass " << _f0mass/GeV << "\n";
+  output << "set " << name() << ":f_0Width " << _f0width/GeV << "\n";
+  output << "set " << name() << ":sigmaMass " << _sigmamass/GeV << "\n";
+  output << "set " << name() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "set " << name() << ":a1Mass " << _a1mass/GeV << "\n";
+  output << "set " << name() << ":a1Width " <<_a1width /GeV << "\n";
+  output << "set " << name() << ":KaonMass " << _mK/GeV << "\n";
+  output << "set " << name() << ":KStarMass " << _mKstar/GeV << "\n";
+  output << "set " << name() << ":KaonCoupling " << _gammk << "\n";
+  output << "set " << name() << ":Fpi " << _fpi/MeV << "\n";
+  output << "set " << name() << ":a1WidthOption " << _a1opt << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix) {
       if(ix<2) {
-	output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix 
+	output << "set    " << name() << ":RhoPWaveMagnitude " << ix 
 	       << " " << _rhomagP[ix] << "\n";
       }
       else {
-	output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix 
+	output << "insert " << name() << ":RhoPWaveMagnitude " << ix 
 	       << " " << _rhomagP[ix] << "\n";
       }
   }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoPWavePhase " << ix 
+      output << "set    " << name() << ":RhoPWavePhase " << ix 
 	     << " " << _rhophaseP[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoPWavePhase " << ix 
+      output << "insert " << name() << ":RhoPWavePhase " << ix 
 	     << " " << _rhophaseP[ix] << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix 
+      output << "set    " << name() << ":RhoDWaveMagnitude " << ix 
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix 
+      output << "insert " << name() << ":RhoDWaveMagnitude " << ix 
 	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
     if(ix<2) {
-      output << "set    " << fullName() << ":RhoDWavePhase " << ix 
+      output << "set    " << name() << ":RhoDWavePhase " << ix 
 	     << " " << _rhophaseD[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":RhoDWavePhase " << ix 
+      output << "insert " << name() << ":RhoDWavePhase " << ix 
 	     << " " << _rhophaseD[ix] << "\n";
     }
   }
-  output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
-  output << "set " << fullName() << ":f2Phase " <<_f2phase  << "\n";
-  output << "set " << fullName() << ":sigmaPhase " <<_sigmaphase  << "\n";
-  output << "set " << fullName() << ":f0Magnitude " << _f0mag << "\n";
-  output << "set " << fullName() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
-  output << "set " << fullName() << ":sigmaMagnitude " <<_sigmamag  << "\n";
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Initializea1 " <<_initializea1  << "\n";
+  output << "set " << name() << ":f0Phase " << _f0phase << "\n";
+  output << "set " << name() << ":f2Phase " <<_f2phase  << "\n";
+  output << "set " << name() << ":sigmaPhase " <<_sigmaphase  << "\n";
+  output << "set " << name() << ":f0Magnitude " << _f0mag << "\n";
+  output << "set " << name() << ":f2Magnitude " << _f2mag*GeV2 << "\n";
+  output << "set " << name() << ":sigmaMagnitude " <<_sigmamag  << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":Initializea1 " <<_initializea1  << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) {
-      output << "set    " << fullName() << ":a1RunningWidth " << ix 
+      output << "set    " << name() << ":a1RunningWidth " << ix 
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
     else {
-      output << "insert " << fullName() << ":a1RunningWidth " << ix 
+      output << "insert " << name() << ":a1RunningWidth " << ix 
 	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
     if(ix<200) {
-      output << "set    " << fullName() << ":a1RunningQ2 " << ix 
+      output << "set    " << name() << ":a1RunningQ2 " << ix 
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":a1RunningQ2 " << ix 
+      output << "insert " << name() << ":a1RunningQ2 " << ix 
 	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
   }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
 
 }

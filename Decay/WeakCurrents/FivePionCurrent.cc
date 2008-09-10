@@ -631,25 +631,25 @@ unsigned int FivePionCurrent::decayMode(vector<int> idout) {
 // output the information for the database
 void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::FivePionCurrent " << fullName() 
+  if(create) output << "create Herwig::FivePionCurrent " << name() 
 		    << " HwWeakCurrents.so\n";
-  output << "set " << fullName() << ":RhoMass "    << _rhomass/MeV << "\n";
-  output << "set " << fullName() << ":A1Mass  "    << _a1mass/MeV  << "\n";
-  output << "set " << fullName() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
-  output << "set " << fullName() << ":OmegaMass  " << _omegamass/MeV  << "\n";
-  output << "set " << fullName() << ":RhoWidth "    << _rhowidth/MeV << "\n";
-  output << "set " << fullName() << ":A1Width  "    << _a1width/MeV  << "\n";
-  output << "set " << fullName() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
-  output << "set " << fullName() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
-  output << "set " << fullName() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << fullName() << ":RhoOmega " << _rhoomega << "\n";
-  output << "set " << fullName() << ":C " << _c/GeV2 << "\n";
-  output << "set " << fullName() << ":C0 " << _c0 << "\n";
-  output << "set " << fullName() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
-  output << "set " << fullName() << ":grhopipi " <<_grhopipi << "\n";
-  output << "set " << fullName() << ":garhopi " << _garhopi/GeV << "\n";
-  output << "set " << fullName() << ":faaf " <<_faaf/GeV << "\n";
-  output << "set " << fullName() << ":ffpipi " << _ffpipi/GeV << "\n";
+  output << "set " << name() << ":RhoMass "    << _rhomass/MeV << "\n";
+  output << "set " << name() << ":A1Mass  "    << _a1mass/MeV  << "\n";
+  output << "set " << name() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
+  output << "set " << name() << ":OmegaMass  " << _omegamass/MeV  << "\n";
+  output << "set " << name() << ":RhoWidth "    << _rhowidth/MeV << "\n";
+  output << "set " << name() << ":A1Width  "    << _a1width/MeV  << "\n";
+  output << "set " << name() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
+  output << "set " << name() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
+  output << "set " << name() << ":LocalParameters " <<  _localparameters << "\n";
+  output << "set " << name() << ":RhoOmega " << _rhoomega << "\n";
+  output << "set " << name() << ":C " << _c/GeV2 << "\n";
+  output << "set " << name() << ":C0 " << _c0 << "\n";
+  output << "set " << name() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
+  output << "set " << name() << ":grhopipi " <<_grhopipi << "\n";
+  output << "set " << name() << ":garhopi " << _garhopi/GeV << "\n";
+  output << "set " << name() << ":faaf " <<_faaf/GeV << "\n";
+  output << "set " << name() << ":ffpipi " << _ffpipi/GeV << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }

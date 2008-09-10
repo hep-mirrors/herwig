@@ -15,7 +15,6 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
@@ -26,6 +25,11 @@
 namespace Herwig {
 
 using namespace ThePEG;
+
+/**
+ *  A typedef for the BeamParticleData
+ */
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**  \ingroup Shower
  *
@@ -186,7 +190,7 @@ public:
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
 					       const bool cc,double enhance,
-					       Ptr<BeamParticleData>::transient_const_pointer beam)=0;
+					       tcBeamPtr beam)=0;
   //@}
 
   /**
@@ -202,12 +206,6 @@ public:
    * Return the pointer to the ShowerAlpha object.
    */
   inline tShowerAlphaPtr alpha() const { return alpha_; }
-
-  /**
-   *  The type of interaction
-   */
-  inline ShowerIndex::InteractionType interactionType() const
-  {return splittingFn_->interactionType();}
   //@}
 
 public:
@@ -231,6 +229,29 @@ public:
    */
   inline Energy pT() const { return pT_; }
   //@}
+
+  /**
+   *  Access the maximum weight for the PDF veto
+   */
+  inline double pdfMax() const { return pdfmax_;}
+
+  /**
+   *  Method to return the evolution scale given the
+   *  transverse momentum, \f$p_T\f$ and \f$z\f$.
+   */
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for a final-state branching
+   */
+  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
+					      double phi, Energy pt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for an initial-state branching
+   */
+  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
+						double phi, Energy pt)=0;
 
 public:
 
@@ -313,7 +334,7 @@ protected:
    */
   bool PDFVeto(const Energy2 t, const double x,
 	       const tcPDPtr parton0, const tcPDPtr parton1,
-	       Ptr<BeamParticleData>::transient_const_pointer beam) const;
+	       tcBeamPtr beam) const;
 
   /**
    *  The veto on the splitting function.
@@ -383,9 +404,31 @@ protected:
   inline vector<IdList> particles() const { return particles_; }
 
   /**
+   *  Methods to set the member variables for inheriting classes
+   */
+  //@{
+  /**
+   *  Method to set the SplittingFunction
+   */
+  inline void splittingFn(tSplittingFnPtr in) { splittingFn_ = in;}
+
+  /**
+   *  Method to set the coupling
+   */
+  inline void alpha(tShowerAlphaPtr in) { alpha_ = in; }
+
+  /**
+   *  Method to set the maximum PDF weight
+   */
+  inline void pdfMax(double in) { pdfmax_ = in;}
+
+  /**
    *  Get the option for the PDF factor
    */
   inline unsigned int PDFFactor() const { return pdffactor_; }
+  //@}
+
+public:
 
   /**
    * @name Methods for the cut-off
@@ -558,8 +601,6 @@ private:
   Energy pT_;
   //@}
 
-private:
-
   /**
    *  The limits of \f$z\f$ in the splitting
    */
@@ -596,7 +637,7 @@ struct ClassTraits<Herwig::SudakovFormFactor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */

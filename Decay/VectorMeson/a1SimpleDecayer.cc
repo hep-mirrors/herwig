@@ -417,39 +417,39 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
-  output << "set " << fullName() << ":OneMax   " <<   _onemax << "\n";
-  output << "set " << fullName() << ":TwoMax   " <<   _twomax << "\n";
-  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":Coupling " << _coupling*GeV << "\n";
+  output << "set " << name() << ":OneMax   " <<   _onemax << "\n";
+  output << "set " << name() << ":TwoMax   " <<   _twomax << "\n";
+  output << "set " << name() << ":ThreeMax " << _threemax << "\n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<3) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+    if(ix<3) output << "set    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+    else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<3) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+    if(ix<3) output << "set    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/MeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+    else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowgts.size();++ix) {
-    if(ix<3) output << "set    " << fullName() << ":RhoWeights " << ix << " " 
+    if(ix<3) output << "set    " << name() << ":RhoWeights " << ix << " " 
 		    << _rhowgts[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoWeights " << ix << " " 
+    else     output << "insert " << name() << ":RhoWeights " << ix << " " 
 		    << _rhowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << fullName() << ":OneChargedWeights " 
+    output << "set " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << fullName() << ":TwoChargedWeights " 
+    output << "set " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << fullName() << ":ThreeChargedWeights " 
+    output << "set " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 

@@ -25,10 +25,7 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::outgoing;
-using ThePEG::Helicity::ScalarWaveFunction;
 
 TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   // set up for the modes in the base class
@@ -533,48 +530,49 @@ void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output,bool header,
 					     bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::TwoMesonRhoKStarCurrent " 
-		    << fullName() << " HwWeakCurrents.so\n";
+		    << name() << " HwWeakCurrents.so\n";
   unsigned int ix;
   for(ix=0;ix<_rhomasses.size();++ix) {
     if(ix<3)  output << "set ";
     else      output << "insert ";
-    output << fullName() << ":RhoMasses " << ix << " " << _rhomasses[ix]/MeV << "\n";
+    output << name() << ":RhoMasses " << ix << " " << _rhomasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_rhowidths.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":RhoWidths " << ix << " " << _rhowidths[ix]/MeV << "\n";
+    output << name() << ":RhoWidths " << ix << " " << _rhowidths[ix]/MeV << "\n";
   }
   for(ix=0;ix<_kstarmasses.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KstarMasses " << ix << " " << _kstarmasses[ix]/MeV << "\n";
+    output << name() << ":KstarMasses " << ix << " " << _kstarmasses[ix]/MeV << "\n";
   }
   for(ix=0;ix<_kstarwidths.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KstarWidths " << ix << " " << _kstarwidths[ix]/MeV << "\n";
+    output << name() << ":KstarWidths " << ix << " " << _kstarwidths[ix]/MeV << "\n";
   }
-  output << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
-  output << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
+  output << "set " << name() << ":RhoParameters " << _rhoparameters << "\n";
+  output << "set " << name() << ":KstarParameters " << _kstarparameters << "\n";
   for(ix=0;ix<_piwgt.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":PiMagnitude " << ix << " " << _pimag[ix]   << "\n";
+    output << name() << ":PiMagnitude " << ix << " " << _pimag[ix]   << "\n";
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
+    output << name() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
   }
   for(ix=0;ix<_kwgt.size();++ix) {
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KMagnitude " << ix << " " << _kmag[ix]   << "\n";
+    output << name() << ":KMagnitude " << ix << " " << _kmag[ix]   << "\n";
     if(ix<3) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
+    output << name() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
   }
-  output << "set " << fullName() << ":PiModel " << _pimodel << "\n";
-  output << "set " << fullName() << ":KModel  " << _kmodel  << "\n";
+  output << "set " << name() << ":PiModel " << _pimodel << "\n";
+  output << "set " << name() << ":KModel  " << _kmodel  << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

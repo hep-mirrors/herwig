@@ -18,6 +18,14 @@
 
 using namespace Herwig;
 
+PPtr ShowerParticle::clone() const {
+  return new_ptr(*this);
+}
+
+PPtr ShowerParticle::fullclone() const {
+  return new_ptr(*this);
+}
+
 ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 // Definition of the static class description member.
 

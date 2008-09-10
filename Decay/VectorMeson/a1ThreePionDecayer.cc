@@ -705,59 +705,59 @@ void a1ThreePionDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  output << "set " << fullName() << ":Coupling " << _coupling     << "\n";
-  output << "set " << fullName() << ":Lambda2 "  << _lambda2/GeV2 << "\n";
-  output << "set " << fullName() << ":a1mass2 "  << _a1mass2/GeV2 << "\n";
-  output << "set " << fullName() << ":SigmaMass "  << _sigmamass/GeV  << "\n";
-  output << "set " << fullName() << ":SigmaWidth " << _sigmawidth/GeV << "\n";
-  output << "set " << fullName() << ":SigmaMagnitude " << _zmag << "\n";
-  output << "set " << fullName() << ":SigmaPhase " << _zphase << "\n";
+  output << "set " << name() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << name() << ":Coupling " << _coupling     << "\n";
+  output << "set " << name() << ":Lambda2 "  << _lambda2/GeV2 << "\n";
+  output << "set " << name() << ":a1mass2 "  << _a1mass2/GeV2 << "\n";
+  output << "set " << name() << ":SigmaMass "  << _sigmamass/GeV  << "\n";
+  output << "set " << name() << ":SigmaWidth " << _sigmawidth/GeV << "\n";
+  output << "set " << name() << ":SigmaMagnitude " << _zmag << "\n";
+  output << "set " << name() << ":SigmaPhase " << _zphase << "\n";
   for(unsigned int ix=0;ix<_rhomag.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoMagnitude " << ix << " " 
+    if(ix<1) output << "set    " << name() << ":RhoMagnitude " << ix << " " 
 		    << _rhomag[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoMagnitude " << ix << " " 
+    else     output << "insert " << name() << ":RhoMagnitude " << ix << " " 
 		    << _rhomag[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhophase.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoPhase " << ix << " " 
+    if(ix<1) output << "set    " << name() << ":RhoPhase " << ix << " " 
 		    << _rhophase[ix] << "\n";
-    else     output << "insert " << fullName() << ":RhoPhase " << ix << " " 
+    else     output << "insert " << name() << ":RhoPhase " << ix << " " 
 		    << _rhophase[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+    if(ix<1) output << "set    " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
-    else     output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+    else     output << "insert " << name() << ":RhoMasses " << ix << " " 
 		    << _rhomass[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
-    if(ix<1) output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+    if(ix<1) output << "set    " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
-    else     output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+    else     output << "insert " << name() << ":RhoWidths " << ix << " " 
 		    << _rhowidth[ix]/GeV << "\n";
   }
   // integration weights for the different channels
   for(unsigned int ix=0;ix<_zerowgts.size();++ix) {
-    output << "set " << fullName() << ":AllNeutralWeights " 
+    output << "set " << name() << ":AllNeutralWeights " 
 	   << ix << " " << _zerowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_onewgts.size();++ix) {
-    output << "set " << fullName() << ":OneChargedWeights " 
+    output << "set " << name() << ":OneChargedWeights " 
 	   << ix << " " << _onewgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_twowgts.size();++ix) {
-    output << "set " << fullName() << ":TwoChargedWeights " 
+    output << "set " << name() << ":TwoChargedWeights " 
 	   << ix << " " << _twowgts[ix] << "\n";
   }
   for(unsigned int ix=0;ix<_threewgts.size();++ix) {
-    output << "set " << fullName() << ":ThreeChargedWeights " 
+    output << "set " << name() << ":ThreeChargedWeights " 
 	   << ix << " " << _threewgts[ix] << "\n";
   }
-  output << "set " << fullName() << ":ZeroMax "  << _zeromax  << "\n";
-  output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
-  output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
-  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+  output << "set " << name() << ":ZeroMax "  << _zeromax  << "\n";
+  output << "set " << name() << ":OneMax "   << _onemax   << "\n";
+  output << "set " << name() << ":TwoMax "   << _twomax   << "\n";
+  output << "set " << name() << ":ThreeMax " << _threemax << "\n";
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }

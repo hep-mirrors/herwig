@@ -14,7 +14,6 @@
 
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
-#include "QTildeMECorrection.fh"
 
 namespace Herwig {
 
@@ -84,16 +83,11 @@ struct ClassTraits<Herwig::QTildeMECorrection>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPI.so HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "QTildeMECorrection.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeMECorrection.tcc"
-#endif
 
 #endif /* HERWIG_QTildeMECorrection_H */

@@ -154,7 +154,7 @@ protected:
    * @param m2 The mass of the second outgoing particle.
    * @return The partial width.
    */
-  inline virtual Energy partial2BodyWidth(int iloc,Energy m0,Energy m1,Energy m2) const;
+  virtual Energy partial2BodyWidth(int iloc,Energy m0,Energy m1,Energy m2) const;
 
   /**
    * Perform the set up for a mode in classes inheriting from this one

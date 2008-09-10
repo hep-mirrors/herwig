@@ -31,68 +31,6 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const
   return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);
 }
 
-inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
-						       Energy m2) const {
-  using Constants::pi;
-  if(q<m1+m2) return Energy();
-  // calcluate the decay momentum
-  Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
-    pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
-  if(_MEcode[imode]==-1) return q/_mass*_theParticle->width();
-  Energy  pcm(sqrt(pcm2));
-  double gam(0.);
-  switch(_MEcode[imode]) {
-  // V -> P P
-  case  0: gam = pcm2/6./q2;
-    break;
-  // V -> P V
-  case  1: gam = pcm2/12./m02;
-    break;
-  // V -> f fbar
-  case  2: gam = 1./12.*(q2*(2.*q2-m12-m22+6.*m1*m2)
-			 -(m12-m22)*(m12-m22))/q2/q2;
-    break;
-  // P -> VV
-  case  3: gam = 0.25*pcm2/m02;
-    break;
-  // A -> VP 
-  case  4: gam = (2.*pcm2+3.*m12)/24./m02;
-    break;
-  // V -> VV
-  case  5: gam = pcm2/3./q2*(1.+m12/q2+m22/q2);
-    break;
-  // S -> SS
-  case  6: gam = 0.125/q2*m02;
-    break;
-  // T -> PP
-  case  7: gam = pcm2*pcm2/60./q2/m02;
-    break;
-  // T -> VP
-  case  8: gam = pcm2*pcm2/40./m02/m02;
-    break;
-  // T -> VV
-  case  9: gam = 1./30./q2/q2/m02*
-      (3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
-       -5.*(m12-m22)*(m12-m22)*pcm2);
-    break;
-  // P -> PV
-  case 10: gam = 0.5*pcm2/m22;
-    break;
-  // P -> PT
-  case 11: gam = sqr(pcm2)/12.*q2/m12/m12/m02;
-    break;
-  // S -> VV
-  case 12: gam = 0.125*(2.*pcm2+3.*m12*m22/q2)/m02;
-    break;
-  // unknown
-  default:
-    throw Exception() << "Unknown type of mode " << _MEcode[imode] 
-		      << " in GenericWidthGenerator::partial2BodyWidth() " 
-		      << Exception::abortnow;
-  }
-  return gam*pcm*sqr(_MEcoupling[imode])/pi;
-}
-
 inline int GenericWidthGenerator::MEcode(int imode) const {
   return _MEcode[imode];
 }

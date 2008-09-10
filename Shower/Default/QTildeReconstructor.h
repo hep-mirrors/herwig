@@ -14,8 +14,6 @@
 
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "QTildeReconstructor.fh"
-#include <cassert>
 
 namespace Herwig {
 
@@ -26,6 +24,7 @@ using namespace ThePEG;
  *  showering
  */
 struct JetKinStruct {
+
   /**
    *  Parent particle of the jet
    */
@@ -56,6 +55,10 @@ typedef vector<JetKinStruct> JetKinVect;
  * In the case of multi-step showering, there will be not unnecessary
  * kinematical reconstructions. 
  *
+ * There is also the option of taking a set of momenta for the particles
+ * and inverting the reconstruction to give the evolution variables for the
+ * shower.
+ *
  * Notice:
  * - although we often use the term "jet" in either methods or variables names,
  *   or in comments, which could appear applicable only for QCD showering,
@@ -75,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  inline QTildeReconstructor();
+  inline QTildeReconstructor() : _reconopt(0) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -90,8 +93,8 @@ public:
    * hard subprocess system.
    */
   virtual bool reconstructHardJets(ShowerTreePtr hard,
-				   map<tShowerProgenitorPtr,
-				   pair<Energy,double> > pt) const;
+				   const map<tShowerProgenitorPtr,
+				   pair<Energy,double> > & pt) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -103,6 +106,55 @@ public:
    */
   virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
   //@}
+
+  /**
+   *  Methods to invert the reconstruction of the shower for
+   *  a scattering or decay process and calculate
+   *  the variables used to generate the
+   *  shower given the particles produced.
+   *  This is needed for the CKKW and POWHEG approaches
+   */
+  //@{
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the 
+   * shower
+   */
+  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr) const;
+
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the shower
+   *  for a hard process
+   */
+  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr) const;
+  //@}
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
 
 protected:
 
@@ -143,34 +195,6 @@ protected:
   bool reconstructDecayJet(const tShowerParticlePtr particleJetParent) const;
   //@}
 
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
-protected:
-
   /**
    * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
    * ones before showering and the masses are reconstructed after the showering,
@@ -203,21 +227,37 @@ protected:
 			 Lorentz5Momentum ppartner[2],
 			 double & k1, double & k2,Lorentz5Momentum & qt) const;
 
+
+  /**
+   * Compute the momentum rescaling factor needed to invert the shower
+   * @param pout The momenta of the outgoing particles
+   * @param mon  The on-shell masses
+   * @param roots The mass of the decaying particle
+   */
+  double inverseRescalingFactor(vector<Lorentz5Momentum> pout,
+				 vector<Energy> mon,Energy roots) const;
+
   /**
    * Check the rescaling conserves momentum
    * @param k The rescaling
    * @param root_s The centre-of-mass energy
    * @param jets The jets
    */
-  inline Energy momConsEq(const double & k, const Energy & root_s,
+  Energy momConsEq(const double & k, const Energy & root_s,
 			  const JetKinVect & jets) const;
 
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  inline LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
-				    const Lorentz5Momentum & oldp) const;
-
+  LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldp) const;
+  
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
+			     const Lorentz5Momentum & oldq) const;
+  
   /**
    *  Recursively boost the initial-state shower
    * @param p The particle
@@ -242,7 +282,8 @@ protected:
    * from (E, same perp, q).
    */
   inline double getBeta(const double E, const double q, 
-			const double Ep, const double qp) const;
+			const double Ep, const double qp) const
+  {return (q*E-qp*Ep)/(sqr(qp)+sqr(E));}
 
   /**
    *  Find the colour partners of a particle to identify the colour singlet
@@ -267,20 +308,37 @@ protected:
    *  Perform the reconstruction of a system with only final-state
    *  particles
    */
+  void reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
+				   HardTreePtr,
+				   vector<HardBranchingPtr>,
+				   EvolverPtr ) const;
+  
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
   void reconstructInitialInitialSystem(bool & applyBoost,
 				       Boost & toRest, Boost & fromRest,
 				       vector<ShowerProgenitorPtr>) const;
+  
+  /**
+   *  Perform the reconstruction of a system with only final-state
+   *  particles
+   */
+  void reconstructInitialInitialShower(bool & applyBoost,
+				       Boost & toRest, Boost & fromRest,
+				       HardTreePtr,
+				       vector<HardBranchingPtr> ) const;
+
+  /**
+   *  Reconstruction of a general coloured system
+   */
+  void reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const;
 
   /**
    *  Add the intrinsic \f$p_T\f$ to the system if needed
    */
   bool addIntrinsicPt(vector<ShowerProgenitorPtr>) const;
-
-  /**
-   *  Compute the boost needed to go from p to q.
-   */
-  LorentzRotation solveBoost(const Lorentz5Momentum & q,
-			     const Lorentz5Momentum & p ) const;
 
 protected:
 
@@ -290,13 +348,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -361,13 +419,11 @@ struct ClassTraits<Herwig::QTildeReconstructor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "QTildeReconstructor.icc"
 
 #endif /* HERWIG_QTildeReconstructor_H */

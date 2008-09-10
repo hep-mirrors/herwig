@@ -522,21 +522,21 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 
 void ISGWFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::ISGWFormFactor " << fullName() << "\n";
-  output << "set " << fullName() << ":Kappa    "    << _kappa        << "\n";
-  output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
-  output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
-  output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << "\n";
-  output << "set " << fullName() << ":CharmMass "   << _mcharm/GeV   << "\n";
-  output << "set " << fullName() << ":BottomMass "  << _mbottom/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSud "     << _betaSud/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSus "     << _betaSus/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSuc "     << _betaSuc/GeV  << "\n";
-  output << "set " << fullName() << ":BetaSub "     << _betaSub/GeV  << "\n";
-  output << "set " << fullName() << ":BetaPud "     << _betaPud/GeV  << "\n";
-  output << "set " << fullName() << ":BetaPus "     << _betaPus/GeV  << "\n";
-  output << "set " << fullName() << ":BetaPuc "     << _betaPuc/GeV  << "\n";
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+  if(create) output << "create Herwig::ISGWFormFactor " << name() << "\n";
+  output << "set " << name() << ":Kappa    "    << _kappa        << "\n";
+  output << "set " << name() << ":DownMass "    << _mdown/GeV    << "\n";
+  output << "set " << name() << ":UpMass "      << _mup/GeV      << "\n";
+  output << "set " << name() << ":StrangeMass " << _mstrange/GeV << "\n";
+  output << "set " << name() << ":CharmMass "   << _mcharm/GeV   << "\n";
+  output << "set " << name() << ":BottomMass "  << _mbottom/GeV  << "\n";
+  output << "set " << name() << ":BetaSud "     << _betaSud/GeV  << "\n";
+  output << "set " << name() << ":BetaSus "     << _betaSus/GeV  << "\n";
+  output << "set " << name() << ":BetaSuc "     << _betaSuc/GeV  << "\n";
+  output << "set " << name() << ":BetaSub "     << _betaSub/GeV  << "\n";
+  output << "set " << name() << ":BetaPud "     << _betaPud/GeV  << "\n";
+  output << "set " << name() << ":BetaPus "     << _betaPus/GeV  << "\n";
+  output << "set " << name() << ":BetaPuc "     << _betaPuc/GeV  << "\n";
+  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

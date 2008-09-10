@@ -113,35 +113,33 @@ fi
 dnl ##### HEPMC #####
 AC_DEFUN([HERWIG_CHECK_HEPMC],
 [
-AC_REQUIRE([HERWIG_CHECK_CLHEP])
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
 CREATE_HEPMC="#create"
 HEPMCLIBS="-lHepMC"
-hepmclinkname=HepMC
+
 AC_ARG_WITH(hepmc,
-        AC_HELP_STRING([--with-hepmc=DIR],[Location of HepMC installation @<:@default=CLHEP@:>@]),
+        AC_HELP_STRING([--with-hepmc=DIR],[Location of HepMC installation @<:@default=system libs@:>@]),
         [],
-	[if test -z $CLHEPINCLUDE; then with_hepmc=no; else with_hepmc="CLHEP"; fi])
+	[with_hepmc=system])
 
 if test "x$with_hepmc" = "xno"; then
 	AC_MSG_RESULT([HepMC support disabled.])
+elif test "x$with_hepmc" = "xsystem"; then
+        AC_MSG_RESULT([in system libraries])
+	oldlibs="$LIBS"
+	AC_CHECK_LIB(HepMC,main,
+		[],
+		[with_hepmc=no
+		 AC_MSG_WARN([
+HepMC not found in system libraries])
+		])
+	HEPMCLIBS="$LIBS"
+	LIBS=$oldlibs
 else
-	if test "$with_hepmc" = "CLHEP"; then
-		if test -f "${CLHEPINCLUDE#-I}/CLHEP/HepMC/GenEvent.h"; then
-			AC_MSG_RESULT([part of CLHEP])
-			HEPMCINCLUDE=$CLHEPINCLUDE/CLHEP
-			HEPMCLIBS="$CLHEPLDFLAGS $CLHEPLIB"
-			hepmclinkname=CLHEP
-		else
-			AC_MSG_RESULT([not found in CLHEP, use '--with-hepmc=' explicitly.])
-			with_hepmc=no
-		fi
-	else
-		AC_MSG_RESULT([$with_hepmc])
-		HEPMCINCLUDE=-I$with_hepmc/include
-		HEPMCLIBS="-L$with_hepmc/lib -R$with_hepmc/lib -lHepMC"
-	fi
+	AC_MSG_RESULT([$with_hepmc])
+	HEPMCINCLUDE=-I$with_hepmc/include
+	HEPMCLIBS="-L$with_hepmc/lib -R$with_hepmc/lib -lHepMC"
 fi
 
 if test "x$with_hepmc" != "xno"; then
@@ -149,9 +147,9 @@ if test "x$with_hepmc" != "xno"; then
 	oldLIBS="$LIBS"
 	oldLDFLAGS="$LDFLAGS"
 	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS $CLHEPLIB $HEPMCLIBS"
-	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
-	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE $HEPMCINCLUDE"
+	LIBS="$LIBS $HEPMCLIBS"
+	LDFLAGS="$LDFLAGS"
+	CPPFLAGS="$CPPFLAGS $HEPMCINCLUDE"
 
 	# check HepMC
 	AC_MSG_CHECKING([that HepMC works])
@@ -169,12 +167,10 @@ if test "x$with_hepmc" != "xno"; then
 	CREATE_HEPMC="create"
 fi
 
-
 AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_hepmc" != "xno"])
 AC_SUBST(HEPMCINCLUDE)
 AC_SUBST(HEPMCLIBS)
 AC_SUBST(CREATE_HEPMC)
-AC_CONFIG_LINKS([Config/HepMCHelper.h:Config/HepMCHelper_$hepmclinkname.h])
 ])
 
 dnl ##### THEPEG #####

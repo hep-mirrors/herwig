@@ -25,8 +25,6 @@ updateChildren(const tShowerParticlePtr theParent,
   if(theChildren.size() != 2)
     throw Exception() <<  "Decay_QtildaShowerKinematics1to2::updateChildren() " 
  		      << "Warning! too many children!" << Exception::eventerror;
-  // get the interaction type
-  const ShowerIndex::InteractionType interaction =splittingFn()->interactionType();
   // copy scales etc
   Energy dqtilde = scale();
   double dz = z(); 
@@ -41,8 +39,8 @@ updateChildren(const tShowerParticlePtr theParent,
     theChildren[ix]->showerVariables() .resize(3);
     theChildren[ix]->showerParameters().resize(2);
   }
-  theChildren[0]->setEvolutionScale(interaction,         dqtilde);
-  theChildren[1]->setEvolutionScale(interaction, (1.-dz)*dqtilde);
+  theChildren[0]->setEvolutionScale(        dqtilde);
+  theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=    dz *theParent->showerParameters()[0]; 
   theChildren[1]->showerParameters()[0]=(1.-dz)*theParent->showerParameters()[0];
@@ -94,7 +92,7 @@ void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
   // this is for the initial decaying particle
   if(particle.perturbative()==2) {
     p = particle.momentum();
-    ShowerParticlePtr partner=particle.partners()[splittingFn()->interactionType()];
+    ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
     if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     pcm=ppartner;

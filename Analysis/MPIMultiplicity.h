@@ -8,7 +8,7 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h" 
 #include "Herwig++/Shower/ShowerHandler.h"
-#include "Herwig++/UnderlyingEvent/MPIHandler.h"
+#include "Herwig++/Shower/UEBase.h"
 #include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
@@ -151,7 +151,7 @@ private:
    * This is a pointer to the MPIHandler object to get the theoretical 
    * multiplicity distribution
    */
-  MPIHPtr theMPIHandler;
+  UEBasePtr theMPIHandler;
 
   /**
    * Histogram for the real extra scatter multiplicity

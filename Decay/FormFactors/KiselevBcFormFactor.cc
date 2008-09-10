@@ -241,58 +241,58 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
 void KiselevBcFormFactor::dataBaseOutput(ofstream & output,
 					 bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig::KiselevBcFormFactor " << fullName() << " \n";
+  if(create) output << "create Herwig::KiselevBcFormFactor " << name() << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << fullName() << ":Fplus "  << ix << "  " 
+      output << "set " << name() << ":Fplus "  << ix << "  " 
 	     << _fp[ix]  << "\n";
-      output << "set " << fullName() << ":Fminus "  << ix << "  " 
+      output << "set " << name() << ":Fminus "  << ix << "  " 
 	     << _fm[ix]  << "\n";
-      output << "set " << fullName() << ":FV "  << ix << "  " 
+      output << "set " << name() << ":FV "  << ix << "  " 
 	     << _FV[ix]*GeV  << "\n";
-      output << "set " << fullName() << ":F0A "  << ix << "  " 
+      output << "set " << name() << ":F0A "  << ix << "  " 
 	     << _F0A[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":FplusA "  << ix << "  " 
+      output << "set " << name() << ":FplusA "  << ix << "  " 
 	     << _FpA[ix]*GeV  << "\n";
-      output << "set " << fullName() << ":FminusA "  << ix << "  " 
+      output << "set " << name() << ":FminusA "  << ix << "  " 
 	     << _FmA[ix]*GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFplus "  << ix << "  " 
+      output << "set " << name() << ":MpoleFplus "  << ix << "  " 
 	     << _Mfp[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFminus "  << ix << "  " 
+      output << "set " << name() << ":MpoleFminus "  << ix << "  " 
 	     << _Mfm[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFV "  << ix << "  " 
+      output << "set " << name() << ":MpoleFV "  << ix << "  " 
 	     << _MFV[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleF0A "  << ix << "  " 
+      output << "set " << name() << ":MpoleF0A "  << ix << "  " 
 	     << _MF0A[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFplusA "  << ix << "  " 
+      output << "set " << name() << ":MpoleFplusA "  << ix << "  " 
 	     << _MFpA[ix]/GeV  << "\n";
-      output << "set " << fullName() << ":MpoleFminusA "  << ix << "  " 
+      output << "set " << name() << ":MpoleFminusA "  << ix << "  " 
 	     << _MFmA[ix]/GeV  << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Fplus "  << ix << "  " 
+      output << "insert " << name() << ":Fplus "  << ix << "  " 
 	     << _fp[ix]  << "\n";
-      output << "insert " << fullName() << ":Fminus "  << ix << "  " 
+      output << "insert " << name() << ":Fminus "  << ix << "  " 
 	     << _fm[ix]  << "\n";
-      output << "insert " << fullName() << ":FV "  << ix << "  " 
+      output << "insert " << name() << ":FV "  << ix << "  " 
 	     << _FV[ix]*GeV  << "\n";
-      output << "insert " << fullName() << ":F0A "  << ix << "  " 
+      output << "insert " << name() << ":F0A "  << ix << "  " 
 	     << _F0A[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":FplusA "  << ix << "  " 
+      output << "insert " << name() << ":FplusA "  << ix << "  " 
 	     << _FpA[ix]*GeV  << "\n";
-      output << "insert " << fullName() << ":FminusA "  << ix << "  " 
+      output << "insert " << name() << ":FminusA "  << ix << "  " 
 	     << _FmA[ix]*GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFplus "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFplus "  << ix << "  " 
 	     << _Mfp[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFminus "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFminus "  << ix << "  " 
 	     << _Mfm[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFV "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFV "  << ix << "  " 
 	     << _MFV[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleF0A "  << ix << "  " 
+      output << "insert " << name() << ":MpoleF0A "  << ix << "  " 
 	     << _MF0A[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFplusA "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFplusA "  << ix << "  " 
 	     << _MFpA[ix]/GeV  << "\n";
-      output << "insert " << fullName() << ":MpoleFminusA "  << ix << "  " 
+      output << "insert " << name() << ":MpoleFminusA "  << ix << "  " 
 	     << _MFmA[ix]/GeV  << "\n";
     }
   }

@@ -16,37 +16,16 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "ShowerModel.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "ShowerTree.fh"
+#include "ShowerTree.h"
 #include "MECorrectionBase.fh"
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
-#include "Herwig++/Shower/CKKW/Clustering/CascadeReconstructor.h"
-#include "Herwig++/Shower/CKKW/Reweighting/DefaultReweighter.h"
-#include "Herwig++/Shower/CKKW/Reweighting/DefaultCKKWVeto.h"
 #include "Evolver.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-
-#ifdef HERWIG_CHECK_VETOES
-struct vetoed_points {
-
-  inline vetoed_points ()
-    : timelike (), spacelike(), spacelike_decay () { }
-
-  inline vetoed_points (const vetoed_points&)
-    : timelike (), spacelike(), spacelike_decay () { }
-
-  ofstream timelike;
-
-  ofstream spacelike;
-
-  ofstream spacelike_decay;
-  
-};
-#endif
 
 /** \ingroup Shower
  * Here is the documentation of the Evolver class.
@@ -72,7 +51,10 @@ public:
   /**
    *  Default Constructor
    */
-  inline Evolver();
+  Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
+	      _hardVetoRead(0),
+	      _iptrms(0.*GeV), _beta(0.), _gamma(0.*GeV), _iptmax(),
+	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.) {}
 
   /**
    *  Member to perform the shower
@@ -82,14 +64,6 @@ public:
    * Perform the shower of the hard process
    */
   virtual void showerHardProcess(ShowerTreePtr);
-
-  /**
-   * Initialize the Shower for ME/PS merging,
-   * given the minimum and maximum multiplicity.
-   * The cascade history is available through
-   * the reconstructor object.
-   */
-  virtual void initCKKWShower (const CascadeHistory&, unsigned int currentMult, unsigned int maxMult);
 
   /**
    * Perform the shower of a decay
@@ -104,31 +78,27 @@ public:
   /**
    *  Is there any showering switched on
    */
-  inline bool showeringON() const;
+  bool showeringON() const { return isISRadiationON() || isFSRadiationON(); }
 
   /**
    * It returns true/false if the initial-state radiation is on/off.
    */
-  inline bool isISRadiationON() const;  
+  bool isISRadiationON() const { return _splittingGenerator->isISRadiationON(); }
 
   /**
    * It returns true/false if the final-state radiation is on/off.
    */
-  inline bool isFSRadiationON() const;  
+  bool isFSRadiationON() const { return _splittingGenerator->isFSRadiationON(); }
 
   /**
    *  Get the ShowerModel
    */ 
-  inline ShowerModelPtr showerModel() const;
+  ShowerModelPtr showerModel() const {return _model;}
 
   /**
-   * Set the cascade reconstructor and reweighter
-   * for ME/PS merging. This also communicates the
-   * splitting functions used in the Shower and
-   * initializes the reweighter.
+   *  Get the SplittingGenerator
    */
-  void useCKKW (CascadeReconstructorPtr,ReweighterPtr);
-
+  tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
   //@}
 
 public:
@@ -170,12 +140,12 @@ protected:
    * @param hard Whether this is a hard process or decay
    * @return The particles to be showered
    */
-  vector<ShowerProgenitorPtr> setupShower(bool hard);
+  virtual vector<ShowerProgenitorPtr> setupShower(bool hard);
 
   /**
    *  set the colour partners
    */
-  void setColourPartners(bool hard);
+  virtual void setColourPartners(bool hard);
 
   /**
    *  Methods to perform the evolution of an individual particle, including
@@ -212,7 +182,7 @@ protected:
    * @param minimumMass The minimum mass of the final-state system
    */
   virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
-				    vector<Energy> maxscale,
+				    Energy maxscale,
 				    Energy minimumMass);
   //@}
 
@@ -223,17 +193,17 @@ protected:
   /**
    * Any ME correction?   
    */
-  inline bool MECOn() const;
+  bool MECOn() const { return _meCorrMode > 0; }
 
   /**
    * Any hard ME correction? 
    */
-  inline bool hardMEC() const;
+  bool hardMEC() const { return _meCorrMode == 1 || _meCorrMode == 2; }
 
   /**
    * Any soft ME correction? 
    */
-  inline bool softMEC() const;
+  bool softMEC() const { return _meCorrMode == 1 || _meCorrMode > 2; }
   //@}
 
   /**
@@ -243,7 +213,9 @@ protected:
   /**
    * Any intrinsic pT?
    */
-  inline bool ipTon() const;
+  bool ipTon() const {
+    return _iptrms != 0.0*MeV || ( _beta == 1.0 && _gamma != 0.0*MeV && _iptmax !=0.0*MeV );
+  }
    //@}  
 
   /**@name Additional shower vetoes */
@@ -251,12 +223,17 @@ protected:
   /**
    * Insert a veto.
    */
-  inline void addVeto (ShowerVetoPtr);
+  void addVeto (ShowerVetoPtr v) { _vetoes.push_back(v); }
 
   /**
    * Remove a veto.
    */
-  inline void removeVeto (ShowerVetoPtr);
+  void removeVeto (ShowerVetoPtr v) { 
+    vector<ShowerVetoPtr>::iterator vit = find(_vetoes.begin(),_vetoes.end(),v);
+    if (vit != _vetoes.end())
+      _vetoes.erase(vit);
+  }
+
   //@}
 
   /**
@@ -266,22 +243,22 @@ protected:
   /**
    * Vetos on? 
    */
-  inline bool hardVetoOn() const;
+  bool hardVetoOn() const { return _hardVetoMode > 0; }
 
   /**
    * veto hard emissions in IS shower?
    */
-  inline bool hardVetoIS() const;
+  bool hardVetoIS() const { return _hardVetoMode == 1 || _hardVetoMode == 2; }
 
   /**
    * veto hard emissions in FS shower?
    */
-  inline bool hardVetoFS() const;
+  bool hardVetoFS() const { return _hardVetoMode == 1 || _hardVetoMode > 2; }
 
   /**
    * veto hard emissions according to lastScale from XComb? 
    */
-  inline bool hardVetoXComb() const;
+  bool hardVetoXComb() const {return (_hardVetoRead == 1);}
   //@}
 
   /**
@@ -292,22 +269,23 @@ protected:
   /**
    *  Access the enhancement factor for initial-state radiation
    */
-  inline double initialStateRadiationEnhancementFactor() const;
+  double initialStateRadiationEnhancementFactor() const { return _initialenhance; }
 
   /**
    *  Access the enhancement factor for final-state radiation
    */
-  inline double finalStateRadiationEnhancementFactor() const;
+  double finalStateRadiationEnhancementFactor() const { return _finalenhance; }
 
   /**
    *  Set the enhancement factor for initial-state radiation
    */
-  inline void initialStateRadiationEnhancementFactor(double);
+  void initialStateRadiationEnhancementFactor(double in) { _initialenhance=in; }
 
   /**
    *  Set the enhancement factor for final-state radiation
    */
-  inline void finalStateRadiationEnhancementFactor(double);
+  void finalStateRadiationEnhancementFactor(double in) { _finalenhance=in; }
+
   //@}
 
   /**
@@ -317,12 +295,48 @@ protected:
   /**
    *  Get the beam particle data
    */
-  inline Ptr<BeamParticleData>::const_pointer beamParticle() const;
+  Ptr<BeamParticleData>::const_pointer beamParticle() const { return _beam; }
 
   /**
    *  Set the beam particle data
    */
-  inline void setBeamParticle(Ptr<BeamParticleData>::const_pointer);
+  void setBeamParticle(Ptr<BeamParticleData>::const_pointer in) { _beam=in; }
+  //@}
+
+  /**
+   * Set/Get the current tree being evolverd for inheriting classes
+   */
+  //@{
+  /**
+   * Get the tree
+   */
+  tShowerTreePtr currentTree() { return _currenttree; }
+
+  /**
+   * Set the tree
+   */
+  void currentTree(tShowerTreePtr tree) { _currenttree=tree; }
+
+  //@}
+
+  /**
+   *  Access the maximum number of attempts to generate the shower
+   */
+  unsigned int maximumTries() const { return _maxtry; }
+
+  /**
+   * Set/Get the ShowerProgenitor for the current shower
+   */
+  //@{
+  /**
+   *  Access the progenitor
+   */
+  ShowerProgenitorPtr progenitor() { return _progenitor; }
+
+  /**
+   *  Set the progenitor
+   */
+  void progenitor(ShowerProgenitorPtr in) { _progenitor=in; }
   //@}
 
   /**
@@ -331,9 +345,41 @@ protected:
   virtual void generateIntrinsicpT(vector<ShowerProgenitorPtr>);
 
   /**
+   *  Access to the intrinsic \f$p_T\f$ for inheriting classes
+   */
+  map<tShowerProgenitorPtr,pair<Energy,double> > & intrinsicpT() { return _intrinsic; }
+
+  /**
    *  find the maximally allowed pt acc to the hard process. 
    */
   void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
+
+protected:
+
+  /**
+   *  Start the shower of a timelike particle
+   */
+  virtual bool startTimeLikeShower();
+
+  /**
+   *  Start the shower of a spacelike particle
+   */
+  virtual bool startSpaceLikeShower(PPtr);
+
+  /**
+   *  Vetos for the timelike shower
+   */
+  virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr);
+
+  /**
+   *  Vetos for the spacelike shower
+   */
+  virtual bool spaceLikeVetoed(const Branching &,ShowerParticlePtr);
+
+  /**
+   *  Vetos for the spacelike shower
+   */
+  virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
 
 protected:
 
@@ -343,13 +389,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -361,26 +407,6 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-
   //@}
 
 private:
@@ -500,42 +526,6 @@ private:
    */
   vector<ShowerVetoPtr> _vetoes;
 
-  /**@name Members related to CKKW ME/PS merging */
-  //@{
-
-  /**
-   * The cascade reconstructor used.
-   */
-  CascadeReconstructorPtr _reconstructor;
-
-  /**
-   * The reweighter used.
-   */
-  DefaultReweighterPtr _reweighter;
-
-  /**
-   * The CKKW veto used
-   */
-  DefaultCKKWVetoPtr _ckkwVeto;
-
-  /**
-   * Wether or not CKKW is used
-   */
-  bool _useCKKW;
-
-  /**
-   * Wether or not CKKW applies to the current tree
-   */
-  bool _theUseCKKW;
-
-#ifdef HERWIG_CHECK_VETOES
-
-  vetoed_points _vetoed_points;
-
-#endif
-
-  //@}
-
   /**
    *  number of IS emissions
    */
@@ -578,13 +568,11 @@ struct ClassTraits<Herwig::Evolver>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMPIPDF.so HwRemDecayer.so HwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "Evolver.icc"
 
 #endif /* HERWIG_Evolver_H */

@@ -484,6 +484,10 @@ void GenericWidthGenerator::doinit() throw(InitException) {
       _decaymodes.clear();
       for(unsigned int ix=0;ix<_decaytags.size();++ix) {
 	_decaymodes.push_back(CurrentGenerator::current().findDecayMode(_decaytags[ix]));
+	if(!_decaymodes.back()) 
+	  generator()->log() << "Error in GenericWidthGenerator::doinit() "
+			     << "Failed to find DecayMode  for tag" 
+			     << _decaytags[ix] << "\n";
       }
     }
     // otherwise just use the modes from the selector
@@ -600,70 +604,70 @@ void GenericWidthGenerator::setInterpolators() {
 void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header) {
   if(header) output << "update Width_Generators set parameters=\"";
   // prefactor and general switiches
-  output << "set " << fullName() << ":Prefactor "   << _prefactor << "\n";
-  output << "set " << fullName() << ":BRNormalize " << _BRnorm    << "\n";
-  output << "set " << fullName() << ":BRMinimum "   << _BRminimum << "\n";
-  output << "set " << fullName() << ":Points "      << _npoints   << "\n";
-  output << "set " << fullName() << ":InterpolationOrder " << _intorder << "\n";
+  output << "set " << name() << ":Prefactor "   << _prefactor << "\n";
+  output << "set " << name() << ":BRNormalize " << _BRnorm    << "\n";
+  output << "set " << name() << ":BRMinimum "   << _BRminimum << "\n";
+  output << "set " << name() << ":Points "      << _npoints   << "\n";
+  output << "set " << name() << ":InterpolationOrder " << _intorder << "\n";
   // the type of the matrix element
   for(unsigned int ix=0;ix<_MEtype.size();++ix) {
-    output << "insert " << fullName() << ":MEtype " << ix << " " 
+    output << "insert " << name() << ":MEtype " << ix << " " 
 	   << _MEtype[ix] << "\n";
   }
   // the code for thew two body matrix elements
   for(unsigned int ix=0;ix<_MEcode.size();++ix) {
-    output << "insert " << fullName() << ":MEcode " 
+    output << "insert " << name() << ":MEcode " 
 	   << ix << " " << _MEcode[ix] << "\n";
   }
   // the coupling for trhe two body matrix elements
   for(unsigned int ix=0;ix<_MEcoupling.size();++ix) {
-    output << "insert " << fullName() << ":MEcoupling " 
+    output << "insert " << name() << ":MEcoupling " 
 	   << ix << " " << _MEcoupling[ix] << "\n";
   }
   // use this mode for the running width
   for(unsigned int ix=0;ix<_modeon.size();++ix) {
-    output << "insert " << fullName() << ":ModeOn " 
+    output << "insert " << name() << ":ModeOn " 
 	   << ix << " " << _modeon[ix] << "\n";
   }
   // first outgoing mass
   for(unsigned int ix=0;ix<_minmass.size();++ix) {
-    output << "insert " << fullName() << ":MinimumMasses " 
+    output << "insert " << name() << ":MinimumMasses " 
 	   << ix << " " << _minmass[ix]/GeV << "\n";
   }
   // first outgoing mass
   for(unsigned int ix=0;ix<_MEmass1.size();++ix) {
-    output << "insert " << fullName() << ":MEmass1 " 
+    output << "insert " << name() << ":MEmass1 " 
 	   << ix << " " << _MEmass1[ix]/GeV << "\n";
   }
   // second outgoing mass
   for(unsigned int ix=0;ix<_MEmass2.size();++ix) {
-    output << "insert " << fullName() << ":MEmass2 " 
+    output << "insert " << name() << ":MEmass2 " 
 	   << ix << " " << _MEmass2[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
-    output << "insert " << fullName() << ":DecayModes "
+    output << "insert " << name() << ":DecayModes "
 	   << ix << " " << _decaytags[ix] << " \n";
   }
   // data for the interpolation tables
   std::streamsize curpre=output.precision();
   output.precision(curpre+2);
   for(unsigned int ix=0;ix<_intermasses.size();++ix) {
-    output << "insert " << fullName() 
+    output << "insert " << name() 
 	   << ":InterpolationMasses " 
 	   << ix << " " << _intermasses[ix]/GeV << "\n";
   }
   for(unsigned int ix=0;ix<_interwidths.size();++ix) {
-    output << "insert " << fullName() 
+    output << "insert " << name() 
 	   << ":InterpolationWidths " 
 	   << ix << " " << _interwidths[ix]/GeV << "\n";
   }
   output.precision(curpre);
   for(unsigned int ix=0;ix<_noofentries.size();++ix) {
-    output << "insert " << fullName() 
+    output << "insert " << name() 
 	   << ":NumberofEntries " 
 	   << ix << " " << _noofentries[ix] << "\n";
   }  
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() 
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << name() 
 		    << "\";" << endl;
 }
 
@@ -675,11 +679,9 @@ DecayMap GenericWidthGenerator::rate(const Particle & p) {
   DecayMap dm;
   Energy width = _theParticle->width();
   for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
-    // DGRELL units?
-    if(p.id()==_theParticle->id())
-      dm.insert(partialWidth(ix,scale)/width,_decaymodes[ix]);
-    else
-      dm.insert(partialWidth(ix,scale)/width,_decaymodes[ix]->CC());
+    dm.insert(partialWidth(ix,scale)/width,
+	      p.id()==_theParticle->id() ? 
+	      _decaymodes[ix] : _decaymodes[ix]->CC());
   }
   return dm;
 }
@@ -736,9 +738,70 @@ IVector GenericWidthGenerator::getReferences() {
   return ret;
 }
 
-
 Length GenericWidthGenerator::lifeTime(const ParticleData &, Energy m, Energy w) const {
   if(m<_theParticle->massMin()) w = width(*_theParticle,_theParticle->massMin());
   else if(m>_theParticle->massMax()) w = width(*_theParticle,_theParticle->massMax());
   return UseRandom::rndExp(hbarc/w);
+}
+
+Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
+						       Energy m2) const {
+  using Constants::pi;
+  if(q<m1+m2) return Energy();
+  // calcluate the decay momentum
+  Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
+    pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
+  if(_MEcode[imode]==-1) return q/_mass*_theParticle->width();
+  Energy  pcm(sqrt(pcm2));
+  double gam(0.);
+  switch(_MEcode[imode]) {
+  // V -> P P
+  case  0: gam = pcm2/6./q2;
+    break;
+  // V -> P V
+  case  1: gam = pcm2/12./m02;
+    break;
+  // V -> f fbar
+  case  2: gam = 1./12.*(q2*(2.*q2-m12-m22+6.*m1*m2)
+			 -(m12-m22)*(m12-m22))/q2/q2;
+    break;
+  // P -> VV
+  case  3: gam = 0.25*pcm2/m02;
+    break;
+  // A -> VP 
+  case  4: gam = (2.*pcm2+3.*m12)/24./m02;
+    break;
+  // V -> VV
+  case  5: gam = pcm2/3./q2*(1.+m12/q2+m22/q2);
+    break;
+  // S -> SS
+  case  6: gam = 0.125/q2*m02;
+    break;
+  // T -> PP
+  case  7: gam = pcm2*pcm2/60./q2/m02;
+    break;
+  // T -> VP
+  case  8: gam = pcm2*pcm2/40./m02/m02;
+    break;
+  // T -> VV
+  case  9: gam = 1./30./q2/q2/m02*
+      (3.*q2*(8.*pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
+       -5.*(m12-m22)*(m12-m22)*pcm2);
+    break;
+  // P -> PV
+  case 10: gam = 0.5*pcm2/m22;
+    break;
+  // P -> PT
+  case 11: gam = sqr(pcm2)/12.*q2/m12/m12/m02;
+    break;
+  // S -> VV
+  case 12: gam = 0.125*(2.*pcm2+3.*m12*m22/q2)/m02;
+    break;
+  // unknown
+  default:
+    throw Exception() << "Unknown type of mode " << _MEcode[imode] 
+		      << " in GenericWidthGenerator::partial2BodyWidth() " 
+		      << Exception::abortnow;
+  }
+  return gam*pcm*sqr(_MEcoupling[imode])/pi;
 }

@@ -23,6 +23,14 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void ScalarMesonTensorScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix) 
+      if(mode(ix)) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
 ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer() 
   : _incoming(3), _outgoingT(3), _outgoingS(3), _coupling(3), _maxweight(3) {
   // D+ -> f_2 pi
@@ -235,27 +243,27 @@ void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "set " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingTensor " << ix << " " 
+      output << "set " << name() << ":OutgoingTensor " << ix << " " 
 	     << _outgoingT[ix] << "\n";
-      output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
+      output << "set " << name() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingS[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "set " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "set " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingTensor " << ix << " " 
+      output << "insert " << name() << ":OutgoingTensor " << ix << " " 
 	     << _outgoingT[ix] << "\n";
-      output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
+      output << "insert " << name() << ":OutgoingScalar " << ix << " " 
 	     << _outgoingS[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix]*GeV << "\n";
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }

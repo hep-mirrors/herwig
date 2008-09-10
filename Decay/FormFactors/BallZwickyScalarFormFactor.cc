@@ -303,54 +303,55 @@ void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
 						bool create) const {
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::BallZwickyScalarFormFactor "
-		    << fullName() << " \n";
-  output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
+		    << name() << " \n";
+  output << "set " << name() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     if(ix<initialModes()) {
-      output << "set " << fullName() << ":r_10 " << ix << " " << _r10[ix] << "\n";
-      output << "set " << fullName() << ":r_20 " << ix << " " << _r20[ix] << "\n";
-      output << "set " << fullName() << ":r_1plus " << ix << " " << _r1plus[ix] << "\n";
-      output << "set " << fullName() << ":r_2plus " << ix << " " << _r2plus[ix] << "\n";
-      output << "set " << fullName() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
-      output << "set " << fullName() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
-      output << "set " << fullName() << ":m_120 " 
+      output << "set " << name() << ":r_10 " << ix << " " << _r10[ix] << "\n";
+      output << "set " << name() << ":r_20 " << ix << " " << _r20[ix] << "\n";
+      output << "set " << name() << ":r_1plus " << ix << " " << _r1plus[ix] << "\n";
+      output << "set " << name() << ":r_2plus " << ix << " " << _r2plus[ix] << "\n";
+      output << "set " << name() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
+      output << "set " << name() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
+      output << "set " << name() << ":m_120 " 
 	     << ix << " " << _m120[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":mfit20 " 
+      output << "set " << name() << ":mfit20 " 
 	     << ix << " " << _mfit20[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":m_12plus " 
+      output << "set " << name() << ":m_12plus " 
 	     << ix << " " << _m12plus[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":mfit2plus " 
+      output << "set " << name() << ":mfit2plus " 
 	     << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":m_12T " 
+      output << "set " << name() << ":m_12T " 
 	     << ix << " " << _m12T[ix]/GeV2 << "\n";
-      output << "set " << fullName() << ":mfit2T " 
+      output << "set " << name() << ":mfit2T " 
 	     << ix << " " << _mfit2T[ix]/GeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":r_10 " 
+      output << "insert " << name() << ":r_10 " 
 	     << ix << " " << _r10[ix] << "\n";
-      output << "insert " << fullName() << ":r_20 " 
+      output << "insert " << name() << ":r_20 " 
 	     << ix << " " << _r20[ix] << "\n";
-      output << "insert " << fullName() << ":r_1plus " 
+      output << "insert " << name() << ":r_1plus " 
 	     << ix << " " << _r1plus[ix] << "\n";
-      output << "insert " << fullName() << ":r_2plus " 
+      output << "insert " << name() << ":r_2plus " 
 	     << ix << " " << _r2plus[ix] << "\n";
-      output << "insert " << fullName() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
-      output << "insert " << fullName() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
-      output << "insert " << fullName() << ":m_120 " 
+      output << "insert " << name() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
+      output << "insert " << name() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
+      output << "insert " << name() << ":m_120 " 
 	     << ix << " " << _m120[ix]/GeV2 << "\n";
-      output << "insert " << fullName() << ":mfit20 " 
+      output << "insert " << name() << ":mfit20 " 
 	     << ix << " " << _mfit20[ix]/GeV2 << "\n";
-      output << "insert " << fullName() << ":m_12plus " 
+      output << "insert " << name() << ":m_12plus " 
 	     << ix << " " << _m12plus[ix]/GeV2 << "\n";
-      output << "insert " << fullName() << ":mfit2plus " 
+      output << "insert " << name() << ":mfit2plus " 
 	     << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
-      output << "insert " << fullName() << ":m_12T " 
+      output << "insert " << name() << ":m_12T " 
 	     << ix << " " << _m12T[ix]/GeV2 << "\n";
-      output << "insert " << fullName() << ":mfit2T " 
+      output << "insert " << name() << ":mfit2T " 
 	     << ix << " " << _mfit2T[ix]/GeV2 << "\n";
     }
   }
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

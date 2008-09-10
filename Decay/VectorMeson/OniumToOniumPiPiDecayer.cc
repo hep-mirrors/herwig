@@ -344,53 +344,53 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
-      output << "set " << fullName() << ":Incoming " << ix << " " 
+      output << "set " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "set " << fullName() << ":Outgoing " << ix << " " 
+      output << "set " << name() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "set " << fullName() << ":Coupling " << ix << " " 
+      output << "set " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "set " << fullName() << ":ReA " << ix << " " 
+      output << "set " << name() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ImA " << ix << " " 
+      output << "set " << name() << ":ImA " << ix << " " 
 	     << _imA[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ReB " << ix << " " 
+      output << "set " << name() << ":ReB " << ix << " " 
 	     << _reB[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ImB " << ix << " " 
+      output << "set " << name() << ":ImB " << ix << " " 
 	     << _imB[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ReC " << ix << " " 
+      output << "set " << name() << ":ReC " << ix << " " 
 	     << _reC[ix]*MeV2 << "\n";
-      output << "set " << fullName() << ":ImC " << ix << " " 
+      output << "set " << name() << ":ImC " << ix << " " 
 	     << _imC[ix]*MeV2 << "\n";
     }
     else {
-      output << "insert " << fullName() << ":Incoming " << ix << " " 
+      output << "insert " << name() << ":Incoming " << ix << " " 
 	     << _incoming[ix] << "\n";
-      output << "insert " << fullName() << ":Outgoing " << ix << " " 
+      output << "insert " << name() << ":Outgoing " << ix << " " 
 	     << _outgoing[ix] << "\n";
-      output << "insert " << fullName() << ":Coupling " << ix << " " 
+      output << "insert " << name() << ":Coupling " << ix << " " 
 	     << _coupling[ix] << "\n";
-      output << "insert " << fullName() << ":ReA " << ix << " " 
+      output << "insert " << name() << ":ReA " << ix << " " 
 	     << _reA[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ImA " << ix << " " 
+      output << "insert " << name() << ":ImA " << ix << " " 
 	     << _imA[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ReB " << ix << " " 
+      output << "insert " << name() << ":ReB " << ix << " " 
 	     << _reB[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ImB " << ix << " " 
+      output << "insert " << name() << ":ImB " << ix << " " 
 	     << _imB[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ReC " << ix << " " 
+      output << "insert " << name() << ":ReC " << ix << " " 
 	     << _reC[ix]*MeV2 << "\n";
-      output << "insert " << fullName() << ":ImC " << ix << " " 
+      output << "insert " << name() << ":ImC " << ix << " " 
 	     << _imC[ix]*MeV2 << "\n";
     }
   }
   for(unsigned int ix=0;ix<_maxweight.size();++ix) {
     if(ix<2*_initsize) {
-      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+      output << "set " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
     else {
-      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+      output << "insert " << name() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
   }
