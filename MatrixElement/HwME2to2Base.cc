@@ -250,7 +250,7 @@ bool HwME2to2Base::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
   // default just use the ones we generated
   _rescaledMomenta=momenta;
   if(_rescaleOption==1) return true;
-  Energy mnew[2];
+  Energy mnew[2] = {0*MeV, 0*MeV};
   if(_rescaleOption==0) {
     mnew[0] = 0.*GeV;
     mnew[1] = 0.*GeV;
@@ -263,6 +263,9 @@ bool HwME2to2Base::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
     if(abs(data[2]->id())!=abs(data[3]->id())) return true;
     mnew[0] = 0.5*(momenta[2].mass()+momenta[3].mass());
     mnew[1] = mnew[0];
+  } 
+  else {
+    assert(false);
   }
   Lorentz5Momentum pcm(momenta[2]+momenta[3]);
   Energy m0=pcm.m();

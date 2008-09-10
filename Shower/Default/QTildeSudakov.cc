@@ -206,7 +206,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   // check some branching possible
   if(tmax<=tmin) return ShoKinPtr();
   // perform the evolution
-  Energy2 t(tmin),pt2;
+  Energy2 t(tmin),pt2(-MeV2);
   do {
     if(!guessDecay(t,tmax,minmass,enhance)) break;
     pt2 = sqr(1.-z())*(t-masssquared_[0])-z()*masssquared_[2];
