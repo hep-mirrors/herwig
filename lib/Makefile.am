@@ -5,7 +5,7 @@ LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
 Herwig_la_LDFLAGS = -module -version-info 1:0:0
-Herwig_la_LDFLAGS += $(THEPEGLDFLAGS)
+Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
@@ -18,12 +18,8 @@ $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/General/libHwGeneralME.la \
 $(top_builddir)/MatrixElement/libHwME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
+$(top_builddir)/Looptools/libHwLooptoolsXFC.la \
 $(THEPEGLIB) -ldl
-
-if WANT_LOOPTOOLS
-Herwig_la_LIBADD += $(top_builddir)/Looptools/libHwLooptoolsXFC.la
-Herwig_la_LDFLAGS += $(FCLIBS)
-endif
 
 all-local: done-all-links
 

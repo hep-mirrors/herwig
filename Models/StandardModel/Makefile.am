@@ -16,9 +16,5 @@ libHwStandardModel_la_SOURCES = \
         SMWWHVertex.cc SMWWHVertex.h SMWWHVertex.icc \
         SMWWWVertex.cc SMWWWVertex.h SMWWWVertex.icc \
         SMWWWWVertex.cc SMWWWWVertex.h SMWWWWVertex.icc 
-
-if WANT_LOOPTOOLS
-libHwStandardModel_la_SOURCES += \
-SMHGGVertex.cc SMHGGVertex.h SMHGGVertex.icc SMHGGVertex.fh \
-SMHPPVertex.cc SMHPPVertex.h SMHPPVertex.icc SMHPPVertex.fh
-endif
+	SMHGGVertex.cc SMHGGVertex.h SMHGGVertex.icc SMHGGVertex.fh \
+	SMHPPVertex.cc SMHPPVertex.h SMHPPVertex.icc SMHPPVertex.fh
