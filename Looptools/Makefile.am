@@ -1,15 +1,12 @@
-noinst_LTLIBRARIES =
-EXTRA_LTLIBRARIES =
+noinst_LTLIBRARIES = libHwLooptoolsXFC.la 
+## libHwLooptoolsCFC.la 
+
+EXTRA_LTLIBRARIES = libHwLooptoolsCFC.la 
+## EXTRA_LTLIBRARIES += libHwLooptoolsCheck2.la
 
 EXTRA_DIST = include/lt.h include/ftypes.h include/ff.h include/ffwarn.h \
   include/fferr.h include/defs.h include/looptools.h include/ffperm5.h \
   include/clooptools.h
-
-if WANT_LOOPTOOLS
-EXTRA_LTLIBRARIES += libHwLooptoolsCFC.la 
-noinst_LTLIBRARIES += libHwLooptoolsXFC.la ## libHwLooptoolsCFC.la 
-## EXTRA_LTLIBRARIES += libHwLooptoolsCheck2.la
-endif
 
 theXFCSOURCES = A/ffca0.F A/ffxa0.F A/A0.F A/A00.F \
 B/ffxdb0.F B/Bcoeffa.F B/ffcb0.F B/Bcoeff.F B/ffxdb1.F \

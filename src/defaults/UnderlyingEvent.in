@@ -11,12 +11,12 @@ library SimpleKTCut.so
 # cut on pt. Without a specific matcher object, it works on all
 # particles
 create ThePEG::SimpleKTCut KtCut
-set KtCut:MinKT 3.4
+set KtCut:MinKT 4.0
 
 # create the cuts object for the Underlying Event
 create ThePEG::Cuts UECuts
 # This should always be 2*MinKT!!
-set UECuts:MHatMin 6.8
+set UECuts:MHatMin 8.0
 
 insert UECuts:OneCuts 0 KtCut
 
@@ -39,5 +39,19 @@ insert MPIHandler:Cuts 0 UECuts
 set MPIHandler:InvRadius 1.5
 
 # Set the details of the soft model
-set MPIHandler:softInt No
+
+# Flag to decide whether additional soft interactions (i.e. pt < ptmin)
+# should be simulated at all
+
+set MPIHandler:softInt Yes
+
+# Flag to decide whether to use the 2 component model. In this model,
+# the hadron radius (or better: mean parton-parton separation) can be
+# different for hard and soft scatters. The radius for the soft scatters
+# is computed during the run startup so that the elastic t-slope, B_el,
+# coincides with current measurements (for CMenergy < 1.8 TeV) or
+# Donnachie-Landshoff pomeron fit (CMenergy > 1.8 TeV). If this model is
+# disabled one has to take care that this observable is correctly
+# described by adjusting InvRadius properly.
+
 set MPIHandler:twoComp Yes
