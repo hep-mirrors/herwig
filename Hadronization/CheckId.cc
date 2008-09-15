@@ -11,25 +11,9 @@
 // functions of the CheckId class.
 //
 #include "CheckId.h"
-#include "ThePEG/Repository/CurrentGenerator.h"
 #include <cassert>
 
 using namespace Herwig;
-
-namespace {
-  int abs(PDT::Colour c) {
-    return c > 0 ? c : -c;
-  }
-}
-
-
-PDPtr CheckId::makeDiquark(tcPDPtr par1, tcPDPtr par2) {
-  long id1 = par1->id();
-  long id2 = par2->id();
-  long idnew = makeDiquarkID(id1,id2);
-  assert(!CurrentGenerator::isVoid());
-  return CurrentGenerator::current().getParticleData(idnew);
-}
 
 long CheckId::makeDiquarkID(long id1, long id2) {
 
@@ -49,46 +33,7 @@ long CheckId::makeDiquarkID(long id1, long id2) {
   return id1 > 0 ? idnew : -idnew;
 }
 
-bool CheckId::canBeMeson(tcPDPtr par1,tcPDPtr par2 ) {
-  assert(par1 && par2);
-  long id1 = par1->id();
-  long id2 = par2->id();
-  // a Meson must not have any diquarks
-  bool isDiquark = DiquarkMatcher::Check(id1) || DiquarkMatcher::Check(id2);
 
-  return ( abs(par1->iColour())== 3  && abs(par2->iColour()) == 3  &&  
-           id1*id2 < 0  && !isDiquark );
-}
-
-bool CheckId::canBeBaryon(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
-  assert(par1 && par2);
-  long id1 = par1->id();
-  long id2 = par2->id();
-
-  bool result = false;
-  if (!par3) {
-    bool twoDiquarks = DiquarkMatcher::Check(id1) && DiquarkMatcher::Check(id2);
-    // In this case, to be a baryon, one component must be a (anti-)quark and
-    // the other a (anti-)diquark; furthermore, only:
-    //   quark - diquark   or  anti-quark - anti-diquark  
-    // (that means same sign for both components) are allowed.
-    result = id1*id2 > 0  && !twoDiquarks &&
-      ( (abs(par1->iColour()) == 3   && DiquarkMatcher::Check(id2) ) || 
-	( DiquarkMatcher::Check(id1) && (abs(par2->iColour()) == 3) ) );
-  } 
-  else {
-    assert (par3);
-     // In this case, to be a baryon, all three components must be (anti-)quarks
-    // and with the same sign.
-    result = (par1->iColour() == 3 && par2->iColour() == 3 && par3->iColour() == 3) ||
-      (par1->iColour() == -3 && par2->iColour() == -3 && par3->iColour() == -3);
-  }
-  return result;    
-}
-
-bool CheckId::canBeHadron(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
-  return (canBeMeson(par1,par2) && !par3) || canBeBaryon(par1,par2,par3);
-}
 
 bool CheckId::hasBottom(tcPDPtr par1, tcPDPtr par2, tcPDPtr par3) {
   long id1 = par1 ? par1->id() : 0;
@@ -146,18 +91,4 @@ return
   ( (id2/1000000)% 10 != 0 && (id2/1000000)% 10 != 9 ) ||
   ( (id3/1000000)% 10 != 0 && (id3/1000000)% 10 != 9 ) ||
   abs(id1)==6||abs(id2)==6;
-}
-
-bool CheckId::isDiquarkWithB(tcPDPtr par1) {
-  if (!par1) return false;
-  long id1 = par1->id();
-  return DiquarkMatcher::Check(id1)  &&  (abs(id1)/1000)%10 == ParticleID::b;
-}
-
-bool CheckId::isDiquarkWithC(tcPDPtr par1) {
-  if (!par1) return false;
-  long id1 = par1->id();
-  return ( DiquarkMatcher::Check(id1)  &&  
-	   ( (abs(id1)/1000)%10 == ParticleID::c  
-	     || (abs(id1)/100)%10 == ParticleID::c ) );
 }

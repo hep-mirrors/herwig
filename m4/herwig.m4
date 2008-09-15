@@ -398,13 +398,10 @@ AC_REQUIRE([AC_FC_LIBRARY_LDFLAGS])
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([HERWIG_COMPILERFLAGS])
 
-AC_MSG_CHECKING([whether to build Looptools dependent parts])
-AC_ARG_ENABLE(looptools,
-        AC_HELP_STRING([--disable-looptools],[turn off Looptools-dependent parts]),
-        [],
-        [enable_looptools=yes]
-        )
-if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
+AC_MSG_CHECKING([if Looptools build works])
+enable_looptools=yes
+
+if test "x$GCC" = "xyes"; then
    case "${host}" in
       x86_64-*)
 	AM_FCFLAGS="$AM_FCFLAGS -fdefault-integer-8"
@@ -423,13 +420,11 @@ if test "x$enable_looptools" = "xyes" -a "x$GCC" = "xyes"; then
   AC_LANG_POP([Fortran])
 fi
 AC_MSG_RESULT([$enable_looptools])
-AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 
 AC_SUBST([F77],[$FC])
 AC_SUBST([FFLAGS],[$FCFLAGS])
 AC_SUBST([AM_FFLAGS],[$AM_FCFLAGS])
 AC_SUBST([FLIBS],[$FCLIBS])
-
 ])
 
 dnl ##### PDF PATH #####
@@ -590,7 +585,6 @@ echo    "*****************************************************"
 echo    "*** $PACKAGE_STRING configuration summary"
 echo    "***"
 echo 	"*** BSM models:		$enable_models"
-echo    "*** Looptools:		$enable_looptools"
 echo 	"*** Herwig debug mode:	$enable_debug"
 echo    "***"
 echo    "*** GSL:		$with_gsl"

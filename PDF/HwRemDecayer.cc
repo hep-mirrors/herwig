@@ -209,7 +209,7 @@ void HwRemDecayer::doSplit(pair<tPPtr, tPPtr> partons, pair<tcPDFPtr, tcPDFPtr> 
     }
   }
   // forced splitting for second parton
-  if(partons.second->data().coloured()) {   
+  if(partons.second->data().coloured()) {
     try{
       split(partons.second, theContent.second, theRems.second, 
 	    theUsed.second, theMaps.second, pdfs.second, first);
@@ -913,7 +913,7 @@ void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
     diquarks.first = finalSplit(theRems.first, theContent.first.RemID(), 
 				theUsed.first);
     theMaps.first.push_back(make_pair(diquarks.first, tPPtr()));
-
+  }
   if(theRems.second) {
     diquarks.second = finalSplit(theRems.second, theContent.second.RemID(), 
 				 theUsed.second);
@@ -927,7 +927,6 @@ void HwRemDecayer::finalize(double colourDisrupt, unsigned int softInt){
   //stop here if we don't have two remnants
   softRems_ = diquarks;
   doSoftInteractions(softInt);
-  }
 }
 
 

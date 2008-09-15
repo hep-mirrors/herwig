@@ -80,24 +80,23 @@ vector<Energy> RunningMass::mass() const
 }
 // Return the running mass for a given scale and particle type.
 Energy RunningMass::value(Energy2 scale, tcPDPtr part) const {
-//   Energy output;
-//   unsigned int id=abs(part->id());
-//   // calculate the running mass
-//   if(id<=_theMaxFlav) {
-//     // calculate the value of alphaS and number of flavours
-//     //unsigned int nf=  _theStandardModel->Nf(scale);
-//     unsigned int nf=id;
-//     double as = _theStandardModel->alphaS(scale);
-//     id=id-1;
-//     output = massElement(id)*pow(as,_thePower[nf-1]);
-//     if(_theQCDOrder==2){output*=(1.+as*_theCoefficient[nf-1]);}
-//   }
-//   // 
-//   else {
-//     output= part->mass();
-//   }
-//   return output;
-  return part->mass();
+  Energy output;
+  unsigned int id=abs(part->id());
+  // calculate the running mass
+  if(id<=_theMaxFlav) {
+    // calculate the value of alphaS and number of flavours
+    //unsigned int nf=  _theStandardModel->Nf(scale);
+    unsigned int nf=id;
+    double as = _theStandardModel->alphaS(scale);
+    id=id-1;
+    output = massElement(id)*pow(as,_thePower[nf-1]);
+    if(_theQCDOrder==2){output*=(1.+as*_theCoefficient[nf-1]);}
+  }
+  // 
+  else {
+    output= part->mass();
+  }
+  return output;
 }
 
 void RunningMass::doinit() throw(InitException) {

@@ -763,7 +763,7 @@ bool Evolver::spaceLikeDecayVetoed(const Branching & fb,
 	vetoed |= test;
 	break;
       case ShowerVeto::Shower:
-	if(test) VetoShower();
+	if(test) throw VetoShower();
 	break;
       case ShowerVeto::Event:
 	if(test) throw Veto();
