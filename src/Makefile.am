@@ -41,7 +41,7 @@ if WANT_RS
 check_BSM += check-LHC-RS
 endif
 
-check-local: check-LHC check-LEP check-TVT check-ILC $(check_BSM)
+check-local: check-LHC check-LEP check-DIS check-ILC $(check_BSM)
 
 link-helper-files:
 	@for i in $(HELPERFILES); do \

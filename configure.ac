@@ -45,6 +45,17 @@ AC_PROG_LN_S
 
 dnl modified search order
 AC_PROG_FC([gfortran g95 g77 xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
+AC_LANG_PUSH([Fortran])
+AC_MSG_CHECKING([if the Fortran compiler ($FC) works])
+AC_COMPILE_IFELSE(
+   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([A Fortran compiler is required to build Herwig++.])
+	]
+)
+AC_LANG_POP([Fortran])
+
 
 LT_PREREQ([2.2])
 LT_INIT([disable-static dlopen pic-only])

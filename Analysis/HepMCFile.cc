@@ -98,14 +98,17 @@ void HepMCFile::analyze(tEventPtr event, long, int, int) {
   if (event->number() > _eventNumber) return;
 
   Energy eUnit;
+  Length lUnit;
   switch (_unitchoice) {
-  default: eUnit = GeV; break;
-  case 1:  eUnit = MeV; break;
+  default: eUnit = GeV; lUnit = millimeter; break;
+  case 1:  eUnit = MeV; lUnit = millimeter; break;
+  case 2:  eUnit = GeV; lUnit = centimeter; break;
+  case 3:  eUnit = MeV; lUnit = centimeter; break;
   }
 
   HepMC::GenEvent * hepmc 
     = HepMCConverter<HepMC::GenEvent>::convert(*event, false,
-					       eUnit, millimeter);
+					       eUnit, lUnit);
   if (_hepmcio)
     _hepmcio->write_event(hepmc);
   else
@@ -189,4 +192,14 @@ void HepMCFile::Init() {
      "MeV_mm",
      "Use MeV and mm as units.",
      1);
+  static SwitchOption interfaceUnitsGeV_cm
+    (interfaceUnits,
+     "GeV_cm",
+     "Use GeV and cm as units.",
+     2);
+  static SwitchOption interfaceUnitsMeV_cm
+    (interfaceUnits,
+     "MeV_cm",
+     "Use MeV and cm as units.",
+     3);
 }
