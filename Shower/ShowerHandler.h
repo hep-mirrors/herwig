@@ -220,7 +220,7 @@ protected:
   /**
    *  Access to the Evolver
    */
-  tEvolverPtr evolver() const;
+  tEvolverPtr evolver() const {return evolver_;}
 
   /**
    *  Boost all the particles in the collision so that the collision always occurs
