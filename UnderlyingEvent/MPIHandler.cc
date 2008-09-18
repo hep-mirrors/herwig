@@ -78,7 +78,7 @@ void MPIHandler::initialize() {
   //check if MPI is wanted
   if( !beamOK() ){
     throw Exception()  << "You have requested multiple parton-parton scattering,\n"
-		       << "but the model is not forseen for the setup you chose.\n" 
+		       << "but the model is not forseen for the beam setup you chose.\n" 
                        << Exception::runerror;
   }
   numSubProcs_ = subProcesses().size();
