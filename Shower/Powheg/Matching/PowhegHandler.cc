@@ -1266,7 +1266,6 @@ double PowhegHandler::sudakovWeight() {
     
     double internal_wgt = Sud( scale, cit->first );
     scale =  cit->second.second.second;
-    if(scale > cit->second.first.second ) cerr <<"scales wrong way round!\n";
     internal_wgt /= Sud( scale, cit->first );
     if(internal_wgt > 1.1 || internal_wgt < 0.)cerr<<"\n\nbig internal weight of "<< internal_wgt
 						   <<"\nnum scale = "
@@ -1274,7 +1273,19 @@ double PowhegHandler::sudakovWeight() {
 						   <<"\nden scale = "
 						   <<cit->second.second.second /GeV
 						   <<"\n\n";
+    SudWgt *= internal_wgt;
   }
+
+  //divide by q and qbar sudakovs at hard scale (these are always present)
+  for(set<HardBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
+      it!=_theHardTree->branchings().end();++it) {
+    if((**it).incoming()) continue;
+    Energy scale = (*it)->branchingParticle()->evolutionScale();
+    double div_wgt = Sud( scale, (*it)->branchingParticle()->id() );
+    SudWgt /= div_wgt; 
+  }
+
+  if(SudWgt > 1.1 ) cerr<<"sud wgt is "<<SudWgt<<"\n";
  
   double alphaWgt = 1.;
   //need to add the alphaS weight
