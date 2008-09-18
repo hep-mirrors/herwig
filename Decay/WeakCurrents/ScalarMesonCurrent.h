@@ -11,7 +11,6 @@
 // This is the declaration of the ScalarMesonCurrent class.
 
 #include "WeakDecayCurrent.h"
-#include "ScalarMesonCurrent.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -108,9 +107,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan, Energy & scale, 
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode,const int ichan, Energy & scale, 
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the meson against the list
@@ -143,13 +142,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -240,7 +239,5 @@ struct ClassTraits<Herwig::ScalarMesonCurrent>
 /** @endcond */
 
 }
-
-#include "ScalarMesonCurrent.icc"
 
 #endif /* HERWIG_ScalarMesonCurrent_H */

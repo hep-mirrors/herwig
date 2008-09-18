@@ -17,10 +17,10 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
-using ThePEG::Helicity::ScalarSpinInfo;  
+using namespace ThePEG::Helicity;
 
 FivePionCurrent::FivePionCurrent() {
   // set the number of modes
@@ -655,14 +655,15 @@ void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) 
 }
 
 vector<LorentzPolarizationVectorE> 
-FivePionCurrent::current(bool vertex, const int imode,const int ichan,
-			 Energy & scale,const ParticleVector & decay) const {
-  LorentzVector<complex<InvEnergy2> > output;
-  // construct the spininfo objects if needed
-  if(vertex) {
-    for(unsigned int ix=0;ix<decay.size();++ix)
-      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
+FivePionCurrent::current(const int imode,const int ichan,
+			 Energy & scale,const ParticleVector & decay,
+			 DecayIntegrator::MEOption meopt) const {
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<5;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
   }
+  LorentzVector<complex<InvEnergy2> > output;
   Lorentz5Momentum q1(decay[0]->momentum());
   Lorentz5Momentum q2(decay[1]->momentum());
   Lorentz5Momentum q3(decay[2]->momentum());

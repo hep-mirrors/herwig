@@ -410,8 +410,14 @@ tPDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
-				 Energy & scale,const ParticleVector & outpart) const {
+TwoMesonRhoKStarCurrent::current(const int imode, const int ichan,
+				 Energy & scale,const ParticleVector & outpart,
+				 DecayIntegrator::MEOption meopt) const {
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(outpart[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
   Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
@@ -461,13 +467,6 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
   else if(imode==3)      FPI *= 1.       ;
   // the kaon eta mode
   else if(imode==4)      FPI *=sqrt(1.5);
-  // workaround for gcc 3.2.3 bug
-  // set up the spininfo for the decay products
-  //ALB for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
-  for(unsigned int ix=0;ix<2;++ix) {
-    PPtr mytemp=outpart[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  }
   // compute the current
   pdiff-=psum;
   return vector<LorentzPolarizationVectorE>(1,FPI*pdiff);

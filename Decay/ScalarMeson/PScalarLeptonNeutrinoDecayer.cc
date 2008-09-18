@@ -220,55 +220,56 @@ void PScalarLeptonNeutrinoDecayer::Init() {
      MeV, 0, 0*MeV, 0*MeV, 1000.*MeV, false, false, true);
 }
 
-double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
-					 const Particle & inpart,
-					 const ParticleVector & decay) const {
-  int icoup(0),id(abs(inpart.id())),idferm(0);
+double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
+					 const ParticleVector & decay,
+					 MEOption meopt) const {
+  useMe();
   // work out which decay constant to use
+  int icoup(0),id(abs(inpart.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(id==abs(_incoming[ix])) icoup=ix;
   }
-  // workaround for gcc 3.2.3 bug
-  // check if the decay particle has spin info
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  
   // find the particles
   unsigned int iferm(0),ianti(0);
   for(unsigned ix=0;ix<decay.size();++ix) {
     id=decay[ix]->id();
-    if(id<=-11&&id>=-16) {
-      ianti=ix;
-    }
-    else if(id>=11&&id<=16) {
-      iferm=ix;
-      idferm=id;
-    }
+    if(id<=-11&&id>=-16)    ianti=ix;
+    else if(id>=11&&id<=16) iferm=ix;
   }
-  // spinors for the lepton and neutrino
-  vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wbar;
-  // construct the spininfo's of the outgoing particles
-  SpinorWaveFunction(   wave,decay[ianti],outgoing,true,vertex);
-  SpinorBarWaveFunction(wbar,decay[iferm],outgoing,true,vertex);
+  int idferm = decay[iferm]->id();
+  // initialization
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    // set up the spin information for the decay products
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+  }
+  // calculate the spinors
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   // the prefactor
-  Energy premass;
-  if(idferm%2==0) premass=decay[ianti]->mass();
-  else            premass=decay[iferm]->mass();
+  Energy premass =  idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
   InvEnergy pre = premass * 2.*_decayconstant[icoup]*_GF/inpart.mass();
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
   vector<unsigned int> ispin(3,0);
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
     for(ispin[iferm+1]=0;ispin[iferm+1]<2;++ispin[iferm+1]) {
-      newME(ispin)= idferm%2==0 ? 
-	pre*wave[ispin[ianti+1]].rightScalar(wbar[ispin[iferm+1]]) :
-	pre*wave[ispin[ianti+1]].leftScalar( wbar[ispin[iferm+1]]) ;
+      ME()(ispin)= idferm%2==0 ? 
+	pre*_wave[ispin[ianti+1]].rightScalar(_wavebar[ispin[iferm+1]]) :
+	pre*_wave[ispin[ianti+1]].leftScalar( _wavebar[ispin[iferm+1]]) ;
     }
   }
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
 //   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy mass = idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
@@ -277,7 +278,7 @@ double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
 //   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << (me-test)/(me+test) << endl;
-  return 0.5*newME.contract(rhoin).real();
+  return 0.5*ME().contract(_rho).real();
 }
 
 

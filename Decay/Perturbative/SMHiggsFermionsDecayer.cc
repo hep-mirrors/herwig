@@ -130,37 +130,44 @@ void SMHiggsFermionsDecayer::Init() {
 }
 
 // return the matrix element squared
-double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpart,
-				   const ParticleVector & decay) const {
-  RhoDMatrix rhoin;
-  // check if the incoming particle has a spin info and if not create it
-  ScalarWaveFunction inwave = ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),
-						 rhoin,incoming,true,vertex);
-  // construct the spinors for the outgoing particles
-  int iferm,ianti;
-  if(decay[0]->id()<0){iferm=1;ianti=0;}
-  else{iferm=0;ianti=1;}
-  vector<SpinorWaveFunction   > awave;
-  vector<SpinorBarWaveFunction> fwave;
-  SpinorWaveFunction   (awave,decay[ianti],outgoing,true,vertex);
-  SpinorBarWaveFunction(fwave,decay[iferm],outgoing,true,vertex);
-  // compute the matrix element
-  DecayMatrixElement newme(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
-  Energy2 scale(inpart.mass()*inpart.mass());
+double SMHiggsFermionsDecayer::me2(const int, const Particle & inpart,
+				   const ParticleVector & decay,
+				   MEOption meopt) const {
+  int iferm(1),ianti(0);
+  if(decay[0]->id()>0) swap(iferm,ianti);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
+  Energy2 scale(sqr(inpart.mass()));
   unsigned int ifm,ia;
-  for(ifm=0;ifm<2;++ifm)
-    {
-      for(ia=0;ia<2;++ia)
-	{
-	  if(iferm>ianti)
-	    {newme(0,ia,ifm)=_hvertex->evaluate(scale,awave[ia],fwave[ifm],inwave);}
-	  else
-	    {newme(0,ifm,ia)=_hvertex->evaluate(scale,awave[ia],fwave[ifm],inwave);}
-	}
+  for(ifm=0;ifm<2;++ifm) {
+    for(ia=0;ia<2;++ia) {
+      if(iferm>ianti)
+	ME()(0,ia,ifm)=_hvertex->evaluate(scale,_wave[ia],
+					  _wavebar[ifm],_swave);
+      else
+	ME()(0,ifm,ia)=_hvertex->evaluate(scale,_wave[ia],
+					  _wavebar[ifm],_swave);
     }
-  ME(newme);
+  }
   int id = abs(decay[0]->id());
-  double output=(newme.contract(rhoin)).real()*UnitRemoval::E2/scale;
+  double output=(ME().contract(_rho)).real()*UnitRemoval::E2/scale;
   if(id <=6) output*=3.;
   // normalize if width generator
   if(_hwidth) {

@@ -14,7 +14,6 @@
 
 #include "WeakDecayCurrent.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "KPiCurrent.fh"
 
 namespace Herwig {
 
@@ -78,9 +77,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale,  
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE>  
+  current(const int imode,const int ichan,Energy & scale,  
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the particles are the allowed mode.
@@ -141,14 +140,33 @@ protected:
    * @param q2 The scale
    * @param ires The resonances
    */
-  inline Complex sWaveBreitWigner(Energy2 q2,unsigned int ires) const;
-
+  Complex sWaveBreitWigner(Energy2 q2,unsigned int ires) const {
+    Energy q=sqrt(q2),gam(0.*MeV);
+    Energy2 m2=sqr(_vecmass[ires]);
+    if(q>_mK+_mpi) {
+      Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);
+      Energy p =Kinematics::pstarTwoBodyDecay( q            ,_mK,_mpi);
+      gam = _vecwidth[ires]*m2/q2*p/pX;
+    }
+    return m2/(m2-q2-Complex(0.,1.)*q*gam);
+  }
+  
   /**
    *  p-wave Breit-Wigner for the vector resonances
    * @param q2 The scale
    * @param ires The resonances
    */
-  inline Complex pWaveBreitWigner(Energy2 q2,unsigned int ires) const;
+  Complex pWaveBreitWigner(Energy2 q2,unsigned int ires) const {
+    Energy q=sqrt(q2),gam(0.*MeV);
+    Energy2 m2=sqr(_vecmass[ires]);
+    if(q>_mK+_mpi) {
+      Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);
+      Energy p =Kinematics::pstarTwoBodyDecay( q            ,_mK,_mpi);
+      double ratio=p/pX;
+      gam = _vecwidth[ires]*m2/q2*ratio*sqr(ratio);
+    }
+    return m2/(m2-q2-Complex(0.,1.)*q*gam);
+  }
   //@}
 
 protected:
@@ -159,13 +177,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
-
+  virtual IBPtr clone() const {return new_ptr(*this);}
+  
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -339,7 +357,5 @@ struct ClassTraits<Herwig::KPiCurrent>
 /** @endcond */
 
 }
-
-#include "KPiCurrent.icc"
 
 #endif /* HERWIG_KPiCurrent_H */

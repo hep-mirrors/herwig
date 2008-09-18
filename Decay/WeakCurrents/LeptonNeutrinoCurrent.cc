@@ -27,7 +27,8 @@ using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
-NoPIOClassDescription<LeptonNeutrinoCurrent> LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
+NoPIOClassDescription<LeptonNeutrinoCurrent> 
+LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
 // Definition of the static class description member.
 
 void LeptonNeutrinoCurrent::Init() {
@@ -82,23 +83,37 @@ tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVectorE> 
-LeptonNeutrinoCurrent::current(bool vertex, const int, const int,
-			       Energy & scale,const ParticleVector & outpart) const {
+LeptonNeutrinoCurrent::current(const int, const int,
+			       Energy & scale,const ParticleVector & outpart,
+			       DecayIntegrator::MEOption meopt) const {
   Lorentz5Momentum q(outpart[0]->momentum()+outpart[1]->momentum());q.rescaleMass();
   scale=q.mass();
   // storage for the currents
   vector<LorentzPolarizationVectorE> temp(4);
   vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
-  // construct the spin information objects for the  decay products and calculate
+  vector<LorentzSpinorBar<SqrtEnergy> > wavebar; 
   // their wavefunctions
   if(outpart[0]->id()>0) {
-    SpinorWaveFunction(   wave   ,outpart[1],outgoing,true,vertex);
-    SpinorBarWaveFunction(wavebar,outpart[0],outgoing,true,vertex);
+    SpinorWaveFunction   ::
+      calculateWaveFunctions(wave   ,outpart[1],outgoing);
+    SpinorBarWaveFunction::
+      calculateWaveFunctions(wavebar,outpart[0],outgoing);
   }
   else {
-    SpinorWaveFunction(   wave   ,outpart[0],outgoing,true,vertex);
-    SpinorBarWaveFunction(wavebar,outpart[1],outgoing,true,vertex);
+    SpinorWaveFunction   ::
+      calculateWaveFunctions(wave   ,outpart[0],outgoing);
+    SpinorBarWaveFunction::
+      calculateWaveFunctions(wavebar,outpart[1],outgoing);
+  }
+  if(meopt==DecayIntegrator::Terminate) {
+    if(outpart[0]->id()>0) {
+      SpinorWaveFunction   ::constructSpinInfo(wave   ,outpart[1],outgoing,true);
+      SpinorBarWaveFunction::constructSpinInfo(wavebar,outpart[0],outgoing,true);
+    }
+    else {
+      SpinorWaveFunction   ::constructSpinInfo(   wave,outpart[0],outgoing,true);
+      SpinorBarWaveFunction::constructSpinInfo(wavebar,outpart[1],outgoing,true);
+    }
   }
   // now compute the currents
   int iloc(0);

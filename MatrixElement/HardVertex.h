@@ -47,14 +47,16 @@ public:
   /**
    * Get the matrix element
    */
-  inline const ProductionMatrixElement & ME() const 
-  {return _matrixelement;}
+  const ProductionMatrixElement & ME() const {
+    return _matrixelement;
+  }
 
   /**
    * Set the matrix element
    */
-  inline void ME(const ProductionMatrixElement & in) const
-  {_matrixelement.reset(in);}
+  inline void ME(const ProductionMatrixElement & in) const {
+    _matrixelement.reset(in);
+  }
   //@}
   
 public:

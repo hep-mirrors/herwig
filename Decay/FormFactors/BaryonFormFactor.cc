@@ -13,7 +13,16 @@
 namespace Herwig {
 using namespace ThePEG;
 
-BaryonFormFactor::~BaryonFormFactor() {}
+void BaryonFormFactor::doinit() throw(InitException) {
+  Interfaced::doinit();
+  // check the consistency of the parameters
+  unsigned int isize(_incomingid.size());
+  if(isize!=_outgoingid.size() || isize!=_incomingJ.size()||isize!=_outgoingJ.size()||
+     isize!=_spectator1.size()|| isize!=_spectator2.size()|| isize!=_inquark.size()||
+     isize!=_outquark.size())
+    {throw InitException() << "Inconsistent parameters in BaryonFormFactor::doinit() " 
+			   << Exception::abortnow;}
+}
 
 void BaryonFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _incomingid << _outgoingid << _incomingJ << _outgoingJ << _spectator1 

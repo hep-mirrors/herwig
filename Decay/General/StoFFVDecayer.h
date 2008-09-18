@@ -32,8 +32,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -128,6 +128,11 @@ private:
    * Store the vertices for vector intrermediate
    */
   vector<pair<AbstractVVSVertexPtr, AbstractFFVVertexPtr> > _vec;
+
+  mutable RhoDMatrix _rho;
+  mutable ScalarWaveFunction _swave;
+  mutable vector<VectorWaveFunction> _outVector;
+  mutable pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > _outspin[3];
 };
 
 }

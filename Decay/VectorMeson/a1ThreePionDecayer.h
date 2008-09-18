@@ -14,8 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
-// #include "a1ThreePionDecayer.fh"
-// #include "a1ThreePionDecayer.xh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 
@@ -107,7 +106,7 @@ public:
   /**
    * Default constructor.
    */
-  inline a1ThreePionDecayer();
+  a1ThreePionDecayer();
 
   /**
    * Which of the possible decays is required
@@ -126,8 +125,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -192,13 +191,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -237,14 +236,24 @@ private:
    * @param q2 The scale, \f$q^2\f$.
    * @return The Breit-Wigner
    */
-  inline Complex sigmaBreitWigner(Energy2 q2) const;
+  Complex sigmaBreitWigner(Energy2 q2) const {
+    Energy q=sqrt(q2);
+    Energy width=_sigmawidth*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi)/_psigma;
+    Energy2 msigma2=_sigmamass*_sigmamass;
+    Complex ii(0.,1.);
+    complex<Energy2> denom = q>2.*_mpi ? q2-msigma2+ii*msigma2*width/q :
+      q2-msigma2;
+    return msigma2/denom;
+  }
   
   /**
    * The \f$a_1\f$ form factor, \f$F_{a_1}(q^2)\f$
    * @param q2 The scale, \f$q^2\f$.
    * @return The form factor.
    */
-  inline double a1FormFactor(Energy2 q2) const;
+  double a1FormFactor(Energy2 q2) const {
+    return (1.+_a1mass2/_lambda2)/(1.+q2/_lambda2);
+  }
 
   /**
    * Breit-Wigner for the \f$\rho\f$, this is  \f$\frac1{D_{\rho_k}(q^2)}\f$.
@@ -252,33 +261,73 @@ private:
    * @param ires The \f$\rho\f$ multiplet.
    * @return The Breit-Wigner
    */
-  inline Complex rhoBreitWigner(Energy2 q2,int ires) const;
+  Complex rhoBreitWigner(Energy2 q2,int ires) const {
+    Energy q=sqrt(q2);
+    Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
+    complex<Energy2> denom;
+    Complex ii(0.,1.);
+    if(q2<4.*_mpi2) {
+      denom=q2-_rhomass[ires]*_rhomass[ires]-_rhowidth[ires]*_rhomass[ires]*
+	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])
+	/grhom;
+    }
+    else {
+      Energy pcm=2.*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+      Energy2 grho = pcm*pcm*pcm/q;
+      denom=q2-_rhomass[ires]*_rhomass[ires]
+	-_rhowidth[ires]*_rhomass[ires]*
+	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])/grhom
+	+ii*_rhomass[ires]*_rhowidth[ires]*grho/grhom;
+    }
+    return _rhoD[ires]/denom;
+  }
 
   /**
    *  Normalisation factor for the \f$\rho\f$ propagator to ensure \f$D(0)=-1\f$.
    * @param ires The \f$\rho\f$ multiplet.
    * @return The normalisation factor.
    */
-  inline Energy2 DParameter(int ires) const;
+  Energy2 DParameter(int ires) const {
+    Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
+    return _rhomass[ires]*_rhomass[ires]+_rhowidth[ires]*_rhomass[ires]*
+      (hFunction(0.*MeV)-_hm2[ires]+sqr(_rhomass[ires])*_dhdq2m2[ires])/grhom;
+  }
 
   /**
    * The \f$\frac{dh}{dq^2}\f$ function in the rho propagator evaluated at \f$q^2=m^2\f$.
    * @param ires The \f$\rho\f$ resonance for the function
    * @return \f$\frac{dh}{dq^2}\f$ evaluated at \f$q^2=m^2\f$.
    */
-  inline double dhdq2Parameter(int ires) const ;
+  double dhdq2Parameter(int ires) const  {
+    Energy2 mrho2(sqr(_rhomass[ires]));
+    double root = sqrt(1.-4.*_mpi2/mrho2);
+    using Constants::pi;
+    return root/pi*(root+(1.+2*_mpi2/mrho2)*log((1+root)/(1-root)));
+  }
   
   /**
    * The \f$h(q^2)\f$ function in the \f$\rho\f$ propagator.
-   * @param q2 The scale, \f$q^2\f$.
+   * @param q The scale, \f$q\f$.
    * @return The function \f$h(q^2)\f$.
    */
-  inline Energy2 hFunction(const Energy q2) const;
+  Energy2 hFunction(const Energy q) const  {
+    static const Energy2 eps(0.01*MeV2);
+    Energy2 q2=sqr(q), output;
+    double root = sqrt(1.-4.*_mpi2/q2);
+    if(q2>4*_mpi2) {
+      output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;
+    }
+    else if(q2>eps) output=0.*MeV2;
+    else            output=-8.*_mpi2/Constants::pi;
+    return output;
+  }
 
   /**
    *  Momentum Function
    */
-  inline Energy4 lambda(Energy2 a, Energy2 b, Energy2 c) const;
+  Energy4 lambda(Energy2 a, Energy2 b, Energy2 c) const {
+    return sqr(a)+sqr(b)+sqr(c)-2.*a*b-2.*a*c-2.*b*c;
+  }
   
 private:
 
@@ -428,6 +477,9 @@ private:
    */
   mutable double _threemax;
 
+  mutable RhoDMatrix _rho;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
 };
   
 }
@@ -468,7 +520,5 @@ struct ClassTraits<Herwig::a1ThreePionDecayer>
 /** @endcond */
   
 }
-
-#include "a1ThreePionDecayer.icc"
 
 #endif /* HERWIG_a1ThreePionDecayer_H */

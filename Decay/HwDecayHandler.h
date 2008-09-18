@@ -14,7 +14,6 @@
 #include "ThePEG/Handlers/DecayHandler.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Helicity/SpinInfo.h"
-#include "HwDecayHandler.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -44,7 +43,8 @@ public:
   /**
    * Default constructor
    */
-  inline HwDecayHandler();
+  HwDecayHandler()  : DecayHandler(), _newstep(true) 
+  {}
 
 public:
 
@@ -110,13 +110,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -124,7 +124,12 @@ protected:
   /**
    *  Develop a stable particle
    */
-  inline void develop(tPPtr particle) const;
+  void develop(tPPtr particle) const {
+    if(!particle->spinInfo()) return;
+    Helicity::tcSpinfoPtr hwspin = 
+      dynamic_ptr_cast<Helicity::tcSpinfoPtr>(particle->spinInfo());
+    if(hwspin) hwspin->setDeveloped(true);
+  }
 
 private:
 
@@ -175,7 +180,5 @@ struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDec
 /** @endcond */
 
 }
-
-#include "HwDecayHandler.icc"
 
 #endif /* HERWIG_HwDecayHandler_H */

@@ -18,7 +18,6 @@
 #include "Herwig++/Models/StandardModel/SMHGGVertex.h"
 #include "Herwig++/Models/StandardModel/SMHPPVertex.h"
 #include "Herwig++/PDT/SMHiggsWidthGenerator.h"
-#include "SMHiggsGGHiggsPPDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -48,7 +47,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SMHiggsGGHiggsPPDecayer();
+  SMHiggsGGHiggsPPDecayer() : _h0wgt(2,1.) {}
   
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -60,8 +59,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -119,13 +118,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
   
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -181,6 +180,9 @@ private:
    */
   SMHiggsWidthGeneratorPtr _hwidth;
   
+  mutable RhoDMatrix _rho;
+  mutable ScalarWaveFunction _swave;
+  mutable vector<VectorWaveFunction> _vwave[2];
 };
   
 }
@@ -215,7 +217,5 @@ struct ClassTraits<Herwig::SMHiggsGGHiggsPPDecayer>
 /** @endcond */
 
 }
-
-#include "SMHiggsGGHiggsPPDecayer.icc"
 
 #endif /* HERWIG_SMHiggsGGHiggsPPDecayer_H */

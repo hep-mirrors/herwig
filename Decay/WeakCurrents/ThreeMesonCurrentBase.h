@@ -11,7 +11,6 @@
 // This is the declaration of the ThreeMesonCurrentBase class.
 
 #include "WeakDecayCurrent.h"
-#include "ThreeMesonCurrentBase.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -83,9 +82,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale,
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode,const int ichan,Energy & scale,
+	  const ParticleVector & decay,DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the mesons against the list.

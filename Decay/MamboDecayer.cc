@@ -357,3 +357,28 @@ void MamboDecayer::dataBaseOutput(ofstream & output, bool header) const {
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
 }
+
+void MamboDecayer::doinitrun() {
+  HwDecayerBase::doinitrun();
+  _a0[0] = 0.5;
+  _a0[1] = 0.375;
+  _a0[2] = 0.375;
+  _a0[3] = 0.4921875;
+  _a0[4] = 0.84375;
+  _a0[5] = 1.854492188,
+  _a0[6] = 5.0625;
+  _a0[7] = 16.58578491;
+  _a0[8] = 63.33398438; 
+  _a0[9] = 275.6161079;
+
+  _a1[0] = 0.5;
+  _a1[1] = 0.75;
+  _a1[2] = 1.125;
+  _a1[3] = 1.96875;
+  _a1[4] = 4.21875;
+  _a1[5] = 11.12695313;
+  _a1[6] = 35.4375;
+  _a1[7] = 132.6862793;
+  _a1[8] = 570.0058594;
+  _a1[9] = 2756.161079;
+}

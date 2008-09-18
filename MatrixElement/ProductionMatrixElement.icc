@@ -17,8 +17,6 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-// default constructor  
-inline ProductionMatrixElement::ProductionMatrixElement() {}
 
 // constructor for 2-1 scattering
 inline ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,

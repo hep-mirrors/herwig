@@ -237,13 +237,13 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
   if( hdp[2]->dataPtr()->iSpin() == PDT::Spin0 ) swap(hdp[2], hdp[3]);
   
   SpinorVector sp;
-  SpinorWaveFunction(sp, hdp[0], incoming, false, true);
+  SpinorWaveFunction(sp, hdp[0], incoming, false);
   SpinorBarVector spbar;
-  SpinorBarWaveFunction(spbar, hdp[1], incoming, false, true);
+  SpinorBarWaveFunction(spbar, hdp[1], incoming, false);
   VBVector vec;
   bool mv(hdp[2]->dataPtr()->mass() == 0.0*MeV);
-  VectorWaveFunction(vec, hdp[2], outgoing, true, mv,true);
-  ScalarWaveFunction sca(hdp[3], outgoing, true, true);
+  VectorWaveFunction(vec, hdp[2], outgoing, true, mv);
+  ScalarWaveFunction sca(hdp[3], outgoing, true);
 
   //Need to use rescale momenta to calculate matrix element
   cPDVector data(4);

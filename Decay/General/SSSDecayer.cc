@@ -59,19 +59,27 @@ void SSSDecayer::Init() {
 
 }
 
-double SSSDecayer::me2(bool vertex, const int , const Particle & inpart,
-		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin0);
-  
-  ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),rhoin,incoming,
-			    true,vertex);
-  ScalarWaveFunction s1(decay[0],outgoing,true,vertex);
-  ScalarWaveFunction s2(decay[1],outgoing,true,vertex);
-  Energy2 scale(inpart.mass()*inpart.mass());
-  DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newme(0,0,0) = _abstractVertex->evaluate(scale,s1,s2,inwave);
-  ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+double SSSDecayer::me2(const int , const Particle & inpart,
+		       const ParticleVector & decay,
+		       MEOption meopt) const {
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::
+      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::
+	constructSpinInfo(decay[ix],outgoing,true);
+  }
+  ScalarWaveFunction s1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
+  ScalarWaveFunction s2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
+  Energy2 scale(sqr(inpart.mass()));
+  ME()(0,0,0) = _abstractVertex->evaluate(scale,s1,s2,_swave);
+  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -86,7 +94,7 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     Energy2 scale(sqr(inpart.second));
     _perturbativeVertex->setCoupling(scale, inpart.first, outa.first,
 				     outb.first);
-    Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					outb.second);
     double c2 = norm(_perturbativeVertex->getNorm());
     Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;

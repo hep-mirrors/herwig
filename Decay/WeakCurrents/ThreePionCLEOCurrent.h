@@ -12,7 +12,6 @@
 // This is the declaration of the ThreePionCLEOCurrent class.
 //
 #include "ThreeMesonCurrentBase.h"
-#include "ThreePionCLEOCurrent.fh"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -227,13 +226,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -277,7 +276,7 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The \f$a_1\f$ running width.
    */
-  inline Energy a1width(Energy2 q2) const ;
+  Energy a1width(Energy2 q2) const;
 
   /**
    * Initialize the \f$a_1\f$ running width
@@ -290,7 +289,12 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex a1BreitWigner(Energy2 q2) const;
+  Complex a1BreitWigner(Energy2 q2) const {
+    Complex ii(0.,1.);
+    Energy2 m2=_a1mass*_a1mass; Energy q=sqrt(q2);
+    Complex output=m2/(m2-q2-ii*q*a1width(q2));
+    return output;
+  }
 
   /**
    * The \f$\rho\f$ Breit-Wigner.
@@ -299,7 +303,16 @@ private:
    * @param icharge The charge of the \f$\rho\f$.
    * @return The Breit-Wigner
    */
-  inline Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const;
+  Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_prhocc[ires];
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpi0)/_prhoc0[ires];
+    ratio*= ratio*ratio;
+    Energy gamrun=_rhowidth[ires]*ratio*_rhomass[ires]/q;
+    return _rhomass[ires]*_rhomass[ires]/(_rhomass[ires]*_rhomass[ires]
+					  -q2-ii*_rhomass[ires]*gamrun);
+  }
 
   /**
    * Breit-Wigner for the \f$\sigma\f$.
@@ -308,7 +321,14 @@ private:
    * charged (0) or neutral (1) 
    * @return The Breit-Wigner
    */
-  inline Complex sigmaBreitWigner(Energy2 q2,int icharge) const;
+  Complex sigmaBreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_psigmacc;
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_psigma00;
+    Energy gamrun=_sigmawidth*ratio*_sigmamass/q;
+    return _sigmamass*_sigmamass/(_sigmamass*_sigmamass-q2-ii*_sigmamass*gamrun);
+  }
   
   /**
    * Breit-Wigner for the \f$f_0(1370)\f$.
@@ -317,7 +337,14 @@ private:
    * charged (0) or neutral (1) 
    * @return The Breit-Wigner
    */
-  inline Complex f0BreitWigner(Energy2 q2,int icharge) const;
+  Complex f0BreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf0cc;
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf000;
+    Energy gamrun=_f0width*ratio*_f0mass/q;
+    return _f0mass*_f0mass/(_f0mass*_f0mass-q2-ii*_f0mass*gamrun);
+  }
 
   /**
    * Breit-Wigner for the \f$f_2\f$.
@@ -326,7 +353,15 @@ private:
    * charged (0) or neutral (1) 
    * @return The Breit-Wigner
    */
-  inline Complex f2BreitWigner(Energy2 q2,int icharge) const;
+  Complex f2BreitWigner(Energy2 q2,int icharge) const {
+    Energy q=sqrt(q2);
+    double ratio; Complex ii(0.,1.);
+    if(icharge==0) ratio=Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic)/_pf2cc;
+    else           ratio=Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0)/_pf200;
+    ratio*= ratio*ratio*ratio*ratio;
+    Energy gamrun=_f2width*ratio*_f2mass/q;
+    return _f2mass*_f2mass/(_f2mass*_f2mass-q2-ii*_f2mass*gamrun);
+  }
 
 private:
   
@@ -628,8 +663,5 @@ struct ClassTraits<Herwig::ThreePionCLEOCurrent>
 /** @endcond */
 
 }
-
-
-#include "ThreePionCLEOCurrent.icc"
 
 #endif /* THEPEG_ThreePionCLEOCurrent_H */

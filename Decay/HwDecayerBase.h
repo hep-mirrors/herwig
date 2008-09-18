@@ -35,7 +35,7 @@ public:
   /**
    * The default constructor.
    */
-  inline HwDecayerBase();
+  HwDecayerBase() : _initialize(false), _dbOutput(false) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -123,12 +123,12 @@ public:
   /**
    *  Access to the initialize variable
    */
-  inline bool initialize() const;
+  bool initialize() const {return _initialize;}
 
   /**
    *  Access the database output variable
    */
-  inline bool databaseOutput() const;
+  bool databaseOutput() const {return _dbOutput;}
   //@}
 
 protected:
@@ -197,7 +197,5 @@ struct ClassTraits<Herwig::HwDecayerBase>
 /** @endcond */
 
 }
-
-#include "HwDecayerBase.icc"
 
 #endif /* HERWIG_HwDecayerBase_H */

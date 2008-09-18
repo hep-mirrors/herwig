@@ -56,13 +56,8 @@ void SFFDecayer::Init() {
 
 }
 
-double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
-		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin0);
-  
-  ScalarWaveFunction inwave =
-    ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),rhoin,
-		       incoming,true,vertex);
+double SFFDecayer::me2(const int , const Particle & inpart,
+		       const ParticleVector & decay,MEOption meopt) const {
   // work out which is the fermion and antifermion
   int iferm(1),ianti(0);
   int itype[2];
@@ -71,27 +66,40 @@ double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
     else                           itype[ix] = 2;
   }
   if(itype[0]==0||itype[1]==1||(itype[0]==2&&itype[1]==2)) swap(iferm,ianti);
-  vector<SpinorWaveFunction> awave;
-  vector<SpinorBarWaveFunction> fwave;
-  SpinorWaveFunction(awave,decay[ianti],outgoing,true,vertex);
-  SpinorBarWaveFunction(fwave,decay[iferm],outgoing,true,vertex);
-  DecayMatrixElement newme(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
-  Energy2 scale(inpart.mass()*inpart.mass());
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::
+      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
+  Energy2 scale(sqr(inpart.mass()));
   for(unsigned int ifm = 0; ifm < 2; ++ifm){
     for(unsigned int ia = 0; ia < 2; ++ia) {
       if(iferm > ianti){
-	newme(0, ia, ifm) = _abstractVertex->evaluate(scale,awave[ia],
-						      fwave[ifm],inwave);
+	ME()(0, ia, ifm) = _abstractVertex->evaluate(scale,_wave[ia],
+						     _wavebar[ifm],_swave);
       }
       else {
-	newme(0, ifm, ia) = _abstractVertex->evaluate(scale,awave[ia],
-						      fwave[ifm],inwave);
+	ME()(0, ifm, ia) = _abstractVertex->evaluate(scale,_wave[ia],
+						     _wavebar[ifm],_swave);
 	
       }
     }
   }
-  ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -110,7 +118,7 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     Complex al(_perturbativeVertex->getLeft()), ar(_perturbativeVertex->getRight());
     double me2 = -c2*( (norm(al) + norm(ar))*( sqr(mu1) + sqr(mu2) - 1.)
 		       + 2.*(ar*conj(al) + al*conj(ar)).real()*mu1*mu2 );
-    Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					outb.second);
     Energy output = me2*pcm/(8*Constants::pi);
     // colour factor

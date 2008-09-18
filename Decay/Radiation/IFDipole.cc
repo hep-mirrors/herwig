@@ -20,16 +20,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
-using namespace ThePEG::Helicity;
 
-#ifdef KEITH_DEBUG
-#include <cfortran.h>
-#include <packlib.h>
-#include <hplot.h>
-#include <higz.h>
-#include <graflib.h>
-#include <kernlib.h>
-#endif
+using namespace ThePEG::Helicity;
 
 extern "C" int isnan(double) throw();
 
@@ -696,4 +688,10 @@ LorentzRotation IFDipole::solveBoost(const Lorentz5Momentum & q,
     R.boost( beta );
   } 
   return R;
+}
+
+void IFDipole::doinit() throw(InitException) {
+  Interfaced::doinit();
+  // get the value fo alpha from the Standard Model object
+  _alpha=generator()->standardModel()->alphaEM();
 }

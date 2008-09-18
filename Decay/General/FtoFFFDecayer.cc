@@ -84,47 +84,64 @@ void FtoFFFDecayer::doinit() throw(InitException) {
   }
 }
 
-double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
-			   const ParticleVector & decay) const {
+double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
+			   const ParticleVector & decay,
+			   MEOption meopt) const {
   const vector<vector<double> > cfactors(getColourFactors());
   const vector<vector<double> > nfactors(getLargeNcColourFactors());
   const size_t ncf(numberOfFlows());
   Energy2 scale(sqr(inpart.mass()));
-  // spin density matrix
-  RhoDMatrix rhoin(PDT::Spin1Half);
-  
-  // get the wavefunctions for all the particles
-  pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > inwave;
-  pair<vector<SpinorWaveFunction>,vector<SpinorBarWaveFunction> > outwave[3];
-
-  // incoming particle
-  SpinorWaveFunction(inwave.first,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     Helicity::incoming,true,vertex);
-  if(inwave.first[0].wave().Type() == u_spinortype) {
-    for(unsigned int ix = 0; ix < 2; ++ix) {
-      inwave.second.push_back(inwave.first[ix].bar());
-      inwave.second[ix].conjugate();
+  if(meopt==Initialize) {
+    SpinorWaveFunction::
+      calculateWaveFunctions(_inwave.first,_rho,const_ptr_cast<tPPtr>(&inpart),
+			    Helicity::incoming);
+    _inwave.second.resize(2);
+    if(_inwave.first[0].wave().Type() == u_spinortype) {
+      for(unsigned int ix = 0; ix < 2; ++ix) {
+	_inwave.second[ix] = _inwave.first[ix].bar();
+	_inwave.second[ix].conjugate();
+      }
+    }
+    else {
+      for(unsigned int ix = 0; ix < 2; ++ix) {
+	_inwave.second[ix] = _inwave.first[ix].bar();
+	_inwave.first[ix].conjugate();
+      }
     }
   }
-  else {
-    for(unsigned int ix = 0; ix < 2; ++ix) {
-      inwave.second.push_back(inwave.first[ix].bar());
-      inwave.first[ix].conjugate();
+  // setup spin info when needed
+  if(meopt==Terminate) {
+    // for the decaying particle
+    if(inpart.id()<0) 
+      SpinorWaveFunction::constructSpinInfo(_inwave.first,
+					    const_ptr_cast<tPPtr>(&inpart),
+					    Helicity::incoming,true);
+    else
+      SpinorBarWaveFunction::constructSpinInfo(_inwave.second,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       Helicity::incoming,true);
+    // outgoing particles
+    for(unsigned int ix = 0; ix < 3; ++ix) {
+      cerr << "testing child " << ix << "\n";
+      SpinorWaveFunction::
+      constructSpinInfo(_outwave[ix].first,decay[ix],Helicity::outgoing,true);
     }
   }
   // outgoing particles
   for(unsigned int ix = 0; ix < 3; ++ix) {
-    SpinorWaveFunction(outwave[ix].first,decay[ix],Helicity::outgoing,true,vertex);
-    if(outwave[ix].first[0].wave().Type() == u_spinortype) {
+    SpinorWaveFunction::
+      calculateWaveFunctions(_outwave[ix].first,decay[ix],Helicity::outgoing);
+    _outwave[ix].second.resize(2);
+    if(_outwave[ix].first[0].wave().Type() == u_spinortype) {
       for(unsigned int iy = 0; iy < 2; ++iy) {
-	outwave[ix].second.push_back(outwave[ix].first[iy].bar());
-	outwave[ix].first[iy].conjugate();
+	_outwave[ix].second[iy] = _outwave[ix].first[iy].bar();
+	_outwave[ix].first[iy].conjugate();
       }
     }
     else {
       for(unsigned int iy = 0; iy < 2; ++iy) {
-	outwave[ix].second.push_back(outwave[ix].first[iy].bar());
-	outwave[ix].second[iy].conjugate();
+	_outwave[ix].second[iy] = _outwave[ix].first[iy].bar();
+	_outwave[ix].second[iy].conjugate();
       }
     }
   }
@@ -162,22 +179,22 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    SpinorBarWaveFunction w1,w2;
 	    // incoming wavefunction
 	    if(ferm) {
-	      w0 = inwave.first [ihel[0]];
-	      w1 = outwave[dit->channelType].second[ihel[dit->channelType+1]];
+	      w0 = _inwave.first [ihel[0]];
+	      w1 = _outwave[dit->channelType].second[ihel[dit->channelType+1]];
 	    }
 	    else {
-	      w0 = outwave[dit->channelType].first [ihel[dit->channelType+1]];
-	      w1 = inwave.second[ihel[0]];
+	      w0 = _outwave[dit->channelType].first [ihel[dit->channelType+1]];
+	      w1 = _inwave.second[ihel[0]];
 	    }
 	    if(decay[out2[dit->channelType]]->id()<0&&
 	       decay[out3[dit->channelType]]->id()>0) {
-	      w2 = outwave[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
-	      w3 = outwave[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
+	      w2 = _outwave[out3[dit->channelType]].second[ihel[out3[dit->channelType]+1]];
+	      w3 = _outwave[out2[dit->channelType]].first [ihel[out2[dit->channelType]+1]];
 	      sign *= -1.;
 	    }
 	    else {
-	      w2 = outwave[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
-	      w3 = outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
+	      w2 = _outwave[out2[dit->channelType]].second[ihel[out2[dit->channelType]+1]];
+	      w3 = _outwave[out3[dit->channelType]].first [ihel[out3[dit->channelType]+1]];
 	    }
 	    tcPDPtr offshell = dit->intermediate;
 	    Complex diag;
@@ -244,30 +261,28 @@ double  FtoFFFDecayer::me2(bool vertex, const int ichan, const Particle & inpart
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rhoin)).real();
+	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],_rho)).real();
 	me2 += con;
 	if(ix==iy) {
-	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],rhoin)).real();
+	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],_rho)).real();
 	  pflows[ix] += con;
 	}
       }
     }
-    if(vertex) {
-      double ptotal(std::accumulate(pflows.begin(),pflows.end(),0.));
-      ptotal *=UseRandom::rnd();
-      for(unsigned int ix=0;ix<pflows.size();++ix) {
-	if(ptotal<=pflows[ix]) {
-	  colourFlow(ix);
-	  ME(mes[ix]);
-	  break;
-	}
-	ptotal-=pflows[ix];
+    double ptotal(std::accumulate(pflows.begin(),pflows.end(),0.));
+    ptotal *=UseRandom::rnd();
+    for(unsigned int ix=0;ix<pflows.size();++ix) {
+      if(ptotal<=pflows[ix]) {
+	colourFlow(ix);
+	ME(mes[ix]);
+	break;
       }
+      ptotal-=pflows[ix];
     }
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],rhoin)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],_rho)).real();
   }
   // return the matrix element squared
   return me2;

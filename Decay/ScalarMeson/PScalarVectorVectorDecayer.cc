@@ -161,37 +161,41 @@ void PScalarVectorVectorDecayer::Init() {
      0, 0, 0, 0., 200., false, false, true);
 }
 
-double PScalarVectorVectorDecayer::me2(bool vertex, const int,
-				   const Particle & inpart,
-				   const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
+double PScalarVectorVectorDecayer::me2(const int,
+				       const Particle & inpart,
+				       const ParticleVector & decay,
+				       MEOption meopt) const {
+  useMe();
   bool photon[2]={false,false};
-  vector<LorentzPolarizationVector> wave[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    if(decay[ix]->id()==ParticleID::gamma) photon[ix]=true;
-    // workaround for gcc 3.2.3 bug
-    //ALB VectorWaveFunction(wave[ix],decay[ix],outgoing,true,photon[ix],vertex);
-    vector<LorentzPolarizationVector> mytempLPV; 
-    VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
-    wave[ix]=mytempLPV;
+  for(unsigned int ix=0;ix<2;++ix)
+    photon[ix] = decay[ix]->id()==ParticleID::gamma;
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
   }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
+					    outgoing,true,photon[ix]);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
   InvEnergy2 fact(_coupling[imode()]/inpart.mass());
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      newME(0,ix,iy)=fact*epsilon(wave[0][ix],decay[1]->momentum(),wave[1][iy])
+      ME()(0,ix,iy)=fact*epsilon(_vectors[0][ix],decay[1]->momentum(),
+				 _vectors[1][iy])
 	*decay[0]->momentum();
     }
   }
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0); 
-  
   // test of the matrix element
 //   double test = 2.*sqr(fact*inpart.mass())*
 //     sqr(Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),decay[1]->mass()));
@@ -199,7 +203,7 @@ double PScalarVectorVectorDecayer::me2(bool vertex, const int,
 //   cerr << "testing the matrix element for " << inpart.PDGName() << " -> " 
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
 //        << me << " " << (me-test)/(me+test) << "\n";
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation

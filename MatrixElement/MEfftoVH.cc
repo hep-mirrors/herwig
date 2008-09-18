@@ -257,7 +257,7 @@ void MEfftoVH::constructVertex(tSubProPtr sub) {
   vector<SpinorBarWaveFunction> ain,fout;
   SpinorWaveFunction(   fin ,hard[0],incoming,false,true);
   SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
-  ScalarWaveFunction(        hard[2],outgoing,true,true);
+  ScalarWaveFunction(        hard[2],outgoing,true);
   SpinorBarWaveFunction(fout,hard[3],outgoing,true ,true);
   SpinorWaveFunction(   aout,hard[4],outgoing,true ,true);
   helicityME(fin,ain,fout,aout,true);

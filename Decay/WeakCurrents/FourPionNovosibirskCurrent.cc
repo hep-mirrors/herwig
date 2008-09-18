@@ -20,15 +20,23 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include <functional>
 
 using namespace Herwig;
 using namespace ThePEG;
-using ThePEG::Helicity::ScalarSpinInfo;
+using namespace ThePEG::Helicity;
 
 namespace {
   inline Energy  timesGeV (double x) { return x * GeV; }
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
+}
+ 
+void FourPionNovosibirskCurrent::doupdate() throw(UpdateException) {
+  WeakDecayCurrent::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1width(-1);
 }
 
 FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
@@ -779,16 +787,16 @@ tPDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,
  
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int ichan,
-				    Energy & scale,const ParticleVector & decay) const {
+FourPionNovosibirskCurrent::current(const int imode, const int ichan,
+				    Energy & scale,const ParticleVector & decay,
+				    DecayIntegrator::MEOption meopt) const {
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<4;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   LorentzVector<complex<InvEnergy> > output;
   double fact(1.);
-  // construct the spininfo objects if needed
-  if(vertex) {
-    for(unsigned int ix=0;ix<decay.size();++ix) {
-      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
-    }
-  }
   // the momenta of the particles
   Lorentz5Momentum q1(decay[0]->momentum()),q2(decay[2]->momentum()),
     q3(decay[1]->momentum()),q4(decay[3]->momentum());
@@ -940,4 +948,65 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+double FourPionNovosibirskCurrent::
+threeBodyMatrixElement(const int iopt, const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy,
+		       const Energy, const Energy) const {
+  unsigned int ix;
+  // construct the momenta of the decay products
+  Energy p1[5],p2[5],p3[5];
+  Energy2 p1sq, p2sq, p3sq;
+  Energy q(sqrt(q2));
+  if(iopt==0) {
+    p1[0] = 0.5*(q2+_mpi02-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-_mpi02);
+    p2[0] = 0.5*(q2+_mpic2-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-_mpic2);
+    p3[0] = 0.5*(q2+_mpic2-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-_mpic2);
+  }
+  else {
+    p1[0] = 0.5*(q2+_mpi02-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-_mpi02);
+    p2[0] = 0.5*(q2+_mpi02-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-_mpi02);
+    p3[0] = 0.5*(q2+_mpi02-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-_mpi02);
+  }
+  // take momentum of 1 parallel to z axis
+  p1[1]=0.*MeV;p1[2]=0.*MeV;p1[3]=p1[4];
+  // construct 2 
+  double cos2(0.5*(sqr(p1[4])+sqr(p2[4])-sqr(p3[4]))/p1[4]/p2[4]);
+  p2[1] = p2[4]*sqrt(1.-sqr(cos2)); p2[2]=0.*MeV; p2[3]=-p2[4]*cos2;
+  // construct 3
+  double cos3(0.5*(sqr(p1[4])-sqr(p2[4])+sqr(p3[4]))/p1[4]/p3[4]);
+  p3[1] =-p3[4]*sqrt(1.-sqr(cos3)); p3[2]=0.*MeV; p3[3]=-p3[4]*cos3;
+  // pi+pi-pi0 term
+  complex<Energy4> output(0.*sqr(MeV2));
+  if(iopt==0) {
+    // values for the different Breit-Wigner terms
+    Complex rho1(2.365*rhoBreitWigner(s2)),
+      rho2(2.365*rhoBreitWigner(s3)),
+      sig1(sigmaBreitWigner(s1,1));
+    // compute the vector
+    complex<Energy2> term;
+    for(ix=1;ix<4;++ix) { 
+      term = (p1[0]*p2[ix]-p2[0]*p1[ix])*rho2+(p1[0]*p3[ix]-p3[0]*p1[ix])*rho1
+	+_zsigma*q*p1[ix]*sig1;
+      output+=term*conj(term);
+    }
+  }
+  // pi0pi0pi0 term
+  else if(iopt==1) {
+    // values for the different Breit-Wigner terms
+    Complex sig1(sigmaBreitWigner(s1,0)),
+      sig2(sigmaBreitWigner(s2,0)),
+      sig3(sigmaBreitWigner(s3,0));
+    // compute the vector
+    complex<Energy2> term;
+    for(ix=1;ix<4;++ix) {
+      term = _zsigma * q * (p1[ix]*sig1 + p2[ix]*sig2 + p3[ix]*sig3);
+      output += term*conj(term);
+    }
+    output/=6.;
+  }
+  output *= a1FormFactor(q2);
+  return output.real() / pow<4,1>(_rhomass);
 }

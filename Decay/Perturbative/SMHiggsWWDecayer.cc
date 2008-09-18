@@ -192,14 +192,39 @@ ParticleVector SMHiggsWWDecayer::decay(const Particle & parent,
   return generate(true,false,imode,parent);
 }
 
-double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
-			     const ParticleVector & decay) const {
-  RhoDMatrix rhoin;
-  // check if the incoming particle has a spin info and if not create it
-  ScalarWaveFunction inwave = ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),
-						 rhoin,incoming,true,vertex);
+double SMHiggsWWDecayer::me2(const int, const Particle & inpart,
+			     const ParticleVector & decay,
+			     MEOption meopt) const {
   // check if Z or W decay
   bool Z0=decay[0]->id()==-decay[1]->id();
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
+			  PDT::Spin1Half,PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_fwave1,decay[0],outgoing,true);
+    SpinorWaveFunction   ::
+      constructSpinInfo(_awave1,decay[1],outgoing,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_fwave2,decay[2],outgoing,true);
+    SpinorWaveFunction   ::
+      constructSpinInfo(_awave2,decay[3],outgoing,true);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_fwave1,decay[0],outgoing);
+  SpinorWaveFunction   ::
+    calculateWaveFunctions(_awave1,decay[1],outgoing);
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_fwave2,decay[2],outgoing);
+  SpinorWaveFunction   ::
+    calculateWaveFunctions(_awave2,decay[3],outgoing);
   // get the intermediates and vertex
   tcPDPtr inter[2];
   AbstractFFVVertexPtr vert;
@@ -213,16 +238,9 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
     inter[1]=getParticleData(ParticleID::Wminus);
     vert=_theFFWVertex;
   }
+
+
   // construct the spinors for the outgoing particles
-  vector<SpinorWaveFunction   > awave1,awave2;
-  vector<SpinorBarWaveFunction> fwave1,fwave2;
-  SpinorBarWaveFunction(fwave1,decay[0],outgoing,true,vertex);
-  SpinorWaveFunction   (awave1,decay[1],outgoing,true,vertex);
-  SpinorBarWaveFunction(fwave2,decay[2],outgoing,true,vertex);
-  SpinorWaveFunction   (awave2,decay[3],outgoing,true,vertex);
-  // compute the matrix element
-  DecayMatrixElement newme(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
-			   PDT::Spin1Half,PDT::Spin1Half);
   Energy2 scale0(sqr(inpart.mass()));
   Energy2 scale1((decay[0]->momentum()+decay[1]->momentum()).m2());
   Energy2 scale2((decay[2]->momentum()+decay[3]->momentum()).m2());
@@ -238,9 +256,9 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
   for(ohel1=0;ohel1<2;++ohel1) {
     for(ohel2=0;ohel2<2;++ohel2) {
       curr1[ohel1][ohel2]=vert->evaluate(scale1,1,inter[0],
-					 awave1[ohel2],fwave1[ohel1]);
+					 _awave1[ohel2],_fwave1[ohel1]);
       curr2[ohel1][ohel2]=vert->evaluate(scale2,1,inter[1],
-					 awave2[ohel2],fwave2[ohel1]);
+					 _awave2[ohel2],_fwave2[ohel1]);
     }
   }
   // compute the matrix element
@@ -248,15 +266,14 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
     for(ohel2=0;ohel2<2;++ohel2) {
       for(ohel3=0;ohel3<2;++ohel3) {
 	for(ohel4=0;ohel4<2;++ohel4) {
-	  newme(0,ohel1,ohel2,ohel3,ohel4)=
+	  ME()(0,ohel1,ohel2,ohel3,ohel4)=
 	    _theHVVVertex->evaluate(scale0,curr1[ohel1][ohel2],
-				    curr2[ohel3][ohel4],inwave);
+				    curr2[ohel3][ohel4],_swave);
 	}
       }
     }
   }
-  ME(newme);
-  double output=(newme.contract(rhoin)).real()*scale0*UnitRemoval::InvE2;
+  double output=(ME().contract(_rho)).real()*scale0*UnitRemoval::InvE2;
   // set up the colour flows
   if(decay[0]->coloured()) {
     output*=3.;

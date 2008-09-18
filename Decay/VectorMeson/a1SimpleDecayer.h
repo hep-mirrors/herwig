@@ -14,7 +14,7 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "a1SimpleDecayer.fh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 
@@ -33,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline a1SimpleDecayer();
+  a1SimpleDecayer();
 
   /**
    * Which of the possible decays is required
@@ -52,8 +52,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector& decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -121,13 +121,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const  {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -156,7 +156,14 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner.
    * @param ires Which multiplet to use.
    */
-  inline Complex rhoBreitWigner(Energy2 q2, unsigned int ires) const;
+  Complex rhoBreitWigner(Energy2 q2, unsigned int ires) const {
+    Energy q(sqrt(q2));
+    Energy mass  = _rhomass[ires], width = _rhowidth[ires];
+    Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi));
+    Energy pcm = 2.*_mpi<q ? Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi) : 0.*MeV;
+    Energy gamrun(width*mass*Math::Pow<3>(pcm/pcm0)/q);
+    return -sqr(mass)/complex<Energy2>(q2-mass*mass,mass*gamrun);
+  }
 
   /**
    * The \f$\rho\f$ form factors
@@ -164,7 +171,7 @@ private:
    * @param ires Which \f$\rho\f$ multiplet
    * @return The form factor
    */
-  inline Complex rhoFormFactor(Energy2 q2,int ires) const;
+  Complex rhoFormFactor(Energy2 q2,int ires) const;
 
 private:
 
@@ -242,6 +249,9 @@ private:
    */
   Energy _mpi;
 
+  mutable RhoDMatrix _rho;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
 };
 
 }
@@ -280,7 +290,5 @@ struct ClassTraits<Herwig::a1SimpleDecayer>
 /** @endcond */
 
 }
-
-#include "a1SimpleDecayer.icc"
 
 #endif /* HERWIG_a1SimpleDecayer_H */

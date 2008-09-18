@@ -385,7 +385,7 @@ void MEPP2HiggsPowheg::constructVertex(tSubProPtr sub) {
     vector<SpinorWaveFunction> qbar;
     VectorWaveFunction (g1,hard[0],incoming,false,true,true);
     VectorWaveFunction (g2,hard[1],incoming,false,true,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g1[1] = g1[2];
     g2[1] = g2[2];
     ggME(g1,g2,hout,true);
@@ -394,7 +394,7 @@ void MEPP2HiggsPowheg::constructVertex(tSubProPtr sub) {
     vector<SpinorBarWaveFunction> q2;
     SpinorWaveFunction    (q1,hard[0],incoming,false,true);
     SpinorBarWaveFunction (q2,hard[1],incoming,false,true);
-    ScalarWaveFunction     hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction     hout(hard[2],outgoing,true);
     qqME(q1,q2,hout,true);
   }
   // construct the vertex

@@ -187,14 +187,15 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
   // include the prefactor due to the weight of the channel
   double wgt=1.;
   // work out the masses of the intermediate particles
-  vector<Energy2> intmass2; vector<Energy> intmass;
+  vector<Energy2> intmass2(_intpart.size());
+  vector<Energy> intmass(_intpart.size());
   Lorentz5Momentum pinter;
   for(ix=0;ix<_intpart.size();++ix) {
     pinter=output[_intext[ix][0]];
     for(iz=1;iz<_intext[ix].size();++iz) pinter+=output[_intext[ix][iz]];
     pinter.rescaleMass();
-    intmass.push_back(pinter.mass());
-    intmass2.push_back(intmass[ix]*intmass[ix]);
+    intmass[ix]  = pinter.mass();
+    intmass2[ix] = sqr(intmass[ix]);
   }
   Energy2 scale(intmass2[0]);
   // calculate the terms for each of the decays
@@ -231,7 +232,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       // weight factor
       wgt *=0.5*sqr(scale)*(wgta2+wgtb2);
       // factor for the kinematics
-      pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
+      pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[0]],
 				   intmass[idau[1]]);
       wgt *= intmass[ix]*8.*pi*pi/pcm;
     }
@@ -243,7 +244,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       for(iy=0;iy<_intext[idau[0]].size();++iy)
 	lower+=output[_intext[idau[0]][iy]].mass();
       wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
-      pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
+      pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[0]],
 				   output[idau[1]].mass());
       wgt *= intmass[ix]*8.*pi*pi/pcm;
     }
@@ -255,13 +256,13 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       for(iy=0;iy<_intext[idau[1]].size();++iy)
 	lower+=output[_intext[idau[1]][iy]].mass();
       wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
-      pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[1]],
+      pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],intmass[idau[1]],
 				   output[idau[0]].mass());
       wgt *=intmass[ix]*8.*pi*pi/pcm;
     }
     // both on-shell
     else {
-      pcm = Kinematics::CMMomentum(intmass[ix],output[idau[1]].mass(),
+      pcm = Kinematics::pstarTwoBodyDecay(intmass[ix],output[idau[1]].mass(),
 				   output[idau[0]].mass());
       wgt *=intmass[ix]*8.*pi*pi/pcm;
     }
@@ -322,15 +323,14 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
   vector<int> temp;
   _intext.resize(_intpart.size());
   // loop over the intermediate particles
-  int ix,iy;
-  for(ix=_intpart.size()-1;ix>=0;--ix) {
+  for(int ix=_intpart.size()-1;ix>=0;--ix) {
     temp.clear();
     // add the first daughter
     if(_intdau1[ix]>=0) {
       temp.push_back(_intdau1[ix]);
     }
     else {
-      iy = -_intdau1[ix];
+      int iy = -_intdau1[ix];
       vector<int>::iterator istart=_intext[iy].begin();
       vector<int>::iterator iend=_intext[iy].end();
       for(;istart!=iend;++istart) temp.push_back(*istart);
@@ -340,7 +340,7 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
       temp.push_back(_intdau2[ix]);
     }
     else {
-      iy = -_intdau2[ix];
+      int iy = -_intdau2[ix];
       vector<int>::iterator istart=_intext[iy].begin();
       vector<int>::iterator iend=_intext[iy].end();
       for(;istart!=iend;++istart) temp.push_back(*istart);
@@ -424,4 +424,119 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   // construct the output with the particles in the first step
   out.push_back( _intdau1[0]>0 ? external[_intdau1[0]] : resonance[-_intdau1[0]]);
   out.push_back( _intdau2[0]>0 ? external[_intdau2[0]] : resonance[-_intdau2[0]]);
+}
+ 
+// return the weight for a given resonance
+InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
+						     Energy lower,Energy upper) {
+  InvEnergy2 wgt=InvEnergy2();
+  if(lower>upper) {
+    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
+				 << ires << "   " << _intpart[ires]->id() << "   " 
+				 << moff/GeV << Exception::eventerror;
+  } 
+  // use a Breit-Wigner 
+  if(_jactype[ires]==0) {
+    if(_intmwidth[ires]!=0.*GeV2) {
+      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
+      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      Energy2 moff2=moff*moff-_intmass2[ires];
+      wgt = _intmwidth[ires]/rhomax/(moff2*moff2+_intmwidth[ires]*_intmwidth[ires]);
+    }
+    else {
+      wgt = 1./((sqr(upper)-sqr(lower))*sqr(sqr(moff)-_intmass2[ires])/
+		(sqr(lower)-_intmass2[ires])/(sqr(upper)-_intmass2[ires]));
+    }
+  } 
+  // power law
+  else if(_jactype[ires]==1) {
+    double rhomin = pow(sqr(lower/MeV),_intpower[ires]+1.);
+    double rhomax = pow(sqr(upper/MeV),_intpower[ires]+1.)-rhomin;
+    wgt = (_intpower[ires]+1.)/rhomax*pow(sqr(moff/MeV),_intpower[ires])
+      /MeV/MeV;
+  }
+  else if(_jactype[ires]==2) {
+    wgt = 1./Constants::pi/_intmwidth[ires];
+  } 
+  else {
+    throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
+				 << "DecayPhaseSpaceChannel::massWeight"
+				 << Exception::eventerror;
+  } 
+  return wgt;
+}
+Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
+  Energy mass=Energy();
+  if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
+					       << " not allowed" 
+					       << Exception::eventerror;
+  if(abs(lower-upper)/(lower+upper)>1e-10) {
+    lower +=1e-10*(lower+upper);
+    upper -=1e-10*(lower+upper);
+  }
+  else 
+    return 0.5*(lower+upper);
+  // use a Breit-Wigner
+  if(_jactype[ires]==0) {
+    if(_intmwidth[ires]!=0.*GeV2) {
+      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
+      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      double rho = rhomin+rhomax*UseRandom::rnd();
+      mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
+    }
+    else {
+      mass = sqrt(_intmass2[ires]+
+		  (sqr(lower)-_intmass2[ires])*(sqr(upper)-_intmass2[ires])/
+		  (sqr(lower)-_intmass2[ires]-UseRandom::rnd()*(sqr(lower)-sqr(upper))));
+    }
+  }
+  // use a power-law
+  else if(_jactype[ires]==1) {
+    double rhomin = pow(sqr(lower/MeV),_intpower[ires]+1.);
+    double rhomax = pow(sqr(upper/MeV),_intpower[ires]+1.)-rhomin;
+    double rho = rhomin+rhomax*UseRandom::rnd();
+    mass = pow(rho,0.5/(_intpower[ires]+1.))*MeV;
+  }
+  else if(_jactype[ires]==2) {
+    mass = _intmass[ires];
+  } 
+  else {
+    throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
+				 << "DecayPhaseSpaceChannel::generateMass" 
+				 << Exception::eventerror;
+  }
+  if(mass<lower)      mass=lower+1e-10*(lower+upper);
+  else if(mass>upper) mass=upper-1e-10*(lower+upper);
+  return mass;
+}
+
+void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
+					  const Energy m1, const Energy m2,
+					  Lorentz5Momentum & p1,
+					  Lorentz5Momentum & p2 ) {
+  static const double eps=1e-6;
+  double ctheta,phi;
+  Kinematics::generateAngles(ctheta,phi);
+  Axis unitDir1=Kinematics::unitDirection(ctheta,phi);
+  Momentum3 pstarVector;
+  Energy min=p.m();
+  if ( min >= m1 + m2  &&  m1 >= 0.0*MeV  &&  m2 >= 0.0*MeV  ) {
+    pstarVector = unitDir1 * Kinematics::pstarTwoBodyDecay(min,m1,m2);
+  }
+  else if( m1 >= 0.0*MeV  &&  m2 >= 0.0*MeV && (m1+m2-min)/(min+m1+m2)<eps) {
+    pstarVector = Momentum3();
+  }
+  else {
+    throw DecayPhaseSpaceError() << "Two body decay cannot proceed "
+				 << "p = " << p / GeV 
+				 << " p.m() = " << min / GeV
+				 << " -> " << m1/GeV 
+				 << ' ' << m2/GeV << Exception::eventerror;
+  }
+  p1 = Lorentz5Momentum(m1, pstarVector);
+  p2 = Lorentz5Momentum(m2,-pstarVector);
+  // boost from CM to LAB
+  Boost bv=p.boostVector();
+  p1.boost( bv );   
+  p2.boost( bv );
 }

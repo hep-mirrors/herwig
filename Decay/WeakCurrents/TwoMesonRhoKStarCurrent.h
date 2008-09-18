@@ -13,7 +13,6 @@
 #include "WeakDecayCurrent.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "TwoMesonRhoKStarCurrent.fh"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 namespace Herwig {
@@ -102,9 +101,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale,  
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode, const int ichan,Energy & scale,  
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the particles are the allowed mode.
@@ -159,13 +158,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -205,15 +204,46 @@ private:
    * @param ires   Which of the different multiplets to use.
    * @return The value of the Breit-Wigner distribution.
    */
-  inline Complex BreitWigner(Energy2 q2, unsigned int imodel,unsigned int itype,
-			     unsigned int ires) const;
+  Complex BreitWigner(Energy2 q2, unsigned int imodel,unsigned int itype,
+		      unsigned int ires) const {
+    // workout the index of the resonace
+    unsigned int iy(3*itype+ires);
+    // off shell mass
+    Energy q(sqrt(q2));
+    // and the running width
+    Energy pq(pcm(iy,q));
+    double ratio(pow<3,1>(pq/_mom[iy]));
+    Energy gamrun(_width[iy]*_mass[iy]*ratio/q);
+    // work out the denominator
+    complex<Energy2> denom, numer;
+    Complex ii(0.,1.);
+    if(imodel==0) {
+      denom=q2-_mass2[iy]+ii*_mass[iy]*gamrun;
+      numer=-_mass2[iy];
+    }
+    else if(imodel==1) {
+      denom = q2 - _mass2[iy] + ii*_mass[iy]*gamrun
+	- ( sqr(pq) * (GSModelhFunction(iy,q)-_hm2[iy])
+	    - sqr(_mom[iy]) * (q2-_mass2[iy]) * _dhdq2[iy]);
+      
+      numer = -(_mass2[iy]+_dparam[iy]*_mass[iy]*_width[iy]);
+    }
+    else assert(false);
+    // return the answer
+    return numer/denom;
+  }
   
   /**
    * The \f$d\f$ parameter in the GS model of the propagator.
    * @param ires Which of the \f$\rho\f$ or \f$K^*\f$ resonances to use
    * @return The \f$d\f$ parameter
    */
-  inline double GSModelDParameter(const unsigned int ires)const ;
+  double GSModelDParameter(const unsigned int ires)const {
+    Energy mpi(0.5*(_massa[ires]+_massb[ires]));
+    using Constants::pi;
+    return 3.*mpi*mpi/pi/sqr(_mom[ires])*log(0.5*(_mass[ires]+2.*_mom[ires])/mpi)
+      +0.5*_mass[ires]/pi/_mom[ires]-mpi*mpi*_mass[ires]/pi/pow<3,1>(_mom[ires]);
+  }
   
   /**
    * The \f$\frac{dh}{dq^2}\f$ function in the GS model for the propagator
@@ -221,7 +251,12 @@ private:
    * @param ires Which of the \f$\rho\f$ or \f$K^*\f$ resonances to use
    * @return The value of \f$\frac{dh}{dq^2}\f$ at \f$q^2=m^2\f$.
    */
-  inline InvEnergy2 GSModeldhdq2Parameter(const unsigned int ires)const ;
+  InvEnergy2 GSModeldhdq2Parameter(const unsigned int ires)const  {
+    Energy mpi = 0.5 * (_massa[ires] + _massb[ires]);
+    return _width[ires] / Constants::pi / pow<3,1>(_mom[ires]) *
+      (sqr(mpi) / _mass[ires] / _mom[ires] * 
+       log(0.5 * (_mass[ires] + 2.*_mom[ires])/mpi) + 0.5);
+  }
   
   /**
    * The \f$h\f$ function in the GS model.
@@ -229,7 +264,11 @@ private:
    * @param q The scale \f$q\f$.
    * @return The value of the \f$h\f$ function at scale \f$q\f$.
    */
-  inline double GSModelhFunction(const unsigned int ires, const Energy q)const ;
+  double GSModelhFunction(const unsigned int ires, const Energy q) const  {
+    Energy pq(pcm(ires,q));
+    return _width[ires]*_mass2[ires]/pow<3,1>(_mom[ires])
+      *2.*pq/Constants::pi/q*log((q+2.*pq)/(_massa[ires]+_massb[ires]));
+  }
   
   /**
    * The momentum of the decay products for the running width.
@@ -238,7 +277,13 @@ private:
    * @return The momenta of the decay products in the rest frame of the
    *         intermediate resonance.
    */
-  inline Energy pcm(const unsigned int ires, const Energy q) const;
+  Energy pcm(const unsigned int ires, const Energy q) const {
+    Energy2 q2(q*q);
+    Energy output;
+    if(q <= _massa[ires]+_massb[ires]) return 0.*MeV;
+    return 0.5/q*sqrt((q2-sqr(_massa[ires]+_massb[ires]))*
+		      (q2-sqr(_massa[ires]-_massb[ires])));
+  }
   //@}
 
 private:
@@ -417,7 +462,5 @@ struct ClassTraits<Herwig::TwoMesonRhoKStarCurrent>
 /** @endcond */
 
 }
-
-#include "TwoMesonRhoKStarCurrent.icc"
 
 #endif /* HERWIG_TwoMesonRhoKStarCurrent_H */

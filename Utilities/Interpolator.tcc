@@ -17,52 +17,8 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include <cassert>
 
 using namespace Herwig;
-
-template <typename ValT, typename ArgT>
-Interpolator<ValT,ArgT>::Interpolator(vector<ValT> f, 
-				      vector<ArgT> x, 
-				      unsigned int order) 
-  : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
-    _funit(TypeTraits<ValT>::baseunit), 
-    _xunit(TypeTraits<ArgT>::baseunit)
-{
-  // check the size of the vectors is the same
-  if(_fun.size()!=_xval.size())
-    throw Exception() << "Interpolator: The size of the vectors containing " 
-		      << "the x and function values are different" 
-		      << Exception::runerror;
-  if(_order<1)
-    throw Exception() << "Interpolator: The order of interpolation is too low" 
-		      << " using linear interpolation" 
-		      << Exception::runerror;
-  assert(x.size() == f.size());
-  for (size_t i = 0; i < f.size(); ++i) {
-    _fun [i] = f[i] / _funit;
-    _xval[i] = x[i] / _xunit;
-  }
-}
-
-template <typename ValT, typename ArgT>
-Interpolator<ValT,ArgT>::Interpolator(size_t size, 
-				      double f[], ValT funit,
-				      double x[], ArgT xunit,
-				      unsigned int order)
-  : _fun(size,0.0),_xval(size,0.0),_order(order),
-    _funit(funit),_xunit(xunit)
-{
-  // check the size of the vectors is the same
-  if(_order<1)
-    throw Exception() << "Interpolator: The order of interpolation is too low" 
-		      << " using linear interpolation" 
-		      << Exception::runerror;
-  for (size_t i = 0; i < size; ++i) {
-    _fun [i] = f[i];
-    _xval[i] = x[i];
-  }
-}
 
 template <typename ValT, typename ArgT>
 void Interpolator<ValT,ArgT>::persistentOutput(PersistentOStream & os) const {
@@ -158,40 +114,40 @@ ValT Interpolator<ValT,ArgT>::operator ()(ArgT xpt) const {
   // ilow is now the midpoint
   mid=ilow;
   // copy the re-ordered interpolation points 
-  vector<double> copyx,copyfun;
   // number of points
-  unsigned int npoints(_order+2-_order%2),icopy;
-  int iloc(0),i;
+  unsigned int npoints(_order+2-_order%2),icopy,j(0);
+  int iloc(0),i(0);
   do {
     icopy=mid+iloc;
-    if(icopy>isize-1){npoints=mp;}
+    if(icopy>isize-1) npoints=mp;
     else {
-      copyx.push_back(_xval[icopy]);
-      copyfun.push_back(_fun[icopy]);
+      _copyx[j]   = _xval[icopy];
+      _copyfun[j] = _fun [icopy];
+      ++j;
     }
     iloc=-iloc;
     if(iloc>=0){++iloc;}
   }
-  while(copyx.size()<npoints);
+  while(j<npoints);
   // do this interpolation
   bool extra(npoints!=mp);
   for(ix=0;ix<m;++ix) {
     if(extra) {
       icopy=m-ix-1;
-      copyfun[m+1]=(copyfun[m+1]-copyfun[m-1])/(copyx[m+1]-copyx[icopy]);
+      _copyfun[m+1]=(_copyfun[m+1]-_copyfun[m-1])/(_copyx[m+1]-_copyx[icopy]);
     }
     i=m;
     for(iy=ix;iy<m;++iy) {
       icopy=i-ix-1;
-      copyfun[i]=(copyfun[i]-copyfun[i-1])/(copyx[i]-copyx[icopy]);
+      _copyfun[i]=(_copyfun[i]-_copyfun[i-1])/(_copyx[i]-_copyx[icopy]);
       --i;
     }
   }
-  double sum(copyfun[m]);
-  if(extra) sum=0.5*(sum+copyfun[m+1]);
+  double sum(_copyfun[m]);
+  if(extra) sum=0.5*(sum+_copyfun[m+1]);
   i=m-1;
   for(ix=0;ix<m;++ix) {
-    sum=copyfun[i]+(xpoint-copyx[i])*sum;
+    sum=_copyfun[i]+(xpoint-_copyx[i])*sum;
     --i;
   }
   return sum * _funit;

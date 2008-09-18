@@ -1254,3 +1254,16 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 		     0. / MeV,
 		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
 }
+
+void KaonThreeMesonCurrent::doinitrun() {
+  // set up the running a_1 width
+  inita1Width(0);
+  ThreeMesonCurrentBase::doinitrun();
+}
+
+void KaonThreeMesonCurrent::doupdate() throw(UpdateException) {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
+}
