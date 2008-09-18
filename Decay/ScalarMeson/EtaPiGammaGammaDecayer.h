@@ -14,6 +14,7 @@
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -85,8 +86,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -151,13 +152,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -267,6 +268,8 @@ private:
    */
   vector<InvEnergy2> _econst;
 
+  mutable RhoDMatrix _rho;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
 };
 
 }

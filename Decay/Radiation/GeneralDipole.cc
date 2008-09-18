@@ -10,17 +10,10 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GeneralDipole.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-
-GeneralDipole::~GeneralDipole() {}
 
 void GeneralDipole::persistentOutput(PersistentOStream & os) const {
   os << _emin << _eminrest << _eminlab << _maxwgt << _maxtry << _nphotonmax 
@@ -1044,4 +1037,127 @@ double GeneralDipole::fullDipoleWeight()
   while(ipart>=0);
   // return the answer
   return wtotal/denom;
+}
+
+GeneralDipole::GeneralDipole() {
+  // maximum weight
+  _maxwgt = 5.0;
+  // minimum photon energy
+  _emin    = 1.e-6*MeV;
+  // real minimum energies in lab and rest frame
+  _eminlab  = 100*MeV;
+  _eminrest = 100*MeV;
+  // maximum number of tries
+  _maxtry=500;
+  // option for the energy cut-off
+  _energyopt=1;
+  // option for beta factors
+  _betaopt = 1;
+  // default mode
+  _mode = 1;
+  // control over the number of photons
+  _nphotonmax=20;
+}
+
+double GeneralDipole::dipoleWeight(unsigned int ix, unsigned int iy,
+					  unsigned int iphot) {
+  unsigned int ie(_photonemit[iphot]),is(_photonspect[iphot]);
+  double wtemp,denom1,denom2,cosemit,cosspect;
+  if((ix==ie&&iy==is)||(iy==ie&&ix==is)) {
+    // first factor
+    denom1   = _ombetanew[ie]+_betanew[ie]*sqr(_sinphot[iphot])/
+      (1.+_cosphot[iphot]);
+    // angle to the spectator
+    cosspect = (_qnewdrf[is].vect()).cosTheta(_ldrf[iphot].vect());
+    // second factor
+    denom2   = (1.-_betanew[is]*cosspect);
+    // total weight
+    wtemp =-_zij[ix][iy]/9.*(2.*(1.-_betanew[ie]*_betanew[is]*_cosij[ie][is])
+			     /denom1/denom2
+			     -_ombetanew[ie]*(1.+_betanew[ie])/sqr(denom1)
+			     -_ombetanew[is]*(1.+_betanew[is])/sqr(denom2));
+  }
+  // use accurate result if photon emitted from this dipole
+  // otherwise use the general result
+  else {
+    // get the angles
+    cosemit  = (_qnewdrf[ix].vect()).cosTheta(_ldrf[iphot].vect());
+    cosspect = (_qnewdrf[iy].vect()).cosTheta(_ldrf[iphot].vect());
+    // denominators
+    denom1   = (1.-_betanew[ix]*cosemit );
+    denom2   = (1.-_betanew[iy]*cosspect);
+    // total weight
+    wtemp =-_zij[ix][iy]/9.*(2.*(1.-_betanew[ix]*_betanew[iy]*_cosij[ix][iy])
+			     /denom1/denom2
+			     -_ombetanew[ix]*(1.+_betanew[ix])/sqr(denom1)
+			     -_ombetanew[iy]*(1.+_betanew[iy])/sqr(denom2));
+  }
+  return wtemp;
+}
+
+double GeneralDipole::jacobianWeight() {
+  // rescaling factor
+  double output(pow(_rescalingfactor,3*_nprod-3));
+  // mass term
+  output *=sqr(_roots/_m[0]);
+  // boost term
+  output /=(1.+_bigLdrf.e()/_roots);
+  // energy rescaling
+  Energy mratio[2]={0.,0.};
+  for(unsigned int ix=1;ix<=_nprod;++ix)
+    {
+      mratio[0]+=_m2[ix]/_qdrf[ix].e();
+      mratio[1]+=_m2[ix]/_qnewdrf[ix].e();
+      output   *=_qdrf[ix].e()/_qnewdrf[ix].e();
+    }
+  // ratios of energies of all the particles
+  output *= (_m[0]-mratio[0])/(_roots-mratio[1]);
+  // return the answer
+  return output;
+}
+
+void GeneralDipole::reweightDipole() {
+  // reweight the dipoles
+  double wgt,denom1,denom2,cosspect;
+  unsigned int ie,is;
+  for(unsigned int ix=0;ix<_multiplicity;++ix)
+    {
+      if(!_photcut[ix])
+	{
+	  ie = _photonemit[ix];
+	  is = _photonspect[ix];
+	  // first factor
+	  denom1   = _ombetanew[ie]+_betanew[ie]*sqr(_sinphot[ix])/(1.+_cosphot[ix]);
+	  // angle to the spectator
+	  cosspect = (_qnewdrf[is].vect()).cosTheta(_ldrf[ix].vect());
+	  // second factor
+	  denom2   = (1.-_betanew[is]*cosspect);
+	  wgt = 
+	    2.*(1.-_betanew[ie]*_betanew[is]*_cosij[ie][is])/denom1/denom2
+	    -_ombetanew[ie]*(1.+_betanew[ie])/sqr(denom1)
+	    -_ombetanew[is]*(1.+_betanew[is])/sqr(denom2);
+	  _dipolewgt*=wgt;
+	}
+    }
+}
+
+double GeneralDipole::nbar(unsigned int i,unsigned int j) {
+  if(_zij[i][j]>0){return 0.;}
+  if(i==0)
+    {return YFSFormFactors::nbarIF(_beta[j],_ombeta[j],_zij[i][j]/9.,_emax,_emin);}
+  else if(j==0)
+    {return YFSFormFactors::nbarIF(_beta[i],_ombeta[i],_zij[i][j]/9.,_emax,_emin);}
+  else {
+    // easiest to do the calculation in terms of the values in rest frame
+    // of the dipole
+    Energy2 s((_qdrf[i]+_qdrf[j]).m2());
+    Energy md(sqrt(s)),ei(0.5*(s+_m2[i]-_m2[j])/md),ej(0.5*(s-_m2[i]+_m2[j])/md);
+    // calculate beta
+    double betai(sqrt((ei+_m[i])*(ei-_m[i]))/ei);
+    double betaj(sqrt((ej+_m[j])*(ej-_m[j]))/ej);
+    // calculate 1-beta to avoid numerical problems
+    double ombetai(sqr(_m[i]/ei)/(1.+betai));
+    double ombetaj(sqr(_m[j]/ej)/(1.+betaj));
+    return YFSFormFactors::nbarFF(betai,ombetai,betaj,ombetaj,_zij[i][j]/9.,_emax,_emin);
+  }
 }

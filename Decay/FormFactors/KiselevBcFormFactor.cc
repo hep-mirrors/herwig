@@ -18,7 +18,7 @@
 
 using namespace Herwig;
 
-inline KiselevBcFormFactor::KiselevBcFormFactor() :
+KiselevBcFormFactor::KiselevBcFormFactor() :
   _fp  (16,0.    ), _fm  (16,0.    ), _FV( 16,0./GeV),
   _F0A (16,0.*GeV), _FpA (16,0./GeV), _FmA (16,0./GeV),
   _Mfp (16,0.*GeV), _Mfm (16,0.*GeV), _MFV (16,0.*GeV),

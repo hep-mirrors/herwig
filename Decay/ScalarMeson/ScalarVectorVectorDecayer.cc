@@ -171,49 +171,51 @@ void ScalarVectorVectorDecayer::Init() {
 
 }
 
-double ScalarVectorVectorDecayer::me2(bool vertex, const int,
+double ScalarVectorVectorDecayer::me2(const int,
 				      const Particle & inpart,
-				      const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
+				      const ParticleVector & decay,
+				      MEOption meopt) const {
   bool photon[2]={false,false};
-  vector<LorentzPolarizationVector> wave[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    if(decay[ix]->id()==ParticleID::gamma) photon[ix]=true;
-    // workaround for gcc 3.2.3 bug
-    //ALB VectorWaveFunction(wave[ix],decay[ix],outgoing,true,photon[ix],vertex);
-    vector<LorentzPolarizationVector> mytempLPV; 
-    VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
-    wave[ix]=mytempLPV;
+  for(unsigned int ix=0;ix<2;++ix)
+    photon[ix] = decay[ix]->id()==ParticleID::gamma;
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
   }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],
+					    outgoing,true,photon[ix]);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
   InvEnergy2 fact(_coupling[imode()]/inpart.mass());
   Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix) {
     for(iy=0;iy<3;++iy) {
-      newME(0,ix,iy)=fact*(p1p2*wave[0][ix].dot(wave[1][iy])-
-			   (wave[1][iy]*decay[0]->momentum())*
-			   (wave[0][ix]*decay[1]->momentum()));
+      ME()(0,ix,iy)=fact*(p1p2*_vectors[0][ix].dot(_vectors[1][iy])-
+			  (_vectors[1][iy]*decay[0]->momentum())*
+			  (_vectors[0][ix]*decay[1]->momentum()));
     }
   }
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
-  
   // test of the matrix element
-//   double me = newME.contract(rhoin).real();
-//   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
-// 					   decay[1]->mass());
-//   double test = sqr(_coupling[imode()]/inpart.mass())*
-//     (2.*sqr(pcm*inpart.mass())+3.*sqr(decay[0]->mass()*decay[1]->mass()));
-//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-//        << me << " " << test << " " << (me-test)/(me+test) << "\n";
-  return newME.contract(rhoin).real();
+  //   double me = newME.contract(rhoin).real();
+  //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+  // 					   decay[1]->mass());
+  //   double test = sqr(_coupling[imode()]/inpart.mass())*
+  //     (2.*sqr(pcm*inpart.mass())+3.*sqr(decay[0]->mass()*decay[1]->mass()));
+  //   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
+  //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+  //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
+  return ME().contract(_rho).real();
 }
 
 // output the setup info for the particle database

@@ -14,8 +14,6 @@
 #include <ThePEG/Config/ThePEG.h>
 #include <ThePEG/Utilities/ClassDescription.h>
 #include <ThePEG/Helicity/RhoDMatrix.h>
-// #include "ProductionMatrixElement.fh"
-// #include "ProductionMatrixElement.xh"
 
 namespace Herwig {
 using ThePEG::Helicity::RhoDMatrix;
@@ -122,7 +120,7 @@ public:
   /**
    * Default constructor.
    */
-  inline ProductionMatrixElement();
+  ProductionMatrixElement() {};
   //@}
 
 public:
@@ -344,13 +342,15 @@ public:
   /**
    * Calculate the decay matrix for an incoming particle.
    */
-  RhoDMatrix calculateDMatrix(int,RhoDMatrix, vector<RhoDMatrix>);
+  RhoDMatrix calculateDMatrix(int,const RhoDMatrix &,
+			      const vector<RhoDMatrix> &);
 
   /**
    * Calculate the rho matrix for a given outgoing particle.
    */
-  RhoDMatrix calculateRhoMatrix(int,RhoDMatrix,RhoDMatrix,
-				vector<RhoDMatrix>);
+  RhoDMatrix calculateRhoMatrix(int,const RhoDMatrix &,
+                                const RhoDMatrix &,
+				const vector<RhoDMatrix> &);
   
 public:
 

@@ -337,13 +337,13 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
   if( ext[2]->data().iSpin() < ext[3]->data().iSpin() ) swap(ext[2], ext[3]);
 
   VBVector v1, v3;
-  VectorWaveFunction(v1, ext[1], incoming, false, true, true);
+  VectorWaveFunction(v1, ext[1], incoming, false, true);
   //function to calculate me2 expects massless incoming vectors
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
   v1[1] = v1[2];
   bool mc = !(ext[2]->data().mass() > 0.*MeV);
-  VectorWaveFunction(v3, ext[2], outgoing, true, mc, true);
+  VectorWaveFunction(v3, ext[2], outgoing, true, mc);
   SpinorVector sp;  SpinorBarVector sbar;
   double dummy(0.);
   HardVertexPtr hv = new_ptr(HardVertex());
@@ -360,8 +360,8 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
   VectorWaveFunction vor(rescaledMomenta()[2], data[2], outgoing);
 
   if( ext[0]->id() > 0 ) {
-    SpinorWaveFunction(sp, ext[0], incoming, false, true);
-    SpinorBarWaveFunction(sbar, ext[3], outgoing, true, true);
+    SpinorWaveFunction(sp, ext[0], incoming, false);
+    SpinorBarWaveFunction(sbar, ext[3], outgoing, true);
 
     SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
     SpinorBarWaveFunction sbr(rescaledMomenta()[3], data[3], outgoing);
@@ -385,8 +385,8 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
       dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);
   }
   else {
-    SpinorBarWaveFunction(sbar, ext[0], incoming, false, true);
-    SpinorWaveFunction(sp, ext[3], outgoing, true, true);
+    SpinorBarWaveFunction(sbar, ext[0], incoming, false);
+    SpinorWaveFunction(sp, ext[3], outgoing, true);
 
     SpinorBarWaveFunction sbr(rescaledMomenta()[0], data[0], incoming);
     SpinorWaveFunction spr(rescaledMomenta()[3], data[3], outgoing);

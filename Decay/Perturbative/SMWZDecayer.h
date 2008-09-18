@@ -14,7 +14,6 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "SMWZDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -55,8 +54,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -96,13 +95,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -171,6 +170,11 @@ private:
    */
   vector<double> _wleptonwgt;
   //@}
+
+  mutable RhoDMatrix _rho;
+  mutable vector<VectorWaveFunction> _vectors;
+  mutable vector<SpinorWaveFunction> _wave;
+  mutable vector<SpinorBarWaveFunction> _wavebar;
 };
 
 }
@@ -213,7 +217,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "SMWZDecayer.icc"
 
 #endif /* HERWIG_SMWZDecayer_H */

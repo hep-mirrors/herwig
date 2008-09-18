@@ -54,22 +54,30 @@ void VSSDecayer::Init() {
 
 }
 
-double VSSDecayer::me2(bool vertex, const int , const Particle & inpart,
- 		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin1);
-  
-  vector<VectorWaveFunction> inwave;
-  VectorWaveFunction(inwave,const_ptr_cast<tPPtr>(&inpart),incoming,true,
-		     false,vertex);
-  ScalarWaveFunction sca1(decay[0],outgoing,true,vertex);
-  ScalarWaveFunction sca2(decay[1],outgoing,true,vertex);
-  Energy2 scale(inpart.mass()*inpart.mass());
-  DecayMatrixElement newme(PDT::Spin1,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix) {
-    newme(ix,0,0) = _abstractVertex->evaluate(scale,inwave[ix],sca1,sca2);
+double VSSDecayer::me2(const int , const Particle & inpart,
+ 		       const ParticleVector & decay, 
+		       MEOption meopt) const {
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0));
   }
-  ME(newme);
-  double output=(newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::
+	constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
+  }
+  ScalarWaveFunction sca1(decay[0]->momentum(),decay[0]->dataPtr(),outgoing);
+  ScalarWaveFunction sca2(decay[1]->momentum(),decay[1]->dataPtr(),outgoing);
+  Energy2 scale(sqr(inpart.mass()));
+  for(unsigned int ix=0;ix<3;++ix) {
+    ME()(ix,0,0) = _abstractVertex->evaluate(scale,_vectors[ix],sca1,sca2);
+  }
+  double output=(ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -86,7 +94,7 @@ Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa,
     double mu1sq = sqr(outa.second/inpart.second);
     double mu2sq = sqr(outb.second/inpart.second);
     double me2 = sqr(mu1sq - mu2sq) - 2.*(mu1sq + mu2sq);
-    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
     Energy output = -norm(_perturbativeVertex->getNorm())*me2*pcm /
       (24.*Constants::pi);

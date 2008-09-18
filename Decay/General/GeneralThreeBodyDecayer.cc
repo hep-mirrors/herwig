@@ -235,7 +235,7 @@ threeBodyMatrixElement(const int imode,  const Energy2 q2,
   for(unsigned int ix=1;ix<4;++ix)
     decay.push_back(mode(imode)->externalParticles(ix)->produceParticle(out[ix-1]));
   // return the matrix element
-  return me2(false,-1,*inpart,decay);
+  return me2(-1,*inpart,decay,Initialize);
 }
 
 double GeneralThreeBodyDecayer::brat(const DecayMode &, const Particle & p,

@@ -203,31 +203,25 @@ bool PartonicDecayerBase::duplicateMode(const Particle & parent,
   bool found(false);
   for (unsigned ix = 0; ix < hadrons.size(); ++ix)
     hadronsb.insert(hadrons[ix]->dataPtr());
-
   // now check particle's decay modes 
-  tcPDPtr pdata(parent.dataPtr());
-  Selector<tDMPtr> modes = pdata->decaySelector();
-  Selector<tDMPtr>::const_iterator modeptr = modes.begin();
-  Selector<tDMPtr>::const_iterator end = modes.end();
-
-
+  Selector<tDMPtr>::const_iterator modeptr 
+    = parent.dataPtr()->decaySelector().begin();
+  Selector<tDMPtr>::const_iterator end     
+    = parent.dataPtr()->decaySelector().end();
   // check not a duplicate of a known mode
   for(;modeptr!=end;++modeptr) {
     tcDMPtr mode=(*modeptr).second;
     // check same number of products
-    if (mode->products().size() == hadronsb.size()) {
-      ParticleMSet::const_iterator dit;
-      cParticleMSet::const_iterator pit;
-      
-      for(dit=mode->products().begin(), pit=hadronsb.begin();
-	  dit!=mode->products().end(); ++dit,++pit) {
-	if((*dit)!=(*pit)) break;
-      }
-      if(dit == mode->products().end()) {
-	found = true;
-	break;
-      }
+    if(mode->products().size() != hadronsb.size()) continue;
+    ParticleMSet::const_iterator dit;
+    cParticleMSet::const_iterator pit;
+    for(dit=mode->products().begin(), pit=hadronsb.begin();
+	dit!=mode->products().end(); ++dit,++pit) {
+      if((*dit)!=(*pit)) break;
     }
+    if(dit != mode->products().end()) continue;
+    found = true;
+    break;
   }
   return found;
 }

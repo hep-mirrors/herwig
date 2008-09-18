@@ -57,46 +57,50 @@ void TFFDecayer::Init() {
 
 }
 
-double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
-		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin2);
-  
-  vector<LorentzTensor<double> > in;
-  TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
+double TFFDecayer::me2(const int , const Particle & inpart,
+		       const ParticleVector & decay,
+		       MEOption meopt) const {
   unsigned int iferm(0),ianti(1);
   if(decay[0]->id()>=0) swap(iferm,ianti);
-  vector<SpinorWaveFunction> wave;
-  vector<SpinorBarWaveFunction> awave;
-  SpinorWaveFunction(wave,decay[ianti],outgoing,true,vertex);
-  SpinorBarWaveFunction(awave,decay[iferm],outgoing,true,vertex);
-  Energy2 scale(inpart.mass()*inpart.mass());
-  DecayMatrixElement newme(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half);
+  if(meopt==Initialize) {
+    TensorWaveFunction::
+      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+			     incoming,false);
+    ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1Half,PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    TensorWaveFunction::
+      constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+			incoming,true,false);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
+  Energy2 scale(sqr(inpart.mass()));
   unsigned int thel,fhel,ahel;
   for(thel=0;thel<5;++thel) {
-    TensorWaveFunction inwave(inpart.momentum(),
-			      inpart.dataPtr(),
-			      in[thel].xx(),in[thel].xy(),in[thel].xz(),
-			      in[thel].xt(),in[thel].yx(),in[thel].yy(),
-			      in[thel].yz(),in[thel].yt(),in[thel].zx(),
-			      in[thel].zy(),in[thel].zz(),in[thel].zt(),
-			      in[thel].tx(),in[thel].ty(),in[thel].tz(),
-			      in[thel].tt());
     for(fhel=0;fhel<2;++fhel) {
       for(ahel=0;ahel<2;++ahel) {
 	if(iferm > ianti) {
-	  newme(thel,fhel,ahel) = _abstractVertex->evaluate(scale,wave[ahel],
-							    awave[fhel],inwave);
+	  ME()(thel,fhel,ahel) = 
+	    _abstractVertex->evaluate(scale,_wave[ahel],
+				      _wavebar[fhel],_tensors[thel]);
 	}
 	else {
-	  newme(thel,ahel,fhel) = _abstractVertex->evaluate(scale,wave[ahel],
-							    awave[fhel],inwave);
+	  ME()(thel,ahel,fhel) = 
+	    _abstractVertex->evaluate(scale,_wave[ahel],
+				      _wavebar[fhel],_tensors[thel]);
 	}
       }
     }
   }
-  ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -114,7 +118,7 @@ Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     double musq = sqr(outa.second/inpart.second);
     double b = sqrt(1- 4.*musq);
     double me2 = b*b*(5-2*b*b)*scale/120.*UnitRemoval::InvE2;
-    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
     Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/(8.*Constants::pi);
     // colour factor

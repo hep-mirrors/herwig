@@ -476,22 +476,23 @@ void a1ThreePionDecayer::Init() {
      false, false, true);
 }
 
-double a1ThreePionDecayer::me2(bool vertex, const int ichan,
+double a1ThreePionDecayer::me2(const int ichan,
 			       const Particle & inpart,
-			       const ParticleVector & decay) const {
-  // wavefunctions for the decaying particles
-  RhoDMatrix rhoin(PDT::Spin1);
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex) {
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-	PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+			       const ParticleVector & decay,
+			       MEOption meopt) const {
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
@@ -593,13 +594,12 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
   }
   // form-factor
   LorentzPolarizationVector outputFinal 
-    = output * a1FormFactor(Q.mass2())*_coupling/(Q.mass()*_rhomass[0]*_rhomass[0]);
+    = output * a1FormFactor(Q.mass2())*_coupling/(Q.mass()*sqr(_rhomass[0]));
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0,0)=outputFinal.dot(invec[ix]);}
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix)
+    ME()(ix,0,0,0)=outputFinal.dot(_vectors[ix]);
   // return the answer
-  double out = newME.contract(rhoin).real();
+  double out = ME().contract(_rho).real();
   // test of the answer
 //   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),s3,s2,s1,
 // 				       decay[0]->mass(),decay[1]->mass(), 

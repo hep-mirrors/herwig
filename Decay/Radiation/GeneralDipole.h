@@ -33,17 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GeneralDipole();
-
-  /**
-   * The copy constructor.
-   */
-  inline GeneralDipole(const GeneralDipole &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~GeneralDipole();
+  GeneralDipole();
   //@}
 
 public:
@@ -90,13 +80,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -106,7 +96,7 @@ protected:
    * @param j Second particle in the dipole
    * @return The average photon multiplicity
    */
-  inline double nbar(unsigned int i, unsigned int j);
+  double nbar(unsigned int i, unsigned int j);
 
   /**
    * Member which generates the photons
@@ -139,7 +129,7 @@ protected:
   /**
    *  Reweights the dipole for the effects of the momentum rescaling
    */
-  inline void reweightDipole();
+  void reweightDipole();
 
   /**
    * The full YFS form factor
@@ -156,7 +146,7 @@ protected:
   /**
    * Jacobian factor for the weight
    */
-  inline double jacobianWeight();
+  double jacobianWeight();
 
   /**
    * Calculate the full weight for the dipoles
@@ -170,7 +160,7 @@ protected:
    * @param iphot Photn
    * @return The weight
    */
-  inline double dipoleWeight(unsigned int ix, unsigned int iy,unsigned int iphot);
+  double dipoleWeight(unsigned int ix, unsigned int iy,unsigned int iphot);
 
 private:
 
@@ -512,7 +502,5 @@ struct ClassTraits<Herwig::GeneralDipole>
 /** @endcond */
 
 }
-
-#include "GeneralDipole.icc"
 
 #endif /* HERWIG_GeneralDipole_H */

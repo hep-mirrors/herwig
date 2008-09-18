@@ -190,28 +190,31 @@ void PScalarPScalarVectorDecayer::Init() {
 
 }
 
-double PScalarPScalarVectorDecayer::me2(bool vertex, const int,
-					const Particle & inpart,
-					const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  // set up spins for the incoming particles
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
-  vector<LorentzPolarizationVector> eps;
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  PPtr mytemp = decay[0];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  VectorWaveFunction(eps,decay[1],outgoing,true,false,vertex);
+double PScalarPScalarVectorDecayer::me2( const int,
+					 const Particle & inpart,
+					 const ParticleVector & decay,
+					 MEOption meopt) const {
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
+    VectorWaveFunction::constructSpinInfo(_vectors,decay[1],
+					  outgoing,true,false);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors,decay[1],
+					     outgoing,false);
   // calculate the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin1);
   Lorentz5Momentum psum(inpart.momentum()+decay[0]->momentum());
   for(unsigned int ix=0;ix<3;++ix) {
-    newME(0,0,ix)=_coupling[imode()]/inpart.mass()*(eps[ix]*psum);
+    ME()(0,0,ix)=_coupling[imode()]/inpart.mass()*(_vectors[ix]*psum);
   }
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
@@ -221,7 +224,7 @@ double PScalarPScalarVectorDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << (me-test)/(me+test) << "\n";
   // output the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation

@@ -30,8 +30,7 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(),
 			       _c1K1430m(), _c1K14300(), _c1rho1700(), _c1K1680(), 
 			       _c2Kstarp(), _c2rho(), _c2omega(), _c2Kstarm(),
 			       _c2f980(), _c2f2(), _c2f1370(), _c2K14300(),
-			       _c2K14302(), _c2K1680(), _c2NR(), _rD0(), _rres()
-{
+			       _c2K14302(), _c2K1680(), _c2NR(), _rD0(), _rres() {
   // use local values for masses and widths
   _localparameters=true;
   // masses and widths
@@ -70,6 +69,9 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(),
   _a2K14302   = 1.0/GeV2 ; _phi2K14302 = 335;
   _a2K1680    = 5.6      ; _phi2K1680  = 174;
   _a2NR       = 1.1      ; _phi2NR     = 340;
+  // radial sizes
+  _rD0  = 5.0/GeV;
+  _rres = 1.5/GeV;
   // zero masses
   _mpi=0.*MeV;
   _mkp=0.*MeV;
@@ -102,9 +104,6 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
   _c2K14302  = _a2K14302*Complex(cos(_phi2K14302*fact),sin(_phi2K14302*fact));
   _c2K1680   = _a2K1680 *Complex(cos(_phi2K1680 *fact),sin(_phi2K1680 *fact));
   _c2NR      = _a2NR    *Complex(cos(_phi2NR    *fact),sin(_phi2NR    *fact));
-  // radial sizes
-  _rD0  = 5.0/GeV;
-  _rres = 1.5/GeV;
   // pion and kaon masses
   _mpi = getParticleData(ParticleID::piplus)->mass();
   _mkp = getParticleData(ParticleID::Kplus )->mass();
@@ -879,17 +878,23 @@ int DtoKPiPiCLEO::modeNumber(bool & cc,tcPDPtr parent,
   else                        return -1;
 }
 
-double DtoKPiPiCLEO::me2(bool vertex, const int ichan,
-			    const Particle & inpart,
-			    const ParticleVector & decay) const {
+double DtoKPiPiCLEO::me2(const int ichan,
+			 const Particle & inpart,
+			 const ParticleVector & decay,
+			 MEOption meopt) const {
   useMe();
-  // wavefunnction for the decaying particle
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // wavefunctions for the outgoing particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // compute the invariant masses needed to calulate the amplitudes
   Energy mD  = inpart.mass();
@@ -981,10 +986,8 @@ double DtoKPiPiCLEO::me2(bool vertex, const int ichan,
     }
   }
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=amp;
-  ME(newME);
-  return real(amp*conj(amp));
+  ME()(0,0,0,0)=amp;
+  return norm(amp);
 }
 
 void DtoKPiPiCLEO::dataBaseOutput(ofstream & output, bool header) const {
@@ -1098,11 +1101,11 @@ Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
 					Energy mAB, Energy mAC, Energy mBC,
 					Energy mres, Energy wres) const{
   // compute the production momenta
-  Energy pDR  = Kinematics::CMMomentum(mD,mres,mC);
-  Energy pDAB = Kinematics::CMMomentum(mD,mAB ,mC);
+  Energy pDR  = Kinematics::pstarTwoBodyDecay(mD,mres,mC);
+  Energy pDAB = Kinematics::pstarTwoBodyDecay(mD,mAB ,mC);
   // and the decay momenta
-  Energy pAB = Kinematics::CMMomentum(mAB ,mA,mB);
-  Energy pR  = Kinematics::CMMomentum(mres,mA,mB);
+  Energy pAB = Kinematics::pstarTwoBodyDecay(mAB ,mA,mB);
+  Energy pR  = Kinematics::pstarTwoBodyDecay(mres,mA,mB);
   double Fd(1.),Fr(1.),s(1.);
   switch(ispin) {
   case 0:

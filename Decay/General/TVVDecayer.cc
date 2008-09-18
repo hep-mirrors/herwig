@@ -56,41 +56,45 @@ void TVVDecayer::Init() {
 
 }
 
-double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
-		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin2);
-  
-  vector<LorentzTensor<double> > in;
-  bool massa(decay[0]->mass()==0*MeV),massb(decay[1]->mass()==0*MeV);
-  TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  vector<VectorWaveFunction> vec1,vec2;
-  VectorWaveFunction(vec1,decay[0],outgoing,true,massa,vertex);
-  VectorWaveFunction(vec2,decay[1],outgoing,true,massb,vertex);
-  DecayMatrixElement newme(PDT::Spin2,PDT::Spin1,PDT::Spin1);
-  Energy2 scale(inpart.mass()*inpart.mass());
+double TVVDecayer::me2(const int , const Particle & inpart,
+		       const ParticleVector & decay,
+		       MEOption meopt) const {
+  bool photon[2];
+  for(unsigned int ix=0;ix<2;++ix)
+    photon[ix] = decay[ix]->mass()==0*MeV;
+  if(meopt==Initialize) {
+    TensorWaveFunction::
+      calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
+			     incoming,false);
+    ME(DecayMatrixElement(PDT::Spin2,PDT::Spin1,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    TensorWaveFunction::
+      constructSpinInfo(_tensors,const_ptr_cast<tPPtr>(&inpart),
+			incoming,true,false);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::
+	constructSpinInfo(_vectors[ix],decay[ix],outgoing,true,photon[ix]);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
+  Energy2 scale(sqr(inpart.mass()));
   unsigned int thel,v1hel,v2hel;
   for(thel=0;thel<5;++thel) {
-    TensorWaveFunction inwave(inpart.momentum(),
-			      inpart.dataPtr(),
-			      in[thel].xx(),in[thel].xy(),in[thel].xz(),
-			      in[thel].xt(),in[thel].yx(),in[thel].yy(),
-			      in[thel].yz(),in[thel].yt(),in[thel].zx(),
-			      in[thel].zy(),in[thel].zz(),in[thel].zt(),
-			      in[thel].tx(),in[thel].ty(),in[thel].tz(),
-			      in[thel].tt());
     for(v1hel=0;v1hel<3;++v1hel) {
       for(v2hel=0;v2hel<3;++v2hel) {
-	newme(thel,v1hel,v2hel) = _abstractVertex->evaluate(scale,vec1[v1hel],
-							    vec2[v2hel],
-							    inwave);
-	if(massb) ++v2hel;
+	ME()(thel,v1hel,v2hel) = _abstractVertex->evaluate(scale,
+							   _vectors[0][v1hel],
+							   _vectors[1][v2hel],
+							   _tensors[thel]);
+	if(photon[1]) ++v2hel;
       }
-      if(massa) ++v1hel;
+      if(photon[0]) ++v1hel;
     }
   }
-  ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  double output = (ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -106,7 +110,7 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
     double mu2 = sqr(outa.second/inpart.second);
     double b = sqrt(1 - 4.*mu2);
-    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
     Energy2 me2;
     if(outa.second > 0.*MeV && outb.second > 0.*MeV)

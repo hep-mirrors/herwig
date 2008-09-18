@@ -20,11 +20,16 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 using namespace ThePEG::Helicity;
-using Helicity::ScalarWaveFunction;
-using Helicity::outgoing;
+
+void ScalarMesonCurrent::doinit() throw(InitException) {
+  unsigned int isize=numberOfModes();
+  if(_id.size()!=isize||_decay_constant.size()!=isize)
+    {throw InitException() << "Inconsistent parameters in ScalarMesonCurrent::doinit()"
+			   << Exception::abortnow;}
+  WeakDecayCurrent::doinit();
+}
 
 ScalarMesonCurrent::ScalarMesonCurrent() {
   // the eta/eta' mixing angle
@@ -146,16 +151,15 @@ tPDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq,
 }
 
 vector<LorentzPolarizationVectorE> 
-ScalarMesonCurrent::current(bool vertex, const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay) const {
+ScalarMesonCurrent::current(const int imode, const int, 
+			    Energy & scale,const ParticleVector & decay,
+			    DecayIntegrator::MEOption meopt) const {
   static const Complex ii(0.,1.);
+  if(meopt==DecayIntegrator::Terminate) {
+    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   scale = decay[0]->mass();
-  // workaround for gcc 3.2.3 bug*
-  // set up the spin information for the particle
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  PPtr mytemp = decay[0];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
   Complex pre(-ii*_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;
@@ -231,6 +235,4 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
   if(header) {
     output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
   }
-}
-  
 }

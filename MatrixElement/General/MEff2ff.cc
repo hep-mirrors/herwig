@@ -712,8 +712,8 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     //common spinors
     SpinorVector spA;
     SpinorBarVector spbB;
-    SpinorWaveFunction(spA, hardpro[0], incoming, false, true);
-    SpinorBarWaveFunction(spbB, hardpro[2], outgoing,true, true);
+    SpinorWaveFunction(spA, hardpro[0], incoming, false);
+    SpinorBarWaveFunction(spbB, hardpro[2], outgoing,true);
 
     //ME spinors
     SpinorWaveFunction sp1r(rescaledMomenta()[0], data[0], incoming);
@@ -724,8 +724,8 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
        hardpro[2]->id() == 1000037) {
       SpinorVector spB, spC;
       SpinorBarVector spbA, spbC;
-      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
-      SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
+      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false);
+      SpinorWaveFunction(spB, hardpro[3], outgoing, true);
       //ME spinors
       SpinorBarWaveFunction spb1r(rescaledMomenta()[1], data[1], incoming);
       SpinorWaveFunction sp2r(rescaledMomenta()[3], data[3], outgoing);
@@ -764,8 +764,8 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     else if( hardpro[1]->id() < 0 ) {
       SpinorVector spB;
       SpinorBarVector spbA;
-      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
-      SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
+      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false);
+      SpinorWaveFunction(spB, hardpro[3], outgoing, true);
 
       //ME spinors
       SpinorBarWaveFunction spb1r(rescaledMomenta()[1], data[1], incoming);
@@ -795,8 +795,8 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     else {
       SpinorVector spB;
       SpinorBarVector spbA;
-      SpinorWaveFunction(spB,hardpro[1],incoming, false, true);
-      SpinorBarWaveFunction(spbA, hardpro[3], outgoing, true, true);
+      SpinorWaveFunction(spB,hardpro[1],incoming, false);
+      SpinorBarWaveFunction(spbA, hardpro[3], outgoing, true);
 
       SpinorWaveFunction sp2r(rescaledMomenta()[1], data[1], incoming);
       SpinorBarWaveFunction spb1r(rescaledMomenta()[3], data[3], outgoing);
@@ -827,10 +827,10 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   else {
     SpinorVector spA, spB;
     SpinorBarVector spbA, spbB;
-    SpinorBarWaveFunction(spbA,hardpro[0],incoming, false, true);
-    SpinorBarWaveFunction(spbB,hardpro[1],incoming, false, true);
-    SpinorWaveFunction(spA, hardpro[2], outgoing, true, true);
-    SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
+    SpinorBarWaveFunction(spbA,hardpro[0],incoming, false);
+    SpinorBarWaveFunction(spbB,hardpro[1],incoming, false);
+    SpinorWaveFunction(spA, hardpro[2], outgoing, true);
+    SpinorWaveFunction(spB, hardpro[3], outgoing, true);
 
     //ME spinors
     SpinorBarWaveFunction spb1r(rescaledMomenta()[0], data[0], incoming);

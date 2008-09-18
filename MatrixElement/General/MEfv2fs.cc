@@ -342,12 +342,12 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
 
   //calculate production ME
   VecWFVector vecIn;
-  VectorWaveFunction(vecIn, external[1], incoming, false, true,  true);
+  VectorWaveFunction(vecIn, external[1], incoming, false, true);
   //function to calculate me2 expects massless incoming vectors
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
   vecIn[1] = vecIn[2];
-  ScalarWaveFunction scaOut(external[3], outgoing, true, true);
+  ScalarWaveFunction scaOut(external[3], outgoing, true);
 
   //Need to use rescale momenta to calculate matrix element
   cPDVector data(4);
@@ -360,9 +360,9 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
   double dummy(0.);
   if( external[0]->id() > 0 ) {
     SpinorVector spIn;
-    SpinorWaveFunction(spIn, external[0], incoming, false, true);
+    SpinorWaveFunction(spIn, external[0], incoming, false);
     SpinorBarVector spbOut;
-    SpinorBarWaveFunction(spbOut, external[2], outgoing, true, true);
+    SpinorBarWaveFunction(spbOut, external[2], outgoing, true);
 
     SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
     VectorWaveFunction vr(rescaledMomenta()[1], data[1], incoming);
@@ -387,9 +387,9 @@ void MEfv2fs::constructVertex(tSubProPtr subp) {
   }
   else {
     SpinorBarVector spbIn;
-    SpinorBarWaveFunction(spbIn, external[0], incoming, false, true);
+    SpinorBarWaveFunction(spbIn, external[0], incoming, false);
     SpinorVector spOut;
-    SpinorWaveFunction(spOut, external[2], outgoing, true, true);
+    SpinorWaveFunction(spOut, external[2], outgoing, true);
 
     SpinorBarWaveFunction sbr(rescaledMomenta()[0], data[0], incoming);
     VectorWaveFunction vr(rescaledMomenta()[1], data[1], incoming);

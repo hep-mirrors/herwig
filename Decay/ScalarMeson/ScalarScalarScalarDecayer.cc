@@ -235,7 +235,7 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   generateIntermediates(false);
 }
 
-inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
+void ScalarScalarScalarDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize(_coupling.size());
@@ -342,24 +342,26 @@ void ScalarScalarScalarDecayer::Init() {
 
 }
 
-double ScalarScalarScalarDecayer::me2(bool vertex, const int,
-				   const Particle & inpart,
-				   const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
-  for (unsigned int ix=0;ix<2;++ix) {
-    //ALB gcc 3.2.3 {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+double ScalarScalarScalarDecayer::me2(const int,
+				      const Particle & inpart,
+				      const ParticleVector & decay,
+				      MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0));
   }
-  // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0);
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
+  }
   double fact(_coupling[imode()]/inpart.mass());
-  newME(0,0,0) = fact;
-  ME(newME);
+  ME()(0,0,0) = fact;
   return sqr(fact);
 }
 

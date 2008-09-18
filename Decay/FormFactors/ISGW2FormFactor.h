@@ -15,7 +15,6 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
-#include "ISGW2FormFactor.fh"
 #include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
@@ -154,13 +153,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -195,7 +194,16 @@ protected:
    * @param q2 \f$q^2\f$ the scale.
    * @return the value of \f$\alpha_S\f$.
    */
-  double alphaS(Energy mass, Energy2 q2) const;
+  double alphaS(Energy mass, Energy2 q2) const {
+    Energy2 lqcd2(0.04*GeV2);
+    double nflav(4.);
+    double output(_alphamuQM);
+    if (q2>0.36*GeV2) {
+      if(mass<_mcharm+0.03*GeV) nflav=3.0;
+      output = 12.*Constants::pi/(33.-2.*nflav)/log(q2/lqcd2);
+    }
+    return output;
+  }
 
 private:
 
@@ -533,8 +541,6 @@ template <>
 /** @endcond */
 
 }
-
-#include "ISGW2FormFactor.icc"
 
 #endif /* HERWIG_ISGW2FormFactor_H */
 

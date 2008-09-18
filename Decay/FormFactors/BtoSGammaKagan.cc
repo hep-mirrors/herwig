@@ -86,6 +86,11 @@ BtoSGammaKagan::BtoSGammaKagan()
   _spectrum=vector<InvEnergy>(spin,spin+100);
 }
 
+void BtoSGammaKagan::doinitrun() {
+  BtoSGammaHadronicMass::doinitrun();
+  _pmHinter = new_ptr(Interpolator<InvEnergy,Energy>(_spectrum,_mHinter,3));
+}
+
 void BtoSGammaKagan::persistentOutput(PersistentOStream & os) const {
   os << ounit(_mt,GeV) << ounit(_mb,GeV) << ounit(_mc,GeV) << ounit(_ms,GeV) 
      << _msovermb << _zratio << ounit(_lambda2,GeV2) << ounit(_mw,GeV) << ounit(_mz,GeV) 

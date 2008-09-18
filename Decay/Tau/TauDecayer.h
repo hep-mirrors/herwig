@@ -13,8 +13,9 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "TauDecayer.fh"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
+#include "ThePEG/Helicity/LorentzSpinor.h"
+#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -53,7 +54,9 @@ public:
   /**
    * Default constructor.
    */
-  inline TauDecayer();
+  TauDecayer() :_gf(1.16637E-5/GeV2) {
+    generateIntermediates(true);
+  }
 
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -75,14 +78,13 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * This method combines the leptonic current and the hadronic current to 
    * calculate the matrix element.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		      const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay,MEOption) const;
 
   /**
    * Output the setup information for the particle database.
@@ -120,13 +122,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -144,7 +146,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -191,6 +193,23 @@ private:
    */
   vector<double> _weights;
 
+  /**
+   *  The spinors for the decaying particle
+   */
+  mutable vector<LorentzSpinor   <SqrtEnergy> > _inspin;
+  mutable vector<LorentzSpinorBar<SqrtEnergy> > _inbar ;
+
+  /**
+   *  Rho matrix
+   */
+  mutable RhoDMatrix _rho;
+
+  /**
+   *  Maps for the vectors
+   */
+  mutable vector<unsigned int> _constants;
+  mutable vector<PDT::Spin> _ispin; 
+
 };
 
 }
@@ -233,7 +252,5 @@ struct ClassTraits<Herwig::TauDecayer>
 /** @endcond */
 
 }
-
-#include "TauDecayer.icc"
 
 #endif /* THEPEG_TauDecayer_H */

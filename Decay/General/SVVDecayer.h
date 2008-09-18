@@ -17,6 +17,8 @@
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.fh"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -51,8 +53,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-                      const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+                      const ParticleVector & decay, MEOption meopt) const;
   
   /**
    * Function to return partial Width
@@ -155,6 +157,10 @@ private:
    * Pointer to the general form
    */
   GeneralVVSVertexPtr _generalVertex;
+
+  mutable RhoDMatrix _rho;
+  mutable Helicity::ScalarWaveFunction _swave;
+  mutable vector<Helicity::VectorWaveFunction> _vectors[2];
 };
 
 }

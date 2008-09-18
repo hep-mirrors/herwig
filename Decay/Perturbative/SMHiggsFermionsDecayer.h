@@ -16,7 +16,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/PDT/SMHiggsWidthGenerator.h"
-#include "SMHiggsFermionsDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -65,8 +64,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -109,13 +108,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -169,6 +168,10 @@ private:
    */
   SMHiggsWidthGeneratorPtr _hwidth;
 
+  mutable RhoDMatrix _rho;
+  mutable ScalarWaveFunction _swave;
+  mutable vector<SpinorWaveFunction> _wave;
+  mutable vector<SpinorBarWaveFunction> _wavebar;
 };
 
 }
@@ -203,7 +206,5 @@ struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
 /** @endcond */
 
 }
-
-#include "SMHiggsFermionsDecayer.icc"
 
 #endif /* HERWIG_SMHiggsFermionsDecayer_H */
