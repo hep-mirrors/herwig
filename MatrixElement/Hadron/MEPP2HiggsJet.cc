@@ -777,7 +777,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     VectorWaveFunction(g1,hard[0],incoming,false,true,true);
     VectorWaveFunction(g2,hard[1],incoming,false,true,true);
     VectorWaveFunction(g4,hard[3],outgoing,true ,true,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g1[1]=g1[2];g2[1]=g2[2];g4[1]=g4[2];
     ggME(g1,g2,hout,g4,true);
   }
@@ -789,7 +789,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     SpinorWaveFunction(    qin,hard[0],incoming,false,true);
     VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
     SpinorBarWaveFunction(qout,hard[3],outgoing,true ,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g2[1]=g2[2];
     qgME(qin,g2,hout,qout,true); 
   }
@@ -801,7 +801,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     SpinorBarWaveFunction( qin,hard[0],incoming,false,true);
     VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
     SpinorWaveFunction(   qout,hard[3],outgoing,true ,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g2[1]=g2[2];
     qbargME(qin,g2,hout,qout,true); 
   }
@@ -813,7 +813,7 @@ void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
     SpinorWaveFunction(    q  ,hard[0],incoming,false,true);
     SpinorBarWaveFunction(qbar,hard[1],incoming,false,true);
     VectorWaveFunction(     g4,hard[3],outgoing,true ,true,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true);
     g4[1]=g4[2];
     qqbarME(q,qbar,hout,g4,true); 
   }

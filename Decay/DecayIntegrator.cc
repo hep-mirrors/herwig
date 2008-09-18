@@ -41,8 +41,8 @@ ParticleVector DecayIntegrator::decay(const Particle & parent,
   if(mout>parent.mass()) return ParticleVector();
   // generate the decay
   bool cc;
-  int imode=modeNumber(cc,parent.dataPtr(),children);
-  return generate(_generateinter,cc,imode,parent);
+  _imode = modeNumber(cc,parent.dataPtr(),children);
+  return _modes[_imode]->generate(_generateinter,cc,parent);
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
@@ -136,7 +136,8 @@ ostream & Herwig::operator<<(ostream & os, const DecayIntegrator & decay) {
 }
 
 // generate the momenta for the decay
-ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int & imode,
+ParticleVector DecayIntegrator::generate(bool inter,bool cc,
+					 const unsigned int & imode,
 					 const Particle & inpart) const {
   _imode=imode;
   return _modes[imode]->generate(inter,cc,inpart);
@@ -260,6 +261,10 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
   unsigned int ix(0),iy,N,iz,tmax,nmatched;
   if(_modes.size()==0) return -1;
   do {
+    if(!_modes[ix]) {
+      ++ix;
+      continue;
+    }
     cc = _modes[ix]->externalParticles(0)->CC();
     tmax=1;if(!cc){++tmax;}
     for(iz=0;iz<tmax;++iz) {
@@ -345,4 +350,41 @@ Energy DecayIntegrator::initializePhaseSpaceMode(unsigned int imode,bool init) c
   tDecayPhaseSpaceModePtr modeptr = const_ptr_cast<tDecayPhaseSpaceModePtr>(cmodeptr);
   modeptr->init();
   return modeptr->initializePhaseSpace(init);
+}
+
+// the matrix element to be integrated for the me
+double DecayIntegrator::threeBodyMatrixElement(const int,const Energy2,
+					       const Energy2,
+					       const Energy2,const Energy2,
+					       const Energy, const Energy, 
+					       const Energy) const {
+  throw DecayIntegratorError() 
+    << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
+    << "method. This must be overwritten in the classes "
+    << "inheriting from DecayIntegrator where it is needed"
+    << Exception::runerror;
+}
+
+// the differential three body decay rate with one integral performed
+InvEnergy DecayIntegrator::threeBodydGammads(const int, const Energy2,
+					     const Energy2,
+					     const Energy, const Energy, 
+					     const Energy) const {
+  throw DecayIntegratorError() 
+    << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
+    <<"method. This must be overwritten in the classes "
+    << "inheriting from DecayIntegrator where it is needed"
+    << Exception::runerror;
+}
+
+bool DecayIntegrator::oneLoopVirtualME(double &, unsigned int ,
+				       const Particle &, 
+				       const ParticleVector &) {
+  return false;
+}
+
+bool DecayIntegrator::realEmmisionME(double &, unsigned int,
+				     const Particle &, 
+				     const ParticleVector &) {
+  return false;
 }

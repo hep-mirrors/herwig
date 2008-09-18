@@ -22,6 +22,13 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void VectorMesonCurrent::doinit() throw(InitException) {
+  unsigned int isize=numberOfModes();
+  if(_id.size()!=isize||_decay_constant.size()!=isize)
+    {throw InitException() << "Inconsistent parameters in VectorMesonCurrent::doinit()"
+			   << Exception::abortnow;}
+  WeakDecayCurrent::doinit();
+}
 VectorMesonCurrent::VectorMesonCurrent()  {
   _id.push_back(213);_decay_constant.push_back(0.1764*GeV2);
   addDecayMode(2,-1);
@@ -129,11 +136,20 @@ tPDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq,
 }
 
 vector<LorentzPolarizationVectorE> 
-VectorMesonCurrent::current(bool vertex, const int imode, const int, 
-			    Energy & scale,const ParticleVector & decay) const {
+VectorMesonCurrent::current(const int imode, const int, 
+			    Energy & scale,const ParticleVector & decay,
+			    DecayIntegrator::MEOption meopt) const {
+  // set up the spin information for the particle and calculate the wavefunctions
+  vector<LorentzPolarizationVector> temp;
+  VectorWaveFunction::
+    calculateWaveFunctions(temp,decay[0],outgoing,false);
+  if(meopt==DecayIntegrator::Terminate) {
+    VectorWaveFunction::constructSpinInfo(temp,decay[0],
+					  outgoing,true,false);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   scale=decay[0]->mass();
   // polarization vector
-  vector<LorentzPolarizationVector> temp;
   Energy fact(_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;
@@ -142,8 +158,6 @@ VectorMesonCurrent::current(bool vertex, const int imode, const int,
     fact *= sqrt(0.5);
     if(decay[0]->id()==ParticleID::rho0&&abs(iq)==1) fact=-fact;
   }
-  // set up the spin information for the particle and calculate the wavefunctions
-  VectorWaveFunction(temp,decay[0],outgoing,true,false,vertex);
   // normalise the current
   vector<LorentzPolarizationVectorE> returnval(3);
   for(unsigned int ix=0;ix<3;++ix) {

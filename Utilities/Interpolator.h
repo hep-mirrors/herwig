@@ -13,6 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include <cassert>
 
 namespace Herwig {
 
@@ -41,12 +42,23 @@ public:
   /**
    * The default constructor.
    */
-  Interpolator() : _order(3) {}
+  Interpolator() : _order(3), _copyx(5),_copyfun(5) {}
 
   /**
    * Constructor with data as vectors.
    */
-  Interpolator(vector<ValT> f, vector<ArgT> x, unsigned int order);
+  Interpolator(vector<ValT> f, vector<ArgT> x, unsigned int order) 
+    : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
+      _funit(TypeTraits<ValT>::baseunit), 
+      _xunit(TypeTraits<ArgT>::baseunit),
+      _copyx(order+2),_copyfun(order+2) {
+    assert(_order>0);
+    assert(x.size() == f.size());
+    for (size_t i = 0; i < f.size(); ++i) {
+      _fun [i] = f[i] / _funit;
+      _xval[i] = x[i] / _xunit;
+    }
+  }
   //@}
 
   /**
@@ -55,7 +67,15 @@ public:
   Interpolator(size_t size, 
 	       double f[], ValT funit,
 	       double x[], ArgT xunit,
-	       unsigned int order);
+	       unsigned int order) 
+    : _fun(size,0.0),_xval(size,0.0),_order(order),
+      _funit(funit),_xunit(xunit), _copyx(order+2),_copyfun(order+2) {
+    assert(_order>0);
+    for (size_t i = 0; i < size; ++i) {
+      _fun [i] = f[i];
+      _xval[i] = x[i];
+    }
+  }
   //@}
 
   /**
@@ -150,6 +170,11 @@ private:
    * The Unit of the argument values
    */
   ArgT _xunit;
+
+  /**
+   *  Temporary storage vectors
+   */
+  mutable vector<double> _copyx,_copyfun;
 
 };
 

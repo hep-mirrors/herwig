@@ -24,6 +24,17 @@
 
 using namespace Herwig;
 
+void WSBFormFactor::doinit() throw(InitException) {
+  ScalarFormFactor::doinit();
+  unsigned int isize(numberOfFactors());
+  if(isize!=_F0.size() ||isize!=_V.size()  ||isize!=_A0.size() ||
+     isize!=_A1.size() ||isize!=_A2.size() ||isize!=_mS0.size()||
+     isize!=_mS1.size()||isize!=_mV0.size()||isize!=_mV1.size())
+    throw InitException() << "Inconsistent parameters in WSBFormFactor::doinit()" 
+			  << Exception::abortnow;
+}
+
+
 WSBFormFactor::WSBFormFactor() 
   : _F0(51), _V(51), _A0(51), _A1(51), _A2(51), 
     _mS0(51), _mS1(51), _mV0(51), _mV1(51) {

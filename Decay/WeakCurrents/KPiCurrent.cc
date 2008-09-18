@@ -401,8 +401,14 @@ void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
 }
 
 vector<LorentzPolarizationVectorE> 
-KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scale,
-		    const ParticleVector & decay) const {
+KPiCurrent::current(const int imode, const int ichan, Energy & scale,
+		    const ParticleVector & decay,
+		    DecayIntegrator::MEOption meopt) const {
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
   Lorentz5Momentum psum (decay[0]->momentum()+decay[1]->momentum());
@@ -434,10 +440,6 @@ KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scal
   Complex qtermnew = qterm*_cV*dot/vnorm;
   sterm *=_cS/snorm;
   LorentzPolarizationVectorE output=gterm*pdiff+(-qtermnew+sterm)*psum;
-  for(unsigned int ix=0;ix<2;++ix) {
-    PPtr mytemp=decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  }
   // return the answer
   if(imode==0) output *= sqrt(0.5);
   return vector<LorentzPolarizationVectorE>(1,output);

@@ -14,6 +14,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/FormFactors/ScalarFormFactor.h"
 #include "Herwig++/Decay/WeakCurrents/LeptonNeutrinoCurrent.h"
+#include "ThePEG/Helicity/LorentzTensor.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -67,8 +68,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2( const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -108,13 +109,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -174,6 +175,12 @@ private:
    */
   InvEnergy2 _GF;
 
+  mutable RhoDMatrix _rho;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  mutable vector<Helicity::LorentzTensor<double> > _tensors;
+  mutable vector<unsigned int> _constants;
+  mutable vector<PDT::Spin> _ispin;
+  mutable unsigned int _imes;
 };
 
 }

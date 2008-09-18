@@ -204,45 +204,52 @@ void SMWZDecayer::Init() {
 
 
 // return the matrix element squared
-double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
-			const ParticleVector & decay) const {
-  // get/calculate the spin info for the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);
-  vector<VectorWaveFunction> inwave;
-  VectorWaveFunction(inwave,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
-		     true,false,vertex);
-  // construct the spinors for the outgoing particles
-  int iferm,ianti;
-  if(decay[0]->id()<0){iferm=1;ianti=0;}
-  else{iferm=0;ianti=1;}
-  vector<SpinorWaveFunction   > awave;
-  vector<SpinorBarWaveFunction> fwave;
-  SpinorWaveFunction   (awave,decay[ianti],outgoing,true,vertex);
-  SpinorBarWaveFunction(fwave,decay[iferm],outgoing,true,vertex);
+double SMWZDecayer::me2(const int, const Particle & inpart,
+			const ParticleVector & decay,
+			MEOption meopt) const {
+  int iferm(1),ianti(0);
+  if(decay[0]->id()>0) swap(iferm,ianti);
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[iferm],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[ianti],outgoing,true);
+    return 0.;
+  }
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[iferm],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   // compute the matrix element
-  DecayMatrixElement newme(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
-  Energy2 scale(inpart.mass()*inpart.mass());
+  Energy2 scale(sqr(inpart.mass()));
   unsigned int ifm,ia,vhel;
   for(ifm=0;ifm<2;++ifm) {
     for(ia=0;ia<2;++ia) {
       for(vhel=0;vhel<3;++vhel) {
 	if(inpart.id()==ParticleID::Z0) {
-	  if(iferm>ianti) newme(vhel,ia,ifm)=
-	    _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
-	  else            newme(vhel,ifm,ia)=
-	    _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
+	  if(iferm>ianti) ME()(vhel,ia,ifm)=
+	    _zvertex->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
+	  else            ME()(vhel,ifm,ia)=
+	    _zvertex->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
 	}
 	else {
-	  if(iferm>ianti) newme(vhel,ia,ifm)=
-	    _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
-	  else            newme(vhel,ifm,ia)=
-	    _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);
+	  if(iferm>ianti) ME()(vhel,ia,ifm)=
+	    _wvertex->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
+	  else            ME()(vhel,ifm,ia)=
+	    _wvertex->evaluate(scale,_wave[ia],_wavebar[ifm],_vectors[vhel]);
 	}
       }
     }
   }
-  ME(newme);
-  double output=(newme.contract(rhoin)).real()*UnitRemoval::E2/scale;
+  double output=(ME().contract(_rho)).real()*UnitRemoval::E2/scale;
   if(abs(decay[0]->id())<=6) output*=3.;
   if(decay[0]->hasColour())      decay[0]->antiColourNeighbour(decay[1]);
   else if(decay[1]->hasColour()) decay[1]->antiColourNeighbour(decay[0]);

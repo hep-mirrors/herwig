@@ -253,10 +253,10 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 				   CosAngle,AzmAngle,pout[0],pout[1]);
 	  // kinematic piece of the weight
 	  wgt = 
-	    Kinematics::CMMomentum(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
-	    Kinematics::CMMomentum(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
+	    Kinematics::pstarTwoBodyDecay(pdec.mass(),p01    .mass(),pout[2].mass())/pdec.mass()*
+	    Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
 	  // piece to improve weight variation
-	  wgt *= pdec.mass()/Kinematics::CMMomentum(pdec.mass(),sqrt(mb2min),pout[2].mass());
+	  wgt *= pdec.mass()/Kinematics::pstarTwoBodyDecay(pdec.mass(),sqrt(mb2min),pout[2].mass());
 	  // matrix element piece
 	  wgt *= 16.*(pdec*pout[1])*(pout[0]*pout[2])/sqr(mb2max-mb2min);
 	  // check doesn't violate max
@@ -335,9 +335,9 @@ ParticleVector WeakPartonicDecayer::decay(const Particle & parent,
 				 CosAngle,AzmAngle,pout[0],pout[1]);
 	// kinematic piece of the weight
 	wgt *= 16.*
-	  Kinematics::CMMomentum(pdec.mass(),pout[3].mass(),ms            )/pdec.mass()*
-	  Kinematics::CMMomentum(ms         ,p01    .mass(),pout[2].mass())/ms*
-	  Kinematics::CMMomentum(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
+	  Kinematics::pstarTwoBodyDecay(pdec.mass(),pout[3].mass(),ms            )/pdec.mass()*
+	  Kinematics::pstarTwoBodyDecay(ms         ,p01    .mass(),pout[2].mass())/ms*
+	  Kinematics::pstarTwoBodyDecay(p01 .mass(),pout[0].mass(),pout[1].mass())/p01.mass();
 	wgt *= fourBodyMatrixElement(pdec,pout[2],pout[0],pout[1],pout[3],Wcol,initial);
 	// check doesn't violate max
 	if(wgt>_threemax) {

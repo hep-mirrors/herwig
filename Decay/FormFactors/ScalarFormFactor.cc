@@ -19,6 +19,17 @@
 
 using namespace Herwig;
 
+void ScalarFormFactor::doinit() throw(InitException) {
+  Interfaced::doinit();
+  // check the consistency of the parameters
+  unsigned int isize=_incomingid.size();
+  if(isize!=_outgoingid.size() || isize!=_outgoingJ.size()||
+     isize!=_spectator.size()  || isize!=_inquark.size()||
+     isize!=_outquark.size())
+    throw InitException() << "Inconsistent parameters in ScalarFormFactor::doinit() " 
+			  << Exception::abortnow;
+}
+
 void ScalarFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _incomingid << _outgoingid << _outgoingJ << _spectator << _inquark << _outquark
      << _numbermodes;

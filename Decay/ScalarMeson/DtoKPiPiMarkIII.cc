@@ -31,8 +31,8 @@ Complex DtoKPiPiMarkIII::amplitude(bool rho, Energy mD,
 					  Energy mAB, Energy mAC, Energy mBC,
 					  Energy mres, Energy wres) const {
   InvEnergy radius = rho ? _rrho : _rKstar;
-  Energy  pAB  = Kinematics::CMMomentum(mAB ,mA,mB);
-  Energy  pR   = Kinematics::CMMomentum(mres,mA,mB);
+  Energy  pAB  = Kinematics::pstarTwoBodyDecay(mAB ,mA,mB);
+  Energy  pR   = Kinematics::pstarTwoBodyDecay(mres,mA,mB);
   Energy2 mgam = wres*sqr(mres)/mAB*Math::powi(pAB/pR,3)*
     (1.+sqr(radius*pR))/(1.+sqr(radius*pAB));
   Energy2 s = (sqr(mAC)-sqr(mBC)-(sqr(mD)-sqr(mC))*(sqr(mA)-sqr(mB))/sqr(mres))*
@@ -556,16 +556,22 @@ int DtoKPiPiMarkIII::modeNumber(bool & cc, tcPDPtr parent,
   }
 }
 
-double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart,
-			    const ParticleVector & decay) const {
+double DtoKPiPiMarkIII::me2( const int ichan,const Particle & inpart,
+			    const ParticleVector & decay,
+			     MEOption meopt) const {
   useMe();
-  // wavefunnction for the decaying particle
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // wavefunctions for the outgoing particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // compute the invariant masses needed to calulate the amplitudes
   Energy mA  = decay[0]->mass();
@@ -638,10 +644,8 @@ double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart
     }
   }
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=amp;
-  ME(newME);
-  return real(amp*conj(amp));
+  ME()(0,0,0,0)=amp;
+  return norm(amp);
 }
 
 void DtoKPiPiMarkIII::dataBaseOutput(ofstream & output, bool header) const {

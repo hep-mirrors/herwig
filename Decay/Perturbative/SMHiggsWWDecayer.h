@@ -16,8 +16,9 @@
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/PDT/SMHiggsWidthGenerator.h"
-#include "SMHiggsWWDecayer.fh"
 
 namespace Herwig {
 
@@ -78,8 +79,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -122,13 +123,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -225,6 +226,11 @@ private:
    */
   vector<double> _zmax;
   //@}
+
+  mutable RhoDMatrix _rho;
+  mutable ScalarWaveFunction _swave;
+  mutable vector<SpinorWaveFunction   > _awave1,_awave2;
+  mutable vector<SpinorBarWaveFunction> _fwave1,_fwave2;
 };
 
 }
@@ -263,7 +269,5 @@ struct ClassTraits<Herwig::SMHiggsWWDecayer>
 /** @endcond */
 
 }
-
-#include "SMHiggsWWDecayer.icc"
 
 #endif /* HERWIG_SMHiggsWWDecayer_H */

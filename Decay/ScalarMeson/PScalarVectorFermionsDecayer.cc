@@ -230,21 +230,37 @@ void PScalarVectorFermionsDecayer::Init() {
 
 }
 
-double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
+double PScalarVectorFermionsDecayer::me2(const int,
 					 const Particle & inpart,
-					 const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // vectors containing the spinors and polarization vectors
-  vector<LorentzSpinor<SqrtEnergy> > wave;
-  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
-  vector<LorentzPolarizationVector> vwave;
-  // set up the spin info for the outgoing particles
-  VectorWaveFunction(vwave     ,decay[0],outgoing,true,true,vertex);
-  SpinorBarWaveFunction(wavebar,decay[1],outgoing,true,vertex);
-  SpinorWaveFunction(   wave   ,decay[2],outgoing,true,vertex);
+					 const ParticleVector & decay,
+					 MEOption meopt) const {
+  // initialization
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,
+			  PDT::Spin1Half));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    // set up the spin information for the decay products
+    VectorWaveFunction::
+      constructSpinInfo(_vectors,decay[0],outgoing,true,true);
+    SpinorBarWaveFunction::
+      constructSpinInfo(_wavebar,decay[1],outgoing,true);
+    SpinorWaveFunction::
+      constructSpinInfo(_wave   ,decay[2],outgoing,true);
+    return 0.;
+  }
+  // calculate the spinors and polarization vectors
+  VectorWaveFunction::
+    calculateWaveFunctions(_vectors,decay[0],outgoing,true);
+  SpinorBarWaveFunction::
+    calculateWaveFunctions(_wavebar,decay[1],outgoing);
+  SpinorWaveFunction::
+    calculateWaveFunctions(_wave   ,decay[2],outgoing);
   // now compute the matrix element
   Complex ii(0.,1.);
   Lorentz5Momentum pff(decay[1]->momentum()+decay[2]->momentum());
@@ -261,21 +277,18 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
   LorentzVector<complex<Energy3> > eps;
   LorentzVector<complex<Energy> > fcurrent;
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   vector<unsigned int> ispin(4);ispin[0]=0;
   for(ispin[3]=0;ispin[3]<2;++ispin[3]) {
     for(ispin[2]=0;ispin[2]<2;++ispin[2]) {
-      fcurrent = wave[ispin[3]].vectorCurrent(wavebar[ispin[2]]);
+      fcurrent = _wave[ispin[3]].vectorCurrent(_wavebar[ispin[2]]);
       // compute the current for this part
       eps = epsilon(decay[0]->momentum(),pff,fcurrent);
       for(ispin[1]=0;ispin[1]<3;++ispin[1]) {
-	newME(ispin)=pre * vwave[ispin[1]].dot(eps);
+	ME()(ispin)=pre *_vectors[ispin[1]].dot(eps);
       }
     }	  
   }
-  ME(newME);
-  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);
-  double me = newME.contract(rhoin).real();
+  double me = ME().contract(_rho).real();
 //   //code to test the matrix element against the analytic result
 //   Energy   m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
 //   Energy2 m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};

@@ -12,8 +12,7 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-// #include "VectorMeson3PionDecayer.fh"
-// #include "VectorMeson3PionDecayer.xh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -104,7 +103,7 @@ public:
   /**
    * Default constructor.
    */
-  inline VectorMeson3PionDecayer();
+  VectorMeson3PionDecayer();
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -114,8 +113,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Which of the possible decays is required
@@ -189,13 +188,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -212,7 +211,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -368,6 +367,17 @@ private:
    *  Initial size of the vectors
    */
   unsigned int _initsize;
+
+  /**
+   *  Storage of polarization tensors to try and increase
+   *  speed
+   */
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+  
+  /**
+   *   Storage of the \f$\rho\f$ matrix
+   */
+  mutable RhoDMatrix _rho;
 };
 
 }
@@ -410,7 +420,5 @@ struct ClassTraits<Herwig::VectorMeson3PionDecayer>
 /** @endcond */
 
 }
-
-#include "VectorMeson3PionDecayer.icc"
 
 #endif /* HERWIG_VectorMeson3PionDecayer_H */

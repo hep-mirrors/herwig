@@ -45,12 +45,16 @@ public:
   /**
    * Get the matrix element
    */
-  inline const DecayMatrixElement & ME() const;
+  const DecayMatrixElement & ME() const { 
+    return _matrixelement;
+  }
 
   /**
    * Set the matrix element
    */
-  inline void ME(const DecayMatrixElement &) const;
+  void ME(const DecayMatrixElement & in) const {
+    _matrixelement.reset(in);
+  }
   //@}  
 
 public:
@@ -128,7 +132,5 @@ struct ClassTraits<Herwig::DecayVertex>
 /** @endcond */
   
 }
-
-#include "DecayVertex.icc"
 
 #endif /* HERWIG_DecayVertex_H */

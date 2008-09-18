@@ -22,7 +22,15 @@
 
 using namespace Herwig; 
 using namespace ThePEG::Helicity;
-     
+ 
+void VectorMeson2MesonDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix)
+      if(mode(ix)) _maxweight[ix]= mode(ix)->maxWeight();
+  }
+}
+
 void VectorMeson2MesonDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check consistence of the parameters
@@ -50,6 +58,8 @@ void VectorMeson2MesonDecayer::doinit() throw(InitException) {
 
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
   _incoming(64), _outgoing1(64), _outgoing2(64), _maxweight(64), _coupling(64) {
+  // matrix element storage
+  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0));
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
@@ -291,32 +301,31 @@ void VectorMeson2MesonDecayer::Init() {
   
 }
 
-double VectorMeson2MesonDecayer::me2(bool vertex, const int,
+double VectorMeson2MesonDecayer::me2(const int,
 				     const Particle & inpart,
-				     const ParticleVector & decay) const {
-  // polarization vector of the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // setup the spininfomation for the decay products
-  for(unsigned int ix=0;ix<decay.size();++ix) {
-    // workaround for gcc 3.2.3 bug
-    //ALB ScalarWaveFunction(decay[ix],outgoing,true,vertex);
-    PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+				     const ParticleVector & decay,
+				     MEOption meopt) const {
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       incoming,false);
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // difference of the momenta
   Lorentz5Vector<double> pdiff
     = (decay[0]->momentum()-decay[1]->momentum()) 
     * _coupling[imode()]/inpart.mass();
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix) {
-    newME(ix,0,0)=invec[ix].dot(pdiff);
-  }
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix) 
+    ME()(ix,0,0)=_vectors[ix].dot(pdiff);
   // test of the matrix element
-//   double me = newME.contract(rhoin).real();
+//   double me = newME.contract(_rho).real();
 //   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
 // 					   decay[1]->mass());
 //   double test = 4.*sqr(_coupling[imode()]*pcm/inpart.mass())/3.;
@@ -324,7 +333,7 @@ double VectorMeson2MesonDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
  
 bool VectorMeson2MesonDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,

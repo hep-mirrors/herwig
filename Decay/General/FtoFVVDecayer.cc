@@ -94,65 +94,103 @@ void FtoFVVDecayer::doinit() throw(InitException) {
   }
 }
 
-double  FtoFVVDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
-			   const ParticleVector & decay) const {
-  // spin density matrix
-  RhoDMatrix rhoin(PDT::Spin1Half);
-  
+double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
+			   const ParticleVector & decay,
+			   MEOption meopt) const {
   //Set up wave-functions
   bool ferm( inpart.id() > 0 );
-  //incoming
-  vector<SpinorWaveFunction> fwave;
-  vector<SpinorBarWaveFunction> fbwave;
-  if( ferm ) {
-    SpinorWaveFunction(fwave, rhoin, const_ptr_cast<tPPtr>(&inpart),
-		       Helicity::incoming, true, vertex);
-    if( fwave[0].wave().Type() != u_spinortype )
-      fwave[0].conjugate();
-    if( fwave[1].wave().Type() != u_spinortype )
-      fwave[1].conjugate();
+  if(meopt==Initialize) {
+    if( ferm ) {
+      SpinorWaveFunction::
+	calculateWaveFunctions(_fwave,_rho,const_ptr_cast<tPPtr>(&inpart),
+			       Helicity::incoming);
+      if( _fwave[0].wave().Type() != u_spinortype )
+	_fwave[0].conjugate();
+      if( _fwave[1].wave().Type() != u_spinortype )
+	_fwave[1].conjugate();
+    }
+    else {
+      SpinorBarWaveFunction::
+	calculateWaveFunctions(_fbwave, _rho, const_ptr_cast<tPPtr>(&inpart),
+			       Helicity::incoming);
+      if( _fbwave[0].wave().Type() != v_spinortype )
+	_fbwave[0].conjugate();
+      if( _fbwave[1].wave().Type() != v_spinortype )
+	_fbwave[1].conjugate();
+    }
   }
-  else {
-    SpinorBarWaveFunction(fbwave, rhoin, const_ptr_cast<tPPtr>(&inpart),
-			  Helicity::incoming, true, vertex);
-    if( fbwave[0].wave().Type() != v_spinortype )
-      fbwave[0].conjugate();
-    if( fbwave[1].wave().Type() != v_spinortype )
-      fbwave[1].conjugate();
+  // setup spin info when needed
+  if(meopt==Terminate) {
+    // for the decaying particle
+    if(ferm)
+      SpinorWaveFunction::constructSpinInfo(_fwave,
+					    const_ptr_cast<tPPtr>(&inpart),
+					    Helicity::incoming,true);
+    else
+      SpinorBarWaveFunction::constructSpinInfo(_fbwave,
+					       const_ptr_cast<tPPtr>(&inpart),
+					       Helicity::incoming,true);
+    int ivec(-1);
+    // outgoing particles
+    for(int ix = 0; ix < 3; ++ix) {
+      tPPtr p = decay[ix];
+      if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
+	if( ferm ) {
+	  SpinorBarWaveFunction::
+	    constructSpinInfo(_fbwave, p, Helicity::outgoing,true);
+	}
+	else {
+	  SpinorWaveFunction::
+	    constructSpinInfo(_fwave , p, Helicity::outgoing,true);
+	}
+      }
+      else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
+	if( ivec < 0 ) {
+	  ivec = ix;
+	  VectorWaveFunction::
+	    constructSpinInfo(_vwave.first , p, Helicity::outgoing, true, false);
+	}
+	else {
+	  VectorWaveFunction::
+	    constructSpinInfo(_vwave.second, p, Helicity::outgoing, true, false);
+	}
+      }
+    }
+    return 0.;
   }
-
   // outgoing, keep track of fermion and first occurrence of vector positions
   int isp(-1), ivec(-1);
-  pair<vector<VectorWaveFunction>, vector<VectorWaveFunction> > vwave;
   // outgoing particles
   for(int ix = 0; ix < 3; ++ix) {
     tPPtr p = decay[ix];
     if( p->dataPtr()->iSpin() == PDT::Spin1Half ) {
       isp = ix;
       if( ferm ) {
-	SpinorBarWaveFunction(fbwave, p, Helicity::outgoing, true, vertex);
-	if( fbwave[0].wave().Type() != u_spinortype )
-	  fbwave[0].conjugate();
-	if( fbwave[1].wave().Type() != u_spinortype )
-	  fbwave[1].conjugate();
+	SpinorBarWaveFunction::
+	  calculateWaveFunctions(_fbwave, p, Helicity::outgoing);
+	if( _fbwave[0].wave().Type() != u_spinortype )
+	  _fbwave[0].conjugate();
+	if( _fbwave[1].wave().Type() != u_spinortype )
+	  _fbwave[1].conjugate();
       }
       else {
-	SpinorWaveFunction(fwave, p, Helicity::outgoing, true, vertex);
-	if( fwave[0].wave().Type() != v_spinortype )
-	  fwave[0].conjugate();
-	if( fwave[1].wave().Type() != v_spinortype )
-	  fwave[1].conjugate();
+	SpinorWaveFunction::
+	  calculateWaveFunctions(_fwave, p, Helicity::outgoing);
+	if( _fwave[0].wave().Type() != v_spinortype )
+	  _fwave[0].conjugate();
+	if( _fwave[1].wave().Type() != v_spinortype )
+	  _fwave[1].conjugate();
       }
     }
     else if( p->dataPtr()->iSpin() == PDT::Spin1 ) {
       if( ivec < 0 ) {
 	ivec = ix;
-	VectorWaveFunction(vwave.first, p, Helicity::outgoing, true, false, 
-			   vertex);
+	VectorWaveFunction::
+	  calculateWaveFunctions(_vwave.first , p, Helicity::outgoing, false);
       }
       else {
-	VectorWaveFunction(vwave.second, p, Helicity::outgoing, true, false, 
-			   vertex);
+	VectorWaveFunction::
+	  calculateWaveFunctions(_vwave.second, p, Helicity::outgoing, false);
       }
     }
   }
@@ -194,58 +232,58 @@ double  FtoFVVDecayer::me2(bool vertex, const int ichan, const Particle & inpart
 	    //Need make sure we connect the correct particles 
 	    VectorWaveFunction vw1, vw2;
 	    if( (*dit).channelType == TBDiagram::channel23 ) {
-	      vw1 = vwave.first[iv1];
-	      vw2 = vwave.second[iv2];
+	      vw1 = _vwave.first[iv1];
+	      vw2 = _vwave.second[iv2];
 	    }
 	    else if( (*dit).channelType == TBDiagram::channel12 ) {
-	      vw1 = vwave.second[iv2];
-	      vw2 = vwave.first[iv1];
+	      vw1 = _vwave.second[iv2];
+	      vw2 = _vwave.first[iv1];
 	    }
 	    else {
 	      if( ivec < isp ) {
-		vw1 = vwave.second[iv2];
-		vw2 = vwave.first[iv1];
+		vw1 = _vwave.second[iv2];
+		vw2 = _vwave.first[iv1];
 	      }
 	      else {
-		vw1 = vwave.first[iv1];
-		vw2 = vwave.second[iv2];
+		vw1 = _vwave.first[iv1];
+		vw2 = _vwave.second[iv2];
 	      }
 	    }
 	    if( ferm ) {
 	      SpinorWaveFunction inters = 
 		_fer[idiag].first->evaluate(scale, widthOption(), offshell,
-					    fwave[if1], vw1);
-	      diag = _fer[idiag].second->evaluate(scale, inters, fbwave[if2],
+					    _fwave[if1], vw1);
+	      diag = _fer[idiag].second->evaluate(scale, inters, _fbwave[if2],
 						  vw2);
 	    }
 	    else {
 	      SpinorBarWaveFunction inters = 
 		_fer[idiag].first->evaluate(scale, widthOption(), offshell,
-					    fbwave[if2], vw1);
-	      diag = _fer[idiag].second->evaluate(scale, fwave[if1], inters, 
+					    _fbwave[if2], vw1);
+	      diag = _fer[idiag].second->evaluate(scale, _fwave[if1], inters, 
 						  vw2);
 	    }
 	  }
 	  else if( offshell->iSpin() == PDT::Spin0 ) {
 	    ScalarWaveFunction inters = 
 	      _sca[idiag].first->evaluate(scale, widthOption(), offshell, 
-					  fwave[if1], fbwave[if2]);
-	    diag = _sca[idiag].second->evaluate(scale, vwave.first[iv1],
-						vwave.second[iv2], inters);
+					  _fwave[if1], _fbwave[if2]);
+	    diag = _sca[idiag].second->evaluate(scale, _vwave.first[iv1],
+						_vwave.second[iv2], inters);
 	  }
 	  else if( offshell->iSpin() == PDT::Spin1 ) {
 	    VectorWaveFunction interv = 
 	      _vec[idiag].first->evaluate(scale, widthOption(), offshell, 
-					  fwave[if1], fbwave[if2]);
-	    diag = _vec[idiag].second->evaluate(scale, vwave.first[iv1],
-						vwave.second[iv2], interv);
+					  _fwave[if1], _fbwave[if2]);
+	    diag = _vec[idiag].second->evaluate(scale, _vwave.first[iv1],
+						_vwave.second[iv2], interv);
 	  } 
 	  else if( offshell->iSpin() == PDT::Spin2 ) {
 	    TensorWaveFunction intert = 
 	      _ten[idiag].first->evaluate(scale, widthOption(), offshell, 
-					  fwave[if1], fbwave[if2]);
-	    diag = _ten[idiag].second->evaluate(scale, vwave.first[iv1],
-						vwave.second[iv2], intert);
+					  _fwave[if1], _fbwave[if2]);
+	    diag = _ten[idiag].second->evaluate(scale, _vwave.first[iv1],
+						_vwave.second[iv2], intert);
 	  }
 	  else 
 	    throw Exception()
@@ -309,30 +347,28 @@ double  FtoFVVDecayer::me2(bool vertex, const int ichan, const Particle & inpart
     vector<double> pflows(ncf,0.);
     for(unsigned int ix = 0; ix < ncf; ++ix) {
       for(unsigned int iy = 0; iy < ncf; ++ iy) {
-	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],rhoin)).real();
+	double con = cfactors[ix][iy]*(mes[ix].contract(mes[iy],_rho)).real();
 	me2 += con;
 	if(ix==iy) {
-	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],rhoin)).real();
+	  con = nfactors[ix][iy]*(mel[ix].contract(mel[iy],_rho)).real();
 	  pflows[ix] += con;
 	}
       }
     }
-    if(vertex) {
-      double ptotal(std::accumulate(pflows.begin(),pflows.end(),0.));
-      ptotal *= UseRandom::rnd();
-      for(unsigned int ix=0;ix<pflows.size();++ix) {
-	if(ptotal<=pflows[ix]) {
-	  colourFlow(ix);
-	  ME(mes[ix]);
-	  break;
-	}
-	ptotal-=pflows[ix];
+    double ptotal(std::accumulate(pflows.begin(),pflows.end(),0.));
+    ptotal *= UseRandom::rnd();
+    for(unsigned int ix=0;ix<pflows.size();++ix) {
+      if(ptotal<=pflows[ix]) {
+        colourFlow(ix);
+        ME(mes[ix]);
+        break;
       }
+      ptotal-=pflows[ix];
     }
   }
   else {
     unsigned int iflow = colourFlow();
-    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],rhoin)).real();
+    me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],_rho)).real();
   }
   // return the matrix element squared
 

@@ -47,7 +47,7 @@ ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer()
   generateIntermediates(false);
 }
 
-inline void ScalarMesonTensorScalarDecayer::doinit() throw(InitException) {
+void ScalarMesonTensorScalarDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
@@ -153,31 +153,34 @@ void ScalarMesonTensorScalarDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
+double ScalarMesonTensorScalarDecayer::me2(const int,
 					   const Particle & inpart,
-					   const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // set up the spin info for the outgoing particles
-  vector<LorentzTensor<double> > twave;
-  TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
-  // workaround for gcc 3.2.3 bug
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+					   const ParticleVector & decay,
+					   MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin2,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    TensorWaveFunction::constructSpinInfo(_tensors,decay[0],
+					  outgoing,true,false);
+    ScalarWaveFunction::constructSpinInfo(decay[1],outgoing,true);
+    return 0.;
+  }
+  TensorWaveFunction::
+    calculateWaveFunctions(_tensors,decay[0],outgoing,false);
   // calculate the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin2,PDT::Spin0);
   InvEnergy2 fact(_coupling[imode()]/inpart.mass());
   LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix) {
-    vtemp = twave[ix]*inpart.momentum(); 
-    newME(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
+    vtemp = _tensors[ix]*inpart.momentum(); 
+    ME()(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
   }
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
-  
   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
@@ -188,7 +191,7 @@ double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
 //        << me << " " << (me-test)/(me+test) << "\n";
   // output the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation

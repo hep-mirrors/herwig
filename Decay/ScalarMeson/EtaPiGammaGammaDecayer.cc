@@ -219,32 +219,33 @@ void EtaPiGammaGammaDecayer::Init() {
      false);
 }
 
-double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpart,
-				   const ParticleVector & decay) const {
-  unsigned int ix,iy;
-  // workaround for gcc 3.2.3 bug
-  // spin info of the decaying particle
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // spin info and wavefunctions for outgoing particles
-  vector<LorentzPolarizationVector> vwave[2];
-  // workaround for gcc 3.2.3 bug
-  for(ix=0;ix<2;++ix) {
-    //ALB  {VectorWaveFunction(vwave[ix],decay[ix+1],outgoing,true,true,vertex);}
-    //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-    vector<LorentzPolarizationVector> mytempLPV;
-    VectorWaveFunction(mytempLPV,decay[ix+1],outgoing,true,true,vertex);
-    vwave[ix]=mytempLPV; 
+double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
+				   const ParticleVector& decay,
+				   MEOption meopt) const {
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1));
   }
-  PPtr mytemp = decay[0];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    ScalarWaveFunction::constructSpinInfo(decay[0],outgoing,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix+1],
+					    outgoing,true,true);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::calculateWaveFunctions(_vectors[ix],decay[ix+1],
+					       outgoing,true);
   // dot products we need
   Energy2 q1dotq2(decay[1]->momentum()*decay[2]->momentum()),
     pdotq1(inpart.momentum()*decay[1]->momentum()),
     pdotq2(inpart.momentum()*decay[2]->momentum());
   complex<Energy> e1dotq2[3],e1dotp[3],e2dotq1[3],e2dotp[3];
-  for(ix=0;ix<3;++ix) {
+  for(unsigned int ix=0;ix<3;++ix) {
     if(ix==1) {
       e1dotq2[ix]=0.*MeV;
       e1dotp[ix] =0.*MeV;
@@ -252,10 +253,10 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
       e2dotp[ix] =0.*MeV;
     }
     else {
-      e1dotq2[ix] =vwave[0][ix]*decay[2]->momentum();
-      e1dotp[ix]  =vwave[0][ix]*inpart.momentum();
-      e2dotq1[ix] =vwave[1][ix]*decay[1]->momentum();
-      e2dotp[ix]  =vwave[1][ix]*inpart.momentum();
+      e1dotq2[ix] =_vectors[0][ix]*decay[2]->momentum();
+      e1dotp[ix]  =_vectors[0][ix]*inpart.momentum();
+      e2dotq1[ix] =_vectors[1][ix]*decay[1]->momentum();
+      e2dotp[ix]  =_vectors[1][ix]*inpart.momentum();
     }
   }
   // the momentum dependent pieces of the matrix element
@@ -272,15 +273,13 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
   complex<InvEnergy2> Dfact(_dconst[imode()]*(prop1*(pdotq2-meta2)
 					      +prop2*(pdotq1-meta2)));
   complex<InvEnergy4> Efact(_econst[imode()]*(prop1+prop2));
-  // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1);
   Complex e1dote2;
-  for(ix=0;ix<3;++ix) {
-    for(iy=0;iy<3;++iy) {
-      if(ix==1||iy==1) newME(0,0,ix,iy)=0.;
+  for(unsigned int ix=0;ix<3;++ix) {
+    for(unsigned int iy=0;iy<3;++iy) {
+      if(ix==1||iy==1) ME()(0,0,ix,iy)=0.;
       else {
-	e1dote2=vwave[0][ix].dot(vwave[1][iy]);
-	newME(0,0,ix,iy) = 
+	e1dote2=_vectors[0][ix].dot(_vectors[1][iy]);
+	ME()(0,0,ix,iy) = 
 	  Dfact*complex<Energy2>(e1dote2*q1dotq2-
 				 e1dotq2[ix]*e2dotq1[iy])
 	  -Efact*complex<Energy4>(-e1dote2*pdotq1*pdotq2
@@ -290,11 +289,8 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
       }
     }
   }
-  // contract the whole thing
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
   /*
-  double me(newME.contract(rhoin).real());
+  double me(ME().contract(rhoin).real());
   Energy M(inpart.mass()),M2(M*M);
   Energy2 s1(2.*(decay[1]->momentum()*decay[2]->momentum()));
   Energy2 s2(M2-2.*(inpart.momentum()*decay[1]->momentum()));
@@ -307,7 +303,7 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
    (M2-s3)*(M2-s3))/8. - me << endl;
   return me;
   */
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
  
 double EtaPiGammaGammaDecayer::

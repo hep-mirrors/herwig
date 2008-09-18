@@ -12,9 +12,8 @@
 // This is the declaration of the TensorMesonVectorPScalarDecayer class.
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-// #include "TensorMesonVectorPScalarDecayer.fh"
-// #include "TensorMesonVectorPScalarDecayer.xh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -72,8 +71,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -123,13 +122,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -147,7 +146,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -193,6 +192,18 @@ private:
    *  Initial size of the vectors
    */
   unsigned int _initsize;
+
+  /**
+   *  Storage of polarization tensors to try and increase
+   *  speed
+   */
+  mutable vector<Helicity::LorentzTensor<double> > _tensors;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
+  /**
+   *   Storage of the \f$\rho\f$ matrix
+   */
+  mutable RhoDMatrix _rho;
 };
 
 }
@@ -235,7 +246,5 @@ struct ClassTraits<Herwig::TensorMesonVectorPScalarDecayer>
 /** @endcond */
 
 }
-
-#include "TensorMesonVectorPScalarDecayer.icc"
 
 #endif /* HERWIG_TensorMesonVectorPScalarDecayer_H */

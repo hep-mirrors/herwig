@@ -51,59 +51,74 @@ void FFVDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _abstractVertex >> _perturbativeVertex;
 }
 
-double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
-		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin1Half);
-  
-  DecayMatrixElement newME(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
-  Energy2 scale(inpart.mass()*inpart.mass());
-  vector<SpinorWaveFunction> wave;
-  vector<SpinorBarWaveFunction> barWave;
-  vector<VectorWaveFunction> vWave;
-  unsigned int iferm(0),ivec(1);
-  if(decay[1]->data().iSpin() == PDT::Spin1Half) swap(iferm,ivec);
+double FFVDecayer::me2(const int , const Particle & inpart,
+		       const ParticleVector & decay, 
+		       MEOption meopt) const {
+  // type of process
   int itype[2];
   if(inpart.dataPtr()->CC())        itype[0] = inpart.id() > 0 ? 0 : 1;
   else                              itype[0] = 2;
-  if(decay[iferm]->dataPtr()->CC()) itype[1] = decay[iferm]->id() > 0 ? 0 : 1;
-  else                              itype[1] = 2;
+  if(decay[0]->dataPtr()->CC()) itype[1] = decay[0]->id() > 0 ? 0 : 1;
+  else                              itype[1] = 2;  
   //Need to use different barred or unbarred spinors depending on 
   //whether particle is cc or not.
   bool ferm(itype[0] == 0 || itype[1] == 0 || (itype[0] == 2 && itype[1] == 2));
-  if(ferm) {
-    SpinorWaveFunction(wave,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		       incoming,true,vertex);
-    SpinorBarWaveFunction(barWave,decay[iferm],outgoing,true,vertex);
-    //checking spinor types
-    if(wave[0].wave().Type() != u_spinortype) {
-      for(unsigned int ix = 0; ix < 2; ++ix)
-	wave[ix].conjugate();
+  if(meopt==Initialize) {
+    // spinors and rho
+    if(ferm) {
+      SpinorWaveFunction   ::calculateWaveFunctions(_wave,_rho,
+						    const_ptr_cast<tPPtr>(&inpart),
+						    incoming);
+      if(_wave[0].wave().Type() != u_spinortype)
+	for(unsigned int ix = 0; ix < 2; ++ix) _wave   [ix].conjugate();
     }
-  }
-  else {
-    SpinorBarWaveFunction(barWave,rhoin,const_ptr_cast<tPPtr>(&inpart),
-			  incoming,true,vertex);
-    SpinorWaveFunction(wave,decay[iferm],outgoing,true,vertex);
-    if(barWave[0].wave().Type() != v_spinortype) {
-      for(unsigned int ix = 0; ix < 2; ++ix)
-	barWave[ix].conjugate();
+    else {
+      SpinorBarWaveFunction::calculateWaveFunctions(_wavebar,_rho,
+						    const_ptr_cast<tPPtr>(&inpart),
+						    incoming);
+      if(_wavebar[0].wave().Type() != v_spinortype)
+	for(unsigned int ix = 0; ix < 2; ++ix) _wavebar[ix].conjugate();
     }
+    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1));
   }
-  VectorWaveFunction(vWave,decay[ivec],outgoing,true,false,vertex);
+  // setup spin info when needed
+  if(meopt==Terminate) {
+    // for the decaying particle
+    if(ferm) {
+      SpinorWaveFunction::
+	constructSpinInfo(_wave,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorBarWaveFunction::constructSpinInfo(_wavebar,decay[0],outgoing,true);
+    }
+    else {
+      SpinorBarWaveFunction::
+	constructSpinInfo(_wavebar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorWaveFunction::constructSpinInfo(_wave,decay[0],outgoing,true);
+    }
+    VectorWaveFunction::
+      constructSpinInfo(_vector,decay[1],outgoing,true,false);
+  }
+  Energy2 scale(sqr(inpart.mass()));
+  if(ferm)
+    SpinorBarWaveFunction::
+      calculateWaveFunctions(_wavebar,decay[0],outgoing);
+  else
+    SpinorWaveFunction::
+      calculateWaveFunctions(_wave   ,decay[0],outgoing);
+  VectorWaveFunction::
+    calculateWaveFunctions(_vector,decay[1],outgoing,false);
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {
 	if(ferm)
-	  newME(if1, if2,vhel) = 
-	    _abstractVertex->evaluate(scale,wave[if1],barWave[if2],vWave[vhel]);
+	  ME()(if1, if2,vhel) = 
+	    _abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],_vector[vhel]);
 	else
-	  newME(if2, if1, vhel) = 
-	    _abstractVertex->evaluate(scale,wave[if1],barWave[if2],vWave[vhel]);
+	  ME()(if2, if1, vhel) = 
+	    _abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],_vector[vhel]);
       }
     }
   }
-  ME(newME);
-  double output=(newME.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  double output=(ME().contract(_rho)).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),decay[1]->dataPtr());
   // return the answer
@@ -135,7 +150,7 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
     else
       me2 = 2.*( (norm(cl) + norm(cr))*(sqr(mu1) + 1.) 
 		 - 4.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
-    Energy pcm = Kinematics::CMMomentum(inpart.second, outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					outb.second);
     Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/16./Constants::pi; 
     // colour factor
