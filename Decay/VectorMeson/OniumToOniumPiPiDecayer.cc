@@ -24,6 +24,13 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void OniumToOniumPiPiDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  for(unsigned int ix=0;ix<_maxweight.size();++ix) {
+    if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
+  }
+}
+
 OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   // Upsilon(3S)->Upsilon(1S) pi pi
   _incoming.push_back(200553);
@@ -288,41 +295,44 @@ int OniumToOniumPiPiDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return npi0==2 ? 2*imode+1 : 2*imode;
 }
 
-double OniumToOniumPiPiDecayer::me2(bool vertex, const int,
+double OniumToOniumPiPiDecayer::me2(const int,
 				    const Particle & inpart,
-				    const ParticleVector & decay) const {
+				    const ParticleVector & decay,
+				    MEOption meopt) const {
   useMe();
-  // polarization vector of the incoming onium resonance
-  RhoDMatrix rhoin(PDT::Spin1);
-  vector<LorentzPolarizationVector> vin;
-  VectorWaveFunction(vin,rhoin,const_ptr_cast<tPPtr>(&inpart),
- 		     incoming,true,false,vertex);
-  // polarization vector of the outgoing onium resonance
-  vector<LorentzPolarizationVector> vout;
-  VectorWaveFunction(vout,decay[0],outgoing,true,false,vertex);
-  for(unsigned int ix=1;ix<decay.size();++ix) {
-    PPtr myvout = decay[ix];
-    ScalarWaveFunction(myvout,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors[0],_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0));
   }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors[0],const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    VectorWaveFunction::constructSpinInfo(_vectors[1],decay[0],
+					  outgoing,true,false);
+    for(unsigned int ix=1;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors[1],decay[0],outgoing,false);
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0);
   complex<InvEnergy2> A(_cA[imode()/2]),B(_cB[imode()/2]),C(_cC[imode()/2]);
   Energy2 q2  =(decay[1]->momentum()+decay[2]->momentum()).m2();
   Energy2 mpi2=sqr(decay[1]->mass());
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      Complex dota = vin[ix].dot(vout[iy]);
+      Complex dota = _vectors[0][ix].dot(_vectors[1][iy]);
       complex<Energy2> dotb = 
-	(vin[ix]*decay[1]->momentum())*(vout[iy]*decay[2]->momentum())+
-	(vin[ix]*decay[2]->momentum())*(vout[iy]*decay[1]->momentum());
-      newME(ix,iy,0,0)= _coupling[imode()/2]*
+	(_vectors[0][ix]*decay[1]->momentum())*(_vectors[1][iy]*decay[2]->momentum())+
+	(_vectors[0][ix]*decay[2]->momentum())*(_vectors[1][iy]*decay[1]->momentum());
+      ME()(ix,iy,0,0)= _coupling[imode()/2]*
 	(A*dota*(q2-2.*mpi2)+B*dota*decay[1]->momentum().e()*decay[2]->momentum().e()
 	 +C*dotb);
     }
   }
   // matrix element
-  ME(newME);
-  double output=newME.contract(rhoin).real();
+  double output=ME().contract(_rho).real();
   if(imode()%2==1) output*=0.5;
   // test of the matrix element
 //   Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();

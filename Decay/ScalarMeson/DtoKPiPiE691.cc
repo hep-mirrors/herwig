@@ -533,17 +533,23 @@ int DtoKPiPiE691::modeNumber(bool & cc,tcPDPtr parent,
   }
 }
 
-double DtoKPiPiE691::me2(bool vertex, const int ichan,
+double DtoKPiPiE691::me2(const int ichan,
 			 const Particle & inpart,
-			 const ParticleVector & decay) const {
+			 const ParticleVector & decay,
+			 MEOption meopt) const {
   useMe();
-  // wavefunnction for the decaying particle
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  // wavefunctions for the outgoing particles
-  for(unsigned int ix=0;ix<3;++ix) {
-    PPtr mytemp = decay[ix]; 
-    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   Complex amp;
   // D+ -> K-pi+pi+
@@ -630,10 +636,8 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
     }
   }
   // now compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=amp;
-  ME(newME);
-  return real(amp*conj(amp));
+  ME()(0,0,0,0)=amp;
+  return norm(amp);
 }
 
 void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {

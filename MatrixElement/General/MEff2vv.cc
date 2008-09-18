@@ -272,14 +272,14 @@ void MEff2vv::constructVertex(tSubProPtr sub) {
   if( ext[2]->id() != getOutgoing().first ) swap(ext[2], ext[3]);
 
   vector<SpinorWaveFunction> sp;
-  SpinorWaveFunction(sp, ext[0], incoming, false, true);
+  SpinorWaveFunction(sp, ext[0], incoming, false);
   vector<SpinorBarWaveFunction> sbar;
-  SpinorBarWaveFunction(sbar, ext[1], incoming, false, true);
+  SpinorBarWaveFunction(sbar, ext[1], incoming, false);
   vector<VectorWaveFunction> v1, v2;
   bool mc  = !(ext[2]->data().mass() > 0.*MeV);
   bool md  = !(ext[3]->data().mass() > 0.*MeV);
-  VectorWaveFunction(v1, ext[2], outgoing, true, mc, true);
-  VectorWaveFunction(v2, ext[3], outgoing, true, md, true);
+  VectorWaveFunction(v1, ext[2], outgoing, true, mc);
+  VectorWaveFunction(v2, ext[3], outgoing, true, md);
   
 
     //Need to use rescale momenta to calculate matrix element

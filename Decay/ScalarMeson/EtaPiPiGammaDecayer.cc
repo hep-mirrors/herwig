@@ -28,6 +28,14 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void EtaPiPiGammaDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_maxweight.size();++ix)
+      _maxweight[ix]=mode(ix)->maxWeight();
+  }
+}
+
 EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() 
   : _incoming(2), _coupling(2), _maxweight(2), _option(2) {
   // the pion decay constant
@@ -422,26 +430,31 @@ void EtaPiPiGammaDecayer::Init() {
 
 }
 
-double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
-				 const ParticleVector & decay) const {
+double EtaPiPiGammaDecayer::me2(const int,const Particle & inpart,
+				const ParticleVector & decay,
+				MEOption meopt) const {
   useMe();
-  // workaround for gcc 3.2.3 bug
-  // set up the spin info
-  vector<LorentzPolarizationVector> wave;
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  PPtr mytemp0 = decay[0];
-  ScalarWaveFunction(mytemp0,outgoing,true,vertex);
-  PPtr mytemp1 = decay[1];
-  ScalarWaveFunction(mytemp1,outgoing,true,vertex);
-
-  VectorWaveFunction(wave,decay[2],outgoing,true,true,vertex);
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+    ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    VectorWaveFunction::constructSpinInfo(_vectors,decay[2],
+					  outgoing,true,true);
+    return 0.;
+  }
+  VectorWaveFunction::calculateWaveFunctions(_vectors,decay[2],
+					     outgoing,true);
   // prefactor for the matrix element
   complex<InvEnergy3> pre(_coupling[imode()]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
-  Lorentz5Momentum ppipi(decay[0]->momentum()+decay[1]->momentum());ppipi.rescaleMass();
+  Lorentz5Momentum ppipi(decay[0]->momentum()+decay[1]->momentum());
+  ppipi.rescaleMass();
   Energy q(ppipi.mass());
   Energy2 q2(q*q);
   Complex ii(0.,1.);
@@ -471,16 +484,13 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
 							  decay[1]->momentum(),
 							  decay[2]->momentum()));
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1);
   vector<unsigned int> ispin(4,0);
   for(ispin[3]=0;ispin[3]<3;++ispin[3]) {
-    if(ispin[3]==1) newME(ispin)=0.;
-    else            newME(ispin)=epstemp.dot(wave[ispin[3]]);
+    if(ispin[3]==1) ME()(ispin)=0.;
+    else            ME()(ispin)=epstemp.dot(_vectors[ispin[3]]);
   }
   // contract the whole thing
-  ME(newME);
-  RhoDMatrix rhoin(PDT::Spin0);
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 double EtaPiPiGammaDecayer::

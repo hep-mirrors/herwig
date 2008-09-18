@@ -61,7 +61,7 @@ public:
   /**
    * Default constructor
    */
-  inline WeakDecayCurrent();
+  WeakDecayCurrent() : _numbermodes(0) {}
 
 public:
 
@@ -102,7 +102,7 @@ public:
   /**
    * Return the number of modes handled by this current
    */
-  inline unsigned int numberOfModes() const;
+  unsigned int numberOfModes() const {return _quark.size();}
 
   /**
    * Hadronic current. This method is purely virtual and must be implemented in
@@ -114,9 +114,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE> current(bool vertex, const int imode,
-						    const int ichan,Energy & scale, 
-						    const ParticleVector & decay) const=0;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode, const int ichan,Energy & scale, 
+	  const ParticleVector & decay, DecayIntegrator::MEOption) const=0;
 
   /**
    * Accept the decay. This method is purely virtual and must be implemented in any class
@@ -141,7 +141,16 @@ public:
    * @param iq The PDG code of the quark.
    * @param ia The PDG code of the antiquark.
    */
-  inline void decayModeInfo(unsigned int imode, int& iq, int& ia) const;
+  void decayModeInfo(unsigned int imode, int& iq, int& ia) const {
+    if(imode<_quark.size()) {
+      iq=_quark[imode];
+      ia=_antiquark[imode];
+    }
+    else {
+      iq=0;
+      ia=0;
+    }
+  }
 
   /**
    * Output the setup information for the particle database
@@ -181,13 +190,16 @@ protected:
    * @param iq The PDG code for the quark.
    * @param ia The PDG code for the antiquark.
    */
-  inline void addDecayMode(int iq,int ia);
+  void addDecayMode(int iq,int ia) {
+    _quark.push_back(iq);
+    _antiquark.push_back(ia);
+  }
 
   /**
    *  Set initial number of modes
    * @param nmodes The number of modes.
    */
-  inline void setInitialModes(unsigned int nmodes);
+  void setInitialModes(unsigned int nmodes) {_numbermodes=nmodes;}
 
 private:
 
@@ -253,7 +265,5 @@ struct ClassTraits<Herwig::WeakDecayCurrent>
 /** @endcond */
 
 }
-
-#include "WeakDecayCurrent.icc"
 
 #endif /* HERWIG_WeakDecayCurrent_H */

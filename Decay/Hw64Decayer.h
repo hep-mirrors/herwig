@@ -48,7 +48,7 @@ public:
   /**
    * Default constructor
    */
-  inline Hw64Decayer();
+  Hw64Decayer() : MECode(0),_masstry(50) {} 
 
   /**
    * return true if this decayer can perfom the decay specified by the
@@ -101,13 +101,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -123,8 +123,12 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  inline void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
-				  const vector<Lorentz5Momentum> & moms) const;
+  void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
+			   const vector<Lorentz5Momentum> & moms) const {
+    unsigned int numProds = particles.size();
+    for(unsigned int ix=0;ix<numProds;++ix)
+      out.push_back(particles[ix]->produceParticle(moms[ix]));
+  }
 
 private:
 
@@ -185,7 +189,5 @@ struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Deca
 /** @endcond */
 
 }
-
-#include "Hw64Decayer.icc"
 
 #endif /* HERWIG_Hw64Decayer_H */

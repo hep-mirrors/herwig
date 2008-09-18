@@ -468,7 +468,7 @@ Energy GeneralTwoBodyDecayer::partialWidth(PMPair inpart, PMPair outa,
   ParticleVector decay;
   decay.push_back(newchild[0]->produceParticle(pout[0]));
   decay.push_back(newchild[1]->produceParticle(pout[1]));
-  double me =  me2(false,-1,*parent,decay);
+  double me =  me2(-1,*parent,decay,Initialize);
   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,
 					     outa.second, outb.second);
   return me/(8.*Constants::pi)*pcm;

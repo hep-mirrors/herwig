@@ -16,13 +16,12 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/epsilon.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::ScalarSpinInfo;
 
 ThreeMesonCurrentBase::ThreeMesonCurrentBase() {
   // the quarks for the different modes
@@ -58,13 +57,13 @@ void ThreeMesonCurrentBase::Init() {
 
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan, 
-			       Energy & scale,const ParticleVector & decay) const {
-  // spininfo for the particles
-  if(vertex) {
-    for(unsigned int ix=0;ix<3;++ix) {
-      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
-    }
+ThreeMesonCurrentBase::current(const int imode, const int ichan, 
+			       Energy & scale,const ParticleVector & decay,
+			       DecayIntegrator::MEOption meopt) const {
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
   }
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q=0*MeV;

@@ -311,15 +311,15 @@ void MEvv2vv::constructVertex(tSubProPtr sub) {
   if( ext[2]->id() != getOutgoing().first ) swap(ext[2], ext[3]);
 
   VBVector v1, v2, v3, v4;
-  VectorWaveFunction(v1, ext[0], incoming, false, true, true);
-  VectorWaveFunction(v2, ext[1], incoming, false, true, true);
+  VectorWaveFunction(v1, ext[0], incoming, false, true);
+  VectorWaveFunction(v2, ext[1], incoming, false, true);
   //function to calculate me2 expects massless incoming vectors
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
   bool mc  = !(ext[2]->data().mass() > 0.*MeV);
   bool md  = !(ext[3]->data().mass() > 0.*MeV);
-  VectorWaveFunction(v3, ext[2], outgoing, true, mc, true);
-  VectorWaveFunction(v4, ext[3], outgoing, true, md, true);
+  VectorWaveFunction(v3, ext[2], outgoing, true, mc);
+  VectorWaveFunction(v4, ext[3], outgoing, true, md);
     
   double dummy(0.);
 

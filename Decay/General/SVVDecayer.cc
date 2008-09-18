@@ -64,32 +64,41 @@ void SVVDecayer::Init() {
 
 }
 
-double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
-		       const ParticleVector & decay) const {
-  RhoDMatrix rhoin(PDT::Spin0);
+double SVVDecayer::me2(const int , const Particle & inpart,
+		       const ParticleVector& decay, 
+		       MEOption meopt) const {
+  bool photon[2];
+  for(unsigned int ix=0;ix<2;++ix)
+    photon[ix] = decay[ix]->mass()==0.*MeV;
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    _swave = ScalarWaveFunction(inpart.momentum(),inpart.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::
+      constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::
+	constructSpinInfo(_vectors[ix],decay[ix],outgoing,true,photon[ix]);
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,photon[ix]);
   
-  //vectors of wavefunctions to store all helicities
-  vector<VectorWaveFunction> vOut1,vOut2;
-  ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),rhoin,
-			    incoming,true,vertex);
-  bool massa(decay[0]->mass()==0.*MeV);
-  bool massb(decay[1]->mass()==0.*MeV);
-  VectorWaveFunction(vOut1,decay[0],outgoing,true,massa,vertex);
-  VectorWaveFunction(vOut2,decay[1],outgoing,true,massb,vertex);
-  //set-up DecayMatrix
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
-  Energy2 scale(inpart.mass()*inpart.mass());
+  
+  Energy2 scale(sqr(inpart.mass()));
   unsigned int iv1,iv2;
   for(iv2 = 0; iv2 < 3; ++iv2) {
-    if( massb && iv2 == 1 ) ++iv2;
+    if( photon[1] && iv2 == 1 ) ++iv2;
     for(iv1=0;iv1<3;++iv1) {
-      if( massa && iv1 == 1) ++iv1;
-      newME(0, iv1, iv2) = _abstractVertex->evaluate(scale,vOut1[iv1],
-						     vOut2[iv2],inwave);
+      if( photon[0] && iv1 == 1) ++iv1;
+      ME()(0, iv1, iv2) = _abstractVertex->evaluate(scale,_vectors[0][iv1],
+						    _vectors[1][iv2],_swave);
     }
   }
-  ME(newME);
-  double output = newME.contract(rhoin).real()/scale*UnitRemoval::E2;
+  double output = ME().contract(_rho).real()/scale*UnitRemoval::E2;
   // colour and identical particle factors
   output *= colourFactor(inpart.dataPtr(),decay[0]->dataPtr(),
 			 decay[1]->dataPtr());
@@ -115,7 +124,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     else 
       me2 = 4.;
     
-    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
     Energy output = norm(_perturbativeVertex->getNorm())*
       me2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
@@ -137,7 +146,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     Complex a22(_generalVertex->a22());Complex aEp(_generalVertex->aEp());
     double mu1(outa.second/inpart.second),mu1sq(mu1*mu1);
     double mu2(outb.second/inpart.second),mu2sq(mu2*mu2);
-    Energy pcm = Kinematics::CMMomentum(inpart.second,outa.second,
+    Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
     Complex me2 = (aEp*aEp + a11*(2.*a11-2.*a21+a22))*mu1sq*mu1sq
       +2.*a21*a21*mu2sq*mu1sq + 2.*mu1sq*(a11*(a21-a22) - aEp*aEp)

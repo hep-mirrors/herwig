@@ -12,7 +12,6 @@
 // This is the declaration of the ThreeMesonDefaultCurrent class.
 //
 #include "ThreeMesonCurrentBase.h"
-#include "ThreeMesonDefaultCurrent.fh"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -116,20 +115,30 @@ public:
   
   /**
    * the matrix element for the \f$a_1\f$ decay to calculate the running width
-   * @param imode The mode to be integrated
    * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double threeBodyMatrixElement(const int imode,  const Energy2 q2,
-				       const Energy2 s3, const Energy2 s2, 
-				       const Energy2 s1, const Energy  m1, 
-				       const Energy  m2, const Energy  m3) const;
+  double threeBodyMatrixElement(const int ,  const Energy2 q2,
+				const Energy2 s3, const Energy2 s2, 
+				const Energy2 s1, const Energy  , 
+				const Energy  , const Energy  ) const {
+    Energy2 mpi2(sqr(_mpi));
+    Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
+    // the matrix element
+    Energy2 output(0.*MeV2); 
+    // first resonance
+    output += ((s1-4.*mpi2) + 0.25*(s3-s2)*(s3-s2)/q2) * real(propb*conj(propb)); 
+    // second resonance
+    output += ((s2-4.*mpi2) + 0.25*(s3-s1)*(s3-s1)/q2) * real(propa*conj(propa)); 
+    // the interference term 
+    output += (0.5*q2-s3-0.5*mpi2+0.25*(s3-s2)*(s3-s1)/q2)*real(propa*conj(propb)+
+								propb*conj(propa)); 
+    return output/sqr(_rhoF123masses[0]);
+  }
+
 protected:
 
   /**
@@ -160,13 +169,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -183,12 +192,12 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  virtual void doupdate() throw(UpdateException);
   //@}
 
 private:
@@ -211,7 +220,25 @@ private:
    * @param ires Which \f$\rho\f$ multiplet
    * @return The Breit-Wigner 
    */
-  inline Complex BrhoF123(Energy2 q2,int ires) const;
+  Complex BrhoF123(Energy2 q2,int ires) const {
+    Complex output(0.),norm(0.);
+    for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
+      norm+=_rhoF123wgts[ix];
+    }
+    if(ires<0) {
+      for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
+	output+=_rhoF123wgts[ix]*rhoKBreitWigner(q2,0,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_rhoF123wgts.size()&&temp<3)
+	output=_rhoF123wgts[temp]*rhoKBreitWigner(q2,0,temp);
+      else
+	output=0.;
+    }
+    return output/norm;
+  }
 
   /**
    * The \f$\rho\f$ Breit-Wigner for the \f$F_5\f$ form factors.
@@ -219,7 +246,24 @@ private:
    * @param ires Which \f$\rho\f$ multiplet
    * @return The Breit-Wigner 
    */
-  inline Complex BrhoF5(Energy2 q2,int ires) const;
+  Complex BrhoF5(Energy2 q2,int ires) const {
+    Complex output(0.),norm(0.);
+    for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix) {
+      norm+=_rhoF5wgts[ix];
+    }
+    if(ires<0) {
+      for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix) {
+	output+=_rhoF5wgts[ix]*rhoKBreitWigner(q2,1,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_rhoF5wgts.size()&&temp<3) {
+	output=_rhoF5wgts[temp]*rhoKBreitWigner(q2,1,temp);
+      }
+    }
+    return output/norm;
+  }
 
   /**
    * The \f$K^*\f$ Breit-Wigner for the \f$F_{1,2,3}\f$ form factors.
@@ -227,7 +271,24 @@ private:
    * @param ires Which \f$\rho\f$ multiplet
    * @return The Breit-Wigner 
    */
-  inline Complex BKstarF123(Energy2 q2,int ires) const;
+  Complex BKstarF123(Energy2 q2,int ires) const {
+    Complex output(0.),norm(0.);
+    for(unsigned int ix=0,N=min(3,int(_kstarF123wgts.size()));ix<N;++ix) {
+      norm+=_kstarF123wgts[ix];
+    }
+    if(ires<0) {
+      for(unsigned int ix=0,N=min(3,int(_kstarF123wgts.size()));ix<N;++ix) {
+	output+=_kstarF123wgts[ix]*rhoKBreitWigner(q2,2,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_kstarF123wgts.size()&&temp<3) {
+	output=_kstarF123wgts[temp]*rhoKBreitWigner(q2,2,temp);
+      }
+    }
+    return output/norm;
+  }
 
   /**
    * The \f$K^*\f$ Breit-Wigner for the \f$F_5\f$ form factors.
@@ -235,42 +296,96 @@ private:
    * @param ires Which \f$\rho\f$ multiplet
    * @return The Breit-Wigner 
    */
-  inline Complex BKstarF5(Energy2 q2,int ires) const;
+  Complex BKstarF5(Energy2 q2,int ires) const {
+    Complex output(0.),norm(0.);
+    for(unsigned int ix=0,N=min(3,int(_kstarF5wgts.size()));ix<N;++ix) {
+      norm+=_kstarF5wgts[ix];
+    }
+    if(ires<0) {
+      for(unsigned int ix=0,N=min(3,int(_kstarF5wgts.size()));ix<N;++ix) {
+	output+=_kstarF5wgts[ix]*rhoKBreitWigner(q2,3,ix);
+      }
+    }
+    else {
+      unsigned int temp(ires);
+      if(temp<_kstarF5wgts.size()&&temp<3) {
+	output=_kstarF5wgts[ires]*rhoKBreitWigner(q2,3,temp);
+      }
+    }
+    return output/norm;
+  }
   
   /**
    * Mixed Breit Wigner for the \f$F_5\f$ form factor
-   * @param s1 The scale \f$s_1\f$.
-   * @param s2 The scale \f$s_2\f$.
+   * @param si The scale \f$s_1\f$.
+   * @param sj The scale \f$s_2\f$.
    * @param ires Which resonances to use
    * @return The mixed Breit-Wigner
    */
-  inline Complex FKrho(Energy2 s1,Energy2 s2,int ires) const;
+  Complex FKrho(Energy2 si,Energy2 sj,int ires) const {
+    Complex output;
+    if(ires<0){output = _rhoKstarwgt*BKstarF123(si,-1)+BrhoF123(sj,-1);}
+    else if(ires%2==0){output= _rhoKstarwgt*BKstarF123(si,ires/2);}
+    else if(ires%2==1){output=BrhoF123(sj,ires/2);}
+    output /=(1.+_rhoKstarwgt);
+    return output;
+  }
   
   /**
    * \f$a_1\f$ Breit-Wigner
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex a1BreitWigner(Energy2 q2) const;
+  inline Complex a1BreitWigner(Energy2 q2) const  {
+    Complex ii(0.,1.);
+    Energy2 m2(_a1mass*_a1mass);
+    Energy  q(sqrt(q2));
+    return m2/(m2-q2-ii*q*a1Width(q2));
+  }
   
   /**
    * The \f$K_1\f$ Breit-Wigner
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The Breit-Wigner
    */
-  inline Complex K1BreitWigner(Energy2 q2) const;
+  Complex K1BreitWigner(Energy2 q2) const {
+    Energy2 m2 = sqr(_k1mass);
+    Complex ii(0.,1.);
+    complex<Energy2> fact(m2 - ii*_k1mass*_k1width);
+    return fact/(fact-q2);
+  }
   
   /**
    * The \f$a_1\f$ running width
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The \f$a_1\f$ running width.
    */
-  inline Energy a1Width(Energy2 q2) const ;
+  Energy a1Width(Energy2 q2) const {
+    Energy output;
+    if(!_a1opt) output = _a1mass*_a1width*g(q2)/g(sqr(_a1mass))/sqrt(q2);
+    else        output = (*_a1runinter)(q2);
+    return output;
+  }
   
   /**
    *  The \f$g(Q^2)\f$ function of Kuhn and Santamaria
    */
-  inline double g(Energy2 q2) const;
+  double g(Energy2 q2) const {
+    double output;
+    if(q2 < 9.*sqr(_mpi)) {
+      output=0.;
+    }
+    else if(q2 < sqr(_rhoF123masses[0]+_mpi)) {
+      double diff = (q2-9.*sqr(_mpi))/GeV2;
+      
+      output = 4.1*sqr(diff)*diff*(1.-3.3*diff+5.8*sqr(diff));
+    }
+    else {
+      double ratio = q2/GeV2;
+      output = ratio*(1.623+10.38/ratio-9.32/sqr(ratio)+0.65/(ratio*sqr(ratio)));
+    }
+    return output;
+  }
 
   /**
    * Initialize the \f$a_1\f$ running width
@@ -284,7 +399,7 @@ private:
    * @param itype The type of Breit-Wigner, \e i.e. which masses and widths to use.x
    * @param ires Which multiplet to use.
    */
-  inline Complex rhoKBreitWigner(Energy2 q2,unsigned int itype,unsigned int ires) const;
+  Complex rhoKBreitWigner(Energy2 q2,unsigned int itype,unsigned int ires) const;
 
 private:
   
@@ -490,7 +605,5 @@ struct ClassTraits<Herwig::ThreeMesonDefaultCurrent>
 /** @endcond */
 
 }
-
-#include "ThreeMesonDefaultCurrent.icc"
 
 #endif /* THEPEG_ThreeMesonDefaultCurrent_H */

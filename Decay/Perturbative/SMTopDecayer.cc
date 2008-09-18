@@ -141,70 +141,91 @@ void SMTopDecayer::Init() {
   
 }
 
-double SMTopDecayer::me2(bool vertex, const int, 
-			 const Particle & inpart,
-			 const ParticleVector & decay) const {
-  RhoDMatrix rhot(PDT::Spin1Half);
-     //diagonalise  
-  DecayMatrixElement topMe(PDT::Spin1Half,PDT::Spin1Half,
-			   PDT::Spin1Half,PDT::Spin1Half);
-  Energy2 scale(inpart.mass()*inpart.mass());
+double SMTopDecayer::me2(const int, const Particle & inpart,
+			 const ParticleVector & decay,
+			 MEOption meopt) const {
+  // spinors etc for the decaying particle
+  if(meopt==Initialize) {
+    // spinors and rho
+    if(inpart.id()>0)
+      SpinorWaveFunction   ::calculateWaveFunctions(_inHalf,_rho,
+						    const_ptr_cast<tPPtr>(&inpart),
+						    incoming);
+    else
+      SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar,_rho,
+						    const_ptr_cast<tPPtr>(&inpart),
+						    incoming);
+    ME(DecayMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+			  PDT::Spin1Half,PDT::Spin1Half));
+  }
+  // setup spin info when needed
+  if(meopt==Terminate) {
+    // for the decaying particle
+    if(inpart.id()>0) {
+      SpinorWaveFunction::
+	constructSpinInfo(_inHalf,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorBarWaveFunction::constructSpinInfo(_inHalfBar,decay[0],outgoing,true);
+      SpinorWaveFunction   ::constructSpinInfo(_outHalf   ,decay[1],outgoing,true);
+      SpinorBarWaveFunction::constructSpinInfo(_outHalfBar,decay[2],outgoing,true);
+    }
+    else {
+      SpinorBarWaveFunction::
+	constructSpinInfo(_inHalfBar,const_ptr_cast<tPPtr>(&inpart),incoming,true);
+      SpinorWaveFunction::constructSpinInfo(_inHalf,decay[0],outgoing,true);
+      SpinorBarWaveFunction::constructSpinInfo(_outHalfBar,decay[1],outgoing,true);
+      SpinorWaveFunction   ::constructSpinInfo(_outHalf   ,decay[2],outgoing,true);
+    }
+  }
+  // spinors for the decay product
+  if(inpart.id()>0) {
+    SpinorBarWaveFunction::calculateWaveFunctions(_inHalfBar ,decay[0],outgoing);
+    SpinorWaveFunction   ::calculateWaveFunctions(_outHalf   ,decay[1],outgoing);
+    SpinorBarWaveFunction::calculateWaveFunctions(_outHalfBar,decay[2],outgoing);
+  }
+  else {
+    SpinorWaveFunction   ::calculateWaveFunctions(_inHalf    ,decay[0],outgoing);
+    SpinorBarWaveFunction::calculateWaveFunctions(_outHalfBar,decay[1],outgoing);
+    SpinorWaveFunction   ::calculateWaveFunctions(_outHalf   ,decay[2],outgoing);
+  }
+  Energy2 scale(sqr(inpart.mass()));
   if(inpart.id() == ParticleID::t) {
-    //Vectors to hold all heliticies of spinors
-    vector<SpinorWaveFunction> twave,awave;
-    vector<SpinorBarWaveFunction> bwave,fwave;
-    //Set-up spinors for external particles
-    SpinorWaveFunction(twave,rhot,const_ptr_cast<tPPtr>(&inpart),
-		       incoming,true,vertex);
-    SpinorBarWaveFunction(bwave,decay[0],outgoing,true,vertex);
-    SpinorWaveFunction(awave,decay[1],outgoing,true,vertex);
-    SpinorBarWaveFunction(fwave,decay[2],outgoing,true,vertex);
     //Define intermediate vector wave-function for Wplus 
     tcPDPtr Wplus(getParticleData(ParticleID::Wplus));
     VectorWaveFunction inter;
     unsigned int thel,bhel,fhel,afhel;
     for(thel = 0;thel<2;++thel){
       for(bhel = 0;bhel<2;++bhel){	  
-	inter = _wvertex->evaluate(scale,1,Wplus,twave[thel],bwave[bhel]);
+	inter = _wvertex->evaluate(scale,1,Wplus,_inHalf[thel],
+				   _inHalfBar[bhel]);
 	for(afhel=0;afhel<2;++afhel){
 	  for(fhel=0;fhel<2;++fhel){
-	    topMe(thel,bhel,afhel,fhel) = 
-	      _wvertex->evaluate(scale,awave[afhel],
-				 fwave[fhel],inter);
+	    ME()(thel,bhel,afhel,fhel) = 
+	      _wvertex->evaluate(scale,_outHalf[afhel],
+				 _outHalfBar[fhel],inter);
 	  }
 	}
       }
     }
   }
-  if(inpart.id() == ParticleID::tbar) {
-    //Vectors to hold all heliticies of spinors
-    vector<SpinorWaveFunction> bbarWave,awave;
-    vector<SpinorBarWaveFunction> tbarWave,fwave;
-    //Set-up spinors for externl particles
-    SpinorBarWaveFunction(tbarWave,rhot,const_ptr_cast<tPPtr>(&inpart),
-			  incoming,true,vertex);
-    SpinorWaveFunction(bbarWave,decay[0],outgoing,true,vertex);
-    SpinorBarWaveFunction(fwave,decay[1],outgoing,true,vertex);
-    SpinorWaveFunction(awave,decay[2],outgoing,true,vertex);
+  else if(inpart.id() == ParticleID::tbar) {
     VectorWaveFunction inter;
     tcPDPtr Wminus(getParticleData(ParticleID::Wminus));
     unsigned int tbhel,bbhel,afhel,fhel;
     for(tbhel = 0;tbhel<2;++tbhel){
       for(bbhel = 0;bbhel<2;++bbhel){
 	inter = _wvertex->
-	  evaluate(scale,1,Wminus,bbarWave[bbhel],tbarWave[tbhel]);
+	  evaluate(scale,1,Wminus,_inHalf[bbhel],_inHalfBar[tbhel]);
 	for(afhel=0;afhel<2;++afhel){
 	  for(fhel=0;fhel<2;++fhel){
-	    topMe(tbhel,bbhel,fhel,afhel) = 
-	      _wvertex->evaluate(scale,awave[afhel],
-				 fwave[fhel],inter);
+	    ME()(tbhel,bbhel,fhel,afhel) = 
+	      _wvertex->evaluate(scale,_outHalf[afhel],
+				 _outHalfBar[fhel],inter);
 	  }
 	}
       }
     }
   }
-  ME(topMe);
-  double output = (topMe.contract(rhot)).real();
+  double output = (ME().contract(_rho)).real();
   if(abs(decay[1]->id())<=6) output *=3.;
   return output;
 }

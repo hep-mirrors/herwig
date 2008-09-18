@@ -13,7 +13,7 @@
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "VectorMesonVectorScalarDecayer.fh"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace Herwig;
@@ -64,8 +64,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2(const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -115,13 +115,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -138,7 +138,7 @@ protected:
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -185,6 +185,9 @@ private:
    */
   unsigned int _initsize;
 
+  mutable RhoDMatrix _rho;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
+
 };
 
 }
@@ -227,7 +230,5 @@ struct ClassTraits<Herwig::VectorMesonVectorScalarDecayer>
 /** @endcond */
 
 }
-
-#include "VectorMesonVectorScalarDecayer.icc"
 
 #endif /* HERWIG_VectorMesonVectorScalarDecayer_H */

@@ -48,8 +48,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-                     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+                     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Function to return partial Width
@@ -141,6 +141,9 @@ private:
    * Pointer to the perturbative vertex
    */
   SSSVertexPtr _perturbativeVertex;
+
+  mutable RhoDMatrix _rho;
+  mutable Helicity::ScalarWaveFunction _swave;
 };
 
 }

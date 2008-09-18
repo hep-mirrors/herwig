@@ -11,6 +11,7 @@
 // This is the declaration of the PScalarVectorVectorDecayer class.
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -69,8 +70,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2(bool vertex, const int ichan,const Particle & part,
-	     const ParticleVector & decay) const;
+  double me2( const int ichan,const Particle & part,
+	     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -120,13 +121,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -189,6 +190,9 @@ private:
    *  initial number of modes
    */
   unsigned int _initsize;
+
+  mutable RhoDMatrix _rho;
+  mutable vector<Helicity::LorentzPolarizationVector> _vectors[2];
 };
 
 }

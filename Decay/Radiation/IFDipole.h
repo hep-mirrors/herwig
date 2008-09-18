@@ -39,7 +39,13 @@ public:
   /**
    * The default constructor.
    */
-  inline IFDipole();
+  IFDipole() :
+    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(), _nphotonmax(20),
+    _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
+    _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
+    _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
+    _mode(1), _maxtry(500), _energyopt(1), _betaopt(1), _dipoleopt()
+  {}
   //@}
 
 public:
@@ -86,13 +92,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -104,7 +110,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 protected:
@@ -115,7 +121,10 @@ protected:
    * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$.
    * @return The average photon multiplicity
    */
-  inline double nbar(double beta1,double ombeta1);
+  double nbar(double beta1,double ombeta1) {
+    return  _alpha/pi*_chrg1*_chrg2/beta1*
+      log((1.+beta1)/ombeta1)*log(_emax/_emin);
+  }
 
   /**
    * Generate the momentum of a photon 
@@ -133,16 +142,28 @@ protected:
    * @param iphot The number of the photon for which the weight is required
    * @return The weight
    */
-  inline double exactDipoleWeight(double beta1,double ombeta1,
-				  unsigned int iphot);
+  double exactDipoleWeight(double beta1,double ombeta1,
+			   unsigned int iphot) {
+    double ombc;
+    // if cos is greater than zero use result accurate as cos->1
+    if(_cosphot[iphot]>0.0)
+      ombc=ombeta1+beta1*sqr(_sinphot[iphot])/(1.+_cosphot[iphot]);
+    // if cos is less    than zero use result accurate as cos->-1
+    else
+      ombc=1.-beta1*_cosphot[iphot];
+    return 1.0*sqr(beta1*_sinphot[iphot]/ombc);
+  }
 
   /**
    *  The crude YFS form factor for calculating the weight
-   * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$
-   * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$
+   * @param b   Velocity of the first charged particle, \f$\beta_1\f$
+   * @param omb One minus the velocity of the first particle,  \f$1-\beta_1\f$
    * @return The YFS form factor
    */
-    inline double crudeYFSFormFactor(double beta1,double ombeta1);
+  double crudeYFSFormFactor(double b,double omb) {
+    double Y =-_alpha/pi*_chrg1*_chrg2 / b * log((1.+b)/omb) * log(_m[0]/(2.*_emin));
+    return exp(Y);
+  }
 
   /**
    *  The exact YFS form factor for calculating the weight
@@ -197,11 +218,6 @@ private:
 
 private:
 
-#ifdef KEITH_DEBUG
-  inline void KFILL(int,double,double);
-  inline void LFILL(int,double,double,double);
-  void IF_FILL(int);
-#endif
   /**
    *  the fine structure constant at $q^2=0$
    */
@@ -401,7 +417,5 @@ struct ClassTraits<Herwig::IFDipole>
 /** @endcond */
 
 }
-
-#include "IFDipole.icc"
 
 #endif /* HERWIG_IFDipole_H */

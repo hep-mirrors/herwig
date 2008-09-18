@@ -11,7 +11,6 @@
 // This is the declaration of the VectorMesonCurrent class.
 
 #include "WeakDecayCurrent.h"
-#include "VectorMesonCurrent.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -39,11 +38,6 @@ public:
    * Default constructor
    */
   VectorMesonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline VectorMesonCurrent(const VectorMesonCurrent &);
   //@}
 
 public:
@@ -113,9 +107,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale,  
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode,const int ichan,Energy & scale,  
+	  const ParticleVector & decay,DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks the meson against the list
@@ -148,13 +142,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -166,7 +160,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -239,7 +233,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "VectorMesonCurrent.icc"
 
 #endif /* THEPEG_VectorMesonCurrent_H */

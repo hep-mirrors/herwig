@@ -25,10 +25,9 @@ namespace {
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
+ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   // local particle properties
   _localparameters=true;
   // rho masses and widths
@@ -968,4 +967,110 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 		    << fullName() << "\";" << endl;
 }
 
+void ThreePionCLEOCurrent::doinitrun() {
+  // set up the running a_1 width
+  inita1Width(0);
+  ThreeMesonCurrentBase::doinitrun();
+}
+
+void ThreePionCLEOCurrent::doupdate() throw(UpdateException) {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
+}
+
+Energy ThreePionCLEOCurrent::a1width(Energy2 q2) const {
+  Energy output;
+  if(_a1opt) output=(*_a1runinter)(q2);
+  else {
+    double gam(0.);
+    if(q2<0.1753*GeV2) {
+      gam =0.;
+    }
+    else if(q2<0.823*GeV2) {
+      double p=q2/GeV2-0.1753;
+      gam = 5.80900*p*sqr(p)*(1.-3.00980*p+4.57920*sqr(p));
+    }
+    else {
+      double p=q2/GeV2;
+      gam = -13.91400+27.67900*p-13.39300*sqr(p)
+	+3.19240*sqr(p)*p-0.10487*sqr(sqr(p));
+    }
+    if(q2<0.1676*GeV2) {
+      gam+=0.;
+    }
+    else if(q2<0.823*GeV2) {
+      double p=q2/GeV2-0.1676;
+      gam+= 6.28450*p*sqr(p)*(1.-2.95950*p+4.33550*sqr(p));
+    }
+    else {
+      double p=q2/GeV2;
+      gam+= -15.41100+32.08800*p-17.66600*sqr(p)
+	+4.93550*sqr(p)*p-0.37498*sqr(sqr(p));
+    }
+    Energy mkst=0.894*GeV,mk=0.496*GeV;
+    Energy2 mk1sq=sqr(mkst+mk), mk2sq=sqr(mkst-mk);
+    double c3pi=sqr(0.2384),ckst=sqr(4.7621)*c3pi;
+    gam*=c3pi;
+    if(q2>mk1sq) gam+=0.5*ckst*sqrt((q2-mk1sq)*(q2-mk2sq))/q2;
+    gam = gam*_a1width*_a1mass/GeV2/1.331/0.814/1.0252088;
+    output = gam*GeV2/sqrt(q2);
+  }
+  return output;
+}
+
+double 
+ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
+					     const Energy2 s3, const Energy2 s2, 
+					     const Energy2 s1, const Energy,
+					     const Energy, const Energy) const {
+  Energy p1[5],p2[5],p3[5];
+  Energy2 p1sq, p2sq, p3sq;
+  Energy q=sqrt(q2);
+  Energy2 mpi2c=_mpic*_mpic;
+  Energy2 mpi20=_mpi0*_mpi0;
+  // construct the momenta for the 2 neutral 1 charged mode
+  Complex F1,F2,F3;
+  if(iopt==0) {
+    // construct the momenta of the decay products
+    p1[0] = 0.5*(q2+mpi20-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi20);
+    p2[0] = 0.5*(q2+mpi20-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-mpi20);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
+    // take momentum of 1 parallel to z axis
+    p1[1]=0.*MeV;p1[2]=0.*MeV;p1[3]=p1[4];
+    // construct 2 
+    double cos2 = 0.5*(p1sq+p2sq-p3sq-2.*mpi20+mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.*MeV; p2[3]=-p2[4]*cos2;
+    // construct 3
+    double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.*MeV; p3[3]=-p3[4]*cos3; 
+    // calculate the form factors
+    CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
+  }
+  // construct the momenta for the 3 charged mode 
+  else {
+    // construct the momenta of the decay products
+    p1[0] = 0.5*(q2+mpi2c-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi2c);
+    p2[0] = 0.5*(q2+mpi2c-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-mpi2c);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
+    // take momentum of 1 parallel to z axis
+    p1[1]=0.*MeV;p1[2]=0.*MeV;p1[3]=p1[4];
+    // construct 2 
+    double cos2 = 0.5*(p1sq+p2sq-p3sq-mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.*MeV; p2[3]=-p2[4]*cos2;
+    // construct 3
+    double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.*MeV; p3[3]=-p3[4]*cos3; 
+    // calculate the form factors
+    CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
+  }
+  // construct a vector with the current
+  complex<Energy> current[4];
+  for(unsigned int ix=0;ix<4;++ix)
+    current[ix] = F1*(p2[ix]-p3[ix])-F2*(p3[ix]-p1[ix])+F3*(p1[ix]-p2[ix]);
+  complex<Energy2> dot1=current[0]*conj(current[0]);
+  for(unsigned int ix=1;ix<4;++ix) dot1-=current[ix]*conj(current[ix]);
+  complex<Energy2> dot2=current[0]*q;
+  return(-dot1+dot2*conj(dot2)/q2).real() / sqr(_rhomass[0]);
 }

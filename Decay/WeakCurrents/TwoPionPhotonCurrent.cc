@@ -27,6 +27,27 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+TwoPionPhotonCurrent::TwoPionPhotonCurrent() {
+  // modes handled
+  addDecayMode(2,-1);
+  setInitialModes(1);
+  // weight of the resonances in the current
+  _resweights.push_back(1.0);_resweights.push_back(-0.1);_resweights.push_back(0.0);
+  // parameters of the rho resonaces
+  _rhoparameters=true;
+  _rhomasses.push_back(0.773*GeV);_rhomasses.push_back(1.70*GeV);
+  _rhowidths.push_back(0.145*GeV);_rhowidths.push_back(0.26*GeV);
+  // parameters fo the omega resonance
+  _omegaparameters=true;
+  _omegamass=782*MeV;_omegawidth=8.5*MeV;
+  // couplings
+  _grho   = 0.11238947*GeV2;
+  _grhoomegapi = 12.924/GeV;
+  // parameters for the resonance used in the integration
+  _intmass = 1.2*GeV;
+  _intwidth = 0.35*GeV;
+}
+
 void TwoPionPhotonCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();
   // set up the rho masses and widths
@@ -205,10 +226,22 @@ tPDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int) {
 
 // the hadronic currents    
 vector<LorentzPolarizationVectorE> 
-TwoPionPhotonCurrent::current(bool vertex, const int, const int, 
-			      Energy & scale,const ParticleVector & decay) const {
+TwoPionPhotonCurrent::current(const int, const int,Energy & scale,
+			      const ParticleVector & decay,
+			      DecayIntegrator::MEOption meopt) const {
+  vector<LorentzPolarizationVector> temp;
+  VectorWaveFunction::
+    calculateWaveFunctions(temp,decay[2],outgoing,true);
+  if(meopt==DecayIntegrator::Terminate) {
+    for(unsigned int ix=0;ix<2;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    VectorWaveFunction::constructSpinInfo(temp,decay[2],
+					  outgoing,true,true);
+    return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
+  }
   // locate the particles
-  Lorentz5Momentum pout(decay[1]->momentum()+decay[2]->momentum()+decay[0]->momentum());
+  Lorentz5Momentum pout(decay[1]->momentum()+decay[2]->momentum()+
+			decay[0]->momentum());
   // overall hadronic mass
   pout.rescaleMass();
   scale=pout.mass();
@@ -226,19 +259,6 @@ TwoPionPhotonCurrent::current(bool vertex, const int, const int,
   Energy2 dot13(decay[2]->momentum()*decay[0]->momentum());
   Energy2 dot23(decay[1]->momentum()*decay[0]->momentum());
   Energy2 mpi2 = sqr(decay[0]->mass());
-
-  // workaround for gcc 3.2.3 bug
-  // construct the spininfomation objects for the decay products
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[0];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
-  vector<LorentzPolarizationVector> temp;
-  VectorWaveFunction(temp,decay[2],outgoing,true,true,vertex);
-
   vector<LorentzPolarizationVectorE> ret(3);
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix!=1) {

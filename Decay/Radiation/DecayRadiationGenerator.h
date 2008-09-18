@@ -100,6 +100,4 @@ struct ClassTraits<Herwig::DecayRadiationGenerator>
 
 }
 
-#include "DecayRadiationGenerator.icc"
-
 #endif /* HERWIG_DecayRadiationGenerator_H */

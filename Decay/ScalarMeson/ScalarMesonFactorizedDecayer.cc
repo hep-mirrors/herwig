@@ -48,7 +48,7 @@ IVector ScalarMesonFactorizedDecayer::getReferences() {
   return ret;
 }
 
-inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
+void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // get the ckm object
   _ckm=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
@@ -489,44 +489,70 @@ void ScalarMesonFactorizedDecayer::Init() {
      0, 0, 0, 0., 1., false, false, true);
 }
  
-double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
+double ScalarMesonFactorizedDecayer::me2(const int ichan,
 					 const Particle & part,
-					 const ParticleVector & decay) const {
-  // find the mode
-  unsigned int mode(imode()),ix,iy,chel,fhel;
-  int id0(part.id()),id1;
-  Complex ii(0.,1.);
-  // workaround for gcc 3.2.3 bug
-  // spin info for the decaying particle
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&part),incoming,true,vertex);
-  tPPtr mytempPart = const_ptr_cast<tPPtr>(&part);
-  ScalarWaveFunction(mytempPart,incoming,true,vertex);
-  vector<unsigned int> ihel(decay.size());
-  // get the wavefunctions of the decay products
-  vector<vector<LorentzPolarizationVector> > vecwave(decay.size());
-  vector<vector<LorentzTensor<double> > > tenwave(decay.size());
-  for(ix=0;ix<decay.size();++ix) {
-    iy=decay[ix]->dataPtr()->iSpin();
-    // workaround for gcc 3.2.3 bug
-    //ALB if(iy==1){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    if(iy==1){PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
-    else if(iy==3) {
-      //ALB {VectorWaveFunction(vecwave[ix],decay[ix],outgoing,true,false,vertex);}
-      vector<LorentzPolarizationVector> mytempLPV ; 
-      VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,false,vertex);
-      vecwave[ix]=mytempLPV ;
+					 const ParticleVector & decay,
+					 MEOption meopt) const {
+  useMe();
+  // initialisation
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+    _vectors.resize(decay.size());
+    _tensors.resize(decay.size());
+    // create the matrix element
+    vector<PDT::Spin> spin;
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      spin.push_back(decay[ix]->dataPtr()->iSpin());
+    ME(DecayMatrixElement(PDT::Spin0,spin));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					  incoming,true);
+    // get the wavefunctions of the decay products
+    for(unsigned int ix=0;ix<decay.size();++ix) {
+      switch(decay[ix]->dataPtr()->iSpin()) {
+      case 1:
+	ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+	break;
+      case 3:
+	VectorWaveFunction::constructSpinInfo(_vectors[ix],decay[ix],outgoing,
+					      true,false);
+	break;
+      case 5:
+	TensorWaveFunction::constructSpinInfo(_tensors[ix],decay[ix],outgoing,
+					      true,false);
+	break;
+      default:
+	assert(false);
+      }
     }
-    else if(iy==5) {
-      //ALB {TensorWaveFunction(tenwave[ix],decay[ix],outgoing,true,false,vertex);}
-      vector<LorentzTensor<double> > mytempLT;
-      TensorWaveFunction(mytempLT,decay[ix],outgoing,true,false,vertex);
-      tenwave[ix]=mytempLT;
+    return 0.;
+  }
+  // get the wavefunctions of the decay products
+  for(unsigned int ix=0;ix<decay.size();++ix) {
+    switch(decay[ix]->dataPtr()->iSpin()) {
+    case 1:
+      break;
+    case 3:
+      VectorWaveFunction::
+	calculateWaveFunctions(_vectors[ix],decay[ix],outgoing,false);
+      break;
+    case 5:
+      TensorWaveFunction::
+	calculateWaveFunctions(_tensors[ix],decay[ix],outgoing,false);
+      break;
+    default:
+      assert(false);
     }
   }
-  // create the matrix element
-  vector<PDT::Spin> spin;
-  for(ix=0;ix<decay.size();++ix){spin.push_back(decay[ix]->dataPtr()->iSpin());}
-  DecayMatrixElement newME(PDT::Spin0,spin);
+  ME().zero();
+  // find the mode
+  unsigned int mode(imode()),chel,fhel;
+  int id0(part.id()),id1;
+  Complex ii(0.,1.);
+  vector<unsigned int> ihel(decay.size());
   // loop over the different diagrams
   vector<LorentzPolarizationVectorE> form;
   Complex fp,f0,A0,A1,A2,A3,V,k;
@@ -562,14 +588,14 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       if(cc){V=-V;}
       A3 = 0.5/MV*(msum*A1-mdiff*A2);
       // compute the hadron currents
-      for(ix=0;ix<3;++ix) {
+      for(unsigned int ix=0;ix<3;++ix) {
 	// dot product
-	complex<Energy> dot = vecwave[_formpart[mode][iy]][ix]*part.momentum();
+	complex<Energy> dot = _vectors[_formpart[mode][iy]][ix]*part.momentum();
 	// current
-	form.push_back(-ii*msum*A1*vecwave[_formpart[mode][iy]][ix]
+	form.push_back(-ii*msum*A1*_vectors[_formpart[mode][iy]][ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       +2.*V/msum*epsilon(vecwave[_formpart[mode][iy]][ix],
+		       +2.*V/msum*epsilon(_vectors[_formpart[mode][iy]][ix],
 					  part.momentum(),
 					  decay[_formpart[mode][iy]]->momentum())); 
       }
@@ -579,8 +605,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 							 id0,id1,MP,MV,h,k,bp,bm);
       if(cc){h=-h;}
       // compute the hadron currents
-      for(ix=0;ix<5;++ix) {
-	dotv = tenwave[_formpart[mode][iy]][ix]*part.momentum();
+      for(unsigned int ix=0;ix<5;++ix) {
+	dotv = _tensors[_formpart[mode][iy]][ix]*part.momentum();
 	complex<Energy2> dot = dotv*part.momentum();
 	form.push_back(ii*h*epsilon(dotv,sum,q)-k*dotv
 		       -bp*dot*sum-bm*dot*q);
@@ -588,9 +614,9 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
     }
     // find the particles for the current
     cpart.clear();
-    for(ix=0;ix<decay.size();++ix)
+    for(unsigned int ix=0;ix<decay.size();++ix)
       {if(ix!=_formpart[mode][iy]){cpart.push_back(decay[ix]);}}
-    ix=decay.size();
+    unsigned int ix=decay.size();
     vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
     int itemp(1);
     do {
@@ -606,8 +632,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       constants[_formpart[mode][iy]]=constants[_formpart[mode][iy]+1];
     // calculate the current
     vector<LorentzPolarizationVectorE>
-      curr=_current[_currentmapA[mode][iy]]->current(vertex,_currentmapB[mode][iy],ichan,
-						     scale,cpart);
+      curr=_current[_currentmapA[mode][iy]]->
+      current(_currentmapB[mode][iy],ichan,scale,cpart,meopt);
     pre = (pow(part.mass()/scale,int(cpart.size()-2)));
     // loop over the helicities to calculate the matrix element
     ihel[0]=0;
@@ -618,15 +644,12 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       }
       for(fhel=0;fhel<form.size();++fhel) {
 	ihel[_formpart[mode][iy]+1]=fhel;
-	newME(ihel)+=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])*_GF;
+	ME()(ihel) +=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])*_GF;
       }
     }
   }
-  // store the matrix element
-  ME(newME);
   // perform the contraction
-  RhoDMatrix rhoin(PDT::Spin0);
-  return 0.5*(newME.contract(rhoin)).real();
+  return 0.5*(ME().contract(_rho)).real();
 }
   
 void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,

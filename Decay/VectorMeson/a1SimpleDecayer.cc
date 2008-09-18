@@ -318,22 +318,21 @@ int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
   return imode;
 }
 
-double a1SimpleDecayer::me2(bool vertex, const int ichan,
-			    const Particle & inpart,
-			    const ParticleVector & decay) const {
-  // wavefunctions of the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex){ 
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-      PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
+			    const ParticleVector & decay,MEOption meopt) const {
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+    ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   Lorentz5Vector<complex<Energy> > current;
   Energy2 s1 = (decay[1]->momentum()+decay[2]->momentum()).m2();
@@ -351,13 +350,10 @@ double a1SimpleDecayer::me2(bool vertex, const int ichan,
       rhoFormFactor(s1,-1)*(decay[1]->momentum()-decay[2]->momentum());
   }
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix) {
-    newME(ix,0,0,0)=_coupling*current.dot(invec[ix]);
-  }
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix)
+    ME()(ix,0,0,0)=_coupling*current.dot(_vectors[ix]);
   // matrix element and identical particle factor
-  double output=newME.contract(rhoin).real();
+  double output=ME().contract(_rho).real();
   if(imode()!=1) output*=0.5;
   // test the output
 //   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),
@@ -454,4 +450,24 @@ void a1SimpleDecayer::dataBaseOutput(ofstream & output,
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" 
 		    << fullName() << "\";" << endl;
+}
+
+// functions to return the Breit-Wigners
+Complex a1SimpleDecayer::rhoFormFactor(Energy2 q2,int ires) const {
+  Complex output(0.),norm(0.);
+  for(unsigned int ix=0,N=min(3,int(_rhowgts.size()));ix<N;++ix)
+    norm+=_rhowgts[ix];
+  if(ires<0) {
+    for(unsigned int ix=0,N=min(3,int(_rhowgts.size()));ix<N;++ix) {
+      output+=_rhowgts[ix]*rhoBreitWigner(q2,ix);
+    }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_rhowgts.size()&&temp<3)
+      output=_rhowgts[temp]*rhoBreitWigner(q2,temp);
+    else
+      output=0.;
+  }
+  return output/norm;
 }

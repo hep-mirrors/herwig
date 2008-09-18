@@ -23,6 +23,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/SpinInfo.h"
+#include "ThePEG/EventRecord/Event.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -58,6 +59,7 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
 					   ParticleVector & outpart) const {
   double wgt(1.);
   if(outpart.empty()) {
+    outpart.reserve(_extpart.size()-1);
     for(unsigned int ix=1;ix<_extpart.size();++ix) {
       if(cc&&_extpart[ix]->CC()) {
 	outpart.push_back((_extpart[ix]->CC())->produceParticle());
@@ -73,20 +75,14 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
   // momenta of the particles
   vector<Lorentz5Momentum> part(outpart.size());
   // two body decay
-  if(outpart.size()==2) {
-    double ctheta,phi;
-    Kinematics::generateAngles(ctheta,phi);
-    Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
-			     ctheta, phi,part[0],part[1]);
-    wgt *= Kinematics::CMMomentum(inmass,mass[1],mass[2])/8./Constants::pi/inmass;
-    outpart[0]->set5Momentum(part[0]);
-    outpart[1]->set5Momentum(part[1]);
-  }
-  else {
-    throw DecayIntegratorError() << "DecayPhaseSpaceMode::flatPhaseSpace "
-				 << "only two body modes currently implemented" 
-				 << Exception::abortnow;
-  }
+  assert(outpart.size()==2);
+  double ctheta,phi;
+  Kinematics::generateAngles(ctheta,phi);
+  Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
+			   ctheta, phi,part[0],part[1]);
+  wgt *= Kinematics::pstarTwoBodyDecay(inmass,mass[1],mass[2])/8./Constants::pi/inmass;
+  outpart[0]->set5Momentum(part[0]);
+  outpart[1]->set5Momentum(part[1]);
   return wgt*inmass;
 }
 
@@ -128,7 +124,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	pre = prewid>0.*MeV ? 1./prewid : 1./MeV;
 	// generate the weight for this point
 	try {
-	  wgt = pre*weight(false,false,ichan,*inpart,particles);
+	  wgt = pre*weight(false,ichan,*inpart,particles,true);
 	}
 	catch (Veto) {
 	  wgt=0.;
@@ -181,7 +177,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	double wgt=0.; 
 	int ichan;
 	if(m0>mmin) {
-	  inpart->set5Momentum(Lorentz5Momentum(0.0*MeV,0.0*MeV,0.0*MeV,m0,m0));
+	  inpart->set5Momentum(Lorentz5Momentum(m0));
 	  // compute the prefactor
 	  prewid= (_widthgen&&_partial>=0) ? 
 	    _widthgen->partialWidth(_partial,inpart->mass()) :
@@ -189,7 +185,7 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
 	  pre = prewid>0*MeV ? 1./prewid : 1./MeV;
 	  // generate the weight for this point
 	  try {
-	    wgt = pre*weight(false,false,ichan,*inpart,particles);
+	    wgt = pre*weight(false,ichan,*inpart,particles,true);
 	  }
 	  catch (Veto) {
 	    wgt=0.;
@@ -324,12 +320,11 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   // construct a new particle which is at rest
   Particle inrest(inpart);
   inrest.boost(-inpart.momentum().boostVector());
-  int ncount(0),ichan; double wgt;
-  unsigned int ix,iy;
+  int ncount(0),ichan; double wgt(0.);
+  unsigned int ix;
   try {
     do {
-      for(iy=0;iy<particles.size();++iy){particles[iy]->spinInfo(SpinfoPtr());}
-      wgt=pre*weight(true,cc,ichan,inrest,particles);
+      wgt=pre*weight(cc,ichan,inrest,particles,ncount==0);
       ++ncount;
       if(wgt>_maxweight) {
 	CurrentGenerator::log() << "Resetting max weight for decay " 
@@ -360,6 +355,7 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
     throw Veto();
   }
   // set up the vertex for spin correlations
+  me2(-1,inrest,particles,DecayIntegrator::Terminate);
   const_ptr_cast<tPPtr>(&inpart)->spinInfo(inrest.spinInfo());
   constructVertex(inpart,particles);
   // return if intermediate particles not required
@@ -460,6 +456,7 @@ void DecayPhaseSpaceMode::doinitrun() {
 // generate the masses of the external particles
 vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) const {
   vector<Energy> mass(1,inmass);
+  mass.reserve(_extpart.size());
   vector<int> notdone;
   Energy mlow(0.*MeV);
   // set masses of stable particles and limits 

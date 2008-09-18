@@ -37,7 +37,13 @@ public:
   /**
    * Default constructor
    */
-  inline LeptonNeutrinoCurrent();
+  LeptonNeutrinoCurrent() {
+    // set up the modes in the base class
+    addDecayMode(11,-12);
+    addDecayMode(13,-15);
+    addDecayMode(15,-16);
+    setInitialModes(3);
+  }
 
 public:
 
@@ -81,9 +87,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale, 
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE> 
+  current(const int imode, const int ichan,Energy & scale, 
+	  const ParticleVector & decay, DecayIntegrator::MEOption) const;
 
   /**
    * Accept the decay. Checks that this is one of the allowed modes.
@@ -122,13 +128,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -185,7 +191,5 @@ struct ClassTraits<Herwig::LeptonNeutrinoCurrent>
 /** @endcond */
 
 }
-
-#include "LeptonNeutrinoCurrent.icc"
 
 #endif /* HERWIG_LeptonNeutrinoCurrent_H */

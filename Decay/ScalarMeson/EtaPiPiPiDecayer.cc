@@ -211,16 +211,22 @@ void EtaPiPiPiDecayer::Init() {
 
 }
 
-double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
-			     const ParticleVector & decay) const {
-  // workaround for gcc 3.2.3 bug
-  // construct spin info objects (this is pretty much a waste of time)
-  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
-  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  for(unsigned int ix=0;ix<decay.size();++ix) {
-    //ALB ScalarWaveFunction(decay[ix],outgoing,true,vertex);
-    PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+double EtaPiPiPiDecayer::me2(const int,const Particle & inpart,
+			     const ParticleVector & decay,
+			     MEOption meopt) const {
+  useMe();
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0));
+  }
+  if(meopt==Terminate) {
+    // set up the spin information for the decay products
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true);
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // calculate the matrix element
   // compute the variables we need
@@ -236,9 +242,7 @@ double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
   double x(0.5*sqrt(3.)*(u-t)/inpart.mass()/Q),x2(x*x);
   double y(0.5*msum/inpart.mass()*(Mmm2-s)/m34/Q-1),y2(y*y);
   double me(_prefactor[imode()]*(1+_a[imode()]*y+_b[imode()]*y2+_c[imode()]*x2));
-  DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  newME(0,0,0,0)=sqrt(me);
-  ME(newME);
+  ME()(0,0,0,0)=sqrt(me);
   return me;
 }
 

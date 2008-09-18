@@ -86,37 +86,45 @@ void SMHiggsGGHiggsPPDecayer::Init() {
   
 }
 
-double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int, 
+double SMHiggsGGHiggsPPDecayer::me2(const int, 
 				    const Particle & part,
-				    const ParticleVector & decay) const {
-  RhoDMatrix rhoH(PDT::Spin0);
-  
-  vector<VectorWaveFunction> V1,V2;
-  ScalarWaveFunction hwave(const_ptr_cast<tPPtr>(&part),
-			   rhoH,incoming,true,vertex);
-  VectorWaveFunction(V1,decay[0],outgoing,true,true,vertex);
-  VectorWaveFunction(V2,decay[1],outgoing,true,true,vertex);
+				    const ParticleVector & decay,
+				    MEOption meopt) const {
+  if(meopt==Initialize) {
+    ScalarWaveFunction::
+      calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&part),incoming);
+    _swave = ScalarWaveFunction(part.momentum(),part.dataPtr(),incoming);
+    ME(DecayMatrixElement(PDT::Spin0,PDT::Spin1,PDT::Spin1));
+  }
+  if(meopt==Terminate) {
+    ScalarWaveFunction::constructSpinInfo(const_ptr_cast<tPPtr>(&part),
+					  incoming,true);
+    for(unsigned int ix=0;ix<2;++ix)
+      VectorWaveFunction::constructSpinInfo(_vwave[ix],decay[ix],
+					    outgoing,true,true);
+    return 0.;
+  }
+  for(unsigned int ix=0;ix<2;++ix)
+    VectorWaveFunction::
+      calculateWaveFunctions(_vwave[ix],decay[ix],outgoing,true);
   //Set up decay matrix
-  DecayMatrixElement higgs(PDT::Spin0,PDT::Spin1,PDT::Spin1);
-  Energy2 scale(part.mass()*part.mass());
+  Energy2 scale(sqr(part.mass()));
   unsigned int v1hel,v2hel;
   for(v1hel = 0;v1hel < 3;v1hel+=2) {
     for(v2hel = 0;v2hel < 3;v2hel+=2) {
-      
       if(decay[0]->id() == ParticleID::g &&
 	 decay[1]->id() == ParticleID::g) {
-	higgs(0,v1hel,v2hel) = _hggvertex->evaluate(scale,V1[v1hel],
-						    V2[v2hel],hwave);
+	ME()(0,v1hel,v2hel) = _hggvertex->evaluate(scale,_vwave[0][v1hel],
+						   _vwave[1][v2hel],_swave);
       }
       else {
-	higgs(0,v1hel,v2hel) = _hppvertex->evaluate(scale,V1[v1hel],
-						    V2[v2hel],hwave);
+	ME()(0,v1hel,v2hel) = _hppvertex->evaluate(scale,_vwave[0][v1hel],
+						   _vwave[1][v2hel],_swave);
       }
     }
   }
   //store matrix element
-  ME(higgs);
-  double output = higgs.contract(rhoH).real()*UnitRemoval::E2/scale;
+  double output = ME().contract(_rho).real()*UnitRemoval::E2/scale;
   //colour factor (N^2 - 1)/4
   if(decay[0]->id() == ParticleID::g &&
      decay[1]->id() == ParticleID::g) {

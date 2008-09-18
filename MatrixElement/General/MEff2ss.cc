@@ -254,11 +254,11 @@ void MEff2ss::constructVertex(tSubProPtr sub) {
   //First calculate wave functions with off-shell momenta
   //to calculate correct spin information
   SpinorVector sp;
-  SpinorWaveFunction(sp, ext[0], incoming, false, true);
+  SpinorWaveFunction(sp, ext[0], incoming, false);
   SpinorBarVector sbar;
-  SpinorBarWaveFunction(sbar, ext[1], incoming, false, true);
-  ScalarWaveFunction sca1(ext[2], outgoing, true, true);
-  ScalarWaveFunction sca2(ext[3], outgoing, true, true);
+  SpinorBarWaveFunction(sbar, ext[1], incoming, false);
+  ScalarWaveFunction sca1(ext[2], outgoing, true);
+  ScalarWaveFunction sca2(ext[3], outgoing, true);
   //Need to use rescale momenta to calculate matrix element
   cPDVector data(4);
   vector<Lorentz5Momentum> momenta(4);

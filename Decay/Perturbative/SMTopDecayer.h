@@ -16,7 +16,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "SMTopDecayer.fh"
 
 namespace Herwig {
   using namespace ThePEG;
@@ -68,8 +67,8 @@ public:
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay, MEOption meopt) const;
 
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -141,13 +140,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -206,6 +205,11 @@ private:
    *  Pointer to the \f$W^\pm\f$
    */
   PDPtr _wplus;
+
+  mutable RhoDMatrix _rho;
+  mutable vector<SpinorWaveFunction   >   _inHalf,_outHalf;
+  mutable vector<SpinorBarWaveFunction>   _inHalfBar,_outHalfBar;
+
 };
 
 }
@@ -240,7 +244,5 @@ struct ClassTraits<Herwig::SMTopDecayer>
 /** @endcond */
 
 }
-
-#include "SMTopDecayer.icc"
 
 #endif /* HERWIG_SMTopDecayer_H */

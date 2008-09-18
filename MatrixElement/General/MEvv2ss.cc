@@ -240,15 +240,15 @@ void MEvv2ss::constructVertex(tSubProPtr sub) {
   if( ext[2]->id() != getOutgoing().first ) swap(ext[2], ext[3]);
 
   VBVector v1, v2;
-  VectorWaveFunction(v1, ext[0], incoming, false, true, true);
-  VectorWaveFunction(v2, ext[1], incoming, false, true, true);
+  VectorWaveFunction(v1, ext[0], incoming, false, true);
+  VectorWaveFunction(v2, ext[1], incoming, false, true);
   //function to calculate me2 expects massless incoming vectors
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
   v1[1] = v1[2]; 
   v2[1] = v2[2];
-  ScalarWaveFunction sca1(ext[2], outgoing, true, true);
-  ScalarWaveFunction sca2(ext[3], outgoing, true, true);
+  ScalarWaveFunction sca1(ext[2], outgoing, true);
+  ScalarWaveFunction sca2(ext[3], outgoing, true);
 
   //Need to use rescale momenta to calculate matrix element
   cPDVector data(4);

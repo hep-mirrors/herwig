@@ -26,12 +26,37 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+void VectorMeson3PionDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  if(initialize()) {
+    double temp;
+    unsigned int iy;
+    for(unsigned int ix=0;ix<_incoming.size();++ix) {
+      _maxwgt[ix]=mode(ix)->maxWeight();
+      for(iy=0;iy<3;++iy) {
+	if(mode(ix)->numberChannels()>3*iy+1) {
+	  temp=mode(ix)->channelWeight(3*iy)+mode(ix)->channelWeight(3*iy+1)+
+	    mode(ix)->channelWeight(3*iy+2);
+	  temp/=3.;
+	  switch(iy) {
+	  case 0: _rho1wgt[ix]=temp; break;
+	  case 1: _rho2wgt[ix]=temp; break;
+	  case 2: _rho3wgt[ix]=temp; break;
+	  }
+	}
+      }
+    }
+  }
+}
+
 VectorMeson3PionDecayer::VectorMeson3PionDecayer() 
   : _incoming(2), _coupling(2), _directcoupling(2), _directphase(2),
     _rho2coupling(2), _rho2phase(2), _rho3coupling(2), _rho3phase(2),
     _maxwgt(2), _rho1wgt(2), _rho2wgt(2), _rho3wgt(2), _rho1mass(2),
     _rho2mass(2), _rho3mass(2), _rho1width(2), _rho2width(2), 
     _rho3width(2), _defaultmass(2), _mpic(0.*MeV), _mpi0(0.*MeV) {
+  // matrix element storage
+  ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
   // omega decay
   _incoming[0] = 223;
   _coupling[0] = 178.71/GeV;
@@ -380,83 +405,78 @@ void VectorMeson3PionDecayer::Init() {
 
 }
 
-double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
+double VectorMeson3PionDecayer::me2(const int ichan,
 				    const Particle & inpart,
-				    const ParticleVector & decay) const {
-  // wavefunctions for the decaying particle
-  RhoDMatrix rhoin(PDT::Spin1);
-  vector<LorentzPolarizationVector> invec;
-  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
-		     incoming,true,false,vertex);
-  // create the spin information for the decay products if needed
-  unsigned int ix;
-  if(vertex) {
-    for(ix=0;ix<decay.size();++ix) {
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-      PPtr mytemp = decay[ix]; 
-      ScalarWaveFunction(mytemp,outgoing,true,vertex);
-    }
+				    const ParticleVector & decay,
+				    MEOption meopt) const {
+  if(meopt==Initialize) {
+    VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
+						const_ptr_cast<tPPtr>(&inpart),
+						incoming,false);
+  }
+  if(meopt==Terminate) {
+    VectorWaveFunction::constructSpinInfo(_vectors,const_ptr_cast<tPPtr>(&inpart),
+					  incoming,true,false);
+    // set up the spin information for the decay products
+    for(unsigned int ix=0;ix<3;++ix)
+      ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);
+    return 0.;
   }
   // compute the matrix element
-  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
   // work out the prefactor
   complex<InvEnergy2> pre(0./MeV2);
   Complex resfact,ii(0.,1.);
   if(ichan<0){pre=_ccoupling[imode()][3];}
   Energy pcm;
   // work out the direct invariant masses needed
-  Lorentz5Momentum temp(decay[1]->momentum()+decay[2]->momentum());temp.rescaleMass();
-  Energy mrho0(temp.mass());
-  temp = decay[1]->momentum()+decay[0]->momentum();temp.rescaleMass();
-  Energy mrhop(temp.mass());
-  temp = decay[2]->momentum()+decay[0]->momentum();temp.rescaleMass();
-  Energy mrhom(temp.mass());
+  Energy mrho0(sqrt(decay[1]->momentum().m2(decay[2]->momentum())));
+  Energy mrhop(sqrt(decay[1]->momentum().m2(decay[0]->momentum())));
+  Energy mrhom(sqrt(decay[2]->momentum().m2(decay[0]->momentum())));
   // contribution of the resonances
   int ichannow(-3);
-  for(ix=0;ix<3;++ix) {
-      ichannow+=3;
-      if((ix==0 && _rho1wgt[imode()]>0.) || (ix==1 && _rho2wgt[imode()]>0.) ||
-	 (ix==2 && _rho3wgt[imode()]>0.)) {
-	if(ichan<0) {
-	  // rho0 contribution
-	  pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-	  resfact = _rhomass2[imode()][ix]/
-	    (mrho0*mrho0-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	  // rho+ contribution
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhop*mrhop-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	  // rho- contribution
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhom*mrhom-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	  // add the contribution
-	}
-	else if(ichan==ichannow) {
-	  pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-	  resfact = _rhomass2[imode()][ix]/
-	    (mrho0*mrho0-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	}
-	else if(ichan==ichannow+1) {
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhop*mrhop-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	}
-	else if(ichan==ichannow+2) {
-	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-	  resfact+= _rhomass2[imode()][ix]/
-	    (mrhom*mrhom-_rhomass2[imode()][ix]
-	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	}
-	pre += resfact * _ccoupling[imode()][ix];
-	ichannow+=3;
+  for(unsigned int ix=0;ix<3;++ix) {
+    ichannow+=3;
+    if((ix==0 && _rho1wgt[imode()]>0.) || (ix==1 && _rho2wgt[imode()]>0.) ||
+       (ix==2 && _rho3wgt[imode()]>0.)) {
+      if(ichan<0) {
+	// rho0 contribution
+	pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	resfact = _rhomass2[imode()][ix]/
+	  (mrho0*mrho0-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+	// rho+ contribution
+	pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhop*mrhop-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+	// rho- contribution
+	pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhom*mrhom-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+	// add the contribution
       }
+      else if(ichan==ichannow) {
+	pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	resfact = _rhomass2[imode()][ix]/
+	  (mrho0*mrho0-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+      }
+      else if(ichan==ichannow+1) {
+	pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhop*mrhop-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+      }
+      else if(ichan==ichannow+2) {
+	pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	resfact+= _rhomass2[imode()][ix]/
+	  (mrhom*mrhom-_rhomass2[imode()][ix]
+	   +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+      }
+      pre += resfact * _ccoupling[imode()][ix];
+      ichannow+=3;
+    }
   }
   // polarization vector piece
   LorentzPolarizationVector 
@@ -464,10 +484,10 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
 					  decay[1]->momentum(),
 					  decay[2]->momentum());
   // compute the matrix element
-  for(ix=0;ix<3;++ix) newME(ix,0,0,0)=scalar.dot(invec[ix]);
-  ME(newME);
+  for(unsigned int ix=0;ix<3;++ix) 
+    ME()(ix,0,0,0)=scalar.dot(_vectors[ix]);
   // return the answer
-  return newME.contract(rhoin).real();
+  return ME().contract(_rho).real();
 }
 
 double VectorMeson3PionDecayer::

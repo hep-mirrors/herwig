@@ -59,17 +59,25 @@ using namespace ThePEG;
 
 class DecayIntegrator: public HwDecayerBase {
 
+public:
+
   /**
    *  The output operator is a friend, this is mainly for debugging
    */    
   friend ostream & operator<<(ostream &, const DecayIntegrator &);
+
+  /**
+   *  Enum for the matrix element option
+   */
+  enum MEOption {Initialize,Calculate,Terminate};
 
 public:
 
   /**
    * Default constructor.
    */
-  inline DecayIntegrator();
+  DecayIntegrator() : _niter(10), _npoint(10000), _ntry(500),
+		      _generateinter(false),_outputmodes(false) {}
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -77,7 +85,10 @@ public:
    * @param parent The decaying particle
    * @param children The decay products
    */
-  inline virtual bool accept(tcPDPtr parent, const tPDVector & children) const;
+  virtual bool accept(tcPDPtr parent, const tPDVector & children) const {
+    bool cc;
+    return modeNumber(cc,parent,children)>=0;
+  }
   
   /**
    * For a given decay mode and a given particle instance, perform the
@@ -110,19 +121,18 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * This function is purely virtual and must be implemented in classes inheriting
    * from DecayIntegrator.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
    * @return The matrix element squared for the phase-space configuration.
    */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		      const ParticleVector & decay) const=0;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay,MEOption opt) const=0;
   
   /**
    * The helicity amplitude matrix element for spin correlations.
    */
-  inline const DecayMatrixElement & ME() const;
+  DecayMatrixElement & ME() const {return _matrixelement;}
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -132,8 +142,12 @@ public:
    * @param coupling The coupling for the matrix element.
    * @return True or False if this mode can be handled.
    */
-  inline virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
-				    double & coupling) const;
+  virtual bool twoBodyMEcode(const DecayMode & , int & mecode,
+			     double & coupling) const {
+    coupling = 1.;
+    mecode   = -1;
+    return false;
+  }						     
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -155,10 +169,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  inline virtual double threeBodyMatrixElement(const int imode,  const Energy2 q2,
-					       const Energy2 s3, const Energy2 s2, 
-					       const Energy2 s1, const Energy  m1, 
-					       const Energy  m2, const Energy  m3) const;
+  virtual double threeBodyMatrixElement(const int imode,  const Energy2 q2,
+					const Energy2 s3, const Energy2 s2, 
+					const Energy2 s1, const Energy  m1, 
+					const Energy  m2, const Energy  m3) const;
   
   /**
    * The differential three body decay rate with one integral performed.
@@ -170,10 +184,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  inline virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
-					     const Energy2 s,
-					     const Energy m1, const Energy m2, 
-					     const Energy m3) const;
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
+				      const Energy2 s,
+				      const Energy m1, const Energy m2, 
+				      const Energy m3) const;
   
   /**
    * Set the code for the partial width. Finds the partial width in the
@@ -209,12 +223,14 @@ public:
    * @return A particle vector containing the decay products after the generation
    * of photons.
    */
-  inline ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  ParticleVector generatePhotons(const Particle & p,ParticleVector children) {
+    return _photongen->generatePhotons(p,children);
+  }
 
   /**
    *  check if photons can be generated in the decay
    */
-  inline bool canGeneratePhotons();
+  bool canGeneratePhotons() {return _photongen;}
 
   /**
    *  The one-loop virtual correction.
@@ -224,9 +240,9 @@ public:
    * @param products The decay products including the radiated photon.
    * @return Whether the correction is implemented
    */
-  inline virtual bool oneLoopVirtualME(double & output, unsigned int imode,
-				       const Particle & part, 
-				       const ParticleVector & products);
+  virtual bool oneLoopVirtualME(double & output, unsigned int imode,
+				const Particle & part, 
+				const ParticleVector & products);
   
   /**
    *  The real emission matrix element
@@ -236,9 +252,9 @@ public:
    * @param products The decay products including the radiated photon
    * @return Whether the correction is implemented
    */
-  inline virtual bool realEmmisionME(double & output, unsigned int imode,
-				     const Particle & part, 
-				     const ParticleVector & products);
+  virtual bool realEmmisionME(double & output, unsigned int imode,
+			      const Particle & part, 
+			      const ParticleVector & products);
   //@}
   
 public:
@@ -281,17 +297,17 @@ protected:
   /**
    * The mode being used for this decay
    */
-  inline int imode() const;
+  int imode() const {return _imode;}
 
   /**
    * Set the mode being use for this decay.
    */
-  inline void imode(int);
+  void imode(int in) {_imode=in;}
   
   /**
    * Set the helicity matrix element for the decay.
    */
-  inline void ME(const DecayMatrixElement &) const;
+  void ME(const DecayMatrixElement & in) const {_matrixelement.reset(in);}
    
   /**
    * Reset the properities of all intermediates.
@@ -304,7 +320,7 @@ protected:
   /**
    * Number of decay modes
    */
-  inline unsigned int numberModes() const;
+  unsigned int numberModes() const {return _modes.size();}
 
   /**
    * Pointer to a mode
@@ -319,12 +335,12 @@ protected:
   /**
    * Get whether or not the intermediates are included
    */
-  inline bool generateIntermediates() const;
+  bool generateIntermediates() const {return _generateinter;}
 
   /**
    * Set whether or not the intermediates are included 
    */ 
-  inline void generateIntermediates(bool);
+  void generateIntermediates(bool in) {_generateinter=in;}
 
   /**
    * Initialize the phase-space mode
@@ -397,7 +413,7 @@ private:
   /**
    * The helicity matrix element for the current decay
    */
-  DecayMatrixElement _matrixelement;
+  mutable DecayMatrixElement _matrixelement;
 
   /**
    *  Output the phase space channels for testing
@@ -446,7 +462,5 @@ struct ClassTraits<Herwig::DecayIntegrator>
 /** @endcond */
 
 }
-
-#include "DecayIntegrator.icc"
 
 #endif /* HERWIG_DecayIntegrator_H */
