@@ -1220,7 +1220,7 @@ void PowhegHandler::createColourFlow(HardTreePtr tree,
 double PowhegHandler::Sud( Energy scale, long id ){
   //upper limit on scale 
   double sudwgt = 1.;
-  Energy scale_cut = 1000*GeV;
+  Energy scale_cut = _max_qtilde;
   multimap< long, pair < Interpolator<double,Energy>::Ptr,
     Interpolator<Energy,double>::Ptr >  >::const_iterator cjt;
   for( cjt =  _fbranchings.lower_bound( abs( id ) );
@@ -1272,6 +1272,7 @@ double PowhegHandler::sudakovWeight() {
 						   <<cit->second.first.second / GeV
 						   <<"\nden scale = "
 						   <<cit->second.second.second /GeV
+	
 						   <<"\n\n";
     SudWgt *= internal_wgt;
   }
