@@ -18,6 +18,8 @@
 #include "ThePEG/EventRecord/SubProcess.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig++/PDT/StandardMatchers.h"
+#include "ThePEG/PDT/StandardMatchers.h"
 #include "HwRemDecayer.fh"
 
 namespace Herwig {
@@ -75,23 +77,29 @@ public:
   /**
    * Check if this decayer can perfom the decay specified by the
    * given decay mode.
-   * @param dm the DecayMode describing the decay.
    * @return true if this decayer can handle the given mode, otherwise false.
    */
-  inline virtual bool accept(const DecayMode & dm) const;
+  virtual bool accept(const DecayMode &) const {
+    return true;
+  }
 
   /**
    * Return true if this decayer can handle the extraction of the \a   
    * extracted parton from the given \a particle.   
    */  
-  inline virtual bool canHandle(tcPDPtr parent, tcPDPtr extracted) const;  
-
+  virtual bool canHandle(tcPDPtr particle, tcPDPtr parton) const {
+    if(!StandardQCDPartonMatcher::Check(*parton)) return false;
+    return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma;
+  } 
+  
   /**   
    * Return true if this decayed can extract more than one parton from   
    * a particle.   
    */  
-  inline virtual bool multiCapable() const;
-
+  virtual bool multiCapable() const {  
+    return true;
+  }
+  
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
    * @param dm the DecayMode describing the decay.
@@ -178,13 +186,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -196,7 +204,10 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException) {
+    Interfaced::doinit();
+    _ybin=0.25/_zbin;
+  }
   //@}
 
 private:
@@ -224,8 +235,23 @@ private:
     /**
      * manually extract the valence flavour \a id.
      */
-    inline void extract(int id);
-
+    inline void extract(int id) {
+      for(unsigned int i=0; i<flav.size(); i++) {
+	if(id == sign*flav[i]){
+	  if(hadron->id() == ParticleID::gamma) {
+	    flav[0] =  id;
+	    flav[1] = -id;
+	    extracted = 0;
+	    flav.resize(2);
+	  }
+	  else {
+	    extracted = i;
+	  }
+	  break;
+	}
+      }      
+    }
+    
     /**
      * Return a proper particle ID assuming that \a id has been removed
      * from the hadron.
@@ -236,12 +262,17 @@ private:
      * Method to determine whether \a parton is a quark from the sea.
      * @return TRUE if \a parton is neither a valence quark nor a gluon.
      */
-    inline bool isSeaQuark(tcPPtr parton) const;
+    bool isSeaQuark(tcPPtr parton) const {
+      return ((parton->id() != ParticleID::g) && ( !isValenceQuark(parton) ) );
+    }
 
     /**
      * Method to determine whether \a parton is a valence quark.
      */
-    inline bool isValenceQuark(tcPPtr parton) const;
+    bool isValenceQuark(tcPPtr parton) const {
+      int id(sign*parton->id());
+      return find(flav.begin(),flav.end(),id) != flav.end();
+    }
 
     /** The valence flavours of the corresponding baryon. */                    
     vector<int> flav;                                                           
@@ -301,8 +332,20 @@ private:
    * last parton used was a valance parton, so only 2 (or 1, if meson) flavours
    * remain to be used.
    */
-  inline PPtr finalSplit(const tRemPPtr rem, long remID, Lorentz5Momentum) const;
-
+  PPtr finalSplit(const tRemPPtr rem, long remID,
+		  Lorentz5Momentum usedMomentum) const {
+    // Create the remnant and set its momentum, also reset all of the decay 
+    // products from the hadron
+    PPtr remnant = new_ptr(Particle(getParticleData(remID)));
+    Lorentz5Momentum prem(rem->momentum()-usedMomentum);
+    prem.setMass(getParticleData(remID)->constituentMass());
+    prem.rescaleEnergy();
+    remnant->set5Momentum(prem);
+    // Add the remnant to the step, but don't do colour connections
+    thestep->addDecayProduct(rem,remnant,false);
+    return remnant;
+  }
+  
 
   /**
    * This takes the particle and find a splitting for np -> p + child and 
@@ -518,7 +561,5 @@ struct ClassTraits<Herwig::HwRemDecayer>
 /** @endcond */
 
 }
-
-#include "HwRemDecayer.icc"
 
 #endif /* HERWIG_HwRemDecayer_H */
