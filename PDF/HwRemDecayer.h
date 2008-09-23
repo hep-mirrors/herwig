@@ -88,7 +88,8 @@ public:
    * extracted parton from the given \a particle.   
    */  
   virtual bool canHandle(tcPDPtr particle, tcPDPtr parton) const {
-    if(!StandardQCDPartonMatcher::Check(*parton)) return false;
+    if(!(StandardQCDPartonMatcher::Check(*parton) ||
+	 parton->id()==ParticleID::gamma)) return false;
     return HadronMatcher::Check(*particle) || particle->id()==ParticleID::gamma;
   } 
   
