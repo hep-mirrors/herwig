@@ -54,7 +54,7 @@ public:
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(0.*GeV), _beta(0.), _gamma(0.*GeV), _iptmax(),
-	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.) {}
+	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.), _y_cut(1.1) {}
 
   /**
    *  Member to perform the shower
