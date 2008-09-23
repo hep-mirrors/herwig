@@ -50,9 +50,9 @@ insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
 # idenified particle analysis
 insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
 # four jet analysis
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
 # general jet analysis
-insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
+# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
 
 ##################################################
 #  Useful analysis handlers for B-factory physics
