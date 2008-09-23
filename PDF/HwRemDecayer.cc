@@ -444,7 +444,7 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
 	// SP as q is always less than forcedSplitScale, the pdf scale is fixed 
 	// pdfval = _pdf->xfx(theBeamData,in,sqr(q),lastx*zr); 
 	double pdfval=_pdf->xfx(theBeamData,in,sqr(_forcedSplitScale),lastx*zr);
-	psum += pdfval*az*0.5*(sqr(zz)+sqr(wz));
+	if(pdfval>0.) psum += pdfval*az*0.5*(sqr(zz)+sqr(wz));
       }
       // q -> q g
       else {
@@ -452,12 +452,12 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
 	// SP as q is always less than forcedSplitScale, the pdf scale is fixed 
  	// pdfval = _pdf->xfx(theBeamData,in,sqr(q),lastx*zr);
  	double pdfval=_pdf->xfx(theBeamData,in,sqr(_forcedSplitScale),lastx*zr);
-	psum += pdfval*az*4./3.*(1.+sqr(wz))*zr;
+	if(pdfval>0.) psum += pdfval*az*4./3.*(1.+sqr(wz))*zr;
       }
-      prob.push_back(psum);
+      if(psum>0.) prob.push_back(psum);
       yy+=dely;
     }
-    partonprob[ids[iflav]] = make_pair(psum,prob);
+    if(psum>0.) partonprob[ids[iflav]] = make_pair(psum,prob);
     ptotal+=psum;
   }
   // select the flavour
