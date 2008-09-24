@@ -330,7 +330,12 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
 	pt=0.0*GeV;
 	reject = false;
       }
-      if(wgt>1.0) cerr << j << " " << wgt << "PROBLEM!!!!" << endl;
+      if(wgt>1.0) {
+	ostringstream s;
+	s << "GGtoHHardGenerator::getEvent weight for channel " << j
+	  << "is " << wgt << " which is greater than 1";
+	generator()->logWarning( Exception(s.str(), Exception::warning) );
+      }
     }
     while(reject);
     // set pt of emission etc
