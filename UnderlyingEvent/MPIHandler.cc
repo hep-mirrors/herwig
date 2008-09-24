@@ -77,11 +77,13 @@ void MPIHandler::initialize() {
 
   //check if MPI is wanted
   if( !beamOK() ){
-    generator()->log() << "You have requested multiple parton-parton scattering,\n"
-		       << "but the model is not forseen for the setup you chose.\n" 
-		       << "Events will be produced without MPI.\n";
-    return;
+    throw Exception()  << "You have requested multiple parton-parton scattering,\n"
+		       << "but the model is not forseen for the beam setup you chose.\n" 
+		       << "You should therefore disable that by setting XXXGenerator:EventHandler:"
+		       << "CascadeHandler:MPIHandler to NULL"
+                       << Exception::runerror;
   }
+
   numSubProcs_ = subProcesses().size();
 
   if( numSubProcs_ != cuts().size() ) 

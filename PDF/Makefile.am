@@ -10,7 +10,7 @@ EXTRA_DIST = mrst
 ## bound into HwShower.la
 noinst_LTLIBRARIES = libHwRemDecayer.la
 libHwRemDecayer_la_SOURCES = \
-HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh
+HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh
 
 ## bound into HwShower.la
 noinst_LTLIBRARIES += libHwMPIPDF.la

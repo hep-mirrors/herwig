@@ -333,7 +333,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
 CrossSection MEfftoffH::dSigHatDR() const {
   using Constants::pi;
   // jacobian factor for the higgs
-  InvEnergy2 bwfact;
+  InvEnergy2 bwfact = -1.0/MeV2;
   Energy moff =meMomenta()[4].mass();
   if(_shapeopt==1) {
     tPDPtr h0 = getParticleData(ParticleID::h0);

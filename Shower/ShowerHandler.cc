@@ -149,7 +149,7 @@ void ShowerHandler::Init() {
 
   static Reference<ShowerHandler,UEBase> interfaceMPIHandler
     ("MPIHandler",
-     "The object that admisinsters all additional semihard partonic scatterings.",
+     "The object that administers all additional scatterings.",
      &ShowerHandler::MPIHandler_, false, false, true, true);
   
 }
