@@ -18,49 +18,27 @@
 
 using namespace Herwig;
 
-MEPP2WHPowheg::MEPP2WHPowheg() :_maxflavour(5), _plusminus(0)
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
- ,_contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
-  _fixedScale(100.*GeV), _scaleFact(1.)
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
+MEPP2WHPowheg::MEPP2WHPowheg() 
+ : _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+   _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
+   _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
 ClassDescription<MEPP2WHPowheg> MEPP2WHPowheg::initMEPP2WHPowheg;
 // Definition of the static class description member.
 
 void MEPP2WHPowheg::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _plusminus
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
-     << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
+  os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
      << _a         << _p              << _gluon
      << _TR        << _CF             << _scaleopt       
      << ounit(_fixedScale,GeV)        << _scaleFact;
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
-
 }
 
 void MEPP2WHPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _plusminus
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
-     >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
+  is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
      >> _a         >> _p              >> _gluon
      >> _TR        >> _CF             >> _scaleopt 
      >> iunit(_fixedScale,GeV)        >> _scaleFact;
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
-
 }
 
 void MEPP2WHPowheg::Init() {
@@ -68,36 +46,6 @@ void MEPP2WHPowheg::Init() {
   static ClassDocumentation<MEPP2WHPowheg> documentation
     ("The MEPP2WHPowheg class implements the matrix element for the  Bjorken"
      " process q qbar -> WH");
-
-  static Parameter<MEPP2WHPowheg,unsigned int> interfaceMaxFlavour
-    ( "MaxFlavour",
-      "The heaviest incoming quark flavour this matrix element is allowed to handle "
-      "(if applicable).",
-      &MEPP2WHPowheg::_maxflavour, 5, 1, 5, false, false, true);
-
-  static Switch<MEPP2WHPowheg,unsigned int> interfacePlusMinus
-    ("Wcharge",
-     "Which intermediate W bosons to include",
-     &MEPP2WHPowheg::_plusminus, 0, false, false);
-  static SwitchOption interfacePlusMinusAll
-    (interfacePlusMinus,
-     "Both",
-     "Include W+ and W-",
-     0);
-  static SwitchOption interfacePlusMinusPlus
-    (interfacePlusMinus,
-     "Plus",
-     "Only include W+",
-     1);
-  static SwitchOption interfacePlusMinusMinus
-    (interfacePlusMinus,
-     "Minus",
-     "Only include W-",
-     2);
-
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
 
    static Switch<MEPP2WHPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -179,93 +127,7 @@ void MEPP2WHPowheg::Init() {
      &MEPP2WHPowheg::_scaleFact, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
-
 }
-
-void MEPP2WHPowheg::getDiagrams() const {
-  // which intgermediates to include
-  bool wplus =_plusminus==0||_plusminus==1;
-  bool wminus=_plusminus==0||_plusminus==2;
-  tPDPtr higgs = getParticleData(ParticleID::h0);
-  // possible incoming particles
-  typedef std::vector<pair<long,long> > Pairvector;
-  // possible parents
-  vector<PDPair> parentpair;
-  parentpair.reserve(6);
-  // don't even think of putting 'break' in here!
-  switch(_maxflavour) {
-  case 5:
-    parentpair.push_back(make_pair(getParticleData(ParticleID::b), 
-				   getParticleData(ParticleID::cbar)));
-    parentpair.push_back(make_pair(getParticleData(ParticleID::b), 
-				   getParticleData(ParticleID::ubar)));
-  case 4:
-    parentpair.push_back(make_pair(getParticleData(ParticleID::s), 
-				   getParticleData(ParticleID::cbar)));
-    parentpair.push_back(make_pair(getParticleData(ParticleID::d), 
-				   getParticleData(ParticleID::cbar)));
-  case 3:
-    parentpair.push_back(make_pair(getParticleData(ParticleID::s), 
-				   getParticleData(ParticleID::ubar)));
-  case 2:
-    parentpair.push_back(make_pair(getParticleData(ParticleID::d), 
-				   getParticleData(ParticleID::ubar)));
-  default:
-    ;
-  }
-  // possible children
-  typedef Selector<tDMPtr> DecaySelector;
-  // for W+
-  DecaySelector wpdec = getParticleData(ParticleID::Wplus)->decaySelector();
-  vector<PDPair> wpdecays;
-  for(DecaySelector::const_iterator cit=wpdec.begin();cit!=wpdec.end();++cit) {
-    if(cit->second->orderedProducts().size()!=2) continue;
-    if(cit->second->orderedProducts()[0]->id()>0)
-      wpdecays.push_back(make_pair(cit->second->orderedProducts()[0],
-				   cit->second->orderedProducts()[1]));
-    else
-      wpdecays.push_back(make_pair(cit->second->orderedProducts()[1],
-				   cit->second->orderedProducts()[0]));
-  }
-  // for W-
-  DecaySelector wmdec = getParticleData(ParticleID::Wminus)->decaySelector();
-  vector<PDPair> wmdecays;
-  for(DecaySelector::const_iterator cit=wmdec.begin();cit!=wmdec.end();++cit) {
-    if(cit->second->orderedProducts().size()!=2) continue;
-    if(cit->second->orderedProducts()[0]->id()>0)
-      wmdecays.push_back(make_pair(cit->second->orderedProducts()[0],
-				   cit->second->orderedProducts()[1]));
-    else
-      wmdecays.push_back(make_pair(cit->second->orderedProducts()[1],
-				   cit->second->orderedProducts()[0]));
-  }
-  vector<PDPair>::const_iterator parent = parentpair.begin();
-  for (; parent != parentpair.end(); ++parent) {
-    // W- modes
-    if(wminus) {
-      for(unsigned int ix=0;ix<wmdecays.size();++ix) {
-	add(new_ptr((Tree2toNDiagram(2), parent->first, parent->second, 
-		     1, WMinus(), 3, higgs, 3, WMinus(), 
-		     5, wmdecays[ix].first,5, wmdecays[ix].second,-1)));
-      }
-    }
-    // W+ modes
-    if(wplus) {
-      for(unsigned int ix=0;ix<wpdecays.size();++ix) {
-	add(new_ptr((Tree2toNDiagram(2), parent->second->CC(), parent->first->CC(), 
-		     1, WPlus(), 3, higgs, 3, WPlus(), 5, wpdecays[ix].first,
-		     5, wpdecays[ix].second, -1)));
-      }
-    }  
-  }
-}
-
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
 
 void MEPP2WHPowheg::doinit() throw(InitException) {
   // gluon ParticleData object
@@ -273,7 +135,7 @@ void MEPP2WHPowheg::doinit() throw(InitException) {
   // colour factors
   _CF = 4./3.; 
   _TR = 0.5;
-  MEfftoVH::doinit();
+  MEPP2WH::doinit();
 }
 
 Energy2 MEPP2WHPowheg::scale() const {
@@ -285,17 +147,17 @@ int MEPP2WHPowheg::nDim() const {
 }
 
 bool MEPP2WHPowheg::generateKinematics(const double * r) {
-  _xt=*(r+6);
-  _v =*(r+7);
-  return MEfftoVH::generateKinematics(r);
+  _xt=*(r+5);
+  _v =*(r+6);
+  return MEPP2WH::generateKinematics(r);
 }
 
 CrossSection MEPP2WHPowheg::dSigHatDR() const {
   // Get Born momentum fractions xbar_a and xbar_b:
-  CrossSection lo_xsec(MEfftoVH::dSigHatDR());
+  CrossSection lo_xsec(MEPP2WH::dSigHatDR());
   _xb_a = lastX1();
   _xb_b = lastX2();
-  return MEfftoVH::dSigHatDR()*NLOweight();
+  return MEPP2WH::dSigHatDR()*NLOweight();
 }
 
 double MEPP2WHPowheg::NLOweight() const {

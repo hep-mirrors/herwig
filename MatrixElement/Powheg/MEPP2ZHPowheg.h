@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2ZHPowheg class.
 //
 
-#include "Herwig++/MatrixElement/MEfftoVH.h"
+#include "Herwig++/MatrixElement/Hadron/MEPP2ZH.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref MEPP2ZHPowhegInterfaces "The interfaces"
  * defined for MEPP2ZHPowheg.
  */
-class MEPP2ZHPowheg: public MEfftoVH {
+class MEPP2ZHPowheg: public MEPP2ZH {
 
 public:
 
@@ -27,18 +27,6 @@ public:
    * The default constructor.
    */
   MEPP2ZHPowheg();
-
-  /** @name Virtual functions required by the MEBase class. */
-  //@{
-  /**
-   * Add all possible diagrams with the add() function.
-   */
-  virtual void getDiagrams() const;
-  //@}
-
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -69,10 +57,6 @@ public:
    */
   virtual CrossSection dSigHatDR() const;
   //@}
-
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
 
 public:
 
@@ -106,86 +90,104 @@ protected:
    * configurations are re-weighted.
    */
   double NLOweight() const;
+
   /**
    * Calculate the variable \f$x=M_{B}^2/s\f$ from the integration variables. 
    */
   double x(double xt, double v) const;
+
   /**
    * Calculate the momentum fraction of the first parton. 
    */
   double x_a(double x, double v) const;
+
   /**
    * Calculate the momentum fraction of second parton. 
    */
   double x_b(double x, double v) const;
+
   /**
    * Calculate the minimum of \f$x\f$. 
    */
   double xbar(double v) const;
+
   /**
    * Calculate the ratio of the radiative luminosity funcion to the
    * Born luminosity function for the \f$qg\f$ initiated channel. 
    */
   double Ltilde_qg(double x, double v) const;
+
   /**
    * Calculate the ratio of the radiative luminosity funcion to the
    * Born luminosity function for the \f$g\bar{q}\f$ initiated channel. 
    */
   double Ltilde_gq(double x, double v) const;
+
   /**
    * Calculate the ratio of the radiative luminosity funcion to the
    * Born luminosity function for the \f$q\bar{q}\f$ initiated channel. 
    */
   double Ltilde_qq(double x, double v) const;
+
   /**
    * Calculate the soft-virtual contribution to the NLO weight. 
    */
   double Vtilde_qq() const;
+
   /**
    * Function for calculation of the \f$g\bar{q}\f$ and \f$g\bar{q}\f$ 
    * initiated real contribution.
    */
   double Ccalbar_qg(double x) const;
+
   /**
    * Function for calculation of the \f$qg\f$ 
    * initiated real contribution.
    */
   double Fcal_qg(double x, double v) const;
+
   /**
    * Function for calculation of the \f$g\bar{q}\f$ initiated real
    * contribution.
    */
   double Fcal_gq(double x, double v) const;
+
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
   double Fcal_qq(double x, double v) const;
+
   /**
    * Function for calculation of the \f$qg\f$ initiated real
    * contribution.
    */
   double Ftilde_qg(double xt, double v) const;
+
   /**
    * Function for calculation of the \f$g\bar{q}\f$ initiated real
    * contribution.
    */
   double Ftilde_gq(double xt, double v) const;
+
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
   double Ftilde_qq(double xt, double v) const;
+
   /**
    * Function for calculation of the \f$qg\f$ initiated real
    * contribution.
    */
   double Ctilde_qg(double x, double v) const;
+
   /**
    * Function for calculation of the \f$g\bar{q}\f$ initiated real
    * contribution.
    */
   double Ctilde_gq(double x, double v) const;
+
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
@@ -236,11 +238,6 @@ private:
   MEPP2ZHPowheg & operator=(const MEPP2ZHPowheg &);
 
 private:
-
-  /**
-   *  The allowed flavours of the incoming quarks
-   */
-  unsigned int _maxflavour;
 
   /**
    *  The momentum fraction of the first parton in the Born process
@@ -401,7 +398,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2ZHPowheg,1> {
   /** Typedef of the first base class of MEPP2ZHPowheg. */
-  typedef Herwig::MEfftoVH NthBase;
+  typedef Herwig::MEPP2ZH NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

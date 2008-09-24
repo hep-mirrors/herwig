@@ -17,71 +17,24 @@
 
 using namespace Herwig;
 
-MEPP2ZHPowheg::MEPP2ZHPowheg() : _maxflavour(5)
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
- ,_contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
-  _fixedScale(100.*GeV), _scaleFact(1.)
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
+MEPP2ZHPowheg::MEPP2ZHPowheg() 
+ : _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+   _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
+   _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
-void MEPP2ZHPowheg::getDiagrams() const {
-  tPDPtr higgs = getParticleData(ParticleID::h0);
-  // find possible Z decays
-  typedef Selector<tDMPtr> DecaySelector;
-  DecaySelector Zdec = Z0()->decaySelector();
-  vector<PDPair> Zdecays;
-  for(DecaySelector::const_iterator cit=Zdec.begin();cit!=Zdec.end();++cit) {
-    if(cit->second->orderedProducts().size()!=2) continue;
-    if(cit->second->orderedProducts()[0]->id()>0)
-      Zdecays.push_back(make_pair(cit->second->orderedProducts()[0],
-				  cit->second->orderedProducts()[1]));
-    else
-      Zdecays.push_back(make_pair(cit->second->orderedProducts()[1],
-				  cit->second->orderedProducts()[0]));
-  }
-  // create the diagrams
-  for(unsigned int ix=1;ix<=_maxflavour;++ix) {
-    tcPDPtr q    = getParticleData(ix);
-    tcPDPtr qbar = q->CC();
-    for(unsigned int iz=0;iz<Zdecays.size();++iz) {
-      add(new_ptr((Tree2toNDiagram(2), q, qbar,  
-		   1, Z0(), 3, higgs, 3, Z0(), 
-		   5, Zdecays[iz].first,5, Zdecays[iz].second,-1)));
-    }
-  }
-}
-
 void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
-     << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
+  os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
      << _a         << _p              << _gluon
      << _TR        << _CF             << _scaleopt       
      << ounit(_fixedScale,GeV)        << _scaleFact;
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
 }
 
 void MEPP2ZHPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
-     >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
+  is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
      >> _a         >> _p              >> _gluon
      >> _TR        >> _CF             >> _scaleopt 
      >> iunit(_fixedScale,GeV)        >> _scaleFact;
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
 
 }
 
@@ -92,16 +45,6 @@ void MEPP2ZHPowheg::Init() {
 
   static ClassDocumentation<MEPP2ZHPowheg> documentation
     ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H");
-
-  static Parameter<MEPP2ZHPowheg,unsigned int> interfaceMaxFlavour
-    ( "MaxFlavour",
-      "The heaviest incoming quark flavour this matrix element is allowed to handle "
-      "(if applicable).",
-      &MEPP2ZHPowheg::_maxflavour, 5, 1, 5, false, false, true);
-
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
 
    static Switch<MEPP2ZHPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -183,15 +126,7 @@ void MEPP2ZHPowheg::Init() {
      &MEPP2ZHPowheg::_scaleFact, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-///////////////////////////////////////////////////////
-///////////////// NLO WORK ABOVE HERE /////////////////
-///////////////////////////////////////////////////////
-
 }
-
-///////////////////////////////////////////////////////
-///////////////// NLO WORK UNDER HERE /////////////////
-///////////////////////////////////////////////////////
 
 void MEPP2ZHPowheg::doinit() throw(InitException) {
   // gluon ParticleData object
@@ -199,7 +134,7 @@ void MEPP2ZHPowheg::doinit() throw(InitException) {
   // colour factors
   _CF = 4./3.; 
   _TR = 0.5;
-  MEfftoVH::doinit();
+  MEPP2ZH::doinit();
 }
 
 Energy2 MEPP2ZHPowheg::scale() const {
@@ -211,17 +146,17 @@ int MEPP2ZHPowheg::nDim() const {
 }
 
 bool MEPP2ZHPowheg::generateKinematics(const double * r) {
-  _xt=*(r+6);
-  _v =*(r+7);
-  return MEfftoVH::generateKinematics(r);
+  _xt=*(r+5);
+  _v =*(r+6);
+  return MEPP2ZH::generateKinematics(r);
 }
 
 CrossSection MEPP2ZHPowheg::dSigHatDR() const {
   // Get Born momentum fractions xbar_a and xbar_b:
-  CrossSection lo_xsec(MEfftoVH::dSigHatDR());
+  CrossSection lo_xsec(MEPP2ZH::dSigHatDR());
   _xb_a = lastX1();
   _xb_b = lastX2();
-  return MEfftoVH::dSigHatDR()*NLOweight();
+  return MEPP2ZH::dSigHatDR()*NLOweight();
 }
 
 double MEPP2ZHPowheg::NLOweight() const {
