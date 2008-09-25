@@ -22,7 +22,6 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/MatrixElement/HardVertex.h"
 
 using namespace Herwig;
 
@@ -30,30 +29,22 @@ MEPP2HiggsPowheg::MEPP2HiggsPowheg() :
   CF_(4./3.)  ,  CA_(3.)            , TR_(1./2.)        , nlf_(5.)          ,
   beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
-  scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.)   ,
-  shapeopt_(2),  processopt_(1)     ,  minflavouropt_(4), maxflavouropt_(5), 
-  mh_(0.*GeV) ,  wh_(0.*GeV)        ,  h_br_(1.)
+  scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.) 
 {}
 
 ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
 // Definition of the static class description member.
 
 void MEPP2HiggsPowheg::persistentOutput(PersistentOStream & os) const {
-  os << hggvertex      << ffhvertex        << theSM 
-     << contrib_       << nlo_alphaS_opt_  << fixed_alphaS_ 
+  os << contrib_       << nlo_alphaS_opt_  << fixed_alphaS_ 
      << scaleopt_      << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)   
-     << scaleFact_     << shapeopt_      
-     << processopt_    << minflavouropt_   << maxflavouropt_ << hmass_        
-     << ounit(mh_,GeV) << ounit(wh_,GeV)   << h_br_;
+     << scaleFact_     ;
 }
 
 void MEPP2HiggsPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> hggvertex      >> ffhvertex        >> theSM 
-     >> contrib_       >> nlo_alphaS_opt_  >> fixed_alphaS_ 
+  is >> contrib_       >> nlo_alphaS_opt_  >> fixed_alphaS_ 
      >> scaleopt_      >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)  
-     >> scaleFact_     >> shapeopt_      
-     >> processopt_    >> minflavouropt_   >> maxflavouropt_ >> hmass_     
-     >> iunit(mh_,GeV) >> iunit(wh_,GeV)   >> h_br_;
+     >> scaleFact_     ;
 }
 
 void MEPP2HiggsPowheg::Init() {
@@ -136,99 +127,6 @@ void MEPP2HiggsPowheg::Init() {
      &MEPP2HiggsPowheg::scaleFact_, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
-  static Switch<MEPP2HiggsPowheg,unsigned int> interfaceShapeOption
-    ("ShapeScheme",
-     "Option for the treatment of the Higgs resonance shape",
-     &MEPP2HiggsPowheg::shapeopt_, 1, false, false);
-  static SwitchOption interfaceStandardShapeFixed
-    (interfaceShapeOption,
-     "FixedBreitWigner",
-     "Breit-Wigner s-channel resonanse",
-     1);
-  static SwitchOption interfaceStandardShapeRunning
-    (interfaceShapeOption,
-     "MassGenerator",
-     "Use the mass generator to give the shape",
-     2);
-
-  static Switch<MEPP2HiggsPowheg,unsigned int> interfaceProcess
-    ("Process",
-     "Which subprocesses to include",
-     &MEPP2HiggsPowheg::processopt_, 1, false, false);
-  static SwitchOption interfaceProcessAll
-    (interfaceProcess,
-     "All",
-     "Include all subprocesses",
-     1);
-  static SwitchOption interfaceProcess1
-    (interfaceProcess,
-     "qqbar",
-     "Only include the incoming q qbar subprocess",
-     2);
-  static SwitchOption interfaceProcessgg
-    (interfaceProcess,
-     "gg",
-     "Only include the incoming gg subprocess",
-     3);
-
-  static Parameter<MEPP2HiggsPowheg,unsigned int> interfaceMinimumFlavour
-    ("MinimumFlavour",
-     "The minimum flavour of the incoming quarks in the hard process",
-     &MEPP2HiggsPowheg::minflavouropt_, 4, 3, 5,
-     false, false, Interface::limited);
-
-  static Parameter<MEPP2HiggsPowheg,unsigned int> interfaceMaximumFlavour
-    ("MaximumFlavour",
-     "The maximum flavour of the incoming quarks in the hard process",
-     &MEPP2HiggsPowheg::maxflavouropt_, 5, 3, 5,
-     false, false, Interface::limited);
-}
-
-void MEPP2HiggsPowheg::doinit() throw(InitException) {
-  MEBase::doinit();
-  // get the vertex pointers from the SM object
-  theSM = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
-  // do the initialisation
-  if(!theSM) {
-    throw InitException() << "Wrong type of StandardModel object in MEPP2HiggsPowheg::doinit(),"
-                          << " the Herwig++ version must be used" 
-                          << Exception::runerror;
-  }
-  hggvertex = theSM->vertexHGG();
-  ffhvertex = theSM->vertexFFH();
-  // get the mass generator for the higgs
-  PDPtr h0 = getParticleData(ParticleID::h0);
-  mh_ = h0->mass();
-  wh_ = h0->generateWidth(mh_);
-  if(h0->massGenerator()) {
-    hmass_=dynamic_ptr_cast<SMHiggsMassGeneratorPtr>(h0->massGenerator());
-  }
-  if(shapeopt_==2&&!hmass_) throw InitException()
-    << "If using the mass generator for the line shape in MEPP2HiggsPowheg::doinit()"
-    << "the mass generator must be an instance of the SMHiggsMassGenerator class"
-    << Exception::runerror;
-
-  // If the width is equal to the nominal width we check that the decay 
-  // modes of the Higgs are in fact all on. h_br_ is computed as the sum 
-  // of branching ratios for decays which are On only. h_br_ later multiplies 
-  // the return value in dSigHatDR. If the width is not the nominal width 
-  // h_br_ just stays equal to 1, and the code here has no effect.
-  if(wh_==h0->width()) {
-    h_br_ = 0.;
-    for(DecaySet::const_iterator it=h0->decayModes().begin();it!=h0->decayModes().end();++it) {
-      tDMPtr mode=*it;
-      if(!mode->on()||mode->orderedProducts().size()!=2) continue;
-      h_br_ += mode->brat();
-    }
-  }
-}
-
-unsigned int MEPP2HiggsPowheg::orderInAlphaS() const {
-  return 2;
-}
-
-unsigned int MEPP2HiggsPowheg::orderInAlphaEW() const {
-  return 1;
 }
 
 Energy2 MEPP2HiggsPowheg::scale() const {
@@ -236,214 +134,29 @@ Energy2 MEPP2HiggsPowheg::scale() const {
 }
 
 int MEPP2HiggsPowheg::nDim() const {
-  return 3;
+  return 2;
 }
 
 bool MEPP2HiggsPowheg::generateKinematics(const double * r) {
   // Generate the radiative integration variables:
-  xt_= *(r+1);
-  y_ = *(r+2) * 2. - 1.;
+  xt_= *r;
+  y_ = *(r+1) * 2. - 1.;
   // Continue with lo matrix element code:
-  Lorentz5Momentum pout = meMomenta()[0] + meMomenta()[1];
-  pout.rescaleMass();
-  meMomenta()[2].setMass(pout.mass());
-  meMomenta()[2] = LorentzMomentum(pout.x(),pout.y(),pout.z(),pout.t());
-  jacobian(1.0);
-  // check whether it passes all the cuts: returns true if it does
-  vector<LorentzMomentum> out(1,meMomenta()[2]);
-  tcPDVector tout(1,mePartonData()[2]);
-  return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
-}
-
-void MEPP2HiggsPowheg::getDiagrams() const {
-  tcPDPtr h0=getParticleData(ParticleID::h0);
-  // gg -> H process
-  if(processopt_==1||processopt_==3) {
-    tcPDPtr g=getParticleData(ParticleID::g);
-    add(new_ptr((Tree2toNDiagram(2), g, g, 1, h0, -1)));
-  }
-  // q qbar -> H processes
-  if(processopt_==1||processopt_==2) {
-    for (unsigned int i = minflavouropt_; i <= maxflavouropt_; ++i) {
-      tcPDPtr q = getParticleData(i);
-      tcPDPtr qb = q->CC();
-    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, h0, -2)));
-    }
-  }
-}
-
-CrossSection MEPP2HiggsPowheg::dSigHatDR() const {
-  // Extract information on the lo process to use in the nlo calculation:
-  get_born_variables();
-  // Continue with the lo matrix element code:
-  using Constants::pi;
-  InvEnergy2 bwfact;
-  if(shapeopt_==1) {
-    bwfact = mePartonData()[2]->generateWidth(sqrt(sHat()))*sqrt(sHat())/pi/
-      (sqr(sHat()-sqr(mh_))+sqr(mh_*wh_));
-  } else {
-    bwfact = hmass_->BreitWignerWeight(sqrt(sHat()),0);
-  }
-  double cs = me2() * jacobian() * pi * double(UnitRemoval::E4 * bwfact/sHat());
-  return UnitRemoval::InvE2 * sqr(hbarc) * cs * h_br_;
+  return MEPP2Higgs::generateKinematics(r);
 }
 
 double MEPP2HiggsPowheg::me2() const {
-  double output(0.0);
   useMe();
-  ScalarWaveFunction hout(meMomenta()[2],mePartonData()[2],outgoing);
-
-// Safety code to garantee the reliable behaviour of Higgs shape limits 
-// (important for heavy and broad Higgs resonance).
-  Energy hmass = meMomenta()[2].m();
-  tcPDPtr h0 = mePartonData()[2];
-  Energy mass = h0->mass();
-  Energy halfmass = .5*mass;
-  if (.0*GeV > hmass) return 0.0;
-  // stricly speaking the condition is applicable if h0->widthUpCut() == h0->widthLoCut()...
-  if (h0->widthLoCut() > halfmass) {
-    if ((mass + h0->widthUpCut() < hmass || mass - h0->widthLoCut() > hmass)) return 0.0;
-  } else {
-    if (mass + halfmass < hmass || halfmass > hmass) return 0.0;
-  }
-
+  double output = MEPP2Higgs::me2();
   if (mePartonData()[0]->id() == ParticleID::g && 
       mePartonData()[1]->id() == ParticleID::g) {
-    VectorWaveFunction gin1(meMomenta()[0],mePartonData()[0],incoming);
-    VectorWaveFunction gin2(meMomenta()[1],mePartonData()[1],incoming);
-
-    vector<VectorWaveFunction> g1,g2;
-    for(unsigned int i = 0; i < 2; ++i) {
-      gin1.reset(2*i);
-      g1.push_back(gin1);
-      gin2.reset(2*i);
-      g2.push_back(gin2);
-    }
-    // NB - lo_ggME_ equals sqr(alphaS/(pi*vev))*sqr(p2_)/576. _ALL_IN_MeVs_!
-    //  cout << "lo_ggME_ = " << (sqr(alphaS_/(Constants::pi*242759.68))
-    //                          *sqr(p2_/MeV2)/576. << endl;
-    lo_ggME_ = ggME(g1,g2,hout,false);
-    output   = lo_ggME_*NLOweight();
-  } else {
-    if (mePartonData()[0]->id() == -mePartonData()[1]->id()) {
-      SpinorWaveFunction    qin (meMomenta()[0],mePartonData()[0],incoming);
-      SpinorBarWaveFunction qbin(meMomenta()[1],mePartonData()[1],incoming);
-
-      vector<SpinorWaveFunction> fin;
-      vector<SpinorBarWaveFunction> ain;
-      for (unsigned int i = 0; i < 2; ++i) {
-        qin.reset(i);
-        fin.push_back(qin);
-        qbin.reset(i);
-        ain.push_back(qbin);
-      }
-      output = qqME(fin,ain,hout,false);
-    }
-    else {
-    throw Exception() << "Unknown subprocess in MEPP2HiggsPowheg::me2()" 
-		      << Exception::runerror;
-    }
+    get_born_variables();
+    // NB - lo_ggME_ equals sqr(alphaS/(pi*vev))*
+    // sqr(p2_)/576. _ALL_IN_MeVs_!
+    lo_ggME_ = output;
+    output *= NLOweight();
   }
   return output;
-}
-
-Selector<MEBase::DiagramIndex> MEPP2HiggsPowheg::diagrams(const DiagramVector & diags) const {
-  Selector<DiagramIndex> sel;
-  for (DiagramIndex i = 0; i < diags.size(); ++i)
-    sel.insert(1.0, i);
-  return sel;
-}
-
-Selector<const ColourLines *> MEPP2HiggsPowheg::colourGeometries(tcDiagPtr diag) const {
-  // colour lines
-  static const ColourLines line1("1 -2,2 -1");
-  static const ColourLines line2("1 -2");
-  // select the colour flow
-  Selector<const ColourLines *> sel;
-  if (diag->id() == -1) {
-    sel.insert(1.0, &line1);
-  } else {
-    sel.insert(1.0, &line2);
-  }
-  // return the answer
-  return sel;
-}
-
-void MEPP2HiggsPowheg::constructVertex(tSubProPtr sub) {
-  // extract the particles in the hard process
-  ParticleVector hard;
-  hard.push_back(sub->incoming().first);
-  hard.push_back(sub->incoming().second);
-  hard.push_back(sub->outgoing()[0]);
-  if(hard[0]->id() < hard[1]->id()) {
-    swap(hard[0],hard[1]);
-  }
-  // identify the process and calculate the matrix element
-  if(hard[0]->id() == ParticleID::g && hard[1]->id() == ParticleID::g) {
-    vector<VectorWaveFunction> g1,g2;
-    vector<SpinorBarWaveFunction> q;
-    vector<SpinorWaveFunction> qbar;
-    VectorWaveFunction (g1,hard[0],incoming,false,true,true);
-    VectorWaveFunction (g2,hard[1],incoming,false,true,true);
-    ScalarWaveFunction hout(hard[2],outgoing,true);
-    g1[1] = g1[2];
-    g2[1] = g2[2];
-    ggME(g1,g2,hout,true);
-  } else {
-    vector<SpinorWaveFunction>    q1;
-    vector<SpinorBarWaveFunction> q2;
-    SpinorWaveFunction    (q1,hard[0],incoming,false,true);
-    SpinorBarWaveFunction (q2,hard[1],incoming,false,true);
-    ScalarWaveFunction     hout(hard[2],outgoing,true);
-    qqME(q1,q2,hout,true);
-  }
-  // construct the vertex
-  HardVertexPtr hardvertex = new_ptr(HardVertex());
-  // set the matrix element for the vertex
-  hardvertex->ME(me_);
-  // set the pointers and to and from the vertex
-  for(unsigned int i = 0; i < 3; ++i) {
-    dynamic_ptr_cast<SpinfoPtr>(hard[i]->spinInfo())->setProductionVertex(hardvertex);
-  }
-}
-
-double MEPP2HiggsPowheg::ggME(vector<VectorWaveFunction> g1, 
-                          vector<VectorWaveFunction> g2, 
-                          ScalarWaveFunction & in, 
-                          bool calc) const {
-  ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,PDT::Spin0);
-  Energy2 s(sHat());
-  double me2(0.0);
-  for(int i = 0; i < 2; ++i) {
-    for(int j = 0; j < 2; ++j) {
-      Complex diag = hggvertex->evaluate(s,g1[i],g2[j],in);
-      me2 += norm(diag);
-      if(calc) newme(2*i, 2*j, 0) = diag;
-    }
-  }
-  if(calc) me_.reset(newme);
-  // initial colour and spin factors: colour -> (8/64) and spin -> (1/4)
-  return me2/32.;
-}
-
-
-double MEPP2HiggsPowheg::qqME(vector<SpinorWaveFunction> & fin, 
-                          vector<SpinorBarWaveFunction> & ain, 
-                          ScalarWaveFunction & in, 
-                          bool calc) const {
-  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
-  Energy2 s(scale());
-  double me2(0.0);
-  for(int i = 0; i < 2; ++i) {
-    for(int j = 0; j < 2; ++j) {
-      Complex diag = ffhvertex->evaluate(s,fin[i],ain[j],in);
-      me2+=norm(diag);
-      if(calc) newme(i, j, 0) = diag;
-    }
-  }
-  if(calc) me_.reset(newme);
-  // final colour/spin factors
-  return me2/12.;
 }
 
 double MEPP2HiggsPowheg::NLOweight() const {
@@ -539,6 +252,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
 }
 
 void MEPP2HiggsPowheg::get_born_variables() const {
+  assert(meMomenta().size()==3);
   // Particle data for QCD particles:
   a_lo_=mePartonData()[0];
   b_lo_=mePartonData()[1];
@@ -553,12 +267,6 @@ void MEPP2HiggsPowheg::get_born_variables() const {
   // Assign Born variables
   p2_    = sHat();
   s2_    = p2_;
-  if(meMomenta().size()==4) {
-    p12_    = meMomenta()[1].m2();
-    p22_    = meMomenta()[2].m2();
-    theta1_= acos(meMomenta()[2].z()/meMomenta()[2].vect().mag());
-    theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
-  }
   return;
 }
 
@@ -614,28 +322,6 @@ double MEPP2HiggsPowheg::Vtilde_universal() const {
         * ( 8./(1.+y_)*log(etabar(y_)/etabarm_)
      	  + 8./(1.-y_)*log(etabar(y_)/etabarp_)
           );
-}
-
-double MEPP2HiggsPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b, 
-					       double xt, double y ) const {
-  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qq::y value not allowed."; }
-  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
-    cout << "\nCtilde_qq::for Cqq^plus  a must be a quark! id = " 
-	 << a->id() << "\n";
-  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
-    cout << "\nCtilde_qq::for Cqq^minus b must be a quark! id = " 
-	 << b->id() << "\n";
-  double x_pm      = x(xt,y);
-  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	   + 2.*log(1.-xt)/(1.-xt)
-           )*CF_*(1.+sqr(x_pm)) 
-	 + sqr(etabar_pm)*CF_*(1.-x_pm)
-	 )*Lhat_ab(a,b,x_pm,y) / x_pm
-       - ( ( (1./(1.-xt))*log(p2_/sqr(mu_F_)     )+4.*log(etabar_pm)/(1.-xt)
-	   + 2.*log(1.-xt)/(1.-xt)
-	   )*CF_*2. 
-	 );
 }
 
 double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(tcPDPtr a, tcPDPtr b, 
@@ -879,8 +565,3 @@ double MEPP2HiggsPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b,
            )*2./(1.+y)/(1.-xt)
          ) / lo_ggME_ / 8. / Constants::pi / alphaS_;
 } 
-
-
-
-
-
