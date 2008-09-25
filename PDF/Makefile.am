@@ -24,6 +24,12 @@ SatPDF.h SatPDF.cc
 
 HwSatPDF_la_LDFLAGS = -module -version-info 1:0:0
 
+pkglib_LTLIBRARIES += HwIncomingPhotonEvolver.la
+HwIncomingPhotonEvolver_la_SOURCES = \
+IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
+
+HwIncomingPhotonEvolver_la_LDFLAGS = -module -version-info 1:0:0
+
 if WANT_LOCAL_PDF
 install-data-local:
 	for i in `find $(srcdir)/mrst -name '*.dat'`; \
