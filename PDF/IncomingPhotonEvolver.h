@@ -184,7 +184,7 @@ struct ClassTraits<Herwig::IncomingPhotonEvolver>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "IncomingPhotonEvolver.so"; }
+  static string library() { return "HwIncomingPhotonEvolver.so"; }
 };
 
 /** @endcond */
