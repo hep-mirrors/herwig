@@ -92,6 +92,17 @@ set MEqq2gZ2ff:Process 3
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ffPowheg PowhegMEqq2W2ff
 set MEqq2gZ2ff:Process 2
+ 
+# PP->ZH
+create Herwig::MEPP2ZHPowheg PowhegMEPP2ZH
+
+# PP->WH
+create Herwig::MEPP2WHPowheg PowhegMEPP2WH
+
+# hadron-hadron to higgs
+create Herwig::MEPP2HiggsPowheg PowhegMEHiggs
+set PowhegMEHiggs:ShapeScheme MassGenerator
+set PowhegMEHiggs:Process gg
 
 ##########################################################
 # DIS matrix elements
