@@ -77,11 +77,13 @@ void MPIHandler::initialize() {
 
   //check if MPI is wanted
   if( !beamOK() ){
-    generator()->log() << "You have requested multiple parton-parton scattering,\n"
-		       << "but the model is not forseen for the setup you chose.\n" 
-		       << "Events will be produced without MPI.\n";
-    return;
+    throw Exception()  << "You have requested multiple parton-parton scattering,\n"
+		       << "but the model is not forseen for the beam setup you chose.\n" 
+		       << "You should therefore disable that by setting XXXGenerator:EventHandler:"
+		       << "CascadeHandler:MPIHandler to NULL"
+                       << Exception::runerror;
   }
+
   numSubProcs_ = subProcesses().size();
 
   if( numSubProcs_ != cuts().size() ) 
@@ -517,6 +519,9 @@ InvEnergy2 MPIHandler::slopeDiff(CrossSection softXSec,
 }
 
 CrossSection MPIHandler::totalXSecExp() const {
+  if(totalXSecExp_ != 0*millibarn)
+    return totalXSecExp_;
+
   double pom_old = 0.0808;
   CrossSection coef_old = 21.7*millibarn;
   double pom_new_hard = 0.452;
@@ -565,7 +570,7 @@ void MPIHandler::persistentOutput(PersistentOStream & os) const {
      << ounit(beta_, 1/GeV2)
      << algorithm_ << ounit(invRadius_, GeV2)
      << numSubProcs_ << colourDisrupt_ << softInt_ << twoComp_ 
-     << DLmode_;
+     << DLmode_ << ounit(totalXSecExp_, millibarn);
 }
 
 void MPIHandler::persistentInput(PersistentIStream & is, int) {
@@ -577,7 +582,7 @@ void MPIHandler::persistentInput(PersistentIStream & is, int) {
      >> iunit(beta_, 1/GeV2)
      >> algorithm_ >> iunit(invRadius_, GeV2)
      >> numSubProcs_ >> colourDisrupt_ >> softInt_ >> twoComp_ 
-     >> DLmode_;
+     >> DLmode_ >> iunit(totalXSecExp_, millibarn);
 }
 
 ClassDescription<MPIHandler> MPIHandler::initMPIHandler;
@@ -671,6 +676,36 @@ void MPIHandler::Init() {
      "No",
      "disable the model",
      false);
+
+
+  static Parameter<MPIHandler,CrossSection> interfaceMeasuredTotalXSec
+    ("MeasuredTotalXSec",
+     "Value for the total cross section (assuming rho=0). If non-zero, this "
+     "overwrites the Donnachie-Landshoff parametrizations.",
+     &MPIHandler::totalXSecExp_, millibarn, 0.0*millibarn, 0.0*millibarn, 0*millibarn,
+     false, false, Interface::lowerlim);
+
+  
+  static Switch<MPIHandler,unsigned int> interfaceDLmode
+    ("DLmode",
+     "Choice of Donnachie-Landshoff parametrization for the total cross section.",
+     &MPIHandler::DLmode_, 2, false, false);
+  static SwitchOption interfaceDLmodeStandard
+    (interfaceDLmode,
+     "Standard",
+     "Standard parametrization with s**0.08",
+     1);
+  static SwitchOption interfaceDLmodeCDF
+    (interfaceDLmode,
+     "CDF",
+     "Standard parametrization but normalization fixed to CDF's measured value",
+     2);
+  static SwitchOption interfaceDLmodeNew
+    (interfaceDLmode,
+     "New",
+     "Parametrization taking hard and soft pomeron contributions into account",
+     3);
+
 
   //outdated interfaces....
   string desc("The supported way of determining in which mode the ");

@@ -421,7 +421,8 @@ protected:
     else if(ichan==2) {
       return(*_Fomega)(q)*_aomega*sqrt(_bomega*q/GeV-_comega)*invmrho4/q;
     }
-    else assert(false);
+    assert(false);
+    return InvEnergy6();
   }
 
   /**

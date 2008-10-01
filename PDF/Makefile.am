@@ -10,7 +10,7 @@ EXTRA_DIST = mrst
 ## bound into HwShower.la
 noinst_LTLIBRARIES = libHwRemDecayer.la
 libHwRemDecayer_la_SOURCES = \
-HwRemDecayer.h HwRemDecayer.icc HwRemDecayer.cc HwRemDecayer.fh
+HwRemDecayer.h HwRemDecayer.cc HwRemDecayer.fh
 
 ## bound into HwShower.la
 noinst_LTLIBRARIES += libHwMPIPDF.la
@@ -23,6 +23,12 @@ HwSatPDF_la_SOURCES = \
 SatPDF.h SatPDF.cc
 
 HwSatPDF_la_LDFLAGS = -module -version-info 1:0:0
+
+pkglib_LTLIBRARIES += HwIncomingPhotonEvolver.la
+HwIncomingPhotonEvolver_la_SOURCES = \
+IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
+
+HwIncomingPhotonEvolver_la_LDFLAGS = -module -version-info 1:0:0
 
 if WANT_LOCAL_PDF
 install-data-local:

@@ -102,6 +102,7 @@ void SMHGGVertex::Init() {
 }
 
 void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr part1) {
+  assert(part1 && part2 && part3);
   if (part1->id() != ParticleID::h0 && part2->id() != ParticleID::g &&
       part3->id() != ParticleID::g ) 
     throw HelicityConsistencyError() 
