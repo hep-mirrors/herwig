@@ -279,7 +279,7 @@ MEfv2fs::colourGeometries(tcDiagPtr diag) const {
   //3b8->3b1
   cl[12] = ColourLines("-1 2 3, -3 -4");
   cl[13] = ColourLines("-1 2, -4 -3 -2");
-  vector<ColourLines>::size_type offset;
+  vector<ColourLines>::size_type offset = 999;
   if(mePartonData()[0]->id() > 0 && 
      mePartonData()[2]->iColour() == PDT::Colour8 ) offset = 0;
   else if(mePartonData()[0]->id() < 0 && 
@@ -292,6 +292,7 @@ MEfv2fs::colourGeometries(tcDiagPtr diag) const {
 	  mePartonData()[3]->iColour() == PDT::Colour0 ) offset = 10;
   else if(mePartonData()[0]->id() < 0 && 
 	  mePartonData()[3]->iColour() == PDT::Colour0 ) offset = 12;
+  assert(offset != 999);
   HPDiagram current = getProcessInfo().at(abs(diag->id()) - 1); 
   Selector<const ColourLines *> sel;
   if(current.channelType == HPDiagram::tChannel && 

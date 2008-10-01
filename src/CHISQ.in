@@ -26,7 +26,7 @@ cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 1
-set LEPGenerator:PrintEvent 10
+set LEPGenerator:PrintEvent 0
 set LEPGenerator:MaxErrors 10000
 
 ##################################################
@@ -40,13 +40,15 @@ cd /Herwig/Generators
 #  Useful analysis handlers for LEP physics
 ##################################################
 # particle multiplicities
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Multiplicity
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPMultiplicity
 # b multiplicities
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
 # b fragmentation functions
-# insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
 # event shapes and identified particle spectra
 insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
+# idenified particle analysis
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
 # four jet analysis
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
 # general jet analysis

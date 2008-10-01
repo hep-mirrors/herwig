@@ -81,6 +81,7 @@ public:
   MPIHandler(): softMult_(0), identicalToUE_(-1), 
 		PtOfQCDProc_(-1.0*GeV), Ptmin_(-1.0*GeV), 
 		hardXSec_(0*millibarn), softXSec_(0*millibarn), 
+		totalXSecExp_(0*millibarn),
 		softMu2_(0*GeV2), beta_(100.0/GeV2), 
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
@@ -441,6 +442,14 @@ private:
    * Variable to store the final soft cross section below ptmin
    */
   CrossSection softXSec_;
+
+  /**
+   * Variable to store the total pp cross section (assuming rho=0!) as
+   * measured at LHC. If this variable is set, this value is used in the
+   * subsequent run instead of any of the Donnachie-Landshoff
+   * parametrizations.
+   */
+  CrossSection totalXSecExp_;
 
   /**
    * Variable to store the soft radius, that is calculated during

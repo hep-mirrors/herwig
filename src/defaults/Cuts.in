@@ -50,22 +50,22 @@ set LeptonKtCut:Matcher /Herwig/Matchers/Lepton
 set LeptonKtCut:MinKT 0.0*GeV
 
 # cut on top quarks
-create ThePEG::SimpleKTCut TopKtCut SimpleKTCut.so
+create ThePEG::KTRapidityCut TopKtCut KTRapidityCut.so
 set TopKtCut:Matcher /Herwig/Matchers/Top
 set TopKtCut:MinKT 0.0*GeV
 
 # cut on W bosons
-create ThePEG::SimpleKTCut WBosonKtCut SimpleKTCut.so
+create ThePEG::KTRapidityCut WBosonKtCut KTRapidityCut.so
 set WBosonKtCut:Matcher /Herwig/Matchers/WBoson
 set WBosonKtCut:MinKT 0.0*GeV
 
 # cut on Z bosons
-create ThePEG::SimpleKTCut ZBosonKtCut SimpleKTCut.so
+create ThePEG::KTRapidityCut ZBosonKtCut KTRapidityCut.so
 set ZBosonKtCut:Matcher /Herwig/Matchers/ZBoson
 set ZBosonKtCut:MinKT 0.0*GeV
 
 # cut on Higgs bosons
-create ThePEG::SimpleKTCut HiggsBosonKtCut SimpleKTCut.so
+create ThePEG::KTRapidityCut HiggsBosonKtCut KTRapidityCut.so
 set HiggsBosonKtCut:Matcher /Herwig/Matchers/HiggsBoson
 set HiggsBosonKtCut:MinKT 0.0*GeV
 
