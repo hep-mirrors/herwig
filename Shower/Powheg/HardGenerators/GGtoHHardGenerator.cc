@@ -12,7 +12,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Powheg/HardTree.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "Herwig++/Shower/Base/Evolver.h"

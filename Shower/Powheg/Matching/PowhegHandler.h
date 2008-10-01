@@ -12,7 +12,7 @@
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Config/Pointers.h"
-#include "Herwig++/Shower/Powheg/HardTree.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"

@@ -96,7 +96,7 @@ insert QCDCuts:OneCuts[2] LeptonKtCut
 insert QCDCuts:OneCuts[3] TopKtCut
 insert QCDCuts:OneCuts[4] WBosonKtCut
 insert QCDCuts:OneCuts[5] ZBosonKtCut
-#insert QCDCuts:OneCuts[6] HiggsBosonKtCut
+insert QCDCuts:OneCuts[6] HiggsBosonKtCut
 insert QCDCuts:MultiCuts[0] MassCut
 
 # cuts for DIS
