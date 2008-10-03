@@ -33,3 +33,7 @@ insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa0
 insert HadronSelector:Forbidden 0 /Herwig/Particles/kappabar0
 insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa-
 insert HadronSelector:Forbidden 0 /Herwig/Particles/sigma
+
+mkdir /Herwig/Widths
+cd /Herwig/Widths
+read widths.in

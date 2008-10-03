@@ -995,6 +995,696 @@ set WMass:NGenerate 100
 set /Herwig/Particles/W+:Mass_generator WMass
 set /Herwig/Particles/W-:Mass_generator WMass
 #
+create Herwig::GenericMassGenerator  Sigma(1660)-Mass
+set Sigma(1660)-Mass:Particle /Herwig/Particles/Sigma(1660)- 
+set Sigma(1660)-Mass:BreitWignerShape 0
+set Sigma(1660)-Mass:MaximumWeight 1.25314
+set Sigma(1660)-Mass:NGenerate 100
+set Sigma(1660)-Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1660)-:Mass_generator Sigma(1660)-Mass
+set /Herwig/Particles/Sigmabar(1660)+:Mass_generator Sigma(1660)-Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1660)0Mass
+set Sigma(1660)0Mass:Particle /Herwig/Particles/Sigma(1660)0 
+set Sigma(1660)0Mass:BreitWignerShape 0
+set Sigma(1660)0Mass:MaximumWeight 1.25258
+set Sigma(1660)0Mass:NGenerate 100
+set Sigma(1660)0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1660)0:Mass_generator Sigma(1660)0Mass
+set /Herwig/Particles/Sigmabar(1660)0:Mass_generator Sigma(1660)0Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1660)+Mass
+set Sigma(1660)+Mass:Particle /Herwig/Particles/Sigma(1660)+ 
+set Sigma(1660)+Mass:BreitWignerShape 0
+set Sigma(1660)+Mass:MaximumWeight 1.25193
+set Sigma(1660)+Mass:NGenerate 100
+set Sigma(1660)+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigmabar(1660)-:Mass_generator Sigma(1660)+Mass
+set /Herwig/Particles/Sigma(1660)+:Mass_generator Sigma(1660)+Mass
+#
+create Herwig::GenericMassGenerator  Lambda(1600)0Mass
+set Lambda(1600)0Mass:Particle /Herwig/Particles/Lambda(1600)0 
+set Lambda(1600)0Mass:BreitWignerShape 0
+set Lambda(1600)0Mass:MaximumWeight 1.52256
+set Lambda(1600)0Mass:NGenerate 100
+set Lambda(1600)0Mass:WidthOption 0
+
+set /Herwig/Particles/Lambda(1600)0:Mass_generator Lambda(1600)0Mass
+set /Herwig/Particles/Lambdabar(1600)0:Mass_generator Lambda(1600)0Mass
+#
+create Herwig::GenericMassGenerator  Xi(1690)0Mass
+set Xi(1690)0Mass:Particle /Herwig/Particles/Xi(1690)0 
+set Xi(1690)0Mass:BreitWignerShape 0
+set Xi(1690)0Mass:MaximumWeight 1.39215
+set Xi(1690)0Mass:NGenerate 100
+set Xi(1690)0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi(1690)0:Mass_generator Xi(1690)0Mass
+set /Herwig/Particles/Xibar(1690)0:Mass_generator Xi(1690)0Mass
+#
+create Herwig::GenericMassGenerator  Xi(1690)-Mass
+set Xi(1690)-Mass:Particle /Herwig/Particles/Xi(1690)- 
+set Xi(1690)-Mass:BreitWignerShape 0
+set Xi(1690)-Mass:MaximumWeight 1.37563
+set Xi(1690)-Mass:NGenerate 100
+set Xi(1690)-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi(1690)-:Mass_generator Xi(1690)-Mass
+set /Herwig/Particles/Xibar(1690)+:Mass_generator Xi(1690)-Mass
+#
+create Herwig::GenericMassGenerator  Xi(1950)-Mass
+set Xi(1950)-Mass:Particle /Herwig/Particles/Xi(1950)- 
+set Xi(1950)-Mass:BreitWignerShape 0
+set Xi(1950)-Mass:MaximumWeight 1.08485
+set Xi(1950)-Mass:NGenerate 100
+set Xi(1950)-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi(1950)-:Mass_generator Xi(1950)-Mass
+set /Herwig/Particles/Xibar(1950)+:Mass_generator Xi(1950)-Mass
+#
+create Herwig::GenericMassGenerator  Xi(1950)0Mass
+set Xi(1950)0Mass:Particle /Herwig/Particles/Xi(1950)0 
+set Xi(1950)0Mass:BreitWignerShape 0
+set Xi(1950)0Mass:MaximumWeight 1.08534
+set Xi(1950)0Mass:NGenerate 100
+set Xi(1950)0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi(1950)0:Mass_generator Xi(1950)0Mass
+set /Herwig/Particles/Xibar(1950)0:Mass_generator Xi(1950)0Mass
+#
+create Herwig::GenericMassGenerator  Lambda(1670)0Mass
+set Lambda(1670)0Mass:Particle /Herwig/Particles/Lambda(1670)0 
+set Lambda(1670)0Mass:BreitWignerShape 0
+set Lambda(1670)0Mass:MaximumWeight 1.64537
+set Lambda(1670)0Mass:NGenerate 100
+set Lambda(1670)0Mass:WidthOption 0
+
+set /Herwig/Particles/Lambda(1670)0:Mass_generator Lambda(1670)0Mass
+set /Herwig/Particles/Lambdabar(1670)0:Mass_generator Lambda(1670)0Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1750)-Mass
+set Sigma(1750)-Mass:Particle /Herwig/Particles/Sigma(1750)- 
+set Sigma(1750)-Mass:BreitWignerShape 0
+set Sigma(1750)-Mass:MaximumWeight 4.47503
+set Sigma(1750)-Mass:NGenerate 100
+set Sigma(1750)-Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1750)-:Mass_generator Sigma(1750)-Mass
+set /Herwig/Particles/Sigmabar(1750)+:Mass_generator Sigma(1750)-Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1750)0Mass
+set Sigma(1750)0Mass:Particle /Herwig/Particles/Sigma(1750)0 
+set Sigma(1750)0Mass:BreitWignerShape 0
+set Sigma(1750)0Mass:MaximumWeight 4.09
+set Sigma(1750)0Mass:NGenerate 100
+set Sigma(1750)0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1750)0:Mass_generator Sigma(1750)0Mass
+set /Herwig/Particles/Sigmabar(1750)0:Mass_generator Sigma(1750)0Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1750)+Mass
+set Sigma(1750)+Mass:Particle /Herwig/Particles/Sigma(1750)+ 
+set Sigma(1750)+Mass:BreitWignerShape 0
+set Sigma(1750)+Mass:MaximumWeight 3.7098
+set Sigma(1750)+Mass:NGenerate 100
+set Sigma(1750)+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigmabar(1750)-:Mass_generator Sigma(1750)+Mass
+set /Herwig/Particles/Sigma(1750)+:Mass_generator Sigma(1750)+Mass
+#
+create Herwig::GenericMassGenerator  Delta-Mass
+set Delta-Mass:Particle /Herwig/Particles/Delta- 
+set Delta-Mass:BreitWignerShape 0
+set Delta-Mass:MaximumWeight 1.60348
+set Delta-Mass:NGenerate 100
+set Delta-Mass:WidthOption 0
+
+set /Herwig/Particles/Delta-:Mass_generator Delta-Mass
+set /Herwig/Particles/Deltabar+:Mass_generator Delta-Mass
+#
+create Herwig::GenericMassGenerator  Delta++Mass
+set Delta++Mass:Particle /Herwig/Particles/Delta++ 
+set Delta++Mass:BreitWignerShape 0
+set Delta++Mass:MaximumWeight 1.59686
+set Delta++Mass:NGenerate 100
+set Delta++Mass:WidthOption 0
+
+set /Herwig/Particles/Delta++:Mass_generator Delta++Mass
+set /Herwig/Particles/Deltabar--:Mass_generator Delta++Mass
+#
+create Herwig::GenericMassGenerator  Sigma*-Mass
+set Sigma*-Mass:Particle /Herwig/Particles/Sigma*- 
+set Sigma*-Mass:BreitWignerShape 0
+set Sigma*-Mass:MaximumWeight 1.25525
+set Sigma*-Mass:NGenerate 100
+set Sigma*-Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma*-:Mass_generator Sigma*-Mass
+set /Herwig/Particles/Sigma*bar+:Mass_generator Sigma*-Mass
+#
+create Herwig::GenericMassGenerator  Sigma*0Mass
+set Sigma*0Mass:Particle /Herwig/Particles/Sigma*0 
+set Sigma*0Mass:BreitWignerShape 0
+set Sigma*0Mass:MaximumWeight 1.22803
+set Sigma*0Mass:NGenerate 100
+set Sigma*0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma*0:Mass_generator Sigma*0Mass
+set /Herwig/Particles/Sigma*bar0:Mass_generator Sigma*0Mass
+#
+create Herwig::GenericMassGenerator  Sigma*+Mass
+set Sigma*+Mass:Particle /Herwig/Particles/Sigma*+ 
+set Sigma*+Mass:BreitWignerShape 0
+set Sigma*+Mass:MaximumWeight 1.23799
+set Sigma*+Mass:NGenerate 100
+set Sigma*+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma*+:Mass_generator Sigma*+Mass
+set /Herwig/Particles/Sigma*bar-:Mass_generator Sigma*+Mass
+#
+create Herwig::GenericMassGenerator  Xi*-Mass
+set Xi*-Mass:Particle /Herwig/Particles/Xi*- 
+set Xi*-Mass:BreitWignerShape 0
+set Xi*-Mass:MaximumWeight 1.07001
+set Xi*-Mass:NGenerate 100
+set Xi*-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi*-:Mass_generator Xi*-Mass
+set /Herwig/Particles/Xi*bar+:Mass_generator Xi*-Mass
+#
+create Herwig::GenericMassGenerator  Xi*0Mass
+set Xi*0Mass:Particle /Herwig/Particles/Xi*0 
+set Xi*0Mass:BreitWignerShape 0
+set Xi*0Mass:MaximumWeight 1.06997
+set Xi*0Mass:NGenerate 100
+set Xi*0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi*0:Mass_generator Xi*0Mass
+set /Herwig/Particles/Xi*bar0:Mass_generator Xi*0Mass
+#
+create Herwig::GenericMassGenerator  n(1440)0Mass
+set n(1440)0Mass:Particle /Herwig/Particles/n(1440)0 
+set n(1440)0Mass:BreitWignerShape 0
+set n(1440)0Mass:MaximumWeight 1.97368
+set n(1440)0Mass:NGenerate 100
+set n(1440)0Mass:WidthOption 0
+
+set /Herwig/Particles/nbar(1440):Mass_generator n(1440)0Mass
+set /Herwig/Particles/n(1440)0:Mass_generator n(1440)0Mass
+#
+create Herwig::GenericMassGenerator  p(1440)+Mass
+set p(1440)+Mass:Particle /Herwig/Particles/p(1440)+ 
+set p(1440)+Mass:BreitWignerShape 0
+set p(1440)+Mass:MaximumWeight 1.97418
+set p(1440)+Mass:NGenerate 100
+set p(1440)+Mass:WidthOption 0
+
+set /Herwig/Particles/p(1440)+:Mass_generator p(1440)+Mass
+set /Herwig/Particles/pbar(1440):Mass_generator p(1440)+Mass
+#
+create Herwig::GenericMassGenerator  n(1535)0Mass
+set n(1535)0Mass:Particle /Herwig/Particles/n(1535)0 
+set n(1535)0Mass:BreitWignerShape 0
+set n(1535)0Mass:MaximumWeight 2.49438
+set n(1535)0Mass:NGenerate 100
+set n(1535)0Mass:WidthOption 0
+
+set /Herwig/Particles/nbar(1535):Mass_generator n(1535)0Mass
+set /Herwig/Particles/n(1535)0:Mass_generator n(1535)0Mass
+#
+create Herwig::GenericMassGenerator  p(1535)+Mass
+set p(1535)+Mass:Particle /Herwig/Particles/p(1535)+ 
+set p(1535)+Mass:BreitWignerShape 0
+set p(1535)+Mass:MaximumWeight 2.44019
+set p(1535)+Mass:NGenerate 100
+set p(1535)+Mass:WidthOption 0
+
+set /Herwig/Particles/p(1535)+:Mass_generator p(1535)+Mass
+set /Herwig/Particles/pbar(1535):Mass_generator p(1535)+Mass
+#
+create Herwig::GenericMassGenerator  p(1520)+Mass
+set p(1520)+Mass:Particle /Herwig/Particles/p(1520)+ 
+set p(1520)+Mass:BreitWignerShape 0
+set p(1520)+Mass:MaximumWeight 1.27705
+set p(1520)+Mass:NGenerate 100
+set p(1520)+Mass:WidthOption 0
+
+set /Herwig/Particles/pbar(1520)-:Mass_generator p(1520)+Mass
+set /Herwig/Particles/p(1520)+:Mass_generator p(1520)+Mass
+#
+create Herwig::GenericMassGenerator  n(1520)0Mass
+set n(1520)0Mass:Particle /Herwig/Particles/n(1520)0 
+set n(1520)0Mass:BreitWignerShape 0
+set n(1520)0Mass:MaximumWeight 1.27659
+set n(1520)0Mass:NGenerate 100
+set n(1520)0Mass:WidthOption 0
+
+set /Herwig/Particles/n(1520)0:Mass_generator n(1520)0Mass
+set /Herwig/Particles/nbar(1520)0:Mass_generator n(1520)0Mass
+#
+create Herwig::GenericMassGenerator  Delta+Mass
+set Delta+Mass:Particle /Herwig/Particles/Delta+ 
+set Delta+Mass:BreitWignerShape 0
+set Delta+Mass:MaximumWeight 1.58661
+set Delta+Mass:NGenerate 100
+set Delta+Mass:WidthOption 0
+
+set /Herwig/Particles/Delta+:Mass_generator Delta+Mass
+set /Herwig/Particles/Deltabar-:Mass_generator Delta+Mass
+#
+create Herwig::GenericMassGenerator  Delta0Mass
+set Delta0Mass:Particle /Herwig/Particles/Delta0 
+set Delta0Mass:BreitWignerShape 0
+set Delta0Mass:MaximumWeight 1.58872
+set Delta0Mass:NGenerate 100
+set Delta0Mass:WidthOption 0
+
+set /Herwig/Particles/Delta0:Mass_generator Delta0Mass
+set /Herwig/Particles/Deltabar0:Mass_generator Delta0Mass
+#
+create Herwig::GenericMassGenerator  Lambda(1690)0Mass
+set Lambda(1690)0Mass:Particle /Herwig/Particles/Lambda(1690)0 
+set Lambda(1690)0Mass:BreitWignerShape 0
+set Lambda(1690)0Mass:MaximumWeight 1.0242
+set Lambda(1690)0Mass:NGenerate 100
+set Lambda(1690)0Mass:WidthOption 0
+
+set /Herwig/Particles/Lambda(1690)0:Mass_generator Lambda(1690)0Mass
+set /Herwig/Particles/Lambdabar(1690)0:Mass_generator Lambda(1690)0Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1670)+Mass
+set Sigma(1670)+Mass:Particle /Herwig/Particles/Sigma(1670)+ 
+set Sigma(1670)+Mass:BreitWignerShape 0
+set Sigma(1670)+Mass:MaximumWeight 1.1161
+set Sigma(1670)+Mass:NGenerate 100
+set Sigma(1670)+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1670)+:Mass_generator Sigma(1670)+Mass
+set /Herwig/Particles/Sigmabar(1670)-:Mass_generator Sigma(1670)+Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1670)0Mass
+set Sigma(1670)0Mass:Particle /Herwig/Particles/Sigma(1670)0 
+set Sigma(1670)0Mass:BreitWignerShape 0
+set Sigma(1670)0Mass:MaximumWeight 1.11718
+set Sigma(1670)0Mass:NGenerate 100
+set Sigma(1670)0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1670)0:Mass_generator Sigma(1670)0Mass
+set /Herwig/Particles/Sigmabar(1670)0:Mass_generator Sigma(1670)0Mass
+#
+create Herwig::GenericMassGenerator  Sigma(1670)-Mass
+set Sigma(1670)-Mass:Particle /Herwig/Particles/Sigma(1670)- 
+set Sigma(1670)-Mass:BreitWignerShape 0
+set Sigma(1670)-Mass:MaximumWeight 1.11731
+set Sigma(1670)-Mass:NGenerate 100
+set Sigma(1670)-Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma(1670)-:Mass_generator Sigma(1670)-Mass
+set /Herwig/Particles/Sigmabar(1670)+:Mass_generator Sigma(1670)-Mass
+#
+create Herwig::GenericMassGenerator  Xi(1820)0Mass
+set Xi(1820)0Mass:Particle /Herwig/Particles/Xi(1820)0 
+set Xi(1820)0Mass:BreitWignerShape 0
+set Xi(1820)0Mass:MaximumWeight 1.04511
+set Xi(1820)0Mass:NGenerate 100
+set Xi(1820)0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi(1820)0:Mass_generator Xi(1820)0Mass
+set /Herwig/Particles/Xibar(1820)0:Mass_generator Xi(1820)0Mass
+#
+create Herwig::GenericMassGenerator  Xi(1820)-Mass
+set Xi(1820)-Mass:Particle /Herwig/Particles/Xi(1820)- 
+set Xi(1820)-Mass:BreitWignerShape 0
+set Xi(1820)-Mass:MaximumWeight 1.04486
+set Xi(1820)-Mass:NGenerate 100
+set Xi(1820)-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi(1820)-:Mass_generator Xi(1820)-Mass
+set /Herwig/Particles/Xibar(1820)+:Mass_generator Xi(1820)-Mass
+#
+create Herwig::GenericMassGenerator  Lambda(1405)0Mass
+set Lambda(1405)0Mass:Particle /Herwig/Particles/Lambda(1405)0 
+set Lambda(1405)0Mass:BreitWignerShape 0
+set Lambda(1405)0Mass:MaximumWeight 1.24865
+set Lambda(1405)0Mass:NGenerate 100
+set Lambda(1405)0Mass:WidthOption 0
+
+set /Herwig/Particles/Lambda(1405)0:Mass_generator Lambda(1405)0Mass
+set /Herwig/Particles/Lambdabar(1405)0:Mass_generator Lambda(1405)0Mass
+#
+create Herwig::GenericMassGenerator  Lambda(1520)0Mass
+set Lambda(1520)0Mass:Particle /Herwig/Particles/Lambda(1520)0 
+set Lambda(1520)0Mass:BreitWignerShape 0
+set Lambda(1520)0Mass:MaximumWeight 1.11507
+set Lambda(1520)0Mass:NGenerate 100
+set Lambda(1520)0Mass:WidthOption 0
+
+set /Herwig/Particles/Lambda(1520)0:Mass_generator Lambda(1520)0Mass
+set /Herwig/Particles/Lambdabar(1520)0:Mass_generator Lambda(1520)0Mass
+#
+create Herwig::GenericMassGenerator  Sigma_c++Mass
+set Sigma_c++Mass:Particle /Herwig/Particles/Sigma_c++ 
+set Sigma_c++Mass:BreitWignerShape 0
+set Sigma_c++Mass:MaximumWeight 1.03189
+set Sigma_c++Mass:NGenerate 100
+set Sigma_c++Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_c++:Mass_generator Sigma_c++Mass
+set /Herwig/Particles/Sigmabar_c--:Mass_generator Sigma_c++Mass
+#
+create Herwig::GenericMassGenerator  Sigma_c+Mass
+set Sigma_c+Mass:Particle /Herwig/Particles/Sigma_c+ 
+set Sigma_c+Mass:BreitWignerShape 0
+set Sigma_c+Mass:MaximumWeight 1.02536
+set Sigma_c+Mass:NGenerate 100
+set Sigma_c+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_c+:Mass_generator Sigma_c+Mass
+set /Herwig/Particles/Sigmabar_c-:Mass_generator Sigma_c+Mass
+#
+create Herwig::GenericMassGenerator  Sigma_c0Mass
+set Sigma_c0Mass:Particle /Herwig/Particles/Sigma_c0 
+set Sigma_c0Mass:BreitWignerShape 0
+set Sigma_c0Mass:MaximumWeight 1.03157
+set Sigma_c0Mass:NGenerate 100
+set Sigma_c0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_c0:Mass_generator Sigma_c0Mass
+set /Herwig/Particles/Sigmabar_c0:Mass_generator Sigma_c0Mass
+#
+create Herwig::GenericMassGenerator  Sigma*_c++Mass
+set Sigma*_c++Mass:Particle /Herwig/Particles/Sigma*_c++ 
+set Sigma*_c++Mass:BreitWignerShape 0
+set Sigma*_c++Mass:MaximumWeight 1.07934
+set Sigma*_c++Mass:NGenerate 100
+set Sigma*_c++Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma*_c++:Mass_generator Sigma*_c++Mass
+set /Herwig/Particles/Sigmabar*_c--:Mass_generator Sigma*_c++Mass
+#
+create Herwig::GenericMassGenerator  Sigma*_c+Mass
+set Sigma*_c+Mass:Particle /Herwig/Particles/Sigma*_c+ 
+set Sigma*_c+Mass:BreitWignerShape 0
+set Sigma*_c+Mass:MaximumWeight 1.0884
+set Sigma*_c+Mass:NGenerate 100
+set Sigma*_c+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma*_c+:Mass_generator Sigma*_c+Mass
+set /Herwig/Particles/Sigmabar*_c-:Mass_generator Sigma*_c+Mass
+#
+create Herwig::GenericMassGenerator  Sigma*_c0Mass
+set Sigma*_c0Mass:Particle /Herwig/Particles/Sigma*_c0 
+set Sigma*_c0Mass:BreitWignerShape 0
+set Sigma*_c0Mass:MaximumWeight 1.09369
+set Sigma*_c0Mass:NGenerate 100
+set Sigma*_c0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma*_c0:Mass_generator Sigma*_c0Mass
+set /Herwig/Particles/Sigmabar*_c0:Mass_generator Sigma*_c0Mass
+#
+create Herwig::GenericMassGenerator  Sigma_b+Mass
+set Sigma_b+Mass:Particle /Herwig/Particles/Sigma_b+ 
+set Sigma_b+Mass:BreitWignerShape 0
+set Sigma_b+Mass:MaximumWeight 1.05901
+set Sigma_b+Mass:NGenerate 100
+set Sigma_b+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_b+:Mass_generator Sigma_b+Mass
+set /Herwig/Particles/Sigma_bbar-:Mass_generator Sigma_b+Mass
+#
+create Herwig::GenericMassGenerator  Sigma_b0Mass
+set Sigma_b0Mass:Particle /Herwig/Particles/Sigma_b0 
+set Sigma_b0Mass:BreitWignerShape 0
+set Sigma_b0Mass:MaximumWeight 1.0726
+set Sigma_b0Mass:NGenerate 100
+set Sigma_b0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_bbar0:Mass_generator Sigma_b0Mass
+set /Herwig/Particles/Sigma_b0:Mass_generator Sigma_b0Mass
+#
+create Herwig::GenericMassGenerator  Sigma_b-Mass
+set Sigma_b-Mass:Particle /Herwig/Particles/Sigma_b- 
+set Sigma_b-Mass:BreitWignerShape 0
+set Sigma_b-Mass:MaximumWeight 1.07594
+set Sigma_b-Mass:NGenerate 100
+set Sigma_b-Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_b-:Mass_generator Sigma_b-Mass
+set /Herwig/Particles/Sigma_bbar+:Mass_generator Sigma_b-Mass
+#
+create Herwig::GenericMassGenerator  Sigma*_b+Mass
+set Sigma*_b+Mass:Particle /Herwig/Particles/Sigma_b*+ 
+set Sigma*_b+Mass:BreitWignerShape 0
+set Sigma*_b+Mass:MaximumWeight 1.10853
+set Sigma*_b+Mass:NGenerate 100
+set Sigma*_b+Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_b*+:Mass_generator Sigma*_b+Mass
+set /Herwig/Particles/Sigma_b*bar-:Mass_generator Sigma*_b+Mass
+#
+create Herwig::GenericMassGenerator  Sigma*_b0Mass
+set Sigma*_b0Mass:Particle /Herwig/Particles/Sigma_b*0 
+set Sigma*_b0Mass:BreitWignerShape 0
+set Sigma*_b0Mass:MaximumWeight 1.12129
+set Sigma*_b0Mass:NGenerate 100
+set Sigma*_b0Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_b*bar0:Mass_generator Sigma*_b0Mass
+set /Herwig/Particles/Sigma_b*0:Mass_generator Sigma*_b0Mass
+#
+create Herwig::GenericMassGenerator  Sigma*_b-Mass
+set Sigma*_b-Mass:Particle /Herwig/Particles/Sigma_b*- 
+set Sigma*_b-Mass:BreitWignerShape 0
+set Sigma*_b-Mass:MaximumWeight 1.12506
+set Sigma*_b-Mass:NGenerate 100
+set Sigma*_b-Mass:WidthOption 0
+
+set /Herwig/Particles/Sigma_b*-:Mass_generator Sigma*_b-Mass
+set /Herwig/Particles/Sigma_b*bar+:Mass_generator Sigma*_b-Mass
+#
+create Herwig::GenericMassGenerator  Xi'_c+Mass
+set Xi'_c+Mass:Particle /Herwig/Particles/Xi'_c+ 
+set Xi'_c+Mass:BreitWignerShape 0
+set Xi'_c+Mass:MaximumWeight 0.968365
+set Xi'_c+Mass:NGenerate 100
+set Xi'_c+Mass:WidthOption 0
+
+set /Herwig/Particles/Xi'_c+:Mass_generator Xi'_c+Mass
+set /Herwig/Particles/Xi'_cbar-:Mass_generator Xi'_c+Mass
+#
+create Herwig::GenericMassGenerator  Xi'_c0Mass
+set Xi'_c0Mass:Particle /Herwig/Particles/Xi'_c0 
+set Xi'_c0Mass:BreitWignerShape 0
+set Xi'_c0Mass:MaximumWeight 0.968198
+set Xi'_c0Mass:NGenerate 100
+set Xi'_c0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi'_c0:Mass_generator Xi'_c0Mass
+set /Herwig/Particles/Xi'_cbar0:Mass_generator Xi'_c0Mass
+#
+create Herwig::GenericMassGenerator  Xi'_b0Mass
+set Xi'_b0Mass:Particle /Herwig/Particles/Xi_b'0 
+set Xi'_b0Mass:BreitWignerShape 0
+set Xi'_b0Mass:MaximumWeight 0.96838
+set Xi'_b0Mass:NGenerate 100
+set Xi'_b0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b'bar0:Mass_generator Xi'_b0Mass
+set /Herwig/Particles/Xi_b'0:Mass_generator Xi'_b0Mass
+#
+create Herwig::GenericMassGenerator  Xi'_b-Mass
+set Xi'_b-Mass:Particle /Herwig/Particles/Xi_b'- 
+set Xi'_b-Mass:BreitWignerShape 0
+set Xi'_b-Mass:MaximumWeight 0.968198
+set Xi'_b-Mass:NGenerate 100
+set Xi'_b-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b'-:Mass_generator Xi'_b-Mass
+set /Herwig/Particles/Xi_b'bar+:Mass_generator Xi'_b-Mass
+#
+create Herwig::GenericMassGenerator  Xi*_c+Mass
+set Xi*_c+Mass:Particle /Herwig/Particles/Xi_c*+ 
+set Xi*_c+Mass:BreitWignerShape 0
+set Xi*_c+Mass:MaximumWeight 1.03241
+set Xi*_c+Mass:NGenerate 100
+set Xi*_c+Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_c*+:Mass_generator Xi*_c+Mass
+set /Herwig/Particles/Xi_c*bar-:Mass_generator Xi*_c+Mass
+#
+create Herwig::GenericMassGenerator  Xi*_c0Mass
+set Xi*_c0Mass:Particle /Herwig/Particles/Xi_c*0 
+set Xi*_c0Mass:BreitWignerShape 0
+set Xi*_c0Mass:MaximumWeight 1.03114
+set Xi*_c0Mass:NGenerate 100
+set Xi*_c0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_c*bar0:Mass_generator Xi*_c0Mass
+set /Herwig/Particles/Xi_c*0:Mass_generator Xi*_c0Mass
+#
+create Herwig::GenericMassGenerator  Xi*_b0Mass
+set Xi*_b0Mass:Particle /Herwig/Particles/Xi_b*0 
+set Xi*_b0Mass:BreitWignerShape 0
+set Xi*_b0Mass:MaximumWeight 1.04382
+set Xi*_b0Mass:NGenerate 100
+set Xi*_b0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b*bar0:Mass_generator Xi*_b0Mass
+set /Herwig/Particles/Xi_b*0:Mass_generator Xi*_b0Mass
+#
+create Herwig::GenericMassGenerator  Xi*_b-Mass
+set Xi*_b-Mass:Particle /Herwig/Particles/Xi_b*- 
+set Xi*_b-Mass:BreitWignerShape 0
+set Xi*_b-Mass:MaximumWeight 1.04232
+set Xi*_b-Mass:NGenerate 100
+set Xi*_b-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b*-:Mass_generator Xi*_b-Mass
+set /Herwig/Particles/Xi_b*bar+:Mass_generator Xi*_b-Mass
+#
+create Herwig::GenericMassGenerator  Lambda'_cMass
+set Lambda'_cMass:Particle /Herwig/Particles/Lambda_c(2593)+ 
+set Lambda'_cMass:BreitWignerShape 0
+set Lambda'_cMass:MaximumWeight 1.25388
+set Lambda'_cMass:NGenerate 100
+set Lambda'_cMass:WidthOption 0
+
+set /Herwig/Particles/Lambda_c(2593)+:Mass_generator Lambda'_cMass
+set /Herwig/Particles/Lambda_c(2593)bar-:Mass_generator Lambda'_cMass
+#
+create Herwig::GenericMassGenerator  Lambda*_cMass
+set Lambda*_cMass:Particle /Herwig/Particles/Lambda_c(2625)+ 
+set Lambda*_cMass:BreitWignerShape 0
+set Lambda*_cMass:MaximumWeight 0.936816
+set Lambda*_cMass:NGenerate 100
+set Lambda*_cMass:WidthOption 0
+
+set /Herwig/Particles/Lambda_c(2625)+:Mass_generator Lambda*_cMass
+set /Herwig/Particles/Lambda_c(2625)bar-:Mass_generator Lambda*_cMass
+#
+create Herwig::GenericMassGenerator  Lambda'_bMass
+set Lambda'_bMass:Particle /Herwig/Particles/Lambda_b10 
+set Lambda'_bMass:BreitWignerShape 0
+set Lambda'_bMass:MaximumWeight 1.08571
+set Lambda'_bMass:NGenerate 100
+set Lambda'_bMass:WidthOption 0
+
+set /Herwig/Particles/Lambda_b1bar0:Mass_generator Lambda'_bMass
+set /Herwig/Particles/Lambda_b10:Mass_generator Lambda'_bMass
+#
+create Herwig::GenericMassGenerator  Lambda*_bMass
+set Lambda*_bMass:Particle /Herwig/Particles/Lambda_b1*0 
+set Lambda*_bMass:BreitWignerShape 0
+set Lambda*_bMass:MaximumWeight 0.968317
+set Lambda*_bMass:NGenerate 100
+set Lambda*_bMass:WidthOption 0
+
+set /Herwig/Particles/Lambda_b1*0:Mass_generator Lambda*_bMass
+set /Herwig/Particles/Lambda_b1*bar0:Mass_generator Lambda*_bMass
+#
+create Herwig::GenericMassGenerator  Omega_c*0Mass
+set Omega_c*0Mass:Particle /Herwig/Particles/Omega_c*0 
+set Omega_c*0Mass:BreitWignerShape 0
+set Omega_c*0Mass:MaximumWeight 0.969009
+set Omega_c*0Mass:NGenerate 100
+set Omega_c*0Mass:WidthOption 0
+
+set /Herwig/Particles/Omega_c*0:Mass_generator Omega_c*0Mass
+set /Herwig/Particles/Omega_c*bar0:Mass_generator Omega_c*0Mass
+#
+create Herwig::GenericMassGenerator  Omega_b*-Mass
+set Omega_b*-Mass:Particle /Herwig/Particles/Omega_b*- 
+set Omega_b*-Mass:BreitWignerShape 0
+set Omega_b*-Mass:MaximumWeight 0.968299
+set Omega_b*-Mass:NGenerate 100
+set Omega_b*-Mass:WidthOption 0
+
+set /Herwig/Particles/Omega_b*bar+:Mass_generator Omega_b*-Mass
+set /Herwig/Particles/Omega_b*-:Mass_generator Omega_b*-Mass
+#
+create Herwig::GenericMassGenerator  Xi_c1+Mass
+set Xi_c1+Mass:Particle /Herwig/Particles/Xi_c(2790)+ 
+set Xi_c1+Mass:BreitWignerShape 0
+set Xi_c1+Mass:MaximumWeight 0.972612
+set Xi_c1+Mass:NGenerate 100
+set Xi_c1+Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_c(2790)+:Mass_generator Xi_c1+Mass
+set /Herwig/Particles/Xi_c(2790)bar-:Mass_generator Xi_c1+Mass
+#
+create Herwig::GenericMassGenerator  Xi_c10Mass
+set Xi_c10Mass:Particle /Herwig/Particles/Xi_c(2790)0 
+set Xi_c10Mass:BreitWignerShape 0
+set Xi_c10Mass:MaximumWeight 0.972432
+set Xi_c10Mass:NGenerate 100
+set Xi_c10Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_c(2790)0:Mass_generator Xi_c10Mass
+set /Herwig/Particles/Xi_c(2790)bar0:Mass_generator Xi_c10Mass
+#
+create Herwig::GenericMassGenerator  Xi_c1*0Mass
+set Xi_c1*0Mass:Particle /Herwig/Particles/Xi_c(2815)0 
+set Xi_c1*0Mass:BreitWignerShape 0
+set Xi_c1*0Mass:MaximumWeight 0.982198
+set Xi_c1*0Mass:NGenerate 100
+set Xi_c1*0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_c(2815)0:Mass_generator Xi_c1*0Mass
+set /Herwig/Particles/Xi_c(2815)bar0:Mass_generator Xi_c1*0Mass
+#
+create Herwig::GenericMassGenerator  Xi_c1*+Mass
+set Xi_c1*+Mass:Particle /Herwig/Particles/Xi_c(2815)+ 
+set Xi_c1*+Mass:BreitWignerShape 0
+set Xi_c1*+Mass:MaximumWeight 0.982659
+set Xi_c1*+Mass:NGenerate 100
+set Xi_c1*+Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_c(2815)+:Mass_generator Xi_c1*+Mass
+set /Herwig/Particles/Xi_c(2815)bar-:Mass_generator Xi_c1*+Mass
+#
+create Herwig::GenericMassGenerator  Xi_b1*0Mass
+set Xi_b1*0Mass:Particle /Herwig/Particles/Xi_b1*0 
+set Xi_b1*0Mass:BreitWignerShape 0
+set Xi_b1*0Mass:MaximumWeight 0.982664
+set Xi_b1*0Mass:NGenerate 100
+set Xi_b1*0Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b1*0:Mass_generator Xi_b1*0Mass
+set /Herwig/Particles/Xi_b1*bar0:Mass_generator Xi_b1*0Mass
+#
+create Herwig::GenericMassGenerator  Xi_b1*-Mass
+set Xi_b1*-Mass:Particle /Herwig/Particles/Xi_b1*- 
+set Xi_b1*-Mass:BreitWignerShape 0
+set Xi_b1*-Mass:MaximumWeight 0.982221
+set Xi_b1*-Mass:NGenerate 100
+set Xi_b1*-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b1*-:Mass_generator Xi_b1*-Mass
+set /Herwig/Particles/Xi_b1*bar+:Mass_generator Xi_b1*-Mass
+#
+create Herwig::GenericMassGenerator  Xi_b1-Mass
+set Xi_b1-Mass:Particle /Herwig/Particles/Xi_b1- 
+set Xi_b1-Mass:BreitWignerShape 0
+set Xi_b1-Mass:MaximumWeight 0.973502
+set Xi_b1-Mass:NGenerate 100
+set Xi_b1-Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b1-:Mass_generator Xi_b1-Mass
+set /Herwig/Particles/Xi_b1bar+:Mass_generator Xi_b1-Mass
+#
+create Herwig::GenericMassGenerator  Xi_b10Mass
+set Xi_b10Mass:Particle /Herwig/Particles/Xi_b10 
+set Xi_b10Mass:BreitWignerShape 0
+set Xi_b10Mass:MaximumWeight 0.973726
+set Xi_b10Mass:NGenerate 100
+set Xi_b10Mass:WidthOption 0
+
+set /Herwig/Particles/Xi_b1bar0:Mass_generator Xi_b10Mass
+set /Herwig/Particles/Xi_b10:Mass_generator Xi_b10Mass
+#
 create Herwig::GenericMassGenerator  f0(1500)Mass
 set f0(1500)Mass:Particle /Herwig/Particles/f_0(1500) 
 set f0(1500)Mass:BreitWignerShape 0

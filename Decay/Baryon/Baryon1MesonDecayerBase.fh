@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Baryon1MesonDecayerBase class.
+//
+#ifndef HERWIG_Baryon1MesonDecayerBase_FH
+#define HERWIG_Baryon1MesonDecayerBase_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class Baryon1MesonDecayerBase;
+ThePEG_DECLARE_CLASS_POINTERS(Baryon1MesonDecayerBase,Baryon1MesonDecayerBasePtr);
+
+}
+
+#endif

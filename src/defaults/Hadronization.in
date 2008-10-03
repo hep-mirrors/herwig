@@ -53,7 +53,7 @@ set ColourReconnector:ColourReconnection No
 
 # Clustering parameters for light quarks
 set ClusterFissioner:ClMaxLight  3.15*GeV
-set ClusterFissioner:ClPowLight  2.0
+set ClusterFissioner:ClPowLight  1.28
 set ClusterFissioner:PSplitLight 1.20
 set ClusterDecayer:ClDirLight 1
 set ClusterDecayer:ClSmrLight 0.78

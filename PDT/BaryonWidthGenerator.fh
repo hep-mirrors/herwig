@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BaryonWidthGenerator class.
+//
+#ifndef HERWIG_BaryonWidthGenerator_FH
+#define HERWIG_BaryonWidthGenerator_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class BaryonWidthGenerator;
+ThePEG_DECLARE_POINTERS(BaryonWidthGenerator,BaryonWidthGeneratorPtr);
+
+}
+
+#endif
