@@ -122,7 +122,6 @@ double  FtoFFFDecayer::me2(const int ichan, const Particle & inpart,
 					       Helicity::incoming,true);
     // outgoing particles
     for(unsigned int ix = 0; ix < 3; ++ix) {
-      cerr << "testing child " << ix << "\n";
       SpinorWaveFunction::
       constructSpinInfo(_outwave[ix].first,decay[ix],Helicity::outgoing,true);
     }
