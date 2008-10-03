@@ -13,8 +13,9 @@ int main() {
   double pv2s = 0;
   double mls = 2.65501e+11;
 
-  cout << "before" << endl;
+  cout << "before ini" << endl;
   ffini();
+  cout << "after ini" << endl;
   long theC = Cget(ps2,pv2s,pv1s,
 		      mls,mls,mls);
   cerr << "theC: " << theC << '\n';

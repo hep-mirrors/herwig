@@ -153,7 +153,6 @@ bool MEPP2ZHPowheg::generateKinematics(const double * r) {
 
 CrossSection MEPP2ZHPowheg::dSigHatDR() const {
   // Get Born momentum fractions xbar_a and xbar_b:
-  CrossSection lo_xsec(MEPP2ZH::dSigHatDR());
   _xb_a = lastX1();
   _xb_b = lastX2();
   return MEPP2ZH::dSigHatDR()*NLOweight();
