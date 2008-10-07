@@ -653,6 +653,13 @@ bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
     // find the partner branchings
     tShowerParticlePtr partner=(*cit)->branchingParticle()->partner();
     if(!partner) continue;
+    for( set<HardBranchingPtr>::iterator clt = branchings.begin();
+	 clt != branchings.end(); ++clt ) {
+      if((**clt).branchingParticle()==partner) {
+	(**cit).colourPartner(*clt);
+	break;
+      }
+    }
     tHardBranchingPtr branch;
     set<HardBranchingPtr>::iterator cjt;
     for(cjt=branchings.begin();cjt!=branchings.end();++cjt){
