@@ -149,7 +149,7 @@ EGPtr HerwigRun::eventGenerator() {
 	  eg->setSeed(seed);
 	}
 	if(!isInitialized) {
-	  std::cout << "Initializing. This can take up to a minute." 
+	  std::cout << "Initializing. This can take a while." 
 		    << std::endl;
 	  eg->initialize();
 	  isInitialized = true;
@@ -167,7 +167,7 @@ EventPtr HerwigRun::generateEvent() {
   if( Status != RUN ) 
     return EventPtr();
   if(!isInitialized) {
-    std::cout << "Initializing. This can take up to a minute." 
+    std::cout << "Initializing. This can take a while." 
 	      << std::endl;
     eg->initialize();
     isInitialized = true;

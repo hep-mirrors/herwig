@@ -545,15 +545,19 @@ reconstructDecayJet( const tShowerParticlePtr p) const {
 }
 
 bool QTildeReconstructor::
-solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
-		  const JetKinVect & jetKinematics, ShowerParticlePtr partner, 
+solveDecayKFactor(Energy mb, 
+		  const Lorentz5Momentum & n, 
+		  const Lorentz5Momentum & pjet, 
+		  const JetKinVect & jetKinematics, 
+		  ShowerParticlePtr partner, 
 		  Lorentz5Momentum ppartner[2],
-		  double & k1, double & k2,Lorentz5Momentum & qt) const {
+		  double & k1, double & k2,
+		  Lorentz5Momentum & qt) const {
   Energy2 pjn  = partner ? pjet.vect()*n.vect()        : 0.*MeV2;
   Energy2 pcn  = partner ? ppartner[0].vect()*n.vect() : 1.*MeV2;
   Energy2 nmag = n.vect().mag2();
-  Lorentz5Momentum pn=(pjn/nmag)*n;
-  qt=pjet-pn;qt.setE(0.*MeV);
+  Lorentz5Momentum pn = partner ? (pjn/nmag)*n : Lorentz5Momentum();
+  qt=pjet-pn; qt.setE(0.*MeV);
   Energy2 pt2=qt.vect().mag2();
   Energy  Ejet = pjet.e();
   // magnitudes of the momenta for fast access
@@ -591,9 +595,8 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
     }
     d1    += (mb-roots)/ds;
     d2     = d1 + pjn/pcn;
-    ++ix;
   }
-  while(abs(mb-roots)>eps&&ix<100);
+  while(abs(mb-roots)>eps && ix<100);
   k1=d1;
   k2=d2;
   // return true if N-R succeed, otherwise false

@@ -255,6 +255,10 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 } 
 
 bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
+  if (t == Energy2()) {
+    t=-1.*GeV2;
+    return false;
+  }
   // special case for gluon radiating
   pair<double,double> limits;
   if(ids_[0]==ParticleID::g) {
@@ -289,6 +293,10 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
 }
 
 bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
+  if (t == Energy2()) {
+    t=-1.*GeV2;
+    return false;
+  }
   pair<double,double> limits;
   // compute the limits
   limits.first = x;

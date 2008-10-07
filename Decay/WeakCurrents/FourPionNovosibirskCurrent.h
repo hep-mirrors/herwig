@@ -451,13 +451,14 @@ protected:
   Energy2 hFunction(const Energy q) const {
     using Constants::pi;
     static const Energy2 eps(0.01*MeV2);
-    Energy2 q2(q*q);
-    double root(sqrt(1.-4.*_mpic2/q2));
-    
-    Energy2 output;
-    if(q2>4*_mpic2)  output=root*log((1.+root)/(1.-root))*(q2-4*_mpic2)/pi;
-    else if(q2>eps) output=0.*MeV2;
-    else            output=-8.*_mpic2/pi;
+
+    Energy2 q2(q*q), output;
+    if (q2 > 4*_mpic2) {
+      double root = sqrt(1.-4.*_mpic2/q2);
+      output = root*log((1.+root)/(1.-root))*(q2-4*_mpic2)/pi;
+    }
+    else if (q2 > eps) output = Energy2();
+    else               output = -8.*_mpic2/pi;
     return output;
   }
 

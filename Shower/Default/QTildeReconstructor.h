@@ -222,10 +222,15 @@ protected:
    * @param k2 The rescaling parameter for the outgoing singlet
    * @param qt The transverse momentum vector
    */
-  bool solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
-			 const JetKinVect & jetKinematics, ShowerParticlePtr partner,
+  bool solveDecayKFactor(Energy mb, 
+			 const Lorentz5Momentum & n, 
+			 const Lorentz5Momentum & pjet, 
+			 const JetKinVect & jetKinematics, 
+			 ShowerParticlePtr partner,
 			 Lorentz5Momentum ppartner[2],
-			 double & k1, double & k2,Lorentz5Momentum & qt) const;
+			 double & k1, 
+			 double & k2,
+			 Lorentz5Momentum & qt) const;
 
 
   /**
