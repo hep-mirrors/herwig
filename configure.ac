@@ -23,10 +23,10 @@ esac
 
 dnl === disable debug symbols by default =====
 if test "x$CXXFLAGS" = "x"; then
-   CXXFLAGS=-O2
+   CXXFLAGS=-O3
 fi
 if test "x$CFLAGS" = "x"; then
-   CFLAGS=-O2
+   CFLAGS=-O3
 fi
 dnl Looptools manual requires no optimization
 if test "x$FCFLAGS" = "x"; then
