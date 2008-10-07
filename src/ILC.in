@@ -7,7 +7,7 @@
 # for the differences
 ##################################################
 
-###################################################
+##################################################
 # Change settings for the ee->Z->qq matrix element
 # to produce only top quarks 
 #
@@ -15,13 +15,22 @@
 # default value is already okay.
 #
 # Any repository setting can be modified here
-###################################################
+##################################################
+
+##################################################
+# Selected the hard process
+##################################################
 cd /Herwig/MatrixElements
-insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
+# default e+e- > t tbar
+insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 set MEee2gZ2qq:MinimumFlavour 6
 set MEee2gZ2qq:MaximumFlavour 6
+# e+e- > l+l-
+# insert SimpleEE:MatrixElements[0] MEee2gZ2ll
 # higgs+Z
 # insert SimpleEE:MatrixElements[0] MEee2ZH
+# higgs+e+e-/nu_enu_ebar via VBF
+# insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
 
 ##################################################
 # Technical parameters for this run
