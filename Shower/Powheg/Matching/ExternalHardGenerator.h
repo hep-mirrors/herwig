@@ -36,7 +36,7 @@ public:
   /**
    * The default constructor.
    */
-  inline ExternalHardGenerator()
+  inline ExternalHardGenerator() : _fixedVeto(true)
   {}
 
   /**
@@ -121,6 +121,11 @@ private:
    * Pointer to the CKKW handler from which the nasonTree is obtained
    */
   PowhegHandlerPtr _CKKWh;
+
+  /**
+   * Whether to use the fixed pt_cut for pt shower or softest pt from ME
+   */
+  bool _fixedVeto;
 
 };
 

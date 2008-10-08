@@ -7,6 +7,7 @@
 #include "ExternalHardGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
@@ -47,6 +48,23 @@ void ExternalHardGenerator::Init() {
      "The cascade handler for Powheg",
      &ExternalHardGenerator::_CKKWh, false, false,
      true, false);
+ 
+  static Switch<ExternalHardGenerator, bool> interfaceFixedVeto
+    ("FixedVeto",
+     "Whether to use fixed pt_cut or the softest pt from ME for the shower pt veto",
+     &ExternalHardGenerator::_fixedVeto, true, false, false);
+  
+   static SwitchOption interfaceFixedVetoFixed
+    (interfaceFixedVeto,
+     "Fixed",
+     "Fixed pt_cut",
+     true);
+  
+  static SwitchOption interfaceFixedVetoSoft
+    (interfaceFixedVeto,
+     "Soft",
+     "Pt of softest branching in ME",
+     false);
 
 }
 
@@ -59,12 +77,24 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
+  
   Energy kt_merge = _CKKWh->getMergeScale();
 
-  //add pt vetos
-  //n.b these are currently in terms of durham kt - should change veto
-  QProgenitor->maximumpT(kt_merge);
-  QbarProgenitor->maximumpT(kt_merge);
+  Energy veto_pt = kt_merge;
+
+  //if not using fixed pt veto get the pt veto from the hardtree
+  if( !_fixedVeto ) {
+    for(set<HardBranchingPtr>::const_iterator it
+	  =hardtree->branchings().begin();
+	it!=hardtree->branchings().end();++it) {
+      if( (*it)->incoming() ) continue;
+      if( (*it)->children().size() == 2)
+	veto_pt = (*it)->children()[0]->pT();  
+    }
+  }
+
+  QProgenitor->maximumpT(veto_pt);
+  QbarProgenitor->maximumpT(veto_pt);
 
   if(!hardtree) return HardTreePtr();
   // check the trees match
