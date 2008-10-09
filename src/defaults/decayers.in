@@ -12477,15 +12477,15 @@ insert BaryonLight1:MaximumWeight 2 0.000122986
 insert BaryonLight1:MaximumWeight 3 4.63043e-10 
 insert BaryonLight1:MaximumWeight 4 2.99887e-20 
 insert BaryonLight1:MaximumWeight 5 1.02435e-09 
-insert BaryonLight1:MaximumWeight 6 0.0035
-insert BaryonLight1:MaximumWeight 7 0.00043765 
+insert BaryonLight1:MaximumWeight 6 0.0037
+insert BaryonLight1:MaximumWeight 7 0.0005
 insert BaryonLight1:MaximumWeight 8 9.60594e-13 
 insert BaryonLight1:MaximumWeight 9 3.14573e-13 
 insert BaryonLight1:MaximumWeight 10 0.00404325 
 insert BaryonLight1:MaximumWeight 11 0.00135948 
 insert BaryonLight1:MaximumWeight 12 0.00239575 
 insert BaryonLight1:MaximumWeight 13 0.000490015 
-insert BaryonLight1:MaximumWeight 14 0.000225975 
+insert BaryonLight1:MaximumWeight 14 0.000228 
 insert BaryonLight1:MaximumWeight 15 3.58814e-06 
 insert BaryonLight1:MaximumWeight 16 0.00075
 insert BaryonLight1:MaximumWeight 17 7.52759e-06 
@@ -13434,7 +13434,7 @@ set CharmBaryon1:Ihat4 8 -1.63299
 set CharmBaryon1:Incoming 8 4232
 set CharmBaryon1:OutgoingB 8 3322
 set CharmBaryon1:OutgoingM 8 211
-set CharmBaryon1:MaxWeight 8 0.065
+set CharmBaryon1:MaxWeight 8 0.067
 set CharmBaryon1:I1 9 0.166667
 set CharmBaryon1:I2 9 0.166667
 set CharmBaryon1:I3 9 0.666667
@@ -13478,7 +13478,7 @@ set CharmBaryon1:Ihat4 12 1.1547
 set CharmBaryon1:Incoming 12 4132
 set CharmBaryon1:OutgoingB 12 3322
 set CharmBaryon1:OutgoingM 12 111
-set CharmBaryon1:MaxWeight 12 0.0007
+set CharmBaryon1:MaxWeight 12 0.00075
 set CharmBaryon1:I1 13 0
 set CharmBaryon1:I2 13 0
 set CharmBaryon1:I3 13 -0.169102
@@ -13533,7 +13533,7 @@ set CharmBaryon1:Ihat4 17 0.666667
 set CharmBaryon1:Incoming 17 4122
 set CharmBaryon1:OutgoingB 17 3122
 set CharmBaryon1:OutgoingM 17 213
-set CharmBaryon1:MaxWeight 17 0.4
+set CharmBaryon1:MaxWeight 17 0.41
 set CharmBaryon1:I1 18 0
 set CharmBaryon1:I2 18 0
 set CharmBaryon1:I3 18 -0.57735
@@ -13654,7 +13654,7 @@ set CharmBaryon1:Ihat4 28 0
 set CharmBaryon1:Incoming 28 4132
 set CharmBaryon1:OutgoingB 28 3222
 set CharmBaryon1:OutgoingM 28 -323
-set CharmBaryon1:MaxWeight 28 0.00701935
+set CharmBaryon1:MaxWeight 28 0.0072
 set CharmBaryon1:I1 29 0
 set CharmBaryon1:I2 29 0
 set CharmBaryon1:I3 29 0.57735
@@ -14089,7 +14089,7 @@ insert BaryonHeavy3:MaximumWeight 16 0.0222433
 insert BaryonHeavy3:MaximumWeight 17 0.0338862 
 insert BaryonHeavy3:MaximumWeight 18 0.0334095 
 insert BaryonHeavy3:MaximumWeight 19 0.1 
-insert BaryonHeavy3:MaximumWeight 20 0.095
+insert BaryonHeavy3:MaximumWeight 20 0.097
 insert BaryonHeavy3:MaximumWeight 21 0.025 
 insert BaryonHeavy3:MaximumWeight 22 0.025
 create Herwig::LeptonNeutrinoCurrent BaryonHeavy3Current  HwWeakCurrents.so
@@ -15322,7 +15322,7 @@ insert BottomBaryonScalar:MaximumWeight 48 2.02555e-05
 insert BottomBaryonScalar:MaximumWeight 49 8.60654e-09
 insert BottomBaryonScalar:MaximumWeight 50 0.018
 insert BottomBaryonScalar:MaximumWeight 51 0.00110106
-insert BottomBaryonScalar:MaximumWeight 52 0.00159992
+insert BottomBaryonScalar:MaximumWeight 52 0.0023
 insert BottomBaryonScalar:MaximumWeight 53 0.07
 insert BottomBaryonScalar:MaximumWeight 54 0.00367262
 insert BottomBaryonScalar:MaximumWeight 55 1.43709e-07
@@ -24073,15 +24073,15 @@ set BtosgammaKagan:HadronicMass BtosgammaMass
 
 #
 create Herwig::SMTopDecayer  Top
-set Top:QuarkWeights 0 3.
-set Top:QuarkWeights 1 3.
-set Top:QuarkWeights 2 3.
-set Top:QuarkWeights 3 3.
+set Top:QuarkWeights 0 5.
+set Top:QuarkWeights 1 5.
+set Top:QuarkWeights 2 5.
+set Top:QuarkWeights 3 5.
 set Top:QuarkWeights 4 1.5e-05
-set Top:QuarkWeights 5 3.
-set Top:LeptonWeights 0 3.
-set Top:LeptonWeights 1 3.
-set Top:LeptonWeights 2 3.
+set Top:QuarkWeights 5 5.
+set Top:LeptonWeights 0 5.
+set Top:LeptonWeights 1 5.
+set Top:LeptonWeights 2 5.
 set Top:Iteration 1
 set Top:Ntry 500
 set Top:Points 10000
