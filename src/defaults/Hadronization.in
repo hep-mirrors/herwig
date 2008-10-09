@@ -89,7 +89,7 @@ set HadronSelector:PwtUquark  1.0
 set HadronSelector:PwtSquark  0.68
 set HadronSelector:PwtCquark  1.0
 set HadronSelector:PwtBquark  1.0
-set HadronSelector:PwtDIquark 0.52
-set HadronSelector:SngWt      0.96
-set HadronSelector:DecWt      0.61
+set HadronSelector:PwtDIquark 0.49
+set HadronSelector:SngWt      0.77
+set HadronSelector:DecWt      0.62
 set HadronSelector:Mode 1
