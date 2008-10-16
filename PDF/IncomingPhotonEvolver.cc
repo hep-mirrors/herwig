@@ -6,6 +6,7 @@
 
 #include "IncomingPhotonEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/EventHandler.h"
@@ -20,7 +21,7 @@
 using namespace Herwig;
 
 IncomingPhotonEvolver::IncomingPhotonEvolver() 
-  : PDFMax_(50.), PDFPower_(1.0)
+  : PDFMax_(50.), PDFPower_(1.0), minpT_(2.*GeV)
 {}
 
 void IncomingPhotonEvolver::
@@ -49,7 +50,6 @@ handle(EventHandler & eh, const tPVector & ,
   }
   // calculate CMF momentum get the pt scale for the process
   Energy pt(generator()->maximumCMEnergy());
-  Energy ptmin=2.*GeV;
   Lorentz5Momentum pcmf;
   for(ParticleVector::const_iterator 
 	cit=eh.currentEvent()->primarySubProcess()->outgoing().begin(),
@@ -57,8 +57,9 @@ handle(EventHandler & eh, const tPVector & ,
       cit!=end;++cit) {
     pcmf += (**cit).momentum();
     Energy pttest = (**cit).momentum().perp();
-    if(pttest<pt&&pt>2.*ptmin) pt=pttest;
+    if(pttest<pt&&pt>minpT_) pt=pttest;
   }
+  if(pt==generator()->maximumCMEnergy()) pt=minpT_;
   // limits for the z integrand
   double lower = 1./PDFPower_;
   double upper = lower/pow(x[0],PDFPower_);
@@ -77,7 +78,7 @@ handle(EventHandler & eh, const tPVector & ,
   unsigned int ncount(0);
   Energy scale;
   do {
-    scale = max(pt,ptmin);
+    scale = max(pt,minpT_);
     // new value of pT
     pt *= pow(UseRandom::rnd(),0.5/wgt);
     // new value of z
@@ -286,11 +287,11 @@ IBPtr IncomingPhotonEvolver::fullclone() const {
 }
 
 void IncomingPhotonEvolver::persistentOutput(PersistentOStream & os) const {
-  os << PDFMax_ << PDFPower_ << photon_ << partons_;
+  os << PDFMax_ << PDFPower_ << ounit(minpT_,GeV) << photon_ << partons_;
 }
 
 void IncomingPhotonEvolver::persistentInput(PersistentIStream & is, int) {
-  is >> PDFMax_ >> PDFPower_ >> photon_ >> partons_;
+  is >> PDFMax_ >> PDFPower_ >> iunit(minpT_,GeV) >> photon_ >> partons_;
 }
 
 ClassDescription<IncomingPhotonEvolver> IncomingPhotonEvolver::initIncomingPhotonEvolver;
@@ -299,7 +300,27 @@ ClassDescription<IncomingPhotonEvolver> IncomingPhotonEvolver::initIncomingPhoto
 void IncomingPhotonEvolver::Init() {
 
   static ClassDocumentation<IncomingPhotonEvolver> documentation
-    ("There is no documentation for the IncomingPhotonEvolver class");
+    ("The IncomingPhotonEvolver class performs the backward"
+     " evolution of a photon extracted from a hadron to a quark"
+     " or antiquark so that the event can be showered.");
+
+  static Parameter<IncomingPhotonEvolver,Energy> interfaceminpT
+    ("minpT",
+     "The minimum pT scale to start the evolution",
+     &IncomingPhotonEvolver::minpT_, GeV, 2.0*GeV, 10.0*GeV, 0.5*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<IncomingPhotonEvolver,double> interfacePDFMax
+    ("PDFMax",
+     "The maximum value for the overestimate of the branching probability",
+     &IncomingPhotonEvolver::PDFMax_, 50.0, 1.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<IncomingPhotonEvolver,double> interfacePDFPower
+    ("PDFPower",
+     "The power for the overestimate of the branching probability",
+     &IncomingPhotonEvolver::PDFPower_, 1.0, 0.01, 10.0,
+     false, false, Interface::limited);
 
 }
 
@@ -310,30 +331,4 @@ void IncomingPhotonEvolver::doinit() throw(InitException) {
     partons_.push_back(getParticleData(ix));
     partons_.push_back(partons_.back()->CC());
   }
-  // test of the pdf
-//   ofstream output("pdf.top");
-//   tcPDPtr proton = getParticleData(ParticleID::pplus);
-//   Ptr<BeamParticleData>::transient_const_pointer beam = 
-//     dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
-//     (proton);
-//   assert(beam);
-//   // get the PDF 
-//   tcPDFPtr pdf = beam->pdf();
-//   for(int ix=-5;ix<=22;++ix) {
-//     if(ix==0) ++ix;
-//     if(ix==6) ix=21;
-//     tcPDPtr quark = getParticleData(ix);
-//     Energy2 scale = 20*GeV2;
-//     output << "NEW FRAME\n";
-//     output << "SET FONT DUPLEX\n";
-//     output << "SET SCALE Y LOG\n";
-//     string title = "distribution for" + quark->PDGName();
-//     output << "TITLE TOP \""<< title << "\"\n";
-//     for(double x=1e-3;x<1.;x*=1.1) {
-//       double pdfval =  pdf->xfx(proton,quark,scale,x);
-//       output << x << "\t" << pdfval << "\n";
-//     }
-//     output << "JOIN\n";
-//   }
-//   output.close();
 }
