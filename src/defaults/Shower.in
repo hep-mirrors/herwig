@@ -117,6 +117,7 @@ set QtoQGSudakov:PDFmax 1.9
 
 cp SudakovCommon GtoGGSudakov
 set GtoGGSudakov:SplittingFunction GtoGGSplitFn
+set GtoGGSudakov:PDFmax 2.0
 
 cp SudakovCommon GtoQQbarSudakov
 set GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn
