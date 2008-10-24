@@ -36,12 +36,12 @@ public:
   /**
    * The default constructor.
    */
-  inline HepMCFile();
+  HepMCFile();
 
   /**
    * The copy constructor.
    */
-  inline HepMCFile(const HepMCFile &);
+  HepMCFile(const HepMCFile &);
   //@}
 
 public:
