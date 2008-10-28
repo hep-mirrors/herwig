@@ -29,7 +29,8 @@
 
 using namespace Herwig;
 
-MEqq2gZ2ff::MEqq2gZ2ff() : _maxflavour(5), _gammaZ(0), _process(0) {
+MEqq2gZ2ff::MEqq2gZ2ff() : _minflavour(1), _maxflavour(5), 
+			   _gammaZ(0), _process(0) {
   massOption(true ,1);
   massOption(false,1);
 }
@@ -73,7 +74,7 @@ void MEqq2gZ2ff::getDiagrams() const {
     if(!(quark||lepton)) continue;
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();
-    for(unsigned int i = 1; i <= _maxflavour; ++i) {
+    for(unsigned int i = _minflavour; i <= _maxflavour; ++i) {
       tcPDPtr q  = getParticleData(i);
       tcPDPtr qb = q->CC();
       if(Z0)    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _z0   , 3, lm, 3, lp, -1)));
@@ -131,13 +132,13 @@ MEqq2gZ2ff::colourGeometries(tcDiagPtr) const {
 }
 
 void MEqq2gZ2ff::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _gammaZ << _process
+  os << _minflavour << _maxflavour << _gammaZ << _process
      << _theFFZVertex << _theFFPVertex 
      << _gamma << _z0;
 }
 
 void MEqq2gZ2ff::persistentInput(PersistentIStream & is, int) { 
-  is >> _maxflavour >> _gammaZ >> _process
+  is >> _minflavour >> _maxflavour >> _gammaZ >> _process
      >> _theFFZVertex >> _theFFPVertex 
      >> _gamma >> _z0; 
 }
@@ -154,8 +155,14 @@ void MEqq2gZ2ff::Init() {
 
   static Parameter<MEqq2gZ2ff,unsigned int> interfaceMaxFlavour
     ("MaxFlavour",
-     "The heaviest incoming quark flavour this matrix element is allowed to handle",
-     &MEqq2gZ2ff::_maxflavour, 5, 1, 6,
+     "The maximum incoming quark flavour this matrix element is allowed to handle",
+     &MEqq2gZ2ff::_maxflavour, 5, 1, 5,
+     false, false, Interface::limited);
+
+  static Parameter<MEqq2gZ2ff,unsigned int> interfaceMinFlavour
+    ("MinFlavour",
+     "The minimum incoming quark flavour this matrix element is allowed to handle",
+     &MEqq2gZ2ff::_minflavour, 1, 1, 5,
      false, false, Interface::limited);
 
   static Switch<MEqq2gZ2ff,unsigned int> interfaceGammaZ
