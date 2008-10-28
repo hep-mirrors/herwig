@@ -90,6 +90,10 @@ HERWIG_ENABLE_MODELS
 
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
+if test "xx${host/darwin/foundit}xx" != "xx${host}xx"; then
+   APPLE_DSO_FLAGS=-Wl,-undefined,dynamic_lookup
+fi
+AC_SUBST([APPLE_DSO_FLAGS])
 
 AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Makefile
