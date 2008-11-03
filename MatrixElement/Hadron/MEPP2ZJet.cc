@@ -247,20 +247,20 @@ void MEPP2ZJet::getDiagrams() const {
       // q qbar -> Z g -> l+l- g
       if(_process==0||_process==1) {
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, qb, 1, _gamma,
-			       3, g,  4, lm, 4, lp, -1)));
+			       2, g,  4, lm, 4, lp, -1)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, qb, 1,    _z0,
-			       3, g,  4, lm, 4, lp, -2)));
-	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, qb, 3, _gamma,
+			       2, g,  4, lm, 4, lp, -2)));
+	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, qb, 2, _gamma,
 			       1, g,  4, lm, 4, lp, -3)));
-	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, qb, 3,    _z0,
+	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, qb, 2,    _z0,
 			       1, g,  4, lm, 4, lp, -4)));
       }
       // q g   -> Z q -> l+l- qbar
       if(_process==0||_process==2) {
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), q, q, g,    1, _gamma,
-			       3, q,  4, lm, 4, lp, -5)));
+			       2, q,  4, lm, 4, lp, -5)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(3), q, q, g,    1,    _z0,
-			       3, q,  4, lm, 4, lp, -6)));
+			       2, q,  4, lm, 4, lp, -6)));
 	if(gamma) add(new_ptr((Tree2toNDiagram(2), q, g, 1, q, 3, _gamma,
 			       3, q,  4, lm, 4, lp, -7)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(2), q, g, 1, q, 3,    _z0,
@@ -269,9 +269,9 @@ void MEPP2ZJet::getDiagrams() const {
       // qbar g   -> Z qbar -> l+l- qbar
       if(_process==0||_process==3) {
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), qb, qb, g,     1, _gamma,
-			       3, qb,  4, lm, 4, lp, -9 )));
+			       2, qb,  4, lm, 4, lp, -9 )));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(3), qb, qb, g,     1,    _z0,
-			       3, qb,  4, lm, 4, lp, -10)));
+			       2, qb,  4, lm, 4, lp, -10)));
 	if(gamma) add(new_ptr((Tree2toNDiagram(2), qb,  g, 1, qb, 3, _gamma,
 			       3, qb,  4, lm, 4, lp, -11)));
 	if(Z0)    add(new_ptr((Tree2toNDiagram(2), qb,  g, 1, qb, 3,    _z0,
