@@ -49,9 +49,9 @@ insert PowhegEvolver:HardGenerator 0 GGtoHHardGenerator
 ##################################################
 # Tevatron physics parameters (override defaults) 
 ##################################################
+cd /Herwig/Generators
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
-/pbar-:PDF /Herwig/Partons/MRST-NLO
 
 ##################################################
 # Matrix Elements for hadron-hadron collisions 
