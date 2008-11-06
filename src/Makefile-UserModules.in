@@ -25,7 +25,7 @@ ALLCCFILES=$(shell echo *.cc)
 all : $(ALLCCFILES:.cc=.so)
 
 %.so : %.cc %.h 
-	$(CXX) -shared -fPIC $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $< -o $@  
+	$(CXX) @SHARED_FLAG@ -fPIC $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $< -o $@  
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.so)

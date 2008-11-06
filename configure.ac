@@ -88,12 +88,15 @@ HERWIG_CHECK_ABS_BUG
 
 HERWIG_ENABLE_MODELS
 
+SHARED_FLAG=-shared
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
 if test "xx${host/darwin/foundit}xx" != "xx${host}xx"; then
    APPLE_DSO_FLAGS=-Wl,-undefined,dynamic_lookup
+   SHARED_FLAG=-bundled
 fi
 AC_SUBST([APPLE_DSO_FLAGS])
+AC_SUBST([SHARED_FLAG])
 
 AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Makefile
