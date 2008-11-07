@@ -462,7 +462,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
       atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);
-      if(gottaBoost) tempJetKin.parent->deepTransform(restboost); 
+      if(gottaBoost) tempJetKin.parent->deepTransform(restboost);
       tempJetKin.q = ShowerHardJets[ix]->progenitor()->momentum();
       jetKinematics.push_back(tempJetKin);
       // check if potential partner of the decay particle
@@ -493,7 +493,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       if(it->parent!=partner) {
 	// boost for rescaling
 	if(atLeastOnce) {
-	  if(it->parent->children().empty()) {
+	  if(it->parent->children().empty()&&!it->parent->spinInfo()) {
 	    Lorentz5Momentum pnew(k2*it->p.vect(),
 				  sqrt(sqr(k2*it->p.vect().mag())+it->q.mass2()),
 				  it->q.mass());
@@ -520,7 +520,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
   }
   catch(KinematicsReconstructionVeto) {
     return false;
-  } 
+  }
   return true;
 }
 
