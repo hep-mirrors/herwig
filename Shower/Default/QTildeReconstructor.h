@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  inline QTildeReconstructor() : _reconopt(0) {};
+  inline QTildeReconstructor() : _reconopt(0), _minQ(0.001*GeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -382,6 +382,12 @@ private:
    *  Option for handling the reconstruction
    */
   unsigned int _reconopt;
+
+  /**
+   * Minimum invariant mass for initial-final dipoles to allow the
+   * reconstruction
+   */
+  Energy _minQ;
 
   /**
    *  The progenitor of the jet currently being reconstructed

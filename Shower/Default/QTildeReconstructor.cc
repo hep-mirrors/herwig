@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/Evolver.h"
@@ -71,11 +72,11 @@ struct ColourSingletShower {
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
-  os << _reconopt;
+  os << _reconopt << ounit(_minQ,GeV);
 }
 
 void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _reconopt;  
+  is >> _reconopt >> iunit(_minQ,GeV);  
 }
 
 ClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
@@ -102,6 +103,12 @@ void QTildeReconstructor::Init() {
      "Colour",
      "Use the colour structure of the process to determine the reconstruction procedure.",
      1);
+
+  static Parameter<QTildeReconstructor,Energy> interfaceMinimumQ2
+    ("MinimumQ2",
+     "The minimum Q2 for the reconstruction of initial-final systems",
+     &QTildeReconstructor::_minQ, GeV, 0.001*GeV, 1e-6*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
 }
 
@@ -165,7 +172,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 
 bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
-		    const map<tShowerProgenitorPtr,pair<Energy,double> > & intrinsic) const {
+		    const map<tShowerProgenitorPtr,
+		              pair<Energy,double> > & intrinsic) const {
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
@@ -251,9 +259,33 @@ reconstructHardJets(ShowerTreePtr hard,
       // DIS and VBF type
       else if(nnun==0&&nnii==0&&((nnif==1&&nnf>0&&nni==1)||
 				 (nnif==2&&       nni==0))) {
+	// check these systems can be reconstructed
 	for(unsigned int ix=0;ix<systems.size();++ix) {
-	  if(systems[ix].type==IF) 
-	    reconstructInitialFinalSystem(systems[ix].jets);
+	  // compute q^2
+	  if(systems[ix].type!=IF) continue;
+	  Lorentz5Momentum q;
+	  for(unsigned int iy=0;iy<systems[ix].jets.size();++iy) {
+	    if(systems[ix].jets[iy]->progenitor()->isFinalState())
+	      q += systems[ix].jets[iy]->progenitor()->momentum();
+	    else
+	      q -= systems[ix].jets[iy]->progenitor()->momentum();
+	  }
+	  q.rescaleMass();
+	  // check above cut
+	  if(abs(q.m())>=_minQ) continue;
+	  if(nnif==1&&nni==1) {
+	    throw KinematicsReconstructionVeto();
+	  }
+	  else {
+	    general = true;
+	    break;
+	  }
+	}
+	if(!general) {
+	  for(unsigned int ix=0;ix<systems.size();++ix) {
+	    if(systems[ix].type==IF)
+	      reconstructInitialFinalSystem(systems[ix].jets);
+	  }
 	}
       }
       // e+e- type
@@ -263,7 +295,6 @@ reconstructHardJets(ShowerTreePtr hard,
       // general type
       else {
 	general = true;
-	reconstructGeneralSystem(ShowerHardJets);
       }
       // final-state systems except for general recon
       if(!general) {
@@ -271,6 +302,9 @@ reconstructHardJets(ShowerTreePtr hard,
 	  if(systems[ix].type==F) 
 	    reconstructFinalStateSystem(applyBoost,toRest,fromRest,systems[ix].jets);
 	}
+      }
+      else {
+	reconstructGeneralSystem(ShowerHardJets);
       }
     }
   }
@@ -844,7 +878,8 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-  double sinth(sqrt(1.-sqr(axis.z())));
+//   double sinth(sqrt(1.-sqr(axis.z())));
+  double sinth(sqr(axis.x())+sqr(axis.y()));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
   rot.boostZ( pa.e()/pa.vect().mag());
