@@ -25,13 +25,13 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   double alpha = (_original*_n)/dot;
   _z=alpha/aparent;
   double beta = ((_original*_p)-alpha*sqr(_p.mass()))/dot;
-  _qt=_original-alpha*_p-beta*_n-ptparent;
+  _qt = _original - alpha*_p - beta*_n - _z*ptparent;
   _pt=sqrt(max(-_qt*_qt,0.*MeV2));
   // reconstruct children
   for(unsigned int ix=0;ix<_children.size();++ix) {
     _children[ix]->_p=_p;
     _children[ix]->_n=_n;
-    _children[ix]->setMomenta(R,alpha,_qt,setMomentum);
+    _children[ix]->setMomenta( R, alpha, _qt + _z*ptparent, setMomentum);
   }
   // calculate the evolution scale and phi
   if(!_children.empty()) {
