@@ -35,14 +35,14 @@ IBPtr PowhegHandler::fullclone() const {
 
 void PowhegHandler::persistentOutput(PersistentOStream & os) const {
   os  << _alphaS << _sudopt << _sudname << _jetMeasureMode << _allowedInitial
-      << _allowedFinal << _matrixElement << _lepton <<  _yini << _alphaSMG
-      << _npoint <<  ounit( _max_qtilde, GeV );
+      << _allowedFinal << _matrixElement << _lepton << _reweightOff <<  _yini 
+      << _alphaSMG << _npoint <<  ounit( _max_qtilde, GeV );
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
   is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode >> _allowedInitial
-      >> _allowedFinal >> _matrixElement >> _lepton >> _yini >> _alphaSMG
-      >> _npoint >> iunit( _max_qtilde, GeV );
+      >> _allowedFinal >> _matrixElement >> _lepton >> _reweightOff >> _yini 
+      >> _alphaSMG >> _npoint >> iunit( _max_qtilde, GeV );
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -121,6 +121,21 @@ void PowhegHandler::Init() {
     (interfaceLepton,
      "Hadronic",
      "Hadronic collision",
+     false);
+
+  static Switch<PowhegHandler,bool> interfaceReweight
+    ("ReweightOff",
+     "Whether to switch off the sudakov reweighting",
+     &PowhegHandler::_reweightOff, false, false, false);
+  static SwitchOption interfaceReweightOff
+    (interfaceReweight,
+     "Off",
+     "No Sudakov reweighting",
+     true);
+  static SwitchOption interfaceReweightOn
+    (interfaceReweight,
+     "On",
+     "Do Sudakov reweighting",
      false);
 
   static Reference<PowhegHandler,MEBase> interfaceMatrixElement
@@ -237,7 +252,8 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
-  return SudWgt;
+  if(!_reweightOff) return SudWgt;
+  else return 1.;
 }
 
 void PowhegHandler::dofinish() {
@@ -441,7 +457,7 @@ bool PowhegHandler:: splittingAllowed( ShowerParticlePtr part_i,
 }
 
 // finds the id of the emitting particle and sudakov for the desired clustering
-
+// also swaps order of children pointers as required (not pointers passed by reference)
 SudakovPtr PowhegHandler:: getSud( int & qq_pairs, long & emmitter_id,
 				      ShowerParticlePtr & part_i, 
 				      ShowerParticlePtr & part_j ) {
@@ -451,6 +467,8 @@ SudakovPtr PowhegHandler:: getSud( int & qq_pairs, long & emmitter_id,
     if ( ( part_i->id() < 0 &&  part_j->id() < 0 ) ||
 	 ( part_i->id() > 0 &&  part_j->id() > 0 ) ) return SudakovPtr();
     if ( qq_pairs < 2 ) return SudakovPtr();
+    //if the q and qbar are the wrong way round then switch order
+    if ( part_j->id() > part_i->id() ) swap( part_i, part_j );
     qq_pairs -= 1;
     emmitter_id = 21;
   }
@@ -479,9 +497,9 @@ SudakovPtr PowhegHandler:: getSud( int & qq_pairs, long & emmitter_id,
 	  abs(ids[2]) == abs(part_j->id()) ) {
 	return cit->second.first;
       }
-      if( abs(ids[1]) == abs(part_j->id()) && 
-	  abs(ids[2]) == abs(part_i->id())  ) {
-	swap(part_i,part_j);
+      if( abs( ids[1] ) == abs( part_j->id() ) && 
+	  abs( ids[2] ) == abs( part_i->id() ) ) {
+	swap( part_i, part_j );
 	return cit->second.first;
       }
     }
@@ -588,7 +606,7 @@ HardTreePtr PowhegHandler::doClustering() {
 								HardBranchingPtr(), false ) ) );
     fixColours( clustered, clusterPair.first, clusterPair.second );
     theParticles.insert( make_pair( clustered, clusteredBranch ) );
-    
+
     //add children
     clusteredBranch->addChild(theParticles.find(clusterPair.first )->second);
     clusteredBranch->addChild(theParticles.find(clusterPair.second)->second);
@@ -597,13 +615,7 @@ HardTreePtr PowhegHandler::doClustering() {
     
     theParticles.erase( clusterPair.first  );
     theParticles.erase( clusterPair.second );
-    /*
-      cerr<<"\n\n clustered particles: \n"
-	  << * clusterPair.first <<" \n and\n"
-	  << * clusterPair.second << "\n into \n"
-	  << * clustered <<"\n "
-	  <<"scale of clustering was "<<yij_min<<"\n";
-    */
+  
     //search the externals for each of the 2 particles being clustered
     //if found update the yij scale and nason branching of each external
     if( _theExternals.find( clusterPair.first ) != _theExternals.end() ){
@@ -618,8 +630,9 @@ HardTreePtr PowhegHandler::doClustering() {
   vector<HardBranchingPtr> theBranchings;
   for(  map<ShowerParticlePtr, HardBranchingPtr>::iterator it = 
 	  theParticles.begin(); 
-	it != theParticles.end(); ++it ) 
+	it != theParticles.end(); ++it )
     theBranchings.push_back( it->second );
+  
   // fix for e+e- to match up the colours of the q qbar pair
   if(theBranchings[0]->branchingParticle()->dataPtr()->iColour()==PDT::Colour3) {
     ColinePtr temp = theBranchings[1]->branchingParticle()->antiColourLine();
@@ -645,11 +658,6 @@ HardTreePtr PowhegHandler::doClustering() {
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructDecayJets(powhegtree,evolver());
 
-  generator()->log() << "testing hard momenta for the shower\n";
-  for( unsigned int jx = 0; jx < theBranchings.size(); ++jx ) {
-    generator()->log() << "testing " << theBranchings[jx]->showerMomentum()/GeV << "\t"
-		       << theBranchings[jx]->showerMomentum().m()/GeV << "\n";
-  }
   //get the intermediates - there is one intermediate for each node
   for( map<HardBranchingPtr,double>::const_iterator cit 
 	 = _theNodes.begin();
@@ -1275,15 +1283,6 @@ double PowhegHandler::sudakovWeight() {
 	
 						   <<"\n\n";
     SudWgt *= internal_wgt;
-  }
-
-  //divide by q and qbar sudakovs at hard scale (these are always present)
-  for(set<HardBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
-      it!=_theHardTree->branchings().end();++it) {
-    if((**it).incoming()) continue;
-    Energy scale = (*it)->branchingParticle()->evolutionScale();
-    double div_wgt = Sud( scale, (*it)->branchingParticle()->id() );
-    SudWgt /= div_wgt; 
   }
 
   if(SudWgt > 1.1 ) cerr<<"sud wgt is "<<SudWgt<<"\n";
