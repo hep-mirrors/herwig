@@ -43,13 +43,13 @@ Herwig++ News				(emacs -*- outline -*- format)
     both to resolve problems with the modelling of partonic decays and
     improve agreement with $\Upsilon(4s)$ data
 
-*** Changes to allow the values other than the transverse mass of the final-state particles as the maximum transverse momentum for radiation in the parton shower
+*** Changes to allow values other than transverse mass of final-state particles as maximum transverse momentum for radiation in parton shower
     either SCALUP for Les Houches events or the scale of the hard
     process for internally generated hard processes
 
 *** Changed defaults for intrinsic transverse momentum in hadron collisions
-    to 1.9GeV, 2.1GeV and 2.2GeV for the Tevatron and LHC at 10\,TeV and
-    14\,TeV, respectively
+    to 1.9GeV, 2.1GeV and 2.2GeV for the Tevatron and LHC at 10 TeV and
+    14 TeV, respectively
 
 *** Pdfinfo object is now created in the HepMC interface
     However in order to support all versions of HepMC containing this
@@ -69,62 +69,78 @@ Herwig++ News				(emacs -*- outline -*- format)
 *** Diffractive particles deleted from default input files
     they were not previously used
 
-** === Modifications made only to here so far ===
-
 ** Technical changes:
 
-*** Some \ThePEGClass{AnalysisHandler} classes comparing to LEP data have been
-      renamed, {\it e.g.} \HWPPClass{MultiplicityCount} becomes
-      \HWPPClass{LEPMultiplicityCount} to avoid confusion with
-      those supplied in {\tt Contrib} for observables at the $\Upsilon(4s)$
-      resonance.
-*** We have reorganised the code to remove the majority of the {\tt .icc}
-      files by moving the inlined functions to the headers in an effort to
-      improve compile time.
-*** We have restructured the decay libraries to reduce the amount of
-      memory allocation and de-allocation which improves run-time performance.
-*** The switch to turn off \textsf{LoopTools} has been removed because
-      \textsf{LoopTools} is now used by several core modules. As \textsf{LoopTools}
-      does not work on 64-bit platforms with g77 this build option is not supported.
-*** We have removed support for the obsolete version of \textsf{HepMC} supplied
-      with \textsf{CLHEP} and improved the support for different units options
-      with \textsf{HepMC}.
-*** The \textsf{EvtGen} interface has been removed until it is more stable.
-*** Support for \textsf{ROOT} which was not used has been removed.
-*** The CKKW infrastructure present in previous releases has been removed
-      from the release.
-*** The default optimisation has been increased from {\tt -O2} to {\tt -O3}.
-*** The handling of the \fortran\ compiler has been improved, mainly due to 
-      improvements in the \textsf{autotools}.
-*** The \textsf{FixedAllocator} use to allocate memory for \ThePEGClass{Particle}
-      objects in \ThePEG\ has been removed as it had no performance benefits.
+*** Some AnalysisHandler classes comparing to LEP data have been renamed
+    e.g. MultiplicityCount becomes LEPMultiplicityCount to avoid
+    confusion with those supplied in /Contrib for observables at the
+    Upsilon(4s) resonance
 
-** Bugs fixed (should have ticket numbers?):
+*** Reorganisation to remove the majority of the .icc files
+    by moving inlined functions to headers in an effort to improve
+    compile time
 
-*** Problems with the mother/daughter relations in the hard process and
-      diagram selection in $W^\pm$ and $Z^0$ production in association with a 
-      hard jet.
-*** A minor bug in the general matrix element code for fermion-vector to fermion-scalar
-      where the outgoing fermion is coloured and the scalar neutral has been fixed.
-*** A bug involving the selection of diagrams in some associated squark gaugino
-      processes has been fixed.
-*** A bug has been fixed which lead to $h^0\to\mu^+\mu^-$ being generated rather
-      than $h^0\to\tau^+\tau^-$.
-*** The normalisation in the \HWPPClass{Histogram} class for non unit-weight
-      events has been fixed.
-*** The protection against negative PDF values, which can occur when using
-      NLO PDF sets, has been improved.
-*** The lifetime for BSM particles is now automatically calculated at the same
-      time as the width.
-*** We now treat hadrons containing a top quark in the same way as hadrons containing
-      BSM particles in order to support this possibility.
-*** Several ambiguous uses of unsigned int have been corrected.
-*** Several variables which may have been used undefined have been initialised.
-*** Several memory leaks at initialisation have been fixed.
-*** The configuration of \HWPP\ now aborts if no \fortran\ compiler is found as
-      this is required to compile \textsf{Looptools}.
-*** Several minor floating point errors that did not affect
-      results have been corrected.
+*** Restructured the decay libraries to reduce the amount of memory allocation
+    and de-allocation which improves run-time performance
+
+*** The switch to turn off LoopTools has been removed
+    because LoopTools is now used by several core modules. As LoopTools
+    does not work on 64-bit platforms with g77 this build option is not
+    supported
+
+*** Removed support for obsolete version of HepMC supplied with CLHEP
+    and improved the support for different units options with HepMC
+
+*** EvtGen interface has been removed until it is more stable
+
+*** Support for ROOT has been removed
+    it was not previously used
+
+*** CKKW infrastructure has been removed from the release
+    until a concrete implementation is available
+
+*** Default optimisation has been increased from -O2 to -O3
+
+*** Handling of the fortran compiler has been improved
+    mainly due to improvements in the autotools
+
+*** Use of FixedAllocator for Particle objects in ThePEG has been removed
+    as it had no performance benefits
+
+** Bugs fixed:
+
+*** Problems with the mother/daughter relations in the hard process
+    and diagram selection in W+- and Z0 production in association with a
+    hard jet
+
+*** In general matrix element code for fermion-vector to fermion-scalar
+    where the outgoing fermion is coloured and the scalar neutral
+
+*** In the selection of diagrams in some associated squark gaugino processes
+
+*** h0->mu+mu- was being generated when h0->tau+tau-
+
+*** Normalisation in the Histogram class for non unit-weight events
+
+*** Protection against negative PDF values has been improved
+    these can occur when using NLO PDF sets
+
+*** Lifetime for BSM particles is now automatically calculated
+    at the same time as the width
+
+*** Hadrons containing a top quark now treated like hadrons containing BSM particles
+    in order to support this possibility
+
+*** Several ambiguous uses of unsigned int
+
+*** Several variables that may have been used undefined
+
+*** Several memory leaks at initialisation
+
+*** The configuration now aborts if no fortran compiler is found
+    as this is required to compile Looptools
+
+*** Several minor floating point errors that did not affect results
 
 
 
