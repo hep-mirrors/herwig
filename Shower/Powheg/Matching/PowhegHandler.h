@@ -268,6 +268,11 @@ private:
   Energy2 _s;
 
   /**
+   *  Flag to allow Sudakov reweighting to be switched off
+   */
+  bool _reweightOff;
+
+  /**
    *  Map containing the sudakovs for the final-state particles
    */
   multimap< long, pair < Interpolator<double,Energy>::Ptr,
