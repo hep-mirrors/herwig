@@ -233,13 +233,13 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   pair<double,double> limits=make_pair(sqr(minmass/masses_[0]),
 				       1.-masses_[2]/sqrt(tmax-masssquared_[0])
 				       +0.5*masssquared_[2]/(tmax-masssquared_[0]));
+  zLimits(limits);
   if(zLimits().second<zLimits().first) {
     t=-1.0*GeV2;
     return false;
   }
-  zLimits(limits);
   // guess values of t and z
-  t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2]); 
+  t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2]);
   z(guessz(2,ids_)); 
   // actual values for z-limits
   limits=make_pair(sqr(minmass/masses_[0]),
@@ -255,6 +255,10 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 } 
 
 bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
+  if (t == Energy2()) {
+    t=-1.*GeV2;
+    return false;
+  }
   // special case for gluon radiating
   pair<double,double> limits;
   if(ids_[0]==ParticleID::g) {
@@ -289,6 +293,10 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
 }
 
 bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
+  if (t == Energy2()) {
+    t=-1.*GeV2;
+    return false;
+  }
   pair<double,double> limits;
   // compute the limits
   limits.first = x;

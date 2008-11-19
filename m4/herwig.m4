@@ -414,7 +414,8 @@ if test "x$GCC" = "xyes"; then
    	AC_COMPILE_IFELSE(
 	   	AC_LANG_PROGRAM([],[      print *[,]"Hello"]),
 		[],
-		[enable_looptools="needs gfortran on 64bit machines"]
+		[AC_MSG_RESULT([no])
+ 		 AC_MSG_ERROR([needs gfortran on 64bit machines])]
 	)
 	FCFLAGS="$oldFCFLAGS"
   AC_LANG_POP([Fortran])

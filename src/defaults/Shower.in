@@ -26,6 +26,7 @@ create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
 create Herwig::QTildeReconstructor KinematicsReconstructor
+set KinematicsReconstructor:ReconstructionOption Colour
 
 set /Herwig/Partons/RemnantDecayer:AlphaS AlphaQCD
 
@@ -116,6 +117,7 @@ set QtoQGSudakov:PDFmax 1.9
 
 cp SudakovCommon GtoGGSudakov
 set GtoGGSudakov:SplittingFunction GtoGGSplitFn
+set GtoGGSudakov:PDFmax 2.0
 
 cp SudakovCommon GtoQQbarSudakov
 set GtoQQbarSudakov:SplittingFunction GtoQQbarSplitFn

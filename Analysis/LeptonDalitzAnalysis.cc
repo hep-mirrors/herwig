@@ -32,7 +32,7 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
     }
     while(!part->parents().empty()&&
 	  dynamic_ptr_cast<ShowerParticlePtr>(last));
-    if(part->id()==22||part->id()==23&&final[ix]->previous())
+    if( (part->id()==22 || part->id()==23) && final[ix]->previous())
       part=final[ix];
     if(part->id()>0&&part->id()<=6)       quark.push_back(final[ix]);
     else if(part->id()<0&&part->id()>=-6)  anti.push_back(final[ix]);

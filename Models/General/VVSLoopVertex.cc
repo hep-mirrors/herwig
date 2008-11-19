@@ -59,12 +59,12 @@ void VVSLoopVertex::Init() {
 void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
 				tcPDPtr) {
   //Kinematic invariants
-  double ps2 = invariant(0,0) * UnitRemoval::InvE2;
-  double pv1s = invariant(1,1) * UnitRemoval::InvE2;
-  double pv2s = invariant(2,2) * UnitRemoval::InvE2;
+  double ps2 = invariant(0,0) / MeV2;
+  double pv1s = invariant(1,1) / MeV2;
+  double pv2s = invariant(2,2) / MeV2;
   Complex a(0.),b(0.),c(0.),d(0.),e(0.),f(0.);
   for(unsigned int i = 0; i< theNpart;++i) {
-    double lmass = masses[i]*UnitRemoval::InvE;
+    double lmass = masses[i] / MeV;
     double mls = sqr(lmass);
     Complex lc = couplings[i].first;
     if(type[i] == PDT::Spin1Half) {

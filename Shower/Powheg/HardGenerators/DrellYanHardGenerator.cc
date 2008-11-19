@@ -26,9 +26,10 @@ using namespace std;
 
 using namespace Herwig;
 
-DrellYanHardGenerator::DrellYanHardGenerator() : _power(2.0),_preqqbar(5.),
-						 _preqg(3.),_pregqbar(3.),
-						 _min_pt(2.*GeV)
+DrellYanHardGenerator::DrellYanHardGenerator() 
+  : _power(2.0),_preqqbar(6.5),
+    _preqg(4.0),_pregqbar(4.0),
+    _min_pt(2.*GeV)
 {}
 
 void DrellYanHardGenerator::persistentOutput(PersistentOStream & os) const {
@@ -374,7 +375,12 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
 	pt=0.0*GeV;
 	reject = false;
       }
-      if(wgt>1.0) cerr<< "PROBLEM!!!!"<<endl;
+      if(wgt>1.0) {
+	ostringstream s;
+	s << "DrellYanHardGenerator::getEvent weight for channel " << j
+	  << "is " << wgt << " which is greater than 1";
+	generator()->logWarning( Exception(s.str(), Exception::warning) );
+      }
     }
     while(reject);
     // set pt of emission etc

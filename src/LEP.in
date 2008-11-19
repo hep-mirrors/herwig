@@ -3,7 +3,7 @@
 # usage: Herwig++ read LEP.in
 ##################################################
 
-###################################################
+##################################################
 # Change settings for the ee->Z->qq matrix element
 # to avoid producing top quarks
 #
@@ -11,13 +11,20 @@
 # default value is already okay.
 #
 # Any repository setting can be modified here
-###################################################
+##################################################
+
+##################################################
+# Selected the hard process
+##################################################
 cd /Herwig/MatrixElements
-insert SimpleEE:MatrixElements 0 /Herwig/MatrixElements/MEee2gZ2qq
-set MEee2gZ2qq:MinimumFlavour 1
-set MEee2gZ2qq:MaximumFlavour 5
+# default e+e- > q qbar (5 flavours d,u,s,c,b)
+insert SimpleEE:MatrixElements 0 MEee2gZ2qq
+# e+e- > l+l-
+# insert SimpleEE:MatrixElements[0] MEee2gZ2ll
 # higgs+Z
 # insert SimpleEE:MatrixElements[0] MEee2ZH
+# higgs+e+e-/nu_enu_ebar via VBF
+# insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
 
 ##################################################
 # Technical parameters for this run

@@ -257,15 +257,15 @@ void MEPP2WJet::getDiagrams() const {
 	// q qbar -> W- g
 	if(wminus) {
 	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qNeg2, qNeg2, 1, _wminus,
-		       3, g,  4, lNeg1, 4, lNeg2, -1)));
-	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qNeg1, qNeg2, 3, _wminus,
+		       2, g,  4, lNeg1, 4, lNeg2, -1)));
+	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qNeg1, qNeg2, 2, _wminus,
 		       1, g,  4, lNeg1, 4, lNeg2, -2)));
 	}
 	// q qbar -> W+ g
 	if(wplus) {
 	  add(new_ptr((Tree2toNDiagram(3), qPos1, qPos2, qPos2, 1, _wplus,
-		       3, g,  4, lPos1, 4, lPos2, -3)));
-	  add(new_ptr((Tree2toNDiagram(3), qPos1, qPos1, qPos2, 3, _wplus,
+		       2, g,  4, lPos1, 4, lPos2, -3)));
+	  add(new_ptr((Tree2toNDiagram(3), qPos1, qPos1, qPos2, 2, _wplus,
 		       1, g,  4, lPos1, 4, lPos2, -4)));
 	}
       }
@@ -273,13 +273,13 @@ void MEPP2WJet::getDiagrams() const {
       if(_process==0||_process==2) {
 	if(wminus) {
 	  add(new_ptr((Tree2toNDiagram(3), qNeg1, qPos1, g    , 1, _wminus,
-		       3, qPos1,  4, lNeg1, 4, lNeg2, -5)));
+		       2, qPos1,  4, lNeg1, 4, lNeg2, -5)));
 	  add(new_ptr((Tree2toNDiagram(2), qNeg1, g, 1, qNeg1,  3, _wminus,
 		       3, qPos1,  4, lNeg1, 4, lNeg2, -6)));
 	}
 	if(wplus) {
 	  add(new_ptr((Tree2toNDiagram(3), qPos1, qNeg1, g,     1, _wplus,
-		       3, qNeg1,  4, lPos1, 4, lPos2, -7)));
+		       2, qNeg1,  4, lPos1, 4, lPos2, -7)));
 	  add(new_ptr((Tree2toNDiagram(2), qPos1, g, 1, qNeg1,  3, _wplus,
 		       3, qNeg1,  4, lPos1, 4, lPos2, -8)));
 	}
@@ -288,13 +288,13 @@ void MEPP2WJet::getDiagrams() const {
       if(_process==0||_process==3) {
 	if(wminus) {
 	  add(new_ptr((Tree2toNDiagram(3), qNeg2, qPos2, g,     1, _wminus,
-		       3, qPos2,  4, lNeg1, 4, lNeg2, -9 )));
+		       2, qPos2,  4, lNeg1, 4, lNeg2, -9 )));
 	  add(new_ptr((Tree2toNDiagram(2), qNeg2, g, 1, qNeg2,  3, _wminus,
 		       3, qPos2,  4, lNeg1, 4, lNeg2, -10)));
 	}
 	if(wplus) {
 	  add(new_ptr((Tree2toNDiagram(3), qPos2, qNeg2, g,     1, _wplus,
-		       3, qNeg2,  4, lPos1, 4, lPos2, -11)));
+		       2, qNeg2,  4, lPos1, 4, lPos2, -11)));
 	  add(new_ptr((Tree2toNDiagram(2), qPos2,  g, 1, qPos2, 3, _wplus,
 		       3, qNeg2,  4, lPos1, 4, lPos2, -12)));
 	}
@@ -374,7 +374,7 @@ MEPP2WJet::diagrams(const DiagramVector & diags) const {
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
     int id=abs(diags[i]->id());
     if     (id <= 2 ) sel.insert(meInfo()[id- 1],i);
-    if     (id <= 4 ) sel.insert(meInfo()[id- 3],i);
+    else if(id <= 4 ) sel.insert(meInfo()[id- 3],i);
     else if(id <= 6 ) sel.insert(meInfo()[id- 5],i);
     else if(id <= 8 ) sel.insert(meInfo()[id- 7],i);
     else if(id <= 10) sel.insert(meInfo()[id- 9],i);

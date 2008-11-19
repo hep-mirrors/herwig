@@ -30,7 +30,7 @@ public:
   /**
    * Default constructor.
    */
-  inline RunningMass();
+  RunningMass()  : _theQCDOrder(1), _theMaxFlav(6), _lightOption(1) {}
 
 public:
   
@@ -77,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -137,6 +137,11 @@ private:
    */
   tcSMPtr _theStandardModel;
 
+  /**
+   *  Option to use pole masses for u,d,s
+   */
+  unsigned int _lightOption;
+
 };
 
 }
@@ -173,7 +178,5 @@ struct ClassTraits<Herwig::RunningMass>
 /** @endcond */
   
 }
-
-#include "RunningMass.icc"
 
 #endif /* HERWIG_RunningMass_H */

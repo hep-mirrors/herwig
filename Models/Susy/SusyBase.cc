@@ -27,7 +27,8 @@
 
 using namespace Herwig;
 
-SusyBase::SusyBase() : _tanbeta(0), _mu(0.*MeV), theMone(0.*MeV), theMtwo(0.*MeV),
+SusyBase::SusyBase() : _readFile(false),_tanbeta(0), _mu(0.*MeV), 
+		       theMone(0.*MeV), theMtwo(0.*MeV),
 		       theMthree(0.*MeV) {}
 
 IBPtr SusyBase::clone() const {
@@ -62,7 +63,7 @@ void SusyBase::doinit() throw(InitException) {
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
-  os << theNMix << theUMix << theVMix << theWSFSFVertex 
+  os << _readFile << theNMix << theUMix << theVMix << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex 
      << theGSGSGVertex << theNNZVertex 
@@ -74,7 +75,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
-  is >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
+  is >> _readFile >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theCCZVertex >> theCNWVertex
@@ -181,6 +182,12 @@ void SusyBase::Init() {
 
 void SusyBase::readSetup(istream & is) throw(SetupException) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
+  if(_readFile)
+    throw SetupException() 
+      << "A second SLHA file " << filename << " has been opened."
+      << "This is probably unintended and as it can cause crashes"
+      << " and other unpredictable behaviour it is not allowed."
+      << Exception::runerror;
   ifstream file(filename.c_str());
   if( !file ) throw SetupException() 
     << "SusyBase::readSetup - An error occurred in opening the "
@@ -238,6 +245,8 @@ void SusyBase::readSetup(istream & is) throw(SetupException) {
    // set the masses, this has to be done after the 
    // mixing matrices have been created
    resetRepositoryMasses();
+   // have now read the file
+   _readFile=true;
 }
 
 void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {

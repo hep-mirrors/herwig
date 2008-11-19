@@ -136,7 +136,7 @@ void HepMCFile::Init() {
   static Parameter<HepMCFile,long> interfacePrintEvent
     ("PrintEvent",
      "The number of events that should be printed.",
-     &HepMCFile::_eventNumber, 1, 1, 1,
+     &HepMCFile::_eventNumber, 1, 0, 0,
      false, false, Interface::lowerlim);
 
   static Switch<HepMCFile,int> interfaceFormat

@@ -69,7 +69,6 @@ void PartnerFinder::Init() {
 
 }
 
-
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
 						 const bool setPartners) {
@@ -92,7 +91,7 @@ bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
     // Notice that this definition exclude the special case of baryon-violating
     // processes (as in R-parity Susy), which will show up as particles
     // without candidate colour partners, and that we will be treated a part later
-    // (this means that no modifications of the following loop is needed!)
+    // (this means that no modifications of the following loop is needed!)
     ShowerParticleVector::const_iterator cit, cjt;
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
       if(!(*cit)->data().coloured()) continue;
