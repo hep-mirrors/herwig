@@ -29,8 +29,15 @@ create Herwig::MEee2gZ2qq MEee2gZ2qq
 set MEee2gZ2qq:MinimumFlavour 1
 set MEee2gZ2qq:MaximumFlavour 5
 
+# e+e- -> l+l-
+create Herwig::MEee2gZ2ll MEee2gZ2ll
+set MEee2gZ2ll:Allowed Charged
+
 # e+e- -> ZH
 create Herwig::MEee2ZH MEee2ZH
+
+# e+e- -> e+e-H/nu_enu_ebarH
+create Herwig::MEee2HiggsVBF MEee2HiggsVBF
 
 ############################################################
 #  hadron-hadron matrix elements
@@ -80,7 +87,6 @@ create Herwig::MEPP2ZH MEPP2ZH
 # PP->WH
 create Herwig::MEPP2WH MEPP2WH
 
-
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme
 ##########################################################
@@ -93,7 +99,7 @@ set MEqq2gZ2ff:Process 3
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ffPowheg PowhegMEqq2W2ff
 set MEqq2gZ2ff:Process 2
-
+ 
 # PP->ZH
 create Herwig::MEPP2ZHPowheg PowhegMEPP2ZH
 

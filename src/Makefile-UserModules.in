@@ -1,28 +1,31 @@
 # -*- Makefile -*- (for emacs)
-
+# @configure_input@
 #
 # This Makefile is intended for compiling Herwig++ plugins
-# You can find plugins here: INSERT URL
+# You can find example plugins in the Contrib directory
 #
 # This Makefile received very little testing, 
 # any bug reports are very welcome!
 #
 
-# location of include files
-THEPEGINCLUDE = @THEPEGINCLUDE@
-CLHEPINCLUDE  = @CLHEPINCLUDE@
-INCLUDE = $(THEPEGINCLUDE) $(CLHEPINCLUDE) -I@prefix@/include
 #
 # C++ flags
 # 
 CXX = @CXX@
-CXXFLAGS = @CXXFLAGS@
+
+CXXFLAGS = @AM_CXXFLAGS@ @CXXFLAGS@
+
+# add additional package header directories here
+CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@
+
+# add additional libraries here
+LDFLAGS = @APPLE_DSO_FLAGS@
 
 ALLCCFILES=$(shell echo *.cc)
 all : $(ALLCCFILES:.cc=.so)
 
 %.so : %.cc %.h 
-	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -shared $< -o $@  
+	$(CXX) @SHARED_FLAG@ -fPIC $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $< -o $@  
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.so)

@@ -362,9 +362,9 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   double x  = _pt*exp( _yj)/sqrt(s)+et*exp( _yh)/sqrt(s);
   double y  = _pt*exp(-_yj)/sqrt(s)+et*exp(-_yh)/sqrt(s);
   // that and uhat
-  Energy2 th = -sqrt(s)*x*_pt*exp(-_yj);
-  Energy2 uh = -sqrt(s)*y*_pt*exp( _yj);
-  Energy2 sh = x*y*s;
+  // Energy2 th = -sqrt(s)*x*_pt*exp(-_yj);
+  // Energy2 uh = -sqrt(s)*y*_pt*exp( _yj);
+  // Energy2 sh = x*y*s;
   // reconstruct the momenta
   // incoming momenta
   pnew.push_back(Lorentz5Momentum(0.*MeV,0.*MeV,
@@ -621,7 +621,7 @@ double GGtoHHardGenerator::getResult(int emis_type, Energy pt, double yj,
   Energy2 th = -sqrt(s)*x*pt*exp(-yj);
   Energy2 uh = -sqrt(s)*y*pt*exp( yj);
   Energy2 sh = _mh2-th-uh;
-  InvEnergy2 res;
+  InvEnergy2 res = InvEnergy2();
   // pdf part of the cross section
   double pdf[4];
   pdf[0]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],_mh2,x1);

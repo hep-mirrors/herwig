@@ -49,7 +49,7 @@ double MPISampler::generate() {
   if ( !theSampler.generate() ) throw EventLoopException()
     << "The maximum number of attempts per event (" << theProcessHandler->maxLoop()
     << ") in multiple interaction handler '" << theProcessHandler->name() << "' was exceeded."
-    << Exception::maybeabort;
+    << Exception::eventerror;
   lastPoint() = theSampler.lastPoint();
   return 1.0;
 }

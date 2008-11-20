@@ -222,7 +222,12 @@ private:
    */
   //@{
   /**
-   *  Allowed flavours for the incoming quarks
+   *  Minimum allowed flavour for the incoming quarks
+   */
+  unsigned int _minflavour;
+
+  /**
+   *  Maximum allowed flavour for the incoming quarks
    */
   unsigned int _maxflavour;
 

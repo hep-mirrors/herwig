@@ -15,6 +15,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/Evolver.h"
@@ -71,11 +72,11 @@ struct ColourSingletShower {
 }
 
 void QTildeReconstructor::persistentOutput(PersistentOStream & os) const {
-  os << _reconopt;
+  os << _reconopt << ounit(_minQ,GeV);
 }
 
 void QTildeReconstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _reconopt;  
+  is >> _reconopt >> iunit(_minQ,GeV);  
 }
 
 ClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
@@ -102,6 +103,12 @@ void QTildeReconstructor::Init() {
      "Colour",
      "Use the colour structure of the process to determine the reconstruction procedure.",
      1);
+
+  static Parameter<QTildeReconstructor,Energy> interfaceMinimumQ2
+    ("MinimumQ2",
+     "The minimum Q2 for the reconstruction of initial-final systems",
+     &QTildeReconstructor::_minQ, GeV, 0.001*GeV, 1e-6*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
 }
 
@@ -165,7 +172,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 
 bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
-		    const map<tShowerProgenitorPtr,pair<Energy,double> > & intrinsic) const {
+		    const map<tShowerProgenitorPtr,
+		              pair<Energy,double> > & intrinsic) const {
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
@@ -251,9 +259,33 @@ reconstructHardJets(ShowerTreePtr hard,
       // DIS and VBF type
       else if(nnun==0&&nnii==0&&((nnif==1&&nnf>0&&nni==1)||
 				 (nnif==2&&       nni==0))) {
+	// check these systems can be reconstructed
 	for(unsigned int ix=0;ix<systems.size();++ix) {
-	  if(systems[ix].type==IF) 
-	    reconstructInitialFinalSystem(systems[ix].jets);
+	  // compute q^2
+	  if(systems[ix].type!=IF) continue;
+	  Lorentz5Momentum q;
+	  for(unsigned int iy=0;iy<systems[ix].jets.size();++iy) {
+	    if(systems[ix].jets[iy]->progenitor()->isFinalState())
+	      q += systems[ix].jets[iy]->progenitor()->momentum();
+	    else
+	      q -= systems[ix].jets[iy]->progenitor()->momentum();
+	  }
+	  q.rescaleMass();
+	  // check above cut
+	  if(abs(q.m())>=_minQ) continue;
+	  if(nnif==1&&nni==1) {
+	    throw KinematicsReconstructionVeto();
+	  }
+	  else {
+	    general = true;
+	    break;
+	  }
+	}
+	if(!general) {
+	  for(unsigned int ix=0;ix<systems.size();++ix) {
+	    if(systems[ix].type==IF)
+	      reconstructInitialFinalSystem(systems[ix].jets);
+	  }
 	}
       }
       // e+e- type
@@ -263,7 +295,6 @@ reconstructHardJets(ShowerTreePtr hard,
       // general type
       else {
 	general = true;
-	reconstructGeneralSystem(ShowerHardJets);
       }
       // final-state systems except for general recon
       if(!general) {
@@ -271,6 +302,9 @@ reconstructHardJets(ShowerTreePtr hard,
 	  if(systems[ix].type==F) 
 	    reconstructFinalStateSystem(applyBoost,toRest,fromRest,systems[ix].jets);
 	}
+      }
+      else {
+	reconstructGeneralSystem(ShowerHardJets);
       }
     }
   }
@@ -462,7 +496,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       if(gottaBoost) tempJetKin.p.boost(boosttorest,gammarest);
       _progenitor=tempJetKin.parent;
       atLeastOnce |= reconstructTimeLikeJet(tempJetKin.parent,0);
-      if(gottaBoost) tempJetKin.parent->deepTransform(restboost); 
+      if(gottaBoost) tempJetKin.parent->deepTransform(restboost);
       tempJetKin.q = ShowerHardJets[ix]->progenitor()->momentum();
       jetKinematics.push_back(tempJetKin);
       // check if potential partner of the decay particle
@@ -493,7 +527,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       if(it->parent!=partner) {
 	// boost for rescaling
 	if(atLeastOnce) {
-	  if(it->parent->children().empty()) {
+	  if(it->parent->children().empty()&&!it->parent->spinInfo()) {
 	    Lorentz5Momentum pnew(k2*it->p.vect(),
 				  sqrt(sqr(k2*it->p.vect().mag())+it->q.mass2()),
 				  it->q.mass());
@@ -520,7 +554,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
   }
   catch(KinematicsReconstructionVeto) {
     return false;
-  } 
+  }
   return true;
 }
 
@@ -545,15 +579,19 @@ reconstructDecayJet( const tShowerParticlePtr p) const {
 }
 
 bool QTildeReconstructor::
-solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
-		  const JetKinVect & jetKinematics, ShowerParticlePtr partner, 
+solveDecayKFactor(Energy mb, 
+		  const Lorentz5Momentum & n, 
+		  const Lorentz5Momentum & pjet, 
+		  const JetKinVect & jetKinematics, 
+		  ShowerParticlePtr partner, 
 		  Lorentz5Momentum ppartner[2],
-		  double & k1, double & k2,Lorentz5Momentum & qt) const {
+		  double & k1, double & k2,
+		  Lorentz5Momentum & qt) const {
   Energy2 pjn  = partner ? pjet.vect()*n.vect()        : 0.*MeV2;
   Energy2 pcn  = partner ? ppartner[0].vect()*n.vect() : 1.*MeV2;
   Energy2 nmag = n.vect().mag2();
-  Lorentz5Momentum pn=(pjn/nmag)*n;
-  qt=pjet-pn;qt.setE(0.*MeV);
+  Lorentz5Momentum pn = partner ? (pjn/nmag)*n : Lorentz5Momentum();
+  qt=pjet-pn; qt.setE(0.*MeV);
   Energy2 pt2=qt.vect().mag2();
   Energy  Ejet = pjet.e();
   // magnitudes of the momenta for fast access
@@ -591,9 +629,8 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
     }
     d1    += (mb-roots)/ds;
     d2     = d1 + pjn/pcn;
-    ++ix;
   }
-  while(abs(mb-roots)>eps&&ix<100);
+  while(abs(mb-roots)>eps && ix<100);
   k1=d1;
   k2=d2;
   // return true if N-R succeed, otherwise false
@@ -848,7 +885,8 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-  double sinth(sqrt(1.-sqr(axis.z())));
+//   double sinth(sqrt(1.-sqr(axis.z())));
+  double sinth(sqr(axis.x())+sqr(axis.y()));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
   rot.boostZ( pa.e()/pa.vect().mag());

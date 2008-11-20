@@ -421,7 +421,7 @@ KPiCurrent::current(const int imode, const int ichan, Energy & scale,
   Complex vnorm(0.),gterm(0.),sterm(0.),snorm(0.);
   complex<InvEnergy2> qterm(0./MeV2);
   for(unsigned int ix=0;ix<_vecwgt.size();++ix) {
-    vnorm+=_vecwgt[ix];
+    vnorm += _vecwgt[ix];
     if(ichan<0||_resmap[ix]==ichan) {
       Complex bw=_vecwgt[ix]*pWaveBreitWigner(q2,ix);
       gterm +=bw;
@@ -430,15 +430,15 @@ KPiCurrent::current(const int imode, const int ichan, Energy & scale,
   }
   // contribution of the scalar resonances
   for(unsigned int ix=0;ix<_scawgt.size();++ix) {
+    snorm += _scawgt[ix];
     if(ichan<0||_resmap[ix+_vecwgt.size()]==ichan) {
-      snorm+=_scawgt[ix];
       sterm+=_scawgt[ix]*sWaveBreitWigner(q2,ix);
     }
   }
   // compute the current
   gterm *=_cV/vnorm;
   Complex qtermnew = qterm*_cV*dot/vnorm;
-  sterm *=_cS/snorm;
+  sterm *= _cS/snorm;
   LorentzPolarizationVectorE output=gterm*pdiff+(-qtermnew+sterm)*psum;
   // return the answer
   if(imode==0) output *= sqrt(0.5);

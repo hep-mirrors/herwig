@@ -25,6 +25,8 @@ set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
+# use the general recon for now
+set KinematicsReconstructor:ReconstructionOption General
 # create the Powheg evolver and use it instead of the default one
 create Herwig::PowhegEvolver PowhegEvolver HwPowhegShower.so
 set ShowerHandler:Evolver PowhegEvolver

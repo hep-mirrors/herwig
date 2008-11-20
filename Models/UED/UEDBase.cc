@@ -392,7 +392,9 @@ void UEDBase::writeSpectrum() {
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
   while (!theMasses.empty()) {
     IDMassPair tmp = theMasses.back();
-    ofs << tmp.first << "\t\t\t" << tmp.second/GeV << endl;
+    tcPDPtr data = getParticleData(tmp.first);
+    ofs << tmp.first << "\t\t\t" << tmp.second/GeV << "\t\t" << (data? data->PDGName() : "") 
+	<< endl;
     theMasses.pop_back();
   }
   ofs << "#\n";
