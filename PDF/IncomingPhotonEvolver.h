@@ -12,7 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the IncomingPhotonEvolver class.
+ * The IncomingPhotonEvolver class performs the backward evolution
+ * of a photon in a partonic process to a quark or antiquark so that
+ * the event can be showered.
  *
  * @see \ref IncomingPhotonEvolverInterfaces "The interfaces"
  * defined for IncomingPhotonEvolver.
@@ -32,7 +34,7 @@ public:
 public:
 
   /** @name Virtual functions required by the StepHandler class. */
-  //@{
+  //@{  
   /**
     * The main function called by the EventHandler class to
     * perform a step. Given the current state of an Event, this function
@@ -142,6 +144,11 @@ private:
    *  The power for the sampling of the PDF
    */
   double PDFPower_;
+
+  /**
+   *  The minimum starting scale for the evolution
+   */
+  Energy minpT_;
 
   /**
    *   Photon ParticleData object

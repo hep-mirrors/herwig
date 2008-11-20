@@ -17,10 +17,6 @@ mkdir /Herwig/Masses
 cd /Herwig/Masses
 read masses.in
 
-mkdir /Herwig/Widths
-cd /Herwig/Widths
-read widths.in
-
 #
 #  not sure about this
 #

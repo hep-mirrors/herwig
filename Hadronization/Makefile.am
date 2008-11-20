@@ -13,7 +13,7 @@ ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.icc ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h\
 ColourReconnector.icc  ColourReconnector.fh\
-HadronSelector.cc HadronSelector.h HadronSelector.icc HadronSelector.fh\
+HadronSelector.cc HadronSelector.h HadronSelector.fh\
 Hw64Selector.cc Hw64Selector.h Hw64Selector.icc Hw64Selector.fh\
 HwppSelector.cc HwppSelector.h HwppSelector.icc HwppSelector.fh\
 LightClusterDecayer.cc LightClusterDecayer.h \

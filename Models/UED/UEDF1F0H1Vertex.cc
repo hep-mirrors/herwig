@@ -107,14 +107,14 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(0./MeV), theMw(0.*MeV),
   
   anti.push_back(-5100015);
   ferm.push_back(16);
-  kkhiggs.push_back(5100037);
+  kkhiggs.push_back(-5100037);
   anti.push_back(-6100015);
   ferm.push_back(16);
-  kkhiggs.push_back(5100037);
+  kkhiggs.push_back(-5100037);
 
   anti.push_back(-15);
   ferm.push_back(5100016);
-  kkhiggs.push_back(5100037);
+  kkhiggs.push_back(-5100037);
   anti.push_back(-15);
   ferm.push_back(6100016);
   kkhiggs.push_back(-5100037);

@@ -12,6 +12,7 @@ library HwVMDecay.so
 library HwTMDecay.so
 library HwMamboDecay.so
 library HwPerturbativeDecay.so
+library HwBaryonDecay.so
 library HwTauDecay.so
 library HwPerturbativeHiggsDecay.so
 #
@@ -12464,6 +12465,1860 @@ set STSDecayer:Coupling 2 0.0217
 set STSDecayer:MaxWeight 2 4.35748
 
 #
+create Herwig::SemiLeptonicBaryonDecayer  BaryonLight1
+set BaryonLight1:Iteration 1
+set BaryonLight1:Ntry 500
+set BaryonLight1:Points 10000
+set BaryonLight1:GenerateIntermediates 1 
+set BaryonLight1:GFermi 1.16639e-05 
+insert BaryonLight1:MaximumWeight 0 2.29031 
+insert BaryonLight1:MaximumWeight 1 3.98905e-05 
+insert BaryonLight1:MaximumWeight 2 0.000122986 
+insert BaryonLight1:MaximumWeight 3 4.63043e-10 
+insert BaryonLight1:MaximumWeight 4 2.99887e-20 
+insert BaryonLight1:MaximumWeight 5 1.02435e-09 
+insert BaryonLight1:MaximumWeight 6 0.0037
+insert BaryonLight1:MaximumWeight 7 0.0005
+insert BaryonLight1:MaximumWeight 8 9.60594e-13 
+insert BaryonLight1:MaximumWeight 9 3.14573e-13 
+insert BaryonLight1:MaximumWeight 10 0.00404325 
+insert BaryonLight1:MaximumWeight 11 0.00135948 
+insert BaryonLight1:MaximumWeight 12 0.00239575 
+insert BaryonLight1:MaximumWeight 13 0.000490015 
+insert BaryonLight1:MaximumWeight 14 0.000228 
+insert BaryonLight1:MaximumWeight 15 3.58814e-06 
+insert BaryonLight1:MaximumWeight 16 0.00075
+insert BaryonLight1:MaximumWeight 17 7.52759e-06 
+create Herwig::LeptonNeutrinoCurrent BaryonLight1Current  HwWeakCurrents.so
+set BaryonLight1Current:Quark 0  11
+set BaryonLight1Current:AntiQuark 0  -12
+set BaryonLight1Current:Quark 1  13
+set BaryonLight1Current:AntiQuark 1  -15
+set BaryonLight1Current:Quark 2  15
+set BaryonLight1Current:AntiQuark 2  -16
+set BaryonLight1:Current BaryonLight1Current 
+create Herwig::LightBaryonQuarkModelFormFactor BaryonLight1Form 
+set BaryonLight1Form:f1 0  1
+set BaryonLight1Form:g1 0  1.25
+set BaryonLight1Form:f2 0  1.81
+set BaryonLight1Form:g2 0  0
+set BaryonLight1Form:Lambdaf1 0  0.69
+set BaryonLight1Form:Lambdaf2 0  0.96
+set BaryonLight1Form:Lambdag1 0  0.76
+set BaryonLight1Form:Lambdag2 0  1.04
+set BaryonLight1Form:f1 1  0
+set BaryonLight1Form:g1 1  0.6
+set BaryonLight1Form:f2 1  1.04
+set BaryonLight1Form:g2 1  0
+set BaryonLight1Form:Lambdaf1 1  -0.32
+set BaryonLight1Form:Lambdaf2 1  -1.72
+set BaryonLight1Form:Lambdag1 1  0.77
+set BaryonLight1Form:Lambdag2 1  1.05
+set BaryonLight1Form:f1 2  0
+set BaryonLight1Form:g1 2  0.6
+set BaryonLight1Form:f2 2  1.04
+set BaryonLight1Form:g2 2  0
+set BaryonLight1Form:Lambdaf1 2  -0.32
+set BaryonLight1Form:Lambdaf2 2  -1.72
+set BaryonLight1Form:Lambdag1 2  0.77
+set BaryonLight1Form:Lambdag2 2  1.05
+set BaryonLight1Form:f1 3  1.41
+set BaryonLight1Form:g1 3  0.69
+set BaryonLight1Form:f2 3  0.76
+set BaryonLight1Form:g2 3  0
+set BaryonLight1Form:Lambdaf1 3  0.6
+set BaryonLight1Form:Lambdaf2 3  0.81
+set BaryonLight1Form:Lambdag1 3  0.77
+set BaryonLight1Form:Lambdag2 3  1.04
+set BaryonLight1Form:f1 4  -1.41
+set BaryonLight1Form:g1 4  -0.69
+set BaryonLight1Form:f2 4  -0.76
+set BaryonLight1Form:g2 4  0
+set BaryonLight1Form:Lambdaf1 4  0.6
+set BaryonLight1Form:Lambdaf2 4  0.81
+set BaryonLight1Form:Lambdag1 4  0.77
+set BaryonLight1Form:Lambdag2 4  1.04
+set BaryonLight1Form:f1 5  -1
+set BaryonLight1Form:g1 5  0.24
+set BaryonLight1Form:f2 5  0.73
+set BaryonLight1Form:g2 5  0
+set BaryonLight1Form:Lambdaf1 5  0.56
+set BaryonLight1Form:Lambdaf2 5  0.71
+set BaryonLight1Form:Lambdag1 5  0.76
+set BaryonLight1Form:Lambdag2 5  1.04
+set BaryonLight1Form:f1 6  -1.19
+set BaryonLight1Form:g1 6  -0.99
+set BaryonLight1Form:f2 6  -0.85
+set BaryonLight1Form:g2 6  -0.025
+set BaryonLight1Form:Lambdaf1 6  0.71
+set BaryonLight1Form:Lambdaf2 6  0.98
+set BaryonLight1Form:Lambdag1 6  0.81
+set BaryonLight1Form:Lambdag2 6  1.12
+set BaryonLight1Form:f1 7  -0.69
+set BaryonLight1Form:g1 7  0.19
+set BaryonLight1Form:f2 7  0.44
+set BaryonLight1Form:g2 7  0.0043
+set BaryonLight1Form:Lambdaf1 7  0.64
+set BaryonLight1Form:Lambdaf2 7  0.84
+set BaryonLight1Form:Lambdag1 7  0.83
+set BaryonLight1Form:Lambdag2 7  1.16
+set BaryonLight1Form:f1 8  -0.97
+set BaryonLight1Form:g1 8  0.27
+set BaryonLight1Form:f2 8  0.62
+set BaryonLight1Form:g2 8  0.0061
+set BaryonLight1Form:Lambdaf1 8  0.64
+set BaryonLight1Form:Lambdaf2 8  0.9
+set BaryonLight1Form:Lambdag1 8  0.83
+set BaryonLight1Form:Lambdag2 8  1.16
+set BaryonLight1Form:f1 9  1.19
+set BaryonLight1Form:g1 9  0.33
+set BaryonLight1Form:f2 9  0.07
+set BaryonLight1Form:g2 9  0.0076
+set BaryonLight1Form:Lambdaf1 9  0.68
+set BaryonLight1Form:Lambdaf2 9  0.89
+set BaryonLight1Form:Lambdag1 9  0.81
+set BaryonLight1Form:Lambdag2 9  1.1
+set BaryonLight1Form:f1 10  0.69
+set BaryonLight1Form:g1 10  0.94
+set BaryonLight1Form:f2 10  0.98
+set BaryonLight1Form:g2 10  0.022
+set BaryonLight1Form:Lambdaf1 10  0.75
+set BaryonLight1Form:Lambdaf2 10  1.05
+set BaryonLight1Form:Lambdag1 10  0.81
+set BaryonLight1Form:Lambdag2 10  1.12
+set BaryonLight1Form:f1 11  0.98
+set BaryonLight1Form:g1 11  1.33
+set BaryonLight1Form:f2 11  1.38
+set BaryonLight1Form:g2 11  0.031
+set BaryonLight1Form:Lambdaf1 11  0.75
+set BaryonLight1Form:Lambdaf2 11  1.05
+set BaryonLight1Form:Lambdag1 11  0.81
+set BaryonLight1Form:Lambdag2 11  1.12
+set BaryonLight1Form:Incoming 0 2112
+set BaryonLight1Form:Outgoing 0 2212
+set BaryonLight1Form:InSpin 0 2
+set BaryonLight1Form:OutSpin 0 2
+set BaryonLight1Form:Spectator1 0 2
+set BaryonLight1Form:Spectator2 0 1
+set BaryonLight1Form:InQuark 0 1
+set BaryonLight1Form:OutQuark 0 2
+set BaryonLight1Form:Incoming 1 3222
+set BaryonLight1Form:Outgoing 1 3122
+set BaryonLight1Form:InSpin 1 2
+set BaryonLight1Form:OutSpin 1 2
+set BaryonLight1Form:Spectator1 1 3
+set BaryonLight1Form:Spectator2 1 2
+set BaryonLight1Form:InQuark 1 2
+set BaryonLight1Form:OutQuark 1 1
+set BaryonLight1Form:Incoming 2 3112
+set BaryonLight1Form:Outgoing 2 3122
+set BaryonLight1Form:InSpin 2 2
+set BaryonLight1Form:OutSpin 2 2
+set BaryonLight1Form:Spectator1 2 3
+set BaryonLight1Form:Spectator2 2 1
+set BaryonLight1Form:InQuark 2 1
+set BaryonLight1Form:OutQuark 2 2
+set BaryonLight1Form:Incoming 3 3112
+set BaryonLight1Form:Outgoing 3 3212
+set BaryonLight1Form:InSpin 3 2
+set BaryonLight1Form:OutSpin 3 2
+set BaryonLight1Form:Spectator1 3 3
+set BaryonLight1Form:Spectator2 3 1
+set BaryonLight1Form:InQuark 3 1
+set BaryonLight1Form:OutQuark 3 2
+set BaryonLight1Form:Incoming 4 3212
+set BaryonLight1Form:Outgoing 4 3222
+set BaryonLight1Form:InSpin 4 2
+set BaryonLight1Form:OutSpin 4 2
+set BaryonLight1Form:Spectator1 4 3
+set BaryonLight1Form:Spectator2 4 2
+set BaryonLight1Form:InQuark 4 1
+set BaryonLight1Form:OutQuark 4 2
+set BaryonLight1Form:Incoming 5 3312
+set BaryonLight1Form:Outgoing 5 3322
+set BaryonLight1Form:InSpin 5 2
+set BaryonLight1Form:OutSpin 5 2
+set BaryonLight1Form:Spectator1 5 3
+set BaryonLight1Form:Spectator2 5 3
+set BaryonLight1Form:InQuark 5 1
+set BaryonLight1Form:OutQuark 5 2
+set BaryonLight1Form:Incoming 6 3122
+set BaryonLight1Form:Outgoing 6 2212
+set BaryonLight1Form:InSpin 6 2
+set BaryonLight1Form:OutSpin 6 2
+set BaryonLight1Form:Spectator1 6 1
+set BaryonLight1Form:Spectator2 6 2
+set BaryonLight1Form:InQuark 6 3
+set BaryonLight1Form:OutQuark 6 2
+set BaryonLight1Form:Incoming 7 3212
+set BaryonLight1Form:Outgoing 7 2212
+set BaryonLight1Form:InSpin 7 2
+set BaryonLight1Form:OutSpin 7 2
+set BaryonLight1Form:Spectator1 7 2
+set BaryonLight1Form:Spectator2 7 1
+set BaryonLight1Form:InQuark 7 3
+set BaryonLight1Form:OutQuark 7 2
+set BaryonLight1Form:Incoming 8 3112
+set BaryonLight1Form:Outgoing 8 2112
+set BaryonLight1Form:InSpin 8 2
+set BaryonLight1Form:OutSpin 8 2
+set BaryonLight1Form:Spectator1 8 1
+set BaryonLight1Form:Spectator2 8 1
+set BaryonLight1Form:InQuark 8 3
+set BaryonLight1Form:OutQuark 8 2
+set BaryonLight1Form:Incoming 9 3312
+set BaryonLight1Form:Outgoing 9 3122
+set BaryonLight1Form:InSpin 9 2
+set BaryonLight1Form:OutSpin 9 2
+set BaryonLight1Form:Spectator1 9 3
+set BaryonLight1Form:Spectator2 9 1
+set BaryonLight1Form:InQuark 9 3
+set BaryonLight1Form:OutQuark 9 2
+set BaryonLight1Form:Incoming 10 3312
+set BaryonLight1Form:Outgoing 10 3212
+set BaryonLight1Form:InSpin 10 2
+set BaryonLight1Form:OutSpin 10 2
+set BaryonLight1Form:Spectator1 10 3
+set BaryonLight1Form:Spectator2 10 1
+set BaryonLight1Form:InQuark 10 3
+set BaryonLight1Form:OutQuark 10 2
+set BaryonLight1Form:Incoming 11 3322
+set BaryonLight1Form:Outgoing 11 3222
+set BaryonLight1Form:InSpin 11 2
+set BaryonLight1Form:OutSpin 11 2
+set BaryonLight1Form:Spectator1 11 3
+set BaryonLight1Form:Spectator2 11 2
+set BaryonLight1Form:InQuark 11 3
+set BaryonLight1Form:OutQuark 11 2
+set BaryonLight1:FormFactor BaryonLight1Form 
+
+#
+create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy1
+set BaryonHeavy1:Iteration 1
+set BaryonHeavy1:Ntry 500
+set BaryonHeavy1:Points 10000
+set BaryonHeavy1:GFermi 1.16639e-05 
+insert BaryonHeavy1:MaximumWeight 0 0.224655 
+insert BaryonHeavy1:MaximumWeight 1 0.223647 
+insert BaryonHeavy1:MaximumWeight 2 0.0680859 
+insert BaryonHeavy1:MaximumWeight 3 0.261028 
+insert BaryonHeavy1:MaximumWeight 4 0.259932 
+insert BaryonHeavy1:MaximumWeight 5 0.081155 
+insert BaryonHeavy1:MaximumWeight 6 0.261825 
+insert BaryonHeavy1:MaximumWeight 7 0.260714 
+insert BaryonHeavy1:MaximumWeight 8 0.0813646 
+insert BaryonHeavy1:MaximumWeight 9 6.31228e-11 
+insert BaryonHeavy1:MaximumWeight 10 6.64235e-11 
+insert BaryonHeavy1:MaximumWeight 11 1.66042e-11 
+insert BaryonHeavy1:MaximumWeight 12 6.40337e-11 
+insert BaryonHeavy1:MaximumWeight 13 5.98422e-11 
+insert BaryonHeavy1:MaximumWeight 14 1.57092e-11 
+insert BaryonHeavy1:MaximumWeight 15 6.19344e-11 
+insert BaryonHeavy1:MaximumWeight 16 5.98856e-11 
+insert BaryonHeavy1:MaximumWeight 17 1.59245e-11 
+insert BaryonHeavy1:MaximumWeight 18 0.116794 
+insert BaryonHeavy1:MaximumWeight 19 0.111392 
+insert BaryonHeavy1:MaximumWeight 20 0.031394 
+insert BaryonHeavy1:MaximumWeight 21 8.71083e-11 
+insert BaryonHeavy1:MaximumWeight 22 8.08105e-11 
+insert BaryonHeavy1:MaximumWeight 23 2.10457e-11 
+insert BaryonHeavy1:MaximumWeight 24 8.60724e-11 
+insert BaryonHeavy1:MaximumWeight 25 8.27541e-11 
+insert BaryonHeavy1:MaximumWeight 26 2.03931e-11 
+insert BaryonHeavy1:MaximumWeight 27 1.07084e-10 
+insert BaryonHeavy1:MaximumWeight 28 1.06392e-10 
+insert BaryonHeavy1:MaximumWeight 29 2.51075e-11 
+insert BaryonHeavy1:MaximumWeight 30 0.164188 
+insert BaryonHeavy1:MaximumWeight 31 0.164551 
+insert BaryonHeavy1:MaximumWeight 32 0.0460406 
+create Herwig::LeptonNeutrinoCurrent BaryonHeavy1Current 
+set BaryonHeavy1Current:Quark 0  11
+set BaryonHeavy1Current:AntiQuark 0  -12
+set BaryonHeavy1Current:Quark 1  13
+set BaryonHeavy1Current:AntiQuark 1  -15
+set BaryonHeavy1Current:Quark 2  15
+set BaryonHeavy1Current:AntiQuark 2  -16
+set BaryonHeavy1:Current BaryonHeavy1Current 
+create Herwig::BaryonThreeQuarkModelFormFactor BaryonHeavy1Form 
+set BaryonHeavy1Form:Order       50 
+set BaryonHeavy1Form:LightMass   0.42 
+set BaryonHeavy1Form:StrangeMass 0.57 
+set BaryonHeavy1Form:LambdaQ     2.5 
+set BaryonHeavy1Form:Lambdaqq    0.71 
+set BaryonHeavy1Form:Lambdasq    0.85 
+set BaryonHeavy1Form:Lambdass    1 
+insert BaryonHeavy1Form:C0 0   0.000375628 
+insert BaryonHeavy1Form:C0 1   0.00343009 
+insert BaryonHeavy1Form:C0 2   0.0199814 
+insert BaryonHeavy1Form:C0 3   0.0917634 
+insert BaryonHeavy1Form:C0 4   0.359697 
+insert BaryonHeavy1Form:C0 5   1.2551 
+insert BaryonHeavy1Form:C0 6   4.00327 
+insert BaryonHeavy1Form:C0 7   11.8929 
+insert BaryonHeavy1Form:C0 8   33.3858 
+insert BaryonHeavy1Form:C0 9   89.612 
+insert BaryonHeavy1Form:C0 10   232.335 
+insert BaryonHeavy1Form:C0 11   587.125 
+insert BaryonHeavy1Form:C0 12   1457.96 
+insert BaryonHeavy1Form:C0 13   3583.66 
+insert BaryonHeavy1Form:C0 14   8774.68 
+insert BaryonHeavy1Form:C0 15   21515.4 
+insert BaryonHeavy1Form:C0 16   53045.1 
+insert BaryonHeavy1Form:C0 17   131869 
+insert BaryonHeavy1Form:C0 18   331096 
+insert BaryonHeavy1Form:C0 19   840161 
+insert BaryonHeavy1Form:C0 20   2.15444e+06 
+insert BaryonHeavy1Form:C0 21   5.57995e+06 
+insert BaryonHeavy1Form:C0 22   1.45848e+07 
+insert BaryonHeavy1Form:C0 23   3.84373e+07 
+insert BaryonHeavy1Form:C0 24   1.0205e+08 
+insert BaryonHeavy1Form:C0 25   2.72723e+08 
+insert BaryonHeavy1Form:C0 26   7.33119e+08 
+insert BaryonHeavy1Form:C0 27   1.98107e+09 
+insert BaryonHeavy1Form:C0 28   5.37853e+09 
+insert BaryonHeavy1Form:C0 29   1.46646e+10 
+insert BaryonHeavy1Form:C0 30   4.01372e+10 
+insert BaryonHeavy1Form:C0 31   1.10242e+11 
+insert BaryonHeavy1Form:C0 32   3.03769e+11 
+insert BaryonHeavy1Form:C0 33   8.39505e+11 
+insert BaryonHeavy1Form:C0 34   2.32642e+12 
+insert BaryonHeavy1Form:C0 35   6.46325e+12 
+insert BaryonHeavy1Form:C0 36   1.79984e+13 
+insert BaryonHeavy1Form:C0 37   5.02307e+13 
+insert BaryonHeavy1Form:C0 38   1.40473e+14 
+insert BaryonHeavy1Form:C0 39   3.93594e+14 
+insert BaryonHeavy1Form:C0 40   1.10481e+15 
+insert BaryonHeavy1Form:C0 41   3.10643e+15 
+insert BaryonHeavy1Form:C0 42   8.74841e+15 
+insert BaryonHeavy1Form:C0 43   2.46747e+16 
+insert BaryonHeavy1Form:C0 44   6.96937e+16 
+insert BaryonHeavy1Form:C0 45   1.97116e+17 
+insert BaryonHeavy1Form:C0 46   5.58224e+17 
+insert BaryonHeavy1Form:C0 47   1.58279e+18 
+insert BaryonHeavy1Form:C0 48   4.49307e+18 
+insert BaryonHeavy1Form:C0 49   1.27686e+19 
+insert BaryonHeavy1Form:C0 50   3.63244e+19 
+insert BaryonHeavy1Form:C0 51   1.58249e-43 
+insert BaryonHeavy1Form:C0 52   1.55096e-43 
+insert BaryonHeavy1Form:C0 53   7.6833e-42 
+insert BaryonHeavy1Form:C0 54   3.77428e-42 
+insert BaryonHeavy1Form:C0 55   1.25131e-40 
+insert BaryonHeavy1Form:C0 56   4.63466e-41 
+insert BaryonHeavy1Form:C0 57   1.23766e-39 
+insert BaryonHeavy1Form:C0 58   3.85248e-40 
+insert BaryonHeavy1Form:C0 59   8.90842e-39 
+insert BaryonHeavy1Form:C0 60   2.45582e-39 
+insert BaryonHeavy1Form:C0 61   5.11996e-38 
+insert BaryonHeavy1Form:C0 62   1.29144e-38 
+insert BaryonHeavy1Form:C0 63   2.4948e-37 
+insert BaryonHeavy1Form:C0 64   5.89613e-38 
+insert BaryonHeavy1Form:C0 65   1.07799e-36 
+insert BaryonHeavy1Form:C0 66   2.43358e-37 
+insert BaryonHeavy1Form:C0 67   4.28681e-36 
+insert BaryonHeavy1Form:C0 68   9.39947e-37 
+insert BaryonHeavy1Form:C0 69   1.62026e-35 
+insert BaryonHeavy1Form:C0 70   3.50054e-36 
+insert BaryonHeavy1Form:C0 71   5.98256e-35 
+insert BaryonHeavy1Form:C0 72   1.28841e-35 
+insert BaryonHeavy1Form:C0 73   2.20484e-34 
+insert BaryonHeavy1Form:C0 74   4.77162e-35 
+insert BaryonHeavy1Form:C0 75   8.22738e-34 
+insert BaryonHeavy1Form:C0 76   1.7972e-34 
+insert BaryonHeavy1Form:C0 77   3.13098e-33 
+insert BaryonHeavy1Form:C0 78   6.91323e-34 
+insert BaryonHeavy1Form:C0 79   1.21734e-32 
+insert BaryonHeavy1Form:C0 80   2.71581e-33 
+insert BaryonHeavy1Form:C0 81   4.82921e-32 
+insert BaryonHeavy1Form:C0 82   1.08724e-32 
+insert BaryonHeavy1Form:C0 83   1.94969e-31 
+insert BaryonHeavy1Form:C0 84   4.42369e-32 
+insert BaryonHeavy1Form:C0 85   7.9895e-31 
+insert BaryonHeavy1Form:C0 86   1.82466e-31 
+insert BaryonHeavy1Form:C0 87   3.31537e-30 
+insert BaryonHeavy1Form:C0 88   7.61387e-31 
+insert BaryonHeavy1Form:C0 89   1.39053e-29 
+insert BaryonHeavy1Form:C0 90   3.20863e-30 
+insert BaryonHeavy1Form:C0 91   5.88593e-29 
+insert BaryonHeavy1Form:C0 92   1.36377e-29 
+insert BaryonHeavy1Form:C0 93   2.51135e-28 
+insert BaryonHeavy1Form:C0 94   5.83983e-29 
+insert BaryonHeavy1Form:C0 95   1.07904e-27 
+insert BaryonHeavy1Form:C0 96   2.51718e-28 
+insert BaryonHeavy1Form:C0 97   4.66507e-27 
+insert BaryonHeavy1Form:C0 98   1.09136e-27 
+insert BaryonHeavy1Form:C0 99   2.02805e-26 
+insert BaryonHeavy1Form:C0 100   4.75657e-27 
+insert BaryonHeavy1Form:C0 101   8.86043e-26 
+insert BaryonHeavy1Form:C1 0   0.000303248 
+insert BaryonHeavy1Form:C1 1   0.00283105 
+insert BaryonHeavy1Form:C1 2   0.01681 
+insert BaryonHeavy1Form:C1 3   0.0785061 
+insert BaryonHeavy1Form:C1 4   0.312373 
+insert BaryonHeavy1Form:C1 5   1.10482 
+insert BaryonHeavy1Form:C1 6   3.56784 
+insert BaryonHeavy1Form:C1 7   10.7214 
+insert BaryonHeavy1Form:C1 8   30.4204 
+insert BaryonHeavy1Form:C1 9   82.4753 
+insert BaryonHeavy1Form:C1 10   215.861 
+insert BaryonHeavy1Form:C1 11   550.36 
+insert BaryonHeavy1Form:C1 12   1378.07 
+insert BaryonHeavy1Form:C1 13   3413.44 
+insert BaryonHeavy1Form:C1 14   8416.66 
+insert BaryonHeavy1Form:C1 15   20767.3 
+insert BaryonHeavy1Form:C1 16   51482.6 
+insert BaryonHeavy1Form:C1 17   128588 
+insert BaryonHeavy1Form:C1 18   324138 
+insert BaryonHeavy1Form:C1 19   825199 
+insert BaryonHeavy1Form:C1 20   2.12174e+06 
+insert BaryonHeavy1Form:C1 21   5.50721e+06 
+insert BaryonHeavy1Form:C1 22   1.442e+07 
+insert BaryonHeavy1Form:C1 23   3.8058e+07 
+insert BaryonHeavy1Form:C1 24   1.01162e+08 
+insert BaryonHeavy1Form:C1 25   2.70614e+08 
+insert BaryonHeavy1Form:C1 26   7.28045e+08 
+insert BaryonHeavy1Form:C1 27   1.96871e+09 
+insert BaryonHeavy1Form:C1 28   5.34813e+09 
+insert BaryonHeavy1Form:C1 29   1.45891e+10 
+insert BaryonHeavy1Form:C1 30   3.99481e+10 
+insert BaryonHeavy1Form:C1 31   1.09765e+11 
+insert BaryonHeavy1Form:C1 32   3.02556e+11 
+insert BaryonHeavy1Form:C1 33   8.36403e+11 
+insert BaryonHeavy1Form:C1 34   2.31844e+12 
+insert BaryonHeavy1Form:C1 35   6.44261e+12 
+insert BaryonHeavy1Form:C1 36   1.79448e+13 
+insert BaryonHeavy1Form:C1 37   5.00906e+13 
+insert BaryonHeavy1Form:C1 38   1.40106e+14 
+insert BaryonHeavy1Form:C1 39   3.92627e+14 
+insert BaryonHeavy1Form:C1 40   1.10225e+15 
+insert BaryonHeavy1Form:C1 41   3.09965e+15 
+insert BaryonHeavy1Form:C1 42   8.73037e+15 
+insert BaryonHeavy1Form:C1 43   2.46265e+16 
+insert BaryonHeavy1Form:C1 44   6.95648e+16 
+insert BaryonHeavy1Form:C1 45   1.9677e+17 
+insert BaryonHeavy1Form:C1 46   5.57293e+17 
+insert BaryonHeavy1Form:C1 47   1.58028e+18 
+insert BaryonHeavy1Form:C1 48   4.48627e+18 
+insert BaryonHeavy1Form:C1 49   1.27501e+19 
+insert BaryonHeavy1Form:C1 50   3.62743e+19 
+insert BaryonHeavy1Form:C1 51   1.33486e-43 
+insert BaryonHeavy1Form:C1 52   1.3252e-43 
+insert BaryonHeavy1Form:C1 53   6.64089e-42 
+insert BaryonHeavy1Form:C1 54   3.29627e-42 
+insert BaryonHeavy1Form:C1 55   1.10321e-40 
+insert BaryonHeavy1Form:C1 56   4.12175e-41 
+insert BaryonHeavy1Form:C1 57   1.10956e-39 
+insert BaryonHeavy1Form:C1 58   3.47961e-40 
+insert BaryonHeavy1Form:C1 59   8.10273e-39 
+insert BaryonHeavy1Form:C1 60   2.24852e-39 
+insert BaryonHeavy1Form:C1 61   4.71724e-38 
+insert BaryonHeavy1Form:C1 62   1.197e-38 
+insert BaryonHeavy1Form:C1 63   2.32564e-37 
+insert BaryonHeavy1Form:C1 64   5.52664e-38 
+insert BaryonHeavy1Form:C1 65   1.0158e-36 
+insert BaryonHeavy1Form:C1 66   2.30489e-37 
+insert BaryonHeavy1Form:C1 67   4.07999e-36 
+insert BaryonHeavy1Form:C1 68   8.98784e-37 
+insert BaryonHeavy1Form:C1 69   1.55618e-35 
+insert BaryonHeavy1Form:C1 70   3.37615e-36 
+insert BaryonHeavy1Form:C1 71   5.79239e-35 
+insert BaryonHeavy1Form:C1 72   1.25191e-35 
+insert BaryonHeavy1Form:C1 73   2.14933e-34 
+insert BaryonHeavy1Form:C1 74   4.66503e-35 
+insert BaryonHeavy1Form:C1 75   8.06432e-34 
+insert BaryonHeavy1Form:C1 76   1.76556e-34 
+insert BaryonHeavy1Form:C1 77   3.0819e-33 
+insert BaryonHeavy1Form:C1 78   6.81643e-34 
+insert BaryonHeavy1Form:C1 79   1.20205e-32 
+insert BaryonHeavy1Form:C1 80   2.68509e-33 
+insert BaryonHeavy1Form:C1 81   4.77975e-32 
+insert BaryonHeavy1Form:C1 82   1.07712e-32 
+insert BaryonHeavy1Form:C1 83   1.9331e-31 
+insert BaryonHeavy1Form:C1 84   4.38918e-32 
+insert BaryonHeavy1Form:C1 85   7.93209e-31 
+insert BaryonHeavy1Form:C1 86   1.81255e-31 
+insert BaryonHeavy1Form:C1 87   3.29495e-30 
+insert BaryonHeavy1Form:C1 88   7.57025e-31 
+insert BaryonHeavy1Form:C1 89   1.3831e-29 
+insert BaryonHeavy1Form:C1 90   3.19259e-30 
+insert BaryonHeavy1Form:C1 91   5.85835e-29 
+insert BaryonHeavy1Form:C1 92   1.35777e-29 
+insert BaryonHeavy1Form:C1 93   2.50095e-28 
+insert BaryonHeavy1Form:C1 94   5.81701e-29 
+insert BaryonHeavy1Form:C1 95   1.07506e-27 
+insert BaryonHeavy1Form:C1 96   2.50838e-28 
+insert BaryonHeavy1Form:C1 97   4.64961e-27 
+insert BaryonHeavy1Form:C1 98   1.08793e-27 
+insert BaryonHeavy1Form:C1 99   2.02198e-26 
+insert BaryonHeavy1Form:C1 100   4.74303e-27 
+insert BaryonHeavy1Form:C1 101   8.83639e-26 
+insert BaryonHeavy1Form:C2 0   5.97614e-05 
+insert BaryonHeavy1Form:C2 1   0.000758598 
+insert BaryonHeavy1Form:C2 2   0.00548822 
+insert BaryonHeavy1Form:C2 3   0.0294731 
+insert BaryonHeavy1Form:C2 4   0.13017 
+insert BaryonHeavy1Form:C2 5   0.499099 
+insert BaryonHeavy1Form:C2 6   1.71799 
+insert BaryonHeavy1Form:C2 7   5.43326 
+insert BaryonHeavy1Form:C2 8   16.0622 
+insert BaryonHeavy1Form:C2 9   45.0003 
+insert BaryonHeavy1Form:C2 10   120.858 
+insert BaryonHeavy1Form:C2 11   314.271 
+insert BaryonHeavy1Form:C2 12   798.245 
+insert BaryonHeavy1Form:C2 13   1996.12 
+insert BaryonHeavy1Form:C2 14   4948.31 
+insert BaryonHeavy1Form:C2 15   12232 
+insert BaryonHeavy1Form:C2 16   30294.2 
+insert BaryonHeavy1Form:C2 17   75435.4 
+insert BaryonHeavy1Form:C2 18   189304 
+insert BaryonHeavy1Form:C2 19   479380 
+insert BaryonHeavy1Form:C2 20   1.22556e+06 
+insert BaryonHeavy1Form:C2 21   3.16273e+06 
+insert BaryonHeavy1Form:C2 22   8.23472e+06 
+insert BaryonHeavy1Form:C2 23   2.16168e+07 
+insert BaryonHeavy1Form:C2 24   5.71691e+07 
+insert BaryonHeavy1Form:C2 25   1.52209e+08 
+insert BaryonHeavy1Form:C2 26   4.0769e+08 
+insert BaryonHeavy1Form:C2 27   1.09792e+09 
+insert BaryonHeavy1Form:C2 28   2.97116e+09 
+insert BaryonHeavy1Form:C2 29   8.07608e+09 
+insert BaryonHeavy1Form:C2 30   2.20403e+10 
+insert BaryonHeavy1Form:C2 31   6.03707e+10 
+insert BaryonHeavy1Form:C2 32   1.65918e+11 
+insert BaryonHeavy1Form:C2 33   4.57408e+11 
+insert BaryonHeavy1Form:C2 34   1.2646e+12 
+insert BaryonHeavy1Form:C2 35   3.50554e+12 
+insert BaryonHeavy1Form:C2 36   9.74144e+12 
+insert BaryonHeavy1Form:C2 37   2.71324e+13 
+insert BaryonHeavy1Form:C2 38   7.57327e+13 
+insert BaryonHeavy1Form:C2 39   2.11812e+14 
+insert BaryonHeavy1Form:C2 40   5.93521e+14 
+insert BaryonHeavy1Form:C2 41   1.66606e+15 
+insert BaryonHeavy1Form:C2 42   4.68459e+15 
+insert BaryonHeavy1Form:C2 43   1.31928e+16 
+insert BaryonHeavy1Form:C2 44   3.72091e+16 
+insert BaryonHeavy1Form:C2 45   1.05093e+17 
+insert BaryonHeavy1Form:C2 46   2.97223e+17 
+insert BaryonHeavy1Form:C2 47   8.41671e+17 
+insert BaryonHeavy1Form:C2 48   2.38631e+18 
+insert BaryonHeavy1Form:C2 49   6.7735e+18 
+insert BaryonHeavy1Form:C2 50   1.92476e+19 
+insert BaryonHeavy1Form:C2 51   1.86707e-44 
+insert BaryonHeavy1Form:C2 52   2.5887e-44 
+insert BaryonHeavy1Form:C2 53   1.61756e-42 
+insert BaryonHeavy1Form:C2 54   9.42145e-43 
+insert BaryonHeavy1Form:C2 55   3.56394e-41 
+insert BaryonHeavy1Form:C2 56   1.46742e-41 
+insert BaryonHeavy1Form:C2 57   4.27536e-40 
+insert BaryonHeavy1Form:C2 58   1.43162e-40 
+insert BaryonHeavy1Form:C2 59   3.52241e-39 
+insert BaryonHeavy1Form:C2 60   1.02417e-39 
+insert BaryonHeavy1Form:C2 61   2.23583e-38 
+insert BaryonHeavy1Form:C2 62   5.86951e-39 
+insert BaryonHeavy1Form:C2 63   1.17394e-37 
+insert BaryonHeavy1Form:C2 64   2.85934e-38 
+insert BaryonHeavy1Form:C2 65   5.36564e-37 
+insert BaryonHeavy1Form:C2 66   1.23864e-37 
+insert BaryonHeavy1Form:C2 67   2.22353e-36 
+insert BaryonHeavy1Form:C2 68   4.95279e-37 
+insert BaryonHeavy1Form:C2 69   8.64771e-36 
+insert BaryonHeavy1Form:C2 70   1.88739e-36 
+insert BaryonHeavy1Form:C2 71   3.25063e-35 
+insert BaryonHeavy1Form:C2 72   7.03967e-36 
+insert BaryonHeavy1Form:C2 73   1.20917e-34 
+insert BaryonHeavy1Form:C2 74   2.62249e-35 
+insert BaryonHeavy1Form:C2 75   4.52583e-34 
+insert BaryonHeavy1Form:C2 76   9.88547e-35 
+insert BaryonHeavy1Form:C2 77   1.72081e-33 
+insert BaryonHeavy1Form:C2 78   3.79455e-34 
+insert BaryonHeavy1Form:C2 79   6.67068e-33 
+insert BaryonHeavy1Form:C2 80   1.48541e-33 
+insert BaryonHeavy1Form:C2 81   2.6361e-32 
+insert BaryonHeavy1Form:C2 82   5.92285e-33 
+insert BaryonHeavy1Form:C2 83   1.05996e-31 
+insert BaryonHeavy1Form:C2 84   2.40017e-32 
+insert BaryonHeavy1Form:C2 85   4.32644e-31 
+insert BaryonHeavy1Form:C2 86   9.86219e-32 
+insert BaryonHeavy1Form:C2 87   1.78867e-30 
+insert BaryonHeavy1Form:C2 88   4.10053e-31 
+insert BaryonHeavy1Form:C2 89   7.47622e-30 
+insert BaryonHeavy1Form:C2 90   1.72232e-30 
+insert BaryonHeavy1Form:C2 91   3.15449e-29 
+insert BaryonHeavy1Form:C2 92   7.298e-30 
+insert BaryonHeavy1Form:C2 93   1.34197e-28 
+insert BaryonHeavy1Form:C2 94   3.11625e-29 
+insert BaryonHeavy1Form:C2 95   5.7503e-28 
+insert BaryonHeavy1Form:C2 96   1.3397e-28 
+insert BaryonHeavy1Form:C2 97   2.47979e-27 
+insert BaryonHeavy1Form:C2 98   5.79439e-28 
+insert BaryonHeavy1Form:C2 99   1.07552e-26 
+insert BaryonHeavy1Form:C2 100   2.51974e-27 
+insert BaryonHeavy1Form:C2 101   4.6887e-26 
+set BaryonHeavy1Form:Incoming 0 5122
+set BaryonHeavy1Form:Outgoing 0 4122
+set BaryonHeavy1Form:InSpin 0 2
+set BaryonHeavy1Form:OutSpin 0 2
+set BaryonHeavy1Form:Spectator1 0 1
+set BaryonHeavy1Form:Spectator2 0 2
+set BaryonHeavy1Form:InQuark 0 5
+set BaryonHeavy1Form:OutQuark 0 4
+set BaryonHeavy1Form:Incoming 1 5232
+set BaryonHeavy1Form:Outgoing 1 4232
+set BaryonHeavy1Form:InSpin 1 2
+set BaryonHeavy1Form:OutSpin 1 2
+set BaryonHeavy1Form:Spectator1 1 2
+set BaryonHeavy1Form:Spectator2 1 3
+set BaryonHeavy1Form:InQuark 1 5
+set BaryonHeavy1Form:OutQuark 1 4
+set BaryonHeavy1Form:Incoming 2 5132
+set BaryonHeavy1Form:Outgoing 2 4132
+set BaryonHeavy1Form:InSpin 2 2
+set BaryonHeavy1Form:OutSpin 2 2
+set BaryonHeavy1Form:Spectator1 2 1
+set BaryonHeavy1Form:Spectator2 2 3
+set BaryonHeavy1Form:InQuark 2 5
+set BaryonHeavy1Form:OutQuark 2 4
+set BaryonHeavy1Form:Incoming 3 5112
+set BaryonHeavy1Form:Outgoing 3 4112
+set BaryonHeavy1Form:InSpin 3 2
+set BaryonHeavy1Form:OutSpin 3 2
+set BaryonHeavy1Form:Spectator1 3 1
+set BaryonHeavy1Form:Spectator2 3 1
+set BaryonHeavy1Form:InQuark 3 5
+set BaryonHeavy1Form:OutQuark 3 4
+set BaryonHeavy1Form:Incoming 4 5212
+set BaryonHeavy1Form:Outgoing 4 4212
+set BaryonHeavy1Form:InSpin 4 2
+set BaryonHeavy1Form:OutSpin 4 2
+set BaryonHeavy1Form:Spectator1 4 2
+set BaryonHeavy1Form:Spectator2 4 1
+set BaryonHeavy1Form:InQuark 4 5
+set BaryonHeavy1Form:OutQuark 4 4
+set BaryonHeavy1Form:Incoming 5 5222
+set BaryonHeavy1Form:Outgoing 5 4222
+set BaryonHeavy1Form:InSpin 5 2
+set BaryonHeavy1Form:OutSpin 5 2
+set BaryonHeavy1Form:Spectator1 5 2
+set BaryonHeavy1Form:Spectator2 5 2
+set BaryonHeavy1Form:InQuark 5 5
+set BaryonHeavy1Form:OutQuark 5 4
+set BaryonHeavy1Form:Incoming 6 5332
+set BaryonHeavy1Form:Outgoing 6 4332
+set BaryonHeavy1Form:InSpin 6 2
+set BaryonHeavy1Form:OutSpin 6 2
+set BaryonHeavy1Form:Spectator1 6 3
+set BaryonHeavy1Form:Spectator2 6 3
+set BaryonHeavy1Form:InQuark 6 5
+set BaryonHeavy1Form:OutQuark 6 4
+set BaryonHeavy1Form:Incoming 7 5112
+set BaryonHeavy1Form:Outgoing 7 4114
+set BaryonHeavy1Form:InSpin 7 2
+set BaryonHeavy1Form:OutSpin 7 4
+set BaryonHeavy1Form:Spectator1 7 1
+set BaryonHeavy1Form:Spectator2 7 1
+set BaryonHeavy1Form:InQuark 7 5
+set BaryonHeavy1Form:OutQuark 7 4
+set BaryonHeavy1Form:Incoming 8 5212
+set BaryonHeavy1Form:Outgoing 8 4214
+set BaryonHeavy1Form:InSpin 8 2
+set BaryonHeavy1Form:OutSpin 8 4
+set BaryonHeavy1Form:Spectator1 8 2
+set BaryonHeavy1Form:Spectator2 8 1
+set BaryonHeavy1Form:InQuark 8 5
+set BaryonHeavy1Form:OutQuark 8 4
+set BaryonHeavy1Form:Incoming 9 5222
+set BaryonHeavy1Form:Outgoing 9 4224
+set BaryonHeavy1Form:InSpin 9 2
+set BaryonHeavy1Form:OutSpin 9 4
+set BaryonHeavy1Form:Spectator1 9 2
+set BaryonHeavy1Form:Spectator2 9 2
+set BaryonHeavy1Form:InQuark 9 5
+set BaryonHeavy1Form:OutQuark 9 4
+set BaryonHeavy1Form:Incoming 10 5332
+set BaryonHeavy1Form:Outgoing 10 4334
+set BaryonHeavy1Form:InSpin 10 2
+set BaryonHeavy1Form:OutSpin 10 4
+set BaryonHeavy1Form:Spectator1 10 3
+set BaryonHeavy1Form:Spectator2 10 3
+set BaryonHeavy1Form:InQuark 10 5
+set BaryonHeavy1Form:OutQuark 10 4
+set BaryonHeavy1:FormFactor BaryonHeavy1Form 
+
+#
+create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy2
+set BaryonHeavy2:Iteration 1
+set BaryonHeavy2:Ntry 500
+set BaryonHeavy2:Points 10000
+set BaryonHeavy2:GFermi 1.16639e-05 
+insert BaryonHeavy2:MaximumWeight 0 0.224529 
+insert BaryonHeavy2:MaximumWeight 1 0.220339 
+insert BaryonHeavy2:MaximumWeight 2 0.0563864 
+insert BaryonHeavy2:MaximumWeight 3 2.99041e-11 
+insert BaryonHeavy2:MaximumWeight 4 3.16203e-11 
+insert BaryonHeavy2:MaximumWeight 5 5.07564e-12 
+insert BaryonHeavy2:MaximumWeight 6 2.20245e-11 
+insert BaryonHeavy2:MaximumWeight 7 2.73425e-11 
+insert BaryonHeavy2:MaximumWeight 8 4.50209e-12 
+insert BaryonHeavy2:MaximumWeight 9 3.83095e-11 
+insert BaryonHeavy2:MaximumWeight 10 3.46566e-11 
+insert BaryonHeavy2:MaximumWeight 11 6.57251e-12 
+insert BaryonHeavy2:MaximumWeight 12 0.266394 
+insert BaryonHeavy2:MaximumWeight 13 0.247822 
+insert BaryonHeavy2:MaximumWeight 14 0.0409128 
+insert BaryonHeavy2:MaximumWeight 15 0.273397 
+insert BaryonHeavy2:MaximumWeight 16 0.267639 
+insert BaryonHeavy2:MaximumWeight 17 0.0666931 
+insert BaryonHeavy2:MaximumWeight 18 0.273754 
+insert BaryonHeavy2:MaximumWeight 19 0.268016 
+insert BaryonHeavy2:MaximumWeight 20 0.0667733 
+insert BaryonHeavy2:MaximumWeight 21 0.100
+insert BaryonHeavy2:MaximumWeight 22 0.098
+insert BaryonHeavy2:MaximumWeight 23 1.72323e-10 
+insert BaryonHeavy2:MaximumWeight 24 1.46686e-10 
+insert BaryonHeavy2:MaximumWeight 25 1.71899e-10 
+insert BaryonHeavy2:MaximumWeight 26 1.45838e-10 
+insert BaryonHeavy2:MaximumWeight 27 1.75848e-10 
+insert BaryonHeavy2:MaximumWeight 28 1.49537e-10 
+insert BaryonHeavy2:MaximumWeight 29 0.164607 
+insert BaryonHeavy2:MaximumWeight 30 0.143456 
+insert BaryonHeavy2:MaximumWeight 31 0.041659 
+insert BaryonHeavy2:MaximumWeight 32 0.0362478 
+create Herwig::LeptonNeutrinoCurrent BaryonHeavy2Current  HwWeakCurrents.so
+set BaryonHeavy2Current:Quark 0  11
+set BaryonHeavy2Current:AntiQuark 0  -12
+set BaryonHeavy2Current:Quark 1  13
+set BaryonHeavy2Current:AntiQuark 1  -15
+set BaryonHeavy2Current:Quark 2  15
+set BaryonHeavy2Current:AntiQuark 2  -16
+set BaryonHeavy2:Current BaryonHeavy2Current 
+create Herwig::SingletonFormFactor BaryonHeavy2Form 
+set BaryonHeavy2Form:CharmMass 1.8 
+set BaryonHeavy2Form:StrangeMass 0.51 
+set BaryonHeavy2Form:ThetaLambda 0.785398 
+set BaryonHeavy2Form:ThetaSigma 0.785398 
+set BaryonHeavy2Form:ThetaXi 0.785398 
+set BaryonHeavy2Form:ThetaXiPrime 0.785398 
+set BaryonHeavy2Form:PoleMass 0  6
+set BaryonHeavy2Form:PoleMass 1  6
+set BaryonHeavy2Form:PoleMass 2  6
+set BaryonHeavy2Form:PoleMass 3  6
+set BaryonHeavy2Form:PoleMass 4  6.4
+set BaryonHeavy2Form:PoleMass 5  6
+set BaryonHeavy2Form:PoleMass 6  6
+set BaryonHeavy2Form:PoleMass 7  2.5
+set BaryonHeavy2Form:PoleMass 8  2.8
+set BaryonHeavy2Form:PoleMass 9  2.8
+set BaryonHeavy2Form:PoleMass 10  2.8
+set BaryonHeavy2Form:PoleMass 11  2.8
+set BaryonHeavy2Form:PoleMass 12  2.8
+set BaryonHeavy2Form:Incoming 0 5122
+set BaryonHeavy2Form:Outgoing 0 4122
+set BaryonHeavy2Form:InSpin 0 2
+set BaryonHeavy2Form:OutSpin 0 2
+set BaryonHeavy2Form:Spectator1 0 1
+set BaryonHeavy2Form:Spectator2 0 2
+set BaryonHeavy2Form:InQuark 0 5
+set BaryonHeavy2Form:OutQuark 0 4
+set BaryonHeavy2Form:Incoming 1 5112
+set BaryonHeavy2Form:Outgoing 1 4112
+set BaryonHeavy2Form:InSpin 1 2
+set BaryonHeavy2Form:OutSpin 1 2
+set BaryonHeavy2Form:Spectator1 1 1
+set BaryonHeavy2Form:Spectator2 1 1
+set BaryonHeavy2Form:InQuark 1 5
+set BaryonHeavy2Form:OutQuark 1 4
+set BaryonHeavy2Form:Incoming 2 5212
+set BaryonHeavy2Form:Outgoing 2 4212
+set BaryonHeavy2Form:InSpin 2 2
+set BaryonHeavy2Form:OutSpin 2 2
+set BaryonHeavy2Form:Spectator1 2 2
+set BaryonHeavy2Form:Spectator2 2 1
+set BaryonHeavy2Form:InQuark 2 5
+set BaryonHeavy2Form:OutQuark 2 4
+set BaryonHeavy2Form:Incoming 3 5222
+set BaryonHeavy2Form:Outgoing 3 4222
+set BaryonHeavy2Form:InSpin 3 2
+set BaryonHeavy2Form:OutSpin 3 2
+set BaryonHeavy2Form:Spectator1 3 2
+set BaryonHeavy2Form:Spectator2 3 2
+set BaryonHeavy2Form:InQuark 3 5
+set BaryonHeavy2Form:OutQuark 3 4
+set BaryonHeavy2Form:Incoming 4 5332
+set BaryonHeavy2Form:Outgoing 4 4332
+set BaryonHeavy2Form:InSpin 4 2
+set BaryonHeavy2Form:OutSpin 4 2
+set BaryonHeavy2Form:Spectator1 4 3
+set BaryonHeavy2Form:Spectator2 4 3
+set BaryonHeavy2Form:InQuark 4 5
+set BaryonHeavy2Form:OutQuark 4 4
+set BaryonHeavy2Form:Incoming 5 5232
+set BaryonHeavy2Form:Outgoing 5 4232
+set BaryonHeavy2Form:InSpin 5 2
+set BaryonHeavy2Form:OutSpin 5 2
+set BaryonHeavy2Form:Spectator1 5 2
+set BaryonHeavy2Form:Spectator2 5 3
+set BaryonHeavy2Form:InQuark 5 5
+set BaryonHeavy2Form:OutQuark 5 4
+set BaryonHeavy2Form:Incoming 6 5132
+set BaryonHeavy2Form:Outgoing 6 4132
+set BaryonHeavy2Form:InSpin 6 2
+set BaryonHeavy2Form:OutSpin 6 2
+set BaryonHeavy2Form:Spectator1 6 1
+set BaryonHeavy2Form:Spectator2 6 3
+set BaryonHeavy2Form:InQuark 6 5
+set BaryonHeavy2Form:OutQuark 6 4
+set BaryonHeavy2Form:Incoming 7 4122
+set BaryonHeavy2Form:Outgoing 7 3122
+set BaryonHeavy2Form:InSpin 7 2
+set BaryonHeavy2Form:OutSpin 7 2
+set BaryonHeavy2Form:Spectator1 7 1
+set BaryonHeavy2Form:Spectator2 7 2
+set BaryonHeavy2Form:InQuark 7 4
+set BaryonHeavy2Form:OutQuark 7 3
+set BaryonHeavy2Form:Incoming 8 4112
+set BaryonHeavy2Form:Outgoing 8 3112
+set BaryonHeavy2Form:InSpin 8 2
+set BaryonHeavy2Form:OutSpin 8 2
+set BaryonHeavy2Form:Spectator1 8 1
+set BaryonHeavy2Form:Spectator2 8 1
+set BaryonHeavy2Form:InQuark 8 4
+set BaryonHeavy2Form:OutQuark 8 3
+set BaryonHeavy2Form:Incoming 9 4212
+set BaryonHeavy2Form:Outgoing 9 3212
+set BaryonHeavy2Form:InSpin 9 2
+set BaryonHeavy2Form:OutSpin 9 2
+set BaryonHeavy2Form:Spectator1 9 2
+set BaryonHeavy2Form:Spectator2 9 1
+set BaryonHeavy2Form:InQuark 9 4
+set BaryonHeavy2Form:OutQuark 9 3
+set BaryonHeavy2Form:Incoming 10 4222
+set BaryonHeavy2Form:Outgoing 10 3222
+set BaryonHeavy2Form:InSpin 10 2
+set BaryonHeavy2Form:OutSpin 10 2
+set BaryonHeavy2Form:Spectator1 10 2
+set BaryonHeavy2Form:Spectator2 10 2
+set BaryonHeavy2Form:InQuark 10 4
+set BaryonHeavy2Form:OutQuark 10 3
+set BaryonHeavy2Form:Incoming 11 4232
+set BaryonHeavy2Form:Outgoing 11 3322
+set BaryonHeavy2Form:InSpin 11 2
+set BaryonHeavy2Form:OutSpin 11 2
+set BaryonHeavy2Form:Spectator1 11 2
+set BaryonHeavy2Form:Spectator2 11 3
+set BaryonHeavy2Form:InQuark 11 4
+set BaryonHeavy2Form:OutQuark 11 3
+set BaryonHeavy2Form:Incoming 12 4132
+set BaryonHeavy2Form:Outgoing 12 3312
+set BaryonHeavy2Form:InSpin 12 2
+set BaryonHeavy2Form:OutSpin 12 2
+set BaryonHeavy2Form:Spectator1 12 1
+set BaryonHeavy2Form:Spectator2 12 3
+set BaryonHeavy2Form:InQuark 12 4
+set BaryonHeavy2Form:OutQuark 12 3
+set BaryonHeavy2:FormFactor BaryonHeavy2Form 
+
+#
+create Herwig::KornerKramerCharmDecayer  CharmBaryon1
+set CharmBaryon1:Iteration 1
+set CharmBaryon1:Ntry 500
+set CharmBaryon1:Points 10000
+set CharmBaryon1:GenerateIntermediates 0 
+set CharmBaryon1:GFermi 1.16639e-05
+set CharmBaryon1:OneOverNc 0
+set CharmBaryon1:Fpi 131.7
+set CharmBaryon1:FK 160.6
+set CharmBaryon1:Frho 0.272
+set CharmBaryon1:fKstar 0.238
+set CharmBaryon1:Mdcplus 2.42
+set CharmBaryon1:Mscplus 2.54
+set CharmBaryon1:Mdcminus 2.01
+set CharmBaryon1:Mscminus 2.11
+set CharmBaryon1:Cplus 0.73
+set CharmBaryon1:Cminus 1.9
+set CharmBaryon1:H2 0.119
+set CharmBaryon1:H3 -0.011
+set CharmBaryon1:I1 0 -0.333333
+set CharmBaryon1:I2 0 -0.333333
+set CharmBaryon1:I3 0 -0.333333
+set CharmBaryon1:I4 0 0.666667
+set CharmBaryon1:I5 0 0.166667
+set CharmBaryon1:Ihat3 0 -0.333333
+set CharmBaryon1:Ihat4 0 0.666667
+set CharmBaryon1:Incoming 0 4122
+set CharmBaryon1:OutgoingB 0 3122
+set CharmBaryon1:OutgoingM 0 211
+set CharmBaryon1:MaxWeight 0 0.0131
+set CharmBaryon1:I1 1 0
+set CharmBaryon1:I2 1 0
+set CharmBaryon1:I3 1 -0.57735
+set CharmBaryon1:I4 1 0
+set CharmBaryon1:I5 1 -0.288675
+set CharmBaryon1:Ihat3 1 0.57735
+set CharmBaryon1:Ihat4 1 -1.1547
+set CharmBaryon1:Incoming 1 4122
+set CharmBaryon1:OutgoingB 1 3212
+set CharmBaryon1:OutgoingM 1 211
+set CharmBaryon1:MaxWeight 1 0.00585
+set CharmBaryon1:I1 2 0
+set CharmBaryon1:I2 2 0
+set CharmBaryon1:I3 2 0.57735
+set CharmBaryon1:I4 2 0
+set CharmBaryon1:I5 2 0.288675
+set CharmBaryon1:Ihat3 2 -0.57735
+set CharmBaryon1:Ihat4 2 1.1547
+set CharmBaryon1:Incoming 2 4122
+set CharmBaryon1:OutgoingB 2 3222
+set CharmBaryon1:OutgoingM 2 111
+set CharmBaryon1:MaxWeight 2 0.0059
+set CharmBaryon1:I1 3 0
+set CharmBaryon1:I2 3 0
+set CharmBaryon1:I3 3 -0.169102
+set CharmBaryon1:I4 3 0.57735
+set CharmBaryon1:I5 3 0.204124
+set CharmBaryon1:Ihat3 3 0.408248
+set CharmBaryon1:Ihat4 3 -0.816497
+set CharmBaryon1:Incoming 3 4122
+set CharmBaryon1:OutgoingB 3 3222
+set CharmBaryon1:OutgoingM 3 221
+set CharmBaryon1:MaxWeight 3 0.00247881
+set CharmBaryon1:I1 4 0
+set CharmBaryon1:I2 4 0
+set CharmBaryon1:I3 4 0.985599
+set CharmBaryon1:I4 4 -0.57735
+set CharmBaryon1:I5 4 0.204124
+set CharmBaryon1:Ihat3 4 0.408248
+set CharmBaryon1:Ihat4 4 -0.816497
+set CharmBaryon1:Incoming 4 4122
+set CharmBaryon1:OutgoingB 4 3222
+set CharmBaryon1:OutgoingM 4 331
+set CharmBaryon1:MaxWeight 4 0.0215345
+set CharmBaryon1:I1 5 -0.408248
+set CharmBaryon1:I2 5 -0.408248
+set CharmBaryon1:I3 5 -0.816497
+set CharmBaryon1:I4 5 0.816497
+set CharmBaryon1:I5 5 0
+set CharmBaryon1:Ihat3 5 0
+set CharmBaryon1:Ihat4 5 0
+set CharmBaryon1:Incoming 5 4122
+set CharmBaryon1:OutgoingB 5 2212
+set CharmBaryon1:OutgoingM 5 -311
+set CharmBaryon1:MaxWeight 5 0.045
+set CharmBaryon1:I1 6 0
+set CharmBaryon1:I2 6 0
+set CharmBaryon1:I3 6 0
+set CharmBaryon1:I4 6 0.816497
+set CharmBaryon1:I5 6 0.408248
+set CharmBaryon1:Ihat3 6 0
+set CharmBaryon1:Ihat4 6 0
+set CharmBaryon1:Incoming 6 4122
+set CharmBaryon1:OutgoingB 6 3322
+set CharmBaryon1:OutgoingM 6 321
+set CharmBaryon1:MaxWeight 6 0.00427652
+set CharmBaryon1:I1 7 -0.408248
+set CharmBaryon1:I2 7 -0.408248
+set CharmBaryon1:I3 7 0
+set CharmBaryon1:I4 7 0
+set CharmBaryon1:I5 7 0
+set CharmBaryon1:Ihat3 7 -0.816497
+set CharmBaryon1:Ihat4 7 1.63299
+set CharmBaryon1:Incoming 7 4232
+set CharmBaryon1:OutgoingB 7 3222
+set CharmBaryon1:OutgoingM 7 -311
+set CharmBaryon1:MaxWeight 7 0.136
+set CharmBaryon1:I1 8 0.408248
+set CharmBaryon1:I2 8 0.408248
+set CharmBaryon1:I3 8 0
+set CharmBaryon1:I4 8 0
+set CharmBaryon1:I5 8 0
+set CharmBaryon1:Ihat3 8 0.816497
+set CharmBaryon1:Ihat4 8 -1.63299
+set CharmBaryon1:Incoming 8 4232
+set CharmBaryon1:OutgoingB 8 3322
+set CharmBaryon1:OutgoingM 8 211
+set CharmBaryon1:MaxWeight 8 0.067
+set CharmBaryon1:I1 9 0.166667
+set CharmBaryon1:I2 9 0.166667
+set CharmBaryon1:I3 9 0.666667
+set CharmBaryon1:I4 9 -0.333333
+set CharmBaryon1:I5 9 0.166667
+set CharmBaryon1:Ihat3 9 -0.333333
+set CharmBaryon1:Ihat4 9 0.666667
+set CharmBaryon1:Incoming 9 4132
+set CharmBaryon1:OutgoingB 9 3122
+set CharmBaryon1:OutgoingM 9 -311
+set CharmBaryon1:MaxWeight 9 0.0023
+set CharmBaryon1:I1 10 0.288675
+set CharmBaryon1:I2 10 0.288675
+set CharmBaryon1:I3 10 0
+set CharmBaryon1:I4 10 -0.57735
+set CharmBaryon1:I5 10 -0.288675
+set CharmBaryon1:Ihat3 10 0.57735
+set CharmBaryon1:Ihat4 10 -1.1547
+set CharmBaryon1:Incoming 10 4132
+set CharmBaryon1:OutgoingB 10 3212
+set CharmBaryon1:OutgoingM 10 -311
+set CharmBaryon1:MaxWeight 10 0.025
+set CharmBaryon1:I1 11 0
+set CharmBaryon1:I2 11 0
+set CharmBaryon1:I3 11 0
+set CharmBaryon1:I4 11 0.816497
+set CharmBaryon1:I5 11 0.408248
+set CharmBaryon1:Ihat3 11 0
+set CharmBaryon1:Ihat4 11 0
+set CharmBaryon1:Incoming 11 4132
+set CharmBaryon1:OutgoingB 11 3222
+set CharmBaryon1:OutgoingM 11 -321
+set CharmBaryon1:MaxWeight 11 0.00201135
+set CharmBaryon1:I1 12 0
+set CharmBaryon1:I2 12 0
+set CharmBaryon1:I3 12 0.57735
+set CharmBaryon1:I4 12 -0.57735
+set CharmBaryon1:I5 12 0
+set CharmBaryon1:Ihat3 12 -0.57735
+set CharmBaryon1:Ihat4 12 1.1547
+set CharmBaryon1:Incoming 12 4132
+set CharmBaryon1:OutgoingB 12 3322
+set CharmBaryon1:OutgoingM 12 111
+set CharmBaryon1:MaxWeight 12 0.00075
+set CharmBaryon1:I1 13 0
+set CharmBaryon1:I2 13 0
+set CharmBaryon1:I3 13 -0.169102
+set CharmBaryon1:I4 13 -0.408248
+set CharmBaryon1:I5 13 -0.288675
+set CharmBaryon1:Ihat3 13 0.408248
+set CharmBaryon1:Ihat4 13 -0.816497
+set CharmBaryon1:Incoming 13 4132
+set CharmBaryon1:OutgoingB 13 3322
+set CharmBaryon1:OutgoingM 13 221
+set CharmBaryon1:MaxWeight 13 0.0048
+set CharmBaryon1:I1 14 0
+set CharmBaryon1:I2 14 0
+set CharmBaryon1:I3 14 0.985599
+set CharmBaryon1:I4 14 -0.408248
+set CharmBaryon1:I5 14 0.288675
+set CharmBaryon1:Ihat3 14 0.408248
+set CharmBaryon1:Ihat4 14 -0.816497
+set CharmBaryon1:Incoming 14 4132
+set CharmBaryon1:OutgoingB 14 3322
+set CharmBaryon1:OutgoingM 14 331
+set CharmBaryon1:MaxWeight 14 0.0142804
+set CharmBaryon1:I1 15 -0.408248
+set CharmBaryon1:I2 15 -0.408248
+set CharmBaryon1:I3 15 -0.816497
+set CharmBaryon1:I4 15 0.816497
+set CharmBaryon1:I5 15 0
+set CharmBaryon1:Ihat3 15 0
+set CharmBaryon1:Ihat4 15 0
+set CharmBaryon1:Incoming 15 4132
+set CharmBaryon1:OutgoingB 15 3312
+set CharmBaryon1:OutgoingM 15 211
+set CharmBaryon1:MaxWeight 15 0.0176031
+set CharmBaryon1:I1 16 1
+set CharmBaryon1:I2 16 -1
+set CharmBaryon1:I3 16 0
+set CharmBaryon1:I4 16 0
+set CharmBaryon1:I5 16 0
+set CharmBaryon1:Ihat3 16 2
+set CharmBaryon1:Ihat4 16 0
+set CharmBaryon1:Incoming 16 4332
+set CharmBaryon1:OutgoingB 16 3322
+set CharmBaryon1:OutgoingM 16 -311
+set CharmBaryon1:MaxWeight 16 0.0200215
+set CharmBaryon1:I1 17 -0.333333
+set CharmBaryon1:I2 17 -0.333333
+set CharmBaryon1:I3 17 -0.333333
+set CharmBaryon1:I4 17 0.666667
+set CharmBaryon1:I5 17 0.166667
+set CharmBaryon1:Ihat3 17 -0.333333
+set CharmBaryon1:Ihat4 17 0.666667
+set CharmBaryon1:Incoming 17 4122
+set CharmBaryon1:OutgoingB 17 3122
+set CharmBaryon1:OutgoingM 17 213
+set CharmBaryon1:MaxWeight 17 0.41
+set CharmBaryon1:I1 18 0
+set CharmBaryon1:I2 18 0
+set CharmBaryon1:I3 18 -0.57735
+set CharmBaryon1:I4 18 0
+set CharmBaryon1:I5 18 -0.288675
+set CharmBaryon1:Ihat3 18 0.57735
+set CharmBaryon1:Ihat4 18 -1.1547
+set CharmBaryon1:Incoming 18 4122
+set CharmBaryon1:OutgoingB 18 3212
+set CharmBaryon1:OutgoingM 18 213
+set CharmBaryon1:MaxWeight 18 0.0554171
+set CharmBaryon1:I1 19 0
+set CharmBaryon1:I2 19 0
+set CharmBaryon1:I3 19 0.57735
+set CharmBaryon1:I4 19 0
+set CharmBaryon1:I5 19 0.288675
+set CharmBaryon1:Ihat3 19 -0.57735
+set CharmBaryon1:Ihat4 19 1.1547
+set CharmBaryon1:Incoming 19 4122
+set CharmBaryon1:OutgoingB 19 3222
+set CharmBaryon1:OutgoingM 19 113
+set CharmBaryon1:MaxWeight 19 0.0550436
+set CharmBaryon1:I1 20 0
+set CharmBaryon1:I2 20 0
+set CharmBaryon1:I3 20 0.57735
+set CharmBaryon1:I4 20 0
+set CharmBaryon1:I5 20 0.288675
+set CharmBaryon1:Ihat3 20 0.57735
+set CharmBaryon1:Ihat4 20 -1.1547
+set CharmBaryon1:Incoming 20 4122
+set CharmBaryon1:OutgoingB 20 3222
+set CharmBaryon1:OutgoingM 20 223
+set CharmBaryon1:MaxWeight 20 0.201805
+set CharmBaryon1:I1 21 0
+set CharmBaryon1:I2 21 0
+set CharmBaryon1:I3 21 0.816497
+set CharmBaryon1:I4 21 -0.816497
+set CharmBaryon1:I5 21 0
+set CharmBaryon1:Ihat3 21 0
+set CharmBaryon1:Ihat4 21 0
+set CharmBaryon1:Incoming 21 4122
+set CharmBaryon1:OutgoingB 21 3222
+set CharmBaryon1:OutgoingM 21 333
+set CharmBaryon1:MaxWeight 21 0.00524444
+set CharmBaryon1:I1 22 -0.408248
+set CharmBaryon1:I2 22 -0.408248
+set CharmBaryon1:I3 22 -0.816497
+set CharmBaryon1:I4 22 0.816497
+set CharmBaryon1:I5 22 0
+set CharmBaryon1:Ihat3 22 0
+set CharmBaryon1:Ihat4 22 0
+set CharmBaryon1:Incoming 22 4122
+set CharmBaryon1:OutgoingB 22 2212
+set CharmBaryon1:OutgoingM 22 -313
+set CharmBaryon1:MaxWeight 22 0.0798045
+set CharmBaryon1:I1 23 0
+set CharmBaryon1:I2 23 0
+set CharmBaryon1:I3 23 0
+set CharmBaryon1:I4 23 0.816497
+set CharmBaryon1:I5 23 0.408248
+set CharmBaryon1:Ihat3 23 0
+set CharmBaryon1:Ihat4 23 0
+set CharmBaryon1:Incoming 23 4122
+set CharmBaryon1:OutgoingB 23 3322
+set CharmBaryon1:OutgoingM 23 323
+set CharmBaryon1:MaxWeight 23 0.00335682
+set CharmBaryon1:I1 24 -0.408248
+set CharmBaryon1:I2 24 -0.408248
+set CharmBaryon1:I3 24 0
+set CharmBaryon1:I4 24 0
+set CharmBaryon1:I5 24 0
+set CharmBaryon1:Ihat3 24 -0.816497
+set CharmBaryon1:Ihat4 24 1.63299
+set CharmBaryon1:Incoming 24 4232
+set CharmBaryon1:OutgoingB 24 3222
+set CharmBaryon1:OutgoingM 24 -313
+set CharmBaryon1:MaxWeight 24 0.0465517
+set CharmBaryon1:I1 25 0.408248
+set CharmBaryon1:I2 25 0.408248
+set CharmBaryon1:I3 25 0
+set CharmBaryon1:I4 25 0
+set CharmBaryon1:I5 25 0
+set CharmBaryon1:Ihat3 25 0.816497
+set CharmBaryon1:Ihat4 25 -1.63299
+set CharmBaryon1:Incoming 25 4232
+set CharmBaryon1:OutgoingB 25 3322
+set CharmBaryon1:OutgoingM 25 213
+set CharmBaryon1:MaxWeight 25 1.72674
+set CharmBaryon1:I1 26 0.166667
+set CharmBaryon1:I2 26 0.166667
+set CharmBaryon1:I3 26 0.666667
+set CharmBaryon1:I4 26 -0.333333
+set CharmBaryon1:I5 26 0.166667
+set CharmBaryon1:Ihat3 26 -0.333333
+set CharmBaryon1:Ihat4 26 0.666667
+set CharmBaryon1:Incoming 26 4132
+set CharmBaryon1:OutgoingB 26 3122
+set CharmBaryon1:OutgoingM 26 -313
+set CharmBaryon1:MaxWeight 26 0.0299461
+set CharmBaryon1:I1 27 0.288675
+set CharmBaryon1:I2 27 0.288675
+set CharmBaryon1:I3 27 0
+set CharmBaryon1:I4 27 -0.57735
+set CharmBaryon1:I5 27 -0.288675
+set CharmBaryon1:Ihat3 27 0.57735
+set CharmBaryon1:Ihat4 27 -1.1547
+set CharmBaryon1:Incoming 27 4132
+set CharmBaryon1:OutgoingB 27 3212
+set CharmBaryon1:OutgoingM 27 -313
+set CharmBaryon1:MaxWeight 27 0.0108903
+set CharmBaryon1:I1 28 0
+set CharmBaryon1:I2 28 0
+set CharmBaryon1:I3 28 0
+set CharmBaryon1:I4 28 0.816497
+set CharmBaryon1:I5 28 0.408248
+set CharmBaryon1:Ihat3 28 0
+set CharmBaryon1:Ihat4 28 0
+set CharmBaryon1:Incoming 28 4132
+set CharmBaryon1:OutgoingB 28 3222
+set CharmBaryon1:OutgoingM 28 -323
+set CharmBaryon1:MaxWeight 28 0.0072
+set CharmBaryon1:I1 29 0
+set CharmBaryon1:I2 29 0
+set CharmBaryon1:I3 29 0.57735
+set CharmBaryon1:I4 29 -0.57735
+set CharmBaryon1:I5 29 0
+set CharmBaryon1:Ihat3 29 -0.57735
+set CharmBaryon1:Ihat4 29 1.1547
+set CharmBaryon1:Incoming 29 4132
+set CharmBaryon1:OutgoingB 29 3322
+set CharmBaryon1:OutgoingM 29 113
+set CharmBaryon1:MaxWeight 29 0.0288654
+set CharmBaryon1:I1 30 0
+set CharmBaryon1:I2 30 0
+set CharmBaryon1:I3 30 0.57735
+set CharmBaryon1:I4 30 -0.57735
+set CharmBaryon1:I5 30 0
+set CharmBaryon1:Ihat3 30 0.57735
+set CharmBaryon1:Ihat4 30 -1.1547
+set CharmBaryon1:Incoming 30 4132
+set CharmBaryon1:OutgoingB 30 3322
+set CharmBaryon1:OutgoingM 30 223
+set CharmBaryon1:MaxWeight 30 0.12
+set CharmBaryon1:I1 31 0
+set CharmBaryon1:I2 31 0
+set CharmBaryon1:I3 31 0.816497
+set CharmBaryon1:I4 31 0
+set CharmBaryon1:I5 31 0.408248
+set CharmBaryon1:Ihat3 31 0
+set CharmBaryon1:Ihat4 31 0
+set CharmBaryon1:Incoming 31 4132
+set CharmBaryon1:OutgoingB 31 3322
+set CharmBaryon1:OutgoingM 31 333
+set CharmBaryon1:MaxWeight 31 0.00536368
+set CharmBaryon1:I1 32 -0.408248
+set CharmBaryon1:I2 32 -0.408248
+set CharmBaryon1:I3 32 -0.816497
+set CharmBaryon1:I4 32 0.816497
+set CharmBaryon1:I5 32 0
+set CharmBaryon1:Ihat3 32 0
+set CharmBaryon1:Ihat4 32 0
+set CharmBaryon1:Incoming 32 4132
+set CharmBaryon1:OutgoingB 32 3312
+set CharmBaryon1:OutgoingM 32 213
+set CharmBaryon1:MaxWeight 32 0.27
+set CharmBaryon1:I1 33 1
+set CharmBaryon1:I2 33 -1
+set CharmBaryon1:I3 33 0
+set CharmBaryon1:I4 33 0
+set CharmBaryon1:I5 33 0
+set CharmBaryon1:Ihat3 33 2
+set CharmBaryon1:Ihat4 33 0
+set CharmBaryon1:Incoming 33 4332
+set CharmBaryon1:OutgoingB 33 3322
+set CharmBaryon1:OutgoingM 33 -313
+set CharmBaryon1:MaxWeight 33 0.0159979
+set CharmBaryon1:I1 34 0
+set CharmBaryon1:I2 34 0.333333
+set CharmBaryon1:I3 34 0
+set CharmBaryon1:I4 34 0
+set CharmBaryon1:I5 34 0
+set CharmBaryon1:Ihat3 34 0
+set CharmBaryon1:Ihat4 34 0
+set CharmBaryon1:Incoming 34 4122
+set CharmBaryon1:OutgoingB 34 3214
+set CharmBaryon1:OutgoingM 34 211
+set CharmBaryon1:MaxWeight 34 0.0203127
+set CharmBaryon1:I1 35 0
+set CharmBaryon1:I2 35 0.333333
+set CharmBaryon1:I3 35 0
+set CharmBaryon1:I4 35 0
+set CharmBaryon1:I5 35 0
+set CharmBaryon1:Ihat3 35 0
+set CharmBaryon1:Ihat4 35 0
+set CharmBaryon1:Incoming 35 4122
+set CharmBaryon1:OutgoingB 35 3224
+set CharmBaryon1:OutgoingM 35 111
+set CharmBaryon1:MaxWeight 35 0.0206847
+set CharmBaryon1:I1 36 0
+set CharmBaryon1:I2 36 0.569036
+set CharmBaryon1:I3 36 0
+set CharmBaryon1:I4 36 0
+set CharmBaryon1:I5 36 0
+set CharmBaryon1:Ihat3 36 0
+set CharmBaryon1:Ihat4 36 0
+set CharmBaryon1:Incoming 36 4122
+set CharmBaryon1:OutgoingB 36 3224
+set CharmBaryon1:OutgoingM 36 221
+set CharmBaryon1:MaxWeight 36 0.0243183
+set CharmBaryon1:I1 37 0
+set CharmBaryon1:I2 37 -0.097631
+set CharmBaryon1:I3 37 0
+set CharmBaryon1:I4 37 0
+set CharmBaryon1:I5 37 0
+set CharmBaryon1:Ihat3 37 0
+set CharmBaryon1:Ihat4 37 0
+set CharmBaryon1:Incoming 37 4122
+set CharmBaryon1:OutgoingB 37 3224
+set CharmBaryon1:OutgoingM 37 331
+set CharmBaryon1:MaxWeight 37 3.90584e-07
+set CharmBaryon1:I1 38 0
+set CharmBaryon1:I2 38 -0.471405
+set CharmBaryon1:I3 38 0
+set CharmBaryon1:I4 38 0
+set CharmBaryon1:I5 38 0
+set CharmBaryon1:Ihat3 38 0
+set CharmBaryon1:Ihat4 38 0
+set CharmBaryon1:Incoming 38 4122
+set CharmBaryon1:OutgoingB 38 2214
+set CharmBaryon1:OutgoingM 38 -311
+set CharmBaryon1:MaxWeight 38 0.0172628
+set CharmBaryon1:I1 39 0
+set CharmBaryon1:I2 39 -0.816497
+set CharmBaryon1:I3 39 0
+set CharmBaryon1:I4 39 0
+set CharmBaryon1:I5 39 0
+set CharmBaryon1:Ihat3 39 0
+set CharmBaryon1:Ihat4 39 0
+set CharmBaryon1:Incoming 39 4122
+set CharmBaryon1:OutgoingB 39 2224
+set CharmBaryon1:OutgoingM 39 -321
+set CharmBaryon1:MaxWeight 39 0.0519786
+set CharmBaryon1:I1 40 0
+set CharmBaryon1:I2 40 0.471405
+set CharmBaryon1:I3 40 0
+set CharmBaryon1:I4 40 0
+set CharmBaryon1:I5 40 0
+set CharmBaryon1:Ihat3 40 0
+set CharmBaryon1:Ihat4 40 0
+set CharmBaryon1:Incoming 40 4122
+set CharmBaryon1:OutgoingB 40 3324
+set CharmBaryon1:OutgoingM 40 321
+set CharmBaryon1:MaxWeight 40 0.0160487
+set CharmBaryon1:I1 41 0
+set CharmBaryon1:I2 41 -0.333333
+set CharmBaryon1:I3 41 0
+set CharmBaryon1:I4 41 0
+set CharmBaryon1:I5 41 0
+set CharmBaryon1:Ihat3 41 0
+set CharmBaryon1:Ihat4 41 0
+set CharmBaryon1:Incoming 41 4132
+set CharmBaryon1:OutgoingB 41 3214
+set CharmBaryon1:OutgoingM 41 -311
+set CharmBaryon1:MaxWeight 41 0.00944063
+set CharmBaryon1:I1 42 0
+set CharmBaryon1:I2 42 -0.471405
+set CharmBaryon1:I3 42 0
+set CharmBaryon1:I4 42 0
+set CharmBaryon1:I5 42 0
+set CharmBaryon1:Ihat3 42 0
+set CharmBaryon1:Ihat4 42 0
+set CharmBaryon1:Incoming 42 4132
+set CharmBaryon1:OutgoingB 42 3224
+set CharmBaryon1:OutgoingM 42 -321
+set CharmBaryon1:MaxWeight 42 0.0193036
+set CharmBaryon1:I1 43 0
+set CharmBaryon1:I2 43 -0.333333
+set CharmBaryon1:I3 43 0
+set CharmBaryon1:I4 43 0
+set CharmBaryon1:I5 43 0
+set CharmBaryon1:Ihat3 43 0
+set CharmBaryon1:Ihat4 43 0
+set CharmBaryon1:Incoming 43 4132
+set CharmBaryon1:OutgoingB 43 3324
+set CharmBaryon1:OutgoingM 43 111
+set CharmBaryon1:MaxWeight 43 0.0138565
+set CharmBaryon1:I1 44 0
+set CharmBaryon1:I2 44 0.097631
+set CharmBaryon1:I3 44 0
+set CharmBaryon1:I4 44 0
+set CharmBaryon1:I5 44 0
+set CharmBaryon1:Ihat3 44 0
+set CharmBaryon1:Ihat4 44 0
+set CharmBaryon1:Incoming 44 4132
+set CharmBaryon1:OutgoingB 44 3324
+set CharmBaryon1:OutgoingM 44 221
+set CharmBaryon1:MaxWeight 44 0.000755889
+set CharmBaryon1:I1 45 0
+set CharmBaryon1:I2 45 -0.569036
+set CharmBaryon1:I3 45 0
+set CharmBaryon1:I4 45 0
+set CharmBaryon1:I5 45 0
+set CharmBaryon1:Ihat3 45 0
+set CharmBaryon1:Ihat4 45 0
+set CharmBaryon1:Incoming 45 4132
+set CharmBaryon1:OutgoingB 45 3324
+set CharmBaryon1:OutgoingM 45 331
+set CharmBaryon1:MaxWeight 45 9.59072e-06
+set CharmBaryon1:I1 46 0
+set CharmBaryon1:I2 46 0.471405
+set CharmBaryon1:I3 46 0
+set CharmBaryon1:I4 46 0
+set CharmBaryon1:I5 46 0
+set CharmBaryon1:Ihat3 46 0
+set CharmBaryon1:Ihat4 46 0
+set CharmBaryon1:Incoming 46 4132
+set CharmBaryon1:OutgoingB 46 3314
+set CharmBaryon1:OutgoingM 46 211
+set CharmBaryon1:MaxWeight 46 0.0273069
+set CharmBaryon1:I1 47 0
+set CharmBaryon1:I2 47 0.471405
+set CharmBaryon1:I3 47 0
+set CharmBaryon1:I4 47 0
+set CharmBaryon1:I5 47 0
+set CharmBaryon1:Ihat3 47 0
+set CharmBaryon1:Ihat4 47 0
+set CharmBaryon1:Incoming 47 4132
+set CharmBaryon1:OutgoingB 47 3334
+set CharmBaryon1:OutgoingM 47 321
+set CharmBaryon1:MaxWeight 47 0.00570461
+set CharmBaryon1:I1 48 -0.57735
+set CharmBaryon1:I2 48 0
+set CharmBaryon1:I3 48 0
+set CharmBaryon1:I4 48 0
+set CharmBaryon1:I5 48 0
+set CharmBaryon1:Ihat3 48 0
+set CharmBaryon1:Ihat4 48 0
+set CharmBaryon1:Incoming 48 4332
+set CharmBaryon1:OutgoingB 48 3324
+set CharmBaryon1:OutgoingM 48 -311
+set CharmBaryon1:MaxWeight 48 0.00685019
+set CharmBaryon1:I1 49 -0.57735
+set CharmBaryon1:I2 49 0
+set CharmBaryon1:I3 49 0
+set CharmBaryon1:I4 49 0
+set CharmBaryon1:I5 49 0
+set CharmBaryon1:Ihat3 49 0
+set CharmBaryon1:Ihat4 49 0
+set CharmBaryon1:Incoming 49 4332
+set CharmBaryon1:OutgoingB 49 3334
+set CharmBaryon1:OutgoingM 49 211
+set CharmBaryon1:MaxWeight 49 0.0101584
+set CharmBaryon1:I1 50 0
+set CharmBaryon1:I2 50 0.333333
+set CharmBaryon1:I3 50 0
+set CharmBaryon1:I4 50 0
+set CharmBaryon1:I5 50 0
+set CharmBaryon1:Ihat3 50 0
+set CharmBaryon1:Ihat4 50 0
+set CharmBaryon1:Incoming 50 4122
+set CharmBaryon1:OutgoingB 50 3214
+set CharmBaryon1:OutgoingM 50 213
+set CharmBaryon1:MaxWeight 50 0.0380711
+set CharmBaryon1:I1 51 0
+set CharmBaryon1:I2 51 0.333333
+set CharmBaryon1:I3 51 0
+set CharmBaryon1:I4 51 0
+set CharmBaryon1:I5 51 0
+set CharmBaryon1:Ihat3 51 0
+set CharmBaryon1:Ihat4 51 0
+set CharmBaryon1:Incoming 51 4122
+set CharmBaryon1:OutgoingB 51 3224
+set CharmBaryon1:OutgoingM 51 113
+set CharmBaryon1:MaxWeight 51 0.0380348
+set CharmBaryon1:I1 52 0
+set CharmBaryon1:I2 52 0.333333
+set CharmBaryon1:I3 52 0
+set CharmBaryon1:I4 52 0
+set CharmBaryon1:I5 52 0
+set CharmBaryon1:Ihat3 52 0
+set CharmBaryon1:Ihat4 52 0
+set CharmBaryon1:Incoming 52 4122
+set CharmBaryon1:OutgoingB 52 3224
+set CharmBaryon1:OutgoingM 52 223
+set CharmBaryon1:MaxWeight 52 0.0213052
+set CharmBaryon1:I1 53 0
+set CharmBaryon1:I2 53 -0.471405
+set CharmBaryon1:I3 53 0
+set CharmBaryon1:I4 53 0
+set CharmBaryon1:I5 53 0
+set CharmBaryon1:Ihat3 53 0
+set CharmBaryon1:Ihat4 53 0
+set CharmBaryon1:Incoming 53 4122
+set CharmBaryon1:OutgoingB 53 3224
+set CharmBaryon1:OutgoingM 53 333
+set CharmBaryon1:MaxWeight 53 3.89911e-07
+set CharmBaryon1:I1 54 0
+set CharmBaryon1:I2 54 -0.471405
+set CharmBaryon1:I3 54 0
+set CharmBaryon1:I4 54 0
+set CharmBaryon1:I5 54 0
+set CharmBaryon1:Ihat3 54 0
+set CharmBaryon1:Ihat4 54 0
+set CharmBaryon1:Incoming 54 4122
+set CharmBaryon1:OutgoingB 54 2214
+set CharmBaryon1:OutgoingM 54 -313
+set CharmBaryon1:MaxWeight 54 0.0797601
+set CharmBaryon1:I1 55 0
+set CharmBaryon1:I2 55 -0.816497
+set CharmBaryon1:I3 55 0
+set CharmBaryon1:I4 55 0
+set CharmBaryon1:I5 55 0
+set CharmBaryon1:Ihat3 55 0
+set CharmBaryon1:Ihat4 55 0
+set CharmBaryon1:Incoming 55 4122
+set CharmBaryon1:OutgoingB 55 2224
+set CharmBaryon1:OutgoingM 55 -323
+set CharmBaryon1:MaxWeight 55 0.244574
+set CharmBaryon1:I1 56 0
+set CharmBaryon1:I2 56 0.471405
+set CharmBaryon1:I3 56 0
+set CharmBaryon1:I4 56 0
+set CharmBaryon1:I5 56 0
+set CharmBaryon1:Ihat3 56 0
+set CharmBaryon1:Ihat4 56 0
+set CharmBaryon1:Incoming 56 4122
+set CharmBaryon1:OutgoingB 56 3324
+set CharmBaryon1:OutgoingM 56 323
+set CharmBaryon1:MaxWeight 56 8.19361e-05
+set CharmBaryon1:I1 57 0
+set CharmBaryon1:I2 57 -0.333333
+set CharmBaryon1:I3 57 0
+set CharmBaryon1:I4 57 0
+set CharmBaryon1:I5 57 0
+set CharmBaryon1:Ihat3 57 0
+set CharmBaryon1:Ihat4 57 0
+set CharmBaryon1:Incoming 57 4132
+set CharmBaryon1:OutgoingB 57 3214
+set CharmBaryon1:OutgoingM 57 -313
+set CharmBaryon1:MaxWeight 57 0.0224257
+set CharmBaryon1:I1 58 0
+set CharmBaryon1:I2 58 -0.471405
+set CharmBaryon1:I3 58 0
+set CharmBaryon1:I4 58 0
+set CharmBaryon1:I5 58 0
+set CharmBaryon1:Ihat3 58 0
+set CharmBaryon1:Ihat4 58 0
+set CharmBaryon1:Incoming 58 4132
+set CharmBaryon1:OutgoingB 58 3224
+set CharmBaryon1:OutgoingM 58 -323
+set CharmBaryon1:MaxWeight 58 0.0459226
+set CharmBaryon1:I1 59 0
+set CharmBaryon1:I2 59 -0.333333
+set CharmBaryon1:I3 59 0
+set CharmBaryon1:I4 59 0
+set CharmBaryon1:I5 59 0
+set CharmBaryon1:Ihat3 59 0
+set CharmBaryon1:Ihat4 59 0
+set CharmBaryon1:Incoming 59 4132
+set CharmBaryon1:OutgoingB 59 3324
+set CharmBaryon1:OutgoingM 59 113
+set CharmBaryon1:MaxWeight 59 0.0405582
+set CharmBaryon1:I1 60 0
+set CharmBaryon1:I2 60 -0.333333
+set CharmBaryon1:I3 60 0
+set CharmBaryon1:I4 60 0
+set CharmBaryon1:I5 60 0
+set CharmBaryon1:Ihat3 60 0
+set CharmBaryon1:Ihat4 60 0
+set CharmBaryon1:Incoming 60 4132
+set CharmBaryon1:OutgoingB 60 3324
+set CharmBaryon1:OutgoingM 60 223
+set CharmBaryon1:MaxWeight 60 0.0176579
+set CharmBaryon1:I1 61 0
+set CharmBaryon1:I2 61 -0.471405
+set CharmBaryon1:I3 61 0
+set CharmBaryon1:I4 61 0
+set CharmBaryon1:I5 61 0
+set CharmBaryon1:Ihat3 61 0
+set CharmBaryon1:Ihat4 61 0
+set CharmBaryon1:Incoming 61 4132
+set CharmBaryon1:OutgoingB 61 3324
+set CharmBaryon1:OutgoingM 61 333
+set CharmBaryon1:MaxWeight 61 2.00738e-09
+set CharmBaryon1:I1 62 0
+set CharmBaryon1:I2 62 0.471405
+set CharmBaryon1:I3 62 0
+set CharmBaryon1:I4 62 0
+set CharmBaryon1:I5 62 0
+set CharmBaryon1:Ihat3 62 0
+set CharmBaryon1:Ihat4 62 0
+set CharmBaryon1:Incoming 62 4132
+set CharmBaryon1:OutgoingB 62 3314
+set CharmBaryon1:OutgoingM 62 213
+set CharmBaryon1:MaxWeight 62 0.0742392
+set CharmBaryon1:I1 63 0
+set CharmBaryon1:I2 63 0.471405
+set CharmBaryon1:I3 63 0
+set CharmBaryon1:I4 63 0
+set CharmBaryon1:I5 63 0
+set CharmBaryon1:Ihat3 63 0
+set CharmBaryon1:Ihat4 63 0
+set CharmBaryon1:Incoming 63 4132
+set CharmBaryon1:OutgoingB 63 3334
+set CharmBaryon1:OutgoingM 63 323
+set CharmBaryon1:MaxWeight 63 0.000160371
+set CharmBaryon1:I1 64 -0.57735
+set CharmBaryon1:I2 64 0
+set CharmBaryon1:I3 64 0
+set CharmBaryon1:I4 64 0
+set CharmBaryon1:I5 64 0
+set CharmBaryon1:Ihat3 64 0
+set CharmBaryon1:Ihat4 64 0
+set CharmBaryon1:Incoming 64 4332
+set CharmBaryon1:OutgoingB 64 3324
+set CharmBaryon1:OutgoingM 64 -313
+set CharmBaryon1:MaxWeight 64 0.041161
+set CharmBaryon1:I1 65 -0.57735
+set CharmBaryon1:I2 65 0
+set CharmBaryon1:I3 65 0
+set CharmBaryon1:I4 65 0
+set CharmBaryon1:I5 65 0
+set CharmBaryon1:Ihat3 65 0
+set CharmBaryon1:Ihat4 65 0
+set CharmBaryon1:Incoming 65 4332
+set CharmBaryon1:OutgoingB 65 3334
+set CharmBaryon1:OutgoingM 65 213
+set CharmBaryon1:MaxWeight 65 0.0643286
+
+#
+create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy3
+set BaryonHeavy3:Iteration 1
+set BaryonHeavy3:Ntry 500
+set BaryonHeavy3:Points 10000
+set BaryonHeavy3:GFermi 1.16639e-05 
+insert BaryonHeavy3:MaximumWeight 0 0.155059 
+insert BaryonHeavy3:MaximumWeight 1 0.154479 
+insert BaryonHeavy3:MaximumWeight 2 0.0478423 
+insert BaryonHeavy3:MaximumWeight 3 0.183107 
+insert BaryonHeavy3:MaximumWeight 4 0.18242 
+insert BaryonHeavy3:MaximumWeight 5 0.0558729 
+insert BaryonHeavy3:MaximumWeight 6 0.183291 
+insert BaryonHeavy3:MaximumWeight 7 0.182598 
+insert BaryonHeavy3:MaximumWeight 8 0.0559255 
+insert BaryonHeavy3:MaximumWeight 9 0.116825 
+insert BaryonHeavy3:MaximumWeight 10 0.110605 
+insert BaryonHeavy3:MaximumWeight 11 0.0267389 
+insert BaryonHeavy3:MaximumWeight 12 0.132773 
+insert BaryonHeavy3:MaximumWeight 13 0.132352 
+insert BaryonHeavy3:MaximumWeight 14 0.0365608 
+insert BaryonHeavy3:MaximumWeight 15 0.0227486 
+insert BaryonHeavy3:MaximumWeight 16 0.0222433 
+insert BaryonHeavy3:MaximumWeight 17 0.0338862 
+insert BaryonHeavy3:MaximumWeight 18 0.0334095 
+insert BaryonHeavy3:MaximumWeight 19 0.1 
+insert BaryonHeavy3:MaximumWeight 20 0.097
+insert BaryonHeavy3:MaximumWeight 21 0.025 
+insert BaryonHeavy3:MaximumWeight 22 0.025
+create Herwig::LeptonNeutrinoCurrent BaryonHeavy3Current  HwWeakCurrents.so
+set BaryonHeavy3Current:Quark 0  11
+set BaryonHeavy3Current:AntiQuark 0  -12
+set BaryonHeavy3Current:Quark 1  13
+set BaryonHeavy3Current:AntiQuark 1  -15
+set BaryonHeavy3Current:Quark 2  15
+set BaryonHeavy3Current:AntiQuark 2  -16
+set BaryonHeavy3:Current BaryonHeavy3Current 
+create Herwig::ChengHeavyBaryonFormFactor BaryonHeavy3Form 
+set BaryonHeavy3Form:DownMass     0.322 
+set BaryonHeavy3Form:UpMass       0.338 
+set BaryonHeavy3Form:StrangeMass  0.51 
+set BaryonHeavy3Form:CharmMass    1.6 
+set BaryonHeavy3Form:BottomMass   5 
+set BaryonHeavy3Form:VectorMassbc 6.34 
+set BaryonHeavy3Form:AxialMassbc  6.73 
+set BaryonHeavy3Form:VectorMassbs 5.42 
+set BaryonHeavy3Form:AxialMassbs  5.86 
+set BaryonHeavy3Form:VectorMassbd 5.32 
+set BaryonHeavy3Form:AxialMassbd  5.71 
+set BaryonHeavy3Form:VectorMasscs 2.11 
+set BaryonHeavy3Form:AxialMasscs  2.54 
+set BaryonHeavy3Form:VectorMasscu 2.01 
+set BaryonHeavy3Form:AxialMasscu  2.42 
+set BaryonHeavy3Form:Nfi 0  1
+set BaryonHeavy3Form:Eta 0  1
+set BaryonHeavy3Form:Nfi 1  0.57735
+set BaryonHeavy3Form:Eta 1  1
+set BaryonHeavy3Form:Nfi 2  0.707107
+set BaryonHeavy3Form:Eta 2  1
+set BaryonHeavy3Form:Nfi 3  1
+set BaryonHeavy3Form:Eta 3  1
+set BaryonHeavy3Form:Nfi 4  1
+set BaryonHeavy3Form:Eta 4  1
+set BaryonHeavy3Form:Nfi 5  0.707107
+set BaryonHeavy3Form:Eta 5  1
+set BaryonHeavy3Form:Nfi 6  0.707107
+set BaryonHeavy3Form:Eta 6  1
+set BaryonHeavy3Form:Nfi 7  0.5
+set BaryonHeavy3Form:Eta 7  1
+set BaryonHeavy3Form:Nfi 8  0.5
+set BaryonHeavy3Form:Eta 8  1
+set BaryonHeavy3Form:Nfi 9  0.288675
+set BaryonHeavy3Form:Eta 9  1
+set BaryonHeavy3Form:Nfi 10  1
+set BaryonHeavy3Form:Eta 10  -0.333333
+set BaryonHeavy3Form:Nfi 11  0.57735
+set BaryonHeavy3Form:Eta 11  -0.333333
+set BaryonHeavy3Form:Nfi 12  1
+set BaryonHeavy3Form:Eta 12  0
+set BaryonHeavy3Form:Nfi 13  1
+set BaryonHeavy3Form:Eta 13  0
+set BaryonHeavy3Form:Nfi 14  0.57735
+set BaryonHeavy3Form:Eta 14  0
+set BaryonHeavy3Form:Nfi 15  1
+set BaryonHeavy3Form:Eta 15  0
+set BaryonHeavy3Form:Nfi 16  0.57735
+set BaryonHeavy3Form:Eta 16  0
+set BaryonHeavy3Form:Nfi 17  0.57735
+set BaryonHeavy3Form:Eta 17  1
+set BaryonHeavy3Form:Nfi 18  0.57735
+set BaryonHeavy3Form:Eta 18  1
+set BaryonHeavy3Form:Nfi 19  0.57735
+set BaryonHeavy3Form:Eta 19  1
+set BaryonHeavy3Form:Incoming 0 5122
+set BaryonHeavy3Form:Outgoing 0 4122
+set BaryonHeavy3Form:InSpin 0 2
+set BaryonHeavy3Form:OutSpin 0 2
+set BaryonHeavy3Form:Spectator1 0 1
+set BaryonHeavy3Form:Spectator2 0 2
+set BaryonHeavy3Form:InQuark 0 5
+set BaryonHeavy3Form:OutQuark 0 4
+set BaryonHeavy3Form:Incoming 1 5122
+set BaryonHeavy3Form:Outgoing 1 3122
+set BaryonHeavy3Form:InSpin 1 2
+set BaryonHeavy3Form:OutSpin 1 2
+set BaryonHeavy3Form:Spectator1 1 1
+set BaryonHeavy3Form:Spectator2 1 2
+set BaryonHeavy3Form:InQuark 1 5
+set BaryonHeavy3Form:OutQuark 1 3
+set BaryonHeavy3Form:Incoming 2 5122
+set BaryonHeavy3Form:Outgoing 2 2112
+set BaryonHeavy3Form:InSpin 2 2
+set BaryonHeavy3Form:OutSpin 2 2
+set BaryonHeavy3Form:Spectator1 2 1
+set BaryonHeavy3Form:Spectator2 2 2
+set BaryonHeavy3Form:InQuark 2 5
+set BaryonHeavy3Form:OutQuark 2 1
+set BaryonHeavy3Form:Incoming 3 5232
+set BaryonHeavy3Form:Outgoing 3 4232
+set BaryonHeavy3Form:InSpin 3 2
+set BaryonHeavy3Form:OutSpin 3 2
+set BaryonHeavy3Form:Spectator1 3 2
+set BaryonHeavy3Form:Spectator2 3 3
+set BaryonHeavy3Form:InQuark 3 5
+set BaryonHeavy3Form:OutQuark 3 4
+set BaryonHeavy3Form:Incoming 4 5132
+set BaryonHeavy3Form:Outgoing 4 4132
+set BaryonHeavy3Form:InSpin 4 2
+set BaryonHeavy3Form:OutSpin 4 2
+set BaryonHeavy3Form:Spectator1 4 1
+set BaryonHeavy3Form:Spectator2 4 3
+set BaryonHeavy3Form:InQuark 4 5
+set BaryonHeavy3Form:OutQuark 4 4
+set BaryonHeavy3Form:Incoming 5 5232
+set BaryonHeavy3Form:Outgoing 5 3322
+set BaryonHeavy3Form:InSpin 5 2
+set BaryonHeavy3Form:OutSpin 5 2
+set BaryonHeavy3Form:Spectator1 5 2
+set BaryonHeavy3Form:Spectator2 5 3
+set BaryonHeavy3Form:InQuark 5 5
+set BaryonHeavy3Form:OutQuark 5 3
+set BaryonHeavy3Form:Incoming 6 5132
+set BaryonHeavy3Form:Outgoing 6 3312
+set BaryonHeavy3Form:InSpin 6 2
+set BaryonHeavy3Form:OutSpin 6 2
+set BaryonHeavy3Form:Spectator1 6 1
+set BaryonHeavy3Form:Spectator2 6 3
+set BaryonHeavy3Form:InQuark 6 5
+set BaryonHeavy3Form:OutQuark 6 3
+set BaryonHeavy3Form:Incoming 7 5232
+set BaryonHeavy3Form:Outgoing 7 3212
+set BaryonHeavy3Form:InSpin 7 2
+set BaryonHeavy3Form:OutSpin 7 2
+set BaryonHeavy3Form:Spectator1 7 2
+set BaryonHeavy3Form:Spectator2 7 3
+set BaryonHeavy3Form:InQuark 7 5
+set BaryonHeavy3Form:OutQuark 7 1
+set BaryonHeavy3Form:Incoming 8 5132
+set BaryonHeavy3Form:Outgoing 8 3112
+set BaryonHeavy3Form:InSpin 8 2
+set BaryonHeavy3Form:OutSpin 8 2
+set BaryonHeavy3Form:Spectator1 8 1
+set BaryonHeavy3Form:Spectator2 8 3
+set BaryonHeavy3Form:InQuark 8 5
+set BaryonHeavy3Form:OutQuark 8 1
+set BaryonHeavy3Form:Incoming 9 5232
+set BaryonHeavy3Form:Outgoing 9 3122
+set BaryonHeavy3Form:InSpin 9 2
+set BaryonHeavy3Form:OutSpin 9 2
+set BaryonHeavy3Form:Spectator1 9 2
+set BaryonHeavy3Form:Spectator2 9 3
+set BaryonHeavy3Form:InQuark 9 5
+set BaryonHeavy3Form:OutQuark 9 1
+set BaryonHeavy3Form:Incoming 10 5332
+set BaryonHeavy3Form:Outgoing 10 4332
+set BaryonHeavy3Form:InSpin 10 2
+set BaryonHeavy3Form:OutSpin 10 2
+set BaryonHeavy3Form:Spectator1 10 3
+set BaryonHeavy3Form:Spectator2 10 3
+set BaryonHeavy3Form:InQuark 10 5
+set BaryonHeavy3Form:OutQuark 10 4
+set BaryonHeavy3Form:Incoming 11 5332
+set BaryonHeavy3Form:Outgoing 11 3312
+set BaryonHeavy3Form:InSpin 11 2
+set BaryonHeavy3Form:OutSpin 11 2
+set BaryonHeavy3Form:Spectator1 11 3
+set BaryonHeavy3Form:Spectator2 11 3
+set BaryonHeavy3Form:InQuark 11 5
+set BaryonHeavy3Form:OutQuark 11 1
+set BaryonHeavy3Form:Incoming 12 5332
+set BaryonHeavy3Form:Outgoing 12 4334
+set BaryonHeavy3Form:InSpin 12 2
+set BaryonHeavy3Form:OutSpin 12 4
+set BaryonHeavy3Form:Spectator1 12 3
+set BaryonHeavy3Form:Spectator2 12 3
+set BaryonHeavy3Form:InQuark 12 5
+set BaryonHeavy3Form:OutQuark 12 4
+set BaryonHeavy3Form:Incoming 13 5332
+set BaryonHeavy3Form:Outgoing 13 3334
+set BaryonHeavy3Form:InSpin 13 2
+set BaryonHeavy3Form:OutSpin 13 4
+set BaryonHeavy3Form:Spectator1 13 3
+set BaryonHeavy3Form:Spectator2 13 3
+set BaryonHeavy3Form:InQuark 13 5
+set BaryonHeavy3Form:OutQuark 13 3
+set BaryonHeavy3Form:Incoming 14 5332
+set BaryonHeavy3Form:Outgoing 14 3314
+set BaryonHeavy3Form:InSpin 14 2
+set BaryonHeavy3Form:OutSpin 14 4
+set BaryonHeavy3Form:Spectator1 14 3
+set BaryonHeavy3Form:Spectator2 14 3
+set BaryonHeavy3Form:InQuark 14 5
+set BaryonHeavy3Form:OutQuark 14 1
+set BaryonHeavy3Form:Incoming 15 4332
+set BaryonHeavy3Form:Outgoing 15 3334
+set BaryonHeavy3Form:InSpin 15 2
+set BaryonHeavy3Form:OutSpin 15 4
+set BaryonHeavy3Form:Spectator1 15 3
+set BaryonHeavy3Form:Spectator2 15 3
+set BaryonHeavy3Form:InQuark 15 4
+set BaryonHeavy3Form:OutQuark 15 3
+set BaryonHeavy3Form:Incoming 16 4332
+set BaryonHeavy3Form:Outgoing 16 3324
+set BaryonHeavy3Form:InSpin 16 2
+set BaryonHeavy3Form:OutSpin 16 4
+set BaryonHeavy3Form:Spectator1 16 3
+set BaryonHeavy3Form:Spectator2 16 3
+set BaryonHeavy3Form:InQuark 16 4
+set BaryonHeavy3Form:OutQuark 16 2
+set BaryonHeavy3Form:Incoming 17 4122
+set BaryonHeavy3Form:Outgoing 17 3122
+set BaryonHeavy3Form:InSpin 17 2
+set BaryonHeavy3Form:OutSpin 17 2
+set BaryonHeavy3Form:Spectator1 17 1
+set BaryonHeavy3Form:Spectator2 17 2
+set BaryonHeavy3Form:InQuark 17 4
+set BaryonHeavy3Form:OutQuark 17 3
+set BaryonHeavy3Form:Incoming 18 4232
+set BaryonHeavy3Form:Outgoing 18 3322
+set BaryonHeavy3Form:InSpin 18 2
+set BaryonHeavy3Form:OutSpin 18 2
+set BaryonHeavy3Form:Spectator1 18 2
+set BaryonHeavy3Form:Spectator2 18 3
+set BaryonHeavy3Form:InQuark 18 4
+set BaryonHeavy3Form:OutQuark 18 3
+set BaryonHeavy3Form:Incoming 19 4132
+set BaryonHeavy3Form:Outgoing 19 3312
+set BaryonHeavy3Form:InSpin 19 2
+set BaryonHeavy3Form:OutSpin 19 2
+set BaryonHeavy3Form:Spectator1 19 1
+set BaryonHeavy3Form:Spectator2 19 3
+set BaryonHeavy3Form:InQuark 19 4
+set BaryonHeavy3Form:OutQuark 19 3
+set BaryonHeavy3:FormFactor BaryonHeavy3Form
+
+#
 create Herwig::SemiLeptonicScalarDecayer  WSB
 set WSB:Iteration 1
 set WSB:Ntry 500
@@ -13315,6 +15170,2260 @@ set WSBFormFactor:Spectator 50 -1
 set WSBFormFactor:InQuark 50 5
 set WSBFormFactor:OutQuark 50 1
 set WSB:FormFactor WSBFormFactor 
+
+#
+create Herwig::BaryonFactorizedDecayer  BottomBaryonScalar
+set BottomBaryonScalar:Iteration 1
+set BottomBaryonScalar:Ntry 500
+set BottomBaryonScalar:Points 10000
+set BottomBaryonScalar:GFermi 1.16639e-05 
+set BottomBaryonScalar:a1Bottom 1.23
+set BottomBaryonScalar:a2Bottom 0.33
+set BottomBaryonScalar:a1Charm 1.1
+set BottomBaryonScalar:a2Charm -0.5
+set BottomBaryonScalar:CKM /Herwig/CKM 
+insert BottomBaryonScalar:WeightLocation 0 0
+insert BottomBaryonScalar:WeightLocation 1 0
+insert BottomBaryonScalar:WeightLocation 2 0
+insert BottomBaryonScalar:WeightLocation 3 0
+insert BottomBaryonScalar:WeightLocation 4 0
+insert BottomBaryonScalar:WeightLocation 5 0
+insert BottomBaryonScalar:WeightLocation 6 0
+insert BottomBaryonScalar:WeightLocation 7 0
+insert BottomBaryonScalar:WeightLocation 8 0
+insert BottomBaryonScalar:WeightLocation 9 0
+insert BottomBaryonScalar:WeightLocation 10 0
+insert BottomBaryonScalar:WeightLocation 11 0
+insert BottomBaryonScalar:WeightLocation 12 0
+insert BottomBaryonScalar:WeightLocation 13 0
+insert BottomBaryonScalar:WeightLocation 14 0
+insert BottomBaryonScalar:WeightLocation 15 0
+insert BottomBaryonScalar:WeightLocation 16 0
+insert BottomBaryonScalar:WeightLocation 17 0
+insert BottomBaryonScalar:WeightLocation 18 0
+insert BottomBaryonScalar:WeightLocation 19 0
+insert BottomBaryonScalar:WeightLocation 20 0
+insert BottomBaryonScalar:WeightLocation 21 0
+insert BottomBaryonScalar:WeightLocation 22 0
+insert BottomBaryonScalar:WeightLocation 23 0
+insert BottomBaryonScalar:WeightLocation 24 0
+insert BottomBaryonScalar:WeightLocation 25 0
+insert BottomBaryonScalar:WeightLocation 26 0
+insert BottomBaryonScalar:WeightLocation 27 0
+insert BottomBaryonScalar:WeightLocation 28 0
+insert BottomBaryonScalar:WeightLocation 29 0
+insert BottomBaryonScalar:WeightLocation 30 0
+insert BottomBaryonScalar:WeightLocation 31 0
+insert BottomBaryonScalar:WeightLocation 32 0
+insert BottomBaryonScalar:WeightLocation 33 0
+insert BottomBaryonScalar:WeightLocation 34 0
+insert BottomBaryonScalar:WeightLocation 35 0
+insert BottomBaryonScalar:WeightLocation 36 0
+insert BottomBaryonScalar:WeightLocation 37 0
+insert BottomBaryonScalar:WeightLocation 38 0
+insert BottomBaryonScalar:WeightLocation 39 0
+insert BottomBaryonScalar:WeightLocation 40 0
+insert BottomBaryonScalar:WeightLocation 41 0
+insert BottomBaryonScalar:WeightLocation 42 0
+insert BottomBaryonScalar:WeightLocation 43 0
+insert BottomBaryonScalar:WeightLocation 44 0
+insert BottomBaryonScalar:WeightLocation 45 0
+insert BottomBaryonScalar:WeightLocation 46 0
+insert BottomBaryonScalar:WeightLocation 47 0
+insert BottomBaryonScalar:WeightLocation 48 0
+insert BottomBaryonScalar:WeightLocation 49 0
+insert BottomBaryonScalar:WeightLocation 50 0
+insert BottomBaryonScalar:WeightLocation 51 0
+insert BottomBaryonScalar:WeightLocation 52 0
+insert BottomBaryonScalar:WeightLocation 53 0
+insert BottomBaryonScalar:WeightLocation 54 0
+insert BottomBaryonScalar:WeightLocation 55 0
+insert BottomBaryonScalar:WeightLocation 56 0
+insert BottomBaryonScalar:WeightLocation 57 0
+insert BottomBaryonScalar:WeightLocation 58 0
+insert BottomBaryonScalar:WeightLocation 59 0
+insert BottomBaryonScalar:WeightLocation 60 0
+insert BottomBaryonScalar:WeightLocation 61 0
+insert BottomBaryonScalar:WeightLocation 62 0
+insert BottomBaryonScalar:WeightLocation 63 0
+insert BottomBaryonScalar:WeightLocation 64 0
+insert BottomBaryonScalar:WeightLocation 65 0
+insert BottomBaryonScalar:WeightLocation 66 0
+insert BottomBaryonScalar:WeightLocation 67 0
+insert BottomBaryonScalar:WeightLocation 68 0
+insert BottomBaryonScalar:WeightLocation 69 0
+insert BottomBaryonScalar:WeightLocation 70 0
+insert BottomBaryonScalar:WeightLocation 71 0
+insert BottomBaryonScalar:WeightLocation 72 0
+insert BottomBaryonScalar:WeightLocation 73 0
+insert BottomBaryonScalar:WeightLocation 74 0
+insert BottomBaryonScalar:WeightLocation 75 0
+insert BottomBaryonScalar:WeightLocation 76 0
+insert BottomBaryonScalar:WeightLocation 77 0
+insert BottomBaryonScalar:WeightLocation 78 0
+insert BottomBaryonScalar:WeightLocation 79 0
+insert BottomBaryonScalar:WeightLocation 80 0
+insert BottomBaryonScalar:WeightLocation 81 0
+insert BottomBaryonScalar:WeightLocation 82 0
+insert BottomBaryonScalar:WeightLocation 83 0
+insert BottomBaryonScalar:WeightLocation 84 0
+insert BottomBaryonScalar:WeightLocation 85 0
+insert BottomBaryonScalar:WeightLocation 86 0
+insert BottomBaryonScalar:WeightLocation 87 0
+insert BottomBaryonScalar:MaximumWeight 0 0.0147113
+insert BottomBaryonScalar:MaximumWeight 1 0.00116148
+insert BottomBaryonScalar:MaximumWeight 2 0.00168101
+insert BottomBaryonScalar:MaximumWeight 3 0.0453621
+insert BottomBaryonScalar:MaximumWeight 4 0.00380078
+insert BottomBaryonScalar:MaximumWeight 5 8.56063e-09
+insert BottomBaryonScalar:MaximumWeight 6 4.41438e-09
+insert BottomBaryonScalar:MaximumWeight 7 4.27007e-09
+insert BottomBaryonScalar:MaximumWeight 8 6.07688e-06
+insert BottomBaryonScalar:MaximumWeight 9 9.19826e-07
+insert BottomBaryonScalar:MaximumWeight 10 1.19065e-07
+insert BottomBaryonScalar:MaximumWeight 11 6.16384e-08
+insert BottomBaryonScalar:MaximumWeight 12 6.01101e-08
+insert BottomBaryonScalar:MaximumWeight 13 8.8887e-05
+insert BottomBaryonScalar:MaximumWeight 14 3.7768e-08
+insert BottomBaryonScalar:MaximumWeight 15 0.0175354
+insert BottomBaryonScalar:MaximumWeight 16 0.00138492
+insert BottomBaryonScalar:MaximumWeight 17 0.0020143
+insert BottomBaryonScalar:MaximumWeight 18 0.0543872
+insert BottomBaryonScalar:MaximumWeight 19 0.0045673
+insert BottomBaryonScalar:MaximumWeight 20 0.0175617
+insert BottomBaryonScalar:MaximumWeight 21 0.00138701
+insert BottomBaryonScalar:MaximumWeight 22 0.0020176
+insert BottomBaryonScalar:MaximumWeight 23 0.0544773
+insert BottomBaryonScalar:MaximumWeight 24 0.00457512
+insert BottomBaryonScalar:MaximumWeight 25 1.77806e-08
+insert BottomBaryonScalar:MaximumWeight 26 9.17422e-09
+insert BottomBaryonScalar:MaximumWeight 27 8.88518e-09
+insert BottomBaryonScalar:MaximumWeight 28 1.27117e-05
+insert BottomBaryonScalar:MaximumWeight 29 1.9241e-06
+insert BottomBaryonScalar:MaximumWeight 30 1.79105e-08
+insert BottomBaryonScalar:MaximumWeight 31 9.24135e-09
+insert BottomBaryonScalar:MaximumWeight 32 8.95234e-09
+insert BottomBaryonScalar:MaximumWeight 33 1.28062e-05
+insert BottomBaryonScalar:MaximumWeight 34 1.9384e-06
+insert BottomBaryonScalar:MaximumWeight 35 1.12622e-07
+insert BottomBaryonScalar:MaximumWeight 36 5.83167e-08
+insert BottomBaryonScalar:MaximumWeight 37 5.69376e-08
+insert BottomBaryonScalar:MaximumWeight 38 8.42658e-05
+insert BottomBaryonScalar:MaximumWeight 39 3.58044e-08
+insert BottomBaryonScalar:MaximumWeight 40 1.12936e-07
+insert BottomBaryonScalar:MaximumWeight 41 5.84801e-08
+insert BottomBaryonScalar:MaximumWeight 42 5.70908e-08
+insert BottomBaryonScalar:MaximumWeight 43 8.4519e-05
+insert BottomBaryonScalar:MaximumWeight 44 3.5912e-08
+insert BottomBaryonScalar:MaximumWeight 45 2.69015e-08
+insert BottomBaryonScalar:MaximumWeight 46 1.39361e-08
+insert BottomBaryonScalar:MaximumWeight 47 1.36195e-08
+insert BottomBaryonScalar:MaximumWeight 48 2.02555e-05
+insert BottomBaryonScalar:MaximumWeight 49 8.60654e-09
+insert BottomBaryonScalar:MaximumWeight 50 0.018
+insert BottomBaryonScalar:MaximumWeight 51 0.00110106
+insert BottomBaryonScalar:MaximumWeight 52 0.0023
+insert BottomBaryonScalar:MaximumWeight 53 0.07
+insert BottomBaryonScalar:MaximumWeight 54 0.00367262
+insert BottomBaryonScalar:MaximumWeight 55 1.43709e-07
+insert BottomBaryonScalar:MaximumWeight 56 7.35099e-08
+insert BottomBaryonScalar:MaximumWeight 57 6.98837e-08
+insert BottomBaryonScalar:MaximumWeight 58 9.30994e-05
+insert BottomBaryonScalar:MaximumWeight 59 3.95578e-08
+insert BottomBaryonScalar:MaximumWeight 60 0.00598854
+insert BottomBaryonScalar:MaximumWeight 61 0.000472722
+insert BottomBaryonScalar:MaximumWeight 62 0.000640993
+insert BottomBaryonScalar:MaximumWeight 63 0.0169935
+insert BottomBaryonScalar:MaximumWeight 64 0.00128473
+insert BottomBaryonScalar:MaximumWeight 65 1.61781e-08
+insert BottomBaryonScalar:MaximumWeight 66 7.84416e-09
+insert BottomBaryonScalar:MaximumWeight 67 6.68216e-09
+insert BottomBaryonScalar:MaximumWeight 68 6.88474e-06
+insert BottomBaryonScalar:MaximumWeight 69 1.04211e-06
+insert BottomBaryonScalar:MaximumWeight 70 8.01444e-07
+insert BottomBaryonScalar:MaximumWeight 71 3.82459e-07
+insert BottomBaryonScalar:MaximumWeight 72 3.05222e-07
+insert BottomBaryonScalar:MaximumWeight 73 0.000225103
+insert BottomBaryonScalar:MaximumWeight 74 9.43004e-08
+insert BottomBaryonScalar:MaximumWeight 75 0.0131163
+insert BottomBaryonScalar:MaximumWeight 76 0.000866485
+insert BottomBaryonScalar:MaximumWeight 77 0.000102483
+insert BottomBaryonScalar:MaximumWeight 78 0.0002451
+insert BottomBaryonScalar:MaximumWeight 79 2.59124e-06
+insert BottomBaryonScalar:MaximumWeight 80 1.44122e-05
+insert BottomBaryonScalar:MaximumWeight 81 0.00511908
+insert BottomBaryonScalar:MaximumWeight 82 0.020127
+insert BottomBaryonScalar:MaximumWeight 83 0.00153056
+insert BottomBaryonScalar:MaximumWeight 84 0.0501601
+insert BottomBaryonScalar:MaximumWeight 85 0.00379703
+insert BottomBaryonScalar:MaximumWeight 86 0.0128147
+insert BottomBaryonScalar:MaximumWeight 87 0.000969737
+create Herwig::ScalarMesonCurrent BottomBaryonScalarCurrent 
+set BottomBaryonScalarCurrent:ThetaEtaEtaPrime -0.194
+set BottomBaryonScalarCurrent:ID 0 211
+set BottomBaryonScalarCurrent:Decay_Constant 0 130.7
+set BottomBaryonScalarCurrent:ID 1 111
+set BottomBaryonScalarCurrent:Decay_Constant 1 130.7
+set BottomBaryonScalarCurrent:ID 2 111
+set BottomBaryonScalarCurrent:Decay_Constant 2 130.7
+set BottomBaryonScalarCurrent:ID 3 221
+set BottomBaryonScalarCurrent:Decay_Constant 3 130.7
+set BottomBaryonScalarCurrent:ID 4 221
+set BottomBaryonScalarCurrent:Decay_Constant 4 130.7
+set BottomBaryonScalarCurrent:ID 5 221
+set BottomBaryonScalarCurrent:Decay_Constant 5 130.7
+set BottomBaryonScalarCurrent:ID 6 331
+set BottomBaryonScalarCurrent:Decay_Constant 6 130.7
+set BottomBaryonScalarCurrent:ID 7 331
+set BottomBaryonScalarCurrent:Decay_Constant 7 130.7
+set BottomBaryonScalarCurrent:ID 8 331
+set BottomBaryonScalarCurrent:Decay_Constant 8 130.7
+set BottomBaryonScalarCurrent:ID 9 311
+set BottomBaryonScalarCurrent:Decay_Constant 9 159.8
+set BottomBaryonScalarCurrent:ID 10 321
+set BottomBaryonScalarCurrent:Decay_Constant 10 159.8
+set BottomBaryonScalarCurrent:ID 11 411
+set BottomBaryonScalarCurrent:Decay_Constant 11 200
+set BottomBaryonScalarCurrent:ID 12 421
+set BottomBaryonScalarCurrent:Decay_Constant 12 200
+set BottomBaryonScalarCurrent:ID 13 431
+set BottomBaryonScalarCurrent:Decay_Constant 13 241
+set BottomBaryonScalarCurrent:ID 14 10431
+set BottomBaryonScalarCurrent:Decay_Constant 14 73.7
+set BottomBaryonScalarCurrent:Quark 0  2
+set BottomBaryonScalarCurrent:AntiQuark 0  -1
+set BottomBaryonScalarCurrent:Quark 1  1
+set BottomBaryonScalarCurrent:AntiQuark 1  -1
+set BottomBaryonScalarCurrent:Quark 2  2
+set BottomBaryonScalarCurrent:AntiQuark 2  -2
+set BottomBaryonScalarCurrent:Quark 3  1
+set BottomBaryonScalarCurrent:AntiQuark 3  -1
+set BottomBaryonScalarCurrent:Quark 4  2
+set BottomBaryonScalarCurrent:AntiQuark 4  -2
+set BottomBaryonScalarCurrent:Quark 5  3
+set BottomBaryonScalarCurrent:AntiQuark 5  -3
+set BottomBaryonScalarCurrent:Quark 6  1
+set BottomBaryonScalarCurrent:AntiQuark 6  -1
+set BottomBaryonScalarCurrent:Quark 7  2
+set BottomBaryonScalarCurrent:AntiQuark 7  -2
+set BottomBaryonScalarCurrent:Quark 8  3
+set BottomBaryonScalarCurrent:AntiQuark 8  -3
+set BottomBaryonScalarCurrent:Quark 9  1
+set BottomBaryonScalarCurrent:AntiQuark 9  -3
+set BottomBaryonScalarCurrent:Quark 10  2
+set BottomBaryonScalarCurrent:AntiQuark 10  -3
+set BottomBaryonScalarCurrent:Quark 11  4
+set BottomBaryonScalarCurrent:AntiQuark 11  -1
+set BottomBaryonScalarCurrent:Quark 12  4
+set BottomBaryonScalarCurrent:AntiQuark 12  -2
+set BottomBaryonScalarCurrent:Quark 13  4
+set BottomBaryonScalarCurrent:AntiQuark 13  -3
+set BottomBaryonScalarCurrent:Quark 14  4
+set BottomBaryonScalarCurrent:AntiQuark 14  -3
+set BottomBaryonScalar:Current BottomBaryonScalarCurrent 
+create Herwig::ChengHeavyBaryonFormFactor BottomBaryonScalarForm 
+set BottomBaryonScalarForm:DownMass     0.322 
+set BottomBaryonScalarForm:UpMass       0.338 
+set BottomBaryonScalarForm:StrangeMass  0.51 
+set BottomBaryonScalarForm:CharmMass    1.6 
+set BottomBaryonScalarForm:BottomMass   5 
+set BottomBaryonScalarForm:VectorMassbc 6.34 
+set BottomBaryonScalarForm:AxialMassbc  6.73 
+set BottomBaryonScalarForm:VectorMassbs 5.42 
+set BottomBaryonScalarForm:AxialMassbs  5.86 
+set BottomBaryonScalarForm:VectorMassbd 5.32 
+set BottomBaryonScalarForm:AxialMassbd  5.71 
+set BottomBaryonScalarForm:VectorMasscs 2.11 
+set BottomBaryonScalarForm:AxialMasscs  2.54 
+set BottomBaryonScalarForm:VectorMasscu 2.01 
+set BottomBaryonScalarForm:AxialMasscu  2.42 
+set BottomBaryonScalarForm:Nfi 0  1
+set BottomBaryonScalarForm:Eta 0  1
+set BottomBaryonScalarForm:Nfi 1  0.57735
+set BottomBaryonScalarForm:Eta 1  1
+set BottomBaryonScalarForm:Nfi 2  0.707107
+set BottomBaryonScalarForm:Eta 2  1
+set BottomBaryonScalarForm:Nfi 3  1
+set BottomBaryonScalarForm:Eta 3  1
+set BottomBaryonScalarForm:Nfi 4  1
+set BottomBaryonScalarForm:Eta 4  1
+set BottomBaryonScalarForm:Nfi 5  0.707107
+set BottomBaryonScalarForm:Eta 5  1
+set BottomBaryonScalarForm:Nfi 6  0.707107
+set BottomBaryonScalarForm:Eta 6  1
+set BottomBaryonScalarForm:Nfi 7  0.5
+set BottomBaryonScalarForm:Eta 7  1
+set BottomBaryonScalarForm:Nfi 8  0.5
+set BottomBaryonScalarForm:Eta 8  1
+set BottomBaryonScalarForm:Nfi 9  0.288675
+set BottomBaryonScalarForm:Eta 9  1
+set BottomBaryonScalarForm:Nfi 10  1
+set BottomBaryonScalarForm:Eta 10  -0.333333
+set BottomBaryonScalarForm:Nfi 11  0.57735
+set BottomBaryonScalarForm:Eta 11  -0.333333
+set BottomBaryonScalarForm:Nfi 12  1
+set BottomBaryonScalarForm:Eta 12  0
+set BottomBaryonScalarForm:Nfi 13  1
+set BottomBaryonScalarForm:Eta 13  0
+set BottomBaryonScalarForm:Nfi 14  0.57735
+set BottomBaryonScalarForm:Eta 14  0
+set BottomBaryonScalarForm:Nfi 15  1
+set BottomBaryonScalarForm:Eta 15  0
+set BottomBaryonScalarForm:Nfi 16  0.57735
+set BottomBaryonScalarForm:Eta 16  0
+set BottomBaryonScalarForm:Nfi 17  0.57735
+set BottomBaryonScalarForm:Eta 17  1
+set BottomBaryonScalarForm:Nfi 18  0.57735
+set BottomBaryonScalarForm:Eta 18  1
+set BottomBaryonScalarForm:Nfi 19  0.57735
+set BottomBaryonScalarForm:Eta 19  1
+set BottomBaryonScalarForm:Incoming 0 5122
+set BottomBaryonScalarForm:Outgoing 0 4122
+set BottomBaryonScalarForm:InSpin 0 2
+set BottomBaryonScalarForm:OutSpin 0 2
+set BottomBaryonScalarForm:Spectator1 0 1
+set BottomBaryonScalarForm:Spectator2 0 2
+set BottomBaryonScalarForm:InQuark 0 5
+set BottomBaryonScalarForm:OutQuark 0 4
+set BottomBaryonScalarForm:Incoming 1 5122
+set BottomBaryonScalarForm:Outgoing 1 3122
+set BottomBaryonScalarForm:InSpin 1 2
+set BottomBaryonScalarForm:OutSpin 1 2
+set BottomBaryonScalarForm:Spectator1 1 1
+set BottomBaryonScalarForm:Spectator2 1 2
+set BottomBaryonScalarForm:InQuark 1 5
+set BottomBaryonScalarForm:OutQuark 1 3
+set BottomBaryonScalarForm:Incoming 2 5122
+set BottomBaryonScalarForm:Outgoing 2 2112
+set BottomBaryonScalarForm:InSpin 2 2
+set BottomBaryonScalarForm:OutSpin 2 2
+set BottomBaryonScalarForm:Spectator1 2 1
+set BottomBaryonScalarForm:Spectator2 2 2
+set BottomBaryonScalarForm:InQuark 2 5
+set BottomBaryonScalarForm:OutQuark 2 1
+set BottomBaryonScalarForm:Incoming 3 5232
+set BottomBaryonScalarForm:Outgoing 3 4232
+set BottomBaryonScalarForm:InSpin 3 2
+set BottomBaryonScalarForm:OutSpin 3 2
+set BottomBaryonScalarForm:Spectator1 3 2
+set BottomBaryonScalarForm:Spectator2 3 3
+set BottomBaryonScalarForm:InQuark 3 5
+set BottomBaryonScalarForm:OutQuark 3 4
+set BottomBaryonScalarForm:Incoming 4 5132
+set BottomBaryonScalarForm:Outgoing 4 4132
+set BottomBaryonScalarForm:InSpin 4 2
+set BottomBaryonScalarForm:OutSpin 4 2
+set BottomBaryonScalarForm:Spectator1 4 1
+set BottomBaryonScalarForm:Spectator2 4 3
+set BottomBaryonScalarForm:InQuark 4 5
+set BottomBaryonScalarForm:OutQuark 4 4
+set BottomBaryonScalarForm:Incoming 5 5232
+set BottomBaryonScalarForm:Outgoing 5 3322
+set BottomBaryonScalarForm:InSpin 5 2
+set BottomBaryonScalarForm:OutSpin 5 2
+set BottomBaryonScalarForm:Spectator1 5 2
+set BottomBaryonScalarForm:Spectator2 5 3
+set BottomBaryonScalarForm:InQuark 5 5
+set BottomBaryonScalarForm:OutQuark 5 3
+set BottomBaryonScalarForm:Incoming 6 5132
+set BottomBaryonScalarForm:Outgoing 6 3312
+set BottomBaryonScalarForm:InSpin 6 2
+set BottomBaryonScalarForm:OutSpin 6 2
+set BottomBaryonScalarForm:Spectator1 6 1
+set BottomBaryonScalarForm:Spectator2 6 3
+set BottomBaryonScalarForm:InQuark 6 5
+set BottomBaryonScalarForm:OutQuark 6 3
+set BottomBaryonScalarForm:Incoming 7 5232
+set BottomBaryonScalarForm:Outgoing 7 3212
+set BottomBaryonScalarForm:InSpin 7 2
+set BottomBaryonScalarForm:OutSpin 7 2
+set BottomBaryonScalarForm:Spectator1 7 2
+set BottomBaryonScalarForm:Spectator2 7 3
+set BottomBaryonScalarForm:InQuark 7 5
+set BottomBaryonScalarForm:OutQuark 7 1
+set BottomBaryonScalarForm:Incoming 8 5132
+set BottomBaryonScalarForm:Outgoing 8 3112
+set BottomBaryonScalarForm:InSpin 8 2
+set BottomBaryonScalarForm:OutSpin 8 2
+set BottomBaryonScalarForm:Spectator1 8 1
+set BottomBaryonScalarForm:Spectator2 8 3
+set BottomBaryonScalarForm:InQuark 8 5
+set BottomBaryonScalarForm:OutQuark 8 1
+set BottomBaryonScalarForm:Incoming 9 5232
+set BottomBaryonScalarForm:Outgoing 9 3122
+set BottomBaryonScalarForm:InSpin 9 2
+set BottomBaryonScalarForm:OutSpin 9 2
+set BottomBaryonScalarForm:Spectator1 9 2
+set BottomBaryonScalarForm:Spectator2 9 3
+set BottomBaryonScalarForm:InQuark 9 5
+set BottomBaryonScalarForm:OutQuark 9 1
+set BottomBaryonScalarForm:Incoming 10 5332
+set BottomBaryonScalarForm:Outgoing 10 4332
+set BottomBaryonScalarForm:InSpin 10 2
+set BottomBaryonScalarForm:OutSpin 10 2
+set BottomBaryonScalarForm:Spectator1 10 3
+set BottomBaryonScalarForm:Spectator2 10 3
+set BottomBaryonScalarForm:InQuark 10 5
+set BottomBaryonScalarForm:OutQuark 10 4
+set BottomBaryonScalarForm:Incoming 11 5332
+set BottomBaryonScalarForm:Outgoing 11 3312
+set BottomBaryonScalarForm:InSpin 11 2
+set BottomBaryonScalarForm:OutSpin 11 2
+set BottomBaryonScalarForm:Spectator1 11 3
+set BottomBaryonScalarForm:Spectator2 11 3
+set BottomBaryonScalarForm:InQuark 11 5
+set BottomBaryonScalarForm:OutQuark 11 1
+set BottomBaryonScalarForm:Incoming 12 5332
+set BottomBaryonScalarForm:Outgoing 12 4334
+set BottomBaryonScalarForm:InSpin 12 2
+set BottomBaryonScalarForm:OutSpin 12 4
+set BottomBaryonScalarForm:Spectator1 12 3
+set BottomBaryonScalarForm:Spectator2 12 3
+set BottomBaryonScalarForm:InQuark 12 5
+set BottomBaryonScalarForm:OutQuark 12 4
+set BottomBaryonScalarForm:Incoming 13 5332
+set BottomBaryonScalarForm:Outgoing 13 3334
+set BottomBaryonScalarForm:InSpin 13 2
+set BottomBaryonScalarForm:OutSpin 13 4
+set BottomBaryonScalarForm:Spectator1 13 3
+set BottomBaryonScalarForm:Spectator2 13 3
+set BottomBaryonScalarForm:InQuark 13 5
+set BottomBaryonScalarForm:OutQuark 13 3
+set BottomBaryonScalarForm:Incoming 14 5332
+set BottomBaryonScalarForm:Outgoing 14 3314
+set BottomBaryonScalarForm:InSpin 14 2
+set BottomBaryonScalarForm:OutSpin 14 4
+set BottomBaryonScalarForm:Spectator1 14 3
+set BottomBaryonScalarForm:Spectator2 14 3
+set BottomBaryonScalarForm:InQuark 14 5
+set BottomBaryonScalarForm:OutQuark 14 1
+set BottomBaryonScalarForm:Incoming 15 4332
+set BottomBaryonScalarForm:Outgoing 15 3334
+set BottomBaryonScalarForm:InSpin 15 2
+set BottomBaryonScalarForm:OutSpin 15 4
+set BottomBaryonScalarForm:Spectator1 15 3
+set BottomBaryonScalarForm:Spectator2 15 3
+set BottomBaryonScalarForm:InQuark 15 4
+set BottomBaryonScalarForm:OutQuark 15 3
+set BottomBaryonScalarForm:Incoming 16 4332
+set BottomBaryonScalarForm:Outgoing 16 3324
+set BottomBaryonScalarForm:InSpin 16 2
+set BottomBaryonScalarForm:OutSpin 16 4
+set BottomBaryonScalarForm:Spectator1 16 3
+set BottomBaryonScalarForm:Spectator2 16 3
+set BottomBaryonScalarForm:InQuark 16 4
+set BottomBaryonScalarForm:OutQuark 16 2
+set BottomBaryonScalarForm:Incoming 17 4122
+set BottomBaryonScalarForm:Outgoing 17 3122
+set BottomBaryonScalarForm:InSpin 17 2
+set BottomBaryonScalarForm:OutSpin 17 2
+set BottomBaryonScalarForm:Spectator1 17 1
+set BottomBaryonScalarForm:Spectator2 17 2
+set BottomBaryonScalarForm:InQuark 17 4
+set BottomBaryonScalarForm:OutQuark 17 3
+set BottomBaryonScalarForm:Incoming 18 4232
+set BottomBaryonScalarForm:Outgoing 18 3322
+set BottomBaryonScalarForm:InSpin 18 2
+set BottomBaryonScalarForm:OutSpin 18 2
+set BottomBaryonScalarForm:Spectator1 18 2
+set BottomBaryonScalarForm:Spectator2 18 3
+set BottomBaryonScalarForm:InQuark 18 4
+set BottomBaryonScalarForm:OutQuark 18 3
+set BottomBaryonScalarForm:Incoming 19 4132
+set BottomBaryonScalarForm:Outgoing 19 3312
+set BottomBaryonScalarForm:InSpin 19 2
+set BottomBaryonScalarForm:OutSpin 19 2
+set BottomBaryonScalarForm:Spectator1 19 1
+set BottomBaryonScalarForm:Spectator2 19 3
+set BottomBaryonScalarForm:InQuark 19 4
+set BottomBaryonScalarForm:OutQuark 19 3
+set BottomBaryonScalar:FormFactor BottomBaryonScalarForm 
+
+#
+create Herwig::BaryonFactorizedDecayer  BottomBaryonVector
+set BottomBaryonVector:Iteration 1
+set BottomBaryonVector:Ntry 500
+set BottomBaryonVector:Points 10000
+set BottomBaryonVector:GFermi 1.16639e-05 
+set BottomBaryonVector:a1Bottom 1.23
+set BottomBaryonVector:a2Bottom 0.33
+set BottomBaryonVector:a1Charm 1.1
+set BottomBaryonVector:a2Charm -0.5
+set BottomBaryonVector:CKM /Herwig/CKM 
+insert BottomBaryonVector:WeightLocation 0 0
+insert BottomBaryonVector:WeightLocation 1 0
+insert BottomBaryonVector:WeightLocation 2 0
+insert BottomBaryonVector:WeightLocation 3 0
+insert BottomBaryonVector:WeightLocation 4 0
+insert BottomBaryonVector:WeightLocation 5 0
+insert BottomBaryonVector:WeightLocation 6 0
+insert BottomBaryonVector:WeightLocation 7 0
+insert BottomBaryonVector:WeightLocation 8 0
+insert BottomBaryonVector:WeightLocation 9 0
+insert BottomBaryonVector:WeightLocation 10 0
+insert BottomBaryonVector:WeightLocation 11 0
+insert BottomBaryonVector:WeightLocation 12 0
+insert BottomBaryonVector:WeightLocation 13 0
+insert BottomBaryonVector:WeightLocation 14 0
+insert BottomBaryonVector:WeightLocation 15 0
+insert BottomBaryonVector:WeightLocation 16 0
+insert BottomBaryonVector:WeightLocation 17 0
+insert BottomBaryonVector:WeightLocation 18 0
+insert BottomBaryonVector:WeightLocation 19 0
+insert BottomBaryonVector:WeightLocation 20 0
+insert BottomBaryonVector:WeightLocation 21 0
+insert BottomBaryonVector:WeightLocation 22 0
+insert BottomBaryonVector:WeightLocation 23 0
+insert BottomBaryonVector:WeightLocation 24 0
+insert BottomBaryonVector:WeightLocation 25 0
+insert BottomBaryonVector:WeightLocation 26 0
+insert BottomBaryonVector:WeightLocation 27 0
+insert BottomBaryonVector:WeightLocation 28 0
+insert BottomBaryonVector:WeightLocation 29 0
+insert BottomBaryonVector:WeightLocation 30 0
+insert BottomBaryonVector:WeightLocation 31 0
+insert BottomBaryonVector:WeightLocation 32 0
+insert BottomBaryonVector:WeightLocation 33 0
+insert BottomBaryonVector:WeightLocation 34 0
+insert BottomBaryonVector:WeightLocation 35 0
+insert BottomBaryonVector:WeightLocation 36 0
+insert BottomBaryonVector:WeightLocation 37 0
+insert BottomBaryonVector:WeightLocation 38 0
+insert BottomBaryonVector:WeightLocation 39 0
+insert BottomBaryonVector:WeightLocation 40 0
+insert BottomBaryonVector:WeightLocation 41 0
+insert BottomBaryonVector:WeightLocation 42 0
+insert BottomBaryonVector:WeightLocation 43 0
+insert BottomBaryonVector:WeightLocation 44 0
+insert BottomBaryonVector:WeightLocation 45 0
+insert BottomBaryonVector:WeightLocation 46 0
+insert BottomBaryonVector:WeightLocation 47 0
+insert BottomBaryonVector:WeightLocation 48 0
+insert BottomBaryonVector:WeightLocation 49 0
+insert BottomBaryonVector:WeightLocation 50 0
+insert BottomBaryonVector:WeightLocation 51 0
+insert BottomBaryonVector:WeightLocation 52 0
+insert BottomBaryonVector:WeightLocation 53 0
+insert BottomBaryonVector:WeightLocation 54 0
+insert BottomBaryonVector:WeightLocation 55 0
+insert BottomBaryonVector:WeightLocation 56 0
+insert BottomBaryonVector:WeightLocation 57 0
+insert BottomBaryonVector:WeightLocation 58 0
+insert BottomBaryonVector:WeightLocation 59 0
+insert BottomBaryonVector:WeightLocation 60 0
+insert BottomBaryonVector:WeightLocation 61 0
+insert BottomBaryonVector:WeightLocation 62 0
+insert BottomBaryonVector:WeightLocation 63 0
+insert BottomBaryonVector:WeightLocation 64 0
+insert BottomBaryonVector:WeightLocation 65 0
+insert BottomBaryonVector:WeightLocation 66 0
+insert BottomBaryonVector:WeightLocation 67 0
+insert BottomBaryonVector:WeightLocation 68 0
+insert BottomBaryonVector:WeightLocation 69 0
+insert BottomBaryonVector:WeightLocation 70 0
+insert BottomBaryonVector:WeightLocation 71 0
+insert BottomBaryonVector:WeightLocation 72 0
+insert BottomBaryonVector:WeightLocation 73 0
+insert BottomBaryonVector:WeightLocation 74 0
+insert BottomBaryonVector:WeightLocation 75 0
+insert BottomBaryonVector:WeightLocation 76 0
+insert BottomBaryonVector:WeightLocation 77 0
+insert BottomBaryonVector:WeightLocation 78 0
+insert BottomBaryonVector:WeightLocation 79 0
+insert BottomBaryonVector:WeightLocation 80 0
+insert BottomBaryonVector:WeightLocation 81 0
+insert BottomBaryonVector:WeightLocation 82 0
+insert BottomBaryonVector:WeightLocation 83 0
+insert BottomBaryonVector:WeightLocation 84 0
+insert BottomBaryonVector:WeightLocation 85 0
+insert BottomBaryonVector:WeightLocation 86 0
+insert BottomBaryonVector:WeightLocation 87 0
+insert BottomBaryonVector:WeightLocation 88 0
+insert BottomBaryonVector:WeightLocation 89 0
+insert BottomBaryonVector:WeightLocation 90 0
+insert BottomBaryonVector:WeightLocation 91 0
+insert BottomBaryonVector:WeightLocation 92 0
+insert BottomBaryonVector:WeightLocation 93 0
+insert BottomBaryonVector:WeightLocation 94 0
+insert BottomBaryonVector:WeightLocation 95 0
+insert BottomBaryonVector:WeightLocation 96 0
+insert BottomBaryonVector:WeightLocation 97 0
+insert BottomBaryonVector:WeightLocation 98 0
+insert BottomBaryonVector:WeightLocation 99 0
+insert BottomBaryonVector:WeightLocation 100 0
+insert BottomBaryonVector:WeightLocation 101 0
+insert BottomBaryonVector:WeightLocation 102 0
+insert BottomBaryonVector:WeightLocation 103 0
+insert BottomBaryonVector:WeightLocation 104 0
+insert BottomBaryonVector:WeightLocation 105 0
+insert BottomBaryonVector:WeightLocation 106 0
+insert BottomBaryonVector:WeightLocation 107 0
+insert BottomBaryonVector:WeightLocation 108 0
+insert BottomBaryonVector:WeightLocation 109 0
+insert BottomBaryonVector:WeightLocation 110 0
+insert BottomBaryonVector:WeightLocation 111 0
+insert BottomBaryonVector:WeightLocation 112 0
+insert BottomBaryonVector:WeightLocation 113 0
+insert BottomBaryonVector:WeightLocation 114 0
+insert BottomBaryonVector:WeightLocation 115 0
+insert BottomBaryonVector:WeightLocation 116 0
+insert BottomBaryonVector:WeightLocation 117 0
+insert BottomBaryonVector:MaximumWeight 0 0.0449396
+insert BottomBaryonVector:MaximumWeight 1 0.00612163
+insert BottomBaryonVector:MaximumWeight 2 0.131143
+insert BottomBaryonVector:MaximumWeight 3 0.00309077
+insert BottomBaryonVector:MaximumWeight 4 0.0695929
+insert BottomBaryonVector:MaximumWeight 5 0.0324241
+insert BottomBaryonVector:MaximumWeight 6 2.65172e-08
+insert BottomBaryonVector:MaximumWeight 7 8.37622e-08
+insert BottomBaryonVector:MaximumWeight 8 7.93362e-08
+insert BottomBaryonVector:MaximumWeight 9 8.953e-06
+insert BottomBaryonVector:MaximumWeight 10 1.3552e-06
+insert BottomBaryonVector:MaximumWeight 11 0.00115009
+insert BottomBaryonVector:MaximumWeight 12 0.000972447
+insert BottomBaryonVector:MaximumWeight 13 3.66488e-07
+insert BottomBaryonVector:MaximumWeight 14 1.13877e-06
+insert BottomBaryonVector:MaximumWeight 15 1.08871e-06
+insert BottomBaryonVector:MaximumWeight 16 0.000121201
+insert BottomBaryonVector:MaximumWeight 17 5.14972e-08
+insert BottomBaryonVector:MaximumWeight 18 4.50002e-05
+insert BottomBaryonVector:MaximumWeight 19 4.13094e-05
+insert BottomBaryonVector:MaximumWeight 20 0.053585
+insert BottomBaryonVector:MaximumWeight 21 0.00731867
+insert BottomBaryonVector:MaximumWeight 22 0.156467
+insert BottomBaryonVector:MaximumWeight 23 0.00368031
+insert BottomBaryonVector:MaximumWeight 24 0.0833327
+insert BottomBaryonVector:MaximumWeight 25 0.038913
+insert BottomBaryonVector:MaximumWeight 26 0.0536657
+insert BottomBaryonVector:MaximumWeight 27 0.00731593
+insert BottomBaryonVector:MaximumWeight 28 0.156705
+insert BottomBaryonVector:MaximumWeight 29 0.00370561
+insert BottomBaryonVector:MaximumWeight 30 0.083468
+insert BottomBaryonVector:MaximumWeight 31 0.038978
+insert BottomBaryonVector:MaximumWeight 32 5.49863e-08
+insert BottomBaryonVector:MaximumWeight 33 1.72936e-07
+insert BottomBaryonVector:MaximumWeight 34 1.64202e-07
+insert BottomBaryonVector:MaximumWeight 35 1.84595e-05
+insert BottomBaryonVector:MaximumWeight 36 2.79291e-06
+insert BottomBaryonVector:MaximumWeight 37 0.00237386
+insert BottomBaryonVector:MaximumWeight 38 0.00201395
+insert BottomBaryonVector:MaximumWeight 39 5.53851e-08
+insert BottomBaryonVector:MaximumWeight 40 1.7474e-07
+insert BottomBaryonVector:MaximumWeight 41 1.65383e-07
+insert BottomBaryonVector:MaximumWeight 42 1.85805e-05
+insert BottomBaryonVector:MaximumWeight 43 2.81345e-06
+insert BottomBaryonVector:MaximumWeight 44 0.00239027
+insert BottomBaryonVector:MaximumWeight 45 0.00202752
+insert BottomBaryonVector:MaximumWeight 46 3.45745e-07
+insert BottomBaryonVector:MaximumWeight 47 1.08706e-06
+insert BottomBaryonVector:MaximumWeight 48 1.02367e-06
+insert BottomBaryonVector:MaximumWeight 49 0.000112858
+insert BottomBaryonVector:MaximumWeight 50 4.79645e-08
+insert BottomBaryonVector:MaximumWeight 51 4.13834e-05
+insert BottomBaryonVector:MaximumWeight 52 3.74634e-05
+insert BottomBaryonVector:MaximumWeight 53 3.46681e-07
+insert BottomBaryonVector:MaximumWeight 54 1.0836e-06
+insert BottomBaryonVector:MaximumWeight 55 1.02634e-06
+insert BottomBaryonVector:MaximumWeight 56 0.000113141
+insert BottomBaryonVector:MaximumWeight 57 4.80722e-08
+insert BottomBaryonVector:MaximumWeight 58 4.14795e-05
+insert BottomBaryonVector:MaximumWeight 59 3.75666e-05
+insert BottomBaryonVector:MaximumWeight 60 8.25592e-08
+insert BottomBaryonVector:MaximumWeight 61 2.59006e-07
+insert BottomBaryonVector:MaximumWeight 62 2.44365e-07
+insert BottomBaryonVector:MaximumWeight 63 2.69568e-05
+insert BottomBaryonVector:MaximumWeight 64 1.1447e-08
+insert BottomBaryonVector:MaximumWeight 65 9.97623e-06
+insert BottomBaryonVector:MaximumWeight 66 9.23672e-06
+insert BottomBaryonVector:MaximumWeight 67 0.05
+insert BottomBaryonVector:MaximumWeight 68 0.00425156
+insert BottomBaryonVector:MaximumWeight 69 0.15
+insert BottomBaryonVector:MaximumWeight 70 0.00155878
+insert BottomBaryonVector:MaximumWeight 71 0.041
+insert BottomBaryonVector:MaximumWeight 72 0.0119752
+insert BottomBaryonVector:MaximumWeight 73 4.20717e-07
+insert BottomBaryonVector:MaximumWeight 74 1.29436e-06
+insert BottomBaryonVector:MaximumWeight 75 1.16536e-06
+insert BottomBaryonVector:MaximumWeight 76 0.000100101
+insert BottomBaryonVector:MaximumWeight 77 4.25338e-08
+insert BottomBaryonVector:MaximumWeight 78 2.30658e-05
+insert BottomBaryonVector:MaximumWeight 79 1.52993e-05
+insert BottomBaryonVector:MaximumWeight 80 0.0225479
+insert BottomBaryonVector:MaximumWeight 81 0.00340359
+insert BottomBaryonVector:MaximumWeight 82 0.0670545
+insert BottomBaryonVector:MaximumWeight 83 0.00207781
+insert BottomBaryonVector:MaximumWeight 84 0.0485642
+insert BottomBaryonVector:MaximumWeight 85 0.0249597
+insert BottomBaryonVector:MaximumWeight 86 5.19428e-08
+insert BottomBaryonVector:MaximumWeight 87 1.602e-07
+insert BottomBaryonVector:MaximumWeight 88 1.55161e-07
+insert BottomBaryonVector:MaximumWeight 89 2.07183e-05
+insert BottomBaryonVector:MaximumWeight 90 3.13573e-06
+insert BottomBaryonVector:MaximumWeight 91 0.006
+insert BottomBaryonVector:MaximumWeight 92 0.00355305
+insert BottomBaryonVector:MaximumWeight 93 2.20399e-06
+insert BottomBaryonVector:MaximumWeight 94 4.56021e-06
+insert BottomBaryonVector:MaximumWeight 95 6.2865e-06
+insert BottomBaryonVector:MaximumWeight 96 0.000590819
+insert BottomBaryonVector:MaximumWeight 97 2.72562e-07
+insert BottomBaryonVector:MaximumWeight 98 0.000250635
+insert BottomBaryonVector:MaximumWeight 99 0.000233231
+insert BottomBaryonVector:MaximumWeight 100 0.0666776
+insert BottomBaryonVector:MaximumWeight 101 0.00385387
+insert BottomBaryonVector:MaximumWeight 102 0.00895393
+insert BottomBaryonVector:MaximumWeight 103 0.000482572
+insert BottomBaryonVector:MaximumWeight 104 0.000972852
+insert BottomBaryonVector:MaximumWeight 105 0.00180393
+insert BottomBaryonVector:MaximumWeight 106 6.10446e-05
+insert BottomBaryonVector:MaximumWeight 107 0.0217848
+insert BottomBaryonVector:MaximumWeight 108 0.000128913
+insert BottomBaryonVector:MaximumWeight 109 0.0832288
+insert BottomBaryonVector:MaximumWeight 110 0.00593006
+insert BottomBaryonVector:MaximumWeight 111 0.0408944
+insert BottomBaryonVector:MaximumWeight 112 0.203886
+insert BottomBaryonVector:MaximumWeight 113 0.0137325
+insert BottomBaryonVector:MaximumWeight 114 0.0871771
+insert BottomBaryonVector:MaximumWeight 115 0.0520421
+insert BottomBaryonVector:MaximumWeight 116 0.00349373
+insert BottomBaryonVector:MaximumWeight 117 0.0220737
+create Herwig::VectorMesonCurrent BottomBaryonVectorCurrent 
+set BottomBaryonVectorCurrent:ID 0 213
+set BottomBaryonVectorCurrent:Decay_Constant 0 0.16632
+set BottomBaryonVectorCurrent:ID 1 113
+set BottomBaryonVectorCurrent:Decay_Constant 1 0.16632
+set BottomBaryonVectorCurrent:ID 2 113
+set BottomBaryonVectorCurrent:Decay_Constant 2 0.16632
+set BottomBaryonVectorCurrent:ID 3 223
+set BottomBaryonVectorCurrent:Decay_Constant 3 0.1764
+set BottomBaryonVectorCurrent:ID 4 223
+set BottomBaryonVectorCurrent:Decay_Constant 4 0.1764
+set BottomBaryonVectorCurrent:ID 5 333
+set BottomBaryonVectorCurrent:Decay_Constant 5 0.238
+set BottomBaryonVectorCurrent:ID 6 313
+set BottomBaryonVectorCurrent:Decay_Constant 6 0.2019
+set BottomBaryonVectorCurrent:ID 7 323
+set BottomBaryonVectorCurrent:Decay_Constant 7 0.2019
+set BottomBaryonVectorCurrent:ID 8 20213
+set BottomBaryonVectorCurrent:Decay_Constant 8 0.4626
+set BottomBaryonVectorCurrent:ID 9 20113
+set BottomBaryonVectorCurrent:Decay_Constant 9 0.4626
+set BottomBaryonVectorCurrent:ID 10 20113
+set BottomBaryonVectorCurrent:Decay_Constant 10 0.4626
+set BottomBaryonVectorCurrent:ID 11 413
+set BottomBaryonVectorCurrent:Decay_Constant 11 0.402
+set BottomBaryonVectorCurrent:ID 12 423
+set BottomBaryonVectorCurrent:Decay_Constant 12 0.402
+set BottomBaryonVectorCurrent:ID 13 433
+set BottomBaryonVectorCurrent:Decay_Constant 13 0.509
+set BottomBaryonVectorCurrent:ID 14 443
+set BottomBaryonVectorCurrent:Decay_Constant 14 1.223
+set BottomBaryonVectorCurrent:ID 15 100443
+set BottomBaryonVectorCurrent:Decay_Constant 15 1.08
+set BottomBaryonVectorCurrent:ID 16 10433
+set BottomBaryonVectorCurrent:Decay_Constant 16 0.397
+set BottomBaryonVectorCurrent:Quark 0  2
+set BottomBaryonVectorCurrent:AntiQuark 0  -1
+set BottomBaryonVectorCurrent:Quark 1  1
+set BottomBaryonVectorCurrent:AntiQuark 1  -1
+set BottomBaryonVectorCurrent:Quark 2  2
+set BottomBaryonVectorCurrent:AntiQuark 2  -2
+set BottomBaryonVectorCurrent:Quark 3  1
+set BottomBaryonVectorCurrent:AntiQuark 3  -1
+set BottomBaryonVectorCurrent:Quark 4  2
+set BottomBaryonVectorCurrent:AntiQuark 4  -2
+set BottomBaryonVectorCurrent:Quark 5  3
+set BottomBaryonVectorCurrent:AntiQuark 5  -3
+set BottomBaryonVectorCurrent:Quark 6  1
+set BottomBaryonVectorCurrent:AntiQuark 6  -3
+set BottomBaryonVectorCurrent:Quark 7  2
+set BottomBaryonVectorCurrent:AntiQuark 7  -3
+set BottomBaryonVectorCurrent:Quark 8  2
+set BottomBaryonVectorCurrent:AntiQuark 8  -1
+set BottomBaryonVectorCurrent:Quark 9  1
+set BottomBaryonVectorCurrent:AntiQuark 9  -1
+set BottomBaryonVectorCurrent:Quark 10  2
+set BottomBaryonVectorCurrent:AntiQuark 10  -2
+set BottomBaryonVectorCurrent:Quark 11  4
+set BottomBaryonVectorCurrent:AntiQuark 11  -1
+set BottomBaryonVectorCurrent:Quark 12  4
+set BottomBaryonVectorCurrent:AntiQuark 12  -2
+set BottomBaryonVectorCurrent:Quark 13  4
+set BottomBaryonVectorCurrent:AntiQuark 13  -3
+set BottomBaryonVectorCurrent:Quark 14  4
+set BottomBaryonVectorCurrent:AntiQuark 14  -4
+set BottomBaryonVectorCurrent:Quark 15  4
+set BottomBaryonVectorCurrent:AntiQuark 15  -4
+set BottomBaryonVectorCurrent:Quark 16  4
+set BottomBaryonVectorCurrent:AntiQuark 16  -3
+set BottomBaryonVector:Current BottomBaryonVectorCurrent 
+create Herwig::ChengHeavyBaryonFormFactor BottomBaryonVectorForm 
+set BottomBaryonVectorForm:DownMass     0.322 
+set BottomBaryonVectorForm:UpMass       0.338 
+set BottomBaryonVectorForm:StrangeMass  0.51 
+set BottomBaryonVectorForm:CharmMass    1.6 
+set BottomBaryonVectorForm:BottomMass   5 
+set BottomBaryonVectorForm:VectorMassbc 6.34 
+set BottomBaryonVectorForm:AxialMassbc  6.73 
+set BottomBaryonVectorForm:VectorMassbs 5.42 
+set BottomBaryonVectorForm:AxialMassbs  5.86 
+set BottomBaryonVectorForm:VectorMassbd 5.32 
+set BottomBaryonVectorForm:AxialMassbd  5.71 
+set BottomBaryonVectorForm:VectorMasscs 2.11 
+set BottomBaryonVectorForm:AxialMasscs  2.54 
+set BottomBaryonVectorForm:VectorMasscu 2.01 
+set BottomBaryonVectorForm:AxialMasscu  2.42 
+set BottomBaryonVectorForm:Nfi 0  1
+set BottomBaryonVectorForm:Eta 0  1
+set BottomBaryonVectorForm:Nfi 1  0.57735
+set BottomBaryonVectorForm:Eta 1  1
+set BottomBaryonVectorForm:Nfi 2  0.707107
+set BottomBaryonVectorForm:Eta 2  1
+set BottomBaryonVectorForm:Nfi 3  1
+set BottomBaryonVectorForm:Eta 3  1
+set BottomBaryonVectorForm:Nfi 4  1
+set BottomBaryonVectorForm:Eta 4  1
+set BottomBaryonVectorForm:Nfi 5  0.707107
+set BottomBaryonVectorForm:Eta 5  1
+set BottomBaryonVectorForm:Nfi 6  0.707107
+set BottomBaryonVectorForm:Eta 6  1
+set BottomBaryonVectorForm:Nfi 7  0.5
+set BottomBaryonVectorForm:Eta 7  1
+set BottomBaryonVectorForm:Nfi 8  0.5
+set BottomBaryonVectorForm:Eta 8  1
+set BottomBaryonVectorForm:Nfi 9  0.288675
+set BottomBaryonVectorForm:Eta 9  1
+set BottomBaryonVectorForm:Nfi 10  1
+set BottomBaryonVectorForm:Eta 10  -0.333333
+set BottomBaryonVectorForm:Nfi 11  0.57735
+set BottomBaryonVectorForm:Eta 11  -0.333333
+set BottomBaryonVectorForm:Nfi 12  1
+set BottomBaryonVectorForm:Eta 12  0
+set BottomBaryonVectorForm:Nfi 13  1
+set BottomBaryonVectorForm:Eta 13  0
+set BottomBaryonVectorForm:Nfi 14  0.57735
+set BottomBaryonVectorForm:Eta 14  0
+set BottomBaryonVectorForm:Nfi 15  1
+set BottomBaryonVectorForm:Eta 15  0
+set BottomBaryonVectorForm:Nfi 16  0.57735
+set BottomBaryonVectorForm:Eta 16  0
+set BottomBaryonVectorForm:Nfi 17  0.57735
+set BottomBaryonVectorForm:Eta 17  1
+set BottomBaryonVectorForm:Nfi 18  0.57735
+set BottomBaryonVectorForm:Eta 18  1
+set BottomBaryonVectorForm:Nfi 19  0.57735
+set BottomBaryonVectorForm:Eta 19  1
+set BottomBaryonVectorForm:Incoming 0 5122
+set BottomBaryonVectorForm:Outgoing 0 4122
+set BottomBaryonVectorForm:InSpin 0 2
+set BottomBaryonVectorForm:OutSpin 0 2
+set BottomBaryonVectorForm:Spectator1 0 1
+set BottomBaryonVectorForm:Spectator2 0 2
+set BottomBaryonVectorForm:InQuark 0 5
+set BottomBaryonVectorForm:OutQuark 0 4
+set BottomBaryonVectorForm:Incoming 1 5122
+set BottomBaryonVectorForm:Outgoing 1 3122
+set BottomBaryonVectorForm:InSpin 1 2
+set BottomBaryonVectorForm:OutSpin 1 2
+set BottomBaryonVectorForm:Spectator1 1 1
+set BottomBaryonVectorForm:Spectator2 1 2
+set BottomBaryonVectorForm:InQuark 1 5
+set BottomBaryonVectorForm:OutQuark 1 3
+set BottomBaryonVectorForm:Incoming 2 5122
+set BottomBaryonVectorForm:Outgoing 2 2112
+set BottomBaryonVectorForm:InSpin 2 2
+set BottomBaryonVectorForm:OutSpin 2 2
+set BottomBaryonVectorForm:Spectator1 2 1
+set BottomBaryonVectorForm:Spectator2 2 2
+set BottomBaryonVectorForm:InQuark 2 5
+set BottomBaryonVectorForm:OutQuark 2 1
+set BottomBaryonVectorForm:Incoming 3 5232
+set BottomBaryonVectorForm:Outgoing 3 4232
+set BottomBaryonVectorForm:InSpin 3 2
+set BottomBaryonVectorForm:OutSpin 3 2
+set BottomBaryonVectorForm:Spectator1 3 2
+set BottomBaryonVectorForm:Spectator2 3 3
+set BottomBaryonVectorForm:InQuark 3 5
+set BottomBaryonVectorForm:OutQuark 3 4
+set BottomBaryonVectorForm:Incoming 4 5132
+set BottomBaryonVectorForm:Outgoing 4 4132
+set BottomBaryonVectorForm:InSpin 4 2
+set BottomBaryonVectorForm:OutSpin 4 2
+set BottomBaryonVectorForm:Spectator1 4 1
+set BottomBaryonVectorForm:Spectator2 4 3
+set BottomBaryonVectorForm:InQuark 4 5
+set BottomBaryonVectorForm:OutQuark 4 4
+set BottomBaryonVectorForm:Incoming 5 5232
+set BottomBaryonVectorForm:Outgoing 5 3322
+set BottomBaryonVectorForm:InSpin 5 2
+set BottomBaryonVectorForm:OutSpin 5 2
+set BottomBaryonVectorForm:Spectator1 5 2
+set BottomBaryonVectorForm:Spectator2 5 3
+set BottomBaryonVectorForm:InQuark 5 5
+set BottomBaryonVectorForm:OutQuark 5 3
+set BottomBaryonVectorForm:Incoming 6 5132
+set BottomBaryonVectorForm:Outgoing 6 3312
+set BottomBaryonVectorForm:InSpin 6 2
+set BottomBaryonVectorForm:OutSpin 6 2
+set BottomBaryonVectorForm:Spectator1 6 1
+set BottomBaryonVectorForm:Spectator2 6 3
+set BottomBaryonVectorForm:InQuark 6 5
+set BottomBaryonVectorForm:OutQuark 6 3
+set BottomBaryonVectorForm:Incoming 7 5232
+set BottomBaryonVectorForm:Outgoing 7 3212
+set BottomBaryonVectorForm:InSpin 7 2
+set BottomBaryonVectorForm:OutSpin 7 2
+set BottomBaryonVectorForm:Spectator1 7 2
+set BottomBaryonVectorForm:Spectator2 7 3
+set BottomBaryonVectorForm:InQuark 7 5
+set BottomBaryonVectorForm:OutQuark 7 1
+set BottomBaryonVectorForm:Incoming 8 5132
+set BottomBaryonVectorForm:Outgoing 8 3112
+set BottomBaryonVectorForm:InSpin 8 2
+set BottomBaryonVectorForm:OutSpin 8 2
+set BottomBaryonVectorForm:Spectator1 8 1
+set BottomBaryonVectorForm:Spectator2 8 3
+set BottomBaryonVectorForm:InQuark 8 5
+set BottomBaryonVectorForm:OutQuark 8 1
+set BottomBaryonVectorForm:Incoming 9 5232
+set BottomBaryonVectorForm:Outgoing 9 3122
+set BottomBaryonVectorForm:InSpin 9 2
+set BottomBaryonVectorForm:OutSpin 9 2
+set BottomBaryonVectorForm:Spectator1 9 2
+set BottomBaryonVectorForm:Spectator2 9 3
+set BottomBaryonVectorForm:InQuark 9 5
+set BottomBaryonVectorForm:OutQuark 9 1
+set BottomBaryonVectorForm:Incoming 10 5332
+set BottomBaryonVectorForm:Outgoing 10 4332
+set BottomBaryonVectorForm:InSpin 10 2
+set BottomBaryonVectorForm:OutSpin 10 2
+set BottomBaryonVectorForm:Spectator1 10 3
+set BottomBaryonVectorForm:Spectator2 10 3
+set BottomBaryonVectorForm:InQuark 10 5
+set BottomBaryonVectorForm:OutQuark 10 4
+set BottomBaryonVectorForm:Incoming 11 5332
+set BottomBaryonVectorForm:Outgoing 11 3312
+set BottomBaryonVectorForm:InSpin 11 2
+set BottomBaryonVectorForm:OutSpin 11 2
+set BottomBaryonVectorForm:Spectator1 11 3
+set BottomBaryonVectorForm:Spectator2 11 3
+set BottomBaryonVectorForm:InQuark 11 5
+set BottomBaryonVectorForm:OutQuark 11 1
+set BottomBaryonVectorForm:Incoming 12 5332
+set BottomBaryonVectorForm:Outgoing 12 4334
+set BottomBaryonVectorForm:InSpin 12 2
+set BottomBaryonVectorForm:OutSpin 12 4
+set BottomBaryonVectorForm:Spectator1 12 3
+set BottomBaryonVectorForm:Spectator2 12 3
+set BottomBaryonVectorForm:InQuark 12 5
+set BottomBaryonVectorForm:OutQuark 12 4
+set BottomBaryonVectorForm:Incoming 13 5332
+set BottomBaryonVectorForm:Outgoing 13 3334
+set BottomBaryonVectorForm:InSpin 13 2
+set BottomBaryonVectorForm:OutSpin 13 4
+set BottomBaryonVectorForm:Spectator1 13 3
+set BottomBaryonVectorForm:Spectator2 13 3
+set BottomBaryonVectorForm:InQuark 13 5
+set BottomBaryonVectorForm:OutQuark 13 3
+set BottomBaryonVectorForm:Incoming 14 5332
+set BottomBaryonVectorForm:Outgoing 14 3314
+set BottomBaryonVectorForm:InSpin 14 2
+set BottomBaryonVectorForm:OutSpin 14 4
+set BottomBaryonVectorForm:Spectator1 14 3
+set BottomBaryonVectorForm:Spectator2 14 3
+set BottomBaryonVectorForm:InQuark 14 5
+set BottomBaryonVectorForm:OutQuark 14 1
+set BottomBaryonVectorForm:Incoming 15 4332
+set BottomBaryonVectorForm:Outgoing 15 3334
+set BottomBaryonVectorForm:InSpin 15 2
+set BottomBaryonVectorForm:OutSpin 15 4
+set BottomBaryonVectorForm:Spectator1 15 3
+set BottomBaryonVectorForm:Spectator2 15 3
+set BottomBaryonVectorForm:InQuark 15 4
+set BottomBaryonVectorForm:OutQuark 15 3
+set BottomBaryonVectorForm:Incoming 16 4332
+set BottomBaryonVectorForm:Outgoing 16 3324
+set BottomBaryonVectorForm:InSpin 16 2
+set BottomBaryonVectorForm:OutSpin 16 4
+set BottomBaryonVectorForm:Spectator1 16 3
+set BottomBaryonVectorForm:Spectator2 16 3
+set BottomBaryonVectorForm:InQuark 16 4
+set BottomBaryonVectorForm:OutQuark 16 2
+set BottomBaryonVectorForm:Incoming 17 4122
+set BottomBaryonVectorForm:Outgoing 17 3122
+set BottomBaryonVectorForm:InSpin 17 2
+set BottomBaryonVectorForm:OutSpin 17 2
+set BottomBaryonVectorForm:Spectator1 17 1
+set BottomBaryonVectorForm:Spectator2 17 2
+set BottomBaryonVectorForm:InQuark 17 4
+set BottomBaryonVectorForm:OutQuark 17 3
+set BottomBaryonVectorForm:Incoming 18 4232
+set BottomBaryonVectorForm:Outgoing 18 3322
+set BottomBaryonVectorForm:InSpin 18 2
+set BottomBaryonVectorForm:OutSpin 18 2
+set BottomBaryonVectorForm:Spectator1 18 2
+set BottomBaryonVectorForm:Spectator2 18 3
+set BottomBaryonVectorForm:InQuark 18 4
+set BottomBaryonVectorForm:OutQuark 18 3
+set BottomBaryonVectorForm:Incoming 19 4132
+set BottomBaryonVectorForm:Outgoing 19 3312
+set BottomBaryonVectorForm:InSpin 19 2
+set BottomBaryonVectorForm:OutSpin 19 2
+set BottomBaryonVectorForm:Spectator1 19 1
+set BottomBaryonVectorForm:Spectator2 19 3
+set BottomBaryonVectorForm:InQuark 19 4
+set BottomBaryonVectorForm:OutQuark 19 3
+set BottomBaryonVector:FormFactor BottomBaryonVectorForm 
+
+#
+create Herwig::StrongHeavyBaryonDecayer  HeavyStrong
+set HeavyStrong:Iteration 1
+set HeavyStrong:Ntry 500
+set HeavyStrong:Points 10000
+set HeavyStrong:GenerateIntermediates 0 
+set HeavyStrong:gSigma_cLambda_cPi 8.88
+set HeavyStrong:gXiStar_cXi_cPi 8.34
+set HeavyStrong:fLambda_c1Sigma_cPi 0.52
+set HeavyStrong:fXi_c1Xi_cPi 0.36
+set HeavyStrong:fLambda_c1*Sigma_cPi 21.5
+set HeavyStrong:fXi_c1*Xi_cPi 20
+set HeavyStrong:gSigma_bLambda_bPi 8.88
+set HeavyStrong:gXiStar_bXi_bPi 8.34
+set HeavyStrong:fLambda_b1Sigma_bPi 0.52
+set HeavyStrong:fXi_b1Xi_bPi 0.36
+set HeavyStrong:fLambda_b1*Sigma_bPi 21.5
+set HeavyStrong:fXi_b1*Xi_bPi 20
+set HeavyStrong:Incoming 0 4222
+set HeavyStrong:OutgoingB 0 4122
+set HeavyStrong:OutgoingM 0 211
+set HeavyStrong:ModeType 0 1
+set HeavyStrong:MaxWeight 0 2.00656
+set HeavyStrong:Incoming 1 4212
+set HeavyStrong:OutgoingB 1 4122
+set HeavyStrong:OutgoingM 1 111
+set HeavyStrong:ModeType 1 1
+set HeavyStrong:MaxWeight 1 2.32796
+set HeavyStrong:Incoming 2 4112
+set HeavyStrong:OutgoingB 2 4122
+set HeavyStrong:OutgoingM 2 -211
+set HeavyStrong:ModeType 2 1
+set HeavyStrong:MaxWeight 2 2.00361
+set HeavyStrong:Incoming 3 4224
+set HeavyStrong:OutgoingB 3 4122
+set HeavyStrong:OutgoingM 3 211
+set HeavyStrong:ModeType 3 1
+set HeavyStrong:MaxWeight 3 2.25125
+set HeavyStrong:Incoming 4 4214
+set HeavyStrong:OutgoingB 4 4122
+set HeavyStrong:OutgoingM 4 111
+set HeavyStrong:ModeType 4 1
+set HeavyStrong:MaxWeight 4 2.16303
+set HeavyStrong:Incoming 5 4114
+set HeavyStrong:OutgoingB 5 4122
+set HeavyStrong:OutgoingM 5 -211
+set HeavyStrong:ModeType 5 1
+set HeavyStrong:MaxWeight 5 2.06737
+set HeavyStrong:Incoming 6 4324
+set HeavyStrong:OutgoingB 6 4232
+set HeavyStrong:OutgoingM 6 111
+set HeavyStrong:ModeType 6 1
+set HeavyStrong:MaxWeight 6 1.99324
+set HeavyStrong:Incoming 7 4324
+set HeavyStrong:OutgoingB 7 4132
+set HeavyStrong:OutgoingM 7 211
+set HeavyStrong:ModeType 7 1
+set HeavyStrong:MaxWeight 7 1.50601
+set HeavyStrong:Incoming 8 4314
+set HeavyStrong:OutgoingB 8 4132
+set HeavyStrong:OutgoingM 8 111
+set HeavyStrong:ModeType 8 1
+set HeavyStrong:MaxWeight 8 1.72816
+set HeavyStrong:Incoming 9 4314
+set HeavyStrong:OutgoingB 9 4232
+set HeavyStrong:OutgoingM 9 -211
+set HeavyStrong:ModeType 9 1
+set HeavyStrong:MaxWeight 9 1.68833
+set HeavyStrong:Incoming 10 14122
+set HeavyStrong:OutgoingB 10 4222
+set HeavyStrong:OutgoingM 10 -211
+set HeavyStrong:ModeType 10 0
+set HeavyStrong:MaxWeight 10 2.34015
+set HeavyStrong:Incoming 11 14122
+set HeavyStrong:OutgoingB 11 4212
+set HeavyStrong:OutgoingM 11 111
+set HeavyStrong:ModeType 11 0
+set HeavyStrong:MaxWeight 11 5.25433
+set HeavyStrong:Incoming 12 14122
+set HeavyStrong:OutgoingB 12 4112
+set HeavyStrong:OutgoingM 12 211
+set HeavyStrong:ModeType 12 0
+set HeavyStrong:MaxWeight 12 2.50106
+set HeavyStrong:Incoming 13 4124
+set HeavyStrong:OutgoingB 13 4222
+set HeavyStrong:OutgoingM 13 -211
+set HeavyStrong:ModeType 13 1
+set HeavyStrong:MaxWeight 13 11.5795
+set HeavyStrong:Incoming 14 4124
+set HeavyStrong:OutgoingB 14 4212
+set HeavyStrong:OutgoingM 14 111
+set HeavyStrong:ModeType 14 1
+set HeavyStrong:MaxWeight 14 13.7322
+set HeavyStrong:Incoming 15 4124
+set HeavyStrong:OutgoingB 15 4112
+set HeavyStrong:OutgoingM 15 211
+set HeavyStrong:ModeType 15 1
+set HeavyStrong:MaxWeight 15 11.5641
+set HeavyStrong:Incoming 16 5222
+set HeavyStrong:OutgoingB 16 5122
+set HeavyStrong:OutgoingM 16 211
+set HeavyStrong:ModeType 16 1
+set HeavyStrong:MaxWeight 16 1.60113
+set HeavyStrong:Incoming 17 5212
+set HeavyStrong:OutgoingB 17 5122
+set HeavyStrong:OutgoingM 17 111
+set HeavyStrong:ModeType 17 1
+set HeavyStrong:MaxWeight 17 1.59965
+set HeavyStrong:Incoming 18 5112
+set HeavyStrong:OutgoingB 18 5122
+set HeavyStrong:OutgoingM 18 -211
+set HeavyStrong:ModeType 18 1
+set HeavyStrong:MaxWeight 18 1.5982
+set HeavyStrong:Incoming 19 5224
+set HeavyStrong:OutgoingB 19 5122
+set HeavyStrong:OutgoingM 19 211
+set HeavyStrong:ModeType 19 1
+set HeavyStrong:MaxWeight 19 1.5944
+set HeavyStrong:Incoming 20 5214
+set HeavyStrong:OutgoingB 20 5122
+set HeavyStrong:OutgoingM 20 111
+set HeavyStrong:ModeType 20 1
+set HeavyStrong:MaxWeight 20 1.60103
+set HeavyStrong:Incoming 21 5114
+set HeavyStrong:OutgoingB 21 5122
+set HeavyStrong:OutgoingM 21 -211
+set HeavyStrong:ModeType 21 1
+set HeavyStrong:MaxWeight 21 1.60585
+set HeavyStrong:Incoming 22 5324
+set HeavyStrong:OutgoingB 22 5232
+set HeavyStrong:OutgoingM 22 111
+set HeavyStrong:ModeType 22 1
+set HeavyStrong:MaxWeight 22 1.88378
+set HeavyStrong:Incoming 23 5324
+set HeavyStrong:OutgoingB 23 5132
+set HeavyStrong:OutgoingM 23 211
+set HeavyStrong:ModeType 23 1
+set HeavyStrong:MaxWeight 23 1.42109
+set HeavyStrong:Incoming 24 5314
+set HeavyStrong:OutgoingB 24 5132
+set HeavyStrong:OutgoingM 24 111
+set HeavyStrong:ModeType 24 1
+set HeavyStrong:MaxWeight 24 1.63003
+set HeavyStrong:Incoming 25 5314
+set HeavyStrong:OutgoingB 25 5232
+set HeavyStrong:OutgoingM 25 -211
+set HeavyStrong:ModeType 25 1
+set HeavyStrong:MaxWeight 25 1.59544
+set HeavyStrong:Incoming 26 15122
+set HeavyStrong:OutgoingB 26 5222
+set HeavyStrong:OutgoingM 26 -211
+set HeavyStrong:ModeType 26 0
+set HeavyStrong:MaxWeight 26 4.22387
+set HeavyStrong:Incoming 27 15122
+set HeavyStrong:OutgoingB 27 5212
+set HeavyStrong:OutgoingM 27 111
+set HeavyStrong:ModeType 27 0
+set HeavyStrong:MaxWeight 27 4.21194
+set HeavyStrong:Incoming 28 15122
+set HeavyStrong:OutgoingB 28 5112
+set HeavyStrong:OutgoingM 28 211
+set HeavyStrong:ModeType 28 0
+set HeavyStrong:MaxWeight 28 1.96324
+set HeavyStrong:Incoming 29 5124
+set HeavyStrong:OutgoingB 29 5222
+set HeavyStrong:OutgoingM 29 -211
+set HeavyStrong:ModeType 29 2
+set HeavyStrong:MaxWeight 29 0.107134
+set HeavyStrong:Incoming 30 5124
+set HeavyStrong:OutgoingB 30 5212
+set HeavyStrong:OutgoingM 30 111
+set HeavyStrong:ModeType 30 2
+set HeavyStrong:MaxWeight 30 0.132231
+set HeavyStrong:Incoming 31 5124
+set HeavyStrong:OutgoingB 31 5112
+set HeavyStrong:OutgoingM 31 211
+set HeavyStrong:ModeType 31 2
+set HeavyStrong:MaxWeight 31 0.0747326
+set HeavyStrong:Incoming 32 14324
+set HeavyStrong:OutgoingB 32 4322
+set HeavyStrong:OutgoingM 32 111
+set HeavyStrong:ModeType 32 2
+set HeavyStrong:MaxWeight 32 1.50908
+set HeavyStrong:Incoming 33 14324
+set HeavyStrong:OutgoingB 33 4312
+set HeavyStrong:OutgoingM 33 211
+set HeavyStrong:ModeType 33 2
+set HeavyStrong:MaxWeight 33 1.5594
+set HeavyStrong:Incoming 34 14314
+set HeavyStrong:OutgoingB 34 4312
+set HeavyStrong:OutgoingM 34 111
+set HeavyStrong:ModeType 34 2
+set HeavyStrong:MaxWeight 34 1.48272
+set HeavyStrong:Incoming 35 14314
+set HeavyStrong:OutgoingB 35 4322
+set HeavyStrong:OutgoingM 35 -211
+set HeavyStrong:ModeType 35 2
+set HeavyStrong:MaxWeight 35 1.75973
+set HeavyStrong:Incoming 36 14324
+set HeavyStrong:OutgoingB 36 4324
+set HeavyStrong:OutgoingM 36 111
+set HeavyStrong:ModeType 36 0
+set HeavyStrong:MaxWeight 36 2.24229
+set HeavyStrong:Incoming 37 14324
+set HeavyStrong:OutgoingB 37 4314
+set HeavyStrong:OutgoingM 37 211
+set HeavyStrong:ModeType 37 0
+set HeavyStrong:MaxWeight 37 2.09263
+set HeavyStrong:Incoming 38 14314
+set HeavyStrong:OutgoingB 38 4314
+set HeavyStrong:OutgoingM 38 111
+set HeavyStrong:ModeType 38 0
+set HeavyStrong:MaxWeight 38 2.36559
+set HeavyStrong:Incoming 39 14314
+set HeavyStrong:OutgoingB 39 4324
+set HeavyStrong:OutgoingM 39 -211
+set HeavyStrong:ModeType 39 0
+set HeavyStrong:MaxWeight 39 2.18137
+set HeavyStrong:Incoming 40 14322
+set HeavyStrong:OutgoingB 40 4322
+set HeavyStrong:OutgoingM 40 111
+set HeavyStrong:ModeType 40 0
+set HeavyStrong:MaxWeight 40 1.56278
+set HeavyStrong:Incoming 41 14322
+set HeavyStrong:OutgoingB 41 4312
+set HeavyStrong:OutgoingM 41 211
+set HeavyStrong:ModeType 41 0
+set HeavyStrong:MaxWeight 41 1.49557
+set HeavyStrong:Incoming 42 14312
+set HeavyStrong:OutgoingB 42 4312
+set HeavyStrong:OutgoingM 42 111
+set HeavyStrong:ModeType 42 0
+set HeavyStrong:MaxWeight 42 1.56355
+set HeavyStrong:Incoming 43 14312
+set HeavyStrong:OutgoingB 43 4322
+set HeavyStrong:OutgoingM 43 -211
+set HeavyStrong:ModeType 43 0
+set HeavyStrong:MaxWeight 43 1.55762
+set HeavyStrong:Incoming 44 14322
+set HeavyStrong:OutgoingB 44 4324
+set HeavyStrong:OutgoingM 44 111
+set HeavyStrong:ModeType 44 2
+set HeavyStrong:MaxWeight 44 0.00928127
+set HeavyStrong:Incoming 45 14322
+set HeavyStrong:OutgoingB 45 4314
+set HeavyStrong:OutgoingM 45 211
+set HeavyStrong:ModeType 45 2
+set HeavyStrong:MaxWeight 45 0.0125624
+set HeavyStrong:Incoming 46 14312
+set HeavyStrong:OutgoingB 46 4314
+set HeavyStrong:OutgoingM 46 111
+set HeavyStrong:ModeType 46 2
+set HeavyStrong:MaxWeight 46 0.0120602
+set HeavyStrong:Incoming 47 14312
+set HeavyStrong:OutgoingB 47 4324
+set HeavyStrong:OutgoingM 47 -211
+set HeavyStrong:ModeType 47 2
+set HeavyStrong:MaxWeight 47 0.0167952
+set HeavyStrong:Incoming 48 15324
+set HeavyStrong:OutgoingB 48 5322
+set HeavyStrong:OutgoingM 48 111
+set HeavyStrong:ModeType 48 2
+set HeavyStrong:MaxWeight 48 1.87626
+set HeavyStrong:Incoming 49 15324
+set HeavyStrong:OutgoingB 49 5312
+set HeavyStrong:OutgoingM 49 211
+set HeavyStrong:ModeType 49 2
+set HeavyStrong:MaxWeight 49 1.616
+set HeavyStrong:Incoming 50 15314
+set HeavyStrong:OutgoingB 50 5312
+set HeavyStrong:OutgoingM 50 111
+set HeavyStrong:ModeType 50 2
+set HeavyStrong:MaxWeight 50 1.84227
+set HeavyStrong:Incoming 51 15314
+set HeavyStrong:OutgoingB 51 5322
+set HeavyStrong:OutgoingM 51 -211
+set HeavyStrong:ModeType 51 2
+set HeavyStrong:MaxWeight 51 1.82865
+set HeavyStrong:Incoming 52 15324
+set HeavyStrong:OutgoingB 52 5324
+set HeavyStrong:OutgoingM 52 111
+set HeavyStrong:ModeType 52 0
+set HeavyStrong:MaxWeight 52 2.77725
+set HeavyStrong:Incoming 53 15324
+set HeavyStrong:OutgoingB 53 5314
+set HeavyStrong:OutgoingM 53 211
+set HeavyStrong:ModeType 53 0
+set HeavyStrong:MaxWeight 53 2.5378
+set HeavyStrong:Incoming 54 15314
+set HeavyStrong:OutgoingB 54 5314
+set HeavyStrong:OutgoingM 54 111
+set HeavyStrong:ModeType 54 0
+set HeavyStrong:MaxWeight 54 2.93925
+set HeavyStrong:Incoming 55 15314
+set HeavyStrong:OutgoingB 55 5324
+set HeavyStrong:OutgoingM 55 -211
+set HeavyStrong:ModeType 55 0
+set HeavyStrong:MaxWeight 55 2.69015
+set HeavyStrong:Incoming 56 15322
+set HeavyStrong:OutgoingB 56 5322
+set HeavyStrong:OutgoingM 56 111
+set HeavyStrong:ModeType 56 0
+set HeavyStrong:MaxWeight 56 1.34628
+set HeavyStrong:Incoming 57 15322
+set HeavyStrong:OutgoingB 57 5312
+set HeavyStrong:OutgoingM 57 211
+set HeavyStrong:ModeType 57 0
+set HeavyStrong:MaxWeight 57 1.28732
+set HeavyStrong:Incoming 58 15312
+set HeavyStrong:OutgoingB 58 5312
+set HeavyStrong:OutgoingM 58 111
+set HeavyStrong:ModeType 58 0
+set HeavyStrong:MaxWeight 58 1.34676
+set HeavyStrong:Incoming 59 15312
+set HeavyStrong:OutgoingB 59 5322
+set HeavyStrong:OutgoingM 59 -211
+set HeavyStrong:ModeType 59 0
+set HeavyStrong:MaxWeight 59 1.34286
+set HeavyStrong:Incoming 60 15322
+set HeavyStrong:OutgoingB 60 5324
+set HeavyStrong:OutgoingM 60 111
+set HeavyStrong:ModeType 60 2
+set HeavyStrong:MaxWeight 60 0.00860417
+set HeavyStrong:Incoming 61 15322
+set HeavyStrong:OutgoingB 61 5314
+set HeavyStrong:OutgoingM 61 211
+set HeavyStrong:ModeType 61 2
+set HeavyStrong:MaxWeight 61 0.0153272
+set HeavyStrong:Incoming 62 15312
+set HeavyStrong:OutgoingB 62 5314
+set HeavyStrong:OutgoingM 62 111
+set HeavyStrong:ModeType 62 2
+set HeavyStrong:MaxWeight 62 0.0115148
+set HeavyStrong:Incoming 63 15312
+set HeavyStrong:OutgoingB 63 5324
+set HeavyStrong:OutgoingM 63 -211
+set HeavyStrong:ModeType 63 2
+set HeavyStrong:MaxWeight 63 0.0153888
+
+#
+create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3StrongRoper
+set SU3StrongRoper:Iteration 1
+set SU3StrongRoper:Ntry 500
+set SU3StrongRoper:Points 10000
+set SU3StrongRoper:GenerateIntermediates 0 
+set SU3StrongRoper:Fcoupling 0.11
+set SU3StrongRoper:Dcoupling 0.6
+set SU3StrongRoper:Parity 1
+set SU3StrongRoper:Fpi 130.7
+set SU3StrongRoper:Proton 2212
+set SU3StrongRoper:Neutron 2112
+set SU3StrongRoper:Sigma+ 3222
+set SU3StrongRoper:Sigma0 3212
+set SU3StrongRoper:Sigma- 3112
+set SU3StrongRoper:Lambda 3122
+set SU3StrongRoper:Xi0 3322
+set SU3StrongRoper:Xi- 3312
+set SU3StrongRoper:ExcitedProton 12212
+set SU3StrongRoper:ExcitedNeutron 12112
+set SU3StrongRoper:ExcitedSigma+ 13222
+set SU3StrongRoper:ExcitedSigma0 13212
+set SU3StrongRoper:ExcitedSigma- 13112
+set SU3StrongRoper:ExcitedLambda 23122
+set SU3StrongRoper:ExcitedXi0 13322
+set SU3StrongRoper:ExcitedXi- 13312
+insert SU3StrongRoper:MaxWeight 0 1.80705
+insert SU3StrongRoper:MaxWeight 1 1.83437
+insert SU3StrongRoper:MaxWeight 2 0.626841
+insert SU3StrongRoper:MaxWeight 3 0.315783
+insert SU3StrongRoper:MaxWeight 4 0.0801244
+insert SU3StrongRoper:MaxWeight 5 0.495582
+insert SU3StrongRoper:MaxWeight 6 1.81893
+insert SU3StrongRoper:MaxWeight 7 1.82169
+insert SU3StrongRoper:MaxWeight 8 0.796182
+insert SU3StrongRoper:MaxWeight 9 0.417085
+insert SU3StrongRoper:MaxWeight 10 0.0805194
+insert SU3StrongRoper:MaxWeight 11 0.473075
+insert SU3StrongRoper:MaxWeight 12 1.67933
+insert SU3StrongRoper:MaxWeight 13 1.69741
+insert SU3StrongRoper:MaxWeight 14 1.601
+insert SU3StrongRoper:MaxWeight 15 3.86444
+insert SU3StrongRoper:MaxWeight 16 0.114795
+insert SU3StrongRoper:MaxWeight 17 0.119024
+insert SU3StrongRoper:MaxWeight 18 3.04579
+insert SU3StrongRoper:MaxWeight 19 2.91748
+insert SU3StrongRoper:MaxWeight 20 0.469575
+insert SU3StrongRoper:MaxWeight 21 0.45577
+insert SU3StrongRoper:MaxWeight 22 6.20849
+insert SU3StrongRoper:MaxWeight 23 10.9318
+insert SU3StrongRoper:MaxWeight 24 3.41669
+insert SU3StrongRoper:MaxWeight 25 4.09249
+insert SU3StrongRoper:MaxWeight 26 0.444487
+insert SU3StrongRoper:MaxWeight 27 0.464752
+insert SU3StrongRoper:MaxWeight 28 2.93537
+insert SU3StrongRoper:MaxWeight 29 3.02507
+insert SU3StrongRoper:MaxWeight 30 11.1723
+insert SU3StrongRoper:MaxWeight 31 10.8365
+insert SU3StrongRoper:MaxWeight 32 4.04486
+insert SU3StrongRoper:MaxWeight 33 3.44034
+insert SU3StrongRoper:MaxWeight 34 0.45577
+insert SU3StrongRoper:MaxWeight 35 0.448599
+insert SU3StrongRoper:MaxWeight 36 5.93298
+insert SU3StrongRoper:MaxWeight 37 11.0765
+insert SU3StrongRoper:MaxWeight 38 3.41669
+insert SU3StrongRoper:MaxWeight 39 3.94553
+insert SU3StrongRoper:MaxWeight 40 2.10871
+insert SU3StrongRoper:MaxWeight 41 0.177081
+insert SU3StrongRoper:MaxWeight 42 10.815
+insert SU3StrongRoper:MaxWeight 43 5.22192
+insert SU3StrongRoper:MaxWeight 44 0.225516
+insert SU3StrongRoper:MaxWeight 45 0.46041
+insert SU3StrongRoper:MaxWeight 46 1.59995
+insert SU3StrongRoper:MaxWeight 47 10.3094
+insert SU3StrongRoper:MaxWeight 48 5.47674
+insert SU3StrongRoper:MaxWeight 49 0.210177
+
+#
+create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3Strong2
+set SU3Strong2:Iteration 1
+set SU3Strong2:Ntry 500
+set SU3Strong2:Points 10000
+set SU3Strong2:GenerateIntermediates 0 
+set SU3Strong2:Fcoupling -0.33
+set SU3Strong2:Dcoupling 0.6
+set SU3Strong2:Parity 0
+set SU3Strong2:Fpi 130.7
+set SU3Strong2:Proton 2212
+set SU3Strong2:Neutron 2112
+set SU3Strong2:Sigma+ 3222
+set SU3Strong2:Sigma0 3212
+set SU3Strong2:Sigma- 3112
+set SU3Strong2:Lambda 3122
+set SU3Strong2:Xi0 3322
+set SU3Strong2:Xi- 3312
+set SU3Strong2:ExcitedProton 22212
+set SU3Strong2:ExcitedNeutron 22112
+set SU3Strong2:ExcitedSigma+ 23222
+set SU3Strong2:ExcitedSigma0 23212
+set SU3Strong2:ExcitedSigma- 23112
+set SU3Strong2:ExcitedLambda 33122
+set SU3Strong2:ExcitedXi0 23322
+set SU3Strong2:ExcitedXi- 23312
+insert SU3Strong2:MaxWeight 0 1.62119
+insert SU3Strong2:MaxWeight 1 1.63297
+insert SU3Strong2:MaxWeight 2 13.6826
+insert SU3Strong2:MaxWeight 3 6.91591
+insert SU3Strong2:MaxWeight 4 7.5876
+insert SU3Strong2:MaxWeight 5 0.497088
+insert SU3Strong2:MaxWeight 6 1.62475
+insert SU3Strong2:MaxWeight 7 1.62009
+insert SU3Strong2:MaxWeight 8 11.8384
+insert SU3Strong2:MaxWeight 9 6.60507
+insert SU3Strong2:MaxWeight 10 7.74213
+insert SU3Strong2:MaxWeight 11 0.472179
+insert SU3Strong2:MaxWeight 12 18.252
+insert SU3Strong2:MaxWeight 13 18.5175
+insert SU3Strong2:MaxWeight 14 17.7211
+insert SU3Strong2:MaxWeight 15 11.4144
+insert SU3Strong2:MaxWeight 16 11.7404
+insert SU3Strong2:MaxWeight 17 11.9092
+insert SU3Strong2:MaxWeight 18 7.03876
+insert SU3Strong2:MaxWeight 19 6.94796
+insert SU3Strong2:MaxWeight 20 8.3926
+insert SU3Strong2:MaxWeight 21 8.33094
+insert SU3Strong2:MaxWeight 22 1.70959
+insert SU3Strong2:MaxWeight 23 52.0614
+insert SU3Strong2:MaxWeight 24 13.5324
+insert SU3Strong2:MaxWeight 25 3.05822
+insert SU3Strong2:MaxWeight 26 8.14647
+insert SU3Strong2:MaxWeight 27 8.37524
+insert SU3Strong2:MaxWeight 28 0.841043
+insert SU3Strong2:MaxWeight 29 0.854517
+insert SU3Strong2:MaxWeight 30 52.3542
+insert SU3Strong2:MaxWeight 31 51.8405
+insert SU3Strong2:MaxWeight 32 2.9055
+insert SU3Strong2:MaxWeight 33 13.5578
+insert SU3Strong2:MaxWeight 34 8.27111
+insert SU3Strong2:MaxWeight 35 8.18578
+insert SU3Strong2:MaxWeight 36 1.63768
+insert SU3Strong2:MaxWeight 37 52.1333
+insert SU3Strong2:MaxWeight 38 13.5324
+insert SU3Strong2:MaxWeight 39 1.94042
+insert SU3Strong2:MaxWeight 40 8.1767
+insert SU3Strong2:MaxWeight 41 4.11344
+insert SU3Strong2:MaxWeight 42 48.938
+insert SU3Strong2:MaxWeight 43 47.8208
+insert SU3Strong2:MaxWeight 44 23.6554
+insert SU3Strong2:MaxWeight 45 2.17309
+insert SU3Strong2:MaxWeight 46 8.21707
+insert SU3Strong2:MaxWeight 47 4.06565
+insert SU3Strong2:MaxWeight 48 47.7349
+insert SU3Strong2:MaxWeight 49 49.0244
+insert SU3Strong2:MaxWeight 50 23.5405
+insert SU3Strong2:MaxWeight 51 2.21665
+
+#
+create Herwig::SU3BaryonDecupletOctetScalarDecayer  SU3Decuplet
+set SU3Decuplet:Iteration 1
+set SU3Decuplet:Ntry 500
+set SU3Decuplet:Points 10000
+set SU3Decuplet:GenerateIntermediates 0 
+set SU3Decuplet:Ccoupling 1.5
+set SU3Decuplet:Parity 1
+set SU3Decuplet:Fpi 92.4
+set SU3Decuplet:Proton 2212
+set SU3Decuplet:Neutron 2112
+set SU3Decuplet:Sigma+ 3222
+set SU3Decuplet:Sigma0 3212
+set SU3Decuplet:Sigma- 3112
+set SU3Decuplet:Lambda 3122
+set SU3Decuplet:Xi0 3322
+set SU3Decuplet:Xi- 3312
+set SU3Decuplet:Delta++ 2224
+set SU3Decuplet:Delta+ 2214
+set SU3Decuplet:Delta0 2114
+set SU3Decuplet:Delta- 1114
+set SU3Decuplet:Sigma*+ 3224
+set SU3Decuplet:Sigma*0 3214
+set SU3Decuplet:Sigma*- 3114
+set SU3Decuplet:Omega 3334
+set SU3Decuplet:Xi*0 3324
+set SU3Decuplet:Xi*- 3314
+insert SU3Decuplet:MaxWeight 0 2.20000
+insert SU3Decuplet:MaxWeight 1 4.52362
+insert SU3Decuplet:MaxWeight 2 2.20000
+insert SU3Decuplet:MaxWeight 3 2.20000
+insert SU3Decuplet:MaxWeight 4 2.64073
+insert SU3Decuplet:MaxWeight 5 1.44792
+insert SU3Decuplet:MaxWeight 6 2.20000
+insert SU3Decuplet:MaxWeight 7 2.20000
+insert SU3Decuplet:MaxWeight 8 2.63609
+insert SU3Decuplet:MaxWeight 9 1.41052
+insert SU3Decuplet:MaxWeight 10 2.20000
+insert SU3Decuplet:MaxWeight 11 4.06786
+insert SU3Decuplet:MaxWeight 12 4.8
+insert SU3Decuplet:MaxWeight 13 3.0
+insert SU3Decuplet:MaxWeight 14 12.761
+insert SU3Decuplet:MaxWeight 15 0.0169452
+insert SU3Decuplet:MaxWeight 16 3.20000
+insert SU3Decuplet:MaxWeight 17 6.30188
+insert SU3Decuplet:MaxWeight 18 6.54799
+insert SU3Decuplet:MaxWeight 19 3.0
+insert SU3Decuplet:MaxWeight 20 3.8
+insert SU3Decuplet:MaxWeight 21 4.8
+insert SU3Decuplet:MaxWeight 22 0.0160214
+insert SU3Decuplet:MaxWeight 23 2.40674
+insert SU3Decuplet:MaxWeight 24 2.50209
+insert SU3Decuplet:MaxWeight 25 14.29
+insert SU3Decuplet:MaxWeight 26 2.44392
+insert SU3Decuplet:MaxWeight 27 0.668873
+insert SU3Decuplet:MaxWeight 28 4.2
+insert SU3Decuplet:MaxWeight 29 5.2
+insert SU3Decuplet:MaxWeight 30 0.356554
+insert SU3Decuplet:MaxWeight 31 4.8
+insert SU3Decuplet:MaxWeight 32 4.8
+insert SU3Decuplet:MaxWeight 33 1.72199
+
+#
+create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3RoperDecuplet
+set SU3RoperDecuplet:Iteration 1
+set SU3RoperDecuplet:Ntry 500
+set SU3RoperDecuplet:Points 10000
+set SU3RoperDecuplet:GenerateIntermediates 0 
+set SU3RoperDecuplet:Coupling 1.35
+set SU3RoperDecuplet:Parity 1
+set SU3RoperDecuplet:Fpi 130.7
+set SU3RoperDecuplet:Proton 12212
+set SU3RoperDecuplet:Neutron 12112
+set SU3RoperDecuplet:Sigma+ 13222
+set SU3RoperDecuplet:Sigma0 13212
+set SU3RoperDecuplet:Sigma- 13112
+set SU3RoperDecuplet:Lambda 23122
+set SU3RoperDecuplet:Xi0 13322
+set SU3RoperDecuplet:Xi- 13312
+set SU3RoperDecuplet:Delta++ 2224
+set SU3RoperDecuplet:Delta+ 2214
+set SU3RoperDecuplet:Delta0 2114
+set SU3RoperDecuplet:Delta- 1114
+set SU3RoperDecuplet:Sigma*+ 3224
+set SU3RoperDecuplet:Sigma*0 3214
+set SU3RoperDecuplet:Sigma*- 3114
+set SU3RoperDecuplet:Omega 3334
+set SU3RoperDecuplet:Xi*0 3324
+set SU3RoperDecuplet:Xi*- 3314
+insert SU3RoperDecuplet:MaxWeight 0 2.56576
+insert SU3RoperDecuplet:MaxWeight 1 84.0227
+insert SU3RoperDecuplet:MaxWeight 2 2.56781
+insert SU3RoperDecuplet:MaxWeight 3 2.73098
+insert SU3RoperDecuplet:MaxWeight 4 56.7064
+insert SU3RoperDecuplet:MaxWeight 5 28.0791
+insert SU3RoperDecuplet:MaxWeight 6 2.57358
+insert SU3RoperDecuplet:MaxWeight 7 2.72882
+insert SU3RoperDecuplet:MaxWeight 8 57.6277
+insert SU3RoperDecuplet:MaxWeight 9 28.2219
+insert SU3RoperDecuplet:MaxWeight 10 2.56025
+insert SU3RoperDecuplet:MaxWeight 11 74.9779
+insert SU3RoperDecuplet:MaxWeight 12 16.1559
+insert SU3RoperDecuplet:MaxWeight 13 14.0751
+insert SU3RoperDecuplet:MaxWeight 14 0.791015
+insert SU3RoperDecuplet:MaxWeight 15 0.00104774
+insert SU3RoperDecuplet:MaxWeight 16 12.8492
+insert SU3RoperDecuplet:MaxWeight 17 43.7074
+insert SU3RoperDecuplet:MaxWeight 18 0.590208
+insert SU3RoperDecuplet:MaxWeight 19 0.608962
+insert SU3RoperDecuplet:MaxWeight 20 0.000397168
+insert SU3RoperDecuplet:MaxWeight 21 0.000528759
+insert SU3RoperDecuplet:MaxWeight 22 20.9576
+insert SU3RoperDecuplet:MaxWeight 23 12.4322
+insert SU3RoperDecuplet:MaxWeight 24 47.985
+insert SU3RoperDecuplet:MaxWeight 25 38.7633
+insert SU3RoperDecuplet:MaxWeight 26 12.8808
+insert SU3RoperDecuplet:MaxWeight 27 22.1448
+insert SU3RoperDecuplet:MaxWeight 28 1.10029
+insert SU3RoperDecuplet:MaxWeight 29 0.000365739
+insert SU3RoperDecuplet:MaxWeight 30 44.9148
+insert SU3RoperDecuplet:MaxWeight 31 12.3086
+insert SU3RoperDecuplet:MaxWeight 32 5.64695
+insert SU3RoperDecuplet:MaxWeight 33 2.7869
+insert SU3RoperDecuplet:MaxWeight 34 2.73645
+insert SU3RoperDecuplet:MaxWeight 35 1.57765
+insert SU3RoperDecuplet:MaxWeight 36 4.1449
+insert SU3RoperDecuplet:MaxWeight 37 5.09824
+insert SU3RoperDecuplet:MaxWeight 38 2.73002
+insert SU3RoperDecuplet:MaxWeight 39 2.48197
+insert SU3RoperDecuplet:MaxWeight 40 1.43915
+insert SU3RoperDecuplet:MaxWeight 41 4.43562
+
+#
+create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3Strong3
+set SU3Strong3:Iteration 1
+set SU3Strong3:Ntry 500
+set SU3Strong3:Points 10000
+set SU3Strong3:GenerateIntermediates 0 
+set SU3Strong3:Fcoupling -0.69
+set SU3Strong3:Dcoupling 1.75
+set SU3Strong3:Parity 1
+set SU3Strong3:Fpi 130.7
+set SU3Strong3:Proton 2212
+set SU3Strong3:Neutron 2112
+set SU3Strong3:Sigma+ 3222
+set SU3Strong3:Sigma0 3212
+set SU3Strong3:Sigma- 3112
+set SU3Strong3:Lambda 3122
+set SU3Strong3:Xi0 3322
+set SU3Strong3:Xi- 3312
+set SU3Strong3:ExcitedProton 2124
+set SU3Strong3:ExcitedNeutron 1214
+set SU3Strong3:ExcitedSigma+ 13224
+set SU3Strong3:ExcitedSigma0 13214
+set SU3Strong3:ExcitedSigma- 13114
+set SU3Strong3:ExcitedLambda 13124
+set SU3Strong3:ExcitedXi0 13324
+set SU3Strong3:ExcitedXi- 13314
+insert SU3Strong3:MaxWeight 0 3.76502
+insert SU3Strong3:MaxWeight 1 3.80624
+insert SU3Strong3:MaxWeight 2 15.886
+insert SU3Strong3:MaxWeight 3 8.10483
+insert SU3Strong3:MaxWeight 4 49.1548
+insert SU3Strong3:MaxWeight 5 0.056859
+insert SU3Strong3:MaxWeight 6 3.7818
+insert SU3Strong3:MaxWeight 7 3.78946
+insert SU3Strong3:MaxWeight 8 16.046
+insert SU3Strong3:MaxWeight 9 8.07833
+insert SU3Strong3:MaxWeight 10 46.8005
+insert SU3Strong3:MaxWeight 11 0.0570574
+insert SU3Strong3:MaxWeight 12 38.4119
+insert SU3Strong3:MaxWeight 13 38.6815
+insert SU3Strong3:MaxWeight 14 37.2037
+insert SU3Strong3:MaxWeight 15 5.04034
+insert SU3Strong3:MaxWeight 16 1.81489
+insert SU3Strong3:MaxWeight 17 1.85277
+insert SU3Strong3:MaxWeight 18 0.297424
+insert SU3Strong3:MaxWeight 19 0.289611
+insert SU3Strong3:MaxWeight 20 4.94361
+insert SU3Strong3:MaxWeight 21 4.81691
+insert SU3Strong3:MaxWeight 22 1.3823
+insert SU3Strong3:MaxWeight 23 95.9447
+insert SU3Strong3:MaxWeight 24 29.2431
+insert SU3Strong3:MaxWeight 25 4.33187
+insert SU3Strong3:MaxWeight 26 4.6988
+insert SU3Strong3:MaxWeight 27 4.89784
+insert SU3Strong3:MaxWeight 28 0.662332
+insert SU3Strong3:MaxWeight 29 0.682562
+insert SU3Strong3:MaxWeight 30 98.0671
+insert SU3Strong3:MaxWeight 31 95.2452
+insert SU3Strong3:MaxWeight 32 4.18468
+insert SU3Strong3:MaxWeight 33 29.4475
+insert SU3Strong3:MaxWeight 34 4.81691
+insert SU3Strong3:MaxWeight 35 4.7443
+insert SU3Strong3:MaxWeight 36 1.28206
+insert SU3Strong3:MaxWeight 37 97.3651
+insert SU3Strong3:MaxWeight 38 29.2431
+insert SU3Strong3:MaxWeight 39 4.11443
+insert SU3Strong3:MaxWeight 40 26.6185
+insert SU3Strong3:MaxWeight 41 29.2309
+insert SU3Strong3:MaxWeight 42 460.632
+insert SU3Strong3:MaxWeight 43 450.193
+insert SU3Strong3:MaxWeight 44 18.8397
+insert SU3Strong3:MaxWeight 45 0.0169732
+insert SU3Strong3:MaxWeight 46 30.2496
+insert SU3Strong3:MaxWeight 47 28.0834
+insert SU3Strong3:MaxWeight 48 446.415
+insert SU3Strong3:MaxWeight 49 464.428
+insert SU3Strong3:MaxWeight 50 18.3862
+insert SU3Strong3:MaxWeight 51 0.0191169
+
+#
+create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3OctetDecuplet2
+set SU3OctetDecuplet2:Iteration 1
+set SU3OctetDecuplet2:Ntry 500
+set SU3OctetDecuplet2:Points 10000
+set SU3OctetDecuplet2:GenerateIntermediates 0 
+set SU3OctetDecuplet2:Coupling 0.085
+set SU3OctetDecuplet2:Parity 1
+set SU3OctetDecuplet2:Fpi 130.7
+set SU3OctetDecuplet2:Proton 22212
+set SU3OctetDecuplet2:Neutron 22112
+set SU3OctetDecuplet2:Sigma+ 23222
+set SU3OctetDecuplet2:Sigma0 23212
+set SU3OctetDecuplet2:Sigma- 23112
+set SU3OctetDecuplet2:Lambda 33122
+set SU3OctetDecuplet2:Xi0 23322
+set SU3OctetDecuplet2:Xi- 23312
+set SU3OctetDecuplet2:Delta++ 2224
+set SU3OctetDecuplet2:Delta+ 2214
+set SU3OctetDecuplet2:Delta0 2114
+set SU3OctetDecuplet2:Delta- 1114
+set SU3OctetDecuplet2:Sigma*+ 3224
+set SU3OctetDecuplet2:Sigma*0 3214
+set SU3OctetDecuplet2:Sigma*- 3114
+set SU3OctetDecuplet2:Omega 3334
+set SU3OctetDecuplet2:Xi*0 3324
+set SU3OctetDecuplet2:Xi*- 3314
+insert SU3OctetDecuplet2:MaxWeight 0 2.32934
+insert SU3OctetDecuplet2:MaxWeight 1 0.416437
+insert SU3OctetDecuplet2:MaxWeight 2 2.32724
+insert SU3OctetDecuplet2:MaxWeight 3 2.39008
+insert SU3OctetDecuplet2:MaxWeight 4 0.288323
+insert SU3OctetDecuplet2:MaxWeight 5 0.115812
+insert SU3OctetDecuplet2:MaxWeight 6 2.32373
+insert SU3OctetDecuplet2:MaxWeight 7 2.38921
+insert SU3OctetDecuplet2:MaxWeight 8 0.281336
+insert SU3OctetDecuplet2:MaxWeight 9 0.146149
+insert SU3OctetDecuplet2:MaxWeight 10 2.32736
+insert SU3OctetDecuplet2:MaxWeight 11 0.436271
+insert SU3OctetDecuplet2:MaxWeight 12 0.101687
+insert SU3OctetDecuplet2:MaxWeight 13 0.116201
+insert SU3OctetDecuplet2:MaxWeight 14 0.0246518
+insert SU3OctetDecuplet2:MaxWeight 15 0.748111
+insert SU3OctetDecuplet2:MaxWeight 16 0.0736602
+insert SU3OctetDecuplet2:MaxWeight 17 0.201734
+insert SU3OctetDecuplet2:MaxWeight 18 0.00868203
+insert SU3OctetDecuplet2:MaxWeight 19 0.00795239
+insert SU3OctetDecuplet2:MaxWeight 20 0.362188
+insert SU3OctetDecuplet2:MaxWeight 21 0.378257
+insert SU3OctetDecuplet2:MaxWeight 22 0.0641479
+insert SU3OctetDecuplet2:MaxWeight 23 0.08768
+insert SU3OctetDecuplet2:MaxWeight 24 0.215179
+insert SU3OctetDecuplet2:MaxWeight 25 0.302509
+insert SU3OctetDecuplet2:MaxWeight 26 0.0757243
+insert SU3OctetDecuplet2:MaxWeight 27 0.086701
+insert SU3OctetDecuplet2:MaxWeight 28 0.0197644
+insert SU3OctetDecuplet2:MaxWeight 29 0.83081
+insert SU3OctetDecuplet2:MaxWeight 30 0.27337
+insert SU3OctetDecuplet2:MaxWeight 31 0.0652819
+insert SU3OctetDecuplet2:MaxWeight 32 0.644853
+insert SU3OctetDecuplet2:MaxWeight 33 0.308066
+insert SU3OctetDecuplet2:MaxWeight 34 0.0241458
+insert SU3OctetDecuplet2:MaxWeight 35 0.00953046
+insert SU3OctetDecuplet2:MaxWeight 36 0.438785
+insert SU3OctetDecuplet2:MaxWeight 37 4.80464e-05
+insert SU3OctetDecuplet2:MaxWeight 38 0.713118
+insert SU3OctetDecuplet2:MaxWeight 39 0.298617
+insert SU3OctetDecuplet2:MaxWeight 40 0.0186567
+insert SU3OctetDecuplet2:MaxWeight 41 0.0109833
+insert SU3OctetDecuplet2:MaxWeight 42 0.341691
+insert SU3OctetDecuplet2:MaxWeight 43 5.03293e-05
+
+#
+create Herwig::SU3BaryonSingletOctetScalarDecayer  SU3SingletOctet1
+set SU3SingletOctet1:Iteration 1
+set SU3SingletOctet1:Ntry 500
+set SU3SingletOctet1:Points 10000
+set SU3SingletOctet1:GenerateIntermediates 0 
+set SU3SingletOctet1:Coupling 0.39
+set SU3SingletOctet1:Parity 0
+set SU3SingletOctet1:Fpi 130.7
+set SU3SingletOctet1:Proton 2212
+set SU3SingletOctet1:Neutron 2112
+set SU3SingletOctet1:Sigma+ 3222
+set SU3SingletOctet1:Sigma0 3212
+set SU3SingletOctet1:Sigma- 3112
+set SU3SingletOctet1:Lambda 3122
+set SU3SingletOctet1:Xi0 3322
+set SU3SingletOctet1:Xi- 3312
+set SU3SingletOctet1:ExcitedLambda 13122
+insert SU3SingletOctet1:MaxWeight 0 1.60862
+insert SU3SingletOctet1:MaxWeight 1 1.65601
+insert SU3SingletOctet1:MaxWeight 2 1.44904
+insert SU3SingletOctet1:MaxWeight 3 10.9271
+insert SU3SingletOctet1:MaxWeight 4 10.791
+
+#
+create Herwig::SU3BaryonSingletOctetScalarDecayer  SU3SingletOctet2
+set SU3SingletOctet2:Iteration 1
+set SU3SingletOctet2:Ntry 500
+set SU3SingletOctet2:Points 10000
+set SU3SingletOctet2:GenerateIntermediates 0 
+set SU3SingletOctet2:Coupling 1.5
+set SU3SingletOctet2:Parity 0
+set SU3SingletOctet2:Fpi 130.7
+set SU3SingletOctet2:Proton 2212
+set SU3SingletOctet2:Neutron 2112
+set SU3SingletOctet2:Sigma+ 3222
+set SU3SingletOctet2:Sigma0 3212
+set SU3SingletOctet2:Sigma- 3112
+set SU3SingletOctet2:Lambda 3122
+set SU3SingletOctet2:Xi0 3322
+set SU3SingletOctet2:Xi- 3312
+set SU3SingletOctet2:ExcitedLambda 3124
+insert SU3SingletOctet2:MaxWeight 0 1.84716
+insert SU3SingletOctet2:MaxWeight 1 1.88647
+insert SU3SingletOctet2:MaxWeight 2 1.63557
+insert SU3SingletOctet2:MaxWeight 3 0.00132433
+insert SU3SingletOctet2:MaxWeight 4 0.93801
+insert SU3SingletOctet2:MaxWeight 5 0.80882
+
+#
+create Herwig::SU3BaryonOctetOctetScalarDecayer  SU3Strong4
+set SU3Strong4:Iteration 1
+set SU3Strong4:Ntry 500
+set SU3Strong4:Points 10000
+set SU3Strong4:GenerateIntermediates 0 
+set SU3Strong4:Fcoupling -0.48
+set SU3Strong4:Dcoupling 0.68
+set SU3Strong4:Parity 1
+set SU3Strong4:Fpi 130.7
+set SU3Strong4:Proton 12212
+set SU3Strong4:Neutron 12112
+set SU3Strong4:Sigma+ 13222
+set SU3Strong4:Sigma0 13212
+set SU3Strong4:Sigma- 13112
+set SU3Strong4:Lambda 23122
+set SU3Strong4:Xi0 13322
+set SU3Strong4:Xi- 13312
+set SU3Strong4:ExcitedProton 22212
+set SU3Strong4:ExcitedNeutron 22112
+set SU3Strong4:ExcitedSigma+ 23222
+set SU3Strong4:ExcitedSigma0 23212
+set SU3Strong4:ExcitedSigma- 23112
+set SU3Strong4:ExcitedLambda 33122
+set SU3Strong4:ExcitedXi0 23322
+set SU3Strong4:ExcitedXi- 23312
+insert SU3Strong4:MaxWeight 0 0.0639544
+insert SU3Strong4:MaxWeight 1 0.0683901
+insert SU3Strong4:MaxWeight 2 0.0719544
+insert SU3Strong4:MaxWeight 3 0.0190191
+insert SU3Strong4:MaxWeight 4 1.56023
+insert SU3Strong4:MaxWeight 5 0.0352242
+insert SU3Strong4:MaxWeight 6 0.063882
+insert SU3Strong4:MaxWeight 7 0.0681114
+insert SU3Strong4:MaxWeight 8 0.189404
+insert SU3Strong4:MaxWeight 9 0.0737446
+insert SU3Strong4:MaxWeight 10 1.43798
+insert SU3Strong4:MaxWeight 11 0.0475399
+insert SU3Strong4:MaxWeight 12 1.83818
+insert SU3Strong4:MaxWeight 13 2.27413
+insert SU3Strong4:MaxWeight 14 2.14365
+insert SU3Strong4:MaxWeight 15 0.00257397
+insert SU3Strong4:MaxWeight 16 0.439475
+insert SU3Strong4:MaxWeight 17 0.494001
+insert SU3Strong4:MaxWeight 18 3.83517
+insert SU3Strong4:MaxWeight 19 3.9436
+insert SU3Strong4:MaxWeight 20 0.00603613
+insert SU3Strong4:MaxWeight 21 14.2647
+insert SU3Strong4:MaxWeight 22 3.48259
+insert SU3Strong4:MaxWeight 23 0.0893589
+insert SU3Strong4:MaxWeight 24 3.94828
+insert SU3Strong4:MaxWeight 25 3.98963
+insert SU3Strong4:MaxWeight 26 0.00113937
+insert SU3Strong4:MaxWeight 27 0.000501017
+insert SU3Strong4:MaxWeight 28 4.56376
+insert SU3Strong4:MaxWeight 29 6.14187
+insert SU3Strong4:MaxWeight 30 0.119288
+insert SU3Strong4:MaxWeight 31 3.62416
+insert SU3Strong4:MaxWeight 32 3.74573
+insert SU3Strong4:MaxWeight 33 2.9989
+insert SU3Strong4:MaxWeight 34 0.00187852
+insert SU3Strong4:MaxWeight 35 13.8324
+insert SU3Strong4:MaxWeight 36 2.84881
+insert SU3Strong4:MaxWeight 37 0.117276
+insert SU3Strong4:MaxWeight 38 1.19996
+insert SU3Strong4:MaxWeight 39 0.609627
+insert SU3Strong4:MaxWeight 40 164.291
+insert SU3Strong4:MaxWeight 41 84.1802
+insert SU3Strong4:MaxWeight 42 27.2875
+insert SU3Strong4:MaxWeight 43 2.56877
+insert SU3Strong4:MaxWeight 44 1.25728
+insert SU3Strong4:MaxWeight 45 0.647119
+insert SU3Strong4:MaxWeight 46 187.091
+insert SU3Strong4:MaxWeight 47 77.3773
+insert SU3Strong4:MaxWeight 48 25.0159
+insert SU3Strong4:MaxWeight 49 5.49723
+
+#
+create Herwig::SU3BaryonOctetDecupletScalarDecayer  SU3OctetDecuplet3
+set SU3OctetDecuplet3:Iteration 1
+set SU3OctetDecuplet3:Ntry 500
+set SU3OctetDecuplet3:Points 10000
+set SU3OctetDecuplet3:GenerateIntermediates 0 
+set SU3OctetDecuplet3:Coupling 0.35
+set SU3OctetDecuplet3:Parity 1
+set SU3OctetDecuplet3:Fpi 130.7
+set SU3OctetDecuplet3:Proton 2124
+set SU3OctetDecuplet3:Neutron 1214
+set SU3OctetDecuplet3:Sigma+ 13224
+set SU3OctetDecuplet3:Sigma0 13214
+set SU3OctetDecuplet3:Sigma- 13114
+set SU3OctetDecuplet3:Lambda 13124
+set SU3OctetDecuplet3:Xi0 13324
+set SU3OctetDecuplet3:Xi- 13314
+set SU3OctetDecuplet3:Delta++ 2224
+set SU3OctetDecuplet3:Delta+ 2214
+set SU3OctetDecuplet3:Delta0 2114
+set SU3OctetDecuplet3:Delta- 1114
+set SU3OctetDecuplet3:Sigma*+ 3224
+set SU3OctetDecuplet3:Sigma*0 3214
+set SU3OctetDecuplet3:Sigma*- 3114
+set SU3OctetDecuplet3:Omega 3334
+set SU3OctetDecuplet3:Xi*0 3324
+set SU3OctetDecuplet3:Xi*- 3314
+insert SU3OctetDecuplet3:MaxWeight 0 1.08203
+insert SU3OctetDecuplet3:MaxWeight 1 1.6621
+insert SU3OctetDecuplet3:MaxWeight 2 1.08106
+insert SU3OctetDecuplet3:MaxWeight 3 1.11398
+insert SU3OctetDecuplet3:MaxWeight 4 1.13352
+insert SU3OctetDecuplet3:MaxWeight 5 0.555956
+insert SU3OctetDecuplet3:MaxWeight 6 1.08058
+insert SU3OctetDecuplet3:MaxWeight 7 1.11181
+insert SU3OctetDecuplet3:MaxWeight 8 1.10991
+insert SU3OctetDecuplet3:MaxWeight 9 0.577804
+insert SU3OctetDecuplet3:MaxWeight 10 1.08122
+insert SU3OctetDecuplet3:MaxWeight 11 1.66787
+insert SU3OctetDecuplet3:MaxWeight 12 0.511277
+insert SU3OctetDecuplet3:MaxWeight 13 0.428777
+insert SU3OctetDecuplet3:MaxWeight 14 0.262264
+insert SU3OctetDecuplet3:MaxWeight 15 0.187729
+insert SU3OctetDecuplet3:MaxWeight 16 0.0581627
+insert SU3OctetDecuplet3:MaxWeight 17 1.16719
+insert SU3OctetDecuplet3:MaxWeight 18 0.134985
+insert SU3OctetDecuplet3:MaxWeight 19 0.132211
+insert SU3OctetDecuplet3:MaxWeight 20 0.0842445
+insert SU3OctetDecuplet3:MaxWeight 21 0.0831287
+insert SU3OctetDecuplet3:MaxWeight 22 0.405935
+insert SU3OctetDecuplet3:MaxWeight 23 0.429367
+insert SU3OctetDecuplet3:MaxWeight 24 1.07034
+insert SU3OctetDecuplet3:MaxWeight 25 1.26643
+insert SU3OctetDecuplet3:MaxWeight 26 0.442732
+insert SU3OctetDecuplet3:MaxWeight 27 0.385974
+insert SU3OctetDecuplet3:MaxWeight 28 0.201153
+insert SU3OctetDecuplet3:MaxWeight 29 0.15828
+insert SU3OctetDecuplet3:MaxWeight 30 0.941479
+insert SU3OctetDecuplet3:MaxWeight 31 0.0514224
+insert SU3OctetDecuplet3:MaxWeight 32 2.16926
+insert SU3OctetDecuplet3:MaxWeight 33 2.19241
+insert SU3OctetDecuplet3:MaxWeight 34 3.46377e-07
+insert SU3OctetDecuplet3:MaxWeight 35 8.02372e-08
+insert SU3OctetDecuplet3:MaxWeight 36 1.97192
+insert SU3OctetDecuplet3:MaxWeight 37 1.84709
+insert SU3OctetDecuplet3:MaxWeight 38 1.3873e-08
+insert SU3OctetDecuplet3:MaxWeight 39 3.14856e-07
+
+#
+create Herwig::OmegaXiStarPionDecayer  OmegaXiStar
+set OmegaXiStar:Iteration 1
+set OmegaXiStar:Ntry 500
+set OmegaXiStar:Points 10000
+set OmegaXiStar:GenerateIntermediates 0 
+set OmegaXiStar:Acomm 2.091e-07
+set OmegaXiStar:AP -9.2e-08
+set OmegaXiStar:AS -6.32e-08
+set OmegaXiStar:BP 2.301e-06
+set OmegaXiStar:BS -1.008e-06
+set OmegaXiStar:MaximumWeight 0.00252403
+set OmegaXiStar:Incoming 3334
+set OmegaXiStar:Outgoing 3324
+
+#
+create Herwig::NonLeptonicOmegaDecayer  OmegaNL
+set OmegaNL:DStar -3.98e-07
+set OmegaNL:FStar 5e-08
+set OmegaNL:omegad -6.44444e-09
+set OmegaNL:omegaf 8.5e-09
+set OmegaNL:CBstar 1.35
+set OmegaNL:sc -0.85
+set OmegaNL:C 1.5
+set OmegaNL:Fpi 92.4
+set OmegaNL:hc 3.9e-08
+set OmegaNL:hpi 3.2e-07
+set OmegaNL:d 4.4e-08
+set OmegaNL:f -5e-08
+set OmegaNL:MLambda 1115.68
+set OmegaNL:MXi 1314.83
+set OmegaNL:MOmega 1672.45
+set OmegaNL:MXiStar 1531.8
+set OmegaNL:Mpiplus 139.57
+set OmegaNL:MKplus 493.667
+set OmegaNL:Mpi0 134.977
+set OmegaNL:MK0 497.648
+set OmegaNL:MBstar 1620
+set OmegaNL:MR 1500
+set OmegaNL:LocalMasses 1
+insert OmegaNL:MaxWeight 0 1.5
+insert OmegaNL:MaxWeight 1 0.40
+insert OmegaNL:MaxWeight 2 0.20
+set OmegaNL:Iteration 1
+set OmegaNL:Ntry 500
+set OmegaNL:Points 10000
+set OmegaNL:GenerateIntermediates 0 
+
+#
+create Herwig::NonLeptonicHyperonDecayer  HyperonNL
+set HyperonNL:MaxWeight 0 1.1
+set HyperonNL:IncomingBaryon 0 3122
+set HyperonNL:OutgoingBaryon 0 2212
+set HyperonNL:OutgoingMeson 0 -211
+set HyperonNL:CouplingA 0 3.25e-07
+set HyperonNL:CouplingB 0 -2.34e-06
+set HyperonNL:MaxWeight 1 0.58
+set HyperonNL:IncomingBaryon 1 3122
+set HyperonNL:OutgoingBaryon 1 2112
+set HyperonNL:OutgoingMeson 1 111
+set HyperonNL:CouplingA 1 -2.3e-07
+set HyperonNL:CouplingB 1 1.65e-06
+set HyperonNL:MaxWeight 2 1.5818
+set HyperonNL:IncomingBaryon 2 3312
+set HyperonNL:OutgoingBaryon 2 3122
+set HyperonNL:OutgoingMeson 2 -211
+set HyperonNL:CouplingA 2 -4.51e-07
+set HyperonNL:CouplingB 2 -1.48e-06
+set HyperonNL:MaxWeight 3 1.36822
+set HyperonNL:IncomingBaryon 3 3322
+set HyperonNL:OutgoingBaryon 3 3122
+set HyperonNL:OutgoingMeson 3 111
+set HyperonNL:CouplingA 3 3.19e-07
+set HyperonNL:CouplingB 3 1.05e-06
+set HyperonNL:MaxWeight 4 1.15
+set HyperonNL:IncomingBaryon 4 3222
+set HyperonNL:OutgoingBaryon 4 2212
+set HyperonNL:OutgoingMeson 4 111
+set HyperonNL:CouplingA 4 -2.93e-07
+set HyperonNL:CouplingB 4 -3.25e-06
+set HyperonNL:MaxWeight 5 1.59923
+set HyperonNL:IncomingBaryon 5 3112
+set HyperonNL:OutgoingBaryon 5 2112
+set HyperonNL:OutgoingMeson 5 -211
+set HyperonNL:CouplingA 5 4.27e-07
+set HyperonNL:CouplingB 5 1.52e-07
+set HyperonNL:MaxWeight 6 0.859131
+set HyperonNL:IncomingBaryon 6 3222
+set HyperonNL:OutgoingBaryon 6 2112
+set HyperonNL:OutgoingMeson 6 211
+set HyperonNL:CouplingA 6 1.3e-08
+set HyperonNL:CouplingB 6 -4.44e-06
+set HyperonNL:Iteration 1
+set HyperonNL:Ntry 500
+set HyperonNL:Points 10000
+set HyperonNL:GenerateIntermediates 0 
+
+#
+create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3RoperGamma
+set SU3RoperGamma:Iteration 1
+set SU3RoperGamma:Ntry 500
+set SU3RoperGamma:Points 10000
+set SU3RoperGamma:GenerateIntermediates 0 
+set SU3RoperGamma:Fcoupling -0.009
+set SU3RoperGamma:Dcoupling -0.024
+set SU3RoperGamma:Parity 1
+set SU3RoperGamma:Proton 2212
+set SU3RoperGamma:Neutron 2112
+set SU3RoperGamma:Sigma+ 3222
+set SU3RoperGamma:Sigma0 3212
+set SU3RoperGamma:Sigma- 3112
+set SU3RoperGamma:Lambda 3122
+set SU3RoperGamma:Xi0 3322
+set SU3RoperGamma:Xi- 3312
+set SU3RoperGamma:ExcitedProton 12212
+set SU3RoperGamma:ExcitedNeutron 12112
+set SU3RoperGamma:ExcitedSigma+ 13222
+set SU3RoperGamma:ExcitedSigma0 13212
+set SU3RoperGamma:ExcitedSigma- 13112
+set SU3RoperGamma:ExcitedLambda 23122
+set SU3RoperGamma:ExcitedXi0 13322
+set SU3RoperGamma:ExcitedXi- 13312
+insert SU3RoperGamma:MaxWeight 0 1.34534
+insert SU3RoperGamma:MaxWeight 1 2.3978
+insert SU3RoperGamma:MaxWeight 2 0.01954
+insert SU3RoperGamma:MaxWeight 3 0.00189107
+insert SU3RoperGamma:MaxWeight 4 0.00998248
+insert SU3RoperGamma:MaxWeight 5 0.000310286
+insert SU3RoperGamma:MaxWeight 6 0.0310247
+insert SU3RoperGamma:MaxWeight 7 0.024809
+insert SU3RoperGamma:MaxWeight 8 5.2804e-05
+insert SU3RoperGamma:MaxWeight 9 0.014572
+
+#
+create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma2
+set SU3Gamma2:Iteration 1
+set SU3Gamma2:Ntry 500
+set SU3Gamma2:Points 10000
+set SU3Gamma2:GenerateIntermediates 0 
+set SU3Gamma2:Fcoupling -0.046
+set SU3Gamma2:Dcoupling 0.033
+set SU3Gamma2:Parity 0
+set SU3Gamma2:Proton 2212
+set SU3Gamma2:Neutron 2112
+set SU3Gamma2:Sigma+ 3222
+set SU3Gamma2:Sigma0 3212
+set SU3Gamma2:Sigma- 3112
+set SU3Gamma2:Lambda 3122
+set SU3Gamma2:Xi0 3322
+set SU3Gamma2:Xi- 3312
+set SU3Gamma2:ExcitedProton 22212
+set SU3Gamma2:ExcitedNeutron 22112
+set SU3Gamma2:ExcitedSigma+ 23222
+set SU3Gamma2:ExcitedSigma0 23212
+set SU3Gamma2:ExcitedSigma- 23112
+set SU3Gamma2:ExcitedLambda 33122
+set SU3Gamma2:ExcitedXi0 23322
+set SU3Gamma2:ExcitedXi- 23312
+insert SU3Gamma2:MaxWeight 0 2.9575
+insert SU3Gamma2:MaxWeight 1 1.97747
+insert SU3Gamma2:MaxWeight 2 0.0962338
+insert SU3Gamma2:MaxWeight 3 0.00969098
+insert SU3Gamma2:MaxWeight 4 0.0522884
+insert SU3Gamma2:MaxWeight 5 0.00991625
+insert SU3Gamma2:MaxWeight 6 0.0712376
+insert SU3Gamma2:MaxWeight 7 0.0130695
+insert SU3Gamma2:MaxWeight 8 0.36402
+insert SU3Gamma2:MaxWeight 9 0.0548153
+
+#
+create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma3
+set SU3Gamma3:Iteration 1
+set SU3Gamma3:Ntry 500
+set SU3Gamma3:Points 10000
+set SU3Gamma3:GenerateIntermediates 0 
+set SU3Gamma3:Fcoupling 0
+set SU3Gamma3:Dcoupling 0.056
+set SU3Gamma3:Parity 1
+set SU3Gamma3:Proton 2212
+set SU3Gamma3:Neutron 2112
+set SU3Gamma3:Sigma+ 3222
+set SU3Gamma3:Sigma0 3212
+set SU3Gamma3:Sigma- 3112
+set SU3Gamma3:Lambda 3122
+set SU3Gamma3:Xi0 3322
+set SU3Gamma3:Xi- 3312
+set SU3Gamma3:ExcitedProton 2212
+set SU3Gamma3:ExcitedNeutron 2112
+set SU3Gamma3:ExcitedSigma+ 3222
+set SU3Gamma3:ExcitedSigma0 3212
+set SU3Gamma3:ExcitedSigma- 3112
+set SU3Gamma3:ExcitedLambda 3122
+set SU3Gamma3:ExcitedXi0 3322
+set SU3Gamma3:ExcitedXi- 3312
+insert SU3Gamma3:MaxWeight 0 1.58351
+
+#
+create Herwig::SU3BaryonDecupletOctetPhotonDecayer  DecupletGamma
+set DecupletGamma:Iteration 1
+set DecupletGamma:Ntry 500
+set DecupletGamma:Points 10000
+set DecupletGamma:GenerateIntermediates 0 
+set DecupletGamma:Ccoupling 1
+set DecupletGamma:Parity 1
+set DecupletGamma:Proton 2212
+set DecupletGamma:Neutron 2112
+set DecupletGamma:Sigma+ 3222
+set DecupletGamma:Sigma0 3212
+set DecupletGamma:Sigma- 3112
+set DecupletGamma:Lambda 3122
+set DecupletGamma:Xi0 3322
+set DecupletGamma:Xi- 3312
+set DecupletGamma:Delta++ 2224
+set DecupletGamma:Delta+ 2214
+set DecupletGamma:Delta0 2114
+set DecupletGamma:Delta- 1114
+set DecupletGamma:Sigma*+ 3224
+set DecupletGamma:Sigma*0 3214
+set DecupletGamma:Sigma*- 3114
+set DecupletGamma:Omega 3334
+set DecupletGamma:Xi*0 3324
+set DecupletGamma:Xi*- 3314
+insert DecupletGamma:MaxWeight 0 1.35551
+insert DecupletGamma:MaxWeight 1 1.3398
+insert DecupletGamma:MaxWeight 2 0.135728
+insert DecupletGamma:MaxWeight 3 0.137064
+insert DecupletGamma:MaxWeight 4 0.0331892
+insert DecupletGamma:MaxWeight 5 0.122578
+
+#
+create Herwig::SU3BaryonOctetOctetPhotonDecayer  SU3Gamma4
+set SU3Gamma4:Iteration 1
+set SU3Gamma4:Ntry 500
+set SU3Gamma4:Points 10000
+set SU3Gamma4:GenerateIntermediates 0 
+set SU3Gamma4:Fcoupling -0.093
+set SU3Gamma4:Dcoupling 0.087
+set SU3Gamma4:Parity 1
+set SU3Gamma4:Proton 2212
+set SU3Gamma4:Neutron 2112
+set SU3Gamma4:Sigma+ 3222
+set SU3Gamma4:Sigma0 3212
+set SU3Gamma4:Sigma- 3112
+set SU3Gamma4:Lambda 3122
+set SU3Gamma4:Xi0 3322
+set SU3Gamma4:Xi- 3312
+set SU3Gamma4:ExcitedProton 2124
+set SU3Gamma4:ExcitedNeutron 1214
+set SU3Gamma4:ExcitedSigma+ 13224
+set SU3Gamma4:ExcitedSigma0 13214
+set SU3Gamma4:ExcitedSigma- 13114
+set SU3Gamma4:ExcitedLambda 13124
+set SU3Gamma4:ExcitedXi0 13324
+set SU3Gamma4:ExcitedXi- 13314
+insert SU3Gamma4:MaxWeight 0 0.415222
+insert SU3Gamma4:MaxWeight 1 0.417084
+insert SU3Gamma4:MaxWeight 2 0.0204893
+insert SU3Gamma4:MaxWeight 3 0.00210252
+insert SU3Gamma4:MaxWeight 4 0.00955353
+insert SU3Gamma4:MaxWeight 5 0.00222245
+insert SU3Gamma4:MaxWeight 6 0.0283485
+insert SU3Gamma4:MaxWeight 7 0.00715258
+insert SU3Gamma4:MaxWeight 8 0.0517918
+insert SU3Gamma4:MaxWeight 9 0.0120169
+
+#
+create Herwig::SU3BaryonSingletOctetPhotonDecayer  SU3Gamma5
+set SU3Gamma5:Iteration 1
+set SU3Gamma5:Ntry 500
+set SU3Gamma5:Points 10000
+set SU3Gamma5:GenerateIntermediates 0 
+set SU3Gamma5:Coupling 0.252
+set SU3Gamma5:Parity 0
+set SU3Gamma5:Sigma0 3212
+set SU3Gamma5:Lambda 3122
+set SU3Gamma5:ExcitedLambda 3124
+insert SU3Gamma5:MaxWeight 0 1.60087
+insert SU3Gamma5:MaxWeight 1 2.20194
 
 #
 create Herwig::TauDecayer  Tau1Vector
@@ -17276,6 +21385,144 @@ set MelikhovStechFormFactor:OutQuark 41 3
 set MelikhovStech:FormFactor MelikhovStechFormFactor 
 
 #
+create Herwig::SemiLeptonicBaryonDecayer  BaryonLight2
+set BaryonLight2:Iteration 1
+set BaryonLight2:Ntry 500
+set BaryonLight2:Points 10000
+set BaryonLight2:GenerateIntermediates 1 
+set BaryonLight2:GFermi 1.16639e-05 
+insert BaryonLight2:MaximumWeight 0 2.29013 
+insert BaryonLight2:MaximumWeight 1 4.14333e-05 
+insert BaryonLight2:MaximumWeight 2 0.00012764 
+insert BaryonLight2:MaximumWeight 3 4.70199e-10 
+insert BaryonLight2:MaximumWeight 4 3.04697e-20 
+insert BaryonLight2:MaximumWeight 5 1.02959e-09 
+insert BaryonLight2:MaximumWeight 6 0.0028835 
+insert BaryonLight2:MaximumWeight 7 0.000392968 
+insert BaryonLight2:MaximumWeight 8 9.43244e-13 
+insert BaryonLight2:MaximumWeight 9 2.69324e-13 
+insert BaryonLight2:MaximumWeight 10 0.00405493 
+insert BaryonLight2:MaximumWeight 11 0.00117335 
+insert BaryonLight2:MaximumWeight 12 0.00239207 
+insert BaryonLight2:MaximumWeight 13 0.000443089 
+insert BaryonLight2:MaximumWeight 14 0.000229395 
+insert BaryonLight2:MaximumWeight 15 3.35965e-06 
+insert BaryonLight2:MaximumWeight 16 0.000719781 
+insert BaryonLight2:MaximumWeight 17 7.04736e-06 
+create Herwig::LeptonNeutrinoCurrent BaryonLight2Current  HwWeakCurrents.so
+set BaryonLight2Current:Quark 0  11
+set BaryonLight2Current:AntiQuark 0  -12
+set BaryonLight2Current:Quark 1  13
+set BaryonLight2Current:AntiQuark 1  -15
+set BaryonLight2Current:Quark 2  15
+set BaryonLight2Current:AntiQuark 2  -16
+set BaryonLight2:Current BaryonLight2Current 
+create Herwig::BaryonSimpleFormFactor BaryonLight2Form 
+set BaryonLight2Form:g_A 1.25 
+set BaryonLight2Form:alpha_D 0.6 
+set BaryonLight2Form:eta_V 0.97 
+set BaryonLight2Form:eta_A 1.08 
+set BaryonLight2Form:rho_E 0.094 
+set BaryonLight2Form:rho_M 0.86 
+set BaryonLight2Form:Incoming 0 2112
+set BaryonLight2Form:Outgoing 0 2212
+set BaryonLight2Form:InSpin 0 2
+set BaryonLight2Form:OutSpin 0 2
+set BaryonLight2Form:Spectator1 0 2
+set BaryonLight2Form:Spectator2 0 1
+set BaryonLight2Form:InQuark 0 1
+set BaryonLight2Form:OutQuark 0 2
+set BaryonLight2Form:Incoming 1 3222
+set BaryonLight2Form:Outgoing 1 3122
+set BaryonLight2Form:InSpin 1 2
+set BaryonLight2Form:OutSpin 1 2
+set BaryonLight2Form:Spectator1 1 3
+set BaryonLight2Form:Spectator2 1 2
+set BaryonLight2Form:InQuark 1 1
+set BaryonLight2Form:OutQuark 1 2
+set BaryonLight2Form:Incoming 2 3112
+set BaryonLight2Form:Outgoing 2 3122
+set BaryonLight2Form:InSpin 2 2
+set BaryonLight2Form:OutSpin 2 2
+set BaryonLight2Form:Spectator1 2 3
+set BaryonLight2Form:Spectator2 2 1
+set BaryonLight2Form:InQuark 2 1
+set BaryonLight2Form:OutQuark 2 2
+set BaryonLight2Form:Incoming 3 3112
+set BaryonLight2Form:Outgoing 3 3212
+set BaryonLight2Form:InSpin 3 2
+set BaryonLight2Form:OutSpin 3 2
+set BaryonLight2Form:Spectator1 3 3
+set BaryonLight2Form:Spectator2 3 1
+set BaryonLight2Form:InQuark 3 1
+set BaryonLight2Form:OutQuark 3 2
+set BaryonLight2Form:Incoming 4 3212
+set BaryonLight2Form:Outgoing 4 3222
+set BaryonLight2Form:InSpin 4 2
+set BaryonLight2Form:OutSpin 4 2
+set BaryonLight2Form:Spectator1 4 3
+set BaryonLight2Form:Spectator2 4 2
+set BaryonLight2Form:InQuark 4 1
+set BaryonLight2Form:OutQuark 4 2
+set BaryonLight2Form:Incoming 5 3312
+set BaryonLight2Form:Outgoing 5 3322
+set BaryonLight2Form:InSpin 5 2
+set BaryonLight2Form:OutSpin 5 2
+set BaryonLight2Form:Spectator1 5 3
+set BaryonLight2Form:Spectator2 5 3
+set BaryonLight2Form:InQuark 5 1
+set BaryonLight2Form:OutQuark 5 2
+set BaryonLight2Form:Incoming 6 3122
+set BaryonLight2Form:Outgoing 6 2212
+set BaryonLight2Form:InSpin 6 2
+set BaryonLight2Form:OutSpin 6 2
+set BaryonLight2Form:Spectator1 6 2
+set BaryonLight2Form:Spectator2 6 1
+set BaryonLight2Form:InQuark 6 3
+set BaryonLight2Form:OutQuark 6 2
+set BaryonLight2Form:Incoming 7 3212
+set BaryonLight2Form:Outgoing 7 2212
+set BaryonLight2Form:InSpin 7 2
+set BaryonLight2Form:OutSpin 7 2
+set BaryonLight2Form:Spectator1 7 2
+set BaryonLight2Form:Spectator2 7 1
+set BaryonLight2Form:InQuark 7 3
+set BaryonLight2Form:OutQuark 7 2
+set BaryonLight2Form:Incoming 8 3112
+set BaryonLight2Form:Outgoing 8 2112
+set BaryonLight2Form:InSpin 8 2
+set BaryonLight2Form:OutSpin 8 2
+set BaryonLight2Form:Spectator1 8 1
+set BaryonLight2Form:Spectator2 8 1
+set BaryonLight2Form:InQuark 8 3
+set BaryonLight2Form:OutQuark 8 2
+set BaryonLight2Form:Incoming 9 3312
+set BaryonLight2Form:Outgoing 9 3122
+set BaryonLight2Form:InSpin 9 2
+set BaryonLight2Form:OutSpin 9 2
+set BaryonLight2Form:Spectator1 9 3
+set BaryonLight2Form:Spectator2 9 1
+set BaryonLight2Form:InQuark 9 3
+set BaryonLight2Form:OutQuark 9 2
+set BaryonLight2Form:Incoming 10 3312
+set BaryonLight2Form:Outgoing 10 3212
+set BaryonLight2Form:InSpin 10 2
+set BaryonLight2Form:OutSpin 10 2
+set BaryonLight2Form:Spectator1 10 3
+set BaryonLight2Form:Spectator2 10 1
+set BaryonLight2Form:InQuark 10 3
+set BaryonLight2Form:OutQuark 10 2
+set BaryonLight2Form:Incoming 11 3322
+set BaryonLight2Form:Outgoing 11 3222
+set BaryonLight2Form:InSpin 11 2
+set BaryonLight2Form:OutSpin 11 2
+set BaryonLight2Form:Spectator1 11 3
+set BaryonLight2Form:Spectator2 11 2
+set BaryonLight2Form:InQuark 11 3
+set BaryonLight2Form:OutQuark 11 2
+set BaryonLight2:FormFactor BaryonLight2Form 
+
+#
 create Herwig::SemiLeptonicScalarDecayer  KiselevBc
 set KiselevBc:Iteration 1
 set KiselevBc:Ntry 500
@@ -18325,6 +22572,198 @@ insert BcHadronic:MaximumWeight 137 0.000366705
 insert BcHadronic:MaximumWeight 138 0.000226844
 
 #
+create Herwig::SemiLeptonicBaryonDecayer  ExcitedLambda
+set ExcitedLambda:Iteration 1
+set ExcitedLambda:Ntry 500
+set ExcitedLambda:Points 10000
+set ExcitedLambda:GFermi 1.16639e-05 
+insert ExcitedLambda:MaximumWeight 0 0.00284407 
+insert ExcitedLambda:MaximumWeight 1 0.00277839 
+insert ExcitedLambda:MaximumWeight 2 0.000412905 
+insert ExcitedLambda:MaximumWeight 3 0.00244756 
+insert ExcitedLambda:MaximumWeight 4 0.0024288 
+insert ExcitedLambda:MaximumWeight 5 0.000347225 
+create Herwig::LeptonNeutrinoCurrent ExcitedLambdaCurrent 
+set ExcitedLambdaCurrent:Quark 0  11
+set ExcitedLambdaCurrent:AntiQuark 0  -12
+set ExcitedLambdaCurrent:Quark 1  13
+set ExcitedLambdaCurrent:AntiQuark 1  -15
+set ExcitedLambdaCurrent:Quark 2  15
+set ExcitedLambdaCurrent:AntiQuark 2  -16
+set ExcitedLambda:Current ExcitedLambdaCurrent 
+create Herwig::LambdabExcitedLambdacSumRuleFormFactor ExcitedLambdaForm 
+set ExcitedLambdaForm:Xi          0.29 
+set ExcitedLambdaForm:Rho2        2.01 
+set ExcitedLambdaForm:Incoming 0 5122
+set ExcitedLambdaForm:Outgoing 0 14122
+set ExcitedLambdaForm:InSpin 0 2
+set ExcitedLambdaForm:OutSpin 0 2
+set ExcitedLambdaForm:Spectator1 0 1
+set ExcitedLambdaForm:Spectator2 0 2
+set ExcitedLambdaForm:InQuark 0 5
+set ExcitedLambdaForm:OutQuark 0 4
+set ExcitedLambdaForm:Incoming 1 5122
+set ExcitedLambdaForm:Outgoing 1 4124
+set ExcitedLambdaForm:InSpin 1 2
+set ExcitedLambdaForm:OutSpin 1 4
+set ExcitedLambdaForm:Spectator1 1 1
+set ExcitedLambdaForm:Spectator2 1 2
+set ExcitedLambdaForm:InQuark 1 5
+set ExcitedLambdaForm:OutQuark 1 4
+set ExcitedLambda:FormFactor ExcitedLambdaForm 
+
+#
+create Herwig::RadiativeHeavyBaryonDecayer  HeavyGamma
+set HeavyGamma:Iteration 1
+set HeavyGamma:Ntry 500
+set HeavyGamma:Points 10000
+set HeavyGamma:GenerateIntermediates 0 
+set HeavyGamma:M1Coupling 0 1.1004e-05
+set HeavyGamma:E1Coupling 0 0
+set HeavyGamma:Incoming 0 4312
+set HeavyGamma:OutgoingB 0 4132
+set HeavyGamma:ModeType 0 1
+set HeavyGamma:MaxWeight 0 1.66921
+set HeavyGamma:M1Coupling 1 9.4102e-05
+set HeavyGamma:E1Coupling 1 0
+set HeavyGamma:Incoming 1 4322
+set HeavyGamma:OutgoingB 1 4232
+set HeavyGamma:ModeType 1 1
+set HeavyGamma:MaxWeight 1 1.67004
+set HeavyGamma:M1Coupling 2 1.1004e-05
+set HeavyGamma:E1Coupling 2 0
+set HeavyGamma:Incoming 2 5312
+set HeavyGamma:OutgoingB 2 5132
+set HeavyGamma:ModeType 2 1
+set HeavyGamma:MaxWeight 2 1.63358
+set HeavyGamma:M1Coupling 3 9.4102e-05
+set HeavyGamma:E1Coupling 3 0
+set HeavyGamma:Incoming 3 5322
+set HeavyGamma:OutgoingB 3 5232
+set HeavyGamma:ModeType 3 1
+set HeavyGamma:MaxWeight 3 1.60473
+set HeavyGamma:M1Coupling 4 0.000376
+set HeavyGamma:E1Coupling 4 0
+set HeavyGamma:Incoming 4 4214
+set HeavyGamma:OutgoingB 4 4122
+set HeavyGamma:ModeType 4 1
+set HeavyGamma:MaxWeight 4 0.035949
+set HeavyGamma:M1Coupling 5 0.000376
+set HeavyGamma:E1Coupling 5 0
+set HeavyGamma:Incoming 5 5214
+set HeavyGamma:OutgoingB 5 5122
+set HeavyGamma:ModeType 5 1
+set HeavyGamma:MaxWeight 5 0.03294
+set HeavyGamma:M1Coupling 6 3.74e-05
+set HeavyGamma:E1Coupling 6 0
+set HeavyGamma:Incoming 6 4314
+set HeavyGamma:OutgoingB 6 4132
+set HeavyGamma:ModeType 6 1
+set HeavyGamma:MaxWeight 6 0.000579519
+set HeavyGamma:M1Coupling 7 0.00032486
+set HeavyGamma:E1Coupling 7 0
+set HeavyGamma:Incoming 7 4324
+set HeavyGamma:OutgoingB 7 4232
+set HeavyGamma:ModeType 7 1
+set HeavyGamma:MaxWeight 7 0.0462769
+set HeavyGamma:M1Coupling 8 0.00010132
+set HeavyGamma:E1Coupling 8 0
+set HeavyGamma:Incoming 8 5314
+set HeavyGamma:OutgoingB 8 5132
+set HeavyGamma:ModeType 8 1
+set HeavyGamma:MaxWeight 8 0.00429418
+set HeavyGamma:M1Coupling 9 0.00032486
+set HeavyGamma:E1Coupling 9 0
+set HeavyGamma:Incoming 9 5324
+set HeavyGamma:OutgoingB 9 5232
+set HeavyGamma:ModeType 9 1
+set HeavyGamma:MaxWeight 9 0.0463449
+set HeavyGamma:M1Coupling 10 0.0001088
+set HeavyGamma:E1Coupling 10 0
+set HeavyGamma:Incoming 10 4212
+set HeavyGamma:OutgoingB 10 4122
+set HeavyGamma:ModeType 10 1
+set HeavyGamma:MaxWeight 10 0.064517
+set HeavyGamma:M1Coupling 11 0.0001088
+set HeavyGamma:E1Coupling 11 0
+set HeavyGamma:Incoming 11 5212
+set HeavyGamma:OutgoingB 11 5122
+set HeavyGamma:ModeType 11 1
+set HeavyGamma:MaxWeight 11 0.0325132
+set HeavyGamma:M1Coupling 12 0.0003337
+set HeavyGamma:E1Coupling 12 0
+set HeavyGamma:Incoming 12 4224
+set HeavyGamma:OutgoingB 12 4222
+set HeavyGamma:ModeType 12 1
+set HeavyGamma:MaxWeight 12 0.00297666
+set HeavyGamma:M1Coupling 13 8.34e-05
+set HeavyGamma:E1Coupling 13 0
+set HeavyGamma:Incoming 13 4214
+set HeavyGamma:OutgoingB 13 4212
+set HeavyGamma:ModeType 13 1
+set HeavyGamma:MaxWeight 13 0.000203503
+set HeavyGamma:M1Coupling 14 -0.0001688
+set HeavyGamma:E1Coupling 14 0
+set HeavyGamma:Incoming 14 4114
+set HeavyGamma:OutgoingB 14 4112
+set HeavyGamma:ModeType 14 1
+set HeavyGamma:MaxWeight 14 0.000903461
+set HeavyGamma:M1Coupling 15 -0.000611
+set HeavyGamma:E1Coupling 15 0
+set HeavyGamma:Incoming 15 4314
+set HeavyGamma:OutgoingB 15 4312
+set HeavyGamma:ModeType 15 1
+set HeavyGamma:MaxWeight 15 0.0178619
+set HeavyGamma:M1Coupling 16 -0.0003607
+set HeavyGamma:E1Coupling 16 0
+set HeavyGamma:Incoming 16 4324
+set HeavyGamma:OutgoingB 16 4322
+set HeavyGamma:ModeType 16 1
+set HeavyGamma:MaxWeight 16 0.00671238
+set HeavyGamma:M1Coupling 17 0.001055
+set HeavyGamma:E1Coupling 17 0
+set HeavyGamma:Incoming 17 4334
+set HeavyGamma:OutgoingB 17 4332
+set HeavyGamma:ModeType 17 1
+set HeavyGamma:MaxWeight 17 1.59261
+set HeavyGamma:M1Coupling 18 0.0009945
+set HeavyGamma:E1Coupling 18 0
+set HeavyGamma:Incoming 18 5224
+set HeavyGamma:OutgoingB 18 5222
+set HeavyGamma:ModeType 18 1
+set HeavyGamma:MaxWeight 18 0.00818774
+set HeavyGamma:M1Coupling 19 0.0002486
+set HeavyGamma:E1Coupling 19 0
+set HeavyGamma:Incoming 19 5214
+set HeavyGamma:OutgoingB 19 5212
+set HeavyGamma:ModeType 19 1
+set HeavyGamma:MaxWeight 19 0.000627892
+set HeavyGamma:M1Coupling 20 -0.0004973
+set HeavyGamma:E1Coupling 20 0
+set HeavyGamma:Incoming 20 5114
+set HeavyGamma:OutgoingB 20 5112
+set HeavyGamma:ModeType 20 1
+set HeavyGamma:MaxWeight 20 0.0025886
+set HeavyGamma:M1Coupling 21 -0.0004371
+set HeavyGamma:E1Coupling 21 0
+set HeavyGamma:Incoming 21 5314
+set HeavyGamma:OutgoingB 21 5312
+set HeavyGamma:ModeType 21 1
+set HeavyGamma:MaxWeight 21 0.00938573
+set HeavyGamma:M1Coupling 22 0.0003088
+set HeavyGamma:E1Coupling 22 0
+set HeavyGamma:Incoming 22 5324
+set HeavyGamma:OutgoingB 22 5322
+set HeavyGamma:ModeType 22 1
+set HeavyGamma:MaxWeight 22 0.00506067
+set HeavyGamma:M1Coupling 23 -0.0003769
+set HeavyGamma:E1Coupling 23 0
+set HeavyGamma:Incoming 23 5334
+set HeavyGamma:OutgoingB 23 5332
+set HeavyGamma:ModeType 23 1
+set HeavyGamma:MaxWeight 23 1.67242
+
+#
 create Herwig::ScalarVectorVectorDecayer  SVV
 set SVV:Iteration 1
 set SVV:Ntry 2000
@@ -18450,7 +22889,7 @@ insert Tau5Pion:WeightLocation 1 12
 insert Tau5Pion:WeightLocation 2 30
 insert Tau5Pion:MaximumWeight 0 0.12
 insert Tau5Pion:MaximumWeight 1 1.10
-insert Tau5Pion:MaximumWeight 2 0.18
+insert Tau5Pion:MaximumWeight 2 0.19
 insert Tau5Pion:Weights 0 0.0829231
 insert Tau5Pion:Weights 1 0.0837284
 insert Tau5Pion:Weights 2 0.0832389
@@ -19634,15 +24073,15 @@ set BtosgammaKagan:HadronicMass BtosgammaMass
 
 #
 create Herwig::SMTopDecayer  Top
-set Top:QuarkWeights 0 3.
-set Top:QuarkWeights 1 3.
-set Top:QuarkWeights 2 3.
-set Top:QuarkWeights 3 3.
+set Top:QuarkWeights 0 5.
+set Top:QuarkWeights 1 5.
+set Top:QuarkWeights 2 5.
+set Top:QuarkWeights 3 5.
 set Top:QuarkWeights 4 1.5e-05
-set Top:QuarkWeights 5 3.
-set Top:LeptonWeights 0 3.
-set Top:LeptonWeights 1 3.
-set Top:LeptonWeights 2 3.
+set Top:QuarkWeights 5 5.
+set Top:LeptonWeights 0 5.
+set Top:LeptonWeights 1 5.
+set Top:LeptonWeights 2 5.
 set Top:Iteration 1
 set Top:Ntry 500
 set Top:Points 10000
@@ -19941,5 +24380,42 @@ insert DtoKPiPiMarkIII:Weights 5 0.576273
 insert DtoKPiPiMarkIII:Weights 6 0.423727
 insert DtoKPiPiMarkIII:Weights 7 0.497905
 insert DtoKPiPiMarkIII:Weights 8 0.502095
+
+#
+create Herwig::RadiativeHyperonDecayer  RadiativeHyperon
+set RadiativeHyperon:MaxWeight 0 0.0245809
+set RadiativeHyperon:IncomingBaryon 0 3222
+set RadiativeHyperon:OutgoingBaryon 0 2212
+set RadiativeHyperon:CouplingA 0 -1.81e-07
+set RadiativeHyperon:CouplingB 0 4.7e-08
+set RadiativeHyperon:MaxWeight 1 6.02591e-05
+set RadiativeHyperon:IncomingBaryon 1 3312
+set RadiativeHyperon:OutgoingBaryon 1 3112
+set RadiativeHyperon:CouplingA 1 8e-09
+set RadiativeHyperon:CouplingB 1 1.5e-08
+set RadiativeHyperon:MaxWeight 2 1.34599e-12
+set RadiativeHyperon:IncomingBaryon 2 3212
+set RadiativeHyperon:OutgoingBaryon 2 2112
+set RadiativeHyperon:CouplingA 2 -2e-09
+set RadiativeHyperon:CouplingB 2 -4.5e-08
+set RadiativeHyperon:MaxWeight 3 0.00237221
+set RadiativeHyperon:IncomingBaryon 3 3122
+set RadiativeHyperon:OutgoingBaryon 3 2112
+set RadiativeHyperon:CouplingA 3 -5.2e-08
+set RadiativeHyperon:CouplingB 3 -5e-09
+set RadiativeHyperon:MaxWeight 4 0.00175107
+set RadiativeHyperon:IncomingBaryon 4 3322
+set RadiativeHyperon:OutgoingBaryon 4 3212
+set RadiativeHyperon:CouplingA 4 5e-09
+set RadiativeHyperon:CouplingB 4 7e-08
+set RadiativeHyperon:MaxWeight 5 0.00171032
+set RadiativeHyperon:IncomingBaryon 5 3322
+set RadiativeHyperon:OutgoingBaryon 5 3122
+set RadiativeHyperon:CouplingA 5 -3.4e-08
+set RadiativeHyperon:CouplingB 5 -8e-09
+set RadiativeHyperon:Iteration 1
+set RadiativeHyperon:Ntry 500
+set RadiativeHyperon:Points 10000
+set RadiativeHyperon:GenerateIntermediates 0 
 
 #

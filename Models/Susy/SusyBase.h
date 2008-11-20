@@ -335,6 +335,11 @@ private:
 
 private:
 
+  /**
+   *  Whether or not the SLHA fiel has been read
+   */
+  bool _readFile;
+
   /*
    * Storage of the parameters.
    */

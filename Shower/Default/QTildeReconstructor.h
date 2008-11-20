@@ -78,7 +78,7 @@ public:
   /**
    *  Default constructor
    */
-  inline QTildeReconstructor() : _reconopt(0) {};
+  inline QTildeReconstructor() : _reconopt(0), _minQ(0.001*GeV) {};
 
   /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
@@ -222,10 +222,15 @@ protected:
    * @param k2 The rescaling parameter for the outgoing singlet
    * @param qt The transverse momentum vector
    */
-  bool solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
-			 const JetKinVect & jetKinematics, ShowerParticlePtr partner,
+  bool solveDecayKFactor(Energy mb, 
+			 const Lorentz5Momentum & n, 
+			 const Lorentz5Momentum & pjet, 
+			 const JetKinVect & jetKinematics, 
+			 ShowerParticlePtr partner,
 			 Lorentz5Momentum ppartner[2],
-			 double & k1, double & k2,Lorentz5Momentum & qt) const;
+			 double & k1, 
+			 double & k2,
+			 Lorentz5Momentum & qt) const;
 
 
   /**
@@ -377,6 +382,12 @@ private:
    *  Option for handling the reconstruction
    */
   unsigned int _reconopt;
+
+  /**
+   * Minimum invariant mass for initial-final dipoles to allow the
+   * reconstruction
+   */
+  Energy _minQ;
 
   /**
    *  The progenitor of the jet currently being reconstructed

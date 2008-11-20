@@ -28,8 +28,45 @@ read meson_decays.in
 
 cd /Herwig/Hadronization
 # with new decays these should not be made by the hadronization
+# particles only as intermediates in certain decays
 insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa+
 insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa0
 insert HadronSelector:Forbidden 0 /Herwig/Particles/kappabar0
 insert HadronSelector:Forbidden 0 /Herwig/Particles/kappa-
 insert HadronSelector:Forbidden 0 /Herwig/Particles/sigma
+# exclude 2nd excited 10plet
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda(1520)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambdabar(1520)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_c(2625)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_c(2625)bar-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_b1*0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda_b1*bar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2815)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2815)bar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2815)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_c(2815)bar-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1*0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1*bar0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1*-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi_b1*bar+
+# exclude 3rd excited 45 plet
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambda(1690)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Lambdabar(1690)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/p(1520)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/pbar(1520)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/n(1520)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/nbar(1520)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1670)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1670)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigma(1670)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Sigmabar(1670)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi(1820)-
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xibar(1820)+
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xi(1820)0
+insert HadronSelector:Forbidden 0 /Herwig/Particles/Xibar(1820)0
+
+mkdir /Herwig/Widths
+cd /Herwig/Widths
+read widths.in

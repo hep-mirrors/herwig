@@ -1,4 +1,4 @@
-SUBDIRS = FormFactors Tau VectorMeson Perturbative \
+SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
 	  WeakCurrents ScalarMeson TensorMeson Partonic General Radiation
 
 noinst_LTLIBRARIES = libHwDecay.la 

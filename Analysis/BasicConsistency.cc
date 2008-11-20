@@ -55,6 +55,8 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     ptotal(-event->incoming().first->momentum()
 	   -event->incoming().second->momentum());
 
+  const Energy beamenergy = ptotal.mag();
+
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     if (_checkquark && (*it)->coloured()) {
@@ -131,18 +133,20 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   Energy ee  = ptotal.e();
 
   if (isnan(mag/MeV)) {
-    cerr << "\nMomentum is 'nan'; " << ptotal/GeV 
-	 << " GeV in event " << event->number() << '\n';
-    generator()->log() <<"\nMomentum is 'nan'; " << ptotal/GeV 
-		       << " GeV in event " << event->number() << '\n' 
+    cerr << "\nMomentum is 'nan'; " << ptotal/MeV 
+	 << " MeV in event " << event->number() << '\n';
+    generator()->log() <<"\nMomentum is 'nan'; " << ptotal/MeV 
+		       << " MeV in event " << event->number() << '\n' 
 		       << *event;
   }
 
-  if (mag > 5.*MeV || abs(ee) > 5.*MeV) {
-    cerr << "\nMomentum imbalance by " << ptotal/GeV 
-	 << " GeV in event " << event->number() << '\n';
-    generator()->log() <<"\nMomentum imbalance by " << ptotal/GeV 
-		       << " GeV in event " << event->number() << '\n' 
+  const Energy epsilonmax = 1.0e-5 * beamenergy;
+
+  if (mag > epsilonmax || abs(ee) > epsilonmax) {
+    cerr << "\nMomentum imbalance by " << ptotal/MeV 
+	 << " MeV in event " << event->number() << '\n';
+    generator()->log() <<"\nMomentum imbalance by " << ptotal/MeV 
+		       << " MeV in event " << event->number() << '\n' 
 		       << *event;
   }
 
@@ -187,11 +191,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 	test = (*it)->lifeLength();
 	break;
       }
-      problem |= 
-	isnan(test.x()/mm) || isnan(test.y()/mm) ||
-	isnan(test.z()/mm) || isnan(test.t()/mm) ||
-	isinf(test.x()/mm) || isinf(test.y()/mm) ||
-	isinf(test.z()/mm) || isinf(test.t()/mm);
+      problem |= isnan(test.mag2()/mm/mm) || isinf(test.mag2()/mm/mm);
     }
     if(problem) {
       generator()->log() << "Problem with position of " << **it << "\n"
@@ -305,7 +305,7 @@ void BasicConsistency::doinitrun() {
     if(abs(total-1.)>eps) {
       cerr << "Warning: Total BR for " 
 	   << it->second->PDGName() 
-	   << " does not add up to one sum = " << total << "\n";
+	   << " does not add up to 1. sum = " << total << "\n";
     }
   }
 }
