@@ -322,11 +322,34 @@ private:
 
 private:
 
+  /**
+   *  Spin density matrx
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Spin-\f$\frac12\f$ spinor
+   */
   mutable vector<Helicity::LorentzSpinor<SqrtEnergy> >      _inHalf;
+
+  /**
+   *  Spin-\f$\frac12\f$ barred spinor
+   */
   mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> >   _inHalfBar;
+
+  /**
+   *  Spin-\f$\frac32\f$ spinor
+   */
   mutable vector<Helicity::LorentzRSSpinor<SqrtEnergy> >    _inThreeHalf;
+
+  /**
+   *  Spin-\f$\frac32\f$ barred spinor
+   */
   mutable vector<Helicity::LorentzRSSpinorBar<SqrtEnergy> > _inThreeHalfBar;
+
+  /**
+   *  Polarization vector
+   */
   mutable vector<Helicity::LorentzPolarizationVector> _inVec;
 };
 

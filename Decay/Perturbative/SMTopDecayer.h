@@ -206,8 +206,19 @@ private:
    */
   PDPtr _wplus;
 
+  /**
+   *  Spin density matrix for the decay
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Spinors for the decay
+   */
   mutable vector<SpinorWaveFunction   >   _inHalf,_outHalf;
+
+  /**
+   *  Barred spinors for the decay
+   */
   mutable vector<SpinorBarWaveFunction>   _inHalfBar,_outHalfBar;
 
 };

@@ -171,9 +171,24 @@ private:
   vector<double> _wleptonwgt;
   //@}
 
+  /**
+   *  Spin density matrix for the decay
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decay
+   */
   mutable vector<VectorWaveFunction> _vectors;
+
+  /**
+   *  Spinors for the decay
+   */
   mutable vector<SpinorWaveFunction> _wave;
+
+  /**
+   *  Barred spinors for the decay
+   */
   mutable vector<SpinorBarWaveFunction> _wavebar;
 };
 
