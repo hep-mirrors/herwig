@@ -13,6 +13,9 @@
 #include "HepMC/GenEvent.h"
 
 namespace ThePEG {
+/**
+ * Struct for HepMC conversion
+ */
 template<> 
 struct HepMCTraits<HepMC::GenEvent> 
   : public HepMCTraitsBase<HepMC::GenEvent,

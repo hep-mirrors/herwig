@@ -42,7 +42,7 @@ ClassDescription<PowhegEvolver> PowhegEvolver::initPowhegEvolver;
 void PowhegEvolver::Init() {
 
   static ClassDocumentation<PowhegEvolver> documentation
-    ("The PowhegEvolver implements the POWHEG approach to MC@NLO");
+    ("The PowhegEvolver implements the POWHEG approach to MC\\@NLO");
 
   static RefVector<PowhegEvolver,HardestEmissionGenerator> interfaceHardGenerator
     ("HardGenerator",

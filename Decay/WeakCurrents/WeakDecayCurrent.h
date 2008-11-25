@@ -116,7 +116,7 @@ public:
    */
   virtual vector<LorentzPolarizationVectorE> 
   current(const int imode, const int ichan,Energy & scale, 
-	  const ParticleVector & decay, DecayIntegrator::MEOption) const=0;
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const=0;
 
   /**
    * Accept the decay. This method is purely virtual and must be implemented in any class

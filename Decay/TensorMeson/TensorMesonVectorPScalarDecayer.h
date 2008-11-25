@@ -198,6 +198,10 @@ private:
    *  speed
    */
   mutable vector<Helicity::LorentzTensor<double> > _tensors;
+
+  /**
+   *  Storage of the polarization vectors
+   */
   mutable vector<Helicity::LorentzPolarizationVector> _vectors;
 
   /**

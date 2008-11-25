@@ -103,8 +103,8 @@ protected:
    * @param itype The type of radiated particle (0 is gluon, 1 is quark 
    *              and 2 is antiquark)
    * @param pnew The momenta of the new particles
-   * @param trans The LorentzRotation from the higgs rest frame to the new lab
    * @param xnew The new values of the momentuym fractions
+   * @param out The ParticleData object for the outgoing parton
    * @return Whether or not the matrix element correction needs to be applied
    */
   bool applyHard(ShowerParticleVector gluons,

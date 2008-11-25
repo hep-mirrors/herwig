@@ -73,9 +73,7 @@ public:
    * Specify all the parameters.
    * @param abserr Absolute error.
    * @param relerr Relative error.
-   * @param binwidth Width of the bin as a fraction of the integration region.
-   * @param maxint Maximum number of intervals
-   * @param maxeval Maximum number of function evaluations
+   * @param max Maximum number of intervals
    */
   inline GSLBisection(double abserr, double relerr, int max) :
     abserr_(abserr), relerr_(relerr), maxPoints_(max) {}
@@ -114,9 +112,14 @@ private:
 private:
 
   /**
-   * The parameters controlling the error.
+   * The parameters controlling the absolute error.
    */
-  double abserr_, relerr_;
+  double abserr_;
+
+  /**
+   * The parameters controlling the relatve error.
+   */
+  double relerr_;
 
   /**
    * The maximum number of evaluations to use.

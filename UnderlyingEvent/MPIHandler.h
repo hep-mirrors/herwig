@@ -44,7 +44,9 @@ using namespace ThePEG;
 
 class MPIHandler: public UEBase {
 
-
+  /**
+   *  Maximum number of scatters
+   */
   static const unsigned int maxScatters_ = 99;
 
   /**
@@ -573,6 +575,10 @@ namespace Herwig {
   struct slopeAndTotalXSec : public GSLHelper<CrossSection, CrossSection> {
 
   public:
+
+    /**
+     *  Constructor
+     */
     slopeAndTotalXSec(tcMPIHPtr handler): handler_(handler) {}
 
     /** second argument type */
@@ -581,12 +587,18 @@ namespace Herwig {
     /** second value type */
     typedef InvEnergy2 ValType2;
 
-    /* first element of the vector like function to find root for */
+    /** first element of the vector like function to find root for 
+     * @param softXSec soft cross-section
+     * @param softMu2 \f$\mu^2\f$ 
+     */
     CrossSection f1(ArgType softXSec, ArgType2 softMu2) const {
       return handler_->totalXSecDiff(softXSec, softMu2);
     }
 
-    /* second element of the vector like function to find root for */
+    /** second element of the vector like function to find root for 
+     * @param softXSec soft cross-section
+     * @param softMu2 \f$\mu^2\f$ 
+     */
     InvEnergy2 f2(ArgType softXSec, ArgType2 softMu2) const {
       return handler_->slopeDiff(softXSec, softMu2);
     }
@@ -605,6 +617,9 @@ namespace Herwig {
 
   private: 
 
+    /**
+     *  Pointer to the handler
+     */
     tcMPIHPtr handler_;
 
   };
@@ -689,9 +704,18 @@ namespace Herwig {
   struct TotalXSecBisection : public GSLHelper<CrossSection, CrossSection> {
   public:
 
+    /**
+     *  Constructor
+     * @param handler The handler
+     * @param softMu2 \f$\mu^2\f$
+     */
     TotalXSecBisection(tcMPIHPtr handler, Energy2 softMu2=0*GeV2): 
       handler_(handler), softMu2_(softMu2) {}
 
+    /**
+     *  operator to return the cross section
+     * @param argument input cross section
+     */
     CrossSection operator ()(CrossSection argument) const {
       return handler_->totalXSecDiff(argument, softMu2_);
     }
@@ -704,12 +728,21 @@ namespace Herwig {
 
   private: 
 
+    /**
+     *  The handler
+     */
     tcMPIHPtr handler_;
 
+    /**
+     *  \f$\mu^2\f$
+     */
     Energy2 softMu2_;
 
   };
 
+  /**
+   *  Typedef for derivative of the length
+   */
   typedef QTY<1,-2,0>::Type LengthDiff;
 
   /**
@@ -718,12 +751,21 @@ namespace Herwig {
   struct slopeInt : public GSLHelper<LengthDiff, Length>{
 
   public:
-    /** Constructor */
+    /** Constructor 
+     * @param handler The handler
+     * @param hard The hard cross section
+     * @param soft The soft cross section
+     * @param softMu2 \f$\mu^2\f$
+     */
     slopeInt(tcMPIHPtr handler, CrossSection hard, 
 	      CrossSection soft=0*millibarn, Energy2 softMu2=0*GeV2)
       : handler_(handler), hardXSec_(hard), 
 	softXSec_(soft), softMu2_(softMu2) {}
 
+    /**
+     *  Operator to return the answer
+     * @param arg The argument
+     */
     ValType operator ()(ArgType arg) const;
 
   private:
@@ -759,8 +801,11 @@ namespace Herwig {
      *  The constructor
      *  @param handler is the pointer to the MPIHandler to get access to 
      *  MPIHandler::OverlapFunction and member variables of the MPIHandler.
-     *  @param xsec is the cross section to be eikonalized.
      *  @param option is a flag, whether the inelastic or the total 
+     *  @param handler The handler
+     *  @param hard The hard cross section
+     *  @param soft The soft cross section
+     *  @param softMu2 \f$\mu^2\f$
      *  cross section should be returned (-2 or -1). For option = N > 0 the integrand
      *  is N*(A(b)*sigma)^N/N! exp(-A(b)*sigma) this is the P_N*sigma where
      *  P_N is the Probability of having exactly N interaction (including the hard one)

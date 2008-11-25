@@ -89,7 +89,7 @@ public:
    */
   virtual vector<LorentzPolarizationVectorE> 
   current(const int imode, const int ichan,Energy & scale, 
-	  const ParticleVector & decay, DecayIntegrator::MEOption) const;
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const;
 
   /**
    * Accept the decay. Checks that this is one of the allowed modes.

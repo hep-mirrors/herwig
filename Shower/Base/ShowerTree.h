@@ -19,7 +19,11 @@
 #include "ShowerTree.fh"
 
 namespace Herwig {
-  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
+
+/**
+ *  Typedef for map of ShowerTrees for decays
+ */
+typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
   
 using namespace ThePEG;
  

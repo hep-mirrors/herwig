@@ -95,8 +95,9 @@ protected:
 				    unsigned int ilist);
 
   /**
-   *  Create the decayer
-   * @param The diagrams for the decay
+   * Create the decayer
+   * @param diagrams The diagrams for the decay
+   * @param inter Option for intermediates
    */
   GeneralThreeBodyDecayerPtr createDecayer(const vector<TBDiagram> & diagrams, 
 					   bool inter) const;
@@ -113,12 +114,15 @@ protected:
   /**
    *  Create the DecayMode from the diagrams
    * @param diagrams The diagrams
+   * @param inter Option for intermediates
    */
   void createDecayMode(const vector<TBDiagram> & diagrams, bool inter);
 
   /**
    * Get the correct colour factor matrix.
-   * @param extpart Vector of external ParticleData pointers
+   * @param incoming The incoming particle
+   * @param outgoing The outgoing particles
+   * @param diagrams The diagrams
    * @param ncf Set the number of colourflows.
    */
   pair<vector<DVector>,vector<DVector> >
