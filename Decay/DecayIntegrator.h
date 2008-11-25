@@ -124,6 +124,7 @@ public:
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param opt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
@@ -136,13 +137,12 @@ public:
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
-   * @param dm The DecayMode
    * @param mecode The code for the matrix element as described
    *               in the GenericWidthGenerator class.
    * @param coupling The coupling for the matrix element.
    * @return True or False if this mode can be handled.
    */
-  virtual bool twoBodyMEcode(const DecayMode & , int & mecode,
+  virtual bool twoBodyMEcode(const DecayMode &, int & mecode,
 			     double & coupling) const {
     coupling = 1.;
     mecode   = -1;

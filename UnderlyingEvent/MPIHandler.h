@@ -712,6 +712,9 @@ namespace Herwig {
 
   typedef QTY<1,-2,0>::Type LengthDiff;
 
+  /**
+   *  A struct for the integrand for the slope
+   */
   struct slopeInt : public GSLHelper<LengthDiff, Length>{
 
   public:
