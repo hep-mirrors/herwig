@@ -1,7 +1,6 @@
 SUBDIRS = BSM
 
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la \
-                     HwMPIAnalysis.la
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
