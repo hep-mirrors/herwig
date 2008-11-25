@@ -1,7 +1,7 @@
 SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la \
-                     HwMPIAnalysis.la HwDrellYanDalitzAnalysis.la
+                     HwMPIAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
@@ -38,10 +38,6 @@ IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.h\
 BELLECharmAnalysis.h BELLECharmAnalysis.cc\
 CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 
-HwDrellYanDalitzAnalysis_la_LDFLAGS = -module -version-info 1:0:0
-HwDrellYanDalitzAnalysis_la_SOURCES = \
-DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.h 
-
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
@@ -51,9 +47,7 @@ HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
-LEPJetAnalysis.cc LEPJetAnalysis.h\
-LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.h \
-TopDalitzAnalysis.cc TopDalitzAnalysis.h
+LEPJetAnalysis.cc LEPJetAnalysis.h
 endif
 
 HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
