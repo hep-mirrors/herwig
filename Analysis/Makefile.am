@@ -49,10 +49,3 @@ LEPFourJetsAnalysis.cc\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
 LEPJetAnalysis.cc LEPJetAnalysis.h
 endif
-
-HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
-HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwMPIAnalysis_la_LIBADD =
-HwMPIAnalysis_la_SOURCES = \
-RFieldAnalysis.h RFieldAnalysis.cc \
-MPIMultiplicity.h MPIMultiplicity.cc
