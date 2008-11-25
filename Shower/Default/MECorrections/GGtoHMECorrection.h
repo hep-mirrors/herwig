@@ -373,8 +373,6 @@ private:
    */
   double _maxwgt;
 
-  vector<pair<double,double> > _dalitz,_dalitz2;
-
 };
 
 }
