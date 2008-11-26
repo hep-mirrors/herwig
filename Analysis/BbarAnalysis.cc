@@ -34,7 +34,6 @@ Histogram eta5_h(-6.,6.,100)    , pt5_h(0.,200.,100)  ;
 Histogram eta6_h(-6.,6.,100)    , pt6_h(0.,200.,100)  ;
 Histogram eta567_h(-6.,6.,100)  , y567_h(-5.,5.,100)  , pt567_h(0.,150.,30);
 Histogram m567_h(114.95,115.05,100)  ;
-Histogram yall_h(-4.,4.,80)     , mall_h(0.,1000.,100);
 Histogram HTall_h(0.,500.,25)   ;
 Histogram y3456_h(-4.,4.,80)    , m3456_h(0.,1000.,100);
 
@@ -143,8 +142,6 @@ void BbarAnalysis::analyze(const tPVector & particles) {
   // Everything added up:
   HTall_h.addWeighted((pl.perp()+plbar.perp()
 		      +pb.perp()+pbbar.perp()+pemission.perp())/GeV,1.);
-  yall_h.addWeighted((pVStar+pemission).rapidity(),1.);
-  mall_h.addWeighted(sqrt((pVStar+pemission).m2())/GeV,1.);
   // Everything added up except the emission:
   y3456_h.addWeighted(pVStar.rapidity(),1.);
   m3456_h.addWeighted(sqrt(pVStar.m2())/GeV,1.);
@@ -237,10 +234,6 @@ void BbarAnalysis::dofinish() {
   // Everything added up:
   HTall_h.normaliseToCrossSection();
   HTall_h.prefactor(HTall_h.prefactor()*1.e6);
-  yall_h.normaliseToCrossSection();
-  yall_h.prefactor(yall_h.prefactor()*1.e6);
-  mall_h.normaliseToCrossSection();
-  mall_h.prefactor(mall_h.prefactor()*1.e6);
   // Everything added up except the emission:
   y3456_h.normaliseToCrossSection();
   y3456_h.prefactor(y3456_h.prefactor()*1.e6);
@@ -281,8 +274,6 @@ void BbarAnalysis::dofinish() {
   m567_h.topdrawOutput(file,Frame,"RED","m567 distribution: all wgts");
   // Everything added up:
   HTall_h.topdrawOutput(file,Frame,"RED","HTall distribution: all wgts");
-  yall_h.topdrawOutput(file,Frame,"RED","yall distribution: all wgts");
-  mall_h.topdrawOutput(file,Frame,"RED","mall distribution: all wgts");
   // Everything added up except the emission:
   y3456_h.topdrawOutput(file,Frame,"RED","y3456 distribution: all wgts");
   m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
