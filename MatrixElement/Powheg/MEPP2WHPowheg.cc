@@ -208,6 +208,7 @@ double MEPP2WHPowheg::NLOweight() const {
   //  if(_xt<1.-_eps)
   //    wgt += _a*(1./pow(1.-_xt,_p)-(1.-pow(_eps,1.-_p))/(1.-_p)/(1.-_eps));
   // return the answer
+  assert(!isinf(wgt)&&!isnan(wgt));
   return _contrib==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
@@ -316,9 +317,64 @@ double MEPP2WHPowheg::Ftilde_gq(double xt, double v) const {
 }
 
 double MEPP2WHPowheg::Ftilde_qq(double xt, double v) const {
-  return _alphaS2Pi*_CF*
-    (( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)+
-       ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v )/(1.-xt)
-     + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
-     + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v);
+  double eps(1e-10);
+  // is emission into regular or singular region?
+  if(xt>=0. && xt<1.-eps && v>eps && v<1.-eps) { 
+    // x<1, v>0, v<1 (regular emission, neither soft or collinear):
+    return _alphaS2Pi*_CF*
+      (( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)+
+	 ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v )/(1.-xt)
+       + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
+       + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v);
+  } 
+  else {
+    // make sure emission is actually in the allowed phase space:
+    if(!(v>=0. && v<=1. && xt>=0. && xt<=1.)) {
+      ostringstream s;
+      s << "MEPP2WHPowheg::Ftilde_qq : \n" << "xt(" << xt << ") and / or v(" 
+	<< v << ") not in the phase space.";
+      generator()->logWarning(Exception(s.str(),Exception::warning)); 
+      return 0.;
+    }
+    // is emission soft singular?
+    if(xt>=1.-eps) {
+      // x=1:
+      if(v<=eps) {
+	// x==1, v=0 (soft and collinear with particle b):
+	return _alphaS2Pi*_CF*
+	  (   ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
+	      );
+      } else if(v>=1.-eps) {
+	// x==1, v=1 (soft and collinear with particle a):
+	return _alphaS2Pi*_CF*
+	  (   ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v
+	      );
+      } else {
+	// x==1, 0<v<1 (soft wide angle emission):
+	return _alphaS2Pi*_CF*
+	  (   ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v)
+	      + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v
+	      );
+      }
+    } else {
+      // x<1:
+      if(v<=eps) {
+	// x<1 but v=0 (collinear with particle b, but not soft):
+	return _alphaS2Pi*_CF*
+	  ( ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,1.),1.) ) / (1.-v)
+	      )/(1.-xt)
+	    + ( log(1.-xbar(v)) - log(1.-_xb_a))*2./(1.-v) 
+	    );
+      } else if(v>=1.-eps) {
+	// x<1 but v=1 (collinear with particle a, but not soft):
+	return _alphaS2Pi*_CF*
+	  ( ( ( Fcal_qq(x(xt, v), v) - Fcal_qq(x(xt,0.),0.) ) / v 
+	      )/(1.-xt)
+	    + ( log(1.-xbar(v)) - log(1.-_xb_b))*2./v 
+	    );
+      }
+    }
+  }
+  return 0.;
+
 }
