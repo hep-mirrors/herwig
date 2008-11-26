@@ -21,6 +21,7 @@ struct HepMCTraits<HepMC::GenEvent>
   : public HepMCTraitsBase<HepMC::GenEvent,
 			   HepMC::GenParticle,
 			   HepMC::GenVertex,
-			   HepMC::Polarization> 
+			   HepMC::Polarization,
+			   HepMC::PdfInfo>
 {};
 }
