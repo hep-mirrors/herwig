@@ -79,147 +79,150 @@ public:
    */
   static void Init();
 
-//   /**
-//    * Function to set the born variables. 
-//    */
-//   void get_born_variables() const;
+  /**
+   * Function to set the born variables. 
+   */
+  void get_born_variables() const;
 
-//   /**
-//    * Calculate the correction weight with which leading-order
-//    * configurations are re-weighted.
-//    */
-//   double NLOweight() const;
+  /**
+   * Calculate the correction weight with which leading-order
+   * configurations are re-weighted.
+   */
+  double NLOweight() const;
 
-//   /**
-//    * Invariants required for the evaluation of next-to-leading order
-//    * quantities (Frixione et al. NPB.383 WZ production at colliders). 
-//    */
-//   Energy2 s(double xt, double y) const {
-//     return  p2_/x(xt,y);
-//   }
+  /**
+   * Invariants required for the evaluation of next-to-leading order
+   * quantities (Frixione et al. NPB.383 WZ production at colliders). 
+   */
+  Energy2 s(double xt, double y)      const ;
+  Energy2 tk(double xt, double y)     const ;
+  Energy2 uk(double xt, double y)     const ;
+  double  betax(double xt, double y)  const ; 
+  double  v1(double xt, double y)     const ; 
+  double  v2(double xt, double y)     const ; 
+  double  cpsi(double xt, double y)   const ; 
+  double  cpsipr(double xt, double y) const ; 
+  Energy2 q1(double xt, double y)     const ;
+  Energy2 q2(double xt, double y)     const ;
+  Energy2 q1hat(double xt, double y)  const ; 
+  Energy2 q2hat(double xt, double y)  const ; 
+  Energy2 w1(double xt, double y)     const ; 
+  Energy2 w2(double xt, double y)     const ;  
 
-//   Energy2 tk(double xt, double y) const {
-//     double  x_xt_y(x(xt,y));
-//     return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.-y);
-//   }
+  /**
+   * Calculate the minimum of \f$x\f$. 
+   */
+  double xbar(double y) const;
 
-//   Energy2 uk(double xt, double y) const {
-//     double  x_xt_y(x(xt,y));
-//     return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.+y);
-//   }
+  /**
+   * Calculate auxiliary function of \f$\bar{x}(y)\f$, \f$\bar{\eta}(y)\f$. 
+   */
+  double etabar(double y) const;
 
-//   /**
-//    * Calculate the minimum of \f$x\f$. 
-//    */
-//   double xbar(double y) const;
+  /**
+   * Calculate the variable \f$x=p^{2}/s\f$ from the integration variables. 
+   */
+  double x(double xt, double y) const;
 
-//   /**
-//    * Calculate auxiliary function of \f$\bar{x}(y)\f$, \f$\bar{\eta}(y)\f$. 
-//    */
-//   double etabar(double y) const;
+  /**
+   * Calculate the momentum fraction of the plus and minus partons. 
+   */
+  double xp(double x, double y) const;
+  double xm(double x, double y) const;
 
-//   /**
-//    * Calculate the variable \f$x=p^{2}/s\f$ from the integration variables. 
-//    */
-//   double x(double xt, double y) const {
-//     double x0(xbar(y));
-//     return x0+(1.-x0)*xt;
-//   }
+  /**
+   * Calculate the ratio of the NLO luminosity to the LO
+   * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
+   */
+  double Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const;
 
-//   /**
-//    * Calculate the momentum fraction of the plus and minus partons. 
-//    */
-//   double xp(double x, double y) const;
-//   double xm(double x, double y) const;
+  /**
+   * Calculate the universal soft-virtual contribution to the NLO weight. 
+   */
+  double Vtilde_universal() const;
 
-//   /**
-//    * Calculate the ratio of the NLO luminosity to the LO
-//    * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
-//    */
-//   double Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const;
+  /**
+   * Function for calculation of the \f$q\bar{q}\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Calculate the universal soft-virtual contribution to the NLO weight. 
-//    */
-//   double Vtilde_universal() const;
+  /**
+   * Function for calculation of the \f$gg\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Function for calculation of the \f$gg\f$ initiated real
-//    * contribution.
-//    */
-//   double Ctilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$qg\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Function for calculation of the \f$qg\f$ initiated real
-//    * contribution.
-//    */
-//   double Ctilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$gq\f$ initiated real
+   * contribution.
+   */
+  double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Function for calculation of the \f$gq\f$ initiated real
-//    * contribution.
-//    */
-//   double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * The regular part of the virtual correction matrix element(s) 
+   */
+  double M_V_regular() const;
 
-//   /**
-//    * The regular part of the virtual correction matrix element(s) 
-//    */
-//   double M_V_regular() const;
+  /**
+   * The matrix element q + qbar -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_qqbar(double xt, double y) const;
 
-//   /**
-//    * The matrix element q + qbar -> n + g times tk*uk 
-//    */
-//   Energy2 t_u_M_R_qqbar(double xt, double y) const;
+  /**
+   * The matrix element qbar + q -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_qbarq(double xt, double y) const;
 
-//   /**
-//    * The matrix element qbar + q -> n + g times tk*uk 
-//    */
-//   Energy2 t_u_M_R_qbarq(double xt, double y) const;
+  /**
+   * The matrix element g + g    -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_gg(double xt, double y) const;
 
-//   /**
-//    * The matrix element g + g    -> n + g times tk*uk 
-//    */
-//   Energy2 t_u_M_R_gg(double xt, double y) const;
+  /**
+   * The matrix element q + g    -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_qg(double xt, double y) const;
 
-//   /**
-//    * The matrix element q + g    -> n + q times tk*uk 
-//    */
-//   Energy2 t_u_M_R_qg(double xt, double y) const;
+  /**
+   * The matrix element g + q    -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_gq(double xt, double y) const;
 
-//   /**
-//    * The matrix element g + q    -> n + q times tk*uk 
-//    */
-//   Energy2 t_u_M_R_gq(double xt, double y) const;
+  /**
+   * Function for calculation of the \f$q\bar{q}\f$ initiated real
+   * contribution.
+   */
+  double Rtilde_Ltilde_qqbar_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$\bar{q}q\f$ initiated real
+   * contribution.
+   */
+  double Rtilde_Ltilde_qbarq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Function for calculation of the \f$q\bar{q}\f$ initiated real
-//    * contribution.
-//    */
-//   double Rtilde_Ltilde_qqbar_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$qq\f$ 
+   * initiated real contribution.
+   */
+  double Rtilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Function for calculation of the \f$\bar{q}q\f$ initiated real
-//    * contribution.
-//    */
-//   double Rtilde_Ltilde_qbarq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$qg\f$ initiated real
+   * contribution.
+   */
+  double Rtilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
-//   /**
-//    * Function for calculation of the \f$qq\f$ 
-//    * initiated real contribution.
-//    */
-//   double Rtilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
-
-//   /**
-//    * Function for calculation of the \f$qg\f$ initiated real
-//    * contribution.
-//    */
-//   double Rtilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
-
-//   /**
-//    * Function for calculation of the \f$gq\f$ initiated real
-//    * contribution.
-//    */
-//   double Rtilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  /**
+   * Function for calculation of the \f$gq\f$ initiated real
+   * contribution.
+   */
+  double Rtilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
 protected:
 
@@ -258,6 +261,12 @@ private:
    *  Parameters for the NLO weight
    */
   //@{
+
+  /**
+   *  The CF_ colour factor
+   */
+  double CF_;
+
   /**
    *  Whether to generate the positive, negative or leading order contribution
    */
@@ -305,6 +314,21 @@ private:
   mutable double lo_me2_;
 
   /**
+   * The invariant mass of the lo final state. 
+   */
+  mutable Energy2 p2_     , s2_      ;
+
+  /**
+   * The squared masses of the lo final state particles p1 and p2. 
+   */
+  mutable Energy2 p12_    , p22_     ;
+
+  /**
+   * The polar and azimuthal angles respectively defining a two body lo event. 
+   */
+  mutable double  theta1_ , theta2_  ;
+
+  /**
    *  The momentum fraction of the plus and minus partons in the Born process
    */
   mutable double xbp_, xbm_;
@@ -324,6 +348,11 @@ private:
    */
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
+
+  /**
+   *  The value of \f$\alpha_S\f$ used for the calculation
+   */
+  mutable double alphaS_;
 
 };
 
