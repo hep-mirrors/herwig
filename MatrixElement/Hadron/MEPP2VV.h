@@ -69,6 +69,21 @@ public:
   virtual int process() const { return _process; }
 
   /**
+   * Return the factorisation scale.
+   */
+  virtual Energy mu_F() const { return mu_F_; }
+
+  /**
+   * Return the factorisation scale.
+   */
+  virtual Energy mu_UV() const { return mu_UV_; }
+
+  /**
+   * Return the maximum number of incoming flavours.
+   */
+  virtual int maxflavour() const { return _maxflavour; }
+
+  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
