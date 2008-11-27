@@ -1,0 +1,27 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VV_ME_Analysis class.
+//
+
+namespace Herwig {
+
+inline VV_ME_Analysis::VV_ME_Analysis() {}
+
+inline VV_ME_Analysis::VV_ME_Analysis(const VV_ME_Analysis & x)
+  : AnalysisHandler(x) {}
+
+inline IBPtr VV_ME_Analysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VV_ME_Analysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+
+
+}

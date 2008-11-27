@@ -29,6 +29,13 @@ HwBbarAnalysis_la_SOURCES = \
 BbarAnalysis.cc BbarAnalysis.fh \
 BbarAnalysis.h BbarAnalysis.icc
 
+pkglib_LTLIBRARIES += HwVV_ME_Analysis.la
+HwVV_ME_Analysis_la_LDFLAGS = -module -version-info 4:0:0
+HwVV_ME_Analysis_la_CPPFLAGS = $(AM_CPPFLAGS)
+HwVV_ME_Analysis_la_SOURCES = \
+VV_ME_Analysis.cc VV_ME_Analysis.fh \
+VV_ME_Analysis.h VV_ME_Analysis.icc
+
 if HAVE_HEPMC
 HwAnalysis_la_SOURCES +=  \
 GraphvizPlot.h GraphvizPlot.cc \
