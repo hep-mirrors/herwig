@@ -517,8 +517,9 @@ void HardProcessConstructor::assignToCF(HPDiagram & diag) {
     if(diag.ordered.second) tChannelCF(diag);
     else                    uChannelCF(diag);
   }
-  else if(diag.channelType == HPDiagram::sChannel)
+  else if(diag.channelType == HPDiagram::sChannel) {
     sChannelCF(diag);
+  }
   else {
     vector<CFPair> cfv(2);
     cfv[0] = make_pair(1, 1);

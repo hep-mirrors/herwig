@@ -17,4 +17,4 @@ ScalarVectorVectorDecayer.h  ScalarVectorVectorDecayer.cc \
 DtoKPiPiCLEO.h DtoKPiPiCLEO.cc \
 DtoKPiPiE691.h   DtoKPiPiE691.cc\
 DtoKPiPiMarkIII.h DtoKPiPiMarkIII.cc
-HwSMDecay_la_LDFLAGS = -module -version-info 3:2:0
+HwSMDecay_la_LDFLAGS = -module -version-info 4:0:0

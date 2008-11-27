@@ -4,4 +4,4 @@ HwTMDecay_la_SOURCES = \
 TensorMeson2PScalarDecayer.cc TensorMeson2PScalarDecayer.h\
 TensorMesonVectorPScalarDecayer.cc TensorMesonVectorPScalarDecayer.h \
 TensorMesonVectorVectorDecayer.cc TensorMesonVectorVectorDecayer.h
-HwTMDecay_la_LDFLAGS = -module -version-info 3:0:0
+HwTMDecay_la_LDFLAGS = -module -version-info 4:0:0
