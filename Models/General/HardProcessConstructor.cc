@@ -501,22 +501,14 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
     return;
   }
   
-  if(  psc->id() < 0 && psd->id() > 0 ) {
+  if( psc->iSpin() == psd->iSpin() && 
+      psc->id() < 0 && psd->id() > 0 ) {
     swap(diag.outgoing.first, diag.outgoing.second);
     if(diag.channelType == HPDiagram::tChannel) {
       diag.ordered.second = !diag.ordered.second;
     }
     return;
   }
-
-//   if( psc->iSpin() == psd->iSpin() ) {
-//     long id3(psc->id()), id4(psd->id());
-//     if( ( id3 > 0 && id4 > 0 ) || ( id3 < 0 && id4 < 0 ) ) {
-//       if( id4 < id3 ) swap(diag.outgoing.first, diag.outgoing.second);
-//       if(diag.channelType == HPDiagram::tChannel) 
-// 	diag.ordered.second = !diag.ordered.second;
-//     }
-//   }
 
 }
 
