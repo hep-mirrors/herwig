@@ -294,6 +294,10 @@ private:
    *  On-shell width for the higgs
    */
   Energy wh_;
+
+public:
+  Energy wh() { return wh_; };
+
 };
 
 }
