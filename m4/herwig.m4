@@ -598,6 +598,6 @@ echo    "*** CLHEP:		$with_clhep"
 echo    "*** HepMC:		$with_hepmc"
 echo    "***"
 echo    "*** KtJet:		$with_ktjet"
-echo    "*** FastJet:		$with_fastjet"
+dnl echo    "*** FastJet:		$with_fastjet"
 echo    "*****************************************************"
 ])
