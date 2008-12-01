@@ -73,6 +73,7 @@ public:
    * Set the initial scales
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
+   * @param setPartners Whether to set the colour partners or just the scales
    */
   virtual bool setInitialEvolutionScales(const ShowerParticleVector &particles,
 					 const bool isDecayCase,

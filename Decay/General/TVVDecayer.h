@@ -42,10 +42,10 @@ public:
   //@{
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
@@ -142,8 +142,19 @@ private:
    */
   VVTVertexPtr _perturbativeVertex;
 
+  /**
+   *  Spin density matrix
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization tensors of decaying particle
+   */
   mutable vector<Helicity::TensorWaveFunction> _tensors;
+
+  /**
+   *  Polarization vectors of outgoing vector bosons
+   */
   mutable vector<Helicity::VectorWaveFunction> _vectors[2];
 };
 

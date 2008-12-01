@@ -107,16 +107,16 @@ public:
   /**
    * Hadronic current. This method is purely virtual and must be implemented in
    * all classes inheriting from this one.
-   * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for.
    * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
+   * @param meopt Option for the calculation of the matrix element
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVectorE> 
   current(const int imode, const int ichan,Energy & scale, 
-	  const ParticleVector & decay, DecayIntegrator::MEOption) const=0;
+	  const ParticleVector & decay, DecayIntegrator::MEOption meopt) const=0;
 
   /**
    * Accept the decay. This method is purely virtual and must be implemented in any class

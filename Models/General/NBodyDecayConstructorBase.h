@@ -22,19 +22,17 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * This is the base class for NBodyDecayConstructors. An N-body 
- * decay constructor should inherit from this and implement the 
- * DecayList virtual funtcion to create the decays and decayers.  
- *
- * @see \ref NBodyDecayConstructorBaseInterfaces "The interfaces"
- * defined for NBodyDecayConstructor. 
- */
+
 
 /**
  *  A struct to order the particles in the same way as in the DecayMode's
  */
 struct ParticleOrdering {
+  /**
+   *  Operator for the ordering
+   * @param p1 The first ParticleData object
+   * @param p2 The second ParticleData object
+   */
   bool operator()(PDPtr p1, PDPtr p2) {
     return abs(p1->id()) > abs(p2->id()) ||
       ( abs(p1->id()) == abs(p2->id()) && p1->id() > p2->id() ) ||
@@ -47,6 +45,14 @@ struct ParticleOrdering {
  */
 typedef multiset<PDPtr,ParticleOrdering> OrderedParticles;
 
+/**
+ * This is the base class for NBodyDecayConstructors. An N-body 
+ * decay constructor should inherit from this and implement the 
+ * DecayList virtual funtcion to create the decays and decayers.  
+ *
+ * @see \ref NBodyDecayConstructorBaseInterfaces "The interfaces"
+ * defined for NBodyDecayConstructor. 
+ */
 class NBodyDecayConstructorBase: public Interfaced {
 
 public:

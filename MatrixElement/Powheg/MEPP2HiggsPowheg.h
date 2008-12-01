@@ -110,18 +110,26 @@ public:
   double NLOweight() const;
 
   /**
-   * Invariants required for the evaluation of next-to-leading order
+   * Invariant required for the evaluation of next-to-leading order
    * quantities (Frixione et al. NPB.383 WZ production at colliders). 
    */
   Energy2 s(double xt, double y) const {
     return  p2_/x(xt,y);
   }
 
+  /**
+   * Invariant required for the evaluation of next-to-leading order
+   * quantities (Frixione et al. NPB.383 WZ production at colliders). 
+   */
   Energy2 tk(double xt, double y) const {
     double  x_xt_y(x(xt,y));
     return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.-y);
   }
 
+  /**
+   * Invariant required for the evaluation of next-to-leading order
+   * quantities (Frixione et al. NPB.383 WZ production at colliders). 
+   */
   Energy2 uk(double xt, double y) const {
     double  x_xt_y(x(xt,y));
     return -0.5*p2_/x_xt_y*(1.- x_xt_y)*(1.+y);
@@ -146,9 +154,13 @@ public:
   }
 
   /**
-   * Calculate the momentum fraction of the plus and minus partons. 
+   * Calculate the momentum fraction of the plus parton. 
    */
   double xp(double x, double y) const;
+
+  /**
+   * Calculate the momentum fraction of the minus parton. 
+   */
   double xm(double x, double y) const;
 
   /**
@@ -336,27 +348,51 @@ private:
   /**
    * The invariant mass of the lo final state. 
    */
-  mutable Energy2 p2_     , s2_      ;
+  mutable Energy2 p2_      ;
 
   /**
-   *  The momentum fraction of the plus and minus partons in the Born process
+   * The invariant mass of the lo final state. 
    */
-  mutable double xbp_, xbm_;
+  mutable Energy2 s2_      ;
 
   /**
-   *  The sqrt(1-xbp_) and sqrt(1-xbm_) respectively
+   *  The momentum fraction of the plus parton in the Born process
    */
-  mutable double etabarp_, etabarm_;
+  mutable double xbp_;
 
   /**
-   *  The ParticleData object for the plus and minus lo partons
+   *  The momentum fraction of the minus parton in the Born process
    */
-  mutable tcPDPtr a_lo_, b_lo_;
+  mutable double  xbm_;
 
   /**
-   *  The BeamParticleData object for the plus and minus direction hadrons
+   *  The sqrt(1-xbp_) 
+   */
+  mutable double etabarp_;
+
+  /**
+   *  The sqrt(1-xbm_) 
+   */
+  mutable double etabarm_;
+
+  /**
+   *  The ParticleData object for the plus lo parton
+   */
+  mutable tcPDPtr a_lo_;
+
+  /**
+   *  The ParticleData object for the minus lo parton
+   */
+  mutable tcPDPtr b_lo_;
+
+  /**
+   *  The BeamParticleData object for the plus direction hadron
    */
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
+
+  /**
+   *  The BeamParticleData object for the  minus direction hadron
+   */
   mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
 
   /**
@@ -370,9 +406,14 @@ private:
   unsigned int scaleopt_;
 
   /**
-   * The factorization and renormalization scale respectively
+   * The factorization  scale 
    */
-  Energy mu_F_, mu_UV_;
+  Energy mu_F_;
+
+  /**
+   * The renormalization scale
+   */
+  Energy mu_UV_;
 
   /**
    *  Prefactor if variable scale used

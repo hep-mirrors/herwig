@@ -164,27 +164,21 @@ analyze(tEventPtr event, long ieve, int loop, int state) {
       break;
     case ParticleID::pi0:
       _xepi0 ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xipi0 ->addWeighted(-log(xp),event->weight());
     case ParticleID::eta:
       _xeeta ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xieta ->addWeighted(-log(xp),event->weight());
     case ParticleID::etaprime:
       _xeetap ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xietap ->addWeighted(-log(xp),event->weight());
     case ParticleID::rhoplus:
       _xerhop ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xirhop ->addWeighted(-log(xp),event->weight());
     case ParticleID::omega:
       _xeomega ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xiomega ->addWeighted(-log(xp),event->weight());
     case ParticleID::a_0plus:
       _xea_0p ->addWeighted( xe,event->weight());
-      xp = xp,event->weight();
       _xia_0p ->addWeighted(-log(xp),event->weight());
     case ParticleID::K0:
     case ParticleID::K_S0:

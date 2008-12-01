@@ -157,7 +157,8 @@ if test "x$with_hepmc" != "xno"; then
 ]],[[HepMC::GenEvent();]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
 	AC_MSG_ERROR([Use '--with-hepmc=' to set a path or use '--without-hepmc'.])
 	])
-	
+
+	AC_CHECK_HEADERS([HepMC/PdfInfo.h],[],[AC_MSG_ERROR([Need HepMC with PdfInfo support.])],[#include <algorithm>])
 	AC_CHECK_HEADERS([HepMC/IO_GenEvent.h])
 	AC_CHECK_HEADERS([HepMC/IO_ExtendedAscii.h])
 
@@ -597,6 +598,6 @@ echo    "*** CLHEP:		$with_clhep"
 echo    "*** HepMC:		$with_hepmc"
 echo    "***"
 echo    "*** KtJet:		$with_ktjet"
-echo    "*** FastJet:		$with_fastjet"
+dnl echo    "*** FastJet:		$with_fastjet"
 echo    "*****************************************************"
 ])

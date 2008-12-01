@@ -29,7 +29,13 @@ using Helicity::VertexBasePtr;
   struct TwoBodyDecay {
     
   public:
-    
+
+    /**
+     *  Constructor
+     * @param pa Decaying particle
+     * @param pb First  decay product
+     * @param pc Second decay product
+     */    
     TwoBodyDecay(tPDPtr pa, tPDPtr pb, tPDPtr pc) : parent_(pa) {
       ParticleOrdering order;
       if( order(pb, pc) ) {
@@ -41,8 +47,15 @@ using Helicity::VertexBasePtr;
 	children_.second = pb;
       }
     }
-    
+
+    /**
+     *  The parent
+     */    
     tPDPtr parent_;
+
+    /**
+     *  The children
+     */
     tPDPair children_;
     
   private:

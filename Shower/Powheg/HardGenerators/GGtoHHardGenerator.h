@@ -116,7 +116,7 @@ protected:
    * Returns the matrix element for a given type of process,
    * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
    * @param emis_type the type of emission,
-   * (0 is \f$q\bar{q}\to Vg\f$, 1 is \f$qg\to Vq\f$ and 2 is \f$g\bar{q}\toV\bar{q}\f$)
+   * (0 is \f$gg\to h^0g\f$, 1 is \f$qg\to h^0q\f$ and 2 is \f$g\bar{q}\to h^0\bar{q}\f$)
    * @param pt The transverse momentum of the jet
    * @param yj The rapidity of the jet
    * @param outParton the outgoing parton
@@ -211,7 +211,7 @@ protected:
   complex<Energy> me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mf2) const;
 
   /**
-   *  The \f%F(x)\f$ function for the leading-order result
+   *  The \f$F(x)\f$ function for the leading-order result
    */
   Complex F(double x);
   //@}

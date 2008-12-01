@@ -45,10 +45,10 @@ public:
   //@{
   /**
    * Return the matrix element squared for a given mode and phase-space channel.  
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
@@ -145,9 +145,24 @@ private:
    */
   FFVVertexPtr _perturbativeVertex;
 
+  /**
+   *  Spin density matrix 
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decaying particle
+   */
   mutable vector<VectorWaveFunction> _vectors;
+
+  /**
+   *  Spinors for the decay products 
+   */
   mutable vector<SpinorWaveFunction> _wave;
+
+  /**
+   *  Barred spinors for the decay products
+   */
   mutable vector<SpinorBarWaveFunction> _wavebar;
 
 };

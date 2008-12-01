@@ -82,9 +82,14 @@ private:
 private:
 
   /**
-   * The parameters controlling the error.
+   * The parameters controlling the absolute error.
    */
-  double _abserr,_relerr;
+  double _abserr;
+
+  /**
+   * The parameters controlling the relative error.
+   */
+  double _relerr;
 
   /**
    * The maximum number of intervals to use.

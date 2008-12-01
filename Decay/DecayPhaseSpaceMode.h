@@ -201,10 +201,10 @@ protected:
 
   /**
    * Access to the matrix element from the decayer.
-   * @param bin Generate the vertex information for spin correlations
    * @param ichan The channel, this is to allow the matrix element to be used to
    *              select the intermediates
    * @param inpart The incoming particle.
+   * @param opt The option for what to calculate
    * @param outpart The outgoing particles.
    */
   double me2(const int ichan ,const Particle & inpart,
@@ -251,12 +251,12 @@ protected:
 
   /**
    * Return the weight for a given phase-space point.
-   * @param vertex Produce the SpinInfo objects for the spin correlations.
    * @param cc Whether we are generating the mode specified or the charge 
    *           conjugate mode.
    * @param ichan The channel to generate the weight for.
    * @param in The incoming particle.
    * @param particles The outgoing particles.
+   * @param first Whether or not this is the first call for initialisation
    * @return The weight.
    */
   Energy weight(bool cc,int & ichan, const Particle & in,

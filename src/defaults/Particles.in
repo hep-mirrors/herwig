@@ -11,19 +11,7 @@ read bosons.in
 read mesons.in
 read baryons.in
 read diquarks.in
-read DiffractiveParticles.in
 
 mkdir /Herwig/Masses
 cd /Herwig/Masses
 read masses.in
-
-#
-#  not sure about this
-#
-cd /Herwig/Particles
-
-create ThePEG::ParticleData R0 
-setup R0 40 R0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
-create ThePEG::ParticleData Rbar0 
-setup Rbar0 -40 Rbar0 5000.0 417.46480 4174.647970 0.0 0 0 0 0
-makeanti R0 Rbar0 
