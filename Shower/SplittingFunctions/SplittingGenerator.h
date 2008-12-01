@@ -313,9 +313,8 @@ private:
   void addToMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
 
   /**
-   *  Obtain the reference vectors for a final-state particle
+   * Obtain the reference vectors for a final-state particle
    * @param particle The particle
-   * @param type The  type of the interaction
    * @param p The p reference vector
    * @param n The n reference vector
    */

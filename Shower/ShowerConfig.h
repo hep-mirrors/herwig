@@ -59,10 +59,10 @@ using namespace ThePEG;
    */
   typedef vector<long> IdList;
 
-  /**
-   *  Enum for the type of interaction
-   */
   namespace ShowerInteraction {
+    /**
+     *  Enum for the type of interaction
+     */
     enum Type { UNDEFINED=-1, QCD };
   }
 }

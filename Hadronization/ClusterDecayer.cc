@@ -372,7 +372,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     }
     while(ntry<_masstry&&ptrHad1->mass()+ptrHad2->mass()>ptr->mass());
     // if fails produce on shell and issue warning (should never happen??)
-    if(ptrHad1->mass()+ptrHad2->mass()>ptr->mass()) {
+    if( ptrHad1->mass() + ptrHad2->mass() > ptr->mass() ) {
       generator()->log() << "Failed to produce off-shell hadrons in "
 			 << "ClusterDecayer::decayIntoTwoHadrons producing hadrons "
 			 << "on-shell" << endl;

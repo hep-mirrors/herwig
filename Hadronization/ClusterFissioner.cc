@@ -245,6 +245,12 @@ void ClusterFissioner::cut(stack<ClusterPtr> & clusterStack,
   }
 }
 
+namespace {
+  inline bool cantMakeHadron(tcPPtr p1, tcPPtr p2) {
+    return ! CheckId::canBeHadron(p1->dataPtr(), p2->dataPtr());
+  }
+}
+
 ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster, 
 						tPVector & finalhadrons,
 						bool softUEisOn) {
@@ -276,15 +282,21 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
       ++counter;
       
       drawNewFlavour(newPtr1,newPtr2); 
-
-     // check for right ordering
+      // check for right ordering
       assert (ptrQ2);
       assert (newPtr2);
       assert (ptrQ2->dataPtr());
       assert (newPtr2->dataPtr());
-      if(!CheckId::canBeHadron(ptrQ2->dataPtr(), newPtr2->dataPtr()))
+      if(cantMakeHadron(ptrQ1, newPtr1) || cantMakeHadron(ptrQ2, newPtr2)) {
 	swap(newPtr1, newPtr2);
-         
+	// check again
+	if(cantMakeHadron(ptrQ1, newPtr1) || cantMakeHadron(ptrQ2, newPtr2)) {
+	  throw Exception() 
+	    << "ClusterFissioner cannot split the cluster ("
+	    << ptrQ1->PDGName() << ' ' << ptrQ2->PDGName()
+	    << ") into hadrons.\n" << Exception::runerror;
+	}
+      }
       // Check that new clusters can produce particles and there is enough
       // phase space to choose the drawn flavour
       m1 = ptrQ1->data().constituentMass();

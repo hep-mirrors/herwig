@@ -201,6 +201,7 @@ public:
   /** 
    * Contract the matrix element with the \f$\rho\f$ matrix of the 
    * incoming particle. The spins of the decay products are summed over.
+   * @param con The conjugate matrix elemetn for the contraction
    * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
    */
   Complex contract(const DecayMatrixElement & con, 
@@ -418,6 +419,9 @@ public:
   }
   //@}
 
+  /**
+   *  Member to zero all the elements for the matrix element
+   */
   void zero() {
     for(unsigned int ix=0;ix<_matrixelement.size();++ix)
       _matrixelement[ix]=0.;

@@ -14,6 +14,8 @@ library HwLEPAnalysis.so
 library HwMamboDecay.so
 library HwMEHadronFast.so
 library HwMEHadron.so
+library HwMEDIS.so
+library HwPowhegME.so
 library HwMELepton.so
 library SimpleKTCut.so
 library HwMPI.so
@@ -21,15 +23,17 @@ library HwMRST.so
 library HwPartonicDecay.so
 library HwPerturbativeDecay.so
 library HwPerturbativeHiggsDecay.so
-library HwRemDecayer.so
 library HwRSModel.so
-library HwMPIPDF.so
 library HwShower.so
+library HwPowhegShower.so
 library HwSMDecay.so
 library HwTauDecay.so
 library HwTMDecay.so
+library HwBaryonDecay.so
 library HwUA5.so
 library HwUED.so
 library HwVMDecay.so
+library HwSatPDF.so
+library HwIncomingPhotonEvolver.so
 @LOAD_KTJET@
 doxygendump Herwig:: AllInterfaces.h

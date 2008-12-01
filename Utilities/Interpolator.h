@@ -172,9 +172,14 @@ private:
   ArgT _xunit;
 
   /**
-   *  Temporary storage vectors
+   *  Temporary storage vector
    */
-  mutable vector<double> _copyx,_copyfun;
+  mutable vector<double> _copyx;
+
+  /**
+   *  Temporary storage vector
+   */
+  mutable vector<double> _copyfun;
 
 };
 

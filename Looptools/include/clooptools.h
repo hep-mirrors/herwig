@@ -10,6 +10,7 @@
 #ifndef HERWIG_clooptools_h_
 #define HERWIG_clooptools_h_
 
+/** complex defn for Looptools*/
 struct DOUBLE_COMPLEX { double re, im; };
 typedef const DOUBLE_COMPLEX CDOUBLE_COMPLEX;
 

@@ -17,9 +17,10 @@ HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model RS.model
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-RS.in \
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in TVT-Powheg.in
 
+## provide -no3body for faster 'make check'
+dist_noinst_DATA = LHC-MUED-no3body.in 
 dist_pkgdata_DATA = $(INPUTFILES) $(HELPERFILES)
 pkgdata_DATA = Makefile-UserModules
-
 
 CLEANFILES = HerwigDefaults.rpo \
   *.run *.log *.out *.tex \
@@ -35,7 +36,7 @@ if WANT_MSSM
 check_BSM += check-LHC-MSSM
 endif
 if WANT_UED
-check_BSM += check-LHC-MUED
+check_BSM += check-LHC-MUED-no3body
 endif
 if WANT_RS
 check_BSM += check-LHC-RS

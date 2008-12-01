@@ -151,6 +151,8 @@ public:
    * @param m1 The mass of the outgoing baryon.
    * @param type The type of the decay 
    * @param imass The baryonic mass parameter to use.
+   * @param id0 PDG code for the decaying particle
+   * @param id1 PDG code for the decay product
    */
   Energy widthIntegrand(double omega,Energy m0, Energy m1, int type, int imass,
 			int id0,int id1);

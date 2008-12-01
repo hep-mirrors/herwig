@@ -66,6 +66,7 @@ public:
    * Standard Constructor. Note that the default constructor is
    * private - there is no particle without a pointer to a
    * ParticleData object.
+   * @param x the ParticleData object
    * @param fs  Whether or not the particle is an inital or final-state particle
    * @param tls Whether or not the particle initiates a time-like shower
    */

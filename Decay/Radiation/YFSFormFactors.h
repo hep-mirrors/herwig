@@ -386,12 +386,12 @@ private:
   //@{
   /**
    * The \f$A_4\f$ function for the full final-final dipole
-   * @param en1 The energy of the first  particle
-   * @param en2 The energy of the second particle
+   * @param inen1 The energy of the first  particle
+   * @param inen2 The energy of the second particle
    * @param beta1 Velocity of the first  particle, \f$\beta_1\f$
    * @param beta2 Velocity of the second particle, \f$\beta_2\f$.
-   * @param m1 The mass of the first particle
-   * @param m2 The mass of the second particle
+   * @param inm1 The mass of the first particle
+   * @param inm2 The mass of the second particle
    * @param s   The invariant mass of the charged particles
    */
   static InvEnergy2 A4FFFull(Energy  inen1  ,Energy inen2,

@@ -899,7 +899,7 @@ HardTreePtr PowhegHandler::generalClustering() {
     potentialTrees.pop();
   }
   // check the core process is allowed using the matrix element
-  // and reomve ones which aren't allowed
+  // and remove ones which aren't allowed
   list<PrototypeTree>::iterator it=trees.begin(),jt;
   while(it!=trees.end()) {
     DiagPtr diagram = getDiagram(*it);

@@ -73,10 +73,10 @@ public:
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
@@ -227,10 +227,35 @@ private:
   vector<double> _zmax;
   //@}
 
+  /**
+   *  Spin density matrix
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Scalar wavefunction
+   */
   mutable ScalarWaveFunction _swave;
-  mutable vector<SpinorWaveFunction   > _awave1,_awave2;
-  mutable vector<SpinorBarWaveFunction> _fwave1,_fwave2;
+
+  /**
+   *  1st spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction   > _awave1;
+
+  /**
+   *  2nd spinor wavefunction
+   */
+  mutable vector<SpinorWaveFunction   > _awave2;
+
+  /**
+   *  1st barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _fwave1;
+
+  /**
+   *  2nd barred spinor wavefunction
+   */
+  mutable vector<SpinorBarWaveFunction> _fwave2;
 };
 
 }

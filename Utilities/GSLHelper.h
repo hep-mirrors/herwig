@@ -34,16 +34,35 @@ struct GSLHelper
 {
     
 public:
+
+  /**
+   *  Constructor
+   */
   GSLHelper() {}
 
+  /**
+   *  Destructor
+   */
   virtual ~GSLHelper() {}
 
+  /**
+   * Typedef for Agrument type
+   */
   typedef T ArgType;
 
+  /**
+   *  Typedef for Value type
+   */
   typedef V ValType;
 
+  /**
+   * Value type
+   */
   virtual V vUnit() const {return TypeTraits<V>::baseunit;}
 
+  /**
+   * Agrument type
+   */
   virtual T aUnit() const {return TypeTraits<T>::baseunit;}
 
 private:

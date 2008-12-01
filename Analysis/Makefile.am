@@ -1,10 +1,7 @@
 SUBDIRS = BSM
 
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la \
-                     HwMPIAnalysis.la HwDrellYanDalitzAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 6:0:0
-HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwAnalysis_la_LIBADD =
+pkglib_LTLIBRARIES = HwAnalysis.la
+HwAnalysis_la_LDFLAGS = -module -version-info 7:0:0
 HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.h \
@@ -36,15 +33,8 @@ HwVV_ME_Analysis_la_SOURCES = \
 VV_ME_Analysis.cc VV_ME_Analysis.fh \
 VV_ME_Analysis.h VV_ME_Analysis.icc
 
-if HAVE_HEPMC
-HwAnalysis_la_SOURCES +=  \
-GraphvizPlot.h GraphvizPlot.cc \
-HepMCFile.h    HepMCFile.cc
-HwAnalysis_la_CPPFLAGS += $(HEPMCINCLUDE)
-HwAnalysis_la_LIBADD += $(HEPMCLIBS)
-endif
-
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 3:1:0
+pkglib_LTLIBRARIES +=  HwLEPAnalysis.la
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.h\
 SingleParticleAnalysis.cc SingleParticleAnalysis.h\
@@ -53,30 +43,28 @@ IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.h\
 BELLECharmAnalysis.h BELLECharmAnalysis.cc\
 CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 
-HwDrellYanDalitzAnalysis_la_LDFLAGS = -module -version-info 1:0:0
-HwDrellYanDalitzAnalysis_la_SOURCES = \
-DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.h 
+if HAVE_HEPMC
+pkglib_LTLIBRARIES += HwHepMCAnalysis.la
+HwHepMCAnalysis_la_LDFLAGS = -module -version-info 1:0:0
+HwHepMCAnalysis_la_SOURCES = \
+GraphvizPlot.h GraphvizPlot.cc \
+HepMCFile.h    HepMCFile.cc
+HwHepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE)
+HwHepMCAnalysis_la_LIBADD = $(HEPMCLIBS)
+endif
+
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 4:1:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 5:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
-LEPJetAnalysis.cc LEPJetAnalysis.h\
-LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.h \
-TopDalitzAnalysis.cc TopDalitzAnalysis.h
+LEPJetAnalysis.cc LEPJetAnalysis.h
 endif
-
-HwMPIAnalysis_la_LDFLAGS = -module -version-info 4:0:0
-HwMPIAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwMPIAnalysis_la_LIBADD =
-HwMPIAnalysis_la_SOURCES = \
-RFieldAnalysis.h RFieldAnalysis.cc \
-MPIMultiplicity.h MPIMultiplicity.cc
 
 pkglib_LTLIBRARIES += HwZpt.la
 HwZpt_la_LDFLAGS = -module -version-info 4:0:0

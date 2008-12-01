@@ -4,4 +4,4 @@ MEee2gZ2qq.h MEee2gZ2qq.cc\
 MEee2gZ2ll.h MEee2gZ2ll.cc\
 MEee2ZH.h MEee2ZH.cc\
 MEee2HiggsVBF.h MEee2HiggsVBF.cc
-HwMELepton_la_LDFLAGS = -module -version-info 3:0:0
+HwMELepton_la_LDFLAGS = -module -version-info 1:0:0

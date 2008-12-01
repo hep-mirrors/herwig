@@ -19,7 +19,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/** \file Herwig++/PDT/StandardMatchers.h
+/**
  *
  * This file declare a set of standard matcher classes in addition to those
  * defined in ThePEG. The classes can be used by themselves (with

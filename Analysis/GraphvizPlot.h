@@ -177,7 +177,7 @@ struct ClassTraits<Herwig::GraphvizPlot>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GraphvizPlot class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwAnalysis.so"; }
+  static string library() { return "HwHepMCAnalysis.so"; }
 };
 
 /** @endcond */

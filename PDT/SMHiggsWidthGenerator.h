@@ -121,7 +121,7 @@ protected:
 
 protected:
 
-  /** @routines to calculate Higgs width. */
+  /** @name Routines to calculate Higgs width. */
   //@{
   /**
    * Calculates the double Breit-Wigner Integral a-la FORTRAN HERWIG.

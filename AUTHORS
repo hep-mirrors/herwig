@@ -1,5 +1,5 @@
 ============
-Herwig++ 2.2
+Herwig++ 2.3
 ============
 
 Please contact <herwig@projects.hepforge.org> for any queries.
@@ -7,20 +7,21 @@ Please contact <herwig@projects.hepforge.org> for any queries.
 ========
 Authors:
 ========
-Manuel Baehr <mb@particle.uni-karlsruhe.de>
-Stefan Gieseke <gieseke@particle.uni-karlsruhe.de>
-Martyn Gigg <m.a.gigg@durham.ac.uk>
-David Grellscheid <David.Grellscheid@durham.ac.uk>
-Keith Hamilton <hamilton@fyma.ucl.ac.be>
-Seyi Latunde-Dada <seyi@hep.phy.cam.ac.uk>
-Simon Plaetzer <sp@particle.uni-karlsruhe.de>
-Peter Richardson <Peter.Richardson@durham.ac.uk>
-Mike Seymour <Michael.Seymour@cern.ch>
-Alexander Sherstnev <cherstn@hep.phy.cam.ac.uk>
-Bryan Webber <webber@hep.phy.cam.ac.uk>
+Manuel Baehr
+Stefan Gieseke
+Martyn Gigg
+David Grellscheid
+Keith Hamilton
+Seyi Latunde-Dada
+Simon Plaetzer
+Peter Richardson
+Mike Seymour
+Alexander Sherstnev
+Jon Tully
+Bryan Webber
 
 ===============
 Former authors:
 ===============
-Alberto Ribon <Alberto.Ribon@cern.ch>
-Philip Stephens <stephens@hep.phy.cam.ac.uk>
+Alberto Ribon
+Philip Stephens
