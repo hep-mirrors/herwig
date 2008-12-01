@@ -30,7 +30,6 @@ MEPP2HiggsPowheg::MEPP2HiggsPowheg() :
   beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
   scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.) 
-  ,  h_br_(1.)
 {}
 
 ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
@@ -39,15 +38,13 @@ ClassDescription<MEPP2HiggsPowheg> MEPP2HiggsPowheg::initMEPP2HiggsPowheg;
 void MEPP2HiggsPowheg::persistentOutput(PersistentOStream & os) const {
   os << contrib_       << nlo_alphaS_opt_  << fixed_alphaS_ 
      << scaleopt_      << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)   
-     << scaleFact_     
-     << h_br_;
+     << scaleFact_     ;
 }
 
 void MEPP2HiggsPowheg::persistentInput(PersistentIStream & is, int) {
   is >> contrib_       >> nlo_alphaS_opt_  >> fixed_alphaS_ 
      >> scaleopt_      >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)  
-     >> scaleFact_     
-     >> h_br_; 
+     >> scaleFact_     ;
 }
 
 void MEPP2HiggsPowheg::Init() {
@@ -132,24 +129,6 @@ void MEPP2HiggsPowheg::Init() {
 
 }
 
-void MEPP2HiggsPowheg::doinit() throw(InitException) {
-  MEPP2Higgs::doinit();
-  // If the width is equal to the nominal width we check that the decay  
-  // modes of the Higgs are in fact all on. h_br_ is computed as the sum  
-  // of branching ratios for decays which are On only. h_br_ later multiplies  
-  // the return value in dSigHatDR. If the width is not the nominal width  
-  // h_br_ just stays equal to 1, and the code here has no effect. 
-  PDPtr h0 = getParticleData(ParticleID::h0);
-  if(MEPP2Higgs::wh()==h0->width()) { 
-    h_br_ = 0.; 
-    for(DecaySet::const_iterator it=h0->decayModes().begin();it!=h0->decayModes().end();++it) { 
-      tDMPtr mode=*it; 
-      if(!mode->on()||mode->orderedProducts().size()!=2) continue; 
-      h_br_ += mode->brat(); 
-    } 
-  }
-}
-
 Energy2 MEPP2HiggsPowheg::scale() const {
   return scaleopt_ == 1 ?  scaleFact_*sHat() : sqr(mu_F_);
 }
@@ -175,7 +154,6 @@ double MEPP2HiggsPowheg::me2() const {
     // NB - lo_ggME_ equals sqr(alphaS/(pi*vev))*
     // sqr(p2_)/576. _ALL_IN_MeVs_!
     lo_ggME_ = output;
-    output *= h_br_;
     output *= NLOweight();
   }
   return output;
