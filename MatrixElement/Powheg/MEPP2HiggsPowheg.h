@@ -269,6 +269,16 @@ protected:
   inline virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
+protected:
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+
 private:
 
   /**
@@ -419,6 +429,15 @@ private:
    *  Prefactor if variable scale used
    */
   double scaleFact_;
+
+  /** 
+   *  Total branching for the allowed decays; this compensates 
+   *  for the fact that the SMHiggsWidthGenerator currently does 
+   *  take account of whether decay modes are switched On / Off  
+   *  when using the WidthScheme=Fixed option. 
+   */ 
+  double h_br_; 
+
 };
 
 }

@@ -136,6 +136,7 @@ double MEPP2VVPowheg::me2() const {
     case 3: // Z(mu-,mu+) Z(e-,e+) (MCFM: 86 [nproc])
       mcfm_brs *= 0.034616433;
       mcfm_brs *= 0.034616433;
+      mcfm_brs *= 2.;  // as identical particle factor 1/2 is now obsolete.
       break;
     case 4: // W+(mu+,nu_mu) Z(nu_e,nu_ebar) (MCFM: 72 [nproc])
       mcfm_brs *= 0.109338816;
