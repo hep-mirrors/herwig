@@ -55,10 +55,10 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for.
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
@@ -210,7 +210,12 @@ protected:
 			 const ParticleVector & out) const;
 
   /**
-   *
+   *  Method to construct the channels for the integrator to give the partial width
+   * @param intype  Types of the channels
+   * @param inmass Mass for the channels
+   * @param inwidth Width for the channels
+   * @param inpow Power for the channels
+   * @param inweights Weights for the channels
    */
   void constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
 				   vector<Energy> & inwidth, vector<double> & inpow,
@@ -218,7 +223,7 @@ protected:
 
   /**
    *  Set the colour flow
-   * @param The value for the colour flow
+   * @param flow The value for the colour flow
    */
   inline void colourFlow(unsigned int flow) const { _iflow = flow; }
 

@@ -150,32 +150,65 @@ private:
   GammaGammaAnalysis & operator=(const GammaGammaAnalysis &);
 
 private:
+
   /**
-   *   \f$p_T\f$ of the photon
+   *   \f$p_T\f$ of the harder photon
    */
   Histogram _ptharder;
+
+  /**
+   *   \f$p_T\f$ of the softer photon
+   */
   Histogram _ptsofter;
+
+  /**
+   *   \f$p_T\f$ of the photon pair
+   */
   Histogram _ptpair;
 
   /**
-   *   Energy of the photons
+   *   Energy of the harder photon
    */
   Histogram _Eharder;
+
+  /**
+   *   Energy of the softer photon
+   */
   Histogram _Esofter;
+
+  /**
+   *   Energy of the photon pair
+   */
   Histogram _Epair;
 
   /**
-   *  Rapidity of the photons
+   *  Rapidity of the harder photon
    */
   Histogram _rapharder;
+
+  /**
+   *  Rapidity of the softer photon
+   */
   Histogram _rapsofter;
+
+  /**
+   *  Rapidity of the photon pair
+   */
   Histogram _rappair;
 
   /**
-   *  Azimuth of the photons
+   *  Azimuth of the harder photon
    */
   Histogram _phiharder;
+
+  /**
+   *  Azimuth of the softer photon
+   */
   Histogram _phisofter;
+
+  /**
+   *  Azimuth of the photon pair
+   */
   Histogram _deltaphi;
   
   /**

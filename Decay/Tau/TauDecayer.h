@@ -81,10 +81,11 @@ public:
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(const int ichan, const Particle & part,
-		     const ParticleVector & decay,MEOption) const;
+		     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database.
@@ -197,6 +198,10 @@ private:
    *  The spinors for the decaying particle
    */
   mutable vector<LorentzSpinor   <SqrtEnergy> > _inspin;
+
+  /**
+   *  Barred spinors for the deaying particle
+   */
   mutable vector<LorentzSpinorBar<SqrtEnergy> > _inbar ;
 
   /**
@@ -208,6 +213,10 @@ private:
    *  Maps for the vectors
    */
   mutable vector<unsigned int> _constants;
+
+  /**
+   *  Spins of the particles
+   */
   mutable vector<PDT::Spin> _ispin; 
 
 };

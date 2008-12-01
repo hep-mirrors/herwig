@@ -9,6 +9,6 @@ HwMPI_la_SOURCES = MPISampler.cc MPISampler.h MPISampler.icc \
 	ProcessHandler.cc ProcessHandler.icc \
 	ProcessHandler.fh ProcessHandler.h \
 	stat.h
-HwMPI_la_LDFLAGS= -module -version-info 5:0:0
+HwMPI_la_LDFLAGS= -module -version-info 6:0:0
 HwMPI_la_LIBADD= $(GSLLIBS)
 HwMPI_la_CPPFLAGS= $(AM_CPPFLAGS) $(GSLINCLUDE)

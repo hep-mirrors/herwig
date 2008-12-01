@@ -67,10 +67,10 @@ public:
    * Return the matrix element squared for a given mode and phase-space channel.
    * This version uses the generalised couplings to compute the matrix elements
    * given above.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2(const int ichan,const Particle & part,
@@ -231,10 +231,10 @@ private:
   //@{
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double halfHalfScalar(const int ichan,const Particle & inpart,
@@ -242,10 +242,10 @@ private:
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a vector.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double halfHalfVector(const int ichan,const Particle & inpart,
@@ -253,10 +253,10 @@ private:
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double halfThreeHalfScalar(const int ichan,const Particle & inpart,
@@ -264,10 +264,10 @@ private:
 
   /**
    * Matrix element for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a vector.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double halfThreeHalfVector(const int ichan,const Particle & inpart,
@@ -275,10 +275,10 @@ private:
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac12\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double threeHalfHalfScalar(const int ichan,const Particle & inpart,
@@ -286,10 +286,10 @@ private:
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac12\f$ and a vector.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double threeHalfHalfVector(const int ichan,const Particle & inpart,
@@ -297,10 +297,10 @@ private:
 
   /**
    * Matrix element for spin-\f$\frac32\f$ to spin-\f$\frac32\f$ and a scalar.
-   * @param vertex Generate the information for spin correlations.
    * @param ichan The phase-space channel.
    * @param inpart The decaying particle.
    * @param decay The decay products.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared.
    */
   double threeHalfThreeHalfScalar(const int ichan,const Particle & inpart,
@@ -322,11 +322,34 @@ private:
 
 private:
 
+  /**
+   *  Spin density matrx
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Spin-\f$\frac12\f$ spinor
+   */
   mutable vector<Helicity::LorentzSpinor<SqrtEnergy> >      _inHalf;
+
+  /**
+   *  Spin-\f$\frac12\f$ barred spinor
+   */
   mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> >   _inHalfBar;
+
+  /**
+   *  Spin-\f$\frac32\f$ spinor
+   */
   mutable vector<Helicity::LorentzRSSpinor<SqrtEnergy> >    _inThreeHalf;
+
+  /**
+   *  Spin-\f$\frac32\f$ barred spinor
+   */
   mutable vector<Helicity::LorentzRSSpinorBar<SqrtEnergy> > _inThreeHalfBar;
+
+  /**
+   *  Polarization vector
+   */
   mutable vector<Helicity::LorentzPolarizationVector> _inVec;
 };
 

@@ -62,10 +62,10 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2( const int ichan,const Particle & part,
@@ -175,11 +175,34 @@ private:
    */
   InvEnergy2 _GF;
 
+  /**
+   *  Spin density matrix
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *  Polarization vectors for the decay products
+   */
   mutable vector<Helicity::LorentzPolarizationVector> _vectors;
+
+  /**
+   *  Polarization vectors for the decay products
+   */
   mutable vector<Helicity::LorentzTensor<double> > _tensors;
+
+  /**
+   *  Constants for the mapping of the leptonic current
+   */
   mutable vector<unsigned int> _constants;
+
+  /**
+   *  Spins of the particles
+   */
   mutable vector<PDT::Spin> _ispin;
+
+  /**
+   *  Location of the outgoing meson
+   */
   mutable unsigned int _imes;
 };
 

@@ -61,10 +61,10 @@ public:
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double me2(const int ichan,const Particle & part,
@@ -131,10 +131,10 @@ protected:
 
   /**
    * Matrix element for \f$\frac12\to\frac12\f$.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param inpart The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double halfHalf(const int ichan,const Particle & inpart,
@@ -142,10 +142,10 @@ protected:
 
   /**
    * Matrix element for \f$\frac12\to\frac32\f$.
-   * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param inpart The decaying Particle.
    * @param decay The particles produced in the decay.
+   * @param meopt The option for the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
   double halfThreeHalf(const int ichan,const Particle & inpart,
@@ -190,13 +190,44 @@ private:
    */
   InvEnergy2 _gf;
 
+  /**
+   *  Spin density matrix
+   */
   mutable RhoDMatrix _rho;
+
+  /**
+   *   Spin-\f$\frac12\f$ spinors
+   */
   mutable vector<LorentzSpinor<SqrtEnergy> > _inHalf;
+
+  /**
+   *   Spin-\f$\frac12\f$ barred spinors
+   */
   mutable vector<LorentzSpinorBar<SqrtEnergy> > _inHalfBar;
+
+  /**
+   *   Spin-\f$\frac32\f$ spinors
+   */
   mutable vector<LorentzRSSpinor<SqrtEnergy> > _inThreeHalf;
+
+  /**
+   *   Spin-\f$\frac32\f$ barred spinors
+   */
   mutable vector<LorentzRSSpinorBar<SqrtEnergy> > _inThreeHalfBar;
+
+  /**
+   *  Constants for the mapping of the leptonic vector 
+   */
   mutable vector<unsigned int> _constants;
+
+  /**
+   *  Spins of the particles
+   */
   mutable vector<PDT::Spin> _ispin;
+
+  /**
+   *  Location of the outgoing baryon
+   */
   mutable unsigned int _ibar;
 };
 

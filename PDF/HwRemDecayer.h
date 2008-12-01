@@ -320,6 +320,7 @@ private:
    * Set the colour connections.
    * @param partners = Object that holds the information which particles to connect.
    * @param anti = flag to indicate, if (anti)colour was extracted as first parton.
+   * @param disrupt parameter for disruption of the colour structure
    */
   void fixColours(PartnerMap partners, bool anti, double disrupt) const;
 
@@ -358,6 +359,7 @@ private:
    * @param oldx  The fraction of the hadron's momentum carried by the last parton
    * @param pf    The momentum of the last parton at input and after branching at output
    * @param p     The total emitted momentum
+   * @param content The content of the hadron
    */
   PPtr forceSplit(const tRemPPtr rem, long child, Energy &oldQ, double &oldx, 
 		  Lorentz5Momentum &pf, Lorentz5Momentum &p,

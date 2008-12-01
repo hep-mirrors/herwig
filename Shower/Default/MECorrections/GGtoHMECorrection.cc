@@ -608,11 +608,9 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     ++_nover;
     _maxwgt=max(_maxwgt,weight);
     weight=1.;
-    _dalitz2.push_back(make_pair(shat/_mh2,that/_mh2));
   }
   if(UseRandom::rnd()>weight) return false;
   ++_ngen;
-  _dalitz.push_back(make_pair(shat/_mh2,that/_mh2));
   // construct the momenta 
   Energy roots = 0.5*sqrt(s);
   Energy pt = sqrt(uhat*that/shat);

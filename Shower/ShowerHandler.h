@@ -339,10 +339,15 @@ private:
    */
   tPPair incoming_;
 
+
+  /**
+   *  Typedef for the ShowerTree for the decays
+   */
+  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
+
   /**
    *  The ShowerTree for the decays
    */
-  typedef multimap<Energy,ShowerTreePtr,std::greater<Energy> > ShowerDecayMap;
   ShowerDecayMap decay_;
 
   /**
