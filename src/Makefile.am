@@ -1,5 +1,4 @@
-SUBDIRS = . defaults tests
-DIST_SUBDIRS = defaults
+SUBDIRS = defaults
 
 AUTOMAKE_OPTIONS = -Wno-portability
 
