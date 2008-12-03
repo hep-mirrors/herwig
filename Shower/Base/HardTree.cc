@@ -16,6 +16,48 @@ HardTree::HardTree(vector<HardBranchingPtr> branchings,
     _spacelike (spacelike .begin(),spacelike .end())
 {}
 
+bool HardTree::findNodes() {
+  //clear all containers to be filled
+  _theExternals.clear();
+  _theNodes.clear();
+  _theInternals.clear();
+  //call function to recursively fill _theExternals and _theNodes
+  for( set< HardBranchingPtr>::const_iterator cit = _branchings.begin();
+       cit != _branchings.end(); ++cit ){
+    if( (*cit)->incoming() ) continue;
+    fillNodes( *cit, HardBranchingPtr() );
+  }
+  //make _internals from nodes
+  //get the intermediates - there is one intermediate for each node
+  for( map< HardBranchingPtr, Energy >::const_iterator cit = _theNodes.begin();
+       cit != _theNodes.end(); ++cit ) {
+    //end scale and intermediate are given by theNodes
+    Energy endScale = cit->second;
+    Energy startScale;
+    if( cit->first->parent() ) {
+      HardBranchingPtr intParent = cit->first->parent();
+      startScale = intParent->scale() * cit->first->z();
+    }
+    else startScale = cit->first->branchingParticle()->evolutionScale();
+    long intID = cit->first->branchingParticle()->id();
+    if ( startScale < endScale ) endScale = startScale;
+    _theInternals.insert( make_pair( intID, make_pair(  startScale, endScale  ) ) );
+  }
+  return true;
+}
+
+bool HardTree::fillNodes( HardBranchingPtr branch, HardBranchingPtr parentBranch ){
+  if( ! branch->children().empty() ) {
+    _theNodes.insert( make_pair( branch, branch->scale() ) );
+    //set the parent of branching (used in finding the internal lines)
+    branch->parent( parentBranch );
+    fillNodes( branch->children()[0], branch );
+    fillNodes( branch->children()[1], branch );
+  }
+  else  _theExternals.insert( make_pair( branch->branchingParticle(), parentBranch ) );
+  return true;
+}
+
 void HardBranching::setMomenta(LorentzRotation R,double aparent,
 			       Lorentz5Momentum ptparent,
 			       bool setMomentum) {
@@ -64,6 +106,9 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
     if(_children[1]->_incoming) _phi+=Constants::pi;
   }
 }
+
+
+
 
 bool HardTree::connect(ShowerTreePtr shower) {
   _particles.clear();
@@ -156,4 +201,52 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
     }
   }
   return os;
+}
+
+void HardTree::fillHardScales( HardBranchingPtr branch, vector< pair< Energy, double > > & currentLine ){
+  if( branch->children().empty() ) return;
+  else{
+    //child[0] continues currentline child[1] creates a new line
+    //copy contents of old line into newline
+    vector< pair< Energy, double > > newHardLine = currentLine;
+    currentLine.push_back( make_pair( branch->scale(),
+				      branch->children()[0]->z() ) );
+    fillHardScales( branch->children()[0], currentLine );
+    newHardLine.push_back( make_pair( branch->scale(),
+				      branch->children()[1]->z() ) );
+    fillHardScales( branch->children()[1], newHardLine );
+    _hard_line_scales.push_back( newHardLine );
+  }
+}
+
+bool HardTree::checkHardOrdering() {
+  _hard_line_scales.clear();
+  for( set<HardBranchingPtr>::const_iterator it = 
+	 this->branchings().begin();
+       it != this->branchings().end(); ++it)  {
+    if( (*it)->incoming() ) continue;
+    //if the branching has children then fill qtilde and z of branching and
+    //continue recursively on the children
+    if( ! (*it)->children().empty() ) {
+      vector< pair< Energy, double > > new_hard_line1;
+      new_hard_line1.push_back( make_pair( (*it)->scale(), (*it)->children()[0]->z() ) );
+      fillHardScales( (*it)->children()[0], new_hard_line1 );
+      vector< pair< Energy, double > > new_hard_line2;
+      new_hard_line2.push_back( make_pair( (*it)->scale(), (*it)->children()[1]->z() ) );
+      fillHardScales( (*it)->children()[1], new_hard_line2 );
+      _hard_line_scales.push_back( new_hard_line1 );
+      _hard_line_scales.push_back( new_hard_line2 );
+    }    
+  }
+  //  bool ordered = true;
+  for(int ix = 0; ix < _hard_line_scales.size(); ix++ ){
+    for(int jx = 0; jx < _hard_line_scales[ix].size(); jx++ ){
+      if( jx == 0 ) 
+	continue;
+      //angular ordering condition: z_1*q_1 > q2
+      if( _hard_line_scales[ix][jx].first  > _hard_line_scales[ix][jx - 1].first * _hard_line_scales[ix][ jx - 1 ].second )
+	return false;
+    }
+  }
+  return true;
 }

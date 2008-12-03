@@ -62,7 +62,51 @@ public:
    */
   set<HardBranchingPtr> & incoming() {return _spacelike;}
 
+ /**
+  * Access the external branchings
+  */
+  map< ShowerParticlePtr, HardBranchingPtr > & getExternals() 
+  { return _theExternals; }
+
+  /**
+   * Access the nodal branchings
+   */
+  map< HardBranchingPtr, Energy > & getNodes() { return _theNodes; }
+
+  /**
+   * Access the internal lines
+   */
+  map< long, pair< Energy, Energy > > & getInternals() { return _theInternals; }
+
+
+
+  /**
+   * Returns true if all lines in tree are ordered in /tilde(q)
+   */
+  bool checkHardOrdering();
+  
+  /**
+   * Calls recursive function to fill externals and nodes
+   * then finds the internal lines from the nodes
+   */
+  bool findNodes( );
+
 private:
+
+ /**
+   * Recursive function to fill externals and nodes, also connects the parents
+   */
+  bool fillNodes( HardBranchingPtr, HardBranchingPtr );
+
+  /**
+   * Function to recursively find the hard line scales
+   **/
+  void fillHardScales( HardBranchingPtr branch, vector< pair< Energy, double > > & currentLine );
+
+  /**
+   * Scales and z along each hard line to check ordering
+   */
+  vector< vector< pair< Energy, double > > > _hard_line_scales;
 
   /**
    *  The ShowerTree
@@ -83,6 +127,23 @@ private:
    *  The HardBranchings which initiate the space-like showers
    */
   set<HardBranchingPtr> _spacelike;
+
+  /**
+   * Map containing external particles and their branchings
+   */
+  map< ShowerParticlePtr, HardBranchingPtr > _theExternals;
+
+  /**
+   * Map containing all nodes with the ingoing partons and their scale 
+   * (this is the the intermediates and their ending node).
+   */
+  map< HardBranchingPtr,  Energy > _theNodes;
+  
+  /**
+   * Map containing all internal line ids and 
+   * their start and end node scale, qtilde.
+   */
+  map< long, pair< Energy, Energy > > _theInternals;
 
 };
 
@@ -216,7 +277,7 @@ public:
   tHardBranchingPtr parent() const {return _parent;}
 
   /**
-   *  The parent of the branching
+   *  Set the parent of the branching
    */
   void parent(tHardBranchingPtr in) {_parent=in;}
 
