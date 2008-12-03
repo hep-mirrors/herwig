@@ -1,0 +1,32 @@
+#! /bin/bash
+# usage ./run_tests <path to herwig> <path to rpo>
+
+if [ $# != 2 ]; then
+    echo "Expected two arguments." >&2
+    echo "Usage: $0 <path to herwig> <path to rpo>" >&2
+    exit 1
+fi
+
+HERWIG="$1"
+RPOPATH="$2"
+
+TIMECMD="nice -10 /usr/bin/time -f %U"
+
+############# LEP chisq #############
+
+"$HERWIG" read CHISQ.in -r "$RPOPATH"
+$TIMECMD "$HERWIG" run CHISQ.run -N20000 > /dev/null 2> tmptime
+
+echo "YVALUE = "`cat tmptime` > LEP.time
+./sum_chisq CHISQ.log > chisq.value
+
+#####################################
+
+INFILES="LHC ILC TVT DIS"
+
+for INFILE in $INFILES; do
+    "$HERWIG" read $INFILE.in -r "$RPOPATH"
+    $TIMECMD "$HERWIG" run $INFILE.run -N20000 > /dev/null 2> tmptime$INFILE
+
+    echo "YVALUE = "`cat tmptime$INFILE` > ${INFILE}.time
+done
