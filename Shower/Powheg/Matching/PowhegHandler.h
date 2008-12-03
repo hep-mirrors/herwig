@@ -17,12 +17,10 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 
-
 namespace Herwig {
-
   class PowhegHandler;
   class PrototypeBranching;
-
+  class ProtoTree;
 }
 
 //declaration of thepeg ptr
@@ -30,6 +28,7 @@ namespace ThePEG {
 
   ThePEG_DECLARE_POINTERS(Herwig::PowhegHandler,PowhegHandlerPtr);
   ThePEG_DECLARE_POINTERS(Herwig::PrototypeBranching,PrototypeBranchingPtr);
+  ThePEG_DECLARE_POINTERS(Herwig::ProtoTree,ProtoTreePtr);
 
 }
 
@@ -59,10 +58,27 @@ using namespace ThePEG;
     DiagPtr diagram;
   };
 
-
-
-
-
+  class ProtoTree:public Base {
+  public:
+    ProtoTree() {}
+    ProtoTree(const set< HardBranchingPtr > & newBranchings) : theBranchings( newBranchings ) {}
+    
+    void addBranching( HardBranchingPtr Branching ){
+      theBranchings.insert( Branching );
+    }
+    bool removeBranching( HardBranchingPtr Branching ){
+      if( theBranchings.find( Branching ) != theBranchings.end() ){
+	theBranchings.erase( Branching );
+	return true;
+      }
+      else return false;
+    }
+    const set< HardBranchingPtr > & getBranchings() const {
+      return  theBranchings;
+    }
+  private:
+    set< HardBranchingPtr > theBranchings;
+  };
 
 /**
  * Here is the documentation of the PowhegHandler class.
@@ -78,8 +94,9 @@ public:
    * The default constructor.
    */
   PowhegHandler() : _npoint(100), _sudopt(0), _sudname("sudakov.data"),
-		    _jetMeasureMode(0),_lepton(true)
-		  , _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ) {}
+		    _jetMeasureMode(0),_lepton(true), _reweightOff(false),
+		    _highestMult(false),
+		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ) {}
 
   /**
    * Perform CKKW reweighting
@@ -182,13 +199,43 @@ protected:
 
 private:
 
+  //a list of all clusters used in finding all shower histories
+  map< HardBranchingPtr , pair< ShowerParticlePtr, ShowerParticlePtr > > _all_clusters;
+
+  //a set of prototrees (which are a set of HardBranchings)
+  //can do find on set to see if it contains a certain hardbranching
+  set< ProtoTreePtr > _proto_trees;
+
+  //all possible shower configurations that are angular ordered
+  vector< pair< HardTreePtr, double > > _hardTrees;
+
+  //just connect up the progenitors in currentProtoTree
+  bool simpleColConnections( ProtoTreePtr currentProtoTree );
+
+  bool simpleColConnections( HardTreePtr currentHardTree );
+
+  
+  //recursive method to find all trees
+  //does a single clustering on the current tree adding more prototrees if more than one possible branching
+  bool fillProtoTrees( map< ShowerParticlePtr, HardBranchingPtr >, 
+		       ProtoTreePtr );
+
+  //looks to see if a cluster of the cluster_particles already exists in _all_clusterings
+  //if so returns the pointer to that hardBranching if not creates the hardBranchings, adds it
+  //to _all_branchings and returns the pointer
+  HardBranchingPtr getCluster( pair< ShowerParticlePtr, ShowerParticlePtr >, map< ShowerParticlePtr, HardBranchingPtr > );
+
+  //checks whether a prototree containing the same branchings exists already in _proto_trees in 
+  //which case the current tree is a repeat and should be removed (and not recursed)
+  bool repeatProtoTree( ProtoTreePtr currentProtoTree );
+
   /**
    * Clusters the partons and creates a branching history
    * by combining the 2 particles with smallest
    * jet measure out of all allowed pairings until we are left 
    * with \f$q\bar{q}\f$.
    */
-  HardTreePtr doClustering();
+  HardTreePtr doClustering( );
   
   double Sud( Energy scale, long id );
 
@@ -210,8 +257,14 @@ private:
   /**
    *  Calculate the Sudakov weight
    */
-  double sudakovWeight();
+  double sudakovWeight( HardTreePtr );
   
+  /**                                                                                                                                                       
+   *  Calculate the splitting function weight                                                                                                                          
+   */
+  double splittingFnWeight( HardTreePtr );
+
+
   /**
    * Checks to see that the splitting is allowed.
    */
@@ -228,7 +281,7 @@ private:
    * Checks to see that the splitting is allowed and finds the
    * Sudakov form factor for the splitting.
    */
-  SudakovPtr getSud(int & qq_pairs, long & emmitter_id,
+  SudakovPtr getSud(long & emmitter_id,
 		    ShowerParticlePtr & part_i, 
 		    ShowerParticlePtr & part_j ) ;
   
@@ -253,7 +306,7 @@ private:
 private:
 
   /**
-   *  The hard tree
+   *  The chosen hard tree
    */
   HardTreePtr _theHardTree;
 
@@ -268,40 +321,11 @@ private:
   Energy2 _s;
 
   /**
-   *  Flag to allow Sudakov reweighting to be switched off
-   */
-  bool _reweightOff;
-
-  /**
    *  Map containing the sudakovs for the final-state particles
    */
-  multimap< long, pair < Interpolator<double,Energy>::Ptr,
+  multimap< long, pair < Interpolator<Energy,double>::Ptr,
 			 Interpolator<Energy,double>::Ptr>  > _fbranchings;
 
-  /**
-   * Map containing particle and the resolution parameter of 
-   * external partons.
-   */
-  map< ShowerParticlePtr, pair< double, HardBranchingPtr > > _theExternals;
-
-  /**
-   * Map containing all nodes with the ingoing partons and their clustered jet 
-   * parameter (this is the the intermediates and their ending node).
-   */
-  map< HardBranchingPtr, double > _theNodes;
-  
-  /**
-   * Map containing all intermediate partons and 
-   * their start and end node resolution parameters ( y and qtilde ).
-   */
-  map< long, pair< pair< double, Energy > , pair< double, Energy > > > 
-  _theIntermediates;
-
-  /**
-   * Map between the cluster number and the jet parameter.
-   */
-  map< int, double > _theJetParameters;
-  
   /**
    *  Pointer to the object calculating the strong coupling
    */
@@ -326,6 +350,16 @@ private:
    *  Whether \f$e^+e^-\f$ or hadron-hadron
    */
   bool _lepton;
+
+  /**
+   *  Whether sudakov reweighting is switched off
+   */
+  bool _reweightOff;
+
+  /**
+   *  Whether we are treating the highest multiplicity contribution
+   */
+  bool _highestMult;
 
 
   /**
@@ -408,5 +442,4 @@ struct ClassTraits<Herwig::PowhegHandler>
 }
 
 #endif /* HERWIG_PowhegHandler_H */
-
 
