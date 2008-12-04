@@ -302,7 +302,7 @@ void MEPP2VV::getDiagrams() const {
   }
   // Z Z
   if(_process==0||_process==3) {
-    for(int ix=1;ix<_maxflavour;++ix) {
+    for(int ix=1;ix<=_maxflavour;++ix) {
       tcPDPtr qk = getParticleData(ix);
       tcPDPtr qb = qk->CC();
       add(new_ptr((Tree2toNDiagram(3), qk, qk, qb, 1, z0, 2, z0, -1)));
