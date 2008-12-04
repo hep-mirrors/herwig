@@ -171,7 +171,9 @@ double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
   Energy2 m12 = sqr(meMomenta()[2].mass());
   Energy2 m22 = sqr(meMomenta()[3].mass());
   Energy2 D1 = sHat()-m12-m22;
-  Energy4 lambda = sqr(D1) - 4*m12*m22;
+  Energy4 lambda = sqr(D1) - 4.*m12*m22;
+  if(meMomenta()[2].mass()==meMomenta()[3].mass())
+      lambda = sHat()*(sHat()-4.*m12);
   double D =  D1 / sqrt(lambda);
   if(mePartonData()[2]->id()==ParticleID::Z0&&
      mePartonData()[3]->id()==ParticleID::Z0) {
