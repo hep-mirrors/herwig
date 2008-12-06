@@ -216,7 +216,7 @@ void PP2HAnalysis::dofinish() {
   YjetYH_10.prefactor(YjetYH_10.prefactor()*1.e3);
   YjetYH_10.topdrawOutput(outfile,Frame|Ylog,"RED",
 			  "y0jet1-y0H1 (p0T,jet1>10 GeV)",
-			  "F      X  X X   X     X        ",
+			  " X   X  X X   X     X        ",
 			  "dS/d(y0jet1-y0H1) (pb)",
 			  " G    X   X  X X      ");
   YjetYH_40.normaliseToCrossSection();
