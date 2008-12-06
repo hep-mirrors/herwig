@@ -22,7 +22,7 @@ const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-
 
 GGtoHMECorrection::GGtoHMECorrection() 
   : _minloop(6),_maxloop(6),_massopt(0),  
-    _channelwgtA(0.45),_channelwgtB(0.15),
+    _channelwgtA(0.45),_channelwgtB(0.15), scaleFact_(1.),
     _ggpow(1.6), _qgpow(1.6),_enhance(1.1),
     _nover(0),_ntry(0),_ngen(0),
     _maxwgt(0.) {}
@@ -38,12 +38,12 @@ IBPtr GGtoHMECorrection::fullclone() const {
 
 void GGtoHMECorrection::persistentOutput(PersistentOStream & os) const {
   os << _minloop << _maxloop << _massopt << _ggpow << _qgpow << _enhance
-     << _channelwgtA << _channelwgtB << _channelweights;
+     << _channelwgtA << _channelwgtB << scaleFact_ << _channelweights;
 }
 
 void GGtoHMECorrection::persistentInput(PersistentIStream & is, int) {
   is >> _minloop >> _maxloop >> _massopt >> _ggpow >> _qgpow >> _enhance
-     >> _channelwgtA >> _channelwgtB >> _channelweights;
+     >> _channelwgtA >> _channelwgtB >> scaleFact_ >> _channelweights;
 }
 
 void GGtoHMECorrection::doinit() throw(InitException) {
@@ -120,6 +120,12 @@ void GGtoHMECorrection::Init() {
      " This is a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction",
      &GGtoHMECorrection::_channelwgtB, 0.15, 0., 1.e10,
+     false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection, double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The factor used before sHat if using a running scale",
+     &GGtoHMECorrection::scaleFact_, 1.0, 0.0, 10.0, 
      false, false, Interface::limited);
 
   static Parameter<GGtoHMECorrection,double> interfaceGGPower
@@ -508,6 +514,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     Energy4 jacobian2 = jacobian * 2.*uhat*that/(shat-_mh2);
     // new scale (this is mt^2=pt^2+mh^2)
     Energy2 scale(uhat*that/shat+_mh2);
+    scale *= sqr(scaleFact_);
     // the PDF's with the emitted gluon
     double fxnew[2];
     xnew[0]=exp(yH)/sqrt(s)*sqrt(shat*(_mh2-uhat)/(_mh2-that));
@@ -556,6 +563,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     InvEnergy4 mewgt;
     // new scale (this is mt^2=pt^2+mh^2)
     Energy2 scale(uhat*that/shat+_mh2);
+    scale *= sqr(scaleFact_);
     double fxnew[2];
     xnew[0]=exp(yH)/sqrt(s)*sqrt(shat*(_mh2-uhat)/(_mh2-that));
     xnew[1]=shat/(s*xnew[0]);

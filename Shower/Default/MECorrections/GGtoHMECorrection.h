@@ -332,6 +332,11 @@ private:
   double _channelwgtB;
 
   /**
+   *  Prefactor if variable scale used
+   */
+  double scaleFact_;
+
+  /**
    *  Weights for the channels as a vector
    */
   vector<double> _channelweights;
