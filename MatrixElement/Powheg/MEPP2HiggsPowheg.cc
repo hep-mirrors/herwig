@@ -130,7 +130,7 @@ void MEPP2HiggsPowheg::Init() {
 }
 
 Energy2 MEPP2HiggsPowheg::scale() const {
-  return scaleopt_ == 1 ?  scaleFact_*sHat() : sqr(mu_F_);
+  return scaleopt_ == 1 ?  sqr(scaleFact_)*sHat() : sqr(scaleFact_*mu_F_);
 }
 
 int MEPP2HiggsPowheg::nDim() const {
