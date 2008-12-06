@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_Higgspt_H
-#define HERWIG_Higgspt_H
+#ifndef HERWIG_PP2HAnalysis_H
+#define HERWIG_PP2HAnalysis_H
 //
-// This is the declaration of the Higgspt class.
+// This is the declaration of the PP2HAnalysis class.
 //
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -17,12 +17,12 @@ namespace Herwig {
   
   using namespace ThePEG;
   /**
-   * Here is the documentation of the Higgspt class.
+   * Here is the documentation of the PP2HAnalysis class.
    *
-   * @see \ref HiggsptInterfaces "The interfaces"
-   * defined for Higgspt.
+   * @see \ref PP2HAnalysisInterfaces "The interfaces"
+   * defined for PP2HAnalysis.
    */
-  class Higgspt: public AnalysisHandler {
+  class PP2HAnalysis: public AnalysisHandler {
     
   public:
 
@@ -31,7 +31,7 @@ namespace Herwig {
   /**
    * The default constructor.
    */
-    inline Higgspt() {}
+    inline PP2HAnalysis() {}
 
   public:
     
@@ -112,13 +112,13 @@ namespace Herwig {
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<Higgspt> initHiggspt;
+  static ClassDescription<PP2HAnalysis> initPP2HAnalysis;
     
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  Higgspt & operator=(const Higgspt &);
+  PP2HAnalysis & operator=(const PP2HAnalysis &);
     
   public:
     
@@ -153,34 +153,34 @@ namespace ThePEG {
   /** @cond TRAITSPECIALIZATIONS */
   
   /** This template specialization informs ThePEG about the
-   *  base classes of Higgspt. */
+   *  base classes of PP2HAnalysis. */
   template <>
- struct BaseClassTrait<Herwig::Higgspt,1> {
-    /** Typedef of the first base class of Higgspt. */
+ struct BaseClassTrait<Herwig::PP2HAnalysis,1> {
+    /** Typedef of the first base class of PP2HAnalysis. */
     typedef AnalysisHandler NthBase;
   };
 
   /** This template specialization informs ThePEG about the name of
-   *  the Higgspt class and the shared object where it is defined. */
+   *  the PP2HAnalysis class and the shared object where it is defined. */
   template <>
-  struct ClassTraits<Herwig::Higgspt>
-    : public ClassTraitsBase<Herwig::Higgspt> {
+  struct ClassTraits<Herwig::PP2HAnalysis>
+    : public ClassTraitsBase<Herwig::PP2HAnalysis> {
     /** Return a platform-independent class name */
-    static string className() { return "Herwig::Higgspt"; }
+    static string className() { return "Herwig::PP2HAnalysis"; }
     /**
      * The name of a file containing the dynamic library where the class
-     * Higgspt is implemented. It may also include several, space-separated,
-     * libraries if the class Higgspt depends on other classes (base classes
+     * PP2HAnalysis is implemented. It may also include several, space-separated,
+     * libraries if the class PP2HAnalysis depends on other classes (base classes
      * excepted). In this case the listed libraries will be dynamically
      * linked in the order they are specified.
      */
-    static string library() { return "HwKtJet.so HwHiggspt.so"; }
+    static string library() { return "HwKtJet.so HwPP2HAnalysis.so"; }
   };
   
   /** @endcond */
 
 }
 
-#endif /* HERWIG_Higgspt_H */
+#endif /* HERWIG_PP2HAnalysis_H */
 
 

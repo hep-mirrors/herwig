@@ -79,11 +79,11 @@ HwWpt_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwWpt_la_SOURCES = \
 Wpt.cc Wpt.h 
 
-pkglib_LTLIBRARIES += HwHiggspt.la
-HwHiggspt_la_LDFLAGS = -module -version-info 4:0:0
-HwHiggspt_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwHiggspt_la_SOURCES = \
-Higgspt.cc Higgspt.h 
+pkglib_LTLIBRARIES += HwPP2HAnalysis.la
+HwPP2HAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwPP2HAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
+HwPP2HAnalysis_la_SOURCES = \
+PP2HAnalysis.cc PP2HAnalysis.h 
 
 pkglib_LTLIBRARIES += HwZrap.la
 HwZrap_la_LDFLAGS = -module -version-info 4:0:0
