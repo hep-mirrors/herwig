@@ -1,4 +1,4 @@
-// -*- C++ -*-
+ // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
 // functions of the PP2HAnalysis class.
@@ -40,9 +40,9 @@ Histogram YjetYH_80A(-5.,5.,50);
 Histogram Njets_10(0.,10.,10);
 Histogram Njets_40(0.,10.,10);
 Histogram Njets_80(0.,10.,10);
-Histogram y23(0.,1.,50);
-Histogram y34(0.,1.,50);
-Histogram y45(0.,1.,50);
+Histogram log_y23(-11.,-4.,70);
+Histogram log_y34(-11.,-4.,70);
+Histogram log_y45(-11.,-4.,70);
 
 void PP2HAnalysis::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
@@ -154,9 +154,13 @@ void PP2HAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   Njets_10.addWeighted(n10+0.001,1);
   Njets_40.addWeighted(n40+0.001,1);
   Njets_80.addWeighted(n80+0.001,1);
-  y23.addWeighted(ev.getYMerge(2),1); 
-  y34.addWeighted(ev.getYMerge(3),1); 
-  y45.addWeighted(ev.getYMerge(4),1); 
+
+  if(ktjets.size()>2)
+    log_y23.addWeighted(log(ev.getYMerge(2))/log(10.),1); 
+  if(ktjets.size()>3)
+    log_y34.addWeighted(log(ev.getYMerge(3))/log(10.),1); 
+  if(ktjets.size()>4)
+    log_y45.addWeighted(log(ev.getYMerge(4))/log(10.),1); 
 
 }
 
@@ -168,80 +172,152 @@ void PP2HAnalysis::dofinish() {
   using namespace HistogramOptions;
   pt_30.normaliseToCrossSection();
   pt_30.prefactor(pt_30.prefactor()*1.e3);
-  pt_30.topdrawOutput(outfile,Frame,"RED","pT of Higgs (pb)");
+  pt_30.topdrawOutput(outfile,Frame,"RED",
+		      "Higgs boson p0T1",
+		      "             X X",
+		      "dS/dp0T1 (pb)",
+		      " G   X X     ");
   pt_200.normaliseToCrossSection();
   pt_200.prefactor(pt_200.prefactor()*1.e3);
-  pt_200.topdrawOutput(outfile,Frame|Ylog,"RED","pT of Higgs (pb)");
+  pt_200.topdrawOutput(outfile,Frame|Ylog,"RED",
+		       "Higgs boson p0T1",
+		       "             X X",
+		       "dS/dp0T1 (pb)",
+		       " G   X X     ");
   pt_400.normaliseToCrossSection();
   pt_400.prefactor(pt_400.prefactor()*1.e3);
-  pt_400.topdrawOutput(outfile,Frame|Ylog,"RED","pT of Higgs (pb)");
+  pt_400.topdrawOutput(outfile,Frame|Ylog,"RED",
+		       "Higgs boson p0T1",
+		       "             X X",
+		       "dS/dp0T1 (pb)",
+		       " G   X X     ");
   Yjet_10.normaliseToCrossSection();
   Yjet_10.prefactor(Yjet_10.prefactor()*1.e3);
-  Yjet_10.topdrawOutput(outfile,Frame|Ylog,
-			     "RED","Yjet (pb) pT>10 GeV");
+  Yjet_10.topdrawOutput(outfile,Frame|Ylog,"RED",
+			"y0jet1 (p0T,jet1>10 GeV)",
+			" X   X   X     X        ",
+			"dS/dy0jet1 (pb)",
+			" G   X   X     ");
   Yjet_40.normaliseToCrossSection();
   Yjet_40.prefactor(Yjet_40.prefactor()*1.e3);
-  Yjet_40.topdrawOutput(outfile,Frame|Ylog,
-			     "RED","Yjet (pb) pT>40 GeV");
+  Yjet_40.topdrawOutput(outfile,Frame|Ylog,"RED",
+			"y0jet1 (p0T,jet1>40 GeV)",
+			" X   X   X     X        ",
+			"dS/dy0jet1 (pb)",
+			" G   X   X     ");
   Yjet_80.normaliseToCrossSection();
   Yjet_80.prefactor(Yjet_80.prefactor()*1.e3);
-  Yjet_80.topdrawOutput(outfile,Frame|Ylog,
-			     "RED","Yjet (pb) pT>80 GeV");
+  Yjet_80.topdrawOutput(outfile,Frame|Ylog,"RED",
+			"y0jet1 (p0T,jet1>80 GeV)",
+			" X   X   X     X        ",
+			"dS/dy0jet1 (pb)",
+			" G   X   X     ");
   YjetYH_10.normaliseToCrossSection();
   YjetYH_10.prefactor(YjetYH_10.prefactor()*1.e3);
-  YjetYH_10.topdrawOutput(outfile,Frame|Ylog,
-			       "RED","Yjet-YH (pb) pt>10 GeV");
+  YjetYH_10.topdrawOutput(outfile,Frame|Ylog,"RED",
+			  "y0jet1-y0H1 (p0T,jet1>10 GeV)",
+			  "F      X  X X   X     X        ",
+			  "dS/d(y0jet1-y0H1) (pb)",
+			  " G    X   X  X X      ");
   YjetYH_40.normaliseToCrossSection();
   YjetYH_40.prefactor(YjetYH_40.prefactor()*1.e3);
-  YjetYH_40.topdrawOutput(outfile,Frame|Ylog,
-			       "RED","Yjet-YH (pb) pT>40 GeV");
+  YjetYH_40.topdrawOutput(outfile,Frame|Ylog,"RED",
+			  "y0jet1-y0H1 (p0T,jet1>40 GeV)",
+			  " X   X  X X   X     X        ",
+			  "dS/d(y0jet1-y0H1) (pb)",
+			  " G    X   X  X X      ");
   YjetYH_80.normaliseToCrossSection();
   YjetYH_80.prefactor(YjetYH_80.prefactor()*1.e3);
-  YjetYH_80.topdrawOutput(outfile,Frame|Ylog,
-			       "RED","Yjet-YH (pb) pT>80 GeV");
+  YjetYH_80.topdrawOutput(outfile,Frame|Ylog,"RED",
+			  "y0jet1-y0H1 (p0T,jet1>80 GeV)",
+			  " X   X  X X   X     X        ",
+			  "dS/d(y0jet1-y0H1) (pb)",
+			  " G    X   X  X X      ");
   Yjet_10A.normaliseToCrossSection();
   Yjet_10A.prefactor(Yjet_10A.prefactor()*1.e3);
-  Yjet_10A.topdrawOutput(outfile,Frame|Ylog,
-			      "RED","Yjet (pb) pT(all)>10 GeV");
+  Yjet_10A.topdrawOutput(outfile,Frame|Ylog,"RED",
+			 "y0jet1 (p0T,all1>10 GeV)",
+			 " X   X   X     X        ",
+			 "dS/dy0jet1 (pb)",
+			 " G   X   X     ");
   Yjet_40A.normaliseToCrossSection();
   Yjet_40A.prefactor(Yjet_40A.prefactor()*1.e3);
-  Yjet_40A.topdrawOutput(outfile,Frame|Ylog,
-			      "RED","Yjet (pb) pT(all)>40 GeV");
+  Yjet_40A.topdrawOutput(outfile,Frame|Ylog,"RED",
+			 "y0jet1 (p0T,all1>40 GeV)",
+			 " X   X   X     X        ",
+			 "dS/dy0jet1 (pb)",
+			 " G   X   X     ");
   Yjet_80A.normaliseToCrossSection();
   Yjet_80A.prefactor(Yjet_80A.prefactor()*1.e3);
-  Yjet_80A.topdrawOutput(outfile,Frame|Ylog,
-			      "RED","Yjet (pb) pT(all)>80 GeV");
+  Yjet_80A.topdrawOutput(outfile,Frame|Ylog,"RED",
+			 "y0jet1 (p0T,all1>80 GeV)",
+			 " X   X   X     X        ",
+			 "dS/dy0jet1 (pb)",
+			 " G   X   X     ");
   YjetYH_10A.normaliseToCrossSection();
   YjetYH_10A.prefactor(YjetYH_10A.prefactor()*1.e3);
-  YjetYH_10A.topdrawOutput(outfile,Frame|Ylog,
-				"RED","Yjet-YH (pb) pT(all)>10 GeV");
+  YjetYH_10A.topdrawOutput(outfile,Frame|Ylog,"RED",
+			   "y0jet1-y0H1 (p0T,all1>10 GeV)",
+			   " X   X  X X   X     X        ",
+			   "dS/d(y0jet1-y0H1) (pb)",
+			   " G    X   X  X X      ");
   YjetYH_40A.normaliseToCrossSection();
   YjetYH_40A.prefactor(YjetYH_40A.prefactor()*1.e3);
-  YjetYH_40A.topdrawOutput(outfile,Frame|Ylog,
-				"RED","Yjet-YH (pb) pT(all)>40 GeV");
+  YjetYH_40A.topdrawOutput(outfile,Frame|Ylog,"RED",
+			   "y0jet1-y0H1 (p0T,all1>40 GeV)",
+			   " X   X  X X   X     X        ",
+			   "dS/d(y0jet1-y0H1) (pb)",
+			   " G    X   X  X X      ");
   YjetYH_80A.normaliseToCrossSection();
   YjetYH_80A.prefactor(YjetYH_80A.prefactor()*1.e3);
-  YjetYH_80A.topdrawOutput(outfile,Frame|Ylog,
-				"RED","Yjet-YH (pb) pT(all)>80 GeV");
+  YjetYH_80A.topdrawOutput(outfile,Frame|Ylog,"RED",
+			   "y0jet1-y0H1 (p0T,all1>80 GeV)",
+			   " X   X  X X   X     X        ",
+			   "dS/d(y0jet1-y0H1) (pb)",
+			   " G    X   X  X X      ");
   Njets_10.normaliseToCrossSection();
   Njets_10.prefactor(Njets_10.prefactor()*1.e3);
-  Njets_10.topdrawOutput(outfile,Frame,"RED","Njets (pb) pT>10 GeV");
+  Njets_10.topdrawOutput(outfile,Frame,"RED",
+			 "Jet multiplicity (p0T1>10 GeV)",
+			 "                   X X        ",
+			 "dS/dn0jets1 (pb)",
+			 " G   X    X     ");
   Njets_40.normaliseToCrossSection();
   Njets_40.prefactor(Njets_40.prefactor()*1.e3);
-  Njets_40.topdrawOutput(outfile,Frame,"RED","Njets (pb) pT>40 GeV");
+  Njets_40.topdrawOutput(outfile,Frame,"RED",
+			 "Jet multiplicity (p0T1>40 GeV)",
+			 "                   X X        ",
+			 "dS/dn0jets1 (pb)",
+			 " G   X    X     ");
   Njets_80.normaliseToCrossSection();
   Njets_80.prefactor(Njets_80.prefactor()*1.e3);
-  Njets_80.topdrawOutput(outfile,Frame,"RED","Njets (pb) pT>80 GeV");
+  Njets_80.topdrawOutput(outfile,Frame,"RED",
+			 "Jet multiplicity (p0T1>80 GeV)",
+			 "                   X X        ",
+			 "dS/dn0jets1 (pb)",
+			 " G   X    X     ");
 
-  y23.normaliseToCrossSection();
-  y23.prefactor(y23.prefactor()*1.e3);
-  y23.topdrawOutput(outfile,Frame,"RED","y23 (pb)");
-  y34.normaliseToCrossSection();
-  y34.prefactor(y34.prefactor()*1.e3);
-  y34.topdrawOutput(outfile,Frame,"RED","y34 (pb)");
-  y45.normaliseToCrossSection();
-  y45.prefactor(y45.prefactor()*1.e3);
-  y45.topdrawOutput(outfile,Frame,"RED","y45 (pb)");
+  log_y23.normaliseToCrossSection();
+  log_y23.prefactor(log_y23.prefactor()*1.e3);
+  log_y23.topdrawOutput(outfile,Frame|Ylog,"RED",
+			"Log0101(y0231)",
+			"   X  X  X  X ",
+			"dS/dLog0101(y0231)",
+			" G     X  X  X  X ");
+  log_y34.normaliseToCrossSection();
+  log_y34.prefactor(log_y34.prefactor()*1.e3);
+  log_y34.topdrawOutput(outfile,Frame|Ylog,"RED",
+			"Log0101(y0341)",
+			"   X  X  X  X ",
+			"dS/dLog0101(y0341)",
+			" G     X  X  X  X ");
+  log_y45.normaliseToCrossSection();
+  log_y45.prefactor(log_y45.prefactor()*1.e3);
+  log_y45.topdrawOutput(outfile,Frame|Ylog,"RED",
+			"Log0101(y0451)",
+			"   X  X  X  X ",
+			"dS/dLog0101(y0451)",
+			" G     X  X  X  X ");
 
   outfile.close();
 }
