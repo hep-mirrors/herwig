@@ -29,17 +29,20 @@ GGtoHHardGenerator::_epsi = complex<Energy2>(0.*GeV2,-1.e-10*GeV2);
 GGtoHHardGenerator::GGtoHHardGenerator() : _power(2.0),_pregg(5.),
 					   _preqg(3.),_pregqbar(3.),
 					   _min_pt(2.*GeV),
-					   _minloop(6),_maxloop(6),_massopt(0)
+					   _minloop(6),_maxloop(6),_massopt(0),
+					   scaleFact_(1.), alphaScale_(0)
 {}
 
 void GGtoHHardGenerator::persistentOutput(PersistentOStream & os) const {
   os << _alphaS << _power << _pregg << _preqg << _pregqbar 
-     << ounit( _min_pt,GeV ) << _minloop << _maxloop << _massopt;
+     << ounit( _min_pt,GeV ) << _minloop << _maxloop << _massopt << scaleFact_
+     << alphaScale_;
 }
 
 void GGtoHHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _power >> _pregg >> _preqg >> _pregqbar >> 
-    iunit( _min_pt, GeV )>> _minloop >> _maxloop >> _massopt;
+  is >> _alphaS >> _power >> _pregg >> _preqg >> _pregqbar 
+     >> iunit( _min_pt, GeV )>> _minloop >> _maxloop >> _massopt >> scaleFact_
+     >> alphaScale_;
 }
 
 ClassDescription<GGtoHHardGenerator> GGtoHHardGenerator::initGGtoHHardGenerator;
@@ -104,6 +107,25 @@ void GGtoHHardGenerator::Init() {
     (interfaceMassOption,
      "Large",
      "Use the heavy mass limit",
+     1);
+  static Parameter<GGtoHHardGenerator, double> interfaceScaleFactor
+    ("ScaleFactor",
+     "The factor used before sHat if using a running scale",
+     &GGtoHHardGenerator::scaleFact_, 1.0, 0.0, 10.0, 
+     false, false, Interface::limited);
+  static Switch<GGtoHHardGenerator,unsigned int> interfaceAlphaScale
+    ("AlphaScale",
+     "Option to use either pT or mT of the Higgs in the scale of alphaS",
+     &GGtoHHardGenerator::alphaScale_, 0, false, false);
+  static SwitchOption interfaceAlphaScalePT
+    (interfaceAlphaScale,
+     "pT",
+     "Use the pt of the Higgs",
+     0);
+  static SwitchOption interfaceAlphaScaleMT
+    (interfaceAlphaScale,
+     "mT",
+     "Use the mT of the Higgs",
      1);
 }
    
@@ -608,7 +630,8 @@ double GGtoHHardGenerator::getResult(int emis_type, Energy pt, double yj,
 				     tcPDPtr & outParton) {
   Energy2 s=sqr(generator()->maximumCMEnergy());
   Energy2 scale = _mh2+sqr(pt);
-  Energy  et=sqrt(scale);
+  Energy  et=sqrt(scale);  // Think before you go moving this!
+  scale *= sqr(scaleFact_);
   // longitudinal real correction fractions
   double x  = pt*exp( yj)/sqrt(s)+et*exp( _yh)/sqrt(s);
   double y  = pt*exp(-yj)/sqrt(s)+et*exp(-_yh)/sqrt(s);
@@ -664,5 +687,13 @@ double GGtoHHardGenerator::getResult(int emis_type, Energy pt, double yj,
   else {
     res *= pdf[2]*pdf[3]/pdf[0]/pdf[1]*_mh2/sh;
   }
-  return _alphaS->ratio(scale)/8./sqr(Constants::pi)*_mh2/sh*GeV*pt*res;
+  double the_result(0.);
+  if(alphaScale_==0) {
+    the_result=_alphaS->ratio(sqr(pt*scaleFact_))
+      /8./sqr(Constants::pi)*_mh2/sh*GeV*pt*res;
+  } else {
+    the_result=_alphaS->ratio(scale)
+      /8./sqr(Constants::pi)*_mh2/sh*GeV*pt*res;
+  }
+  return the_result;
 }

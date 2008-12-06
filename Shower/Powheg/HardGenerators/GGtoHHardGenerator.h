@@ -299,6 +299,17 @@ private:
    *  Option for treatment of the fermion loops
    */
   unsigned int _massopt;
+
+  /**
+   *  Prefactor if variable scale used
+   */
+  double scaleFact_;
+
+  /**
+   *  Option for using pt or mt as alpha_S scale
+   */
+  unsigned int alphaScale_;
+
   //@}
 
   /**
