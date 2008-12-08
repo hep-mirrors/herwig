@@ -262,6 +262,11 @@ private:
    */
   double scaleFact_;
 
+  /**
+   *  Flag to invoke debugging (comparison with MCFM).
+   */
+  unsigned int debugMCFM_;
+
 };
 
 }

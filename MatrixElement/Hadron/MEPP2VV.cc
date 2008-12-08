@@ -27,7 +27,7 @@ using namespace Herwig;
 
 MEPP2VV::MEPP2VV() : _process(0), _maxflavour(5) ,
     scaleopt_(1),   mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , 
-    scaleFact_(1.)
+    scaleFact_(1.), debugMCFM_(0)
 {}
 
 unsigned int MEPP2VV::orderInAlphaS() const {
@@ -122,18 +122,33 @@ void MEPP2VV::Init() {
      &MEPP2VV::scaleFact_, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
+  static Switch<MEPP2VV,unsigned int> interfaceDebugMCFM
+    ("DebugMCFM",
+     "Option to make t-channel propagators massless for WW (as in MCFM)",
+     &MEPP2VV::debugMCFM_, 0, false, false);
+  static SwitchOption interfaceNoDebugging
+    (interfaceDebugMCFM,
+     "NoDebugging",
+     "Default massive t-channel propagators in WW production",
+     0);
+  static SwitchOption interfaceDebugging
+    (interfaceDebugMCFM,
+     "Debugging",
+     "Use massless t-channel propagators in WW production (as in MCFM)",
+     1);
+
 }
 
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
   os << _vertexFFP << _vertexFFW << _vertexFFZ << _vertexWWW << _process
      << scaleopt_      << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)   
-     << scaleFact_ ;
+     << scaleFact_ << debugMCFM_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
   is >> _vertexFFP >> _vertexFFW >> _vertexFFZ >> _vertexWWW >> _process
      >> scaleopt_      >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)  
-     >> scaleFact_  ;
+     >> scaleFact_  >> debugMCFM_;
 }
 
 Energy2 MEPP2VV::scale() const {
@@ -227,9 +242,9 @@ void MEPP2VV::getDiagrams() const {
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
-	add(new_ptr((Tree2toNDiagram(2), qk, qb, 1, gamma, 3, w1, 3, w1,  4)));
+	add(new_ptr((Tree2toNDiagram(2),qk,qb,1,gamma,3,w1,3,w2,4)));
 	// s-channel Z
-	add(new_ptr((Tree2toNDiagram(2), qk, qb, 1,    z0, 3, w1, 3, w2,  5)));
+	add(new_ptr((Tree2toNDiagram(2),qk,qb,1,   z0,3,w1,3,w2,5)));
 	// t-channel
 	if(ix%2==0) {
 	  int idiag=0;
@@ -432,6 +447,12 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 		_vertexFFW->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
 	      diag[ix] = 
 		_vertexFFW->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
+	      if(debugMCFM_) {
+		  Energy2 the_that;
+		  the_that =(meMomenta()[0]-meMomenta()[2]).m2();
+        	  Energy2 the_m2(sqr(tc[ix]->mass()));
+		  diag[ix]*=(the_that - the_m2) / the_that;
+	      }
 	    }
 	    // individual diagrams
 	    for (size_t ii=0; ii<5; ++ii) me[ii] += std::norm(diag[ii]);
