@@ -40,9 +40,17 @@ Histogram YjetYH_80A(-5.,5.,50);
 Histogram Njets_10(0.,10.,10);
 Histogram Njets_40(0.,10.,10);
 Histogram Njets_80(0.,10.,10);
-Histogram log_y23(-11.,-4.,70);
-Histogram log_y34(-11.,-4.,70);
-Histogram log_y45(-11.,-4.,70);
+Histogram log_y23(-14.,-4.,100);
+Histogram log_y34(-14.,-4.,100);
+Histogram log_y45(-14.,-4.,100);
+Histogram cos1st(-1.,1.,50);
+Histogram cosjet(-1.,1.,50);
+Histogram cos1st_10(-1.,1.,50);
+Histogram cosjet_10(-1.,1.,50);
+Histogram cos1st_30(-1.,1.,50);
+Histogram cosjet_30(-1.,1.,50);
+Histogram cos1st_100(-1.,1.,50);
+Histogram cosjet_100(-1.,1.,50);
 
 void PP2HAnalysis::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
@@ -82,11 +90,21 @@ void PP2HAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
 			  << "\nNumberof Higgses is " << Higgses 
 			  << Exception::warning;
 
+  //-----------------------//
+  //                       //
+  // pT Spectrum analysis  //
+  //                       //
+  //-----------------------//
   Energy pTh = Higgs->momentum().perp();
   pt_30.addWeighted( pTh/GeV,1.);
   pt_200.addWeighted(pTh/GeV,1.);
   pt_400.addWeighted(pTh/GeV,1.);
 
+  //-----------------------//
+  //                       //
+  // Jet Rapidity analysis //
+  //                       //
+  //-----------------------//
   _kint.clearMap();
   KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(particles),4,2,1,0.7);
   // Get the two jets ordered by their Pt (largest Pt is first).
@@ -95,42 +113,32 @@ void PP2HAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
       && Higgs
       && abs(ktjets[0].t())!=abs(ktjets[0].z())
       && abs(Higgs->momentum().t())!=abs(Higgs->momentum().z()) ) {
+    double Yjet    = ktjets[0].rapidity();
+    double Yjet_YH = ktjets[0].rapidity()-Higgs->momentum().rapidity();
     if(ktjets[0].perp()>=10000.) {
-      Yjet_10.addWeighted(ktjets[0].rapidity(),1.);
-      YjetYH_10.addWeighted(
-        ktjets[0].rapidity()-Higgs->momentum().rapidity()
-	,1.);
+      Yjet_10.addWeighted(Yjet,1.);
+      YjetYH_10.addWeighted(Yjet_YH,1.);
     }
     if(ktjets[0].perp()>=40000.) {
-      Yjet_40.addWeighted(ktjets[0].rapidity(),1.);
-      YjetYH_40.addWeighted(
-	ktjets[0].rapidity()-Higgs->momentum().rapidity()
-	,1.);
+      Yjet_40.addWeighted(Yjet,1.);
+      YjetYH_40.addWeighted(Yjet_YH,1.);
     }
     if(ktjets[0].perp()>=80000.) {
-      Yjet_80.addWeighted(ktjets[0].rapidity(),1.);
-      YjetYH_80.addWeighted(
-	ktjets[0].rapidity()-Higgs->momentum().rapidity()
-	,1.);
+      Yjet_80.addWeighted(Yjet,1.);
+      YjetYH_80.addWeighted(Yjet_YH,1.);
     }
     unsigned int last(ktjets.size()-1);
-    if(ktjets[last]>=10000.) {
-      Yjet_10A.addWeighted(ktjets[0].rapidity(),1.);
-      YjetYH_10A.addWeighted(
-	ktjets[0].rapidity()-Higgs->momentum().rapidity()
-	,1.);
+    if(ktjets[last]>=10000.&&Higgs->momentum().perp()>=10000.*MeV) {
+      Yjet_10A.addWeighted(Yjet,1.);
+      YjetYH_10A.addWeighted(Yjet_YH,1.);
     }
-    if(ktjets[last]>=40000.) {
-      Yjet_40A.addWeighted(ktjets[0].rapidity(),1.);
-      YjetYH_40A.addWeighted(
-	ktjets[0].rapidity()-Higgs->momentum().rapidity()
-	,1.);
+    if(ktjets[last]>=40000.&&Higgs->momentum().perp()>=40000.*MeV) {
+      Yjet_40A.addWeighted(Yjet,1.);
+      YjetYH_40A.addWeighted(Yjet_YH,1.);
     }
-    if(ktjets[last]>=80000.) {
-      Yjet_80A.addWeighted(ktjets[0].rapidity(),1.);
-      YjetYH_80A.addWeighted(
-	ktjets[0].rapidity()-Higgs->momentum().rapidity()
-	,1.);
+    if(ktjets[last]>=80000.&&Higgs->momentum().perp()>=80000.*MeV) {
+      Yjet_80A.addWeighted(Yjet,1.);
+      YjetYH_80A.addWeighted(Yjet_YH,1.);
     }
   } else {
     if(!Higgs) 
@@ -143,6 +151,107 @@ void PP2HAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
       generator()->log()   << "PP2HAnalysis::analyze\n"
 			 << "Infinite rapidity leading jet.\n";
   }
+
+  //----------------------//
+  //                      //
+  //    Soft radiation    //
+  //       analysis       //
+  //                      //
+  //----------------------//
+  if( ktjets.size()>0 && Higgs ) {
+
+    // Find the gluons which fuse to give the Higgs:
+    tPPtr parent_P;
+    tPPtr parent_M;
+    if(Higgs->parents().size()==1 && 
+       Higgs->parents()[0]->parents().size()==2 && 
+       Higgs->parents()[0]->parents()[0]->id()==21 &&
+       Higgs->parents()[0]->parents()[1]->id()==21) {
+      parent_P = Higgs->parents()[0]->parents()[0];
+      parent_M = Higgs->parents()[0]->parents()[1];
+    } else if(Higgs->parents().size()==2 &&
+	      Higgs->parents()[0]->id()==21 && 
+	      Higgs->parents()[1]->id()==21) {
+      parent_P = Higgs->parents()[0];
+      parent_M = Higgs->parents()[1];
+    } else {
+      throw Exception() << "PP2HAnalysis::analyze"  
+			<< "\nCan't find Higgs parent gluons"
+			<< Exception::warning;
+    }
+    if(parent_P->momentum().z()<0.*GeV) swap(parent_P,parent_M);
+
+    // Find the boost to the COM of the colliding gluons.
+    Lorentz5Momentum p_P_gg = parent_P->momentum();
+    Lorentz5Momentum p_M_gg = parent_M->momentum();
+    Lorentz5Momentum pjet_gg = _kint.convert(ktjets[0]);
+    Boost boost_gg = (p_P_gg+p_M_gg).findBoostToCM();
+    // Boost the two gluons to their COM with them aligned along Z. 
+    p_P_gg = p_P_gg.boost(boost_gg);
+    p_M_gg = p_M_gg.boost(boost_gg);
+    // Also boost the leading jet to this frame.
+    pjet_gg = pjet_gg.boost(boost_gg);
+
+    // Find the first emission (with the widest angle).
+    tPPtr emitter_P = parent_P;
+    tPPtr ISchild_P;
+    tPPtr emitted_P;
+    tPPtr emitter_M = parent_M;
+    tPPtr ISchild_M;
+    tPPtr emitted_M;
+    do {
+      ISchild_P = emitter_P;
+      emitter_P = emitter_P->parents()[0];
+    }
+    while(emitter_P->children().size()==1);
+    emitted_P=emitter_P->children()[0]==ISchild_P ? emitter_P->children()[1] :
+                                                    emitter_P->children()[0] ;
+    do {
+      ISchild_M = emitter_M;
+      emitter_M = emitter_M->parents()[0];
+    }
+    while(emitter_M->children().size()==1);
+    emitted_M=emitter_M->children()[0]==ISchild_M ? emitter_M->children()[1] :
+                                                    emitter_M->children()[0] ;
+
+    if(abs(emitter_P->id())==2212||abs(emitter_M->id())==2212) 
+      throw Exception() << "PP2HAnalysis::analyze"  
+			<< "\nSelected a proton as a parent of emission."
+			<< Exception::warning;
+      
+    Lorentz5Momentum p1st_P_gg = emitted_P->momentum();
+    Lorentz5Momentum p1st_M_gg = emitted_M->momentum();
+    p1st_P_gg = p1st_P_gg.boost(boost_gg);
+    p1st_M_gg = p1st_M_gg.boost(boost_gg);
+
+    double c1st_P = p1st_P_gg.cosTheta();
+    double c1st_M = p1st_M_gg.cosTheta();
+    double c1st   = abs(c1st_P) <= abs(c1st_M) ? c1st_P : c1st_M;
+    if(abs(emitter_P->id())==2212) c1st = c1st_M;
+    if(abs(emitter_M->id())==2212) c1st = c1st_P;
+    double cjet   = pjet_gg.cosTheta();
+    cos1st.addWeighted(c1st,1.);
+    cosjet.addWeighted(cjet,1.);
+    if(ktjets[0].perp()<=10000.) {
+      cos1st_10.addWeighted(c1st,1.);
+      cosjet_10.addWeighted(cjet,1.);
+    }
+    if(ktjets[0].perp()<=30000.) {
+      cos1st_30.addWeighted(c1st,1.);
+      cosjet_30.addWeighted(cjet,1.);
+    }
+    if(ktjets[0].perp()<=100000.) {
+      cos1st_100.addWeighted(c1st,1.);
+      cosjet_100.addWeighted(cjet,1.);
+    }
+  }
+
+  //----------------------//
+  //                      //
+  //   Jet multiplicity   //
+  //       analysis       //
+  //                      //
+  //----------------------//
   unsigned int n10(0);
   unsigned int n40(0);
   unsigned int n80(0);
@@ -155,6 +264,11 @@ void PP2HAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   Njets_40.addWeighted(n40+0.001,1);
   Njets_80.addWeighted(n80+0.001,1);
 
+  //----------------------//
+  //                      //
+  //   Y merge analysis   //
+  //                      //
+  //----------------------//
   if(ktjets.size()>2)
     log_y23.addWeighted(log(ev.getYMerge(2))/log(10.),1); 
   if(ktjets.size()>3)
@@ -278,22 +392,22 @@ void PP2HAnalysis::dofinish() {
   Njets_10.normaliseToCrossSection();
   Njets_10.prefactor(Njets_10.prefactor()*1.e3);
   Njets_10.topdrawOutput(outfile,Frame,"RED",
-			 "Jet multiplicity (p0T1>10 GeV)",
-			 "                   X X        ",
+			 "Jet multiplicity (p0T,jets1>10 GeV)",
+			 "                   X      X        ",
 			 "dS/dn0jets1 (pb)",
 			 " G   X    X     ");
   Njets_40.normaliseToCrossSection();
   Njets_40.prefactor(Njets_40.prefactor()*1.e3);
   Njets_40.topdrawOutput(outfile,Frame,"RED",
-			 "Jet multiplicity (p0T1>40 GeV)",
-			 "                   X X        ",
+			 "Jet multiplicity (p0T,jets1>40 GeV)",
+			 "                   X      X        ",
 			 "dS/dn0jets1 (pb)",
 			 " G   X    X     ");
   Njets_80.normaliseToCrossSection();
   Njets_80.prefactor(Njets_80.prefactor()*1.e3);
   Njets_80.topdrawOutput(outfile,Frame,"RED",
-			 "Jet multiplicity (p0T1>80 GeV)",
-			 "                   X X        ",
+			 "Jet multiplicity (p0T,jets1>80 GeV)",
+			 "                   X      X        ",
 			 "dS/dn0jets1 (pb)",
 			 " G   X    X     ");
 
@@ -318,6 +432,62 @@ void PP2HAnalysis::dofinish() {
 			"   X  X  X  X ",
 			"dS/dLog0101(y0451)",
 			" G     X  X  X  X ");
+  cos1st.normaliseToCrossSection();
+  cos1st.prefactor(cos1st.prefactor()*1.e3);
+  cos1st.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ01st1",
+		        "   GX   X",
+		        "dS/dcosQ01st1 (pb)",
+		        " G     GX   X     ");
+  cosjet.normaliseToCrossSection();
+  cosjet.prefactor(cosjet.prefactor()*1.e3);
+  cosjet.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ0jet1",
+		        "   GX   X",
+		        "dS/dcosQ0jet1 (pb)",
+		        " G     GX   X     ");
+  cos1st_10.normaliseToCrossSection();
+  cos1st_10.prefactor(cos1st_10.prefactor()*1.e3);
+  cos1st_10.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ01st1 (p0T,jet1<10 GeV)",
+		        "   GX   X   X     X        ",
+		        "dS/dcosQ01st1 (pb)",
+		        " G     GX   X     ");
+  cosjet_10.normaliseToCrossSection();
+  cosjet_10.prefactor(cosjet_10.prefactor()*1.e3);
+  cosjet_10.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ0jet1 (p0t,jet1<10 GeV)",
+		        "   GX   X   X     X        ",
+		        "dS/dcosQ0jet1 (pb)",
+		        " G     GX   X     ");
+  cos1st_30.normaliseToCrossSection();
+  cos1st_30.prefactor(cos1st_30.prefactor()*1.e3);
+  cos1st_30.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ01st1 (p0T,jet1<30 GeV)",
+		        "   GX   X   X     X        ",
+		        "dS/dcosQ01st1 (pb)",
+		        " G     GX   X     ");
+  cosjet_30.normaliseToCrossSection();
+  cosjet_30.prefactor(cosjet_30.prefactor()*1.e3);
+  cosjet_30.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ0jet1 (p0t,jet1<30 GeV)",
+		        "   GX   X   X     X        ",
+		        "dS/dcosQ0jet1 (pb)",
+		        " G     GX   X     ");
+  cos1st_100.normaliseToCrossSection();
+  cos1st_100.prefactor(cos1st_100.prefactor()*1.e3);
+  cos1st_100.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ01st1 (p0T,jet1<100 GeV)",
+		        "   GX   X   X     X        ",
+		        "dS/dcosQ01st1 (pb)",
+		        " G     GX   X     ");
+  cosjet_100.normaliseToCrossSection();
+  cosjet_100.prefactor(cosjet_100.prefactor()*1.e3);
+  cosjet_100.topdrawOutput(outfile,Frame,"RED",
+ 		        "CosQ0jet1 (p0t,jet1<100 GeV)",
+		        "   GX   X   X     X        ",
+		        "dS/dcosQ0jet1 (pb)",
+		        " G     GX   X     ");
 
   outfile.close();
 }
