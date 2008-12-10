@@ -148,69 +148,16 @@ public:
   double Ctilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
   /**
-   * Function for calculation of the \f$gg\f$ initiated real
-   * contribution.
-   */
-  double Ctilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
-
-  /**
-   * Function for calculation of the \f$qg\f$ initiated real
-   * contribution.
-   */
-  double Ctilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
-
-  /**
    * Function for calculation of the \f$gq\f$ initiated real
    * contribution.
    */
   double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
   /**
-   * The regular part of the virtual correction matrix element(s) 
-   */
-  double M_V_regular() const;
-
-  /**
-   * The matrix element q + qbar -> n + g times tk*uk 
-   */
-  Energy2 t_u_M_R_qqbar(double xt, double y) const;
-
-  /**
-   * The matrix element qbar + q -> n + g times tk*uk 
-   */
-  Energy2 t_u_M_R_qbarq(double xt, double y) const;
-
-  /**
-   * The matrix element g + g    -> n + g times tk*uk 
-   */
-  Energy2 t_u_M_R_gg(double xt, double y) const;
-
-  /**
-   * The matrix element q + g    -> n + q times tk*uk 
-   */
-  Energy2 t_u_M_R_qg(double xt, double y) const;
-
-  /**
-   * The matrix element g + q    -> n + q times tk*uk 
-   */
-  Energy2 t_u_M_R_gq(double xt, double y) const;
-
-  /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Rtilde_Ltilde_qqbar_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
-  /**
-   * Function for calculation of the \f$\bar{q}q\f$ initiated real
-   * contribution.
-   */
-  double Rtilde_Ltilde_qbarq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
-
-  /**
-   * Function for calculation of the \f$qq\f$ 
-   * initiated real contribution.
-   */
-  double Rtilde_Ltilde_gg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Rtilde_Ltilde_qqb_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
   /**
    * Function for calculation of the \f$qg\f$ initiated real
@@ -219,10 +166,30 @@ public:
   double Rtilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
 
   /**
-   * Function for calculation of the \f$gq\f$ initiated real
+   * Function for calculation of the \f$gqb\f$ initiated real
    * contribution.
    */
-  double Rtilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Rtilde_Ltilde_gqb_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+
+  /**
+   * The regular part of the virtual correction matrix element(s) 
+   */
+  double M_V_regular() const;
+
+  /**
+   * The matrix element q + qb -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_qqb(double xt, double y) const;
+
+  /**
+   * The matrix element q + g  -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_qg(double xt, double y) const;
+
+  /**
+   * The matrix element g + qb -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_gqb(double xt, double y) const;
 
 protected:
 
@@ -321,7 +288,7 @@ private:
   /**
    * The squared masses of the lo final state particles p1 and p2. 
    */
-  mutable Energy2 p12_    , p22_     ;
+  mutable Energy2 k12_    , k22_     ;
 
   /**
    * The polar and azimuthal angles respectively defining a two body lo event. 

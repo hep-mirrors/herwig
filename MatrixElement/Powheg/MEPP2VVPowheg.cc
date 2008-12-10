@@ -159,12 +159,8 @@ double MEPP2VVPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(contrib_==0) return 1.;
 
-  // ATTENTION!!! - for consistency with LO matrix element ALL
-  // energy dimensions should be understood as MeVs!
-
   // If necessary swap the particle data vectors so that xbp_, 
   // mePartonData[0], beam[0] relate to the inbound particle a. 
-  // [ Irrelevant for gg collisions!! Kept as an aide memoire. ]
   if(!(lastPartons().first ->dataPtr()==a_lo_&&
        lastPartons().second->dataPtr()==b_lo_)) {
     swap(xbp_     ,xbm_     );
@@ -185,65 +181,30 @@ double MEPP2VVPowheg::NLOweight() const {
   // Calculate the integrand
   double wgt(0.);
 
-  // g g contribution
-  a_nlo=getParticleData(ParticleID::g);
+  // q qb  contribution
+  a_nlo=a_lo_;
+  b_nlo=b_lo_;
+  double wqqbvirt   = Vtilde_universal() + M_V_regular()/lo_me2_;
+  double wqqbcollin = alsOn2pi
+                    * ( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_, 1.) 
+                      + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_,-1.));
+  double wqqbreal   = alsOn2pi
+                    * Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo,xt_,y_);
+  double wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
+  // q g   contribution
+  a_nlo=a_lo_;
   b_nlo=getParticleData(ParticleID::g);
-  double wggvirt      = Vtilde_universal() + M_V_regular()/lo_me2_;
-  double wggcollin    = alsOn2pi
-                      * ( Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_, 1.) 
-                        + Ctilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,-1.));
-  double wggreal      = alsOn2pi
-                      * Rtilde_Ltilde_gg_on_x(a_nlo,b_nlo,xt_,y_);
-  double wgg          = wggvirt + wggcollin + wggreal;
-  // g q + g qbar contributions
+  double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
+  double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
+  double wqg        = wqgreal+wqgcollin;
+  // g qb  contribution
   a_nlo=getParticleData(ParticleID::g);
-  double wgqcollin(0.)   , wgqreal(0.)   , wgq(0.)   ;
-  for(int ix=1; ix<=maxflavour(); ++ix) {
-    b_nlo=getParticleData( ix);
-    wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
-    wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
-    wgq              += wgqreal+wgqcollin;
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    b_nlo=getParticleData(minus_ix);
-    wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
-    wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
-    wgq              += wgqreal+wgqcollin;
-  }
-  // q g + qbar g contributions
-  b_nlo=getParticleData(ParticleID::g);
-  double wqgcollin(0.)   , wqgreal(0.)   , wqg(0.)   ;
-  for(int ix=1; ix<=maxflavour(); ++ix) {
-    a_nlo=getParticleData( ix);
-    wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
-    wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
-    wqg              += wqgreal+wqgcollin;
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    a_nlo=getParticleData(minus_ix);
-    wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
-    wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
-    wqg              += wqgreal+wqgcollin;
-  }
-  // q qbar + qbar q contributions
-  double wqqbarreal(0.), wqqbar(0.);
-  for(int ix=1; ix<=maxflavour(); ++ix) {
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    a_nlo=getParticleData( ix);
-    b_nlo=getParticleData(minus_ix);
-    wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qqbar_on_x(a_nlo,b_nlo,xt_,y_);
-    wqqbar       += wqqbarreal;
-    a_nlo=getParticleData(minus_ix);
-    b_nlo=getParticleData( ix);
-    wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qbarq_on_x(a_nlo,b_nlo,xt_,y_);
-    wqqbar       += wqqbarreal;
-  }
-  // total
-  wgt                 = 1.+(wgg+wgq+wqg+wqqbar);
+  b_nlo=b_lo_;
+  double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_, 1.);
+  double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo,xt_,y_);
+  double wgqb       = wgqbreal+wgqbcollin;
+  // total contribution
+  wgt                 = 1.+(wqqb+wgqb+wqg);
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
@@ -263,8 +224,11 @@ void MEPP2VVPowheg::get_born_variables() const {
   p2_    = sHat();
   s2_    = p2_;
   if(meMomenta().size()==4) {
-    p12_    = meMomenta()[1].m2();
-    p22_    = meMomenta()[2].m2();
+    k12_    = meMomenta()[2].m2();
+    k22_    = meMomenta()[3].m2();
+//    cout << "\n\n";
+//    cout << "sqrt(k12_): " << sqrt(k12_)/GeV << endl;
+//    cout << "sqrt(k22_): " << sqrt(k22_)/GeV << endl;
     theta1_= acos(meMomenta()[2].z()/meMomenta()[2].vect().mag());
     theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
   }
@@ -347,46 +311,6 @@ double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
 	 );
 }
 
-double MEPP2VVPowheg::Ctilde_Ltilde_gg_on_x(tcPDPtr a, tcPDPtr b, 
-					       double xt, double y ) const {
-  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gg::y value not allowed."; }
-  if(y== 1.&&a->id()!=21) 
-    cout << "\nCtilde_gg::for Cgg^plus  a must be a gluon! id = " 
-	 << a->id() << "\n";
-  if(y==-1.&&b->id()!=21) 
-    cout << "\nCtilde_gg::for Cgg^minus b must be a gluon! id = " 
-	 << b->id() << "\n";
-  double x_pm      = x(xt,y);
-  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	   + 2.*log(1.-xt)/(1.-xt)
-           )*2.*CF_*(x_pm+sqr(1.-x_pm)/x_pm+x_pm*sqr(1.-x_pm))
-
-	 )*Lhat_ab(a,b,x_pm,y) / x_pm
-       - ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())     )+4.*log(etabar_pm)/(1.-xt)
-	   + 2.*log(1.-xt)/(1.-xt)
-	   )*2.*CF_
-	 );
-}
-
-double MEPP2VVPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b, 
-					       double xt, double y ) const {
-  if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
-  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
-    cout << "\nCtilde_qg::for Cqg^plus  a must be a quark! id = " 
-	 << a->id() << "\n";
-  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
-    cout << "\nCtilde_qg::for Cqg^minus b must be a quark! id = "
-	 << b->id() << "\n";
-  double x_pm      = x(xt,y);
-  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	   + 2.*log(1.-xt)/(1.-xt)
-           )*(1.-x_pm)*CF_*(1.+sqr(1.-x_pm))/x_pm
-	 + sqr(etabar_pm)*CF_*x_pm
-	 )*Lhat_ab(a,b,x_pm,y) / x_pm;
-}
-
 double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b, 
 					       double xt, double y ) const {
   if(y!= 1.&&y!=-1.) { cout << "\nCtilde_gq::y value not allowed."; }
@@ -405,156 +329,59 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
 	 )*Lhat_ab(a,b,x_pm,y) / x_pm;
 }
 
-double MEPP2VVPowheg::M_V_regular() const {
-  return alphaS_/2./Constants::pi*CF_*
-                        (  11./3.
-			+  4.*sqr(Constants::pi)/3.
-			- (4.*Constants::pi*CF_/CF_)*log(p2_/sqr(mu_UV()))
-			)*lo_me2_;
-}
-
-Energy2 MEPP2VVPowheg::t_u_M_R_qqbar(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*32./9./sqr(p2_)/s(xt,y)*tk(xt,y)*uk(xt,y)
-           *( sqr(tk(xt,y)) + sqr(uk(xt,y))
-            )*lo_me2_;
-}
-
-Energy2 MEPP2VVPowheg::t_u_M_R_qbarq(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*32./9./sqr(p2_)/s(xt,y)*uk(xt,y)*tk(xt,y)
-           *( sqr(uk(xt,y)) + sqr(tk(xt,y))
-            )*lo_me2_;
-}
-
-Energy2 MEPP2VVPowheg::t_u_M_R_gg(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*3./sqr(p2_)/s(xt,y)
-           *( sqr(sqr(p2_    )) + sqr(sqr(s( xt,y)))
-	    + sqr(sqr(tk(xt,y))) + sqr(sqr(uk(xt,y)))
-            )*lo_me2_;
-}
-
-Energy2 MEPP2VVPowheg::t_u_M_R_qg(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)*uk(xt,y)
-           *( sqr(s(xt,y)) + sqr(uk(xt,y))
-            )*lo_me2_;
-}
-
-Energy2 MEPP2VVPowheg::t_u_M_R_gq(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)*tk(xt,y)
-           *( sqr(s(xt,y)) + sqr(tk(xt,y))
-            )*lo_me2_;
-}
-
-double MEPP2VVPowheg::Rtilde_Ltilde_qqbar_on_x(tcPDPtr a , tcPDPtr b,
-					     double  xt, double y ) const {
+double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b,
+				           double  xt, double y ) const {
   return ( ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qqbar(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_qqb(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt , 1.)
-	   * t_u_M_R_qqbar(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+	   * t_u_M_R_qqb(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qqbar( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_qqb( 1.,y  )
 
-	   + 1./s( 1., 1.) * t_u_M_R_qqbar( 1., 1.)
+	   + 1./s( 1., 1.) * t_u_M_R_qqb( 1., 1.)
 
            )*2./(1.-y)/(1.-xt)
 	 + ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qqbar(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_qqb(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt ,-1.)
-	   * t_u_M_R_qqbar(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+	   * t_u_M_R_qqb(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qqbar( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_qqb( 1.,y  )
 
-	   + 1./s( 1.,-1.) * t_u_M_R_qqbar( 1.,-1.)
+	   + 1./s( 1.,-1.) * t_u_M_R_qqb( 1.,-1.)
 
            )*2./(1.+y)/(1.-xt)
 	 ) / lo_me2_ / 8. / Constants::pi / alphaS_;
 }
 
-double MEPP2VVPowheg::Rtilde_Ltilde_qbarq_on_x(tcPDPtr a , tcPDPtr b,
+double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b, 
 					     double  xt, double y ) const {
   return ( ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qbarq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_gqb(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt , 1.)
-	   * t_u_M_R_qbarq(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+	   * t_u_M_R_gqb(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qbarq( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_gqb( 1.,y  )
 
-	   + 1./s( 1., 1.) * t_u_M_R_qbarq( 1., 1.)
+	   + 1./s( 1., 1.) * t_u_M_R_gqb( 1., 1.)
 
            )*2./(1.-y)/(1.-xt)
 	 + ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qbarq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_gqb(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt ,-1.)
-	   * t_u_M_R_qbarq(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+	   * t_u_M_R_gqb(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qbarq( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_gqb( 1.,y  )
 
-	   + 1./s( 1.,-1.) * t_u_M_R_qbarq( 1.,-1.)
-
-           )*2./(1.+y)/(1.-xt)
-	 ) / lo_me2_ / 8. / Constants::pi / alphaS_;
-}
-
-double MEPP2VVPowheg::Rtilde_Ltilde_gg_on_x(tcPDPtr a , tcPDPtr b, 
-					     double  xt, double y ) const {
-  return ( ( 
-	     1./s(xt ,y  )
-	   * t_u_M_R_gg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
-
-  	   - 1./s(xt , 1.)
-	   * t_u_M_R_gg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
-
-	   - 1./s( 1.,y  ) * t_u_M_R_gg( 1.,y  )
-
-	   + 1./s( 1., 1.) * t_u_M_R_gg( 1., 1.)
-
-           )*2./(1.-y)/(1.-xt)
-	 + ( 
-	     1./s(xt ,y  )
-	   * t_u_M_R_gg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
-
-  	   - 1./s(xt ,-1.)
-	   * t_u_M_R_gg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
-
-	   - 1./s( 1.,y  ) * t_u_M_R_gg( 1.,y  )
-
-	   + 1./s( 1.,-1.) * t_u_M_R_gg( 1.,-1.)
-
-           )*2./(1.+y)/(1.-xt)
-	 ) / lo_me2_ / 8. / Constants::pi / alphaS_;
-}
-
-double MEPP2VVPowheg::Rtilde_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b, 
-					     double  xt, double y ) const {
-  return ( ( 
-	     1./s(xt ,y  )
-	   * t_u_M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
-
-  	   - 1./s(xt , 1.)
-	   * t_u_M_R_qg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
-
-	   - 1./s( 1.,y  ) * t_u_M_R_qg( 1.,y  )
-
-	   + 1./s( 1., 1.) * t_u_M_R_qg( 1., 1.)
-
-           )*2./(1.-y)/(1.-xt)
-	 + ( 
-	     1./s(xt ,y  )
-	   * t_u_M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
-
-  	   - 1./s(xt ,-1.)
-	   * t_u_M_R_qg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
-
-	   - 1./s( 1.,y  ) * t_u_M_R_qg( 1.,y  )
-
-	   + 1./s( 1.,-1.) * t_u_M_R_qg( 1.,-1.)
+	   + 1./s( 1.,-1.) * t_u_M_R_gqb( 1.,-1.)
 
            )*2./(1.+y)/(1.-xt)
 	 ) / lo_me2_ / 8. / Constants::pi / alphaS_;
@@ -589,6 +416,31 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b,
          ) / lo_me2_ / 8. / Constants::pi / alphaS_;
 } 
 
+double MEPP2VVPowheg::M_V_regular() const {
+  return alphaS_/2./Constants::pi*CF_*
+                        (  11./3.
+			+  4.*sqr(Constants::pi)/3.
+			- (4.*Constants::pi*CF_/CF_)*log(p2_/sqr(mu_UV()))
+			)*lo_me2_;
+}
+
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*32./9./sqr(p2_)/s(xt,y)*tk(xt,y)*uk(xt,y)
+           *( sqr(tk(xt,y)) + sqr(uk(xt,y))
+            )*lo_me2_;
+}
+
+Energy2 MEPP2VVPowheg::t_u_M_R_qg(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)*uk(xt,y)
+           *( sqr(s(xt,y)) + sqr(uk(xt,y))
+            )*lo_me2_;
+}
+
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb(double xt, double y) const {
+  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)*tk(xt,y)
+           *( sqr(s(xt,y)) + sqr(tk(xt,y))
+            )*lo_me2_;
+}
 
 
 
