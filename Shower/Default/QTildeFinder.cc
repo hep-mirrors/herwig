@@ -26,11 +26,13 @@ ClassDescription<QTildeFinder> QTildeFinder::initQTildeFinder;
 // Definition of the static class description member.
 
 void QTildeFinder::persistentOutput(PersistentOStream & os) const {
-  os << _finalFinalConditions << _initialFinalDecayConditions;
+  os << _finalFinalConditions << _initialFinalDecayConditions
+     << _initialInitialConditions;
 }
 
 void QTildeFinder::persistentInput(PersistentIStream & is, int) {
-  is >> _finalFinalConditions >> _initialFinalDecayConditions;
+  is >> _finalFinalConditions >> _initialFinalDecayConditions
+     >>_initialInitialConditions;
 }
 
 void QTildeFinder::Init() {
@@ -84,6 +86,27 @@ void QTildeFinder::Init() {
     (interfaceInitialFinalDecayConditions,
      "Smooth",
      "Smooth matching in the soft limit",
+     2);
+
+  static Switch<QTildeFinder,unsigned int> interfaceInitialInitialConditions
+    ("InitialInitialConditions",
+     "The initial conditions for the shower of an initial-initial"
+     " colour connection.",
+     &QTildeFinder::_initialInitialConditions, 0, false, false);
+  static SwitchOption interfaceInitialInitialConditionsSymmetric
+    (interfaceInitialInitialConditions,
+     "Symmetric",
+     "The symmetric choice",
+     0);
+  static SwitchOption interfaceInitialInitialConditionsMaximiseB
+    (interfaceInitialInitialConditions,
+     "MaximiseB",
+     "Maximal radiation from parton b",
+     1);
+  static SwitchOption interfaceInitialInitialConditionsMaximiseC
+    (interfaceInitialInitialConditions,
+     "MaximiseC",
+     "Maximal radiation from parton c",
      2);
 }
 
@@ -157,7 +180,13 @@ calculateInitialInitialScales(const ShowerPPair &ppair) {
   Lorentz5Momentum p(ppair.first->momentum()+ppair.second->momentum());
   p.boost(p.findBoostToCM());
   Energy Q = sqrt(p.m2());
-  return pair<Energy,Energy>(Q,Q);
+  if(_initialInitialConditions==1) {
+    return pair<Energy,Energy>(sqrt(2.0)*Q,sqrt(0.5)*Q);
+  } else if(_initialInitialConditions==2) {
+    return pair<Energy,Energy>(sqrt(0.5)*Q,sqrt(2.0)*Q);
+  } else {
+    return pair<Energy,Energy>(Q,Q);
+  }
 }
 
 pair<Energy,Energy> QTildeFinder::
