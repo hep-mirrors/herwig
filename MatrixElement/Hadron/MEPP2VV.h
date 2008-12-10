@@ -263,7 +263,12 @@ private:
   double scaleFact_;
 
   /**
-   *  Flag to invoke debugging (comparison with MCFM).
+   *  Interfaced flag to turn on / off spin correlations for vector bosons.
+   */
+  unsigned int spinCorrelations_;
+
+  /**
+   *  Interfaced flag to invoke debugging (comparison with MCFM).
    */
   unsigned int debugMCFM_;
 

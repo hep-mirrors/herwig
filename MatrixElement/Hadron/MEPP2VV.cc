@@ -27,7 +27,7 @@ using namespace Herwig;
 
 MEPP2VV::MEPP2VV() : _process(0), _maxflavour(5) ,
     scaleopt_(1),   mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , 
-    scaleFact_(1.), debugMCFM_(0)
+    scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0)
 {}
 
 unsigned int MEPP2VV::orderInAlphaS() const {
@@ -122,6 +122,23 @@ void MEPP2VV::Init() {
      &MEPP2VV::scaleFact_, 1.0, 0.0, 10.0,
      false, false, Interface::limited);
 
+  static Switch<MEPP2VV,unsigned int> interfaceSpinCorrelations
+    ("SpinCorrelations",
+     "Option to remove spin correlation effects in boson decays "
+     " for testing purposes and for generating NLO spin correlations "
+     " by the method of Frixione, Laenen, Motylinski and Webber.",
+     &MEPP2VV::spinCorrelations_, 1, false, false);
+  static SwitchOption interfaceSpinCorrelationsOff
+    (interfaceSpinCorrelations,
+     "Off",
+     "Turning off the spin correlations in the vector boson decays",
+     0);
+  static SwitchOption interfaceSpinCorrelationsOn
+    (interfaceSpinCorrelations,
+     "On",
+     "Turning on  the spin correlations in the vector boson decays",
+     1);
+
   static Switch<MEPP2VV,unsigned int> interfaceDebugMCFM
     ("DebugMCFM",
      "Option to make t-channel propagators massless for WW (as in MCFM)",
@@ -142,13 +159,13 @@ void MEPP2VV::Init() {
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
   os << _vertexFFP << _vertexFFW << _vertexFFZ << _vertexWWW << _process
      << scaleopt_      << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)   
-     << scaleFact_ << debugMCFM_;
+     << scaleFact_ << spinCorrelations_ << debugMCFM_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
   is >> _vertexFFP >> _vertexFFW >> _vertexFFZ >> _vertexWWW >> _process
      >> scaleopt_      >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)  
-     >> scaleFact_  >> debugMCFM_;
+     >> scaleFact_  >> spinCorrelations_ >> debugMCFM_;
 }
 
 Energy2 MEPP2VV::scale() const {
@@ -513,6 +530,7 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 
 
 void MEPP2VV::constructVertex(tSubProPtr sub) {
+  if(!spinCorrelations_) return;
   SpinfoPtr spin[4];
   // Extract the 4 particles in the hard process.
   ParticleVector hard;
