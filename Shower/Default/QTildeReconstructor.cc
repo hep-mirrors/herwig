@@ -326,11 +326,12 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
   if(momConsEq( 0.0, root_s, jets )>0.0*MeV) throw KinematicsReconstructionVeto();
   // if two jets simple solution
   if ( jets.size() == 2 ) {
-    if ( sqr((jets[0].p.x()+jets[1].p.x())/MeV) < 1.e-4 &&
-	 sqr((jets[0].p.y()+jets[1].p.y())/MeV) < 1.e-4 &&
-	 sqr((jets[0].p.z()+jets[1].p.z())/MeV) < 1.e-4 ) {
+    static const Energy2 eps = 1.0e-4 * MeV2;
+    if ( sqr(jets[0].p.x()+jets[1].p.x()) < eps &&
+	 sqr(jets[0].p.y()+jets[1].p.y()) < eps &&
+	 sqr(jets[0].p.z()+jets[1].p.z()) < eps ) {
       Energy test = (jets[0].p+jets[1].p).vect().mag();
-      if(test>1e-4*MeV) throw KinematicsReconstructionVeto();
+      if(test > 1.0e-4 * MeV) throw KinematicsReconstructionVeto();
       Energy2 m1sq(jets[0].q.m2()),m2sq(jets[1].q.m2());
       return sqrt( ( sqr(s - m1sq - m2sq) - 4.*m1sq*m2sq )
 		   /(4.*s*jets[0].p.vect().mag2()) );
@@ -1329,7 +1330,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
 Energy QTildeReconstructor::momConsEq(const double & k, 
 				      const Energy & root_s, 
 				      const JetKinVect & jets) const {
-  static const Energy2 eps=1e-9*GeV2;
+  static const Energy2 eps=1e-8*GeV2;
   Energy dum = Energy();
   for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
     Energy2 dum2 = (it->q).m2() + sqr(k)*(it->p).vect().mag2();
