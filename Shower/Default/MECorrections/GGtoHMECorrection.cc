@@ -22,7 +22,7 @@ const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-
 
 GGtoHMECorrection::GGtoHMECorrection() 
   : _minloop(6),_maxloop(6),_massopt(0),  
-    _channelwgtA(0.45),_channelwgtB(0.15), scaleFact_(1.),
+    _channelwgtA(0.45),_channelwgtB(0.15), alphaScaleOption_(0), scaleFact_(1.),
     _ggpow(1.6), _qgpow(1.6),_enhance(1.1),
     _nover(0),_ntry(0),_ngen(0),
     _maxwgt(0.) {}
@@ -38,12 +38,12 @@ IBPtr GGtoHMECorrection::fullclone() const {
 
 void GGtoHMECorrection::persistentOutput(PersistentOStream & os) const {
   os << _minloop << _maxloop << _massopt << _ggpow << _qgpow << _enhance
-     << _channelwgtA << _channelwgtB << scaleFact_ << _channelweights;
+     << _channelwgtA << _channelwgtB << alphaScaleOption_ << scaleFact_ << _channelweights;
 }
 
 void GGtoHMECorrection::persistentInput(PersistentIStream & is, int) {
   is >> _minloop >> _maxloop >> _massopt >> _ggpow >> _qgpow >> _enhance
-     >> _channelwgtA >> _channelwgtB >> scaleFact_ >> _channelweights;
+     >> _channelwgtA >> _channelwgtB >> alphaScaleOption_ >> scaleFact_ >> _channelweights;
 }
 
 void GGtoHMECorrection::doinit() throw(InitException) {
@@ -121,6 +121,21 @@ void GGtoHMECorrection::Init() {
      "should not affect the results only the efficiency and fraction",
      &GGtoHMECorrection::_channelwgtB, 0.15, 0., 1.e10,
      false, false, Interface::limited);
+
+  static Switch<GGtoHMECorrection,unsigned int> interfaceAlphaScaleOption
+    ("AlphaScaleOption",
+     "Option to use pT or mT in the coupling constant in the hard correction.",
+     &GGtoHMECorrection::alphaScaleOption_, 0, false, false);
+  static SwitchOption interfaceAlphaScaleOptionMT
+    (interfaceAlphaScaleOption,
+     "mT",
+     "Use mT in the coupling constant for the hard correction",
+     0);
+  static SwitchOption interfaceAlphaScaleOptionPT
+    (interfaceAlphaScaleOption,
+     "pT",
+     "Use pT in the coupling constant for the hard correction",
+     1);
 
   static Parameter<GGtoHMECorrection, double> interfaceScaleFactor
     ("ScaleFactor",
@@ -527,7 +542,9 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     // pdf part of the weight
     weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
     // finally coupling and different channel pieces
-    weight *= 1./16./sqr(Constants::pi)*coupling()->value(scale)/_channelweights[0];
+    Energy2 alphaScale(scale);
+    if(alphaScaleOption_==1) alphaScale -= _mh2*sqr(scaleFact_);
+    weight *= 1./16./sqr(Constants::pi)*coupling()->value(alphaScale)/_channelweights[0];
     itype=0;
     iemit = that>uhat ? 0 : 1;
     out = getParticleData(ParticleID::g);
@@ -609,7 +626,9 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
     // pdf part of the weight
     weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
     // finally coupling and different channel pieces
-    weight *= 1./16./sqr(Constants::pi)*coupling()->value(scale);
+    Energy2 alphaScale(scale);
+    if(alphaScaleOption_==1) alphaScale -= _mh2*sqr(scaleFact_);
+    weight *= 1./16./sqr(Constants::pi)*coupling()->value(alphaScale);
   }
   // if me correction should be applied
   if(weight>1.) {

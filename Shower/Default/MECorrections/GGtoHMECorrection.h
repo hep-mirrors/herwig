@@ -332,6 +332,11 @@ private:
   double _channelwgtB;
 
   /**
+   *  Interfaced flag to set the strong coupling constant to pT (0) or mT (1)
+   */
+  unsigned int alphaScaleOption_;
+
+  /**
    *  Prefactor if variable scale used
    */
   double scaleFact_;
