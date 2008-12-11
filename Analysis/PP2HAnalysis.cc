@@ -43,14 +43,34 @@ Histogram Njets_80(0.,10.,10);
 Histogram log_y23(-14.,-4.,100);
 Histogram log_y34(-14.,-4.,100);
 Histogram log_y45(-14.,-4.,100);
-Histogram cos1st(-1.,1.,50);
 Histogram cosjet(-1.,1.,50);
-Histogram cos1st_10(-1.,1.,50);
-Histogram cosjet_10(-1.,1.,50);
-Histogram cos1st_30(-1.,1.,50);
-Histogram cosjet_30(-1.,1.,50);
-Histogram cos1st_100(-1.,1.,50);
-Histogram cosjet_100(-1.,1.,50);
+Histogram cosjet_lt_10(-1.,1.,50);
+Histogram cosjet_lt_30(-1.,1.,50);
+Histogram cosjet_lt_100(-1.,1.,50);
+Histogram cosjet_gt_10(-1.,1.,50);
+Histogram cosjet_gt_30(-1.,1.,50);
+Histogram cosjet_gt_100(-1.,1.,50);
+Histogram cosjet_w(-0.5,0.5,50);
+Histogram cosjet_lt_10_w(-0.5,0.5,50);
+Histogram cosjet_lt_30_w(-0.5,0.5,50);
+Histogram cosjet_lt_100_w(-0.5,0.5,50);
+Histogram cosjet_gt_10_w(-0.5,0.5,50);
+Histogram cosjet_gt_30_w(-0.5,0.5,50);
+Histogram cosjet_gt_100_w(-0.5,0.5,50);
+Histogram cos1st(-1.,1.,50);
+Histogram cos1st_lt_10(-1.,1.,50);
+Histogram cos1st_lt_30(-1.,1.,50);
+Histogram cos1st_lt_100(-1.,1.,50);
+Histogram cos1st_gt_10(-1.,1.,50);
+Histogram cos1st_gt_30(-1.,1.,50);
+Histogram cos1st_gt_100(-1.,1.,50);
+Histogram cos1st_w(-0.5,0.5,50);
+Histogram cos1st_lt_10_w(-0.5,0.5,50);
+Histogram cos1st_lt_30_w(-0.5,0.5,50);
+Histogram cos1st_lt_100_w(-0.5,0.5,50);
+Histogram cos1st_gt_10_w(-0.5,0.5,50);
+Histogram cos1st_gt_30_w(-0.5,0.5,50);
+Histogram cos1st_gt_100_w(-0.5,0.5,50);
 
 void PP2HAnalysis::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
@@ -232,17 +252,43 @@ void PP2HAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
     double cjet   = pjet_gg.cosTheta();
     cos1st.addWeighted(c1st,1.);
     cosjet.addWeighted(cjet,1.);
+    cos1st_w.addWeighted(c1st,1.);
+    cosjet_w.addWeighted(cjet,1.);
     if(ktjets[0].perp()<=10000.) {
-      cos1st_10.addWeighted(c1st,1.);
-      cosjet_10.addWeighted(cjet,1.);
+      cos1st_lt_10.addWeighted(c1st,1.);
+      cosjet_lt_10.addWeighted(cjet,1.);
+      cos1st_lt_10_w.addWeighted(c1st,1.);
+      cosjet_lt_10_w.addWeighted(cjet,1.);
     }
     if(ktjets[0].perp()<=30000.) {
-      cos1st_30.addWeighted(c1st,1.);
-      cosjet_30.addWeighted(cjet,1.);
+      cos1st_lt_30.addWeighted(c1st,1.);
+      cosjet_lt_30.addWeighted(cjet,1.);
+      cos1st_lt_30_w.addWeighted(c1st,1.);
+      cosjet_lt_30_w.addWeighted(cjet,1.);
     }
     if(ktjets[0].perp()<=100000.) {
-      cos1st_100.addWeighted(c1st,1.);
-      cosjet_100.addWeighted(cjet,1.);
+      cos1st_lt_100.addWeighted(c1st,1.);
+      cosjet_lt_100.addWeighted(cjet,1.);
+      cos1st_lt_100_w.addWeighted(c1st,1.);
+      cosjet_lt_100_w.addWeighted(cjet,1.);
+    }
+    if(ktjets[0].perp()>=10000.) {
+      cos1st_gt_10.addWeighted(c1st,1.);
+      cosjet_gt_10.addWeighted(cjet,1.);
+      cos1st_gt_10_w.addWeighted(c1st,1.);
+      cosjet_gt_10_w.addWeighted(cjet,1.);
+    }
+    if(ktjets[0].perp()>=30000.) {
+      cos1st_gt_30.addWeighted(c1st,1.);
+      cosjet_gt_30.addWeighted(cjet,1.);
+      cos1st_gt_30_w.addWeighted(c1st,1.);
+      cosjet_gt_30_w.addWeighted(cjet,1.);
+    }
+    if(ktjets[0].perp()>=100000.) {
+      cos1st_gt_100.addWeighted(c1st,1.);
+      cosjet_gt_100.addWeighted(cjet,1.);
+      cos1st_gt_100_w.addWeighted(c1st,1.);
+      cosjet_gt_100_w.addWeighted(cjet,1.);
     }
   }
 
@@ -432,62 +478,188 @@ void PP2HAnalysis::dofinish() {
 			"   X  X  X  X ",
 			"dS/dLog0101(y0451)",
 			" G     X  X  X  X ");
-  cos1st.normaliseToCrossSection();
-  cos1st.prefactor(cos1st.prefactor()*1.e3);
-  cos1st.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ01st1",
-		        "   GX   X",
-		        "dS/dcosQ01st1 (pb)",
-		        " G     GX   X     ");
   cosjet.normaliseToCrossSection();
   cosjet.prefactor(cosjet.prefactor()*1.e3);
   cosjet.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ0jet1",
-		        "   GX   X",
-		        "dS/dcosQ0jet1 (pb)",
-		        " G     GX   X     ");
-  cos1st_10.normaliseToCrossSection();
-  cos1st_10.prefactor(cos1st_10.prefactor()*1.e3);
-  cos1st_10.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ01st1 (p0T,jet1<10 GeV)",
-		        "   GX   X   X     X        ",
-		        "dS/dcosQ01st1 (pb)",
-		        " G     GX   X     ");
-  cosjet_10.normaliseToCrossSection();
-  cosjet_10.prefactor(cosjet_10.prefactor()*1.e3);
-  cosjet_10.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ0jet1 (p0t,jet1<10 GeV)",
-		        "   GX   X   X     X        ",
-		        "dS/dcosQ0jet1 (pb)",
-		        " G     GX   X     ");
-  cos1st_30.normaliseToCrossSection();
-  cos1st_30.prefactor(cos1st_30.prefactor()*1.e3);
-  cos1st_30.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ01st1 (p0T,jet1<30 GeV)",
-		        "   GX   X   X     X        ",
-		        "dS/dcosQ01st1 (pb)",
-		        " G     GX   X     ");
-  cosjet_30.normaliseToCrossSection();
-  cosjet_30.prefactor(cosjet_30.prefactor()*1.e3);
-  cosjet_30.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ0jet1 (p0t,jet1<30 GeV)",
-		        "   GX   X   X     X        ",
-		        "dS/dcosQ0jet1 (pb)",
-		        " G     GX   X     ");
-  cos1st_100.normaliseToCrossSection();
-  cos1st_100.prefactor(cos1st_100.prefactor()*1.e3);
-  cos1st_100.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ01st1 (p0T,jet1<100 GeV)",
-		        "   GX   X   X     X        ",
-		        "dS/dcosQ01st1 (pb)",
-		        " G     GX   X     ");
-  cosjet_100.normaliseToCrossSection();
-  cosjet_100.prefactor(cosjet_100.prefactor()*1.e3);
-  cosjet_100.topdrawOutput(outfile,Frame,"RED",
- 		        "CosQ0jet1 (p0t,jet1<100 GeV)",
-		        "   GX   X   X     X        ",
-		        "dS/dcosQ0jet1 (pb)",
-		        " G     GX   X     ");
+		       "CosQ0jet1",
+		       "   GX   X",
+		       "dS/dcosQ0jet1 (pb)",
+		       " G     GX   X     ");
+  cosjet_lt_10.normaliseToCrossSection();
+  cosjet_lt_10.prefactor(cosjet_lt_10.prefactor()*1.e3);
+  cosjet_lt_10.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ0jet1 (p0t,jet1<10 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ0jet1 (pb)",
+			     " G     GX   X     ");
+  cosjet_lt_30.normaliseToCrossSection();
+  cosjet_lt_30.prefactor(cosjet_lt_30.prefactor()*1.e3);
+  cosjet_lt_30.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ0jet1 (p0t,jet1<30 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ0jet1 (pb)",
+			     " G     GX   X     ");
+  cosjet_lt_100.normaliseToCrossSection();
+  cosjet_lt_100.prefactor(cosjet_lt_100.prefactor()*1.e3);
+  cosjet_lt_100.topdrawOutput(outfile,Frame,"RED",
+			      "CosQ0jet1 (p0t,jet1<100 GeV)",
+			      "   GX   X   X     X        ",
+			      "dS/dcosQ0jet1 (pb)",
+			      " G     GX   X     ");
+  cosjet_gt_10.normaliseToCrossSection();
+  cosjet_gt_10.prefactor(cosjet_gt_10.prefactor()*1.e3);
+  cosjet_gt_10.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ0jet1 (p0t,jet1>10 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ0jet1 (pb)",
+			     " G     GX   X     ");
+  cosjet_gt_30.normaliseToCrossSection();
+  cosjet_gt_30.prefactor(cosjet_gt_30.prefactor()*1.e3);
+  cosjet_gt_30.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ0jet1 (p0t,jet1>30 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ0jet1 (pb)",
+			     " G     GX   X     ");
+  cosjet_gt_100.normaliseToCrossSection();
+  cosjet_gt_100.prefactor(cosjet_gt_100.prefactor()*1.e3);
+  cosjet_gt_100.topdrawOutput(outfile,Frame,"RED",
+			      "CosQ0jet1 (p0t,jet1>100 GeV)",
+			      "   GX   X   X     X        ",
+			      "dS/dcosQ0jet1 (pb)",
+			      " G     GX   X     ");
+  cosjet_lt_10_w.normaliseToCrossSection();
+  cosjet_lt_10_w.prefactor(cosjet_lt_10_w.prefactor()*1.e3);
+  cosjet_lt_10_w.topdrawOutput(outfile,Frame,"RED",
+			       "CosQ0jet1 (p0t,jet1<10 GeV)",
+			       "   GX   X   X     X        ",
+			       "dS/dcosQ0jet1 (pb)",
+			       " G     GX   X     ");
+  cosjet_lt_30_w.normaliseToCrossSection();
+  cosjet_lt_30_w.prefactor(cosjet_lt_30_w.prefactor()*1.e3);
+  cosjet_lt_30_w.topdrawOutput(outfile,Frame,"RED",
+			       "CosQ0jet1 (p0t,jet1<30 GeV)",
+			       "   GX   X   X     X        ",
+			       "dS/dcosQ0jet1 (pb)",
+			       " G     GX   X     ");
+  cosjet_lt_100_w.normaliseToCrossSection();
+  cosjet_lt_100_w.prefactor(cosjet_lt_100_w.prefactor()*1.e3);
+  cosjet_lt_100_w.topdrawOutput(outfile,Frame,"RED",
+				"CosQ0jet1 (p0t,jet1<100 GeV)",
+				"   GX   X   X     X        ",
+				"dS/dcosQ0jet1 (pb)",
+				" G     GX   X     ");
+  cosjet_gt_10_w.normaliseToCrossSection();
+  cosjet_gt_10_w.prefactor(cosjet_gt_10_w.prefactor()*1.e3);
+  cosjet_gt_10_w.topdrawOutput(outfile,Frame,"RED",
+			       "CosQ0jet1 (p0t,jet1>10 GeV)",
+			       "   GX   X   X     X        ",
+			       "dS/dcosQ0jet1 (pb)",
+			       " G     GX   X     ");
+  cosjet_gt_30_w.normaliseToCrossSection();
+  cosjet_gt_30_w.prefactor(cosjet_gt_30_w.prefactor()*1.e3);
+  cosjet_gt_30_w.topdrawOutput(outfile,Frame,"RED",
+			       "CosQ0jet1 (p0t,jet1>30 GeV)",
+			       "   GX   X   X     X        ",
+			       "dS/dcosQ0jet1 (pb)",
+			       " G     GX   X     ");
+  cosjet_gt_100_w.normaliseToCrossSection();
+  cosjet_gt_100_w.prefactor(cosjet_gt_100_w.prefactor()*1.e3);
+  cosjet_gt_100_w.topdrawOutput(outfile,Frame,"RED",
+				"CosQ0jet1 (p0t,jet1>100 GeV)",
+				"   GX   X   X     X        ",
+				"dS/dcosQ0jet1 (pb)",
+				" G     GX   X     ");
+  cos1st.normaliseToCrossSection();
+  cos1st.prefactor(cos1st.prefactor()*1.e3);
+  cos1st.topdrawOutput(outfile,Frame,"RED",
+		       "CosQ01st1",
+		       "   GX   X",
+		       "dS/dcosQ01st1 (pb)",
+		       " G     GX   X     ");
+  cos1st_lt_10.normaliseToCrossSection();
+  cos1st_lt_10.prefactor(cos1st_lt_10.prefactor()*1.e3);
+  cos1st_lt_10.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1<10 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_lt_30.normaliseToCrossSection();
+  cos1st_lt_30.prefactor(cos1st_lt_30.prefactor()*1.e3);
+  cos1st_lt_30.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1<30 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_lt_100.normaliseToCrossSection();
+  cos1st_lt_100.prefactor(cos1st_lt_100.prefactor()*1.e3);
+  cos1st_lt_100.topdrawOutput(outfile,Frame,"RED",
+			      "CosQ01st1 (p0T,jet1<100 GeV)",
+			      "   GX   X   X     X        ",
+			      "dS/dcosQ01st1 (pb)",
+			      " G     GX   X     ");
+  cos1st_gt_10.normaliseToCrossSection();
+  cos1st_gt_10.prefactor(cos1st_gt_10.prefactor()*1.e3);
+  cos1st_gt_10.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1>10 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_gt_30.normaliseToCrossSection();
+  cos1st_gt_30.prefactor(cos1st_gt_30.prefactor()*1.e3);
+  cos1st_gt_30.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1>30 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_gt_100.normaliseToCrossSection();
+  cos1st_gt_100.prefactor(cos1st_gt_100.prefactor()*1.e3);
+  cos1st_gt_100.topdrawOutput(outfile,Frame,"RED",
+			      "CosQ01st1 (p0T,jet1>100 GeV)",
+			      "   GX   X   X     X        ",
+			      "dS/dcosQ01st1 (pb)",
+			      " G     GX   X     ");
+  cos1st_lt_10_w.normaliseToCrossSection();
+  cos1st_lt_10_w.prefactor(cos1st_lt_10_w.prefactor()*1.e3);
+  cos1st_lt_10_w.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1<10 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_lt_30_w.normaliseToCrossSection();
+  cos1st_lt_30_w.prefactor(cos1st_lt_30_w.prefactor()*1.e3);
+  cos1st_lt_30_w.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1<30 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_lt_100_w.normaliseToCrossSection();
+  cos1st_lt_100_w.prefactor(cos1st_lt_100_w.prefactor()*1.e3);
+  cos1st_lt_100_w.topdrawOutput(outfile,Frame,"RED",
+			      "CosQ01st1 (p0T,jet1<100 GeV)",
+			      "   GX   X   X     X        ",
+			      "dS/dcosQ01st1 (pb)",
+			      " G     GX   X     ");
+  cos1st_gt_10_w.normaliseToCrossSection();
+  cos1st_gt_10_w.prefactor(cos1st_gt_10_w.prefactor()*1.e3);
+  cos1st_gt_10_w.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1>10 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_gt_30_w.normaliseToCrossSection();
+  cos1st_gt_30_w.prefactor(cos1st_gt_30_w.prefactor()*1.e3);
+  cos1st_gt_30_w.topdrawOutput(outfile,Frame,"RED",
+			     "CosQ01st1 (p0T,jet1>30 GeV)",
+			     "   GX   X   X     X        ",
+			     "dS/dcosQ01st1 (pb)",
+			     " G     GX   X     ");
+  cos1st_gt_100_w.normaliseToCrossSection();
+  cos1st_gt_100_w.prefactor(cos1st_gt_100_w.prefactor()*1.e3);
+  cos1st_gt_100_w.topdrawOutput(outfile,Frame,"RED",
+			      "CosQ01st1 (p0T,jet1>100 GeV)",
+			      "   GX   X   X     X        ",
+			      "dS/dcosQ01st1 (pb)",
+			      " G     GX   X     ");
 
   outfile.close();
 }
