@@ -43,14 +43,16 @@ IBPtr Evolver::fullclone() const {
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions << _ptVetoDefinition
-     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes;
+     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions 
+     << _ptVetoDefinition << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
+     << ounit(_iptmax,GeV) << _vetoes << _y_cut;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions >> _ptVetoDefinition
-     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes;
+     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions 
+     >> _ptVetoDefinition >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) 
+     >> iunit(_iptmax,GeV) >> _vetoes >> _y_cut;
 }
 
 void Evolver::doinitrun() {
@@ -183,8 +185,11 @@ void Evolver::Init() {
   static SwitchOption Durham
     (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
   
+  static SwitchOption Shower
+    (ifaceJetMeasureMode,"Shower","Shower pt", 1);
+  
   static SwitchOption LUCLUS
-    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 1);
+    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 2);
 
   static Parameter<Evolver,double> interfacePtCut
     ("JetCut",
@@ -671,12 +676,46 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
   Energy ptVeto;
   // if set use the y_cut pt veto with the appropriate pt_veto definition
   if( _y_cut > 1. ) ptVeto = _progenitor->maximumpT();
-  else              ptVeto = sqrt(ShowerHandler::currentHandler()
-				  ->lastXCombPtr()->lastS() * _y_cut );
-  if( fb.kinematics && _ptVetoDefinition == 0 ) 
-    ptVeto *= max( fb.kinematics->z(), 1. - fb.kinematics->z() );
-  if(fb.kinematics->pT() > ptVeto)
-    return true;
+  else              ptVeto = sqrt( ShowerHandler::currentHandler()
+				   ->lastXCombPtr()->lastS() * _y_cut );
+  //do durham pt veto
+  if( fb.kinematics && ( _ptVetoDefinition == 0 
+			 || _ptVetoDefinition == 2 ) ){
+    Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
+    Energy pt = fb.kinematics->pT();
+    double z = fb.kinematics->z();
+
+    Energy2 m0 = getParticleData( fb.ids[0] )->constituentMass();
+    Energy2 m1 = getParticleData( fb.ids[1] )->constituentMass();
+    Energy2 m2 = getParticleData( fb.ids[2] )->constituentMass();
+
+    double lambda = sqrt( 1. - 4.*m0/s );
+    double beta1 = 2.*( m1 - sqr(z)*m0 + sqr(pt) )
+      / z / lambda / ( lambda + 1. ) / s;
+    double beta2 = 2.*( m2 - sqr( 1. - z )*m0 + sqr(pt) )
+      / ( 1. - z ) / lambda / ( lambda + 1. ) / s;
+
+    Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
+    Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
+    Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
+    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );;
+
+    double costheta = ( Z1*Z2 - sqr(pt) )
+      / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
+
+    Energy2 kt_measure;
+    if( _ptVetoDefinition == 0 )
+      kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
+    else if( _ptVetoDefinition == 2 )
+      kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
+
+    if( kt_measure > sqr(ptVeto) ) return true;
+  }
+  //normal shower pt veto
+  else{
+    if(fb.kinematics->pT() > ptVeto)
+      return true;
+  }
   // general vetos
   if (fb.kinematics && !_vetoes.empty()) {
     bool vetoed=false;
