@@ -63,13 +63,14 @@ public:
   /**
    *  Constructor from a branching element
    */
-  QTildeSudakovIntegrator(const BranchingElement &, Energy MergeScale, 
-			  unsigned int jetMeasureMode);
+  QTildeSudakovIntegrator(const BranchingElement &, 
+			  unsigned int jetMeasureMode,
+			  Energy2 s);
 
   /**
    *  Return the value
    */
-  double value(Energy qtildemax, Energy qtildemin);
+  double value(Energy qtildemax, Energy qtildemin, Energy pt_cut);
   
   /**
    *  The integrand for the inner integral
@@ -164,6 +165,11 @@ private:
    *  The CKKW merge scale (durham kt)
    */
   mutable Energy mergeScale_;
+
+  /**
+   *  The centre of mass energy squared
+   */
+  Energy2 s_;
 
   /**
    *  The CKKW jet definition begin used

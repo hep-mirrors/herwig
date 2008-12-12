@@ -37,14 +37,14 @@ IBPtr PowhegHandler::fullclone() const {
 
 void PowhegHandler::persistentOutput(PersistentOStream & os) const {
   os  << _alphaS << _sudopt << _sudname << _jetMeasureMode << _allowedInitial
-      << _allowedFinal << _matrixElement << _lepton << _highestMult << _reweightOff <<  _yini 
-      << _alphaSMG << _npoint <<  ounit( _max_qtilde, GeV );
+      << _allowedFinal << _matrixElement << _lepton << _highestMult << _reweightOff << _testSudakovs <<_yini 
+      << _alphaSMG << _npoint <<  ounit( _max_qtilde, GeV ) <<  ounit( _max_pt_cut, GeV ) <<  ounit( _min_pt_cut, GeV );
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
   is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode >> _allowedInitial
-      >> _allowedFinal >> _matrixElement >> _lepton >> _highestMult >> _reweightOff >> _yini 
-      >> _alphaSMG >> _npoint >> iunit( _max_qtilde, GeV );
+      >> _allowedFinal >> _matrixElement >> _lepton >> _highestMult >> _reweightOff >> _testSudakovs >> _yini 
+      >> _alphaSMG >> _npoint >> iunit( _max_qtilde, GeV ), iunit( _max_pt_cut, GeV ), iunit( _min_pt_cut, GeV );
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -90,13 +90,16 @@ void PowhegHandler::Init() {
   static Switch<PowhegHandler, unsigned int> ifaceJetMeasureMode
     ("JetMeasure",
      "Choice of the jet measure algorithm",
-     &PowhegHandler::_jetMeasureMode, 0, false, false);
+     &PowhegHandler::_jetMeasureMode, 1, false, false);
   
   static SwitchOption Durham
     (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
   
+  static SwitchOption ShowerPt
+    (ifaceJetMeasureMode,"ShowerPt","ShowerPt", 1);
+  
   static SwitchOption LUCLUS
-    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 1);
+    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 2);
 
   static Parameter<PowhegHandler,double> interfaceMergeScale
     ("MergeScale",
@@ -157,6 +160,23 @@ void PowhegHandler::Init() {
      "Do Sudakov reweighting",
      false);
 
+  static Switch<PowhegHandler,bool> interfaceTestSudakov
+    ("testSudakov",
+     "Whether to output Sudakov test histograms",
+     &PowhegHandler::_testSudakovs, false, false, false);
+
+  static SwitchOption interfaceTestSudakovOff
+    (interfaceTestSudakov,
+     "Off",
+     "No Sudakov testing",
+     false);
+  static SwitchOption interfaceTestSudakovOn
+    (interfaceTestSudakov,
+     "On",
+     "Do Sudakov testing",
+     true);
+
+
   static Reference<PowhegHandler,MEBase> interfaceMatrixElement
     ("MatrixElement",
      "The matrix element class for the core 2->2 process",
@@ -165,7 +185,7 @@ void PowhegHandler::Init() {
   static Parameter<PowhegHandler,unsigned int> interfaceInterpPoints
     ("InterpolatorPoints",
      "The number of points used for sudakov interpolation tables",
-     &PowhegHandler::_npoint, 100, 0, 1000000,
+     &PowhegHandler::_npoint, 10, 0, 1000000,
      false, false, Interface::limited );
 
   static Parameter<PowhegHandler, Energy> interfaceMaxQTilde
@@ -173,19 +193,31 @@ void PowhegHandler::Init() {
      "The maximum QTilde scale for sudakov interpolation tables",
      &PowhegHandler::_max_qtilde, GeV, 91.2*GeV, 1.*GeV, 1000000.*GeV,
      false, false, Interface::limited);
+
+  static Parameter<PowhegHandler, Energy> interfaceMaxPtCut
+    ("maxPtCut",
+     "The maximum pt cut for sudakov interpolation tables",
+     &PowhegHandler::_max_pt_cut, GeV, 45.6*GeV, 1.*GeV, 1000000.*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<PowhegHandler, Energy> interfaceMinPtCut
+    ("minPtCut",
+     "The minimum pt cut for sudakov interpolation tables",
+     &PowhegHandler::_min_pt_cut, GeV, 0.*GeV, 0.*GeV, 1000000.*GeV,
+     false, false, Interface::limited);
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
-  // cluster the event
+    // cluster the event
   _theHardTree = doClustering( );
- 
+
   // return if fails
   if(!_theHardTree)
     return 0.;
 
   // compute the Sudakov weight
   double SudWgt = _lepton ? sudakovWeight( _theHardTree ) : 1.;
-  
+ 
   //update the sub process
   if(_lepton) {
     ParticleVector outgoing = lastXCombPtr()->subProcess()->outgoing();
@@ -315,105 +347,187 @@ void PowhegHandler::doinitrun() {
 
   _hSud = new_ptr(Histogram(0.,2.,100));
   _halphaS = new_ptr(Histogram(0.,2.,100));
+
+  ofstream sudFileOutput;
+  if(_sudopt==1) sudFileOutput.open(_sudname.c_str());
  
   // integrator for the outer integral
   GaussianIntegrator outer;
   // get the final-state branchings from the evolver
   if(_sudopt!=2) {
-    ofstream sudFileOutput;
-    if(_sudopt==1) sudFileOutput.open(_sudname.c_str());
+   
     for(BranchingList::const_iterator 
 	  it = evolver()->splittingGenerator()->finalStateBranchings().begin();
 	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
    
+      //skip sudakovs involving tops
+      if( abs( it->second.second[0] ) == 6 ||
+	  abs( it->second.second[1] ) == 6 ||
+	  abs( it->second.second[2] ) == 6 ) continue;
+
       Ptr<QTildeSudakovIntegrator>::pointer integrator = 
-	new_ptr( QTildeSudakovIntegrator(it->second, sqrt( _yini * _s ), _jetMeasureMode ) );
-      if(_sudopt==1) sudFileOutput << it->second.first->fullName() << "\t"
-				   << it->second.second[0] << "\t"
-				   << it->second.second[1] << "\t"
-				   << it->second.second[2] << "\n";
+	new_ptr( QTildeSudakovIntegrator(it->second, _jetMeasureMode, _s ) );
+    
       Energy qtildemax = _max_qtilde;
       Energy qtildemin = integrator->minimumScale();
-    
-      vector<double> sud;
-    
-      vector<Energy> scale;
-      sud.push_back(0.); scale.push_back(qtildemin);
+      _min_qtilde = qtildemin;
 
-      Energy currentScale = qtildemin;
-      double fact = pow(qtildemax/qtildemin,1./double(_npoint-1));
-      for(unsigned int ix=1;ix<_npoint;++ix) {
-	currentScale *= fact;
-	double currentSud = integrator->value(currentScale,scale.back());
-	scale.push_back(currentScale);
-	sud.push_back(sud.back()+currentSud);
-      }
-      // convert to the Sudakov
-      for(unsigned int ix=0;ix<sud.size();++ix) {
-	sud[ix] = exp(-sud[ix]);
-      }
-   
-      // construct the Interpolators
-      Interpolator<double,Energy>::Ptr 
-	intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
-      Interpolator<Energy,double>::Ptr 
-	ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
-   
-      _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
+      //initialise sudakov values on grid ij ( pt_i, qtilde_j )
+      vector< double > dummy( _npoint, 0. );
+      vector< vector< double > > sud( _npoint, dummy );
+      vector< Energy > ptCut;
+      vector< Energy > scale;
   
-      if(_sudopt==1) {
-	sudFileOutput << scale.size() << "\n";
-	for(unsigned int ix=0;ix<scale.size();++ix)
-	  sudFileOutput << setprecision(18) << scale[ix]/GeV << "\t" << sud[ix] << "\n";
+      //fill scales at start
+      for( unsigned int ix = 0; ix < _npoint; ++ix ){
+	ptCut.push_back( _min_pt_cut + double( ix ) * ( _max_pt_cut - _min_pt_cut ) / double( _npoint - 1 ) );
+	scale.push_back( qtildemin + double( ix ) * ( qtildemax - qtildemin ) / double( _npoint - 1 ) );
       }
+      //fill sud integrals
+      for( unsigned int ix = 0; ix < _npoint; ++ix ){
+	sud[ix][0] = 0.; 
+	for( unsigned int jx = 1; jx < _npoint; ++jx ) {
+	  double currentSud = integrator->value( scale[ jx ], scale[ jx - 1 ], ptCut[ix] );
+	  sud[ix][jx] = ( sud[ix][ jx - 1 ]  + currentSud );
+	  cerr<< ix<<", "<<jx<<"\t";
+	}
+      }
+      //exponentiate to the Sudakov
+      for( unsigned int ix = 0; ix < _npoint; ++ix ) {
+	for( unsigned int jx = 0; jx < _npoint; ++jx ) {
+	  sud[ix][jx] = exp( - sud[ix][jx] );
+	}
+      }
+
+      //convert the vectors of energy (pt_cut and scales) to vectors of double for interpolator2d
+      vector< double > scale_dbl;
+      vector< double > pt_dbl;
+      for( int ix = 0; ix < _npoint; ++ix ){
+	scale_dbl.push_back( scale[ix] / GeV );
+	pt_dbl.push_back( ptCut[ix] / GeV );
+      }
+      // construct the Interpolator
+      
+      Interpolator2dPtr theInterpolator = new_ptr( Interpolator2d( sud, pt_dbl,
+								   scale_dbl ) );
+      cerr<<"made interpolator \n";
+
+      _fbranchings.insert( make_pair( it->first, theInterpolator ) );
+      
+      //write current sud grid to selected output file
+      if(_sudopt==1) {
+	
+	sudFileOutput << it->second.second[0] << "\t"
+		      << it->second.second[1] << "\t"
+		      << it->second.second[2] << "\n";
+
+	//output the grid size i * j
+	sudFileOutput << pt_dbl.size() << "\t" << scale_dbl.size() << "\n";
+
+	for( unsigned int jx = 0;jx < scale_dbl.size(); ++jx ){
+	  //write a row
+	  for( unsigned int ix = 0; ix < pt_dbl.size(); ++ix ){
+	    sudFileOutput << sud[ix][jx] << "\t";
+	  }
+	  sudFileOutput << "\n";
+	}
+	//output pts in a line
+	for( unsigned int ix = 0; ix < pt_dbl.size(); ++ix ){
+	  sudFileOutput << pt_dbl[ix] << "\t";
+	}
+	sudFileOutput << "\n";
+	//output scales in a line
+	for( unsigned int ix = 0; ix < scale_dbl.size(); ++ix ){
+	  sudFileOutput << scale_dbl[ix] << "\t";
+	}
+	sudFileOutput << "\n";
+      }
+      
     }
     sudFileOutput.close();
   }
+ 
   else {
     CFileLineReader file(_sudname);
     while(file.readline()) {
-      string line = file.getline(), name;
+      string line = file.getline();
       istringstream is;
       is.str(line);
       IdList ids(3);
-      is >> name >> ids[0] >> ids[1] >> ids[2];
+      //GET NAMES AND IDS FROM FIRST LINE 
+      is >> ids[0] >> ids[1] >> ids[2];
+ 
       file.readline();
-      vector<Energy> scale;
-      vector<double> sud;
       unsigned int isize;
-      double temp[2];
+      unsigned int jsize;
+
+      //GET THE NUMBER OF POINTS IN THIS
       is.str(file.getline());
-      is >> isize;
-      for(unsigned int ix=0;ix<isize;++ix) {
+      is >> isize >> jsize;
+
+      //initialise vectors and matrix to the correct size
+      vector< double > dummy( jsize, 0. );
+      vector< vector< double > > sud( isize, dummy );
+      vector< double > pt_dbl( isize );
+      vector< double > scale_dbl( isize );
+      
+      //read in matrix of sud values sud( pt_i, scale_i )
+
+      //read a column- different line is different qtilde
+      for( unsigned int jx = 0; jx < jsize; ++jx ) {
+	//read a horizontal line diferent entry ids different pt
 	file.readline();
 	is.str(file.getline());
-	is >> temp[0] >> temp[1];
-	scale.push_back(temp[0]*GeV);
-	sud.push_back(temp[1]);
+	for( unsigned int ix = 0; ix < isize; ++ix )
+	  is >> sud[ix][jx];
       }
+      //read in pt values
+      file.readline();
+      is.str(file.getline());
+      for( unsigned int ix = 0; ix < isize; ++ix )
+	is >> pt_dbl[ix];
+      file.readline();
+      is.str(file.getline());
+      for( unsigned int jx = 0; jx < jsize; ++jx )
+	is >> scale_dbl[jx];
+
+      //test output of read in values
+      /*
+      //make a test histogram
+      double dy = scale_dbl[1] - scale_dbl[0];
+      for( unsigned int ix = 0; ix < isize; ++ix ) {
+      cout <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\n"
+	   <<"SET FONT DUPLEX\n"
+	   <<"SET ORDER X Y DX \n";
+	for( unsigned int jx = 0; jx < jsize; ++jx ){
+	  cout<< scale_dbl[jx] <<"\t"<< sud[ix][jx] <<"\t"<<dy/2.<<"\n";
+	}
+	cout<<"HIST BLACK \n";
+      }
+      */
+
+      //find branching list with matching ids
       BranchingList::const_iterator it,
 	start = evolver()->splittingGenerator()->finalStateBranchings().lower_bound(ids[0]),
 	end   = evolver()->splittingGenerator()->finalStateBranchings().upper_bound(ids[0]);
-      for(it=start;it!=end;++it) {
-	if(it->second.first->fullName()==name&&
-	   it->second.second[0]==ids[0]&&
-	   it->second.second[1]==ids[1]&&
-	   it->second.second[2]==ids[2]) {
+      for( it = start; it != end; ++it ) {
+	if( it->second.second[0] == ids[0] &&
+	    it->second.second[1] == ids[1] &&
+	    it->second.second[2] == ids[2] ) {
 	  // construct the Interpolators
-	  Interpolator<double,Energy>::Ptr 
-	    intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
-	  Interpolator<Energy,double>::Ptr 
-	    ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
-	  _fbranchings.insert( make_pair( it->first, make_pair( intq, ints ) ) );
+	  Interpolator2dPtr theInterpolator = new_ptr( Interpolator2d( sud, pt_dbl, scale_dbl ) );
+
+	  _fbranchings.insert( make_pair( it->first, theInterpolator ) );
 	  break;
 	}
-      }
-      if(it==end) {
-	//	cerr << "testing fails\n";
+	
+	if( it == end ) {
+	  cerr << "sud read error: could not find correct branching list\n";
+	}
       }
     }
   }
-
+  if( _testSudakovs ) testSudakovs();
 }
 
 void PowhegHandler::doinit() throw(InitException) {
@@ -453,7 +567,7 @@ double PowhegHandler::getJetMeasure(ShowerParticlePtr part_i,
     else
       yij = 2. * sqr( part_i->momentum().e() ) * ( 1. - costheta ) / _s ;
     break;
-  case 1:
+  case 2:
     yij = 2. * sqr( part_i->momentum().e() * part_j->momentum().e() /
 		    ( part_i->momentum().e() + part_j->momentum().e() ) )/_s
       * ( 1. - costheta );
@@ -1322,17 +1436,17 @@ void PowhegHandler::createColourFlow(HardTreePtr tree,
       it!=tree->branchings().end();++it) (**it).fixColours();
 }
 
-double PowhegHandler::Sud( Energy scale, long id ){
+double PowhegHandler::Sud( Energy scale, long id, Energy pt_cut ){
   //upper limit on scale 
   double sudwgt = 1.;
+  //scale cut set to just below max_qtilde to avoid seg fault on boundary
   Energy scale_cut = _max_qtilde;
-  multimap< long, pair < Interpolator<double,Energy>::Ptr,
-    Interpolator<Energy,double>::Ptr >  >::const_iterator cjt;
+  multimap< long, Interpolator2dPtr  >::const_iterator cjt;
   for( cjt =  _fbranchings.lower_bound( abs( id ) );
        cjt != _fbranchings.upper_bound( abs( id ) );
        ++cjt ) {
-    if( scale < scale_cut ) sudwgt *= (* cjt->second.first )( scale );
-    else sudwgt *= (* cjt->second.first )( scale_cut );
+    if( scale < scale_cut ) sudwgt *= (* cjt->second )( pt_cut / GeV, scale / GeV );
+    else sudwgt *= (* cjt->second )( pt_cut / GeV, scale_cut / GeV);
   }
   return sudwgt;
 }
@@ -1358,6 +1472,19 @@ double PowhegHandler::splittingFnWeight( HardTreePtr theTree ){
 
 double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   double SudWgt = 1.;
+
+  Energy kt_cut;
+  if( ! _highestMult ) kt_cut = sqrt( _yini * _s );
+  //this should be set to lowest pt emission
+  else {
+    kt_cut = theTree->lowestPt();
+    if( kt_cut < sqrt( _yini * _s ) ||
+	kt_cut > _max_pt_cut ){
+      cerr<<"error in hardTree::lowestPt() - out of range \n";
+      kt_cut = sqrt( _yini * _s );
+    }
+  }
+
   //external line weight
   for( map< ShowerParticlePtr, HardBranchingPtr >::const_iterator cit = 
 	 theTree->getExternals().begin();
@@ -1374,7 +1501,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
     else{
       scale = cit->first->evolutionScale();
     }
-    SudWgt *= Sud( scale, cit->first->id() );  
+    SudWgt *= Sud( scale, cit->first->id(), kt_cut );  
   }
   if(SudWgt > 1.1) cerr<<"\n\n\nsudakov from externals > 1!!\n\n\n";
   //intermediate line wgts
@@ -1384,9 +1511,9 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
     
     Energy scale =  cit->second.first;
     
-    double internal_wgt = Sud( scale, cit->first );
+    double internal_wgt = Sud( scale, cit->first, kt_cut );
     scale =  cit->second.second;
-    internal_wgt /= Sud( scale, cit->first );
+    internal_wgt /= Sud( scale, cit->first, kt_cut );
     if(internal_wgt > 1.1 || internal_wgt < 0.)cerr<<"\n\nbig internal weight of "<< internal_wgt
 						   <<"\nnum scale = "
 						   <<cit->second.first / GeV
@@ -1467,4 +1594,42 @@ bool PowhegHandler::checkBranching(HardBranchingPtr br) {
   }
   reject |= br->z()<-eps || br->z()>1.+eps;
   return reject;
+}
+
+void PowhegHandler::testSudakovs(){
+  ofstream sudTestOut;
+  Energy deltaQt = 0.5 * GeV;
+  //vector of pts to evaluate at and the colours they should be on plot
+  vector< pair<Energy, string> > thePts;
+  thePts.push_back( make_pair( 0.*GeV, string("BLACK" ) ) );
+  thePts.push_back( make_pair( 2.*GeV, string("RED" ) ) );
+  thePts.push_back( make_pair( 5.*GeV, string("BLUE" ) ) );
+  thePts.push_back( make_pair( 9.12*GeV, string("GREEN" ) ) );
+
+  sudTestOut.open( "sudTest.top" );
+  multimap< long, Interpolator2dPtr  >::const_iterator cjt;
+  for( cjt =  _fbranchings.begin();
+       cjt != _fbranchings.end();
+       ++cjt ) {
+    //loop over pts
+    sudTestOut <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\nSET FONT DUPLEX\n"
+	       <<"TITLE TOP \"Sud Test "<< cjt->first
+	       <<": BLACK-pt=0GeV, RED-pt=2GeV, BLUE-pt=5GeV, GREEN-pt=9.12GeV\" \n"
+	       <<"CASE      \"\" \nTITLE LEFT \"Sud(qtilde)\" \nCASE \" \" \n"
+	       <<"SET ORDER X Y DX \nTITLE BOTTOM \"qtilde / GeV \" \n";
+    for( vector< pair< Energy, string > >::const_iterator cit = thePts.begin();
+	 cit != thePts.end(); ++cit ){ 
+      //output Sud(qt)
+      Energy qtilde = 2.*GeV;
+      //  cerr<<"min qtilde = "<< _min_qtilde / GeV <<"\n";
+      while( qtilde < _max_qtilde ){
+	double sud_val = (*cjt->second)( cit->first / GeV, qtilde / GeV );
+	sudTestOut << qtilde / GeV <<"\t"<< sud_val <<"\t"<< deltaQt / 2. / GeV<<"\n";
+	qtilde += deltaQt;
+      }
+      sudTestOut <<"HIST "<< cit->second <<"\n";
+    }
+  }
+  sudTestOut.close();
+  //output histograms based on the 2d interpolated sudakovs
 }

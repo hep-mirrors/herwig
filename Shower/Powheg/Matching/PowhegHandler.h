@@ -9,6 +9,7 @@
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Utilities/Interpolator.h"
+#include "Herwig++/Utilities/Interpolator2d.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Config/Pointers.h"
@@ -93,10 +94,9 @@ public:
   /**
    * The default constructor.
    */
-  PowhegHandler() : _npoint(100), _sudopt(0), _sudname("sudakov.data"),
-		    _jetMeasureMode(0),_lepton(true), _reweightOff(false),
-		    _highestMult(false),
-		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ) {}
+  PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOff(false), 
+		    _highestMult(false), _testSudakovs(false),
+		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ) {}
 
   /**
    * Perform CKKW reweighting
@@ -122,6 +122,10 @@ public:
    */
   inline Energy getMergeScale() {
     return sqrt( _yini * _s );
+  }
+
+  inline bool highestMult(){
+    return _highestMult;
   }
 
   /**
@@ -237,7 +241,7 @@ private:
    */
   HardTreePtr doClustering( );
   
-  double Sud( Energy scale, long id );
+  double Sud( Energy scale, long id, Energy pt_cut );
 
 
   HardTreePtr generalClustering();
@@ -303,6 +307,11 @@ private:
    */
   PowhegHandler & operator=(const PowhegHandler &);
 
+  /**                                                                                                                                       
+   * Outputs some sudakov test histograms                                                                                     
+   */
+  void testSudakovs();
+
 private:
 
   /**
@@ -323,8 +332,7 @@ private:
   /**
    *  Map containing the sudakovs for the final-state particles
    */
-  multimap< long, pair < Interpolator<Energy,double>::Ptr,
-			 Interpolator<Energy,double>::Ptr>  > _fbranchings;
+  multimap< long, Interpolator2dPtr > _fbranchings;
 
   /**
    *  Pointer to the object calculating the strong coupling
@@ -361,6 +369,10 @@ private:
    */
   bool _highestMult;
 
+  /**                                                                                                   
+   *  Whether the sudakovs should be tested                                                                    
+   */
+  bool _testSudakovs;
 
   /**
    *  The allowed final-state branchings
@@ -401,6 +413,23 @@ private:
    * maximum qtilde scale for sudakov interpolation tables
    */
   Energy _max_qtilde;
+
+  /**
+   * minimum qtilde scale for sudakov interpolation tables
+   */
+  Energy _min_qtilde;
+
+
+  /**                                                                                                                  
+   * maximum pt cut for sudakov interpolation tables                                                  
+   */
+  Energy _max_pt_cut;
+
+  /**                                                                                                   
+   * minimum pt cut for sudakov interpolation tables                                                      
+   */
+  Energy _min_pt_cut;
+
 
 };
 

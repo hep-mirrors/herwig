@@ -1,5 +1,4 @@
-// -*- C++ -*-
-//
+// -*- C++ -*-//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the ExternalHardGenerator class.
 //
@@ -48,24 +47,6 @@ void ExternalHardGenerator::Init() {
      "The cascade handler for Powheg",
      &ExternalHardGenerator::_CKKWh, false, false,
      true, false);
- 
-  static Switch<ExternalHardGenerator, bool> interfaceFixedVeto
-    ("FixedVeto",
-     "Whether to use fixed pt_cut or the softest pt from ME for the shower pt veto",
-     &ExternalHardGenerator::_fixedVeto, true, false, false);
-  
-   static SwitchOption interfaceFixedVetoFixed
-    (interfaceFixedVeto,
-     "Fixed",
-     "Fixed pt_cut",
-     true);
-  
-  static SwitchOption interfaceFixedVetoSoft
-    (interfaceFixedVeto,
-     "Soft",
-     "Pt of softest branching in ME",
-     false);
-
 }
 
 HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
@@ -73,7 +54,7 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   ShowerProgenitorPtr 
     QProgenitor    = tree->outgoingLines().begin()->first,
     QbarProgenitor = tree->outgoingLines().rbegin()->first;
-  if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
+  if(QProgenitor->id()<0) swap(QProgenitor, QbarProgenitor);
 
   // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
@@ -81,15 +62,13 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   Energy kt_merge = _CKKWh->getMergeScale();
 
   Energy veto_pt = kt_merge;
-
-  //if not using fixed pt veto get the pt veto from the hardtree
-  if( !_fixedVeto ) {
-    for(set<HardBranchingPtr>::const_iterator it
-	  =hardtree->branchings().begin();
-	it!=hardtree->branchings().end();++it) {
-      if( (*it)->incoming() ) continue;
-      if( (*it)->children().size() == 2)
-	veto_pt = (*it)->children()[0]->pT();  
+  
+  //fixed veto
+  if(  _CKKWh->highestMult() ){
+    veto_pt = hardtree->lowestPt();
+    if( veto_pt < kt_merge ) {
+      cerr<<"error in hardTree::lowestPt() - out of range \n";
+      veto_pt = kt_merge;
     }
   }
 

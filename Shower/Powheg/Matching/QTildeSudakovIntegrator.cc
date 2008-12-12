@@ -11,30 +11,73 @@ using namespace Herwig;
 
 double QTildeSudakovIntegrator::innerIntegrand(double z) const {
   using Constants::pi;
+
   // compute the pt
   Energy2 pt2=sqr(z*(1.-z))*sqr(qtilde_)-masssquared_[1]*(1.-z)-masssquared_[2]*z;
   if(ids_[0]!=ParticleID::g) pt2+=z*(1.-z)*masssquared_[0];
 
+  
+  //massless veto approximations fo speed
   if( jetMeasureMode_ == 0 ){
     if( pt2 < sqr( max( z, 1. - z ) * mergeScale_ ) ) return 0.;
   }
   else {
     if( pt2 < sqr( mergeScale_ ) ) return 0.;
   }
+  
+  /*
+  Energy2 kt_measure;
 
-  // return the answer
+  //calculate mass dependent kt scale here
+ 
+  if( jetMeasureMode_ == 0 ||  jetMeasureMode_ == 2 ){
+    Energy2 s = s_;
+    Energy pt = sqrt(pt2);
+
+    Energy2 m0 = masssquared_[0];
+    Energy2 m1 = masssquared_[1];
+    Energy2 m2 = masssquared_[2];
+
+    double lambda = sqrt( 1. - 4.*m0/s );
+    double beta1 = 2.*( m1 - sqr(z)*m0 + sqr(pt) )
+      / z / lambda / ( lambda + 1. ) / s;
+    double beta2 = 2.*( m2 - sqr( 1. - z )*m0 + sqr(pt) )
+      / ( 1. - z ) / lambda / ( lambda + 1. ) / s;
+
+    Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
+    Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
+    Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
+    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );;
+
+    double costheta = ( Z1*Z2 - sqr(pt) )
+      / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
+
+    //durham
+    if( jetMeasureMode_ == 0 )
+      kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
+    //luclus
+    else if( jetMeasureMode_ == 2 )
+      kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
+  }
+  else kt_measure = pt2;
+
+  //return 0 if kt measure is less than the mergeScale_
+  if( kt_measure < sqr( mergeScale_ ) ) return 0.;
+  */  
+
   Energy2 t = z*(1.-z)*sqr(qtilde_);
+
   return 0.5/pi*coupling_->value(sqr(z*(1.-z)*qtilde_))*
     splittingFunction_->P(z,t,ids_,true);
 }
 
 QTildeSudakovIntegrator::QTildeSudakovIntegrator(const BranchingElement & br,
-						 Energy MergeScale,
-						 unsigned int jetMeasureMode) {
-  mergeScale_ = MergeScale; 
+						 unsigned int jetMeasureMode,
+						 Energy2 s) {
   jetMeasureMode_ = jetMeasureMode;
   // get the id list
   ids_ = br.second;
+  s_ = s;
   // get the coupling
   coupling_ = br.first->alpha();
   // get the splitting function
@@ -79,10 +122,15 @@ QTildeSudakovIntegrator::QTildeSudakovIntegrator(const BranchingElement & br,
   qtildemin_=sqrt(tmin);
 }
 
-double QTildeSudakovIntegrator::value(Energy qtildemax, Energy qtildemin) {
+double QTildeSudakovIntegrator::value(Energy qtildemax, Energy qtildemin, Energy pt_cut) {
   // create the integrand for the inner integral
+  
   inner_ = InnerSudakovIntegrand(this);
   qtildeh_ = qtildemax;
+  mergeScale_ = pt_cut;
+  // cerr<<"mergescale = "<< mergeScale_ / GeV <<"\t";
+  // cerr<<"between "<< qtildemin / GeV <<" and "<< qtildemax / GeV <<"\t";
+
   double rhomax(0.),rhomin(2.*log(qtildemin/qtildemax));
   return outerIntegrator_.value(*this,rhomin,rhomax);
 }
