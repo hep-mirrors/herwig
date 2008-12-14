@@ -13,7 +13,8 @@ using namespace Herwig;
 HardTree::HardTree(vector<HardBranchingPtr> branchings,
 		   vector<HardBranchingPtr> spacelike) 
   : _branchings(branchings.begin(),branchings.end()),
-    _spacelike (spacelike .begin(),spacelike .end())
+    _spacelike (spacelike .begin(),spacelike .end()),
+    _lowestPt( 999999. * GeV )
 {}
 
 bool HardTree::findNodes() {
@@ -54,7 +55,11 @@ bool HardTree::fillNodes( HardBranchingPtr branch, HardBranchingPtr parentBranch
     fillNodes( branch->children()[0], branch );
     fillNodes( branch->children()[1], branch );
   }
-  else  _theExternals.insert( make_pair( branch->branchingParticle(), parentBranch ) );
+  //external branching found
+  else  {
+    _theExternals.insert( make_pair( branch->branchingParticle(), parentBranch ) );
+    if( parentBranch && ( branch->pT() < _lowestPt ) ) _lowestPt = branch->pT();
+  }
   return true;
 }
 

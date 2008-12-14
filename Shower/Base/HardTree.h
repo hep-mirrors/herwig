@@ -62,6 +62,11 @@ public:
    */
   set<HardBranchingPtr> & incoming() {return _spacelike;}
 
+  /**
+   *  Get LowestPt
+   */
+  Energy lowestPt() const {return _lowestPt;}
+  
  /**
   * Access the external branchings
   */
@@ -144,6 +149,12 @@ private:
    * their start and end node scale, qtilde.
    */
   map< long, pair< Energy, Energy > > _theInternals;
+
+  /**
+   *  The pt of the softest branching
+   *  This is found by looking at tree end points in fillNodes
+   */
+  Energy _lowestPt;
 
 };
 
