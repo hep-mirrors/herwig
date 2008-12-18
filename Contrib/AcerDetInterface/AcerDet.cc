@@ -65,9 +65,11 @@ extern "C" {
 }
 
 void AcerDet::analyze(tEventPtr event, long ieve, int loop, int state) {
-  // energy unit
-  Energy eunit(GeV);
-  if(HepMC::Units::default_momentum_unit()==HepMC::Units::MEV) eunit = GeV;
+  // check energy unit
+  if(HepMC::Units::default_momentum_unit()!=HepMC::Units::GEV)
+    throw Exception() << "Must be using GeV in HepMC if using AcerDet"
+		      << " in AcerDet::analyze()"
+		      << Exception::runerror;
   // clear storage
   _nphoton=0;
   _photonMomentum.clear();
@@ -89,33 +91,33 @@ void AcerDet::analyze(tEventPtr event, long ieve, int loop, int state) {
   // number of photons and momenta
   _nphoton = acdphot_.nphot;
   for(int ix=0;ix<_nphoton;++ix) {
-    _photonMomentum.push_back(LorentzMomentum(acdphot_.pxphot[ix]*eunit,
-					      acdphot_.pyphot[ix]*eunit,
-					      acdphot_.pzphot[ix]*eunit,
-					      acdphot_.eephot[ix]*eunit));
+    _photonMomentum.push_back(LorentzMomentum(acdphot_.pxphot[ix]*GeV,
+					      acdphot_.pyphot[ix]*GeV,
+					      acdphot_.pzphot[ix]*GeV,
+					      acdphot_.eephot[ix]*GeV));
   }
   // number of leptons, momenta and PDG codes
   _nlepton = acdleptt_.nlept;
   for(int ix=0;ix<_nlepton;++ix) {
-    _leptonMomentum.push_back(LorentzMomentum(acdleptt_.pxlept[ix]*eunit,
-					      acdleptt_.pylept[ix]*eunit,
-					      acdleptt_.pzlept[ix]*eunit,
-					      acdleptt_.eelept[ix]*eunit));
+    _leptonMomentum.push_back(LorentzMomentum(acdleptt_.pxlept[ix]*GeV,
+					      acdleptt_.pylept[ix]*GeV,
+					      acdleptt_.pzlept[ix]*GeV,
+					      acdleptt_.eelept[ix]*GeV));
     _leptonID.push_back(acdleptt_.kflept[ix]);
   }
   // number of jets, momenta and PDG codes
   _njet = acdjets_.njets;
   for(int ix=0;ix<_njet;++ix) {
-    _jetMomentum.push_back(LorentzMomentum(acdjets_.pxjets[ix]*eunit,
-					   acdjets_.pyjets[ix]*eunit,
-					   acdjets_.pzjets[ix]*eunit,
-					   acdjets_.eejets[ix]*eunit));
+    _jetMomentum.push_back(LorentzMomentum(acdjets_.pxjets[ix]*GeV,
+					   acdjets_.pyjets[ix]*GeV,
+					   acdjets_.pzjets[ix]*GeV,
+					   acdjets_.eejets[ix]*GeV));
     _jetID.push_back(acdjets_.kfjets[ix]);
   }
   // missing ET
-  _etcalo     = make_pair(acdmiss_.pxcalo*eunit,acdmiss_.pycalo*eunit);
-  _etneutrino = make_pair(acdmiss_.pxnues*eunit,acdmiss_.pynues*eunit);
-  _etstable   = make_pair(acdmiss_.pxmiss*eunit,acdmiss_.pymiss*eunit);
+  _etcalo     = make_pair(acdmiss_.pxcalo*GeV,acdmiss_.pycalo*GeV);
+  _etneutrino = make_pair(acdmiss_.pxnues*GeV,acdmiss_.pynues*GeV);
+  _etstable   = make_pair(acdmiss_.pxmiss*GeV,acdmiss_.pymiss*GeV);
   delete hepmc;
 }
 
