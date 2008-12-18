@@ -611,6 +611,38 @@ double TopDecayMECorrection::xgc(double xac, double kt,
 
 double TopDecayMECorrection::xginvc0(double xg , double kt) 
 { 
+  // The function xg(kappa_tilde_c,xa) surely, enough, draws a  
+  // line of constant kappa_tilde_c in the xg, xa Dalitz plot. 
+  // Such a function can therefore draw the upper and lower 
+  // edges of the phase space for emission from c (the b-quark).
+  // However, to sample the soft part of the dead zone effectively
+  // we want to generate a value of xg first and THEN distribute
+  // xa in the associated allowed part of the dead zone. Hence, the 
+  // function we want, to define the dead zone in xa for a given
+  // xg, is the inverse of xg(kappa_tilde_c,xa). The full expression 
+  // for xg(kappa_tilde_c,xa) is complicated and, sure enough, 
+  // does not invert. Therefore we try to overestimate the size
+  // of the dead zone initially, rejecting events which do not 
+  // fall exactly inside it afterwards, with the immediate aim 
+  // of getting an approximate version of xg(kappa_tilde_c,xa) 
+  // that can  be inverted. We do this by simply setting c=0 i.e.
+  // the b-quark mass to zero (and the gluon mass of course), in 
+  // the full expression xg(...). The result of inverting this 
+  // function is the output of this routine (a value of xa) hence 
+  // the name xginvc0. xginvc0 is calculated to be,
+  // xginvc0 = (1./3.)*(1.+a+pow((U+sqrt(4.*V*V*V+U*U))/2.,1./3.)
+  //                      -V*pow(2./(U+sqrt(4.*V*V*V+U*U)),1./3.)
+  //                   )
+  // U = 2.*a*a*a - 66.*a*a + 9.*a*kt*xg + 18.*a*kt
+  //   - 66.*a + 27.*kt*xg*xg - 45.*kt*xg +18.*kt +2. ;
+  // V = -1.-a*a-14.*a-3.kt*xg+3.*kt;
+  // This function, as with many functions in this ME correction,
+  // is plagued by cuts that have to handled carefully in numerical 
+  // implementation. We have analysed the cuts and hence we implement 
+  // it in the following way, with a series of 'if' statements. 
+  //
+  // A useful -definition- to know in deriving the v<0 terms is
+  // that tanh^-1(z) = 0.5*(log(1.+z)-log(1.-z)).
   double u,v,output;
   u = 2.*_a*_a*_a-66.*_a*_a
      +9.*xg*kt*_a+18.*kt*_a
@@ -618,11 +650,26 @@ double TopDecayMECorrection::xginvc0(double xg , double kt)
      -45.*xg*kt+18.*kt+2.;
   v = -_a*_a-14.*_a-3.*xg*kt+3.*kt-1.;
   double u2=u*u,v3=v*v*v;
-  if(u>0.&&(-4.*v3-u2)>0.)      output = cos(  atan(sqrt(-4.*v3-u2)/u)/3.);
-  else if(u>0.&&(-4.*v3-u2)<0.) output = cosh(atanh(sqrt( 4.*v3+u2)/u)/3.);
-  else                          output = cos(( atan(sqrt(-4.*v3-u2)/u)
+  if(v<0.) {
+    if(u>0.&&(4.*v3+u2)<0.)      output = cos(  atan(sqrt(-4.*v3-u2)/u)/3.);
+    else if(u>0.&&(4.*v3+u2)>0.) output = cosh(atanh(sqrt( 4.*v3+u2)/u)/3.);
+    else                         output = cos(( atan(sqrt(-4.*v3-u2)/u)
 					       +Constants::pi)/3.);
-  return ( 1.+_a +2.*sqrt(-v)*output)/3.;
+    output *= 2.*sqrt(-v);
+  } else {
+    output = sinh(log((u+sqrt(4.*v3+u2))/(2.*sqrt(v3)))/3.);
+    output *= 2.*sqrt(v);
+  }
+  if(isnan(output)||isinf(output)) {
+      throw Exception() << "TopMECorrection::xginvc0:\n"
+	  << "possible numerical instability detected.\n"
+	  << "\n v = " <<  v << "   u = " << u << "\n4.*v3+u2 = " << 4.*v3+u2
+	  << "\n_a = " << _a << "  ma = " << sqrt(_a*_mt*_mt/GeV2) 
+	  << "\n_c = " << _c << "  mc = " << sqrt(_c*_mt*_mt/GeV2) 
+	  << "\n_g = " << _g << "  mg = " << sqrt(_g*_mt*_mt/GeV2) 
+	  << Exception::eventerror;
+  }
+  return ( 1.+_a +output)/3.;
 }
 
 double TopDecayMECorrection::approxDeadMaxxa(double xg,double ktb,double ktc) 
