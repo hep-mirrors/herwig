@@ -1,0 +1,44 @@
+# -*- Makefile -*- (for emacs)
+
+#
+# This Makefile is intended for compiling Herwig++ plugins
+# You can find plugins here: INSERT URL
+#
+# This Makefile received very little testing, 
+# any bug reports are very welcome!
+#
+
+# location of include files
+THEPEGINCLUDE =
+GSLINCLUDE  =
+HERWIGINCLUDE =
+FC=g77
+HEPMCLIBS = 
+PGSPATH = /home/richardn/montecarlo/fortran/pgs/PGS/
+PGSLIB = -L$(PGSPATH)/lib -lpgslib -lstdhep -lFmcfio -lpythia -ltauola -lherwig
+
+#libexthep.a  lib.a  libpythia.a  lib.a
+
+
+
+INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
+#
+# C++ flags
+# 
+CXX = g++
+CXXFLAGS = -O2
+
+ALLCCFILES=$(shell echo *.cc)
+
+default : HwPGSInterface.so
+
+HwPGSInterface.so : PGSInterface.cc PGSInterface.h  PGSInterface.o
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -shared \
+	PGSInterface.o PGSInterface.cc -o HwPGSInterface.so \
+	$(PGSLIB) $(HEPMCLIBS) -lHepMCfio -lg2c
+
+PGSInterface.o: PGSInterface.f
+	$(FC) -c PGSInterface.f 
+
+clean:
+	rm -f *.o *.so
