@@ -176,6 +176,11 @@ void Evolver::Init() {
      "OneFinalStateEmission",
      "Allow one emission in the final state and none in the initial state",
      2);
+  static SwitchOption interfaceLimitEmissionsHardOnly
+    (interfaceLimitEmissions,
+     "HardOnly",
+     "Only allow radiation from the hard ME correction",
+     3);
 
   static Switch<Evolver, unsigned int> ifaceJetMeasureMode
     ("JetMeasure",
@@ -389,7 +394,8 @@ void Evolver::hardMatrixElementCorrection() {
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
   // don't do anything if not needed
-  if(_limitEmissions == 1 || ( _limitEmissions == 2 && _nfs != 0) ) return false;
+  if(_limitEmissions == 1 || _limitEmissions == 3 || 
+     ( _limitEmissions == 2 && _nfs != 0) ) return false;
   // generate the emission
   Branching fb;
   while (true) {
@@ -441,7 +447,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 bool 
 Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // don't do anything if not needed
-  if(_limitEmissions == 2  || 
+  if(_limitEmissions == 2  || _limitEmissions == 3  ||
      ( _limitEmissions == 1 && _nis != 0 ) ) return false;
   Branching bb;
   // generate branching
@@ -685,9 +691,9 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     Energy pt = fb.kinematics->pT();
     double z = fb.kinematics->z();
 
-    Energy2 m0 = getParticleData( fb.ids[0] )->constituentMass();
-    Energy2 m1 = getParticleData( fb.ids[1] )->constituentMass();
-    Energy2 m2 = getParticleData( fb.ids[2] )->constituentMass();
+    Energy2 m0 = sqr(getParticleData( fb.ids[0] )->constituentMass());
+    Energy2 m1 = sqr(getParticleData( fb.ids[1] )->constituentMass());
+    Energy2 m2 = sqr(getParticleData( fb.ids[2] )->constituentMass());
 
     double lambda = sqrt( 1. - 4.*m0/s );
     double beta1 = 2.*( m1 - sqr(z)*m0 + sqr(pt) )
