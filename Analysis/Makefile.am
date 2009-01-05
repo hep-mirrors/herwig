@@ -63,7 +63,8 @@ HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
-LEPJetAnalysis.cc LEPJetAnalysis.h
+LEPJetAnalysis.cc LEPJetAnalysis.h \
+y23.cc y23.h
 endif
 
 pkglib_LTLIBRARIES += HwZpt.la
