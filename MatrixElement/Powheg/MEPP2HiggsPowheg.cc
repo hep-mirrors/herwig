@@ -172,6 +172,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
   if(!(lastPartons().first ->dataPtr()==a_lo_&&
        lastPartons().second->dataPtr()==b_lo_)) {
     swap(xbp_     ,xbm_     );
+    swap(etabarp_ ,etabarm_ );
     swap(hadron_A_,hadron_B_);
   }
 

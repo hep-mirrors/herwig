@@ -226,9 +226,9 @@ void MEPP2VVPowheg::get_born_variables() const {
   if(meMomenta().size()==4) {
     k12_    = meMomenta()[2].m2();
     k22_    = meMomenta()[3].m2();
-//    cout << "\n\n";
-//    cout << "sqrt(k12_): " << sqrt(k12_)/GeV << endl;
-//    cout << "sqrt(k22_): " << sqrt(k22_)/GeV << endl;
+    cout << "\n\n";
+    cout << "sqrt(k12_): " << sqrt(k12_)/GeV << endl;
+    cout << "sqrt(k22_): " << sqrt(k22_)/GeV << endl;
     theta1_= acos(meMomenta()[2].z()/meMomenta()[2].vect().mag());
     theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
   }
