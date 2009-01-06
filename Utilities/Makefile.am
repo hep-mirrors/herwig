@@ -2,7 +2,7 @@ noinst_LTLIBRARIES = libHwUtils.la
 libHwUtils_la_SOURCES = \
 EnumParticles.h \
 Interpolator.tcc Interpolator.h \
-Interpolator2d.cc Interpolator2d.h \
+Interpolator2d.tcc Interpolator2d.h \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \
 Maths.h Maths.icc Maths.cc \

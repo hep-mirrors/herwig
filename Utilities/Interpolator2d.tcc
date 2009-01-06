@@ -10,8 +10,6 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Interpolator class.
 //
-
-#include "Interpolator2d.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -20,30 +18,34 @@
 using namespace Herwig;
 using namespace std;
 
-void Interpolator2d::persistentOutput(PersistentOStream & os) const {
+template <typename ValT, typename Arg1T, typename Arg2T>
+void Interpolator2d<ValT,Arg1T,Arg2T>::persistentOutput(PersistentOStream & os) const {
+}
+template <typename ValT, typename Arg1T, typename Arg2T>
+void Interpolator2d<ValT,Arg1T,Arg2T>::persistentInput(PersistentIStream & is, int) {
 }
 
-void Interpolator2d::persistentInput(PersistentIStream & is, int) {
-}
-
-//Interpolator2d::initInterpolator2d;
 // Definition of the static class description member.
-
-void Interpolator2d::Init() {
+template <typename ValT, typename Arg1T, typename Arg2T>
+void Interpolator2d<ValT,Arg1T,Arg2T>::Init() {
   static ClassDocumentation< Interpolator2d > documentation
     ("The Interpolator2d class is designed to interpolate a 2d table of values");
 }
 
-double Interpolator2d::operator ()(double x1, double x2) const {
+template <typename ValT, typename Arg1T, typename Arg2T>
+ValT Interpolator2d<ValT,Arg1T,Arg2T>::operator ()(Arg1T x1_u, Arg2T x2_u) const {
+  //divide out units
+  double x1 = x1_u / _x1unit;
+  double x2 = x2_u / _x2unit;
+
   //find which grid (i,j) we are in and get the coefficients of that ij
   int i = int( ( x1 - _x1_points[0] ) / _dx1 );
   int j = int( ( x2 - _x2_points[0] ) / _dx2 );
 
   //grid square is labelled by i,j and include i+1,j i+1,j+1, i,j+1
   //so there are i-1 * j-1 squares
-
-  if( i > _the_weights.size() - 2 || i <  0 
-      || j > _the_weights[0].size() - 2 || j < 0 ){
+  if( i > _the_weights.size() - 1 || i <  0 
+      || j > _the_weights[0].size() - 1 || j < 0 ){
     cerr<< "out of range at ("<<x1<<","<<x2<<") at ("<<i<<","<<j<<")\n";
     cerr<<"weights x size = "<< _the_weights.size()<<"\n"; 
     cerr<<"weights y size = "<< _the_weights[0].size()<<"\n"; 
@@ -53,7 +55,6 @@ double Interpolator2d::operator ()(double x1, double x2) const {
     cerr<<"dx2 = "<< _dx2 <<"\n";
     cerr<<"x1 min = "<<  _x1_points[0]<<", x1 max = "<<_x1_points[ _x1_points.size() - 1]<<"\n";
     cerr<<"x2 min = "<<  _x2_points[0]<<", x2 max = "<<_x2_points[ _x2_points.size() - 1]<<"\n";
-
     return 0.;
   }
   
@@ -73,40 +74,37 @@ double Interpolator2d::operator ()(double x1, double x2) const {
   //return c_kl t^k u^l
   double result = 0.;
   //
-  for(int k = 0; k < 4; k++ ){
+  for( int k = 0; k < 4; k++ ){
     for( int l = 0; l < 4; l++ )
       result += _coefficients[i][j][k][l] * pow( t, k ) * pow( u, l );
   }
-  return result;
+  return result * _funit;
 }
 
+template <typename ValT, typename Arg1T, typename Arg2T>
+Interpolator2d<ValT,Arg1T,Arg2T>::Interpolator2d( const vector< vector< ValT > > & the_weights_u, 
+						  const vector< Arg1T > & x1_points_u,
+						  const vector< Arg2T >  & x2_points_u ):
+  _funit( TypeTraits<ValT>::baseunit ), _x1unit( TypeTraits<Arg1T>::baseunit ),
+  _x2unit( TypeTraits<Arg2T>::baseunit ), _x1_points( x1_points_u.size() ), 
+  _x2_points( x2_points_u.size() )
+{
+  //initialise wgts to correct size
+  vector< double > dummy_column( the_weights_u[0].size(), 0. );
+  vector< vector < double > > dummy_weights
+    ( the_weights_u.size(), dummy_column );
+  _the_weights = dummy_weights;
 
-void Interpolator2d::gridHists(){
-  ofstream gridOut( "grid.out" );
-
-   //make a test histogram
-  for( unsigned int ix = 0; ix < _x1_points.size(); ++ix ) {
-    gridOut <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\n"
-	    <<"SET FONT DUPLEX\n"
-	    <<"SET ORDER X Y DX \n";
-    for( unsigned int jx = 0; jx <  _x2_points.size(); ++jx ){
-      gridOut<< _x2_points[jx] <<"\t"<< _the_weights[ix][jx] <<"\t"<<_dx2/2.<<"\n";
-    }
-    gridOut<<"HIST BLACK \n";
+  //divide out units
+  for(unsigned int i = 0; i < x1_points_u.size(); i++){
+    _x1_points[i] = x1_points_u[i] / _x1unit;
+    for(unsigned int j = 0; j < x2_points_u.size(); j++)
+      _the_weights[i][j] = the_weights_u[i][j] / _funit;
   }
-  gridOut.close();
+  for(unsigned int j = 0; j < x2_points_u.size(); j++) _x2_points[j] = x2_points_u[j] / _x2unit;
 
-}
-
-
-Interpolator2d::Interpolator2d( const vector< vector< double > > & the_weights, 
-				const vector< double > & x1_points,
-				const vector< double > & x2_points ){
-  _the_weights = the_weights;
-  _x1_points = x1_points;
-  _x2_points = x2_points; 
-  _dx1 = x1_points[1] - x1_points[0];
-  _dx2 = x2_points[1] - x2_points[0];
+  _dx1 = _x1_points[1] - _x1_points[0];
+  _dx2 = _x2_points[1] - _x2_points[0];
 
   //create the magic matrix
   int wt_d[16][16] =
@@ -157,15 +155,16 @@ Interpolator2d::Interpolator2d( const vector< vector< double > > & the_weights,
   _coefficients = coefficients;
 
   //fill coefficients
-  for( int i = 0; i < _the_weights.size() - 1; i++ ){
-    for( int j = 0; j < _the_weights[0].size() - 1; j++ ){
+  for( unsigned int i = 0; i < _the_weights.size() - 1; i++ ){
+    for( unsigned int j = 0; j < _the_weights[0].size() - 1; j++ ){
       _coefficients[i][j] = getCoefficient( i, j );
     }
   }
 }
 
-
-vector< vector< double > > Interpolator2d::getCoefficient( unsigned int i, unsigned int j ){
+template <typename ValT, typename Arg1T, typename Arg2T>
+vector< vector< double > > Interpolator2d<ValT,Arg1T,Arg2T>::
+getCoefficient( unsigned int i, unsigned int j ){
   //initialise the coefficient 4*4 matrix that is to be returned
   vector< double > dummy1( 4, 0 );
   vector< vector< double > > theCoeff( 4, dummy1 );
@@ -217,7 +216,8 @@ vector< vector< double > > Interpolator2d::getCoefficient( unsigned int i, unsig
   return theCoeff;
 }
 
-vector< vector< double > > Interpolator2d::findDerivX1(){
+template <typename ValT, typename Arg1T, typename Arg2T>
+vector< vector< double > > Interpolator2d<ValT,Arg1T,Arg2T>::findDerivX1(){
   vector< double > dummy( _the_weights[0].size(), 0. );
   vector< vector< double > > deriv( _the_weights.size(), dummy );
   for( unsigned int i = 0; i < _the_weights.size(); i++ ){
@@ -240,7 +240,8 @@ vector< vector< double > > Interpolator2d::findDerivX1(){
   return deriv;
 }
 
-vector< vector< double > > Interpolator2d::findDerivX2(){
+template <typename ValT, typename Arg1T, typename Arg2T>
+vector< vector< double > > Interpolator2d<ValT,Arg1T,Arg2T>::findDerivX2(){
   vector< double > dummy( _the_weights[0].size(), 0. );
   vector< vector< double > > deriv( _the_weights.size(), dummy );
   //loop over all of grid but not edges (cannot find derivs here
@@ -263,7 +264,8 @@ vector< vector< double > > Interpolator2d::findDerivX2(){
   return deriv;
 }
 
-vector< vector< double > > Interpolator2d::findDerivX1X2(){
+template <typename ValT, typename Arg1T, typename Arg2T>
+vector< vector< double > > Interpolator2d<ValT,Arg1T,Arg2T>::findDerivX1X2(){
   vector< double > dummy( _the_weights[0].size(), 0. );
   vector< vector< double > > deriv( _the_weights.size(), dummy );
   //loop over all of grid but not edges (cannot find derivs here
@@ -286,7 +288,6 @@ vector< vector< double > > Interpolator2d::findDerivX1X2(){
 	    / _dx1 / _dx2;
 	}
 	else{
-	  //is the sign correct here??
 	  deriv[i][j] = - ( _the_weights[i][j] - _the_weights[i-1][j+1] ) 
 	    / _dx1 / _dx2;
 	}
