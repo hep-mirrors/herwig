@@ -370,7 +370,6 @@ void PowhegHandler::doinitrun() {
     
       Energy qtildemax = _max_qtilde;
       Energy qtildemin = integrator->minimumScale();
-      _min_qtilde = qtildemin;
 
       //initialise sudakov values on grid ij ( pt_i, qtilde_j )
       vector< double > dummy( _npoint, 0. );
@@ -389,7 +388,6 @@ void PowhegHandler::doinitrun() {
 	for( unsigned int jx = 1; jx < _npoint; ++jx ) {
 	  double currentSud = integrator->value( scale[ jx ], scale[ jx - 1 ], ptCut[ix] );
 	  sud[ix][jx] = ( sud[ix][ jx - 1 ]  + currentSud );
-	  cerr<< ix<<", "<<jx<<"\t";
 	}
       }
       //exponentiate to the Sudakov
@@ -399,20 +397,10 @@ void PowhegHandler::doinitrun() {
 	}
       }
 
-      //convert the vectors of energy (pt_cut and scales) to vectors of double for interpolator2d
-      vector< double > scale_dbl;
-      vector< double > pt_dbl;
-      for( int ix = 0; ix < _npoint; ++ix ){
-	scale_dbl.push_back( scale[ix] / GeV );
-	pt_dbl.push_back( ptCut[ix] / GeV );
-      }
-      // construct the Interpolator
-      
-      Interpolator2dPtr theInterpolator = new_ptr( Interpolator2d( sud, pt_dbl,
-								   scale_dbl ) );
-      cerr<<"made interpolator \n";
+      Interpolator2d< double, Energy, Energy >::Ptr theInterpolator = 
+	new_ptr( Interpolator2d<double,Energy,Energy>( sud, ptCut, scale ) );
 
-      _fbranchings.insert( make_pair( it->first, theInterpolator ) );
+      _fbranchings.insert( make_pair( it->first, make_pair( theInterpolator, qtildemin ) ) );
       
       //write current sud grid to selected output file
       if(_sudopt==1) {
@@ -422,23 +410,23 @@ void PowhegHandler::doinitrun() {
 		      << it->second.second[2] << "\n";
 
 	//output the grid size i * j
-	sudFileOutput << pt_dbl.size() << "\t" << scale_dbl.size() << "\n";
+	sudFileOutput << ptCut.size() << "\t" << scale.size() << "\n";
 
-	for( unsigned int jx = 0;jx < scale_dbl.size(); ++jx ){
+	for( unsigned int jx = 0;jx < scale.size(); ++jx ){
 	  //write a row
-	  for( unsigned int ix = 0; ix < pt_dbl.size(); ++ix ){
+	  for( unsigned int ix = 0; ix < ptCut.size(); ++ix ){
 	    sudFileOutput << sud[ix][jx] << "\t";
 	  }
 	  sudFileOutput << "\n";
 	}
 	//output pts in a line
-	for( unsigned int ix = 0; ix < pt_dbl.size(); ++ix ){
-	  sudFileOutput << pt_dbl[ix] << "\t";
+	for( unsigned int ix = 0; ix < ptCut.size(); ++ix ){
+	  sudFileOutput << ptCut[ix] / GeV << "\t";
 	}
 	sudFileOutput << "\n";
 	//output scales in a line
-	for( unsigned int ix = 0; ix < scale_dbl.size(); ++ix ){
-	  sudFileOutput << scale_dbl[ix] << "\t";
+	for( unsigned int ix = 0; ix < scale.size(); ++ix ){
+	  sudFileOutput << scale[ix] / GeV << "\t";
 	}
 	sudFileOutput << "\n";
       }
@@ -468,8 +456,8 @@ void PowhegHandler::doinitrun() {
       //initialise vectors and matrix to the correct size
       vector< double > dummy( jsize, 0. );
       vector< vector< double > > sud( isize, dummy );
-      vector< double > pt_dbl( isize );
-      vector< double > scale_dbl( isize );
+      vector< Energy > pt( isize );
+      vector< Energy > scale( jsize );
       
       //read in matrix of sud values sud( pt_i, scale_i )
 
@@ -484,28 +472,19 @@ void PowhegHandler::doinitrun() {
       //read in pt values
       file.readline();
       is.str(file.getline());
-      for( unsigned int ix = 0; ix < isize; ++ix )
-	is >> pt_dbl[ix];
+      for( unsigned int ix = 0; ix < isize; ++ix ){
+	double val;
+	is >> val;
+	pt[ix] = val * GeV;
+      }
       file.readline();
       is.str(file.getline());
-      for( unsigned int jx = 0; jx < jsize; ++jx )
-	is >> scale_dbl[jx];
-
-      //test output of read in values
-      /*
-      //make a test histogram
-      double dy = scale_dbl[1] - scale_dbl[0];
-      for( unsigned int ix = 0; ix < isize; ++ix ) {
-      cout <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\n"
-	   <<"SET FONT DUPLEX\n"
-	   <<"SET ORDER X Y DX \n";
-	for( unsigned int jx = 0; jx < jsize; ++jx ){
-	  cout<< scale_dbl[jx] <<"\t"<< sud[ix][jx] <<"\t"<<dy/2.<<"\n";
-	}
-	cout<<"HIST BLACK \n";
+      for( unsigned int jx = 0; jx < jsize; ++jx ){
+	double val;
+	is >> val;
+	scale[jx] = val * GeV;
       }
-      */
-
+    
       //find branching list with matching ids
       BranchingList::const_iterator it,
 	start = evolver()->splittingGenerator()->finalStateBranchings().lower_bound(ids[0]),
@@ -515,9 +494,10 @@ void PowhegHandler::doinitrun() {
 	    it->second.second[1] == ids[1] &&
 	    it->second.second[2] == ids[2] ) {
 	  // construct the Interpolators
-	  Interpolator2dPtr theInterpolator = new_ptr( Interpolator2d( sud, pt_dbl, scale_dbl ) );
-
-	  _fbranchings.insert( make_pair( it->first, theInterpolator ) );
+	  Interpolator2d< double, Energy, Energy >::Ptr theInterpolator = 
+	    new_ptr( Interpolator2d< double, Energy, Energy >( sud, pt, scale ) );
+	  Energy qtildemin = scale[0];
+	  _fbranchings.insert( make_pair( it->first, make_pair( theInterpolator, qtildemin ) ) );
 	  break;
 	}
 	
@@ -1441,12 +1421,17 @@ double PowhegHandler::Sud( Energy scale, long id, Energy pt_cut ){
   double sudwgt = 1.;
   //scale cut set to just below max_qtilde to avoid seg fault on boundary
   Energy scale_cut = _max_qtilde;
-  multimap< long, Interpolator2dPtr  >::const_iterator cjt;
+  multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > >::const_iterator cjt;
   for( cjt =  _fbranchings.lower_bound( abs( id ) );
        cjt != _fbranchings.upper_bound( abs( id ) );
        ++cjt ) {
-    if( scale < scale_cut ) sudwgt *= (* cjt->second )( pt_cut / GeV, scale / GeV );
-    else sudwgt *= (* cjt->second )( pt_cut / GeV, scale_cut / GeV);
+    //check to see if we are within qtilde limits before calling interpolator
+    if( scale < scale_cut && scale > cjt->second.second ) 
+      sudwgt *= (* cjt->second.first )( pt_cut, scale );
+    else if ( scale < cjt->second.second )
+      sudwgt *= (* cjt->second.first )( pt_cut, cjt->second.second);
+    else 
+      sudwgt *= (* cjt->second.first )( pt_cut, scale_cut);
   }
   return sudwgt;
 }
@@ -1480,7 +1465,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
     kt_cut = theTree->lowestPt();
     if( kt_cut < sqrt( _yini * _s ) ||
 	kt_cut > _max_pt_cut ){
-      cerr<<"error in hardTree::lowestPt() - out of range \n";
+      //   cerr<<"error in hardTree::lowestPt() - out of range \n";
       kt_cut = sqrt( _yini * _s );
     }
   }
@@ -1604,26 +1589,24 @@ void PowhegHandler::testSudakovs(){
   thePts.push_back( make_pair( 0.*GeV, string("BLACK" ) ) );
   thePts.push_back( make_pair( 2.*GeV, string("RED" ) ) );
   thePts.push_back( make_pair( 5.*GeV, string("BLUE" ) ) );
-  thePts.push_back( make_pair( 9.12*GeV, string("GREEN" ) ) );
+  thePts.push_back( make_pair( 10*GeV, string("GREEN" ) ) );
 
   sudTestOut.open( "sudTest.top" );
-  multimap< long, Interpolator2dPtr  >::const_iterator cjt;
+  multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > >::const_iterator cjt;
   for( cjt =  _fbranchings.begin();
        cjt != _fbranchings.end();
        ++cjt ) {
     //loop over pts
     sudTestOut <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\nSET FONT DUPLEX\n"
 	       <<"TITLE TOP \"Sud Test "<< cjt->first
-	       <<": BLACK-pt=0GeV, RED-pt=2GeV, BLUE-pt=5GeV, GREEN-pt=9.12GeV\" \n"
+	       <<": BLACK-pt=0GeV, RED-pt=2GeV, BLUE-pt=5GeV, GREEN-pt=10GeV\" \n"
 	       <<"CASE      \"\" \nTITLE LEFT \"Sud(qtilde)\" \nCASE \" \" \n"
 	       <<"SET ORDER X Y DX \nTITLE BOTTOM \"qtilde / GeV \" \n";
     for( vector< pair< Energy, string > >::const_iterator cit = thePts.begin();
 	 cit != thePts.end(); ++cit ){ 
-      //output Sud(qt)
-      Energy qtilde = 2.*GeV;
-      //  cerr<<"min qtilde = "<< _min_qtilde / GeV <<"\n";
+      Energy qtilde = cjt->second.second;
       while( qtilde < _max_qtilde ){
-	double sud_val = (*cjt->second)( cit->first / GeV, qtilde / GeV );
+	double sud_val = (*cjt->second.first)( cit->first, qtilde );
 	sudTestOut << qtilde / GeV <<"\t"<< sud_val <<"\t"<< deltaQt / 2. / GeV<<"\n";
 	qtilde += deltaQt;
       }
@@ -1631,5 +1614,4 @@ void PowhegHandler::testSudakovs(){
     }
   }
   sudTestOut.close();
-  //output histograms based on the 2d interpolated sudakovs
 }

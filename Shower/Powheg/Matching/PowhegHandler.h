@@ -332,7 +332,7 @@ private:
   /**
    *  Map containing the sudakovs for the final-state particles
    */
-  multimap< long, Interpolator2dPtr > _fbranchings;
+  multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > > _fbranchings;
 
   /**
    *  Pointer to the object calculating the strong coupling
@@ -419,7 +419,6 @@ private:
    */
   Energy _min_qtilde;
 
-
   /**                                                                                                                  
    * maximum pt cut for sudakov interpolation tables                                                  
    */
@@ -429,7 +428,6 @@ private:
    * minimum pt cut for sudakov interpolation tables                                                      
    */
   Energy _min_pt_cut;
-
 
 };
 
