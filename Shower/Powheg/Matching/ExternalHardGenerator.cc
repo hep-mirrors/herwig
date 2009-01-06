@@ -63,14 +63,10 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   Energy veto_pt = kt_merge;
   
-  //fixed veto
-  if(  _CKKWh->highestMult() ){
-    veto_pt = hardtree->lowestPt();
-    if( veto_pt < kt_merge ) {
-      cerr<<"error in hardTree::lowestPt() - out of range \n";
-      veto_pt = kt_merge;
-    }
-  }
+  //fixed veto - this is a shower pt
+  //evolver vetoes should be set to use shower pt in highest multiplicity case
+  if(  _CKKWh->highestMult() )
+    veto_pt = hardtree->lowestPt( 1. );
 
   QProgenitor->maximumpT(veto_pt);
   QbarProgenitor->maximumpT(veto_pt);

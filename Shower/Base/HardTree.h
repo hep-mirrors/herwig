@@ -63,13 +63,13 @@ public:
   set<HardBranchingPtr> & incoming() {return _spacelike;}
 
   /**
-   *  Get LowestPt
+   *  Get LowestPt in which ever jet definition
    */
-  Energy lowestPt() const {return _lowestPt;}
+  Energy lowestPt( int jetMeasureMode );
   
- /**
-  * Access the external branchings
-  */
+  /**
+   * Access the external branchings
+   */
   map< ShowerParticlePtr, HardBranchingPtr > & getExternals() 
   { return _theExternals; }
 
@@ -151,10 +151,10 @@ private:
   map< long, pair< Energy, Energy > > _theInternals;
 
   /**
-   *  The pt of the softest branching
+   *  The hardBranching of softest branching
    *  This is found by looking at tree end points in fillNodes
    */
-  Energy _lowestPt;
+   HardBranchingPtr  _lowestPt;
 
 };
 

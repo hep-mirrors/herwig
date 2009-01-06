@@ -13,8 +13,7 @@ using namespace Herwig;
 HardTree::HardTree(vector<HardBranchingPtr> branchings,
 		   vector<HardBranchingPtr> spacelike) 
   : _branchings(branchings.begin(),branchings.end()),
-    _spacelike (spacelike .begin(),spacelike .end()),
-    _lowestPt( 999999. * GeV )
+    _spacelike (spacelike .begin(),spacelike .end())
 {}
 
 bool HardTree::findNodes() {
@@ -58,7 +57,8 @@ bool HardTree::fillNodes( HardBranchingPtr branch, HardBranchingPtr parentBranch
   //external branching found
   else  {
     _theExternals.insert( make_pair( branch->branchingParticle(), parentBranch ) );
-    if( parentBranch && ( branch->pT() < _lowestPt ) ) _lowestPt = branch->pT();
+    if( parentBranch && ( !_lowestPt || branch->pT() < _lowestPt->pT() ) )
+      _lowestPt = branch;
   }
   return true;
 }
@@ -254,4 +254,12 @@ bool HardTree::checkHardOrdering() {
     }
   }
   return true;
+}
+
+Energy HardTree::lowestPt( int jetMeasureMode ){
+  Energy kt_softest = _lowestPt->pT();
+  //is this the durham jet def
+  if( jetMeasureMode == 0 )
+    kt_softest /= max( _lowestPt->z(), 1. - _lowestPt->z() );    
+  return kt_softest;
 }

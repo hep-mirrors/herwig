@@ -1457,19 +1457,13 @@ double PowhegHandler::splittingFnWeight( HardTreePtr theTree ){
 
 double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   double SudWgt = 1.;
-
   Energy kt_cut;
   if( ! _highestMult ) kt_cut = sqrt( _yini * _s );
-  //this should be set to lowest pt emission
   else {
-    kt_cut = theTree->lowestPt();
-    if( kt_cut < sqrt( _yini * _s ) ||
-	kt_cut > _max_pt_cut ){
-      //   cerr<<"error in hardTree::lowestPt() - out of range \n";
-      kt_cut = sqrt( _yini * _s );
-    }
+    kt_cut = theTree->lowestPt( _jetMeasureMode );
+    if( kt_cut > _max_pt_cut )
+      kt_cut = _max_pt_cut;
   }
-
   //external line weight
   for( map< ShowerParticlePtr, HardBranchingPtr >::const_iterator cit = 
 	 theTree->getExternals().begin();
