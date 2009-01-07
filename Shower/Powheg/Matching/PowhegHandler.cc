@@ -305,8 +305,10 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
-  if( ! _reweightOff )
-    return SudWgt;
+  if( ! _reweightOff ){
+    if ( SudWgt / 5. > 1 ) cerr << SudWgt <<"\n";
+    return SudWgt / 5.;
+  }
   
   else{
     return 1.;
@@ -1420,7 +1422,7 @@ double PowhegHandler::Sud( Energy scale, long id, Energy pt_cut ){
   //upper limit on scale 
   double sudwgt = 1.;
   //scale cut set to just below max_qtilde to avoid seg fault on boundary
-  Energy scale_cut = _max_qtilde;
+  Energy scale_cut = sqrt( _s );
   multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > >::const_iterator cjt;
   for( cjt =  _fbranchings.lower_bound( abs( id ) );
        cjt != _fbranchings.upper_bound( abs( id ) );
@@ -1432,6 +1434,28 @@ double PowhegHandler::Sud( Energy scale, long id, Energy pt_cut ){
       sudwgt *= (* cjt->second.first )( pt_cut, cjt->second.second);
     else 
       sudwgt *= (* cjt->second.first )( pt_cut, scale_cut);
+    
+    //check for errors in sud value
+    if( sudwgt == 0 ){ cerr<<"zero sud at scale = "<< scale / GeV
+			   <<", id = "<< id 
+			   <<", pt_cut = " << pt_cut / GeV 
+			   <<", scale_cut = " << scale_cut / GeV
+			   <<"\n";
+    }
+    if( sudwgt > 1.2 ){ cerr<<"large sud = "<< sudwgt<<" at scale = "<< scale / GeV
+			   <<", id = "<< id 
+			   <<", pt_cut = " << pt_cut / GeV 
+			   <<", scale_cut = " << scale_cut / GeV
+			   <<"\n";
+    }
+    if( isnan( sudwgt ) ){ cerr<<"nan sud at scale = "<< scale / GeV
+			      <<", id = "<< id 
+			       << ", pt_cut = " << pt_cut / GeV <<"\n";
+    }
+    if( isinf( sudwgt ) ){ cerr<<"inf sud at scale = "<< scale / GeV
+			       <<", id = "<< id 
+			       << ", pt_cut = " << pt_cut / GeV <<"\n";
+    }
   }
   return sudwgt;
 }
