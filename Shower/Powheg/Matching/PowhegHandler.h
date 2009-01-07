@@ -96,7 +96,7 @@ public:
    */
   PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOff(false), 
 		    _highestMult(false), _testSudakovs(false),
-		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ) {}
+		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), _clusterOption( 0 ) {}
 
   /**
    * Perform CKKW reweighting
@@ -240,6 +240,12 @@ private:
    * with \f$q\bar{q}\f$.
    */
   HardTreePtr doClustering( );
+
+  /**
+   * Creates all cluster histories and selects one
+   * according to its shower probability
+   */
+  HardTreePtr doClusteringOrdered( );
   
   double Sud( Energy scale, long id, Energy pt_cut );
 
@@ -428,6 +434,11 @@ private:
    * minimum pt cut for sudakov interpolation tables                                                      
    */
   Energy _min_pt_cut;
+  
+  /**
+   * which clustering scheme to use
+   */
+  unsigned int _clusterOption; 
 
 };
 
