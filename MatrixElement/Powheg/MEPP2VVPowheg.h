@@ -94,20 +94,20 @@ public:
    * Invariants required for the evaluation of next-to-leading order
    * quantities (Frixione et al. NPB.383 WZ production at colliders). 
    */
-  Energy2 s(double xt, double y)      const ;
-  Energy2 tk(double xt, double y)     const ;
-  Energy2 uk(double xt, double y)     const ;
-  double  betax(double xt, double y)  const ; 
-  double  v1(double xt, double y)     const ; 
-  double  v2(double xt, double y)     const ; 
-  double  cpsi(double xt, double y)   const ; 
-  double  cpsipr(double xt, double y) const ; 
-  Energy2 q1(double xt, double y)     const ;
-  Energy2 q2(double xt, double y)     const ;
-  Energy2 q1hat(double xt, double y)  const ; 
-  Energy2 q2hat(double xt, double y)  const ; 
-  Energy2 w1(double xt, double y)     const ; 
-  Energy2 w2(double xt, double y)     const ;  
+  inline Energy2 s(double xt, double y)      const ;
+  inline Energy2 tk(double xt, double y)     const ;
+  inline Energy2 uk(double xt, double y)     const ;
+  inline double  betax(double xt, double y)  const ; 
+  inline double  v1(double xt, double y)     const ; 
+  inline double  v2(double xt, double y)     const ; 
+  inline double  cpsi(double xt, double y)   const ; 
+  inline double  cpsipr(double xt, double y) const ; 
+  inline Energy2 q1(double xt, double y)     const ;
+  inline Energy2 q2(double xt, double y)     const ;
+  inline Energy2 q1hat(double xt, double y)  const ; 
+  inline Energy2 q2hat(double xt, double y)  const ; 
+  inline Energy2 w1(double xt, double y)     const ; 
+  inline Energy2 w2(double xt, double y)     const ;  
 
   /**
    * Calculate the minimum of \f$x\f$. 
@@ -122,7 +122,7 @@ public:
   /**
    * Calculate the variable \f$x=p^{2}/s\f$ from the integration variables. 
    */
-  double x(double xt, double y) const;
+  inline double x(double xt, double y) const;
 
   /**
    * Calculate the momentum fraction of the plus and minus partons. 
@@ -233,6 +233,11 @@ private:
    *  The CF_ colour factor
    */
   double CF_;
+
+  /**
+   *  The TR_ colour factor
+   */
+  double TR_;
 
   /**
    *  Whether to generate the positive, negative or leading order contribution
@@ -359,5 +364,7 @@ struct ClassTraits<Herwig::MEPP2VVPowheg>
 /** @endcond */
 
 }
+
+#include "MEPP2VVPowheg.icc"
 
 #endif /* HERWIG_MEPP2VVPowheg_H */

@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MEPP2VVPowheg::MEPP2VVPowheg() :  
-    CF_(4./3.),
+    CF_(4./3.),    TR_(0.5),
     contrib_(1),   nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
     removebr_(1)
 {}
@@ -160,10 +160,13 @@ double MEPP2VVPowheg::NLOweight() const {
   if(contrib_==0) return 1.;
 
   // If necessary swap the particle data vectors so that xbp_, 
-  // mePartonData[0], beam[0] relate to the inbound particle a. 
+  // mePartonData[0], hadron_A_ relate to the inbound particle a
+  // (the quark) and xbm_, mePartonData[1], hadron_B_ relate to 
+  // particle b (the antiquark). See MEPP2VV.cc for more info. 
   if(!(lastPartons().first ->dataPtr()==a_lo_&&
        lastPartons().second->dataPtr()==b_lo_)) {
     swap(xbp_     ,xbm_     );
+    swap(etabarp_ ,etabarm_ );
     swap(hadron_A_,hadron_B_);
   }
 
@@ -209,26 +212,78 @@ double MEPP2VVPowheg::NLOweight() const {
 }
 
 void MEPP2VVPowheg::get_born_variables() const {
-  // Particle data for QCD particles:
-  a_lo_=mePartonData()[0];
-  b_lo_=mePartonData()[1];
+  // Particle data for incoming QCD particles:
+  a_lo_=mePartonData()[0];  // This is the quark in MEPP2VV.cc
+  b_lo_=mePartonData()[1];  // This is the antiquark in MEPP2VV.cc
+
+  // Sanity checks:
+  if(a_lo_->id()<0)
+    cout << "Error in get_born_variables:\n" 
+	 << "a_lo_ is an antiquark, id=" << a_lo_->PDGName() << endl;
+  if(b_lo_->id()>0)
+    cout << "Error in get_born_variables:\n" 
+	 << "b_lo_ is an quark, id=" << b_lo_->PDGName() << endl;
+  bool alarm(false);
+  bool wminus_first(false);
+  switch(MEPP2VV::process()) {
+  case 1: // W+(->e+,nu_e) W-(->e-,nu_ebar) (MCFM: 61 [nproc])
+    if(abs(mePartonData()[2]->id())!=24||abs(mePartonData()[3]->id())!=24) 
+      alarm=true;
+    if(mePartonData()[2]->id()<0) wminus_first=true;
+    break;
+  case 2: // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) 
+    // (MCFM: 72+77 [nproc])
+    if(abs(mePartonData()[2]->id())!=24||mePartonData()[3]->id()!=23) 
+      alarm=true;
+    break;
+  case 3: // Z(mu-,mu+) Z(e-,e+) (MCFM: 86 [nproc])
+    if(mePartonData()[2]->id()!= 23||mePartonData()[3]->id()!=23) 
+      alarm=true;
+    break;
+  case 4: // W+(mu+,nu_mu) Z(nu_e,nu_ebar) (MCFM: 72 [nproc])
+    if(mePartonData()[2]->id()!= 24||mePartonData()[3]->id()!=23) 
+      alarm=true;
+    break;
+  case 5: // W-(mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 77 [nproc])
+    if(mePartonData()[2]->id()!=-24||mePartonData()[3]->id()!=23) 
+      alarm=true;
+    break;
+  }
+  if(alarm) { 
+    cout << "Error in get_born_variables: unexpected final state labelling.\n";
+    cout << "mePartonData()[2] = " << mePartonData()[2]->PDGName() << endl; 
+    cout << "mePartonData()[3] = " << mePartonData()[3]->PDGName() << endl; 
+  }
+
+  // Get the Born momenta according to the notation of the FMNR papers:
+  Lorentz5Momentum p1_lo(meMomenta()[0]);
+  Lorentz5Momentum p2_lo(meMomenta()[1]);
+  Lorentz5Momentum k1_lo(meMomenta()[2]);
+  Lorentz5Momentum k2_lo(meMomenta()[3]);
+  // Make sure k1 corresponds to the W+ momentum for W+W- events.
+  if(wminus_first) swap(k1_lo,k2_lo);
+
   // BeamParticleData objects for PDF's
   hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().first->dataPtr());
   hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().second->dataPtr());
+
   // Leading order momentum fractions and associated etabar's
-  xbp_ = lastX1(); etabarp_ = sqrt(1.-xbp_);
-  xbm_ = lastX2(); etabarm_ = sqrt(1.-xbm_);
+  xbp_     = lastX1(); 
+  etabarp_ = sqrt(1.-xbp_);
+  xbm_     = lastX2(); 
+  etabarm_ = sqrt(1.-xbm_);
+
   // Assign Born variables
   p2_    = sHat();
   s2_    = p2_;
   if(meMomenta().size()==4) {
     k12_    = meMomenta()[2].m2();
     k22_    = meMomenta()[3].m2();
-    cout << "\n\n";
-    cout << "sqrt(k12_): " << sqrt(k12_)/GeV << endl;
-    cout << "sqrt(k22_): " << sqrt(k22_)/GeV << endl;
+    //    cout << "\n\n";
+    //    cout << "sqrt(k12_): " << sqrt(k12_)/GeV << endl;
+    //    cout << "sqrt(k22_): " << sqrt(k22_)/GeV << endl;
     theta1_= acos(meMomenta()[2].z()/meMomenta()[2].vect().mag());
     theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
   }
@@ -278,10 +333,10 @@ double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const {
 
 double MEPP2VVPowheg::Vtilde_universal() const {
   return  alphaS_/2./Constants::pi*CF_ 
-        * ( log(p2_/sqr(mu_F()))*( 2.*(2.*Constants::pi*CF_/CF_)
-	     	          + 4.*log(etabarp_)+4.*log(etabarm_))
-	                  + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
-	                  - 2.*sqr(Constants::pi)/3.
+        * (   log(p2_/sqr(mu_F()))
+	    * (3. + 4.*log(etabarp_)+4.*log(etabarm_))
+	    + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
+	    - 2.*sqr(Constants::pi)/3.
 	  )
         + alphaS_/2./Constants::pi*CF_ 
         * ( 8./(1.+y_)*log(etabar(y_)/etabarm_)
@@ -317,15 +372,15 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   if(y== 1.&&a->id()!=21)
     cout << "\nCtilde_gq::for Cgq^plus  a must be a gluon! id = " 
 	 << a->id() << "\n";
-  if(y== 1.&&!(abs(a->id()>0)&&abs(a->id())<7)) 
+  if(y==-1.&&b->id()!=21) 
     cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = " 
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
   return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())/x_pm)+4.*log(etabar_pm)/(1.-xt)
-       	   + 2.*log(1.-xt)/(1.-xt)
-           )*(1.-x_pm)*CF_*(sqr(x_pm)+sqr(1.-x_pm))
-	 + sqr(etabar_pm)*CF_*2.*x_pm*(1.-x_pm)
+	           + 2.*log(1.-xt)/(1.-xt)
+	    )*(1.-x_pm)*TR_*(sqr(x_pm)+sqr(1.-x_pm))
+	 + sqr(etabar_pm)*TR_*2.*x_pm*(1.-x_pm)
 	 )*Lhat_ab(a,b,x_pm,y) / x_pm;
 }
 
