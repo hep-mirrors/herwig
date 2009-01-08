@@ -39,37 +39,24 @@ ValT Interpolator2d<ValT,Arg1T,Arg2T>::operator ()(Arg1T x1_u, Arg2T x2_u) const
   double x2 = x2_u / _x2unit;
 
   //find which grid (i,j) we are in and get the coefficients of that ij
-  int i = int( ( x1 - _x1_points[0] ) / _dx1 );
-  int j = int( ( x2 - _x2_points[0] ) / _dx2 );
+  int i = int( ( ( x1 - _dx1 / 2.) - _x1_points[0] ) / _dx1 );
+  int j = int( ( ( x2 - _dx2 / 2.) - _x2_points[0] ) / _dx2 );
 
   //grid square is labelled by i,j and include i+1,j i+1,j+1, i,j+1
   //so there are i-1 * j-1 squares
-  if( i > _the_weights.size() - 1 || i <  0 
-      || j > _the_weights[0].size() - 1 || j < 0 ){
-    cerr<< "out of range at ("<<x1<<","<<x2<<") at ("<<i<<","<<j<<")\n";
-    cerr<<"weights x size = "<< _the_weights.size()<<"\n"; 
-    cerr<<"weights y size = "<< _the_weights[0].size()<<"\n"; 
-    cerr<<"x1 size = "<<_x1_points.size()<<"\n";
-    cerr<<"x2 size = "<<_x2_points.size()<<"\n";
-    cerr<<"dx1 = "<< _dx1 <<"\n";
-    cerr<<"dx2 = "<< _dx2 <<"\n";
-    cerr<<"x1 min = "<<  _x1_points[0]<<", x1 max = "<<_x1_points[ _x1_points.size() - 1]<<"\n";
-    cerr<<"x2 min = "<<  _x2_points[0]<<", x2 max = "<<_x2_points[ _x2_points.size() - 1]<<"\n";
+  //so limits should go
+  if( x1 > _x1_points[ _x1_points.size() - 1 ] || 
+      x1 < _x1_points[0] || 
+      x2 > _x2_points[ _x2_points.size() - 1 ] || 
+      x2 < _x2_points[0] ) {
+    cerr<< "Interpolator2d::out of range at ("<<x1<<","<<x2
+	<<") at ("<<i<<","<<j<<")\n";
     return 0.;
   }
-  
-  double t;
-  double u;
-  //find co-ordinate parameters t and u
-  if( i == _the_weights.size() - 1 )
-    t = ( x1 - _x1_points[i] )/ ( 0. -  _x1_points[i] );
-  else
-    t = ( x1 - _x1_points[i] )/ ( _x1_points[i+1] -  _x1_points[i] );
 
-  if( i == _the_weights[0].size() - 1 )
-    u = ( x2 - _x2_points[j] )/ ( 0. -  _x2_points[j] );
-  else
-    u = ( x2 - _x2_points[j] )/ ( _x2_points[j+1] -  _x2_points[j] );
+  //find co-ordinate parameters t and u
+  double t = ( x1 - _x1_points[i] )/ ( _x1_points[i+1] -  _x1_points[i] );
+  double u = ( x2 - _x2_points[j] )/ ( _x2_points[j+1] -  _x2_points[j] );
   
   //return c_kl t^k u^l
   double result = 0.;
