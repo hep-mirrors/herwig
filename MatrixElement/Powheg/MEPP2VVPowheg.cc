@@ -106,13 +106,16 @@ void MEPP2VVPowheg::Init() {
 
 int MEPP2VVPowheg::nDim() const {
   int output = MEPP2VV::nDim(); 
-  return output+2;
+  if(contrib_>0) output += 2;
+  return output;
 }
 
 bool MEPP2VVPowheg::generateKinematics(const double * r) {
-  // Generate the radiative integration variables:
-  xt_= *r;
-  y_ = *(r+1) * 2. - 1.;
+  if(contrib_>0) {
+    // Generate the radiative integration variables:
+    xt_= *r;
+    y_ = *(r+1) * 2. - 1.;
+  }
   // Continue with lo matrix element code:
   return MEPP2VV::generateKinematics(r);
 }
@@ -148,81 +151,33 @@ double MEPP2VVPowheg::me2() const {
       break;
     }
   }
-  get_born_variables();
-  lo_me2_ = output;
-  output *= mcfm_brs;
+  get_LO_data(output);
   output *= NLOweight();
+  output *= mcfm_brs;
   return output;
 }
 
-double MEPP2VVPowheg::NLOweight() const {
-  // If only leading order is required return 1:
-  if(contrib_==0) return 1.;
+void MEPP2VVPowheg::get_LO_data(double lo_me2) const {
 
-  // If necessary swap the particle data vectors so that xbp_, 
-  // mePartonData[0], hadron_A_ relate to the inbound particle a
-  // (the quark) and xbm_, mePartonData[1], hadron_B_ relate to 
-  // particle b (the antiquark). See MEPP2VV.cc for more info. 
-  if(!(lastPartons().first ->dataPtr()==a_lo_&&
-       lastPartons().second->dataPtr()==b_lo_)) {
-    swap(xbp_     ,xbm_     );
-    swap(etabarp_ ,etabarm_ );
-    swap(hadron_A_,hadron_B_);
-  }
+  // In this member we want to get the lo_lumi_ and the lo_me2_ 
+  // as these are denominators in the NLO weight. We want sb_,
+  // tb_, ub_, k12b_, k22b_ to evaluate the expression for the
+  // virtual correction. We also want Yb_, theta1b_, theta2b_, 
+  // as these, together with the diboson invariant mass (sb_) 
+  // are preserved in the projection from the 2->3 real emission 
+  // process to the 2->2 LO/virtual ones i.e. they are the Born 
+  // variables which will be needed to construct the 2->3 along
+  // with the radiative variables.
 
-  // calculate the PDF's for the Born process
-  lo_lumi_ = hadron_A_->pdf()->xfx(hadron_A_,a_lo_,scale(),xbp_)/xbp_
-           * hadron_B_->pdf()->xfx(hadron_B_,b_lo_,scale(),xbm_)/xbm_;
-
-  // Calculate alpha_S and alpha_S/(2*pi)
-  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
-  double alsOn2pi(alphaS_/2./Constants::pi);
-
-  // Particle data objects for the new plus and minus colliding partons.
-  tcPDPtr a_nlo, b_nlo;
-
-  // Calculate the integrand
-  double wgt(0.);
-
-  // q qb  contribution
-  a_nlo=a_lo_;
-  b_nlo=b_lo_;
-  double wqqbvirt   = Vtilde_universal() + M_V_regular()/lo_me2_;
-  double wqqbcollin = alsOn2pi
-                    * ( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_, 1.) 
-                      + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_,-1.));
-  double wqqbreal   = alsOn2pi
-                    * Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo,xt_,y_);
-  double wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
-  // q g   contribution
-  a_nlo=a_lo_;
-  b_nlo=getParticleData(ParticleID::g);
-  double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
-  double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
-  double wqg        = wqgreal+wqgcollin;
-  // g qb  contribution
-  a_nlo=getParticleData(ParticleID::g);
-  b_nlo=b_lo_;
-  double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_, 1.);
-  double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo,xt_,y_);
-  double wgqb       = wgqbreal+wgqbcollin;
-  // total contribution
-  wgt                 = 1.+(wqqb+wgqb+wqg);
-  return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
-}
-
-void MEPP2VVPowheg::get_born_variables() const {
-  // Particle data for incoming QCD particles:
-  a_lo_=mePartonData()[0];  // This is the quark in MEPP2VV.cc
-  b_lo_=mePartonData()[1];  // This is the antiquark in MEPP2VV.cc
-
-  // Sanity checks:
-  if(a_lo_->id()<0)
+  // First a few sanity checks (these can be removed when the code is done):
+  if(mePartonData()[0]->id()<0)
     cout << "Error in get_born_variables:\n" 
-	 << "a_lo_ is an antiquark, id=" << a_lo_->PDGName() << endl;
-  if(b_lo_->id()>0)
+	 << "mePartonData()[0] is an antiquark, id=" 
+	 << ab_->PDGName() << endl;
+  if(mePartonData()[1]->id()>0)
     cout << "Error in get_born_variables:\n" 
-	 << "b_lo_ is an quark, id=" << b_lo_->PDGName() << endl;
+	 << "mePartonData()[1] is an quark, id=" 
+	 << bb_->PDGName() << endl;
   bool alarm(false);
   bool wminus_first(false);
   switch(MEPP2VV::process()) {
@@ -255,13 +210,10 @@ void MEPP2VVPowheg::get_born_variables() const {
     cout << "mePartonData()[3] = " << mePartonData()[3]->PDGName() << endl; 
   }
 
-  // Get the Born momenta according to the notation of the FMNR papers:
-  Lorentz5Momentum p1_lo(meMomenta()[0]);
-  Lorentz5Momentum p2_lo(meMomenta()[1]);
-  Lorentz5Momentum k1_lo(meMomenta()[2]);
-  Lorentz5Momentum k2_lo(meMomenta()[3]);
-  // Make sure k1 corresponds to the W+ momentum for W+W- events.
-  if(wminus_first) swap(k1_lo,k2_lo);
+  // Now get all data on the LO process needed for the NLO computation:
+
+  // Store the value of the leading order squared matrix element:
+  lo_me2_ = lo_me2;
 
   // BeamParticleData objects for PDF's
   hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
@@ -269,55 +221,159 @@ void MEPP2VVPowheg::get_born_variables() const {
   hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().second->dataPtr());
 
-  // Leading order momentum fractions and associated etabar's
-  xbp_     = lastX1(); 
-  etabarp_ = sqrt(1.-xbp_);
-  xbm_     = lastX2(); 
-  etabarm_ = sqrt(1.-xbm_);
+  // Leading order momentum fractions and associated etabar's:
+  xpb_   = lastX1(); 
+  etapb_ = sqrt(1.-xpb_);
+  xmb_   = lastX2(); 
+  etamb_ = sqrt(1.-xmb_);
 
-  // Assign Born variables
-  p2_    = sHat();
-  s2_    = p2_;
-  if(meMomenta().size()==4) {
-    k12_    = k1_lo.m2();
-    k22_    = k2_lo.m2();
-    theta1_= acos(meMomenta()[2].z()/meMomenta()[2].vect().mag());
-    theta2_= atan(meMomenta()[2].x()/meMomenta()[2].y());
+  // Particle data for incoming QCD particles:
+  ab_=mePartonData()[0];  // This is the quark in MEPP2VV.cc
+  bb_=mePartonData()[1];  // This is the antiquark in MEPP2VV.cc
+
+  // If necessary swap the particle data vectors so that xpb_, 
+  // mePartonData[0], hadron_A_ relate to the inbound particle a
+  // (the quark) and xmb_, mePartonData[1], hadron_B_ relate to 
+  // particle b (the antiquark). See MEPP2VV.cc for more info. 
+  flipped_ = false;
+  if(!(lastPartons().first ->dataPtr()==ab_&&
+       lastPartons().second->dataPtr()==bb_)) {
+    swap(xpb_     ,xmb_     );
+    swap(etapb_   ,etamb_   );
+    swap(hadron_A_,hadron_B_);
+    flipped_ = true;
   }
+
+  // Now get the partonic flux for the Born process:
+  lo_lumi_ = hadron_A_->pdf()->xfx(hadron_A_,ab_,scale(),xpb_)/xpb_
+           * hadron_B_->pdf()->xfx(hadron_B_,bb_,scale(),xmb_)/xmb_;
+
+  // The Born momenta according to the notation of the FMNR papers,
+  // in the diboson centre of mass frame:
+  p1b_ = meMomenta()[0];
+  p2b_ = meMomenta()[1];
+  k1b_ = meMomenta()[2];
+  k2b_ = meMomenta()[3];
+  // For W+W- events make sure k1 corresponds to the W+ momentum:
+  if(wminus_first) swap(k1b_,k2b_);
+  // Boost the momenta so they are in the diboson centre of mass frame:
+  Lorentz5Momentum ktot(k1b_+k2b_);
+  Boost CMSBoostb(-ktot.boostVector());
+  p1b_.boost(CMSBoostb);
+  p2b_.boost(CMSBoostb);
+  k1b_.boost(CMSBoostb);
+  k2b_.boost(CMSBoostb);
+
+  // The diboson invariant mass / shat, that and uhat:
+  sb_ = sHat();
+  tb_ = (p1b_-k1b_).m2();
+  ub_ = (p1b_-k2b_).m2();
+
+  // The diboson rapidity:
+  Yb_ = 0.5*log(xpb_/xmb_);
+  // Note Yb_ = + lastY() if flipped = false 
+  // but  Yb_ = - lastY() if flipped = true.
+  // Yb_ is always defined with the quark travelling in the +z direction!
+
+  // Masses of the final state bosons:
+  k12b_    = k1b_.m2();
+  k22b_    = k2b_.m2();
+
+  // Polar and azimuthal angles of the dibosons in their rest frame:
+  theta1b_ = acos(k1b_.z()/k1b_.vect().mag());
+  theta2b_ = atan2(k1b_.x(),k1b_.y());
+
+  // The masses and angles can be used to reconstruct the momenta in 
+  // the diboson centre of mass frame as follows (as a sanity check):
+  //  Energy4 lambda = sb_*sb_+k12b_*k12b_+k22b_*k22b_
+  //      -2.*sb_*k12b_- 2.*sb_*k22b_ - 2.*k12b_*k22b_;
+  //  Energy p  = sqrt(lambda)/2./sqrt(sb_);
+  //  Energy pt = p*sin(theta1b_); 
+  //  Energy pl = p*cos(theta1b_); 
+  //  Lorentz5Momentum p1b(0.*GeV,0.*GeV, p1b_.t(),p1b_.t(),0.*GeV);
+  //  Lorentz5Momentum p2b(0.*GeV,0.*GeV,-p2b_.t(),p2b_.t(),0.*GeV);
+  //  Lorentz5Momentum k1b( pt*sin(theta2b_), pt*cos(theta2b_), pl,
+  //		       sqrt(p*p+k12b_),sqrt(k12b_));
+  //  Lorentz5Momentum k2b(-pt*sin(theta2b_),-pt*cos(theta2b_),-pl,
+  //		       sqrt(p*p+k22b_),sqrt(k22b_));
+  // Checks showed these momenta agreed with p1b_,p2b_,k1b_,k2b_ to within 
+  // 0.01 eV. These therefore correspond to theta's of Frixione et al.
+
   return;
 }
 
+double MEPP2VVPowheg::NLOweight() const {
+  // If only leading order is required return 1:
+  if(contrib_==0) return 1.;
+
+  // Calculate alpha_S and alpha_S/(2*pi)
+  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
+  double alsOn2pi(alphaS_/2./Constants::pi);
+
+  // Particle data objects for the new plus and minus colliding partons.
+  tcPDPtr a_nlo, b_nlo;
+
+  // Calculate the integrand
+  double wgt(0.);
+
+  // q qb  contribution
+  a_nlo=ab_;
+  b_nlo=bb_;
+  double wqqbvirt   = Vtilde_universal() + M_V_regular()/lo_me2_;
+  double wqqbcollin = alsOn2pi
+                    * ( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_, 1.) 
+                      + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,xt_,-1.));
+  double wqqbreal   = alsOn2pi
+                    * Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo,xt_,y_);
+  double wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
+  // q g   contribution
+  a_nlo=ab_;
+  b_nlo=getParticleData(ParticleID::g);
+  double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,-1.);
+  double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
+  double wqg        = wqgreal+wqgcollin;
+  // g qb  contribution
+  a_nlo=getParticleData(ParticleID::g);
+  b_nlo=bb_;
+  double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_, 1.);
+  double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo,xt_,y_);
+  double wgqb       = wgqbreal+wgqbcollin;
+  // total contribution
+  wgt               = 1.+(wqqb+wgqb+wqg);
+  return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
+}
+
 double MEPP2VVPowheg::xbar(double y) const {
-  double xbp2(sqr(xbp_)), xbm2(sqr(xbm_));
+  double xbp2(sqr(xpb_)), xbm2(sqr(xmb_));
   double omy(-999.)     , opy( 999.)     ;
   double xbar1(-999.)   , xbar2(-999.)   ;
-  if(y== 1.) return xbp_;
-  if(y==-1.) return xbm_;
+  if(y== 1.) return xpb_;
+  if(y==-1.) return xmb_;
   omy = 1.-y; 
   opy = 1.+y;
   xbar1=2.*opy*xbp2/
-    (sqrt(sqr(1.+xbp2)*sqr(omy)+16.*y*xbp2)+omy*(1.-xbp_)*(1.+xbp_));
+    (sqrt(sqr(1.+xbp2)*sqr(omy)+16.*y*xbp2)+omy*(1.-xpb_)*(1.+xpb_));
   xbar2=2.*omy*xbm2/
-    (sqrt(sqr(1.+xbm2)*sqr(opy)-16.*y*xbm2)+opy*(1.-xbm_)*(1.+xbm_));
+    (sqrt(sqr(1.+xbm2)*sqr(opy)-16.*y*xbm2)+opy*(1.-xmb_)*(1.+xmb_));
   return max(xbar1,xbar2);
 }
 
-double MEPP2VVPowheg::etabar(double y) const {
+double MEPP2VVPowheg::etab(double y) const {
   return sqrt(1.-xbar(y));
 }
 
 double MEPP2VVPowheg::xp(double x, double y) const {
-  if(x== 1.) return xbp_  ;
-  if(y==-1.) return xbp_  ;
-  if(y== 1.) return xbp_/x;
-  return (xbp_/sqrt(x))*sqrt((2.-(1.-x)*(1.-y))/(2.-(1.-x)*(1.+y)));
+  if(x== 1.) return xpb_  ;
+  if(y==-1.) return xpb_  ;
+  if(y== 1.) return xpb_/x;
+  return (xpb_/sqrt(x))*sqrt((2.-(1.-x)*(1.-y))/(2.-(1.-x)*(1.+y)));
 }
 
 double MEPP2VVPowheg::xm(double x, double y) const {
-  if(x== 1.) return xbm_  ;
-  if(y==-1.) return xbm_/x;
-  if(y== 1.) return xbm_  ;
-  return (xbm_/sqrt(x))*sqrt((2.-(1.-x)*(1.+y))/(2.-(1.-x)*(1.-y)));
+  if(x== 1.) return xmb_  ;
+  if(y==-1.) return xmb_/x;
+  if(y== 1.) return xmb_  ;
+  return (xmb_/sqrt(x))*sqrt((2.-(1.-x)*(1.+y))/(2.-(1.-x)*(1.-y)));
 }
 
 double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const {
@@ -330,14 +386,14 @@ double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const {
 
 double MEPP2VVPowheg::Vtilde_universal() const {
   return  alphaS_/2./Constants::pi*CF_ 
-        * (   log(p2_/sqr(mu_F()))
-	    * (3. + 4.*log(etabarp_)+4.*log(etabarm_))
-	    + 8.*sqr(log(etabarp_)) + 8.*sqr(log(etabarm_))
+        * (   log(sb_/sqr(mu_F()))
+	    * (3. + 4.*log(etapb_)+4.*log(etamb_))
+	    + 8.*sqr(log(etapb_)) + 8.*sqr(log(etamb_))
 	    - 2.*sqr(Constants::pi)/3.
 	  )
         + alphaS_/2./Constants::pi*CF_ 
-        * ( 8./(1.+y_)*log(etabar(y_)/etabarm_)
-     	  + 8./(1.-y_)*log(etabar(y_)/etabarp_)
+        * ( 8./(1.+y_)*log(etab(y_)/etamb_)
+     	  + 8./(1.-y_)*log(etab(y_)/etapb_)
           );
 }
 
@@ -350,14 +406,14 @@ double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
   if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
     cout << "\nCtilde_qq::for Cqq^minus b must be a quark! id = " 
 	 << b->id() << "\n";
-  double x_pm      = x(xt,y);
-  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())/x_pm)+4.*log(etabar_pm)/(1.-xt)
+  double x_pm    = x(xt,y);
+  double etab_pm = y == 1. ? etapb_ : etamb_ ;
+  return ( ( (1./(1.-xt))*log(sb_/sqr(mu_F())/x_pm)+4.*log(etab_pm)/(1.-xt)
        	   + 2.*log(1.-xt)/(1.-xt)
            )*CF_*(1.+sqr(x_pm)) 
-	 + sqr(etabar_pm)*CF_*(1.-x_pm)
+	 + sqr(etab_pm)*CF_*(1.-x_pm)
 	 )*Lhat_ab(a,b,x_pm,y) / x_pm
-       - ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())     )+4.*log(etabar_pm)/(1.-xt)
+       - ( ( (1./(1.-xt))*log(sb_/sqr(mu_F())     )+4.*log(etab_pm)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
 	   )*CF_*2. 
 	 );
@@ -372,12 +428,12 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   if(y==-1.&&b->id()!=21) 
     cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = " 
 	 << b->id() << "\n";
-  double x_pm      = x(xt,y);
-  double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
-  return ( ( (1./(1.-xt))*log(p2_/sqr(mu_F())/x_pm)+4.*log(etabar_pm)/(1.-xt)
+  double x_pm    = x(xt,y);
+  double etab_pm = y == 1. ? etapb_ : etamb_ ;
+  return ( ( (1./(1.-xt))*log(sb_/sqr(mu_F())/x_pm)+4.*log(etab_pm)/(1.-xt)
 	           + 2.*log(1.-xt)/(1.-xt)
 	    )*(1.-x_pm)*TR_*(sqr(x_pm)+sqr(1.-x_pm))
-	 + sqr(etabar_pm)*TR_*2.*x_pm*(1.-x_pm)
+	 + sqr(etab_pm)*TR_*2.*x_pm*(1.-x_pm)
 	 )*Lhat_ab(a,b,x_pm,y) / x_pm;
 }
 
@@ -472,24 +528,24 @@ double MEPP2VVPowheg::M_V_regular() const {
   return alphaS_/2./Constants::pi*CF_*
                         (  11./3.
 			+  4.*sqr(Constants::pi)/3.
-			- (4.*Constants::pi*CF_/CF_)*log(p2_/sqr(mu_UV()))
+			- (4.*Constants::pi*CF_/CF_)*log(sb_/sqr(mu_UV()))
 			)*lo_me2_;
 }
 
 Energy2 MEPP2VVPowheg::t_u_M_R_qqb(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*32./9./sqr(p2_)/s(xt,y)*tk(xt,y)*uk(xt,y)
+  return 8.*Constants::pi*alphaS_*32./9./sqr(sb_)/s(xt,y)*tk(xt,y)*uk(xt,y)
            *( sqr(tk(xt,y)) + sqr(uk(xt,y))
             )*lo_me2_;
 }
 
 Energy2 MEPP2VVPowheg::t_u_M_R_qg(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)*uk(xt,y)
+  return 8.*Constants::pi*alphaS_*-4./3./sqr(sb_)*uk(xt,y)
            *( sqr(s(xt,y)) + sqr(uk(xt,y))
             )*lo_me2_;
 }
 
 Energy2 MEPP2VVPowheg::t_u_M_R_gqb(double xt, double y) const {
-  return 8.*Constants::pi*alphaS_*-4./3./sqr(p2_)*tk(xt,y)
+  return 8.*Constants::pi*alphaS_*-4./3./sqr(sb_)*tk(xt,y)
            *( sqr(s(xt,y)) + sqr(tk(xt,y))
             )*lo_me2_;
 }

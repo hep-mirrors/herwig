@@ -82,7 +82,7 @@ public:
   /**
    * Function to set the born variables. 
    */
-  void get_born_variables() const;
+  void get_LO_data(double lo_me2) const;
 
   /**
    * Calculate the correction weight with which leading-order
@@ -117,7 +117,7 @@ public:
   /**
    * Calculate auxiliary function of \f$\bar{x}(y)\f$, \f$\bar{\eta}(y)\f$. 
    */
-  double etabar(double y) const;
+  double etab(double y) const;
 
   /**
    * Calculate the variable \f$x=p^{2}/s\f$ from the integration variables. 
@@ -230,6 +230,74 @@ private:
   //@{
 
   /**
+   *  The BeamParticleData object for the plus and minus direction hadrons
+   */
+  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
+  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
+
+  /**
+   *  The momentum fraction of the plus and minus partons in the Born process
+   */
+  mutable double xpb_, xmb_;
+
+  /**
+   *  The sqrt(1-xpb_) and sqrt(1-xmb_) respectively
+   */
+  mutable double etapb_, etamb_;
+
+  /**
+   *  The ParticleData object for the plus and minus lo partons
+   */
+  mutable tcPDPtr ab_, bb_;
+
+  /**
+   *  Flag indicating if the q & qbar are flipped or not i.e. this
+   *  is true if q enters from the -z direction in the lab frame.
+   */
+  mutable bool flipped_;
+
+  /**
+   *  Values of the PDF's before radiation
+   */
+  mutable double lo_lumi_;
+
+  /**
+   * The 2->2 process momenta in the diboson centre of mass frame,
+   * in the notation of the Frixione, Mele, Nason, Ridolfi papers. 
+   */
+  mutable Lorentz5Momentum p1b_;
+  mutable Lorentz5Momentum p2b_;
+  mutable Lorentz5Momentum k1b_;
+  mutable Lorentz5Momentum k2b_;
+
+  /**
+   * The invariant mass / shat, that and uhat of the LO final state. 
+   */
+  mutable Energy2 sb_;
+  mutable Energy2 tb_;
+  mutable Energy2 ub_;
+
+  /**
+   * The rapidity of the LO final state with the quark defining the +z axis. 
+   */
+  mutable double Yb_;
+
+  /**
+   * The squared masses of the lo final state particles p1 and p2. 
+   */
+  mutable Energy2 k12b_, k22b_;
+
+  /**
+   * The polar and azimuthal angles respectively defining a two body lo event. 
+   */
+  mutable double  theta1b_ , theta2b_  ;
+
+  /**
+   *  The value of the leading order qqbar->VV matrix element
+   */
+  mutable double lo_me2_;
+
+  /**
    *  The CF_ colour factor
    */
   double CF_;
@@ -274,52 +342,6 @@ private:
    */
   double y_;
   //@}
-
-  /**
-   *  Values of the PDF's before radiation
-   */
-  mutable double lo_lumi_;
-
-  /**
-   *  The value of the leading order qqbar->VV matrix element
-   */
-  mutable double lo_me2_;
-
-  /**
-   * The invariant mass of the lo final state. 
-   */
-  mutable Energy2 p2_     , s2_      ;
-
-  /**
-   * The squared masses of the lo final state particles p1 and p2. 
-   */
-  mutable Energy2 k12_    , k22_     ;
-
-  /**
-   * The polar and azimuthal angles respectively defining a two body lo event. 
-   */
-  mutable double  theta1_ , theta2_  ;
-
-  /**
-   *  The momentum fraction of the plus and minus partons in the Born process
-   */
-  mutable double xbp_, xbm_;
-
-  /**
-   *  The sqrt(1-xbp_) and sqrt(1-xbm_) respectively
-   */
-  mutable double etabarp_, etabarm_;
-
-  /**
-   *  The ParticleData object for the plus and minus lo partons
-   */
-  mutable tcPDPtr a_lo_, b_lo_;
-
-  /**
-   *  The BeamParticleData object for the plus and minus direction hadrons
-   */
-  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
-  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
 
   /**
    *  The value of \f$\alpha_S\f$ used for the calculation
