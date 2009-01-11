@@ -440,6 +440,18 @@ private:
    */
   unsigned int _clusterOption; 
 
+  /**
+   * total number of hard trees created in this run
+   */
+  unsigned int _trees_created;
+
+  /**
+   * the number of ordered hard trees
+   */
+  unsigned int _ordered_trees_created;
+
+
+
 };
 
 }

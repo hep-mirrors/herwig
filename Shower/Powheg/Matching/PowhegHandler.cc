@@ -334,6 +334,15 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
 }
 void PowhegHandler::dofinish() {
   ShowerHandler::dofinish();
+  
+  if( _clusterOption == 1 ){
+    cout<<"\n---------\n"
+	<<"proportion of unordered trees created = "
+	<< ( 1. - double( _ordered_trees_created )
+	     / double( _trees_created ) ) * 100.
+	<<" %\n--------\n";
+  }
+  
   string fname = generator()->filename() + string("-") 
     + string("wgts.top");
   ofstream output(fname.c_str());
@@ -362,6 +371,9 @@ void PowhegHandler::dofinish() {
 
 
 void PowhegHandler::doinitrun() {
+  _trees_created = 0;
+  _ordered_trees_created = 0;
+
   ShowerHandler::doinitrun();  
   _s = sqr( generator()->maximumCMEnergy() );
 
@@ -1782,6 +1794,13 @@ HardTreePtr PowhegHandler::doClustering() {
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructDecayJets( powhegtree, evolver() );
+
+  //keep track of proportion of trees that are ordered
+  _trees_created++;
+  if( powhegtree->checkHardOrdering() )
+    _ordered_trees_created++;
+  
+  powhegtree->findNodes();
 
   return powhegtree;
 }
