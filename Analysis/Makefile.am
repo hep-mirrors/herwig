@@ -65,6 +65,13 @@ LEPFourJetsAnalysis.cc\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
 LEPJetAnalysis.cc LEPJetAnalysis.h \
 y23.cc y23.h
+
+pkglib_LTLIBRARIES += HwPP2HAnalysis.la
+HwPP2HAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwPP2HAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
+HwPP2HAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
+HwPP2HAnalysis_la_SOURCES = \
+PP2HAnalysis.cc PP2HAnalysis.h 
 endif
 
 pkglib_LTLIBRARIES += HwZpt.la
@@ -80,11 +87,6 @@ HwWpt_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwWpt_la_SOURCES = \
 Wpt.cc Wpt.h 
 
-pkglib_LTLIBRARIES += HwPP2HAnalysis.la
-HwPP2HAnalysis_la_LDFLAGS = -module -version-info 4:0:0
-HwPP2HAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwPP2HAnalysis_la_SOURCES = \
-PP2HAnalysis.cc PP2HAnalysis.h 
 
 pkglib_LTLIBRARIES += HwZrap.la
 HwZrap_la_LDFLAGS = -module -version-info 4:0:0
