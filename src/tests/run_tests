@@ -15,7 +15,7 @@ TIMECMD="nice -10 /usr/bin/time -f %U"
 ############# LEP chisq #############
 
 "$HERWIG" read CHISQ.in -r "$RPOPATH"
-$TIMECMD "$HERWIG" run CHISQ.run -N20000 > /dev/null 2> tmptime
+$TIMECMD -o tmptime "$HERWIG" run CHISQ.run -N20000 > /dev/null
 
 echo "YVALUE = "`cat tmptime` > LEP.time
 ./sum_chisq CHISQ.log > chisq.value
@@ -26,7 +26,7 @@ INFILES="LHC ILC TVT DIS"
 
 for INFILE in $INFILES; do
     "$HERWIG" read $INFILE.in -r "$RPOPATH"
-    $TIMECMD "$HERWIG" run $INFILE.run -N20000 > /dev/null 2> tmptime$INFILE
+    $TIMECMD -o tmptime$INFILE "$HERWIG" run $INFILE.run -N20000 > /dev/null
 
     echo "YVALUE = "`cat tmptime$INFILE` > ${INFILE}.time
 done
