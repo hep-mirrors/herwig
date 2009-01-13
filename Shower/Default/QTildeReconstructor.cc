@@ -885,7 +885,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-//   double sinth(sqrt(1.-sqr(axis.z())));
   double sinth(sqr(axis.x())+sqr(axis.y()));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
@@ -908,14 +907,16 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum qperp = qbp-a[0]*n1-b[0]*n2;
   a[1] = 0.5*(qcp.m2()-qperp.m2())/n1n2;
   b[1] = 1.;
+
   double A(0.5*a[0]),B(b[0]*a[0]-a[1]*b[1]-0.25),C(-0.5*b[0]);
   if(sqr(B)-4.*A*C<0.) throw KinematicsReconstructionVeto();
   double kb = 0.5*(-B+sqrt(sqr(B)-4.*A*C))/A;
   double kc = (a[0]*kb-0.5)/a[1];
+  if(kc==0.) throw KinematicsReconstructionVeto();
   Lorentz5Momentum pnew[2] = { a[0]*kb*n1+b[0]/kb*n2+qperp,
 			       a[1]*kc*n1+b[1]/kc*n2+qperp};
   LorentzRotation rotinv=rot.inverse();
-  LorentzRotation transb=rotinv*solveBoost(pnew[0],qbp)*rot;
+  LorentzRotation transb=rotinv*solveBoostZ(pnew[0],qbp)*rot;
   LorentzRotation transc=rotinv*solveBoost(pnew[1],qcp)*rot;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     if(jets[ix]->progenitor()->isFinalState())
@@ -999,6 +1000,22 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   else {
     R.boost( beta );
   } 
+  return R;
+}
+
+LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
+						 const Lorentz5Momentum & p ) const {
+  LorentzRotation R;
+  Energy2 den = (p.t()*q.t()-p.z()*q.z());
+  Energy2 num = -(p.z()*q.t()-q.z()*p.t());
+  double beta;
+  if(abs(den)<1e-10*GeV2||abs(num)<1e-10*GeV2) {
+    beta=0.;
+  }
+  else {
+    beta = num/den;
+  }
+  R.boostZ(beta);
   return R;
 }
 
