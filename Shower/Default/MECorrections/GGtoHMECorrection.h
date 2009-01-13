@@ -95,6 +95,28 @@ protected:
 
   /**
    * Return the momenta and type of hard matrix element correction
+   * with no Sudakov form factor
+   * @param gluons The original incoming particles.
+   * @param beams The BeamParticleData objects
+   * @param higgs The original outgoing higgs
+   * @param iemit Whether the first (0) or second (1) particle emitted
+   * the radiation
+   * @param itype The type of radiated particle (0 is gluon, 1 is quark 
+   *              and 2 is antiquark)
+   * @param pnew The momenta of the new particles
+   * @param xnew The new values of the momentuym fractions
+   * @param out The ParticleData object for the outgoing parton
+   * @return Whether or not the matrix element correction needs to be applied
+   */
+  bool applyHardNoSudakov(ShowerParticleVector gluons,
+			  vector<tcBeamPtr> beams,
+			  PPtr higgs,unsigned int & iemit,
+			  unsigned int & itype,vector<Lorentz5Momentum> & pnew,
+			  pair<double,double> & xnew,
+			  tcPDPtr & out);
+
+  /**
+   * Return the momenta and type of hard matrix element correction
    * @param gluons The original incoming particles.
    * @param beams The BeamParticleData objects
    * @param higgs The original outgoing higgs
@@ -112,7 +134,42 @@ protected:
 		 PPtr higgs,unsigned int & iemit,
 		 unsigned int & itype,vector<Lorentz5Momentum> & pnew,
 		 pair<double,double> & xnew,
-		 tPDPtr & out);
+		 tcPDPtr & out);
+
+
+  /**
+   * Return the momenta and type of hard matrix element correction
+   * including the Sudakov form factor
+   * @param gluons The original incoming particles.
+   * @param beams The BeamParticleData objects
+   * @param higgs The original outgoing higgs
+   * @param iemit Whether the first (0) or second (1) particle emitted
+   * the radiation
+   * @param itype The type of radiated particle (0 is gluon, 1 is quark 
+   *              and 2 is antiquark)
+   * @param pnew The momenta of the new particles
+   * @param xnew The new values of the momentuym fractions
+   * @param out The ParticleData object for the outgoing parton
+   * @return Whether or not the matrix element correction needs to be applied
+   */
+  bool applyHardSudakov(ShowerParticleVector gluons,
+			vector<tcBeamPtr> beams,
+			PPtr higgs,unsigned int & iemit,
+			unsigned int & itype,vector<Lorentz5Momentum> & pnew,
+			pair<double,double> & xnew,
+			tcPDPtr & out);
+
+  /**
+   * Returns the matrix element for a given type of process,
+   * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
+   * @param emis_type the type of emission,
+   * (0 is \f$gg\to h^0g\f$, 1 is \f$qg\to h^0q\f$ and 2 is \f$g\bar{q}\to h^0\bar{q}\f$)
+   * @param pt The transverse momentum of the jet
+   * @param yj The rapidity of the jet
+   * @param outParton the outgoing parton
+   */
+  double getResult(int emis_type, Energy pt, double yj,vector<tcBeamPtr> beams,
+		   tcPDPtr & outParton);
 
   /**
    *   Members to calculate the matrix elements
@@ -243,6 +300,12 @@ protected:
   virtual void doinit() throw(InitException);
 
   /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+
+  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
@@ -264,6 +327,11 @@ private:
   GGtoHMECorrection & operator=(const GGtoHMECorrection &);
 
 private:
+
+  /**
+   *  Option for generation
+   */
+  bool _generationOption;
 
   /**
    *  Parameters for the evaluation of the loops for the 
@@ -320,6 +388,11 @@ private:
    *  Mass squared of Higgs
    */  
   Energy2 _mh2;
+
+  /**
+   *  The rapidity of the Higgs boson
+   */
+  double _yh;
 
   /**
    *  Relative weight of the \f$qg\f$ to the \f$gg\f$  channel
@@ -382,6 +455,42 @@ private:
    *  Maximum weight
    */
   double _maxwgt;
+
+  /**
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
+   */
+  //@{
+  /**
+   * The power, \f$n\f$, for the sampling
+   */
+  double _power;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$gg\f$ channel
+   */
+  double _pregg;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double _preqg;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double _pregqbar;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> _prefactor;
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy _min_pt;
+  //@}
 
 };
 

@@ -21,11 +21,13 @@ using namespace Herwig;
 const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-10*GeV2);
 
 GGtoHMECorrection::GGtoHMECorrection() 
-  : _minloop(6),_maxloop(6),_massopt(0),  
+  : _generationOption(false),_minloop(6),_maxloop(6),_massopt(0),  
     _channelwgtA(0.45),_channelwgtB(0.15), alphaScaleOption_(0), scaleFact_(1.),
     _ggpow(1.6), _qgpow(1.6),_enhance(1.1),
-    _nover(0),_ntry(0),_ngen(0),
-    _maxwgt(0.) {}
+    _nover(0),_ntry(0),_ngen(0), _maxwgt(0.),
+    _power(2.0),_pregg(5.),_preqg(3.),_pregqbar(3.),
+    _min_pt(2.0*GeV)
+{}
 
 IBPtr GGtoHMECorrection::clone() const {
   return new_ptr(*this);
@@ -35,27 +37,42 @@ IBPtr GGtoHMECorrection::fullclone() const {
   return new_ptr(*this);
 }
 
-
 void GGtoHMECorrection::persistentOutput(PersistentOStream & os) const {
-  os << _minloop << _maxloop << _massopt << _ggpow << _qgpow << _enhance
-     << _channelwgtA << _channelwgtB << alphaScaleOption_ << scaleFact_ << _channelweights;
+  os << _generationOption << _minloop << _maxloop << _massopt 
+     << _ggpow << _qgpow << _enhance
+     << _channelwgtA << _channelwgtB << alphaScaleOption_ << scaleFact_ 
+     << _channelweights << _power << _pregg << _preqg << _pregqbar 
+     << ounit( _min_pt,GeV );
 }
 
 void GGtoHMECorrection::persistentInput(PersistentIStream & is, int) {
-  is >> _minloop >> _maxloop >> _massopt >> _ggpow >> _qgpow >> _enhance
-     >> _channelwgtA >> _channelwgtB >> alphaScaleOption_ >> scaleFact_ >> _channelweights;
+  is >> _generationOption >> _minloop >> _maxloop >> _massopt 
+     >> _ggpow >> _qgpow >> _enhance
+     >> _channelwgtA >> _channelwgtB >> alphaScaleOption_ >> scaleFact_ 
+     >> _channelweights >> _power >> _pregg >> _preqg >> _pregqbar 
+     >> iunit( _min_pt, GeV );
 }
 
 void GGtoHMECorrection::doinit() throw(InitException) {
-  MECorrectionBase::doinit();
+  QTildeMECorrection::doinit();
   double total = 1.+_channelwgtA+_channelwgtB;
   _channelweights.push_back(1./total);
   _channelweights.push_back(_channelweights.back()+_channelwgtA/total);
   _channelweights.push_back(_channelweights.back()+_channelwgtB/total);
 }
 
+void GGtoHMECorrection::doinitrun() {
+  // insert the different prefactors in the vector for easy look up
+  _prefactor.push_back(_pregg);
+  _prefactor.push_back(_preqg);
+  _prefactor.push_back(_preqg);
+  _prefactor.push_back(_pregqbar);
+  _prefactor.push_back(_pregqbar);
+  QTildeMECorrection::doinitrun();
+}
+
 void GGtoHMECorrection::dofinish() {
-  MECorrectionBase::dofinish();
+  QTildeMECorrection::dofinish();
   if(_ntry==0) return;
   generator()->log() << "GGtoHMECorrection when applying the hard correction "
 		     << "generated " << _ntry << " trial emissions of which "
@@ -78,6 +95,22 @@ void GGtoHMECorrection::Init() {
      "were used for the Higgs+jet matrix element in hadron-hadron collisions.",
      "\\bibitem{Baur:1989cm} U.~Baur and E.~W.~N.~Glover,"
      "Nucl.\\ Phys.\\ B {\\bf 339} (1990) 38.\n");
+
+  static Switch<GGtoHMECorrection,bool> interface_generationOption
+    ("GenerationOption",
+     "Option to control how the hard correction is generated",
+     &GGtoHMECorrection::_generationOption, false, false, false);
+  static SwitchOption interface_generationOptionNoSudakov
+    (interface_generationOption,
+     "NoSudakov",
+     "Don't include the Sudakov",
+     false);
+  static SwitchOption interface_generationOptionIncludeSudakov
+    (interface_generationOption,
+     "IncludeSudakov",
+     "Include the Sudakov form-factor",
+     true);
+
   static Parameter<GGtoHMECorrection,unsigned int> interfaceMinimumInLoop
     ("MinimumInLoop",
      "The minimum flavour of the quarks to include in the loops",
@@ -161,6 +194,37 @@ void GGtoHMECorrection::Init() {
      " the weight for the matrix element correction is less than one.",
      &GGtoHMECorrection::_enhance, 1.1, 1.0, 10.0,
      false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection,double> interfacePower
+    ("Power",
+     "The power for the sampling of the matrix elements",
+     &GGtoHMECorrection::_power, 2.0, 1.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection,double> interfacePrefactorgg
+    ("Prefactorgg",
+     "The prefactor for the sampling of the q qbar channel",
+     &GGtoHMECorrection::_pregg, 5.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection,double> interfacePrefactorqg
+    ("Prefactorqg",
+     "The prefactor for the sampling of the q g channel",
+     &GGtoHMECorrection::_preqg, 3.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+  
+  static Parameter<GGtoHMECorrection,double> interfacePrefactorgqbar
+    ("Prefactorgqbar",
+     "The prefactor for the sampling of the g qbar channel",
+     &GGtoHMECorrection::_pregqbar, 3.0, 0.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<GGtoHMECorrection, Energy> interfacePtMin
+    ("minPt",
+     "The pt cut on hardest emision generation"
+     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
+     &GGtoHMECorrection::_min_pt, GeV, 0.1*GeV, 0*GeV, 100000.0*GeV,
+     false, false, Interface::limited);
 }
 
 bool GGtoHMECorrection::canHandle(ShowerTreePtr tree, double & initial,
@@ -191,6 +255,8 @@ bool GGtoHMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   if(part[0]->id()!=ParticleID::h0) return false;
   // extract the Higgs mass and store it
   _mh2=sqr(part[0]->mass());
+  _yh = 0.5 * log((part[0]->momentum().e()+part[0]->momentum().z())/
+ 	          (part[0]->momentum().e()-part[0]->momentum().z()));
   // can handle it
   initial = _enhance;
   final   = 1.;
@@ -221,7 +287,7 @@ void GGtoHMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   vector<Lorentz5Momentum> pnew;
   pair<double,double> xnew;
   // if not accepted return
-  tPDPtr out;
+  tcPDPtr out;
   if(!applyHard(incoming,beams,higgs,iemit,itype,pnew,xnew,out)) return;
   // if applying ME correction create the new particles
   if(itype==0) {
@@ -464,7 +530,136 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
 				  unsigned int & iemit, unsigned int & itype,
 				  vector<Lorentz5Momentum> & pnew, 
 				  pair<double,double> & xout,
-				  tPDPtr & out) {
+				  tcPDPtr & out) {
+  if(_generationOption) 
+    return applyHardSudakov(gluons,beams,higgs,iemit,itype,pnew,xout,out);
+  else
+    return applyHardNoSudakov(gluons,beams,higgs,iemit,itype,pnew,xout,out);
+}
+
+bool GGtoHMECorrection::applyHardSudakov(ShowerParticleVector gluons, 
+					   vector<tcBeamPtr> beams,PPtr higgs,
+					   unsigned int & iemit, unsigned int & itype,
+					   vector<Lorentz5Momentum> & pnew, 
+					   pair<double,double> & xout,
+					   tcPDPtr & out) {
+  // hadron-hadron cmf
+  Energy2 s=sqr(generator()->maximumCMEnergy());
+  // maximum pt (half of centre-of-mass energy)
+  Energy maxp = 0.5*generator()->maximumCMEnergy();
+  // set pt of emission to zero
+  Energy _pt=0.*GeV;
+  //Working Variables
+  Energy pt;
+  double yj;
+  // limits on the rapidity of the jet
+  double minyj = -8.0,maxyj = 8.0;
+  bool reject;
+  double wgt;
+  int emis_type=-1;
+  double yjet;
+  tcPDPtr outParton;
+  for(int j=0;j<5;++j) {     
+    pt = maxp;
+    do {
+      double a = coupling()->overestimateValue()*_prefactor[j]*(maxyj-minyj)/(_power-1.);
+      // generate next pt
+      pt=GeV/pow(pow(GeV/pt,_power-1)-log(UseRandom::rnd())/a,1./(_power-1.));
+      // generate rapidity of the jet
+      yj=UseRandom::rnd()*(maxyj-minyj)+ minyj;
+      // calculate rejection weight
+      wgt=getResult(j,pt,yj,beams,outParton);
+      wgt/= _prefactor[j]*pow(GeV/pt,_power);
+      reject = UseRandom::rnd()>wgt;
+      // in the shower region ?
+      Energy et=sqrt(_mh2+sqr(pt));
+      double x  = pt*exp( yj)/sqrt(s)+et*exp( _yh)/sqrt(s);
+      double y  = pt*exp(-yj)/sqrt(s)+et*exp(-_yh)/sqrt(s);
+      double tbar = -sqrt(s)*x*pt*exp(-yj)/_mh2;
+      double sbar = x*y*s/_mh2;
+      if(tbar>     (1.-sbar)/(1.+sbar)||
+	 tbar<sbar*(1.-sbar)/(1.+sbar)) reject = true;
+      //no emission event if p goes past p min - basically set to outside
+      //of the histogram bounds (hopefully hist object just ignores it)
+      if(pt<_min_pt){
+	pt=0.0*GeV;
+	reject = false;
+      }
+      if(wgt>1.0) {
+	ostringstream s;
+	s << "GGtoHHardGenerator::getEvent weight for channel " << j
+	  << "is " << wgt << " which is greater than 1";
+	generator()->logWarning( Exception(s.str(), Exception::warning) );
+      }
+    }
+    while(reject);
+    // set pt of emission etc
+    if(pt>_pt){
+      emis_type = j;
+      _pt=pt;
+      yjet=yj;
+      out = outParton;
+    }
+  }
+  //was this an (overall) no emission event?
+  if(_pt<_min_pt){ 
+    _pt=0.0*GeV;
+    emis_type = 5;
+  }
+  if(emis_type==5 || emis_type== -1) return false;
+  // generate the momenta of the particles
+  // transverse energy
+  Energy et=sqrt(_mh2+sqr(_pt));
+  // first calculate all the kinematic variables
+  // longitudinal real correction fractions
+  double x  = _pt*exp( yjet)/sqrt(s)+et*exp( _yh)/sqrt(s);
+  double y  = _pt*exp(-yjet)/sqrt(s)+et*exp(-_yh)/sqrt(s);
+  xout.first  = x;
+  xout.second = y;
+  // reconstruct the momenta
+  // incoming momenta
+  pnew.push_back(Lorentz5Momentum(0.*MeV,0.*MeV,
+				   x*0.5*sqrt(s), x*0.5*sqrt(s),0.*MeV));
+  pnew.push_back(Lorentz5Momentum(0.*MeV,0.*MeV,
+				  -y*0.5*sqrt(s), y*0.5*sqrt(s),0.*MeV));
+  // outgoing momenta
+  double phi(Constants::twopi*UseRandom::rnd());
+  double sphi(sin(phi)),cphi(cos(phi));
+  pnew.push_back(Lorentz5Momentum(-cphi*_pt,-sphi*_pt,_pt*sinh(yjet),
+				  _pt*cosh(yjet),0.*MeV));
+  pnew.push_back(Lorentz5Momentum( cphi*_pt, sphi*_pt, et*sinh(_yh),
+				   et*cosh(_yh), sqrt(_mh2)));
+  if(emis_type==0) {
+    itype=0;
+    Energy2 th = -sqrt(s)*x*_pt*exp(-yjet);
+    Energy2 uh = -sqrt(s)*y*_pt*exp( yjet);
+    iemit = th>uh ? 0 : 1;
+  }
+  else if(emis_type==1) {
+    itype = 1;
+    iemit = 0;
+  }
+  else if(emis_type==2) {
+    itype = 1;
+    iemit = 1;
+  }
+  else if(emis_type==3) {
+    itype = 2;
+    iemit = 0;
+  }
+  else {
+    itype = 2;
+    iemit = 1;
+  }
+  return true;
+}
+
+bool GGtoHMECorrection::applyHardNoSudakov(ShowerParticleVector gluons, 
+					   vector<tcBeamPtr> beams,PPtr higgs,
+					   unsigned int & iemit, unsigned int & itype,
+					   vector<Lorentz5Momentum> & pnew, 
+					   pair<double,double> & xout,
+					   tcPDPtr & out) {
   ++_ntry;
   // calculate the limits on s
   Energy mh(higgs->mass());
@@ -934,4 +1129,77 @@ Complex GGtoHMECorrection::F(double x) {
   else {
     return -2.*sqr(asin(0.5/sqrt(x)));
   }
+}
+
+double GGtoHMECorrection::getResult(int emis_type, Energy pt, double yj,
+				    vector<tcBeamPtr> beams,tcPDPtr & outParton) {
+  Energy2 s=sqr(generator()->maximumCMEnergy());
+  Energy2 scale = _mh2+sqr(pt);
+  Energy  et=sqrt(scale);  // Think before you go moving this!
+  scale *= sqr(scaleFact_);
+  // longitudinal real correction fractions
+  double x  = pt*exp( yj)/sqrt(s)+et*exp( _yh)/sqrt(s);
+  double y  = pt*exp(-yj)/sqrt(s)+et*exp(-_yh)/sqrt(s);
+  // reject if outside region
+  if(x<0.||x>1.||y<0.||y>1.||x*y<_mh2/s) return 0.;
+  // longitudinal born fractions
+  double x1 = sqrt(_mh2)*exp( _yh)/sqrt(s);          
+  double y1 = sqrt(_mh2)*exp(-_yh)/sqrt(s);
+  // mandelstam variables
+  Energy2 th = -sqrt(s)*x*pt*exp(-yj);
+  Energy2 uh = -sqrt(s)*y*pt*exp( yj);
+  Energy2 sh = _mh2-th-uh;
+  InvEnergy2 res = InvEnergy2();
+  tcPDPtr gluon = getParticleData(ParticleID::g);
+  // pdf part of the cross section
+  double pdf[4];
+  pdf[0]=beams[0]->pdf()->xfx(beams[0],gluon,_mh2,x1);
+  pdf[1]=beams[1]->pdf()->xfx(beams[1],gluon,_mh2,y1);
+  // g g -> H g
+  if(emis_type==0) {
+    outParton = gluon;
+    pdf[2]=beams[0]->pdf()->xfx(beams[0],gluon,scale,x);
+    pdf[3]=beams[1]->pdf()->xfx(beams[1],gluon,scale,y);
+    res = ggME(sh,uh,th)/loME();
+  }
+  // q g -> H q 
+  else if(emis_type==1) {
+    outParton = quarkFlavour(beams[0]->pdf(),scale,x,beams[0],pdf[2],false);
+    pdf[3]=beams[1]->pdf()->xfx(beams[1],gluon,scale,y);
+    res = qgME(sh,uh,th)/loME();
+  }
+  // g q -> H q
+  else if(emis_type==2) {
+    pdf[2]=beams[0]->pdf()->xfx(beams[0],gluon,scale,x);
+    outParton = quarkFlavour(beams[1]->pdf(),scale,y,beams[1],pdf[3],false);
+    res = qgME(sh,th,uh)/loME();
+  }
+  // qbar g -> H qbar
+  else if(emis_type==3) {
+    outParton = quarkFlavour(beams[0]->pdf(),scale,x,beams[0],pdf[2],true);
+    pdf[3]=beams[1]->pdf()->xfx(beams[1],gluon,scale,y);
+    res = qbargME(sh,uh,th)/loME();
+  }
+  // g qbar -> H qbar
+  else if(emis_type==4) {
+    pdf[2]=beams[0]->pdf()->xfx(beams[0],gluon,scale,x);
+    outParton = quarkFlavour(beams[1]->pdf(),scale,y,beams[1],pdf[3],true);
+    res = qbargME(sh,th,uh)/loME();
+  }
+  //deals with pdf zero issue at large x
+  if(pdf[0]<=0.||pdf[1]<=0.||pdf[2]<=0.||pdf[3]<=0.) {
+    res = 0./GeV2;
+  }
+  else {
+    res *= pdf[2]*pdf[3]/pdf[0]/pdf[1]*_mh2/sh;
+  }
+  double the_result(0.);
+  if(alphaScaleOption_==1) {
+    the_result=coupling()->ratio(sqr(pt*scaleFact_))
+      /8./sqr(Constants::pi)*_mh2/sh*GeV*pt*res;
+  } else {
+    the_result=coupling()->ratio(scale)
+      /8./sqr(Constants::pi)*_mh2/sh*GeV*pt*res;
+  }
+  return the_result;
 }
