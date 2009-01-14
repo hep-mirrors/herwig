@@ -7,6 +7,7 @@
 
 #include "Herwig++/MatrixElement/Hadron/MEPP2VV.h"
 #include "ThePEG/PDF/BeamParticleData.h"
+#include "Herwig++/MatrixElement/Powheg/NLO2to2Kinematics.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -29,15 +30,6 @@ public:
 public:
 
   /**
-   * The matrix element for the kinematical configuration
-   * previously provided by the last call to setKinematics(), suitably
-   * scaled by sHat() to give a dimension-less number.
-   * @return the matrix element scaled with sHat() to give a
-   * dimensionless number.
-   */
-  virtual double me2() const;
-
-  /**
    * Generate internal degrees of freedom given nDim() uniform
    * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
    * generator, the dSigHatDR should be a smooth function of these
@@ -45,13 +37,22 @@ public:
    * @param r a pointer to the first of nDim() consecutive random numbers.
    * @return true if the generation succeeded, otherwise false.
    */
-  virtual bool generateKinematics(const double * r);
+  bool generateKinematics(const double * r);
 
   /**
    * The number of internal degrees of freedom used in the matrix
    * element.
    */
-  virtual int nDim() const;
+  int nDim() const;
+
+  /**
+   * The matrix element for the kinematical configuration
+   * previously provided by the last call to setKinematics(), suitably
+   * scaled by sHat() to give a dimension-less number.
+   * @return the matrix element scaled with sHat() to give a
+   * dimensionless number.
+   */
+  double me2() const;
 
 public:
 
@@ -77,12 +78,12 @@ public:
    * before the main function starts or
    * when this class is dynamically loaded.
    */
-  static void Init();
+    static void Init();
 
   /**
    * Function to set the born variables. 
    */
-  void get_LO_data(double lo_me2) const;
+  void getKinematics(double xt, double y);
 
   /**
    * Calculate the correction weight with which leading-order
@@ -91,105 +92,65 @@ public:
   double NLOweight() const;
 
   /**
-   * Invariants required for the evaluation of next-to-leading order
-   * quantities (Frixione et al. NPB.383 WZ production at colliders). 
-   */
-  inline Energy2 s(double xt, double y)      const ;
-  inline Energy2 tk(double xt, double y)     const ;
-  inline Energy2 uk(double xt, double y)     const ;
-  inline double  betax(double xt, double y)  const ; 
-  inline double  v1(double xt, double y)     const ; 
-  inline double  v2(double xt, double y)     const ; 
-  inline double  cpsi(double xt, double y)   const ; 
-  inline double  cpsipr(double xt, double y) const ; 
-  inline Energy2 q1(double xt, double y)     const ;
-  inline Energy2 q2(double xt, double y)     const ;
-  inline Energy2 q1hat(double xt, double y)  const ; 
-  inline Energy2 q2hat(double xt, double y)  const ; 
-  inline Energy2 w1(double xt, double y)     const ; 
-  inline Energy2 w2(double xt, double y)     const ;  
-
-  /**
-   * Calculate the minimum of \f$x\f$. 
-   */
-  double xbar(double y) const;
-
-  /**
-   * Calculate auxiliary function of \f$\bar{x}(y)\f$, \f$\bar{\eta}(y)\f$. 
-   */
-  double etab(double y) const;
-
-  /**
-   * Calculate the variable \f$x=p^{2}/s\f$ from the integration variables. 
-   */
-  inline double x(double xt, double y) const;
-
-  /**
-   * Calculate the momentum fraction of the plus and minus partons. 
-   */
-  double xp(double x, double y) const;
-  double xm(double x, double y) const;
-
-  /**
    * Calculate the ratio of the NLO luminosity to the LO
    * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
    */
-  double Lhat_ab(tcPDPtr a, tcPDPtr b, double x, double y) const;
+  double Lhat_ab(tcPDPtr a, tcPDPtr b, real2to3Kinematics Kinematics) const;
 
   /**
    * Calculate the universal soft-virtual contribution to the NLO weight. 
    */
-  double Vtilde_universal() const;
+  double Vtilde_universal(real2to3Kinematics S) const;
 
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Ctilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Ctilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,real2to3Kinematics C) const;
 
   /**
    * Function for calculation of the \f$gq\f$ initiated real
    * contribution.
    */
-  double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,real2to3Kinematics C) const;
 
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Rtilde_Ltilde_qqb_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Rtilde_Ltilde_qqb_on_x(tcPDPtr a,tcPDPtr b) const;
 
   /**
    * Function for calculation of the \f$qg\f$ initiated real
    * contribution.
    */
-  double Rtilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Rtilde_Ltilde_qg_on_x(tcPDPtr a,tcPDPtr b) const;
 
   /**
    * Function for calculation of the \f$gqb\f$ initiated real
    * contribution.
    */
-  double Rtilde_Ltilde_gqb_on_x(tcPDPtr a,tcPDPtr b,double xt,double y) const;
+  double Rtilde_Ltilde_gqb_on_x(tcPDPtr a,tcPDPtr b) const;
 
   /**
    * The regular part of the virtual correction matrix element(s) 
    */
-  double M_V_regular() const;
+    double M_V_regular(born2to2Kinematics theKinematics) const;
 
   /**
    * The matrix element q + qb -> n + g times tk*uk 
    */
-  Energy2 t_u_M_R_qqb(double xt, double y) const;
+  Energy2 t_u_M_R_qqb(real2to3Kinematics theKinematics) const;
 
   /**
    * The matrix element q + g  -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_qg(double xt, double y) const;
+  Energy2 t_u_M_R_qg(real2to3Kinematics theKinematics) const;
 
   /**
    * The matrix element g + qb -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_gqb(double xt, double y) const;
+  Energy2 t_u_M_R_gqb(real2to3Kinematics theKinematics) const;
 
 protected:
 
@@ -232,65 +193,59 @@ private:
   /**
    *  The BeamParticleData object for the plus and minus direction hadrons
    */
-  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
-  mutable Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
+  Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
+  Ptr<BeamParticleData>::transient_const_pointer hadron_B_;
 
   /**
-   *  The momentum fraction of the plus and minus partons in the Born process
+   * Born / virtual 2->2 kinematics.
    */
-  mutable double xpb_, xmb_;
+  born2to2Kinematics B_;
 
   /**
-   *  The sqrt(1-xpb_) and sqrt(1-xmb_) respectively
+   * Soft limit of the 2->3 real emission kinematics.
    */
-  mutable double etapb_, etamb_;
+  real2to3Kinematics S_;
+
+  /**
+   * Soft-collinear limit of the 2->3 kinematics (emission in +z direction).
+   */
+  real2to3Kinematics SCp_;
+
+  /**
+   * The collinear limit of the 2->3 kinematics (emission in -z direction).
+   */
+  real2to3Kinematics SCm_;
+
+  /**
+   * The collinear limit of the 2->3 kinematics (emission in +z direction).
+   */
+  real2to3Kinematics Cp_;
+
+  /**
+   * The collinear limit of the 2->3 kinematics (emission in -z direction).
+   */
+  real2to3Kinematics Cm_;
+
+  /**
+   * The resolved 2->3 real emission kinematics:
+   */
+  real2to3Kinematics H_;
 
   /**
    *  The ParticleData object for the plus and minus lo partons
    */
-  mutable tcPDPtr ab_, bb_;
+  tcPDPtr ab_, bb_;
 
   /**
    *  Flag indicating if the q & qbar are flipped or not i.e. this
    *  is true if q enters from the -z direction in the lab frame.
    */
-  mutable bool flipped_;
+  bool flipped_;
 
   /**
    *  Values of the PDF's before radiation
    */
-  mutable double lo_lumi_;
-
-  /**
-   * The 2->2 process momenta in the diboson centre of mass frame,
-   * in the notation of the Frixione, Mele, Nason, Ridolfi papers. 
-   */
-  mutable Lorentz5Momentum p1b_;
-  mutable Lorentz5Momentum p2b_;
-  mutable Lorentz5Momentum k1b_;
-  mutable Lorentz5Momentum k2b_;
-
-  /**
-   * The invariant mass / shat, that and uhat of the LO final state. 
-   */
-  mutable Energy2 sb_;
-  mutable Energy2 tb_;
-  mutable Energy2 ub_;
-
-  /**
-   * The rapidity of the LO final state with the quark defining the +z axis. 
-   */
-  mutable double Yb_;
-
-  /**
-   * The squared masses of the lo final state particles p1 and p2. 
-   */
-  mutable Energy2 k12b_, k22b_;
-
-  /**
-   * The polar and azimuthal angles respectively defining a two body lo event. 
-   */
-  mutable double  theta1b_ , theta2b_  ;
+  double lo_lumi_;
 
   /**
    *  The value of the leading order qqbar->VV matrix element
@@ -326,21 +281,6 @@ private:
    *  Flag to remove or multiply in MCFM branching fractions for testing
    */
   unsigned int removebr_;
-  //@}
-
-  /**
-   *  Radiation variables
-   */
-  //@{
-  /**
-   *   The \f$\tilde{x}\f$ variable
-   */
-  double xt_;
-
-  /**
-   *  The \f$y\f$ angular variable
-   */
-  double y_;
   //@}
 
   /**
@@ -386,7 +326,5 @@ struct ClassTraits<Herwig::MEPP2VVPowheg>
 /** @endcond */
 
 }
-
-#include "MEPP2VVPowheg.icc"
 
 #endif /* HERWIG_MEPP2VVPowheg_H */

@@ -6,6 +6,5 @@ MEqq2W2ffPowheg.cc  MEqq2W2ffPowheg.h \
 MEPP2HiggsPowheg.cc  MEPP2HiggsPowheg.h \
 MEPP2WHPowheg.cc  MEPP2WHPowheg.h \
 MEPP2ZHPowheg.cc  MEPP2ZHPowheg.h \
-MEPP2VVPowheg.cc \
-MEPP2VVPowheg.h MEPP2VVPowheg.icc
-
+MEPP2VVPowheg.cc  MEPP2VVPowheg.h \
+NLO2to2Kinematics.cc NLO2to2Kinematics.h
