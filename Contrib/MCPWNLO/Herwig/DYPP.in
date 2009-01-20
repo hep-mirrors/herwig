@@ -76,6 +76,8 @@ cd /Herwig/Analysis
 create Herwig::MySimpleAnalysis MySimpleAnalysis MySimpleAnalysis.so
 insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MySimpleAnalysis
 
+set /Herwig/Shower/Evolver:MECorrMode 0
+
 #cd /Herwig/Shower
 # HardVetoMode : 0 (All off), 1 (All on), 2 (only IS emissions vetoed)
 #, 3 (only FS emissions vetoed).
