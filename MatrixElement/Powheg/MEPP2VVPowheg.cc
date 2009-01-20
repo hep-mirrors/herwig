@@ -115,8 +115,10 @@ bool MEPP2VVPowheg::generateKinematics(const double * r) {
   double y( -999.);
   if(contrib_>0) {
     // Generate the radiative integration variables:
-    xt = *r;
-    y  = *(r+1) * 2. - 1.;
+//    xt = *r;
+//    y  = *(r+1) * 2. - 1.;
+    xt = UseRandom::rnd();
+    y  = UseRandom::rnd() * 2. -1.;
   }
 
   // Continue with lo matrix element code:
@@ -347,31 +349,35 @@ double MEPP2VVPowheg::NLOweight() const {
   double wgqb       = wgqbreal+wgqbcollin;
   // total contribution
   wgt               = 1.+(wqqb+wgqb+wqg);
-//   cout << "\n\n\n\n";
-//   cout << "*ab_       " << ab_->PDGName() << endl;
-//   cout << "*bb_       " << bb_->PDGName() << endl;
-//   cout << "H_.xt()    " << H_.xt()        << endl;
-//   cout << "H_.y()     " << H_.y()         << endl;
-//   cout << "H_.bornVariables().sb()    " << H_.bornVariables().sb()/GeV2    << endl;
-//   cout << "H_.tkr()    " << H_.tkr()/GeV2   << endl;
-//   cout << "H_.ukr()    " << H_.ukr()/GeV2   << endl;
-//   cout << "H_.s2r()    " << H_.s2r()/GeV2   << endl;
-//   cout << "H_.k12r()  " << H_.k12r()/GeV2 << endl;
-//   cout << "H_.k22r()  " << H_.k22r()/GeV2 << endl;
-//   cout << "gW^2       " << gW*gW      << endl;
-//   cout << "sin2ThetaW " << sin2ThetaW << endl;
-//   cout << "sqr(Kij)   " << Kij*Kij    << endl;
-//   cout << "wqqbvirt   " << wqqbvirt   << endl;
-//   cout << "wqqbcollin " << wqqbcollin << endl;
-//   cout << "wqqbreal   " << wqqbreal   << endl;
-//   cout << "wqqb       " << wqqb       << endl;
-//   cout << "wqgcollin  " << wqgcollin  << endl;
-//   cout << "wqgreal    " << wqgreal    << endl;
-//   cout << "wqg        " << wqg        << endl;
-//   cout << "wgqbcollin " << wgqbcollin << endl;
-//   cout << "wgqbreal   " << wgqbreal   << endl;
-//   cout << "wgqb       " << wgqb       << endl;
-//   cout << "wgt        " << wgt        << endl;
+  // Temporary fix for nans & infs plus related debugging output:
+  if(isnan(wgt)||isinf(wgt)) { 
+    cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
+    cout << "xt = " << H_.xt() << ", y = " << H_.y() << endl;
+    cout << "sr + tkr + ukr = "
+	 << H_.sr()/GeV2  << " + "
+	 << H_.tkr()/GeV2 << " + "
+	 << H_.ukr()/GeV2 << " = "
+	 << (H_.sr()+H_.tkr()+H_.ukr())/GeV2 << endl;
+    cout << "s2r        " << H_.s2r()/GeV2 << endl;
+    cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
+    cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
+    cout << "gW^2       " << gW*gW      << endl;
+    cout << "sin2ThetaW " << sin2ThetaW << endl;
+    cout << "sqr(Kij)   " << Kij*Kij    << endl;
+    cout << "wqqbvirt   " << wqqbvirt   << endl;
+    cout << "wqqbcollin " << wqqbcollin << endl;
+    cout << "wqqbreal   " << wqqbreal   << endl;
+    cout << "wqqb       " << wqqb       << endl;
+    cout << "wqgcollin  " << wqgcollin  << endl;
+    cout << "wqgreal    " << wqgreal    << endl;
+    cout << "wqg        " << wqg        << endl;
+    cout << "wgqbcollin " << wgqbcollin << endl;
+    cout << "wgqbreal   " << wgqbreal   << endl;
+    cout << "wgqb       " << wgqb       << endl;
+    cout << "wgt        " << wgt        << endl;
+    cout << "setting wgt = 0.";
+    wgt = 0.;
+  }
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 

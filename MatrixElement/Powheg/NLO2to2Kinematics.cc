@@ -369,7 +369,7 @@ void real2to3Kinematics::sanityCheck() const {
     Lorentz5Momentum p1bdiff = (p1r-bornVariables_.p1b());
     if(p1bdiff.x()/GeV>4.e-11||p1bdiff.y()/GeV>4.e-11||p1bdiff.z()/GeV>4.e-11||
        p1bdiff.t()/GeV>4.e-11||p1bdiff.tau()/GeV>4.e-11) {
-	cout << "\n\n\nreal2to3Kinematics: error for y_= 1.";
+	cout << "\n\n\nreal2to3Kinematics: error for xt_= 1.\n";
 	cout << "p1r     = " <<  p1r                      /GeV << endl;
 	cout << "p1b     = " <<  bornVariables_.p1b()     /GeV << endl;
 	cout << "p1r-p1b = " << (p1r-bornVariables_.p1b())/GeV << endl;
@@ -377,7 +377,7 @@ void real2to3Kinematics::sanityCheck() const {
     Lorentz5Momentum p2bdiff = (p2r-bornVariables_.p2b());
     if(p2bdiff.x()/GeV>4.e-11||p2bdiff.y()/GeV>4.e-11||p2bdiff.z()/GeV>4.e-11||
        p2bdiff.t()/GeV>4.e-11||p2bdiff.tau()/GeV>4.e-11) {
-	cout << "\n\n\nreal2to3Kinematics: error for y_=-1.";
+	cout << "\n\n\nreal2to3Kinematics: error for xt_= 1.\n";
 	cout << "p2r     = " <<  p2r                      /GeV << endl;
 	cout << "p2b     = " <<  bornVariables_.p2b()     /GeV << endl;
 	cout << "p2r-p2b = " << (p2r-bornVariables_.p2b())/GeV << endl;
