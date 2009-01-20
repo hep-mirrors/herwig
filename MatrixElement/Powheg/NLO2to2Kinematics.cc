@@ -83,33 +83,33 @@ void born2to2Kinematics::sanityCheck() const {
   Lorentz5Momentum k1bdiff(k1b_-k1b);
   Lorentz5Momentum k2bdiff(k2b_-k2b);
 
-  if(p1bdiff.x()/GeV>4.e-11||p1bdiff.y()/GeV>4.e-11||p1bdiff.z()/GeV>4.e-11||
-     p1bdiff.t()/GeV>4.e-11||p1bdiff.tau()/GeV>4.e-11) {
-      cout << "\n\n\n";
-      cout << "p1bdiff = " << p1bdiff/GeV << endl;
+  if(p1bdiff.x()/GeV>1.e-9||p1bdiff.y()/GeV>1.e-9||p1bdiff.z()/GeV>1.e-9||
+     p1bdiff.t()/GeV>1.e-9||p1bdiff.tau()/GeV>1.e-9) {
+      cout << "\n\n\nborn2to2Kinematics:\n";
       cout << "p1b_    = " << p1b_/GeV    << endl;
       cout << "p1b     = " << p1b/GeV     << endl;
+      cout << "p1bdiff = " << p1bdiff/GeV << endl;
   }
-  if(p2bdiff.x()/GeV>4.e-11||p2bdiff.y()/GeV>4.e-11||p2bdiff.z()/GeV>4.e-11||
-     p2bdiff.t()/GeV>4.e-11||p2bdiff.tau()/GeV>4.e-11) {
-      cout << "\n\n\n";
-      cout << "p2bdiff = " << p2bdiff/GeV << endl;
+  if(p2bdiff.x()/GeV>1.e-9||p2bdiff.y()/GeV>1.e-9||p2bdiff.z()/GeV>1.e-9||
+     p2bdiff.t()/GeV>1.e-9||p2bdiff.tau()/GeV>1.e-9) {
+      cout << "\n\n\nborn2to2Kinematics:\n";
       cout << "p2b_    = " << p2b_/GeV    << endl;
       cout << "p2b     = " << p2b/GeV     << endl;
+      cout << "p2bdiff = " << p2bdiff/GeV << endl;
   }
-  if(k1bdiff.x()/GeV>4.e-11||k1bdiff.y()/GeV>4.e-11||k1bdiff.z()/GeV>4.e-11||
-     k1bdiff.t()/GeV>4.e-11||k1bdiff.tau()/GeV>4.e-11) {
-      cout << "\n\n\n";
-      cout << "k1bdiff = " << k1bdiff/GeV << endl;
+  if(k1bdiff.x()/GeV>1.e-9||k1bdiff.y()/GeV>1.e-9||k1bdiff.z()/GeV>1.e-9||
+     k1bdiff.t()/GeV>1.e-9||k1bdiff.tau()/GeV>1.e-9) {
+      cout << "\n\n\nborn2to2Kinematics:\n";
       cout << "k1b_    = " << k1b_/GeV    << endl;
       cout << "k1b     = " << k1b/GeV     << endl;
+      cout << "k1bdiff = " << k1bdiff/GeV << endl;
   }
-  if(k2bdiff.x()/GeV>4.e-11||k2bdiff.y()/GeV>4.e-11||k2bdiff.z()/GeV>4.e-11||
-     k2bdiff.t()/GeV>4.e-11||k2bdiff.tau()/GeV>4.e-11) { 
-      cout << "\n\n\n";
-      cout << "k2bdiff = " << k2bdiff/GeV << endl;
+  if(k2bdiff.x()/GeV>1.e-9||k2bdiff.y()/GeV>1.e-9||k2bdiff.z()/GeV>1.e-9||
+     k2bdiff.t()/GeV>1.e-9||k2bdiff.tau()/GeV>1.e-9) { 
+      cout << "\n\n\nborn2to2Kinematics:\n";
       cout << "k2b_    = " << k2b_/GeV    << endl;
       cout << "k2b     = " << k2b/GeV     << endl;
+      cout << "k2bdiff = " << k2bdiff/GeV << endl;
   }
 
   return;
@@ -291,7 +291,7 @@ void real2to3Kinematics::sanityCheck() const {
   total = p1r+p2r-kr-k1r-k2r;
   if(total.x()/MeV>0.1||total.y()/MeV>0.1||total.z()/MeV>0.1||
      total.t()/MeV>0.1)
-      cout << "\nreal2to3Kinematics momentum imbalance= " << total/GeV << endl;
+     cout << "\nreal2to3Kinematics momentum imbalance = " << total/GeV << endl;
 
   // OK rescale all spatial components so the invariant length
   // equals exactly the invariant length element of the 5Vector.
@@ -305,22 +305,22 @@ void real2to3Kinematics::sanityCheck() const {
   total = p1r+p2r-kr-k1r-k2r;
   if(total.x()/MeV>0.1||total.y()/MeV>0.1||total.z()/MeV>0.1||
      total.t()/MeV>0.1)
-      cout << "\nreal2to3Kinematics momentum imbalance= " << total/GeV << endl;
+     cout << "\nreal2to3Kinematics momentum imbalance = " << total/GeV << endl;
 
   // Check that the final state momenta k1 and k2 are the same as
   // they are in the 2->2 process:
   Lorentz5Momentum k1diff(bornVariables_.k1b()-k1r);
   Lorentz5Momentum k2diff(bornVariables_.k2b()-k2r);
-  if(k1diff.x()/GeV>4.e-11||k1diff.y()/GeV>4.e-11||k1diff.z()/GeV>4.e-11||
-     k1diff.t()/GeV>4.e-11||k1diff.tau()/GeV>4.e-11) {
-      cout << "\n\n\nreal2to3Kinematics: ";
+  if(k1diff.x()/GeV>1.e-9||k1diff.y()/GeV>1.e-9||k1diff.z()/GeV>1.e-9||
+     k1diff.t()/GeV>1.e-9||k1diff.tau()/GeV>1.e-9) {
+      cout << "\n\n\nreal2to3Kinematics:\n";
       cout << "k1b    = " << bornVariables_.k1b()/GeV << endl;
       cout << "k1r    = " << k1r   /GeV << endl;
       cout << "k1diff = " << k1diff/GeV << endl;
   }
-  if(k2diff.x()/GeV>4.e-11||k2diff.y()/GeV>4.e-11||k2diff.z()/GeV>4.e-11||
-     k2diff.t()/GeV>4.e-11||k2diff.tau()/GeV>4.e-11) {
-      cout << "\n\n\nreal2to3Kinematics: ";
+  if(k2diff.x()/GeV>1.e-9||k2diff.y()/GeV>1.e-9||k2diff.z()/GeV>1.e-9||
+     k2diff.t()/GeV>1.e-9||k2diff.tau()/GeV>1.e-9) {
+      cout << "\n\n\nreal2to3Kinematics:\n";
       cout << "k2b    = " << bornVariables_.k2b()/GeV << endl;
       cout << "k2r    = " << k2r   /GeV << endl;
       cout << "k2diff = " << k2diff/GeV << endl;
@@ -329,16 +329,16 @@ void real2to3Kinematics::sanityCheck() const {
   // Check also that for y_=+/-1 you also get Born-like initial state momenta
   if(xt_!=1.&&y_== 1.) {
     Lorentz5Momentum p1bdiff = (p1r-kr-bornVariables_.p1b());
-    if(p1bdiff.x()/GeV>4.e-11||p1bdiff.y()/GeV>4.e-11||p1bdiff.z()/GeV>4.e-11||
-       p1bdiff.t()/GeV>4.e-11||p1bdiff.tau()/GeV>4.e-11) {
+    if(p1bdiff.x()/GeV>1.e-9||p1bdiff.y()/GeV>1.e-9||p1bdiff.z()/GeV>1.e-9||
+       p1bdiff.t()/GeV>1.e-9||p1bdiff.tau()/GeV>1.e-9) {
 	cout << "\n\n\nreal2to3Kinematics: error for y_= 1.\n";
 	cout << "p1r-kr     = " << (p1r-kr)                     /GeV << endl;
 	cout << "p1b        = " <<  bornVariables_.p1b()        /GeV << endl;
 	cout << "p1r-kr-p1b = " << (p1r-kr-bornVariables_.p1b())/GeV << endl;
     }
     Lorentz5Momentum p2bdiff = (p2r-bornVariables_.p2b());
-    if(p2bdiff.x()/GeV>4.e-11||p2bdiff.y()/GeV>4.e-11||p2bdiff.z()/GeV>4.e-11||
-       p2bdiff.t()/GeV>4.e-11||p2bdiff.tau()/GeV>4.e-11) {
+    if(p2bdiff.x()/GeV>1.e-9||p2bdiff.y()/GeV>1.e-9||p2bdiff.z()/GeV>1.e-9||
+       p2bdiff.t()/GeV>1.e-9||p2bdiff.tau()/GeV>1.e-9) {
 	cout << "\n\n\nreal2to3Kinematics: error for y_=-1.\n";
 	cout << "p2r     = " <<  p2r                      /GeV << endl;
 	cout << "p2b     = " <<  bornVariables_.p2b()     /GeV << endl;
@@ -347,16 +347,16 @@ void real2to3Kinematics::sanityCheck() const {
   }
   if(xt_!=1.&&y_==-1.) {
     Lorentz5Momentum p2bdiff = (p2r-kr-bornVariables_.p2b());
-    if(p2bdiff.x()/GeV>4.e-11||p2bdiff.y()/GeV>4.e-11||p2bdiff.z()/GeV>4.e-11||
-       p2bdiff.t()/GeV>4.e-11||p2bdiff.tau()/GeV>4.e-11) {
+    if(p2bdiff.x()/GeV>1.e-9||p2bdiff.y()/GeV>1.e-9||p2bdiff.z()/GeV>1.e-9||
+       p2bdiff.t()/GeV>1.e-9||p2bdiff.tau()/GeV>1.e-9) {
 	cout << "\n\n\nreal2to3Kinematics: error for y_=-1.\n";
 	cout << "p2r-kr     = " << (p2r-kr)                     /GeV << endl;
 	cout << "p2b        = " <<  bornVariables_.p2b()        /GeV << endl;
 	cout << "p2r-kr-p2b = " << (p2r-kr-bornVariables_.p2b())/GeV << endl;
     }
     Lorentz5Momentum p1bdiff = (p1r-bornVariables_.p1b());
-    if(p1bdiff.x()/GeV>4.e-11||p1bdiff.y()/GeV>4.e-11||p1bdiff.z()/GeV>4.e-11||
-       p1bdiff.t()/GeV>4.e-11||p1bdiff.tau()/GeV>4.e-11) {
+    if(p1bdiff.x()/GeV>1.e-9||p1bdiff.y()/GeV>1.e-9||p1bdiff.z()/GeV>1.e-9||
+       p1bdiff.t()/GeV>1.e-9||p1bdiff.tau()/GeV>1.e-9) {
 	cout << "\n\n\nreal2to3Kinematics: error for y_=-1.\n";
 	cout << "p1r     = " <<  p1r                      /GeV << endl;
 	cout << "p1b     = " <<  bornVariables_.p1b()     /GeV << endl;
@@ -367,16 +367,16 @@ void real2to3Kinematics::sanityCheck() const {
   // And that for xt_=1 you also get the Born initial state momenta
   if(xt_== 1.) {
     Lorentz5Momentum p1bdiff = (p1r-bornVariables_.p1b());
-    if(p1bdiff.x()/GeV>4.e-11||p1bdiff.y()/GeV>4.e-11||p1bdiff.z()/GeV>4.e-11||
-       p1bdiff.t()/GeV>4.e-11||p1bdiff.tau()/GeV>4.e-11) {
+    if(p1bdiff.x()/GeV>1.e-9||p1bdiff.y()/GeV>1.e-9||p1bdiff.z()/GeV>1.e-9||
+       p1bdiff.t()/GeV>1.e-9||p1bdiff.tau()/GeV>1.e-9) {
 	cout << "\n\n\nreal2to3Kinematics: error for xt_= 1.\n";
 	cout << "p1r     = " <<  p1r                      /GeV << endl;
 	cout << "p1b     = " <<  bornVariables_.p1b()     /GeV << endl;
 	cout << "p1r-p1b = " << (p1r-bornVariables_.p1b())/GeV << endl;
     }
     Lorentz5Momentum p2bdiff = (p2r-bornVariables_.p2b());
-    if(p2bdiff.x()/GeV>4.e-11||p2bdiff.y()/GeV>4.e-11||p2bdiff.z()/GeV>4.e-11||
-       p2bdiff.t()/GeV>4.e-11||p2bdiff.tau()/GeV>4.e-11) {
+    if(p2bdiff.x()/GeV>1.e-9||p2bdiff.y()/GeV>1.e-9||p2bdiff.z()/GeV>1.e-9||
+       p2bdiff.t()/GeV>1.e-9||p2bdiff.tau()/GeV>1.e-9) {
 	cout << "\n\n\nreal2to3Kinematics: error for xt_= 1.\n";
 	cout << "p2r     = " <<  p2r                      /GeV << endl;
 	cout << "p2b     = " <<  bornVariables_.p2b()     /GeV << endl;
