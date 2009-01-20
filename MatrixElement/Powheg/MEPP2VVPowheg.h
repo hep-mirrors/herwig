@@ -8,9 +8,12 @@
 #include "Herwig++/MatrixElement/Hadron/MEPP2VV.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig++/MatrixElement/Powheg/NLO2to2Kinematics.h"
+#include "Herwig++/Utilities/Maths.h"
 
 namespace Herwig {
 using namespace ThePEG;
+using Math::ReLi2;
+using Constants::pi;
 
 /**
  * Here is the documentation of the MEPP2VVPowheg class.
@@ -133,24 +136,27 @@ public:
   double Rtilde_Ltilde_gqb_on_x(tcPDPtr a,tcPDPtr b) const;
 
   /**
-   * The regular part of the virtual correction matrix element(s) 
+   * The regular part of the virtual correction matrix element(s).
+   * For WZ production this is given by Equation B.2 in NPB 383 (1992) 
+   * 3-44 *** modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
    */
-    double M_V_regular(born2to2Kinematics theKinematics) const;
+  double M_V_regular(real2to3Kinematics S) const;
 
   /**
    * The matrix element q + qb -> n + g times tk*uk 
    */
-  Energy2 t_u_M_R_qqb(real2to3Kinematics theKinematics) const;
+  Energy2 t_u_M_R_qqb(real2to3Kinematics R) const;
 
   /**
    * The matrix element q + g  -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_qg(real2to3Kinematics theKinematics) const;
+  Energy2 t_u_M_R_qg(real2to3Kinematics R) const;
 
   /**
    * The matrix element g + qb -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_gqb(real2to3Kinematics theKinematics) const;
+  Energy2 t_u_M_R_gqb(real2to3Kinematics R) const;
 
 protected:
 
@@ -261,6 +267,26 @@ private:
    *  The TR_ colour factor
    */
   double TR_;
+
+  /**
+   *  The number of colours
+   */
+  double NC_;
+
+  /**
+   *  The up and down, left handed, quark-boson couplings
+   */
+  mutable double guL_, gdL_;
+
+  /**
+   *  The TGC coupling
+   */
+  mutable double eZ_;
+
+  /**
+   *  The CKM factor (Fij^2)
+   */
+  mutable double Fij2_;
 
   /**
    *  Whether to generate the positive, negative or leading order contribution

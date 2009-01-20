@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MEPP2VVPowheg::MEPP2VVPowheg() :  
-    CF_(4./3.),    TR_(0.5),
+    CF_(4./3.),    TR_(0.5),  NC_(3.),
     contrib_(1),   nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
     removebr_(1)
 {}
@@ -300,11 +300,26 @@ double MEPP2VVPowheg::NLOweight() const {
 
   // Calculate alpha_S and alpha_S/(2*pi)
   alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
-  double alsOn2pi(alphaS_/2./Constants::pi);
+  double alsOn2pi(alphaS_/2./pi);
 
   // Particle data objects for the new plus and minus colliding partons.
   tcPDPtr a_nlo, b_nlo, gluon;
   gluon = getParticleData(ParticleID::g);
+
+  // Get the all couplings and CKM entry.
+  double gW(sqrt(4.0*pi*SM().alphaEM(scale())/SM().sin2ThetaW()));
+  double sin2ThetaW(SM().sin2ThetaW());
+  double cosThetaW(sqrt(1.-sin2ThetaW));
+  guL_ = gW/2./cosThetaW*( 1.-4./3.*sin2ThetaW);
+  gdL_ = gW/2./cosThetaW*(-1.+2./3.*sin2ThetaW);
+  eZ_  = gW*cosThetaW;
+
+  double Kij(sqrt(SM().CKM(*ab_,*bb_)));
+  Fij2_ = sqr(gW/2./sqrt(2.)*Kij);
+
+  // Here we got: gW^2      : 0.43942  (HW++) 0.43896  (MCFM)
+  //              sin2ThetaW: 0.222247 (HW++) 0.222247 (MCFM)
+  //              Kud       : 0.224274 (HW++) ???????? (MCFM)
 
   // Calculate the integrand
   double wgt(0.);
@@ -312,31 +327,61 @@ double MEPP2VVPowheg::NLOweight() const {
   // q qb  contribution
   a_nlo=ab_;
   b_nlo=bb_;
-  double wqqbvirt   = Vtilde_universal(S_) + M_V_regular(B_)/lo_me2_;
-  double wqqbcollin = Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cp_) 
-                    + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cm_);
-  double wqqbreal   = Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo);
+  double wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)
+                                           / lo_me2_;
+  double wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cp_) 
+                               + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cm_) );
+  double wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo);
   double wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
   // q g   contribution
   a_nlo=ab_;
   b_nlo=gluon;
-  double wqgcollin  = Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cm_);
-  double wqgreal    = Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo);
-  double wqg        = wqgreal+wqgcollin;
+  double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cm_);
+  double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo);
+  double wqg        = wqgreal + wqgcollin;
   // g qb  contribution
   a_nlo=gluon;
   b_nlo=bb_;
-  double wgqbcollin = Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cp_);
-  double wgqbreal   = Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo);
+  double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cp_);
+  double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo);
   double wgqb       = wgqbreal+wgqbcollin;
   // total contribution
-  wgt               = 1.+alsOn2pi*(wqqb+wgqb+wqg);
+  wgt               = 1.+(wqqb+wgqb+wqg);
+//   cout << "\n\n\n\n";
+//   cout << "*ab_       " << ab_->PDGName() << endl;
+//   cout << "*bb_       " << bb_->PDGName() << endl;
+//   cout << "H_.xt()    " << H_.xt()        << endl;
+//   cout << "H_.y()     " << H_.y()         << endl;
+//   cout << "H_.bornVariables().sb()    " << H_.bornVariables().sb()/GeV2    << endl;
+//   cout << "H_.tkr()    " << H_.tkr()/GeV2   << endl;
+//   cout << "H_.ukr()    " << H_.ukr()/GeV2   << endl;
+//   cout << "H_.s2r()    " << H_.s2r()/GeV2   << endl;
+//   cout << "H_.k12r()  " << H_.k12r()/GeV2 << endl;
+//   cout << "H_.k22r()  " << H_.k22r()/GeV2 << endl;
+//   cout << "gW^2       " << gW*gW      << endl;
+//   cout << "sin2ThetaW " << sin2ThetaW << endl;
+//   cout << "sqr(Kij)   " << Kij*Kij    << endl;
+//   cout << "wqqbvirt   " << wqqbvirt   << endl;
+//   cout << "wqqbcollin " << wqqbcollin << endl;
+//   cout << "wqqbreal   " << wqqbreal   << endl;
+//   cout << "wqqb       " << wqqb       << endl;
+//   cout << "wqgcollin  " << wqgcollin  << endl;
+//   cout << "wqgreal    " << wqgreal    << endl;
+//   cout << "wqg        " << wqg        << endl;
+//   cout << "wgqbcollin " << wgqbcollin << endl;
+//   cout << "wgqbreal   " << wgqbreal   << endl;
+//   cout << "wgqb       " << wgqb       << endl;
+//   cout << "wgt        " << wgt        << endl;
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
 double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, 
 			      real2to3Kinematics Kinematics) const {
-    double nlo_lumi(-999.);
+  if(!(abs(a->id())<=6||a->id()==21)||!(abs(b->id())<=6||b->id()==21))
+    cout << "MEPP2VVPowheg::Lhat_ab: Error," 
+         << "particle a = " << a->PDGName() << ", "
+         << "particle b = " << b->PDGName() << endl;
+  double nlo_lumi(-999.);
   double xp(Kinematics.xpr()),xm(Kinematics.xmr());
   nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),xp)/xp)
            * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),xm)/xm);
@@ -349,13 +394,13 @@ double MEPP2VVPowheg::Vtilde_universal(real2to3Kinematics S) const {
   double etapb(S.bornVariables().etapb());
   double etamb(S.bornVariables().etamb());
   Energy2 sb(S.s2r());
-  return  alphaS_/2./Constants::pi*CF_ 
+  return  alphaS_/2./pi*CF_ 
         * (   log(sb/sqr(mu_F()))
 	    * (3. + 4.*log(etapb)+4.*log(etamb))
 	    + 8.*sqr(log(etapb)) +8.*sqr(log(etamb))
-	    - 2.*sqr(Constants::pi)/3.
+	    - 2.*sqr(pi)/3.
 	  )
-        + alphaS_/2./Constants::pi*CF_ 
+        + alphaS_/2./pi*CF_ 
         * ( 8./(1.+y)*log(sqrt(1.-xbar_y)/etamb)
      	  + 8./(1.-y)*log(sqrt(1.-xbar_y)/etapb)
           );
@@ -410,153 +455,1156 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
+  if(!(abs(a->id())<=6||a->id()==21)||!(abs(b->id())<=6||b->id()==21))
+    cout << "MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x: Error," 
+         << "particle a = " << a->PDGName() << ", "
+         << "particle b = " << b->PDGName() << endl;
   double xt(H_.xt()); 
   double y(H_.y()); 
   Energy2 s(H_.sr());
   Energy2 s2(H_.s2r());
   return 
-     ( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_)-t_u_M_R_qqb(Cp_)*Lhat_ab(a,b,Cp_))/s
-       - (t_u_M_R_qqb(S_) - t_u_M_R_qqb(SCp_))/s2
+   ( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(a,b,Cp_))/s
+     - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/s2
 
-       )*2./(1.-y)/(1.-xt)
+     )*2./(1.-y)/(1.-xt)
 
-     + ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_)-t_u_M_R_qqb(Cm_)*Lhat_ab(a,b,Cm_))/s
-       - (t_u_M_R_qqb(S_) - t_u_M_R_qqb(SCm_))/s2
+   + ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(a,b,Cm_))/s
+     - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2
 
-       )*2./(1.+y)/(1.-xt)
+     )*2./(1.+y)/(1.-xt)
 
-     ) / lo_me2_ / 8. / Constants::pi / alphaS_;
+   ) / lo_me2_ / 8. / pi / alphaS_;
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
+  if(!(abs(a->id())<=6||a->id()==21)||!(abs(b->id())<=6||b->id()==21))
+    cout << "MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x: Error," 
+         << "particle a = " << a->PDGName() << ", "
+         << "particle b = " << b->PDGName() << endl;
   double xt(H_.xt()); 
   double y(H_.y()); 
   Energy2 s(H_.sr());
   Energy2 s2(H_.s2r());
   return 
-     ( ( (t_u_M_R_gqb(H_)*Lhat_ab(a,b,H_)-t_u_M_R_gqb(Cp_)*Lhat_ab(a,b,Cp_))/s
-       - (t_u_M_R_gqb(S_) - t_u_M_R_gqb(SCp_)                              )/s2
+   ( ( (t_u_M_R_gqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_gqb(Cp_)*Lhat_ab(a,b,Cp_))/s
+     - (t_u_M_R_gqb(S_)                 - t_u_M_R_gqb(SCp_)                )/s2
 
-       )*2./(1.-y)/(1.-xt)
+     )*2./(1.-y)/(1.-xt)
 
-     + ( (t_u_M_R_gqb(H_)*Lhat_ab(a,b,H_)-t_u_M_R_gqb(Cm_)*Lhat_ab(a,b,Cm_))/s
-       - (t_u_M_R_gqb(S_) - t_u_M_R_gqb(SCm_)                              )/s2
+   + ( (t_u_M_R_gqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_gqb(Cm_)*Lhat_ab(a,b,Cm_))/s
+     - (t_u_M_R_gqb(S_)                 - t_u_M_R_gqb(SCm_)                )/s2
 
-       )*2./(1.+y)/(1.-xt)
+     )*2./(1.+y)/(1.-xt)
 
-     ) / lo_me2_ / 8. / Constants::pi / alphaS_;
+   ) / lo_me2_ / 8. / pi / alphaS_;
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
+  if(!(abs(a->id())<=6||a->id()==21)||!(abs(b->id())<=6||b->id()==21))
+    cout << "MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x: Error," 
+         << "particle a = " << a->PDGName() << ", "
+         << "particle b = " << b->PDGName() << endl;
   double xt(H_.xt()); 
   double y(H_.y()); 
   Energy2 s(H_.sr());
   Energy2 s2(H_.s2r());
   return 
-     ( ( (t_u_M_R_qg(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qg(Cp_)*Lhat_ab(a,b,Cp_))/s
-       - (t_u_M_R_qg(S_)                 - t_u_M_R_qg(SCp_)                )/s2
+   ( ( (t_u_M_R_qg(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qg(Cp_)*Lhat_ab(a,b,Cp_))/s
+     - (t_u_M_R_qg(S_)                 - t_u_M_R_qg(SCp_)                )/s2
 
-       )*2./(1.-y)/(1.-xt)
+     )*2./(1.-y)/(1.-xt)
 
-     + ( (t_u_M_R_qg(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qg(Cm_)*Lhat_ab(a,b,Cm_))/s
-       - (t_u_M_R_qg(S_)                 - t_u_M_R_qg(SCm_)                )/s2
+   + ( (t_u_M_R_qg(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qg(Cm_)*Lhat_ab(a,b,Cm_))/s
+     - (t_u_M_R_qg(S_)                 - t_u_M_R_qg(SCm_)                )/s2
 
-       )*2./(1.+y)/(1.-xt)
+     )*2./(1.+y)/(1.-xt)
 
-     ) / lo_me2_ / 8. / Constants::pi / alphaS_;
+   ) / lo_me2_ / 8. / pi / alphaS_;
 }
 
-double MEPP2VVPowheg::M_V_regular(born2to2Kinematics S) const {
-  Energy2 s(S.sb());
-  Energy2 t(S.tb());
-  Energy2 u(S.ub());
-  Energy2 mW2(S.k12b());
-  Energy2 mZ2(S.k22b());
-  return alphaS_/2./Constants::pi*CF_*
-                        (  11./3.
-			+  4.*sqr(Constants::pi)/3.
-			- (4.*Constants::pi*CF_/CF_)*log(s/sqr(mu_UV()))
-			)*lo_me2_;
+/***************************************************************************/
+// The following three functions are identically  \tilde{I}_{4,t}, 
+// \tilde{I}_{3,WZ} and \tilde{I}_{3,W} given in Eqs. B.8,B.9,B.10 
+// of NPB 383(1992)3-44, respectively. They are related to / derived 
+// from the loop integrals in Eqs. A.3, A.5 and A.8 of the same paper.
+InvEnergy4 TildeI4t(Energy2 s, Energy2 t, Energy2 mW2, Energy2 mZ2);
+InvEnergy2 TildeI3WZ(Energy2 s, Energy2 mW2, Energy2 mZ2, double beta);
+InvEnergy2 TildeI3W(Energy2 s, Energy2 t, Energy2 mW2);
+
+/***************************************************************************/
+// The following six functions are identically  I_{dd}^{(1)}, I_{ud}^{(1)}, 
+// I_{uu}^{(1)}, F_{u}^{(1)}, F_{d}^{(1)}, H^{(1)} from Eqs. B.4, B.5, B.3,
+// B.3, B.6, B.7 of NPB 383(1992)3-44, respectively. They make up the 
+// one-loop matrix element. Ixx functions correspond to the graphs
+// with no TGC, Fx functions are due to non-TGC graphs interfering 
+// with TGC graphs, while the H function is due purely to TGC graphs. 
+double Idd1(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2,double beta);
+double Iud1(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2,double beta);
+double Iuu1(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2,double beta);
+Energy2 Fu1(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2,double beta);
+Energy2 Fd1(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2,double beta);
+Energy4 H1 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+
+/***************************************************************************/
+// M_V_Regular is the regular part of the one-loop matrix element 
+// exactly as defined in Eqs. B.1 and B.2 of of NPB 383(1992)3-44.
+double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
+  Energy2 s(S.bornVariables().sb());
+  Energy2 t(S.bornVariables().tb());
+  Energy2 u(S.bornVariables().ub());
+  Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
+  Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
+  double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
+  
+  return 4.*pi*alphaS_*Fij2_*CF_*(1./sqr(4.*pi))/NC_
+       * ( gdL_*gdL_*Idd1(s,t,u,mW2,mZ2,beta)
+	 + gdL_*guL_*Iud1(s,t,u,mW2,mZ2,beta)
+	 + guL_*guL_*Iuu1(s,t,u,mW2,mZ2,beta) 
+	 - eZ_/(s-mW2) * ( gdL_*Fd1(s,t,u,mW2,mZ2,beta)
+	                 - guL_*Fu1(s,t,u,mW2,mZ2,beta)
+	                 )
+         + sqr(eZ_/(s-mW2)) * H1(s,t,u,mW2,mZ2)
+	 );
 }
 
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics theKinematics) const {
+/***************************************************************************/
+InvEnergy4 TildeI4t(Energy2 s, Energy2 t, Energy2 mW2, Energy2 mZ2) {
+  double sqrBrackets;
+  sqrBrackets = (  sqr(log(-t/mW2))/2.+log(-t/mW2)*log(-t/mZ2)/2.
+	        - 2.*log(-t/mW2)*log((mW2-t)/mW2)-2.*ReLi2(t/mW2)
+	        );
+
+  swap(mW2,mZ2);
+
+  sqrBrackets+= (  sqr(log(-t/mW2))/2.+log(-t/mW2)*log(-t/mZ2)/2.
+	        - 2.*log(-t/mW2)*log((mW2-t)/mW2)-2.*ReLi2(t/mW2)
+	        );
+
+  return sqrBrackets/s/t;
+}
+
+InvEnergy2 TildeI3WZ(Energy2 s, Energy2 mW2, Energy2 mZ2, double beta) {
+  Energy2 sig(mZ2+mW2);
+  Energy2 del(mZ2-mW2);
+  double  sqrBrackets ;
+  sqrBrackets  = ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
+	 	 + ReLi2((1.-del/s+beta)/2.)
+	         + sqr(log((1.-del/s+beta)/2.))/2.
+		 + log((1.-del/s-beta)/2.)*log((1.+del/s-beta)/2.)
+                 );
+
+  beta *= -1;
+  sqrBrackets += ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
+	 	 + ReLi2((1.-del/s+beta)/2.)
+	         + sqr(log((1.-del/s+beta)/2.))/2.
+		 + log((1.-del/s-beta)/2.)*log((1.+del/s-beta)/2.)
+                 );
+  beta *= -1;
+
+  swap(mW2,mZ2);
+  del  *= -1.;
+  sqrBrackets += ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
+	 	 + ReLi2((1.-del/s+beta)/2.)
+	         + sqr(log((1.-del/s+beta)/2.))/2.
+		 + log((1.-del/s-beta)/2.)*log((1.+del/s-beta)/2.)
+                 );
+  swap(mW2,mZ2);
+  del  *= -1.;
+
+  beta *= -1;
+  swap(mW2,mZ2);
+  del  *= -1.;
+  sqrBrackets += ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
+	 	 + ReLi2((1.-del/s+beta)/2.)
+	         + sqr(log((1.-del/s+beta)/2.))/2.
+		 + log((1.-del/s-beta)/2.)*log((1.+del/s-beta)/2.)
+                 );
+  beta *= -1;
+  swap(mW2,mZ2);
+  del  *= -1.;
+
+  return sqrBrackets/s/beta;
+}
+
+InvEnergy2 TildeI3W(Energy2 s, Energy2 t, Energy2 mW2) {
+  return 
+    1./(mW2-t)*(sqr(log(mW2/s))/2.-sqr(log(-t/s))/2.-sqr(pi)/2.);
+}
+
+/***************************************************************************/
+double  Idd1(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double beta) { 
+    Energy2 sig(mZ2+mW2);
+    Energy2 del(mZ2-mW2);
+    double Val(0.);
+
+    Val +=    2.*(22.*t*t+t*(19.*s+18.*sig)+18.*mW2*mZ2)/t/t     
+            - 8.*(u*t+2*s*sig)/mW2/mZ2
+            - 2.*sqr(t-u)/t/s/sqr(beta);
+
+    Val += +( 2.*(8.*t*t+4.*t*(s-3.*sig)+4*sqr(sig)-5.*s*sig+s*s)/t/s/sqr(beta)
+	    + 4.*(t*(3.*u+s)-3.*mW2*mZ2)/t/t
+	    + 6.*(t+u)*sqr(t-u)/t/s/s/sqr(sqr(beta))
+	    )*log(-t/s);
+
+    Val += +( ( 8.*t*t*(-2.*s+del)+8.*t*(-s*s+3.*s*sig-2.*del*sig)
+	       - 2.*(s-sig)*(s*s-4.*s*sig+3.*del*sig)
+	      )/t/s/s/beta/beta
+	      + 16.*s*(t-mZ2)/(t*(u+s)-mW2*mZ2)
+	      + 2.*(4.*t*t+t*(10.*s-3.*mZ2-9.*mW2)+12.*mW2*mZ2)/t/t
+	      -6.*(s-del)*(t+u)*sqr(t-u)/t/s/s/s/sqr(sqr(beta))
+            )*log(-t/mW2);
+
+    Val +=  ( - ( 4.*t*t*(2.*sig-3.*s)
+	        - 4.*t*(s-sig)*(2.*s-3.*sig)
+	        - 2.*(s-2.*sig)*sqr(s-sig)
+	        )/t/s/beta/beta
+	      + ( 4.*sig*t-3.*s*s+4.*s*sig
+	        - 4.*(mW2*mW2+mZ2*mZ2)
+	        )/t
+	      - 3.*sqr(t*t-u*u)/t/s/s/sqr(sqr(beta))
+	    )*TildeI3WZ(s,mW2,mZ2,beta);
+
+    Val += +( 4.*(t*u+2.*s*sig)/3./mW2/mZ2 - 4.*(t-2.*u)/3./t
+	    )*pi*pi;
+
+    Val += -( 4.*s*(t*u-2.*mW2*mZ2)/t
+	    )*TildeI4t(s,t,mW2,mZ2);
+
+    Val +=  ( 8.*(t-mW2)*(u*t-2.*mW2*mZ2)/t/t
+	    )*TildeI3W(s,t,mW2);
+
+    swap(mW2,mZ2);
+    del *= -1;
+    Val +=    2.*(22.*t*t+t*(19.*s+18.*sig)+18.*mW2*mZ2)/t/t     
+            - 8.*(u*t+2*s*sig)/mW2/mZ2
+            - 2.*sqr(t-u)/t/s/sqr(beta);
+
+    Val += +( 2.*(8.*t*t+4.*t*(s-3.*sig)+4*sqr(sig)-5.*s*sig+s*s)/t/s/sqr(beta)
+	    + 4.*(t*(3.*u+s)-3.*mW2*mZ2)/t/t
+	    + 6.*(t+u)*sqr(t-u)/t/s/s/sqr(sqr(beta))
+	    )*log(-t/s);
+
+    Val += +( ( 8.*t*t*(-2.*s+del)+8.*t*(-s*s+3.*s*sig-2.*del*sig)
+	       - 2.*(s-sig)*(s*s-4.*s*sig+3.*del*sig)
+	      )/t/s/s/beta/beta
+	      + 16.*s*(t-mZ2)/(t*(u+s)-mW2*mZ2)
+	      + 2.*(4.*t*t+t*(10.*s-3.*mZ2-9.*mW2)+12.*mW2*mZ2)/t/t
+	      -6.*(s-del)*(t+u)*sqr(t-u)/t/s/s/s/sqr(sqr(beta))
+            )*log(-t/mW2);
+
+    Val +=  ( - ( 4.*t*t*(2.*sig-3.*s)
+	        - 4.*t*(s-sig)*(2.*s-3.*sig)
+	        - 2.*(s-2.*sig)*sqr(s-sig)
+	        )/t/s/beta/beta
+	      + ( 4.*sig*t-3.*s*s+4.*s*sig
+	        - 4.*(mW2*mW2+mZ2*mZ2)
+	        )/t
+	      - 3.*sqr(t*t-u*u)/t/s/s/sqr(sqr(beta))
+	    )*TildeI3WZ(s,mW2,mZ2,beta);
+
+    Val += +( 4.*(t*u+2.*s*sig)/3./mW2/mZ2 - 4.*(t-2.*u)/3./t
+	    )*pi*pi;
+
+    Val += -( 4.*s*(t*u-2.*mW2*mZ2)/t
+            )*TildeI4t(s,t,mW2,mZ2);
+
+    Val +=  ( 8.*(t-mW2)*(u*t-2.*mW2*mZ2)/t/t
+	    )*TildeI3W(s,t,mW2);
+    swap(mW2,mZ2);
+    del *= -1;
+
+    return Val;
+}
+
+/***************************************************************************/
+double  Iud1(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double beta) { 
+    Energy2 sig(mZ2+mW2);
+    Energy2 del(mZ2-mW2);
+    double Val(0.);
+
+    Val +=    2.*(4.*t*t+t*(9.*s-4.*sig)-18.*s*sig)/t/u     
+            + 8.*(t*u+2.*s*sig)/mW2/mZ2
+            + 4.*s*s*(2.*t-sig)/u/(mW2*mZ2-t*(u+s))
+	    - 2.*sqr(t-u)/u/s/sqr(beta);
+
+    Val +=  ( 2.*(8.*t*t-4.*t*(s+3.*sig)-(s-sig)*(3.*s+4.*sig))/u/s/sqr(beta)
+	    + 6.*(t+u)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    - 12.*s*(t-sig)/t/u
+	    )*log(-t/s);
+    
+    Val +=  ( (2./u/s/s/sqr(beta))*( 4.*t*t*(-2.*s+del)
+				   + 4.*t*(s*s+s*(mZ2+5.*mW2)-2.*sig*del)
+				   + (s-sig)*(3.*s*s+8.*mW2*s-3.*sig*del)
+                                   )
+	    + (2.*t*(18.*s+3.*mW2+mZ2)-24.*s*sig)/t/u
+	    - 8.*s*(2.*t*t-t*(3.*s+4.*mZ2+2.*mW2)+2.*mZ2*(s+sig))
+                  /u/(mW2*mZ2-t*(u+s))
+	    - 8.*s*s*t*(2.*t-sig)*(t-mZ2)/u/sqr(mW2*mZ2-t*(u+s))
+	    + 6.*(s-del)*(s-sig)*sqr(t-u)/u/s/s/s/sqr(sqr(beta))
+	    )*log(-t/mW2);
+
+    Val +=  ( -2.*(2.*t*t*(2.*sig-3.*s)+6.*sig*t*(s-sig)+sqr(s-sig)*(s+2.*sig))
+	         /u/s/sqr(beta)
+	      +3.*s*(4.*t-4.*sig-s)/u
+	      -3.*sqr(s-sig)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    )*TildeI3WZ(s,mW2,mZ2,beta);
+    
+    Val +=  ( 4.*(u+4.*s)/3./u - 4.*(u*t+2.*s*sig)/3./mW2/mZ2 
+	    )*pi*pi;
+
+    Val += -( 16.*s*(t-sig)*(t-mW2)/t/u
+	    )*TildeI3W(s,t,mW2);
+
+    Val +=  ( 8.*s*s*(t-sig)/u
+	    )*TildeI4t(s,t,mW2,mZ2);
+
+    swap(t,u);
+    Val +=    2.*(4.*t*t+t*(9.*s-4.*sig)-18.*s*sig)/t/u     
+            + 8.*(t*u+2.*s*sig)/mW2/mZ2
+            + 4.*s*s*(2.*t-sig)/u/(mW2*mZ2-t*(u+s))
+	    - 2.*sqr(t-u)/u/s/sqr(beta);
+
+    Val +=  ( 2.*(8.*t*t-4.*t*(s+3.*sig)-(s-sig)*(3.*s+4.*sig))/u/s/sqr(beta)
+	    + 6.*(t+u)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    - 12.*s*(t-sig)/t/u
+	    )*log(-t/s);
+    
+    Val +=  ( (2./u/s/s/sqr(beta))*( 4.*t*t*(-2.*s+del)
+				   + 4.*t*(s*s+s*(mZ2+5.*mW2)-2.*sig*del)
+				   + (s-sig)*(3.*s*s+8.*mW2*s-3.*sig*del)
+                                   )
+	    + (2.*t*(18.*s+3.*mW2+mZ2)-24.*s*sig)/t/u
+	    - 8.*s*(2.*t*t-t*(3.*s+4.*mZ2+2.*mW2)+2.*mZ2*(s+sig))
+                  /u/(mW2*mZ2-t*(u+s))
+	    - 8.*s*s*t*(2.*t-sig)*(t-mZ2)/u/sqr(mW2*mZ2-t*(u+s))
+	    + 6.*(s-del)*(s-sig)*sqr(t-u)/u/s/s/s/sqr(sqr(beta))
+	    )*log(-t/mW2);
+
+    Val +=  ( -2.*(2.*t*t*(2.*sig-3.*s)+6.*sig*t*(s-sig)+sqr(s-sig)*(s+2.*sig))
+	         /u/s/sqr(beta)
+	      +3.*s*(4.*t-4.*sig-s)/u
+	      -3.*sqr(s-sig)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    )*TildeI3WZ(s,mW2,mZ2,beta);
+    
+    Val +=  ( 4.*(u+4.*s)/3./u - 4.*(u*t+2.*s*sig)/3./mW2/mZ2 
+	    )*pi*pi;
+
+    Val += -( 16.*s*(t-sig)*(t-mW2)/t/u
+	    )*TildeI3W(s,t,mW2);
+
+    Val +=  ( 8.*s*s*(t-sig)/u
+	    )*TildeI4t(s,t,mW2,mZ2);
+    swap(t,u);
+
+    swap(mW2,mZ2);
+    del *= -1;
+    Val +=    2.*(4.*t*t+t*(9.*s-4.*sig)-18.*s*sig)/t/u     
+            + 8.*(t*u+2.*s*sig)/mW2/mZ2
+            + 4.*s*s*(2.*t-sig)/u/(mW2*mZ2-t*(u+s))
+	    - 2.*sqr(t-u)/u/s/sqr(beta);
+
+    Val +=  ( 2.*(8.*t*t-4.*t*(s+3.*sig)-(s-sig)*(3.*s+4.*sig))/u/s/sqr(beta)
+	    + 6.*(t+u)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    - 12.*s*(t-sig)/t/u
+	    )*log(-t/s);
+    
+    Val +=  ( (2./u/s/s/sqr(beta))*( 4.*t*t*(-2.*s+del)
+				   + 4.*t*(s*s+s*(mZ2+5.*mW2)-2.*sig*del)
+				   + (s-sig)*(3.*s*s+8.*mW2*s-3.*sig*del)
+                                   )
+	    + (2.*t*(18.*s+3.*mW2+mZ2)-24.*s*sig)/t/u
+	    - 8.*s*(2.*t*t-t*(3.*s+4.*mZ2+2.*mW2)+2.*mZ2*(s+sig))
+                  /u/(mW2*mZ2-t*(u+s))
+	    - 8.*s*s*t*(2.*t-sig)*(t-mZ2)/u/sqr(mW2*mZ2-t*(u+s))
+	    + 6.*(s-del)*(s-sig)*sqr(t-u)/u/s/s/s/sqr(sqr(beta))
+	    )*log(-t/mW2);
+
+    Val +=  ( -2.*(2.*t*t*(2.*sig-3.*s)+6.*sig*t*(s-sig)+sqr(s-sig)*(s+2.*sig))
+	         /u/s/sqr(beta)
+	      +3.*s*(4.*t-4.*sig-s)/u
+	      -3.*sqr(s-sig)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    )*TildeI3WZ(s,mW2,mZ2,beta);
+    
+    Val +=  ( 4.*(u+4.*s)/3./u - 4.*(u*t+2.*s*sig)/3./mW2/mZ2 
+	    )*pi*pi;
+
+    Val += -( 16.*s*(t-sig)*(t-mW2)/t/u
+	    )*TildeI3W(s,t,mW2);
+
+    Val +=  ( 8.*s*s*(t-sig)/u
+	    )*TildeI4t(s,t,mW2,mZ2);
+    swap(mW2,mZ2);
+    del *= -1;
+
+    swap(t,u);
+    swap(mW2,mZ2);
+    del *= -1;
+    Val +=    2.*(4.*t*t+t*(9.*s-4.*sig)-18.*s*sig)/t/u     
+            + 8.*(t*u+2.*s*sig)/mW2/mZ2
+            + 4.*s*s*(2.*t-sig)/u/(mW2*mZ2-t*(u+s))
+	    - 2.*sqr(t-u)/u/s/sqr(beta);
+
+    Val +=  ( 2.*(8.*t*t-4.*t*(s+3.*sig)-(s-sig)*(3.*s+4.*sig))/u/s/sqr(beta)
+	    + 6.*(t+u)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    - 12.*s*(t-sig)/t/u
+	    )*log(-t/s);
+    
+    Val +=  ( (2./u/s/s/sqr(beta))*( 4.*t*t*(-2.*s+del)
+				   + 4.*t*(s*s+s*(mZ2+5.*mW2)-2.*sig*del)
+				   + (s-sig)*(3.*s*s+8.*mW2*s-3.*sig*del)
+                                   )
+	    + (2.*t*(18.*s+3.*mW2+mZ2)-24.*s*sig)/t/u
+	    - 8.*s*(2.*t*t-t*(3.*s+4.*mZ2+2.*mW2)+2.*mZ2*(s+sig))
+                  /u/(mW2*mZ2-t*(u+s))
+	    - 8.*s*s*t*(2.*t-sig)*(t-mZ2)/u/sqr(mW2*mZ2-t*(u+s))
+	    + 6.*(s-del)*(s-sig)*sqr(t-u)/u/s/s/s/sqr(sqr(beta))
+	    )*log(-t/mW2);
+
+    Val +=  ( -2.*(2.*t*t*(2.*sig-3.*s)+6.*sig*t*(s-sig)+sqr(s-sig)*(s+2.*sig))
+	         /u/s/sqr(beta)
+	      +3.*s*(4.*t-4.*sig-s)/u
+	      -3.*sqr(s-sig)*sqr(t-u)/u/s/s/sqr(sqr(beta))
+	    )*TildeI3WZ(s,mW2,mZ2,beta);
+    
+    Val +=  ( 4.*(u+4.*s)/3./u - 4.*(u*t+2.*s*sig)/3./mW2/mZ2 
+	    )*pi*pi;
+
+    Val += -( 16.*s*(t-sig)*(t-mW2)/t/u
+	    )*TildeI3W(s,t,mW2);
+
+    Val +=  ( 8.*s*s*(t-sig)/u
+	    )*TildeI4t(s,t,mW2,mZ2);
+    swap(t,u);
+    swap(mW2,mZ2);
+    del *= -1;
+
+    return Val;
+}
+
+/***************************************************************************/
+double  Iuu1(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double beta) {
+    double Val(Idd1(s,u,t,mW2,mZ2,beta));
+    return Val;
+}
+
+/***************************************************************************/
+Energy2 Fd1 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double beta) {
+    Energy2 sig(mZ2+mW2);
+    Energy2 del(mZ2-mW2);
+    Energy2 Val(0.*GeV2);
+
+    Val +=    4.*(17.*t*t+t*(11.*s-13.*sig)+17.*(s*sig+mW2*mZ2))/t     
+	    + 16.*(s-sig)*(t*u+2.*s*sig)/mW2/mZ2
+	    + 4*s*s*(2.*t-sig)/(t*(u+s)-mW2*mZ2);
+
+    Val +=  ( 8.*(t-u)/sqr(beta)
+	    - 4.*(3.*t*t-t*(s+3.*sig)+3.*(s*sig+mW2*mZ2))/t
+	    )*log(-t/s);
+
+    Val +=  ( 8.*(t*t-t*(2.*s+3.*mW2+mZ2)+3.*(s*sig+mW2*mZ2))/t
+	    + 8.*s*(t*(3.*s+2.*sig)-2.*mZ2*(s+sig))/(t*(u+s)-mW2*mZ2)
+	    + 8.*s*s*t*(2.*t-sig)*(t-mZ2)/sqr(t*(u+s)-mW2*mZ2)
+	    - 8.*(s-del)*(t-u)/s/sqr(beta)  
+	    )*log(-t/mW2);
+
+    Val +=  ( 4.*(s-sig)*(t-u)/sqr(beta)
+	    + 4.*(sig-3.*s)*t
+	    + 4.*(4.*s*sig-mZ2*mZ2-mW2*mW2)
+   	    )*TildeI3WZ(s,mW2,mZ2,beta);
+
+    Val += -( 8.*(3.*t*t+2.*t*(2.*s-sig)+2.*s*sig+mW2*mZ2)/3./t
+	    + 8.*(s-sig)*(t*u+2.*s*sig)/3./mW2/mZ2
+	    )*pi*pi;
+
+    Val +=  ( 4.*(s*t*t-s*(s+sig)*t+2.*s*(s*sig+mW2*mZ2))
+   	    )*TildeI4t(s,t,mW2,mZ2);
+
+    Val += -( 8.*(t-mW2)*(t*t-t*(s+sig)+2.*(s*sig+mW2*mZ2))/t
+   	    )*TildeI3W(s,t,mW2);
+
+
+    swap(mW2,mZ2);
+    del *= -1;
+    Val +=    4.*(17.*t*t+t*(11.*s-13.*sig)+17.*(s*sig+mW2*mZ2))/t     
+	    + 16.*(s-sig)*(t*u+2.*s*sig)/mW2/mZ2
+	    + 4*s*s*(2.*t-sig)/(t*(u+s)-mW2*mZ2);
+
+    Val +=  ( 8.*(t-u)/sqr(beta)
+	    - 4.*(3.*t*t-t*(s+3.*sig)+3.*(s*sig+mW2*mZ2))/t
+	    )*log(-t/s);
+
+    Val +=  ( 8.*(t*t-t*(2.*s+3.*mW2+mZ2)+3.*(s*sig+mW2*mZ2))/t
+	    + 8.*s*(t*(3.*s+2.*sig)-2.*mZ2*(s+sig))/(t*(u+s)-mW2*mZ2)
+	    + 8.*s*s*t*(2.*t-sig)*(t-mZ2)/sqr(t*(u+s)-mW2*mZ2)
+	    - 8.*(s-del)*(t-u)/s/sqr(beta)  
+	    )*log(-t/mW2);
+
+    Val +=  ( 4.*(s-sig)*(t-u)/sqr(beta)
+	    + 4.*(sig-3.*s)*t
+	    + 4.*(4.*s*sig-mZ2*mZ2-mW2*mW2)
+   	    )*TildeI3WZ(s,mW2,mZ2,beta);
+
+    Val += -( 8.*(3.*t*t+2.*t*(2.*s-sig)+2.*s*sig+mW2*mZ2)/3./t
+	    + 8.*(s-sig)*(t*u+2.*s*sig)/3./mW2/mZ2
+	    )*pi*pi;
+
+    Val +=  ( 4.*(s*t*t-s*(s+sig)*t+2.*s*(s*sig+mW2*mZ2))
+   	    )*TildeI4t(s,t,mW2,mZ2);
+
+    Val += -( 8.*(t-mW2)*(t*t-t*(s+sig)+2.*(s*sig+mW2*mZ2))/t
+   	    )*TildeI3W(s,t,mW2);
+    swap(mW2,mZ2);
+    del *= -1;
+
+    return Val;
+}
+
+/***************************************************************************/
+Energy2 Fu1 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double beta) { 
+    Energy2 Val(Fd1(s,u,t,mW2,mZ2,beta));
+    return Val;
+}
+
+/***************************************************************************/
+Energy4 H1  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
+    Energy2 sig(mZ2+mW2);
+    Energy2 del(mZ2-mW2);
+    Energy4 Val(0.*GeV2*GeV2);
+    Val  =   8.*t*t+8.*t*(s-sig)+s*s+6.*s*sig+mZ2*mZ2+10.*mW2*mZ2+mW2*mW2
+	   - sqr(s-sig)*(t*u+2.*s*sig)/mW2/mZ2;
+    Val *= ( 16.-8.*pi*pi/3.);
+    return Val;
+}
+
+Energy2 t_u_Rdd(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1 , Energy2 q2,
+		Energy2 mW2, Energy2 mZ2);
+Energy2 t_u_Rud(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1 , Energy2 q2,
+		Energy2 q1h, Energy2 q2h, Energy2 mW2, Energy2 mZ2);
+Energy2 t_u_Ruu(Energy2 s  , Energy2 tk , Energy2 uk, Energy2 q1h, Energy2 q2h,
+		Energy2 mW2, Energy2 mZ2);
+Energy4 t_u_RZds(Energy2 s ,Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
+		 Energy2 s2,Energy2 mW2, Energy2 mZ2);
+Energy4 t_u_RZda(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
+		 Energy2 s2, Energy2 mW2, Energy2 mZ2);
+Energy4 t_u_RZd(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1 , Energy2 q2 ,
+		Energy2 s2 , Energy2 mW2, Energy2 mZ2);
+Energy4 t_u_RZu(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1h, Energy2 q2h,
+		Energy2 s2 , Energy2 mW2, Energy2 mZ2);
+Energy6 t_u_RZs(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
+		Energy2 s2, Energy2 mW2, Energy2 mZ2);
+Energy6 t_u_RZa(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
+		Energy2 s2, Energy2 mW2, Energy2 mZ2);
+Energy6 t_u_RZ(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
+	       Energy2 s2 , Energy2 mW2, Energy2 mZ2);
+
+/***************************************************************************/
+// t_u_M_R_qqb is the real emission q + qb -> n + g matrix element 
+// exactly as defined in Eqs. C.1 of NPB 383(1992)3-44, multiplied by
+// tk * uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
   // First the Born variables:
-  Energy2 s2(theKinematics.s2r());
-  Energy2 k12(theKinematics.k12r());
-  Energy2 k22(theKinematics.k22r());
-  double  theta1(theKinematics.theta1r());
-  double  theta2(theKinematics.theta2r());
+  Energy2 s2(R.s2r());
+  Energy2 mW2(R.k12r());
+  Energy2 mZ2(R.k22r());
   // Then the rest:
-  Energy2 s(theKinematics.sr());
-  Energy2 tk(theKinematics.tkr());
-  Energy2 uk(theKinematics.ukr());
-  double  cpsi(theKinematics.cpsir());
-  double  cpsipr(theKinematics.cpsipr());
-  double  betax(theKinematics.betaxr());
-  double  v1(theKinematics.v1r());
-  double  v2(theKinematics.v2r());
-  Energy2 q1(theKinematics.q1r());
-  Energy2 q2(theKinematics.q2r());
-  Energy2 q1hat(theKinematics.q1hatr());
-  Energy2 q2hat(theKinematics.q2hatr());
-  Energy2 w1(theKinematics.w1r());
-  Energy2 w2(theKinematics.w2r());
+  Energy2 s(R.sr());
+  Energy2 tk(R.tkr());
+  Energy2 uk(R.ukr());
+  Energy2 q1(R.q1r());
+  Energy2 q2(R.q2r());
+  Energy2 q1h(R.q1hatr());
+  Energy2 q2h(R.q2hatr());
+  Energy2 w1(R.w1r());
+  Energy2 w2(R.w2r());
 
-  return 0.*GeV2;
+  return -2.*pi*alphaS_*Fij2_*CF_/NC_
+       * (    gdL_*gdL_*t_u_Rdd(s,tk,uk,q1,q2,mW2,mZ2)
+	 + 2.*gdL_*guL_*t_u_Rud(s,tk,uk,q1,q2,q1h,q2h,mW2,mZ2)
+	 +    guL_*guL_*t_u_Ruu(s,tk,uk,q1h,q2h,mW2,mZ2)
+	 - 2.*eZ_/(s2-mW2) * ( gdL_
+			      *t_u_RZd(s,tk,uk,q1 ,q2 ,s2,mW2,mZ2)
+	                     - guL_
+			      *t_u_RZu(s,tk,uk,q1h,q2h,s2,mW2,mZ2)
+	                     )
+         + sqr(eZ_/(s2-mW2)) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
+	 );
 }
 
-Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics theKinematics) const {
+Energy2 t_u_Rdd(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
+            Energy2 mW2, Energy2 mZ2) {
+  Energy2 Val(0.*GeV2);
+
+  Val +=   4.*(q2*(uk+2.*s+q2)+q1*(s+q1))/mW2/mZ2*uk
+         + 16.*(uk+s)/q2*uk
+         - 4.*(2.*uk+4.*s+q2)/mW2*uk
+         - 4.*(2.*uk+5.*s+q2+2.*q1-mW2)/mZ2*uk
+         + 4.*q1*s*(s+q1)/mW2/mZ2
+         + 16.*s*(s+q2-mZ2-mW2)/q1
+         - 4.*s*(4.*s+q2+q1)/mW2
+         + 16.*mW2*mZ2*s/q1/q2
+         + 4.*s
+         + 16.*mZ2*(tk-2.*mW2)/q1/q2/q2*tk*uk
+         + 16.*(2.*mZ2+mW2-tk)/q1/q2*tk*uk
+         + 16.*mW2*(s-mZ2-mW2)/q1/q2*uk
+         + 16.*mZ2*(q1-2.*mW2)/q2/q2*uk
+         + 32.*mW2*mW2*mZ2/q1/q2/q2*uk
+         + 16.*mW2/q1*uk
+         + 4.*uk
+         + 8./q2*tk*uk
+         + 4.*q1/mW2/mZ2*tk*uk
+         - 24./q1*tk*uk
+         - 4./mW2*tk*uk;
+
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  Val +=   4.*(q2*(uk+2.*s+q2)+q1*(s+q1))/mW2/mZ2*uk
+         + 16.*(uk+s)/q2*uk
+         - 4.*(2.*uk+4.*s+q2)/mW2*uk
+         - 4.*(2.*uk+5.*s+q2+2.*q1-mW2)/mZ2*uk
+         + 4.*q1*s*(s+q1)/mW2/mZ2
+         + 16.*s*(s+q2-mZ2-mW2)/q1
+         - 4.*s*(4.*s+q2+q1)/mW2
+         + 16.*mW2*mZ2*s/q1/q2
+         + 4.*s
+         + 16.*mZ2*(tk-2.*mW2)/q1/q2/q2*tk*uk
+         + 16.*(2.*mZ2+mW2-tk)/q1/q2*tk*uk
+         + 16.*mW2*(s-mZ2-mW2)/q1/q2*uk
+         + 16.*mZ2*(q1-2.*mW2)/q2/q2*uk
+         + 32.*mW2*mW2*mZ2/q1/q2/q2*uk
+         + 16.*mW2/q1*uk
+         + 4.*uk
+         + 8./q2*tk*uk
+         + 4.*q1/mW2/mZ2*tk*uk
+         - 24./q1*tk*uk
+         - 4./mW2*tk*uk;
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+
+  return Val;
+}
+Energy2 t_u_Rud(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
+	    Energy2 q1h,Energy2 q2h,Energy2 mW2, Energy2 mZ2) {
+  Energy2 Val(0.*GeV2); 
+  
+  Val +=   (uk*s*(uk+3.*s+q1h)+s*s*(s+mZ2)-(s+uk)*(2.*mZ2*s+3.*mW2*s+mW2*q1h)
+           ) * 8./q1/q2h/q2*uk  
+         - (uk*(uk+3.*s+q1h-mW2)-(q2+s)*(q2-s)+s*(q2-mW2)+q1h*(q2-mW2)+mW2*q2
+	   ) * 4.*s/mZ2/q1/q2h*uk
+         - 4.*((s+uk+q2h-2.*mZ2)*(s+q1h-mZ2)-mZ2*q1)/mW2/q2*uk
+         + 4.*(2.*s*uk+2.*mW2*uk+5.*s*s+2.*q1h*s-2.*mZ2*s)/q1/q2h/q2*tk*uk
+         + ((2.*uk+s)*(s+q1h)+s*(q2+q2h)+2.*q2*(s+q2h)-q1*s+q1*q2+q1h*q2h
+	   ) /mW2/mZ2*uk
+         + 8.*s*(uk-q1h+mZ2)/q1/q2*uk
+         + 4.*s*(-uk+s-q2+q1+q1h)/mZ2/q2h*uk
+         + 4.*s*(-uk-q2+q1h)/mZ2/q1*uk
+         + 8.*(mZ2*uk-s*s+mW2*s-2.*mZ2*q1-2.*mZ2*q1h)/q2h/q2*uk
+         + 2.*(-uk-9.*s-4.*q2-5.*q2h-3.*q1-4.*q1h+8.*mZ2)/mW2*uk
+         + 2.*(-4.*uk+3.*s+5.*q1+4.*q1h)/q2h*uk
+         + 2.*(s*tk+q2*tk+s*s-q2*q2+q1h*q2)/mW2/mZ2*tk
+         - 8.*s*(tk+s+q1h)/mW2/q2*tk
+         + 2.*(-tk+3.*s+q2-q1h)/mW2*tk
+         - 8.*s*s*s/q1h/q2
+         - 2.*s*q2*(s+q2)/mW2/mZ2
+         + 2.*s*(2.*s+q2)/mZ2
+         + 2.*s*(2.*s+q2)/mW2
+         - 16.*s*s/q1h
+         - 2.*s
+         - 16.*s*s/q1h/q2*tk
+         - 8.*s/q2*tk
+         - 16.*s/q1h*tk
+         + 6.*s/mZ2*tk
+         + 4.*s/q1*uk
+         + 4.*s/mZ2*uk
+         + 12.*uk
+         + 4.*s*(tk+q1h-mW2)/mZ2/q1/q2h*tk*uk
+         + 2.*(s+4.*q1+5.*q1h-4.*mZ2)/q2*uk
+         - 4.*s*s*s/q1h/q1/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2*tk*uk
+         + 8.*s*s/mW2/q1h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2h*tk*uk
+         + 4.*(s+mZ2)/mW2/q2*tk*uk
+         - 4.*s/q1h/q2h*tk*uk
+         - 4.*s/q1h/q1*tk*uk
+         + 12.*s/mW2/q1h*tk*uk
+         - (s+4.*q2)/mW2/mZ2*tk*uk
+         - 4.*(s+2.*mZ2)/q2h/q2*tk*uk
+         - 4.*(3.*s+2.*q1h)/q1/q2*tk*uk
+         - 8.*mW2/q1/q2h*tk*uk
+         + 8./q2h*tk*uk
+         + 8./q1*tk*uk;
+
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  swap(q1h,q2h); // Note this swap is done in accordance with MC@NLO.
+                 // It is not in NPB 383(1992)3-44 Eq.C.4!
+  Val +=   (uk*s*(uk+3.*s+q1h)+s*s*(s+mZ2)-(s+uk)*(2.*mZ2*s+3.*mW2*s+mW2*q1h)
+           ) * 8./q1/q2h/q2*uk  
+         - (uk*(uk+3.*s+q1h-mW2)-(q2+s)*(q2-s)+s*(q2-mW2)+q1h*(q2-mW2)+mW2*q2
+	   ) * 4.*s/mZ2/q1/q2h*uk
+         - 4.*((s+uk+q2h-2.*mZ2)*(s+q1h-mZ2)-mZ2*q1)/mW2/q2*uk
+         + 4.*(2.*s*uk+2.*mW2*uk+5.*s*s+2.*q1h*s-2.*mZ2*s)/q1/q2h/q2*tk*uk
+         + ((2.*uk+s)*(s+q1h)+s*(q2+q2h)+2.*q2*(s+q2h)-q1*s+q1*q2+q1h*q2h
+	   ) /mW2/mZ2*uk
+         + 8.*s*(uk-q1h+mZ2)/q1/q2*uk
+         + 4.*s*(-uk+s-q2+q1+q1h)/mZ2/q2h*uk
+         + 4.*s*(-uk-q2+q1h)/mZ2/q1*uk
+         + 8.*(mZ2*uk-s*s+mW2*s-2.*mZ2*q1-2.*mZ2*q1h)/q2h/q2*uk
+         + 2.*(-uk-9.*s-4.*q2-5.*q2h-3.*q1-4.*q1h+8.*mZ2)/mW2*uk
+         + 2.*(-4.*uk+3.*s+5.*q1+4.*q1h)/q2h*uk
+         + 2.*(s*tk+q2*tk+s*s-q2*q2+q1h*q2)/mW2/mZ2*tk
+         - 8.*s*(tk+s+q1h)/mW2/q2*tk
+         + 2.*(-tk+3.*s+q2-q1h)/mW2*tk
+         - 8.*s*s*s/q1h/q2
+         - 2.*s*q2*(s+q2)/mW2/mZ2
+         + 2.*s*(2.*s+q2)/mZ2
+         + 2.*s*(2.*s+q2)/mW2
+         - 16.*s*s/q1h
+         - 2.*s
+         - 16.*s*s/q1h/q2*tk
+         - 8.*s/q2*tk
+         - 16.*s/q1h*tk
+         + 6.*s/mZ2*tk
+         + 4.*s/q1*uk
+         + 4.*s/mZ2*uk
+         + 12.*uk
+         + 4.*s*(tk+q1h-mW2)/mZ2/q1/q2h*tk*uk
+         + 2.*(s+4.*q1+5.*q1h-4.*mZ2)/q2*uk
+         - 4.*s*s*s/q1h/q1/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2*tk*uk
+         + 8.*s*s/mW2/q1h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2h*tk*uk
+         + 4.*(s+mZ2)/mW2/q2*tk*uk
+         - 4.*s/q1h/q2h*tk*uk
+         - 4.*s/q1h/q1*tk*uk
+         + 12.*s/mW2/q1h*tk*uk
+         - (s+4.*q2)/mW2/mZ2*tk*uk
+         - 4.*(s+2.*mZ2)/q2h/q2*tk*uk
+         - 4.*(3.*s+2.*q1h)/q1/q2*tk*uk
+         - 8.*mW2/q1/q2h*tk*uk
+         + 8./q2h*tk*uk
+         + 8./q1*tk*uk;
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  swap(q1h,q2h); // Note this swap is done in accordance with MC@NLO.
+                 // It is not in NPB 383(1992)3-44 Eq.C.4!
+
+  swap(tk,uk);
+  swap(q1,q2h);
+  swap(q2,q1h);
+  Val +=   (uk*s*(uk+3.*s+q1h)+s*s*(s+mZ2)-(s+uk)*(2.*mZ2*s+3.*mW2*s+mW2*q1h)
+           ) * 8./q1/q2h/q2*uk  
+         - (uk*(uk+3.*s+q1h-mW2)-(q2+s)*(q2-s)+s*(q2-mW2)+q1h*(q2-mW2)+mW2*q2
+	   ) * 4.*s/mZ2/q1/q2h*uk
+         - 4.*((s+uk+q2h-2.*mZ2)*(s+q1h-mZ2)-mZ2*q1)/mW2/q2*uk
+         + 4.*(2.*s*uk+2.*mW2*uk+5.*s*s+2.*q1h*s-2.*mZ2*s)/q1/q2h/q2*tk*uk
+         + ((2.*uk+s)*(s+q1h)+s*(q2+q2h)+2.*q2*(s+q2h)-q1*s+q1*q2+q1h*q2h
+	   ) /mW2/mZ2*uk
+         + 8.*s*(uk-q1h+mZ2)/q1/q2*uk
+         + 4.*s*(-uk+s-q2+q1+q1h)/mZ2/q2h*uk
+         + 4.*s*(-uk-q2+q1h)/mZ2/q1*uk
+         + 8.*(mZ2*uk-s*s+mW2*s-2.*mZ2*q1-2.*mZ2*q1h)/q2h/q2*uk
+         + 2.*(-uk-9.*s-4.*q2-5.*q2h-3.*q1-4.*q1h+8.*mZ2)/mW2*uk
+         + 2.*(-4.*uk+3.*s+5.*q1+4.*q1h)/q2h*uk
+         + 2.*(s*tk+q2*tk+s*s-q2*q2+q1h*q2)/mW2/mZ2*tk
+         - 8.*s*(tk+s+q1h)/mW2/q2*tk
+         + 2.*(-tk+3.*s+q2-q1h)/mW2*tk
+         - 8.*s*s*s/q1h/q2
+         - 2.*s*q2*(s+q2)/mW2/mZ2
+         + 2.*s*(2.*s+q2)/mZ2
+         + 2.*s*(2.*s+q2)/mW2
+         - 16.*s*s/q1h
+         - 2.*s
+         - 16.*s*s/q1h/q2*tk
+         - 8.*s/q2*tk
+         - 16.*s/q1h*tk
+         + 6.*s/mZ2*tk
+         + 4.*s/q1*uk
+         + 4.*s/mZ2*uk
+         + 12.*uk
+         + 4.*s*(tk+q1h-mW2)/mZ2/q1/q2h*tk*uk
+         + 2.*(s+4.*q1+5.*q1h-4.*mZ2)/q2*uk
+         - 4.*s*s*s/q1h/q1/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2*tk*uk
+         + 8.*s*s/mW2/q1h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2h*tk*uk
+         + 4.*(s+mZ2)/mW2/q2*tk*uk
+         - 4.*s/q1h/q2h*tk*uk
+         - 4.*s/q1h/q1*tk*uk
+         + 12.*s/mW2/q1h*tk*uk
+         - (s+4.*q2)/mW2/mZ2*tk*uk
+         - 4.*(s+2.*mZ2)/q2h/q2*tk*uk
+         - 4.*(3.*s+2.*q1h)/q1/q2*tk*uk
+         - 8.*mW2/q1/q2h*tk*uk
+         + 8./q2h*tk*uk
+         + 8./q1*tk*uk;
+  swap(tk,uk);
+  swap(q1,q2h);
+  swap(q2,q1h);
+
+  swap(mW2,mZ2);
+  swap(q1,q1h);
+  swap(q2,q2h);
+  Val +=   (uk*s*(uk+3.*s+q1h)+s*s*(s+mZ2)-(s+uk)*(2.*mZ2*s+3.*mW2*s+mW2*q1h)
+           ) * 8./q1/q2h/q2*uk  
+         - (uk*(uk+3.*s+q1h-mW2)-(q2+s)*(q2-s)+s*(q2-mW2)+q1h*(q2-mW2)+mW2*q2
+	   ) * 4.*s/mZ2/q1/q2h*uk
+         - 4.*((s+uk+q2h-2.*mZ2)*(s+q1h-mZ2)-mZ2*q1)/mW2/q2*uk
+         + 4.*(2.*s*uk+2.*mW2*uk+5.*s*s+2.*q1h*s-2.*mZ2*s)/q1/q2h/q2*tk*uk
+         + ((2.*uk+s)*(s+q1h)+s*(q2+q2h)+2.*q2*(s+q2h)-q1*s+q1*q2+q1h*q2h
+	   ) /mW2/mZ2*uk
+         + 8.*s*(uk-q1h+mZ2)/q1/q2*uk
+         + 4.*s*(-uk+s-q2+q1+q1h)/mZ2/q2h*uk
+         + 4.*s*(-uk-q2+q1h)/mZ2/q1*uk
+         + 8.*(mZ2*uk-s*s+mW2*s-2.*mZ2*q1-2.*mZ2*q1h)/q2h/q2*uk
+         + 2.*(-uk-9.*s-4.*q2-5.*q2h-3.*q1-4.*q1h+8.*mZ2)/mW2*uk
+         + 2.*(-4.*uk+3.*s+5.*q1+4.*q1h)/q2h*uk
+         + 2.*(s*tk+q2*tk+s*s-q2*q2+q1h*q2)/mW2/mZ2*tk
+         - 8.*s*(tk+s+q1h)/mW2/q2*tk
+         + 2.*(-tk+3.*s+q2-q1h)/mW2*tk
+         - 8.*s*s*s/q1h/q2
+         - 2.*s*q2*(s+q2)/mW2/mZ2
+         + 2.*s*(2.*s+q2)/mZ2
+         + 2.*s*(2.*s+q2)/mW2
+         - 16.*s*s/q1h
+         - 2.*s
+         - 16.*s*s/q1h/q2*tk
+         - 8.*s/q2*tk
+         - 16.*s/q1h*tk
+         + 6.*s/mZ2*tk
+         + 4.*s/q1*uk
+         + 4.*s/mZ2*uk
+         + 12.*uk
+         + 4.*s*(tk+q1h-mW2)/mZ2/q1/q2h*tk*uk
+         + 2.*(s+4.*q1+5.*q1h-4.*mZ2)/q2*uk
+         - 4.*s*s*s/q1h/q1/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q2h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2*tk*uk
+         + 8.*s*s/mW2/q1h/q2*tk*uk
+         - 4.*s*s/q1h/q1/q2h*tk*uk
+         + 4.*(s+mZ2)/mW2/q2*tk*uk
+         - 4.*s/q1h/q2h*tk*uk
+         - 4.*s/q1h/q1*tk*uk
+         + 12.*s/mW2/q1h*tk*uk
+         - (s+4.*q2)/mW2/mZ2*tk*uk
+         - 4.*(s+2.*mZ2)/q2h/q2*tk*uk
+         - 4.*(3.*s+2.*q1h)/q1/q2*tk*uk
+         - 8.*mW2/q1/q2h*tk*uk
+         + 8./q2h*tk*uk
+         + 8./q1*tk*uk;
+  swap(mW2,mZ2);
+  swap(q1,q1h);
+  swap(q2,q2h);
+
+  return Val;
+ }
+
+Energy2 t_u_Ruu(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1h,Energy2 q2h,
+		Energy2 mW2, Energy2 mZ2) {
+  return t_u_Rdd(s,tk,uk,q1h,q2h,mZ2,mW2);
+}
+
+Energy4 t_u_RZds(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
+	    Energy2 s2, Energy2 mW2, Energy2 mZ2) {
+  Energy4 Val(0.*GeV2*GeV2); 
+  Energy2 sig(mZ2+mW2);
+
+  Val +=   ( q1*q2*(5./2.*s*s+5.*s*tk+3.*tk*tk)+(tk*uk*uk+q1*q1*q2)*(tk+s)
+	   + q1*(tk*tk*uk+s*uk*uk-s*s*tk+s*s*uk)+q1*q1*q1*(uk+s)-q1*q1*s*s2 
+           ) * 8./q1/q2 
+         - ( tk*tk*(4.*uk+s+q1-2.*q2)+tk*(sqr(q1+q2)-q1*s-3.*q2*s-2.*q1*q1)
+	   - q1*s*(4.*s-2.*q1-q2)+tk*uk*(q1+3.*s)
+	   ) * 4.*sig/q1/q2 
+         - 4.*sig*sig*(s*(2.*s+q1)+tk*(uk+5./2.*tk+5.*s+q1+q2)
+                      )/mW2/mZ2 
+         + 2.*sig*s2*(4.*sqr(s+tk)+tk*(uk+s+4.*q1+2.*q2)+2.*q1*(2.*s+q1)
+                     )/mW2/mZ2 
+         + 4.*sig*sig*(s2+s-q1+q2)/q1/q2*tk 
+         - 16.*mW2*mZ2*(tk*uk/2.+q2*tk-q1*s)/q1/q2 
+         - 4.*s2*s2*q1*(tk+s+q1)/mW2/mZ2 
+         + sig*sig*sig*(uk+tk)/mW2/mZ2 
+         + 4.*mW2*mZ2*sig*(uk+tk)/q1/q2;
+
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  Val +=   ( q1*q2*(5./2.*s*s+5.*s*tk+3.*tk*tk)+(tk*uk*uk+q1*q1*q2)*(tk+s)
+	   + q1*(tk*tk*uk+s*uk*uk-s*s*tk+s*s*uk)+q1*q1*q1*(uk+s)-q1*q1*s*s2 
+           ) * 8./q1/q2 
+         - ( tk*tk*(4.*uk+s+q1-2.*q2)+tk*(sqr(q1+q2)-q1*s-3.*q2*s-2.*q1*q1)
+	   - q1*s*(4.*s-2.*q1-q2)+tk*uk*(q1+3.*s)
+	   ) * 4.*sig/q1/q2 
+         - 4.*sig*sig*(s*(2.*s+q1)+tk*(uk+5./2.*tk+5.*s+q1+q2)
+                      )/mW2/mZ2 
+         + 2.*sig*s2*(4.*sqr(s+tk)+tk*(uk+s+4.*q1+2.*q2)+2.*q1*(2.*s+q1)
+                     )/mW2/mZ2 
+         + 4.*sig*sig*(s2+s-q1+q2)/q1/q2*tk 
+         - 16.*mW2*mZ2*(tk*uk/2.+q2*tk-q1*s)/q1/q2 
+         - 4.*s2*s2*q1*(tk+s+q1)/mW2/mZ2 
+         + sig*sig*sig*(uk+tk)/mW2/mZ2 
+         + 4.*mW2*mZ2*sig*(uk+tk)/q1/q2;
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+
+  return Val;
+}
+Energy4 t_u_RZda(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
+		 Energy2 s2, Energy2 mW2, Energy2 mZ2) {
+  Energy4 Val(0.*GeV2*GeV2);
+
+  Val +=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
+                  ) /q2/q2*tk
+         - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
+         - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
+         - 2.*s2*(s+2.*q2)/mZ2*tk
+         + 8.*mW2*mZ2*mZ2/q1/q2*tk
+         + 2.*mZ2*mZ2/mW2*tk;
+
+  swap(mW2,mZ2); // N.B. Here we subtract!
+  Val -=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
+                  ) /q2/q2*tk
+         - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
+         - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
+         - 2.*s2*(s+2.*q2)/mZ2*tk
+         + 8.*mW2*mZ2*mZ2/q1/q2*tk
+         + 2.*mZ2*mZ2/mW2*tk;
+  swap(mW2,mZ2);
+
+  swap(q1,q2); // N.B. Here we subtract!
+  swap(tk,uk);
+  Val -=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
+                  ) /q2/q2*tk
+         - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
+         - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
+         - 2.*s2*(s+2.*q2)/mZ2*tk
+         + 8.*mW2*mZ2*mZ2/q1/q2*tk
+         + 2.*mZ2*mZ2/mW2*tk;
+  swap(q1,q2);
+  swap(tk,uk);
+
+  swap(mW2,mZ2); // N.B. Here we add!
+  swap(q1,q2); 
+  swap(tk,uk);
+  Val +=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
+                  ) /q2/q2*tk
+         - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
+         - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
+         - 2.*s2*(s+2.*q2)/mZ2*tk
+         + 8.*mW2*mZ2*mZ2/q1/q2*tk
+         + 2.*mZ2*mZ2/mW2*tk;
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+
+  return Val;
+}
+Energy4 t_u_RZd(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1 , Energy2 q2 ,
+		Energy2 s2, Energy2 mW2, Energy2 mZ2) {
+  Energy4 Val(0.*GeV2*GeV2); 
+
+  Val = t_u_RZds(s,tk,uk,q1,q2,s2,mW2,mZ2)
+      + t_u_RZda(s,tk,uk,q1,q2,s2,mW2,mZ2);
+
+  return Val;
+}
+Energy4 t_u_RZu(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1h, Energy2 q2h,
+		Energy2 s2, Energy2 mW2, Energy2 mZ2) {
+  Energy4 Val(0.*GeV2*GeV2);
+
+  Val = t_u_RZd(s,tk,uk,q1h,q2h,s2,mZ2,mW2);
+
+  return Val;
+}
+Energy6 t_u_RZs(Energy2 s,Energy2 tk,Energy2 uk,Energy2 q1,Energy2 q2,
+		Energy2 s2,Energy2 mW2,Energy2 mZ2) {
+  Energy6 Val(0.*GeV2*GeV2*GeV2); 
+  Energy2 sig(mZ2+mW2);
+
+  Val +=   2.*sig*sig*s2*( tk*(3.*uk+9.*tk+19.*s+6.*q1+4.*q2)+8.*s*s+6.*q1*s
+	                 + 2.*q1*q1
+                         )/mW2/mZ2
+         - 2.*sig*sig*sig*(tk*(3.*uk+6.*tk+11.*s+2.*q1+2.*q2)+2.*s*(2.*s+q1))
+           / mW2/mZ2
+         - 2.*sig*s2*s2*(tk*(uk+4.*tk+9.*s+6.*q1+2.*q2)+4.*sqr(s+q1)-2.*q1*s)
+           /mW2/mZ2
+         - 16.*sig*(2.*tk*(uk/2.-tk-s+q1+q2)-s*(3.*s/2.-2.*q1))
+         + 8.*s2*(s*(s/2.+tk)+4.*q1*(tk+s+q1))
+         + 4.*s2*s2*s2*q1*(tk+s+q1)/mW2/mZ2
+         + 8.*sig*sig*(2.*tk+s/2.)
+         + 2.*sig*sig*sig*sig*tk/mW2/mZ2
+         + 32.*mW2*mZ2*s;
+
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  Val +=   2.*sig*sig*s2*( tk*(3.*uk+9.*tk+19.*s+6.*q1+4.*q2)+8.*s*s+6.*q1*s
+	                 + 2.*q1*q1
+                         )/mW2/mZ2
+         - 2.*sig*sig*sig*(tk*(3.*uk+6.*tk+11.*s+2.*q1+2.*q2)+2.*s*(2.*s+q1))
+           / mW2/mZ2
+         - 2.*sig*s2*s2*(tk*(uk+4.*tk+9.*s+6.*q1+2.*q2)+4.*sqr(s+q1)-2.*q1*s)
+           /mW2/mZ2
+         - 16.*sig*(2.*tk*(uk/2.-tk-s+q1+q2)-s*(3.*s/2.-2.*q1))
+         + 8.*s2*(s*(s/2.+tk)+4.*q1*(tk+s+q1))
+         + 4.*s2*s2*s2*q1*(tk+s+q1)/mW2/mZ2
+         + 8.*sig*sig*(2.*tk+s/2.)
+         + 2.*sig*sig*sig*sig*tk/mW2/mZ2
+         + 32.*mW2*mZ2*s;
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  
+  return Val;
+}
+Energy6 t_u_RZa(Energy2 s,Energy2 tk,Energy2 uk,Energy2 q1,Energy2 q2,
+		Energy2 s2,Energy2 mW2,Energy2 mZ2) {
+  Energy6 Val(0.*GeV2*GeV2*GeV2);
+  Energy2 sig(mZ2+mW2);
+
+  Val += - 2.*mZ2*(2.*tk+11.*s+18.*q2)*tk
+         - 2.*mZ2*mZ2*(2.*tk+3.*s+2.*q2)/mW2*tk
+         + 2.*mZ2*s2*(tk+3.*s+4.*q2)/mW2*tk
+         - 2.*s2*s2*(s+2.*q2)/mW2*tk
+         + 2.*mZ2*mZ2*mZ2/mW2*tk
+         + 20.*mZ2*mZ2*tk;
+
+  swap(mW2,mZ2);
+  Val -= - 2.*mZ2*(2.*tk+11.*s+18.*q2)*tk
+         - 2.*mZ2*mZ2*(2.*tk+3.*s+2.*q2)/mW2*tk
+         + 2.*mZ2*s2*(tk+3.*s+4.*q2)/mW2*tk
+         - 2.*s2*s2*(s+2.*q2)/mW2*tk
+         + 2.*mZ2*mZ2*mZ2/mW2*tk
+         + 20.*mZ2*mZ2*tk;
+  swap(mW2,mZ2);
+
+  swap(q1,q2);
+  swap(tk,uk);
+  Val -= - 2.*mZ2*(2.*tk+11.*s+18.*q2)*tk
+         - 2.*mZ2*mZ2*(2.*tk+3.*s+2.*q2)/mW2*tk
+         + 2.*mZ2*s2*(tk+3.*s+4.*q2)/mW2*tk
+         - 2.*s2*s2*(s+2.*q2)/mW2*tk
+         + 2.*mZ2*mZ2*mZ2/mW2*tk
+         + 20.*mZ2*mZ2*tk;
+  swap(q1,q2);
+  swap(tk,uk);
+
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+  Val += - 2.*mZ2*(2.*tk+11.*s+18.*q2)*tk
+         - 2.*mZ2*mZ2*(2.*tk+3.*s+2.*q2)/mW2*tk
+         + 2.*mZ2*s2*(tk+3.*s+4.*q2)/mW2*tk
+         - 2.*s2*s2*(s+2.*q2)/mW2*tk
+         + 2.*mZ2*mZ2*mZ2/mW2*tk
+         + 20.*mZ2*mZ2*tk;
+  swap(mW2,mZ2);
+  swap(q1,q2);
+  swap(tk,uk);
+
+  return Val;
+}
+Energy6 t_u_RZ(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
+	       Energy2 s2, Energy2 mW2, Energy2 mZ2) {
+  Energy6 Val(0.*GeV2*GeV2*GeV2); 
+
+  Val = t_u_RZs(s,tk,uk,q1,q2,s2,mW2,mZ2)
+      + t_u_RZa(s,tk,uk,q1,q2,s2,mW2,mZ2);
+
+  return Val;
+}
+/***************************************************************************/
+// t_u_M_R_qg is the real emission q + qb -> n + g matrix element 
+// exactly as defined in Eqs. C.9 of NPB 383(1992)3-44, multiplied by
+// tk * uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
   // First the Born variables:
-  Energy2 s2(theKinematics.s2r());
-  Energy2 k12(theKinematics.k12r());
-  Energy2 k22(theKinematics.k22r());
-  double  theta1(theKinematics.theta1r());
-  double  theta2(theKinematics.theta2r());
+  Energy2 s2(R.s2r());
+  Energy2 mW2(R.k12r());
+  Energy2 mZ2(R.k22r());
   // Then the rest:
-  Energy2 s(theKinematics.sr());
-  Energy2 tk(theKinematics.tkr());
-  Energy2 uk(theKinematics.ukr());
-  double  cpsi(theKinematics.cpsir());
-  double  cpsipr(theKinematics.cpsipr());
-  double  betax(theKinematics.betaxr());
-  double  v1(theKinematics.v1r());
-  double  v2(theKinematics.v2r());
-  Energy2 q1(theKinematics.q1r());
-  Energy2 q2(theKinematics.q2r());
-  Energy2 q1hat(theKinematics.q1hatr());
-  Energy2 q2hat(theKinematics.q2hatr());
-  Energy2 w1(theKinematics.w1r());
-  Energy2 w2(theKinematics.w2r());
+  Energy2 s(R.sr());
+  Energy2 tk(R.tkr());
+  Energy2 uk(R.ukr());
+  Energy2 q1(R.q1r());
+  Energy2 q2(R.q2r());
+  Energy2 q1h(R.q1hatr());
+  Energy2 q2h(R.q2hatr());
+  Energy2 w1(R.w1r());
+  Energy2 w2(R.w2r());
 
-  return 0.*GeV2;
+  Energy2 Val(0.*GeV2);
+
+  swap(s,tk);
+  swap(q2,w2);
+  swap(q2h,w1);
+  Val  =  -2.*pi*alphaS_*Fij2_*CF_/NC_
+        * (    gdL_*gdL_*t_u_Rdd(s,tk,uk,q1,q2,mW2,mZ2)
+	  + 2.*gdL_*guL_*t_u_Rud(s,tk,uk,q1,q2,q1h,q2h,mW2,mZ2)
+	  +    guL_*guL_*t_u_Ruu(s,tk,uk,q1h,q2h,mW2,mZ2)
+	  - 2.*eZ_/(s2-mW2) * ( gdL_
+		 	       *t_u_RZd(s,tk,uk,q1 ,q2 ,s2,mW2,mZ2)
+	                      - guL_
+			       *t_u_RZu(s,tk,uk,q1h,q2h,s2,mW2,mZ2)
+	                      )
+          + sqr(eZ_/(s2-mW2)) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
+	  );
+  swap(s,tk);
+  swap(q2,w2);
+  swap(q2h,w1);
+
+  Val *= -tk/s * TR_/CF_; 
+
+  return Val;
 }
-
-Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics theKinematics) const {
+/***************************************************************************/
+// t_u_M_R_gqb is the real emission g + qb -> n + q matrix element 
+// exactly as defined in Eqs. C.9 of NPB 383(1992)3-44, multiplied by
+// tk * uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
   // First the Born variables:
-  Energy2 s2(theKinematics.s2r());
-  Energy2 k12(theKinematics.k12r());
-  Energy2 k22(theKinematics.k22r());
-  double  theta1(theKinematics.theta1r());
-  double  theta2(theKinematics.theta2r());
+  Energy2 s2(R.s2r());
+  Energy2 mW2(R.k12r());
+  Energy2 mZ2(R.k22r());
   // Then the rest:
-  Energy2 s(theKinematics.sr());
-  Energy2 tk(theKinematics.tkr());
-  Energy2 uk(theKinematics.ukr());
-  double  cpsi(theKinematics.cpsir());
-  double  cpsipr(theKinematics.cpsipr());
-  double  betax(theKinematics.betaxr());
-  double  v1(theKinematics.v1r());
-  double  v2(theKinematics.v2r());
-  Energy2 q1(theKinematics.q1r());
-  Energy2 q2(theKinematics.q2r());
-  Energy2 q1hat(theKinematics.q1hatr());
-  Energy2 q2hat(theKinematics.q2hatr());
-  Energy2 w1(theKinematics.w1r());
-  Energy2 w2(theKinematics.w2r());
+  Energy2 s(R.sr());
+  Energy2 tk(R.tkr());
+  Energy2 uk(R.ukr());
+  Energy2 q1(R.q1r());
+  Energy2 q2(R.q2r());
+  Energy2 q1h(R.q1hatr());
+  Energy2 q2h(R.q2hatr());
+  Energy2 w1(R.w1r());
+  Energy2 w2(R.w2r());
 
-  return 0.*GeV2;
+  Energy2 Val(0.*GeV2);
+
+  swap(s,uk);
+  swap(q1,w1);
+  swap(q1h,w2);
+  Val  =  -2.*pi*alphaS_*Fij2_*CF_/NC_
+        * (    gdL_*gdL_*t_u_Rdd(s,tk,uk,q1,q2,mW2,mZ2)
+	  + 2.*gdL_*guL_*t_u_Rud(s,tk,uk,q1,q2,q1h,q2h,mW2,mZ2)
+	  +    guL_*guL_*t_u_Ruu(s,tk,uk,q1h,q2h,mW2,mZ2)
+	  - 2.*eZ_/(s2-mW2) * ( gdL_
+		 	       *t_u_RZd(s,tk,uk,q1 ,q2 ,s2,mW2,mZ2)
+	                      - guL_
+			       *t_u_RZu(s,tk,uk,q1h,q2h,s2,mW2,mZ2)
+	                      )
+          + sqr(eZ_/(s2-mW2)) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
+	  );
+  swap(s,uk);
+  swap(q1,w1);
+  swap(q1h,w2);
+
+  Val *= -uk/s * TR_/CF_; 
+
+  return Val;
 }
-
-
-
-
