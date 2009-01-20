@@ -1,0 +1,1434 @@
+#
+# file containing the decays for the baryons
+#
+#
+# the (70,1^-_1)  10bar multiplet
+#
+#
+decaymode Lambda(1405)0->Sigma0,pi0; 0.333334 1 /Herwig/Decays/SU3SingletOctet1
+decaymode Lambda(1405)0->Sigma-,pi+; 0.333333 1 /Herwig/Decays/SU3SingletOctet1
+decaymode Lambda(1405)0->Sigma+,pi-; 0.333333 1 /Herwig/Decays/SU3SingletOctet1
+#
+decaymode Lambdabar(1405)0->Sigmabar0,pi0; 0.333334 1 /Herwig/Decays/SU3SingletOctet1
+decaymode Lambdabar(1405)0->Sigmabar-,pi+; 0.333333 1 /Herwig/Decays/SU3SingletOctet1
+decaymode Lambdabar(1405)0->Sigmabar+,pi-; 0.333333 1 /Herwig/Decays/SU3SingletOctet1
+#
+decaymode Lambda_c(2593)+->Sigma_c0,pi+; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_c(2593)+->Sigma_c+,pi0; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_c(2593)+->Sigma_c++,pi-; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_c(2593)+->Lambda_c+,pi+,pi-; 0.186667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c(2593)+->Lambda_c+,pi0,pi0; 0.093333 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_c(2593)bar-->Sigmabar_c--,pi+; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_c(2593)bar-->Sigmabar_c-,pi0; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_c(2593)bar-->Sigmabar_c0,pi-; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_c(2593)bar-->Lambdabar_c-,pi+,pi-; 0.186667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c(2593)bar-->Lambdabar_c-,pi0,pi0; 0.093333 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_b10->Sigma_b-,pi+; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_b10->Sigma_b0,pi0; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_b10->Sigma_b+,pi-; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_b10->Lambda_b0,pi+,pi-; 0.186667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b10->Lambda_b0,pi0,pi0; 0.093333 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_b1bar0->Sigma_bbar-,pi+; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_b1bar0->Sigma_bbar0,pi0; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_b1bar0->Sigma_bbar+,pi-; 0.24 1 /Herwig/Decays/HeavyStrong
+decaymode Lambda_b1bar0->Lambda_bbar0,pi+,pi-; 0.186667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b1bar0->Lambda_bbar0,pi0,pi0; 0.093333 1 /Herwig/Decays/DecayME0
+#
+decaymode Xi_c(2790)0->Xi'_c+,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2790)0->Xi'_c0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c(2790)bar0->Xi'_cbar-,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2790)bar0->Xi'_cbar0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c(2790)+->Xi'_c0,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2790)+->Xi'_c+,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c(2790)bar-->Xi'_cbar0,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2790)bar-->Xi'_cbar-,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b10->Xi_b'-,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b10->Xi_b'0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1bar0->Xi_b'bar+,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1bar0->Xi_b'bar0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1-->Xi_b'0,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1-->Xi_b'-,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1bar+->Xi_b'bar0,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1bar+->Xi_b'bar+,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+# the (70,1^-_1)  10bar multiplet
+#
+#
+decaymode Lambda(1520)0->n0,Kbar0; 0.223547 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambda(1520)0->p+,K-; 0.223547 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambda(1520)0->Sigma-,pi+; 0.139096 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambda(1520)0->Sigma0,pi0; 0.139096 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambda(1520)0->Sigma+,pi-; 0.139096 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambda(1520)0->Sigma*-,pi+; 0.02878 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1520)0->Sigma*0,pi0; 0.02878 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1520)0->Sigma*+,pi-; 0.02878 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1520)0->Sigma0,gamma; 0.019373 1 /Herwig/Decays/SU3Gamma5
+decaymode Lambda(1520)0->Lambda0,pi+,pi-; 0.014638 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1520)0->Lambda0,gamma; 0.007948 1 /Herwig/Decays/SU3Gamma5
+decaymode Lambda(1520)0->Lambda0,pi0,pi0; 0.007319 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambdabar(1520)0->pbar-,K+; 0.223547 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambdabar(1520)0->nbar0,K0; 0.223547 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambdabar(1520)0->Sigmabar-,pi+; 0.139096 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambdabar(1520)0->Sigmabar0,pi0; 0.139096 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambdabar(1520)0->Sigmabar+,pi-; 0.139096 1 /Herwig/Decays/SU3SingletOctet2
+decaymode Lambdabar(1520)0->Sigma*bar-,pi+; 0.02878 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1520)0->Sigma*bar0,pi0; 0.02878 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1520)0->Sigma*bar+,pi-; 0.02878 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1520)0->Sigmabar0,gamma; 0.019373 1 /Herwig/Decays/SU3Gamma5
+decaymode Lambdabar(1520)0->Lambdabar0,pi+,pi-; 0.014638 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1520)0->Lambdabar0,gamma; 0.007948 1 /Herwig/Decays/SU3Gamma5
+decaymode Lambdabar(1520)0->Lambdabar0,pi0,pi0; 0.007319 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_c(2625)+->Lambda_c+,pi+,pi-; 0.666667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c(2625)+->Lambda_c+,pi0,pi0; 0.333333 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_c(2625)bar-->Lambdabar_c-,pi+,pi-; 0.666667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c(2625)bar-->Lambdabar_c-,pi0,pi0; 0.333333 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_b1*0->Lambda_b0,pi+,pi-; 0.666667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b1*0->Lambda_b0,pi0,pi0; 0.333333 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambda_b1*bar0->Lambda_bbar0,pi+,pi-; 0.666667 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b1*bar0->Lambda_bbar0,pi0,pi0; 0.333333 1 /Herwig/Decays/DecayME0
+#
+decaymode Xi_c(2815)0->Xi_c*+,pi-; 0.365 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)0->Xi'_c+,pi-; 0.278 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)0->Xi_c*0,pi0; 0.19 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)0->Xi'_c0,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c(2815)bar0->Xi_c*bar-,pi+; 0.365 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)bar0->Xi'_cbar-,pi+; 0.278 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)bar0->Xi_c*bar0,pi0; 0.19 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)bar0->Xi'_cbar0,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c(2815)+->Xi_c*0,pi+; 0.365 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)+->Xi'_c0,pi+; 0.278 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)+->Xi_c*+,pi0; 0.19 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)+->Xi'_c+,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c(2815)bar-->Xi_c*bar0,pi-; 0.365 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)bar-->Xi'_cbar0,pi-; 0.278 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)bar-->Xi_c*bar-,pi0; 0.19 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c(2815)bar-->Xi'_cbar-,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1*0->Xi_b'-,pi+; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*0->Xi_b*-,pi+; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*0->Xi_b'0,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*0->Xi_b*0,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1*bar0->Xi_b*bar+,pi-; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*bar0->Xi_b'bar+,pi-; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*bar0->Xi_b*bar0,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*bar0->Xi_b'bar0,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1*-->Xi_b'0,pi-; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*-->Xi_b*0,pi-; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*-->Xi_b'-,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*-->Xi_b*-,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b1*bar+->Xi_b*bar0,pi+; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*bar+->Xi_b'bar0,pi+; 0.333 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*bar+->Xi_b*bar+,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b1*bar+->Xi_b'bar+,pi0; 0.167 1 /Herwig/Decays/HeavyStrong
+#
+# the (56,0^+_0)  35 multiplet
+#
+#
+decaymode Delta-->n0,pi-; 1 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Deltabar+->nbar0,pi+; 1 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Delta0->n0,pi0; 0.662933 1 /Herwig/Decays/SU3Decuplet
+decaymode Delta0->p+,pi-; 0.331467 1 /Herwig/Decays/SU3Decuplet
+decaymode Delta0->n0,gamma; 0.0056 1 /Herwig/Decays/DecupletGamma
+#
+decaymode Deltabar0->nbar0,pi0; 0.662933 1 /Herwig/Decays/SU3Decuplet
+decaymode Deltabar0->pbar-,pi+; 0.331467 1 /Herwig/Decays/SU3Decuplet
+decaymode Deltabar0->nbar0,gamma; 0.0056 1 /Herwig/Decays/DecupletGamma
+#
+decaymode Delta+->p+,pi0; 0.662933 1 /Herwig/Decays/SU3Decuplet
+decaymode Delta+->n0,pi+; 0.331467 1 /Herwig/Decays/SU3Decuplet
+decaymode Delta+->p+,gamma; 0.0056 1 /Herwig/Decays/DecupletGamma
+#
+decaymode Deltabar-->pbar-,pi0; 0.662933 1 /Herwig/Decays/SU3Decuplet
+decaymode Deltabar-->nbar0,pi-; 0.331467 1 /Herwig/Decays/SU3Decuplet
+decaymode Deltabar-->pbar-,gamma; 0.0056 1 /Herwig/Decays/DecupletGamma
+#
+decaymode Delta++->p+,pi+; 1 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Deltabar--->pbar-,pi-; 1 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Sigma*-->Lambda0,pi-; 0.87 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*-->Sigma-,pi0; 0.065 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*-->Sigma0,pi-; 0.065 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Sigma*bar+->Lambdabar0,pi+; 0.87 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar+->Sigmabar0,pi+; 0.065 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar+->Sigmabar+,pi0; 0.065 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Sigma*0->Lambda0,pi0; 0.87 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*0->Sigma-,pi+; 0.0585 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*0->Sigma+,pi-; 0.0585 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*0->Lambda0,gamma; 0.013 1 /Herwig/Decays/DecayME0
+#
+decaymode Sigma*bar0->Lambdabar0,pi0; 0.87 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar0->Sigmabar-,pi+; 0.0585 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar0->Sigmabar+,pi-; 0.0585 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar0->Lambdabar0,gamma; 0.013 1 /Herwig/Decays/DecayME0
+#
+decaymode Sigma*+->Lambda0,pi+; 0.87 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*+->Sigma0,pi+; 0.065 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*+->Sigma+,pi0; 0.065 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Sigma*bar-->Lambdabar0,pi-; 0.87 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar-->Sigmabar-,pi0; 0.065 1 /Herwig/Decays/SU3Decuplet
+decaymode Sigma*bar-->Sigmabar0,pi-; 0.065 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Xi*-->Xi0,pi-; 0.666667 1 /Herwig/Decays/SU3Decuplet
+decaymode Xi*-->Xi-,pi0; 0.333333 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Xi*bar+->Xibar0,pi+; 0.666667 1 /Herwig/Decays/SU3Decuplet
+decaymode Xi*bar+->Xibar+,pi0; 0.333333 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Xi*0->Xi-,pi+; 0.666667 1 /Herwig/Decays/SU3Decuplet
+decaymode Xi*0->Xi0,pi0; 0.333333 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Xi*bar0->Xibar+,pi-; 0.666667 1 /Herwig/Decays/SU3Decuplet
+decaymode Xi*bar0->Xibar0,pi0; 0.333333 1 /Herwig/Decays/SU3Decuplet
+#
+decaymode Omega-->Lambda0,K-; 0.673797 1 /Herwig/Decays/OmegaNL
+decaymode Omega-->Xi0,pi-; 0.234536 1 /Herwig/Decays/OmegaNL
+decaymode Omega-->Xi-,pi0; 0.085466 1 /Herwig/Decays/OmegaNL
+decaymode Omega-->Xi0,e-,nu_ebar; 0.005565 1 /Herwig/Decays/DecayME0
+decaymode Omega-->Xi*0,pi-; 0.000636 1 /Herwig/Decays/OmegaXiStar
+#
+decaymode Omegabar+->Lambdabar0,K+; 0.673797 1 /Herwig/Decays/OmegaNL
+decaymode Omegabar+->Xibar0,pi+; 0.234536 1 /Herwig/Decays/OmegaNL
+decaymode Omegabar+->Xibar+,pi0; 0.085466 1 /Herwig/Decays/OmegaNL
+decaymode Omegabar+->Xibar0,e+,nu_e; 0.005565 1 /Herwig/Decays/DecayME0
+decaymode Omegabar+->Xi*bar0,pi+; 0.000636 1 /Herwig/Decays/OmegaXiStar
+#
+decaymode Sigma*_c0->Lambda_c+,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigmabar*_c0->Lambdabar_c-,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma*_c+->Lambda_c+,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigmabar*_c-->Lambdabar_c-,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma*_c++->Lambda_c+,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigmabar*_c--->Lambdabar_c-,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c*0->Xi_c+,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c*0->Xi_c0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c*bar0->Xi_cbar-,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c*bar0->Xi_cbar0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c*+->Xi_c0,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c*+->Xi_c+,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c*bar-->Xi_cbar0,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_c*bar-->Xi_cbar-,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Omega_c*0->Omega_c0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Omega_c*bar0->Omega_cbar0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Sigma_b*-->Lambda_b0,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b*bar+->Lambda_bbar0,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b*0->Lambda_b0,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b*bar0->Lambda_bbar0,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b*+->Lambda_b0,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b*bar-->Lambda_bbar0,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b*-->Xi_b0,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b*-->Xi_b-,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b*bar+->Xi_bbar0,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b*bar+->Xi_bbar+,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b*0->Xi_b-,pi+; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b*0->Xi_b0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b*bar0->Xi_bbar+,pi-; 0.666667 1 /Herwig/Decays/HeavyStrong
+decaymode Xi_b*bar0->Xi_bbar0,pi0; 0.333333 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Omega_b*-->Omega_b-,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Omega_b*bar+->Omega_bbar+,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+# the (56,0^+_0)  40 multiplet
+#
+#
+decaymode Lambda0->p+,pi-; 0.639167 1 /Herwig/Decays/HyperonNL
+decaymode Lambda0->n0,pi0; 0.358093 1 /Herwig/Decays/HyperonNL
+decaymode Lambda0->n0,gamma; 0.001751 1 /Herwig/Decays/RadiativeHyperon
+decaymode Lambda0->p+,e-,nu_ebar; 0.000832 1 /Herwig/Decays/BaryonLight1
+decaymode Lambda0->p+,mu-,nu_mubar; 0.000157 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Lambdabar0->pbar-,pi+; 0.639167 1 /Herwig/Decays/HyperonNL
+decaymode Lambdabar0->nbar0,pi0; 0.358093 1 /Herwig/Decays/HyperonNL
+decaymode Lambdabar0->nbar0,gamma; 0.001751 1 /Herwig/Decays/RadiativeHyperon
+decaymode Lambdabar0->pbar-,e+,nu_e; 0.000832 1 /Herwig/Decays/BaryonLight1
+decaymode Lambdabar0->pbar-,mu+,nu_mu; 0.000157 1 /Herwig/Decays/BaryonLight1
+#
+#
+#
+decaymode n0->p+,e-,nu_ebar; 1 1 /Herwig/Decays/BaryonLight1
+#
+decaymode nbar0->pbar-,e+,nu_e; 1 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Sigma-->n0,pi-; 0.998476 1 /Herwig/Decays/HyperonNL
+decaymode Sigma-->n0,e-,nu_ebar; 0.001017 1 /Herwig/Decays/BaryonLight1
+decaymode Sigma-->n0,mu-,nu_mubar; 0.00045 1 /Herwig/Decays/BaryonLight1
+decaymode Sigma-->Lambda0,e-,nu_ebar; 5.7E-5 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Sigmabar+->nbar0,pi+; 0.998476 1 /Herwig/Decays/HyperonNL
+decaymode Sigmabar+->nbar0,e+,nu_e; 0.001017 1 /Herwig/Decays/BaryonLight1
+decaymode Sigmabar+->nbar0,mu+,nu_mu; 0.00045 1 /Herwig/Decays/BaryonLight1
+decaymode Sigmabar+->Lambdabar0,e+,nu_e; 5.7E-5 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Sigma0->Lambda0,gamma; 0.995 1 /Herwig/Decays/SU3Gamma3
+decaymode Sigma0->Lambda0,e-,e+; 0.005 1 /Herwig/Decays/DecayME0
+#
+decaymode Sigmabar0->Lambdabar0,gamma; 0.995 1 /Herwig/Decays/SU3Gamma3
+decaymode Sigmabar0->Lambdabar0,e-,e+; 0.005 1 /Herwig/Decays/DecayME0
+#
+decaymode Sigma+->p+,pi0; 0.515674 1 /Herwig/Decays/HyperonNL
+decaymode Sigma+->n0,pi+; 0.483076 1 /Herwig/Decays/HyperonNL
+decaymode Sigma+->p+,gamma; 0.00123 1 /Herwig/Decays/RadiativeHyperon
+decaymode Sigma+->Lambda0,e+,nu_e; 2.0E-5 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Sigmabar-->pbar-,pi0; 0.515674 1 /Herwig/Decays/HyperonNL
+decaymode Sigmabar-->nbar0,pi-; 0.483076 1 /Herwig/Decays/HyperonNL
+decaymode Sigmabar-->pbar-,gamma; 0.00123 1 /Herwig/Decays/RadiativeHyperon
+decaymode Sigmabar-->Lambdabar0,e-,nu_ebar; 2.0E-5 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Xi-->Lambda0,pi-; 0.998873 1 /Herwig/Decays/HyperonNL
+decaymode Xi-->Lambda0,e-,nu_ebar; 0.000563 1 /Herwig/Decays/BaryonLight1
+decaymode Xi-->Lambda0,mu-,nu_mubar; 0.00035 1 /Herwig/Decays/BaryonLight1
+decaymode Xi-->Sigma-,gamma; 0.000127 1 /Herwig/Decays/RadiativeHyperon
+decaymode Xi-->Sigma0,e-,nu_ebar; 8.7E-5 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Xibar+->Lambdabar0,pi+; 0.998873 1 /Herwig/Decays/HyperonNL
+decaymode Xibar+->Lambdabar0,e+,nu_e; 0.000563 1 /Herwig/Decays/BaryonLight1
+decaymode Xibar+->Lambdabar0,mu+,nu_mu; 0.00035 1 /Herwig/Decays/BaryonLight1
+decaymode Xibar+->Sigmabar+,gamma; 0.000127 1 /Herwig/Decays/RadiativeHyperon
+decaymode Xibar+->Sigmabar0,e+,nu_e; 8.7E-5 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Xi0->Lambda0,pi0; 0.995225 1 /Herwig/Decays/HyperonNL
+decaymode Xi0->Sigma0,gamma; 0.00333 1 /Herwig/Decays/RadiativeHyperon
+decaymode Xi0->Lambda0,gamma; 0.00117 1 /Herwig/Decays/RadiativeHyperon
+decaymode Xi0->Sigma+,e-,nu_ebar; 0.00027 1 /Herwig/Decays/BaryonLight1
+decaymode Xi0->Sigma+,mu-,nu_mubar; 5.0E-6 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Xibar0->Lambdabar0,pi0; 0.995225 1 /Herwig/Decays/HyperonNL
+decaymode Xibar0->Sigmabar0,gamma; 0.00333 1 /Herwig/Decays/RadiativeHyperon
+decaymode Xibar0->Lambdabar0,gamma; 0.00117 1 /Herwig/Decays/RadiativeHyperon
+decaymode Xibar0->Sigmabar-,e+,nu_e; 0.00027 1 /Herwig/Decays/BaryonLight1
+decaymode Xibar0->Sigmabar-,mu+,nu_mu; 5.0E-6 1 /Herwig/Decays/BaryonLight1
+#
+decaymode Lambda_c+->u=dbar,s=ud_0; 0.244527 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->s=dbar,u=ud_0; 0.109073 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->p+,K-,pi+,pi0; 0.029 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->p+,K-,pi+; 0.028 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->p+,Kbar0,pi0; 0.028 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Lambda0,rho+; 0.0272 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma+,omega; 0.027 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->u=dbar,d=ud_0; 0.0262 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->u=sbar,s=ud_0; 0.025926 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->p+,Kbar0; 0.023 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma+,pi+,pi-; 0.023 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Lambda0,e+,nu_e; 0.021 1 /Herwig/Decays/BaryonHeavy2
+decaymode Lambda_c+->Lambda0,mu+,nu_mu; 0.02 1 /Herwig/Decays/BaryonHeavy2
+decaymode Lambda_c+->p+,Kbar0,pi+,pi-; 0.019 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma-,pi+,pi+; 0.019 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Lambda(1520)0,pi+; 0.018 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->p+,K*bar0; 0.016 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma*+,omega; 0.014 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma0,rho+; 0.013 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma+,rho0; 0.013 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->p+,Kbar0,eta; 0.012 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Delta++,K*-; 0.011 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->d=dbar,u=ud_0; 0.0108 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->Lambda0,pi+,eta; 0.0106 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Sigma0,pi+; 0.0104 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Lambda0,pi+; 0.0101 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma+,pi0; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->s=sbar,u=ud_0; 0.00998 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->Sigma+,eta'; 0.009 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Delta++,K-; 0.0086 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma*+,eta; 0.0085 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->p+,K-,pi+,pi0,pi0; 0.008 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma0,pi+,pi+,pi-; 0.008 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma-,pi+,mu+,nu_mu; 0.0073 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma0,pi0,e+,nu_e; 0.0073 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma+,pi-,mu+,nu_mu; 0.0073 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma-,pi+,e+,nu_e; 0.0072 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma0,pi0,mu+,nu_mu; 0.0072 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma+,pi-,e+,nu_e; 0.0072 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma+,eta; 0.0055 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma0,pi+,pi0; 0.005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Sigma*0,pi+; 0.005 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma*+,pi0; 0.005 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Lambda0,K+,Kbar0; 0.0044 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Sigma*0,rho+; 0.0043 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Sigma*+,rho0; 0.0043 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Xi0,K+; 0.0039 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Delta+,K*bar0; 0.0035 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Lambda0,pi+,pi+,pi-,pi0; 0.0033 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Sigma+,phi; 0.0032 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Lambda0,pi+,pi+,pi-; 0.003 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Xi-,K+,pi+; 0.003 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Delta+,Kbar0; 0.0029 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Xi(1690)0,K+; 0.0029 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->p+,f_0; 0.0028 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Sigma+,K*bar0; 0.0028 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Xi*0,K+; 0.0026 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->Lambda0,K+,pi+,pi-; 0.002394 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->e+,nu_e,d=ud_0; 0.0023 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->mu+,nu_mu,d=ud_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->p+,pi+,pi-; 0.0019 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->u=sbar,d=ud_0; 0.0018 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->p+,pi+,pi-,pi+,pi-; 0.0018 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->Xi0,K*+; 0.0012 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambda_c+->p+,K-,pi+,pi+,pi-; 0.0011 1 /Herwig/Decays/Mambo
+decaymode Lambda_c+->p+,phi; 0.00082 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Lambda0,K+; 0.00075 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->d=sbar,u=ud_0; 0.0006 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_c+->Sigma0,K+; 0.00058 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->Sigma+,K+,K-; 0.0004 1 /Herwig/Decays/DecayME0
+decaymode Lambda_c+->p+,K+,K-; 0.00035 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambdabar_c-->ubar=d,sbar=ud_0bar; 0.244527 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->sbar=d,ubar=ud_0bar; 0.109073 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->pbar-,K+,pi-,pi0; 0.029 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->pbar-,K0,pi0; 0.028 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,K+,pi-; 0.028 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Lambdabar0,rho-; 0.0272 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar-,omega; 0.027 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->ubar=d,dbar=ud_0bar; 0.0262 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->ubar=s,sbar=ud_0bar; 0.025926 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->Sigmabar-,pi-,pi+; 0.023 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,K0; 0.023 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Lambdabar0,e-,nu_ebar; 0.021 1 /Herwig/Decays/BaryonHeavy2
+decaymode Lambdabar_c-->Lambdabar0,mu-,nu_mubar; 0.02 1 /Herwig/Decays/BaryonHeavy2
+decaymode Lambdabar_c-->Sigmabar+,pi-,pi-; 0.019 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,K0,pi-,pi+; 0.019 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Lambdabar(1520)0,pi-; 0.018 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,K*0; 0.016 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigma*bar-,omega; 0.014 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar-,rho0; 0.013 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar0,rho-; 0.013 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->pbar-,K0,eta; 0.012 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Deltabar--,K*+; 0.011 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->dbar=d,ubar=ud_0bar; 0.0108 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->Lambdabar0,pi-,eta; 0.0106 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Sigmabar0,pi-; 0.0104 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Lambdabar0,pi-; 0.0101 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar-,pi0; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->sbar=s,ubar=ud_0bar; 0.00998 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->Sigmabar-,eta'; 0.009 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Deltabar--,K+; 0.0086 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigma*bar-,eta; 0.0085 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar0,pi-,pi-,pi+; 0.008 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->pbar-,K+,pi-,pi0,pi0; 0.008 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar-,pi+,mu-,nu_mubar; 0.0073 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar0,pi0,e-,nu_ebar; 0.0073 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar+,pi-,mu-,nu_mubar; 0.0073 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar-,pi+,e-,nu_ebar; 0.0072 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar0,pi0,mu-,nu_mubar; 0.0072 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar+,pi-,e-,nu_ebar; 0.0072 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar-,eta; 0.0055 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigma*bar-,pi0; 0.005 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigma*bar0,pi-; 0.005 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar0,pi-,pi0; 0.005 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Lambdabar0,K-,K0; 0.0044 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Sigma*bar-,rho0; 0.0043 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigma*bar0,rho-; 0.0043 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Xibar0,K-; 0.0039 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Deltabar-,K*0; 0.0035 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Lambdabar0,pi-,pi-,pi+,pi0; 0.0033 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Sigmabar-,phi; 0.0032 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Xibar+,K-,pi-; 0.003 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Lambdabar0,pi-,pi-,pi+; 0.003 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->Xibar(1690)0,K-; 0.0029 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Deltabar-,K0; 0.0029 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Sigmabar-,K*0; 0.0028 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,f_0; 0.0028 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Xi*bar0,K-; 0.0026 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->Lambdabar0,K-,pi-,pi+; 0.002394 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->e-,nu_ebar,dbar=ud_0bar; 0.0023 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->mu-,nu_mubar,dbar=ud_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->pbar-,pi-,pi+; 0.0019 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,pi-,pi+,pi-,pi+; 0.0018 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->ubar=s,dbar=ud_0bar; 0.0018 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->Xibar0,K*-; 0.0012 1 /Herwig/Decays/CharmBaryon1
+decaymode Lambdabar_c-->pbar-,K+,pi-,pi-,pi+; 0.0011 1 /Herwig/Decays/Mambo
+decaymode Lambdabar_c-->pbar-,phi; 0.00082 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Lambdabar0,K-; 0.00075 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->dbar=s,ubar=ud_0bar; 0.0006 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambdabar_c-->Sigmabar0,K-; 0.00058 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->Sigmabar-,K-,K+; 0.0004 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar_c-->pbar-,K-,K+; 0.00035 1 /Herwig/Decays/DecayME0
+#
+decaymode Sigma_c0->Lambda_c+,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigmabar_c0->Lambdabar_c-,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_c+->Lambda_c+,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigmabar_c-->Lambdabar_c-,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_c++->Lambda_c+,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigmabar_c--->Lambdabar_c-,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_c0->dbar=u,s=sd_0; 0.3942 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->dbar=s,u=sd_0; 0.1084 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->Xi-,pi+,pi+,pi-; 0.033 1 /Herwig/Decays/Mambo
+decaymode Xi_c0->mu+,nu_mu,pi-,Xi0; 0.032 1 /Herwig/Decays/Mambo
+decaymode Xi_c0->e+,nu_e,pi-,Xi0; 0.032 1 /Herwig/Decays/Mambo
+decaymode Xi_c0->Xi-,mu+,nu_mu; 0.032 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_c0->Xi-,e+,nu_e; 0.032 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_c0->sbar=u,s=sd_0; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->dbar=u,d=sd_0; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->Xi0,omega; 0.0233 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Sigma*+,K*-; 0.022 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi-,rho+; 0.018 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi*-,rho+; 0.018 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi0,rho0; 0.017 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->mu+,nu_mu,pi0,Xi-; 0.016 1 /Herwig/Decays/Mambo
+decaymode Xi_c0->e+,nu_e,pi0,Xi-; 0.016 1 /Herwig/Decays/Mambo
+decaymode Xi_c0->Sigma0,Kbar0; 0.012 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Lambda0,K*bar0; 0.011 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Sigma*0,K*bar0; 0.011 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi-,pi+; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->sbar=s,u=sd_0; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->dbar=d,u=sd_0; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->Xi*0,rho0; 0.0092 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi0,eta'; 0.0085 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi*0,omega; 0.0084 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Sigma0,K*bar0; 0.0062 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi*-,pi+; 0.0056 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Sigma*+,K-; 0.005 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Lambda0,Kbar0; 0.0042 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->mu+,nu_mu,d=sd_0; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->e+,nu_e,d=sd_0; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->Sigma+,K*-; 0.004 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Lambda0,K-,pi+; 0.0034 1 /Herwig/Decays/DecayME0
+decaymode Xi_c0->Omega-,K+; 0.003 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi*0,pi0; 0.0028 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Sigma*0,Kbar0; 0.0025 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->Xi0,eta; 0.0024 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->p+,K-,K*bar0; 0.0021 1 /Herwig/Decays/DecayME0
+decaymode Xi_c0->p+,K-,K-,pi+; 0.002 1 /Herwig/Decays/Mambo
+decaymode Xi_c0->Xi0,phi; 0.0018 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->sbar=u,d=sd_0; 0.0016 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->Sigma+,K-; 0.0012 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c0->sbar=d,u=sd_0; 0.0005 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c0->Xi0,pi0; 0.0003 1 /Herwig/Decays/CharmBaryon1
+#
+decaymode Xi_cbar0->d=ubar,sbar=sd_0bar; 0.3942 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->d=sbar,ubar=sd_0bar; 0.1084 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->Xibar+,pi-,pi-,pi+; 0.033 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar0->Xibar+,e-,nu_ebar; 0.032 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_cbar0->Xibar+,mu-,nu_mubar; 0.032 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_cbar0->e-,nu_ebar,pi+,Xibar0; 0.032 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar0->mu-,nu_mubar,pi+,Xibar0; 0.032 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar0->d=ubar,dbar=sd_0bar; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->s=ubar,sbar=sd_0bar; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->Xibar0,omega; 0.0233 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Sigma*bar-,K*+; 0.022 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xi*bar+,rho-; 0.018 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xibar+,rho-; 0.018 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xibar0,rho0; 0.017 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->e-,nu_ebar,pi0,Xibar+; 0.016 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar0->mu-,nu_mubar,pi0,Xibar+; 0.016 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar0->Sigmabar0,K0; 0.012 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Sigma*bar0,K*0; 0.011 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Lambdabar0,K*0; 0.011 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xibar+,pi-; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->d=dbar,ubar=sd_0bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->s=sbar,ubar=sd_0bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->Xi*bar0,rho0; 0.0092 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xibar0,eta'; 0.0085 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xi*bar0,omega; 0.0084 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Sigmabar0,K*0; 0.0062 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xi*bar+,pi-; 0.0056 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Sigma*bar-,K+; 0.005 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Lambdabar0,K0; 0.0042 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Sigmabar-,K*+; 0.004 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->e-,nu_ebar,dbar=sd_0bar; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->mu-,nu_mubar,dbar=sd_0bar; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->Lambdabar0,K+,pi-; 0.0034 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar0->Omegabar+,K-; 0.003 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xi*bar0,pi0; 0.0028 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Sigma*bar0,K0; 0.0025 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->Xibar0,eta; 0.0024 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->pbar-,K+,K*0; 0.0021 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar0->pbar-,K+,K+,pi-; 0.002 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar0->Xibar0,phi; 0.0018 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->s=ubar,dbar=sd_0bar; 0.0016 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->Sigmabar-,K+; 0.0012 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar0->s=dbar,ubar=sd_0bar; 0.0005 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar0->Xibar0,pi0; 0.0003 1 /Herwig/Decays/CharmBaryon1
+#
+decaymode Xi_c+->dbar=u,s=su_0; 0.4948 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->dbar=s,u=su_0; 0.1596 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->mu+,nu_mu,Xi0; 0.036 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_c+->e+,nu_e,Xi0; 0.036 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_c+->mu+,nu_mu,Xi-,pi+; 0.0293 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->e+,nu_e,Xi-,pi+; 0.0293 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->sbar=u,s=su_0; 0.0283 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->dbar=u,d=su_0; 0.0273 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->Xi0,rho+; 0.0234 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c+->Xi0,pi+,pi+,pi-; 0.0174 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->mu+,nu_mu,Xi0,pi0; 0.0147 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->e+,nu_e,Xi0,pi0; 0.0147 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->Sigma+,Kbar0; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c+->Sigma*+,Kbar0; 0.01 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->Xi-,pi+,pi+; 0.01 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->sbar=s,u=su_0; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->dbar=d,u=su_0; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->Sigma+,K*bar0; 0.0081 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->Xi0,pi+; 0.0055 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_c+->mu+,nu_mu,d=su_0; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->e+,nu_e,d=su_0; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->Sigma+,K-,pi+; 0.004 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->Lambda0,K-,pi+,pi+; 0.0032 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->Sigma0,K-,pi+,pi+; 0.0029 1 /Herwig/Decays/Mambo
+decaymode Xi_c+->sbar=u,d=su_0; 0.0016 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_c+->Sigma+,K+,K-; 0.0015 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->p+,K-,pi+; 0.0013 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->p+,K*bar0; 0.0012 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->p+,K_S0,K_S0; 0.0009 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->Omega-,K+,pi+; 0.0007 1 /Herwig/Decays/DecayME0
+decaymode Xi_c+->sbar=d,u=su_0; 0.0005 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Xi_cbar-->d=ubar,sbar=su_0bar; 0.4948 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->d=sbar,ubar=su_0bar; 0.1596 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->e-,nu_ebar,Xibar0; 0.036 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_cbar-->mu-,nu_mubar,Xibar0; 0.036 1 /Herwig/Decays/BaryonHeavy3
+decaymode Xi_cbar-->e-,nu_ebar,Xibar+,pi-; 0.0293 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->mu-,nu_mubar,Xibar+,pi-; 0.0293 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->s=ubar,sbar=su_0bar; 0.0283 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->d=ubar,dbar=su_0bar; 0.0273 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->Xibar0,rho-; 0.0234 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar-->Xibar0,pi-,pi-,pi+; 0.0174 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->e-,nu_ebar,Xibar0,pi0; 0.0147 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->mu-,nu_mubar,Xibar0,pi0; 0.0147 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->Xibar+,pi-,pi-; 0.01 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->Sigma*bar-,K0; 0.01 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->Sigmabar-,K0; 0.01 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar-->d=dbar,ubar=su_0bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->s=sbar,ubar=su_0bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->Sigmabar-,K*0; 0.0081 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->Xibar0,pi-; 0.0055 1 /Herwig/Decays/CharmBaryon1
+decaymode Xi_cbar-->Sigmabar-,K+,pi-; 0.004 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->e-,nu_ebar,dbar=su_0bar; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->mu-,nu_mubar,dbar=su_0bar; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->Lambdabar0,K+,pi-,pi-; 0.0032 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->Sigmabar0,K+,pi-,pi-; 0.0029 1 /Herwig/Decays/Mambo
+decaymode Xi_cbar-->s=ubar,dbar=su_0bar; 0.0016 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_cbar-->Sigmabar-,K-,K+; 0.0015 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->pbar-,K+,pi-; 0.0013 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->pbar-,K*0; 0.0012 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->pbar-,K_S0,K_S0; 0.0009 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->Omegabar+,K-,pi-; 0.0007 1 /Herwig/Decays/DecayME0
+decaymode Xi_cbar-->s=dbar,ubar=su_0bar; 0.0005 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Xi'_c0->Xi_c0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Xi'_cbar0->Xi_cbar0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Xi'_c+->Xi_c+,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Xi'_cbar-->Xi_cbar-,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Omega_c0->dbar=u,s=ss_1; 0.5319 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->dbar=s,u=ss_1; 0.1606 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->mu+,nu_mu,s=ss_1; 0.066 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->e+,nu_e,s=ss_1; 0.066 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->sbar=u,s=ss_1; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->dbar=u,d=ss_1; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->Omega-,rho+; 0.025 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_c0->Omega-,mu+,nu_mu; 0.014 1 /Herwig/Decays/BaryonHeavy3
+decaymode Omega_c0->Omega-,e+,nu_e; 0.014 1 /Herwig/Decays/BaryonHeavy3
+decaymode Omega_c0->Xi0,Kbar0; 0.012 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_c0->sbar=s,u=ss_1; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->dbar=d,u=ss_1; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->Xi*0,K*bar0; 0.0078 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_c0->Xi0,K*bar0; 0.0059 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_c0->Omega-,pi+; 0.0059 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_c0->mu+,nu_mu,d=ss_1; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->e+,nu_e,d=ss_1; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->sbar=u,d=ss_1; 0.0016 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_c0->Xi*0,Kbar0; 0.0014 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_c0->sbar=d,u=ss_1; 0.0005 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Omega_cbar0->d=ubar,sbar=ss_1bar; 0.5319 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->d=sbar,ubar=ss_1bar; 0.1606 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->e-,nu_ebar,sbar=ss_1bar; 0.066 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->mu-,nu_mubar,sbar=ss_1bar; 0.066 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->d=ubar,dbar=ss_1bar; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->s=ubar,sbar=ss_1bar; 0.0298 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->Omegabar+,rho-; 0.025 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_cbar0->Omegabar+,e-,nu_ebar; 0.014 1 /Herwig/Decays/BaryonHeavy3
+decaymode Omega_cbar0->Omegabar+,mu-,nu_mubar; 0.014 1 /Herwig/Decays/BaryonHeavy3
+decaymode Omega_cbar0->Xibar0,K0; 0.012 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_cbar0->d=dbar,ubar=ss_1bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->s=sbar,ubar=ss_1bar; 0.0099 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->Xi*bar0,K*0; 0.0078 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_cbar0->Omegabar+,pi-; 0.0059 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_cbar0->Xibar0,K*0; 0.0059 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_cbar0->e-,nu_ebar,dbar=ss_1bar; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->mu-,nu_mubar,dbar=ss_1bar; 0.004 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->s=ubar,dbar=ss_1bar; 0.0016 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_cbar0->Xi*bar0,K0; 0.0014 1 /Herwig/Decays/CharmBaryon1
+decaymode Omega_cbar0->s=dbar,ubar=ss_1bar; 0.0005 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Lambda_b0->s=cbar,c=ud_0; 0.2104 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->d=ubar,c=ud_0; 0.2072 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->c=ubar,d=ud_0; 0.0913 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->c=cbar,s=ud_0; 0.09044 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Lambda_c+,e-,nu_ebar; 0.0662 1 /Herwig/Decays/BaryonHeavy1
+decaymode Lambda_b0->Lambda_c+,mu-,nu_mubar; 0.0662 1 /Herwig/Decays/BaryonHeavy1
+decaymode Lambda_b0->Lambda_c+,a_1-; 0.0379 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->Lambda_c+,D_s*-; 0.0343 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->e-,nu_ebar,c=ud_0; 0.0291 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->mu-,nu_mubar,c=ud_0; 0.0291 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Lambda_c+,tau-,nu_taubar; 0.0191 1 /Herwig/Decays/BaryonHeavy1
+decaymode Lambda_b0->Lambda_c+,D_s-; 0.014 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_b0->Lambda_c+,D_s1-; 0.0136 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->Lambda_c+,rho-; 0.0135 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->s=ubar,c=ud_0; 0.0134 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->tau-,nu_taubar,c=ud_0; 0.01288 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->d=cbar,c=ud_0; 0.012493 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Lambda_c+,pi-; 0.006 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_b0->c=cbar,d=ud_0; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->c=ubar,s=ud_0; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->d=ubar,u=ud_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->s=cbar,u=ud_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Lambda_c+,D_s0-; 0.0016 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_b0->Lambda_c+,D*-; 0.00147 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->Sigma*_c0,pi0; 0.0012 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Sigma*_c+,pi-; 0.0012 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Sigma*_c0,rho0; 0.001 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Sigma*_c+,rho-; 0.001 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Xi_c*0,K0; 0.001 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->e-,nu_ebar,u=ud_0; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->mu-,nu_mubar,u=ud_0; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Lambda_c+,K*-; 0.00067 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->Sigma_c0,pi0; 0.0006 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Lambda_c(2625)+,e-,nu_ebar; 0.0006 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_b0->Lambda_c(2625)+,mu-,nu_mubar; 0.0006 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_b0->Sigma_c+,pi-; 0.0006 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Lambda_c+,D-; 0.000537 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_b0->Sigma_c0,rho0; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Sigma_c0,eta'; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Sigma_c+,rho-; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Xi'_c0,K0; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Lambda0,Jpsi; 0.00047 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->Lambda_c+,K-; 0.00043 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_b0->Sigma_c0,eta; 0.0004 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Lambda0,psi(2S); 0.00039 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_b0->tau-,nu_taubar,u=ud_0; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Xi_c0,K0; 0.0003 1 /Herwig/Decays/DecayME0
+decaymode Lambda_b0->Lambda_c(2593)+,e-,nu_ebar; 0.0003 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_b0->Lambda_c(2593)+,mu-,nu_mubar; 0.0003 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_b0->d=cbar,u=ud_0; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->s=ubar,u=ud_0; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_b0->Lambda_c(2625)+,tau-,nu_taubar; 8.0E-5 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_b0->Lambda_c(2593)+,tau-,nu_taubar; 4.0E-5 1 /Herwig/Decays/ExcitedLambda
+#
+decaymode Lambda_bbar0->sbar=c,cbar=ud_0bar; 0.2104 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->dbar=u,cbar=ud_0bar; 0.2072 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->cbar=u,dbar=ud_0bar; 0.0913 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->cbar=c,sbar=ud_0bar; 0.09044 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->Lambdabar_c-,mu+,nu_mu; 0.0662 1 /Herwig/Decays/BaryonHeavy1
+decaymode Lambda_bbar0->Lambdabar_c-,e+,nu_e; 0.0662 1 /Herwig/Decays/BaryonHeavy1
+decaymode Lambda_bbar0->Lambdabar_c-,a_1+; 0.0379 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Lambdabar_c-,D_s*+; 0.0343 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->mu+,nu_mu,cbar=ud_0bar; 0.0291 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->e+,nu_e,cbar=ud_0bar; 0.0291 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->Lambdabar_c-,tau+,nu_tau; 0.0191 1 /Herwig/Decays/BaryonHeavy1
+decaymode Lambda_bbar0->Lambdabar_c-,D_s+; 0.014 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_bbar0->Lambdabar_c-,D_s1+; 0.0136 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Lambdabar_c-,rho+; 0.0135 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->sbar=u,cbar=ud_0bar; 0.0134 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->tau+,nu_tau,cbar=ud_0bar; 0.01288 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->dbar=c,cbar=ud_0bar; 0.012493 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->Lambdabar_c-,pi+; 0.006 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_bbar0->cbar=u,sbar=ud_0bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->cbar=c,dbar=ud_0bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->sbar=c,ubar=ud_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->dbar=u,ubar=ud_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->Lambdabar_c-,D_s0+; 0.0016 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_bbar0->Lambdabar_c-,D*+; 0.00147 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Sigmabar*_c-,pi+; 0.0012 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Sigmabar*_c0,pi0; 0.0012 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Xi_c*bar0,Kbar0; 0.001 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Sigmabar*_c-,rho+; 0.001 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Sigmabar*_c0,rho0; 0.001 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->mu+,nu_mu,ubar=ud_0bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->e+,nu_e,ubar=ud_0bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->Lambdabar_c-,K*+; 0.00067 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Sigmabar_c-,pi+; 0.0006 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Lambda_c(2625)bar-,mu+,nu_mu; 0.0006 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_bbar0->Lambda_c(2625)bar-,e+,nu_e; 0.0006 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_bbar0->Sigmabar_c0,pi0; 0.0006 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Lambdabar_c-,D+; 0.000537 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_bbar0->Xi'_cbar0,Kbar0; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Sigmabar_c-,rho+; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Sigmabar_c0,rho0; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Sigmabar_c0,eta'; 0.0005 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Lambdabar0,Jpsi; 0.00047 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Lambdabar_c-,K+; 0.00043 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Lambda_bbar0->Sigmabar_c0,eta; 0.0004 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->Lambdabar0,psi(2S); 0.00039 1 /Herwig/Decays/BottomBaryonVector
+decaymode Lambda_bbar0->Lambda_c(2593)bar-,mu+,nu_mu; 0.0003 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_bbar0->Lambda_c(2593)bar-,e+,nu_e; 0.0003 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_bbar0->Xi_cbar0,Kbar0; 0.0003 1 /Herwig/Decays/DecayME0
+decaymode Lambda_bbar0->tau+,nu_tau,ubar=ud_0bar; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->sbar=u,ubar=ud_0bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->dbar=c,ubar=ud_0bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Lambda_bbar0->Lambda_c(2625)bar-,tau+,nu_tau; 8.0E-5 1 /Herwig/Decays/ExcitedLambda
+decaymode Lambda_bbar0->Lambda_c(2593)bar-,tau+,nu_tau; 4.0E-5 1 /Herwig/Decays/ExcitedLambda
+#
+decaymode Sigma_b-->Lambda_b0,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_bbar+->Lambda_bbar0,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b0->Lambda_b0,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_bbar0->Lambda_bbar0,pi0; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_b+->Lambda_b0,pi+; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Sigma_bbar-->Lambda_bbar0,pi-; 1 1 /Herwig/Decays/HeavyStrong
+#
+decaymode Xi_b-->s=cbar,c=sd_0; 0.2039 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->d=ubar,c=sd_0; 0.2016 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->c=ubar,d=sd_0; 0.0913 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->c=cbar,s=sd_0; 0.08946 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Xi_c0,e-,nu_ebar; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_b-->Xi_c0,mu-,nu_mubar; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_b-->Xi_c0,D_s*-; 0.043 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->Xi_c0,a_1-; 0.037 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->Xi_c0,D_s-; 0.027 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b-->Xi_c0,rho-; 0.026 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->e-,nu_ebar,c=sd_0; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->mu-,nu_mubar,c=sd_0; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Xi_c0,tau-,nu_taubar; 0.0211 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_b-->s=ubar,c=sd_0; 0.0123 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->d=cbar,c=sd_0; 0.012 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->tau-,nu_taubar,c=sd_0; 0.011 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Xi_c0,pi-; 0.009 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b-->c=cbar,d=sd_0; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->c=ubar,s=sd_0; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->d=ubar,u=sd_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->s=cbar,u=sd_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Xi_c0,D*-; 0.0015 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->Xi_c0,K*-; 0.0015 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->Xi-,Jpsi; 0.001 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->Xi_c0,D-; 0.001 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b-->Xi-,psi(2S); 0.00084 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b-->e-,nu_ebar,u=sd_0; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->mu-,nu_mubar,u=sd_0; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Xi_c0,K-; 0.0007 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b-->tau-,nu_taubar,u=sd_0; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Sigma_c0,K-; 0.0002 1 /Herwig/Decays/DecayME0
+decaymode Xi_b-->d=cbar,u=sd_0; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->s=ubar,u=sd_0; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b-->Xi'_c0,pi-; 0.0001 1 /Herwig/Decays/DecayME0
+#
+decaymode Xi_bbar+->sbar=c,cbar=sd_0bar; 0.2039 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->dbar=u,cbar=sd_0bar; 0.2016 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->cbar=u,dbar=sd_0bar; 0.0913 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->cbar=c,sbar=sd_0bar; 0.08946 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->Xi_cbar0,mu+,nu_mu; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_bbar+->Xi_cbar0,e+,nu_e; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_bbar+->Xi_cbar0,D_s*+; 0.043 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->Xi_cbar0,a_1+; 0.037 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->Xi_cbar0,D_s+; 0.027 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar+->Xi_cbar0,rho+; 0.026 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->mu+,nu_mu,cbar=sd_0bar; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->e+,nu_e,cbar=sd_0bar; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->Xi_cbar0,tau+,nu_tau; 0.0211 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_bbar+->sbar=u,cbar=sd_0bar; 0.0123 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->dbar=c,cbar=sd_0bar; 0.012 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->tau+,nu_tau,cbar=sd_0bar; 0.011 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->Xi_cbar0,pi+; 0.009 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar+->cbar=u,sbar=sd_0bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->cbar=c,dbar=sd_0bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->sbar=c,ubar=sd_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->dbar=u,ubar=sd_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->Xi_cbar0,K*+; 0.0015 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->Xi_cbar0,D*+; 0.0015 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->Xi_cbar0,D+; 0.001 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar+->Xibar+,Jpsi; 0.001 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->Xibar+,psi(2S); 0.00084 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar+->mu+,nu_mu,ubar=sd_0bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->e+,nu_e,ubar=sd_0bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->Xi_cbar0,K+; 0.0007 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar+->tau+,nu_tau,ubar=sd_0bar; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->Sigmabar_c0,K+; 0.0002 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar+->Xi'_cbar0,pi+; 0.0001 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar+->sbar=u,ubar=sd_0bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar+->dbar=c,ubar=sd_0bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Xi_b0->s=cbar,c=su_0; 0.2219 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->d=ubar,c=su_0; 0.21785 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->c=ubar,d=su_0; 0.09111 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->c=cbar,s=su_0; 0.08946 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->e-,nu_ebar,Xi_c+; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_b0->mu-,nu_mubar,Xi_c+; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_b0->Xi_c+,D_s*-; 0.032 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->Xi_c+,a_1-; 0.028 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->e-,nu_ebar,c=su_0; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->mu-,nu_mubar,c=su_0; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->tau-,nu_taubar,Xi_c+; 0.0211 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_b0->Xi_c+,D_s-; 0.02 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b0->Xi_c+,rho-; 0.019 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->s=ubar,c=su_0; 0.01287 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->d=cbar,c=su_0; 0.01263 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->tau-,nu_taubar,c=su_0; 0.011 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->Xi_c+,pi-; 0.0067 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b0->c=cbar,d=su_0; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->c=ubar,s=su_0; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->d=ubar,u=su_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->s=cbar,u=su_0; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->Xi_c+,D*-; 0.0011 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->Xi_c+,K*-; 0.0011 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->Xi0,Jpsi; 0.001 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->Xi0,psi(2S); 0.00084 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->e-,nu_ebar,u=su_0; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->mu-,nu_mubar,u=su_0; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->Xi_c+,D-; 0.00077 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b0->Xi_c+,K-; 0.00053 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b0->Sigma_c+,K-; 0.0004 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Omega_c0,K0; 0.00032 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->tau-,nu_taubar,u=su_0; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->Sigma_c0,Kbar0; 0.0003 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Xi'_c0,eta'; 0.0003 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Xi'_c+,pi-; 0.00025 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Xi'_c0,eta; 0.00021 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Xi'_c0,pi0; 0.0002 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Xi_c0,eta; 0.00016 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Lambda_c+,K-; 0.00014 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->d=cbar,u=su_0; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->s=ubar,u=su_0; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_b0->Sigma0,D*0; 9.0E-5 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_b0->Sigma0,D0; 6.0E-5 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b0->Xi_c0,eta'; 4.0E-5 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Xi_c0,pi0; 3.0E-5 1 /Herwig/Decays/DecayME0
+decaymode Xi_b0->Lambda0,D0; 2.0E-5 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_b0->Lambda0,D*0; 2.0E-5 1 /Herwig/Decays/BottomBaryonVector
+#
+decaymode Xi_bbar0->sbar=c,cbar=su_0bar; 0.2219 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->dbar=u,cbar=su_0bar; 0.21785 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->cbar=u,dbar=su_0bar; 0.09111 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->cbar=c,sbar=su_0bar; 0.08946 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->mu+,nu_mu,Xi_cbar-; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_bbar0->e+,nu_e,Xi_cbar-; 0.0732 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_bbar0->Xi_cbar-,D_s*+; 0.032 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->Xi_cbar-,a_1+; 0.028 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->mu+,nu_mu,cbar=su_0bar; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->e+,nu_e,cbar=su_0bar; 0.023 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->tau+,nu_tau,Xi_cbar-; 0.0211 1 /Herwig/Decays/BaryonHeavy1
+decaymode Xi_bbar0->Xi_cbar-,D_s+; 0.02 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar0->Xi_cbar-,rho+; 0.019 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->sbar=u,cbar=su_0bar; 0.01287 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->dbar=c,cbar=su_0bar; 0.01263 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->tau+,nu_tau,cbar=su_0bar; 0.011 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->Xi_cbar-,pi+; 0.0067 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar0->cbar=u,sbar=su_0bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->cbar=c,dbar=su_0bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->sbar=c,ubar=su_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->dbar=u,ubar=su_0bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->Xi_cbar-,K*+; 0.0011 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->Xi_cbar-,D*+; 0.0011 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->Xibar0,Jpsi; 0.001 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->Xibar0,psi(2S); 0.00084 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->mu+,nu_mu,ubar=su_0bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->e+,nu_e,ubar=su_0bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->Xi_cbar-,D+; 0.00077 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar0->Xi_cbar-,K+; 0.00053 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar0->Sigmabar_c-,K+; 0.0004 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Omega_cbar0,Kbar0; 0.00032 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Xi'_cbar0,eta'; 0.0003 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Sigmabar_c0,K0; 0.0003 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->tau+,nu_tau,ubar=su_0bar; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->Xi'_cbar-,pi+; 0.00025 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Xi'_cbar0,eta; 0.00021 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Xi'_cbar0,pi0; 0.0002 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Xi_cbar0,eta; 0.00016 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Lambdabar_c-,K+; 0.00014 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->sbar=u,ubar=su_0bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->dbar=c,ubar=su_0bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Xi_bbar0->Sigmabar0,D*bar0; 9.0E-5 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->Sigmabar0,Dbar0; 6.0E-5 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Xi_bbar0->Xi_cbar0,eta'; 4.0E-5 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Xi_cbar0,pi0; 3.0E-5 1 /Herwig/Decays/DecayME0
+decaymode Xi_bbar0->Lambdabar0,D*bar0; 2.0E-5 1 /Herwig/Decays/BottomBaryonVector
+decaymode Xi_bbar0->Lambdabar0,Dbar0; 2.0E-5 1 /Herwig/Decays/BottomBaryonScalar
+#
+decaymode Xi_b'-->Xi_b-,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Xi_b'bar+->Xi_bbar+,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Xi_b'0->Xi_b0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Xi_b'bar0->Xi_bbar0,gamma; 1 1 /Herwig/Decays/HeavyGamma
+#
+decaymode Omega_b-->s=cbar,c=ss_1; 0.2221 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->d=ubar,c=ss_1; 0.1983 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->c=ubar,d=ss_1; 0.0913 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->c=cbar,s=ss_1; 0.0844 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->e-,nu_ebar,Omega_c*0; 0.0484 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_b-->mu-,nu_mubar,Omega_c*0; 0.0484 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_b-->e-,nu_ebar,c=ss_1; 0.0252 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->mu-,nu_mubar,c=ss_1; 0.0252 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->e-,nu_ebar,Omega_c0; 0.0226 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_b-->mu-,nu_mubar,Omega_c0; 0.0226 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_b-->Omega_c*0,a_1-; 0.0216 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c0,a_1-; 0.0156 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c0,D_s-; 0.0155 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->Omega_c*0,D_s*-; 0.0139 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c*0,rho-; 0.0135 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->tau-,nu_taubar,Omega_c*0; 0.0128 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_b-->Omega_c*0,D_s-; 0.0125 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->tau-,nu_taubar,c=ss_1; 0.0124 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->s=ubar,c=ss_1; 0.0119 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->Omega_c0,rho-; 0.0111 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->d=cbar,c=ss_1; 0.011 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->Omega_c0,D_s*-; 0.0099 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c*0,pi-; 0.0095 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->tau-,nu_taubar,Omega_c0; 0.0069 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_b-->c=cbar,d=ss_1; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->c=ubar,s=ss_1; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->Omega-,Jpsi; 0.0043 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c0,pi-; 0.0043 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->Omega-,psi(2S); 0.0026 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->d=ubar,u=ss_1; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->s=cbar,u=ss_1; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->Omega_c*0,D*-; 0.0013 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c*0,D-; 0.001 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->Omega_c*0,K*-; 0.0009 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->e-,nu_ebar,u=ss_1; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->mu-,nu_mubar,u=ss_1; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->Omega_c0,D*-; 0.0007 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c0,K*-; 0.0007 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_b-->Omega_c*0,K-; 0.0007 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->Omega_c0,D-; 0.0005 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->tau-,nu_taubar,u=ss_1; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->Omega_c0,K-; 0.0003 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_b-->d=cbar,u=ss_1; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_b-->s=ubar,u=ss_1; 0.0001 1 /Herwig/Decays/WeakPartonic100
+#
+decaymode Omega_bbar+->sbar=c,cbar=ss_1bar; 0.2221 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->dbar=u,cbar=ss_1bar; 0.1983 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->cbar=u,dbar=ss_1bar; 0.0913 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->cbar=c,sbar=ss_1bar; 0.0844 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->mu+,nu_mu,Omega_c*bar0; 0.0484 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_bbar+->e+,nu_e,Omega_c*bar0; 0.0484 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_bbar+->mu+,nu_mu,cbar=ss_1bar; 0.0252 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->e+,nu_e,cbar=ss_1bar; 0.0252 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->mu+,nu_mu,Omega_cbar0; 0.0226 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_bbar+->e+,nu_e,Omega_cbar0; 0.0226 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_bbar+->Omega_c*bar0,a_1+; 0.0216 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_cbar0,a_1+; 0.0156 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_cbar0,D_s+; 0.0155 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->Omega_c*bar0,D_s*+; 0.0139 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_c*bar0,rho+; 0.0135 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->tau+,nu_tau,Omega_c*bar0; 0.0128 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_bbar+->Omega_c*bar0,D_s+; 0.0125 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->tau+,nu_tau,cbar=ss_1bar; 0.0124 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->sbar=u,cbar=ss_1bar; 0.0119 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->Omega_cbar0,rho+; 0.0111 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->dbar=c,cbar=ss_1bar; 0.011 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->Omega_cbar0,D_s*+; 0.0099 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_c*bar0,pi+; 0.0095 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->tau+,nu_tau,Omega_cbar0; 0.0069 1 /Herwig/Decays/BaryonHeavy1
+decaymode Omega_bbar+->cbar=u,sbar=ss_1bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->cbar=c,dbar=ss_1bar; 0.0048 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->Omega_cbar0,pi+; 0.0043 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->Omegabar+,Jpsi; 0.0043 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omegabar+,psi(2S); 0.0026 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->sbar=c,ubar=ss_1bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->dbar=u,ubar=ss_1bar; 0.0022 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->Omega_c*bar0,D*+; 0.0013 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_c*bar0,D+; 0.001 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->Omega_c*bar0,K*+; 0.0009 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->mu+,nu_mu,ubar=ss_1bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->e+,nu_e,ubar=ss_1bar; 0.0008 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->Omega_c*bar0,K+; 0.0007 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->Omega_cbar0,K*+; 0.0007 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_cbar0,D*+; 0.0007 1 /Herwig/Decays/BottomBaryonVector
+decaymode Omega_bbar+->Omega_cbar0,D+; 0.0005 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->Omega_cbar0,K+; 0.0003 1 /Herwig/Decays/BottomBaryonScalar
+decaymode Omega_bbar+->tau+,nu_tau,ubar=ss_1bar; 0.0003 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->sbar=u,ubar=ss_1bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+decaymode Omega_bbar+->dbar=c,ubar=ss_1bar; 0.0001 1 /Herwig/Decays/WeakPartonic100
+#
+# the (56,0^+_2)  40 multiplet
+#
+#
+decaymode Lambda(1600)0->Sigma-,pi+; 0.267667 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambda(1600)0->Sigma+,pi-; 0.267667 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambda(1600)0->Sigma0,pi0; 0.267666 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambda(1600)0->n0,Kbar0; 0.0985 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambda(1600)0->p+,K-; 0.0985 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Lambdabar(1600)0->Sigmabar-,pi+; 0.267667 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambdabar(1600)0->Sigmabar0,pi0; 0.267667 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambdabar(1600)0->Sigmabar+,pi-; 0.267666 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambdabar(1600)0->pbar-,K+; 0.0985 1 /Herwig/Decays/SU3StrongRoper
+decaymode Lambdabar(1600)0->nbar0,K0; 0.0985 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode p(1440)+->n0,pi+; 0.433153 1 /Herwig/Decays/SU3StrongRoper
+decaymode p(1440)+->p+,pi0; 0.216576 1 /Herwig/Decays/SU3StrongRoper
+decaymode p(1440)+->Delta++,pi-; 0.131196 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode p(1440)+->Delta+,pi0; 0.087464 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode p(1440)+->p+,pi+,pi-; 0.058309 1 /Herwig/Decays/DecayME0
+decaymode p(1440)+->Delta0,pi+; 0.043732 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode p(1440)+->p+,pi0,pi0; 0.029155 1 /Herwig/Decays/DecayME0
+decaymode p(1440)+->p+,gamma; 0.000415 1 /Herwig/Decays/SU3RoperGamma
+#
+decaymode pbar(1440)->nbar0,pi-; 0.433153 1 /Herwig/Decays/SU3StrongRoper
+decaymode pbar(1440)->pbar-,pi0; 0.216576 1 /Herwig/Decays/SU3StrongRoper
+decaymode pbar(1440)->Deltabar--,pi+; 0.131196 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode pbar(1440)->Deltabar-,pi0; 0.087464 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode pbar(1440)->pbar-,pi+,pi-; 0.058309 1 /Herwig/Decays/DecayME0
+decaymode pbar(1440)->Deltabar0,pi-; 0.043732 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode pbar(1440)->pbar-,pi0,pi0; 0.029155 1 /Herwig/Decays/DecayME0
+decaymode pbar(1440)->pbar-,gamma; 0.000415 1 /Herwig/Decays/SU3RoperGamma
+#
+decaymode n(1440)0->p+,pi-; 0.433245 1 /Herwig/Decays/SU3StrongRoper
+decaymode n(1440)0->n0,pi0; 0.216622 1 /Herwig/Decays/SU3StrongRoper
+decaymode n(1440)0->Delta-,pi+; 0.131223 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode n(1440)0->Delta0,pi0; 0.087482 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode n(1440)0->n0,pi+,pi-; 0.058321 1 /Herwig/Decays/DecayME0
+decaymode n(1440)0->Delta+,pi-; 0.043741 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode n(1440)0->n0,pi0,pi0; 0.029161 1 /Herwig/Decays/DecayME0
+decaymode n(1440)0->n0,gamma; 0.000205 1 /Herwig/Decays/SU3RoperGamma
+#
+decaymode nbar(1440)->pbar-,pi+; 0.433245 1 /Herwig/Decays/SU3StrongRoper
+decaymode nbar(1440)->nbar0,pi0; 0.216622 1 /Herwig/Decays/SU3StrongRoper
+decaymode nbar(1440)->Deltabar+,pi-; 0.131223 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode nbar(1440)->Deltabar0,pi0; 0.087482 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode nbar(1440)->nbar0,pi+,pi-; 0.058321 1 /Herwig/Decays/DecayME0
+decaymode nbar(1440)->Deltabar-,pi+; 0.043741 1 /Herwig/Decays/SU3RoperDecuplet
+decaymode nbar(1440)->nbar0,pi0,pi0; 0.029161 1 /Herwig/Decays/DecayME0
+decaymode nbar(1440)->nbar0,gamma; 0.000205 1 /Herwig/Decays/SU3RoperGamma
+#
+decaymode Sigma(1660)-->Lambda0,pi-; 0.445 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)-->Sigma-,pi0; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)-->Sigma0,pi-; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)-->n0,K-; 0.11 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Sigmabar(1660)+->Lambdabar0,pi+; 0.445 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)+->Sigmabar0,pi+; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)+->Sigmabar+,pi0; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)+->nbar0,K+; 0.11 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Sigma(1660)0->Lambda0,pi0; 0.445 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)0->Sigma-,pi+; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)0->Sigma+,pi-; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)0->n0,Kbar0; 0.055 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)0->p+,K-; 0.055 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Sigmabar(1660)0->Lambdabar0,pi0; 0.445 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)0->Sigmabar-,pi+; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)0->Sigmabar+,pi-; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)0->pbar-,K+; 0.055 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)0->nbar0,K0; 0.055 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Sigma(1660)+->Lambda0,pi+; 0.445 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)+->Sigma0,pi+; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)+->Sigma+,pi0; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigma(1660)+->p+,Kbar0; 0.11 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Sigmabar(1660)-->Lambdabar0,pi-; 0.445 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)-->Sigmabar-,pi0; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)-->Sigmabar0,pi-; 0.2225 1 /Herwig/Decays/SU3StrongRoper
+decaymode Sigmabar(1660)-->pbar-,K0; 0.11 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Xi(1690)0->Lambda0,Kbar0; 0.571429 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xi(1690)0->Sigma+,K-; 0.285714 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xi(1690)0->Sigma0,Kbar0; 0.142857 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Xibar(1690)0->Lambdabar0,K0; 0.571429 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xibar(1690)0->Sigmabar-,K+; 0.285714 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xibar(1690)0->Sigmabar0,K0; 0.142857 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Xi(1690)-->Lambda0,K-; 0.571429 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xi(1690)-->Sigma-,Kbar0; 0.285714 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xi(1690)-->Sigma0,K-; 0.142857 1 /Herwig/Decays/SU3StrongRoper
+#
+decaymode Xibar(1690)+->Lambdabar0,K+; 0.571429 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xibar(1690)+->Sigmabar+,K0; 0.285714 1 /Herwig/Decays/SU3StrongRoper
+decaymode Xibar(1690)+->Sigmabar0,K+; 0.142857 1 /Herwig/Decays/SU3StrongRoper
+#
+# the (70,1^-_1)  40 multiplet
+#
+#
+decaymode Lambda(1670)0->Lambda0,eta; 0.250001 1 /Herwig/Decays/SU3Strong2
+decaymode Lambda(1670)0->Sigma-,pi+; 0.183333 1 /Herwig/Decays/SU3Strong2
+decaymode Lambda(1670)0->Sigma0,pi0; 0.183333 1 /Herwig/Decays/SU3Strong2
+decaymode Lambda(1670)0->Sigma+,pi-; 0.183333 1 /Herwig/Decays/SU3Strong2
+decaymode Lambda(1670)0->n0,Kbar0; 0.1 1 /Herwig/Decays/SU3Strong2
+decaymode Lambda(1670)0->p+,K-; 0.1 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Lambdabar(1670)0->Lambdabar0,eta; 0.250001 1 /Herwig/Decays/SU3Strong2
+decaymode Lambdabar(1670)0->Sigmabar-,pi+; 0.183333 1 /Herwig/Decays/SU3Strong2
+decaymode Lambdabar(1670)0->Sigmabar0,pi0; 0.183333 1 /Herwig/Decays/SU3Strong2
+decaymode Lambdabar(1670)0->Sigmabar+,pi-; 0.183333 1 /Herwig/Decays/SU3Strong2
+decaymode Lambdabar(1670)0->pbar-,K+; 0.1 1 /Herwig/Decays/SU3Strong2
+decaymode Lambdabar(1670)0->nbar0,K0; 0.1 1 /Herwig/Decays/SU3Strong2
+#
+decaymode p(1535)+->p+,eta; 0.529 1 /Herwig/Decays/SU3Strong2
+decaymode p(1535)+->n0,pi+; 0.239 1 /Herwig/Decays/SU3Strong2
+decaymode p(1535)+->p+,pi0; 0.1195 1 /Herwig/Decays/SU3Strong2
+decaymode p(1535)+->n(1440)0,pi+; 0.04 1 /Herwig/Decays/SU3Strong4
+decaymode p(1535)+->p(1440)+,pi0; 0.02 1 /Herwig/Decays/SU3Strong4
+decaymode p(1535)+->n0,rho+; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode p(1535)+->p+,pi+,pi-; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode p(1535)+->p+,pi0,pi0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode p(1535)+->p+,rho0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode p(1535)+->Delta++,pi-; 0.005 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode p(1535)+->Delta+,pi0; 0.003333 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode p(1535)+->p+,gamma; 0.0025 1 /Herwig/Decays/SU3Gamma2
+decaymode p(1535)+->Delta0,pi+; 0.001667 1 /Herwig/Decays/SU3OctetDecuplet2
+#
+decaymode pbar(1535)->pbar-,eta; 0.529 1 /Herwig/Decays/SU3Strong2
+decaymode pbar(1535)->nbar0,pi-; 0.239 1 /Herwig/Decays/SU3Strong2
+decaymode pbar(1535)->pbar-,pi0; 0.1195 1 /Herwig/Decays/SU3Strong2
+decaymode pbar(1535)->nbar(1440),pi-; 0.04 1 /Herwig/Decays/SU3Strong4
+decaymode pbar(1535)->pbar(1440),pi0; 0.02 1 /Herwig/Decays/SU3Strong4
+decaymode pbar(1535)->pbar-,pi+,pi-; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode pbar(1535)->nbar0,rho-; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode pbar(1535)->pbar-,pi0,pi0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode pbar(1535)->pbar-,rho0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode pbar(1535)->Deltabar--,pi+; 0.005 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode pbar(1535)->Deltabar-,pi0; 0.003333 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode pbar(1535)->pbar-,gamma; 0.0025 1 /Herwig/Decays/SU3Gamma2
+decaymode pbar(1535)->Deltabar0,pi-; 0.001667 1 /Herwig/Decays/SU3OctetDecuplet2
+#
+decaymode n(1535)0->n0,eta; 0.529 1 /Herwig/Decays/SU3Strong2
+decaymode n(1535)0->p+,pi-; 0.239687 1 /Herwig/Decays/SU3Strong2
+decaymode n(1535)0->n0,pi0; 0.119843 1 /Herwig/Decays/SU3Strong2
+decaymode n(1535)0->p(1440)+,pi-; 0.04 1 /Herwig/Decays/SU3Strong4
+decaymode n(1535)0->n(1440)0,pi0; 0.02 1 /Herwig/Decays/SU3Strong4
+decaymode n(1535)0->n0,pi+,pi-; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode n(1535)0->p+,rho-; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode n(1535)0->n0,pi0,pi0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode n(1535)0->n0,rho0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode n(1535)0->Delta-,pi+; 0.005 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode n(1535)0->Delta0,pi0; 0.003333 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode n(1535)0->Delta+,pi-; 0.001667 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode n(1535)0->n0,gamma; 0.00147 1 /Herwig/Decays/SU3Gamma2
+#
+decaymode nbar(1535)->nbar0,eta; 0.529 1 /Herwig/Decays/SU3Strong2
+decaymode nbar(1535)->pbar-,pi+; 0.239687 1 /Herwig/Decays/SU3Strong2
+decaymode nbar(1535)->nbar0,pi0; 0.119843 1 /Herwig/Decays/SU3Strong2
+decaymode nbar(1535)->pbar(1440),pi+; 0.04 1 /Herwig/Decays/SU3Strong4
+decaymode nbar(1535)->nbar(1440),pi0; 0.02 1 /Herwig/Decays/SU3Strong4
+decaymode nbar(1535)->pbar-,rho+; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode nbar(1535)->nbar0,pi+,pi-; 0.013333 1 /Herwig/Decays/DecayME0
+decaymode nbar(1535)->nbar0,pi0,pi0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode nbar(1535)->nbar0,rho0; 0.006667 1 /Herwig/Decays/DecayME0
+decaymode nbar(1535)->Deltabar+,pi-; 0.005 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode nbar(1535)->Deltabar0,pi0; 0.003333 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode nbar(1535)->Deltabar-,pi+; 0.001667 1 /Herwig/Decays/SU3OctetDecuplet2
+decaymode nbar(1535)->nbar0,gamma; 0.00147 1 /Herwig/Decays/SU3Gamma2
+#
+decaymode Sigma(1750)-->Sigma-,eta; 0.55 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)-->n0,K-; 0.25 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)-->Lambda0,pi-; 0.2 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Sigmabar(1750)+->Sigmabar+,eta; 0.55 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)+->nbar0,K+; 0.25 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)+->Lambdabar0,pi+; 0.2 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Sigma(1750)0->Sigma0,eta; 0.55 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)0->Lambda0,pi0; 0.2 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)0->n0,Kbar0; 0.125 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)0->p+,K-; 0.125 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Sigmabar(1750)0->Sigmabar0,eta; 0.55 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)0->Lambdabar0,pi0; 0.2 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)0->pbar-,K+; 0.125 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)0->nbar0,K0; 0.125 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Sigma(1750)+->Sigma+,eta; 0.55 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)+->p+,Kbar0; 0.25 1 /Herwig/Decays/SU3Strong2
+decaymode Sigma(1750)+->Lambda0,pi+; 0.2 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Sigmabar(1750)-->Sigmabar-,eta; 0.55 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)-->pbar-,K0; 0.25 1 /Herwig/Decays/SU3Strong2
+decaymode Sigmabar(1750)-->Lambdabar0,pi-; 0.2 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Xi(1950)-->Lambda0,K-; 0.5 1 /Herwig/Decays/SU3Strong2
+decaymode Xi(1950)-->Xi0,pi-; 0.333333 1 /Herwig/Decays/SU3Strong2
+decaymode Xi(1950)-->Xi-,pi0; 0.166667 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Xibar(1950)+->Lambdabar0,K+; 0.5 1 /Herwig/Decays/SU3Strong2
+decaymode Xibar(1950)+->Xibar0,pi+; 0.333333 1 /Herwig/Decays/SU3Strong2
+decaymode Xibar(1950)+->Xibar+,pi0; 0.166667 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Xi(1950)0->Lambda0,Kbar0; 0.5 1 /Herwig/Decays/SU3Strong2
+decaymode Xi(1950)0->Xi-,pi+; 0.333333 1 /Herwig/Decays/SU3Strong2
+decaymode Xi(1950)0->Xi0,pi0; 0.166667 1 /Herwig/Decays/SU3Strong2
+#
+decaymode Xibar(1950)0->Lambdabar0,K0; 0.5 1 /Herwig/Decays/SU3Strong2
+decaymode Xibar(1950)0->Xibar+,pi-; 0.333333 1 /Herwig/Decays/SU3Strong2
+decaymode Xibar(1950)0->Xibar0,pi0; 0.166667 1 /Herwig/Decays/SU3Strong2
+#
+# the (70,1^-_1)  40 multiplet
+#
+#
+decaymode Lambda(1690)0->Lambda0,pi+,pi-; 0.166667 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1690)0->n0,Kbar0; 0.1125 1 /Herwig/Decays/SU3Strong3
+decaymode Lambda(1690)0->p+,K-; 0.1125 1 /Herwig/Decays/SU3Strong3
+decaymode Lambda(1690)0->Sigma-,pi+; 0.108333 1 /Herwig/Decays/SU3Strong3
+decaymode Lambda(1690)0->Sigma0,pi0; 0.108333 1 /Herwig/Decays/SU3Strong3
+decaymode Lambda(1690)0->Sigma+,pi-; 0.108333 1 /Herwig/Decays/SU3Strong3
+decaymode Lambda(1690)0->Lambda0,pi0,pi0; 0.083333 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1690)0->Sigma-,pi0,pi+; 0.066667 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1690)0->Sigma0,pi+,pi-; 0.066667 1 /Herwig/Decays/DecayME0
+decaymode Lambda(1690)0->Sigma+,pi0,pi-; 0.066667 1 /Herwig/Decays/DecayME0
+#
+decaymode Lambdabar(1690)0->Lambdabar0,pi+,pi-; 0.166667 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1690)0->pbar-,K+; 0.1125 1 /Herwig/Decays/SU3Strong3
+decaymode Lambdabar(1690)0->nbar0,K0; 0.1125 1 /Herwig/Decays/SU3Strong3
+decaymode Lambdabar(1690)0->Sigmabar-,pi+; 0.108333 1 /Herwig/Decays/SU3Strong3
+decaymode Lambdabar(1690)0->Sigmabar0,pi0; 0.108333 1 /Herwig/Decays/SU3Strong3
+decaymode Lambdabar(1690)0->Sigmabar+,pi-; 0.108333 1 /Herwig/Decays/SU3Strong3
+decaymode Lambdabar(1690)0->Lambdabar0,pi0,pi0; 0.083333 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1690)0->Sigmabar-,pi0,pi+; 0.066667 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1690)0->Sigmabar0,pi+,pi-; 0.066667 1 /Herwig/Decays/DecayME0
+decaymode Lambdabar(1690)0->Sigmabar+,pi0,pi-; 0.066667 1 /Herwig/Decays/DecayME0
+#
+decaymode p(1520)+->n0,pi+; 0.38 1 /Herwig/Decays/SU3Strong3
+decaymode p(1520)+->p+,pi0; 0.19 1 /Herwig/Decays/SU3Strong3
+decaymode p(1520)+->Delta++,pi-; 0.125 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode p(1520)+->n0,rho+; 0.115067 1 /Herwig/Decays/DecayME0
+decaymode p(1520)+->Delta+,pi0; 0.083333 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode p(1520)+->p+,rho0; 0.057533 1 /Herwig/Decays/DecayME0
+decaymode p(1520)+->Delta0,pi+; 0.041667 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode p(1520)+->p+,gamma; 0.0051 1 /Herwig/Decays/SU3Gamma4
+decaymode p(1520)+->p+,eta; 0.0023 1 /Herwig/Decays/SU3Strong3
+#
+decaymode pbar(1520)-->nbar0,pi-; 0.38 1 /Herwig/Decays/SU3Strong3
+decaymode pbar(1520)-->pbar-,pi0; 0.19 1 /Herwig/Decays/SU3Strong3
+decaymode pbar(1520)-->Deltabar--,pi+; 0.125 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode pbar(1520)-->nbar0,rho-; 0.115067 1 /Herwig/Decays/DecayME0
+decaymode pbar(1520)-->Deltabar-,pi0; 0.083333 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode pbar(1520)-->pbar-,rho0; 0.057533 1 /Herwig/Decays/DecayME0
+decaymode pbar(1520)-->Deltabar0,pi-; 0.041667 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode pbar(1520)-->pbar-,gamma; 0.0051 1 /Herwig/Decays/SU3Gamma4
+decaymode pbar(1520)-->pbar-,eta; 0.0023 1 /Herwig/Decays/SU3Strong3
+#
+decaymode n(1520)0->p+,pi-; 0.38 1 /Herwig/Decays/SU3Strong3
+decaymode n(1520)0->n0,pi0; 0.19 1 /Herwig/Decays/SU3Strong3
+decaymode n(1520)0->Delta-,pi+; 0.125 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode n(1520)0->p+,rho-; 0.1157 1 /Herwig/Decays/DecayME0
+decaymode n(1520)0->Delta0,pi0; 0.083333 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode n(1520)0->n0,rho0; 0.05785 1 /Herwig/Decays/DecayME0
+decaymode n(1520)0->Delta+,pi-; 0.041667 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode n(1520)0->n0,gamma; 0.00415 1 /Herwig/Decays/SU3Gamma4
+decaymode n(1520)0->n0,eta; 0.0023 1 /Herwig/Decays/SU3Strong3
+#
+decaymode nbar(1520)0->pbar-,pi+; 0.38 1 /Herwig/Decays/SU3Strong3
+decaymode nbar(1520)0->nbar0,pi0; 0.19 1 /Herwig/Decays/SU3Strong3
+decaymode nbar(1520)0->Deltabar+,pi-; 0.125 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode nbar(1520)0->pbar-,rho+; 0.1157 1 /Herwig/Decays/DecayME0
+decaymode nbar(1520)0->Deltabar0,pi0; 0.083333 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode nbar(1520)0->nbar0,rho0; 0.05785 1 /Herwig/Decays/DecayME0
+decaymode nbar(1520)0->Deltabar-,pi+; 0.041667 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode nbar(1520)0->nbar0,gamma; 0.00415 1 /Herwig/Decays/SU3Gamma4
+decaymode nbar(1520)0->nbar0,eta; 0.0023 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Sigma(1670)-->Sigma-,pi0; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)-->Sigma0,pi-; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)-->Lambda0,pi-; 0.179 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)-->n0,K-; 0.105 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Sigmabar(1670)+->Sigmabar0,pi+; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)+->Sigmabar+,pi0; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)+->Lambdabar0,pi+; 0.179 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)+->nbar0,K+; 0.105 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Sigma(1670)0->Sigma-,pi+; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)0->Sigma+,pi-; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)0->Lambda0,pi0; 0.179 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)0->n0,Kbar0; 0.0525 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)0->p+,K-; 0.0525 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Sigmabar(1670)0->Sigmabar-,pi+; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)0->Sigmabar+,pi-; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)0->Lambdabar0,pi0; 0.179 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)0->pbar-,K+; 0.0525 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)0->nbar0,K0; 0.0525 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Sigma(1670)+->Sigma0,pi+; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)+->Sigma+,pi0; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)+->Lambda0,pi+; 0.179 1 /Herwig/Decays/SU3Strong3
+decaymode Sigma(1670)+->p+,Kbar0; 0.105 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Sigmabar(1670)-->Sigmabar-,pi0; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)-->Sigmabar0,pi-; 0.358 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)-->Lambdabar0,pi-; 0.179 1 /Herwig/Decays/SU3Strong3
+decaymode Sigmabar(1670)-->pbar-,K0; 0.105 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Xi(1820)-->Lambda0,K-; 0.55 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)-->Xi*0,pi-; 0.14 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xi(1820)-->Sigma-,Kbar0; 0.086667 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)-->Xi0,pi-; 0.073333 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)-->Xi*-,pi0; 0.07 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xi(1820)-->Sigma0,K-; 0.043333 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)-->Xi-,pi0; 0.036667 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Xibar(1820)+->Lambdabar0,K+; 0.55 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)+->Xi*bar0,pi+; 0.14 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xibar(1820)+->Sigmabar+,K0; 0.086667 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)+->Xibar0,pi+; 0.073333 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)+->Xi*bar+,pi0; 0.07 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xibar(1820)+->Sigmabar0,K+; 0.043333 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)+->Xibar+,pi0; 0.036667 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Xi(1820)0->Lambda0,Kbar0; 0.55 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)0->Xi*-,pi+; 0.14 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xi(1820)0->Sigma+,K-; 0.086667 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)0->Xi-,pi+; 0.073333 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)0->Xi*0,pi0; 0.07 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xi(1820)0->Sigma0,Kbar0; 0.043333 1 /Herwig/Decays/SU3Strong3
+decaymode Xi(1820)0->Xi0,pi0; 0.036667 1 /Herwig/Decays/SU3Strong3
+#
+decaymode Xibar(1820)0->Lambdabar0,K0; 0.55 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)0->Xi*bar+,pi-; 0.14 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xibar(1820)0->Sigmabar-,K+; 0.086667 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)0->Xibar+,pi-; 0.073333 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)0->Xi*bar0,pi0; 0.07 1 /Herwig/Decays/SU3OctetDecuplet3
+decaymode Xibar(1820)0->Sigmabar0,K0; 0.043333 1 /Herwig/Decays/SU3Strong3
+decaymode Xibar(1820)0->Xibar0,pi0; 0.036667 1 /Herwig/Decays/SU3Strong3

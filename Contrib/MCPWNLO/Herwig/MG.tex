@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage{graphics}
+\begin{document}
+\appendix
+\section[xxx]{T\scalebox{0.8}{HE}PEG\cite{ThePEG} Run Information}
+Run name: \textbf{MG}:\\
+The following models were used:
+\begin{itemize}
+\item 
+\item The  non-leptonic decays of the Omega baryon were simulated using the NonLeptonicOmegaDecayer class based on the results of\cite{Borasoy:1999ip}.
+\item The CLEO fits of \cite{Muramatsu:2002jp} and \cite{Kopp:2000gv} were used for the decays $D^0\to\bar{K}^0\pi^+\pi^-$ and $D^0\to K^-\pi^+\pi^0$.
+\item The MAMBO algorithm of \cite{Kleiss:1991rn} was used for high multiplicity decays
+\item The Shower evolution was perform using the algorithm suggested in \cite{Gieseke:2003rz}.
+\item The decays of $\eta,\eta'\to\pi^+\pi^-\gamma$ were simulated using the matrix elements from \cite{Venugopal:1998fq,Holstein:2001bt}
+\item The fit of the Mark III collaboration \cite{Adler:1987sd} was used for $D\to K\pi\pi$ decays
+\item The form factor model of \cite{Bauer:1986bm,Wirbel:1985ji} was used for either semi-leptonic or hadronic weak decays
+\item The model of \cite{Anjos:1992kb} for $D\to K\pi\pi$ decays was used
+\item The non-leptonic charm decays were simulated using the KornerKramerCharmDecayerclass which implements the model of \cite{Korner:1992wi}.
+\item The non-leptonic hyperon decays were simulated using the NonLeptonicHyperonDecayer class which implements the model of\cite{Borasoy:1999md}
+\item The parameterisation of \cite{Caprini:1997mu} was used for the $B\to D^{(*)}$ form factors together with the parameters from\cite{Snyder:2007qn} for the $D$ and \cite{Aubert:2007rs} for the $D^*$
+\item The quark model calculation of \cite{Schlumpf:1994fb} was usedfor the weak decay of the light baryons
+\item The radiative decays of the heavy baryons were simulated using the results of\cite{Ivanov:1999bk,Ivanov:1998wj}.
+\item The radiative hyperons decays were simulated using the RadiativeHyperonDecayer class which implements the results of \cite{Borasoy:1999nt}.
+\item The strong decays of the heavy baryons were simulated using the results of\cite{Ivanov:1999bk}.
+\end{itemize}
+
+\begin{thebibliography}{99}
+\bibitem{ThePEG} L.~L\"onnblad, Comput.~Phys.~Commun.\ {\bf 118} (1999) 213.
+
+\bibitem{Borasoy:1999ip}
+B.~Borasoy and B.~R.~Holstein,
+Phys.\ Rev.\  D {\bf 60} (1999) 054021 [arXiv:hep-ph/9905398].
+%%CITATION = PHRVA,D60,054021;%%
+
+\bibitem{Muramatsu:2002jp} H.~Muramatsu {\it et al.}  [CLEO Collaboration],Phys.\ Rev.\ Lett.\  {\bf 89} (2002) 251802[Erratum-ibid.\  {\bf 90} (2003) 059901] [arXiv:hep-ex/0207067].
+\bibitem{Kopp:2000gv} S.~Kopp {\it et al.}  [CLEO Collaboration], Phys.\ Rev.\  D {\bf 63} (2001) 092001 [arXiv:hep-ex/0011065].
+\bibitem{Kleiss:1991rn} R.~Kleiss and W.~J.~Stirling,
+Nucl.\ Phys.\  B {\bf 385} (1992) 413.
+%%CITATION = NUPHA,B385,413;%%
+
+\bibitem{Gieseke:2003rz} S.~Gieseke, P.~Stephens and B.~Webber,JHEP {\bf 0312} (2003) 045.
+\bibitem{Venugopal:1998fq} E.~P.~Venugopal and B.~R.~Holstein,
+Phys.\ Rev.\  D {\bf 57} (1998) 4397 [arXiv:hep-ph/9710382].
+%%CITATION = PHRVA,D57,4397;%%
+\bibitem{Holstein:2001bt} B.~R.~Holstein,
+ Phys.\ Scripta {\bf T99} (2002) 55 [arXiv:hep-ph/0112150].
+%%CITATION = PHSTB,T99,55;%%
+
+\bibitem{Adler:1987sd} J.~Adler {\it et al.} [MARK-III Collaboration], Phys.\ Lett.\  B {\bf 196} (1987) 107.
+\bibitem{Bauer:1986bm} M.~Bauer, B.~Stech and M.~Wirbel,
+Z.\ Phys.\  C {\bf 34} (1987) 103.
+%%CITATION = ZEPYA,C34,103;%%
+\bibitem{Wirbel:1985ji} M.~Wirbel, B.~Stech and M.~Bauer,Z.\ Phys.\  C {\bf 29} (1985) 637.
+%%CITATION = ZEPYA,C29,637;%%
+
+\bibitem{Anjos:1992kb} J.~C.~Anjos {\it et al.}  [E691 Collaboration],Phys.\ Rev.\  D {\bf 48} (1993) 56.
+\bibitem{Korner:1992wi}
+J.~G.~Korner and M.~Kramer,
+Z.\ Phys.\  C {\bf 55} (1992) 659.
+%%CITATION = ZEPYA,C55,659;%%
+
+\bibitem{Borasoy:1999md}
+B.~Borasoy and B.~R.~Holstein,
+Phys.\ Rev.\  D {\bf 59} (1999) 094025 [arXiv:hep-ph/9902351].
+%%CITATION = PHRVA,D59,094025;%%
+
+\bibitem{Caprini:1997mu} I.~Caprini, L.~Lellouch and M.~Neubert,Nucl.\ Phys.\  B {\bf 530} (1998) 153 [arXiv:hep-ph/9712417].
+%%CITATION = NUPHA,B530,153;%%
+\bibitem{Aubert:2007rs} B.~Aubert {\it et al.}  [BABAR Collaboration],arXiv:0705.4008 [hep-ex]. %%CITATION = ARXIV:0705.4008;%%
+\bibitem{Snyder:2007qn} A.~E.~Snyder, [arXiv:hep-ex/0703035].
+%%CITATION = ECONF,C0610161,015;%%
+
+\bibitem{Schlumpf:1994fb}
+F.~Schlumpf,
+Phys.\ Rev.\  D {\bf 51} (1995) 2262 [arXiv:hep-ph/9409272].
+%%CITATION = PHRVA,D51,2262;%%
+
+\bibitem{Ivanov:1999bk}
+M.~A.~Ivanov, J.~G.~Korner, V.~E.~Lyubovitskij and A.~G.~Rusetsky,
+Phys.\ Rev.\  D {\bf 60} (1999) 094002
+[arXiv:hep-ph/9904421].
+%%CITATION = PHRVA,D60,094002;%%
+\bibitem{Ivanov:1998wj}
+M.~A.~Ivanov, J.~G.~Korner and V.~E.~Lyubovitskij,
+Phys.\ Lett.\  B {\bf 448} (1999) 143 [arXiv:hep-ph/9811370].
+%%CITATION = PHLTA,B448,143;%%
+
+\bibitem{Borasoy:1999nt}
+B.~Borasoy and B.~R.~Holstein,
+Phys.\ Rev.\  D {\bf 59} (1999) 054019 [arXiv:hep-ph/9902431].
+%%CITATION = PHRVA,D59,054019;%%
+
+\bibitem{Ivanov:1999bk}
+M.~A.~Ivanov, J.~G.~Korner, V.~E.~Lyubovitskij and A.~G.~Rusetsky,
+Phys.\ Rev.\  D {\bf 60} (1999) 094002
+[arXiv:hep-ph/9904421].
+%%CITATION = PHRVA,D60,094002;%%
+
+\end{thebibliography}
+\end{document}

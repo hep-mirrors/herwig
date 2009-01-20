@@ -1,0 +1,22 @@
+Statistics for the UE process: 
+                                       generated    number of    Cross-section
+                                          events     attempts             (nb)
+==============================================================================
+Total:                                    100021       100021      1.63187e+07
+==============================================================================
+Per matrix element breakdown:
+MEQCD2to2Fast                             100021       100021      1.63187e+07
+==============================================================================
+
+==============================================================================
+Eikonalized and soft cross sections:
+
+Model parameters:                    ptmin:   4 GeV, mu2: 1.5 GeV2
+                                     DL mode: 2, CMenergy: 1800 GeV
+hard inclusive cross section (mb):   16.319
+soft inclusive cross section (mb):   115.529
+total cross section (mb):            81.8
+soft inv radius (GeV2):              0.58287
+slope of soft pt spectrum (1/GeV2):  0.155357
+Average hard multiplicity:           0.714669
+Average soft multiplicity:           2.89616

@@ -1,0 +1,32 @@
+mkdir LesHouches
+cd LesHouches
+library LesHouches.so
+# library MadGraphReader.so
+create ThePEG::LesHouchesFileReader pp2tt
+# create ThePEG::MadGraphReader pp2tt
+set pp2tt:FileName test7.dat
+
+create ThePEG::Strategy DefaultStrategy
+cp /Defaults/Particles/p+ p+
+cp /Defaults/Partons/GRV94L GRV94L
+set p+:PDF GRV94L
+insert DefaultStrategy:LocalParticles[0] p+
+create ThePEG::Cuts NoCuts
+set NoCuts:MHatMin 1
+set pp2tt:Cuts NoCuts
+set pp2tt:PDFA GRV94L
+set pp2tt:PDFB GRV94L
+create ThePEG::LesHouchesEventHandler PP2tt
+insert PP2tt:LesHouchesReaders[0] pp2tt
+set PP2tt:PartonExtractor /Defaults/Handlers/StandardExtractor
+set PP2tt:StatLevel 2
+set PP2tt:WeightOption VarNegWeight
+create ThePEG::EventGenerator LHTest
+set LHTest:EventHandler PP2tt
+set LHTest:RandomNumberGenerator /Defaults/Random
+set LHTest:StandardModelParameters /Defaults/StandardModel
+set LHTest:Strategy DefaultStrategy
+set LHTest:NumberOfEvents 100
+set LHTest:DebugLevel 1
+set LHTest:PrintEvent 10
+saverun LHTest LHTest
