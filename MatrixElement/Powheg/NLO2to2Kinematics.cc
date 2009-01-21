@@ -144,19 +144,19 @@ real2to3Kinematics::real2to3Kinematics(born2to2Kinematics bornVariables,
   }
 
   // Then we calculate x from \tilde{x}:
-  xr_ = xt_==1 ? 1 : xbar_+(1.-xbar_)*xt_;
+  xr_ = xt_==1. ? 1. : xbar_+(1.-xbar_)*xt_;
 
-  if(xr_== 1.) xpr_ = bornVariables.xpb();
-  if(y_ ==-1.) xpr_ = bornVariables.xpb();
-  if(y_ == 1.) xpr_ = bornVariables.xpb()/xr_;
-  xpr_ = (bornVariables.xpb()/sqrt(xr_))
-       * sqrt((2.-(1.-xr_)*(1.-y_))/(2.-(1.-xr_)*(1.+y_)));
+  if(xr_== 1.)      xpr_ = bornVariables.xpb();
+  else if(y_ ==-1.) xpr_ = bornVariables.xpb();
+  else if(y_ == 1.) xpr_ = bornVariables.xpb()/xr_;
+  else xpr_ = (bornVariables.xpb()/sqrt(xr_))
+            * sqrt((2.-(1.-xr_)*(1.-y_))/(2.-(1.-xr_)*(1.+y_)));
 
-  if(xr_== 1.) xmr_ = bornVariables.xmb();
-  if(y_ ==-1.) xmr_ = bornVariables.xmb()/xr_;
-  if(y_ == 1.) xmr_ = bornVariables.xmb();
-  xmr_ = (bornVariables.xmb()/sqrt(xr_))
-       * sqrt((2.-(1.-xr_)*(1.+y_))/(2.-(1.-xr_)*(1.-y_)));
+  if(xr_== 1.)      xmr_ = bornVariables.xmb();
+  else if(y_ ==-1.) xmr_ = bornVariables.xmb()/xr_;
+  else if(y_ == 1.) xmr_ = bornVariables.xmb();
+  else xmr_ = (bornVariables.xmb()/sqrt(xr_))
+            * sqrt((2.-(1.-xr_)*(1.+y_))/(2.-(1.-xr_)*(1.-y_)));
 
   // The diboson invariant mass is preserved as are the individual 
   // diboson masses, as are theta1 and theta2:
