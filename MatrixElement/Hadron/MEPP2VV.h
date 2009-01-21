@@ -118,7 +118,7 @@ public:
    * limits on cos(theta).
    */
   virtual double getCosTheta(double ctmin, double ctmax, const double * r);
-  @}
+  //@}
 
 public:
 
