@@ -40,13 +40,13 @@ public:
    * @param r a pointer to the first of nDim() consecutive random numbers.
    * @return true if the generation succeeded, otherwise false.
    */
-  bool generateKinematics(const double * r);
+  virtual bool generateKinematics(const double * r);
 
   /**
    * The number of internal degrees of freedom used in the matrix
    * element.
    */
-  int nDim() const;
+  virtual int nDim() const;
 
   /**
    * The matrix element for the kinematical configuration
@@ -55,7 +55,7 @@ public:
    * @return the matrix element scaled with sHat() to give a
    * dimensionless number.
    */
-  double me2() const;
+  virtual double me2() const;
 
 public:
 
