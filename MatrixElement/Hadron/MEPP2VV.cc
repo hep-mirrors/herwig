@@ -27,8 +27,10 @@ using namespace Herwig;
 
 MEPP2VV::MEPP2VV() : _process(0), _maxflavour(5) ,
     scaleopt_(1),   mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , 
-    scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0)
-{}
+    scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0) {
+  massOption(true ,1);
+  massOption(false,1);
+}
 
 unsigned int MEPP2VV::orderInAlphaS() const {
   return 0;
