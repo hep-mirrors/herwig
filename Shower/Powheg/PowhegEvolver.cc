@@ -215,16 +215,21 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
       currentTree()->updateFinalStateShowerProduct(progenitor(),
 						   particle,theChildren);
     currentTree()->addFinalStateBranching(particle,theChildren);
+
+    
+
     // shower the first  particle
     if( branch->children()[0]->children().empty() ) {
-      timeLikeShower(theChildren[0]);
+      if( ! _hardonly )
+	timeLikeShower(theChildren[0]);
     }
     else {
       truncatedTimeLikeShower( theChildren[0],branch->children()[0] );
     } 
     // shower the second particle
     if( branch->children()[1]->children().empty() ) {
-      timeLikeShower( theChildren[1] );
+      if( ! _hardonly )
+	timeLikeShower( theChildren[1] );
     }
     else {
       truncatedTimeLikeShower( theChildren[1],branch->children()[1] );
