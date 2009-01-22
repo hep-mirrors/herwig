@@ -516,26 +516,26 @@ double MEPP2HiggsPowheg::Rtilde_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b,
 					     double  xt, double y ) const {
   return ( ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_gq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt , 1.)
-	   * t_u_M_R_qg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+	   * t_u_M_R_gq(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qg( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_gq( 1.,y  )
 
-	   + 1./s( 1., 1.) * t_u_M_R_qg( 1., 1.)
+	   + 1./s( 1., 1.) * t_u_M_R_gq( 1., 1.)
 
            )*2./(1.-y)/(1.-xt)
 	 + ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_gq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt ,-1.)
-	   * t_u_M_R_qg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+	   * t_u_M_R_gq(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qg( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_gq( 1.,y  )
 
-	   + 1./s( 1.,-1.) * t_u_M_R_qg( 1.,-1.)
+	   + 1./s( 1.,-1.) * t_u_M_R_gq( 1.,-1.)
 
            )*2./(1.+y)/(1.-xt)
 	 ) / lo_ggME_ / 8. / Constants::pi / alphaS_;
