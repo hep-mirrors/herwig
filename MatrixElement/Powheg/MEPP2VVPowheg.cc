@@ -302,7 +302,7 @@ double MEPP2VVPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(contrib_==0) return 1.;
 
-  // Calculate alpha_S and alpha_S/(2*pi)
+  // Calculate alpha_S and alpha_S/(2*pi).
   alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(scale());
   double alsOn2pi(alphaS_/2./pi);
 
@@ -310,7 +310,7 @@ double MEPP2VVPowheg::NLOweight() const {
   tcPDPtr a_nlo, b_nlo, gluon;
   gluon = getParticleData(ParticleID::g);
 
-  // Get the all couplings and CKM entry.
+  // Get the all couplings.
   double gW(sqrt(4.0*pi*SM().alphaEM(scale())/SM().sin2ThetaW()));
   double sin2ThetaW(SM().sin2ThetaW());
   double cosThetaW(sqrt(1.-sin2ThetaW));
@@ -318,12 +318,32 @@ double MEPP2VVPowheg::NLOweight() const {
   gdL_ = gW/2./cosThetaW*(-1.+2./3.*sin2ThetaW);
   eZ_  = gW*cosThetaW;
 
-  double Kij(sqrt(SM().CKM(*ab_,*bb_)));
-  Fij2_ = sqr(gW/2./sqrt(2.)*Kij);
+  // Get the CKM entry. Note that this code was debugged 
+  // considerably; the call to CKM(particle,particle) 
+  // did not appear to work, so we extract the elements
+  // as follows below. The right numbers now appear to 
+  // to be associated with the right quarks.
+  double Kij(-999.);
+  int up_id(-999),dn_id(-999);
+  if(abs(ab_->id())%2==0&&abs(bb_->id())%2==1) {
+    up_id = abs(ab_->id());  
+    dn_id = abs(bb_->id());  
+  }
+  else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==0) {
+    up_id = abs(bb_->id());  
+    dn_id = abs(ab_->id());  
+  }
+  else {
+    cout << "MEPP2VVPowheg::NLOweight" << endl;
+    cout << "No quarks in the call to the CKM matrix!" << endl;
+  }
+  up_id /= 2;
+  up_id -= 1;
+  dn_id -= 1;
+  dn_id /= 2;
+  Kij = sqrt(SM().CKM(up_id,dn_id));
 
-  // Here we got: gW^2      : 0.43942  (HW++) 0.43896  (MCFM)
-  //              sin2ThetaW: 0.222247 (HW++) 0.222247 (MCFM)
-  //              Kud       : 0.224274 (HW++) ???????? (MCFM)
+  Fij2_ = sqr(gW/2./sqrt(2.)*Kij);
 
   // Calculate the integrand
   double wgt(0.);
@@ -331,8 +351,14 @@ double MEPP2VVPowheg::NLOweight() const {
   // q qb  contribution
   a_nlo=ab_;
   b_nlo=bb_;
-  // DEBUGGING - switching off TGCs
-  eZ_=0.;
+
+  ///////////////////////////////////////
+  ///////////////////////////////////////
+  // DEBUGGING - switching off TGCs    //
+  // eZ_=0.;
+  ///////////////////////////////////////
+  ///////////////////////////////////////
+
   double wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)
                                            / lo_me2_;
   double wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cp_) 
@@ -354,58 +380,60 @@ double MEPP2VVPowheg::NLOweight() const {
   // total contribution
   wgt               = 1.+(wqqb+wgqb+wqg);
   // Temporary fix for nans & infs plus related debugging output:
-  if(isnan(wgt)||isinf(wgt)||fabs(wgt)>10.) { 
-    cout << "\n\n\n";
-    cout << "lo_me2_ " << lo_me2_ << ",  " << "M_Born " << M_Born(B_) << endl;
-    cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
-    cout << "xt = " << H_.xt() << ", y = " << H_.y() << endl;
-    cout << "sr + tkr + ukr = "
-	 << H_.sr()/GeV2  << " + "
-	 << H_.tkr()/GeV2 << " + "
-	 << H_.ukr()/GeV2 << " = "
-	 << (H_.sr()+H_.tkr()+H_.ukr())/GeV2 << endl;
-    cout << "s2r        " << H_.s2r()/GeV2 << endl;
-    cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
-    cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
-    cout << "gW^2       " << gW*gW      << endl;
-    cout << "sin2ThetaW " << sin2ThetaW << endl;
-    cout << "sqr(Kij)   " << Kij*Kij    << endl;
-    cout << "wqqbvirt   " << wqqbvirt   << endl;
-    cout << "wqqbcollin " << wqqbcollin << endl;
-    cout << "wqqbreal   " << wqqbreal   << endl;
-    cout << "wqqb       " << wqqb       << endl;
-    cout << "t_u_M_R_qqb(H_)    " << t_u_M_R_qqb(H_)  /GeV2 << endl;
-    cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
-    cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
-    cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
-    cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
-    cout << "Lhat_ab(ab_,bb_,H_)   " << Lhat_ab(ab_,bb_,H_)   << endl;
-    cout << "Lhat_ab(ab_,bb_,Cp_)  " << Lhat_ab(ab_,bb_,Cp_)  << endl;
-    cout << "Lhat_ab(ab_,bb_,Cm_)  " << Lhat_ab(ab_,bb_,Cm_)  << endl;
-    cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/s)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
-	 << endl;
-    cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/s2)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/H_.s2r())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
-	 << endl;
-    cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/s)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/H_.sr())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
-	 << endl;
-    cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/H_.s2r())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
-	 << endl;
-    cout << "wqgcollin  " << wqgcollin  << endl;
-    cout << "wqgreal    " << wqgreal    << endl;
-    cout << "wqg        " << wqg        << endl;
-    cout << "wgqbcollin " << wgqbcollin << endl;
-    cout << "wgqbreal   " << wgqbreal   << endl;
-    cout << "wgqb       " << wgqb       << endl;
-    cout << "wgt        " << wgt        << endl;
-    if(isnan(wgt)||isinf(wgt)) {
-	cout << "setting wgt = 0.";
-	wgt = 0.;
-    }
-  }
+//   if(isnan(wgt)||isinf(wgt)||fabs(wgt)>10.) { 
+//     cout << "\n\n\n";
+//     cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
+//     cout << "lo_me2_ " << lo_me2_ << ",  " << "M_Born " << M_Born(B_) << "  ratio " << M_Born(B_)/lo_me2_ << endl;
+//     cout << "xt = " << H_.xt() << ", y = " << H_.y() << endl;
+//     cout << "sb + tkb + ukb = "
+// 	 << B_.sb()/GeV2  << " + "
+// 	 << B_.tb()/GeV2 << " + "
+// 	 << B_.ub()/GeV2 << " = "
+// 	 << (B_.sb()+B_.tb()+B_.ub())/GeV2 << endl;
+//     cout << "sr + tkr + ukr = "
+// 	 << H_.sr()/GeV2  << " + "
+// 	 << H_.tkr()/GeV2 << " + "
+// 	 << H_.ukr()/GeV2 << " = "
+// 	 << (H_.sr()+H_.tkr()+H_.ukr())/GeV2 << endl;
+//     cout << "s2r        " << H_.s2r()/GeV2 << endl;
+//     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
+//     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
+//     cout << "gW^2       " << gW*gW      << endl;
+//     cout << "sin2ThetaW " << sin2ThetaW << endl;
+//     cout << "sqr(Kij)   " << Kij*Kij    << endl;
+//     cout << "wqqbvirt   " << wqqbvirt   << endl;
+//     cout << "wqqbcollin " << wqqbcollin << endl;
+//     cout << "wqqbreal   " << wqqbreal   << endl;
+//     cout << "wqqb       " << wqqb       << endl;
+//     cout << "t_u_M_R_qqb(H_)    " << t_u_M_R_qqb(H_)  /GeV2 << endl;
+//     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
+//     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
+//     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
+//     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
+//     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/s)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
+// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
+// 	 << endl;
+//     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/s2)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
+// 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/H_.s2r())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
+// 	 << endl;
+//     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/s)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
+// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/H_.sr())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
+// 	 << endl;
+//     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
+// 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/H_.s2r())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
+// 	 << endl;
+//     cout << "wqgcollin  " << wqgcollin  << endl;
+//     cout << "wqgreal    " << wqgreal    << endl;
+//     cout << "wqg        " << wqg        << endl;
+//     cout << "wgqbcollin " << wgqbcollin << endl;
+//     cout << "wgqbreal   " << wgqbreal   << endl;
+//     cout << "wgqb       " << wgqb       << endl;
+//     cout << "wgt        " << wgt        << endl;
+//     if(isnan(wgt)||isinf(wgt)) {
+// 	cout << "setting wgt = 0.";
+// 	wgt = 0.;
+//     }
+//   }
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
@@ -1680,13 +1708,13 @@ double MEPP2VVPowheg::M_Born(born2to2Kinematics B) const {
 
 /***************************************************************************/
 double  Idd0(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
-    return    8.*(1./4.*(u*t/mW2/mZ2-1.)+s/2.*(mW2+mZ2)/mW2/mZ2)
+    return    8.*((u*t/mW2/mZ2-1.)/4.+s/2.*(mW2+mZ2)/mW2/mZ2)
       	    + 8.*(u/t-mW2*mZ2/t/t);
 }
 
 /***************************************************************************/
 double  Iud0(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
-    return  - 8.*(1./4.*(u*t/mW2/mZ2-1.)+s/2.*(mW2+mZ2)/mW2/mZ2)
+    return  - 8.*((u*t/mW2/mZ2-1.)/4.+s/2.*(mW2+mZ2)/mW2/mZ2)
 	    + 8.*s/t/u*(mW2+mZ2);
 }
 
@@ -1697,8 +1725,8 @@ double  Iuu0(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
 
 /***************************************************************************/
 Energy2 Fd0 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
-    return  - 8.*s*( 1./4.*(u*t/mW2/mZ2-1.)*(1.-(mW2+mZ2)/s-4.*mW2*mZ2/s/t)
-		     + (mW2+mZ2)/2./mW2/mZ2*(s-mW2-mZ2+2.*mW2*mZ2/t)
+    return  - 8.*s*( (u*t/mW2/mZ2-1.)*(1.-(mW2+mZ2)/s-4.*mW2*mZ2/s/t)/4.
+		   + (mW2+mZ2)/2./mW2/mZ2*(s-mW2-mZ2+2.*mW2*mZ2/t)
 	           );
 }
 
@@ -1710,9 +1738,7 @@ Energy2 Fu0 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
 /***************************************************************************/
 Energy4 H0  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
     return    8.*s*s*(u*t/mW2/mZ2-1.)*( 1./4.-(mW2+mZ2)/2./s
-				    + (sqr(mW2+mZ2)+8.*mW2*mZ2)/4./s/s
-	                            )
+				      + (sqr(mW2+mZ2)+8.*mW2*mZ2)/4./s/s
+	                              )
 	    + 8.*s*s*(mW2+mZ2)/mW2/mZ2*(s/2.-mW2-mZ2+sqr(mW2-mZ2)/2./s);
 }
-
-
