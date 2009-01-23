@@ -213,18 +213,21 @@ void PowhegHandler::Init() {
      "Choice of the clustering scheme",
      &PowhegHandler::_clusterOption, 0, false, false);
   
-  static SwitchOption angularOrdered
-    (ifaceClusterOption,"angularOrdered","make all histories and require angular ordering", 0);
+  static SwitchOption allHistories
+    (ifaceClusterOption,"allHistories","make all histories and require angular ordering", 0);
   
   static SwitchOption jetClustered
     (ifaceClusterOption,"jetClustered", "cluster according to jet algorithm", 1);
+  
+  static SwitchOption ptChoice
+    (ifaceClusterOption,"ptChoice", "choose ordered history with lowest total pt", 2);
   
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   // cluster the event
  
-  if( _clusterOption == 0 )
+  if( _clusterOption == 0 || _clusterOption == 2 )
     _theHardTree = doClusteringOrdered();
   else
     _theHardTree = doClustering();
@@ -234,7 +237,10 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     return 0.;
 
   // compute the Sudakov weight
-  double SudWgt = _lepton ? sudakovWeight( _theHardTree ) : 1.;
+  double SudWgt;
+  if( ! _reweightOff )
+    SudWgt = _lepton ? sudakovWeight( _theHardTree ) : 1.;
+  else SudWgt = 1.;
  
   //update the sub process
   if(_lepton) {
@@ -901,20 +907,40 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   if( _hardTrees.empty() )
     return HardTreePtr();
 
-  //now just choose a hardTree from
-  long treeIndex;
-  do{
-    treeIndex = UseRandom::irnd( _hardTrees.size() ); 
-  } while ( _hardTrees[ treeIndex ].second / totalWeight < UseRandom::rnd() );
+  //the hardTreePtr that is to be returned
+  HardTreePtr chosen_hardTree;
+  
+  //choose a hardTree from shower probability
+  if( _clusterOption == 0 ){
+    long treeIndex;
+    do{
+      treeIndex = UseRandom::irnd( _hardTrees.size() ); 
+    } while ( _hardTrees[ treeIndex ].second / totalWeight < UseRandom::rnd() );
+    chosen_hardTree = _hardTrees[ treeIndex ].first;
+  }
 
-  //re-do momentum deconstruction (gets overridden by other trees otherwise)
-  simpleColConnections( _hardTrees[ treeIndex ].first );
+  //choose hardtree with lowest pt
+  else if( _clusterOption == 2 ){
+    //set min pt to be large
+    Energy min_pt = 9999999999.*GeV;
+    for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ ){
+      if( _hardTrees[ix].first->totalPt() < min_pt ){
+	min_pt = _hardTrees[ix].first->totalPt();
+	chosen_hardTree = _hardTrees[ix].first;
+      }
+    }
+  }
+
+  //re-do momentum deconstruction (has been overridden by other trees otherwise)
+  simpleColConnections( chosen_hardTree );
   if( ! evolver()->showerModel()->kinematicsReconstructor()
-      ->deconstructDecayJets( _hardTrees[ treeIndex ].first, evolver() ) )
+      ->deconstructDecayJets( chosen_hardTree, evolver() ) )
     cerr<<"\n\nproblem doing momentum decon in selected tree \n\n";
-
-  //  return HardTreePtr();
-  return _hardTrees[ treeIndex ].first;
+  if( ! chosen_hardTree ) {
+    cerr<<"PowhegHandler::problem in choosing hard tree\n";
+    return HardTreePtr();
+  }
+  return chosen_hardTree;
 }
 
 void PowhegHandler::fixColours(tPPtr parent, tPPtr child1, tPPtr child2) {
@@ -1640,10 +1666,19 @@ void PowhegHandler::testSudakovs(){
   thePts.push_back( make_pair( 10*GeV, string("GREEN" ) ) );
 
   sudTestOut.open( "sudTest.top" );
+
+
   multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > >::const_iterator cjt;
   for( cjt =  _fbranchings.begin();
        cjt != _fbranchings.end();
        ++cjt ) {
+    /*
+    cerr<<"interp at max qt = "<< (*cjt->second.first)( 10*GeV, _max_qtilde )<<"\n";
+    cerr<<"interp at max pt = "<< (*cjt->second.first)( _max_pt_cut, 10*GeV )<<"\n";
+
+    cerr<<"interp at min qt = "<< (*cjt->second.first)( 10*GeV, cjt->second.second )<<"\n";
+    cerr<<"interp at min pt = "<< (*cjt->second.first)( _min_pt_cut, 10*GeV )<<"\n";
+    */
     //loop over pts
     sudTestOut <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\nSET FONT DUPLEX\n"
 	       <<"TITLE TOP \"Sud Test "<< cjt->first
