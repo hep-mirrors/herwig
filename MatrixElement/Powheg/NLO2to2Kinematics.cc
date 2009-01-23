@@ -31,6 +31,16 @@ born2to2Kinematics::born2to2Kinematics(vector<Lorentz5Momentum> Momenta, double 
   p2b_ = Momenta[1];
   k1b_ = Momenta[2];
   k2b_ = Momenta[3];
+
+  // The diboson invariant mass / shat, that and uhat:
+  sb_ = (p1b_+p2b_).m2();
+  tb_ = (p1b_-k1b_).m2();
+  ub_ = (p1b_-k2b_).m2();
+  
+  // Masses of the final state bosons:
+  k12b_ = k1b_.m2();
+  k22b_ = k2b_.m2();
+
   // Boost the momenta so they are in the diboson centre of mass frame:
   Lorentz5Momentum ktot(k1b_+k2b_);
   Boost CMSBoostb(-ktot.boostVector());
@@ -39,21 +49,12 @@ born2to2Kinematics::born2to2Kinematics(vector<Lorentz5Momentum> Momenta, double 
   k1b_.boost(CMSBoostb);
   k2b_.boost(CMSBoostb);
   
-  // The diboson invariant mass / shat, that and uhat:
-  sb_ = (p1b_+p2b_).m2();
-  tb_ = (p1b_-k1b_).m2();
-  ub_ = (p1b_-k2b_).m2();
-  
   // The diboson rapidity:
   Yb_ = 0.5*log(xpb_/xmb_);
   // Note Yb_ = + lastY() if flipped_ = false 
   // but  Yb_ = - lastY() if flipped_ = true.
   // Yb_ is always defined with the quark travelling in the +z direction!
-  
-  // Masses of the final state bosons:
-  k12b_ = k1b_.m2();
-  k22b_ = k2b_.m2();
-  
+    
   // Polar and azimuthal angles of the dibosons in their rest frame:
   theta1b_ = acos(k1b_.z()/k1b_.vect().mag());
   theta2b_ = atan2(k1b_.x(),k1b_.y());
