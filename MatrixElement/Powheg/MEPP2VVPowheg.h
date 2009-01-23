@@ -158,6 +158,13 @@ public:
    */
   Energy2 t_u_M_R_gqb(real2to3Kinematics R) const;
 
+  /**
+   * The Born matrix element as given in Equation 3.1 - 3.3 in NPB 383 
+   * (1992) *** modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  double M_Born(born2to2Kinematics B) const;
+
 protected:
 
   /** @name Clone Methods. */

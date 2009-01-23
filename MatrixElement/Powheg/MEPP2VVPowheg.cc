@@ -339,25 +339,24 @@ double MEPP2VVPowheg::NLOweight() const {
                                + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cm_) );
   double wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo);
   double wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
-//   // q g   contribution
-//   a_nlo=ab_;
-//   b_nlo=gluon;
-//   double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cm_);
-//   double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo);
-//   double wqg        = wqgreal + wqgcollin;
-//   // g qb  contribution
-//   a_nlo=gluon;
-//   b_nlo=bb_;
-//   double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cp_);
-//   double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo);
-//   double wgqb       = wgqbreal+wgqbcollin;
-//   // total contribution
-//   wgt               = 1.+(wqqb+wgqb+wqg);
-  // DEBUGGING - switching off qg and gqbar contributions...
-  wgt               = 1.+wqqb;
+  // q g   contribution
+  a_nlo=ab_;
+  b_nlo=gluon;
+  double wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cm_);
+  double wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo);
+  double wqg        = wqgreal + wqgcollin;
+  // g qb  contribution
+  a_nlo=gluon;
+  b_nlo=bb_;
+  double wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cp_);
+  double wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo);
+  double wgqb       = wgqbreal+wgqbcollin;
+  // total contribution
+  wgt               = 1.+(wqqb+wgqb+wqg);
   // Temporary fix for nans & infs plus related debugging output:
   if(isnan(wgt)||isinf(wgt)||fabs(wgt)>10.) { 
     cout << "\n\n\n";
+    cout << "lo_me2_ " << lo_me2_ << ",  " << "M_Born " << M_Born(B_) << endl;
     cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
     cout << "xt = " << H_.xt() << ", y = " << H_.y() << endl;
     cout << "sr + tkr + ukr = "
@@ -395,12 +394,12 @@ double MEPP2VVPowheg::NLOweight() const {
     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/H_.s2r())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
 	 << endl;
-//     cout << "wqgcollin  " << wqgcollin  << endl;
-//     cout << "wqgreal    " << wqgreal    << endl;
-//     cout << "wqg        " << wqg        << endl;
-//     cout << "wgqbcollin " << wgqbcollin << endl;
-//     cout << "wgqbreal   " << wgqbreal   << endl;
-//     cout << "wgqb       " << wgqb       << endl;
+    cout << "wqgcollin  " << wqgcollin  << endl;
+    cout << "wqgreal    " << wqgreal    << endl;
+    cout << "wqg        " << wqg        << endl;
+    cout << "wgqbcollin " << wgqbcollin << endl;
+    cout << "wgqbreal   " << wgqbreal   << endl;
+    cout << "wgqb       " << wgqb       << endl;
     cout << "wgt        " << wgt        << endl;
     if(isnan(wgt)||isinf(wgt)) {
 	cout << "setting wgt = 0.";
@@ -611,10 +610,10 @@ InvEnergy4 TildeI4t(Energy2 s, Energy2 t, Energy2 mW2, Energy2 mZ2) {
 	        );
 
   swap(mW2,mZ2);
-
   sqrBrackets+= (  sqr(log(-t/mW2))/2.+log(-t/mW2)*log(-t/mZ2)/2.
 	        - 2.*log(-t/mW2)*log((mW2-t)/mW2)-2.*ReLi2(t/mW2)
 	        );
+  swap(mW2,mZ2);
 
   return sqrBrackets/s/t;
 }
@@ -630,7 +629,7 @@ InvEnergy2 TildeI3WZ(Energy2 s, Energy2 mW2, Energy2 mZ2, double beta) {
                  );
 
   beta *= -1;
-  sqrBrackets += ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
+  sqrBrackets -= ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
 	 	 + ReLi2((1.-del/s+beta)/2.)
 	         + sqr(log((1.-del/s+beta)/2.))/2.
 		 + log((1.-del/s-beta)/2.)*log((1.+del/s-beta)/2.)
@@ -650,7 +649,7 @@ InvEnergy2 TildeI3WZ(Energy2 s, Energy2 mW2, Energy2 mZ2, double beta) {
   beta *= -1;
   swap(mW2,mZ2);
   del  *= -1.;
-  sqrBrackets += ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
+  sqrBrackets -= ( ReLi2(2.*mW2/(sig-del*(del/s+beta)))
 	 	 + ReLi2((1.-del/s+beta)/2.)
 	         + sqr(log((1.-del/s+beta)/2.))/2.
 		 + log((1.-del/s-beta)/2.)*log((1.+del/s-beta)/2.)
@@ -1644,3 +1643,76 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
 
   return Val;
 }
+
+/***************************************************************************/
+// The following six functions are I_{dd}^{(0)}, I_{ud}^{(0)}, 
+// I_{uu}^{(0)}, F_{u}^{(0)}, F_{d}^{(0)}, H^{(0)} from Eqs. 3.9 - 3.14
+// They make up the Born matrix element. Ixx functions correspond to the 
+// graphs with no TGC, Fx functions are due to non-TGC graphs interfering 
+// with TGC graphs, while the H function is due purely to TGC graphs. 
+double Idd0(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+double Iud0(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+double Iuu0(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+Energy2 Fu0(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+Energy2 Fd0(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+Energy4 H0 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
+
+/***************************************************************************/
+// M_V_Regular is the regular part of the one-loop matrix element 
+// exactly as defined in Eqs. B.1 and B.2 of of NPB 383(1992)3-44.
+double MEPP2VVPowheg::M_Born(born2to2Kinematics B) const {
+  Energy2 s(B.sb());
+  Energy2 t(B.tb());
+  Energy2 u(B.ub());
+  Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
+  Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
+  
+  return Fij2_/2./NC_
+       * (    gdL_*gdL_*Idd0(s,t,u,mW2,mZ2)
+	 + 2.*gdL_*guL_*Iud0(s,t,u,mW2,mZ2)
+	 +    guL_*guL_*Iuu0(s,t,u,mW2,mZ2) 
+	 - 2.*eZ_/(s-mW2) * ( gdL_*Fd0(s,t,u,mW2,mZ2)
+	                    - guL_*Fu0(s,t,u,mW2,mZ2)
+	                    )
+         + sqr(eZ_/(s-mW2)) * H0(s,t,u,mW2,mZ2)
+	 );
+}
+
+/***************************************************************************/
+double  Idd0(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
+    return    8.*(1./4.*(u*t/mW2/mZ2-1.)+s/2.*(mW2+mZ2)/mW2/mZ2)
+      	    + 8.*(u/t-mW2*mZ2/t/t);
+}
+
+/***************************************************************************/
+double  Iud0(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
+    return  - 8.*(1./4.*(u*t/mW2/mZ2-1.)+s/2.*(mW2+mZ2)/mW2/mZ2)
+	    + 8.*s/t/u*(mW2+mZ2);
+}
+
+/***************************************************************************/
+double  Iuu0(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
+    return Idd0(s,u,t,mW2,mZ2);
+}
+
+/***************************************************************************/
+Energy2 Fd0 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
+    return  - 8.*s*( 1./4.*(u*t/mW2/mZ2-1.)*(1.-(mW2+mZ2)/s-4.*mW2*mZ2/s/t)
+		     + (mW2+mZ2)/2./mW2/mZ2*(s-mW2-mZ2+2.*mW2*mZ2/t)
+	           );
+}
+
+/***************************************************************************/
+Energy2 Fu0 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
+    return Fd0(s,u,t,mW2,mZ2);
+}
+
+/***************************************************************************/
+Energy4 H0  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) { 
+    return    8.*s*s*(u*t/mW2/mZ2-1.)*( 1./4.-(mW2+mZ2)/2./s
+				    + (sqr(mW2+mZ2)+8.*mW2*mZ2)/4./s/s
+	                            )
+	    + 8.*s*s*(mW2+mZ2)/mW2/mZ2*(s/2.-mW2-mZ2+sqr(mW2-mZ2)/2./s);
+}
+
+
