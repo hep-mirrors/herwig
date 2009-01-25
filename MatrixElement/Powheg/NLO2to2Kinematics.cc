@@ -204,15 +204,19 @@ real2to3Kinematics::real2to3Kinematics(born2to2Kinematics bornVariables,
     tkr_ = -0.5*sr_*(1.-xr_)*(1.-y_);
     ukr_ = -0.5*sr_*(1.-xr_)*(1.+y_);
     // Eq.2.12 of WZ paper NPB 383(1992) 3-44: 
-    cpsir_  =1.-sr_ /2./((sr_+tkr_)/2./sqrt(s2r_))/((  sr_+ukr_)/2./sqrt(s2r_));
-    cpsiprr_=1.+tkr_/2./((sr_+tkr_)/2./sqrt(s2r_))/((-tkr_-ukr_)/2./sqrt(s2r_));
+    cpsir_  =1.-2.*sr_ *s2r_/(sr_+tkr_)/(sr_ +ukr_);
+    cpsiprr_=1.-2.*tkr_*s2r_/(sr_+tkr_)/(tkr_+ukr_);
   }
 
   // Remainder of Eq.2.12 of WZ paper NPB 383(1992) 3-44: 
-  betaxr_ = sqrt(1.-sqr(sqrt(k12r_)+sqrt(k22r_))/s2r_)
-          * sqrt(1.-sqr(sqrt(k12r_)-sqrt(k22r_))/s2r_);
-  v1r_    = betaxr_/(1.-(k22r_-k12r_)/s2r_); 
-  v2r_    = betaxr_/(1.+(k22r_-k12r_)/s2r_); 
+  Energy rs2(sqrt(s2r_ ));
+  Energy  m1(sqrt(k12r_));
+  Energy  m2(sqrt(k22r_));
+  betaxr_ = sqrt(rs2+m1+m2) * sqrt(rs2-m1+m2)
+          * sqrt(rs2-m1-m2) * sqrt(rs2+m1-m2) / s2r_;          
+
+  v1r_    = s2r_*betaxr_/(s2r_-(m2-m1)*(m2+m1)); 
+  v2r_    = s2r_*betaxr_/(s2r_+(m2-m1)*(m2+m1)); 
   
   // Eq.2.13 of WZ paper NPB 383(1992) 3-44: 
   if(xt_==1.) {
