@@ -975,7 +975,7 @@ Energy2 Fd1 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double b
 	    + 4.*(4.*s*sig-mZ2*mZ2-mW2*mW2)
    	    )*TildeI3WZ(s,mW2,mZ2,beta);
 
-    Val += -( 8.*(3.*t*t+2.*t*(2.*s-sig)+2.*s*sig+mW2*mZ2)/3./t
+    Val += -( 8.*(3.*t*t+2.*t*(2.*s-sig)+2.*(s*sig+mW2*mZ2))/3./t
 	    + 8.*(s-sig)*(t*u+2.*s*sig)/3./mW2/mZ2
 	    )*pi*pi;
 
@@ -1007,7 +1007,7 @@ Energy2 Fd1 (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double b
 	    + 4.*(4.*s*sig-mZ2*mZ2-mW2*mW2)
    	    )*TildeI3WZ(s,mW2,mZ2,beta);
 
-    Val += -( 8.*(3.*t*t+2.*t*(2.*s-sig)+2.*s*sig+mW2*mZ2)/3./t
+    Val += -( 8.*(3.*t*t+2.*t*(2.*s-sig)+2.*(s*sig+mW2*mZ2))/3./t
 	    + 8.*(s-sig)*(t*u+2.*s*sig)/3./mW2/mZ2
 	    )*pi*pi;
 
