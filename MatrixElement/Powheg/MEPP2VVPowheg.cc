@@ -379,8 +379,13 @@ double MEPP2VVPowheg::NLOweight() const {
   double wgqb       = wgqbreal+wgqbcollin;
   // total contribution
   wgt               = 1.+(wqqb+wgqb+wqg);
-  // Temporary fix for nans & infs plus related debugging output:
-//   if(isnan(wgt)||isinf(wgt)||fabs(wgt)>10.) { 
+  // Temporary warning in case of nans & infs (not getting any so far!):
+  if(isnan(wgt)||isinf(wgt)) { 
+    cout << "NAN / INF detected: wgt = " << wgt << endl;
+    cout << "Resetting wgt to zero." << endl;
+    wgt = 0.;
+  }
+//  Debugging output:
 //     cout << "\n\n\n";
 //     cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
 //     cout << "lo_me2_ " << lo_me2_ << ",  " << "M_Born " << M_Born(B_) << "  ratio " << M_Born(B_)/lo_me2_ << endl;
@@ -429,11 +434,6 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "wgqbreal   " << wgqbreal   << endl;
 //     cout << "wgqb       " << wgqb       << endl;
 //     cout << "wgt        " << wgt        << endl;
-//     if(isnan(wgt)||isinf(wgt)) {
-// 	cout << "setting wgt = 0.";
-// 	wgt = 0.;
-//     }
-//   }
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
