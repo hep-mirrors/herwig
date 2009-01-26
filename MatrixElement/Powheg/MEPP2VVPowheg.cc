@@ -412,20 +412,7 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "wqqbcollin " << wqqbcollin << endl;
 //     cout << "wqqbreal   " << wqqbreal   << endl;
 //     cout << "wqqb       " << wqqb       << endl;
-//     cout << "t_u_M_R_qqb(H_)    " << t_u_M_R_qqb(H_)  /GeV2 << endl;
-//     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
-//     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
-//     cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
-//     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
-//     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
-//     cout << "Splitting approx plus:  " 
-// 	 << Cp_.sr()*8.*pi*alphaS_/Cp_.xr()
-// 	      *CF_*(1.+sqr(Cp_.xr()))*M_Born(B_)  /GeV2
-// 	 << endl;
-//     cout << "Splitting approx minus:  " 
-// 	 << Cm_.sr()*8.*pi*alphaS_/Cm_.xr()
-// 	      *CF_*(1.+sqr(Cm_.xr()))*M_Born(B_)  /GeV2
-// 	 << endl;
+    sanityCheck();
 //     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/s)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
 // 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
 // 	 << endl;
@@ -1755,4 +1742,90 @@ Energy4 H0  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
 				      + (sqr(mW2+mZ2)+8.*mW2*mZ2)/4./s/s
 	                              )
 	    + 8.*s*s*(mW2+mZ2)/mW2/mZ2*(s/2.-mW2-mZ2+sqr(mW2-mZ2)/2./s);
+}
+
+/***************************************************************************/
+void MEPP2VVPowheg::sanityCheck() const {
+
+  Energy2 prefacs(8.*pi*alphaS_*S_.sr() /S_.xr() );
+  Energy2 prefacsp(8.*pi*alphaS_*SCp_.sr() /SCp_.xr() );
+  Energy2 prefacsm(8.*pi*alphaS_*SCm_.sr() /SCm_.xr() );
+  Energy2 prefacp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr());
+  Energy2 prefacm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr());
+
+  double xp(Cp_.xr());
+  double xm(Cm_.xr());
+
+
+  Energy2 absDiff_qqbs 
+      = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born(B_);
+  double  relDiff_qqbs = absDiff_qqbs / t_u_M_R_qqb(S_);
+  if(fabs(relDiff_qqbs)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
+    cout << "t_u_M_R_qqb(S_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
+	 << absDiff_qqbs / GeV2 << "   (" << relDiff_qqbs << ")\n";
+  }
+
+  Energy2 absDiff_qqbsp 
+      = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born(B_);
+  double  relDiff_qqbsp = absDiff_qqbsp / t_u_M_R_qqb(SCp_);
+  if(fabs(relDiff_qqbsp)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
+    cout << "t_u_M_R_qqb(SCp_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
+	 << absDiff_qqbsp / GeV2 << "   (" << relDiff_qqbsp << ")\n";
+  }
+
+  Energy2 absDiff_qqbsm 
+      = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born(B_);
+  double  relDiff_qqbsm = absDiff_qqbsm / t_u_M_R_qqb(SCm_);
+  if(fabs(relDiff_qqbsm)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
+    cout << "t_u_M_R_qqb(SCm_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
+	 << absDiff_qqbsm / GeV2 << "   (" << relDiff_qqbsm << ")\n";
+  }
+
+  Energy2 absDiff_qqbp 
+      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+sqr(xp))*M_Born(B_);
+  double  relDiff_qqbp = absDiff_qqbp / t_u_M_R_qqb(Cp_);
+  if(fabs(relDiff_qqbp)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
+    cout << "t_u_M_R_qqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born (rel):\n"
+	 << absDiff_qqbp / GeV2 << "   (" << relDiff_qqbp << ")\n";
+  }
+
+  Energy2 absDiff_qqbm 
+      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+sqr(xm))*M_Born(B_);
+  double  relDiff_qqbm = absDiff_qqbm / t_u_M_R_qqb(Cm_);
+  if(fabs(relDiff_qqbm)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
+    cout << "t_u_M_R_qqb(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born (rel):\n"
+	 << absDiff_qqbm / GeV2 << "   (" << relDiff_qqbm << ")\n";
+  }
+
+  Energy2 absDiff_gqbp
+      = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born(B_);
+  double  relDiff_gqbp =  absDiff_gqbp/ t_u_M_R_gqb(Cp_);
+  if(fabs(relDiff_gqbp)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_gqb(Cp_)   " << t_u_M_R_gqb(Cp_) /GeV2 << endl;
+    cout << "t_u_M_R_gqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born (rel):\n"
+	 << absDiff_gqbp / GeV2 << "   (" << relDiff_gqbp << ")\n";
+  }
+
+  Energy2 absDiff_qgm
+      = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born(B_);
+  double  relDiff_qgm  =  absDiff_qgm / t_u_M_R_qg(Cm_);
+  if(fabs(relDiff_qgm)>1.e-9) {
+    cout << "\n";
+    cout << "t_u_M_R_qg(Cm_)   " << t_u_M_R_qg(Cm_) /GeV2 << endl;
+    cout << "t_u_M_R_qg(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born (rel):\n"
+	 << absDiff_qgm  / GeV2 << "   (" << relDiff_qgm  << ")\n";
+  }
+
+  return;
 }
