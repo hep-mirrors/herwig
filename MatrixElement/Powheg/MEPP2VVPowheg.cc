@@ -356,6 +356,7 @@ double MEPP2VVPowheg::NLOweight() const {
   ///////////////////////////////////////
   // DEBUGGING - switching off TGCs    //
   // eZ_=0.;
+  // guL_=0.;
   ///////////////////////////////////////
   ///////////////////////////////////////
 
@@ -389,7 +390,8 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "\n\n\n";
 //     cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
 //     cout << "lo_me2_ " << lo_me2_ << ",  " << "M_Born " << M_Born(B_) << "  ratio " << M_Born(B_)/lo_me2_ << endl;
-//     cout << "xt = " << H_.xt() << ", y = " << H_.y() << endl;
+//     cout << "xt = " << H_.xt() << endl;
+//     cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
 //     cout << "sb + tkb + ukb = "
 // 	 << B_.sb()/GeV2  << " + "
 // 	 << B_.tb()/GeV2 << " + "
@@ -413,8 +415,17 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "t_u_M_R_qqb(H_)    " << t_u_M_R_qqb(H_)  /GeV2 << endl;
 //     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
 //     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
+//     cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
 //     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
 //     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
+//     cout << "Splitting approx plus:  " 
+// 	 << Cp_.sr()*8.*pi*alphaS_/Cp_.xr()
+// 	      *CF_*(1.+sqr(Cp_.xr()))*M_Born(B_)  /GeV2
+// 	 << endl;
+//     cout << "Splitting approx minus:  " 
+// 	 << Cm_.sr()*8.*pi*alphaS_/Cm_.xr()
+// 	      *CF_*(1.+sqr(Cm_.xr()))*M_Born(B_)  /GeV2
+// 	 << endl;
 //     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/s)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
 // 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
 // 	 << endl;
@@ -1427,7 +1438,7 @@ Energy4 t_u_RZda(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
   Energy4 Val(0.*GeV2*GeV2);
 
   Val +=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
-                  ) /q2/q2*tk
+                  ) /q1/q2*tk
          - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
          - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
          - 2.*s2*(s+2.*q2)/mZ2*tk
@@ -1436,7 +1447,7 @@ Energy4 t_u_RZda(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
 
   swap(mW2,mZ2); // N.B. Here we subtract!
   Val -=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
-                  ) /q2/q2*tk
+                  ) /q1/q2*tk
          - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
          - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
          - 2.*s2*(s+2.*q2)/mZ2*tk
@@ -1447,7 +1458,7 @@ Energy4 t_u_RZda(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
   swap(q1,q2); // N.B. Here we subtract!
   swap(tk,uk);
   Val -=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
-                  ) /q2/q2*tk
+                  ) /q1/q2*tk
          - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
          - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
          - 2.*s2*(s+2.*q2)/mZ2*tk
@@ -1460,7 +1471,7 @@ Energy4 t_u_RZda(Energy2 s ,Energy2 tk ,Energy2 uk ,Energy2 q1,Energy2 q2,
   swap(q1,q2); 
   swap(tk,uk);
   Val +=   4.*mZ2*(2.*uk*uk-s*tk+q1*(uk-tk-s+q1+0.5*q2)+q2*(s-3.*q2)
-                  ) /q2/q2*tk
+                  ) /q1/q2*tk
          - 4.*mZ2*mZ2*(q1-tk-2.*s-q2)/q1/q2*tk
          - 2.*mZ2*(tk+2.*s+2.*q2)/mW2*tk
          - 2.*s2*(s+2.*q2)/mZ2*tk
