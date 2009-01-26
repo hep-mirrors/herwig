@@ -83,6 +83,8 @@ void PartnerFinder::Init() {
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
 						 const bool setPartners) {
+  int particlenumber = 0; 
+
   // set the partners and the scales
   if(setPartners) {
     // Loop over  particles  and consider only coloured particles which don't
@@ -182,29 +184,62 @@ bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
 // 	calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position]),
 // 					isDecayCase);
       // pair<Energy,Energy> pairScales;
+      
     pair<Energy,Energy> testscale,pairScales(make_pair(1e10*GeV,1e10*GeV));
     int position(0);
-    if (PHpfinder()) {
-      //    pair<Energy,Energy> testscale,pairScales(make_pair(1e10*GeV,1e10*GeV));
-    //  position(0);
-     for(unsigned int ix=0;ix<partners.size();++ix) {
+     int gluoncount = 0;
+     int particlecount = 0;
+     // count the number of gluons in shower tree.
+     ShowerParticleVector::const_iterator ckt;
+     for(ckt=particles.begin();ckt!=particles.end();++ckt) {
+            if ((**ckt).id() == 21){
+      	++gluoncount;
+       }
+	    if(fabs((**ckt).id()) < 7 || (**ckt).id() == 21){
+	      ++particlecount;}
+	    cout << "ID" << "               " << (**ckt).id() << endl;
+}
+       ++particlenumber; //update particle number for showered particles
+
+       cout << "particleinfo" << particlenumber << "\t" << particlecount << endl; 
+
+        if (PHpfinder()) {
+	  
+                  for(unsigned int ix=0;ix<partners.size();++ix) {
        testscale =
      calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix]),
                                                    isDecayCase);
-       if(testscale.first<pairScales.first) {
+                         if(testscale.first<pairScales.first) {
          pairScales=testscale;
          position=ix;
+       
      }
-     }
-        
- } else {position = UseRandom::irnd(partners.size());
+     } 
+       pair<Energy,Energy> testscale2(make_pair(0*GeV,0*GeV));
+
+       //set scale for truncated gluon to larger of the 2 scales.
+
+	   if (gluoncount > 1 && partners.size() == 2) {
+		if(particlenumber == particlecount - 1) {
+      	for(unsigned int ix=0;ix<partners.size();++ix) {
+		   testscale2 =
+	     calculateInitialEvolutionScales(ShowerPPair(*cit,partners[ix]),
+     			     isDecayCase);
+		   if(testscale2.first > pairScales.first) {
+	    pairScales=testscale2;
+	  position=ix;
+       }
+	}}
+	   }}
+           
+  else {
+
+    position = UseRandom::irnd(partners.size());
     pairScales = 
     calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position]),
                                         isDecayCase);
-
- }
-
-    /**************************************************************************/
+     }
+        /**************************************************************************/
       switch(_approach) {
       case 0: // Totally random
 	(*cit)->setEvolutionScale(pairScales.first);
@@ -254,7 +289,7 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair,
     ShowerPPair a(particlePair.second, particlePair.first);
     pair<Energy,Energy> rval = calculateInitialFinalScales(a,isDecayCase);
     return pair<Energy,Energy>(rval.second,rval.first);
-  }
+    }
   else if(!FS1 &&FS2)
     return calculateInitialFinalScales(particlePair,isDecayCase);
   else
