@@ -57,6 +57,14 @@ public:
    */
   virtual double me2() const;
 
+  /**
+   * This member check the collinear limits of the 
+   * real emission matrix elements are equal to the 
+   * appropriate combinations of Born ME's multiplied
+   * by the splitting functions.
+   */
+  void sanityCheck() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
