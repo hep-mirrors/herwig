@@ -413,14 +413,18 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "wqqbreal   " << wqqbreal   << endl;
 //     cout << "wqqb       " << wqqb       << endl;
     sanityCheck();
+//     Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
+// 			   *CF_*(1.+sqr(Cp_.xr()))*M_Born(B_));
+//     Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
+// 			   *CF_*(1.+sqr(Cm_.xr()))*M_Born(B_));
 //     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/s)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
+// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb_Cp*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
 // 	 << endl;
 //     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/s2)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
 // 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/H_.s2r())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
 // 	 << endl;
 //     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/s)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/H_.sr())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
+// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb_Cm*Lhat_ab(ab_,bb_,Cm_))/H_.sr())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
 // 	 << endl;
 //     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
 // 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/H_.s2r())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
@@ -523,14 +527,21 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
   double y(H_.y()); 
   Energy2 s(H_.sr());
   Energy2 s2(H_.s2r());
+
+  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
+  Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
+			*CF_*(1.+sqr(Cp_.xr()))*M_Born(B_));
+  Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
+			*CF_*(1.+sqr(Cm_.xr()))*M_Born(B_));
+
   return 
-   ( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(a,b,Cp_))/s
-     - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/s2
+   ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_) - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_))/s
+     - (t_u_M_R_qqb(S_)               - t_u_M_R_qqb(SCp_)              )/s2
 
      )*2./(1.-y)/(1.-xt)
 
-   + ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(a,b,Cm_))/s
-     - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2
+   + ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_) - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_))/s
+     - (t_u_M_R_qqb(S_)               - t_u_M_R_qqb(SCm_)              )/s2
 
      )*2./(1.+y)/(1.-xt)
 
@@ -546,14 +557,20 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
   double y(H_.y()); 
   Energy2 s(H_.sr());
   Energy2 s2(H_.s2r());
+
+  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
+  Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
+			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born(B_));
+  Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
+
   return 
-   ( ( (t_u_M_R_gqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_gqb(Cp_)*Lhat_ab(a,b,Cp_))/s
-     - (t_u_M_R_gqb(S_)                 - t_u_M_R_gqb(SCp_)                )/s2
+   ( ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_) - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_))/s
+     - (t_u_M_R_gqb(S_)               - t_u_M_R_gqb(SCp_)              )/s2
 
      )*2./(1.-y)/(1.-xt)
 
-   + ( (t_u_M_R_gqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_gqb(Cm_)*Lhat_ab(a,b,Cm_))/s
-     - (t_u_M_R_gqb(S_)                 - t_u_M_R_gqb(SCm_)                )/s2
+   + ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_) - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_))/s
+     - (t_u_M_R_gqb(S_)               - t_u_M_R_gqb(SCm_)              )/s2
 
      )*2./(1.+y)/(1.-xt)
 
@@ -569,14 +586,20 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   double y(H_.y()); 
   Energy2 s(H_.sr());
   Energy2 s2(H_.s2r());
+
+  Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
+  Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
+  Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
+		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born(B_));
+
   return 
-   ( ( (t_u_M_R_qg(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qg(Cp_)*Lhat_ab(a,b,Cp_))/s
-     - (t_u_M_R_qg(S_)                 - t_u_M_R_qg(SCp_)                )/s2
+   ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_) - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_))/s
+     - (t_u_M_R_qg(S_)               - t_u_M_R_qg(SCp_)                )/s2
 
      )*2./(1.-y)/(1.-xt)
 
-   + ( (t_u_M_R_qg(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qg(Cm_)*Lhat_ab(a,b,Cm_))/s
-     - (t_u_M_R_qg(S_)                 - t_u_M_R_qg(SCm_)                )/s2
+   + ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_) - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_))/s
+     - (t_u_M_R_qg(S_)               - t_u_M_R_qg(SCm_)                )/s2
 
      )*2./(1.+y)/(1.-xt)
 
@@ -1788,7 +1811,7 @@ void MEPP2VVPowheg::sanityCheck() const {
   }
 
   Energy2 absDiff_qqbp 
-      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+sqr(xp))*M_Born(B_);
+      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born(B_);
   double  relDiff_qqbp = absDiff_qqbp / t_u_M_R_qqb(Cp_);
   if(fabs(relDiff_qqbp)>1.e-9) {
     cout << "\n";
@@ -1798,7 +1821,7 @@ void MEPP2VVPowheg::sanityCheck() const {
   }
 
   Energy2 absDiff_qqbm 
-      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+sqr(xm))*M_Born(B_);
+      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born(B_);
   double  relDiff_qqbm = absDiff_qqbm / t_u_M_R_qqb(Cm_);
   if(fabs(relDiff_qqbm)>1.e-9) {
     cout << "\n";
