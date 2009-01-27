@@ -698,7 +698,7 @@ double  Idd1(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double b
     Energy2 del(mZ2-mW2);
     double Val(0.);
 
-    Val +=    2.*(22.*t*t+t*(19.*s+18.*sig)+18.*mW2*mZ2)/t/t     
+    Val +=    2.*(22.*t*t+t*(19.*s-18.*sig)+18.*mW2*mZ2)/t/t     
             - 8.*(u*t+2*s*sig)/mW2/mZ2
             - 2.*sqr(t-u)/t/s/sqr(beta);
 
@@ -736,7 +736,7 @@ double  Idd1(Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2, double b
 
     swap(mW2,mZ2);
     del *= -1;
-    Val +=    2.*(22.*t*t+t*(19.*s+18.*sig)+18.*mW2*mZ2)/t/t     
+    Val +=    2.*(22.*t*t+t*(19.*s-18.*sig)+18.*mW2*mZ2)/t/t     
             - 8.*(u*t+2*s*sig)/mW2/mZ2
             - 2.*sqr(t-u)/t/s/sqr(beta);
 
