@@ -318,6 +318,13 @@ double MEPP2VVPowheg::NLOweight() const {
   gdL_ = gW/2./cosThetaW*(-1.+2./3.*sin2ThetaW);
   eZ_  = gW*cosThetaW;
 
+  // If the process is W-Z instead of W+Z we must transform these
+  // couplings as follows, according to NPB 383(1992)3-44 Eq.3.23
+  if(mePartonData()[2]->id()==-24&&mePartonData()[3]->id()==23) { 
+      swap(guL_,gdL_);
+      eZ_ *= -1.;
+  }
+
   // Get the CKM entry. Note that this code was debugged 
   // considerably; the call to CKM(particle,particle) 
   // did not appear to work, so we extract the elements
@@ -412,7 +419,7 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "wqqbcollin " << wqqbcollin << endl;
 //     cout << "wqqbreal   " << wqqbreal   << endl;
 //     cout << "wqqb       " << wqqb       << endl;
-    sanityCheck();
+//    sanityCheck();
 //     Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
 // 			   *CF_*(1.+sqr(Cp_.xr()))*M_Born(B_));
 //     Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
