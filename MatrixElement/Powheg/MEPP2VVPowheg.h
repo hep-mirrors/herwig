@@ -63,7 +63,7 @@ public:
    * appropriate combinations of Born ME's multiplied
    * by the splitting functions.
    */
-  void sanityCheck() const;
+  bool sanityCheck() const;
 
 public:
 
