@@ -331,25 +331,27 @@ double MEPP2VVPowheg::NLOweight() const {
   // as follows below. The right numbers now appear to 
   // to be associated with the right quarks.
   double Kij(-999.);
-  int up_id(-999),dn_id(-999);
-  if(abs(ab_->id())%2==0&&abs(bb_->id())%2==1) {
-    up_id = abs(ab_->id());  
-    dn_id = abs(bb_->id());  
+  if(abs(mePartonData()[2]->id())==24&&mePartonData()[3]->id()==23) { 
+    int up_id(-999),dn_id(-999);
+    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==1) {
+      up_id = abs(ab_->id());  
+      dn_id = abs(bb_->id());  
+    }
+    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==0) {
+      up_id = abs(bb_->id());  
+      dn_id = abs(ab_->id());  
+    }
+    else {
+      cout << "MEPP2VVPowheg::NLOweight" << endl;
+      cout << "No quarks in the call to the CKM matrix!" << endl;
+    }
+    up_id /= 2;
+    up_id -= 1;
+    dn_id -= 1;
+    dn_id /= 2;
+    Kij = sqrt(SM().CKM(up_id,dn_id));
   }
-  else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==0) {
-    up_id = abs(bb_->id());  
-    dn_id = abs(ab_->id());  
-  }
-  else {
-    cout << "MEPP2VVPowheg::NLOweight" << endl;
-    cout << "No quarks in the call to the CKM matrix!" << endl;
-  }
-  up_id /= 2;
-  up_id -= 1;
-  dn_id -= 1;
-  dn_id /= 2;
-  Kij = sqrt(SM().CKM(up_id,dn_id));
-
+  
   Fij2_ = sqr(gW/2./sqrt(2.)*Kij);
 
   // Calculate the integrand
@@ -359,16 +361,7 @@ double MEPP2VVPowheg::NLOweight() const {
   a_nlo=ab_;
   b_nlo=bb_;
 
-  ///////////////////////////////////////
-  ///////////////////////////////////////
-  // DEBUGGING - switching off TGCs    //
-  // eZ_=0.;
-  // guL_=0.;
-  ///////////////////////////////////////
-  ///////////////////////////////////////
-
-  double wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)
-                                           / lo_me2_;
+  double wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)/lo_me2_;
   double wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cp_) 
                                + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cm_) );
   double wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo);
@@ -393,49 +386,20 @@ double MEPP2VVPowheg::NLOweight() const {
     cout << "Resetting wgt to zero." << endl;
     wgt = 0.;
   }
-//  Debugging output:
+
+  // Debugging output:
+//   if(sanityCheck()||wgt<0.) {
 //     cout << "\n\n\n";
 //     cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
-//     cout << "lo_me2_ " << lo_me2_ << ",  " << "M_Born " << M_Born(B_) << "  ratio " << M_Born(B_)/lo_me2_ << endl;
-//     cout << "xt = " << H_.xt() << endl;
 //     cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
-//     cout << "sb + tkb + ukb = "
-// 	 << B_.sb()/GeV2  << " + "
-// 	 << B_.tb()/GeV2 << " + "
-// 	 << B_.ub()/GeV2 << " = "
-// 	 << (B_.sb()+B_.tb()+B_.ub())/GeV2 << endl;
-//     cout << "sr + tkr + ukr = "
-// 	 << H_.sr()/GeV2  << " + "
-// 	 << H_.tkr()/GeV2 << " + "
-// 	 << H_.ukr()/GeV2 << " = "
-// 	 << (H_.sr()+H_.tkr()+H_.ukr())/GeV2 << endl;
 //     cout << "s2r        " << H_.s2r()/GeV2 << endl;
 //     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
 //     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
-//     cout << "gW^2       " << gW*gW      << endl;
-//     cout << "sin2ThetaW " << sin2ThetaW << endl;
 //     cout << "sqr(Kij)   " << Kij*Kij    << endl;
 //     cout << "wqqbvirt   " << wqqbvirt   << endl;
 //     cout << "wqqbcollin " << wqqbcollin << endl;
 //     cout << "wqqbreal   " << wqqbreal   << endl;
 //     cout << "wqqb       " << wqqb       << endl;
-//    sanityCheck();
-//     Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-// 			   *CF_*(1.+sqr(Cp_.xr()))*M_Born(B_));
-//     Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-// 			   *CF_*(1.+sqr(Cm_.xr()))*M_Born(B_));
-//     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(a,b,H_) - t_u_M_R_qqb(Cp_)*Lhat_ab(ab_,bb_,Cp_))/s)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb_Cp*Lhat_ab(ab_,bb_,Cp_))/H_.sr())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
-// 	 << endl;
-//     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/s2)*2./(1.-y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-// 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCp_)                )/H_.s2r())*2./(1.-H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
-// 	 << endl;
-//     cout << "( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb(Cm_)*Lhat_ab(ab_,bb_,Cm_))/s)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-// 	 << ( ( (t_u_M_R_qqb(H_)*Lhat_ab(ab_,bb_,H_) - t_u_M_R_qqb_Cm*Lhat_ab(ab_,bb_,Cm_))/H_.sr())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_ 
-// 	 << endl;
-//     cout << "( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/s2)*2./(1.+y)/(1.-xt) ) / lo_me2_ / 8. / pi / alphaS_ \n"
-// 	 << ( ( - (t_u_M_R_qqb(S_)                 - t_u_M_R_qqb(SCm_)                )/H_.s2r())*2./(1.+H_.y())/(1.-H_.xt()) ) / lo_me2_ / 8. / pi / alphaS_
-// 	 << endl;
 //     cout << "wqgcollin  " << wqgcollin  << endl;
 //     cout << "wqgreal    " << wqgreal    << endl;
 //     cout << "wqg        " << wqg        << endl;
@@ -443,6 +407,8 @@ double MEPP2VVPowheg::NLOweight() const {
 //     cout << "wgqbreal   " << wgqbreal   << endl;
 //     cout << "wgqb       " << wgqb       << endl;
 //     cout << "wgt        " << wgt        << endl;
+//   }
+
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
@@ -1775,7 +1741,9 @@ Energy4 H0  (Energy2 s, Energy2 t, Energy2 u, Energy2 mW2, Energy2 mZ2) {
 }
 
 /***************************************************************************/
-void MEPP2VVPowheg::sanityCheck() const {
+bool MEPP2VVPowheg::sanityCheck() const {
+
+  bool alarm(false);
 
   Energy2 prefacs(8.*pi*alphaS_*S_.sr() /S_.xr() );
   Energy2 prefacsp(8.*pi*alphaS_*SCp_.sr() /SCp_.xr() );
@@ -1786,11 +1754,18 @@ void MEPP2VVPowheg::sanityCheck() const {
   double xp(Cp_.xr());
   double xm(Cm_.xr());
 
+  if(fabs((lo_me2_-M_Born(B_))/M_Born(B_))>10.e-2) {
+    alarm=true;
+    cout << "lo_me2_ - M_Born(B_) (rel) = " 
+	 <<  lo_me2_-M_Born(B_)            << "   (" 
+	 << (lo_me2_-M_Born(B_))/M_Born(B_) << ")\n";
+  }
 
   Energy2 absDiff_qqbs 
       = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born(B_);
   double  relDiff_qqbs = absDiff_qqbs / t_u_M_R_qqb(S_);
-  if(fabs(relDiff_qqbs)>1.e-9) {
+  if(fabs(relDiff_qqbs)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
     cout << "t_u_M_R_qqb(S_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
@@ -1800,7 +1775,8 @@ void MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbsp 
       = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born(B_);
   double  relDiff_qqbsp = absDiff_qqbsp / t_u_M_R_qqb(SCp_);
-  if(fabs(relDiff_qqbsp)>1.e-9) {
+  if(fabs(relDiff_qqbsp)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
     cout << "t_u_M_R_qqb(SCp_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
@@ -1810,7 +1786,8 @@ void MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbsm 
       = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born(B_);
   double  relDiff_qqbsm = absDiff_qqbsm / t_u_M_R_qqb(SCm_);
-  if(fabs(relDiff_qqbsm)>1.e-9) {
+  if(fabs(relDiff_qqbsm)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
     cout << "t_u_M_R_qqb(SCm_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
@@ -1820,7 +1797,8 @@ void MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbp 
       = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born(B_);
   double  relDiff_qqbp = absDiff_qqbp / t_u_M_R_qqb(Cp_);
-  if(fabs(relDiff_qqbp)>1.e-9) {
+  if(fabs(relDiff_qqbp)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
     cout << "t_u_M_R_qqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born (rel):\n"
@@ -1830,7 +1808,8 @@ void MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbm 
       = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born(B_);
   double  relDiff_qqbm = absDiff_qqbm / t_u_M_R_qqb(Cm_);
-  if(fabs(relDiff_qqbm)>1.e-9) {
+  if(fabs(relDiff_qqbm)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
     cout << "t_u_M_R_qqb(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born (rel):\n"
@@ -1840,7 +1819,8 @@ void MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_gqbp
       = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born(B_);
   double  relDiff_gqbp =  absDiff_gqbp/ t_u_M_R_gqb(Cp_);
-  if(fabs(relDiff_gqbp)>1.e-9) {
+  if(fabs(relDiff_gqbp)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_gqb(Cp_)   " << t_u_M_R_gqb(Cp_) /GeV2 << endl;
     cout << "t_u_M_R_gqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born (rel):\n"
@@ -1850,12 +1830,13 @@ void MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qgm
       = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born(B_);
   double  relDiff_qgm  =  absDiff_qgm / t_u_M_R_qg(Cm_);
-  if(fabs(relDiff_qgm)>1.e-9) {
+  if(fabs(relDiff_qgm)>1.e-7) {
+    alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qg(Cm_)   " << t_u_M_R_qg(Cm_) /GeV2 << endl;
     cout << "t_u_M_R_qg(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born (rel):\n"
 	 << absDiff_qgm  / GeV2 << "   (" << relDiff_qgm  << ")\n";
   }
 
-  return;
+  return alarm;
 }
