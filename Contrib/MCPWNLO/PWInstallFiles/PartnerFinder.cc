@@ -190,20 +190,21 @@ bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
      int gluoncount = 0;
      int particlecount = 0;
      // count the number of gluons in shower tree.
+     bool hardprocess = false;
      ShowerParticleVector::const_iterator ckt;
      for(ckt=particles.begin();ckt!=particles.end();++ckt) {
+      if (fabs((**ckt).id()) > 5 && (**ckt).id() != 21) {hardprocess = true;} // dealing with hard process for W, Z or top pair production
             if ((**ckt).id() == 21){
       	++gluoncount;
        }
 	    if(fabs((**ckt).id()) < 7 || (**ckt).id() == 21){
 	      ++particlecount;}
-	    cout << "ID" << "               " << (**ckt).id() << endl;
 }
        ++particlenumber; //update particle number for showered particles
 
        cout << "particleinfo" << particlenumber << "\t" << particlecount << endl; 
 
-        if (PHpfinder()) {
+        if (PHpfinder() && hardprocess) {
 	  
                   for(unsigned int ix=0;ix<partners.size();++ix) {
        testscale =

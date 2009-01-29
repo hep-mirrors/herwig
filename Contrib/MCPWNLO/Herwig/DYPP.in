@@ -61,6 +61,9 @@ set MGGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
 cd /Herwig/Generators
 set MGGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
 
+cd /Herwig/Cuts
+set JetKtCut:MinKT 0.0*GeV
+
 cd /Herwig/MatrixElements/
 
 # Drell-Yan Z/gamma

@@ -501,7 +501,7 @@ double random (int &rseed);
 
        
     outdata << "<LesHouchesEvents version =\"1.0\">" << endl; outdata << "<!--" << endl;
-    if (MCNLO){outdata << "NORMFACTOR =" <<"\t"<< xsecabs/xsec << endl;}
+    if (MCNLO){outdata << "NORMFACTOR =" <<"\t"<< xsecabs/xsec << endl;}else {outdata << "NORMFACTOR =" <<"\t"<< 1.0 << endl;}
     if (MCNLO) {outdata << "MC@NLO" << "\t" ;} else {outdata << "POWHEG" << "\t" ;}
     if (proc==23) {outdata << "Z boson production from" << "\t" ;} else {outdata << "W boson production from" << "\t" ;}
     if (pp && user.cme() == 14000.) {outdata << "proton-proton collisions at LHC";} else if (!pp && (user.cme() > 1700. ||user.cme() < 2000.)) {outdata << "proton-antiproton collisions at the Tevatron" << endl;}
@@ -1135,7 +1135,7 @@ else if (proc==24) {
    the event.AQEDUP and AQCDUP are alphaem and alphas resp.XWGTUP is 
    the weight of the event=1 or -1 for unweighted events.*/
 
-	double PUP[5][7],AQEDUP,AQCDUP,XWGTUP,SCALUP,mass[8];
+	double PUP[5][9],AQEDUP,AQCDUP,XWGTUP,SCALUP,mass[8];
 	int ICOLUP[3][7],MOTHUP[3][7],ISTUP[7],ISPINUP[7],IDUP[7],NUP;
 
     XWGTUP = wgt;
@@ -1292,16 +1292,22 @@ else if (proc==24) {
 	if (Jt==1||Jt==3) {
 	  IDUP[1]=ID[0];
 	  IDUP[2]=ID[1];
-	  IDUP[4]=21;}
+	  IDUP[4]=21;
+	  if (emit) {IDUP[4] = 21; IDUP[7] = 21;}
+}
         if (Jt==5||Jt==7) {
 	  if (Jtt==1) {
 	    IDUP[1]=ID[0];
 	    IDUP[2]=21;
-	    IDUP[4]=IDUP[1];}
+	    IDUP[4]=IDUP[1];
+	    if (emit) {IDUP[4] = 21 ; IDUP[7] = IDUP[1];}
+}
 	  else {
 	    IDUP[1]=21;
 	    IDUP[2]=ID[1];
-	    IDUP[4]=IDUP[2];}}
+	    IDUP[4]=IDUP[2];
+	    if (emit) {IDUP[4] = 21 ; IDUP[7] = IDUP[2];}
+}}
 
 	if (proc==23) {
 	  IDUP[3]=23;
@@ -1335,7 +1341,18 @@ else if (proc==24) {
 	  ISPINUP[6]=-1;
 	  NUP=6; 
 	  if (emit) {NUP=7;
-          IDUP[7]=21;
+	  PUP[4][8] = PUP[4][4];
+          PUP[3][8] = PUP[3][4];
+          PUP[2][8] = PUP[2][4];
+          PUP[1][8] = PUP[1][4];
+          PUP[4][4] = PUP[4][7];
+          PUP[3][4] = PUP[3][7];
+          PUP[2][4] = PUP[2][7];
+          PUP[1][4] = PUP[1][7];
+          PUP[4][7] = PUP[4][8];
+          PUP[3][7] = PUP[3][8];
+          PUP[2][7] = PUP[2][8];
+          PUP[1][7] = PUP[1][8];
 	  ISPINUP[7]=-1;
 	  ISTUP[7]=1;}
       // Assign mother information and colour using Kleiss trick.
@@ -1359,10 +1376,10 @@ else if (proc==24) {
 	    ICOLUP[2][2]=0;
 	    ICOLUP[1][1]=502;
 	    ICOLUP[2][1]=501;
-	    ICOLUP[1][4]=502;
-	    ICOLUP[2][4]=0;
-	    ICOLUP[1][7]=503;
-	    ICOLUP[2][7]=501;
+	    ICOLUP[1][7]=502;
+	    ICOLUP[2][7]=0;
+	    ICOLUP[1][4]=503;
+	    ICOLUP[2][4]=501;
 	  }
 	      }        else {
 		ICOLUP[1][2]=0;
@@ -1376,10 +1393,10 @@ else if (proc==24) {
 	    ICOLUP[2][2]=503;
 	    ICOLUP[1][1]=501;
 	    ICOLUP[2][1]=502;
-	    ICOLUP[1][4]=0;
-	    ICOLUP[2][4]=502;
-	    ICOLUP[1][7]=501;
-	    ICOLUP[2][7]=503;  
+	    ICOLUP[1][7]=0;
+	    ICOLUP[2][7]=502;
+	    ICOLUP[1][4]=501;
+	    ICOLUP[2][4]=503;  
 	}
 	      }
 	    }
@@ -1398,10 +1415,10 @@ else if (proc==24) {
 	    ICOLUP[2][1]=0;
 	    ICOLUP[1][2]=502;
 	    ICOLUP[2][2]=501;
-	    ICOLUP[1][4]=502;
-	    ICOLUP[2][4]=0;
-	    ICOLUP[1][7]=503;
-	    ICOLUP[2][7]=501;  
+	    ICOLUP[1][7]=502;
+	    ICOLUP[2][7]=0;
+	    ICOLUP[1][4]=503;
+	    ICOLUP[2][4]=501;  
 	  }
 }
 	      else {
@@ -1416,10 +1433,10 @@ else if (proc==24) {
 	    ICOLUP[2][1]=503;
 	    ICOLUP[1][2]=501;
 	    ICOLUP[2][2]=502;
-	    ICOLUP[1][4]=0;
-	    ICOLUP[2][4]=502;
-	    ICOLUP[1][7]=501;
-	    ICOLUP[2][7]=503;  
+	    ICOLUP[1][7]=0;
+	    ICOLUP[2][7]=502;
+	    ICOLUP[1][4]=501;
+	    ICOLUP[2][4]=503;  
 	    }
 	      }
 	    } }
@@ -1445,10 +1462,10 @@ else if (proc==24) {
 	  ICOLUP[2][1]=0;
 	  ICOLUP[1][2]=0;
 	  ICOLUP[2][2]=502;
-	  ICOLUP[1][4]=503;
-	  ICOLUP[2][4]=502;
-	  ICOLUP[1][7]=501;
-	  ICOLUP[2][7]=503;
+	  ICOLUP[1][7]=503;
+	  ICOLUP[2][7]=502;
+	  ICOLUP[1][4]=501;
+	  ICOLUP[2][4]=503;
 	  }
 }
 	else{
@@ -1463,10 +1480,10 @@ else if (proc==24) {
 	  ICOLUP[2][1]=501;
 	  ICOLUP[1][2]=502;
 	  ICOLUP[2][2]=0;
-	  ICOLUP[1][4]=502;
-          ICOLUP[2][4]=503;
-	  ICOLUP[1][7]=503;
-	  ICOLUP[2][7]=501;}
+	  ICOLUP[1][7]=502;
+          ICOLUP[2][7]=503;
+	  ICOLUP[1][4]=503;
+	  ICOLUP[2][4]=501;}
 }	  
 	}
 	else {
@@ -1487,10 +1504,10 @@ else if (proc==24) {
 	  ICOLUP[2][1]=0;
 	  ICOLUP[1][2]=0;
 	  ICOLUP[2][2]=502;
-	  ICOLUP[1][4]=503;
-	  ICOLUP[2][4]=501;
-	  ICOLUP[1][7]=501;
-	  ICOLUP[2][7]=502;
+	  ICOLUP[1][7]=503;
+	  ICOLUP[2][7]=501;
+	  ICOLUP[1][4]=501;
+	  ICOLUP[2][4]=502;
 	  }
 }
 	else{
@@ -1505,10 +1522,10 @@ else if (proc==24) {
 	  ICOLUP[2][1]=503;
 	  ICOLUP[1][2]=502;
 	  ICOLUP[2][2]=0;
-	  ICOLUP[1][4]=501;
-          ICOLUP[2][4]=503;
-	  ICOLUP[1][7]=502;
-	  ICOLUP[2][7]=501;}
+	  ICOLUP[1][7]=501;
+          ICOLUP[2][7]=503;
+	  ICOLUP[1][4]=502;
+	  ICOLUP[2][4]=501;}
 	}
 	}
         }}else {

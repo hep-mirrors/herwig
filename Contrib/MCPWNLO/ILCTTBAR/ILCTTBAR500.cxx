@@ -1808,6 +1808,8 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	mass[17]=500.;
 	mass[15]=0.;
 	mass[16]=0.;
+	if (POWprod) {
+          if (emit) {
 	PUP[4][13]=PUP[4][6];
 	PUP[3][13]=PUP[3][6];
 	PUP[2][13]=PUP[2][6];
@@ -1815,7 +1817,12 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	PUP[4][14]=PUP[4][7];
 	PUP[3][14]=PUP[3][7];
 	PUP[2][14]=PUP[2][7];
-	PUP[1][14]=PUP[1][7];
+	PUP[1][14]=PUP[1][7];} else {
+	  PUP[4][13]=PUP[4][6];
+          PUP[3][13]=PUP[3][6];
+          PUP[2][13]=PUP[2][6];
+          PUP[1][13]=PUP[1][6];
+	}}
 	PUP[4][1]=250.;
 	PUP[3][1]=250.;
 	PUP[2][1]=0.;
@@ -2022,10 +2029,15 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 		 ICOLUP[2][16]=502;
 		 }
 		 }else {
-		 ICOLUP[1][13]=505;
+		   if((PUP[4][3] > PUP[4][4] && acos((PUP[3][13]*PUP[3][3]+PUP[2][13]*PUP[2][3]+PUP[1][13]*PUP[1][3])/(PUP[4][13]*PUP[4][3])) > 1.57) || PUP[4][4] > PUP[4][3] && acos((PUP[3][13]*PUP[3][4]+PUP[2][13]*PUP[2][4]+PUP[1][13]*PUP[1][4])/(PUP[4][13]*PUP[4][4])) < 1.57) {                ICOLUP[1][13]=505;
 		 ICOLUP[2][13]=501;
 		 ICOLUP[1][14]=502;
-		 ICOLUP[2][14]=505;
+		 ICOLUP[2][14]=505;} else {
+		   ICOLUP[1][14]=505;
+                   ICOLUP[2][14]=501;
+                   ICOLUP[1][13]=502;
+                   ICOLUP[2][13]=505;
+		 }
 		 ICOLUP[1][11]=501;
 		 ICOLUP[2][11]=503;
 		 ICOLUP[1][6]=503;
@@ -2063,10 +2075,17 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
                    ICOLUP[2][3]=0;
                    ICOLUP[1][4]=0;
                    ICOLUP[2][4]=502;
+		   if((PUP[4][3] > PUP[4][4] && acos((PUP[3][13]*PUP[3][3]+PUP[2][13]*PUP[2][3]+PUP[1][13]*PUP[1][3])/(PUP[4][13]*PUP[4][3])) > 1.57) || PUP[4][4] > PUP[4][3] && acos((PUP[3][13]*PUP[3][4]+PUP[2][13]*PUP[2][4]+PUP[1][13]*PUP[1][4])/(PUP[4][13]*PUP[4][4])) < 1.57) {
+
 		   ICOLUP[1][13]=505;
 		   ICOLUP[2][13]=501;
 		   ICOLUP[1][14]=502;
-		   ICOLUP[2][14]=505;
+		   ICOLUP[2][14]=505;} else {
+		     ICOLUP[1][13]=502;
+                     ICOLUP[2][13]=505;
+                     ICOLUP[1][14]=505;
+                     ICOLUP[2][14]=501;
+		   }
 		 ICOLUP[1][6]=501;
 		 ICOLUP[2][6]=0;
 		 ICOLUP[1][7]=0;
@@ -2309,33 +2328,46 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 			   if (ja !=3 && ja != 4){
 			     sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];}
 		      }
-			 if (POWdecay && POWprod) {{for (int ja=11; ja < 14; ja++)
-			   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			   sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
-}}
-			 if (emit) {outdata << IDUP[14] << "\t" << ISTUP[14] << "\t" << MOTHUP[1][14] <<"\t" << MOTHUP[2][14] << "\t" << ICOLUP[1][14] << "\t" << ICOLUP[2][14] <<"\t" <<setprecision (9)<< PUP[1][14] << "\t" << PUP[2][14]<<"\t"<<PUP[3][14]<<"\t"<<PUP[4][14]<<"\t" << mass[14] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			 sum1+=PUP[4][14];sum2+=PUP[1][14];sum3+=PUP[2][14];sum3+=PUP[3][14];
-}
-			  if (demitt) {outdata << IDUP[15] << "\t" << ISTUP[15] << "\t" << MOTHUP[1][15] <<"\t" << MOTHUP[2][15] << "\t" << ICOLUP[1][15] << "\t" << ICOLUP[2][15] <<"\t" <<setprecision (9)<< PUP[1][15] << "\t" << PUP[2][15]<<"\t"<<PUP[3][15]<<"\t"<<PUP[4][15]<<"\t" << mass[15] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			  sum1+=PUP[4][15];sum2+=PUP[1][15];sum3+=PUP[2][15];sum3+=PUP[3][15];
-}
-			  if (demittb) {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t" << ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			  sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
-}}
+			 if (POWdecay && POWprod) {
+			   if (emit) {
+                             outdata << IDUP[13] << "\t" << ISTUP[13] << "\t" << MOTHUP[1][13] <<"\t" << MOTHUP[2][13] << "\t" <<ICOLUP[1][13] << "\t" << ICOLUP[2][13] <<"\t" <<setprecision (9)<< PUP[1][13] << "\t" << PUP[2][13]<<"\t"<<PUP[3][13]<<"\t"<<PUP[4][13]<<"\t" << mass[13] <<"\t"<< "0" << "\t" <<"9" <<endl;
+                             sum1+=PUP[4][13];sum2+=PUP[1][13];sum3+=PUP[2][13];sum3+=PUP[3][13];
+			     outdata << IDUP[14] << "\t" << ISTUP[14] << "\t" << MOTHUP[1][14] <<"\t" << MOTHUP[2][14] << "\t" << ICOLUP[1][14] << "\t" << ICOLUP[2][14] <<"\t" <<setprecision (9)<< PUP[1][14] << "\t" << PUP[2][14]<<"\t"<<PUP[3][14]<<"\t"<<PUP[4][14]<<"\t" << mass[14] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			     sum1+=PUP[4][14];sum2+=PUP[1][14];sum3+=PUP[2][14]; sum3+=PUP[3][14];
+                           }
 
-			 if (POWdecay && !POWprod) {{for (int ja=11; ja < 13; ja++)
+			   if (demitt) {outdata << IDUP[15] << "\t" << ISTUP[15] << "\t" << MOTHUP[1][15] <<"\t" << MOTHUP[2][15] << "\t" << ICOLUP[1][15] << "\t" << ICOLUP[2][15] <<"\t" <<setprecision (9)<< PUP[1][15] << "\t" << PUP[2][15]<<"\t"<<PUP[3][15]<<"\t"<<PUP[4][15]<<"\t" << mass[15] <<"\t"<< "0" << "\t" <<"9" <<endl;
+                           sum1+=PUP[4][15];sum2+=PUP[1][15];sum3+=PUP[2][15];sum3+=PUP[3][15];
+                           }
+                           if (demittb) {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t"<< ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
+                           sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
+                           }
+
+			   {for (int ja=11; ja < 13; ja++)
+			
+   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			   sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
+}}
+			   if(!emit) {outdata << IDUP[13] << "\t" << ISTUP[13] << "\t" << MOTHUP[1][13] <<"\t" << MOTHUP[2][13] << "\t" <<ICOLUP[1][13] << "\t" << ICOLUP[2][13] <<"\t" <<setprecision (9)<< PUP[1][13] << "\t" << PUP[2][13]<<"\t"<<PUP[3][13]<<"\t"<<PUP[4][13]<<"\t" << mass[13] <<"\t"<< "0" << "\t" <<"9" <<endl;
+                           sum1+=PUP[4][13];sum2+=PUP[1][13];sum3+=PUP[2][13];sum3+=PUP[3][13];
+}                           }
+
+			 if (POWdecay && !POWprod) {
+			   if (demitt) {
+			     for (int ja=15; ja < NUP+2; ja++)
+			       {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			       sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
+			       }}
+                           if (!demitt && demittb)
+			     {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t" << ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			     sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
+			     }
+
+			   {for (int ja=11; ja < 13; ja++)
 			   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
 			   sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
 }}
-			  if (demitt) {
-			 for (int ja=15; ja < NUP+2; ja++)
-			   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			   sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
-}}
-			   if (!demitt && demittb) 
-			    {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t" << ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			    sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
-} 
+			   
 			 }
 			 if (POWprod && !POWdecay) {for (int ja=13; ja<NUPP;ja++)
 			 {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
