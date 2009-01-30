@@ -34,13 +34,13 @@ MEPP2VVPowheg::MEPP2VVPowheg() :
 }
 
 void MEPP2VVPowheg::persistentOutput(PersistentOStream & os) const {
-  os << contrib_    << nlo_alphaS_opt_  << fixed_alphaS_
-     << removebr_ ;
+    os << contrib_    << nlo_alphaS_opt_  << fixed_alphaS_
+       << removebr_ ;
 }
 
 void MEPP2VVPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> contrib_    >> nlo_alphaS_opt_  >> fixed_alphaS_
-     >> removebr_ ;
+    is >> contrib_    >> nlo_alphaS_opt_  >> fixed_alphaS_
+       >> removebr_ ;
 }
 
 ClassDescription<MEPP2VVPowheg> MEPP2VVPowheg::initMEPP2VVPowheg;
@@ -104,6 +104,20 @@ void MEPP2VVPowheg::Init() {
      "Multiply by MCFM branching ratios for comparison/debugging purposes",
      0);
 
+}
+
+void MEPP2VVPowheg::doinit() throw(InitException) {
+  MEPP2VV::doinit();
+  // get the ckm object
+  Ptr<StandardCKM>::pointer 
+      theCKM=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
+  if(!theCKM) throw InitException() << "MEPP2VVPowheg::doinit() "
+				    << "the CKM object must be the Herwig one"
+				    << Exception::runerror;
+  unsigned int ix,iy;
+  // get the CKM matrix (unsquared for interference)
+  vector< vector<Complex > > CKM(theCKM->getUnsquaredMatrix(SM().families()));
+  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckm_[ix][iy]=CKM[ix][iy];}}
 }
 
 int MEPP2VVPowheg::nDim() const {
@@ -311,18 +325,21 @@ double MEPP2VVPowheg::NLOweight() const {
   gluon = getParticleData(ParticleID::g);
 
   // Get the all couplings.
-  double gW(sqrt(4.0*pi*SM().alphaEM(scale())/SM().sin2ThetaW()));
-  double sin2ThetaW(SM().sin2ThetaW());
-  double cosThetaW(sqrt(1.-sin2ThetaW));
-  guL_ = gW/2./cosThetaW*( 1.-4./3.*sin2ThetaW);
-  gdL_ = gW/2./cosThetaW*(-1.+2./3.*sin2ThetaW);
-  eZ_  = gW*cosThetaW;
+  gW_ = sqrt(4.0*pi*SM().alphaEM(scale())/SM().sin2ThetaW());
+  sin2ThetaW_ = SM().sin2ThetaW();
+  double cosThetaW(sqrt(1.-sin2ThetaW_));
+  guL_ = gW_/2./cosThetaW*( 1.-4./3.*sin2ThetaW_);
+  gdL_ = gW_/2./cosThetaW*(-1.+2./3.*sin2ThetaW_);
+  guR_ = gW_/2./cosThetaW*(   -4./3.*sin2ThetaW_);
+  gdR_ = gW_/2./cosThetaW*(   +2./3.*sin2ThetaW_);
+  eZ_  = gW_*cosThetaW;
+  eZ2_ = sqr(eZ_);
 
   // If the process is W-Z instead of W+Z we must transform these
   // couplings as follows, according to NPB 383(1992)3-44 Eq.3.23
   if(mePartonData()[2]->id()==-24&&mePartonData()[3]->id()==23) { 
-      swap(guL_,gdL_);
-      eZ_ *= -1.;
+    swap(guL_,gdL_);
+    eZ_ *= -1.;
   }
 
   // Get the CKM entry. Note that this code was debugged 
@@ -330,7 +347,8 @@ double MEPP2VVPowheg::NLOweight() const {
   // did not appear to work, so we extract the elements
   // as follows below. The right numbers now appear to 
   // to be associated with the right quarks.
-  double Kij(-999.);
+  double Kij(-999.);  
+  // W+Z / W-Z
   if(abs(mePartonData()[2]->id())==24&&mePartonData()[3]->id()==23) { 
     int up_id(-999),dn_id(-999);
     if(abs(ab_->id())%2==0&&abs(bb_->id())%2==1) {
@@ -342,17 +360,50 @@ double MEPP2VVPowheg::NLOweight() const {
       dn_id = abs(ab_->id());  
     }
     else {
-      cout << "MEPP2VVPowheg::NLOweight" << endl;
-      cout << "No quarks in the call to the CKM matrix!" << endl;
+      cout << "MEPP2VVPowheg:" << endl;
+      cout << "WZ needs an up and a down type quark as incoming!" << endl;
     }
     up_id /= 2;
     up_id -= 1;
     dn_id -= 1;
     dn_id /= 2;
     Kij = sqrt(SM().CKM(up_id,dn_id));
+  } 
+  // W+W-
+  else if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
+    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+      int up_ida(abs(ab_->id())/2-1);
+      int up_idb(abs(bb_->id())/2-1);
+      Kij  = sqrt(std::norm( ckm_[up_ida][0]*ckm_[up_idb][0]
+			   + ckm_[up_ida][1]*ckm_[up_idb][1]
+		           + ckm_[up_ida][2]*ckm_[up_idb][2]));
+    }
+    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+      int dn_ida((abs(ab_->id())-1)/2);
+      int dn_idb((abs(bb_->id())-1)/2);
+      Kij  = sqrt(std::norm( ckm_[0][dn_ida]*ckm_[0][dn_idb]
+			   + ckm_[1][dn_ida]*ckm_[1][dn_idb]
+		           + ckm_[2][dn_ida]*ckm_[2][dn_idb]));
+    }
+    else {
+      cout << "MEPP2VVPowheg:" << endl;
+      cout << "WW needs 2 down-type / 2 up-type!" << endl;
+    }
   }
-  
-  Fij2_ = sqr(gW/2./sqrt(2.)*Kij);
+  // ZZ 
+  else if(mePartonData()[2]->id()==23&&mePartonData()[3]->id()==23) {
+    Kij  = 2.*sqrt(2.)/gW_;
+  }
+  else {
+    cout << "MEPP2VVPowheg: incompatible final state particles!" << endl;
+  }
+
+  Fij2_ = sqr(gW_/2./sqrt(2.)*Kij);
+
+  // Get the leading order WZ, WW & ZZ matrix elements for testing
+  M_Born_WW_ = M_Born_WW(B_);
+  M_Born_ZZ_ = M_Born_ZZ(B_);
+  M_Born_WZ_ = M_Born_WZ(B_);
 
   // Calculate the integrand
   double wgt(0.);
@@ -389,24 +440,32 @@ double MEPP2VVPowheg::NLOweight() const {
 
   // Debugging output:
 //   if(sanityCheck()||wgt<0.) {
-//     cout << "\n\n\n";
-//     cout << ab_->PDGName() << ", " << bb_->PDGName() << endl;
-//     cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
-//     cout << "s2r        " << H_.s2r()/GeV2 << endl;
-//     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
-//     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
-//     cout << "sqr(Kij)   " << Kij*Kij    << endl;
-//     cout << "wqqbvirt   " << wqqbvirt   << endl;
-//     cout << "wqqbcollin " << wqqbcollin << endl;
-//     cout << "wqqbreal   " << wqqbreal   << endl;
-//     cout << "wqqb       " << wqqb       << endl;
-//     cout << "wqgcollin  " << wqgcollin  << endl;
-//     cout << "wqgreal    " << wqgreal    << endl;
-//     cout << "wqg        " << wqg        << endl;
-//     cout << "wgqbcollin " << wgqbcollin << endl;
-//     cout << "wgqbreal   " << wgqbreal   << endl;
-//     cout << "wgqb       " << wgqb       << endl;
-//     cout << "wgt        " << wgt        << endl;
+    cout << "\n\n\n";
+    cout << ab_->PDGName() << ", " 
+	 << bb_->PDGName() << ", " 
+         << mePartonData()[2]->PDGName() << ", " 
+	 << mePartonData()[3]->PDGName() << endl; 
+    cout << "lo_me2_, M_Born_WZ_ " << lo_me2_ << ", " << M_Born_WZ_ << endl;
+    cout << "lo_me2_, M_Born_ZZ_ " << lo_me2_ << ", " << M_Born_ZZ_ << endl;
+    cout << "lo_me2_, M_Born_WW_ " << lo_me2_ << ", " << M_Born_WW_ << endl;
+    cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
+    cout << "sb+tb+ub = " 
+	 << B_.sb()/GeV2 << " + " 
+	 << B_.tb()/GeV2 << " + " << B_.ub()/GeV2 << endl;
+    cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
+    cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
+    cout << "sqr(Kij)   " << Kij*Kij    << endl;
+    cout << "wqqbvirt   " << wqqbvirt   << endl;
+    cout << "wqqbcollin " << wqqbcollin << endl;
+    cout << "wqqbreal   " << wqqbreal   << endl;
+    cout << "wqqb       " << wqqb       << endl;
+    cout << "wqgcollin  " << wqgcollin  << endl;
+    cout << "wqgreal    " << wqgreal    << endl;
+    cout << "wqg        " << wqg        << endl;
+    cout << "wgqbcollin " << wgqbcollin << endl;
+    cout << "wgqbreal   " << wgqbreal   << endl;
+    cout << "wgqb       " << wgqb       << endl;
+    cout << "wgt        " << wgt        << endl;
 //   }
 
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
@@ -503,9 +562,9 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
 
   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-			*CF_*(1.+sqr(Cp_.xr()))*M_Born(B_));
+			*CF_*(1.+sqr(Cp_.xr()))*M_Born_WZ_);
   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-			*CF_*(1.+sqr(Cm_.xr()))*M_Born(B_));
+			*CF_*(1.+sqr(Cm_.xr()))*M_Born_WZ_);
 
   return 
    ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_) - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_))/s
@@ -533,7 +592,7 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
 
   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
-			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born(B_));
+			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_WZ_);
   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
 
   return 
@@ -563,7 +622,7 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
-		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born(B_));
+		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_WZ_);
 
   return 
    ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_) - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_))/s
@@ -620,7 +679,7 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
 	 - eZ_/(s-mW2) * ( gdL_*Fd1(s,t,u,mW2,mZ2,beta)
 	                 - guL_*Fu1(s,t,u,mW2,mZ2,beta)
 	                 )
-         + sqr(eZ_/(s-mW2)) * H1(s,t,u,mW2,mZ2)
+         + eZ2_/sqr(s-mW2) * H1(s,t,u,mW2,mZ2)
 	 );
 }
 
@@ -1083,7 +1142,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
 	                     - guL_
 			      *t_u_RZu(s,tk,uk,q1h,q2h,s2,mW2,mZ2)
 	                     )
-         + sqr(eZ_/(s2-mW2)) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
+         + eZ2_/sqr(s2-mW2) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
 	 );
 }
 
@@ -1614,7 +1673,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
 	                      - guL_
 			       *t_u_RZu(s,tk,uk,q1h,q2h,s2,mW2,mZ2)
 	                      )
-          + sqr(eZ_/(s2-mW2)) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
+          + eZ2_/sqr(s2-mW2) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
 	  );
   swap(s,tk);
   swap(q2,w2);
@@ -1658,7 +1717,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
 	                      - guL_
 			       *t_u_RZu(s,tk,uk,q1h,q2h,s2,mW2,mZ2)
 	                      )
-          + sqr(eZ_/(s2-mW2)) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
+          + eZ2_/sqr(s2-mW2) *t_u_RZ(s,tk,uk,q1,q2,s2,mW2,mZ2)
 	  );
   swap(s,uk);
   swap(q1,w1);
@@ -1683,23 +1742,89 @@ Energy2 Fd0(Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
 Energy4 H0 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
 
 /***************************************************************************/
-// M_V_Regular is the regular part of the one-loop matrix element 
-// exactly as defined in Eqs. B.1 and B.2 of of NPB 383(1992)3-44.
-double MEPP2VVPowheg::M_Born(born2to2Kinematics B) const {
+// M_Born_WZ is the Born matrix element exactly as defined in Eqs. 3.3-3.14
+// of of NPB 383(1992)3-44.
+double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
   Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
   Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
   
+  double cosThetaW(sqrt(1.-sin2ThetaW_));
+  double eZ2(eZ2_);
+  double eZ(eZ_);
+  double gdL(gdL_);
+  double guL(guL_);
+  double gdR(gdR_);
+  double guR(guR_);
+
+  // W+W-
+  if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
+    Energy2 s(B_.sb());
+    double e2(sqr(gW_)*sin2ThetaW_);
+    Energy2 mW2(B_.k12b()); 
+    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+      // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
+      if(ab_->id()==-bb_->id()) {
+        eZ2 = 1./2.*sqr(s-mW2)/Fij2_
+	    * (e2*e2/s/s*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
+		         +sqr(       eZ*(guL-guR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
+              );
+        eZ  = -1./2./Fij2_/(gW_*gW_/4./sqrt(Fij2_))*(s-mW2)
+            * (gW_*gW_*e2/4./s *( 2./3.+2.*eZ*guL/2./e2*s/(s-mW2/sqr(cosThetaW))));
+      } else {
+	eZ2 =0.;
+	eZ  =0.;
+      }
+      gdL = gW_/sqrt(2.);
+      guL = 0.;
+    }
+    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+      // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
+      if(ab_->id()==-bb_->id()) {
+	eZ2 = 1./2.*sqr(s-mW2)/Fij2_
+	    * (e2*e2/s/s*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
+		         +sqr(       eZ*(gdL-gdR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
+	      );
+	eZ  = -1./2./Fij2_/(gW_*gW_/4./sqrt(Fij2_))*(s-mW2)
+            * (gW_*gW_*e2/4./s *(-1./3.+2.*eZ*gdL/2./e2*s/(s-mW2/sqr(cosThetaW))));
+      } else {
+	eZ2 =0.;
+	eZ  =0.;
+      }
+      guL = gW_/sqrt(2.);
+      gdL = 0.;
+    }
+  }
+  // ZZ 
+  else if(mePartonData()[2]->id()==23&&mePartonData()[3]->id()==23) {
+    eZ  = 0.;
+    eZ2 = 0.;
+    double gV2,gA2;
+    gV2 = sqr(guL/2.-gW_/2./cosThetaW*2./3.*sin2ThetaW_);
+    gA2 = sqr(guL/2.+gW_/2./cosThetaW*2./3.*sin2ThetaW_);
+    guL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
+    gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
+    gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
+    gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
+    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
+    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    else {
+      cout << "MEPP2VVPowheg:" << endl;
+      cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
+    }
+  }
+
   return Fij2_/2./NC_
-       * (    gdL_*gdL_*Idd0(s,t,u,mW2,mZ2)
-	 + 2.*gdL_*guL_*Iud0(s,t,u,mW2,mZ2)
-	 +    guL_*guL_*Iuu0(s,t,u,mW2,mZ2) 
-	 - 2.*eZ_/(s-mW2) * ( gdL_*Fd0(s,t,u,mW2,mZ2)
-	                    - guL_*Fu0(s,t,u,mW2,mZ2)
-	                    )
-         + sqr(eZ_/(s-mW2)) * H0(s,t,u,mW2,mZ2)
+       * (    
+	      gdL*gdL*Idd0(s,t,u,mW2,mZ2)
+	 + 2.*gdL*guL*Iud0(s,t,u,mW2,mZ2)
+	 +    guL*guL*Iuu0(s,t,u,mW2,mZ2) 
+	 - 2.*eZ/(s-mW2) * ( gdL*Fd0(s,t,u,mW2,mZ2)
+	                   - guL*Fu0(s,t,u,mW2,mZ2)
+	                   )
+         + eZ2/sqr(s-mW2) * H0(s,t,u,mW2,mZ2)
 	 );
 }
 
@@ -1754,89 +1879,157 @@ bool MEPP2VVPowheg::sanityCheck() const {
   double xp(Cp_.xr());
   double xm(Cm_.xr());
 
-  if(fabs((lo_me2_-M_Born(B_))/M_Born(B_))>10.e-2) {
+  if(fabs((lo_me2_-M_Born_WZ_)/M_Born_WZ_)>10.e-2) {
     alarm=true;
-    cout << "lo_me2_ - M_Born(B_) (rel) = " 
-	 <<  lo_me2_-M_Born(B_)            << "   (" 
-	 << (lo_me2_-M_Born(B_))/M_Born(B_) << ")\n";
+    cout << "lo_me2_ - M_Born_WZ_ (rel) = " 
+	 <<  lo_me2_-M_Born_WZ_            << "   (" 
+	 << (lo_me2_-M_Born_WZ_)/M_Born_WZ_ << ")\n";
   }
 
   Energy2 absDiff_qqbs 
-      = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born(B_);
+      = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born_WZ_;
   double  relDiff_qqbs = absDiff_qqbs / t_u_M_R_qqb(S_);
   if(fabs(relDiff_qqbs)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
-    cout << "t_u_M_R_qqb(S_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
+    cout << "t_u_M_R_qqb(S_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_WZ (rel):\n"
 	 << absDiff_qqbs / GeV2 << "   (" << relDiff_qqbs << ")\n";
   }
 
   Energy2 absDiff_qqbsp 
-      = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born(B_);
+      = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born_WZ_;
   double  relDiff_qqbsp = absDiff_qqbsp / t_u_M_R_qqb(SCp_);
   if(fabs(relDiff_qqbsp)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
-    cout << "t_u_M_R_qqb(SCp_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
+    cout << "t_u_M_R_qqb(SCp_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_WZ (rel):\n"
 	 << absDiff_qqbsp / GeV2 << "   (" << relDiff_qqbsp << ")\n";
   }
 
   Energy2 absDiff_qqbsm 
-      = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born(B_);
+      = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born_WZ_;
   double  relDiff_qqbsm = absDiff_qqbsm / t_u_M_R_qqb(SCm_);
   if(fabs(relDiff_qqbsm)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
-    cout << "t_u_M_R_qqb(SCm_)-8*pi*alphaS*sHat/x*2*Cab*M_Born (rel):\n"
+    cout << "t_u_M_R_qqb(SCm_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_WZ (rel):\n"
 	 << absDiff_qqbsm / GeV2 << "   (" << relDiff_qqbsm << ")\n";
   }
 
   Energy2 absDiff_qqbp 
-      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born(B_);
+      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born_WZ_;
   double  relDiff_qqbp = absDiff_qqbp / t_u_M_R_qqb(Cp_);
   if(fabs(relDiff_qqbp)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
-    cout << "t_u_M_R_qqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born (rel):\n"
+    cout << "t_u_M_R_qqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born_WZ (rel):\n"
 	 << absDiff_qqbp / GeV2 << "   (" << relDiff_qqbp << ")\n";
   }
 
   Energy2 absDiff_qqbm 
-      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born(B_);
+      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born_WZ_;
   double  relDiff_qqbm = absDiff_qqbm / t_u_M_R_qqb(Cm_);
   if(fabs(relDiff_qqbm)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
-    cout << "t_u_M_R_qqb(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born (rel):\n"
+    cout << "t_u_M_R_qqb(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born_WZ (rel):\n"
 	 << absDiff_qqbm / GeV2 << "   (" << relDiff_qqbm << ")\n";
   }
 
   Energy2 absDiff_gqbp
-      = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born(B_);
+      = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born_WZ_;
   double  relDiff_gqbp =  absDiff_gqbp/ t_u_M_R_gqb(Cp_);
   if(fabs(relDiff_gqbp)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_gqb(Cp_)   " << t_u_M_R_gqb(Cp_) /GeV2 << endl;
-    cout << "t_u_M_R_gqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born (rel):\n"
+    cout << "t_u_M_R_gqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born_WZ (rel):\n"
 	 << absDiff_gqbp / GeV2 << "   (" << relDiff_gqbp << ")\n";
   }
 
   Energy2 absDiff_qgm
-      = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born(B_);
+      = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born_WZ_;
   double  relDiff_qgm  =  absDiff_qgm / t_u_M_R_qg(Cm_);
   if(fabs(relDiff_qgm)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qg(Cm_)   " << t_u_M_R_qg(Cm_) /GeV2 << endl;
-    cout << "t_u_M_R_qg(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born (rel):\n"
+    cout << "t_u_M_R_qg(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born_WZ (rel):\n"
 	 << absDiff_qgm  / GeV2 << "   (" << relDiff_qgm  << ")\n";
   }
 
   return alarm;
+}
+
+/***************************************************************************/
+// M_Born_ZZ is the Born matrix element exactly as defined in Eqs. 2.18-2.19
+// of of NPB 357(1991)409-438.
+double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
+  Energy2 s(B.sb());
+  Energy2 t(B.tb());
+  Energy2 u(B.ub());
+  Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
+  Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
+  double cosThetaW(sqrt(1.-sin2ThetaW_));
+  
+  double gV2,gA2,gX,gY,gZ;
+  gV2  = sqr(guL_/2.-gW_/2./cosThetaW*2./3.*sin2ThetaW_);
+  gA2  = sqr(guL_/2.+gW_/2./cosThetaW*2./3.*sin2ThetaW_);
+  gX   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
+  gV2  = sqr(gdL_/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
+  gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
+  gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
+  gZ   = gX;
+  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  
+  return 1./NC_*sqr(gZ*2.)*(t/u+u/t+4.*mZ2*s/t/u-mZ2*mZ2*(1./t/t+1./u/u));
+
+}
+
+/***************************************************************************/
+// M_Born_WW is the Born matrix element exactly as defined in Eqs. 3.2-3.8
+// of of NPB 410(1993)280-384.
+double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
+  Energy2 s(B.sb());
+  Energy2 t(B.tb());
+  Energy2 u(B.ub());
+  Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
+  Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
+    
+  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  double Qi    = up_type ? 2./3. : -1./3.; 
+  double giL   = up_type ? guL_/2.  : gdL_/2.; 
+  double giR   = up_type ? guR_/2.  : gdR_/2.; 
+  double e2    = sqr(gW_)*sin2ThetaW_;
+  
+  double cos2ThetaW(1.-sin2ThetaW_);
+
+  double ctt_i(gW_*gW_*gW_*gW_/16.);
+  InvEnergy2 cts_i(gW_*gW_*e2/4./s *(Qi+2.*eZ_*giL/e2*s/(s-mW2/cos2ThetaW)));
+  InvEnergy4 css_i(e2*e2/s/s*(sqr(Qi+eZ_*(giL+giR)/e2*s/(s-mW2/cos2ThetaW))
+		      	     +sqr(   eZ_*(giL-giR)/e2*s/(s-mW2/cos2ThetaW)))
+                  );
+
+  if(ab_->id()!=-bb_->id()) return 0.;
+
+  if(!up_type) swap(t,u);
+  double signf = up_type ? 1. : -1.;
+
+  return 1./4./NC_ 
+      * ( 
+	  ctt_i*( 16.*(u*t/mW2/mW2-1.)*(1./4.+mW2*mW2/t/t)+16.*s/mW2)
+        - cts_i*( 16.*(u*t/mW2/mW2-1.)*(s/4.-mW2/2.-mW2*mW2/t)
+		+ 16.*s*(s/mW2-2.+2.*mW2/t)
+	        )
+	       *signf
+      + 
+          css_i*(  8.*(u*t/mW2/mW2-1.)*(s*s/4.-s*mW2+3.*mW2*mW2)
+ 		+  8.*s*s*(s/mW2-4.)
+ 	        )
+	);
 }

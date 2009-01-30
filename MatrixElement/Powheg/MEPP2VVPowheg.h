@@ -9,6 +9,7 @@
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "Herwig++/MatrixElement/Powheg/NLO2to2Kinematics.h"
 #include "Herwig++/Utilities/Maths.h"
+#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -91,6 +92,20 @@ public:
    */
     static void Init();
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
+public:
+
   /**
    * Function to set the born variables. 
    */
@@ -171,7 +186,24 @@ public:
    * (1992) *** modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_Born(born2to2Kinematics B) const;
+  double M_Born_WZ(born2to2Kinematics B) const;
+  mutable double M_Born_WZ_;
+
+  /**
+   * The Born matrix element as given in Equation 2.18 - 2.19 in NPB 357 
+   * (1991) *** modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  double M_Born_ZZ(born2to2Kinematics B) const;
+  mutable double M_Born_ZZ_;
+
+  /**
+   * The Born matrix element as given in Equation 3.2 - 3.8 in NPB 410 
+   * (1993) *** modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  double M_Born_WW(born2to2Kinematics B) const;
+  mutable double M_Born_WW_;
 
 protected:
 
@@ -258,6 +290,11 @@ private:
   tcPDPtr ab_, bb_;
 
   /**
+   * The ckm matrix elements (unsquared, to allow interference)
+   */
+  Complex ckm_[3][3];
+
+  /**
    *  Flag indicating if the q & qbar are flipped or not i.e. this
    *  is true if q enters from the -z direction in the lab frame.
    */
@@ -289,14 +326,32 @@ private:
   double NC_;
 
   /**
+   *  The weak coupling and the sin (squared) of the Weinberg angle
+   */
+  mutable double gW_, sin2ThetaW_;
+
+  /**
    *  The up and down, left handed, quark-boson couplings
    */
   mutable double guL_, gdL_;
 
   /**
+   *  The up and down, right handed, quark-boson couplings (for WW & ZZ)
+   */
+  mutable double guR_, gdR_;
+
+  /**
    *  The TGC coupling
    */
   mutable double eZ_;
+
+  /**
+   *  The TGC coupling squared. This is useful for debugging purposes
+   *  when one wants to turn of t-channel * TGC interference contributions
+   *  but leave the pure TGC contributions intact. It is also needed in 
+   *  order to transform WZ matrix elements into WW ones.
+   */
+  mutable double eZ2_;
 
   /**
    *  The CKM factor (Fij^2)
