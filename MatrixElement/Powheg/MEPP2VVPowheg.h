@@ -187,7 +187,7 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_Born_WZ(born2to2Kinematics B) const;
-  mutable double M_Born_WZ_;
+  mutable double M_Born_;
 
   /**
    * The Born matrix element as given in Equation 2.18 - 2.19 in NPB 357 
@@ -195,7 +195,14 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_Born_ZZ(born2to2Kinematics B) const;
-  mutable double M_Born_ZZ_;
+
+  /**
+   * M_V_Regular_ZZ is the regular part of the one-loop ZZ matrix element 
+   * exactly as defined in Eqs. B.1 & B.2 of of  NPB 357(1991)409-438 ***
+   * modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  double M_V_Regular_ZZ(real2to3Kinematics S) const;
 
   /**
    * The Born matrix element as given in Equation 3.2 - 3.8 in NPB 410 
@@ -203,7 +210,14 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_Born_WW(born2to2Kinematics B) const;
-  mutable double M_Born_WW_;
+
+  /**
+   * M_V_Regular_WW is the regular part of the one-loop WW matrix element 
+   * exactly as defined in Eqs. C.1 - C.7 of of NPB 410(1993)280-324 ***
+   * modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  double M_V_Regular_WW(real2to3Kinematics S) const;
 
 protected:
 

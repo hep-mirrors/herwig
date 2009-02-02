@@ -400,10 +400,8 @@ double MEPP2VVPowheg::NLOweight() const {
 
   Fij2_ = sqr(gW_/2./sqrt(2.)*Kij);
 
-  // Get the leading order WZ, WW & ZZ matrix elements for testing
-  M_Born_WW_ = M_Born_WW(B_);
-  M_Born_ZZ_ = M_Born_ZZ(B_);
-  M_Born_WZ_ = M_Born_WZ(B_);
+  // Get the leading order matrix element
+  M_Born_    = M_Born_WZ(B_);
 
   // Calculate the integrand
   double wgt(0.);
@@ -445,9 +443,7 @@ double MEPP2VVPowheg::NLOweight() const {
 	 << bb_->PDGName() << ", " 
          << mePartonData()[2]->PDGName() << ", " 
 	 << mePartonData()[3]->PDGName() << endl; 
-    cout << "lo_me2_, M_Born_WZ_ " << lo_me2_ << ", " << M_Born_WZ_ << endl;
-    cout << "lo_me2_, M_Born_ZZ_ " << lo_me2_ << ", " << M_Born_ZZ_ << endl;
-    cout << "lo_me2_, M_Born_WW_ " << lo_me2_ << ", " << M_Born_WW_ << endl;
+    cout << "lo_me2_, M_Born_    " << lo_me2_ << ", " << M_Born_    << endl;
     cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
     cout << "sb+tb+ub = " 
 	 << B_.sb()/GeV2 << " + " 
@@ -562,9 +558,9 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
 
   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-			*CF_*(1.+sqr(Cp_.xr()))*M_Born_WZ_);
+			*CF_*(1.+sqr(Cp_.xr()))*M_Born_);
   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-			*CF_*(1.+sqr(Cm_.xr()))*M_Born_WZ_);
+			*CF_*(1.+sqr(Cm_.xr()))*M_Born_);
 
   return 
    ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_) - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_))/s
@@ -592,7 +588,7 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
 
   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
-			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_WZ_);
+			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_);
   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
 
   return 
@@ -622,7 +618,7 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
-		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_WZ_);
+		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_);
 
   return 
    ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_) - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_))/s
@@ -1879,87 +1875,126 @@ bool MEPP2VVPowheg::sanityCheck() const {
   double xp(Cp_.xr());
   double xm(Cm_.xr());
 
-  if(fabs((lo_me2_-M_Born_WZ_)/M_Born_WZ_)>10.e-2) {
-    alarm=true;
-    cout << "lo_me2_ - M_Born_WZ_ (rel) = " 
-	 <<  lo_me2_-M_Born_WZ_            << "   (" 
-	 << (lo_me2_-M_Born_WZ_)/M_Born_WZ_ << ")\n";
+  double M_B_WW(M_Born_WW(B_));
+  double M_B_ZZ(M_Born_ZZ(B_));
+
+  if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==23) {
+    if(fabs((lo_me2_-M_Born_)/M_Born_)>10.e-2) {
+      alarm=true;
+      cout << "lo_me2_ - M_Born_ (rel) = " 
+	   <<  lo_me2_-M_Born_                << "  (" 
+	   << (lo_me2_-M_Born_)/M_Born_       << ")\n";
+    }
+  }
+
+  if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
+    if(fabs((lo_me2_-M_Born_   )/M_Born_   )>10.e-2||
+       fabs((lo_me2_-M_B_WW)/M_B_WW)>10.e-2||
+       fabs((M_Born_-M_B_WW)/M_B_WW)>10.e-2) {
+	alarm=true;
+	cout << "lo_me2_ - M_Born_ (rel) = " 
+	     <<  lo_me2_-M_Born_                << "  (" 
+	     << (lo_me2_-M_Born_)/M_Born_       << ")\n";
+	cout << "lo_me2_ - M_B_WW (rel) = " 
+	     <<  lo_me2_-M_B_WW             << "  (" 
+	     << (lo_me2_-M_B_WW)/M_B_WW << ")\n";
+	cout << "M_Born_ - M_B_WW (rel) = " 
+	     <<  M_Born_-M_B_WW             << "  (" 
+	     << (M_Born_-M_B_WW)/M_B_WW << ")\n";
+    }
+  }
+
+  if(abs(mePartonData()[2]->id())==23&&abs(mePartonData()[3]->id())==23) {
+    if(fabs((lo_me2_-M_Born_   )/M_Born_   )>10.e-2||
+       fabs((lo_me2_-M_B_ZZ)/M_B_ZZ)>10.e-2||
+       fabs((M_Born_-M_B_ZZ)/M_B_ZZ)>10.e-2) {
+	alarm=true;
+	cout << "lo_me2_ - M_Born_ (rel) = " 
+	     <<  lo_me2_-M_Born_                << "  (" 
+	     << (lo_me2_-M_Born_)/M_Born_       << ")\n";
+	cout << "lo_me2_ - M_B_ZZ (rel) = " 
+	     <<  lo_me2_-M_B_ZZ             << "  (" 
+	     << (lo_me2_-M_B_ZZ)/M_B_ZZ << ")\n";
+	cout << "M_Born_ - M_B_ZZ (rel) = " 
+	     <<  M_Born_-M_B_ZZ             << "  (" 
+	     << (M_Born_-M_B_ZZ)/M_B_ZZ << ")\n";
+    }
   }
 
   Energy2 absDiff_qqbs 
-      = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born_WZ_;
+      = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born_;
   double  relDiff_qqbs = absDiff_qqbs / t_u_M_R_qqb(S_);
   if(fabs(relDiff_qqbs)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
-    cout << "t_u_M_R_qqb(S_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_qqb(S_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_ (rel):\n"
 	 << absDiff_qqbs / GeV2 << "   (" << relDiff_qqbs << ")\n";
   }
 
   Energy2 absDiff_qqbsp 
-      = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born_WZ_;
+      = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born_;
   double  relDiff_qqbsp = absDiff_qqbsp / t_u_M_R_qqb(SCp_);
   if(fabs(relDiff_qqbsp)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
-    cout << "t_u_M_R_qqb(SCp_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_qqb(SCp_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_ (rel):\n"
 	 << absDiff_qqbsp / GeV2 << "   (" << relDiff_qqbsp << ")\n";
   }
 
   Energy2 absDiff_qqbsm 
-      = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born_WZ_;
+      = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born_;
   double  relDiff_qqbsm = absDiff_qqbsm / t_u_M_R_qqb(SCm_);
   if(fabs(relDiff_qqbsm)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
-    cout << "t_u_M_R_qqb(SCm_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_qqb(SCm_)-8*pi*alphaS*sHat/x*2*Cab*M_Born_ (rel):\n"
 	 << absDiff_qqbsm / GeV2 << "   (" << relDiff_qqbsm << ")\n";
   }
 
   Energy2 absDiff_qqbp 
-      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born_WZ_;
+      = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born_;
   double  relDiff_qqbp = absDiff_qqbp / t_u_M_R_qqb(Cp_);
   if(fabs(relDiff_qqbp)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
-    cout << "t_u_M_R_qqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_qqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born_ (rel):\n"
 	 << absDiff_qqbp / GeV2 << "   (" << relDiff_qqbp << ")\n";
   }
 
   Energy2 absDiff_qqbm 
-      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born_WZ_;
+      = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born_;
   double  relDiff_qqbm = absDiff_qqbm / t_u_M_R_qqb(Cm_);
   if(fabs(relDiff_qqbm)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
-    cout << "t_u_M_R_qqb(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_qqb(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pqq*M_Born_ (rel):\n"
 	 << absDiff_qqbm / GeV2 << "   (" << relDiff_qqbm << ")\n";
   }
 
   Energy2 absDiff_gqbp
-      = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born_WZ_;
+      = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born_;
   double  relDiff_gqbp =  absDiff_gqbp/ t_u_M_R_gqb(Cp_);
   if(fabs(relDiff_gqbp)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_gqb(Cp_)   " << t_u_M_R_gqb(Cp_) /GeV2 << endl;
-    cout << "t_u_M_R_gqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_gqb(Cp_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born_ (rel):\n"
 	 << absDiff_gqbp / GeV2 << "   (" << relDiff_gqbp << ")\n";
   }
 
   Energy2 absDiff_qgm
-      = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born_WZ_;
+      = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born_;
   double  relDiff_qgm  =  absDiff_qgm / t_u_M_R_qg(Cm_);
   if(fabs(relDiff_qgm)>1.e-7) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qg(Cm_)   " << t_u_M_R_qg(Cm_) /GeV2 << endl;
-    cout << "t_u_M_R_qg(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born_WZ (rel):\n"
+    cout << "t_u_M_R_qg(Cm_)-8*pi*alphaS*sHat/x*(1-x)*Pgq*M_Born_ (rel):\n"
 	 << absDiff_qgm  / GeV2 << "   (" << relDiff_qgm  << ")\n";
   }
 
@@ -1992,7 +2027,33 @@ double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
 }
 
 /***************************************************************************/
-// M_Born_WW is the Born matrix element exactly as defined in Eqs. 3.2-3.8
+// M_V_Regular_ZZ is the one-loop ZZ matrix element exactly as defined in 
+// Eqs. B.1 & B.2 of NPB 357(1991)409-438.
+double MEPP2VVPowheg::M_V_Regular_ZZ(real2to3Kinematics S) const {
+  Energy2 s(S.bornVariables().sb());
+  Energy2 t(S.bornVariables().tb());
+  Energy2 u(S.bornVariables().ub());
+  Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
+  Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
+  double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
+  double cosThetaW(sqrt(1.-sin2ThetaW_));
+  
+  double gV2,gA2,gX,gY,gZ;
+  gV2  = sqr(guL_/2.-gW_/2./cosThetaW*2./3.*sin2ThetaW_);
+  gA2  = sqr(guL_/2.+gW_/2./cosThetaW*2./3.*sin2ThetaW_);
+  gX   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
+  gV2  = sqr(gdL_/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
+  gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
+  gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
+  gZ   = gX;
+  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  
+  return 1./NC_*sqr(gZ*2.)*(t/u+u/t+4.*mZ2*s/t/u-mZ2*mZ2*(1./t/t+1./u/u));
+
+}
+
+/***************************************************************************/
+// M_B_WW is the Born matrix element exactly as defined in Eqs. 3.2-3.8
 // of of NPB 410(1993)280-384.
 double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
   Energy2 s(B.sb());
@@ -2033,3 +2094,50 @@ double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
  	        )
 	);
 }
+
+/***************************************************************************/
+// M_V_Regular_WW is the regular part of the one-loop WW matrix element 
+// exactly as defined in Eqs. C.1 - C.7 of of NPB 410(1993)280-324 ***
+// modulo a factor 1/(2s) ***, which is a flux factor that those authors 
+// absorb in the matrix element. 
+double MEPP2VVPowheg::M_V_Regular_WW(real2to3Kinematics S) const {
+  Energy2 s(S.bornVariables().sb());
+  Energy2 t(S.bornVariables().tb());
+  Energy2 u(S.bornVariables().ub());
+  Energy2 mW2(S.k12r()); // N.B. the diboson masses are preserved in getting
+  Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
+  double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
+    
+  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  double Qi    = up_type ? 2./3. : -1./3.; 
+  double giL   = up_type ? guL_/2.  : gdL_/2.; 
+  double giR   = up_type ? guR_/2.  : gdR_/2.; 
+  double e2    = sqr(gW_)*sin2ThetaW_;
+  
+  double cos2ThetaW(1.-sin2ThetaW_);
+
+  double ctt_i(gW_*gW_*gW_*gW_/16.);
+  InvEnergy2 cts_i(gW_*gW_*e2/4./s *(Qi+2.*eZ_*giL/e2*s/(s-mW2/cos2ThetaW)));
+  InvEnergy4 css_i(e2*e2/s/s*(sqr(Qi+eZ_*(giL+giR)/e2*s/(s-mW2/cos2ThetaW))
+		      	     +sqr(   eZ_*(giL-giR)/e2*s/(s-mW2/cos2ThetaW)))
+                  );
+
+  if(ab_->id()!=-bb_->id()) return 0.;
+
+  if(!up_type) swap(t,u);
+  double signf = up_type ? 1. : -1.;
+
+  return 1./4./NC_ 
+      * ( 
+	  ctt_i*( 16.*(u*t/mW2/mW2-1.)*(1./4.+mW2*mW2/t/t)+16.*s/mW2)
+        - cts_i*( 16.*(u*t/mW2/mW2-1.)*(s/4.-mW2/2.-mW2*mW2/t)
+		+ 16.*s*(s/mW2-2.+2.*mW2/t)
+	        )
+	       *signf
+      + 
+          css_i*(  8.*(u*t/mW2/mW2-1.)*(s*s/4.-s*mW2+3.*mW2*mW2)
+ 		+  8.*s*s*(s/mW2-4.)
+ 	        )
+	);
+}
+
