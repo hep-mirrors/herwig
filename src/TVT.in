@@ -20,7 +20,7 @@ set LHCGenerator:MaxErrors 100000
 ##################################################
 # Tevatron physics parameters (override defaults) 
 ##################################################
-set LHCGenerator:EventHandler:LuminosityFunction:Energy 1960.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
 set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 
 ##################################################
@@ -30,12 +30,7 @@ set LHCGenerator:EventHandler:BeamB /Herwig/Particles/pbar-
 cd /Herwig/MatrixElements
 
 # Drell-Yan Z/gamma
-set MEWJet:WDecay Electron
-insert SimpleQCD:MatrixElements[0] MEWJet
-set MEqq2W2ff:Process Electron
-#insert SimpleQCD:MatrixElements[0] MEqq2W2ff
-
-
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # Drell-Yan W
 # insert SimpleQCD:MatrixElements[0] MEqq2W2ff
 # gamma-gamma
@@ -71,7 +66,7 @@ cd /Herwig/Generators
 ##################################################
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
 # insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
 # set /Herwig/Analysis/HepMCFile:PrintEvent 100
