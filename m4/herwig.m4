@@ -68,7 +68,7 @@ if test "x$with_clhep" != "xno"; then
 	  for filename in $CLHEPPATH/lib/libCLHEP-?.?.?.?.{so,dylib} $CLHEPPATH/lib/libCLHEP.{so,dylib}
 	  do
 		if test -e $filename; then
-		   CLHEPLIB=`basename $filename | sed -e 's/^lib/-l/' -e 's/\.\(so\|dylib\)$//'`
+		   CLHEPLIB=`basename $filename | sed -e 's/^lib/-l/' -e 's/\.so//' -e 's/\.dylib//'`
 		fi
 	  done
 	  if test -z "$CLHEPLIB"; then
