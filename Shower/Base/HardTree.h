@@ -96,6 +96,12 @@ public:
    */
   bool findNodes( );
 
+  /**
+   * Returns sum of pts of all branchings in tree
+   */
+  Energy totalPt() { return _total_pt; } 
+
+
 private:
 
  /**
@@ -155,6 +161,11 @@ private:
    *  This is found by looking at tree end points in fillNodes
    */
    HardBranchingPtr  _lowestPt;
+
+  /**
+   *  The sum of the pts of all branchings
+   */
+  Energy _total_pt;
 
 };
 

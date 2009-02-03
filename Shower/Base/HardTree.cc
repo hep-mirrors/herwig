@@ -225,16 +225,22 @@ void HardTree::fillHardScales( HardBranchingPtr branch, vector< pair< Energy, do
 }
 
 bool HardTree::checkHardOrdering() {
+  //this function also caculates sum of pts of all branchings
+  _total_pt = 0. * GeV;
   _hard_line_scales.clear();
   for( set<HardBranchingPtr>::const_iterator it = 
 	 this->branchings().begin();
        it != this->branchings().end(); ++it)  {
     if( (*it)->incoming() ) continue;
     //if the branching has children then fill qtilde and z of branching and
-    //continue recursively on the children
+    //continue recursively on the children 
+   
     if( ! (*it)->children().empty() ) {
       vector< pair< Energy, double > > new_hard_line1;
       new_hard_line1.push_back( make_pair( (*it)->scale(), (*it)->children()[0]->z() ) );
+      //pts of children are equal so just add once 
+      _total_pt += (*it)->children()[0]->pT();
+
       fillHardScales( (*it)->children()[0], new_hard_line1 );
       vector< pair< Energy, double > > new_hard_line2;
       new_hard_line2.push_back( make_pair( (*it)->scale(), (*it)->children()[1]->z() ) );
