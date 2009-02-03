@@ -2027,9 +2027,9 @@ double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
 }
 
 /***************************************************************************/
-// M_V_Regular_ZZ is the one-loop ZZ matrix element exactly as defined in 
+// M_V_regular_ZZ is the one-loop ZZ matrix element exactly as defined in 
 // Eqs. B.1 & B.2 of NPB 357(1991)409-438.
-double MEPP2VVPowheg::M_V_Regular_ZZ(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
@@ -2096,11 +2096,11 @@ double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
 }
 
 /***************************************************************************/
-// M_V_Regular_WW is the regular part of the one-loop WW matrix element 
+// M_V_regular_WW is the regular part of the one-loop WW matrix element 
 // exactly as defined in Eqs. C.1 - C.7 of of NPB 410(1993)280-324 ***
 // modulo a factor 1/(2s) ***, which is a flux factor that those authors 
 // absorb in the matrix element. 
-double MEPP2VVPowheg::M_V_Regular_WW(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
@@ -2127,6 +2127,52 @@ double MEPP2VVPowheg::M_V_Regular_WW(real2to3Kinematics S) const {
   if(!up_type) swap(t,u);
   double signf = up_type ? 1. : -1.;
 
+  InvEnergy4 TildeI4  = ( 2.*sqr(log(-t/mW2))-4.*log((mW2-t)/mW2)*log(-t/mW2)
+			- 4.*ReLi2(t/mW2) )/s/t;
+  InvEnergy2 TildeI3t = 1./(mW2-t)
+                          *(sqr(log(mW2/s))/2.-sqr(log(-t/s))/2.-pi*pi/2.);
+  InvEnergy2 TildeI3l = 1./s/beta*( 4.*ReLi2((beta-1.)/(beta+1.))
+				  + sqr(log((1.-beta)/(1.+beta)))
+				  + pi*pi/3.);
+  double Fup1_st(0.);
+  Fup1_st = 4.*(80.*t*t+73.*s*t-140.*mW2*t+72.*mW2*mW2)/t/t
+          - 4.*sqr(4.*t+s)/s/beta/beta/t
+          - 128.*(t+2.*s)/mW2
+          + 64.*t*(t+s)/mW2/mW2
+          - (32.*(t*t-3.*s*t-3.*mW2*mW2)/t/t+128.*s/(t-mW2))*log(-t/mW2)
+          + ( 8.*(6.*t*t+8.*s*t-19.*mW2*t+12.*mW2*mW2)/t/t
+	    - (32.*t*t-128.*s*t-26.*s*s)/s/beta/beta/t
+	    + 6.*sqr(4.*t+s)/s/sqr(sqr(beta))/t
+	    )*log(s/mW2)
+          + 32.*s*(2.*mW2*mW2/t-u)*TildeI4
+          - 64.*(t-mW2)*(2.*mW2*mW2/t/t-u/t)*TildeI3t
+          + ( (16.*t*(4.*mW2-u)-49.*s*s+72.*mW2*s-48.*mW2*mW2)/2./t
+	    + 2.*(8.*t*t-14.*s*t-3.*s*s)/beta/beta/t
+	    - 3.*sqr(4.*t+s)/2./sqr(sqr(beta))/t
+	    )*TildeI3l
+          + 32./3.*( 2.*(t+2.*s)/mW2 
+		   - (3.*t+2.*s-4.*mW2)/t
+		   - t*(t+s)/mW2/mW2
+	           )*pi*pi;
+  Energy2 Jup1_st(0.*GeV2);
+  Jup1_st = -128.*(t*t+2.*s*t+2.*s*s)/mW2 
+          - 16.*(t*t-21.*s*t-26.*mW2*t+34.*mW2*s+17.*mW2*mW2)/t
+          + 64.*s*t*(t+s)/mW2/mW2 +32.*s*s/(t-mW2)
+          + ( 16.*(t-5.*s+2.*mW2)-48.*mW2*(2.*s+mW2)/t
+	    + 64.*s*(2.*t+s)/(t-mW2) - 32.*s*s*t/sqr(t-mW2)
+	    )*log(-t/mW2)
+          + ( 16.*(4.*s+s)/beta/beta 
+	    - 16.*(3.*t-2.*s)
+	    + 48.*mW2*(2.*t-2.*s-mW2)/t
+	    )*log(s/mW2)
+          + 16.*s*(t*(2.*s+u)-2.*mW2*(2.*s+mW2))*TildeI4
+          + 32.*(t-mW2)*(2.*mW2*(2.*s+mW2)/t-2.*s-u)*TildeI3t
+          + ( 32.*s*t-12.*s*s+32.*mW2*mW2
+	    - 16.*mW2*(2.*t+7.*s)-4.*s*(4.*t+s)/beta/beta
+	    )*TildeI3l
+          + 32./3.*( 2.*(t*t+2.*s*t+2.*s*s)/mW2
+                   - s*t*(t+s)/mW2/mW2-2.*mW2*(2.*t-2.*s-mW2)/t-t-4.*s
+	           )*pi*pi;
   return 1./4./NC_ 
       * ( 
 	  ctt_i*( 16.*(u*t/mW2/mW2-1.)*(1./4.+mW2*mW2/t/t)+16.*s/mW2)
@@ -2140,4 +2186,3 @@ double MEPP2VVPowheg::M_V_Regular_WW(real2to3Kinematics S) const {
  	        )
 	);
 }
-
