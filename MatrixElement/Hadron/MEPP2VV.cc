@@ -261,9 +261,9 @@ void MEPP2VV::getDiagrams() const {
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
-	add(new_ptr((Tree2toNDiagram(2),qk,qb,1,gamma,3,w1,3,w2,4)));
+	add(new_ptr((Tree2toNDiagram(2),qk,qb,1,gamma,3,w1,3,w2,-4)));
 	// s-channel Z
-	add(new_ptr((Tree2toNDiagram(2),qk,qb,1,   z0,3,w1,3,w2,5)));
+	add(new_ptr((Tree2toNDiagram(2),qk,qb,1,   z0,3,w1,3,w2,-5)));
 	// t-channel
 	if(ix%2==0) {
 	  int idiag=0;
@@ -320,7 +320,7 @@ void MEPP2VV::getDiagrams() const {
 		     parentpair[ix].second->CC() , parentpair[ix].first->CC(),
 		   2, wPlus, 1, z0, -2)));
 	add(new_ptr((Tree2toNDiagram(2), parentpair[ix].second->CC(),
-		     parentpair[ix].first->CC(), 1, wPlus, 3, wPlus, 3, z0,  3)));
+		     parentpair[ix].first->CC(), 1, wPlus, 3, wPlus, 3, z0, -3)));
       }
     }
     // W- Z
@@ -332,7 +332,7 @@ void MEPP2VV::getDiagrams() const {
 	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].first, 
 		     parentpair[ix].first , parentpair[ix].second, 2, wMinus, 1, z0, -2)));
 	add(new_ptr((Tree2toNDiagram(2), parentpair[ix].first,
-		     parentpair[ix].second, 1, wMinus, 3, wMinus, 3, z0,  3))); 
+		     parentpair[ix].second, 1, wMinus, 3, wMinus, 3, z0, -3))); 
       }
     }
   }
