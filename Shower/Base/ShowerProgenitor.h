@@ -44,10 +44,10 @@ public:
    * @param emitted Whether or not the particle has radiated
    */
   ShowerProgenitor(PPtr original,PPtr copy, ShowerParticlePtr particle,
-		   Energy pT=0.*MeV,bool emitted=false)
+		   Energy pT=ZERO,bool emitted=false)
     : _original(original), _copy(copy), _perturbative(true),
       _particle(particle), _highestpT(pT), _maxpT(Constants::MaxEnergy), 
-      _maxHardPt(0.0*GeV), _hasEmitted(emitted) {
+      _maxHardPt(ZERO), _hasEmitted(emitted) {
     // get the BeamParticleData object
     if ( original->parents().empty() ) {
       _beam=dynamic_ptr_cast<tcBeamPtr>(original->dataPtr());

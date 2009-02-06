@@ -84,7 +84,7 @@ void IFDipole::Init() {
   static Parameter<IFDipole,Energy> interfaceMinimumEnergyRest
     ("MinimumEnergyRest",
      "The minimum energy of the photons in the rest frame of the decaying particle",
-     &IFDipole::_emin, MeV, 1.*MeV, 0.0*MeV, 10000.0*MeV,
+     &IFDipole::_emin, MeV, 1.*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<IFDipole,unsigned int> interfaceMaximumNumberOfPhotons
@@ -327,7 +327,7 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
   _dipolewgt /=dipoles;
 
   // now do the momentum reshuffling
-  Lorentz5Momentum pmom(0.*GeV,0.*GeV,0.*GeV,_m[0],_m[0]);
+  Lorentz5Momentum pmom(ZERO,ZERO,ZERO,_m[0],_m[0]);
   if(_multiplicity>0)
     {
       // total energy  and momentum of photons
@@ -506,7 +506,7 @@ double IFDipole::photon(double beta1,double ombeta1)
   _sinphot.push_back(sinth);
   // store the four vector for the photon
   _lprf.push_back(Lorentz5Momentum(energy*sinth*cos(phi),energy*sinth*sin(phi),
-				   energy*costh,energy,0.*GeV));
+				   energy*costh,energy,ZERO));
   // add the photon momentum to the total
   _bigLprf+=_lprf.back();
   // return the weight
@@ -545,8 +545,8 @@ double IFDipole::meWeight(ParticleVector children)
         // if cos is less    than zero use result accurate as cos->-1
         else
           { ombc=1.-beta1*_cosphot[i]; }
-        if(((_qnewprf[_map[0]].z()>Energy())&&(_qprf[_map[0]].z()<Energy()))||
-           ((_qnewprf[_map[0]].z()<Energy())&&(_qprf[_map[0]].z()>Energy()))) {
+        if(((_qnewprf[_map[0]].z()>ZERO)&&(_qprf[_map[0]].z()<ZERO))||
+           ((_qnewprf[_map[0]].z()<ZERO)&&(_qprf[_map[0]].z()>ZERO))) {
           pik    = _qnewprf[_map[0]].e()*_lprf[i].e()*opbc;
           dipole = sqr(beta1*_sinphot[i]/(opbc*_lprf[i].e()));
         } else {
@@ -593,7 +593,7 @@ double IFDipole::exactYFSFormFactor(double beta1,double ombeta1,
   double arg1 = -omc/(2.*c);
   double arg2 = -omb*omc/(2.*(b+c));
   double arg3 = 2.*b/(1.+b);
-  if(_m[_map[1]+1]!=Energy()) {
+  if(_m[_map[1]+1]!=ZERO) {
     Y = _chrg1*_chrg2*(_alpha/(2.*pi))*(
          log(_m[0]*_m[_map[1]+1]/sqr(2.*_emin))
         +log(_m[_map[0]+1]*_m[_map[1]+1]/sqr(2.*_emin))
@@ -616,7 +616,7 @@ double IFDipole::exactYFSFormFactor(double beta1,double ombeta1,
         -(1./b )*log((2.*c/b)*((b+c)/(omc*(1.+c))))*log((b+c)/(c*omb))
         );
   }
-  else if(_m[_map[1]+1]==Energy()) {
+  else if(_m[_map[1]+1]==ZERO) {
     Y = _chrg1*_chrg2*(_alpha/(2.*pi))*(
          log(sqr(_m[0]/(2.*_emin)))
         +log(sqr(_m[_map[0]+1]/(2.*_emin)))

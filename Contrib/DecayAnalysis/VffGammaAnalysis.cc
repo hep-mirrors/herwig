@@ -72,7 +72,7 @@ void VffGammaAnalysis::analyze(tPPtr part) {
   imode = 3*imode+(abs(part->children()[0]->id())-11)/2;
   Lorentz5Momentum pphoton;
   unsigned int mult(0);
-  Energy emax(0.*MeV);
+  Energy emax(ZERO);
   int imax=-1;
   Lorentz5Momentum pferm(part->children()[0]->momentum()+
 			 part->children()[1]->momentum());

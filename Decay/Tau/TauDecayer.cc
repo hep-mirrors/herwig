@@ -163,7 +163,7 @@ void TauDecayer::Init() {
   static Parameter<TauDecayer,InvEnergy2> interfaceGFermi
     ("GFermi",
      "The Fermi coupling constant",
-     &TauDecayer::_gf, 1./GeV2, 1.16637E-5/GeV2, 0./GeV2, 1.e-3/GeV2,
+     &TauDecayer::_gf, 1./GeV2, 1.16637E-5/GeV2, ZERO, 1.e-3/GeV2,
      false, false, false);
 
   static Reference<TauDecayer,WeakDecayCurrent> interfaceWeakCurrent

@@ -161,7 +161,7 @@ void ScalarVectorVectorDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarVectorVectorDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0./GeV, 10000/GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 10000/GeV, false, false, true);
 
   static ParVector<ScalarVectorVectorDecayer,double> interfaceMaxWeight
     ("MaxWeight",

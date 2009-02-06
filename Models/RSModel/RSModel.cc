@@ -70,7 +70,7 @@ static Reference<RSModel,ThePEG::Helicity::AbstractVVVTVertex> interfaceVertexVV
 static Parameter<RSModel,Energy> interfaceLambda_pi
   ("Lambda_pi",
    "The coupling of the graviton to matter",
-   &RSModel::_theLambda_pi, GeV, 10000*GeV, 0*GeV, 1.0e12*GeV,
+   &RSModel::_theLambda_pi, GeV, 10000*GeV, ZERO, 1.0e12*GeV,
    false, false, false);
 
   static ClassDocumentation<RSModel> documentation

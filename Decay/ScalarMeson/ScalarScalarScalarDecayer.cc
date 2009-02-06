@@ -332,7 +332,7 @@ void ScalarScalarScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarScalarScalarDecayer::_coupling,
-     MeV, 0, 0*MeV, 0.0*MeV, 1000000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 1000000.*MeV, false, false, true);
 
   static ParVector<ScalarScalarScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",

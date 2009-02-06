@@ -84,7 +84,7 @@ public:
 		PtOfQCDProc_(-1.0*GeV), Ptmin_(-1.0*GeV), 
 		hardXSec_(0*millibarn), softXSec_(0*millibarn), 
 		totalXSecExp_(0*millibarn),
-		softMu2_(0*GeV2), beta_(100.0/GeV2), 
+		softMu2_(ZERO), beta_(100.0/GeV2), 
 		algorithm_(2), numSubProcs_(0), 
 		colourDisrupt_(0.0), softInt_(true), twoComp_(true),
 		DLmode_(2), avgNhard_(0.0), avgNsoft_(0.0) {}
@@ -204,7 +204,7 @@ public:
    * Return the ptmin parameter of the model
    */
   virtual Energy Ptmin() const {
-    if(Ptmin_ > 0*GeV)
+    if(Ptmin_ > ZERO)
       return Ptmin_;
     else
       throw Exception() << "MPIHandler::Ptmin called without initialize before"
@@ -312,14 +312,14 @@ private:
    *  invRadius_
    *  @return inverse area.
    */
-  InvArea OverlapFunction(Length b, Energy2 mu2=0*GeV2) const;
+  InvArea OverlapFunction(Length b, Energy2 mu2=ZERO) const;
 
   /**
    * Method to calculate the poisson probability for expectation value
    * \f$<n> = A(b)\sigma\f$, and multiplicity N.
    */
   double poisson(Length b, CrossSection sigma, 
-		 unsigned int N, Energy2 mu2=0*GeV2) const;
+		 unsigned int N, Energy2 mu2=ZERO) const;
 
   /**
    *  Return n!
@@ -340,7 +340,7 @@ private:
    * @param softMu2 = the soft radius, if 0 the hard radius will be used
    */
   CrossSection totalXSecDiff(CrossSection softXSec, 
-			     Energy2 softMu2=0*GeV2) const;
+			     Energy2 softMu2=ZERO) const;
 
   /**
    * Difference of the calculated elastic slope and the
@@ -349,7 +349,7 @@ private:
    * @param softMu2 = the soft radius, if 0 the hard radius will be used
    */
   InvEnergy2 slopeDiff(CrossSection softXSec, 
-			 Energy2 softMu2=0*GeV2) const;
+			 Energy2 softMu2=ZERO) const;
 
   /**
    * Returns the value of the elastic slope for the current CMenergy.
@@ -646,7 +646,7 @@ namespace Herwig {
     virtual Energy2 operator ()(InvEnergy2 beta) const
     {
       if( fabs(beta*GeV2) < 1.E-4 )
-	beta = (beta > 0/GeV2) ? 1.E-4/GeV2 : -1.E-4/GeV2;
+	beta = (beta > ZERO) ? 1.E-4/GeV2 : -1.E-4/GeV2;
 
       return (exp(beta*sqr(ptmin_)) - 1.0)/beta - softXSec_/dsig_;
     }
@@ -709,7 +709,7 @@ namespace Herwig {
      * @param handler The handler
      * @param softMu2 \f$\mu^2\f$
      */
-    TotalXSecBisection(tcMPIHPtr handler, Energy2 softMu2=0*GeV2): 
+    TotalXSecBisection(tcMPIHPtr handler, Energy2 softMu2=ZERO): 
       handler_(handler), softMu2_(softMu2) {}
 
     /**
@@ -758,7 +758,7 @@ namespace Herwig {
      * @param softMu2 \f$\mu^2\f$
      */
     slopeInt(tcMPIHPtr handler, CrossSection hard, 
-	      CrossSection soft=0*millibarn, Energy2 softMu2=0*GeV2)
+	      CrossSection soft=0*millibarn, Energy2 softMu2=ZERO)
       : handler_(handler), hardXSec_(hard), 
 	softXSec_(soft), softMu2_(softMu2) {}
 
@@ -812,7 +812,7 @@ namespace Herwig {
      *  This is equation 14 from "Jimmy4: Multiparton Interactions in HERWIG for the LHC"
      */
     Eikonalization(tcMPIHPtr handler, int option, CrossSection hard, 
-		   CrossSection soft=0*millibarn, Energy2 softMu2=0*GeV2) 
+		   CrossSection soft=0*millibarn, Energy2 softMu2=ZERO) 
       : theHandler(handler), theoption(option), hardXSec_(hard), 
 	softXSec_(soft), softMu2_(softMu2) {}
 

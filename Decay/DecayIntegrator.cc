@@ -35,7 +35,7 @@ using namespace Herwig;
 ParticleVector DecayIntegrator::decay(const Particle & parent,
 				      const tPDVector & children) const {
   // return empty vector if products heavier than parent
-  Energy mout(0.*GeV);
+  Energy mout(ZERO);
   for(tPDVector::const_iterator it=children.begin();
       it!=children.end();++it) mout+=(**it).massMin();
   if(mout>parent.mass()) return ParticleVector();

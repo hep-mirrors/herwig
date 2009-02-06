@@ -185,7 +185,7 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   // Set masses in 5-vectors:
   newfs[0].setMass(ba[0]->mass());
   newfs[1].setMass(ba[1]->mass());
-  newfs[2].setMass(0.*MeV);
+  newfs[2].setMass(ZERO);
   // The next part of this routine sets the colour structure.
   // To do this for decays we assume that the gluon comes from c!
   // First create new particle objects for c, a and gluon:
@@ -317,7 +317,7 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   pg_brf.setE(0.5*_mt*_xg);
   // then their masses,
   pc_brf.setMass(_mc);
-  pg_brf.setMass(0.*MeV);
+  pg_brf.setMass(ZERO);
   // Now set the z-component of c and g. For pg we simply start from
   // _xa and _xg, while for pc we assume it is equal to minus the sum
   // of the z-components of a (assumed to point in the +z direction) and g.
@@ -325,8 +325,8 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   pg_brf.setZ(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a)/root);
   pc_brf.setZ(-1.*( pg_brf.z()+_mt*0.5*root));
   // Now set the y-component of c and g's momenta
-  pc_brf.setY(0.*MeV);
-  pg_brf.setY(0.*MeV);
+  pc_brf.setY(ZERO);
+  pg_brf.setY(ZERO);
   // Now set the x-component of c and g's momenta
   pg_brf.setX(sqrt(sqr(pg_brf.t())-sqr(pg_brf.z())));
   pc_brf.setX(-pg_brf.x());

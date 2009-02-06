@@ -61,7 +61,7 @@ public:
    * Return the slope of the soft pt spectrum. Only necessary when the
    * soft part is modelled.
    */
-  virtual InvEnergy2 beta() const {return 0/GeV2;}
+  virtual InvEnergy2 beta() const {return ZERO;}
 
   /**
    * Some finalize code eventually.

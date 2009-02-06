@@ -361,7 +361,7 @@ bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,
   }
   if(leptons.size()!=2) return false;
   // get momentum of leptonic system and the its minimum possible mass
-  Energy mmin(0.*GeV);
+  Energy mmin(ZERO);
   Lorentz5Momentum pw;
   for(unsigned int ix=0;ix<leptons.size();++ix) {
     pw+=leptons[ix]->momentum();

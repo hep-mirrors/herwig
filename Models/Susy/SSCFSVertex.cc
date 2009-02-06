@@ -19,7 +19,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(0.*MeV),
+SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
 			    _q2last(), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {

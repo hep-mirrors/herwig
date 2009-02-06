@@ -21,7 +21,7 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
-				     theq2Last(0.*GeV2), theCoupLast(0.) {
+				     theq2Last(ZERO), theCoupLast(0.) {
   setList(vector<long>(1, 23), vector<long>(1, 5100036), 
 	  vector<long>(1, 5100025));
 }

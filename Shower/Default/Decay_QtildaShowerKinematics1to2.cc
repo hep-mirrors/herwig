@@ -74,7 +74,7 @@ reconstructLast(const tShowerParticlePtr theLast,
 		unsigned int iopt,Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass>0.*GeV ? mass : theLast->data().constituentMass(); 
+  Energy theMass = mass>ZERO ? mass : theLast->data().constituentMass(); 
   theLast->showerParameters()[1]=
     (sqr(theMass) + sqr(theLast->showerVariables()[2])
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
@@ -98,7 +98,7 @@ void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     pcm=ppartner;
     Boost boost(p.findBoostToCM());
     pcm.boost(boost);
-    n = Lorentz5Momentum( 0.0*MeV,0.5*p.mass()*pcm.vect().unit()); 
+    n = Lorentz5Momentum( ZERO,0.5*p.mass()*pcm.vect().unit()); 
     n.boost( -boost);
   }
   else {

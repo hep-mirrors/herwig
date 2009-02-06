@@ -168,7 +168,7 @@ void BallZwickyVectorFormFactor::doinit() throw(InitException) {
 //     output << "set limits x 0 14. y 0 1" << endl;
 //     double rt(sqrt(2.));
 //     for(iz=0;iz<4;++iz) {
-//       q2=0.*GeV2;
+//       q2=ZERO;
 //       for( ;q2<14.*GeV2+step;q2+=step) {
 // 	ScalarVectorFormFactor(q2,ix,id0,id1,m0,m1,A0,A1,A2,V);
 // 	if(id1==113||id1==223) {
@@ -201,7 +201,7 @@ void BallZwickyVectorFormFactor::doinit() throw(InitException) {
 // 	   << " penguin form factors\" " << endl;
 //     output << "set limits x 0 14. y 0 1" << endl;
 //     for(iz=0;iz<3;++iz) {
-//       q2=0.*GeV2;
+//       q2=ZERO;
 //       for( ;q2<14.*GeV2+step;q2+=step) {
 // 	ScalarVectorSigmaFormFactor(q2,ix,id0,id1,m0,m1,A0,A1,A2);
 // 	if(id1==113||id1==223) {
@@ -434,7 +434,7 @@ void BallZwickyVectorFormFactor::Init() {
     ("CutOff",
      "Parameter controlling the value of q^2 where we switch from the fit "
      "to a small q^2 expansion for numerical stability.",
-     &BallZwickyVectorFormFactor::_cutoff, GeV2, 2.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &BallZwickyVectorFormFactor::_cutoff, GeV2, 2.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
 
 }
@@ -447,28 +447,28 @@ void BallZwickyVectorFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int 
 							Complex & A2,Complex & V) const {
   // the form-factors
   // A_0
-  if(_A0mR2[mode]<0*GeV2) {
+  if(_A0mR2[mode]<ZERO) {
     A0 = (_A0r1[mode]+_A0r2[mode]/(1.-q2/_A0mfit2[mode]))/(1.-q2/_A0mfit2[mode]);
   }
   else {
     A0 = _A0r1[mode]/(1.-q2/_A0mR2[mode])+_A0r2[mode]/(1.-q2/_A0mfit2[mode]);
   }
   // A_1
-  if(_A1mR2[mode]<0*GeV2) {
+  if(_A1mR2[mode]<ZERO) {
     A1 = (_A1r1[mode]+_A1r2[mode]/(1.-q2/_A1mfit2[mode]))/(1.-q2/_A1mfit2[mode]);
   }
   else {
     A1 = _A1r1[mode]/(1.-q2/_A1mR2[mode])+_A1r2[mode]/(1.-q2/_A1mfit2[mode]);
   }
   // A_2
-  if(_A2mR2[mode]<0*GeV2) {
+  if(_A2mR2[mode]<ZERO) {
     A2 = (_A2r1[mode]+_A2r2[mode]/(1.-q2/_A2mfit2[mode]))/(1.-q2/_A2mfit2[mode]);
   }
   else {
     A2 = _A2r1[mode]/(1.-q2/_A2mR2[mode])+_A2r2[mode]/(1.-q2/_A2mfit2[mode]);
   }
   // V
-  if(_VmR2[mode]<0*GeV2) {
+  if(_VmR2[mode]<ZERO) {
     V = (_Vr1[mode]+_Vr2[mode]/(1.-q2/_Vmfit2[mode]))/(1.-q2/_Vmfit2[mode]);
   }
   else {
@@ -482,14 +482,14 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
 							     Complex & T1,Complex & T2,
 							     Complex & T3) const {
   // T_1
-  if(_T1mR2[mode]<0*GeV2) {
+  if(_T1mR2[mode]<ZERO) {
     T1 = (_T1r1[mode]+_T1r2[mode]/(1.-q2/_T1mfit2[mode]))/(1.-q2/_T1mfit2[mode]);
   }
   else {
     T1 = _T1r1[mode]/(1.-q2/_T1mR2[mode])+_T1r2[mode]/(1.-q2/_T1mfit2[mode]);
   }
   // T_2
-  if(_T2mR2[mode]<0*GeV2) {
+  if(_T2mR2[mode]<ZERO) {
     T2 = (_T2r1[mode]+_T2r2[mode]/(1.-q2/_T2mfit2[mode]))/(1.-q2/_T2mfit2[mode]);
   }
   else {
@@ -497,7 +497,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
   }
   // T_3
   if(q2>_cutoff) {
-    if(_T3mR2[mode]<0*GeV2) {
+    if(_T3mR2[mode]<ZERO) {
       T3 = (_T3r1[mode]+_T3r2[mode]/(1.-q2/_T3mfit2[mode]))/(1.-q2/_T3mfit2[mode]);
     }
     else {
@@ -508,7 +508,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
   }
   else {
     InvEnergy2 smallT2,smallT3;
-    if(_T2mR2[mode]<0*GeV2) {
+    if(_T2mR2[mode]<ZERO) {
       double a(q2/_T2mfit2[mode]);
       smallT2=1./_T2mfit2[mode]*
 	(_T2r1[mode]+2.*_T2r2[mode]+a*(_T2r1[mode]+3.*_T2r2[mode]+
@@ -522,7 +522,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
 	+q2*q2*(+_T2r1[mode]/_T2mR2[mode]/_T2mR2[mode]/_T2mR2[mode]
 		+_T2r2[mode]/_T2mfit2[mode]/_T2mfit2[mode]/_T2mfit2[mode]);
     }
-    if(_T3mR2[mode]<0*GeV2) {
+    if(_T3mR2[mode]<ZERO) {
       double a(q2/_T3mfit2[mode]);
       smallT3=1./_T3mfit2[mode]*
 	(_T3r1[mode]+2.*_T3r2[mode]+a*(_T3r1[mode]+3.*_T3r2[mode]+

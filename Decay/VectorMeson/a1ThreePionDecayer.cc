@@ -28,7 +28,7 @@ using namespace ThePEG::Helicity;
 
 a1ThreePionDecayer::a1ThreePionDecayer() 
   : _rhomass(1,0.7761*GeV), _rhowidth(1,0.1445*GeV), _sigmamass(0.8*GeV),
-    _sigmawidth(0.8*GeV), _psigma(0.*GeV), _mpi(0.*GeV), _mpi2(0.*GeV2),
+    _sigmawidth(0.8*GeV), _psigma(ZERO), _mpi(ZERO), _mpi2(ZERO),
     _lambda2(1.2*GeV2), _a1mass2(1.23*1.23*GeV2),
     _zsigma(0.), _zmag(1.3998721), _zphase(0.43585036),
     _rhomag(1,1.), _rhophase(1,0.), _coupling(90.44), 
@@ -367,13 +367,13 @@ void a1ThreePionDecayer::Init() {
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1ThreePionDecayer::_rhomass,
-     GeV, 0, 0*GeV, 0*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO, 10000*GeV, false, false, true);
 
   static ParVector<a1ThreePionDecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1ThreePionDecayer::_rhowidth,
-     GeV, 0, 0*GeV, 0*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO, 10000*GeV, false, false, true);
 
   static ParVector<a1ThreePionDecayer,double> interfaceRhoMagnitude
     ("RhoMagnitude",
@@ -402,13 +402,13 @@ void a1ThreePionDecayer::Init() {
   static Parameter<a1ThreePionDecayer,Energy> interfaceSigmaMass
     ("SigmaMass",
      "The local value of the sigma mass",
-     &a1ThreePionDecayer::_sigmamass, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionDecayer::_sigmamass, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionDecayer,Energy> interfaceSigmaWidth
     ("SigmaWidth",
      "The local value of the sigma width",
-     &a1ThreePionDecayer::_sigmawidth, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionDecayer::_sigmawidth, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<a1ThreePionDecayer,double> interfacezerowgts

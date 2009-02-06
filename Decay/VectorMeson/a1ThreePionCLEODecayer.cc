@@ -29,11 +29,11 @@ using Constants::pi;
  
 a1ThreePionCLEODecayer::a1ThreePionCLEODecayer() 
   : _rhomass(2), _rhowidth(2), _f2mass(1.275*GeV), _f2width(0.185*GeV), 
-    _pf2cc(0.*MeV), _pf200(0.*MeV), _f0mass(1.186*GeV), _f0width(0.350*GeV),
-    _pf0cc(0.*MeV), _pf000(0.*MeV), _sigmamass(0.860*GeV), _sigmawidth(0.880*GeV), 
-    _psigmacc(0.*MeV), _psigma00(0.*MeV), _mpi0(0.*MeV), _mpic(0.*MeV),
+    _pf2cc(ZERO), _pf200(ZERO), _f0mass(1.186*GeV), _f0width(0.350*GeV),
+    _pf0cc(ZERO), _pf000(ZERO), _sigmamass(0.860*GeV), _sigmawidth(0.880*GeV), 
+    _psigmacc(ZERO), _psigma00(ZERO), _mpi0(ZERO), _mpic(ZERO),
     _coupling(45.57/GeV), _rhomagP(2), _rhophaseP(2), _rhomagD(2),
-    _rhophaseD(2), _f2mag(0.71/GeV2), _f2phase(0.56*pi), _f2coup(0./MeV2,0./MeV2),
+    _rhophaseD(2), _f2mag(0.71/GeV2), _f2phase(0.56*pi), _f2coup(ZERO,ZERO),
     _f0mag(0.77), _f0phase(-0.54*pi), _f0coup(0.,0.), _sigmamag(2.10),
     _sigmaphase(0.23*pi), _sigmacoup(0.,0.), _localparameters(true),
     _zerowgts(9), _onewgts(9), _twowgts(9), _threewgts(12), _zeromax(13.0704),
@@ -443,48 +443,48 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1ThreePionCLEODecayer::_rhomass,
-     GeV, 0, 0*GeV, -10000*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, -10000*GeV, 10000*GeV, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1ThreePionCLEODecayer::_rhowidth,
-     GeV, 0, 0*GeV, -10000*GeV, 10000*GeV, false, false, true);
+     GeV, 0, ZERO, -10000*GeV, 10000*GeV, false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_2Mass
     ("f_2Mass",
      "The mass of the f_2 meson",
-     &a1ThreePionCLEODecayer::_f2mass, GeV, 1.275*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionCLEODecayer::_f2mass, GeV, 1.275*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_2Width
     ("f_2Width",
      "The width of the f_2 meson",
-     &a1ThreePionCLEODecayer::_f2width, GeV, 0.185*GeV, 0.0*GeV, 1.0*GeV,
+     &a1ThreePionCLEODecayer::_f2width, GeV, 0.185*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_0Mass
     ("f_0Mass",
      "The mass of the f_0 meson",
-     &a1ThreePionCLEODecayer::_f0mass, GeV, 1.186*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionCLEODecayer::_f0mass, GeV, 1.186*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_0Width
     ("f_0Width",
      "The width of the f_0 meson",
-     &a1ThreePionCLEODecayer::_f0width, GeV, 0.350*GeV, 0.0*GeV, 1.0*GeV,
+     &a1ThreePionCLEODecayer::_f0width, GeV, 0.350*GeV, ZERO, 1.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacesigmaMass
     ("sigmaMass",
      "The mass of the sigma meson",
-     &a1ThreePionCLEODecayer::_sigmamass, GeV, 0.860*GeV, 0.0*GeV, 10.0*GeV,
+     &a1ThreePionCLEODecayer::_sigmamass, GeV, 0.860*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,Energy> interfacesigmaWidth
     ("sigmaWidth",
      "The width of the sigma meson",
-     &a1ThreePionCLEODecayer::_sigmawidth, GeV, 0.880*GeV, 0.0*GeV, 2.0*GeV,
+     &a1ThreePionCLEODecayer::_sigmawidth, GeV, 0.880*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,InvEnergy> interfaceCoupling
@@ -509,7 +509,7 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoDWaveMagnitude",
      "The magnitude of the couplings for the d-wave rho currents",
      &a1ThreePionCLEODecayer::_rhomagD,
-     1/MeV2, 0, 0/MeV2, 0/MeV2, 10000/MeV2, false, false, true);
+     1/MeV2, 0, ZERO, ZERO, 10000/MeV2, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,double> interfacerhophaseD
     ("RhoDWavePhase",
@@ -544,7 +544,7 @@ void a1ThreePionCLEODecayer::Init() {
   static Parameter<a1ThreePionCLEODecayer,InvEnergy2> interfacef2Magnitude
     ("f2Magnitude",
      "The magnitude of the f_2 tensor current",
-     &a1ThreePionCLEODecayer::_f2mag, 1./GeV2, 0.71/GeV2, 0./GeV2, 10./GeV2,
+     &a1ThreePionCLEODecayer::_f2mag, 1./GeV2, 0.71/GeV2, ZERO, 10./GeV2,
      false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacesigmaMagnitude

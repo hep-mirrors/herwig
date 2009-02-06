@@ -445,13 +445,13 @@ void StrongHeavyBaryonDecayer::Init() {
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegSigma_cLambda_cPi
     ("gSigma_cLambda_cPi",
      "The coupling of the Sigma_c to Lambda_c pi",
-     &StrongHeavyBaryonDecayer::_gsigma_clambda_cpi, 1./GeV, 8.8/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gsigma_clambda_cpi, 1./GeV, 8.8/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegXiStar_cXi_cPi
     ("gXiStar_cXi_cPi",
      "The coupling of the Xi*_c to Xi_c pi",
-     &StrongHeavyBaryonDecayer::_gxistar_cxi_cpi, 1./GeV, 8.34/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gxistar_cxi_cpi, 1./GeV, 8.34/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,double> interfacefLambda_c1Sigma_cPi
@@ -470,26 +470,26 @@ void StrongHeavyBaryonDecayer::Init() {
     ("fLambda_c1*Sigma_cPi",
      "The coupling of Lambda_c1* to Sigma_c and pi",
      &StrongHeavyBaryonDecayer::_flambda_c1starsigma_cpi, 1./GeV2, 21.5/GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegSigma_bLambda_bPi
     ("gSigma_bLambda_bPi",
      "The coupling of the Sigma_b to Lambda_b pi",
-     &StrongHeavyBaryonDecayer::_gsigma_blambda_bpi, 1./GeV, 8.8/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gsigma_blambda_bpi, 1./GeV, 8.8/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy2> interfacefXi_c1starXi_cPi
     ("fXi_c1*Xi_cPi",
      "The coupling of Xi_c1* to Xi_c and pi",
      &StrongHeavyBaryonDecayer::_fxi_c1starxi_cpi, 1./GeV2, 20./GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegXiStar_bXi_bPi
     ("gXiStar_bXi_bPi",
      "The coupling of the Xi*_b to Xi_b pi",
-     &StrongHeavyBaryonDecayer::_gxistar_bxi_bpi, 1./GeV, 8.34/GeV, 0.0/GeV, 20.0/GeV,
+     &StrongHeavyBaryonDecayer::_gxistar_bxi_bpi, 1./GeV, 8.34/GeV, ZERO, 20.0/GeV,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,double> interfacefLambda_b1Sigma_bPi
@@ -508,14 +508,14 @@ void StrongHeavyBaryonDecayer::Init() {
     ("fLambda_b1*Sigma_bPi",
      "The coupling of Lambda_b1* to Sigma_b and pi",
      &StrongHeavyBaryonDecayer::_flambda_b1starsigma_bpi, 1./GeV2, 21.5/GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy2> interfacefXi_b1starXi_bPi
     ("fXi_b1*Xi_bPi",
      "The coupling of Xi_b1* to Xi_b and pi",
      &StrongHeavyBaryonDecayer::_fxi_b1starxi_bpi, 1./GeV2, 20./GeV2,
-     0.0/GeV2, 100.0/GeV2,
+     ZERO, 100.0/GeV2,
      false, false, true);
 
   static ParVector<StrongHeavyBaryonDecayer,int> interfaceIncoming

@@ -109,7 +109,7 @@ double SFFDecayer::me2(const int , const Particle & inpart,
 
 Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
 				     inpart.first, 3);

@@ -149,22 +149,22 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
   Energy e = sqrt(sHat())/2.0;
   // generate the mass of the higgs boson
   Energy2 mhmax2 = sHat()-4.*ptmin*e;
-  Energy2 mhmin2 =0.*GeV2;
+  Energy2 mhmin2 =ZERO;
   if(mhmax2<=mhmin2) return false;
   double rhomin = atan((mhmin2-sqr(_mh))/_mh/_wh);
   double rhomax = atan((mhmax2-sqr(_mh))/_mh/_wh);
   Energy mh = sqrt(_mh*_wh*tan(rhomin+r[1]*(rhomax-rhomin))+sqr(_mh));
   // assign masses
   if(mePartonData()[2]->id()!=ParticleID::h0) {
-    meMomenta()[2].setMass(0.*GeV);
+    meMomenta()[2].setMass(ZERO);
     meMomenta()[3].setMass(mh);
   }
   else {
-    meMomenta()[3].setMass(0.*GeV);
+    meMomenta()[3].setMass(ZERO);
     meMomenta()[2].setMass(mh);
   }
 
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
@@ -182,17 +182,17 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
   Energy2 pq   = 2.0*e*q;
   double ctmin = -1.0,ctmax = 1.0;
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-  if ( ptmin > 0.0*GeV ) {
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -654,17 +654,17 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    // compute the dot products for the matrix element
    complex<InvEnergy> eps[3][4][2];
    Energy2 pdot[4][4];
-   pdot[0][0]=0.*GeV2;
+   pdot[0][0]=ZERO;
    pdot[0][1]= g1[0].getMomentum()*g2[0].getMomentum();
    pdot[0][2]=-1.*g1[0].getMomentum()*g4[0].getMomentum();
    pdot[0][3]=-1.*g1[0].getMomentum()*hout.getMomentum();
    pdot[1][0]= pdot[0][1];
-   pdot[1][1]= 0.*GeV2;
+   pdot[1][1]= ZERO;
    pdot[1][2]=-1.*g2[0].getMomentum()*g4[0].getMomentum();
    pdot[1][3]=-1.*g2[0].getMomentum()*hout.getMomentum();
    pdot[2][0]= pdot[0][2];
    pdot[2][1]= pdot[1][2];
-   pdot[2][2]= 0.*GeV2;
+   pdot[2][2]= ZERO;
    pdot[2][3]= g4[0].getMomentum()*hout.getMomentum();
    pdot[3][0]=pdot[0][3];
    pdot[3][1]=pdot[1][3];

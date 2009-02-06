@@ -66,7 +66,7 @@ ThreeMesonCurrentBase::current(const int imode, const int ichan,
     return vector<LorentzPolarizationVectorE>(1,LorentzPolarizationVectorE());
   }
   // calculate q2,s1,s2,s3
-  Lorentz5Momentum q=0*MeV;
+  Lorentz5Momentum q;
   for(unsigned int ix=0;ix<decay.size();++ix){q+=decay[ix]->momentum();}
   q.rescaleMass();
   scale=q.mass();
@@ -85,7 +85,7 @@ ThreeMesonCurrentBase::current(const int imode, const int ichan,
   complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
   vect += (F.F4-dot)*q;
-  if(F.F5!=0./MeV/MeV2) 
+  if(F.F5!=InvEnergy3()) 
     vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
 							       decay[1]->momentum(),
 							       decay[2]->momentum());

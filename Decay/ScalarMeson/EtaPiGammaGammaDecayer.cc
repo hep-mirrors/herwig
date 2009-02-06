@@ -34,7 +34,7 @@ void EtaPiGammaGammaDecayer::doinitrun() {
 
 EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   : _grhoomega(12.924/GeV), _fpi(130.7*MeV),_rhomass(771.1*MeV),
-    _rhowidth(149.2*MeV),_grho(_rhomass/_fpi),_mpi(0.*MeV),_rhoconst(0.),
+    _rhowidth(149.2*MeV),_grho(_rhomass/_fpi),_mpi(ZERO),_rhoconst(0.),
     _localparameters(true),_ratiofpif8(1./1.3),_ratiofpif0(1./1.04),
     _theta(-Constants::pi/9.),_etamax(2.36858),_etapmax(0.006),
     _dconst(2), _econst(2) {
@@ -146,13 +146,13 @@ void EtaPiGammaGammaDecayer::Init() {
   static Parameter<EtaPiGammaGammaDecayer,InvEnergy> interfacegrhoomega
     ("grhoomega",
      "The couping of the rho, omega and a pion",
-     &EtaPiGammaGammaDecayer::_grhoomega, 1./GeV, 12.924/GeV, 0.0/GeV, 100./GeV,
+     &EtaPiGammaGammaDecayer::_grhoomega, 1./GeV, 12.924/GeV, ZERO, 100./GeV,
      false, false, true);
 
   static Parameter<EtaPiGammaGammaDecayer,Energy> interfaceFpi
     ("Fpi",
      "The pion decay constant",
-     &EtaPiGammaGammaDecayer::_fpi, MeV, 130.7*MeV, 0.0*MeV, 200.0*MeV,
+     &EtaPiGammaGammaDecayer::_fpi, MeV, 130.7*MeV, ZERO, 200.0*MeV,
      false, false, true);
 
   static Parameter<EtaPiGammaGammaDecayer,double> interfacegrho
@@ -247,10 +247,10 @@ double EtaPiGammaGammaDecayer::me2(const int,const Particle & inpart,
   complex<Energy> e1dotq2[3],e1dotp[3],e2dotq1[3],e2dotp[3];
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix==1) {
-      e1dotq2[ix]=0.*MeV;
-      e1dotp[ix] =0.*MeV;
-      e2dotq1[ix]=0.*MeV;
-      e2dotp[ix] =0.*MeV;
+      e1dotq2[ix]=ZERO;
+      e1dotp[ix] =ZERO;
+      e2dotq1[ix]=ZERO;
+      e2dotp[ix] =ZERO;
     }
     else {
       e1dotq2[ix] =_vectors[0][ix]*decay[2]->momentum();
@@ -347,7 +347,7 @@ EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<double> inpow(2,0.0);
   return new_ptr(ThreeBodyAllOnCalculator<EtaPiGammaGammaDecayer>
 		 (inweights,intype,inmass,inwidth,inpow,*this,
-		  imode,_mpi,0.*MeV,0.*MeV));
+		  imode,_mpi,ZERO,ZERO));
 }
 
 void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output, 

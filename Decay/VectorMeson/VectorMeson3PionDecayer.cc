@@ -54,7 +54,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
     _rho2coupling(2), _rho2phase(2), _rho3coupling(2), _rho3phase(2),
     _maxwgt(2), _rho1wgt(2), _rho2wgt(2), _rho3wgt(2), _rho1mass(2),
     _rho2mass(2), _rho3mass(2), _rho1width(2), _rho2width(2), 
-    _rho3width(2), _defaultmass(2), _mpic(0.*MeV), _mpi0(0.*MeV) {
+    _rho3width(2), _defaultmass(2), _mpic(ZERO), _mpi0(ZERO) {
   // matrix element storage
   ME(DecayMatrixElement(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0));
   // omega decay
@@ -364,37 +364,37 @@ void VectorMeson3PionDecayer::Init() {
     ("Rho1Mass",
      "The mass of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_rho1mass,
-     GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
+     GeV, -1, 0.77*GeV, ZERO, 5.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho2Mass
     ("Rho2Mass",
      "The mass of the second rho multiplet",
      &VectorMeson3PionDecayer::_rho2mass,
-     GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
+     GeV, -1, 0.77*GeV, ZERO, 5.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho3Mass
     ("Rho3Mass",
      "The mass of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3mass,
-     GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
+     GeV, -1, 0.77*GeV, ZERO, 5.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho1Width
     ("Rho1Width",
      "The width of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_rho1width,
-     GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
+     GeV, -1, 0.15*GeV, ZERO, 1.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho2Width
     ("Rho2Width",
      "The width of the second rho multiplet",
      &VectorMeson3PionDecayer::_rho2width,
-     GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
+     GeV, -1, 0.15*GeV, ZERO, 1.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho3Width
     ("Rho3Width",
      "The width of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3width,
-     GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
+     GeV, -1, 0.15*GeV, ZERO, 1.*GeV, false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,bool> interfaceDefaultParam
     ("DefaultParameters",
@@ -424,7 +424,7 @@ double VectorMeson3PionDecayer::me2(const int ichan,
   }
   // compute the matrix element
   // work out the prefactor
-  complex<InvEnergy2> pre(0./MeV2);
+  complex<InvEnergy2> pre(ZERO);
   Complex resfact,ii(0.,1.);
   if(ichan<0){pre=_ccoupling[imode()][3];}
   Energy pcm;
@@ -501,13 +501,13 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
   p2.setE(0.5*(q2+mpi2c-s2)/q); ee2=p2.e()*p2.e(); pp2=sqrt(ee2-mpi2c);
   p3.setE(0.5*(q2+mpi2c-s3)/q); ee3=p3.e()*p3.e(); pp3=sqrt(ee3-mpi2c);
   // take momentum of 1 parallel to z axis
-  p1.setX(0.*MeV);p1.setY(0.*MeV);p1.setZ(pp1);
+  p1.setX(ZERO);p1.setY(ZERO);p1.setZ(pp1);
   // construct 2 
   double cos2(0.5*(ee1+ee2-ee3-mpi20)/pp1/pp2);
-  p2.setX(pp2*sqrt(1.-cos2*cos2)); p2.setY(0.*MeV); p2.setZ(-pp2*cos2);
+  p2.setX(pp2*sqrt(1.-cos2*cos2)); p2.setY(ZERO); p2.setZ(-pp2*cos2);
   // construct 3
   double cos3(0.5*(ee1-ee2+ee3-mpi20)/pp1/pp3);
-  p3.setX(-pp3*sqrt(1.-cos3*cos3)); p3.setY(0.*MeV); p3.setZ(-pp3*cos3); 
+  p3.setX(-pp3*sqrt(1.-cos3*cos3)); p3.setY(ZERO); p3.setZ(-pp3*cos3); 
   // compute the prefactor
   complex<InvEnergy2> pre(_ccoupling[imode][3]);
   Complex resfact,ii(0.,1.);

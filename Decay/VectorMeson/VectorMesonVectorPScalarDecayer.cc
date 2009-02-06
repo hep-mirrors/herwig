@@ -333,7 +333,7 @@ void VectorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &VectorMesonVectorPScalarDecayer::_coupling,
-     1/MeV, 0, 0/MeV, -10000000/MeV, 10000000/MeV, false, false, true);
+     1/MeV, 0, ZERO, -10000000/MeV, 10000000/MeV, false, false, true);
 
   static ParVector<VectorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",

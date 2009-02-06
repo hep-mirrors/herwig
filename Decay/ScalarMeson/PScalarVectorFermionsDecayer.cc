@@ -193,7 +193,7 @@ void PScalarVectorFermionsDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PScalarVectorFermionsDecayer::_coupling,
-     1/MeV, 0, 0/MeV, -10000000/MeV, 10000000/MeV, false, false, true);
+     1/MeV, 0, ZERO, -10000000/MeV, 10000000/MeV, false, false, true);
 
   static ParVector<PScalarVectorFermionsDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -220,13 +220,13 @@ void PScalarVectorFermionsDecayer::Init() {
     ("VMDmass",
      "The mass to use for the particle in the VMD factor",
      &PScalarVectorFermionsDecayer::_VMDmass,
-     MeV, 0, 0*MeV, 0.*MeV, 10000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000.*MeV, false, false, true);
 
   static ParVector<PScalarVectorFermionsDecayer,Energy> interfaceVMDwidth
     ("VMDwidth",
      "The width to use for the particle in the VMD factor",
      &PScalarVectorFermionsDecayer::_VMDwidth,
-     MeV, 0, 0*MeV, 0.*MeV, 10000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000.*MeV, false, false, true);
 
 }
 

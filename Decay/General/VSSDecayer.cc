@@ -87,7 +87,7 @@ double VSSDecayer::me2(const int , const Particle & inpart,
 
 Energy VSSDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first, outa.first,
 				     outb.first);

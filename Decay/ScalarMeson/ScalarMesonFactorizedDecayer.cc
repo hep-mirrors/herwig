@@ -90,7 +90,7 @@ void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	  // get the particles from the current
 	  _current[icurr]->decayModeInfo(iy,iq,ia);
 	  ptemp=_current[icurr]->particles(Wcharge,iy,iq,ia);
-	  minb=0.*MeV;
+	  minb=ZERO;
 	  for(iz=0;iz<ptemp.size();++iz) {
 	    extpart.push_back(ptemp[iz]);
 	    minb+=ptemp[iz]->massMin();
@@ -111,7 +111,7 @@ void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	    extpart.resize(2);
 	    // get the particles from the current
 	    ptemp=_current[icurr]->particles(Wcharge,iy,-ia,-iq);
-	    minb=0.*MeV;
+	    minb=ZERO;
 	    for(iz=0;iz<ptemp.size();++iz) {
 	      extpart.push_back(ptemp[iz]);
 	      minb+=ptemp[iz]->massMin();
@@ -443,7 +443,7 @@ void ScalarMesonFactorizedDecayer::Init() {
     ("GFermi",
      "The Fermi coupling constant",
      &ScalarMesonFactorizedDecayer::_GF, 
-     1./GeV2, 1.16639E-5/GeV2, 0./GeV2, 1.0e-4/GeV2,
+     1./GeV2, 1.16639E-5/GeV2, ZERO, 1.0e-4/GeV2,
      false, false, false);
 
   static Parameter<ScalarMesonFactorizedDecayer,double> interfacea1Bottom

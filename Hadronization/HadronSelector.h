@@ -82,7 +82,7 @@ public:
      * @param massin The mass of the hadron
      */
     HadronInfo(long idin=0, tPDPtr datain=tPDPtr(),
-	       double swtin=1., Energy massin=0.*MeV)
+	       double swtin=1., Energy massin=ZERO)
       : id(idin), ptrData(datain), swtef(swtin), wt(1.0), overallWeight(0.0),
 	mass(massin)
     {}
@@ -278,7 +278,7 @@ public:
   inline  Energy massLightestHadronPair(tcPDPtr ptr1, tcPDPtr ptr2,
 					tcPDPtr ptr3 = PDPtr ()) const  {
     pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(ptr1, ptr2, ptr3);
-    if ( ! pairData.first || ! pairData.second ) return Energy();
+    if ( ! pairData.first || ! pairData.second ) return ZERO;
     return ( pairData.first->mass() + pairData.second->mass() ); 
   }
 

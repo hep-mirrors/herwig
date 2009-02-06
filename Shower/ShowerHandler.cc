@@ -594,7 +594,7 @@ PPtr ShowerHandler::findFirstParton(tPPtr seed) const{
 
 bool ShowerHandler::decayProduct(tPPtr particle) const {
   // must be time-like and not incoming
-  if(particle->momentum().m2()<=0.0*GeV2||
+  if(particle->momentum().m2()<=ZERO||
      particle == currentSubProcess()->incoming().first||
      particle == currentSubProcess()->incoming().second) return false;
   // if non-coloured this is enough

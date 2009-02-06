@@ -82,12 +82,12 @@ double MEvv2vv::me2() const {
     vd[2*i] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 2*i, 
 				 outgoing);
   }
-  bool mc  = !(mePartonData()[2]->mass() > 0.*MeV);
+  bool mc  = !(mePartonData()[2]->mass() > ZERO);
   //massive vector, also 1
   if( !mc )
     vc[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 1, 
 			       outgoing);
-  bool md  = !(mePartonData()[3]->mass() > 0.*MeV);
+  bool md  = !(mePartonData()[3]->mass() > ZERO);
   if( !md ) 
     vd[1] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 1, 
 			       outgoing);
@@ -316,8 +316,8 @@ void MEvv2vv::constructVertex(tSubProPtr sub) {
   //function to calculate me2 expects massless incoming vectors
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
-  bool mc  = !(ext[2]->data().mass() > 0.*MeV);
-  bool md  = !(ext[3]->data().mass() > 0.*MeV);
+  bool mc  = !(ext[2]->data().mass() > ZERO);
+  bool md  = !(ext[3]->data().mass() > ZERO);
   VectorWaveFunction(v3, ext[2], outgoing, true, mc);
   VectorWaveFunction(v4, ext[3], outgoing, true, md);
     

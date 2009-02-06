@@ -32,7 +32,7 @@ extern "C" int isnan(double) throw();
 extern "C" int isinf(double) throw();
 
 BasicConsistency::BasicConsistency() 
-  : _epsmom(0.0*MeV),_checkquark(true), _checkcharge(true),
+  : _epsmom(ZERO),_checkquark(true), _checkcharge(true),
     _checkcluster(true), _checkBR(true)
 {}
 

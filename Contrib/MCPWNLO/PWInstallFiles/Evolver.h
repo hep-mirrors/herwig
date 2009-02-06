@@ -53,7 +53,7 @@ public:
    */
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),_PHtopveto(0),
-	      _iptrms(0.*GeV), _beta(0.), _gamma(0.*GeV), _iptmax(),
+	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.) {}
 
   /**
@@ -226,7 +226,7 @@ protected:
    * Any intrinsic pT?
    */
   bool ipTon() const {
-    return _iptrms != 0.0*MeV || ( _beta == 1.0 && _gamma != 0.0*MeV && _iptmax !=0.0*MeV );
+    return _iptrms != ZERO || ( _beta == 1.0 && _gamma != ZERO && _iptmax !=ZERO );
   }
    //@}  
 

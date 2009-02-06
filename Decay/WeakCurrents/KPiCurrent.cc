@@ -27,7 +27,7 @@ using ThePEG::Helicity::ScalarWaveFunction;
 
 KPiCurrent::KPiCurrent() :
   _localparameters(true),_transverse(false), _cV(1.),_cS(0.2),
-  _mpi(0.*MeV), _mK(0.*MeV) {
+  _mpi(ZERO), _mK(ZERO) {
   // set up for the modes in the base class
   addDecayMode(2,-3);
   addDecayMode(2,-3);
@@ -238,25 +238,25 @@ void KPiCurrent::Init() {
   static ParVector<KPiCurrent,Energy> interfaceVectorMass
     ("VectorMass",
      "Masses of the vector resonances",
-     &KPiCurrent::_vecmass, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_vecmass, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KPiCurrent,Energy> interfaceVectorWidth
     ("VectorWidth",
      "Widths of the vector resonances",
-     &KPiCurrent::_vecwidth, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_vecwidth, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KPiCurrent,Energy> interfaceScalarMass
     ("ScalarMass",
      "Masses of the scalar resonances",
-     &KPiCurrent::_scamass, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_scamass, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KPiCurrent,Energy> interfaceScalarWidth
     ("ScalarWidth",
      "Widths of the scalar resonances",
-     &KPiCurrent::_scawidth, MeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KPiCurrent::_scawidth, MeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 }
 
@@ -419,7 +419,7 @@ KPiCurrent::current(const int imode, const int ichan, Energy & scale,
   Energy2 dot(psum*pdiff);
   // contribution of the vector resonances
   Complex vnorm(0.),gterm(0.),sterm(0.),snorm(0.);
-  complex<InvEnergy2> qterm(0./MeV2);
+  complex<InvEnergy2> qterm(ZERO);
   for(unsigned int ix=0;ix<_vecwgt.size();++ix) {
     vnorm += _vecwgt[ix];
     if(ichan<0||_resmap[ix]==ichan) {

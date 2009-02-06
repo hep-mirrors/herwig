@@ -418,73 +418,73 @@ void DtoKPiPiE691::Init() {
   static Parameter<DtoKPiPiE691,Energy> interfaceK8920Mass
     ("K8920Mass",
      "The mass of the K*(892)0",
-     &DtoKPiPiE691::_mK8920, GeV, 0.8961 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK8920, GeV, 0.8961 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK8920Width
     ("K8920Width",
      "The width of the K*(892)0",
-     &DtoKPiPiE691::_wK8920, GeV, 0.0505*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK8920, GeV, 0.0505*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK892MinusMass
     ("K892MinusMass",
      "The mass of the K*(892)-",
-     &DtoKPiPiE691::_mK892m, GeV, 0.89159*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK892m, GeV, 0.89159*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK892MinusWidth
     ("K892MinusWidth",
      "The width of the K*(892)-",
-     &DtoKPiPiE691::_wK892m, GeV, 0.0498*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK892m, GeV, 0.0498*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1680Mass
     ("K1680Mass",
      "The mass of the K*(1680)",
-     &DtoKPiPiE691::_mK1680, GeV, 1.714  *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK1680, GeV, 1.714  *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1680Width
     ("K1680Width",
      "The width of the K*(1680)",
-     &DtoKPiPiE691::_wK1680, GeV, 0.323 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK1680, GeV, 0.323 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1430Mass
     ("K1430Mass",
      "The mass of the K*(1430)",
-     &DtoKPiPiE691::_mK1430, GeV, 1.429  *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mK1430, GeV, 1.429  *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceK1430Width
     ("K1430Width",
      "The width of the K*(1430)",
-     &DtoKPiPiE691::_wK1430, GeV, 0.287 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wK1430, GeV, 0.287 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRho0Mass
     ("Rho0Mass",
      "The mass of the rho0",
-     &DtoKPiPiE691::_mrho0, GeV, 0.7681 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mrho0, GeV, 0.7681 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRho0Width
     ("Rho0Width",
      "The width of the rho0",
-     &DtoKPiPiE691::_wrho0, GeV, 0.1515*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wrho0, GeV, 0.1515*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRhoPlusMass
     ("RhoPlusMass",
      "The mass of the rho+",
-     &DtoKPiPiE691::_mrhop, GeV, 0.7681 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_mrhop, GeV, 0.7681 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE691,Energy> interfaceRhoPlusWidth
     ("RhoPlusWidth",
      "The width of the rho+",
-     &DtoKPiPiE691::_wrhop, GeV, 0.1515*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiE691::_wrhop, GeV, 0.1515*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiE691,double> interfaceMaximumWeights

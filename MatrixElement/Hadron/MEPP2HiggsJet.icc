@@ -15,7 +15,7 @@ namespace Herwig {
 
 inline MEPP2HiggsJet::MEPP2HiggsJet() :  
   _shapeopt(2),_maxflavour(5), _process(0),
-  _minloop(6),_maxloop(6),_massopt(0) , _mh(0.*GeV),_wh(0.*GeV)
+  _minloop(6),_maxloop(6),_massopt(0) , _mh(ZERO),_wh(ZERO)
 {}
 
 inline IBPtr MEPP2HiggsJet::clone() const {
@@ -28,7 +28,7 @@ inline IBPtr MEPP2HiggsJet::fullclone() const {
 
 inline Complex MEPP2HiggsJet::W1(Energy2 s,Energy2 mf2) const {
   double root = sqrt(abs(1.-4.*mf2/s));
-  if(s<0.*GeV2)     return 2.*root*asinh(0.5*sqrt(-s/mf2));
+  if(s<ZERO)     return 2.*root*asinh(0.5*sqrt(-s/mf2));
   else if(s<4.*mf2) return 2.*root*asin(0.5*sqrt( s/mf2));
   else              return root*(2.*acosh(0.5*sqrt(s/mf2))
 				 -Constants::pi*Complex(0.,1.));
@@ -36,7 +36,7 @@ inline Complex MEPP2HiggsJet::W1(Energy2 s,Energy2 mf2) const {
 
 inline Complex MEPP2HiggsJet::W2(Energy2 s,Energy2 mf2) const {
   double root=0.5*sqrt(abs(s)/mf2);
-  if(s<0.*GeV2)     return 4.*sqr(asinh(root));
+  if(s<ZERO)     return 4.*sqr(asinh(root));
   else if(s<4.*mf2) return -4.*sqr(asin(root));
   else              return 4.*sqr(acosh(root))-sqr(Constants::pi)
 		      -4.*Constants::pi*acosh(root)*Complex(0.,1.);
@@ -46,7 +46,7 @@ inline Complex MEPP2HiggsJet::I3(Energy2 s, Energy2 t, Energy2 u, Energy2 v,
 				 Energy2 mf2) const
 {
   double ratio=(4.*mf2*t/(u*s)),root(sqrt(1+ratio));
-  if(v==0.*GeV2) return 0.;
+  if(v==ZERO) return 0.;
   else {
     Complex y=0.5*(1.+sqrt(1.-4.*(mf2+_epsi*MeV*MeV)/v));
     Complex xp=0.5*(1.+root),xm=0.5*(1.-root);

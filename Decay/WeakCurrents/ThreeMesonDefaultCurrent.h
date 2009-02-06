@@ -128,7 +128,7 @@ public:
     Energy2 mpi2(sqr(_mpi));
     Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
     // the matrix element
-    Energy2 output(0.*MeV2); 
+    Energy2 output(ZERO); 
     // first resonance
     output += ((s1-4.*mpi2) + 0.25*(s3-s2)*(s3-s2)/q2) * real(propb*conj(propb)); 
     // second resonance

@@ -44,10 +44,10 @@ void MyEventShapes::Init() {
 }
 // void MyEventShapes::calcHemisphereMasses() {
 //   Lorentz5Momentum pos, neg;
-//   Energy pden(0.*MeV),epos(0.*MeV),eneg(0.*MeV);
+//   Energy pden(ZERO),epos(ZERO),eneg(ZERO);
 //   for(unsigned int ix=0;ix<_pv.size();++ix)
 //     {
-//       if(_pv[ix].vect() * thrustAxis() > 0.*MeV)
+//       if(_pv[ix].vect() * thrustAxis() > ZERO)
 // 	{
 // 	  pos  += _pv[ix];
 // 	  epos += _pv[ix].perp(thrustAxis()); 
@@ -179,7 +179,7 @@ void MyEventShapes::diagonalizeTensors(bool linear, bool cmboost) {
     }
     Momentum3 pvec = dum.vect();
     double pvec_MeV[3] = {pvec.x()/MeV, pvec.y()/MeV, pvec.z()/MeV};
-    if (pvec.mag() > 0*MeV) {
+    if (pvec.mag() > ZERO) {
       sumvec += pvec;
       if (linear) {
 	sum += pvec.mag()*UnitRemoval::InvE;
@@ -236,7 +236,7 @@ void MyEventShapes::calculateThrust() {
 
   // thrust
   vector<Momentum3> p;
-  Energy psum = 0.0*MeV;
+  Energy psum = ZERO;
   for(unsigned int l=0; l<_pv.size(); l++) 
     {
       p.push_back(_pv[l].vect());
@@ -300,7 +300,7 @@ void MyEventShapes::calculateThrust() {
   // minor
   if (_thrustAxis[0]*_thrustAxis[1] < 1e-10) 
     {
-      Energy eval = 0.*MeV;
+      Energy eval = ZERO;
       axis = _thrustAxis[0].cross(_thrustAxis[1]);
       _thrustAxis.push_back(axis); 
       for (unsigned int l=0; l<_pv.size(); l++) 
@@ -316,7 +316,7 @@ void MyEventShapes::calculateThrust() {
 
 void MyEventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
   Energy2 tval;
-  t = 0.0*MeV2;
+  t = ZERO;
   Vector3<Energy2> tv;
   Momentum3 ptot;
   vector<Momentum3> cpm;
@@ -326,7 +326,7 @@ void MyEventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
       ptot = Momentum3();
       for (unsigned int l=0; l<p.size(); l++) {
 	if (l!=j && l!=k) {
-	  if (p[l]*tv > 0.0*MeV*MeV2) { 
+	  if (p[l]*tv > ZERO) { 
 	    ptot += p[l];
 	  } else {
 	    ptot -= p[l];
@@ -352,7 +352,7 @@ void MyEventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
 
 void MyEventShapes::calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis) {
   Energy2 mval;
-  m = 0.0 * MeV2;
+  m = ZERO;
   Momentum3 tv, ptot;
   vector<Momentum3> cpm;
   for (unsigned int j=0; j < p.size(); j++) {
@@ -360,7 +360,7 @@ void MyEventShapes::calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis) {
     ptot = Momentum3();
     for (unsigned int l=0; l<p.size(); l++) {
       if (l!=j) {
-	if (p[l]*tv > 0.0*MeV2) { 
+	if (p[l]*tv > ZERO) { 
 	  ptot += p[l];
 	} else {
 	  ptot -= p[l];
@@ -385,7 +385,7 @@ void MyEventShapes::bookEEC(vector<double> & hi) {
   // hi is the histogram.  It is understood that hi.front() contains
   // the bin [-1 < cos(chi) < -1+delta] and hi.back() the bin [1-delta
   // < cos(chi) < 1].  Here, delta = 2/hi.size().
-  Energy Evis(0.*MeV);
+  Energy Evis(ZERO);
   for (unsigned int bin = 0; bin < hi.size(); bin++) {
     double delta = 2./hi.size();
     double coschi = -1+bin*delta;

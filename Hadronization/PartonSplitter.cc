@@ -114,7 +114,7 @@ void PartonSplitter::doinit() throw(InitException) {
     PDPtr quark = getParticleData(ix);
     Energy pcm = Kinematics::pstarTwoBodyDecay(mg,quark->constituentMass(),
 					       quark->constituentMass());
-    if(pcm>0.*GeV) _quarkSelector.insert(pcm/GeV,quark);
+    if(pcm>ZERO) _quarkSelector.insert(pcm/GeV,quark);
   }
   if(_quarkSelector.empty()) 
     throw InitException() << "At least one quark must have constituent mass less "

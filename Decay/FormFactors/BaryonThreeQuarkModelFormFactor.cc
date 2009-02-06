@@ -285,37 +285,37 @@ void BaryonThreeQuarkModelFormFactor::Init() {
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceLightMass
     ("LightMass",
      "The mass of the light quark",
-     &BaryonThreeQuarkModelFormFactor::_mlight, GeV, .42*GeV, 0.0*GeV, 2.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_mlight, GeV, .42*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceStrangeMass
     ("StrangeMass",
      "The mass of the strange quark",
-     &BaryonThreeQuarkModelFormFactor::_mstrange, GeV, .57*GeV, 0.0*GeV, 2.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_mstrange, GeV, .57*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceLambdaQ
     ("LambdaQ",
      "Heavy Baryon Size Parameter",
-     &BaryonThreeQuarkModelFormFactor::_LambdaQ, GeV, 2.5*GeV, 0.0*GeV, 10.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_LambdaQ, GeV, 2.5*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceLambdaqq
     ("Lambdaqq",
      "The size parameter for light quarks",
-     &BaryonThreeQuarkModelFormFactor::_Lambdaqq, GeV, 0.71*GeV, 0.0*GeV, 2.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_Lambdaqq, GeV, 0.71*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceLambdasq
     ("Lambdasq",
      "The size parameter for one strange quark",
-     &BaryonThreeQuarkModelFormFactor::_Lambdasq, GeV, 0.85*GeV, 0.0*GeV, 2.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_Lambdasq, GeV, 0.85*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceLambdass
     ("Lambdass",
      "The size parameter with two strange quarks.",
-     &BaryonThreeQuarkModelFormFactor::_Lambdass, GeV, 1.0*GeV, 0.0*GeV, 2.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_Lambdass, GeV, 1.0*GeV, ZERO, 2.0*GeV,
      false, false, true);
 
   static ParVector<BaryonThreeQuarkModelFormFactor,double> interfaceC0

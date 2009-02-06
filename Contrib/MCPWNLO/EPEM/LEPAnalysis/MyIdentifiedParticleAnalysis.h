@@ -77,7 +77,7 @@ protected:
  int getFlavour(const tPVector &);
 
  inline double getX(const Lorentz5Momentum & p, const Energy & Ebeam)
-  {return(Ebeam > 0*MeV ? double(p.vect().mag()/Ebeam) : -1.);}
+  {return(Ebeam > ZERO ? double(p.vect().mag()/Ebeam) : -1.);}
 
 protected:
 

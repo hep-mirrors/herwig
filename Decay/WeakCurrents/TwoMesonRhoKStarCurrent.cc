@@ -172,25 +172,25 @@ void TwoMesonRhoKStarCurrent::Init() {
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
      "The masses of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_rhomasses, MeV, -1, 775.8*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoMesonRhoKStarCurrent::_rhomasses, MeV, -1, 775.8*MeV, ZERO, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceRhoWidths
     ("RhoWidths",
      "The widths of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_rhowidths, MeV, -1, 150.3*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoMesonRhoKStarCurrent::_rhowidths, MeV, -1, 150.3*MeV, ZERO, 1000.*MeV,
      false, false, true);
   
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarMasses
     ("KstarMasses",
      "The masses of the different K* resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_kstarmasses, MeV, -1, 891.66*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoMesonRhoKStarCurrent::_kstarmasses, MeV, -1, 891.66*MeV, ZERO, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarWidths
     ("KstarWidths",
      "The widths of the different K* resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_kstarwidths, MeV, -1, 50.8*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoMesonRhoKStarCurrent::_kstarwidths, MeV, -1, 50.8*MeV, ZERO, 1000.*MeV,
      false, false, true);
   
   static Switch<TwoMesonRhoKStarCurrent,bool> interfaceRhoParameters
