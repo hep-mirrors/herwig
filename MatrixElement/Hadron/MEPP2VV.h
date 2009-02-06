@@ -243,6 +243,11 @@ private:
   int _maxflavour;
 
   /**
+   *  Processes
+   */
+  bool _mixingInWW;
+
+  /**
    *  The matrix element
    */
   ProductionMatrixElement _me;

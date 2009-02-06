@@ -25,7 +25,7 @@
 
 using namespace Herwig;
 
-MEPP2VV::MEPP2VV() : _process(0), _maxflavour(5) ,
+MEPP2VV::MEPP2VV() : _process(0), _maxflavour(5) , _mixingInWW(0),
     scaleopt_(1),   mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , 
     scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0) {
   massOption(true ,1);
@@ -90,6 +90,21 @@ void MEPP2VV::Init() {
      "The maximum flavour allowed for the incoming quarks",
      &MEPP2VV::_maxflavour, 5, 2, 5,
      false, false, Interface::limited);
+
+  static Switch<MEPP2VV,bool> interfaceFlavourMixingInWWProduction
+    ("FlavourMixingInWWProduction",
+     "Disable CKM mixing in WW production i.e. impose unitarity of the CKM matrix",
+     &MEPP2VV::_mixingInWW, 0, false, false);
+  static SwitchOption interfaceNoMixingInWW
+    (interfaceFlavourMixingInWWProduction,
+     "NoMixing",
+     "The CKM matrix is a unit matrix (equates to imposing unitarity of the CKM)",
+     0);
+  static SwitchOption interfaceMixingInWW
+    (interfaceFlavourMixingInWWProduction,
+     "Mixing",
+     "Allow the flvours of the intermediate and initial state quarks to differ",
+     1);
 
   static Switch<MEPP2VV,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
@@ -258,6 +273,7 @@ void MEPP2VV::getDiagrams() const {
       tcPDPtr w1 = ix%2==0 ? wPlus : wMinus;
       tcPDPtr w2 = ix%2!=0 ? wPlus : wMinus;
       for(int iy=1;iy<=_maxflavour;++iy) {
+	if(!_mixingInWW&&(ix!=iy)) continue;
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
