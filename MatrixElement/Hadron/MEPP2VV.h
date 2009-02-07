@@ -12,6 +12,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 
@@ -82,6 +83,11 @@ public:
    * Return the maximum number of incoming flavours.
    */
   virtual int maxflavour() const { return _maxflavour; }
+
+  /**
+   * Return the CKM matrix elements.
+   */
+  Complex CKM(int ix,int iy) const { return _ckm[ix][iy]; }
 
   /**
    * Add all possible diagrams with the add() function.
@@ -231,6 +237,11 @@ private:
    */ 
   AbstractVVVVertexPtr _vertexWWW;
   //@}
+
+  /**
+   * The ckm matrix elements (unsquared, to allow interference)
+   */
+  Complex _ckm[3][3];
 
   /**
    *  Processes

@@ -213,6 +213,17 @@ void MEPP2VV::doinit() throw(InitException) {
   _vertexFFP = hwsm->vertexFFP();
   _vertexWWW = hwsm->vertexWWW();
   _vertexFFW = hwsm->vertexFFW();
+
+  // get the ckm object
+  Ptr<StandardCKM>::pointer 
+      theCKM=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
+  if(!theCKM) throw InitException() << "MEPP2VVPowheg::doinit() "
+				    << "the CKM object must be the Herwig one"
+				    << Exception::runerror;
+  unsigned int ix,iy;
+  // get the CKM matrix (unsquared for interference)
+  vector< vector<Complex > > CKM(theCKM->getUnsquaredMatrix(SM().families()));
+  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){_ckm[ix][iy]=CKM[ix][iy];}}
 }
 
 double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
@@ -273,7 +284,6 @@ void MEPP2VV::getDiagrams() const {
       tcPDPtr w1 = ix%2==0 ? wPlus : wMinus;
       tcPDPtr w2 = ix%2!=0 ? wPlus : wMinus;
       for(int iy=1;iy<=_maxflavour;++iy) {
-	if(!_mixingInWW&&(ix!=iy)) continue;
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
