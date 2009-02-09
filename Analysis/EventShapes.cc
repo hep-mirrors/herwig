@@ -72,14 +72,15 @@ vector<double> EventShapes::eigenvalues(const double T[3][3]) {
   // use Cardano's formula to compute the zeros 
   double p = (3.*c - sqr(b))/3.;
   double q = (2.*sqr(b)*b - 9.*b*c + 27.*d)/27.;
-  // check diskriminant
+  // check diskriminant to double precision
   vector<double> lambda;
-  if (4.*p*sqr(p) + 27.*sqr(q) > 0) {
+  if (4.*p*sqr(p) + 27.*sqr(q) > 2.0e-16) {
     for (unsigned int i=0; i<3; i++) {
       lambda.push_back(-1.);
     }
-    cerr << "EventShapes::eigenvalues: found D > 0! \n"
-	 << "Matrix doesn't have real Eigenvalues in this case\n";
+    cerr << "EventShapes::eigenvalues: found D = "
+	 << 4.*p*sqr(p) + 27.*sqr(q) 
+	 << " > 0! No real Eigenvalues!\n";
   } else {
     // get solutions
     double alpha = acos(-q/2.*sqrt(-27./(p*p*p)))/3.;
