@@ -165,11 +165,13 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_V_regular(real2to3Kinematics S) const;
+  mutable double M_V_regular_;
 
   /**
    * The matrix element q + qb -> n + g times tk*uk 
    */
   Energy2 t_u_M_R_qqb(real2to3Kinematics R) const;
+  mutable Energy2 t_u_M_R_qqb_;
 
   /**
    * The matrix element q + g  -> n + q times tk*uk 
@@ -198,11 +200,19 @@ public:
 
   /**
    * M_V_regular_ZZ is the regular part of the one-loop ZZ matrix element 
-   * exactly as defined in Eqs. B.1 & B.2 of of  NPB 357(1991)409-438 ***
+   * exactly as defined in Eqs. B.1 & B.2 of  NPB 357(1991)409-438 ***
    * modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
   double M_V_regular_ZZ(real2to3Kinematics S) const;
+
+  /**
+   * t_u_M_R_qqb_ZZ is the q + qb -> n + g times tk*uk real emission 
+   * matrix element as defined in Eq. C.1 of  NPB 357(1991)409-438 ***
+   * modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  Energy2 t_u_M_R_qqb_ZZ(real2to3Kinematics R) const;
 
   /**
    * The Born matrix element as given in Equation 3.2 - 3.8 in NPB 410 
@@ -218,6 +228,14 @@ public:
    * those authors absorb in the matrix element. 
    */
   double M_V_regular_WW(real2to3Kinematics S) const;
+
+  /**
+   * t_u_M_R_qqb_WW is the q + qb -> n + g times tk*uk real emission 
+   * matrix element as defined in Eq. D.1-D.5 of  NPB 410(1993)280-324 ***
+   * modulo a factor 1/(2s) ***, which is a flux factor that 
+   * those authors absorb in the matrix element. 
+   */
+  Energy2 t_u_M_R_qqb_WW(real2to3Kinematics R) const;
 
 protected:
 
@@ -302,11 +320,6 @@ private:
    *  The ParticleData object for the plus and minus lo partons
    */
   tcPDPtr ab_, bb_;
-
-  /**
-   * The ckm matrix elements (unsquared, to allow interference)
-   */
-  Complex ckm_[3][3];
 
   /**
    *  Flag indicating if the q & qbar are flipped or not i.e. this
