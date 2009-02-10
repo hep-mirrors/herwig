@@ -25,9 +25,11 @@
 
 using namespace Herwig;
 
-MEPP2VV::MEPP2VV() : _process(0), _maxflavour(5) , _mixingInWW(0),
-    scaleopt_(1),   mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , 
-    scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0) {
+MEPP2VV::MEPP2VV() : 
+  _ckm(3,vector<Complex>(3,0.0)), 
+  _process(1)   , _maxflavour(5)      , _mixingInWW(1)  ,
+  scaleopt_(1)  , mu_F_(100.*GeV)     , mu_UV_(100.*GeV), 
+  scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0) {
   massOption(true ,1);
   massOption(false,1);
 }
@@ -174,15 +176,17 @@ void MEPP2VV::Init() {
 }
 
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
-  os << _vertexFFP << _vertexFFW << _vertexFFZ << _vertexWWW << _process
-     << scaleopt_      << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)   
+  os << _vertexFFP << _vertexFFW  << _vertexFFZ  << _vertexWWW << _ckm
+     << _process   << _maxflavour << _mixingInWW
+     << scaleopt_  << ounit(mu_F_,GeV)  << ounit(mu_UV_,GeV)   
      << scaleFact_ << spinCorrelations_ << debugMCFM_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
-  is >> _vertexFFP >> _vertexFFW >> _vertexFFZ >> _vertexWWW >> _process
-     >> scaleopt_      >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)  
-     >> scaleFact_  >> spinCorrelations_ >> debugMCFM_;
+  is >> _vertexFFP >> _vertexFFW  >> _vertexFFZ  >> _vertexWWW >> _ckm
+     >> _process   >> _maxflavour >> _mixingInWW
+     >> scaleopt_  >> iunit(mu_F_,GeV)  >> iunit(mu_UV_,GeV)  
+     >> scaleFact_ >> spinCorrelations_ >> debugMCFM_;
 }
 
 Energy2 MEPP2VV::scale() const {
@@ -266,8 +270,21 @@ MEPP2VV::colourGeometries(tcDiagPtr diag) const {
   static ColourLines cs("1 -2");
   static ColourLines ct("1 2 -3");
   Selector<const ColourLines *> sel; 
-  if(diag->id()>0) sel.insert(1.0, &cs);
-  else             sel.insert(1.0, &ct);
+  if(abs(diag->partons()[2]->id())==24&&abs(diag->partons()[3]->id())==24) {
+    if(diag->id()==-4||diag->id()==-5) { 
+      sel.insert(1.0, &cs);
+      return sel;
+    } 
+  }
+  if((abs(diag->partons()[2]->id())==23&&abs(diag->partons()[3]->id())==24)||
+     (abs(diag->partons()[2]->id())==24&&abs(diag->partons()[3]->id())==23)) {
+    if(diag->id()==-3) {
+      sel.insert(1.0, &cs);
+      return sel;
+    }
+  }
+
+  sel.insert(1.0, &ct);
   return sel;
 }
 
@@ -284,6 +301,8 @@ void MEPP2VV::getDiagrams() const {
       tcPDPtr w1 = ix%2==0 ? wPlus : wMinus;
       tcPDPtr w2 = ix%2!=0 ? wPlus : wMinus;
       for(int iy=1;iy<=_maxflavour;++iy) {
+	// Impose initial state quarks have the same flavour:
+ 	if(!_mixingInWW&&ix!=iy) continue; 
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
@@ -294,6 +313,8 @@ void MEPP2VV::getDiagrams() const {
 	if(ix%2==0) {
 	  int idiag=0;
 	  for(int iz=1;iz<=5;iz+=2) {
+	    // Impose intermediate be in the same generation as initial state:
+	    if(!_mixingInWW&&iz!=ix-1) continue;
 	    --idiag;
 	    tcPDPtr tc = getParticleData(iz);
 	    add(new_ptr((Tree2toNDiagram(3), qk, tc, qb, 1, w1, 2, w2, idiag)));
@@ -302,6 +323,8 @@ void MEPP2VV::getDiagrams() const {
 	else {
 	  int idiag=0;
 	  for(int iz=2;iz<=6;iz+=2) {
+	    // Impose intermediate be in the same generation as initial state:
+	    if(!_mixingInWW&&iz!=ix+1) continue;
 	    --idiag;
 	    tcPDPtr tc = getParticleData(iz);
 	    add(new_ptr((Tree2toNDiagram(3), qk, tc, qb, 1, w1, 2, w2, idiag)));
@@ -413,11 +436,7 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 			   vector<VectorWaveFunction>    & v1,
 			   vector<VectorWaveFunction>    & v2,
 			   bool calc) const {
-//   cerr << "testing process" 
-//        << mePartonData()[0]->PDGName() << " "
-//        << mePartonData()[1]->PDGName() << " -> "
-//        << mePartonData()[2]->PDGName() << " "
-//        << mePartonData()[3]->PDGName() << "\n";
+
   double output(0.);
   vector<double> me(5,0.0);
   ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,
@@ -455,12 +474,18 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
   else if(abs(mePartonData()[2]->id())==ParticleID::Wplus&&
 	  abs(mePartonData()[3]->id())==ParticleID::Wplus) {
     // particle data for the t-channel intermediate
-    tcPDPtr tc[3];
+    vector<tcPDPtr> tc;
     if(f1[0].getParticle()->id()%2==0) {
-      for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(1+2*ix);
+      for(unsigned int ix=0;ix<3;++ix) {
+	if(!_mixingInWW&&abs(f1[0].getParticle()->id())!=2+2*ix) continue;
+	tc.push_back(getParticleData(1+2*ix));
+      }
     }
     else {
-      for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(2+2*ix);
+      for(unsigned int ix=0;ix<3;++ix) {
+	if(!_mixingInWW&&abs(f1[0].getParticle()->id())!=1+2*ix) continue;
+	tc.push_back(getParticleData(2+2*ix));
+      }
     }
     tcPDPtr gamma = getParticleData(ParticleID::gamma);
     tcPDPtr z0    = getParticleData(ParticleID::Z0);
@@ -483,7 +508,7 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 	    diag[4] = sChannel ? 
 	      _vertexWWW->evaluate(scale(),interZ,v2[ohel2],v1[ohel1]) : 0.;
 	    // t-channel
-	    for(unsigned int ix=0;ix<3;++ix) {
+	    for(unsigned int ix=0;ix<tc.size();++ix) {
 // 	      cerr << "testing in loop " << f1[ihel1].getParticle()->PDGName()
 // 		   << " " << tc[ix]->PDGName() << " " 
 // 		   << a1[ihel2].getParticle()->PDGName()
@@ -492,6 +517,20 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 		_vertexFFW->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
 	      diag[ix] = 
 		_vertexFFW->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
+	      if(!_mixingInWW) {
+		Complex Kij(1,0.);
+		if(abs(f1[ihel1].getParticle()->id())%2==0) {
+		  int up_id(abs(f1[ihel1].getParticle()->id())/2-1);
+		  int dn_id((abs(tc[ix]->id())-1)/2);
+		  Kij  = sqr(_ckm[up_id][dn_id]);
+		}
+		else if(abs(f1[ihel1].getParticle()->id())%2==1) {
+		  int dn_id((abs(f1[ihel1].getParticle()->id())-1)/2);
+		  int up_id(abs(tc[ix]->id())/2-1);
+		  Kij  = sqr(_ckm[up_id][dn_id]);
+		}
+		diag[ix] /= Kij;
+	      }
 	      if(debugMCFM_) {
 		  Energy2 the_that;
 		  the_that =(meMomenta()[0]-meMomenta()[2]).m2();
@@ -502,10 +541,18 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 	    // individual diagrams
 	    for (size_t ii=0; ii<5; ++ii) me[ii] += std::norm(diag[ii]);
 	    // full matrix element
-// 	    cerr << "testing diagrams " 
-// 		 << diag[0] << " " << diag[1] << " "
-// 		 << diag[2] << " " << diag[3] << " "
-// 		 << diag[4] << "\n"; 
+	    // Test combinations of s, t and u-channel contributions
+// 	    double t_Channel    = std::norm(diag[0]+diag[1]+diag[2]);
+// 	    output += t_Channel;
+// 	    double s_Channel    = std::norm(diag[3]+diag[4]);
+// 	    output += s_Channel;
+// 	    double stChannel    = std::norm(diag[0]+diag[1]+diag[2])
+// 	                        + std::norm(diag[3]+diag[4]);
+// 	    output += stChannel;
+// 	    double Interference = 2.*real( (diag[0]+diag[1]+diag[2])
+// 				         * std::conj(diag[3]+diag[4])
+// 				         );
+//  	    output += Interference;
 	    diag[0] += diag[1]+diag[2]+diag[3]+diag[4];
 	    output += std::norm(diag[0]);
 	    // storage of the matrix element for spin correlations

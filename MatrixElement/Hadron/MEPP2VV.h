@@ -90,6 +90,11 @@ public:
   Complex CKM(int ix,int iy) const { return _ckm[ix][iy]; }
 
   /**
+   * Return the process being run (WW/ZZ/WZ).
+   */
+  bool mixingInWW() const { return _mixingInWW; }
+
+  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -241,7 +246,7 @@ private:
   /**
    * The ckm matrix elements (unsquared, to allow interference)
    */
-  Complex _ckm[3][3];
+  vector< vector<Complex> > _ckm;
 
   /**
    *  Processes
