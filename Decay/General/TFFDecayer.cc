@@ -110,7 +110,7 @@ double TFFDecayer::me2(const int , const Particle & inpart,
 
 Energy TFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale = sqr(inpart.second);
     _perturbativeVertex->setCoupling(scale, inpart.first, outa.first,

@@ -50,7 +50,7 @@ void JetFinder::Init() {
   static Parameter<JetFinder,Energy> interfacedCut
     ("dCut",
      "Set the dimensionful resolution parameter",
-     &JetFinder::_dCut, GeV, 10.0*GeV, 0.0*GeV, 0*GeV,
+     &JetFinder::_dCut, GeV, 10.0*GeV, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
 

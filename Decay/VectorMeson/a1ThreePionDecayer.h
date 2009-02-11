@@ -290,7 +290,7 @@ private:
   Energy2 DParameter(int ires) const {
     Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
     return _rhomass[ires]*_rhomass[ires]+_rhowidth[ires]*_rhomass[ires]*
-      (hFunction(0.*MeV)-_hm2[ires]+sqr(_rhomass[ires])*_dhdq2m2[ires])/grhom;
+      (hFunction(ZERO)-_hm2[ires]+sqr(_rhomass[ires])*_dhdq2m2[ires])/grhom;
   }
 
   /**
@@ -317,7 +317,7 @@ private:
     if(q2>4*_mpi2) {
       output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;
     }
-    else if(q2>eps) output=0.*MeV2;
+    else if(q2>eps) output=ZERO;
     else            output=-8.*_mpi2/Constants::pi;
     return output;
   }

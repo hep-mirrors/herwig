@@ -41,7 +41,7 @@ inline double ScalarMassGenerator::weight(Energy q,int shape) const {
   Energy2 q2    = sqr(q);
   Energy2 mass2 = sqr(nominalMass());
   Energy2 mwidth= nominalMass()*nominalWidth();
-  Energy2 gamma[2]={0.*MeV2,0.*MeV2};
+  Energy2 gamma[2]={0.*MeV2,ZERO};
   if(shape==1) {
     for(unsigned int ix=0;ix<_coupling.size();++ix) {
       double lambda = (mass2-_m2plus[ix])*(mass2-_m2minus[ix])/sqr(mass2);
@@ -56,7 +56,7 @@ inline double ScalarMassGenerator::weight(Energy q,int shape) const {
       else           gamma[1]+=sqr(_coupling[ix])*sqrt(-lambda);
     }
   }
-  Energy2 numer(0.*MeV2);
+  Energy2 numer(ZERO);
   if(shape==2)      numer = nominalMass()*gamma[0]/q;
   else if(shape==3) numer = nominalMass()*nominalWidth();
   else              numer = gamma[0];

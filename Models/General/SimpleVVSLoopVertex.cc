@@ -51,7 +51,7 @@ Complex SimpleVVSLoopVertex::W2(Energy2 s, Energy2 mf2) const {
   Complex ac(0.);
   double root=0.5*sqrt(abs(s)/mf2);
 
-  if(s < 0.*GeV2)
+  if(s < ZERO)
     ac = sqr(asinh(root));
   else if(root<1.)
     ac = -sqr(asin(root));

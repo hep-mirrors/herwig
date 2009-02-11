@@ -111,7 +111,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     return;
   // set masses
   for (int i=0; i<2; i++) newfs[i].setMass(qq[i]->mass());
-  newfs[2].setMass(0.*MeV);
+  newfs[2].setMass(ZERO);
   // decide which particle emits
   bool firstEmits=
     newfs[2].vect().perp2(newfs[0].vect())<
@@ -235,14 +235,14 @@ applyHard(const ParticleVector &p) {
   u3 = u1.cross(u2);
   u3 /= u3.mag();
   double ct2=-2., ct3=-2.;
-  if (pp1 == Energy() || pp2 == Energy() || pp3 == Energy()) {
+  if (pp1 == ZERO || pp2 == ZERO || pp3 == ZERO) {
     bool touched = false;
-    if (pp1 == Energy()) {
+    if (pp1 == ZERO) {
       ct2 = 1; 
       ct3 = -1; 
       touched = true;
     } 
-    if (pp2 == Energy() || pp3 == Energy()) {
+    if (pp2 == ZERO || pp3 == ZERO) {
       ct2 = 1; 
       ct3 = 1; 
       touched = true;

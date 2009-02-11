@@ -461,8 +461,8 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 			  << " KornerKramerCharmDecayer::doinit()" 
 			  << Exception::abortnow;
   // compute the various coefficients
-  Energy m1,m2,m3,fmes(0.*MeV); 
-  Energy2 P1P2,Qplus,Qminus,gmes(0.*MeV2);
+  Energy m1,m2,m3,fmes(ZERO); 
+  Energy2 P1P2,Qplus,Qminus,gmes(ZERO);
   double Fnonfact,A3,B3,Ffact[2];
   Energy H2,H3,A2,B2;
   Energy2 A,B;
@@ -520,11 +520,11 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
       mform2[1]=1./(mdcplus_ *mdcplus_);
     }
     else {
-      fmes=0.*MeV;
+      fmes=ZERO;
       chi=0.;
       mform2[0]=1./(mscminus_*mscminus_);
       mform2[1]=1./(mscplus_ *mscplus_);
-      gmes=0.*MeV2;
+      gmes=ZERO;
     }
     // form factor for the factorising diagrams
     for(iy=0;iy<2;++iy) {
@@ -550,8 +550,8 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	B +=0.25/m1/m2*chi*fmes*Qplus*(m1+m2)/3.*(4.*I1_[ix]+5.*I2_[ix])*Ffact[1];
 	// add to vectors
 	A1_.push_back(A*pre);B1_.push_back(B*pre);
-	A2_.push_back(0./MeV);B2_.push_back(0./MeV);
-	A3_.push_back(0./MeV2);B3_.push_back(0./MeV2);
+	A2_.push_back(ZERO);B2_.push_back(ZERO);
+	A3_.push_back(ZERO);B3_.push_back(ZERO);
       }
       else if(mspin==3) {
 	// non-factorizing terms
@@ -574,7 +574,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	// add to vectors
 	A1_.push_back(A*pre);B1_.push_back(B*pre);
 	A2_.push_back(A2*pre);B2_.push_back(B2*pre);
-	A3_.push_back(0./MeV2);B3_.push_back(0./MeV2);
+	A3_.push_back(ZERO);B3_.push_back(ZERO);
       }
       else
 	throw InitException() << "Invalid outgoing meson spin in"
@@ -590,14 +590,14 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	// add to vectors
 	// make the coupling dimensionless
 	A1_.push_back(0.);B1_.push_back(0.);
-	A2_.push_back(0./MeV);B2_.push_back(B2*pre);
-	A3_.push_back(0./MeV2);B3_.push_back(0./MeV2);
+	A2_.push_back(ZERO);B2_.push_back(B2*pre);
+	A3_.push_back(ZERO);B3_.push_back(ZERO);
       }
       else if(mspin==3) {
 	InvEnergy norm(0.75/m1/m2*cminus_*H2*I2_[ix]);
 	// first the non-factorizing piece
 	A  = -norm*m1*(P1P2-m2*(m2+m3))*2.;
-	A2 = 0.*MeV;
+	A2 = ZERO;
 	A3 =  norm*m1*2.;
 	B  = -norm*m1*Qplus;
 	B2 = -norm*m1*m2*2.;
@@ -605,7 +605,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	// then the factorizing piece
 	double norm2 = 0.5/m1/m2*chi*gmes*I1_[ix];
 	A  += norm2*Qplus*Ffact[1];
-	A2 += 0.*MeV;
+      //A2 += ZERO;
 	A3 +=-norm2*2.*Ffact[1];
 	B  += norm2*Qplus*Ffact[0];
 	B2 += norm2*m2*2.*Ffact[0];
@@ -734,25 +734,25 @@ void KornerKramerCharmDecayer::Init() {
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceMdcplus
     ("Mdcplus",
      "The mass of the 1+ dc meson for the form-factors",
-     &KornerKramerCharmDecayer::mdcplus_, GeV, 2.42*GeV, 0.0*GeV, 10.0*GeV,
+     &KornerKramerCharmDecayer::mdcplus_, GeV, 2.42*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceMscplus
     ("Mscplus",
      "The mass of the 1+ sc meson for the form-factors",
-     &KornerKramerCharmDecayer::mscplus_, GeV, 2.54*GeV, 0.0*GeV, 10.0*GeV,
+     &KornerKramerCharmDecayer::mscplus_, GeV, 2.54*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceMdcminus
     ("Mdcminus",
      "The mass of the 1- dc meson for the form-factors",
-     &KornerKramerCharmDecayer::mdcminus_, GeV, 2.01*GeV, 0.0*GeV, 10.0*GeV,
+     &KornerKramerCharmDecayer::mdcminus_, GeV, 2.01*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceMscminus
     ("Mscminus",
      "The mass of the 1- sc meson for the form-factors",
-     &KornerKramerCharmDecayer::mscminus_, GeV, 2.11*GeV, 0.0*GeV, 10.0*GeV,
+     &KornerKramerCharmDecayer::mscminus_, GeV, 2.11*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,double> interfaceCplus
@@ -770,7 +770,7 @@ void KornerKramerCharmDecayer::Init() {
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceH2
     ("H2",
      "The H2 parameter",
-     &KornerKramerCharmDecayer::H2_, GeV, 0.119*GeV, 0.0*GeV, 10.0*GeV,
+     &KornerKramerCharmDecayer::H2_, GeV, 0.119*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceH3

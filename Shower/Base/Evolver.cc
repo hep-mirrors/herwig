@@ -126,7 +126,7 @@ void Evolver::Init() {
     ("IntrinsicPtGaussian",
      "RMS of intrinsic pT of Gaussian distribution:\n"
      "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
-     &Evolver::_iptrms, GeV, 0*GeV, 0*GeV, 1000000.0*GeV,
+     &Evolver::_iptrms, GeV, ZERO, ZERO, 1000000.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<Evolver, double> ifacebeta
@@ -140,13 +140,13 @@ void Evolver::Init() {
     ("IntrinsicPtGamma",
      "Parameter for inverse quadratic:\n"
      "2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
-     &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
+     &Evolver::_gamma,GeV, ZERO, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<Evolver, Energy> ifaceiptmax
     ("IntrinsicPtIptmax",
      "Upper bound on intrinsic pT for inverse quadratic",
-     &Evolver::_iptmax,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
+     &Evolver::_iptmax,GeV, ZERO, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
 
   static RefVector<Evolver,ShowerVeto> ifaceVetoes
@@ -227,7 +227,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 	    ptmax = max(ptmax,cjt->first->progenitor()->momentum().mt());
 	}
       }
-      if (ptmax < 0.0*GeV) ptmax = pcm.m();
+      if (ptmax < ZERO) ptmax = pcm.m();
     } 
     // decay, incoming() is the decaying particle.
     else { 
@@ -451,7 +451,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
-      bb.kinematics->updateLast(newParent,0.*MeV,0.*MeV);
+      bb.kinematics->updateLast(newParent,ZERO,ZERO);
     }
     else {
       pair<Energy,double> kt=_intrinsic[_progenitor];
@@ -476,7 +476,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
   setupMaximumScales(_currenttree, particlesToShower);
   // compute the minimum mass of the final-state
-  Energy minmass(0.*MeV);
+  Energy minmass(ZERO);
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState())
       minmass+=particlesToShower[ix]->progenitor()->mass();

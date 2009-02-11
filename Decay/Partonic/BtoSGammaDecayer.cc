@@ -55,7 +55,7 @@ ParticleVector BtoSGammaDecayer::decay(const Particle & parent,
   Lorentz5Momentum pout[3],phad;
   pout[0].setMass(children[0]->dataPtr()->constituentMass());
   pout[1].setMass(children[1]->dataPtr()->constituentMass());
-  pout[2].setMass(0.*GeV);
+  pout[2].setMass(ZERO);
   // first calculate the hadronic mass spectrum
   phad.setMass(_hadronicmass->hadronicMass(parent.mass(),pout[0].mass()+pout[1].mass()));
   // two body decay to hadronic cluster and photon

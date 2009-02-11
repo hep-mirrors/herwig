@@ -71,7 +71,7 @@ public:
    */
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 		     double x, double eps = 0.0,
-		     Energy2 particleScale = 0.0*GeV2) const;
+		     Energy2 particleScale = ZERO) const;
 
 
   /**
@@ -85,7 +85,7 @@ public:
    */
   virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 		      double x, double eps = 0.0,
-		      Energy2 particleScale = 0.0*GeV2) const;
+		      Energy2 particleScale = ZERO) const;
   //@}
 
 

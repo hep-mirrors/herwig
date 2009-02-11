@@ -464,7 +464,7 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks,
   }
   // select the type of process and generate the kinematics
   double rn(UseRandom::rnd());
-  Energy2 shat(0.*GeV2),uhat(0.*GeV2),that(0.*GeV2);
+  Energy2 shat(ZERO),uhat(ZERO),that(ZERO);
   double weight(0.),xnew[2]={1.,1.};
   // generate the value of s according to 1/s^2
   shat = smax*smin/(smin+UseRandom::rnd()*(smax-smin));
@@ -562,11 +562,11 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks,
   }
   if(UseRandom::rnd()>weight) return false;
   // construct the momenta in the rest frame of the boson
-  Lorentz5Momentum pb(0.*MeV,0.*MeV,0.*MeV,mb,mb),pspect,pg,pemit;
+  Lorentz5Momentum pb(ZERO,ZERO,ZERO,mb,mb),pspect,pg,pemit;
   double cos3 = 0.0;
   if(itype==0)
     {
-      pg     = Lorentz5Momentum(0.*MeV,0.*MeV,0.*MeV,0.5*(shat-_mb2)/mb,0.*MeV);
+      pg     = Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(shat-_mb2)/mb,ZERO);
       Energy2 tp(that),up(uhat);
       double zsign(-1.);
       if(iemit==2)
@@ -575,19 +575,19 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks,
 	  up=that;
 	  zsign=1.;
 	}
-      pspect = Lorentz5Momentum(0.*MeV,0.*MeV,zsign*0.5*(_mb2-tp)/mb,
-				0.5*(_mb2-tp)/mb,0.*MeV);
+      pspect = Lorentz5Momentum(ZERO,ZERO,zsign*0.5*(_mb2-tp)/mb,
+				0.5*(_mb2-tp)/mb,ZERO);
       Energy eemit=0.5*(_mb2-up)/mb;
       cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
     }
   else
     {
-      pg=Lorentz5Momentum(0.*MeV,0*MeV,0.*MeV,0.5*(_mb2-uhat)/mb,0.*MeV);
+      pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(_mb2-uhat)/mb,ZERO);
       double zsign(1.);
       if(iemit==1)
 	{
 	  if(itype==1) zsign=-1.;
-	  pspect=Lorentz5Momentum(0.*MeV,0.*MeV,0.5*zsign*(shat-_mb2)/mb,
+	  pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(shat-_mb2)/mb,
 				  0.5*(shat-_mb2)/mb);
 	  Energy eemit=0.5*(_mb2-that)/mb;
 	  cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
@@ -595,7 +595,7 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks,
       else
 	{
 	  if(itype==2) zsign=-1.;
-	  pspect=Lorentz5Momentum(0.*MeV,0.*MeV,0.5*zsign*(_mb2-that)/mb,
+	  pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(_mb2-that)/mb,
 				  0.5*(_mb2-that)/mb);
 	  Energy eemit=0.5*(shat-_mb2)/mb;
 	  cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));

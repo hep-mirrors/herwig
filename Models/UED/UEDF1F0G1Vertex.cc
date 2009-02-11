@@ -19,7 +19,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(0.*GeV2), theCoupLast(0.) {
+UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
   vector<long> anti, ferm, boson(24, 5100021);
   //QQ
   for(long i = 1; i < 7; ++i) {

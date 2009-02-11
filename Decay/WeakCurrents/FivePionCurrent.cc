@@ -51,8 +51,8 @@ FivePionCurrent::FivePionCurrent() {
   _garhopi=6.*GeV;
   _faaf=4.*GeV;
   _ffpipi=5.*GeV;
-  _presigma = 0./GeV2/GeV;      
-  _preomega = 0./GeV2/GeV2/GeV2/GeV;
+  _presigma = ZERO;
+  _preomega = ZERO;
 }
 
 inline void FivePionCurrent::doinit() throw(InitException) {
@@ -253,7 +253,7 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
   // check the charge
   if(abs(icharge)!=3) return false;
   // check that the modes are kinematical allowed
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   // 3 pi- 2pi+
   if(imode==0) {
     min=5.*getParticleData(ParticleID::piplus)->mass();

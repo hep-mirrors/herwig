@@ -83,7 +83,7 @@ void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
 						    Energy mass) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = mass > 0.*GeV  ?  mass : theLast->data().constituentMass();
+  Energy theMass = mass > ZERO  ?  mass : theLast->data().constituentMass();
   theLast->showerParameters()[1]=
     (sqr(theMass) + sqr(theLast->showerVariables()[2]) 
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
@@ -111,21 +111,21 @@ void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
       Boost boost=(p + ppartner).findBoostToCM();
       pcm = ppartner;
       pcm.boost(boost);
-      n = Lorentz5Momentum(0.*MeV,pcm.vect());
+      n = Lorentz5Momentum(ZERO,pcm.vect());
       n.boost( -boost);
     }
     else if(!partner->isFinalState()) {
       // if the partner is an initial-state particle then the reference
       // vector is along the partner which should be massless
       if(particle.perturbative()==1)
-	{n = Lorentz5Momentum(0.*MeV,ppartner.vect());}
+	{n = Lorentz5Momentum(ZERO,ppartner.vect());}
       // if the partner is an initial-state decaying particle then the reference
       // vector is along the backwards direction in rest frame of decaying particle
       else {
 	Boost boost=ppartner.findBoostToCM();
 	pcm = p;
 	pcm.boost(boost);
-	  n = Lorentz5Momentum( 0.0*MeV, -pcm.vect()); 
+	  n = Lorentz5Momentum( ZERO, -pcm.vect()); 
 	  n.boost( -boost);
       } 
     } 

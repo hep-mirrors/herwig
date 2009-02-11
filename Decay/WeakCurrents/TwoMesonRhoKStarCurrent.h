@@ -279,7 +279,7 @@ private:
    */
   Energy pcm(const unsigned int ires, const Energy q) const {
     Energy2 q2(q*q);
-    if(q <= _massa[ires]+_massb[ires]) return 0.*MeV;
+    if(q <= _massa[ires]+_massb[ires]) return ZERO;
     return 0.5/q*sqrt((q2-sqr(_massa[ires]+_massb[ires]))*
 		      (q2-sqr(_massa[ires]-_massb[ires])));
   }

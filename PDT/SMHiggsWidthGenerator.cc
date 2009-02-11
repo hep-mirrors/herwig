@@ -89,7 +89,7 @@ Energy SMHiggsWidthGenerator::width(const ParticleData & in, Energy m) const {
     return in.width();
   }
   else if(_widthopt <=3 ) {
-    Energy higgswidth = Energy();
+    Energy higgswidth = ZERO;
     for (unsigned int i = 1; i < 14; ++i) higgswidth += partialWidth(m,i);
     return higgswidth;
   }
@@ -99,7 +99,7 @@ Energy SMHiggsWidthGenerator::width(const ParticleData & in, Energy m) const {
 }
 
 DecayMap SMHiggsWidthGenerator::rate(const ParticleData & p) const {
-  if(_mw==0.*GeV) return p.decaySelector();
+  if(_mw==ZERO) return p.decaySelector();
   else            return branching(p.mass(),p);
 }
 
@@ -112,7 +112,7 @@ DecayMap SMHiggsWidthGenerator::branching(Energy scale, const ParticleData & p) 
   if(_widthopt==1) return p.decaySelector();
   // calculate the partial widths
   vector<Energy> partial;
-  Energy total(0.*GeV);
+  Energy total(ZERO);
   for(unsigned int ix=0;ix<14;++ix) {
     partial.push_back(partialWidth(scale,ix));
     total+=partial.back();
@@ -198,12 +198,12 @@ Energy SMHiggsWidthGenerator::partialWidth(Energy Mh,unsigned int imode) const {
     _gfermiinv = 8.*_sw2*sqr(_mw)/_alphaEM;
   }
   // output value
-  Energy3 output(0.*GeV2*GeV);
+  Energy3 output(ZERO);
   // quark modes
   if(imode<=6) {
     Energy mf = _qmass[imode];
     double xf = sqr(mf/Mh);
-    if( xf >= 0.25 ) return 0.*GeV;
+    if( xf >= 0.25 ) return ZERO;
     if(_widthopt==2) {
       if (mf > _lambdaQCD) mf *= pow(log(Mh/_lambdaQCD)/log(mf/_lambdaQCD),
 				     _gam0/(2.0*_beta0));
@@ -350,13 +350,13 @@ pair<Energy,Energy> SMHiggsWidthGenerator::width(Energy scale, const ParticleDat
   if(_widthopt==1) return make_pair(p.width(),p.width());
   // calculate the partial widths
   vector<Energy> partial;
-  Energy total(0.*GeV);
+  Energy total(ZERO);
   for(unsigned int ix=0;ix<14;++ix) {
     partial.push_back(partialWidth(scale,ix));
     total+=partial.back();
   }
   // sum for the on modes
-  Energy partialon(0.*GeV);
+  Energy partialon(ZERO);
   for(DecaySet::const_iterator it=p.decayModes().begin();it!=p.decayModes().end();++it) {
     tDMPtr mode=*it;
     if(!mode->on()||mode->orderedProducts().size()!=2) continue;

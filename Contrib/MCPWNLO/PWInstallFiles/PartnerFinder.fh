@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PartnerFinder class.
+//
+#ifndef HERWIG_PartnerFinder_FH
+#define HERWIG_PartnerFinder_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class PartnerFinder;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::PartnerFinder,PartnerFinderPtr);
+
+}
+
+#endif

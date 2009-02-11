@@ -127,13 +127,13 @@ void SingletonFormFactor::Init() {
   static Parameter<SingletonFormFactor,Energy> interfaceCharmMass
     ("CharmMass",
      "The mass of the charm quark",
-     &SingletonFormFactor::_mcharm, GeV, 1.8*GeV, 0.0*GeV, 10.0*GeV,
+     &SingletonFormFactor::_mcharm, GeV, 1.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<SingletonFormFactor,Energy> interfaceStrangeMass
     ("StrangeMass",
      "The mass of the strange quark",
-     &SingletonFormFactor::_mstrange, GeV, 0.51*GeV, 0.0*GeV, 10.0*GeV,
+     &SingletonFormFactor::_mstrange, GeV, 0.51*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<SingletonFormFactor,double> interfaceThetaLambda
@@ -164,7 +164,7 @@ void SingletonFormFactor::Init() {
     ("PoleMass",
      "The mass for the energy dependence of the form-factors.",
      &SingletonFormFactor::_polemass,
-     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, ZERO, -10.*GeV, 10.*GeV, false, false, true);
 }
 
 // form factor for spin-1/2 to spin-1/2

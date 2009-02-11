@@ -75,7 +75,7 @@ void GeneralThreeBodyDecayer::Init() {
 ParticleVector GeneralThreeBodyDecayer::decay(const Particle & parent,
 					      const tPDVector & children) const {
   // return empty vector if products heavier than parent
-  Energy mout(0.*GeV);
+  Energy mout(ZERO);
   for(tPDVector::const_iterator it=children.begin();
       it!=children.end();++it) mout+=(**it).massMin();
   if(mout>parent.mass()) return ParticleVector();
@@ -224,9 +224,9 @@ threeBodyMatrixElement(const int imode,  const Energy2 q2,
   double cos3 = 0.5*(sqr(pout[0])-sqr(pout[1])+sqr(pout[2]))/pout[0]/pout[2];
   double sin2 = sqrt(1.-sqr(cos2)), sin3 = sqrt(1.-sqr(cos3));
   Lorentz5Momentum out[3]=
-    {Lorentz5Momentum(      0.*GeV   , 0.*GeV ,  pout[0]      , eout[0] , m1),
-     Lorentz5Momentum(  pout[1]*sin2 , 0.*GeV , -pout[1]*cos2 , eout[1] , m2),
-     Lorentz5Momentum( -pout[2]*sin3 , 0.*GeV , -pout[2]*cos3 , eout[2] , m3)};
+    {Lorentz5Momentum(      ZERO   , ZERO ,  pout[0]      , eout[0] , m1),
+     Lorentz5Momentum(  pout[1]*sin2 , ZERO , -pout[1]*cos2 , eout[1] , m2),
+     Lorentz5Momentum( -pout[2]*sin3 , ZERO , -pout[2]*cos3 , eout[2] , m3)};
   // create the incoming
   PPtr inpart=mode(imode)->externalParticles(0)->
     produceParticle(Lorentz5Momentum(sqrt(q2)));
@@ -256,7 +256,7 @@ double GeneralThreeBodyDecayer::brat(const DecayMode &, const Particle & p,
 
 Energy GeneralThreeBodyDecayer::partialWidth(PMPair inpart, PMPair outa, 
 					     PMPair outb, PMPair outc) const {
-  if(inpart.second<outa.second+outb.second+outc.second) return 0.*GeV;
+  if(inpart.second<outa.second+outb.second+outc.second) return ZERO;
   // create the object to calculate the width if it doesn't all ready exist
   if(!_widthcalc) {
     string tag = _incoming->name() + "->";
@@ -496,11 +496,11 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       itype = 1;
     }
     deltam -= getProcessInfo()[ix].intermediate->mass();
-    if(deltam<0.*GeV&&getProcessInfo()[ix].intermediate->width()>0.*MeV) {
+    if(deltam<ZERO&&getProcessInfo()[ix].intermediate->width()>ZERO) {
       if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
       else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
     }
-    if(deltam<0.*GeV) continue;
+    if(deltam<ZERO) continue;
     if(getProcessInfo()[ix].intermediate->id()!=ParticleID::gamma) {
       intype.push_back(itype);
       inpow.push_back(0.);

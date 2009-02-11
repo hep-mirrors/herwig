@@ -50,7 +50,7 @@ namespace Herwig {
 			     const Axis & unitDir1,
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2) {
       Energy min=p.m();
-      if ( min >= m1 + m2  &&  m1 >= Energy()  &&  m2 >= Energy()  ) {
+      if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
 	Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
 	p1 = Lorentz5Momentum(m1, pstarVector);
 	p2 = Lorentz5Momentum(m2,-pstarVector);
@@ -98,9 +98,9 @@ namespace Herwig {
      */
     static Energy pstarTwoBodyDecay(const Energy M, 
 				    const Energy m1, const Energy m2) {
-      return ( M > Energy() &&  m1 >=Energy() && m2 >= Energy()  && M > m1+m2 ?  
+      return ( M > ZERO &&  m1 >=ZERO && m2 >= ZERO  && M > m1+m2 ?  
 	       Energy(sqrt(( sqr(M) - sqr(m1+m2) )*( sqr(M) - sqr(m1-m2) )) 
-		      / (2.0*M) ) : Energy()); 
+		      / (2.0*M) ) : ZERO); 
     }
     
     /**

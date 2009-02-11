@@ -212,7 +212,7 @@ void TensorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorPScalarDecayer::_coupling,
-     1/GeV2, 0, 0/GeV2, 0/GeV2, 100./GeV2, false, false, true);
+     1/GeV2, 0, ZERO, ZERO, 100./GeV2, false, false, true);
 
   static ParVector<TensorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",

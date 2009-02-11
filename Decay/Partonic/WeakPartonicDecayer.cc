@@ -597,7 +597,7 @@ fourBodyMatrixElement(Lorentz5Momentum & p0,Lorentz5Momentum & p1,
     +1./d1g      *( d12*d13+d03*d2g+d03*d12 )
     +m12/sqr(d1g)*( -d03*d2g-d03*d12 )
     +m02/sqr(d0g)*(  d12*d3g-d03*d12 );
-  Energy2 mef = !Wcol ? 0.*GeV2 : 
+  Energy2 mef = !Wcol ? ZERO : 
     +1./d2g/d3g  *( d0g*d12*d23+d03*d1g*d23+2*d03*d12*d23 )
     +1./d2g      *( d03*d1g+d03*d12-d02*d12 )
     +1./d3g      *( d0g*d12-d03*d13+d03*d12 )

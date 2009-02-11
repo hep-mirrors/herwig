@@ -22,7 +22,7 @@ using namespace Herwig;
 using namespace ThePEG;  
 
 SMHGGVertex::SMHGGVertex()
-  :_couplast(0.),_q2last(0.*GeV2),_mw(),massopt(1),_minloop(6),
+  :_couplast(0.),_q2last(ZERO),_mw(),massopt(1),_minloop(6),
    _maxloop(6),_CoefRepresentation(1) {
   //PDG codes for particles at vertices
   vector<long> first(1,21),second(1,21),third(1,25);
@@ -147,7 +147,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
     setNorm(_couplast);
     unsigned int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
-    masses.resize(delta,0.*GeV);
+    masses.resize(delta,ZERO);
     for (unsigned int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;

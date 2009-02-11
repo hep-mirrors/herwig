@@ -174,7 +174,7 @@ inline void EventShapes::checkHemispheres() {
 
 inline double EventShapes::getXi(const Lorentz5Momentum & p, 
 				 const Energy & Ebeam) {
-  return((Ebeam > 0*MeV && p.vect().mag() > 0*MeV) ? 
+  return((Ebeam > ZERO && p.vect().mag() > ZERO) ? 
 	 log(Ebeam/p.vect().mag()) : -1.); 
 }
 

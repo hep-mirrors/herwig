@@ -28,13 +28,13 @@ using Herwig::Math::Li2;
 
 BtoSGammaKagan::BtoSGammaKagan() 
   : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
-    _mc(1.392*GeV),_ms(0.*GeV),_msovermb(1./50.),_zratio(0.),
+    _mc(1.392*GeV),_ms(ZERO),_msovermb(1./50.),_zratio(0.),
     _lambda2(0.12*GeV2),_mw(80.425*GeV),_mz(91.1876*GeV),
     _MB(5279.4*MeV),_c20(0.),_c70(0.),_c80(0.),
     _beta0(23./3.),_beta1(116./3.),_alpha(1./137.036),
     _alphaSZ(0.118),_mub(4.8*GeV),_alphaSM(0.),
     _ckm(0.976),_delta(0.),_spectmax(0.00025/GeV),_maxtry(100),
-    _fermilambda(0.*GeV),_fermia(0.),_ferminorm(1./GeV),
+    _fermilambda(ZERO),_fermia(0.),_ferminorm(1./GeV),
     _fermilambda1(-0.3*GeV2),_ycut(0.9999999999),
     _y(0.),_deltacut(0.9),_nsfunct(100),_nspect (100) {
   Energy mHin[100]={0*GeV,0.0505907*GeV,0.101181*GeV,0.151772*GeV,0.202363*GeV,
@@ -183,7 +183,7 @@ void BtoSGammaKagan::Init() {
   static Parameter<BtoSGammaKagan,Energy2> interfaceLambda2
     ("Lambda2",
      "Hadronic parameter from hep-ph/9805303",
-     &BtoSGammaKagan::_lambda2, GeV2, 0.12*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &BtoSGammaKagan::_lambda2, GeV2, 0.12*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,Energy> interfaceBMesonMass
@@ -231,13 +231,13 @@ void BtoSGammaKagan::Init() {
   static ParVector<BtoSGammaKagan,Energy> interfacemHValues
     ("mHValues",
      "The mH values for the interpolation of the spectrum",
-     &BtoSGammaKagan::_mHinter, GeV, -1, 1.*GeV, 0.0*GeV, 10.*GeV,
+     &BtoSGammaKagan::_mHinter, GeV, -1, 1.*GeV, ZERO, 10.*GeV,
      false, false, Interface::limited);
 
   static ParVector<BtoSGammaKagan,InvEnergy> interfaceSpectrum
     ("Spectrum",
      "Values of the spectrum for interpolation",
-     &BtoSGammaKagan::_spectrum, 1./GeV, -1, 0./GeV, 0./GeV, 1./GeV,
+     &BtoSGammaKagan::_spectrum, 1./GeV, -1, ZERO, ZERO, 1./GeV,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,InvEnergy> interfaceFermiNormalisation
@@ -255,7 +255,7 @@ void BtoSGammaKagan::Init() {
   static Parameter<BtoSGammaKagan,InvEnergy> interfaceSpectrumMaximum
     ("SpectrumMaximum",
      "The maximum value of the spectrum for unweighting",
-     &BtoSGammaKagan::_spectmax, 1./GeV, 1./GeV, 0./GeV, 10000.0/GeV,
+     &BtoSGammaKagan::_spectmax, 1./GeV, 1./GeV, ZERO, 10000.0/GeV,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,double> interfaceycut
@@ -397,7 +397,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     // now for the spectrum
     _mHinter.clear();
     _spectrum.clear();
-    _spectmax=0./GeV;
+    _spectmax=ZERO;
     // limits on the mass
     Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
     Energy minhadronmass(max(minMass(),sqrt(_MB*_MB-2.*_MB*maxegamma)));

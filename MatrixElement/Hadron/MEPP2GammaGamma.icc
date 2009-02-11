@@ -30,8 +30,8 @@ inline Complex MEPP2GammaGamma::ggme(Energy2 s,Energy2 t,Energy2 u) const {
   double ltu(log(abs(t/u)));
   double frac1((t-u)/s),frac2((sqr(t)+sqr(u))/sqr(s));
   double thetatu = (t/u<0) ? 0 : 1;
-  double thetat  = (t<0*GeV2)   ? 0 : 1;
-  double thetau  = (u<0*GeV2)   ? 0 : 1;
+  double thetat  = (t<ZERO)   ? 0 : 1;
+  double thetau  = (u<ZERO)   ? 0 : 1;
   using Constants::pi;
   return Complex(1.+frac1*ltu+0.5*frac2*(sqr(ltu)+sqr(pi)*thetatu),
 		 -pi*(thetat-thetau)*(frac1+frac2*ltu));

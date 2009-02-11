@@ -19,10 +19,10 @@
 using namespace Herwig;
 
 KiselevBcFormFactor::KiselevBcFormFactor() :
-  _fp  (16,0.    ), _fm  (16,0.    ), _FV( 16,0./GeV),
-  _F0A (16,0.*GeV), _FpA (16,0./GeV), _FmA (16,0./GeV),
-  _Mfp (16,0.*GeV), _Mfm (16,0.*GeV), _MFV (16,0.*GeV),
-  _MF0A(16,0.*GeV), _MFpA(16,0.*GeV), _MFmA(16,0.*GeV) {
+  _fp  (16,0.    ), _fm  (16,0.    ), _FV( 16,ZERO),
+  _F0A (16,ZERO), _FpA (16,ZERO), _FmA (16,ZERO),
+  _Mfp (16,ZERO), _Mfm (16,ZERO), _MFV (16,ZERO),
+  _MF0A(16,ZERO), _MFpA(16,ZERO), _MFmA(16,ZERO) {
   // B_c to B_s
   addFormFactor(541,531,0,-5,4,3);
   _fp[0] =   1.30    ;_Mfp[0] =   1.8*GeV;
@@ -150,61 +150,61 @@ void KiselevBcFormFactor::Init() {
   static ParVector<KiselevBcFormFactor,InvEnergy> interfaceFV
     ("FV",
      "The value of the F_V form factor at q^2=0",
-     &KiselevBcFormFactor::_FV, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &KiselevBcFormFactor::_FV, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceF0A
     ("F0A",
      "The value of the F_0^A form factor at q^2=0",
-     &KiselevBcFormFactor::_F0A, 1.*GeV, -1, 0.*GeV, -10.*GeV, 10.*GeV,
+     &KiselevBcFormFactor::_F0A, 1.*GeV, -1, ZERO, -10.*GeV, 10.*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,InvEnergy> interfaceFpA
     ("FplusA",
      "The value of the F_+^A form factor at q^2=0",
-     &KiselevBcFormFactor::_FpA, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &KiselevBcFormFactor::_FpA, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,InvEnergy> interfaceFmA
     ("FminusA",
      "The value of the F_-^A form factor at q^2=0",
-     &KiselevBcFormFactor::_FmA, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &KiselevBcFormFactor::_FmA, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFplus
     ("MpoleFplus",
      "The pole mass for the f_+ form factor",
-     &KiselevBcFormFactor::_Mfp, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_Mfp, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFminus
     ("MpoleFminus",
      "The pole mass for the f_- form factor",
-     &KiselevBcFormFactor::_Mfm, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_Mfm, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFV
     ("MpoleFV",
      "The pole mass for the f_V form factor",
-     &KiselevBcFormFactor::_MFV, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MFV, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleF0A
     ("MpoleF0A",
      "The pole mass for the f_0^A form factor",
-     &KiselevBcFormFactor::_MF0A, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MF0A, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFpA
     ("MpoleFplusA",
      "The pole mass for the f_+^A form factor",
-     &KiselevBcFormFactor::_MFpA, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MFpA, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KiselevBcFormFactor,Energy> interfaceMpoleFmA
     ("MpoleFminusA",
      "The pole mass for the f_-^A form factor",
-     &KiselevBcFormFactor::_MFmA, GeV, -1, 0.0*GeV, -2.0*GeV, 10.0*GeV,
+     &KiselevBcFormFactor::_MFmA, GeV, -1, ZERO, -2.0*GeV, 10.0*GeV,
      false, false, true);
 }
 
@@ -223,13 +223,13 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
   useMe();
   InvEnergy fv,fp,fm;
   Energy f0;
-  if(_MFV[iloc]>0*MeV)  fv = _FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);
+  if(_MFV[iloc]>ZERO)  fv = _FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);
   else                  fv = _FV[iloc];
-  if(_MFmA[iloc]>0*MeV) fm = _FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);
+  if(_MFmA[iloc]>ZERO) fm = _FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);
   else                  fm = _FmA[iloc];
-  if(_MFpA[iloc]>0*MeV) fp = _FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);
+  if(_MFpA[iloc]>ZERO) fp = _FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);
   else                  fp = _FpA[iloc];
-  if(_MF0A[iloc]>0*MeV) f0 = _F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);
+  if(_MF0A[iloc]>ZERO) f0 = _F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);
   else                  f0 = _F0A[iloc];
   Energy msum(m0+m1);
   V  = fv*msum;

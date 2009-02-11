@@ -54,7 +54,7 @@ void BSMWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
 
 Energy BSMWidthGenerator::partial2BodyWidth(int iloc, Energy m0,
 					    Energy m1, Energy m2) const {
-  if( m0 < (m1 + m2) ) return Energy();
+  if( m0 < (m1 + m2) ) return ZERO;
   //need pointers to particles involved
   tcDMPtr dm = theModes[iloc].first;
   ParticleMSet::const_iterator pit = dm->products().begin();

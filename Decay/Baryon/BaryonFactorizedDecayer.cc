@@ -88,7 +88,7 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
 	  // get the particles from the current
 	  _current->decayModeInfo(icurr,iq,ia);
 	  ptemp=_current->particles(Wcharge,icurr,iq,ia);
-	  minb=0.*MeV;
+	  minb=ZERO;
 	  for(iz=0;iz<ptemp.size();++iz)
 	    {extpart.push_back(ptemp[iz]);minb+=ptemp[iz]->massMin();}
 	  // valid mode
@@ -107,7 +107,7 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
 	    {
 	      extpart.resize(2);
 	      ptemp=_current->particles(Wcharge,icurr,-ia,-iq);
-	      minb=0.*MeV;
+	      minb=ZERO;
 	      for(iz=0;iz<ptemp.size();++iz)
 		{extpart.push_back(ptemp[iz]);minb+=ptemp[iz]->massMin();}
 	      if(extpart.size()>2&&minb<min)

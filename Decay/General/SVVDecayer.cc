@@ -69,7 +69,7 @@ double SVVDecayer::me2(const int , const Particle & inpart,
 		       MEOption meopt) const {
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
-    photon[ix] = decay[ix]->mass()==0.*MeV;
+    photon[ix] = decay[ix]->mass()==ZERO;
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);
@@ -108,7 +108,7 @@ double SVVDecayer::me2(const int , const Particle & inpart,
 
 Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
     _perturbativeVertex->setCoupling(scale, outa.first , 
@@ -134,7 +134,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     return output;
   }
   else if(_generalVertex) {
-    Lorentz5Momentum in(0.*MeV,0.*MeV,0.*MeV,inpart.second),out1,out2;
+    Lorentz5Momentum in(ZERO,ZERO,ZERO,inpart.second),out1,out2;
     Kinematics::twoBodyDecay(in,outa.second,outb.second,
 			     Axis(0.,0.,1.),out1,out2);
     _generalVertex->calculateKinematics(in,out1,out2);

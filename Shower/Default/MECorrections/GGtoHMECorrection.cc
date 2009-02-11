@@ -18,7 +18,7 @@
 
 using namespace Herwig;
 
-const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(0.*GeV2,-1.e-10*GeV2);
+const complex<Energy2> GGtoHMECorrection::_epsi = complex<Energy2>(ZERO,-1.e-10*GeV2);
 
 GGtoHMECorrection::GGtoHMECorrection() 
   : _minloop(6),_maxloop(6),_massopt(0),  
@@ -188,7 +188,7 @@ void GGtoHMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     incoming.push_back(cit->first->progenitor());
     beams.push_back(cit->first->beam());
   }
-  if(incoming[0]->momentum().z()<0.*GeV) {
+  if(incoming[0]->momentum().z()<ZERO) {
     swap(incoming[0],incoming[1]);
     swap(beams[0],beams[1]);
   }
@@ -475,7 +475,7 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
   Energy4 lome = loME();
   // select the type of process and generate the kinematics
   double rn(UseRandom::rnd());
-  Energy2 shat(0.*GeV2),uhat(0.*GeV2),that(0.*GeV2);
+  Energy2 shat(ZERO),uhat(ZERO),that(ZERO);
   double weight(0.),xnew[2]={1.,1.};
   // gg -> H g
   if(rn<_channelweights[0]) {
@@ -615,8 +615,8 @@ bool GGtoHMECorrection::applyHard(ShowerParticleVector gluons,
   Energy roots = 0.5*sqrt(s);
   Energy pt = sqrt(uhat*that/shat);
   Energy mt = sqrt(uhat*that/shat+_mh2);
-  Lorentz5Momentum pin[2]={Lorentz5Momentum(0.*GeV,0.*GeV, xnew[0]*roots,xnew[0]*roots),
-			   Lorentz5Momentum(0.*GeV,0.*GeV,-xnew[1]*roots,xnew[1]*roots)};
+  Lorentz5Momentum pin[2]={Lorentz5Momentum(ZERO,ZERO, xnew[0]*roots,xnew[0]*roots),
+			   Lorentz5Momentum(ZERO,ZERO,-xnew[1]*roots,xnew[1]*roots)};
   double phi = Constants::twopi*UseRandom::rnd();
   Lorentz5Momentum pH(pt*cos(phi),pt*sin(phi),mt*sinh(yH),mt*cosh(yH));
   Lorentz5Momentum pJ(pin[0]+pin[1]-pH);
@@ -634,10 +634,10 @@ Energy2 GGtoHMECorrection::ggME(Energy2 s, Energy2 t, Energy2 u) {
   Energy2 output;
   if(_massopt==0) {
     complex<Energy> me[2][2][2];
-    me[1][1][1] = 0.*GeV;
-    me[1][1][0] = 0.*GeV;
-    me[0][1][0] = 0.*GeV;
-    me[0][1][1] = 0.*GeV;
+    me[1][1][1] = ZERO;
+    me[1][1][0] = ZERO;
+    me[0][1][0] = ZERO;
+    me[0][1][1] = ZERO;
     for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       _bi[1]=B(s,mf2);
@@ -687,7 +687,7 @@ Energy2 GGtoHMECorrection::ggME(Energy2 s, Energy2 t, Energy2 u) {
 Energy2 GGtoHMECorrection::qgME(Energy2 s, Energy2 t, Energy2 u) {
   Energy2 output;
   if(_massopt==0) {
-    complex<Energy2> A(0.*GeV2);
+    complex<Energy2> A(ZERO);
     Energy2 si(u-_mh2);
     for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
@@ -706,7 +706,7 @@ Energy2 GGtoHMECorrection::qgME(Energy2 s, Energy2 t, Energy2 u) {
 Energy2 GGtoHMECorrection::qbargME(Energy2 s, Energy2 t, Energy2 u) {
   Energy2 output;
   if(_massopt==0) {
-    complex<Energy2> A(0.*GeV2);
+    complex<Energy2> A(ZERO);
     Energy2 si(u-_mh2);
     for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
@@ -825,9 +825,9 @@ bool GGtoHMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 Complex GGtoHMECorrection::B(Energy2 s,Energy2 mf2) const {
   Complex output,pii(0.,Constants::pi);
   double rat=s/(4.*mf2);
-  if(s<0.*GeV2)
+  if(s<ZERO)
     output=2.-2.*sqrt(1.-1./rat)*log(sqrt(-rat)+sqrt(1.-rat));
-  else if(s>=0.*GeV2&&rat<1.)
+  else if(s>=ZERO&&rat<1.)
     output=2.-2.*sqrt(1./rat-1.)*asin(sqrt(rat));
   else
     output=2.-sqrt(1.-1./rat)*(2.*log(sqrt(rat)+sqrt(rat-1.))-pii);
@@ -838,9 +838,9 @@ complex<InvEnergy2> GGtoHMECorrection::C(Energy2 s,Energy2 mf2) const {
   complex<InvEnergy2> output;
   Complex pii(0.,Constants::pi);
   double rat=s/(4.*mf2);
-  if(s<0.*GeV2)
+  if(s<ZERO)
     output=2.*sqr(log(sqrt(-rat)+sqrt(1.-rat)))/s;
-  else if(s>=0.*GeV2&&rat<1.)
+  else if(s>=ZERO&&rat<1.)
     output=-2.*sqr(asin(sqrt(rat)))/s;
   else {
     double cosh=log(sqrt(rat)+sqrt(rat-1.));
@@ -851,7 +851,7 @@ complex<InvEnergy2> GGtoHMECorrection::C(Energy2 s,Energy2 mf2) const {
   
 Complex GGtoHMECorrection::dIntegral(Energy2 a, Energy2 b, double y0) const {
   Complex output;
-  if(b==0.*GeV2) output=0.;
+  if(b==ZERO) output=0.;
   else {
     Complex y1=0.5*(1.+sqrt(1.-4.*(a+_epsi)/b));
     Complex y2=1.-y1;

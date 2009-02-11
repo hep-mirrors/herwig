@@ -151,9 +151,9 @@ void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
       tcPDPtr part1=getParticleData(id1);Energy m1=part1->mass();
       Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
       if(part1->iSpin()==2)
-	{SpinHalfSpinHalfFormFactor(0.*GeV2,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
+	{SpinHalfSpinHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
       else
-	{SpinHalfSpinThreeHalfFormFactor(0.*GeV2,ix,id0,id1,m0,m1,f1v,f2v,f3v,
+	{SpinHalfSpinThreeHalfFormFactor(ZERO,ix,id0,id1,m0,m1,f1v,f2v,f3v,
 					 f4v,f1a,f2a,f3a,f4a);}
     }
 }
@@ -190,91 +190,91 @@ void ChengHeavyBaryonFormFactor::Init() {
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceUpMass
     ("DownMass",
      "The consituent mass of the down quark",
-     &ChengHeavyBaryonFormFactor::_md, GeV, 0.322*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_md, GeV, 0.322*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceDownMass
     ("UpMass",
      "The consituent mass of the up quark",
-     &ChengHeavyBaryonFormFactor::_mu, GeV, 0.338*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mu, GeV, 0.338*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfacStrangeMass
     ("StrangeMass",
      "The consituent mass of the strange quark",
-     &ChengHeavyBaryonFormFactor::_ms, GeV, 0.510*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_ms, GeV, 0.510*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceCharmMass
     ("CharmMass",
      "The consituent mass of the charm quark",
-     &ChengHeavyBaryonFormFactor::_mc, GeV, 1.6*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mc, GeV, 1.6*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceBottomMass
     ("BottomMass",
      "The consituent mass of the bottom quark",
-     &ChengHeavyBaryonFormFactor::_mb, GeV, 5.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mb, GeV, 5.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMassbc
     ("VectorMassbc",
      "The vector mass for the b->c transitions.",
-     &ChengHeavyBaryonFormFactor::_mVbc, GeV, 6.34*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVbc, GeV, 6.34*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMassbc
     ("AxialMassbc",
      "The axial-vector mass for the b->c transitions.",
-     &ChengHeavyBaryonFormFactor::_mAbc, GeV, 6.73*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAbc, GeV, 6.73*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMassbs
     ("VectorMassbs",
      "The vector mass for the b->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mVbs, GeV, 5.42*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVbs, GeV, 5.42*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMassbs
     ("AxialMassbs",
      "The axial-vector mass for the b->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mAbs, GeV, 5.86*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAbs, GeV, 5.86*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMassbd
     ("VectorMassbd",
      "The vector mass for the b->d transitions.",
-     &ChengHeavyBaryonFormFactor::_mVbd, GeV, 5.32*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVbd, GeV, 5.32*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMassbd
     ("AxialMassbd",
      "The axial-vector mass for the b->d transitions.",
-     &ChengHeavyBaryonFormFactor::_mAbd, GeV, 5.71*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAbd, GeV, 5.71*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMasscs
     ("VectorMasscs",
      "The vector mass for the c->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mVcs, GeV, 2.11*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVcs, GeV, 2.11*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMasscs
     ("AxialMasscs",
      "The axial-vector mass for the c->s transitions.",
-     &ChengHeavyBaryonFormFactor::_mAcs, GeV, 2.54*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAcs, GeV, 2.54*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceVectorMasscu
     ("VectorMasscu",
      "The vector mass for the c->u transitions.",
-     &ChengHeavyBaryonFormFactor::_mVcu, GeV, 2.01*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mVcu, GeV, 2.01*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceAxialMasscu
     ("AxialMasscu",
      "The axial-vector mass for the c->u transitions.",
-     &ChengHeavyBaryonFormFactor::_mAcu, GeV, 2.42*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_mAcu, GeV, 2.42*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ChengHeavyBaryonFormFactor,double> interfaceNfi
@@ -300,7 +300,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
-  Energy mV(0.*GeV),mA(0.*GeV);
+  Energy mV(ZERO),mA(ZERO);
    if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
       (id0==4332&&id1==3334))
      {mA=_mAcs;mV=_mVcs;}
@@ -339,7 +339,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
-  Energy mV(0.*GeV),mA(0.*GeV);
+  Energy mV(ZERO),mA(ZERO);
    if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
       (id0==4332&&id1==3334))
      {mA=_mAcs;mV=_mVcs;}

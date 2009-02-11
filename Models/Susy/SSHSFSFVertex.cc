@@ -21,13 +21,13 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)), 
+SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)), 
 				 theSinA(0.0),
 				 theCosA(0.0), theSinB(0.0), theCosB(0.0),
 				 theTanB(0.0), theSinAB(0.0), theCosAB(0.0),
-				 theMw(0.*MeV), theMz(0.*MeV), theMu(0.*MeV), 
-				 theSw(0.0), theCw(0.0), theCoupLast(0.*MeV),
-				 theq2Last(0.*MeV2), theHLast(0), theSF1Last(0),
+				 theMw(ZERO), theMz(ZERO), theMu(ZERO), 
+				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
+				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
 				 theSF2Last(0) {
   
   vector<long> first,second,third;

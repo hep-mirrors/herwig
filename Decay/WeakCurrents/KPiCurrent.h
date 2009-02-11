@@ -141,7 +141,7 @@ protected:
    * @param ires The resonances
    */
   Complex sWaveBreitWigner(Energy2 q2,unsigned int ires) const {
-    Energy q=sqrt(q2),gam(0.*MeV);
+    Energy q=sqrt(q2),gam(ZERO);
     Energy2 m2=sqr(_vecmass[ires]);
     if(q>_mK+_mpi) {
       Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);
@@ -157,7 +157,7 @@ protected:
    * @param ires The resonances
    */
   Complex pWaveBreitWigner(Energy2 q2,unsigned int ires) const {
-    Energy q=sqrt(q2),gam(0.*MeV);
+    Energy q=sqrt(q2),gam(ZERO);
     Energy2 m2=sqr(_vecmass[ires]);
     if(q>_mK+_mpi) {
       Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);

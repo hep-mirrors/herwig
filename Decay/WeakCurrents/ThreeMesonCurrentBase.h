@@ -166,11 +166,11 @@ protected:
      * @param f4 The \f$F_4\f$ form factor
      * @param f5 The \f$F_5\f$ form factor
      */    
-    FormFactors(complex<InvEnergy>  f1 = 0/MeV, 
-		complex<InvEnergy>  f2 = 0/MeV, 
-		complex<InvEnergy>  f3 = 0/MeV, 
-		complex<InvEnergy>  f4 = 0/MeV, 
-		complex<InvEnergy3> f5 = 0/MeV/MeV2) 
+    FormFactors(complex<InvEnergy>  f1 = InvEnergy(), 
+		complex<InvEnergy>  f2 = InvEnergy(),
+		complex<InvEnergy>  f3 = InvEnergy(),
+		complex<InvEnergy>  f4 = InvEnergy(),
+		complex<InvEnergy3> f5 = InvEnergy3())
       : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
   };
 

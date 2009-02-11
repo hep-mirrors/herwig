@@ -29,37 +29,37 @@ LightBaryonQuarkModelFormFactor::LightBaryonQuarkModelFormFactor() {
   // neutron to proton
   addFormFactor(2112,2212,2,2,2,1,1,2);
   _f1.push_back(1.00);_f2.push_back(1.81/GeV);
-  _g1.push_back(1.25);_g2.push_back(0.00/GeV);
+  _g1.push_back(1.25);_g2.push_back(ZERO);
   _Lambdaf1.push_back(0.69*GeV);_Lambdaf2.push_back(0.96*GeV);
   _Lambdag1.push_back(0.76*GeV);_Lambdag2.push_back(1.04*GeV);
   // sigma+  to lambda
   addFormFactor(3222,3122,2,2,3,2,2,1);
   _f1.push_back(0.00);_f2.push_back(1.04/GeV);
-  _g1.push_back(0.60);_g2.push_back(0.00/GeV);
+  _g1.push_back(0.60);_g2.push_back(ZERO);
   _Lambdaf1.push_back(-0.32*GeV);_Lambdaf2.push_back(-1.72*GeV);
   _Lambdag1.push_back( 0.77*GeV);_Lambdag2.push_back( 1.05*GeV);
   // sigma-  to lambda
   addFormFactor(3112,3122,2,2,3,1,1,2);
   _f1.push_back(0.00);_f2.push_back(1.04/GeV);
-  _g1.push_back(0.60);_g2.push_back(0.00/GeV);
+  _g1.push_back(0.60);_g2.push_back(ZERO);
   _Lambdaf1.push_back(-0.32*GeV);_Lambdaf2.push_back(-1.72*GeV);
   _Lambdag1.push_back( 0.77*GeV);_Lambdag2.push_back( 1.05*GeV);
   // sigma-  to sigma0
   addFormFactor(3112,3212,2,2,3,1,1,2);
   _f1.push_back(1.41);_f2.push_back(0.76/GeV);
-  _g1.push_back(0.69);_g2.push_back(0.00/GeV);
+  _g1.push_back(0.69);_g2.push_back(ZERO);
   _Lambdaf1.push_back(0.60*GeV);_Lambdaf2.push_back(0.81*GeV);
   _Lambdag1.push_back(0.77*GeV);_Lambdag2.push_back(1.04*GeV);
   // sigma0  to sigma+
   addFormFactor(3212,3222,2,2,3,2,1,2);
   _f1.push_back(-1.41);_f2.push_back(-0.76/GeV);
-  _g1.push_back(-0.69);_g2.push_back( 0.00/GeV);
+  _g1.push_back(-0.69);_g2.push_back( ZERO);
   _Lambdaf1.push_back(0.60*GeV);_Lambdaf2.push_back(0.81*GeV);
   _Lambdag1.push_back(0.77*GeV);_Lambdag2.push_back(1.04*GeV);
   // Xi- to Xi0
   addFormFactor(3312,3322,2,2,3,3,1,2);
   _f1.push_back(-1.00);_f2.push_back(0.73/GeV);
-  _g1.push_back( 0.24);_g2.push_back(0.00/GeV);
+  _g1.push_back( 0.24);_g2.push_back(ZERO);
   _Lambdaf1.push_back(0.56*GeV);_Lambdaf2.push_back(0.71*GeV);
   _Lambdag1.push_back(0.76*GeV);_Lambdag2.push_back(1.04*GeV);
   // lambda to proton
@@ -147,37 +147,37 @@ void LightBaryonQuarkModelFormFactor::Init() {
     ("f2",
      "The form-factor f2 at zero q^2",
      &LightBaryonQuarkModelFormFactor::_f2,
-     1./GeV, 0, 0/GeV, -10./GeV, 10./GeV, false, false, true);
+     1./GeV, 0, ZERO, -10./GeV, 10./GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,InvEnergy> interfaceg2
     ("g2",
      "The form-factor g2 at zero q^2",
      &LightBaryonQuarkModelFormFactor::_g2,
-     1./GeV, 0, 0/GeV, -10./GeV, 10./GeV, false, false, true);
+     1./GeV, 0, ZERO, -10./GeV, 10./GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdaf1
     ("Lambdaf1",
      "The first mass for the energy dependence of the f1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdaf1,
-     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, ZERO, -10.*GeV, 10.*GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdaf2
     ("Lambdaf2",
      "The second mass for the energy dependence of the f1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdaf2,
-     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, ZERO, -10.*GeV, 10.*GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdag1
     ("Lambdag1",
      "The first mass for the energy dependence of the g1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdag1,
-     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, ZERO, -10.*GeV, 10.*GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdag2
     ("Lambdag2",
      "The second mass for the energy dependence of the g1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdag2,
-     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, ZERO, -10.*GeV, 10.*GeV, false, false, true);
 }
 
 // form factor for spin-1/2 to spin-1/2
@@ -191,7 +191,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int mode,int, int, Energy m0, Energy m1,
   f3a = 0.;
   // energy dependence of the f1 and g1 factors
   InvEnergy2 lam1,lam2;
-  if(_Lambdaf1[mode]>0.*GeV) {
+  if(_Lambdaf1[mode]>ZERO) {
     lam1 = 1./sqr(_Lambdaf1[mode]);
     lam2 = 1./sqr(_Lambdaf2[mode]);
     f1v= _f1[mode]/(1.-q2*(lam1-q2*sqr(lam2)));

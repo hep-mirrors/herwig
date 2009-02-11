@@ -193,10 +193,10 @@ inline void EventShapes2::checkHemispheres() {
 
 inline void EventShapes2::calcHemisphereMasses() {
   Lorentz5Momentum pos, neg;
-  Energy pden(0.*MeV),epos(0.*MeV),eneg(0.*MeV);
+  Energy pden(ZERO),epos(ZERO),eneg(ZERO);
   for(unsigned int ix=0;ix<_pv.size();++ix)
     {
-      if(_pv[ix].vect() * thrustAxis() > 0.*MeV)
+      if(_pv[ix].vect() * thrustAxis() > ZERO)
 	{
 	  pos  += _pv[ix];
 	  epos += _pv[ix].perp(thrustAxis()); 
@@ -221,12 +221,12 @@ inline void EventShapes2::calcHemisphereMasses() {
 
 inline double EventShapes2::getX(const Lorentz5Momentum & p, 
 				const Energy & Ebeam) {
-  return(Ebeam > 0*MeV ? double(p.vect().mag()/Ebeam) : -1.); 
+  return(Ebeam > ZERO ? double(p.vect().mag()/Ebeam) : -1.); 
 }
 
 inline double EventShapes2::getXi(const Lorentz5Momentum & p, 
 				 const Energy & Ebeam) {
-  return((Ebeam > 0*MeV && p.vect().mag() > 0*MeV) ? 
+  return((Ebeam > ZERO && p.vect().mag() > ZERO) ? 
 	 log(Ebeam/p.vect().mag()) : -1.); 
 }
 

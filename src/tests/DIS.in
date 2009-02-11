@@ -1,0 +1,65 @@
+##################################################
+# Example generator based on DIS parameters
+# usage: Herwig++ read DIS.in
+##################################################
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set DISGenerator:NumberOfEvents 10000000
+set DISGenerator:RandomNumberGenerator:Seed 31122001
+set DISGenerator:DebugLevel 1
+set DISGenerator:PrintEvent 10
+set DISGenerator:MaxErrors 10000
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+
+##################################################
+# DIS physics parameters (override defaults here) 
+##################################################
+
+##################################################
+# Matrix Elements for lepton-hadron collisions 
+# (by default only neutral-current switched on)
+##################################################
+cd /Herwig/MatrixElements/
+
+# Neutral current DIS
+insert SimpleDIS:MatrixElements[0] MEDISNC
+
+cd /Herwig/Generators
+
+##################################################
+#  Useful analysis handlers for lepton-hadron physics
+##################################################
+
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+# insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+# insert DISGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
+# set /Herwig/Analysis/HepMCFile:Units GeV_mm
+
+set /Herwig/Shower/KinematicsReconstructor:ReconstructionOption 1
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun DIS DISGenerator
+
+##################################################
+# uncomment this section for an example batch run
+# of two repeats with different parameters
+#
+# Note that a separate call of 'Herwig run' 
+# is not required in this case
+##################################################
+# set DISGenerator:NumberOfEvents 10
+# run DIS-full DISGenerator
+#
+# run DIS-initial DISGenerator

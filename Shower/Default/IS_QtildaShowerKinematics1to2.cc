@@ -99,13 +99,13 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
     theLast->showerParameters()[0]/p_dot_n();
   theLast->showerVariables().resize(3);
   theLast->showerParameters().resize(2);
-  for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=0.*MeV;
+  for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=ZERO;
   // momentum
-  Lorentz5Momentum ntemp=Lorentz5Momentum(0.*GeV,-pVector().vect());
+  Lorentz5Momentum ntemp=Lorentz5Momentum(ZERO,-pVector().vect());
   double beta = 0.5*pt2/
     theLast->showerParameters()[0]/(pVector()*ntemp);
   Lorentz5Momentum plast = 
-    Lorentz5Momentum(pVector().z()>0.*GeV ? px : -px ,py,0.*GeV,0.*GeV)
+    Lorentz5Momentum(pVector().z()>ZERO ? px : -px ,py,ZERO,ZERO)
     +theLast->x()*pVector()+beta*ntemp;
   plast.rescaleMass();
   theLast->set5Momentum(plast);
@@ -135,13 +135,13 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
       rot.boost(trans);
       pcm = rot*parent->momentum();
       rot.invert();
-      n = rot*Lorentz5Momentum(0.*GeV,-pcm.vect());
-      p = rot*Lorentz5Momentum(0.*GeV, pcm.vect());
+      n = rot*Lorentz5Momentum(ZERO,-pcm.vect());
+      p = rot*Lorentz5Momentum(ZERO, pcm.vect());
     }
     else {
       pcm = parent->momentum();
-      p = Lorentz5Momentum(0.0*MeV, pcm.vect());
-      n = Lorentz5Momentum(0.0*MeV, -pcm.vect());
+      p = Lorentz5Momentum(ZERO, pcm.vect());
+      n = Lorentz5Momentum(ZERO, -pcm.vect());
     }
   } 
   else {

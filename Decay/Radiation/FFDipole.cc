@@ -92,7 +92,7 @@ void FFDipole::Init() {
     ("MinimumEnergyBoosted",
      "The minimum energy of the photons in the boosted frame in which"
      " they are generated.",
-     &FFDipole::_emin, MeV, 1.e-6*MeV, 0.0*MeV, 100.0*MeV,
+     &FFDipole::_emin, MeV, 1.e-6*MeV, ZERO, 100.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<FFDipole,Energy> interfaceMinimumEnergyRest
@@ -595,7 +595,7 @@ double FFDipole::photon(double beta1,double ombeta1,
 				   en*sinth*sin(phi),
 				   en*costh,
 				   en,
-				   0.*GeV));
+				   ZERO));
   // add the photon momentum to the total
   _bigLdrf+=_ldrf.back();
   // return the weight

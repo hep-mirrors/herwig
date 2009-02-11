@@ -8,7 +8,9 @@ bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc HerwigRun.cc HerwigRun.h
 Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
 Herwig___LDADD = $(THEPEGLIB) -ldl
-Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" -DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
+Herwig___CPPFLAGS = $(AM_CPPFLAGS) \
+-DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" \
+-DHERWIG_PKGLIBDIR="\"$(pkglibdir)\"" \
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
@@ -54,14 +56,6 @@ link-helper-files:
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< --exitonerror
 	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N100 --exitonerror
-
-## Chisquare report ##
-EXTRA_SCRIPTS = sum_chisq
-
-chisq.value : $(srcdir)/CHISQ.in HerwigDefaults.rpo sum_chisq
-	./Herwig++ read $< --exitonerror
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N10000 --exitonerror
-	@./sum_chisq $(notdir $(subst .in,.log,$<)) > $@
 
 ## valgrind targets ##
 

@@ -145,7 +145,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     type[0] = PDT::Spin1Half;
     type[1] = PDT::Spin1Half;
     type[2] = PDT::Spin1;
-    masses.resize(3,0.*GeV);
+    masses.resize(3,ZERO);
     masses[0] = _theSM->mass(q2,getParticleData(ParticleID::t));
     masses[1] = _theSM->mass(q2,getParticleData(ParticleID::b));
     masses[2] = _mw;

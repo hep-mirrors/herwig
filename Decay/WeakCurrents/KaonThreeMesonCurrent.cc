@@ -161,9 +161,9 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   _omegaKstarwgt=1./sqrt(2.);
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.*MeV;_mK=0.*MeV;
-  _maxmass=0.*GeV;
-  _maxcalc=0.*GeV;
+  _mpi=ZERO;_mK=ZERO;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
 
@@ -223,67 +223,67 @@ void KaonThreeMesonCurrent::Init() {
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceA1Width
     ("A1Width",
      "The a_1 width if using local values.",
-     &KaonThreeMesonCurrent::_a1width, GeV, 0.599*GeV, 0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceA1Mass
     ("A1Mass",
      "The a_1 mass if using local values.",
-     &KaonThreeMesonCurrent::_a1mass, GeV, 1.251*GeV, 0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
      false, false, false);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceFPi
     ("FPi",
      "The pion decay constant",
-     &KaonThreeMesonCurrent::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
+     &KaonThreeMesonCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoAxialMasses
     ("RhoAxialMasses",
      "The masses for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho1mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoAxialWidths
     ("RhoAxialWidths",
      "The widths for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho1width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoVectorMasses
     ("RhoVectorMasses",
      "The masses for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho2mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceRhoVectorWidths
     ("RhoVectorWidths",
      "The widths for the rho resonances if used local values",
-     &KaonThreeMesonCurrent::_rho2width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_rho2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarAxialMasses
     ("KstarAxialMasses",
      "The masses for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar1mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarAxialWidths
     ("KstarAxialWidths",
      "The widths for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar1width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarVectorMasses
     ("KstarVectorMasses",
      "The masses for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar2mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar2mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceKstarVectorWidths
     ("KstarVectorWidths",
      "The widths for the Kstar resonances if used local values",
-     &KaonThreeMesonCurrent::_kstar2width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_kstar2width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,double> interfaceAxialRhoWeight
@@ -390,25 +390,25 @@ void KaonThreeMesonCurrent::Init() {
   static ParVector<KaonThreeMesonCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &KaonThreeMesonCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &KaonThreeMesonCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &KaonThreeMesonCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceK1Masses
     ("K1Masses",
      "Masses of the K_1 mesons",
-     &KaonThreeMesonCurrent::_k1mass, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_k1mass, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KaonThreeMesonCurrent,Energy> interfaceK1Widths
     ("K1Widths",
      "Widths of the K_1 mesons",
-     &KaonThreeMesonCurrent::_k1width, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_k1width, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<KaonThreeMesonCurrent,double> interfaceK1WeightKStarPi
@@ -432,25 +432,25 @@ void KaonThreeMesonCurrent::Init() {
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceOmegaMass
     ("OmegaMass",
      "The mass of the omega meson",
-     &KaonThreeMesonCurrent::_omegamass, GeV, 0.782*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfaceOmegaWidth
     ("OmegaWidth",
      "The width of the omega meson",
-     &KaonThreeMesonCurrent::_omegawidth, GeV, 0.00843*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_omegawidth, GeV, 0.00843*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfacePhiMass
     ("PhiMass",
      "The mass of the phi meson",
-     &KaonThreeMesonCurrent::_phimass, GeV, 1.020*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_phimass, GeV, 1.020*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,Energy> interfacePhiWidth
     ("PhiWidth",
      "The width of the phi meson",
-     &KaonThreeMesonCurrent::_phiwidth, GeV, 0.00443*GeV, 0.0*GeV, 10.0*GeV,
+     &KaonThreeMesonCurrent::_phiwidth, GeV, 0.00443*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<KaonThreeMesonCurrent,double> interfaceOmegaKStarWeight
@@ -479,7 +479,7 @@ void KaonThreeMesonCurrent::Init() {
 void KaonThreeMesonCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return; 
+    if(!_initializea1||_maxmass==ZERO) return; 
     // parameters for the table of values
     Energy2 step(sqr(_maxmass)/199.);
     // integrator to perform the integral
@@ -495,7 +495,7 @@ void KaonThreeMesonCurrent::inita1Width(int iopt) {
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
     // loop to give the values
     _a1runq2.clear();_a1runwidth.clear();
-    for(Energy2 moff2 = 0.*MeV2; moff2<=sqr(_maxmass); moff2+=step) {
+    for(Energy2 moff2 = ZERO; moff2<=sqr(_maxmass); moff2+=step) {
       _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
       _a1runq2.push_back(moff2);
     }
@@ -521,7 +521,7 @@ bool KaonThreeMesonCurrent::createMode(int icharge, unsigned int imode,
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
   tPDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   // the particles we will use a lot
@@ -1250,8 +1250,8 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
   }
   return FormFactors(F1 / _fpi,
 		     F2 / _fpi,
-		     0. / MeV,
-		     0. / MeV,
+		     InvEnergy(),
+		     InvEnergy(),
 		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
 }
 

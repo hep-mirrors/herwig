@@ -211,13 +211,13 @@ void PScalarLeptonNeutrinoDecayer::Init() {
     ("GFermi",
      "The Fermi coupling constant",
      &PScalarLeptonNeutrinoDecayer::_GF, 1./GeV2, 1.16639E-5/GeV2,
-     0./GeV2, 1.0e-4*1./GeV2,false, false, false);
+     ZERO, 1.0e-4*1./GeV2,false, false, false);
 
   static ParVector<PScalarLeptonNeutrinoDecayer,Energy> interfaceDecayConstant
     ("DecayConstant",
      "The decay constant for the incoming pseudoscaalr meson.",
      &PScalarLeptonNeutrinoDecayer::_decayconstant,
-     MeV, 0, 0*MeV, 0*MeV, 1000.*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 1000.*MeV, false, false, true);
 }
 
 double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,

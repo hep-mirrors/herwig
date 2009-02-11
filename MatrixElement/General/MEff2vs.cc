@@ -91,7 +91,7 @@ double MEff2vs::me2() const {
     outa[2*ih] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 
 				    2*ih, outgoing);
   }
-  if( mePartonData()[2]->mass() > 0.0*MeV ) {
+  if( mePartonData()[2]->mass() > ZERO ) {
     outa[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 
 				 1, outgoing);
   }
@@ -114,7 +114,7 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
   ScalarWaveFunction interS; VectorWaveFunction interV; 
   SpinorBarWaveFunction interFB;
   bool mv(false);
-  if( mePartonData()[2]->mass() == 0.0*MeV ) mv = true;
+  if( mePartonData()[2]->mass() == ZERO ) mv = true;
   ProductionMatrixElement prodme(PDT::Spin1Half, PDT::Spin1Half,
 				 PDT::Spin1,PDT::Spin0);
   for(unsigned int ihel1 = 0; ihel1 < 2; ++ihel1) {
@@ -241,7 +241,7 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
   SpinorBarVector spbar;
   SpinorBarWaveFunction(spbar, hdp[1], incoming, false);
   VBVector vec;
-  bool mv(hdp[2]->dataPtr()->mass() == 0.0*MeV);
+  bool mv(hdp[2]->dataPtr()->mass() == ZERO);
   VectorWaveFunction(vec, hdp[2], outgoing, true, mv);
   ScalarWaveFunction sca(hdp[3], outgoing, true);
 

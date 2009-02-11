@@ -38,63 +38,63 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(3.92e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back(-2.523/MeV2);_imB.push_back( 1.189/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(3S)->Upsilon(2S) pi pi
   _incoming.push_back(200553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(311e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back(-0.395/MeV2);_imB.push_back( 0.001/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(2S)->Upsilon(1S) pi pi
   _incoming.push_back(100553);
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(61.4e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back(-0.753/MeV2);_imB.push_back( 0.000/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-0.753/MeV2);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(4S)->Upsilon(1S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(1.77e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back( ZERO);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Upsilon(4S)->Upsilon(2S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(68.8e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
   _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // psi(2s)->psi(1S) pi pi
   _incoming.push_back(100443);
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(66.2e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back(-0.336/MeV2);_imB.push_back( 0.   /MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back(-0.336/MeV2);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // psi(3770)->psi(1S) pi pi
   _incoming.push_back(30443);
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
   _coupling.push_back(20.6e-6);
-  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
-  _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
-  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
+  _reA.push_back( 1.   /MeV2);_imA.push_back( ZERO);
+  _reB.push_back( ZERO);_imB.push_back( ZERO);
+  _reC.push_back( ZERO);_imC.push_back( ZERO);
   // Initial size of the vectors
   _initsize=_incoming.size();
   // don'y generate the intermediates in the phase-space
