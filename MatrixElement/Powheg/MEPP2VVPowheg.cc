@@ -123,8 +123,6 @@ bool MEPP2VVPowheg::generateKinematics(const double * r) {
     // Generate the radiative integration variables:
     xt = (*(r+1));
     y  = (*(r+2)) * 2. - 1.;
-//    xt = UseRandom::rnd();
-//    y  = UseRandom::rnd() * 2. -1.;
   }
 
   // Continue with lo matrix element code:
@@ -461,6 +459,11 @@ double MEPP2VVPowheg::NLOweight() const {
     cout << "wgqb       " << wgqb       << endl;
     cout << "wgt        " << wgt        << endl;
   }
+
+  if(isnan(wgt)||isinf(wgt)) 
+    throw Exception() << "MEPP2VVPowheg:: NLO weight "
+		      << "is bad: " << wgt 
+		      << Exception::eventerror;
 
   return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
 }
@@ -2213,7 +2216,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbs 
       = t_u_M_R_qqb(S_) - prefacs*2.*CF_*M_Born_;
   double  relDiff_qqbs = absDiff_qqbs / t_u_M_R_qqb(S_);
-  if(fabs(relDiff_qqbs)>1.e-7) {
+  if(fabs(relDiff_qqbs)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(S_)    " << t_u_M_R_qqb(S_)  /GeV2 << endl;
@@ -2225,7 +2228,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbsp 
       = t_u_M_R_qqb(SCp_) - prefacsp*2.*CF_*M_Born_;
   double  relDiff_qqbsp = absDiff_qqbsp / t_u_M_R_qqb(SCp_);
-  if(fabs(relDiff_qqbsp)>1.e-7) {
+  if(fabs(relDiff_qqbsp)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCp_)  " << t_u_M_R_qqb(SCp_)/GeV2 << endl;
@@ -2237,7 +2240,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbsm 
       = t_u_M_R_qqb(SCm_) - prefacsm*2.*CF_*M_Born_;
   double  relDiff_qqbsm = absDiff_qqbsm / t_u_M_R_qqb(SCm_);
-  if(fabs(relDiff_qqbsm)>1.e-7) {
+  if(fabs(relDiff_qqbsm)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(SCm_)  " << t_u_M_R_qqb(SCm_)/GeV2 << endl;
@@ -2249,7 +2252,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbp 
       = t_u_M_R_qqb(Cp_) - prefacp*CF_*(1.+xp*xp)*M_Born_;
   double  relDiff_qqbp = absDiff_qqbp / t_u_M_R_qqb(Cp_);
-  if(fabs(relDiff_qqbp)>1.e-7) {
+  if(fabs(relDiff_qqbp)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cp_)   " << t_u_M_R_qqb(Cp_) /GeV2 << endl;
@@ -2261,7 +2264,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qqbm 
       = t_u_M_R_qqb(Cm_) - prefacm*CF_*(1.+xm*xm)*M_Born_;
   double  relDiff_qqbm = absDiff_qqbm / t_u_M_R_qqb(Cm_);
-  if(fabs(relDiff_qqbm)>1.e-7) {
+  if(fabs(relDiff_qqbm)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qqb(Cm_)   " << t_u_M_R_qqb(Cm_) /GeV2 << endl;
@@ -2273,7 +2276,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_gqbp
       = t_u_M_R_gqb(Cp_) - prefacp*(1.-xp)*TR_*(xp*xp+sqr(1.-xp))*M_Born_;
   double  relDiff_gqbp =  absDiff_gqbp/ t_u_M_R_gqb(Cp_);
-  if(fabs(relDiff_gqbp)>1.e-7) {
+  if(fabs(relDiff_gqbp)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_gqb(Cp_)   " << t_u_M_R_gqb(Cp_) /GeV2 << endl;
@@ -2285,7 +2288,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
   Energy2 absDiff_qgm
       = t_u_M_R_qg(Cm_)  - prefacm*(1.-xm)*TR_*(xm*xm+sqr(1.-xm))*M_Born_;
   double  relDiff_qgm  =  absDiff_qgm / t_u_M_R_qg(Cm_);
-  if(fabs(relDiff_qgm)>1.e-7) {
+  if(fabs(relDiff_qgm)>1.e-6) {
     alarm=true;
     cout << "\n";
     cout << "t_u_M_R_qg(Cm_)   " << t_u_M_R_qg(Cm_) /GeV2 << endl;
