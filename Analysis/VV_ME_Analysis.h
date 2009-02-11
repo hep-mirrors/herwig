@@ -66,14 +66,6 @@ namespace Herwig {
     virtual void analyze(tEventPtr event, long ieve, int loop, int state);
     
     /**
-     * Transform the event to the desired Lorentz frame and return the
-     * corresponding LorentzRotation.
-     * @param event a pointer to the Event to be transformed.
-     * @return the LorentzRotation used in the transformation.
-     */
-    virtual LorentzRotation transform(tEventPtr event) const;
-    
-    /**
      * Analyze the given vector of particles. The default version calls
      * analyze(tPPtr) for each of the particles.
      * @param particles the vector of pointers to particles to be analyzed
@@ -90,6 +82,11 @@ namespace Herwig {
     
   public:
     
+    /**
+     * A pair of the incoming hadrons.
+     */
+    PPair inbound;
+
     /**
      * A vector of the final state leptons. 
      */

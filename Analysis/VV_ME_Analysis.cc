@@ -33,19 +33,17 @@ Histogram m34wz_h(70.,100.,100) ;
 Histogram eta5_h(-6.,6.,100)    , pt5_h(0.,200.,100)  ;
 Histogram eta6_h(-6.,6.,100)    , pt6_h(0.,200.,100)  ;
 Histogram eta56_h(-6.,6.,100)   , y56_h(-5.,5.,100)   , pt56_h(0.,150.,30);
-Histogram m56_h(75.0,100.0,100)  ;
-Histogram HT3456_h(0.,500.,25)   ;
+Histogram m56_h(75.0,100.0,100) ;
+Histogram HT3456_h(0.,500.,25)  ;
 Histogram y3456_h(-4.,4.,80)    , m3456_h(0.,1000.,100);
+Histogram cth1_h(-1.,1.,40)     , acth2_h(0.,Constants::pi,40);
 
 VV_ME_Analysis::~VV_ME_Analysis() {}
 
-LorentzRotation VV_ME_Analysis::transform(tEventPtr event) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
 void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
 
+  // Store the initial state particles.
+  inbound=event->incoming();
   // Store all of the final state particles as leptons.
   leptons=event->getFinalState();
   // Extract the emitted parton
@@ -178,6 +176,35 @@ void VV_ME_Analysis::analyze(const tPVector & particles) {
 		      )/GeV,1.);
   y3456_h.addWeighted(p3456.rapidity(),1.);
   m3456_h.addWeighted(sqrt(p3456.m2())/GeV,1.);
+  // The theta Born variables:
+  assert(abs(inbound.first->children()[0]->id())<7);
+  assert(abs(inbound.second->children()[0]->id())<7);
+  Lorentz5Momentum p3456rest(0.*GeV,0.*GeV,0.*GeV,p3456.m(),p3456.m());
+  Lorentz5Momentum pplus(inbound.first->children()[0]->momentum()); 
+  Lorentz5Momentum pminus(inbound.second->children()[0]->momentum());
+  Lorentz5Momentum k(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  pplus  = boostx(pplus , p3456, p3456rest);
+  pminus = boostx(pminus, p3456, p3456rest);
+  p34    = boostx(p34   , p3456, p3456rest);
+  p56    = boostx(p56   , p3456, p3456rest);
+  double cth1  (pplus.vect()*p34.vect()/pplus.vect().mag()/p34.vect().mag());
+  cth1_h.addWeighted(cth1,1.);
+  double sth1  (sqrt(1.-cth1*cth1));
+  double cpsipr(0.);
+  double spsipr(0.);
+  double acth2 (0.);
+  if(emitted) {
+    k = emitted->momentum();
+    k = boostx(k, p3456, p3456rest);
+    cpsipr = pplus.vect()*k.vect()/pplus.vect().mag()/k.vect().mag(); 
+    spsipr = sqrt(1.-cpsipr*cpsipr);
+    acth2  = acos( ( k.vect()*p34.vect()/k.vect().mag()    /p34.vect().mag()
+	           - cpsipr*cth1 
+		   )/spsipr/sth1 );
+  } else {
+    acth2 = acos(p34.y()/p34.vect().mag()/sth1);
+  }
+  acth2_h.addWeighted(acth2,1.);
 
   AnalysisHandler::analyze(particles);
 }
@@ -268,6 +295,11 @@ void VV_ME_Analysis::dofinish() {
   y3456_h.prefactor(y3456_h.prefactor()*1.e6);
   m3456_h.normaliseToCrossSection();
   m3456_h.prefactor(m3456_h.prefactor()*1.e6);
+  // The theta Born variables:
+  cth1_h.normaliseToCrossSection();
+  cth1_h.prefactor(cth1_h.prefactor()*1.e6);
+  acth2_h.normaliseToCrossSection();
+  acth2_h.prefactor(acth2_h.prefactor()*1.e6);
 
   file.open(fname.c_str());
   using namespace HistogramOptions;
@@ -305,6 +337,9 @@ void VV_ME_Analysis::dofinish() {
   HT3456_h.topdrawOutput(file,Frame,"RED","HT3456 distribution: all wgts");
   y3456_h.topdrawOutput(file,Frame,"RED","y3456 distribution: all wgts");
   m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
+  // The theta Born variables:
+  cth1_h.topdrawOutput(file,Frame,"RED","Cos(theta1) distribution: all wgts");
+  acth2_h.topdrawOutput(file,Frame,"RED","Cos(theta2) distribution: all wgts");
 
   file.close();
 }
