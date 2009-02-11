@@ -214,7 +214,7 @@ void ModelGenerator::doinit() throw(InitException) {
 
     if( parent->decaySelector().empty() ) {
       parent->stable(true);
-      parent->width(0.0*MeV);
+      parent->width(ZERO);
       parent->massGenerator(tGenericMassGeneratorPtr());
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }
@@ -244,7 +244,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
   if( parent->stable() ) return;
   DecaySet::iterator dit = parent->decayModes().begin();
   DecaySet::iterator dend = parent->decayModes().end();
-  Energy oldwidth(parent->width()), newwidth(0.*MeV);
+  Energy oldwidth(parent->width()), newwidth(ZERO);
   bool rescalebrat(false);
   double brsum(0.);
   for(; dit != dend; ++dit ) {
@@ -255,8 +255,8 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     for( ; pit != pend; ++pit ) {
       release -= (**pit).constituentMass();
     }
-    if( (**dit).brat() < brMin_ || release < 0.*MeV ) {
-      if( release < 0.*MeV )
+    if( (**dit).brat() < brMin_ || release < ZERO ) {
+      if( release < ZERO )
 	cerr << "Warning: The shower cannot be generated using this decay " 
 	     << (**dit).tag() << " because it is too close to threshold. It "
 	     << "will be switched off and the branching fractions of the "
@@ -286,7 +286,7 @@ void ModelGenerator::checkDecays(PDPtr parent) {
 				    "set", brf.str());
     }
     parent->width(newwidth);
-    if( newwidth > 0.0*MeV ) parent->cTau(hbarc/newwidth);
+    if( newwidth > ZERO ) parent->cTau(hbarc/newwidth);
     parent->widthCut(5*newwidth);
   }
   

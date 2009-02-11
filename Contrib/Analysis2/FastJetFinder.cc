@@ -159,7 +159,7 @@ void FastJetFinder::Init() {
 void FastJetFinder::convert () {
   _lastPseudojets.clear();
   tPVector final = lastEvent()->getFinalState();
-  Lorentz5Momentum sum = Lorentz5Momentum (0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum sum = Lorentz5Momentum (ZERO,ZERO,ZERO,ZERO);
   for(tPVector::iterator p = final.begin();
       p != final.end(); ++p) {
     sum = sum + (**p).momentum();

@@ -484,12 +484,12 @@ PPtr HwRemDecayer::forceSplit(const tRemPPtr rem, long child, Energy &lastQ,
   PPtr parton = getParticleData(child)->produceParticle();
   Energy2 emittedm2 = sqr(parton->dataPtr()->constituentMass());
   // Now boost pcm and pf to z only frame
-  Lorentz5Momentum p_ref = Lorentz5Momentum(0.0*MeV,  beam.vect());
-  Lorentz5Momentum n_ref = Lorentz5Momentum(0.0*MeV, -beam.vect());
+  Lorentz5Momentum p_ref = Lorentz5Momentum(ZERO,  beam.vect());
+  Lorentz5Momentum n_ref = Lorentz5Momentum(ZERO, -beam.vect());
   // generate phi and compute pt of branching
   double phi = Constants::twopi*UseRandom::rnd();
   Energy pt=sqrt(pt2);
-  Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), 0.0*MeV, 0.0*MeV);
+  Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), ZERO, ZERO);
   // compute alpha for previous particle
   Energy2 p_dot_n  = p_ref*n_ref;
   double lastalpha =    pf*n_ref/p_dot_n;
@@ -697,14 +697,14 @@ void HwRemDecayer::initSoftInteractions(Energy ptmin, InvEnergy2 beta){
 }
 
 Energy HwRemDecayer::softPt() const {
-  Energy2 pt2(0*GeV2);
+  Energy2 pt2(ZERO);
   double xmin(0.0), xmax(1.0), x(0);
 
-  if(beta_ == 0/GeV2){
+  if(beta_ == ZERO){
     return UseRandom::rnd(0.0,(double)(ptmin_/GeV))*GeV;
   }
 
-  if(beta_ < 0.0/GeV2){
+  if(beta_ < ZERO){
     xmin = 1.0;
     xmax = exp( -beta_*sqr(ptmin_) );    
   }else{
@@ -714,7 +714,7 @@ Energy HwRemDecayer::softPt() const {
   x = UseRandom::rnd(xmin, xmax);
   pt2 = 1.0/beta_ * log(1/x);
   
-  if( pt2 < 0*GeV2 || pt2 > sqr(ptmin_) )
+  if( pt2 < ZERO || pt2 > sqr(ptmin_) )
     throw Exception() << "HwRemDecayer::softPt generation of pt "
                       << "outside allowed range [0," << ptmin_/GeV << "]."
                       << Exception::runerror; 
@@ -729,8 +729,8 @@ void HwRemDecayer::softKinematics(Lorentz5Momentum &r1, Lorentz5Momentum &r2,
   g1 = Lorentz5Momentum();
   g2 = Lorentz5Momentum();
   //All necessary variables for the two soft gluons
-  Energy pt(softPt()), pz(0.0*GeV);
-  Energy2 pz2(0.*GeV2);
+  Energy pt(softPt()), pz(ZERO);
+  Energy2 pz2(ZERO);
   double phi(UseRandom::rnd(2.*Constants::pi));
   double x_g1(0.0), x_g2(0.0);
   

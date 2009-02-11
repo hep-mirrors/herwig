@@ -323,14 +323,15 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
   // must be at least two jets
   if ( jets.size() < 2) throw KinematicsReconstructionVeto();
   // sum of jet masses must be less than roots
-  if(momConsEq( 0.0, root_s, jets )>0.0*MeV) throw KinematicsReconstructionVeto();
+  if(momConsEq( 0.0, root_s, jets )>ZERO) throw KinematicsReconstructionVeto();
   // if two jets simple solution
   if ( jets.size() == 2 ) {
-    if ( sqr((jets[0].p.x()+jets[1].p.x())/MeV) < 1.e-4 &&
-	 sqr((jets[0].p.y()+jets[1].p.y())/MeV) < 1.e-4 &&
-	 sqr((jets[0].p.z()+jets[1].p.z())/MeV) < 1.e-4 ) {
+    static const Energy2 eps = 1.0e-4 * MeV2;
+    if ( sqr(jets[0].p.x()+jets[1].p.x()) < eps &&
+	 sqr(jets[0].p.y()+jets[1].p.y()) < eps &&
+	 sqr(jets[0].p.z()+jets[1].p.z()) < eps ) {
       Energy test = (jets[0].p+jets[1].p).vect().mag();
-      if(test>1e-4*MeV) throw KinematicsReconstructionVeto();
+      if(test > 1.0e-4 * MeV) throw KinematicsReconstructionVeto();
       Energy2 m1sq(jets[0].q.m2()),m2sq(jets[1].q.m2());
       return sqrt( ( sqr(s - m1sq - m2sq) - 4.*m1sq*m2sq )
 		   /(4.*s*jets[0].p.vect().mag2()) );
@@ -341,17 +342,17 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
   // check convergence, if it's a problem maybe use Newton iteration?
   else {
     double k1 = 0.,k2 = 1.,k = 0.; 
-    if ( momConsEq( k1, root_s, jets ) < 0.0*MeV ) {
-      while ( momConsEq( k2, root_s, jets ) < 0.0*MeV ) {
+    if ( momConsEq( k1, root_s, jets ) < ZERO ) {
+      while ( momConsEq( k2, root_s, jets ) < ZERO ) {
 	k1 = k2; 
 	k2 *= 2;       
       }
       while ( fabs( (k1 - k2)/(k1 + k2) ) > 1.e-10 ) { 
-	if( momConsEq( k2, root_s, jets ) == 0.*MeV ) {
+	if( momConsEq( k2, root_s, jets ) == ZERO ) {
 	  return k2; 
 	} else {
 	  k = (k1+k2)/2.;
-	  if ( momConsEq( k, root_s, jets ) > 0*MeV ) {
+	  if ( momConsEq( k, root_s, jets ) > ZERO ) {
 	    k2 = k;
 	  } else {
 	    k1 = k; 
@@ -476,7 +477,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     JetKinVect jetKinematics;
     bool atLeastOnce = radiated[0];
     LorentzRotation restboost(boosttorest,gammarest);
-    Energy inmass(0.*GeV);
+    Energy inmass(ZERO);
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // only consider final-state jets
       if(!ShowerHardJets[ix]->progenitor()->isFinalState()) {
@@ -509,7 +510,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       unsigned int iloc = UseRandom::irnd(0,possiblepartners.size()-1);
       partner = possiblepartners[iloc].parent;
       nvect = possiblepartners[iloc].p;
-      nvect = Lorentz5Momentum(0.*MeV,0.5*initial->progenitor()->mass()*
+      nvect = Lorentz5Momentum(ZERO,0.5*initial->progenitor()->mass()*
 			       nvect.vect().unit());
       nvect.boost(-boosttorest,gammarest);
       ppartner[0] = possiblepartners[iloc].p;
@@ -587,11 +588,11 @@ solveDecayKFactor(Energy mb,
 		  Lorentz5Momentum ppartner[2],
 		  double & k1, double & k2,
 		  Lorentz5Momentum & qt) const {
-  Energy2 pjn  = partner ? pjet.vect()*n.vect()        : 0.*MeV2;
+  Energy2 pjn  = partner ? pjet.vect()*n.vect()        : ZERO;
   Energy2 pcn  = partner ? ppartner[0].vect()*n.vect() : 1.*MeV2;
   Energy2 nmag = n.vect().mag2();
   Lorentz5Momentum pn = partner ? (pjn/nmag)*n : Lorentz5Momentum();
-  qt=pjet-pn; qt.setE(0.*MeV);
+  qt=pjet-pn; qt.setE(ZERO);
   Energy2 pt2=qt.vect().mag2();
   Energy  Ejet = pjet.e();
   // magnitudes of the momenta for fast access
@@ -615,7 +616,7 @@ solveDecayKFactor(Energy mb,
     ++ix;
     d2    = d1 + pjn/pcn;
     roots = Ejet;
-    ds    = 0.*MeV;
+    ds    = ZERO;
     for(unsigned int iy=0;iy<jetKinematics.size();++iy) {
       if(jetKinematics[iy].parent==partner) continue;
       ea = sqrt(sqr(d2)*pmag[iy]+jetKinematics[iy].q.mass2());
@@ -711,7 +712,7 @@ bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
     Boost boost=((*cit)->pVector()+branch->pVector()).findBoostToCM();
     Lorentz5Momentum pcm = branch->pVector();
     pcm.boost(boost);
-    Lorentz5Momentum nvect = Lorentz5Momentum(0.*MeV,pcm.vect());
+    Lorentz5Momentum nvect = Lorentz5Momentum(ZERO,pcm.vect());
     nvect.boost( -boost);
     (*cit)->nVector(nvect);
   }
@@ -757,7 +758,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
     root.resize(pout.size());
     do {
       // compute new energies
-      Energy sum(0.*MeV);
+      Energy sum(ZERO);
       for(unsigned int ix=0;ix<pout.size();++ix) {
 	root[ix] = sqrt(pmag[ix]/sqr(lambda)+sqr(mon[ix]));
 	sum+=root[ix];
@@ -765,7 +766,7 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
       // if accuracy reached exit
       if(abs(sum/roots-1.)<1e-10) break;
       // use Newton-Raphson to compute new guess for lambda
-      Energy numer(0.*MeV),denom(0.*MeV);
+      Energy numer(ZERO),denom(ZERO);
       for(unsigned int ix=0;ix<pout.size();++ix) {
 	numer +=root[ix];
 	denom +=pmag[ix]/root[ix];
@@ -896,8 +897,8 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   pa *=rot;
   // project and calculate rescaling
   // reference vectors
-  Lorentz5Momentum n1(0.*MeV,0.*MeV,-pa.z(),-pa.z());
-  Lorentz5Momentum n2(0.*MeV,0.*MeV, pa.z(),-pa.z());
+  Lorentz5Momentum n1(ZERO,ZERO,-pa.z(),-pa.z());
+  Lorentz5Momentum n2(ZERO,ZERO, pa.z(),-pa.z());
   Energy2 n1n2 = n1*n2;
   // decompose the momenta
   Lorentz5Momentum qbp=rot*pin[1],qcp= rot*pout[1];
@@ -939,8 +940,8 @@ bool QTildeReconstructor::addIntrinsicPt(vector<ShowerProgenitorPtr> jets) const
     pair<Energy,double> pt=_intrinsic[jets[ix]];
     Energy etemp = jets[ix]->original()->parents()[0]->momentum().z();
     Lorentz5Momentum 
-      p_basis(0*MeV, 0*MeV, etemp, abs(etemp)),
-      n_basis(0*MeV, 0*MeV,-etemp, abs(etemp));
+      p_basis(ZERO, ZERO, etemp, abs(etemp)),
+      n_basis(ZERO, ZERO,-etemp, abs(etemp));
     double alpha = jets[ix]->progenitor()->x();
     double beta  = 0.5*(sqr(jets[ix]->progenitor()->data().mass())+
 			sqr(pt.first))/alpha/(p_basis*n_basis);
@@ -1096,7 +1097,7 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
     radiated |= reconstructSpaceLikeJet(jets[ix]->progenitor());
     assert(!jets[ix]->original()->parents().empty());
     Energy etemp = jets[ix]->original()->parents()[0]->momentum().z();
-    Lorentz5Momentum ptemp = Lorentz5Momentum(0*MeV, 0*MeV, etemp, abs(etemp));
+    Lorentz5Momentum ptemp = Lorentz5Momentum(ZERO, ZERO, etemp, abs(etemp));
     pq.push_back(ptemp);
   }
   // add the intrinsic pt if needed
@@ -1132,7 +1133,7 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   double beta[2] = 
     {getBeta((a[0]+b[0]), (a[0]-b[0]), (k1*a[0]+b[0]/k1), (k1*a[0]-b[0]/k1)),
      getBeta((a[1]+b[1]), (a[1]-b[1]), (a[1]/k2+k2*b[1]), (a[1]/k2-k2*b[1]))};
-  if (pq[0].z() > 0*MeV) {
+  if (pq[0].z() > ZERO) {
     beta[0] = -beta[0]; 
     beta[1] = -beta[1];
   }
@@ -1147,7 +1148,7 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
        parent->momentum().z()/pq[ix].z()>1.) throw KinematicsReconstructionVeto();
     newcmf+=toBoost->momentum();
   }
-  if(newcmf.m()<0.*GeV||newcmf.e()<0.*GeV) throw KinematicsReconstructionVeto();
+  if(newcmf.m()<ZERO||newcmf.e()<ZERO) throw KinematicsReconstructionVeto();
   toRest   = pcm.findBoostToCM();
   fromRest = newcmf.boostVector();
 }
@@ -1164,7 +1165,7 @@ reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pin.push_back((*cit)->branchingParticle()->momentum());
     Energy etemp = (*cit)->beam()->momentum().z();
-    pq.push_back(Lorentz5Momentum(0*MeV, 0*MeV,etemp, abs(etemp)));
+    pq.push_back(Lorentz5Momentum(ZERO, ZERO,etemp, abs(etemp)));
   }
   bool order = (*tree->incoming().begin())->beam()->momentum().z()/pq[0].z()<0.;
   assert(pin.size()==2);
@@ -1185,7 +1186,7 @@ reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
   Energy2 s  = (pq[0] +pq[1] ).m2();
   // calculate the x values 
   double x[2]={sqrt(pcm.mass2()/s*exp(2.*rap)),pcm.mass2()/s/x[0]};
-  if(pq[0].z()<0*MeV) swap(x[0],x[1]);
+  if(pq[0].z()<ZERO) swap(x[0],x[1]);
   double k1=alpha[0]/x[0],k2=beta[1]/x[1];
   double alphanew[2]={alpha[0]/k1,alpha[1]*k2};
   double betanew [2]={beta [0]*k1,beta [1]/k2};
@@ -1193,7 +1194,7 @@ reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
   for(unsigned int ix=0;ix<2;++ix) {
     boost[ix] = getBeta(alpha   [ix]+beta   [ix], alpha[ix]   -beta   [ix], 
 			alphanew[ix]+betanew[ix], alphanew[ix]-betanew[ix]);
-    if (pq[0].z() > 0*MeV) beta[ix]*=-1.;
+    if (pq[0].z() > ZERO) beta[ix]*=-1.;
   }
   // apply the boost the the particles
   // first incoming particle
@@ -1303,7 +1304,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
       Boost boost=((*cjt)->pVector()+branch->pVector()).findBoostToCM();
       Lorentz5Momentum pcm = branch->pVector();
       pcm.boost(boost);
-      Lorentz5Momentum nvect = Lorentz5Momentum(0.*MeV,pcm.vect());
+      Lorentz5Momentum nvect = Lorentz5Momentum(ZERO,pcm.vect());
       nvect.boost( -boost);
       (**cjt).nVector(nvect);
     }
@@ -1322,15 +1323,15 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
       rot.boost(trans);
       Lorentz5Momentum pcm = rot*(**cjt).beam()->momentum();
       rot.invert();
-      (**cjt).nVector(rot*Lorentz5Momentum(0.*GeV,-pcm.vect()));
+      (**cjt).nVector(rot*Lorentz5Momentum(ZERO,-pcm.vect()));
       tHardBranchingPtr branch2 = *cjt;;      
       while (branch2->parent()) {
 	branch2=branch2->parent();
-	branch2->nVector(rot*Lorentz5Momentum(0.*GeV,-pcm.vect()));
+	branch2->nVector(rot*Lorentz5Momentum(ZERO,-pcm.vect()));
       }
     }
     else if(branch->incoming()) {
-      (**cjt).nVector(Lorentz5Momentum(0.*GeV,branch->showerMomentum().vect()));
+      (**cjt).nVector(Lorentz5Momentum(ZERO,branch->showerMomentum().vect()));
     }
   }
   // now compute the new momenta 
@@ -1353,13 +1354,13 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
 Energy QTildeReconstructor::momConsEq(const double & k, 
 				      const Energy & root_s, 
 				      const JetKinVect & jets) const {
-  static const Energy2 eps=1e-9*GeV2;
-  Energy dum = Energy();
+  static const Energy2 eps=1e-8*GeV2;
+  Energy dum = ZERO;
   for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
     Energy2 dum2 = (it->q).m2() + sqr(k)*(it->p).vect().mag2();
-    if(dum2 < Energy2()) {
+    if(dum2 < ZERO) {
       if(dum2 < -eps) throw KinematicsReconstructionVeto();
-      dum2 = Energy2();
+      dum2 = ZERO;
     }
     dum += sqrt(dum2);
   }

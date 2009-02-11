@@ -60,7 +60,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   _coupling[1] = 4.278e-3; 
   _maxweight[1] = 3.53141; 
   _rhoconst=0.;
-  _mpi=0.*MeV;
+  _mpi=ZERO;
   // initialization of the experimental function
   _initialize =false;
   _npoints=100;
@@ -296,7 +296,7 @@ void EtaPiPiGammaDecayer::Init() {
   static Parameter<EtaPiPiGammaDecayer,Energy> interfacefpi
     ("fpi",
      "The pion decay constant",
-     &EtaPiPiGammaDecayer::_fpi, MeV, 130.7*MeV, 0.*MeV, 200.*MeV,
+     &EtaPiPiGammaDecayer::_fpi, MeV, 130.7*MeV, ZERO, 200.*MeV,
      false, false, false); 
 
   static ParVector<EtaPiPiGammaDecayer,int> interfaceIncoming
@@ -353,7 +353,7 @@ void EtaPiPiGammaDecayer::Init() {
   static Parameter<EtaPiPiGammaDecayer,InvEnergy2> interfaceOmnesA
     ("OmnesA",
      "The constant a for the Omnes form of the prefactor",
-     &EtaPiPiGammaDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, 0./GeV2,
+     &EtaPiPiGammaDecayer::_aconst, 1./GeV2, 0.8409082/GeV2, ZERO,
      10./GeV2,
      false, false, false);
 
@@ -540,7 +540,7 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<double> inpow(1,0.0);
   WidthCalculatorBasePtr 
     output(new_ptr(ThreeBodyAllOnCalculator<EtaPiPiGammaDecayer>
-		   (inweights,intype,inmass,inwidth,inpow,*this,imode,_mpi,_mpi,0.*MeV)));
+		   (inweights,intype,inmass,inwidth,inpow,*this,imode,_mpi,_mpi,ZERO)));
   return output;
 }
 

@@ -62,7 +62,7 @@ double MEfv2vf::me2() const {
   VBVector vecIn(2), vecOut(3);
   SpinorBarVector spb(2);
   double fullme(0.);
-  bool mc = !(mePartonData()[2]->mass() > 0.*MeV);
+  bool mc = !(mePartonData()[2]->mass() > ZERO);
   if(mePartonData()[0]->id() > 0) {
     for(unsigned int i = 0; i < 2; ++i) {
       sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i, 
@@ -342,7 +342,7 @@ void MEfv2vf::constructVertex(tSubProPtr sub) {
   // and this constructor sets the '1' polarisation at element [2] 
   //in the vector
   v1[1] = v1[2];
-  bool mc = !(ext[2]->data().mass() > 0.*MeV);
+  bool mc = !(ext[2]->data().mass() > ZERO);
   VectorWaveFunction(v3, ext[2], outgoing, true, mc);
   SpinorVector sp;  SpinorBarVector sbar;
   double dummy(0.);

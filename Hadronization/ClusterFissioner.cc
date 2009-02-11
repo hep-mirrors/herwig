@@ -64,19 +64,19 @@ void ClusterFissioner::Init() {
   // ClMax for light, Bottom, Charm and exotic (e.g. Susy) quarks
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxLight ("ClMaxLight","cluster max mass for light quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxLight, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxBottom ("ClMaxBottom","cluster max mass  for b quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxBottom, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxBottom, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxCharm ("ClMaxCharm","cluster max mass for c quarks  (unit [GeV])",
-                    &ClusterFissioner::_clMaxCharm, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxCharm, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
   static Parameter<ClusterFissioner,Energy>
     interfaceClMaxExotic ("ClMaxExotic","cluster max mass  for exotic quarks (unit [GeV])",
-                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+                    &ClusterFissioner::_clMaxExotic, GeV, 3.35*GeV, ZERO, 10.0*GeV,
 		    false,false,false);
  
  // ClPow for light, Bottom, Charm and exotic (e.g. Susy) quarks
@@ -135,7 +135,7 @@ void ClusterFissioner::Init() {
     ("StringTension",
      "String tension used in vertex displacement calculation",
      &ClusterFissioner::_kappa, GeV/meter, 
-     1.0e15*GeV/meter, 0.0*GeV/meter, 0*GeV/meter,
+     1.0e15*GeV/meter, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
 }
@@ -271,7 +271,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(ClusterPtr & cluster,
   // Initialization for the exponential ("soft") mass distribution.
   static const int max_loop = 1000;
   int counter = 0;
-  Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy(),m=Energy();
+  Energy Mc1 = ZERO, Mc2 = ZERO,m1=ZERO,m2=ZERO,m=ZERO;
   bool toHadron1(false), toHadron2(false);
   PPtr newPtr1 = PPtr ();
   PPtr newPtr2 = PPtr ();

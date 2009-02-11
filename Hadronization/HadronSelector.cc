@@ -774,7 +774,7 @@ pair<tcPDPtr,tcPDPtr> HadronSelector::lightestHadronPair(tcPDPtr ptr1, tcPDPtr p
 
   tcPDPtr vIdHad1[2]={tcPDPtr(),tcPDPtr()},vIdHad2[2]={tcPDPtr(),tcPDPtr()};
   bool vOk[2] = {false, false};
-  Energy vMassPair[2] = { Energy(), Energy() };
+  Energy vMassPair[2] = { ZERO, ZERO };
   for (int i = 0; i < 2; i++) {
     tcPDPtr idPartner = i==0 ? getParticleData(ParticleID::d) : getParticleData(ParticleID::u);
     // Change sign to idPartner (transform it into a anti-quark) if it is not

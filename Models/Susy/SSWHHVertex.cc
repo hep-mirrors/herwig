@@ -23,7 +23,7 @@ using namespace Herwig;
 
 SSWHHVertex::SSWHHVertex() : 
   theSw(0.), theS2w(0.), theC2w(0.), thesbma(0.), thecbma(0.), 
-  theGBlast(0), theHlast(0), theCouplast(0.), theq2last(0.*MeV2), 
+  theGBlast(0), theHlast(0), theCouplast(0.), theq2last(ZERO), 
   theElast(0.) {
   vector<long> first, second, third;
   //photon

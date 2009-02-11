@@ -24,7 +24,7 @@
 using namespace Herwig;
 
 const complex<Energy2> 
-GGtoHHardGenerator::_epsi = complex<Energy2>(0.*GeV2,-1.e-10*GeV2);
+GGtoHHardGenerator::_epsi = complex<Energy2>(ZERO,-1.e-10*GeV2);
 
 GGtoHHardGenerator::GGtoHHardGenerator() : _power(2.0),_pregg(5.),
 					   _preqg(3.),_pregqbar(3.),
@@ -86,7 +86,7 @@ void GGtoHHardGenerator::Init() {
     ("minPt",
      "The pt cut on hardest emision generation"
      "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
-     &GGtoHHardGenerator::_min_pt, GeV, 2.*GeV, 0*GeV, 100000.0*GeV,
+     &GGtoHHardGenerator::_min_pt, GeV, 2.*GeV, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
   static Parameter<GGtoHHardGenerator,unsigned int> interfaceMaximumInLoop
     ("MaximumInLoop",
@@ -324,7 +324,7 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   // maximum pt (half of centre-of-mass energy)
   Energy maxp = 0.5*generator()->maximumCMEnergy();
   // set pt of emission to zero
-  _pt=0.*GeV;
+  _pt=ZERO;
   //Working Variables
   Energy pt;
   double yj;
@@ -349,7 +349,7 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
       //no emission event if p goes past p min - basically set to outside
       //of the histogram bounds (hopefully hist object just ignores it)
       if(pt<_min_pt){
-	pt=0.0*GeV;
+	pt=ZERO;
 	reject = false;
       }
       if(wgt>1.0) {
@@ -370,7 +370,7 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   }
   //was this an (overall) no emission event?
   if(_pt<_min_pt){ 
-    _pt=0.0*GeV;
+    _pt=ZERO;
     emis_type = 5;
   }
   if(emis_type==5) return false;
@@ -389,26 +389,26 @@ bool GGtoHHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   // Energy2 sh = x*y*s;
   // reconstruct the momenta
   // incoming momenta
-  pnew.push_back(Lorentz5Momentum(0.*MeV,0.*MeV,
-				   x*0.5*sqrt(s), x*0.5*sqrt(s),0.*MeV));
-  pnew.push_back(Lorentz5Momentum(0.*MeV,0.*MeV,
-				  -y*0.5*sqrt(s), y*0.5*sqrt(s),0.*MeV));
+  pnew.push_back(Lorentz5Momentum(ZERO,ZERO,
+				   x*0.5*sqrt(s), x*0.5*sqrt(s),ZERO));
+  pnew.push_back(Lorentz5Momentum(ZERO,ZERO,
+				  -y*0.5*sqrt(s), y*0.5*sqrt(s),ZERO));
   // outgoing momenta
   double phi(Constants::twopi*UseRandom::rnd());
   double sphi(sin(phi)),cphi(cos(phi));
   pnew.push_back(Lorentz5Momentum( cphi*_pt, sphi*_pt, et*sinh(_yh),
 				   et*cosh(_yh), _mass));
   pnew.push_back(Lorentz5Momentum(-cphi*_pt,-sphi*_pt,_pt*sinh(_yj),
-				  _pt*cosh(_yj),0.*MeV));
+				  _pt*cosh(_yj),ZERO));
   return true;
 }
 
 Complex GGtoHHardGenerator::B(Energy2 s,Energy2 mf2) const {
   Complex output,pii(0.,Constants::pi);
   double rat=s/(4.*mf2);
-  if(s<0.*GeV2)
+  if(s<ZERO)
     output=2.-2.*sqrt(1.-1./rat)*log(sqrt(-rat)+sqrt(1.-rat));
-  else if(s>=0.*GeV2&&rat<1.)
+  else if(s>=ZERO&&rat<1.)
     output=2.-2.*sqrt(1./rat-1.)*asin(sqrt(rat));
   else
     output=2.-sqrt(1.-1./rat)*(2.*log(sqrt(rat)+sqrt(rat-1.))-pii);
@@ -419,9 +419,9 @@ complex<InvEnergy2> GGtoHHardGenerator::C(Energy2 s,Energy2 mf2) const {
   complex<InvEnergy2> output;
   Complex pii(0.,Constants::pi);
   double rat=s/(4.*mf2);
-  if(s<0.*GeV2)
+  if(s<ZERO)
     output=2.*sqr(log(sqrt(-rat)+sqrt(1.-rat)))/s;
-  else if(s>=0.*GeV2&&rat<1.)
+  else if(s>=ZERO&&rat<1.)
     output=-2.*sqr(asin(sqrt(rat)))/s;
   else {
     double cosh=log(sqrt(rat)+sqrt(rat-1.));
@@ -432,7 +432,7 @@ complex<InvEnergy2> GGtoHHardGenerator::C(Energy2 s,Energy2 mf2) const {
   
 Complex GGtoHHardGenerator::dIntegral(Energy2 a, Energy2 b, double y0) const {
   Complex output;
-  if(b==0.*GeV2) output=0.;
+  if(b==ZERO) output=0.;
   else {
     Complex y1=0.5*(1.+sqrt(1.-4.*(a+_epsi)/b));
     Complex y2=1.-y1;
@@ -538,10 +538,10 @@ Energy2 GGtoHHardGenerator::ggME(Energy2 s, Energy2 t, Energy2 u) {
   Energy2 output;
   if(_massopt==0) {
     complex<Energy> me[2][2][2];
-    me[1][1][1] = 0.*GeV;
-    me[1][1][0] = 0.*GeV;
-    me[0][1][0] = 0.*GeV;
-    me[0][1][1] = 0.*GeV;
+    me[1][1][1] = ZERO;
+    me[1][1][0] = ZERO;
+    me[0][1][0] = ZERO;
+    me[0][1][1] = ZERO;
     for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       _bi[1]=B(s,mf2);
@@ -591,7 +591,7 @@ Energy2 GGtoHHardGenerator::ggME(Energy2 s, Energy2 t, Energy2 u) {
 Energy2 GGtoHHardGenerator::qgME(Energy2 s, Energy2 t, Energy2 u) {
   Energy2 output;
   if(_massopt==0) {
-    complex<Energy2> A(0.*GeV2);
+    complex<Energy2> A(ZERO);
     Energy2 si(u-_mh2);
     for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
@@ -610,7 +610,7 @@ Energy2 GGtoHHardGenerator::qgME(Energy2 s, Energy2 t, Energy2 u) {
 Energy2 GGtoHHardGenerator::qbargME(Energy2 s, Energy2 t, Energy2 u) {
   Energy2 output;
   if(_massopt==0) {
-    complex<Energy2> A(0.*GeV2);
+    complex<Energy2> A(ZERO);
     Energy2 si(u-_mh2);
     for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
@@ -682,7 +682,7 @@ double GGtoHHardGenerator::getResult(int emis_type, Energy pt, double yj,
   }
   //deals with pdf zero issue at large x
   if(pdf[0]<=0.||pdf[1]<=0.||pdf[2]<=0.||pdf[3]<=0.) {
-    res = 0./GeV2;
+    res = ZERO;
   }
   else {
     res *= pdf[2]*pdf[3]/pdf[0]/pdf[1]*_mh2/sh;

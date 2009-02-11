@@ -262,7 +262,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
   Energy mh(_mh);
   if(_shapeopt!=0) {
     Energy mhmax = min(roots ,mePartonData()[4]->massMax());
-    Energy mhmin = max(0.*GeV,mePartonData()[4]->massMin());
+    Energy mhmin = max(ZERO,mePartonData()[4]->massMin());
     if(mhmax<=mhmin) return false;
     double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
     double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
@@ -291,20 +291,20 @@ bool MEfftoffH::generateKinematics(const double * r) {
   double cost12 = stheta[0]*stheta[1]*cos(phi12)+ctheta[0]*ctheta[1];
   // momentum of 2
   Energy p2 = 0.5*(sHat()-2.*roots*p1-sqr(mh))/(roots-p1*(1.-cost12));
-  if(p2<0.*GeV) return false;
+  if(p2<ZERO) return false;
   // construct the momenta
   // first outgoing particle
   meMomenta()[2].setX(stheta[0]*p1);
-  meMomenta()[2].setY(0.*GeV);
+  meMomenta()[2].setY(ZERO);
   meMomenta()[2].setZ(ctheta[0]*p1);
   meMomenta()[2].setT(p1);
-  meMomenta()[2].setMass(0.*GeV);
+  meMomenta()[2].setMass(ZERO);
   // second outgoing particle
   meMomenta()[3].setX(stheta[1]*cos(phi12)*p2);
   meMomenta()[3].setY(stheta[1]*sin(phi12)*p2);
   meMomenta()[3].setZ(ctheta[1]*p2);
   meMomenta()[3].setT(p2);
-  meMomenta()[3].setMass(0.*GeV);
+  meMomenta()[3].setMass(ZERO);
   // finally the higgs
   meMomenta()[4].setX(-meMomenta()[2].x()-meMomenta()[3].x());
   meMomenta()[4].setY(-meMomenta()[2].y()-meMomenta()[3].y());

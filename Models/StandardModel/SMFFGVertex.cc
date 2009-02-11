@@ -52,7 +52,7 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
 				     << Exception::runerror;
 }
 
-SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
+SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
   // PDG codes for the particles
   vector<long> first,second,third;
   for(int ix=1;ix<7;++ix) {

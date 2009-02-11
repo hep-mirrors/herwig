@@ -27,66 +27,66 @@ void RadiativeHeavyBaryonDecayer::doinitrun() {
 RadiativeHeavyBaryonDecayer::RadiativeHeavyBaryonDecayer() {
   // Xi_c' to Xi_c
   _incoming.push_back(4312);_outgoingB.push_back(4132);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(1.1004e-5/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.1004e-5/MeV);
   _incoming.push_back(4322);_outgoingB.push_back(4232);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(9.4102e-5/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(9.4102e-5/MeV);
   // Xi_b' to Xi_b
   _incoming.push_back(5312);_outgoingB.push_back(5132);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(1.1004e-5/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.1004e-5/MeV);
   _incoming.push_back(5322);_outgoingB.push_back(5232);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(9.4102e-5/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(9.4102e-5/MeV);
   // sigma_c*+ to Lambda_c+
   _incoming.push_back(4214);_outgoingB.push_back(4122);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(3.76e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.76e-4/MeV);
   // sigma_b*+ to Lambda_b+
   _incoming.push_back(5214);_outgoingB.push_back(5122);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(3.76e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.76e-4/MeV);
   // Xi_c* to Xi_c
   _incoming.push_back(4314);_outgoingB.push_back(4132);_maxweight.push_back(0.005);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(0.374e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(0.374e-4/MeV);
   _incoming.push_back(4324);_outgoingB.push_back(4232);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(3.2486e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.2486e-4/MeV);
   // Xi_b* to Xi_b
   _incoming.push_back(5314);_outgoingB.push_back(5132);_maxweight.push_back(0.005);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(1.0132e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.0132e-4/MeV);
   _incoming.push_back(5324);_outgoingB.push_back(5232);_maxweight.push_back(0.05);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(3.2486e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(3.2486e-4/MeV);
   // sigma_c+ to Lambda_c+
   _incoming.push_back(4212);_outgoingB.push_back(4122);_maxweight.push_back(0.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(1.088e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.088e-4/MeV);
   // sigma_b+ to Lambda_b+
   _incoming.push_back(5212);_outgoingB.push_back(5122);_maxweight.push_back(0.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(1.088e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(1.088e-4/MeV);
   // sigma_c* to sigma_c
   _incoming.push_back(4224);_outgoingB.push_back(4222);_maxweight.push_back(0.008);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back( 3.337e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 3.337e-4/MeV);
   _incoming.push_back(4214);_outgoingB.push_back(4212);_maxweight.push_back(0.003);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back( 0.834e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 0.834e-4/MeV);
   _incoming.push_back(4114);_outgoingB.push_back(4112);_maxweight.push_back(0.0012);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(-1.688e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-1.688e-4/MeV);
   // Xi_c* to Xi'_c
   _incoming.push_back(4314);_outgoingB.push_back(4312);_maxweight.push_back(0.012);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(-6.110e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-6.110e-4/MeV);
   _incoming.push_back(4324);_outgoingB.push_back(4322);_maxweight.push_back(0.006);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(-3.607e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-3.607e-4/MeV);
   // Omega_c* to Omega_c
   _incoming.push_back(4334);_outgoingB.push_back(4332);_maxweight.push_back(2.4);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back( 1.055e-3/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 1.055e-3/MeV);
   // sigma_b* to sigma_b
   _incoming.push_back(5224);_outgoingB.push_back(5222);_maxweight.push_back(0.06);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back( 9.945e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 9.945e-4/MeV);
   _incoming.push_back(5214);_outgoingB.push_back(5212);_maxweight.push_back(0.004);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back( 2.486e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 2.486e-4/MeV);
   _incoming.push_back(5114);_outgoingB.push_back(5112);_maxweight.push_back(0.015);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(-4.973e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-4.973e-4/MeV);
   // Xi_b* to Xi'_b
   _incoming.push_back(5314);_outgoingB.push_back(5312);_maxweight.push_back(0.007);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(-4.371e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-4.371e-4/MeV);
   _incoming.push_back(5324);_outgoingB.push_back(5322);_maxweight.push_back(0.005);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back( 3.088e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back( 3.088e-4/MeV);
   // Omega_b* to Omega_b
   _incoming.push_back(5334);_outgoingB.push_back(5332);_maxweight.push_back(2.1);
-  _modetype.push_back(1);_e1coupling.push_back(0./MeV2);_m1coupling.push_back(-3.769e-4/MeV);
+  _modetype.push_back(1);_e1coupling.push_back(ZERO);_m1coupling.push_back(-3.769e-4/MeV);
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates
@@ -182,14 +182,15 @@ void RadiativeHeavyBaryonDecayer::Init() {
   static ParVector<RadiativeHeavyBaryonDecayer,InvEnergy> interfaceM1Coupling
     ("M1Coupling",
      "The coupling for the M1 modes",
-     &RadiativeHeavyBaryonDecayer::_m1coupling, 1./MeV, -1, 0./MeV,0*1./MeV, 0*1./MeV,
+     &RadiativeHeavyBaryonDecayer::_m1coupling, 
+     1./MeV, -1, ZERO, ZERO, ZERO,
      false, false, false);
 
   static ParVector<RadiativeHeavyBaryonDecayer,InvEnergy2> interfaceE1Coupling
     ("E1Coupling",
      "The coupling for the E1 modes",
      &RadiativeHeavyBaryonDecayer::_e1coupling,
-     1./MeV/MeV, -1,  0./MeV/MeV, 0*1./MeV/MeV, 0*1./MeV/MeV,
+     1./MeV/MeV, -1,  ZERO, ZERO, ZERO,
      false, false, false);
 
   static ParVector<RadiativeHeavyBaryonDecayer,int> interfaceIncoming

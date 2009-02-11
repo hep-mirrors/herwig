@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(0.*GeV2), 
+SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
 			     _rightlast(0.) {
   vector<long> first, second, third;

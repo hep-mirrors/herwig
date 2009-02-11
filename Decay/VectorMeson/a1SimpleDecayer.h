@@ -160,7 +160,7 @@ private:
     Energy q(sqrt(q2));
     Energy mass  = _rhomass[ires], width = _rhowidth[ires];
     Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi));
-    Energy pcm = 2.*_mpi<q ? Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi) : 0.*MeV;
+    Energy pcm = 2.*_mpi<q ? Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi) : ZERO;
     Energy gamrun(width*mass*Math::Pow<3>(pcm/pcm0)/q);
     return -sqr(mass)/complex<Energy2>(q2-mass*mass,mass*gamrun);
   }

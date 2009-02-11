@@ -1,0 +1,116 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MySimpleAnalysis class.
+//
+
+namespace Herwig {
+
+inline MySimpleAnalysis::MySimpleAnalysis() :
+  _ptZ(4,Histogram(0.,250.,250)), _ptWp(4,Histogram(0.,250.,250)),_ptWm(4,Histogram(0.,250.,250)), 
+  _mWp(-250.,250.,100),_mZ(-250.,250.,100),_mWm(-250.,250.,100),
+  _rapZ(-4.,4., 40), _rapWp(-4.,4., 40),_rapWm(-4.,4., 40),
+  _phiZ(0.,3.2, 32), _phiWp(0.,3.2, 32), _phiWm(0.,3.2, 32),
+  _rapem(-4.,4., 40),_rapep(-4.,4., 40),_rapnu(-4.,4., 40),_rapanu(-4.,4., 40),
+  _phiem(0.,3.2, 32),_phiep(0.,3.2, 32), _phinu(0.,3.2, 32),_phianu(0.,3.2, 32),
+  
+     _ptW4(0.,20.,10),
+     _ptW5(20.,40.,4),
+     _ptW6(40.,80.,4),
+     _ptW7(80.,100.,1),
+     _ptW8(100.,120.,1),
+     _ptW9(120.,160.,1),
+     _ptW10(160.,200.,1),
+     _ptZ4(0.,12.,24),
+     _ptZ5(12.,20.,8),
+     _ptZ6(20.,30.,5),
+     _ptZ7(30.,50.,5),
+     _ptZ8(50.,100.,5),
+     _ptZ9(100.,150.,2),
+     _ptZ10(150.,200.,1)
+
+
+{}
+  
+
+inline IBPtr MySimpleAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MySimpleAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+inline void MySimpleAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  string fname = generator()->filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
+  string title;
+  using namespace HistogramOptions;
+     title="pT of Z boson for data comparison with CDF Run I at 1.8TeV";
+     _ptZ4.topdrawOutput(outfile,Frame,"",title);
+     _ptZ5.topdrawOutput(outfile,None,"", title="");
+    _ptZ6.topdrawOutput(outfile,None,"",title="");
+     _ptZ7.topdrawOutput(outfile,None,"",title="");
+    _ptZ8.topdrawOutput(outfile,None,"",title="");
+    _ptZ9.topdrawOutput(outfile,None,"",title="");
+    _ptZ10.topdrawOutput(outfile,None,"BLACK",title="");
+     title="pT of W boson for data comparison with D0 Run I at 1.8TeV";
+     _ptW4.topdrawOutput(outfile,Frame,"",title);
+     _ptW5.topdrawOutput(outfile,None,"", title="");
+    _ptW6.topdrawOutput(outfile,None,"",title="");
+     _ptW7.topdrawOutput(outfile,None,"",title="");
+    _ptW8.topdrawOutput(outfile,None,"",title="");
+    _ptW9.topdrawOutput(outfile,None,"",title="");
+    _ptW10.topdrawOutput(outfile,None,"BLACK",title="");
+
+   _phianu.topdrawOutput(outfile,Frame,"BLACK","Azimuth of anitneutrino");
+   _phinu.topdrawOutput(outfile,Frame,"BLACK","Azimuth of neutrino");
+   _phiep.topdrawOutput(outfile,Frame,"BLACK","Azimuth of positron");
+   _phiem.topdrawOutput(outfile,Frame,"BLACK","Azimuth of electron");
+   
+   _rapanu.topdrawOutput(outfile,Frame,"BLACK","Rapidity of anitneutrino");
+   _rapnu.topdrawOutput(outfile,Frame,"BLACK","Rapidity of neutrino");
+   _rapep.topdrawOutput(outfile,Frame,"BLACK","Rapidity of positron");
+   _rapem.topdrawOutput(outfile,Frame,"BLACK","Rapidity of electron");
+    for(unsigned int ix=0;ix<1;++ix)
+       {
+	       if(ix==0){title="pt of Z for all masses ";}
+      else if(ix==1){title="pt of Z for mass 40-80 GeV";}
+      else if(ix==2){title="pt of Z for mass 80-100 GeV";}
+      else if(ix==3){title="pt of Z for mass 100- GeV";}
+	       // _ptZ[ix].topdrawOutput(outfile,Frame,"BLACK",title);
+       _ptZ[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
+         if(ix==0){title="pt of Wp for all masses ";}
+      else if(ix==1){title="pt of Wp for mass 40-80 GeV";}
+      else if(ix==2){title="pt of Wp for mass 80-100 GeV";}
+      else if(ix==3){title="pt of Wp for mass 100- GeV";}
+	 //   _ptWp[ix].topdrawOutput(outfile,Frame,"BLACK",title);
+       _ptWp[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
+          if(ix==0){title="pt of Wm for all masses ";}
+      else if(ix==1){title="pt of Wm for mass 40-80 GeV";}
+      else if(ix==2){title="pt of Wm for mass 80-100 GeV";}
+      else if(ix==3){title="pt of Wm for mass 100- GeV";}
+	  //   _ptWm[ix].topdrawOutput(outfile,Frame,"BLACK",title);
+       _ptWm[ix].topdrawOutput(outfile,Frame|Ylog,"BLACK",title);
+       }
+      _mWp.topdrawOutput(outfile,Frame,"BLACK","Mass of Wp");
+      _mZ.topdrawOutput(outfile,Frame,"BLACK","Mass of Z");
+      //_mZ.topdrawOutput(outfile,Frame|Ylog,"BLACK", "Mass of Z");
+    
+ //  _mWp.topdrawOutput(outfile,Frame|Ylog,"BLACK", "Mass of Wp");
+  _mWm.topdrawOutput(outfile,Frame,"BLACK","Mass of Wm");
+//   _mWm.topdrawOutput(outfile,Frame|Ylog,"BLACK", "Mass of Wm");
+    _rapZ.topdrawOutput(outfile,Frame,"BLACK","Rapidity of Z");
+//   _rapZ.topdrawOutput(outfile,Frame|Ylog,"BLACK","Rapidity of Z");
+  _rapWp.topdrawOutput(outfile,Frame,"BLACK","Rapidity of Wp");
+//   _rapWp.topdrawOutput(outfile,Frame|Ylog,"BLACK","Rapidity of Wp");
+  _rapWm.topdrawOutput(outfile,Frame,"BLACK","Rapidity of Wm");
+//   _rapWm.topdrawOutput(outfile,Frame|Ylog,"BLACK","Rapidity of Wm");
+
+   _phiZ.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Z");
+   _phiWp.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Wp");
+   _phiWm.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Wm");
+}
+}

@@ -27,7 +27,7 @@ KtLorentzVector KtJetInterface::convert(tcPPtr particle) {
   return KtLorentzVector(p.x()/MeV, p.y()/MeV, p.z()/MeV, p.e()/MeV);
 }
 
-int KtJetInterface::getThePEGID(KtLorentzVector &kv) {
+int KtJetInterface::getThePEGID(const KtLorentzVector &kv) {
   return Kt2PythiaMap[kv.getID()];
 }
 

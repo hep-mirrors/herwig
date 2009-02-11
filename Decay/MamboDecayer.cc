@@ -67,7 +67,7 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
     out[0] = children[0]->produceParticle(parent.momentum());
     return out;
   }
-  Energy totalMass(0.0*MeV);
+  Energy totalMass(ZERO);
   for(int i = 0; i < N; ++i) {
     totalMass += children[i]->mass();
   }
@@ -109,8 +109,8 @@ ParticleVector MamboDecayer::decay(const Particle & parent,
 double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
 				       Energy comEn) const {
   const int N = mom.size();
-  Energy rmtot(0.0*GeV);
-  Energy2 rm2tot(0.0*GeV2);
+  Energy rmtot(ZERO);
+  Energy2 rm2tot(ZERO);
   for(int i = 0;i < N;++i) {
     rmtot += mom[i].mass();
     rm2tot += mom[i].mass2();
@@ -119,15 +119,15 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   Energy wmax = (2.0/3.0)*wb;
   const Energy tol(1e-12*MeV);
   long double r(0.), sf1(0.);
-  Energy2 sm2f2(0.*GeV2);
-  Energy sf(0.*MeV), sff1(0.*MeV), w(0.*MeV), 
-    wold(wmax), err(0.*MeV);
+  Energy2 sm2f2(ZERO);
+  Energy sf(ZERO), sff1(ZERO), w(ZERO), 
+    wold(wmax), err(ZERO);
   unsigned int iter(0), maxiter(50);
   do {
-    sf = 0.*MeV; sf1 = 0.; sff1 = 0.*MeV; sm2f2 = 0.*GeV2;        
+    sf = ZERO; sf1 = 0.; sff1 = ZERO; sm2f2 = ZERO;        
     for(int i = 0;i < N;++i) {
       r = abs(mom[i].mass()/wold);
-      Energy f(0.*MeV);
+      Energy f(ZERO);
       long double f1(0.);
       if (r == 0.0) {
 	f=2.*wold;
@@ -193,7 +193,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
 
   //Perform lorentz boost from k to q
   vector<Lorentz5Momentum> q(N);
-  Energy q0=0.*MeV, q1=0.*MeV, q2=0.*MeV, q3=0.*MeV;
+  Energy q0=ZERO, q1=ZERO, q2=ZERO, q3=ZERO;
   long double t=0.;
   vector<Energy2> qsq(N);
   for(int i = 0;i<N;++i){
@@ -211,7 +211,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   iter = 0;
   do {
     Energy f = -comEn;
-    Energy f1 = 0.0*MeV;
+    Energy f1 = ZERO;
     for(int i = 0; i < N; ++i)	    {
       en[i] = sqrt((xiold*xiold*qsq[i]) + mom[i].mass2());
       f += en[i];
@@ -229,7 +229,7 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
   
   //Calculate weight of distribution
   double s1(1.);
-  Energy s2(0.*MeV),s3(0.*MeV);
+  Energy s2(ZERO),s3(ZERO);
   double wxi(0.);
   for(int i=0;i<N;++i) {
     s1 *= q[i].e()/mom[i].e();

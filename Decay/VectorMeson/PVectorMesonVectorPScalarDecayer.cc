@@ -302,7 +302,7 @@ void PVectorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PVectorMesonVectorPScalarDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 100./GeV, false, false, true);
 
   static ParVector<PVectorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -335,7 +335,7 @@ double PVectorMesonVectorPScalarDecayer::me2(const int,
   VectorWaveFunction::calculateWaveFunctions(_vectors[1],decay[0],outgoing,photon);
   // compute the matrix element
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
-  complex<Energy> epsdot(0.*MeV);
+  complex<Energy> epsdot(ZERO);
   InvEnergy2 pre(_coupling[imode()]/inpart.mass());
   for(unsigned ix=0;ix<3;++ix) {
     if(ix==1&&photon) {

@@ -18,7 +18,7 @@ using namespace ThePEG::Helicity;
 
 AnomalousWWHVertex::AnomalousWWHVertex() 
   : interactionType_(0), Lambda_(1000.*GeV),
-    couplast_(0.), q2last_(0.*GeV2), mw_(0.*GeV), zfact_(0.) {
+    couplast_(0.), q2last_(ZERO), mw_(ZERO), zfact_(0.) {
   // particles
   vector<long> first,second,third;
   first.push_back(24);  
@@ -91,7 +91,7 @@ void AnomalousWWHVertex::Init() {
   static Parameter<AnomalousWWHVertex,Energy> interfaceLambda
     ("Lambda",
      "The scale of new physics",
-     &AnomalousWWHVertex::Lambda_, GeV, 1000.0*GeV, 0.0*GeV, 1000000.0*GeV,
+     &AnomalousWWHVertex::Lambda_, GeV, 1000.0*GeV, ZERO, 1000000.0*GeV,
      false, false, Interface::limited);
 
 }

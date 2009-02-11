@@ -45,7 +45,7 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     n_bb.boost( beta_bb );
     // set first in b2b frame along z-axis (assuming that p and n are
     // b2b as checked above)
-    dq=Lorentz5Momentum(0.0*MeV, 0.0*MeV, (alpha - beta)*p_bb.vect().mag(), 
+    dq=Lorentz5Momentum(ZERO, ZERO, (alpha - beta)*p_bb.vect().mag(), 
 			alpha*p_bb.t() + beta*n_bb.t());
     // add transverse components
     dq.setX(px);
@@ -77,7 +77,7 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     n_bb.boost( beta_bb );
     // set first in b2b frame along z-axis (assuming that p and n are
     // b2b as checked above)
-    dq=Lorentz5Momentum (0.0*MeV, 0.0*MeV, 0.5*beta*pVector().mass(), 
+    dq=Lorentz5Momentum (ZERO, ZERO, 0.5*beta*pVector().mass(), 
 			 alpha*pVector().mass() + 0.5*beta*pVector().mass());
     // add transverse components
     dq.setX(px);

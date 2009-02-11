@@ -29,7 +29,7 @@ MEPP2Higgs::MEPP2Higgs() :
 
   scaleopt_(1),  mu_F_(100.*GeV)                        ,
   shapeopt_(2),  processopt_(1)     ,  minflavouropt_(4), maxflavouropt_(5), 
-  mh_(0.*GeV) ,  wh_(0.*GeV)
+  mh_(ZERO) ,  wh_(ZERO)
 {}
 
 ClassDescription<MEPP2Higgs> MEPP2Higgs::initMEPP2Higgs;

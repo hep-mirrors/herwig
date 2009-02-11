@@ -207,13 +207,13 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle(),
 					  fin[inhel1],p1[outhel1]);
-	  diag[0] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],p2[outhel2]);
+	  diag[0] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],p2[outhel2]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle(),
 					  fin[inhel1],p2[outhel2]);
-	  diag[1] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],p1[outhel1]);
+	  diag[1] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],p1[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
 	  diag1 += norm(diag[0]);
@@ -313,7 +313,7 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
   //    cerr << "testing ratio " << sum/test/sqr(charge)*2. << endl;
   // final factors
   if(calc) _me.reset(newme);
-  return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(0.*GeV2));
+  return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(ZERO));
 }
 
 void MEPP2GammaGamma::constructVertex(tSubProPtr sub) {

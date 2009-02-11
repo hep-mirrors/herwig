@@ -157,7 +157,7 @@ void SemiLeptonicScalarDecayer::Init() {
     ("GFermi",
      "The Fermi coupling constant",
      &SemiLeptonicScalarDecayer::_GF, 1./GeV2, 1.16639E-5/GeV2,
-     0./GeV2, 1.e-4/GeV2,
+     ZERO, 1.e-4/GeV2,
      false, false, false);
 
   static Reference<SemiLeptonicScalarDecayer,LeptonNeutrinoCurrent> interfaceCurrent

@@ -61,7 +61,7 @@ bool MEMinBias::generateKinematics(const double *) {
     meMomenta()[i] = Lorentz5Momentum(mePartonData()[i]->generateMass());
   }
 
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
@@ -69,7 +69,7 @@ bool MEMinBias::generateKinematics(const double *) {
     return false;
   }
 
-  Energy pt = 0*GeV;
+  Energy pt = ZERO;
   meMomenta()[2].setVect(Momentum3( pt,  pt, q));
   meMomenta()[3].setVect(Momentum3(-pt, -pt, -q));
 

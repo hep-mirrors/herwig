@@ -73,9 +73,9 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(),
   _rD0  = 5.0/GeV;
   _rres = 1.5/GeV;
   // zero masses
-  _mpi=0.*MeV;
-  _mkp=0.*MeV;
-  _mk0=0.*MeV;
+  _mpi=ZERO;
+  _mkp=ZERO;
+  _mk0=ZERO;
   // intermediates
   generateIntermediates(true);
 }
@@ -419,157 +419,157 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy> interfaceOmegaMass
     ("OmegaMass",
      "The mass of the omega meson",
-     &DtoKPiPiCLEO::_momega, MeV, 782.57*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_momega, MeV, 782.57*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef980Mass
     ("f980Mass",
      "The mass of the f_0(980) meson",
-     &DtoKPiPiCLEO::_mf980, MeV, 977.00*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mf980, MeV, 977.00*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef_2Mass
     ("f_2Mass",
      "The mass of the f_2 meson",
-     &DtoKPiPiCLEO::_mf2, MeV, 1275.4 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mf2, MeV, 1275.4 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef1370Mass
     ("f1370Mass",
      "The mass of the f_0(1370) meson",
-     &DtoKPiPiCLEO::_mf1370, MeV, 1310   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mf1370, MeV, 1310   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_01430Mass
     ("K_01430Mass",
      "The mass of the K_0(1430) meson",
-     &DtoKPiPiCLEO::_mK14300, MeV, 1412   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK14300, MeV, 1412   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_21430Mass
     ("K_21430Mass",
      "The mass of the K_2(1430) meson",
-     &DtoKPiPiCLEO::_mK14302, MeV, 1425.6 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK14302, MeV, 1425.6 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar1680Mass
     ("Kstar1680Mass",
      "The mass of the K*(1680) meson",
-     &DtoKPiPiCLEO::_mK1680, MeV, 1717   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK1680, MeV, 1717   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho1700Mass
     ("rho1700Mass",
      "The mass of the rho(1700) meson",
-     &DtoKPiPiCLEO::_mrho1700, MeV, 1700   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mrho1700, MeV, 1700   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar0892Mass
     ("Kstar0892Mass",
      "The mass of the K*0(892) meson",
-     &DtoKPiPiCLEO::_mK8920, MeV, 896.1 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK8920, MeV, 896.1 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892AMass
     ("KstarPlus892AMass",
      "The mass of the K*+(892) meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_mK892A, MeV, 891.5 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK892A, MeV, 891.5 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892BMass
     ("KstarPlus892BMass",
      "The mass of the K*+(892) meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_mK892B, MeV, 891.66*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mK892B, MeV, 891.66*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerhoPlusMass
     ("RhoPlusMass",
      "The mass of the rho+ meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_mrhoA, MeV, 770   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mrhoA, MeV, 770   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho0Mass
     ("Rho0Mass",
      "The mass of the rho+ meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_mrhoB, MeV, 769.3 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_mrhoB, MeV, 769.3 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceOmegaWidth
     ("OmegaWidth",
      "The width of the omega meson",
-     &DtoKPiPiCLEO::_womega, MeV, 8.44*MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_womega, MeV, 8.44*MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef980Width
     ("f980Width",
      "The width of the f_0(980) meson",
-     &DtoKPiPiCLEO::_wf980, MeV,  50.  *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wf980, MeV,  50.  *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef_2Width
     ("f_2Width",
      "The width of the f_2 meson",
-     &DtoKPiPiCLEO::_wf2, MeV, 185.1 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wf2, MeV, 185.1 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacef1370Width
     ("f1370Width",
      "The width of the f_0(1370) meson",
-     &DtoKPiPiCLEO::_wf1370, MeV, 272.0 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wf1370, MeV, 272.0 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_01430Width
     ("K_01430Width",
      "The width of the K_0(1430) meson",
-     &DtoKPiPiCLEO::_wK14300, MeV, 294   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK14300, MeV, 294   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceK_21430Width
     ("K_21430Width",
      "The width of the K_2(1430) meson",
-     &DtoKPiPiCLEO::_wK14302, MeV,  98.5 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK14302, MeV,  98.5 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar1680Width
     ("Kstar1680Width",
      "The width of the K*(1680) meson",
-     &DtoKPiPiCLEO::_wK1680, MeV, 322   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK1680, MeV, 322   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho1700Width
     ("rho1700Width",
      "The width of the rho(1700) meson",
-     &DtoKPiPiCLEO::_wrho1700, MeV, 240   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wrho1700, MeV, 240   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstar0892Width
     ("Kstar0892Width",
      "The width of the K*0(892) meson",
-     &DtoKPiPiCLEO::_wK8920, MeV, 50.5 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK8920, MeV, 50.5 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892AWidth
     ("KstarPlus892AWidth",
      "The width of the K*+(892) meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_wK892A, MeV,  50   *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK892A, MeV,  50   *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfaceKstarPlus892BWidth
     ("KstarPlus892BWidth",
      "The width of the K*+(892) meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_wK892B, MeV, 50.8 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wK892B, MeV, 50.8 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerhoPlusWidth
     ("RhoPlusWidth",
      "The width of the rho+ meson in D0 -> K-pi+pi0",
-     &DtoKPiPiCLEO::_wrhoA, MeV, 150.7 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wrhoA, MeV, 150.7 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,Energy> interfacerho0Width
     ("Rho0Width",
      "The width of the rho+ meson in D0 -> K0pi+pi-",
-     &DtoKPiPiCLEO::_wrhoB, MeV, 150.2 *MeV, 0.0*MeV, 10000.0*MeV,
+     &DtoKPiPiCLEO::_wrhoB, MeV, 150.2 *MeV, ZERO, 10000.0*MeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfacegPi
@@ -650,7 +650,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceChargedK_0MinusAmplitude
     ("ChargedK_0MinusAmplitude",
      "Amplitude for the K_0(1430)- component for D0 -> K- pi+ pi0",
-     &DtoKPiPiCLEO::_a1K1430m, GeV2, 0.77*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a1K1430m, GeV2, 0.77*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceChargedK_0MinusPhase
@@ -662,7 +662,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceChargedK_00Amplitude
     ("ChargedK_00Amplitude",
      "Amplitude for the K_0(1430)0 component for D0 -> K- pi+ pi0",
-     &DtoKPiPiCLEO::_a1K14300, GeV2, 0.85*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a1K14300, GeV2, 0.85*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceChargedK_00Phase
@@ -746,7 +746,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceNeutralf980Amplitude
     ("Neutralf980Amplitude",
      "Amplitude for the f_0(980) component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2f980, GeV2, 0.34*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a2f980, GeV2, 0.34*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralf980Phase
@@ -758,7 +758,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,InvEnergy2> interfaceNeutralf2Amplitude
     ("Neutralf2Amplitude",
      "Amplitude for the f_2 component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2f2, 1./GeV2, 0.7/GeV2, 0.0/GeV2, 10.0/GeV2,
+     &DtoKPiPiCLEO::_a2f2, 1./GeV2, 0.7/GeV2, ZERO, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralf2Phase
@@ -770,7 +770,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceNeutralf1370Amplitude
     ("Neutralf1370Amplitude",
      "Amplitude for the f_0(1370) component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2f1370, GeV2, 1.8*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a2f1370, GeV2, 1.8*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralf1370Phase
@@ -782,7 +782,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,Energy2> interfaceNeutralKK_0MinusAmplitude
     ("NeutralKK_0MinusAmplitude",
      "Amplitude for the K_0(1430)- component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2K14300, GeV2, 2.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &DtoKPiPiCLEO::_a2K14300, GeV2, 2.0*GeV2, ZERO, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralKK_0MinusPhase
@@ -794,7 +794,7 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,InvEnergy2> interfaceNeutralKK_2MinusAmplitude
     ("NeutralKK_2MinusAmplitude",
      "Amplitude for the K_2(1430)- component for D0 -> Kbar0 pi+ pi-",
-     &DtoKPiPiCLEO::_a2K14302, 1./GeV2, 1.0/GeV2, 0.0/GeV2, 10.0/GeV2,
+     &DtoKPiPiCLEO::_a2K14302, 1./GeV2, 1.0/GeV2, ZERO, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,double> interfaceNeutralKK_2MinusPhase
@@ -830,14 +830,14 @@ void DtoKPiPiCLEO::Init() {
   static Parameter<DtoKPiPiCLEO,InvEnergy> interfaceDRadius
     ("DRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the D",
-     &DtoKPiPiCLEO::_rD0, 1./GeV, 5./GeV, 0./GeV, 10./GeV,
+     &DtoKPiPiCLEO::_rD0, 1./GeV, 5./GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiCLEO,InvEnergy> interfaceResonanceRadius
     ("ResonanceRadius",
      "The radius parameter for the Blatt-Weisskopf form-factor for the"
      "intermediate resonances",
-     &DtoKPiPiCLEO::_rres, 1./GeV, 1.5/GeV, 0./GeV, 10./GeV,
+     &DtoKPiPiCLEO::_rres, 1./GeV, 1.5/GeV, ZERO, 10./GeV,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiCLEO,double> interfaceMaximumWeights
@@ -1133,13 +1133,13 @@ Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
   complex<Energy2> bw;
   if(!f0) {
     Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres)/mAB;
-    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mwid);
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(ZERO,mwid);
   }
   else {
     Energy Gamma_pi = _gpi*sqrt(0.25*sqr(mAB)-sqr(_mpi));
     Energy Gamma_K  = 0.5*_gK *(sqrt(0.25*sqr(mAB)-sqr(_mkp))+
 				sqrt(0.25*sqr(mAB)-sqr(_mk0)));
-    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mres*(Gamma_pi+Gamma_K));
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(ZERO,mres*(Gamma_pi+Gamma_K));
   }
   return s*Fr*Fd*GeV2/bw;
 }

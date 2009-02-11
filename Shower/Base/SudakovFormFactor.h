@@ -138,7 +138,7 @@ public:
   inline SudakovFormFactor() : pdfmax_(35.0), pdffactor_(0),
 			       cutOffOption_(0), a_(0.3), b_(2.3), c_(0.3*GeV),
 			       kinCutoffScale_( 2.3*GeV ), vgcut_(0.85*GeV),
-			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(0.*GeV2),
+			       vqcut_(0.85*GeV), pTmin_(1.*GeV), pT2min_(ZERO),
 			       z_( 0.0 ),phi_(0.0), pT_() {}
 
   /**
@@ -147,7 +147,7 @@ public:
   //@{
   /**
    * Return the scale of the next time-like branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
@@ -160,7 +160,7 @@ public:
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param stoppingScale stopping scale for the evolution
    * @param minmass The minimum mass allowed for the spake-like particle.
@@ -178,7 +178,7 @@ public:
 
   /**
    * Return the scale of the next space-like branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum

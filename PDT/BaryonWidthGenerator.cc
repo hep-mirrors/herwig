@@ -93,7 +93,7 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   using Constants::pi;
   Complex A1,A2,A3,B1,B2,B3;
   if(q<m1+m2) 
-    return Energy();
+    return ZERO;
   // mode from the base class
   int mecode(MEcode(imode));
   if(mecode<=100){ 
@@ -102,7 +102,7 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   // calcluate the decay momentum
   Energy2 q2(q*q),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
-  Energy pcm(sqrt(pcm2)),gam(0.*GeV),msum(q+m1);
+  Energy pcm(sqrt(pcm2)),gam(ZERO),msum(q+m1);
   // Energy m0(mass());
   Energy2 fact1((q+m1)*(q+m1)-m22),fact2((q-m1)*(q-m1)-m22),fact3(q2+m12-m22);
   // 1/2 -> 1/2 0
@@ -173,7 +173,7 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
   else if(mecode==104) {
     Energy Qp(sqrt(fact1)),Qm(sqrt(fact2));
     double r2(sqrt(2.)),r3(sqrt(3.));
-    complex<Energy> h1(-2.*Qp*A1),h2(2.*Qm*B1),h5(0.*GeV),h6(0.*GeV);
+    complex<Energy> h1(-2.*Qp*A1),h2(2.*Qm*B1),h5(ZERO),h6(ZERO);
     complex<Energy> h3(-2./r3*Qp*(A1-fact2/m1*A2/msum));
     complex<Energy> h4( 2./r3*Qm*(B1-fact1/m1*B2/msum));
     if(m2>1e-10*GeV) {
@@ -207,7 +207,7 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
 							A1,A2,A3,B1,B2,B3);
     Energy Qp(sqrt(fact1)),Qm(sqrt(fact2));
     double r2(sqrt(2.)),r3(sqrt(3.));
-    complex<Energy> h1(-2.*Qp*A1),h2(2.*Qm*B1),h5(0.*GeV),h6(0.*GeV);
+    complex<Energy> h1(-2.*Qp*A1),h2(2.*Qm*B1),h5(ZERO),h6(ZERO);
     complex<Energy> h3(-2./r3*Qp*(A1-fact2/q*(A2/msum)));
     complex<Energy> h4( 2./r3*Qm*(B1-fact1/q*(B2/msum)));
     if(m2>1e-10*GeV) {

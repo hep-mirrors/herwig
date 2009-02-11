@@ -34,7 +34,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   _T10   (42,0.),_sigma1T1(42,0.),_sigma2T1(42,0.),
   _T20   (42,0.),_sigma1T2(42,0.),_sigma2T2(42,0.),
   _T30   (42,0.),_sigma1T3(42,0.),_sigma2T3(42,0.),
-  _massP(42,0.*GeV), _massV(42,0.*GeV) {
+  _massP(42,ZERO), _massV(42,ZERO) {
   // form factors for D to K
   addFormFactor(421,-321,0,-2,4,3);
   addFormFactor(411,-311,0,-1,4,3);
@@ -478,13 +478,13 @@ void MelikhovStechFormFactor::Init() {
   static ParVector<MelikhovStechFormFactor,Energy> interfaceMassP
     ("MassP",
      "The mass of the pseudoscalar for the q^2 dependence of the form factors.",
-     &MelikhovStechFormFactor::_massP, GeV, -1, 0.0*GeV, 0*GeV, 10.*GeV,
+     &MelikhovStechFormFactor::_massP, GeV, -1, ZERO, ZERO, 10.*GeV,
      false, false, false);
 
   static ParVector<MelikhovStechFormFactor,Energy> interfaceMassV
     ("MassV",
      "The mass of the vector for the q^2 dependence of the form factors.",
-     &MelikhovStechFormFactor::_massV, GeV, -1, 0.0*GeV, 0*GeV, 10.*GeV,
+     &MelikhovStechFormFactor::_massV, GeV, -1, ZERO, ZERO, 10.*GeV,
      false, false, false);
 
   static Parameter< MelikhovStechFormFactor,double> interfaceThetaEtaEtaPrime

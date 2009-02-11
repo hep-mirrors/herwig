@@ -102,7 +102,7 @@ void UEDBase::Init() {
   static Parameter<UEDBase,Energy> interfaceInverseRadius
     ("InverseRadius",
      "The inverse radius of the compactified dimension ",
-     &UEDBase::theInvRadius, GeV, 500.*GeV, 0.*GeV, 0*GeV,
+     &UEDBase::theInvRadius, GeV, 500.*GeV, ZERO, ZERO,
      true, false, Interface::nolimits);
 
   static Parameter<UEDBase,double> interfaceLambdaR
@@ -114,13 +114,13 @@ void UEDBase::Init() {
     static Parameter<UEDBase,Energy> interfaceBoundaryMass
     ("HiggsBoundaryMass",
      "The boundary mass for the Higgs",
-     &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     &UEDBase::theMbarH, GeV, ZERO, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
   static Parameter<UEDBase,Energy> interfaceVeV
     ("HiggsVEV",
      "The vacuum expectation value of the Higgs field",
-     &UEDBase::theVeV, GeV, 246.*GeV, 0*GeV, 0*GeV,
+     &UEDBase::theVeV, GeV, 246.*GeV, ZERO, ZERO,
      true, false, Interface::nolimits);
     
   static Reference<UEDBase,Helicity::AbstractFFVVertex> interfaceF1F1Z

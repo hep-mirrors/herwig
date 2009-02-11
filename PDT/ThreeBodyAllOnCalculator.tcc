@@ -18,7 +18,7 @@ template <class T>
 void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low,
 						 Energy2 & upp) const { 
   // first convert the value of x into the value of souter
-  if(_channelmass[_thechannel] > 0*MeV) {
+  if(_channelmass[_thechannel] > ZERO) {
     if(_channelwidth[_thechannel] > 1e-8*MeV) {
       _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
 					   _channelwidth[_thechannel]*tan(x));
@@ -31,7 +31,7 @@ void ThreeBodyAllOnCalculator<T>::outerVariables(const double & x, Energy2 & low
     _souter = UnitRemoval::E2 * pow(x,1./(_channelpower[_thechannel]+1.));
   }
   // now the limits of the inner integral
-  Energy ea(0.*MeV),eb(0.*MeV),eam(0.*MeV),ebm(0.*MeV);
+  Energy ea(ZERO),eb(ZERO),eam(ZERO),ebm(ZERO);
   Energy rs=sqrt(_souter);
   switch(_channeltype[_thechannel]) {
   case 1:
@@ -57,7 +57,7 @@ template <class T>
 Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
   assert(!isnan(y/MeV2)); 
   // set up the values of the s variables
-  Energy2 s12(0.*MeV2),s23(0.*MeV2),s13(0.*MeV2),
+  Energy2 s12(ZERO),s23(ZERO),s13(ZERO),
     m2sum(_m2[0]+_m2[1]+_m2[2]+_m2[3]);
   switch(_channeltype[_thechannel]) {
   case 1:
@@ -78,8 +78,8 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
   }
   // compute the jacobian
   // computer the denominator for the jacobian
-  InvEnergy2 jacdem = 0./MeV2;
-  Energy2 sjac(0.*MeV2); 
+  InvEnergy2 jacdem = ZERO;
+  Energy2 sjac(ZERO); 
   Energy2 rm2,rw2;
   for(unsigned int ix=0,N=_channeltype.size(); ix<N; ++ix) {
     switch(_channeltype[ix]) {
@@ -95,7 +95,7 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
     }
     assert(!isnan(sjac/MeV2));
     InvEnergy2 term; 
-    if(_channelmass[ix] > 0*MeV) {
+    if(_channelmass[ix] > ZERO) {
       if(_channelwidth[ix] > 1e-8*MeV) {
 	rm2 = sqr(_channelmass[ix]);
 	rw2 = sqr(_channelwidth[ix]);
@@ -124,11 +124,11 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
   _m[0] = sqrt(q2);
   _m2[0]=q2;
   // check the decay is kinematically allowed
-  if(_m[0]<_m[1]+_m[2]+_m[3]){return 0.*MeV;}
+  if(_m[0]<_m[1]+_m[2]+_m[3]){return ZERO;}
   // perform the integrals for all the different channels
-  Energy4 sum(0.*MeV2*MeV2);
+  Energy4 sum(ZERO);
   for(unsigned int ix=0,N=_channeltype.size(); ix<N; ++ix) {
-    Energy2 upp(0.*MeV2),low(0.*MeV2);
+    Energy2 upp(ZERO),low(ZERO);
     // work out the kinematic limits
     switch(_channeltype[ix]) {
     case 1:
@@ -148,7 +148,7 @@ Energy ThreeBodyAllOnCalculator<T>::partialWidth(Energy2 q2) const {
     }
     double rupp, rlow;
     // transform them
-    if(_channelmass[ix] > 0*MeV) {
+    if(_channelmass[ix] > ZERO) {
       if(_channelwidth[ix] > 1e-8*MeV) {
 	rupp = atan((upp-_channelmass[ix]*_channelmass[ix])/
 		    _channelmass[ix]/_channelwidth[ix]);

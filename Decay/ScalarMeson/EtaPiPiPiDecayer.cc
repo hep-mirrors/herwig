@@ -290,7 +290,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
   WidthCalculatorBasePtr 
     temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
-		 (1,-1000.*MeV,0.0*MeV,0.0,*this,imode,m[0],m[1],m[2])));
+		 (1,-1000.*MeV,ZERO,0.0,*this,imode,m[0],m[1],m[2])));
   if(_outgoing[imode]==ParticleID::eta) {
     tcGenericMassGeneratorPtr test;
     tGenericMassGeneratorPtr massptr;
@@ -301,7 +301,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
     }
     if(massptr) {
       massptr->init();
-      return new_ptr(OneOffShellCalculator(3,temp,massptr,0.*MeV));
+      return new_ptr(OneOffShellCalculator(3,temp,massptr,ZERO));
     }
   }
   return temp;

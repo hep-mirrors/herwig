@@ -58,7 +58,7 @@ bool ME2to4Base::generateKinematics(const double * r) {
   pair<Lorentz5Momentum,Lorentz5Momentum> pBoson = 
     make_pair(Lorentz5Momentum(mb.first),Lorentz5Momentum(mb.second));
   double ctmin = -1.0, ctmax = 1.0;
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), pBoson.first.mass(), pBoson.second.mass());
@@ -75,20 +75,20 @@ bool ME2to4Base::generateKinematics(const double * r) {
   Energy2 pq = 2.0*e*q;
 
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], bosons.first);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], bosons.first);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], bosons.second);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[0], bosons.second);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
 
   Energy ptmin = max(lastCuts().minKT(bosons.first),
    		     lastCuts().minKT(bosons.second));
-  if ( ptmin > 0.0*GeV ) {
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -262,7 +262,7 @@ double ME2to4Base::getCosTheta(Energy2 sHat, Energy2 m12, Energy2 m22,
 			       double ctmin, double ctmax, double r) {
   Energy2 D1 = sHat-m12-m22;
   Energy4 lambda = sqr(D1) - 4*m12*m22;
-  if (lambda < 0.0*GeV2*GeV2)  throw ImpossibleKinematics();
+  if (lambda < ZERO)  throw ImpossibleKinematics();
   double D =  D1 / sqrt(lambda);
   if(_weightOpt==1) {
     double fraction = (D-ctmax)/(D-ctmin);

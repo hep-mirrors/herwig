@@ -203,7 +203,7 @@ void PScalar4FermionsDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PScalar4FermionsDecayer::_coupling,
-     1/MeV, 0, 0/MeV, -10000/MeV, 10000/MeV, false, false, true);
+     1/MeV, 0, ZERO, -10000/MeV, 10000/MeV, false, false, true);
 
   static ParVector<PScalar4FermionsDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -230,13 +230,13 @@ void PScalar4FermionsDecayer::Init() {
     ("VMDmass",
      "The mass to use for the particle in the VMD factor",
      &PScalar4FermionsDecayer::_VMDmass,
-     1.*MeV, -1, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+     1.*MeV, -1, ZERO, -10000*MeV, 10000*MeV, false, false, true);
 
   static ParVector<PScalar4FermionsDecayer,Energy> interfaceVMDwidth
     ("VMDwidth",
      "The width to use for the particle in the VMD factor",
      &PScalar4FermionsDecayer::_VMDwidth,
-     1.*MeV, -1, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
+     1.*MeV, -1, ZERO, -10000*MeV, 10000*MeV, false, false, true);
 
 }
 
@@ -297,7 +297,7 @@ double PScalar4FermionsDecayer::me2(const int,
   // invariants
   Energy2 m12(sqr(momentum[0].mass()));
   Energy2 m34(sqr(momentum[1].mass()));
-  Energy2 m14(0.*MeV2), m23(0.*MeV2);
+  Energy2 m14(ZERO), m23(ZERO);
   complex<InvEnergy4> prop1(1./m12/m34),prop2(0./sqr(MeV2));
   Complex ii(0.,1.);
   if(identical) {

@@ -27,9 +27,9 @@
 
 using namespace Herwig;
 
-SusyBase::SusyBase() : _readFile(false),_tanbeta(0), _mu(0.*MeV), 
-		       theMone(0.*MeV), theMtwo(0.*MeV),
-		       theMthree(0.*MeV) {}
+SusyBase::SusyBase() : _readFile(false),_tanbeta(0), _mu(ZERO), 
+		       theMone(ZERO), theMtwo(ZERO),
+		       theMthree(ZERO) {}
 
 IBPtr SusyBase::clone() const {
   return new_ptr(*this);
@@ -296,7 +296,7 @@ void SusyBase::readDecay(ifstream & ifs,
   istringstream iss(decay);
   string dummy;
   long parent(0);
-  Energy width(0.*MeV);
+  Energy width(ZERO);
   iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getParticleData(parent);
   if(!inpart)  {
@@ -306,7 +306,7 @@ void SusyBase::readDecay(ifstream & ifs,
     return;
   }
   inpart->width(width);
-  if( width > 0.0*MeV ) inpart->cTau(hbarc/width);
+  if( width > ZERO ) inpart->cTau(hbarc/width);
   inpart->widthCut(5.*width);
   string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
   double brsum(0.);
@@ -570,7 +570,7 @@ void SusyBase::extractParameters(bool checkmodel) {
   pit=_parameters.find("hmix");
   if(pit==_parameters.end()) {
     cerr << "BLOCK HMIX not found setting mu to zero\n";
-    _mu=0.*GeV;
+    _mu=ZERO;
   }
   else {
     it = pit->second.find(1);

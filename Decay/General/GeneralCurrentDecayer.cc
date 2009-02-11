@@ -73,7 +73,7 @@ void GeneralCurrentDecayer::Init() {
   static Parameter<GeneralCurrentDecayer,InvEnergy2> interfaceGFermi
     ("GFermi",
      "The Fermi coupling constant",
-     &GeneralCurrentDecayer::_theGF, 1./GeV2, 1.16639E-5/GeV2, 0./GeV2, 
+     &GeneralCurrentDecayer::_theGF, 1./GeV2, 1.16639E-5/GeV2, ZERO, 
      1.e-3/GeV2, false, false, false);
 }
 

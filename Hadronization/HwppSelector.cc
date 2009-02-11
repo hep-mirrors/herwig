@@ -89,7 +89,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     }
   }
   // weights for the different possibilities
-  Energy weight, wgtsum(0.0*MeV);
+  Energy weight, wgtsum(ZERO);
   // loop over all hadron pairs with the allowed flavours
   vector<Kupco> hadrons;
   for(unsigned int ix=0;ix<partons().size();++ix) {
@@ -154,8 +154,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
     wgtsum-= hadrons[ix].weight;
     ++ix;
   }
-  while(wgtsum > 0*MeV && ix < hadrons.size());
-  if(ix == hadrons.size() && wgtsum > 0*MeV) 
+  while(wgtsum > ZERO && ix < hadrons.size());
+  if(ix == hadrons.size() && wgtsum > ZERO) 
       return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
   assert(hadrons[ix].idQ);

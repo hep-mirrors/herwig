@@ -117,19 +117,19 @@ void MSSM::extractParameters(bool checkmodel) {
     string name=it->first;
     MixingVector::const_iterator vit;
     if(name=="au") {
-      theAtop=0.*GeV;
+      theAtop=ZERO;
       for(vit=it->second.second.begin();vit!=it->second.second.end();++vit) {
 	if(vit->row==3&&vit->col==3) theAtop=vit->value*GeV;
       }
     }
     else if(name=="ad") {
-      theAbottom=0.*GeV;
+      theAbottom=ZERO;
       for(vit=it->second.second.begin();vit!=it->second.second.end();++vit) {
 	if(vit->row==3&&vit->col==3) theAbottom=vit->value*GeV;
       }
     }
     else if(name=="ae") {
-      theAtau=0.*GeV;
+      theAtau=ZERO;
       for(vit=it->second.second.begin();vit!=it->second.second.end();++vit) {
 	if(vit->row==3&&vit->col==3) theAtau=vit->value*GeV;
       }

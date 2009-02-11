@@ -67,7 +67,7 @@ protected:
   /**
    * Given a pair of particles, supposedly partners w.r.t. an interaction,
    * this method returns their initial evolution scales as a pair.
-   * If something wrong happens, it returns the null (Energy(),Energy()) pair. 
+   * If something wrong happens, it returns the null (ZERO,ZERO) pair. 
    * This method is used by the above setXXXInitialEvolutionScales 
    * methods.
    */

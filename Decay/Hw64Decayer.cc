@@ -71,7 +71,7 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
   ParticleVector rval;
   unsigned int numProds(children.size());
   // check that it is possible to kinematically perform the decay
-  Energy minmass(0.*MeV);
+  Energy minmass(ZERO);
   vector<Energy> minmasses(numProds);
   vector<tcGenericMassGeneratorPtr> massgen(numProds,tcGenericMassGeneratorPtr());
   tcMassGenPtr mtemp;
@@ -98,7 +98,7 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
   if(numProds!=1) {
     do {
       unsigned int istart=UseRandom::irnd(numProds);
-      outmass=0.*MeV;
+      outmass=ZERO;
       for(unsigned int ix=istart;ix<numProds;++ix) { 
 	masses[ix] = massgen[ix] ?
 	  massgen[ix]->mass(*(children[ix]),minmasses[ix],
@@ -155,7 +155,7 @@ ParticleVector Hw64Decayer::decay(const Particle & p,
       if(IPDG >= 1000)
 	m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
       else
-	m1 = 0.0*MeV;
+	m1 = ZERO;
       m2 = generator()->getParticleData((IPDG/100)%10)->mass();
       m3 = generator()->getParticleData((IPDG/10)%10)->mass();
       xs = 1.0 - Math::absmax<Energy>(m1, Math::absmax<Energy>(m2, m3))/(m1+m2+m3);

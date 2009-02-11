@@ -29,7 +29,7 @@ a1SimpleDecayer::a1SimpleDecayer()
   : _rhomass(3), _rhowidth(3), _rhowgts(3),_localparameters(true), 
     _coupling(47.95/GeV), _onemax(5.4474), _twomax(5.47784), 
     _threemax(5.40185), _onewgts(6), 
-    _twowgts(6), _threewgts(6), _mpi(0.*MeV) {
+    _twowgts(6), _threewgts(6), _mpi(ZERO) {
   // rho masses, widths and weights
   _rhomass[0] = 0.773*GeV; _rhowidth[0] = 0.145*GeV; _rhowgts[0] =  1.0;  
   _rhomass[1] = 1.370*GeV; _rhowidth[1] = 0.510*GeV; _rhowgts[1] = -0.145;
@@ -221,20 +221,20 @@ void a1SimpleDecayer::Init() {
   static Parameter<a1SimpleDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The overall coupling for the decay",
-     &a1SimpleDecayer::_coupling, 1./GeV, 47.95/GeV, 0.0/GeV, 100./GeV,
+     &a1SimpleDecayer::_coupling, 1./GeV, 47.95/GeV, ZERO, 100./GeV,
      false, false, Interface::limited);
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1SimpleDecayer::_rhomass,
-     MeV, 0, 0*MeV, 0*MeV, 10000*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000*MeV, false, false, true);
 
   static ParVector<a1SimpleDecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1SimpleDecayer::_rhowidth,
-     MeV, 0, 0*MeV, 0*MeV, 10000*MeV, false, false, true);
+     MeV, 0, ZERO, ZERO, 10000*MeV, false, false, true);
 
   static ParVector<a1SimpleDecayer,double> interfaceRhoWeights
     ("RhoWeights",

@@ -77,7 +77,7 @@ public:
     Energy2 mpi2(sqr(_mpi));
     Complex propb(Trho1(s1,-1)),propa(Trho1(s2,-1)); 
     // the matrix element
-    Energy2 output(0.*MeV2); 
+    Energy2 output(ZERO); 
     // first resonance
     output+= ((s1-4.*mpi2)+0.25*(s3-s2)*(s3-s2)/q2)*real(propb*conj(propb)); 
     // second resonance
@@ -285,7 +285,7 @@ private:
     Energy width = _rho1width[ires];
     Energy q=sqrt(q2);
     Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
-    Energy pcm  = q<=2.*_mpi ? 0.*GeV : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+    Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
     double ratio = Math::powi(pcm/pcm0, 3);
     Energy gam(width*mass*ratio/q);
     return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
@@ -302,7 +302,7 @@ private:
     Energy width = _rho2width[ires];
     Energy q=sqrt(q2);
     Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mpi,_mpi);
-    Energy pcm  = q<=2.*_mpi ? 0.*GeV : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
+    Energy pcm  = q<=2.*_mpi ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
     double ratio(pcm/pcm0);ratio*=ratio*ratio;
     Energy gam(width*mass*ratio/q);
     return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
@@ -319,7 +319,7 @@ private:
     Energy width = _kstar1width[ires];
     Energy q=sqrt(q2);
     Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
-    Energy pcm  = q<=_mpi+_mK ? 0.*GeV : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
+    Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
     double ratio(pcm/pcm0);ratio*=ratio*ratio;
     Energy gam(width*mass*ratio/q);
     return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);
@@ -336,7 +336,7 @@ private:
     Energy width = _kstar2width[ires];
     Energy q=sqrt(q2);
     Energy pcm0 = Kinematics::pstarTwoBodyDecay(mass,_mK,_mpi);
-    Energy pcm  = q<=_mpi+_mK ? 0.*GeV : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
+    Energy pcm  = q<=_mpi+_mK ? ZERO : Kinematics::pstarTwoBodyDecay(q,_mK,_mpi);
     double ratio(pcm/pcm0);ratio*=ratio*ratio;
     Energy gam(width*mass*ratio/q);
     return sqr(mass)/(sqr(mass)-q2-Complex(0.,1.)*mass*gam);

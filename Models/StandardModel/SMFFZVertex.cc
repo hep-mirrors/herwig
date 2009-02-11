@@ -57,7 +57,7 @@ void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
 }
 
 SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
-			     _couplast(0.0), _q2last(0.*GeV2) {
+			     _couplast(0.0), _q2last(ZERO) {
   // PDG codes for the particles
   vector<long> first,second,third;
   // the quarks

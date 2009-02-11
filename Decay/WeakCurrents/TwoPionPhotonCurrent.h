@@ -208,7 +208,7 @@ private:
    * @return The value of the function. 
    */
   complex<InvEnergy> FFunction(Energy2 q2) const {
-    complex<InvEnergy2> output(0./MeV2);
+    complex<InvEnergy2> output(ZERO);
     for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix) {
       output -= _resweights[ix]*BreitWigner(q2,ix);
     }

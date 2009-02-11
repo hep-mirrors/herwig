@@ -84,7 +84,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
     }
   }
   else if(_massopt1==2) {
-    mass[1] = _massopt2==0 ? 0.*GeV : mePartonData()[3]->mass();
+    mass[1] = _massopt2==0 ? ZERO : mePartonData()[3]->mass();
     Energy ecm = sqrt(sHat());
     Energy mmin  = mePartonData()[2]->massMin();
     // not kinematically possible return
@@ -110,7 +110,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
     }
   }
   else if(_massopt2==2) {
-    mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[2]->mass();
+    mass[0] = _massopt1==0 ? ZERO : mePartonData()[2]->mass();
     Energy ecm = sqrt(sHat());
     Energy mmin  = mePartonData()[3]->massMin();
     // not kinematically possible return
@@ -136,8 +136,8 @@ bool HwME2to2Base::generateKinematics(const double * r) {
     }
   }
   else {
-    mass[0] = _massopt1==0 ? 0.*GeV : mePartonData()[2]->mass();
-    mass[1] = _massopt2==0 ? 0.*GeV : mePartonData()[3]->mass();
+    mass[0] = _massopt1==0 ? ZERO : mePartonData()[2]->mass();
+    mass[1] = _massopt2==0 ? ZERO : mePartonData()[3]->mass();
   }
   // set up the momenta
   for ( int i = 2, N = meMomenta().size(); i < N; ++i ) {
@@ -146,7 +146,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
 
   double ctmin = -1.0;
   double ctmax = 1.0;
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   try {
     q = SimplePhaseSpace::
       getMagnitude(sHat(), meMomenta()[2].mass(), meMomenta()[3].mass());
@@ -165,20 +165,20 @@ bool HwME2to2Base::generateKinematics(const double * r) {
   Energy2 pq = 2.0*e*q;
 
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
 
   Energy ptmin = max(lastCuts().minKT(mePartonData()[2]),
    		     lastCuts().minKT(mePartonData()[3]));
-  if ( ptmin > 0.0*GeV ) {
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -268,10 +268,10 @@ bool HwME2to2Base::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
   // default just use the ones we generated
   _rescaledMomenta=momenta;
   if(_rescaleOption==1) return true;
-  Energy mnew[2] = {0*MeV, 0*MeV};
+  Energy mnew[2] = {0*MeV, ZERO};
   if(_rescaleOption==0) {
-    mnew[0] = 0.*GeV;
-    mnew[1] = 0.*GeV;
+    mnew[0] = ZERO;
+    mnew[1] = ZERO;
   }
   else if(_rescaleOption==2) {
     mnew[0] = data[2]->mass();

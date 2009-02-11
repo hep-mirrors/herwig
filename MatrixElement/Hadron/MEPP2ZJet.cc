@@ -383,7 +383,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
 		     lastCuts().minKT(_z0));
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
-  if(maxMass2<=0.*GeV2||minMass2<0.*GeV2) return false;
+  if(maxMass2<=ZERO||minMass2<ZERO) return false;
   // also impose the limits from the ParticleData object
   minMass2 = max(minMass2,sqr(_z0->massMin()));
   maxMass2 = min(maxMass2,sqr(_z0->massMax()));
@@ -408,11 +408,11 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // jacobian
   jacobian(jacobian()/sHat()/(emjac1+emjac2));
   // set the masses of the outgoing particles to 2-2 scattering
-  meMomenta()[2].setMass(0.*MeV);
+  meMomenta()[2].setMass(ZERO);
   Lorentz5Momentum pz(mz);
   // generate the polar angle of the hard scattering
   double ctmin(-1.0), ctmax(1.0);
-  Energy q(0.0*GeV);
+  Energy q(ZERO);
   try {
     q = SimplePhaseSpace::getMagnitude(sHat(), meMomenta()[2].mass(),mz);
   } 
@@ -420,7 +420,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
     return false;
   }	    
   Energy2 pq = sqrt(sHat())*q;
-  if ( ptmin > 0.0*GeV ) {
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));
@@ -439,7 +439,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // generate the momenta of the Z decay products
   meMomenta()[3].setMass(mePartonData()[3]->mass());
   meMomenta()[4].setMass(mePartonData()[4]->mass());
-  Energy q2 = 0.0*GeV;
+  Energy q2 = ZERO;
   try {
     q2 = SimplePhaseSpace::getMagnitude(_mz2, meMomenta()[3].mass(),
 					meMomenta()[4].mass());
@@ -449,9 +449,9 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   double cth2 =-1.+2.*r[3];
   double phi2=Constants::twopi*r[4];
   Energy pt2 =q2*sqrt(1.-sqr(cth2));
-  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.*MeV,
+  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,ZERO,
 					    meMomenta()[3].mass()),
-			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.*MeV,
+			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,ZERO,
 					   meMomenta()[4].mass())};
   pl[0].rescaleEnergy();
   pl[1].rescaleEnergy();
@@ -495,7 +495,7 @@ double MEPP2ZJet::getCosTheta(double ctmin, double ctmax, const double r) {
 
 double MEPP2ZJet::me2() const {
   useMe();
-  InvEnergy2 output(0./GeV2);
+  InvEnergy2 output(ZERO);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;
   vector<SpinorWaveFunction>    lp;

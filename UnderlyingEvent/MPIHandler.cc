@@ -130,7 +130,7 @@ void MPIHandler::initialize() {
     else
       algorithm_ = 0;
 
-    if(PtOfQCDProc_ == 0*GeV)//pure MinBias mode
+    if(PtOfQCDProc_ == ZERO)//pure MinBias mode
       algorithm_ = -1;
   }
 
@@ -332,7 +332,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
     iH = 0; 
 
     Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);//get the inel xsec
-    CrossSection inel = integrator.value(inelint, Length(), bmax);
+    CrossSection inel = integrator.value(inelint, ZERO, bmax);
 
     avgNhard_ = 0.0;
     avgNsoft_ = 0.0;
@@ -352,9 +352,9 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	Eikonalization integrand(this, iH*100+iS, *it, softXSec_, softMu2_);
       
 	if(Algorithm() > 0){
-	  P = integrator.value(integrand, Length(), bmax) / *it;
+	  P = integrator.value(integrand, ZERO, bmax) / *it;
 	}else{
-	  P = integrator.value(integrand, Length(), bmax) / inel;
+	  P = integrator.value(integrand, ZERO, bmax) / inel;
 	}
 	//store the probability
 	if(Algorithm()>-1){
@@ -479,7 +479,7 @@ double MPIHandler::factorial (unsigned int n) const {
 }
 
 InvArea MPIHandler::OverlapFunction(Length b, Energy2 mu2) const {
-  if(mu2 == 0*GeV2)
+  if(mu2 == ZERO)
     mu2 = invRadius_;
 
   InvLength mu = sqrt(mu2)/hbarc;
@@ -501,7 +501,7 @@ CrossSection MPIHandler::totalXSecDiff(CrossSection softXSec,
   Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
   Length bmax = 500.0*sqrt(millibarn);
 
-  CrossSection tot = integrator.value(integrand, Length(), bmax);
+  CrossSection tot = integrator.value(integrand, ZERO, bmax);
   return (tot-totalXSecExp());
 }
 
@@ -511,11 +511,11 @@ InvEnergy2 MPIHandler::slopeDiff(CrossSection softXSec,
   Eikonalization integrand(this, -2, hardXSec_, softXSec, softMu2);
   Length bmax = 500.0*sqrt(millibarn);
 
-  CrossSection tot = integrator.value(integrand, Length(), bmax);
+  CrossSection tot = integrator.value(integrand, ZERO, bmax);
   
   slopeInt integrand2(this, hardXSec_, softXSec, softMu2);
   
-  return integrator.value(integrand2, Length(), bmax)/tot - slopeExp();
+  return integrator.value(integrand2, ZERO, bmax)/tot - slopeExp();
 }
 
 CrossSection MPIHandler::totalXSecExp() const {
@@ -633,7 +633,7 @@ void MPIHandler::Init() {
   static Parameter<MPIHandler,Energy> interfacePtOfQCDProc
     ("PtOfQCDProc",
      "Specify the value of the pt cutoff for the process that is identical to the UE one",
-     &MPIHandler::PtOfQCDProc_, GeV, -1.0*GeV, 0*GeV, 0*GeV,
+     &MPIHandler::PtOfQCDProc_, GeV, -1.0*GeV, ZERO, ZERO,
      false, false, Interface::nolimits);
 
   static Parameter<MPIHandler,double> interfacecolourDisrupt

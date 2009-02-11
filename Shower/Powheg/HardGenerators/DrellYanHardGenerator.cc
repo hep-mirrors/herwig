@@ -81,7 +81,7 @@ void DrellYanHardGenerator::Init() {
     ("minPt",
      "The pt cut on hardest emision generation"
      "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
-     &DrellYanHardGenerator::_min_pt, GeV, 2.*GeV, 0*GeV, 100000.0*GeV,
+     &DrellYanHardGenerator::_min_pt, GeV, 2.*GeV, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
 }
 
@@ -100,7 +100,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
     _beams.push_back( cit->first->beam() );
     _partons.push_back( cit->first->progenitor()->dataPtr() );
     // check that quark is along +ve z direction
-    if(cit->first->progenitor()->id() > 0 && cit->first->progenitor()->momentum().z() < 0 * MeV ) 
+    if(cit->first->progenitor()->id() > 0 && cit->first->progenitor()->momentum().z() < ZERO ) 
       _quarkplus = false;
     particlesToShower.push_back( cit->first );
   }
@@ -147,7 +147,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(gluon            , true)));
-    iemit = pnew[0].z()/pnew[2].rapidity()>0*MeV ? 0 : 1;
+    iemit = pnew[0].z()/pnew[2].rapidity()>ZERO ? 0 : 1;
   }
   // q g    -> q V
   else if(emission_type==1) {
@@ -348,7 +348,7 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   // maximum pt (half of centre-of-mass energy)
   Energy maxp = 0.5*generator()->maximumCMEnergy();
   // set pt of emission to zero
-  _pt=0.*GeV;
+  _pt=ZERO;
   //Working Variables
   Energy pt;
   double yj;
@@ -372,7 +372,7 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
       //no emission event if p goes past p min - basically set to outside
       //of the histogram bounds (hopefully hist object just ignores it)
       if(pt<_min_pt){
-	pt=0.0*GeV;
+	pt=ZERO;
 	reject = false;
       }
       if(wgt>1.0) {
@@ -392,7 +392,7 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   }
   //was this an (overall) no emission event?
   if(_pt<_min_pt){ 
-    _pt=0.0*GeV;
+    _pt=ZERO;
     emis_type = 3;
   }
   if(emis_type==3) return false;
@@ -421,34 +421,34 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
     if(UseRandom::rnd()<sqr(m2-th)/(sqr(m2-th)+sqr(m2-sh))) iemit=2;
   }
   // reconstruct the momenta in the rest frame of the gauge boson
-  Lorentz5Momentum pb(0.*MeV,0.*MeV,0.*MeV,_mass,_mass),pspect,pg,pemit;
+  Lorentz5Momentum pb(ZERO,ZERO,ZERO,_mass,_mass),pspect,pg,pemit;
   double cos3;
   if(emis_type==0) {
-    pg=Lorentz5Momentum(0.*MeV,0.*MeV,0.*MeV,0.5*(sh-m2)/_mass,0.*MeV);
+    pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(sh-m2)/_mass,ZERO);
     Energy2 tp(th),up(uh);
     double zsign(-1.);
     if(iemit==2) {
       swap(tp,up);
       zsign=1;
     }
-    pspect = Lorentz5Momentum(0.*MeV,0.*MeV
+    pspect = Lorentz5Momentum(ZERO,ZERO
 			      ,zsign*0.5*(m2-tp)/_mass,0.5*(m2-tp)/_mass,
-			      0.*MeV);
+			      ZERO);
     Energy eemit=0.5*(m2-up)/_mass;
     cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
   }
   else {
-    pg=Lorentz5Momentum(0.*MeV,0.*MeV,0.*MeV,0.5*(m2-uh)/_mass,0.*MeV);
+    pg=Lorentz5Momentum(ZERO,ZERO,ZERO,0.5*(m2-uh)/_mass,ZERO);
     double zsign(1.);
     if(iemit==1) {
       if(emis_type==1) zsign=-1.;
-      pspect=Lorentz5Momentum(0.*MeV,0.*MeV,0.5*zsign*(sh-m2)/_mass,0.5*(sh-m2)/_mass);
+      pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(sh-m2)/_mass,0.5*(sh-m2)/_mass);
       Energy eemit=0.5*(m2-th)/_mass;
       cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
     }
     else {
       if(emis_type==2) zsign=-1.;
-      pspect=Lorentz5Momentum(0.*MeV,0.*MeV,0.5*zsign*(m2-th)/_mass,0.5*(m2-th)/_mass);
+      pspect=Lorentz5Momentum(ZERO,ZERO,0.5*zsign*(m2-th)/_mass,0.5*(m2-th)/_mass);
       Energy eemit=0.5*(sh-m2)/_mass;
       cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
     }
@@ -465,9 +465,9 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
     if(iemit==1) pemit=pb+pspect-pg;
     else         pemit=pspect+pg-pb;
   }
-  pemit .setMass(0.*MeV);
-  pg    .setMass(0.*MeV);
-  pspect.setMass(0.*MeV);
+  pemit .setMass(ZERO);
+  pg    .setMass(ZERO);
+  pspect.setMass(ZERO);
   // find the new CMF
   Lorentz5Momentum pp[2];
   if(emis_type==0) {

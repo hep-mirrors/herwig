@@ -127,16 +127,16 @@ handle(EventHandler & eh, const tPVector & ,
   // construct the kinematics
   // p and n vectors
   Energy mag = incomingHadrons.first->momentum().t();
-  Lorentz5Momentum p(0.*GeV,0.*GeV, mag,mag);
-  Lorentz5Momentum n(0.*GeV,0.*GeV,-mag,mag);
-  if(incomingHadrons.first->momentum().z()<0.*GeV) swap(p,n);
+  Lorentz5Momentum p(ZERO,ZERO, mag,mag);
+  Lorentz5Momentum n(ZERO,ZERO,-mag,mag);
+  if(incomingHadrons.first->momentum().z()<ZERO) swap(p,n);
   Energy2 pdotn = p*n;
   // calculate the momenta of the partons involved in the branching
   double betaq = 0.5*z*sqr(pt)/(x[0]*(1.-z)*pdotn);
   double phi = Constants::twopi*UseRandom::rnd();
   Lorentz5Momentum pin    = x[0]/z*p;
   Lorentz5Momentum pout   = (1.-z)*x[0]/z*p+betaq*n+
-    Lorentz5Momentum(pt*cos(phi),pt*sin(phi),0.*GeV,0.*GeV);
+    Lorentz5Momentum(pt*cos(phi),pt*sin(phi),ZERO,ZERO);
   Lorentz5Momentum pgamma = pin-pout;
   pout  .rescaleMass();
   pgamma.rescaleMass();
@@ -169,7 +169,7 @@ handle(EventHandler & eh, const tPVector & ,
   double beta[2] = 
     {getBeta((a[0]+b[0]), (a[0]-b[0]), (k1*a[0]+b[0]/k1), (k1*a[0]-b[0]/k1)),
      getBeta((a[1]+b[1]), (a[1]-b[1]), (a[1]/k2+k2*b[1]), (a[1]/k2-k2*b[1]))};
-  if (p.z() > 0*MeV) {
+  if (p.z() > ZERO) {
     beta[0] = -beta[0]; 
     beta[1] = -beta[1];
   }
@@ -190,7 +190,7 @@ handle(EventHandler & eh, const tPVector & ,
     throw Exception() << "Can't generate backward evolution of the photon"
 		      << " in IncomingPhotonEvolver::handle()"
 		      << Exception::eventerror;
-  if(newcmf.m()<0.*GeV||newcmf.e()<0.*GeV)  
+  if(newcmf.m()<ZERO||newcmf.e()<ZERO)  
     throw Exception() << "Can't generate backward evolution of the photon"
 		      << " in IncomingPhotonEvolver::handle()"
 		      << Exception::eventerror;

@@ -76,7 +76,7 @@ public:
    */
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double x, double eps = 0.0,
-                     Energy2 particleScale = 0.0*GeV2) const;
+                     Energy2 particleScale = ZERO) const;
 
   /**
    * Return x times the valence pdf for the given parameters
@@ -89,7 +89,7 @@ public:
    */
   virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                       double x, double eps = 0.0,
-                      Energy2 particleScale = 0.0*GeV2) const;
+                      Energy2 particleScale = ZERO) const;
 
   /**
    * The sea density. Return the pdf for the given cvalence \a
@@ -102,7 +102,7 @@ public:
    */
   virtual double xfsx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 		      double x, double eps = 0.0,
-		      Energy2 particleScale = 0.0*GeV2) const;
+		      Energy2 particleScale = ZERO) const;
   //@}
 
 public:

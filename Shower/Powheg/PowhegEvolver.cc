@@ -347,7 +347,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     }
     if( !emitted ) {
       if( intrinsicpT().find( progenitor() ) == intrinsicpT().end() ) {
-	kinematics->updateLast( newParent, 0.*MeV, 0.*MeV );
+	kinematics->updateLast( newParent, ZERO, ZERO );
       }
       else {
 	pair<Energy,double> kt = intrinsicpT()[progenitor()];
@@ -389,7 +389,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   // now reconstruct the momentum
   if( !emitted ) {
     if( intrinsicpT().find( progenitor() ) == intrinsicpT().end() ) {
-      bb.kinematics->updateLast( newParent, 0.*MeV, 0.*MeV );
+      bb.kinematics->updateLast( newParent, ZERO, ZERO );
     }
     else {
       pair<Energy,double> kt = intrinsicpT()[ progenitor() ];

@@ -21,11 +21,11 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSHHHVertex::SSHHHVertex() : theMw(0.*MeV), theZfact(0.*MeV), theSw(0.),
+SSHHHVertex::SSHHHVertex() : theMw(ZERO), theZfact(ZERO), theSw(0.),
 			     theSbpa(0.), theCbpa(0.), theSbma(0.),
 			     theCbma(0.), theS2a(0.), theC2a(0.),
 			     theS2b(0.), theC2b(0.), theElast(0.),
-			     theq2last(0.*MeV2) 
+			     theq2last(ZERO) 
 {
   vector<long> first, second, third;
   int sec = 35;

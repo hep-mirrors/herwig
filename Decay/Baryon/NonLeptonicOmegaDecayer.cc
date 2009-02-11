@@ -84,11 +84,11 @@ void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
   // couplings for xi0 pi-
   _a[1] = _c/   sqrt(2.)/_fpi*(_hc/3./(_momega-_mxistar)
 			       +_hpi*_mpip*_mpip/2./(_mkp*_mkp-_mpip*_mpip));
-  _b[1] = 0./MeV;
+  _b[1] = ZERO;
   // couplings for xi- pi0
   _a[2] = _c/2./         _fpi*(_hc/3./(_momega-_mxistar)
 			       +_hpi*_mpi0*_mpi0/2./(_mk0*_mk0-_mpi0*_mpi0));
-  _b[2] = 0./MeV;
+  _b[2] = ZERO;
   // set up the decay modes
   tPDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
@@ -218,7 +218,7 @@ void NonLeptonicOmegaDecayer::Init() {
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceFpi
     ("Fpi",
      "The pion decay constant.",
-     &NonLeptonicOmegaDecayer::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
+     &NonLeptonicOmegaDecayer::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfacehc
@@ -248,61 +248,61 @@ void NonLeptonicOmegaDecayer::Init() {
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMLambda
     ("MLambda",
      "The mass of the Lambda baryon",
-     &NonLeptonicOmegaDecayer::_mlambda, MeV, 1115.683*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mlambda, MeV, 1115.683*MeV, ZERO, 10000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMXi
     ("MXi",
      "The mass of the Xi baryon",
-     &NonLeptonicOmegaDecayer::_mxi, MeV, 1314.830*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mxi, MeV, 1314.830*MeV, ZERO, 10000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMOmega
     ("MOmega",
      "The mass of the Omega baryon",
-     &NonLeptonicOmegaDecayer::_momega, MeV, 1672.450*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_momega, MeV, 1672.450*MeV, ZERO, 10000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMXiStar
     ("MXiStar",
      "The mass of the XiStar baryon",
-     &NonLeptonicOmegaDecayer::_mxistar, MeV, 1531.800*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mxistar, MeV, 1531.800*MeV, ZERO, 10000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMpiplus
     ("Mpiplus",
      "The mass of the charged pion",
-     &NonLeptonicOmegaDecayer::_mpip, MeV, 139.57*MeV, 0.0*MeV, 1000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mpip, MeV, 139.57*MeV, ZERO, 1000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMKplus
     ("MKplus",
      "The mass of the charged kaon",
-     &NonLeptonicOmegaDecayer::_mkp, MeV, 493.667*MeV, 0.0*MeV, 1000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mkp, MeV, 493.667*MeV, ZERO, 1000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMpi0
     ("Mpi0",
      "The mass of the neutral pion",
-     &NonLeptonicOmegaDecayer::_mpi0, MeV, 134.977*MeV, 0.0*MeV, 1000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mpi0, MeV, 134.977*MeV, ZERO, 1000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMK0
     ("MK0",
      "The mass of the neutral kaon",
-     &NonLeptonicOmegaDecayer::_mk0, MeV, 497.648*MeV, 0.0*MeV, 1000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mk0, MeV, 497.648*MeV, ZERO, 1000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMBstar
     ("MBstar",
      "The mass of the excited B* resonnaces",
-     &NonLeptonicOmegaDecayer::_mbstar, MeV, 1620.0*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mbstar, MeV, 1620.0*MeV, ZERO, 10000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMR
     ("MR",
      "The mass of the excited R resonnaces",
-     &NonLeptonicOmegaDecayer::_mr, MeV, 1620.0*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_mr, MeV, 1620.0*MeV, ZERO, 10000.0*MeV,
      false, false, true);
 
   static Switch<NonLeptonicOmegaDecayer,bool> interfaceLocalMasses
