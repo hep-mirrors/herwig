@@ -12,8 +12,6 @@
 // This is the declaration of the GSLHelper class.
 //
 
-#include "ThePEG/Config/PhysicalQty.h"
-
 namespace Herwig {
 
   using namespace ThePEG;
