@@ -509,10 +509,6 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 	      _vertexWWW->evaluate(scale(),interZ,v2[ohel2],v1[ohel1]) : 0.;
 	    // t-channel
 	    for(unsigned int ix=0;ix<tc.size();++ix) {
-// 	      cerr << "testing in loop " << f1[ihel1].getParticle()->PDGName()
-// 		   << " " << tc[ix]->PDGName() << " " 
-// 		   << a1[ihel2].getParticle()->PDGName()
-// 		   << "\n";
 	      SpinorWaveFunction inter = 
 		_vertexFFW->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
 	      diag[ix] = 
@@ -541,18 +537,6 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
 	    // individual diagrams
 	    for (size_t ii=0; ii<5; ++ii) me[ii] += std::norm(diag[ii]);
 	    // full matrix element
-	    // Test combinations of s, t and u-channel contributions
-// 	    double t_Channel    = std::norm(diag[0]+diag[1]+diag[2]);
-// 	    output += t_Channel;
-// 	    double s_Channel    = std::norm(diag[3]+diag[4]);
-// 	    output += s_Channel;
-// 	    double stChannel    = std::norm(diag[0]+diag[1]+diag[2])
-// 	                        + std::norm(diag[3]+diag[4]);
-// 	    output += stChannel;
-// 	    double Interference = 2.*real( (diag[0]+diag[1]+diag[2])
-// 				         * std::conj(diag[3]+diag[4])
-// 				         );
-//  	    output += Interference;
 	    diag[0] += diag[1]+diag[2]+diag[3]+diag[4];
 	    output += std::norm(diag[0]);
 	    // storage of the matrix element for spin correlations
