@@ -130,7 +130,7 @@ void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool f
 
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance) const {
-  Energy newQ = Energy();
+  Energy newQ = ZERO;
   ShoKinPtr kinematics = ShoKinPtr();
   SudakovPtr sudakov=SudakovPtr();
   IdList ids;
@@ -211,7 +211,7 @@ Branching SplittingGenerator::
 chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			double enhance,
 			Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  Energy newQ=Energy();
+  Energy newQ=ZERO;
   ShoKinPtr kinematics=ShoKinPtr();
   SudakovPtr sudakov;
   IdList ids;

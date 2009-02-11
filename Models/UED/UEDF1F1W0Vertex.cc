@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(0./MeV), theQ2Last(0.0*GeV2), 
+UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
 				    theCoupLast(0.), 
 				    thefermALast(0), thefermBLast(0) {
   vector<long> anti, ferm, wboson;

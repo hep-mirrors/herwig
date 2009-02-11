@@ -22,7 +22,7 @@ using namespace Herwig;
 
 UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theCosThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,
-				     theq2Last(0.*GeV2), theCoupLast(0.), 
+				     theq2Last(ZERO), theCoupLast(0.), 
 				     theLeftLast(0.), theRightLast(0.) {
   vector<long> anti, ferm, boson(25, 23);
   //QQ, uu, dd

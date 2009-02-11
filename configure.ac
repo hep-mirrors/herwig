@@ -38,13 +38,14 @@ AC_LANG([C++])
 
 AM_INIT_AUTOMAKE([1.9 gnu dist-bzip2 -Wall])
 dnl Checks for programs.
-AC_PROG_CXX
+AC_PROG_CXX([g++])
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
 
 dnl modified search order
-AC_PROG_FC([gfortran g95 g77 xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
+AC_PROG_FC([gfortran g95 g77]) 
+dnl xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn xlf90 f90 pgf90 pghpf epcf90 xlf f77 frt pgf77 cf77 fort77 fl32 af77])
 AC_LANG_PUSH([Fortran])
 AC_MSG_CHECKING([if the Fortran compiler ($FC) works])
 AC_COMPILE_IFELSE(

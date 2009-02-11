@@ -111,7 +111,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 			    << " in decay of " << parent->PDGName() 
 			    << Exception::eventerror;
       }
-      parent->scale(0.0*MeV2);
+      parent->scale(ZERO);
       // loop over the children
       for ( int i = 0, N = children.size(); i < N; ++i ) {
 	// if the child has already been decayed add products to the record
@@ -153,7 +153,7 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
     parent->children()[i]->setLabVertex(parent->labDecayVertex());
     s.addDecayProduct(parent->children()[i]);
   }
-  parent->scale(0.0*GeV2);
+  parent->scale(ZERO);
   for ( int i = 0, N = parent->children().size(); i < N; ++i ) {
     if((parent->children()[i])->decayed()) {
       for(unsigned int ix=0;ix<(parent->children()[i])->children().size();++ix)

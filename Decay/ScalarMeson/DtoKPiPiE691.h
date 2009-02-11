@@ -128,7 +128,7 @@ protected:
     default: assert(false);
     }
     Complex bw = sqrt(0.5*wres/GeV/Constants::pi)*GeV/
-      (mAB-mres-complex<Energy>(0.*MeV,0.5*wres));
+      (mAB-mres-complex<Energy>(ZERO,0.5*wres));
     return s*bw;
   }
   //@}

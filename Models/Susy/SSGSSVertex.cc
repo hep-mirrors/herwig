@@ -20,7 +20,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(0.*GeV2) {
+SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) {
   vector<long> first,second,third;
   for(long ix=1000001;ix<1000007;++ix) {
     first.push_back(21);

@@ -19,7 +19,7 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
-  : _couplast(0.), _q2last(0.*GeV2), _mw(0.*GeV), _zfact(0.) {
+  : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) {
   // particles
   vector<long> first,second,third;
   first.push_back(24);  

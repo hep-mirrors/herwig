@@ -127,7 +127,7 @@ double FFVDecayer::me2(const int , const Particle & inpart,
 
 Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
     if( outa.first->iSpin() == PDT::Spin1Half)

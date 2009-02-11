@@ -43,19 +43,19 @@ void ScalarMassGenerator::Init() {
     ("Coupling",
      "The coupling",
      &ScalarMassGenerator::_coupling,
-     GeV, 0, 0*GeV, 0*GeV, Constants::MaxEnergy, false, false, true);
+     GeV, 0, ZERO, ZERO, Constants::MaxEnergy, false, false, true);
 
   static ParVector<ScalarMassGenerator,Energy> interfacemass1
     ("Mass1",
      "The mass for first particle",
      &ScalarMassGenerator::_mass1,
-     GeV, 0, 0*GeV, 0*GeV, Constants::MaxEnergy, false, false, true);
+     GeV, 0, ZERO, ZERO, Constants::MaxEnergy, false, false, true);
 
   static ParVector<ScalarMassGenerator,Energy> interfacemass2
     ("Mass2",
      "The mass for second particle",
      &ScalarMassGenerator::_mass2,
-     GeV, 0, 0*GeV, 0*GeV, Constants::MaxEnergy, false, false, true);
+     GeV, 0, ZERO, ZERO, Constants::MaxEnergy, false, false, true);
 
 }
 

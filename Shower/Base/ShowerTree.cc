@@ -509,7 +509,7 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
 	for (unsigned int i = 0, N = children.size(); i < N; ++i ) {
 	  children[i]->setLabVertex(parent->labDecayVertex());
 	  parent->addChild(children[i]);
-	  parent->scale(0.0*GeV2);
+	  parent->scale(ZERO);
 	}
 	// if succeeded break out of loop
 	break;

@@ -194,7 +194,7 @@ vector<tPDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
     if( pb->id() == id ) swap(pa, pb);
     if( pc->id() == id ) swap(pa, pc);
     //One of the products must be a W
-    Energy mp(0.*GeV);
+    Energy mp(ZERO);
     if( abs(pb->id()) == ParticleID::Wplus )
       mp = pc->mass();
     else if( abs(pc->id()) == ParticleID::Wplus )
@@ -306,7 +306,7 @@ createDecayMode(PDPtr inpart, const tPDVector & decays,
       << Exception::runerror;
   }
   // the partial widths
-  Energy totalWidth(0.*MeV);
+  Energy totalWidth(ZERO);
   vector<vector<Energy> > pWidths(decays.size()/3);
   vector<vector<string> > tags(decays.size()/3);
   vector<vector<WeakDecayCurrentPtr> > currents(decays.size()/3);

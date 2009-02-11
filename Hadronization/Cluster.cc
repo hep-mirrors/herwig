@@ -32,7 +32,7 @@ using namespace Herwig;
 
 tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
 
-Energy2 Cluster::_mg2 = 0.*GeV2;
+Energy2 Cluster::_mg2 = ZERO;
 
 ClassDescription<Cluster> Cluster::initCluster;
 
@@ -114,7 +114,7 @@ Energy Cluster::sumConstituentMasses() const
            _component[2]->mass();
   } else if(_numComp == 2) 
     return _component[0]->mass() + _component[1]->mass();
-  else return Energy();
+  else return ZERO;
 }
 
 

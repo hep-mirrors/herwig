@@ -239,7 +239,7 @@ protected:
     Energy pcm = iopt==0 ? 
       Kinematics::pstarTwoBodyDecay(q,_mpi0,_mpi0) :
       Kinematics::pstarTwoBodyDecay(q,_mpic,_mpic);
-    if(pcm<0.*MeV) pcm=0.*MeV;
+    if(pcm<ZERO) pcm=ZERO;
     Energy  width(_sigmawidth*pcm/_psigma[iopt]);
     Energy2 msigma2 = sqr(_sigmamass);
     return msigma2/(q2-msigma2+Complex(0.,1.)*msigma2*width/q);
@@ -431,7 +431,7 @@ protected:
   Energy2 DParameter() const {
     Energy2 grhom(8.*_prho*_prho*_prho/_rhomass);
     return _rhomass*_rhomass+_rhowidth*_rhomass*
-      (hFunction(0.*MeV)-_hm2+_rhomass*_rhomass*_dhdq2m2)/grhom;
+      (hFunction(ZERO)-_hm2+_rhomass*_rhomass*_dhdq2m2)/grhom;
   }
 
   /**
@@ -457,7 +457,7 @@ protected:
       double root = sqrt(1.-4.*_mpic2/q2);
       output = root*log((1.+root)/(1.-root))*(q2-4*_mpic2)/pi;
     }
-    else if (q2 > eps) output = Energy2();
+    else if (q2 > eps) output = ZERO;
     else               output = -8.*_mpic2/pi;
     return output;
   }

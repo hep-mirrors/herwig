@@ -31,7 +31,7 @@ namespace {
 ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.*MeV;_mK=0.*MeV;
+  _mpi=ZERO;_mK=ZERO;
   // set the initial weights for the resonances
   // the rho weights
   _rhoF123wgts.push_back(1.0);_rhoF123wgts.push_back(-0.145);
@@ -143,8 +143,8 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
 		 back_inserter(_a1runq2),
 		 timesGeV2);
 
-  _maxmass=0.*GeV;
-  _maxcalc=0.*GeV;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
 void ThreeMesonDefaultCurrent::doinit() throw(InitException) {
@@ -424,91 +424,91 @@ void ThreeMesonDefaultCurrent::Init() {
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &ThreeMesonDefaultCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &ThreeMesonDefaultCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &ThreeMesonDefaultCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
     
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceA1Width
     ("A1Width",
      "The a_1 width if using local values.",
-     &ThreeMesonDefaultCurrent::_a1width, GeV, 0.599*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1width, GeV, 0.599*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceA1Mass
     ("A1Mass",
      "The a_1 mass if using local values.",
-     &ThreeMesonDefaultCurrent::_a1mass, GeV, 1.251*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_a1mass, GeV, 1.251*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceK1Width
     ("K1Width",
      "The K_1 width if using local values.",
-     &ThreeMesonDefaultCurrent::_k1width, GeV, 0.174*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_k1width, GeV, 0.174*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceK1Mass
     ("K1Mass",
      "The K_1 mass if using local values.",
-     &ThreeMesonDefaultCurrent::_k1mass, GeV, 1.402*GeV, 0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_k1mass, GeV, 1.402*GeV, ZERO, 10.0*GeV,
      false, false, false);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF123masses
     ("rhoF123masses",
      "The masses for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF123masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF123masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF123widths
     ("rhoF123widths",
      "The widths for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF123widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF123widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF5masses
     ("rhoF5masses",
      "The masses for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF5masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF5masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfacerhoF5widths
     ("rhoF5widths",
      "The widths for the rho resonances if used local values",
-     &ThreeMesonDefaultCurrent::_rhoF5widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_rhoF5widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF123masses
     ("KstarF123masses",
      "The masses for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF123masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF123masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF123widths
     ("KstarF123widths",
      "The widths for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF123widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF123widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF5masses
     ("KstarF5masses",
      "The masses for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF5masses, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF5masses, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
   
   static ParVector<ThreeMesonDefaultCurrent,Energy> interfaceKstarF5widths
     ("KstarF5widths",
      "The widths for the Kstar resonances if used local values",
-     &ThreeMesonDefaultCurrent::_kstarF5widths, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &ThreeMesonDefaultCurrent::_kstarF5widths, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<ThreeMesonDefaultCurrent,Energy> interfaceFPi
     ("FPi",
      "The pion decay constant",
-     &ThreeMesonDefaultCurrent::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
+     &ThreeMesonDefaultCurrent::_fpi, MeV, 92.4*MeV, ZERO, 200.0*MeV,
      false, false, true);
 }
   
@@ -629,7 +629,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
   tPDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   // the particles we will use a lot
@@ -900,7 +900,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return;
+    if(!_initializea1||_maxmass==ZERO) return;
     // parameters for the table of values
     Energy2 step(sqr(_maxcalc)/199.);
     // integrator to perform the integral
@@ -916,7 +916,7 @@ void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
     // loop to give the values
     _a1runq2.clear(); _a1runwidth.clear();
-    for(Energy2 moff2(0.*MeV2); moff2<=sqr(_maxcalc); moff2+=step) {
+    for(Energy2 moff2(ZERO); moff2<=sqr(_maxcalc); moff2+=step) {
       _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
       _a1runq2.push_back(moff2);
     }
@@ -1065,7 +1065,7 @@ Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
   // calculate the momenta for the running widths
   if(itype>1) mout[0]=_mK;
   Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,mout[0],mout[1]));
-  Energy pcm(0.*MeV);
+  Energy pcm(ZERO);
   if(mout[0]+mout[1]<q){pcm=Kinematics::pstarTwoBodyDecay(q,mout[0],mout[1]);}
   double ratio = Math::Pow<3>(pcm/pcm0);
   Energy gamrun(width*mass*ratio/q);

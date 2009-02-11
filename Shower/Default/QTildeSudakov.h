@@ -41,7 +41,7 @@ public:
   //@{
   /**
    * Return the scale of the next time-like branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
@@ -54,7 +54,7 @@ public:
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param stoppingScale stopping scale for the evolution
    * @param minmass The minimum mass allowed for the spake-like particle.
@@ -72,7 +72,7 @@ public:
 
   /**
    * Return the scale of the next space-like branching. If there is no 
-   * branching then it returns Energy().
+   * branching then it returns ZERO.
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum

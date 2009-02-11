@@ -14,9 +14,9 @@
 namespace Herwig {
 
 inline SMHiggsWidthGenerator::SMHiggsWidthGenerator() 
-  : _widthopt(2), _offshell(10.), _mw(0.*GeV),_mz(0.*GeV),_gamw(0.*GeV),
-    _gamz(0.*GeV),_qmass(7,0.*GeV),_lmass(3,0.*GeV),
-    _sw2(0.), _ca(0.), _cf(0.),_qlast(0.*GeV)
+  : _widthopt(2), _offshell(10.), _mw(ZERO),_mz(ZERO),_gamw(ZERO),
+    _gamz(ZERO),_qmass(7,ZERO),_lmass(3,ZERO),
+    _sw2(0.), _ca(0.), _cf(0.),_qlast(ZERO)
 {}
 
 inline IBPtr SMHiggsWidthGenerator::clone() const {

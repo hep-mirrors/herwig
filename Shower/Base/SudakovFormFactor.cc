@@ -156,7 +156,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,Energy> interfacepTmin
     ("pTmin",
      "The minimum pT if using a cut-off on the pT",
-     &SudakovFormFactor::pTmin_, GeV, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &SudakovFormFactor::pTmin_, GeV, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 }
 
@@ -364,5 +364,5 @@ double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
 
 void SudakovFormFactor::doinit() throw(InitException) {
   Interfaced::doinit();
-  pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : 0.*GeV2; 
+  pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : ZERO; 
 }

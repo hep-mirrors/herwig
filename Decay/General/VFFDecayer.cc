@@ -109,7 +109,7 @@ double VFFDecayer::me2(const int , const Particle & inpart,
 
 Energy VFFDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     double mu1(outa.second/inpart.second), mu2(outb.second/inpart.second);
     _perturbativeVertex->setCoupling(sqr(inpart.second), outa.first, outb.first,

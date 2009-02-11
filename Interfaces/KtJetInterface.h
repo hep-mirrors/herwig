@@ -59,7 +59,7 @@ public:
   /**
    *  Get the PDG code for a KtJet vector
    */ 
-  int getThePEGID(KtJet::KtLorentzVector &);
+  int getThePEGID(const KtJet::KtLorentzVector &);
 
   /**
    * Convert KtJet vector back to ThePEG

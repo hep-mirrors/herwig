@@ -62,8 +62,8 @@ double MEff2vv::me2() const {
   SpinorVector sp(2);
   SpinorBarVector sbar(2);
   // vector 
-  bool mc  = !(mePartonData()[2]->mass() > 0.*MeV);
-  bool md  = !(mePartonData()[3]->mass() > 0.*MeV);
+  bool mc  = !(mePartonData()[2]->mass() > ZERO);
+  bool md  = !(mePartonData()[3]->mass() > ZERO);
   VBVector v1(3), v2(3);  
   for( unsigned int i = 0; i < 2; ++i ) {
     sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i, incoming);
@@ -276,8 +276,8 @@ void MEff2vv::constructVertex(tSubProPtr sub) {
   vector<SpinorBarWaveFunction> sbar;
   SpinorBarWaveFunction(sbar, ext[1], incoming, false);
   vector<VectorWaveFunction> v1, v2;
-  bool mc  = !(ext[2]->data().mass() > 0.*MeV);
-  bool md  = !(ext[3]->data().mass() > 0.*MeV);
+  bool mc  = !(ext[2]->data().mass() > ZERO);
+  bool md  = !(ext[3]->data().mass() > ZERO);
   VectorWaveFunction(v1, ext[2], outgoing, true, mc);
   VectorWaveFunction(v2, ext[3], outgoing, true, md);
   

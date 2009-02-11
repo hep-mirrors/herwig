@@ -112,7 +112,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     if(_intdau1[ix]<0&&_intdau2[ix]<0) {
       // lower limits on the masses of the two resonances
       for(iy=0;iy<2;++iy) {
-	lowerb[iy]=Energy();
+	lowerb[iy]=ZERO;
 	for(iz=0;iz<_intext[idau[iy]].size();++iz) {
 	  lowerb[iy]+=massext[_intext[idau[iy]][iz]];
 	}
@@ -146,7 +146,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     else if(_intdau1[ix]<0) {
       // compute the limits of integration
       upper = massint[ix]-massext[idau[1]];
-      lower = Energy();
+      lower = ZERO;
       for(iy=0;iy<_intext[idau[0]].size();++iy) {
 	lower+=massext[_intext[idau[0]][iy]];
       }
@@ -159,7 +159,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     else if(_intdau2[ix]<0) {
       // compute the limits of integration
       upper = massint[ix]-massext[idau[0]];
-      lower = 0*MeV;
+      lower = ZERO;
       for(iy=0;iy<_intext[idau[1]].size();++iy) {
 	lower+=massext[_intext[idau[1]][iy]];
       }
@@ -208,7 +208,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
     if(_intdau1[ix]<0&&_intdau2[ix]<0) {
       // lower limits on the masses of the two resonances
       for(iy=0;iy<2;++iy) {
-	lowerb[iy]=Energy();
+	lowerb[iy]=ZERO;
 	for(iz=0;iz<_intext[idau[iy]].size();++iz)
 	  lowerb[iy]+=output[_intext[idau[iy]][iz]].mass();
       }
@@ -240,7 +240,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
     else if(_intdau1[ix]<0) {
       // compute the limits of integration
       upper = intmass[ix]-output[idau[1]].mass();
-      lower = Energy();
+      lower = ZERO;
       for(iy=0;iy<_intext[idau[0]].size();++iy)
 	lower+=output[_intext[idau[0]][iy]].mass();
       wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
@@ -252,7 +252,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
     else if(_intdau2[ix]<0) {
       // compute the limits of integration
       upper = intmass[ix]-output[idau[0]].mass(); 
-      lower = Energy();
+      lower = ZERO;
       for(iy=0;iy<_intext[idau[1]].size();++iy)
 	lower+=output[_intext[idau[1]][iy]].mass();
       wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
@@ -353,8 +353,8 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
   for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
     massmax -= _mode->externalParticles(ix)->massMin();
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
-    if(_intwidth.back()==0.*MeV && ix>0 && _jactype[ix]==0 ) {
-      Energy massmin(0.*GeV);
+    if(_intwidth.back()==ZERO && ix>0 && _jactype[ix]==0 ) {
+      Energy massmin(ZERO);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
 	massmin+=_mode->externalParticles(_intext[ix][iy])->massMin();
       // check if can be on-shell
@@ -376,7 +376,7 @@ void DecayPhaseSpaceChannel::doinitrun() {
   Interfaced::doinitrun();
   for(unsigned int ix=1;ix<_jactype.size();++ix) {
     if(_jactype[ix]==0) {
-      if(_intmass[ix]==0.*MeV || _intwidth[ix]==0*MeV) {
+      if(_intmass[ix]==ZERO || _intwidth[ix]==ZERO) {
 	CurrentGenerator::log() << "DecayPhaseSpaceChannel::doinitrun()" 
 				<< " Problem with parameters for " 
 				<< _intpart[ix]->PDGName()
@@ -437,7 +437,7 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   } 
   // use a Breit-Wigner 
   if(_jactype[ires]==0) {
-    if(_intmwidth[ires]!=0.*GeV2) {
+    if(_intmwidth[ires]!=ZERO) {
       double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
       double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
       Energy2 moff2=moff*moff-_intmass2[ires];
@@ -466,7 +466,7 @@ InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   return wgt;
 }
 Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
-  Energy mass=Energy();
+  Energy mass=ZERO;
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
 					       << " not allowed" 
 					       << Exception::eventerror;
@@ -478,7 +478,7 @@ Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) 
     return 0.5*(lower+upper);
   // use a Breit-Wigner
   if(_jactype[ires]==0) {
-    if(_intmwidth[ires]!=0.*GeV2) {
+    if(_intmwidth[ires]!=ZERO) {
       double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
       double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
       double rho = rhomin+rhomax*UseRandom::rnd();
@@ -520,10 +520,10 @@ void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   Axis unitDir1=Kinematics::unitDirection(ctheta,phi);
   Momentum3 pstarVector;
   Energy min=p.m();
-  if ( min >= m1 + m2  &&  m1 >= 0.0*MeV  &&  m2 >= 0.0*MeV  ) {
+  if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
     pstarVector = unitDir1 * Kinematics::pstarTwoBodyDecay(min,m1,m2);
   }
-  else if( m1 >= 0.0*MeV  &&  m2 >= 0.0*MeV && (m1+m2-min)/(min+m1+m2)<eps) {
+  else if( m1 >= ZERO  &&  m2 >= ZERO && (m1+m2-min)/(min+m1+m2)<eps) {
     pstarVector = Momentum3();
   }
   else {

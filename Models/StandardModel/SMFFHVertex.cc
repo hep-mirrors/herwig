@@ -38,9 +38,9 @@ SMFFHVertex::SMFFHVertex()  {
   // set up for the couplings
   _couplast=InvEnergy();
   _idlast=0;
-  _q2last=0.*GeV2;
-  _masslast=0.*GeV;
-  _mw=0.*GeV;
+  _q2last=ZERO;
+  _masslast=ZERO;
+  _mw=ZERO;
 }
 
 void SMFFHVertex::doinit() throw(InitException) {
@@ -90,7 +90,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
       throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
 				       << "Unknown particle in Higgs vertex" 
 				       << Exception::warning;
-      _masslast = 0*MeV;
+      _masslast = ZERO;
     }
   }
   else if(iferm!=_idlast) {
@@ -102,7 +102,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
       throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
 				       << "Unknown particle in Higgs vertex" 
 				       << Exception::warning;
-      _masslast = 0*MeV;
+      _masslast = ZERO;
     }
   }
   setNorm(_couplast*_masslast);

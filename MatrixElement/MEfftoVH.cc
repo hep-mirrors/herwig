@@ -249,7 +249,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   if(UseRandom::rndbool()) {
     // generate the mass of the Higgs
     Energy mhmax = min(2.*e-vec->massMin(),mePartonData()[2]->massMax());
-    Energy mhmin = max(0.*GeV             ,mePartonData()[2]->massMin());
+    Energy mhmin = max(ZERO             ,mePartonData()[2]->massMin());
     if(mhmax<=mhmin) return false;
     double rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
     double rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
@@ -277,7 +277,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
     jac *= rhomax-rhomin;
     // generate the mass of the Higgs
     Energy mhmax = min(2.*e-mv,mePartonData()[2]->massMax());
-    Energy mhmin = max(0.*GeV ,mePartonData()[2]->massMin());
+    Energy mhmin = max(ZERO ,mePartonData()[2]->massMin());
     if(mhmax<=mhmin) return false;
     rhomin = atan((sqr(mhmin)-sqr(_mh))/_mh/_wh);
     rhomax = atan((sqr(mhmax)-sqr(_mh))/_mh/_wh);
@@ -288,7 +288,7 @@ bool MEfftoVH::generateKinematics(const double * r) {
   meMomenta()[2].setMass(mh);
   for(unsigned int ix=3;ix<5;++ix) 
     meMomenta()[ix] = Lorentz5Momentum(mePartonData()[ix]->generateMass());
-  Energy q = 0.0*GeV;
+  Energy q = ZERO;
   Lorentz5Momentum pvec(mv);
   try {
     q = SimplePhaseSpace::
@@ -309,17 +309,17 @@ bool MEfftoVH::generateKinematics(const double * r) {
   Energy2 pq   = 2.0*e*q;
   double ctmin = -1.0,ctmax = 1.0;
   Energy2 thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e0e2 - m22 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[2]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m22 - e1e2)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[1], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
+  if ( thmin > ZERO ) ctmax = min(ctmax, (e1e3 - m32 - thmin)/pq);
 
   thmin = lastCuts().minTij(mePartonData()[0], mePartonData()[3]);
-  if ( thmin > 0.0*GeV2 ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
-  if ( ptmin > 0.0*GeV ) {
+  if ( thmin > ZERO ) ctmin = max(ctmin, (thmin + m32 - e0e3)/pq);
+  if ( ptmin > ZERO ) {
     double ctm = 1.0 - sqr(ptmin/q);
     if ( ctm <= 0.0 ) return false;
     ctmin = max(ctmin, -sqrt(ctm));

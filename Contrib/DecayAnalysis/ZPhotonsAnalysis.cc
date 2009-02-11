@@ -48,7 +48,7 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
   // ix/emax is the index/energy of the most energetic photon emitted:
   Lorentz5Momentum pphoton;
   unsigned int mult=0;
-  Energy emax=0.*MeV;
+  Energy emax=ZERO;
   int imax=-1;
   // loop over the non-fermionic children i.e. the photons:
   for(unsigned int ix=2;ix<part->children().size();++ix) {

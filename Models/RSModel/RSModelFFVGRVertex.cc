@@ -21,7 +21,7 @@ using namespace Herwig;
 using namespace ThePEG;
 
 RSModelFFVGRVertex::RSModelFFVGRVertex() 
-  : _charge(17,0.), _couplast(2,0.), _q2last(2,0.*GeV2) {
+  : _charge(17,0.), _couplast(2,0.), _q2last(2,ZERO) {
   vector<long> first,second,third,fourth;
   for(int ix=1;ix<7;++ix) {
     first.push_back(-ix);

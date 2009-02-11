@@ -107,7 +107,7 @@ void GenericWidthGenerator::Init() {
     ("MinimumMasses",
      "The minimum mass of the decay products",
      &GenericWidthGenerator::_minmass,
-     GeV, 0, 0*GeV, 0*GeV,  1.E12*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO,  1.E12*GeV, false, false, true);
 
   static ParVector<GenericWidthGenerator,double> interfaceMEcoupling
     ("MEcoupling",
@@ -125,25 +125,25 @@ void GenericWidthGenerator::Init() {
     ("MEmass1",
      "The mass for first particle in a two body mode",
      &GenericWidthGenerator::_MEmass1,
-     GeV, 0, 0*GeV, 0*GeV,  1.E12*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO,  1.E12*GeV, false, false, true);
 
   static ParVector<GenericWidthGenerator,Energy> interfaceMEmass2
     ("MEmass2",
      "The mass for second particle in a two body mode",
      &GenericWidthGenerator::_MEmass2,
-     GeV, 0, 0*GeV, 0*GeV,  1.E12*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO,  1.E12*GeV, false, false, true);
 
   static ParVector<GenericWidthGenerator,Energy> interfaceInterpolationMasses
     ("InterpolationMasses",
      "The masses for interpolation table",
      &GenericWidthGenerator::_intermasses,
-     GeV, 0, 0*GeV, 0*GeV,  1E12*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO,  1E12*GeV, false, false, true);
 
   static ParVector<GenericWidthGenerator,Energy> interfaceInterpolationWidths
     ("InterpolationWidths",
      "The widths for interpolation table",
      &GenericWidthGenerator::_interwidths,
-     GeV, 0, 0*GeV, 0*GeV,  1E12*GeV, false, false, true);
+     GeV, 0, ZERO, ZERO,  1E12*GeV, false, false, true);
 
   static ParVector<GenericWidthGenerator,int> interfacenoofenteries
     ("NumberofEntries",
@@ -200,7 +200,7 @@ void GenericWidthGenerator::Init() {
 }
 
 Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
-  Energy gamma= Energy();
+  Energy gamma= ZERO;
   for(unsigned int ix =0;ix<_MEcoupling.size();++ix) {
     if(_modeon[ix]) gamma +=partialWidth(ix,m);
   }
@@ -245,7 +245,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
       _decaytags.push_back(_decaymodes.back()->tag());
       ParticleMSet::const_iterator pit(mode->products().begin());
       // minimum mass for the decaymode
-      Energy minmass = Energy();
+      Energy minmass = ZERO;
       for(;pit!=mode->products().end();++pit) {
 	(**pit).init();
 	minmass+=(**pit).massMin();
@@ -261,8 +261,8 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	_MEtype.push_back(0);
 	_MEcode.push_back(0);
 	_MEcoupling.push_back(mode->brat());
-	_MEmass1.push_back(0.*GeV);
-	_MEmass2.push_back(0.*GeV);
+	_MEmass1.push_back(ZERO);
+	_MEmass2.push_back(ZERO);
 	_noofentries.push_back(_intermasses.size());
 	_modeon.push_back(mode->brat()>_BRminimum);
 	setupMode(mode,decayer,_MEtype.size()-1);
@@ -325,9 +325,9 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	    int ioff = ((part1->massGenerator()&&!order)||
 			(part2->massGenerator()&&order)) ? 2 : 1;
 	    if(massgen1)
-	      widthptr=new_ptr(OneOffShellCalculator(ioff,twobody,massgen1,0.*GeV));
+	      widthptr=new_ptr(OneOffShellCalculator(ioff,twobody,massgen1,ZERO));
 	    else
-	      widthptr=new_ptr(OneOffShellCalculator(ioff,twobody,massgen2,0.*GeV));
+	      widthptr=new_ptr(OneOffShellCalculator(ioff,twobody,massgen2,ZERO));
 	  }
 	  else {
 	    int ioff   = order ? 1 : 2;
@@ -342,9 +342,9 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 					      _MEmass2[_MEcode.size()-1])));
 	    // this is the first off-shell
 	    WidthCalculatorBasePtr widthptr2=
-	      new_ptr(OneOffShellCalculator(ioff,twobody,massgen1,0*GeV));
+	      new_ptr(OneOffShellCalculator(ioff,twobody,massgen1,ZERO));
 	    widthptr=new_ptr(TwoOffShellCalculator(iother,widthptr2,massgen2,
-						   0*GeV,massgen1->lowerLimit()));
+						   ZERO,massgen1->lowerLimit()));
 	  }
 	  // set up the interpolation table
 	  Energy test(part1->massMin()+part2->massMin());
@@ -354,9 +354,9 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	  Energy2 moff2;
 	  // additional points to improve the interpolation
 	  if(min==test) {
-	    _intermasses.push_back(moff-2.*step);_interwidths.push_back(0*GeV);
-	    _intermasses.push_back(moff-   step);_interwidths.push_back(0*GeV);
-	    _intermasses.push_back(moff        );_interwidths.push_back(0*GeV);
+	    _intermasses.push_back(moff-2.*step);_interwidths.push_back(ZERO);
+	    _intermasses.push_back(moff-   step);_interwidths.push_back(ZERO);
+	    _intermasses.push_back(moff        );_interwidths.push_back(ZERO);
 	    double fact(exp(0.1*log(1.+step/moff)));
 	    for(unsigned int ix=0;ix<10;++ix) {
 	      moff*=fact;
@@ -367,8 +367,8 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	    moff+=step;
 	  }
 	  else if(test>min-2.*step) {
-	    _intermasses.push_back(moff-2.*step);_interwidths.push_back(0*GeV);
-	    _intermasses.push_back(test        );_interwidths.push_back(0*GeV);
+	    _intermasses.push_back(moff-2.*step);_interwidths.push_back(ZERO);
+	    _intermasses.push_back(test        );_interwidths.push_back(ZERO);
 	  }
 	  else {
 	    _intermasses.push_back(moff-2.*step);
@@ -427,8 +427,8 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	  _MEtype.push_back(0);
 	  _MEcode.push_back(0);
 	  _MEcoupling.push_back(mode->brat());
-	  _MEmass1.push_back(0.*GeV);
-	  _MEmass2.push_back(0.*GeV);
+	  _MEmass1.push_back(ZERO);
+	  _MEmass2.push_back(ZERO);
 	  _noofentries.push_back(_intermasses.size());
 	  _modeon.push_back(mode->brat()>_BRminimum);
 	}
@@ -444,7 +444,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	  }
 	  double coupling(1.);
 	  if(_BRnorm) {
-	    Energy gamma = Energy();
+	    Energy gamma = ZERO;
 	    gamma=widthptr->partialWidth(_mass*_mass);
 	    double ratio(mode->brat()*mode->parent()->width()/gamma);
 	    coupling *=ratio;
@@ -452,8 +452,8 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	  _MEtype.push_back(2);
 	  _MEcode.push_back(0);
 	  _MEcoupling.push_back(coupling);
-	  _MEmass1.push_back(0*GeV);
-	  _MEmass2.push_back(0*GeV);
+	  _MEmass1.push_back(ZERO);
+	  _MEmass2.push_back(ZERO);
 	  _modeon.push_back(mode->brat()>_BRminimum);
 	  unsigned int ix=0;
 	  if(_MEtype.size()>1){ix=_noofentries[_MEtype.size()-2];}
@@ -475,7 +475,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     }
     // now check the overall normalisation of the running width
     Energy gamma = width(*_theParticle,_mass);
-    if(gamma>Energy()) _prefactor = _theParticle->width()/gamma;
+    if(gamma>ZERO) _prefactor = _theParticle->width()/gamma;
     // output the info so it can be read back in
   }
   else {
@@ -526,7 +526,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 //   output << "SET LIMITS X " 
 // 	 << (_theParticle->massMin()-10.*step)/GeV << " " 
 // 	 << _theParticle->massMax()/GeV << "\n";
-//   Energy upper(0.*GeV);
+//   Energy upper(ZERO);
 //   for(Energy etest=_theParticle->massMin();etest<_theParticle->massMax();etest+=step) {
 //     Energy gamma=width(*_theParticle,etest);
 //     upper = max(gamma,upper);
@@ -691,7 +691,7 @@ void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr,
 {}
 
 Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {
-  if(q<_minmass[imode]) return Energy();
+  if(q<_minmass[imode]) return ZERO;
   Energy gamma;
   if(_MEtype[imode]==0) {
     gamma=_MEcoupling[imode]*_theParticle->width();
@@ -707,7 +707,7 @@ Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {
 		      << "in GenericWidthGenerator::partialWidth()"
 		      << Exception::runerror;
   }
-  return max(gamma,Energy());
+  return max(gamma,ZERO);
 }
 
 void GenericWidthGenerator::dofinish() {
@@ -747,7 +747,7 @@ Length GenericWidthGenerator::lifeTime(const ParticleData &, Energy m, Energy w)
 Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
 						       Energy m2) const {
   using Constants::pi;
-  if(q<m1+m2) return Energy();
+  if(q<m1+m2) return ZERO;
   // calcluate the decay momentum
   Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);

@@ -37,7 +37,7 @@ Complex DtoKPiPiMarkIII::amplitude(bool rho, Energy mD,
     (1.+sqr(radius*pR))/(1.+sqr(radius*pAB));
   Energy2 s = (sqr(mAC)-sqr(mBC)-(sqr(mD)-sqr(mC))*(sqr(mA)-sqr(mB))/sqr(mres))*
     sqrt((1.+sqr(radius*pR))/(1.+sqr(radius*pAB))); 
-  Complex output=s/((sqr(mres)- sqr(mAB)-complex<Energy2>(0.*MeV2,mgam)));
+  Complex output=s/((sqr(mres)- sqr(mAB)-complex<Energy2>(ZERO,mgam)));
   return output;
 }
 
@@ -272,49 +272,49 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstar0Mass
     ("Kstar0Mass",
      "The mass of the K*(892)0",
-     &DtoKPiPiMarkIII::_mKstar0, GeV, 0.8965 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mKstar0, GeV, 0.8965 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstar0Width
     ("Kstar0Width",
      "The width of the K*(892)0",
-     &DtoKPiPiMarkIII::_wKstar0, GeV, 0.0502*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wKstar0, GeV, 0.0502*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstarMinusMass
     ("KstarMinusMass",
      "The mass of the K*(892)-",
-     &DtoKPiPiMarkIII::_mKstarm, GeV, 0.8921*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mKstarm, GeV, 0.8921*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstarMinusWidth
     ("KstarMinusWidth",
      "The width of the K*(892)-",
-     &DtoKPiPiMarkIII::_wKstarm, GeV, 0.0511*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wKstarm, GeV, 0.0511*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRho0Mass
     ("Rho0Mass",
      "The mass of the rho0",
-     &DtoKPiPiMarkIII::_mrho0, GeV, 0.770 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mrho0, GeV, 0.770 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRho0Width
     ("Rho0Width",
      "The width of the rho0",
-     &DtoKPiPiMarkIII::_wrho0, GeV, 0.1533*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wrho0, GeV, 0.1533*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRhoPlusMass
     ("RhoPlusMass",
      "The mass of the rho+",
-     &DtoKPiPiMarkIII::_mrhop, GeV, 0.770 *GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_mrhop, GeV, 0.770 *GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,Energy> interfaceRhoPlusWidth
     ("RhoPlusWidth",
      "The width of the rho+",
-     &DtoKPiPiMarkIII::_wrhop, GeV, 0.1533*GeV, 0.0*GeV, 10.0*GeV,
+     &DtoKPiPiMarkIII::_wrhop, GeV, 0.1533*GeV, ZERO, 10.0*GeV,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,InvEnergy> interfaceRhoRadius

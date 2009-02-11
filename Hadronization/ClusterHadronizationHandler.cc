@@ -109,7 +109,7 @@ void ClusterHadronizationHandler::Init() {
   static Parameter<ClusterHadronizationHandler,Energy2> interfaceMinVirtuality2 
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
-     &ClusterHadronizationHandler::_minVirtuality2, GeV2, 0.1*GeV2, 0.0*GeV2, 10.0*GeV2,false,false,false);
+     &ClusterHadronizationHandler::_minVirtuality2, GeV2, 0.1*GeV2, ZERO, 10.0*GeV2,false,false,false);
   
   static Parameter<ClusterHadronizationHandler,Length> interfaceMaxDisplacement 
     ("MaxDisplacement",

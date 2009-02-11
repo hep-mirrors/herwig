@@ -23,7 +23,7 @@ using namespace Herwig;
 
 SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theQt11(0.), theQt22(0.), theQb11(0.),
-			     theQb22(0.), theSqmass(4,0.0*GeV),
+			     theQb22(0.), theSqmass(4,ZERO),
 			     theTanB(0.),theSinA(0.), 
 			     theCosA(0.), theSinB(0.), theCosB(0.), 
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 

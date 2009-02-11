@@ -90,7 +90,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
 						   double enhance) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
-  q_ = Energy();
+  q_ = ZERO;
   z(0.);
   phi(0.); 
   // perform initialization
@@ -105,10 +105,10 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   }
   while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
 	alphaSVeto(sqr(z()*(1.-z()))*t));
-  if(t > Energy2()) q_ = sqrt(t);
+  if(t > ZERO) q_ = sqrt(t);
   else q_ = -1.*MeV;
   phi(Constants::twopi*UseRandom::rnd());
-  if(q_ < Energy()) return ShoKinPtr();
+  if(q_ < ZERO) return ShoKinPtr();
   // return the ShowerKinematics object
   return createFinalStateBranching(q_,z(),phi(),pT()); 
 }
@@ -121,7 +121,7 @@ generateNextSpaceBranching(const Energy startingQ,
 			   Ptr<BeamParticleData>::transient_const_pointer beam) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
-  q_ = Energy();
+  q_ = ZERO;
   z(0.);
   phi(0.);
   // perform the initialization
@@ -134,7 +134,7 @@ generateNextSpaceBranching(const Energy startingQ,
   tcPDPtr parton0 = getParticleData(ids[0]);
   tcPDPtr parton1 = getParticleData(ids[1]);
   // calculate next value of t using veto algorithm
-  Energy2 t(tmax),pt2(0.*GeV2);
+  Energy2 t(tmax),pt2(ZERO);
   do {
     if(!guessSpaceLike(t,tmin,x,enhance)) break;
     pt2=sqr(1.-z())*t-z()*masssquared_[2];
@@ -143,7 +143,7 @@ generateNextSpaceBranching(const Energy startingQ,
 	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
 	alphaSVeto(sqr(1.-z())*t) || 
 	PDFVeto(t,x,parton0,parton1,beam) || pt2 < pT2min() );
-  if(t > Energy2() && zLimits().first < zLimits().second)  q_ = sqrt(t);
+  if(t > ZERO && zLimits().first < zLimits().second)  q_ = sqrt(t);
   else return ShoKinPtr();
   phi(Constants::twopi*UseRandom::rnd());
   pT(sqrt(pt2));
@@ -160,7 +160,7 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
   }
   masses_.clear();
   masssquared_.clear();
-  tmin=Energy2();
+  tmin=ZERO;
   if(cutOffOption() == 0) {
     for(unsigned int ix=0;ix<ids_.size();++ix)
       masses_.push_back(getParticleData(ids_[ix])->mass());
@@ -218,7 +218,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
 	alphaSVeto(sqr(1.-z())*t) ||
 	pt2<pT2min() ||
 	t*(1.-z())>masssquared_[0]-sqr(minmass));
-  if(t > Energy2()) {
+  if(t > ZERO) {
     q_ = sqrt(t);
     pT(sqrt(pt2));
   }
@@ -258,7 +258,7 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
 } 
 
 bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
-  if (t == Energy2()) {
+  if (t == ZERO) {
     t=-1.*GeV2;
     return false;
   }
@@ -296,7 +296,7 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t) {
 }
 
 bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x) {
-  if (t == Energy2()) {
+  if (t == ZERO) {
     t=-1.*GeV2;
     return false;
   }
@@ -420,11 +420,11 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
     Energy2 scale=(sqr(pt)+masssquared_[1]*(1.-zin)+masssquared_[2]*zin);
     if(ids[0]!=ParticleID::g) scale -= zin*(1.-zin)*masssquared_[0];
     scale /= sqr(zin*(1-zin));
-    return scale<=0.*MeV2 ? sqrt(tmin) : sqrt(scale);
+    return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
   else if(iopt==1) {
     Energy2 scale=(sqr(pt)+zin*masssquared_[2])/sqr(1.-zin);
-    return scale<=0.*MeV2 ? sqrt(tmin) : sqrt(scale);
+    return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
   else {
     throw Exception() << "Unknown option in QTildeSudakov::calculateScale() "

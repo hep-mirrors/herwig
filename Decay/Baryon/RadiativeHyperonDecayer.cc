@@ -151,13 +151,13 @@ void RadiativeHyperonDecayer::Init() {
   static ParVector<RadiativeHyperonDecayer,InvEnergy> interfaceCouplingA
     ("CouplingA",
      "The A coupling",
-     &RadiativeHyperonDecayer::A_, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &RadiativeHyperonDecayer::A_, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, Interface::limited);
 
   static ParVector<RadiativeHyperonDecayer,InvEnergy> interfaceCouplingB
     ("CouplingB",
      "The B coupling",
-     &RadiativeHyperonDecayer::B_, 1./GeV, -1, 0./GeV, -10./GeV, 10./GeV,
+     &RadiativeHyperonDecayer::B_, 1./GeV, -1, ZERO, -10./GeV, 10./GeV,
      false, false, Interface::limited);
 
 }

@@ -144,7 +144,7 @@ void ScalarMesonTensorScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarMesonTensorScalarDecayer::_coupling,
-     1/GeV, 0, 0/GeV, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, ZERO, ZERO, 100./GeV, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",

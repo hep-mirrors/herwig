@@ -61,7 +61,7 @@ double TVVDecayer::me2(const int , const Particle & inpart,
 		       MEOption meopt) const {
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
-    photon[ix] = decay[ix]->mass()==0*MeV;
+    photon[ix] = decay[ix]->mass()==ZERO;
   if(meopt==Initialize) {
     TensorWaveFunction::
       calculateWaveFunctions(_tensors,_rho,const_ptr_cast<tPPtr>(&inpart),
@@ -104,7 +104,7 @@ double TVVDecayer::me2(const int , const Particle & inpart,
   
 Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa, 
 				PMPair outb) const {
-  if( inpart.second < outa.second + outb.second  ) return Energy();
+  if( inpart.second < outa.second + outb.second  ) return ZERO;
   if(_perturbativeVertex) {
     Energy2 scale(sqr(inpart.second));
     _perturbativeVertex->setCoupling(scale, outa.first, outb.first, inpart.first);
@@ -113,7 +113,7 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
     Energy2 me2;
-    if(outa.second > 0.*MeV && outb.second > 0.*MeV)
+    if(outa.second > ZERO && outb.second > ZERO)
       me2 = scale*(30 - 20.*b*b + 3.*pow(b,4))/120.; 
     else 
       me2 = scale/10.;

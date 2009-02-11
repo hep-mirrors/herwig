@@ -104,7 +104,7 @@ void BallZwickyScalarFormFactor::doinit() throw(InitException) {
 //     output << "set limits x 0 14. y 0 1" << endl;
 //     double rt(sqrt(2.));
 //     for(iz=0;iz<3;++iz) {
-//       q2=0.*MeV2;
+//       q2=ZERO;
 //       for( ;q2<14.*GeV2+step;q2+=step) {
 // 	ScalarScalarFormFactor(q2,ix,id0,id1,m0,m1,f0,fp);
 // 	ScalarScalarSigmaFormFactor(q2,ix,id0,id1,m0,m1,ft);
@@ -252,20 +252,20 @@ ScalarScalarFormFactor(Energy2 q2,unsigned  int mode,
 		       Complex & f0, Complex & fp) const {
   useMe();
   // the F_0 form-factor
-  if(_m120[mode]<0*GeV2) {
+  if(_m120[mode]<ZERO) {
     f0=_r20[mode]/(1.-q2/_mfit20[mode]);
   }
-  else if(_mfit20[mode]<0*GeV2) {
+  else if(_mfit20[mode]<ZERO) {
     f0=(_r10[mode]+_r20[mode]/(1.-q2/_m120[mode]))/(1.-q2/_m120[mode]);
   }
   else {
     f0=_r10[mode]/(1.-q2/_m120[mode])+_r20[mode]/(1.-q2/_mfit20[mode]);
   }
   // the F_1 form-factor
-  if(_m12plus[mode]<0*GeV2) {
+  if(_m12plus[mode]<ZERO) {
     fp = _r2plus[mode]/(1.-q2/_mfit2plus[mode]);
   }
-  else if(_mfit2plus[mode]<0*GeV2) {
+  else if(_mfit2plus[mode]<ZERO) {
     fp = (_r1plus[mode]+_r2plus[mode]/(1.-q2/_m12plus[mode]))/(1.-q2/_m12plus[mode]);
   }
   else {
@@ -285,10 +285,10 @@ void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
 							     Complex & fT) const {
   useMe();
   // the F_T form-factor
-  if(_m12T[mode]<0*GeV2) {
+  if(_m12T[mode]<ZERO) {
     fT = _r2T[mode]/(1.-q2/_mfit2T[mode]);
   }
-  else if(_mfit2T[mode]<0*GeV2) {
+  else if(_mfit2T[mode]<ZERO) {
     fT = (_r1T[mode]+_r2T[mode]/(1.-q2/_m12T[mode]))/(1.-q2/_m12T[mode]);
   }
   else {

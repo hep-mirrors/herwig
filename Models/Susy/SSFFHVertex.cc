@@ -21,7 +21,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV), 
+SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO), 
 			     theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
 			     theLLast(0.0), theRLast(0.0), theHLast(0), 

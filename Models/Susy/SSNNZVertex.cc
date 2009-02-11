@@ -73,7 +73,7 @@ void SSNNZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _sw >> _cw >> _theN;
   _id1last = 0;
   _id2last = 0;
-  _q2last = 0.*GeV2;
+  _q2last = ZERO;
   _couplast = 0.;
   _leftlast = 0.;
   _rightlast = 0.;

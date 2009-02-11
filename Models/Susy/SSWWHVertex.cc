@@ -21,10 +21,10 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSWWHVertex::SSWWHVertex() : theh0Wfact(0.*MeV), theH0Wfact(0.*MeV), 
-			     theh0Zfact(0.*MeV), theH0Zfact(0.*MeV),
-			     theCoupLast(0.*MeV), theElast(0.0),
-			     theq2last(0.*MeV2), theHlast(0), 
+SSWWHVertex::SSWWHVertex() : theh0Wfact(ZERO), theH0Wfact(ZERO), 
+			     theh0Zfact(ZERO), theH0Zfact(ZERO),
+			     theCoupLast(ZERO), theElast(0.0),
+			     theq2last(ZERO), theHlast(0), 
 			     theGBlast(0) {
   vector<long> first, second, third;
   //ZZh0

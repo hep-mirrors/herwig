@@ -37,14 +37,14 @@ void PTVeto::Init() {
   static Parameter<PTVeto,Energy> interfacemaxPT
     ("MaxPT",
      "Maximum allowed PT",
-     &PTVeto::_maxPT, GeV, 100.0*GeV, 0.0*GeV, 0*GeV,
+     &PTVeto::_maxPT, GeV, 100.0*GeV, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
 
   static Parameter<PTVeto,Energy> interfaceminPT
     ("MinPT",
      "Minimum allowed PT",
-     &PTVeto::_minPT, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     &PTVeto::_minPT, GeV, ZERO, ZERO, ZERO,
      false, false, Interface::lowerlim);
 
 

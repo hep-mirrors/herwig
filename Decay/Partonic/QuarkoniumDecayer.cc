@@ -120,8 +120,8 @@ ParticleVector QuarkoniumDecayer::decay(const Particle & p,
     Kinematics::generateAngles(Theta, Phi);
     Energy p1 = partons[0]->mass();
     Energy p2 = partons[1]->mass();
-    if(p1 == 0.0*GeV) p1 = gluMass;
-    if(p2 == 0.0*GeV) p2 = gluMass;
+    if(p1 == ZERO) p1 = gluMass;
+    if(p2 == ZERO) p2 = gluMass;
     if (! Kinematics::twoBodyDecay(p.momentum(), p1, p2, Theta, Phi,
 				   products[0], products[1]))
       return ParticleVector();

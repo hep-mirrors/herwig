@@ -67,8 +67,8 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
   _lambda2 = 1.2*GeV2;
   _onedlam2 = 1./_lambda2;
   _a1massolam2 = _a1mass*_a1mass*_onedlam2;
-  _hm2=0.*MeV2; 
-  _rhoD=0.*MeV2;
+  _hm2=ZERO; 
+  _rhoD=ZERO;
   _dhdq2m2=0.;
   // use local values of the parameters
   _localparameters=true;
@@ -307,8 +307,8 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
 		 back_inserter(_a1runq2),
 		 timesGeV2);
 
-  _maxmass=0.*MeV;
-  _maxcalc=0.*MeV;
+  _maxmass=ZERO;
+  _maxcalc=ZERO;
 }
 
 void FourPionNovosibirskCurrent::doinit() throw(InitException) {
@@ -390,7 +390,7 @@ void FourPionNovosibirskCurrent::Init() {
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacerhoMass
     ("rhoMass",
      "The local value of the rho mass",
-     &FourPionNovosibirskCurrent::_rhomass, GeV,0.7761*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_rhomass, GeV,0.7761*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacea1mass
@@ -402,49 +402,49 @@ void FourPionNovosibirskCurrent::Init() {
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceSigmaMass
     ("sigmaMass",
      "The local value of the sigma mass",
-     &FourPionNovosibirskCurrent::_sigmamass, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_sigmamass, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceOmegaMass
     ("omegaMass",
      "The local value of the omega mass",
-     &FourPionNovosibirskCurrent::_omegamass, GeV, 0.7820*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_omegamass, GeV, 0.7820*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacerhoWidth
     ("rhoWidth",
      "The local value of the rho width",
-     &FourPionNovosibirskCurrent::_rhowidth, GeV,0.1445*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_rhowidth, GeV,0.1445*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacea1width
     ("a1Width",
      "The local value of the square of the a_1 width",
-     &FourPionNovosibirskCurrent::_a1width, GeV, 0.45*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_a1width, GeV, 0.45*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceSigmaWidth
     ("sigmaWidth",
      "The local value of the sigma width",
-     &FourPionNovosibirskCurrent::_sigmawidth, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_sigmawidth, GeV, 0.8*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceOmegaWidth
     ("omegaWidth",
      "The local value of the omega width",
-     &FourPionNovosibirskCurrent::_omegawidth, GeV, 0.00841*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_omegawidth, GeV, 0.00841*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceIntegrationMass
     ("IntegrationMass",
      "Mass of the pseudoresonance used to improve integration effciency",
-     &FourPionNovosibirskCurrent::_intmass, GeV, 1.4*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_intmass, GeV, 1.4*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfaceIntegrationWidth
     ("IntegrationWidth",
      "Width of the pseudoresonance used to improve integration effciency",
-     &FourPionNovosibirskCurrent::_intwidth, GeV, 0.5*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_intwidth, GeV, 0.5*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,double> interfaceSigmaMagnitude
@@ -498,13 +498,13 @@ void FourPionNovosibirskCurrent::Init() {
   static ParVector<FourPionNovosibirskCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &FourPionNovosibirskCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     &FourPionNovosibirskCurrent::_a1runwidth, GeV, -1, 1.0*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static ParVector<FourPionNovosibirskCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &FourPionNovosibirskCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     &FourPionNovosibirskCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, ZERO, 10.0*GeV2,
      false, false, true);
 
 }
@@ -513,7 +513,7 @@ void FourPionNovosibirskCurrent::Init() {
 void FourPionNovosibirskCurrent::inita1width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.*MeV) return;
+    if(!_initializea1||_maxmass==ZERO) return;
     // parameters for the table of values
     Energy2 step(sqr(_maxmass)/200.);
     // function to be integrated to give the matrix element
@@ -537,7 +537,7 @@ void FourPionNovosibirskCurrent::inita1width(int iopt) {
     double a1const(_a1width/(widthgen1.partialWidth(sqr(_a1mass))+
 			     widthgen2.partialWidth(sqr(_a1mass))));
     // loop to give the values
-    Energy2 moff2(0.*MeV2);
+    Energy2 moff2(ZERO);
     _a1runwidth.clear();_a1runq2.clear();
     for(;moff2<=sqr(_maxmass);moff2+=step) {
       Energy total = a1const*(widthgen1.partialWidth(moff2)+widthgen2.partialWidth(moff2));
@@ -560,7 +560,7 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
   // check the charge
   if(abs(icharge)!=3) return false;
   // check that the modes are kinematical allowed
-  Energy min(0.*MeV);
+  Energy min(ZERO);
   if(imode==0) {
     min=   getParticleData(ParticleID::piplus)->mass()
         +3.*getParticleData(ParticleID::pi0)->mass();
@@ -971,13 +971,13 @@ threeBodyMatrixElement(const int iopt, const Energy2 q2,
     p3[0] = 0.5*(q2+_mpi02-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-_mpi02);
   }
   // take momentum of 1 parallel to z axis
-  p1[1]=0.*MeV;p1[2]=0.*MeV;p1[3]=p1[4];
+  p1[1]=ZERO;p1[2]=ZERO;p1[3]=p1[4];
   // construct 2 
   double cos2(0.5*(sqr(p1[4])+sqr(p2[4])-sqr(p3[4]))/p1[4]/p2[4]);
-  p2[1] = p2[4]*sqrt(1.-sqr(cos2)); p2[2]=0.*MeV; p2[3]=-p2[4]*cos2;
+  p2[1] = p2[4]*sqrt(1.-sqr(cos2)); p2[2]=ZERO; p2[3]=-p2[4]*cos2;
   // construct 3
   double cos3(0.5*(sqr(p1[4])-sqr(p2[4])+sqr(p3[4]))/p1[4]/p3[4]);
-  p3[1] =-p3[4]*sqrt(1.-sqr(cos3)); p3[2]=0.*MeV; p3[3]=-p3[4]*cos3;
+  p3[1] =-p3[4]*sqrt(1.-sqr(cos3)); p3[2]=ZERO; p3[3]=-p3[4]*cos3;
   // pi+pi-pi0 term
   complex<Energy4> output(0.*sqr(MeV2));
   if(iopt==0) {

@@ -19,8 +19,8 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(0./MeV), theMw(0.*MeV), 
-				     theSinThetaW(0.), theq2Last(0.*MeV2),
+UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(ZERO), theMw(ZERO), 
+				     theSinThetaW(0.), theq2Last(ZERO),
 				     theCoupLast(0.), theLeftLast(0.),
 				     theRightLast(0.), theAntiLast(0),
 				     theFermLast(0), theHLast(0) {

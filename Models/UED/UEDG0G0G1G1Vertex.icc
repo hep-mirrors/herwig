@@ -14,7 +14,7 @@
 namespace Herwig {
 
 inline UEDG0G0G1G1Vertex::UEDG0G0G1G1Vertex() : 
-  theq2Last(0.*GeV2), theCoupLast(0.) {
+  theq2Last(ZERO), theCoupLast(0.) {
   vector<long> kk1g(1, 5100021), smgl(1, 21);
   setList(smgl, smgl, kk1g, kk1g);
 }

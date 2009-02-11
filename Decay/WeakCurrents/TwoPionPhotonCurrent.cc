@@ -135,25 +135,25 @@ void TwoPionPhotonCurrent::Init() {
   static ParVector<TwoPionPhotonCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
      "The masses of the different rho resonances for the decay tau ->  pi pi photon",
-     &TwoPionPhotonCurrent::_rhomasses, MeV, -1, 773.*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoPionPhotonCurrent::_rhomasses, MeV, -1, 773.*MeV, ZERO, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoPionPhotonCurrent,Energy> interfaceRhoWidths
     ("RhoWidths",
      "The widths of the different rho resonances for the decay tau -> nu pi pi photon",
-     &TwoPionPhotonCurrent::_rhowidths, MeV, -1, 145.*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoPionPhotonCurrent::_rhowidths, MeV, -1, 145.*MeV, ZERO, 1000.*MeV,
      false, false, true);
 
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceomegamass
     ("omegamass",
      "The mass of the omega",
-     &TwoPionPhotonCurrent::_omegamass, GeV, 0.782*GeV, 0.0*GeV, 1.0*GeV,
+     &TwoPionPhotonCurrent::_omegamass, GeV, 0.782*GeV, ZERO, 1.0*GeV,
      false, false, true);
   
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceomegawidth
     ("omegawidth",
      "The width of the omega for the decay tau- -> pi pi photon",
-     &TwoPionPhotonCurrent::_omegawidth, GeV, 0.0085*GeV, 0.*GeV, 1.*GeV,
+     &TwoPionPhotonCurrent::_omegawidth, GeV, 0.0085*GeV, ZERO, 1.*GeV,
      false, false, false);
   
   static ClassDocumentation<TwoPionPhotonCurrent> documentation
@@ -176,13 +176,13 @@ void TwoPionPhotonCurrent::Init() {
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceIntegrationMass
     ("IntegrationMass",
      "Mass of the pseudoresonance used to improve integration effciency",
-     &TwoPionPhotonCurrent::_intmass, GeV, 1.4*GeV, 0.0*GeV, 10.0*GeV,
+     &TwoPionPhotonCurrent::_intmass, GeV, 1.4*GeV, ZERO, 10.0*GeV,
      false, false, true);
 
   static Parameter<TwoPionPhotonCurrent,Energy> interfaceIntegrationWidth
     ("IntegrationWidth",
      "Width of the pseudoresonance used to improve integration effciency",
-     &TwoPionPhotonCurrent::_intwidth, GeV, 0.5*GeV, 0.0*GeV, 10.0*GeV,
+     &TwoPionPhotonCurrent::_intwidth, GeV, 0.5*GeV, ZERO, 10.0*GeV,
      false, false, true);
 }
 
@@ -251,7 +251,7 @@ TwoPionPhotonCurrent::current(const int, const int,Energy & scale,
   pout.rescaleMass();
   Energy2 s2(pout.m2());
   // compute the prefactor
-  complex<InvEnergy3> prefactor(-FFunction(0.*MeV2)*FFunction(q2)*scale*
+  complex<InvEnergy3> prefactor(-FFunction(ZERO)*FFunction(q2)*scale*
 			    sqrt(Constants::twopi*generator()->standardModel()->alphaEM())*
 			    BreitWigner(s2,10));
   // dot products which don't depend on the polarization vector
