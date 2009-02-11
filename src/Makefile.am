@@ -12,9 +12,9 @@ Herwig___CPPFLAGS = $(AM_CPPFLAGS) -DHERWIG_PKGDATADIR="\"$(pkgdatadir)\"" -DHER
 -DTHEPEG_PKGLIBDIR="\"$(THEPEGPATH)/lib/ThePEG\""
 bin_SCRIPTS = herwig-config
 
-HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model RS.model
+HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model NMSSM.model RS.model
 
-INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-RS.in \
+INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-NMSSM.in LHC-RS.in \
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in TVT-Powheg.in
 
 ## provide -no3body for faster 'make check'
