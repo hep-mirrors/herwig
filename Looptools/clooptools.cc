@@ -8,14 +8,15 @@
 #endif
 
 #include <cstdio>
+#include <cassert>
+#include <string>
+
+extern "C" {
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 
-#include <string>
-
-extern "C" {
   void ffini_();
   void ffexi_();
 }
@@ -23,10 +24,9 @@ extern "C" {
 
 namespace {
   struct RedirectionInfo {
-    RedirectionInfo(int fdin = 0, fpos_t posin = fpos_t()) 
-      : fd(fdin), pos(posin) {}
+    RedirectionInfo(int fdin) 
+      : fd(fdin) {}
     int fd;
-    fpos_t pos;
   };
 
 #ifdef HAVE_UNISTD_H
@@ -34,20 +34,18 @@ namespace {
     // redirect C stdout --- unix specific solution,
     // see C FAQ: http://c-faq.com/stdio/undofreopen.html
     int    fd;
-    fpos_t pos;
     fflush(stdout);
-    fgetpos(stdout, &pos);
     fd = dup(fileno(stdout));
     freopen(logfilename.c_str(), "a", stdout);
-    return RedirectionInfo(fd,pos);
+    return RedirectionInfo(fd);
   }
   
   void stop_redirection(RedirectionInfo rdinfo) {
     fflush(stdout);
+    close(fileno(stdout));
     dup2(rdinfo.fd, fileno(stdout));
     close(rdinfo.fd);
     clearerr(stdout);
-    fsetpos(stdout, &rdinfo.pos);
   }
 #else
   RedirectionInfo start_redirection(std::string) {
@@ -61,16 +59,27 @@ namespace {
 
 namespace Herwig {
   namespace Looptools {
+
+    static int initcount = 0;
+
     void ffini(std::string logfilename) {
-      RedirectionInfo rd = start_redirection(logfilename);
-      ffini_();
-      stop_redirection(rd);
+      assert( initcount >= 0 );
+      if ( initcount == 0 ) {
+	RedirectionInfo rd = start_redirection(logfilename);
+	ffini_();
+	stop_redirection(rd);
+      }
+      ++initcount;
     }
 
     void ffexi(std::string logfilename) {
-      RedirectionInfo rd = start_redirection(logfilename);
-      ffexi_();
-      stop_redirection(rd);
+      assert( initcount > 0 );
+      --initcount;
+      if ( initcount == 0 ) {
+	RedirectionInfo rd = start_redirection(logfilename);
+	ffexi_();
+	stop_redirection(rd);
+      }
     }
 
   } // namespace Looptools
