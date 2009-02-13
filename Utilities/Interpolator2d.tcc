@@ -259,25 +259,31 @@ vector< vector< double > > Interpolator2d<ValT,Arg1T,Arg2T>::findDerivX1X2(){
   for( unsigned int i = 0; i < _the_weights.size(); i++ ){
     for( unsigned int j = 0; j < _the_weights[i].size(); j++ ){
        //special cases - use less accurate approxs if on the edge of limits
-      if( i == 0 ){
-	if( j != _the_weights.size()-1 ){
-	  deriv[i][j] = - ( _the_weights[i+1][j-1] - _the_weights[i][j] ) 
-	    / _dx1 / _dx2;
+      if( i == 0 || j ==0 ){
+	if( i == 0 ){
+	  if( j != 0 ){
+	    deriv[i][j] = - ( _the_weights[i+1][j-1] - _the_weights[i][j] ) 
+	      / _dx1 / _dx2;
+	  }
+	  else {
+	    deriv[i][j] = ( _the_weights[i+1][j+1] - _the_weights[i][j] ) 
+	      / _dx1 / _dx2;
+	  }
 	}
 	else{
-	deriv[i][j] = ( _the_weights[i+1][j+1] - _the_weights[i][j] ) 
-	  / _dx1 / _dx2;
+	  if( i != 0 ){
+	    deriv[i][j] = - ( _the_weights[i-1][j+1] - _the_weights[i][j] ) 
+	      / _dx1 / _dx2;
+	  }
+	  else {
+	    deriv[i][j] = ( _the_weights[i+1][j+1] - _the_weights[i][j] ) 
+	      / _dx1 / _dx2;
+	  }
 	}
       } 
-	else if( i == _the_weights.size()-1 ){
-	  if( j != 0 ){
-	  deriv[i][j] = ( _the_weights[i][j] - _the_weights[i-1][j-1] ) 
-	    / _dx1 / _dx2;
-	}
-	else{
-	  deriv[i][j] = - ( _the_weights[i][j] - _the_weights[i-1][j+1] ) 
-	    / _dx1 / _dx2;
-	}
+      else if( i == _the_weights.size()-1 || j == _the_weights.size()-1 ){
+	deriv[i][j] = ( _the_weights[i][j] - _the_weights[i-1][j-1] ) 
+	  / _dx1 / _dx2;
       }
       else{
 	deriv[i][j] = ( _the_weights[i+1][j+1] - _the_weights[i+1][j-1] -
