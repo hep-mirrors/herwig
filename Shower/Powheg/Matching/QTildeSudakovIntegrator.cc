@@ -18,14 +18,17 @@ double QTildeSudakovIntegrator::innerIntegrand(double z) const {
 
   
   //massless veto approximations fo speed
+  /*
   if( jetMeasureMode_ == 0 ){
     if( pt2 < sqr( max( z, 1. - z ) * mergeScale_ ) ) return 0.;
   }
   else {
     if( pt2 < sqr( mergeScale_ ) ) return 0.;
   }
-  
-  /*
+  */
+
+  if( pt2 < ZERO ) return 0.;
+
   Energy2 kt_measure;
 
   //calculate mass dependent kt scale here
@@ -47,7 +50,7 @@ double QTildeSudakovIntegrator::innerIntegrand(double z) const {
     Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
     Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
     Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
-    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );;
+    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );
 
     double costheta = ( Z1*Z2 - sqr(pt) )
       / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
@@ -61,9 +64,9 @@ double QTildeSudakovIntegrator::innerIntegrand(double z) const {
   }
   else kt_measure = pt2;
 
-  //return 0 if kt measure is less than the mergeScale_
+  //return 0 if kt measure is less than the mergeScale_=sqrt(y*s)
   if( kt_measure < sqr( mergeScale_ ) ) return 0.;
-  */  
+  
 
   Energy2 t = z*(1.-z)*sqr(qtilde_);
 
