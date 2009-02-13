@@ -94,9 +94,10 @@ public:
   /**
    * The default constructor.
    */
-  PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOff(false), 
-		    _highestMult(false), _testSudakovs(false),
-		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), _clusterOption( 0 ) {}
+  PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOpt(0), 
+		    _highestMult(false), _testSudakovs(false), _qtildeDist( false ),
+		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), 
+		    _clusterOption( 0 ), _dalitzOn( false ) {}
 
   /**
    * Perform CKKW reweighting
@@ -313,10 +314,21 @@ private:
    */
   PowhegHandler & operator=(const PowhegHandler &);
 
-  /**                                                                                                                                       
-   * Outputs some sudakov test histograms                                                                                     
+  /**                                                              
+   * Outputs some sudakov test histograms 
    */
   void testSudakovs();
+
+  /**                                                                                                  
+   * Fills vectors for dalitz scatter plots (3 jets only)                                                             
+   */
+  void getDalitz();
+
+  /**
+   * Outputs qtilde distributions from the tabulated sudakovs
+   * for comparison with those from the shower (single emission)
+   */
+  void makeQtildeDist();
 
 private:
 
@@ -366,9 +378,9 @@ private:
   bool _lepton;
 
   /**
-   *  Whether sudakov reweighting is switched off
+   *  The reweighting option being used
    */
-  bool _reweightOff;
+  unsigned int _reweightOpt;
 
   /**
    *  Whether we are treating the highest multiplicity contribution
@@ -379,6 +391,16 @@ private:
    *  Whether the sudakovs should be tested                                                                    
    */
   bool _testSudakovs;
+
+  /**
+   * Whether to do the qtilde distribution output
+   */
+  bool _qtildeDist;
+
+
+  vector< pair< double, double > > _dalitz_from_q1;
+
+  vector< pair< double, double > > _dalitz_from_q2;
 
   /**
    *  The allowed final-state branchings
@@ -439,6 +461,11 @@ private:
    * which clustering scheme to use
    */
   unsigned int _clusterOption; 
+
+  /**
+   * switch for dalitz analysis of hard tree clustering (3 jets only)
+   */
+  bool _dalitzOn;
 
   /**
    * total number of hard trees created in this run

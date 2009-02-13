@@ -37,16 +37,16 @@ IBPtr PowhegHandler::fullclone() const {
 
 void PowhegHandler::persistentOutput(PersistentOStream & os) const {
   os  << _alphaS << _sudopt << _sudname << _jetMeasureMode << _allowedInitial
-      << _allowedFinal << _matrixElement << _lepton << _highestMult << _reweightOff << _testSudakovs <<_yini 
+      << _allowedFinal << _matrixElement << _lepton << _highestMult << _reweightOpt << _testSudakovs <<_yini 
       << _alphaSMG << _npoint <<  ounit( _max_qtilde, GeV ) <<  ounit( _max_pt_cut, GeV ) 
-      <<  ounit( _min_pt_cut, GeV ) << _clusterOption;
+      <<  ounit( _min_pt_cut, GeV ) << _clusterOption << _dalitzOn << _qtildeDist;
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
   is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode >> _allowedInitial
-      >> _allowedFinal >> _matrixElement >> _lepton >> _highestMult >> _reweightOff >> _testSudakovs >> _yini 
+      >> _allowedFinal >> _matrixElement >> _lepton >> _highestMult >> _reweightOpt >> _testSudakovs >> _yini 
       >> _alphaSMG >> _npoint >> iunit( _max_qtilde, GeV ) >> iunit( _max_pt_cut, GeV ) 
-      >> iunit( _min_pt_cut, GeV ) >> _clusterOption;
+      >> iunit( _min_pt_cut, GeV ) >> _clusterOption >> _dalitzOn >> _qtildeDist;
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -147,20 +147,25 @@ void PowhegHandler::Init() {
      "Not the highest multiplicity",
      false);
 
-  static Switch<PowhegHandler,bool> interfaceReweight
-    ("ReweightOff",
+  static Switch<PowhegHandler, unsigned int> interfaceReweight
+    ("ReweightOption",
      "Whether to switch off the sudakov reweighting",
-     &PowhegHandler::_reweightOff, false, false, false);
+     &PowhegHandler::_reweightOpt, 0, false, false);
   static SwitchOption interfaceReweightOff
     (interfaceReweight,
      "Off",
      "No Sudakov reweighting",
-     true);
+     1);
   static SwitchOption interfaceReweightOn
     (interfaceReweight,
      "On",
      "Do Sudakov reweighting",
-     false);
+     0);
+  static SwitchOption interfaceReweightNoSud
+    (interfaceReweight,
+     "NoSud",
+     "alphaS reweighting only",
+     2);
 
   static Switch<PowhegHandler,bool> interfaceTestSudakov
     ("testSudakov",
@@ -222,12 +227,44 @@ void PowhegHandler::Init() {
   static SwitchOption ptChoice
     (ifaceClusterOption,"ptChoice", "choose ordered history with lowest total pt", 2);
   
+  static SwitchOption highProbChoice
+    (ifaceClusterOption,"highProbChoice", "choose ordered history with highest probability", 3);
+
+  static Switch<PowhegHandler,bool> interfaceDalitz
+    ("Dalitz",
+     "Switch for dalitz analysis of hard tree clustering (3 jets only)",
+     &PowhegHandler::_dalitzOn, false, false, false);
+  static SwitchOption interfaceDalitzOff
+    (interfaceDalitz,
+     "Off",
+     "Dalitz analysis off",
+     false);
+  static SwitchOption interfaceDalitzOn
+    (interfaceDalitz,
+     "On",
+     "Dalitz analysis on",
+     true);
+
+  static Switch<PowhegHandler,bool> interfaceQtildeDist
+    ("QtildeDist",
+     "Switch for qtilde distribution hists from sudakov tables",
+     &PowhegHandler::_qtildeDist, false, false, false);
+  static SwitchOption interfaceQtildeDistOff
+    (interfaceQtildeDist,
+     "Off",
+     "Qtilde analysis off",
+     false);
+  static SwitchOption interfaceQtildeDistOn
+    (interfaceQtildeDist,
+     "On",
+     "Qtilde analysis on",
+     true);
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   // cluster the event
  
-  if( _clusterOption == 0 || _clusterOption == 2 )
+  if( _clusterOption == 0 || _clusterOption == 2 || _clusterOption == 3 )
     _theHardTree = doClusteringOrdered();
   else
     _theHardTree = doClustering();
@@ -235,10 +272,12 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   // return if fails
   if(!_theHardTree)
     return 0.;
+  //call dalitz analysis if asked for
+  if( _dalitzOn ) getDalitz();
 
   // compute the Sudakov weight
   double SudWgt;
-  if( ! _reweightOff )
+  if(  _reweightOpt != 1 )
     SudWgt = _lepton ? sudakovWeight( _theHardTree ) : 1.;
   else SudWgt = 1.;
  
@@ -329,7 +368,9 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
-  if( ! _reweightOff ){
+  //divide by constant 5 here is just a factor becasue alphas = 0.2 isn't high enough to guarrantee
+  //that the alphaS weight is < 1
+  if( ! _reweightOpt ){
     if ( SudWgt / 5. > 1 ) cerr << SudWgt <<"\n";
     return SudWgt / 5.;
   }
@@ -352,7 +393,54 @@ void PowhegHandler::dofinish() {
   string fname = generator()->filename() + string("-") 
     + string("wgts.top");
   ofstream output(fname.c_str());
+  //output ddalitz analysis if switched on
+  if( _dalitzOn ){
+    string dalitz_fname = generator()->filename() + string("-") + string("dalitz.top");
+    ofstream dalitz( dalitz_fname.c_str() );
+    dalitz<<"SET WINDOW X 2 9 Y 2 9\n";
+    dalitz<<"SET FONT DUPLEX\n";
+    dalitz<<"SET LIMITS X 0 1 Y 0 1\n";
+    dalitz<<"TITLE BOTTOM \"X011\" \n";
+    dalitz<<"CASE         \" X X\" \n";
+    dalitz<<"TITLE LEFT \"X021\" \n";
+    dalitz<<"CASE       \" X X\" \n";
+    for(int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
+      dalitz<< _dalitz_from_q1[ix].first <<"\t"<< _dalitz_from_q1[ix].second <<"\n";
+    dalitz << "PLOT RED\n";
+    for(int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
+      dalitz<< _dalitz_from_q2[ix].first <<"\t"<< _dalitz_from_q2[ix].second <<"\n";
+    dalitz << "PLOT BLUE\n";
+    
+    dalitz<<"NEW FRAME \n";
+    dalitz<<"SET WINDOW X 2 9 Y 2 9\n";
+    dalitz<<"SET FONT DUPLEX\n";
+    dalitz<<"SET LIMITS X 0 1 Y 0 1\n";
+    dalitz<<"TITLE BOTTOM \"X011\" \n";
+    dalitz<<"CASE         \" X X\" \n";
+    dalitz<<"TITLE LEFT \"X021\" \n";
+    dalitz<<"CASE       \" X X\" \n";
+    for(int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
+      dalitz<< _dalitz_from_q1[ix].first <<"\t"<< _dalitz_from_q1[ix].second <<"\n";
+    dalitz << "PLOT RED\n";
+    
+    dalitz<<"NEW FRAME \n";
+    dalitz<<"SET WINDOW X 2 9 Y 2 9\n";
+    dalitz<<"SET FONT DUPLEX\n";
+    dalitz<<"SET LIMITS X 0 1 Y 0 1\n";
+    dalitz<<"TITLE BOTTOM \"X011\" \n";
+    dalitz<<"CASE         \" X X\" \n";
+    dalitz<<"TITLE LEFT \"X021\" \n";
+    dalitz<<"CASE       \" X X\" \n";
+    for(int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
+      dalitz<< _dalitz_from_q2[ix].first <<"\t"<< _dalitz_from_q2[ix].second <<"\n";
+    dalitz << "PLOT BLUE\n";
+ 
+    cerr<<"no q1 dalitz = "<<_dalitz_from_q1.size()<<"\n";
+    cerr<<"no q2 dalitz = "<<_dalitz_from_q2.size()<<"\n";
 
+    dalitz.close();
+  }
+  
   using namespace HistogramOptions;
 
   _hSud->topdrawOutput(output,Frame,
@@ -379,6 +467,9 @@ void PowhegHandler::dofinish() {
 void PowhegHandler::doinitrun() {
   _trees_created = 0;
   _ordered_trees_created = 0;
+
+  _dalitz_from_q1.clear();
+  _dalitz_from_q2.clear();
 
   ShowerHandler::doinitrun();  
   _s = sqr( generator()->maximumCMEnergy() );
@@ -424,9 +515,12 @@ void PowhegHandler::doinitrun() {
       for( unsigned int ix = 0; ix < _npoint; ++ix ){
 	sud[ix][0] = 0.; 
 	for( unsigned int jx = 1; jx < _npoint; ++jx ) {
+	  //the pt_cut here is pt in the jet measure variable used
 	  double currentSud = integrator->value( scale[ jx ], scale[ jx - 1 ], ptCut[ix] );
 	  sud[ix][jx] = ( sud[ix][ jx - 1 ]  + currentSud );
+	  cerr<<jx<<"\t";
 	}
+	cerr<<ix<<"\n";
       }
       //exponentiate to the Sudakov
       for( unsigned int ix = 0; ix < _npoint; ++ix ) {
@@ -546,6 +640,7 @@ void PowhegHandler::doinitrun() {
     }
   }
   if( _testSudakovs ) testSudakovs();
+  if( _qtildeDist ) makeQtildeDist();
 }
 
 void PowhegHandler::doinit() throw(InitException) {
@@ -898,11 +993,11 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
       //find the wgt and fill _hardTrees map
       powhegtree->findNodes();
       double treeWeight = sudakovWeight( powhegtree );
-      treeWeight *= splittingFnWeight( powhegtree );
+      //  treeWeight *= splittingFnWeight( powhegtree );
       _hardTrees.push_back( make_pair( powhegtree, treeWeight ) );
       totalWeight += treeWeight;
     }
-  } 
+  }
 
   if( _hardTrees.empty() )
     return HardTreePtr();
@@ -914,7 +1009,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   if( _clusterOption == 0 ){
     long treeIndex;
     do{
-      treeIndex = UseRandom::irnd( _hardTrees.size() ); 
+   
     } while ( _hardTrees[ treeIndex ].second / totalWeight < UseRandom::rnd() );
     chosen_hardTree = _hardTrees[ treeIndex ].first;
   }
@@ -930,8 +1025,23 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
       }
     }
   }
-
-  //re-do momentum deconstruction (has been overridden by other trees otherwise)
+  
+  //choose hardtree with highest prob (cluster option = 3)
+  else{
+    //set min pt to be large
+    double max_prob = 0.;
+    for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ ){
+      if( _hardTrees[ ix ].second > max_prob ){
+	max_prob = _hardTrees[ ix ].second;
+	chosen_hardTree = _hardTrees[ix].first;
+      }
+      if( _hardTrees[ ix ].second == max_prob && UseRandom::rndbool() ){
+	max_prob = _hardTrees[ ix ].second;
+	chosen_hardTree = _hardTrees[ix].first;
+      }
+    }
+  }
+    //re-do momentum deconstruction (has been overridden by other trees otherwise)
   simpleColConnections( chosen_hardTree );
   if( ! evolver()->showerModel()->kinematicsReconstructor()
       ->deconstructDecayJets( chosen_hardTree, evolver() ) )
@@ -940,6 +1050,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     cerr<<"PowhegHandler::problem in choosing hard tree\n";
     return HardTreePtr();
   }
+
   return chosen_hardTree;
 }
 
@@ -1477,13 +1588,15 @@ void PowhegHandler::createColourFlow(HardTreePtr tree,
 double PowhegHandler::Sud( Energy scale, long id, Energy pt_cut ){
   //upper limit on scale 
   double sudwgt = 1.;
-  //scale cut set to just below max_qtilde to avoid seg fault on boundary
-  Energy scale_cut = sqrt( _s );
+  Energy scale_cut = _max_qtilde;
   multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > >::const_iterator cjt;
   for( cjt =  _fbranchings.lower_bound( abs( id ) );
        cjt != _fbranchings.upper_bound( abs( id ) );
        ++cjt ) {
     //check to see if we are within qtilde limits before calling interpolator
+   
+    //pt_cut called here is in the durham or luclus jet measure
+    
     if( scale < scale_cut && scale > cjt->second.second ) 
       sudwgt *= (* cjt->second.first )( pt_cut, scale );
     else if ( scale < cjt->second.second )
@@ -1529,7 +1642,6 @@ double PowhegHandler::splittingFnWeight( HardTreePtr theTree ){
     else cerr<< "splittingFnWeight(): node with no children found\n";
     double z = cit->first->children()[0]->z();
     Energy2 t = z * ( 1. - z ) * sqr( cit->second );
-    //  cerr<<"z = "<< z<< ", qt = "<< cit->second / GeV <<"\n";
     splitFnWgt *= cit->first->sudakov()->splittingFn()->P( z, t, ids, true );
   }
   return splitFnWgt;
@@ -1537,13 +1649,16 @@ double PowhegHandler::splittingFnWeight( HardTreePtr theTree ){
 
 double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   double SudWgt = 1.;
+  //ktcut for sudakovs
   Energy kt_cut;
   if( ! _highestMult ) kt_cut = sqrt( _yini * _s );
   else {
+    //does this lowest pt method return something in the luc/dur jet measure?
     kt_cut = theTree->lowestPt( _jetMeasureMode );
     if( kt_cut > _max_pt_cut )
       kt_cut = _max_pt_cut;
   }
+
   //external line weight
   for( map< ShowerParticlePtr, HardBranchingPtr >::const_iterator cit = 
 	 theTree->getExternals().begin();
@@ -1560,7 +1675,8 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
     else{
       scale = cit->first->evolutionScale();
     }
-    SudWgt *= Sud( scale, cit->first->id(), kt_cut );  
+    SudWgt *= Sud( scale, cit->first->id(), kt_cut );
+   
   }
   if(SudWgt > 1.1) cerr<<"\n\n\nsudakov from externals > 1!!\n\n\n";
   //intermediate line wgts
@@ -1572,6 +1688,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
     
     double internal_wgt = Sud( scale, cit->first, kt_cut );
     scale =  cit->second.second;
+
     internal_wgt /= Sud( scale, cit->first, kt_cut );
     if(internal_wgt > 1.1 || internal_wgt < 0.)cerr<<"\n\nbig internal weight of "<< internal_wgt
 						   <<"\nnum scale = "
@@ -1587,17 +1704,21 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   //alphaS weight
   for( map< HardBranchingPtr, Energy >::const_iterator cit = theTree->getNodes().begin(); 
        cit != theTree->getNodes().end(); ++cit ) {
-    if( ! cit->first->children().empty() )
+    if( ! cit->first->children().empty() ){
       alphaWgt *= _alphaS->value( sqr( cit->first->children()[0]->pT() ) ) / _alphaSMG;
-    else cerr << "sudakovWeight(): node with no children \n"; 
+    }
+      else cerr << "sudakovWeight(): node with no children \n"; 
   }
  
   if( SudWgt > 1.1 ) {
     cerr<<"\n\nweight exceeded 1 in PowhegHandler::reweight() !!! \n";
     cerr<<"  alpha wgt = "<< alphaWgt
-    	<<"\n  sudWgt = "<< SudWgt<<"\n\n";
+   	<<"\n  sudWgt = "<< SudWgt<<"\n\n";
   }
-  return SudWgt*alphaWgt;
+  if( _reweightOpt == 0 )
+    return SudWgt*alphaWgt;
+  else
+    return SudWgt;
 }
 
 void PowhegHandler::setBeams(HardTreePtr tree) {
@@ -1661,9 +1782,10 @@ void PowhegHandler::testSudakovs(){
   //vector of pts to evaluate at and the colours they should be on plot
   vector< pair<Energy, string> > thePts;
   thePts.push_back( make_pair( 0.*GeV, string("BLACK" ) ) );
-  thePts.push_back( make_pair( 2.*GeV, string("RED" ) ) );
-  thePts.push_back( make_pair( 5.*GeV, string("BLUE" ) ) );
-  thePts.push_back( make_pair( 10*GeV, string("GREEN" ) ) );
+  thePts.push_back( make_pair( sqrt(_s*0.001), string("RED" ) ) );
+  thePts.push_back( make_pair( sqrt(_s*0.005 ), string("BLUE" ) ) );
+  thePts.push_back( make_pair( sqrt(_s*0.01 ), string("GREEN" ) ) );
+  thePts.push_back( make_pair( sqrt(_s*0.05 ), string("CYAN" ) ) );
 
   sudTestOut.open( "sudTest.top" );
 
@@ -1672,17 +1794,11 @@ void PowhegHandler::testSudakovs(){
   for( cjt =  _fbranchings.begin();
        cjt != _fbranchings.end();
        ++cjt ) {
-    /*
-    cerr<<"interp at max qt = "<< (*cjt->second.first)( 10*GeV, _max_qtilde )<<"\n";
-    cerr<<"interp at max pt = "<< (*cjt->second.first)( _max_pt_cut, 10*GeV )<<"\n";
-
-    cerr<<"interp at min qt = "<< (*cjt->second.first)( 10*GeV, cjt->second.second )<<"\n";
-    cerr<<"interp at min pt = "<< (*cjt->second.first)( _min_pt_cut, 10*GeV )<<"\n";
-    */
+ 
     //loop over pts
     sudTestOut <<"NEW FRAME \nSET WINDOW X 1.6 8 Y 3.5 9\nSET FONT DUPLEX\n"
 	       <<"TITLE TOP \"Sud Test "<< cjt->first
-	       <<": BLACK-pt=0GeV, RED-pt=2GeV, BLUE-pt=5GeV, GREEN-pt=10GeV\" \n"
+	       <<": BLACK:y_ms=0, RED:y_ms=0.001, BLUE:y_ms=0.005, GREEN:y_ms=0.01, CYAN:y_ms=0.05\" \n"
 	       <<"CASE      \"\" \nTITLE LEFT \"Sud(qtilde)\" \nCASE \" \" \n"
 	       <<"SET ORDER X Y DX \nTITLE BOTTOM \"qtilde / GeV \" \n";
     for( vector< pair< Energy, string > >::const_iterator cit = thePts.begin();
@@ -1840,3 +1956,124 @@ HardTreePtr PowhegHandler::doClustering() {
   return powhegtree;
 }
 
+void PowhegHandler::getDalitz(){
+  if( _theHardTree->getExternals().size() == 3 ){
+    //   cerr<<"\n\ndoing dalitz:\n";
+    Energy total_energy = 0. * GeV;
+    double x1_dal=0.;
+    double x2_dal=0.;
+    long parent_id = 0;
+    for( map< ShowerParticlePtr, HardBranchingPtr >::const_iterator cit = 
+	   _theHardTree->getExternals().begin();
+	 cit != _theHardTree->getExternals().end(); ++cit ) {
+      total_energy += cit->first->momentum().t();
+      
+      if( abs( cit->first->id() ) < 7 ){
+	if( cit->first->id() > 0 ) 
+	  x1_dal = 2. * cit->first->momentum().t() / GeV;
+	else  x2_dal = 2. * cit->first->momentum().t() / GeV;
+      } 
+    }
+    x1_dal /= total_energy / GeV;
+    x2_dal /= total_energy / GeV;
+    
+    for( set< HardBranchingPtr >::const_iterator cit = 
+	   _theHardTree->branchings().begin();
+	 cit != _theHardTree->branchings().end(); ++cit ) {
+      if( (*cit)->incoming() ) continue;
+      if( (*cit)->branchingParticle()->id() > 0 ){ 
+	if( (*cit)->children().size() == 2 && (*cit)->children()[0] 
+	    && (*cit)->children()[1] ) {
+	  parent_id = (*cit)->branchingParticle()->id();
+	}
+      }
+      else {
+	
+	if( (*cit)->children().size() == 2 && (*cit)->children()[0] 
+	    && (*cit)->children()[0] ) {
+	  parent_id = (*cit)->branchingParticle()->id();
+	}
+      }
+    }
+    if( parent_id > 0 ) 
+      _dalitz_from_q1.push_back( make_pair(x1_dal, x2_dal) );
+    else if( parent_id < 0 ) 
+      _dalitz_from_q2.push_back( make_pair(x1_dal, x2_dal) );
+  }
+}
+
+
+
+void PowhegHandler::makeQtildeDist(){
+  //currently this only makes plots for up quarks
+
+  ofstream sudTestOut;
+  Energy deltaQt = 0.5 * GeV;
+  //vector of pts to evaluate at and the colours they should be on plot
+  vector< Energy > thePts;
+  thePts.push_back( sqrt( 0.05 * _s ) );
+  thePts.push_back( sqrt( 0.01 * _s ) );
+  thePts.push_back( sqrt( 0.005 * _s ) );
+  thePts.push_back( sqrt( 0.001 * _s ) );
+
+  //iniialise the histograms
+  vector< HistogramPtr > theHists;  
+  for(int ix = 0; ix < thePts.size(); ix ++ )
+    theHists.push_back( new_ptr(Histogram(0.,100.,100) ) );
+
+  sudTestOut.open( "QtildeDist.top" );
+  
+  //for each pt value a vector of qtilde and sud_bar(qtilde) can be obtained from 2d interpolator
+  //from this can calculate sud(qtilde) and make a 1d interpolator going both ways from the vectors
+  
+  //iterator to the 2d interpolator of the up quark
+  multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > >::const_iterator cjt = 
+    _fbranchings.find( long( 1 ) );
+
+  //fill the vector of qtilde values once and for all
+  //how to know exactly what the minimum value is - this came from integrator
+  vector< Energy > scale;
+  Energy qtildemin = cjt->second.second;
+  Energy qtildemax = sqrt( _s );
+  for( unsigned int ix = 0; ix < _npoint; ix++ )
+    scale.push_back( qtildemin + double( ix ) * ( qtildemax - qtildemin ) / double( _npoint - 1 ) );
+
+  //create a vector of pairs of 1d interpolators
+  vector < pair< Interpolator< double, Energy >::Ptr, Interpolator< Energy, double >::Ptr >  > sud_interp;
+
+  for( unsigned int jx = 0; jx < thePts.size(); jx++ ){
+    double sud_min =  (* cjt->second.first )( thePts[jx], qtildemax );
+
+    vector<double> sud;
+    for( unsigned int ix = 0; ix < scale.size(); ix ++)
+      sud.push_back( sud_min /  (* cjt->second.first )( thePts[jx], scale[ix] ) );
+    // construct the Interpolators                                                                                                                         
+    Interpolator<double,Energy>::Ptr
+      intq = new_ptr(Interpolator<double,Energy>(sud,scale,3));
+    Interpolator<Energy,double>::Ptr
+      ints = new_ptr(Interpolator<Energy,double>(scale,sud,3));
+    sud_interp.push_back(  make_pair( intq, ints ) );
+    //make the interpolators both ways and add to the vectors
+  }
+  //fill histograms with the qtilde distributions
+  for( unsigned int ix = 0; ix < sud_interp.size(); ix ++ ){
+    for(unsigned int jx = 0; jx < 100000000; jx ++ ){
+      double sud_wgt = UseRandom::rnd();
+      Energy solved_scale = (* sud_interp[ix].second )( sud_wgt );
+      (* theHists[ix] ) += solved_scale / GeV;
+    }
+  }
+  //output the histograms
+  for( unsigned int ix = 0; ix < theHists.size(); ix ++ ){
+    using namespace HistogramOptions;
+    theHists[ix]->topdrawOutput(sudTestOut,Frame,
+			    "RED",
+			    "qtilde distribution",
+			    "",
+			    "",
+			    "",
+			    "qtilde / GeV",
+			    "");
+  }
+  sudTestOut.close();
+}
