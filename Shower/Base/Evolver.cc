@@ -44,21 +44,27 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions 
-     << _ptVetoDefinition << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
-     << ounit(_iptmax,GeV) << _vetoes << _y_cut;
+     << _ptVetoDefinition << _reversePtVeto << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
+     << ounit(_iptmax,GeV) << _vetoes << _y_cut << _showerVariableOutput << _approxCuts;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions 
-     >> _ptVetoDefinition >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) 
-     >> iunit(_iptmax,GeV) >> _vetoes >> _y_cut;
+     >> _ptVetoDefinition >> _reversePtVeto >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) 
+     >> iunit(_iptmax,GeV) >> _vetoes >> _y_cut >> _showerVariableOutput >> _approxCuts;
 }
 
 void Evolver::doinitrun() {
   Interfaced::doinitrun();
   for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
     showerModel()->meCorrections()[ix]->evolver(this);
+  }
+  if( _showerVariableOutput ){ 
+     _h_qt = new_ptr( Histogram( 0., 100., 100));
+     //   _h_qt_low = new_ptr( Histogram( 0., 20., 100));
+     //  _h_z = new_ptr( Histogram( 0., 1., 100));
+     // _h_pt = new_ptr( Histogram( 0., 50., 100));
   }
 }
 
@@ -202,16 +208,34 @@ void Evolver::Init() {
      &Evolver::_y_cut, 1.1, 0., 1.1,
      false, false, Interface::limited );
 
-  /*
-  static Switch<Evolver, unsigned int> ifacePtVetoDefinition
-    ("PtVetoDefinition",
-     "Choice of the pt deinition used in pt veto",
-     &Evolver::_ptVetoDefinition, 0, false, false);
-  static SwitchOption PtDefShower
-    (ifacePtVetoDefinition,"Shower","shower pt definition", 0);
-  static SwitchOption PtDefDurham
-    (ifacePtVetoDefinition,"Durham","durham pt", 1);
-  */
+  static Switch<Evolver, bool> ifaceReverseVeto
+    ("ReversePtVeto",
+     "Reverse pt veto to veto emissions below cut",
+     &Evolver::_reversePtVeto, false, false, false);
+  static SwitchOption RevVetoFalse
+    (ifaceReverseVeto,"No","Veto emissions above cut", false);
+  static SwitchOption RevVetoTrue
+    (ifaceReverseVeto,"Yes","Veto emissions below cut", true);
+
+
+  static Switch<Evolver, bool> ifaceShowerOutput
+    ("ShowerVariableOutput",
+     "Output histograms of shower variables for a single emission",
+     &Evolver::_showerVariableOutput, false, false, false);
+  static SwitchOption ShowerOutputOff
+    (ifaceShowerOutput,"No","No shower variable output", false);
+  static SwitchOption ShowerOutputOn
+    (ifaceShowerOutput,"Yes","Shower variable output on", true);
+
+ static Switch<Evolver, bool> ifaceApproxCuts
+    ("ApproxCuts",
+     "Use approximate rather than exact jet cuts",
+     &Evolver::_approxCuts, false, false, false);
+  static SwitchOption ApproxCutsOff
+    (ifaceApproxCuts,"No","Use exact cuts", false);
+  static SwitchOption ApproxCutsOn
+    (ifaceApproxCuts,"Yes","Use approx cuts", true);
+
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
@@ -407,6 +431,14 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     // otherwise reset scale and continue
     particle->setEvolutionScale(fb.kinematics->scale());
   }
+  //shower variable output
+  if( _showerVariableOutput ) {
+    (*_h_qt) += fb.kinematics->scale() / GeV;
+    // (*_h_qt_low) += fb.kinematics->scale() / GeV;
+    // (*_h_z) += fb.kinematics->z();
+    // (*_h_pt) += fb.kinematics->pT() / GeV;
+  }
+
   // has emitted
   // Assign the shower kinematics to the emitting particle.
   particle->setShowerKinematics(fb.kinematics);
@@ -686,7 +718,7 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
 				   ->lastXCombPtr()->lastS() * _y_cut );
   //do durham pt veto
   if( fb.kinematics && ( _ptVetoDefinition == 0 
-			 || _ptVetoDefinition == 2 ) ){
+			 || _ptVetoDefinition == 2 ) && !_approxCuts ){
     Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
     Energy pt = fb.kinematics->pT();
     double z = fb.kinematics->z();
@@ -704,7 +736,7 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
     Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
     Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
-    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );;
+    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );
 
     double costheta = ( Z1*Z2 - sqr(pt) )
       / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
@@ -715,7 +747,30 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     else if( _ptVetoDefinition == 2 )
       kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
 
-    if( kt_measure > sqr(ptVeto) ) return true;
+    if( ! _reversePtVeto ){ 
+      if( kt_measure > sqr(ptVeto) ) return true;
+    }
+    else{
+      if( kt_measure < sqr(ptVeto) ) return true;
+    }
+  }
+  else if( fb.kinematics && ( _ptVetoDefinition == 0 
+			      || _ptVetoDefinition == 2 ) && _approxCuts ){
+    Energy2 kt_measure;
+    double z = fb.kinematics->z();
+    Energy pt = fb.kinematics->pT();
+
+    if( _ptVetoDefinition == 0 )
+      kt_measure = sqr( pt / max( z, 1. - z ) );
+    else if( _ptVetoDefinition == 2 )
+      kt_measure = sqr( pt );
+
+    if( ! _reversePtVeto ){ 
+      if( kt_measure > sqr(ptVeto) ) return true;
+    }
+    else{
+      if( kt_measure < sqr(ptVeto) ) return true;
+    }
   }
   //normal shower pt veto
   else{
@@ -818,4 +873,22 @@ bool Evolver::spaceLikeDecayVetoed(const Branching & fb,
     }
   }
   return false;
+}
+
+void Evolver::dofinish() {
+  Interfaced::dofinish();
+  if( _showerVariableOutput ){
+    string fname = generator()->filename() + string("-") + name() + string(".top");
+    ofstream outfile(fname.c_str());
+    using namespace HistogramOptions;
+    _h_qt->topdrawOutput(outfile,Frame|Errorbars,
+			 "RED",
+			 "qtilde",
+			 "",
+			 "",
+			 "",
+			 "qTilde / GeV",
+			 "   ");
+    outfile.close();
+  }
 }

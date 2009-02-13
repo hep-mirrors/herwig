@@ -21,6 +21,7 @@
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "Evolver.fh"
 
 namespace Herwig {
@@ -54,8 +55,9 @@ public:
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
-	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.), _y_cut(1.1) {}
-
+	      _limitEmissions(0), _ptVetoDefinition(1), _reversePtVeto(false), 
+	      _showerVariableOutput( false ), _initialenhance(1.), _finalenhance(1.), 
+	      _y_cut(1.1), _approxCuts( false ) {}
   /**
    *  Member to perform the shower
    */
@@ -414,6 +416,9 @@ protected:
   virtual void doinitrun();
   //@}
 
+  virtual void dofinish();
+
+
 private:
 
   /**
@@ -427,7 +432,12 @@ private:
    * In fact, it should not even be implemented.
    */
   Evolver & operator=(const Evolver &);
-  
+
+  /**
+   * Output shower variable histograms for a single emission
+   */
+  void doShowerVariableOutput();
+
 private:
 
   /**
@@ -491,6 +501,16 @@ private:
   unsigned int _ptVetoDefinition;
 
   /**
+   * Reverse pt veto to produce branchings above a cut only
+   */
+  bool _reversePtVeto;
+
+  /**                                                                                          
+   * Switch for shower variable output                                                                       
+   */
+  bool _showerVariableOutput;
+  
+  /**
    *  The progenitor of the current shower
    */
   ShowerProgenitorPtr _progenitor;
@@ -537,6 +557,11 @@ private:
   double _y_cut;
 
   /**
+   * switch to use approximate jet cuts
+   */ 
+  bool _approxCuts;
+
+  /**
    * Vetoes
    */
   vector<ShowerVetoPtr> _vetoes;
@@ -550,6 +575,12 @@ private:
    *  Number of FS emissions
    */
   unsigned int _nfs;
+
+  /**
+   * Histogram for qtilde of single emission
+   */
+  HistogramPtr _h_qt;
+
 
 };
 
