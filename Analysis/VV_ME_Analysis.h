@@ -137,6 +137,15 @@ namespace Herwig {
     Lorentz5Momentum boostx(Lorentz5Momentum p_in, Lorentz5Momentum pt,
 			    Lorentz5Momentum ptt);
     
+    /**
+     * This function is stolen from fortran herwig, in order to maintain
+     * consistency with the fortran analysis in mcfm. It takes a vector
+     * p and returns the rotation matrix which when applied to p aligns
+     * it along the z-axis and follows this with an azimuthal rotation 
+     * of cp = cos(phi), sp = sin(phi).
+     */
+    LorentzRotation hwurot(Lorentz5Momentum p, double cp, double sp);
+    
     /** @name Clone Methods. */
     //@{
     /**

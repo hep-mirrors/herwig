@@ -36,7 +36,7 @@ Histogram eta56_h(-6.,6.,100)   , y56_h(-5.,5.,100)   , pt56_h(0.,150.,30);
 Histogram m56_h(75.0,100.0,100) ;
 Histogram HT3456_h(0.,500.,25)  ;
 Histogram y3456_h(-4.,4.,80)    , m3456_h(0.,1000.,100);
-Histogram cth1_h(-1.,1.,40)     , acth2_h(0.,Constants::pi,40);
+Histogram th1_h(0.,Constants::pi,32), th2_h(-Constants::pi,Constants::pi,32);
 
 VV_ME_Analysis::~VV_ME_Analysis() {}
 
@@ -50,8 +50,9 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   tPVector::iterator pit;
   int nemitted(0);
   for(pit=leptons.begin();pit!=leptons.end();++pit) {
-    if(!emitted) {
-      if(((*pit)->id()==21)||(abs((*pit)->id())>=1&&abs((*pit)->id()<=6))) { 
+    if((*pit)->id()==21||abs((*pit)->id())<=6) { 
+      if((*pit)->parents().size()==0) continue;
+      if(((*pit)->parents()[0]->id()==21)||abs((*pit)->parents()[0]->id())<=6) {
 	emitted = *pit;
 	nemitted++;
       }
@@ -70,19 +71,28 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
     }
   // Make sure that leptons has only 4 entries (2 bosons * 2-2-body decays).
   assert(leptons.size()==4);  
+
   // Make sure all final-state leptons have parents.
   for (unsigned int i=0; i<leptons.size(); i++)
     assert(leptons[i]->parents().size()>0);
+
   // Go get the parents of the leptons W+ W- / W+ Z / W- Z / Z Z
   tPVector bosons;
-  tPVector::iterator qit;
-  bosons.push_back(leptons[0]->parents()[0]);
-  for(pit=leptons.begin();pit!=leptons.end();++pit) {
-    bool already_got_parent(0);
-    for(qit=bosons.begin();qit!=bosons.end();++qit)
-      if((*pit)->parents()[0]==(*qit)) already_got_parent = 1;
-    if(!already_got_parent) bosons.push_back((*pit)->parents()[0]);
+  tPPtr aBoson;
+  for(unsigned int ix=0;ix<leptons.size();ix++) {
+    aBoson = leptons[ix]->parents()[0];
+    while(leptons[ix]->id()==aBoson->id()&&leptons[ix]->parents().size()>0) 
+      aBoson = aBoson->parents()[0];
+    bosons.push_back(aBoson);
   }
+  // Get rid of duplicate entries in bosons:
+  tPVector::iterator qit;
+  for(pit=bosons.begin();pit!=bosons.end();++pit)
+    for(qit=pit;qit!=bosons.end();++qit)
+      if((*qit)->id()==(*pit)->id()) {
+	bosons.erase(qit);
+	break;
+      }
   // Attempt to order bosons according mcfm notation.
   if(abs(bosons[0]->id())==abs(bosons[1]->id())) {
     // Either W W or Z Z here. Swap so that the W+ is the first entry.
@@ -110,6 +120,7 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
     leptons[2]=bosons[1]->children()[1];
     leptons[3]=bosons[1]->children()[0];
   }
+
   // For debugging; check that entries are what mcfm says they should be. 
 //   if(leptons[0]->id()!=14||leptons[1]->id()!=-13||
 //      leptons[2]->id()!=12||leptons[3]->id()!=-12) {
@@ -179,32 +190,34 @@ void VV_ME_Analysis::analyze(const tPVector & particles) {
   // The theta Born variables:
   assert(abs(inbound.first->children()[0]->id())<7);
   assert(abs(inbound.second->children()[0]->id())<7);
-  Lorentz5Momentum p3456rest(0.*GeV,0.*GeV,0.*GeV,p3456.m(),p3456.m());
   Lorentz5Momentum pplus(inbound.first->children()[0]->momentum()); 
   Lorentz5Momentum pminus(inbound.second->children()[0]->momentum());
-  Lorentz5Momentum k(0.*GeV,0.*GeV,0.*GeV,0.*GeV,0.*GeV);
+  Lorentz5Momentum p3456rest(0.*GeV,0.*GeV,0.*GeV,p3456.m(),p3456.m());
+  // Boost everything to the diboson rest frame:
   pplus  = boostx(pplus , p3456, p3456rest);
   pminus = boostx(pminus, p3456, p3456rest);
   p34    = boostx(p34   , p3456, p3456rest);
   p56    = boostx(p56   , p3456, p3456rest);
-  double cth1  (pplus.vect()*p34.vect()/pplus.vect().mag()/p34.vect().mag());
-  cth1_h.addWeighted(cth1,1.);
-  double sth1  (sqrt(1.-cth1*cth1));
-  double cpsipr(0.);
-  double spsipr(0.);
-  double acth2 (0.);
-  if(emitted) {
-    k = emitted->momentum();
-    k = boostx(k, p3456, p3456rest);
-    cpsipr = pplus.vect()*k.vect()/pplus.vect().mag()/k.vect().mag(); 
-    spsipr = sqrt(1.-cpsipr*cpsipr);
-    acth2  = acos( ( k.vect()*p34.vect()/k.vect().mag()    /p34.vect().mag()
-	           - cpsipr*cth1 
-		   )/spsipr/sth1 );
-  } else {
-    acth2 = acos(p34.y()/p34.vect().mag()/sth1);
-  }
-  acth2_h.addWeighted(acth2,1.);
+  // Get the rotation that puts pplus on the z-axis (zrot):
+  LorentzRotation zrot(hwurot(pplus,1.,0.));
+  // Now rotate everything using this matrix
+  pplus  *= zrot;
+  pminus *= zrot;
+  p34    *= zrot;
+  p56    *= zrot;
+  // Get the rotation that puts the transverse bit 
+  // of pminus on the +y axis (xyrot):
+  LorentzRotation xyrot(hwurot(pplus,pminus.x()/pminus.vect().mag(),
+			             pminus.y()/pminus.vect().mag()));
+  // Now rotate everything using this matrix
+  pplus  *= xyrot;
+  pminus *= xyrot;
+  p34    *= xyrot;
+  p56    *= xyrot;
+
+  // Now get the Born variables
+  th1_h.addWeighted(acos(p34.z()/p34.vect().mag()),1.);
+  th2_h.addWeighted(atan2(p34.x(),p34.y()),1.);
 
   AnalysisHandler::analyze(particles);
 }
@@ -296,10 +309,10 @@ void VV_ME_Analysis::dofinish() {
   m3456_h.normaliseToCrossSection();
   m3456_h.prefactor(m3456_h.prefactor()*1.e6);
   // The theta Born variables:
-  cth1_h.normaliseToCrossSection();
-  cth1_h.prefactor(cth1_h.prefactor()*1.e6);
-  acth2_h.normaliseToCrossSection();
-  acth2_h.prefactor(acth2_h.prefactor()*1.e6);
+  th1_h.normaliseToCrossSection();
+  th1_h.prefactor(th1_h.prefactor()*1.e6);
+  th2_h.normaliseToCrossSection();
+  th2_h.prefactor(th2_h.prefactor()*1.e6);
 
   file.open(fname.c_str());
   using namespace HistogramOptions;
@@ -338,8 +351,8 @@ void VV_ME_Analysis::dofinish() {
   y3456_h.topdrawOutput(file,Frame,"RED","y3456 distribution: all wgts");
   m3456_h.topdrawOutput(file,Frame,"RED","m3456 distribution: all wgts");
   // The theta Born variables:
-  cth1_h.topdrawOutput(file,Frame,"RED","Cos(theta1) distribution: all wgts");
-  acth2_h.topdrawOutput(file,Frame,"RED","Cos(theta2) distribution: all wgts");
+  th1_h.topdrawOutput(file,Frame,"RED","theta1 distribution: all wgts");
+  th2_h.topdrawOutput(file,Frame,"RED","theta2 distribution: all wgts");
 
   file.close();
 }
@@ -386,4 +399,25 @@ Lorentz5Momentum VV_ME_Analysis::boostx(Lorentz5Momentum p_in,
   p_out.rescaleMass();
 
   return p_out;
+}
+
+LorentzRotation VV_ME_Analysis::hwurot(Lorentz5Momentum p,double cp,double sp) {
+  //-----------------------------------------------------------------------
+  // r is a  rotation matrix to get from vector p the z-axis, followed by
+  // a rotation by psi about the z-axis, where cp = cos(psi), sp = sin(psi)
+  //-----------------------------------------------------------------------
+
+  LorentzRotation rxy;
+  LorentzRotation ryz;
+  LorentzRotation raz;
+  if(p.perp()/p.vect().mag()>=1.e-10) {
+    rxy.setRotateZ(atan2(p.x(),p.y()));
+    p *= rxy;
+    ryz.setRotateX(acos(p.z()/p.vect().mag()));
+    p *= ryz;
+  }
+  raz.setRotateZ(atan2(cp,sp));
+  p *= raz;
+  return raz*ryz*rxy;
+  
 }
