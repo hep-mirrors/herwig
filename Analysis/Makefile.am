@@ -69,7 +69,7 @@ y23.cc y23.h
 pkglib_LTLIBRARIES += HwPP2HAnalysis.la
 HwPP2HAnalysis_la_LDFLAGS = -module -version-info 4:0:0
 HwPP2HAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwPP2HAnalysis_la_LIBADD = $(KTJETLIBS) -L$(CLHEPPATH)  $(CLHEPLIB)
+HwPP2HAnalysis_la_LIBADD = $(KTJETLIBS) $(CLHEPLIB)
 HwPP2HAnalysis_la_SOURCES = \
 PP2HAnalysis.cc PP2HAnalysis.h 
 endif
