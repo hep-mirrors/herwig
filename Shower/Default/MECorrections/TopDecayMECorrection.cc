@@ -744,9 +744,9 @@ bool TopDecayMECorrection::inTheDeadRegion(double xg , double xa,
     bool output(true);
     if(!inTheApproxDeadRegion(xg,xa,ktb,ktc)) output = false;
     if(xa>xaccut(ktc)) {
-	if(xg<xgc(xaccut(ktc),ktc, 1,2)&&
+	if(xg<xgc(max(xaccut(ktc),2.*sqrt(_a)),ktc, 1,2)&&
            xg>xgc(xa,ktc, 1,0)) { output = false; } 
-	if(xg>xgc(xaccut(ktc),ktc,-1,2)&&
+	if(xg>xgc(max(xaccut(ktc),2.*sqrt(_a)),ktc,-1,2)&&
            xg<xgc(xa,ktc,-1,0)) { output = false; } 
     } 
     return output;
