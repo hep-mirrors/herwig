@@ -409,15 +409,19 @@ LorentzRotation VV_ME_Analysis::hwurot(Lorentz5Momentum p,double cp,double sp) {
 
   LorentzRotation rxy;
   LorentzRotation ryz;
+
   LorentzRotation raz;
+  raz.setRotateZ(atan2(cp,sp));
+
   if(p.perp()/p.vect().mag()>=1.e-10) {
     rxy.setRotateZ(atan2(p.x(),p.y()));
     p *= rxy;
     ryz.setRotateX(acos(p.z()/p.vect().mag()));
     p *= ryz;
+    return raz*ryz*rxy;
+  } 
+  else {
+    return raz;
   }
-  raz.setRotateZ(atan2(cp,sp));
-  p *= raz;
-  return raz*ryz*rxy;
   
 }
