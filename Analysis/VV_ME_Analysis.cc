@@ -36,52 +36,52 @@ Histogram eta56_h(-6.,6.,100)   , y56_h(-5.,5.,100)   , pt56_h(0.,150.,30);
 Histogram m56_h(75.0,100.0,100) ;
 Histogram HT3456_h(0.,500.,25)  ;
 Histogram y3456_h(-4.,4.,80)    , m3456_h(0.,1000.,100);
-Histogram th1_h(0.,Constants::pi,32), th2_h(-Constants::pi,Constants::pi,32);
+Histogram th1_h(0.,3.2,32)      , th2_h(-3.2,3.2,32);
 
 VV_ME_Analysis::~VV_ME_Analysis() {}
 
 void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
 
   // Store the initial state particles.
-  inbound=event->incoming();
+  inbound_ = event->incoming();
   // Store all of the final state particles as leptons.
-  leptons=event->getFinalState();
+  leptons_ = event->getFinalState();
   // Extract the emitted parton
   tPVector::iterator pit;
-  int nemitted(0);
-  for(pit=leptons.begin();pit!=leptons.end();++pit) {
+  nemitted_ = 0;
+  for(pit=leptons_.begin();pit!=leptons_.end();++pit) {
     if((*pit)->id()==21||abs((*pit)->id())<=6) { 
       if((*pit)->parents().size()==0) continue;
       if(((*pit)->parents()[0]->id()==21)||abs((*pit)->parents()[0]->id())<=6) {
-	emitted = *pit;
-	nemitted++;
+	emitted_ = *pit;
+	nemitted_++;
       }
     }
   }
-  if(nemitted>1)
+  if(nemitted_>1)
 	throw Exception() << "VV_ME_Analysis::analyze"  
 			  << "\nMore than one QCD charge in the final state"
 			  << "\nCan't tell what the NLO emitted parton is."
 			  << Exception::warning;
   // Now delete everything else in leptons which is not a lepton!
-  for(pit=leptons.begin();pit!=leptons.end();++pit)
+  for(pit=leptons_.begin();pit!=leptons_.end();++pit)
     if(!(abs((*pit)->id())>=11&&abs((*pit)->id())<=16)) {
-      leptons.erase(pit);
+      leptons_.erase(pit);
       --pit;
     }
   // Make sure that leptons has only 4 entries (2 bosons * 2-2-body decays).
-  assert(leptons.size()==4);  
+  assert(leptons_.size()==4);  
 
   // Make sure all final-state leptons have parents.
-  for (unsigned int i=0; i<leptons.size(); i++)
-    assert(leptons[i]->parents().size()>0);
+  for (unsigned int i=0; i<leptons_.size(); i++)
+    assert(leptons_[i]->parents().size()>0);
 
   // Go get the parents of the leptons W+ W- / W+ Z / W- Z / Z Z
   tPVector bosons;
   tPPtr aBoson;
-  for(unsigned int ix=0;ix<leptons.size();ix++) {
-    aBoson = leptons[ix]->parents()[0];
-    while(leptons[ix]->id()==aBoson->id()&&leptons[ix]->parents().size()>0) 
+  for(unsigned int ix=0;ix<leptons_.size();ix++) {
+    aBoson = leptons_[ix]->parents()[0];
+    while(leptons_[ix]->id()==aBoson->id()&&leptons_[ix]->parents().size()>0) 
       aBoson = aBoson->parents()[0];
     bosons.push_back(aBoson);
   }
@@ -107,29 +107,26 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
   // Boson children are ordered fermion, anti-fermion in the mcfm convention.
   if(bosons[0]->children()[0]->id()>0) {
-    leptons[0]=bosons[0]->children()[0];
-    leptons[1]=bosons[0]->children()[1];
+    leptons_[0]=bosons[0]->children()[0];
+    leptons_[1]=bosons[0]->children()[1];
   } else {
-    leptons[0]=bosons[0]->children()[1];
-    leptons[1]=bosons[0]->children()[0];
+    leptons_[0]=bosons[0]->children()[1];
+    leptons_[1]=bosons[0]->children()[0];
   }
   if(bosons[1]->children()[0]->id()>0) {
-    leptons[2]=bosons[1]->children()[0];
-    leptons[3]=bosons[1]->children()[1];
+    leptons_[2]=bosons[1]->children()[0];
+    leptons_[3]=bosons[1]->children()[1];
   } else {
-    leptons[2]=bosons[1]->children()[1];
-    leptons[3]=bosons[1]->children()[0];
+    leptons_[2]=bosons[1]->children()[1];
+    leptons_[3]=bosons[1]->children()[0];
   }
 
   // For debugging; check that entries are what mcfm says they should be. 
-//   if(leptons[0]->id()!=14||leptons[1]->id()!=-13||
-//      leptons[2]->id()!=12||leptons[3]->id()!=-12) {
 //     cout << "\n\n\n\n\n";
-//     cout << "leptons[0] " << *leptons[0] << endl;
-//     cout << "leptons[1] " << *leptons[1] << endl;
-//     cout << "leptons[2] " << *leptons[2] << endl;
-//     cout << "leptons[3] " << *leptons[3] << endl;
-//   }
+//     cout << "leptons_[0] " << *leptons_[0] << endl;
+//     cout << "leptons_[1] " << *leptons_[1] << endl;
+//     cout << "leptons_[2] " << *leptons_[2] << endl;
+//     cout << "leptons_[3] " << *leptons_[3] << endl;
 
   AnalysisHandler::analyze( event, ieve, loop, state);
  
@@ -137,9 +134,11 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
 
 void VV_ME_Analysis::analyze(const tPVector & particles) {
 
+  epsilon_ = 1.e-10;
+
   vector<Lorentz5Momentum> p;
-  for(int i=0;i<=3;i++) p.push_back(leptons[i]->momentum());
-  if(emitted) p.push_back(emitted->momentum());
+  for(int i=0;i<=3;i++) p.push_back(leptons_[i]->momentum());
+  if(emitted_) p.push_back(emitted_->momentum());
   assert(p.size()==4||p.size()==5);
 
   int offset(-3);
@@ -188,33 +187,46 @@ void VV_ME_Analysis::analyze(const tPVector & particles) {
   y3456_h.addWeighted(p3456.rapidity(),1.);
   m3456_h.addWeighted(sqrt(p3456.m2())/GeV,1.);
   // The theta Born variables:
-  assert(abs(inbound.first->children()[0]->id())<7);
-  assert(abs(inbound.second->children()[0]->id())<7);
-  Lorentz5Momentum pplus(inbound.first->children()[0]->momentum()); 
-  Lorentz5Momentum pminus(inbound.second->children()[0]->momentum());
+  assert(abs(inbound_.first->children()[0]->id())<7);
+  assert(abs(inbound_.second->children()[0]->id())<7);
+  Lorentz5Momentum pplus(inbound_.first->children()[0]->momentum()); 
+  Lorentz5Momentum pminus(inbound_.second->children()[0]->momentum());
   Lorentz5Momentum p3456rest(0.*GeV,0.*GeV,0.*GeV,p3456.m(),p3456.m());
   // Boost everything to the diboson rest frame:
   pplus  = boostx(pplus , p3456, p3456rest);
   pminus = boostx(pminus, p3456, p3456rest);
   p34    = boostx(p34   , p3456, p3456rest);
   p56    = boostx(p56   , p3456, p3456rest);
+  double sinthpplus (pplus.perp() /pplus.vect().mag() );
+  double sinthpminus(pminus.perp()/pminus.vect().mag());
+  if(nemitted_==0&&(sinthpplus>epsilon_||sinthpminus>epsilon_)) 
+    throw Exception() << "VV_ME_Analysis::analyze\n"
+		      << "Found 0 emitted partons but\n" 
+		      << "sin(theta_pplus)  = " << sinthpplus  << "\n"
+		      << "sin(theta_pminus) = " << sinthpminus << "\n"
+		      << Exception::warning;
   // Get the rotation that puts pplus on the z-axis (zrot):
-  LorentzRotation zrot(hwurot(pplus,1.,0.));
-  // Now rotate everything using this matrix
-  pplus  *= zrot;
-  pminus *= zrot;
-  p34    *= zrot;
-  p56    *= zrot;
-  // Get the rotation that puts the transverse bit 
-  // of pminus on the +y axis (xyrot):
-  LorentzRotation xyrot(hwurot(pplus,pminus.x()/pminus.vect().mag(),
-			             pminus.y()/pminus.vect().mag()));
-  // Now rotate everything using this matrix
-  pplus  *= xyrot;
-  pminus *= xyrot;
-  p34    *= xyrot;
-  p56    *= xyrot;
+  if(sinthpplus>epsilon_) {
+    LorentzRotation zrot(hwurot(pplus,1.,0.));
+    // Now rotate everything using this matrix
+    pplus  *= zrot;
+    pminus *= zrot;
+    p34    *= zrot;
+    p56    *= zrot;
+  }
 
+  if(sinthpminus>epsilon_) {
+    // Get the rotation that puts the transverse bit 
+    // of pminus on the +y axis (xyrot):
+    LorentzRotation xyrot(hwurot(pplus,pminus.x()/pminus.perp(),
+				       pminus.y()/pminus.perp()));
+    
+    // Now rotate everything using this matrix
+    pplus  *= xyrot;
+    pminus *= xyrot;
+    p34    *= xyrot;
+    p56    *= xyrot;
+  }
   // Now get the Born variables
   th1_h.addWeighted(acos(p34.z()/p34.vect().mag()),1.);
   th2_h.addWeighted(atan2(p34.x(),p34.y()),1.);
@@ -359,8 +371,8 @@ void VV_ME_Analysis::dofinish() {
 
 
 Lorentz5Momentum VV_ME_Analysis::boostx(Lorentz5Momentum p_in, 
-				      Lorentz5Momentum pt, 
-				      Lorentz5Momentum ptt){
+		  		        Lorentz5Momentum pt, 
+				        Lorentz5Momentum ptt){
   // Boost input vector p_in to output vector p_out using the same
   // transformation as required to boost massive vector pt to ptt
   Lorentz5Momentum p_tmp,p_out;
@@ -368,44 +380,50 @@ Lorentz5Momentum VV_ME_Analysis::boostx(Lorentz5Momentum p_in,
   Energy  mass, bdotp;
   double  gam;
 
-  if (pt.m2()<0.*GeV2) {
+  if (pt.m2()<0.*GeV2)
     throw Exception() << "pt.m2()<0. in boostx, pt.m2() = "
 		      << pt.m2()/GeV2 
 		      << Exception::runerror;
-  }
+
   mass = sqrt(pt.m2());
 
   // boost to the rest frame of pt
   gam = pt.e()/mass;
-
+  
   beta  = -pt.vect()*(1./pt.e());
   bdotp =  beta*p_in.vect();
-
+  
   Lorentz5Momentum tmp_vec;
   tmp_vec.setVect(beta*gam*((p_in.e()+gam*(p_in.e()+bdotp))/(1.+gam)));
   tmp_vec.setE(0.*GeV);
   tmp_vec.setMass(0.*GeV);
   p_tmp = p_in + tmp_vec;
   p_tmp.setE(gam*(p_in.e()+bdotp));
-
+  
   // boost from rest frame of pt to frame in which pt is identical
   // with ptt, thus completing the transformation
   gam   =  ptt.e()/mass;
   beta  =  ptt/ptt.e();
   bdotp =  beta*p_tmp.vect();
-
+  
   p_out.setVect(p_tmp.vect()+gam*beta*((p_out.e()+p_tmp.e())/(1.+gam)));
   p_out.setE(gam*(p_tmp.e()+bdotp));
   p_out.rescaleMass();
-
+  
   return p_out;
 }
 
 LorentzRotation VV_ME_Analysis::hwurot(Lorentz5Momentum p,double cp,double sp) {
   //-----------------------------------------------------------------------
   // r is a  rotation matrix to get from vector p the z-axis, followed by
-  // a rotation by psi about the z-axis, where cp = cos(psi), sp = sin(psi)
+  // a rotation by phi about the z-axis, where cp = cos(phi), sp = sin(phi)
   //-----------------------------------------------------------------------
+
+  if(fabs(cp*cp+sp*sp-1.)>epsilon_)
+    throw Exception() << "VV_ME_Analysis::hwurot"  
+		      << "\nInconsistent input: cos(phi)^2+sin(phi)^2 = "
+		      << cp*cp+sp*sp
+		      << Exception::warning;
 
   LorentzRotation rxy;
   LorentzRotation ryz;

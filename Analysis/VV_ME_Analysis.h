@@ -85,17 +85,27 @@ namespace Herwig {
     /**
      * A pair of the incoming hadrons.
      */
-    PPair inbound;
+    PPair inbound_;
 
     /**
      * A vector of the final state leptons. 
      */
-    tPVector leptons;
+    tPVector leptons_;
 
     /**
-     * A vector of the final state leptons. 
+     * A pointer to the / an emitted parton.
      */
-    tPPtr emitted;
+    tPPtr emitted_;
+
+    /**
+     * A counter for the number of emitted partons detected.
+     */
+    int nemitted_;
+
+    /**
+     * A very small parameter to determine if rotations etc should be applied.
+     */
+    double epsilon_;
 
     /** @name Functions used by the persistent I/O system. */
     //@{
