@@ -218,8 +218,8 @@ void VV_ME_Analysis::analyze(const tPVector & particles) {
   if(sinthpminus>epsilon_) {
     // Get the rotation that puts the transverse bit 
     // of pminus on the +y axis (xyrot):
-    LorentzRotation xyrot(hwurot(pplus,pminus.x()/pminus.perp(),
-				       pminus.y()/pminus.perp()));
+    LorentzRotation xyrot(hwurot(pplus, pminus.y()/pminus.perp(),
+				       -pminus.x()/pminus.perp()));
     
     // Now rotate everything using this matrix
     pplus  *= xyrot;
@@ -419,19 +419,13 @@ LorentzRotation VV_ME_Analysis::hwurot(Lorentz5Momentum p,double cp,double sp) {
   // a rotation by phi about the z-axis, where cp = cos(phi), sp = sin(phi)
   //-----------------------------------------------------------------------
 
-  if(fabs(cp*cp+sp*sp-1.)>epsilon_)
-    throw Exception() << "VV_ME_Analysis::hwurot"  
-		      << "\nInconsistent input: cos(phi)^2+sin(phi)^2 = "
-		      << cp*cp+sp*sp
-		      << Exception::warning;
-
   LorentzRotation rxy;
   LorentzRotation ryz;
 
   LorentzRotation raz;
   raz.setRotateZ(atan2(cp,sp));
 
-  if(p.perp()/p.vect().mag()>=1.e-10) {
+  if(p.perp()/p.vect().mag()>=epsilon_) {
     rxy.setRotateZ(atan2(p.x(),p.y()));
     p *= rxy;
     ryz.setRotateX(acos(p.z()/p.vect().mag()));
