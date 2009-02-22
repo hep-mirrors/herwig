@@ -206,7 +206,7 @@ void VV_ME_Analysis::analyze(const tPVector & particles) {
 		      << "sin(theta_pminus) = " << sinthpminus << "\n"
 		      << Exception::warning;
   // Get the rotation that puts pplus on the z-axis (zrot):
-  if(sinthpplus>epsilon_) {
+  if(sinthpplus>epsilon_&&nemitted_>0) {
     LorentzRotation zrot(hwurot(pplus,1.,0.));
     // Now rotate everything using this matrix
     pplus  *= zrot;
@@ -215,11 +215,11 @@ void VV_ME_Analysis::analyze(const tPVector & particles) {
     p56    *= zrot;
   }
 
-  if(sinthpminus>epsilon_) {
+  if(sinthpminus>epsilon_&&nemitted_>0) {
     // Get the rotation that puts the transverse bit 
     // of pminus on the +y axis (xyrot):
-    LorentzRotation xyrot(hwurot(pplus, pminus.y()/pminus.perp(),
-				       -pminus.x()/pminus.perp()));
+    LorentzRotation xyrot(hwurot(pplus, pminus.x()/pminus.perp(),
+				        pminus.y()/pminus.perp()));
     
     // Now rotate everything using this matrix
     pplus  *= xyrot;
@@ -423,7 +423,8 @@ LorentzRotation VV_ME_Analysis::hwurot(Lorentz5Momentum p,double cp,double sp) {
   LorentzRotation ryz;
 
   LorentzRotation raz;
-  raz.setRotateZ(atan2(cp,sp));
+  p.z()/GeV > 0 ? raz.setRotateZ( atan2(cp,sp)) 
+                : raz.setRotateZ(-atan2(cp,sp));
 
   if(p.perp()/p.vect().mag()>=epsilon_) {
     rxy.setRotateZ(atan2(p.x(),p.y()));
