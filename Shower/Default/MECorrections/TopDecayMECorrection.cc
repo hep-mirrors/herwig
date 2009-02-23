@@ -602,11 +602,20 @@ double TopDecayMECorrection::z(double xac, double kt,
 }
 
 double TopDecayMECorrection::xgc(double xac, double kt, 
-                                        int toggle1, int toggle2) 
+				 int toggle1, int toggle2) 
 { 
-    return (2.-xac)*(1.-0.5*(1.+_c/(1.+_a-xac)))
-          -(z(xac,kt,toggle1,toggle2)-0.5*(1.+_c/(1.+_a-xac)))
-          *sqrt(xac*xac-4.*_a);
+  double tiny(1.e-6);
+  double xaToMinBoundary(xac*xac-4.*_a);
+  if(xaToMinBoundary<0) {
+    if(fabs(xaToMinBoundary/(1.-_a)/(1.-_a))<tiny)
+      xaToMinBoundary *= -1.;
+    else
+      throw Exception() << "TopDecayMECorrection::xgc xa not in phase space!"
+			<< Exception::eventerror;
+  }
+  return (2.-xac)*(1.-0.5*(1.+_c/(1.+_a-xac)))
+        -(z(xac,kt,toggle1,toggle2)-0.5*(1.+_c/(1.+_a-xac)))
+        *sqrt(xaToMinBoundary);
 }
 
 double TopDecayMECorrection::xginvc0(double xg , double kt) 
