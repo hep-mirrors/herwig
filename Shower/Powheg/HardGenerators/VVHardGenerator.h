@@ -209,14 +209,14 @@ private:
    *  axis defined by the incoming quark (as defined in e.g. 
    *  NPB 410(1993) 280-324
    */
-  Energy _th1;
+  double _th1;
 
   /**
    *  The azimuthal angle theta_2 of the gauge bosons w.r.t. the axis
    *  defined by the incoming quark in the diboson rest frame (as
    *  defined in e.g. NPB 410(1993) 280-324).
    */
-  Energy _th2;
+  double _th2;
 
   /**
    *  Whether the quark is in the + or - z direction

@@ -96,12 +96,13 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   ShowerParticleVector incoming;
   vector<ShowerProgenitorPtr> particlesToShower;
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit ) {
-    incoming.push_back(cit->first->progenitor());
-    particlesToShower.push_back(cit->first);
-    _beams.push_back(cit->first->beam());
-    _partons.push_back(cit->first->progenitor()->dataPtr());
-  }
+  for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit )
+    {
+      incoming.push_back(cit->first->progenitor());
+      particlesToShower.push_back(cit->first);
+      _beams.push_back(cit->first->beam());
+      _partons.push_back(cit->first->progenitor()->dataPtr());
+    }
 
   // Boolean indicating whether the quark is incident from +z or -z:
   _quarkplus = 
@@ -173,6 +174,13 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   p2.boost(CMSBoostb);
   k1.boost(CMSBoostb);
   k2.boost(CMSBoostb);
+  if(p1.perp() /p1.vect().mag()>1.e-15)
+    cout << "p1 NOT on z-axis!!!! p1 = " << p1/GeV << endl;
+  if(p2.perp() /p2.vect().mag()>1.e-15)
+    cout << "p2 NOT on z-axis!!!! p2 = " << p2/GeV << endl;
+  // Now get the Born variables
+  _th1 = acos(k1.z()/k1.vect().mag());
+  _th2 = atan2(k1.x(),k1.y());
 
   vector<Lorentz5Momentum> pnew;
   int emission_type(-1);
@@ -206,7 +214,7 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]->CC(), true)));
   }
   // create the boson
-  newparticles.push_back(new_ptr(ShowerParticle(boson->dataPtr(),true)));
+  newparticles.push_back(new_ptr(ShowerParticle(bosons[0]->dataPtr(),true)));
   // set the momenta
   for(unsigned int ix=0;ix<4;++ix) newparticles[ix]->set5Momentum(pnew[ix]);
   // create the off-shell particle
