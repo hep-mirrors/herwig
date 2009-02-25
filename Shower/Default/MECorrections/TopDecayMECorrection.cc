@@ -530,17 +530,26 @@ double TopDecayMECorrection::xab(double xgb,
       + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
   } else {
     // This is the form of xab FOR _g=0.
-    double ktmktrpktmktrm = ( sqr(xgb*kt-2.*xgb)
-			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1))
-			      *(xgb-xgbr(-1))
-			      )/
-      (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1))
-       *(xgb-xgbr(-1))
-       );
-    double lambda = sqrt((sqr(1.-_a-_c-xgb)-4.*_a*_c)*
-			 ktmktrpktmktrm);
-    xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
-      + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
+    double ktmktrpktmktrm = kt*kt - 4.*_a*(kt-1.)*xgb*xgb
+                                  / (sqr(1.-_a-_c-xgb)-4.*_a*_c);
+    if(fabs(kt-(2.*xgb-2.*_g)/(xgb-sqrt(xgb*xgb-4.*_g)))/kt>1.e-6) {
+      double lambda = sqrt((sqr(1.-_a-_c-xgb)-4.*_a*_c)*ktmktrpktmktrm);
+      xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
+	  + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
+    }
+    else {
+      // This is the value of xa as a function of xb when kt->infinity. 
+      // Where we take any kt > (2.*xgb-2.*_g)/(xgb-sqrt(xgb*xgb-4.*_g)) 
+      // as being effectively infinite. This kt value is actually the 
+      // maximum allowed value kt can have if the phase space is calculated  
+      // without the approximation of _g=0 (massless gluon). This formula
+      // for xab below is then valid for _g=0 AND kt=infinity only.
+      xab = ( 2.*_c+_a*(xgb-2.)
+	    + 3.*xgb
+	    - xgb*(_c+xgb+sqrt(_a*_a-2.*(_c-xgb+1.)*_a+sqr(_c+xgb-1.)))
+            - 2.
+            )/2./(xgb-1.);
+    }
   }
   if(isnan(xab)) {
     double ktmktrpktmktrm = ( sqr(xgb*kt-2.*(xgb-_g))
