@@ -67,7 +67,7 @@ public:
   /**
    * Return the process being run (WW/ZZ/WZ).
    */
-  virtual int process() const { return _process; }
+  virtual int process() const { return process_; }
 
   /**
    * Return the factorisation scale.
@@ -82,17 +82,17 @@ public:
   /**
    * Return the maximum number of incoming flavours.
    */
-  virtual int maxflavour() const { return _maxflavour; }
+  virtual int maxflavour() const { return maxflavour_; }
 
   /**
    * Return the CKM matrix elements.
    */
-  Complex CKM(int ix,int iy) const { return _ckm[ix][iy]; }
+  Complex CKM(int ix,int iy) const { return ckm_[ix][iy]; }
 
   /**
    * Return the process being run (WW/ZZ/WZ).
    */
-  bool mixingInWW() const { return _mixingInWW; }
+  bool mixingInWW() const { return mixingInWW_; }
 
   /**
    * Add all possible diagrams with the add() function.
@@ -225,43 +225,43 @@ private:
   /**
    *   FFPVertex
    */
-  AbstractFFVVertexPtr _vertexFFP;
+  AbstractFFVVertexPtr FFPvertex_;
 
   /**
    *   FFWVertex
    */
-  AbstractFFVVertexPtr _vertexFFW;
+  AbstractFFVVertexPtr FFWvertex_;
 
   /**
    *   FFZVertex
    */
-  AbstractFFVVertexPtr _vertexFFZ;
+  AbstractFFVVertexPtr FFZvertex_;
 
   /**
    *  WWW Vertex
    */ 
-  AbstractVVVVertexPtr _vertexWWW;
+  AbstractVVVVertexPtr WWWvertex_;
   //@}
 
   /**
    * The ckm matrix elements (unsquared, to allow interference)
    */
-  vector< vector<Complex> > _ckm;
+  vector< vector<Complex> > ckm_;
 
   /**
    *  Processes
    */
-  unsigned int _process;
+  unsigned int process_;
 
   /**
    *  Allowed flavours of the incoming quarks
    */
-  int _maxflavour;
+  int maxflavour_;
 
   /**
    *  Processes
    */
-  bool _mixingInWW;
+  bool mixingInWW_;
 
   /**
    *  The matrix element

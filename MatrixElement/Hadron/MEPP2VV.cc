@@ -26,8 +26,8 @@
 using namespace Herwig;
 
 MEPP2VV::MEPP2VV() : 
-  _ckm(3,vector<Complex>(3,0.0)), 
-  _process(1)   , _maxflavour(5)      , _mixingInWW(1)  ,
+  ckm_(3,vector<Complex>(3,0.0)), 
+  process_(1)   , maxflavour_(5)      , mixingInWW_(1)  ,
   scaleopt_(1)  , mu_F_(100.*GeV)     , mu_UV_(100.*GeV), 
   scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0) {
   massOption(true ,1);
@@ -55,7 +55,7 @@ void MEPP2VV::Init() {
   static Switch<MEPP2VV,unsigned int> interfaceProcess
     ("Process",
      "Which processes to include",
-     &MEPP2VV::_process, 0, false, false);
+     &MEPP2VV::process_, 0, false, false);
   static SwitchOption interfaceProcessAll
     (interfaceProcess,
      "All",
@@ -90,13 +90,13 @@ void MEPP2VV::Init() {
   static Parameter<MEPP2VV,int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The maximum flavour allowed for the incoming quarks",
-     &MEPP2VV::_maxflavour, 5, 2, 5,
+     &MEPP2VV::maxflavour_, 5, 2, 5,
      false, false, Interface::limited);
 
   static Switch<MEPP2VV,bool> interfaceFlavourMixingInWWProduction
     ("FlavourMixingInWWProduction",
      "Disable CKM mixing in WW production i.e. impose unitarity of the CKM matrix",
-     &MEPP2VV::_mixingInWW, 0, false, false);
+     &MEPP2VV::mixingInWW_, 0, false, false);
   static SwitchOption interfaceNoMixingInWW
     (interfaceFlavourMixingInWWProduction,
      "NoMixing",
@@ -176,22 +176,22 @@ void MEPP2VV::Init() {
 }
 
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
-  os << _vertexFFP << _vertexFFW  << _vertexFFZ  << _vertexWWW << _ckm
-     << _process   << _maxflavour << _mixingInWW
+  os << FFPvertex_ << FFWvertex_  << FFZvertex_  << WWWvertex_ << ckm_
+     << process_   << maxflavour_ << mixingInWW_
      << scaleopt_  << ounit(mu_F_,GeV)  << ounit(mu_UV_,GeV)   
      << scaleFact_ << spinCorrelations_ << debugMCFM_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
-  is >> _vertexFFP >> _vertexFFW  >> _vertexFFZ  >> _vertexWWW >> _ckm
-     >> _process   >> _maxflavour >> _mixingInWW
+  is >> FFPvertex_ >> FFWvertex_  >> FFZvertex_  >> WWWvertex_ >> ckm_
+     >> process_   >> maxflavour_ >> mixingInWW_
      >> scaleopt_  >> iunit(mu_F_,GeV)  >> iunit(mu_UV_,GeV)  
      >> scaleFact_ >> spinCorrelations_ >> debugMCFM_;
 }
 
 Energy2 MEPP2VV::scale() const {
   return scaleopt_ == 1 ? 
-    sqr(mePartonData()[2]->mass())+sqr(mePartonData()[3]->mass())
+    sqr(mePartonData()[2]->mass()+mePartonData()[3]->mass())
     : sqr(mu_F_);
 }
 
@@ -213,10 +213,10 @@ void MEPP2VV::doinit() throw(InitException) {
 				   << " MEPP2VV::doinit()"
 				   << Exception::abortnow;
   // get pointers to all required Vertex objects
-  _vertexFFZ = hwsm->vertexFFZ();
-  _vertexFFP = hwsm->vertexFFP();
-  _vertexWWW = hwsm->vertexWWW();
-  _vertexFFW = hwsm->vertexFFW();
+  FFZvertex_ = hwsm->vertexFFZ();
+  FFPvertex_ = hwsm->vertexFFP();
+  WWWvertex_ = hwsm->vertexWWW();
+  FFWvertex_ = hwsm->vertexFFW();
 
   // get the ckm object
   Ptr<StandardCKM>::pointer 
@@ -227,7 +227,7 @@ void MEPP2VV::doinit() throw(InitException) {
   unsigned int ix,iy;
   // get the CKM matrix (unsquared for interference)
   vector< vector<Complex > > CKM(theCKM->getUnsquaredMatrix(SM().families()));
-  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){_ckm[ix][iy]=CKM[ix][iy];}}
+  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckm_[ix][iy]=CKM[ix][iy];}}
 }
 
 double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
@@ -295,14 +295,14 @@ void MEPP2VV::getDiagrams() const {
   tcPDPtr z0     = getParticleData(ParticleID::Z0    );
   tcPDPtr gamma  = getParticleData(ParticleID::gamma);
   // W+ W-
-  if(_process==0||_process==1) {
-    for(int ix=1;ix<=_maxflavour;++ix) {
+  if(process_==0||process_==1) {
+    for(int ix=1;ix<=maxflavour_;++ix) {
       tcPDPtr qk = getParticleData(ix);
       tcPDPtr w1 = ix%2==0 ? wPlus : wMinus;
       tcPDPtr w2 = ix%2!=0 ? wPlus : wMinus;
-      for(int iy=1;iy<=_maxflavour;++iy) {
+      for(int iy=1;iy<=maxflavour_;++iy) {
 	// Impose initial state quarks have the same flavour:
- 	if(!_mixingInWW&&ix!=iy) continue; 
+ 	if(!mixingInWW_&&ix!=iy) continue; 
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
@@ -314,7 +314,7 @@ void MEPP2VV::getDiagrams() const {
 	  int idiag=0;
 	  for(int iz=1;iz<=5;iz+=2) {
 	    // Impose intermediate be in the same generation as initial state:
-	    if(!_mixingInWW&&iz!=ix-1) continue;
+	    if(!mixingInWW_&&iz!=ix-1) continue;
 	    --idiag;
 	    tcPDPtr tc = getParticleData(iz);
 	    add(new_ptr((Tree2toNDiagram(3), qk, tc, qb, 1, w1, 2, w2, idiag)));
@@ -324,7 +324,7 @@ void MEPP2VV::getDiagrams() const {
 	  int idiag=0;
 	  for(int iz=2;iz<=6;iz+=2) {
 	    // Impose intermediate be in the same generation as initial state:
-	    if(!_mixingInWW&&iz!=ix+1) continue;
+	    if(!mixingInWW_&&iz!=ix+1) continue;
 	    --idiag;
 	    tcPDPtr tc = getParticleData(iz);
 	    add(new_ptr((Tree2toNDiagram(3), qk, tc, qb, 1, w1, 2, w2, idiag)));
@@ -334,12 +334,12 @@ void MEPP2VV::getDiagrams() const {
     }
   }
   // W+/- Z
-  if(_process==0||_process==2||_process==4||_process==5) {
+  if(process_==0||process_==2||process_==4||process_==5) {
     // possible parents
     Pairvector parentpair;
     parentpair.reserve(6);
     // don't even think of putting 'break' in here!
-    switch(_maxflavour) {
+    switch(maxflavour_) {
     case 5:
        parentpair.push_back(make_pair(getParticleData(ParticleID::b),
  				     getParticleData(ParticleID::cbar)));
@@ -360,7 +360,7 @@ void MEPP2VV::getDiagrams() const {
       ;
     }
     // W+ Z
-    if(_process==0||_process==2||_process==4) {
+    if(process_==0||process_==2||process_==4) {
       for(unsigned int ix=0;ix<parentpair.size();++ix) {
 	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].second->CC(), 
 		     parentpair[ix].first, parentpair[ix].first->CC(),
@@ -373,7 +373,7 @@ void MEPP2VV::getDiagrams() const {
       }
     }
     // W- Z
-    if(_process==0||_process==2||_process==5) {
+    if(process_==0||process_==2||process_==5) {
       for(unsigned int ix=0;ix<parentpair.size();++ix) {
 	add(new_ptr((Tree2toNDiagram(3), parentpair[ix].first, 
 		     parentpair[ix].second->CC(),
@@ -386,8 +386,8 @@ void MEPP2VV::getDiagrams() const {
     }
   }
   // Z Z
-  if(_process==0||_process==3) {
-    for(int ix=1;ix<=_maxflavour;++ix) {
+  if(process_==0||process_==3) {
+    for(int ix=1;ix<=maxflavour_;++ix) {
       tcPDPtr qk = getParticleData(ix);
       tcPDPtr qb = qk->CC();
       add(new_ptr((Tree2toNDiagram(3), qk, qk, qb, 1, z0, 2, z0, -1)));
@@ -450,12 +450,12 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
       for(unsigned int ihel2=0;ihel2<2;++ihel2) {
 	for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	  for(unsigned int ohel2=0;ohel2<3;++ohel2) {
-	    inter   = _vertexFFZ->evaluate(scale(),1,f1[ihel1].getParticle(),
+	    inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].getParticle(),
 					   f1[ihel1],v1[ohel1]);
- 	    diag[0] = _vertexFFZ->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
- 	    inter   = _vertexFFZ->evaluate(scale(),1,f1[ihel1].getParticle(),
+ 	    diag[0] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
+ 	    inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].getParticle(),
 					   f1[ihel1] ,v2[ohel2]);
-	    diag[1] = _vertexFFZ->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
+	    diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	    // individual diagrams
 	    for (size_t ii=0; ii<2; ++ii) me[ii] += std::norm(diag[ii]);
 	    // full matrix element
@@ -477,13 +477,13 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
     vector<tcPDPtr> tc;
     if(f1[0].getParticle()->id()%2==0) {
       for(unsigned int ix=0;ix<3;++ix) {
-	if(!_mixingInWW&&abs(f1[0].getParticle()->id())!=2+2*ix) continue;
+	if(!mixingInWW_&&abs(f1[0].getParticle()->id())!=2+2*ix) continue;
 	tc.push_back(getParticleData(1+2*ix));
       }
     }
     else {
       for(unsigned int ix=0;ix<3;++ix) {
-	if(!_mixingInWW&&abs(f1[0].getParticle()->id())!=1+2*ix) continue;
+	if(!mixingInWW_&&abs(f1[0].getParticle()->id())!=1+2*ix) continue;
 	tc.push_back(getParticleData(2+2*ix));
       }
     }
@@ -496,34 +496,34 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
     for(unsigned int ihel1=0;ihel1<2;++ihel1) {
       for(unsigned int ihel2=0;ihel2<2;++ihel2) {
 	if(sChannel) {
-	  interP = _vertexFFP->evaluate(scale(),1,gamma,f1[ihel1],a1[ihel2]);
-	  interZ = _vertexFFZ->evaluate(scale(),1,z0   ,f1[ihel1],a1[ihel2]);
+	  interP = FFPvertex_->evaluate(scale(),1,gamma,f1[ihel1],a1[ihel2]);
+	  interZ = FFZvertex_->evaluate(scale(),1,z0   ,f1[ihel1],a1[ihel2]);
 	}
 	for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	  for(unsigned int ohel2=0;ohel2<3;++ohel2) {
 	    // s-channel photon
 	    diag[3] = sChannel ? 
-	      _vertexWWW->evaluate(scale(),interP,v2[ohel2],v1[ohel1]) : 0.;
+	      WWWvertex_->evaluate(scale(),interP,v2[ohel2],v1[ohel1]) : 0.;
 	    // s-channel Z0
 	    diag[4] = sChannel ? 
-	      _vertexWWW->evaluate(scale(),interZ,v2[ohel2],v1[ohel1]) : 0.;
+	      WWWvertex_->evaluate(scale(),interZ,v2[ohel2],v1[ohel1]) : 0.;
 	    // t-channel
 	    for(unsigned int ix=0;ix<tc.size();++ix) {
 	      SpinorWaveFunction inter = 
-		_vertexFFW->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
+		FFWvertex_->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
 	      diag[ix] = 
-		_vertexFFW->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	      if(!_mixingInWW) {
+		FFWvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
+	      if(!mixingInWW_) {
 		Complex Kij(1,0.);
 		if(abs(f1[ihel1].getParticle()->id())%2==0) {
 		  int up_id(abs(f1[ihel1].getParticle()->id())/2-1);
 		  int dn_id((abs(tc[ix]->id())-1)/2);
-		  Kij  = sqr(_ckm[up_id][dn_id]);
+		  Kij  = sqr(ckm_[up_id][dn_id]);
 		}
 		else if(abs(f1[ihel1].getParticle()->id())%2==1) {
 		  int dn_id((abs(f1[ihel1].getParticle()->id())-1)/2);
 		  int up_id(abs(tc[ix]->id())/2-1);
-		  Kij  = sqr(_ckm[up_id][dn_id]);
+		  Kij  = sqr(ckm_[up_id][dn_id]);
 		}
 		diag[ix] /= Kij;
 	      }
@@ -553,19 +553,19 @@ double MEPP2VV::helicityME(vector<SpinorWaveFunction>    & f1,
     for(unsigned int ihel1=0;ihel1<2;++ihel1) {
       for(unsigned int ihel2=0;ihel2<2;++ihel2) {
 	VectorWaveFunction interW =
-	  _vertexFFW->evaluate(scale(),1,v1[0].getParticle()->CC(),
+	  FFWvertex_->evaluate(scale(),1,v1[0].getParticle()->CC(),
 			       f1[ihel1],a1[ihel2]);
 	for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	  for(unsigned int ohel2=0;ohel2<3;++ohel2) {
 	    // t-channel diagrams
-	    inter   = _vertexFFW->evaluate(scale(),1,a1[ihel1].getParticle(),
+	    inter   = FFWvertex_->evaluate(scale(),1,a1[ihel1].getParticle(),
 					   f1[ihel1],v1[ohel1]);
- 	    diag[0] = _vertexFFZ->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
- 	    inter   = _vertexFFZ->evaluate(scale(),1,f1[ihel1].getParticle(),
+ 	    diag[0] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
+ 	    inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].getParticle(),
 					   f1[ihel1] ,v2[ohel2]);
-	    diag[1] = _vertexFFW->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
+	    diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	    // s-channel diagram
-	    diag[2] = _vertexWWW->evaluate(scale(),interW,v1[ohel1],v2[ohel2]);
+	    diag[2] = WWWvertex_->evaluate(scale(),interW,v1[ohel1],v2[ohel2]);
 	    // individual diagrams
 	    for (size_t ii=0; ii<3; ++ii) me[ii] += std::norm(diag[ii]);
 	    // full matrix element
