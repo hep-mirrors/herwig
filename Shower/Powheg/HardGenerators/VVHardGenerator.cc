@@ -27,17 +27,21 @@ using namespace std;
 using namespace Herwig;
 
 VVHardGenerator::VVHardGenerator() 
-  : _power(2.0),_preqqbar(6.5),
-    _preqg(4.0),_pregqbar(4.0),
+  : _power(2.0),
+    _preqqbar(6.5),_preqg(4.0),_pregqbar(4.0),
     _min_pt(2.*GeV)
 {}
 
 void VVHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _power << _preqqbar << _preqg << _pregqbar << ounit( _min_pt,GeV );
+  os << _alphaS << _power 
+     << _preqqbar << _preqg << _pregqbar 
+     << ounit( _min_pt,GeV );
 }
 
 void VVHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _power >> _preqqbar >> _preqg >> _pregqbar >> iunit( _min_pt, GeV );
+  is >> _alphaS >> _power 
+     >> _preqqbar >> _preqg >> _pregqbar 
+     >> iunit( _min_pt, GeV );
 }
 
 ClassDescription<VVHardGenerator> VVHardGenerator::initVVHardGenerator;
@@ -117,49 +121,46 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   }
 
   // Get the gauge bosons:
-  vector<PPtr> bosons;
+  PPtr V1;
+  PPtr V2;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   for(cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
-    if(tree->outgoingLines().size()==2) 
-      bosons.push_back(cjt->first->copy());
+    PPtr currentBoson;
+    if(tree->outgoingLines().size()==2) currentBoson = cjt->first->copy();
     if(tree->outgoingLines().size()==4) 
-      if(bosons.size()==0||
-	 (bosons.size()>0&&bosons[0]!=cjt->first->copy()->parents()[0]))
-	bosons.push_back(cjt->first->copy()->parents()[0]);
+      currentBoson = cjt->first->copy()->parents()[0];
+    if(!V1&&!V2)                   V1 = currentBoson;
+    if( V1&&!V2&&V1!=currentBoson) V2 = currentBoson;
   }
+
+  cout << "V1 = " << *V1 << endl;
+  cout << "V2 = " << *V2 << endl;
 
   // Order the gauge bosons in the same way as in the NLO calculation
   // (the same way as in the NLO matrix element):
   // W+(->e+,nu_e) W-(->e-,nu_ebar) (MCFM: 61 [nproc])
-  if(bosons[0]->id()==-24&&bosons[1]->id()== 24) swap(bosons[0],bosons[1]); 
+  if(V1->id()==-24&&V2->id()== 24) swap(V1,V2); 
   // W+/-(mu+,nu_mu / mu-,nu_mubar) Z(nu_e,nu_ebar) (MCFM: 72+77 [nproc])
-  if(bosons[0]->id()== 23&&abs(bosons[1]->id())== 24) swap(bosons[0],bosons[1]); 
+  if(V1->id()== 23&&abs(V2->id())== 24) swap(V1,V2); 
   // *** N.B. *** We may also need a swap in the ZZ case, when / if we 
   // use the WZ LO/NLO matrix element(s) to generate the ZZ & ZZ+jet.
 
-  // Abort the run if the bosons[ix] vector does not simply contain 2 different
-  // pointers to gauge bosons
-  if(bosons.size()!=2) throw Exception() 
-    << "VVHardGenerator::generateHardest()\n"
-    << "bosons[ix] contains " 
-    << bosons.size() 
-    << "entries instead of two!" << Exception::abortnow;
-  if(!bosons[0]||!bosons[1]) throw Exception() 
+  // Abort the run if V1 and V2 are not just pointers to different gauge bosons
+  if(!V1||!V2) throw Exception() 
     << "VVHardGenerator::generateHardest()\n"
     << "one or both of the gauge boson pointers is null." << Exception::abortnow;
-  if(!(abs(bosons[0]->id())==24||bosons[0]->id()==23)||
-     !(abs(bosons[1]->id())==24||bosons[1]->id()==23))
+  if(!(abs(V1->id())==24||V1->id()==23)||!(abs(V2->id())==24||V2->id()==23))
     throw Exception() 
       << "VVHardGenerator::generateHardest()\n" 
-      << "bosons[0] = " << bosons[0]->PDGName() << "\n"
-      << "bosons[1] = " << bosons[1]->PDGName() << "\n"
+      << "V1 = " << V1->PDGName() << "\n"
+      << "V2 = " << V2->PDGName() << "\n"
       << Exception::abortnow;
   
   // Get all of the momenta:
   Lorentz5Momentum p1(incoming[0]->momentum());
   Lorentz5Momentum p2(incoming[1]->momentum());
-  Lorentz5Momentum k1(bosons[0]->momentum());
-  Lorentz5Momentum k2(bosons[1]->momentum());
+  Lorentz5Momentum k1(V1->momentum());
+  Lorentz5Momentum k2(V2->momentum());
   Lorentz5Momentum k12(k1+k2);
   if(incoming[0]->id()<0) swap(p1,p2);
 
@@ -182,53 +183,52 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   _th1 = acos(k1.z()/k1.vect().mag());
   _th2 = atan2(k1.x(),k1.y());
 
+  // Generate radiative variables and reconstruct the kinematics from them.
   vector<Lorentz5Momentum> pnew;
   int emission_type(-1);
-  // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) return HardTreePtr();
-  // construct the HardTree object needed to perform the showers
+
+  // If an emission was generated we need an associated particle vector so 
+  // can build a HardTree object.
   ShowerParticleVector newparticles;
-  // make the particles for the HardTree
   tcPDPtr gluon=getParticleData(ParticleID::g);
-  // create the partons
   int iemit;
-  // q qbar -> g V
-  if(emission_type==0) {
-    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
-    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
-    newparticles.push_back(new_ptr(ShowerParticle(gluon            , true)));
-    iemit = pnew[0].z()/pnew[2].rapidity()>ZERO ? 0 : 1;
-  }
-  // q g    -> q V
+  newparticles.push_back(new_ptr(ShowerParticle(_partons[0]  ,false)));
+  newparticles.push_back(new_ptr(ShowerParticle(_partons[1]  ,false)));
+  newparticles.push_back(new_ptr(ShowerParticle(gluon        ,true )));
+  newparticles.push_back(new_ptr(ShowerParticle(V1->dataPtr(),true )));
+  newparticles.push_back(new_ptr(ShowerParticle(V2->dataPtr(),true )));
+  // q qbar -> g V V
+  if(emission_type==0) iemit = pnew[0].z()/pnew[2].rapidity()>ZERO ? 0 : 1;
+  // q g    -> q V V
   else if(emission_type==1) {
     iemit=1;
-    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
-    newparticles.push_back(new_ptr(ShowerParticle(gluon            ,false)));
-    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]->CC(), true)));
+    swap(newparticles[1],newparticles[2]);
+    newparticles[2]=new_ptr(ShowerParticle(_partons[1]->CC(), true));
   }
-  // g qbar -> qbar V
+  // g qbar -> qbar V V
   else {
     iemit=0;
-    newparticles.push_back(new_ptr(ShowerParticle(gluon            ,false)));
-    newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
-    newparticles.push_back(new_ptr(ShowerParticle(_partons[0]->CC(), true)));
+    swap(newparticles[0],newparticles[2]);
+    newparticles[2]=new_ptr(ShowerParticle(_partons[0]->CC(), true));
   }
-  // create the boson
-  newparticles.push_back(new_ptr(ShowerParticle(bosons[0]->dataPtr(),true)));
   // set the momenta
-  for(unsigned int ix=0;ix<4;++ix) newparticles[ix]->set5Momentum(pnew[ix]);
+  for(unsigned int ix=0;ix<5;++ix) newparticles[ix]->set5Momentum(pnew[ix]);
   // create the off-shell particle
   Lorentz5Momentum poff=pnew[iemit]-pnew[2];
   poff.rescaleMass();
   newparticles.push_back(new_ptr(ShowerParticle(_partons[iemit],false)));
   newparticles.back()->set5Momentum(poff);
+
+  // Construct the HardTree object needed to perform the showers
   // find the sudakov for the branching
-  BranchingList branchings=evolver()->splittingGenerator()->initialStateBranchings();
+  BranchingList 
+    branchings=evolver()->splittingGenerator()->initialStateBranchings();
   long index = abs(_partons[iemit]->id());
   IdList br(3);
   // types of particle in the branching
   br[0]=newparticles[iemit]->id();
-  br[1]=newparticles[  4  ]->id();
+  br[1]=newparticles[  5  ]->id();
   br[2]=newparticles[  2  ]->id();
   if(emission_type==0) {
     br[0]=abs(br[0]);
@@ -326,8 +326,6 @@ bool VVHardGenerator::canHandle(ShowerTreePtr tree) {
   for(cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt)
     part.push_back(cjt->first->progenitor());
 
-  for(unsigned int ix=0;ix<part.size();++ix) 
-    cout << "part[" << ix << "] =" << part[ix]->PDGName() << endl;
   // Check that the outgoing particles are W's or Z's or that they
   // are direct children of W's or Z's:
   if(part.size()==2) {
@@ -341,8 +339,22 @@ bool VVHardGenerator::canHandle(ShowerTreePtr tree) {
 	   abs(part[ix]->parents()[ix]->id()==24))) return false;
     }
   }
+  else if(part.size()==1) {
+    if(part[0]->children().size()!=2) return false;
+    for(unsigned int ix=0;ix<2;++ix) {
+      if(!(abs(part[0]->children()[ix]->id())==23||
+	   abs(part[0]->children()[ix]->id()==24))) return false;
+    }
+  }
   else return false;
 
+//  if(part.size()==1) {
+      cout << "\n\n";
+      cout << "part.size() = " << part.size() << endl;
+      for(unsigned int ix=0;ix<part.size();ix++) 
+	  cout << "part[" << ix << "] = " << *part[ix] << endl;
+//  }
+  return false;
   // OK we should be able to proceed with these incoming / outgoing lines:
   return true;
 }
