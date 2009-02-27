@@ -20,7 +20,7 @@ inline IBPtr RSModel::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void RSModel::doinit() throw(InitException) {
+inline void RSModel::doinit() {
   addVertex(_theFFGRVertex);
   addVertex(_theVVGRVertex);
   addVertex(_theSSGRVertex);

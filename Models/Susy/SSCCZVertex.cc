@@ -45,7 +45,7 @@ SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
   setList(first, second, third);
 }
 
-void SSCCZVertex::doinit() throw(InitException) {
+void SSCCZVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS) 

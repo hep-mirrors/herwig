@@ -46,7 +46,7 @@ void GGtoHMECorrection::persistentInput(PersistentIStream & is, int) {
      >> _channelwgtA >> _channelwgtB >> _channelweights;
 }
 
-void GGtoHMECorrection::doinit() throw(InitException) {
+void GGtoHMECorrection::doinit() {
   MECorrectionBase::doinit();
   double total = 1.+_channelwgtA+_channelwgtB;
   _channelweights.push_back(1./total);

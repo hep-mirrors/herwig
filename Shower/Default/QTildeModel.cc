@@ -44,7 +44,7 @@ void QTildeModel::Init() {
 
 }
 
-void QTildeModel::checkConsistency() throw(InitException) {
+void QTildeModel::checkConsistency() {
   // check KinematicsReconstructor
   if(!dynamic_ptr_cast<Ptr<QTildeReconstructor>::pointer>(kinematicsReconstructor()))
     Throw<InitException>() << "KinematicsReconstructor must be either "

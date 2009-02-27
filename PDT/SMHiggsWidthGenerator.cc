@@ -314,7 +314,7 @@ double SMHiggsWidthGenerator::HwDoubleBW(double x, double y) const {
   return itgerl;
 }
 
-void SMHiggsWidthGenerator::doinit() throw(InitException) {
+void SMHiggsWidthGenerator::doinit() {
   WidthGenerator::doinit();
   // extract W and Z mass and width
   tPDPtr w = getParticleData(ParticleID::Wplus);

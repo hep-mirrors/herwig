@@ -22,7 +22,7 @@
 
 using namespace Herwig;
 
-void MEee2Higgs2SM::doinit() throw(InitException) {
+void MEee2Higgs2SM::doinit() {
   ME2to2Base::doinit();
   _h0      = getParticleData(ThePEG::ParticleID::h0);
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
@@ -262,7 +262,7 @@ void MEee2Higgs2SM::constructVertex(tSubProPtr sub) {
 }
 
 void MEee2Higgs2SM::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   // dummy = trans.translate(dummy);
   _theFFHVertex = trans.translate(_theFFHVertex);
   _h0        = trans.translate(_h0);

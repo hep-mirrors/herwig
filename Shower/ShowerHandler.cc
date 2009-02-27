@@ -45,7 +45,7 @@ ShowerHandler::~ShowerHandler() {}
 
 ShowerHandler * ShowerHandler::currentHandler_ = 0;
 
-void ShowerHandler::doinit() throw(InitException) {
+void ShowerHandler::doinit() {
   CascadeHandler::doinit();
   // copy particles to decay before showering from input vector to the 
   // set used in the simulation

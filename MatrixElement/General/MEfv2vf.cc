@@ -27,7 +27,7 @@ using ThePEG::Helicity::SpinorWaveFunction;
 using ThePEG::Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::VectorWaveFunction;
 
-void MEfv2vf::doinit() throw(InitException) {
+void MEfv2vf::doinit() {
   GeneralHardME::doinit();
   HPCount ndiags = numberOfDiags();
   theFerm.resize(ndiags);

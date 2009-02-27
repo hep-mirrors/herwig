@@ -40,7 +40,7 @@ IBPtr AnomalousWWHVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-void AnomalousWWHVertex::doinit() throw(InitException) {
+void AnomalousWWHVertex::doinit() {
   // parameters
   mw_ = getParticleData(ThePEG::ParticleID::Wplus)->mass();
   zfact_ = 1./(1.-generator()->standardModel()->sin2ThetaW());

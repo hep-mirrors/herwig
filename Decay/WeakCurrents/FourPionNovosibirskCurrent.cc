@@ -32,7 +32,7 @@ namespace {
   inline Energy2 timesGeV2(double x) { return x * GeV2; }
 }
  
-void FourPionNovosibirskCurrent::doupdate() throw(UpdateException) {
+void FourPionNovosibirskCurrent::doupdate() {
   WeakDecayCurrent::doupdate();
   // update running width if needed
   if ( !touched() ) return;
@@ -311,7 +311,7 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() : _mpic(), _mpi0(),
   _maxcalc=ZERO;
 }
 
-void FourPionNovosibirskCurrent::doinit() throw(InitException) {
+void FourPionNovosibirskCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // pion masses
   _mpic=getParticleData(ParticleID::piplus)->mass();

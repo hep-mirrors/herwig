@@ -54,7 +54,7 @@ TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   _kstarwidths.push_back(0.0513*GeV);_kstarwidths.push_back(0.235*GeV);
 }
 
-void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
+void TwoMesonRhoKStarCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // check consistency of parametrers
   if(_rhomasses.size()!=_rhowidths.size()||

@@ -46,7 +46,7 @@ SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0),
   setList(first, second, third);
 }
 
-void SSNNZVertex::doinit() throw(InitException) {
+void SSNNZVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS)

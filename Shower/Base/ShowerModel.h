@@ -110,7 +110,7 @@ protected:
    *  The checkConsitency member which must be implemented in classes
    *  inheriting from this one.
    */
-  virtual void checkConsistency() throw(InitException) =0;
+  virtual void checkConsistency() =0;
 
   /** @name Standard Interfaced functions. */
   //@{
@@ -119,7 +119,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:

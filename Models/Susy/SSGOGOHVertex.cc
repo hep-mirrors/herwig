@@ -67,7 +67,7 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 
 SSGOGOHVertex::~SSGOGOHVertex() {}
 
-void SSGOGOHVertex::doinit() throw(InitException) {
+void SSGOGOHVertex::doinit() {
   FFSVertex::doinit();
   
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());

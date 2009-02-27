@@ -49,7 +49,7 @@ SSWWHVertex::SSWWHVertex() : theh0Wfact(ZERO), theH0Wfact(ZERO),
 			     
 SSWWHVertex::~SSWWHVertex() {}
 
-void SSWWHVertex::doinit() throw(InitException) {
+void SSWWHVertex::doinit() {
   VVSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

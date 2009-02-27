@@ -39,7 +39,7 @@ IBPtr SusyBase::fullclone() const {
   return new_ptr(*this);
 }
 
-void SusyBase::doinit() throw(InitException) {
+void SusyBase::doinit() {
   addVertex(theWSFSFVertex);
   addVertex(theNFSFVertex);
   addVertex(theGFSFVertex);
@@ -180,7 +180,7 @@ void SusyBase::Init() {
 
 }
 
-void SusyBase::readSetup(istream & is) throw(SetupException) {
+void SusyBase::readSetup(istream & is) {
   string filename = dynamic_ptr_cast<istringstream*>(&is)->str();
   if(_readFile)
     throw SetupException() 
@@ -249,7 +249,7 @@ void SusyBase::readSetup(istream & is) throw(SetupException) {
    _readFile=true;
 }
 
-void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {
+void SusyBase::readBlock(ifstream & ifs,string name) {
   if(!ifs)
     throw SetupException() 
       << "SusyBase::readBlock() - The input stream is in a bad state"
@@ -285,7 +285,7 @@ void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {
 }
 
 void SusyBase::readDecay(ifstream & ifs, 
-			 string decay) const throw(SetupException){
+			 string decay) const{
   if(!ifs)
     throw SetupException() 
       <<"SusyBase::readDecay - The input stream is in a bad state";
@@ -372,7 +372,7 @@ void SusyBase::readDecay(ifstream & ifs,
 
 const MixingVector
 SusyBase::readMatrix(ifstream & ifs, 
-		     unsigned int & row, unsigned int & col) throw(SetupException) {
+		     unsigned int & row, unsigned int & col) {
   if(!ifs)
     throw SetupException() 
       << "SusyBase::readMatrix() - The input stream is in a bad state."

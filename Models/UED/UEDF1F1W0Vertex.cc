@@ -64,7 +64,7 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO),
   setList(anti, ferm, wboson);
 }
 
-void UEDF1F1W0Vertex::doinit() throw(InitException) {
+void UEDF1F1W0Vertex::doinit() {
   FFVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)

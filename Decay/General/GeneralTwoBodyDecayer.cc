@@ -41,7 +41,7 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
   return decay;
 }
 
-void GeneralTwoBodyDecayer::doinit() throw(InitException) {
+void GeneralTwoBodyDecayer::doinit() {
   DecayIntegrator::doinit();
   if(!_theVertex) throw InitException() << "GeneralTwoBodyDecayer::doinit() - "
 					<< "Null vertex pointer!\n";  

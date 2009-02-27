@@ -23,7 +23,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void ScalarMesonCurrent::doinit() throw(InitException) {
+void ScalarMesonCurrent::doinit() {
   unsigned int isize=numberOfModes();
   if(_id.size()!=isize||_decay_constant.size()!=isize)
     {throw InitException() << "Inconsistent parameters in ScalarMesonCurrent::doinit()"

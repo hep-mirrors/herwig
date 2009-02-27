@@ -244,7 +244,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -254,7 +254,7 @@ protected:
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  inline virtual void doupdate();
   //@}
 
 private:

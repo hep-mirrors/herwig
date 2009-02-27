@@ -93,7 +93,7 @@ RadiativeHeavyBaryonDecayer::RadiativeHeavyBaryonDecayer() {
   generateIntermediates(false);
 }
 
-void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
+void RadiativeHeavyBaryonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // check the parameters are consistent
   unsigned int isize(_incoming.size());

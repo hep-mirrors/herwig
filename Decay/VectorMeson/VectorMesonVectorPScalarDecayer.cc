@@ -34,7 +34,7 @@ void VectorMesonVectorPScalarDecayer::doinitrun() {
   }
 }
 
-void VectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
+void VectorMesonVectorPScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the parameters
   unsigned int isize=_incoming.size();

@@ -34,7 +34,7 @@ MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {
 }
 
 void MEPP2GammaJet::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   // dummy = trans.translate(dummy);
   HwME2to2Base::rebind(trans);
   _gluonvertex =trans.translate(_gluonvertex );
@@ -48,7 +48,7 @@ IVector MEPP2GammaJet::getReferences() {
   return ret;
 }
 
-void MEPP2GammaJet::doinit() throw(InitException) {
+void MEPP2GammaJet::doinit() {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

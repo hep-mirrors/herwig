@@ -129,7 +129,7 @@ private:
    */
   bool reshuffling( const tcPDPtr, tClusterPtr, tClusterPtr,
 		    tClusterVector &, tPVector & finalhadrons) 
-    throw (Veto, Stop, Exception); 
+   ; 
   
   /**
    *  This (private) method, called by decay(), performs reshuffling in the 

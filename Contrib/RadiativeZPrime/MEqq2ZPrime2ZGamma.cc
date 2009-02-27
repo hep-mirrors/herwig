@@ -28,7 +28,7 @@ MEqq2ZPrime2ZGamma::MEqq2ZPrime2ZGamma()  : _maxflavour(5) {
   massOption(false,1);
 }
 
-void MEqq2ZPrime2ZGamma::doinit() throw(InitException) {
+void MEqq2ZPrime2ZGamma::doinit() {
   HwME2to2Base::doinit();
   _zPrime = getParticleData(32); 
   tcSMPtr sm = generator()->standardModel();

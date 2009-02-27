@@ -166,7 +166,7 @@ ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   _maxcalc=ZERO;
 }
 
-void ThreePionCLEOCurrent::doinit() throw(InitException) {
+void ThreePionCLEOCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // pointers to the particles we need
   tPDPtr a1m = getParticleData(ParticleID::a_1minus);
@@ -973,7 +973,7 @@ void ThreePionCLEOCurrent::doinitrun() {
   ThreeMesonCurrentBase::doinitrun();
 }
 
-void ThreePionCLEOCurrent::doupdate() throw(UpdateException) {
+void ThreePionCLEOCurrent::doupdate() {
   ThreeMesonCurrentBase::doupdate();
   // update running width if needed
   if ( !touched() ) return;

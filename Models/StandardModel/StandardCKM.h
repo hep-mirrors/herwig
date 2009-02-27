@@ -112,14 +112,14 @@ protected:
   /**
    * Check sanity of the object during the setup phase.
    */
-  inline virtual void doupdate() throw(UpdateException);
+  inline virtual void doupdate();
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  inline virtual void doinit();
 
   /**
    * Finalize this object. Called in the run phase just after a
@@ -136,7 +136,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in

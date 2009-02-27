@@ -65,7 +65,7 @@ a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
   generateIntermediates(true);
 }
   
-void a1ThreePionCLEODecayer::doinit() throw(InitException) {
+void a1ThreePionCLEODecayer::doinit() {
   DecayIntegrator::doinit();
   // pointers to the particles we need as external particles
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);

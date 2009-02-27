@@ -223,7 +223,7 @@ private:
   /**
    *  Read the data from the file
    */
-  virtual void readSetup(istream &) throw(SetupException);
+  virtual void readSetup(istream &);
 
   /**
    *  Initialize the data

@@ -30,7 +30,7 @@ namespace {
   }
 }
 
-void HwppSelector::doinit() throw(InitException) {
+void HwppSelector::doinit() {
   HadronSelector::doinit();
 }
 
@@ -71,7 +71,7 @@ void HwppSelector::Init() {
 
 pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
 						     tcPDPtr par2,tcPDPtr )
-  throw(Veto, Stop, Exception) {
+  {
   // if either of the input partons is a diquark don't allow diquarks to be 
   // produced
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));

@@ -37,7 +37,7 @@ ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer()
 }
 
 void ScalarMesonFactorizedDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _ckm = trans.translate(_ckm);
   DecayIntegrator::rebind(trans);
 }
@@ -48,7 +48,7 @@ IVector ScalarMesonFactorizedDecayer::getReferences() {
   return ret;
 }
 
-void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
+void ScalarMesonFactorizedDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the ckm object
   _ckm=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());

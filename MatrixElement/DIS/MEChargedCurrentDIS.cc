@@ -27,7 +27,7 @@ MEChargedCurrentDIS::MEChargedCurrentDIS()
   massOption(false,_massopt);
 }
 
-void MEChargedCurrentDIS::doinit() throw(InitException) {
+void MEChargedCurrentDIS::doinit() {
   HwME2to2Base::doinit();
   _wp = getParticleData(ThePEG::ParticleID::Wplus );
   _wm = getParticleData(ThePEG::ParticleID::Wminus);

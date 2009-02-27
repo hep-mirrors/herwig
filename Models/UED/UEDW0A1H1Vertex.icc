@@ -21,7 +21,7 @@ inline IBPtr UEDW0A1H1Vertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void UEDW0A1H1Vertex::doinit() throw(InitException) {
+inline void UEDW0A1H1Vertex::doinit() {
   VSSVertex::doinit();
   tUEDBasePtr UEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!UEDBase) throw InitException() 

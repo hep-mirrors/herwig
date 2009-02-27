@@ -45,7 +45,7 @@ RSModelFFVGRVertex::RSModelFFVGRVertex()
   _theKappa=InvEnergy();
 }
 
-void RSModelFFVGRVertex::doinit() throw(InitException) {
+void RSModelFFVGRVertex::doinit() {
   orderInGem(1);
   FFVTVertex::doinit();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());

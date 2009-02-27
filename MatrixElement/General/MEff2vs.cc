@@ -23,7 +23,7 @@ using namespace Herwig;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-void MEff2vs::doinit() throw(InitException) {
+void MEff2vs::doinit() {
   GeneralHardME::doinit();
   HPCount ndiags(numberOfDiags());
   theSca.resize(ndiags);

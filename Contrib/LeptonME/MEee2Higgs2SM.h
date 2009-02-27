@@ -150,7 +150,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -162,7 +162,7 @@ protected:
    * pointer.
    */
   virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this

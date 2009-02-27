@@ -342,7 +342,7 @@ void DtoKPiPiMarkIII::Init() {
      false, false, Interface::limited);
 }
 
-void DtoKPiPiMarkIII::doinit() throw(InitException) {
+void DtoKPiPiMarkIII::doinit() {
   DecayIntegrator::doinit();
   double fact = Constants::pi/180.;
   // amplitudes for D0 -> K- pi+ pi0

@@ -495,7 +495,7 @@ void MRST::doinitrun() {
 #endif
 }
 
-void MRST::readSetup(istream &is) throw(SetupException) {
+void MRST::readSetup(istream &is) {
   _file = dynamic_cast<istringstream*>(&is)->str();
   initialize();
 }

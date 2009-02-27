@@ -170,7 +170,7 @@ inline void EventShapes2::dofinish() {
 
 }
 
-inline void EventShapes2::doinit() throw(InitException) {
+inline void EventShapes2::doinit() {
   Analysis2Base::doinit();
 
   int plotFlags = HistogramOutput::Ylog | HistogramOutput::Frame | HistogramOutput::Errorbars;

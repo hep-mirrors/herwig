@@ -43,7 +43,7 @@ SMFFHVertex::SMFFHVertex()  {
   _mw=ZERO;
 }
 
-void SMFFHVertex::doinit() throw(InitException) {
+void SMFFHVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if (!_theSM) 
     throw InitException();

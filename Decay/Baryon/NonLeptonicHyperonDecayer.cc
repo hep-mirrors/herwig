@@ -22,7 +22,7 @@ void NonLeptonicHyperonDecayer::doinitrun() {
   }
 }
 
-void NonLeptonicHyperonDecayer::doinit() throw(InitException) {
+void NonLeptonicHyperonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   unsigned int isize(_incomingB.size());
   if(isize!=_outgoingB.size()||isize!=_outgoingM.size()||isize!=_a.size()||

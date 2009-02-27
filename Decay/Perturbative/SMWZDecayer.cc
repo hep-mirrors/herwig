@@ -53,7 +53,7 @@ SMWZDecayer::SMWZDecayer()
    generateIntermediates(false);
 }
 
-void SMWZDecayer::doinit() throw(InitException) {
+void SMWZDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());

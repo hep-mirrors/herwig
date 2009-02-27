@@ -51,7 +51,7 @@ void BaryonFactorizedDecayer::doinitrun() {
   }
 }
 
-void BaryonFactorizedDecayer::doinit() throw(InitException) {
+void BaryonFactorizedDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the CKM matrix elements
   unsigned int ix,iy,iz,iform,icurr;

@@ -32,7 +32,7 @@ IBPtr TFFDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void TFFDecayer::doinit() throw(InitException) {
+void TFFDecayer::doinit() {
   _perturbativeVertex = dynamic_ptr_cast<FFTVertexPtr>        (getVertex());
   _abstractVertex     = dynamic_ptr_cast<AbstractFFTVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();

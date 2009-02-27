@@ -33,7 +33,7 @@ IBPtr SVVDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void SVVDecayer::doinit() throw(InitException) {
+void SVVDecayer::doinit() {
   GeneralTwoBodyDecayer::doinit();
   _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(getVertex());
   _generalVertex      = dynamic_ptr_cast<GeneralVVSVertexPtr >(getVertex());

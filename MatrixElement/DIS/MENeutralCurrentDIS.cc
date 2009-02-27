@@ -27,7 +27,7 @@ MENeutralCurrentDIS::MENeutralCurrentDIS()
   massOption(false,0);
 }
 
-void MENeutralCurrentDIS::doinit() throw(InitException) {
+void MENeutralCurrentDIS::doinit() {
   HwME2to2Base::doinit();
   _z0    = getParticleData(ThePEG::ParticleID::Z0);
   _gamma = getParticleData(ThePEG::ParticleID::gamma);

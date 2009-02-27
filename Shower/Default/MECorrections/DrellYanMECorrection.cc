@@ -36,7 +36,7 @@ IBPtr DrellYanMECorrection::fullclone() const {
   return new_ptr(*this);
 }
 
-void DrellYanMECorrection::doinit() throw(InitException) {
+void DrellYanMECorrection::doinit() {
   MECorrectionBase::doinit();
   _channelweights.push_back(_channelwgtA/(1.+_channelwgtA));
   _channelweights.push_back(_channelweights[0]+1./(1.+_channelwgtA)/(1+_channelwgtB));

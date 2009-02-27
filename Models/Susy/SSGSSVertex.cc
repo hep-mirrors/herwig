@@ -35,7 +35,7 @@ SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(ZERO) {
   setList(first,second,third);
 }
 
-void SSGSSVertex::doinit() throw(InitException) {
+void SSGSSVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   VSSVertex::doinit();

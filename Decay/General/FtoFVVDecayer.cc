@@ -41,7 +41,7 @@ void FtoFVVDecayer::Init() {
 
 }
 
-void FtoFVVDecayer::doinit() throw(InitException) {
+void FtoFVVDecayer::doinit() {
   GeneralThreeBodyDecayer::doinit();
   unsigned int ndiags = getProcessInfo().size();
   _sca.resize(ndiags);

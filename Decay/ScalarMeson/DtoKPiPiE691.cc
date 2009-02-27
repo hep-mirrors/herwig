@@ -53,7 +53,7 @@ DtoKPiPiE691::DtoKPiPiE691() {
   generateIntermediates(true);
 }
 
-void DtoKPiPiE691::doinit() throw(InitException) {
+void DtoKPiPiE691::doinit() {
   DecayIntegrator::doinit();
   // complex amplitudes calculated from magnitudes and phases
   double fact = Constants::pi/180.;

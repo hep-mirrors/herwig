@@ -42,7 +42,7 @@ EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   generateIntermediates(false);
 }
 
-void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
+void EtaPiGammaGammaDecayer::doinit() {
   DecayIntegrator::doinit();
   // set rho parameters if needed
   tPDPtr rho(getParticleData(ParticleID::rho0));

@@ -12,7 +12,7 @@
 
 using namespace Herwig;
 
-void LightBaryonQuarkModelFormFactor::doinit() throw(InitException) {
+void LightBaryonQuarkModelFormFactor::doinit() {
   BaryonFormFactor::doinit();
   // check that the parameters are consistent
   unsigned int isize=numberOfFactors();

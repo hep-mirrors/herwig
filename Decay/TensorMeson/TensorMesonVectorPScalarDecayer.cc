@@ -118,7 +118,7 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   generateIntermediates(false);
 }
 
-void TensorMesonVectorPScalarDecayer::doinit() throw(InitException) {
+void TensorMesonVectorPScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();

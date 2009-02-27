@@ -48,7 +48,7 @@ TwoPionPhotonCurrent::TwoPionPhotonCurrent() {
   _intwidth = 0.35*GeV;
 }
 
-void TwoPionPhotonCurrent::doinit() throw(InitException) {
+void TwoPionPhotonCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // set up the rho masses and widths
   tPDPtr temp;

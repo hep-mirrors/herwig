@@ -62,7 +62,7 @@ IBPtr HardProcessConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-void HardProcessConstructor::doinit() throw(InitException) {
+void HardProcessConstructor::doinit() {
   Interfaced::doinit();
   theNout = theOutgoing.size();
   PDVector::size_type ninc = theIncoming.size();

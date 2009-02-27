@@ -991,7 +991,7 @@ void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
 		<< fullName() << "\";" << endl;
 }  
 
-void KaonThreeMesonCurrent::doinit() throw(InitException) {
+void KaonThreeMesonCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
@@ -1261,7 +1261,7 @@ void KaonThreeMesonCurrent::doinitrun() {
   ThreeMesonCurrentBase::doinitrun();
 }
 
-void KaonThreeMesonCurrent::doupdate() throw(UpdateException) {
+void KaonThreeMesonCurrent::doupdate() {
   ThreeMesonCurrentBase::doupdate();
   // update running width if needed
   if ( !touched() ) return;

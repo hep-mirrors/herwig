@@ -40,7 +40,7 @@ MelikhovFormFactor::MelikhovFormFactor() :
   initialModes(numberOfFactors());
 }
 
-void MelikhovFormFactor::doinit() throw(InitException) {
+void MelikhovFormFactor::doinit() {
   ScalarFormFactor::doinit();
   // the parameters for the different fits
   double Rplus0[4]={0.29    ,0.20    ,0.21    ,0.26    };

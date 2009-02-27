@@ -29,7 +29,7 @@ SMHGGVertex::SMHGGVertex()
   setList(first,second,third);
 }
 
-void SMHGGVertex::doinit() throw(InitException) {
+void SMHGGVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if(!_theSM) 
     throw InitException();

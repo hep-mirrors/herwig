@@ -78,7 +78,7 @@ VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer()
   generateIntermediates(false);
 }
 
-void VectorMesonVectorScalarDecayer::doinit() throw(InitException) {
+void VectorMesonVectorScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();
