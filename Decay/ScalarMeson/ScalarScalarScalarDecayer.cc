@@ -235,7 +235,7 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   generateIntermediates(false);
 }
 
-void ScalarScalarScalarDecayer::doinit() throw(InitException) {
+void ScalarScalarScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize(_coupling.size());

@@ -105,7 +105,7 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
   setList(anti, ferm, wboson);
 }
 
-void UEDF1F0W1Vertex::doinit() throw(InitException) {
+void UEDF1F0W1Vertex::doinit() {
   FFVVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());

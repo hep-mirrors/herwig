@@ -81,7 +81,7 @@ string YMerge::Y (string in) {
 
 }
 
-void YMerge::doinit() throw(InitException) {
+void YMerge::doinit() {
 
   Analysis2Base::doinit();
 

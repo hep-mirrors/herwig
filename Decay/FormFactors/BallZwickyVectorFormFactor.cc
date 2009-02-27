@@ -132,7 +132,7 @@ BallZwickyVectorFormFactor::BallZwickyVectorFormFactor()
   _cutoff=0.01*GeV2;
 }
 
-void BallZwickyVectorFormFactor::doinit() throw(InitException) {
+void BallZwickyVectorFormFactor::doinit() {
   ScalarFormFactor::doinit();
   unsigned int isize(numberOfFactors());
   if(isize!=_Vr1.size()||isize!=_Vr2.size()||isize!=_A0r1.size()||isize!=_A0r2.size()||

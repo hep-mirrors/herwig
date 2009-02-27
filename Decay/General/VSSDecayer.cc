@@ -30,7 +30,7 @@ IBPtr VSSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void VSSDecayer::doinit() throw(InitException) {
+void VSSDecayer::doinit() {
   _perturbativeVertex = dynamic_ptr_cast<VSSVertexPtr>        (getVertex());
   _abstractVertex     = dynamic_ptr_cast<AbstractVSSVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();

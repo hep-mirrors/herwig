@@ -27,7 +27,7 @@ inline IBPtr UEDG1G1G0Vertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void UEDG1G1G0Vertex::doinit() throw(InitException) {
+inline void UEDG1G1G0Vertex::doinit() {
   VVVVertex::doinit();
   orderInGs(1);
   orderInGem(0);

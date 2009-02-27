@@ -102,7 +102,7 @@ inline void Analysis2Base::dofinish() {
 }
 
 inline void Analysis2Base::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   // dummy = trans.translate(dummy);
   for(map<string,Histogram2Ptr>::iterator h = _histograms.begin();
       h != _histograms.end(); ++h)

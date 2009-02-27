@@ -28,7 +28,7 @@ SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last() {
   setList(first,second,third);
 }
 
-void SMGGGVertex::doinit() throw(InitException) {
+void SMGGGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   VVVVertex::doinit();

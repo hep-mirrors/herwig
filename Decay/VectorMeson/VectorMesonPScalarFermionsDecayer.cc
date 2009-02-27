@@ -84,7 +84,7 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
   generateIntermediates(false);
 }
 
-void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
+void VectorMesonPScalarFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize(_coupling.size());

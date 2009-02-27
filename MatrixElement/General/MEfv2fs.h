@@ -164,7 +164,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  void doinit() throw(InitException);
+  void doinit();
   //@}
 
 protected:

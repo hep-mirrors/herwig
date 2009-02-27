@@ -34,7 +34,7 @@ IBPtr WeakCurrentDecayConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-void WeakCurrentDecayConstructor::doinit() throw(InitException) {
+void WeakCurrentDecayConstructor::doinit() {
   NBodyDecayConstructorBase::doinit();
   _theModel = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::pointer>
     (generator()->standardModel());

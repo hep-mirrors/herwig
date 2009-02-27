@@ -80,7 +80,7 @@ BaryonThreeQuarkModelFormFactor::BaryonThreeQuarkModelFormFactor()
   initialModes(numberOfFactors());
 }
 
-void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
+void BaryonThreeQuarkModelFormFactor::doinit() {
   BaryonFormFactor::doinit();
   // initialization in needed
   if(_initialize) {

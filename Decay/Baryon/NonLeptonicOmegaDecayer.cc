@@ -61,7 +61,7 @@ void NonLeptonicOmegaDecayer::doinitrun() {
   }
 }
 
-void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
+void NonLeptonicOmegaDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // reset the masses if needed
   if(!_localmasses) {

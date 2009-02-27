@@ -51,7 +51,7 @@ UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theSinW(0.), theCosW(0.),
   setList(first, second, third);
 }
 
-void UEDW0W1W1Vertex::doinit() throw(InitException) {
+void UEDW0W1W1Vertex::doinit() {
   VVVVertex::doinit();
   tUEDBasePtr model = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!model)

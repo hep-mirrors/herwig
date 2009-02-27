@@ -29,7 +29,7 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 using ThePEG::Helicity::SpinfoPtr;
 
-void MEvv2ss::doinit() throw(InitException) {
+void MEvv2ss::doinit() {
   GeneralHardME::doinit();
   size_t ndiags = numberOfDiags();
   theSca.resize(ndiags); theVec.resize(ndiags); 

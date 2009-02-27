@@ -139,7 +139,7 @@ CrossSection MEee2VectorMeson::dSigHatDR() const {
   return me2()*jacobian()*wgt*sqr(hbarc);
 }
 
-void MEee2VectorMeson::doinit() throw(InitException) {
+void MEee2VectorMeson::doinit() {
   MEBase::doinit();
   // mass generator
   tMassGenPtr mass=_vector->massGenerator();

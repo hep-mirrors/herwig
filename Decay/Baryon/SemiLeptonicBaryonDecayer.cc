@@ -42,7 +42,7 @@ void SemiLeptonicBaryonDecayer::doinitrun() {
   }
 }
 
-void SemiLeptonicBaryonDecayer::doinit() throw(InitException) {
+void SemiLeptonicBaryonDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();

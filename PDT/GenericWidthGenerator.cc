@@ -207,7 +207,7 @@ Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
   return gamma*_prefactor;
 }
 
-void GenericWidthGenerator::doinit() throw(InitException) {
+void GenericWidthGenerator::doinit() {
   WidthGenerator::doinit();
   // make sure the particle data object was initialized
   _theParticle->init();
@@ -727,7 +727,7 @@ void GenericWidthGenerator::doinitrun() {
 }
 
 void GenericWidthGenerator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _theParticle = trans.translate(_theParticle);
   WidthGenerator::rebind(trans);
 }

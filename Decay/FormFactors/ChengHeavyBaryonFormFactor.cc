@@ -73,7 +73,7 @@ ChengHeavyBaryonFormFactor::ChengHeavyBaryonFormFactor() {
   initialModes(numberOfFactors());
 }
 
-void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
+void ChengHeavyBaryonFormFactor::doinit() {
   BaryonFormFactor::doinit();
   // check the parameters are consistent
   unsigned int isize(numberOfFactors());

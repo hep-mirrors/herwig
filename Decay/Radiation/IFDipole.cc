@@ -690,7 +690,7 @@ LorentzRotation IFDipole::solveBoost(const Lorentz5Momentum & q,
   return R;
 }
 
-void IFDipole::doinit() throw(InitException) {
+void IFDipole::doinit() {
   Interfaced::doinit();
   // get the value fo alpha from the Standard Model object
   _alpha=generator()->standardModel()->alphaEM();

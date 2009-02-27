@@ -27,7 +27,7 @@ MEqq2ZPrime2ff::MEqq2ZPrime2ff() : _maxflavour(5), _gammaZ(0), _process(0) {
   massOption(false,1);
 }
 
-void MEqq2ZPrime2ff::doinit() throw(InitException) {
+void MEqq2ZPrime2ff::doinit() {
   HwME2to2Base::doinit();
   _zPrime = getParticleData(32); 
   _z0     = getParticleData(ThePEG::ParticleID::Z0);

@@ -32,7 +32,7 @@ using namespace ThePEG::Helicity;
 
 void HwDecayHandler::
 handle(EventHandler &, const tPVector & tagged,
-       const Hint &) throw(Veto, Stop, Exception) {
+       const Hint &) {
   // First go through the tagged particles for unstable ones
   tPVector parents;
   for(int i = 0, N = tagged.size(); i<N; ++i) {
@@ -61,7 +61,7 @@ handle(EventHandler &, const tPVector & tagged,
 // perform decay method including modifications for spin correlations
 // and for the decayer to specify intermediate decay products
 void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
-  throw(Veto, Exception) {
+  {
   long ntry = 0;
   tcSpinfoPtr hwspin;
   if ( maxLifeTime() >= 0.0*mm ) {
@@ -147,7 +147,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 
 // method to add an intermediate which has already been decayed to the event record
 void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
-  throw(Veto, Exception) 
+  
 {
   for ( int i = 0, N = parent->children().size(); i < N; ++i ) {
     parent->children()[i]->setLabVertex(parent->labDecayVertex());

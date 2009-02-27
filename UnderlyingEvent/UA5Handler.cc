@@ -341,7 +341,7 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
-			const Hint &) throw(Veto,Stop,Exception) {
+			const Hint &) {
   // Warn if the event has multiple scatters. 
   // If so, UA5 often has been left on by accident.
   if (_needWarning 
@@ -528,7 +528,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 void UA5Handler::generateMomentum(tClusterPtr clu1, tClusterPtr clu2,
 				  const ClusterVector &clusters, 
 				  Energy CME, const Lorentz5Momentum & cm) 
-  const throw(Veto,Exception) {
+  const {
   // begin with the cylindrical phase space generation described in the paper of Jadach
   generateCylindricalPS(clusters, CME);
   // boost momentum of incoming cluster along z axis to cluster cmf frame

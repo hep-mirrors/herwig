@@ -26,7 +26,7 @@ UEDZ0H1H1Vertex::UEDZ0H1H1Vertex() : theCosThetaW(0.), theCosTheta2W(0.), theMw2
 	  vector<long>(1, -5100037));
 }
 
-void UEDZ0H1H1Vertex::doinit() throw(InitException) {
+void UEDZ0H1H1Vertex::doinit() {
   VSSVertex::doinit();
   tUEDBasePtr theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
   if(!theUEDBase)

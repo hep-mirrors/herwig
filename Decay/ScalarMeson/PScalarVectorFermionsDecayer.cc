@@ -73,7 +73,7 @@ PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer()
   generateIntermediates(false);
 }
 
-void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
+void PScalarVectorFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize=_coupling.size();

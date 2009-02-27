@@ -64,7 +64,7 @@ public:
     * @throws Exception if something goes wrong.
     */
   virtual void handle(EventHandler & eh, const tPVector & tagged,
-		      const Hint & hint) throw(Veto, Stop, Exception);
+		      const Hint & hint);
   //@}
 
 public:

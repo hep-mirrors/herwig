@@ -56,7 +56,7 @@ public:
    * of clusters is overriden to the intial one.
    */
   void rearrange(EventHandler & ch,
-                 ClusterVector & clusters) throw(Veto, Stop, Exception);
+                 ClusterVector & clusters);
     
 public:
 

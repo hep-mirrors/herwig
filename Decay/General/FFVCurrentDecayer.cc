@@ -39,14 +39,14 @@ IBPtr FFVCurrentDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void FFVCurrentDecayer::doinit() throw(InitException) {
+void FFVCurrentDecayer::doinit() {
   _theFFVPtr = dynamic_ptr_cast<FFVVertexPtr>(getVertex());
   GeneralCurrentDecayer::doinit();
 }
 
 
 void FFVCurrentDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _theFFVPtr = trans.translate(_theFFVPtr);
   GeneralCurrentDecayer::rebind(trans);
 }

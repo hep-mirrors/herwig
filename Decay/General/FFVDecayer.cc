@@ -37,7 +37,7 @@ IBPtr FFVDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void FFVDecayer::doinit() throw(InitException) {
+void FFVDecayer::doinit() {
   _perturbativeVertex = dynamic_ptr_cast<FFVVertexPtr>        (getVertex());
   _abstractVertex     = dynamic_ptr_cast<AbstractFFVVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();

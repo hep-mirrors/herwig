@@ -34,7 +34,7 @@ MEqq2gZ2ffPowheg::MEqq2gZ2ffPowheg() :
   massOption(false,1);
 }
 
-void MEqq2gZ2ffPowheg::doinit() throw(InitException) {
+void MEqq2gZ2ffPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
   // colour factors

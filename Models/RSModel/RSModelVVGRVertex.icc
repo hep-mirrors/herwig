@@ -33,7 +33,7 @@ inline IBPtr RSModelVVGRVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void RSModelVVGRVertex::doinit() throw(InitException) {
+inline void RSModelVVGRVertex::doinit() {
   VVTVertex::doinit();
   _theModel = generator()->standardModel();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);

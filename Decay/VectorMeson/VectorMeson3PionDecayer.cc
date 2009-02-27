@@ -97,7 +97,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
   generateIntermediates(true);
 }
 
-void VectorMeson3PionDecayer::doinit() throw(InitException) {
+void VectorMeson3PionDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the consistence of the decay modes
   unsigned int isize=_incoming.size();

@@ -72,7 +72,7 @@ ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   generateIntermediates(false);
 }
 
-void ScalarVectorVectorDecayer::doinit() throw(InitException) {
+void ScalarVectorVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize(_coupling.size());

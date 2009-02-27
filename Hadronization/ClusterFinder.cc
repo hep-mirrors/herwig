@@ -35,7 +35,7 @@ void ClusterFinder::Init() {
 
 
 ClusterVector ClusterFinder::formClusters(const PVector & partons) 
-  throw(Veto, Stop, Exception) {
+  {
 
   set<tPPtr> examinedSet;  // colour particles already included in a cluster
   map<tColinePtr, pair<tPPtr,tPPtr> > quarkQuark; // quark quark 
@@ -234,7 +234,7 @@ ClusterVector ClusterFinder::formClusters(const PVector & partons)
 
 
 void ClusterFinder::reduceToTwoComponents(ClusterVector & clusters) 
-  throw(Veto, Stop, Exception) {
+  {
 
   // In order to preserve all of the information, we do not modify the 
   // directly the 3-component clusters, but instead we define new clusters,

@@ -35,7 +35,7 @@ MEqq2W2ff::MEqq2W2ff() : _maxflavour(5), _plusminus(0), _process(0) {
   massOption(false,1);
 }
 
-void MEqq2W2ff::doinit() throw(InitException) {
+void MEqq2W2ff::doinit() {
   HwME2to2Base::doinit();
   _wp=getParticleData(ThePEG::ParticleID::Wplus);
   _wm=getParticleData(ThePEG::ParticleID::Wminus);

@@ -54,7 +54,7 @@ SSHHHVertex::SSHHHVertex() : theMw(ZERO), theZfact(ZERO), theSw(0.),
 
 }
 
-void SSHHHVertex::doinit() throw(InitException) {
+void SSHHHVertex::doinit() {
   SSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

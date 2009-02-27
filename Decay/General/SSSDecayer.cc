@@ -35,7 +35,7 @@ IBPtr SSSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void SSSDecayer::doinit() throw(InitException) {
+void SSSDecayer::doinit() {
   _perturbativeVertex = dynamic_ptr_cast<SSSVertexPtr>        (getVertex());
   _abstractVertex     = dynamic_ptr_cast<AbstractSSSVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();

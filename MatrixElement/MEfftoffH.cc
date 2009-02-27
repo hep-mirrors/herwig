@@ -131,7 +131,7 @@ MEfftoffH::colourGeometries(tcDiagPtr ) const {
   return sel;
 }
 
-void MEfftoffH::doinit() throw(InitException) {
+void MEfftoffH::doinit() {
   MEBase::doinit();
   // get the vertex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());

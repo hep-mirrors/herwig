@@ -85,7 +85,7 @@ void a1ThreePionDecayer::doinitrun() {
   }
 }
 
-void a1ThreePionDecayer::doinit() throw(InitException) {
+void a1ThreePionDecayer::doinit() {
   DecayIntegrator::doinit();
   // particles we need for the external state
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);

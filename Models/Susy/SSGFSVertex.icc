@@ -21,7 +21,7 @@ inline IBPtr SSGFSVertex::fullclone() const {
   return new_ptr(*this);
 }
  
-inline void SSGFSVertex::doinit() throw(InitException) {
+inline void SSGFSVertex::doinit() {
   FFSVertex::doinit();
   tMSSMPtr model = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
 

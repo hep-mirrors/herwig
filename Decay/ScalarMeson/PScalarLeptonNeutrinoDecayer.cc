@@ -73,7 +73,7 @@ PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer()
   generateIntermediates(false);
 }
 
-void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
+void PScalarLeptonNeutrinoDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize(_incoming.size());

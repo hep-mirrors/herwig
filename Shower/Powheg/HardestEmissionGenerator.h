@@ -100,7 +100,7 @@ protected:
    * @throws RebindException if no cloned object was found for a given
    * pointer.
    */
-  virtual void rebind(const TranslationMap & trans) throw(RebindException);
+  virtual void rebind(const TranslationMap & trans);
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this

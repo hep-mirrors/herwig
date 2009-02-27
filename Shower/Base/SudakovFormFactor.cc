@@ -362,7 +362,7 @@ double SudakovFormFactor::guessz (unsigned int iopt, const IdList &ids) const {
 			       lower),ids,pdfopt);
 }
 
-void SudakovFormFactor::doinit() throw(InitException) {
+void SudakovFormFactor::doinit() {
   Interfaced::doinit();
   pT2min_ = cutOffOption()==2 ? sqr(pTmin_) : ZERO; 
 }

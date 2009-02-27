@@ -31,7 +31,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void TauDecayer::doinit() throw(InitException) {
+void TauDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();

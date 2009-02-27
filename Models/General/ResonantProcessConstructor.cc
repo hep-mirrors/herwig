@@ -29,7 +29,7 @@ IBPtr ResonantProcessConstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-void ResonantProcessConstructor::doinit() throw(InitException) {
+void ResonantProcessConstructor::doinit() {
   Interfaced::doinit();
   EGPtr eg = generator();
   theModel = dynamic_ptr_cast<HwSMPtr>(eg->standardModel());

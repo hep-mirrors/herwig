@@ -145,7 +145,7 @@ namespace {
 
 void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
-       const Hint &) throw(Veto, Stop, Exception) {
+       const Hint &) {
   PVector currentlist(tagged.begin(),tagged.end());
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative

@@ -122,7 +122,7 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(ZERO), theMw(ZERO),
   setList(anti, ferm, kkhiggs);
 }
 
-void UEDF1F0H1Vertex::doinit() throw(InitException) {
+void UEDF1F0H1Vertex::doinit() {
   FFSVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());

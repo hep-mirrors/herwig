@@ -120,7 +120,7 @@ Energy RunningMass::value(Energy2 scale, tcPDPtr part) const {
   return output;
 }
 
-void RunningMass::doinit() throw(InitException) {
+void RunningMass::doinit() {
   _theStandardModel = generator()->standardModel();
   _theStandardModel->alphaSPtr()->init();
   // coefficients for the calculation

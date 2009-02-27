@@ -46,7 +46,7 @@ StandardModel::StandardModel(const StandardModel & x)
  ,_theHPPVertex(x._theHPPVertex) ,_vertexlist(x._vertexlist)
   ,_theRunningMass(x._theRunningMass),_theModelGenerator(x._theModelGenerator) {}
 
-void StandardModel::doinit() throw(InitException) {
+void StandardModel::doinit() {
   StandardModelBase::doinit();
   if(_theRunningMass) {
     _theRunningMass->init();

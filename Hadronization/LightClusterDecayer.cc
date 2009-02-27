@@ -206,7 +206,7 @@ bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1,
 				      tClusterPtr cluPtr2,
 				      tClusterVector & redefinedClusters,
 				      tPVector & finalhadrons)
-  throw (Veto, Stop, Exception) {
+  {
   // don't reshuffle with beam clusters
   if(cluPtr2->isBeamCluster()) return false;
 

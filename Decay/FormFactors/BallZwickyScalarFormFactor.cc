@@ -71,7 +71,7 @@ BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()
   _thetaeta = -Constants::pi/9.;
 }
 
-void BallZwickyScalarFormFactor::doinit() throw(InitException) {
+void BallZwickyScalarFormFactor::doinit() {
   ScalarFormFactor::doinit();
   // check all the vectors have the same size
   unsigned int isize=numberOfFactors();

@@ -184,7 +184,7 @@ protected:
    * Function to read information from a setup file.
    * @param is istream object to read file.
    */
-  virtual void readSetup(istream & is) throw(SetupException);
+  virtual void readSetup(istream & is);
 
 private:
   
@@ -195,7 +195,7 @@ private:
    * @param ifs input stream containg data
    * @param name The name of the block
    */
-  void readBlock(ifstream & ifs,string name) throw(SetupException);
+  void readBlock(ifstream & ifs,string name);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -204,14 +204,14 @@ private:
    * @param col Number of columns
    */
   const MixingVector readMatrix(ifstream & ifs, unsigned int & row,
-				unsigned int & col) throw(SetupException);
+				unsigned int & col);
 
   /**
    * Read decaymodes from LHA file
    * @param ifs input stream containg data
    * @param decay string containing name of parent and value of total width
    */
-  void readDecay(ifstream & ifs, string decay) const throw(SetupException);
+  void readDecay(ifstream & ifs, string decay) const;
 
   /**
    * Create a DecayMode object in the repository
@@ -316,7 +316,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
