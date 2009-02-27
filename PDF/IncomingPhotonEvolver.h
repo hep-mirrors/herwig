@@ -51,7 +51,7 @@ public:
     * @throws Exception if something goes wrong.
     */
   virtual void handle(EventHandler & eh, const tPVector & tagged,
-		      const Hint & hint) throw(Veto, Stop, Exception);
+		      const Hint & hint);
   //@}
 
 public:
@@ -116,7 +116,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:

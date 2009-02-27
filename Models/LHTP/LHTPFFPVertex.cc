@@ -114,7 +114,7 @@ LHTPFFPVertex::LHTPFFPVertex() :
   setList(first,second,third);
 }
 
-void LHTPFFPVertex::doinit() throw(InitException) {
+void LHTPFFPVertex::doinit() {
   // charges
   for(int ix = 1; ix < 16; ++ix) {
     tcPDPtr ptemp = getParticleData(ix);

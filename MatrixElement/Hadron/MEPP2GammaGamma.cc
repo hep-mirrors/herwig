@@ -34,7 +34,7 @@ unsigned int MEPP2GammaGamma::orderInAlphaEW() const {
   return 2;
 }
 
-void MEPP2GammaGamma::doinit() throw(InitException) {
+void MEPP2GammaGamma::doinit() {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

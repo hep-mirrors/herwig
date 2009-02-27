@@ -52,7 +52,7 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
   setList(first,second,third);
 }
 
-void NMSSMWHHVertex::doinit() throw(InitException) {
+void NMSSMWHHVertex::doinit() {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 

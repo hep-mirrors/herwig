@@ -31,7 +31,7 @@ using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 using ThePEG::Helicity::SpinfoPtr;
 
-void MEvv2vv::doinit() throw(InitException) {
+void MEvv2vv::doinit() {
   GeneralHardME::doinit();
   size_t ndiags = numberOfDiags();
   theScaV.resize(ndiags);

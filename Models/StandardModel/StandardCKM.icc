@@ -23,11 +23,11 @@ inline StandardCKM::StandardCKM(const StandardCKM & x)
   : CKMBase(x), theta12(x.theta12), theta13(x.theta13), theta23(x.theta23),
     delta(x.delta) {}
 
-inline void StandardCKM::doupdate() throw(UpdateException) {
+inline void StandardCKM::doupdate() {
   CKMBase::doupdate();
 }
 
-inline void StandardCKM::doinit() throw(InitException) {
+inline void StandardCKM::doinit() {
   CKMBase::doinit();
 }
 
@@ -36,7 +36,7 @@ inline void StandardCKM::dofinish() {
 }
 
 inline void StandardCKM::
-rebind(const TranslationMap & trans) throw(RebindException) {
+rebind(const TranslationMap & trans) {
   // dummy = trans.translate(dummy);
   CKMBase::rebind(trans);
 }

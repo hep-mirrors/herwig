@@ -24,7 +24,7 @@
 
 using namespace RadiativeZPrime;
 
-void MEqq2ZPrime2ZGamma2ffGamma::doinit() throw(InitException) {
+void MEqq2ZPrime2ZGamma2ffGamma::doinit() {
   MEBase::doinit(); 
   _z0     = getParticleData(ParticleID::Z0);
   _zPrime = getParticleData(32); 

@@ -43,7 +43,7 @@ GammaZPrimeZVertex::GammaZPrimeZVertex() {
   setList(first,second,third);
 }
 
-void GammaZPrimeZVertex::doinit() throw(InitException) {
+void GammaZPrimeZVertex::doinit() {
   tcSMPtr sm = generator()->standardModel();
   tcRadiativeZPrimeModelPtr model = 
     dynamic_ptr_cast<tcRadiativeZPrimeModelPtr>(generator()->standardModel());

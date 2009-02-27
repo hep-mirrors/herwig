@@ -171,7 +171,7 @@ void NMSSMHSFSFVertex::Init() {
 
 }
 
-void NMSSMHSFSFVertex::doinit() throw(InitException) {
+void NMSSMHSFSFVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
   if( !nmssm )

@@ -155,7 +155,7 @@ public:
    */
   virtual void handle(EventHandler &eh, const tPVector &tagged,
 		      const Hint &hint) 
-    throw(Veto,Stop,Exception);
+   ;
 
 protected:
 
@@ -255,7 +255,7 @@ private:
    */
   void generateMomentum(tClusterPtr clu1,tClusterPtr clu2,
 			const ClusterVector &clusters, Energy CME,
-			const Lorentz5Momentum & cm) const throw(Veto,Exception);
+			const Lorentz5Momentum & cm) const;
   
   /**
    * The implementation of the cylindrical phase space.

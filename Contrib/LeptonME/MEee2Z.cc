@@ -183,7 +183,7 @@ ProductionMatrixElement MEee2Z::HelicityME(vector<SpinorWaveFunction> fin,
   return output;
 }
 
-void MEee2Z::doinit() throw(InitException) {
+void MEee2Z::doinit() {
   MEBase::doinit();
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

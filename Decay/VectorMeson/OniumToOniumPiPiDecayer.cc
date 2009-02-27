@@ -101,7 +101,7 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   generateIntermediates(false);
 }
 
-void OniumToOniumPiPiDecayer::doinit() throw(InitException) {
+void OniumToOniumPiPiDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the vectors
   unsigned int isize=_incoming.size();

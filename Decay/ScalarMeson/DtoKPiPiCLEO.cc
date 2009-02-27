@@ -80,7 +80,7 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() : _c1NR(), _c1rho(), _c1Kstarm(), _c1Kstar0(),
   generateIntermediates(true);
 }
 
-void DtoKPiPiCLEO::doinit() throw(InitException) {
+void DtoKPiPiCLEO::doinit() {
   DecayIntegrator::doinit();
   // complex amplitudes for K-pi+pi0
   double fact = Constants::pi/180.;

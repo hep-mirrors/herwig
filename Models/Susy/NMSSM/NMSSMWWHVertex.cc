@@ -29,7 +29,7 @@ NMSSMWWHVertex::NMSSMWWHVertex()
   setList(first,second,third);
 }
 
-void NMSSMWWHVertex::doinit() throw(InitException) {
+void NMSSMWWHVertex::doinit() {
   // SM parameters
   _mw=getParticleData(ThePEG::ParticleID::Wplus)->mass();
   double sw = generator()->standardModel()->sin2ThetaW();

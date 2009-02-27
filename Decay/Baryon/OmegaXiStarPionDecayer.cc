@@ -29,7 +29,7 @@ OmegaXiStarPionDecayer::OmegaXiStarPionDecayer()  {
   generateIntermediates(false);
 }
 
-void OmegaXiStarPionDecayer::doinit() throw(InitException) {
+void OmegaXiStarPionDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // set up the phase space
   tPDVector extpart(3);

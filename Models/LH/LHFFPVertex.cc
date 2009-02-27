@@ -68,7 +68,7 @@ void LHFFPVertex::Init() {
 
 }
 
-void LHFFPVertex::doinit() throw(InitException) {
+void LHFFPVertex::doinit() {
   FFVVertex::doinit();
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());

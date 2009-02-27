@@ -26,7 +26,7 @@ IncomingPhotonEvolver::IncomingPhotonEvolver()
 
 void IncomingPhotonEvolver::
 handle(EventHandler & eh, const tPVector & ,
-       const Hint & ) throw(Veto, Stop, Exception) {
+       const Hint & ) {
   // extract the incoming partons from the hard process
   PPair incomingPartons = 
     eh.currentEvent()->primarySubProcess()->incoming();
@@ -324,7 +324,7 @@ void IncomingPhotonEvolver::Init() {
 
 }
 
-void IncomingPhotonEvolver::doinit() throw(InitException) {
+void IncomingPhotonEvolver::doinit() {
   StepHandler::doinit();
   photon_ = getParticleData(ParticleID::gamma);
   for(int ix=1;ix<=5;++ix) {

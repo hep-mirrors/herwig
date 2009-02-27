@@ -24,7 +24,7 @@
 
 using namespace Herwig;
 
-void MEee2gZ2qq::doinit() throw(InitException) {
+void MEee2gZ2qq::doinit() {
   HwME2to2Base::doinit();
   massOption(true ,_massopt);
   massOption(false,_massopt);
@@ -284,7 +284,7 @@ void MEee2gZ2qq::constructVertex(tSubProPtr sub) {
 }
 
 void MEee2gZ2qq::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   // dummy = trans.translate(dummy);
   _theFFZVertex = trans.translate(_theFFZVertex);
   _theFFPVertex = trans.translate(_theFFPVertex);

@@ -66,7 +66,7 @@ void KPiCurrent::persistentInput(PersistentIStream & is, int) {
      >> _transverse;
 }
 
-void KPiCurrent::doinit() throw(InitException) {
+void KPiCurrent::doinit() {
   WeakDecayCurrent::doinit();
   // check consistency of parametrers
   if(_vecmass.size()!=_vecwidth.size()||

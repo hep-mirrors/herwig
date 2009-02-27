@@ -70,7 +70,7 @@ void LHTPWWWVertex::Init() {
 
 }
 
-void LHTPWWWVertex::doinit() throw(InitException) {
+void LHTPWWWVertex::doinit() {
   VVVVertex::doinit();
   orderInGem(1);
   orderInGs(0);

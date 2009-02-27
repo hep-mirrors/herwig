@@ -45,7 +45,7 @@ PScalar4FermionsDecayer::PScalar4FermionsDecayer()
   generateIntermediates(false);
 }
 
-void PScalar4FermionsDecayer::doinit() throw(InitException) {
+void PScalar4FermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize=_coupling.size();

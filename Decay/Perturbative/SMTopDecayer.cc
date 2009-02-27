@@ -230,7 +230,7 @@ double SMTopDecayer::me2(const int, const Particle & inpart,
   return output;
 }
 
-void SMTopDecayer::doinit() throw(InitException) {
+void SMTopDecayer::doinit() {
   DecayIntegrator::doinit();
   //get vertices from SM object
   tcHwSMPtr hwsm = dynamic_ptr_cast<tcHwSMPtr>(standardModel());

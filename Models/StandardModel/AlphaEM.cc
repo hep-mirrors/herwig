@@ -46,7 +46,7 @@ void AlphaEM::Init() {
 
 }
 
-void AlphaEM::doinit() throw(InitException) {
+void AlphaEM::doinit() {
   AlphaEMBase::doinit();
   _me   = sqr(getParticleData(ParticleID::eminus)->mass());
   _mmu  = sqr(getParticleData(ParticleID::muminus)->mass());

@@ -22,7 +22,7 @@
 
 using namespace Herwig;
 
-void PowhegEvolver::doinit() throw(InitException) {
+void PowhegEvolver::doinit() {
   Evolver::doinit();
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix)
     _hardgenerator[ix]->setEvolver(this);

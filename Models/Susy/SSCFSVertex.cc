@@ -97,7 +97,7 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
   setList(first,second,third);
 }
 
-void SSCFSVertex::doinit() throw(InitException) {
+void SSCFSVertex::doinit() {
   FFSVertex::doinit();
   _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   //mixing matrices

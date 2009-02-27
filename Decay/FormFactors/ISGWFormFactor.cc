@@ -174,7 +174,7 @@ ISGWFormFactor::ISGWFormFactor() {
   initialModes(numberOfFactors());
 }
 
-void ISGWFormFactor::doinit() throw(InitException) {
+void ISGWFormFactor::doinit() {
   ScalarFormFactor::doinit();
   // set up the quark masses
   _mquark.resize(5);

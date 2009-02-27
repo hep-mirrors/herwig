@@ -71,7 +71,7 @@ LHFFZVertex::LHFFZVertex() : _couplast(0.0), _q2last(0.*GeV2) {
   setList(first,second,third);
 }
 
-void LHFFZVertex::doinit() throw(InitException) {
+void LHFFZVertex::doinit() {
   FFVVertex::doinit();
   cLHModelPtr model = dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());
   if(!model) throw InitException() << "Must be using the LHModel "

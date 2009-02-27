@@ -39,7 +39,7 @@ void Hw64Selector::Init() {
 
 pair<tcPDPtr,tcPDPtr> Hw64Selector::chooseHadronPair(const Energy cluMass,tcPDPtr par1, 
 						     tcPDPtr par2,tcPDPtr)						    
-  throw(Veto, Stop, Exception) {
+  {
   bool diquark = !(DiquarkMatcher::Check(par1->id()) || DiquarkMatcher::Check(par2->id()));
 
 

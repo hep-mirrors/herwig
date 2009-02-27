@@ -120,7 +120,7 @@ private:
    * Calculate the radiative corrections to the masses of the KK excitations
    * @param n The KK-level for which to calculate the masses. 
    */
-  void calculateKKMasses(const unsigned int n) throw(InitException);
+  void calculateKKMasses(const unsigned int n);
 
   /**
    * Calculate the radiative corrections to the spin-0 and spin-1 
@@ -141,7 +141,7 @@ private:
    *@param id The id of the particles mass to reset
    *@param value The new mass
    */  
-  void resetMass(long id, Energy value) throw(InitException);
+  void resetMass(long id, Energy value);
 
   /**
    * Calculate the Weinburg Mixing angle for the appropriate level.
@@ -183,7 +183,7 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:

@@ -352,7 +352,7 @@ void BtoSGammaKagan::calculateWilsonCoefficients() {
     +_alpha/_alphaSM*(2.*c7em*_c70-kSL*_c70*_c70);
 }
 
-void BtoSGammaKagan::doinit() throw(InitException) {
+void BtoSGammaKagan::doinit() {
   BtoSGammaHadronicMass::doinit();
   // quark masses
   _ms=_msovermb*_mb;

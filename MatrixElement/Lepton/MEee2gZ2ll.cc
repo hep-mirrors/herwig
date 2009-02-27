@@ -236,7 +236,7 @@ void MEee2gZ2ll::constructVertex(tSubProPtr sub) {
   }
 }
 
-void MEee2gZ2ll::doinit() throw(InitException) {
+void MEee2gZ2ll::doinit() {
   ME2to2Base::doinit();
   // set the particle data objects
   _Z0=getParticleData(ThePEG::ParticleID::Z0);
@@ -256,7 +256,7 @@ void MEee2gZ2ll::doinit() throw(InitException) {
 }
 
 void MEee2gZ2ll::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _theFFZVertex = trans.translate(_theFFZVertex);
   _theFFPVertex = trans.translate(_theFFPVertex);
   _Z0           = trans.translate(_Z0);

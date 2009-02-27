@@ -85,7 +85,7 @@ PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer()
   generateIntermediates(false);
 }
 
-void PScalarPScalarVectorDecayer::doinit() throw(InitException) {
+void PScalarPScalarVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();

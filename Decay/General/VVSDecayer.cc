@@ -25,7 +25,7 @@ IBPtr VVSDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-void VVSDecayer::doinit() throw(InitException) {
+void VVSDecayer::doinit() {
   _perturbativeVertex = dynamic_ptr_cast<VVSVertexPtr>        (getVertex());
   _abstractVertex     = dynamic_ptr_cast<AbstractVVSVertexPtr>(getVertex());
   GeneralTwoBodyDecayer::doinit();

@@ -99,7 +99,7 @@ KiselevBcFormFactor::KiselevBcFormFactor() :
   initialModes(numberOfFactors());
 }
 
-void KiselevBcFormFactor::doinit() throw(InitException) {
+void KiselevBcFormFactor::doinit() {
   ScalarFormFactor::doinit();
   unsigned int isize(numberOfFactors());
   if(isize!=_fp.size() ||isize!=_fm.size()  ||isize!=_FV.size()  ||isize!=_F0A.size()||

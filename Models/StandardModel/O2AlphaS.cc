@@ -73,7 +73,7 @@ vector<Energy2> O2AlphaS::flavourThresholds() const {
   return thresholds;
 }
 
-void O2AlphaS::doinit() throw(InitException) {
+void O2AlphaS::doinit() {
   // thresholds
   for(unsigned int ix=1;ix<7;++ix) {
     tPDPtr p = getParticleData(ix);

@@ -159,7 +159,7 @@ TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer()
   generateIntermediates(false);
 }
 
-void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
+void TensorMeson2PScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();

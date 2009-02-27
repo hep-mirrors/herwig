@@ -54,7 +54,7 @@ threeBodyMEIntegrator(const DecayMode & ) const {
 		  outgoing()[2]->mass()));
 }
 
-void VtoFFVDecayer::doinit() throw(InitException) {
+void VtoFFVDecayer::doinit() {
   GeneralThreeBodyDecayer::doinit(); 
   unsigned int ndiags = getProcessInfo().size();
   _sca.resize(ndiags);

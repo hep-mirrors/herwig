@@ -27,7 +27,7 @@ UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV),
 		     theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
 		     theVeV(246.*GeV) {}
 
-void UEDBase::doinit() throw(InitException) {
+void UEDBase::doinit() {
   StandardModel::doinit();
   //create fresh BSM info file so it can be appended to later
   //when decaymodes have been created
@@ -194,7 +194,7 @@ void UEDBase::Init() {
      &UEDBase::theW0W1W1Vertex, false, false, true, false, false);
 }
 
-void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
+void UEDBase::calculateKKMasses(const unsigned int n) {
   if(n == 0)
     throw InitException() << "UEDBase::resetKKMasses - "
 			  << "Trying to reset masses with KK number == 0!"
@@ -351,7 +351,7 @@ void UEDBase::fermionMasses(const unsigned int n) {
 }
 
 
-void UEDBase::resetMass(long id, Energy mass) throw(InitException) {
+void UEDBase::resetMass(long id, Energy mass) {
   theMasses.push_back(make_pair(id, mass));
   tPDPtr particle = getParticleData(id);
   if(!particle) {

@@ -383,7 +383,7 @@ double HadronSelector::mixingStateWeight(long id) {
   }
 }
 
-void HadronSelector::doinit() throw(InitException) {
+void HadronSelector::doinit() {
   Interfaced::doinit();
   // the default partons allowed
   // the quarks

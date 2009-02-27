@@ -64,7 +64,7 @@ SSWHHVertex::SSWHHVertex() :
   setList(first, second, third);
 }
 
-void SSWHHVertex::doinit() throw(InitException) {
+void SSWHHVertex::doinit() {
   VSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

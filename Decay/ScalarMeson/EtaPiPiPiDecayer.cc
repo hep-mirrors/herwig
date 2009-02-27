@@ -64,7 +64,7 @@ EtaPiPiPiDecayer::EtaPiPiPiDecayer()
   generateIntermediates(false);
 }
  
-void EtaPiPiPiDecayer::doinit() throw(InitException) {
+void EtaPiPiPiDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistency of the parameters
   unsigned int isize(_incoming.size());

@@ -43,7 +43,7 @@ SMWWWWVertex::SMWWWWVertex()
   setList(first,second,third,fourth);
 }
 
-void SMWWWWVertex::doinit() throw(InitException) {
+void SMWWWWVertex::doinit() {
   orderInGem(2);
   orderInGs(0);
   VVVVVertex::doinit();

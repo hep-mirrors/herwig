@@ -306,7 +306,7 @@ ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceChannel & channe
 }
 
 // doinit method  
-void DecayPhaseSpaceChannel::doinit() throw(InitException) {
+void DecayPhaseSpaceChannel::doinit() {
   Interfaced::doinit();
   // check if the mode pointer exists
   if(!_mode){throw InitException() << "DecayPhaseSpaceChannel::doinit() the " 

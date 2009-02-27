@@ -97,7 +97,7 @@ SMWWWVertex::SMWWWVertex() : _zfact(0.),_couplast(0.),
   setList(first,second,third);
 }
 
-void SMWWWVertex::doinit() throw(InitException) {
+void SMWWWVertex::doinit() {
   orderInGem(1);
   orderInGs(0);
   VVVVertex::doinit();

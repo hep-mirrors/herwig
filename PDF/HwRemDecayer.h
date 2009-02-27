@@ -205,7 +205,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException) {
+  virtual void doinit() {
     Interfaced::doinit();
     _ybin=0.25/_zbin;
   }

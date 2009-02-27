@@ -22,7 +22,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-void VectorMesonCurrent::doinit() throw(InitException) {
+void VectorMesonCurrent::doinit() {
   unsigned int isize=numberOfModes();
   if(_id.size()!=isize||_decay_constant.size()!=isize)
     {throw InitException() << "Inconsistent parameters in VectorMesonCurrent::doinit()"

@@ -41,7 +41,7 @@ RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2), _q2last(2) {
   _zfact=0.;
 }
 
-void RSModelVVVGRVertex::doinit() throw(InitException) {
+void RSModelVVVGRVertex::doinit() {
   VVVTVertex::doinit();
   _zfact = sqrt((1.-generator()->standardModel()->sin2ThetaW())/
 		generator()->standardModel()->sin2ThetaW());

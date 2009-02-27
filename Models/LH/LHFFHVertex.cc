@@ -75,7 +75,7 @@ LHFFHVertex::LHFFHVertex()
   setList(first,second,third);
 }
 
-void LHFFHVertex::doinit() throw(InitException) {
+void LHFFHVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if (!_theSM) throw InitException() << "Must be using the LHModel "
 				     << " in LHFFPVertex::doinit()"

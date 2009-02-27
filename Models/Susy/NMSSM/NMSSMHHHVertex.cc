@@ -37,7 +37,7 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
   setList(first, second, third);
 }
 
-void NMSSMHHHVertex::doinit() throw(InitException) {
+void NMSSMHHHVertex::doinit() {
   generator()->standardModel() = generator()->standardModel();
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if( !nmssm ) 

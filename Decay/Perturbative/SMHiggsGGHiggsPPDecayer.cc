@@ -142,7 +142,7 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
   return output;
 }
 
-void SMHiggsGGHiggsPPDecayer::doinit() throw(InitException) {
+void SMHiggsGGHiggsPPDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the width generator for the higgs
   tPDPtr higgs = getParticleData(ParticleID::h0);

@@ -128,7 +128,7 @@ void MEPP2ZHPowheg::Init() {
 
 }
 
-void MEPP2ZHPowheg::doinit() throw(InitException) {
+void MEPP2ZHPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
   // colour factors

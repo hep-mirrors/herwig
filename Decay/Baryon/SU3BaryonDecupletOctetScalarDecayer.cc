@@ -46,7 +46,7 @@ SU3BaryonDecupletOctetScalarDecayer::SU3BaryonDecupletOctetScalarDecayer() {
   generateIntermediates(false);
 }
 
-void SU3BaryonDecupletOctetScalarDecayer::doinit() throw(InitException) {
+void SU3BaryonDecupletOctetScalarDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // set up the decay modes
   setupModes(1);

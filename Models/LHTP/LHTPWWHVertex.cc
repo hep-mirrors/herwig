@@ -163,7 +163,7 @@ LHTPWWHVertex::LHTPWWHVertex() : _couplast(0.), _q2last(0.*GeV2) {
   setList(first, second, third);
 }
 
-void LHTPWWHVertex::doinit() throw(InitException) {
+void LHTPWWHVertex::doinit() {
   // model
  cLHTPModelPtr model = 
    dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());

@@ -179,7 +179,7 @@ LHWWHVertex::LHWWHVertex()
   setList(first,second,third);
 }
 
-void LHWWHVertex::doinit() throw(InitException) {
+void LHWWHVertex::doinit() {
   // model
  cLHModelPtr model = 
    dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());

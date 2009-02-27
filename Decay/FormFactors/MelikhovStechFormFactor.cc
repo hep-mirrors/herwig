@@ -247,7 +247,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   _thetaeta = 2./9.*Constants::pi;
 }
 
-void MelikhovStechFormFactor::doinit() throw(InitException) {
+void MelikhovStechFormFactor::doinit() {
   ScalarFormFactor::doinit();
   unsigned int isize(numberOfFactors());
   if(isize!=_fplus0.size()||isize!=_sigma1fp.size()||isize!=_sigma2fp.size()||

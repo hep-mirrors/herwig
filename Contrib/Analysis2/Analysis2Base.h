@@ -321,7 +321,7 @@ protected:
    * pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
+   ;
 
   /**
    * Return a vector of all pointers to Interfaced objects used in this

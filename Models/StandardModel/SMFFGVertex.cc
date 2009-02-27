@@ -63,7 +63,7 @@ SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
   setList(first,second,third);
 }
   
-void SMFFGVertex::doinit() throw(InitException) {
+void SMFFGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

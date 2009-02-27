@@ -156,7 +156,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   generateIntermediates(false);
 }
 
-void EtaPiPiGammaDecayer::doinit() throw(InitException) {
+void EtaPiPiGammaDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the consistence of the parameters
   unsigned int isize=_incoming.size();

@@ -85,7 +85,7 @@ void LHModel::Init() {
 
 }
 
-void LHModel::doinit() throw(InitException) {
+void LHModel::doinit() {
   // compute the parameters of the model
   // W and Z masses
   Energy mw(getParticleData(ParticleID::Wplus)->mass()),

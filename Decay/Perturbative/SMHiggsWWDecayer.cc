@@ -50,7 +50,7 @@ void SMHiggsWWDecayer::Init() {
 SMHiggsWWDecayer::SMHiggsWWDecayer() : _wmax(2,1.00), _zmax(2,1.00)
 {}
 
-void SMHiggsWWDecayer::doinit() throw(InitException) {
+void SMHiggsWWDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());

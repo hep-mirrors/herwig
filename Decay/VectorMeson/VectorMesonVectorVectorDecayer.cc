@@ -30,7 +30,7 @@ void VectorMesonVectorVectorDecayer::doinitrun() {
   }
 }
 
-void VectorMesonVectorVectorDecayer::doinit() throw(InitException) {
+void VectorMesonVectorVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   unsigned int isize(_incoming.size());
   if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||

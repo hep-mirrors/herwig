@@ -166,7 +166,7 @@ void ShowerAlphaQCD::Init() {
 
 }
 
-void ShowerAlphaQCD::doinit() throw(InitException) {
+void ShowerAlphaQCD::doinit() {
   ShowerAlpha::doinit();
   // calculate the value of 5-flavour lambda 
   // evaluate the initial

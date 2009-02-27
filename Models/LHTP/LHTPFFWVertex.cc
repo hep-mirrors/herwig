@@ -43,7 +43,7 @@ void LHTPFFWVertex::Init() {
 
 }
 
-void LHTPFFWVertex::doinit() throw(InitException) {
+void LHTPFFWVertex::doinit() {
   ThePEG::Helicity::FFVVertex::doinit();
   Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one

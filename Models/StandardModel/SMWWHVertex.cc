@@ -31,7 +31,7 @@ SMWWHVertex::SMWWHVertex()
   setList(first,second,third);
 }
 
-void SMWWHVertex::doinit() throw(InitException) {
+void SMWWHVertex::doinit() {
   // parameters
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
   _zfact = 1./(1.-generator()->standardModel()->sin2ThetaW());

@@ -112,7 +112,7 @@ void RadiativeZPrimeModel::Init() {
 
 }
 
-void RadiativeZPrimeModel::doinit() throw(InitException) {
+void RadiativeZPrimeModel::doinit() {
   if(_useZcouplings) {
     _vnu = vnu();
     _ve  = ve() ;

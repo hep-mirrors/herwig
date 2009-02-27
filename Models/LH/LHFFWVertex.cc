@@ -96,7 +96,7 @@ void LHFFWVertex::Init() {
 
 }
   
-void LHFFWVertex::doinit() throw(InitException) {
+void LHFFWVertex::doinit() {
   ThePEG::Helicity::FFVVertex::doinit();
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());

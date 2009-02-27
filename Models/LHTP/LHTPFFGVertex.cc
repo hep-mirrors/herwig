@@ -53,7 +53,7 @@ LHTPFFGVertex::LHTPFFGVertex()
   setList(first,second,third);
 }
   
-void LHTPFFGVertex::doinit() throw(InitException) {
+void LHTPFFGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

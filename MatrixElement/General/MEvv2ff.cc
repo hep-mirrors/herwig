@@ -27,7 +27,7 @@ using ThePEG::Helicity::TensorWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-void MEvv2ff::doinit() throw(InitException) {
+void MEvv2ff::doinit() {
   GeneralHardME::doinit();
   size_t ndiags = numberOfDiags();
   theFerm.resize(ndiags);  theVec.resize(ndiags);

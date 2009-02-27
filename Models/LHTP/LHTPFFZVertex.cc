@@ -119,7 +119,7 @@ LHTPFFZVertex::LHTPFFZVertex() : _gl(37,0.0), _gr(37,0.0),
   setList(first,second,third);
 }
 
-void LHTPFFZVertex::doinit() throw(InitException) {
+void LHTPFFZVertex::doinit() {
   // model
   cLHTPModelPtr model = 
     dynamic_ptr_cast<cLHTPModelPtr>(generator()->standardModel());

@@ -55,7 +55,7 @@ FivePionCurrent::FivePionCurrent() {
   _preomega = ZERO;
 }
 
-inline void FivePionCurrent::doinit() throw(InitException) {
+inline void FivePionCurrent::doinit() {
   WeakDecayCurrent::doinit();
   if(!_localparameters) {
     _rhomass    = getParticleData(ParticleID::rhominus)->mass();

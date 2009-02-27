@@ -70,7 +70,7 @@ public:
    * situation of vetos on the hadronization.
    */
   virtual void handle(EventHandler & ch, const tPVector & tagged,
-		      const Hint & hint) throw(Veto,Stop, Exception);
+		      const Hint & hint);
 
   /**
    * It returns minimum virtuality^2 of partons to use in calculating 

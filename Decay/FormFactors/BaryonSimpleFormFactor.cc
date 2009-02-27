@@ -44,7 +44,7 @@ BaryonSimpleFormFactor::BaryonSimpleFormFactor() {
   initialModes(numberOfFactors());
 }
 
-void BaryonSimpleFormFactor::doinit() throw(InitException) {
+void BaryonSimpleFormFactor::doinit() {
   BaryonFormFactor::doinit();
   _f1.clear();
   _f2.clear();

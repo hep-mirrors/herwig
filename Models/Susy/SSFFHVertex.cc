@@ -59,7 +59,7 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
   setList(first, second, third);
 }
 
-void SSFFHVertex::doinit() throw(InitException) {
+void SSFFHVertex::doinit() {
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )
     throw InitException() 

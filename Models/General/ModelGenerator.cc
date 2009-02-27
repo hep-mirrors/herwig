@@ -170,7 +170,7 @@ void ModelGenerator::Init() {
      false, false, Interface::limited);
 }
 
-void ModelGenerator::doinit() throw(InitException) {
+void ModelGenerator::doinit() {
   Interfaced::doinit();
   useMe();
   //create mass and width generators for the requested particles

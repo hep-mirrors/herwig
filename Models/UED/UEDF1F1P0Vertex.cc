@@ -45,7 +45,7 @@ UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
   setList(anti, ferm, photon);
 }
 
-void UEDF1F1P0Vertex::doinit() throw(InitException) {
+void UEDF1F1P0Vertex::doinit() {
   FFVVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());

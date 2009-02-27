@@ -56,7 +56,7 @@ LHFFGVertex::LHFFGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   setList(first,second,third);
 }
   
-void LHFFGVertex::doinit() throw(InitException) {
+void LHFFGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

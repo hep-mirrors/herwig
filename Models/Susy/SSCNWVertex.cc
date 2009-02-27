@@ -45,7 +45,7 @@ SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(ZERO),
 }
 
 
-void SSCNWVertex::doinit() throw(InitException) {
+void SSCNWVertex::doinit() {
   FFVVertex::doinit();
   tSusyBasePtr theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
   if(!theSS)

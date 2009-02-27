@@ -78,7 +78,7 @@ LHWWWVertex::LHWWWVertex() : _couplast(0.),_q2last(0.*GeV2) {
   setList(first,second,third);
 }
 
-void LHWWWVertex::doinit() throw(InitException) {
+void LHWWWVertex::doinit() {
   // model
   cLHModelPtr model = 
     dynamic_ptr_cast<cLHModelPtr>(generator()->standardModel());

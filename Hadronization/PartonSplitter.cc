@@ -105,7 +105,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon,
   ptrQbar ->set5Momentum( momentumQbar );
 }
 
-void PartonSplitter::doinit() throw(InitException) {
+void PartonSplitter::doinit() {
   Interfaced::doinit();
   // calculate the probabilties for the gluon to branch into each quark type
   // based on the available phase-space, as in fortran.

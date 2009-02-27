@@ -33,7 +33,7 @@ void VectorMeson2FermionDecayer::doinitrun() {
   }
 }
 
-void VectorMeson2FermionDecayer::doinit() throw(InitException) {
+void VectorMeson2FermionDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
