@@ -226,7 +226,7 @@ StrongHeavyBaryonDecayer::StrongHeavyBaryonDecayer() {
   generateIntermediates(false);
 }
 
-void StrongHeavyBaryonDecayer::doinit() throw(InitException) {
+void StrongHeavyBaryonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   unsigned int isize(_incoming.size());
   if(isize!=_outgoingB.size()||isize!=_outgoingM.size()||isize!=_maxweight.size())

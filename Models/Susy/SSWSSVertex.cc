@@ -163,7 +163,7 @@ SSWSSVertex::SSWSSVertex():_sw(0.), _cw(0.), _q2last(),_couplast(0.),
   setList(first,second,third);
 }
 
-void SSWSSVertex::doinit() throw(InitException) {
+void SSWSSVertex::doinit() {
   VSSVertex::doinit();
   tMSSMPtr theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!theSS)

@@ -59,7 +59,7 @@ void DISMECorrection::Init() {
 
 }
 
-void DISMECorrection::doinit() throw(InitException) {
+void DISMECorrection::doinit() {
   QTildeMECorrection::doinit();
   // electroweak parameters
   _sinW = generator()->standardModel()->sin2ThetaW();

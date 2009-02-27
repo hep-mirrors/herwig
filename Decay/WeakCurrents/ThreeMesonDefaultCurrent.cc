@@ -147,7 +147,7 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   _maxcalc=ZERO;
 }
 
-void ThreeMesonDefaultCurrent::doinit() throw(InitException) {
+void ThreeMesonDefaultCurrent::doinit() {
   ThreeMesonCurrentBase::doinit();
   // the particles we will use a lot
   tPDPtr a1(getParticleData(ParticleID::a_1minus)),
@@ -1032,7 +1032,7 @@ void ThreeMesonDefaultCurrent::doinitrun() {
   ThreeMesonCurrentBase::doinitrun();
 }
 
-void ThreeMesonDefaultCurrent::doupdate() throw(UpdateException) {
+void ThreeMesonDefaultCurrent::doupdate() {
   ThreeMesonCurrentBase::doupdate();
   // update running width if needed
   if ( !touched() ) return;

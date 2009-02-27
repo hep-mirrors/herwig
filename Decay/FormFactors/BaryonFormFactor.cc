@@ -13,7 +13,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-void BaryonFormFactor::doinit() throw(InitException) {
+void BaryonFormFactor::doinit() {
   Interfaced::doinit();
   // check the consistency of the parameters
   unsigned int isize(_incomingid.size());

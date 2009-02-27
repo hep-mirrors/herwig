@@ -67,7 +67,7 @@ void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _ckm;
 }
   
-void SMFFWVertex::doinit() throw(InitException) {
+void SMFFWVertex::doinit() {
   ThePEG::Helicity::FFVVertex::doinit();
   Ptr<CKMBase>::transient_pointer CKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one

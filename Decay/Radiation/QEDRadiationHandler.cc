@@ -39,7 +39,7 @@ QEDRadiationHandler::QEDRadiationHandler() {
 
 void QEDRadiationHandler::
 handle(EventHandler & eh, const tPVector & tagged,
-       const Hint &) throw(Veto, Stop, Exception) {
+       const Hint &) {
   // find the potential decaying particles to be considered
   set<tPPtr> parents;
   for(unsigned int ix=0;ix<tagged.size();++ix) {

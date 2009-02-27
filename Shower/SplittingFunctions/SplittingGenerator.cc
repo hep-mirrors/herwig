@@ -242,7 +242,7 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 }
 
 void SplittingGenerator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   BranchingList::iterator cit;
   for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
     {(cit->second).first=trans.translate((cit->second).first);}

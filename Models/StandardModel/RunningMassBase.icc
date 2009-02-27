@@ -16,7 +16,7 @@ using namespace ThePEG;
 
 inline RunningMassBase::RunningMassBase() {}
 
-inline void RunningMassBase::doinit() throw(InitException) {
+inline void RunningMassBase::doinit() {
   _theMass = mass();
   Interfaced::doinit();
 }

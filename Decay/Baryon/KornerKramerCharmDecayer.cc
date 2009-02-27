@@ -449,7 +449,7 @@ void KornerKramerCharmDecayer::doinitrun() {
   }
 }
 
-void KornerKramerCharmDecayer::doinit() throw(InitException) {
+void KornerKramerCharmDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // check the vectors have the same size
   unsigned int isize=incoming_.size();

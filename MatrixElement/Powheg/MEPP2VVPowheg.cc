@@ -106,7 +106,7 @@ void MEPP2VVPowheg::Init() {
 
 }
 
-void MEPP2VVPowheg::doinit() throw(InitException) {
+void MEPP2VVPowheg::doinit() {
   MEPP2VV::doinit();
 }
 

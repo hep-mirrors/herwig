@@ -235,7 +235,7 @@ public:
    */
   virtual pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, tcPDPtr par1, 
 						 tcPDPtr par2,tcPDPtr par3 = PDPtr())
-    throw(Veto, Stop, Exception) = 0;
+    = 0;
 
   /**
    * This returns the lightest pair of hadrons given by the flavours.
@@ -450,7 +450,7 @@ protected:
    *
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 protected:

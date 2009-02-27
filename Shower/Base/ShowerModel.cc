@@ -33,7 +33,7 @@ void ShowerModel::persistentInput(PersistentIStream & is, int) {
   is >> _reconstructor >> _partnerfinder >> _sudakovs >> _mecorrections;
 }
 
-void ShowerModel::doinit() throw(InitException) {
+void ShowerModel::doinit() {
   Interfaced::doinit();
   checkConsistency();
 }

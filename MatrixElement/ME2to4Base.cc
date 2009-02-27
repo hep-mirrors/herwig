@@ -154,7 +154,7 @@ CrossSection ME2to4Base::dSigHatDR() const {
   return output;
 }
 
-void ME2to4Base::doinit() throw(InitException) {
+void ME2to4Base::doinit() {
   MEBase::doinit();
   // get the particle data objects we need
   _wPlus  = getParticleData(ParticleID::Wplus );

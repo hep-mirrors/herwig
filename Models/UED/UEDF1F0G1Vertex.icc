@@ -21,7 +21,7 @@ inline IBPtr UEDF1F0G1Vertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void UEDF1F0G1Vertex::doinit() throw(InitException) {
+inline void UEDF1F0G1Vertex::doinit() {
   FFVVertex::doinit();
   orderInGs(1);
   orderInGem(0);

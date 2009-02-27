@@ -39,7 +39,7 @@ SMHiggsFermionsDecayer::SMHiggsFermionsDecayer() {
   _maxwgt[8]=0.0809643;  
 }
 
-void SMHiggsFermionsDecayer::doinit() throw(InitException) {
+void SMHiggsFermionsDecayer::doinit() {
   DecayIntegrator::doinit();
   // get the vertices from the Standard Model object
   tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());

@@ -31,7 +31,7 @@ MEPP2QQ::MEPP2QQ() : _quarkflavour(6), _process(0),
 }
 
 void MEPP2QQ::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _gggvertex  = trans.translate( _gggvertex);
   _qqgvertex  = trans.translate( _qqgvertex);
   _gluon      = trans.translate( _gluon);
@@ -54,7 +54,7 @@ IVector MEPP2QQ::getReferences() {
   return ret;
 }
 
-void MEPP2QQ::doinit() throw(InitException) {
+void MEPP2QQ::doinit() {
   HwME2to2Base::doinit();
   // handling of masses
   if(_quarkflavour==6) {

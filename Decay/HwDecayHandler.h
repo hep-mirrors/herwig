@@ -57,7 +57,7 @@ public:
    */
   virtual void handle(EventHandler & eh, const tPVector & tagged,
 		      const Hint & hint)
-    throw(Veto, Stop, Exception);
+   ;
 
   /**
    * Perform the decay of one unstable particle.
@@ -67,7 +67,7 @@ public:
    * @throws Exception if something goes wrong.
    */
   virtual void performDecay(tPPtr parent, Step & s) const
-    throw(Veto, Exception);
+   ;
   
   /**
    * add the decay products of in intermediate particle produced in a decay
@@ -77,7 +77,7 @@ public:
    * @throws Exception if something goes wrong.
    */
   void addDecayedParticle(tPPtr parent, Step & s) const
-    throw(Veto, Exception);
+   ;
 
   /**
    * Standard Init function

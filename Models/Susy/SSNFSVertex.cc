@@ -75,7 +75,7 @@ void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mw,GeV) >> _sb >> _cb;
 }
 
-void SSNFSVertex::doinit() throw(InitException) {
+void SSNFSVertex::doinit() {
   FFSVertex::doinit();
   _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!_theSS)

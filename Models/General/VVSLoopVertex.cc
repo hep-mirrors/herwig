@@ -30,7 +30,7 @@ void VVSLoopVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(masses,GeV) >> type >> couplings >> theNpart;
 }
 
-void VVSLoopVertex::doinit() throw(InitException) {
+void VVSLoopVertex::doinit() {
   Looptools::ffini();
   GeneralVVSVertex::doinit();
 }

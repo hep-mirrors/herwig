@@ -36,7 +36,7 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
   setList(first,second,third);
 }
 
-void SSHGGVertex::doinit() throw(InitException) {
+void SSHGGVertex::doinit() {
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM ) 
     throw InitException()

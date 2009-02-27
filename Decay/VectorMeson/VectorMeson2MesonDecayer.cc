@@ -31,7 +31,7 @@ void VectorMeson2MesonDecayer::doinitrun() {
   }
 }
 
-void VectorMeson2MesonDecayer::doinit() throw(InitException) {
+void VectorMeson2MesonDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();

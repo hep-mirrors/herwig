@@ -58,7 +58,7 @@ void ColourReconnector::Init() {
 
 void ColourReconnector::rearrange(EventHandler &, 
 				  ClusterVector &) 
-   throw(Veto, Stop, Exception){
+  {
   if (_clreco != 0)
     throw Exception("Colour reconnection not implemented.",Exception::abortnow);
 }

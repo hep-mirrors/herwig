@@ -31,7 +31,7 @@ void TensorMesonVectorVectorDecayer::doinitrun() {
   }
 }
 
-void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
+void TensorMesonVectorVectorDecayer::doinit() {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();

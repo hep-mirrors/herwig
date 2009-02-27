@@ -22,7 +22,7 @@ inline IBPtr ScalarMassGenerator::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void ScalarMassGenerator::doinit() throw(InitException) {
+inline void ScalarMassGenerator::doinit() {
   if(_coupling.size()!=_mass1.size()||
      _coupling.size()!=_mass2.size()) 
     throw InitException() << "Parameter vectors have inconsistent sizes in "

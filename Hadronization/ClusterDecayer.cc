@@ -162,7 +162,7 @@ static Parameter<ClusterDecayer,double>
 
 
 void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadrons) 
-  throw(Veto, Stop, Exception) {
+  {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
@@ -182,7 +182,7 @@ void ClusterDecayer::decay(const ClusterVector & clusters, tPVector & finalhadro
 
 
 pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
-  throw(Veto, Stop, Exception) {
+  {
   using Constants::pi;
   using Constants::twopi;
   // To decay the cluster into two hadrons one must distinguish between

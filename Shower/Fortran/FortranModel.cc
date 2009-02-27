@@ -27,7 +27,7 @@ void FortranModel::Init() {
 
 }
 
-void FortranModel::checkConsistency() throw(InitException) {
+void FortranModel::checkConsistency() {
   // check KinematicsReconstructor
   if(!dynamic_ptr_cast<FortranReconstructorPtr>(kinematicsReconstructor()))
     Throw<InitException>() << "KinematicsReconstructor must be either "

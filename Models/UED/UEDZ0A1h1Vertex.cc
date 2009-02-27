@@ -26,7 +26,7 @@ UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),
 	  vector<long>(1, 5100025));
 }
 
-void UEDZ0A1h1Vertex::doinit() throw(InitException) {
+void UEDZ0A1h1Vertex::doinit() {
   VSSVertex::doinit();
   tUEDBasePtr UEDBase = 
     dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());

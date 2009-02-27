@@ -44,7 +44,7 @@ a1SimpleDecayer::a1SimpleDecayer()
   generateIntermediates(true);
 }
 
-void a1SimpleDecayer::doinit() throw(InitException) {
+void a1SimpleDecayer::doinit() {
   DecayIntegrator::doinit();
   // pointers to the particles we need as external particles
   tPDPtr a1p = getParticleData(ParticleID::a_1plus);

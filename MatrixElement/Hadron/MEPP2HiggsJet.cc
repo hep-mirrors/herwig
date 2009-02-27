@@ -834,7 +834,7 @@ int MEPP2HiggsJet::nDim() const {
   return 2;
 }
 
-void MEPP2HiggsJet::doinit() throw(InitException) {
+void MEPP2HiggsJet::doinit() {
   ME2to2Base::doinit();
   tcPDPtr h0=getParticleData(ParticleID::h0);
   _mh = h0->mass();

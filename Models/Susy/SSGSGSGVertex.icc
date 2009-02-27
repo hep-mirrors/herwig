@@ -26,7 +26,7 @@ inline IBPtr SSGSGSGVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void SSGSGSGVertex::doinit() throw(InitException) {
+inline void SSGSGSGVertex::doinit() {
   orderInGs(1);
   orderInGem(0);
   FFVVertex::doinit();

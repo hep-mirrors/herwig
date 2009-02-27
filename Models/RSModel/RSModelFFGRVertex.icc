@@ -36,7 +36,7 @@ inline IBPtr RSModelFFGRVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void RSModelFFGRVertex::doinit() throw(InitException) {
+inline void RSModelFFGRVertex::doinit() {
   FFTVertex::doinit();
   _theModel = generator()->standardModel();
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);

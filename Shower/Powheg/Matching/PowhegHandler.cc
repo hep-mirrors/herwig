@@ -643,7 +643,7 @@ void PowhegHandler::doinitrun() {
   if( _qtildeDist ) makeQtildeDist();
 }
 
-void PowhegHandler::doinit() throw(InitException) {
+void PowhegHandler::doinit() {
   ShowerHandler::doinit();
   // extract the allowed branchings
   // final-state

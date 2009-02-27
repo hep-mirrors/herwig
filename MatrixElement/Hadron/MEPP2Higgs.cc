@@ -126,7 +126,7 @@ void MEPP2Higgs::Init() {
      false, false, Interface::limited);
 }
 
-void MEPP2Higgs::doinit() throw(InitException) {
+void MEPP2Higgs::doinit() {
   MEBase::doinit();
   // get the vertex pointers from the SM object
   theSM = dynamic_ptr_cast<tcHwSMPtr>(standardModel());

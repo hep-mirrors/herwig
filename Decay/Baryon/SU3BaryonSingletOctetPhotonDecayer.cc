@@ -29,7 +29,7 @@ SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer() {
   generateIntermediates(false);
 }
 
-void SU3BaryonSingletOctetPhotonDecayer::doinit() throw(InitException) {
+void SU3BaryonSingletOctetPhotonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // set up the decay modes
   setupModes(1);

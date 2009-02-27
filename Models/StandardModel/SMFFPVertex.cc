@@ -37,7 +37,7 @@ SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(-1.*GeV2) 
   setList(first,second,third);
 }
 
-void SMFFPVertex::doinit() throw(InitException) {
+void SMFFPVertex::doinit() {
   for(int ix=1;ix<4;++ix) {
     _charge[2*ix-1]  = generator()->standardModel()->ed();
     _charge[2*ix ]   = generator()->standardModel()->eu();

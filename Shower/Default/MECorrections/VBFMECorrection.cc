@@ -538,7 +538,7 @@ void VBFMECorrection::dofinish() {
 		     << " processes and " << _maxwgt.second << " for the BGF process\n";
 }
 
-void VBFMECorrection::doinit() throw(InitException) {
+void VBFMECorrection::doinit() {
   MECorrectionBase::doinit();
   // integrals of me over phase space
   double r5=sqrt(5.),darg((r5-1.)/(r5+1.)),ath(0.5*log((1.+1./r5)/(1.-1./r5)));

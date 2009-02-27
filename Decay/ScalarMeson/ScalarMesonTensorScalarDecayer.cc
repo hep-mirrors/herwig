@@ -47,7 +47,7 @@ ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer()
   generateIntermediates(false);
 }
 
-void ScalarMesonTensorScalarDecayer::doinit() throw(InitException) {
+void ScalarMesonTensorScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();

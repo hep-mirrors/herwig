@@ -288,7 +288,7 @@ bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
   return true;
 }
 
-void VectorBosonQQbarHardGenerator::doinit() throw(InitException) {
+void VectorBosonQQbarHardGenerator::doinit() {
   HardestEmissionGenerator::doinit();
 }
 

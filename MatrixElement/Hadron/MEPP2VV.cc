@@ -203,7 +203,7 @@ IBPtr MEPP2VV::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEPP2VV::doinit() throw(InitException) {
+void MEPP2VV::doinit() {
   HwME2to2Base::doinit();
   // get the vertices we need
   // get a pointer to the standard model object in the run

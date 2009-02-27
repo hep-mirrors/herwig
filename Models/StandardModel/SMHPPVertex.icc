@@ -30,7 +30,7 @@ inline IBPtr SMHPPVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-void SMHPPVertex::doinit() throw(InitException) {
+void SMHPPVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) 
     throw InitException() 

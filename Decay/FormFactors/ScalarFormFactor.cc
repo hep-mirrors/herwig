@@ -19,7 +19,7 @@
 
 using namespace Herwig;
 
-void ScalarFormFactor::doinit() throw(InitException) {
+void ScalarFormFactor::doinit() {
   Interfaced::doinit();
   // check the consistency of the parameters
   unsigned int isize=_incomingid.size();

@@ -163,7 +163,7 @@ void GeneralThreeBodyDecayer::setDecayInfo(PDPtr incoming,
   }
 }
 
-void GeneralThreeBodyDecayer::doinit() throw(InitException) {
+void GeneralThreeBodyDecayer::doinit() {
   DecayIntegrator::doinit();
   // create the phase space integrator
   tPDVector extpart(1,_incoming);

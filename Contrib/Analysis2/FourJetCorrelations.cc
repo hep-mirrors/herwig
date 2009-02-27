@@ -72,7 +72,7 @@ void FourJetCorrelations::Init() {
 
 }
 
-void FourJetCorrelations::doinit() throw(InitException) {
+void FourJetCorrelations::doinit() {
   Analysis2Base::doinit();
 
   if (!jetFinder())

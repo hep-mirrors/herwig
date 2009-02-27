@@ -52,7 +52,7 @@ void FortranAlphaQCD::Init() {
      false, false, Interface::limited);
 }
 
-void FortranAlphaQCD::doinit() throw(InitException) {
+void FortranAlphaQCD::doinit() {
   ShowerAlpha::doinit();
   _lambda5=_lambdain*exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.)/sqrt(2.);
   // thresholds

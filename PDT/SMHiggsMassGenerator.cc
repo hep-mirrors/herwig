@@ -62,7 +62,7 @@ bool SMHiggsMassGenerator::accept(const ParticleData & part) const {
   return GenericMassGenerator::accept(part);
 }
 
-void SMHiggsMassGenerator::doinit() throw(InitException) {
+void SMHiggsMassGenerator::doinit() {
   if(particle()->widthGenerator()) {
     _hwidth=dynamic_ptr_cast<SMHiggsWidthGeneratorPtr>(particle()->widthGenerator());
   }

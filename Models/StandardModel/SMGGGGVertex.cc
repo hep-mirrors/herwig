@@ -29,7 +29,7 @@ SMGGGGVertex::SMGGGGVertex() : _couplast(0.),_q2last() {
   setList(first,second,third,fourth);
 }
 
-void SMGGGGVertex::doinit() throw(InitException) {
+void SMGGGGVertex::doinit() {
   orderInGs(2);
   orderInGem(0);
   VVVVVertex::doinit();

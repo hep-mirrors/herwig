@@ -405,7 +405,7 @@ ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceMode & decay) {
   return os;
 }
 
-void DecayPhaseSpaceMode::doinit() throw(InitException) {
+void DecayPhaseSpaceMode::doinit() {
   // check the size of the weight vector is the same as the number of channels
   if(_channelwgts.size()!=numberChannels()) {
     throw Exception() << "Inconsistent number of channel weights and channels"

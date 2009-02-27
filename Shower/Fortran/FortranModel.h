@@ -42,7 +42,7 @@ protected:
    *  The implementation of the virtual member from the base class to
    *  check that the correct objects are loaded
    */
-  virtual void checkConsistency() throw(InitException);
+  virtual void checkConsistency();
 
 protected:
 

@@ -140,7 +140,7 @@ bool GenericMassGenerator::accept(const ParticleData & in) const {
     ( _particle->CC() && _particle->CC()->id() == in.id() );
 }
 
-void GenericMassGenerator::doinit() throw(InitException) {
+void GenericMassGenerator::doinit() {
   MassGenerator::doinit();
   // get the antiparticle
   _antiparticle=_particle->CC();
@@ -209,7 +209,7 @@ string GenericMassGenerator::getParticle() const {
 }
 
 void GenericMassGenerator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _particle = trans.translate(_particle);
   _antiparticle = trans.translate(_antiparticle);
   MassGenerator::rebind(trans);

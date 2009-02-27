@@ -62,7 +62,7 @@ FFZPrimeVertex::FFZPrimeVertex() : _gl(17,0.0), _gr(17,0.0) {
   setList(first,second,third);
 }
 
-void FFZPrimeVertex::doinit() throw(InitException) {
+void FFZPrimeVertex::doinit() {
   tcSMPtr sm = generator()->standardModel();
   tcRadiativeZPrimeModelPtr model = 
     dynamic_ptr_cast<tcRadiativeZPrimeModelPtr>(generator()->standardModel());

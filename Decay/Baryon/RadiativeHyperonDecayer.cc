@@ -20,7 +20,7 @@ void RadiativeHyperonDecayer::doinitrun() {
   }
 }
 
-void RadiativeHyperonDecayer::doinit() throw(InitException) {
+void RadiativeHyperonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   unsigned int isize(incomingB_.size());
   if(isize!=outgoingB_.size()||isize!=A_.size()||

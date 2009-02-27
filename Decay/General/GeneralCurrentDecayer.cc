@@ -85,7 +85,7 @@ int GeneralCurrentDecayer::modeNumber(bool & cc, tcPDPtr parent,
   return modeNumber(cc,id);
 }
 
-void GeneralCurrentDecayer::doinit() throw(InitException) {
+void GeneralCurrentDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();

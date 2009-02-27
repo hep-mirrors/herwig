@@ -15,7 +15,7 @@
 
 using namespace Herwig;
 
-void SU3BaryonDecupletOctetPhotonDecayer::doinit() throw(InitException) {
+void SU3BaryonDecupletOctetPhotonDecayer::doinit() {
   Baryon1MesonDecayerBase::doinit();
   // set up the decay modes
   setupModes(1);

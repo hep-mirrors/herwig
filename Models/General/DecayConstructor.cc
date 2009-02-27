@@ -102,7 +102,7 @@ namespace {
    }
 }
 
-void DecayConstructor::doinit() throw(InitException) {
+void DecayConstructor::doinit() {
   Interfaced::doinit();
   //Need to check that the stored decay mode tags have the
   //products in the standard order

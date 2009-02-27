@@ -40,7 +40,7 @@ void HardestEmissionGenerator::persistentInput(PersistentIStream & is, int) {
 }
 
 void HardestEmissionGenerator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _evolver = trans.translate(_evolver);
   Interfaced::rebind(trans);
 }

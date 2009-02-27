@@ -49,7 +49,7 @@ SingletonFormFactor::SingletonFormFactor() {
   initialModes(numberOfFactors());
 }
 
-void SingletonFormFactor::doinit() throw(InitException) {
+void SingletonFormFactor::doinit() {
   BaryonFormFactor::doinit();
   if(numberOfFactors()!=_polemass.size())
     throw InitException() << "Inconsistent parameters in SingletonFormFactor::doinit()"

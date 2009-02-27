@@ -120,7 +120,7 @@ MEfftoVH::colourGeometries(tcDiagPtr ) const {
   return sel;
 }
 
-void MEfftoVH::doinit() throw(InitException) {
+void MEfftoVH::doinit() {
   MEBase::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());

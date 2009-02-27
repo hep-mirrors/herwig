@@ -54,7 +54,7 @@ public:
    * the other functions.
    */
   void decay(const ClusterVector & clusters, tPVector & finalhadrons) 
-    throw(Veto, Stop, Exception);
+   ;
 
 public:
 
@@ -116,7 +116,7 @@ public:
    *  number [0,1].
    */
   pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr) 
-    throw(Veto, Stop, Exception);
+   ;
 
 private:
 

@@ -163,7 +163,7 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
    setList(first, second, third);
 }
 
-void SSHSFSFVertex::doinit() throw(InitException) {
+void SSHSFSFVertex::doinit() {
   SSSVertex::doinit();
   tMSSMPtr theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theMSSM )

@@ -24,7 +24,7 @@
 
 using namespace Herwig;
 
-void WSBFormFactor::doinit() throw(InitException) {
+void WSBFormFactor::doinit() {
   ScalarFormFactor::doinit();
   unsigned int isize(numberOfFactors());
   if(isize!=_F0.size() ||isize!=_V.size()  ||isize!=_A0.size() ||

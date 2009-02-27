@@ -47,7 +47,7 @@ void SemiLeptonicScalarDecayer::doinitrun() {
   }
 }
 
-void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
+void SemiLeptonicScalarDecayer::doinit() {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();

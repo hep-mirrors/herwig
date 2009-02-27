@@ -99,7 +99,7 @@ void FortranSudakov::Init() {
 
 }
 
-void FortranSudakov::doinit() throw(InitException) {
+void FortranSudakov::doinit() {
   SudakovFormFactor::doinit();
   // get the maximum energy from the event handler
   Energy qlim=generator()->eventHandler()->lumiFnPtr()->maximumCMEnergy();

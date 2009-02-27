@@ -32,7 +32,7 @@ using namespace Herwig;MEQCD2to2::MEQCD2to2():_maxflavour(5),_process(0) {
 }
 
 void MEQCD2to2::rebind(const TranslationMap & trans)
-  throw(RebindException) {
+  {
   _ggggvertex = trans.translate(_ggggvertex);
   _gggvertex  = trans.translate( _gggvertex);
   _qqgvertex  = trans.translate( _qqgvertex);
@@ -57,7 +57,7 @@ IVector MEQCD2to2::getReferences() {
   return ret;
 }
 
-void MEQCD2to2::doinit() throw(InitException) {
+void MEQCD2to2::doinit() {
   // call the base class
   HwME2to2Base::doinit();
   // get the vedrtex pointers from the SM object

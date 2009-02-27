@@ -54,7 +54,7 @@ public:
    * at least one of its components is a beam remnant.
    */
   ClusterVector formClusters(const PVector & partons) 
-    throw(Veto, Stop, Exception);
+   ;
 
   /**
    * Reduces three component clusters into two components.
@@ -66,7 +66,7 @@ public:
    * This could be eliminated or changed in the future.
    */
   void reduceToTwoComponents(ClusterVector&) 
-    throw(Veto, Stop, Exception);
+   ;
 
 public:
 
