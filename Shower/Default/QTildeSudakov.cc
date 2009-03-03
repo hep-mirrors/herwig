@@ -130,6 +130,10 @@ generateNextSpaceBranching(const Energy startingQ,
   // Different order, incoming parton is id =  1, outgoing are id=0,2
   tcPDPtr parton0 = getParticleData(ids[0]);
   tcPDPtr parton1 = getParticleData(ids[1]);
+  if(cc) {
+    if(parton0->CC()) parton0 = parton0->CC();
+    if(parton1->CC()) parton1 = parton1->CC();
+  }
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
   do {
