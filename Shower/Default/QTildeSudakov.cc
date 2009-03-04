@@ -132,7 +132,7 @@ generateNextSpaceBranching(const Energy startingQ,
   tcPDPtr parton1 = getParticleData(ids[1]);
   if(cc) {
     if(parton0->CC()) parton0 = parton0->CC();
-    if(parton0->CC()) parton1 = parton1->CC();
+    if(parton1->CC()) parton1 = parton1->CC();
   }
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(ZERO);
