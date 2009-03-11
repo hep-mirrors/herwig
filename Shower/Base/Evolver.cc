@@ -718,7 +718,7 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
 				   ->lastXCombPtr()->lastS() * _y_cut );
   //do durham pt veto
   if( fb.kinematics && ( _ptVetoDefinition == 0 
-			 || _ptVetoDefinition == 2 ) && !_approxCuts ){
+			 || _ptVetoDefinition == 2 ) && !_approxCuts && ! _highestMult ){
     Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
     Energy pt = fb.kinematics->pT();
     double z = fb.kinematics->z();
@@ -755,7 +755,7 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
     }
   }
   else if( fb.kinematics && ( _ptVetoDefinition == 0 
-			      || _ptVetoDefinition == 2 ) && _approxCuts ){
+			      || _ptVetoDefinition == 2 ) && _approxCuts && !_highestMult ){
     Energy2 kt_measure;
     double z = fb.kinematics->z();
     Energy pt = fb.kinematics->pT();

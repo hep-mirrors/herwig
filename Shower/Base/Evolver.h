@@ -57,7 +57,7 @@ public:
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), _ptVetoDefinition(1), _reversePtVeto(false), 
 	      _showerVariableOutput( false ), _initialenhance(1.), _finalenhance(1.), 
-	      _y_cut(1.1), _approxCuts( false ) {}
+	      _y_cut(1.1), _approxCuts( false ), _highestMult( false ) {}
   /**
    *  Member to perform the shower
    */
@@ -102,6 +102,13 @@ public:
    */
   tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
   //@}
+
+  /**
+   *  Set whether evolving highest multiplicity configuration
+   */ 
+  void setHighest( bool isHighest ){
+    _highestMult = isHighest;
+  }
 
 public:
 
@@ -359,7 +366,10 @@ protected:
   /**
    *  Access to the Pt definition being used for the pt veto 
    */
-  inline unsigned int ptVetoDefinition(){ return _ptVetoDefinition; }
+  inline unsigned int ptVetoDefinition(){ 
+    if( _highestMult ) return 1;
+    else return _ptVetoDefinition; 
+  }
 
 protected:
 
@@ -499,6 +509,11 @@ private:
    * The pt definition being used for in the pt veto
    */
   unsigned int _ptVetoDefinition;
+
+  /**                                                                        
+   * Whether this is the highest multiplicity channel     
+   */
+  bool _highestMult;
 
   /**
    * Reverse pt veto to produce branchings above a cut only
