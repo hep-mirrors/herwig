@@ -263,11 +263,17 @@ void PowhegHandler::Init() {
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   // cluster the event
- 
+  _max_mult = maxMult;
+
   if( _clusterOption == 0 || _clusterOption == 2 || _clusterOption == 3 )
     _theHardTree = doClusteringOrdered();
   else
     _theHardTree = doClustering();
+
+  //if highest mult set veto def
+  if( _highestMult == true ) evolver()->setHighest( true );
+  else evolver()->setHighest( false );
+
 
   // return if fails
   if(!_theHardTree)
@@ -944,6 +950,13 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   map <ShowerParticlePtr,HardBranchingPtr> theParticles;
   tcPDPtr particle_data;
   ShowerParticlePtr vBoson = new_ptr( ShowerParticle( *vb, 1, false, false ) );
+
+  //is this the highest multiplcity channel
+  if( theParts.size() == _max_mult ) {
+    // cerr<<"highest mult channel \n";
+    _highestMult = true;
+  }
+  else _highestMult = false;
 
   //loops through the FS particles and create hardBranchings
   for( unsigned int i = 0; i < theParts.size(); i++){
@@ -1840,6 +1853,9 @@ HardTreePtr PowhegHandler::doClustering() {
   }
    
   PPtr vb = lastXCombPtr()->subProcess()->intermediates()[0];
+
+  //is this the highest multiplcity channel
+  if( theParts.size() == _max_mult ) _highestMult = true;
  
   map <ShowerParticlePtr,HardBranchingPtr> theParticles;
   tcPDPtr particle_data;

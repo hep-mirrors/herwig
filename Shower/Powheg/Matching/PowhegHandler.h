@@ -477,6 +477,11 @@ private:
    */
   unsigned int _ordered_trees_created;
 
+  /**
+   * the maximum multplcity
+   */
+  unsigned int _max_mult;
+
 
 
 };
