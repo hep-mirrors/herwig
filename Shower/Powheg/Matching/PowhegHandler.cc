@@ -1856,7 +1856,8 @@ HardTreePtr PowhegHandler::doClustering() {
 
   //is this the highest multiplcity channel
   if( theParts.size() == _max_mult ) _highestMult = true;
- 
+  else _highestMult = false;
+
   map <ShowerParticlePtr,HardBranchingPtr> theParticles;
   tcPDPtr particle_data;
   ShowerParticlePtr vBoson = new_ptr( ShowerParticle( *vb, 1, false, false ) );
