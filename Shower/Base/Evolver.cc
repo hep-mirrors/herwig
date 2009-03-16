@@ -601,6 +601,9 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 				      << Exception::eventerror;
   // tree has now showered
   _currenttree->hasShowered(true);
+
+  checkShowerMomentum( particlesToShower );
+
 }
 
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,

@@ -8,6 +8,7 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "PowhegEvolver.h"
 #include "HardestEmissionGenerator.h"
+#include "Herwig++/Utilities/Histogram.h"
 
 
 namespace Herwig {
@@ -81,6 +82,11 @@ protected:
   virtual vector<ShowerProgenitorPtr> setupShower(bool hard);
 
   /**
+   * Implementation of checks on momentum reconstruction
+   */  
+  virtual bool checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower );
+
+  /**
    *  set the colour partners
    */
   virtual void setColourPartners(bool hard);
@@ -130,6 +136,10 @@ protected:
    */
   virtual void doinit();
   //@}
+  
+  virtual void doinitrun();
+
+  virtual void dofinish();
 
 private:
 
@@ -172,6 +182,20 @@ private:
    *  Count of the number of truncated emissions
    */
   unsigned int _truncEmissions;
+  
+  /**
+   *  Histograms of momentum differences in reconstructed momenta
+   */
+  HistogramPtr _h_Xdiff;
+  HistogramPtr _h_Ydiff;
+  HistogramPtr _h_Zdiff;
+  HistogramPtr _h_Ediff;
+
+  /**
+   * Count of events passing momenta reconstruction acceptance
+   */
+  int _no_events;
+  int _mom_fails;
 
 };
 

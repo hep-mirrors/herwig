@@ -17,10 +17,64 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Utilities/Histogram.h"
-
 
 using namespace Herwig;
+
+void PowhegEvolver::doinitrun(){
+  Evolver::doinitrun();
+  //init hists and other variables
+  _h_Xdiff = new_ptr( Histogram( -10., 2., 120 ) );
+  _h_Ydiff = new_ptr( Histogram( -10., 2., 120 ) );
+  _h_Zdiff = new_ptr( Histogram( -10., 2., 120 ) );
+  _h_Ediff = new_ptr( Histogram( -10., 2., 120 ) );
+
+  _no_events = 0;
+  _mom_fails = 0;
+}
+
+void PowhegEvolver::dofinish() {
+  Evolver::dofinish();
+
+  ofstream hist_out1("momDiffHists.top");
+
+  using namespace HistogramOptions;
+
+  if( _hardonly ){
+    _h_Xdiff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).x()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.x / GeV )", 
+			     " " );
+    _h_Ydiff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).y()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.y / GeV )", 
+			     " " );
+    _h_Zdiff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).z()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.z / GeV )", 
+			     " " );
+    _h_Ediff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).e()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.e / GeV )", 
+			     " " );
+    cerr<<"\n\n\npercentage of failures = "<< double(_mom_fails)/double(_no_events)*100.<<"\n\n\n";
+  }
+}
 
 void PowhegEvolver::doinit() {
   Evolver::doinit();
@@ -474,4 +528,93 @@ bool PowhegEvolver::startSpaceLikeShower(PPtr parent) {
   }
   return  _hardonly ? false :
     spaceLikeShower(progenitor()->progenitor(),parent);
+}
+
+bool PowhegEvolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower ){
+  if( _hardonly && _nasontree){
+    _no_events ++;
+    // extract the particles from end point of the shower
+    multimap<long,PPtr> outgoing;
+    //loop over all final state particles in particlesToShower
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
+      //insert 3 outgoing particles into outgoing map
+      PPtr temp = particlesToShower[ix]->progenitor();
+      if(!temp->children().empty()) {
+	outgoing.insert(make_pair(temp->children()[0]->id(),temp->children()[0]));
+	outgoing.insert(make_pair(temp->children()[1]->id(),temp->children()[1]));
+      }
+      else {
+	outgoing.insert(make_pair(temp->id(),temp));
+      }
+    }
+    // extract the particles from the nason tree
+    vector<PPtr> outb;
+    for(set<HardBranchingPtr>::const_iterator it = 
+	  _nasontree->branchings().begin();
+	it != _nasontree->branchings().end(); ++it)  {
+      if(!(**it).children().empty()) {
+	for(vector<HardBranchingPtr>::const_iterator jt=(**it).children().begin();
+	    jt!=(**it).children().end();++jt) {
+	  outb.push_back((**jt).branchingParticle());
+	}
+      }
+      else if((**it).branchingParticle()->isFinalState()) {
+	outb.push_back((**it).branchingParticle());
+      }
+    }
+    static Energy eps = 0.00001*GeV;
+
+    Lorentz5Momentum diff_tot( 0.*GeV, 0.*GeV,  0.*GeV,  0.*GeV );
+
+    for(unsigned int ix=0;ix<outb.size();++ix) {
+      //pointer to the shower particle that matches the powheg particle
+      //do by looking at all with matching ids and choosing the one with
+      //minimum momentum difference magnitude
+      PPtr ShowerMatched;
+      Energy magDiff = 10000. * GeV;
+      
+      //loop over all outgoing particles that match the id of outb
+      //choose one that is best match for momentum
+      multimap< long, PPtr >::const_iterator cjt;
+      for( cjt =  outgoing.lower_bound( outb[ix]->id() );
+	   cjt != outgoing.upper_bound( outb[ix]->id() );
+	   ++cjt ) {
+	Lorentz5Momentum mom_diff = outb[ix]->momentum() 
+	  - cjt->second->momentum();
+	Energy magComp = abs( mom_diff.mag() );
+	if( magComp < magDiff ){
+	  magDiff = magComp;
+	  ShowerMatched = cjt->second;
+	}
+      }
+      if( !ShowerMatched ) {
+	generator()->log()<< "could not find a matching shower particle for: \n"
+			  << *outb[ix] << " !!!!\n";
+      }
+
+      Lorentz5Momentum pdiff = outb[ix]->momentum();
+      pdiff -= ShowerMatched->momentum();
+
+      Lorentz5Momentum abs_pdiff( abs( pdiff.x() ),  abs( pdiff.y() ),
+				  abs( pdiff.z() ),  abs( pdiff.t() ) );
+      diff_tot += abs_pdiff;
+      if( diff_tot.x() > eps || diff_tot.y() > eps || diff_tot.z() > eps || diff_tot.t() > eps ){
+	generator()->log() << "show part: " << *ShowerMatched << "\n"
+			   << "powh part: " << *outb[ix] << "\n"
+			   << "diff    =  " << pdiff / GeV << "\n\n";
+      }
+      
+    }
+    if( diff_tot.x() > eps || diff_tot.y() > eps || diff_tot.z() > eps || diff_tot.t() > eps ){
+      generator()->log() << "\n total abs momentum difference = "
+			 << diff_tot / GeV <<"\n \n \n";
+      _mom_fails ++;
+    }
+    (*_h_Xdiff) += log10( diff_tot.x() / GeV );
+    (*_h_Ydiff) += log10( diff_tot.y() / GeV );
+    (*_h_Zdiff) += log10( diff_tot.z() / GeV );
+    (*_h_Ediff) += log10( diff_tot.t() / GeV );
+  }
+  return true;
 }

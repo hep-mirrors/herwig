@@ -151,6 +151,13 @@ protected:
    */
   virtual vector<ShowerProgenitorPtr> setupShower(bool hard);
 
+  
+  /**
+   *  Dummy implementation of powheg check of shower momentum reconstruction 
+   */
+  virtual bool checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower ){ return true; }
+  
+
   /**
    *  set the colour partners
    */
