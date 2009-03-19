@@ -56,11 +56,6 @@ struct ReconstructedObject {
   double charge;
 
   /**
-   *  Unique
-   */
-  bool unique;
-
-  /**
    *  Electromagnetic energy
    */
   Energy emenergy;
@@ -139,6 +134,7 @@ struct ReconstructedObject {
    *  pT of highest track in tau decays
    */
   Energy ptHightestTrack;
+
   /**
    *  Cluster width
    */
@@ -186,7 +182,22 @@ public:
   /**
    *  Public access to the reconstructed objects
    */
-  inline vector<ReconstructedObject> reconstructedObjects() const;
+  inline vector<ReconstructedObject> reconstructedObjects() const {
+    return _objects;
+  }
+
+  /**
+   *  Missing transverse energy in calorimeter and azimuthal angle
+   */
+  inline pair<Energy,double> missingETCalorimeter() const {
+    return _calorimeterMET;
+  }
+  /**
+   *  Missing transverse energy after muon correction and azimuthal angle
+   */
+  inline pair<Energy,double> missingETCorrected() const {
+    return _muonMET;
+  }
 
 public:
 
@@ -279,6 +290,16 @@ private:
    *  The reconstructed objects after PGS
    */
   vector<ReconstructedObject> _objects;
+
+  /**
+   *  missing ET measured in calorimeter
+   */
+  pair <Energy,double> _calorimeterMET;
+
+  /**
+   *  missing ET aftrer muon correction
+   */
+  pair <Energy,double> _muonMET;
 };
 
 }
