@@ -65,7 +65,7 @@ public:
   /**
    *  Get LowestPt in which ever jet definition
    */
-  Energy lowestPt( int jetMeasureMode );
+  Energy lowestPt( int jetMeasureMode, Energy2 s );
   
   /**
    * Access the external branchings

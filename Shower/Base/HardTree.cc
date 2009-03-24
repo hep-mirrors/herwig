@@ -58,7 +58,7 @@ bool HardTree::fillNodes( HardBranchingPtr branch, HardBranchingPtr parentBranch
   else  {
     _theExternals.insert( make_pair( branch->branchingParticle(), parentBranch ) );
     if( parentBranch && ( !_lowestPt || branch->pT() < _lowestPt->pT() ) )
-      _lowestPt = branch;
+      _lowestPt = parentBranch;
   }
   return true;
 }
@@ -261,11 +261,47 @@ bool HardTree::checkHardOrdering() {
   }
   return true;
 }
+Energy HardTree::lowestPt( int jetMeasureMode, Energy2 s ){
+  //check to see we found the _lowest pt correctly
+  if(  _lowestPt->children().size() != 2 ) {
+    cerr<< "HardTree: wrong no. children = " << _lowestPt->children().size() << " \n";
+    return 0.*GeV;
+  }
+  if( ! _lowestPt->children()[0] ) {
+    cerr<< "HardTree: null child \n";
+    return 0.*GeV;
+  }
 
-Energy HardTree::lowestPt( int jetMeasureMode ){
-  Energy kt_softest = _lowestPt->pT();
-  //is this the durham jet def
-  if( jetMeasureMode == 0 )
-    kt_softest /= max( _lowestPt->z(), 1. - _lowestPt->z() );    
+  Energy kt_softest = _lowestPt->children()[0]->pT();
+  if( jetMeasureMode != 1 ){
+    Energy pt = kt_softest;
+    double z = _lowestPt->children()[0]->z();
+   
+    Energy2 m0 = sqr( _lowestPt->branchingParticle()->nominalMass() );
+    Energy2 m1 = sqr( _lowestPt->children()[0]->branchingParticle()->nominalMass() );
+    Energy2 m2 = sqr( _lowestPt->children()[1]->branchingParticle()->nominalMass() );
+
+    double lambda = sqrt( 1. - 4.*m0/s );
+    double beta1 = 2.*( m1 - sqr(z)*m0 + sqr(pt) )
+      / z / lambda / ( lambda + 1. ) / s;
+    double beta2 = 2.*( m2 - sqr( 1. - z )*m0 + sqr(pt) )
+      / ( 1. - z ) / lambda / ( lambda + 1. ) / s;
+
+    Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
+    Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
+    Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
+    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );
+
+    double costheta = ( Z1*Z2 - sqr(pt) )
+      / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
+
+    Energy2 kt_measure;
+    if(  jetMeasureMode == 0 )
+      kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
+    else if( jetMeasureMode == 2 )
+      kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
+    
+    kt_softest = sqrt( kt_measure );
+  }
   return kt_softest;
 }

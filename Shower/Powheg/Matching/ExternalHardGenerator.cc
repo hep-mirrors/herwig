@@ -50,11 +50,15 @@ void ExternalHardGenerator::Init() {
 }
 
 HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
-  
+
   ShowerProgenitorPtr 
     QProgenitor    = tree->outgoingLines().begin()->first,
     QbarProgenitor = tree->outgoingLines().rbegin()->first;
   if(QProgenitor->id()<0) swap(QProgenitor, QbarProgenitor);
+
+  //get com energy from the progenitors
+  Lorentz5Momentum tot_momentum = QProgenitor->progenitor()->momentum() + QbarProgenitor->progenitor()->momentum();
+  Energy2 s = tot_momentum.mag2();
 
   // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
@@ -66,7 +70,7 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   //fixed veto - this is a shower pt
   //evolver vetoes should be set to use shower pt in highest multiplicity case
   if(  _CKKWh->highestMult() )
-    veto_pt = hardtree->lowestPt( 1. );
+    veto_pt = hardtree->lowestPt( 1, s );
 
   QProgenitor->maximumpT(veto_pt);
   QbarProgenitor->maximumpT(veto_pt);
@@ -75,6 +79,7 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   // check the trees match
   if(!hardtree->connect(tree)) return HardTreePtr();
   // Return the HardTree
+ 
   return hardtree;
 }
 

@@ -469,7 +469,6 @@ void PowhegHandler::dofinish() {
 		       "");
 }
 
-
 void PowhegHandler::doinitrun() {
   _trees_created = 0;
   _ordered_trees_created = 0;
@@ -1054,7 +1053,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
       }
     }
   }
-    //re-do momentum deconstruction (has been overridden by other trees otherwise)
+  //re-do momentum deconstruction (has been overridden by other trees otherwise)
   simpleColConnections( chosen_hardTree );
   if( ! evolver()->showerModel()->kinematicsReconstructor()
       ->deconstructDecayJets( chosen_hardTree, evolver() ) )
@@ -1667,7 +1666,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   if( ! _highestMult ) kt_cut = sqrt( _yini * _s );
   else {
     //does this lowest pt method return something in the luc/dur jet measure?
-    kt_cut = theTree->lowestPt( _jetMeasureMode );
+    kt_cut = theTree->lowestPt( _jetMeasureMode, _s );
     if( kt_cut > _max_pt_cut )
       kt_cut = _max_pt_cut;
   }
