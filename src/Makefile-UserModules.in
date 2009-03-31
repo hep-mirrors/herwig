@@ -1,6 +1,8 @@
 # -*- Makefile -*- (for emacs)
 # @configure_input@
 #
+# @PACKAGE_STRING@
+#
 # This Makefile is intended for compiling Herwig++ plugins
 # You can find example plugins in the Contrib directory
 #

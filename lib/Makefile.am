@@ -4,7 +4,7 @@ LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
 
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
-Herwig_la_LDFLAGS = -module -version-info 3:0:0
+Herwig_la_LDFLAGS = -module -version-info 3:1:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \

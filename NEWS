@@ -1,5 +1,35 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.3.1 release: 2009-03-31 (tagged at SVN r4140)
+** Initial state showers
+   The PDF veto was wrongly applied to qbar->qbar g splittings.
+
+** User interaction
+   The Makefile-UserModules now includes the Herwig version number.
+   The -N flag to 'Herwig++ run' is optional now, as was always intended.
+
+** Contrib
+   The contrib directory is now included in the tarball. The omission
+   was accidental.
+
+** Numerical accuracy
+   Minor problems with values close to zero were fixed in several
+   locations.
+
+** LEP event shapes
+   An accidental duplication was removed, they are now only calculated
+   once per event.
+
+** MRST PDF code
+   Initialization problem fixed.
+
+** Mac OS X
+   The configure script was improved to detect libraries better.
+
+** Libtool
+   Updated to version 2.2.6
+
+
 * Herwig++-2.3.0 release: 2008-12-02 (tagged at SVN r3939)
 ** Major release, with many new features and bug fixes
 

@@ -22,7 +22,7 @@
 using namespace Herwig;
 
 MEChargedCurrentDIS::MEChargedCurrentDIS() 
-  : _maxflavour(6), _massopt(0) {
+  : _maxflavour(5), _massopt(0) {
   massOption(true ,1);
   massOption(false,_massopt);
 }
@@ -137,7 +137,7 @@ void MEChargedCurrentDIS::Init() {
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
-      &MEChargedCurrentDIS::_maxflavour, 6, 2, 6, false, false, true);
+      &MEChargedCurrentDIS::_maxflavour, 5, 2, 6, false, false, true);
 
   static Switch<MEChargedCurrentDIS,unsigned int> interfaceMassOption
     ("MassOption",
