@@ -203,7 +203,7 @@ void HerwigRun::generateEvents() {
 	      << eventGenerator()->N() << " events;\n"
 	      << "Warning: you can increase NumberOfEvents "
 	      << "in the input files.\n";
-  long number = std::min( getN(), eventGenerator()->N() );
+  long number = getN() > 0 ? std::min( getN(), eventGenerator()->N() ) : eventGenerator()->N();
   long step = std::max( number/100l, 1l );
   std::cout << "Generating events.\r" << std::flush;
   for( long i = 1; i <= number; ++i ) {
