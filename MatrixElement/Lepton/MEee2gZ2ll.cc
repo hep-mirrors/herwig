@@ -191,13 +191,12 @@ ProductionMatrixElement MEee2gZ2ll::HelicityME(vector<SpinorWaveFunction>    & f
 	  diag2 = _theFFPVertex->evaluate(sHat(),aout[outhel2],fout[outhel1],
 					  interG);
 	  // add up squares of individual terms
-	  total[1] += real(diag1*conj(diag1));
-	  total[2] += real(diag2*conj(diag2));
-	  diag1+=diag2;
+	  total[1] += norm(diag1);
+	  total[2] += norm(diag2);
 	  // the full thing including interference
-	  diag1 +=diag2;
-	  total[0] += real(diag1*conj(diag1));
-	  output(inhel1,inhel2,outhel1,outhel2)=diag1;
+	  diag1 += diag2;
+	  total[0] += norm(diag1);
+	  output(inhel1,inhel2,outhel1,outhel2) = diag1;
 	}
       }
     }
