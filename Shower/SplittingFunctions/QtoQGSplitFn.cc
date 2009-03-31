@@ -41,14 +41,12 @@ double QtoQGSplitFn::P(const double z, const Energy2 t,
 
 }
 
-double QtoQGSplitFn::overestimateP(const double z, const IdList &) const
-{ 
+double QtoQGSplitFn::overestimateP(const double z, const IdList &) const { 
   return 8./3./(1.-z); 
 }
 
 double QtoQGSplitFn::ratioP(const double z, const Energy2 t,
-			    const IdList &ids, const bool mass) const
-{
+			    const IdList &ids, const bool mass) const {
   double val = 1. + sqr(z);
   if(mass) {
     Energy m = getParticleData(ids[0])->mass();
