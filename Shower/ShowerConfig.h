@@ -63,7 +63,7 @@ using namespace ThePEG;
     /**
      *  Enum for the type of interaction
      */
-    enum Type { UNDEFINED=-1, QCD };
+    enum Type { UNDEFINED=-1, QCD, QED };
   }
 }
 
