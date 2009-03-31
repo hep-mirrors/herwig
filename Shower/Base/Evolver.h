@@ -55,11 +55,14 @@ public:
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
-	      _limitEmissions(0), _ptVetoDefinition(1), _reversePtVeto(false), 
-	      _showerVariableOutput( false ), _initialenhance(1.), _finalenhance(1.), 
-	      _y_cut(1.1), _approxCuts( false ), _highestMult( false ) {}
+	      _limitEmissions(0), _ptVetoDefinition(1), 
+	      _highestMult( false ), _reversePtVeto(false), 
+	      _showerVariableOutput( false ), 
+	      _initialenhance(1.), _finalenhance(1.),
+	      _y_cut(1.1), _approxCuts( false ) {}
+
   /**
-   *  Member to perform the shower
+   *  Members to perform the shower
    */
   //@{
   /**
@@ -155,13 +158,13 @@ protected:
   /**
    *  Dummy implementation of powheg check of shower momentum reconstruction 
    */
-  virtual bool checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower ){ return true; }
+  virtual bool checkShowerMomentum(vector<ShowerProgenitorPtr> ) { return true; }
   
 
   /**
    *  set the colour partners
    */
-  virtual void setColourPartners(bool hard);
+  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type);
 
   /**
    *  Methods to perform the evolution of an individual particle, including
@@ -176,7 +179,7 @@ protected:
    * If at least one emission has occurred then the method returns true.
    * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle); 
+  virtual bool timeLikeShower(tShowerParticlePtr particle, ShowerInteraction::Type); 
 
   /**
    * It does the backward evolution of the space-like input particle 
@@ -186,7 +189,8 @@ protected:
    * @param particle The particle to be showered
    * @param beam The beam particle
    */
-  virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam); 
+  virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam,
+			       ShowerInteraction::Type); 
 
   /**
    * If does the forward evolution of the input on-shell particle
@@ -199,7 +203,8 @@ protected:
    */
   virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
 				    Energy maxscale,
-				    Energy minimumMass);
+				    Energy minimumMass,
+				    ShowerInteraction::Type);
   //@}
 
   /**
@@ -383,12 +388,12 @@ protected:
   /**
    *  Start the shower of a timelike particle
    */
-  virtual bool startTimeLikeShower();
+  virtual bool startTimeLikeShower(ShowerInteraction::Type);
 
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool startSpaceLikeShower(PPtr);
+  virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);
 
   /**
    *  Vetos for the timelike shower

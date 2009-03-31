@@ -260,7 +260,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
-    deconstructDecayJets(nasontree,evolver());
+    deconstructDecayJets(nasontree,evolver(),ShowerInteraction::QCD);
 
   // KMH - why don't we do the next step in deconstructDecayJets? 
   // Reset the momenta to ensure the correct momenta after shower recon

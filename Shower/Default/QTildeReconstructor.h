@@ -120,14 +120,16 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr) const;
+  virtual bool deconstructDecayJets(HardTreePtr, EvolverPtr,
+				    ShowerInteraction::Type) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr) const;
+  virtual bool deconstructHardJets(HardTreePtr, EvolverPtr,
+				   ShowerInteraction::Type) const;
   //@}
 
 public:
@@ -322,7 +324,8 @@ protected:
   void reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
 				   HardTreePtr,
 				   vector<HardBranchingPtr>,
-				   EvolverPtr ) const;
+				   EvolverPtr,
+				   ShowerInteraction::Type) const;
   
   /**
    *  Perform the reconstruction of a system with only final-state
@@ -339,7 +342,8 @@ protected:
   void reconstructInitialInitialShower(bool & applyBoost,
 				       Boost & toRest, Boost & fromRest,
 				       HardTreePtr,
-				       vector<HardBranchingPtr> ) const;
+				       vector<HardBranchingPtr>,
+				       ShowerInteraction::Type ) const;
 
   /**
    *  Reconstruction of a general coloured system

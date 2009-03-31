@@ -59,12 +59,12 @@ protected:
   /**
    *  Start the shower of a timelike particle
    */
-  virtual bool startTimeLikeShower();
+  virtual bool startTimeLikeShower(ShowerInteraction::Type);
 
   /**
    *  Start the shower of a spacelike particle
    */
-  virtual bool startSpaceLikeShower(PPtr);
+  virtual bool startSpaceLikeShower(PPtr, ShowerInteraction::Type);
 
 protected:
   
@@ -89,7 +89,7 @@ protected:
   /**
    *  set the colour partners
    */
-  virtual void setColourPartners(bool hard);
+  virtual void setEvolutionPartners(bool hard,ShowerInteraction::Type);
 
   /**
    *  Generate the hardest emission
@@ -100,13 +100,30 @@ protected:
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
-				       HardBranchingPtr branch);
+				       HardBranchingPtr branch,
+				       ShowerInteraction::Type type);
  
   /**
    * Truncated shower from a space-like particle
    */
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-					HardBranchingPtr branch);
+					HardBranchingPtr branch,
+					ShowerInteraction::Type type);
+
+  /**
+   *  Access to set/get the HardTree currently beinging showered
+   */
+  //@{
+  /**
+   *  The HardTree currently being showered
+   */
+  inline tHardTreePtr hardTree() {return _nasontree;}
+
+  /**
+   *  The HardTree currently being showered
+   */
+  inline void hardTree(tHardTreePtr in) {_nasontree = in;}
+  //@}
 
 protected:
 

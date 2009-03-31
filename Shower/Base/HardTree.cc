@@ -112,9 +112,6 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   }
 }
 
-
-
-
 bool HardTree::connect(ShowerTreePtr shower) {
   _particles.clear();
   // extract the progenitors from the ShowerTree
@@ -250,8 +247,8 @@ bool HardTree::checkHardOrdering() {
     }    
   }
   //  bool ordered = true;
-  for(int ix = 0; ix < _hard_line_scales.size(); ix++ ){
-    for(int jx = 0; jx < _hard_line_scales[ix].size(); jx++ ){
+  for(unsigned int ix = 0; ix < _hard_line_scales.size(); ix++ ){
+    for(unsigned int jx = 0; jx < _hard_line_scales[ix].size(); jx++ ){
       if( jx == 0 ) 
 	continue;
       //angular ordering condition: z_1*q_1 > q2

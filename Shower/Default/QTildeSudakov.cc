@@ -344,7 +344,7 @@ ShoKinPtr QTildeSudakov::createFinalStateBranching(Energy scale,double z,
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }
 
@@ -355,7 +355,7 @@ ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }
 
@@ -366,6 +366,6 @@ ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
   showerKin->z(z);
   showerKin->phi(phi);
   showerKin->pT(pt);
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   return showerKin;
 }

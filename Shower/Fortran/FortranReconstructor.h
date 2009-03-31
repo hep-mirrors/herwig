@@ -73,14 +73,16 @@ public:
    *  as a shower reconstruct the variables used to generate the 
    * shower
    */
-  virtual bool deconstructDecayJets(HardTreePtr decay,EvolverPtr) const;
+  virtual bool deconstructDecayJets(HardTreePtr decay,EvolverPtr,
+				    ShowerInteraction::Type) const;
 
   /**
    *  Given the particles, with a history which we wish to interpret
    *  as a shower reconstruct the variables used to generate the shower
    *  for a hard process
    */
-  virtual bool deconstructHardJets(HardTreePtr hard,EvolverPtr) const;
+  virtual bool deconstructHardJets(HardTreePtr hard,EvolverPtr,
+				   ShowerInteraction::Type) const;
   //@}
 
 public:

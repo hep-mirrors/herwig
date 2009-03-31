@@ -328,7 +328,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
     // clear results of last attempt
     if(ntry!=0) {
       currentTree()->clear();
-      setColourPartners(true);
+      setEvolutionPartners(true,ShowerInteraction::QCD);
       _nis = 0;
       _nfs = 0;
     }
@@ -359,13 +359,14 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 	if(!beamparticle->parents().empty()) 
 	  beamparticle=beamparticle->parents()[0];
 	// generate the shower
-	_progenitor->hasEmitted(startSpaceLikeShower(beamparticle));
+	_progenitor->hasEmitted(startSpaceLikeShower(beamparticle,
+						     ShowerInteraction::QCD));
       }
       // final-state
       else {
 	if(!isFSRadiationON()) continue;
 	// perform shower
-	_progenitor->hasEmitted(startTimeLikeShower());
+	_progenitor->hasEmitted(startTimeLikeShower(ShowerInteraction::QCD));
       }
     }
   }
@@ -416,14 +417,15 @@ void Evolver::hardMatrixElementCorrection() {
     _currentme->applyHardMatrixElementCorrection(_currenttree);
 }
 
-bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
+bool Evolver::timeLikeShower(tShowerParticlePtr particle, 
+			     ShowerInteraction::Type type) {
   // don't do anything if not needed
   if(_limitEmissions == 1 || _limitEmissions == 3 || 
      ( _limitEmissions == 2 && _nfs != 0) ) return false;
   // generate the emission
   Branching fb;
   while (true) {
-    fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance);
+    fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance,type);
     // no emission return
     if(!fb.kinematics) return false;
     // if emission OK break
@@ -469,15 +471,16 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
   ++_nfs;
   if(_limitEmissions!=0) return true;
   // shower the first  particle
-  timeLikeShower(theChildren[0]);
+  timeLikeShower(theChildren[0],type);
   // shower the second particle
-  timeLikeShower(theChildren[1]);
+  timeLikeShower(theChildren[1],type);
   // branching has happened
   return true;
 }
 
 bool 
-Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
+Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
+			 ShowerInteraction::Type type) {
   // don't do anything if not needed
   if(_limitEmissions == 2  || _limitEmissions == 3  ||
      ( _limitEmissions == 1 && _nis != 0 ) ) return false;
@@ -485,7 +488,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // generate branching
   while (true) {
     bb=_splittingGenerator->chooseBackwardBranching(*particle,beam,
-						    _initialenhance,_beam);
+						    _initialenhance,
+						    _beam,type);
     // return if no emission
     if(!bb.kinematics) return false;
     // if not vetoed break
@@ -518,7 +522,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // relationships are according to the branching process:
   // now continue the shower
   ++_nis;
-  bool emitted = _limitEmissions==0 ? spaceLikeShower(newParent,beam) : false;
+  bool emitted = _limitEmissions==0 ? 
+    spaceLikeShower(newParent,beam,type) : false;
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
@@ -534,7 +539,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   particle->showerKinematics()->updateChildren(newParent, theChildren);
   if(_limitEmissions!=0) return true;
   // perform the shower of the final-state particle
-  timeLikeShower(otherChild);
+  timeLikeShower(otherChild,type);
   // return the emitted
   return true;
 }
@@ -558,7 +563,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     // clear results of last attempt
     if(ntry!=0) {
       _currenttree->clear();
-      setColourPartners(false);
+      setEvolutionPartners(false,ShowerInteraction::QCD);
     }
     unsigned int istart=UseRandom::irnd(particlesToShower.size());
     unsigned int istop = particlesToShower.size();
@@ -577,7 +582,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       if(_progenitor->progenitor()->isFinalState()) {
 	if(!isFSRadiationON()) continue;
 	// perform shower
-	_progenitor->hasEmitted(startTimeLikeShower());
+	_progenitor->hasEmitted(startTimeLikeShower(ShowerInteraction::QCD));
       }
       // initial-state radiation
       else {
@@ -590,7 +595,8 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 	_progenitor->progenitor()->setEvolutionScale(startScale);
 	// perform the shower
 	_progenitor->hasEmitted(spaceLikeDecayShower(_progenitor->progenitor(),
-						     maxscale,minmass)); 
+						     maxscale,minmass,
+						     ShowerInteraction::QCD)); 
       }
     }
   }
@@ -608,11 +614,11 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 
 bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
 				   Energy maxscale,
-				   Energy minmass) {
+				   Energy minmass,ShowerInteraction::Type type) {
   Branching fb;
   while (true) {
     fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
-						 _initialenhance);
+						 _initialenhance,type);
     // return if no radiation
     if(!fb.kinematics) return false;
     // if not vetoed break
@@ -646,9 +652,9 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   _currenttree->updateInitialStateShowerProduct(_progenitor,theChildren[0]);
   _currenttree->addInitialStateBranching(particle,theChildren[0],theChildren[1]);
   // shower the first  particle
-  spaceLikeDecayShower(theChildren[0],maxscale,minmass);
+  spaceLikeDecayShower(theChildren[0],maxscale,minmass,type);
   // shower the second particle
-  timeLikeShower(theChildren[1]);
+  timeLikeShower(theChildren[1],type);
   // branching has happened
   return true;
 }
@@ -657,7 +663,7 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // put all the particles into a data structure which has the particles
   // and the maximum pt for emission from the particle
   // set the initial colour partners
-  setColourPartners(hard);
+  setEvolutionPartners(hard,ShowerInteraction::QCD);
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   // generate the hard matrix element correction if needed
@@ -674,13 +680,13 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
     particlesToShower.push_back(((*cjt).first));
   // remake the colour partners if needed
   if(_currenttree->hardMatrixElementCorrection()) {
-    setColourPartners(hard);
+    setEvolutionPartners(hard,ShowerInteraction::QCD);
     _currenttree->resetShowerProducts();
   }
   return particlesToShower;
 }
 
-void Evolver::setColourPartners(bool hard) {
+void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
   vector<ShowerParticlePtr> particles;
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -693,15 +699,15 @@ void Evolver::setColourPartners(bool hard) {
       cjt!=_currenttree->outgoingLines().end();++cjt)
     particles.push_back(cjt->first->progenitor());
   // Set the initial evolution scales
-  showerModel()->partnerFinder()->setInitialEvolutionScales(particles,!hard);
+  showerModel()->partnerFinder()->setInitialEvolutionScales(particles,!hard,type);
 }
 
-bool Evolver::startTimeLikeShower() {
-  return timeLikeShower(_progenitor->progenitor());
+bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
+  return timeLikeShower(_progenitor->progenitor(),type);
 }
 
-bool Evolver::startSpaceLikeShower(PPtr parent) {
-  return spaceLikeShower(_progenitor->progenitor(),parent);
+bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
+  return spaceLikeShower(_progenitor->progenitor(),parent,type);
 }
 
 bool Evolver::timeLikeVetoed(const Branching & fb,

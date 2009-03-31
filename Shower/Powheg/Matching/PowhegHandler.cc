@@ -410,10 +410,10 @@ void PowhegHandler::dofinish() {
     dalitz<<"CASE         \" X X\" \n";
     dalitz<<"TITLE LEFT \"X021\" \n";
     dalitz<<"CASE       \" X X\" \n";
-    for(int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
+    for(unsigned int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
       dalitz<< _dalitz_from_q1[ix].first <<"\t"<< _dalitz_from_q1[ix].second <<"\n";
     dalitz << "PLOT RED\n";
-    for(int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
+    for(unsigned int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
       dalitz<< _dalitz_from_q2[ix].first <<"\t"<< _dalitz_from_q2[ix].second <<"\n";
     dalitz << "PLOT BLUE\n";
     
@@ -998,7 +998,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     // Calculate the shower variables
     // if momentum deconstruction fails then continue and ignore
     if( ! evolver()->showerModel()->kinematicsReconstructor()
-	->deconstructDecayJets( powhegtree, evolver() ) ) continue;
+	->deconstructDecayJets( powhegtree, evolver() , ShowerInteraction::QCD )) continue;
     
     //only insert angular ordered hardTrees
     if( powhegtree->checkHardOrdering() ) {
@@ -1056,7 +1056,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   //re-do momentum deconstruction (has been overridden by other trees otherwise)
   simpleColConnections( chosen_hardTree );
   if( ! evolver()->showerModel()->kinematicsReconstructor()
-      ->deconstructDecayJets( chosen_hardTree, evolver() ) )
+      ->deconstructDecayJets( chosen_hardTree, evolver(), ShowerInteraction::QCD ) )
     cerr<<"\n\nproblem doing momentum decon in selected tree \n\n";
   if( ! chosen_hardTree ) {
     cerr<<"PowhegHandler::problem in choosing hard tree\n";
@@ -1301,7 +1301,7 @@ HardTreePtr PowhegHandler::generalClustering() {
     createColourFlow(newTree,jt->diagram);
     // Calculate the shower variables
     evolver()->showerModel()->kinematicsReconstructor()->
-      deconstructDecayJets(newTree,evolver());
+      deconstructDecayJets(newTree,evolver(),ShowerInteraction::QCD);
     if(checkTree(newTree)) break; 
     trees.erase(jt);
   }
@@ -1426,7 +1426,7 @@ HardBranchingPtr PrototypeBranching::convert() {
 HardTreePtr PrototypeTree::convert() {
   vector<HardBranchingPtr> branchings,spacelike;
   set<PrototypeBranchingPtr>::const_iterator it,jt;
-  // incoming lines and spacelike inot the hard process
+  // incoming lines and spacelike into the hard process
   for(it=incoming.begin();it!=incoming.end();++it) {
     spacelike.push_back((**it).convert());
     HardBranchingPtr br(spacelike.back());
@@ -1960,7 +1960,7 @@ HardTreePtr PowhegHandler::doClustering() {
 
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
-    deconstructDecayJets( powhegtree, evolver() );
+    deconstructDecayJets( powhegtree, evolver(),ShowerInteraction::QCD );
 
   //keep track of proportion of trees that are ordered
   _trees_created++;

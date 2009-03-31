@@ -133,7 +133,7 @@ vector<ShowerProgenitorPtr> PowhegEvolver::setupShower( bool hard ) {
   // generate the hardest emission
   hardestEmission();
   // set the colour partners
-  setColourPartners(hard);
+  setEvolutionPartners(hard,ShowerInteraction::QCD);
   // get the particles to be showered
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -181,8 +181,9 @@ void PowhegEvolver::hardestEmission() {
   _nasontree = currenthard->generateHardest( currentTree() );
 }
 
-bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
-					    HardBranchingPtr branch ) {
+bool PowhegEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
+					    HardBranchingPtr branch,
+					    ShowerInteraction::Type type) {
   Branching fb;
   unsigned int iout=0;
   tcPDPtr pdata[2];
@@ -190,7 +191,7 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     // no truncated shower break
     if(!isTruncatedShowerON()||_hardonly) break;
     // generate emission
-    fb=splittingGenerator()->chooseForwardBranching(*particle,1.);
+    fb=splittingGenerator()->chooseForwardBranching(*particle,1.,type);
     // no emission break
     if(!fb.kinematics) break;
     // check haven't evolved too far
@@ -275,18 +276,18 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
     // shower the first  particle
     if( branch->children()[0]->children().empty() ) {
       if( ! _hardonly )
-	timeLikeShower(theChildren[0]);
+	timeLikeShower(theChildren[0],type);
     }
     else {
-      truncatedTimeLikeShower( theChildren[0],branch->children()[0] );
+      truncatedTimeLikeShower( theChildren[0],branch->children()[0],type);
     } 
     // shower the second particle
     if( branch->children()[1]->children().empty() ) {
       if( ! _hardonly )
-	timeLikeShower( theChildren[1] );
+	timeLikeShower( theChildren[1] , type);
     }
     else {
-      truncatedTimeLikeShower( theChildren[1],branch->children()[1] );
+      truncatedTimeLikeShower( theChildren[1],branch->children()[1] ,type);
     }
     return true;
   }
@@ -308,17 +309,18 @@ bool PowhegEvolver::truncatedTimeLikeShower( tShowerParticlePtr particle,
 						  particle, theChildren );
   currentTree()->addFinalStateBranching( particle, theChildren );
   // shower the first  particle
-  if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch );
-  else            timeLikeShower( theChildren[0] );
+  if( iout == 1 ) truncatedTimeLikeShower( theChildren[0], branch , type );
+  else            timeLikeShower( theChildren[0]  , type);
   // shower the second particle
-  if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch );
-  else            timeLikeShower( theChildren[1] );
+  if( iout == 2 ) truncatedTimeLikeShower( theChildren[1], branch , type );
+  else            timeLikeShower( theChildren[1]  , type);
   // branching has happened
   return true;
 }
 
 bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
-					    HardBranchingPtr branch) {
+					     HardBranchingPtr branch,
+					     ShowerInteraction::Type type) {
   //  bool vetoed(true);
   Branching bb;
   // generate branching
@@ -326,7 +328,8 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   while (true) {
     if( isTruncatedShowerON() || _hardonly ) break;
     bb = splittingGenerator()->chooseBackwardBranching( *particle, 
-							beam, 1., beamParticle() );
+							beam, 1., beamParticle(), 
+							type );
     if( !bb.kinematics || bb.kinematics->scale() < branch->scale() ) {
       bb = Branching();
       break;
@@ -393,10 +396,10 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     bool emitted=false;
     if(!_hardonly) {
       if( branch->parent() ) {
-	emitted = truncatedSpaceLikeShower( newParent, beam, branch->parent() );
+	emitted = truncatedSpaceLikeShower( newParent, beam, branch->parent() , type);
       }
       else {
-	emitted = spaceLikeShower( newParent, beam );
+	emitted = spaceLikeShower( newParent, beam , type);
       }
     }
     if( !emitted ) {
@@ -414,10 +417,10 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
     if(_hardonly) return true;
     // perform the shower of the final-state particle
     if( timelike->children().empty() ) {
-      timeLikeShower( otherChild );
+      timeLikeShower( otherChild , type);
     }
     else {
-      truncatedTimeLikeShower( otherChild, timelike );
+      truncatedTimeLikeShower( otherChild, timelike , type);
     }
     // return the emitted
     return true;
@@ -439,7 +442,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   // for the reconstruction of kinematics, parent/child
   // relationships are according to the branching process:
   // now continue the shower
-  bool emitted = truncatedSpaceLikeShower( newParent, beam, branch);
+  bool emitted = truncatedSpaceLikeShower( newParent, beam, branch,type);
   // now reconstruct the momentum
   if( !emitted ) {
     if( intrinsicpT().find( progenitor() ) == intrinsicpT().end() ) {
@@ -454,21 +457,22 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   }
   particle->showerKinematics()->updateChildren( newParent, theChildren );
   // perform the shower of the final-state particle
-  timeLikeShower( otherChild );
+  timeLikeShower( otherChild , type);
   // return the emitted
   return true;
 }
 
-void PowhegEvolver::setColourPartners(bool hard) {
+void PowhegEvolver::setEvolutionPartners(bool hard,
+				      ShowerInteraction::Type type) {
   // if no hard tree use the methid in the base class
   if(!_nasontree) {
-    Evolver::setColourPartners(hard);
+    Evolver::setEvolutionPartners(hard,type);
     return;
   }
   // match the particles in the ShowerTree and NasonTree
   if(!_nasontree->connect(currentTree()))
     throw Exception() << "Can't match trees in "
-		      << "PowhegEvolver::setColourPartners()"
+		      << "PowhegEvolver::setEvolutionPartners()"
 		      << Exception::eventerror;
   // sort out the colour partners
   vector<ShowerParticlePtr> particles;
@@ -489,45 +493,44 @@ void PowhegEvolver::setColourPartners(bool hard) {
     for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator
 	  it=_nasontree->particles().begin();
 	it!=_nasontree->particles().end();++it) {
-      if(it->second==partner) {
-	particles[ix]->setPartner(it->first);
-      }
+      if(it->second==partner) particles[ix]->setPartner(it->first);
     }
     if(!particles[ix]->partner()) 
       throw Exception() << "Can't match partners in "
-			<< "PowhegEvolver::setColourPartners()"
+			<< "PowhegEvolver::setEvolutionPartners()"
 			<< Exception::eventerror;
   }
   // Set the initial evolution scales
   showerModel()->partnerFinder()->
-    setInitialEvolutionScales(particles,!hard,false);
+    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,false);
 }
 
-bool PowhegEvolver::startTimeLikeShower() {
+bool PowhegEvolver::startTimeLikeShower(ShowerInteraction::Type type) {
   if(_nasontree) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=_nasontree->particles().end(),
       mit = _nasontree->particles().find(progenitor()->progenitor());
     if( mit != eit && !mit->second->children().empty() ) {
-      return truncatedTimeLikeShower(progenitor()->progenitor(), mit->second );
+      return truncatedTimeLikeShower(progenitor()->progenitor(), mit->second ,type);
     }
   }
   return  _hardonly ? false :
-    timeLikeShower(progenitor()->progenitor()) ;
+    timeLikeShower(progenitor()->progenitor() ,type) ;
 }
 
-bool PowhegEvolver::startSpaceLikeShower(PPtr parent) {
+bool PowhegEvolver::startSpaceLikeShower(PPtr parent,
+					 ShowerInteraction::Type type) {
   if(_nasontree) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =_nasontree->particles().end(),
       mit = _nasontree->particles().find(progenitor()->progenitor());
     if( _nasontree && mit != eit && mit->second->parent() ) {
       return truncatedSpaceLikeShower( progenitor()->progenitor(),
-				       parent, mit->second->parent() );
+				       parent, mit->second->parent(), type );
     } 
   }
   return  _hardonly ? false :
-    spaceLikeShower(progenitor()->progenitor(),parent);
+    spaceLikeShower(progenitor()->progenitor(),parent,type);
 }
 
 bool PowhegEvolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower ){

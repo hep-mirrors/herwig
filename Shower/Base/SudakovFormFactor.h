@@ -19,7 +19,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
-#include "ShowerKinematics.h"
+#include "ShowerKinematics.fh"
 #include "SudakovFormFactor.fh"
 
 namespace Herwig {
@@ -185,7 +185,7 @@ public:
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
    * @param beam The beam particle
-   * @param enhance THe radiation enhancement factor
+   * @param enhance The radiation enhancement factor
    */
   virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
 					       const IdList &ids,double x,
@@ -206,6 +206,12 @@ public:
    * Return the pointer to the ShowerAlpha object.
    */
   inline tShowerAlphaPtr alpha() const { return alpha_; }
+
+  /**
+   *  The type of interaction
+   */
+  inline ShowerInteraction::Type interactionType() const 
+  {return splittingFn_->interactionType();}
   //@}
 
 public:

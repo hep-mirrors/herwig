@@ -70,6 +70,23 @@ void PartnerFinder::Init() {
 }
 
 bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &particles,
+					      const bool isDecayCase,
+					      ShowerInteraction::Type type,
+					      const bool setPartners) {
+  if(type==ShowerInteraction::QCD) {
+    return setInitialQCDEvolutionScales(particles,isDecayCase,setPartners);
+  }
+  else if(type==ShowerInteraction::QED) {
+    return setInitialQEDEvolutionScales(particles,isDecayCase,setPartners);
+  }
+  else {
+    throw Exception() << "Must be either QCD or QED in "
+		      << "PartnerFinder::setInitialEvolutionScales()\n"
+		      << Exception::runerror;
+  }
+}
+
+bool PartnerFinder::setInitialQCDEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase,
 						 const bool setPartners) {
   // set the partners and the scales
@@ -188,6 +205,64 @@ bool PartnerFinder::setInitialEvolutionScales(const ShowerParticleVector &partic
 			  << " PartnerFinder::setQCDInitialEvolutionScale()"
 			  << Exception::abortnow;
       }
+    }
+  }
+  // partners all ready set only do the scales
+  else {
+    for(ShowerParticleVector::const_iterator cit = particles.begin();
+	cit != particles.end(); ++cit) {
+      if(!(**cit).dataPtr()->coloured()) continue;
+      tShowerParticlePtr partner = (**cit).partner();
+      pair<Energy,Energy> pairScales = 
+	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
+					isDecayCase);
+      (*cit)->setEvolutionScale(pairScales.first);
+    }
+  }
+  return true;
+}
+
+bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &particles,
+						 const bool isDecayCase,
+						 const bool setPartners) {
+  // set the partners and the scales
+  if(setPartners) {
+    ShowerParticleVector::const_iterator cit, cjt;
+    for(cit = particles.begin(); cit != particles.end(); ++cit) {
+      if(!(*cit)->data().charged()) continue;
+      // We now have a charged particle
+      vector<pair<double,tShowerParticlePtr> > partners;
+      for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
+	if(!(*cjt)->data().charged()||cit==cjt) continue;
+	double charge = double((*cit)->data().iCharge()*(*cjt)->data().iCharge());
+	if( FS(*cit) != FS(*cjt) ) charge *=-1.;
+	if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
+      }
+      if(partners.empty()) {
+	throw Exception() << "Failed to partner in " 
+			  << "PartnerFinder::setQCDInitialEvolutionScales"
+			  << (**cit) << Exception::eventerror;
+      }
+      double prob(0.);
+      for(unsigned int ix=0;ix<partners.size();++ix) prob +=partners[ix].first;
+      prob *= UseRandom::rnd();
+      tShowerParticlePtr partner;
+      for(unsigned int ix=0;ix<partners.size();++ix) {
+	if(partners[ix].first>prob) {
+	  partner = partners[ix].second;
+	  break;
+	}
+	prob -= partners[ix].first;
+      }
+      if(!partner) 
+	throw Exception() << "Failed to partner in " 
+			  << "PartnerFinder::setQCDInitialEvolutionScales"
+			  << (**cit) << Exception::eventerror;
+      pair<Energy,Energy> pairScales = 
+	calculateInitialEvolutionScales(ShowerPPair(*cit,partner),
+					isDecayCase);
+      (*cit)->setEvolutionScale(pairScales.first);
+      (*cit)->setPartner(partner);
     }
   }
   // partners all ready set only do the scales

@@ -143,10 +143,12 @@ public:
    *
    * @param particle The particle to be evolved
    * @param enhance The factor by which to ehnace the emission of radiation
+   * @param type The type of interaction to generate
    * @return The Branching struct for the branching
    */
   Branching chooseForwardBranching(ShowerParticle & particle,
-				   double enhance) const; 
+				   double enhance,
+				   ShowerInteraction::Type type) const; 
 
   /**
    * Select the next branching of a particles for the initial-state shower
@@ -155,11 +157,13 @@ public:
    * @param maxscale The maximum scale
    * @param minmass Minimum mass of the particle after the branching
    * @param enhance The factor by which to ehnace the emission of radiation
+   * @param type The type of interaction to generate
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
 				 Energy maxscale,
-				 Energy minmass,double enhance) const; 
+				 Energy minmass,double enhance,
+				 ShowerInteraction::Type type) const; 
 
   /**
    * Choose a new backward branching for a space-like particle.
@@ -177,14 +181,17 @@ public:
    *
    * @param particle The particle to be evolved
    * @param enhance The factor by which to ehnace the emission of radiation
-   * @param beam The beam particle
+   * @param beamparticle The beam particle
+   * @param beam The BeamParticleData object
+   * @param type The type of interaction to generate
    * @return The Branching struct for the branching
    */
   Branching 
   chooseBackwardBranching(ShowerParticle & particle,
-			  PPtr beam,
+			  PPtr beamparticle,
 			  double enhance,
-			  Ptr<BeamParticleData>::transient_const_pointer) const;
+			  Ptr<BeamParticleData>::transient_const_pointer beam,
+			  ShowerInteraction::Type type) const;
   //@}
 
 public:

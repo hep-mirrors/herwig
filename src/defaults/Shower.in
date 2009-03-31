@@ -22,6 +22,7 @@ set ShowerHandler:RemDecayer /Herwig/Partons/RemnantDecayer
 #####################################
 create Herwig::SplittingGenerator SplittingGenerator
 create Herwig::ShowerAlphaQCD AlphaQCD
+create Herwig::ShowerAlphaQED AlphaQED
 create Herwig::Evolver Evolver
 create Herwig::QTildeModel ShowerModel
 create Herwig::QTildeFinder PartnerFinder
@@ -101,6 +102,7 @@ set AlphaQCD:AlphaMZ 0.127
 #
 # Lets set up all the splittings
 create Herwig::QtoQGSplitFn QtoQGSplitFn
+create Herwig::QtoQGammaSplitFn QtoQGammaSplitFn
 create Herwig::GtoQQbarSplitFn GtoQQbarSplitFn
 create Herwig::GtoGGSplitFn GtoGGSplitFn
 create Herwig::QtoGQSplitFn QtoGQSplitFn
@@ -114,6 +116,11 @@ set SudakovCommon:PDFmax 1.0
 cp SudakovCommon QtoQGSudakov
 set QtoQGSudakov:SplittingFunction QtoQGSplitFn
 set QtoQGSudakov:PDFmax 1.9
+
+cp SudakovCommon QtoQGammaSudakov
+set QtoQGammaSudakov:SplittingFunction QtoQGammaSplitFn
+set QtoQGammaSudakov:Alpha AlphaQED
+set QtoQGammaSudakov:PDFmax 1.9
 
 cp SudakovCommon GtoGGSudakov
 set GtoGGSudakov:SplittingFunction GtoGGSplitFn
@@ -163,6 +170,17 @@ set SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
 set SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
 set SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
 #
+set SplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
+
+set SplittingGenerator:AddFinalSplitting e-->e-,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting mu-->mu-,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddFinalSplitting tau-->tau-,gamma; QtoQGammaSudakov
+#
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that particle a is the particle given and we backward branch to
 # particle b which is initial state and particle c which is final state
@@ -173,6 +191,12 @@ set SplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
 set SplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
 set SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
 set SplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
+set SplittingGenerator:AddInitialSplitting u->u,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddInitialSplitting s->s,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddInitialSplitting c->c,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
+set SplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
 #
 set SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #

@@ -249,7 +249,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   }
   // calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
-    deconstructHardJets(nasontree,evolver());
+    deconstructHardJets(nasontree,evolver(),ShowerInteraction::QCD);
   return nasontree;
 }
    

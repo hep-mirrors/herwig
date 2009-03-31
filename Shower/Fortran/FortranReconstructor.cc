@@ -185,12 +185,14 @@ void FortranReconstructor::reconstructTimeLikeMass(tShowerParticlePtr parent) co
 //       END
 
 bool FortranReconstructor::deconstructDecayJets(HardTreePtr,
-						  EvolverPtr) const {
+						EvolverPtr,
+						ShowerInteraction::Type) const {
   throw Exception() << "FortranReconstructor::deconstructDecayJets() not "
 		    << "implemented " << Exception::runerror;
 }
 
-bool FortranReconstructor::deconstructHardJets(HardTreePtr, EvolverPtr) const {
+bool FortranReconstructor::deconstructHardJets(HardTreePtr, EvolverPtr,
+					       ShowerInteraction::Type) const {
   throw Exception() << "FortranReconstructor::deconstructHardJets() "
 		    << "not yet implemented"
 		    << Exception::runerror;

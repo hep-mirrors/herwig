@@ -638,8 +638,9 @@ solveDecayKFactor(Energy mb,
   return ix<100;
 }
 
-bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
-					       EvolverPtr evolver) const {
+bool QTildeReconstructor::
+deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
+		     ShowerInteraction::Type type) const {
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
@@ -685,7 +686,7 @@ bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
     particles.push_back((*cit)->branchingParticle());
   }
   evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true);
+    ->setInitialEvolutionScales(particles,true,type);
   // calculate the reference vectors
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     // find the partner branchings
@@ -719,11 +720,18 @@ bool QTildeReconstructor::deconstructDecayJets(HardTreePtr decay,
   // now compute the new momenta 
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if(!(*cit)->branchingParticle()->isFinalState()) continue;
-    Energy2 dot=(*cit)->pVector()*(*cit)->nVector();
-    double beta = 0.5*((*cit)->branchingParticle()->momentum().m2()
-		       -sqr((*cit)->pVector().mass()))/dot;
-    Lorentz5Momentum qnew=(*cit)->pVector()+beta*(*cit)->nVector();
-    qnew.rescaleMass();
+    Lorentz5Momentum qnew;
+    if((type==ShowerInteraction::QCD&&(*cit)->branchingParticle()->data().coloured())||
+       (type==ShowerInteraction::QED&&(*cit)->branchingParticle()->data().charged())) {
+      Energy2 dot=(*cit)->pVector()*(*cit)->nVector();
+      double beta = 0.5*((*cit)->branchingParticle()->momentum().m2()
+			 -sqr((*cit)->pVector().mass()))/dot;
+      qnew=(*cit)->pVector()+beta*(*cit)->nVector();
+      qnew.rescaleMass();
+    }
+    else {
+      qnew = (*cit)->pVector();
+    }
     // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
     // for the simple case Z->q qbar g this was checked against analytic formulae.
     // compute the boost
@@ -787,7 +795,8 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
 }
 
 bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
-					      EvolverPtr evolver) const {
+					      EvolverPtr evolver,
+					      ShowerInteraction::Type type) const {
   // old recon method
   if(_reconopt==0) {
     // extract incoming and outgoing particles
@@ -801,10 +810,10 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     Boost toRest,fromRest;
     bool applyBoost(false);
     reconstructInitialInitialShower(applyBoost,toRest,fromRest,
-				    tree,in.jets);
+				    tree,in.jets,type);
     // do the final-state reconstruction
     reconstructFinalStateShower(toRest,fromRest,tree,
-				out.jets,evolver);
+				out.jets,evolver,type);
   }
   else {
     throw Exception() << "The inverse reconstruction of the hard shower"
@@ -1157,7 +1166,8 @@ void QTildeReconstructor::
 reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
 				Boost & fromRest,
 				HardTreePtr tree,
-				vector<HardBranchingPtr> jets) const {
+				vector<HardBranchingPtr> jets,
+				ShowerInteraction::Type) const {
   // get the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pq;
@@ -1225,11 +1235,49 @@ reconstructInitialInitialShower(bool & applyBoost,Boost & toRest,
 void QTildeReconstructor::
 reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
 			    HardTreePtr tree, vector<HardBranchingPtr> jets,
-			    EvolverPtr evolver) const {
+			    EvolverPtr evolver,
+			    ShowerInteraction::Type type) const {
   if(jets.size()==1) {
     LorentzRotation R(toRest);
     R.boost(fromRest);
     jets[0]->setMomenta(R,1.0,Lorentz5Momentum());
+    // find the colour partners
+    ShowerParticleVector particles;
+    vector<Lorentz5Momentum> ptemp;
+    set<HardBranchingPtr>::const_iterator cjt;
+    for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {
+      ptemp.push_back((**cjt).branchingParticle()->momentum());
+      (**cjt).branchingParticle()->set5Momentum((**cjt).showerMomentum());
+      particles.push_back((**cjt).branchingParticle());
+    }
+    evolver->showerModel()->partnerFinder()
+      ->setInitialEvolutionScales(particles,true,type);
+    // calculate the reference vectors
+    unsigned int iloc(0);
+    set<HardBranchingPtr>::iterator clt;
+    for(cjt=tree->branchings().begin();cjt!=tree->branchings().end();++cjt) {
+      // reset the momentum
+      (**cjt).branchingParticle()->set5Momentum(ptemp[iloc]);
+      ++iloc;
+      // sort out the partners
+      tShowerParticlePtr partner = 
+	(*cjt)->branchingParticle()->partner();
+      if(!partner) continue;
+      for(clt=tree->branchings().begin();clt!=tree->branchings().end();++clt) {
+	if((**clt).branchingParticle()==partner) {
+	  (**cjt).colourPartner(*clt);
+	  break;
+	}
+      }
+      tHardBranchingPtr branch;
+      for(clt=tree->branchings().begin();clt!=tree->branchings().end();++clt) {
+	if(clt==cjt) continue;
+	if((*clt)->branchingParticle()==partner) {
+	  branch=*clt;
+	  break;
+	}
+      }
+    }
     return;
   }
   vector<HardBranchingPtr>::iterator cit;
@@ -1268,7 +1316,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
     particles.push_back((**cjt).branchingParticle());
   }
   evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true);
+    ->setInitialEvolutionScales(particles,true,type);
   // calculate the reference vectors
   unsigned int iloc(0);
     set<HardBranchingPtr>::iterator clt;

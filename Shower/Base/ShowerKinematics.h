@@ -14,7 +14,7 @@
 
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
-#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "ShowerKinematics.fh"
 
 namespace Herwig {
@@ -50,7 +50,7 @@ public:
    */
   ShowerKinematics() : Base(), _isTheJetStartingPoint( false ),
 		       _scale(), _z( 0.0 ), _phi( 0.0 ), _pt(),
-		       _splitFun() {}
+		       _sudakov() {}
 
   /**
    *  The updateChildren and updateParent
@@ -216,17 +216,28 @@ public:
   /**
    *  Set and get methods for the SplittingFunction object
    */
+  //@{
   /**
    * Access the SplittingFunction object responsible of the 
    * eventual branching of this particle.
    */
-  tSplittingFnPtr splittingFn() const { return _splitFun; }
+  tSplittingFnPtr splittingFn() const { return _sudakov-> splittingFn(); }
+  //@}
 
   /**
-   * Set the SplittingFunction object responsible of the 
+   *  Set and get methods for the SudakovFormFactor object
+   */
+  /**
+   * Access the SudakovFormFactor object responsible of the 
    * eventual branching of this particle.
    */
-  void splittingFn(const tSplittingFnPtr sf) { _splitFun=sf; }
+  tSudakovPtr SudakovFormFactor() const { return _sudakov; }
+
+  /**
+   * Set the SudakovFormFactor object responsible of the 
+   * eventual branching of this particle.
+   */
+  void SudakovFormFactor(const tSudakovPtr sud) { _sudakov=sud; }
   //@}
 
 private:
@@ -267,7 +278,7 @@ private:
   /**
    *  The splitting function for the branching of the particle
    */
-  tSplittingFnPtr _splitFun;
+  tSudakovPtr _sudakov;
 };
 
 }

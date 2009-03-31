@@ -245,7 +245,7 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   showerKin->z(z);
   showerKin->phi(2.*pi*UseRandom::rnd());
   //showerKin->pT(pT());
-  showerKin->splittingFn(splittingFn());
+  showerKin->SudakovFormFactor(this);
   // return it
   return showerKin;
 }
