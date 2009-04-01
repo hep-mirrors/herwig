@@ -1,5 +1,5 @@
 /* This program generates top pairs at NLO accuracy from polarized e+e- annihilation 
-at the ILC with C.O.M energy of 500 GeV (an update for arbitary energy will be presented soon).
+at the ILC.
  The events are produced in the LH xml format */
 #include <cstdlib> 
 #include <ctime> 
@@ -10,12 +10,14 @@ at the ILC with C.O.M energy of 500 GeV (an update for arbitary energy will be p
 #include <stdio.h>
 #include <cmath>
 #include <iomanip>
-#include "ILCTTBAR500_INPUTS.h"
+#include "ILCTTBAR_INPUTS.h"
 using namespace std;
 
 void filegen(double &rintgend1a, double &rintgend2a,double &rintgend3a, double &rintgend4a,double &rintgend1v, double &rintgend2v,double &rintgend3v, double &rintgend4v); // generates production interpolation files
 
  void filegendec (double &rintgend1, double &rintgend2, double &rintgend3, double &rintgend4);// generates decay interpolation files
+
+double coeff(int N, double XXX, bool axi); //interpolates for vector/axial coefficeints
 
 double interp(int N,double XXX, double Xmax1, double Xmax2, double Xmax3, double Xmax4, bool axi); // interpolates for production process
 
@@ -27,11 +29,13 @@ double ME (double d2, double pt2,double &rx, double &ry1, double &ry2,double xmi
 
  double MEd (double pt2,double &rx3, double &rx11, double &rx12, double &rMd1, double &rMd2);//calculates matrix element for decay process
 
- void PolarizedME (double xt, double xtb, double xg, double &rct, double &rst, double &rsphi, double &rcphi,double &rLLL,double &rLRR,double &rLRL,double &rLLR,double &rRLL,double &rRRR, double &rRRL,double &rRLR);//calculates polarized matrix element for production process
+ void PolarizedME (double xt, double xtb, double xg, double &rct, double &rst, double &rsphi, double &rcphi,double &rLLL,double &rLRR,double &rLRL,double &rLLR,double &rRLL,double &rRRR, double &rRRL,double &rRLR,double areafac);//calculates polarized matrix element for production process
 
- double PolMEdec(double xw1, double xb1, double xg1,double &rctw, double &rctl,double &rbphi, double &rbgphi,int tm, double xd0, double zd0);//calculates polarized matrix element for decay process
+ double PolMEdec(double xw1, double xb1, double xg1,double &rctw, double &rctl,double &rbphi, double &rbgphi,int tm, double xd0, double zd0, double fac);//calculates polarized matrix element for decay process
 
 double random (int &rseed); // random number generator
+
+double ddilog(double x); //Dilogarithm function
 
 bool ax(int rseed1); // axial-vector or vector?
 
@@ -42,15 +46,22 @@ bool ax(int rseed1); // axial-vector or vector?
    double b = 23./(12.*pi);
    double bp = 58./(46.*pi);
    double mt =175.;
-   double emcm = 500.;
+   double emcm = user.cme(); 
    double ms = 2.*mt/emcm;
    double rho = pow(mt/emcm,2);
    double d2 = pow(ms,2);
    double beta=sqrt(1.-d2);
    double CF=4./3.;
-// Max and min kt^2 for production. Note this is kappa. Hard wired for 500 GeV
-   double pt2max = 0.03;
-   double pt2min=0.00000016;
+// Max and min kt^2 for production. Note this is kappa.
+   double real = -1440.*rho-44.-1728.*pow(rho,2);
+   double im = 12.*sqrt(fabs(-14592.*pow(rho,3)+3168.*pow(rho,2)-144.*rho-15.+20736.*pow(rho,4)));
+   double magn = sqrt(pow(real,2)+pow(im,2));
+   double theta = atan2(im, real);
+   double xymax = 1./6.*pow(magn,1./3.)*cos(theta/3.)-(-32.*rho-8./3.)/pow(magn,1./3.)*cos(theta/3.)-1./3.;
+   double pt2max = (pow(1.-xymax,2)*(2.*xymax-1.)-rho*pow(2.-2.*xymax,2))/(pow(xymax,2)-4.*rho); 
+   double pt2min=pow(0.2/emcm,2);
+   double xmeet = 2./3. + 4./3.*rho;
+   double pt2meet = (pow(1.-xmeet,2)*(2.*xmeet-1.)-rho*pow(2.-2.*xmeet,2))/(pow(xmeet,2)-4.*rho);
    double mw=80.;
    double a =pow(mw/mt,2);
 // Max and min kt^2 for decays. Note this is kappa*mt^2
@@ -71,8 +82,8 @@ bool ax(int rseed1); // axial-vector or vector?
    double Vt=0.5-2.*Qt*sinsqthw;
    double Ae=-0.5;
    double Ve=-0.5+2.*sinsqthw;
-   double Ref=s*(s-pow(Mz,2))/(4.*sinsq2thw*(pow((s-pow(Mz,2)),2)+pow(Mz*Yz,2)));
-   double Imf=-Mz*Yz*s/(4.*sinsq2thw*(pow((s-pow(Mz,2)),2)+pow(Mz*Yz,2)));
+   double Ref=s*(s-pow(Mz,2))/(16.*sinsqthw*(pow((s-pow(Mz,2)),2)+pow(Mz*Yz,2)));
+   double Imf=-Mz*Yz*s/(16.*sinsqthw*(pow((s-pow(Mz,2)),2)+pow(Mz*Yz,2)));
    double ve = 2.*Ve;
    double ae = 2.*Ae;
    double vt = 2.*Vt;
@@ -83,13 +94,11 @@ bool ax(int rseed1); // axial-vector or vector?
    double qer=sinsqthw/costhw;
    double qtl=(3.-4.*sinsqthw)/(6.*costhw);
    double qtr= -2.*sinsqthw/(3.*costhw);
-   double c1=3.5;
-   double d1=2.25;
-   
+   double c1=  coeff(18,ms,false);
+   double d1= coeff (24,ms,true);  
    double chi1 = k*s*(s-pow(Mz,2))/(pow((s-pow(Mz,2)),2)+pow(Yz*Mz,2));
    double chi2 = pow(k,2)*pow(s,2)/(pow((s-pow(Mz,2)),2)+pow(Yz*Mz,2));
-     double alphaprod =1./(b*log(1./pt2min))*(1.-bp*log(log(1./pt2min))/(b*log(1./pt2min)));
-   
+   double alphaprod =1./(b*log(1./pt2min))*(1.-bp*log(log(1./pt2min))/(b*log(1./pt2min)));
    double sV=pow(Qt,2)-2.*Qt*Ve*Vt*chi1+(pow(Ae,2)+pow(Ve,2))*pow(Vt,2)*chi2;
    double sA=(pow(Ae,2)+pow(Ve,2))*pow(At,2)*chi2;
    double A=(pow(beta,3)+d1*alphaprod/pi)*sA*4.*pi*pow(alphaem,2)/s;
@@ -97,27 +106,25 @@ bool ax(int rseed1); // axial-vector or vector?
 
 
 //cross-section in picobarns
-  double AV=(A+V)*389400000.;
+  double AV=(A+V)*389400000.; 
     
 // Parameters and integrals for Bbar production and decay born variables
-double asmt = 0.107; // alphas at top mass
+   double asmt = 0.107; // alphas at top mass
    double xg0=0.2*2./(pow(beta,2)*emcm);
-    double F1Vg=2./3.;
-double  F1Vz=(0.25-2.*sinsqthw/3.)/(sqrt(sinsqthw)*costhw);
-double F1Az=(-0.25)/(sqrt(sinsqthw)*costhw);
-double I1virt=-2.+(1.+pow(b,2))/(2.*b)*(-1.5+log(4.*pow(b,2)/(1.-pow(b,2)))*log((1.-b)/(1.+b))+2.*pow(pi,2)/3.+2*0.174285939+0.5*pow((log((1.-b)/(1.+b))),2));
-double I2=(1.-pow(b,2))/(4.*b)*(log((1.-b)/(1.+b)));
-double I1soft=-2.*log(xg0)*(1.+(1.+pow(b,2))/(2.*b)*log((1.-b)/(1.+b)))+log((1.-pow(b,2))/(4.*pow(b,2)))-1./b*log((1.-b)/(1.+b))+(1.+pow(b,2))/(2.*b)*(-log(pow(b,2))*log((1.-b)/(1.+b))-pow(pi,2)/3+2.*0.174285939+0.5*pow((log((1.-b)/(1.+b))),2));
-//NB: Hard code ddilog((1-b)/(1+b))=0.174285939
-double I11=I1virt+I1soft;
-     double dF1Vg=asmt*4./(3.*2.*pi)*F1Vg*(I11+I2);
+   double F1Vg=2./3.;
+   double  F1Vz=(0.25-2.*sinsqthw/3.)/(sqrt(sinsqthw)*costhw);
+   double F1Az=(-0.25)/(sqrt(sinsqthw)*costhw);
+   double I1virt=-2.+(1.+pow(beta,2))/(2.*beta)*(-1.5+log(4.*pow(beta,2)/(1.-pow(beta,2)))*log((1.-beta)/(1.+beta))+2.*pow(pi,2)/3.+2*ddilog((1.-beta)/(1.+beta))+0.5*pow((log((1.-beta)/(1.+beta))),2));
+   double I2=(1.-pow(beta,2))/(4.*beta)*(log((1.-beta)/(1.+beta)));
+   double I1soft=-2.*log(xg0)*(1.+(1.+pow(beta,2))/(2.*beta)*log((1.-beta)/(1.+beta)))+log((1.-pow(beta,2))/(4.*pow(beta,2)))-1./beta*log((1.-beta)/(1.+beta))+(1.+pow(beta,2))/(2.*beta)*(-log(pow(beta,2))*log((1.-beta)/(1.+beta))-pow(pi,2)/3+2.*ddilog((1.-beta)/(1.+beta))+0.5*pow((log((1.-beta)/(1.+beta))),2));
+    double I11=I1virt+I1soft;
+    double dF1Vg=asmt*4./(3.*2.*pi)*F1Vg*(I11+I2);
     double dF1Vz=asmt*4./(3.*2.*pi)*F1Vz*(I11+I2);
     double dF1Az=asmt*4./(3.*2.*pi)*F1Az*(I11-I2);
-
+    double sum =0.;
 /***************************************************************************************************/
 
 int main() {
- 
   // Switches
   int nevg = user.nevgen();
   double emcm = user.cme();
@@ -134,6 +141,57 @@ int main() {
    double max1=0.,max2=0.,max3=0.,max4=0.;
    double maxd1=0.,maxd2=0.,maxd3=0.,maxd4=0.;
  //=========================================================//
+   for (int ix = 1; ix < 100000 ; ix++) {
+     double xt=random(seed);
+     double xtb=random(seed);
+     double xgg=2.-xt-xtb;
+     if (xgg < xg0 || (1.-xt)*(1.-xtb)*(xt+xtb-1.) < pow(mt/emcm,2)*pow(2.-xt-xtb,2)) {
+       sum=sum+1.;}
+   }
+   double areafac = 1./(1.-sum/100000.);
+   //=========================================================//
+    double sum = 0.;
+    for (int ix=0; ix <100000; ix++) {
+     double x0=0.2/(mt/2.*(1.-a));
+     double z0=0.0028;
+     double cbgst1, cbgst2;
+       double xg1=random(seed)*(1.-a);
+       double xw1=a+random(seed);
+       double xb1=2.-xw1-xg1;
+       double bw11=sqrt(1.-4.*a/pow(xw1,2));
+       double wb=acos(1./(xw1*bw11*xb1)*(xg1-xw1-xb1+xw1*xb1+2.*a));
+       double wg=acos(1./(xw1*bw11*xg1)*(xb1-xw1-xg1+xw1*xg1+2.*a));
+       double cbg=cos(2.*pi*-wb-wg);
+       double sbg=sin(2.*pi*-wb-wg);
+       double xtp=sqrt(pow((2.-xg1)/2.*mt,2)-pow(xg1*0.5*mt,2));
+       double xte=(2.-xg1)/2.*mt;
+       double vtep=xtp/xte;
+       double gamt=sqrt(1./(1.-pow(vtep,2)));
+       double pb =gamt*(xb1*mt*0.5*cbg-vtep*xte);
+       double pt = xb1*mt*0.5*sbg;
+       cbgst1=cos(atan2(pt,pb));
+       double xg2=random(seed)*(1.-a);
+       double xw2=a+random(seed);
+       double xb2=2.-xw2-xg2;
+       double bw22=sqrt(1.-4.*a/pow(xw2,2));
+       wb=acos(1./(xw2*bw22*xb2)*(xg2-xw2-xb2+xw2*xb2+2.*a));
+       wg=acos(1./(xw2*bw22*xg2)*(xg2-xw2-xg2+xw2*xg2+2.*a));
+       cbg=cos(2.*pi*-wb-wg);
+       sbg=sin(2.*pi*-wb-wg);
+       xtp=sqrt(pow((2.-xg2)/2.*mt,2)-pow(xg2*0.5*mt,2));
+       xte=(2.-xg2)/2.*mt;
+       vtep=xtp/xte;
+       gamt=sqrt(1./(1.-pow(vtep,2)));
+       pb =gamt*(xb2*mt*0.5*cbg-vtep*xte);
+       pt = xb2*mt*0.5*sbg;
+       cbgst2=cos(atan2(pt,pb));
+       if (xg2 < x0 || xg1 < x0 || (1.-cbgst1)/2. < z0|| (1.-cbgst2)/2. < z0|| xw1-a < a*xg1/(1.-xg1)+1.-\
+	   xg1 || xw1-a > 1. || xw2-a < a*xg2/(1.-xg2)+1.-xg2 || xw2-a > 1.) {
+        sum++;
+     }
+   }     
+          double fac = 1./(1.-sum/100000.);
+  //=========================================================//
   bool axi = ax(seed);
   bool emit; // true if truncated emission in production
   bool demitt, demittb; // true if truncated emission in t and tbar decay respectively
@@ -173,12 +231,12 @@ int main() {
   ofstream outdata;
   bool xml = true ;
   /**********************************************************************************************/
-    outdata.open("ILCTTBAR500.dat", ios::trunc); 
+    outdata.open("ILCTTBAR.dat", ios::trunc); 
    outdata << "<LesHouchesEvents version =\"1.0\">" << endl; outdata << "<!--" << endl;
     if (Pm == 1) {outdata << "RH e-" << "\t" ; } else {outdata << "LH e-" << "\t" ; }
      if (Pp == 1) {outdata << "RH e+" << endl; } else {outdata << "LH e+" ; }
      outdata << "annihilation at the ILC" << endl;
-     outdata << "File generated with ILCTTBAR500.cxx" << endl; outdata << "-->" << endl;
+     outdata << "File generated with ILCTTBAR.cxx" << endl; outdata << "-->" << endl;
     outdata << "<init>" << endl;
      outdata << "\t11\t" << "-11\t" <<"\t" << user.cme()/2. << "\t" << user.cme()/2.  << "\t" << "0 \t 0 \t 7\t 7 \t 1 \t 1" << endl;
    outdata << "\t" << AV  << "\t" << 0.000000 << "\t1.00000 \t11" << endl; 
@@ -219,7 +277,7 @@ int main() {
        M = ME(d2,pt2,x,y1,y2,xmin5,M1,M2,w,axi);} while (random(seed) > fabs(M/Mmax));
  
 	int Jt; // Identifier for solution
-	if (x > xmin5 && pt2 < 0.024){
+	if (x > xmin5 && pt2 < pt2meet){ 
 	  if (random(seed) < (fabs(M1)/fabs(M))) {
 	      //Kleiss trick
 	       if (random(seed) <  pow(x,2)/(pow(x,2)+pow(y1,2))) {
@@ -343,7 +401,7 @@ int main() {
       sphi=sin(phig);
       ct=1.-2.*random(seed);
       st=sin(acos(ct));
-      PolarizedME (xt,xtb,xg,ct,st,sphi,cphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR);
+      PolarizedME (xt,xtb,xg,ct,st,sphi,cphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR,areafac);
       if (Pm==-1) {if(fabs(LRR) > fabs(max1)) {max1=LRR;}
 		   if(fabs(LLR) > fabs(max2)) {max2=LLR;}
 		   if(fabs(LRL) > fabs(max3)) {max3=LRL;}
@@ -390,7 +448,7 @@ int main() {
       sphi=sin(phig);
       ct=1.-2.*random(seed);
       st=sin(acos(ct));
-      PolarizedME (xt,xtb,xg,ct,st,sphi,cphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR);
+      PolarizedME (xt,xtb,xg,ct,st,sphi,cphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR,areafac);
       if (Pm==-1) {if(EVT==1) {ME=LRR;}
 		   if(EVT==2) {ME=LLR;}
 		   if(EVT==3) {ME=LRL;}
@@ -408,7 +466,7 @@ int main() {
        xg=2.-x1-x2;
        cphi=1.;
        sphi=1.;
-      PolarizedME (x1,x2,xg,ct,st,cphi,sphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR);
+      PolarizedME (x1,x2,xg,ct,st,cphi,sphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR,areafac);
       if (Pm==-1) {if(EVT==1) {maxphi=LRR;}
 		   if(EVT==2) {maxphi=LLR;}
 		   if(EVT==3) {maxphi=LRL;}
@@ -419,7 +477,7 @@ int main() {
 		   if(EVT==4) {maxphi=RLL;}
       }
       cphi=-1.;
-      PolarizedME (x1,x2,xg,ct,st,cphi,sphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR);
+      PolarizedME (x1,x2,xg,ct,st,cphi,sphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR,areafac);
       if (Pm==-1) {if(EVT==1) {if(LRR > maxphi){maxphi=LRR;}}
 		   if(EVT==2) {if(LLR > maxphi){maxphi=LLR;}}
 		   if(EVT==3) {if(LRL > maxphi){maxphi=LRL;}}
@@ -434,7 +492,7 @@ int main() {
       phig=2.*random(seed)*pi;
       cphi=cos(phig);
       sphi=sin(phig);
-      PolarizedME (x1,x2,xg,ct,st,cphi,sphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR);
+      PolarizedME (x1,x2,xg,ct,st,cphi,sphi,LLL,LRR,LRL,LLR,RLL,RRR,RRL,RLR,areafac);
       if (Pm==-1) {if(EVT==1) {ME=LRR;}
 		   if(EVT==2) {ME=LLR;}
 		   if(EVT==3) {ME=LRL;}
@@ -919,19 +977,25 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
       // Polarizer 
       if (!POWprod) {
    double qelr=qel;
-   double qtlr1=qtl; 
+   double qtlr1=qtl;
    double qtlr2=qtr;
-   double MM11=1.22446;double MM22=1.22446;double MM21=9.1491; double MM12=2.1955;
-   if (Pm==1 && Pp==-1)
-  {qelr=qer;
-   qtlr1=qtr; 
-   qtlr2=qtl;
-   MM11=0.88966; MM22=0.88966; MM21=1.6669; MM12=11.4006;
-}
-   double RA=-Qt+qelr*qtlr1*Ref*16.*pow(costhw,2);
-   double RB=qelr*qtlr1*Imf*16.*pow(costhw,2);
-   double LA=-Qt+qelr*qtlr2*Ref*16.*pow(costhw,2);
-   double LB=qelr*qtlr2*Imf*16.*pow(costhw,2);
+   double RA=-Qt+qelr*qtlr1*Ref*16.;
+   double RB=qelr*qtlr1*Imf*16.;
+   double LA=-Qt+qelr*qtlr2*Ref*16.;
+   double LB=qelr*qtlr2*Imf*16.;
+   double MM11=beta*(pow(RA+LA,2)+pow(RB+LB,2))*(1.-pow(beta,2))*4./3.;
+   double MM22=beta*(pow(RA+LA,2)+pow(RB+LB,2))*(1.-pow(beta,2))*4./3.;
+   double MM12=beta*(pow((RA*(1.-beta)+LA*(1.+beta)),2)+pow((RB*(1.-beta)+LB*(1.+beta)),2))*8./3.;
+   double MM21=beta*(pow((RA*(1.+beta)+LA*(1.-beta)),2)+pow((RB*(1.+beta)+LB*(1.-beta)),2))*8./3.; 
+       if (Pm==1 && Pp==-1)
+       {qelr=qer;
+       qtlr1=qtr;
+       qtlr2=qtl;
+       MM11=beta*(pow(RA+LA,2)+pow(RB+LB,2))*(1.-pow(beta,2))*4./3.;
+       MM22=beta*(pow(RA+LA,2)+pow(RB+LB,2))*(1.-pow(beta,2))*4./3.;
+       MM12=beta*(pow((RA*(1.+beta)+LA*(1.-beta)),2)+pow((RB*(1.+beta)+LB*(1.-beta)),2))*8./3.;
+       MM21=beta*(pow((RA*(1.-beta)+LA*(1.+beta)),2)+pow((RB*(1.-beta)+LB*(1.+beta)),2))*8./3.;
+       }
    double M11max = beta*(pow(RA+LA,2)+pow(RB+LB,2))*(1.-pow(beta,2));
    double M22max=beta*(pow(RA+LA,2)+pow(RB+LB,2))*(1.-pow(beta,2));
    double M21max = beta*(pow((RA*(1.+beta)+LA*(1.-beta)),2)+pow((RB*(1.+beta)+LB*(1.-beta)),2))*4.;
@@ -947,7 +1011,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	     EVT =2;MM=MM21; MMmax=M21max;}else {
 	       EVT=4; MM=MM22; MMmax=M22max; }}
 
-	double Mm;
+	double Mm = 0.;
 	do {
 	 cost = 1.-2.*random(seed);
 	  if (EVT==1) {
@@ -970,8 +1034,9 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	        T2[1]=-0.5*emcm*beta*sin(acos(cost));
 	        T2[2]=0.;
 		T2[3]=-0.5*emcm*beta*cost;
-			sint=sin(acos(cost));
-}
+		sint=sin(acos(cost));
+		    }
+
       /**********************END DECAY PROCESS ****************************/ 
 
       /***********************START DISTRIBUTING BORN EVENTS ACCORDING TO BBAR FUNCTION AND ASSIGNING MMT TO DECAY PRODUCTS********************/
@@ -1084,10 +1149,10 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
  	  bphi2=2*pi*random(seed);
 	  bgphi=2*pi*random(seed);
           bgphi2=2*pi*random(seed);
-	  double T1=PolMEdec(xw1,xb1,xg1,ctw,ctl,bphi,bgphi,1,xd0,zd0);
-          double T2=PolMEdec(xw1,xb1,xg1,ctw,ctl,bphi,bgphi,-1,xd0,zd0);
-	  double T3=PolMEdec(xw2,xb2,xg2,ctw2,ctl2,bphi2,bgphi2,1,xd0,zd0);
-          double T4=PolMEdec(xw2,xb2,xg2,ctw2,ctl2,bphi2,bgphi2,-1,xd0,zd0);
+	  double T1=PolMEdec(xw1,xb1,xg1,ctw,ctl,bphi,bgphi,1,xd0,zd0,fac);
+          double T2=PolMEdec(xw1,xb1,xg1,ctw,ctl,bphi,bgphi,-1,xd0,zd0,fac);
+	  double T3=PolMEdec(xw2,xb2,xg2,ctw2,ctl2,bphi2,bgphi2,1,xd0,zd0,fac);
+          double T4=PolMEdec(xw2,xb2,xg2,ctw2,ctl2,bphi2,bgphi2,-1,xd0,zd0,fac);
 	  if (fabs(T1*T4) > maxd1) {maxd1=T1*T4;}
 	  if (fabs(T2*T4) > maxd2) {maxd2=T2*T4;}
 	  if (fabs(T1*T3) > maxd3) {maxd3=T1*T3;}
@@ -1142,7 +1207,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
  	  bphi2=2.*pi*random(seed);
 	  bgphi=2.*pi*random(seed);
           bgphi2=2.*pi*random(seed);
-	  TTB=PolMEdec(xw1,xb1,xg1,ctw,ctl,bphi,bgphi,tm,xd0,zd0)*PolMEdec(xw2,xb2,xg2,ctw2,ctl2,bphi2,bgphi2,tbm,xd0,zd0);}
+	  TTB=PolMEdec(xw1,xb1,xg1,ctw,ctl,bphi,bgphi,tm,xd0,zd0,fac)*PolMEdec(xw2,xb2,xg2,ctw2,ctl2,bphi2,bgphi2,tbm,xd0,zd0,fac);}
 	   while (random(seed) > fabs(TTB/maxd));
        }
 	// Assign momenta
@@ -1328,8 +1393,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	 double gp = sqrt(pow(GG1[3],2)+pow(GG1[2],2)+pow(GG1[1],2));
 	 double gtrp = sqrt(pow(TG1[3],2)+pow(TG1[2],2)+pow(TG1[1],2));	
 	 double wp = sqrt(pow(W1[3],2)+pow(W1[2],2)+pow(W1[1],2));
-	double mfac = (175.*gp + 175.*bp+175.*gtrp-sqrt(-pow(wp*mw,2)+30625.*pow(wp,2)+pow(bp*mw,2)+2.*bp*gp*pow(mw,2)+2.*bp*gtrp*pow(mw,2)+pow(gp*mw,2)+2.*gp*gtrp*pow(mw,2)+pow(gtrp*mw,2)))/(-pow(wp,2)+pow(bp,2)+2.*bp*gp+2.*bp*gtrp+pow(gp,2)+2.*gp*gtrp+pow(gtrp,2));		  
-	BB1[3]=mfac*BB1[3]; BB1[2]=mfac*BB1[2]; BB1[1]=mfac*BB1[1];GG1[3]=mfac*GG1[3]; GG1[2]=mfac*GG1[2]; GG1[1]=mfac*GG1[1];
+	 double mfac = (mt*gp + mt*bp+mt*gtrp-sqrt(-pow(wp*mw,2)+pow(mt,2)*pow(wp,2)+pow(bp*mw,2)+2.*bp*gp*pow(mw,2)+2.*bp*gtrp*pow(mw,2)+pow(gp*mw,2)+2.*gp*gtrp*pow(mw,2)+pow(gtrp*mw,2)))/(-pow(wp,2)+pow(bp,2)+2.*bp*gp+2.*bp*gtrp+pow(gp,2)+2.*gp*gtrp+pow(gtrp,2));		    BB1[3]=mfac*BB1[3]; BB1[2]=mfac*BB1[2]; BB1[1]=mfac*BB1[1];GG1[3]=mfac*GG1[3]; GG1[2]=mfac*GG1[2]; GG1[1]=mfac*GG1[1];
          TG1[3]=mfac*TG1[3]; TG1[2]=mfac*TG1[2]; TG1[1]=mfac*TG1[1];W1[3]=mfac*W1[3]; W1[2]=mfac*W1[2]; W1[1]=mfac*W1[1];
         E[1]=El*sin(acos(ctl))*cos(bphi);
  	E[2]=El*sin(acos(ctl))*sin(bphi);
@@ -1637,7 +1701,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	 double gp = sqrt(pow(GG2[3],2)+pow(GG2[2],2)+pow(GG2[1],2));
 	 double gtrp = sqrt(pow(TG2[3],2)+pow(TG2[2],2)+pow(TG2[1],2));	
 	 double wp = sqrt(pow(W2[3],2)+pow(W2[2],2)+pow(W2[1],2));
-	 double mfac = (175.*gp + 175.*bp+175.*gtrp-sqrt(-pow(wp*mw,2)+30625.*pow(wp,2)+pow(bp*mw,2)+2.*bp*gp*pow(mw,2)+2.*bp*gtrp*pow(mw,2)+pow(gp*mw,2)+2.*gp*gtrp*pow(mw,2)+pow(gtrp*mw,2)))/(-pow(wp,2)+pow(bp,2)+2.*bp*gp+2.*bp*gtrp+pow(gp,2)+2.*gp*gtrp+pow(gtrp,2));		  
+	 double mfac = (mt*gp + mt*bp+mt*gtrp-sqrt(-pow(wp*mw,2)+pow(mt,2)*pow(wp,2)+pow(bp*mw,2)+2.*bp*gp*pow(mw,2)+2.*bp*gtrp*pow(mw,2)+pow(gp*mw,2)+2.*gp*gtrp*pow(mw,2)+pow(gtrp*mw,2)))/(-pow(wp,2)+pow(bp,2)+2.*bp*gp+2.*bp*gtrp+pow(gp,2)+2.*gp*gtrp+pow(gtrp,2));	   
 	 BB2[3]=mfac*BB2[3]; BB2[2]=mfac*BB2[2]; BB2[1]=mfac*BB2[1];GG2[3]=mfac*GG2[3]; GG2[2]=mfac*GG2[2]; GG2[1]=mfac*GG2[1];
          TG2[3]=mfac*TG2[3]; TG2[2]=mfac*TG2[2]; TG2[1]=mfac*TG2[1];W2[3]=mfac*W2[3]; W2[2]=mfac*W2[2]; W2[1]=mfac*W2[1];
 	 E[1]=El*sin(acos(ctl2))*cos(bphi2);
@@ -1765,7 +1829,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	G2[3]=T2[3]-W2[3]-BB2[3]-TG2[3];
 	}
 	
-}
+	    }
 
 	NN2[1]=W2[1]-EE2[1];
 	NN2[2]=W2[2]-EE2[2];
@@ -1787,9 +1851,12 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	double LE1=sqrt(pow(EE1[1],2)+pow(EE1[2],2)+pow(EE1[3],2));
 	double LE2=sqrt(pow(EE2[1],2)+pow(EE2[2],2)+pow(EE2[3],2));
 	
-	if (POWdecay &&demitt) {PUP[4][15]=sqrt(pow(TG1[1],2)+pow(TG1[2],2)+pow(TG1[3],2));PUP[1][15]=TG1[1]; PUP[2][15]=TG1[2]; PUP[3][15]=TG1[3];}
-	if (POWdecay &&demittb){PUP[4][16]=sqrt(pow(TG2[1],2)+pow(TG2[2],2)+pow(TG2[3],2));PUP[1][16]=TG2[1]; PUP[2][16]=TG2[2]; PUP[3][16]=TG2[3];}
+	if (POWdecay &&demitt) {PUP[4][15]=sqrt(pow(TG1[1],2)+pow(TG1[2],2)+pow(TG1[3],2));PUP[1][15]=TG1[1]; PUP[2][15]=TG1[2]; PUP[3][15]=TG1[3];
+}
+	if (POWdecay &&demittb){PUP[4][16]=sqrt(pow(TG2[1],2)+pow(TG2[2],2)+pow(TG2[3],2));PUP[1][16]=TG2[1]; PUP[2][16]=TG2[2]; PUP[3][16]=TG2[3];
+	}
 
+	
 	// Fill in Les Houches common block
 	mass[1]=0.;
 	mass[2]=0.;
@@ -1805,11 +1872,11 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	mass[12]=0.;
 	mass[13]=0.;
 	mass[14]=0.;
-	mass[17]=500.;
+	mass[17]=emcm;
 	mass[15]=0.;
 	mass[16]=0.;
 	if (POWprod) {
-          if (emit) {
+	  if (emit) {
 	PUP[4][13]=PUP[4][6];
 	PUP[3][13]=PUP[3][6];
 	PUP[2][13]=PUP[2][6];
@@ -1819,16 +1886,16 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 	PUP[2][14]=PUP[2][7];
 	PUP[1][14]=PUP[1][7];} else {
 	  PUP[4][13]=PUP[4][6];
-          PUP[3][13]=PUP[3][6];
-          PUP[2][13]=PUP[2][6];
-          PUP[1][13]=PUP[1][6];
+	  PUP[3][13]=PUP[3][6];
+	  PUP[2][13]=PUP[2][6];
+	  PUP[1][13]=PUP[1][6];
 	}}
-	PUP[4][1]=250.;
-	PUP[3][1]=250.;
+	PUP[4][1]=emcm/2.;
+	PUP[3][1]=emcm/2.;
 	PUP[2][1]=0.;
 	PUP[1][1]=0.;
-	PUP[4][2]=250.;
-	PUP[3][2]=-250.;
+	PUP[4][2]=emcm/2.;
+	PUP[3][2]=-emcm/2.;
 	PUP[2][2]=0.;
 	PUP[1][2]=0.;
 	PUP[4][3]=TE1;
@@ -2029,14 +2096,15 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 		 ICOLUP[2][16]=502;
 		 }
 		 }else {
-		   if((PUP[4][3] > PUP[4][4] && acos((PUP[3][13]*PUP[3][3]+PUP[2][13]*PUP[2][3]+PUP[1][13]*PUP[1][3])/(PUP[4][13]*PUP[4][3])) > 1.57) || PUP[4][4] > PUP[4][3] && acos((PUP[3][13]*PUP[3][4]+PUP[2][13]*PUP[2][4]+PUP[1][13]*PUP[1][4])/(PUP[4][13]*PUP[4][4])) < 1.57) {                ICOLUP[1][13]=505;
+		   if((PUP[4][3] > PUP[4][4] && acos((PUP[3][13]*PUP[3][3]+PUP[2][13]*PUP[2][3]+PUP[1][13]*PUP[1][3])/(PUP[4][13]*PUP[4][3])) > 1.57) || PUP[4][4] > PUP[4][3] && acos((PUP[3][13]*PUP[3][4]+PUP[2][13]*PUP[2][4]+PUP[1][13]*PUP[1][4])/(PUP[4][13]*PUP[4][4])) < 1.57) {
+		 ICOLUP[1][13]=505;
 		 ICOLUP[2][13]=501;
 		 ICOLUP[1][14]=502;
 		 ICOLUP[2][14]=505;} else {
-		   ICOLUP[1][14]=505;
-                   ICOLUP[2][14]=501;
-                   ICOLUP[1][13]=502;
-                   ICOLUP[2][13]=505;
+         	   ICOLUP[1][14]=505;
+		   ICOLUP[2][14]=501;
+		   ICOLUP[1][13]=502;
+		   ICOLUP[2][13]=505;
 		 }
 		 ICOLUP[1][11]=501;
 		 ICOLUP[2][11]=503;
@@ -2057,7 +2125,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 		 ICOLUP[1][16]=508;
 		 ICOLUP[2][16]=502;
 		 }
-}}
+		 }}
 		 if (POWprod & !POWdecay) {
 		   if (!emit){
 		     ICOLUP[1][3]=501;
@@ -2075,17 +2143,16 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
                    ICOLUP[2][3]=0;
                    ICOLUP[1][4]=0;
                    ICOLUP[2][4]=502;
-		   if((PUP[4][3] > PUP[4][4] && acos((PUP[3][13]*PUP[3][3]+PUP[2][13]*PUP[2][3]+PUP[1][13]*PUP[1][3])/(PUP[4][13]*PUP[4][3])) > 1.57) || PUP[4][4] > PUP[4][3] && acos((PUP[3][13]*PUP[3][4]+PUP[2][13]*PUP[2][4]+PUP[1][13]*PUP[1][4])/(PUP[4][13]*PUP[4][4])) < 1.57) {
-
-		   ICOLUP[1][13]=505;
+		   if((PUP[4][3] > PUP[4][4] && acos((PUP[3][13]*PUP[3][3]+PUP[2][13]*PUP[2][3]+PUP[1][13]*PUP[1][3])/(PUP[4][13]*PUP[4][3])) > 1.57) || PUP[4][4] > PUP[4][3] && acos((PUP[3][13]*PUP[3][4]+PUP[2][13]*PUP[2][4]+PUP[1][13]*PUP[1][4])/(PUP[4][13]*PUP[4][4])) < 1.57) { 
+	  	   ICOLUP[1][13]=505;
 		   ICOLUP[2][13]=501;
 		   ICOLUP[1][14]=502;
 		   ICOLUP[2][14]=505;} else {
 		     ICOLUP[1][13]=502;
-                     ICOLUP[2][13]=505;
-                     ICOLUP[1][14]=505;
-                     ICOLUP[2][14]=501;
-		   }
+		     ICOLUP[2][13]=505;
+		     ICOLUP[1][14]=505;
+		     ICOLUP[2][14]=501;  
+                 }
 		 ICOLUP[1][6]=501;
 		 ICOLUP[2][6]=0;
 		 ICOLUP[1][7]=0;
@@ -2308,7 +2375,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 // 			  if (!POWprod && POWdecay) {NUP =13;}
 // 			 if (POWprod && !POWdecay) {if (!emit){NUP=12;}else{NUP=13;}}
 			 XWGTUP=1;
-			 SCALUP=500.;
+			 SCALUP=emcm;
 			 AQEDUP=0.0073;
 			 AQCDUP=0.118;
 			 double sum1,sum2,sum3,sum4;
@@ -2330,27 +2397,26 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 		      }
 			 if (POWdecay && POWprod) {
 			   if (emit) {
-                             outdata << IDUP[13] << "\t" << ISTUP[13] << "\t" << MOTHUP[1][13] <<"\t" << MOTHUP[2][13] << "\t" <<ICOLUP[1][13] << "\t" << ICOLUP[2][13] <<"\t" <<setprecision (9)<< PUP[1][13] << "\t" << PUP[2][13]<<"\t"<<PUP[3][13]<<"\t"<<PUP[4][13]<<"\t" << mass[13] <<"\t"<< "0" << "\t" <<"9" <<endl;
-                             sum1+=PUP[4][13];sum2+=PUP[1][13];sum3+=PUP[2][13];sum3+=PUP[3][13];
-			     outdata << IDUP[14] << "\t" << ISTUP[14] << "\t" << MOTHUP[1][14] <<"\t" << MOTHUP[2][14] << "\t" << ICOLUP[1][14] << "\t" << ICOLUP[2][14] <<"\t" <<setprecision (9)<< PUP[1][14] << "\t" << PUP[2][14]<<"\t"<<PUP[3][14]<<"\t"<<PUP[4][14]<<"\t" << mass[14] <<"\t"<< "0" << "\t" <<"9" <<endl;
-			     sum1+=PUP[4][14];sum2+=PUP[1][14];sum3+=PUP[2][14]; sum3+=PUP[3][14];
-                           }
-
+			     outdata << IDUP[13] << "\t" << ISTUP[13] << "\t" << MOTHUP[1][13] <<"\t" << MOTHUP[2][13] << "\t" <<ICOLUP[1][13] << "\t" << ICOLUP[2][13] <<"\t" <<setprecision (9)<< PUP[1][13] << "\t" << PUP[2][13]<<"\t"<<PUP[3][13]<<"\t"<<PUP[4][13]<<"\t" << mass[13] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			     sum1+=PUP[4][13];sum2+=PUP[1][13];sum3+=PUP[2][13];sum3+=PUP[3][13];
+outdata << IDUP[14] << "\t" << ISTUP[14] << "\t" << MOTHUP[1][14] <<"\t" << MOTHUP[2][14] << "\t" << ICOLUP[1][14] << "\t" << ICOLUP[2][14] <<"\t" <<setprecision (9)<< PUP[1][14] << "\t" << PUP[2][14]<<"\t"<<PUP[3][14]<<"\t"<<PUP[4][14]<<"\t" << mass[14] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			   sum1+=PUP[4][14];sum2+=PUP[1][14];sum3+=PUP[2][14];sum3+=PUP[3][14];
+ 			   }
 			   if (demitt) {outdata << IDUP[15] << "\t" << ISTUP[15] << "\t" << MOTHUP[1][15] <<"\t" << MOTHUP[2][15] << "\t" << ICOLUP[1][15] << "\t" << ICOLUP[2][15] <<"\t" <<setprecision (9)<< PUP[1][15] << "\t" << PUP[2][15]<<"\t"<<PUP[3][15]<<"\t"<<PUP[4][15]<<"\t" << mass[15] <<"\t"<< "0" << "\t" <<"9" <<endl;
-                           sum1+=PUP[4][15];sum2+=PUP[1][15];sum3+=PUP[2][15];sum3+=PUP[3][15];
-                           }
-                           if (demittb) {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t"<< ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
-                           sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
-                           }
-
+			   sum1+=PUP[4][15];sum2+=PUP[1][15];sum3+=PUP[2][15];sum3+=PUP[3][15];
+			   }
+			   if (demittb) {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t"<< ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			   sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
+			   }
 			   {for (int ja=11; ja < 13; ja++)
-			
-   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
 			   sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
-}}
-			   if(!emit) {outdata << IDUP[13] << "\t" << ISTUP[13] << "\t" << MOTHUP[1][13] <<"\t" << MOTHUP[2][13] << "\t" <<ICOLUP[1][13] << "\t" << ICOLUP[2][13] <<"\t" <<setprecision (9)<< PUP[1][13] << "\t" << PUP[2][13]<<"\t"<<PUP[3][13]<<"\t"<<PUP[4][13]<<"\t" << mass[13] <<"\t"<< "0" << "\t" <<"9" <<endl;
+			   } }
+			   if(!emit) {outdata << IDUP[13] << "\t" << ISTUP[13] << "\t" << MOTHUP[1][13] <<"\t" << MOTHUP[2][13] << "\t" << ICOLUP[1][13] << "\t" << ICOLUP[2][13] <<"\t" <<setprecision (9)<< PUP[1][13] << "\t" << PUP[2][13]<<"\t"<<PUP[3][13]<<"\t"<<PUP[4][13]<<"\t" << mass[13] <<"\t"<< "0" << "\t" <<"9" <<endl;
                            sum1+=PUP[4][13];sum2+=PUP[1][13];sum3+=PUP[2][13];sum3+=PUP[3][13];
-}                           }
+
+			   }
+			 }
 
 			 if (POWdecay && !POWprod) {
 			   if (demitt) {
@@ -2362,11 +2428,11 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 			     {outdata << IDUP[16] << "\t" << ISTUP[16] << "\t" << MOTHUP[1][16] <<"\t" << MOTHUP[2][16] << "\t" << ICOLUP[1][16] << "\t" << ICOLUP[2][16] <<"\t" <<setprecision (9)<< PUP[1][16] << "\t" << PUP[2][16]<<"\t"<<PUP[3][16]<<"\t"<<PUP[4][16]<<"\t" << mass[16] <<"\t"<< "0" << "\t" <<"9" <<endl;
 			     sum1+=PUP[4][16];sum2+=PUP[1][16];sum3+=PUP[2][16];sum3+=PUP[3][16];
 			     }
-
 			   {for (int ja=11; ja < 13; ja++)
 			   {outdata << IDUP[ja] << "\t" << ISTUP[ja] << "\t" << MOTHUP[1][ja] <<"\t" << MOTHUP[2][ja] << "\t" << ICOLUP[1][ja] << "\t" << ICOLUP[2][ja] <<"\t" <<setprecision (9)<< PUP[1][ja] << "\t" << PUP[2][ja]<<"\t"<<PUP[3][ja]<<"\t"<<PUP[4][ja]<<"\t" << mass[ja] <<"\t"<< "0" << "\t" <<"9" <<endl;
 			   sum1+=PUP[4][ja];sum2+=PUP[1][ja];sum3+=PUP[2][ja];sum3+=PUP[3][ja];
-}}
+}
+}
 			   
 			 }
 			 if (POWprod && !POWdecay) {for (int ja=13; ja<NUPP;ja++)
@@ -2376,11 +2442,11 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 			 //	 cout <<ixx  << "\t" << sum1 << "\t" <<sum2 <<"\t" <<sum3 <<"\t" << sum4 <<  endl;
 			 cout  << "Generated event : " << "\t" << ixx << "\t" << "of" << "\t" << nevg << "\r" << flush;  
 			 outdata << "</event>" << endl;}
-                       }
+	}
     outdata << "</LesHouchesEvents>" << endl;
   cout << endl;
    return 0;
-}
+  }
 /***************************************************************************************************/
 /* Axial or Vector axial current ? */
  bool ax(int seed1) {
@@ -2388,7 +2454,48 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
        if (random(seed1) < A/(A+V)){axial = true;}
        return axial;    
 }
+/***************************************************************************************************/
+// Interpolation for vector and axial coefficients.
 
+double coeff(int N, double XXX, bool axi) {
+  double FF;
+  double AA;
+  int IX=0;
+  int IY=N+1;
+  int MID;
+  double aa,bb,cc,dd;
+  ifstream indata;
+
+  for (int iy=0;(IY-IX) > 1;iy++) {
+    if (axi) {
+      indata.open("axialcoeff.dat", ios::in);}  else {
+      indata.open("vectorcoeff.dat", ios::in);
+    }
+
+    MID=(IX+IY)/2;
+    for(int ix=0;ix < MID ;ix++) {
+      indata >> AA >> FF;}
+
+    indata.close();
+    if (XXX == AA) {return FF; break;}
+    if (XXX >= AA) {
+ IX=MID;} else {IY=MID;}
+    if ((IY-IX) < 1) break;}
+    if (axi) {
+      indata.open("axialcoeff.dat", ios::in);} else {
+    indata.open("vectorcoeff.dat", ios::in);
+  }
+  for (int ix =1; ix < IY; ix++) {
+    if (ix == IY-1) {
+    indata >> bb >> aa ;} 
+    indata >> dd >> cc ;}
+  indata.close();
+  // cout << bb <<"\t" << aa << endl;
+  // cout << dd <<"\t" << cc << endl;
+  double bbb = aa + (aa - cc)/(bb - dd)*(XXX - bb);
+  ;
+  indata.close();
+  return bbb;}
 /***************************************************************************************************/
 /* Generates interpolation files for production */
 
@@ -2435,8 +2542,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
                /pow(xminm,(1./3.))*sin(xmint/3.);
    double xmin5=xmin1+xmin2+xmin3+xmin4;
    double xmin6=xmin1+xmin2+xmin3-xmin4;
-   
-   if (pt2 > 0.024) {xmax=xmin5;}
+   if (pt2 > pt2meet) {xmax=xmin5;}  
     double div1 = (xmax - xmin6)/ngen;
     double div2 = (xmax - xmin5)/ngen;
      double xx ;
@@ -2460,7 +2566,7 @@ double alphas = 1./(b*log(ptr2b/(pt2min*pow(mt,2))))*(1.-bp*log(log(ptr2b/(pt2mi
 
 }
     xx =xmax + div2/2.; 
-    if (pt2 < 0.024) {
+    if (pt2 < pt2meet) { 
     for (int iz =0; iz < ngen; iz++) {
       xx=xx-div2;
 double yy = 1./(2.*(1.+rho-xx))*(pow(xx,2)-3.*xx-2.*rho*xx+2.+4.*rho+sqrt((pow(xx,2)-4.*rho)*(4.*pt2*(xx-1.-rho)+pow((xx-1.),2))));
@@ -2556,92 +2662,91 @@ void filegendec (double &rintgend1, double &rintgend2, double &rintgend3, double
    }
    cout << "...Done" << endl;
 }
-
 /***************************************************************************************************/
 // Interpolation for production process.
 
 double interp(int N,double XXX, double Xmax1, double Xmax2, double Xmax3, double Xmax4, bool axi) {
-       double FF;
-       double AA;
+  double FF;
+  double AA;
   int IX=0;
   int IY=N+1;
   int MID;
   double aa,bb,cc,dd,ee,ii,gg,hh;
   ifstream indata;
 
-      for (int iy=0;(IY-IX) > 1;iy++) {
-	 if (axi) {
-	if (XXX < Xmax1 ) {
-    indata.open("ttbaraxpro1.dat", ios::in); 
-  }else if (XXX > Xmax1  && XXX < Xmax2 ) {
-    indata.open("ttbaraxpro2.dat", ios::in);
-  }else if (XXX > Xmax2 && XXX < Xmax3 ) {
-    indata.open("ttbaraxpro3.dat", ios::in);
-  }else if (XXX > Xmax3) {
-    indata.open("ttbaraxpro4.dat", ios::in);
-  }}  else {
-    if (XXX < Xmax1 ) {
-    indata.open("ttbarvecpro1.dat", ios::in); 
-  }else if (XXX > Xmax1  && XXX < Xmax2 ) {
-    indata.open("ttbarvecpro2.dat", ios::in);
-  }else if (XXX > Xmax2 && XXX < Xmax3 ) {
-    indata.open("ttbarvecpro3.dat", ios::in);
-  }else if (XXX > Xmax3) {
-    indata.open("ttbarvecpro4.dat", ios::in);
-  }} 
-
-        MID=(IX+IY)/2;
-        for(int ix=0;ix < MID ;ix++) {
-	  indata >> FF >> AA;}
-	
-	 indata.close();
-	
-        if (XXX >= AA) {
-        IX=MID;} else {IY=MID;}
-	if ((IY-IX) < 1) break;}
-          if (IX < 5) {IX=5;}
+  for (int iy=0;(IY-IX) > 1;iy++) {
     if (axi) {
       if (XXX < Xmax1 ) {
-     indata.open("ttbaraxpro1.dat", ios::in); 
-  }else if (XXX > Xmax1  && XXX < Xmax2 ) {
-    indata.open("ttbaraxpro2.dat", ios::in);
-  }else if (XXX > Xmax2 && XXX < Xmax3 ) {
-    indata.open("ttbaraxpro3.dat", ios::in);
-  }else if (XXX > Xmax3) {
-    indata.open("ttbaraxpro4.dat", ios::in);
-  } } else {
-       if (XXX < Xmax1 ) {
-  indata.open("ttbarvecpro1.dat", ios::in); 
-  }else if (XXX > Xmax1  && XXX < Xmax2 ) {
-    indata.open("ttbarvecpro2.dat", ios::in);
-  }else if (XXX > Xmax2 && XXX < Xmax3 ) {
-    indata.open("ttbarvecpro3.dat", ios::in);
-  }else if (XXX > Xmax3) {
-    indata.open("ttbarvecpro4.dat", ios::in);
-  } 
-  }
-     for (int ix=0;ix<IX-3;ix++) {
-        indata >> FF >> AA;}
-        indata >> aa >> bb ;
-        indata >> cc >> dd ;
-        indata >> ee >> ii ;
-        indata >> gg >> hh ;
+	indata.open("ttbaraxpro1.dat", ios::in);
+      }else if (XXX > Xmax1  && XXX < Xmax2 ) {
+	indata.open("ttbaraxpro2.dat", ios::in);
+      }else if (XXX > Xmax2 && XXX < Xmax3 ) {
+	indata.open("ttbaraxpro3.dat", ios::in);
+      }else if (XXX > Xmax3) {
+	indata.open("ttbaraxpro4.dat", ios::in);
+      }}  else {
+	if (XXX < Xmax1 ) {
+	  indata.open("ttbarvecpro1.dat", ios::in);
+	}else if (XXX > Xmax1  && XXX < Xmax2 ) {
+	  indata.open("ttbarvecpro2.dat", ios::in);
+	}else if (XXX > Xmax2 && XXX < Xmax3 ) {
+	  indata.open("ttbarvecpro3.dat", ios::in);
+	}else if (XXX > Xmax3) {
+	  indata.open("ttbarvecpro4.dat", ios::in);
+	}}
 
-        indata.close();
-       double d1=(cc-aa)/(dd-bb);
-       double d2=(ee-cc)/(ii-dd);
-       double d3=(gg-ee)/(hh-ii) ;
-       double dydx=(gg-aa)/(hh-bb);
-       double dydx1=(ee-aa)/(ii-bb);
-	 double dydx2=(gg-cc)/(hh-dd);
-	 double d2ydx2=(dydx2-dydx1)/((hh+dd-ii-bb)/2.);
-	 double d2ydx21=2.*(d2-d1)/(ii-bb);
-	 double d2ydx22=2.*(d3-d2)/(hh-dd);
-	 double d3ydx3=2*(d2ydx22-d2ydx21)/(hh+dd-ii-bb);
-	 double ddd=d3ydx3/6.;
-       double ccc=(d2ydx2-6.*ddd*(XXX-bb))/2.;
-       double bbb=(dydx-2.*ccc*(XXX-bb)-3.*ddd*pow((XXX-bb),2));
-       return bbb*(XXX-bb)+ccc*pow((XXX-bb),2)+ddd*pow((XXX-bb),3)+aa;}
+    MID=(IX+IY)/2;
+    for(int ix=0;ix < MID ;ix++) {
+      indata >> FF >> AA;}
+
+    indata.close();
+    if (XXX == AA) {return FF; break;}
+    if (XXX >= AA) {
+ IX=MID;} else {IY=MID;}
+    if ((IY-IX) < 1) break;}
+  if (IX < 5) {IX=5;}
+  if (axi) {
+    if (XXX < Xmax1 ) {
+      indata.open("ttbaraxpro1.dat", ios::in);
+    }else if (XXX > Xmax1  && XXX < Xmax2 ) {
+      indata.open("ttbaraxpro2.dat", ios::in);
+    }else if (XXX > Xmax2 && XXX < Xmax3 ) {
+      indata.open("ttbaraxpro3.dat", ios::in);
+    }else if (XXX > Xmax3) {
+      indata.open("ttbaraxpro4.dat", ios::in);
+    } } else {
+      if (XXX < Xmax1 ) {
+	indata.open("ttbarvecpro1.dat", ios::in);
+      }else if (XXX > Xmax1  && XXX < Xmax2 ) {
+	indata.open("ttbarvecpro2.dat", ios::in);
+      }else if (XXX > Xmax2 && XXX < Xmax3 ) {
+	indata.open("ttbarvecpro3.dat", ios::in);
+      }else if (XXX > Xmax3) {
+	indata.open("ttbarvecpro4.dat", ios::in);
+      }
+    }
+  for (int ix=0;ix<IX-3;ix++) {
+    indata >> FF >> AA;}
+  indata >> aa >> bb ;
+  indata >> cc >> dd ;
+  indata >> ee >> ii ;
+  indata >> gg >> hh ;
+
+  indata.close();
+  double d1=(cc-aa)/(dd-bb);
+  double d2=(ee-cc)/(ii-dd);
+  double d3=(gg-ee)/(hh-ii) ;
+  double dydx=(gg-aa)/(hh-bb);
+  double dydx1=(ee-aa)/(ii-bb);
+  double dydx2=(gg-cc)/(hh-dd);
+  double d2ydx2=(dydx2-dydx1)/((hh+dd-ii-bb)/2.);
+  double d2ydx21=2.*(d2-d1)/(ii-bb);
+  double d2ydx22=2.*(d3-d2)/(hh-dd);
+  double d3ydx3=2*(d2ydx22-d2ydx21)/(hh+dd-ii-bb);
+  double ddd=d3ydx3/6.;
+  double ccc=(d2ydx2-6.*ddd*(XXX-bb))/2.;
+  double bbb=(dydx-2.*ccc*(XXX-bb)-3.*ddd*pow((XXX-bb),2));
+  return bbb*(XXX-bb)+ccc*pow((XXX-bb),2)+ddd*pow((XXX-bb),3)+aa;}
 /***************************************************************************************************/
 // Interpolation for decay process.
 
@@ -2669,8 +2774,8 @@ double interpd(int N,double XXX, double Xmax1, double Xmax2, double Xmax3, doubl
 	  indata >> FF >> AA;}
 	 
 	 indata.close();
-	 
-        if (XXX >= AA) {
+	 if (XXX == AA) {return FF; break;}
+	if (XXX >= AA) {
         IX=MID;} else {IY=MID;}
 	if ((IY-IX) < 1) break;}
           if (IX < 5) {IX=5;}
@@ -2721,7 +2826,7 @@ double interpd(int N,double XXX, double Xmax1, double Xmax2, double Xmax3, doubl
                /pow(xminm,(1./3.))*sin(xmint/3.);
       rxmin5=xmin1+xmin2+xmin3+xmin4;
       rxmin6=xmin1+xmin2+xmin3-xmin4;
-      if (pt2 < 0.08333) {
+      if (pt2 < pt2meet) {  
         rxmax=1.-2.*pt2-sqrt(pt2)*sqrt(d2+4.*pt2);} else {
         rxmax=rxmin5;
         }
@@ -2740,7 +2845,7 @@ double interpd(int N,double XXX, double Xmax1, double Xmax2, double Xmax3, doubl
 	 rM1=((pow((rx+0.5*d2),2)+pow((ry1+0.5*d2),2)-2.*d2*(1.+d2/2.))/((1.+d2/2.)*(1.-rx)*(1.-ry1))-d2/(2.*pow((1.-rx),2))-d2/(2.*pow((1.-ry1),2)))/(rw*sqrt(1.-d2));
          rM2=((pow((rx+0.5*d2),2)+pow((ry2+0.5*d2),2)-2.*d2*(1.+d2/2.))/((1.+d2/2.)*(1.-rx)*(1.-ry2))-d2/(2.*pow((1.-rx),2))-d2/(2.*pow((1.-ry2),2)))/(rw*sqrt(1.-d2));	   }
        
-       if (rx < xmin5 || pt2 > 0.024){rM1=0;}
+	 if (rx < xmin5 || pt2 > pt2meet){rM1=0;} 
        double M=fabs(rM1)+fabs(rM2);
        return M;}
 /***************************************************************************************************/
@@ -2759,7 +2864,7 @@ double MEd (double pt2,double &rx3, double &rx11, double &rx12, double &rMd1, do
 /***************************************************************************************************/
 // Calculate Polarized Matrix Element for production process
 
-  void PolarizedME (double xt, double xtb, double xg, double &rct, double &rst, double &rsphi, double &rcphi,double &rLLL,double &rLRR,double &rLRL,double &rLLR,double &rRLL,double &rRRR, double &rRRL,double &rRLR) {
+  void PolarizedME (double xt, double xtb, double xg, double &rct, double &rst, double &rsphi, double &rcphi,double &rLLL,double &rLRR,double &rLRL,double &rLLR,double &rRLL,double &rRRR, double &rRRL,double &rRLR, double areafac) {
     double F1VL=-F1Vg+(-0.5+sinsqthw)/(sqrt(sinsqthw)*costhw)*pow(emcm,2)/(pow(emcm,2)-pow(Mz,2))*F1Vz;
     double F1VR=-F1Vg+sinsqthw/(sqrt(sinsqthw)*costhw)*pow(emcm,2)/(pow(emcm,2)-pow(Mz,2))*F1Vz;
     double F1AL=(-0.5+sinsqthw)/(sqrt(sinsqthw)*costhw)*pow(emcm,2)/(pow(emcm,2)-pow(Mz,2))*F1Az;
@@ -2773,19 +2878,17 @@ double MEd (double pt2,double &rx3, double &rx11, double &rx12, double &rMd1, do
     double vF1VR=-(F1Vg+dF1Vg)+sinsqthw/(sqrt(sinsqthw)*costhw)*pow(emcm,2)/(pow(emcm,2)-pow(Mz,2))*(F1Vz+dF1Vz);
     double vF1AL=(-0.5+sinsqthw)/(sqrt(sinsqthw)*costhw)*pow(emcm,2)/(pow(emcm,2)-pow(Mz,2))*(F1Az+dF1Az);
     double vF1AR=sinsqthw/(sqrt(sinsqthw)*costhw)*pow(emcm,2)/(pow(emcm,2)-pow(Mz,2))*(F1Az+dF1Az);
-
-    double areafac = 16.8374; //Inverse of the area of the 3-body phase space. Hard coded for mt=175GeV, emcm=500GeV, Egmin=0.2GeV. 
        double bt=sqrt(1.-4.*pow(mt,2)/(pow(xt*emcm,2)));
        double btb=sqrt(1.-4.*pow(mt,2)/(pow(xtb*emcm,2)));
        double tt=acos((xg-xt-xtb+xt*xtb+4.*pow(mt/emcm,2))/(xt*bt*xtb*btb));
        double tg=acos((xtb-xt-xg+xt*xg)/(xt*bt*xg));
        double gam=emcm/(2.*mt);
-       double GLLR=pow(((vF1VL-b*vF1AL)*(1.+rct)),2);
-       double GLRL=pow(((vF1VL+b*vF1AL)*(1.-rct)),2);
+       double GLLR=pow(((vF1VL-beta*vF1AL)*(1.+rct)),2);
+       double GLRL=pow(((vF1VL+beta*vF1AL)*(1.-rct)),2);
        double GLLL=pow(((vF1VL)*rst/gam),2);
        double GLRR=pow(((vF1VL)*rst/gam),2);
-       double GRLR=pow((-(vF1VR-b*vF1AR)*(1.-rct)),2);
-       double GRRL=pow((-(vF1VR+b*vF1AR)*(1.+rct)),2);
+       double GRLR=pow((-(vF1VR-beta*vF1AR)*(1.-rct)),2);
+       double GRRL=pow((-(vF1VR+beta*vF1AR)*(1.+rct)),2);
        double GRLL=pow(((vF1VR)*rst/gam),2);
        double GRRR=pow(((vF1VR)*rst/gam),2);
        double Apm=xg*sqrt(xt*xtb*(1.+bt)*(1.-btb))/(emcm*(1.-xt)*(1.-xtb));
@@ -2873,12 +2976,10 @@ double MEd (double pt2,double &rx3, double &rx11, double &rx12, double &rMd1, do
 /***************************************************************************************************/
 // Calculate Polarized Matrix Element for decay process
 
-double PolMEdec(double xw1, double xb1, double xg1,double &rctw, double &rctl,double &rbphi, double &rbgphi,int tm, double xd0, double zd0){
-     
-        double fac=pow(mt,2)*(1.-a)/2.*34.606; //Includes inverse of 3body phase space area (34.606). hardcoded for mt=175GeV, mw=80GeV, Egmin=0.2GeV, zd0=0.0028;
-        	double F1WL=1.;
-		double dF1WL=asmt*2./(3.*pi)*(-3.-pow(log(1.-a),2)+1.5*log(1-a)+4.+(5.-3.*a)/(8.*(1.-a))+pow(log(1.-a),2)-2.5*log(1.-a)-a*(2.-3.*a)/(4.*pow((1.-a),2))*log(a)-pow(pi,2)/2.-(1.+log(xd0))*(1.+log(zd0))+0.25*log(zd0)+1.05688-0.22105); //hardcoded for dilog (1-a)=1.05688 and dilog(a)=0.22105
-		double dF2WL=asmt*2./(3.*pi)*1./a*log(1.-a);
+double PolMEdec(double xw1, double xb1, double xg1,double &rctw, double &rctl,double &rbphi, double &rbgphi,int tm, double xd0, double zd0, double fac){
+        double F1WL=1.;
+	double dF1WL=asmt*2./(3.*pi)*(-3.-pow(log(1.-a),2)+1.5*log(1-a)+4.+(5.-3.*a)/(8.*(1.-a))+pow(log(1.-a),2)-2.5*log(1.-a)-a*(2.-3.*a)/(4.*pow((1.-a),2))*log(a)-pow(pi,2)/2.-(1.+log(xd0))*(1.+log(zd0))+0.25*log(zd0)+ddilog(1.-a)-ddilog(a)); 
+        double dF2WL=asmt*2./(3.*pi)*1./a*log(1.-a);
         double TL=1./a*(1.+tm*rctw)*(1.-pow(rctl,2))*fac*pow((F1WL+dF1WL-0.5*a*dF2WL),2);
 	double TO=(1.-tm*rctw)*pow((1.-rctl),2)*fac*pow((F1WL+dF1WL-0.5*dF2WL),2);
 	double TI=tm*2./sqrt(a)*(1.-rctl)*sqrt(1.-pow(rctw,2))*sqrt(1.-pow(rctl,2))*cos(rbphi)*fac*(F1WL+dF1WL-0.5*a*dF2WL)*(F1WL+dF1WL-0.5*dF2WL);
@@ -2926,6 +3027,79 @@ double PolMEdec(double xw1, double xb1, double xg1,double &rctw, double &rctl,do
       if (rseed <= 0) {rseed = rseed + M;}
     return rseed*MINV;}  
 /***************************************************************************************************/
+double ddilog(double x)
+{
+  // The DiLogarithm function
+  // Code translated by R.Brun from CERNLIB DILOG function C332
+
+  const double hf  = 0.5;
+  const double pi  = 3.14152654;
+  const double pi2 = pi*pi;
+  const double pi3 = pi2/3;
+  const double pi6 = pi2/6;
+  const double pi12 = pi2/12;
+  const double c[20] = {0.42996693560813697, 0.40975987533077105,
+			-0.01858843665014592, 0.00145751084062268,-0.00014304184442340,
+			0.00001588415541880,-0.00000190784959387, 0.00000024195180854,
+			-0.00000003193341274, 0.00000000434545063,-0.00000000060578480,
+			0.00000000008612098,-0.00000000001244332, 0.00000000000182256,
+			-0.00000000000027007, 0.00000000000004042,-0.00000000000000610,
+			0.00000000000000093,-0.00000000000000014, 0.00000000000000002};
+
+  double t,h,y,s,a,alfa,b1,b2,b0;
+
+  if (x == 1) {
+    h = pi6;
+  } else if (x == -1) {
+    h = -pi12;
+  } else {
+    t = -x;
+    if (t <= -2) {
+      y = -1/(1+t);
+      s = 1;
+      b1= log(-t);
+      b2= log(1+1/t);
+      a = -pi3+hf*(b1*b1-b2*b2);
+    } else if (t < -1) {
+      y = -1-t;
+      s = -1;
+      a = log(-t);
+      a = -pi6+a*(a+log(1+1/t));
+    } else if (t <= -0.5) {
+      y = -(1+t)/t;
+      s = 1;
+      a = log(-t);
+      a = -pi6+a*(-hf*a+log(1+t));
+    } else if (t < 0) {
+      y = -t/(1+t);
+      s = -1;
+      b1= log(1+t);
+      a = hf*b1*b1;
+    } else if (t <= 1) {
+      y = t;
+      s = 1;
+      a = 0;
+    } else {
+      y = 1/t;
+      s = -1;
+      b1= log(t);
+      a = pi6+hf*b1*b1;
+    }
+    h    = y+y-1;
+    alfa = h+h;
+    b1   = 0;
+    b2   = 0;
+    for (int i=19;i>=0;i--){
+      b0 = c[i] + alfa*b1-b2;
+      b2 = b1;
+      b1 = b0;
+    }
+    h = -(s*(b0-h*b2)+a);
+  }
+  return h;
+}
+/*********************************************************************/
+
 
 // 			 if(POWprod && !POWdecay) {
 // 			   for (int ja = 1; ja < 12; ja++) {
