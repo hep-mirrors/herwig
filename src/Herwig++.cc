@@ -7,6 +7,7 @@
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
 #include "HerwigRun.h"
+#include <iostream>
 
 int main(int argc, char * argv[]) {
   // HerwigRun's constructor does all the work
@@ -15,7 +16,7 @@ int main(int argc, char * argv[]) {
     return hw.good() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   catch ( std::exception & e ) {
-    std::cerr << e.what() << '\n';
+    std::cerr << __FILE__ << ": " << e.what() << '\n';
     return EXIT_FAILURE;
   }
   catch (...) {
