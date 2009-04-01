@@ -67,6 +67,17 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
 
 protected:
 
@@ -96,6 +107,12 @@ protected:
 			      HardBranchingPtr & first, HardBranchingPtr & last,
 			      SudakovPtr sud,PPtr beam);
 
+  void constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			 ShowerInteraction::Type inter);
+  
+  void constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
+			  ShowerInteraction::Type inter);
+
 private:
 
   /**
@@ -109,6 +126,18 @@ private:
    * In fact, it should not even be implemented.
    */
   QEDEvolver & operator=(const QEDEvolver &);
+
+private:
+
+  /**
+   *  Interactions allowed in the shower
+   */
+  vector<ShowerInteraction::Type> interactions_;
+
+  /**
+   *  Order of the interactions
+   */
+  bool QCDFirst_;
 
 };
 
