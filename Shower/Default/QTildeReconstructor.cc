@@ -654,22 +654,40 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
   // input from POWHEG hardest emission generators one progenitor should 
   // be off-shell and the others should be on-shell.
   for(cit=branchings.begin();cit!=branchings.end();++cit){
-    if((*cit)->branchingParticle()->isFinalState()) {
+    if(!(*cit)->incoming()) {
+      cerr << "FS " << *(*cit)->branchingParticle() << "\n";
       pout.push_back((*cit)->branchingParticle()->momentum());
       mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
     }
     else {
+      cerr << "IS " << *(*cit)->branchingParticle() << "\n";
       pin.push_back((*cit)->branchingParticle()->momentum());
     }
   }
   assert(pin.size()==1);
+
+
+
+
+
+
+
+
+
+
+
+
+
   // boost all the momenta to the rest frame of the decaying particle
   Boost boostv=-pin[0].boostVector();
   for(unsigned int ix=0;ix<pout.size();++ix) pout[ix].boost(boostv);
+  cerr << "testing before rescaling factor\n";
   // compute the rescaling factor
   double lambda=inverseRescalingFactor(pout,mon,pin[0].mass());
+  cerr << "testing after rescaling factor " << lambda << "\n";
   // now calculate the p reference vectors 
   for(cit=branchings.begin();cit!=branchings.end();++cit){
+    cerr << "testing calculating vectors\n";
     if(!(*cit)->branchingParticle()->isFinalState()) continue;
     Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
     pvect.boost(boostv);
@@ -680,18 +698,24 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
     pvect.boost(-boostv);
     (*cit)->showerMomentum(pvect);
   }
+  cerr << "testing finding partners\n";
   // find the colour partners
   ShowerParticleVector particles;
   for(cit=branchings.begin();cit!=branchings.end();++cit) {
     particles.push_back((*cit)->branchingParticle());
   }
+  cerr << "calling scales\n";
   evolver->showerModel()->partnerFinder()
     ->setInitialEvolutionScales(particles,true,type);
+  cerr << "after scales\n";
   // calculate the reference vectors
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     // find the partner branchings
     tShowerParticlePtr partner=(*cit)->branchingParticle()->partner();
     if(!partner) continue;
+    cerr << "testing looking at " << *(*cit)->branchingParticle() << "\n";
+    cerr << "testing ref A" << partner << "\n";
+    cerr << "testing ref B" << *partner << "\n";
     for( set<HardBranchingPtr>::iterator clt = branchings.begin();
 	 clt != branchings.end(); ++clt ) {
       if((**clt).branchingParticle()==partner) {
@@ -710,33 +734,59 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
     }
     // If there are only two final-state particles this boost should do
     // nothing, since then we should already have (*cit)->_p=-branch->_p.
-    Boost boost=((*cit)->pVector()+branch->pVector()).findBoostToCM();
-    Lorentz5Momentum pcm = branch->pVector();
-    pcm.boost(boost);
-    Lorentz5Momentum nvect = Lorentz5Momentum(ZERO,pcm.vect());
-    nvect.boost( -boost);
-    (*cit)->nVector(nvect);
+    generator()->log() << "testing partners "
+		       << *(*cit)->branchingParticle() << " "
+		       << *branch->branchingParticle() << "\n";
+    if(branch->branchingParticle()->isFinalState()) {
+      Boost boost=((*cit)->pVector()+branch->pVector()).findBoostToCM();
+      Lorentz5Momentum pcm = branch->pVector();
+      pcm.boost(boost);
+      Lorentz5Momentum nvect = Lorentz5Momentum(ZERO,pcm.vect());
+      nvect.boost( -boost);
+      (*cit)->nVector(nvect);
+    }
+    else {
+      Boost boost=branch->pVector().findBoostToCM();
+      Lorentz5Momentum pcm = (*cit)->pVector();
+      pcm.boost(boost);
+      Lorentz5Momentum nvect = Lorentz5Momentum( ZERO, -pcm.vect()); 
+      nvect.boost( -boost);
+      (*cit)->nVector(nvect);
+    }
   }
+  cerr << "testing comnpute new\n";
   // now compute the new momenta 
   for(cit=branchings.begin();cit!=branchings.end();++cit){
     if(!(*cit)->branchingParticle()->isFinalState()) continue;
+    cerr << "testing A " << *(*cit)->branchingParticle() << "\n";
     Lorentz5Momentum qnew;
     if((type==ShowerInteraction::QCD&&(*cit)->branchingParticle()->data().coloured())||
        (type==ShowerInteraction::QED&&(*cit)->branchingParticle()->data().charged())) {
+      cerr << "testing B\n";
+      cerr << (*cit)->pVector()/GeV << "\n" 
+	   << (*cit)->nVector()/GeV << "\n";
       Energy2 dot=(*cit)->pVector()*(*cit)->nVector();
+      cerr << dot/GeV2 << "\n";
       double beta = 0.5*((*cit)->branchingParticle()->momentum().m2()
 			 -sqr((*cit)->pVector().mass()))/dot;
       qnew=(*cit)->pVector()+beta*(*cit)->nVector();
       qnew.rescaleMass();
     }
     else {
+    cerr << "testing C\n";
       qnew = (*cit)->pVector();
     }
+    cerr << "testing D\n";
     // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
     // for the simple case Z->q qbar g this was checked against analytic formulae.
     // compute the boost
+    cerr << "testing E\n";
     LorentzRotation A=LorentzRotation(boostv);
+    cerr << "testing F " << qnew/GeV << "\n";
+    cerr << "testing F " << (*cit)->branchingParticle()->momentum()/GeV << "\n";
+    cerr << "testing F " << A*(*cit)->branchingParticle()->momentum()/GeV << "\n";
     LorentzRotation R=solveBoost(qnew,A*(*cit)->branchingParticle()->momentum())*A;
+    cerr << "testing G\n";
     // when R is applied to (*cit)->branchingParticle()->momentum() you get qnew (checked).
     (*cit)->setMomenta(R,1.0,Lorentz5Momentum());
   }
@@ -745,7 +795,7 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
 
 double QTildeReconstructor::
 inverseRescalingFactor(vector<Lorentz5Momentum> pout,
-			vector<Energy> mon, Energy roots) const {
+		       vector<Energy> mon, Energy roots) const {
   double lambda=1.;
   if(pout.size()==2) { 
     double mu_q1(pout[0].m()/roots), mu_q2(pout[1].m()/roots);

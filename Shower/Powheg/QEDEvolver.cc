@@ -13,6 +13,7 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Shower/ShowerHandler.h"
 
 using namespace Herwig;
@@ -216,8 +217,10 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
 void QEDEvolver::constructTimeLikeLine(tHardBranchingPtr branch,
 				       tShowerParticlePtr particle) {
   for(unsigned int ix=0;ix<particle->children().size();++ix) {
-    tShowerParticlePtr child = dynamic_ptr_cast<ShowerParticlePtr>(particle->children()[ix]);
+    tShowerParticlePtr child = 
+      dynamic_ptr_cast<ShowerParticlePtr>(particle->children()[ix]);
     if(child->children().empty()) {
+      generator()->log() << "testing FS first pass B " << *child << "\n";
       HardBranchingPtr newBranch = 
 	new_ptr(HardBranching(child,SudakovPtr(),branch,false));
       branch->addChild(newBranch);
@@ -272,11 +275,13 @@ void QEDEvolver::constructSpaceLikeLine(tShowerParticlePtr particle,
 
 void QEDEvolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
 				   ShowerInteraction::Type inter) {
+  bool noEmission = true;
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState()) {
       HardBranchingPtr newBranch;
       if(particlesToShower[ix]->hasEmitted()) {
+	noEmission = false;
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				particlesToShower[ix]->progenitor()->
@@ -293,23 +298,33 @@ void QEDEvolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShow
     }
     else {
       HardBranchingPtr first,last;
-      constructSpaceLikeLine(particlesToShower[ix]->progenitor(),first,last,
-			     SudakovPtr(),
-			     particlesToShower[ix]->original()->parents()[0]);
+      if(!particlesToShower[ix]->progenitor()->parents().empty()) {
+	noEmission = false;
+	constructSpaceLikeLine(particlesToShower[ix]->progenitor(),
+			       first,last,SudakovPtr(),
+			       particlesToShower[ix]->original()->parents()[0]);
+      }
+      else {
+	first = new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
+				      SudakovPtr(),HardBranchingPtr(),true));
+	last = first;
+      }
       spaceBranchings.push_back(first);
       allBranchings.push_back(last);
     }
   }
-  HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings));
-  // do the inverse recon
-  if(!showerModel()->kinematicsReconstructor()->
-     deconstructHardJets(QCDTree,this,inter))
-    throw Exception() << "Can't to shower deconstruction for QED shower in"
-		      << "QEDEvolver::showerHard" << Exception::eventerror;
+  if(!noEmission) {
+    HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings));
+    // do the inverse recon
+    if(!showerModel()->kinematicsReconstructor()->
+       deconstructHardJets(QCDTree,this,inter))
+      throw Exception() << "Can't to shower deconstruction for QED shower in"
+			<< "QEDEvolver::showerHard" << Exception::eventerror;
+    // set the hard tree
+    hardTree(QCDTree);
+  }
   // clear the old shower
   currentTree()->clear();
-  // set the hard tree
-  hardTree(QCDTree);
   // set the charge partners
   setEvolutionPartners(true,inter);
   // get the particles to be showered
@@ -332,6 +347,9 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState()) {
+      cerr << "testing time-like " 
+	   << particlesToShower[ix]->progenitor()->children().size() << " "
+	   << *particlesToShower[ix]->progenitor() << "\n";
       HardBranchingPtr newBranch;
       if(particlesToShower[ix]->hasEmitted()) {
 	newBranch = 
@@ -345,14 +363,66 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				SudakovPtr(),HardBranchingPtr(),false));
+	generator()->log() << "testing final state first pass A"
+			   << *particlesToShower[ix]->progenitor() << "\n";
       }
       allBranchings.push_back(newBranch);
     }
     else {
-      spaceBranchings.
-	push_back(new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-					SudakovPtr(),HardBranchingPtr(),true)));
-      allBranchings.push_back(spaceBranchings.back());
+      generator()->log()
+	<< "testing decay progenitor " 
+	<< particlesToShower[ix]->progenitor()->children().size() << " " 
+	<< particlesToShower[ix]->progenitor()->parents().size() << " " 
+	<< *particlesToShower[ix]->progenitor()
+	<< "\n";
+
+
+      HardBranchingPtr newBranch;
+      if(particlesToShower[ix]->hasEmitted()) {
+	newBranch = 
+	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
+				particlesToShower[ix]->progenitor()->
+				showerKinematics()->SudakovFormFactor(),
+				HardBranchingPtr(),true));
+	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
+	HardBranchingPtr last=newBranch;
+	do {
+	  for(unsigned int ix=0;ix<last->children().size();++ix) {
+	    if(last->children()[ix]->branchingParticle()->id()==
+	       particlesToShower[ix]->id()) {
+	      last = last->children()[ix];
+	      continue;
+	    }
+	  }
+	}
+	while(!last->children().empty());
+	last->incoming(true);
+	spaceBranchings.push_back(newBranch);
+	allBranchings  .push_back(last);
+	cerr << "testing last    " << *last     ->branchingParticle() << "\n";
+	cerr << "testing initial " << *newBranch->branchingParticle() << "\n";
+      }
+      else {
+	newBranch = 
+	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
+				SudakovPtr(),HardBranchingPtr(),true));
+	generator()->log() << "testing final state first pass A"
+			   << *particlesToShower[ix]->progenitor() << "\n";
+	spaceBranchings.push_back(newBranch);
+	allBranchings  .push_back(newBranch);
+      }
+
+
+
+
+
+
+
+
+
+
+
+
     }
   }
   HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings));

@@ -119,12 +119,13 @@ bool HardTree::connect(ShowerTreePtr shower) {
   // connect the trees up
   for(set<HardBranchingPtr>::iterator it=branchings().begin();
       it!=branchings().end();++it) {
+    CurrentGenerator::log() << "looknig for match of "
+			    << *(**it).branchingParticle() << "\n";
     Energy2 dmin(1e30*GeV2);
     tShowerParticlePtr partner;   
     for(unsigned int ix=0;ix<progenitors.size();++ix) {
       if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
-      if((**it).branchingParticle()->isFinalState()!=
-	 progenitors[ix]->progenitor()->isFinalState()) continue;
+      if((**it).incoming()==progenitors[ix]->progenitor()->isFinalState()) continue;
       Energy2 dtest = 
 	sqr(progenitors[ix]->progenitor()->momentum().x()-(**it).showerMomentum().x())+
 	sqr(progenitors[ix]->progenitor()->momentum().y()-(**it).showerMomentum().y())+

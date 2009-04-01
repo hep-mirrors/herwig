@@ -125,8 +125,8 @@ void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
 	Boost boost=ppartner.findBoostToCM();
 	pcm = p;
 	pcm.boost(boost);
-	  n = Lorentz5Momentum( ZERO, -pcm.vect()); 
-	  n.boost( -boost);
+	n = Lorentz5Momentum( ZERO, -pcm.vect()); 
+	n.boost( -boost);
       } 
     } 
   }
