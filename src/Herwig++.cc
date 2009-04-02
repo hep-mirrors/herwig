@@ -8,6 +8,7 @@
 //
 #include "HerwigRun.h"
 #include <iostream>
+#include "ThePEG/Utilities/Exception.h"
 
 int main(int argc, char * argv[]) {
   // HerwigRun's constructor does all the work
@@ -15,12 +16,15 @@ int main(int argc, char * argv[]) {
     Herwig::HerwigRun hw(argc, argv);
     return hw.good() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
+  catch ( ThePEG::Exception & e ) {
+    return EXIT_FAILURE;
+  }
   catch ( std::exception & e ) {
-    std::cerr << __FILE__ << ": " << e.what() << '\n';
+    std::cerr << argv[0] << ": " << e.what() << '\n';
     return EXIT_FAILURE;
   }
   catch (...) {
-    std::cerr << __FILE__ << ": Unknown exception caught.\n";
+    std::cerr << argv[0] << ": Unknown exception caught.\n";
     return EXIT_FAILURE;
   }
   
