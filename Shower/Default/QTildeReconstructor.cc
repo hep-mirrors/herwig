@@ -747,6 +747,10 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
       mon.push_back(mbar);
     }
     k1=k2=inverseRescalingFactor(pout,mon,pin[0].mass());
+    if(partner) {
+      pout.pop_back();
+      mon.pop_back();
+    }
   }
   else {
     if(!inverseDecayRescalingFactor(pout,mon,pin[0].mass(),
