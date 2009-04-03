@@ -179,16 +179,21 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
   spaceBranchings.push_back(new_ptr(HardBranching(vboson,SudakovPtr(),
-						 HardBranchingPtr(),true)));
+						  HardBranchingPtr(),
+						  HardBranching::Incoming)));
   // Outgoing particles from hard emission:
   HardBranchingPtr spectatorBranch(new_ptr(HardBranching(spectator,
-				    SudakovPtr(),HardBranchingPtr(),false)));
+							 SudakovPtr(),HardBranchingPtr(),
+							 HardBranching::Outgoing)));
   HardBranchingPtr emitterBranch(new_ptr(HardBranching(parent,
-				    sudakov,HardBranchingPtr(),false)));
+						       sudakov,HardBranchingPtr(),
+						       HardBranching::Outgoing)));
   emitterBranch->addChild(new_ptr(HardBranching(emitter, 
-				    SudakovPtr(),HardBranchingPtr(),false)));
+						SudakovPtr(),HardBranchingPtr(),
+						HardBranching::Outgoing)));
   emitterBranch->addChild(new_ptr(HardBranching(gluon,
-				    SudakovPtr(),HardBranchingPtr(),false)));
+						SudakovPtr(),HardBranchingPtr(),
+						HardBranching::Outgoing)));
   if(_iemitter==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);

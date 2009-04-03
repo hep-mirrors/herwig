@@ -300,7 +300,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     map<ColinePtr,ColinePtr> colourMap;
     for(set<HardBranchingPtr>::const_iterator it=_theHardTree->branchings().begin();
 	it!=_theHardTree->branchings().end();++it) {
-      if((**it).incoming()) continue;
+      if((**it).status()==HardBranching::Incoming) continue;
       PPtr newParticle = new_ptr(Particle((**it).branchingParticle()->dataPtr()));
       newParticle->set5Momentum((**it).showerMomentum());
       //do colour connections
@@ -356,7 +356,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
 	  newLine->addAntiColoured(newParticle);
 	}
       }
-      if((**it).incoming()) {
+      if((**it).status()==HardBranching::Incoming) {
 	if(lastXCombPtr()->subProcess()->incoming().first->momentum().z()/
 	   newParticle->momentum().z()>0.)
 	  incoming.first = newParticle;
@@ -848,7 +848,8 @@ HardBranchingPtr PowhegHandler::getCluster( pair< ShowerParticlePtr, ShowerParti
   clustered->set5Momentum( pairMomentum );
   
   HardBranchingPtr clusteredBranch( new_ptr( HardBranching( clustered, theSudakov,
-							    HardBranchingPtr(), false ) ) );
+							    HardBranchingPtr(),
+							    HardBranching::Outgoing ) ) );
   _all_clusters.insert( make_pair( clusteredBranch, clusterPair ) );
 
   //join children
@@ -904,7 +905,7 @@ bool PowhegHandler::simpleColConnections( HardTreePtr theHardTree ){
   ColinePtr newline = new_ptr( ColourLine() );
   for( set< HardBranchingPtr >::iterator it = particles.begin();
        it != particles.end(); ++it ){
-    if( (*it)->incoming() ) continue;
+    if( (*it)->status()==HardBranching::Incoming ) continue;
     (*it)->branchingParticle()->resetColour();
     if( (*it)->branchingParticle()->dataPtr()->iColour() 
 	== PDT::Colour3 )
@@ -961,8 +962,9 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   for( unsigned int i = 0; i < theParts.size(); i++){
     ShowerParticlePtr currentParticle = 
       new_ptr( ShowerParticle( *theParts[i], 1, true, false ) );
-    HardBranchingPtr currentBranching =  new_ptr( HardBranching( currentParticle, SudakovPtr(),
-								 HardBranchingPtr(),false ) );     
+    HardBranchingPtr currentBranching = 
+      new_ptr( HardBranching( currentParticle, SudakovPtr(),
+			      HardBranchingPtr(), HardBranching::Outgoing ) );     
     theParticles.insert( make_pair( currentParticle, currentBranching ) );
   }
   //create and initialise the first tree
@@ -991,7 +993,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
       theBranchings.push_back( *cjt );
     spaceBranchings.push_back( new_ptr( HardBranching( vBoson, SudakovPtr(),
 						       HardBranchingPtr(), 
-						       true ) ) );
+						       HardBranching::Incoming ) ) );
     theBranchings.push_back( spaceBranchings.back() );
     HardTreePtr powhegtree = new_ptr( HardTree( theBranchings,
 						spaceBranchings ) );  
@@ -1414,7 +1416,9 @@ HardBranchingPtr PrototypeBranching::convert() {
   // create the new particle
   HardBranchingPtr hard=new_ptr(HardBranching(particle,sudakov,
 					      tHardBranchingPtr(),
-					      !particle->isFinalState()));
+					      particle->isFinalState() ?
+					      HardBranching::Outgoing : 
+					      HardBranching::Incoming));
   // and the children
   for(unsigned int ix=0;ix<children.size();++ix) {
     hard->addChild(children[ix]->convert());
@@ -1432,7 +1436,7 @@ HardTreePtr PrototypeTree::convert() {
     HardBranchingPtr br(spacelike.back());
     while (!br->children().empty()) {
       for(unsigned int ix=0;ix<br->children().size();++ix) {
-	if(br->children()[ix]->incoming()) {
+	if(br->children()[ix]->status()==HardBranching::Incoming) {
 	  br = br->children()[ix];
 	  break;
 	}
@@ -1498,14 +1502,14 @@ void PowhegHandler::createColourFlow(HardTreePtr tree,
   PVector particles;
   set<HardBranchingPtr>::const_iterator it; 
   for(it=tree->branchings().begin();it!=tree->branchings().end();++it) {
-    if((**it).incoming()) {
+    if((**it).status()==HardBranching::Incoming) {
       meMomenta.push_back((**it).branchingParticle()->momentum());
       mePartonData.push_back((**it).branchingParticle()->dataPtr());
       particles.push_back((**it).branchingParticle());
     }
   }
   for(it=tree->branchings().begin();it!=tree->branchings().end();++it) {
-    if(!(**it).incoming()) {
+    if(!(**it).status()==HardBranching::Incoming) {
       meMomenta.push_back((**it).branchingParticle()->momentum());
       mePartonData.push_back((**it).branchingParticle()->dataPtr());
       particles.push_back((**it).branchingParticle());
@@ -1743,7 +1747,7 @@ void PowhegHandler::setBeams(HardTreePtr tree) {
   br->beam(beams.first);
   while (!br->children().empty()) {
     for(unsigned int ix=0;ix<br->children().size();++ix) {
-      if(br->children()[ix]->incoming()) {
+      if(br->children()[ix]->status()==HardBranching::Incoming) {
 	br = br->children()[ix];
 	break;
       }
@@ -1755,7 +1759,7 @@ void PowhegHandler::setBeams(HardTreePtr tree) {
   br->beam(beams.second);
   while (!br->children().empty()) {
     for(unsigned int ix=0;ix<br->children().size();++ix) {
-      if(br->children()[ix]->incoming()) {
+      if(br->children()[ix]->status()==HardBranching::Incoming) {
 	br = br->children()[ix];
 	break;
       }
@@ -1771,7 +1775,7 @@ bool PowhegHandler::checkTree(HardTreePtr tree) {
     reject |=checkBranching(*it);
   }
   for(it=tree->branchings().begin();it!=tree->branchings().end();++it) {
-    if((**it).incoming()) continue;
+    if((**it).status()==HardBranching::Incoming) continue;
     reject |=checkBranching(*it);
   }
   return !reject;
@@ -1866,7 +1870,8 @@ HardTreePtr PowhegHandler::doClustering() {
       new_ptr( ShowerParticle( *theParts[i], 1, true, false ) );
     theParticles.insert(make_pair(currentParticle, 
 				  new_ptr( HardBranching( currentParticle, SudakovPtr(),
-							   HardBranchingPtr(),false ) ) ) );
+							  HardBranchingPtr(),
+							  HardBranching::Outgoing ) ) ) );
     if(currentParticle->dataPtr()->iColour()==PDT::Colour3||
        currentParticle->dataPtr()->iColour()==PDT::Colour8) {
       ColinePtr newline = new_ptr(ColourLine());
@@ -1921,7 +1926,8 @@ HardTreePtr PowhegHandler::doClustering() {
     clustered->set5Momentum( pairMomentum );
   
     HardBranchingPtr clusteredBranch( new_ptr( HardBranching( clustered, theSudakov,
-							      HardBranchingPtr(), false ) ) );
+							      HardBranchingPtr(), 
+							      HardBranching::Outgoing) ) );
     fixColours( clustered, clusterPair.first, clusterPair.second );
     theParticles.insert( make_pair( clustered, clusteredBranch ) );
 
@@ -1952,8 +1958,8 @@ HardTreePtr PowhegHandler::doClustering() {
   theBranchings[1]->colourPartner(theBranchings[0]);
   vector<HardBranchingPtr> spaceBranchings;
   spaceBranchings.push_back( new_ptr( HardBranching( vBoson, SudakovPtr(),
-						      HardBranchingPtr(), 
-						      true ) ) );
+						     HardBranchingPtr(), 
+						     HardBranching::Incoming ) ) );
   theBranchings.push_back( spaceBranchings.back() );
   HardTreePtr powhegtree = new_ptr( HardTree( theBranchings,
 					       spaceBranchings ) );
@@ -1996,7 +2002,7 @@ void PowhegHandler::getDalitz(){
     for( set< HardBranchingPtr >::const_iterator cit = 
 	   _theHardTree->branchings().begin();
 	 cit != _theHardTree->branchings().end(); ++cit ) {
-      if( (*cit)->incoming() ) continue;
+      if( (*cit)->status()==HardBranching::Incoming ) continue;
       if( (*cit)->branchingParticle()->id() > 0 ){ 
 	if( (*cit)->children().size() == 2 && (*cit)->children()[0] 
 	    && (*cit)->children()[1] ) {

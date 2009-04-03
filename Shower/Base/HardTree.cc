@@ -24,7 +24,7 @@ bool HardTree::findNodes() {
   //call function to recursively fill _theExternals and _theNodes
   for( set< HardBranchingPtr>::const_iterator cit = _branchings.begin();
        cit != _branchings.end(); ++cit ){
-    if( (*cit)->incoming() ) continue;
+    if( (*cit)->status()==HardBranching::Incoming ) continue;
     fillNodes( *cit, HardBranchingPtr() );
   }
   //make _internals from nodes
@@ -88,27 +88,50 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
     ids[0]=_particle->id();
     ids[1]=_children[0]->_particle->id();
     ids[2]=_children[1]->_particle->id();
-    _scale=_sudakov->calculateScale(z,pt,ids,_incoming ? 1 : 0);
+    _scale=_sudakov->calculateScale(z,pt,ids,_status);
     // get the pt vector
     Lorentz5Momentum vect=_children[0]->_qt;
-    Boost beta_bb = -(_p+ _n).boostVector();
-    Lorentz5Momentum p_bb = _p;
-    vect.boost(beta_bb);
-    p_bb.boost( beta_bb );
-    Axis axis(p_bb.vect().unit());
-    LorentzRotation rot;
-    if(axis.perp2()>0.) {
-      double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate(-acos(axis.z()),
-		    Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      vect.transform(rot);
+    if(_status!=Decay) {
+      Boost beta_bb = -(_p+ _n).boostVector();
+      Lorentz5Momentum p_bb = _p;
+      vect.boost(beta_bb);
+      p_bb.boost( beta_bb );
+      Axis axis(p_bb.vect().unit());
+      LorentzRotation rot;
+      if(axis.perp2()>0.) {
+	double sinth(sqrt(1.-sqr(axis.z())));
+	rot.setRotate(-acos(axis.z()),
+		      Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+	vect.transform(rot);
+      }
+      else if(axis.z()<0.) {
+	vect.setZ(vect.z());
+      }
+      _phi= atan2(vect.y(),vect.x());
+      if(_phi<0.)                         _phi+=Constants::twopi;
+      if(_children[1]->_status==Incoming) _phi+=Constants::pi;
     }
-    else if(axis.z()<0.) {
-      vect.setZ(vect.z());
+    else {
+      const Boost beta_bb = -pVector().boostVector();
+      Lorentz5Momentum p_bb = pVector();
+      Lorentz5Momentum n_bb = nVector(); 
+      p_bb.boost( beta_bb );
+      n_bb.boost( beta_bb );
+      vect.boost( beta_bb);
+      Axis axis(n_bb.vect().unit());
+      LorentzRotation rot;
+      if(axis.perp2()>0.) {
+	double sinth(sqrt(1.-sqr(axis.z())));
+	rot.setRotate(-acos(axis.z()),
+		      Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+	vect.transform(rot);
+      }
+      else if(axis.z()<0.) {
+	vect.setZ(vect.z());
+      }
+      _phi= atan2(vect.y(),vect.x());
+      if(_phi<0) _phi+=Constants::twopi;
     }
-    _phi= atan2(vect.y(),vect.x());
-    if(_phi<0.)                 _phi+=Constants::twopi;
-    if(_children[1]->_incoming) _phi+=Constants::pi;
   }
 }
 
@@ -119,13 +142,14 @@ bool HardTree::connect(ShowerTreePtr shower) {
   // connect the trees up
   for(set<HardBranchingPtr>::iterator it=branchings().begin();
       it!=branchings().end();++it) {
-    CurrentGenerator::log() << "looknig for match of "
-			    << *(**it).branchingParticle() << "\n";
     Energy2 dmin(1e30*GeV2);
     tShowerParticlePtr partner;   
     for(unsigned int ix=0;ix<progenitors.size();++ix) {
       if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
-      if((**it).incoming()==progenitors[ix]->progenitor()->isFinalState()) continue;
+      if(((**it).status()==HardBranching::Incoming&&
+	  progenitors[ix]->progenitor()->isFinalState())||
+	 ((**it).status()==HardBranching::Outgoing&&
+	  !progenitors[ix]->progenitor()->isFinalState())) continue;
       Energy2 dtest = 
 	sqr(progenitors[ix]->progenitor()->momentum().x()-(**it).showerMomentum().x())+
 	sqr(progenitors[ix]->progenitor()->momentum().y()-(**it).showerMomentum().y())+
@@ -138,7 +162,7 @@ bool HardTree::connect(ShowerTreePtr shower) {
     }
     if(!partner) return false;
     connect(partner,*it);
-    if((**it).incoming()) {
+    if((**it).status()==HardBranching::Incoming) {
       double z((**it).z());
       tHardBranchingPtr parent=(**it).parent();
       while (parent) {
@@ -153,16 +177,16 @@ bool HardTree::connect(ShowerTreePtr shower) {
 }
 
 HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
-			     tHardBranchingPtr parent,bool incoming) 
-  : _particle(particle), _incoming(incoming), _parent(parent),
+			     tHardBranchingPtr parent,Status status) 
+  : _particle(particle), _status(status), _parent(parent),
     _sudakov(sudakov)
 {}
 
 void HardBranching::fixColours() {
   if(!_sudakov) return;
-  if(!_incoming&&_children.empty()) return;
-  if(_incoming && !_parent) return;
-  if(_incoming)
+  if(_status==Outgoing && _children.empty()) return;
+  if(_status==Incoming && !_parent) return;
+  if(_status==Incoming)
     _sudakov->splittingFn()->
       colourConnection(_parent->_particle,_particle,
 		       _parent->children()[1]->_particle,true);
@@ -229,7 +253,7 @@ bool HardTree::checkHardOrdering() {
   for( set<HardBranchingPtr>::const_iterator it = 
 	 this->branchings().begin();
        it != this->branchings().end(); ++it)  {
-    if( (*it)->incoming() ) continue;
+    if( (*it)->status()==HardBranching::Incoming ) continue;
     //if the branching has children then fill qtilde and z of branching and
     //continue recursively on the children 
    

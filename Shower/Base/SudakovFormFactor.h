@@ -259,6 +259,12 @@ public:
   virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
 						double phi, Energy pt)=0;
 
+  /**
+   *  Method to create the ShowerKinematics object for a decay branching
+   */
+  virtual ShoKinPtr createDecayBranching(Energy scale,double z,
+					 double phi, Energy pt)=0;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

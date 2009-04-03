@@ -66,6 +66,12 @@ protected:
    */
   virtual bool startSpaceLikeShower(PPtr, ShowerInteraction::Type);
 
+  /**
+   *  Start the shower of a spacelike decaying aparticle
+   */
+  virtual bool startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
+					 ShowerInteraction::Type);
+
 protected:
   
   /**
@@ -102,6 +108,14 @@ protected:
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
 				       HardBranchingPtr branch,
 				       ShowerInteraction::Type type);
+
+  /**
+   * Truncated shower from a time-like particle
+   */
+  virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
+					     Energy maxscale, Energy minimumMass,
+					     HardBranchingPtr branch,
+					     ShowerInteraction::Type type);
  
   /**
    * Truncated shower from a space-like particle

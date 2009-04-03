@@ -196,9 +196,8 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
 	  Energy startScale=progenitor()->progenitor()->mass();
 	  progenitor()->progenitor()->setEvolutionScale(startScale);
 	  // perform the shower
-	  progenitor()->hasEmitted(spaceLikeDecayShower(progenitor()->progenitor(),
-							maxscale,minmass,
-							interactions_[inter])); 
+	  progenitor()->hasEmitted(startSpaceLikeDecayShower(maxscale,minmass,
+							     interactions_[inter])); 
 	}
       }
     }
@@ -217,18 +216,21 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
 void QEDEvolver::constructTimeLikeLine(tHardBranchingPtr branch,
 				       tShowerParticlePtr particle) {
   for(unsigned int ix=0;ix<particle->children().size();++ix) {
+    HardBranching::Status status = 
+      particle->children()[ix]->id()==particle->id() ?
+      branch->status() : HardBranching::Outgoing;
     tShowerParticlePtr child = 
       dynamic_ptr_cast<ShowerParticlePtr>(particle->children()[ix]);
     if(child->children().empty()) {
       generator()->log() << "testing FS first pass B " << *child << "\n";
       HardBranchingPtr newBranch = 
-	new_ptr(HardBranching(child,SudakovPtr(),branch,false));
+	new_ptr(HardBranching(child,SudakovPtr(),branch,status));
       branch->addChild(newBranch);
     }
     else {
       HardBranchingPtr newBranch = 
 	new_ptr(HardBranching(child,child->showerKinematics()->SudakovFormFactor(),
-			      branch,false));
+			      branch,status));
       constructTimeLikeLine(newBranch,child);
       branch->addChild(newBranch);
     }
@@ -247,7 +249,7 @@ void QEDEvolver::constructSpaceLikeLine(tShowerParticlePtr particle,
     constructSpaceLikeLine(parent,first,last,newSud,beam);
   }
   HardBranchingPtr newBranch = 
-    new_ptr(HardBranching(particle,sud,last,true));
+    new_ptr(HardBranching(particle,sud,last,HardBranching::Incoming));
   newBranch->beam(beam);
   if(!first) {
     first=newBranch;
@@ -262,12 +264,12 @@ void QEDEvolver::constructSpaceLikeLine(tShowerParticlePtr particle,
     timeBranch = 
       new_ptr(HardBranching(timeChild,
 			    timeChild->showerKinematics()->SudakovFormFactor(),
-			    last,false));
+			    last,HardBranching::Outgoing));
     constructTimeLikeLine(timeBranch,timeChild);
   }
   else {
     timeBranch = 
-      new_ptr(HardBranching(timeChild,SudakovPtr(),last,false));
+      new_ptr(HardBranching(timeChild,SudakovPtr(),last,HardBranching::Outgoing));
   }
   last->addChild(timeBranch);
   last=newBranch;
@@ -286,13 +288,14 @@ void QEDEvolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShow
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				particlesToShower[ix]->progenitor()->
 				showerKinematics()->SudakovFormFactor(),
-				HardBranchingPtr(),false));
+				HardBranchingPtr(),HardBranching::Outgoing));
 	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
       }
       else {
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				SudakovPtr(),HardBranchingPtr(),false));
+				SudakovPtr(),HardBranchingPtr(),
+				HardBranching::Outgoing));
       }
       allBranchings.push_back(newBranch);
     }
@@ -306,7 +309,8 @@ void QEDEvolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShow
       }
       else {
 	first = new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				      SudakovPtr(),HardBranchingPtr(),true));
+				      SudakovPtr(),HardBranchingPtr(),
+				      HardBranching::Incoming));
 	last = first;
       }
       spaceBranchings.push_back(first);
@@ -356,13 +360,14 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				particlesToShower[ix]->progenitor()->
 				showerKinematics()->SudakovFormFactor(),
-				HardBranchingPtr(),false));
+				HardBranchingPtr(),HardBranching::Outgoing));
 	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
       }
       else {
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				SudakovPtr(),HardBranchingPtr(),false));
+				SudakovPtr(),HardBranchingPtr(),
+				HardBranching::Outgoing));
 	generator()->log() << "testing final state first pass A"
 			   << *particlesToShower[ix]->progenitor() << "\n";
       }
@@ -379,11 +384,13 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
 
       HardBranchingPtr newBranch;
       if(particlesToShower[ix]->hasEmitted()) {
+	generator()->log() << "testing DECAY ISR!!!!!!!!!\n";
+	cerr << "testing DECAY ISR!!!!!!!!!\n";
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				particlesToShower[ix]->progenitor()->
 				showerKinematics()->SudakovFormFactor(),
-				HardBranchingPtr(),true));
+				HardBranchingPtr(),HardBranching::Decay));
 	constructTimeLikeLine(newBranch,particlesToShower[ix]->progenitor());
 	HardBranchingPtr last=newBranch;
 	do {
@@ -396,7 +403,7 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
 	  }
 	}
 	while(!last->children().empty());
-	last->incoming(true);
+	last->status(HardBranching::Incoming);
 	spaceBranchings.push_back(newBranch);
 	allBranchings  .push_back(last);
 	cerr << "testing last    " << *last     ->branchingParticle() << "\n";
@@ -405,27 +412,27 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
       else {
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
-				SudakovPtr(),HardBranchingPtr(),true));
+				SudakovPtr(),HardBranchingPtr(),
+				HardBranching::Incoming));
 	generator()->log() << "testing final state first pass A"
 			   << *particlesToShower[ix]->progenitor() << "\n";
 	spaceBranchings.push_back(newBranch);
 	allBranchings  .push_back(newBranch);
       }
-
-
-
-
-
-
-
-
-
-
-
-
     }
   }
   HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings));
+  // set the charge partners
+  ShowerParticleVector particles;
+  particles.push_back(spaceBranchings.back()->branchingParticle());
+  for(set<HardBranchingPtr>::iterator cit=QCDTree->branchings().begin();
+      cit!=QCDTree->branchings().end();++cit) {
+    if((*cit)->status()==HardBranching::Outgoing)
+      particles.push_back((*cit)->branchingParticle());
+  }
+//   showerModel()->partnerFinder()->setInitialEvolutionScales(particles,true,inter,true);
+  // test fix to get same partners again
+  showerModel()->partnerFinder()->setInitialEvolutionScales(particles,true,inter,true);
   // do the inverse recon
   if(!showerModel()->kinematicsReconstructor()->
      deconstructDecayJets(QCDTree,this,inter))

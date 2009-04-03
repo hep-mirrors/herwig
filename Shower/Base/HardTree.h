@@ -38,6 +38,7 @@ public:
   bool connect(ShowerParticlePtr particle, HardBranchingPtr branching) {
     if(_branchings.find(branching)==_branchings.end()) return false;
     _particles[particle]=branching;
+    cerr << "testing matching " << particle << " " << branching << "\n";
     return true;
   }
 
@@ -183,6 +184,13 @@ class HardBranching : public Base {
 public:
 
   /**
+   *  Enum for the status
+   */
+  enum Status {Outgoing=0,Incoming,Decay};
+
+public:
+
+  /**
    * The default constructor
    * @param particle The particle which is branching
    * @param sudakov  The Sudakov form factor for the branching
@@ -190,7 +198,7 @@ public:
    * @param incoming Whether the particle is incoming or outgoing
    */
   HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
-		tHardBranchingPtr parent,bool incoming);
+		tHardBranchingPtr parent,Status status);
 
   /**
    * Add a child of the branching
@@ -284,14 +292,14 @@ public:
   void pT(Energy in) { _pt=in;}
 
   /**
-   *  Get whether the branching is incoming or outgoing
-   */
-  bool incoming() const {return _incoming;}
+   *  Get whether the branching is incoming or outgoing or decay
+   */  
+  Status status() {return _status;}
 
   /**
-   *  Set whether the branching is incoming or outgoing
+   *  Set whether the branching is incoming or outgoing or decay
    */
-  void incoming(bool in) {_incoming=in;}
+  void status(Status in) {_status=in;}
 
   /**
    *  The parent of the branching
@@ -415,12 +423,13 @@ private:
   /**
    *  The transverse momentum
    */
-  Energy _pt;
+  Energy _pt; 
 
-  /**
-   *  Whether the branching is incoming or outgoing
-   */
-  bool _incoming;
+ /**
+  *  Whether the branching is incoming, outgoing or a decay
+  */
+  Status _status;
+
 
   /**
    *  Information on the Shower variables for the branching

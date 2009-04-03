@@ -245,6 +245,17 @@ protected:
 				vector<Energy> mon,Energy roots) const;
 
   /**
+   * Compute the momentum rescaling factor needed to invert the shower
+   * @param pout The momenta of the outgoing particles
+   * @param mon  The on-shell masses
+   * @param roots The mass of the decaying particle
+   */
+  bool inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
+				   vector<Energy> mon,Energy roots,
+				   Lorentz5Momentum ppartner, Energy mbar,
+				   double & k1, double & k2) const;
+
+  /**
    * Check the rescaling conserves momentum
    * @param k The rescaling
    * @param root_s The centre-of-mass energy

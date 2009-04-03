@@ -12,6 +12,7 @@
 //
 
 #include "Decay_QtildaShowerKinematics1to2.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
@@ -78,7 +79,17 @@ reconstructLast(const tShowerParticlePtr theLast,
   theLast->showerParameters()[1]=
     (sqr(theMass) + sqr(theLast->showerVariables()[2])
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
-    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );   
+    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );
+  CurrentGenerator::log() << "testing decay branch A" 
+			  << pVector()/GeV << " "
+			  << nVector()/GeV << "\n";
+  CurrentGenerator::log() << "testing decay branch A" 
+			  << pT()/GeV << " "
+			  << phi() << " "
+			  << scale()/GeV << "\n";
+  CurrentGenerator::log() << "testing decay branch A" 
+			  << theLast->showerParameters()[0] << " "
+			  << theLast->showerParameters()[1] << "\n";
   // set that new momentum  
   theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters()[0], 
 					    theLast->showerParameters()[1], 

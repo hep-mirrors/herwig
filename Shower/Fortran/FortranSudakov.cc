@@ -355,14 +355,20 @@ Energy FortranSudakov::calculateScale(double z, Energy pt, IdList ids,
 		    << Exception::runerror;
 }
 
-ShoKinPtr FortranSudakov::createFinalStateBranching(Energy scale,double z,
-				    double phi, Energy pt) {
+ShoKinPtr FortranSudakov::createFinalStateBranching(Energy ,double ,
+						    double , Energy ) {
   throw Exception() << " FortranSudakov::createFinalStateBranching() not implemented"
 		    << Exception::runerror;
 }
 
-ShoKinPtr FortranSudakov::createInitialStateBranching(Energy scale,double z,
-						 double phi, Energy pt) {
+ShoKinPtr FortranSudakov::createInitialStateBranching(Energy,double ,
+						      double , Energy) {
   throw Exception() << " FortranSudakov::createInitialStateBranching() not implemented"
+		    << Exception::runerror;
+}
+
+ShoKinPtr FortranSudakov::createDecayBranching(Energy ,double ,
+					       double , Energy ) {
+  throw Exception() << " FortranSudakov::createDecayBranching() not implemented"
 		    << Exception::runerror;
 }

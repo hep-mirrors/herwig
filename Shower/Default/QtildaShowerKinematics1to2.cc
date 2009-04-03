@@ -12,6 +12,7 @@
 //
 
 #include "QtildaShowerKinematics1to2.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
@@ -83,7 +84,18 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     dq.setX(px);
     dq.setY(py);
     // rotate to have z-axis parallel to n
-    dq.rotateUz( unitVector(n_bb.vect()) );
+//     dq.rotateUz( unitVector(n_bb.vect()) );
+    Axis axis(n_bb.vect().unit());
+    CurrentGenerator::log() << "testing decay axis A" << axis << "\n";
+    if(axis.perp2()>0.) {
+      LorentzRotation rot;
+      double sinth(sqrt(1.-sqr(axis.z())));
+      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+      dq.transform(rot);
+    }
+    else if(axis.z()<0.) {
+      dq.setZ(-dq.z());
+    }
     // boost back 
     dq.boost( -beta_bb ); 
     dq.rescaleMass();

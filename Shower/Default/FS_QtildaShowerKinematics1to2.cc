@@ -12,6 +12,7 @@
 //
 
 #include "FS_QtildaShowerKinematics1to2.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"

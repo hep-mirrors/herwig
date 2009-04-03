@@ -155,7 +155,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 	if(dm>dum.e()) throw KinematicsReconstructionVeto();
 	dum.setMass(dm); 
 	dum.rescaleRho(); 
-	particleJetParent->set5Momentum(dum);  
+	particleJetParent->set5Momentum(dum);
       } 
       else {
 	emitted=false;
@@ -439,7 +439,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	radiated[0]|=ShowerHardJets[ix]->hasEmitted();
       }
     }
-    // if initial state radiation reconsturct the jet and set up the basis vectors
+    // if initial state radiation reconstruct the jet and set up the basis vectors
     bool initialrad=false;
     Lorentz5Momentum pjet;
     Lorentz5Momentum nvect;
@@ -461,6 +461,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     }
     // find boost to the rest frame if needed
     Boost boosttorest=-initial->progenitor()->momentum().boostVector();
+    generator()->log() << "testing original boost " << boosttorest << "\n";
     double gammarest =
       initial->progenitor()->momentum().e()/
       initial->progenitor()->momentum().mass();
@@ -535,10 +536,25 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	    it->parent->set5Momentum(pnew);
 	  }
 	  else {
+	    generator()->log() << "testing original " 
+			       << it->q/GeV << " " << it->p/GeV << "\n";
+
+	    
+	    Lorentz5Momentum pnew(k2*it->p.vect(),
+				  sqrt(sqr(k2*it->p.vect().mag())+it->q.mass2()),
+				  it->q.mass());
+	    generator()->log() << "testing including rescale " << pnew/GeV << "\n";
+
 	    Trafo = solveBoost(k2, it->q, it->p);
 	  }
 	}
+	Lorentz5Momentum ptest=Trafo*it->q;
+	generator()->log() << "testing after rescaling boost " << ptest/GeV << "\n";
+
+
 	if(gottaBoost)  Trafo.boost(-boosttorest,gammarest);
+	generator()->log() << "testing after boost " 
+			       << Trafo*it->q/GeV << " " << Trafo*it->p/GeV << "\n";
 	if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
       }
       else {
@@ -551,6 +567,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	if(gottaBoost) Trafo.boost(-boosttorest,gammarest);
 	partner->deepTransform(Trafo);
       }
+      generator()->log() << "testing after recon " << *it->parent << "\n";
     }
   }
   catch(KinematicsReconstructionVeto) {
@@ -644,100 +661,185 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
   // extract the momenta of the particles
   vector<Lorentz5Momentum> pin;
   vector<Lorentz5Momentum> pout;
+  // on-shell masses of the decay products
   vector<Energy> mon;
+  Energy mbar(-GeV);
+  // the hard branchings of the particles
   set<HardBranchingPtr>::iterator cit;
   set<HardBranchingPtr> branchings=decay->branchings();
-  // The for-loop goes over all _progenitors_ and stores their momenta
-  // and _on-shell_ masses (for quarks it's the current mass), so e.g.
-  // for 2 body decays it has 3 loops (1 for each decay product and 1 
-  // for the decaying particle). The momenta need not be on-shell. For 
-  // input from POWHEG hardest emission generators one progenitor should 
-  // be off-shell and the others should be on-shell.
+  // properties of the incoming particle
+  bool ISR = false;
+  HardBranchingPtr initial;
+  Lorentz5Momentum qisr;
+  // find the incoming particle, both before and after
+  // any ISR
   for(cit=branchings.begin();cit!=branchings.end();++cit){
-    if(!(*cit)->incoming()) {
-      cerr << "FS " << *(*cit)->branchingParticle() << "\n";
-      pout.push_back((*cit)->branchingParticle()->momentum());
-      mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
-    }
-    else {
-      cerr << "IS " << *(*cit)->branchingParticle() << "\n";
-      pin.push_back((*cit)->branchingParticle()->momentum());
+    if((*cit)->status()==HardBranching::Incoming||
+       (*cit)->status()==HardBranching::Decay) {
+      // search back up isr if needed
+      HardBranchingPtr branch = *cit;
+      while(branch->parent()) branch=branch->parent();
+      initial=branch;
+      // momentum or original parent
+      pin.push_back(branch->branchingParticle()->momentum());
+      // ISR?
+      ISR = !branch->branchingParticle()->children().empty();
+      // ISR momentum
+      qisr = pin.back()-(**cit).branchingParticle()->momentum();
+      qisr.rescaleMass();
     }
   }
   assert(pin.size()==1);
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // boost all the momenta to the rest frame of the decaying particle
+  // compute boost to rest frame
   Boost boostv=-pin[0].boostVector();
-  for(unsigned int ix=0;ix<pout.size();++ix) pout[ix].boost(boostv);
-  cerr << "testing before rescaling factor\n";
-  // compute the rescaling factor
-  double lambda=inverseRescalingFactor(pout,mon,pin[0].mass());
-  cerr << "testing after rescaling factor " << lambda << "\n";
-  // now calculate the p reference vectors 
-  for(cit=branchings.begin();cit!=branchings.end();++cit){
-    cerr << "testing calculating vectors\n";
-    if(!(*cit)->branchingParticle()->isFinalState()) continue;
-    Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
-    pvect.boost(boostv);
-    pvect /= lambda;
-    pvect.setMass((*cit)->branchingParticle()->dataPtr()->mass());
-    pvect.rescaleEnergy();
-    (*cit)->pVector(pvect);
-    pvect.boost(-boostv);
-    (*cit)->showerMomentum(pvect);
+  generator()->log() << "testing inverse boost " << boostv << "\n";
+  // partner for ISR
+  ShowerParticlePtr partner;
+  Lorentz5Momentum  ppartner;
+  if(initial->branchingParticle()->partner()) {
+    partner=initial->branchingParticle()->partner();
+    ppartner=partner->momentum();
   }
-  cerr << "testing finding partners\n";
-  // find the colour partners
-  ShowerParticleVector particles;
+  // momentum of the decay products
   for(cit=branchings.begin();cit!=branchings.end();++cit) {
-    particles.push_back((*cit)->branchingParticle());
+    if((*cit)->status()!=HardBranching::Outgoing) continue;
+    // find the mass of the particle
+    // including special treatment for off-shell resonances
+    // to preserve off-shell mass
+    Energy mass;
+    if(!(**cit).branchingParticle()->dataPtr()->stable()) {
+      HardBranchingPtr branch=*cit;
+      while(!branch->children().empty()) {
+	for(unsigned int ix=0;ix<branch->children().size();++ix) {
+	  if(branch->children()[ix]->branchingParticle()->id()==
+	     (**cit).branchingParticle()->id()) {
+	    branch = branch->children()[ix];
+	    continue;
+	  }
+	}
+      };
+      mass = branch->branchingParticle()->mass();
+    }
+    else {
+      mass = (**cit).branchingParticle()->dataPtr()->mass();
+    }
+    // if not evolution partner of decaying particle
+    if((*cit)->branchingParticle()!=partner) {
+      pout.push_back((*cit)->branchingParticle()->momentum());
+      mon.push_back(mass);
+    }
+    // evolution partner of decaying particle
+    else {
+      mbar = mass;
+    }
   }
-  cerr << "calling scales\n";
-  evolver->showerModel()->partnerFinder()
-    ->setInitialEvolutionScales(particles,true,type);
-  cerr << "after scales\n";
-  // calculate the reference vectors
+  // boost all the momenta to the rest frame of the decaying particle
+  for(unsigned int ix=0;ix<pout.size();++ix) pout[ix].boost(boostv);
+  if(initial->branchingParticle()->partner()) {
+    ppartner.boost(boostv);
+    qisr.boost(boostv);
+  }
+  // compute the rescaling factors
+  double k1,k2;
+  if(!ISR) {
+    if(partner) {
+      pout.push_back(ppartner);
+      mon.push_back(mbar);
+    }
+    k1=k2=inverseRescalingFactor(pout,mon,pin[0].mass());
+  }
+  else {
+    if(!inverseDecayRescalingFactor(pout,mon,pin[0].mass(),
+				    ppartner,mbar,k1,k2)) return false;
+  }
+  // now calculate the p reference vectors 
+  unsigned int ifinal=0;
+  for(cit=branchings.begin();cit!=branchings.end();++cit) {
+    if((**cit).status()!=HardBranching::Outgoing) continue;
+    // for partners other than colour partner of decaying particle
+    if((*cit)->branchingParticle()!=partner) {
+      Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
+      pvect.boost(boostv);
+      pvect /= k1;
+      pvect.setMass(mon[ifinal]);
+      ++ifinal;
+      pvect.rescaleEnergy();
+      (*cit)->pVector(pvect);
+      pvect.boost(-boostv);
+      (*cit)->showerMomentum(pvect);
+    }
+    // for colour partner of decaying particle
+    else {
+      Lorentz5Momentum pvect = (*cit)->branchingParticle()->momentum();
+      pvect.boost(boostv);
+      Lorentz5Momentum qtotal;
+      for(unsigned int ix=0;ix<pout.size();++ix) qtotal+=pout[ix];
+      Lorentz5Momentum qperp = 
+	qisr-(qisr.vect()*qtotal.vect())/(qtotal.vect().mag2())*qtotal;
+      pvect +=qperp;
+      pvect /=k2;
+      pvect.setMass(mbar);
+      pvect.rescaleEnergy();
+      pvect.boost(-boostv);
+      (*cit)->pVector(pvect);
+      (*cit)->showerMomentum(pvect);
+    }
+  }
+//   // find the evolution partners
+//   ShowerParticleVector particles;
+//   particles.push_back((**decay->incoming().begin()).branchingParticle());
+//   for(cit=branchings.begin();cit!=branchings.end();++cit) {
+//     if((**cit).status()==HardBranching::Outgoing)
+//       particles.push_back((*cit)->branchingParticle());
+//   }
+//   // partners should
+//   evolver->showerModel()->partnerFinder()
+//     ->setInitialEvolutionScales(particles,true,type,false);
+  // For initial-state if needed
+  if(initial) {
+    tShowerParticlePtr newPartner=initial->branchingParticle()->partner();
+    if(newPartner) {
+      tHardBranchingPtr branch;
+      for( set<HardBranchingPtr>::iterator clt = branchings.begin();
+	   clt != branchings.end(); ++clt ) {
+	if((**clt).branchingParticle()==newPartner) {
+	  initial->colourPartner(*clt);
+	  branch=*clt;
+	  break;
+	}
+      }
+      Lorentz5Momentum pvect = initial->branchingParticle()->momentum();
+      initial->pVector(pvect);
+      Lorentz5Momentum nvect = branch->pVector();
+      nvect.boost(boostv);
+      nvect.setMass(ZERO);
+      nvect.rescaleEnergy();
+      nvect.boost(-boostv);
+      initial->nVector(nvect);
+    }
+  }
+  // calculate the reference vectors, then for outgoing particles
   for(cit=branchings.begin();cit!=branchings.end();++cit){
+    if((**cit).status()!=HardBranching::Outgoing) continue;
     // find the partner branchings
-    tShowerParticlePtr partner=(*cit)->branchingParticle()->partner();
-    if(!partner) continue;
-    cerr << "testing looking at " << *(*cit)->branchingParticle() << "\n";
-    cerr << "testing ref A" << partner << "\n";
-    cerr << "testing ref B" << *partner << "\n";
+    tShowerParticlePtr newPartner=(*cit)->branchingParticle()->partner();
+    if(!newPartner) continue;
+    tHardBranchingPtr branch;
     for( set<HardBranchingPtr>::iterator clt = branchings.begin();
 	 clt != branchings.end(); ++clt ) {
-      if((**clt).branchingParticle()==partner) {
+      if(cit==clt) continue;
+      if((**clt).branchingParticle()==newPartner) {
 	(**cit).colourPartner(*clt);
+ 	branch=*clt;
 	break;
       }
     }
-    tHardBranchingPtr branch;
-    set<HardBranchingPtr>::iterator cjt;
-    for(cjt=branchings.begin();cjt!=branchings.end();++cjt){
-      if(cjt==cit) continue;
-      if((*cjt)->branchingParticle()==partner) {
- 	branch=*cjt;
- 	break;
-      }
+    if((**decay->incoming().begin()).branchingParticle()==newPartner) {
+      (**cit).colourPartner(*decay->incoming().begin());
+      branch = *decay->incoming().begin();
     }
-    // If there are only two final-state particles this boost should do
-    // nothing, since then we should already have (*cit)->_p=-branch->_p.
-    generator()->log() << "testing partners "
-		       << *(*cit)->branchingParticle() << " "
-		       << *branch->branchingParticle() << "\n";
-    if(branch->branchingParticle()->isFinalState()) {
+    // final-state colour partner
+    if(branch->status()==HardBranching::Outgoing) {
       Boost boost=((*cit)->pVector()+branch->pVector()).findBoostToCM();
       Lorentz5Momentum pcm = branch->pVector();
       pcm.boost(boost);
@@ -745,50 +847,52 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
       nvect.boost( -boost);
       (*cit)->nVector(nvect);
     }
+    // initial-state colour partner
     else {
       Boost boost=branch->pVector().findBoostToCM();
       Lorentz5Momentum pcm = (*cit)->pVector();
       pcm.boost(boost);
-      Lorentz5Momentum nvect = Lorentz5Momentum( ZERO, -pcm.vect()); 
+      Lorentz5Momentum nvect = Lorentz5Momentum( ZERO, -pcm.vect());
       nvect.boost( -boost);
       (*cit)->nVector(nvect);
     }
   }
-  cerr << "testing comnpute new\n";
   // now compute the new momenta 
-  for(cit=branchings.begin();cit!=branchings.end();++cit){
-    if(!(*cit)->branchingParticle()->isFinalState()) continue;
-    cerr << "testing A " << *(*cit)->branchingParticle() << "\n";
-    Lorentz5Momentum qnew;
-    if((type==ShowerInteraction::QCD&&(*cit)->branchingParticle()->data().coloured())||
-       (type==ShowerInteraction::QED&&(*cit)->branchingParticle()->data().charged())) {
-      cerr << "testing B\n";
-      cerr << (*cit)->pVector()/GeV << "\n" 
-	   << (*cit)->nVector()/GeV << "\n";
+  // and calculate the shower variables
+  for(cit=branchings.begin();cit!=branchings.end();++cit) {
+    if((**cit).status()!=HardBranching::Outgoing) continue;
+    LorentzRotation A=LorentzRotation(boostv),R;
+    if((*cit)->branchingParticle()==partner) {
+      Lorentz5Momentum qnew;
       Energy2 dot=(*cit)->pVector()*(*cit)->nVector();
-      cerr << dot/GeV2 << "\n";
       double beta = 0.5*((*cit)->branchingParticle()->momentum().m2()
 			 -sqr((*cit)->pVector().mass()))/dot;
       qnew=(*cit)->pVector()+beta*(*cit)->nVector();
       qnew.rescaleMass();
+      // compute the boost
+      LorentzRotation B=LorentzRotation(-boostv);
+      R=B*solveBoost(A*qnew,A*(*cit)->branchingParticle()->momentum())*A;
     }
     else {
-    cerr << "testing C\n";
-      qnew = (*cit)->pVector();
+      Lorentz5Momentum qnew;
+      if((*cit)->branchingParticle()->partner()) {
+	Energy2 dot=(*cit)->pVector()*(*cit)->nVector();
+	double beta = 0.5*((*cit)->branchingParticle()->momentum().m2()
+			   -sqr((*cit)->pVector().mass()))/dot;
+	qnew=(*cit)->pVector()+beta*(*cit)->nVector();
+	qnew.rescaleMass();
+      }
+      else {
+	qnew = (*cit)->pVector();
+      }
+      // compute the boost
+      R=solveBoost(qnew,A*(*cit)->branchingParticle()->momentum())*A;
     }
-    cerr << "testing D\n";
-    // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
-    // for the simple case Z->q qbar g this was checked against analytic formulae.
-    // compute the boost
-    cerr << "testing E\n";
-    LorentzRotation A=LorentzRotation(boostv);
-    cerr << "testing F " << qnew/GeV << "\n";
-    cerr << "testing F " << (*cit)->branchingParticle()->momentum()/GeV << "\n";
-    cerr << "testing F " << A*(*cit)->branchingParticle()->momentum()/GeV << "\n";
-    LorentzRotation R=solveBoost(qnew,A*(*cit)->branchingParticle()->momentum())*A;
-    cerr << "testing G\n";
-    // when R is applied to (*cit)->branchingParticle()->momentum() you get qnew (checked).
+    // reconstruct the momenta
     (*cit)->setMomenta(R,1.0,Lorentz5Momentum());
+  }
+  if(initial) {
+    initial->setMomenta(LorentzRotation(),1.0,Lorentz5Momentum());
   }
   return true;
 }
@@ -853,7 +957,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
     ColourSingletShower in,out;
     for(set<HardBranchingPtr>::const_iterator it=tree->branchings().begin();
 	it!=tree->branchings().end();++it) {
-      if((**it).incoming()) in .jets.push_back(*it);
+      if((**it).status()==HardBranching::Incoming) in .jets.push_back(*it);
       else                  out.jets.push_back(*it);
     }
     // do the initial-state reconstruction
@@ -874,7 +978,7 @@ bool QTildeReconstructor::deconstructHardJets(HardTreePtr tree,
   // are correct
   for(set<HardBranchingPtr>::const_iterator it=tree->branchings().begin();
       it!=tree->branchings().end();++it) {
-    if((**it).incoming()) continue;
+    if((**it).status()==HardBranching::Incoming) continue;
     (**it).setMomenta(LorentzRotation(),1.,Lorentz5Momentum(),false);
   }
   for(set<HardBranchingPtr>::const_iterator it=tree->incoming().begin();
@@ -1394,11 +1498,12 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
     }
     // compute the reference vectors
     // both incoming, should all ready be done
-    if((**cjt).incoming()&&(**clt).incoming()) {
+    if((**cjt).status()==HardBranching::Incoming&&(**clt).status()==HardBranching::Incoming) {
       continue;
     }
     // both outgoing
-    else if(!(**cjt).incoming()&&!branch->incoming()) {
+    else if(!(**cjt).status()==HardBranching::Incoming&&
+	    branch->status()==HardBranching::Outgoing) {
       Boost boost=((*cjt)->pVector()+branch->pVector()).findBoostToCM();
       Lorentz5Momentum pcm = branch->pVector();
       pcm.boost(boost);
@@ -1406,7 +1511,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
       nvect.boost( -boost);
       (**cjt).nVector(nvect);
     }
-    else if((**cjt).incoming()) {
+    else if((**cjt).status()==HardBranching::Incoming) {
       Lorentz5Momentum pa = -(**cjt).showerMomentum()+branch->showerMomentum();
       Lorentz5Momentum pb =  (**cjt).showerMomentum();
       Axis axis(pa.vect().unit());
@@ -1428,7 +1533,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
 	branch2->nVector(rot*Lorentz5Momentum(ZERO,-pcm.vect()));
       }
     }
-    else if(branch->incoming()) {
+    else if(branch->status()==HardBranching::Incoming) {
       (**cjt).nVector(Lorentz5Momentum(ZERO,branch->showerMomentum().vect()));
     }
   }
@@ -1493,4 +1598,42 @@ reconstructGeneralSystem(vector<ShowerProgenitorPtr> & ShowerHardJets) const {
   reconstructInitialInitialSystem(applyBoost,toRest,fromRest,in.jets);
   // reconstruct the final-state systems
   reconstructFinalStateSystem(applyBoost,toRest,fromRest,out.jets);
+}
+
+bool QTildeReconstructor::
+inverseDecayRescalingFactor(vector<Lorentz5Momentum> pout,
+			    vector<Energy> mon,Energy roots,
+			    Lorentz5Momentum ppartner, Energy mbar,
+			    double & k1, double & k2) const {
+  Vector3<Energy> qtotal;
+  vector<Energy2> pmag; 
+  for(unsigned int ix=0;ix<pout.size();++ix) {
+    pmag.push_back(pout[ix].vect().mag2());
+    qtotal+=pout[ix].vect();
+  }
+  Energy2 dot1 = qtotal*ppartner.vect();
+  Energy2 qmag2=qtotal.mag2();
+  double a = -dot1/qmag2;
+  static const Energy eps=1e-8*GeV;
+  unsigned int itry(0);
+  k1=k2=1.;
+  Energy numer(ZERO),denom(ZERO);
+  do {
+    ++itry;
+    numer=denom=0.*GeV;
+    double k12=sqr(k1);
+    for(unsigned int ix=0;ix<pout.size();++ix) {
+      Energy en = sqrt(pmag[ix]/k12+sqr(mon[ix]));
+      numer += en;
+      denom += pmag[ix]/en;
+    }
+    Energy en = sqrt(qmag2/k12+sqr(mbar));
+    numer += en-roots;
+    denom += qmag2/en;
+    k1 += numer/denom*k12*k1;
+    if(abs(k1)>1e10) return false;
+    k2  = a*k1; 
+  }
+  while (abs(numer)>eps&&itry<100);
+  return itry<100;
 }

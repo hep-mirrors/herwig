@@ -594,9 +594,8 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 	Energy startScale=_progenitor->progenitor()->mass();
 	_progenitor->progenitor()->setEvolutionScale(startScale);
 	// perform the shower
-	_progenitor->hasEmitted(spaceLikeDecayShower(_progenitor->progenitor(),
-						     maxscale,minmass,
-						     ShowerInteraction::QCD)); 
+	_progenitor->hasEmitted(startSpaceLikeDecayShower(maxscale,minmass,
+							  ShowerInteraction::QCD)); 
       }
     }
   }
@@ -708,6 +707,12 @@ bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
 
 bool Evolver::startSpaceLikeShower(PPtr parent, ShowerInteraction::Type type) {
   return spaceLikeShower(_progenitor->progenitor(),parent,type);
+}
+
+bool Evolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
+					ShowerInteraction::Type type) {
+  return spaceLikeDecayShower(_progenitor->progenitor(),
+			      maxscale,minimumMass,type);
 }
 
 bool Evolver::timeLikeVetoed(const Branching & fb,

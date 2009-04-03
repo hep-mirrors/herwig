@@ -16,6 +16,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
 #include "Herwig++/Shower/Default/IS_QtildaShowerKinematics1to2.h"
@@ -331,6 +332,10 @@ Energy QTildeSudakov::calculateScale(double zin, Energy pt, IdList ids,
     Energy2 scale=(sqr(pt)+zin*masssquared_[2])/sqr(1.-zin);
     return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
   }
+  else if(iopt==2) {
+    Energy2 scale = (sqr(pt)+zin*masssquared_[2])/sqr(1.-zin)+masssquared_[0];
+    return scale<=ZERO ? sqrt(tmin) : sqrt(scale);
+  }
   else {
     throw Exception() << "Unknown option in QTildeSudakov::calculateScale() "
 		      << "iopt = " << iopt << Exception::runerror;
@@ -360,7 +365,7 @@ ShoKinPtr QTildeSudakov::createInitialStateBranching(Energy scale,double z,
 }
 
 ShoKinPtr QTildeSudakov::createDecayBranching(Energy scale,double z,
-						     double phi, Energy pt) {
+					      double phi, Energy pt) {
   ShoKinPtr  showerKin = new_ptr(Decay_QtildaShowerKinematics1to2());
   showerKin->scale(scale);
   showerKin->z(z);

@@ -396,6 +396,12 @@ protected:
   virtual bool startSpaceLikeShower(PPtr,ShowerInteraction::Type);
 
   /**
+   *  Start the shower of a spacelike particle
+   */
+  virtual bool startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
+					 ShowerInteraction::Type);
+
+  /**
    *  Vetos for the timelike shower
    */
   virtual bool timeLikeVetoed(const Branching &,ShowerParticlePtr);
