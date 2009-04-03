@@ -38,7 +38,6 @@ public:
   bool connect(ShowerParticlePtr particle, HardBranchingPtr branching) {
     if(_branchings.find(branching)==_branchings.end()) return false;
     _particles[particle]=branching;
-    cerr << "testing matching " << particle << " " << branching << "\n";
     return true;
   }
 

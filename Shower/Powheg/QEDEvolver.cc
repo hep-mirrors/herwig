@@ -216,13 +216,13 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
 void QEDEvolver::constructTimeLikeLine(tHardBranchingPtr branch,
 				       tShowerParticlePtr particle) {
   for(unsigned int ix=0;ix<particle->children().size();++ix) {
-    HardBranching::Status status = 
-      particle->children()[ix]->id()==particle->id() ?
-      branch->status() : HardBranching::Outgoing;
+//     HardBranching::Status status = 
+//       particle->children()[ix]->id()==particle->id() ?
+//       branch->status() : HardBranching::Outgoing;
+    HardBranching::Status status = branch->status();
     tShowerParticlePtr child = 
       dynamic_ptr_cast<ShowerParticlePtr>(particle->children()[ix]);
     if(child->children().empty()) {
-      generator()->log() << "testing FS first pass B " << *child << "\n";
       HardBranchingPtr newBranch = 
 	new_ptr(HardBranching(child,SudakovPtr(),branch,status));
       branch->addChild(newBranch);
@@ -351,9 +351,6 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState()) {
-      cerr << "testing time-like " 
-	   << particlesToShower[ix]->progenitor()->children().size() << " "
-	   << *particlesToShower[ix]->progenitor() << "\n";
       HardBranchingPtr newBranch;
       if(particlesToShower[ix]->hasEmitted()) {
 	newBranch = 
@@ -368,24 +365,12 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				SudakovPtr(),HardBranchingPtr(),
 				HardBranching::Outgoing));
-	generator()->log() << "testing final state first pass A"
-			   << *particlesToShower[ix]->progenitor() << "\n";
       }
       allBranchings.push_back(newBranch);
     }
     else {
-      generator()->log()
-	<< "testing decay progenitor " 
-	<< particlesToShower[ix]->progenitor()->children().size() << " " 
-	<< particlesToShower[ix]->progenitor()->parents().size() << " " 
-	<< *particlesToShower[ix]->progenitor()
-	<< "\n";
-
-
       HardBranchingPtr newBranch;
       if(particlesToShower[ix]->hasEmitted()) {
-	generator()->log() << "testing DECAY ISR!!!!!!!!!\n";
-	cerr << "testing DECAY ISR!!!!!!!!!\n";
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				particlesToShower[ix]->progenitor()->
@@ -406,16 +391,12 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
 	last->status(HardBranching::Incoming);
 	spaceBranchings.push_back(newBranch);
 	allBranchings  .push_back(last);
-	cerr << "testing last    " << *last     ->branchingParticle() << "\n";
-	cerr << "testing initial " << *newBranch->branchingParticle() << "\n";
       }
       else {
 	newBranch = 
 	  new_ptr(HardBranching(particlesToShower[ix]->progenitor(),
 				SudakovPtr(),HardBranchingPtr(),
 				HardBranching::Incoming));
-	generator()->log() << "testing final state first pass A"
-			   << *particlesToShower[ix]->progenitor() << "\n";
 	spaceBranchings.push_back(newBranch);
 	allBranchings  .push_back(newBranch);
       }
@@ -457,4 +438,13 @@ void QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
   for(cjt=currentTree()->outgoingLines().begin();
       cjt!=currentTree()->outgoingLines().end();++cjt)
     particlesToShower.push_back(((*cjt).first));
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
+      eit=hardTree()->particles().end(),
+      mit = hardTree()->particles().find(particlesToShower[ix]->progenitor());
+    if( mit != eit) {
+      if(mit->second->status()==HardBranching::Outgoing)
+	particlesToShower[ix]->progenitor()->set5Momentum(mit->second->pVector());
+    }
+  }
 }

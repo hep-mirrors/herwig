@@ -83,10 +83,9 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     // add transverse components
     dq.setX(px);
     dq.setY(py);
-    // rotate to have z-axis parallel to n
+    // changed to be same as other case
 //     dq.rotateUz( unitVector(n_bb.vect()) );
     Axis axis(n_bb.vect().unit());
-    CurrentGenerator::log() << "testing decay axis A" << axis << "\n";
     if(axis.perp2()>0.) {
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(axis.z())));

@@ -80,16 +80,6 @@ reconstructLast(const tShowerParticlePtr theLast,
     (sqr(theMass) + sqr(theLast->showerVariables()[2])
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
     / ( 2.*theLast->showerParameters()[0]*p_dot_n() );
-  CurrentGenerator::log() << "testing decay branch A" 
-			  << pVector()/GeV << " "
-			  << nVector()/GeV << "\n";
-  CurrentGenerator::log() << "testing decay branch A" 
-			  << pT()/GeV << " "
-			  << phi() << " "
-			  << scale()/GeV << "\n";
-  CurrentGenerator::log() << "testing decay branch A" 
-			  << theLast->showerParameters()[0] << " "
-			  << theLast->showerParameters()[1] << "\n";
   // set that new momentum  
   theLast->set5Momentum(  sudakov2Momentum( theLast->showerParameters()[0], 
 					    theLast->showerParameters()[1], 
@@ -105,7 +95,8 @@ void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     p = particle.momentum();
     ShowerParticlePtr partner=particle.partner();
     Lorentz5Momentum ppartner(partner->momentum());
-    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    // reomved to make inverse recon work properly
+    //if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     pcm=ppartner;
     Boost boost(p.findBoostToCM());
     pcm.boost(boost);

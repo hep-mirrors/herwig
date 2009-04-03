@@ -461,7 +461,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
 }
 
 void PowhegEvolver::setEvolutionPartners(bool hard,
-				      ShowerInteraction::Type type) {
+					 ShowerInteraction::Type type) {
   // if no hard tree use the methid in the base class
   if(!_nasontree) {
     Evolver::setEvolutionPartners(hard,type);
@@ -519,21 +519,12 @@ bool PowhegEvolver::startTimeLikeShower(ShowerInteraction::Type type) {
 bool PowhegEvolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
 					      ShowerInteraction::Type type) {
   if(_nasontree) {
-    cerr << "in start space like " 
-	 <<  progenitor()->progenitor() << " " 
-	 << *progenitor()->progenitor() << "\n";
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit =_nasontree->particles().end(),
       mit = _nasontree->particles().find(progenitor()->progenitor());
     if( mit != eit && mit->second->parent() ) {
       HardBranchingPtr branch=mit->second;
       while(branch->parent()) branch=branch->parent();
-      cerr << "testing found match?? " << mit->first << " " << mit->second 
-	   << "\n";
-      cerr << *branch->branchingParticle() << "\n";
-      cerr << branch->children().size() << "\n";
-      for(unsigned int ix=0;ix<branch->children().size();++ix)
-	cerr << *(branch->children()[ix]->branchingParticle()) << "\n";
       return truncatedSpaceLikeDecayShower(progenitor()->progenitor(),maxscale,
 					   minimumMass, branch ,type);
     }

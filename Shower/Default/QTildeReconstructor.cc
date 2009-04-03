@@ -461,7 +461,6 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     }
     // find boost to the rest frame if needed
     Boost boosttorest=-initial->progenitor()->momentum().boostVector();
-    generator()->log() << "testing original boost " << boosttorest << "\n";
     double gammarest =
       initial->progenitor()->momentum().e()/
       initial->progenitor()->momentum().mass();
@@ -536,25 +535,11 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	    it->parent->set5Momentum(pnew);
 	  }
 	  else {
-	    generator()->log() << "testing original " 
-			       << it->q/GeV << " " << it->p/GeV << "\n";
-
-	    
-	    Lorentz5Momentum pnew(k2*it->p.vect(),
-				  sqrt(sqr(k2*it->p.vect().mag())+it->q.mass2()),
-				  it->q.mass());
-	    generator()->log() << "testing including rescale " << pnew/GeV << "\n";
-
 	    Trafo = solveBoost(k2, it->q, it->p);
 	  }
 	}
 	Lorentz5Momentum ptest=Trafo*it->q;
-	generator()->log() << "testing after rescaling boost " << ptest/GeV << "\n";
-
-
 	if(gottaBoost)  Trafo.boost(-boosttorest,gammarest);
-	generator()->log() << "testing after boost " 
-			       << Trafo*it->q/GeV << " " << Trafo*it->p/GeV << "\n";
 	if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
       }
       else {
@@ -567,7 +552,6 @@ reconstructDecayJets(ShowerTreePtr decay) const {
 	if(gottaBoost) Trafo.boost(-boosttorest,gammarest);
 	partner->deepTransform(Trafo);
       }
-      generator()->log() << "testing after recon " << *it->parent << "\n";
     }
   }
   catch(KinematicsReconstructionVeto) {
@@ -692,7 +676,6 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
   assert(pin.size()==1);
   // compute boost to rest frame
   Boost boostv=-pin[0].boostVector();
-  generator()->log() << "testing inverse boost " << boostv << "\n";
   // partner for ISR
   ShowerParticlePtr partner;
   Lorentz5Momentum  ppartner;
@@ -768,8 +751,8 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
       pvect.setMass(mon[ifinal]);
       ++ifinal;
       pvect.rescaleEnergy();
-      (*cit)->pVector(pvect);
       pvect.boost(-boostv);
+      (*cit)->pVector(pvect);
       (*cit)->showerMomentum(pvect);
     }
     // for colour partner of decaying particle
@@ -814,10 +797,11 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
       }
       Lorentz5Momentum pvect = initial->branchingParticle()->momentum();
       initial->pVector(pvect);
-      Lorentz5Momentum nvect = branch->pVector();
-      nvect.boost(boostv);
-      nvect.setMass(ZERO);
-      nvect.rescaleEnergy();
+      Lorentz5Momentum ptemp = branch->pVector();
+      ptemp.boost(boostv);
+      Lorentz5Momentum nvect = Lorentz5Momentum( ZERO,
+						 0.5*initial->branchingParticle()->mass()*
+						 ptemp.vect().unit());
       nvect.boost(-boostv);
       initial->nVector(nvect);
     }
@@ -865,6 +849,7 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
   // and calculate the shower variables
   for(cit=branchings.begin();cit!=branchings.end();++cit) {
     if((**cit).status()!=HardBranching::Outgoing) continue;
+    LorentzRotation B=LorentzRotation(-boostv);
     LorentzRotation A=LorentzRotation(boostv),R;
     if((*cit)->branchingParticle()==partner) {
       Lorentz5Momentum qnew;
@@ -874,7 +859,6 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
       qnew=(*cit)->pVector()+beta*(*cit)->nVector();
       qnew.rescaleMass();
       // compute the boost
-      LorentzRotation B=LorentzRotation(-boostv);
       R=B*solveBoost(A*qnew,A*(*cit)->branchingParticle()->momentum())*A;
     }
     else {
@@ -890,7 +874,7 @@ deconstructDecayJets(HardTreePtr decay, EvolverPtr evolver,
 	qnew = (*cit)->pVector();
       }
       // compute the boost
-      R=solveBoost(qnew,A*(*cit)->branchingParticle()->momentum())*A;
+      R=B*solveBoost(A*qnew,A*(*cit)->branchingParticle()->momentum())*A;
     }
     // reconstruct the momenta
     (*cit)->setMomenta(R,1.0,Lorentz5Momentum());

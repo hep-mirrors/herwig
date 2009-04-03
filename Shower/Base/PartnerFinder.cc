@@ -235,11 +235,7 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
       for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
 	if(!(*cjt)->data().charged()||cit==cjt) continue;
 	double charge = double((*cit)->data().iCharge()*(*cjt)->data().iCharge());
-	if( FS(*cit) != FS(*cjt) ) charge *=-1.;
-	if(abs((**cit).id())==6&&
-	   abs((**cjt).id())==5) charge =-1e20;
-	if(abs((**cjt).id())==6&&
-	   abs((**cit).id())==5) charge =-1e20;
+ 	if( FS(*cit) != FS(*cjt) ) charge *=-1.;
 	if(charge<0.) partners.push_back(make_pair(-charge,*cjt));
       }
       if(partners.empty()) {
@@ -267,8 +263,6 @@ bool PartnerFinder::setInitialQEDEvolutionScales(const ShowerParticleVector &par
 					isDecayCase);
       (*cit)->setEvolutionScale(pairScales.first);
       (*cit)->setPartner(partner);
-      cerr << "testing setting QED partners " 
-	   << **cit << " " << *partner << "\n";
     }
   }
   // partners all ready set only do the scales
