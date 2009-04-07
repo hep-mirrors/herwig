@@ -9,8 +9,10 @@
 
 using namespace Herwig;
 
-void FortranShowerKinematics::updateChildren(const tShowerParticlePtr theParent, 
-		    const ShowerParticleVector theChildren) const {
+void FortranShowerKinematics::
+updateChildren(const tShowerParticlePtr theParent, 
+	       const ShowerParticleVector theChildren,
+	       bool angularOrder) const {
   if(theChildren.size() != 2)
     throw Exception() << "FortranShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
@@ -29,8 +31,14 @@ void FortranShowerKinematics::updateChildren(const tShowerParticlePtr theParent,
   theChildren[0]->showerVariables().resize(5,0.*MeV);
   theChildren[1]->showerVariables().resize(5,0.*MeV);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
-  theChildren[0]->setEvolutionScale(dz*dqtilde);
-  theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+  if(angularOrder) {
+    theChildren[0]->setEvolutionScale(dz*dqtilde);
+    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+  }
+  else {
+    theChildren[0]->setEvolutionScale(dqtilde);
+    theChildren[1]->setEvolutionScale(dqtilde);
+  }
   // calculate and set xi
   double xi = sqr(dqtilde/theParent->showerVariables()[0]);
   theChildren[0]->showerParameters().resize(1,xi);

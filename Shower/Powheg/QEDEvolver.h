@@ -11,6 +11,12 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+  /**\ingroup Shower
+   * Exception class
+   * used to communicate failure of QED shower
+   */
+  struct QEDVeto {};
+
 /**
  * Here is the documentation of the QEDEvolver class.
  *
@@ -110,7 +116,7 @@ protected:
   void constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
 			 ShowerInteraction::Type inter);
   
-  void constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
+  bool constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
 			  ShowerInteraction::Type inter);
 
 private:

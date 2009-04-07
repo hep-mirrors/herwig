@@ -13,6 +13,7 @@
 
 #include "IS_QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
@@ -21,7 +22,8 @@ using namespace Herwig;
 
 void IS_QtildaShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
-		const ShowerParticleVector theChildren ) const {
+		const ShowerParticleVector theChildren,
+		bool ) const {
   theChildren[1]->showerVariables().resize(3);
   theChildren[1]->showerParameters().resize(2);
   theChildren[1]->showerParameters()[0]=
@@ -48,10 +50,14 @@ updateChildren( const tShowerParticlePtr theParent,
 
 void IS_QtildaShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
-	     const ShowerParticleVector theChildren ) const {
+	     const ShowerParticleVector theChildren,
+	     bool angularOrder) const {
   // no z for angular ordering in backward branchings
   theParent->setEvolutionScale(scale());
-  theChildren[1]->setEvolutionScale((1.-z())*scale());
+  if(angularOrder)
+    theChildren[1]->setEvolutionScale((1.-z())*scale());
+  else
+    theChildren[1]->setEvolutionScale(scale());
   // set proper colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
   // set proper parent/child relationships
@@ -123,20 +129,26 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
     if(partner->isFinalState()) {
       Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
       Lorentz5Momentum pb =  particle.momentum();
+      Energy scale=parent->momentum().t();
+      Lorentz5Momentum pbasis(ZERO,parent->momentum().vect().unit()*scale);
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      rot.rotateX(Constants::pi);
-      rot.boostZ( pa.e()/pa.vect().mag());
-      pb*=rot;
-      Boost trans = -1./pb.e()*pb.vect();
-      trans.setZ(0.);
-      rot.boost(trans);
-      pcm = rot*parent->momentum();
+      if(axis.perp2()>1e-20) {
+	rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+	rot.rotateX(Constants::pi);
+      }
+      if(abs(1.-pa.e()/pa.vect().mag())>1e-6) rot.boostZ( pa.e()/pa.vect().mag());
+      pb *= rot;
+      if(pb.perp2()/GeV2>1e-20) {
+	Boost trans = -1./pb.e()*pb.vect();
+	trans.setZ(0.);
+	rot.boost(trans);
+      }
+      pbasis *=rot;
       rot.invert();
-      n = rot*Lorentz5Momentum(ZERO,-pcm.vect());
-      p = rot*Lorentz5Momentum(ZERO, pcm.vect());
+      n = rot*Lorentz5Momentum(ZERO,-pbasis.vect());
+      p = rot*Lorentz5Momentum(ZERO, pbasis.vect());
     }
     else {
       pcm = parent->momentum();

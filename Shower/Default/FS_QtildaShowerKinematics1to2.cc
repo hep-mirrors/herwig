@@ -21,7 +21,8 @@ using namespace Herwig;
 
 void FS_QtildaShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector theChildren ) const {
+	       const ShowerParticleVector theChildren,
+	       bool angularOrder) const {
   if(theChildren.size() != 2)
     throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
@@ -40,8 +41,14 @@ updateChildren(const tShowerParticlePtr theParent,
   theChildren[1]->showerVariables() .resize(3);
   theChildren[1]->showerParameters().resize(2);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
-  theChildren[0]->setEvolutionScale(dz*dqtilde);
-  theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+  if(angularOrder) {
+    theChildren[0]->setEvolutionScale(dz*dqtilde);
+    theChildren[1]->setEvolutionScale((1.-dz)*dqtilde);
+  }
+  else {
+    theChildren[0]->setEvolutionScale(dqtilde);
+    theChildren[1]->setEvolutionScale(dqtilde);
+  }
   // determine alphas of children according to interpretation of z
   theChildren[0]->showerParameters()[0]=     dz *theParent->showerParameters()[0];
   theChildren[1]->showerParameters()[0]= (1.-dz)*theParent->showerParameters()[0];
@@ -75,7 +82,7 @@ reconstructParent(const tShowerParticlePtr theParent,
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
   theParent->showerParameters()[1]= 
-    c1->showerParameters()[1] + c2->showerParameters()[1]; 
+    c1->showerParameters()[1] + c2->showerParameters()[1];
   theParent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 

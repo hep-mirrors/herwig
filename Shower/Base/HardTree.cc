@@ -69,6 +69,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   if(setMomentum) _original=R*_particle->momentum();
   // compute the shower variables
   Energy2 dot = _n*_p;
+  if(dot==ZERO) return;
   double alpha = (_original*_n)/dot;
   _z=alpha/aparent;
   double beta = ((_original*_p)-alpha*sqr(_p.mass()))/dot;
@@ -178,8 +179,9 @@ bool HardTree::connect(ShowerTreePtr shower) {
 
 HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
 			     tHardBranchingPtr parent,Status status) 
-  : _particle(particle), _status(status), _parent(parent),
-    _sudakov(sudakov)
+  : _particle(particle), _p(particle->momentum()),
+    _shower(particle->momentum()),
+    _status(status), _parent(parent), _sudakov(sudakov)
 {}
 
 void HardBranching::fixColours() {

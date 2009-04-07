@@ -461,7 +461,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
   theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
   theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
   // update the children
-  particle->showerKinematics()->updateChildren(particle, theChildren);
+  particle->showerKinematics()->updateChildren(particle, theChildren,true);
   // update the history if needed
   if(particle==_currenttree->getFinalStateShowerProduct(_progenitor))
     _currenttree->updateFinalStateShowerProduct(_progenitor,
@@ -514,7 +514,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   ShowerParticleVector theChildren;
   theChildren.push_back(particle); 
   theChildren.push_back(otherChild); 
-  particle->showerKinematics()->updateParent(newParent, theChildren);
+  particle->showerKinematics()->updateParent(newParent, theChildren,true);
   // update the history if needed
   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
   _currenttree->addInitialStateBranching(particle,newParent,otherChild);
@@ -536,7 +536,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 				kt.first*sin(kt.second));
     }
   }
-  particle->showerKinematics()->updateChildren(newParent, theChildren);
+  particle->showerKinematics()->updateChildren(newParent, theChildren,true);
   if(_limitEmissions!=0) return true;
   // perform the shower of the final-state particle
   timeLikeShower(otherChild,type);
@@ -644,7 +644,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,
   theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
   theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
   // some code moved to updateChildren
-  particle->showerKinematics()->updateChildren(particle, theChildren);
+  particle->showerKinematics()->updateChildren(particle, theChildren,true);
   // In the case of splittings which involves coloured particles,
   // set properly the colour flow of the branching.
   // update the history if needed

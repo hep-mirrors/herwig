@@ -33,7 +33,7 @@ void QtildaShowerKinematics1to2::setBasis(const Lorentz5Momentum &p,
 Lorentz5Momentum QtildaShowerKinematics1to2::
 sudakov2Momentum(double alpha, double beta, Energy px, 
 		 Energy py,unsigned int iopt) const {
-  if(isnan(beta)) 
+  if(isnan(beta)||isinf(beta)) 
     throw Exception() << "beta infinite in "
 		      << "QtildaShowerKinematics1to2::sudakov2Momentum()"
 		      << Exception::eventerror;
