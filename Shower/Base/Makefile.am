@@ -13,4 +13,5 @@ ShowerTree.h ShowerTree.fh ShowerTree.cc \
 ShowerProgenitor.fh ShowerProgenitor.h \
 ShowerVeto.h ShowerVeto.fh ShowerVeto.cc \
 PTVeto.h PTVeto.cc\
-HardTree.h HardTree.fh HardTree.cc
+HardTree.h HardTree.fh HardTree.cc\
+HardBranching.h HardBranching.fh HardBranching.cc
