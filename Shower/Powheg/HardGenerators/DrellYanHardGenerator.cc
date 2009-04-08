@@ -104,7 +104,6 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
       _quarkplus = false;
     particlesToShower.push_back( cit->first );
   }
-
   // find the gauge boson
   PPtr boson;
   if(tree->outgoingLines().size() == 1) {
@@ -251,6 +250,21 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
       }
     }
   }
+  ColinePtr newline=new_ptr(ColourLine());
+  for(set<HardBranchingPtr>::const_iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3)
+      newline->addColoured((**cit).branchingParticle());
+    else if((**cit).branchingParticle()->dataPtr()->iColour()==PDT::Colour3bar)
+      newline->addAntiColoured((**cit).branchingParticle());
+  }
+  ShowerParticleVector particles;
+  for(set<HardBranchingPtr>::iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    particles.push_back((*cit)->branchingParticle());
+  }
+  evolver()->showerModel()->partnerFinder()->
+    setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,true);
   // calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructHardJets(nasontree,evolver(),ShowerInteraction::QCD);
