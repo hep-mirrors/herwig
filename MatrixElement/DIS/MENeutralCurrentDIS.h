@@ -74,7 +74,7 @@ public:
    * @param dv the diagrams to be weighted.
    * @return a Selector relating the given diagrams to their weights.
    */
-  inline virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
+  virtual Selector<DiagramIndex> diagrams(const DiagramVector & dv) const;
 
   /**
    * Return a Selector with possible colour geometries for the selected
@@ -137,6 +137,11 @@ protected:
 		    bool lorder, bool qorder,
 		    bool me) const;
 
+
+  /**
+   *  Option for treatment of $\gamma/Z\f$ terms
+   */
+  inline unsigned int gammaZOption() const {return _gammaZ;}
 
 protected:
 
