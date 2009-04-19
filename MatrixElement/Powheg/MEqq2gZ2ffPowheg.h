@@ -403,7 +403,7 @@ struct ClassTraits<Herwig::MEqq2gZ2ffPowheg>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2gZ2ffPowheg class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */

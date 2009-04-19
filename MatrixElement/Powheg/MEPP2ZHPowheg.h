@@ -415,7 +415,7 @@ struct ClassTraits<Herwig::MEPP2ZHPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so HwPowhegME.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */
