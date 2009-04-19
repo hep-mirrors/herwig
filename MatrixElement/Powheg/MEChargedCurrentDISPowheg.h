@@ -1,11 +1,11 @@
 // -*- C++ -*-
-#ifndef HERWIG_MENeutralCurrentDISPowheg_H
-#define HERWIG_MENeutralCurrentDISPowheg_H
+#ifndef HERWIG_MEChargedCurrentDISPowheg_H
+#define HERWIG_MEChargedCurrentDISPowheg_H
 //
-// This is the declaration of the MENeutralCurrentDISPowheg class.
+// This is the declaration of the MEChargedCurrentDISPowheg class.
 //
 
-#include "Herwig++/MatrixElement/DIS/MENeutralCurrentDIS.h"
+#include "Herwig++/MatrixElement/DIS/MEChargedCurrentDIS.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
@@ -17,19 +17,19 @@ using namespace ThePEG;
  */
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 /**
- * Here is the documentation of the MENeutralCurrentDISPowheg class.
+ * Here is the documentation of the MEChargedCurrentDISPowheg class.
  *
- * @see \ref MENeutralCurrentDISPowhegInterfaces "The interfaces"
- * defined for MENeutralCurrentDISPowheg.
+ * @see \ref MEChargedCurrentDISPowhegInterfaces "The interfaces"
+ * defined for MEChargedCurrentDISPowheg.
  */
-class MENeutralCurrentDISPowheg: public MENeutralCurrentDIS {
+class MEChargedCurrentDISPowheg: public MEChargedCurrentDIS {
 
 public:
 
   /**
    * The default constructor.
    */
-  MENeutralCurrentDISPowheg();
+  MEChargedCurrentDISPowheg();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -94,23 +94,6 @@ protected:
    */
   double NLOWeight() const;
 
-  /**
-   *  The A coefficient for the real emission pieces
-   */
-  double A() const;
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-  //@}
-
 protected:
 
   /** @name Clone Methods. */
@@ -134,13 +117,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MENeutralCurrentDISPowheg> initMENeutralCurrentDISPowheg;
+  static ClassDescription<MEChargedCurrentDISPowheg> initMEChargedCurrentDISPowheg;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MENeutralCurrentDISPowheg & operator=(const MENeutralCurrentDISPowheg &);
+  MEChargedCurrentDISPowheg & operator=(const MEChargedCurrentDISPowheg &);
 
 private:
 
@@ -169,25 +152,6 @@ private:
   double _xp;
   //@}
 
-  /**
-   *  Electroweak parameters
-   */
-  //@{
-  /**
-   *  \f$\sin\theta_W\f$
-   */
-  double _sinW;
-
-  /**
-   *  \f$\cos\theta_W\f$
-   */
-  double _cosW;
-
-  /**
-   *  The square of the Z mass
-   */
-  Energy2 _mz2;
-  //@}
 
   /**
    *  The hadron
@@ -235,24 +199,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MENeutralCurrentDISPowheg. */
+ *  base classes of MEChargedCurrentDISPowheg. */
 template <>
-struct BaseClassTrait<Herwig::MENeutralCurrentDISPowheg,1> {
-  /** Typedef of the first base class of MENeutralCurrentDISPowheg. */
-  typedef Herwig::MENeutralCurrentDIS NthBase;
+struct BaseClassTrait<Herwig::MEChargedCurrentDISPowheg,1> {
+  /** Typedef of the first base class of MEChargedCurrentDISPowheg. */
+  typedef Herwig::MEChargedCurrentDIS NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MENeutralCurrentDISPowheg class and the shared object where it is defined. */
+ *  the MEChargedCurrentDISPowheg class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MENeutralCurrentDISPowheg>
-  : public ClassTraitsBase<Herwig::MENeutralCurrentDISPowheg> {
+struct ClassTraits<Herwig::MEChargedCurrentDISPowheg>
+  : public ClassTraitsBase<Herwig::MEChargedCurrentDISPowheg> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MENeutralCurrentDISPowheg"; }
+  static string className() { return "Herwig::MEChargedCurrentDISPowheg"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MENeutralCurrentDISPowheg is implemented. It may also include several, space-separated,
-   * libraries if the class MENeutralCurrentDISPowheg depends on other classes (base classes
+   * MEChargedCurrentDISPowheg is implemented. It may also include several, space-separated,
+   * libraries if the class MEChargedCurrentDISPowheg depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -263,4 +227,4 @@ struct ClassTraits<Herwig::MENeutralCurrentDISPowheg>
 
 }
 
-#endif /* HERWIG_MENeutralCurrentDISPowheg_H */
+#endif /* HERWIG_MEChargedCurrentDISPowheg_H */

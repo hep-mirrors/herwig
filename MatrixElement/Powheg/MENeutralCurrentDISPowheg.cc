@@ -22,7 +22,7 @@ MENeutralCurrentDISPowheg::MENeutralCurrentDISPowheg()
 {}
 
 int MENeutralCurrentDISPowheg::nDim() const {
-  return MENeutralCurrentDIS::nDim()+2;
+  return MENeutralCurrentDIS::nDim()+1;
 }
 
 bool MENeutralCurrentDISPowheg::generateKinematics(const double * r) {
@@ -42,12 +42,10 @@ bool MENeutralCurrentDISPowheg::generateKinematics(const double * r) {
   // xp
   int ndim=nDim();
   double rhomin = pow(1.-_xB,1.-power_); 
-  double rho = r[ndim-2]*rhomin;
+  double rho = r[ndim-1]*rhomin;
   _xp = 1.-pow(rho,1./(1.-power_));
   jac_ = rhomin/(1.-power_)*pow(1.-_xp,power_);
   jacobian(jacobian()*jac_);
-  // zp
-  _zp = r[ndim-1];
   return true; 
 }
 
@@ -179,17 +177,10 @@ double MENeutralCurrentDISPowheg::NLOWeight() const {
   // q -> qg term
   double realq = CFfact/_xp/(1.+a*l+sqr(l))*qPDF/loPDF*
     (2.+2.*sqr(l)-_xp+3.*_xp*sqr(l)+a*l*(2.*_xp+1.));
-//   double realq = 2.*CFfact/_xp/(1.+a*l+sqr(l))*qPDF/loPDF*
-//     (1.+sqr(l)-_xp*_zp+3.*_xp*_zp*sqr(l)+a*l*(_xp+_zp));
-  //   double realq = 2.*CFfact/_xp*qPDF/loPDF*(1.+3.*_xp*_zp);
   // g -> q qbar term
   double realg =-TRfact/_xp/(1.+a*l+sqr(l))*gPDF/loPDF*
     ((1.+sqr(l)+2.*(1.-3.*sqr(l))*_xp*(1.-_xp))
      +2.*a*l*(1.-2.*_xp*(1.-_xp)));
-//   double realg =-2.*TRfact/_xp/(1.+a*l+sqr(l))*gPDF/loPDF*
-//     (_zp*(1.+sqr(l)+2.*(1.-3.*sqr(l))*_xp*(1.-_xp))
-//      +a*l*(1.-2.*_xp+2.*sqr(_xp)));
-  //   double realg =-2.*TRfact/_xp*gPDF/loPDF*(_zp*(1.-6.*_xp*(1.-_xp)));
   // return the full result
   double wgt = virt+((collq+collg)/loPDF+realq+realg); 
   //   double f2g = gPDF/_xp*TRfact*((sqr(1-_xp)+sqr(_xp))*log((1-_xp)/_xp)+
@@ -305,145 +296,3 @@ double MENeutralCurrentDISPowheg::A() const {
   if(mePartonData()[0]->id()<0) output *= -1;
   return output;
 }
-
-  // kinematically variables for the real emission terms
-//   double x1 = -1./_xp;
-//   double x2 = 1.-(1.-_zp)/_xp;
-//   double x3 = 2.+x1-x2;
-//   double xT = sqrt(4.*(1.-_xp)*(1.-_zp)*_zp/_xp);
-//   double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
-//   double cos3 = x3/sqrt(sqr(x3)+sqr(xT));
-//   double R2 = 0.5*(3.*sqr(cos2)-1.+2.*a*cos2*l+3.*sqr(l)-sqr(l*cos2))/(1.+a*l+sqr(l));
-//   double qme = 1.+sqr(_xp)*(sqr(x2)+sqr(xT))*R2;
-//   qme *= CFfact/_xp/(1.-_xp)/(1.-_zp);
-//   double dipoleQG = CFfact*(-2.+(sqr(x1)+sqr(x2))*sqr(_xp)/(1.-_xp)/(1.-_zp))/_xp;
-//   double testq = (qme-dipoleQG)*qPDF/loPDF;
-//   double R3 = 0.5*(3.*sqr(cos3)-1.-2.*a*cos3*l+3.*sqr(l)-sqr(l*cos3))/(1.+a*l+sqr(l));
-//   double gme = TRfact*_xp/(1.-_zp)*((sqr(x2)+sqr(xT))*R2+(sqr(x3)+sqr(xT))*R3);
-//   double dipoleQQ = TRfact/_xp/(1.-_zp)*(1.-2.*_xp+2.*sqr(_xp));
-//   double realg=(gme-dipoleQQ)*gPDF/loPDF;
-
-//   double testg2 = 2.*TRfact/_xp/(1.+a*l+sqr(l))*gPDF*
-//     (-_zp*(1+sqr(l))+6*sqr(l)*_xp*_zp*(1-_xp)-2*_xp*_zp*(1-_xp)+a*l*(-1+2*_xp*(1-_xp)));
-
-
-//   cerr << "QQBAR TEST RATIO WITH SAME PDF " 
-//        << (realg-testg/loPDF)/(realg+testg/loPDF) << "\n";
-
-
-//   cerr << "testing cos3 " << -(_xp-_zp)/(-_xp-_zp+2*_xp*_zp) << " " << cos3 << "\n";
-
-
-
-
-//   cerr << "testing A "
-//        <<  TRfact*_xp/(1.-_zp)*gPDF/loPDF*
-//     ((sqr(x2)+sqr(xT))*(0.5*(3.*sqr(cos2)-1.+2.*a*cos2*l+3.*sqr(l)-sqr(l*cos2))/(1.+a*l+sqr(l)))+
-//      (sqr(x3)+sqr(xT))*(0.5*(3.*sqr(cos3)-1.-2.*a*cos3*l+3.*sqr(l)-sqr(l*cos3))/(1.+a*l+sqr(l))))
-//        << " " << gme << "\n";
-//   cerr << "testing B "
-//        << TRfact/_xp/(1.-_zp)*(1.-2.*_xp+2.*sqr(_xp))*gPDF/loPDF
-//        << " " << dipoleQQ*gPDF/loPDF << "\n";
-
-//   cerr << "testing C "
-//        <<  (TRfact*_xp/(1.-_zp)*gPDF/loPDF*
-//     ((sqr(x2)+sqr(xT))*(0.5*(3.*sqr(cos2)-1.+2.*a*cos2*l+3.*sqr(l)-sqr(l*cos2))/(1.+a*l+sqr(l)))+
-//      (sqr(x3)+sqr(xT))*(0.5*(3.*sqr(cos3)-1.-2.*a*cos3*l+3.*sqr(l)-sqr(l*cos3))/(1.+a*l+sqr(l)))))
-//     -(TRfact/_xp/(1.-_zp)*(1.-2.*_xp+2.*sqr(_xp))*gPDF/loPDF) << "\n";
-//   cerr << "testing D "
-//        <<  TRfact/(1.-_zp)*gPDF/loPDF/_xp*
-//     ((sqr(_xp)*
-//       ((sqr(x2)+sqr(xT))*(0.5*(3.*sqr(cos2)-1.+2.*a*cos2*l+3.*sqr(l)-sqr(l*cos2))/(1.+a*l+sqr(l)))+
-//        (sqr(x3)+sqr(xT))*(0.5*(3.*sqr(cos3)-1.-2.*a*cos3*l+3.*sqr(l)-sqr(l*cos3))/(1.+a*l+sqr(l)))))
-//      -(1.-2.*_xp+2.*sqr(_xp))) << "\n";
-
-
-//  cerr << "testing M "
-//       <<  0.5*TRfact/(1.-_zp)*gPDF/loPDF/_xp/(1.+a*l+sqr(l))*
-//    (-4.*(2.*_xp+1.-2.*sqr(_xp))*_zp*(1.-_zp)
-
-//     +2.*a*l*(-2*_xp+1+2*sqr(_xp))*(2*_zp-1)
-
-//     +sqr(l)*(+24*_xp*_zp+4*sqr(_zp)-4*_zp+24*sqr(_xp)*sqr(_zp)-24*sqr(_xp)*_zp-24*_xp*sqr(_zp))
-   
-
-//    -2.*(1.-2.*_xp+2.*sqr(_xp))*(a*l)) << "\n";
-
-//  cerr << "testing N "
-//       <<  0.5*TRfact*gPDF/loPDF/_xp/(1.+a*l+sqr(l))*
-//    (-4.*(2.*_xp+1.-2.*sqr(_xp))*_zp
-
-//     -4.*a*l*(-2*_xp+1+2*sqr(_xp))
-
-//     +sqr(l)*(+24*_xp*(1.-_xp)-4)*_zp
-   
-
-//    ) << "\n";
-
-//  cerr << "testing 0 "
-//       <<  2.*TRfact*gPDF/loPDF/_xp/(1.+a*l+sqr(l))*
-//    (-(2.*_xp+1.-2.*sqr(_xp))*_zp
-
-//     -a*l*(-2*_xp+1+2*sqr(_xp))
-
-//     +sqr(l)*(+6*_xp*(1.-_xp)-1)*_zp
-   
-
-//    ) << "\n";
-//   exit(0);
-
-//   //
-
-
-//   // tests of the matrix elements
-//   // the momenta
-//   Energy Q(sqrt(_q2));
-//   Lorentz5Momentum p1( 0.5*Q*xT,  ZERO, -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
-//   Lorentz5Momentum p2(-0.5*Q*xT,  ZERO , -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
-//   Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
-//   Lorentz5Momentum qq(ZERO,ZERO,-Q,ZERO);
-//   // tests of the real q -> q g channel
-//   // subtracted with same pdf in dipole and me
-// //   double testq = 2.*CFfact/_xp/(1.+a*l+sqr(l))*qPDF/loPDF*
-// //     (1.+sqr(l)-_xp*_zp+3.*_xp*_zp*sqr(l)+a*l*(_xp+_zp));
-//   cerr << "QG TEST RATIO WITH SAME PDF " 
-//        << (qme-dipoleQG*qPDF/loPDF)/testq << "\n";
-//   // momenta for the FS dipole
-//   Lorentz5Momentum pj(p2),pa(p0),pi(p1);
-//   // computations of the FS dipole
-//   double xFS = (pi*pa+pj*pa-pi*pj)/(pi*pa+pj*pa);
-//   double zFS = (pi*pa)/(pi*pa+pj*pa);
-//   // in terms of momenta
-//   InvEnergy2 DFSA =  0.5/(pi*pj)/xFS*8.*Constants::pi*aS*4./3.*(2./(1.-zFS+1.-xFS)-1.-zFS);
-//   // in terms of x etc
-//   InvEnergy2 DFSB =  8.*Constants::pi*aS*4./3./_q2/(1.+x1)*(2.*sqr(x1)/(x1+x2)-(1.+2.*x1-x2));
-//   cerr << "FS dipoles " << (DFSA-DFSB)/(DFSA+DFSB) << "\n";
-//   // computations of the IS dipole
-//   Lorentz5Momentum pk(p1);
-//   pi=p2;
-//   double xIS = (pk*pa+pi*pa-pi*pk)/(pk*pa+pi*pa);
-//   double uIS = (pi*pa)/(pi*pa+pk*pa);
-//   // in terms of momenta
-//   InvEnergy2 DISA =  0.5/(pa*pi)/xIS*8.*Constants::pi*aS*4./3.*(2./(1.-xIS+uIS)-(1.+xIS));
-//   // in terms of x etc
-//   InvEnergy2 DISB =-8.*Constants::pi*aS*4./3./_q2/(1.-x2)*(2.*sqr(x1)/(x1+x2)+(1.-x1));
-//   cerr << "IS dipoles " << (DISA-DISB)/(DISA+DISB) << "\n";
-//   double qgtest = 0.25*(DISA+DFSA)/sqr(Constants::twopi)*_q2/_xp;
-//   cerr << "full dipole " << (qgtest-dipoleQG)/(qgtest+dipoleQG) << "\n";
-
-
-
-//   // tests of the real g -> q qbar channel
-//   // dipole
-//   // in terms of momenta
-//   InvEnergy2 DQQA =  0.5/(pa*pi)/xIS*8.*Constants::pi*aS*0.5*(1.-2.*xIS*(1.-xIS));
-//   // in terms of x etc
-//   InvEnergy2 DQQB =-8.*Constants::pi*aS*0.5/_q2/(1.-x2)/x1*(1.+sqr(1.+x1));
-//   cerr << "testing QQ dipole " << (DQQA-DQQB)/(DQQA+DQQB) << "\n";
-//   double qqtest = 0.25*DQQA/sqr(Constants::twopi)*_q2/_xp;
-//   cerr << "full dipole " << (qqtest-dipoleQQ)/(qqtest+dipoleQQ) << "\n";
-
-
-
-
-//   exit(0);

@@ -12,4 +12,5 @@ NLO2to2Kinematics.cc NLO2to2Kinematics.h
 pkglib_LTLIBRARIES += HwPowhegMEDIS.la
 HwPowhegMEDIS_la_LDFLAGS = -module -version-info 1:0:0
 HwPowhegMEDIS_la_SOURCES = \
-MENeutralCurrentDISPowheg.h MENeutralCurrentDISPowheg.cc
+MENeutralCurrentDISPowheg.h MENeutralCurrentDISPowheg.cc \
+MEChargedCurrentDISPowheg.h MEChargedCurrentDISPowheg.cc
