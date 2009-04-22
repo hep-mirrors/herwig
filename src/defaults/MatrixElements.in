@@ -90,7 +90,7 @@ create Herwig::MEPP2WH MEPP2WH
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme
 ##########################################################
-library HwPowhegME.so
+library HwPowhegMEHadron.so
 
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ffPowheg PowhegMEqq2gZ2ff
