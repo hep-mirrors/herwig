@@ -339,7 +339,8 @@ void Histogram::chiSquared(double & chisq,
 			   unsigned int & ndegrees, double minfrac) const {
   chisq =0.;
   ndegrees=0;
-  unsigned int numPoints = _globalStats.numberOfPoints();
+//   unsigned int numPoints = _globalStats.numberOfPoints();
+  double numPoints=_total;
   for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
     double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
@@ -355,7 +356,8 @@ void Histogram::chiSquared(double & chisq,
 }
 
 void Histogram::normaliseToCrossSection() {
-  unsigned int numPoints = _globalStats.numberOfPoints();
+//   unsigned int numPoints = _globalStats.numberOfPoints();
+  double numPoints=_total;
   if (numPoints == 0) ++numPoints;
   _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*
     numPoints/nanobarn;
