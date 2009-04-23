@@ -202,66 +202,6 @@ void MENeutralCurrentDISPowheg::doinit() {
   _cosW = sqrt(1.-_sinW);
   _sinW = sqrt(_sinW);
   _mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
-
-
-
-  tPDPtr proton=getParticleData(2212);
-  _hadron = dynamic_ptr_cast<tcBeamPtr>(proton);
-  tcPDPtr gluon = getParticleData(ParticleID::g);
-  double x = 0.1365;
-  Energy2 Q2=320.*GeV2;
-  // alphaS bits
-  double aS = SM().alphaS(Q2);
-  double CFfact = 4./3.*aS/Constants::twopi;
-  double TRfact = 1./2.*aS/Constants::twopi;
-  // test of F2
-  double F2[6]={0.,0.,0.,0.,0.},F2e[6]={0.,0.,0.,0.,0.};
-  for(int ix=-5;ix<=5;++ix) {
-    if(ix==0) continue;
-    tPDPtr parton = getParticleData(ix);
-    double eq2 = sqr(double(getParticleData(ix)->iCharge())/3.);
-    double loPDF = _hadron->pdf()->xfx(_hadron,parton,Q2,x)/x;
-    double wsum(0.),wsqsum(0.),wgt(0.);
-    unsigned int npoint(1000000);
-    for(unsigned int iy=0;iy<npoint;++iy) {
-      // generate z
-      double rhomin = pow(1.-x,1.-power_); 
-      double rho = UseRandom::rnd()*rhomin;
-      double z = 1.-pow(rho,1./(1.-power_));
-      double jac = rhomin/(1.-power_)*pow(1.-z,power_);
-//       double z = x+UseRandom::rnd()*(1.-x);
-//       double jac =(1.-x);
-      double gPDF = _hadron->pdf()->xfx(_hadron,gluon ,Q2,x/z)*z/x;
-      double qPDF = _hadron->pdf()->xfx(_hadron,parton,Q2,x/z)*z/x;
-      double f2g = gPDF/z*TRfact*((sqr(1-z)+sqr(z))*log((1-z)/z)+8*z*(1.-z)-1.);
-      double f2q = 
-	loPDF/jac*(1.+CFfact*(-1.5*log(1.-x)+sqr(log(1.-x))-sqr(Constants::pi)/3.-4.5))
- 	+qPDF          *CFfact/z*(3.+2.*z-(1.+z)*log(1.-z)-(1.+sqr(z))/(1.-z)*log(z))
- 	+(qPDF-z*loPDF)*CFfact/z*(2.*log(1.-z)-1.5)/(1.-z);
-      // NLO weight
-      wgt = (f2g+f2q);
-      // LO weight
-      //wgt = loPDF/jac;
-      wgt *= x*eq2*jac;
-      wsum += wgt;
-      wsqsum += sqr(wgt);
-    }
-    wsum /= double(npoint);
-     cerr << "testing average " << wsum << " " << 0.5*(1.-sqr(x)) << "\n";
-//     cerr << "testing average " << wsum << " " << (1.-x) << "\n";
-    wsqsum /= double(npoint);
-    F2 [abs(ix)] += wsum;
-    F2e[abs(ix)] += max((wsqsum-sqr(wsum))/double(npoint),0.);
-  }
-  double total(0.),error(0.);
-  for(unsigned int ix=1;ix<=5;++ix) {
-    total += F2[ix];
-    error += F2e[ix];
-    F2e[ix] = sqrt(F2e[ix]);
-    cerr << "testing contribution " << F2[ix] << " +/- " << F2e[ix] << "\n";
-  }
-  error = sqrt(error);
-  cerr << "total " << total << " +/- " << error << "\n";
 }
 
 double MENeutralCurrentDISPowheg::A() const {
