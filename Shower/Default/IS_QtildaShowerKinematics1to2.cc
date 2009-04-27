@@ -133,7 +133,7 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
       Lorentz5Momentum pbasis(ZERO,parent->momentum().vect().unit()*scale);
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
-      double sinth(sqrt(1.-sqr(axis.z())));
+      double sinth(sqr(axis.x())+sqr(axis.y()));
       if(axis.perp2()>1e-20) {
 	rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
 	rot.rotateX(Constants::pi);
