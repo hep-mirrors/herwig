@@ -12,11 +12,8 @@
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
-
-
 
 namespace Herwig {
 
@@ -35,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline VectorBosonQQbarHardGenerator();
+  VectorBosonQQbarHardGenerator() : _Qg(1.*GeV) {}
 
   /**
    *  Members which must be overridden in the inheriting classes
@@ -86,38 +83,24 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
-
 
 protected:
 
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit();
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
+  virtual void doinit();
   //@}
 
 private:
@@ -127,18 +110,7 @@ private:
   /**
    * Constructs the post-emission momenta of q, qbar, g
    */
-  void constructVectors();
-
-  /** Returns the value of the radiative cross section (R(v,r)/B(v))
-   *for the current (_xq,_xqb)
-   */
-  double getResult();
-
-  /**
-   *Returns true if we are within the allowed phase space of emission
-   */   
-  inline bool inRange();
- 
+  bool constructVectors();
 
   /**
    * The static object used to initialize the description of this class.
@@ -161,9 +133,46 @@ private:
   ShowerAlphaPtr _alphaS;
 
   /**
-   *  The alphaS for the overestimate of the true distribution
+   *  Pointer to the object calculating the EM coupling
    */
-  double _alphaS_max;  
+  ShowerAlphaPtr _alphaEM;
+
+  /**
+   *  ParticleData object for the gluon
+   */
+  tcPDPtr _gluon;
+
+  /**
+   *  ParticleData object for the photon
+   */
+  tcPDPtr _gamma;
+
+  /**
+   *  The cut off on pt, assuming massless quarks.
+   */
+  Energy _Qg;
+
+  /**
+   *  The ParticleData objects for the fermions
+   */
+  vector<tcPDPtr> _partons;
+
+  /**
+   * The fermion momenta
+   */
+  vector<Lorentz5Momentum> _quark;
+
+  /**
+   *  The momentum of the radiated gauge boson
+   */
+  Lorentz5Momentum _gauge;
+
+  /**
+   *  The type of interaction
+   */
+  ShowerInteraction::Type _inter;
+
+
 
   /**
    *  The dalitz variables (xq,xqb,xg=2-xq-xqb). These are
@@ -172,30 +181,6 @@ private:
   double _xq;
   double _xqb;
   double _xg;
-
-  /**
-   *  The COM 3-momenta and of the q,qb,g divided by 0.5*sqrt(_s).
-   *  These are used in checking phase space constraints as well
-   *  as constructing emissions. This is beta (velocity) times 
-   *  xq/xqb/xg hence the variable name.
-   */
-  double _b_xq;
-  double _b_xqb;
-  double _b_xg;
-
-  /**
-   *  _rt_mlambda/(2.*_b_xi*_b_xj) gives the sine of the angle 
-   *  between i & j in the COM frame. It is equal to the square
-   *  root of the Kallen function taking as its 3 arguments
-   *  the rescaled 3-momenta _b_xq^2, _b_xqb^2, _b_xg^2. It 
-   *  it is therefore importantly used in calculating relative pT's.
-   */
-  double _rt_mlambda;
-
-  /**
-   *  The gluon mass (Q_g) i.e. the cut off on pt, assuming massless quarks.
-   */
-  Energy _Qg;
 
   //  radiative variables (pt,y)
   double _y;
@@ -211,30 +196,10 @@ private:
   int _iemitter;
   int _ispectator;
 
-  HistogramPtr _hyb;
-  HistogramPtr _hplow;
-  HistogramPtr _hphigh;
-  HistogramPtr _hy;
-  HistogramPtr _hthrust;
-  HistogramPtr _hthrustlow;
-  HistogramPtr _hmass;
-  HistogramPtr _hptVeto;
-  HistogramPtr _hptVetoLow;
   /**
-   *  vector of points for scatter plot
+   *  The EW gauge boson
    */
-  std::vector<double> _ptplot;
-  std::vector<double> _yplot;
-  std::vector<double> _xqplot;
-  std::vector<double> _xqbplot;
-
-  // The quark momenta and data pointers
-  vector<Lorentz5Momentum> _quark;
-  vector<tcPDPtr> _partons;
   PPtr _boson;
-  // The gluon momentum and data pointer
-  Lorentz5Momentum _g;
-  tcPDPtr _gluon_data;
 
 };
 
@@ -276,7 +241,5 @@ struct ClassTraits<Herwig::VectorBosonQQbarHardGenerator>
 /** @endcond */
 
 }
-
-#include "VectorBosonQQbarHardGenerator.icc"
 
 #endif /* HERWIG_VectorBosonQQbarHardGenerator_H */

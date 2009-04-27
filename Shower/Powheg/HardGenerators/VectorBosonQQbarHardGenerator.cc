@@ -23,18 +23,18 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
-
 using namespace Herwig;
 
 void VectorBosonQQbarHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _alphaS_max << ounit( _Qg, GeV );
+  os << _alphaS << _alphaEM << _gamma << _gluon << ounit( _Qg, GeV );
 }
 
 void VectorBosonQQbarHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _alphaS_max >> iunit( _Qg, GeV );
+  is >> _alphaS >> _alphaEM >> _gamma >> _gluon >> iunit( _Qg, GeV );
 }
 
-ClassDescription<VectorBosonQQbarHardGenerator> VectorBosonQQbarHardGenerator::initVectorBosonQQbarHardGenerator;
+ClassDescription<VectorBosonQQbarHardGenerator> 
+VectorBosonQQbarHardGenerator::initVectorBosonQQbarHardGenerator;
 // Definition of the static class description member.
 
 void VectorBosonQQbarHardGenerator::Init() {
@@ -43,11 +43,17 @@ void VectorBosonQQbarHardGenerator::Init() {
     ("The VectorBosonQQbarHardGenerator class generates the hardest emission for"
      "vector boson decays to fermion-antifermion events in the POWHEG approach");
 
-  static Reference<VectorBosonQQbarHardGenerator,ShowerAlpha> interfaceShowerAlpha
-    ("ShowerAlpha",
+  static Reference<VectorBosonQQbarHardGenerator,ShowerAlpha> interfaceShowerAlphaQCD
+    ("ShowerAlphaQCD",
      "The object calculating the strong coupling constant",
      &VectorBosonQQbarHardGenerator::_alphaS, false, false, true, false, false);
   
+
+  static Reference<VectorBosonQQbarHardGenerator,ShowerAlpha> interfaceShowerAlphaQED
+    ("ShowerAlphaQED",
+     "The electromagnetic coupling for the QED corrections",
+     &VectorBosonQQbarHardGenerator::_alphaEM, false, false, true, false, false);
+
   static Parameter<VectorBosonQQbarHardGenerator, Energy> interfacePtMin
     ("minPt",
      "The pt cut on hardest emision generation",
@@ -55,8 +61,36 @@ void VectorBosonQQbarHardGenerator::Init() {
      false, false, Interface::limited);
 }
 
-HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
+void VectorBosonQQbarHardGenerator::doinit() {
+  HardestEmissionGenerator::doinit();
+  _gluon = getParticleData(ParticleID::g);
+  _gamma = getParticleData(ParticleID::gamma);
+}
 
+
+bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
+  // one incoming gauge boson
+  if(tree->incomingLines().size()!=1) return false;
+  // what on earth does this do??
+  if((tree->incomingLines().begin()->first->id()==22)&&
+     (tree->incomingLines().begin()->first->progenitor()->id()==23)) {
+    generator()->log() << "testing in dodgy if\n";
+    return false;
+  }
+  // check outgoing quarks or leptons
+  map<ShowerProgenitorPtr,tShowerParticlePtr> outgoing=tree->outgoingLines();
+  // must be two
+  if(outgoing.size()!=2) return false;
+  // particle and antiparticle
+  if(outgoing.begin()->first->progenitor()->id()!=
+     -1*outgoing.rbegin()->first->progenitor()->id())     return false;
+  int id = abs(outgoing.begin()->first->progenitor()->id());
+  // quark or charged lepton 
+  if( id <= 6 || (id >= 11 && id <= 15 && id%2 == 1))  return true;
+  return false;
+}
+
+HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Get the progenitors: Q and Qbar.
   ShowerProgenitorPtr 
     QProgenitor    = tree->outgoingLines().begin()->first,
@@ -65,9 +99,6 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   _partons.resize(2);
   _partons[0] = QProgenitor->progenitor()->dataPtr();
   _partons[1] = QbarProgenitor->progenitor()->dataPtr();
-  // Get data for the gluon.
-  tcPDPtr gluon_data = getParticleData(ParticleID::g);
-
   // momentum of the partons
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
@@ -76,22 +107,24 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // once and for all.
   _quark[0].setMass(_partons[0]->mass());
   _quark[1].setMass(_partons[1]->mass());
-  _g.setMass(0.*MeV);
-
-  // PDG codes of the partons
-  int q_id   (abs(QProgenitor->progenitor()->id()   ));
-  int qbar_id(abs(QbarProgenitor->progenitor()->id()));
-
+  _gauge.setMass(0.*MeV);
   // Get the gauge boson.
   _boson = tree->incomingLines().begin()->first->copy();
-
   // Get the gauge boson mass.
-  _s = (_quark[0]+_quark[1])*(_quark[0]+_quark[1]);
-
+  _s = (_quark[0]+_quark[1]).m2();
+  // Generate emission and set _quark[0,1] and _gauge to be the 
+  // momenta of q, qbar and g after the hardest emission:
+  if(!getEvent()) {
+    QProgenitor->maximumpT(_Qg);
+    QbarProgenitor->maximumpT(_Qg);
+    return HardTreePtr();
+  }
   // Get the list of possible branchings.
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
-
+  // PDG codes of the partons
+  int q_id   (abs(QProgenitor->progenitor()->id()   ));
+  int qbar_id(abs(QbarProgenitor->progenitor()->id()));
   // Find the sudakovs for the q/qbar->q/qbarg branchings.
   SudakovPtr q_sudakov,qbar_sudakov;
   // quark
@@ -99,7 +132,9 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   for(BranchingList::const_iterator cit = branchings.lower_bound(q_index);
       cit != branchings.upper_bound(q_index); ++cit ) {
     IdList ids = cit->second.second;
-    if(ids[0]==q_id&&ids[1]==q_id&&ids[2]==gluon_data->id()) {
+    if(ids[0]==q_id&&ids[1]==q_id&&
+       ((_inter==ShowerInteraction::QCD&&ids[2]==ParticleID::g    )||
+	(_inter==ShowerInteraction::QED&&ids[2]==ParticleID::gamma))) {
       q_sudakov = cit->second.first;
       break; 	    
     }
@@ -108,73 +143,46 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   for(BranchingList::const_iterator cit = branchings.lower_bound(qbar_index);
       cit != branchings.upper_bound(qbar_index); ++cit ) {
     IdList ids = cit->second.second;
-    if(ids[0]==qbar_id&&ids[1]==qbar_id&&ids[2]==gluon_data->id()) {
+    if(ids[0]==qbar_id&&ids[1]==qbar_id&&
+       ((_inter==ShowerInteraction::QCD&&ids[2]==ParticleID::g    )||
+	(_inter==ShowerInteraction::QED&&ids[2]==ParticleID::gamma))) {
       qbar_sudakov = cit->second.first;
       break; 	    
     }
   }
-
   // Check sudakovs got created:
   if(!q_sudakov||!qbar_sudakov) throw Exception() 
     << "No Sudakov for the hard emission in "
     << "VectorBosonQQbarHardGenerator::generateHardest()" 
     << Exception::runerror;
-
-  // Get all the gluon mass assuming massless quarks: 
-  // _Qg = q_sudakov->kinematicCutOff(q_sudakov->kinScale(),0.*GeV);
-
-  // Generate emission and set _quark[0,1] and _g to be the 
-  // momenta of q, qbar and g after the hardest emission:
-  if(!getEvent()){
-    generator()->log() << "generateHardest: NO emission was generated\n";
-    QProgenitor->maximumpT(0.*GeV);
-    QbarProgenitor->maximumpT(0.*GeV);
-    return HardTreePtr();
-  }
   // Ensure the energies are greater than the constituent masses:
   for (int i=0; i<2; i++)
-     if (_quark[i].e() < _partons[i]->constituentMass()) return HardTreePtr();
-  if (_g.e() < gluon_data->constituentMass()) return HardTreePtr();
-
-  // Set masses as done in VectorBosonQQbarMECorrection
-  // (note this was already done at the start and the mass
-  // component of the five-vector is never changed from that 
-  // starting value, but just in case someone rewrites the
-  // code above we include the following as in the MECorr code):
+    if (_quark[i].e() < _partons[i]->constituentMass()) return HardTreePtr();
+  if (_inter==ShowerInteraction::QCD && 
+      _gauge.e() < _gluon->constituentMass()) return HardTreePtr();
+  // set masses
   _quark[0].setMass(_partons[0]->mass());
   _quark[1].setMass(_partons[1]->mass());
-  _g.setMass(0.*MeV);
-
+  _gauge.setMass(ZERO);
   // assign the emitter based on evolution scales
-  // rather than for the correlations - we might want to try 
-  // making this choice in the same way as VectorBosonQQbarMECorrection
-  // (based on relative pT's). 
-  _iemitter   = _quark[0]*_g>_quark[1]*_g ? 1 : 0;
+  _iemitter   = _quark[0]*_gauge>_quark[1]*_gauge ? 1 : 0;
   _ispectator = _iemitter==1              ? 0 : 1; 
-
   // Set the sudakov for the q/qbar->q/qbarg branching.
   SudakovPtr sudakov = _iemitter==0 ? q_sudakov : qbar_sudakov;
-
   // Make the particles for the HardTree:
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(_partons[_iemitter],true)));
   ShowerParticlePtr spectator(new_ptr(ShowerParticle(_partons[_ispectator],true)));
-  ShowerParticlePtr gluon(new_ptr(ShowerParticle(gluon_data,true)));
+  ShowerParticlePtr gauge(new_ptr(ShowerParticle(_inter == ShowerInteraction::QCD ?
+						 _gluon : _gamma ,true)));
   ShowerParticlePtr vboson(new_ptr(ShowerParticle(_boson->dataPtr(),false)));
   ShowerParticlePtr parent(new_ptr(ShowerParticle(_partons[_iemitter],true)));
   emitter->set5Momentum(_quark[_iemitter]); 
   spectator->set5Momentum(_quark[_ispectator]);  
-  gluon->set5Momentum(_g);  
+  gauge->set5Momentum(_gauge);  
   vboson->set5Momentum(_boson->momentum());  
-  Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
+  Lorentz5Momentum parentMomentum(_quark[_iemitter]+_gauge);
   parentMomentum.setMass(_partons[_iemitter]->mass());
-  // ATTENTION! 
-  // The mass component of the parent's 5 momentum is set
-  // to carry the _on-shell_ mass. If this is not the case
-  // then the QCD evolution scale will be set wrongly (using
-  // the off-shell mass) in the call to 
-  // setQCDInitialEvolutionScales from deconstructDecayJets.
   parent->set5Momentum(parentMomentum);
-
   // Create the vectors of HardBranchings to create the HardTree:
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
@@ -191,7 +199,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   emitterBranch->addChild(new_ptr(HardBranching(emitter, 
 						SudakovPtr(),HardBranchingPtr(),
 						HardBranching::Outgoing)));
-  emitterBranch->addChild(new_ptr(HardBranching(gluon,
+  emitterBranch->addChild(new_ptr(HardBranching(gauge,
 						SudakovPtr(),HardBranchingPtr(),
 						HardBranching::Outgoing)));
   if(_iemitter==0) {
@@ -204,292 +212,122 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   }
   // Add incoming boson to allBranchings
   allBranchings.push_back(spaceBranchings.back());
-
-  // Make the HardTree from the HardBranching vectors.
-  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings));
-	
+//   // Make the HardTree from the HardBranching vectors.
+  HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
+					   _inter));
   // Set the maximum pt for all other emissions
-  double b_xs;
-  b_xs = _ispectator==0 ? _b_xq : _b_xqb;
-  Energy ptveto(sqrt(_s)*_rt_mlambda/(4.*b_xs));
+  Energy ptveto(_pt);
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
-
   // Connect the particles with the branchings in the HardTree
   nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
   nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
-
   // Create the two colour lines and connect the particles:
   ColinePtr blueLine  = new_ptr(ColourLine());
   ColinePtr greenLine = new_ptr(ColourLine());
   blueLine->addColoured(emitter,_iemitter);
-  blueLine->addColoured(gluon,_ispectator);
-  greenLine->addColoured(gluon,_iemitter);
+  blueLine->addColoured(gauge,_ispectator);
+  greenLine->addColoured(gauge,_iemitter);
   greenLine->addColoured(parent,_iemitter);
   greenLine->addColoured(spectator,_ispectator);
-
-// // Some debugging equipement - to calculate unshuffled momenta
-// // in the rest frame of _quark[0]+_quark[1]. I.E. this calculates the 
-// // qnew vectors in deconstructDecayJets.
-//   generator()->log() << "\n\n\nVectorBosonQQbarHardenerator::generateHardest()"
-// 		     << endl;
-//   vector<Lorentz5Momentum> kh_quark; kh_quark.resize(2);
-//   LorentzRotation eventFrame((QProgenitor->copy()->momentum()
-// 		  +QbarProgenitor->copy()->momentum()).findBoostToCM());
-//   kh_quark[0]=eventFrame*QProgenitor->copy()->momentum();
-//   kh_quark[1]=eventFrame*QbarProgenitor->copy()->momentum();
-//   kh_quark[0].setMass(_partons[0]->mass());
-//   kh_quark[1].setMass(_partons[1]->mass());
-//   Energy2 pe2,ps2,qe2,qs2;
-//   pe2=sqr(_partons[  _iemitter]->mass());
-//   ps2=sqr(_partons[_ispectator]->mass());
-//   qe2=(_quark[  _iemitter]+_g).m2();
-//   qs2= _quark[_ispectator].m2();
-//   Energy rts(sqrt(_s));
-//   Energy pem(_partons[ _iemitter]->mass()),psm(_partons[_ispectator]->mass());
-//   Energy qem((_quark[_iemitter]+_g).m()),qsm(_quark[_ispectator].m());
-//   Energy4 lam((rts+pem+psm)*(rts-pem-psm)*(pem-rts-psm)*(psm-rts-pem));
-//   Energy2 bcoeff = _s - pe2 -ps2;
-//   double beta_e,beta_s;
-//   beta_e = (-bcoeff+sqrt(lam+4.*ps2*qe2))/(2.*ps2);
-//   beta_s = (-bcoeff+sqrt(lam+4.*pe2*qs2))/(2.*pe2);
-//   Lorentz5Momentum qe(kh_quark[  _iemitter]+beta_e*kh_quark[_ispectator]);
-//   Lorentz5Momentum qs(kh_quark[_ispectator]+beta_s*kh_quark[  _iemitter]);
-//   generator()->log() << "\n"; 
-//   generator()->log() << "qs " << qs/GeV 
-// 		     << "   " << sqrt(qs.mass2())/GeV 
-// 		     << "   " << sqrt(qs.m2())/GeV << "\n";
-//   generator()->log() << "qe " << qe/GeV 
-// 		     << "   " << sqrt(qe.mass2())/GeV 
-// 		     << "   " << sqrt(qe.m2())/GeV << "\n\n";
-
+  ShowerParticleVector particles;
+  for(set<HardBranchingPtr>::iterator cit=nasontree->branchings().begin();
+      cit!=nasontree->branchings().end();++cit) {
+    particles.push_back((*cit)->branchingParticle());
+  }
+  // set the evolution partners and scales
+  evolver()->showerModel()->partnerFinder()->
+    setInitialEvolutionScales(particles,true,_inter,true);
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructDecayJets(nasontree,evolver(),ShowerInteraction::QCD);
-
-  // KMH - why don't we do the next step in deconstructDecayJets? 
-  // Reset the momenta to ensure the correct momenta after shower recon
-  // if emitter for Kleiss trick and shower are different
-  for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-  	mit=nasontree->particles().begin();mit!=nasontree->particles().end();++mit)
-    mit->first->set5Momentum(mit->second->showerMomentum());
-
   // Return the HardTree
   return nasontree;
 }
 
-bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
-
-  if(tree->incomingLines().size()!=1) return false;    
-  if((tree->incomingLines().begin()->first->id()==22)&&
-  (tree->incomingLines().begin()->first->progenitor()->id()==23)) return false;
-
-  map<ShowerProgenitorPtr,tShowerParticlePtr> outgoing=tree->outgoingLines();
-  if(outgoing.size()!=2) return false;
-  if(abs(outgoing.begin()->first->progenitor()->id())>6)  return false;
-  if(outgoing.begin()->first->progenitor()->id()!=
-     -1*outgoing.rbegin()->first->progenitor()->id())     return false;
-
-  return true;
-}
-
-void VectorBosonQQbarHardGenerator::doinit() {
-  HardestEmissionGenerator::doinit();
-}
-
-void VectorBosonQQbarHardGenerator::dofinish() {
-  HardestEmissionGenerator::dofinish();
-
-  ofstream hist_out("hardEmissHists.top");
-  using namespace HistogramOptions;
-
-  _hy->topdrawOutput( hist_out, Frame,
-		      "BLACK",
-		      "e+e-  y", 
-		      " ", 
-		      " ",
-		      " ", 
-		      "y", 
-		      " " );
- _hplow->topdrawOutput( hist_out, Frame,
-		      "BLACK",
-		      "e+e- low pT", 
-		      " ", 
-		      " ",
-		      " ", 
-		      "pT / GeV", 
-		      " " );
- _hphigh->topdrawOutput( hist_out, Frame,
-		      "BLACK",
-		      "e+e- high pT", 
-		      " ", 
-		      " ",
-		      " ", 
-		      "pT / GeV", 
-		      " " );
- _hthrust->topdrawOutput( hist_out, Frame,
-		      "BLACK",
-		      "e+e- 1-T", 
-		      " ", 
-		      " ",
-		      " ", 
-		      "1-T", 
-		      " " );
- _hthrustlow->topdrawOutput( hist_out, Frame,
-		      "BLACK",
-		      "e+e- 1-T", 
-		      " ", 
-		      " ",
-		      " ", 
-		      "1-T", 
-		      " " );
-
-}
-
-void VectorBosonQQbarHardGenerator::doinitrun() {
-  _alphaS_max = _alphaS->overestimateValue();
-
-  _hthrust = new_ptr( Histogram( 0., 0.5, 100) );
-  _hthrustlow = new_ptr( Histogram( 0., 0.1, 100) );
-  _hy = new_ptr( Histogram( -6., 6., 100 ) );
-  _hplow = new_ptr( Histogram( 0., 10., 100 ) );
-  _hphigh = new_ptr( Histogram( 0., 100., 100) );
-  HardestEmissionGenerator::doinitrun();
-}
-
-bool VectorBosonQQbarHardGenerator::getEvent(){
-
-  
-  Energy pt_min = _Qg;  
-  Energy pt_max = 0.5*sqrt(_s);
+bool VectorBosonQQbarHardGenerator::getEvent() {
+  // max pT
+  Energy ptmax = 0.5*sqrt(_s);
   // Define over valued y_max & y_min according to the associated pt_min cut.
-  double y_max  =  acosh(pt_max/pt_min);
-  double y_min  = -acosh(pt_max/pt_min);
-  double wgt;
-  bool reject;
-  Energy last_pt(pt_max);
-  double prefactor = 2.*_alphaS_max*(4./3.)/Constants::pi;
-  
-  do {
-    reject=true;
-    _pt = last_pt*pow(UseRandom::rnd(),1./(prefactor*(y_max-y_min)));
-    _y  = UseRandom::rnd()*(y_max-y_min)+y_min;
-    
-    _xq  = 1.-_pt/sqrt(_s)*exp(-_y);
-    _xqb = 1.-_pt/sqrt(_s)*exp( _y);
-    _xg  = 2.-_xq-_xqb;
-
-    last_pt = _pt;
-
-    // Mike's "Simple Prescription..." paper says that q or qb retains 
-    // it's parton model direction with relative prob xq^2 or xqb^2 
-    // respectively. _the_spectator_ retains it's parton model direction
-    // but the transverse recoil is absorbed by the _the_emitter_. 
-    // For xq->1 the gluon and particle qb are collinear, and acollinear 
-    // to q, implying qb did the emitting, so for xq>>xqb xq is the 
-    // spectator, xqb is the emitter, so select xq as spectator with prob 
-    // xq^2/(xq^2+xqb^2)
-    UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
-      _iemitter = 1: _iemitter = 0 ; 
-    _ispectator = !_iemitter;
-
-    wgt    = getResult()/(prefactor*GeV/_pt);
-    reject = !inRange() || UseRandom::rnd()>wgt;
-    
-    if(inRange()&&wgt>1.) { 
-      generator()->log() << "VectorBosonQQbarHardGenerator::getEvent() " 
-			 << "excess weight.\n";
-      generator()->log() << "exact = "<< getResult() << "   crude = " 
-			 << prefactor*GeV/_pt << endl;
+  double ymax  =  acosh(ptmax/_Qg);
+  double ymin  = -acosh(ptmax/_Qg);
+  // loop over possible QED and QCD interactions
+  Energy pT[2]={-GeV,-GeV};
+  double  y[2];
+  for(unsigned int interaction=0;interaction<2;++interaction) { 
+    // pt of the emmission
+    Energy lastpt(ptmax);
+    // rapidity of the emission
+    double lasty(0.);
+    // pefactor
+    double prefactor(0.);
+    if(interaction==0&&_partons[0]->coloured()) {
+      prefactor = 2.*_alphaS->overestimateValue()*(4./3.)/Constants::pi;
     }
-    // No emission event if pt goes past pt_min.
-    if(_pt<pt_min) {
-      _pt = 0. * GeV; 
-      return false;
+    else if(interaction==1&&_partons[0]->charged()) {
+      prefactor = 2.*_alphaEM->overestimateValue()*
+	sqr(double(_partons[0]->iCharge())/3.)/Constants::pi;
     }
-  } while (reject);
-  
-  //construct vectors in com z frame
-  constructVectors();
-  return true;
-}
-
-double VectorBosonQQbarHardGenerator::getResult() {
-  using Constants::pi;
-  double CF = 4. / 3.; 
-
-  //dimensionless quark mass squared M^2/s
-  double rho = sqr( _partons[0]->mass() ) /_s;
-  //set to zero for testing
-  rho = 0.;
-
-  //Vector and axial couplings- depends on quarks and Vector Boson type
-  double sin2ThetaW = generator()->standardModel()->sin2ThetaW();
-  
-  //the vector and axial coupings
-  double Vf, Af;
-  double T3f, Qf;
-  //down type quark
-  if( abs( _partons[0]->id() ) == 1 || abs( _partons[0]->id() ) == 3 ||
-      abs( _partons[0]->id() ) == 5 ){
-    T3f = - 1. / 2.;
-    Qf = - 1. / 3.;
+    // if not allowed continue
+    if(prefactor==0.) continue;
+    // loop to generate the pt and rapidity
+    bool reject;
+    do {
+      // don't reject the emission
+      reject = true;
+      // generator pt
+      lastpt *= pow(UseRandom::rnd(),1./(prefactor*(ymax-ymin)));
+      if(lastpt<_Qg) {
+	lastpt=-GeV;
+	break;
+      }
+      lasty   = ymin + UseRandom::rnd()*(ymax-ymin);
+      // calculate x1 and x2
+      double x1 = 1.-lastpt/sqrt(_s)*exp( lasty);
+      double x2 = 1.-lastpt/sqrt(_s)*exp(-lasty);
+      if(x1<0.||x1>1.||x2<0.||x2>1.) {
+	reject=true;
+	continue;
+      }
+      // matrix element weight
+      double wgt = (sqr(x1)+sqr(x2))/(1.-x1)/(1.-x2)*0.5*sqr(lastpt)/_s;
+      if(interaction==0)      wgt *= _alphaS ->ratio(sqr(lastpt));
+      else if(interaction==0) wgt *= _alphaEM->ratio(sqr(lastpt));
+      if(wgt>1.) { 
+	generator()->log() << "VectorBosonQQbarHardGenerator::getEvent() " 
+			   << "excess weight " << wgt << "\n";
+      }
+      reject = UseRandom::rnd()>wgt;
+    }
+    while(reject);
+    pT[interaction] = lastpt;
+    y [interaction] = lasty;
   }
-  //up type quark
+  if(pT[0]>pT[1]) {
+    _inter = ShowerInteraction::QCD;
+    _pt = pT[0];
+    _y  =  y[0];
+  }
   else {
-    T3f =  1. / 2.;
-    Qf =  2. / 3.;
+    _inter = ShowerInteraction::QED;
+    _pt = pT[1];
+    _y  =  y[1];
   }
-
-  //sets the couplings according to whether intermediate was a photon or Z
-  if( _boson->dataPtr()->id() == 23 ){
-    Vf = T3f - 2. * Qf * sin2ThetaW;
-    Af = T3f;
-  }
-  else{
-    Vf = 1.;
-    Af = 0.;
-  }
-
-  //common factors in couplings and flux factors ignored
-  //notation from hep-ph/0310083v2
-  //born contribution in massive quark case
-  double sigB =  sqr(Vf)*(1.+2.*rho)+sqr(Af)*(1.-4.*rho);
-
-  //Traces for the radiative contribution
-  double TrA(0.),TrV(0.);
-  //Axial current trace
-  TrA = rho!=0. ? 
-    ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) 
-      + 2. * rho * ( sqr( 5. - _xq - _xqb ) - 19. + 4. * rho ) ) 
-    / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. - 4. * rho )
-    + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
-    ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) ) 
-    : (_xq*_xq+_xqb*_xqb)/((1.-_xq)*(1.-_xqb)); 
-  //Vector current trace
-  TrV = rho!=0. ? 
-    ( sqr( _xq + 2. * rho ) + sqr( _xqb + 2. * rho ) 
-      - 8. * rho * ( 1. + 2. * rho ) ) 
-    / ( 1. - _xq ) / ( 1. - _xqb ) / ( 1. + 2. * rho )
-    + 1 / sqr( 1. - _xq ) / sqr( 1. - _xqb ) *
-    ( - 2. * rho  * sqr( 1. - _xq ) - 2. * rho  * sqr( 1. - _xqb ) )
-    : TrA; 
-  
-  // Radiative contribution in quark massive case.
-  // alpha_S is evaluated a scale given by the pT of
-  // the emitter relative to the spectator - emitter and
-  // spectator are chosen in perhaps not the optimal way.
-  double b_xs2  = _ispectator==0 ? sqr(_b_xq) : sqr(_b_xqb);
-  double sigR = _alphaS->value(_s*sqr(_rt_mlambda)/(16.*b_xs2)) * CF / 2. / pi 
-    * ( sqr( Vf ) * TrV + sqr( Af ) * TrA ) 
-    * 2. * _pt / _s * GeV;
-
-  double res = sigR / sigB;
-
-  return res;
+  // no emission
+  if(_pt<ZERO) return false;
+  // x values
+  _xq = 1.-_pt/sqrt(_s)*exp( _y);
+  _xqb = 1.-_pt/sqrt(_s)*exp(-_y);
+  _xg = 2.-_xq-_xqb;
+  // select emitter and spectator
+  UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
+    _iemitter = 1: _iemitter = 0 ; 
+  _ispectator = !_iemitter;
+  //construct vectors in com z frame
+  return constructVectors();
 }
 
-void VectorBosonQQbarHardGenerator::constructVectors(){
+bool VectorBosonQQbarHardGenerator::constructVectors(){
   using Constants::twopi;
   using Constants::pi;
   // Find the boost from the lab to the c.o.m with the spectator 
@@ -506,34 +344,31 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   // Extract the reduced (constituent) masses:
   double mu_e(_quark[_iemitter].mass()/rts);
   double mu_s(_quark[_ispectator].mass()/rts);
-  double mu_g(_g.mass()/rts);
+  double mu_g(_gauge.mass()/rts);
 
   // Get masses to avoid floating point errors later.
-  Energy init_g_mass(_g.mass());
+  Energy init_g_mass(_gauge.mass());
   Energy init_e_mass(_quark[_iemitter].mass());
   Energy init_s_mass(_quark[_ispectator].mass());
-
   // Get the Dalitz variables:
-  double xe, xs, xg, b_xe, b_xs, b_xg;
-  xe   = _iemitter==0   ? _xq : _xqb;
-  xs   = _ispectator==0 ? _xq : _xqb;
-  xg   = _xg;
-  b_xe = _iemitter==0   ? _b_xq : _b_xqb;
-  b_xs = _ispectator==0 ? _b_xq : _b_xqb;
-  b_xg = _b_xg;
-
+  double xe   = _iemitter==0   ? _xq : _xqb;
+  double xs   = _ispectator==0 ? _xq : _xqb;
+  double xg   = _xg;
+  double b_xe2  = (xe + 2.*mu_e )*(xe - 2.*mu_e );
+  double b_xs2 =  (xs + 2.*mu_s )*(xs - 2.*mu_s );
+  double b_xg2  = (xg + 2.*mu_g )*(xg - 2.*mu_g );
+  if(b_xe2 <0. || b_xs2<0.|| b_xg2 <0.) return false;
+  double b_xe = sqrt(b_xe2 );
+  double b_xs = sqrt(b_xs2 );
+  double b_xg = sqrt(b_xg2 );
+  if(xe > (1.+(mu_e - mu_s - mu_g )*(mu_e + mu_s + mu_g ))) return false;
+  if(xs > (1.+(mu_s - mu_e - mu_g )*(mu_s + mu_e + mu_g ))) return false;
   // Get the cosines and sines of emitter w.r.t spectator:
   double c_se,s_se;
-  c_se  = (xe*xs - 2.*(1.0 - mu_e*mu_e - mu_s*mu_s + mu_g*mu_g - xg))
-          /(b_xs*b_xe);
-  s_se  = _rt_mlambda/(2.*b_xe*b_xs);
+  c_se  =  0.5*(b_xe2+b_xs2-b_xg2)/(b_xs*b_xe);
+  s_se  = sqrt(1.-sqr(c_se));
 
-  if(abs(c_se)>1.||abs(s_se)>1.) {
-    throw Exception() 
-      << "VectorBosonQQBarHardGenerator::constructVectors()"
-      << "angle between emitter and spectator not physical." 
-      << Exception::abortnow; 
-  }
+  if(abs(c_se)>1.||abs(s_se)>1.) return false;
 
   // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * twopi;  
@@ -542,32 +377,29 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   _quark[_iemitter].setT( 0.5*rts * xe);
   _quark[_iemitter].setX( 0.5*rts * b_xe*s_se*cos(_phi));
   _quark[_iemitter].setY( 0.5*rts * b_xe*s_se*sin(_phi));
-  _quark[_iemitter].setZ(-0.5*rts * b_xe*c_se);
-  _quark[_iemitter].rescaleRho();
+  _quark[_iemitter].setZ( 0.5*rts * b_xe*c_se);
   // momentum of spectator
   _quark[_ispectator].setT( 0.5*rts * xs);
   _quark[_ispectator].setX( 0.*MeV);
   _quark[_ispectator].setY( 0.*MeV);
   _quark[_ispectator].setZ(-0.5*rts * b_xs);
-  _quark[_ispectator].rescaleRho();
   // momentum of gluon
-  _g=-_quark[0]-_quark[1];
-  _g.setT(sqrt(_s)+_g.t());
-  _g.setMass(init_g_mass);
-  _g.rescaleRho();
+  _gauge=-_quark[0]-_quark[1];
+  _gauge.setT(sqrt(_s)+_gauge.t());
+  _gauge.setMass(init_g_mass);
   // boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
-  _g        = eventFrame * _g;
-
+  _gauge        = eventFrame * _gauge;
   // need to reset masses because for whatever reason the boost  
   // touches the mass component of the five-vector and can make  
   // zero mass objects acquire a floating point negative mass(!).
-  _g.setMass(init_g_mass);
+  _gauge.setMass(init_g_mass);
   _quark[_iemitter].setMass(init_e_mass);
   _quark[_ispectator].setMass(init_s_mass);
-  _g.rescaleRho();
+  _gauge.rescaleRho();
   _quark[_iemitter].rescaleRho();
   _quark[_ispectator].rescaleRho();
+  return true;
 }
 
