@@ -328,7 +328,6 @@ bool PowhegEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 					     HardBranchingPtr branch,
 					     ShowerInteraction::Type type) {
-  //  bool vetoed(true);
   Branching bb;
   // generate branching
   tcPDPtr part[2];

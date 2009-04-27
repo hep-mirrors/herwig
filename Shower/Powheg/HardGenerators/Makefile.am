@@ -4,4 +4,5 @@ libHwPowhegHard_la_SOURCES = \
 VectorBosonQQbarHardGenerator.h  \
 VectorBosonQQbarHardGenerator.icc VectorBosonQQbarHardGenerator.cc\
 DrellYanHardGenerator.h DrellYanHardGenerator.cc  \
-GGtoHHardGenerator.h GGtoHHardGenerator.cc
+GGtoHHardGenerator.h GGtoHHardGenerator.cc \
+DISHardGenerator.h DISHardGenerator.cc
