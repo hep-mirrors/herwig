@@ -1258,9 +1258,9 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
 						 const Lorentz5Momentum & p ) const {
   static const Energy2 eps2 = 1e-10*GeV2;
   static const Energy  eps  = 1e-5 *GeV;
-  if(q.e()/p.e()<0.) {
-    return solveBoost(q,p);
-  }
+//   if(q.e()/p.e()<0.) {
+//     return solveBoost(q,p);
+//   }
   LorentzRotation R;
   double beta;
   Energy2 den = (p.t()*q.t()-p.z()*q.z());
@@ -1827,15 +1827,17 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
   double sinth(sqr(axis.x())+sqr(axis.y()));
-  rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-  rot.rotateX(Constants::pi);
-  rot.boostZ( pa.e()/pa.vect().mag());
+  if(axis.perp2()>0.) {
+    rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot.rotateX(Constants::pi);
+    rot.boostZ( pa.e()/pa.vect().mag());
+  }
   // transverse part
   Lorentz5Momentum paxis=rot*pbeam;
   Boost trans = -1./paxis.e()*paxis.vect();
   trans.setZ(0.);
   rot.boost(trans);
-  pa *=rot;
+  pa *= rot;
   // reference vectors
   Lorentz5Momentum n1(ZERO,ZERO,-pa.z(),-pa.z());
   Lorentz5Momentum n2(ZERO,ZERO, pa.z(),-pa.z());
@@ -1938,10 +1940,12 @@ deconstructInitialFinalSystem(HardTreePtr tree,vector<HardBranchingPtr> jets,
       Lorentz5Momentum pb =  (**cjt).showerMomentum();
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
-      double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-      rot.rotateX(Constants::pi);
-      rot.boostZ( pa.e()/pa.vect().mag());
+      double sinth(sqr(axis.x())+sqr(axis.y()));
+      if(axis.perp2()>1e-20) {
+	rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+	rot.rotateX(Constants::pi);
+      }
+      if(abs(1.-pa.e()/pa.vect().mag())>1e-6) rot.boostZ( pa.e()/pa.vect().mag());
       pb*=rot;
       Boost trans = -1./pb.e()*pb.vect();
       trans.setZ(0.);
