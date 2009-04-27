@@ -996,7 +996,8 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
 						       HardBranching::Incoming ) ) );
     theBranchings.push_back( spaceBranchings.back() );
     HardTreePtr powhegtree = new_ptr( HardTree( theBranchings,
-						spaceBranchings ) );  
+						spaceBranchings,
+						ShowerInteraction::QCD) );  
     // Calculate the shower variables
     // if momentum deconstruction fails then continue and ignore
     if( ! evolver()->showerModel()->kinematicsReconstructor()
@@ -1448,7 +1449,8 @@ HardTreePtr PrototypeTree::convert() {
   for(it=outgoing.begin();it!=outgoing.end();++it) {
     branchings.push_back((**it).convert());
   }
-  HardTreePtr newTree = new_ptr(HardTree(branchings,spacelike));
+  HardTreePtr newTree = new_ptr(HardTree(branchings,spacelike,
+					 ShowerInteraction::QCD));
   return newTree;
 }
 
@@ -1962,7 +1964,8 @@ HardTreePtr PowhegHandler::doClustering() {
 						     HardBranching::Incoming ) ) );
   theBranchings.push_back( spaceBranchings.back() );
   HardTreePtr powhegtree = new_ptr( HardTree( theBranchings,
-					       spaceBranchings ) );
+					      spaceBranchings,
+					      ShowerInteraction::QCD) );
 
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->

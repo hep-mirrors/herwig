@@ -287,7 +287,7 @@ HardTreePtr GGtoHHardGenerator::generateHardest(ShowerTreePtr tree) {
   nasonhard.push_back(new_ptr(HardBranching(newparticles[2],SudakovPtr(),
 					    HardBranchingPtr(),HardBranching::Outgoing)));
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin));
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=nasontree->branchings();

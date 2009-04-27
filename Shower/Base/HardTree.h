@@ -31,7 +31,8 @@ public:
   /**
    * The default constructor.
    */
-  HardTree(vector<HardBranchingPtr>,vector<HardBranchingPtr>);
+  HardTree(vector<HardBranchingPtr>,vector<HardBranchingPtr>,
+	   ShowerInteraction::Type);
 
   /**
    *  Match particles in the ShowerTree to branchings in the HardTree
@@ -62,6 +63,11 @@ public:
    * Access the incoming branchings
    */
   set<HardBranchingPtr> & incoming() {return _spacelike;}
+
+  /**
+   *  Type of interaction
+   */
+  ShowerInteraction::Type interaction() {return _interaction;}
 
   /**
    *  Get LowestPt in which ever jet definition
@@ -114,6 +120,14 @@ private:
    * Function to recursively find the hard line scales
    **/
   void fillHardScales( HardBranchingPtr branch, vector< pair< Energy, double > > & currentLine );
+
+private:
+
+  /**
+   *  Type of interaction
+   */
+  ShowerInteraction::Type _interaction;
+
 
   /**
    * Scales and z along each hard line to check ordering

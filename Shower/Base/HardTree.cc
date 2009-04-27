@@ -11,8 +11,10 @@
 using namespace Herwig;
 
 HardTree::HardTree(vector<HardBranchingPtr> branchings,
-		   vector<HardBranchingPtr> spacelike) 
-  : _branchings(branchings.begin(),branchings.end()),
+		   vector<HardBranchingPtr> spacelike,
+		   ShowerInteraction::Type type) 
+  : _interaction(type),
+    _branchings(branchings.begin(),branchings.end()),
     _spacelike (spacelike .begin(),spacelike .end())
 {}
 

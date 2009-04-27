@@ -213,7 +213,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
 						 HardBranching::Outgoing)));
   // intermediate IS particle
   nasonhard.push_back(new_ptr(HardBranching(newparticles[4],SudakovPtr(),
-					nasonin[iemit],HardBranching::Incoming)));
+					    nasonin[iemit],HardBranching::Incoming)));
   nasonin[iemit]->addChild(nasonhard.back());
   // set the colour partners
   nasonhard.back()->colourPartner(nasonin[iemit==0 ? 1 : 0]);
@@ -224,7 +224,7 @@ HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   nasonhard.push_back(new_ptr(HardBranching(newparticles[3],SudakovPtr(),
 					    HardBranchingPtr(),HardBranching::Outgoing)));
   // make the tree
-  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin));
+  HardTreePtr nasontree=new_ptr(HardTree(nasonhard,nasonin,ShowerInteraction::QCD));
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   set<HardBranchingPtr> hard=nasontree->branchings();

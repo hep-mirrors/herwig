@@ -230,6 +230,7 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
   // set the ShowerTree to be showered
   currentTree(decay);
   unsigned int qedtry=0;
+  bool showerOrder=true;
   do {
     try {
       // extract particles to be shower, set scales and perform hard matrix element 
@@ -245,7 +246,14 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
       // loop over possible interactions
       vector<set<ShowerParticlePtr> > 
 	finalStates(interactions_.size(),set<ShowerParticlePtr>());
+      if(hardTree()) {
+	if(hardTree()->interaction()!=interactions_[0]) {
+	  showerOrder = false;
+	  swap(interactions_[0],interactions_[1]);
+	}
+      }
       for(unsigned int inter=0;inter<interactions_.size();++inter) {
+	generator()->log() << "testing in showoer loop " << interactions_[inter] << "\n";
 	unsigned int ntry(0);
 	// set up for second pass if required
 	if(inter!=0) {
@@ -346,6 +354,7 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
 	  }
 	}
       }
+      if(!showerOrder) swap(interactions_[0],interactions_[1]);
       return;
     }
     catch (QEDVeto) {
@@ -354,6 +363,7 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
     }
   }
   while(qedtry<=5);
+  if(!showerOrder) swap(interactions_[0],interactions_[1]);
   throw Exception() << "Too many tries for QED shower in QEDEvolver::showerDecay()"
 		    << Exception::eventerror;
 }
@@ -464,7 +474,8 @@ void QEDEvolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShow
     }
   }
   if(!noEmission) {
-    HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings));
+    HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings,
+					   inter));
     // set the charge partners
     ShowerParticleVector particles;
     for(set<HardBranchingPtr>::iterator cit=QCDTree->branchings().begin();
@@ -567,7 +578,7 @@ bool QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
       }
     }
   }
-  HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings));
+  HardTreePtr QCDTree = new_ptr(HardTree(allBranchings,spaceBranchings,inter));
   // set the charge partners
   ShowerParticleVector particles;
   particles.push_back(spaceBranchings.back()->branchingParticle());
