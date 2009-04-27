@@ -113,13 +113,11 @@ bool DISHardGenerator::canHandle(ShowerTreePtr tree) {
 }
 
 HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
-  generator()->log() << "testing start\n";
   ShowerParticlePtr quark[2],lepton[2];
   PPtr hadron;
   // incoming particles
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-    generator()->log() << "testing loop A\n";
     if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
       hadron = cit->first->original()->parents()[0];
       quark [0] = cit->first->progenitor();
@@ -154,7 +152,6 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   Lorentz5Momentum phadron =  hadron->momentum();
   phadron.setMass(0.*GeV);
   phadron.rescaleRho();
-  generator()->log() << "testing pbeam A " << phadron/GeV << "\n";
   Lorentz5Momentum pcmf = phadron+0.5/xB_*q_;
   pcmf.rescaleMass();
   rot_ = LorentzRotation(-pcmf.boostVector());
@@ -184,18 +181,15 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   SudakovPtr sudakov;
   // ISR
   if(ComptonISFS_||!isCompton) {
-    generator()->log() << "ISR\n";
     BranchingList branchings=evolver()->splittingGenerator()->initialStateBranchings();
     long index = abs(partons_[0]->id());
     IdList br(3);
     if(isCompton) {
-      generator()->log() << "testing Compton ISR\n";
       br[0] = index;
       br[1] = index;
       br[2] = ParticleID::g;
     }
     else {
-      generator()->log() << "testing BGF ISR\n";
       br[0] = ParticleID::g;
       br[1] =  abs(partons_[0]->id());
       br[2] = -abs(partons_[0]->id());
@@ -211,7 +205,6 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   }
   // FSR
   else {
-    generator()->log() << "FSR\n";
     BranchingList branchings = 
       evolver()->splittingGenerator()->finalStateBranchings();
     long index=abs(partons_[1]->id());
@@ -227,9 +220,7 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
 				 << "DISHardGenerator::generateHardest()" 
 				 << Exception::runerror;
-  generator()->log() << sudakov->fullName() << "\n";
   // add the leptons
-  generator()->log() << "testing A\n";
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   spaceBranchings.push_back(new_ptr(HardBranching(lepton[0],SudakovPtr(),
 						  HardBranchingPtr(),
@@ -238,54 +229,19 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   allBranchings.push_back(new_ptr(HardBranching(lepton[1],SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
-  generator()->log() << "testing B\n";
-  if(isCompton&&!ComptonISFS_) {
-    generator()->log() << "testing breit frame A\n";
-    generator()->log() << "incoming " << ComptonMomenta_[0]/GeV << "\n";
-    generator()->log() << "outgoing " << (ComptonMomenta_[1]+ComptonMomenta_[2])/GeV << "\n";
-  }
-  else if(isCompton) {
-    generator()->log() << "testing breit frame B\n";
-    generator()->log() << "incoming " << (ComptonMomenta_[0]-ComptonMomenta_[2])/GeV << "\n";
-    generator()->log() << "outgoing " << ComptonMomenta_[1]/GeV << "\n";
-  }
-  else {
-    generator()->log() << "testing breit frame C\n";
-    generator()->log() << "incoming " << (BGFMomenta_[0]-BGFMomenta_[2])/GeV << "\n";
-    generator()->log() << "outgoing " << BGFMomenta_[1]/GeV << "\n";
-  }
-
-
-
-
-
-
-
-
-
-
-
-
   // compton hardest
   if(isCompton) {
     rot_.invert();
     for(unsigned int ix=0;ix<ComptonMomenta_.size();++ix) {
       ComptonMomenta_[ix].transform(rot_);
-      generator()->log() << "Hard momenta A " << ComptonMomenta_[ix]/GeV << "\n";
     }
-    generator()->log() << "q_ " << rot_*q_/GeV << "\n";
-    generator()->log() << "testing C1\n";
     ShowerParticlePtr newqout (new_ptr(ShowerParticle(partons_[1],true)));
     newqout->set5Momentum(ComptonMomenta_[1]);
-    generator()->log() << "testing C2\n";
     ShowerParticlePtr newg(new_ptr(ShowerParticle(gluon_,true)));
     newg->set5Momentum(ComptonMomenta_[2]);
-    generator()->log() << "testing C3\n";
     ShowerParticlePtr newqin   (new_ptr(ShowerParticle(partons_[0],false )));
     newqin->set5Momentum(ComptonMomenta_[0]);
-    generator()->log() << "testing C4\n";
     if(ComptonISFS_) {
-      generator()->log() << "testing D1\n";
       ShowerParticlePtr newspace(new_ptr(ShowerParticle(partons_[0],false)));
       newspace->set5Momentum(ComptonMomenta_[0]-ComptonMomenta_[2]);
       HardBranchingPtr spaceBranch(new_ptr(HardBranching(newqin,sudakov,
@@ -342,10 +298,7 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
     rot_.invert();
     for(unsigned int ix=0;ix<BGFMomenta_.size();++ix) {
       BGFMomenta_[ix].transform(rot_);
-      generator()->log() << "Hard momenta B " << BGFMomenta_[ix]/GeV << "\n";
     }
-    generator()->log() << "q_ " << rot_*q_/GeV << "\n";
-    generator()->log() << "testing E1\n";
     ShowerParticlePtr newq   (new_ptr(ShowerParticle(partons_[1],true)));
     newq->set5Momentum(BGFMomenta_[1]);
     ShowerParticlePtr newqbar(new_ptr(ShowerParticle(partons_[0]->CC(),true)));
@@ -375,7 +328,6 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
     newout->addColoured(newg    ,partons_[0]->id()>0);
     newout->addColoured(newqbar ,partons_[0]->id()>0);
   }
-  generator()->log() << "testing before tree\n";
   HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
 				       ShowerInteraction::QCD)));
   // Set the maximum pt for all other emissions and connect hard and shower tree
@@ -390,8 +342,6 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
 	cjt!=newTree->branchings().end();++cjt) {
       if(!(*cjt)->branchingParticle()->isFinalState()&&
 	 (*cjt)->branchingParticle()->id()==cit->first->progenitor()->id()) {
-	generator()->log() << "connecting " << *cit->first->progenitor() << "\n and "
-	     << *(*cjt)->branchingParticle() << "\n";
 	newTree->connect(cit->first->progenitor(),*cjt);
 	tPPtr beam =cit->first->original();
 	if(!beam->parents().empty()) beam=beam->parents()[0];
@@ -414,36 +364,25 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
 	cjt!=newTree->branchings().end();++cjt) {
       if((*cjt)->branchingParticle()->isFinalState()&&
 	 (*cjt)->branchingParticle()->id()==cit->first->progenitor()->id()) {
-	generator()->log() << "connecting " << *cit->first->progenitor() << "\n and "
-	     << *(*cjt)->branchingParticle() << "\n";
 	newTree->connect(cit->first->progenitor(),*cjt);
       }
     }
   }
   // set the evolution partners and scales
-  generator()->log() << *newTree << "\n";
-  generator()->log() << "testing before partner A\n";
   ShowerParticleVector particles;
   for(set<HardBranchingPtr>::iterator cit=newTree->branchings().begin();
       cit!=newTree->branchings().end();++cit) {
     particles.push_back((*cit)->branchingParticle());
   }
-  generator()->log() << "testing before partner B\n";
   evolver()->showerModel()->partnerFinder()->
     setInitialEvolutionScales(particles,true,ShowerInteraction::QCD,true);
   // Calculate the shower variables:
-  generator()->log() << "testing before decon\n";
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
-  generator()->log() << "testing after decon\n";
-  generator()->log() << *newTree << "\n";
   return newTree;
 }
 
 void DISHardGenerator::generateCompton() {
-  generator()->log() << "testing q " << q_/GeV << "\n";
-  generator()->log() << "quark  momenta \n" << pq_[0]/GeV << "\n" << pq_[1]/GeV << "\n";
-  generator()->log() << "lepton momenta \n" << pl_[0]/GeV << "\n" << pl_[1]/GeV << "\n";
   // maximum value of the xT
   double xT = (1.-xB_)/xB_;
   double xTMin = 4.*sqr(pTmin_)/q2_;
@@ -452,7 +391,6 @@ void DISHardGenerator::generateCompton() {
   double a = alphaS_->overestimateValue()*comptonWeight_/Constants::twopi;
   // loop to generate kinematics
   double wgt(0.),xp(0.),phi(0.);
-  generator()->log() << "start " << xT << "\n";
   do {
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
@@ -488,13 +426,6 @@ void DISHardGenerator::generateCompton() {
   Lorentz5Momentum p2(-0.5*Q*xT*cos(phi), -0.5*Q*xT*sin(phi),
 		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
   Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
-  generator()->log() << "testing " << xp << " " << x1 << " " << x2 << "\n";
-  generator()->log() << "testing momenta \n" 
-       << q_/GeV << "\n" 
-       << p0/GeV << "\n" 
-       << p1/GeV << "\n" 
-       << p2/GeV << "\n";
-    generator()->log() << "testing diff " << (p0-p1-p2)/GeV << "\n";
   pTCompton_=0.5*Q*xT;
   ComptonMomenta_.resize(3);
   ComptonMomenta_[0]=p0;
@@ -504,9 +435,6 @@ void DISHardGenerator::generateCompton() {
 }
 
 void DISHardGenerator::generateBGF() {
-  generator()->log() << "testing q " << q_/GeV << "\n";
-  generator()->log() << "quark  momenta \n" << pq_[0]/GeV << "\n" << pq_[1]/GeV << "\n";
-  generator()->log() << "lepton momenta \n" << pl_[0]/GeV << "\n" << pl_[1]/GeV << "\n";
   // maximum value of the xT
   double xT = (1.-xB_)/xB_;
   double xTMin = 4.*sqr(pTmin_)/q2_;
@@ -515,7 +443,6 @@ void DISHardGenerator::generateBGF() {
   double a = alphaS_->overestimateValue()*BGFWeight_/Constants::twopi;
   // loop to generate kinematics
   double wgt(0.),xp(0.),phi(0.);
-  generator()->log() << "start " << xT << "\n";
   do {
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
@@ -556,15 +483,6 @@ void DISHardGenerator::generateBGF() {
   BGFMomenta_[0]=p0;
   BGFMomenta_[1]=p1;
   BGFMomenta_[2]=p2;
-
-
-  generator()->log() << "testing " << xp << " " << x1 << " " << x2 << "\n";
-  generator()->log() << "testing momenta \n" 
-       << q_/GeV << "\n" 
-       << p0/GeV << "\n" 
-       << p1/GeV << "\n" 
-       << p2/GeV << "\n";
-  generator()->log() << "testing diff " << (p0-p1-p2)/GeV << "\n";
 }
 
 double DISHardGenerator::comptonME(double xT, double xp, double zp,
