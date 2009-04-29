@@ -31,30 +31,25 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
 
   int in;
   // hadron and momentum fraction
+  // set Q2 process momenta
   if(UseRandom::rnd()< 0.5) {
     in = 0;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
     _xB = lastX1();
-  }
-  else {
-    in = 1;
-    _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
-    _xB = lastX2();
-  }
-  // set Q2 process momenta
-  if(in == 0){
     _q2 = -(meMomenta()[0]-meMomenta()[2]).m2();
     _pa = meMomenta()[5]+meMomenta()[2]-meMomenta()[0];
     _pb = meMomenta()[0];
     _pc = meMomenta()[2];
   }
   else {
+    in = 1;
+    _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
+    _xB = lastX2();
     _q2 = -(meMomenta()[1]-meMomenta()[3]).m2();
     _pa = meMomenta()[5]+meMomenta()[3]-meMomenta()[1];
     _pb = meMomenta()[1];
     _pc = meMomenta()[3];
   }
-
   // xp
   int ndim=nDim();
   double rhomin = pow(1.-_xB,1.-power_); 
@@ -66,10 +61,11 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   _zp = r[ndim-2];
   // phi
   _phi = r[ndim-3]*Constants::twopi;
-
   jac_  = rhomin/(1.-power_)*pow(1.-_xp,power_);
   //jac_ *= pow(1.-_zp,power_)/(1.-power_);
-  jac_ *= 1./Constants::twopi;
+  // NO as generating phi between 0 and 2pi and have a factor 1/2pi in the phase space
+  // these cancel
+  //jac_ *= 1./Constants::twopi;
   jacobian(jacobian()*jac_);
   return true;
 }
@@ -225,15 +221,17 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   double x = 1.-p3*p2/(p1*p3+p1*p2);
   double z = p2*p1/(p1*p3+p1*p2);
   // q -> qg term
-  double real1 = CFfact*qPDF/loPDF*1./((1.-_xp)*(1.-_zp))*
-    (1.+sqr(_xp)*(sqr(x2)+1.5*x2perp)*sqr(1.-sintheta2*cos(_phi))/(1.+0.5*sqr(sintheta2)));
-  double dipole1 = CFfact*16.*sqr(Constants::pi)*qPDF/loPDF*1./_q2*(sqr(x)+sqr(z))/((1.-x)*(1.-z)); 
-  double realq = real1-dipole1;
-  // g -> q qbar term
-  double real2 = TRfact*gPDF/loPDF*1./(1.-_zp)*
-    (sqr(_xp)*(sqr(x1)+1.5*x2perp)*sqr(1.+sintheta1*cos(_phi))/(1.+0.5*sqr(sintheta1))+sqr(_xp)*(sqr(x2)+1.5*x2perp)*sqr(1.-sintheta2*cos(_phi))/(1.+0.5*sqr(sintheta2)));
-  double dipole2 = TRfact*16.*sqr(Constants::pi)*gPDF/loPDF*1./_q2*(sqr(x)+sqr(1-x))/(1-z);
-  double realg = real2-dipole2;
+//   double real1 = CFfact*qPDF/loPDF*1./((1.-_xp)*(1.-_zp))*
+//     (1.+sqr(_xp)*(sqr(x2)+1.5*x2perp)*sqr(1.-sintheta2*cos(_phi))/(1.+0.5*sqr(sintheta2)));
+//   double dipole1 = CFfact*16.*sqr(Constants::pi)*qPDF/loPDF*1./_q2*(sqr(x)+sqr(z))/((1.-x)*(1.-z)); 
+//   double realq = real1-dipole1;
+//   // g -> q qbar term
+//   double real2 = TRfact*gPDF/loPDF*1./(1.-_zp)*
+//     (sqr(_xp)*(sqr(x1)+1.5*x2perp)*sqr(1.+sintheta1*cos(_phi))/(1.+0.5*sqr(sintheta1))+sqr(_xp)*(sqr(x2)+1.5*x2perp)*sqr(1.-sintheta2*cos(_phi))/(1.+0.5*sqr(sintheta2)));
+//   double dipole2 = TRfact*16.*sqr(Constants::pi)*gPDF/loPDF*1./_q2*(sqr(x)+sqr(1-x))/(1-z);
+//   double realg = real2-dipole2;
+  double realq=0.;
+  double realg=0.;
   // return the full result
   double wgt = virt+((collq+collg)/loPDF+realq+realg);
  
@@ -250,66 +248,7 @@ void MEPP2HiggsVBFPowheg::doinit() {
   _cosW = sqrt(1.-_sinW);
   _sinW = sqrt(_sinW);
   _mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
-
-
-
-  tPDPtr proton=getParticleData(2212);
-  _hadron = dynamic_ptr_cast<tcBeamPtr>(proton);
   tcPDPtr gluon = getParticleData(ParticleID::g);
-  double x = 0.1365;
-  Energy2 Q2=320.*GeV2;
-  // alphaS bits
-  double aS = SM().alphaS(Q2);
-  double CFfact = 4./3.*aS/Constants::twopi;
-  double TRfact = 1./2.*aS/Constants::twopi;
-  // test of F2
-  double F2[6]={0.,0.,0.,0.,0.},F2e[6]={0.,0.,0.,0.,0.};
-  for(int ix=-5;ix<=5;++ix) {
-    if(ix==0) continue;
-    tPDPtr parton = getParticleData(ix);
-    double eq2 = sqr(double(getParticleData(ix)->iCharge())/3.);
-    double loPDF = _hadron->pdf()->xfx(_hadron,parton,Q2,x)/x;
-    double wsum(0.),wsqsum(0.),wgt(0.);
-    unsigned int npoint(1000000);
-    for(unsigned int iy=0;iy<npoint;++iy) {
-      // generate z
-      double rhomin = pow(1.-x,1.-power_); 
-      double rho = UseRandom::rnd()*rhomin;
-      double z = 1.-pow(rho,1./(1.-power_));
-      double jac = rhomin/(1.-power_)*pow(1.-z,power_);
-//       double z = x+UseRandom::rnd()*(1.-x);
-//       double jac =(1.-x);
-      double gPDF = _hadron->pdf()->xfx(_hadron,gluon ,Q2,x/z)*z/x;
-      double qPDF = _hadron->pdf()->xfx(_hadron,parton,Q2,x/z)*z/x;
-      double f2g = gPDF/z*TRfact*((sqr(1-z)+sqr(z))*log((1-z)/z)+8*z*(1.-z)-1.);
-      double f2q = 
-	loPDF/jac*(1.+CFfact*(-1.5*log(1.-x)+sqr(log(1.-x))-sqr(Constants::pi)/3.-4.5))
- 	+qPDF          *CFfact/z*(3.+2.*z-(1.+z)*log(1.-z)-(1.+sqr(z))/(1.-z)*log(z))
- 	+(qPDF-z*loPDF)*CFfact/z*(2.*log(1.-z)-1.5)/(1.-z);
-      // NLO weight
-      wgt = (f2g+f2q);
-      // LO weight
-      //wgt = loPDF/jac;
-      wgt *= x*eq2*jac;
-      wsum += wgt;
-      wsqsum += sqr(wgt);
-    }
-    wsum /= double(npoint);
-     cerr << "testing average " << wsum << " " << 0.5*(1.-sqr(x)) << "\n";
-//     cerr << "testing average " << wsum << " " << (1.-x) << "\n";
-    wsqsum /= double(npoint);
-    F2 [abs(ix)] += wsum;
-    F2e[abs(ix)] += max((wsqsum-sqr(wsum))/double(npoint),0.);
-  }
-  double total(0.),error(0.);
-  for(unsigned int ix=1;ix<=5;++ix) {
-    total += F2[ix];
-    error += F2e[ix];
-    F2e[ix] = sqrt(F2e[ix]);
-    cerr << "testing contribution " << F2[ix] << " +/- " << F2e[ix] << "\n";
-  }
-  error = sqrt(error);
-  cerr << "total " << total << " +/- " << error << "\n";
 }
 
 
