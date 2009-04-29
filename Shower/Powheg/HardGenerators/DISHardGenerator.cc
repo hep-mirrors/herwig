@@ -21,7 +21,7 @@
 
 using namespace Herwig;
 
-DISHardGenerator::DISHardGenerator() : comptonWeight_(50.), BGFWeight_(3000.), 
+DISHardGenerator::DISHardGenerator() : comptonWeight_(50.), BGFWeight_(150.), 
 				       pTmin_(1.*GeV) 
 {}
 
@@ -522,8 +522,8 @@ double DISHardGenerator::BGFME(double xT, double xp, double zp,
     (1+acoeff_*l_+sqr(l_));
   double R3= (sqr(cos3)-acoeff_*cos3*(l_+root*sin3*cphi)+sqr(l_+root*sin3*cphi))/
     (1+acoeff_*l_+sqr(l_));
-  return 0.5*alphaS_->ratio(0.25*q2_*sqr(xT))*(R2*(sqr(x2)+sqr(xT))+
-					       R3*(sqr(x3)+sqr(xT)));
+  return 0.5*alphaS_->ratio(0.25*q2_*sqr(xT))*sqr(xp)*
+    (R2*(sqr(x2)+sqr(xT))+R3*(sqr(x3)+sqr(xT)));
 }
 
 double DISHardGenerator::A(tcPDPtr lin, tcPDPtr lout,
