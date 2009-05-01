@@ -465,12 +465,12 @@ public:
   /**
    *  The minimum \f$p_T\f$ for the branching
    */
-  inline Energy const pTmin() const { return pTmin_; }
+  inline Energy pTmin() const { return pTmin_; }
   
   /**
    *  The square of the minimum \f$p_T\f$
    */
-  inline Energy2 const pT2min() const { return pT2min_; }
+  inline Energy2 pT2min() const { return pT2min_; }
   //@}
 
 private:
