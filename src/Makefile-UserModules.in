@@ -15,7 +15,7 @@
 # 
 CXX = @CXX@
 
-CXXFLAGS = @AM_CXXFLAGS@ @CXXFLAGS@
+CXXFLAGS = -g -W -Wall @CXXFLAGS@
 
 # add additional package header directories here
 CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@

@@ -30,6 +30,12 @@ void VVSLoopVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(masses,GeV) >> type >> couplings >> theNpart;
 }
 
+void VVSLoopVertex::doinit() {
+  // ffini needed here for BSM initialization code!
+  Looptools::ffini();
+  GeneralVVSVertex::doinit();
+}
+
 void VVSLoopVertex::dofinish() {
   Looptools::ffexi();
   GeneralVVSVertex::dofinish();

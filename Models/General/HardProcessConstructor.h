@@ -336,6 +336,11 @@ private:
   bool theAllDiagrams;
 
   /**
+   * Which types of processes to generate
+   */
+  unsigned int theProcessOption;
+
+  /**
    * Whether to print the debug information with the matrix 
    * element. This is here solely so it can be passed to 
    * a matrix element that is created here.

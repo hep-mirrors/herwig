@@ -112,7 +112,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
       << "SSHGGVertex::setCoupling(): This vertex has the incorrect "
       << "particle content in it. " << higgs << " " 
       << particle2->id() << " " << particle3->id();
-  if( q2 != theq2last )	{
+  if( q2 != theq2last || theCouplast == 0.)	{
     theCouplast = sqr(strongCoupling(q2))*weakCoupling(q2);
     Energy mt = theMSSM->mass(q2, thetop);
     if( higgs == ParticleID::h0 || higgs == ParticleID::H0 ) {

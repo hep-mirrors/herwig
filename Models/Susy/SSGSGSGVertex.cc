@@ -38,7 +38,7 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       part3->id() == ParticleID::SUSY_g) ||
      (part3->id() == ParticleID::g && part1->id() == ParticleID::SUSY_g &&
       part2->id() == ParticleID::SUSY_g)) {
-    if(q2 != _q2last) {
+    if(q2 != _q2last || _couplast==0.) {
       _couplast = strongCoupling(q2);
       _q2last = q2;
     }

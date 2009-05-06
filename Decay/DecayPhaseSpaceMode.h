@@ -67,7 +67,7 @@ public:
    * Default constructor.
    */
   DecayPhaseSpaceMode() :  _maxweight(0.),_niter(10), _npoint(10000), _ntry(500),
-			   _partial(-1) {}
+			   _partial(-1), _testOnShell(false) {}
 
   /**
    * Constructor with a pointer to a <code>DecayPhaseIntegrator</code> and a vector
@@ -76,10 +76,10 @@ public:
    * @param in The particle data objects for the external particles
    * @param intin A pointer to the DecayIntegrator class using this mode.
    */
-  DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin) 
+  DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin,bool onShell=false) 
     :  _integrator(intin), _maxweight(0.),
        _niter(10), _npoint(10000), _ntry(500),
-       _extpart(in),  _partial(-1) {}
+       _extpart(in),  _partial(-1), _testOnShell(onShell) {}
   //@}
 
   /**
@@ -164,6 +164,11 @@ public:
    *  Access to the selected channel
    */
   unsigned int selectedChannel() const {return _ichannel;}
+
+  /**
+   *  test on/off-shell kinematics
+   */
+  bool testOnShell() const { return _testOnShell; }
 
 protected:
 
@@ -434,9 +439,16 @@ private:
   vector<cGenericMassGeneratorPtr> _massgen;
 
   /**
+   *  Whether to check on-shell or off-shell kinematics
+   * in doinit, if on-shell off-shell is tested in initrun
+   */
+  bool _testOnShell;
+
+  /**
    *  The selected channel
    */
   mutable unsigned int _ichannel;
+
 };
 
   /**

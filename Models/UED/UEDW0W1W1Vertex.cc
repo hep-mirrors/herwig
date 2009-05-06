@@ -112,7 +112,7 @@ void UEDW0W1W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     setNorm(0.);
     return;
   }
-  if( q2 != theq2last ) {
+  if( q2 != theq2last || theElast == 0.) {
     theq2last = q2;
     theElast = electroMagneticCoupling(q2);
   }

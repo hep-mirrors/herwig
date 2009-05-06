@@ -98,7 +98,7 @@ void SSCCZVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     setNorm(0.); setLeft(0.), setRight(0.);
     return;
   }
-  if(_q2last != q2) {
+  if(_q2last != q2||_couplast==0.) {
     _q2last = q2;
     _couplast = electroMagneticCoupling(q2);
   }

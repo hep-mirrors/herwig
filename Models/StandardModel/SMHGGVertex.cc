@@ -117,7 +117,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   }
   switch (_CoefRepresentation) {
   case 1: {
-    if(q2 != _q2last) {
+    if(q2 != _q2last||_couplast==0.) {
       double g   = weakCoupling(q2);
       double gs2 = sqr(strongCoupling(q2));
       _couplast = UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi);

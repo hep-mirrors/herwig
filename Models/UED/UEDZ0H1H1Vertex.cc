@@ -77,7 +77,7 @@ void UEDZ0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     return;
   }
   if(kkhiggs == 5100037) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0.) {
       theq2Last = q2;
       theCoupLast = 
 	Complex(0., 1.)*weakCoupling(q2);

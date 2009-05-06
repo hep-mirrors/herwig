@@ -102,11 +102,21 @@ namespace {
    }
 }
 
+namespace {
+  /// Helper function for sorting by number of outgoing lines
+  inline bool orderNBodyConstructors(tNBodyDecayConstructorBasePtr a,
+				     tNBodyDecayConstructorBasePtr b) {
+    return a->numBodies() < b->numBodies();
+  }
+}
+
 void DecayConstructor::doinit() {
   Interfaced::doinit();
   //Need to check that the stored decay mode tags have the
   //products in the standard order
   for_each( _disableDMTags.begin(), _disableDMTags.end(), adjustFSOrder );
+  sort(_theNBodyDecayConstructors.begin(), _theNBodyDecayConstructors.end(),
+       orderNBodyConstructors);
 }
 
 void DecayConstructor::createDecayers(const PDVector & particles) {

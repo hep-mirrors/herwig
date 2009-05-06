@@ -125,8 +125,12 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     smfermion = part2;
   }
   
-  double gew = weakCoupling(q2);
-  setNorm(-sqrt(2)*gew);
+  if(q2!=_q2last || _couplast==0.) {
+    _couplast = -sqrt(2)*weakCoupling(q2);
+    _q2last=q2;
+  }
+  setNorm(_couplast);
+
   if( ineut != _id1last || ism != _id2last || isc != _id3last ) {
     _id1last = ineut;
     _id2last = ism;

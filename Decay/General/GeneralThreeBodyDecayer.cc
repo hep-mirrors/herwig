@@ -169,7 +169,7 @@ void GeneralThreeBodyDecayer::doinit() {
   tPDVector extpart(1,_incoming);
   extpart.insert(extpart.end(),_outgoing.begin(),_outgoing.end());
   // create the integration channels for the decay
-  DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this)));
+  DecayPhaseSpaceModePtr mode(new_ptr(DecayPhaseSpaceMode(extpart,this,true)));
   DecayPhaseSpaceChannelPtr newchannel;
   // create the phase-space channels for the integration
   unsigned int nmode(0);
@@ -343,6 +343,20 @@ colourConnections(const Particle & parent,
 	  outgoing[triplet[0]]->colourLine()->addColoured(inter);
 	else if(inter->dataPtr()->iColour()==PDT::Colour3bar)
 	  outgoing[triplet[0]]->colourLine()->addAntiColoured(inter);
+      }
+    }
+    else if(octet.size()==1&&triplet.size()==1&&antitriplet.size()==1) {
+      outgoing[    triplet[0]]->antiColourNeighbour(outgoing[octet[0]]);
+      outgoing[antitriplet[0]]->    colourNeighbour(outgoing[octet[0]]);
+      if(inter&&inter->coloured()) {
+	if(inter->dataPtr()->iColour()==PDT::Colour3)
+	  outgoing[antitriplet[0]]->antiColourLine()->addColoured(inter);
+	else if(inter->dataPtr()->iColour()==PDT::Colour3bar)
+	  outgoing[    triplet[0]]->    colourLine()->addAntiColoured(inter);
+	else if(inter->dataPtr()->iColour()==PDT::Colour8) {
+	  outgoing[antitriplet[0]]->antiColourLine()->addAntiColoured(inter);
+	  outgoing[    triplet[0]]->    colourLine()->addColoured(inter);
+	}
       }
     }
     else throw Exception() 

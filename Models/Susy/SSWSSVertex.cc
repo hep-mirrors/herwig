@@ -279,7 +279,7 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       }
     }
   }
-  if( q2 != _q2last ) {
+  if( q2 != _q2last || _couplast==0. ) {
     _q2last = q2;
     _couplast = electroMagneticCoupling(q2);
   }

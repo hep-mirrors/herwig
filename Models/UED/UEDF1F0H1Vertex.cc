@@ -243,7 +243,7 @@ void UEDF1F0H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   }
 
 
-  if(q2 != theq2Last) {
+  if(q2 != theq2Last || theCoupLast == 0.) {
     theq2Last = q2;
     theCoupLast = weakCoupling(q2);
   }

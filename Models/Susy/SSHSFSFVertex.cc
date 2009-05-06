@@ -29,7 +29,6 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
 				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
 				 theSF2Last(0) {
-  
   vector<long> first,second,third;
   int higgs = 25;
   //h0,H0
@@ -101,66 +100,60 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
     third.push_back(-lj);
   }
   //outgoing H+
-   for(long ii = 2; ii < 7; ii += 2) {
-     for(long ij = 1; ij < 6; ij += 2) {
-       
-       //LL
-       first.push_back(37);
-       second.push_back(1000000 + ij);
-       third.push_back(-1000000 - ii);
-       //RR
-       first.push_back(37);
-       second.push_back(2000000 + ij);
-       third.push_back(-2000000 - ii);
-       //RL
-       first.push_back(37);
-       second.push_back(2000000 + ij);
-       third.push_back(-1000000 - ii);
-       //LR
-       first.push_back(37);
-       second.push_back(1000000 + ij);
-       third.push_back(-2000000 - ii);
-     }
-   }
-   for(long ii = 11; ii < 17; ii += 2) {
-     first.push_back(37);
-     second.push_back(1000000 + ii);
-     third.push_back(-1000001 - ii);
-     first.push_back(37);
-     second.push_back(2000000 + ii);
-     third.push_back(-1000001 - ii);
-   }
-   //outgoing H-
-   for(long ii = 2; ii < 7; ii += 2) {
-     for(long ij = 1; ij < 6; ij += 2) {
-       //LL
-       first.push_back(-37);
-       second.push_back(1000000 + ii);
-       third.push_back(-1000000 - ij);
-       //RR
-       first.push_back(-37);
-       second.push_back(2000000 + ii);
-       third.push_back(-2000000 - ij);
-       //RL
-       first.push_back(-37);
-       second.push_back(1000000 + ii);
-       third.push_back(-2000000 - ij);
-       //LR
-       first.push_back(-37);
-       second.push_back(2000000 + ii);
-       third.push_back(-1000000 - ij);
-
-     }
-   }
-   for(long ii = 11; ii < 17; ii += 2) {
-     first.push_back(-37);
-     second.push_back(1000001 + ii);
-     third.push_back(-1000000 - ii);
-     first.push_back(-37);
-     second.push_back(1000001 + ii);
-     third.push_back(-2000000 - ii);
-   }
-   setList(first, second, third);
+  for(long ii = 2; ii < 7; ii += 2) {
+    //LL
+    first.push_back(37);
+    second.push_back( 999999 + ii);
+    third.push_back(-1000000 - ii);
+    //RR
+    first.push_back(37);
+    second.push_back(1999999 + ii);
+    third.push_back(-2000000 - ii);
+    //RL
+    first.push_back(37);
+    second.push_back(1999999 + ii);
+    third.push_back(-1000000 - ii);
+    //LR
+    first.push_back(37);
+    second.push_back( 999999 + ii);
+    third.push_back(-2000000 - ii);
+  }
+  for(long ii = 11; ii < 17; ii += 2) {
+    first.push_back(37);
+    second.push_back(1000000 + ii);
+    third.push_back(-1000001 - ii);
+    first.push_back(37);
+    second.push_back(2000000 + ii);
+    third.push_back(-1000001 - ii);
+  }
+  //outgoing H-
+  for(long ii = 2; ii < 7; ii += 2) {
+    //LL
+    first.push_back(-37);
+    second.push_back(1000000 + ii);
+    third.push_back(- 999999 - ii);
+    //RR
+    first.push_back(-37);
+    second.push_back(2000000 + ii);
+    third.push_back(-1999999 - ii);
+    //RL
+    first.push_back(-37);
+    second.push_back(1000000 + ii);
+    third.push_back(-1999999 - ii);
+    //LR
+    first.push_back(-37);
+    second.push_back(2000000 + ii);
+    third.push_back(- 999999 - ii);
+  }
+  for(long ii = 11; ii < 17; ii += 2) {
+    first.push_back(-37);
+    second.push_back(1000001 + ii);
+    third.push_back(-1000000 - ii);
+    first.push_back(-37);
+    second.push_back(1000001 + ii);
+    third.push_back(-2000000 - ii);
+  }
+  setList(first, second, third);
 }
 
 void SSHSFSFVertex::doinit() {
@@ -264,7 +257,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   }
   assert( higgsID != 0 && sq1ID != 0 && sq2ID != 0);
   
-  if( q2 != theq2Last ) {
+  if( q2 != theq2Last || thegLast==0.) {
     thegLast = weakCoupling(q2);
       theq2Last = q2;
     }
@@ -453,7 +446,7 @@ void SSHSFSFVertex::chargedHiggs(long id1, long id2) {
 
   long smdID = (beta == 0) ? id2 - 1000000 : id2 - 2000000;
   Energy mfd = getParticleData(smdID)->mass();
-  Energy2 facta = theMw*theMw*2.*theSinB*theCosB;
+  Energy2 facta = sqr(theMw)*2.*theSinB*theCosB;
   if( smdID == 11 || smdID == 13 || smdID == 15) {
     Complex l1b = (beta == 0) ? 1.0 : 0.0;
     Complex l2b = (beta == 0) ? 0.0 : 1.0;
