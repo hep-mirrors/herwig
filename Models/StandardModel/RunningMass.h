@@ -30,7 +30,7 @@ public:
   /**
    * Default constructor.
    */
-  RunningMass()  : _theQCDOrder(1), _theMaxFlav(6), _lightOption(1) {}
+  RunningMass()  : _theQCDOrder(1), _theMaxFlav(6), _lightOption(1), _heavyOption(0) {}
 
 public:
   
@@ -141,6 +141,11 @@ private:
    *  Option to use pole masses for u,d,s
    */
   unsigned int _lightOption;
+
+  /**
+   *  Option to use pole masses for c,b
+   */
+  unsigned int _heavyOption;
 
 };
 

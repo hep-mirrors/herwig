@@ -130,7 +130,7 @@ void MEPP2HiggsPowheg::Init() {
 }
 
 Energy2 MEPP2HiggsPowheg::scale() const {
-  return scaleopt_ == 1 ?  scaleFact_*sHat() : sqr(mu_F_);
+  return scaleopt_ == 1 ?  sqr(scaleFact_)*sHat() : sqr(scaleFact_*mu_F_);
 }
 
 int MEPP2HiggsPowheg::nDim() const {
@@ -172,6 +172,7 @@ double MEPP2HiggsPowheg::NLOweight() const {
   if(!(lastPartons().first ->dataPtr()==a_lo_&&
        lastPartons().second->dataPtr()==b_lo_)) {
     swap(xbp_     ,xbm_     );
+    swap(etabarp_ ,etabarm_ );
     swap(hadron_A_,hadron_B_);
   }
 
@@ -515,26 +516,26 @@ double MEPP2HiggsPowheg::Rtilde_Ltilde_gq_on_x(tcPDPtr a , tcPDPtr b,
 					     double  xt, double y ) const {
   return ( ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_gq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt , 1.)
-	   * t_u_M_R_qg(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
+	   * t_u_M_R_gq(xt , 1.)*Lhat_ab(a,b,x(xt , 1.), 1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qg( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_gq( 1.,y  )
 
-	   + 1./s( 1., 1.) * t_u_M_R_qg( 1., 1.)
+	   + 1./s( 1., 1.) * t_u_M_R_gq( 1., 1.)
 
            )*2./(1.-y)/(1.-xt)
 	 + ( 
 	     1./s(xt ,y  )
-	   * t_u_M_R_qg(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
+	   * t_u_M_R_gq(xt ,y  )*Lhat_ab(a,b,x(xt ,y  ),y  )
 
   	   - 1./s(xt ,-1.)
-	   * t_u_M_R_qg(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
+	   * t_u_M_R_gq(xt ,-1.)*Lhat_ab(a,b,x(xt ,-1.),-1.)
 
-	   - 1./s( 1.,y  ) * t_u_M_R_qg( 1.,y  )
+	   - 1./s( 1.,y  ) * t_u_M_R_gq( 1.,y  )
 
-	   + 1./s( 1.,-1.) * t_u_M_R_qg( 1.,-1.)
+	   + 1./s( 1.,-1.) * t_u_M_R_gq( 1.,-1.)
 
            )*2./(1.+y)/(1.-xt)
 	 ) / lo_ggME_ / 8. / Constants::pi / alphaS_;

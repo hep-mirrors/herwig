@@ -349,7 +349,7 @@ CrossSection MEfftoffH::dSigHatDR() const {
   return jac1*me2()*jacobian()/pow(Constants::twopi,3)/32.*sqr(hbarc)/sHat();
 }
 
-void MEfftoffH::constructVertex(tSubProPtr sub) {
+void MEfftoffH::constructVertex(tSubProPtr ) {
 //   SpinfoPtr spin[5];
 //   // extract the particles in the hard process
 //   ParticleVector hard;

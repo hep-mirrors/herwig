@@ -40,39 +40,38 @@
 \Large \textbf {ILC top pair production and decay with {\tt MCPWNLO}} \\
 \end{center}
 \section{Introduction}
-This manual describes how to generate $e^+e^-$ annihilation events at a $500$ GeV ILC with NLO accuracy using the {\tt POWHEG} \cite{Nason:2004rx} method. More details on the use and application of the program and its interface with {\tt Herwig++} \cite{Bahr:2008pv} can be found in \cite{LatundeDada:2008bv}.
+This manual describes how to generate $e^+e^-$ annihilation events at the ILC with NLO accuracy using the {\tt POWHEG} \cite{Nason:2004rx} method. More details on the use and application of the program and its interface with {\tt Herwig++} \cite{Bahr:2008pv} can be found in \cite{LatundeDada:2008bv}.
 \section{Setting the parameters}
-Within the directory {\tt MCPWNLO/ILCTTBAR}, the file {\tt ILCTTBAR500\_INPUTS.h} includes all the available user parameters
-for the main program {\tt ILCTTBAR500.cxx} for {\tt
+Within the directory {\tt MCPWNLO/ILCTTBAR}, the file {\tt ILCTTBAR\_INPUTS.h} includes all the available user parameters
+for the main program {\tt ILCTTBAR.cxx} for {\tt
   POWHEG} event generation. The parameters are:\\
 \\
-{\tt double cme}: The center of mass energy in GeV e.g. $500$ for ILC. This is hard-wired
-for the code at present.\\
-{\tt  int Pem}: Polarization of the beam electrons (1 or -1).\\
+{\tt double cme}: The center of mass energy in GeV e.g. $500$ for ILC. \\
+{\tt  int Pem}: Polarization of the beam electrons (1 for right-handed helicity or -1 for left-handed helicity).\\
 {\tt  int Pep}: Polarization of the beam positrons (1 or -1).\\
 {\tt double Mz}: Pole mass of the $Z$ boson in GeV.\\
 {\tt int nevgen}: Number of events to generate (typically $\approx 10^5$). \\
 {\tt int rseed}:  Initial seed for the random number generator. \\ 
-{\tt bool POWHEGprod}:Set to {\tt true} if the {\tt POWHEG} method is to be used for production. \\
-{\tt bool POWHEGdecay}:Set to {\tt true} if the {\tt POWHEG} method is to be used for the decays. \\
-{\tt bool truncpro}:Set to {\tt true} if the truncated shower is to be switched on in the
+{\tt bool POWHEGprod}: Set to {\tt true} if the {\tt POWHEG} method is to be used for production. \\
+{\tt bool POWHEGdecay}: Set to {\tt true} if the {\tt POWHEG} method is to be used for the decays. \\
+{\tt bool truncpro}: Set to {\tt true} if the truncated shower is to be switched on in the
 production process. \\
-{\tt bool truncdec}:Set to {\tt true} if the truncated shower is to be switched on in the
+{\tt bool truncdec}: Set to {\tt true} if the truncated shower is to be switched on in the
 decay process.\\
 \section{Generating partonic events}
 After setting the parameters, open the {\tt Makefile} and set {\tt HERWIGDIR} to the address of the {\tt Herwig} folder
 in the directory {\tt MCPWNLO}. 
-To run {\tt ILCTTBAR500.cxx}, in the directory {\tt ILCTTBAR}, type the following commands :\\
+To run {\tt ILCTTBAR.cxx}, in the directory {\tt ILCTTBAR}, type the following commands :\\
 \\
 {\tt make clean} \\
 {\tt make} \\
 \\
-This creates the executable {\tt ILCTTBAR500} and {\tt run\_ilc} (which is moved to {\tt
+This creates the executable {\tt ILCTTBAR} and {\tt run\_ilc} (which is moved to {\tt
   HERWIGDIR}). Next, type: \\
 \\
-{\tt .$\backslash$ILCTTBAR500} \\ 
+{\tt ./ILCTTBAR} \\ 
 \\
-This runs the main program and generates the Les Houches file for interface with \textsf{Herwig++}. This file will be called {\tt ILCTTBAR500.dat} and contains unweighted events with absolute weights
+This runs the main program and generates the Les Houches file for interface with \textsf{Herwig++}. This file will be called {\tt ILCTTBAR.dat} and contains unweighted events with absolute weights
 of $1$.
 \section{{\tt POWHEG} requirements}
 If running {\tt POWHEG}, go to the folder {\tt PWInstallFiles} in the main {\tt MCPWNLO}
@@ -130,12 +129,12 @@ should be set to $1$ for {\tt POWHEG}.\\
 Having set up the initialization file, run \textsf{Herwig++} by typing the following
 commands: \\
 \\
-{\tt .$\backslash$run\_ilc [eventfile] [number of events]} \\
+{\tt ./run\_ilc [eventfile] [number of events]} \\
 \\
 An example of the run
 command is:\\
 \\
-{\tt .$\backslash$run\_ilc /usera/seyi/MCPWNLO/ILCTTBAR/ILCTTBAR500.dat 10000}\\
+{\tt ./run\_ilc /usera/seyi/MCPWNLO/ILCTTBAR/ILCTTBAR.dat 10000}\\
 \\
 where you should replace the eventfile with the path to your Les Houches file.
 \\

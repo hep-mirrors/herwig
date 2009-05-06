@@ -19,7 +19,7 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGFSVertex::SSGFSVertex() :_q2last(0.*sqr(MeV)),_couplast(0.), 
+SSGFSVertex::SSGFSVertex() :_q2last(0.*GeV2),_couplast(0.), 
 			    _id1last(0), _id2last(0) {
   vector<long> first,second,third;
   for(long ix=1;ix<7;++ix) {
@@ -102,7 +102,7 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     << part1->id() << " " << part2->id() << " " << part3->id()
     << Exception::runerror;
   if(iferm >=1 && iferm <=6) {
-    if(q2 != _q2last) {
+    if(q2 != _q2last || _couplast==0.) {
       _couplast = -strongCoupling(q2)*sqrt(2.);
       _q2last = q2;
     }

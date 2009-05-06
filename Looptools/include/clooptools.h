@@ -17,45 +17,51 @@ typedef const DOUBLE_COMPLEX CDOUBLE_COMPLEX;
 #include <complex>
 typedef std::complex<double> double_complex;
 
-#define AARGS(t) t(m)
-
-#define BARGS(t) t(p), t(m1), t(m2)
-
-#define CARGS(t) t(p1), t(p2), t(p1p2), t(m1), t(m2), t(m3)
-
-#define DARGS(t) t(p1), t(p2), t(p3), t(p4), t(p1p2), t(p2p3), \
-  t(m1), t(m2), t(m3), t(m4)
-
-#define EARGS(t) t(p1), t(p2), t(p3), t(p4), t(p5), \
-  t(p1p2), t(p2p3), t(p3p4), t(p4p5), t(p5p1), \
-  t(m1), t(m2), t(m3), t(m4), t(m5)
-
 /****************************************************************/
 
 extern "C" {
 
-extern void a0sub_(DOUBLE_COMPLEX *result, AARGS(const double *));
-// extern void a0subc_(DOUBLE_COMPLEX *result, AARGS(CDOUBLE_COMPLEX *));
-extern void a00sub_(DOUBLE_COMPLEX *result, AARGS(const double *));
-// extern void a00subc_(DOUBLE_COMPLEX *result, AARGS(CDOUBLE_COMPLEX *));
+extern void a0sub_(DOUBLE_COMPLEX *result, const double *m);
+extern void a00sub_(DOUBLE_COMPLEX *result, const double *m);
 
-extern long bget_(BARGS(const double *));
-// extern long bgetc_(BARGS(CDOUBLE_COMPLEX *));
+extern long bget_(const double *p, const double *m1, const double *m2);
 
-extern void c0sub_(DOUBLE_COMPLEX *result, CARGS(const double *));
-// extern void c0subc_(DOUBLE_COMPLEX *result, CARGS(CDOUBLE_COMPLEX *));
-extern long cget_(CARGS(const double *));
-// extern long cgetc_(CARGS(CDOUBLE_COMPLEX *));
+extern void c0sub_(DOUBLE_COMPLEX *result, 
+		   const double *p1, const double *p2, 
+		   const double *p1p2, 
+		   const double *m1, const double *m2, const double *m3);
+extern long cget_(const double *p1, const double *p2, 
+		  const double *p1p2, 
+		  const double *m1, const double *m2, const double *m3);
 
-extern void d0sub_(DOUBLE_COMPLEX *result, DARGS(const double *));
-// extern void d0subc_(DOUBLE_COMPLEX *result, DARGS(CDOUBLE_COMPLEX *));
-extern long dget_(DARGS(const double *));
-// extern long dgetc_(DARGS(CDOUBLE_COMPLEX *));
+extern void d0sub_(DOUBLE_COMPLEX *result, 
+		   const double *p1, const double *p2, 
+		   const double *p3, const double *p4, 
+		   const double *p1p2, const double *p2p3, 
+		   const double *m1, const double *m2, 
+		   const double *m3, const double *m4);
+extern long dget_(const double *p1, const double *p2, 
+		  const double *p3, const double *p4, 
+		  const double *p1p2, const double *p2p3, 
+		  const double *m1, const double *m2, 
+		  const double *m3, const double *m4);
 
-extern void e0sub_(DOUBLE_COMPLEX *result, EARGS(const double *));
-// extern void e0subc_(DOUBLE_COMPLEX *result, EARGS(CDOUBLE_COMPLEX *));
-extern long eget_(EARGS(const double *));
-// extern long egetc_(EARGS(CDOUBLE_COMPLEX *));
+extern void e0sub_(DOUBLE_COMPLEX *result, 
+		   const double *p1, const double *p2, 
+		   const double *p3, const double *p4, const double *p5, 
+		   const double *p1p2, const double *p2p3, 
+		   const double *p3p4, const double *p4p5, 
+		   const double *p5p1, 
+		   const double *m1, const double *m2, 
+		   const double *m3, const double *m4, const double *m5);
+extern long eget_(const double *p1, const double *p2, 
+		  const double *p3, const double *p4, const double *p5, 
+		  const double *p1p2, const double *p2p3, 
+		  const double *p3p4, const double *p4p5, 
+		  const double *p5p1, 
+		  const double *m1, const double *m2, 
+		  const double *m3, const double *m4, const double *m5);
+
 
 extern void li2sub_(DOUBLE_COMPLEX *result, const double *x);
 extern void li2csub_(DOUBLE_COMPLEX *result, CDOUBLE_COMPLEX *x);
@@ -160,45 +166,26 @@ enum {
 };
 
 
-inline double_complex A0(AARGS(const double ))
+inline double_complex A0(const double m)
 {
   DOUBLE_COMPLEX result;
-  a0sub_(&result, AARGS(&));
+  a0sub_(&result, &m);
   return ToComplex(result);
 }
 
-// inline double_complex A0C(AARGS(const double_complex ))
-// {
-//   DOUBLE_COMPLEX result;
-//   a0subc_(&result, AARGS(_Fcp_));
-//   return ToComplex(result);
-// }
-
-inline double_complex A00(AARGS(const double ))
+inline double_complex A00(const double m)
 {
   DOUBLE_COMPLEX result;
-  a00sub_(&result, AARGS(&));
+  a00sub_(&result, &m);
   return ToComplex(result);
 }
-
-// inline double_complex A00C(AARGS(const double_complex ))
-// {
-//   DOUBLE_COMPLEX result;
-//   a00subc_(&result, AARGS(_Fcp_));
-//   return ToComplex(result);
-// }
 
 /****************************************************************/
 
-inline long Bget(BARGS(const double ))
+inline long Bget(const double p, const double m1, const double m2)
 {
-  return bget_(BARGS(&));
+  return bget_(&p, &m1, &m2);
 }
-
-// inline long BgetC(BARGS(const double_complex ))
-// {
-//   return bgetc_(BARGS(_Fcp_));
-// }
 
 inline DOUBLE_COMPLEX *Bcache(const long integral)
   { return &ltvars_.cache[0][integral]; }
@@ -212,79 +199,48 @@ inline double_complex Bval(const long i, const long integral)
 inline double_complex BvalC(const long i, const long integral)
   { return ToComplex(BcacheC(integral)[i]); }
 
-inline double_complex B0i(const long i, BARGS(const double ))
-  { return Bval(i, Bget(BARGS())); }
+inline double_complex B0i(const long i, const double p, 
+			  const double m1, const double m2)
+  { return Bval(i, Bget(p, m1, m2)); }
 
-// inline double_complex B0iC(const long i, BARGS(const double_complex ))
-//   { return BvalC(i, BgetC(BARGS())); }
-
-inline double_complex B0(BARGS(const double ))
-  { return B0i(bb0, BARGS()); }
-inline double_complex B1(BARGS(const double ))
-  { return B0i(bb1, BARGS()); }
-inline double_complex B00(BARGS(const double ))
-  { return B0i(bb00, BARGS()); }
-inline double_complex B11(BARGS(const double ))
-  { return B0i(bb11, BARGS()); }
-inline double_complex B001(BARGS(const double ))
-  { return B0i(bb001, BARGS()); }
-inline double_complex B111(BARGS(const double ))
-  { return B0i(bb111, BARGS()); }
-inline double_complex DB0(BARGS(const double ))
-  { return B0i(dbb0, BARGS()); }
-inline double_complex DB1(BARGS(const double ))
-  { return B0i(dbb1, BARGS()); }
-inline double_complex DB00(BARGS(const double ))
-  { return B0i(dbb00, BARGS()); }
-inline double_complex DB11(BARGS(const double ))
-  { return B0i(dbb11, BARGS()); }
-
-// inline double_complex B0C(BARGS(const double_complex ))
-//   { return B0iC(bb0, BARGS()); }
-// inline double_complex B1C(BARGS(const double_complex ))
-//   { return B0iC(bb1, BARGS()); }
-// inline double_complex B00C(BARGS(const double_complex ))
-//   { return B0iC(bb00, BARGS()); }
-// inline double_complex B11C(BARGS(const double_complex ))
-//   { return B0iC(bb11, BARGS()); }
-// inline double_complex B001C(BARGS(const double_complex ))
-//   { return B0iC(bb001, BARGS()); }
-// inline double_complex B111C(BARGS(const double_complex ))
-//   { return B0iC(bb111, BARGS()); }
-// inline double_complex DB0C(BARGS(const double_complex ))
-//   { return B0iC(dbb0, BARGS()); }
-// inline double_complex DB1C(BARGS(const double_complex ))
-//   { return B0iC(dbb1, BARGS()); }
-// inline double_complex DB00C(BARGS(const double_complex ))
-//   { return B0iC(dbb00, BARGS()); }
-// inline double_complex DB11C(BARGS(const double_complex ))
-//   { return B0iC(dbb11, BARGS()); }
+inline double_complex B0(const double p, const double m1, const double m2)
+  { return B0i(bb0, p, m1, m2); }
+inline double_complex B1(const double p, const double m1, const double m2)
+  { return B0i(bb1, p, m1, m2); }
+inline double_complex B00(const double p, const double m1, const double m2)
+  { return B0i(bb00, p, m1, m2); }
+inline double_complex B11(const double p, const double m1, const double m2)
+  { return B0i(bb11, p, m1, m2); }
+inline double_complex B001(const double p, const double m1, const double m2)
+  { return B0i(bb001, p, m1, m2); }
+inline double_complex B111(const double p, const double m1, const double m2)
+  { return B0i(bb111, p, m1, m2); }
+inline double_complex DB0(const double p, const double m1, const double m2)
+  { return B0i(dbb0, p, m1, m2); }
+inline double_complex DB1(const double p, const double m1, const double m2)
+  { return B0i(dbb1, p, m1, m2); }
+inline double_complex DB00(const double p, const double m1, const double m2)
+  { return B0i(dbb00, p, m1, m2); }
+inline double_complex DB11(const double p, const double m1, const double m2)
+  { return B0i(dbb11, p, m1, m2); }
 
 /****************************************************************/
 
-inline double_complex C0(CARGS(const double ))
+inline double_complex C0(const double p1, const double p2, 
+			 const double p1p2, 
+			 const double m1, const double m2, const double m3)
 {
   DOUBLE_COMPLEX result;
-  c0sub_(&result, CARGS(&));
+  c0sub_(&result, &p1, &p2, &p1p2, &m1, &m2, &m3);
   return ToComplex(result);
 }
 
-// inline double_complex C0C(CARGS(const double_complex ))
-// {
-//   DOUBLE_COMPLEX result;
-//   c0subc_(&result, CARGS(_Fcp_));
-//   return ToComplex(result);
-// }
-
-inline long Cget(CARGS(const double ))
+inline long Cget(const double p1, const double p2, 
+		 const double p1p2, const double m1, 
+		 const double m2, const double m3)
 {
-  return cget_(CARGS(&));
+  return cget_(&p1, &p2, &p1p2, &m1, &m2, &m3);
 }
-
-// inline long CgetC(CARGS(const double_complex ))
-// {
-//   return cgetc_(CARGS(_Fcp_));
-// }
 
 inline DOUBLE_COMPLEX *Ccache(const long integral)
   { return &ltvars_.cache[2][integral]; }
@@ -298,37 +254,33 @@ inline double_complex Cval(const long i, const long integral)
 inline double_complex CvalC(const long i, const long integral)
   { return ToComplex(CcacheC(integral)[i]); }
 
-inline double_complex C0i(const long i, CARGS(const double ))
-  { return Cval(i, Cget(CARGS())); }
-
-// inline double_complex C0iC(const long i, CARGS(const double_complex ))
-//   { return CvalC(i, CgetC(CARGS())); }
+inline double_complex C0i(const long i, 
+			  const double p1, const double p2, 
+			  const double p1p2, const double m1, 
+			  const double m2, const double m3)
+  { return Cval(i, Cget(p1, p2, p1p2, m1, m2, m3)); }
 
 /****************************************************************/
 
-inline double_complex D0(DARGS(const double ))
+inline double_complex D0(const double p1, const double p2, 
+			 const double p3, const double p4, 
+			 const double p1p2, const double p2p3, 
+			 const double m1, const double m2, 
+			 const double m3, const double m4)
 {
   DOUBLE_COMPLEX result;
-  d0sub_(&result, DARGS(&));
+  d0sub_(&result, &p1, &p2, &p3, &p4, &p1p2, &p2p3, &m1, &m2, &m3, &m4);
   return ToComplex(result);
 }
 
-// inline double_complex D0C(DARGS(const double_complex ))
-// {
-//   DOUBLE_COMPLEX result;
-//   d0subc_(&result, DARGS(&));
-//   return ToComplex(result);
-// }
-
-inline long Dget(DARGS(const double ))
+inline long Dget(const double p1, const double p2, 
+		 const double p3, const double p4, 
+		 const double p1p2, const double p2p3, 
+		 const double m1, const double m2, 
+		 const double m3, const double m4)
 {
-  return dget_(DARGS(&));
+  return dget_(&p1, &p2, &p3, &p4, &p1p2, &p2p3, &m1, &m2, &m3, &m4);
 }
-
-// inline long DgetC(DARGS(const double_complex ))
-// {
-//   return dgetc_(DARGS(_Fcp_));
-// }
 
 inline DOUBLE_COMPLEX *Dcache(const long integral)
   { return &ltvars_.cache[4][integral]; }
@@ -342,37 +294,40 @@ inline double_complex Dval(const long i, const long integral)
 inline double_complex DvalC(const long i, const long integral)
   { return ToComplex(DcacheC(integral)[i]); }
 
-inline double_complex D0i(const long i, DARGS(const double ))
-  { return Dval(i, Dget(DARGS())); }
-
-// inline double_complex D0iC(const long i, DARGS(const double_complex ))
-//   { return DvalC(i, DgetC(DARGS())); }
+inline double_complex D0i(const long i, 
+			  const double p1, const double p2, 
+			  const double p3, const double p4, 
+			  const double p1p2, const double p2p3, 
+			  const double m1, const double m2, 
+			  const double m3, const double m4)
+  { return Dval(i, Dget(p1, p2, p3, p4, p1p2, p2p3, m1, m2, m3, m4)); }
 
 /****************************************************************/
 
-inline double_complex E0(EARGS(const double ))
+inline double_complex E0(const double p1, const double p2, 
+			 const double p3, const double p4, const double p5, 
+			 const double p1p2, const double p2p3, 
+			 const double p3p4, const double p4p5, 
+			 const double p5p1, 
+			 const double m1, const double m2, 
+			 const double m3, const double m4, const double m5)
 {
   DOUBLE_COMPLEX result;
-  e0sub_(&result, EARGS(&));
+  e0sub_(&result, &p1, &p2, &p3, &p4, &p5, &p1p2, &p2p3, &p3p4, &p4p5, &p5p1, &m1, &m2, &m3, &m4, &m5);
   return ToComplex(result);
 }
 
-// inline double_complex E0C(EARGS(const double_complex ))
-// {
-//   DOUBLE_COMPLEX result;
-//   e0subc_(&result, EARGS(&));
-//   return ToComplex(result);
-// }
-
-inline long Eget(EARGS(const double ))
+inline long Eget(const double p1, const double p2, 
+		 const double p3, const double p4, 
+		 const double p5, 
+		 const double p1p2, const double p2p3, 
+		 const double p3p4, const double p4p5, 
+		 const double p5p1, 
+		 const double m1, const double m2, 
+		 const double m3, const double m4, const double m5)
 {
-  return eget_(EARGS(&));
+  return eget_(&p1, &p2, &p3, &p4, &p5, &p1p2, &p2p3, &p3p4, &p4p5, &p5p1, &m1, &m2, &m3, &m4, &m5);
 }
-
-// inline long EgetC(EARGS(const double_complex ))
-// {
-//   return egetc_(EARGS(_Fcp_));
-// }
 
 inline DOUBLE_COMPLEX *Ecache(const long integral)
   { return &ltvars_.cache[6][integral]; }
@@ -386,11 +341,16 @@ inline double_complex Eval(const long i, const long integral)
 inline double_complex EvalC(const long i, const long integral)
   { return ToComplex(EcacheC(integral)[i]); }
 
-inline double_complex E0i(const long i, EARGS(const double ))
-  { return Eval(i, Eget(EARGS())); }
-
-// inline double_complex E0iC(const long i, EARGS(const double_complex ))
-//   { return EvalC(i, EgetC(EARGS())); }
+inline double_complex E0i(const long i, 
+			  const double p1, const double p2, 
+			  const double p3, const double p4, 
+			  const double p5, 
+			  const double p1p2, const double p2p3, 
+			  const double p3p4, const double p4p5, 
+			  const double p5p1, 
+			  const double m1, const double m2, 
+			  const double m3, const double m4, const double m5)
+{ return Eval(i, Eget(p1, p2, p3, p4, p5, p1p2, p2p3, p3p4, p4p5, p5p1, m1, m2, m3, m4, m5)); }
 
 /****************************************************************/
 
@@ -401,21 +361,11 @@ inline double_complex Li2(const double x)
   return ToComplex(result);
 }
 
-// inline double_complex Li2C(const double_complex x)
-// {
-//   DOUBLE_COMPLEX result;
-//   li2csub_(&result, _Fcp_(x));
-//   return ToComplex(result);
-// }
-
 /****************************************************************/
 
 #define clearcache clearcache_
 #define markcache markcache_
 #define restorecache restorecache_
-// #define ffini ffini_
-// #define ffexi ffexi_
-
 
 inline void setmudim(const double mudim)
 {

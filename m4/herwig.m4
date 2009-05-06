@@ -194,7 +194,7 @@ THEPEGPATH="${with_thepeg}"
 oldldflags="$LDFLAGS"
 oldlibs="$LIBS"
 
-LDFLAGS=$THEPEGLDFLAGS
+LDFLAGS="$LDFLAGS $THEPEGLDFLAGS"
 AC_CHECK_LIB([ThePEG],[debugThePEG],[],
 	[AC_MSG_ERROR([No ThePEG libraries in $THEPEGLDFLAGS. Please set --with-thepeg.])])
 

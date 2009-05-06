@@ -36,12 +36,17 @@ void EventShapes::calcHemisphereMasses() {
       if(_pv[ix].vect() * thrustAxis() > ZERO)
 	{
 	  pos  += _pv[ix];
-	  epos += _pv[ix].perp(thrustAxis()); 
+	  // can be replaced with, once perp() is giving non-nan results
+	  //	  for nearly parallel vectors.  
+	  // epos += _pv[ix].perp(thrustAxis());
+	  epos += _pv[ix].vect().cross(thrustAxis()).mag();
 	}
       else
 	{
 	  neg  += _pv[ix];
-	  eneg += _pv[ix].perp(thrustAxis()); 
+	  // see above
+	  //	  eneg += _pv[ix].perp(thrustAxis()); 
+	  eneg += _pv[ix].vect().cross(thrustAxis()).mag();
 	}
       pden += _pv[ix].vect().mag();	 
     }

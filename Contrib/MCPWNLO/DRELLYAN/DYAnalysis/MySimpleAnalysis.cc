@@ -23,11 +23,9 @@ using namespace Herwig;
 MySimpleAnalysis::MySimpleAnalysis() :
   _ptZ(4,Histogram(0.,250.,250)), _ptWp(4,Histogram(0.,250.,250)),_ptWm(4,Histogram(0.,250.,250)), 
   _mWp(-250.,250.,100),_mZ(-250.,250.,100),_mWm(-250.,250.,100),
-  _rapZ(-4.,4., 40), _rapWp(-4.,4., 40),_rapWm(-4.,4., 40),
-  _phiZ(0.,3.2, 32), _phiWp(0.,3.2, 32), _phiWm(0.,3.2, 32),
-  _rapem(-4.,4., 40),_rapep(-4.,4., 40),_rapnu(-4.,4., 40),_rapanu(-4.,4., 40),
-  _phiem(0.,3.2, 32),_phiep(0.,3.2, 32), _phinu(0.,3.2, 32),_phianu(0.,3.2, 32),
-  
+  _rapZ(-10.,10., 100), _rapWp(-10.,10., 100),_rapWm(-10.,10., 100),
+  _rapem(-10.,10., 100),_rapep(-10.,10., 100),_rapnu(-10.,10., 100),_rapanu(-10.,10., 100),
+ 
      _ptW4(0.,20.,10),
      _ptW5(20.,40.,4),
      _ptW6(40.,80.,4),
@@ -204,7 +202,7 @@ string infile = "DYPP.dat";
   
     double rapem = 0.5*log((pzem.e()+pzem.z())/(pzem.e()-pzem.z()));
     double rapep = 0.5*log((pzep.e()+pzep.z())/(pzep.e()-pzep.z()));
-    double rapnu = 0.5*log((pznu.e()+pzanu.z())/(pznu.e()-pznu.z()));
+    double rapnu = 0.5*log((pznu.e()+pznu.z())/(pznu.e()-pznu.z()));
     double rapanu = 0.5*log((pzanu.e()+pzanu.z())/(pzanu.e()-pzanu.z()));
     
 
@@ -213,10 +211,6 @@ string infile = "DYPP.dat";
     _rapnu.addWeighted(rapnu,eventweight_);
     _rapanu.addWeighted(rapanu,eventweight_);
 
-    _phiem.addWeighted(pzem.phi(),eventweight_); 
-    _phiep.addWeighted(pzep.phi(),eventweight_); 
-    _phinu.addWeighted(pznu.phi(),eventweight_); 
-    _phianu.addWeighted(pzanu.phi(),eventweight_); 
 
 
   }
@@ -277,10 +271,10 @@ void MySimpleAnalysis::dofinish() {
     _ptW9.topdrawOutput(outfile,None,"",title="");
     _ptW10.topdrawOutput(outfile,None,"BLACK",title="");
 
-   _phianu.topdrawOutput(outfile,Frame,"BLACK","Azimuth of anitneutrino");
-   _phinu.topdrawOutput(outfile,Frame,"BLACK","Azimuth of neutrino");
-   _phiep.topdrawOutput(outfile,Frame,"BLACK","Azimuth of positron");
-   _phiem.topdrawOutput(outfile,Frame,"BLACK","Azimuth of electron");
+    //   _phianu.topdrawOutput(outfile,Frame,"BLACK","Azimuth of anitneutrino");
+    // _phinu.topdrawOutput(outfile,Frame,"BLACK","Azimuth of neutrino");
+    // _phiep.topdrawOutput(outfile,Frame,"BLACK","Azimuth of positron");
+    // _phiem.topdrawOutput(outfile,Frame,"BLACK","Azimuth of electron");
    
    _rapanu.topdrawOutput(outfile,Frame,"BLACK","Rapidity of anitneutrino");
    _rapnu.topdrawOutput(outfile,Frame,"BLACK","Rapidity of neutrino");
@@ -321,9 +315,9 @@ void MySimpleAnalysis::dofinish() {
   _rapWm.topdrawOutput(outfile,Frame,"BLACK","Rapidity of Wm");
 //   _rapWm.topdrawOutput(outfile,Frame|Ylog,"BLACK","Rapidity of Wm");
 
-   _phiZ.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Z");
-   _phiWp.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Wp");
-   _phiWm.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Wm");
+//   _phiZ.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Z");
+//   _phiWp.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Wp");
+//   _phiWm.topdrawOutput(outfile,Frame,"BLACK","Azimuth of Wm");
 }
 
 

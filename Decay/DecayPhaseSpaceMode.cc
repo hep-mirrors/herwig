@@ -30,12 +30,14 @@ using namespace ThePEG::Helicity;
 
 void DecayPhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << _integrator << _channels << _channelwgts << _maxweight << _niter 
-     << _npoint << _ntry << _extpart << _partial << _widthgen << _massgen;
+     << _npoint << _ntry << _extpart << _partial << _widthgen << _massgen
+     << _testOnShell;
 }
 
 void DecayPhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
   is >> _integrator >> _channels >> _channelwgts >> _maxweight >> _niter 
-     >> _npoint >> _ntry >> _extpart >> _partial >> _widthgen >> _massgen;
+     >> _npoint >> _ntry >> _extpart >> _partial >> _widthgen >> _massgen
+     >> _testOnShell;
 }
 
 ClassDescription<DecayPhaseSpaceMode> DecayPhaseSpaceMode::initDecayPhaseSpaceMode;
@@ -442,7 +444,9 @@ void DecayPhaseSpaceMode::doinitrun() {
     throw Exception() << "Inconsistent number of channel weights and channels"
 		      << " in DecayPhaseSpaceMode " << Exception::abortnow;
   }
-  Interfaced::doinit();
+  for(unsigned int ix=0;ix<_channels.size();++ix) {
+    _channels[ix]->initrun();
+  }
   if(_widthgen) const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->initrun();
   tcGenericWidthGeneratorPtr wtemp;
   for(unsigned int ix=1;ix<_extpart.size();++ix) {

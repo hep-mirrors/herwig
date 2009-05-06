@@ -264,6 +264,12 @@ protected:
 			     const Lorentz5Momentum & oldq) const;
   
   /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  LorentzRotation solveBoostZ(const Lorentz5Momentum & newq, 
+			      const Lorentz5Momentum & oldq) const;
+  
+  /**
    *  Recursively boost the initial-state shower
    * @param p The particle
    * @param bv The boost

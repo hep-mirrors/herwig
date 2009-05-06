@@ -140,7 +140,7 @@ int main() {
           else{
 	    if (random(seed) < (pow(x,2)+pow(y2,2))/2.) {
 	       //Kleiss trick
-	      if (random(seed) < pow(x,2)/(pow(x,2)+pow(y1,2))) {
+	      if (random(seed) < pow(x,2)/(pow(x,2)+pow(y2,2))) {
 		x1=x;
 		x2=y2;
 		Jt=1;}
@@ -155,7 +155,7 @@ int main() {
 	else {
           if (random(seed) < (pow(x,2)+pow(y2,2))/2.) {
 	    //Kleiss trick
-	    if (random(seed) < pow(x,2)/(pow(x,2)+pow(y1,2))) { 
+	    if (random(seed) < pow(x,2)/(pow(x,2)+pow(y2,2))) { 
 	         x1=x;
 		 x2=y2;
 		 Jt=1;}

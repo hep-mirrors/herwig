@@ -19,7 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last() {
+SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   // the particles
   vector<long> first,second,third;
   first.push_back(21);
@@ -48,7 +48,7 @@ void SMGGGVertex::Init() {
 void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr,
 			      Direction,Direction,Direction) {
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = strongCoupling(q2);
     _q2last=q2;
   }

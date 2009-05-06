@@ -20,7 +20,7 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
-			    _q2last(), _couplast(0.),
+			    _q2last(0.*GeV2), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {
   vector<long> first,second,third;
@@ -155,7 +155,13 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     smfermion = part2;
   }
   //overall normalisation
-  setNorm(-weakCoupling(q2));
+  if(q2!=_q2last||_couplast==0.) {
+    _q2last=q2;
+    _couplast = -weakCoupling(q2);
+  }
+  setNorm(_couplast);
+
+
   if( ichg != _id1last || ism != _id2last || isc != _id3last ) {
     _id1last = ichg;
     _id2last = ism;
@@ -181,7 +187,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
       else if( ism == 16 ) {
 	_leftlast = Complex(0., 0.);
-	_rightlast = ul1*(*_stau)(alpha, 0) - y*(*_stau)(alpha,1)*ul2/_cb;
+	_rightlast = ul1*(*_stau)(alpha, 0) - y*(*_stau)(alpha,1)*ul2;
       }
       else if( ism == 11 || ism == 13 || ism == 15 ) {
 	_leftlast = -y*conj(ul2);

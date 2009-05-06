@@ -71,6 +71,11 @@ public:
    */
   virtual void DecayList(const vector<PDPtr> & part);
 
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const { return 3; }
+
 protected:
 
 
@@ -171,6 +176,18 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
   //@}
 
 private:

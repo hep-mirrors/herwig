@@ -170,9 +170,20 @@ void ModelGenerator::Init() {
      false, false, Interface::limited);
 }
 
+namespace {
+  /// Helper function for sorting by mass
+  inline bool massIsLess(tcPDPtr a, tcPDPtr b) {
+    return a->mass() < b->mass();
+  }
+}
+
 void ModelGenerator::doinit() {
   Interfaced::doinit();
   useMe();
+  // sort DecayParticles list by mass
+  sort(_theParticles.begin(),_theParticles.end(),
+       massIsLess);
+
   //create mass and width generators for the requested particles
   PDVector::iterator pit, pend;
   if( _theOffsel == 0 ) {
@@ -217,6 +228,7 @@ void ModelGenerator::doinit() {
     writeDecayModes(ofs, parent);
     ofs << "#\n";
     if( parent->massGenerator() ) {
+      parent->widthCut(5.*parent->width());
       parent->massGenerator()->reset();
       ofs << "# " <<parent->PDGName() << " will be considered off-shell.\n#";
     }
@@ -282,7 +294,6 @@ void ModelGenerator::checkDecays(PDPtr parent) {
     }
     parent->width(newwidth);
     if( newwidth > ZERO ) parent->cTau(hbarc/newwidth);
-    parent->widthCut(5*newwidth);
   }
   
 }

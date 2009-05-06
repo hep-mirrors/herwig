@@ -15,6 +15,7 @@
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Utilities/Throw.h"
 #include "DecayConstructor.h"
 
 using namespace Herwig;
@@ -197,6 +198,20 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       if( min> ( mout[0] + mint ) &&
 	  mint > ( mout[1] + mout[2] )) {
 	if(_removeOnShell) continue;
+	else if(dit->intermediate->width()==0.*GeV) {
+	  Throw<InitException>() 
+	    << "Trying to include on-shell diagram for "
+	    << getParticleData(dit->incoming)->PDGName() << " -> "
+	    << getParticleData(dit->outgoing)->PDGName() << " "
+	    << getParticleData(dit->outgoingPair.first )->PDGName() << " "
+	    << getParticleData(dit->outgoingPair.second)->PDGName()
+	    << " with intermediate " << dit->intermediate->PDGName()
+	    << " with zero width.\n"
+	    << "You should make sure that the width for the intermediate is either"
+	    << " read from an SLHA file or the intermediate is included in the "
+	    << "DecayParticles list of the ModelGenerator.\n"
+	    << Exception::runerror;
+	}
 	possibleOnShell = true;
       }
 
@@ -244,7 +259,7 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
     bool inter(false);
     if( _interopt == 1 || (_interopt == 0 && possibleOnShell) ) 
       inter = true;
-    vector< vector<TBDiagram> >::const_iterator mend = modes.end();	  
+    vector< vector<TBDiagram> >::const_iterator mend = modes.end();
     for( vector< vector<TBDiagram> >::const_iterator mit = modes.begin();
 	 mit != mend; ++mit ) {
       createDecayMode(*mit, inter);
@@ -490,6 +505,11 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
       output.first   = vector<DVector>(1,DVector(1,3.));
       output.second  = vector<DVector>(1,DVector(1,3.));
     }
+    else if(trip.size()==1&&atrip.size()==1&&oct.size()==1) {
+      ncf = 1;
+      output.first   = vector<DVector>(1,DVector(1,4.));
+      output.second  = vector<DVector>(1,DVector(1,4.));
+    }
     else throw Exception() << "Unknown colour flow structure for "
 			   << name << Exception::runerror;
   }
@@ -566,4 +586,15 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
 			   << name << Exception::runerror;
   }
   return output;
+}
+
+void ThreeBodyDecayConstructor::doinit() {
+  NBodyDecayConstructorBase::doinit();
+  if(!_removeOnShell) 
+    generator()->log() << "Warning: Including diagrams with on-shell "
+		       << "intermediates in three-body BSM decays, this"
+		       << " can lead to double counting and is not"
+		       << " recommended unless you really know what you are doing\n"
+		       << "This can be switched off using\n set "
+		       << fullName() << ":RemoveOnShell Yes\n"; 
 }

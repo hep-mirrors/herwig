@@ -23,7 +23,8 @@
 using namespace Herwig;
 
 HardProcessConstructor::HardProcessConstructor() : 
-  theNout(0), theNv(0), theAllDiagrams(true), theDebug(false),
+  theNout(0), theNv(0), theAllDiagrams(true),
+  theProcessOption(0), theDebug(false),
   the33bto33b(4, DVector(4, 0.)),  the33bpto33bp(3, DVector(3, 0.)),
   the33bto88(2, DVector(4, 0.)), the88to88(2, DVector(4, 0.)) {
   //set-up colour factor matrices
@@ -64,6 +65,11 @@ IBPtr HardProcessConstructor::fullclone() const {
 
 void HardProcessConstructor::doinit() {
   Interfaced::doinit();
+  if(theProcessOption==2&&theOutgoing.size()!=2)
+    throw InitException() 
+      << "Exclusive processes require exactly"
+      << " two outgoing particles but " << theOutgoing.size()
+      << "have been inserted." << Exception::runerror;
   theNout = theOutgoing.size();
   PDVector::size_type ninc = theIncoming.size();
   // exit if nothing to do
@@ -127,13 +133,13 @@ bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
 }
 
 void HardProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << theIncoming << theOutgoing << theModel << theAllDiagrams << theSubProcess
-     << the33bto33b << the33bpto33bp << the33bto88 << the88to88;
+  os << theIncoming << theOutgoing << theModel << theAllDiagrams << theProcessOption
+     << theSubProcess << the33bto33b << the33bpto33bp << the33bto88 << the88to88;
 }
 
 void HardProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> theIncoming >> theOutgoing  >> theModel >> theAllDiagrams >> theSubProcess
-     >> the33bto33b >> the33bpto33bp >> the33bto88 >> the88to88;
+  is >> theIncoming >> theOutgoing  >> theModel >> theAllDiagrams >> theProcessOption
+     >> theSubProcess >> the33bto33b >> the33bpto33bp >> the33bto88 >> the88to88;
   theNout = 0;
   theNv = 0;
 }
@@ -187,6 +193,30 @@ void HardProcessConstructor::Init() {
      "No",
      "Do not print the debug information",
      false);
+
+  static Switch<HardProcessConstructor,unsigned int> interfaceProcesses
+    ("Processes",
+     "Whether to generate inclusive or exclusive processes",
+     &HardProcessConstructor::theProcessOption, 0, false, false);
+  static SwitchOption interfaceProcessesSingleParticleInclusive
+    (interfaceProcesses,
+     "SingleParticleInclusive",
+     "Require at least one particle from the list of outgoing particles"
+     " in the hard process",
+     0);
+  static SwitchOption interfaceProcessesTwoParticleInclusive
+    (interfaceProcesses,
+     "TwoParticleInclusive",
+     "Require that boththe particles in the hard processes are in the"
+     " list of outgoing particles",
+     1);
+  static SwitchOption interfaceProcessesExclusive
+    (interfaceProcesses,
+     "Exclusive",
+     "Require that both the particles in the hard processes are in the"
+     " list of outgoing particles in every hard process",
+     2);
+
 }
 
 namespace {
@@ -266,12 +296,21 @@ void HardProcessConstructor::constructDiagrams() {
     for( ; itb != range.second; ++itb ) {
       process.push_back(itb->second);
     }
+    // if inclusive enforce the exclusivity
+    if(theProcessOption==2) {
+      if(!((process[0].outgoing. first==theOutgoing[0]->id()&&
+	    process[0].outgoing.second==theOutgoing[1]->id())||
+	   (process[0].outgoing. first==theOutgoing[1]->id()&&
+	    process[0].outgoing.second==theOutgoing[0]->id()))) {
+	process.clear();
+	it = range.second;
+	continue;
+      }
+    }
     createMatrixElement(process);
     process.clear();
     it = range.second;
   }
-  
-
 }
 
 void HardProcessConstructor::
@@ -346,11 +385,21 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 
 void HardProcessConstructor::makeFourPointDiagrams(long parta, long partb,
 						   long partc, VBPtr vert) {
+  if(theProcessOption>=1) {
+    PDVector::const_iterator loc = find(theOutgoing.begin(),theOutgoing.end(),
+					getParticleData(partc));
+    if(loc==theOutgoing.end()) return;
+  }
   tPDSet ext = search(vert, parta, incoming, partb,incoming, partc, outgoing);
   if( ext.empty() ) return;
   IDPair in(parta, partb);
   for(tPDSet::const_iterator iter=ext.begin(); iter!=ext.end();
       ++iter) {
+    if(theProcessOption>=1) {
+      PDVector::const_iterator loc = find(theOutgoing.begin(),theOutgoing.end(),
+					  *iter);
+      if(loc==theOutgoing.end()) continue;
+    }
     HPDiagram nhp(in,make_pair(partc, (*iter)->id()));
     nhp.vertices = make_pair(vert, vert);
     nhp.channelType = HPDiagram::fourPoint;
@@ -366,7 +415,17 @@ void
 HardProcessConstructor::makeDiagrams(IDPair in, long out1, const tPDSet & out2, 
 				     PDPtr inter, HPDiagram::Channel chan, 
 				     VBPair vertexpair, BPair cross) {
+  if(theProcessOption>=1) {
+    PDVector::const_iterator loc = find(theOutgoing.begin(),theOutgoing.end(),
+					getParticleData(out1));
+    if(loc==theOutgoing.end()) return;
+  }
   for(tPDSet::const_iterator it = out2.begin(); it != out2.end(); ++it) {
+    if(theProcessOption>=1) {
+      PDVector::const_iterator loc = find(theOutgoing.begin(),theOutgoing.end(),
+					  *it);
+      if(loc==theOutgoing.end()) continue;
+    }
     HPDiagram nhp( in,make_pair(out1, (*it)->id()) );
     nhp.intermediate = inter;
     nhp.vertices = vertexpair;

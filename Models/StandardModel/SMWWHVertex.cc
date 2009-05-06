@@ -63,7 +63,7 @@ void SMWWHVertex::Init() {
 void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
   int ibos=abs(a->id());
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = weakCoupling(q2) * UnitRemoval::InvE * _mw;
     _q2last=q2;
   }

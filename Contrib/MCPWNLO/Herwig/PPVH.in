@@ -1,0 +1,91 @@
+# This will read in all the standard hadron decay modes and add
+# the new particles that are used in HERWIG 6.4, but not in ThePEG
+#read Decays.in
+#
+#cd /Herwig/
+#set theGlobalParameters:EffectiveGluonMass 0.750*GeV
+#set theGlobalParameters:HadronizationScale 0.5*GeV
+#set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
+#set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
+#set theGlobalParameters:MinVirtuality2 0.1*GeV2
+#set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+#
+set /Herwig/Particles/B0:Stable 0
+set /Herwig/Particles/B+:Stable 0
+set /Herwig/Particles/B_s0:Stable 0
+set /Herwig/Particles/Lambda_b0:Stable 0
+set /Herwig/Particles/Xi_b0:Stable 0
+set /Herwig/Particles/Xi_b-:Stable 0
+set /Herwig/Particles/Omega_b-:Stable 0
+
+#
+mkdir LesHouches
+cd LesHouches
+library LesHouches.so
+cd /Herwig/EventHandlers
+#create ThePEG::LesHouchesFileReader Reader2 MadGraphReader.so
+create ThePEG::LesHouchesFileReader Reader2  LesHouches.so
+set Reader2:FileName PPVH.dat
+set Reader2:BeamA 2212
+set Reader2:BeamB -2212
+set Reader2:EBeamA 980.0
+set Reader2:EBeamB 980.0
+set Reader2:PDFA /Herwig/Partons/MRST
+set Reader2:PDFB /Herwig/Partons/MRST
+create ThePEG::Cuts QCDCuts
+set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:X1Min 0.00001
+set QCDCuts:X2Min 0.00001
+set QCDCuts:MHatMin 20.*GeV
+set QCDCuts:X1Max 0.9
+set QCDCuts:X2Max 0.9
+create ThePEG::LesHouchesEventHandler LesHouchesHandler
+insert LesHouchesHandler:LesHouchesReaders[0] Reader2
+set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
+set LesHouchesHandler:StatLevel 2
+set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
+set LesHouchesHandler:WeightOption NegUnitWeight
+# insert LesHouchesHandler:PostSubProcessHandlers [0] /Herwig/QEDRadiation/QEDRadHandler
+
+cd /Herwig/Cuts
+set JetKtCut:MinKT 0.0*GeV
+
+cd /Herwig/Generators 
+create ThePEG::EventGenerator MGGenerator
+set MGGenerator:RandomNumberGenerator /Herwig/Random
+set MGGenerator:StandardModelParameters /Herwig/Model
+set MGGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
+
+cd /Herwig/Generators
+set MGGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
+
+cd /Herwig/MatrixElements/
+
+#e+e- 
+insert SimpleQCD:MatrixElements[0] /Herwig/MatrixElements/MEPP2WH
+#MEqq2W2ff MEqq2gZ2ff MEee2gZ2qq
+
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 1.9*GeV
+
+set /Herwig/Shower/Evolver:MECorrMode 0
+
+cd /Herwig/Analysis
+cd /Herwig/Analysis
+create Herwig::MyVHAnalysis MyVHAnalysis MyVHAnalysis.so
+insert /Herwig/Generators/MGGenerator:AnalysisHandlers 0 MyVHAnalysis
+
+cd /Herwig/Generators/
+set MGGenerator:NumberOfEvents 1000000
+set MGGenerator:RandomNumberGenerator:Seed 31122001
+set MGGenerator:DebugLevel 1
+set MGGenerator:PrintEvent 10
+set MGGenerator:MaxErrors 100000000
+set MGGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+#set MGGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+#set MGGenerator:Strategy /Herwig/ThePEGStrategy
+#set MGGenerator:EventHandler:LuminosityFunction:Energy 500
+#
+saverun MG MGGenerator
+

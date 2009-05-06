@@ -108,7 +108,6 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
   if( modes.size() == 1 ) {
     parent->width(pwidth);
     if( pwidth > ZERO ) parent->cTau(hbarc/pwidth);
-    parent->widthCut(5.*pwidth);
     dmbrat = 1.;
   }
   else {
@@ -116,7 +115,6 @@ void NBodyDecayConstructorBase::setBranchingRatio(tDMPtr dm, Energy pwidth) {
     Energy newWidth(currentwidth + pwidth);
     parent->width(newWidth);
     if( newWidth > ZERO ) parent->cTau(hbarc/newWidth);
-    parent->widthCut(5.*newWidth);
     //need to reweight current branching fractions if there are any
     double factor(currentwidth/newWidth);
     for(DecaySet::const_iterator dit = modes.begin(); 
