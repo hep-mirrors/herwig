@@ -578,7 +578,7 @@ tPPair ShowerHandler::remakeRemnant(tPPair oldp){
   PBIPair newbins = pex.newRemnants(oldp, newp, newStep());
   newStep()->addIntermediate(newp.first);
   newStep()->addIntermediate(newp.second);
-  // return the new partona
+  // return the new partons
   return newp;
 }
 
@@ -635,7 +635,7 @@ void ShowerHandler::boostCollision(bool boost) {
     boost_ = LorentzRotation(-ptotal.boostVector());
     Axis axis((boost_*incoming_.first ->momentum()).vect().unit());
     if(axis.perp2()>0.) {
-      double sinth(sqrt(1.-sqr(axis.z())));
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
       boost_.rotate(acos(-axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     }
   }

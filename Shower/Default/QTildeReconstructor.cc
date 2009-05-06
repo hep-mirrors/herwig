@@ -879,7 +879,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-//   double sinth(sqrt(1.-sqr(axis.z())));
   double sinth(sqr(axis.x())+sqr(axis.y()));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
@@ -1289,7 +1288,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
       Lorentz5Momentum pb =  (**cjt).showerMomentum();
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
-      double sinth(sqrt(1.-sqr(axis.z())));
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
       rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       rot.rotateX(Constants::pi);
       rot.boostZ( pa.e()/pa.vect().mag());
