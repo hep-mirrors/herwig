@@ -385,7 +385,7 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
 void DISHardGenerator::generateCompton() {
   // maximum value of the xT
   double xT = (1.-xB_)/xB_;
-  double xTMin = 4.*sqr(pTmin_)/q2_;
+  double xTMin = 2.*pTmin_/sqrt(q2_);
   double zp;
   // prefactor
   double a = alphaS_->overestimateValue()*comptonWeight_/Constants::twopi;
@@ -437,7 +437,7 @@ void DISHardGenerator::generateCompton() {
 void DISHardGenerator::generateBGF() {
   // maximum value of the xT
   double xT = (1.-xB_)/xB_;
-  double xTMin = 4.*sqr(pTmin_)/q2_;
+  double xTMin = 2.*max(pTmin_,pTCompton_)/sqrt(q2_);
   double zp;
   // prefactor
   double a = alphaS_->overestimateValue()*BGFWeight_/Constants::twopi;
