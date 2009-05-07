@@ -195,7 +195,7 @@ void UEDF1F0W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       (kkparticle >= 6100001 && kkparticle <= 6100006) ||
       (kkparticle >= 5100011 && kkparticle <= 5100016) ||
       (kkparticle >= 6100011 && kkparticle <= 6100016) ) {
-    if(q2 != theq2last) {
+    if(q2 != theq2last || theCouplast == 0.) {
       theq2last = q2;
       theCouplast = electroMagneticCoupling(q2);
     }

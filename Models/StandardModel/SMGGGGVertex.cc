@@ -54,7 +54,7 @@ void SMGGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
   setType(1);
   setOrder(0,1,2,3);
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = sqr(strongCoupling(q2));
     _q2last=q2;
   }

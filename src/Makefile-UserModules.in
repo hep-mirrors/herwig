@@ -1,6 +1,8 @@
 # -*- Makefile -*- (for emacs)
 # @configure_input@
 #
+# @PACKAGE_STRING@
+#
 # This Makefile is intended for compiling Herwig++ plugins
 # You can find example plugins in the Contrib directory
 #
@@ -13,7 +15,7 @@
 # 
 CXX = @CXX@
 
-CXXFLAGS = @AM_CXXFLAGS@ @CXXFLAGS@
+CXXFLAGS = -g -W -Wall @CXXFLAGS@
 
 # add additional package header directories here
 CPPFLAGS = -I@prefix@/include @THEPEGINCLUDE@ @GSLINCLUDE@

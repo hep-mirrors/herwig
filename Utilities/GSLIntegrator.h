@@ -46,7 +46,7 @@ public:
   /**
    * Default Constructor uses values in GSL manual as parameters
    **/
-  GSLIntegrator() : _abserr(1.0E-35), _relerr(5.E-5), _nbins(1000) {}
+  GSLIntegrator() : _abserr(1.0E-35), _relerr(1.0E-3), _nbins(1000) {}
   
   /**
    * Specify all the parameters.

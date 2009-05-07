@@ -84,7 +84,7 @@ void UEDZ0A1h1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   }
   if( (scaA == 5100036 && scaB == 5100025) ||
       (scaB == 5100036 && scaA == 5100025) ) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0.) {
       theq2Last = q2;
       theCoupLast = theKappa*electroMagneticCoupling(q2)/theSin2ThetaW;
     }

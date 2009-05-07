@@ -43,10 +43,17 @@ inline bool operator==(const HPDiagram & x, const HPDiagram & y) {
 	   y.outgoing.first != y.outgoing.second &&
 	   x.outgoing.first == y.outgoing.second && 
 	   x.outgoing.second == y.outgoing.first &&
-	   x.ordered.second != y.ordered.second ) {
-    if( !y.intermediate && !x.intermediate ) return true;
-    if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
-      return true;
+	   x.channelType == y.channelType) {
+    if(x.channelType==HPDiagram::fourPoint) return true;
+    if(x.channelType==HPDiagram::tChannel&&
+       x.ordered.second != y.ordered.second) {
+      if( abs(y.intermediate->id()) == abs(x.intermediate->id()) )
+	return true;
+    }
+    if(x.channelType==HPDiagram::sChannel) {
+      if( y.intermediate->id() == x.intermediate->id() )
+	return true;
+    }
   }
   return false;
 }

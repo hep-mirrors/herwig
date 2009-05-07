@@ -1,0 +1,175 @@
+\documentclass[12pt,a4paper,oneside]{article}
+%\documentclass{article}
+%\usepackage{afterpage}
+%\usepackage[hang,small,bf]{caption}
+%\usepackage{fancyhdr}
+%\usepackage[something]{optional}
+%\usepackage[todo, question, colour]{optional}
+%\usepackage{epsfig,axodraw}
+%\usepackage{array,cite,amsmath,amssymb}
+%\usepackage{cite}
+%\usepackage{makeidx}
+%\usepackage{doublespace}  % This doesn't work with FeynArts diagrams
+%\usepackage{array}
+%\usepackage{multicol}
+%\usepackage{subfigure}
+%\usepackage{rotating}
+%\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{booktabs}
+%\input{psfig.tex}
+%\usepackage{psfig}
+\oddsidemargin=-0.05in
+\textwidth=6.9in
+\topmargin=-0.8in
+\textheight=9.55in
+%\reqno
+%\newcounter{table}
+\addtocounter{table}{0}
+\usepackage{hyperref}
+\usepackage{epsfig,bm,amsmath}
+\onehalfspacing
+% \makeatletter
+% \DeclareRobustCommand{\Cpp}
+% {\valign{\vfil\hbox{##}\vfil\cr
+%    \textsf{C\kern-.1em}\cr
+%    $\hbox{\fontsize{\sf@size}{0}\textbf{+\kern-0.05em+}}$\cr}%
+% }
+\begin{document}
+\begin{center}
+\Large \textbf {Drell-Yan Vector Boson Production with {\tt MCPWNLO}} \\
+\end{center}
+\section{Introduction}
+This manual describes how to use this program to generate Drell-Yan events at hadron colliders with NLO accuracy using the {\tt MC@NLO} \cite{Frixione:2002ik} and {\tt POWHEG} \cite{Nason:2004rx} methods. More details on the use and application of the program and its interface with {\tt Herwig++} \cite{Bahr:2008pv} can be found in \cite{LatundeDada:2007jg, seyi}.
+\section{Setting the parameters}
+Within the directory {\tt MCPWNLO/DRELLYAN}, the file {\tt DYPP\_INPUTS.h} includes all the available user parameters
+for the main program {\tt DYPP.cxx}. The parameters are:\\
+\\
+{\tt bool MCNLO}: Set to {\tt true} if the {\tt MC@NLO} method is to be used or {\tt
+  false} if the {\tt POWHEG} method is to be used. \\
+{\tt bool trunc}: Set to {\tt true} if truncated shower of at most one gluon is to be
+implemented for {\tt POWHEG} method. Note that to interface with an angular ordered
+shower, this should be set to {\tt true}. \\
+{\tt int VBID}: Particle ID for the vector boson required. Set to {\tt 23} for $Z$ boson
+production or {\tt 24} for $W$ boson production. \\
+{\tt double cme}: The hadron-hadron center of mass energy in GeV e.g. 1800/1960 for the
+Tevatron and 14000 for the LHC. \\
+{\tt bool acc}: Type of collider. Set to {\tt true} if $p-p$ or {\tt false} if
+{$p-\bar{p}$. \\
+{\tt double Mz}: Pole mass of the $Z$ boson in GeV.
+{\tt double Mw}: Pole mass of the $W$ boson in GeV.
+{\tt bool zerowidth }: Set to {\tt true} if zero width approximation is to be used or {\tt
+  false} if Breit-Wigner resonance is to be used for boson mass. \\
+{\tt double widthw}: Width of the $W$ boson in GeV.\\
+{\tt double widthz}: Width of the $Z$ boson in GeV.\\
+{\tt double halfwidth}: Number of halfwidths either side of the resonance peak. \\
+{\tt char* rscheme}: Factorization scheme. Options are ``{\tt MSbar}'' and ``{\tt DIS}''.\\
+{\tt char* PDFset}: The PDFset to be used e.g. ``{\tt cteq5m.LHgrid}''. Make sure this agrees with the factorization
+scheme set above. \\
+{\tt int nevint}: Number of events (typically $ \approx 10^5$) to integrate over for cross-section calculation and
+determination of maximum weights. \\
+{\tt int nevgen}: Number of events (typically $\approx 10^5$) to generate. \\
+{\tt int rseed}:  Initial seed for the random number generator. \\ 
+
+\section{Generating partonic events}
+After setting the parameters, open the {\tt Makefile} and set {\tt LHAPDFDIR} to your
+{\tt LHAPDF} directory. Also set {\tt HERWIGDIR} to the address of the {\tt Herwig} folder
+in the directory {\tt MCPWNLO}. 
+To run {\tt DYPP.cxx}, in the folder {\tt DRELLYAN}, type the following commands :\\
+\\
+{\tt make clean} \\
+{\tt make} \\
+\\
+This creates the executable {\tt DYPP} and {\tt run\_dypp} (which is moved to {\tt
+  HERWIGDIR}). Next, type: 
+{\tt ./DYPP} \\
+This runs the main program and generates the Les Houches file for interface with \textsf{Herwig++}. This file will be called {\tt PWDYPP.dat} if running {\tt POWHEG} and {\tt
+  MCDYPP.dat} if running {\tt MC@NLO}. It contains unweighted events with absolute weights
+of $1$.
+\section{{\tt POWHEG} requirements}
+If running {\tt POWHEG}, go to the folder {\tt PWInstallFiles} in the main {\tt MCPWNLO}
+directory. There you will find the following files:\\
+{\tt PartnerFinder.cc}  {\tt PartnerFinder.h}  {\tt PartnerFinder.icc}
+Replace the files of the same names in {\tt /Shower/Base} folder of your \textsf{Herwig++}
+installation directory. Then go back to the {\tt Shower} folder not in {\tt Base}!) and type: \\
+\\
+{\tt make} \\
+{\tt make install} \\
+\\
+This allows us to set the colour partner of the hardest emission correctly for {\tt
+  POWHEG}.
+\section{Analysis} 
+
+In the folder {\tt DYAnalysis} in the {\tt DRELLYAN} directory are some analysis files
+which analyze the events after interfacing the Les Houches file with
+\textsf{Herwig++}. \\
+{\tt MySimpleAnalysis.cc} contains the main program which provides
+histograms for the transverse momenta of the dilepton pair produced from the vector
+bosons, the rapidity and azimuthal distributions of the bosons, the masses of the bosons and the rapidity and
+azimuths of the leptons. Other histograms can be added by booking histograms in the {\tt
+  MySimpleAnalysis.icc} file and declaring them in the {\tt MySimpleAnalysis.h}.\\
+Open the {\tt Makefile} and set {\tt HPDIR} and
+{\tt THEPEGDIR} to the folder where you installed \textsf{Herwig++} and
+\textsf{ThePEG}. Compile the directory by typing the following commands. \\
+\\
+{\tt make} \\
+{\tt make install} \\
+\\
+in the {\tt DYAnalysis} directory. This recreates the library, {\tt MySimpleAnalysis.so}.
+
+\section{Interfacing with \textsf{Herwig++}}
+Having generated the Les Houches file and set up the analysis handler, the next step is to
+run \textsf{Herwig++}. It is assumed that both \textsf{Herwig++} and \textsf{ThePEG} have
+already been installed on your system. 
+
+Now go to the directory {\tt MCPWNLO/Herwig} and open the initialization file {\tt
+  DYPP.in}. This contains \textsf{Herwig++} user parameters which can be set depending on
+which process and NLO method you are running. The default set-up is for {\tt MC@NLO} $W$
+boson production at the $1800$ GeV Tevatron. A selection of these are:\\
+\\
+{\tt set Reader2:FileName DYPP.dat}: This is the filename for the Les Houches file your
+generated file is converted into by the program {\tt DRELLYAN/run\_dypp.cxx}. Leave this
+as it is! \\
+{\tt set Reader2:EBeamA 900.0}: The beam energy in GeV of the hadron from the `left'. \\
+{\tt set Reader2:EBeamB 900.0}: The beam energy in GeV of the hadron from the `right'.\\
+{\tt set LesHouchesHandler:WeightOption NegUnitWeight}: The weight option for the
+events. This allows for negative weighted events. \\
+{\tt insert SimpleQCD:MatrixElements[0] MEqq2W2ff}: The hard process. Here it's set up for
+$W$ boson production.\\
+\\
+Next are commands which should be uncommented if running {\tt POWHEG}. If running {\\
+tt MC@NLO}, comment these out. \\
+\\
+{\tt set /Herwig/Shower/Evolver:HardVetoMode 0}: The veto mode to be applied. For {\tt
+  POWHEG}, this should be set to $1$.\\
+{\tt set /Herwig/Shower/PartnerFinder:PHPartnerFinder 0}: The partner finder option. This
+should be set to $1$ for {\tt POWHEG}.\\
+{\tt set /Herwig/Shower/Evolverr:HardVetoScaleSource 0}: This reads the maximum $p_T$ for
+the veto from {\tt SCALUP} in the LEs Houches file. Set this to $1$ for {\tt POWHEG}.\\
+\\
+Having set up the initialization file, run \textsf{Herwig++} by typing the following
+commands: \\
+\\
+{\tt ./run\_dypp [eventfile] [number of events]} \\
+\\
+An example of the run
+command is:\\
+\\
+{\tt ./run\_dypp /usera/seyi/MCPWNLO/DRELLYAN/MCDYPP.dat 10000}\\
+\\
+where you should replace the eventfile with the path to your Les Houches file.
+\\
+  At the end of the run, a topdraw file called {\tt MG-MySimpleAnalysis.top} will be
+  produced containing the histograms booked by the analysis handler. If you have topdraw
+  installed, you can convert this to a postscript file by typing the command:\\
+\\
+{\tt td -dPOSTSCRIPT  MG-MySimpleAnalysis.top}
+\section{Further Information}
+For further information about {\tt MCPWNLO} contact: {\tt seyi@hep.phy.cam.ac.uk}.
+\bibliography{manual}
+\bibliographystyle{utphys}
+\end{document}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

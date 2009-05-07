@@ -36,7 +36,7 @@ CXXOBJS   = $(CXXSOURCES:.cxx=.o)
 CC	  = gcc	
 FF	  = g77
 
-all: ILCTTBAR500 run_ilc
+all: ILCTTBAR run_ilc
 
 %.o:		%.cxx
 		$(CC) -c $(OPT) \
@@ -45,7 +45,7 @@ all: ILCTTBAR500 run_ilc
 %.o:		%.f
 		$(FF) -c $(OPT) $^ -o $@
 
-ILCTTBAR500:	ILCTTBAR500.o
+ILCTTBAR:	ILCTTBAR.o
 		g++ $(OPT) -I./src/ $^\
 		-L$(LIBG2C) -lg2c -o $@
 
@@ -60,7 +60,7 @@ run_ilc:	run_ilc.o
 
 clean:
 		rm *.o
-		rm ILCTTBAR500
+		rm ILCTTBAR
 	       
 
 

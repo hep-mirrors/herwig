@@ -284,10 +284,11 @@ int main() {
     do {
       // Random numbers 
    double r1=random(seed);
+   double r2=random(seed);
    double r3=random(seed);
    double r4=random(seed);
     x1 = r1;  
-    x2 = r1*random(seed)+1.-r1;
+    x2 = r2;
       if (Jt==1) {
 	QQgsc(r3, r4, x1, x2, param, wgt, wgtax, wgt1, wgtax1, resolve);
       wt = (wgt*sigV[ID]+wgtax*sigA[ID])/2.;}

@@ -104,7 +104,7 @@ void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     (ianti >= 5100011 && ianti <= 5100016) ||
     (ianti >= 6100011 && ianti <= 6100016);
   if( ferma && fermb  ) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0. ) {
 	theq2Last = q2;
 	theCoupLast = 0.5*weakCoupling(q2)/theCosThW;
     }

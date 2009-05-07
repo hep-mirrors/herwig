@@ -879,7 +879,6 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pb = pin[0];
   Axis axis(pa.vect().unit());
   LorentzRotation rot;
-//   double sinth(sqrt(1.-sqr(axis.z())));
   double sinth(sqr(axis.x())+sqr(axis.y()));
   rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
   rot.rotateX(Constants::pi);
@@ -909,7 +908,7 @@ reconstructInitialFinalSystem(vector<ShowerProgenitorPtr> jets) const {
   Lorentz5Momentum pnew[2] = { a[0]*kb*n1+b[0]/kb*n2+qperp,
 			       a[1]*kc*n1+b[1]/kc*n2+qperp};
   LorentzRotation rotinv=rot.inverse();
-  LorentzRotation transb=rotinv*solveBoost(pnew[0],qbp)*rot;
+  LorentzRotation transb=rotinv*solveBoostZ(pnew[0],qbp)*rot;
   LorentzRotation transc=rotinv*solveBoost(pnew[1],qcp)*rot;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     if(jets[ix]->progenitor()->isFinalState())
@@ -993,6 +992,35 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   else {
     R.boost( beta );
   } 
+  return R;
+}
+
+LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
+						 const Lorentz5Momentum & p ) const {
+  static const Energy2 eps2 = 1e-8*GeV2;
+  static const Energy  eps  = 1e-4 *GeV;
+  LorentzRotation R;
+  double beta;
+  Energy2 den = (p.t()*q.t()-p.z()*q.z());
+  Energy2 num = -(p.z()*q.t()-q.z()*p.t());
+  if(abs(den)<eps2||abs(num)<eps2) {
+    if(abs(p.t()-abs(p.z()))<eps&&abs(q.t()-abs(q.z()))<eps) {
+      double ratio = sqr(q.t()/p.t());
+      beta  = -(1.-ratio)/(1.+ratio); 
+    }
+    else {
+      beta=0.;
+    }
+  }
+  else {
+    beta = num/den;
+    
+  }
+  Lorentz5Momentum ptest = R*p;
+  if(ptest.z()/q.z() < 0. || ptest.t()/q.t() < 0. ) {
+    throw KinematicsReconstructionVeto();
+  }
+  R.boostZ(beta);
   return R;
 }
 
@@ -1289,7 +1317,7 @@ reconstructFinalStateShower(Boost & toRest, Boost & fromRest,
       Lorentz5Momentum pb =  (**cjt).showerMomentum();
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
-      double sinth(sqrt(1.-sqr(axis.z())));
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
       rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       rot.rotateX(Constants::pi);
       rot.boostZ( pa.e()/pa.vect().mag());

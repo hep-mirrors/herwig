@@ -75,7 +75,7 @@ void UEDF1F0G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << Exception::warning;
   if((abs(ifermN) >= 5100001 && abs(ifermN) <= 5100006) ||
      (abs(ifermN) >= 6100001 && abs(ifermN) <= 6100006)) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0.) {
       theq2Last = q2;
       theCoupLast = -strongCoupling(q2);
     }

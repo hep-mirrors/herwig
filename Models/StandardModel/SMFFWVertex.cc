@@ -106,7 +106,7 @@ void SMFFWVertex::Init() {
 // coupling for FFW vertex
 void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = -sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }

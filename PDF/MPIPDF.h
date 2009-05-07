@@ -38,7 +38,7 @@ public:
   /**
    * The constructor which takes a PDF object as argument, to work with.
    */
-  MPIPDF(tcPDFPtr orig = tcPDFPtr()) : thePDF(orig) {}
+  MPIPDF(cPDFPtr orig = cPDFPtr()) : thePDF(orig) {}
 
   /**
    * The destructor.
@@ -154,7 +154,7 @@ private:
   /**
    * pointer to the underlying ThePEG::PDFBase object, we are modifying.
    */
-  tcPDFPtr thePDF;
+  cPDFPtr thePDF;
 };
 
 }

@@ -100,7 +100,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
   }
   switch (_CoefRepresentation) {
   case 1: {
-    if(q2 != _q2last) {
+    if(q2 != _q2last||_couplast==0.) {
       double g = weakCoupling(q2);
       _couplast = UnitRemoval::E * pow(g,3)/_mw/sqr(Constants::pi)/sqrt(2.)/16.;
       _q2last = q2;
@@ -135,7 +135,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     break;
   }
   case 2: {
-    if(q2 != _q2last) {
+    if(q2 != _q2last||_couplast==0.) {
       double e = electroMagneticCoupling(q2);
       _couplast = pow(e,3)/_theSM->sin2ThetaW();
       _q2last = q2;

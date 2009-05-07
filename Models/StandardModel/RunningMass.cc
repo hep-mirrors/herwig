@@ -24,12 +24,12 @@ using namespace ThePEG;
 
 void RunningMass::persistentOutput(PersistentOStream & os) const {
   os << _theQCDOrder << _thePower << _theCoefficient << _theMaxFlav
-     << _theStandardModel << _lightOption;
+     << _theStandardModel << _lightOption << _heavyOption;
 }
 
 void RunningMass::persistentInput(PersistentIStream & is, int) {
   is >> _theQCDOrder >> _thePower >> _theCoefficient >> _theMaxFlav 
-     >> _theStandardModel >> _lightOption;
+     >> _theStandardModel >> _lightOption >> _heavyOption;
 }
 
 ClassDescription<RunningMass> RunningMass::initRunningMass;
@@ -68,7 +68,21 @@ void RunningMass::Init() {
      "Use the pole mass",
      1);
 
-  
+  static Switch<RunningMass,unsigned int> interfaceBottomCharmMass
+    ("TopBottomCharmMass",
+     "Option for using a running or pole mass for the top, bottom and charm quarks",
+     &RunningMass::_heavyOption, 0, false, false);
+  static SwitchOption interfaceBottomCharmMassRunning
+    (interfaceBottomCharmMass,
+     "Running",
+     "Use the running mass",
+     0);
+  static SwitchOption interfaceBottomCharmMassPole
+    (interfaceBottomCharmMass,
+     "Pole",
+     "Use the pole mass",
+     1);
+
 }
 // Return the masses used.
 vector<Energy> RunningMass::mass() const {
@@ -100,7 +114,8 @@ Energy RunningMass::value(Energy2 scale, tcPDPtr part) const {
   unsigned int id=abs(part->id());
   // calculate the running mass
   if(id<=_theMaxFlav) {
-    if(id<=3&&_lightOption==1) {
+    if( (id <= 3 && _lightOption == 1 ) ||
+	(id >= 4 && _heavyOption == 1 ) ) {
       output= part->mass();
     }
     else {

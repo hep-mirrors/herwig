@@ -127,7 +127,7 @@ void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
      (abs(neu) == 1000022 || abs(neu) == 1000023 || 
       abs(neu) == 1000025 || abs(neu) == 1000035 || 
       abs(neu) == 1000045) ) {
-    if(q2 != _q2last) {
+    if(q2 != _q2last||_couplast==0.) {
       _q2last = q2;
       _couplast = weakCoupling(q2);;
     }

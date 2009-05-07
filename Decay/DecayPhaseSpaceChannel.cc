@@ -349,14 +349,24 @@ void DecayPhaseSpaceChannel::doinit() {
   }
   // ensure intermediates either have the width set, or
   // can't possibly be on-shell
-  Energy massmax(_mode->externalParticles(0)->massMax());
-  for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
-    massmax -= _mode->externalParticles(ix)->massMin();
+  Energy massmax;
+  if(_mode->testOnShell()) {
+    massmax = _mode->externalParticles(0)->mass();
+    for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+      massmax -= _mode->externalParticles(ix)->mass();
+  }
+  else { 
+    massmax = _mode->externalParticles(0)->massMax();
+    for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+      massmax -= _mode->externalParticles(ix)->massMin();
+  }
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
     if(_intwidth.back()==ZERO && ix>0 && _jactype[ix]==0 ) {
       Energy massmin(ZERO);
       for(unsigned int iy=0;iy<_intext[ix].size();++iy)
-	massmin+=_mode->externalParticles(_intext[ix][iy])->massMin();
+	massmin += _mode->testOnShell() ? 
+	  _mode->externalParticles(_intext[ix][iy])->mass() :
+	  _mode->externalParticles(_intext[ix][iy])->massMin();
       // check if can be on-shell
       if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
 	string modeout;
@@ -364,7 +374,7 @@ void DecayPhaseSpaceChannel::doinit() {
 	  modeout += _mode->externalParticles(iy)->PDGName() + " ";
 	}
 	throw InitException() << "Width zero for " << _intpart[ix]->PDGName()
-			      << " in DecayPhaseSpaceChannel::doinit()"
+			      << " in DecayPhaseSpaceChannel::doinit() "
 			      << modeout
 			      << Exception::runerror;
       }
@@ -374,14 +384,38 @@ void DecayPhaseSpaceChannel::doinit() {
 
 void DecayPhaseSpaceChannel::doinitrun() {
   Interfaced::doinitrun();
-  for(unsigned int ix=1;ix<_jactype.size();++ix) {
-    if(_jactype[ix]==0) {
-      if(_intmass[ix]==ZERO || _intwidth[ix]==ZERO) {
-	CurrentGenerator::log() << "DecayPhaseSpaceChannel::doinitrun()" 
-				<< " Problem with parameters for " 
-				<< _intpart[ix]->PDGName()
-				<< " in phase-space integraton "
-				<< _intmass[ix]/GeV << " " << _intwidth[ix]/GeV << "\n";
+  if(!_mode->testOnShell()) return;
+  _intmass.clear();
+  _intwidth.clear();
+  _intmass2.clear();
+  _intmwidth.clear();
+  // masses and widths of the intermediate particles
+  for(unsigned int ix=0;ix<_intpart.size();++ix) {
+    _intmass.push_back(_intpart[ix]->mass());
+    _intwidth.push_back(_intpart[ix]->width());
+    _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
+    _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
+  }
+  // ensure intermediates either have the width set, or
+  // can't possibly be on-shell
+  Energy massmax = _mode->externalParticles(0)->massMax();
+  for(unsigned int ix=1;ix<_mode->numberofParticles();++ix) 
+    massmax -= _mode->externalParticles(ix)->massMin();
+  for(unsigned int ix=0;ix<_intpart.size();++ix) {
+    if(_intwidth.back()==0.*MeV && ix>0 && _jactype[ix]==0 ) {
+      Energy massmin(0.*GeV);
+      for(unsigned int iy=0;iy<_intext[ix].size();++iy)
+	massmin += _mode->externalParticles(_intext[ix][iy])->massMin();
+      // check if can be on-shell
+      if(_intmass[ix]>=massmin&&_intmass[ix]<=massmax+massmin) {
+	string modeout;
+	for(unsigned int iy=0;iy<_mode->numberofParticles();++iy) {
+	  modeout += _mode->externalParticles(iy)->PDGName() + " ";
+	}
+	throw Exception() << "Width zero for " << _intpart[ix]->PDGName()
+			  << " in DecayPhaseSpaceChannel::doinitrun() "
+			  << modeout
+			  << Exception::runerror;
       }
     }
   }
