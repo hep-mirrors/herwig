@@ -140,6 +140,8 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
       }
       if(abs(1.-pa.e()/pa.vect().mag())>1e-6) rot.boostZ( pa.e()/pa.vect().mag());
       pb *= rot;
+
+
       if(pb.perp2()/GeV2>1e-20) {
 	Boost trans = -1./pb.e()*pb.vect();
 	trans.setZ(0.);

@@ -1,9 +1,9 @@
 SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 7:0:0
+HwAnalysis_la_LDFLAGS = -module -version-info 7:1:0
 HwAnalysis_la_SOURCES = \
-EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
+EventShapes.cc EventShapes.fh EventShapes.h  \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.h \
 BasicConsistency.cc BasicConsistency.h \
 LEPMultiplicityCount.cc LEPMultiplicityCount.h \

@@ -11,6 +11,7 @@ read bosons.in
 read mesons.in
 read baryons.in
 read diquarks.in
+read DiffractiveParticles.in
 
 mkdir /Herwig/Masses
 cd /Herwig/Masses

@@ -349,6 +349,7 @@ private:
 
   /**
    *  Map containing the sudakovs for the final-state particles
+   *  and also the minimum allowed scale of branching type
    */
   multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > > _fbranchings;
 
@@ -426,6 +427,12 @@ private:
    * The fixed alphaS value that was used to generate mad graph events
    */
   double _alphaSMG;
+  
+  /*
+   * The global alphaS factor to ensure all alphaS weights are less than one
+   */
+  double _global_alphaS_wgt;
+
 
   /**`
    * Histogram of sudakov weights

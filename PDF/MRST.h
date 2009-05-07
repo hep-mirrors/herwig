@@ -332,7 +332,12 @@ private:
   /**
    *  The \f$x\f$ values for interpolation
    */
-  static double xxb[nx+1];
+  static double lxx[nx+1];
+
+  /**
+   *  The \f$x\f$ values for interpolation
+   */
+  static double lxxb[nx+1];
 
   /**
    *  The \f$q^2\f$ values for interpolation
@@ -342,7 +347,7 @@ private:
   /**
    *  The \f$q^2\f$ values for interpolation
    */
-  static double qqb[nq+1];
+  static double lqq[nq+1];
 
   /**
    *  Coefficients used for interpolation

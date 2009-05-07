@@ -275,6 +275,7 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 	    VectorWaveFunction interv = 
 	      _vec[idiag].first->evaluate(scale, widthOption(), offshell, 
 					  _fwave[if1], _fbwave[if2]);
+	    interv.direction(Helicity::incoming);
 	    diag = _vec[idiag].second->evaluate(scale, _vwave.first[iv1],
 						_vwave.second[iv2], interv);
 	  } 

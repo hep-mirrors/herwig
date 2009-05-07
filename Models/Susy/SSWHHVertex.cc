@@ -174,7 +174,7 @@ void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
 	theCouplast = Complex(0., 0.5)/theSw;
     }
   }
-  if( q2 != theq2last ) {
+  if( q2 != theq2last || theElast==0.) {
     theq2last = q2;
     theElast = electroMagneticCoupling(q2);
   }

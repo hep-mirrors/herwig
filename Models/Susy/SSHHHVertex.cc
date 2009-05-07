@@ -164,7 +164,7 @@ void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     return;
   }
   
-  if( q2 != theq2last ) {
+  if( q2 != theq2last || theElast==0. ) {
     theq2last = q2;
     theElast = electroMagneticCoupling(q2);;
   }

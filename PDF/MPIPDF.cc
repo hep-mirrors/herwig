@@ -13,11 +13,6 @@
 
 #include "MPIPDF.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MPIPDF.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/ParticleData.h"

@@ -265,6 +265,13 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   // cluster the event
   _max_mult = maxMult;
 
+  //calculate a global alphaS factor to ensure alphaS weight is
+  //always less than one.
+  double alphaS_max =  _alphaS->value( sqr( _fbranchings.find( long( 1 ) )->second.second ) );
+  _global_alphaS_wgt = 1.;
+  for( int ix = minMult; ix < maxMult; ix++ ) 
+    _global_alphaS_wgt *= alphaS_max / _alphaSMG;
+
   if( _clusterOption == 0 || _clusterOption == 2 || _clusterOption == 3 )
     _theHardTree = doClusteringOrdered();
   else
@@ -376,9 +383,9 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   }
   //divide by constant 5 here is just a factor becasue alphas = 0.2 isn't high enough to guarrantee
   //that the alphaS weight is < 1
-  if( ! _reweightOpt ){
-    if ( SudWgt / 5. > 1 ) cerr << SudWgt <<"\n";
-    return SudWgt / 5.;
+  if( _reweightOpt != 1 ){
+    if ( SudWgt / 2. / _global_alphaS_wgt > 1 ) cerr << SudWgt / 2. / _global_alphaS_wgt <<"\n";
+    return SudWgt / 2. / _global_alphaS_wgt;
   }
   
   else{
@@ -506,30 +513,32 @@ void PowhegHandler::doinitrun() {
       Energy qtildemin = integrator->minimumScale();
 
       //initialise sudakov values on grid ij ( pt_i, qtilde_j )
-      vector< double > dummy( _npoint, 0. );
-      vector< vector< double > > sud( _npoint, dummy );
+      vector< double > dummy( _npoint + 1, 0. );
+      vector< vector< double > > sud( _npoint + 1, dummy );
       vector< Energy > ptCut;
       vector< Energy > scale;
   
       //fill scales at start
-      for( unsigned int ix = 0; ix < _npoint; ++ix ){
+      for( unsigned int ix = 0; ix < _npoint + 1; ++ix ){
 	ptCut.push_back( _min_pt_cut + double( ix ) * ( _max_pt_cut - _min_pt_cut ) / double( _npoint - 1 ) );
 	scale.push_back( qtildemin + double( ix ) * ( qtildemax - qtildemin ) / double( _npoint - 1 ) );
       }
       //fill sud integrals
-      for( unsigned int ix = 0; ix < _npoint; ++ix ){
+      for( unsigned int ix = 0; ix < _npoint + 1; ++ix ){
 	sud[ix][0] = 0.; 
-	for( unsigned int jx = 1; jx < _npoint; ++jx ) {
+	for( unsigned int jx = 1; jx < _npoint + 1; ++jx ) {
 	  //the pt_cut here is pt in the jet measure variable used
 	  double currentSud = integrator->value( scale[ jx ], scale[ jx - 1 ], ptCut[ix] );
 	  sud[ix][jx] = ( sud[ix][ jx - 1 ]  + currentSud );
-	  cerr<<jx<<"\t";
+	  // cerr<<jx<<"\t";
 	}
-	cerr<<ix<<"\n";
+	//	cerr<<ix<<"\n";
       }
+
+      cerr<<"\n\nextreme scales pt, qt = "<< ptCut[ _npoint  ] / GeV <<" "<<  scale[ _npoint ] / GeV <<"\n\n\n";
       //exponentiate to the Sudakov
-      for( unsigned int ix = 0; ix < _npoint; ++ix ) {
-	for( unsigned int jx = 0; jx < _npoint; ++jx ) {
+      for( unsigned int ix = 0; ix < _npoint+1; ++ix ) {
+	for( unsigned int jx = 0; jx < _npoint+1; ++jx ) {
 	  sud[ix][jx] = exp( - sud[ix][jx] );
 	}
       }
@@ -644,6 +653,7 @@ void PowhegHandler::doinitrun() {
       }
     }
   }
+
   if( _testSudakovs ) testSudakovs();
   if( _qtildeDist ) makeQtildeDist();
 }

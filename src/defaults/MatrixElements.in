@@ -94,11 +94,11 @@ library HwPowhegMEHadron.so
 
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ffPowheg PowhegMEqq2gZ2ff
-set MEqq2gZ2ff:Process 3
+set PowhegMEqq2gZ2ff:Process 3
 
 # q qbar to W -> l nu
 create Herwig::MEqq2W2ffPowheg PowhegMEqq2W2ff
-set MEqq2gZ2ff:Process 2
+set PowhegMEqq2gZ2ff:Process 2
  
 # PP->ZH
 create Herwig::MEPP2ZHPowheg PowhegMEPP2ZH

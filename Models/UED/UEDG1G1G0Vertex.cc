@@ -36,7 +36,7 @@ void UEDG1G1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
   if( (id1 == ParticleID::g && id2 == 5100021 && id3 == 5100021) ||
       (id2 == ParticleID::g && id1 == 5100021 && id3 == 5100021) ||
       (id3 == ParticleID::g && id1 == 5100021 && id2 == 5100021) ) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0.) {
       theq2Last = q2;
       theCoupLast = strongCoupling(q2);
     }

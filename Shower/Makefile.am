@@ -1,7 +1,7 @@
 SUBDIRS = SplittingFunctions Couplings Powheg Fortran \
           Default Base .
 pkglib_LTLIBRARIES = HwShower.la
-HwShower_la_LDFLAGS = -module -version-info 8:0:0
+HwShower_la_LDFLAGS = -module -version-info 8:1:0
 HwShower_la_LIBADD = SplittingFunctions/libHwSplitting.la \
                      Couplings/libHwCouplings.la \
                      Default/libHwDefaultShower.la \

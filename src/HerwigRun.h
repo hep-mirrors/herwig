@@ -9,9 +9,7 @@
 #ifndef HERWIG_RUN_H_
 #define HERWIG_RUN_H_
 
-#include <ThePEG/EventRecord/Step.h>
-#include <ThePEG/Repository/EventGenerator.h>
-#include <iostream>
+#include <ostream>
 
 namespace Herwig {
 
@@ -50,16 +48,6 @@ public:
   //@}
   
   /**
-   *  Access to the event generator pointer
-   */
-  ThePEG::EGPtr eventGenerator();
-
-  /**
-   *  generate an event
-   */
-  ThePEG::EventPtr generateEvent();
-
-  /**
    * Generate the requested number of events
    */
   void generateEvents();
@@ -69,44 +57,9 @@ public:
    */
   //@{
   /**
-   *  Number of events to generator
-   */
-  long getN() const;
-
-  /**
-   *  Number of events which have been generated
-   */
-  long getNGen() const;
-
-  /**
-   *  Status of the event generator
-   */
-  RunStatus status() const;
-
-  /**
    *  State of the object
    */
   bool good() const;
-
-  /**
-   *  Is this the run mode
-   */
-  bool isRunMode() const;
-
-  /**
-   *  Is this the init mode
-   */
-  bool isInitMode() const;
-
-  /**
-   *  Is this the read mode
-   */
-  bool isReadMode() const;
-
-  /**
-   *  Is the event generator ready to run
-   */
-  bool preparedToRun();
   //@}
 
   /**
@@ -119,57 +72,22 @@ private:
   /**
    *  Number of events to generate
    */
-  long N;
-
-  /**
-   *  Number of events which have been generated
-   */
-  long ngen;
+  long N_;
 
   /**
    *  Random number seed
    */
-  int seed;
+  int seed_;
 
   /**
    *  Name of event generator to run
    */
-  std::string run;
-
-  /**
-   *  Name of the repository file
-   */
-  std::string repo;
-
-  /**
-   *  Name of the input file to generate the repository
-   */
-  std::string repoin;
-
-  /**
-   *  Whether or not the event generator has been created
-   */
-  bool egCreated;
+  std::string runname_;
 
   /**
    *  Status of the event generator
    */
-  RunStatus Status;
-
-  /**
-   *  Pointer to the event generator
-   */
-  ThePEG::EGPtr eg;
-
-  /**
-   *  Whether or not the event generator is initialised
-   */
-  bool isInitialized;
-
-  /**
-   *  The last event which was generated
-   */
-  ThePEG::EventPtr lastEvent;
+  RunStatus status_;
 };
 
 }

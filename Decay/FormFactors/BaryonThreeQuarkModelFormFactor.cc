@@ -159,7 +159,7 @@ void BaryonThreeQuarkModelFormFactor::doinit() {
     generator()->log() << "Omega_b-->Omega_c*0 decay" 
 		       << width/6.582119E-22/MeV << "\n";
     // output some plots for testing
-    double lambdabar;
+    double lambdabar = -999.999;
     ofstream output("ThreeQuark.top");
     output << "set font duplex" << endl;
     output << "title top \"Figure 3 from paper \"" << endl;

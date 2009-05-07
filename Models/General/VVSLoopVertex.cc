@@ -31,6 +31,7 @@ void VVSLoopVertex::persistentInput(PersistentIStream & is, int) {
 }
 
 void VVSLoopVertex::doinit() {
+  // ffini needed here for BSM initialization code!
   Looptools::ffini();
   GeneralVVSVertex::doinit();
 }

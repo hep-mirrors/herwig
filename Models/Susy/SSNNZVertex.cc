@@ -112,7 +112,7 @@ void SSNNZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
      ic2 == ParticleID::SUSY_chi_10 || ic2 == ParticleID::SUSY_chi_20 ||
      ic2 == ParticleID::SUSY_chi_30 || ic2 == ParticleID::SUSY_chi_40 ||
      ic1 == 1000045                 || ic2 == 1000045                ) {
-    if(q2 != _q2last) {
+    if(q2 != _q2last || _couplast==0.) {
       _q2last = q2;
       _couplast = weakCoupling(q2)/_cw;
     }

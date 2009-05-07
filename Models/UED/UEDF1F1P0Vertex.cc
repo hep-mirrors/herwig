@@ -92,7 +92,7 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
      (iferm >= 5100011 && iferm <= 5100016) ||
      (iferm >= 6100001 && iferm <= 6100006) || 
      (iferm >= 6100011 && iferm <= 6100016)) {
-    if(q2 != theq2Last) {
+    if(q2 != theq2Last || theCoupLast == 0. ) {
       theq2Last = q2;
       theCoupLast = electroMagneticCoupling(q2);
     }

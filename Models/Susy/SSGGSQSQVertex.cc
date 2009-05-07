@@ -50,7 +50,7 @@ void SSGGSQSQVertex::Init() {
 
 void SSGGSQSQVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr, tcPDPtr,
 				 tcPDPtr) { 
-  if(q2 != _q2last) {
+  if(q2 != _q2last || _couplast == 0.) {
     _couplast = sqr(strongCoupling(q2));
     _q2last = q2;
   }

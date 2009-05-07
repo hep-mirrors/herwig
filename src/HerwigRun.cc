@@ -12,6 +12,10 @@
 #include <ThePEG/Utilities/Debug.h>
 #include <ThePEG/Repository/Repository.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/Repository/EventGenerator.h>
+#include <ThePEG/EventRecord/Event.h>
+#include <cassert>
+#include <iostream>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -24,66 +28,82 @@ const string usage = " init|read|run "
                    "[-i initialization file] [run-file]\n";
 
 HerwigRun::HerwigRun(int argc, char **argv) 
-: N(-1),
-  ngen(0),
-  seed(0),
-  repo(),
-  repoin("HerwigDefaults.in"),
-  egCreated(false), 
-  Status(UNKNOWN), 
-  isInitialized(false)
+: N_(-1),
+  seed_(0),
+  runname_(),
+  status_(UNKNOWN)
 {
-  std::string runType;
-  if(argc > 1) runType = argv[1];
-  else runType = "";
+  std::string reponame("HerwigDefaults.rpo");
+  std::string infile("HerwigDefaults.in");
 
-  if(runType == "init") Status = INIT;
-  else if(runType == "read") Status = READ;
-  else if(runType == "run") Status = RUN;
-  else if(runType == "-h" || runType == "--help") {
+  std::string runType;
+  if ( argc > 1 ) 
+    runType = argv[1];
+
+  if ( runType == "init" ) 
+    status_ = INIT;
+  else if ( runType == "read" ) 
+    status_ = READ;
+  else if ( runType == "run" ) 
+    status_ = RUN;
+  else if ( runType == "-h" || runType == "--help" ) {
     std::cout << "Usage: " << argv[0] << usage;
     printHelp(std::cout);
-    Status = SUCCESS;
+    status_ = SUCCESS;
     return;
   } 
   else if ( runType == "-v" || runType == "--version" ) {
     std::cout << versionstring << std::endl;
-    Status = SUCCESS;
+    status_ = SUCCESS;
     return;
   }
   else {
     std::cerr << "Usage: " << argv[0] << usage;
-    Status = ERROR;
+    status_ = ERROR;
     return;
   }
+
+
   for ( int iarg = 2; iarg < argc; ++iarg ) {
     std::string arg = argv[iarg];
-    if ( arg == "-r" ) repo = argv[++iarg];
-    else if(arg == "-i") repoin = argv[++iarg];
-    else if ( arg == "-l" ) DynamicLoader::appendPath(argv[++iarg]);
+    if ( arg == "-r" ) 
+      reponame = argv[++iarg];
+    else if( arg == "-i" ) 
+      infile = argv[++iarg];
+    else if ( arg == "-N" ) 
+      N_ = atoi(argv[++iarg]);
+    else if ( arg.substr(0,2) == "-N" ) 
+      N_ = atoi(arg.substr(2).c_str());
+    else if ( arg == "-seed" || arg == "--seed" ) 
+      seed_ = atoi(argv[++iarg]);
+    else if ( arg == "-l" ) 
+      DynamicLoader::appendPath(argv[++iarg]);
     else if ( arg.substr(0,2) == "-l" )
       DynamicLoader::appendPath(arg.substr(2));
-    else if ( arg == "-L" ) DynamicLoader::prependPath(argv[++iarg]);
+    else if ( arg == "-L" ) 
+      DynamicLoader::prependPath(argv[++iarg]);
     else if ( arg.substr(0,2) == "-L" )
       DynamicLoader::prependPath(arg.substr(2));
-    else if ( arg == "-d" ) Debug::level = atoi(argv[++iarg]);
+    else if ( arg == "-d" ) 
+      Debug::level = atoi(argv[++iarg]);
     else if ( arg.substr(0,2) == "-d" )
-	Debug::level = atoi(arg.substr(2).c_str());
-    else if ( arg == "-N" ) N = atoi(argv[++iarg]);
-    else if ( arg.substr(0,2) == "-N" ) N = atoi(arg.substr(2).c_str());
-    else if ( arg == "-seed" || arg == "--seed" ) seed = atoi(argv[++iarg]);
-    else if ( arg == "--exitonerror" ) Repository::exitOnError() = 1;
+      Debug::level = atoi(arg.substr(2).c_str());
+    else if ( arg == "--exitonerror" ) 
+      Repository::exitOnError() = 1;
     else if ( arg == "-h" || arg == "--help" ) {
       std::cout << "Usage: " << argv[0] << usage;
       printHelp(std::cout);
-      Status = SUCCESS;
+      status_ = SUCCESS;
       return;
     }
     else
-      run = arg;
+      runname_ = arg;
   }
-  if ( Debug::level ) Debug::unmaskFpuErrors();
-  if ( Status == INIT ) {
+  if ( Debug::level ) 
+    Debug::unmaskFpuErrors();
+
+
+  if ( status_ == INIT ) {
     // debugging breakpoint
     breakThePEG();
     {
@@ -94,139 +114,108 @@ HerwigRun::HerwigRun(int argc, char **argv)
       DynamicLoader::appendPath(THEPEG_PKGLIBDIR);
 #endif
       HoldFlag<> setup(InterfaceBase::NoReadOnly);
-      Repository::read(repoin, cout);
+      Repository::read(infile, cout);
       Repository::update();
     }
-    if ( repo.empty() )
-      repo = "HerwigDefaults.rpo";
-    Repository::save(repo);
-    Status = SUCCESS;
+    Repository::save(reponame);
+    status_ = SUCCESS;
   } 
-  else if ( Status == READ ) {
-    if ( repo.empty() ) {
-      repo = "HerwigDefaults.rpo";
-      ifstream test(repo.c_str());
+
+  else if ( status_ == READ ) {
 #ifdef HERWIG_PKGDATADIR
-      if (!test) {
-	repo = string(HERWIG_PKGDATADIR) + "/HerwigDefaults.rpo";
-      }
-#endif
-      test.close();
+    ifstream test(reponame.c_str());
+    if ( !test ) {
+      reponame = string(HERWIG_PKGDATADIR) + '/' + reponame;
     }
-    Repository::load(repo);
+    test.close();
+#endif
+    Repository::load(reponame);
     breakThePEG();
-    if ( run.size() && run != "-" ) {
-      Repository::read(run, std::cout);
+    if ( !runname_.empty() && runname_ != "-" ) {
+      Repository::read(runname_, std::cout);
     } else {
       Repository::read(std::cin, std::cout, "Herwig++> ");
     }
-    Status = SUCCESS;
+    status_ = SUCCESS;
   } 
-  else if ( run.empty() ) {
+  else if ( runname_.empty() ) {
     std::cerr << "No run-file specified.\n";
-    Status = ERROR;
+    status_ = ERROR;
   } 
-  else if ( Status == RUN ) {
+  else if ( status_ == RUN ) {
     generateEvents();
   }
   else {
-    std::cerr << "Argument parse error.\n";
-    Status = ERROR;
+    std::cerr << "Argument parse error.\n"
+	      << "Usage: " << argv[0] << usage;
+    status_ = ERROR;
   }
 }
   
-EGPtr HerwigRun::eventGenerator() {
-  if( Status != RUN ) 
-    return EGPtr();
-  if(!egCreated) {
-    PersistentIStream is(run);
-    is >> eg;
-    breakThePEG();
-    egCreated = true;
-    if ( eg ) 
-      {
-	if ( seed > 0 ){
-	  eg->setSeed(seed);
-	}
-	if(!isInitialized) {
-	  std::cout << "Initializing. This can take a while." 
-		    << std::endl;
-	  eg->initialize();
-	  isInitialized = true;
-	}
-      }
-    return eg;
-  } else 
-    {
-      return eg; 
-    }
-}
-
-EventPtr HerwigRun::generateEvent() {
-  lastEvent = EventPtr();
-  if( Status != RUN ) 
-    return EventPtr();
-  if(!isInitialized) {
-    std::cout << "Initializing. This can take a while." 
-	      << std::endl;
-    eg->initialize();
-    isInitialized = true;
-  }
-  if(!egCreated) eventGenerator();
-  if(eg) {
-    if(ngen < N && ngen < eg->N()) { 
-      ngen++; 
-      try {
-	lastEvent = eg->shoot(); 
-      }
-      catch ( ... ) {
-	eg->finish();
-	throw;
-      }
-      return lastEvent; 
-    }
-    else {
-      return EventPtr();
-    }
-  } else return lastEvent;
-}
 
 void HerwigRun::generateEvents() {
-  if ( !isRunMode() || !preparedToRun() ) {
-    std::cerr << "Error: EventGenerator not available.\n";
-    Status = ERROR;
+  assert( status_ == RUN );
+
+  PersistentIStream is(runname_);
+  ThePEG::EGPtr eg;
+  is >> eg;
+
+  // debugging breakpoint
+  breakThePEG();
+
+  if ( !eg ) {
+    std::cerr << __FILE__ << ": EventGenerator not available.\n";
+    status_ = ERROR;
     return;
   }
 
-  if ( getN() > eventGenerator()->N() )
+  if ( seed_ > 0 ) 
+    eg->setSeed(seed_);
+	
+  std::cout << "Initializing. This can take a while." << std::endl;
+  eg->initialize();
+
+  if ( N_ == -1 )
+    N_ = eg->N();
+  else if ( N_ > eg->N() ) {
     std::cerr << "Warning: will only generate " 
-	      << eventGenerator()->N() << " events;\n"
+	      << eg->N() << " events;\n"
 	      << "Warning: you can increase NumberOfEvents "
 	      << "in the input files.\n";
-  long number = std::min( getN(), eventGenerator()->N() );
-  long step = std::max( number/100l, 1l );
-  std::cout << "Generating events.\r" << std::flush;
-  for( long i = 1; i <= number; ++i ) {
-    generateEvent();
-    if ( i % step == 0 )
-      std::cout << "Generated event: " << i 
-		<< " of " << number << "\r" << std::flush;
+    N_ = eg->N();
   }
+  const long maxNum = N_;
+
+  long step = std::max( maxNum/100l, 1l );
+
+  std::cout << "Generating events.\r" << std::flush;
+
+  try {
+    while ( eg->shoot() )
+      {
+	long i = eg->currentEventNumber();
+	if ( i % step == 0 )
+	  std::cout << "Generated event: " << i 
+		    << " of " << maxNum << "\r" << std::flush;
+	if ( i >= maxNum ) 
+ 	  break;
+      }
+  }
+  catch (...) {
+    std::cout << '\n';
+    eg->finish();
+    throw;
+  }
+
   std::cout << '\n';
-  eventGenerator()->finalize();
-  Status = SUCCESS;
+  eg->finalize();
+  status_ = SUCCESS;
 }
 
-long HerwigRun::getN() const { return N; }
-long HerwigRun::getNGen() const { return ngen; }
-HerwigRun::RunStatus HerwigRun::status() const { return Status; }
-bool HerwigRun::good() const { return status() == SUCCESS; }
-bool HerwigRun::isRunMode() const { return status() == RUN; }
-bool HerwigRun::isReadMode() const { return status() == READ; }
-bool HerwigRun::isInitMode() const { return status() == INIT; }
+bool HerwigRun::good() const { return status_ == SUCCESS; }
 
 void HerwigRun::printHelp(std::ostream &out) {
-  out << endl
+  out << '\n'
       << "One of the following options is required.\n"
       << "==============================================================\n"
       << "init    - Reread default file and create .rpo\n"
@@ -246,10 +235,6 @@ void HerwigRun::printHelp(std::ostream &out) {
       << "==============================================================\n";
 }
 
-bool HerwigRun::preparedToRun() {
-  if(eventGenerator()) return true;
-  else return false;
+HerwigRun::~HerwigRun() { 
+  Repository::cleanup(); 
 }
-
-HerwigRun::~HerwigRun() { Repository::cleanup(); }
-

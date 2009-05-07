@@ -86,7 +86,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
   // photon
   if(ibos==22) {
     // alpha
-    if(_q2last[0]!=q2) {
+    if(_q2last[0]!=q2||_couplast[0]==0.) {
       _couplast[0] = electroMagneticCoupling(q2);
       _q2last[0]=q2;
     }
@@ -100,7 +100,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
   }
   // gluon
   else if (ibos==21||ibos==9) {
-    if(_q2last[1]!=q2) {
+    if(_q2last[1]!=q2||_couplast[1]==0.) {
       _couplast[1] = strongCoupling(q2);
       _q2last[1]=q2;
     }

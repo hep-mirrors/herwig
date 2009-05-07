@@ -57,7 +57,7 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
     if(d1!=intermediate) idb=-idb;
   }
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = electroMagneticCoupling(q2);
     _q2last=q2;
   }

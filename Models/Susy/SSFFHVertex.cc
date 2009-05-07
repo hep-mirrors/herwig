@@ -139,7 +139,7 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     setRight(0.);
     return;
   }
-  if( q2 != theq2last ) {
+  if( q2 != theq2last || theGlast==0.) {
     theGlast = weakCoupling(q2);
     theq2last = q2;
   }

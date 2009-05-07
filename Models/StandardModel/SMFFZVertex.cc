@@ -39,7 +39,7 @@ void SMFFZVertex::Init() {
 
 void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }

@@ -95,6 +95,10 @@ void Histogram::topdrawOutput(ostream & out,
   if (ymin > 1e34)  ymin = 1e-34;
   if (ymax < 1e-33) ymax = 1e-33;
   if (ymax < 10*ymin) ymin = 0.1*ymax;
+  // make the y range slightly larger
+  double fac=pow(ymax/ymin,0.1);
+  ymax *= fac;
+  ymin /= fac;
 
   if (ylog && frame) {
     out << "SET LIMITS Y " << ymin << " " << ymax << endl;

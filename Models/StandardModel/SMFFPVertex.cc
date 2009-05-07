@@ -19,7 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(-1.*GeV2) {
+SMFFPVertex::SMFFPVertex()  : _charge(17,0.0), _couplast(0.), _q2last(0.*GeV2) {
   // PDG codes for the particles
   vector<long> first,second,third;
   // the quarks
@@ -70,7 +70,7 @@ void SMFFPVertex::Init() {
 // coupling for FFP vertex
 void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
-  if(q2!=_q2last) {
+  if(q2!=_q2last||_couplast==0.) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }

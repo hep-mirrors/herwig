@@ -48,6 +48,11 @@ public:
    */
   virtual void DecayList(const vector<PDPtr> & part);
 
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const { return 2; }
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

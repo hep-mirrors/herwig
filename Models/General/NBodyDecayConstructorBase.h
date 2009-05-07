@@ -73,6 +73,11 @@ public:
   virtual void DecayList(const vector<PDPtr> & particles) = 0;
 
   /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const = 0;
+
+  /**
    * Set the pointer to the DecayConstrcutor
    */
   inline void decayConstructor(tDecayConstructorPtr d) { 

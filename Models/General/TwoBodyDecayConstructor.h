@@ -87,6 +87,12 @@ public:
    *@param part vector of ParticleData pointers containing particles in model
    */
   virtual void DecayList(const PDVector & part);
+
+  /**
+   * Number of outgoing lines. Required for correct ordering.
+   */
+  virtual unsigned int numBodies() const { return 2; }
+
   
 public:
 

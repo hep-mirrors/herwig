@@ -65,7 +65,7 @@ void SSGSSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   }
   if((isf >= 1000001 && isf <= 1000006) || 
      (isf>=2000001 && isf <= 2000006) ) {
-    if(q2 != _q2last) {
+    if(q2 != _q2last || _couplast == 0.) {
       _couplast = strongCoupling(q2);
       _q2last = q2;
     }

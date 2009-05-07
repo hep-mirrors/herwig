@@ -164,7 +164,7 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
   }
   if( f1ID < 0 ) swap(f1ID, f2ID);
   
-  if( q2 != theq2last ) {
+  if( q2 != theq2last || theCoupLast == 0. ) {
     theCoupLast = weakCoupling(q2);
     theq2last = q2;
   }

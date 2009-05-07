@@ -1256,23 +1256,24 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
 
 LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q, 
 						 const Lorentz5Momentum & p ) const {
-  static const Energy2 eps2 = 1e-10*GeV2;
-  static const Energy  eps  = 1e-5 *GeV;
+  static const Energy2 eps2 = 1e-8*GeV2;
+  static const Energy  eps  = 1e-4 *GeV;
   LorentzRotation R;
   double beta;
   Energy2 den = (p.t()*q.t()-p.z()*q.z());
   Energy2 num = -(p.z()*q.t()-q.z()*p.t());
   if(abs(den)<eps2||abs(num)<eps2) {
-      if(abs(p.t()-abs(p.z()))<eps&&abs(q.t()-abs(q.z()))<eps) {
-	double ratio = sqr(q.t()/p.t());
-	beta  = -(1.-ratio)/(1.+ratio); 
-      }
-      else {
-	beta=0.;
-      }
+    if(abs(p.t()-abs(p.z()))<eps&&abs(q.t()-abs(q.z()))<eps) {
+      double ratio = sqr(q.t()/p.t());
+      beta  = -(1.-ratio)/(1.+ratio); 
+    }
+    else {
+      beta=0.;
+    }
   }
   else {
     beta = num/den;
+    
   }
   R.boostZ(beta);
   Lorentz5Momentum ptest = R*p;
@@ -1625,7 +1626,7 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
       Lorentz5Momentum pb =  (**cjt).showerMomentum();
       Axis axis(pa.vect().unit());
       LorentzRotation rot;
-      double sinth(sqrt(1.-sqr(axis.z())));
+      double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
       rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       rot.rotateX(Constants::pi);
       rot.boostZ( pa.e()/pa.vect().mag());

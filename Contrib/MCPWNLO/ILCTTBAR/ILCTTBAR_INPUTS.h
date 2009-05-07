@@ -12,7 +12,7 @@ class Input
 
 /* Center of mass energy/GeV */
 
-  double cme() {return 500.;} /*This code is hard wired for 500 GeV centre of mass energy */
+  double cme() {return 1000.;} 
 
 /* Polarization of e- (Pem) and e+ (Pep). +1 for RH and -1 for LH */
 
@@ -26,7 +26,7 @@ class Input
 
 /* Number of events to generate */
 
- int nevgen() {return 100000;};
+ int nevgen() {return 10;};
 
  
 /* Random number seed */

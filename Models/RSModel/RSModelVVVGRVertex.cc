@@ -19,7 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2), _q2last(2) {
+RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2,0.), _q2last(2,0.*GeV2) {
   vector<long> first,second,third,fourth;
   first.push_back(24);
   second.push_back(-24);
@@ -77,14 +77,14 @@ void RSModelVVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
   int idc=c->id();
   // first the overall normalisation
   if(ida==21 && idb==21 && idc==21) {
-    if(q2!=_q2last[1]) {
+    if(q2!=_q2last[1]||_couplast[1]==0.) {
       _couplast[1] = strongCoupling(q2);
       _q2last[1]=q2;
     }
     setNorm(Complex(_couplast[1]*_theKappa*UnitRemoval::E));
   }
   else {
-    if(q2!=_q2last[0]) {
+    if(q2!=_q2last[0]||_couplast[0]==0.) {
       _couplast[0] = electroMagneticCoupling(q2);
       _q2last[0]=q2;
     }
