@@ -1258,9 +1258,6 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
 						 const Lorentz5Momentum & p ) const {
   static const Energy2 eps2 = 1e-10*GeV2;
   static const Energy  eps  = 1e-5 *GeV;
-//   if(q.e()/p.e()<0.) {
-//     return solveBoost(q,p);
-//   }
   LorentzRotation R;
   double beta;
   Energy2 den = (p.t()*q.t()-p.z()*q.z());
@@ -1278,6 +1275,10 @@ LorentzRotation QTildeReconstructor::solveBoostZ(const Lorentz5Momentum & q,
     beta = num/den;
   }
   R.boostZ(beta);
+  Lorentz5Momentum ptest = R*p;
+  if(ptest.z()/q.z() < 0. || ptest.t()/q.t() < 0. ) {
+    throw KinematicsReconstructionVeto();
+  }
   return R;
 }
 
