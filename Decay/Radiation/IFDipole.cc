@@ -23,8 +23,6 @@
 
 using namespace ThePEG::Helicity;
 
-extern "C" int isnan(double) throw();
-
 using namespace Herwig;
 
 void IFDipole::persistentOutput(PersistentOStream & os) const {
