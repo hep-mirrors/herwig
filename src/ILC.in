@@ -27,6 +27,8 @@ set MEee2gZ2qq:MinimumFlavour 6
 set MEee2gZ2qq:MaximumFlavour 6
 # e+e- > l+l-
 # insert SimpleEE:MatrixElements[0] MEee2gZ2ll
+# e+e- > W+W- ZZ
+# insert SimpleEE:MatrixElements[0] MEee2VV
 # higgs+Z
 # insert SimpleEE:MatrixElements[0] MEee2ZH
 # higgs+e+e-/nu_enu_ebar via VBF
