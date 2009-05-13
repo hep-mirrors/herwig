@@ -47,9 +47,9 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # top-antitop production
 # insert SimpleQCD:MatrixElements[0] MEHeavyQuark
 # W+jet
-#insert SimpleQCD:MatrixElements[0] MEWJet
+# insert SimpleQCD:MatrixElements[0] MEWJet
 # Z+jet
-#insert SimpleQCD:MatrixElements[0] MEZJet
+# insert SimpleQCD:MatrixElements[0] MEZJet
 # higgs + W (N.B. if considering all W decay modes useful to set )
 #           (jet pT cut to zero so no cut on W decay products    )
 # insert SimpleQCD:MatrixElements[0] MEPP2WH
@@ -58,7 +58,8 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 #           (jet pT cut to zero so no cut on Z decay products    )
 # insert SimpleQCD:MatrixElements[0] MEPP2ZH
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-# 
+# WW/WZ/ZZ
+# insert SimpleQCD:MatrixElements[0] MEPP2VV
 cd /Herwig/Generators
 
 ##################################################

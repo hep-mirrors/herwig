@@ -87,6 +87,9 @@ create Herwig::MEPP2ZH MEPP2ZH
 # PP->WH
 create Herwig::MEPP2WH MEPP2WH
 
+# PP->WW/WZ/ZZ
+create Herwig::MEPP2VV MEPP2VV
+
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme
 ##########################################################
