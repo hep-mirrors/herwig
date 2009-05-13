@@ -47,6 +47,8 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # insert SimpleQCD:MatrixElements[0] MEHeavyQuark
 # WW/WZ/ZZ
 # insert SimpleQCD:MatrixElements[0] MEPP2VV
+# Wgamma/Zgamma
+# insert SimpleQCD:MatrixElements[0] MEPP2VGamma
 
 cd /Herwig/Generators
 ##################################################

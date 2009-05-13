@@ -13,6 +13,7 @@ MEPP2ZH.h    MEPP2ZH.cc   \
 MEPP2WJet.cc MEPP2WJet.h  \
 MEPP2ZJet.cc MEPP2ZJet.h  \
 MEPP2VV.cc   MEPP2VV.h  \
+MEPP2VGamma.cc   MEPP2VGamma.h  \
 MEMinBias.h MEMinBias.cc
 
 HwMEHadron_la_LDFLAGS = -module -version-info 1:1:0

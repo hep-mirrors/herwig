@@ -60,6 +60,9 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 # WW/WZ/ZZ
 # insert SimpleQCD:MatrixElements[0] MEPP2VV
+# Wgamma/Zgamma
+# insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+
 cd /Herwig/Generators
 
 ##################################################
