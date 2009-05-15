@@ -71,10 +71,6 @@ void MEPP2HiggsVBF::getDiagrams() const {
 		     parentpair[ix].second->CC(), 1, parentpair[iy].first,
 		     4, parentpair[ix].first->CC(), 
 		     2, higgs,-1)));
-// 	add(new_ptr((Tree2toNDiagram(4), parentpair[ix].second->CC(), WMinus(), WPlus(), 
-// 		     parentpair[iy].second, 1,
-// 		     parentpair[ix].first->CC(), 4, parentpair[iy].first,
-// 		     2, higgs,-1)));
 	// qbar1 qbar2 -> qbar1' qbar2' h
 	add(new_ptr((Tree2toNDiagram(4), parentpair[ix].first->CC(), WPlus(), WMinus(), 
 		     parentpair[iy].second->CC(), 1,
