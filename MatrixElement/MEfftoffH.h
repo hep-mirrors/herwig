@@ -29,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEfftoffH();
+  MEfftoffH() : _shapeopt(2), _process(0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -166,23 +166,23 @@ protected:
   /**
    *  Access to the \f$W^+\f$ data
    */ 
-  inline PDPtr WPlus() const;
+  PDPtr WPlus() const {return _wplus;}
 
   /**
    *  Access to the \f$W^-\f$ data
    */ 
-  inline PDPtr WMinus() const;
+  PDPtr WMinus() const {return _wminus;}
 
   /**
    *  Access to the \f$Z^0\f$ data
    */ 
-  inline PDPtr Z0() const;
+  PDPtr Z0() const {return _z0;}
   //@}
 
   /**
    *  Which process to generate
    */
-  inline unsigned int process() const;
+  unsigned int process() const {return _process;}
 
 protected:
 
@@ -281,8 +281,12 @@ private:
   /**
    * Matrix element for spin correlations
    */
-  ProductionMatrixElement _me;
+  mutable ProductionMatrixElement _me;
 
+  /**
+   *  if order swaped
+   */
+  bool _swap;
 };
 
 }
@@ -313,7 +317,5 @@ struct ClassTraits<Herwig::MEfftoffH>
 /** @endcond */
 
 }
-
-#include "MEfftoffH.icc"
 
 #endif /* HERWIG_MEfftoffH_H */

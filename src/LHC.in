@@ -27,41 +27,67 @@ set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 ##################################################
 cd /Herwig/MatrixElements/
 
+#
+#  Electroweak boson W/Z processes
+#
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+#
 # Drell-Yan W
 # insert SimpleQCD:MatrixElements[0] MEqq2W2ff
-# gamma-gamma
-# insert SimpleQCD:MatrixElements[0] MEGammaGamma
+#
+# W+jet
+# insert SimpleQCD:MatrixElements[0] MEWJet
+#
+# Z+jet
+# insert SimpleQCD:MatrixElements[0] MEZJet
+#
+# WW/WZ/ZZ
+# insert SimpleQCD:MatrixElements[0] MEPP2VV
+#
+# Wgamma/Zgamma
+# insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+
+#
+#  QCD and gamma processes
+#
+# QCD 2-2 scattering
+# insert SimpleQCD:MatrixElements[0] MEQCD2to2
+#
+# top-antitop production
+# insert SimpleQCD:MatrixElements[0] MEHeavyQuark
+#
 # gamma+jet
 # insert SimpleQCD:MatrixElements[0] MEGammaJet
+#
+# gamma-gamma
+# insert SimpleQCD:MatrixElements[0] MEGammaGamma
+
+#
+#  Higgs Processes
+#
+#
 # gg/qqbar -> Higgs (recommend including q qbar->Hg as not in ME correction)
 # insert SimpleQCD:MatrixElements[0] MEHiggs
 # insert SimpleQCD:MatrixElements[0] MEHiggsJet
 # set MEHiggsJet:Process qqbar
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+#
 # higgs+jet
 # insert SimpleQCD:MatrixElements[0] MEHiggsJet
-# QCD 2-2 scattering
-# insert SimpleQCD:MatrixElements[0] MEQCD2to2
-# top-antitop production
-# insert SimpleQCD:MatrixElements[0] MEHeavyQuark
-# W+jet
-# insert SimpleQCD:MatrixElements[0] MEWJet
-# Z+jet
-# insert SimpleQCD:MatrixElements[0] MEZJet
+#
 # higgs + W (N.B. if considering all W decay modes useful to set )
 #           (jet pT cut to zero so no cut on W decay products    )
 # insert SimpleQCD:MatrixElements[0] MEPP2WH
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+#
 # higgs + Z (N.B. if considering all Z decay modes useful to set )
 #           (jet pT cut to zero so no cut on Z decay products    )
 # insert SimpleQCD:MatrixElements[0] MEPP2ZH
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
-# WW/WZ/ZZ
-# insert SimpleQCD:MatrixElements[0] MEPP2VV
-# Wgamma/Zgamma
-# insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+#
+# VBF Higgs
+# insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
 
 cd /Herwig/Generators
 

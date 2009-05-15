@@ -96,6 +96,9 @@ create Herwig::MEPP2VV MEPP2VV
 # PP->WZ gamma
 create Herwig::MEPP2VGamma MEPP2VGamma
 
+# PP -> Higgs via VBF
+create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
+
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme
 ##########################################################
