@@ -217,6 +217,7 @@ void MPIHandler::initialize() {
 
   Probs(UEXSecs);
   //MultDistribution("probs.test");
+
   UEXSecs.clear();
 }
 
@@ -274,6 +275,8 @@ void MPIHandler::statistics(string os) const {
 	 << softXSec_/millibarn << endl
 	 << "total cross section (mb):            "
 	 << totalXSecExp()/millibarn << endl
+	 << "inelastic cross section (mb):        "
+	 << inelXSec_/millibarn << endl
 	 << "soft inv radius (GeV2):              "
 	 << softMu2_/GeV2 << endl
 	 << "slope of soft pt spectrum (1/GeV2):  "
@@ -331,8 +334,9 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 
     iH = 0; 
 
-    Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);//get the inel xsec
-    CrossSection inel = integrator.value(inelint, ZERO, bmax);
+    //get the inel xsec
+    Eikonalization inelint(this, -1, *it, softXSec_, softMu2_);
+    inelXSec_ = integrator.value(inelint, ZERO, bmax);
 
     avgNhard_ = 0.0;
     avgNsoft_ = 0.0;
@@ -354,7 +358,7 @@ void MPIHandler::Probs(XSVector UEXSecs) {
 	if(Algorithm() > 0){
 	  P = integrator.value(integrand, ZERO, bmax) / *it;
 	}else{
-	  P = integrator.value(integrand, ZERO, bmax) / inel;
+	  P = integrator.value(integrand, ZERO, bmax) / inelXSec_;
 	}
 	//store the probability
 	if(Algorithm()>-1){
