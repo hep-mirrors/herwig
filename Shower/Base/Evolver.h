@@ -297,7 +297,21 @@ protected:
    *  Set the enhancement factor for final-state radiation
    */
   void finalStateRadiationEnhancementFactor(double in) { _finalenhance=in; }
+  //@}
 
+  /**
+   *  Access to set/get the HardTree currently beinging showered
+   */
+  //@{
+  /**
+   *  The HardTree currently being showered
+   */
+  inline tHardTreePtr hardTree() {return _hardTree;}
+
+  /**
+   *  The HardTree currently being showered
+   */
+  inline void hardTree(tHardTreePtr in) {_hardTree = in;}
   //@}
 
   /**
@@ -512,6 +526,11 @@ private:
    * The ShowerTree currently being showered
    */
   ShowerTreePtr _currenttree;
+
+  /**
+   *  The HardTree currently being showered
+   */
+  HardTreePtr _hardTree;
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm

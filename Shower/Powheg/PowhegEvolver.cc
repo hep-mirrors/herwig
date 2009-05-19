@@ -20,62 +20,6 @@
 
 using namespace Herwig;
 
-void PowhegEvolver::doinitrun(){
-  Evolver::doinitrun();
-  //init hists and other variables
-  _h_Xdiff = new_ptr( Histogram( -10., 2., 120 ) );
-  _h_Ydiff = new_ptr( Histogram( -10., 2., 120 ) );
-  _h_Zdiff = new_ptr( Histogram( -10., 2., 120 ) );
-  _h_Ediff = new_ptr( Histogram( -10., 2., 120 ) );
-
-  _no_events = 0;
-  _mom_fails = 0;
-}
-
-void PowhegEvolver::dofinish() {
-  Evolver::dofinish();
-
-  ofstream hist_out1("momDiffHists.top");
-
-  using namespace HistogramOptions;
-
-  if( _hardonly ){
-    _h_Xdiff->topdrawOutput( hist_out1, Frame| Ylog,
-			     "BLACK",
-			     "sum of abs(pdiff).x()", 
-			     " ", 
-			     " ",
-			     " ", 
-			     "log10( pdiff.x / GeV )", 
-			     " " );
-    _h_Ydiff->topdrawOutput( hist_out1, Frame| Ylog,
-			     "BLACK",
-			     "sum of abs(pdiff).y()", 
-			     " ", 
-			     " ",
-			     " ", 
-			     "log10( pdiff.y / GeV )", 
-			     " " );
-    _h_Zdiff->topdrawOutput( hist_out1, Frame| Ylog,
-			     "BLACK",
-			     "sum of abs(pdiff).z()", 
-			     " ", 
-			     " ",
-			     " ", 
-			     "log10( pdiff.z / GeV )", 
-			     " " );
-    _h_Ediff->topdrawOutput( hist_out1, Frame| Ylog,
-			     "BLACK",
-			     "sum of abs(pdiff).e()", 
-			     " ", 
-			     " ",
-			     " ", 
-			     "log10( pdiff.e / GeV )", 
-			     " " );
-    cerr<<"\n\n\npercentage of failures = "<< double(_mom_fails)/double(_no_events)*100.<<"\n\n\n";
-  }
-}
-
 void PowhegEvolver::doinit() {
   Evolver::doinit();
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix)
@@ -175,10 +119,10 @@ void PowhegEvolver::hardestEmission() {
     currenthard=_hardgenerator[ix];
   }
   // if no suitable generator return
-  _nasontree=HardTreePtr();
+  hardTree(HardTreePtr());
   if(!currenthard) return;
   // generate the hardest emission
-  _nasontree = currenthard->generateHardest( currentTree() );
+  hardTree(currenthard->generateHardest( currentTree() ));
 }
 
 bool PowhegEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
@@ -481,12 +425,12 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
 void PowhegEvolver::setEvolutionPartners(bool hard,
 					 ShowerInteraction::Type type) {
   // if no hard tree use the methid in the base class
-  if(!_nasontree) {
+  if(!hardTree()) {
     Evolver::setEvolutionPartners(hard,type);
     return;
   }
   // match the particles in the ShowerTree and NasonTree
-  if(!_nasontree->connect(currentTree()))
+  if(!hardTree()->connect(currentTree()))
     throw Exception() << "Can't match trees in "
 		      << "PowhegEvolver::setEvolutionPartners()"
 		      << Exception::eventerror;
@@ -504,11 +448,11 @@ void PowhegEvolver::setEvolutionPartners(bool hard,
   // find the partner
   for(unsigned int ix=0;ix<particles.size();++ix) {
     tHardBranchingPtr partner = 
-      _nasontree->particles()[particles[ix]]->colourPartner();
+      hardTree()->particles()[particles[ix]]->colourPartner();
     if(!partner) continue;
     for(map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator
-	  it=_nasontree->particles().begin();
-	it!=_nasontree->particles().end();++it) {
+	  it=hardTree()->particles().begin();
+	it!=hardTree()->particles().end();++it) {
       if(it->second==partner) particles[ix]->setPartner(it->first);
     }
     if(!particles[ix]->partner()) 
@@ -522,10 +466,10 @@ void PowhegEvolver::setEvolutionPartners(bool hard,
 }
 
 bool PowhegEvolver::startTimeLikeShower(ShowerInteraction::Type type) {
-  if(_nasontree) {
+  if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-      eit=_nasontree->particles().end(),
-      mit = _nasontree->particles().find(progenitor()->progenitor());
+      eit=hardTree()->particles().end(),
+      mit = hardTree()->particles().find(progenitor()->progenitor());
     if( mit != eit && !mit->second->children().empty() ) {
       return truncatedTimeLikeShower(progenitor()->progenitor(), mit->second ,type);
     }
@@ -536,10 +480,10 @@ bool PowhegEvolver::startTimeLikeShower(ShowerInteraction::Type type) {
 
 bool PowhegEvolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
 					      ShowerInteraction::Type type) {
-  if(_nasontree) {
+  if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-      eit =_nasontree->particles().end(),
-      mit = _nasontree->particles().find(progenitor()->progenitor());
+      eit =hardTree()->particles().end(),
+      mit = hardTree()->particles().find(progenitor()->progenitor());
     if( mit != eit && mit->second->parent() ) {
       HardBranchingPtr branch=mit->second;
       while(branch->parent()) branch=branch->parent();
@@ -553,10 +497,10 @@ bool PowhegEvolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass
 
 bool PowhegEvolver::startSpaceLikeShower(PPtr parent,
 					 ShowerInteraction::Type type) {
-  if(_nasontree) {
+  if(hardTree()) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
-      eit =_nasontree->particles().end(),
-      mit = _nasontree->particles().find(progenitor()->progenitor());
+      eit =hardTree()->particles().end(),
+      mit = hardTree()->particles().find(progenitor()->progenitor());
     if( mit != eit && mit->second->parent() ) {
       return truncatedSpaceLikeShower( progenitor()->progenitor(),
 				       parent, mit->second->parent(), type );
@@ -567,8 +511,7 @@ bool PowhegEvolver::startSpaceLikeShower(PPtr parent,
 }
 
 bool PowhegEvolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower ){
-  if( _hardonly && _nasontree){
-    _no_events ++;
+  if( _hardonly && hardTree()){
     // extract the particles from end point of the shower
     multimap<long,PPtr> outgoing;
     //loop over all final state particles in particlesToShower
@@ -587,8 +530,8 @@ bool PowhegEvolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesTo
     // extract the particles from the nason tree
     vector<PPtr> outb;
     for(set<HardBranchingPtr>::const_iterator it = 
-	  _nasontree->branchings().begin();
-	it != _nasontree->branchings().end(); ++it)  {
+	  hardTree()->branchings().begin();
+	it != hardTree()->branchings().end(); ++it)  {
       if(!(**it).children().empty()) {
 	for(vector<HardBranchingPtr>::const_iterator jt=(**it).children().begin();
 	    jt!=(**it).children().end();++jt) {
@@ -645,12 +588,7 @@ bool PowhegEvolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesTo
     if( diff_tot.x() > eps || diff_tot.y() > eps || diff_tot.z() > eps || diff_tot.t() > eps ){
       generator()->log() << "\n total abs momentum difference = "
 			 << diff_tot / GeV <<"\n \n \n";
-      _mom_fails ++;
     }
-    (*_h_Xdiff) += log10( diff_tot.x() / GeV );
-    (*_h_Ydiff) += log10( diff_tot.y() / GeV );
-    (*_h_Zdiff) += log10( diff_tot.z() / GeV );
-    (*_h_Ediff) += log10( diff_tot.t() / GeV );
   }
   return true;
 }
