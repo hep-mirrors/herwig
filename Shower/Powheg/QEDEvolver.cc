@@ -355,6 +355,7 @@ void QEDEvolver::showerDecay(ShowerTreePtr decay) {
 	}
       }
       if(!showerOrder) swap(interactions_[0],interactions_[1]);
+      hardTree(HardTreePtr());
       return;
     }
     catch (QEDVeto) {
@@ -524,6 +525,15 @@ void QEDEvolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShow
 
 bool QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
 				    ShowerInteraction::Type inter) {
+  Energy ptmax(-GeV);
+  // get the maximum pt is all ready a hard tree
+  if(hardTree()) {
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      if(particlesToShower[ix]->maximumpT()>ptmax&&
+	 particlesToShower[ix]->progenitor()->isFinalState()) 
+	ptmax = particlesToShower[ix]->maximumpT();
+    }
+  }
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(particlesToShower[ix]->progenitor()->isFinalState()) {
@@ -611,8 +621,10 @@ bool QEDEvolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToSho
   assert(particlesToShower.size()==1);
   // outgoing particles
   for(cjt=currentTree()->outgoingLines().begin();
-      cjt!=currentTree()->outgoingLines().end();++cjt)
+      cjt!=currentTree()->outgoingLines().end();++cjt) {
     particlesToShower.push_back(((*cjt).first));
+    if(ptmax>ZERO) particlesToShower.back()->maximumpT(ptmax);
+  }
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     map<ShowerParticlePtr,tHardBranchingPtr>::const_iterator 
       eit=hardTree()->particles().end(),
