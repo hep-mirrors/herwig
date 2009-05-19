@@ -278,8 +278,9 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     _theHardTree = doClustering();
 
   //if highest mult set veto def
-  if( _highestMult == true ) evolver()->setHighest( true );
-  else evolver()->setHighest( false );
+  // needs fixing
+//   if( _highestMult == true ) evolver()->setHighest( true );
+//   else evolver()->setHighest( false );
 
 
   // return if fails

@@ -44,27 +44,21 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions 
-     << _ptVetoDefinition << _reversePtVeto << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
-     << ounit(_iptmax,GeV) << _vetoes << _y_cut << _showerVariableOutput << _approxCuts;
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
+     << ounit(_iptmax,GeV) << _vetoes ;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions 
-     >> _ptVetoDefinition >> _reversePtVeto >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) 
-     >> iunit(_iptmax,GeV) >> _vetoes >> _y_cut >> _showerVariableOutput >> _approxCuts;
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) 
+     >> iunit(_iptmax,GeV) >> _vetoes ;
 }
 
 void Evolver::doinitrun() {
   Interfaced::doinitrun();
   for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
     showerModel()->meCorrections()[ix]->evolver(this);
-  }
-  if( _showerVariableOutput ){ 
-     _h_qt = new_ptr( Histogram( 0., 100., 100));
-     //   _h_qt_low = new_ptr( Histogram( 0., 20., 100));
-     //  _h_z = new_ptr( Histogram( 0., 1., 100));
-     // _h_pt = new_ptr( Histogram( 0., 50., 100));
   }
 }
 
@@ -187,54 +181,6 @@ void Evolver::Init() {
      "HardOnly",
      "Only allow radiation from the hard ME correction",
      3);
-
-  static Switch<Evolver, unsigned int> ifaceJetMeasureMode
-    ("JetMeasure",
-     "Choice of the jet measure algorithm",
-     &Evolver::_ptVetoDefinition, 1, false, false);
-  
-  static SwitchOption Durham
-    (ifaceJetMeasureMode,"Durham","Durham jet algorithm", 0);
-  
-  static SwitchOption Shower
-    (ifaceJetMeasureMode,"Shower","Shower pt", 1);
-  
-  static SwitchOption LUCLUS
-    (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet algorithm", 2);
-
-  static Parameter<Evolver,double> interfacePtCut
-    ("JetCut",
-     "The jet cut (in durham or shower definition)",
-     &Evolver::_y_cut, 1.1, 0., 1.1,
-     false, false, Interface::limited );
-
-  static Switch<Evolver, bool> ifaceReverseVeto
-    ("ReversePtVeto",
-     "Reverse pt veto to veto emissions below cut",
-     &Evolver::_reversePtVeto, false, false, false);
-  static SwitchOption RevVetoFalse
-    (ifaceReverseVeto,"No","Veto emissions above cut", false);
-  static SwitchOption RevVetoTrue
-    (ifaceReverseVeto,"Yes","Veto emissions below cut", true);
-
-
-  static Switch<Evolver, bool> ifaceShowerOutput
-    ("ShowerVariableOutput",
-     "Output histograms of shower variables for a single emission",
-     &Evolver::_showerVariableOutput, false, false, false);
-  static SwitchOption ShowerOutputOff
-    (ifaceShowerOutput,"No","No shower variable output", false);
-  static SwitchOption ShowerOutputOn
-    (ifaceShowerOutput,"Yes","Shower variable output on", true);
-
- static Switch<Evolver, bool> ifaceApproxCuts
-    ("ApproxCuts",
-     "Use approximate rather than exact jet cuts",
-     &Evolver::_approxCuts, false, false, false);
-  static SwitchOption ApproxCutsOff
-    (ifaceApproxCuts,"No","Use exact cuts", false);
-  static SwitchOption ApproxCutsOn
-    (ifaceApproxCuts,"Yes","Use approx cuts", true);
 
 }
 
@@ -432,13 +378,6 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     if(!timeLikeVetoed(fb,particle)) break;
     // otherwise reset scale and continue
     particle->setEvolutionScale(fb.kinematics->scale());
-  }
-  //shower variable output
-  if( _showerVariableOutput ) {
-    (*_h_qt) += fb.kinematics->scale() / GeV;
-    // (*_h_qt_low) += fb.kinematics->scale() / GeV;
-    // (*_h_z) += fb.kinematics->z();
-    // (*_h_pt) += fb.kinematics->pT() / GeV;
   }
 
   // has emitted
@@ -724,73 +663,9 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
   if(_currentme && softMEC() &&
      _currentme->softMatrixElementVeto(_progenitor,particle,fb))
     return true;
-  // veto on maximum pt
-  Energy ptVeto;
-  // if set use the y_cut pt veto with the appropriate pt_veto definition
-  if( _y_cut > 1. ) ptVeto = _progenitor->maximumpT();
-  else              ptVeto = sqrt( ShowerHandler::currentHandler()
-				   ->lastXCombPtr()->lastS() * _y_cut );
-  //do durham pt veto
-  if( fb.kinematics && ( _ptVetoDefinition == 0 
-			 || _ptVetoDefinition == 2 ) && !_approxCuts && ! _highestMult ){
-    Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
-    Energy pt = fb.kinematics->pT();
-    double z = fb.kinematics->z();
-
-    Energy2 m0 = sqr(getParticleData( fb.ids[0] )->constituentMass());
-    Energy2 m1 = sqr(getParticleData( fb.ids[1] )->constituentMass());
-    Energy2 m2 = sqr(getParticleData( fb.ids[2] )->constituentMass());
-
-    double lambda = sqrt( 1. - 4.*m0/s );
-    double beta1 = 2.*( m1 - sqr(z)*m0 + sqr(pt) )
-      / z / lambda / ( lambda + 1. ) / s;
-    double beta2 = 2.*( m2 - sqr( 1. - z )*m0 + sqr(pt) )
-      / ( 1. - z ) / lambda / ( lambda + 1. ) / s;
-
-    Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
-    Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
-    Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
-    Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );
-
-    double costheta = ( Z1*Z2 - sqr(pt) )
-      / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
-
-    Energy2 kt_measure;
-    if( _ptVetoDefinition == 0 )
-      kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
-    else if( _ptVetoDefinition == 2 )
-      kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
-
-    if( ! _reversePtVeto ){ 
-      if( kt_measure > sqr(ptVeto) ) return true;
-    }
-    else{
-      if( kt_measure < sqr(ptVeto) ) return true;
-    }
-  }
-  else if( fb.kinematics && ( _ptVetoDefinition == 0 
-			      || _ptVetoDefinition == 2 ) && _approxCuts && !_highestMult ){
-    Energy2 kt_measure;
-    double z = fb.kinematics->z();
-    Energy pt = fb.kinematics->pT();
-
-    if( _ptVetoDefinition == 0 )
-      kt_measure = sqr( pt / max( z, 1. - z ) );
-    else if( _ptVetoDefinition == 2 )
-      kt_measure = sqr( pt );
-
-    if( ! _reversePtVeto ){ 
-      if( kt_measure > sqr(ptVeto) ) return true;
-    }
-    else{
-      if( kt_measure < sqr(ptVeto) ) return true;
-    }
-  }
-  //normal shower pt veto
-  else{
-    if(fb.kinematics->pT() > ptVeto)
-      return true;
-  }
+  // pt veto
+  if(fb.kinematics->pT() > _progenitor->maximumpT())
+    return true;
   // general vetos
   if (fb.kinematics && !_vetoes.empty()) {
     bool vetoed=false;
@@ -823,15 +698,7 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
      _currentme->softMatrixElementVeto(_progenitor,particle,bb))
     return true;
   // check vs max pt for the shower
-  Energy ptVeto;
-  //if set use the y_cut pt veto with the appropriate pt_veto definition
-  if( _y_cut > 1. ) ptVeto = _progenitor->maximumpT();
-  else              ptVeto = sqrt( ShowerHandler::currentHandler()
-				   ->lastXCombPtr()->lastS() * _y_cut );
-  if( bb.kinematics && _ptVetoDefinition == 0 ) 
-    ptVeto *= max( bb.kinematics->z(), 1. - bb.kinematics->z() );
-  if(bb.kinematics->pT()> ptVeto )
-    return true;
+  if(bb.kinematics->pT()> _progenitor->maximumpT() ) return true;
   // the more general vetos
   if (!_vetoes.empty()) {
     bool vetoed=false;
@@ -862,10 +729,7 @@ bool Evolver::spaceLikeDecayVetoed(const Branching & fb,
      _currentme->softMatrixElementVeto(_progenitor,particle,fb))
     return true;
   // veto on hardest pt in the shower
-  Energy ptVeto = _progenitor->maximumpT();
-  if( fb.kinematics && _ptVetoDefinition == 0 ) 
-    ptVeto *= max( fb.kinematics->z(), 1. - fb.kinematics->z() );
-  if(fb.kinematics->pT()> ptVeto) return true;
+  if(fb.kinematics->pT()> _progenitor->maximumpT()) return true;
   // general vetos
   if (!_vetoes.empty()) {
     bool vetoed=false;
@@ -887,22 +751,4 @@ bool Evolver::spaceLikeDecayVetoed(const Branching & fb,
     }
   }
   return false;
-}
-
-void Evolver::dofinish() {
-  Interfaced::dofinish();
-  if( _showerVariableOutput ){
-    string fname = generator()->filename() + string("-") + name() + string(".top");
-    ofstream outfile(fname.c_str());
-    using namespace HistogramOptions;
-    _h_qt->topdrawOutput(outfile,Frame|Errorbars,
-			 "RED",
-			 "qtilde",
-			 "",
-			 "",
-			 "",
-			 "qTilde / GeV",
-			 "   ");
-    outfile.close();
-  }
 }

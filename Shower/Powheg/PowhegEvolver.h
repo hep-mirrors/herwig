@@ -6,9 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/Evolver.h"
-#include "Herwig++/Shower/Base/HardBranching.fh"
 #include "PowhegEvolver.h"
-#include "HardestEmissionGenerator.h"
 #include "Herwig++/Utilities/Histogram.h"
 
 

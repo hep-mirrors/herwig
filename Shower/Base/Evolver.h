@@ -21,7 +21,8 @@
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig++/Shower/Base/HardBranching.fh"
+#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
 #include "Evolver.fh"
 
 namespace Herwig {
@@ -55,11 +56,8 @@ public:
   Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
-	      _limitEmissions(0), _ptVetoDefinition(1), 
-	      _highestMult( false ), _reversePtVeto(false), 
-	      _showerVariableOutput( false ), 
-	      _initialenhance(1.), _finalenhance(1.),
-	      _y_cut(1.1), _approxCuts( false ) {}
+	      _limitEmissions(0), 
+	      _initialenhance(1.), _finalenhance(1.) {}
 
   /**
    *  Members to perform the shower
@@ -105,13 +103,6 @@ public:
    */
   tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
   //@}
-
-  /**
-   *  Set whether evolving highest multiplicity configuration
-   */ 
-  void setHighest( bool isHighest ){
-    _highestMult = isHighest;
-  }
 
 public:
 
@@ -375,14 +366,6 @@ protected:
    */
   void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
 
-  /**
-   *  Access to the Pt definition being used for the pt veto 
-   */
-  inline unsigned int ptVetoDefinition(){ 
-    if( _highestMult ) return 1;
-    else return _ptVetoDefinition; 
-  }
-
 protected:
 
   /**
@@ -444,9 +427,6 @@ protected:
   virtual void doinitrun();
   //@}
 
-  virtual void dofinish();
-
-
 private:
 
   /**
@@ -460,11 +440,6 @@ private:
    * In fact, it should not even be implemented.
    */
   Evolver & operator=(const Evolver &);
-
-  /**
-   * Output shower variable histograms for a single emission
-   */
-  void doShowerVariableOutput();
 
 private:
 
@@ -522,26 +497,6 @@ private:
    *  Limit the number of emissions for testing
    */
   unsigned int _limitEmissions;
-
-  /**
-   * The pt definition being used for in the pt veto
-   */
-  unsigned int _ptVetoDefinition;
-
-  /**                                                                        
-   * Whether this is the highest multiplicity channel     
-   */
-  bool _highestMult;
-
-  /**
-   * Reverse pt veto to produce branchings above a cut only
-   */
-  bool _reversePtVeto;
-
-  /**                                                                                          
-   * Switch for shower variable output                                                                       
-   */
-  bool _showerVariableOutput;
   
   /**
    *  The progenitor of the current shower
@@ -585,16 +540,6 @@ private:
   map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
 
   /**
-   *  \f$y_{\rm cut}\f$
-   */
-  double _y_cut;
-
-  /**
-   * switch to use approximate jet cuts
-   */ 
-  bool _approxCuts;
-
-  /**
    * Vetoes
    */
   vector<ShowerVetoPtr> _vetoes;
@@ -608,12 +553,6 @@ private:
    *  Number of FS emissions
    */
   unsigned int _nfs;
-
-  /**
-   * Histogram for qtilde of single emission
-   */
-  HistogramPtr _h_qt;
-
 
 };
 
