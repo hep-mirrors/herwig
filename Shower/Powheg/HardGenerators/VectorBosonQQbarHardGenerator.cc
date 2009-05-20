@@ -292,7 +292,7 @@ bool VectorBosonQQbarHardGenerator::getEvent() {
       // matrix element weight
       double wgt = (sqr(x1)+sqr(x2))/(1.-x1)/(1.-x2)*0.5*sqr(lastpt)/_s;
       if(interaction==0)      wgt *= _alphaS ->ratio(sqr(lastpt));
-      else if(interaction==0) wgt *= _alphaEM->ratio(sqr(lastpt));
+      else if(interaction==1) wgt *= _alphaEM->ratio(sqr(lastpt));
       if(wgt>1.) { 
 	generator()->log() << "VectorBosonQQbarHardGenerator::getEvent() " 
 			   << "excess weight " << wgt << "\n";
@@ -316,9 +316,9 @@ bool VectorBosonQQbarHardGenerator::getEvent() {
   // no emission
   if(_pt<ZERO) return false;
   // x values
-  _xq = 1.-_pt/sqrt(_s)*exp( _y);
+  _xq  = 1.-_pt/sqrt(_s)*exp( _y);
   _xqb = 1.-_pt/sqrt(_s)*exp(-_y);
-  _xg = 2.-_xq-_xqb;
+  _xg  = 2.-_xq-_xqb;
   // select emitter and spectator
   UseRandom::rnd()<(sqr(_xq)/(sqr(_xq)+sqr(_xqb))) ? 
     _iemitter = 1: _iemitter = 0 ; 
