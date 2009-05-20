@@ -38,7 +38,7 @@ QEDEvolver::QEDEvolver() : QCDFirst_(true) {
 }
 
 void QEDEvolver::doinit() {
-  PowhegEvolver::doinit();
+  Evolver::doinit();
   if(!QCDFirst_) swap(interactions_[0],interactions_[1]);
 }
 IBPtr QEDEvolver::clone() const {

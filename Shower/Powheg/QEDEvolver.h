@@ -5,7 +5,7 @@
 // This is the declaration of the QEDEvolver class.
 //
 
-#include "PowhegEvolver.h"
+#include "Herwig++/Shower/Base/Evolver.h"
 
 namespace Herwig {
 
@@ -23,7 +23,7 @@ using namespace ThePEG;
  * @see \ref QEDEvolverInterfaces "The interfaces"
  * defined for QEDEvolver.
  */
-class QEDEvolver: public PowhegEvolver {
+class QEDEvolver: public Evolver {
 
 public:
 
@@ -160,7 +160,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::QEDEvolver,1> {
   /** Typedef of the first base class of QEDEvolver. */
-  typedef Herwig::PowhegEvolver NthBase;
+  typedef Herwig::Evolver NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -5,7 +5,7 @@
 // This is the declaration of the DISHardGenerator class.
 //
 
-#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
+#include "Herwig++/Shower/Base/HardestEmissionGenerator.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"

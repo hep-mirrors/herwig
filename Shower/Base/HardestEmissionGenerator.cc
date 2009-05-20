@@ -8,11 +8,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "PowhegEvolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/HardTree.h"
+#include "Herwig++/Shower/Base/Evolver.h"
 
 using namespace Herwig;
 
@@ -39,8 +39,7 @@ void HardestEmissionGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _evolver;
 }
 
-void HardestEmissionGenerator::rebind(const TranslationMap & trans)
-  {
+void HardestEmissionGenerator::rebind(const TranslationMap & trans) {
   _evolver = trans.translate(_evolver);
   Interfaced::rebind(trans);
 }

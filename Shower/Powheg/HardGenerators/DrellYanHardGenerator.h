@@ -5,7 +5,7 @@
 // This is the declaration of the DrellYanHardGenerator class.
 //
 
-#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
+#include "Herwig++/Shower/Base/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 

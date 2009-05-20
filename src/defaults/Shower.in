@@ -90,6 +90,25 @@ create Herwig::GGtoHMECorrection GGtoHME
 insert ShowerModel:MECorrections 3 GGtoHME
 set GGtoHME:Coupling AlphaQCD
 #
+#
+#############################################################
+#
+#  create the Powheg hard emission generators
+#
+
+# create and use the Drell-yan hard emission generator
+create Herwig::DrellYanHardGenerator DrellYanHardGenerator HwPowhegShower.so
+set DrellYanHardGenerator:ShowerAlpha AlphaQCD
+insert Evolver:HardGenerator 0 DrellYanHardGenerator
+
+# create and use the gg->H hard emission generator
+create Herwig::GGtoHHardGenerator GGtoHHardGenerator
+set GGtoHHardGenerator:ShowerAlpha AlphaQCD
+insert Evolver:HardGenerator 0 GGtoHHardGenerator
+
+
+
+#
 # a few default values
 set Evolver:MECorrMode 1
 set AlphaQCD:ScaleFactor 1.0

@@ -15,4 +15,6 @@ ShowerVeto.h ShowerVeto.fh ShowerVeto.cc \
 DurhamJetVeto.h DurhamJetVeto.cc \
 PTVeto.h PTVeto.cc\
 HardTree.h HardTree.fh HardTree.cc\
-HardBranching.h HardBranching.fh HardBranching.cc
+HardBranching.h HardBranching.fh HardBranching.cc\
+HardestEmissionGenerator.h HardestEmissionGenerator.fh \
+HardestEmissionGenerator.cc

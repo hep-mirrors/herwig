@@ -22,7 +22,7 @@
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
 #include "Herwig++/Shower/Base/HardBranching.fh"
-#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
+#include "HardestEmissionGenerator.h"
 #include "Evolver.fh"
 
 namespace Herwig {
@@ -53,11 +53,13 @@ public:
   /**
    *  Default Constructor
    */
-  Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
+  Evolver() : _maxtry(100), _hardType(0), 
+	      _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
 	      _limitEmissions(0), 
-	      _initialenhance(1.), _finalenhance(1.) {}
+	      _initialenhance(1.), _finalenhance(1.), 
+	      _hardonly(false), _trunc_Mode(true){}
 
   /**
    *  Members to perform the shower
@@ -149,7 +151,7 @@ protected:
   /**
    *  Dummy implementation of powheg check of shower momentum reconstruction 
    */
-  virtual bool checkShowerMomentum(vector<ShowerProgenitorPtr> ) { return true; }
+  virtual bool checkShowerMomentum(vector<ShowerProgenitorPtr> );
   
 
   /**
@@ -197,6 +199,11 @@ protected:
 				    Energy minimumMass,
 				    ShowerInteraction::Type);
   //@}
+
+  /**
+   *  Generate the hardest emission in the POWHEG approach
+   */
+  virtual void hardestEmission();
 
   /**
    *  Switches for matrix element corrections
@@ -413,6 +420,38 @@ protected:
    */
   virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
 
+  /**
+   * Truncated shower from a time-like particle
+   */
+  virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
+				       HardBranchingPtr branch,
+				       ShowerInteraction::Type type);
+
+  /**
+   * Truncated shower from a time-like particle
+   */
+  virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
+					     Energy maxscale, Energy minimumMass,
+					     HardBranchingPtr branch,
+					     ShowerInteraction::Type type);
+ 
+  /**
+   * Truncated shower from a space-like particle
+   */
+  virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
+					HardBranchingPtr branch,
+					ShowerInteraction::Type type);
+
+  /**
+   *   Truncated shower mode
+   */
+  bool isTruncatedShowerON() const {return _trunc_Mode;}
+
+  vector<HardestEmissionGeneratorPtr> & hardestEmissionGenerator() 
+  {return _hardgenerator;}
+
+  bool hardOnly() const {return _hardonly;}
+
 protected:
 
   /** @name Clone Methods. */
@@ -471,6 +510,11 @@ private:
    *  Maximum number of tries to generate the shower of a particular tree
    */
   unsigned int _maxtry;
+
+  /**
+   *  Option for the type of ME corrections to apply
+   */
+  unsigned int _hardType;
 
   /**
    * Matrix element correction switch
@@ -573,6 +617,21 @@ private:
    */
   unsigned int _nfs;
 
+  /**
+   *  Only generate the emission from the hardest emission
+   *  generate for testing only
+   */
+  bool _hardonly;
+
+ /**
+   *  Truncated shower switch
+   */
+  bool _trunc_Mode;
+
+  /**
+   *  Vector of objects responisble for generating the hardest emission
+   */
+  vector<HardestEmissionGeneratorPtr> _hardgenerator;
 };
 
 }
