@@ -292,7 +292,7 @@ struct ClassTraits<Herwig::DISHardGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "DISHardGenerator.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */
