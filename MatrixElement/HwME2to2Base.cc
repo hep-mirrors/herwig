@@ -80,7 +80,7 @@ bool HwME2to2Base::generateKinematics(const double * r) {
       double rhomin = atan((sqr(mmin[1])-sqr(mon))/mon/width);
       double rhomax = atan((sqr(mmax[1])-sqr(mon))/mon/width);
       mass[1] = sqrt(mon*width*tan(rhomin+r[2]*(rhomax-rhomin))+sqr(mon));
-      mjac *= (rhomax-rhomin);
+      mjac *= (rhomax-rhomin)/Constants::pi;
     }
   }
   else if(_massopt1==2) {

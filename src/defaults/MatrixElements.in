@@ -33,6 +33,9 @@ set MEee2gZ2qq:MaximumFlavour 5
 create Herwig::MEee2gZ2ll MEee2gZ2ll
 set MEee2gZ2ll:Allowed Charged
 
+# e+e- -> W+W- ZZ
+create Herwig::MEee2VV MEee2VV
+
 # e+e- -> ZH
 create Herwig::MEee2ZH MEee2ZH
 
@@ -86,6 +89,15 @@ create Herwig::MEPP2ZH MEPP2ZH
 
 # PP->WH
 create Herwig::MEPP2WH MEPP2WH
+
+# PP->WW/WZ/ZZ
+create Herwig::MEPP2VV MEPP2VV
+
+# PP->WZ gamma
+create Herwig::MEPP2VGamma MEPP2VGamma
+
+# PP -> Higgs via VBF
+create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
 
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme

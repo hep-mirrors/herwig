@@ -24,13 +24,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-// the usual OS X workaround
-// SP: shouldn't we move this into a central place,
-// e.g. ThePEG/Config/ThePEG.h, which is included
-// by almost all headers through Interfaced.h ?
-extern "C" int isnan(double) throw();
-extern "C" int isinf(double) throw();
-
 BasicConsistency::BasicConsistency() 
   : _epsmom(ZERO),_checkquark(true), _checkcharge(true),
     _checkcluster(true), _checkBR(true)

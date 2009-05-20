@@ -17,17 +17,9 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FFDipole.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "YFSFormFactors.h"
-
-// Mac OS X workaround
-extern "C" int isnan(double) throw();
 
 using namespace Herwig;
 

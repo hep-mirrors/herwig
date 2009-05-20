@@ -39,14 +39,14 @@ void PowhegHandler::persistentOutput(PersistentOStream & os) const {
   os  << _alphaS << _sudopt << _sudname << _jetMeasureMode << _allowedInitial
       << _allowedFinal << _matrixElement << _lepton << _highestMult << _reweightOpt << _testSudakovs <<_yini 
       << _alphaSMG << _npoint <<  ounit( _max_qtilde, GeV ) <<  ounit( _max_pt_cut, GeV ) 
-      <<  ounit( _min_pt_cut, GeV ) << _clusterOption << _dalitzOn << _qtildeDist;
+      <<  ounit( _min_pt_cut, GeV ) << _clusterOption << _dalitzOn << _qtildeDist << _rejectNonAO;
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
   is  >> _alphaS >> _sudopt >> _sudname >> _jetMeasureMode >> _allowedInitial
       >> _allowedFinal >> _matrixElement >> _lepton >> _highestMult >> _reweightOpt >> _testSudakovs >> _yini 
       >> _alphaSMG >> _npoint >> iunit( _max_qtilde, GeV ) >> iunit( _max_pt_cut, GeV ) 
-      >> iunit( _min_pt_cut, GeV ) >> _clusterOption >> _dalitzOn >> _qtildeDist;
+      >> iunit( _min_pt_cut, GeV ) >> _clusterOption >> _dalitzOn >> _qtildeDist >> _rejectNonAO;
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -259,6 +259,22 @@ void PowhegHandler::Init() {
      "On",
      "Qtilde analysis on",
      true);
+
+  static Switch<PowhegHandler,bool> interfaceReject
+    ("RejectNonOrdered",
+     "Whether to reject non angular ordered cluster histories",
+     &PowhegHandler::_rejectNonAO, true, false, false);
+  static SwitchOption interfaceRejectYes
+    (interfaceReject,
+     "Reject",
+     "Reject all non angular ordered events",
+     true);
+  static SwitchOption interfaceRejectNo
+    (interfaceReject,
+     "Select",
+     "Select a history for non angular ordered events",
+     false);
+
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
@@ -271,7 +287,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   _global_alphaS_wgt = 1.;
   for( int ix = minMult; ix < maxMult; ix++ ) 
     _global_alphaS_wgt *= alphaS_max / _alphaSMG;
-
+  
   if( _clusterOption == 0 || _clusterOption == 2 || _clusterOption == 3 )
     _theHardTree = doClusteringOrdered();
   else
@@ -382,13 +398,11 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
       newSubProcess->addOutgoing(outgoing[ix]);
     lastXCombPtr()->subProcess(newSubProcess);
   }
-  //divide by constant 5 here is just a factor becasue alphas = 0.2 isn't high enough to guarrantee
-  //that the alphaS weight is < 1
+ 
   if( _reweightOpt != 1 ){
-    if ( SudWgt / 2. / _global_alphaS_wgt > 1 ) cerr << SudWgt / 2. / _global_alphaS_wgt <<"\n";
-    return SudWgt / 2. / _global_alphaS_wgt;
+    if ( SudWgt / _global_alphaS_wgt > 1 ) cerr << SudWgt / _global_alphaS_wgt <<"\n";
+    return SudWgt / _global_alphaS_wgt;
   }
-  
   else{
     return 1.;
   }
@@ -401,6 +415,12 @@ void PowhegHandler::dofinish() {
 	<<"proportion of unordered trees created = "
 	<< ( 1. - double( _ordered_trees_created )
 	     / double( _trees_created ) ) * 100.
+	<<" %\n--------\n";
+  }
+  if( _clusterOption == 2 ){
+    cout<<"\n---------\n"
+	<<"proportion of events with no ordered trees created = "
+	<< double( _unorderedEvents / double( _trees_created ) ) * 100.
 	<<" %\n--------\n";
   }
   
@@ -433,7 +453,7 @@ void PowhegHandler::dofinish() {
     dalitz<<"CASE         \" X X\" \n";
     dalitz<<"TITLE LEFT \"X021\" \n";
     dalitz<<"CASE       \" X X\" \n";
-    for(int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
+    for(unsigned int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
       dalitz<< _dalitz_from_q1[ix].first <<"\t"<< _dalitz_from_q1[ix].second <<"\n";
     dalitz << "PLOT RED\n";
     
@@ -445,7 +465,7 @@ void PowhegHandler::dofinish() {
     dalitz<<"CASE         \" X X\" \n";
     dalitz<<"TITLE LEFT \"X021\" \n";
     dalitz<<"CASE       \" X X\" \n";
-    for(int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
+    for(unsigned int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
       dalitz<< _dalitz_from_q2[ix].first <<"\t"<< _dalitz_from_q2[ix].second <<"\n";
     dalitz << "PLOT BLUE\n";
  
@@ -480,6 +500,7 @@ void PowhegHandler::dofinish() {
 void PowhegHandler::doinitrun() {
   _trees_created = 0;
   _ordered_trees_created = 0;
+  _unorderedEvents = 0;
 
   _dalitz_from_q1.clear();
   _dalitz_from_q2.clear();
@@ -520,23 +541,19 @@ void PowhegHandler::doinitrun() {
       vector< Energy > scale;
   
       //fill scales at start
-      for( unsigned int ix = 0; ix < _npoint + 1; ++ix ){
+      for( unsigned int ix = 0; ix < _npoint+1; ++ix ){
 	ptCut.push_back( _min_pt_cut + double( ix ) * ( _max_pt_cut - _min_pt_cut ) / double( _npoint - 1 ) );
 	scale.push_back( qtildemin + double( ix ) * ( qtildemax - qtildemin ) / double( _npoint - 1 ) );
       }
       //fill sud integrals
-      for( unsigned int ix = 0; ix < _npoint + 1; ++ix ){
+      for( unsigned int ix = 0; ix < _npoint+1; ++ix ){
 	sud[ix][0] = 0.; 
-	for( unsigned int jx = 1; jx < _npoint + 1; ++jx ) {
+	for( unsigned int jx = 1; jx < _npoint+1; ++jx ) {
 	  //the pt_cut here is pt in the jet measure variable used
 	  double currentSud = integrator->value( scale[ jx ], scale[ jx - 1 ], ptCut[ix] );
 	  sud[ix][jx] = ( sud[ix][ jx - 1 ]  + currentSud );
-	  // cerr<<jx<<"\t";
 	}
-	//	cerr<<ix<<"\n";
       }
-
-      cerr<<"\n\nextreme scales pt, qt = "<< ptCut[ _npoint  ] / GeV <<" "<<  scale[ _npoint ] / GeV <<"\n\n\n";
       //exponentiate to the Sudakov
       for( unsigned int ix = 0; ix < _npoint+1; ++ix ) {
 	for( unsigned int jx = 0; jx < _npoint+1; ++jx ) {
@@ -654,7 +671,6 @@ void PowhegHandler::doinitrun() {
       }
     }
   }
-
   if( _testSudakovs ) testSudakovs();
   if( _qtildeDist ) makeQtildeDist();
 }
@@ -940,6 +956,8 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   _all_clusters.clear();
   _proto_trees.clear();
   _hardTrees.clear();
+  _rejectedHardTrees.clear();
+
   
   //make an intermediate and add to subprocess if not read in
   if(lastXCombPtr()->subProcess()->intermediates().empty()) {
@@ -1023,19 +1041,24 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
       _hardTrees.push_back( make_pair( powhegtree, treeWeight ) );
       totalWeight += treeWeight;
     }
+    else{
+      powhegtree->findNodes();
+      _rejectedHardTrees.push_back( make_pair( powhegtree, 1. ) );
+    }
   }
-
-  if( _hardTrees.empty() )
-    return HardTreePtr();
-
+  if( _hardTrees.empty() ){
+    _unorderedEvents++;
+    if( _rejectNonAO  )
+      return HardTreePtr();
+  }
   //the hardTreePtr that is to be returned
   HardTreePtr chosen_hardTree;
   
   //choose a hardTree from shower probability
   if( _clusterOption == 0 ){
     long treeIndex;
-    do{
-   
+    do{ 
+      treeIndex = UseRandom::irnd( _hardTrees.size() ); 
     } while ( _hardTrees[ treeIndex ].second / totalWeight < UseRandom::rnd() );
     chosen_hardTree = _hardTrees[ treeIndex ].first;
   }
@@ -1044,10 +1067,20 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   else if( _clusterOption == 2 ){
     //set min pt to be large
     Energy min_pt = 9999999999.*GeV;
-    for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ ){
-      if( _hardTrees[ix].first->totalPt() < min_pt ){
-	min_pt = _hardTrees[ix].first->totalPt();
-	chosen_hardTree = _hardTrees[ix].first;
+    if( !_hardTrees.empty() ){
+      for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ ){
+	if( _hardTrees[ix].first->totalPt() < min_pt ){
+	  min_pt = _hardTrees[ix].first->totalPt();
+	  chosen_hardTree = _hardTrees[ix].first;
+	}
+      }
+    }
+    else{
+      for(unsigned int ix = 0; ix < _rejectedHardTrees.size(); ix++ ){
+	if( _rejectedHardTrees[ix].first->totalPt() < min_pt ){
+	  min_pt = _rejectedHardTrees[ix].first->totalPt();
+	  chosen_hardTree = _rejectedHardTrees[ix].first;
+	}
       }
     }
   }
@@ -1076,7 +1109,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     cerr<<"PowhegHandler::problem in choosing hard tree\n";
     return HardTreePtr();
   }
-
+  _trees_created++;
   return chosen_hardTree;
 }
 
@@ -2054,7 +2087,7 @@ void PowhegHandler::makeQtildeDist(){
 
   //iniialise the histograms
   vector< HistogramPtr > theHists;  
-  for(int ix = 0; ix < thePts.size(); ix ++ )
+  for(unsigned int ix = 0; ix < thePts.size(); ix ++ )
     theHists.push_back( new_ptr(Histogram(0.,100.,100) ) );
 
   sudTestOut.open( "QtildeDist.top" );

@@ -23,8 +23,6 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
-extern "C" int isnan(double) throw();
-
 using namespace Herwig;
 
 TopDecayMECorrection::TopDecayMECorrection() 

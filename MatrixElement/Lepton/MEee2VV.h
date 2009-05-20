@@ -1,37 +1,34 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEPP2VV_H
-#define HERWIG_MEPP2VV_H
+#ifndef HERWIG_MEee2VV_H
+#define HERWIG_MEee2VV_H
 //
-// This is the declaration of the MEPP2VV class.
+// This is the declaration of the MEee2VV class.
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEPP2VV class implements the production of \f$W^+W^-\f$,
- * \f$W^\pm Z^0\f$ and \f$Z^0Z^o\f$ in hadron-hadron collisions.
+ * The MEee2VV class implements the matrix elements for 
+ * \f$e^+e^-\toW^+W^-/|^0Z^0\f$.
  *
- * @see \ref MEPP2VVInterfaces "The interfaces"
- * defined for MEPP2VV.
+ * @see \ref MEee2VVInterfaces "The interfaces"
+ * defined for MEee2VV.
  */
-class MEPP2VV: public HwME2to2Base {
+class MEee2VV: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEPP2VV();
-
-public:
+  MEee2VV();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -62,36 +59,6 @@ public:
   virtual Energy2 scale() const;
 
   /**
-   * Return the process being run (WW/ZZ/WZ).
-   */
-  virtual int process() const { return process_; }
-
-  /**
-   * Return the factorisation scale.
-   */
-  virtual Energy mu_F() const { return mu_F_; }
-
-  /**
-   * Return the factorisation scale.
-   */
-  virtual Energy mu_UV() const { return mu_UV_; }
-
-  /**
-   * Return the maximum number of incoming flavours.
-   */
-  virtual int maxflavour() const { return maxflavour_; }
-
-  /**
-   * Return the CKM matrix elements.
-   */
-  Complex CKM(int ix,int iy) const { return ckm_[ix][iy]; }
-
-  /**
-   * Return the process being run (WW/ZZ/WZ).
-   */
-  bool mixingInWW() const { return mixingInWW_; }
-
-  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -117,15 +84,15 @@ public:
   colourGeometries(tcDiagPtr diag) const;
 
   /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
-
-  /**
    * Used internally by generateKinematics, after calculating the
    * limits on cos(theta).
    */
-  virtual double getCosTheta(double ctmin, double ctmax, const double * r);
+  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 public:
@@ -157,11 +124,11 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\toW^+W^-\f$.
+   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
    * @param f1  Spinors for the incoming fermion
    * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param v1  Polarization vector for the 1st outgoing boson
+   * @param v2  Polarization vector for the 2nd outgoing boson
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double WWME(vector<SpinorWaveFunction>    & f1,
@@ -169,27 +136,13 @@ protected:
 	      vector<VectorWaveFunction>    & v1,
 	      vector<VectorWaveFunction>    & v2,
 	      bool me) const;
-  
+
   /**
-   * Matrix element for \f$f\bar{f}\toW^\pm Z^0\f$.
+   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
    * @param f1  Spinors for the incoming fermion
    * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
-   * @param me  Whether or not to calculate the matrix element for spin correlations
-   */
-  double WZME(vector<SpinorWaveFunction>    & f1,
-	      vector<SpinorBarWaveFunction> & a1,
-	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
-  
-  /**
-   * Matrix element for \f$f\bar{f}\toZ^0Z^0\f$.
-   * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param v1  Polarization vector for the 1st outgoing boson
+   * @param v2  Polarization vector for the 2nd outgoing boson
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double ZZME(vector<SpinorWaveFunction>    & f1,
@@ -215,6 +168,7 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -233,13 +187,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEPP2VV> initMEPP2VV;
+  static ClassDescription<MEee2VV> initMEee2VV;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEPP2VV & operator=(const MEPP2VV &);
+  MEee2VV & operator=(const MEee2VV &);
 
 private:
 
@@ -269,60 +223,19 @@ private:
   //@}
 
   /**
-   * The ckm matrix elements (unsquared, to allow interference)
-   */
-  vector< vector<Complex> > ckm_;
-
-  /**
    *  Processes
    */
   unsigned int process_;
 
   /**
-   *  Allowed flavours of the incoming quarks
-   */
-  int maxflavour_;
-
-  /**
-   *  Treatment of the the boson masses
+   *  Treatment of the the W and Z masses
    */
   unsigned int massOption_;
-
-  /**
-   *  Processes
-   */
-  bool mixingInWW_;
 
   /**
    *  The matrix element
    */
   mutable ProductionMatrixElement me_;
-
-  /**
-   * Selects a dynamic (sHat) or fixed factorization scale
-   */
-  unsigned int scaleopt_;
-
-  /**
-   * The factorization and renormalization scale respectively
-   */
-  Energy mu_F_, mu_UV_;
-
-  /**
-   *  Prefactor if variable scale used
-   */
-  double scaleFact_;
-
-  /**
-   *  Interfaced flag to turn on / off spin correlations for vector bosons.
-   */
-  unsigned int spinCorrelations_;
-
-  /**
-   *  Interfaced flag to invoke debugging (comparison with MCFM).
-   */
-  unsigned int debugMCFM_;
-
 };
 
 }
@@ -334,32 +247,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEPP2VV. */
+ *  base classes of MEee2VV. */
 template <>
-struct BaseClassTrait<Herwig::MEPP2VV,1> {
-  /** Typedef of the first base class of MEPP2VV. */
+struct BaseClassTrait<Herwig::MEee2VV,1> {
+  /** Typedef of the first base class of MEee2VV. */
   typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEPP2VV class and the shared object where it is defined. */
+ *  the MEee2VV class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEPP2VV>
-  : public ClassTraitsBase<Herwig::MEPP2VV> {
+struct ClassTraits<Herwig::MEee2VV>
+  : public ClassTraitsBase<Herwig::MEee2VV> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEPP2VV"; }
+  static string className() { return "Herwig::MEee2VV"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEPP2VV is implemented. It may also include several, space-separated,
-   * libraries if the class MEPP2VV depends on other classes (base classes
+   * MEee2VV is implemented. It may also include several, space-separated,
+   * libraries if the class MEee2VV depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMEHadron.so"; }
+  static string library() { return "HwMELepton.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEPP2VV_H */
+#endif /* HERWIG_MEee2VV_H */

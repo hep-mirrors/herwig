@@ -97,7 +97,7 @@ public:
   PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOpt(0), 
 		    _highestMult(false), _testSudakovs(false), _qtildeDist( false ),
 		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), 
-		    _clusterOption( 0 ), _dalitzOn( false ) {}
+		    _clusterOption( 0 ), _rejectNonAO( true ), _dalitzOn( false ) {}
 
   /**
    * Perform CKKW reweighting
@@ -213,6 +213,9 @@ private:
 
   //all possible shower configurations that are angular ordered
   vector< pair< HardTreePtr, double > > _hardTrees;
+
+  vector< pair< HardTreePtr, double > > _rejectedHardTrees;
+
 
   //just connect up the progenitors in currentProtoTree
   bool simpleColConnections( ProtoTreePtr currentProtoTree );
@@ -349,7 +352,6 @@ private:
 
   /**
    *  Map containing the sudakovs for the final-state particles
-   *  and also the minimum allowed scale of branching type
    */
   multimap< long, pair< Interpolator2d< double, Energy, Energy >::Ptr, Energy > > _fbranchings;
 
@@ -427,12 +429,11 @@ private:
    * The fixed alphaS value that was used to generate mad graph events
    */
   double _alphaSMG;
-  
+
   /*
    * The global alphaS factor to ensure all alphaS weights are less than one
    */
   double _global_alphaS_wgt;
-
 
   /**`
    * Histogram of sudakov weights
@@ -470,6 +471,12 @@ private:
   unsigned int _clusterOption; 
 
   /**
+   * whether to just reject event if there are no angular ordered histories (true)
+   * or to choose one of the non angular ordered histories (false)
+   */
+  bool _rejectNonAO;
+
+  /**
    * switch for dalitz analysis of hard tree clustering (3 jets only)
    */
   bool _dalitzOn;
@@ -478,6 +485,11 @@ private:
    * total number of hard trees created in this run
    */
   unsigned int _trees_created;
+
+  /**
+   * total number of events with no ordered histories found
+   */
+  unsigned int _unorderedEvents;
 
   /**
    * the number of ordered hard trees
