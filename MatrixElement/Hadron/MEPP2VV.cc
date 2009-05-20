@@ -89,12 +89,12 @@ void MEPP2VV::Init() {
 
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
   os << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ 
-     << process_ << massOption_;
+     << process_ << massOption_ << maxflavour_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
   is >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ 
-     >> process_ >> massOption_;
+     >> process_ >> massOption_ >> maxflavour_;
 }
 
 Energy2 MEPP2VV::scale() const {
