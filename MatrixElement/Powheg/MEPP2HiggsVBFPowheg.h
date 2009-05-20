@@ -177,6 +177,11 @@ private:
   //@}
 
   /**
+   * Index to identify the hadron   
+   */
+  int _in;
+
+  /**
    *  The variables to get the right boost
    */
   //@{
@@ -201,15 +206,9 @@ private:
    */
   //@{
   /**
-   *  \f$\sin\theta_W\f$
+   *  The square of \f$\sin\theta_W\f$
    */
-  double _sinW;
-
-  /**
-   *  \f$\cos\theta_W\f$
-   */
-  double _cosW;
-
+  double _sin2W;
   /**
    *  The square of the Z mass
    */

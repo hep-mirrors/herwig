@@ -29,11 +29,10 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   // Born kinematics
   if(!MEPP2HiggsVBFPowheg::generateKinematics(r)) return false;
 
-  int in;
   // hadron and momentum fraction
   // set Q2 process momenta
   if(UseRandom::rnd()< 0.5) {
-    in = 0;
+    _in = 0;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
     _xB = lastX1();
     _q2 = -(meMomenta()[0]-meMomenta()[2]).m2();
@@ -42,7 +41,7 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
     _pc = meMomenta()[2];
   }
   else {
-    in = 1;
+    _in = 1;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
     _xB = lastX2();
     _q2 = -(meMomenta()[1]-meMomenta()[3]).m2();
@@ -81,12 +80,12 @@ IBPtr MEPP2HiggsVBFPowheg::fullclone() const {
 
 void MEPP2HiggsVBFPowheg::persistentOutput(PersistentOStream & os) const {
   os << ounit(muF_,GeV) << scaleFact_ << scaleOpt_ << contrib_
-     << _sinW << _cosW << ounit(_mz2,GeV2) << power_;
+     << ounit(_mz2,GeV2) << power_;
 }
 
 void MEPP2HiggsVBFPowheg::persistentInput(PersistentIStream & is, int) {
   is >> iunit(muF_,GeV) >> scaleFact_ >> scaleOpt_ >> contrib_
-     >> _sinW >> _cosW >> iunit(_mz2,GeV2) >> power_;
+     >> iunit(_mz2,GeV2) >> power_;
 }
 
 ClassDescription<MEPP2HiggsVBFPowheg>
@@ -193,45 +192,118 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
 			   +2.*log(1.-_xB)*log(_q2/mu2)+sqr(log(1.-_xB)));
   virt /= jac_;
   // PDF from leading-order
-  double loPDF = _hadron->pdf()->xfx(_hadron,mePartonData()[1],mu2,_xB)/_xB;
+  double loPDF = _hadron->pdf()->xfx(_hadron,mePartonData()[1],mu2,_xB)*_xB;
   // NLO gluon PDF
   tcPDPtr gluon = getParticleData(ParticleID::g);
-  double gPDF   = _hadron->pdf()->xfx(_hadron,gluon,mu2,_xB/_xp)*_xp/_xB;
+  double gPDF   = _hadron->pdf()->xfx(_hadron,gluon,mu2,_xB/_xp)/_xp/_xB;
   // NLO quark PDF
-  double qPDF   = _hadron->pdf()->xfx(_hadron,mePartonData()[1],mu2,_xB/_xp)*_xp/_xB;
+  double qPDF   = _hadron->pdf()->xfx(_hadron,mePartonData()[1],mu2,_xB/_xp)/_xp/_xB;
   // collinear counterterms
   // gluon
   double collg = 
-    TRfact/_xp*gPDF*(2.*_xp*(1.-_xp)+(sqr(_xp)+sqr(1.-_xp))*log((1.-_xp)*_q2/_xp/mu2));
+    TRfact/_xp*gPDF*(2.*_xp*(1.-_xp)+(sqr(_xp)+sqr(1.-_xp))*
+    log((1.-_xp)*_q2/_xp/mu2));
   // quark
   double collq = 
-    CFfact/_xp*qPDF*(1-_xp-2./(1.-_xp)*log(_xp)-(1.+_xp)*log((1.-_xp)/_xp*_q2/mu2))+
-    CFfact/_xp*(qPDF-_xp*loPDF)*(2./(1.-_xp)*log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
+    CFfact/_xp*qPDF*(1-_xp-2./(1.-_xp)*log(_xp)-(1.+_xp)*
+    log((1.-_xp)/_xp*_q2/mu2))+
+    CFfact/_xp*(qPDF-_xp*loPDF)*(2./(1.-_xp)*
+    log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
   // cacluate lepton kinematic variables
   Lorentz5Momentum  q = _pa;
   Lorentz5Momentum p1 = _pb;
   Lorentz5Momentum p2 = _pc;
   Lorentz5Momentum p3 = meMomenta()[5];
+  // Breit frame variables
   double x1 = 2.*p1*q/(q*q);
   double x2 = 2.*p2*q/(q*q);
-  double x2perp = 4.*(1-_xp)*(1.-_zp)*_zp/_xp;
-  double sintheta1 = sqrt(x2perp/(sqr(x1)+x2perp));
-  double sintheta2 = sqrt(x2perp/(sqr(x2)+x2perp));
+  Lorentz5Momentum r1 = -p1/x1;
+  Lorentz5Momentum r2 =  p2/x2;
+  // Vector boson parameters
+  Energy Gamma(getParticleData(ParticleID::Z0)->width());
+  Energy4 MG2(_mz2*sqr(Gamma));
+  //
+  double c0L,c1L,c0R,c1R;
+  if(abs(mePartonData()[0]->id())%2==0) {
+    c0L = 0.5*generator()->standardModel()->au()-
+	  _sin2W*generator()->standardModel()->eu();
+    c0R =-_sin2W*generator()->standardModel()->eu();
+  }
+  else {
+    c0L = 0.5*generator()->standardModel()->ad()-
+	  _sin2W*generator()->standardModel()->ed();
+    c0R =-_sin2W*generator()->standardModel()->ed();
+  }
+  if(abs(mePartonData()[1]->id())%2==0) {
+    c1L = 0.5*generator()->standardModel()->au()-
+	  _sin2W*generator()->standardModel()->eu();
+    c1R =-_sin2W*generator()->standardModel()->eu();
+  }
+  else {
+    c1L = 0.5*generator()->standardModel()->ad()-
+	  _sin2W*generator()->standardModel()->ed();
+    c1R =-_sin2W*generator()->standardModel()->ed();
+  }
+
+  // Matrix element variables
+  double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
+  double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
+  InvEnergy4 Dlo = 1./(sqr(_q2    -_mz2)+MG2); 
+  InvEnergy4 Dbf = 1./(sqr(sqr(q) -_mz2)+MG2);
+  InvEnergy4 D2;
+  Energy4 term1, term2;
+
+  if(_in == 0){
+  term1 = G1*(r1*meMomenta()[1])*((q+r1)*meMomenta()[3])+
+          G2*(r1*meMomenta()[3])*((q+r1)*meMomenta()[1]);
+
+  term2 = G1*((r2-q)*meMomenta()[1])*(r2*meMomenta()[3])+
+          G2*((r2-q)*meMomenta()[3])*(r2*meMomenta()[1]);
+
+  Energy2 k2 = (meMomenta()[3]-meMomenta()[1])*
+               (meMomenta()[3]-meMomenta()[1]);
+
+  D2 = 1./(sqr(k2 -_mz2)+MG2);
+  } else {
+  term1 = G1*(r1*meMomenta()[0])*((q+r1)*meMomenta()[2])+
+          G2*(r1*meMomenta()[2])*((q+r1)*meMomenta()[0]);
+
+  term2 = G1*((r2-q)*meMomenta()[0])*(r2*meMomenta()[2])+
+          G2*((r2-q)*meMomenta()[2])*(r2*meMomenta()[0]);
+
+  Energy2 k2 = (meMomenta()[2]-meMomenta()[0])*
+               (meMomenta()[2]-meMomenta()[0]);
+
+  D2 = 1./(sqr(k2 -_mz2)+MG2);
+  }
+
+  InvEnergy2 commfact1  = 4.*_mz2*D2;
+             commfact1 *= pow(4.*Constants::pi*SM().alphaS(mu2)/_sin2W,3);
+
+  Energy4 commfact2 = G1*(meMomenta()[0]*meMomenta()[1])*
+                         (meMomenta()[2]*meMomenta()[3])+
+                      G2*(meMomenta()[0]*meMomenta()[3])*
+                         (meMomenta()[2]*meMomenta()[1]);
+
+  Energy2 commfact = commfact1*commfact2;
+  //->
   // dipoles kinematc variables
   double x = 1.-p3*p2/(p1*p3+p1*p2);
   double z = p2*p1/(p1*p3+p1*p2);
   // q -> qg term
-//   double real1 = CFfact*qPDF/loPDF*1./((1.-_xp)*(1.-_zp))*
-//     (1.+sqr(_xp)*(sqr(x2)+1.5*x2perp)*sqr(1.-sintheta2*cos(_phi))/(1.+0.5*sqr(sintheta2)));
-//   double dipole1 = CFfact*16.*sqr(Constants::pi)*qPDF/loPDF*1./_q2*(sqr(x)+sqr(z))/((1.-x)*(1.-z)); 
-//   double realq = real1-dipole1;
-//   // g -> q qbar term
-//   double real2 = TRfact*gPDF/loPDF*1./(1.-_zp)*
-//     (sqr(_xp)*(sqr(x1)+1.5*x2perp)*sqr(1.+sintheta1*cos(_phi))/(1.+0.5*sqr(sintheta1))+sqr(_xp)*(sqr(x2)+1.5*x2perp)*sqr(1.-sintheta2*cos(_phi))/(1.+0.5*sqr(sintheta2)));
-//   double dipole2 = TRfact*16.*sqr(Constants::pi)*gPDF/loPDF*1./_q2*(sqr(x)+sqr(1-x))/(1-z);
-//   double realg = real2-dipole2;
-  double realq=0.;
-  double realg=0.;
+   double real1   = CFfact*qPDF/loPDF*1./((1.-_xp)*(1.-_zp))*
+                    sqr(Dbf/Dlo)/commfact2*(term1+sqr(_xp-1.+_zp)*term2);
+   double dipole1 = (1./(commfact*Dlo))*CFfact*16.*sqr(Constants::pi)*
+                    qPDF/loPDF*1./_q2*(sqr(x)+sqr(z))/((1.-x)*(1.-z)); 
+   double realq   = (real1-dipole1);
+
+  // g -> q qbar term
+   double real2   = TRfact*gPDF/loPDF*1./((1.-_zp)*sqr(_xp)*(2+_xp-_zp))*
+                    sqr(Dbf/Dlo)/commfact2*(term1+sqr(_xp-1.+_zp)*term2);
+   double dipole2 = (1./(commfact*Dlo))*TRfact*16.*sqr(Constants::pi)*
+                    gPDF/loPDF*1./_q2*(sqr(x)+sqr(1-x))/(1-z);
+   double realg = real2-dipole2;
+
   // return the full result
   double wgt = virt+((collq+collg)/loPDF+realq+realg);
  
@@ -244,9 +316,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
 void MEPP2HiggsVBFPowheg::doinit() {
   MEPP2HiggsVBF::doinit();
   // electroweak parameters
-  _sinW = generator()->standardModel()->sin2ThetaW();
-  _cosW = sqrt(1.-_sinW);
-  _sinW = sqrt(_sinW);
+  _sin2W = generator()->standardModel()->sin2ThetaW();
   _mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
   tcPDPtr gluon = getParticleData(ParticleID::g);
 }
