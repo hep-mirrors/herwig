@@ -108,11 +108,6 @@ protected:
 protected:
 
   /**
-   *  Calculate the coefficient A for the correlations
-   */
-  inline double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout);
-
-  /**
    *  Generate a Compton process
    */
   void generateCompton();
@@ -121,6 +116,7 @@ protected:
    *  Matrix element piece for the Compton process
    */
   double comptonME(double xT,double xp, double zp, double phi);
+
   /**
    *  Generate a BGF process
    */
@@ -169,14 +165,14 @@ private:
   Energy pTmin_;
 
   /**
+   *  Gluon particle data object
+   */
+  PDPtr gluon_;
+
+  /**
    *  Beam particle
    */
   tcBeamPtr beam_;
-
-  /**
-   *  Partons
-   */
-  tcPDPtr partons_[2];
 
   /**
    *  PDF object
@@ -184,39 +180,19 @@ private:
   tcPDFPtr pdf_;
 
   /**
-   *  Rotation to the Breit frame
+   *  Partons
    */
-  LorentzRotation rot_;
+  tcPDPtr partons_[4];
 
   /**
-   *  Electroweak parameters
+   *  Higgs
    */
-  //@{
-  /**
-   *  \f$\sin\theta_W\f$
-   */
-  double sinW_;
+  tcPDPtr higgs_;
 
   /**
-   *  \f$\cos\theta_W\f$
+   *  q
    */
-  double cosW_;
-
-  /**
-   *  The square of the Z mass
-   */
-  Energy2 mz2_;
-
-  /**
-   *  The coefficient for the correlations
-   */
-  double acoeff_;
-  //@}
-
-  /**
-   *  Gluon particle data object
-   */
-  PDPtr gluon_;
+  Lorentz5Momentum q_;
 
   /**
    *  \f$Q^2\f$
@@ -229,24 +205,24 @@ private:
   double xB_;
 
   /**
-   *
+   *  Rotation to the Breit frame
    */
-  double l_;
+  LorentzRotation rot_;
 
   /**
-   *  Lepton momenta
+   *  Quark momenta for spectator system
    */
-  Lorentz5Momentum pl_[2];
+  Lorentz5Momentum pother_[2];
 
   /**
-   *  Quark momenta
+   *  Quark momenta for emitting system
    */
-  Lorentz5Momentum pq_[2];
+  Lorentz5Momentum psystem_[2];
 
   /**
-   *  q
+   *  Higgs momenta
    */
-  Lorentz5Momentum q_;
+  Lorentz5Momentum phiggs_;
 
   /**
    *  Compton parameters
@@ -292,7 +268,7 @@ struct ClassTraits<Herwig::VBFHardGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "VBFHardGenerator.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */

@@ -34,22 +34,15 @@ IBPtr VBFHardGenerator::fullclone() const {
 }
 
 void VBFHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << alphaS_ << sinW_ << cosW_ << ounit(mz2_,GeV2) << ounit(pTmin_,GeV)
-     << comptonWeight_ << BGFWeight_ << gluon_;
+  os << alphaS_ << ounit(pTmin_,GeV) << comptonWeight_ << BGFWeight_ << gluon_;
 }
 
 void VBFHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> alphaS_ >> sinW_ >> cosW_ >> iunit(mz2_,GeV2) >> iunit(pTmin_,GeV)
-     >> comptonWeight_ >> BGFWeight_ >> gluon_;
+  is >> alphaS_ >> iunit(pTmin_,GeV) >> comptonWeight_ >> BGFWeight_ >> gluon_;
 }
 
 void VBFHardGenerator::doinit() {
   HardestEmissionGenerator::doinit();
-  // electroweak parameters
-  sinW_ = generator()->standardModel()->sin2ThetaW();
-  cosW_ = sqrt(1.-sinW_);
-  sinW_ = sqrt(sinW_);
-  mz2_ = sqr(getParticleData(ParticleID::Z0)->mass());
   gluon_ = getParticleData(ParticleID::g);
 }
 
@@ -90,66 +83,128 @@ bool VBFHardGenerator::canHandle(ShowerTreePtr tree) {
   // two incoming particles
   if(tree->incomingLines().size()!=2) return false;
   // two outgoing particles
-  if(tree->outgoingLines().size()!=2) return false;
-  // check incoming quark and lepton
-  bool quark(false),lepton(false);
+  if(tree->outgoingLines().size()!=3) return false;
+  pair<tPPtr,tPPtr> first,second;
+  // get the incoming particles
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-    quark  |=  QuarkMatcher::Check(cit->first->progenitor()->data());
-    lepton |= LeptonMatcher::Check(cit->first->progenitor()->data());
+    if(!first.first)  first.first = cit->first->progenitor();
+    else             second.first = cit->first->progenitor();
   }
-  if(!quark||!lepton) return false;
-  // check outgoing quark and lepton
-  quark = false;
-  lepton = false;
+  // incoming quarks or antiquarks
+  if(!first.first||!second.first) return false;
+  if(abs(first.first->id())>5||abs(second.first->id())>5) return false;
+  bool higgs=false;
+  // and the outgoing
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-	cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
-    quark  |=  QuarkMatcher::Check(cjt->first->progenitor()->data());
-    lepton |= LeptonMatcher::Check(cjt->first->progenitor()->data());
+ 	cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
+    if(cjt->first->progenitor()->id()==ParticleID::h0) {
+      higgs = true;
+    }
+    else {
+      if(abs(cjt->first->progenitor()->id())>5) continue;
+      if(cjt->first->progenitor()->colourLine()&&
+	 cjt->first->progenitor()->colourLine()==first.first->colourLine()) {
+	first.second = cjt->first->progenitor();
+	continue;
+      }
+      if(cjt->first->progenitor()->antiColourLine()&&
+	 cjt->first->progenitor()->antiColourLine()==first.first->antiColourLine()) {
+	first.second = cjt->first->progenitor();
+	continue;
+      }
+      if(cjt->first->progenitor()->colourLine()&&
+	 cjt->first->progenitor()->colourLine()==second.first->colourLine()) {
+	second.second = cjt->first->progenitor();
+	continue;
+      }
+      if(cjt->first->progenitor()->antiColourLine()&&
+	 cjt->first->progenitor()->antiColourLine()==second.first->antiColourLine()) {
+	second.second = cjt->first->progenitor();
+	continue;
+      }
+    }
   }
-  if(!quark||!lepton) return false;
+  if(!first.second||!second.second||!higgs) return false;
   // can handle it
   return true;
 }
 
 HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
-  ShowerParticlePtr quark[2],lepton[2];
-  PPtr hadron;
-  // incoming particles
+  cerr << "testing in hardest\n";
+  pair<    tShowerParticlePtr,    tShowerParticlePtr> first,second;
+  pair<tcBeamPtr,tcBeamPtr> beams;
+  pair<tPPtr,tPPtr> hadrons;
+  tShowerParticlePtr higgs;
+  // get the incoming particles
   for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
 	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
-    if(QuarkMatcher::Check(cit->first->progenitor()->data())) {
-      hadron = cit->first->original()->parents()[0];
-      quark [0] = cit->first->progenitor();
-      beam_ = cit->first->beam();
+    if(!first.first) {
+      first.first    = cit->first->progenitor();
+      beams.first    = cit->first->beam();
+      hadrons.first  = cit->first->original()->parents()[0];
     }
-    else if(LeptonMatcher::Check(cit->first->progenitor()->data())) {
-      lepton[0] = cit->first->progenitor();
+    else {
+      second.first   = cit->first->progenitor();
+      beams.second   = cit->first->beam();
+      hadrons.second = cit->first->original()->parents()[0];
     }
   }
-  pdf_=beam_->pdf();
-  assert(beam_&&pdf_&&quark[0]&&lepton[0]);
-  // outgoing particles
+  // and the outgoing
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
-	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
-    if(QuarkMatcher::Check(cit->first->progenitor()->data()))
-      quark [1] = cit->first->progenitor();
-    else if(LeptonMatcher::Check(cit->first->progenitor()->data()))
-      lepton[1] = cit->first->progenitor();
+ 	cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
+    if(cjt->first->progenitor()->id()==ParticleID::h0) {
+      higgs = cjt->first->progenitor();
+    }
+    else {
+      if(abs(cjt->first->progenitor()->id())>5) continue;
+      if(cjt->first->progenitor()->colourLine()&&
+	 cjt->first->progenitor()->colourLine()==first.first->colourLine()) {
+	first.second = cjt->first->progenitor();
+	continue;
+      }
+      if(cjt->first->progenitor()->antiColourLine()&&
+	 cjt->first->progenitor()->antiColourLine()==first.first->antiColourLine()) {
+	first.second = cjt->first->progenitor();
+	continue;
+      }
+      if(cjt->first->progenitor()->colourLine()&&
+	 cjt->first->progenitor()->colourLine()==second.first->colourLine()) {
+	second.second = cjt->first->progenitor();
+	continue;
+      }
+      if(cjt->first->progenitor()->antiColourLine()&&
+	 cjt->first->progenitor()->antiColourLine()==second.first->antiColourLine()) {
+	second.second = cjt->first->progenitor();
+	continue;
+      }
+    }
   }
-  assert(quark[1]&&lepton[1]);
+  // first system will emit random swap so both with equal probability
+  if(UseRandom::rnd()<0.5) {
+    swap(first,second);
+    swap(beams.first,beams.second);
+  }
+  // check beam, all particles
+  assert(beams.first  && higgs &&
+	 first .first &&  first.second && 
+	 second.first && second.second);
+  // beam and pdf
+  beam_ = beams.first;
+  pdf_=beam_->pdf();
+  assert(beam_&&pdf_);
   // Particle data objects
-  for(unsigned int ix=0;ix<2;++ix) partons_[ix] = quark[ix]->dataPtr();
+  partons_[0] =  first. first->dataPtr();
+  partons_[1] =  first.second->dataPtr();
+  partons_[2] = second. first->dataPtr();
+  partons_[3] = second.second->dataPtr();
+  higgs->dataPtr();
   // extract the born variables
-  q_ =lepton[0]->momentum()-lepton[1]->momentum();
+  q_ = first.second->momentum()-first.first->momentum();
   q2_ = -q_.m2();
-  xB_ = quark[0]->x();
-  double  yB = 
-    (                   q_*quark[0]->momentum())/
-    (lepton[0]->momentum()*quark[0]->momentum()); 
-  l_ = 2./yB-1.;
+  xB_ = first.first->x();
   // construct lorentz transform from lab to breit frame
-  Lorentz5Momentum phadron =  hadron->momentum();
+  Lorentz5Momentum phadron =  hadrons.first->momentum();
   phadron.setMass(0.*GeV);
   phadron.rescaleRho();
   Lorentz5Momentum pcmf = phadron+0.5/xB_*q_;
@@ -159,17 +214,13 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
   Axis axis(pbeam.vect().unit());
   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
   rot_.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-  Lorentz5Momentum pl    = rot_*lepton[0]->momentum();
-  rot_.rotateZ(-atan2(pl.y(),pl.x()));
   // momenta of the particles
-  pl_[0]=rot_*lepton[0]->momentum();
-  pl_[1]=rot_*lepton[1]->momentum();
-  pq_[0]=rot_* quark[0]->momentum();
-  pq_[1]=rot_* quark[1]->momentum();
+  phiggs_     = rot_*higgs->momentum();
+  pother_ [0] = rot_*second. first->momentum();
+  pother_ [1] = rot_*second.second->momentum();
+  psystem_[0] = rot_* first. first->momentum();
+  psystem_[1] = rot_* first.second->momentum();
   q_ *= rot_;
-  // coefficient for the matrix elements
-  acoeff_ = A(lepton[0]->dataPtr(),lepton[1]->dataPtr(),
-	      quark [0]->dataPtr(),quark [1]->dataPtr());
   // generate a compton point
   generateCompton();
   generateBGF();
@@ -220,13 +271,16 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
   if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
 				 << "VBFHardGenerator::generateHardest()" 
 				 << Exception::runerror;
-  // add the leptons
+  // add the non emitting particles
   vector<HardBranchingPtr> spaceBranchings,allBranchings;
-  spaceBranchings.push_back(new_ptr(HardBranching(lepton[0],SudakovPtr(),
+  spaceBranchings.push_back(new_ptr(HardBranching(second.first,SudakovPtr(),
 						  HardBranchingPtr(),
 						  HardBranching::Incoming)));
   allBranchings.push_back(spaceBranchings.back());
-  allBranchings.push_back(new_ptr(HardBranching(lepton[1],SudakovPtr(),
+  allBranchings.push_back(new_ptr(HardBranching(second.second,SudakovPtr(),
+						HardBranchingPtr(),
+						HardBranching::Outgoing)));
+  allBranchings.push_back(new_ptr(HardBranching(higgs,SudakovPtr(),
 						HardBranchingPtr(),
 						HardBranching::Outgoing)));
   // compton hardest
@@ -487,75 +541,44 @@ void VBFHardGenerator::generateBGF() {
 
 double VBFHardGenerator::comptonME(double xT, double xp, double zp,
 				   double phi) {
-  // kinematical variables
-//   double x1 = -1./xp;
-  double x2 = 1.-(1.-zp)/xp;
-//   double x3 = 2.+x1-x2;
-  // matrix element
-  vector<double> output(3,0.);
-  double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
-  double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
-  double root = sqrt(sqr(l_)-1.);
-  double cphi = cos(phi);
-  // compute the r2 term
-  double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
-    (1+acoeff_*l_+sqr(l_));
-  return 4./3.*alphaS_->ratio(0.25*q2_*sqr(xT))*(1.+R2*sqr(xp)*(sqr(x2)+sqr(xT)));
+//   // kinematical variables
+// //   double x1 = -1./xp;
+//   double x2 = 1.-(1.-zp)/xp;
+// //   double x3 = 2.+x1-x2;
+//   // matrix element
+//   vector<double> output(3,0.);
+//   double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
+//   double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
+//   double root = sqrt(sqr(l_)-1.);
+//   double cphi = cos(phi);
+//   // compute the r2 term
+//   double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
+//     (1+acoeff_*l_+sqr(l_));
+//   return 4./3.*alphaS_->ratio(0.25*q2_*sqr(xT))*(1.+R2*sqr(xp)*(sqr(x2)+sqr(xT)));
+  return 1.;
 }
 
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
 			       double phi) {
-  // kinematical variables
-  double x1 = -1./xp;
-  double x2 = 1.-(1.-zp)/xp;
-  double x3 = 2.+x1-x2;
-  // matrix element
-  vector<double> output(3,0.);
-  double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
-  double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
-  double cos3 = x3/sqrt(sqr(x3)+sqr(xT));
-  double sin3 = xT/sqrt(sqr(x3)+sqr(xT));
-  double root = sqrt(sqr(l_)-1.);
-  double cphi = cos(phi);
-  // compute the r2 term
-  double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
-    (1+acoeff_*l_+sqr(l_));
-  double R3= (sqr(cos3)-acoeff_*cos3*(l_+root*sin3*cphi)+sqr(l_+root*sin3*cphi))/
-    (1+acoeff_*l_+sqr(l_));
-  return 0.5*alphaS_->ratio(0.25*q2_*sqr(xT))*sqr(xp)*
-    (R2*(sqr(x2)+sqr(xT))+R3*(sqr(x3)+sqr(xT)));
+//   // kinematical variables
+//   double x1 = -1./xp;
+//   double x2 = 1.-(1.-zp)/xp;
+//   double x3 = 2.+x1-x2;
+//   // matrix element
+//   vector<double> output(3,0.);
+//   double cos2 = x2/sqrt(sqr(x2)+sqr(xT));
+//   double sin2 = xT/sqrt(sqr(x2)+sqr(xT));
+//   double cos3 = x3/sqrt(sqr(x3)+sqr(xT));
+//   double sin3 = xT/sqrt(sqr(x3)+sqr(xT));
+//   double root = sqrt(sqr(l_)-1.);
+//   double cphi = cos(phi);
+//   // compute the r2 term
+//   double R2= (sqr(cos2)+acoeff_*cos2*(l_-root*sin2*cphi)+sqr(l_-root*sin2*cphi))/
+//     (1+acoeff_*l_+sqr(l_));
+//   double R3= (sqr(cos3)-acoeff_*cos3*(l_+root*sin3*cphi)+sqr(l_+root*sin3*cphi))/
+//     (1+acoeff_*l_+sqr(l_));
+//   return 0.5*alphaS_->ratio(0.25*q2_*sqr(xT))*sqr(xp)*
+//     (R2*(sqr(x2)+sqr(xT))+R3*(sqr(x3)+sqr(xT)));
+  return 1.;
 }
 
-double VBFHardGenerator::A(tcPDPtr lin, tcPDPtr lout,
-			   tcPDPtr qin, tcPDPtr) {
-  double output;
-  // charged current
-  if(lin->id()!=lout->id()) {
-    output = 2;
-  }
-  // neutral current
-  else {
-    double fact = 0.25*q2_/(q2_+mz2_)/sinW_/cosW_;
-    double cvl,cal,cvq,caq;
-    if(abs(lin->id())%2==0) {
-      cvl = generator()->standardModel()->vnu()*fact+generator()->standardModel()->enu();
-      cal = generator()->standardModel()->anu()*fact;
-    }
-    else {
-      cvl = generator()->standardModel()->ve()*fact+generator()->standardModel()->ee();
-      cal = generator()->standardModel()->ae()*fact;
-    }
-    if(abs(qin->id())%2==0) {
-      cvq = generator()->standardModel()->vu()*fact+generator()->standardModel()->eu();
-      caq = generator()->standardModel()->au()*fact;
-    }
-    else {
-      cvq = generator()->standardModel()->vd()*fact+generator()->standardModel()->ed();
-      caq = generator()->standardModel()->ad()*fact;
-    }
-    output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
-  }
-  if(qin->id()<0) output *= -1.;
-  if(lin->id()<0) output *= -1;
-  return output;
-}
