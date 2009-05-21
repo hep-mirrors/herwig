@@ -152,13 +152,22 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   Lorentz5Momentum phadron =  hadron->momentum();
   phadron.setMass(0.*GeV);
   phadron.rescaleRho();
-  Lorentz5Momentum pcmf = phadron+0.5/xB_*q_;
-  pcmf.rescaleMass();
-  rot_ = LorentzRotation(-pcmf.boostVector());
-  Lorentz5Momentum pbeam = rot_*phadron;
-  Axis axis(pbeam.vect().unit());
+  Lorentz5Momentum pb     = quark[0]->momentum();
+  Lorentz5Momentum pbasis = phadron;
+  Axis axis(q_.vect().unit());
   double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-  rot_.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+  LorentzRotation rot_ = LorentzRotation();
+  if(axis.perp2()>1e-20) {
+    rot_.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot_.rotateX(Constants::pi);
+  }
+  if(abs(1.-q_.e()/q_.vect().mag())>1e-6) rot_.boostZ( q_.e()/q_.vect().mag());
+  pb *= rot_;
+  if(pb.perp2()/GeV2>1e-20) {
+    Boost trans = -1./pb.e()*pb.vect();
+    trans.setZ(0.);
+    rot_.boost(trans);
+  }
   Lorentz5Momentum pl    = rot_*lepton[0]->momentum();
   rot_.rotateZ(-atan2(pl.y(),pl.x()));
   // momenta of the particles
@@ -266,6 +275,9 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
       newout->addColoured(newspace,partons_[0]->id()<0);
       newout->addColoured(newqout,partons_[1]->id()<0);
       newout->addColoured(newg  ,partons_[1]->id()>0);
+      ColinePtr newline(new_ptr(ColourLine())); 
+      newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+      newline->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3); 
     }
     else {
       ShowerParticlePtr newtime(new_ptr(ShowerParticle(partons_[1],true)));
@@ -284,13 +296,10 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
       offBranch->addChild(g);
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(spaceBranch);
-      allBranchings.push_back(offBranch);
-      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-      newin->addColoured(newqin,partons_[0]->id()<0);
-      newin->addColoured(newtime,partons_[0]->id()<0);
-      newin->addColoured(newg  ,partons_[0]->id()<0);
-      newout->addColoured(newqout,partons_[1]->id()<0);
-      newout->addColoured(newg,partons_[1]->id()>0);
+      allBranchings.push_back(offBranch);	 
+      ColinePtr newline(new_ptr(ColourLine())); 
+      newline->addColoured(newqin ,newqin->dataPtr()->iColour()!=PDT::Colour3); 
+      newline->addColoured(newtime,newqin->dataPtr()->iColour()!=PDT::Colour3); 
     }
   }
   // BGF hardest
@@ -320,13 +329,10 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
 						     HardBranching::Outgoing)));
     spaceBranchings.push_back(spaceBranch);
     allBranchings.push_back(offBranch);
-    allBranchings.push_back(outBranch);
-    ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-    newin ->addColoured(newg    ,partons_[0]->id()<0);
-    newin ->addColoured(newspace,partons_[0]->id()<0);
-    newin ->addColoured(newq    ,partons_[0]->id()<0);
-    newout->addColoured(newg    ,partons_[0]->id()>0);
-    newout->addColoured(newqbar ,partons_[0]->id()>0);
+    allBranchings.push_back(outBranch); 	
+    ColinePtr newline(new_ptr(ColourLine())); 
+    newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3); 
+    newline->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3); 
   }
   HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
 				       ShowerInteraction::QCD)));
@@ -379,6 +385,23 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
+  for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin(); 
+      cjt!=newTree->branchings().end();++cjt) { 
+    if(cjt==newTree->branchings().begin()) { 
+      (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
+      ++cjt; 
+      (**cjt).showerMomentum((**cjt).branchingParticle()->momentum()); 
+      ++cjt;
+    } 
+    // incoming 
+    if((**cjt).status()==HardBranching::Incoming) { 
+      quark[0]->set5Momentum((**cjt).showerMomentum()); 
+    } 
+    // outgoing 
+    else { 
+      quark[1]->set5Momentum((**cjt).showerMomentum()); 
+    } 
+  } 
   return newTree;
 }
 
@@ -392,6 +415,7 @@ void DISHardGenerator::generateCompton() {
   // loop to generate kinematics
   double wgt(0.),xp(0.),phi(0.);
   do {
+    wgt = 0.;
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
     // dzp
@@ -444,6 +468,7 @@ void DISHardGenerator::generateBGF() {
   // loop to generate kinematics
   double wgt(0.),xp(0.),phi(0.);
   do {
+    wgt = 0.;
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
     // dzp
