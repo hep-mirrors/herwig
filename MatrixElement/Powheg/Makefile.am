@@ -7,6 +7,7 @@ MEPP2HiggsPowheg.cc  MEPP2HiggsPowheg.h \
 MEPP2WHPowheg.cc  MEPP2WHPowheg.h \
 MEPP2ZHPowheg.cc  MEPP2ZHPowheg.h \
 MEPP2VVPowheg.cc  MEPP2VVPowheg.h \
+MEPP2VGammaPowheg.cc  MEPP2VGammaPowheg.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
 NLO2to2Kinematics.cc NLO2to2Kinematics.h
 
