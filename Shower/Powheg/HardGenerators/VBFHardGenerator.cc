@@ -454,7 +454,7 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
 
 void VBFHardGenerator::generateCompton() {
   // maximum value of the xT
-  double xT = (1.-xB_)/xB_;
+  double xT = sqrt((1.-xB_)/xB_);
   double xTMin = 2.*pTmin_/sqrt(q2_);
   double zp;
   // prefactor

@@ -22,7 +22,7 @@
 using namespace Herwig;
 
 DISHardGenerator::DISHardGenerator() : comptonWeight_(50.), BGFWeight_(150.), 
-				       pTmin_(1.*GeV) 
+				       pTmin_(0.1*GeV) 
 {}
 
 IBPtr DISHardGenerator::clone() const {
@@ -407,7 +407,7 @@ HardTreePtr DISHardGenerator::generateHardest(ShowerTreePtr tree) {
 
 void DISHardGenerator::generateCompton() {
   // maximum value of the xT
-  double xT = (1.-xB_)/xB_;
+  double xT = sqrt((1.-xB_)/xB_);
   double xTMin = 2.*pTmin_/sqrt(q2_);
   double zp;
   // prefactor
