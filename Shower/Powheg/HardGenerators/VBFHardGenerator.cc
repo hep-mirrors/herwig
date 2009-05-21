@@ -462,6 +462,7 @@ void VBFHardGenerator::generateCompton() {
   // loop to generate kinematics
   double wgt(0.),xp(0.),phi(0.);
   do {
+    wgt = 0.;
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
     // dzp
@@ -514,6 +515,7 @@ void VBFHardGenerator::generateBGF() {
   // loop to generate kinematics
   double wgt(0.),xp(0.),phi(0.);
   do {
+    wgt = 0.;
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
     // dzp
