@@ -131,7 +131,6 @@ bool VBFHardGenerator::canHandle(ShowerTreePtr tree) {
 }
 
 HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
-  cerr << "testing in hardest\n";
   pair<    tShowerParticlePtr,    tShowerParticlePtr> first,second;
   pair<tcBeamPtr,tcBeamPtr> beams;
   pair<tPPtr,tPPtr> hadrons;
@@ -191,7 +190,7 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
 	 second.first && second.second);
   // beam and pdf
   beam_ = beams.first;
-  pdf_=beam_->pdf();
+  pdf_  = beam_->pdf();
   assert(beam_&&pdf_);
   // Particle data objects
   partons_[0] =  first. first->dataPtr();
@@ -203,17 +202,24 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
   q_ = first.second->momentum()-first.first->momentum();
   q2_ = -q_.m2();
   xB_ = first.first->x();
-  // construct lorentz transform from lab to breit frame
-  Lorentz5Momentum phadron =  hadrons.first->momentum();
-  phadron.setMass(0.*GeV);
-  phadron.rescaleRho();
-  Lorentz5Momentum pcmf = phadron+0.5/xB_*q_;
-  pcmf.rescaleMass();
-  rot_ = LorentzRotation(-pcmf.boostVector());
-  Lorentz5Momentum pbeam = rot_*phadron;
-  Axis axis(pbeam.vect().unit());
-  double sinth(sqrt(sqr(axis.x())+sqr(axis.y())));
-  rot_.rotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+  Lorentz5Momentum pb     = first.first->momentum();
+  Lorentz5Momentum pbasis = hadrons.first->momentum();
+  pbasis.setMass(0.*GeV);
+  pbasis.rescaleRho();
+  Axis axis(q_.vect().unit());
+  double sinth(sqr(axis.x())+sqr(axis.y()));
+  rot_ = LorentzRotation();
+  if(axis.perp2()>1e-20) {
+    rot_.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot_.rotateX(Constants::pi);
+  }
+  if(abs(1.-q_.e()/q_.vect().mag())>1e-6) rot_.boostZ( q_.e()/q_.vect().mag());
+  pb *= rot_;
+  if(pb.perp2()/GeV2>1e-20) {
+    Boost trans = -1./pb.e()*pb.vect();
+    trans.setZ(0.);
+    rot_.boost(trans);
+  }
   // momenta of the particles
   phiggs_     = rot_*higgs->momentum();
   pother_ [0] = rot_*second. first->momentum();
@@ -314,12 +320,9 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);
       allBranchings.push_back(outBranch);
-      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-      newin->addColoured(newqin,partons_[0]->id()<0);
-      newin->addColoured(newg  ,partons_[0]->id()<0);
-      newout->addColoured(newspace,partons_[0]->id()<0);
-      newout->addColoured(newqout,partons_[1]->id()<0);
-      newout->addColoured(newg  ,partons_[1]->id()>0);
+      ColinePtr newline(new_ptr(ColourLine()));
+      newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
+      newline->addColoured(newqout ,newspace->dataPtr()->iColour()!=PDT::Colour3);
     }
     else {
       ShowerParticlePtr newtime(new_ptr(ShowerParticle(partons_[1],true)));
@@ -339,12 +342,10 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
       spaceBranchings.push_back(spaceBranch);
       allBranchings.push_back(spaceBranch);
       allBranchings.push_back(offBranch);
-      ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-      newin->addColoured(newqin,partons_[0]->id()<0);
-      newin->addColoured(newtime,partons_[0]->id()<0);
-      newin->addColoured(newg  ,partons_[0]->id()<0);
-      newout->addColoured(newqout,partons_[1]->id()<0);
-      newout->addColoured(newg,partons_[1]->id()>0);
+
+      ColinePtr newline(new_ptr(ColourLine()));
+      newline->addColoured(newqin ,newqin->dataPtr()->iColour()!=PDT::Colour3);
+      newline->addColoured(newtime,newqin->dataPtr()->iColour()!=PDT::Colour3);
     }
   }
   // BGF hardest
@@ -375,12 +376,10 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
     spaceBranchings.push_back(spaceBranch);
     allBranchings.push_back(offBranch);
     allBranchings.push_back(outBranch);
-    ColinePtr newin(new_ptr(ColourLine())),newout(new_ptr(ColourLine()));
-    newin ->addColoured(newg    ,partons_[0]->id()<0);
-    newin ->addColoured(newspace,partons_[0]->id()<0);
-    newin ->addColoured(newq    ,partons_[0]->id()<0);
-    newout->addColoured(newg    ,partons_[0]->id()>0);
-    newout->addColoured(newqbar ,partons_[0]->id()>0);
+
+    ColinePtr newline(new_ptr(ColourLine()));
+    newline->addColoured(newspace,newspace->dataPtr()->iColour()!=PDT::Colour3);
+    newline->addColoured(newq    ,newspace->dataPtr()->iColour()!=PDT::Colour3);
   }
   HardTreePtr newTree(new_ptr(HardTree(allBranchings,spaceBranchings,
 				       ShowerInteraction::QCD)));
@@ -392,21 +391,19 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
     // set maximum pT
     if(QuarkMatcher::Check(cit->first->progenitor()->data()))
       cit->first->maximumpT(pT);
-    for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
-	cjt!=newTree->branchings().end();++cjt) {
-      if(!(*cjt)->branchingParticle()->isFinalState()&&
-	 (*cjt)->branchingParticle()->id()==cit->first->progenitor()->id()) {
-	newTree->connect(cit->first->progenitor(),*cjt);
-	tPPtr beam =cit->first->original();
-	if(!beam->parents().empty()) beam=beam->parents()[0];
-	(*cjt)->beam(beam);
-	HardBranchingPtr parent=(*cjt)->parent();
-	while(parent) {
-	  parent->beam(beam);
-	  parent=parent->parent();
-	};
-      }
+    set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
+    if(cit->first->progenitor()==first.first) {
+      ++cjt;++cjt;++cjt;
     }
+    newTree->connect(cit->first->progenitor(),*cjt);
+    tPPtr beam =cit->first->original();
+    if(!beam->parents().empty()) beam=beam->parents()[0];
+    (*cjt)->beam(beam);
+    HardBranchingPtr parent=(*cjt)->parent();
+    while(parent) {
+      parent->beam(beam);
+      parent=parent->parent();
+    };
   }
   // outgoing particles
   for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
@@ -433,6 +430,25 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructHardJets(newTree,evolver(),ShowerInteraction::QCD);
+  for(set<HardBranchingPtr>::iterator cjt=newTree->branchings().begin();
+      cjt!=newTree->branchings().end();++cjt) {
+    if(cjt==newTree->branchings().begin()) {
+      (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
+      ++cjt;
+      (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
+      ++cjt;
+      (**cjt).showerMomentum((**cjt).branchingParticle()->momentum());
+      ++cjt;
+    }
+    // incoming
+    if((**cjt).status()==HardBranching::Incoming) {
+      first. first->set5Momentum((**cjt).showerMomentum());
+    }
+    // outgoing
+    else {
+      first.second->set5Momentum((**cjt).showerMomentum());
+    }
+  }
   return newTree;
 }
 
