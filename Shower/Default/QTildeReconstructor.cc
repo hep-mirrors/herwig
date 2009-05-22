@@ -1344,7 +1344,8 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   // check whether particles radiated and calculate total momentum
   for(unsigned int ix=0;ix<jets.size();++ix) {
     radiated |= jets[ix]->hasEmitted();
-    pcm += jets[ix]->progenitor()->getThePEGBase()->momentum();
+//     pcm += jets[ix]->progenitor()->getThePEGBase()->momentum();
+    pcm += jets[ix]->progenitor()->momentum();
   }
   // check if intrinsic pt to be added
   radiated |= !_intrinsic.empty();
@@ -1355,7 +1356,8 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   vector<Lorentz5Momentum> p, pq, p_in;
   for(unsigned int ix=0;ix<jets.size();++ix) {
     // at momentum to vector
-    p_in.push_back(jets[ix]->progenitor()->getThePEGBase()->momentum());
+//     p_in.push_back(jets[ix]->progenitor()->getThePEGBase()->momentum());
+    p_in.push_back(jets[ix]->progenitor()->momentum());
     // reconstruct the jet
     radiated |= reconstructSpaceLikeJet(jets[ix]->progenitor());
     assert(!jets[ix]->original()->parents().empty());
@@ -1495,6 +1497,7 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
     LorentzRotation R(toRest);
     R.boost(fromRest);
     jets[0]->setMomenta(R,1.0,Lorentz5Momentum());
+    jets[0]->showerMomentum(R*jets[0]->branchingParticle()->momentum());
     // find the colour partners
     ShowerParticleVector particles;
     vector<Lorentz5Momentum> ptemp;

@@ -114,7 +114,6 @@ HardTreePtr VGammaHardGenerator::generateHardest(ShowerTreePtr tree) {
     incoming.push_back( cit->first->progenitor() );
     beams_.push_back( cit->first->beam() );
     partons_.push_back( cit->first->progenitor()->dataPtr() );
-    generator()->log() << "incoming " << *cit->first->progenitor() << "\n";
     // check that quark is along +ve z direction
     if(cit->first->progenitor()->id() > 0 && 
        cit->first->progenitor()->momentum().z() < ZERO ) 
@@ -171,19 +170,9 @@ HardTreePtr VGammaHardGenerator::generateHardest(ShowerTreePtr tree) {
   pTqg_    = -GeV;
   pTgqbar_ = -GeV;
   // generate a q qbar -> V g cconfiguration
-  generator()->log() << "testing in generator hardest\n";
-  generator()->log() << *boson << "\n"<< *photon << "\n";
-  generator()->log() << "testing old \n"
-		     << "Photon    = " << photon->momentum()/GeV << "\n"
-		     << "Boson     = " << boson->momentum()/GeV << "\n";
   generateQQbarG();
   // return if no emission
-  generator()->log() << "testing pt " 
-		     << pTqqbar_/GeV << " " 
-		     << pTqg_/GeV << " "
-		     << pTgqbar_/GeV << "\n";
   if(pTqqbar_<ZERO&&pTqg_<ZERO&&pTgqbar_<ZERO) {
-    generator()->log() << "testing in emission A\n";
     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
       particlesToShower[ix]->maximumpT(pTmin_);
     return HardTreePtr();
@@ -345,16 +334,8 @@ HardTreePtr VGammaHardGenerator::generateHardest(ShowerTreePtr tree) {
   // calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()->
     deconstructHardJets(hardTree,evolver(),ShowerInteraction::QCD);
-  generator()->log() << *hardTree;
-  generator()->log() << "testing in emission B\n";
-
-
-  Lorentz5Momentum ptest,pout;
-
   for(set<HardBranchingPtr>::const_iterator cit=hardTree->branchings().begin();
       cit!=hardTree->branchings().end();++cit) {
-    generator()->log() << *(**cit).branchingParticle() << "\n";
-    generator()->log() << (**cit).showerMomentum()/GeV << "\n";
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
       if((((**cit).status()==HardBranching::Incoming && 
 	   !particlesToShower[ix]->progenitor()->isFinalState())||
@@ -362,31 +343,9 @@ HardTreePtr VGammaHardGenerator::generateHardest(ShowerTreePtr tree) {
 	   particlesToShower[ix]->progenitor()->isFinalState()))&&
 	 particlesToShower[ix]->progenitor()->id()==(**cit).branchingParticle()->id()) {
 	particlesToShower[ix]->progenitor()->set5Momentum((**cit).showerMomentum());
-	generator()->log() << "potential match " << *particlesToShower[ix]->progenitor()
-			   << "\n";
-
-
-	if((**cit).status()==HardBranching::Incoming) 
-	  ptest += (**cit).showerMomentum();
-	else {
-	  ptest -= (**cit).showerMomentum();
-	  pout  += (**cit).showerMomentum();
-	}
       }
     }
   }
-  generator()->log() << "testing sum " << ptest/GeV << "\n";
-  generator()->log() << (pboson+pphoton)/GeV << "\n" 
-		     << pout/GeV << "\n";
-  generator()->log() << (pboson+pphoton).m2()/GeV2 << " " << pout.m2()/GeV2 << "\n";
-
-
-
-
-
-
-
-
   return hardTree;
 }
 
@@ -453,10 +412,8 @@ void VGammaHardGenerator::generateQQbarG() {
     pQbarqqbar_  = Lorentz5Momentum (ZERO,ZERO,-x2*rs_,x2*rs_,ZERO);
     // final bit
     wgt *= QQbarGratio();
-    generator()->log() << "testing " << wgt << "\n";
   }
   while(UseRandom::rnd()>wgt&&pT>pTmin_);
-  generator()->log() << "testing " << pT/GeV << " " << pTmin_/GeV << "\n";
   if(pT<pTmin_) pT=-GeV;
   pTqqbar_ = pT;
   if(!quarkplus_) {
@@ -474,7 +431,8 @@ void VGammaHardGenerator::generateQQbarG() {
 		     << "Gluon     = " << pGqqbar_/GeV << "\n"
 		     << "Quark     = " << pQqqbar_/GeV << "\n"
 		     << "Antiquark = " << pQbarqqbar_/GeV << "\n"
-		     << "sum " << (pGammaqqbar_+pVqqbar_+pGqqbar_-pQqqbar_-pQbarqqbar_)/GeV << "\n";
+		     << "sum " 
+		     << (pGammaqqbar_+pVqqbar_+pGqqbar_-pQqqbar_-pQbarqqbar_)/GeV << "\n";
 }
 
 double VGammaHardGenerator::QQbarGratio() {
