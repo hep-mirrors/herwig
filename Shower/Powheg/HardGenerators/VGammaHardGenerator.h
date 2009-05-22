@@ -92,6 +92,30 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
+  /**
+   *  Generate a \f$q \bar q \to V \gamma \f$ configuration
+   */
+  void generateQQbarG();
+
+  /**
+   *   The ratio of leading to NLO matrix elements
+   */ 
+  double QQbarGratio();
+
 private:
 
   /**
@@ -111,7 +135,17 @@ private:
   /**
    *  Pointer to the object calculating the strong coupling
    */
-  ShowerAlphaPtr _alphaS;
+  ShowerAlphaPtr alphaS_;
+
+  /**
+   *  ParticleData object of the gluon
+   */
+  tcPDPtr gluon_;
+
+  /**
+   *  The transverse momentum of the jet
+   */
+  Energy pTmin_;
 
   /**
    *  Properties of the incoming particles
@@ -120,18 +154,183 @@ private:
   /**
    *  Pointers to the BeamParticleData objects
    */
-  vector<tcBeamPtr> _beams;
+  vector<tcBeamPtr> beams_;
   
   /**
    *  Pointers to the ParticleDataObjects for the partons
    */
-  vector<tcPDPtr> _partons;
+  vector<tcPDPtr> partons_;
   //@}
 
   /**
    *  Whether the quark is in the + or - z direction
    */
-  bool _quarkplus;
+  bool quarkplus_;
+
+  /**
+   *  Prefactor for the overestimate for \f$q\bar q\to V \gamma\f$
+   */
+  double qqgFactor_;
+
+  /**
+   * The power, \f$n\f$, for the sampling
+   */
+  double power_;
+
+  /**
+   *  Born variables
+   */
+  //@{
+  /**
+   *  Rapidity of the photon
+   */
+  double photonRapidity_;
+
+  /**
+   *  Rapidity of the gauge boson
+   */
+  double bosonRapidity_;
+
+  /**
+   *  \f$p_T\f$ of the photon
+   */
+  Energy photonpT_;
+
+  /**
+   *  Azimuth of the photon
+   */
+  double photonAzimuth_;
+
+  /**
+   * gauge boson mass
+   */
+  Energy bosonMass_;
+
+  /**
+   * Mass of the boson/photon system
+   */
+  Energy systemMass_;
+
+  /**
+   *  Momentum fractions for the LO process
+   */ 
+  double x_[2];
+
+  /**
+   * CMS energy squared of the hadron collision
+   */
+  Energy2  s_;
+
+  /**
+   * CMS energy of the hadron collision
+   */
+  Energy  rs_;
+  //@}
+
+  /**
+   *  Momenta etc for the \f$q\bar q \to V \gamma g \f$ process
+   */
+  //@{
+  /**
+   *  Momentum of the vector boson
+   */
+  Lorentz5Momentum pVqqbar_;
+
+  /**
+   *  Momentum of the photon
+   */
+  Lorentz5Momentum pGammaqqbar_;
+
+  /**
+   *  Momentum of the gluon
+   */
+  Lorentz5Momentum pGqqbar_;
+
+  /**
+   *  Momentum of the incoming quark
+   */
+  Lorentz5Momentum pQqqbar_;
+
+  /**
+   *  Momentum of the incoming antiquark
+   */
+  Lorentz5Momentum pQbarqqbar_;
+
+  /**
+   *  The transverse momentum
+   */
+  Energy pTqqbar_;
+  //@}
+
+  /**
+   *  Momenta etc for the \f$qg  \to V \gamma q \f$ process
+   */
+  //@{
+  /**
+   *  Momentum of the vector boson
+   */
+  Lorentz5Momentum pVqg_;
+
+  /**
+   *  Momentum of the photon
+   */
+  Lorentz5Momentum pGammaqg_;
+
+  /**
+   *  Momentum of the gluon
+   */
+  Lorentz5Momentum pGqg_;
+
+  /**
+   *  Momentum of the incoming quark
+   */
+  Lorentz5Momentum pQinqg_;
+
+  /**
+   *  Momentum of the incoming antiquark
+   */
+  Lorentz5Momentum pQoutqg_;
+
+  /**
+   *  The transverse momentum
+   */
+  Energy pTqg_;
+  //@}
+
+  /**
+   *  Momenta etc for the \f$g\bar q \to V \gamma \bar q \f$ process
+   */
+  //@{
+  /**
+   *  Momentum of the vector boson
+   */
+  Lorentz5Momentum pVgqbar_;
+
+  /**
+   *  Momentum of the photon
+   */
+  Lorentz5Momentum pGammagqbar_;
+
+  /**
+   *  Momentum of the gluon
+   */
+  Lorentz5Momentum pGgqbar_;
+
+  /**
+   *  Momentum of the incoming quark
+   */
+  Lorentz5Momentum pQingqbar_;
+
+  /**
+   *  Momentum of the incoming antiquark
+   */
+  Lorentz5Momentum pQoutgqbar_;
+
+  /**
+   *  The transverse momentum
+   */
+  Energy pTgqbar_;
+  //@}
 };
 
 }
