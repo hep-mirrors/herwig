@@ -77,7 +77,7 @@ void SSGOGOHVertex::doinit() {
       << Exception::abortnow;
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
-  double theSw = sqrt(theMSSM->sin2ThetaW());
+  double theSw = sqrt(sin2ThetaW());
   double tw = theSw/sqrt(1. - theSw*theSw);
   double tanb = theMSSM->tanBeta();
   theSb = tanb/sqrt(1. + sqr(tanb));

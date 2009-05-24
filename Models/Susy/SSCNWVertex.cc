@@ -51,7 +51,7 @@ void SSCNWVertex::doinit() {
   if(!theSS)
     throw InitException() << "SSCNWVertex::doinit() - The model pointer is null!"
 			  << Exception::abortnow;
-  _sw = sqrt(theSS->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
   
   _theN = theSS->neutralinoMix();
   _theU = theSS->charginoUMix();

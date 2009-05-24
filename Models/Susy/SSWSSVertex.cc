@@ -170,7 +170,7 @@ void SSWSSVertex::doinit() {
     throw InitException() << "SSWSSVertex::doinit() - "
 			  << "The model pointer is null."
 			  << Exception::abortnow;
-  _sw = sqrt(theSS->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
   _cw = sqrt( 1. - sqr(_sw) );
   _stop = theSS->stopMix();
   _sbottom = theSS->sbottomMix();

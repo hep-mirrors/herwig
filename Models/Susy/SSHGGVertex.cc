@@ -45,7 +45,7 @@ void SSHGGVertex::doinit() {
   theMw = getParticleData(ParticleID::Wplus)->mass();
   thetop = getParticleData(ParticleID::t);
   thebot = getParticleData(ParticleID::b);
-  theSw = sqrt(theMSSM->sin2ThetaW());
+  theSw = sqrt(sin2ThetaW());
   theZfact = getParticleData(ParticleID::Z0)->mass()/sqrt(1. - sqr(theSw));
   
   theSinA = sin(theMSSM->higgsMixingAngle());
