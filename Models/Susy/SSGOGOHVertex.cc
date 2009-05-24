@@ -177,11 +177,11 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
   theHLast = higgsID;
   theID1Last = f1ID;
   theID2Last = f2ID;
-  
   if( higgsID == ParticleID::h0 ) {
     //charginos
-    if( f2ID < 0 ) {
-      unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
+    if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||
+	abs(f2ID) == ParticleID::SUSY_chi_2plus ) {
+      unsigned int ei = (abs(f1ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       theLLast =  conj(theQij[ej][ei])*theSa - conj(theSij[ej][ei])*theCa;
       theRLast = theQij[ei][ej]*theSa - theSij[ei][ej]*theCa;
@@ -201,9 +201,9 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
   }
   else if( higgsID == ParticleID::H0 ) {
     //charginos
-    if( f2ID < 0 ) {
-   
-      unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
+    if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||
+	abs(f2ID) == ParticleID::SUSY_chi_2plus ) {   
+      unsigned int ei = (abs(f1ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       theLLast =  -conj(theQij[ej][ei])*theCa - conj(theSij[ej][ei])*theSa;
       theRLast = -theQij[ei][ej]*theCa - theSij[ei][ej]*theSa;
@@ -222,8 +222,9 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
     }
   }
   else if( higgsID == ParticleID::A0 ) {
-    if( f2ID < 0 ) {
-            unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
+    if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||
+	abs(f2ID) == ParticleID::SUSY_chi_2plus ) {
+      unsigned int ei = (abs(f1ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
 
       theLLast = Complex(0.,1.)*( conj(theQij[ej][ei])*theSb 
@@ -250,7 +251,7 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
     long chg(f2ID), neu(f1ID);
     if( abs(neu) == ParticleID::SUSY_chi_1plus || 
 	abs(neu) == ParticleID::SUSY_chi_2plus ) swap(chg, neu);
-    ej = ( chg == ParticleID::SUSY_chi_1plus) ? 0 : 1;
+    ej = ( abs(chg) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
     ei = neu - ParticleID::SUSY_chi_10;
     if( ei > 1 )
       ei = ( ei == 13 ) ? 3 : 2;
