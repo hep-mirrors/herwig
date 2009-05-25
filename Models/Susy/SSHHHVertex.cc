@@ -63,7 +63,7 @@ void SSHHHVertex::doinit() {
       << Exception::abortnow;
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
-  theSw = sqrt(theMSSM->sin2ThetaW());
+  theSw = sqrt(sin2ThetaW());
   theZfact = getParticleData(ParticleID::Z0)->mass()/2./theSw/sqrt(1. - sqr(theSw));
   
   double tanbeta = theMSSM->tanBeta();

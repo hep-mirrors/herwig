@@ -102,6 +102,6 @@ void SMWWWVertex::doinit() {
   orderInGs(0);
   VVVVertex::doinit();
   // factor for the Z vertex
-  double sw2=generator()->standardModel()->sin2ThetaW();
+  double sw2=sin2ThetaW();
   _zfact = sqrt((1.-sw2)/sw2);
 }

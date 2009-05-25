@@ -12,9 +12,12 @@ MEPP2WH.h    MEPP2WH.cc   \
 MEPP2ZH.h    MEPP2ZH.cc   \
 MEPP2WJet.cc MEPP2WJet.h  \
 MEPP2ZJet.cc MEPP2ZJet.h  \
+MEPP2VV.cc   MEPP2VV.h  \
+MEPP2VGamma.cc   MEPP2VGamma.h  \
+MEPP2HiggsVBF.cc   MEPP2HiggsVBF.h  \
 MEMinBias.h MEMinBias.cc
 
-HwMEHadron_la_LDFLAGS = -module -version-info 1:0:0
+HwMEHadron_la_LDFLAGS = -module -version-info 1:1:0
 
 pkglib_LTLIBRARIES += HwMEHadronFast.la
 HwMEHadronFast_la_SOURCES = \

@@ -71,7 +71,7 @@ void SSWHHVertex::doinit() {
     throw InitException() 
       << "SSWHHVertex::doinit() - The pointer to the MSSM object is null!"
       << Exception::abortnow;
-  theSw = sqrt(theMSSM->sin2ThetaW());
+  theSw = sqrt(sin2ThetaW());
   double cw = sqrt(1. - sqr(theSw));
   theS2w = 2.*theSw*cw;
   theC2w = cw*cw - theSw*theSw;

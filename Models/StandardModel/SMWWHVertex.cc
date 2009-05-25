@@ -34,7 +34,7 @@ SMWWHVertex::SMWWHVertex()
 void SMWWHVertex::doinit() {
   // parameters
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  _zfact = 1./(1.-generator()->standardModel()->sin2ThetaW());
+  _zfact = 1./(1.-sin2ThetaW());
   // order in the couplings
   orderInGem(1);
   orderInGs(0);

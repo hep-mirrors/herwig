@@ -22,4 +22,4 @@ SSWWHVertex.cc SSWWHVertex.h SSWWHVertex.icc SSWWHVertex.fh \
 SSWHHVertex.cc SSWHHVertex.h SSWHHVertex.icc SSWHHVertex.fh \
 SSHHHVertex.cc SSHHHVertex.h SSHHHVertex.icc SSHHHVertex.fh \
 SSHGGVertex.cc SSHGGVertex.h SSHGGVertex.icc SSHGGVertex.fh
-HwSusy_la_LDFLAGS = -module -version-info 4:0:0
+HwSusy_la_LDFLAGS = -module -version-info 4:1:0

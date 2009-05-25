@@ -79,7 +79,7 @@ void Histogram::topdrawOutput(ostream & out,
   vector<double> yout;
   double ymax=-9.8765e34,ymin=9.8765e34;
   double numPoints = _total;
-  if (numPoints == 0) ++numPoints;
+  if (numPoints == 0) numPoints += 1.;
 
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
@@ -245,7 +245,6 @@ void Histogram::simpleOutput(ostream & out, bool errorbars,
   // simple ascii output (eg for gnuplot)
   // work out the y points
   vector<double> yout;
-  //  unsigned int numPoints = _globalStats.numberOfPoints();  
   unsigned int numPoints = visibleEntries();
   if (numPoints == 0) ++numPoints;
   double datanorm(1.0); 
@@ -321,21 +320,18 @@ Histogram Histogram::ratioWith(const Histogram & h2) const {
 }
 
 
-void Histogram::normaliseToData()
-{
+void Histogram::normaliseToData() {
   double numer(0.),denom(0.);
-  unsigned int numPoints = _globalStats.numberOfPoints();
-  for(unsigned int ix=1;ix<_bins.size()-1;++ix)
-    {
-      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      double value = 0.5*_bins[ix].contents / (delta*numPoints);
-      if(_bins[ix].dataerror>0.)
-	{
-	  double var = sqr(_bins[ix].dataerror);
-	  numer += _bins[ix].data * value/var;
-	  denom += sqr(value)/var;
-	}
+  double numPoints = _total;
+  for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double value = 0.5*_bins[ix].contents / (delta*numPoints);
+    if(_bins[ix].dataerror>0.) {
+      double var = sqr(_bins[ix].dataerror);
+      numer += _bins[ix].data * value/var;
+      denom += sqr(value)/var;
     }
+  }
   _prefactor = numer/denom;
 }
 
@@ -343,7 +339,7 @@ void Histogram::chiSquared(double & chisq,
 			   unsigned int & ndegrees, double minfrac) const {
   chisq =0.;
   ndegrees=0;
-  unsigned int numPoints = _globalStats.numberOfPoints();
+  double numPoints = _total;
   for(unsigned int ix=1;ix<_bins.size()-1;++ix) {
     double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
     double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
@@ -359,8 +355,8 @@ void Histogram::chiSquared(double & chisq,
 }
 
 void Histogram::normaliseToCrossSection() {
-  unsigned int numPoints = _globalStats.numberOfPoints();
-  if (numPoints == 0) ++numPoints;
+  double numPoints = _total;
+  if (numPoints == 0) numPoints += 1.;
   _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*
     numPoints/nanobarn;
 }

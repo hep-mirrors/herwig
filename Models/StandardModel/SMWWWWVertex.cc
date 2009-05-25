@@ -48,7 +48,7 @@ void SMWWWWVertex::doinit() {
   orderInGs(0);
   VVVVVertex::doinit();
   // couplings
-  _sw2 = generator()->standardModel()->sin2ThetaW();
+  _sw2 = sin2ThetaW();
   _cw2 = 1.-_sw2;
   double sw = sqrt(_sw2);
   double cw = sqrt(_cw2);

@@ -446,6 +446,11 @@ private:
   CrossSection softXSec_;
 
   /**
+   * Variable to store the inelastic cross section
+   */
+  CrossSection inelXSec_;
+
+  /**
    * Variable to store the total pp cross section (assuming rho=0!) as
    * measured at LHC. If this variable is set, this value is used in the
    * subsequent run instead of any of the Donnachie-Landshoff

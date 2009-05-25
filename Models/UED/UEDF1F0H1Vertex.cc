@@ -131,8 +131,8 @@ void UEDF1F0H1Vertex::doinit() {
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
   theRadius = UEDBase->compactRadius();
-  theSinThetaW = sqrt(UEDBase->sin2ThetaW());
-  theCosThetaW = sqrt(1. - UEDBase->sin2ThetaW());
+  theSinThetaW = sqrt(sin2ThetaW());
+  theCosThetaW = sqrt(1. - sin2ThetaW());
   theMw = getParticleData(24)->mass();
   theMz = getParticleData(23)->mass();
 
