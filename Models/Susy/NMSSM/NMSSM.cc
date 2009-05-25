@@ -71,7 +71,7 @@ void NMSSM::Init() {
 }
 
 void NMSSM::extractParameters(bool checkmodel) {
-  SusyBase::extractParameters(false);
+  MSSM::extractParameters(false);
   if(checkmodel) {
     map<string,ParamMap>::const_iterator pit;
     pit = parameters().find("modsel");

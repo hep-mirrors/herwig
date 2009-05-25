@@ -135,42 +135,45 @@ void MSSM::extractParameters(bool checkmodel) {
       }
     }
   }
-  // the higgs mixing angle
-  map<string,ParamMap>::const_iterator pit;
-  theAlpha=0.;
-  pit=parameters().find("alpha");
-  if(pit!=parameters().end()) {
-    ParamMap::const_iterator it = pit->second.find(1);
-    if(it!=pit->second.end()) theAlpha=it->second;
-  }
-  // neutralino and chargino paramters in thew base class
+  // neutralino and chargino paramters in the base class
   SusyBase::extractParameters(false);
-  if(checkmodel) {
+  // check the model
+  map<string,ParamMap>::const_iterator pit;
+  pit=parameters().find("modsel");
+  if(pit==parameters().end()) return;
+  // nmssm or mssm
+  ParamMap::const_iterator jt;
+  jt = pit->second.find(3);
+  int inmssm = jt!=pit->second.end() ? int(jt->second) : 0; 
+  // RPV
+  jt = pit->second.find(4);
+  int irpv = jt!=pit->second.end() ? int(jt->second) : 0;
+  // CPV
+  jt = pit->second.find(5);
+  int icpv = jt!=pit->second.end() ? int(jt->second) : 0;
+  // flavour violation
+  jt = pit->second.find(6);
+  int ifv = jt!=pit->second.end() ? int(jt->second) : 0;
+  // the higgs mixing angle if not NMSSM
+  theAlpha=0.;
+  if(inmssm==0) {
     map<string,ParamMap>::const_iterator pit;
-    pit=parameters().find("modsel");
-    if(pit==parameters().end()) return;
-    ParamMap::const_iterator it;
-    // nmssm or mssm
-    it = pit->second.find(3);
-    int inmssm = it!=pit->second.end() ? int(it->second) : 0;
+    pit=parameters().find("alpha");
+    if(pit!=parameters().end()) {
+      ParamMap::const_iterator it = pit->second.find(1);
+      if(it!=pit->second.end()) theAlpha=it->second;
+    }
+  }
+  if(checkmodel) {
     if(inmssm!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				    << " used but NMSSM read in " 
-				    << Exception::runerror; 
-    // RPV
-    it = pit->second.find(4);
-    int irpv = it!=pit->second.end() ? int(it->second) : 0;
+				    << Exception::runerror;
     if(irpv!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				  << " used but RPV read in " 
 				  << Exception::runerror; 
-    // CPV
-    it = pit->second.find(5);
-    int icpv = it!=pit->second.end() ? int(it->second) : 0;
     if(icpv!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				  << " used but CPV read in " 
 				  << Exception::runerror; 
-    // flavour violation
-    it = pit->second.find(6);
-    int ifv = it!=pit->second.end() ? int(it->second) : 0;
     if(ifv!=0) throw Exception() << "R-parity, CP and flavour conserving MSSM model"
 				 << " used but flavour violation read in " 
 				 << Exception::runerror;
