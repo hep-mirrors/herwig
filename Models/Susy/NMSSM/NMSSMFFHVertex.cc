@@ -71,7 +71,7 @@ void NMSSMFFHVertex::doinit() {
 			  << Exception::runerror;
   _theSM = model;
   // sin theta_W
-  double sw2=_theSM->sin2ThetaW();
+  double sw2=sin2ThetaW();
   _sw = sqrt(sw2);
   // get the mixing matrices
   _mixS=model->CPevenHiggsMix();

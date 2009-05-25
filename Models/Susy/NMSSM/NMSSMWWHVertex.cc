@@ -32,7 +32,7 @@ NMSSMWWHVertex::NMSSMWWHVertex()
 void NMSSMWWHVertex::doinit() {
   // SM parameters
   _mw=getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  double sw = generator()->standardModel()->sin2ThetaW();
+  double sw = sin2ThetaW();
   _zfact = 1./(1.-sw);
   sw=sqrt(sw);
   // NMSSM parameters

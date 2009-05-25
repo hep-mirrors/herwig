@@ -89,8 +89,7 @@ void NMSSMGOGOHVertex::persistentInput(PersistentIStream & is, int) {
 
 void NMSSMGOGOHVertex::doinit() {
   // SM parameters
-  generator()->standardModel() = generator()->standardModel();
-  _sw = generator()->standardModel()->sin2ThetaW();
+  _sw = sin2ThetaW();
   _cw=sqrt(1.-_sw);
   _sw=sqrt(_sw);
   // NMSSM parameters

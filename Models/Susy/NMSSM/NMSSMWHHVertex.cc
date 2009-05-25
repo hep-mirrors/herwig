@@ -59,7 +59,7 @@ void NMSSMWHHVertex::doinit() {
     throw InitException() << "Must have the NMSSM Model in NMSSMFFHVertex::doinit()"
 			  << Exception::runerror;
   // sin theta_W
-  double sw2=model->sin2ThetaW();
+  double sw2=sin2ThetaW();
   _sw = sqrt(sw2);
   _cw = sqrt(1.-sw2);
   // get the mixing matrices

@@ -48,7 +48,7 @@ void NMSSMHHHVertex::doinit() {
   //SM parameters
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
-  _sw2 = generator()->standardModel()->sin2ThetaW();
+  _sw2 = sin2ThetaW();
   _cw = sqrt(1. - _sw2);
   
   //NMSSM parameters

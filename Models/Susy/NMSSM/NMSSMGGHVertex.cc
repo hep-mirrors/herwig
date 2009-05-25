@@ -33,8 +33,8 @@ void NMSSMGGHVertex::doinit() {
 			  << Exception::abortnow;
   }
   // SM parameters
-  _sw = sqrt(_theSM->sin2ThetaW());
-  _cw = sqrt(1. - _theSM->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
+  _cw = sqrt(1. - sin2ThetaW());
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
   _top = getParticleData(6);
