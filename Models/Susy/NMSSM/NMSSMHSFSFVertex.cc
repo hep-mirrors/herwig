@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "NMSSM.h"
 
 using namespace Herwig;
@@ -79,7 +80,7 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
       third.push_back(1000000 + q);
     }
     //sleptons
-    for(long l = 11; l < 17; l += 2) {
+    for(long l = 11; l < 15; l += 2) {
       //12
       first.push_back(odd[h]);
       second.push_back(-1000000 - l);
@@ -89,6 +90,27 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
       second.push_back(-2000000 - l);
       third.push_back(1000000 + l);
     }
+    //~tau LL/RR
+    first.push_back(odd[h]);
+    second.push_back(-1000015);
+    third.push_back(1000015); 
+    first.push_back(odd[h]);
+    second.push_back(-2000015);
+    third.push_back(2000015); 
+    //~bot LL/RR
+    first.push_back(odd[h]);
+    second.push_back(-1000005);
+    third.push_back(1000005); 
+    first.push_back(odd[h]);
+    second.push_back(-2000005);
+    third.push_back(2000005);
+    first.push_back(odd[h]);
+    //~top LL/RR
+    second.push_back(-1000006);
+    third.push_back(1000006); 
+    first.push_back(odd[h]);
+    second.push_back(-2000006);
+    third.push_back(2000006);
   }
   //charged higgs
   //squarks
@@ -172,6 +194,7 @@ void NMSSMHSFSFVertex::Init() {
 }
 
 void NMSSMHSFSFVertex::doinit() {
+  SSSVertex::doinit();
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
   if( !nmssm )
@@ -198,23 +221,25 @@ void NMSSMHSFSFVertex::doinit() {
   _lambdaVEV = nmssm->lambdaVEV();
 
 
-  _sw = sqrt(_theSM->sin2ThetaW());
-  _cw = sqrt( 1. - _theSM->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
+  _cw = sqrt( 1. - sin2ThetaW());
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
-
-  _v1 = 2.*_mw*_cb;
-  _v2 = 2.*_mw*_sb;
 
   _tb = nmssm->tanBeta();
   double beta = atan(_tb);
   _sb = sin(beta);
   _cb = cos(beta);
 
+  _v1 = sqrt(2.)*_mw*_cb;
+  _v2 = sqrt(2.)*_mw*_sb;
+
   orderInGs(0);
   orderInGs(1);
-  SSSVertex::doinit();
+
 }
+
+		
 
 void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 				   tcPDPtr part2, tcPDPtr part3) {
@@ -266,90 +291,102 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     if( smid % 2 != 0 ) {
       f1 /= _cb;
       if( smid == 5 ) {
-	m1a = (*_mixBt)(alpha, 0);
-	m2a = (*_mixBt)(alpha, 1);
-	m1b = (*_mixBt)(beta, 0);
-	m2b = (*_mixBt)(beta, 1);
+	m1a =  (*_mixBt)(alpha, 0);
+	m1b =  (*_mixBt)(alpha, 1);
+	m2a = (*_mixBt)(beta, 0) ;
+	m2b =  (*_mixBt)(beta, 1);
 	af = _triBt;
       }
       else if( smid == 15 ) {
-	m1a = (*_mixTa)(alpha, 0);
-	m2a = (*_mixTa)(alpha, 1);
-	m1b = (*_mixTa)(beta, 0);
-	m2b = (*_mixTa)(beta, 1);
+	m1a =  (*_mixTa)(alpha, 0);
+	m1b =  (*_mixTa)(alpha, 1);
+	m2a = (*_mixTa)(beta, 0) ;
+	m2b =  (*_mixTa)(beta, 1);
 	af = _triTa;
       }
       else {
 	m1a = (alpha == 0) ? 1. : 0.;
-      	m2a = (alpha == 0) ? 0. : 1.;
-	m1b = (beta == 0) ? 1. : 0.;
+	m1b = (alpha == 0) ? 0. : 1.;
+	m2a = (beta == 0) ? 1. : 0.;
 	m2b = (beta == 0) ? 0. : 1.;
 	af = 0.*MeV;
       }
     }
     else {
       f1 /= _sb;
-      if( smid == 6 ) {
-	m1a = (*_mixTp)(alpha, 0);
-	m2a = (*_mixTp)(alpha, 1);
-	m1b = (*_mixTp)(beta, 0);
+      if( smid == 6 ) {	  
+	m1a =  (*_mixTp)(alpha, 0);
+	m1b = (*_mixTp)(alpha, 1);
+	m2a = (*_mixTp)(beta, 0);
 	m2b = (*_mixTp)(beta, 1);
 	af = _triTp;
       }
       else {
 	m1a = (alpha == 0) ? 1. : 0.;
-      	m2a = (alpha == 0) ? 0. : 1.;
-	m1b = (beta == 0) ? 1. : 0.;
+	m1b = (alpha == 0) ? 0. : 1.;
+	m2a = (beta == 0) ? 1. : 0.;
 	m2b = (beta == 0) ? 0. : 1.;
 	af = 0.*MeV;
       }
     }
     if( higgs == 25 || higgs == 35 || higgs == 45 ) {
       int iloc = (higgs - 25)/10;
-      Complex f2 = 0.5*_mz*(_cb*(*_mixS)(iloc,0) - _sb*(*_mixS)(iloc,1))/_cw
+      Complex f2 = 0.5*_mz*(-_cb*(*_mixS)(iloc,0) + _sb*(*_mixS)(iloc,1))/_cw
 	* UnitRemoval::InvE;
       if( smid % 2 != 0 ) {
+
 	double ef = (smid < 7) ? 1./3. : 1.;
-	fact = f2*( (1. - 2.*ef*sqr(_sw))*m1a*m1b - 2.*ef*sqr(_sw)*m2a*m2b)
-	  - f1*_masslast.first*(*_mixS)(iloc,0)*(m1a*m1b + m2a*m2b) * 
-	  UnitRemoval::InvE;
-	if( alpha != beta ) 
-	  fact -= 0.5*f1*( _lambdaVEV*(*_mixS)(iloc,1) 
-			   + _lambda*_couplast*_v2*(*_mixS)(iloc,2) 
-			   +  af*(*_mixS)(iloc,1)) * 
-	    (m2a*m1b + m1a*m2b) * UnitRemoval::InvE;
+
+	fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b)
+	  - f1*_masslast.first* UnitRemoval::InvE*(*_mixS)(iloc,0)*(m1a*m2a + m1b*m2b)
+	  + 0.5*f1*Complex(( _lambdaVEV*(*_mixS)(iloc,1) 
+			   + _lambda*_v2*(*_mixS)(iloc,2)/_couplast 
+			    -  af*(*_mixS)(iloc,0)) * UnitRemoval::InvE) * 
+	    (m2a*m1b + m1a*m2b) ;
+
       }
       else {
-	f1 /= _sb;
 	double ef = (smid < 7) ? 2./3. : 0.;
-	fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m1b + 2*ef*sqr(_sw)*m2a*m2b )
-	  - f1*_masslast.first*(*_mixS)(iloc,1)*(m1a*m1b + m2a*m2b) * 
-	  UnitRemoval::InvE;
-	if( alpha != beta )
-	  fact -= 0.5*f1*( _lambdaVEV*(*_mixS)(iloc,0) 
-			   + _lambda*_couplast*_v1*(*_mixS)(iloc,2)
-			   + af*(*_mixS)(iloc,1) ) *
-	    (m2a*m1b + m1a*m2b) * UnitRemoval::InvE;
+
+	fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
+	  - f1*_masslast.first*UnitRemoval::InvE*(*_mixS)(iloc,1)*(m1a*m2a + m1b*m2b)  
+	  +  0.5*Complex(f1*( _lambdaVEV*(*_mixS)(iloc,0) 
+			      + _lambda*_v1*(*_mixS)(iloc,2)/_couplast
+			      + af*(*_mixS)(iloc,1) ) *
+			 (m2a*m1b + m1a*m2b) * UnitRemoval::InvE);
+		
       }
     }
     //CP-odd
     else if( higgs == 36 || higgs == 46 ) {
       int iloc = (higgs - 36)/10;
+      Complex f2 = (0.5*_mz*(+_cb*(*_mixP)(iloc,0) + _sb*(*_mixP)(iloc,1))/_cw)*UnitRemoval::InvE;   
       if( smid % 2 != 0 ) {
-	fact = Complex(0.,0.5)*f1*(_lambdaVEV*(*_mixP)(iloc,1) 
-				   + _lambda*_couplast*_v2*(*_mixP)(iloc,2)
-				   - af*(*_mixP)(iloc,0)) *
-	  (m2a*m1b - m1a*m2b) * UnitRemoval::InvE;
+	  double ef = (smid < 7) ? 1./3. : 1.;
+	  
+	  fact = Complex(0,1.0)*
+	    (f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b)
+	     - f1*_masslast.first*UnitRemoval::InvE*(*_mixP)(iloc,0)*(m1a*m2a + m1b*m2b) 
+	     +0.5*Complex(f1*( _lambdaVEV*(*_mixP)(iloc,1) 
+			       + _lambda*_v2*(*_mixP)(iloc,2)/_couplast 
+			       -  af*(*_mixP)(iloc,0)) * 
+			  (m2a*m1b + m1a*m2b) * UnitRemoval::InvE));
+	  
       }
       else {
-	fact = Complex(0., 0.5)*f1*( _lambdaVEV*(*_mixP)(iloc,0)
-				     + _lambda*_couplast*_v1*(*_mixP)(iloc,2)
-				     - af*(*_mixP)(iloc,1) ) * 
-	  (m2a*m1b - m1a*m2b) * UnitRemoval::InvE;
+	  double ef = (smid < 7) ? 2./3. : 0.;
+	  fact = Complex(0 ,1.0)*
+	    (-f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
+	     - f1*_masslast.first*UnitRemoval::InvE*(*_mixP)(iloc,1)*(m1a*m2a + m1b*m2b)  
+	     +  0.5*f1*Complex(( _lambdaVEV*(*_mixP)(iloc,0) 
+				  + _lambda*_v1*(*_mixP)(iloc,2)/_couplast
+				  - af*(*_mixP)(iloc,1) ) *
+			       (m2a*m1b + m1a*m2b) * UnitRemoval::InvE));
       }
     }
+    
   }
-
+  
   if( q2 != _q2last ) {
     _q2last = q2;
     _couplast = weakCoupling(q2);
@@ -364,8 +401,8 @@ Complex NMSSMHSFSFVertex::chargedHiggs(Energy2 q2, long id1, long id2) {
   unsigned int alpha = ( id1/1000000 == 2 ) ? 1 : 0;
   unsigned int beta = ( id2/1000000 == 2 ) ? 1 : 0;
   
-  long utype = (beta == 0) ? id1 - 1000000 : id1 - 2000000;
-  long dtype = (alpha == 0) ? id2 - 1000000 : id2 - 2000000;
+  long utype = (alpha == 0) ? id1 - 1000000 : id1 - 2000000;
+  long dtype = (beta == 0) ? id2 - 1000000 : id2 - 2000000;
   if( q2 != _q2last || id1 != _idlast.first || id2 != _idlast.second) {
     _idlast.first = id1;
     _idlast.second = id2;
@@ -377,44 +414,53 @@ Complex NMSSMHSFSFVertex::chargedHiggs(Energy2 q2, long id1, long id2) {
   Energy2 facta = 2.*sqr(_mw)*_sb*_cb;
   complex<Energy> coupling(0.*MeV);
   if( dtype == 11 || dtype == 13 || dtype == 15) {
-    Complex l1b = (beta == 0) ? 1.0 : 0.0;
-    Complex l2b = (beta == 0) ? 0.0 : 1.0;
-    complex<Energy> tri(0.*MeV);
-    if( dtype == 15 ) {
-      l1b = (*_mixTa)(beta, 0);
-      l2b = (*_mixTa)(beta, 1);
+  Complex l1b =  0.;
+  Complex l2b = 0.;
+  complex<Energy> tri(0.*MeV);
+  if (dtype == 11 || dtype == 13){
+     l1b = (beta == 0) ? 1.0 : 0.0;
+     l2b = (beta == 0) ? 0.0 : 1.0;
+	}
+    else {
+	 l1b = (*_mixTa)(beta, 0) ;
+     l2b = (*_mixTa)(beta, 1);
       tri = _triTa;
     }
-    coupling = ( l1b*(sqr(_masslast.second)*_tb - facta) 
-		 + l2b*_masslast.second*(tri*_tb + _lambdaVEV) )/_mw/sqrt(2.);
+	    coupling = ( l1b*(-sqr(_masslast.second)*_tb + facta) 
+		 + l2b*_masslast.second*(-tri*_tb + _lambdaVEV) )/_mw/sqrt(2.); 
   }
   else {
     Complex q1a(0.0), q1b(0.0), q2a(0.0), q2b(0.0);
     complex<Energy> triD(0.*MeV), triU(0.*MeV);
-    if( utype == 2 || utype == 4 ) {
+	
+    if( utype == 2 || utype == 4 || utype == 6) {
+	  if(utype == 6){
+	  q1a =  (*_mixTp)(alpha, 0) ;
+      q2a =  (*_mixTp)(alpha, 1);
+	  triU = _triTp;
+	  }
+	  else{
       q1a = (alpha == 0) ? 1.0 : 0.0;
       q2a = (alpha == 0) ? 0.0 : 1.0;
-    }
-    else {
-      q1a = (*_mixTp)(alpha, 0);
-      q2a = (*_mixTp)(alpha, 1);
-      triU = _triTp;
-    }
-    if( dtype == 1 || dtype == 3 ) {
+      }
+	}  
+
+    if( dtype == 1 || dtype == 3 || utype == 5){ 
+	  if(utype == 5){
+	  q1b =  (*_mixBt)(beta, 0) ;
+      q2b =  (*_mixBt)(beta, 1);
+	  }
+	  else{
       q1b = (beta == 0) ? 1.0 : 0.0;
       q2b = (beta == 0) ? 0.0 : 1.0;
-    }
-    else {
-      q1b = (*_mixBt)(beta, 0);
-      q2b = (*_mixBt)(beta, 1);
-      triD = _triBt;
+      }
     }
     Energy mfu = _masslast.first;
     Energy mfd = _masslast.second;
     coupling = ( q1a*q1b*(sqr(mfd)*_tb +sqr(mfu)/_tb - facta)
 		 + q2a*q2b*mfu*mfd*(_tb + (1./_tb))
-		 + q1a*q1b*mfd*(triD*_tb + _lambdaVEV)
-		 + q2a*q1b*mfu*(triU/_tb + _lambdaVEV))/_mw/sqrt(2.);
+		 + q1a*q2b*mfd*(-triD*_tb + _lambdaVEV)
+		 + q2a*q1b*mfu*(-triU/_tb + _lambdaVEV))/_mw/sqrt(2.);
   }
   return coupling * UnitRemoval::InvE;
 }
