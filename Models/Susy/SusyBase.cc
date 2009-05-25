@@ -224,9 +224,21 @@ void SusyBase::readSetup(istream & is) {
        string name = StringUtils::car(StringUtils::cdr(line), " #");
        // mixing matrix
        if((name.find("mix")  != string::npos && 
-	   name.find("hmix") != 0)||
-	  name.find("au") == 0||name.find("ad") == 0||
-	  name.find("ae") == 0 ) {
+	   name.find("hmix") != 0)) {
+	 unsigned int row(0),col(0);
+	 MixingVector vals = readMatrix(file,row,col);
+	 _mixings[name] = make_pair(make_pair(row,col),vals);
+       }
+       else if(name.find("au") == 0||name.find("ad") == 0||
+	       name.find("ae") == 0 ) {
+	 string test = StringUtils::car(line, "#");
+	 while (test.find("=")!= string::npos) {
+	   test = StringUtils::cdr(test, "=");
+	 }
+	 istringstream is(test);
+	 double scale;
+	 is >> scale;
+	 if(scale>1e10) continue;
 	 unsigned int row(0),col(0);
 	 MixingVector vals = readMatrix(file,row,col);
 	 _mixings[name] = make_pair(make_pair(row,col),vals);
