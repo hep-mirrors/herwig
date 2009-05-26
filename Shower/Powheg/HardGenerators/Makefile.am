@@ -7,4 +7,5 @@ DrellYanHardGenerator.h DrellYanHardGenerator.cc  \
 GGtoHHardGenerator.h GGtoHHardGenerator.cc \
 DISHardGenerator.h DISHardGenerator.cc\
 VBFHardGenerator.h VBFHardGenerator.cc\
-VGammaHardGenerator.h VGammaHardGenerator.cc
+VGammaHardGenerator.h VGammaHardGenerator.cc\
+VJetGammaHardGenerator.h VJetGammaHardGenerator.cc
