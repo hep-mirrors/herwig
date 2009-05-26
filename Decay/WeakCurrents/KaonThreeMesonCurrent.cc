@@ -203,7 +203,19 @@ ClassDescription<KaonThreeMesonCurrent> KaonThreeMesonCurrent::initKaonThreeMeso
 void KaonThreeMesonCurrent::Init() {
 
   static ClassDocumentation<KaonThreeMesonCurrent> documentation
-    ("There is no documentation for the KaonThreeMesonCurrent class");
+    ("The KaonThreeMesonCurrent class implements the model of "
+     "Z. Phys.  C 69 (1996) 243 [arXiv:hep-ph/9503474]"
+     " for the weak current with three "
+     "mesons, at least one of which is a kaon",
+     "The KaonThreeMesonCurrent class implements the model of "
+     "\\cite{Finkemeier:1995sr} for the weak current with three "
+     "mesons, at least one of which is a kaon",
+     "\\bibitem{Finkemeier:1995sr}\n"
+     "M.~Finkemeier and E.~Mirkes,\n"
+     "Z.\\ Phys.\\  C {\\bf 69} (1996) 243 [arXiv:hep-ph/9503474].\n"
+     " %%CITATION = ZEPYA,C69,243;%%\n"
+
+);
 
   static Switch<KaonThreeMesonCurrent,bool> interfaceInitializea1
     ("Initializea1",

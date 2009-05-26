@@ -19,8 +19,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the QTildeMECorrection class.
+/** \ingroup Shower
+ * The QTildeMECorrection class provides the base class for matrix element corrections
+ * in Herwig++.
  *
  * @see \ref QTildeMECorrectionInterfaces "The interfaces"
  * defined for QTildeMECorrection.

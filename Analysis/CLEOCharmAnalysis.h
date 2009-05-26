@@ -19,7 +19,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The CLEOCharmAnalysis class compares the results of Herwig++ at 10.52 GeV
  * with data on Charm hadron spectra from the CLEO experiment
  *

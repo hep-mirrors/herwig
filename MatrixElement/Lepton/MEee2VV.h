@@ -16,7 +16,7 @@ using namespace ThePEG;
 
 /**
  * The MEee2VV class implements the matrix elements for 
- * \f$e^+e^-\toW^+W^-/|^0Z^0\f$.
+ * \f$e^+e^-\to W^+W^-/|^0Z^0\f$.
  *
  * @see \ref MEee2VVInterfaces "The interfaces"
  * defined for MEee2VV.
@@ -126,7 +126,7 @@ protected:
   /**
    * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
+   * @param a1  Spinors for the incoming antifermion
    * @param v1  Polarization vector for the 1st outgoing boson
    * @param v2  Polarization vector for the 2nd outgoing boson
    * @param me  Whether or not to calculate the matrix element for spin correlations
@@ -140,7 +140,7 @@ protected:
   /**
    * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
+   * @param a1  Spinors for the incoming antifermion
    * @param v1  Polarization vector for the 1st outgoing boson
    * @param v2  Polarization vector for the 2nd outgoing boson
    * @param me  Whether or not to calculate the matrix element for spin correlations

@@ -75,6 +75,7 @@ public:
    * is the constructor which should normally be used in decayers.
    * @param in The particle data objects for the external particles
    * @param intin A pointer to the DecayIntegrator class using this mode.
+   * @param onShell Whether or not to perform tests for zero width on-shell particles
    */
   DecayPhaseSpaceMode(tPDVector in, tcDecayIntegratorPtr intin,bool onShell=false) 
     :  _integrator(intin), _maxweight(0.),

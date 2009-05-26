@@ -22,8 +22,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the IdentifiedParticleAnalysis class.
+/** \ingroup Analysis
+ * The IdentifiedParticleAnalysis class produces various identified particle spectra
+ * compared to LEP data.
  *
  * @see \ref IdentifiedParticleAnalysisInterfaces "The interfaces"
  * defined for IdentifiedParticleAnalysis.

@@ -18,8 +18,9 @@
 namespace Herwig {
   using namespace ThePEG;
 
-/**
- * Here is the documentation of the GraphvizPlot class.
+/** \ingroup Analysis
+ * The GraphvizPlot class uses  HepMC event to generate
+ * an output of the tree structure of the event which can be viewed using dot.
  *
  * @see \ref GraphvizPlotInterfaces "The interfaces"
  * defined for GraphvizPlot.

@@ -10,14 +10,14 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  *  Enumeration for species of particle
  */
 enum ParticleSpecies {
   lightMeson=0,strangeMeson,lightBaryon,other
 };
 
-/**
+/** \ingroup Analysis
  *  Struct for the multiplcity data
  */
 struct MultiplicityInfo {

@@ -21,8 +21,8 @@
 namespace Herwig {
   using namespace ThePEG;
 
-/**
- * Here is the documentation of the HepMCFile class.
+/** \ingroup Analysis
+ * The HepMCFile class outputs Herwig++ events in HepMC format.
  *
  * @see \ref HepMCFileInterfaces "The interfaces"
  * defined for HepMCFile.

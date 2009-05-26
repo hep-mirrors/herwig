@@ -19,8 +19,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the Hw64Selector class.
+/** \ingroup hadronization
+ * The Hw64Selector class selects the hadrons produced in cluster decay using
+ * the FORTRAN HERWIG variant of the cluster model.
  *
  * @see \ref Hw64SelectorInterfaces "The interfaces"
  * defined for Hw64Selector.

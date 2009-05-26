@@ -18,7 +18,7 @@
 namespace Herwig {
 using namespace ThePEG;
 /**
- * Here is the documentation of the MinBiasPDF class. It defines
+ * The MinBiasPDF class defines
  * a modified pdf which uses an existing pdf object to add
  * modifications like removing the valence part of it, which
  * is needed in the backward evolution of secondary scatters.

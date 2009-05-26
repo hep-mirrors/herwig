@@ -12,7 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEMinBias class.
+ * The MEMinBias class provides a simple colour singlet exchange matrix element
+ * to be used in the soft component of the multiple scattering model of the 
+ * underlying event
  *
  * @see \ref MEMinBiasInterfaces "The interfaces"
  * defined for MEMinBias.

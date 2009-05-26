@@ -25,7 +25,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The LEPFourJetsAnalysis class performs analysis for four jet angles and
  * compares them to LEP data.
  *

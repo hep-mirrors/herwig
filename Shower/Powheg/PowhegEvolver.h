@@ -14,8 +14,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the PowhegEvolver class.
+/** \ingroup Shower
+ * The PowhegEvolver class performs the shower evolution of hard scattering
+ * and decay processes with the option of hard radiation in the Powheg scheme.
  *
  * @see \ref PowhegEvolverInterfaces "The interfaces"
  * defined for PowhegEvolver.

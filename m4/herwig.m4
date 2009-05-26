@@ -115,6 +115,7 @@ AC_DEFUN([HERWIG_CHECK_HEPMC],
 [
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
+LOAD_HEPMC=""
 CREATE_HEPMC="#create"
 HEPMCLIBS="-lHepMC"
 
@@ -166,12 +167,14 @@ if test "x$with_hepmc" != "xno"; then
 	LDFLAGS="$oldLDFLAGS"
 	CPPFLAGS="$oldCPPFLAGS"
 	CREATE_HEPMC="create"
+	LOAD_HEPMC="library HwHepMCAnalysis.so"
 fi
 
 AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_hepmc" != "xno"])
 AC_SUBST(HEPMCINCLUDE)
 AC_SUBST(HEPMCLIBS)
 AC_SUBST(CREATE_HEPMC)
+AC_SUBST(LOAD_HEPMC)
 ])
 
 dnl ##### THEPEG #####

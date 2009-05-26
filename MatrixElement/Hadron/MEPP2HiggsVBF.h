@@ -12,7 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2HiggsVBF class.
+ * The MEPP2HiggsVBF class provides the matrix elements for the
+ * production of the Higgs boson via the vector boson fusion mechanism
+ * in hadron collisions
  *
  * @see \ref MEPP2HiggsVBFInterfaces "The interfaces"
  * defined for MEPP2HiggsVBF.

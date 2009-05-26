@@ -28,7 +28,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Shower
- * Here is the documentation of the Evolver class.
+ * The Evolver class class performs the sohwer evolution of hard scattering 
+ * and decay processes in Herwig++.
  *
  * @see \ref EvolverInterfaces "The interfaces"
  * defined for Evolver.

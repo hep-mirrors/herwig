@@ -122,8 +122,8 @@ protected:
    * Matrix element for \f$\gamma\gamma\to q\bar{q}\f$
    * @param p1   The wavefunctions for the first  incoming photon
    * @param p2   The wavefunctions for the second incoming photon
-   * @param f    The wavefunction  for the outgoing fermion
-   * @param fbar The wavefunction  for the outgoing antifermion
+   * @param w1   The wavefunctions for the first  outgoing W
+   * @param w2   The wavefunctions for the second outgoing W
    * @param calc Whether or not to calculate the matrix element
    */
   double helicityME(vector<VectorWaveFunction> & p1,

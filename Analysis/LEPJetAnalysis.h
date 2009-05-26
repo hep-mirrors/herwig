@@ -22,8 +22,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the LEPJetAnalysis class.
+/** \ingroup Analysis
+ * The LEPJetAnalysis class compares the results of Heriwg++ with LEP data for
+ * various jet distributions.
  *
  * @see \ref LEPJetAnalysisInterfaces "The interfaces"
  * defined for LEPJetAnalysis.

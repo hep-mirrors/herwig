@@ -126,11 +126,11 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\toW^+W^-\f$.
+   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The first  outgoing W polarization vectors
+   * @param v2  The second outgoing W polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double WWME(vector<SpinorWaveFunction>    & f1,
@@ -140,11 +140,11 @@ protected:
 	      bool me) const;
   
   /**
-   * Matrix element for \f$f\bar{f}\toW^\pm Z^0\f$.
+   * Matrix element for \f$f\bar{f}\to W^\pm Z^0\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The outgoing W polarization vectors
+   * @param v2  The outgoing Z polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double WZME(vector<SpinorWaveFunction>    & f1,
@@ -154,11 +154,11 @@ protected:
 	      bool me) const;
   
   /**
-   * Matrix element for \f$f\bar{f}\toZ^0Z^0\f$.
+   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The first  outgoing Z polarization vectors 
+   * @param v2  The second outgoing Z polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double ZZME(vector<SpinorWaveFunction>    & f1,

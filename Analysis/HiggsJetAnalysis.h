@@ -20,7 +20,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * HiggsJetAnalysis assumes that there is one Higgs in the final state
  * and books some observables computed from its four momentum.  It
  * shouldn't do anything in case there is no Higgs in the event.

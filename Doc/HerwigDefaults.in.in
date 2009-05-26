@@ -17,6 +17,8 @@ library HwMEHadron.so
 library HwMEDIS.so
 library HwPowhegME.so
 library HwMELepton.so
+library HwMEGammaGamma.so
+library HwMEGammaHadron.so
 library SimpleKTCut.so
 library HwMPI.so
 library HwMRST.so
@@ -36,4 +38,5 @@ library HwVMDecay.so
 library HwSatPDF.so
 library HwIncomingPhotonEvolver.so
 @LOAD_KTJET@
+@LOAD_HEPMC@
 doxygendump Herwig:: AllInterfaces.h
