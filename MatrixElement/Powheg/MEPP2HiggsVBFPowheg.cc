@@ -31,24 +31,33 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
 
   // hadron and momentum fraction
   // set Q2 process momenta
-  if(UseRandom::rnd()< 0.5) {
+  if(UseRandom::rnd()> 0.5) {
     _in = 0;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
     _xB = lastX1();
-    _q2 = -(meMomenta()[0]-meMomenta()[2]).m2();
-    _pa = meMomenta()[5]+meMomenta()[2]-meMomenta()[0];
+    _pa =  meMomenta()[2]-meMomenta()[0];
+    _q2 = -_pa.m2();
     _pb = meMomenta()[0];
     _pc = meMomenta()[2];
+    _pbother = meMomenta()[1];
+    _pcother = meMomenta()[3];
+    _partons[0] = mePartonData()[0]; 
+    _partons[1] = mePartonData()[1];
   }
   else {
     _in = 1;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
     _xB = lastX2();
-    _q2 = -(meMomenta()[1]-meMomenta()[3]).m2();
-    _pa = meMomenta()[5]+meMomenta()[3]-meMomenta()[1];
+    _pa =  meMomenta()[3]-meMomenta()[1];
+    _q2 = -_pa.m2();
     _pb = meMomenta()[1];
     _pc = meMomenta()[3];
+    _pbother = meMomenta()[3];
+    _pcother = meMomenta()[1];
+    _partons[0] = mePartonData()[1];
+    _partons[1] = mePartonData()[0];
   }
+
   // xp
   int ndim=nDim();
   double rhomin = pow(1.-_xB,1.-power_); 
@@ -165,66 +174,104 @@ CrossSection MEPP2HiggsVBFPowheg::dSigHatDR() const {
 double MEPP2HiggsVBFPowheg::NLOWeight() const {
   // If only leading order is required return 1:
   if(contrib_==0) return 1.;
-  // scale and prefactors
-  Energy2 mu2(scale());
-  double aS = 2.*SM().alphaS(mu2);
-  double CFfact = 4./3.*aS/Constants::twopi;
-  double TRfact = 1./2.*aS/Constants::twopi;
+
 
   // Boost
   Axis axis(_pa.vect().unit());
   LorentzRotation rot;
   double sinth(sqr(axis.x())+sqr(axis.y()));
+  rot = LorentzRotation();
   if(axis.perp2()>1e-20) {
     rot.setRotate(-acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     rot.rotateX(Constants::pi);
   }
-  if(abs(1.-_pa.e()/_pa.vect().mag())>1e-6) rot.boostZ(_pa.e()/_pa.vect().mag());
+  if(abs(1.-_pa.e()/_pa.vect().mag())>1e-6) 
+    rot.boostZ(_pa.e()/_pa.vect().mag());
   _pb *= rot;
   if(_pb.perp2()/GeV2>1e-20) {
     Boost trans = -1./_pb.e()*_pb.vect();
     trans.setZ(0.);
     rot.boost(trans);
   }
+
+  // momenta of particles
+  Lorentz5Momentum p1, p2,p1other,p2other;
   
+  _pa *= rot;
+  _q2  = -_pa.m2();
+  p1 = rot*_pb;
+  p2 = rot*_pc;
+  p1other = rot*_pbother;
+  p2other = rot*_pcother;
+
+  // scale and prefactors
+  Energy2 mu2 = _q2;
+  Energy Q = sqrt(_q2);
+  double aS = 2.*SM().alphaS(mu2);
+  double CFfact = 4./3.*aS/Constants::twopi;
+  double TRfact = 1./2.*aS/Constants::twopi; 
+
+  // Breit frame variables
+  double x1 = -1./_xp;
+  double x2 = 1.-(1.-_zp)/_xp;
+  double x3 = 2.+x1-x2;
+;
+  double xT = 2*sqr((1.-_xp)*(1.-_zp)*_zp/_xp);
+
+ vector<Lorentz5Momentum>  nloMomenta;
+ nloMomenta.resize(3);
+
+ nloMomenta[0] = (0.,0.,-0.5*Q*x1,-0.5*Q*x1);
+ nloMomenta[1] =  ( 0.5*Q*xT*cos(_phi),  0.5*Q*xT*sin(_phi),
+                  -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+ nloMomenta[2] = (-0.5*Q*xT*cos(_phi), -0.5*Q*xT*sin(_phi),
+		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+
+  Lorentz5Momentum qnlo = nloMomenta[2]+nloMomenta[1]-nloMomenta[0];
+  Energy2 q2nlo = qnlo.m2();
+
+  Lorentz5Momentum r1 = -nloMomenta[0]/x1;
+  Lorentz5Momentum r2 =  nloMomenta[1]/x2;
+
   // LO + dipole subtracted virtual + collinear quark bit with LO pdf
-  double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+1.5*log(_q2/mu2/(1.-_xB))
-			   +2.*log(1.-_xB)*log(_q2/mu2)+sqr(log(1.-_xB)));
+  double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+
+			   1.5*log(_q2/mu2/(1.-_xB))+
+			   2.*log(1.-_xB)*log(_q2/mu2)+
+			   sqr(log(1.-_xB)));
   virt /= jac_;
+
+  Energy2 nloscale = _q2*((1.-_xp)*(1-_zp)*_zp/_xp+1.);
+
+  Energy2 collQ2 = 2.*_xp*nloMomenta[2]*nloMomenta[0];
+
   // PDF from leading-order
-  double loPDF = _hadron->pdf()->xfx(_hadron,mePartonData()[1],mu2,_xB)*_xB;
+  double loPDF = 
+    _hadron->pdf()->xfx(_hadron,_partons[0],mu2,_xB)*_xB;
   // NLO gluon PDF
   tcPDPtr gluon = getParticleData(ParticleID::g);
-  double gPDF   = _hadron->pdf()->xfx(_hadron,gluon,mu2,_xB/_xp)/_xp/_xB;
+  double gPDF   = 
+    _hadron->pdf()->xfx(_hadron,gluon,nloscale,_xB/_xp)/_xp/_xB;
   // NLO quark PDF
-  double qPDF   = _hadron->pdf()->xfx(_hadron,mePartonData()[1],mu2,_xB/_xp)/_xp/_xB;
+  double qPDF   = 
+    _hadron->pdf()->xfx(_hadron,_partons[0],nloscale,_xB/_xp)/_xp/_xB;
   // collinear counterterms
   // gluon
   double collg = 
     TRfact/_xp*gPDF*(2.*_xp*(1.-_xp)+(sqr(_xp)+sqr(1.-_xp))*
-    log((1.-_xp)*_q2/_xp/mu2));
+    log((1.-_xp)*collQ2/_xp/mu2));
   // quark
   double collq = 
     CFfact/_xp*qPDF*(1-_xp-2./(1.-_xp)*log(_xp)-(1.+_xp)*
-    log((1.-_xp)/_xp*_q2/mu2))+
+    log((1.-_xp)/_xp*collQ2/mu2))+
     CFfact/_xp*(qPDF-_xp*loPDF)*(2./(1.-_xp)*
-    log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
-  // cacluate lepton kinematic variables
-  Lorentz5Momentum  q = _pa;
-  Lorentz5Momentum p1 = _pb;
-  Lorentz5Momentum p2 = _pc;
-  Lorentz5Momentum p3 = meMomenta()[5];
-  // Breit frame variables
-  double x1 = 2.*p1*q/(q*q);
-  double x2 = 2.*p2*q/(q*q);
-  Lorentz5Momentum r1 = -p1/x1;
-  Lorentz5Momentum r2 =  p2/x2;
+    log(collQ2*(1.-_xp)/mu2)-1.5/(1.-_xp));
+
   // Vector boson parameters
   Energy Gamma(getParticleData(ParticleID::Z0)->width());
   Energy4 MG2(_mz2*sqr(Gamma));
-  //
+  // Electroweak coefficients
   double c0L,c1L,c0R,c1R;
-  if(abs(mePartonData()[0]->id())%2==0) {
+  if(abs(_partons[0]->id())%2==0) {
     c0L = 0.5*generator()->standardModel()->au()-
 	  _sin2W*generator()->standardModel()->eu();
     c0R =-_sin2W*generator()->standardModel()->eu();
@@ -234,7 +281,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
 	  _sin2W*generator()->standardModel()->ed();
     c0R =-_sin2W*generator()->standardModel()->ed();
   }
-  if(abs(mePartonData()[1]->id())%2==0) {
+  if(abs(_partons[1]->id())%2==0) {
     c1L = 0.5*generator()->standardModel()->au()-
 	  _sin2W*generator()->standardModel()->eu();
     c1R =-_sin2W*generator()->standardModel()->eu();
@@ -248,60 +295,51 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  InvEnergy4 Dlo = 1./(sqr(_q2    -_mz2)+MG2); 
-  InvEnergy4 Dbf = 1./(sqr(sqr(q) -_mz2)+MG2);
+  InvEnergy4 Dlo = 1./(sqr(_q2   -_mz2)+MG2); 
+  InvEnergy4 Dbf = 1./(sqr(q2nlo -_mz2)+MG2);
   InvEnergy4 D2;
-  Energy4 term1, term2;
 
-  if(_in == 0){
-  term1 = G1*(r1*meMomenta()[1])*((q+r1)*meMomenta()[3])+
-          G2*(r1*meMomenta()[3])*((q+r1)*meMomenta()[1]);
+  Energy4 term1 = G1*(r1*p1other)*((qnlo+r1)*p2other)+
+                  G2*(r1*p2other)*((qnlo+r1)*p1other);
 
-  term2 = G1*((r2-q)*meMomenta()[1])*(r2*meMomenta()[3])+
-          G2*((r2-q)*meMomenta()[3])*(r2*meMomenta()[1]);
+  Energy4 term2 = G1*((r2-qnlo)*p1other)*(r2*p2other)+
+                  G2*((r2-qnlo)*p2other)*(r2*p1other);
 
-  Energy2 k2 = (meMomenta()[3]-meMomenta()[1])*
-               (meMomenta()[3]-meMomenta()[1]);
+  Energy2 k2 = (p2other-p1other).m2();
 
   D2 = 1./(sqr(k2 -_mz2)+MG2);
-  } else {
-  term1 = G1*(r1*meMomenta()[0])*((q+r1)*meMomenta()[2])+
-          G2*(r1*meMomenta()[2])*((q+r1)*meMomenta()[0]);
-
-  term2 = G1*((r2-q)*meMomenta()[0])*(r2*meMomenta()[2])+
-          G2*((r2-q)*meMomenta()[2])*(r2*meMomenta()[0]);
-
-  Energy2 k2 = (meMomenta()[2]-meMomenta()[0])*
-               (meMomenta()[2]-meMomenta()[0]);
-
-  D2 = 1./(sqr(k2 -_mz2)+MG2);
-  }
 
   InvEnergy2 commfact1  = 4.*_mz2*D2;
              commfact1 *= pow(4.*Constants::pi*SM().alphaS(mu2)/_sin2W,3);
 
-  Energy4 commfact2 = G1*(meMomenta()[0]*meMomenta()[1])*
-                         (meMomenta()[2]*meMomenta()[3])+
-                      G2*(meMomenta()[0]*meMomenta()[3])*
-                         (meMomenta()[2]*meMomenta()[1]);
+  Energy4 commfact2 = G1*(p1*p1other)*
+                         (p2*p2other)+
+                      G2*(p1*p2other)*
+                         (p2*p1other);
 
   Energy2 commfact = commfact1*commfact2;
-  //->
   // dipoles kinematc variables
-  double x = 1.-p3*p2/(p1*p3+p1*p2);
-  double z = p2*p1/(p1*p3+p1*p2);
+  double x = 1.-nloMomenta[2]*nloMomenta[1]/
+              ((nloMomenta[2]+nloMomenta[1])*
+              nloMomenta[0]);
+  double z = nloMomenta[1]*nloMomenta[0]/
+             ((nloMomenta[2]+nloMomenta[1])*
+             nloMomenta[0]);
   // q -> qg term
-   double real1   = CFfact*qPDF/loPDF*1./((1.-_xp)*(1.-_zp))*
+   double real1   = 1./3.*CFfact*qPDF/loPDF*1./((1.-_xp)*(1.-_zp))*
                     sqr(Dbf/Dlo)/commfact2*(term1+sqr(_xp-1.+_zp)*term2);
-   double dipole1 = (1./(commfact*Dlo))*CFfact*16.*sqr(Constants::pi)*
-                    qPDF/loPDF*1./_q2*(sqr(x)+sqr(z))/((1.-x)*(1.-z)); 
+   double dipole1 = 1./3.*(1./(commfact*Dlo))*CFfact*16.*
+                    sqr(Constants::pi)*qPDF/loPDF*1./_q2*
+                    (sqr(x)+sqr(z))/((1.-x)*(1.-z)); 
    double realq   = (real1-dipole1);
 
   // g -> q qbar term
-   double real2   = TRfact*gPDF/loPDF*1./((1.-_zp)*sqr(_xp)*(2+_xp-_zp))*
-                    sqr(Dbf/Dlo)/commfact2*(term1+sqr(_xp-1.+_zp)*term2);
-   double dipole2 = (1./(commfact*Dlo))*TRfact*16.*sqr(Constants::pi)*
-                    gPDF/loPDF*1./_q2*(sqr(x)+sqr(1-x))/(1-z);
+   double real2   = 1./8.*TRfact*gPDF/loPDF*1./((1.-_zp)*sqr(_xp)*
+                    (2+_xp-_zp))* sqr(Dbf/Dlo)/commfact2*
+                    (term1+sqr(_xp-1.+_zp)*term2);
+   double dipole2 = 1./8.*(1./(commfact*Dlo))*TRfact*16.*
+                    sqr(Constants::pi)*gPDF/loPDF*1./_q2*
+                    ((sqr(x)+sqr(1-x))/(1.-z)+(sqr(x)+sqr(1-x))/z);
    double realg = real2-dipole2;
 
   // return the full result

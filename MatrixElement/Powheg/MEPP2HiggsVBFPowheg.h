@@ -151,9 +151,11 @@ private:
   double _xB;
 
   /**
-   *   \f$Q^2\f$
+   *  Partons
    */
-  Energy2 _q2;
+  tcPDPtr _partons[2];
+
+  mutable Energy2 _q2;
   //@}
 
   /**
@@ -188,7 +190,7 @@ private:
   /**
    *  The transfered (virtual boson) momentum 
    */
-  Lorentz5Momentum _pa;
+  mutable Lorentz5Momentum _pa;
 
   /**
    *  The incoming quark momentum 
@@ -199,6 +201,19 @@ private:
    *  The outgoing quark momentum
    */
   Lorentz5Momentum _pc;
+
+  /**
+   *  The incoming quark momentum 
+   */
+  Lorentz5Momentum _pbother;
+
+  /**
+   *  The outgoing quark momentum
+   */
+  Lorentz5Momentum _pcother;
+
+
+
   //@}
 
   /**
@@ -216,7 +231,7 @@ private:
   //@}
 
   /**
-   *  The hadron
+   *  The first hadron
    */
   tcBeamPtr _hadron;
 
@@ -290,4 +305,5 @@ struct ClassTraits<Herwig::MEPP2HiggsVBFPowheg>
 
 }
 
-#endif /* HERWIG_MEPP2HiggsVBFPowheg_H */
+#endif /* HERWIG_ME
+PP2HiggsVBFPowheg_H */
