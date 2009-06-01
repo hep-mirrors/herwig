@@ -16,7 +16,10 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "ThePEG/PDT/StandardMatchers.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include <numeric>
+
 
 using namespace Herwig;
 
@@ -31,11 +34,13 @@ IBPtr VGammaHardGenerator::fullclone() const {
 }
 
 void VGammaHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << alphaS_ << gluon_ << ounit(pTmin_,GeV);
+  os << alphaS_ << gluon_ << ounit(pTmin_,GeV)
+     << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ << FFGvertex_;
 }
 
 void VGammaHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> alphaS_ >> gluon_ >> iunit(pTmin_,GeV);
+  is >> alphaS_ >> gluon_ >> iunit(pTmin_,GeV)
+     >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ >> FFGvertex_;
 }
 
 ClassDescription<VGammaHardGenerator> VGammaHardGenerator::initVGammaHardGenerator;
@@ -63,6 +68,18 @@ void VGammaHardGenerator::Init() {
 void VGammaHardGenerator::doinit() {
   HardestEmissionGenerator::doinit();
   gluon_ = getParticleData(ParticleID::g);
+  // get a pointer to the standard model object in the run
+  static const tcHwSMPtr hwsm
+    = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if (!hwsm) throw InitException() << "hwsm pointer is null in"
+				   << " MEPP2VGamma::doinit()"
+				   << Exception::abortnow;
+  // get pointers to all required Vertex objects
+  FFZvertex_ = hwsm->vertexFFZ();
+  FFPvertex_ = hwsm->vertexFFP();
+  WWWvertex_ = hwsm->vertexWWW();
+  FFWvertex_ = hwsm->vertexFFW();
+  FFGvertex_ = hwsm->vertexFFG();
 }
 
 bool VGammaHardGenerator::canHandle(ShowerTreePtr tree) {
@@ -157,6 +174,9 @@ HardTreePtr VGammaHardGenerator::generateHardest(ShowerTreePtr tree) {
     bosonRapidity_  *= -1.;
     photonAzimuth_  *= -1.;
   }
+  // ParticleData objects
+  photon_ = photon->dataPtr();
+  boson_  = boson->dataPtr();
   // CMS energy of the hadron collision
   s_  = generator()->currentEvent()->primaryCollision()->m2();
   rs_ = sqrt(s_);
@@ -436,5 +456,97 @@ void VGammaHardGenerator::generateQQbarG() {
 }
 
 double VGammaHardGenerator::QQbarGratio() {
+  using namespace ThePEG::Helicity;
+  double sum(0.);
+  vector<SpinorWaveFunction> qin;
+  vector<SpinorBarWaveFunction> qbarin;
+  vector<VectorWaveFunction> wout,pout,gout;
+  SpinorWaveFunction q_in(pQqqbar_,partons_[0],incoming);
+  SpinorBarWaveFunction qbar_in(pQbarqqbar_,partons_[1],incoming);
+  VectorWaveFunction v_out(pVqqbar_    ,boson_,outgoing);
+  VectorWaveFunction p_out(pGammaqqbar_,photon_,outgoing);
+  VectorWaveFunction g_out(pGqqbar_    ,gluon_,outgoing);
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix<2) {
+      q_in.reset(ix);
+      qin.push_back(q_in);
+      qbar_in.reset(ix);
+      qbarin.push_back(qbar_in);
+//       g_out.reset(10);
+      g_out.reset(2*ix);
+      gout.push_back(g_out);
+      p_out.reset(10);
+//       p_out.reset(2*ix);
+      pout.push_back(p_out);
+    }
+    v_out.reset(ix);
+    wout.push_back(v_out);
+  }
+  Energy2 scale(sqr(bosonMass_));
+  vector<Complex> diag(boson_->id()==ParticleID::Z0 ? 6 : 8, 0.);
+  AbstractFFVVertexPtr vertex = 
+    boson_->id()==ParticleID::Z0 ? FFZvertex_ : FFWvertex_;
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int whel=0;whel<3;++whel) {
+	for(unsigned int phel=0;phel<2;++phel) {
+	  for(unsigned int ghel=0;ghel<2;++ghel) {
+	    //
+	    //  Diagrams which are the same for W/Z gamma
+	    //
+	    // first diagram
+	    SpinorWaveFunction inters1 = 
+	      FFPvertex_->evaluate(scale,5,partons_[0],qin[ihel1],pout[phel]);
+	    SpinorBarWaveFunction inters2 = 
+	      vertex->evaluate(scale,5,partons_[0]->CC(),qbarin[ihel2],wout[whel]);
+	    diag[0] = FFGvertex_->evaluate(scale,inters1,inters2,gout[ghel]);
+	    // second diagram
+	    SpinorWaveFunction inters3 = 
+	      FFGvertex_->evaluate(scale,5,partons_[0],qin[ihel1],gout[ghel]);
+	    SpinorBarWaveFunction inters4 = 
+	      FFPvertex_->evaluate(scale,5,partons_[1],qbarin[ihel2],pout[phel]);
+	    diag[1] = vertex->evaluate(scale,inters3,inters4,wout[whel]);
+	    // fourth diagram
+	    diag[2] = FFPvertex_->evaluate(scale,inters3,inters2,pout[phel]);
+	    // fifth diagram
+	    SpinorBarWaveFunction inters5 = 
+	      FFGvertex_->evaluate(scale,5,partons_[1],qbarin[ihel2],gout[ghel]);
+	    diag[3] = 
+	      vertex->evaluate(scale,inters1,inters5,wout[whel]);
+	    // sixth diagram
+	    SpinorWaveFunction inters6 = 
+	      vertex->evaluate(scale,5,partons_[1]->CC(),qin[ihel1],wout[whel]);
+	    diag[4] = FFGvertex_->evaluate(scale,inters6,inters4,gout[ghel]);
+	    // eighth diagram
+	    diag[5] = FFPvertex_->evaluate(scale,inters6,inters5,pout[phel]);
+	    //
+	    //  Diagrams only for W gamma
+	    //
+	    if(boson_->id()!=ParticleID::Z0) {
+	      // third diagram
+	      VectorWaveFunction interv = 
+		WWWvertex_->evaluate(scale,3,boson_->CC(),pout[phel],wout[whel]);
+	      diag[6] = vertex->evaluate(scale,inters3,qbarin[ihel2],interv);
+	      // seventh diagram
+	      diag[7] = vertex->evaluate(scale,qin[ihel1],inters5,interv);
+	    }
+	    // sum
+	    Complex dsum = std::accumulate(diag.begin(),diag.end(),Complex(0.));
+	    cerr << "testing" 
+		 << ihel1 << " " << ihel2 << " " 
+		 << ghel  << " " << phel  << " " << whel << " " 
+		 << dsum/sqrt(norm(diag[0])+norm(diag[1])+norm(diag[2])+norm(diag[3])+
+			      norm(diag[4])+norm(diag[5])+norm(diag[6])+norm(diag[7]))<< "\n";
+	    sum += norm(dsum);
+	  }
+	}
+      }
+    }
+  }
+  // final spin and colour factors
+  // spin = 1/4 colour = 4/9
+  sum /= 9.;
+
+
   return 1000000.;
 }

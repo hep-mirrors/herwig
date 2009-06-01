@@ -8,6 +8,8 @@
 #include "Herwig++/Shower/Base/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 
 namespace Herwig {
 
@@ -143,9 +145,50 @@ private:
   tcPDPtr gluon_;
 
   /**
+   *  ParticleData object of the gluon
+   */
+  tcPDPtr photon_;
+
+  /**
+   *  ParticleData object of the 
+   */
+  tcPDPtr boson_;
+
+  /**
    *  The transverse momentum of the jet
    */
   Energy pTmin_;
+private:
+
+  /**
+   *  Vertices
+   */
+  //@{
+  /**
+   *   FFPVertex
+   */
+  AbstractFFVVertexPtr FFPvertex_;
+
+  /**
+   *   FFWVertex
+   */
+  AbstractFFVVertexPtr FFWvertex_;
+
+  /**
+   *   FFZVertex
+   */
+  AbstractFFVVertexPtr FFZvertex_;
+
+  /**
+   *  WWW Vertex
+   */ 
+  AbstractVVVVertexPtr WWWvertex_;
+
+  /**
+   *  FFG Vertex
+   */ 
+  AbstractFFVVertexPtr FFGvertex_;
+  //@}
 
   /**
    *  Properties of the incoming particles
