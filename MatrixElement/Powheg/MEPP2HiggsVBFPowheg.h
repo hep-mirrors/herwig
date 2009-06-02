@@ -153,7 +153,7 @@ private:
   /**
    *  Partons
    */
-  tcPDPtr _partons[2];
+  tcPDPtr _partons[5];
 
   mutable Energy2 _q2;
   //@}
@@ -213,13 +213,14 @@ private:
    */
   //@{
   /**
-   *  The square of \f$\sin\theta_W\f$
-   */
-  double _sin2W;
-  /**
    *  The square of the Z mass
    */
   Energy2 _mz2;
+
+  /**
+   *  The square of the W mass
+   */
+  Energy2 _mw2;
   //@}
 
   /**

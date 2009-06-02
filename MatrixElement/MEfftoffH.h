@@ -184,6 +184,11 @@ protected:
    */
   unsigned int process() const {return _process;}
 
+  /**
+   *  Whether momenta are swapped
+   */
+  bool swap() {return _swap;}
+
 protected:
 
   /** @name Standard Interfaced functions. */
