@@ -187,7 +187,7 @@ protected:
   /**
    *  Whether momenta are swapped
    */
-  bool swap() {return _swap;}
+  bool swapOrder() {return _swap;}
 
 protected:
 

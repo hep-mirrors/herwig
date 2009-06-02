@@ -36,7 +36,7 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
     _partons[0] = mePartonData()[0]; 
     _partons[1] = mePartonData()[1]; 
     _partons[4] = mePartonData()[4];
-    if(!swap()) {
+    if(!swapOrder()) {
       _pb = meMomenta()[0];
       _pc = meMomenta()[2];
       _pbother = meMomenta()[1];
@@ -59,7 +59,7 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
     _partons[0] = mePartonData()[1];
     _partons[1] = mePartonData()[0];
     _partons[4] = mePartonData()[4];
-    if(!swap()) {
+    if(!swapOrder()) {
       _pb = meMomenta()[1];
       _pc = meMomenta()[3];
       _pbother = meMomenta()[0];
