@@ -27,16 +27,14 @@ int MEPP2HiggsVBFPowheg::nDim() const {
 
 bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   // Born kinematics
-  if(!MEPP2HiggsVBFPowheg::generateKinematics(r)) return false;
-
+  if(!MEPP2HiggsVBF::generateKinematics(r)) return false;
   // hadron and momentum fraction
   // set Q2 process momenta
   if(UseRandom::rnd()> 0.5) {
-    _in = 0;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
     _xB = lastX1();
     _pa =  meMomenta()[2]-meMomenta()[0];
-    _q2 = -_pa.m2();
+    //    _q2 = -_pa.m2();
     _pb = meMomenta()[0];
     _pc = meMomenta()[2];
     _pbother = meMomenta()[1];
@@ -45,15 +43,14 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
     _partons[1] = mePartonData()[1];
   }
   else {
-    _in = 1;
     _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
     _xB = lastX2();
     _pa =  meMomenta()[3]-meMomenta()[1];
-    _q2 = -_pa.m2();
+    //    _q2 = -_pa.m2();
     _pb = meMomenta()[1];
     _pc = meMomenta()[3];
-    _pbother = meMomenta()[3];
-    _pcother = meMomenta()[1];
+    _pbother = meMomenta()[0];
+    _pcother = meMomenta()[2];
     _partons[0] = mePartonData()[1];
     _partons[1] = mePartonData()[0];
   }

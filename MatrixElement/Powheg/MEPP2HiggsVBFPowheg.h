@@ -46,7 +46,7 @@ public:
    */
   virtual int nDim() const;
 
-  /**
+ /**
    * Generate internal degrees of freedom given nDim() uniform
    * random numbers in the interval \f$ ]0,1[ \f$. To help the phase space
    * generator, the dSigHatDR should be a smooth function of these
@@ -179,11 +179,6 @@ private:
   //@}
 
   /**
-   * Index to identify the hadron   
-   */
-  int _in;
-
-  /**
    *  The variables to get the right boost
    */
   //@{
@@ -211,9 +206,6 @@ private:
    *  The outgoing quark momentum
    */
   Lorentz5Momentum _pcother;
-
-
-
   //@}
 
   /**
@@ -298,12 +290,13 @@ struct ClassTraits<Herwig::MEPP2HiggsVBFPowheg>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "MEPP2HiggsVBFPowheg.so"; }
+
+  // static string library() { return "MEPP2HiggsVBFPowheg.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegMEHadron.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_ME
-PP2HiggsVBFPowheg_H */
+#endif /* HERWIG_MEPP2HiggsVBFPowheg_H */
