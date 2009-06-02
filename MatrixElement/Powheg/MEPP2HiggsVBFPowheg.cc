@@ -239,11 +239,11 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   vector<Lorentz5Momentum>  nloMomenta;
   nloMomenta.resize(3);
 
-  nloMomenta[0] = (0.,0.,-0.5*Q*x1,-0.5*Q*x1);
-  nloMomenta[1] =  ( 0.5*Q*xT*cos(_phi),  0.5*Q*xT*sin(_phi),
-		     -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
-  nloMomenta[2] = (-0.5*Q*xT*cos(_phi), -0.5*Q*xT*sin(_phi),
-		   -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
+  nloMomenta[0] = Lorentz5Momentum(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
+  nloMomenta[1] = Lorentz5Momentum( 0.5*Q*xT*cos(_phi),  0.5*Q*xT*sin(_phi),
+				    -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
+  nloMomenta[2] = Lorentz5Momentum(-0.5*Q*xT*cos(_phi), -0.5*Q*xT*sin(_phi),
+				   -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
   
   Lorentz5Momentum qnlo = nloMomenta[2]+nloMomenta[1]-nloMomenta[0];
   Energy2 q2nlo = qnlo.m2();
@@ -347,7 +347,6 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   D2 = 1./(sqr(k2 -mb2));
 
   InvEnergy2 commfact1  = 4.*mb2*D2;
-             commfact1 *= pow(4.*Constants::pi*SM().alphaS(mu2)/_sin2W,3);
 
   Energy4 commfact2 = G1*(p1*p1other)*
                          (p2*p2other)+
