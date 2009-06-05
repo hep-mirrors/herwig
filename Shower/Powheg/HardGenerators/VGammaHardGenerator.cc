@@ -472,11 +472,11 @@ double VGammaHardGenerator::QQbarGratio() {
       qin.push_back(q_in);
       qbar_in.reset(ix);
       qbarin.push_back(qbar_in);
-//       g_out.reset(10);
+      //g_out.reset(10);
       g_out.reset(2*ix);
       gout.push_back(g_out);
-      p_out.reset(10);
-//       p_out.reset(2*ix);
+      //p_out.reset(10);
+      p_out.reset(2*ix);
       pout.push_back(p_out);
     }
     v_out.reset(ix);
