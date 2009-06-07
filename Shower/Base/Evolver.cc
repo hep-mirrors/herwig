@@ -480,7 +480,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
       // the tree has now showered
       _currenttree->hasShowered(true);
       // debugging tests
-      if(debug_) {
+      if(debug_&&interactions_.size()>1) {
 	if(finalStates[0].size()==finalStates[1].size()) {
 	  Energy2 measure(ZERO);
 	  set<ShowerParticlePtr> qed = finalStates[1];
@@ -792,7 +792,8 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       _currenttree->hasShowered(true);
       if(debug_) {
 	checkShowerMomentum( particlesToShower );
-	if(finalStates[0].size()==finalStates[1].size()) {
+	if(interactions_.size()>1&&
+	   finalStates[0].size()==finalStates[1].size()) {
 	  Energy2 measure(ZERO);
 	  set<ShowerParticlePtr> qed = finalStates[1];
 	  for(set<ShowerParticlePtr>::const_iterator cit=finalStates[0].begin();
@@ -813,7 +814,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 	      }
 	    }
 	    if(imin==qed.end()) generator()->log() << "No match for " << **(cit) << "\n";
-	  else      qed.erase(imin);
+	    else      qed.erase(imin);
 	    measure = max(measure,dmin);
 	  }
 	  if(measure>1e-8*GeV2) {
