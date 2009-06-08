@@ -145,7 +145,7 @@ private:
   tcPDPtr gluon_;
 
   /**
-   *  ParticleData object of the gluon
+   *  ParticleData object of the photon
    */
   tcPDPtr photon_;
 
@@ -155,10 +155,9 @@ private:
   tcPDPtr boson_;
 
   /**
-   *  The transverse momentum of the jet
+   *  The minimum transverse momentum of the jet
    */
   Energy pTmin_;
-private:
 
   /**
    *  Vertices

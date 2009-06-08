@@ -34,12 +34,12 @@ IBPtr VGammaHardGenerator::fullclone() const {
 }
 
 void VGammaHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << alphaS_ << gluon_ << ounit(pTmin_,GeV)
+  os << alphaS_ << gluon_ << ounit(pTmin_,GeV) << power_
      << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ << FFGvertex_;
 }
 
 void VGammaHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> alphaS_ >> gluon_ >> iunit(pTmin_,GeV)
+  is >> alphaS_ >> gluon_ >> iunit(pTmin_,GeV) >> power_
      >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ >> FFGvertex_;
 }
 
@@ -59,8 +59,7 @@ void VGammaHardGenerator::Init() {
 
   static Parameter<VGammaHardGenerator, Energy> interfacePtMin
     ("minPt",
-     "The pt cut on hardest emision generation"
-     "2*(1-Beta)*exp(-sqr(intrinsicpT/RMS))/sqr(RMS)",
+     "The pt cut on hardest emision generation",
      &VGammaHardGenerator::pTmin_, GeV, 2.*GeV, ZERO, 100000.0*GeV,
      false, false, Interface::limited);
 }
