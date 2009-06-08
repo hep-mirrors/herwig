@@ -8,4 +8,5 @@ GGtoHHardGenerator.h GGtoHHardGenerator.cc \
 DISHardGenerator.h DISHardGenerator.cc\
 VBFHardGenerator.h VBFHardGenerator.cc\
 VGammaHardGenerator.h VGammaHardGenerator.cc\
+GammaGammaHardGenerator.h GammaGammaHardGenerator.cc\
 VJetGammaHardGenerator.h VJetGammaHardGenerator.cc
