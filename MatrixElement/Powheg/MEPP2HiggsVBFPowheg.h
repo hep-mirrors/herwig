@@ -183,6 +183,10 @@ private:
    */
   //@{
   /**
+   *  LO momenta 
+   */
+  Lorentz5Momentum _loMomenta[4];
+  /**
    *  The transfered (virtual boson) momentum 
    */
   mutable Lorentz5Momentum _pa;

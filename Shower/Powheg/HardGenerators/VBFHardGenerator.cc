@@ -465,6 +465,7 @@ void VBFHardGenerator::generateCompton() {
     wgt = 0.;
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
+
     // dzp
     zp = UseRandom::rnd();
     xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
@@ -558,12 +559,13 @@ void VBFHardGenerator::generateBGF() {
 }
 
 double VBFHardGenerator::comptonME(double xT, double xp, double zp,
+
+
 				   double phi) {
   // scale and prefactors
   Energy2 mu2 = q2_;
   double aS = 2.*alphaS_->value(mu2);
   double CFfact = 4./3.*aS/Constants::twopi;
-  double sin2W = generator()->standardModel()->sin2ThetaW();
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
   double x2 = 1.-(1.-zp)/xp;
@@ -575,41 +577,66 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
 		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
   Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
   Lorentz5Momentum qnlo = p2+p1-p0; 
-  Energy2 q2nlo = qnlo.m2();
+
   // Breit frame variables
   Lorentz5Momentum r1 = -p0/x1;
   Lorentz5Momentum r2 =  p1/x2;
   // electroweak parameters
   Energy2 mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
-  Energy Gamma(getParticleData(ParticleID::Z0)->width());
-  Energy4 MG2(mz2*sqr(Gamma));
+  Energy2 mw2 = sqr(getParticleData(ParticleID::Wplus)->mass());
   double c0L,c1L,c0R,c1R;
+  Energy2 mb2;
+  // W
+  if(partons_[0]->id()!=partons_[1]->id()) {
+    mb2 = mw2;
+      c0L = 1;
+      c0R = 0;
+      c1L = 1;
+      c1R = 0;
+  }
+  // Z
+  else {
+    mb2 = mz2;
   if(abs(partons_[0]->id())%2==0) {
-    c0L = 0.5*generator()->standardModel()->au()-
-	  sin2W*generator()->standardModel()->eu();
-    c0R =-sin2W*generator()->standardModel()->eu();
+      c0L = 
+	generator()->standardModel()->vu()+
+	generator()->standardModel()->au();
+      c0R =
+	generator()->standardModel()->vu()-
+	generator()->standardModel()->au();
   }
   else {
-    c0L = 0.5*generator()->standardModel()->ad()-
-	  sin2W*generator()->standardModel()->ed();
-    c0R =-sin2W*generator()->standardModel()->ed();
+      c0L = 
+	generator()->standardModel()->vd()+
+	generator()->standardModel()->ad();
+      c0R =
+	generator()->standardModel()->vd()-
+	generator()->standardModel()->ad();
   }
 
   if(abs(partons_[2]->id())%2==0) {
-    c1L = 0.5*generator()->standardModel()->au()-
-	  sin2W*generator()->standardModel()->eu();
-    c1R =-sin2W*generator()->standardModel()->eu();
+      c1L = 
+	generator()->standardModel()->vu()+
+	generator()->standardModel()->au();
+      c1R =
+	generator()->standardModel()->vu()-
+	generator()->standardModel()->au();
   }
   else {
-    c1L = 0.5*generator()->standardModel()->ad()-
-	  sin2W*generator()->standardModel()->ed();
-    c1R =-sin2W*generator()->standardModel()->ed();
+      c1L = 
+	generator()->standardModel()->vd()+
+	generator()->standardModel()->ad();
+      c1R =
+	generator()->standardModel()->vd()-
+	generator()->standardModel()->ad();
+    }
+
   }
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  InvEnergy4 Dlo = 1./(sqr(q2_  -mz2)+MG2); 
-  InvEnergy4 Dbf = 1./(sqr(q2nlo-mz2)+MG2);
+  InvEnergy4 Dlo = 1./(sqr(q2_-mb2)); 
+  InvEnergy4 Dbf = 1./(sqr(q2_-mb2));
 
   Energy4 term1 = G1*(r1*pother_[0])*((qnlo+r1)*pother_[1])+
                   G2*(r1*pother_[1])*((qnlo+r1)*pother_[0]);
@@ -621,9 +648,29 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
                          (psystem_[1]*pother_[1])+
                       G2*(psystem_[0]*pother_[1])*
                          (psystem_[1]*pother_[0]);
+  //->da qui
+  double x = 1.-p2*p1/
+              ((p2+p1)*
+              p0);
+  double z = p1*p0/
+             ((p2+p1)*
+             p0);
 
-  return 1./3.*CFfact*1./((1.-xp)*(1.-zp))*sqr(Dbf/Dlo)
-                    /commfact2*(term1+sqr(xp-1.+zp)*term2); 
+  double real1   = CFfact/xp*1./((1.-xp)*(1.-zp))*
+                   (term1+sqr(xp-1.+zp)*term2)/commfact2;
+  double dipole1 = CFfact/xp*
+                   (sqr(x)+sqr(z))/
+                   ((1.-x)*(1.-z)); 
+   double realq   = (real1-dipole1);
+   /*
+
+   cerr << "realq: " << realq << " x: " << x << " z: " << z << " term1: " << term1/commfact2 << " term2: " << term2/commfact2  << " TERM1: " << ((r1*pother_[0])*((qnlo+r1)*pother_[1]))/((p1*pother_[0])*(p2*pother_[1]))<< " TEMR2: " <<(((r2-qnlo)*pother_[0])*(r2*pother_[1]))/((p1*pother_[0])*(p2*pother_[1]))<< " Estremo1: " <<(r1*pother_[0])/(p1*pother_[0]) << " Estremo2: " << ((qnlo+r1)*pother_[1])/(p2*pother_[1]) <<'\n';*/
+
+   //->a qui
+
+
+  return CFfact*1./((1.-xp)*(1.-zp))/commfact2*
+         (term1+sqr(xp-1.+zp)*term2); 
 }
 
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
@@ -632,7 +679,6 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
   Energy2 mu2 = q2_;
   double aS = 2.*alphaS_->value(mu2);
   double TRfact = 1./2.*aS/Constants::twopi;
-  double sin2W = generator()->standardModel()->sin2ThetaW();
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
   double x2 = 1.-(1.-zp)/xp;
@@ -644,41 +690,66 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
 		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
   Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
   Lorentz5Momentum qnlo = p2+p1-p0; 
-  Energy2 q2nlo = qnlo.m2();
+
   // Breit frame variables
   Lorentz5Momentum r1 = -p0/x1;
   Lorentz5Momentum r2 =  p1/x2;
   // electroweak parameters
   Energy2 mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
-  Energy Gamma(getParticleData(ParticleID::Z0)->width());
-  Energy4 MG2(mz2*sqr(Gamma));
+  Energy2 mw2 = sqr(getParticleData(ParticleID::Wplus)->mass());
   double c0L,c1L,c0R,c1R;
+  Energy2 mb2;
+  // W
+  if(partons_[0]->id()!=partons_[1]->id()) {
+    mb2 = mw2;
+      c0L = 1;
+      c0R = 0;
+      c1L = 1;
+      c1R = 0;
+  }
+  // Z
+  else {
+    mb2 = mz2;
   if(abs(partons_[0]->id())%2==0) {
-    c0L = 0.5*generator()->standardModel()->au()-
-	  sin2W*generator()->standardModel()->eu();
-    c0R =-sin2W*generator()->standardModel()->eu();
+      c0L = 
+	generator()->standardModel()->vu()+
+	generator()->standardModel()->au();
+      c0R =
+	generator()->standardModel()->vu()-
+	generator()->standardModel()->au();
   }
   else {
-    c0L = 0.5*generator()->standardModel()->ad()-
-	  sin2W*generator()->standardModel()->ed();
-    c0R =-sin2W*generator()->standardModel()->ed();
+      c0L = 
+	generator()->standardModel()->vd()+
+	generator()->standardModel()->ad();
+      c0R =
+	generator()->standardModel()->vd()-
+	generator()->standardModel()->ad();
   }
 
   if(abs(partons_[2]->id())%2==0) {
-    c1L = 0.5*generator()->standardModel()->au()-
-	  sin2W*generator()->standardModel()->eu();
-    c1R =-sin2W*generator()->standardModel()->eu();
+      c1L = 
+	generator()->standardModel()->vu()+
+	generator()->standardModel()->au();
+      c1R =
+	generator()->standardModel()->vu()-
+	generator()->standardModel()->au();
   }
   else {
-    c1L = 0.5*generator()->standardModel()->ad()-
-	  sin2W*generator()->standardModel()->ed();
-    c1R =-sin2W*generator()->standardModel()->ed();
+      c1L = 
+	generator()->standardModel()->vd()+
+	generator()->standardModel()->ad();
+      c1R =
+	generator()->standardModel()->vd()-
+	generator()->standardModel()->ad();
+    }
+
   }
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  InvEnergy4 Dlo = 1./(sqr(q2_  -mz2)+MG2); 
-  InvEnergy4 Dbf = 1./(sqr(q2nlo-mz2)+MG2);
+  InvEnergy4 Dlo = 1./(sqr(q2_-mb2)); 
+  InvEnergy4 Dbf = 1./(sqr(q2_-mb2));
 
   Energy4 term1 = G1*(r1*pother_[0])*((qnlo+r1)*pother_[1])+
                   G2*(r1*pother_[1])*((qnlo+r1)*pother_[0]);
@@ -691,8 +762,8 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
                       G2*(psystem_[0]*pother_[1])*
                          (psystem_[1]*pother_[0]);
 
-  return  1./3.*TRfact*1./((1.-zp)*sqr(xp)*
-          (2+xp-zp))* sqr(Dbf/Dlo)/commfact2*
+  return  TRfact*1./((1.-zp)*sqr(xp)*
+          (2+xp-zp))/commfact2*
           (term1+sqr(xp-1.+zp)*term2);
 }
 
