@@ -30,12 +30,13 @@ using namespace Herwig;
 
 
 void METRP2to2::persistentOutput(PersistentOStream & os) const {
-  os << _maxflavour << _process << _ndim;
+  os << _maxflavour << _process << _ndim << _planckmass;
 }
 
 void METRP2to2::persistentInput(PersistentIStream & is, int) {
-  is >> _maxflavour >> _process >> _ndim;
+  is >> _maxflavour >> _process >> _ndim >> _planckmass;
 }
+
 
 unsigned int METRP2to2::orderInAlphaS() const {
   return 0;
@@ -72,7 +73,7 @@ void METRP2to2::Init() {
  static Parameter<METRP2to2, double> interfacePlanckMass
     ("PlanckMass",
      "The Planck Mass",
-     &METRP2to2::_planckmass, 1500.0, 200.0,200000.0,
+     &METRP2to2::_planckmass, 2000.0, 200.0,200000.0,
      false, false, Interface::limited);
 
 
@@ -80,7 +81,7 @@ void METRP2to2::Init() {
   static Parameter<METRP2to2, unsigned int> interfaceNumberExtraDimensions
     ("NumberExtraDimensions",
      "The number of extra dimensions to consider",
-     &METRP2to2::_ndim, 6, 2, 6,
+     &METRP2to2::_ndim, 3, 2, 6,
      false, false, Interface::limited);
 
 

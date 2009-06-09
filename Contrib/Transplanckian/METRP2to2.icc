@@ -13,7 +13,7 @@
 
 namespace Herwig {
   
-  inline METRP2to2::METRP2to2():_maxflavour(5),_process(0),_ndim(6), _planckmass(1500.0) {
+  inline METRP2to2::METRP2to2():_maxflavour(5),_process(0),_ndim(3), _planckmass(2000.0) {
     massOption(true ,0);
     massOption(false,0);
   }
