@@ -307,24 +307,13 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   nloMomenta[2] = Lorentz5Momentum(-0.5*Q*xT*cos(_phi), -0.5*Q*xT*sin(_phi),
 				   -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
   
-    if (_partons[0]->id() < 0){
-     nloMomenta[0].x() = - nloMomenta[0].x();
-     nloMomenta[0].y() = - nloMomenta[0].y();
-     nloMomenta[0].z() = - nloMomenta[0].z();
-     nloMomenta[0].e() = - nloMomenta[0].e();
-    }
-    if (_partons[2]->id() < 0){
-      nloMomenta[1].x() = - nloMomenta[1].x();
-      nloMomenta[1].y() = - nloMomenta[1].y();
-      nloMomenta[1].z() = - nloMomenta[1].z();
-      nloMomenta[1].e() = - nloMomenta[1].e();
-    }
-    if (_partons[0]->id() > 0){
-      nloMomenta[2].x() = - nloMomenta[2].x();
-      nloMomenta[2].y() = - nloMomenta[2].y();
-      nloMomenta[2].z() = - nloMomenta[2].z();
-      nloMomenta[2].e() = - nloMomenta[2].e();
-      }
+    if (_partons[0]->id() < 0)
+      nloMomenta[0] = - nloMomenta[0];
+    if (_partons[2]->id() < 0) 
+      nloMomenta[1] = - nloMomenta[1];
+    if (_partons[0]->id() > 0)
+      nloMomenta[2] = - nloMomenta[2];
+
 
   Lorentz5Momentum qnlo = nloMomenta[2]+nloMomenta[1]-nloMomenta[0];
   Lorentz5Momentum r1 = -nloMomenta[0]/x1;
@@ -495,7 +484,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   // q -> qg term
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
-   double real1   = CFfact*qPDF/loPDF/_xp*1./((1.-_xp)*(1.-_zp))*
+  double real1   = CFfact*qPDF/loPDF/_xp*1./((1.-_xp)*(1.-_zp))*
                     (R1+sqr(_xp)*(sqr(x2)+sqr(xT))*R2);
   double dipole1 = CFfact*
                    qPDF/loPDF/_xp*(sqr(x)+sqr(z))/
