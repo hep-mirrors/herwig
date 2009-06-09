@@ -180,11 +180,13 @@ AC_SUBST(LOAD_HEPMC)
 dnl ##### THEPEG #####
 AC_DEFUN([HERWIG_CHECK_THEPEG],
 [
+defaultlocation="${prefix}"
+test "x$defaultlocation" = xNONE && defaultlocation="${ac_default_prefix}"
 AC_MSG_CHECKING([for libThePEG in])
 AC_ARG_WITH(thepeg,
         AC_HELP_STRING([--with-thepeg=DIR],[location of ThePEG installation]),
         [],
-	[with_thepeg="${prefix}"])
+	[with_thepeg="${defaultlocation}"])
 AC_MSG_RESULT([$with_thepeg])
 
 if test "x$with_thepeg" = "xno"; then
