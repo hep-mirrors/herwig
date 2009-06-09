@@ -96,6 +96,15 @@ protected:
    */
   double NLOWeight() const;
 
+  /**
+   *  Leading order matrix element
+   */
+  Energy4 loME(const Lorentz5Momentum &p1,
+	       const Lorentz5Momentum &p2,
+	       const Lorentz5Momentum &q1,
+	       const Lorentz5Momentum &q2,
+	       double G1, double G2) const;
+
 protected:
 
   /** @name Standard Interfaced functions. */
