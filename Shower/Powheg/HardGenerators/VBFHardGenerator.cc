@@ -559,8 +559,6 @@ void VBFHardGenerator::generateBGF() {
 }
 
 double VBFHardGenerator::comptonME(double xT, double xp, double zp,
-
-
 				   double phi) {
   // scale and prefactors
   Energy2 mu2 = q2_;
@@ -635,42 +633,37 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  InvEnergy4 Dlo = 1./(sqr(q2_-mb2)); 
-  InvEnergy4 Dbf = 1./(sqr(q2_-mb2));
+  Energy4 term1,term2,term3,loME;
+  if(partons_[0]->id()>0) {
+    if(partons_[1]->id()>0) {
+      term1 = loMatrixElement(r1     ,pother_[0],qnlo+r1,pother_[1],G1,G2);
+      term2 = loMatrixElement(r2-qnlo,pother_[0],r2     ,pother_[1],G1,G2);
+      loME  = loMatrixElement(p1     ,pother_[0],p2     ,pother_[1],G1,G2);
+    }
+    else {
+      term1 = loMatrixElement(r1     ,pother_[1],qnlo+r1,pother_[0],G1,G2);
+      term2 = loMatrixElement(r2-qnlo,pother_[1],r2     ,pother_[0],G1,G2);
+      loME  = loMatrixElement(p1     ,pother_[1],p2     ,pother_[0],G1,G2);
+    }
+  }
+  else {
+    if(partons_[1]->id()>0) {
+      term1 = loMatrixElement(qnlo+r1,pother_[0],r1     ,pother_[1],G1,G2);
+      term2 = loMatrixElement(r2     ,pother_[0],r2-qnlo,pother_[1],G1,G2);
+      loME  = loMatrixElement(p2     ,pother_[0],p1     ,pother_[1],G1,G2);
+    }
+    else {
+      term1 = loMatrixElement(qnlo+r1,pother_[1],r1     ,pother_[0],G1,G2);
+      term2 = loMatrixElement(r2     ,pother_[1],r2-qnlo,pother_[0],G1,G2);
+      loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
+    }
+  }
 
-  Energy4 term1 = G1*(r1*pother_[0])*((qnlo+r1)*pother_[1])+
-                  G2*(r1*pother_[1])*((qnlo+r1)*pother_[0]);
+  double R1 = term1/loME;
+  double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
 
-  Energy4 term2 = G1*((r2-qnlo)*pother_[0])*(r2*pother_[1])+
-                  G2*((r2-qnlo)*pother_[1])*(r2*pother_[0]);
-
-  Energy4 commfact2 = G1*(psystem_[0]*pother_[0])*
-                         (psystem_[1]*pother_[1])+
-                      G2*(psystem_[0]*pother_[1])*
-                         (psystem_[1]*pother_[0]);
-  //->da qui
-  double x = 1.-p2*p1/
-              ((p2+p1)*
-              p0);
-  double z = p1*p0/
-             ((p2+p1)*
-             p0);
-
-  double real1   = CFfact/xp*1./((1.-xp)*(1.-zp))*
-                   (term1+sqr(xp-1.+zp)*term2)/commfact2;
-  double dipole1 = CFfact/xp*
-                   (sqr(x)+sqr(z))/
-                   ((1.-x)*(1.-z)); 
-   double realq   = (real1-dipole1);
-   /*
-
-   cerr << "realq: " << realq << " x: " << x << " z: " << z << " term1: " << term1/commfact2 << " term2: " << term2/commfact2  << " TERM1: " << ((r1*pother_[0])*((qnlo+r1)*pother_[1]))/((p1*pother_[0])*(p2*pother_[1]))<< " TEMR2: " <<(((r2-qnlo)*pother_[0])*(r2*pother_[1]))/((p1*pother_[0])*(p2*pother_[1]))<< " Estremo1: " <<(r1*pother_[0])/(p1*pother_[0]) << " Estremo2: " << ((qnlo+r1)*pother_[1])/(p2*pother_[1]) <<'\n';*/
-
-   //->a qui
-
-
-  return CFfact*1./((1.-xp)*(1.-zp))/commfact2*
-         (term1+sqr(xp-1.+zp)*term2); 
+  return CFfact/((1.-xp)*(1.-zp))*
+         (R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2); 
 }
 
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
@@ -692,8 +685,8 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
   Lorentz5Momentum qnlo = p2+p1-p0; 
 
   // Breit frame variables
-  Lorentz5Momentum r1 = -p0/x1;
   Lorentz5Momentum r2 =  p1/x2;
+  Lorentz5Momentum r3 = -p2/x3;
   // electroweak parameters
   Energy2 mz2 = sqr(getParticleData(ParticleID::Z0)->mass());
   Energy2 mw2 = sqr(getParticleData(ParticleID::Wplus)->mass());
@@ -748,22 +741,43 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-  InvEnergy4 Dlo = 1./(sqr(q2_-mb2)); 
-  InvEnergy4 Dbf = 1./(sqr(q2_-mb2));
-
-  Energy4 term1 = G1*(r1*pother_[0])*((qnlo+r1)*pother_[1])+
-                  G2*(r1*pother_[1])*((qnlo+r1)*pother_[0]);
-
-  Energy4 term2 = G1*((r2-qnlo)*pother_[0])*(r2*pother_[1])+
-                  G2*((r2-qnlo)*pother_[1])*(r2*pother_[0]);
-
-  Energy4 commfact2 = G1*(psystem_[0]*pother_[0])*
-                         (psystem_[1]*pother_[1])+
-                      G2*(psystem_[0]*pother_[1])*
-                         (psystem_[1]*pother_[0]);
-
-  return  TRfact*1./((1.-zp)*sqr(xp)*
-          (2+xp-zp))/commfact2*
-          (term1+sqr(xp-1.+zp)*term2);
+  Energy4 term1,term2,term3,loME;
+  if(partons_[0]->id()>0) {
+    if(partons_[1]->id()>0) {
+      term2 = loMatrixElement(r2-qnlo,pother_[0],r2     ,pother_[1],G1,G2);
+      term3 = loMatrixElement(r3     ,pother_[0],qnlo+r3,pother_[1],G1,G2);
+      loME  = loMatrixElement(p1     ,pother_[0],p2     ,pother_[1],G1,G2);
+    }
+    else {
+      term2 = loMatrixElement(r2-qnlo,pother_[1],r2     ,pother_[0],G1,G2);
+      term3 = loMatrixElement(r3     ,pother_[1],qnlo+r3,pother_[0],G1,G2);
+      loME  = loMatrixElement(p1     ,pother_[1],p2     ,pother_[0],G1,G2);
+    }
+  }
+  else {
+    if(partons_[1]->id()>0) {
+      term2 = loMatrixElement(r2     ,pother_[0],r2-qnlo,pother_[1],G1,G2);
+      term3 = loMatrixElement(qnlo+r3,pother_[0],r3     ,pother_[1],G1,G2);
+      loME  = loMatrixElement(p2     ,pother_[0],p1     ,pother_[1],G1,G2);
+    }
+    else {
+      term2 = loMatrixElement(r2     ,pother_[1],r2-qnlo,pother_[0],G1,G2);
+      term3 = loMatrixElement(qnlo+r3,pother_[1],r3     ,pother_[0],G1,G2);
+      loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
+    }
+  }
+  double R3 = sqr(x3)/(sqr(x3)+sqr(xT))*(term3/loME);
+  double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
+  return TRfact*(1.-zp)*
+         (sqr(xp)*(sqr(x3)+sqr(xT))*R3+
+          sqr(xp)*(sqr(x2)+sqr(xT))*R2);
 }
 
+Energy4 VBFHardGenerator::
+loMatrixElement(const Lorentz5Momentum &p1,
+		const Lorentz5Momentum &p2,
+		const Lorentz5Momentum &q1,
+		const Lorentz5Momentum &q2,
+		double G1, double G2) const {
+  return G1*(p1*p2)*(q1*q2) + G2*(p1*q2)*(q1*p2);
+}

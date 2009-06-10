@@ -268,28 +268,24 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   Lorentz5Momentum r2 =  nloMomenta[1]/x2;
   Lorentz5Momentum r3 = -nloMomenta[2]/x3;
 
-//   cerr << "Momenta dopo il boost - p1: " << p1/GeV
-//        << " nloMomenta[0]: " << nloMomenta[0]/GeV
-//        << " r1:            " << r1/GeV
-//        << " p1other:       " << p1other/GeV
-//        << " x1: " << x1 << "\n";
-
   // LO + dipole subtracted virtual + collinear quark bit with LO pdf
   double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+
 			   1.5*log(_q2/mu2/(1.-_xB))+
 			   2.*log(1.-_xB)*log(_q2/mu2)+
 			   sqr(log(1.-_xB)));
   virt /= jac_;
+
+  Energy2 scale = _q2*((1.-_xp)*(1-_zp)*_zp/_xp+1.);
   // PDF from leading-order
   double loPDF = 
     _hadron->pdf()->xfx(_hadron,_partons[0],mu2,_xB)/_xB;
   // NLO gluon PDF
   tcPDPtr gluon = getParticleData(ParticleID::g);
   double gPDF   = 
-    _hadron->pdf()->xfx(_hadron,gluon,mu2,_xB/_xp)*_xp/_xB;
+    _hadron->pdf()->xfx(_hadron,gluon,scale,_xB/_xp)*_xp/_xB;
   // NLO quark PDF
   double qPDF   = 
-    _hadron->pdf()->xfx(_hadron,_partons[0],mu2,_xB/_xp)*_xp/_xB;
+    _hadron->pdf()->xfx(_hadron,_partons[0],scale,_xB/_xp)*_xp/_xB;
   // collinear counterterms
   // gluon
   double collg = 
@@ -390,7 +386,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
   double real1   = CFfact*qPDF/loPDF/_xp/((1.-_xp)*(1.-_zp))*
-    (R1+sqr(_xp)*(sqr(x2)+sqr(xT))*R2);
+                   (R1+sqr(_xp)*(sqr(x2)+sqr(xT))*R2);
   double dipole1 = CFfact*qPDF/loPDF/_xp*(sqr(x)+sqr(z))/
                    ((1.-x)*(1.-z));
   double realq   = (real1-dipole1);

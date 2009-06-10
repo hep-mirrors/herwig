@@ -91,6 +91,14 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+  /**
+   *  Leading order matrix element
+   */
+  Energy4 loMatrixElement(const Lorentz5Momentum &p1,
+			  const Lorentz5Momentum &p2,
+			  const Lorentz5Momentum &q1,
+			  const Lorentz5Momentum &q2,
+			  double G1, double G2) const;
   //@}
 
 protected:
