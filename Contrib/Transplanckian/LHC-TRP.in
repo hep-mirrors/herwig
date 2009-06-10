@@ -49,8 +49,6 @@ set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10000
 set LHCGenerator:MaxErrors 10000
 
- 
-
 create ThePEG::EventGenerator MGGenerator
 set MGGenerator:RandomNumberGenerator /Herwig/Random
 set MGGenerator:StandardModelParameters /Herwig/Model
@@ -130,8 +128,8 @@ set metrp2to2:PlanckMass 1500
 # set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
 # 
 
-cd /Herwig/Analysis
-create Herwig::rootanalysis RAnalysis rootanalysis.so
+#cd /Herwig/Analysis
+#create Herwig::rootanalysis RAnalysis rootanalysis.so
 #create Herwig::NLOAnalysis nloanalysis NLOAnalysis.so
 
 cd /Herwig/Generators
@@ -139,8 +137,8 @@ cd /Herwig/Generators
 ##################################################
 #  Useful analysis handlers for hadron-hadron physics
 ##################################################
-insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RAnalysis
-insert MGGenerator:AnalysisHandlers 0 /Herwig/Analysis/RAnalysis
+#insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/RAnalysis
+#insert MGGenerator:AnalysisHandlers 0 /Herwig/Analysis/RAnalysis
 # analysis of W/Z events
 # insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
 # analysis of top-antitop events

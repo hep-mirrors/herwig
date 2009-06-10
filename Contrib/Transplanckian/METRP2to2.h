@@ -54,9 +54,13 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-
-
-
+  virtual double ME() const;
+  virtual double bccalc(double s) const;
+  virtual double Any(double s, double t) const;
+  virtual double fpoint(int n, double x) const;
+  virtual double fny(double n, double bc, double q) const;
+  virtual double interp(double y, double f0, double f1, double y0, double y1) const;
+  virtual double fnyasympt(double n, double y) const;
   /**
    * Return the scale associated with the last set phase space point.
    */
@@ -121,21 +125,11 @@ protected:
    *  Members to calculate the matrix elements
    */
   //@{
-  /**
-   * Matrix element for \f$q_i q_j \to q_i q_j\f$.
-   */
-  inline double ME() const;
 
   
-  //@}
-  
-  inline double Any(double s, double t) const;
-  inline double fny(double n, double bc, double q) const;
-  inline double METRP2to2::fnyasympt(double n, double y) const;
-  inline double METRP2to2::ffile(string inputf, double x) const;
-  inline double METRP2to2::interp(double y, double f0, double f1, double y0, double y1) const ;
-  inline double METRP2to2::fpoint(int n, double x) const;
-  inline double METRP2to2::bccalc(double s) const;
+
+
+
 
 protected:
 
@@ -233,6 +227,5 @@ struct ClassTraits<Herwig::METRP2to2>
 
 }
 
-#include "METRP2to2.icc"
 
 #endif /* HERWIG_METRP2to2_H */
