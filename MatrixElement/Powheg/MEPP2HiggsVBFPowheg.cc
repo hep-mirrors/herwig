@@ -223,67 +223,23 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
 
   // momenta of particles
   Lorentz5Momentum p1, p2,p1other,p2other;
-  /*
-  cerr << "Momenta prima del boost  _pb: "
-                   << "(" << _pb.x()/GeV
-                   << "," << _pb.y()/GeV
-		   << "," << _pb.z()/GeV
-		   << "," << _pb.t()/GeV
-	           << ")" << 
-          " _pc: " << "(" << _pc.x()/GeV
-                   << "," << _pc.y()/GeV
-		   << "," << _pc.z()/GeV
-		   << "," << _pc.t()/GeV
-	           << ")" <<
-     " _pbother: " << "(" << _pbother.x()/GeV
-                   << "," << _pbother.y()/GeV
-		   << "," << _pbother.z()/GeV
-		   << "," << _pbother.t()/GeV
-	           << ")" <<
-     " _pcother: " << "(" << _pcother.x()/GeV
-                   << "," << _pcother.y()/GeV
-		   << "," << _pcother.z()/GeV
-                   << "," << _pcother.t()/GeV <<")" << endl; 
-*/
+//   cerr << "Momenta prima del boost  _pb: " << _pb/GeV 
+//        << "\n _pc: "      << _pc/GeV 
+//        << "\n _pbother: " << _pbother/GeV
+//        << "\n _pcother: " << _pcother/GeV << "\n";
+
   _pa *= rot;
   _q2  = -_pa.m2();
-  
-//   for(int i = 0; i < 4; i++){
-//     if (_partons[i]->id() < 0){ 
-//       _loMomenta[i].x() = - _loMomenta[i].x();
-//       _loMomenta[i].y() = - _loMomenta[i].y();
-//       _loMomenta[i].z() = - _loMomenta[i].z();
-//       _loMomenta[i].e() = - _loMomenta[i].e(); 
-//     }
-//   }
+
   p1 = rot*_loMomenta[0];
   p2 = rot*_loMomenta[2];
   p1other = rot*_loMomenta[1];
   p2other = rot*_loMomenta[3];
-  /*
-  cerr << "Momenta dopo il boost - p1: "
-                   << "(" << p1.x()/GeV
-                   << "," << p1.y()/GeV
-		   << "," << p1.z()/GeV
-		   << "," << p1.t()/GeV
-	           << ")" << 
-           " p2: " << "(" << p2.x()/GeV
-                   << "," << p2.y()/GeV
-		   << "," << p2.z()/GeV
-		   << "," << p2.t()/GeV
-	           << ")" <<
-      " p1other: " << "(" << p1other.x()/GeV
-                   << "," << p1other.y()/GeV
-		   << "," << p1other.z()/GeV
-		   << "," << p1other.t()/GeV
-	           << ")" <<
-      " p2other: " << "(" << p2other.x()/GeV
-                   << "," << p2other.y()/GeV
-		   << "," << p2other.z()/GeV
-                   << "," << p2other.t()/GeV << ")" <<  endl;
-*/
 
-
+//   cerr << "Momenta dopo il boost - p1: " << p1/GeV
+//        << "\n p2:      " << p2/GeV
+//        << "\n p1other: " << p1other/GeV
+//        << "\n p2other: " << p2other/GeV << "\n";
 
   // scale and prefactors
   Energy2 mu2 = _q2;
@@ -306,43 +262,17 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
 				    -0.5*Q*x2, 0.5*Q*sqrt(sqr(xT)+sqr(x2)));
   nloMomenta[2] = Lorentz5Momentum(-0.5*Q*xT*cos(_phi), -0.5*Q*xT*sin(_phi),
 				   -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
-  
-//     if (_partons[0]->id() < 0)
-//       nloMomenta[0] = - nloMomenta[0];
-//     if (_partons[2]->id() < 0) 
-//       nloMomenta[1] = - nloMomenta[1];
-//     if (_partons[0]->id() > 0)
-//       nloMomenta[2] = - nloMomenta[2];
-
 
   Lorentz5Momentum qnlo = nloMomenta[2]+nloMomenta[1]-nloMomenta[0];
   Lorentz5Momentum r1 = -nloMomenta[0]/x1;
   Lorentz5Momentum r2 =  nloMomenta[1]/x2;
   Lorentz5Momentum r3 = -nloMomenta[2]/x3;
 
-  
-  /* cerr << "Momenta dopo il boost - p1: "
-                   << "(" << p1.x()/GeV
-                   << "," << p1.y()/GeV
-		   << "," << p1.z()/GeV
-		   << "," << p1.t()/GeV
-	           << ")" <<
-" nloMomenta[0]: " << "(" << nloMomenta[0].x()/GeV
-                   << "," << nloMomenta[0].y()/GeV
-		   << "," << nloMomenta[0].z()/GeV
-		   << "," << nloMomenta[0].t()/GeV
-                   << ")" << 
-           " r1: " << "(" << r1.x()/GeV
-                   << "," << r1.y()/GeV
-		   << "," << r1.z()/GeV
-		   << "," << r1.t()/GeV
-	           << ")" <<
-      " p1other: " << "(" << p1other.x()/GeV
-                   << "," << p1other.y()/GeV
-		   << "," << p1other.z()/GeV
-		   << "," << p1other.t()/GeV
-	           << ")" << 
-           " x1: " << x1 << endl;*/
+//   cerr << "Momenta dopo il boost - p1: " << p1/GeV
+//        << " nloMomenta[0]: " << nloMomenta[0]/GeV
+//        << " r1:            " << r1/GeV
+//        << " p1other:       " << p1other/GeV
+//        << " x1: " << x1 << "\n";
 
   // LO + dipole subtracted virtual + collinear quark bit with LO pdf
   double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+
@@ -371,7 +301,6 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
     log((1.-_xp)/_xp*_q2/mu2))+
     CFfact/_xp*(qPDF-_xp*loPDF)*(2./(1.-_xp)*
     log(_q2*(1.-_xp)/mu2)-1.5/(1.-_xp));
-
   // Electroweak coefficients
   double c0L,c1L,c0R,c1R;
   Energy2 mb2;
@@ -419,210 +348,61 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
 	generator()->standardModel()->ad();
     }
   }
-
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
   double G2 = sqr(c0L*c1R)+sqr(c0R*c1L);
-
   Energy4 term1,term2,term3,loME;
   if(_partons[0]->id()>0) {
     if(_partons[1]->id()>0) {
-      term1 = loME(r1     ,p1other,qnlo+r1,p2other,G1,G2);
-      term2 = loME(r2-qnlo,p1other,r2     ,p2other,G1,G2);
-      term3 = loME(r3     ,p1other,qnlo+r3,p2other,G1,G2);
-      loME  = loME(p1     ,p1other,p2     ,p2other,G1,G2);
+      term1 = loMatrixElement(r1     ,p1other,qnlo+r1,p2other,G1,G2);
+      term2 = loMatrixElement(r2-qnlo,p1other,r2     ,p2other,G1,G2);
+      term3 = loMatrixElement(r3     ,p1other,qnlo+r3,p2other,G1,G2);
+      loME  = loMatrixElement(p1     ,p1other,p2     ,p2other,G1,G2);
     }
     else {
-      term1 = loME(r1     ,p2other,qnlo+r1,p1other,G1,G2);
-      term2 = loME(r2-qnlo,p2other,r2     ,p1other,G1,G2);
-      term3 = loME(r3     ,p2other,qnlo+r3,p1other,G1,G2);
-      loME  = loME(p1     ,p2other,p2     ,p1other,G1,G2);
+      term1 = loMatrixElement(r1     ,p2other,qnlo+r1,p1other,G1,G2);
+      term2 = loMatrixElement(r2-qnlo,p2other,r2     ,p1other,G1,G2);
+      term3 = loMatrixElement(r3     ,p2other,qnlo+r3,p1other,G1,G2);
+      loME  = loMatrixElement(p1     ,p2other,p2     ,p1other,G1,G2);
     }
   }
   else {
     if(_partons[1]->id()>0) {
-      term1 = loME(qnlo+r1,p1other,r1     ,p2other,G1,G2);
-      term2 = loME(r2     ,p1other,r2-qnlo,p2other,G1,G2);
-      term3 = loME(qnlo+r3,p1other,r3     ,p2other,G1,G2);
-      loME  = loME(p2     ,p1other,p1     ,p2other,G1,G2);
+      term1 = loMatrixElement(qnlo+r1,p1other,r1     ,p2other,G1,G2);
+      term2 = loMatrixElement(r2     ,p1other,r2-qnlo,p2other,G1,G2);
+      term3 = loMatrixElement(qnlo+r3,p1other,r3     ,p2other,G1,G2);
+      loME  = loMatrixElement(p2     ,p1other,p1     ,p2other,G1,G2);
     }
     else {
-      term1 = loME(qnlo+r1,p2other,r1     ,p1other,G1,G2);
-      term2 = loME(r2     ,p2other,r2-qnlo,p1other,G1,G2);
-      term3 = loME(qnlo+r3,p2other,r3     ,p1other,G1,G2);
-      loME  = loME(p2     ,p2other,p1     ,p1other,G1,G2);
+      term1 = loMatrixElement(qnlo+r1,p2other,r1     ,p1other,G1,G2);
+      term2 = loMatrixElement(r2     ,p2other,r2-qnlo,p1other,G1,G2);
+      term3 = loMatrixElement(qnlo+r3,p2other,r3     ,p1other,G1,G2);
+      loME  = loMatrixElement(p2     ,p2other,p1     ,p1other,G1,G2);
     }
   }
-
-
-
-
-
-
-  /*
-  cerr << "Testing term2: " << (r2-qnlo)*p1other/GeV2 << " " << r2*p2other/GeV2 << " " << (r2-qnlo)*p2other/GeV2 << " " << r2*p1other/GeV2 << endl; */
-
-
-
-  /*  cerr << "p1tilde: " << "(" << p1tilde.x()/GeV
-                   << "," << p1tilde.y()/GeV
-		   << "," << p1tilde.z()/GeV
-		   << "," << p1tilde.t()/GeV
-	           << ")" << 
-           " p2tilde: " << "(" << p2tilde.x()/GeV
-                   << "," << p2tilde.y()/GeV
-		   << "," << p2tilde.z()/GeV
-		   << "," << p2tilde.t()/GeV
-	           << ")" <<
-           " p1other: " << "(" << p1other.x()/GeV
-                   << "," << p1other.y()/GeV
-		   << "," << p1other.z()/GeV
-		   << "," << p1other.t()/GeV
-	           << ")" <<
-           " p2other: " << "(" << p2other.x()/GeV
-                   << "," << p2other.y()/GeV
-		   << "," << p2other.z()/GeV
-		   << "," << p2other.t()/GeV
-                   << ")" << 
-         " qnlo: " << "(" << qnlo.x()/GeV
-                   << "," << qnlo.y()/GeV
-		   << "," << qnlo.z()/GeV
-		   << "," << qnlo.t()/GeV
-                   << ")" << endl;*/
-
-  /*
-  cerr << "loME: " << loME/sqr(GeV2) << " G1: " << G1 << " G2: " << G2 << " p1*p1other: " << p1*p1other/GeV2 << " p2*p2other: " << p2*p2other/GeV2 << " p1*p2other: " << p1*p2other/GeV2 << " p2*p1other: " << p2*p1other/GeV2 << endl;
-  */
-  /* cerr << "loMetilde: " <<  loMEtilde/sqr(GeV2)  << " G1: " << G1 << " G2: " << G2 << " p1tilde*p1other: " << p1tilde*p1other/GeV2 << " p2tilde*p2other: " << p2tilde*p2other/GeV2 << " p1tilde*p2other: " << p1tilde*p2other/GeV2 << " p2tilde*p1other: " << p2tilde*p1other/GeV2 << endl;*/
-
-  // dipoles kinematc variables
-  /*  double x =0.;
-  double z=1.;*/
-    
   double x = 1.-nloMomenta[2]*nloMomenta[1]/
             ((nloMomenta[2]+nloMomenta[1])*
             nloMomenta[0]);
   double z = nloMomenta[1]*nloMomenta[0]/
             ((nloMomenta[2]+nloMomenta[1])*
             nloMomenta[0]);
-
   // q -> qg term
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
-  double real1   = CFfact*qPDF/loPDF/_xp*1./((1.-_xp)*(1.-_zp))*
-                    (R1+sqr(_xp)*(sqr(x2)+sqr(xT))*R2);
-
-  double dipole1 = CFfact*
-                   qPDF/loPDF/_xp*(sqr(x)+sqr(z))/
-                   ((1.-x)*(1.-z)); 
-
-
+  double real1   = CFfact*qPDF/loPDF/_xp/((1.-_xp)*(1.-_zp))*
+    (R1+sqr(_xp)*(sqr(x2)+sqr(xT))*R2);
+  double dipole1 = CFfact*qPDF/loPDF/_xp*(sqr(x)+sqr(z))/
+                   ((1.-x)*(1.-z));
   double realq   = (real1-dipole1);
-   
-   if(realq >100000000){
-   cerr << "term1: " << term1/sqr(GeV2) << " term2: " << term2/sqr(GeV2) << " xp: " << _xp << " zp: " << _zp << " commfact: " << loME/sqr(GeV2) << " x: " << x << " z: " << z <<  " real1: " << real1 << " dipole1: " << dipole1 << " realq: "<< realq << endl;
-
-    /*cerr << "term2: " <<term2/sqr(GeV2) << " (r2-qnlo)*p1other: " << (r2-qnlo)*p1other/GeV2 << " (r2*p2other): " << (r2*p2other)/GeV2 << " (r2-qnlo)*p2other: " << (r2-qnlo)*p2other/GeV2 << " r2*p1other/GeV2: " << r2*p1other/GeV2 << " loME: " << loME/sqr(GeV2) << " (p1*p1other): " << (p1*p1other)/GeV2 << " (p2*p2other): " << (p2*p2other)/GeV2 << "(p1*p2other): " << (p1*p2other)/GeV2 << " (p2*p1other):  " << (p2*p1other)/GeV2 << endl;
-   
-    cerr << " r2: " <<  r2/GeV
-    <<" p2: " <<  p2/GeV
-	           <<  
-" nloMomenta[1]: " <<  nloMomenta[1].x()/GeV
-                   <<  nloMomenta[1].y()/GeV
-		   <<  nloMomenta[1].z()/GeV
-		   <<  nloMomenta[1].t()/GeV
-	           << 
-" _pc: " << "(" << _pc.x()/GeV
-                   << "," << _pc.y()/GeV
-		   << "," << _pc.z()/GeV
-		   << "," << _pc.t()/GeV
-	           << ")" << 
-           " zp: " << _zp <<             
-           " xp: " << _xp << endl;*/
-
-
-   }
-
-
-   /*   
-    cerr << "realq: " << realq << " x: " << x << " z: " << z << " term1: " << term1/loME << " term2: " << term2/loME  << " TERM1: " << ((r1*p1other)*((qnlo+r1)*p2other))/((p1*p1other)*(p2*p2other))<< " TEMR2: " <<(((r2-qnlo)*p1other)*(r2*p2other))/((p1*p1other)*(p2*p2other))<< "Estremo1: " << (r1*p1other)/(p1*p1other) << " " << ((qnlo+r1)*p2other)/(p2*p2other) << '\n';
-*/   
-
-    
-   /* cerr << "qnlo: " << "(" << qnlo.x()/GeV
-                   << "," << qnlo.y()/GeV
-		   << "," << qnlo.z()/GeV
-		   << "," << qnlo.t()/GeV
-	           << ")" << 
-           " r1: " << r1/GeV
-	           << ")" <<
-           " p1: " << "(" << p1.x()/GeV
-                   << "," << p1.y()/GeV
-		   << "," << p1.z()/GeV
-		   << "," << p1.t()/GeV
-	           << ")" <<
-           " p2: " << "(" << p2.x()/GeV
-                   << "," << p2.y()/GeV
-		   << "," << p2.z()/GeV
-		   << "," << p2.t()/GeV
-	           << ")" <<
-      " p1other: " << "(" << p1other.x()/GeV
-                   << "," << p1other.y()/GeV
-		   << "," << p1other.z()/GeV
-		   << "," << p1other.t()/GeV
-	           << ")" <<
-      " p2other: " << "(" << p2other.x()/GeV
-                   << "," << p2other.y()/GeV
-		   << "," << p2other.z()/GeV
-		   << "," << p2other.t()/GeV
-                   << ")" << 
-
-    " " << ((qnlo+r1)*p2other)/(p2*p2other) <<   endl;*/ 
-
   // g -> q qbar term
-   
   double R3 = sqr(x3)/(sqr(x3)+sqr(xT))*(term3/loME);
          R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
-  double real2 = TRfact*gPDF/loPDF/_xp*(1./(1.-_zp)+1./_zp)*
+  double real2 = TRfact*gPDF/loPDF/_xp/(1.-_zp)*
                  (sqr(_xp)*(sqr(x3)+sqr(xT))*R3+
                   sqr(_xp)*(sqr(x2)+sqr(xT))*R2);
-   double dipole2 = TRfact*gPDF/loPDF/_xp*
-                    ((sqr(x)+sqr(1.-x))/(1.-z)
-		    +(sqr(x)+sqr(1.-x))/z);
-   
-   double realg = real2-dipole2;
-      if(realg > 100000000){    
-	cerr << "term3: " << term3/sqr(GeV2) << " term2: " << term2/sqr(GeV2) << " xp: " << _xp << " zp: " << _zp << " x: " << x << " z: " << z <<  " real2: " << real2 << " dipole2: " << dipole2 << " realg: "<< realg << endl;
-
-	/* cerr << "term2: " <<term2/sqr(GeV2) << " (r2-qnlo)*p1other: " << (r2-qnlo)*p1other/GeV2 << " (r2*p2other): " << (r2*p2other)/GeV2 << " (r2-qnlo)*p2other: " << (r2-qnlo)*p2other/GeV2 << " r2*p1other/GeV2: " << r2*p1other/GeV2 << " loMEtilde: " << loMEtilde/sqr(GeV2) << " (p1tilde*p1other): " << (p1tilde*p1other)/GeV2 << " (p2tilde*p2other): " << (p2tilde*p2other)/GeV2 << "(p1tilde*p2other): " << (p1tilde*p2other)/GeV2 << " (p2tilde*p1other):  " << (p2tilde*p1other)/GeV2 << endl;
-
-    cerr << 
-           " r2: " << "(" << r2.x()/GeV
-                   << "," << r2.y()/GeV
-		   << "," << r2.z()/GeV
-		   << "," << r2.t()/GeV
-	           << ")" <<
-      " p2tilde: " << "(" << p2tilde.x()/GeV
-                   << "," << p2tilde.y()/GeV
-		   << "," << p2tilde.z()/GeV
-		   << "," << p2tilde.t()/GeV
-	           << ")" << 
-" nloMomenta[1]: " << "(" << nloMomenta[1].x()/GeV
-                   << "," << nloMomenta[1].y()/GeV
-		   << "," << nloMomenta[1].z()/GeV
-		   << "," << nloMomenta[1].t()/GeV
- 	           << ")" <<
-          " _pc: " << "(" << _pc.x()/GeV
-                   << "," << _pc.y()/GeV
-		   << "," << _pc.z()/GeV
-		   << "," << _pc.t()/GeV
-	           << ")" <<  
-           " zp: " << _zp <<  
-           " xp: " << _xp << endl;*/
-
-   }
-   //cerr << "Testing cancellation realg: " << realg << " x: " << x << " z: " << z << '\n';
-
+  double dipole2 = TRfact*gPDF/loPDF/_xp*
+    (sqr(x)+sqr(1.-x))/(1.-z);
+  double realg = real2-dipole2;
   // return the full result
   double wgt = virt+((collq+collg)/loPDF+realq+realg);
   return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
@@ -636,11 +416,12 @@ void MEPP2HiggsVBFPowheg::doinit() {
   tcPDPtr gluon = getParticleData(ParticleID::g);
 }
 
-Energy4 MEPP2HiggsVBFPowheg::loME(const Lorentz5Momentum &p1,
-				  const Lorentz5Momentum &p2,
-				  const Lorentz5Momentum &q1,
-				  const Lorentz5Momentum &q2,
-				  double G1, double G2) const {
+Energy4 MEPP2HiggsVBFPowheg::
+loMatrixElement(const Lorentz5Momentum &p1,
+		const Lorentz5Momentum &p2,
+		const Lorentz5Momentum &q1,
+		const Lorentz5Momentum &q2,
+		double G1, double G2) const {
   return G1*(p1*p2)*(q1*q2) + G2*(p1*q2)*(q1*p2);
 }
 
