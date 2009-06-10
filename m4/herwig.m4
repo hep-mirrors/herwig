@@ -588,21 +588,33 @@ AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 
 AC_DEFUN([HERWIG_OVERVIEW],
 [
-echo    "*****************************************************"
-echo    "*** $PACKAGE_STRING configuration summary"
-echo    "***"
-echo 	"*** BSM models:		$enable_models"
-echo 	"*** Herwig debug mode:	$enable_debug"
-echo    "***"
-echo    "*** GSL:		$with_gsl"
-echo    "***"
-echo    "*** ThePEG:		$with_thepeg"
-echo    "*** ThePEG headers:	$with_thepeg_headers"
-echo    "***"
-echo    "*** CLHEP:		$with_clhep"
-echo    "*** HepMC:		$with_hepmc"
-echo    "***"
-echo    "*** KtJet:		$with_ktjet"
-dnl echo    "*** FastJet:		$with_fastjet"
-echo    "*****************************************************"
+FCSTRING=`$FC --version | head -1`
+CXXSTRING=`$CXX --version | head -1`
+CCSTRING=`$CC --version | head -1`
+cat << _HW_EOF_ > config.herwig
+*****************************************************
+*** $PACKAGE_STRING configuration summary
+*** Please include this information in bug reports!
+***--------------------------------------------------
+*** Prefix:		$prefix
+***
+*** BSM models:		$enable_models
+*** Herwig debug mode:	$enable_debug
+***
+*** GSL:		$with_gsl
+***
+*** ThePEG:		$with_thepeg
+*** ThePEG headers:	$with_thepeg_headers
+***
+*** HepMC:		$with_hepmc
+***
+*** CLHEP:		$with_clhep
+*** KtJet:		$with_ktjet
+***
+*** Host:		$host
+*** CXX:		$CXXSTRING
+*** FC:			$FCSTRING
+*** CC:			$CCSTRING
+*****************************************************
+_HW_EOF_
 ])

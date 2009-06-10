@@ -159,4 +159,6 @@ AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
 
 HERWIG_OVERVIEW
 
+AC_CONFIG_COMMANDS([summary],[cat config.herwig])
+
 AC_OUTPUT
