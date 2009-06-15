@@ -92,7 +92,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit();
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -110,7 +110,10 @@ private:
   NMSSMGOGOHVertex & operator=(const NMSSMGOGOHVertex &);
 
 private:
-
+   /**
+   * A pointer to the Standard Model object 
+   */
+  tcHwSMPtr _theSM;
   /**
    *  The various mixing matrices and couplings
    */

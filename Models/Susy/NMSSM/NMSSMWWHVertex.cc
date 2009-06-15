@@ -17,11 +17,14 @@ using namespace ThePEG::Helicity;
 NMSSMWWHVertex::NMSSMWWHVertex() 
   : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) {
   int id[3]={25,35,45};
+  // PDG codes for the particles in the vertex
   vector<long> first,second,third;
   for(unsigned int ix=0;ix<3;++ix) {
+    // Higgs WW
     first .push_back(  24  );
     second.push_back( -24  );
     third .push_back(id[ix]);
+	//Higgs ZZ
     first .push_back(  23  );
     second.push_back(  23  );
     third .push_back(id[ix]);
@@ -29,10 +32,10 @@ NMSSMWWHVertex::NMSSMWWHVertex()
   setList(first,second,third);
 }
 
-void NMSSMWWHVertex::doinit() {
+void NMSSMWWHVertex::doinit() throw(InitException) {
   // SM parameters
   _mw=getParticleData(ThePEG::ParticleID::Wplus)->mass();
-  double sw = sin2ThetaW();
+  double sw = generator()->standardModel()->sin2ThetaW();
   _zfact = 1./(1.-sw);
   sw=sqrt(sw);
   // NMSSM parameters
@@ -74,11 +77,11 @@ void NMSSMWWHVertex::Init() {
      " bosons with the Higgs bosons of the NMSSM");
 
 }
-
+//calulate couplings
 void NMSSMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr c) {
-  // gauge bosons
+  // ID of gauge bosons
   int ibos=abs(a->id());
-  // higgs
+  // ID of Higgs
   int ihiggs = (c->id()-25)/10;
   // first the overall normalisation
   if(q2!=_q2last) {
@@ -87,7 +90,7 @@ void NMSSMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr c) {
   }
   // higgs mixing factor
   Complex hmix = _cosb*(*_mixS)(ihiggs,0)+_sinb*(*_mixS)(ihiggs,1);
-  // coupling
+  // couplings
   if(ibos==24)      setNorm(_couplast*hmix);
   else if(ibos==23) setNorm(_couplast*hmix*_zfact);
   else {

@@ -16,12 +16,14 @@ using namespace ThePEG::Helicity;
 
 NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
 				   _q2last(0.*MeV2), _couplast(0.) {
-  // PDG codes for the particles
+  // PDG codes for the particles in the vertex
   vector<long> first,second,third;
   // codes for the neutral higgs
+  //CP even
   int ieven[3]={25,35,45};
+  //CP odd
   int iodd [2]={36,46};
-  // Z S P
+  // Z CP even CP odd
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {
       first.push_back(23);
@@ -29,19 +31,32 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
       third.push_back(iodd [iy]);
     }
   }
-  // W H+ S
+  // W H+ CP even
   for(unsigned int ix=0;ix<3;++ix) {
     first.push_back(-24);
     second.push_back(37);
     third.push_back(ieven[ix]);
   }
-  // W H+ P
+   // W+ H- CP even
+  for(unsigned int ix=0;ix<3;++ix) {
+    first.push_back(24);
+    second.push_back(-37);
+    third.push_back(ieven[ix]);
+  }
+  // W H+ CP odd
   for(unsigned int ix=0;ix<2;++ix) {
     first.push_back(-24);
     second.push_back(37);
     third.push_back(iodd[ix]);
   }
-  // charged higgs Z and photon
+    //W+ H- CP odd
+    for(unsigned int ix=0;ix<2;++ix) {
+    first.push_back(24);
+    second.push_back(-37);
+    third.push_back(iodd[ix]);
+  }
+  
+  // Charged higgs Z/gamma
   first.push_back(22);
   second.push_back(37);
   third.push_back(-37);
@@ -52,14 +67,14 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
   setList(first,second,third);
 }
 
-void NMSSMWHHVertex::doinit() {
+void NMSSMWHHVertex::doinit() throw(InitException) {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
     throw InitException() << "Must have the NMSSM Model in NMSSMFFHVertex::doinit()"
 			  << Exception::runerror;
   // sin theta_W
-  double sw2=sin2ThetaW();
+  double sw2=model->sin2ThetaW();
   _sw = sqrt(sw2);
   _cw = sqrt(1.-sw2);
   // get the mixing matrices
@@ -100,11 +115,11 @@ void NMSSMWHHVertex::Init() {
      " gauge boson with two Higgs bosons in the NMSSM.");
 
 }
-
+//calulate the couplings
 void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
-  // em coupling
+  // weak coupling
   if(q2!=_q2last) {
-    _couplast = electroMagneticCoupling(q2);
+    _couplast = weakCoupling(q2);
     _q2last=q2;
   }
   // gauge bosons
@@ -113,44 +128,46 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   int ih2 =c->id();
   Complex fact;
   if(ibos==ParticleID::Z0) {
-    fact = 0.5/_sw/_cw;
+  fact = 0.5/_cw;
     // Z H+ H-
     if(abs(ih1)==37) {
-      fact = 0.5*(sqr(_cw)-sqr(_sw));
-      if(ih1<0) fact *=-1.;
+      fact *=2*(sqr(_cw)-sqr(_sw));
+      if(ih1<0) fact *=-1.;  
     }
-    // Z S P
+    // Z CP even CP odd
     else {
       if(ih1%10==6) {
-	fact *=-1.;
+	fact *= -1.; 
 	swap(ih1,ih2);
       }
       int is = (ih1-25)/10;
       int ip = (ih2-36)/10;
-      fact *= Complex(0.,1.)*
-	(*_mixS)(is,0)*(*_mixP)(ip,0)-(*_mixS)(is,1)*(*_mixP)(ip,1);
+      fact *= Complex(0.,1.)*((*_mixS)(is,1)*(*_mixP)(ip,1)-(*_mixS)(is,0)*(*_mixP)(ip,0));
     }
   }
+  // gamma CP even CP odd
   else if(ibos==ParticleID::gamma) {
-    fact = ih1>0 ? 1. : -1;
+    fact = ih1>0 ? 1. : -1;  
   }
+  //Charged Higgs
   else {
-    fact = 0.5/_sw; 
+    fact = 0.5; 
     if(abs(ih2)==37) {
-      fact *=-1.;
+      fact *=-1.; 
       swap(ih1,ih2);
     }
-    if(ibos>0) fact*=-1;
-    // H+ S
+    if(ibos>0) fact*=-1; 
+    // H+ CP even
     if(ih2%5==0) {
-      int is = (ih1-25)/10;
-      fact *= -              (_sinb*(*_mixS)(is,0)-_cosb*(*_mixS)(is,1));
+      int is = (ih2-25)/10;
+      fact *= (_cosb*(*_mixS)(is,1)-_sinb*(*_mixS)(is,0));
     }
-    // H+ P
+    // H+ CP odd
     else {
-      int ip = (ih1-36)/10;
-      fact *= Complex(0.,1.)*(_sinb*(*_mixP)(ip,0)+_cosb*(*_mixP)(ip,1));
+      int ip = (ih2-36)/10;
+      fact *= Complex(0.,1.)*(_cosb*(*_mixP)(ip,1)+_sinb*(*_mixP)(ip,0));
     }
   }
+  //output the coupling
   setNorm(_couplast*fact);
 }

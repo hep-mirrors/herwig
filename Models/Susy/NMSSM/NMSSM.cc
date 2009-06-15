@@ -13,17 +13,17 @@
 using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
-  os << theHiggsAMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
+  os << theHiggsAMix << theNMNMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
      << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV) << _ffhvertex 
      << _wwhvertex << _whhvertex << _gogohvertex << _hhhvertex 
-     << _hssvertex;// << _gghvertex;
+     << _hssvertex << _gghvertex;
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
-  is >> theHiggsAMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
+  is >> theHiggsAMix >> theNMNMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
      >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV) >> _ffhvertex 
      >> _wwhvertex >> _whhvertex >> _gogohvertex >> _hhhvertex 
-     >> _hssvertex;// >> _gghvertex;
+     >> _hssvertex >> _gghvertex;
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -130,7 +130,28 @@ void NMSSM::createMixingMatrices() {
     if (name == "nmamix") {
       createMixingMatrix(theHiggsAMix,name,it->second.second,it->second.first);
     }
+	    if( name == "nmnmix" ){
+      createMixingMatrix(theNMNMix,name,it->second.second,it->second.first);
+    }
   }
-  // base class for neutralinos and charginos
+    // base class for neutralinos and charginos
   MSSM::createMixingMatrices();
 }
+
+void NMSSM::adjustMixingMatrix(long id) {
+  //get correct mixing matrix
+  switch(id) {
+  case 1000022 :
+  case 1000023 :
+  case 1000025 :
+  case 1000035 : 
+  case 1000045 : 
+    if( theNMNMix)
+      theNMNMix->adjustPhase(id);
+    else 
+      throw SetupException() << "SusyBase::adjustMixingMatrix - "
+			     << "The neutralino mixing matrix pointer "
+			     << "is null!" << Exception::runerror;
+				 break;
+				 }}
+

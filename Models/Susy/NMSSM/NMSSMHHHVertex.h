@@ -95,7 +95,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit();
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -222,16 +222,20 @@ private:
 
   /**
    * The value of the VEV of the higgs that couples to the down-type sector
-   * with the coupling factored out, i.e. \f$ 2M_W\cos\beta \f$
+   *  \f$ g*sqrt(2)M_W\cos\beta \f$
    */
-  Energy _v1;
+  Energy _vu;
 
   /**
    * The value of the VEV of the higgs that couples to the up-type sector
-   * with the coupling factored out i.e. \f$ 2M_W\sin\beta \f$
+   * i.e. \f$ g*sqrt(2)M_W\sin\beta \f$
    */
-  Energy _v2;
-
+  Energy _vd;
+  
+    /**
+   * The value of the VEV of the singlet higgs
+   */
+  Energy _s;
   /**
    * The scale at which this vertex was last evaluated 
    */
@@ -241,6 +245,8 @@ private:
    * The value of the EW coupling when it was last evaluated
    */
   double _glast;
+
+
 };
 
 }

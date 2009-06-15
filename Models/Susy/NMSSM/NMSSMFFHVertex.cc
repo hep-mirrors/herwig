@@ -19,7 +19,7 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
 				   _q2last(0.*MeV2), 
 				   _masslast(make_pair(0.*MeV,0*MeV)),
 				   _couplast(0.) {
-  // PDG codes for the particles
+  // PDG codes for the particles in vertex
   vector<long> first,second,third;
   // the quarks and neutral higgs
   int in[5]={25,35,45,36,46};
@@ -39,16 +39,30 @@ NMSSMFFHVertex::NMSSMFFHVertex() : _mw(0.*MeV), _sinb(0.), _cosb(0.),
     }
   }
   // the quarks  and the charged higgs
+  //H-
   for(int ix=0;ix<3;++ix) {
-    first.push_back(2*ix);
+    first.push_back(2*ix+2);
     second.push_back(-2*ix-1);
     third.push_back(-37);
+  }  
+  //H+
+   for(int ix=0;ix<3;++ix) {
+    first.push_back(-(2*ix+2));
+    second.push_back(2*ix+1);
+    third.push_back(37);
   }
-  // the leptons and the charged higgs
+// the leptons and the charged higgs
+//H-
   for(int ix=0;ix<3;++ix) {
     first.push_back(2*ix+12);
     second.push_back(-2*ix-11);
     third.push_back(-37);
+  }
+  //H+
+  for(int ix=0;ix<3;++ix) {
+    first.push_back(-(2*ix+12));
+    second.push_back(2*ix+11);
+    third.push_back(37);
   }
   setList(first,second,third);
 }
@@ -63,7 +77,7 @@ void NMSSMFFHVertex::persistentInput(PersistentIStream & is, int) {
      >> _sinb >> _cosb >> _tanb >> _sw >> _theSM;
 }
 
-void NMSSMFFHVertex::doinit() {
+void NMSSMFFHVertex::doinit() throw(InitException) {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
@@ -71,7 +85,7 @@ void NMSSMFFHVertex::doinit() {
 			  << Exception::runerror;
   _theSM = model;
   // sin theta_W
-  double sw2=sin2ThetaW();
+  double sw2=_theSM->sin2ThetaW();
   _sw = sqrt(sw2);
   // get the mixing matrices
   _mixS=model->CPevenHiggsMix();
@@ -106,14 +120,13 @@ void NMSSMFFHVertex::Init() {
      " of the Higgs bosons of the NMSSM to Standard Model fermions");
 
 }
-
+//calulate the couplings
 void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int) {
   int ihiggs=c->id();
   int id(abs(a->id()));
   Complex output(1.);
   // neutral Higgs
   if(ihiggs==25||ihiggs==35||ihiggs==45||ihiggs==36||ihiggs==46) {
-    // left and right couplings set to one
     if(_idlast.first!=id||q2!=_q2last) {
       _idlast.first=id;
       _masslast.first = _theSM->mass(q2,a);
@@ -133,7 +146,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
       output *= Complex(0.,-1.);
     }
   }
-  // charged higgs
+  // Charged higgs
   else if(abs(ihiggs)==37) {
     output*=-sqrt(2.);
     int id2=abs(b->id());
@@ -155,7 +168,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
 		      << "in NMSSMFFHVertex::setCoupling()"
 		      << Exception::runerror;
   }
-  // prefact
+  // prefactor
   if(q2!=_q2last) {
     _couplast = 0.5*weakCoupling(q2);
     _q2last=q2;

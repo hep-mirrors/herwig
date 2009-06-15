@@ -94,7 +94,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit();
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -140,6 +140,46 @@ private:
    */
   Energy _mz;
   
+   /**
+   * The product \f$\lambda \langle S\rangle \f$.
+   */
+  
+  Energy _lambdaVEV;
+  
+  /**
+   *  The coefficient of the trilinear \f$SH_2 H_1\f$ term in the superpotential
+   */
+  
+  double _lambda;
+  
+   /**
+   * The value of the VEV of the higgs that couples to the up-type sector
+   *  \f$ g*sqrt(2)M_W\cos\beta \f$
+   */
+  
+  Energy _v1;
+    /**
+   * The value of the VEV of the higgs that couples to the down-type sector
+   *  \f$ g*sqrt(2)M_W\cos\beta \f$
+   */
+   
+   Energy _v2;
+   
+ /**
+   * The top quark trilinear coupling
+   */
+  complex<Energy> _triTp;
+
+  /**
+   * The bottom quark trilinear coupling
+   */
+  complex<Energy> _triBt;
+  
+    /**
+   * The bottom quark trilinear coupling
+   */
+  complex<Energy> _triTa;
+  
   /**
    * A pointer to the top quark
    */
@@ -149,7 +189,15 @@ private:
    * A pointer to the bottom quark
    */
   tcPDPtr _bt;
+ /**
+   * A pointer to the charm quark
+   */
+  tcPDPtr _charm;
 
+  /**
+   * A pointer to the bottom quark
+   */
+  tcPDPtr _tau;
   /**
    * CP-even Higgs mixing matrix 
    */
@@ -169,6 +217,11 @@ private:
    * \f$\tilde{b}\f$ mixing matrix  
    */
   MixingMatrixPtr _mixQb;
+    /**
+   * \f$\tilde{tau}\f$ mixing matrix  
+   */
+  MixingMatrixPtr _mixQta;
+
 
   /**
    * \f$ \sin\beta\f$ 
@@ -196,6 +249,11 @@ private:
    * evaluated.
    */
   double _couplast;
+    /**
+   * The value of the weak coupling was last 
+   * evaluated.
+   */
+  double _coup;
   
   /**
    * The PDG code of the Higgs particle when the vertex was last evaluated 

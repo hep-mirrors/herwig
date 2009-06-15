@@ -21,6 +21,10 @@ inline const MixingMatrixPtr & NMSSM::CPoddHiggsMix() const {
   return theHiggsAMix;
 }
 
+inline const MixingMatrixPtr & NMSSM::NMneutralinoMix() const {
+  return theNMNMix;
+}
+
 inline double NMSSM::lambda() const {
   return _lambda;
 }
