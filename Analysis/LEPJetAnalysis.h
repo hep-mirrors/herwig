@@ -14,9 +14,6 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "Herwig++/Interfaces/KtJetInterface.h"
-#include "KtJet/KtJet.h"
-#include "KtJet/KtLorentzVector.h"
 
 namespace Herwig {
 
@@ -139,11 +136,6 @@ private:
    */
   HistogramPtr _y56;
   //@}
-
-  /**
-   *  The interface between Herwig++ and KtJet
-   */
-  Herwig::KtJetInterface _kint;
 
   /**
    *  Bins for the y fractions
@@ -277,7 +269,7 @@ struct ClassTraits<Herwig::LEPJetAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "libfastjet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

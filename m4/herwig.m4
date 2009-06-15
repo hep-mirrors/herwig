@@ -610,6 +610,7 @@ cat << _HW_EOF_ > config.herwig
 ***
 *** CLHEP:		$with_clhep
 *** KtJet:		$with_ktjet
+*** fastjet:		$with_fastjet
 ***
 *** Host:		$host
 *** CXX:		$CXXSTRING
