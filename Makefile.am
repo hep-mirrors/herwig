@@ -1,7 +1,7 @@
 SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
-	UnderlyingEvent Interfaces Analysis Looptools \
+	UnderlyingEvent Analysis Looptools \
 	lib src Doc Contrib
 
 noinst_HEADERS = Config/HepMCHelper.h

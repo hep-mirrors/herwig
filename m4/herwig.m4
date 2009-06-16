@@ -48,67 +48,6 @@ Update gcc if possible.
 fi
 ])
 
-dnl ##### CLHEP #####
-AC_DEFUN([HERWIG_CHECK_CLHEP],
-[
-AC_MSG_CHECKING([for CLHEP])
-AC_ARG_WITH(clhep,
-        AC_HELP_STRING([--with-clhep=DIR],[location of CLHEP installation]),
-        [],
-	[with_clhep=no])
-AC_MSG_RESULT([$with_clhep])
-CLHEPINCLUDE=""
-CLHEPPATH=""
-CLHEPLIB=""
-if test "x$with_clhep" != "xno"; then
-	CLHEPPATH=$with_clhep
-
-	AC_MSG_CHECKING([for CLHEPLIB])
-	if test -z "$CLHEPLIB"; then
-	  for filename in $CLHEPPATH/lib/libCLHEP-?.?.?.?.{so,dylib} $CLHEPPATH/lib/libCLHEP.{so,dylib}
-	  do
-		if test -e $filename; then
-		   CLHEPLIB=`basename $filename | sed -e 's/^lib/-l/' -e 's/\.so//' -e 's/\.dylib//'`
-		fi
-	  done
-	  if test -z "$CLHEPLIB"; then
-	      AC_MSG_RESULT([none])
-	      AC_MSG_ERROR([Cannot find libCLHEP at $CLHEPPATH/lib.])
-	  fi
-	fi
-	CLHEPLDFLAGS="-L$CLHEPPATH/lib -R$CLHEPPATH/lib"
-	AC_MSG_RESULT([$CLHEPLIB])
-
-	AC_MSG_CHECKING([for CLHEPINCLUDE]) 
-	if test -z "$CLHEPINCLUDE"; then
-		  CLHEPINCLUDE=-I$CLHEPPATH/include
-	fi
-	AC_MSG_RESULT([$CLHEPINCLUDE])
-
-	# Now lets see if the libraries work properly
-	oldLIBS="$LIBS"
-	oldLDFLAGS="$LDFLAGS"
-	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS $CLHEPLIB"
-	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
-	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE"
-	
-	# check CLHEP first
-	AC_MSG_CHECKING([that CLHEP works])
-	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <CLHEP/Random/Random.h>]],[[using namespace CLHEP; HepRandom r; r.flat();]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
-	AC_MSG_ERROR([CLHEP not OK. See 'config.log' for details.])
-	])
-	
-	LIBS="$oldLIBS"
-	LDFLAGS="$oldLDFLAGS"
-	CPPFLAGS="$oldCPPFLAGS"
-
-	AC_SUBST(CLHEPLIB)
-	AC_SUBST(CLHEPLDFLAGS)
-	AC_SUBST(CLHEPINCLUDE)
-fi
-])
-
 
 dnl ##### HEPMC #####
 AC_DEFUN([HERWIG_CHECK_HEPMC],
@@ -232,97 +171,6 @@ CPPFLAGS="$oldcppflags"
 AC_SUBST(THEPEGINCLUDE)
 ])
 
-dnl ##### KTJET #####
-AC_DEFUN([HERWIG_CHECK_KTJET],[
-AC_REQUIRE([HERWIG_CHECK_CLHEP])
-
-KTJETPATH=""
-KTJETLIBS=""
-KTJETINCLUDE=""
-LOAD_KTJET=""
-CREATE_KTJET="#create"
-
-AC_MSG_CHECKING([for KtJet])
-
-AC_ARG_WITH(ktjet,
-        AC_HELP_STRING([--with-ktjet=DIR],[location of KtJet installation]),
-        [],
-	[with_ktjet=no])
-
-
-if test "x$with_ktjet" = "xno"; then
-	AC_MSG_RESULT([not required])	
-else
-	if test -z "$CLHEPINCLUDE"; then
-		AC_MSG_RESULT([need CLHEP])
-		AC_MSG_ERROR([KtJet needs CLHEP headers. Please set --with-clhep.])
-	fi
-
-	AC_MSG_RESULT([required])
-	KTJETPATH="$with_ktjet"
-
-	AC_MSG_CHECKING([KtJet library name is])
-	if test -f "$KTJETPATH/lib/libKtJet.a"; then
-		ktjetname=KtJet
-		AC_MSG_RESULT([KtJet])
-	elif test -f "$KTJETPATH/lib/libKtEvent.a"; then
-		ktjetname=KtEvent
-		AC_MSG_RESULT([KtEvent])
-	else
-		AC_MSG_RESULT([?])
-		AC_MSG_ERROR([No KtJet library found in $KTJETPATH/lib.])
-	fi
-
-	ktjetrpath=""
-	if test -e "$KTJETPATH/lib/lib$ktjetname.so"; then
-		ktjetrpath="-R$KTJETPATH/lib"
-	fi
-
-	oldlibs=$LIBS
-	oldcxxflags=$CXXFLAGS
-	LIBS=""
-	CXXFLAGS="-L$KTJETPATH/lib $ktjetrpath -l$ktjetname $CLHEPLDFLAGS"
-	AC_CHECK_LIB([$ktjetname],[abort],
-		     [],
-		     [
-			AC_MSG_ERROR([lib$ktjename not working. See 'config.log' for details.])
-		     ],
-		     [$CLHEPLIB])   
-	KTJETLIBS="$CXXFLAGS $LIBS"
-	LIBS=$oldlibs
-	CXXFLAGS=$oldcxxflags
-
-	AC_SUBST(KTJETLIBS)
-	
-	AC_MSG_CHECKING([KtJet headers])
-	if test -f "$KTJETPATH/include/KtJet/KtJet.h"; then
-		KTJETINCLUDE="-I$KTJETPATH/include"
-	elif test -f "$KTJETPATH/KtJet/KtJet.h"; then
-		KTJETINCLUDE="-I$KTJETPATH"
-	else
-		AC_MSG_RESULT([not found.])
-		AC_MSG_ERROR([No KtJet headers. Please set KTJETINCLUDE explicitly.])
-	fi
-	AC_MSG_RESULT([$KTJETINCLUDE])
-	KTJETINCLUDE="$KTJETINCLUDE $CLHEPINCLUDE"
-
-	oldcppflags="$CPPFLAGS"
-	CPPFLAGS="$CPPFLAGS $KTJETINCLUDE"
-	AC_CHECK_HEADER([KtJet/KtJet.h],[],
-	[AC_MSG_ERROR([Problem with KtJet headers in $KTJETINCLUDE.])])
-	CPPFLAGS="$oldcppflags"
-
-	AC_SUBST(KTJETINCLUDE)
-	
-	LOAD_KTJET="read KtJetAnalysis.in"
-	CREATE_KTJET="create"
-	AC_SUBST(LOAD_KTJET)
-	AC_SUBST(CREATE_KTJET)
-fi
-
-AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
-])
-
 dnl ##### FastJet #####
 AC_DEFUN([HERWIG_CHECK_FASTJET],[
 
@@ -330,6 +178,7 @@ FASTJETPATH=""
 FASTJETLIBS=""
 FASTJETINCLUDE=""
 LOAD_FASTJET=""
+CREATE_FASTJET="#create"
 
 AC_MSG_CHECKING([for FastJet])
 
@@ -362,6 +211,8 @@ else
 			AC_MSG_RESULT([not found, please create libfastjet.so from $FASTJETLIB/libfastjet.a])
 			AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
 		fi
+		CREATE_FASTJET="create"
+		LOAD_FASTJET="library HwLEPJetAnalysis.so"
 		AC_MSG_RESULT([$FASTJETLIB/libfastjet.so])
 	else
 		AC_MSG_RESULT([?])
@@ -390,6 +241,8 @@ else
 	AC_MSG_RESULT([$FASTJETINCLUDE])
 
 	AC_SUBST(FASTJETINCLUDE)
+	AC_SUBST(CREATE_FASTJET)
+	AC_SUBST(LOAD_FASTJET)
 
 fi
 
@@ -608,9 +461,7 @@ cat << _HW_EOF_ > config.herwig
 ***
 *** HepMC:		$with_hepmc
 ***
-*** CLHEP:		$with_clhep
-*** KtJet:		$with_ktjet
-*** fastjet:		$with_fastjet
+*** Fastjet:		$with_fastjet
 ***
 *** Host:		$host
 *** CXX:		$CXXSTRING

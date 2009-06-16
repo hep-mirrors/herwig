@@ -37,6 +37,6 @@ library HwUED.so
 library HwVMDecay.so
 library HwSatPDF.so
 library HwIncomingPhotonEvolver.so
-@LOAD_KTJET@
+@LOAD_FASTJET@
 @LOAD_HEPMC@
 doxygendump Herwig:: AllInterfaces.h

@@ -79,8 +79,6 @@ HERWIG_PDF_PATH
 
 HERWIG_CHECK_HEPMC
 
-HERWIG_CHECK_KTJET
-
 HERWIG_CHECK_FASTJET
 
 HERWIG_VERSIONSTRING
@@ -106,7 +104,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
 		Models/UED/Makefile
-		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
