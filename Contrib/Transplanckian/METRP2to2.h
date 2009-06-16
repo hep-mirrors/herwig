@@ -30,7 +30,7 @@ public:
   /**
    * The default constructor.
    */
-  inline METRP2to2();
+  METRP2to2();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -54,13 +54,12 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
-  virtual double ME() const;
-  virtual double bccalc(double s) const;
-  virtual double Any(double s, double t) const;
-  virtual double fpoint(int n, double x) const;
-  virtual double fny(double n, double bc, double q) const;
-  virtual double interp(double y, double f0, double f1, double y0, double y1) const;
-  virtual double fnyasympt(double n, double y) const;
+  InvEnergy bccalc(Energy2 s) const;
+  double A_ny(Energy2 s, Energy2 t) const;
+  double fpoint(double x) const;
+  double f_ny(double y) const;
+  double interp(double y, double f0, double f1, double y0, double y1) const;
+  double fnyasympt(double y) const;
   /**
    * Return the scale associated with the last set phase space point.
    */
@@ -91,6 +90,7 @@ public:
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
   //@}
+
 
 
 public:
@@ -171,7 +171,7 @@ private:
 
   unsigned int _ndim;
 
-  double _planckmass;
+  Energy _planckmass;
 
   /**
    *  Processes to include
@@ -182,12 +182,6 @@ private:
    *  Colour flow
    */
   mutable unsigned int _flow;
-  
-
-  /**
-   *  Diagram
-   */
-  mutable unsigned int _diagram;
 };
 
 }
