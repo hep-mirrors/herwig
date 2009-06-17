@@ -89,27 +89,27 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
       second.push_back(-2000000 - l);
       third.push_back(1000000 + l);
     }
-	  //~tau LL/RR
-	  first.push_back(odd[h]);
-      second.push_back(-1000015);
-      third.push_back(1000015); 
-	  first.push_back(odd[h]);
-      second.push_back(-2000015);
-      third.push_back(2000015); 
-	  //~bot LL/RR
-	  first.push_back(odd[h]);
-      second.push_back(-1000005);
-      third.push_back(1000005); 
-	  first.push_back(odd[h]);
-      second.push_back(-2000005);
-      third.push_back(2000005);
-	  first.push_back(odd[h]);
-	  //~top LL/RR
-      second.push_back(-1000006);
-      third.push_back(1000006); 
-	  first.push_back(odd[h]);
-      second.push_back(-2000006);
-      third.push_back(2000006);
+    //~tau LL/RR
+    first.push_back(odd[h]);
+    second.push_back(-1000015);
+    third.push_back(1000015); 
+    first.push_back(odd[h]);
+    second.push_back(-2000015);
+    third.push_back(2000015); 
+    //~bot LL/RR
+    first.push_back(odd[h]);
+    second.push_back(-1000005);
+    third.push_back(1000005); 
+    first.push_back(odd[h]);
+    second.push_back(-2000005);
+    third.push_back(2000005);
+    first.push_back(odd[h]);
+    //~top LL/RR
+    second.push_back(-1000006);
+    third.push_back(1000006); 
+    first.push_back(odd[h]);
+    second.push_back(-2000006);
+    third.push_back(2000006);
   }
   //charged higgs
   //squarks
@@ -131,7 +131,6 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
     first.push_back(-37);
     second.push_back(-2*q - 1999999);
     third.push_back(2*q + 1000000);
-
     //H+
     //LL
     first.push_back(37);
@@ -152,18 +151,27 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   }
   //sleptons
   //easier as there are no right handed sneutrinos
-  for(long l = 11; l < 15; l +=2 ) {
+  for(long l = 11; l <= 15; l +=2 ) {
     //H-
     //LL
     first.push_back(-37);
     second.push_back(-l - 1000000);
+    third.push_back(l + 1000001);
+    //RL
+    first.push_back(-37);
+    second.push_back(-l - 2000000);
     third.push_back(l + 1000001);
     //H+
     //LL
     first.push_back(+37);
     second.push_back(-l - 1000001);
     third.push_back(l + 1000000);
+    //RL
+    first.push_back(+37);
+    second.push_back(-l - 1000001);
+    third.push_back(l + 2000000);
   }
+  // 
   setList(first, second, third);
 }
 
@@ -193,7 +201,7 @@ void NMSSMHSFSFVertex::Init() {
 
 }
 
-void NMSSMHSFSFVertex::doinit() throw(InitException) {
+void NMSSMHSFSFVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
   if( !nmssm )
@@ -219,9 +227,9 @@ void NMSSMHSFSFVertex::doinit() throw(InitException) {
   _lambda = nmssm->lambda();
   _lambdaVEV = nmssm->lambdaVEV();
 
-
-  _sw = sqrt(_theSM->sin2ThetaW());
+  _sw = sin2ThetaW();
   _cw = sqrt( 1. - _sw);
+  _sw = sqrt(_sw);
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
 
@@ -239,12 +247,8 @@ void NMSSMHSFSFVertex::doinit() throw(InitException) {
 
 }
 
-		
-
 void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 				   tcPDPtr part2, tcPDPtr part3) {
-
-
   long id1(abs(part1->id())), id2(abs(part2->id())), id3(abs(part3->id())); 
   long higgs(0), isf1(0), isf2(0);
   if( id1 == 25 || id1 == 35 || id1 == 45 || id1 == 36 || id1 == 46 || 
@@ -267,208 +271,202 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   }
   else {
     throw HelicityConsistencyError()
-	  << "NMSSMHSFSFVertex::setCoupling - There is no higgs particle "
-	  << "in this vertex. " << part1->id() << " " << part2->id() << " "
-	  << part3->id() << Exception::warning;
+      << "NMSSMHSFSFVertex::setCoupling - There is no higgs particle "
+      << "in this vertex. " << part1->id() << " " << part2->id() << " "
+      << part3->id() << Exception::runerror;
     return;
   }
   
-   if( q2 != _q2last ) {
+  if( q2 != _q2last ) {
     _q2last = q2;
     _couplast = weakCoupling(q2);
   }
  
-  Complex fact(0.);
-    //charged higgs
+  //charged higgs
   if( higgs == 37 ) {
-    fact = chargedHiggs(q2, isf1, isf2);
+    setNorm(_couplast*chargedHiggs(q2, isf1, isf2));
+    return;
   }
-  else { 
-    unsigned int alpha = ( isf1 > 2000000 ) ? 1 : 0;
-    unsigned int beta = ( isf2 > 2000000 ) ? 1 : 0;
-    long smid = ( alpha == 0 ) ? isf1 - 1000000 : isf1 - 2000000;
-    if( q2 != _q2last || smid != _idlast.first) {
-	
-      _idlast.first = smid;
-      tcPDPtr p = getParticleData(smid);
-      _masslast.first = _theSM->mass(q2, p);
+  // neutral higgs
+  // L/R states of the sfermions
+  unsigned int alpha = ( isf1 > 2000000 ) ? 1 : 0;
+  unsigned int beta  = ( isf2 > 2000000 ) ? 1 : 0;
+  // id nad mass of corresponding SM fermion
+  long smid = ( alpha == 0 ) ? isf1 - 1000000 : isf1 - 2000000;
+  if( q2 != _q2last || smid != _idlast.first) {
+    _idlast.first = smid;
+    _masslast.first = _theSM->mass(q2, getParticleData(smid));
+  }
+  double f1 = _masslast.first/_mw;
+  complex<Energy> af(ZERO);
+  Complex m1a(0.), m1b(0.), m2a(0.), m2b(0.);
+  // mixing for down type squarks and charged sleptons
+  if( smid % 2 != 0 ) {
+    f1 /= _cb;
+    // sbottom
+    if( smid == 5 ) {
+      m1a = (*_mixBt)(alpha, 0);
+      m1b = (*_mixBt)(alpha, 1);
+      m2a = (*_mixBt)(beta , 0) ;
+      m2b = (*_mixBt)(beta , 1);
+      af = _triBt;
     }
-	
-    double f1 = _masslast.first/_mw;
-    complex<Energy> af(0.*MeV);
-    Complex m1a(0.), m1b(0.), m2a(0.), m2b(0.);
-    if( smid % 2 != 0 ) {
-      f1 /= _cb;
-      if( smid == 5 ) {
-	m1a =  (*_mixBt)(alpha, 0);
-	m1b =  (*_mixBt)(alpha, 1);
-	m2a = (*_mixBt)(beta, 0) ;
-	m2b =  (*_mixBt)(beta, 1);
-	af = _triBt;
-      }
-      else if( smid == 15 ) {
-	m1a =  (*_mixTa)(alpha, 0);
-	m1b =  (*_mixTa)(alpha, 1);
-	m2a = (*_mixTa)(beta, 0) ;
-	m2b =  (*_mixTa)(beta, 1);
-	af = _triTa;
-      }
-      else {
-	m1a = (alpha == 0) ? 1. : 0.;
-	m1b = (alpha == 0) ? 0. : 1.;
-	m2a = (beta == 0) ? 1. : 0.;
-	m2b = (beta == 0) ? 0. : 1.;
-	af = 0.*MeV;
-      }
+    // stau
+    else if( smid == 15 ) {
+      m1a = (*_mixTa)(alpha, 0);
+      m1b = (*_mixTa)(alpha, 1);
+      m2a = (*_mixTa)(beta , 0) ;
+      m2b = (*_mixTa)(beta , 1);
+      af = _triTa;
     }
+    // 1st 2 generations
     else {
-      f1 /= _sb;
-      if( smid == 6 ) {	  
-	m1a =  (*_mixTp)(alpha, 0);
-	m1b = (*_mixTp)(alpha, 1);
-	m2a = (*_mixTp)(beta, 0);
-	m2b = (*_mixTp)(beta, 1);
-	af = _triTp;
-      }
-      else {
-	m1a = (alpha == 0) ? 1. : 0.;
-	m1b = (alpha == 0) ? 0. : 1.;
-	m2a = (beta == 0) ? 1. : 0.;
-	m2b = (beta == 0) ? 0. : 1.;
-	af = 0.*MeV;
-      }
+      m1a = (alpha == 0) ? 1. : 0.;
+      m1b = (alpha == 0) ? 0. : 1.;
+      m2a = (beta  == 0) ? 1. : 0.;
+      m2b = (beta  == 0) ? 0. : 1.;
+      af = ZERO;
     }
-    if( higgs == 25 || higgs == 35 || higgs == 45 ) {
-      int iloc = (higgs - 25)/10;
-      Complex f2 = 0.5*_mz*(-_cb*(*_mixS)(iloc,0) + _sb*(*_mixS)(iloc,1))/_cw
-	* UnitRemoval::InvE;
-      if( smid % 2 != 0 ) {
-	  
-	double ef = (smid < 7) ? 1./3. : 1.;
-
-	fact = - f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b)
-		   - f1*_masslast.first*UnitRemoval::InvE*(*_mixS)(iloc,0)*(m1a*m2a + m1b*m2b) 
-	       - 0.5*f1*Complex(( _lambdaVEV*(*_mixS)(iloc,1) 
-		   + _lambda*_v2*(*_mixS)(iloc,2)/_couplast 
-		   +  af*(*_mixS)(iloc,0)) * 
-	       (m2a*m1b + m1a*m2b) * UnitRemoval::InvE);
-      }
-      else {
-	double ef = (smid < 7) ? 2./3. : 0.;
-
-	fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
-	       - f1*_masslast.first*UnitRemoval::InvE*(*_mixS)(iloc,1)*(m1a*m2a + m1b*m2b)  
-	       -  0.5*f1*Complex(( _lambdaVEV*(*_mixS)(iloc,0) 
-		   + _lambda*_v1*(*_mixS)(iloc,2)/_couplast
-		   +  af*(*_mixS)(iloc,1) ) *
-	      (m2a*m1b + m1a*m2b) * UnitRemoval::InvE);
-		
-      }
-    }
-    //CP-odd
-    else if( higgs == 36 || higgs == 46 ) {
-      int iloc = (higgs - 36)/10;
-      Complex f2 = (0.5*_mz*(-_cb*(*_mixP)(iloc,0)
-	              + _sb*(*_mixP)(iloc,1))/_cw)*UnitRemoval::InvE;
-	        if( smid % 2 != 0 ) {
-	  double ef = (smid < 7) ? 1./3. : 1.;
-
-	  
-	  fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
-			- f1*_masslast.first*UnitRemoval::InvE*(*_mixP)(iloc,0)*(m1a*m2a + m1b*m2b)  
-	        -  0.5*f1*Complex(( _lambdaVEV*(*_mixP)(iloc,1) 
-			+ _lambda*_v2*(*_mixP)(iloc,2)/_couplast
-			- af*(*_mixP)(iloc,0) ) *
-			(m2a*m1b + m1a*m2b) * UnitRemoval::InvE);
-	fact *= Complex(0, 1.0);
-
-      }
-      else {
-	double ef = (smid < 7) ? 2./3. : 0.;
-			  
-	  fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
-	         - f1*_masslast.first*UnitRemoval::InvE*(*_mixP)(iloc,1)*(m1a*m2a + m1b*m2b)  
-	         -  0.5*f1*Complex(( _lambdaVEV*(*_mixP)(iloc,0) 
-			 + _lambda*_v1*(*_mixP)(iloc,2)/_couplast
-			 - af*(*_mixP)(iloc,1) ) *
-			(m2a*m1b + m1a*m2b) * UnitRemoval::InvE);
-				
-	fact *=Complex(0,1.0);	
-	  }
-    }
-	
   }
-  
-  setNorm(_couplast*fact);
+  // mixing for up type squarks and sneutrions
+  else {
+    f1 /= _sb;
+    // stop
+    if( smid == 6 ) {	  
+      m1a = (*_mixTp)(alpha, 0);
+      m1b = (*_mixTp)(alpha, 1);
+      m2a = (*_mixTp)(beta , 0);
+      m2b = (*_mixTp)(beta , 1);
+      af = _triTp;
+    }
+    // everything else
+    else {
+      m1a = (alpha == 0) ? 1. : 0.;
+      m1b = (alpha == 0) ? 0. : 1.;
+      m2a = (beta == 0) ? 1. : 0.;
+      m2b = (beta == 0) ? 0. : 1.;
+      af = 0.*MeV;
+    }
+  }
+  // scalar higgs bosons
+  complex<Energy> fact(ZERO);
+  if( higgs == 25 || higgs == 35 || higgs == 45 ) {
+    int iloc = (higgs - 25)/10;
+    complex<Energy> f2 = 0.5*_mz*( - _cb*(*_mixS)(iloc,0) 
+				   + _sb*(*_mixS)(iloc,1))/_cw;
+
+    // down type squarks and charged sleptons
+    if( smid % 2 != 0 ) {
+      double ef = (smid < 7) ? 1./3. : 1.;
+      fact = - f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b)
+	- f1*_masslast.first*(*_mixS)(iloc,0)*(m1a*m2a + m1b*m2b) 
+	- 0.5*f1*(( - _lambdaVEV*(*_mixS)(iloc,1) 
+		    - _lambda*_v2*(*_mixS)(iloc,2)/_couplast 
+		    +  af*(*_mixS)(iloc,0)) * 
+		  (m2a*m1b + m1a*m2b) );
+    }
+    // up type squarks and sneutrinos
+    else {
+      double ef = (smid < 7) ? 2./3. : 0.;
+      fact = -f2*( (1. - 2.*ef*sqr(_sw))*m1a*m2a + 2.*ef*sqr(_sw)*m1b*m2b )
+	- f1*_masslast.first*(*_mixS)(iloc,1)*(m1a*m2a + m1b*m2b)  
+	-  0.5*f1*(( - _lambdaVEV*(*_mixS)(iloc,0) 
+		     - _lambda*_v1*(*_mixS)(iloc,2)/_couplast
+		     +  af*(*_mixS)(iloc,1) ) *
+		   (m2a*m1b + m1a*m2b));
+    }
+  }
+  // pseudo scalar
+  else if( higgs == 36 || higgs == 46 ) {
+    int iloc = (higgs - 36)/10;
+    // down type squarks and charged sleptons
+    if( smid % 2 != 0 ) {
+      fact = -  0.5*f1*(m2a*m1b + m1a*m2b)*
+	( - _lambdaVEV*(*_mixP)(iloc,1) 
+	  - _lambda*_v2*(*_mixP)(iloc,2)/_couplast
+	  - af*(*_mixP)(iloc,0) );
+    }
+    // up-type squarks and sneutrinos
+    else {
+      fact =    0.5*f1*(m2a*m1b + m1a*m2b)*
+	( - _lambdaVEV*(*_mixP)(iloc,0) 
+	  - _lambda*_v1*(*_mixP)(iloc,2)/_couplast
+	  - af*(*_mixP)(iloc,1));
+    }
+    fact *= Complex(0, 1.0);
+  }
+  setNorm(_couplast*fact*UnitRemoval::InvE);
 }
 
 Complex NMSSMHSFSFVertex::chargedHiggs(Energy2 q2, long id1, long id2) {
   //have id1 as up-type
-  if( id1 % 2 != 0)
-    swap(id1, id2);
+  if( id1 % 2 != 0) swap(id1, id2);
+  // sfermion L/R states
   unsigned int alpha = ( id1/1000000 == 2 ) ? 1 : 0;
-  unsigned int beta = ( id2/1000000 == 2 ) ? 1 : 0;
-  
+  unsigned int beta  = ( id2/1000000 == 2 ) ? 1 : 0;
+  // type of quarks
   long utype = (alpha == 0) ? id1 - 1000000 : id1 - 2000000;
-  long dtype = (beta == 0) ? id2 - 1000000 : id2 - 2000000;
+  long dtype = ( beta == 0) ? id2 - 1000000 : id2 - 2000000;
+  // compute the running masses
   if( q2 != _q2last || id1 != _idlast.first || id2 != _idlast.second) {
-    _idlast.first = id1;
+    _idlast.first  = id1;
     _idlast.second = id2;
-    tcPDPtr p = getParticleData(utype);
-    _masslast.first = _theSM->mass(q2, p);
-    p = getParticleData(dtype);
-    _masslast.second = _theSM->mass(q2, p);
+    _masslast.first  = _theSM->mass(q2, getParticleData(utype) );
+    _masslast.second = _theSM->mass(q2, getParticleData(dtype) );
   }
   Energy2 facta = 2.*sqr(_mw)*_sb*_cb;
-  complex<Energy> coupling(0.*MeV);
+  complex<Energy2> coupling(ZERO);
+  // sleptons
   if( dtype == 11 || dtype == 13 || dtype == 15) {
-  Complex l1b =  0.;
-  Complex l2b = 0.;
-  complex<Energy> tri(0.*MeV);
-  if (dtype == 11 || dtype == 13){
-     l1b = (beta == 0) ? 1.0 : 0.0;
-     l2b = (beta == 0) ? 0.0 : 1.0;
-	}
+    Complex l1b = 0., l2b = 0.;
+    complex<Energy> tri(ZERO);
+    // 1st 2 generations
+    if (dtype == 11 || dtype == 13) {
+      l1b = (beta == 0) ? 1.0 : 0.0;
+      l2b = (beta == 0) ? 0.0 : 1.0;
+    }
+    // stau
     else {
-	 l1b = (*_mixTa)(beta, 0) ;
-     l2b = (*_mixTa)(beta, 1);
+      l1b = (*_mixTa)(beta, 0) ;
+      l2b = (*_mixTa)(beta, 1);
       tri = _triTa;
     }
-	    coupling = ( l1b*(sqr(_masslast.second)*_tb - facta) 
-		 + l2b*_masslast.second*(tri*_tb - _lambdaVEV) )/_mw/sqrt(2.); 
+    coupling = ( l1b*(sqr(_masslast.second)*_tb - facta) +
+		 l2b*_masslast.second*(tri*_tb + _lambdaVEV) );
   }
+  // squarks
   else {
     Complex q1a(0.0), q1b(0.0), q2a(0.0), q2b(0.0);
-    complex<Energy> triD(0.*MeV), triU(0.*MeV);
-	
-    if( utype == 2 || utype == 4 || utype == 6) {
-	  if(utype == 6){
-	  q1a =  (*_mixTp)(alpha, 0) ;
+    complex<Energy> triD(ZERO), triU(ZERO);
+    // up-type bit
+    // stop
+    if(utype == 6){
+      q1a =  (*_mixTp)(alpha, 0) ;
       q2a =  (*_mixTp)(alpha, 1);
-	  triU = _triTp;
-	  }
-	  else{
+      triU = _triTp;
+    }
+    // light
+    else{
       q1a = (alpha == 0) ? 1.0 : 0.0;
       q2a = (alpha == 0) ? 0.0 : 1.0;
-      }
-	}  
-
-    if( dtype == 1 || dtype == 3 || utype == 5){ 
-	  if(utype == 5){
-	  q1b =  (*_mixBt)(beta, 0) ;
+    }
+    // down-type bit
+    // sbottom
+    if(utype == 5){
+      q1b =  (*_mixBt)(beta, 0) ;
       q2b =  (*_mixBt)(beta, 1);
-	  }
-	  else{
+    }
+    // light
+    else{
       q1b = (beta == 0) ? 1.0 : 0.0;
       q2b = (beta == 0) ? 0.0 : 1.0;
-      }
     }
     Energy mfu = _masslast.first;
     Energy mfd = _masslast.second;
     coupling = ( q1a*q1b*((sqr(mfd)*_tb + sqr(mfu)/_tb) - facta)
 		 + q2a*q2b*mfu*mfd*(_tb + (1./_tb))
-		 + q1a*q2b*mfd*(triD*_tb - _lambdaVEV)
-		 + q2a*q1b*mfu*(triU/_tb - _lambdaVEV))/_mw/sqrt(2.);
+		 + q1a*q2b*mfd*(triD*_tb + _lambdaVEV)
+		 + q2a*q1b*mfu*(triU/_tb + _lambdaVEV));
   }
-  return coupling * UnitRemoval::InvE;
+  return coupling * UnitRemoval::InvE/_mw/sqrt(2.);
 }

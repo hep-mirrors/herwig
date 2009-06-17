@@ -77,7 +77,7 @@ void NMSSMFFHVertex::persistentInput(PersistentIStream & is, int) {
      >> _sinb >> _cosb >> _tanb >> _sw >> _theSM;
 }
 
-void NMSSMFFHVertex::doinit() throw(InitException) {
+void NMSSMFFHVertex::doinit() {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
