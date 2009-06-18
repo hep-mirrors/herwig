@@ -24,13 +24,10 @@ class NMSSMHHHVertex: public SSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   NMSSMHHHVertex();
-  //@}
 
 public:
 
@@ -95,7 +92,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  virtual void doinit() throw(InitException);
+  virtual void doinit();
   //@}
 
 private:
@@ -236,6 +233,7 @@ private:
    * The value of the VEV of the singlet higgs
    */
   Energy _s;
+
   /**
    * The scale at which this vertex was last evaluated 
    */
@@ -245,7 +243,6 @@ private:
    * The value of the EW coupling when it was last evaluated
    */
   double _glast;
-
 
 };
 

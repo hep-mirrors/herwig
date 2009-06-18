@@ -20,57 +20,54 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _vd(0.*MeV), _s(0.*MeV), _q2last(0.*MeV2),
 				   _glast(0.) {
   vector<long> first, second, third;
-	// PDG codes for the particles in vertex _vd
-    //CP-even Higgs
-	first.push_back(25);
-    second.push_back(35);
-	third.push_back(45);
-    for( unsigned int i = 25; i < 45; i += 10 ) {
+  // PDG codes for the particles in vertex _vd
+  //CP-even Higgs
+  first.push_back(25);
+  second.push_back(35);
+  third.push_back(45);
+  for( unsigned int i = 25; i <= 45; i += 10 ) {
     first.push_back(i);
-	second.push_back(i);
-	third.push_back(25);
+    second.push_back(i);
+    third.push_back(25);
     first.push_back(i);
-	second.push_back(i);
-	third.push_back(35);
+    second.push_back(i);
+    third.push_back(35);
     first.push_back(i);
-	second.push_back(i);
-	third.push_back(45);
+    second.push_back(i);
+    third.push_back(45);
     //Charged Higgs
     first.push_back(i);
-	second.push_back(37);
-	third.push_back(-37);
+    second.push_back(37);
+    third.push_back(-37);
     //CP-odd Higgs
     first.push_back(i);
-	second.push_back(36);
-	third.push_back(36);
+    second.push_back(36);
+    third.push_back(36);
     first.push_back(i);
-	second.push_back(36);
-	third.push_back(46);
+    second.push_back(36);
+    third.push_back(46);
     first.push_back(i);
-	second.push_back(46);
-	third.push_back(36);
+    second.push_back(46);
+    third.push_back(36);
     first.push_back(i);
-	second.push_back(46);
-	third.push_back(46);
+    second.push_back(46);
+    third.push_back(46);
   }
   setList(first, second, third);
 }
 
-void NMSSMHHHVertex::doinit() throw(InitException) {
+void NMSSMHHHVertex::doinit() {
   generator()->standardModel() = generator()->standardModel();
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if( !nmssm ) 
     throw InitException() << "NMSSMHHHVertex::doinit - The model object is"
 			  << "not the NMSSM object."
-			  << Exception::runerror;
-  
+			  << Exception::runerror;  
   //SM parameters
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
   _sw2 = sin2ThetaW(); 
   _cw = sqrt(1. - _sw2);
- 
-  
   //NMSSM parameters
   _mixS = nmssm->CPevenHiggsMix();
   _mixP = nmssm->CPoddHiggsMix();
@@ -86,7 +83,6 @@ void NMSSMHHHVertex::doinit() throw(InitException) {
   double beta = atan(nmssm->tanBeta());
   _sb = sin(beta);
   _cb = cos(beta);
-  
   _vd = sqrt(2)*_mw*_cb;
   _vu = sqrt(2)*_mw*_sb;
   _s  = _lambdaVEV/_lambda;
@@ -116,9 +112,10 @@ ClassDescription<NMSSMHHHVertex> NMSSMHHHVertex::initNMSSMHHHVertex;
 void NMSSMHHHVertex::Init() {
 
   static ClassDocumentation<NMSSMHHHVertex> documentation
-    ("There is the triple Higgs coupling in the NMSSM.");
+    ("This is the triple Higgs coupling in the NMSSM.");
 
 }
+
 //calulate couplings
 void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2, 
 				 tcPDPtr p3) {
@@ -140,7 +137,6 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
   }
   //define VEV's
   double rt = sqrt(0.5);
-
   complex<Energy> coupling;
   
   //CP even Higgs
@@ -148,19 +144,19 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
     unsigned int a = (higgs[0] - 25)/10;
     unsigned int b = (higgs[1] - 25)/10;
     unsigned int c = (higgs[2] - 25)/10;
-
-  coupling = sqr(_lambda)*rt*(_vu*(usMix(a,b,c,1,0,0) + usMix(a,b,c,1,2,2))/_glast 
-			+ _vd*(usMix(a,b,c,0,1,1) + usMix(a,b,c,0,2,2))/_glast
-			+ _s*(usMix(a,b,c,2,1,1) + usMix(a,b,c,2,0,0)))
-			- _lambda*_kappa*rt*(_vu*usMix(a,b,c,2,0,2)/_glast
-			+ _vd*usMix(a,b,c,2,1,2)/_glast + 2.*_s*usMix(a,b,c,1,0,2))
-			+ sqr(_kappa)/rt*_s*usMix(a,b,c,2,2,2)
-			-_lambda*_theAl*rt*usMix(a,b,c,1,0,2)
-			+ _kappa*_theAk*rt/3.*usMix(a,b,c,2,2,2)
-			+ sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(usMix(a,b,c,1,1,1)
-			- usMix(a,b,c,1,0,0))/_glast - _vd*(usMix(a,b,c,0,1,1)
-			- usMix(a,b,c,0,0,0))/_glast);
-	  
+    coupling = 
+      sqr(_lambda)*rt*(_vu*(usMix(a,b,c,1,0,0) + usMix(a,b,c,1,2,2))/_glast 
+		       + _vd*(usMix(a,b,c,0,1,1) + usMix(a,b,c,0,2,2))/_glast
+		       + _s*(usMix(a,b,c,2,1,1) + usMix(a,b,c,2,0,0)))
+      - _lambda*_kappa*rt*(_vu*usMix(a,b,c,2,0,2)/_glast
+			   + _vd*usMix(a,b,c,2,1,2)/_glast + 2.*_s*usMix(a,b,c,1,0,2))
+      + sqr(_kappa)/rt*_s*usMix(a,b,c,2,2,2)
+      -_lambda*_theAl*rt*usMix(a,b,c,1,0,2)
+      + _kappa*_theAk*rt/3.*usMix(a,b,c,2,2,2)
+      + sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(usMix(a,b,c,1,1,1) -
+					   usMix(a,b,c,1,0,0))/_glast - 
+				      _vd*(usMix(a,b,c,0,1,1) -
+					   usMix(a,b,c,0,0,0))/_glast);
   }
   //CP even, CP odd Vertex
   else if(ns == 1 && np == 2) {
@@ -180,23 +176,24 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
       b = (higgs[0] - 36)/10;
       c = (higgs[1] - 36)/10;
     }
-
-	
- coupling =	sqr(_lambda)*rt*(_vu*(upMix(a,b,c,1,0,0) + upMix(a,b,c,1,2,2))/_glast 
-		    + _vd*(upMix(a,b,c,0,1,1) + upMix(a,b,c,0,2,2))/_glast
-			+ _s*(upMix(a,b,c,2,1,1) + upMix(a,b,c,2,0,0)))
-			+ _lambda*_kappa*rt*(_vu*(upMix(a,b,c,0,2,2) 
-			- 2.*upMix(a,b,c,2,0,2))/_glast +_vd*(upMix(a,b,c,1,2,2)
-			- 2.*upMix(a,b,c,2,1,2))/_glast + 2.*_s*(upMix(a,b,c,2,1,0)
-			- upMix(a,b,c,1,0,2) - upMix(a,b,c,0,1,2)))
-			+ sqr(_kappa)/rt*_s*upMix(a,b,c,2,2,2)
-			+_lambda*_theAl*rt*(upMix(a,b,c,1,0,2)
-			+ upMix(a,b,c,0,1,2) + upMix(a,b,c,2,1,0))
-			- _kappa*_theAk*rt*upMix(a,b,c,2,2,2)
-			+ sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(upMix(a,b,c,1,1,1)
-			- upMix(a,b,c,1,0,0))/_glast - _vd*(upMix(a,b,c,0,1,1)
-			- upMix(a,b,c,0,0,0))/_glast);	
-	
+    coupling =	
+      sqr(_lambda)*rt*(_vu*(upMix(a,b,c,1,0,0) + upMix(a,b,c,1,2,2))/_glast 
+		       + _vd*(upMix(a,b,c,0,1,1) + upMix(a,b,c,0,2,2))/_glast
+		       + _s*(upMix(a,b,c,2,1,1) + upMix(a,b,c,2,0,0)))
+      + _lambda*_kappa*rt*(_vu*(upMix(a,b,c,0,2,2) 
+				- 2.*upMix(a,b,c,2,0,2))/_glast +
+			   _vd*(upMix(a,b,c,1,2,2)
+				- 2.*upMix(a,b,c,2,1,2))/_glast 
+			   + 2.*_s*(upMix(a,b,c,2,1,0)
+				    - upMix(a,b,c,1,0,2) - upMix(a,b,c,0,1,2)))
+      + sqr(_kappa)/rt*_s*upMix(a,b,c,2,2,2)
+      +_lambda*_theAl*rt*(upMix(a,b,c,1,0,2)
+			  + upMix(a,b,c,0,1,2) + upMix(a,b,c,2,1,0))
+      - _kappa*_theAk*rt*upMix(a,b,c,2,2,2)
+      + sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(upMix(a,b,c,1,1,1)
+					   - upMix(a,b,c,1,0,0))/_glast - 
+				      _vd*(upMix(a,b,c,0,1,1)
+					   - upMix(a,b,c,0,0,0))/_glast);
   }
   //Charged Higgs
   else {
@@ -207,19 +204,21 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
       a = (higgs[1] - 25)/10;
     else
       a = (higgs[2] - 25)/10;
-    
-
-coupling = 	sqr(_lambda)*rt*2.*(_s*((*_mixS)(a,2)*sqr(_cb) 
-            + (*_mixS)(a,2)*sqr(_sb))
-			- (_vu*(*_mixS)(a,0)/_glast + _vd*(*_mixS)(a,1)/_glast)*_sb*_cb)
-			+_lambda*_sb*_cb*2*(*_mixS)(a,2)*(_kappa*_s/rt + rt*_theAl)
-			+ sqr(_glast)*0.5*rt*_sw2/sqr(_cw)*((_vu*(*_mixS)(a,1)/_glast 
-			- _vd*(*_mixS)(a,0)/_glast)*sqr(_cb) + (_vd*(*_mixS)(a,0)/_glast
-			- _vu*(*_mixS)(a,1)/_glast)*sqr(_sb))
-			+ sqr(_glast)*0.5*rt*(_vu*((*_mixS)(a,1)*sqr(_cb) 
-			+ (*_mixS)(a,1)*sqr(_sb) + 2.*(*_mixS)(a,0)*_cb*_sb)/_glast 
-			+ _vd*((*_mixS)(a,0)*sqr(_cb) + (*_mixS)(a,0)*sqr(_sb) 
-			+ 2.*(*_mixS)(a,1)*_sb*_cb)/_glast);
+    coupling = 	
+      sqr(_lambda)*rt*2.*(_s*((*_mixS)(a,2)*sqr(_cb) + (*_mixS)(a,2)*sqr(_sb))
+			  - (_vu*(*_mixS)(a,0)/_glast + 
+			     _vd*(*_mixS)(a,1)/_glast)*_sb*_cb)
+      +_lambda*_sb*_cb*2*(*_mixS)(a,2)*(_kappa*_s/rt + rt*_theAl)
+      + sqr(_glast)*0.5*rt*_sw2/sqr(_cw)*((_vu*(*_mixS)(a,1)/_glast - 
+					   _vd*(*_mixS)(a,0)/_glast)*sqr(_cb) + 
+					  (_vd*(*_mixS)(a,0)/_glast -
+					   _vu*(*_mixS)(a,1)/_glast)*sqr(_sb))
+      + sqr(_glast)*0.5*rt*(_vu*((*_mixS)(a,1)*sqr(_cb) + 
+				 (*_mixS)(a,1)*sqr(_sb) + 
+				 2.*(*_mixS)(a,0)*_cb*_sb)/_glast 
+			    + _vd*((*_mixS)(a,0)*sqr(_cb) + 
+				   (*_mixS)(a,0)*sqr(_sb) 
+				   + 2.*(*_mixS)(a,1)*_sb*_cb)/_glast);
   }
   setNorm(-coupling * UnitRemoval::InvE);
 }
