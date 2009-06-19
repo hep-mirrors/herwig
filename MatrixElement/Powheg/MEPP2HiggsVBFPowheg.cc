@@ -98,11 +98,6 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   // phi
   _phi = r[ndim-3]*Constants::twopi;
   jac_  = rhomin/(1.-power_)*pow(1.-_xp,power_);
-  //jac_ *= pow(1.-_zp,power_)/(1.-power_);
-  // NO as generating phi between 0 and 2pi and have a factor 1/2pi in the phase space
-  // these cancel
-  //jac_ *= 1./Constants::twopi;
-  jacobian(jacobian()*jac_);
   return true;
 }
 
@@ -201,8 +196,7 @@ CrossSection MEPP2HiggsVBFPowheg::dSigHatDR() const {
 
 double MEPP2HiggsVBFPowheg::NLOWeight() const {
   // If only leading order is required return 1:
-  if(contrib_==0) return 1./jac_;
-
+  if(contrib_==0) return 1.;
   // Boost
   Axis axis(_pa.vect().unit());
   LorentzRotation rot;
@@ -272,8 +266,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+
 			   1.5*log(_q2/mu2/(1.-_xB))+
 			   2.*log(1.-_xB)*log(_q2/mu2)+
-			   sqr(log(1.-_xB)));
-  virt /= jac_;
+			   sqr(log(1.-_xB)));;
 
   Energy2 scale = _q2*((1.-_xp)*(1-_zp)*_zp/_xp+1.);
   // PDF from leading-order
@@ -400,7 +393,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
     (sqr(x)+sqr(1.-x))/(1.-z);
   double realg = real2-dipole2;
   // return the full result
-  double wgt = virt+((collq+collg)/loPDF+realq+realg);
+  double wgt = virt+jac_*((collq+collg)/loPDF+realq+realg);
   return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
