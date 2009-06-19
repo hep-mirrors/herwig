@@ -87,6 +87,8 @@ void METRP2to2::Init() {
      &METRP2to2::_planckmass, GeV, 2000.0*GeV, 200.0*GeV, 200000.0*GeV,
      false, false, Interface::limited);
 
+
+  
   static Parameter<METRP2to2, unsigned int> interfaceNumberExtraDimensions
     ("NumberExtraDimensions",
      "The number of extra dimensions to consider",
@@ -184,20 +186,20 @@ void METRP2to2::getDiagrams() const {
 	// t-channel
 	add(new_ptr((Tree2toNDiagram(3),quark[ix],trpon,quark[iy],
 		     1,quark[ix],2,quark[iy],-16)));
-	// exchange for identical quarks
-	//if(ix==iy)
-	//add(new_ptr((Tree2toNDiagram(3),quark[ix],trpon,quark[iy],
-	//2,quark[ix],1,quark[iy],-17)));
+	//exchange for identical quarks
+	if(ix==iy)
+	add(new_ptr((Tree2toNDiagram(3),quark[ix],trpon,quark[iy],
+	2,quark[ix],1,quark[iy],-17)));
       }
       // qbar qbar -> qbar qbar subprocesses
       if(_process==0||_process==7) {
 	// t-channel
 		add(new_ptr((Tree2toNDiagram(3),antiquark[ix],trpon,antiquark[iy],
 			     1,antiquark[ix],2,antiquark[iy],-18)));
-	// // exchange for identical quarks
-		//if(ix==iy)
-		//add(new_ptr((Tree2toNDiagram(3),antiquark[ix],trpon,antiquark[iy],
-		//2,antiquark[ix],1,antiquark[iy],-19)));
+		//exchange for identical quarks
+		if(ix==iy)
+		  add(new_ptr((Tree2toNDiagram(3),antiquark[ix],trpon,antiquark[iy],
+			       2,antiquark[ix],1,antiquark[iy],-19)));
       }
       // q qbar -> q qbar
       if(_process==0||_process==8) {
@@ -255,8 +257,13 @@ METRP2to2::colourGeometries(tcDiagPtr diag) const {
 }
 
 double METRP2to2::me2() const {
-  return A_ny(sHat(),tHat()) * 16. * sqr(Constants::pi);
-  
+  double me(0.);
+  if(mePartonData()[0]->id() == mePartonData()[1]->id()){  
+    if( mePartonData()[0]->id()>0) { me = A_ny(sHat(),tHat()) - A_ny(sHat(),uHat()) / 3.; }
+    else if(mePartonData()[0]->id()==ParticleID::g) { me = A_ny(sHat(),tHat()) + A_ny(sHat(),uHat()) / 8.; }
+  }
+  else { me =  A_ny(sHat(),tHat()); }
+  return sqr(me * 4. * Constants::pi);
 }
 
   
@@ -282,7 +289,7 @@ double METRP2to2::A_ny(Energy2 s, Energy2 t) const {
   double fny = 0;
   double y = (bc* UnitRemoval::E) * sqrt(-t * UnitRemoval::InvE2);
   if(y >= 20) { fny = fnyasympt(bc* UnitRemoval::E * sqrt(-t * UnitRemoval::InvE2)); } else { fny = fpoint(bc* UnitRemoval::E * sqrt(-t * UnitRemoval::InvE2)); }
-  return sqr( fny ) * sqr(s) * pow<4,1>(bc);
+  return (fny * s * sqr(bc));
 }
 
 
@@ -290,6 +297,8 @@ double METRP2to2::A_ny(Energy2 s, Energy2 t) const {
 double METRP2to2::fnyasympt(double y) const {
   return pow( _ndim, 1.0/(_ndim+1.0) ) * pow( y, -(_ndim+2.0)/(_ndim+1.0) ) / sqrt(_ndim+1.0);
 }  
+
+
   
 
 //fpoint contains tabulated values for the function F_n calculated
