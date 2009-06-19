@@ -13,31 +13,6 @@ cd /Herwig/EventHandlers
 #set LHCHandler:HadronizationHandler NULL
 #set LHCHandler:DecayHandler NULL
 
-mkdir LesHouches
-cd LesHouches
-library LesHouches.so
-cd /Herwig/EventHandlers
-create ThePEG::LesHouchesFileReader Reader2  LesHouches.so
-set Reader2:FileName transme_md3000n6_020609.dat
-#set Reader:CacheFileName testercache.tmp
-set Reader2:BeamA 2212
-set Reader2:BeamB 2212
-set Reader2:EBeamA 7000.
-set Reader2:EBeamB 7000.
-set Reader2:PDFA /Herwig/Partons/MRST
-set Reader2:PDFB /Herwig/Partons/MRST
-
-create ThePEG::LesHouchesEventHandler LesHouchesHandler
-insert LesHouchesHandler:LesHouchesReaders[0] Reader2
-set LesHouchesHandler:PartonExtractor /Herwig/Partons/QCDExtractor
-set LesHouchesHandler:StatLevel 2
-set LesHouchesHandler:Cuts /Herwig/Cuts/QCDCuts
-
-set LesHouchesHandler:CascadeHandler /Herwig/Shower/ShowerHandler
-set LesHouchesHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
-set LesHouchesHandler:DecayHandler /Herwig/Decays/DecayHandler
-
-set LesHouchesHandler:WeightOption 1
 
 ##################################################
 # Technical parameters for this run
@@ -51,19 +26,6 @@ set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10000
 set LHCGenerator:MaxErrors 10000
-
-create ThePEG::EventGenerator MGGenerator
-set MGGenerator:RandomNumberGenerator /Herwig/Random
-set MGGenerator:StandardModelParameters /Herwig/Model
-set MGGenerator:EventHandler /Herwig/EventHandlers/LesHouchesHandler
-set MGGenerator:EventHandler:Cuts /Herwig/Cuts/QCDCuts
-#set MGGenerator:EventHandler:CascadeHandler:MPIHandler NULL
-
-set MGGenerator:NumberOfEvents 1000000
-set MGGenerator:RandomNumberGenerator:Seed 31122001
-set MGGenerator:DebugLevel 1
-set MGGenerator:PrintEvent 1000
-set MGGenerator:MaxErrors 100000000
 
 
 ##################################################
@@ -132,8 +94,7 @@ set metrp2to2:PlanckMass 1500*GeV
 # 
 
 #cd /Herwig/Analysis
-#create Herwig::rootanalysis RAnalysis rootanalysis.so
-#create Herwig::NLOAnalysis nloanalysis NLOAnalysis.so
+
 
 cd /Herwig/Generators
 
@@ -169,8 +130,6 @@ cd /Herwig/Generators
 # Save run for later usage with 'Herwig++ run'
 ##################################################
 saverun LHC-TRP LHCGenerator
-saverun LESH-TRP MGGenerator
-
 
 ##################################################
 # uncomment this section for an example batch run
