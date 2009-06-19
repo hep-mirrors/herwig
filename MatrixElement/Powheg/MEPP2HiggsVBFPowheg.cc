@@ -201,7 +201,7 @@ CrossSection MEPP2HiggsVBFPowheg::dSigHatDR() const {
 
 double MEPP2HiggsVBFPowheg::NLOWeight() const {
   // If only leading order is required return 1:
-  if(contrib_==0) return 1.;
+  if(contrib_==0) return 1./jac_;
 
   // Boost
   Axis axis(_pa.vect().unit());
