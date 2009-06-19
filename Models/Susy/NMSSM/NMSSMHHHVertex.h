@@ -90,7 +90,6 @@ protected:
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
   //@}

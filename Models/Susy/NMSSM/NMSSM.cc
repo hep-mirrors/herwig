@@ -139,19 +139,13 @@ void NMSSM::createMixingMatrices() {
 }
 
 void NMSSM::adjustMixingMatrix(long id) {
-  //get correct mixing matrix
-  switch(id) {
-  case 1000022 :
-  case 1000023 :
-  case 1000025 :
-  case 1000035 : 
-  case 1000045 : 
-    if( theNMNMix)
-      theNMNMix->adjustPhase(id);
-    else 
-      throw SetupException() << "SusyBase::adjustMixingMatrix - "
-			     << "The neutralino mixing matrix pointer "
-			     << "is null!" << Exception::runerror;
-				 break;
-				 }}
+  assert ( id == 1000022 || id == 1000023 || id == 1000025 || 
+	   id == 1000035 || id == 1000045 ); 
+  if( theNMNMix)
+    theNMNMix->adjustPhase(id);
+  else 
+    throw SetupException() << "SusyBase::adjustMixingMatrix - "
+			   << "The neutralino mixing matrix pointer "
+			   << "is null!" << Exception::runerror;
+}
 

@@ -49,13 +49,12 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
     second.push_back(37);
     third.push_back(iodd[ix]);
   }
-    //W+ H- CP odd
-    for(unsigned int ix=0;ix<2;++ix) {
+  //W+ H- CP odd
+  for(unsigned int ix=0;ix<2;++ix) {
     first.push_back(24);
     second.push_back(-37);
     third.push_back(iodd[ix]);
   }
-  
   // Charged higgs Z/gamma
   first.push_back(22);
   second.push_back(37);
@@ -67,14 +66,14 @@ NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
   setList(first,second,third);
 }
 
-void NMSSMWHHVertex::doinit() throw(InitException) {
+void NMSSMWHHVertex::doinit() {
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
     throw InitException() << "Must have the NMSSM Model in NMSSMFFHVertex::doinit()"
 			  << Exception::runerror;
   // sin theta_W
-  double sw2=model->sin2ThetaW();
+  double sw2 = sin2ThetaW();
   _sw = sqrt(sw2);
   _cw = sqrt(1.-sw2);
   // get the mixing matrices
@@ -88,8 +87,8 @@ void NMSSMWHHVertex::doinit() throw(InitException) {
 				   << Exception::runerror;
   // sin and cos beta
   double beta = atan(model->tanBeta());
-  _sinb=sin(beta);
-  _cosb=cos(beta);
+  _sinb = sin(beta);
+  _cosb = cos(beta);
   // order in the couplings
   orderInGem(1);
   orderInGs(0);
@@ -115,6 +114,7 @@ void NMSSMWHHVertex::Init() {
      " gauge boson with two Higgs bosons in the NMSSM.");
 
 }
+
 //calulate the couplings
 void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   // weak coupling
@@ -128,7 +128,7 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   int ih2 =c->id();
   Complex fact;
   if(ibos==ParticleID::Z0) {
-  fact = 0.5/_cw;
+    fact = 0.5/_cw;
     // Z H+ H-
     if(abs(ih1)==37) {
       fact *=2*(sqr(_cw)-sqr(_sw));
@@ -142,7 +142,8 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
       }
       int is = (ih1-25)/10;
       int ip = (ih2-36)/10;
-      fact *= Complex(0.,1.)*((*_mixS)(is,1)*(*_mixP)(ip,1)-(*_mixS)(is,0)*(*_mixP)(ip,0));
+      fact *= Complex(0.,1.)*((*_mixS)(is,1)*(*_mixP)(ip,1)-
+			      (*_mixS)(is,0)*(*_mixP)(ip,0));
     }
   }
   // gamma CP even CP odd

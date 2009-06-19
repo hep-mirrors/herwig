@@ -29,7 +29,7 @@ NMSSMGGHVertex::NMSSMGGHVertex() :
   setList(first, second, third);
 }
 
-void NMSSMGGHVertex::doinit() throw(InitException) {
+void NMSSMGGHVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) {
     throw InitException() << "NMSSMGGHVertex::doinit - The SM pointer is null!"
