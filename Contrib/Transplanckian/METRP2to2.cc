@@ -87,8 +87,6 @@ void METRP2to2::Init() {
      &METRP2to2::_planckmass, GeV, 2000.0*GeV, 200.0*GeV, 200000.0*GeV,
      false, false, Interface::limited);
 
-
-  
   static Parameter<METRP2to2, unsigned int> interfaceNumberExtraDimensions
     ("NumberExtraDimensions",
      "The number of extra dimensions to consider",
@@ -150,7 +148,7 @@ METRP2to2::diagrams(const DiagramVector & diags) const {
 void METRP2to2::getDiagrams() const {
   // get the particle data objects
   PDPtr gluon=getParticleData(ParticleID::g);
-  PDPtr trpon = getParticleData(991);
+  PDPtr trpon = getParticleData(39);
 
   vector<PDPtr> quark,antiquark;
   for(int ix=1;ix<=int(_maxflavour);++ix) {
@@ -183,23 +181,23 @@ void METRP2to2::getDiagrams() const {
     for(unsigned int iy=0;iy<_maxflavour;++iy) {
       // q q -> q q subprocesses
       if(_process==0||_process==6) {
-	// gluon t-channel
+	// t-channel
 	add(new_ptr((Tree2toNDiagram(3),quark[ix],trpon,quark[iy],
 		     1,quark[ix],2,quark[iy],-16)));
-	// // exchange for identical quarks
-	// if(ix==iy)
-	//   add(new_ptr((Tree2toNDiagram(3),quark[ix],trpon,quark[iy],
-	// 	       2,quark[ix],1,quark[iy],-17)));
+	// exchange for identical quarks
+	//if(ix==iy)
+	//add(new_ptr((Tree2toNDiagram(3),quark[ix],trpon,quark[iy],
+	//2,quark[ix],1,quark[iy],-17)));
       }
       // qbar qbar -> qbar qbar subprocesses
       if(_process==0||_process==7) {
-	// gluon t-channel
+	// t-channel
 		add(new_ptr((Tree2toNDiagram(3),antiquark[ix],trpon,antiquark[iy],
-		     1,antiquark[ix],2,antiquark[iy],-18)));
+			     1,antiquark[ix],2,antiquark[iy],-18)));
 	// // exchange for identical quarks
-	// if(ix==iy)
-	//   add(new_ptr((Tree2toNDiagram(3),antiquark[ix],trpon,antiquark[iy],
-	// 	       2,antiquark[ix],1,antiquark[iy],-19)));
+		//if(ix==iy)
+		//add(new_ptr((Tree2toNDiagram(3),antiquark[ix],trpon,antiquark[iy],
+		//2,antiquark[ix],1,antiquark[iy],-19)));
       }
       // q qbar -> q qbar
       if(_process==0||_process==8) {
@@ -225,7 +223,7 @@ METRP2to2::colourGeometries(tcDiagPtr diag) const {
   static const ColourLines cqbqbqbqb("-1 -4,-3 -5");
   // colour lines for q qbar -> q qbar
   static const ColourLines cqqbqqb("1 4,-3 -5");
-  // select the colour flow (as all ready picked just insert answer)
+  // select the colour flow (as already picked just insert answer)
   Selector<const ColourLines *> sel;
   switch(abs(diag->id())) {
     //gg -> gg 
@@ -258,51 +256,44 @@ METRP2to2::colourGeometries(tcDiagPtr diag) const {
 
 double METRP2to2::me2() const {
   return A_ny(sHat(),tHat()) * 16. * sqr(Constants::pi);
+  
 }
 
   
 // Calculate the constant b_c which depends on s_hat and the number of
 // extra dimensions
 InvEnergy METRP2to2::bccalc(Energy2 s) const {  
-  static const double fourpi = 4.0*Constants::pi;
+  static const double fourpi = 4.0*Constants::pi; 
   return 1/_planckmass  *  sqrt(fourpi) * 
-    pow( 0.5 * s / sqr(_planckmass) / fourpi * Math::gamma(_ndim/2.0), 
-	 1.0/_ndim);
+    pow( (0.5 * s / (sqr(_planckmass) *  fourpi)) * Math::gamma(_ndim/2.0), 
+       1.0/_ndim);
 }
   
 
 // interp is a function for linear interpolation between two values in
 // a table
-double METRP2to2::interp(double y, double f0, double f1, 
-			 double y0, double y1) const {  
+double METRP2to2::interp(double y, double f0, double f1, double y0, double y1) const {  
   return (f0 + (y - y0) * (f1 - f0) / (y1 - y0));  
 }
   
-/* Calculation of the matrix element squared */
+//Calculation of the matrix element squared using the function F_n(y) 
 double METRP2to2::A_ny(Energy2 s, Energy2 t) const {
   InvEnergy bc = bccalc(s);
-  return sqr( f_ny(bc*sqrt(-t)) ) * sqr(s) * pow<4,1>(bc);
+  double fny = 0;
+  double y = (bc* UnitRemoval::E) * sqrt(-t * UnitRemoval::InvE2);
+  if(y >= 20) { fny = fnyasympt(bc* UnitRemoval::E * sqrt(-t * UnitRemoval::InvE2)); } else { fny = fpoint(bc* UnitRemoval::E * sqrt(-t * UnitRemoval::InvE2)); }
+  return sqr( fny ) * sqr(s) * pow<4,1>(bc);
 }
 
 
-/* the function F_n(q * bc), calculated using the tabulated values
-   (x<20) and the asymptotic form (x>20) */
-double METRP2to2::f_ny(double y) const {
-  return y >= 20 ? fnyasympt(y) : fpoint(y);
-}
-
-
-  /* The asymptotic form of the F_n functions; used for x > 20 */
+//The asymptotic form of the F_n functions; used for x > 20 
 double METRP2to2::fnyasympt(double y) const {
-  return pow( _ndim, 1.0/(_ndim+1.0) ) 
-    * pow( y, -(_ndim+2.0)/(_ndim+1.0) ) / sqrt(_ndim+1.0);
+  return pow( _ndim, 1.0/(_ndim+1.0) ) * pow( y, -(_ndim+2.0)/(_ndim+1.0) ) / sqrt(_ndim+1.0);
 }  
-
-
   
 
-/* fpoint contains tabulated values for the function F_n calculated
-   using 8-point Gauss-Legendre integration up to arguments x = 20 */
+//fpoint contains tabulated values for the function F_n calculated
+//   using 8-point Gauss-Legendre integration up to arguments x = 20 
 double METRP2to2::fpoint(double x) const {   
   double fvalue;  
   double y0 = 0, y1 = 0, f1 = 0, f0 = 0;  
@@ -311,15 +302,15 @@ double METRP2to2::fpoint(double x) const {
   int n1 = int(nx+1);
   
   assert( x < 20 );
-
-      /* assign the appropriate tabulated points for the number of extra dimensions */
+    
+    //assign the appropriate tabulated points for the number of extra dimensions
     
     if(_ndim == 2) {       
-      double datamatrix[100] = { 2.090560, 1.457590, 1.113050, 0.885216, 0.720795, 0.597404, 0.501483, 0.425543, 0.364668, 0.315299, 0.274983, 0.241792, 0.214466, 0.191698, 0.172689, 0.156841, 0.143329, 0.131919, 0.122174, 0.113656, 0.106339, 0.099869, 0.094101, 0.089013, 0.084378, 0.080185, 0.076376, 0.072856, 0.069622, 0.066624, 0.063844, 0.061242, 0.058820, 0.056561, 0.054417, 0.052433, 0.05055, 0.048772, 0.047129, 0.045546, 0.044056, 0.042673, 0.041328, 0.040078, 0.038895, 0.037749, 0.036688, 0.035666, 0.034687, 0.033771, 0.032883, 0.032041, 0.031239, 0.030467, 0.029731, 0.029025, 0.028350, 0.027698, 0.027075, 0.026479, 0.025896, 0.025347, 0.024812, 0.024291, 0.023804, 0.023318, 0.022854, 0.022416, 0.021974, 0.021561, 0.021160, 0.020761, 0.020390, 0.020021, 0.019662, 0.019325, 0.01898, 0.018662, 0.018351, 0.018041, 0.017747, 0.017459, 0.017177, 0.016906, 0.016641, 0.016384, 0.016132, 0.015889, 0.015651, 0.015418, 0.015196, 0.014973, 0.014759, 0.014553, 0.014345, 0.014149, 0.013956, 0.013762, 0.013582, 0.013399};     
-      f1 = datamatrix[n1];       
-      f0 = datamatrix[n0];  
-    }    
-    
+    double datamatrix[100] = { 2.090560, 1.457590, 1.113050, 0.885216, 0.720795, 0.597404, 0.501483, 0.425543, 0.364668, 0.315299, 0.274983, 0.241792, 0.214466, 0.191698, 0.172689, 0.156841, 0.143329, 0.131919, 0.122174, 0.113656, 0.106339, 0.099869, 0.094101, 0.089013, 0.084378, 0.080185, 0.076376, 0.072856, 0.069622, 0.066624, 0.063844, 0.061242, 0.058820, 0.056561, 0.054417, 0.052433, 0.05055, 0.048772, 0.047129, 0.045546, 0.044056, 0.042673, 0.041328, 0.040078, 0.038895, 0.037749, 0.036688, 0.035666, 0.034687, 0.033771, 0.032883, 0.032041, 0.031239, 0.030467, 0.029731, 0.029025, 0.028350, 0.027698, 0.027075, 0.026479, 0.025896, 0.025347, 0.024812, 0.024291, 0.023804, 0.023318, 0.022854, 0.022416, 0.021974, 0.021561, 0.021160, 0.020761, 0.020390, 0.020021, 0.019662, 0.019325, 0.01898, 0.018662, 0.018351, 0.018041, 0.017747, 0.017459, 0.017177, 0.016906, 0.016641, 0.016384, 0.016132, 0.015889, 0.015651, 0.015418, 0.015196, 0.014973, 0.014759, 0.014553, 0.014345, 0.014149, 0.013956, 0.013762, 0.013582, 0.013399};     
+    f1 = datamatrix[n1];       
+    f0 = datamatrix[n0];  
+  }    
+  
     if(_ndim == 3) {       
       double datamatrix[100] = { 1.17491, 1.02696, 0.89463, 0.77688, 0.67270, 0.58105, 0.50095, 0.43143, 0.37156, 0.32046, 0.27726, 0.24113, 0.21126, 0.18684, 0.16707, 0.15118, 0.13843, 0.12815, 0.11974, 0.11271, 0.10670, 0.10141, 0.09663, 0.09224, 0.08814, 0.08427, 0.08061, 0.07715, 0.07387, 0.07077, 0.06785, 0.06511, 0.06254, 0.06014, 0.05790, 0.05582, 0.05388, 0.05207, 0.05038, 0.04879, 0.04731, 0.04591, 0.04459, 0.04334, 0.04216, 0.04103, 0.03996, 0.03894, 0.03796, 0.03702, 0.03612, 0.03526, 0.03443, 0.03363, 0.03287, 0.03214, 0.03143, 0.03075, 0.03010, 0.02947, 0.02887, 0.02829, 0.02773, 0.02719, 0.02666, 0.02616, 0.02567, 0.0250, 0.02475, 0.02431, 0.02388, 0.02347, 0.02306, 0.02267, 0.02230, 0.02193, 0.02157, 0.02123, 0.02089, 0.02056, 0.02025, 0.01994, 0.01964, 0.01934, 0.01906, 0.018, 0.01851, 0.01825, 0.01799, 0.01774, 0.01750, 0.01726, 0.01703, 0.01680, 0.01658, 0.01637, 0.01616, 0.01595, 0.01575, 0.01555};   
       f1 = datamatrix[n1];       

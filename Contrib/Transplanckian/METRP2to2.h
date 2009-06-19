@@ -11,13 +11,17 @@
 //
 // This is the declaration of the METRP2to2 class.
 //
+// The implementation of this process is based upon hep-ph/0112161 by G.F. Giudice, R. Rattazzi, J.D. Wells.
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Repository/UseRandom.h"
+#include "Herwig++/Utilities/Interpolator.h"
+
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+
 
 /**
  * The METRP2to2 class implements the matrix elements for
@@ -46,6 +50,15 @@ public:
    */
   virtual unsigned int orderInAlphaEW() const;
 
+ /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  //virtual void doinit() throw(InitException);
+
+  
+
   /**
    * The matrix element for the kinematical configuration
    * previously provided by the last call to setKinematics(), suitably
@@ -54,12 +67,32 @@ public:
    * dimensionless number.
    */
   virtual double me2() const;
+  
+  /**
+   * The function which calculates b_c according to hep-ph/0112161, eq.(18)
+   */
   InvEnergy bccalc(Energy2 s) const;
+
+  /**
+   * A_ny calculates part of the matrix element squared (divided by 16 * pi^2) according to hep-ph/0112161. eq.(19)
+   */ 
   double A_ny(Energy2 s, Energy2 t) const;
+
+  /**
+   * fpoint initializes the matrix of pre-calculated points for the functions F_n(y) (hep-ph/0112161, eq.(20)
+   */
   double fpoint(double x) const;
-  double f_ny(double y) const;
+  
+  /**
+   * Function for linear interpolation between two points
+   */ 
   double interp(double y, double f0, double f1, double y0, double y1) const;
+  
+  /**
+   * The asymptotic form of the F_n(y) functions, used for y>20, according to hep-ph/0112161, eq. (25)
+   */ 
   double fnyasympt(double y) const;
+
   /**
    * Return the scale associated with the last set phase space point.
    */
@@ -119,6 +152,9 @@ public:
    */
   static void Init();
 
+
+ 
+
 protected:
 
   /**
@@ -164,24 +200,40 @@ private:
 
 private:
 
+
+
+
   /**
-   *  Maximum numbere of quark flavours to include
+   *  Maximum number of quark flavours to include
    */
   unsigned int _maxflavour;
 
+  /**
+   *  Number of Extra dimensions (>=2)
+   */
   unsigned int _ndim;
 
+  /**
+   *  The Extra-dimensional Planck mass
+   */
+  
   Energy _planckmass;
+
 
   /**
    *  Processes to include
    */
+
   unsigned int _process;
 
   /**
    *  Colour flow
    */
   mutable unsigned int _flow;
+
+ 
+
+
 };
 
 }
@@ -198,6 +250,7 @@ template <>
 struct BaseClassTrait<Herwig::METRP2to2,1> {
   /** Typedef of the first base class of METRP2to2. */
   typedef Herwig::HwME2to2Base NthBase;
+
 };
 
 /** This template specialization informs ThePEG about the name of
