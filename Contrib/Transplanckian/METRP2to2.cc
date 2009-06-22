@@ -256,14 +256,16 @@ METRP2to2::colourGeometries(tcDiagPtr diag) const {
   return sel;
 }
 
+
 double METRP2to2::me2() const {
-  double me(0.);
+  double me(0.), me_exch(0.);
+  double fac1(1.), fac2(0.);
   if(mePartonData()[0]->id() == mePartonData()[1]->id()){  
-    if( mePartonData()[0]->id()>0) { me = A_ny(sHat(),tHat()) - A_ny(sHat(),uHat()) / 3.; }
-    else if(mePartonData()[0]->id()==ParticleID::g) { me = A_ny(sHat(),tHat()) + A_ny(sHat(),uHat()) / 8.; }
+    if( mePartonData()[0]->id()>0) { me_exch = - A_ny(sHat(),uHat()); fac1 = 2./3.; fac2 = 1./6.; }
+    else if(mePartonData()[0]->id()==ParticleID::g) { me_exch = A_ny(sHat(),uHat()); fac1 = 7./8.; fac2 = 1./16.; }
   }
-  else { me =  A_ny(sHat(),tHat()); }
-  return sqr(me * 4. * Constants::pi);
+  me =  A_ny(sHat(),tHat());
+  return ( fac1 * sqr(me) + fac2 * sqr(me+me_exch) );
 }
 
   
@@ -287,9 +289,10 @@ double METRP2to2::interp(double y, double f0, double f1, double y0, double y1) c
 double METRP2to2::A_ny(Energy2 s, Energy2 t) const {
   InvEnergy bc = bccalc(s);
   double fny = 0;
-  double y = (bc* UnitRemoval::E) * sqrt(-t * UnitRemoval::InvE2);
-  if(y >= 20) { fny = fnyasympt(bc* UnitRemoval::E * sqrt(-t * UnitRemoval::InvE2)); } else { fny = fpoint(bc* UnitRemoval::E * sqrt(-t * UnitRemoval::InvE2)); }
-  return (fny * s * sqr(bc));
+  double y = bc * sqrt(-t);
+  if(y >= 20) { fny = fnyasympt(y); } else { fny = fpoint(y); }
+  //cout << "y = " << y << " fny = " << fny << endl;
+  return (4. * Constants::pi * fny * s * sqr(bc));
 }
 
 
