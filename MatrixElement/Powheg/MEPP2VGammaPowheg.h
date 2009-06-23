@@ -9,21 +9,6 @@
 #include "Herwig++/Utilities/GSLIntegrator.h"
 
 namespace Herwig {
- struct Li2Integrand  {
-   Li2Integrand(double y) : _y(y) {}
-
-   double operator ()(double x) const {
-     return (-1.0)*log(1.0-x*_y)/x;
-   }
-   typedef double ArgType;
-   typedef double ValType;
- 
-   double _y;  
- };
-}
-
-
-namespace Herwig {
 
 using namespace ThePEG;
 
@@ -36,11 +21,6 @@ using namespace ThePEG;
  * defined for MEPP2VGammaPowheg.
  */
 class MEPP2VGammaPowheg: public MEPP2VGamma {
-
-  
-public:
-  friend class Li2Integrand;
-  
 
 public:
 
@@ -181,28 +161,22 @@ private:
    */
   mutable double _CF;
     
-    //kinematics: s~hat:_ss, t~hat:_tt, u~hat:_uu
-  mutable Energy2 _ss;
-  mutable Energy2 _tt;
-  mutable Energy2 _uu;
 
     //types of final states:
     tcPDPtr _gluon;
     tcPDPtr _photon;
     tcPDPtr _boson;
-    mutable int _idboson;
-    
-    //momenta of final states:
-    mutable Lorentz5Momentum _p_photon;
-    mutable Lorentz5Momentum _p_parton;
-    mutable Lorentz5Momentum _p_boson;
+  
+  /**
+   *  Momentum fractions of the  first incoming parton
+   */
+  double _xa;
+  
+  /**
+   *  Momentum fractions of the second incoming parton
+   */
+  double _xb;
 
-    //momenta fractions _xa, _xb
-    mutable double _xa;
-    mutable double _xb;
-
-    //alpha_S:
-    mutable double _alphas;
     
   /**
    *  Parameters for the NLO weight
@@ -233,11 +207,6 @@ private:
    */
   double _scaleFact;
   //@}
-
-  /**
-   * integrator
-   */
-  GSLIntegrator _integrator;
 
 };
 
