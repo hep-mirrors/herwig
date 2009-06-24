@@ -187,8 +187,8 @@ double MEPP2VGammaPowheg::NLOweight() const {
   // the finite piece of the 1 loop with some prefactors removed
   double smloop = 0.5 * (charge0*tHat()+ charge1*uHat())/(tHat()+uHat())*
     (charge0*FVfunc(tHat(),uHat(),sHat(),MV2) + charge1*FVfunc(uHat(),tHat(),sHat(),MV2));
-  // full virtual piece (added factor (1- MV2/sHat) PR 6/23/09)
-  double partloop = smloop/(smborn0*smbfact) * (1. - MV2/sHat());
+  // full virtual piece
+  double partloop = smloop/(smborn0*smbfact);
   // alphaS prefactor
   double alfsfact = alphas*_CF/(2.0*Constants::pi);
   // virtual correction
