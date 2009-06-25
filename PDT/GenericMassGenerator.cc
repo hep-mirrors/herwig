@@ -161,10 +161,9 @@ void GenericMassGenerator::doinit() {
     _maxwgt=0.;
     // storage of variables for the loop
     double wgt=0.,swgt=0.,sqwgt=0.;
-    Energy mdummy;
     // perform the initialisation
     for(int ix=0;ix<_ninitial;++ix) {
-      mdummy=mass(wgt,*_particle,3);
+      mass(wgt,*_particle,3);
       swgt  += wgt;
       sqwgt += sqr(wgt);
       if(wgt>_maxwgt) _maxwgt=wgt;

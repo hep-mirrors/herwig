@@ -372,13 +372,11 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   // Find the first two clusters
   // Lets find the clusters, set the partons inside to be on shell and no momentum
   tClusterPtr clu[2];
-  Lorentz5Momentum cluP[2];
   tPVector::const_iterator it;
   unsigned int i = 0;
   for(it = tagged.begin(); it!=tagged.end(); ++it) {
     if((*it)->id() != ExtraParticleID::Cluster) continue;
     clu[i] = dynamic_ptr_cast<ClusterPtr>(*it);
-    cluP[i] = clu[i]->momentum();
     ++i;
     if(i>2) throw Exception() << "Must have at most two beam clusters in "
 			      << "UA5Handler::handle " 

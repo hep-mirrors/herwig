@@ -295,7 +295,6 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if(abs(icharge)!=3) return false; 
   // make sure that the decays are kinematically allowed
-  bool kineallowed(true);
   tPDPtr part[2];
   if(imode==0) {
     part[0]=getParticleData(ParticleID::piplus);
@@ -316,9 +315,6 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
   else if(imode==4) {
     part[0]=getParticleData(ParticleID::eta);
     part[1]=getParticleData(ParticleID::Kplus);
-  }
-  else {
-    kineallowed=false;
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp) return false;

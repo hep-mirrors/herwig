@@ -424,7 +424,6 @@ void SU3BaryonOctetDecupletScalarDecayer::setupModes(unsigned int iopt) const {
   outtemp.push_back(_xism);intemp.push_back(_lambda);mestemp.push_back(321);
   factor.push_back(_c*ort);
   // set up the modes
-  Energy m0,m1;
   int inspin,outspin;
   tPDVector extpart(3);
   for(unsigned int ix=0;ix<outtemp.size();++ix) {
@@ -437,8 +436,8 @@ void SU3BaryonOctetDecupletScalarDecayer::setupModes(unsigned int iopt) const {
 	_outgoingB.push_back(outtemp[ix]);
 	_outgoingM.push_back(mestemp[ix]);
 	if(iopt==1) {
-	  m0 = extpart[0]->mass();inspin  = extpart[0]->iSpin();
-	  m1 = extpart[1]->mass();outspin = extpart[1]->iSpin();
+	  inspin  = extpart[0]->iSpin();
+	  outspin = extpart[1]->iSpin();
 	  if(inspin==2&&outspin==4)      _prefactor.push_back(factor[ix]/_fpi);
 	  else if(inspin==4&&outspin==4) _prefactor.push_back(factor[ix]/_fpi);
 	}
