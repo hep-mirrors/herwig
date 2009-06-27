@@ -9,5 +9,6 @@ MEff2ff.cc MEff2ff.h \
 MEff2vv.cc MEff2vv.h \
 MEfv2vf.cc MEfv2vf.h \
 MEff2vs.h MEff2vs.cc \
+MEff2sv.h MEff2sv.cc \
 MEvv2vv.cc MEvv2vv.h 
 

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// MEff2vs.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// MEff2sv.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
@@ -8,10 +8,10 @@
 //
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the MEff2vs class.
+// functions of the MEff2sv class.
 //
 
-#include "MEff2vs.h"
+#include "MEff2sv.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -23,7 +23,7 @@ using namespace Herwig;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
-void MEff2vs::doinit() {
+void MEff2sv::doinit() {
   GeneralHardME::doinit();
   HPCount ndiags(numberOfDiags());
   theSca.resize(ndiags);
@@ -45,65 +45,65 @@ void MEff2vs::doinit() {
       if(current.intermediate->iSpin() == PDT::Spin1Half) {
 	if( current.ordered.second ) 
 	  theFerm[i] = 
-	    make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first), 
-		      dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.second));
+	    make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first), 
+		      dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.second));
 	else
 	  theFerm[i] = 
-	    make_pair(dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.second), 
-		      dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.first));
+	    make_pair(dynamic_ptr_cast<AbstractFFSVertexPtr>(current.vertices.second), 
+		      dynamic_ptr_cast<AbstractFFVVertexPtr>(current.vertices.first));
       }
     }
   }
 }
 
 
-void MEff2vs::persistentOutput(PersistentOStream & os) const {
+void MEff2sv::persistentOutput(PersistentOStream & os) const {
   os << theSca << theVec << theFerm;
 }
 
-void MEff2vs::persistentInput(PersistentIStream & is, int) {
+void MEff2sv::persistentInput(PersistentIStream & is, int) {
   is >> theSca >> theVec >> theFerm;
 }
 
-ClassDescription<MEff2vs> MEff2vs::initMEff2vs;
+ClassDescription<MEff2sv> MEff2sv::initMEff2sv;
 // Definition of the static class description member.
 
-void MEff2vs::Init() {
+void MEff2sv::Init() {
 
-  static ClassDocumentation<MEff2vs> documentation
-    ("MEff2vs implements the ME calculation of the fermion-antifermion "
+  static ClassDocumentation<MEff2sv> documentation
+    ("MEff2sv implements the ME calculation of the fermion-antifermion "
      "to vector-scalar hard process.");
 
 }
 
-double MEff2vs::me2() const {
+double MEff2sv::me2() const {
   //set up wavefunctions
   SpinorVector ina(2);
   SpinorBarVector inb(2);
   VBVector outa(3);
-  ScalarWaveFunction sca(rescaledMomenta()[3], mePartonData()[3], Complex(1.),
+  ScalarWaveFunction sca(rescaledMomenta()[2], mePartonData()[2], Complex(1.),
 			 outgoing);
   for(unsigned int ih = 0; ih < 2; ++ih) {
     ina[ih] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], 
 				 ih, incoming);
     inb[ih] = SpinorBarWaveFunction(rescaledMomenta()[1], mePartonData()[1], 
 				    ih, incoming);
-    outa[2*ih] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 
+    outa[2*ih] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 
 				    2*ih, outgoing);
   }
   if( mePartonData()[2]->mass() > ZERO ) {
-    outa[1] = VectorWaveFunction(rescaledMomenta()[2], mePartonData()[2], 
+    outa[1] = VectorWaveFunction(rescaledMomenta()[3], mePartonData()[3], 
 				 1, outgoing);
   }
   double full_me(0.);
-  ffb2vsHeME(ina, inb, outa, sca, full_me);
+  ffb2svHeME(ina, inb, sca, outa, full_me);
   return full_me;
 }
 
 ProductionMatrixElement
-MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
-		    VBVector & vec, ScalarWaveFunction & sca, 
-		    double & me2) const {
+MEff2sv::ffb2svHeME(SpinorVector & sp, SpinorBarVector & spbar,
+		    ScalarWaveFunction & sca, VBVector & vec, 
+		    double & me2) const { 
   Energy2 m2(scale());
   const vector<DVector> cfactors = getColourFactors();
   const HPCount ndiags = numberOfDiags();
@@ -111,12 +111,13 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
   vector<double> me(ndiags, 0.);
   vector<Complex> diag(ndiags, Complex(0.)), flows(ncf, Complex(0.));
   me2 = 0.;
-  ScalarWaveFunction interS; VectorWaveFunction interV; 
+  ScalarWaveFunction interS; 
+  VectorWaveFunction interV; 
   SpinorBarWaveFunction interFB;
   bool mv(false);
   if( mePartonData()[2]->mass() == ZERO ) mv = true;
   ProductionMatrixElement prodme(PDT::Spin1Half, PDT::Spin1Half,
-				 PDT::Spin1,PDT::Spin0);
+				 PDT::Spin0,PDT::Spin1);
   for(unsigned int ihel1 = 0; ihel1 < 2; ++ihel1) {
     for(unsigned int ihel2 = 0; ihel2 < 2; ++ihel2) {
       for(unsigned int ovhel = 0; ovhel < 3; ++ovhel) {
@@ -142,20 +143,20 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	    if( offshell->iSpin() == PDT::Spin1Half ) {
 	      if( current.ordered.second ) {
 		interFB = theFerm[ix].second->evaluate(m2, 3, offshell, 
-						       spbar[ihel2], sca);
+						      spbar[ihel2], vec[ovhel]);
 		diag[ix] = theFerm[ix].first->evaluate(m2, sp[ihel1], 
-						       interFB, vec[ovhel]);
+							interFB, sca);
 	      }
 	      else {
 		interFB = theFerm[ix].first->evaluate(m2, 3, offshell, 
-						      spbar[ihel2], vec[ovhel]);
+						       spbar[ihel2], sca);
 		diag[ix] = theFerm[ix].second->evaluate(m2, sp[ihel1], 
-							interFB, sca);
+						       interFB, vec[ovhel]);
 	      }
 	    }
 	  }
-	  else diag[ix] = 0.0;
-	  
+	  else diag[0];
+
 	  me[ix] += norm(diag[ix]);
 	  //add to appropriate colourflow(s)
 	  for(unsigned int iy = 0; iy < current.colourFlow.size(); ++iy)
@@ -164,10 +165,10 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 	  
 	}//end of diagram loop
 	for(unsigned int ii = 0; ii < ncf; ++ii) 
-	  for(unsigned int ij = 0; ij < ncf; ++ij)
+	  for(unsigned int ij = 0; ij < ncf; ++ij) 
 	    me2 += cfactors[ii][ij]*(flows[ii]*conj(flows[ij])).real();
-
-	prodme(ihel1, ihel2, ovhel, 0) = 
+	
+	prodme(ihel1, ihel2, 0, ovhel) = 
 	  std::accumulate(flows.begin(), flows.end(), Complex(0.));
       }
     }
@@ -183,16 +184,16 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
 }
 
 Selector<const ColourLines *>
-MEff2vs::colourGeometries(tcDiagPtr diag) const {
+MEff2sv::colourGeometries(tcDiagPtr diag) const {
   static vector<ColourLines> cf(5);
   //11->11
   cf[0] = ColourLines("");
   //33b->11
   cf[1] = ColourLines("1 -2");
   cf[2] = ColourLines("1 2 -3");
-  //33b->81
-  cf[3] = ColourLines("1 4, -4 2 -3");
-  cf[4] = ColourLines("1 2 4, -4 -3");
+  //33b->18
+  cf[3] = ColourLines("1 5, -5 2 -3");
+  cf[4] = ColourLines("1 2 5, -5 -3");
   
   HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
   PDT::Colour ca = getParticleData(current.incoming.first)->iColour();
@@ -210,7 +211,7 @@ MEff2vs::colourGeometries(tcDiagPtr diag) const {
       else
 	sel.insert(1., &cf[2]);
     }
-    else if( cc == PDT::Colour8 && cd == PDT::Colour0 ) {
+    else if( cd == PDT::Colour8 && cc == PDT::Colour0 ) {
       if( current.ordered.second )
 	sel.insert(1., &cf[3]);
       else
@@ -219,12 +220,12 @@ MEff2vs::colourGeometries(tcDiagPtr diag) const {
   }
   else
     throw MEException()
-      << "MEff2vs::colourGeometries() - Unknown incoming colour configuration "
+      << "MEff2sv::colourGeometries() - Unknown incoming colour configuration "
       << ca << "  " << cb << Exception::runerror;  
   return sel;
 }
 
-void MEff2vs::constructVertex(tSubProPtr sub) {
+void MEff2sv::constructVertex(tSubProPtr sub) {
   // Hard proces external particles
   ParticleVector hdp(4);
   hdp[0] = sub->incoming().first; 
@@ -234,16 +235,16 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
 
   //check ordering
   if( hdp[0]->id() < hdp[1]->id() ) swap(hdp[0], hdp[1]);
-  if( hdp[2]->dataPtr()->iSpin() == PDT::Spin0 ) swap(hdp[2], hdp[3]);
+  if( hdp[3]->dataPtr()->iSpin() == PDT::Spin0 ) swap(hdp[2], hdp[3]);
   
   SpinorVector sp;
   SpinorWaveFunction(sp, hdp[0], incoming, false);
   SpinorBarVector spbar;
   SpinorBarWaveFunction(spbar, hdp[1], incoming, false);
   VBVector vec;
-  bool mv(hdp[2]->dataPtr()->mass() == ZERO);
-  VectorWaveFunction(vec, hdp[2], outgoing, true, mv);
-  ScalarWaveFunction sca(hdp[3], outgoing, true);
+  bool mv(hdp[3]->dataPtr()->mass() == ZERO);
+  VectorWaveFunction(vec, hdp[3], outgoing, true, mv);
+  ScalarWaveFunction sca(hdp[2], outgoing, true);
 
   //Need to use rescale momenta to calculate matrix element
   cPDVector data(4);
@@ -256,7 +257,7 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
 
   SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
   SpinorBarWaveFunction sbr(rescaledMomenta()[1], data[1],incoming);
-  VectorWaveFunction vr(rescaledMomenta()[2], data[2], mv, outgoing);
+  VectorWaveFunction vr(rescaledMomenta()[3], data[3], mv, outgoing);
   for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
     spr.reset(ihel);
     sp[ihel] = spr;
@@ -269,10 +270,10 @@ void MEff2vs::constructVertex(tSubProPtr sub) {
     vr.reset(1);
     vec[1] = vr;
   }
-  sca = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
+  sca = ScalarWaveFunction(rescaledMomenta()[2], data[2], outgoing);
   
   double dummy(0.);
-  ProductionMatrixElement prodme = ffb2vsHeME(sp, spbar, vec, sca, dummy);
+  ProductionMatrixElement prodme = ffb2svHeME(sp, spbar, sca, vec, dummy);
   HardVertexPtr hardvertex = new_ptr(HardVertex());
   hardvertex->ME(prodme);
   for(ParticleVector::size_type i = 0; i < 4; ++i)
