@@ -109,10 +109,7 @@ private:
   NMSSMGOGOHVertex & operator=(const NMSSMGOGOHVertex &);
 
 private:
-   /**
-   * A pointer to the Standard Model object 
-   */
-  tcHwSMPtr _theSM;
+
   /**
    *  The various mixing matrices and couplings
    */

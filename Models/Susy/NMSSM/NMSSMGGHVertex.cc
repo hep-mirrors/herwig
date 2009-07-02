@@ -12,12 +12,12 @@
 
 using namespace Herwig;
 
-NMSSMGGHVertex::NMSSMGGHVertex() : 
-  _sw(0.), _cw(0.), _mw(0.*MeV), _mz(0.*MeV),_lambdaVEV(0.*MeV), _lambda(0.),
-   _v1(0.*MeV), _v2(0.*MeV), _triTp(0.*MeV), _triBt(0.*MeV),
-  _triTa(0.*MeV),_sb(0.), _cb(0.),
-  _masslast(make_pair(0.*MeV,0.*MeV)), _q2last(0.*MeV2), _couplast(0.),_coup(0.),
-  _hlast(0), _recalc(true) {
+NMSSMGGHVertex::NMSSMGGHVertex() : _sw(0.), _cw(0.), _mw(0.*MeV),
+	_mz(0.*MeV),_lambdaVEV(0.*MeV), _lambda(0.), _v1(0.*MeV),
+	_v2(0.*MeV), _triTp(0.*MeV), _triBt(0.*MeV), _triTa(0.*MeV),
+	_sb(0.), _cb(0.), _masslast(make_pair(0.*MeV,0.*MeV)),
+	_q2last(0.*MeV2), _couplast(0.), _coup(0.),
+    _hlast(0), _recalc(true) {
   
   //PDG codes for particles at vertices
   vector<long> first(5,21),second(5,21), third(5);
@@ -29,7 +29,7 @@ NMSSMGGHVertex::NMSSMGGHVertex() :
   setList(first, second, third);
 }
 
-void NMSSMGGHVertex::doinit() {
+void NMSSMGGHVertex::doinit()  {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
   if( !_theSM ) {
     throw InitException() << "NMSSMGGHVertex::doinit - The SM pointer is null!"
@@ -37,13 +37,14 @@ void NMSSMGGHVertex::doinit() {
   }
   // SM parameters
   _sw = sqrt(sin2ThetaW());
-  _cw = sqrt(1. - _theSM->sin2ThetaW());
+  _cw = sqrt(1. - sin2ThetaW());
   _mw = getParticleData(24)->mass();
   _mz = getParticleData(23)->mass();
   _top = getParticleData(6);
   _bt = getParticleData(5);
   _charm = getParticleData(4);
-  _tau = getParticleData(15);
+  _up = getParticleData(2);
+  _down = getParticleData(1);
   
   //NMSSM parameters
   tcNMSSMPtr nmssm = dynamic_ptr_cast<tcNMSSMPtr>(_theSM);
@@ -73,19 +74,24 @@ void NMSSMGGHVertex::doinit() {
   // resize vectors here and use setNParticles method
   // to the set the actual number in the loop.
   // Also only the top mass hass to be calculated at runtime
-  masses.resize(9, Energy());
+  masses.resize(11, Energy());
+  masses[0] = getParticleData(6)->mass();
+  masses[1] = getParticleData(5)->mass();
+  masses[2] = getParticleData(4)->mass();
   masses[3] = getParticleData(1000005)->mass();
   masses[4] = getParticleData(2000005)->mass();
   masses[5] = getParticleData(1000006)->mass();
   masses[6] = getParticleData(2000006)->mass();
-  masses[7] = getParticleData(1000015)->mass();  
-  masses[8] = getParticleData(2000015)->mass();  
+  masses[7] = getParticleData(1000002)->mass();  
+  masses[8] = getParticleData(2000002)->mass();  
+  masses[9] = getParticleData(1000001)->mass();  
+  masses[10] = getParticleData(2000001)->mass(); 
   
-  type.resize(9, PDT::Spin0);
+  type.resize(11, PDT::Spin0);
   type[0] = PDT::Spin1Half;
   type[1] = PDT::Spin1Half;
   type[2] = PDT::Spin1Half;
-  couplings.resize(9);
+  couplings.resize(11);
 
   orderInGem(1);
   orderInGs(2);
@@ -97,7 +103,7 @@ void NMSSMGGHVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << _sw << _cw << ounit(_mw, GeV) << ounit(_mz, GeV)
    << ounit(_lambdaVEV,GeV) << _lambda << ounit(_v1,GeV) << ounit(_v2,GeV)
     << ounit(_triTp,GeV) << ounit(_triBt,GeV) << ounit(_triTa,GeV) 
-     << _top << _bt << _charm << _tau << _mixS << _mixP << _mixQt << _mixQb
+     << _top << _bt << _charm << _up << _down << _mixS << _mixP << _mixQt << _mixQb
 	  << _mixQta << _sb << _cb; 
 }
 
@@ -106,7 +112,7 @@ void NMSSMGGHVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> _sw >> _cw >> iunit(_mw, GeV) >> iunit(_mz, GeV)
      >> iunit(_lambdaVEV,GeV) >> _lambda >> iunit(_v1,GeV) >> iunit(_v2,GeV)
     >> iunit(_triTp,GeV) >> iunit(_triBt,GeV) >> iunit(_triTa,GeV) 
-     >> _top >> _bt >> _charm >> _tau >> _mixS >> _mixP >> _mixQt >>
+     >> _top >> _bt >> _charm >> _up >> _down >> _mixS >> _mixP >> _mixQt >>
 	  _mixQb >> _mixQta >> _sb >> _cb; 
 }
 
@@ -137,259 +143,149 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
     _recalc = true;
     if( hid % 5 == 0 ) {
 	
-		Energy _mt= 0.*MeV;
-Energy _mb= 0.*MeV;
-Energy _mc= 0.*MeV;
-Energy _mta= 0.*MeV;
-
+	   Energy _mt( 0.*MeV), _mb(0.*MeV), _mc (0.*MeV), _mu(0.*MeV), _md(0.*MeV);
+	   
+      complex<Energy> cpl(ZERO);
+	  Complex c(0.);
       setNParticles(9);
       int iloc = (hid - 25)/10;
       //top quark
 	   _mt = _theSM->mass(q2, _top);
-      masses[0] = _theSM->mass(q2, _top);
-      Complex cpl = -_mt*
-	                (*_mixS)(iloc, 1)*0.5/_sb/_mw;
-       couplings[0].first = cpl;
-      couplings[0].second = cpl;
-      //couplings[0].second = cpl;
+	   c = -_mt*(*_mixS)(iloc, 1)*0.5/_sb/_mw;
+       couplings[0].first = c;
+      couplings[0].second = c;
+    
 	  //bottom quark
 	  _mb = _theSM->mass(q2, _bt);
-      masses[1] = _theSM->mass(q2, _bt);
-      cpl = -_mb*(*_mixS)(iloc, 0)*0.5/_cb/_mw;
-      couplings[1].first = cpl;
-      couplings[1].second = cpl;	 
+      c = -_mb*(*_mixS)(iloc, 0)*0.5/_cb/_mw;
+      couplings[1].first = c;
+      couplings[1].second = c;	
+	  
+	    
 	  //charm quark
 	   _mc = _theSM->mass(q2, _charm);
-	  masses[2] = _theSM->mass(q2, _charm);
-	  cpl = - _mc*(*_mixS)(iloc, 1)*0.5/_sb/_mw;
-      couplings[2].first = cpl;
-      couplings[2].second = cpl;
+	 
+	  c = - _mc*(*_mixS)(iloc, 1)*0.5/_sb/_mw;
+      couplings[2].first = c;
+      couplings[2].second = c;
+	  
       //~b_1
      double f1 = _mb/_mw/_cb;
-      Complex f2 = (0.5*_mz*(_sb*(*_mixS)(iloc,1) - _cb*(*_mixS)(iloc,0))/_cw)*UnitRemoval::InvE;
+  complex<Energy>  f2 = 0.5*_mz*( - _cb*(*_mixS)(iloc,0) 
+				   + _sb*(*_mixS)(iloc,1))/_cw;
       
       cpl = -f2*( (1. - 2.*sqr(_sw)/3.)*(*_mixQb)(0, 0)*(*_mixQb)(0, 0)
 	        + 2.*sqr(_sw)*(*_mixQb)(0, 1)*(*_mixQb)(0, 1)/3.)
-			- f1*_mb*UnitRemoval::InvE*(*_mixS)(iloc,0)
+			- f1*_mb*(*_mixS)(iloc,0)
 			*((*_mixQb)(0, 0)*(*_mixQb)(0, 0) + (*_mixQb)(0, 1)*(*_mixQb)(0, 1)) 
-	        - 0.5*f1*(_lambdaVEV*(*_mixS)(iloc,1) + _lambda*_v2*(*_mixS)(iloc,2)/_coup 
+	        - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_v2*(*_mixS)(iloc,2)/_coup 
 			+  _triBt*(*_mixS)(iloc,0))*((*_mixQb)(0, 1)*(*_mixQb)(0, 0)
-			+ (*_mixQb)(0, 0)*(*_mixQb)(0, 1))* UnitRemoval::InvE;
+			+ (*_mixQb)(0, 0)*(*_mixQb)(0, 1));
 			
 		
 		
-      couplings[3].first = cpl; 
-	  couplings[3].second = cpl; 
+      couplings[3].first = cpl*UnitRemoval::InvE; 
+	  couplings[3].second = cpl*UnitRemoval::InvE; 
       //~b_2
       cpl =  -f2*((1. - 2.*sqr(_sw)/3.)*(*_mixQb)(1, 0)*(*_mixQb)(1, 0)
 	         + 2.*sqr(_sw)*(*_mixQb)(1, 1)*(*_mixQb)(1, 1)/3.)
-			- f1*_mb*UnitRemoval::InvE*(*_mixS)(iloc,0)*
+			- f1*_mb*(*_mixS)(iloc,0)*
 			((*_mixQb)(1, 0)*(*_mixQb)(1, 0) + (*_mixQb)(1, 1)*(*_mixQb)(1, 1)) 
-	        - 0.5*f1*(_lambdaVEV*(*_mixS)(iloc,1) + _lambda*_v2*(*_mixS)(iloc,2)/_coup
+	        - 0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,1) - _lambda*_v2*(*_mixS)(iloc,2)/_coup
 			+  _triBt*(*_mixS)(iloc,0))*((*_mixQb)(0, 1)*(*_mixQb)(0, 0)
-			+ (*_mixQb)(0, 0)*(*_mixQb)(0, 1))*UnitRemoval::InvE;
+			+ (*_mixQb)(0, 0)*(*_mixQb)(0, 1));
 
 			
-      couplings[4].first = cpl; 
-	  couplings[4].second = cpl; 
+      couplings[4].first = cpl*UnitRemoval::InvE; 
+	  couplings[4].second = cpl*UnitRemoval::InvE; 
      
 	   //~t_1
       f1 = _mt/_mw/_sb;
 
 	  cpl   =-f2*( (1. - 4.*sqr(_sw)/3.)*(*_mixQt)(0, 0)*(*_mixQt)(0, 0)
 	        + 4.*sqr(_sw)*(*_mixQt)(0, 1)*(*_mixQt)(0, 1)/3.)
-	        - f1*_mt*UnitRemoval::InvE*(*_mixS)(iloc,1)
+	        - f1*_mt*(*_mixS)(iloc,1)
 			*((*_mixQt)(0, 0)*(*_mixQt)(0, 0)
 			+ (*_mixQt)(0, 1)*(*_mixQt)(0, 1))  
-	        -  0.5*f1*(_lambdaVEV*(*_mixS)(iloc,0) + _lambda*_v1*(*_mixS)(iloc,2)/_coup
+	        -  0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,0) - _lambda*_v1*(*_mixS)(iloc,2)/_coup
 			+ _triTp*(*_mixS)(iloc,1))*((*_mixQt)(0, 1)*(*_mixQt)(0, 0)
-			+ (*_mixQt)(0, 0)*(*_mixQt)(0, 1))*UnitRemoval::InvE;
+			+ (*_mixQt)(0, 0)*(*_mixQt)(0, 1));
 	  
+      couplings[5].first = cpl*UnitRemoval::InvE;
+	  couplings[5].second = cpl*UnitRemoval::InvE;
 	   
-		
-      couplings[5].first = cpl;
-	  couplings[5].second = cpl; 
       //~t_2
 	 cpl =  -f2*( (1. - 4.*sqr(_sw)/3.)*(*_mixQt)(1, 0)*(*_mixQt)(1, 0)
 	        + 4.*sqr(_sw)*(*_mixQt)(1, 1)*(*_mixQt)(1, 1)/3.)
-	        - f1*_mt*UnitRemoval::InvE*(*_mixS)(iloc,1)
+	        - f1*_mt*(*_mixS)(iloc,1)
 			*((*_mixQt)(1, 0)*(*_mixQt)(1, 0)
 			+ (*_mixQt)(1, 1)*(*_mixQt)(1, 1))  
-	        -  0.5*f1*(_lambdaVEV*(*_mixS)(iloc,0) + _lambda*_v1*(*_mixS)(iloc,2)/_coup
+	        -  0.5*f1*(-_lambdaVEV*(*_mixS)(iloc,0) - _lambda*_v1*(*_mixS)(iloc,2)/_coup
 			+ _triTp*(*_mixS)(iloc,1))*((*_mixQt)(1, 1)*(*_mixQt)(1, 0)
-			+ (*_mixQt)(1, 0)*(*_mixQt)(1, 1))*UnitRemoval::InvE;
+			+ (*_mixQt)(1, 0)*(*_mixQt)(1, 1));
 		
-      couplings[6].first = cpl;
-	  couplings[6].second = cpl; 
+      couplings[6].first = cpl*UnitRemoval::InvE;
+	  couplings[6].second = cpl*UnitRemoval::InvE; 
 
-	  //~tau_1
-	    _mta = _theSM->mass(q2, _tau); 
-	  f1 = _mta/_mw/_cb;
-	  cpl =-f2*( (1. - 2.*sqr(_sw))*(*_mixQta)(0, 0)*(*_mixQta)(0, 0) 
-		    + 2.*sqr(_sw)*(*_mixQta)(0, 1)*(*_mixQta)(0, 1))
-		    - f1*_mta*UnitRemoval::InvE*(*_mixS)(iloc,0)
-			*((*_mixQta)(0, 0)*(*_mixQta)(0, 0) 
-			+ (*_mixQta)(0, 1)*(*_mixQta)(0, 1)) 
-			- 0.5*f1*(_lambdaVEV*(*_mixS)(iloc,1) + _lambda*_v2*(*_mixS)(iloc,2)/_coup
-			+  _triTa*(*_mixS)(iloc,0))*((*_mixQta)(0, 1)*(*_mixQta)(0, 0) 
-		    + (*_mixQta)(0, 0)*(*_mixQta)(0, 1)) * UnitRemoval::InvE;
-		
-      couplings[7].first = cpl; 
-	  couplings[7].second = cpl; 
-      //~tau_2
-	 cpl =  -f2*( (1. - 2.*sqr(_sw))*(*_mixQta)(1, 0)*(*_mixQta)(1, 0)
-	        + 2.*sqr(_sw)*(*_mixQta)(1, 1)*(*_mixQta)(1, 1))
-	        - f1*_mta*UnitRemoval::InvE*(*_mixS)(iloc,1)
-			*((*_mixQta)(1, 0)*(*_mixQta)(1, 0)
-			+ (*_mixQta)(1, 1)*(*_mixQta)(1, 1))  
-	        -  0.5*f1*(_lambdaVEV*(*_mixS)(iloc,0) 
-			+ _lambda*_v1*(*_mixS)(iloc,2)/_coup
-			+ _triTa*(*_mixS)(iloc,1) )*((*_mixQta)(1, 1)*(*_mixQta)(1, 0)
-			+ (*_mixQta)(1, 0)*(*_mixQta)(1, 1))*UnitRemoval::InvE;
-		
-		
-      couplings[8].first = cpl; 
-	  couplings[8].second = cpl; 	  
+	  //~u_L
+	 f1 = _mu/_mw/_sb;
+
+	  cpl   = -f2*(1. - 4.*sqr(_sw)/3.) - f1*_mt*(*_mixS)(iloc,1);
+
+      couplings[7].first = cpl*UnitRemoval::InvE; 
+	  couplings[7].second = cpl*UnitRemoval::InvE; 
+	  //~u_R
+	  cpl   =-f2*4.*sqr(_sw)/3. - f1*_mt*(*_mixS)(iloc,1);
+
+      couplings[8].first = cpl*UnitRemoval::InvE; 
+	  couplings[8].second = cpl*UnitRemoval::InvE; 	  
+	  
+	  //~d_L
+	 f1 = _md/_mw/_cb;
+
+	  cpl   =-f2*(1. - 2.*sqr(_sw)/3.) - f1*_mt*(*_mixS)(iloc,1);
+
+      couplings[9].first = cpl*UnitRemoval::InvE; 
+	  couplings[9].second = cpl*UnitRemoval::InvE; 
+	  
+	  //~d_R
+	  cpl   =-f2*2.*sqr(_sw)/3. - f1*_mt*(*_mixS)(iloc,1);
+
+      couplings[10].first = cpl*UnitRemoval::InvE; 
+	  couplings[10].second = cpl*UnitRemoval::InvE; 	  
 	  
 
     }
 	
-	
-	
     else {
-      setNParticles(9);
+      setNParticles(3);
       int iloc = (hid - 36)/10;
-	  	Energy _mt= 0.*MeV;
-Energy _mb= 0.*MeV;
-Energy _mc= 0.*MeV;
-Energy _mta= 0.*MeV;
+	  	Energy _mt(0.*MeV),_mb( 0.*MeV), _mc= 0.*MeV,;
+		 Complex c(0.);
       //top quark
 	   _mt =  _theSM->mass(q2, _top);
-      masses[0] = _theSM->mass(q2, _top);
-	  Complex cpl = Complex(0., -1.)*0.5*_mt* 
-					(*_mixP)(iloc, 1)/_sb/_mw;
-      couplings[0].first = cpl;
-      couplings[0].second = -cpl;
+
+	   complex<Energy> cpl(ZERO);
+	   c = Complex(0., 1.)*0.5*_mt*(*_mixP)(iloc, 1)/_sb/_mw;
+      couplings[0].first = c;
+      couplings[0].second = -c;
+	  
 	  //bottom quark
-      masses[1] = _theSM->mass(q2, _bt);
+
 	  _mb = _theSM->mass(q2, _bt);
-       cpl = Complex(0., -1.)*0.5*_mb*
+       c = Complex(0., 1.)*0.5*_mb*
 	        (*_mixP)(iloc, 0)/_cb/_mw;
-      couplings[1].first = cpl;
-      couplings[1].second = -cpl;	 
+      couplings[1].first = c;
+      couplings[1].second = -c;	
+	   
 	  //charm quark
-	  masses[2] = _theSM->mass(q2, _charm);
+
 	   _mc = _theSM->mass(q2, _charm);
-       cpl = Complex(0., -1.)*0.5*_mc*
+       c = Complex(0., 1.)*0.5*_mc*
 	       (*_mixP)(iloc, 1)/_sb/_mw;
-      couplings[2].first = cpl;
-      couplings[2].second = -cpl;
-        //sbottom_1
-      double f1 = _mb/_mw/_cb;
-      Complex f2 = 0.5*_mz*(-_cb*(*_mixP)(iloc,0) 
-	               + _sb*(*_mixP)(iloc,1))/_cw*UnitRemoval::InvE;
-      cpl = -f2*((1. - 2.*sqr(_sw)/3.)
-	          *(*_mixQb)(0, 0)*(*_mixQb)(0, 0)
-	        + 2.*sqr(_sw)*(*_mixQb)(0, 1)*(*_mixQb)(0, 1)/3.)
-			- f1*_mb*UnitRemoval::InvE*(*_mixP)(iloc,0)
-			*((*_mixQb)(0, 0)*(*_mixQb)(0, 0)+ (*_mixQb)(0, 1)*(*_mixQb)(0, 1)) 
-	        + 0.5*f1*Complex((_lambdaVEV*(*_mixP)(iloc,1)
-			 + _lambda*_v2*(*_mixP)(iloc,2)/_coup
-			-  _triBt*(*_mixP)(iloc,0))*((*_mixQb)(0, 1)*(*_mixQb)(0, 0)
-			+ (*_mixQb)(0, 0)*(*_mixQb)(0, 1)) * UnitRemoval::InvE);
-			
-		cpl *= Complex(0.,1.0);	 
-		 couplings[3].first = cpl;
-         couplings[3].second = -cpl;
-		 
-	
-      //~b_2
-      cpl =  -f2*( (1. - 2.*sqr(_sw)/3.)
-	         *(*_mixQb)(1, 0)*(*_mixQb)(1, 0)
-	         + 2.*sqr(_sw)*(*_mixQb)(1, 1)*(*_mixQb)(1, 1)/3.)
-			- f1*_mb*UnitRemoval::InvE*(*_mixP)(iloc,0)
-			 *((*_mixQb)(1, 0)*(*_mixQb)(1, 0) 
-			+ (*_mixQb)(1, 1)*(*_mixQb)(1, 1)) 
-			+ 0.5*f1*Complex((_lambdaVEV*(*_mixP)(iloc,1)
-			+ _lambda*_v2*(*_mixP)(iloc,2)/_coup
-			-  _triBt*(*_mixP)(iloc,0))*((*_mixQb)(1, 1)*(*_mixQb)(1, 0)
-			+ (*_mixQb)(1, 0)*(*_mixQb)(1, 1)) * UnitRemoval::InvE);
-		 
-	cpl *=Complex(0.,1.0);			
-			
-      couplings[4].first = cpl; 
-	  couplings[4].second = -cpl; 
-     
-	   //~t_1
-      f1 = _mt/_mw/_sb;
-
-	  cpl   = -f2*( (1. - 4.*sqr(_sw)/3.)
-	          *(*_mixQt)(0, 0)*(*_mixQt)(0, 0)
-		    + 4.*sqr(_sw)*(*_mixQt)(0, 1)*(*_mixQt)(0, 1)/3.)
-			- f1*_mt*UnitRemoval::InvE*(*_mixP)(iloc,1)
-			*((*_mixQt)(0, 0)*(*_mixQt)(0, 0)
-	        + (*_mixQt)(0, 1)*(*_mixQt)(0, 1))  
-	        +  0.5*f1*Complex((_lambdaVEV*(*_mixP)(iloc,0) 
-			+ _lambda*_v1*(*_mixP)(iloc,2)/_coup
-			- _triTp*(*_mixP)(iloc,1) )*((*_mixQt)(0, 1)*(*_mixQt)(0, 0) 
-		    + (*_mixQt)(0, 0)*(*_mixQt)(0, 1))*UnitRemoval::InvE);
-			
-	cpl *= Complex(0.,1.0);		
+      couplings[2].first = c;
+      couplings[2].second = -c;
 		
-      couplings[5].first = cpl;
-	  couplings[5].second = -cpl; 
-      //~t_2
-	 cpl =  -f2*( (1. - 4.*sqr(_sw)/3.)
-	        *(*_mixQt)(1, 0)*(*_mixQt)(1, 0)
-	        + 4.*sqr(_sw)*(*_mixQt)(1, 1)*(*_mixQt)(1, 1)/3.)
-	        - f1*_mt*UnitRemoval::InvE*(*_mixP)(iloc,1)
-			*((*_mixQt)(1, 0)*(*_mixQt)(1, 0)
-			+ (*_mixQt)(1, 1)*(*_mixQt)(1, 1))  
-	        +  0.5*f1*Complex((_lambdaVEV*(*_mixP)(iloc,0) 
-			+ _lambda*_v1*(*_mixS)(iloc,2)/_coup
-			- _triTp*(*_mixP)(iloc,1) )*((*_mixQt)(1, 1)*(*_mixQt)(1, 0)
-			+ (*_mixQt)(1, 0)*(*_mixQt)(1, 1))*UnitRemoval::InvE);
-			
-	cpl *= Complex(0.,1.0);
-		
-      couplings[6].first = cpl;
-	  couplings[6].second = -cpl; 
-
-	  //stau_1
-	   _mta=_theSM->mass(q2, _tau); 
-	  f1 = _mta/_mw/_cb;
-	  cpl = -f2*( (1. - 2.*sqr(_sw))
-	        *(*_mixQta)(0, 0)*(*_mixQta)(0, 0) 
-		    + 2.*sqr(_sw)*(*_mixQta)(0, 1)*(*_mixQta)(0, 1))
-		    - f1*_mta*UnitRemoval::InvE*(*_mixP)(iloc,0)
-			*((*_mixQta)(0, 0)*(*_mixQta)(0, 0) 
-			+ (*_mixQta)(0, 1)*(*_mixQta)(0, 1)) 
-			+ 0.5*f1*Complex(( _lambdaVEV*(*_mixP)(iloc,1) 
-			+ _lambda*_v2*(*_mixP)(iloc,2)/_coup
-			-  _triTa*(*_mixP)(iloc,0))*((*_mixQta)(0, 1)*(*_mixQta)(0, 0) 
-		    + (*_mixQta)(0, 0)*(*_mixQta)(0, 1))* UnitRemoval::InvE);
-			
-		cpl *=Complex(0.,1.0);
-		
-      couplings[7].first = cpl; 
-	  couplings[7].second = -cpl; 
-      //~tau_2
-	 cpl =  -f2*( (1. - 2.*sqr(_sw))
-	        *(*_mixQta)(1, 0)*(*_mixQta)(1, 0)
-	        + 2.*sqr(_sw)*(*_mixQta)(1, 1)*(*_mixQta)(1, 1))
-	        - f1*_mta*UnitRemoval::InvE*(*_mixP)(iloc,1)
-			*((*_mixQta)(1, 0)*(*_mixQta)(1, 0)
-			+ (*_mixQta)(1, 1)*(*_mixQta)(1, 1))  
-	        +  0.5*f1*Complex(( _lambdaVEV*(*_mixP)(iloc,0) 
-			+ _lambda*_v1*(*_mixP)(iloc,2)/_coup
-			- _triTa*(*_mixP)(iloc,1) )*((*_mixQta)(1, 1)*(*_mixQta)(1, 0)
-			+ (*_mixQta)(1, 0)*(*_mixQta)(1, 1))*UnitRemoval::InvE);
-			
-	cpl *= Complex(0.,1.0);
-		
-		
-      couplings[8].first = cpl; 
-	  couplings[8].second = -cpl; 		
 		
     }
 	

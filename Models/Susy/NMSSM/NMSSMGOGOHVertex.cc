@@ -44,23 +44,24 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
   // CP-even neutralinos
   for(unsigned int ix=0;ix<5;++ix) {
     for(unsigned int iy=0;iy<5;++iy) {
-      for(unsigned int iz=0;iz<3;++iz) {
+      for(unsigned int iz=0;iz<5;++iz) {
 	first .push_back( ineut[ix]);
 	second.push_back( ineut[iy]);
 	third .push_back( ieven[iz]);
+        }
       }
     }
-  }
   // CP-odd  neutralinos
   for(unsigned int ix=0;ix<5;++ix) {
     for(unsigned int iy=0;iy<5;++iy) {
-      for(unsigned int iz=0;iz<2;++iz) {
+      for(unsigned int iz=0;iz<5;++iz) {
 	first .push_back( ineut[ix]);
 	second.push_back( ineut[iy]);
 	third .push_back( iodd[iz]);
+        }
       }
     }
-  }
+
   // charged higgs
   for(unsigned int ix=0;ix<5;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {
@@ -91,8 +92,8 @@ void NMSSMGOGOHVertex::doinit() {
 
    tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
      // SM parameters
-  _theSM = model;
   // sin theta_W
+
   double sw2=sin2ThetaW();
   _cw=sqrt(1.0 - sw2);
   _sw=sqrt(sw2);
@@ -179,7 +180,7 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
       << Exception::runerror;
     return;
   }
-  if( ig1 < 0 ) swap(ig1, ig2);
+  
   // weak coupling
   if(q2!=_q2last) {
     _couplast = weakCoupling(q2);
@@ -191,50 +192,63 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
     int iloc = (ihigg - 25)/10;
     // chargino
     if(abs(ig1) == 1000024 || abs(ig1) == 1000037) {
-      int ic1 = abs(ig1)==1000024 ? 0 : 1;
-      int ic2 = abs(ig2)==1000024 ? 0 : 1;
-      Complex coupL(0.), coupR(0.);
-      coupL = 
-	-_lambda*rt*conj((*_mixS)(iloc,2)*(*_mixU)(ic1,1)*(*_mixV)(ic2,1))
-	-_couplast*rt*(conj((*_mixS)(iloc,0)*(*_mixU)(ic1,1)*(*_mixV)(ic2,0)+
-			    (*_mixS)(iloc,1)*(*_mixU)(ic1,0)*(*_mixV)(ic2,1)));
-      coupR = 
-	-_lambda*rt*(*_mixS)(iloc,2)*(*_mixU)(ic2,1)*(*_mixV)(ic1,1)
-	-_couplast*rt*((*_mixS)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)+
-		       (*_mixS)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1));
-      setLeft(coupL);
-      setRight(coupR);
+
+     if( ig1 < 0 ) swap(ig1, ig2);
+     int ic1 = abs(ig1)==1000024 ? 0 : 1;
+     int ic2 = abs(ig2)==1000024 ? 0 : 1;
+	 Complex coupL(0.), coupR(0.);
+
+       coupL = -_lambda*rt*conj((*_mixS)(iloc,2)*(*_mixU)(ic1,1)*(*_mixV)(ic2,1))
+				  +_couplast*rt*(conj((*_mixS)(iloc,0)*(*_mixU)(ic1,1)*(*_mixV)(ic2,0)
+				  + (*_mixS)(iloc,1)*(*_mixU)(ic1,0)*(*_mixV)(ic2,1)));
+				  
+		 coupR = -_lambda*rt*(*_mixS)(iloc,2)*(*_mixU)(ic2,1)*(*_mixV)(ic1,1)
+				  +_couplast*rt*((*_mixS)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)
+				  + (*_mixS)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1));		  
+				  
+				  
+	  setLeft(-coupL);
+      setRight(-coupR);
       setNorm(1.0);
     }
     // neutralino
     else  {
+
       int in1 = (ig1 < 1000024) ? (ig1 - 1000022) : (ig1 - 1000005)/10; 
       int in2 = (ig2 < 1000024) ? (ig2 - 1000022) : (ig2 - 1000005)/10;
-      Complex us1 = (*_mixS)(iloc, 0); 
-      Complex us2 = (*_mixS)(iloc, 1);
+	  
+
+      Complex us1 = (*_mixS)(iloc, 1); 
+      Complex us2 = (*_mixS)(iloc, 0);
       Complex us3 = (*_mixS)(iloc, 2);
       Complex ni1 = (*_mixN)(in1,0);
       Complex nj1 = (*_mixN)(in2,0);	  
       Complex ni2 = (*_mixN)(in1,1);
       Complex nj2 = (*_mixN)(in2,1);
-      Complex ni3 = (*_mixN)(in1,2);
-      Complex nj3 = (*_mixN)(in2,2); 
-      Complex ni4 = (*_mixN)(in1,3);
-      Complex nj4 = (*_mixN)(in2,3); 
+      Complex ni3 = (*_mixN)(in1,3);
+      Complex nj3 = (*_mixN)(in2,3); 
+      Complex ni4 = (*_mixN)(in1,2);
+      Complex nj4 = (*_mixN)(in2,2); 
       Complex ni5 = (*_mixN)(in1,4);
       Complex nj5 = (*_mixN)(in2,4);
+
+
       Complex YL =  
-	_lambda*rt*(us1*(ni4*nj5 + ni5*nj4) + 
+	       - _lambda*rt*(us1*(ni4*nj5 + ni5*nj4) + 
 		    us2*(ni3*nj5 + ni5*nj3) +
 		    us3*(ni3*nj4 + ni4*nj3))
-	- sqrt(2.)*_kappa*us3*ni5*nj5 
-	+ _couplast*0.5*(us2*(ni2*nj4 + ni4*nj2) - 
-			 us1*(ni2*nj3 + ni3*nj2))
-	+ _couplast*0.5*_sw*(us1*(ni1*nj3 + ni3*nj1) - 
-			     us2*(ni1*nj4 + ni4*nj1) )/_cw;
-      setLeft(-conj(YL));
-      setRight(-YL);
-      setNorm(1.0);
+	       + sqrt(2.)*_kappa*us3*ni5*nj5 
+	       - _couplast*0.5*(us1*(ni2*nj3 + ni3*nj2)
+		   - us2*(ni2*nj4 + ni4*nj2))
+	       + _couplast*0.5*_sw*(us1*(ni1*nj3 + ni3*nj1) 
+			    - us2*(ni1*nj4 + ni4*nj1) )/_cw;
+				 
+				 	  			 
+				 
+      setLeft(conj(YL));
+      setRight(YL);
+      setNorm(-1.0);
+
     }
   }
   // CP-odd  neutral higgs
@@ -242,16 +256,23 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
     int iloc = (ihigg-36)/10;
     // chargino
     if(abs(ig1)==1000024||abs(ig1)==1000037) {
-      int ic1 = abs(ig1)==1000024 ? 0 : 1;
-      int ic2 = abs(ig2)==1000024 ? 0 : 1;
-      Complex QL = Complex(0,-1.0)*
+
+	if( ig1 < 0 ) swap(ig1, ig2);
+
+	int ic1 = abs(ig1)==1000024 ? 0 : 1;
+	int ic2 = abs(ig2)==1000024 ? 0 : 1;
+
+	Complex QL =Complex(0,-1.0)*
 	(_lambda*rt*conj((*_mixP)(iloc,2)*(*_mixU)(ic1,1)*(*_mixV)(ic2,1))
-	 -_couplast*rt*conj(((*_mixP)(iloc,0)*(*_mixU)(ic1,1)*(*_mixV)(ic2,0)+
-			     (*_mixP)(iloc,1)*(*_mixU)(ic1,0)*(*_mixV)(ic2,1))));
-      Complex QR = Complex(0,-1.0)*
-	(_lambda*rt*(*_mixP)(iloc,2)*(*_mixU)(ic2,1)*(*_mixV)(ic1,1)
-	 -_couplast*rt*((*_mixP)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)+
-			(*_mixP)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1)));
+	-_couplast*rt*conj(((*_mixP)(iloc,0)*(*_mixU)(ic1,1)*(*_mixV)(ic2,0)
+				+ (*_mixP)(iloc,1)*(*_mixU)(ic1,0)*(*_mixV)(ic2,1))));
+				
+		Complex QR =Complex(0,-1.0)*
+		(_lambda*rt*(*_mixP)(iloc,2)*(*_mixU)(ic2,1)*(*_mixV)(ic1,1)
+		-_couplast*rt*((*_mixP)(iloc,0)*(*_mixU)(ic2,1)*(*_mixV)(ic1,0)
+				+ (*_mixP)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1)));			
+				
+				
       setLeft(QL);
       setRight(-QR);
       setNorm(1.);
@@ -260,51 +281,64 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
     else {
       int in1 = (ig1 < 1000024) ? (ig1 - 1000022) : (ig1 - 1000005)/10; 
       int in2 = (ig2 < 1000024) ? (ig2 - 1000022) : (ig2 - 1000005)/10;
-      Complex up1 = (*_mixP)(iloc, 0); 
-      Complex up2 = (*_mixP)(iloc, 1);
+	  
+
+      Complex up1 = (*_mixP)(iloc, 1); 
+      Complex up2 = (*_mixP)(iloc, 0);
       Complex up3 = (*_mixP)(iloc, 2);
       Complex ni1 = (*_mixN)(in1,0);
       Complex nj1 = (*_mixN)(in2,0);	  
       Complex ni2 = (*_mixN)(in1,1);
       Complex nj2 = (*_mixN)(in2,1); 
-      Complex ni3 = (*_mixN)(in1,2);
-      Complex nj3 = (*_mixN)(in2,2); 
-      Complex ni4 = (*_mixN)(in1,3);
-      Complex nj4 = (*_mixN)(in2,3); 
+      Complex ni3 = (*_mixN)(in1,3);
+      Complex nj3 = (*_mixN)(in2,3); 
+      Complex ni4 = (*_mixN)(in1,2);
+      Complex nj4 = (*_mixN)(in2,2); 
       Complex ni5 = (*_mixN)(in1,4);
       Complex nj5 = (*_mixN)(in2,4);
-      Complex AL = 
-	_lambda*rt*(up2*(ni3*nj5 + ni5*nj3) +
-		    up1*(ni4*nj5 + ni5*nj4) + 
-		    up3*(ni3*nj4 + ni4*nj3))
-	- sqrt(2.)*_kappa*up3*ni5*nj5
-	- _couplast*0.5*(up2*(ni2*nj4 + ni4*nj2) - 
-			 up1*(ni2*nj3 + ni3*nj2))
-	+ _couplast*0.5*_sw*(up2*(ni1*nj4 + ni4*nj1) - 
-			     up1*(ni1*nj3 + ni3*nj1))/_cw;
-      AL *= Complex(0., -1.);
+
+
+					  
+      Complex AL = _lambda*rt*(up1*(ni4*nj5 + ni5*nj4) +
+		                      up2*(ni3*nj5 + ni5*nj3) + 
+		                      up3*(ni3*nj4 + ni4*nj3))
+	              - sqrt(2.)*_kappa*up3*ni5*nj5
+	              - _couplast*0.5*(up1*(ni2*nj3 + ni3*nj2) - 
+			         up2*(ni2*nj4 + ni3*nj4))
+				  + _couplast*0.5*_sw*(up1*(ni1*nj3 + ni3*nj1) - 
+			          up2*(ni1*nj4 + ni4*nj1))/_cw;
+	  
+      AL *= Complex(0.0, -1.0);
       setLeft(conj(AL));
-      setRight(AL);
+      setRight(-AL);
       setNorm(1.);
+
     }
   }
   // charged higgs
   else {
-    if (abs(ig1) == 1000024 || abs(ig1) == 1000037) {
-      swap (ig1,ig2);
-    }
-    int in = (abs(ig1) < 1000024) ? (ig1-1000022) : (ig1-1000005)/10; 
-    int ic = (abs(ig2) == 1000024) ? 0 : 1;
-    Complex QpR = 
-      _lambda*_cosb*(*_mixU)(ic,1)*(*_mixN)(in,4)
-      -_sinb*_couplast*(rt*(*_mixU)(ic,1)*
-			(_sw*(*_mixN)(in,0)/_cw + (*_mixN)(in,1))
-			- (*_mixU)(ic,0)*(*_mixN)(in,2));
-    Complex QpL = 
-      _lambda*_sinb*(*_mixV)(ic,1)*(*_mixN)(in,4)
-      + _couplast*_cosb*(rt*(*_mixV)(ic,1)*
-			 (_sw*(*_mixN)(in,0)/_cw + (*_mixN)(in,1))
-			 + (*_mixV)(ic,0)*(*_mixN)(in,3));
+  
+	if (abs(ig1) == 1000024 || abs(ig1) == 1000037) {
+	swap (ig1,ig2);
+	}
+	
+	int in = (abs(ig1) < 1000024) ? (ig1-1000022) : (ig1-1000005)/10; 
+	int ic = (abs(ig2) == 1000024) ? 0 : 1;
+
+
+Complex QpR = _lambda*_cosb*(*_mixU)(ic,1)*(*_mixN)(in,4)
+			  -_sinb*_couplast*(rt*(*_mixU)(ic,1)
+			  *(_sw*(*_mixN)(in,0)/_cw + (*_mixN)(in,1))
+			  - (*_mixU)(ic,0)*(*_mixN)(in,2));
+
+			  
+Complex QpL = _lambda*_sinb*(*_mixV)(ic,1)*(*_mixN)(in,4)
+			  + _couplast*_cosb*(rt*(*_mixV)(ic,1)
+			  *(_sw*(*_mixN)(in,0)/_cw + (*_mixN)(in,1))
+			  + (*_mixV)(ic,0)*(*_mixN)(in,3));
+			  
+
+				
     if(ic > 0) {
       setLeft (conj(QpL));
       setRight(QpR);

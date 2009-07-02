@@ -381,19 +381,19 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     int iloc = (higgs - 36)/10;
     // down type squarks and charged sleptons
     if( smid % 2 != 0 ) {
-      fact = -  0.5*f1*(m2a*m1b + m1a*m2b)*
+      fact = Complex(0.0,1.0)*(-0.5*f1*(m2a*m1b + m1a*m2b)*
 	( - _lambdaVEV*(*_mixP)(iloc,1) 
 	  - _lambda*_v2*(*_mixP)(iloc,2)/_couplast
-	  - af*(*_mixP)(iloc,0) );
+	  - af*(*_mixP)(iloc,0) ));
     }
     // up-type squarks and sneutrinos
     else {
-      fact =    0.5*f1*(m2a*m1b + m1a*m2b)*
+      fact = Complex(0.0,1.0)*(0.5*f1*(m2a*m1b + m1a*m2b)*
 	( - _lambdaVEV*(*_mixP)(iloc,0) 
 	  - _lambda*_v1*(*_mixP)(iloc,2)/_couplast
-	  - af*(*_mixP)(iloc,1));
+	  - af*(*_mixP)(iloc,1)));
     }
-    fact *= Complex(0, 1.0);
+   
   }
   setNorm(_couplast*fact*UnitRemoval::InvE);
 }

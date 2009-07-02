@@ -92,6 +92,7 @@ protected:
   /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
   //@}
@@ -194,9 +195,13 @@ private:
   tcPDPtr _charm;
 
   /**
-   * A pointer to the bottom quark
+   * A pointer to the top quark
    */
-  tcPDPtr _tau;
+  tcPDPtr _up;
+    /**
+   * A pointer to the down quark
+   */
+  tcPDPtr _down;
   /**
    * CP-even Higgs mixing matrix 
    */

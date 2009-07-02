@@ -148,13 +148,13 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
       sqr(_lambda)*rt*(_vu*(usMix(a,b,c,1,0,0) + usMix(a,b,c,1,2,2))/_glast 
 		       + _vd*(usMix(a,b,c,0,1,1) + usMix(a,b,c,0,2,2))/_glast
 		       + _s*(usMix(a,b,c,2,1,1) + usMix(a,b,c,2,0,0)))
-      - _lambda*_kappa*rt*(_vu*usMix(a,b,c,2,0,2)/_glast
+      - _lambda*_kappa*rt*(_vu*usMix(a,b,c,0,2,2)/_glast
 			   + _vd*usMix(a,b,c,2,1,2)/_glast + 2.*_s*usMix(a,b,c,1,0,2))
       + sqr(_kappa)/rt*_s*usMix(a,b,c,2,2,2)
-      -_lambda*_theAl*rt*usMix(a,b,c,1,0,2)
+      - _lambda*_theAl*rt*usMix(a,b,c,1,0,2)
       + _kappa*_theAk*rt/3.*usMix(a,b,c,2,2,2)
       + sqr(_glast)*0.25*rt/sqr(_cw)*(_vu*(usMix(a,b,c,1,1,1) -
-					   usMix(a,b,c,1,0,0))/_glast - 
+					   usMix(a,b,c,1,0,0))/_glast -
 				      _vd*(usMix(a,b,c,0,1,1) -
 					   usMix(a,b,c,0,0,0))/_glast);
   }
