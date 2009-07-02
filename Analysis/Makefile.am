@@ -28,16 +28,6 @@ IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.h\
 BELLECharmAnalysis.h BELLECharmAnalysis.cc\
 CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 
-if HAVE_HEPMC
-pkglib_LTLIBRARIES += HwHepMCAnalysis.la
-HwHepMCAnalysis_la_LDFLAGS = -module -version-info 1:0:0
-HwHepMCAnalysis_la_SOURCES = \
-GraphvizPlot.h GraphvizPlot.cc \
-HepMCFile.h    HepMCFile.cc
-HwHepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE)
-HwHepMCAnalysis_la_LIBADD = $(HEPMCLIBS)
-endif
-
 # analysis code which depends on fastjet
 if WANT_LIBFASTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
