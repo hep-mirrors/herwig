@@ -4,8 +4,6 @@ SUBDIRS = include \
 	UnderlyingEvent Analysis Looptools \
 	lib src Doc Contrib
 
-noinst_HEADERS = Config/HepMCHelper.h
-
 EXTRA_DIST = GUIDELINES
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-debug --with-thepeg=$(THEPEGPATH)
