@@ -260,33 +260,33 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
     else {
       setNParticles(3);
       int iloc = (hid - 36)/10;
-	  	Energy _mt(0.*MeV),_mb( 0.*MeV), _mc= 0.*MeV,;
-		 Complex c(0.);
+      Energy _mt(0.*MeV),_mb( 0.*MeV), _mc= 0.*MeV;
+      Complex c(0.);
       //top quark
-	   _mt =  _theSM->mass(q2, _top);
-
-	   complex<Energy> cpl(ZERO);
-	   c = Complex(0., 1.)*0.5*_mt*(*_mixP)(iloc, 1)/_sb/_mw;
+      _mt =  _theSM->mass(q2, _top);
+      
+      complex<Energy> cpl(ZERO);
+      c = Complex(0., 1.)*0.5*_mt*(*_mixP)(iloc, 1)/_sb/_mw;
       couplings[0].first = c;
       couplings[0].second = -c;
-	  
-	  //bottom quark
-
-	  _mb = _theSM->mass(q2, _bt);
-       c = Complex(0., 1.)*0.5*_mb*
-	        (*_mixP)(iloc, 0)/_cb/_mw;
+      
+      //bottom quark
+      
+      _mb = _theSM->mass(q2, _bt);
+      c = Complex(0., 1.)*0.5*_mb*
+	(*_mixP)(iloc, 0)/_cb/_mw;
       couplings[1].first = c;
       couplings[1].second = -c;	
-	   
-	  //charm quark
-
-	   _mc = _theSM->mass(q2, _charm);
-       c = Complex(0., 1.)*0.5*_mc*
-	       (*_mixP)(iloc, 1)/_sb/_mw;
+      
+      //charm quark
+      
+      _mc = _theSM->mass(q2, _charm);
+      c = Complex(0., 1.)*0.5*_mc*
+	(*_mixP)(iloc, 1)/_sb/_mw;
       couplings[2].first = c;
       couplings[2].second = -c;
-		
-		
+      
+      
     }
 	
   }

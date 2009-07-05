@@ -20,7 +20,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MSSM class.
+ * The MSSM class provides the main model class to replace the Standard Model 
+ * when using the Minimal Supersymmetric Standard Model.
  *
  * @see \ref MSSMInterfaces "The interfaces"
  * defined for MSSM.

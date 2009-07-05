@@ -17,8 +17,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the BasicConsistency class.
+/** \ingroup Analysis
+ * The BasicConsistency class is a simple analysis which performs a basic
+ * analysis of the event checking that energy, momentum and charge are
+ * conserved and no quarks or clusters are final-state particles.
  *
  * @see \ref BasicConsistencyInterfaces "The interfaces"
  * defined for BasicConsistency.

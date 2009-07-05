@@ -173,17 +173,14 @@ int GeneralCurrentDecayer::modeNumber(bool & cc, vector<long> id) const {
   idtemp[0] = p0->CC() ? -id[0] : id[0];
   tPDPtr p1=getParticleData(id[1]);
   idtemp[1] = p1->CC() ? -id[1] : id[1];
-  bool found(false);
   unsigned int ipart;
   for(ipart=0;ipart<_inpart.size();++ipart) {
     if(id    [0]==_inpart[ipart]&&id    [1]==_outpart[ipart]) {
       cc=false;
-      found=true;
       break;
     }
     else if(idtemp[0]==_inpart[ipart]&&idtemp[1]==_outpart[ipart]) {
       cc=true;
-      found=true;
       break;
     }
   }

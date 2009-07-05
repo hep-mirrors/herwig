@@ -13,7 +13,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The LPairAnalysis class is designed to analyse lepton pairs.
  * Therefore the lepton and antilepton with highest pt are selected from
  * the event and some observables are computed and booked into

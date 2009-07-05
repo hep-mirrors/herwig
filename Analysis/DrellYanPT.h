@@ -13,7 +13,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**\ingroup Analysis
+/** \ingroup Analysis
  * 
  * This AnalysisHandler books histograms
  * of the weak boson's pt in Drell-Yan

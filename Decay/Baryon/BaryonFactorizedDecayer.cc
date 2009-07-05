@@ -124,7 +124,6 @@ void BaryonFactorizedDecayer::doinit() {
   vector<unsigned int> modeloc,ttform,ttcurr;
   vector<Complex> tCKM; Complex ckm;
   bool done;
-  int id,idbar;
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr channel;
   vector<double>::iterator start,end;
@@ -154,9 +153,6 @@ void BaryonFactorizedDecayer::doinit() {
 	  // set the parameters for the additional modes
 	  ttform.clear();ttcurr.clear();
 	  ttform.push_back(tformmap[ix]);ttcurr.push_back(tcurrmap[ix]);
-	  id=particles[ix][1]->id();
-	  if(particles[ix][1]->CC()){idbar=particles[ix][1]->CC()->id();}
-	  else{idbar=id;}
 	  for(iy=0;iy<modeloc.size();++iy)
 	    {
 	      ttform.push_back(tformmap[modeloc[iy]]);

@@ -1,34 +1,35 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEee2VV_H
-#define HERWIG_MEee2VV_H
+#ifndef HERWIG_MEGammaGamma2WW_H
+#define HERWIG_MEGammaGamma2WW_H
 //
-// This is the declaration of the MEee2VV class.
+// This is the declaration of the MEGammaGamma2WW class.
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.fh"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
 /**
- * The MEee2VV class implements the matrix elements for 
- * \f$e^+e^-\to W^+W^-/|^0Z^0\f$.
+ * The MEGammaGamma2WW class provides the matrix elements for
+ * \f$\gamma\gamma\to f \bar{f}\f$.
  *
- * @see \ref MEee2VVInterfaces "The interfaces"
- * defined for MEee2VV.
+ * @see \ref MEGammaGamma2WWInterfaces "The interfaces"
+ * defined for MEGammaGamma2WW.
  */
-class MEee2VV: public HwME2to2Base {
+class MEGammaGamma2WW : public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEee2VV();
+  MEGammaGamma2WW();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -84,12 +85,6 @@ public:
   colourGeometries(tcDiagPtr diag) const;
 
   /**
-   * Used internally by generateKinematics, after calculating the
-   * limits on cos(theta).
-   */
-  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
-
-  /**
    *  Construct the vertex of spin correlations.
    */
   virtual void constructVertex(tSubProPtr);
@@ -124,32 +119,17 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
-   * @param f1  Spinors for the incoming fermion
-   * @param a1  Spinors for the incoming antifermion
-   * @param v1  Polarization vector for the 1st outgoing boson
-   * @param v2  Polarization vector for the 2nd outgoing boson
-   * @param me  Whether or not to calculate the matrix element for spin correlations
+   * Matrix element for \f$\gamma\gamma\to q\bar{q}\f$
+   * @param p1   The wavefunctions for the first  incoming photon
+   * @param p2   The wavefunctions for the second incoming photon
+   * @param w1   The wavefunctions for the first  outgoing W
+   * @param w2   The wavefunctions for the second outgoing W
+   * @param calc Whether or not to calculate the matrix element
    */
-  double WWME(vector<SpinorWaveFunction>    & f1,
-	      vector<SpinorBarWaveFunction> & a1,
-	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
-
-  /**
-   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
-   * @param f1  Spinors for the incoming fermion
-   * @param a1  Spinors for the incoming antifermion
-   * @param v1  Polarization vector for the 1st outgoing boson
-   * @param v2  Polarization vector for the 2nd outgoing boson
-   * @param me  Whether or not to calculate the matrix element for spin correlations
-   */
-  double ZZME(vector<SpinorWaveFunction>    & f1,
-	      vector<SpinorBarWaveFunction> & a1,
-	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
+  double helicityME(vector<VectorWaveFunction> & p1,
+		    vector<VectorWaveFunction> & p2,
+		    vector<VectorWaveFunction> & w1,
+		    vector<VectorWaveFunction> & w2, bool calc) const;
 
 protected:
 
@@ -167,7 +147,6 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-
 
 protected:
 
@@ -187,55 +166,36 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEee2VV> initMEee2VV;
+  static ClassDescription<MEGammaGamma2WW> initMEGammaGamma2WW;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2VV & operator=(const MEee2VV &);
+  MEGammaGamma2WW & operator=(const MEGammaGamma2WW &);
 
 private:
 
   /**
-   *  Vertices
-   */
-  //@{
-  /**
-   *   FFPVertex
-   */
-  AbstractFFVVertexPtr FFPvertex_;
-
-  /**
-   *   FFWVertex
-   */
-  AbstractFFVVertexPtr FFWvertex_;
-
-  /**
-   *   FFZVertex
-   */
-  AbstractFFVVertexPtr FFZvertex_;
-
-  /**
-   *  WWW Vertex
-   */ 
-  AbstractVVVVertexPtr WWWvertex_;
-  //@}
-
-  /**
-   *  Processes
-   */
-  unsigned int process_;
-
-  /**
-   *  Treatment of the the W and Z masses
+   *  Treatment of the the W mass
    */
   unsigned int massOption_;
 
   /**
-   *  The matrix element
+   *  Pointer to the gammaWW vertex
+   */
+  AbstractVVVVertexPtr WWWVertex_;
+
+  /**
+   *  Pointer to the gammagammaWW vertex
+   */
+  AbstractVVVVVertexPtr WWWWVertex_;
+
+  /**
+   *  Matrix element
    */
   mutable ProductionMatrixElement me_;
+
 };
 
 }
@@ -247,32 +207,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEee2VV. */
+ *  base classes of MEGammaGamma2WW. */
 template <>
-struct BaseClassTrait<Herwig::MEee2VV,1> {
-  /** Typedef of the first base class of MEee2VV. */
+struct BaseClassTrait<Herwig::MEGammaGamma2WW,1> {
+  /** Typedef of the first base class of MEGammaGamma2WW. */
   typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEee2VV class and the shared object where it is defined. */
+ *  the MEGammaGamma2WW class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEee2VV>
-  : public ClassTraitsBase<Herwig::MEee2VV> {
+struct ClassTraits<Herwig::MEGammaGamma2WW>
+  : public ClassTraitsBase<Herwig::MEGammaGamma2WW> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2VV"; }
+  static string className() { return "Herwig::MEGammaGamma2WW"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEee2VV is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2VV depends on other classes (base classes
+   * MEGammaGamma2WW is implemented. It may also include several, space-separated,
+   * libraries if the class MEGammaGamma2WW depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMELepton.so"; }
+  static string library() { return "HwMEGammaGamma.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEee2VV_H */
+#endif /* HERWIG_MEGammaGamma2WW_H */

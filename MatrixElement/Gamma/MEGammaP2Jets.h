@@ -1,34 +1,36 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEee2VV_H
-#define HERWIG_MEee2VV_H
+#ifndef HERWIG_MEGammaP2Jets_H
+#define HERWIG_MEGammaP2Jets_H
 //
-// This is the declaration of the MEee2VV class.
+// This is the declaration of the MEGammaP2Jets class.
 //
 
 #include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
-#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The MEee2VV class implements the matrix elements for 
- * \f$e^+e^-\to W^+W^-/|^0Z^0\f$.
+ * The MEGammaP2Jets class implements the matrix elements for 
+ * pointlike gamma+hadron -> jets.
  *
- * @see \ref MEee2VVInterfaces "The interfaces"
- * defined for MEee2VV.
+ * @see \ref MEGammaP2JetsInterfaces "The interfaces"
+ * defined for MEGammaP2Jets.
  */
-class MEee2VV: public HwME2to2Base {
+class MEGammaP2Jets: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  MEee2VV();
+  MEGammaP2Jets();
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -82,17 +84,55 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+  //@}
+
+protected:
 
   /**
-   * Used internally by generateKinematics, after calculating the
-   * limits on cos(theta).
+   *  Members to calculate the matrix elements
    */
-  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
+  //@{
+  /**
+   * Matrix element for \f$\gamma g\to q \bar{q}\f$.
+   * @param gmin Polarization vectors for the incoming photon 
+   * @param glin Polarization vectors for the incoming gluon
+   * @param fout Spinors for the outgoing quark
+   * @param aout Spinors for the outgoing antiquark
+   * @param calc  Whether or not to calculate the matrix element for spin correlations
+   */
+  double gammagluonME(vector<VectorWaveFunction> & gmin,
+		      vector<VectorWaveFunction> & glin,
+		      vector<SpinorBarWaveFunction> & fout, 
+		      vector<SpinorWaveFunction> & aout,
+		      bool calc) const;
 
   /**
-   *  Construct the vertex of spin correlations.
+   * Matrix element for \f$\gamma q\to g q\f$.
+   * @param gmin Polarization vectors for the incoming photon
+   * @param fin  Spinors for the incoming quark
+   * @param gout Polarization vectors for the outgong gluon
+   * @param fout Spinors for the outgoing quark
+   * @param calc  Whether or not to calculate the matrix element for spin correlations
    */
-  virtual void constructVertex(tSubProPtr);
+  double gammaquarkME(vector<VectorWaveFunction> & gmin,
+		      vector<SpinorWaveFunction> & fin,
+		      vector<VectorWaveFunction> & gout,
+		      vector<SpinorBarWaveFunction> & fout,
+		      bool calc) const;
+
+  /**
+   * Matrix element for \f$\gamma q\to g q\f$.
+   * @param gmin Polarization vectors for the incoming photon
+   * @param fin  Spinors for the incoming antiquark
+   * @param gout Polarization vectors for the outgong gluon
+   * @param fout Spinors for the outgoing antiquark
+   * @param calc  Whether or not to calculate the matrix element for spin correlations
+   */
+  double gammaantiquarkME(vector<VectorWaveFunction> & gmin,
+			  vector<SpinorBarWaveFunction> & fin,
+			  vector<VectorWaveFunction> & gout,
+			  vector<SpinorWaveFunction> & fout,
+			  bool calc) const;
   //@}
 
 public:
@@ -123,36 +163,6 @@ public:
 
 protected:
 
-  /**
-   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
-   * @param f1  Spinors for the incoming fermion
-   * @param a1  Spinors for the incoming antifermion
-   * @param v1  Polarization vector for the 1st outgoing boson
-   * @param v2  Polarization vector for the 2nd outgoing boson
-   * @param me  Whether or not to calculate the matrix element for spin correlations
-   */
-  double WWME(vector<SpinorWaveFunction>    & f1,
-	      vector<SpinorBarWaveFunction> & a1,
-	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
-
-  /**
-   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
-   * @param f1  Spinors for the incoming fermion
-   * @param a1  Spinors for the incoming antifermion
-   * @param v1  Polarization vector for the 1st outgoing boson
-   * @param v2  Polarization vector for the 2nd outgoing boson
-   * @param me  Whether or not to calculate the matrix element for spin correlations
-   */
-  double ZZME(vector<SpinorWaveFunction>    & f1,
-	      vector<SpinorBarWaveFunction> & a1,
-	      vector<VectorWaveFunction>    & v1,
-	      vector<VectorWaveFunction>    & v2,
-	      bool me) const;
-
-protected:
-
   /** @name Clone Methods. */
   //@{
   /**
@@ -167,7 +177,6 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-
 
 protected:
 
@@ -187,55 +196,46 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEee2VV> initMEee2VV;
+  static ClassDescription<MEGammaP2Jets> initMEGammaP2Jets;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEee2VV & operator=(const MEee2VV &);
+  MEGammaP2Jets & operator=(const MEGammaP2Jets &);
 
 private:
 
   /**
-   *  Vertices
+   *  Pointer to the quark-antiquark-gluon vertex
    */
-  //@{
-  /**
-   *   FFPVertex
-   */
-  AbstractFFVVertexPtr FFPvertex_;
+  AbstractFFVVertexPtr _gluonvertex;
 
   /**
-   *   FFWVertex
+   *  Pointer to the quark-antiquark-photon vertex
    */
-  AbstractFFVVertexPtr FFWvertex_;
+  AbstractFFVVertexPtr _photonvertex;
 
   /**
-   *   FFZVertex
+   *  Allowed processes
    */
-  AbstractFFVVertexPtr FFZvertex_;
+  unsigned int _process;
 
   /**
-   *  WWW Vertex
-   */ 
-  AbstractVVVVertexPtr WWWvertex_;
-  //@}
+   *  Minimum flavour
+   */
+  int _minflavour;
 
   /**
-   *  Processes
+   *  Maximum flavour
    */
-  unsigned int process_;
-
+  int _maxflavour;
+  
   /**
-   *  Treatment of the the W and Z masses
+   * Matrix element for spin correlations
    */
-  unsigned int massOption_;
+  ProductionMatrixElement _me;
 
-  /**
-   *  The matrix element
-   */
-  mutable ProductionMatrixElement me_;
 };
 
 }
@@ -247,32 +247,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEee2VV. */
+ *  base classes of MEGammaP2Jets. */
 template <>
-struct BaseClassTrait<Herwig::MEee2VV,1> {
-  /** Typedef of the first base class of MEee2VV. */
+struct BaseClassTrait<Herwig::MEGammaP2Jets,1> {
+  /** Typedef of the first base class of MEGammaP2Jets. */
   typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEee2VV class and the shared object where it is defined. */
+ *  the MEGammaP2Jets class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEee2VV>
-  : public ClassTraitsBase<Herwig::MEee2VV> {
+struct ClassTraits<Herwig::MEGammaP2Jets>
+  : public ClassTraitsBase<Herwig::MEGammaP2Jets> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::MEee2VV"; }
+  static string className() { return "Herwig::MEGammaP2Jets"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * MEee2VV is implemented. It may also include several, space-separated,
-   * libraries if the class MEee2VV depends on other classes (base classes
+   * MEGammaP2Jets is implemented. It may also include several, space-separated,
+   * libraries if the class MEGammaP2Jets depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwMELepton.so"; }
+  static string library() { return "HwMEGammaHadron.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_MEee2VV_H */
+#endif /* HERWIG_MEGammaP2Jets_H */

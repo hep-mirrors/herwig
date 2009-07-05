@@ -21,7 +21,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The LEPEventShapes class performs the analysis of global event shapes and
  * compares with LEP data. This handler is solely intended as a slave
  * handler for the EventShapesMasterAnalysis class.

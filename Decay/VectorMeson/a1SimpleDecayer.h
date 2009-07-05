@@ -21,7 +21,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the a1SimpleDecayer class.
+ * The a1SimpleDecayer class provides a simple model of the decay of the
+ * \f$a_1\f$ meson to three pions including \f$\rho\f$ meson intermediate states.
  *
  * @see \ref a1SimpleDecayerInterfaces "The interfaces"
  * defined for a1SimpleDecayer.

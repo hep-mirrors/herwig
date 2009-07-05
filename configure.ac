@@ -77,11 +77,7 @@ HERWIG_LOOPTOOLS
 
 HERWIG_PDF_PATH
 
-HERWIG_CHECK_HEPMC
-
-HERWIG_CHECK_KTJET
-
-dnl HERWIG_CHECK_FASTJET
+HERWIG_CHECK_FASTJET
 
 HERWIG_VERSIONSTRING
 
@@ -110,7 +106,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/UED/Makefile
 		Models/LH/Makefile
 		Models/LHTP/Makefile
-		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile
@@ -132,6 +127,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Hadron/Makefile
                 MatrixElement/DIS/Makefile
                 MatrixElement/Powheg/Makefile
+                MatrixElement/Gamma/Makefile
 		Shower/SplittingFunctions/Makefile
 		Shower/Couplings/Makefile
 		Shower/Default/MECorrections/Makefile
@@ -161,5 +157,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
 
 HERWIG_OVERVIEW
+
+AC_CONFIG_COMMANDS([summary],[cat config.herwig])
 
 AC_OUTPUT

@@ -402,8 +402,6 @@ void GenericWidthGenerator::doinit() {
 	  else _MEcoupling.back()=1.;
 	  _MEtype.push_back(2);
 	  _MEcode.back()=0;
-	  unsigned int ix=0;
-	  if(_MEtype.size()>1){ix=_noofentries[_MEtype.size()-2];}
 	  _noofentries.push_back(_intermasses.size());
 	  _interpolators.resize(_MEtype.size());
 	  // get the vectors we will need
@@ -455,8 +453,6 @@ void GenericWidthGenerator::doinit() {
 	  _MEmass1.push_back(ZERO);
 	  _MEmass2.push_back(ZERO);
 	  _modeon.push_back(mode->brat()>_BRminimum);
-	  unsigned int ix=0;
-	  if(_MEtype.size()>1){ix=_noofentries[_MEtype.size()-2];}
 	  _noofentries.push_back(_intermasses.size());
 	  _interpolators.resize(_MEtype.size());
 	  // get the vectors we will need

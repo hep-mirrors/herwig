@@ -17,7 +17,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the FtoFVVDecayer class.
+ * The FtoFVVDecayer class provides the general matrix elements for the
+ * decay of a fermion to a fermion and two vector bosons.
  *
  * @see \ref FtoFVVDecayerInterfaces "The interfaces"
  * defined for FtoFVVDecayer.

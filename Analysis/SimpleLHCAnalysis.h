@@ -20,7 +20,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The SimpleLHCAnalysis class is designed to perform some simple analysis of
  * gauge boson, W and Z, distributions in hadron-hadron collisions. The main 
  * distriubtions are the transverse momentum and rapidities of the gauge bosons

@@ -19,7 +19,10 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the KaonThreeMesonCurrent class.
+ * The KaonThreeMesonCurrent class implements the model of M. Finkemeier 
+ * and E.~Mirkes, Z. Phys. C 69 (1996) 243 [arXiv:hep-ph/9503474],
+ * for the weak current for three mesons where at least one of the mesons is
+ * a kaon.
  *
  * @see \ref KaonThreeMesonCurrentInterfaces "The interfaces"
  * defined for KaonThreeMesonCurrent.

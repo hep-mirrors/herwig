@@ -1,7 +1,0 @@
-# List the source files you want to compile here.
-# SOURCES = 
-
-# List the .so files you want to build here
-# OBJECTS = 
-
-include @/Makefile.common

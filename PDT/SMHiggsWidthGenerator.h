@@ -24,7 +24,8 @@ using namespace ThePEG;
 typedef Selector<tDMPtr> DecayMap;
 
 /**
- * Here is the documentation of the SMHiggsWidthGenerator class.
+ * The SMHiggsWidthGenerator class calculates the width for the Standard Model Higgs
+ * boson.
  *
  * @see \ref SMHiggsWidthGeneratorInterfaces "The interfaces"
  * defined for SMHiggsWidthGenerator.

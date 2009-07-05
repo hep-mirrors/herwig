@@ -12,7 +12,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2WH class.
+ * The MEPP2WH class provides the matrix elements for the production of
+ * the \f$W^\pm\f$ boson in association with the Higgs in hadron collisions.
  *
  * @see \ref MEPP2WHInterfaces "The interfaces"
  * defined for MEPP2WH.

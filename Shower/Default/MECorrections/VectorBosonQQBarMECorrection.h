@@ -19,7 +19,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the VectorBosonQQBarMECorrection class.
+ * The VectorBosonQQBarMECorrection class provides the matrix element correction
+ * for the decay of the Z boson.
  *
  * @see \ref VectorBosonQQBarMECorrectionInterfaces "The interfaces"
  * defined for VectorBosonQQBarMECorrection.
