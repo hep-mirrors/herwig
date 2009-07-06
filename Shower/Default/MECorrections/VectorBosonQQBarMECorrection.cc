@@ -416,14 +416,17 @@ double VectorBosonQQBarMECorrection::u(double x2) {
 
 void VectorBosonQQBarMECorrection::
 getXXbar(double kti, double z, double &x, double &xbar) {
-  x = (1. + sqr(d_v)*(-1. + z) + sqr(kti*(-1. + z))*z*z*z 
-       + z*sqrt(sqr(d_v) + kti*(-1. + z)*z*(2. + kti*(-1. + z)*z))
-       - kti*(-1. + z)*z*(2. + z*(-2 
-       + sqrt(sqr(d_v)+ kti*(-1. + z)*z*(2. + kti*(-1. + z)*z))
-				  )))
-    /(1. - kti*(-1. + z)*z 
-      + sqrt(sqr(d_v) + kti*(-1. + z)*z*(2. + kti*(-1. + z)*z)));
-  xbar = 1. + kti*(-1. + z)*z;
+  double w = sqr(d_v) + kti*(-1. + z)*z*(2. + kti*(-1. + z)*z);
+  if (w < 0) {
+    x = -1.; 
+    xbar = -1;
+  } else {
+    x = (1. + sqr(d_v)*(-1. + z) + sqr(kti*(-1. + z))*z*z*z 
+	 + z*sqrt(w)
+	 - kti*(-1. + z)*z*(2. + z*(-2 + sqrt(w))))/
+      (1. - kti*(-1. + z)*z + sqrt(w));
+    xbar = 1. + kti*(-1. + z)*z;
+  }
 }
 
 double VectorBosonQQBarMECorrection::qWeight(double x, double xbar) {
@@ -467,12 +470,17 @@ double VectorBosonQQBarMECorrection::qbarWeight(double x, double xbar) {
 double VectorBosonQQBarMECorrection::qWeightX(Energy qtilde, double z) {
   double x, xb;
   getXXbar(sqr(qtilde/d_Q), z, x, xb);
+  // if exceptionally out of phase space, leave this emission, as there 
+  // is no good interpretation for the soft ME correction. 
+  if (x < 0 || xb < 0) return 1.0; 
   return qWeight(x, xb); 
 }
 
 double VectorBosonQQBarMECorrection::qbarWeightX(Energy qtilde, double z) {
   double x, xb;
   getXXbar(sqr(qtilde/d_Q), z, x, xb);
+  // see above in qWeightX. 
+  if (x < 0 || xb < 0) return 1.0; 
   return qbarWeight(x, xb); 
 }
 

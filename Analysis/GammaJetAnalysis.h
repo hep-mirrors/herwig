@@ -20,7 +20,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * GammaJetAnalysis selects the photon with the hightest pt in the final
  * state and books a number of histograms from its four momentum.  The
  * results are witten in topdrawer format to the working directory.

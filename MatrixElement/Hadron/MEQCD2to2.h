@@ -26,7 +26,8 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 /**
- * Here is the documentation of the MEQCD2to2 class.
+ * The MEQCD2to2 class provides the matrix elements for \f$2\to2\f$ 
+ * QCD scattering processes in hadron-hadron collisions.
  *
  * @see \ref MEQCD2to2Interfaces "The interfaces"
  * defined for MEQCD2to2.

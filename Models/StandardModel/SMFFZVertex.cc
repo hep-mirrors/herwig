@@ -77,7 +77,7 @@ SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
 
 void SMFFZVertex::doinit() {
   tcSMPtr sm = generator()->standardModel();
-  double sw2=sm->sin2ThetaW();
+  double sw2 = sin2ThetaW();
   double fact = 0.25/sqrt(sw2*(1.-sw2));
   for(int ix=1;ix<4;++ix) {
     _gl[2*ix-1]  = fact*(sm->vd()  + sm->ad() );

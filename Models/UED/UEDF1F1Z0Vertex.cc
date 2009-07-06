@@ -56,7 +56,7 @@ void UEDF1F1Z0Vertex::doinit() {
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
   
-  theSin2ThW = model->sin2ThetaW();
+  theSin2ThW = sin2ThetaW();
   theCosThW = sqrt(1. - theSin2ThW); 
   theRadius = model->compactRadius();
   orderInGs(0);

@@ -48,140 +48,16 @@ Update gcc if possible.
 fi
 ])
 
-dnl ##### CLHEP #####
-AC_DEFUN([HERWIG_CHECK_CLHEP],
-[
-AC_MSG_CHECKING([for CLHEP])
-AC_ARG_WITH(clhep,
-        AC_HELP_STRING([--with-clhep=DIR],[location of CLHEP installation]),
-        [],
-	[with_clhep=no])
-AC_MSG_RESULT([$with_clhep])
-CLHEPINCLUDE=""
-CLHEPPATH=""
-CLHEPLIB=""
-if test "x$with_clhep" != "xno"; then
-	CLHEPPATH=$with_clhep
-
-	AC_MSG_CHECKING([for CLHEPLIB])
-	if test -z "$CLHEPLIB"; then
-	  for filename in $CLHEPPATH/lib/libCLHEP-?.?.?.?.{so,dylib} $CLHEPPATH/lib/libCLHEP.{so,dylib}
-	  do
-		if test -e $filename; then
-		   CLHEPLIB=`basename $filename | sed -e 's/^lib/-l/' -e 's/\.so//' -e 's/\.dylib//'`
-		fi
-	  done
-	  if test -z "$CLHEPLIB"; then
-	      AC_MSG_RESULT([none])
-	      AC_MSG_ERROR([Cannot find libCLHEP at $CLHEPPATH/lib.])
-	  fi
-	fi
-	CLHEPLDFLAGS="-L$CLHEPPATH/lib -R$CLHEPPATH/lib"
-	AC_MSG_RESULT([$CLHEPLIB])
-
-	AC_MSG_CHECKING([for CLHEPINCLUDE]) 
-	if test -z "$CLHEPINCLUDE"; then
-		  CLHEPINCLUDE=-I$CLHEPPATH/include
-	fi
-	AC_MSG_RESULT([$CLHEPINCLUDE])
-
-	# Now lets see if the libraries work properly
-	oldLIBS="$LIBS"
-	oldLDFLAGS="$LDFLAGS"
-	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS $CLHEPLIB"
-	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
-	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE"
-	
-	# check CLHEP first
-	AC_MSG_CHECKING([that CLHEP works])
-	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <CLHEP/Random/Random.h>]],[[using namespace CLHEP; HepRandom r; r.flat();]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
-	AC_MSG_ERROR([CLHEP not OK. See 'config.log' for details.])
-	])
-	
-	LIBS="$oldLIBS"
-	LDFLAGS="$oldLDFLAGS"
-	CPPFLAGS="$oldCPPFLAGS"
-
-	AC_SUBST(CLHEPLIB)
-	AC_SUBST(CLHEPLDFLAGS)
-	AC_SUBST(CLHEPINCLUDE)
-fi
-])
-
-
-dnl ##### HEPMC #####
-AC_DEFUN([HERWIG_CHECK_HEPMC],
-[
-AC_MSG_CHECKING([for HepMC location])
-HEPMCINCLUDE=""
-CREATE_HEPMC="#create"
-HEPMCLIBS="-lHepMC"
-
-AC_ARG_WITH(hepmc,
-        AC_HELP_STRING([--with-hepmc=DIR],[Location of HepMC installation @<:@default=system libs@:>@]),
-        [],
-	[with_hepmc=system])
-
-if test "x$with_hepmc" = "xno"; then
-	AC_MSG_RESULT([HepMC support disabled.])
-elif test "x$with_hepmc" = "xsystem"; then
-        AC_MSG_RESULT([in system libraries])
-	oldlibs="$LIBS"
-	AC_CHECK_LIB(HepMC,main,
-		[],
-		[with_hepmc=no
-		 AC_MSG_WARN([
-HepMC not found in system libraries])
-		])
-	HEPMCLIBS="$LIBS"
-	LIBS=$oldlibs
-else
-	AC_MSG_RESULT([$with_hepmc])
-	HEPMCINCLUDE=-I$with_hepmc/include
-	HEPMCLIBS="-L$with_hepmc/lib -R$with_hepmc/lib -lHepMC"
-fi
-
-if test "x$with_hepmc" != "xno"; then
-	# Now lets see if the libraries work properly
-	oldLIBS="$LIBS"
-	oldLDFLAGS="$LDFLAGS"
-	oldCPPFLAGS="$CPPFLAGS"
-	LIBS="$LIBS $HEPMCLIBS"
-	LDFLAGS="$LDFLAGS"
-	CPPFLAGS="$CPPFLAGS $HEPMCINCLUDE"
-
-	# check HepMC
-	AC_MSG_CHECKING([that HepMC works])
-	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <HepMC/GenEvent.h>
-]],[[HepMC::GenEvent();]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
-	AC_MSG_ERROR([Use '--with-hepmc=' to set a path or use '--without-hepmc'.])
-	])
-
-	AC_CHECK_HEADERS([HepMC/PdfInfo.h],[],[AC_MSG_ERROR([Need HepMC with PdfInfo support.])],[#include <algorithm>])
-	AC_CHECK_HEADERS([HepMC/IO_GenEvent.h])
-	AC_CHECK_HEADERS([HepMC/IO_ExtendedAscii.h])
-
-	LIBS="$oldLIBS"
-	LDFLAGS="$oldLDFLAGS"
-	CPPFLAGS="$oldCPPFLAGS"
-	CREATE_HEPMC="create"
-fi
-
-AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_hepmc" != "xno"])
-AC_SUBST(HEPMCINCLUDE)
-AC_SUBST(HEPMCLIBS)
-AC_SUBST(CREATE_HEPMC)
-])
-
 dnl ##### THEPEG #####
 AC_DEFUN([HERWIG_CHECK_THEPEG],
 [
+defaultlocation="${prefix}"
+test "x$defaultlocation" = xNONE && defaultlocation="${ac_default_prefix}"
 AC_MSG_CHECKING([for libThePEG in])
 AC_ARG_WITH(thepeg,
         AC_HELP_STRING([--with-thepeg=DIR],[location of ThePEG installation]),
         [],
-	[with_thepeg="${prefix}"])
+	[with_thepeg="${defaultlocation}"])
 AC_MSG_RESULT([$with_thepeg])
 
 if test "x$with_thepeg" = "xno"; then
@@ -227,97 +103,6 @@ CPPFLAGS="$oldcppflags"
 AC_SUBST(THEPEGINCLUDE)
 ])
 
-dnl ##### KTJET #####
-AC_DEFUN([HERWIG_CHECK_KTJET],[
-AC_REQUIRE([HERWIG_CHECK_CLHEP])
-
-KTJETPATH=""
-KTJETLIBS=""
-KTJETINCLUDE=""
-LOAD_KTJET=""
-CREATE_KTJET="#create"
-
-AC_MSG_CHECKING([for KtJet])
-
-AC_ARG_WITH(ktjet,
-        AC_HELP_STRING([--with-ktjet=DIR],[location of KtJet installation]),
-        [],
-	[with_ktjet=no])
-
-
-if test "x$with_ktjet" = "xno"; then
-	AC_MSG_RESULT([not required])	
-else
-	if test -z "$CLHEPINCLUDE"; then
-		AC_MSG_RESULT([need CLHEP])
-		AC_MSG_ERROR([KtJet needs CLHEP headers. Please set --with-clhep.])
-	fi
-
-	AC_MSG_RESULT([required])
-	KTJETPATH="$with_ktjet"
-
-	AC_MSG_CHECKING([KtJet library name is])
-	if test -f "$KTJETPATH/lib/libKtJet.a"; then
-		ktjetname=KtJet
-		AC_MSG_RESULT([KtJet])
-	elif test -f "$KTJETPATH/lib/libKtEvent.a"; then
-		ktjetname=KtEvent
-		AC_MSG_RESULT([KtEvent])
-	else
-		AC_MSG_RESULT([?])
-		AC_MSG_ERROR([No KtJet library found in $KTJETPATH/lib.])
-	fi
-
-	ktjetrpath=""
-	if test -e "$KTJETPATH/lib/lib$ktjetname.so"; then
-		ktjetrpath="-R$KTJETPATH/lib"
-	fi
-
-	oldlibs=$LIBS
-	oldcxxflags=$CXXFLAGS
-	LIBS=""
-	CXXFLAGS="-L$KTJETPATH/lib $ktjetrpath -l$ktjetname $CLHEPLDFLAGS"
-	AC_CHECK_LIB([$ktjetname],[abort],
-		     [],
-		     [
-			AC_MSG_ERROR([lib$ktjename not working. See 'config.log' for details.])
-		     ],
-		     [$CLHEPLIB])   
-	KTJETLIBS="$CXXFLAGS $LIBS"
-	LIBS=$oldlibs
-	CXXFLAGS=$oldcxxflags
-
-	AC_SUBST(KTJETLIBS)
-	
-	AC_MSG_CHECKING([KtJet headers])
-	if test -f "$KTJETPATH/include/KtJet/KtJet.h"; then
-		KTJETINCLUDE="-I$KTJETPATH/include"
-	elif test -f "$KTJETPATH/KtJet/KtJet.h"; then
-		KTJETINCLUDE="-I$KTJETPATH"
-	else
-		AC_MSG_RESULT([not found.])
-		AC_MSG_ERROR([No KtJet headers. Please set KTJETINCLUDE explicitly.])
-	fi
-	AC_MSG_RESULT([$KTJETINCLUDE])
-	KTJETINCLUDE="$KTJETINCLUDE $CLHEPINCLUDE"
-
-	oldcppflags="$CPPFLAGS"
-	CPPFLAGS="$CPPFLAGS $KTJETINCLUDE"
-	AC_CHECK_HEADER([KtJet/KtJet.h],[],
-	[AC_MSG_ERROR([Problem with KtJet headers in $KTJETINCLUDE.])])
-	CPPFLAGS="$oldcppflags"
-
-	AC_SUBST(KTJETINCLUDE)
-	
-	LOAD_KTJET="read KtJetAnalysis.in"
-	CREATE_KTJET="create"
-	AC_SUBST(LOAD_KTJET)
-	AC_SUBST(CREATE_KTJET)
-fi
-
-AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
-])
-
 dnl ##### FastJet #####
 AC_DEFUN([HERWIG_CHECK_FASTJET],[
 
@@ -325,68 +110,64 @@ FASTJETPATH=""
 FASTJETLIBS=""
 FASTJETINCLUDE=""
 LOAD_FASTJET=""
+CREATE_FASTJET="#create"
 
-AC_MSG_CHECKING([for FastJet])
+AC_MSG_CHECKING([for FastJet location])
 
 AC_ARG_WITH(fastjet,
-        AC_HELP_STRING([--with-fastjet=DIR],[location of FastJet installation]),
+        AC_HELP_STRING([--with-fastjet=DIR],[Location of FastJet installation @<:@default=system libs@:>@]),
         [],
-	[with_fastjet=no])
+	[with_fastjet=system])
 
 if test "x$with_fastjet" = "xno"; then
-	AC_MSG_RESULT([not required])	
+   	AC_MSG_RESULT([FastJet support disabled.])
+elif test "x$with_fastjet" = "xsystem"; then
+     	AC_MSG_RESULT([in system libraries])
+	oldlibs="$LIBS"
+	AC_CHECK_LIB(fastjet,main,
+		[],
+		[with_fastjet=no
+		 AC_MSG_WARN([
+FastJet not found in system libraries])
+		])
+	FASTJETLIBS="$LIBS"
+	LIBS=$oldlibs
 else
-
-	AC_MSG_RESULT([required])
+	AC_MSG_RESULT([$with_fastjet])
 	FASTJETPATH="$with_fastjet"
-
-	# check for libraries
-
-	AC_MSG_CHECKING([for FastJet library])
-
-	if test -z "$FASTJETLIB" ; then
-		FASTJETLIB="$FASTJETPATH/lib"
-	fi
-
-	if test -e "$FASTJETLIB/libfastjet.a"; then
-	  	AC_MSG_RESULT([found static library])
-
-		AC_MSG_CHECKING([for FastJet dynamic library])
-
-		if test ! -e "$FASTJETLIB/libfastjet.so"; then
-			AC_MSG_RESULT([not found, please create libfastjet.so from $FASTJETLIB/libfastjet.a])
-			AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
-		fi
-		AC_MSG_RESULT([$FASTJETLIB/libfastjet.so])
-	else
-		AC_MSG_RESULT([?])
-		AC_MSG_ERROR([No FastJet library found in $FASTJETLIB.])
-	fi
-
-	FASTJETLIBS="-L$FASTJETLIB -lfastjet"
-
-	AC_SUBST(FASTJETLIBS)
-
-	# check for headers
-
-	AC_MSG_CHECKING([for FastJet headers])
-
-	if test -z "$FASTJETINCLUDE" ; then
-		FASTJETINCLUDE="$FASTJETPATH/include"
-	fi
-
-	if test -f "$FASTJETINCLUDE/fastjet/ClusterSequence.hh"; then
-		FASTJETINCLUDE="-I$FASTJETINCLUDE"
-	else
-		AC_MSG_RESULT([not found.])
-		AC_MSG_ERROR([No FastJet headers.])
-	fi
-
-	AC_MSG_RESULT([$FASTJETINCLUDE])
-
-	AC_SUBST(FASTJETINCLUDE)
-
+	FASTJETINCLUDE="-I$with_fastjet/include"
+	FASTJETLIBS="-L$with_fastjet/lib -R$with_fastjet/lib -lfastjet"
 fi
+
+if test "x$with_fastjet" != "xno"; then
+   	# Now lets see if the libraries work properly
+	oldLIBS="$LIBS"
+	oldLDFLAGS="$LDFLAGS"
+	oldCPPFLAGS="$CPPFLAGS"
+	LIBS="$LIBS $FASTJETLIBS"
+	LDFLAGS="$LDFLAGS"
+	CPPFLAGS="$CPPFLAGS $FASTJETINCLUDE"
+
+	AC_MSG_CHECKING([that FastJet works])
+	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <fastjet/ClusterSequence.hh>
+]],[[fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, fastjet::E_scheme, fastjet::Best); ]])],
+			    [AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
+	AC_MSG_ERROR([Use '--with-fastjet=' to set a path or use '--without-fastjet'.])
+	])
+
+	AC_CHECK_HEADERS([fastjet/ClusterSequence.hh])
+
+	LIBS="$oldLIBS"
+	LDFLAGS="$oldLDFLAGS"
+	CPPFLAGS="$oldCPPFLAGS"
+
+	CREATE_FASTJET="create"
+	LOAD_FASTJET="library HwLEPJetAnalysis.so"		
+fi
+AC_SUBST(FASTJETINCLUDE)
+AC_SUBST(CREATE_FASTJET)
+AC_SUBST(LOAD_FASTJET)
+AC_SUBST(FASTJETLIBS)
 
 AM_CONDITIONAL(WANT_LIBFASTJET,[test ! -z "$FASTJETPATH"])
 ])
@@ -583,21 +364,30 @@ AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 
 AC_DEFUN([HERWIG_OVERVIEW],
 [
-echo    "*****************************************************"
-echo    "*** $PACKAGE_STRING configuration summary"
-echo    "***"
-echo 	"*** BSM models:		$enable_models"
-echo 	"*** Herwig debug mode:	$enable_debug"
-echo    "***"
-echo    "*** GSL:		$with_gsl"
-echo    "***"
-echo    "*** ThePEG:		$with_thepeg"
-echo    "*** ThePEG headers:	$with_thepeg_headers"
-echo    "***"
-echo    "*** CLHEP:		$with_clhep"
-echo    "*** HepMC:		$with_hepmc"
-echo    "***"
-echo    "*** KtJet:		$with_ktjet"
-dnl echo    "*** FastJet:		$with_fastjet"
-echo    "*****************************************************"
+FCSTRING=`$FC --version | head -1`
+CXXSTRING=`$CXX --version | head -1`
+CCSTRING=`$CC --version | head -1`
+cat << _HW_EOF_ > config.herwig
+*****************************************************
+*** $PACKAGE_STRING configuration summary
+*** Please include this information in bug reports!
+***--------------------------------------------------
+*** Prefix:		$prefix
+***
+*** BSM models:		$enable_models
+*** Herwig debug mode:	$enable_debug
+***
+*** GSL:		$with_gsl
+***
+*** ThePEG:		$with_thepeg
+*** ThePEG headers:	$with_thepeg_headers
+***
+*** Fastjet:		$with_fastjet
+***
+*** Host:		$host
+*** CXX:		$CXXSTRING
+*** FC:			$FCSTRING
+*** CC:			$CCSTRING
+*****************************************************
+_HW_EOF_
 ])

@@ -23,8 +23,6 @@
 
 using namespace ThePEG::Helicity;
 
-extern "C" int isnan(double) throw();
-
 using namespace Herwig;
 
 void IFDipole::persistentOutput(PersistentOStream & os) const {
@@ -491,10 +489,9 @@ double IFDipole::photon(double beta1,double ombeta1)
   double phi(-pi+UseRandom::rnd()*2.*pi);
   // generate the polar angle
   double r(UseRandom::rnd());
-  double costh,sinth,opbc,ombc;
+  double costh,sinth,ombc;
   ombc  = pow(1.+beta1,1.-r)*pow(ombeta1,r);
   costh = 1./beta1*(1.-ombc);
-  opbc  = 1.+beta1*costh;
   sinth = sqrt(ombc*(2.-ombc)-(1.+beta1)*ombeta1*sqr(costh));
   // generate the ln(energy) uniformly in ln(_emin)->ln(_emax)
   Energy energy   = pow(_emax/_emin,UseRandom::rnd())*_emin;

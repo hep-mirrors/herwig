@@ -33,8 +33,8 @@ void UEDZ0H1H1Vertex::doinit() {
     throw InitException() << "UEDZ0H1H1Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theCosThetaW = sqrt(1. - theUEDBase->sin2ThetaW());
-  theCosTheta2W = 1. - 2.*theUEDBase->sin2ThetaW();
+  theCosThetaW = sqrt(1. - sin2ThetaW());
+  theCosTheta2W = 1. - 2.*sin2ThetaW();
   theMw2 = sqr(getParticleData(24)->mass());
   theR2 = sqr(theUEDBase->compactRadius());
   orderInGs(0);

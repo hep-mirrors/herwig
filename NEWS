@@ -1,5 +1,44 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.3.2 release: 2009-05-08 (tagged at SVN r4249)
+
+** SUSY enhancements
+
+*** Ticket #245: Select inclusive / exclusive production
+    Using the new 'HardProcessConstructor:Processes' switch options
+    'SingleParticleInclusive', 'TwoParticleInclusive' or 'Exclusive'
+*** Improved three-body decay generation
+    Several problems were fixed, incl. tickets #249 #250 #251
+    Thanks to J.Tattersall and K.Rolbiecki for the stress-testing!
+*** Looptools fix
+    Release 2.3.1 had broken the Looptools initialization.
+*** Improved warning message texts
+
+** Ticket #237:
+   Values of q2last can now be zero where possible.
+
+** Ticket #240:
+   The Herwig++ main program now correctly treats the -N flag as optional.
+
+** Ticket #246:
+   Extreme pT partons fixed by improving accuracy of z boosts.
+
+** DIS
+   Improved parton shower momentum reshuffling.
+
+** Minimum Bias events
+   The zero-momentum interacting particle used for
+   bookkeeping is now labelled as a pomeron. 
+
+** User Makefile
+   Makefile-UserModules does not enable -pedantic anymore. User's ROOT
+   code will not compile otherwise.
+
+** Build system
+   Small fixes in the build system.
+
+
+
 * Herwig++-2.3.1 release: 2009-03-31 (tagged at SVN r4140)
 ** Initial state showers
    The PDF veto was wrongly applied to qbar->qbar g splittings.

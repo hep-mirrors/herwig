@@ -58,7 +58,7 @@ void UEDW0W1W1Vertex::doinit() {
     throw InitException() << "UEDW0W1W1Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theSinW = sqrt(model->sin2ThetaW());
+  theSinW = sqrt(sin2ThetaW());
   theCosW = sqrt( 1. - sqr(theSinW) );
   theSinThetaOne = model->sinThetaOne();
   theCosThetaOne = sqrt( 1. - sqr(theSinThetaOne));

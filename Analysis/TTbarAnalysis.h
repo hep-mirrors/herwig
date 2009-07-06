@@ -20,7 +20,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The TTbarAnalysis class tries to find a top antitop pair in the final
  * state and books a number of histograms.  It only makes sense if
  * hadronization and decays are switched off.  However, if there is is

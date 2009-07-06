@@ -120,7 +120,7 @@ MEff2vs::ffb2vsHeME(SpinorVector & sp, SpinorBarVector & spbar,
   for(unsigned int ihel1 = 0; ihel1 < 2; ++ihel1) {
     for(unsigned int ihel2 = 0; ihel2 < 2; ++ihel2) {
       for(unsigned int ovhel = 0; ovhel < 3; ++ovhel) {
-	if( mv ) continue;
+	if( mv && ovhel == 1 ) continue;
 	flows = vector<Complex>(ncf, Complex(0.));
 	for(HPCount ix = 0; ix < ndiags; ++ix) {
 	  HPDiagram current = getProcessInfo()[ix];

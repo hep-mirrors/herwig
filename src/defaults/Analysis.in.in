@@ -73,18 +73,18 @@ create Herwig::BELLECharmAnalysis BELLECharm HwLEPAnalysis.so
 create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
 
 #
-#  Handlers which depend on KtJet for LEP data
+#  Handlers which depend on Fastjet for LEP data
 #  (switched off by default)
 #
 # four jet analysis
-@CREATE_KTJET@ Herwig::LEPFourJetsAnalysis LEPFourJet HwKtJet.so HwLEPJetAnalysis.so
+@CREATE_FASTJET@ Herwig::LEPFourJetsAnalysis LEPFourJet HwLEPJetAnalysis.so
 # general jet analysis
-@CREATE_KTJET@ Herwig::LEPJetAnalysis LEPJet HwKtJet.so HwLEPJetAnalysis.so
+@CREATE_FASTJET@ Herwig::LEPJetAnalysis LEPJet HwLEPJetAnalysis.so
 #
 #  Handlers which depend on HepMC
 #  (switched off by default)
 # Schematic overview of an event (requires --with-hepmc to be set at configure time
 # and the graphviz program 'dot' to produce a plot)
-@CREATE_HEPMC@ Herwig::GraphvizPlot Plot HwHepMCAnalysis.so
+#@CREATE_HEPMC@ Herwig::GraphvizPlot Plot HwHepMCAnalysis.so
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-@CREATE_HEPMC@ Herwig::HepMCFile HepMCFile HwHepMCAnalysis.so
+#@CREATE_HEPMC@ Herwig::HepMCFile HepMCFile HwHepMCAnalysis.so

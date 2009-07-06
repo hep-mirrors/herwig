@@ -155,9 +155,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
     boson=tree->outgoingLines().begin()->first->copy()->parents()[0];
   }
   // ensure that the quark is first
-  bool quarkfirst(true);
   if(incoming[0]->id()<incoming[1]->id()) {
-    quarkfirst=false;
     swap(incoming[0],incoming[1]);
     swap(beams[0],beams[1]);
   }

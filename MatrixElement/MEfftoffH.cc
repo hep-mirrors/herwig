@@ -103,8 +103,17 @@ void MEfftoffH::setKinematics() {
 Selector<MEBase::DiagramIndex>
 MEfftoffH::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    sel.insert(1.0, i);
+  if(diags.size()==1) {
+    sel.insert(1.0, 0);
+  }
+  else {
+    for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+      if(_swap&&diags[i]->id()==-2)
+	sel.insert(1.0, i);
+      else if(!_swap&&diags[i]->id()==-1)
+	sel.insert(1.0, i);
+    }
+  }
   return sel;
 }
 
@@ -166,21 +175,41 @@ double MEfftoffH::me2() const {
   vector<SpinorBarWaveFunction> a1,a2;
   SpinorWaveFunction    fin1,fin2;
   SpinorBarWaveFunction ain1,ain2;
-  if(mePartonData()[0]->id()>0) {
-    fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
-    ain1 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+  if(_swap) {
+    if(mePartonData()[0]->id()>0) {
+      fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+      ain1 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+    }
+    else {
+      fin1 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+      ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+    }
+    if(mePartonData()[1]->id()>0) {
+      fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+      ain2 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+    }
+    else {
+      fin2 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+      ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+    }
   }
   else {
-    fin1 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
-    ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
-  }
-  if(mePartonData()[1]->id()>0) {
-    fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
-    ain2 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
-  }
-  else {
-    fin2 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
-    ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+    if(mePartonData()[0]->id()>0) {
+      fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+      ain1 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+    }
+    else {
+      fin1 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
+      ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
+    }
+    if(mePartonData()[1]->id()>0) {
+      fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+      ain2 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+    }
+    else {
+      fin2 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
+      ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
+    }
   }
   for(unsigned int ix=0;ix<2;++ix) {
     fin1.reset(ix); f1.push_back(fin1);
@@ -205,7 +234,11 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
   tcPDPtr vec[2];
   AbstractFFVVertexPtr vertex[2];
   for(unsigned int ix=0;ix<2;++ix) {
-    int icharge = mePartonData()[ix]->iCharge()-mePartonData()[ix+2]->iCharge();
+    int icharge;
+    if(_swap) 
+      icharge = mePartonData()[ix]->iCharge()-mePartonData()[3-int(ix)]->iCharge();
+    else     
+      icharge = mePartonData()[ix]->iCharge()-mePartonData()[ix+2]->iCharge();
     if(icharge==0)     vec[ix] = _z0;
     else if(icharge>0) vec[ix] = _wplus;
     else               vec[ix] = _wminus;
@@ -271,8 +304,25 @@ bool MEfftoffH::generateKinematics(const double * r) {
   }
   if(mh>roots) return false;
   // generate p1 by transform to eta = 1-2p1/sqrt s
+  double r0=r[0];
+  _swap = false;
+  if(_process==0&&mePartonData()[0]->id()!=mePartonData()[1]->id()&&
+     double(mePartonData()[0]->id())/double(mePartonData()[1]->id())>0.) {
+    if(mePartonData()[0]->id()==mePartonData()[3]->id()&&
+       mePartonData()[1]->id()==mePartonData()[2]->id()) {
+      jacobian(2.*jacobian());
+      if(r0<=0.5) {
+ 	r0*=2.;
+	_swap = false;
+      }
+      else {
+ 	r0 = (r0-0.5)*2.;
+	_swap = true;
+      }
+    }
+  }
   // and generate according to deta/eta
-  double eta = pow(mh/roots,2.*r[0]);
+  double eta = pow(mh/roots,2.*r0);
   jacobian(-jacobian()*eta*2.*log(mh/roots));
   Energy p1 = 0.5*roots*(1.-eta);
   // generate the value of cos theta2 first as no cut
@@ -291,20 +341,35 @@ bool MEfftoffH::generateKinematics(const double * r) {
   double cost12 = stheta[0]*stheta[1]*cos(phi12)+ctheta[0]*ctheta[1];
   // momentum of 2
   Energy p2 = 0.5*(sHat()-2.*roots*p1-sqr(mh))/(roots-p1*(1.-cost12));
-  if(p2<ZERO) return false;
+  if(p2<=ZERO) return false;
   // construct the momenta
   // first outgoing particle
-  meMomenta()[2].setX(stheta[0]*p1);
-  meMomenta()[2].setY(ZERO);
-  meMomenta()[2].setZ(ctheta[0]*p1);
-  meMomenta()[2].setT(p1);
-  meMomenta()[2].setMass(ZERO);
-  // second outgoing particle
-  meMomenta()[3].setX(stheta[1]*cos(phi12)*p2);
-  meMomenta()[3].setY(stheta[1]*sin(phi12)*p2);
-  meMomenta()[3].setZ(ctheta[1]*p2);
-  meMomenta()[3].setT(p2);
-  meMomenta()[3].setMass(ZERO);
+  if(_swap) {
+    meMomenta()[3].setX(stheta[0]*p1);
+    meMomenta()[3].setY(ZERO);
+    meMomenta()[3].setZ(ctheta[0]*p1);
+    meMomenta()[3].setT(p1);
+    meMomenta()[3].setMass(ZERO);
+    // second outgoing particle
+    meMomenta()[2].setX(stheta[1]*cos(phi12)*p2);
+    meMomenta()[2].setY(stheta[1]*sin(phi12)*p2);
+    meMomenta()[2].setZ(ctheta[1]*p2);
+    meMomenta()[2].setT(p2);
+    meMomenta()[2].setMass(ZERO);
+  }
+  else {
+    meMomenta()[2].setX(stheta[0]*p1);
+    meMomenta()[2].setY(ZERO);
+    meMomenta()[2].setZ(ctheta[0]*p1);
+    meMomenta()[2].setT(p1);
+    meMomenta()[2].setMass(ZERO);
+    // second outgoing particle
+    meMomenta()[3].setX(stheta[1]*cos(phi12)*p2);
+    meMomenta()[3].setY(stheta[1]*sin(phi12)*p2);
+    meMomenta()[3].setZ(ctheta[1]*p2);
+    meMomenta()[3].setT(p2);
+    meMomenta()[3].setMass(ZERO);
+  }
   // finally the higgs
   meMomenta()[4].setX(-meMomenta()[2].x()-meMomenta()[3].x());
   meMomenta()[4].setY(-meMomenta()[2].y()-meMomenta()[3].y());
@@ -325,7 +390,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
   if ( !lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]) )
     return false;
   // final bits of the jacobian
-  Energy2 dot = meMomenta()[3]*meMomenta()[4];
+  Energy2 dot = _swap? meMomenta()[2]*meMomenta()[4] : meMomenta()[3]*meMomenta()[4];
   jacobian(jacobian()*p1*sqr(p2)/roots/dot);
   return true;
 }

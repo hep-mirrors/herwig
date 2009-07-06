@@ -12,7 +12,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the RadiativeHyperonDecayer class.
+ * The RadiativeHyperonDecayer class provides the matrix elements
+ * for the decay of hyperons in which a photon is produced using the 
+ * model of Phys. Rev. D 59 (1999) 054019 [arXiv:hep-ph/9902431].
  *
  * @see \ref RadiativeHyperonDecayerInterfaces "The interfaces"
  * defined for RadiativeHyperonDecayer.

@@ -22,3 +22,8 @@ create Herwig::MRST MRST-NLO HwMRST.so
 set MRST-NLO:Interpolation Cubic
 setup MRST-NLO @HERWIG_PDF_NLO@
 set MRST-NLO:RemnantHandler HadronRemnants
+
+# photons from leptons in WW approx
+create ThePEG::WeizsackerWilliamsPDF WWPDF WeizsackerWilliamsPDF.so
+create ThePEG::LeptonLeptonRemnant /Herwig/Partons/LeptonGammaRemnants 
+set /Herwig/Partons/WWPDF:RemnantHandler /Herwig/Partons/LeptonGammaRemnants

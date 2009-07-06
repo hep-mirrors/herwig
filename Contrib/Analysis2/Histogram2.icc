@@ -11,11 +11,6 @@
 // the Histogram2 class.
 //
 
-// workaround for OS X bug where isnan() and isinf() are hidden
-// when <iostream> is included
-extern "C" int isnan(double) throw();
-extern "C" int isinf(double) throw();
-
 namespace Herwig {
 
 inline PersistentOStream& operator << (PersistentOStream& os, const HistogramChannel& h) {

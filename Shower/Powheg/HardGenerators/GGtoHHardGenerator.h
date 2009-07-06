@@ -14,7 +14,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the GGtoHHardGenerator class.
+ * The GGtoHHardGenerator class implements the generation of hard QCD radiation in
+ * \f$gg\to h^0\f$ processes in the POWHEG scheme.
  *
  * @see \ref GGtoHHardGeneratorInterfaces "The interfaces"
  * defined for GGtoHHardGenerator.

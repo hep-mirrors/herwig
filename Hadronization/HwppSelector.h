@@ -19,8 +19,9 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the HwppSelector class.
+/** \ingroup hadronization
+ * The HwppSelector class selects the hadrons produced in cluster decay using
+ * the Herwig++ variant of the cluster model.
  *
  * @see \ref HwppSelectorInterfaces "The interfaces"
  * defined for HwppSelector.

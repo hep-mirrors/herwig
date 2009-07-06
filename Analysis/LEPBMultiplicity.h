@@ -19,7 +19,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 
-/**
+/** \ingroup Analysis
  *  Struct for the multiplcity data
  */
 struct BranchingInfo {

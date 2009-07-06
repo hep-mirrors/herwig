@@ -21,6 +21,8 @@ cd /Herwig/MatrixElements
 insert SimpleEE:MatrixElements 0 MEee2gZ2qq
 # e+e- > l+l-
 # insert SimpleEE:MatrixElements[0] MEee2gZ2ll
+# e+e- > W+W- ZZ
+# insert SimpleEE:MatrixElements[0] MEee2VV
 # higgs+Z
 # insert SimpleEE:MatrixElements[0] MEee2ZH
 # higgs+e+e-/nu_enu_ebar via VBF
@@ -56,9 +58,9 @@ cd /Herwig/Generators
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
 # identified particle spectra
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
-# four jet analysis (needs KtJet installed)
+# four jet analysis (needs Fastjet installed)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
-# general jet analysis (needs KtJet installed)
+# general jet analysis (needs Fastjet installed)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
 
 ##################################################

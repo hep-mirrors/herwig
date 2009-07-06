@@ -59,7 +59,7 @@ void SSNNZVertex::doinit() {
     throw InitException() << "SSNNZVertex::doinit - The neutralino "
 			  << "mixing matrix pointer is null." 
 			  << Exception::abortnow;
-  _sw = sqrt(theSS->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
   _cw = sqrt(1 - _sw*_sw);
   orderInGem(1);
   orderInGs(0);

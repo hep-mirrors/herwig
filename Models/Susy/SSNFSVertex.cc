@@ -94,7 +94,7 @@ void SSNFSVertex::doinit() {
 			  << _sbot << " stau: " << _stau 
 			  << " N: " << _nmix << Exception::abortnow;
 
-  _sw = sqrt(_theSS->sin2ThetaW());
+  _sw = sqrt(sin2ThetaW());
   _mw = getParticleData(24)->mass();
   double tb = _theSS->tanBeta();
   _cw = sqrt(1. - sqr(_sw));

@@ -13,7 +13,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2WHPowheg class.
+ * The MEPP2WHPowheg class provides the next-to-leading order
+ * matrix elements for \f$W^\pm\f$ in assoication with a Higgs boson
+ * in the PoOWHEG scheme.
  *
  * @see \ref MEPP2WHPowhegInterfaces "The interfaces"
  * defined for MEPP2WHPowheg.

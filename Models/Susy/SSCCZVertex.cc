@@ -52,7 +52,7 @@ void SSCCZVertex::doinit() {
     throw InitException() << "SSCCZVertex::doinit - The model pointer "
 				     << "is null! "
 				     << Exception::abortnow;
-  _sw2 = theSS->sin2ThetaW();
+  _sw2 = sin2ThetaW();
   _cw = sqrt(1. - _sw2);
   _theU = theSS->charginoUMix();
   _theV = theSS->charginoVMix();
