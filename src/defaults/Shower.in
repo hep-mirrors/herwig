@@ -125,7 +125,7 @@ set GtoQQbarSudakov:PDFmax 120.0
 
 cp SudakovCommon GtobbbarSudakov
 set GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
-set GtobbbarSudakov:PDFmax 4000.0
+set GtobbbarSudakov:PDFmax 40000.0
 
 cp SudakovCommon GtoccbarSudakov
 set GtoccbarSudakov:SplittingFunction GtoQQbarSplitFn

@@ -216,7 +216,7 @@ void ShowerHandler::cascade() {
   }
   catch (ExtraScatterVeto) {
     throw Exception() << "Remnant extraction failed in "
-                      << "ShowerHandler::cascade()" 
+                      << "ShowerHandler::cascade() from primary interaction" 
                       << Exception::eventerror;   
   }
   // if no MPI return
@@ -269,12 +269,6 @@ void ShowerHandler::cascade() {
 	// do the forcedSplitting
 	remDec_->doSplit(incomingPartons, make_pair(firstPDF().pdf(), 
 						    secondPDF().pdf()), false);
-	// check if there is enough energy to extract
-	if( remnants.first ->momentum().e() - 
-	    incomingPartons.first ->momentum().e() < 1.0e-3*MeV ||
-	    remnants.second->momentum().e() - 
-	    incomingPartons.second->momentum().e() < 1.0e-3*MeV )
-	  throw ExtraScatterVeto();
       } 
       catch(ExtraScatterVeto){
 	//remove all particles associated with the subprocess
@@ -291,7 +285,7 @@ void ShowerHandler::cascade() {
       if ( !remnants.first ->extract(incomingPartons.first , false) ||
 	   !remnants.second->extract(incomingPartons.second, false) )
 	throw Exception() << "Remnant extraction failed in "
-			  << "ShowerHandler::cascade()" 
+			  << "ShowerHandler::cascade() for additional scatter" 
 			  << Exception::runerror;
     }
   }
@@ -334,12 +328,6 @@ void ShowerHandler::cascade() {
       //do the forcedSplitting
       remDec_->doSplit(incomingPartons, make_pair(firstPDF().pdf(), 
 						  secondPDF().pdf()), false);
-      // check if there is enough energy to extract
-      if( remnants.first ->momentum().e() - 
-	  incomingPartons.first ->momentum().e() < 1.0e-3*MeV ||
-	  remnants.second->momentum().e() - 
-	  incomingPartons.second->momentum().e() < 1.0e-3*MeV )
-	throw ExtraScatterVeto();
     }
     catch (ExtraScatterVeto) {
       //remove all particles associated with the subprocess
@@ -357,7 +345,7 @@ void ShowerHandler::cascade() {
     if ( !remnants.first ->extract(incomingPartons.first , false) ||
 	 !remnants.second->extract(incomingPartons.second, false) )
       throw Exception() << "Remnant extraction failed in "
-			<< "ShowerHandler::cascade()" 
+			<< "ShowerHandler::cascade() for MPI hard scattering" 
 			<< Exception::runerror;
     //reset veto counter
     veto = 0;

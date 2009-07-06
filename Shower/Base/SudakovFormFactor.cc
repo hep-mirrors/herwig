@@ -61,7 +61,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 4000.0,
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 100000.0,
      false, false, Interface::limited);
 
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
@@ -201,7 +201,7 @@ PDFVeto(const Energy2 t, const double x,
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > maxpdf) {
     generator()->log() << "PDFVeto warning: Ratio > " << name() 
-		       << ":PDFmax (by a factor of"
+		       << ":PDFmax (by a factor of "
 		       << ratio/maxpdf <<") for " 
 		       << parton0->PDGName() << " to " 
 		       << parton1->PDGName() << "\n";

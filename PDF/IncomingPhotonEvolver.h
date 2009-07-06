@@ -151,6 +151,22 @@ private:
   Energy minpT_;
 
   /**
+   *  The minimum space-like virtuality of the photon
+   */
+  Energy minVirtuality_;
+
+  /**
+   *  Maximum number of attempts to generate the scale of the
+   *  branching
+   */
+  unsigned int vetoTries_;
+
+  /**
+   *  Maximum number of attempts to regenerate the virtuality
+   */
+  unsigned int virtualityTries_;
+
+  /**
    *   Photon ParticleData object
    */
   tcPDPtr photon_;
