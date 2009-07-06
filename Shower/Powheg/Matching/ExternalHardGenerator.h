@@ -16,6 +16,7 @@
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Vectors/LorentzRotation.h"
 #include "PowhegHandler.h"
+#include "ThePEG/Cuts/Cuts.h"
 
 
 

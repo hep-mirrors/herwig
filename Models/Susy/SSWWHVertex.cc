@@ -59,7 +59,7 @@ void SSWWHVertex::doinit() {
 
   Energy mw = getParticleData(ParticleID::Wplus)->mass();
   Energy mz = getParticleData(ParticleID::Z0)->mass();
-  double sw = sqrt(theMSSM->sin2ThetaW());
+  double sw = sqrt(sin2ThetaW());
   double sinalp = sin(theMSSM->higgsMixingAngle());
   double cosalp = sqrt(1. - sqr(sinalp));
   double tanbeta = theMSSM->tanBeta();

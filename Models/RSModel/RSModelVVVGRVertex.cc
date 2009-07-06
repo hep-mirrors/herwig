@@ -43,8 +43,8 @@ RSModelVVVGRVertex::RSModelVVVGRVertex() : _couplast(2,0.), _q2last(2,0.*GeV2) {
 
 void RSModelVVVGRVertex::doinit() {
   VVVTVertex::doinit();
-  _zfact = sqrt((1.-generator()->standardModel()->sin2ThetaW())/
-		generator()->standardModel()->sin2ThetaW());
+  _zfact = sqrt((1.-sin2ThetaW())/
+		sin2ThetaW());
   // set the graviton coupling 
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(generator()->standardModel());
   if(hwRS){_theKappa=2./hwRS->lambda_pi();}

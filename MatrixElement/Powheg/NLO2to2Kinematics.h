@@ -174,6 +174,11 @@ private:
   Energy2 q2hatr_;
   Energy2 w1r_;
   Energy2 w2r_;
+  Lorentz5Momentum p1r_;
+  Lorentz5Momentum p2r_;
+  Lorentz5Momentum kr_;
+  Lorentz5Momentum k1r_;
+  Lorentz5Momentum k2r_;
 
 public:
 
@@ -252,6 +257,11 @@ public:
   inline Energy2 q2hatr() const { return q2hatr_; }
   inline Energy2 w1r() const { return w1r_; }
   inline Energy2 w2r() const { return w2r_; }
+  inline Lorentz5Momentum p1r() const { return p1r_; }
+  inline Lorentz5Momentum p2r() const { return p2r_; }
+  inline Lorentz5Momentum kr()  const { return kr_ ; }
+  inline Lorentz5Momentum k1r() const { return k1r_; }
+  inline Lorentz5Momentum k2r() const { return k2r_; }
 };
 
 }

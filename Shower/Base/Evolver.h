@@ -68,6 +68,11 @@ public:
 	      _hardonly(false), _trunc_Mode(true),
 	      interaction_(1) {}
 
+// =======
+// 	      _ptVetoDefinition(1), _reversePtVeto(false), 
+// 	      _showerVariableOutput( false ),  
+// 	      _Ptveto(ZERO) , _approxCuts( false ), _highestMult( false ), _dynamicSuds( false ) {}
+// >>>>>>> .merge-right.r4419
   /**
    *  Members to perform the shower
    */
@@ -112,6 +117,14 @@ public:
    */
   tSplittingGeneratorPtr splittingGenerator() const { return _splittingGenerator; }
   //@}
+
+  /**
+   * Access to the veto scale for CKKW merging
+   */
+  Energy getVeto(){
+    return ZERO;
+//     return _Ptveto;
+  }
 
 public:
 
@@ -158,8 +171,8 @@ protected:
   /**
    *  Dummy implementation of powheg check of shower momentum reconstruction 
    */
-  virtual bool checkShowerMomentum(vector<ShowerProgenitorPtr> );
-  
+  virtual bool checkShowerMomentum(vector<ShowerProgenitorPtr> particlesToShower,
+				   bool IS  );
 
   /**
    *  set the colour partners
@@ -598,6 +611,24 @@ private:
    *  Limit the number of emissions for testing
    */
   unsigned int _limitEmissions;
+// <<<<<<< .working
+// =======
+
+//   /**
+//    * The pt definition being used for in the pt veto
+//    */
+//   unsigned int _ptVetoDefinition;
+
+//   /**
+//    * Reverse pt veto to produce branchings above a cut only
+//    */
+//   bool _reversePtVeto;
+
+//   /**                                                                                          
+//    * Switch for shower variable output                                                                       
+//    */
+//   bool _showerVariableOutput;
+// >>>>>>> .merge-right.r4419
   
   /**
    *  The progenitor of the current shower
@@ -645,6 +676,33 @@ private:
    */
   map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
 
+// <<<<<<< .working
+// =======
+//  /**
+//    * The veto scale for initial state CKKW
+//    */
+//   Energy _Ptveto;
+
+//   /**
+//    * switch to use approximate jet cuts
+//    */ 
+//   bool _approxCuts;
+
+//   /**                                                                        
+//    * Whether this is the highest multiplicity channel     
+//    */
+//   bool _highestMult;
+
+//   /**                                                                        
+//    * Whether to generate CKKW sudakov weights dynamically by throwing away 
+//    * events which contain a pt veto (rather than just vetoing that emission).
+//    * This procedure ensures that the no emission probability for emissions
+//    * with pt > kt_cut around the hardTree is included (corresponds exactly to
+//    * the desired sudakov weight).
+//    */
+//   bool _dynamicSuds;
+
+// >>>>>>> .merge-right.r4419
   /**
    * Vetoes
    */

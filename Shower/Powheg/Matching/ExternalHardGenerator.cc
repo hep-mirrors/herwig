@@ -72,12 +72,21 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
   if(  _CKKWh->highestMult() )
     veto_pt = hardtree->lowestPt( 1, s );
 
-  QProgenitor->maximumpT(veto_pt);
-  QbarProgenitor->maximumpT(veto_pt);
-
-  if(!hardtree) return HardTreePtr();
+  for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
+	 = tree->outgoingLines().begin(); 
+       it != tree->outgoingLines().end(); ++it ){
+    if( ! it->second->coloured() ) continue;
+    it->first->maximumpT( veto_pt );
+  }     
+  for( map< ShowerProgenitorPtr, ShowerParticlePtr >::iterator it
+	 = tree->incomingLines().begin(); 
+       it != tree->incomingLines().end(); ++it ){
+    if( ! it->second->coloured() ) continue;
+    it->first->maximumpT( veto_pt );
+  }   
+  if( !hardtree ) return HardTreePtr();
   // check the trees match
-  if(!hardtree->connect(tree)) return HardTreePtr();
+  if( !hardtree->connect(tree) ) return HardTreePtr();
   // Return the HardTree
  
   return hardtree;

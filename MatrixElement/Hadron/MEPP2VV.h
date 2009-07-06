@@ -9,7 +9,6 @@
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
-#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 
@@ -67,31 +66,6 @@ public:
   virtual int process() const { return process_; }
 
   /**
-   * Return the factorisation scale.
-   */
-  virtual Energy mu_F() const { return mu_F_; }
-
-  /**
-   * Return the factorisation scale.
-   */
-  virtual Energy mu_UV() const { return mu_UV_; }
-
-  /**
-   * Return the maximum number of incoming flavours.
-   */
-  virtual int maxflavour() const { return maxflavour_; }
-
-  /**
-   * Return the CKM matrix elements.
-   */
-  Complex CKM(int ix,int iy) const { return ckm_[ix][iy]; }
-
-  /**
-   * Return the process being run (WW/ZZ/WZ).
-   */
-  bool mixingInWW() const { return mixingInWW_; }
-
-  /**
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
@@ -117,15 +91,15 @@ public:
   colourGeometries(tcDiagPtr diag) const;
 
   /**
-   *  Construct the vertex of spin correlations.
-   */
-  virtual void constructVertex(tSubProPtr);
-
-  /**
    * Used internally by generateKinematics, after calculating the
    * limits on cos(theta).
    */
-  virtual double getCosTheta(double ctmin, double ctmax, const double * r);
+  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 public:
@@ -157,11 +131,11 @@ public:
 protected:
 
   /**
-   * Matrix element for \f$f\bar{f}\toW^+W^-\f$.
+   * Matrix element for \f$f\bar{f}\to W^+W^-\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The first  outgoing W polarization vectors
+   * @param v2  The second outgoing W polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double WWME(vector<SpinorWaveFunction>    & f1,
@@ -171,11 +145,11 @@ protected:
 	      bool me) const;
   
   /**
-   * Matrix element for \f$f\bar{f}\toW^\pm Z^0\f$.
+   * Matrix element for \f$f\bar{f}\to W^\pm Z^0\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The outgoing W polarization vectors
+   * @param v2  The outgoing Z polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double WZME(vector<SpinorWaveFunction>    & f1,
@@ -185,11 +159,11 @@ protected:
 	      bool me) const;
   
   /**
-   * Matrix element for \f$f\bar{f}\toZ^0Z^0\f$.
+   * Matrix element for \f$f\bar{f}\to Z^0Z^0\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
-   * @param a1  Spinors for first  outgoing fermion
-   * @param a2  Spinors for second outgoing fermion
+   * @param a1  Spinors for the incoming antifermion
+   * @param v1  The first  outgoing Z polarization vectors 
+   * @param v2  The second outgoing Z polarization vectors
    * @param me  Whether or not to calculate the matrix element for spin correlations
    */
   double ZZME(vector<SpinorWaveFunction>    & f1,
@@ -269,11 +243,6 @@ private:
   //@}
 
   /**
-   * The ckm matrix elements (unsquared, to allow interference)
-   */
-  vector< vector<Complex> > ckm_;
-
-  /**
    *  Processes
    */
   unsigned int process_;
@@ -289,34 +258,9 @@ private:
   unsigned int massOption_;
 
   /**
-   *  Processes
-   */
-  bool mixingInWW_;
-
-  /**
    *  The matrix element
    */
   mutable ProductionMatrixElement me_;
-
-  /**
-   * Selects a dynamic (sHat) or fixed factorization scale
-   */
-  unsigned int scaleopt_;
-
-  /**
-   * The factorization and renormalization scale respectively
-   */
-  Energy mu_F_, mu_UV_;
-
-  /**
-   *  Prefactor if variable scale used
-   */
-  double scaleFact_;
-
-  /**
-   *  Interfaced flag to turn on / off spin correlations for vector bosons.
-   */
-  unsigned int spinCorrelations_;
 
   /**
    *  Interfaced flag to invoke debugging (comparison with MCFM).

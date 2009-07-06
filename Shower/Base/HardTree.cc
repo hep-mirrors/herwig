@@ -23,45 +23,61 @@ bool HardTree::findNodes() {
   _theExternals.clear();
   _theNodes.clear();
   _theInternals.clear();
-  //call function to recursively fill _theExternals and _theNodes
-  for( set< HardBranchingPtr>::const_iterator cit = _branchings.begin();
-       cit != _branchings.end(); ++cit ){
-    if( (*cit)->status()==HardBranching::Incoming ) continue;
-    fillNodes( *cit, HardBranchingPtr() );
-  }
-  //make _internals from nodes
-  //get the intermediates - there is one intermediate for each node
-  for( map< HardBranchingPtr, Energy >::const_iterator cit = _theNodes.begin();
-       cit != _theNodes.end(); ++cit ) {
-    //end scale and intermediate are given by theNodes
-    Energy endScale = cit->second;
-    Energy startScale;
-    if( cit->first->parent() ) {
-      HardBranchingPtr intParent = cit->first->parent();
-      startScale = intParent->scale() * cit->first->z();
+
+  _lowestPt = HardBranchingPtr();
+
+  //fix forward relations based on backChild relations
+  //(these are correctly set during clustering)
+  fixFwdBranchings();
+  //find all branchings that initiate a timelike shower
+  //also add nodes, externals and intermediates from the spacelike line
+  set< HardBranchingPtr > FS_initiators;
+  for( set<HardBranchingPtr>::const_iterator it = this->branchings().begin();
+       it != this->branchings().end(); ++it)  {
+    if( ! (*it)->branchingParticle()->coloured() ) continue;
+    if( (*it)->status() ==HardBranching::Outgoing ){
+      //remove any parent ptr that might be set
+      (*it)->parent( HardBranchingPtr() );
+      FS_initiators.insert( *it );
+      continue;
     }
-    else startScale = cit->first->branchingParticle()->evolutionScale();
-    long intID = cit->first->branchingParticle()->id();
-    if ( startScale < endScale ) endScale = startScale;
-    _theInternals.insert( make_pair( intID, make_pair(  startScale, endScale  ) ) );
+    HardBranchingPtr spacelike = *it;
+    while( spacelike->parent() ) {
+      assert( spacelike == spacelike->parent()->children()[0] );
+      spacelike = spacelike->parent();
+      if( ! _lowestPt || _lowestPt->children()[0]->pT() 
+	  > spacelike->children()[0]->pT() )
+	_lowestPt = spacelike;
+      _theIntermediates.insert( make_pair( spacelike, 
+					   spacelike->children()[0] ) );
+      //nb for bkwd branchings the child contains the splitting variables
+      _theNodes.insert( make_pair( spacelike->children()[0], spacelike->children()[0]->scale() ) );
+      FS_initiators.insert( spacelike->children()[0] );
+    }
+    _theExternals.insert( make_pair( (*it)->branchingParticle(), *it ) );
+  }
+  //fix timelike parent relations once and for all
+  //fill timelike shower externals nodes and intermediates
+  for( set<HardBranchingPtr>::const_iterator it = FS_initiators.begin();
+       it != FS_initiators.end(); ++it){
+    fixParents( *it );
+    fillNodes( *it );
   }
   return true;
 }
 
-bool HardTree::fillNodes( HardBranchingPtr branch, HardBranchingPtr parentBranch ){
+bool HardTree::fillNodes( HardBranchingPtr branch ){
   if( ! branch->children().empty() ) {
+    if( ! _lowestPt || _lowestPt->children()[0]->pT() > branch->children()[0]->pT() )
+      _lowestPt = branch;
+    
+    _theIntermediates.insert( make_pair( branch, branch->children()[0] ) );
     _theNodes.insert( make_pair( branch, branch->scale() ) );
-    //set the parent of branching (used in finding the internal lines)
-    branch->parent( parentBranch );
-    fillNodes( branch->children()[0], branch );
-    fillNodes( branch->children()[1], branch );
+    fillNodes( branch->children()[0] );
+    fillNodes( branch->children()[1] ); 
   }
-  //external branching found
-  else  {
-    _theExternals.insert( make_pair( branch->branchingParticle(), parentBranch ) );
-    if( parentBranch && ( !_lowestPt || branch->pT() < _lowestPt->pT() ) )
-      _lowestPt = parentBranch;
-  }
+  else 
+    _theExternals.insert( make_pair( branch->branchingParticle(), branch ) );
   return true;
 }
 
@@ -70,10 +86,10 @@ bool HardTree::connect(ShowerTreePtr shower) {
   // extract the progenitors from the ShowerTree
   vector<ShowerProgenitorPtr> progenitors = shower->extractProgenitors();
   // connect the trees up
-  for(set<HardBranchingPtr>::iterator it=branchings().begin();
-      it!=branchings().end();++it) {
-    Energy2 dmin(1e30*GeV2);
-    tShowerParticlePtr partner;   
+  for( set<HardBranchingPtr>::iterator it = branchings().begin();
+       it != branchings().end(); ++it) {
+    Energy2 dmin( 1e30*GeV2 );
+    tShowerParticlePtr partner; 
     for(unsigned int ix=0;ix<progenitors.size();++ix) {
       if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
       if(((**it).status()==HardBranching::Incoming&&
@@ -81,11 +97,11 @@ bool HardTree::connect(ShowerTreePtr shower) {
 	 ((**it).status()==HardBranching::Outgoing&&
 	  !progenitors[ix]->progenitor()->isFinalState())) continue;
       Energy2 dtest = 
-	sqr(progenitors[ix]->progenitor()->momentum().x()-(**it).showerMomentum().x())+
-	sqr(progenitors[ix]->progenitor()->momentum().y()-(**it).showerMomentum().y())+
-	sqr(progenitors[ix]->progenitor()->momentum().z()-(**it).showerMomentum().z())+
-	sqr(progenitors[ix]->progenitor()->momentum().t()-(**it).showerMomentum().t());
-      if(dtest<dmin) {
+	sqr( progenitors[ix]->progenitor()->momentum().x() - (**it).showerMomentum().x() ) +
+	sqr( progenitors[ix]->progenitor()->momentum().y() - (**it).showerMomentum().y() ) +
+	sqr( progenitors[ix]->progenitor()->momentum().z() - (**it).showerMomentum().z() ) +
+	sqr( progenitors[ix]->progenitor()->momentum().t() - (**it).showerMomentum().t() );
+      if( dtest < dmin ) {
 	partner = progenitors[ix]->progenitor();
 	dmin = dtest;
       }
@@ -97,13 +113,16 @@ bool HardTree::connect(ShowerTreePtr shower) {
       tHardBranchingPtr parent=(**it).parent();
       while (parent) {
 	z *= parent->z();
-	parent=parent->parent();
+	parent = parent->parent();
       }
       partner->x(z);
     }
   }
-  // return false if not matched
-  return particles().size()==progenitors.size();
+  if( particles().size() == progenitors.size() ) return true;
+  else{
+    cerr<<"hardTree connect:: size of particles and progenitors does not match \n";
+    return false;
+  }
 }
 
 ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
@@ -129,6 +148,7 @@ ostream & Herwig::operator<<(ostream & os, const HardTree & x) {
     os << "It's colour lines are " 
        << (**it).branchingParticle()->colourLine() << "\t" 
        << (**it).branchingParticle()->antiColourLine() << "\n";
+
     for(unsigned int iy=0;iy<(**it).children().size();++iy) {
       os << "\t Children: " << *(**it).children()[iy]->branchingParticle()
 	 << "\n";
@@ -155,38 +175,59 @@ void HardTree::fillHardScales( HardBranchingPtr branch, vector< pair< Energy, do
     _hard_line_scales.push_back( newHardLine );
   }
 }
-
-bool HardTree::checkHardOrdering() {
+//this fn needs to be adapted for IS lines
+bool HardTree::checkHardOrdering( ) {
   //this function also caculates sum of pts of all branchings
   _total_pt = 0. * GeV;
   _hard_line_scales.clear();
-  for( set<HardBranchingPtr>::const_iterator it = 
-	 this->branchings().begin();
+  //create timelike proto lines from the outgoing and hardbranchings (the ones in hard process)
+  vector< pair< HardBranchingPtr, vector< pair< Energy, double > > > >  proto_lines;
+  for( set<HardBranchingPtr>::const_iterator it = this->branchings().begin();
        it != this->branchings().end(); ++it)  {
-    if( (*it)->status()==HardBranching::Incoming ) continue;
-    //if the branching has children then fill qtilde and z of branching and
-    //continue recursively on the children 
-   
-    if( ! (*it)->children().empty() ) {
+    if( ! (*it)->branchingParticle()->coloured() ) continue;
+    if( ! (*it)->status()==HardBranching::Incoming && ! (*it)->children().empty() ) { 
       vector< pair< Energy, double > > new_hard_line1;
       new_hard_line1.push_back( make_pair( (*it)->scale(), (*it)->children()[0]->z() ) );
-      //pts of children are equal so just add once 
-      _total_pt += (*it)->children()[0]->pT();
-
-      fillHardScales( (*it)->children()[0], new_hard_line1 );
       vector< pair< Energy, double > > new_hard_line2;
       new_hard_line2.push_back( make_pair( (*it)->scale(), (*it)->children()[1]->z() ) );
-      fillHardScales( (*it)->children()[1], new_hard_line2 );
-      _hard_line_scales.push_back( new_hard_line1 );
-      _hard_line_scales.push_back( new_hard_line2 );
-    }    
+      proto_lines.push_back( make_pair( (*it)->children()[0], new_hard_line1 ) ); 
+      proto_lines.push_back( make_pair( (*it)->children()[1], new_hard_line2 ) ); 
+      //pts of children are equal so just add once 
+      _total_pt += (*it)->children()[0]->pT();
+    }
+    else if( (*it)->parent() ) {
+      //trace all spacelike branchings back following parents
+      HardBranchingPtr spacelike = *it;
+      vector< pair< Energy, double > > space_like_line;
+      while( spacelike->parent() ) {
+	_total_pt += spacelike->pT();
+	//create a protoline from the time like child of parent
+	vector< pair< Energy, double > > time_like_line = space_like_line;
+	if( spacelike->parent()->children().empty() ) 
+	  cerr<<"HardTree::checkHardOrdering() connection problem\n";
+	//timelike child is always first child
+	time_like_line.push_back( make_pair( spacelike->parent()->scale(), 
+					     spacelike->parent()->children()[1]->z() ) );
+	proto_lines.push_back( make_pair( spacelike->parent()->children()[1], time_like_line ) );
+	//add the parent to the space_like_line
+	space_like_line.push_back( make_pair( spacelike->parent()->scale(), 1. ) );
+	spacelike = spacelike->parent();
+      }
+      _hard_line_scales.push_back( space_like_line );
+    }
   }
-  //  bool ordered = true;
-  for(unsigned int ix = 0; ix < _hard_line_scales.size(); ix++ ){
-    for(unsigned int jx = 0; jx < _hard_line_scales[ix].size(); jx++ ){
+  //recursively fill all timelike lines from proto_lines
+  for( unsigned int ix = 0; ix < proto_lines.size(); ix++ ) {
+    fillHardScales( proto_lines[ix].first, proto_lines[ix].second );
+    _hard_line_scales.push_back( proto_lines[ix].second );
+  }
+  //go down each line (outwards from hard sub process) checking angular ordering condition
+  for( unsigned int ix = 0; ix < _hard_line_scales.size(); ix++ ){
+    for( unsigned int jx = 0; jx < _hard_line_scales[ix].size(); jx++ ){
       if( jx == 0 ) 
 	continue;
       //angular ordering condition: z_1*q_1 > q2
+      //this should also work for spacelike lines since for those z was set to 1
       if( _hard_line_scales[ix][jx].first  > _hard_line_scales[ix][jx - 1].first * _hard_line_scales[ix][ jx - 1 ].second )
 	return false;
     }
@@ -194,7 +235,12 @@ bool HardTree::checkHardOrdering() {
   return true;
 }
 Energy HardTree::lowestPt( int jetMeasureMode, Energy2 s ){
+  
   //check to see we found the _lowest pt correctly
+  if( !_lowestPt ) {
+    cerr<<"null lowestpt from tree:\n";
+    return 0.*GeV;
+  }
   if(  _lowestPt->children().size() != 2 ) {
     cerr<< "HardTree: wrong no. children = " << _lowestPt->children().size() << " \n";
     return 0.*GeV;
@@ -236,4 +282,49 @@ Energy HardTree::lowestPt( int jetMeasureMode, Energy2 s ){
     kt_softest = sqrt( kt_measure );
   }
   return kt_softest;
+}
+
+bool HardTree::fixFwdBranchings(){
+  //loop over the spacelike hardbranchings in hard process
+  set< HardBranchingPtr >::iterator it;
+  for( it = _branchings.begin(); it != _branchings.end(); ++it ){
+    HardBranchingPtr current = *it;
+    if( current->status() ==HardBranching::Outgoing ) continue;
+    if( !current->branchingParticle()->coloured() ) continue;
+    current->clearChildren();
+    current->sudakov( SudakovPtr() );
+    if( current->backChildren().empty() ) continue;
+    vector< HardBranchingPtr > backChildren = current->backChildren();
+    while( ! backChildren.empty() ){
+      if( backChildren.size() != 2 ) {
+	cerr << "fixFwdBranchings:: wrong number of back childrem\n";
+	continue;
+      }
+      if( !backChildren[0] || !backChildren[1] ) continue;
+      //remove any exiting children
+      backChildren[0]->clearChildren();
+      backChildren[0]->addChild( current );
+      backChildren[0]->addChild( backChildren[1] );
+      current->parent( backChildren[0] );
+      backChildren[1]->parent ( backChildren[0] );
+      if( !current->backSudakov() ){
+	cerr<<"fixFwdBranchings: problem finding backSudakov \n";
+	continue;
+      }
+      backChildren[0]->sudakov( current->backSudakov() );
+      //continue along incoming line (always the first child)
+      current = backChildren[0];
+      backChildren = backChildren[0]->backChildren();
+    } 
+  }
+  return true;
+}
+
+bool HardTree::fixParents( HardBranchingPtr branch ){
+  if( branch->children().empty() ) return true;
+  branch->children()[0]->parent( branch );
+  fixParents(  branch->children()[0] );
+  branch->children()[1]->parent( branch );
+  fixParents(  branch->children()[1] );
+  return true;
 }

@@ -60,23 +60,34 @@ void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions 
      << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
-     << ounit(_iptmax,GeV) << _vetoes << _hardType 
+     << ounit(_iptmax,GeV) << _vetoes << _hardType
      << _hardgenerator << _hardonly << _trunc_Mode
      << interaction_ << debug_ << interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
-    os << oenum(interactions_[ix]);
+    os << oenum(interactions_[ix]); 
+
+// <<<<<<< .working
+// =======<< _dynamicSuds
+//      << _ptVetoDefinition << _reversePtVeto
+//      << ounit(_Ptveto,GeV) << _showerVariableOutput << _approxCuts;
+// >>>>>>> .merge-right.r4419
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions 
-     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) 
+     >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV)
      >> iunit(_iptmax,GeV) >> _vetoes >> _hardType 
      >> _hardgenerator >> _hardonly >> _trunc_Mode 
      >> interaction_ >> debug_ >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) is >> ienum(interactions_[ix]);
+
+// ======= >> _dynamicSuds
+//      >> _ptVetoDefinition >> _reversePtVeto
+//      >> iunit(_Ptveto,GeV) >> _showerVariableOutput >> _approxCuts;
+// >>>>>>> .merge-right.r4419
 }
 
 void Evolver::doinit() {
@@ -104,6 +115,10 @@ void Evolver::doinitrun() {
   }
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix)
     _hardgenerator[ix]->setEvolver(this);
+// =======
+//   if( _showerVariableOutput )
+//      _h_qt = new_ptr( Histogram( 0., 100., 100));
+// >>>>>>> .merge-right.r4419
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -240,11 +255,36 @@ void Evolver::Init() {
      "Powheg",
      "Use a Powheg hardest emission",
      1);
+// =======
+//   static Switch<Evolver, unsigned int> ifaceJetMeasureMode
+//     ("JetMeasure",
+//      "Choice of the jet measure algorithm",
+//      &Evolver::_ptVetoDefinition, 1, false, false);
+  
+//   static SwitchOption Durham
+//     (ifaceJetMeasureMode,"Durham","Durham jet measure", 0);
+  
+//   static SwitchOption Shower
+//     (ifaceJetMeasureMode,"Shower","Shower pt", 1);
+  
+//   static SwitchOption LUCLUS
+//     (ifaceJetMeasureMode,"LUCLUS","LUCLUS jet measure", 2);
+// >>>>>>> .merge-right.r4419
 
   static RefVector<Evolver,HardestEmissionGenerator> interfaceHardGenerator
     ("HardGenerator",
-     "The objects responsible for generating the hardestr emission",
+     "The objects responsible for generating the hardest emission",
      &Evolver::_hardgenerator, -1, false, false, true, false, false);
+// =======
+//   static SwitchOption Hadron
+//     (ifaceJetMeasureMode,"Hadron","Hadron jet measure", 3);
+
+//   static Parameter< Evolver, Energy > interfacePtCut
+//     ("JetCut",
+//      "The jet cut (in specified jet measure) for shower vetoes",
+//      &Evolver::_Ptveto, GeV, ZERO, ZERO, 100000.0 * GeV,
+//      false, false, Interface::limited );
+// >>>>>>> .merge-right.r4419
 
   static Switch<Evolver,bool> interfaceHardOnly
     ("HardOnly",
@@ -269,6 +309,17 @@ void Evolver::Init() {
     (interfaceTruncMode,"No","Truncated Shower is OFF", 0);
   static SwitchOption interfaceTruncMode1
     (interfaceTruncMode,"Yes","Truncated Shower is ON", 1);
+
+// =======
+//   static Switch<Evolver, bool> ifaceDynamicSuds
+//     ("DynamicSudakovs",
+//      "Generate CKKW Sudakov weights dynamically from shower",
+//      &Evolver::_dynamicSuds, false, false, false);
+//   static SwitchOption DynamicSudsFalse
+//     (ifaceDynamicSuds,"No","No dynamics Sudakovs", false);
+//   static SwitchOption DynamicSudsTrue
+//     (ifaceDynamicSuds,"Yes","Generate dynamics Sudakovs", true);
+// >>>>>>> .merge-right.r4419
 
   static Switch<Evolver,unsigned int > interfaceInteractions
     ("Interactions",
@@ -532,6 +583,9 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
   throw Exception() << "Too many tries for shower in "
 		    << "Evolver::showerHardProcess()"
 		    << Exception::eventerror;
+
+//   checkShowerMomentum( particlesToShower, true );
+
 }
 
 void Evolver::hardMatrixElementCorrection() {
@@ -587,7 +641,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
     if(!fb.kinematics) return false;
     // if emission OK break
     if(!timeLikeVetoed(fb,particle)) break;
-    // otherwise reset scale and continue
+    // otherwise reset scale and continue - SO IS involved in veto algorithm
     particle->setEvolutionScale(fb.kinematics->scale());
   }
 
@@ -663,7 +717,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1],true,true));
   ShowerParticleVector theChildren;
   theChildren.push_back(particle); 
-  theChildren.push_back(otherChild); 
+  theChildren.push_back(otherChild);
+  //this updates the evolution scale
   particle->showerKinematics()->updateParent(newParent, theChildren,true);
   // update the history if needed
   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
@@ -791,7 +846,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       // tree has now showered
       _currenttree->hasShowered(true);
       if(debug_) {
-	checkShowerMomentum( particlesToShower );
+	checkShowerMomentum( particlesToShower , false );
 	if(interactions_.size()>1&&
 	   finalStates[0].size()==finalStates[1].size()) {
 	  Energy2 measure(ZERO);
@@ -1015,15 +1070,104 @@ bool Evolver::startSpaceLikeDecayShower(Energy maxscale,Energy minimumMass,
 bool Evolver::timeLikeVetoed(const Branching & fb,
 			     ShowerParticlePtr particle) {
   // check whether emission was harder than largest pt of hard subprocess
-  if (hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt()) 
+  if ( hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
   // soft matrix elementr correction veto
-  if(_currentme && softMEC() &&
-     _currentme->softMatrixElementVeto(_progenitor,particle,fb))
+  if( _currentme && softMEC() &&
+      _currentme->softMatrixElementVeto( _progenitor, particle, fb ) )
     return true;
   // pt veto
   if(fb.kinematics->pT() > _progenitor->maximumpT())
     return true;
+// =======
+//   //find pt at which we are vetoing
+//   Energy2 ptVeto;
+//   if( _Ptveto > ZERO && !_highestMult ) ptVeto = sqr( _Ptveto );
+//   else ptVeto = sqr( _progenitor->maximumpT() );
+//   //find corresponding pt measure based on the emission variables
+//   Energy2 kt_measure;
+//   //exact single durham/luclus cuts
+//   if( fb.kinematics && ( _ptVetoDefinition == 0 || _ptVetoDefinition == 2 ) 
+//       && !_approxCuts && ! _highestMult ){
+//     Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
+//     Energy pt = fb.kinematics->pT();
+//     double z = fb.kinematics->z();
+
+//     Energy2 m0 = sqr(getParticleData( fb.ids[0] )->constituentMass());
+//     Energy2 m1 = sqr(getParticleData( fb.ids[1] )->constituentMass());
+//     Energy2 m2 = sqr(getParticleData( fb.ids[2] )->constituentMass());
+
+//     double lambda = sqrt( 1. - 4.*m0/s );
+//     double beta1 = 2.*( m1 - sqr(z)*m0 + sqr(pt) )
+//       / z / lambda / ( lambda + 1. ) / s;
+//     double beta2 = 2.*( m2 - sqr( 1. - z )*m0 + sqr(pt) )
+//       / ( 1. - z ) / lambda / ( lambda + 1. ) / s;
+
+//     Energy E1 = sqrt(s)/2.*( z + lambda*beta1 );
+//     Energy E2 = sqrt(s)/2.*( (1.-z) + lambda*beta2 );
+//     Energy Z1 = sqrt(s)/2.*lambda*( z - beta1 );
+//     Energy Z2 = sqrt(s)/2.*lambda*( (1.-z) - beta2 );
+
+//     double costheta = ( Z1*Z2 - sqr(pt) )
+//       / sqrt( sqr(Z1)+sqr(pt) ) / sqrt( sqr(Z2)+sqr(pt) );
+
+//     if( _ptVetoDefinition == 0 )
+//       kt_measure = 2.*min( sqr(E1), sqr(E2) )*( 1. - costheta );
+//     else if( _ptVetoDefinition == 2 )
+//       kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
+//   }
+//   //approx durham/luclus cuts
+//   else if( fb.kinematics && ( _ptVetoDefinition == 0 || _ptVetoDefinition == 2 ) 
+// 	   && _approxCuts && !_highestMult ){
+//     double z = fb.kinematics->z();
+//     Energy pt = fb.kinematics->pT();
+//     if( _ptVetoDefinition == 0 )
+//       kt_measure = sqr( pt / max( z, 1. - z ) );
+//     else if( _ptVetoDefinition == 2 )
+//       kt_measure = sqr( pt );
+//   }
+//   //hadron jet measure cuts
+//   else if( fb.kinematics && _ptVetoDefinition == 3 && !_highestMult ){
+//     Energy2 s = ShowerHandler::currentHandler()->lastXCombPtr()->lastS();
+//     Energy pt = fb.kinematics->pT();
+//     double z = fb.kinematics->z();
+//     Energy2 m1 = sqr(getParticleData( fb.ids[1] )->constituentMass());
+//     Energy2 m2 = sqr(getParticleData( fb.ids[2] )->constituentMass());
+
+//     double beta1 = 2.*( m1 + sqr(pt) ) / z  / s;
+//     double beta2 = 2.*( m2 + sqr(pt) ) / ( 1. - z ) / s;
+
+//     Energy E1 = sqrt(s)/2.*( z + beta1 );
+//     Energy E2 = sqrt(s)/2.*( (1.-z) + beta2 );
+//     Energy Z1 = sqrt(s)/2.*( z - beta1 );
+//     Energy Z2 = sqrt(s)/2.*( (1.-z) - beta2 );
+
+//     //delta phi is always pi for first emission (qt_i = +-pt)
+//     double deltaR = sqr(  log( z / beta1 ) - log( (1-z) / beta2 ) ) / 4. 
+//       + sqr( Constants::pi );
+//     kt_measure = sqr( pt )* deltaR;
+//   } 
+//   //normal shower pt veto - should always be called for highest mult
+//   else kt_measure = sqr( fb.kinematics->pT() );
+  
+//   //veto emission or the full event depending on whether we are generating 
+//   //CKKW sudakov weights dynamically
+//   if( _dynamicSuds ){
+//     if( ! _reversePtVeto && kt_measure > ptVeto ){
+//       //cerr<<"veto event\n";
+//       throw Veto();
+//     }
+//     else if(  _reversePtVeto && kt_measure < ptVeto ) throw Veto();
+//   }
+//   else{
+//     if( ! _reversePtVeto && kt_measure > ptVeto ){
+//       //  cerr<<"veto emission \n";
+//       return true;
+//     }
+//     else if(  _reversePtVeto && kt_measure < ptVeto ) return true;
+//   }
+// >>>>>>> .merge-right.r4419
+
   // general vetos
   if (fb.kinematics && !_vetoes.empty()) {
     bool vetoed=false;
@@ -1055,8 +1199,25 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
   if(_currentme && softMEC() &&
      _currentme->softMatrixElementVeto(_progenitor,particle,bb))
     return true;
-  // check vs max pt for the shower
+  // get pt veto scale
   if(bb.kinematics->pT()> _progenitor->maximumpT() ) return true;
+// =======
+//   Energy ptVeto;
+//   if( _Ptveto > ZERO && !_highestMult ) ptVeto = _Ptveto;
+//   else 
+//     ptVeto = _progenitor->maximumpT();
+//   //veto emission or the full event depending on whether we are generating 
+//   //CKKW sudakov weights dynamically
+//   if( _dynamicSuds ){
+//     if( ! _reversePtVeto && bb.kinematics->pT() > ptVeto ) throw Veto();
+//     else if(  _reversePtVeto && bb.kinematics->pT() < ptVeto ) throw Veto();
+//   }
+//   else{
+//     if( ! _reversePtVeto && bb.kinematics->pT() > ptVeto ) return true;
+//     else if(  _reversePtVeto && bb.kinematics->pT() < ptVeto ) return true;
+//   }
+
+// >>>>>>> .merge-right.r4419
   // the more general vetos
   if (!_vetoes.empty()) {
     bool vetoed=false;
@@ -1080,8 +1241,8 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
   return false;
 }
 
-bool Evolver::spaceLikeDecayVetoed(const Branching & fb,
-				     ShowerParticlePtr particle) {
+bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
+				    ShowerParticlePtr particle ) {
   // apply the soft correction
   if(_currentme && softMEC() &&
      _currentme->softMatrixElementVeto(_progenitor,particle,fb))
@@ -1565,7 +1726,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
   return true;
 }
 
-bool Evolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower ){
+bool Evolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower , bool ISR){
   if( hardOnly() && hardTree()){
     // extract the particles from end point of the shower
     multimap<long,PPtr> outgoing;

@@ -193,8 +193,8 @@ void SSHSFSFVertex::doinit() {
   theSinAB = theSinA*theCosB + theCosA*theSinB;
   theCosAB = theCosA*theCosB - theSinA*theSinB;
 
-  theSw = sqrt(theMSSM->sin2ThetaW());
-  theCw = sqrt(1. - theMSSM->sin2ThetaW());
+  theSw = sqrt(sin2ThetaW());
+  theCw = sqrt(1. - sin2ThetaW());
 
   orderInGem(1);
   orderInGs(0);

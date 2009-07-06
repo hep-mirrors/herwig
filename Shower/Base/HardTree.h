@@ -60,6 +60,11 @@ public:
   set<HardBranchingPtr> & branchings() {return _branchings;}
   
   /**
+   * Fix the fwd branching connections for spacelike shower
+   */
+  bool fixFwdBranchings();
+
+  /**
    * Access the incoming branchings
    */
   set<HardBranchingPtr> & incoming() {return _spacelike;}
@@ -91,6 +96,12 @@ public:
   map< long, pair< Energy, Energy > > & getInternals() { return _theInternals; }
 
 
+  /**
+   * Access the intermediate lines
+   */
+  map< HardBranchingPtr, HardBranchingPtr > & getIntermediates() { return _theIntermediates; }
+
+
 
   /**
    * Returns true if all lines in tree are ordered in /tilde(q)
@@ -108,13 +119,21 @@ public:
    */
   Energy totalPt() { return _total_pt; } 
 
+  LorentzRotation showerRot() { return _showerRot; }
+
+  void showerRot( LorentzRotation r ) { _showerRot = r; }
 
 private:
 
- /**
-   * Recursive function to fill externals and nodes, also connects the parents
+  /**
+   * Recursive function to fix the parent assignments
    */
-  bool fillNodes( HardBranchingPtr, HardBranchingPtr );
+  bool fixParents( HardBranchingPtr );
+
+  /**
+   * Recursive function to fill externals, nodes and intermediates from the time-like showers
+   */
+  bool fillNodes( HardBranchingPtr );
 
   /**
    * Function to recursively find the hard line scales
@@ -166,6 +185,11 @@ private:
   map< HardBranchingPtr,  Energy > _theNodes;
   
   /**
+   * Map of the start and the end branchings of an intermediate line
+   */
+  map< HardBranchingPtr, HardBranchingPtr > _theIntermediates;
+
+  /**
    * Map containing all internal line ids and 
    * their start and end node scale, qtilde.
    */
@@ -182,8 +206,10 @@ private:
    */
   Energy _total_pt;
 
-};
+  //rotation to shower frame
+  LorentzRotation _showerRot;
 
+};
 
 /**
  *  Output operator for testing

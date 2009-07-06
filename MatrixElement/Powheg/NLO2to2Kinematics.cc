@@ -244,8 +244,30 @@ real2to3Kinematics::real2to3Kinematics(born2to2Kinematics bornVariables,
   w1r_    = k12r_ - q1r_  + q2r_ - tkr_;
   w2r_    = k22r_ + q1r_  - q2r_ - ukr_;
   
-  
-
+  // Reconstruct the momenta. k1b_, k2b_ should not have changed modulo 
+  // +/- conventions for things like sin(psi) and sin(psi^prime) (cf 
+  // Eq.2.12 of WZ paper).
+  Energy p10r( (sr_ +tkr_)/2./sqrt(s2r_));
+  Energy p20r( (sr_ +ukr_)/2./sqrt(s2r_));
+  Energy k0r (-(ukr_+tkr_)/2./sqrt(s2r_));
+  double spsir   = sqrt(1-cpsir_  )*sqrt(1.+cpsir_  );
+  double spsiprr = sqrt(1-cpsiprr_)*sqrt(1.+cpsiprr_);
+  p1r_ = Lorentz5Momentum(0.*GeV,0.*GeV,p10r,p10r,0.*GeV);
+  p2r_ = Lorentz5Momentum(0.*GeV, p20r*spsir  ,p20r*cpsir_  ,p20r,0.*GeV);
+  kr_  = Lorentz5Momentum(0.*GeV, k0r *spsiprr,k0r *cpsiprr_,k0r ,0.*GeV);
+  k1r_ = Lorentz5Momentum(sqrt(s2r_)*v1r_*sin(theta2r_)*sin(theta1r_),
+			  sqrt(s2r_)*v1r_*cos(theta2r_)*sin(theta1r_),
+			  sqrt(s2r_)*v1r_*cos(theta1r_),
+			  sqrt(s2r_),sqrt(k12r_));
+  k2r_ = Lorentz5Momentum(sqrt(s2r_)*-v2r_*sin(theta2r_)*sin(theta1r_),
+			  sqrt(s2r_)*-v2r_*cos(theta2r_)*sin(theta1r_),
+			  sqrt(s2r_)*-v2r_*cos(theta1r_),
+			  sqrt(s2r_),sqrt(k22r_));
+  k1r_ *= betaxr_/2./v1r_;
+  k2r_ *= betaxr_/2./v2r_;
+  k1r_.setTau(sqrt(k12r_));
+  k2r_.setTau(sqrt(k22r_));
+  return;
 }
 
 void real2to3Kinematics::sanityCheck() const {

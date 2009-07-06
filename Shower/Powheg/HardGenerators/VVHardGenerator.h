@@ -123,6 +123,30 @@ protected:
    */
   bool getEvent(vector<Lorentz5Momentum> & pnew,int & emissiontype);
   
+//   // Pseudo - code for the inclusion of spin correlations.
+//   /**
+//    *  Construct the vertex of spin correlations.
+//    */
+//   virtual void constructVertex(tSubProPtr);
+
+//   /**
+//    * The matrix element q + qb -> n + g times tk*uk - using helicity amplitudes
+//    */
+//   Energy2 t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const;
+//   mutable Energy2 t_u_M_R_qqb_hel_amp_;
+
+//   /**
+//    * The matrix element q + g -> n + q times tk*uk - using helicity amplitudes
+//    */
+//   Energy2 t_u_M_R_qg_hel_amp(real2to3Kinematics R) const;
+//   mutable Energy2 t_u_M_R_qg_hel_amp_;
+
+//   /**
+//    * The matrix element g + qb -> n + qb times tk*uk - using helicity amplitudes
+//    */
+//   Energy2 t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const;
+//   mutable Energy2 t_u_M_R_gqb_hel_amp_;
+
 private:
 
   /**

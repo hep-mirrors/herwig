@@ -113,7 +113,7 @@ void UEDF1F0W1Vertex::doinit() {
     throw InitException() << "UEDF1F0W1Vertex::doinit() - The pointer to "
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
-  theSinW = sqrt(UEDBase->sin2ThetaW());
+  theSinW = sqrt(sin2ThetaW());
   theCosW = sqrt( 1. - sqr(theSinW));
   theSinOne = UEDBase->sinThetaOne();
   theCosOne = sqrt(1. - sqr(theSinOne)); 

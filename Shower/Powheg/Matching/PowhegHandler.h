@@ -17,6 +17,7 @@
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
+#include "ThePEG/PDF/PartonExtractor.h"
 
 namespace Herwig {
   class PowhegHandler;
@@ -73,7 +74,13 @@ using namespace ThePEG;
 	return true;
       }
       else return false;
-    }
+    }    
+    /**
+     * Fix the parent-child relations along backward lines in 
+     * the hardBranchings 
+     */
+    bool fixFwdBranchings();
+
     const set< HardBranchingPtr > & getBranchings() const {
       return  theBranchings;
     }
@@ -97,7 +104,7 @@ public:
   PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOpt(0), 
 		    _highestMult(false), _testSudakovs(false), _qtildeDist( false ),
 		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), 
-		    _clusterOption( 0 ), _rejectNonAO( true ), _dalitzOn( false ) {}
+		    _clusterOption( 0 ),  _rejectNonAO( true ), _dalitzOn( false ) {}
 
   /**
    * Perform CKKW reweighting
@@ -167,8 +174,6 @@ protected:
 
   virtual void dofinish();
 
-
-
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
@@ -204,37 +209,50 @@ protected:
 
 private:
 
-  //a list of all clusters used in finding all shower histories
+  /**
+   * All clusters used in finding all shower histories
+   */
   map< HardBranchingPtr , pair< ShowerParticlePtr, ShowerParticlePtr > > _all_clusters;
 
-  //a set of prototrees (which are a set of HardBranchings)
-  //can do find on set to see if it contains a certain hardbranching
+  /**
+   * The ProtoTrees which will become HardTrees
+   */
   set< ProtoTreePtr > _proto_trees;
 
-  //all possible shower configurations that are angular ordered
+  /**
+   * The possible shower configurations that are angular-ordered
+   */
   vector< pair< HardTreePtr, double > > _hardTrees;
-
+  
+  /**
+   * The possible shower configurations that are not angular-ordered
+   */
   vector< pair< HardTreePtr, double > > _rejectedHardTrees;
 
-
-  //just connect up the progenitors in currentProtoTree
-  bool simpleColConnections( ProtoTreePtr currentProtoTree );
-
+  /**
+   * Set colour connection in HardTree outwards from the hard process.
+   * Currently assumes qq_bar leading order parton configuration (IS or FS) 
+   */
   bool simpleColConnections( HardTreePtr currentHardTree );
-
   
-  //recursive method to find all trees
-  //does a single clustering on the current tree adding more prototrees if more than one possible branching
+  /**
+   * Recursive function to find all possible clustered trees.
+   * Does not produce any repeated trees.
+   */
   bool fillProtoTrees( map< ShowerParticlePtr, HardBranchingPtr >, 
 		       ProtoTreePtr );
+  /**
+   * Function looks to see if a cluster of the cluster_particles already exists in _all_clusterings
+   * if so returns the pointer to that hardBranching if not creates the hardBranchings, adds it
+   * to _all_branchings and returns the pointer
+   */
+   HardBranchingPtr getCluster( pair< ShowerParticlePtr, ShowerParticlePtr >, 
+			       map< ShowerParticlePtr, HardBranchingPtr >, bool incoming );
 
-  //looks to see if a cluster of the cluster_particles already exists in _all_clusterings
-  //if so returns the pointer to that hardBranching if not creates the hardBranchings, adds it
-  //to _all_branchings and returns the pointer
-  HardBranchingPtr getCluster( pair< ShowerParticlePtr, ShowerParticlePtr >, map< ShowerParticlePtr, HardBranchingPtr > );
-
-  //checks whether a prototree containing the same branchings exists already in _proto_trees in 
-  //which case the current tree is a repeat and should be removed (and not recursed)
+  /**
+   *checks whether a prototree containing the same branchings exists already in _proto_trees in 
+   *which case the current tree is a repeat and should be removed (and not recursed)
+   */
   bool repeatProtoTree( ProtoTreePtr currentProtoTree );
 
   /**
@@ -250,15 +268,19 @@ private:
    * according to its shower probability
    */
   HardTreePtr doClusteringOrdered( );
-  
+
+  /**
+   * Returns Sudakov factor
+   */
   double Sud( Energy scale, long id, Energy pt_cut );
 
-
   HardTreePtr generalClustering();
-  BranchingElement allowedFinalStateBranching
-  (pair<PrototypeBranchingPtr,PrototypeBranchingPtr> &);
-  BranchingElement allowedInitialStateBranching
-  (pair<PrototypeBranchingPtr,PrototypeBranchingPtr> &);
+  BranchingElement allowedFinalStateBranching( pair< PrototypeBranchingPtr, PrototypeBranchingPtr > & );
+  BranchingElement allowedFinalStateBranching( ShowerParticlePtr &, ShowerParticlePtr & );
+  BranchingElement allowedInitialStateBranching( pair< PrototypeBranchingPtr, PrototypeBranchingPtr > & );
+  BranchingElement allowedInitialStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & );
+
+  DiagPtr getDiagram(HardTreePtr);
   DiagPtr getDiagram(const PrototypeTree &);
   Energy2 hadronJetMeasure(const Lorentz5Momentum & p1,
 			   const Lorentz5Momentum & p2,
@@ -283,8 +305,7 @@ private:
    * Checks to see that the splitting is allowed.
    */
   bool splittingAllowed( ShowerParticlePtr part_i,
-			 ShowerParticlePtr part_j,
-			 int qq_pairs);
+			 ShowerParticlePtr part_j );
   
   /**
    *  Sort's out the colour lines
@@ -334,6 +355,10 @@ private:
   void makeQtildeDist();
 
 private:
+  /**
+   *  update sub process based on _theHardTree
+   */
+  bool updateSubProcess();
 
   /**
    *  The chosen hard tree
@@ -359,7 +384,12 @@ private:
    *  Pointer to the object calculating the strong coupling
    */
   ShowerAlphaPtr _alphaS;
-
+  
+  /*
+   * The global alphaS factor to ensure all alphaS weights are less than one
+   */
+  double _global_alphaS_wgt;
+ 
   /**
    *  Option for the Sudakov table
    */
@@ -430,12 +460,7 @@ private:
    */
   double _alphaSMG;
 
-  /*
-   * The global alphaS factor to ensure all alphaS weights are less than one
-   */
-  double _global_alphaS_wgt;
-
-  /**`
+  /**
    * Histogram of sudakov weights
    */
   HistogramPtr _hSud;
@@ -501,8 +526,25 @@ private:
    */
   unsigned int _max_mult;
 
+  /**
+   *  Pointer to the parton extractor
+   */
+  
+  /**
+   * The PartonExtractor object used to construct remnants.
+   */
+  PExtrPtr partonExtractor_;
 
+  /**
+   * The pairs of PartonBin objects describing the partons which can
+   * be extracted by the PartonExtractor object.
+   */
+  PartonPairVec partonBins_;
 
+  /**
+   * The Cuts object to be used for this reader.
+   */
+  CutsPtr cuts_;
 };
 
 }
@@ -543,4 +585,3 @@ struct ClassTraits<Herwig::PowhegHandler>
 }
 
 #endif /* HERWIG_PowhegHandler_H */
-

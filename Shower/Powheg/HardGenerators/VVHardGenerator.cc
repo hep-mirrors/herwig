@@ -606,3 +606,27 @@ void VVHardGenerator::doinitrun() {
   _prefactor.push_back(_pregqbar);
   HardestEmissionGenerator::doinitrun();
 }
+
+// // Pseudo-code for including spin correlations:
+// void VVHardGenerator::constructVertex(tSubProPtr sub) {
+//   //  if(!spinCorrelations()) return;
+//   SpinfoPtr spin[5];
+//   // Extract the particles in the hard process
+//   ParticleVector hard;
+//   hard.push_back(sub->incoming().first);  // p1 
+//   hard.push_back(sub->incoming().second); // p2
+//   hard.push_back(sub->outgoing()[0]);     // k1
+//   hard.push_back(sub->outgoing()[1]);     // k2
+//   hard.push_back(sub->outgoing()[2]);     // k
+//   // Get the spin info objects
+//   for(unsigned int ix=0;ix<5;++ix)
+//     spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[]->spinInfo());
+//   // construct the vertex
+//   HardVertexPtr hardvertex=new_ptr(HardVertex());
+//   // set the matrix element for the vertex
+//   hardvertex->ME(qqb_hel_amps_);
+//   // set the pointers and to and from the vertex
+//   for(unsigned int ix=0;ix<5;++ix)
+//     spin[ix]->setProductionVertex(hardvertex);
+// }
+

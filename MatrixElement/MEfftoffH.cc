@@ -341,7 +341,7 @@ bool MEfftoffH::generateKinematics(const double * r) {
   double cost12 = stheta[0]*stheta[1]*cos(phi12)+ctheta[0]*ctheta[1];
   // momentum of 2
   Energy p2 = 0.5*(sHat()-2.*roots*p1-sqr(mh))/(roots-p1*(1.-cost12));
-  if(p2<ZERO) return false;
+  if(p2<=ZERO) return false;
   // construct the momenta
   // first outgoing particle
   if(_swap) {

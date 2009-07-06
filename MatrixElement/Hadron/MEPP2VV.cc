@@ -1,12 +1,5 @@
 // -*- C++ -*-
 //
-// MEPP2VV.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
-//
-// Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
-// Please respect the MCnet academic guidelines, see GUIDELINES for details.
-//
-//
 // This is the implementation of the non-inlined, non-templated member
 // functions of the MEPP2VV class.
 //
@@ -25,11 +18,8 @@
 
 using namespace Herwig;
 
-MEPP2VV::MEPP2VV() : 
-  ckm_(3,vector<Complex>(3,0.0)),
-  process_(0), maxflavour_(5), massOption_(2) , mixingInWW_(1)  ,
-  scaleopt_(1)  , mu_F_(100.*GeV)     , mu_UV_(100.*GeV), 
-  scaleFact_(1.), spinCorrelations_(1), debugMCFM_(0)
+MEPP2VV::MEPP2VV() : process_(0), maxflavour_(5), massOption_(2) ,
+  debugMCFM_(0)
 {}
 
 unsigned int MEPP2VV::orderInAlphaS() const {
@@ -106,71 +96,6 @@ void MEPP2VV::Init() {
      "The bosons are generated off-shell using the mass and width generator.",
      2);
 
-  static Switch<MEPP2VV,bool> interfaceFlavourMixingInWWProduction
-    ("FlavourMixingInWWProduction",
-     "Disable CKM mixing in WW production i.e. impose unitarity of the CKM matrix",
-     &MEPP2VV::mixingInWW_, 0, false, false);
-  static SwitchOption interfaceNoMixingInWW
-    (interfaceFlavourMixingInWWProduction,
-     "NoMixing",
-     "The CKM matrix is a unit matrix (equates to imposing unitarity of the CKM)",
-     0);
-  static SwitchOption interfaceMixingInWW
-    (interfaceFlavourMixingInWWProduction,
-     "Mixing",
-     "Allow the flvours of the intermediate and initial state quarks to differ",
-     1);
-
-  static Switch<MEPP2VV,unsigned int> interfaceFactorizationScaleOption
-    ("FactorizationScaleOption",
-     "Option for the choice of factorization (and renormalization) scale",
-     &MEPP2VV::scaleopt_, 1, false, false);
-  static SwitchOption interfaceDynamic
-    (interfaceFactorizationScaleOption,
-     "Dynamic",
-     "Dynamic factorization scale equal to the current sqrt(sHat())",
-     1);
-  static SwitchOption interfaceFixed
-    (interfaceFactorizationScaleOption,
-     "Fixed",
-     "Use a fixed factorization scale set with FactorizationScaleValue",
-     2);
-
-  static Parameter<MEPP2VV,Energy> interfaceFactorizationScaleValue
-    ("FactorizationScaleValue",
-     "Value to use in the event of a fixed factorization scale",
-     &MEPP2VV::mu_F_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
-     true, false, Interface::limited);
-
-  static Parameter<MEPP2VV,Energy> interfaceRenormalizationScaleValue
-    ("RenormalizationScaleValue",
-     "Value to use for the (UV) renormalization scale",
-     &MEPP2VV::mu_UV_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
-     true, false, Interface::limited);
-
-  static Parameter<MEPP2VV,double> interfaceScaleFactor
-    ("ScaleFactor",
-     "The factor used before sHat if using a running scale",
-     &MEPP2VV::scaleFact_, 1.0, 0.0, 10.0,
-     false, false, Interface::limited);
-
-  static Switch<MEPP2VV,unsigned int> interfaceSpinCorrelations
-    ("SpinCorrelations",
-     "Option to remove spin correlation effects in boson decays "
-     " for testing purposes and for generating NLO spin correlations "
-     " by the method of Frixione, Laenen, Motylinski and Webber.",
-     &MEPP2VV::spinCorrelations_, 1, false, false);
-  static SwitchOption interfaceSpinCorrelationsOff
-    (interfaceSpinCorrelations,
-     "Off",
-     "Turning off the spin correlations in the vector boson decays",
-     0);
-  static SwitchOption interfaceSpinCorrelationsOn
-    (interfaceSpinCorrelations,
-     "On",
-     "Turning on  the spin correlations in the vector boson decays",
-     1);
-
   static Switch<MEPP2VV,unsigned int> interfaceDebugMCFM
     ("DebugMCFM",
      "Option to make t-channel propagators massless for WW (as in MCFM)",
@@ -189,21 +114,19 @@ void MEPP2VV::Init() {
 }
 
 void MEPP2VV::persistentOutput(PersistentOStream & os) const {
-  os << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ << ckm_
-     << process_ << massOption_ << maxflavour_ << mixingInWW_
-     << scaleopt_  << ounit(mu_F_,GeV)  << ounit(mu_UV_,GeV)   
-     << scaleFact_ << spinCorrelations_ << debugMCFM_;
+  os << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_
+     << process_ << massOption_ << maxflavour_
+     << debugMCFM_;
 }
 
 void MEPP2VV::persistentInput(PersistentIStream & is, int) {
-  is >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ >> ckm_
-     >> process_ >> massOption_ >> maxflavour_ >> mixingInWW_
-     >> scaleopt_  >> iunit(mu_F_,GeV)  >> iunit(mu_UV_,GeV)  
-     >> scaleFact_ >> spinCorrelations_ >> debugMCFM_;
+  is >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_
+     >> process_ >> massOption_ >> maxflavour_
+     >> debugMCFM_;
 }
 
 Energy2 MEPP2VV::scale() const {
-  return scaleopt_ == 1 ? sHat() : sqr(mu_F_);
+  return sHat();
 }
 
 IBPtr MEPP2VV::clone() const {
@@ -232,16 +155,6 @@ void MEPP2VV::doinit() {
   FFPvertex_ = hwsm->vertexFFP();
   WWWvertex_ = hwsm->vertexWWW();
   FFWvertex_ = hwsm->vertexFFW();
-  // get the ckm object
-  Ptr<StandardCKM>::pointer 
-      theCKM=dynamic_ptr_cast<Ptr<StandardCKM>::pointer>(SM().CKM());
-  if(!theCKM) throw InitException() << "MEPP2VVPowheg::doinit() "
-				    << "the CKM object must be the Herwig one"
-				    << Exception::runerror;
-  unsigned int ix,iy;
-  // get the CKM matrix (unsquared for interference)
-  vector< vector<Complex > > CKM(theCKM->getUnsquaredMatrix(SM().families()));
-  for(ix=0;ix<3;++ix){for(iy=0;iy<3;++iy){ckm_[ix][iy]=CKM[ix][iy];}}
 }
 
 double MEPP2VV::getCosTheta(double ctmin, double ctmax, const double * r) {
@@ -300,8 +213,6 @@ void MEPP2VV::getDiagrams() const {
       tcPDPtr w1 = ix%2==0 ? wPlus : wMinus;
       tcPDPtr w2 = ix%2!=0 ? wPlus : wMinus;
       for(int iy=1;iy<=maxflavour_;++iy) {
-	// Impose initial state quarks have the same flavour:
- 	if(!mixingInWW_&&ix!=iy) continue; 
 	if(abs(ix-iy)%2!=0) continue;
 	tcPDPtr qb = getParticleData(-iy);
 	// s channel photon
@@ -313,8 +224,6 @@ void MEPP2VV::getDiagrams() const {
 	  int idiag=0;
 	  for(int iz=1;iz<=5;iz+=2) {
 	    --idiag;
-	    // Impose intermediate be in the same generation as initial state:
-	    if(!mixingInWW_&&iz!=ix-1) continue;
 	    tcPDPtr tc = getParticleData(iz);
 	    add(new_ptr((Tree2toNDiagram(3), qk, tc, qb, 1, w1, 2, w2, idiag)));
 	  }
@@ -323,8 +232,6 @@ void MEPP2VV::getDiagrams() const {
 	  int idiag=0;
 	  for(int iz=2;iz<=6;iz+=2) {
 	    --idiag;
-	    // Impose intermediate be in the same generation as initial state:
-	    if(!mixingInWW_&&iz!=ix+1) continue;
 	    tcPDPtr tc = getParticleData(iz);
 	    add(new_ptr((Tree2toNDiagram(3), qk, tc, qb, 1, w1, 2, w2, idiag)));
 	  }
@@ -452,16 +359,10 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
   // particle data for the t-channel intermediate
   tcPDPtr tc[3];
   if(f1[0].getParticle()->id()%2==0) {
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(!mixingInWW_&&abs(f1[0].getParticle()->id())!=2+2*int(ix)) continue;
-      tc[ix] = getParticleData(1+2*ix);
-    }
+    for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(1+2*ix);
   }
   else {
-    for(unsigned int ix=0;ix<3;++ix) {
-      if(!mixingInWW_&&abs(f1[0].getParticle()->id())!=1+2*int(ix)) continue;
-      tc[ix] = getParticleData(2+2*ix);
-    }
+    for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(2+2*ix);
   }
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   tcPDPtr z0    = getParticleData(ParticleID::Z0);
@@ -485,25 +386,18 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
 	    WWWvertex_->evaluate(scale(),interZ,v2[ohel2],v1[ohel1]) : 0.;
 	  // t-channel
 	  for(unsigned int ix=0;ix<3;++ix) {
-	    if(!tc[ix]) continue;
+	    // ************************************** //
+	    // I think all this multiplying in the    //
+	    // propagator factors could be avoided by //
+	    // just changing the second argument 1 to //
+	    // a 5, as in line 4350 of MEPP2VVPowheg. //
+	    // See also VertexBase.cc in ThePEG,      // 
+	    // Helicity.                              //
+	    // ************************************** //
 	    SpinorWaveFunction inter = 
 	      FFWvertex_->evaluate(scale(),1,tc[ix],f1[ihel1],v1[ohel1]);
 	    diag[ix] = 
 	      FFWvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	    if(!mixingInWW_) {
-	      Complex Kij(1,0.);
-	      if(abs(f1[ihel1].getParticle()->id())%2==0) {
-		int up_id(abs(f1[ihel1].getParticle()->id())/2-1);
-		int dn_id((abs(tc[ix]->id())-1)/2);
-		Kij  = sqr(ckm_[up_id][dn_id]);
-	      }
-	      else if(abs(f1[ihel1].getParticle()->id())%2==1) {
-		int dn_id((abs(f1[ihel1].getParticle()->id())-1)/2);
-		int up_id(abs(tc[ix]->id())/2-1);
-		Kij  = sqr(ckm_[up_id][dn_id]);
-	      }
-	      diag[ix] /= Kij;
-	    }
 	    if(debugMCFM_) {
 	      Energy2 the_that;
 	      the_that =(meMomenta()[0]-meMomenta()[2]).m2();
@@ -619,7 +513,6 @@ double MEPP2VV::ZZME(vector<SpinorWaveFunction>    & f1,
 }
 
 void MEPP2VV::constructVertex(tSubProPtr sub) {
-  if(!spinCorrelations_) return;
   SpinfoPtr spin[4];
   // extract the particles in the hard process
   ParticleVector hard;

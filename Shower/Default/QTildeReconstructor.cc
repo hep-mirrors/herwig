@@ -1342,7 +1342,7 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   bool radiated = false;
   Lorentz5Momentum pcm;
   // check whether particles radiated and calculate total momentum
-  for(unsigned int ix=0;ix<jets.size();++ix) {
+  for( unsigned int ix = 0; ix < jets.size(); ++ix ) {
     radiated |= jets[ix]->hasEmitted();
 //     pcm += jets[ix]->progenitor()->getThePEGBase()->momentum();
     pcm += jets[ix]->progenitor()->momentum();
@@ -1496,6 +1496,7 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
   if(jets.size()==1) {
     LorentzRotation R(toRest);
     R.boost(fromRest);
+    tree->showerRot( R );
     jets[0]->setMomenta(R,1.0,Lorentz5Momentum());
     jets[0]->showerMomentum(R*jets[0]->branchingParticle()->momentum());
     // find the colour partners

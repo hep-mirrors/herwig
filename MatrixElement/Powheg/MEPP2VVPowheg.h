@@ -59,12 +59,22 @@ public:
   virtual double me2() const;
 
   /**
+   * Return the scale associated with the last set phase space point.
+   */
+  virtual Energy2 scale() const;
+
+  /**
    * This member check the collinear limits of the 
    * real emission matrix elements are equal to the 
    * appropriate combinations of Born ME's multiplied
    * by the splitting functions.
    */
   bool sanityCheck() const;
+
+  /**
+   * Return the CKM matrix elements.
+   */
+  Complex CKM(int ix,int iy) const { return ckm_[ix][iy]; }
 
 public:
 
@@ -177,11 +187,31 @@ public:
    * The matrix element q + g  -> n + q times tk*uk 
    */
   Energy2 t_u_M_R_qg(real2to3Kinematics R) const;
+  mutable Energy2 t_u_M_R_qg_;
 
   /**
    * The matrix element g + qb -> n + q times tk*uk 
    */
   Energy2 t_u_M_R_gqb(real2to3Kinematics R) const;
+  mutable Energy2 t_u_M_R_gqb_;
+
+  /**
+   * The matrix element q + qb -> n + g times tk*uk - using helicity amplitudes
+   */
+  Energy2 t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const;
+  mutable Energy2 t_u_M_R_qqb_hel_amp_;
+
+  /**
+   * The matrix element q + g -> n + q times tk*uk - using helicity amplitudes
+   */
+  Energy2 t_u_M_R_qg_hel_amp(real2to3Kinematics R) const;
+  mutable Energy2 t_u_M_R_qg_hel_amp_;
+
+  /**
+   * The matrix element g + qb -> n + qb times tk*uk - using helicity amplitudes
+   */
+  Energy2 t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const;
+  mutable Energy2 t_u_M_R_gqb_hel_amp_;
 
   /**
    * The Born matrix element as given in Equation 3.1 - 3.3 in NPB 383 
@@ -236,6 +266,11 @@ public:
    * those authors absorb in the matrix element. 
    */
   Energy2 t_u_M_R_qqb_WW(real2to3Kinematics R) const;
+
+  /**
+   * Return the renormalisation scale.
+   */
+  Energy mu_UV() const;
 
 protected:
 
@@ -391,6 +426,12 @@ private:
   unsigned int contrib_;
 
   /**
+   *  Whether to generate all channels contributions or just qqb or just 
+   *  qg+gqb contributions
+   */
+  unsigned int channels_;
+
+  /**
    *  Whether to use a fixed or a running QCD coupling for the NLO weight
    */
   unsigned int nlo_alphaS_opt_;
@@ -404,7 +445,51 @@ private:
    *  Flag to remove or multiply in MCFM branching fractions for testing
    */
   unsigned int removebr_;
+
+  /**
+   * Selects a dynamic (sHat) or fixed factorization scale
+   */
+  unsigned int scaleopt_;
+
+  /**
+   * The factorization scale
+   */
+  Energy mu_F_;
+
+  /**
+   * The renormalization scale
+   */
+  Energy mu_UV_;
+
+  /**
+   * The ckm matrix elements (unsquared, to allow interference)
+   */
+  vector< vector<Complex> > ckm_;
+
+  /**
+   *  The q + qb -> v1 + v2 + g  helicity amplitudes  
+   */
+  mutable ProductionMatrixElement qqb_hel_amps_;
+
+  /**
+   *  The q + g  -> v1 + v2 + q  helicity amplitudes  
+   */
+  mutable ProductionMatrixElement qg_hel_amps_;
+
+  /**
+   *  The g + qb -> v1 + v2 + qb helicity amplitudes  
+   */
+  mutable ProductionMatrixElement gqb_hel_amps_;
   //@}
+
+  /**
+   *  The vertices
+   */
+  AbstractFFVVertexPtr FFPvertex_;
+  AbstractFFVVertexPtr FFWvertex_;
+  AbstractFFVVertexPtr FFZvertex_;
+  AbstractVVVVertexPtr WWWvertex_;
+  AbstractFFVVertexPtr FFGvertex_;
 
   /**
    *  The value of \f$\alpha_S\f$ used for the calculation

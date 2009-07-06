@@ -137,7 +137,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
   case 2: {
     if(q2 != _q2last||_couplast==0.) {
       double e = electroMagneticCoupling(q2);
-      _couplast = pow(e,3)/_theSM->sin2ThetaW();
+      _couplast = pow(e,3)/sin2ThetaW();
       _q2last = q2;
     }
     setNorm(_couplast);
