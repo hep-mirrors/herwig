@@ -26,9 +26,11 @@
 
 using namespace Herwig;
 
+namespace{
+
 const bool dbg = false;
 
-namespace{
+
   void reShuffle(Lorentz5Momentum &p1, Lorentz5Momentum &p2, Energy m1, Energy m2){
 
     Lorentz5Momentum ptotal(p1+p2);

@@ -7,6 +7,7 @@
 #include "IncomingPhotonEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/EventHandler.h"
@@ -71,7 +72,9 @@ handle(EventHandler & eh, const tPVector & ,
     (incomingHadrons.first->dataPtr());
   assert(beam);
   // get the PDF 
-  tcPDFPtr pdf = beam->pdf();
+  tcPDFPtr pdf;
+  if ( PDF_ ) pdf = PDF_;
+  else        pdf = beam->pdf();
   assert(pdf);
   // power for the sampling
   double wgt = PDFMax_*SM().alphaEM()/Constants::pi/PDFPower_*
@@ -326,6 +329,11 @@ void IncomingPhotonEvolver::Init() {
      "The minimum pT scale to start the evolution",
      &IncomingPhotonEvolver::minpT_, GeV, 2.0*GeV, 10.0*GeV, 0.5*GeV,
      false, false, Interface::limited);
+
+  static Reference<IncomingPhotonEvolver,PDFBase> interfacePDF
+    ("PDF",
+     "PDF set to use. Overrides the one that is associated with the beam particle.",
+     &IncomingPhotonEvolver::PDF_, false, false, true, true, false);
 
   static Parameter<IncomingPhotonEvolver,double> interfacePDFMax
     ("PDFMax",

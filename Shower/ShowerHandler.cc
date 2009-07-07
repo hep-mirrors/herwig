@@ -151,10 +151,28 @@ void ShowerHandler::Init() {
     ("MPIHandler",
      "The object that administers all additional scatterings.",
      &ShowerHandler::MPIHandler_, false, false, true, true);
+
+  static Reference<ShowerHandler,PDFBase> interfacePDFA
+    ("PDFA",
+     "The PDF for beam particle A. Overrides the particle's own PDF setting.",
+     &ShowerHandler::PDFA_, false, false, true, true, false);
+
+  static Reference<ShowerHandler,PDFBase> interfacePDFB
+    ("PDFB",
+     "The PDF for beam particle B. Overrides the particle's own PDF setting.",
+     &ShowerHandler::PDFB_, false, false, true, true, false);
   
 }
 
 void ShowerHandler::cascade() {
+  tcPDFPtr first  = firstPDF().pdf();
+  tcPDFPtr second = secondPDF().pdf();
+
+  if ( PDFA_ ) first  = PDFA_;
+  if ( PDFB_ ) second = PDFB_;
+
+  resetPDFs(make_pair(first,second));
+
   // get the incoming partons
   tPPair  incomingPartons = 
     eventHandler()->currentCollision()->primarySubProcess()->incoming();
@@ -229,6 +247,7 @@ void ShowerHandler::cascade() {
     return;
   }
   // generate the multiple scatters use modified pdf's now:
+  // We need newpdf to be in scope through the rest of this function.
   pair <PDFPtr, PDFPtr> newpdf;
   setMPIPDFs(newpdf);
   // additional "hard" processes
@@ -640,20 +659,24 @@ void ShowerHandler::boostCollision(bool boost) {
   if(!boost) boost_.invert();
 }
 
+// DO NOT CHANGE THIS SIGNATURE to return the PDFPtr pair. They go out of scope!
 void ShowerHandler::setMPIPDFs(pair <PDFPtr, PDFPtr> & newpdf) {
+
   // first have to check for MinBiasPDF
-  tcMinBiasPDFPtr first = 
-    dynamic_ptr_cast<tcMinBiasPDFPtr>(firstPDF().pdf());
+  tcMinBiasPDFPtr first = dynamic_ptr_cast<tcMinBiasPDFPtr>(firstPDF().pdf());
   if(first)
     newpdf.first = new_ptr(MPIPDF(first->originalPDF()));
   else
     newpdf.first = new_ptr(MPIPDF(firstPDF().pdf()));
-  tcMinBiasPDFPtr second =
-    dynamic_ptr_cast<tcMinBiasPDFPtr>(secondPDF().pdf());
+
+
+  tcMinBiasPDFPtr second = dynamic_ptr_cast<tcMinBiasPDFPtr>(secondPDF().pdf());
   if(second)
     newpdf.second = new_ptr(MPIPDF(second->originalPDF()));
   else
     newpdf.second = new_ptr(MPIPDF(secondPDF().pdf()));
+
+
   // reset the PDFs stored in the base class
   resetPDFs(newpdf);
 }
