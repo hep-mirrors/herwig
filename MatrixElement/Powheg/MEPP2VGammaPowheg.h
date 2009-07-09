@@ -162,10 +162,10 @@ private:
   mutable double _CF;
     
 
-    //types of final states:
-    tcPDPtr _gluon;
-    tcPDPtr _photon;
-    tcPDPtr _boson;
+  //types of final states:
+  tcPDPtr _gluon;
+  tcPDPtr _photon;
+  tcPDPtr _boson;
   
   /**
    *  Momentum fractions of the  first incoming parton
@@ -206,6 +206,26 @@ private:
    *  Prefactor if variable scale used
    */
   double _scaleFact;
+  //@}
+
+  /**
+   *  Radiative variables
+   */
+  //@{
+  /**
+   *  x variable
+   */
+  double _x;
+
+  /**
+   *  z variable
+   */
+  double _z;
+
+  /**
+   *  azimuth
+   */
+  double _phi;
   //@}
 
 };

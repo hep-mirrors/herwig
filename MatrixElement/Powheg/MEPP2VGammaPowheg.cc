@@ -119,6 +119,10 @@ int MEPP2VGammaPowheg::nDim() const {
 bool MEPP2VGammaPowheg::generateKinematics(const double * r) {
   _xa=  lastX1();
   _xb=  lastX2();
+  // radative variables
+  _x = r[nDim()];
+  _z = r[nDim()+1];
+  _phi = Constants::twopi*r[nDim()+2];
   return MEPP2VGamma::generateKinematics(r);
 }
 
