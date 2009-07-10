@@ -12,9 +12,6 @@ ThreeBodyDecayConstructor.h ThreeBodyDecayConstructor.cc \
 WeakCurrentDecayConstructor.h WeakCurrentDecayConstructor.cc \
 ResonantProcessConstructor.cc ResonantProcessConstructor.h \
 ResonantProcessConstructor.fh \
-VVSLoopVertex.fh VVSLoopVertex.h \
-VVSLoopVertex.cc \
-SimpleVVSLoopVertex.fh SimpleVVSLoopVertex.h \
-SimpleVVSLoopVertex.cc \
+VVSLoopVertex.fh VVSLoopVertex.h VVSLoopVertex.cc \
 BSMWidthGenerator.h BSMWidthGenerator.fh BSMWidthGenerator.cc \
 TBDiagram.h TBDiagram.icc

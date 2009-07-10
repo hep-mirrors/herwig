@@ -1,46 +1,39 @@
 // -*- C++ -*-
 //
-// SSHGGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SSHPPVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_SSHGGVertex_H
-#define HERWIG_SSHGGVertex_H
+#ifndef HERWIG_SSHPPVertex_H
+#define HERWIG_SSHPPVertex_H
 //
-// This is the declaration of the SSHGGVertex class.
+// This is the declaration of the SSHPPVertex class.
 //
 
 #include "Herwig++/Models/General/VVSLoopVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSHGGVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 
   /**
    * This class implements the effective vertex coupling a higgs
-   * to a pair of gluons in the MSSM. The loop include the stop and sbottom
-   * squarks and the top quark.
-   *  
+   * to a pair of photons in the MSSM. The loops include third generation
+   * sfermions and fermions, \f$W^\pm\f$ and \f$H^\pm\f$
    *
-   * @see \ref SSHGGVertexInterfaces "The interfaces"
-   * defined for SSHGGVertex.
+   * @see \ref SSHPPVertexInterfaces "The interfaces"
+   * defined for SSHPPVertex.
 
    */
-class SSHGGVertex: public VVSLoopVertex {
+class SSHPPVertex: public VVSLoopVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline SSHGGVertex();
-  //@}
-  
-public:
+  SSHPPVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -84,13 +77,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
   
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -108,13 +101,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SSHGGVertex> initSSHGGVertex;
+  static ClassDescription<SSHPPVertex> initSSHPPVertex;
   
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSHGGVertex & operator=(const SSHGGVertex &);
+  SSHPPVertex & operator=(const SSHPPVertex &);
   
 private:
 
@@ -184,7 +177,31 @@ private:
    * The mixing matrix factor \f$Q^{2i-1}_{22}Q^{2i-1}_{22}\f$ 
    * for the \f$\tilde{b}\f$
    */
-  Complex theQb22;
+  Complex theQb22; 
+  
+  /**
+   * The mixing matrix factor \f$L^{2i}_{11}L^{2i}_{11}\f$ 
+   * for the \f$\tilde{\tau}\f$
+   */
+  Complex theLt11;
+  
+  /**
+   * The mixing matrix factor \f$L^{2i}_{12}L^{2i}_{12}\f$ 
+   * for the \f$\tilde{\tau}\f$
+   */
+  Complex theLt12;
+
+  /**
+   * The mixing matrix factor \f$L^{2i}_{21}L^{2i}_{21}\f$ 
+   * for the \f$\tilde{\tau}\f$
+   */
+  Complex theLt21;
+
+  /**
+   * The mixing matrix factor \f$L^{2i}_{22}L^{2i}_{22}\f$ 
+   * for the \f$\tilde{\tau}\f$
+   */
+  Complex theLt22;
   
   /**
    * A pointer to the top quark ParticleData object 
@@ -197,10 +214,14 @@ private:
   tPDPtr thebot;
 
   /**
-   * The squark masses 
+   * A pointer to the tau lepton ParticleData object 
    */
-  vector<Energy> theSqmass;
-  
+  tPDPtr thetau;
+
+  /**
+   * The sfermion masses 
+   */
+  vector<Energy> theSfmass;
   
   /**
    * The value of \f$ \tan\beta \f$ 
@@ -238,6 +259,26 @@ private:
   double theCosApB;
 
   /**
+   * The value of \f$ \sin(\beta-\alpha) \f$ 
+   */
+  double theSinBmA;
+
+  /**
+   * The value of \f$ \cos(\beta-\alpha) \f$ 
+   */
+  double theCosBmA;
+
+  /**
+   * The U mixing matrix
+   */
+  tMixingMatrixPtr theU;
+
+  /**
+   * The V mixing matrix
+   */
+  tMixingMatrixPtr theV;
+
+  /**
    * Last value of the coupling calculated
    */
   Complex theCouplast;
@@ -268,22 +309,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of SSHGGVertex. */
+ *  base classes of SSHPPVertex. */
 template <>
-struct BaseClassTrait<Herwig::SSHGGVertex,1> {
-  /** Typedef of the first base class of SSHGGVertex. */
+struct BaseClassTrait<Herwig::SSHPPVertex,1> {
+  /** Typedef of the first base class of SSHPPVertex. */
   typedef Herwig::VVSLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the SSHGGVertex class and the shared object where it is defined. */
+ *  the SSHPPVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SSHGGVertex>
-  : public ClassTraitsBase<Herwig::SSHGGVertex> {
+struct ClassTraits<Herwig::SSHPPVertex>
+  : public ClassTraitsBase<Herwig::SSHPPVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSHGGVertex"; }
+  static string className() { return "Herwig::SSHPPVertex"; }
   /** Return the name of the shared library be loaded to get
-   *  access to the SSHGGVertex class and every other class it uses
+   *  access to the SSHPPVertex class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwSusy.so"; }
 };
@@ -292,6 +333,4 @@ struct ClassTraits<Herwig::SSHGGVertex>
 
 }
 
-#include "SSHGGVertex.icc"
-
-#endif /* HERWIG_SSHGGVertex_H */
+#endif /* HERWIG_SSHPPVertex_H */

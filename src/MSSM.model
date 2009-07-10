@@ -204,6 +204,7 @@ create Herwig::SSWWHVertex MSSM_WWH
 create Herwig::SSWHHVertex MSSM_WHH
 create Herwig::SSHHHVertex MSSM_HHH
 create Herwig::SSHGGVertex MSSM_HGG
+create Herwig::SSHPPVertex MSSM_HPP
 cd /Herwig/NewPhysics/MSSM
 # SM vertices
 set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
@@ -216,8 +217,6 @@ set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
 set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
 set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
-set Model:Vertex/HGG /Herwig/Vertices/HGGVertex
-set Model:Vertex/HPP /Herwig/Vertices/HPPVertex
 # MSSM feynman rules
 set Model:Vertex/WSFSF /Herwig/Vertices/MSSM/MSSM_WSS
 set Model:Vertex/NFSF /Herwig/Vertices/MSSM/MSSM_NFS
@@ -235,7 +234,8 @@ set Model:Vertex/GOGOH /Herwig/Vertices/MSSM/MSSM_GOGOH
 set Model:Vertex/SSWWH /Herwig/Vertices/MSSM/MSSM_WWH
 set Model:Vertex/SSWHH /Herwig/Vertices/MSSM/MSSM_WHH
 set Model:Vertex/HHH /Herwig/Vertices/MSSM/MSSM_HHH
-set Model:Vertex/SSHGG /Herwig/Vertices/MSSM/MSSM_HGG
+set Model:Vertex/HGG /Herwig/Vertices/MSSM/MSSM_HGG
+set Model:Vertex/HPP /Herwig/Vertices/MSSM/MSSM_HPP
 ###################################################
 #
 #  Set up spin correlation Decayers
