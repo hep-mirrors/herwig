@@ -189,8 +189,8 @@ void NMSSMGGHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
       couplings[0] = make_pair(c,-c);
       masses[0] = mt;
       // bottom quark couplings
-      couplings[1].first = c;
-      couplings[1].second = -c;	
+      c = Complex(0., 1.)*0.25*mb*(*_mixP)(iloc, 0)/_cb/_mw;
+      couplings[1] = make_pair(c,-c);	
       masses[1] = mb;
     }
   }
