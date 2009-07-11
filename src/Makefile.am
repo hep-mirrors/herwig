@@ -36,7 +36,7 @@ HerwigDefaults.rpo: Herwig++ $(srcdir)/defaults/*.in defaults/PDF.in defaults/An
 
 check_BSM=
 if WANT_MSSM
-check_BSM += check-LHC-MSSM
+check_BSM += check-LHC-MSSM check-LHC-NMSSM
 endif
 if WANT_UED
 check_BSM += check-LHC-MUED-no3body

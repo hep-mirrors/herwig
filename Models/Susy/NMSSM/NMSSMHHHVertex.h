@@ -7,7 +7,6 @@
 #include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMHHHVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -74,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -113,26 +112,36 @@ private:
   /**
    * The mixing matrix combination \f$U^S_{ai}U^S_{bj}U^S_{ck}\f$
    * @param a The row element of the first CP-even mixing matrix   
-   * @param i The column element of the first CP-even mixing matrix
-   * @param b The row element of the second CP-even mixing matrix   
-   * @param j The column element of the second CP-even mixing matrix
-   * @param c The row element of the third CP-even mixing matrix   
+   * @param b The column element of the first CP-even mixing matrix
+   * @param c The row element of the second CP-even mixing matrix   
+   * @param i The column element of the second CP-even mixing matrix
+   * @param j The row element of the third CP-even mixing matrix   
    * @param k The column element of the third CP-even mixing matrix
    */
-  inline Complex usMix(unsigned int a, unsigned int i, unsigned int b,
-		       unsigned int j, unsigned int c, unsigned int k) const;
+  Complex usMix(unsigned int a, unsigned int b, unsigned int c,
+		unsigned int i, unsigned int j, unsigned int k) const {
+    return (*_mixS)(a,i)*(*_mixS)(b,j)*(*_mixS)(c,k) +
+           (*_mixS)(a,i)*(*_mixS)(c,j)*(*_mixS)(b,k) +
+   	   (*_mixS)(b,i)*(*_mixS)(a,j)*(*_mixS)(c,k) +
+   	   (*_mixS)(b,i)*(*_mixS)(c,j)*(*_mixS)(a,k) +
+           (*_mixS)(c,i)*(*_mixS)(a,j)*(*_mixS)(b,k) +
+           (*_mixS)(c,i)*(*_mixS)(b,j)*(*_mixS)(a,k);
+  }
   
   /**
    * The mixing matrix combination \f$U^S_{ai}U^P_{bj}U^P_{ck}\f$
    * @param a The row element of the first CP-even mixing matrix   
-   * @param i The column element of the first CP-even mixing matrix
-   * @param b The row element of the second CP-even mixing matrix   
-   * @param j The column element of the second CP-even mixing matrix
-   * @param c The row element of the third CP-even mixing matrix   
+   * @param b The column element of the first CP-even mixing matrix
+   * @param c The row element of the second CP-even mixing matrix   
+   * @param i The column element of the second CP-even mixing matrix
+   * @param j The row element of the third CP-even mixing matrix   
    * @param k The column element of the third CP-even mixing matrix
    */
-  inline Complex upMix(unsigned int a, unsigned int i, unsigned int b,
-		       unsigned int j, unsigned int c, unsigned int k) const;
+  Complex upMix(unsigned int a, unsigned int b, unsigned int c,
+		unsigned int i, unsigned int j, unsigned int k) const {
+    return (*_mixS)(a,i)*((*_mixP)(b,j)*(*_mixP)(c,k) + 
+			  (*_mixP)(c,j)*(*_mixP)(b,k));
+  }
 
 private:
 
@@ -281,7 +290,5 @@ struct ClassTraits<Herwig::NMSSMHHHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMHHHVertex.icc"
 
 #endif /* HERWIG_NMSSMHHHVertex_H */

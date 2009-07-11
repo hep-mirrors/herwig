@@ -8,7 +8,6 @@
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMGOGOHVertex.fh"
 
 namespace Herwig {
 
@@ -74,13 +73,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -218,7 +217,5 @@ struct ClassTraits<Herwig::NMSSMGOGOHVertex>
 /** @endcond */
 
 }
-
-#include "NMSSMGOGOHVertex.icc"
 
 #endif /* HERWIG_NMSSMGOGOHVertex_H */

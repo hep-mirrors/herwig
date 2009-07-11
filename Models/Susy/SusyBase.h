@@ -129,20 +129,6 @@ public:
   /**@name Functions to access specific vertices.*/
   //@{
   /**
-   * Pointer to the MSSM fermion-antifermion-higgs vertex 
-   */
-  virtual inline tAbstractFFSVertexPtr vertexFFH() const {
-    return theSSFFHVertex;
-  }
-  
-  /**
-   * Pointer to the MSSM double gauge boson-higgs vertex 
-   */
-  virtual inline tAbstractVVSVertexPtr vertexWWH() const {
-    return theSSWWHVertex;
-  }
-
-  /**
    * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
    */
   virtual inline tAbstractVSSVertexPtr vertexWHH() const {
@@ -455,19 +441,9 @@ private:
   AbstractFFVVertexPtr theCNWVertex;
 
   /**
-   * Pointer to the vertex fermion-antifermion-higgs vertex
-   */
-  AbstractFFSVertexPtr theSSFFHVertex;
-
-  /**
    * Pointer to the vertex gaugino-gaugino-higgs vertex
    */
   AbstractFFSVertexPtr theGOGOHVertex;
-  
-  /**
-   * Pointer to the vertex for a pair of gauge bosons and higgs
-   */
-  AbstractVVSVertexPtr theSSWWHVertex;
   
   /**
    * Pointer to the vertex for a gauge boson and higgs

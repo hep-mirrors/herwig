@@ -14,16 +14,12 @@ using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
   os << theHiggsAMix << theNMNMix << _lambda << _kappa << ounit(_theAlambda,GeV) 
-     << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV) << _ffhvertex 
-     << _wwhvertex << _whhvertex << _gogohvertex << _hhhvertex 
-     << _hssvertex << _gghvertex;
+     << ounit(_theAkappa, GeV) << ounit(_lambdaVEV, GeV);
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
   is >> theHiggsAMix >> theNMNMix >> _lambda >> _kappa >> iunit(_theAlambda,GeV) 
-     >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV) >> _ffhvertex 
-     >> _wwhvertex >> _whhvertex >> _gogohvertex >> _hhhvertex 
-     >> _hssvertex >> _gghvertex;
+     >> iunit(_theAkappa, GeV) >> iunit(_lambdaVEV, GeV);
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -33,41 +29,7 @@ void NMSSM::Init() {
 
   static ClassDocumentation<NMSSM> documentation
     ("The NMSSM class is the base class for the NMSSM model");
-  
-  static Reference<NMSSM,AbstractFFSVertex> interfaceVertexNMSSMFFH
-    ("Vertex/NMSSMFFH",
-     "The higgs coupling to SM fermions in the NMSSM",
-     &NMSSM::_ffhvertex, false, false, true, false, false);
-  
-  static Reference<NMSSM,AbstractVVSVertex> interfaceVertexNMSSMWWH
-    ("Vertex/NMSSMWWH",
-     "The coupling of 2 EW gauge bosons a higgs in the NMSSM",
-     &NMSSM::_wwhvertex, false, false, true, false, false);
 
-  static Reference<NMSSM,AbstractVSSVertex> interfaceVertexNMSSMWHH
-    ("Vertex/NMSSMWHH",
-     "The coupling of a pair of Higgs to EW gauge bosons",
-     &NMSSM::_whhvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractFFSVertex> interfaceVertexNMSSMGOGOH
-    ("Vertex/NMSSMGOGOH",
-     "The coupling of a pair of gauginos to a higgs boson in the NMSSM",
-     &NMSSM::_gogohvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractSSSVertex> interfaceVertexNMSSMHHH
-    ("Vertex/NMSSMHHH",
-     "The triple higgs coupling in the NMSSM",
-     &NMSSM::_hhhvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractSSSVertex> interfaceVertexNMSSMHSS
-    ("Vertex/NMSSMHSS",
-     "The coupling of a pair of sfermions to a higgs in the NMSSM",
-     &NMSSM::_hssvertex, false, false, true, false, false);
-
-  static Reference<NMSSM,AbstractVVSVertex> interfaceVertexNMSSMGGH
-    ("Vertex/NMSSMGGH",
-     "The coupling of a higgs to 2 gluons in the NMSSM.",
-     &NMSSM::_gghvertex, false, false, true, false, false);
 }
 
 void NMSSM::extractParameters(bool checkmodel) {

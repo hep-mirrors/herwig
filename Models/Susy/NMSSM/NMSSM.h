@@ -24,19 +24,25 @@ public:
   /**
    * The default constructor.
    */
-  inline NMSSM();
+  NMSSM() : _lambda(0.), _kappa(0.), _theAlambda(0.*MeV), 
+	    _theAkappa(0.*MeV), _lambdaVEV(0.*MeV) 
+  {}
 
 public:
 
   /**
    * Mixing matrix for the neutral CP-odd Higgs bosons
    */
-  inline const MixingMatrixPtr & CPoddHiggsMix() const;
+  const MixingMatrixPtr & CPoddHiggsMix() const {
+    return theHiggsAMix;
+  }
   
     /**
    * Mixing matrix for the neutralinos 
    */
-  inline const MixingMatrixPtr & NMneutralinoMix() const;
+  const MixingMatrixPtr & NMneutralinoMix() const {
+    return theNMNMix;
+  }
 
   /**
    *  The NMSSM couplings
@@ -45,28 +51,38 @@ public:
   /**
    *  Superpotential \f$\lambda\f$ term
    */
-  inline double lambda() const;
+  double lambda() const {
+    return _lambda;
+  }
 
   /**
    *  Superpotential \f$\kappa\f$ coupling
    */
-  inline double kappa() const;
+  double kappa() const {
+    return _kappa;
+  }
 
   /**
    *  The V.E.V of the extra singlet field scaled
    * by \f$ lambda\f$, 
    */
-  inline Energy lambdaVEV() const;
+  Energy lambdaVEV() const {
+    return _lambdaVEV;
+  }
   
   /**
    * Soft trilinear \f$SH_2 H_1\f$ coupling
    */
-  inline Energy trilinearLambda() const;
+  Energy trilinearLambda() const {
+    return _theAlambda;
+  }
 
   /**
    * Soft cubic \f$S\f$ coupling
    */
-  inline Energy trilinearKappa() const;
+  Energy trilinearKappa() const {
+    return _theAkappa;
+  }
   //@}
 
 public:
@@ -94,43 +110,6 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-
-public:
-
-  /**
-   * Pointer to the fermion-fermion-Higgs vertex
-   */
-  virtual inline tAbstractFFSVertexPtr vertexFFH() const;
-
-  /**
-   * Pointer to the two electroweak gauge boson Higgs vertex.
-   */
-  virtual inline tAbstractVVSVertexPtr vertexWWH() const;
-
-  /**
-   * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
-   */
-  virtual inline tAbstractVSSVertexPtr vertexWHH() const;
-
-  /**
-   * Pointer to the higgs coupling to a pair of gauginos
-   */
-  virtual inline tAbstractFFSVertexPtr vertexGOGOH() const;
-
-  /**
-   * Pointer to the triple higgs vertex
-   */
-  virtual inline tAbstractSSSVertexPtr vertexHHH() const;
-
-  /**
-   * Pointer to higgs-sfermion-sfermion vertex 
-   */
-  virtual inline tAbstractSSSVertexPtr vertexHSS() const;
-
-  /**
-   * Pointer to the effective higgs-gluon-gluon vertex
-   */
-  virtual inline tAbstractVVSVertexPtr vertexHGG() const;
   
 protected:
 
@@ -158,13 +137,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -221,44 +200,6 @@ private:
    */
   Energy _lambdaVEV;
   //@}
-
-  /** @name The NMSSM vertices.*/
-  //@{
-  /**
-   * The fermion-fermion higgs vertex.
-   */
-  AbstractFFSVertexPtr _ffhvertex;
-
-  /**
-   * The vector-vector-higgs vertex.
-   */
-  AbstractVVSVertexPtr _wwhvertex;
-  
-  /**
-   * The vector-higgs-higgs vertex
-   */
-  AbstractVSSVertexPtr _whhvertex;
-
-  /**
-   * The coupling of a pair of gauginos to the higgs 
-   */
-  AbstractFFSVertexPtr _gogohvertex;
-
-  /**
-   * The triple higgs coupling 
-   */
-  AbstractSSSVertexPtr _hhhvertex;
-
-  /**
-   * The higgs sfermion vertex 
-   */
-  AbstractSSSVertexPtr _hssvertex;
-
-  /**
-   * The effective Higgs gluon gluon vertex 
-   */
-  AbstractVVSVertexPtr _gghvertex;
-  //@}
 };
 
 }
@@ -297,7 +238,5 @@ struct ClassTraits<Herwig::NMSSM>
 /** @endcond */
 
 }
-
-#include "NMSSM.icc"
 
 #endif /* HERWIG_NMSSM_H */

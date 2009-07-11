@@ -209,12 +209,10 @@ cd /Herwig/NewPhysics/MSSM
 # SM vertices
 set Model:Vertex/FFZ /Herwig/Vertices/FFZVertex
 set Model:Vertex/FFW /Herwig/Vertices/FFWVertex
-set Model:Vertex/FFH /Herwig/Vertices/FFHVertex
 set Model:Vertex/FFG /Herwig/Vertices/FFGVertex
 set Model:Vertex/FFP /Herwig/Vertices/FFPVertex
 set Model:Vertex/GGG /Herwig/Vertices/GGGVertex
 set Model:Vertex/GGGG /Herwig/Vertices/GGGGVertex
-set Model:Vertex/WWH /Herwig/Vertices/WWHVertex
 set Model:Vertex/WWW /Herwig/Vertices/WWWVertex
 set Model:Vertex/WWWW /Herwig/Vertices/WWWWVertex
 # MSSM feynman rules
@@ -229,9 +227,9 @@ set Model:Vertex/GSGSG /Herwig/Vertices/MSSM/MSSM_GGOGO
 set Model:Vertex/NNZ /Herwig/Vertices/MSSM/MSSM_NNZ
 set Model:Vertex/CCZ /Herwig/Vertices/MSSM/MSSM_CCZ
 set Model:Vertex/CNW /Herwig/Vertices/MSSM/MSSM_CNW
-set Model:Vertex/SSFFH /Herwig/Vertices/MSSM/MSSM_FFH
+set Model:Vertex/FFH /Herwig/Vertices/MSSM/MSSM_FFH
 set Model:Vertex/GOGOH /Herwig/Vertices/MSSM/MSSM_GOGOH
-set Model:Vertex/SSWWH /Herwig/Vertices/MSSM/MSSM_WWH
+set Model:Vertex/WWH /Herwig/Vertices/MSSM/MSSM_WWH
 set Model:Vertex/SSWHH /Herwig/Vertices/MSSM/MSSM_WHH
 set Model:Vertex/HHH /Herwig/Vertices/MSSM/MSSM_HHH
 set Model:Vertex/HGG /Herwig/Vertices/MSSM/MSSM_HGG

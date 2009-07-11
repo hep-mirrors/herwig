@@ -67,7 +67,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
      << theNNZVertex << theCCZVertex << theCNWVertex 
-     << theSSFFHVertex << theGOGOHVertex << theSSWWHVertex << theWHHVertex 
+     << theGOGOHVertex << theWHHVertex 
      << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
 
@@ -78,7 +78,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theCCZVertex >> theCNWVertex
-     >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex
+     >> theGOGOHVertex >> theWHHVertex
      >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
 }
@@ -146,20 +146,10 @@ void SusyBase::Init() {
      "Reference to ~chi_i+-chi_i0-W vertex",
      &SusyBase::theCNWVertex, false, false, true, false);
 
-   static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexSSFFH
-   ("Vertex/SSFFH",
-    "Reference to the fermion-antifermion-higgs vertex",
-    &SusyBase::theSSFFHVertex, false, false, true, false);
-
    static Reference<SusyBase,Helicity::AbstractFFSVertex> interfaceVertexGOGOH
    ("Vertex/GOGOH",
     "Reference to the gaugino-gaugino-higgs vertex",
     &SusyBase::theGOGOHVertex, false, false, true, false);
-
-   static Reference<SusyBase,Helicity::AbstractVVSVertex> interfaceVertexWWH
-   ("Vertex/SSWWH",
-    "Reference to the boson-boson-higgs vertex",
-    &SusyBase::theSSWWHVertex, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWHH
     ("Vertex/SSWHH",
