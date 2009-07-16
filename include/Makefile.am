@@ -13,16 +13,13 @@ DIRLINKS = $(top_srcdir)/Analysis \
            $(top_srcdir)/UnderlyingEvent \
            $(top_srcdir)/Utilities
 
-CONFIGHEADERS = $(top_builddir)/Config/HepMCHelper.h
-
 LOOPTOOLHEADERS = $(top_srcdir)/Looptools/include/clooptools.h
 
 CLEANFILES = done-all-links 
 
-done-all-links: $(DIRLINKS) $(CONFIGHEADERS) $(LOOPTOOLHEADERS)
+done-all-links: $(DIRLINKS) $(LOOPTOOLHEADERS)
 	mkdir -p Herwig++/Config Herwig++/Looptools
 	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++
-	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) Herwig++/Config
 	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools
 	touch done-all-links
 
