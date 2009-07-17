@@ -431,6 +431,11 @@ private:
   AbstractFFVVertexPtr theNNZVertex;
 
   /**
+   * Pointer to the neutralino-neutralino-photon vertex
+   */
+  AbstractFFVVertexPtr theNNPVertex;
+
+  /**
    * Pointer to the  vertex chargino-chargino-Z vertex
    */
   AbstractFFVVertexPtr theCCZVertex;

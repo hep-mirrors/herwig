@@ -49,6 +49,7 @@ void SusyBase::doinit() {
   addVertex(theGGSQSQVertex);
   addVertex(theGSGSGVertex);
   addVertex(theNNZVertex);
+  addVertex(theNNPVertex);
   addVertex(theCCZVertex);
   addVertex(theCNWVertex);
   addVertex(vertexGOGOH());
@@ -66,18 +67,17 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << _readFile << theNMix << theUMix << theVMix << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
-     << theNNZVertex << theCCZVertex << theCNWVertex 
+     << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
      << theGOGOHVertex << theWHHVertex 
      << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
-
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
   is >> _readFile >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
-     >> theNNZVertex >> theCCZVertex >> theCNWVertex
+     >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
      >> theGOGOHVertex >> theWHHVertex
      >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
@@ -135,6 +135,11 @@ void SusyBase::Init() {
     ("Vertex/NNZ",
      "Reference to Z-~chi_i0-~chi_i0 vertex",
      &SusyBase::theNNZVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexNNP
+    ("Vertex/NNP",
+     "Reference to photon-~chi_i0-~chi_i0 vertex",
+     &SusyBase::theNNPVertex, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCCZ
     ("Vertex/CCZ",
