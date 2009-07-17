@@ -104,11 +104,13 @@ double FFVDecayer::me2(const int , const Particle & inpart,
   else
     SpinorWaveFunction::
       calculateWaveFunctions(_wave   ,decay[0],outgoing);
+  bool massless = decay[1]->dataPtr()->mass()==ZERO;
   VectorWaveFunction::
-    calculateWaveFunctions(_vector,decay[1],outgoing,false);
+    calculateWaveFunctions(_vector,decay[1],outgoing,massless);
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
       for(unsigned int vhel = 0; vhel < 3; ++vhel) {
+	if(massless && vhel == 1) ++vhel;
 	if(ferm)
 	  ME()(if1, if2,vhel) = 
 	    _abstractVertex->evaluate(scale,_wave[if1],_wavebar[if2],_vector[vhel]);
