@@ -122,10 +122,10 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     unsigned int neu1(in1 - 1000022), neu2(in2 - 1000022);
     if(neu1 > 1) neu1 = (in1-1000005)/10;
     if(neu2 > 1) neu2 = (in2-1000005)/10;
-    Complex n1prime[2] = { (*_theN)(neu1,0)*_cw + (*_theN)(neu1,1)*_sw ,
-			   (*_theN)(neu2,0)*_cw + (*_theN)(neu2,1)*_sw };
-    Complex n2prime[2] = { (*_theN)(neu1,1)*_cw - (*_theN)(neu1,0)*_sw ,
-			   (*_theN)(neu2,1)*_cw - (*_theN)(neu2,0)*_sw };
+    Complex n1prime[2] = { (*_theN)(neu2,0)*_cw + (*_theN)(neu2,1)*_sw ,
+			   (*_theN)(neu1,0)*_cw + (*_theN)(neu1,1)*_sw };
+    Complex n2prime[2] = { (*_theN)(neu2,1)*_cw - (*_theN)(neu2,0)*_sw ,
+			   (*_theN)(neu1,1)*_cw - (*_theN)(neu1,0)*_sw };
     // sfermion/fermion loops
     for(long iferm=1;iferm<16;++iferm) {
       if(iferm==7) iferm=11;
@@ -142,14 +142,14 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       if( iferm % 2 == 0 ) {
  	y /= _sb;
  	lambda = -0.5 + qf*sqr(_sw);
- 	nlf[0] = (*_theN)(neu1,3);
- 	nlf[1] = (*_theN)(neu2,3);
+ 	nlf[0] = (*_theN)(neu2,3);
+ 	nlf[1] = (*_theN)(neu1,3);
       }
       else { 
 	y /= _cb;
 	lambda = 0.5 + qf*sqr(_sw);
-	nlf[0] = (*_theN)(neu1,2);
-	nlf[1] = (*_theN)(neu2,2);
+	nlf[0] = (*_theN)(neu2,2);
+	nlf[1] = (*_theN)(neu1,2);
       }
       Complex bracketr[2] = { _sw*qf*n1prime[0] - n2prime[0]*lambda/_cw ,
 			      _sw*qf*n1prime[1] - n2prime[1]*lambda/_cw };
@@ -184,9 +184,7 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 	  g[ix][0] = y*conj(nlf[ix])*ma1 - ma2*bracketl[ix];
 	  g[ix][1] = y*nlf[ix]*ma2 + ma1*bracketr[ix];
 	}
-	swap(g[1][0],g[1][1]);
-	g[1][0] = conj(g[1][0]);
-	g[1][1] = conj(g[1][1]);
+	swap(g[0][0],g[0][1]);
 	complex<InvEnergy2> I,J,K,I2;
 	loopIntegrals(Mi,Mj,msf,mf,I,J,K,I2);
 	complex<InvEnergy> coup[2];
@@ -197,8 +195,8 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 	}
 	double fact = 4.*qf;
 	if(iferm<=6) fact *=3.;
-	 _leftlast -= fact*coup[0];
-	_rightlast -= fact*coup[1];
+	_leftlast  += fact*coup[0];
+	_rightlast += fact*coup[1];
       }
     }
     // the chargino W contribution
@@ -206,20 +204,19 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       long id = ic==0 ? 
 	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
+      if(Mk+_mw<Mj||Mk+_mw<Mi) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,_mw,Mk,I,J,K,I2);
       Complex g[2][2];
       for(unsigned int ix=0;ix<2;++ix) {
-	unsigned int in = ix==0 ? neu1 : neu2;
+	unsigned int in = ix==0 ? neu2 : neu1;
 	g[ix][0] = 
-	  (*_theN)(in, 1)*conj((*_theV)(ic, 0)) - 
-	  (*_theN)(in, 3)*conj((*_theV)(ic, 1))/sqrt(2);
+	  conj((*_theN)(in, 1))*(*_theV)(ic, 0) - 
+	  conj((*_theN)(in, 3))*(*_theV)(ic, 1)/sqrt(2);
 	g[ix][1] = 
-	  conj((*_theN)(in, 1))*(*_theU)(ic, 0) +
-	  conj((*_theN)(in, 2))*(*_theU)(ic, 1)/sqrt(2);
+	  (*_theN)(in, 1)*conj((*_theU)(ic, 0)) +
+	  (*_theN)(in, 2)*conj((*_theU)(ic, 1))/sqrt(2);
       }
-      g[1][0] = conj(g[1][0]);
-      g[1][1] = conj(g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
 	coup[ix] = 
@@ -236,21 +233,22 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       long id = ic==0 ? 
 	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
+      if(Mk+mh<Mj||Mk+mh<Mi) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,mh,Mk,I,J,K,I2);
       Complex g[2][2];
       for(unsigned int ix=0;ix<2;++ix) {
-	unsigned int in = ix==0 ? neu1 : neu2;
+	unsigned int in = ix==0 ? neu2 : neu1;
 	g[ix][0] =  (*_theN)(in, 3)*(*_theV)(ic,0) 
-	  + ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*(*_theV)(ic,1)/sqrt(2);
+	  +               ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+	  (*_theV)(ic,1)/sqrt(2);
 	g[ix][0] *= _cb;
-	g[ix][1] = (*_theN)(in, 2)*(*_theU)(ic,0) 
-	  - ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*(*_theU)(ic,1)/sqrt(2);
+	g[ix][1] = conj((*_theN)(in, 2)*(*_theU)(ic,0) 
+			- ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+			(*_theU)(ic,1)/sqrt(2));
 	g[ix][1] *= _sb;
       }
       swap(g[1][0],g[1][1]);
-      g[1][0] = conj(g[1][0]);
-      g[1][1] = conj(g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
 	coup[ix] = 
@@ -261,25 +259,27 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       _leftlast  += 2.*coup[0];
       _rightlast += 2.*coup[1];
     }
+    // the chargino goldstone contribution
     for(unsigned int ic=0;ic<2;++ic) {
       long id = ic==0 ? 
 	ParticleID::SUSY_chi_1plus : ParticleID::SUSY_chi_2plus;
       Energy Mk = getParticleData(id)->mass();
+      if(Mk+_mw<Mj||Mk+_mw<Mi) continue;
       complex<InvEnergy2> I,J,K,I2;
       loopIntegrals(Mi,Mj,_mw,Mk,I,J,K,I2);
       Complex g[2][2];
       for(unsigned int ix=0;ix<2;++ix) {
-	unsigned int in = ix==0 ? neu1 : neu2;
-	g[ix][0] =  (*_theN)(in, 3)*(*_theV)(ic,0) 
-	  + ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*(*_theV)(ic,1)/sqrt(2);
+	unsigned int in = ix==0 ? neu2 : neu1;
+	g[ix][0] = (*_theN)(in, 3)*(*_theV)(ic,0) 
+	  + ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+	  (*_theV)(ic,1)/sqrt(2);
 	g[ix][0] *= _sb;
-	g[ix][1] = (*_theN)(in, 2)*(*_theU)(ic,0) 
-	  - ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*(*_theU)(ic,1)/sqrt(2);
+	g[ix][1] = conj((*_theN)(in, 2)*(*_theU)(ic,0) 
+			- ((*_theN)(in,1) + (*_theN)(in,0)*_sw/_cw)*
+			(*_theU)(ic,1)/sqrt(2));
 	g[ix][1] *= _cb;
       }
       swap(g[1][0],g[1][1]);
-      g[1][0] = conj(g[1][0]);
-      g[1][1] = conj(g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
 	coup[ix] = 
@@ -299,27 +299,38 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 void SSNNPVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
 				complex<InvEnergy2> & I, complex<InvEnergy2> & J,
 				complex<InvEnergy2> & K, complex<InvEnergy2> & I2) {
-  static Complex ii(0.,1.);
+  static const Complex ii(0.,1.);
+  static const Energy eps(100.*MeV);
+  Energy2 m2(sqr(m)),M2(sqr(M)),Mi2(sqr(Mi)),Mj2(sqr(Mj));
   using Math::Li2;
-  Energy4 li = sqr(sqr(m)+sqr(M)-sqr(Mi))-4.*sqr(m*M);
-  complex<Energy2> rli = li<ZERO ? ii*sqrt(-li) : sqrt(li); 
-  Energy4 lj = sqr(sqr(m)+sqr(M)-sqr(Mj))-4.*sqr(m*M);
-  complex<Energy2> rlj = lj<ZERO ? ii*sqrt(-lj) : sqrt(lj);
-  Complex arg[6]={0.5/sqr(m)*(sqr(Mj)+sqr(m)-sqr(M)+rlj),
-		  0.5/sqr(m)*(sqr(Mj)+sqr(m)-sqr(M)-rlj),
-		  0.5/sqr(m)*(sqr(Mi)+sqr(m)-sqr(M)+rli),
-		  0.5/sqr(m)*(sqr(Mi)+sqr(m)-sqr(M)-rli),
-		  0.5/m/M*(sqr(m)+sqr(M)-sqr(Mj)+rlj),
-		  0.5/m/M*(sqr(m)+sqr(M)-sqr(Mi)+rli)};
-  I = 1./(sqr(Mi)-sqr(Mj))*(Li2(arg[0])+Li2(arg[1])-
- 			    Li2(arg[2])-Li2(arg[3]));
-  J = 1./(sqr(Mj)-sqr(Mi))*(sqr(log(arg[4]))-sqr(log(arg[5])))-I;
-  I2 = 
-    (sqr(M)-sqr(m))/sqr(Mi)/sqr(Mj)*log(m/M)
-    +1./(sqr(Mj)-sqr(Mi))*
-    (0.5*rlj/sqr(Mj)*log((sqr(m)+sqr(M)-sqr(Mj)-rlj)/
-			 (sqr(m)+sqr(M)-sqr(Mj)+rlj))-
-     0.5*rli/sqr(Mi)*log((sqr(m)+sqr(M)-sqr(Mi)-rli)/
-			 (sqr(m)+sqr(M)-sqr(Mi)+rli)));
-  K = 1./(sqr(Mi)-sqr(Mj))*(1.+Complex(sqr(m)*I+sqr(M)*J-sqr(Mj)*I2));
+  // general form
+  if(m>eps) {
+    Energy4 li = sqr(m2+M2-Mi2)-4.*sqr(m*M);
+    complex<Energy2> rli = li<ZERO ? ii*sqrt(-li) : sqrt(li); 
+    Energy4 lj = sqr(m2+M2-Mj2)-4.*sqr(m*M);
+    complex<Energy2> rlj = lj<ZERO ? ii*sqrt(-lj) : sqrt(lj);
+    Complex arg[6]={0.5/m2*(Mj2+m2-M2+rlj) ,0.5/m2*(Mj2+m2-M2-rlj),
+		    0.5/m2*(Mi2+m2-M2+rli) ,0.5/m2*(Mi2+m2-M2-rli),
+		    0.5/m/M*(m2+M2-Mj2+rlj),0.5/m/M*(m2+M2-Mi2+rli)};
+    I  = 1./(Mi2-Mj2)*(Li2(arg[0])+Li2(arg[1])-
+		       Li2(arg[2])-Li2(arg[3]));
+    J  = 1./(Mj2-Mi2)*(sqr(log(arg[4]))-sqr(log(arg[5])))-I;
+    I2 = (M2-m2)/Mi2/Mj2*log(m/M)
+      +1./(Mj2-Mi2)*(0.5*rlj/Mj2*log((m2+M2-Mj2-rlj)/
+				     (m2+M2-Mj2+rlj))-
+		     0.5*rli/Mi2*log((m2+M2-Mi2-rli)/
+				     (m2+M2-Mi2+rli)));
+    K = 1./(Mi2-Mj2)*(1.+Complex(m2*I+M2*J-Mj2*I2));
+  }
+  // leading term for small m
+  else {
+    I  = 1./(Mj2-Mi2)*(-Li2(double(Mj2/(Mj2-M2)))+Li2(double(Mi2/(Mi2-M2)))
+		       -2.*log(m/M)*log((M2-Mj2)/(M2-Mi2))
+		       +0.5*sqr(log((M2-Mj2)/M2))-0.5*sqr(log((M2-Mi2)/M2)));
+    J  = 1./(Mj2-Mi2)*(Li2(double(Mj2/(Mj2-M2)))-Li2(double(Mi2/(Mi2-M2)))
+		       -0.5*sqr(log((M2-Mi2)/M2))+0.5*sqr(log((M2-Mj2)/M2)));
+    I2 = 1./(Mj2-Mi2)*log((M2-Mj2)/(M2-Mi2))
+      +M2/(Mj2-Mi2)/sqr(Mi*Mj)*(Mj2*log((M2-Mi2)/M2)-Mi2*log((M2-Mj2)/M2));
+    K  = 1./(Mi2-Mj2)*(1.+Complex(M2*J)-Complex(Mj2*I2));
+  }
 }
