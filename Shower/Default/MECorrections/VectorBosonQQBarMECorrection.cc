@@ -77,6 +77,19 @@ bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree,
   ++cjt;
   id[1]=cjt->first->progenitor()->id();
   if(id[0]!=-id[1]||abs(id[0])>6) return false;
+  // get the quark and antiquark
+  ParticleVector qq; 
+  for(cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt)
+    qq.push_back(cjt->first->copy());
+  // ensure quark first
+  if(qq[0]->id()<0) swap(qq[0],qq[1]);
+  // centre of mass energy
+  d_Q = (qq[0]->momentum() + qq[1]->momentum()).m();
+  // quark mass
+  d_m = 0.5*(qq[0]->momentum().m()+qq[1]->momentum().m());
+  // set the other parameters
+  setRho(sqr(d_m/d_Q));
+  setKtildeSymm();
   // otherwise can do it
   initial=1.;
   final  =1.;
@@ -92,13 +105,6 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     qq.push_back(cit->first->copy());
   // ensure quark first
   if(qq[0]->id()<0) swap(qq[0],qq[1]);
-  // centre of mass energy
-  d_Q = (qq[0]->momentum() + qq[1]->momentum()).m();
-  // quark mass
-  d_m = 0.5*(qq[0]->momentum().m()+qq[1]->momentum().m());
-  // set the other parameters
-  setRho(sqr(d_m/d_Q));
-  setKtildeSymm();
   // get the momenta
   vector<Lorentz5Momentum> newfs = applyHard(qq);
   // return if no emission
@@ -329,8 +335,8 @@ double VectorBosonQQBarMECorrection::getHard(double &x1, double &x2) {
     else w *= 2.*y2;
   }
   // alpha and colour factors
-  // DGRELL  (this hard wired alpha_S still needs removing)
-  w *= 1./3./Constants::pi*0.117997; 
+  Energy2 pt2 = sqr(d_Q)*(1.-x1)*(1.-x2);
+  w *= 1./3./Constants::pi*coupling()->value(pt2); 
   return w; 
 }
 
@@ -455,8 +461,8 @@ double VectorBosonQQBarMECorrection::qbarWeight(double x, double xbar) {
   if(xg < EPS) return 1.0;
   // check it is in the phase space
   if((1.-x)*(1.-xbar)*(1.-xg) < d_rho*xg*xg) return 0.0;
-  double k1 = getKfromX(xbar, x);
-  double k2 = getKfromX(x, xbar);
+  double k1 = getKfromX(x, xbar);
+  double k2 = getKfromX(xbar, x);
   // Is it in the antiquark emission zone?
   if(k2 < d_kt2) {
     rval = MEV(x, xbar)/PS(xbar, x);
@@ -478,7 +484,7 @@ double VectorBosonQQBarMECorrection::qWeightX(Energy qtilde, double z) {
 
 double VectorBosonQQBarMECorrection::qbarWeightX(Energy qtilde, double z) {
   double x, xb;
-  getXXbar(sqr(qtilde/d_Q), z, x, xb);
+  getXXbar(sqr(qtilde/d_Q), z, xb, x);
   // see above in qWeightX. 
   if (x < 0 || xb < 0) return 1.0; 
   return qbarWeight(x, xb); 
