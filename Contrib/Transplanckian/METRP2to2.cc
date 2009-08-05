@@ -317,7 +317,7 @@ double METRP2to2::A_ny(Energy2 s, Energy2 t) const {
   InvEnergy bc = bccalc(s);
   double fny = 0;
   double y = bc * sqrt(-t);
-  if(y >= 19.8) { fny = fnyasympt(y); } else { fny = fpoint(y); }
+  if(y >= 20.0) { fny = fnyasympt(y); } else { fny = fpoint(y); }
   //cout << "y = " << y << " fny = " << fny << endl;
   return (4. * Constants::pi * fny * s * sqr(bc));
 }
@@ -328,11 +328,8 @@ double METRP2to2::fnyasympt(double y) const {
   return pow( _ndim, 1.0/(_ndim+1.0) ) * pow( y, -(_ndim+2.0)/(_ndim+1.0) ) / sqrt(_ndim+1.0);
 }  
 
-
-  
-
 //fpoint uses the interpolator to calculate the value of F_n for intermediate values of the argument
 double METRP2to2::fpoint(double x) const {   
-  assert( x < 19.8 );
+  assert( x < 20.0 );
   return (*_interpol)(x);
 }
