@@ -290,7 +290,7 @@ double METRP2to2::A_ny(Energy2 s, Energy2 t) const {
   InvEnergy bc = bccalc(s);
   double fny = 0;
   double y = bc * sqrt(-t);
-  if(y >= 20) { fny = fnyasympt(y); } else { fny = fpoint(y); }
+  if(y >= 19.8) { fny = fnyasympt(y); } else { fny = fpoint(y); }
   //cout << "y = " << y << " fny = " << fny << endl;
   return (4. * Constants::pi * fny * s * sqr(bc));
 }
@@ -313,7 +313,7 @@ double METRP2to2::fpoint(double x) const {
   int n0 = int(nx);  
   int n1 = int(nx+1);
   
-  assert( x < 20 );
+  assert( x < 19.8 );
     
     //assign the appropriate tabulated points for the number of extra dimensions
     
