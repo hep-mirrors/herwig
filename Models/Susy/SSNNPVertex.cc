@@ -315,11 +315,27 @@ void SSNNPVertex::loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
     I  = 1./(Mi2-Mj2)*(Li2(arg[0])+Li2(arg[1])-
 		       Li2(arg[2])-Li2(arg[3]));
     J  = 1./(Mj2-Mi2)*(sqr(log(arg[4]))-sqr(log(arg[5])))-I;
-    I2 = (M2-m2)/Mi2/Mj2*log(m/M)
-      +1./(Mj2-Mi2)*(0.5*rlj/Mj2*log((m2+M2-Mj2-rlj)/
-				     (m2+M2-Mj2+rlj))-
-		     0.5*rli/Mi2*log((m2+M2-Mi2-rli)/
-				     (m2+M2-Mi2+rli)));
+    Complex Itest[2];
+    for(unsigned int ix=0;ix<2;++ix) {
+      Complex a,b;
+      if(ix==0) {
+	a = 0.5*(M2+Mj2-m2)/Mj2;
+	b = 0.5*rlj/Mj2;
+      }
+      else {
+	a = 0.5*(M2+Mi2-m2)/Mi2; 
+	b = 0.5*rli/Mi2;
+      }
+      Itest[ix] = -b*log(b-a)+a*log(b-a)+log(-a-b)*a
+	+log(-a-b)*b+log(1.+b-a)+log(1.+b-a)*b-log(1.+b-a)*a+log(1.-a-b)
+	-log(1.-a-b)*a-log(1.-a-b)*b-2.;
+    }
+    I2 = (Itest[0]-Itest[1]+log(Mj2/Mi2))/(Mj2-Mi2);
+//     I2 = (M2-m2)/Mi2/Mj2*log(m/M)
+//       +1./(Mj2-Mi2)*(0.5*rlj/Mj2*log((m2+M2-Mj2-rlj)/
+// 				     (m2+M2-Mj2+rlj))-
+// 		     0.5*rli/Mi2*log((m2+M2-Mi2-rli)/
+// 				     (m2+M2-Mi2+rli)));
     K = 1./(Mi2-Mj2)*(1.+Complex(m2*I+M2*J-Mj2*I2));
   }
   // leading term for small m

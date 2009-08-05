@@ -50,6 +50,7 @@ void SusyBase::doinit() {
   addVertex(theGSGSGVertex);
   addVertex(theNNZVertex);
   addVertex(theNNPVertex);
+  addVertex(theGNGVertex);
   addVertex(theCCZVertex);
   addVertex(theCNWVertex);
   addVertex(vertexGOGOH());
@@ -68,7 +69,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
      << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
-     << theGOGOHVertex << theWHHVertex 
+     << theGOGOHVertex << theWHHVertex << theGNGVertex
      << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
 }
@@ -78,7 +79,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
-     >> theGOGOHVertex >> theWHHVertex
+     >> theGOGOHVertex >> theWHHVertex >> theGNGVertex
      >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
 }
@@ -140,6 +141,11 @@ void SusyBase::Init() {
     ("Vertex/NNP",
      "Reference to photon-~chi_i0-~chi_i0 vertex",
      &SusyBase::theNNPVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGNG
+    ("Vertex/GNG",
+     "Reference to gluon-~chi_i0-gluino vertex",
+     &SusyBase::theGNGVertex, false, false, true, false);
 
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCCZ
     ("Vertex/CCZ",

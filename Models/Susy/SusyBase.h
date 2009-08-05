@@ -426,6 +426,11 @@ private:
   AbstractFFVVertexPtr theGSGSGVertex; 
 
   /**
+   * Pointer to the gluino-neutralino-gluon vertex
+   */
+  AbstractFFVVertexPtr theGNGVertex;
+
+  /**
    * Pointer to the neutralino-neutralino-Z vertex
    */
   AbstractFFVVertexPtr theNNZVertex;
