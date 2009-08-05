@@ -76,7 +76,9 @@ set Model:Vertex/CFSF /Herwig/Vertices/MSSM/MSSM_CFS
 set Model:Vertex/GSFSF /Herwig/Vertices/MSSM/MSSM_GSS
 set Model:Vertex/GGSQSQ /Herwig/Vertices/MSSM/MSSM_GGSS
 set Model:Vertex/GSGSG /Herwig/Vertices/MSSM/MSSM_GGOGO
+set Model:Vertex/GNG /Herwig/Vertices/MSSM/MSSM_GNG
 set Model:Vertex/NNZ /Herwig/Vertices/MSSM/MSSM_NNZ
+set Model:Vertex/NNP /Herwig/Vertices/MSSM/MSSM_NNP
 set Model:Vertex/CCZ /Herwig/Vertices/MSSM/MSSM_CCZ
 set Model:Vertex/CNW /Herwig/Vertices/MSSM/MSSM_CNW
 set Model:Vertex/SSWHH /Herwig/Vertices/MSSM/MSSM_WHH
