@@ -122,6 +122,7 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+
   //@}
 
 
@@ -200,8 +201,12 @@ private:
 
 private:
 
-
-
+  /**
+   * Interpolators
+   */ 
+  
+  Interpolator<double, double>::Ptr _interpol;
+  
 
   /**
    *  Maximum number of quark flavours to include
@@ -230,8 +235,7 @@ private:
    *  Colour flow
    */
   mutable unsigned int _flow;
-
- 
+  
 
 
 };
