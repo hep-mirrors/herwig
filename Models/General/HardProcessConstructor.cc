@@ -23,7 +23,7 @@
 using namespace Herwig;
 
 HardProcessConstructor::HardProcessConstructor() : 
-  theNout(0), theNv(0), theAllDiagrams(true),
+  theEffective(false), theNout(0), theNv(0), theAllDiagrams(true),
   theProcessOption(0), theDebug(false),
   the33bto33b(4, DVector(4, 0.)),  the33bpto33bp(3, DVector(3, 0.)),
   the33bto88(2, DVector(4, 0.)), the88to88(2, DVector(4, 0.)) {
@@ -133,12 +133,14 @@ bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
 }
 
 void HardProcessConstructor::persistentOutput(PersistentOStream & os) const {
-  os << theIncoming << theOutgoing << theModel << theAllDiagrams << theProcessOption
+  os << theEffective << theVertices
+     << theIncoming << theOutgoing << theModel << theAllDiagrams << theProcessOption
      << theSubProcess << the33bto33b << the33bpto33bp << the33bto88 << the88to88;
 }
 
 void HardProcessConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> theIncoming >> theOutgoing  >> theModel >> theAllDiagrams >> theProcessOption
+  is >> theEffective >> theVertices
+     >> theIncoming >> theOutgoing  >> theModel >> theAllDiagrams >> theProcessOption
      >> theSubProcess >> the33bto33b >> the33bpto33bp >> the33bto88 >> the88to88;
   theNout = 0;
   theNv = 0;
@@ -217,6 +219,22 @@ void HardProcessConstructor::Init() {
      " list of outgoing particles in every hard process",
      2);
 
+
+  static Switch<HardProcessConstructor,bool> interfaceIncludeEffectiveVertices
+    ("IncludeEffectiveVertices",
+     "Whether or not to include effective vertices",
+     &HardProcessConstructor::theEffective, false, false, false);
+  static SwitchOption interfaceIncludeEffectiveVerticesNo
+    (interfaceIncludeEffectiveVertices,
+     "No",
+     "Don't include them",
+     false);
+  static SwitchOption interfaceIncludeEffectiveVerticesYes
+    (interfaceIncludeEffectiveVertices,
+     "Yes",
+     "Include them",
+     true);
+
 }
 
 namespace {
@@ -242,8 +260,15 @@ void HardProcessConstructor::constructDiagrams() {
   theModel->init();
   theNv = theModel->numberOfVertices();
   //make sure  vertices are initialised
-  for(unsigned int ix = 0; ix < theNv; ++ix )
-    theModel->vertex(ix)->init();
+  for(unsigned int ix = 0; ix < theNv; ++ix ) {
+    VertexBasePtr vertex = theModel->vertex(ix); 
+    vertex->init();
+    if(!theEffective&&
+       int(vertex->orderInGem()+vertex->orderInGs())
+       >int(vertex->getNpoint())-2) continue;
+    theVertices.push_back(vertex);
+  }
+  theNv = theVertices.size();
   //Create necessary diagrams
   vector<tcPDPair>::size_type is;
   PDVector::size_type os;
@@ -252,7 +277,7 @@ void HardProcessConstructor::constructDiagrams() {
     for(os = 0; os < theNout; ++os) { 
       long fs = theOutgoing[os]->id();
       for(size_t iv = 0; iv < theNv; ++iv) {
-	tVertexBasePtr vertexA = theModel->vertex(iv);
+	tVertexBasePtr vertexA = theVertices[iv];
 
 	//This skips an effective vertex and the EW ones if 
 	// we only want the strong diagrams
@@ -323,7 +348,7 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
   tPDSet::const_iterator it;
   for(it = offshells.begin(); it != offshells.end(); ++it) {
     for(size_t iv = 0; iv < theNv; ++iv) {
-      tVertexBasePtr vertexB = theModel->vertex(iv);
+      tVertexBasePtr vertexB = theVertices[iv];
       if( vertexB->getNpoint() != 3) continue;
       if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
       
@@ -350,7 +375,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
   tPDSet::const_iterator it;
   for(it = offshells.begin(); it != offshells.end(); ++it) {
      for(size_t iv = 0; iv < theNv; ++iv) {
-       tVertexBasePtr vertexB = theModel->vertex(iv);
+       tVertexBasePtr vertexB = theVertices[iv];
        if( vertexB->getNpoint() != 3 ) continue;
        if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
        tPDSet final;
@@ -367,7 +392,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 			   outgoing, incoming);
   for(it = offshells.begin(); it != offshells.end(); ++it) {
     for(size_t iv = 0; iv < theNv; ++iv) {
-       tVertexBasePtr vertexB = theModel->vertex(iv);
+       tVertexBasePtr vertexB = theVertices[iv];
        if( vertexB->getNpoint() != 3 ) continue;
        if(!theAllDiagrams && vertexB->orderInGs() == 0) continue;
 
