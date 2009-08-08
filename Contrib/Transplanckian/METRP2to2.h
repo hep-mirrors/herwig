@@ -84,11 +84,6 @@ public:
   double fpoint(double x) const;
   
   /**
-   * Function for linear interpolation between two points
-   */ 
-  double interp(double y, double f0, double f1, double y0, double y1) const;
-  
-  /**
    * The asymptotic form of the F_n(y) functions, used for y>20, according to hep-ph/0112161, eq. (25)
    */ 
   double fnyasympt(double y) const;
