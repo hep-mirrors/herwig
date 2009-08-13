@@ -41,7 +41,7 @@ ClassDescription<FFDipole> FFDipole::initFFDipole;
 void FFDipole::Init() {
 
   static ClassDocumentation<FFDipole> documentation
-    ("The FFDipole class implements the final-final dipole for the YODA algorithm");
+    ("The FFDipole class implements the final-final dipole for the SOPTHY algorithm");
 
   static Switch<FFDipole,unsigned int> interfaceUnWeight
     ("UnWeight",

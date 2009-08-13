@@ -40,7 +40,7 @@ ClassDescription<IFDipole> IFDipole::initIFDipole;
 
 void IFDipole::Init() {
   static ClassDocumentation<IFDipole> documentation
-    ("The IFDipole class implements the initial-final dipole for the YODA algorithm");
+    ("The IFDipole class implements the initial-final dipole for the SOPTHY algorithm");
 
   static Switch<IFDipole,unsigned int> interfaceUnWeight
     ("UnWeight",

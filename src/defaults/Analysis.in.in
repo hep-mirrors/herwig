@@ -83,7 +83,8 @@ create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
 #
 #  Handlers which depend on HepMC
 #  (switched off by default)
-# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# Schematic overview of an event
+# (requires --with-hepmc to be set in ThePEG
 # and the graphviz program 'dot' to produce a plot)
 #@CREATE_HEPMC@ Herwig::GraphvizPlot Plot HwHepMCAnalysis.so
 # A HepMC dump file (requires --with-hepmc to be set at configure time)

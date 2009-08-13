@@ -54,7 +54,8 @@ public:
   /**
    * Default constructor.
    */
-  TauDecayer() :_gf(1.16637E-5/GeV2) {
+  TauDecayer() :_gf(1.16637E-5/GeV2), _polOpt(false), _tauMpol(0.),
+		_tauPpol(0.) {
     generateIntermediates(true);
   }
 
@@ -219,6 +220,20 @@ private:
    */
   mutable vector<PDT::Spin> _ispin; 
 
+  /**
+   *  Option to force the polarizations of the tau leptons
+   */
+  bool _polOpt;
+
+  /**
+   *  Polarization for \f$\tau^-\f$
+   */
+  double _tauMpol;
+
+  /**
+   *  Polarization of \f$\tau^+\f$
+   */
+  double _tauPpol;
 };
 
 }
