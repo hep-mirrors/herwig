@@ -85,17 +85,27 @@ bool HardTree::connect(ShowerTreePtr shower) {
   _particles.clear();
   // extract the progenitors from the ShowerTree
   vector<ShowerProgenitorPtr> progenitors = shower->extractProgenitors();
+  // KMH - 120809 - Added boolean vector to hold on to which progenitors have
+  // already been connected to a branching. If connectedProgenitors[ix] = true 
+  // it means progenitors[ix] was already connected to something and so it is
+  // skipped in the loop over progenitors. This guards against the possiblility
+  // of using the same progenitor twice. This can, wrongly, cause events to fail.
+  // This was noticed at a rate of around 1 event in 20 for Powheg ZZ production
+  // - both Z's would sometimes get associated with the same progenitor. There
+  // is still no doubt room for further improvement but using this bool vector
+  // already seemed like a good start.
+  vector<bool> connectedProgenitors(progenitors.size(),false);
   // connect the trees up
   for( set<HardBranchingPtr>::iterator it = branchings().begin();
        it != branchings().end(); ++it) {
     Energy2 dmin( 1e30*GeV2 );
-    tShowerParticlePtr partner; 
-    for(unsigned int ix=0;ix<progenitors.size();++ix) {
-      if((**it).branchingParticle()->id()!=progenitors[ix]->progenitor()->id()) continue;
-      if(((**it).status()==HardBranching::Incoming&&
-	  progenitors[ix]->progenitor()->isFinalState())||
-	 ((**it).status()==HardBranching::Outgoing&&
-	  !progenitors[ix]->progenitor()->isFinalState())) continue;
+    tShowerParticlePtr partner;   
+    unsigned int progenitorsIndex(999);
+    for( unsigned int ix = 0; ix < progenitors.size(); ++ix ) {
+      if( connectedProgenitors[ix] ) continue;
+      if( (**it).branchingParticle()->id() != progenitors[ix]->progenitor()->id() ) continue;
+      if( (**it).branchingParticle()->isFinalState() !=
+	  progenitors[ix]->progenitor()->isFinalState() ) continue;
       Energy2 dtest = 
 	sqr( progenitors[ix]->progenitor()->momentum().x() - (**it).showerMomentum().x() ) +
 	sqr( progenitors[ix]->progenitor()->momentum().y() - (**it).showerMomentum().y() ) +
@@ -103,14 +113,16 @@ bool HardTree::connect(ShowerTreePtr shower) {
 	sqr( progenitors[ix]->progenitor()->momentum().t() - (**it).showerMomentum().t() );
       if( dtest < dmin ) {
 	partner = progenitors[ix]->progenitor();
+	progenitorsIndex = ix;
 	dmin = dtest;
       }
     }
-    if(!partner) return false;
-    connect(partner,*it);
-    if((**it).status()==HardBranching::Incoming) {
-      double z((**it).z());
-      tHardBranchingPtr parent=(**it).parent();
+    if( !partner ) return false;
+    connectedProgenitors[progenitorsIndex] = true;
+    connect( partner, *it );
+    if( (**it).status() == HardBranching::Incoming ) {
+      double z( (**it).z() );
+      tHardBranchingPtr parent = (**it).parent();
       while (parent) {
 	z *= parent->z();
 	parent = parent->parent();
@@ -318,6 +330,19 @@ bool HardTree::fixFwdBranchings(){
     } 
   }
   return true;
+}
+
+void HardTree::removeBackChildren(){
+  //this function will only work once the forward relations have been set - do this first
+  fixFwdBranchings();
+  for( set<HardBranchingPtr>::iterator it = _branchings.begin();
+       it != _branchings.end(); ++it ){
+    HardBranchingPtr currentSpacelike = *it;
+    while( currentSpacelike->parent() ){
+      currentSpacelike->clearBackChildren();
+      currentSpacelike = currentSpacelike->parent();
+    }
+  }
 }
 
 bool HardTree::fixParents( HardBranchingPtr branch ){

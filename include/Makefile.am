@@ -5,7 +5,6 @@ AUTOMAKE_OPTIONS = -Wno-portability
 DIRLINKS = $(top_srcdir)/Analysis \
 	   $(top_srcdir)/Decay \
            $(top_srcdir)/Hadronization \
-           $(top_srcdir)/Interfaces \
            $(top_srcdir)/MatrixElement \
            $(top_srcdir)/Models \
            $(top_srcdir)/PDF \

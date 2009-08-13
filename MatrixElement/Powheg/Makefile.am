@@ -10,7 +10,8 @@ MEPP2VVPowheg.cc  MEPP2VVPowheg.h \
 MEPP2VGammaPowheg.cc  MEPP2VGammaPowheg.h \
 MEPP2GammaGammaPowheg.cc  MEPP2GammaGammaPowheg.h \
 MEPP2HiggsVBFPowheg.cc MEPP2HiggsVBFPowheg.h \
-NLO2to2Kinematics.cc NLO2to2Kinematics.h
+VVKinematics.cc VVKinematics.h
+
 
 pkglib_LTLIBRARIES += HwPowhegMEDIS.la
 HwPowhegMEDIS_la_LDFLAGS = -module -version-info 1:0:0

@@ -462,7 +462,7 @@ void KornerKramerCharmDecayer::doinit() {
 			  << Exception::abortnow;
   // compute the various coefficients
   Energy m1,m2,m3,fmes(ZERO); 
-  Energy2 P1P2,Qplus,Qminus,gmes(ZERO);
+  Energy2 P1P2,Qplus,gmes(ZERO);
   double Fnonfact,A3,B3,Ffact[2];
   Energy H2,H3,A2,B2;
   Energy2 A,B;
@@ -533,7 +533,6 @@ void KornerKramerCharmDecayer::doinit() {
     }
     // invariants
     Qplus  = (m1+m2)*(m1+m2)-m3*m3;
-    Qminus = (m1-m2)*(m1-m2)-m3*m3;
     // decide which type of decay
     mspin=getParticleData(outgoingM_[ix])->iSpin();
     bspin=getParticleData(outgoingB_[ix])->iSpin();

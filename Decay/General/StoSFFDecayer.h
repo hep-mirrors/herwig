@@ -17,7 +17,8 @@ namespace Herwig {
   using namespace ThePEG;
 
 /**
- * Here is the documentation of the StoSFFDecayer class.
+ * The StoSFFDecayer class provides the general matrix element for
+ * scalar decays into another scalar and a fermion-antifermion pair.
  *
  * @see \ref StoSFFDecayerInterfaces "The interfaces"
  * defined for StoSFFDecayer.

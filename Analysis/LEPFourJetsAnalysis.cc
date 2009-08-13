@@ -12,28 +12,52 @@
 //
 
 #include "LEPFourJetsAnalysis.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 
 using namespace Herwig;
 
-void LEPFourJetsAnalysis::analyze(const tPVector & particles) {
-  _kint.clearMap();
-  KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(particles), 1, 1, 1);
-  // four jet distributions
-  ev.findJetsY(0.008); 
-  vector<KtJet::KtLorentzVector> ktjets = ev.getJetsE();
+void LEPFourJetsAnalysis::analyze(tEventPtr event, long, int, int ) {
+  tPVector particles;
+  event->selectFinalState(back_inserter(particles));
+  //  copy fastjet particles from event record.  Templated fastjet
+  //  method might leave units ambigouos.  Loop with integer index
+  //  allows backtracing ThePEG particles if needed.
+  vector<fastjet::PseudoJet> fastjet_particles;
+
+  for (unsigned int j=0; j<particles.size(); j++) {
+    fastjet::PseudoJet p(particles[j]->momentum().x()/GeV, 
+			 particles[j]->momentum().y()/GeV, 
+			 particles[j]->momentum().z()/GeV, 
+			 particles[j]->momentum().e()/GeV);
+    p.set_user_index(j);
+    fastjet_particles.push_back(p);
+  }
+  
+  fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
+  fastjet::Strategy strategy = fastjet::Best;
+  fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, 
+				 recomb_scheme, strategy);
+  fastjet::ClusterSequence cs(fastjet_particles, jet_def);
+
+  vector<fastjet::PseudoJet> fastjets = cs.exclusive_jets_ycut(0.008);
+  vector<fastjet::PseudoJet> sorted = fastjet::sorted_by_E(fastjets); 
   vector<Lorentz5Momentum> jets;
 
-  if (ktjets.size() == 4) {
+  if (sorted.size() == 4) {
     for (int j=0; j<4; ++j) {
-      if (! ktjets[j].isJet()) {
+      if ((cs.constituents(sorted[j])).size() == 1) {
 	throw Exception() << "LEPFourJetsAnalysis: Trying to extract jet " 
 			  << "momenta from a single particle." 
 			  << Exception::warning;
       }
-      jets.push_back(KtJetInterface::convert(ktjets[j]));
+      LorentzMomentum newjet(sorted[j].px()*GeV, sorted[j].py()*GeV, 
+			  sorted[j].pz()*GeV, sorted[j].e()*GeV);
+      jets.push_back(newjet);
     }
     *_cchiBZ += abs(cosChiBZ(jets));
     *_cphiKSW += cosPhiKSW(jets);

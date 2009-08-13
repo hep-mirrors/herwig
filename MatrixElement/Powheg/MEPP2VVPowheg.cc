@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MEPP2VVPowheg::MEPP2VVPowheg() :  
-    CF_(4./3.),    TR_(0.5),  NC_(3.),
+    tiny(1.e-10),  CF_(4./3.),   TR_(0.5),  NC_(3.),
     contrib_(1),   channels_(0), nlo_alphaS_opt_(0) , fixed_alphaS_(0.1180346226),
     removebr_(1), scaleopt_(1), mu_F_(100.*GeV), mu_UV_(100.*GeV),
     ckm_(3,vector<Complex>(3,0.0)) 
@@ -202,17 +202,19 @@ void MEPP2VVPowheg::doinit() {
 
 int MEPP2VVPowheg::nDim() const {
   int output = MEPP2VV::nDim(); 
-  if(contrib_>0) output += 2;
+  if(contrib_>0) output += 3;
   return output;
 }
 
 bool MEPP2VVPowheg::generateKinematics(const double * r) {
-  double xt(-999.);
-  double y( -999.);
+  double xt(     -999.);
+  double y(      -999.);
+  double theta2( -999.);
   if(contrib_>0) {
     // Generate the radiative integration variables:
-    xt = (*(r+1));
-    y  = (*(r+2)) * 2. - 1.;
+    xt      = (*(r+1));
+    y       = (*(r+2)) * 2. - 1.;
+    theta2  = (*(r+3)) * 2.*Constants::pi;
   }
 
   // Continue with lo matrix element code:
@@ -220,7 +222,7 @@ bool MEPP2VVPowheg::generateKinematics(const double * r) {
 
   // Work out the kinematics for the leading order / virtual process 
   // and also get the leading order luminosity function:
-  getKinematics(xt,y);
+  getKinematics(xt,y,theta2);
 
   return output;
 }
@@ -264,22 +266,16 @@ double MEPP2VVPowheg::me2() const {
   return output;
 }
 
-void MEPP2VVPowheg::getKinematics(double xt, double y) {
+void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
 
   // In this member we want to get the lo_lumi_ as this is a 
   // common denominator in the NLO weight. We want also the 
-  // born2to2Kinematics object and all of the real2to3Kinematics
+  // bornVVKinematics object and all of the realVVKinematics
   // objects needed for the NLO weight.
 
-  // First a few sanity checks (these can be removed when the code is done):
-  if(mePartonData()[0]->id()<0)
-    cout << "Error in get_born_variables:\n" 
-	 << "mePartonData()[0] is an antiquark, id=" 
-	 << mePartonData()[0]->PDGName() << endl;
-  if(mePartonData()[1]->id()>0)
-    cout << "Error in get_born_variables:\n" 
-	 << "mePartonData()[1] is an quark, id=" 
-	 << mePartonData()[1]->PDGName() << endl;
+  // First a few sanity checks which can be removed when the code is done.
+  // Already confirmed mePartonData()[0] is a quark, and mePartonData()[1] 
+  // is an antiquark.
   bool alarm(false);
   bool wminus_first(false);
   switch(MEPP2VV::process()) {
@@ -314,35 +310,45 @@ void MEPP2VVPowheg::getKinematics(double xt, double y) {
 
   // Now get all data on the LO process needed for the NLO computation:
 
-  // Should be the hadron containing particle a (the quark):
+  // The +z hadron in the lab:
   hadron_A_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().first->dataPtr());
-  // Should be the hadron containing particle b (the anti-quark):
+  // The -z hadron in the lab:
   hadron_B_=dynamic_ptr_cast<Ptr<BeamParticleData>::transient_const_pointer>
     (lastParticles().second->dataPtr());
 
   // Leading order momentum fractions:
-  double xa(lastX1()); // Should be the quark momentum fraction. 
-  double xb(lastX2()); // Should be the anti-quark momentum fraction. 
+  double xa(lastX1()); // The +z momentum fraction in the lab. 
+  double xb(lastX2()); // The -z momentum fraction in the lab. 
 
-  // Particle data for incoming QCD particles:
-  ab_ = mePartonData()[0];  // This is the quark in MEPP2VV.cc
-  bb_ = mePartonData()[1];  // This is the antiquark in MEPP2VV.cc
+  // Particle data for incoming +z & -z QCD particles respectively:
+  ab_ = lastPartons().first ->dataPtr(); // The +z momentum parton in the lab.
+  bb_ = lastPartons().second->dataPtr(); // The -z momentum parton in the lab.
 
-  // If the lastPartons.first() and lastPartons.second() are 
-  // not a quark and antiquark respectively, swap xa<->xb and
-  // hadron_A_<->hadron_B_, as xa and xb are defined to be the
-  // quark and anti-quark momentum fractions respectively, also,
-  // hadron_A_ and hadron_B_, are defined to be the hadrons 
-  // containing the colliding partons a and b respectively. 
-  // See MEPP2VV.cc for more info. 
+  // We checked TVT & LHC for all VV channels with 10K events:
+  // lastParticles().first ->momentum().z() is always positive
+  // lastParticles().second->momentum().z() is always negative
+  // lastParticles().first ->momentum().z()*xa=lastPartons().first ->momentum().z() 1 in 10^6
+  // lastParticles().second->momentum().z()*xb=lastPartons().second->momentum().z() 1 in 10^6
+
+  // Set the quark and antiquark data pointers.
+  quark_     = mePartonData()[0];
+  antiquark_ = mePartonData()[1];
+  if(quark_->id()<0) swap(quark_,antiquark_);
+
+  // Now in _our_ calculation we basically define the +z axis as being 
+  // given by the direction of the incoming quark for q+qb & q+g processes
+  // and the incoming gluon for g+qbar processes. So now we might need to
+  // flip the values of hadron_A_, hadron_B_, ab_, bb_, xa, xb accordingly:
   flipped_ = false;
-  if(!(lastPartons().first ->dataPtr()==ab_&&
-       lastPartons().second->dataPtr()==bb_)) {
-    swap(xa       ,xb       );
-    swap(hadron_A_,hadron_B_);
+  if(ab_->id()!=quark_->id()) {
     flipped_ = true;
+    swap(hadron_A_,hadron_B_);
+    swap(ab_,bb_);
+    swap(xa,xb);
   }
+  // So hadron_A_ is the thing containing a quark (ab_) with momentum frac xa,
+  // hadron_B_ is the thing containing an antiquark (bb_) with momentum frac xb.
 
   // Now get the partonic flux for the Born process:
   lo_lumi_ = hadron_A_->pdf()->xfx(hadron_A_,ab_,scale(),xa)/xa
@@ -352,7 +358,9 @@ void MEPP2VVPowheg::getKinematics(double xt, double y) {
   if(MEPP2VV::process()==1&&wminus_first) swap(meMomenta()[2],meMomenta()[3]);
 
   // Create the object containing all 2->2 __kinematic__ information:
-  B_ = born2to2Kinematics(meMomenta(),xa,xb);
+  B_ = bornVVKinematics(meMomenta(),xa,xb);
+  // We checked that meMomenta()[0] (quark) is in the +z direction and meMomenta()[1]
+  // is in the -z direction (antiquark).
 
   // Revert momentum swap in case meMomenta and mePartonData correlation
   // needs preserving for other things.
@@ -365,17 +373,17 @@ void MEPP2VVPowheg::getKinematics(double xt, double y) {
   // the necessary real emission kinematics.
   if(contrib_>0) {
     // Soft limit of the 2->3 real emission kinematics:
-    S_   = real2to3Kinematics(B_, 1.,  y);
+    S_   = realVVKinematics(B_, 1.,  y, theta2);
     // Soft-collinear limit of the 2->3 kinematics (emission in +z direction):
-    SCp_ = real2to3Kinematics(B_, 1., 1.);
+    SCp_ = realVVKinematics(B_, 1., 1., theta2);
     // Soft-collinear limit of the 2->3 kinematics (emission in -z direction):
-    SCm_ = real2to3Kinematics(B_, 1.,-1.);
+    SCm_ = realVVKinematics(B_, 1.,-1., theta2);
     // Collinear limit of the 2->3 kinematics (emission in +z direction):
-    Cp_  = real2to3Kinematics(B_, xt, 1.);
+    Cp_  = realVVKinematics(B_, xt, 1., theta2);
     // Collinear limit of the 2->3 kinematics (emission in -z direction):
-    Cm_  = real2to3Kinematics(B_, xt,-1.);
+    Cm_  = realVVKinematics(B_, xt,-1., theta2);
     // The resolved 2->3 real emission kinematics:
-    H_   = real2to3Kinematics(B_, xt,  y);
+    H_   = realVVKinematics(B_, xt,  y, theta2);
 
     // Check all the real kinematics objects are internally consistent:
     S_.sanityCheck();
@@ -399,7 +407,7 @@ double MEPP2VVPowheg::NLOweight() const {
   double alsOn2pi(alphaS_/2./pi);
 
   // Particle data objects for the new plus and minus colliding partons.
-  tcPDPtr a_nlo, b_nlo, gluon;
+  tcPDPtr gluon;
   gluon = getParticleData(ParticleID::g);
 
   // Get the all couplings.
@@ -413,11 +421,11 @@ double MEPP2VVPowheg::NLOweight() const {
   eZ_  = gW_*cosThetaW;
   eZ2_ = sqr(eZ_);
 
-  // MCFM has gwsq = 0.4389585130009 -> gw = 0.662539 
+  // MCFM has gwsq = 0.4389585130009 -> gw = 0.662539442600115
   // Here we have gW_ = 0.662888
-  // MCFM has xw = 0.2222465
+  // MCFM has xw = 0.22224653300000 -> sqrt(xw) = 0.471430306
   // Here we have 0.222247
-  // MCFM has esq = 0.97557008E-002
+  // MCFM has esq = 0.097557007645279 -> e = 0.31234117187024679
   // Here we have 4.0*pi*SM().alphaEM(sqr(100.*GeV)) = 0.0976596
 
   // If the process is W-Z instead of W+Z we must transform these
@@ -436,13 +444,13 @@ double MEPP2VVPowheg::NLOweight() const {
   // W+Z / W-Z
   if(abs(mePartonData()[2]->id())==24&&mePartonData()[3]->id()==23) { 
     int up_id(-999),dn_id(-999);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==1) {
-      up_id = abs(ab_->id());  
-      dn_id = abs(bb_->id());  
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==1) {
+      up_id = abs(quark_->id());  
+      dn_id = abs(antiquark_->id());  
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==0) {
-      up_id = abs(bb_->id());  
-      dn_id = abs(ab_->id());  
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==0) {
+      up_id = abs(antiquark_->id());  
+      dn_id = abs(quark_->id());  
     }
     else {
       cout << "MEPP2VVPowheg:" << endl;
@@ -456,19 +464,19 @@ double MEPP2VVPowheg::NLOweight() const {
   } 
   // W+W-
   else if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
-      int up_ida(abs(ab_->id())/2-1);
-      int up_idb(abs(bb_->id())/2-1);
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
+      int up_ida(abs(quark_->id())/2-1);
+      int up_idb(abs(antiquark_->id())/2-1);
       Kij  = sqrt(std::norm( CKM(up_ida,0)*CKM(up_idb,0)
-			     + CKM(up_ida,1)*CKM(up_idb,1)
-			     + CKM(up_ida,2)*CKM(up_idb,2)));
+			   + CKM(up_ida,1)*CKM(up_idb,1)
+			   + CKM(up_ida,2)*CKM(up_idb,2)));
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
-      int dn_ida((abs(ab_->id())-1)/2);
-      int dn_idb((abs(bb_->id())-1)/2);
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
+      int dn_ida((abs(quark_->id())-1)/2);
+      int dn_idb((abs(antiquark_->id())-1)/2);
       Kij  = sqrt(std::norm( CKM(0,dn_ida)*CKM(0,dn_idb)
-			     + CKM(1,dn_ida)*CKM(1,dn_idb)
-			     + CKM(2,dn_ida)*CKM(2,dn_idb)));
+			   + CKM(1,dn_ida)*CKM(1,dn_idb)
+			   + CKM(2,dn_ida)*CKM(2,dn_idb)));
     }
     else {
       cout << "MEPP2VVPowheg:" << endl;
@@ -495,28 +503,54 @@ double MEPP2VVPowheg::NLOweight() const {
 //   Energy2 t_u_M_R_qqb_ZZ_val = t_u_M_R_qqb_ZZ(H_);
 //   t_u_M_R_qqb_hel_amp_       = t_u_M_R_qqb_hel_amp(H_);
 //   // Get the q + g real emission matrix element (only for checking the helicity amps!)
-//   t_u_M_R_qg_         = t_u_M_R_qg(H_);
-//   t_u_M_R_qg_hel_amp_ = t_u_M_R_qg_hel_amp(H_);
+//   t_u_M_R_qg_                = t_u_M_R_qg(H_);
+//   t_u_M_R_qg_hel_amp_        = t_u_M_R_qg_hel_amp(H_);
 //   // Get the q + g real emission matrix element (only for checking the helicity amps!)
-//   t_u_M_R_gqb_         = t_u_M_R_gqb(H_);
-//   t_u_M_R_gqb_hel_amp_ = t_u_M_R_gqb_hel_amp(H_);
+//   t_u_M_R_gqb_               = t_u_M_R_gqb(H_);
+//   t_u_M_R_gqb_hel_amp_       = t_u_M_R_gqb_hel_amp(H_);
 
 //   cout << "\n\n\n";
+//     cout << ab_->PDGName() << ", " 
+// 	 << bb_->PDGName() << ", " 
+//          << mePartonData()[2]->PDGName() << ", " 
+// 	 << mePartonData()[3]->PDGName() << endl; 
+//     cout << "xr = " << H_.xr() << "   1-xr = "<< 1.-H_.xr() << "   y = " << H_.y() << endl;
+//     cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
+//     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
+//     cout << "sb+tb+ub = " 
+// 	 << B_.sb()/GeV2 << " + " 
+// 	 << B_.tb()/GeV2 << " + " << B_.ub()/GeV2 << endl;
+//     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
+//     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
+//     cout << "sqr(Kij)   " << Kij*Kij    << endl;
 //   cout << "WZ qqb = " << t_u_M_R_qqb_*UnitRemoval::InvE2 << endl;
 //   cout << "WZ qg  = " << t_u_M_R_qg_ *UnitRemoval::InvE2 << endl;
 //   cout << "WZ gqb = " << t_u_M_R_gqb_*UnitRemoval::InvE2 << endl;
-//   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) 
-//     cout << "WZ - WW (%)              = " 
-// 	 << (t_u_M_R_qqb_-t_u_M_R_qqb_WW_val)/t_u_M_R_qqb_ *100. << endl;
-//   if(abs(mePartonData()[2]->id())==23&&abs(mePartonData()[3]->id())==23) 
+//   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
+//     cout << "WZ - WW (%)               = " 
+// 	 << (t_u_M_R_qqb_-t_u_M_R_qqb_WW_val)/t_u_M_R_qqb_ *100. 
+// 	 << endl;
+//     cout << "lo_me2_ - M_Born_WW   (%) = " 
+// 	 <<  lo_me2_-M_Born_WW(B_)                  << "  (" 
+// 	 << (lo_me2_-M_Born_WW(B_))/M_Born_WW(B_)*100.  << ")\n";
+//   }
+//   if(abs(mePartonData()[2]->id())==23&&abs(mePartonData()[3]->id())==23) {
 //     cout << "WZ - ZZ (%)              = " 
-// 	 << (t_u_M_R_qqb_-t_u_M_R_qqb_ZZ_val)/t_u_M_R_qqb_ *100. << endl;
-//   cout << "WZ qqb - hel_amp qqb (%) = " 
-//        << (t_u_M_R_qqb_ - t_u_M_R_qqb_hel_amp_)/t_u_M_R_qqb_ *100. << endl;
-//   cout << "WZ qg  - hel_amp qg  (%) = " 
-//        << (t_u_M_R_qg_  - t_u_M_R_qg_hel_amp_ )/t_u_M_R_qg_  *100. << endl;
-//   cout << "WZ gqb - hel_amp gqb (%) = " 
-//        << (t_u_M_R_gqb_ - t_u_M_R_gqb_hel_amp_)/t_u_M_R_gqb_ *100. << endl;
+// 	 << (t_u_M_R_qqb_-t_u_M_R_qqb_ZZ_val)/t_u_M_R_qqb_ *100. 
+// 	 << endl;
+//     cout << "lo_me2_ - M_Born_ZZ   (%) = " 
+// 	 <<  lo_me2_-M_Born_ZZ(B_)                      << "  (" 
+// 	 << (lo_me2_-M_Born_ZZ(B_))/M_Born_ZZ(B_)*100.  << ")\n";
+//   }
+//   cout << "WZ qqb  - hel_amp qqb (%) = " 
+//        << (t_u_M_R_qqb_ - t_u_M_R_qqb_hel_amp_)/t_u_M_R_qqb_ *100. 
+//        << endl;
+//   cout << "WZ qg   - hel_amp qg  (%) = " 
+//        << (t_u_M_R_qg_  - t_u_M_R_qg_hel_amp_ )/t_u_M_R_qg_  *100. 
+//        << endl;
+//   cout << "WZ gqb  - hel_amp gqb (%) = " 
+//        << (t_u_M_R_gqb_ - t_u_M_R_gqb_hel_amp_)/t_u_M_R_gqb_ *100. 
+//        << endl;
 
   // Calculate the integrand
   double wgt(0.);
@@ -532,27 +566,21 @@ double MEPP2VVPowheg::NLOweight() const {
   double wgqbreal(0.);
 
   if(channels_==0||channels_==1) {
-    // q qb  contribution
-    a_nlo=ab_;
-    b_nlo=bb_;
+    // q+qb
     wqqbvirt   = Vtilde_universal(S_) + M_V_regular(S_)/lo_me2_;
-    wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cp_) 
-			  + Ctilde_Ltilde_qq_on_x(a_nlo,b_nlo,Cm_) );
-    wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(a_nlo,b_nlo);
+    wqqbcollin = alsOn2pi*( Ctilde_Ltilde_qq_on_x(quark_,antiquark_,Cp_) 
+			  + Ctilde_Ltilde_qq_on_x(quark_,antiquark_,Cm_) );
+    wqqbreal   = alsOn2pi*Rtilde_Ltilde_qqb_on_x(quark_,antiquark_);
     wqqb       = wqqbvirt + wqqbcollin + wqqbreal;
   }
   if(channels_==0||channels_==2) {
-    // q g   contribution
-    a_nlo=ab_;
-    b_nlo=gluon;
-    wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cm_);
-    wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo);
+    // q+g
+    wqgcollin  = alsOn2pi*Ctilde_Ltilde_gq_on_x(quark_,gluon,Cm_);
+    wqgreal    = alsOn2pi*Rtilde_Ltilde_qg_on_x(quark_,gluon);
     wqg        = wqgreal + wqgcollin;
-    // g qb  contribution
-    a_nlo=gluon;
-    b_nlo=bb_;
-    wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(a_nlo,b_nlo,Cp_);
-    wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(a_nlo,b_nlo);
+    // g+qb
+    wgqbcollin = alsOn2pi*Ctilde_Ltilde_gq_on_x(gluon,antiquark_,Cp_);
+    wgqbreal   = alsOn2pi*Rtilde_Ltilde_gqb_on_x(gluon,antiquark_);
     wgqb       = wgqbreal+wgqbcollin;
   }
   // total contribution
@@ -571,8 +599,9 @@ double MEPP2VVPowheg::NLOweight() const {
     cout << "lo_me2_ - M_Born_ (%) = " 
 	 <<  lo_me2_-M_Born_                << "  (" 
 	 << (lo_me2_-M_Born_)/M_Born_*100.  << ")\n";
-    cout << "lo_me2_, M_Born_    " << lo_me2_ << ", " << M_Born_    << endl;
-    cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
+    cout << "lo_me2_, M_Born_, M_Born_WW    " << lo_me2_ << ", " << M_Born_   << ", " << M_Born_WW(B_) << endl;
+    cout << "xr = " << H_.xr() << "   1-xr = "<< 1.-H_.xr() << "   y = " << H_.y() << endl;
+    cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
     cout << "sb+tb+ub = " 
 	 << B_.sb()/GeV2 << " + " 
@@ -605,7 +634,8 @@ double MEPP2VVPowheg::NLOweight() const {
 	 <<  lo_me2_-M_Born_                << "  (" 
 	 << (lo_me2_-M_Born_)/M_Born_       << ")\n";
     cout << "lo_me2_, M_Born_    " << lo_me2_ << ", " << M_Born_    << endl;
-    cout << "xr = " << H_.xr() << ", y = " << H_.y() << endl;
+    cout << "xr  = " << H_.xr()  << "   1-xr = " << 1.-H_.xr() << "   y = " << H_.y() << endl;
+    cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
     cout << "sb+tb+ub = " 
 	 << B_.sb()/GeV2 << " + " 
@@ -632,38 +662,38 @@ double MEPP2VVPowheg::NLOweight() const {
 }
 
 double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b, 
-			      real2to3Kinematics Kinematics) const {
+			      realVVKinematics Kinematics) const {
   if(!(abs(a->id())<=6||a->id()==21)||!(abs(b->id())<=6||b->id()==21))
     cout << "MEPP2VVPowheg::Lhat_ab: Error," 
          << "particle a = " << a->PDGName() << ", "
          << "particle b = " << b->PDGName() << endl;
   double nlo_lumi(-999.);
-  double xp(Kinematics.xpr()),xm(Kinematics.xmr());
-  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),xp)/xp)
-           * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),xm)/xm);
+  double x1(Kinematics.x1r()),x2(Kinematics.x2r());
+  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),x1)/x1)
+           * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),x2)/x2);
   return nlo_lumi / lo_lumi_;
 }
 
-double MEPP2VVPowheg::Vtilde_universal(real2to3Kinematics S) const {
+double MEPP2VVPowheg::Vtilde_universal(realVVKinematics S) const {
   double xbar_y = S.xbar();
   double y = S.y();
-  double etapb(S.bornVariables().etapb());
-  double etamb(S.bornVariables().etamb());
+  double eta1b(S.bornVariables().eta1b());
+  double eta2b(S.bornVariables().eta2b());
   Energy2 sb(S.s2r());
   return  alphaS_/2./pi*CF_ 
         * (   log(sb/scale())
-	    * (3. + 4.*log(etapb)+4.*log(etamb))
-	    + 8.*sqr(log(etapb)) +8.*sqr(log(etamb))
+	    * (3. + 4.*log(eta1b)+4.*log(eta2b))
+	    + 8.*sqr(log(eta1b)) +8.*sqr(log(eta2b))
 	    - 2.*sqr(pi)/3.
 	  )
         + alphaS_/2./pi*CF_ 
-        * ( 8./(1.+y)*log(sqrt(1.-xbar_y)/etamb)
-     	  + 8./(1.-y)*log(sqrt(1.-xbar_y)/etapb)
+        * ( 8./(1.+y)*log(sqrt(1.-xbar_y)/eta2b)
+     	  + 8./(1.-y)*log(sqrt(1.-xbar_y)/eta1b)
           );
 }
 
 double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b, 
-					    real2to3Kinematics C) const {
+					    realVVKinematics C) const {
   if(C.y()!= 1.&&C.y()!=-1.) 
     cout << "\nCtilde_qq::y value not allowed.";
   if(C.y()== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
@@ -674,8 +704,8 @@ double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
 	 << b->id() << "\n";
   double xt = C.xt();
   double x  = C.xr();
-  double etab = C.y() == 1. ? C.bornVariables().etapb() 
-                            : C.bornVariables().etamb() ;
+  double etab = C.y() == 1. ? C.bornVariables().eta1b() 
+                            : C.bornVariables().eta2b() ;
   Energy2 sb(C.s2r());
   return ( ( (1./(1.-xt))*log(sb/scale()/x)+4.*log(etab)/(1.-xt)
        	   + 2.*log(1.-xt)/(1.-xt)
@@ -689,7 +719,7 @@ double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
 }
 
 double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b, 
-					    real2to3Kinematics C) const {
+					    realVVKinematics C) const {
   if(C.y()!= 1.&&C.y()!=-1.) 
     cout << "\nCtilde_gq::y value not allowed.";
   if(C.y()== 1.&&a->id()!=21)
@@ -700,8 +730,8 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
 	 << b->id() << "\n";
   double xt = C.xt();
   double x  = C.xr();
-  double etab = C.y() == 1. ? C.bornVariables().etapb() 
-                            : C.bornVariables().etamb() ;
+  double etab = C.y() == 1. ? C.bornVariables().eta1b() 
+                            : C.bornVariables().eta2b() ;
   Energy2 sb(C.s2r());
   return ( ( (1./(1.-xt))*log(sb/scale()/x)+4.*log(etab)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
@@ -722,24 +752,48 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
+//   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
+//   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
+// 			*CF_*(1.+sqr(Cp_.xr()))*M_Born_);
+//   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
+// 			*CF_*(1.+sqr(Cm_.xr()))*M_Born_);
+
+  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb_hel_amp(H_));
   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-			*CF_*(1.+sqr(Cp_.xr()))*M_Born_);
+			*CF_*(1.+sqr(Cp_.xr()))*lo_me2_);
   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-			*CF_*(1.+sqr(Cm_.xr()))*M_Born_);
+			*CF_*(1.+sqr(Cm_.xr()))*lo_me2_);
 
-  return 
-   ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
-     - (t_u_M_R_qqb(S_)               - t_u_M_R_qqb(SCp_)              )/s2
+  int config(0);
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  if(fabs(1.-y )<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cp  ;  config =  1; }
+  if(fabs(1.+y )<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cm  ;  config = -1; }
+  if(fabs(H_.tkr()/s)<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cp  ;  config =  1; }
+  if(fabs(H_.ukr()/s)<=tiny) { t_u_M_R_qqb_H = t_u_M_R_qqb_Cm  ;  config = -1; }
 
-     )*2./(1.-y)/(1.-xt)
-
-   + ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
-     - (t_u_M_R_qqb(S_)               - t_u_M_R_qqb(SCm_)              )/s2
-
-     )*2./(1.+y)/(1.-xt)
-
-   ) / lo_me2_ / 8. / pi / alphaS_;
+  if(config== 0)
+    return 
+      ( ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt)
+      + ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt)
+      ) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config== 1)
+    return 
+        ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config==-1)
+    return 
+        ( (t_u_M_R_qqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else 
+    throw Exception() 
+      << "MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x\n"
+      << "The configuration is not identified as hard / soft / fwd collinear or bwd collinear."
+      << "config = " << config << "\n"
+      << "xt     = " << xt     << "   1.-xt = " << 1.-xt << "\n"
+      << "y      = " << y      << "   1.-y  = " << 1.-y  << "\n"
+      << Exception::eventerror;
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
@@ -754,23 +808,47 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
+//   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
+//   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
+// 			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_);
+//   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
+
+  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb_hel_amp(H_));
   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
-			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_);
+			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*lo_me2_);
   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
+//   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb_hel_amp(Cm_));
 
-  return 
-   ( ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
-     - (t_u_M_R_gqb(S_)               - t_u_M_R_gqb(SCp_)              )/s2
+  int config(0);
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  if(fabs(1.-y )<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cp  ;  config =  1; }
+  if(fabs(1.+y )<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cm  ;  config = -1; }
+  if(fabs(H_.tkr()/s)<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cp  ;  config =  1; }
+  if(fabs(H_.ukr()/s)<=tiny) { t_u_M_R_gqb_H = t_u_M_R_gqb_Cm  ;  config = -1; }
 
-     )*2./(1.-y)/(1.-xt)
-
-   + ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
-     - (t_u_M_R_gqb(S_)               - t_u_M_R_gqb(SCm_)              )/s2
-
-     )*2./(1.+y)/(1.-xt)
-
-   ) / lo_me2_ / 8. / pi / alphaS_;
+  if(config== 0)
+    return 
+      ( ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt)
+      + ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt)
+      ) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config== 1)
+    return 
+        ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config==-1)
+    return 
+        ( (t_u_M_R_gqb_H*Lhat_ab(a,b,H_)/s - t_u_M_R_gqb_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else 
+    throw Exception() 
+      << "MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x\n"
+      << "The configuration is not identified as hard / soft / fwd collinear or bwd collinear."
+      << "config = " << config << "\n"
+      << "xt     = " << xt     << "   1.-xt = " << 1.-xt << "\n"
+      << "y      = " << y      << "   1.-y  = " << 1.-y  << "\n"
+      << Exception::eventerror;
 }
 
 double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
@@ -785,23 +863,47 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-  Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
+//   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
+//   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
+//   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
+// 		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_);
+
+  Energy2 t_u_M_R_qg_H (t_u_M_R_qg_hel_amp(H_));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
+//   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg_hel_amp(Cp_));
   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
-		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_);
+		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*lo_me2_);
 
-  return 
-   ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_)/sCp)
-     - (t_u_M_R_qg(S_)               - t_u_M_R_qg(SCp_)                )/s2
+  int config(0);
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  if(fabs(1.-y )<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cp  ;  config =  1; }
+  if(fabs(1.+y )<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cm  ;  config = -1; }
+  if(fabs(H_.tkr()/s)<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cp  ;  config =  1; }
+  if(fabs(H_.ukr()/s)<=tiny) { t_u_M_R_qg_H = t_u_M_R_qg_Cm  ;  config = -1; }
 
-     )*2./(1.-y)/(1.-xt)
-
-   + ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_)/sCm)
-     - (t_u_M_R_qg(S_)               - t_u_M_R_qg(SCm_)                )/s2
-
-     )*2./(1.+y)/(1.-xt)
-
-   ) / lo_me2_ / 8. / pi / alphaS_;
+  if(config== 0)
+    return 
+      ( ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt)
+      + ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt)
+      ) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config== 1)
+    return 
+        ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cm*Lhat_ab(a,b,Cm_)/sCm)
+	)*2./(1.+y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else if(config==-1)
+    return 
+        ( (t_u_M_R_qg_H*Lhat_ab(a,b,H_)/s - t_u_M_R_qg_Cp*Lhat_ab(a,b,Cp_)/sCp)
+	)*2./(1.-y)/(1.-xt) / lo_me2_ / 8. / pi / alphaS_;
+  else 
+    throw Exception() 
+      << "MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x\n"
+      << "The configuration is not identified as hard / soft / fwd collinear or bwd collinear."
+      << "config = " << config << "\n"
+      << "xt     = " << xt     << "   1.-xt = " << 1.-xt << "\n"
+      << "y      = " << y      << "   1.-y  = " << 1.-y  << "\n"
+      << Exception::eventerror;
 }
 
 /***************************************************************************/
@@ -830,7 +932,7 @@ Energy4 H1 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
 /***************************************************************************/
 // M_V_Regular is the regular part of the one-loop matrix element 
 // exactly as defined in Eqs. B.1 and B.2 of of NPB 383(1992)3-44.
-double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
@@ -849,9 +951,9 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(guL-guR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -865,9 +967,9 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(gdL-gdR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -893,8 +995,8 @@ double MEPP2VVPowheg::M_V_regular(real2to3Kinematics S) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -1346,7 +1448,7 @@ Energy6 t_u_RZ(Energy2 s  , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
 // t_u_M_R_qqb is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.1 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -1373,9 +1475,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(guL-guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1389,9 +1491,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(gdL-gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1417,8 +1519,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb(real2to3Kinematics R) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -1936,7 +2038,7 @@ Energy6 t_u_RZ(Energy2 s , Energy2 tk , Energy2 uk , Energy2 q1, Energy2 q2,
 // t_u_M_R_qg is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.9 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qg(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -1963,9 +2065,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(guL-guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -1979,9 +2081,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(gdL-gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -2007,8 +2109,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -2043,7 +2145,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg(real2to3Kinematics R) const {
 // t_u_M_R_gqb is the real emission g + qb -> n + q matrix element 
 // exactly as defined in Eqs. C.9 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -2070,9 +2172,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(guL-guR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -2086,9 +2188,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s2-mW2)/Fij2_
 	    * (e2*e2/s2/s2*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW)))
 		           +sqr(       eZ*(gdL-gdR)/2./e2*s2/(s2-mW2/sqr(cosThetaW))))
@@ -2114,8 +2216,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb(real2to3Kinematics R) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -2162,8 +2264,8 @@ Energy4 H0 (Energy2 s,Energy2 t,Energy2 u,Energy2 mW2,Energy2 mZ2);
 
 /***************************************************************************/
 // M_Born_WZ is the Born matrix element exactly as defined in Eqs. 3.3-3.14
-// of of NPB 383(1992)3-44.
-double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
+// of of NPB 383(1992)3-44 (with a spin*colour averaging factor 1./4./NC_/NC_). 
+double MEPP2VVPowheg::M_Born_WZ(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
@@ -2181,9 +2283,9 @@ double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
   // W+W-
   if(abs(mePartonData()[2]->id())==24&&abs(mePartonData()[3]->id())==24) {
     double e2(sqr(gW_)*sin2ThetaW_);
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0) {
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
         eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr( 2./3.+eZ*(guL+guR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(guL-guR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -2197,9 +2299,9 @@ double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
       gdL = gW_/sqrt(2.);
       guL = 0.;
     }
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) {
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) {
       // N.B. OLD eZ used to calculate new eZ2 *then* new eZ is set!
-      if(ab_->id()==-bb_->id()) {
+      if(quark_->id()==-antiquark_->id()) {
 	eZ2 = 1./2.*sqr(s-mW2)/Fij2_
 	    * (e2*e2/s/s*(sqr(-1./3.+eZ*(gdL+gdR)/2./e2*s/(s-mW2/sqr(cosThetaW)))
 		         +sqr(       eZ*(gdL-gdR)/2./e2*s/(s-mW2/sqr(cosThetaW))))
@@ -2225,8 +2327,8 @@ double MEPP2VVPowheg::M_Born_WZ(born2to2Kinematics B) const {
     gV2 = sqr(gdL/2.+gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gA2 = sqr(gdL/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
     gdL = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
-    if(abs(ab_->id())%2==0&&abs(bb_->id())%2==0)      gdL = guL;
-    else if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) guL = gdL;
+    if(abs(quark_->id())%2==0&&abs(antiquark_->id())%2==0)      gdL = guL;
+    else if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) guL = gdL;
     else {
       cout << "MEPP2VVPowheg:" << endl;
       cout << "ZZ needs 2 down-type / 2 up-type!" << endl;
@@ -2472,7 +2574,7 @@ bool MEPP2VVPowheg::sanityCheck() const {
 /***************************************************************************/
 // M_Born_ZZ is the Born matrix element exactly as defined in Eqs. 2.18-2.19
 // of of NPB 357(1991)409-438.
-double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
+double MEPP2VVPowheg::M_Born_ZZ(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
@@ -2488,7 +2590,7 @@ double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
   gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
   gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
   gZ   = gX;
-  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) gZ = gY;
   
   return 1./NC_*sqr(gZ*2.)*(t/u+u/t+4.*mZ2*s/t/u-mZ2*mZ2*(1./t/t+1./u/u));
 
@@ -2497,7 +2599,7 @@ double MEPP2VVPowheg::M_Born_ZZ(born2to2Kinematics B) const {
 /***************************************************************************/
 // M_V_regular_ZZ is the one-loop ZZ matrix element exactly as defined in 
 // Eqs. B.1 & B.2 of NPB 357(1991)409-438.
-double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular_ZZ(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
@@ -2514,7 +2616,7 @@ double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
   gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
   gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
   gZ   = gX;
-  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) gZ = gY;
   
   double M_V_reg(0.);
   M_V_reg  = 2.*s*sqr(gZ*2.)*4.*pi*alphaS_*CF_/NC_/sqr(4.*pi)/2.
@@ -2593,7 +2695,7 @@ double MEPP2VVPowheg::M_V_regular_ZZ(real2to3Kinematics S) const {
 // t_u_M_R_qqb_ZZ is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.1 of NPB 357(1991)409-438, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -2619,7 +2721,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
   gA2  = sqr(gdL_/2.-gW_/2./cosThetaW*1./3.*sin2ThetaW_);
   gY   = sqrt(gV2*gV2+gA2*gA2+6.*gA2*gV2)/2.;
   gZ   = gX;
-  if(abs(ab_->id())%2==1&&abs(bb_->id())%2==1) gZ = gY;
+  if(abs(quark_->id())%2==1&&abs(antiquark_->id())%2==1) gZ = gY;
 
   Energy2 t_u_qqb(0.*GeV2);
   t_u_qqb  = (2.*s)*sqr(gZ*2.)*4.*pi*alphaS_*CF_/NC_/2.
@@ -2736,14 +2838,14 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_ZZ(real2to3Kinematics R) const {
 /***************************************************************************/
 // M_B_WW is the Born matrix element exactly as defined in Eqs. 3.2-3.8
 // of of NPB 410(1993)280-384.
-double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
+double MEPP2VVPowheg::M_Born_WW(bornVVKinematics B) const {
   Energy2 s(B.sb());
   Energy2 t(B.tb());
   Energy2 u(B.ub());
   Energy2 mW2(B.k12b()); // N.B. the diboson masses are preserved in getting
   Energy2 mZ2(B.k22b()); // the 2->2 from the 2->3 kinematics.
     
-  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3.    : -1./3. ; 
   double giL   = up_type ? guL_/2.  : gdL_/2.; 
   double giR   = up_type ? guR_/2.  : gdR_/2.; 
@@ -2759,7 +2861,7 @@ double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
 
   ctt_i *= 8.*Fij2_/gW_/gW_;
   cts_i *= sqrt(8.*Fij2_/gW_/gW_);
-  if(ab_->id()!=-bb_->id()) {
+  if(quark_->id()!=-antiquark_->id()) {
     cts_i = 0./GeV2;
     css_i = 0./GeV2/GeV2;
   }
@@ -2786,7 +2888,7 @@ double MEPP2VVPowheg::M_Born_WW(born2to2Kinematics B) const {
 // exactly as defined in Eqs. C.1 - C.7 of of NPB 410(1993)280-324 ***
 // modulo a factor 1/(2s) ***, which is a flux factor that those authors 
 // absorb in the matrix element. 
-double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
+double MEPP2VVPowheg::M_V_regular_WW(realVVKinematics S) const {
   Energy2 s(S.bornVariables().sb());
   Energy2 t(S.bornVariables().tb());
   Energy2 u(S.bornVariables().ub());
@@ -2794,7 +2896,7 @@ double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
   Energy2 mZ2(S.k22r()); // the 2->2 from the 2->3 kinematics.
   double  beta(S.betaxr()); // N.B. for x=1 \beta_x=\beta in NPB 383(1992)3-44.
     
-  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3. : -1./3.; 
   double giL   = up_type ? guL_/2.  : gdL_/2.; 
   double giR   = up_type ? guR_/2.  : gdR_/2.; 
@@ -2810,7 +2912,7 @@ double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
 
   ctt_i *= 8.*Fij2_/gW_/gW_;
   cts_i *= sqrt(8.*Fij2_/gW_/gW_);
-  if(ab_->id()!=-bb_->id()) {
+  if(quark_->id()!=-antiquark_->id()) {
     cts_i = 0./GeV2;
     css_i = 0./GeV2/GeV2;
   }
@@ -2877,7 +2979,7 @@ double MEPP2VVPowheg::M_V_regular_WW(real2to3Kinematics S) const {
 // t_u_M_R_qqb is the real emission q + qb -> n + g matrix element 
 // exactly as defined in Eqs. C.1 of NPB 383(1992)3-44, multiplied by
 // tk * uk!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(realVVKinematics R) const {
   // First the Born variables:
   Energy2 s2(R.s2r());
   Energy2 mW2(R.k12r());
@@ -2893,7 +2995,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
   Energy2 w1(R.w1r());
   Energy2 w2(R.w2r());
 
-  bool up_type = abs(ab_->id())%2==0 ? true : false;
+  bool up_type = abs(quark_->id())%2==0 ? true : false;
   double Qi    = up_type ? 2./3. : -1./3.; 
   double giL   = up_type ? guL_/2.  : gdL_/2.; 
   double giR   = up_type ? guR_/2.  : gdR_/2.; 
@@ -2909,7 +3011,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
 
   ctt_i *= 8.*Fij2_/gW_/gW_;
   cts_i *= sqrt(8.*Fij2_/gW_/gW_);
-  if(ab_->id()!=-bb_->id()) {
+  if(quark_->id()!=-antiquark_->id()) {
     cts_i = 0./GeV2;
     css_i = 0./GeV2/GeV2;
   }
@@ -3010,18 +3112,18 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_WW(real2to3Kinematics R) const {
 
 /***************************************************************************/
 // The game here is to get this helicity amplitude squared to return all the
-// same values as t_u_M_R_qqb above!
-Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const {
+// same values as t_u_M_R_qqb above, TIMES a further factor tk*uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
   using namespace ThePEG::Helicity;
 
-  qqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1,
-					      PDT::Spin1));
+//   qqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+// 					      PDT::Spin1,PDT::Spin1,
+// 					      PDT::Spin1));
 
   double sum_hel_amps_sqr(0.);
 
-  tcPDPtr p1data(ab_);
-  tcPDPtr p2data(bb_);
+  tcPDPtr p1data(quark_);
+  tcPDPtr p2data(antiquark_);
   tcPDPtr k1data(mePartonData()[2]);
   tcPDPtr k2data(mePartonData()[3]);
   tcPDPtr kdata(getParticleData(ParticleID::g));
@@ -3068,8 +3170,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const {
     else
       for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
-  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(ab_);
-  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(bb_);
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
 
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
@@ -3078,12 +3180,12 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(scale(),5,ab_,q[p1hel],g[khel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(scale(),5,bb_,qb[p2hel],g[khel]);
+	    SpinorWaveFunction    p1_k  = ffg->evaluate(scale(),5,p1data,q[p1hel],g[khel]);
+	    SpinorBarWaveFunction p2_k  = ffg->evaluate(scale(),5,p2data,qb[p2hel],g[khel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_t;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
-	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? bb_ : tc[ix];
+	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
 	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(scale(),5,intermediate_t,q[p1hel],v1[k1hel]);
 	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(scale(),5,intermediate_t,qb[p2hel],v2[k2hel]);
 	      // First calculate all the off-shell fermion currents
@@ -3094,7 +3196,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const {
 		diagrams.push_back(ffg->evaluate(scale(),p1_v1,p2_v2,g[khel]));
 		diagrams.push_back(ffv2->evaluate(scale(),p1_v1,p2_k,v2[k2hel]));
 	      }
-	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? ab_ : tc[ix];
+	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
 	      SpinorWaveFunction    p1_v2 = ffv2->evaluate(scale(),5,intermediate_t,q[p1hel],v2[k2hel]);
 	      SpinorBarWaveFunction p2_v1 = ffv1->evaluate(scale(),5,intermediate_t,qb[p2hel],v1[k1hel]);
 	      // q+qb->g+v2+v1, q+qb->v2+g+v1, q+qb->v2+v1+g
@@ -3135,7 +3237,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const {
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
-	    qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+// 	    qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
@@ -3154,21 +3256,21 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const {
 
 /***************************************************************************/
 // The game here is to get this helicity amplitude squared to return all the
-// same values as t_u_M_R_qg above!
-Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(real2to3Kinematics R) const {
+// same values as t_u_M_R_qg above, TIMES a further factor tk*uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
   using namespace ThePEG::Helicity;
 
-  qg_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin1,PDT::Spin1,
-					     PDT::Spin1Half));
+//   qg_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+// 					     PDT::Spin1,PDT::Spin1,
+// 					     PDT::Spin1Half));
   
   double sum_hel_amps_sqr(0.);
 
-  tcPDPtr p1data(ab_);
+  tcPDPtr p1data(quark_);
   tcPDPtr p2data(getParticleData(ParticleID::g));
   tcPDPtr k1data(mePartonData()[2]);
   tcPDPtr k2data(mePartonData()[3]);
-  tcPDPtr kdata(bb_->CC());
+  tcPDPtr kdata (antiquark_->CC());
   if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
 
   SpinorWaveFunction qinSpinor(R.p1r(),p1data,incoming);
@@ -3212,8 +3314,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(real2to3Kinematics R) const {
     else
       for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
-  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(ab_);
-  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(bb_);
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
 
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
@@ -3222,12 +3324,12 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(real2to3Kinematics R) const {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_p2 = ffg->evaluate(scale(),5,ab_,qin[p1hel],g[p2hel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(scale(),5,bb_,qout[khel],g[p2hel]);
+	    SpinorWaveFunction    p1_p2 = ffg->evaluate(scale(),5,p1data,qin[p1hel],g[p2hel]);
+	    SpinorBarWaveFunction p2_k  = ffg->evaluate(scale(),5,kdata->CC(),qout[khel],g[p2hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
-	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? bb_ : tc[ix];
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? antiquark_ : tc[ix];
 	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(scale(),5,intermediate_q,qin[p1hel],v1[k1hel]);
 	      SpinorBarWaveFunction k_v2  = ffv2->evaluate(scale(),5,intermediate_q,qout[khel],v2[k2hel]);
 	      // First calculate all the off-shell fermion currents
@@ -3238,7 +3340,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(real2to3Kinematics R) const {
 		diagrams.push_back(ffg->evaluate(scale(),p1_v1,k_v2,g[p2hel]));
 		diagrams.push_back(ffv1->evaluate(scale(),p1_p2,k_v2,v1[k1hel]));
 	      }
-	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? ab_ : tc[ix];
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
 	      SpinorWaveFunction    p1_v2 = ffv2->evaluate(scale(),5,intermediate_q,qin[p1hel],v2[k2hel]);
               SpinorBarWaveFunction k_v1  = ffv1->evaluate(scale(),5,intermediate_q,qout[khel],v1[k1hel]);
 	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
@@ -3279,7 +3381,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(real2to3Kinematics R) const {
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
-	    qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+// 	    qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
@@ -3298,21 +3400,21 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(real2to3Kinematics R) const {
 
 /***************************************************************************/
 // The game here is to get this helicity amplitude squared to return all the
-// same values as t_u_M_R_gqb above!
-Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const {
+// same values as t_u_M_R_gqb above, TIMES a further factor tk*uk!
+Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
   using namespace ThePEG::Helicity;
 
-  gqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,
-					      PDT::Spin1,PDT::Spin1,
-					      PDT::Spin1Half));
+//   gqb_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1Half,
+// 					      PDT::Spin1,PDT::Spin1,
+// 					      PDT::Spin1Half));
   
   double sum_hel_amps_sqr(0.);
 
   tcPDPtr p1data(getParticleData(ParticleID::g));
-  tcPDPtr p2data(bb_);
+  tcPDPtr p2data(antiquark_);
   tcPDPtr k1data(mePartonData()[2]);
   tcPDPtr k2data(mePartonData()[3]);
-  tcPDPtr kdata(ab_->CC());
+  tcPDPtr kdata (quark_->CC());
   if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data);
 
   SpinorBarWaveFunction qbinSpinor(R.p2r(),p2data,incoming);
@@ -3356,8 +3458,8 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const {
     else
       for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
-  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(bb_);
-  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(ab_);
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p2data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
 
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
@@ -3366,12 +3468,12 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
 	    vector<Complex> diagrams;
-	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(scale(),5,bb_,qbin[p2hel],g[p1hel]);
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(scale(),5,ab_,qbout[khel],g[p1hel]);
+	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(scale(),5,p2data,qbin[p2hel],g[p1hel]);
+	    SpinorWaveFunction    p1_k  = ffg->evaluate(scale(),5,kdata->CC(),qbout[khel],g[p1hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
-	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? ab_ : tc[ix];
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? quark_ : tc[ix];
 	      SpinorBarWaveFunction p2_v1 = ffv1->evaluate(scale(),5,intermediate_q,qbin[p2hel],v1[k1hel]);
 	      SpinorWaveFunction    k_v2  = ffv2->evaluate(scale(),5,intermediate_q,qbout[khel],v2[k2hel]);
 	      // First calculate all the off-shell fermion currents
@@ -3383,7 +3485,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const {
 		diagrams.push_back(ffg->evaluate(scale(),k_v2,p2_v1,g[p1hel]));
 		diagrams.push_back(ffv1->evaluate(scale(),k_v2,p1_p2,v1[k1hel]));
 	      }
-	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? bb_ : tc[ix];
+	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
 	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(scale(),5,intermediate_q,qbin[p2hel],v2[k2hel]);
               SpinorWaveFunction    k_v1  = ffv1->evaluate(scale(),5,intermediate_q,qbout[khel],v1[k1hel]);
 	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
@@ -3424,7 +3526,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const {
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
-	    gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+// 	    gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}

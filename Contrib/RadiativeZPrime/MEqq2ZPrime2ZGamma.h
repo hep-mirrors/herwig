@@ -20,7 +20,7 @@ using namespace Herwig;
 
 /**
  * The MEqq2ZPrime2ZGamma class implements the matrix element for
- * \f$q\bar{q}\toZ'\to Z\gamma\f$.
+ * \f$q\bar{q}\to Z'\to Z\gamma\f$.
  *
  * @see \ref MEqq2ZPrime2ZGammaInterfaces "The interfaces"
  * defined for MEqq2ZPrime2ZGamma.

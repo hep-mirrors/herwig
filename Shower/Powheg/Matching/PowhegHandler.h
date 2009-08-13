@@ -18,6 +18,7 @@
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/MatrixElement/DiagramBase.fh"
 #include "ThePEG/PDF/PartonExtractor.h"
+#include "Herwig++/Shower/Base/CKKWVeto.h"
 
 namespace Herwig {
   class PowhegHandler;
@@ -104,7 +105,8 @@ public:
   PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOpt(0), 
 		    _highestMult(false), _testSudakovs(false), _qtildeDist( false ),
 		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), 
-		    _clusterOption( 0 ),  _rejectNonAO( true ), _dalitzOn( false ) {}
+		    _clusterOption( 0 ),  _rejectNonAO( true ), _rejectNoHistories( true ),_dalitzOn( false ), _pdfScale( 91.18*GeV ),
+		    _dynamicSuds( false ) {}
 
   /**
    * Perform CKKW reweighting
@@ -135,7 +137,6 @@ public:
   inline bool highestMult(){
     return _highestMult;
   }
-
   /**
    *  access to the jet measure definition being used
    */
@@ -247,7 +248,7 @@ private:
    * to _all_branchings and returns the pointer
    */
    HardBranchingPtr getCluster( pair< ShowerParticlePtr, ShowerParticlePtr >, 
-			       map< ShowerParticlePtr, HardBranchingPtr >, bool incoming );
+				map< ShowerParticlePtr, HardBranchingPtr >, bool incoming );
 
   /**
    *checks whether a prototree containing the same branchings exists already in _proto_trees in 
@@ -276,7 +277,7 @@ private:
 
   HardTreePtr generalClustering();
   BranchingElement allowedFinalStateBranching( pair< PrototypeBranchingPtr, PrototypeBranchingPtr > & );
-  BranchingElement allowedFinalStateBranching( ShowerParticlePtr &, ShowerParticlePtr & );
+  BranchingElement allowedFinalStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & );
   BranchingElement allowedInitialStateBranching( pair< PrototypeBranchingPtr, PrototypeBranchingPtr > & );
   BranchingElement allowedInitialStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & );
 
@@ -294,9 +295,14 @@ private:
    *  Calculate the Sudakov weight
    */
   double sudakovWeight( HardTreePtr );
-  
-  /**                                                                                                                                                       
-   *  Calculate the splitting function weight                                                                                                                          
+  /**
+   *  Calculate the PDF weight
+   */
+  double pdfWeight( HardTreePtr );
+
+ 
+  /**
+   *  Calculate the splitting function weight
    */
   double splittingFnWeight( HardTreePtr );
 
@@ -420,6 +426,11 @@ private:
    */
   bool _highestMult;
 
+  /**
+   *  Whether we are treating an event with no shower interpretation
+   */
+  bool _noShowerHists;
+
   /**                                                                                                   
    *  Whether the sudakovs should be tested                                                                    
    */
@@ -502,6 +513,12 @@ private:
   bool _rejectNonAO;
 
   /**
+   * whether to reject events (true) for which there is no parton shower interpretation
+   * or just shower them with no reweighting
+   */
+  bool _rejectNoHistories;
+
+  /**
    * switch for dalitz analysis of hard tree clustering (3 jets only)
    */
   bool _dalitzOn;
@@ -545,6 +562,32 @@ private:
    * The Cuts object to be used for this reader.
    */
   CutsPtr cuts_;
+  
+  /**
+   * The fixed factorization scale used in the MEs.
+   */
+  Energy _pdfScale;
+
+  /**
+   * The first beam.
+   */
+  Ptr<BeamParticleData>::pointer _beamA;
+
+  /**
+   * The second beam.
+   */
+  Ptr<BeamParticleData>::pointer _beamB;
+
+  /**
+   * The veto applied to the shower.
+   */
+  Ptr<CKKWVeto>::pointer _showerVeto;
+
+  /**
+   * Whether to generate the Sudakov reweighting via event vetoes
+   */
+  bool _dynamicSuds;
+
 };
 
 }
@@ -577,7 +620,7 @@ struct ClassTraits<Herwig::PowhegHandler>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwPowhegShower.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegME.so HwPowhegShower.so"; }
 };
 
 /** @endcond */

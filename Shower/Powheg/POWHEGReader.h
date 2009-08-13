@@ -138,7 +138,7 @@ struct ClassTraits<Herwig::POWHEGReader>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwPOWHEG.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegME.so HwPowhegShower.so"; }
 };
 
 /** @endcond */

@@ -47,10 +47,10 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
       Axis axis(p_bb.vect().unit());
       LorentzRotation rot;
       if(axis.perp2()>0.) {
-	double sinth(sqrt(1.-sqr(axis.z())));
-	rot.setRotate(-acos(axis.z()),
+    	double sinth(sqrt(1.-sqr(axis.z())));
+    	rot.setRotate(-acos(axis.z()),
 		      Axis(-axis.y()/sinth,axis.x()/sinth,0.));
-	vect.transform(rot);
+    	vect.transform(rot);
       }
       else if(axis.z()<0.) {
 	vect.setZ(vect.z());
@@ -58,7 +58,7 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
       _phi= atan2(vect.y(),vect.x());
       if(_phi<0.)                         _phi+=Constants::twopi;
       if(_children[1]->_status==Incoming) _phi+=Constants::pi;
-    }
+    }      
     else {
       const Boost beta_bb = -pVector().boostVector();
       Lorentz5Momentum p_bb = pVector();
@@ -91,11 +91,11 @@ HardBranching::HardBranching(ShowerParticlePtr particle, SudakovPtr sudakov,
 {}
 
 void HardBranching::fixColours() {
-  if(!_sudakov) return;
+  if(_status!=Incoming && !_sudakov) return;
   if(_status==Outgoing && _children.empty()) return;
   if(_status==Incoming && !_parent) return;
   if(_status==Incoming)
-    _sudakov->splittingFn()->
+    _parent->sudakov()->splittingFn()->
       colourConnection(_parent->_particle,_particle,
 		       _parent->children()[1]->_particle,true);
   else

@@ -7,7 +7,7 @@
 
 #include "Herwig++/MatrixElement/Hadron/MEPP2VV.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "Herwig++/MatrixElement/Powheg/NLO2to2Kinematics.h"
+#include "Herwig++/MatrixElement/Powheg/VVKinematics.h"
 #include "Herwig++/Utilities/Maths.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
 
@@ -119,7 +119,7 @@ public:
   /**
    * Function to set the born variables. 
    */
-  void getKinematics(double xt, double y);
+  void getKinematics(double xt, double y, double theta2);
 
   /**
    * Calculate the correction weight with which leading-order
@@ -131,24 +131,24 @@ public:
    * Calculate the ratio of the NLO luminosity to the LO
    * luminosity function for the \f$q\bar{q}\f$ initiated channel. 
    */
-  double Lhat_ab(tcPDPtr a, tcPDPtr b, real2to3Kinematics Kinematics) const;
+  double Lhat_ab(tcPDPtr a, tcPDPtr b, realVVKinematics Kinematics) const;
 
   /**
    * Calculate the universal soft-virtual contribution to the NLO weight. 
    */
-  double Vtilde_universal(real2to3Kinematics S) const;
+  double Vtilde_universal(realVVKinematics S) const;
 
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
    * contribution.
    */
-  double Ctilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,real2to3Kinematics C) const;
+  double Ctilde_Ltilde_qq_on_x(tcPDPtr a,tcPDPtr b,realVVKinematics C) const;
 
   /**
    * Function for calculation of the \f$gq\f$ initiated real
    * contribution.
    */
-  double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,real2to3Kinematics C) const;
+  double Ctilde_Ltilde_gq_on_x(tcPDPtr a,tcPDPtr b,realVVKinematics C) const;
 
   /**
    * Function for calculation of the \f$q\bar{q}\f$ initiated real
@@ -174,43 +174,43 @@ public:
    * 3-44 *** modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_V_regular(real2to3Kinematics S) const;
+  double M_V_regular(realVVKinematics S) const;
   mutable double M_V_regular_;
 
   /**
    * The matrix element q + qb -> n + g times tk*uk 
    */
-  Energy2 t_u_M_R_qqb(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_qqb(realVVKinematics R) const;
   mutable Energy2 t_u_M_R_qqb_;
 
   /**
    * The matrix element q + g  -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_qg(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_qg(realVVKinematics R) const;
   mutable Energy2 t_u_M_R_qg_;
 
   /**
    * The matrix element g + qb -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_gqb(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_gqb(realVVKinematics R) const;
   mutable Energy2 t_u_M_R_gqb_;
 
   /**
-   * The matrix element q + qb -> n + g times tk*uk - using helicity amplitudes
+   * The matrix element q + qb -> n + g times (tk*uk)^2 - using helicity amplitudes
    */
-  Energy2 t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_qqb_hel_amp(realVVKinematics R) const;
   mutable Energy2 t_u_M_R_qqb_hel_amp_;
 
   /**
-   * The matrix element q + g -> n + q times tk*uk - using helicity amplitudes
+   * The matrix element q + g -> n + q times (tk*uk)^2 - using helicity amplitudes
    */
-  Energy2 t_u_M_R_qg_hel_amp(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_qg_hel_amp(realVVKinematics R) const;
   mutable Energy2 t_u_M_R_qg_hel_amp_;
 
   /**
-   * The matrix element g + qb -> n + qb times tk*uk - using helicity amplitudes
+   * The matrix element g + qb -> n + qb times (tk*uk)^2 - using helicity amplitudes
    */
-  Energy2 t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_gqb_hel_amp(realVVKinematics R) const;
   mutable Energy2 t_u_M_R_gqb_hel_amp_;
 
   /**
@@ -218,7 +218,7 @@ public:
    * (1992) *** modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_Born_WZ(born2to2Kinematics B) const;
+  double M_Born_WZ(bornVVKinematics B) const;
   mutable double M_Born_;
 
   /**
@@ -226,7 +226,7 @@ public:
    * (1991) *** modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_Born_ZZ(born2to2Kinematics B) const;
+  double M_Born_ZZ(bornVVKinematics B) const;
 
   /**
    * M_V_regular_ZZ is the regular part of the one-loop ZZ matrix element 
@@ -234,7 +234,7 @@ public:
    * modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_V_regular_ZZ(real2to3Kinematics S) const;
+  double M_V_regular_ZZ(realVVKinematics S) const;
 
   /**
    * t_u_M_R_qqb_ZZ is the q + qb -> n + g times tk*uk real emission 
@@ -242,14 +242,14 @@ public:
    * modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  Energy2 t_u_M_R_qqb_ZZ(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_qqb_ZZ(realVVKinematics R) const;
 
   /**
    * The Born matrix element as given in Equation 3.2 - 3.8 in NPB 410 
    * (1993) *** modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_Born_WW(born2to2Kinematics B) const;
+  double M_Born_WW(bornVVKinematics B) const;
 
   /**
    * M_V_regular_WW is the regular part of the one-loop WW matrix element 
@@ -257,7 +257,7 @@ public:
    * modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  double M_V_regular_WW(real2to3Kinematics S) const;
+  double M_V_regular_WW(realVVKinematics S) const;
 
   /**
    * t_u_M_R_qqb_WW is the q + qb -> n + g times tk*uk real emission 
@@ -265,7 +265,7 @@ public:
    * modulo a factor 1/(2s) ***, which is a flux factor that 
    * those authors absorb in the matrix element. 
    */
-  Energy2 t_u_M_R_qqb_WW(real2to3Kinematics R) const;
+  Energy2 t_u_M_R_qqb_WW(realVVKinematics R) const;
 
   /**
    * Return the renormalisation scale.
@@ -311,6 +311,12 @@ private:
   //@{
 
   /**
+   * Parameter to determine when to use limiting value of real emission
+   * matrix elements, to avoid rounding error issues.
+   */
+  double tiny;
+
+  /**
    *  The BeamParticleData object for the plus and minus direction hadrons
    */
   Ptr<BeamParticleData>::transient_const_pointer hadron_A_;
@@ -319,42 +325,48 @@ private:
   /**
    * Born / virtual 2->2 kinematics.
    */
-  born2to2Kinematics B_;
+  bornVVKinematics B_;
 
   /**
    * Soft limit of the 2->3 real emission kinematics.
    */
-  real2to3Kinematics S_;
+  realVVKinematics S_;
 
   /**
    * Soft-collinear limit of the 2->3 kinematics (emission in +z direction).
    */
-  real2to3Kinematics SCp_;
+  realVVKinematics SCp_;
 
   /**
    * The collinear limit of the 2->3 kinematics (emission in -z direction).
    */
-  real2to3Kinematics SCm_;
+  realVVKinematics SCm_;
 
   /**
    * The collinear limit of the 2->3 kinematics (emission in +z direction).
    */
-  real2to3Kinematics Cp_;
+  realVVKinematics Cp_;
 
   /**
    * The collinear limit of the 2->3 kinematics (emission in -z direction).
    */
-  real2to3Kinematics Cm_;
+  realVVKinematics Cm_;
 
   /**
    * The resolved 2->3 real emission kinematics:
    */
-  real2to3Kinematics H_;
+  realVVKinematics H_;
 
   /**
    *  The ParticleData object for the plus and minus lo partons
    */
   tcPDPtr ab_, bb_;
+
+  /**
+   *  The ParticleData object for the quark and antiquark 
+   *  (which can be in a different order to ab_ and bb_).
+   */
+  tcPDPtr quark_, antiquark_;
 
   /**
    *  Flag indicating if the q & qbar are flipped or not i.e. this

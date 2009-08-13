@@ -18,6 +18,8 @@
 #include <queue>
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/PartonExtractor.h"
+#include "ThePEG/PDF/BeamParticleData.h"
+#include "ThePEG/PDF/PDF.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Utilities/Throw.h"
 
@@ -37,7 +39,8 @@ void PowhegHandler::persistentOutput(PersistentOStream & os) const {
       << _reweightOpt << _testSudakovs << _alphaSMG << _npoint 
       <<  ounit( _max_qtilde, GeV ) <<  ounit( _max_pt_cut, GeV ) 
       <<  ounit( _min_pt_cut, GeV ) << _clusterOption << _dalitzOn 
-      << _qtildeDist << _rejectNonAO << partonExtractor_ << cuts_;
+      << _qtildeDist << _rejectNonAO << _rejectNoHistories << partonExtractor_ << cuts_
+      << ounit( _pdfScale, GeV ) << _beamA << _beamB << _showerVeto << _dynamicSuds;
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
@@ -46,7 +49,8 @@ void PowhegHandler::persistentInput(PersistentIStream & is, int) {
       >> _reweightOpt >> _testSudakovs  >> _alphaSMG >> _npoint 
       >> iunit( _max_qtilde, GeV ) >> iunit( _max_pt_cut, GeV ) 
       >> iunit( _min_pt_cut, GeV ) >> _clusterOption >> _dalitzOn 
-      >> _qtildeDist >> _rejectNonAO >> partonExtractor_ >> cuts_;
+      >> _qtildeDist >> _rejectNonAO >> _rejectNoHistories >> partonExtractor_ >> cuts_
+      >> iunit( _pdfScale, GeV ) >> _beamA >> _beamB >> _showerVeto >> _dynamicSuds;
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -159,12 +163,12 @@ void PowhegHandler::Init() {
   static SwitchOption interfaceReweightOn
     (interfaceReweight,
      "On",
-     "Do Sudakov reweighting",
+     "Full reweighting",
      0);
   static SwitchOption interfaceReweightNoSud
     (interfaceReweight,
      "NoSud",
-     "alphaS reweighting only",
+     "alphaS and pdf reweighting only",
      2);
 
   static Switch<PowhegHandler,bool> interfaceTestSudakov
@@ -258,6 +262,7 @@ void PowhegHandler::Init() {
      "On",
      "Qtilde analysis on",
      true);
+
  static Switch<PowhegHandler,bool> interfaceReject
     ("RejectNonOrdered",
      "Whether to reject non angular ordered cluster histories",
@@ -274,6 +279,21 @@ void PowhegHandler::Init() {
      "Select a history for non angular ordered events",
      false);
 
+  static Switch<PowhegHandler,bool> interfaceRejectNoHist
+    ("RejectNoHistories",
+     "Whether to reject events with no shower interpretation",
+     &PowhegHandler::_rejectNoHistories, true, false, false);
+  static SwitchOption interfaceRejectNoHistYes
+    (interfaceRejectNoHist,
+     "Reject",
+     "Reject all events with no shower interpretation",
+     true);
+  static SwitchOption interfaceRejectNoHistNo
+    (interfaceRejectNoHist,
+     "Shower",
+     "Shower events with no shower interpretation directly",
+     false);
+
   static Reference<PowhegHandler,Cuts> interfaceCuts
     ("Cuts",
      "The Cuts object to be used for this reader. Note that these "
@@ -281,44 +301,76 @@ void PowhegHandler::Init() {
      "If no object is provided the LesHouchesEventHandler object must "
      "provide one instead.",
      &PowhegHandler::cuts_, true, false, true, true, false);
+
+  
+  static Parameter<PowhegHandler, Energy> interfacePDFScale
+    ("PDFScale",
+     "The fixed factorization scale that was used in the MEs",
+     &PowhegHandler::_pdfScale, GeV, 91.18*GeV, 1.*GeV, 1000000.*GeV,
+     false, false, Interface::limited);
+  
+  static Reference<PowhegHandler,BeamParticleData> interfaceBeamA
+    ("BeamA",
+     "The first beam",
+     &PowhegHandler::_beamA, false, false, true, false);
+  
+  static Reference<PowhegHandler,BeamParticleData> interfaceBeamB
+    ("BeamB",
+     "The second beam",
+     &PowhegHandler::_beamB, false, false, true, false);
+ 
+  
+   static Reference<PowhegHandler,CKKWVeto > interfaceShowerVeto
+    ("ShowerVeto",
+     "The veto to be applied to the shower",
+     &PowhegHandler::_showerVeto, false, false, true, false );
+ 
+   
+   static Switch<PowhegHandler, bool> ifaceDynamicSuds
+     ("DynamicSudakovs",
+      "Generate CKKW Sudakov weights dynamically from shower",
+      &PowhegHandler::_dynamicSuds, false, false, false);
+   static SwitchOption DynamicSudsFalse
+     (ifaceDynamicSuds,"No","No dynamics Sudakovs", false);
+   static SwitchOption DynamicSudsTrue
+     (ifaceDynamicSuds,"Yes","Generate dynamics Sudakovs", true);
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
-  // cluster the event
   _max_mult = maxMult;
   _s = lastXCombPtr()->lastSHat();
-
-  //calculate a global alphaS factor to ensure alphaS weight is
-  //always less than one.
-  // double alphaS_max =  _alphaS->value( sqr( _fbranchings.find( long( 1 ) )->second.second ) );
-  //simply set to 10 for now
   _global_alphaS_wgt = 10.;
-  // for( int ix = minMult; ix < maxMult; ix++ ) 
-  // _global_alphaS_wgt *= alphaS_max / _alphaSMG;
+ 
   if( _clusterOption == 0 || _clusterOption == 2 || _clusterOption == 3 )
     _theHardTree = doClusteringOrdered();
   else
     _theHardTree = doClustering();
   //if highest mult set veto def
-  // needs fixing
-//   if( _highestMult == true ) evolver()->setHighest( true );
-//   else evolver()->setHighest( false );
+  if( _highestMult == true ) _showerVeto->setHighest( true );
+  else _showerVeto->setHighest( false );
+  
+  //set the veto to veto events or emissions depending on whether Sudakovs are being generated dynamically
+  _showerVeto->setDynamicSuds( _dynamicSuds && ! _noShowerHists );
+
   // return if fails
-  if(!_theHardTree){
-    return 0.;
+  if( !_theHardTree ){
+    if( !_noShowerHists ) return 0.;
+    else return 1.; 
   }
   //call dalitz analysis if asked for
   if( _dalitzOn ) getDalitz();
   //update sub process based on _theHardTree
   updateSubProcess();
-  // compute the Sudakov and alphaS weight
 
+  // compute the Sudakov and alphaS weight
   double SudWgt = 1.;
   if(  _reweightOpt != 1 ){
     _theHardTree->findNodes();
-    SudWgt = sudakovWeight( _theHardTree );
+    SudWgt = sudakovWeight( _theHardTree );    
     if ( SudWgt / _global_alphaS_wgt > 1 ) cerr << SudWgt / _global_alphaS_wgt <<"\n";
-    return SudWgt / _global_alphaS_wgt;
+    if( isnan( SudWgt ) ) cerr<<"weight is nan\n";
+    if( isinf( SudWgt ) ) cerr<<"weight is inf\n";
+    return SudWgt;
   }
   else return 1.;
   
@@ -429,12 +481,12 @@ void PowhegHandler::doinitrun() {
   _halphaS = new_ptr(Histogram(0.,2.,100));
 
   ofstream sudFileOutput;
-  if(_sudopt==1) sudFileOutput.open(_sudname.c_str());
+  if(_sudopt==1 && _reweightOpt == 0 ) sudFileOutput.open(_sudname.c_str());
  
   // integrator for the outer integral
   GaussianIntegrator outer;
   // get the final-state branchings from the evolver
-  if(_sudopt!=2) {
+  if( _sudopt != 2 && _reweightOpt == 0 ) {
    
     for(BranchingList::const_iterator 
 	  it = evolver()->splittingGenerator()->finalStateBranchings().begin();
@@ -516,7 +568,7 @@ void PowhegHandler::doinitrun() {
     sudFileOutput.close();
   }
  
-  else {
+  else if( _reweightOpt == 0 ) {
     CFileLineReader file(_sudname);
     while(file.readline()) {
       string line = file.getline();
@@ -588,8 +640,8 @@ void PowhegHandler::doinitrun() {
       }
     }
   }
-  if( _testSudakovs ) testSudakovs();
-  if( _qtildeDist ) makeQtildeDist();
+  if( _testSudakovs && _reweightOpt == 0 ) testSudakovs();
+  if( _qtildeDist && _reweightOpt == 0 ) makeQtildeDist();
 }
 
 void PowhegHandler::doinit() {
@@ -785,9 +837,11 @@ HardBranchingPtr PowhegHandler::getCluster( pair< ShowerParticlePtr, ShowerParti
       return cit->first;
     }
   }
+  //what happens if the branching is a cc branching??
   BranchingElement theBranching;
-  if( !incoming ) theBranching = allowedFinalStateBranching( clusterPair.first, clusterPair.second );
+  if( !incoming ) theBranching = allowedFinalStateBranching( clusterPair );
   else theBranching = allowedInitialStateBranching( clusterPair );
+
   //if branching is not allowed return null hardbranching
   if( !theBranching.first ) return HardBranchingPtr();
 
@@ -824,14 +878,14 @@ HardBranchingPtr PowhegHandler::getCluster( pair< ShowerParticlePtr, ShowerParti
     clusteredBranch->backSudakov( theBranching.first );
   }
   _all_clusters.insert( make_pair( clusteredBranch, clusterPair ) );
-  //do children relations 
+  //set children relations 
    if( !incoming ){
-    clusteredBranch->addChild( theParticles.find( clusterPair.first )->second );	    
-    clusteredBranch->addChild( theParticles.find( clusterPair.second )->second );  
+     clusteredBranch->addChild( theParticles.find( clusterPair.first )->second );	    
+     clusteredBranch->addChild( theParticles.find( clusterPair.second )->second );  
    }
    else{
-    clusteredBranch->addBackChild( theParticles.find( clusterPair.first )->second );	    
-    clusteredBranch->addBackChild( theParticles.find( clusterPair.second )->second );  
+     clusteredBranch->addBackChild( theParticles.find( clusterPair.first )->second );	    
+     clusteredBranch->addBackChild( theParticles.find( clusterPair.second )->second );  
    }
   return clusteredBranch;
 }
@@ -887,10 +941,18 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   PPair theIncoming = lastXCombPtr()->subProcess()->incoming();
   _all_clusters.clear();
   _proto_trees.clear();
+  _noShowerHists = false;
+
+  //remove backChildRelations from all hardtrees - to avoid cyclic pointer relations causing memory leaks
+  for(unsigned int ix = 0; ix < _rejectedHardTrees.size(); ix++ )
+    _rejectedHardTrees[ix].first->removeBackChildren();
+  for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ )
+    _hardTrees[ix].first->removeBackChildren();
   _hardTrees.clear();
   _rejectedHardTrees.clear();
   //make an intermediate and add to subprocess if not already there (if it a photon) 
   if(lastXCombPtr()->subProcess()->intermediates().empty()) {
+    //  return HardTreePtr();
     PPair theIncomings =  lastXCombPtr()->subProcess()->incoming();
     PVector theOutgoings = lastXCombPtr()->subProcess()->outgoing();
     long intermediate_id = 22;
@@ -962,8 +1024,10 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     initialProtoTree->addBranching( ita->second );
   }
   _proto_trees.insert( initialProtoTree );
+  //fill _proto_trees with all possible trees
   fillProtoTrees( theParticles, initialProtoTree );
   double totalWeight = 0.;
+
   //create a hardtree from each proto tree and fill _hardTrees with angular ordered configs
   for( set< ProtoTreePtr >::const_iterator cit = _proto_trees.begin(); 
        cit != _proto_trees.end(); ++cit ){
@@ -1024,7 +1088,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
       cerr<<"\n\nproblem with deconstructhardjets\n\n\n";
       continue;
     }
-    //only insert angular ordered hardTrees (currently only works for FS I think)
+    //only insert angular ordered hardTrees
     if( _lepton){
       if( powhegtree->checkHardOrdering() ) {
 	//find the wgt and fill _hardTrees map
@@ -1104,6 +1168,11 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   }
   //re-do momentum deconstruction (has been overridden by other trees otherwise)
   if( !_lepton ) { 
+    if(! chosen_hardTree ){
+      if( ! _rejectNoHistories ) _noShowerHists = true;
+      return HardTreePtr();
+    }
+    assert( chosen_hardTree );
     chosen_hardTree->fixFwdBranchings();
     setBeams( chosen_hardTree );
   }
@@ -1120,7 +1189,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     return HardTreePtr();
   }
   _trees_created++;
-
+  // treeOutput(chosen_hardTree);
   return chosen_hardTree;
 }
 
@@ -1378,45 +1447,47 @@ BranchingElement PowhegHandler::
 allowedFinalStateBranching(pair<PrototypeBranchingPtr,PrototypeBranchingPtr> & br) {
   // check with normal ID's
   pair<long,long> ptest = make_pair(br.first->particle->id(),br.second->particle->id());
-  map<pair<long,long>,pair<SudakovPtr,IdList> >::const_iterator 
+  map< pair< long, long >, pair< SudakovPtr, IdList > >::const_iterator 
     split = _allowedFinal.find(ptest);
   if(split!=_allowedFinal.end()) {
     if(split->second.second[1]!=ptest.first) swap(br.first,br.second);
     return split->second;
   }
-  // check with CC
+  // check with CC ids
   if(br.first ->particle->dataPtr()->CC()) ptest.first  *= -1;
   if(br.second->particle->dataPtr()->CC()) ptest.second *= -1;
-  split = _allowedFinal.find(ptest);
-  if(split!=_allowedFinal.end()) {
-    if(split->second.second[1]!=ptest.first) swap(br.first,br.second);
+  split = _allowedFinal.find( ptest );
+  if( split != _allowedFinal.end() ) {
+    if( split->second.second[1] != ptest.first ) swap( br.first, br.second );
     return split->second;
   }
   // not found found null pointer
   return make_pair(SudakovPtr(),IdList());
 }
 
+
 BranchingElement PowhegHandler::
-allowedFinalStateBranching( ShowerParticlePtr & firstChild, ShowerParticlePtr & secondChild ) {
+allowedFinalStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & clusterPair ) {
   // check with normal ID's
-  pair< long, long > ptest = make_pair( firstChild->id(), secondChild->id() );
+  pair< long, long > ptest = make_pair( clusterPair.first->id(), clusterPair.second->id() );
   map< pair< long, long >, pair< SudakovPtr, IdList > >::const_iterator 
     split = _allowedFinal.find(ptest);
   if( split != _allowedFinal.end() ) {
-    if( abs( split->second.second[1] ) != abs( ptest.first ) ) swap( firstChild, secondChild );
+    if(  split->second.second[1] != ptest.first ) swap( clusterPair.first, clusterPair.second );
     return split->second;
   }
   // check with CC
-  if( firstChild->dataPtr()->CC() ) ptest.first  *= -1;
-  if( secondChild->dataPtr()->CC() ) ptest.second *= -1;
+  if( clusterPair.first->dataPtr()->CC() ) ptest.first  *= -1;
+  if( clusterPair.second->dataPtr()->CC() ) ptest.second *= -1;
   split = _allowedFinal.find( ptest );
   if( split != _allowedFinal.end() ) {
     //cc the idlist
+    //this will only be for qbar g clusterings
     BranchingElement ccBranch = split->second;
     if( getParticleData( ccBranch.second[0] )->CC() ) ccBranch.second[0] *= -1;
     if( getParticleData( ccBranch.second[1] )->CC() ) ccBranch.second[1] *= -1;
     if( getParticleData( ccBranch.second[2] )->CC() ) ccBranch.second[2] *= -1;
-    if( abs( ccBranch.second[1] ) != abs( ptest.first ) ) swap( firstChild, secondChild );
+    if( split->second.second[1] !=  ptest.first ) swap( clusterPair.first, clusterPair.second );
     return ccBranch;
   }
   // not found found null pointer
@@ -1827,7 +1898,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
  double SudWgt = 1.;
   //ktcut for sudakovs
   Energy kt_cut;
-  if( ! _highestMult ) kt_cut = evolver()->getVeto();
+  if( ! _highestMult ) kt_cut = _showerVeto->getVeto();
   else {
     //does this lowest pt method return something in the luc/dur jet measure?
     kt_cut = theTree->lowestPt( _jetMeasureMode, _s );
@@ -1887,12 +1958,16 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
        cit != theTree->getNodes().end(); ++cit ) {
     if( cit->first->status() == HardBranching::Incoming ) {
       alphaWgt *= _alphaS->value( sqr( cit->first->pT() ) ) / _alphaSMG;
+      if( isnan( _alphaS->value( sqr( cit->first->pT() ) ) / _alphaSMG ) ) 
+	cerr<<"nan from incoming node at scale "<< cit->first->pT() / GeV <<"\n"; 
       tcPDPtr newParent = cit->first->parent()->branchingParticle()->dataPtr();
       tcPDPtr original = cit->first->branchingParticle()->dataPtr();
     }
     else{
       if( ! cit->first->children().empty() ){
 	alphaWgt *= _alphaS->value( sqr( cit->first->children()[0]->pT() ) ) / _alphaSMG;
+	if( isnan( _alphaS->value( sqr( cit->first->children()[0]->pT() ) ) / _alphaSMG ) ) 
+	  cerr<<"nan from incoming node at scale "<< cit->first->children()[0]->pT() / GeV <<"\n"; 
       }
       else cerr << "sudakovWeight(): node with no children \n"; 
     }
@@ -1902,10 +1977,14 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
     cerr<<"  alpha wgt = "<< alphaWgt
    	<<"\n  sudWgt = "<< SudWgt<<"\n\n";
   }
+  if( isnan(alphaWgt) ) cerr<<"nan in alphaS\n";
+
+  double PDFweight = pdfWeight( theTree );
+  if( isnan( PDFweight ) ) cerr<<"nan in  pdf\n";
   if( _reweightOpt == 0 )
-    return SudWgt*alphaWgt;
+    return SudWgt*alphaWgt*PDFweight;
   else
-    return alphaWgt;
+    return alphaWgt*PDFweight;
 }
 
 void PowhegHandler::setBeams( HardTreePtr tree ) {
@@ -2492,4 +2571,67 @@ bool ProtoTree::fixFwdBranchings(){
     } 
   }
   return true;
+}
+
+double PowhegHandler::pdfWeight( HardTreePtr theHardTree){
+  if(_lepton ) return 1.;
+  // Energy2 pdf_freeze = 
+  //  sqr( ShowerHandler::currentHandler()->pdfFreezingScale() );
+  // cerr<<"freeze scale = "<< sqrt( pdf_freeze ) / GeV <<"\n";
+  double current_pdf;
+  double pdf_wgt = 1.;
+  double x_frac;
+  for( set< HardBranchingPtr >::const_iterator cit = theHardTree->branchings().begin(); 
+       cit != theHardTree->branchings().end(); ++cit ) {
+    if( (*cit)->status() !=HardBranching::Incoming ) continue;
+    //find the pdf for this line
+    HardBranchingPtr currentParticle = *cit;
+    tcPDFPtr pdf;
+    tcPDPtr beamData = currentParticle->beam()->dataPtr();
+
+    if( beamData->id() == _beamA->id() )
+      pdf = _beamA->pdf();
+    else if( beamData->id() == _beamB->id() )
+      pdf = _beamB->pdf();
+    assert(pdf);
+
+    //should also implement pdf freeze scale
+    Lorentz5Momentum beamMom = currentParticle->beam()->momentum();
+    Lorentz5Momentum otherBeam = beamMom;
+    otherBeam.setZ( -otherBeam.z() );
+    tcPDPtr theBeam = currentParticle->beam()->dataPtr();
+    tcPDPtr theParton = currentParticle->branchingParticle()->dataPtr();
+    Energy2 scale = lastXCombPtr()->lastSHat();
+    x_frac =  currentParticle->branchingParticle()->momentum() 
+      * otherBeam / ( beamMom*otherBeam );
+    //include born pdf factor (that shower would have had)
+ 
+    current_pdf = pdf->xfx( theBeam, theParton, 
+			    scale, x_frac ) / x_frac;
+    if( current_pdf <= 0. ) return 0.;
+    else pdf_wgt *= current_pdf;
+  
+    //trace line back with a fraction of pdfs for each node     
+    while( currentParticle->parent() ){
+      scale = sqr( currentParticle->parent()->scale() );
+      theParton = currentParticle->branchingParticle()->dataPtr();
+      current_pdf = pdf->xfx( theBeam, theParton, 
+			      scale, x_frac ) / x_frac;
+      if( current_pdf <= 0. ) return 1.;
+      else pdf_wgt /= current_pdf;
+
+      x_frac /= currentParticle->z();
+      currentParticle = currentParticle->parent();
+      theParton = currentParticle->branchingParticle()->dataPtr();
+      current_pdf = pdf->xfx( theBeam, theParton, 
+			      scale, x_frac ) / x_frac;
+      if( current_pdf <= 0. ) return 0.;
+      else pdf_wgt *= current_pdf;
+    }
+    //divide out the ME pdf fration
+    current_pdf = pdf->xfx( theBeam, theParton, 
+			    sqr( _pdfScale ), x_frac ) / x_frac;
+    pdf_wgt /= current_pdf;
+  }
+  return pdf_wgt;
 }

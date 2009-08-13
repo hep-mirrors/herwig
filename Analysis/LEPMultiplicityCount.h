@@ -23,7 +23,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 
-/**
+/** \ingroup Analysis
  * The LEPMultiplicityCount class is designed to count particle multiplicities and
  * compare them to LEP data.
  *

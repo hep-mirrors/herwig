@@ -65,6 +65,11 @@ public:
   }
 
   /**
+   *  Clear the backward children
+   */
+  void clearBackChildren() { _back_children.clear(); }
+
+  /**
    *  Set the momenta of the particles
    */
   void setMomenta(LorentzRotation R, double alpha, Lorentz5Momentum pt,
@@ -135,7 +140,7 @@ public:
   const Lorentz5Momentum & showerMomentum() const {return _shower;}
 
   /**
-   *  Get the momentum the particle should have as the start of a shower
+   *  Set the momentum the particle should have as the start of a shower
    */
   void showerMomentum(const Lorentz5Momentum & in ) {_shower=in;}
 
@@ -150,12 +155,12 @@ public:
   void pT(Energy in) { _pt=in;}
 
   /**
-   *  Get whether the branching is incoming or outgoing or decay
-   */  
-  Status status() {return _status;}
+   *  Get whether the branching is incoming, outgoing or decay
+   */
+  Status status() const {return _status;}
 
   /**
-   *  Set whether the branching is incoming or outgoing or decay
+   *  Set whether the branching is incoming, outgoing or decay
    */
   void status(Status in) {_status=in;}
 
@@ -300,11 +305,10 @@ private:
    */
   Energy _pt; 
 
- /**
-  *  Whether the branching is incoming, outgoing or a decay
-  */
+  /**
+   *  Whether the branching is incoming, outgoing or a decay
+   */
   Status _status;
-
 
   /**
    *  Information on the Shower variables for the branching

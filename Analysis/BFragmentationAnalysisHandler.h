@@ -21,7 +21,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The BFragmentationAnalysisHandler class is designed to compare
  * the fragmentation function for weakly decaying B hadrons with data
  * from SLD and ALEPH.

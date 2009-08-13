@@ -58,9 +58,9 @@ cd /Herwig/Generators
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
 # identified particle spectra
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
-# four jet analysis (needs KtJet installed)
+# four jet analysis (needs Fastjet installed)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
-# general jet analysis (needs KtJet installed)
+# general jet analysis (needs Fastjet installed)
 # insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
 
 ##################################################

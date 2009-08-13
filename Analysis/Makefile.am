@@ -43,35 +43,24 @@ IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.h\
 BELLECharmAnalysis.h BELLECharmAnalysis.cc\
 CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 
-if HAVE_HEPMC
-pkglib_LTLIBRARIES += HwHepMCAnalysis.la
-HwHepMCAnalysis_la_LDFLAGS = -module -version-info 1:0:0
-HwHepMCAnalysis_la_SOURCES = \
-GraphvizPlot.h GraphvizPlot.cc \
-HepMCFile.h    HepMCFile.cc
-HwHepMCAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(HEPMCINCLUDE)
-HwHepMCAnalysis_la_LIBADD = $(HEPMCLIBS)
-endif
-
-
-# analysis code which depends on ktjet
-if WANT_LIBKTJET
+# analysis code which depends on fastjet
+if WANT_LIBFASTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
 HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 5:0:0
-HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS) $(CLHEPLIB)
+HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
+-I$(FASTJETPATH)
+HwLEPJetAnalysis_la_LIBADD = $(FASTJETLIBS) 
 HwLEPJetAnalysis_la_SOURCES = \
-LEPFourJetsAnalysis.cc\
-LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
-LEPJetAnalysis.cc LEPJetAnalysis.h \
+LEPJetAnalysis.cc LEPJetAnalysis.h\
+LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.h \
 y23.cc y23.h
 
-pkglib_LTLIBRARIES += HwPP2HAnalysis.la
-HwPP2HAnalysis_la_LDFLAGS = -module -version-info 4:0:0
-HwPP2HAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
-HwPP2HAnalysis_la_LIBADD = $(KTJETLIBS) $(CLHEPLIB)
-HwPP2HAnalysis_la_SOURCES = \
-PP2HAnalysis.cc PP2HAnalysis.h 
+#pkglib_LTLIBRARIES += HwPP2HAnalysis.la
+#HwPP2HAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+#HwPP2HAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
+#HwPP2HAnalysis_la_LIBADD = $(KTJETLIBS) $(CLHEPLIB)
+#HwPP2HAnalysis_la_SOURCES = \
+#PP2HAnalysis.cc PP2HAnalysis.h 
 endif
 
 pkglib_LTLIBRARIES += HwZpt.la

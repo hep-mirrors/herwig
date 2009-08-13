@@ -123,6 +123,14 @@ public:
 
   void showerRot( LorentzRotation r ) { _showerRot = r; }
 
+  /**
+   * Remove all back child relations
+   * Needs to be done once a hardTree has been selected or rejected 
+   * (i.e. once back child relations are no longer required) so that
+   * memory leaks associated with cyclic pointer relations are avoided.
+   */
+  void removeBackChildren();
+
 private:
 
   /**
@@ -211,10 +219,10 @@ private:
 
 };
 
-/**
- *  Output operator for testing
- */
-ostream & operator << (ostream &, const HardTree & );
+  /**
+   *  Output operator for testing
+   */
+  ostream & operator << (ostream &, const HardTree & );
 
 }
 

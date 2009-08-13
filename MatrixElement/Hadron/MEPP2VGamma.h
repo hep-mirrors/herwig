@@ -118,9 +118,9 @@ public:
 protected:
   
   /**
-   * Matrix element for \f$f\bar{f}\toW^\pm \gamma\f$.
+   * Matrix element for \f$f\bar{f}\to W^\pm \gamma\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
+   * @param a1  Spinors for the incoming antifermion
    * @param v1  \f$W^\pm\f$ wavefunction
    * @param v2  \f$\gamma\f$ wavefunction
    * @param me  Whether or not to calculate the matrix element for spin correlations
@@ -132,9 +132,9 @@ protected:
 		  bool me) const;
   
   /**
-   * Matrix element for \f$f\bar{f}\toZ^0 \gamma\f$.
+   * Matrix element for \f$f\bar{f}\to Z^0 \gamma\f$.
    * @param f1  Spinors for the incoming fermion
-   * @param f2  Spinors for the incoming antifermion
+   * @param a1  Spinors for the incoming antifermion
    * @param v1  \f$Z^0\f$ wavefunction
    * @param v2  \f$\gamma\f$ wavefunction
    * @param me  Whether or not to calculate the matrix element for spin correlations

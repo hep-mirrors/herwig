@@ -14,16 +14,14 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "Herwig++/Interfaces/KtJetInterface.h"
-#include "KtJet/KtJet.h"
-#include "KtJet/KtLorentzVector.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**
- * Here is the documentation of the LEPJetAnalysis class.
+/** \ingroup Analysis
+ * The LEPJetAnalysis class compares the results of Heriwg++ with LEP data for
+ * various jet distributions.
  *
  * @see \ref LEPJetAnalysisInterfaces "The interfaces"
  * defined for LEPJetAnalysis.
@@ -138,11 +136,6 @@ private:
    */
   HistogramPtr _y56;
   //@}
-
-  /**
-   *  The interface between Herwig++ and KtJet
-   */
-  Herwig::KtJetInterface _kint;
 
   /**
    *  Bins for the y fractions
@@ -276,7 +269,7 @@ struct ClassTraits<Herwig::LEPJetAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "libfastjet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

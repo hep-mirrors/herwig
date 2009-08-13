@@ -447,7 +447,6 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     // check if need to boost to rest frame
     bool gottaBoost = (boosttorest.mag() > 1e-12);
     // if initial state radiation reconstruct the jet and set up the basis vectors
-    bool initialrad=false;
     Lorentz5Momentum pjet;
     Lorentz5Momentum nvect;
     // find the partner
@@ -470,7 +469,6 @@ reconstructDecayJets(ShowerTreePtr decay) const {
     // if ISR
     if(radiated[0]) {
       // reconstruct the decay jet
-      initialrad=true;
       reconstructDecayJet(initial->progenitor());
       // momentum of decaying particle after ISR
       pjet=initial->progenitor()->momentum()

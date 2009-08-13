@@ -5,9 +5,12 @@
 // This is the declaration of the VVHardGenerator class.
 //
 
-#include "Herwig++/Shower/Powheg/HardestEmissionGenerator.h"
+#include "Herwig++/Shower/Base/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/MatrixElement/Powheg/VVKinematics.h"
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 
 namespace Herwig {
 
@@ -97,6 +100,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
@@ -110,10 +123,10 @@ protected:
    * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
    * @param emis_type the type of emission,
    * (0 is \f$q\bar{q}\to Vg\f$, 1 is \f$qg\to Vq\f$ and 2 is \f$g\bar{q}\to V\bar{q}\f$)
-   * @param pt The transverse momentum of the jet
+   * @param pT The transverse momentum of the jet
    * @param yj The rapidity of the jet
    */
-  double getResult(int emis_type, Energy pt, double yj);
+  double getResult(int emis_type, realVVKinematics R, Energy pT);
  
   /**
    *  generates the hardest emission (yj,p)
@@ -129,23 +142,36 @@ protected:
 //    */
 //   virtual void constructVertex(tSubProPtr);
 
-//   /**
-//    * The matrix element q + qb -> n + g times tk*uk - using helicity amplitudes
-//    */
-//   Energy2 t_u_M_R_qqb_hel_amp(real2to3Kinematics R) const;
-//   mutable Energy2 t_u_M_R_qqb_hel_amp_;
+  /**
+   *  sets the QCD, EW and PDF scales
+   * @param pT The pT of the current step in the veto algorithm
+   */
+  void setTheScales(Energy pT);
 
-//   /**
-//    * The matrix element q + g -> n + q times tk*uk - using helicity amplitudes
-//    */
-//   Energy2 t_u_M_R_qg_hel_amp(real2to3Kinematics R) const;
-//   mutable Energy2 t_u_M_R_qg_hel_amp_;
+  /**
+   * The matrix element q + qb -> n + g times tk*uk 
+   */
+  Energy2 t_u_M_R_qqb_hel_amp(realVVKinematics R) const;
 
-//   /**
-//    * The matrix element g + qb -> n + qb times tk*uk - using helicity amplitudes
-//    */
-//   Energy2 t_u_M_R_gqb_hel_amp(real2to3Kinematics R) const;
-//   mutable Energy2 t_u_M_R_gqb_hel_amp_;
+
+  /**
+   * The matrix element q + g  -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_qg_hel_amp(realVVKinematics R) const;
+
+  /**
+   * The matrix element g + qb -> n + q times tk*uk 
+   */
+  Energy2 t_u_M_R_gqb_hel_amp(realVVKinematics R) const;
+
+  /**
+   * The matrix element for the kinematical configuration
+   * previously provided by the last call to setKinematics(), suitably
+   * scaled by sHat() to give a dimension-less number.
+   * @return the matrix element scaled with sHat() to give a
+   * dimensionless number.
+   */
+  double lo_me() const;
 
 private:
 
@@ -164,9 +190,44 @@ private:
 private:
 
   /**
+   * Born / virtual 2->2 kinematics.
+   */
+  bornVVKinematics B_;
+
+  /**
+   * The colour & spin averaged n-body (leading order) matrix element squared.
+   */
+  double lo_me_;
+
+  /**
+   * The resolved 2->3 real emission kinematics.
+   */
+  realVVKinematics R_;
+
+  /**
+   * The radiative variable \tilde{x}.
+   */
+  double xt_;
+
+  /**
+   * The lower bound on the x integration \bar{x}. 
+   */
+  double xbar_;
+
+  /**
+   * The radiative variable y.
+   */
+  double y_;
+
+  /**
+   * The radiative variable theta_{2}.
+   */
+  double theta2_;
+
+  /**
    *  Pointer to the object calculating the strong coupling
    */
-  ShowerAlphaPtr _alphaS;
+  ShowerAlphaPtr alphaS_;
 
   /**
    *  Constants for the sampling. The distribution is assumed to have the
@@ -176,27 +237,27 @@ private:
   /**
    * The power, \f$n\f$, for the sampling
    */
-  double _power;
+  double power_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
    */
-  double _preqqbar;
+  double preqqbar_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
    */
-  double _preqg;
+  double preqg_;
 
   /**
    *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
    */
-  double _pregqbar;
+  double pregqbar_;
 
   /**
    *  The prefactors as a vector for easy use
    */
-  vector<double> _prefactor;
+  vector<double> prefactor_;
   //@}
 
   /**
@@ -204,64 +265,83 @@ private:
    */
   //@{
   /**
+   *  Pointers to the ShowerProgenitor objects for the partons
+   */
+  ShowerProgenitorPtr qProgenitor_;
+  ShowerProgenitorPtr qbProgenitor_;
+
+  /**
+   *  Pointers to the Shower particle objects for the partons
+   */
+  ShowerParticlePtr quark_;
+  ShowerParticlePtr antiquark_;
+
+  /**
    *  Pointers to the BeamParticleData objects
    */
-  vector<tcBeamPtr> _beams;
-  
-  /**
-   *  Pointers to the ParticleDataObjects for the partons
-   */
-  vector<tcPDPtr> _partons;
+  tcBeamPtr qHadron_;
+  tcBeamPtr qbHadron_;
   //@}
 
   /**
    *  Properties of the boson and jets
    */
   //@{
-  /**
-   *  The rapidity of the gauge bosons
-   */
-  double _yVV;
 
   /**
-   *  The mass of the gauge boson pair
+   *  Pointers to the Shower particle objects for the partons
    */
-  Energy _mVV;
+  tcPDPtr gluon_;
+  PPtr V1_;
+  PPtr V2_;
 
   /**
-   *  The polar angle, theta_1, of the first gauge boson w.r.t. the 
-   *  axis defined by the incoming quark (as defined in e.g. 
-   *  NPB 410(1993) 280-324
+   *  Flag indicating if the q & qbar are flipped or not i.e. this
+   *  is true if q enters from the -z direction in the lab frame.
    */
-  double _th1;
-
-  /**
-   *  The azimuthal angle theta_2 of the gauge bosons w.r.t. the axis
-   *  defined by the incoming quark in the diboson rest frame (as
-   *  defined in e.g. NPB 410(1993) 280-324).
-   */
-  double _th2;
-
-  /**
-   *  Whether the quark is in the + or - z direction
-   */
-  bool _quarkplus;
+  bool flipped_;
 
   /**
    *  the rapidity of the jet
    */
-  double _yj;
+  double Yk_;
 
   /**
    *  The transverse momentum of the jet
    */
-  Energy _pt;
+  Energy pT_;
   //@}
 
   /**
    *  The transverse momentum of the jet
    */
-  Energy _min_pt;
+  Energy min_pT_;
+
+  // Work out the scales we want to use in the matrix elements and the pdfs:
+  /**
+   * Scale for alpha_S: pT^2 of the diboson system.
+   */
+   Energy2 QCDScale_;
+
+  /**
+   * Scale for real emission PDF: 
+   */
+  Energy2 PDFScale_;
+
+  /**
+   * Scale of electroweak vertices: mVV^2 the invariant mass of the diboson system.
+   */
+  Energy2 EWScale_;
+
+  /**
+   *  The vertices
+   */
+  AbstractFFVVertexPtr FFPvertex_;
+  AbstractFFVVertexPtr FFWvertex_;
+  AbstractFFVVertexPtr FFZvertex_;
+  AbstractVVVVertexPtr WWWvertex_;
+  AbstractFFVVertexPtr FFGvertex_;
+
 };
 
 }
@@ -294,7 +374,7 @@ struct ClassTraits<Herwig::VVHardGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwPowhegShower.so"; }
+  static string library() { return "HwMEHadron.so HwPowhegME.so HwPowhegShower.so"; }
 };
 
 /** @endcond */

@@ -119,13 +119,11 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
  
 void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
   // For the time being we are considering only 1->2 branching
-  Lorentz5Momentum p, n, pthis, ppartner, pcm;
+  Lorentz5Momentum p, n, pthis, pcm;
   assert(particle.perturbative()!=2);
   if(particle.perturbative()==1) {
     // find the partner and its momentum
     ShowerParticlePtr partner=particle.partner();
-    Lorentz5Momentum ppartner(partner->momentum());
-    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     if(partner->isFinalState()) {
       Lorentz5Momentum pa = -particle.momentum()+partner->momentum();
       Lorentz5Momentum pb =  particle.momentum();

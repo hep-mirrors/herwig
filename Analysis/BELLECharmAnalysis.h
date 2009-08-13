@@ -19,7 +19,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The BELLECharmAnalysis class is designed to compared the results of
  * Herwig++ at 10.52 GeV with data from the BELLE experiment.
  *

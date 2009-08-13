@@ -15,9 +15,6 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
-#include "Herwig++/Interfaces/KtJetInterface.h"
-#include "KtJet/KtJet.h"
-#include "KtJet/KtLorentzVector.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
@@ -25,7 +22,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The LEPFourJetsAnalysis class performs analysis for four jet angles and
  * compares them to LEP data.
  *
@@ -38,13 +35,24 @@ public:
 
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
-
   /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
+   * Analyze a given Event. Note that a fully generated event
+   * may be presented several times, if it has been manipulated in
+   * between. The default version of this function will call transform
+   * to make a lorentz transformation of the whole event, then extract
+   * all final state particles and call analyze(tPVector) of this
+   * analysis object and those of all associated analysis objects. The
+   * default version will not, however, do anything on events which
+   * have not been fully generated, or have been manipulated in any
+   * way.
+   * @param event pointer to the Event to be analyzed.
+   * @param ieve the event number.
+   * @param loop the number of times this event has been presented.
+   * If negative the event is now fully generated.
+   * @param state a number different from zero if the event has been
+   * manipulated in some way since it was last presented.
    */
-  virtual void analyze(const tPVector & particles);
+  virtual void analyze(tEventPtr event, long ieve, int loop, int state);
   //@}
 
 public:
@@ -67,22 +75,52 @@ protected:
   /**
    *  Compute \f$\cos\chi_{BZ}\f$
    */
-  inline double cosChiBZ(vector<Lorentz5Momentum>);
+  inline double cosChiBZ(vector<Lorentz5Momentum> p) {
+    if (p.size() == 4) {
+      Vector3<Energy2> v1 = p[0].vect().cross(p[1].vect());
+      Vector3<Energy2> v2 = p[2].vect().cross(p[3].vect());
+      return cos(v1.angle(v2)); 
+    } 
+    else return 123;
+  }
 
   /**
    *  Compute \f$\cos\Phi_{KSW}\f$.
    */ 
-  inline double cosPhiKSW(vector<Lorentz5Momentum>);
-  
+  inline double cosPhiKSW(vector<Lorentz5Momentum> p) {
+    if (p.size() == 4) {
+      Vector3<Energy2> v1 = p[0].vect().cross(p[3].vect());
+      Vector3<Energy2> v2 = p[1].vect().cross(p[2].vect());
+      double alpha1 = v1.angle(v2);
+      v1 = p[0].vect().cross(p[2].vect());
+      v2 = p[1].vect().cross(p[3].vect());
+      double alpha2 = v1.angle(v2);
+      return cos((alpha1+alpha2)/2.);
+    } 
+    else return 123; 
+  }
+
   /**
    *  Compute \f$\cos\Theta_{NR}\f$
    */
-  inline double cosThetaNR(vector<Lorentz5Momentum>); 
+  inline double cosThetaNR(vector<Lorentz5Momentum> p) {
+    if (p.size() == 4) {
+      Vector3<Energy> v1 = p[0].vect() - p[1].vect();
+      Vector3<Energy> v2 = p[2].vect() - p[3].vect();
+      return cos(v1.angle(v2));
+    }
+    else return 123; 
+  }
 
   /**
    *  Compute \f$\cos\alpha_{34}\f$
    */
-  inline double cosAlpha34(vector<Lorentz5Momentum>); 
+  inline double cosAlpha34(std::vector<Lorentz5Momentum> p) {
+    if (p.size() == 4)
+      return cos(p[2].vect().angle(p[3].vect()));
+    else 
+      return 123; 
+  }
   //@}
 
 protected:
@@ -93,13 +131,17 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const {
+    return new_ptr(*this);
+  }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const {
+    return new_ptr(*this);
+  }
   //@}
 
 protected:
@@ -155,10 +197,6 @@ private:
    */
   HistogramPtr _cthNR;
 
-  /**
-   *  The interface between Herwig++ and KtJet
-   */
-  Herwig::KtJetInterface _kint;
 };
 
 }
@@ -187,13 +225,11 @@ struct ClassTraits<Herwig::LEPFourJetsAnalysis>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the LEPFourJetsAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwShower.so HwKtJet.so HwLEPJetAnalysis.so"; }
+  static string library() { return "libfastjet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */
 
 }
-
-#include "LEPFourJetsAnalysis.icc"
 
 #endif /* HERWIG_LEPFourJetsAnalysis_H */

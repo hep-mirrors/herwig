@@ -14,7 +14,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the FtoFFFDecayer class.
+ * The FtoFFFDecayer class provides the general matrix elements for the
+ * decay of a (anti)fermion to three (anti)fermions.
  *
  * @see \ref FtoFFFDecayerInterfaces "The interfaces"
  * defined for FtoFFFDecayer.

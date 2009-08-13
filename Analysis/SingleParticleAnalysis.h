@@ -22,7 +22,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * The SingleParticleAnalysis class performs the analysis for
  * single particle variables and is intended as a slave handler for the 
  *  EventShapesMasterAnalysis class.

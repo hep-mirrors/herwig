@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_NLO2to2Kinematics_H
-#define HERWIG_NLO2to2Kinematics_H
+#ifndef HERWIG_VVKinematics_H
+#define HERWIG_VVKinematics_H
 //
-// This is the declaration of the NLO2to2Kinematics class.
+// This is the declaration of the VVKinematics class.
 //
 
 #include "ThePEG/Vectors/Lorentz5Vector.h"
@@ -10,12 +10,12 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/** \ingroup NLO2to2Kinematics
- *  The born2to2Kinematics class is used to store information on the 
+/** \ingroup VVKinematics
+ *  The bornVVKinematics class is used to store information on the 
  *  the kinematics of the real emission processes needed for the 
  *  evaluation of matrix elements in the real part of the NLO process.
  */
-class born2to2Kinematics {
+class bornVVKinematics {
  
 private:
   /**
@@ -24,10 +24,10 @@ private:
    */
 
   // Leading order momentum fractions and associated etabar's:
-  double xpb_;
-  double etapb_;
-  double xmb_;
-  double etamb_;
+  double x1b_;
+  double eta1b_;
+  double x2b_;
+  double eta2b_;
 
   // The Born momenta according to the notation of the FMNR papers,
   // in the diboson centre of mass frame:
@@ -51,16 +51,15 @@ private:
   Energy2 k12b_;
   Energy2 k22b_;
 
-  // Polar and azimuthal angles of the dibosons in their rest frame:
+  // Polar angle of the dibosons in their rest frame:
   double theta1b_;
-  double theta2b_;
 
 public:
 
   /**
    * Default constructor 
    */
-  born2to2Kinematics();
+  bornVVKinematics();
 
   /**
    * Meaningful constructor: takes the momenta 
@@ -69,7 +68,7 @@ public:
    * / virtual process and calculates all interesting
    * Mandelstam and Born variables.
    */
-  born2to2Kinematics(vector<Lorentz5Momentum> Momenta, double xp, double xm);
+  bornVVKinematics(vector<Lorentz5Momentum> Momenta, double x1, double x2);
 
 public:
   /**
@@ -77,10 +76,10 @@ public:
    */
 
   // Leading order momentum fractions and associated etabar's:
-  inline double xpb()   const { return xpb_; }
-  inline double etapb() const { return etapb_; } 
-  inline double xmb()   const { return xmb_; }
-  inline double etamb() const { return etamb_; }
+  inline double x1b()   const { return x1b_; }
+  inline double eta1b() const { return eta1b_; } 
+  inline double x2b()   const { return x2b_; }
+  inline double eta2b() const { return eta2b_; }
 
   // The Born momenta according to the notation of the FMNR papers,
   // in the diboson centre of mass frame:
@@ -106,7 +105,6 @@ public:
 
   // Polar and azimuthal angles of the dibosons in their rest frame:
   inline double theta1b() const { return theta1b_; }
-  inline double theta2b() const { return theta2b_; }
 
   // A check to make sure that the momenta calculated from 
   // the energies and angles are equal to those of meMomenta().
@@ -116,18 +114,18 @@ public:
 
 
 
-/** \ingroup NLO2to2Kinematics
- *  The Real2to3Kinematics class is used to store information on the 
+/** \ingroup VVKinematics
+ *  The realVVKinematics class is used to store information on the 
  *  the kinematics of the real emission processes needed for the 
  *  evaluation of matrix elements in the real part of the NLO process.
  */
-class real2to3Kinematics {
+class realVVKinematics {
  
 private:
   /**
-   * The born2to2Kinematics object underlying the 2->3 kinematics.
+   * The bornVVKinematics object underlying the 2->3 kinematics.
    */
-  born2to2Kinematics bornVariables_;
+  bornVVKinematics bornVariables_;
 
   /**
    * The lower bound on the x integration.
@@ -142,12 +140,12 @@ private:
   /**
    * The momentum fraction of the parton incident from the +z direction.
    */
-  double xpr_;
+  double x1r_;
 
   /**
    * The momentum fraction of the parton incident from the -z direction.
    */
-  double xmr_;
+  double x2r_;
 
   /**
    * Invariants required for the evaluation of next-to-leading order
@@ -185,7 +183,7 @@ public:
   /**
    * Default constructor 
    */
-  real2to3Kinematics();
+  realVVKinematics();
 
   /**
    * Meaningful constructor: takes the Born variables
@@ -198,7 +196,7 @@ public:
    * of the  polar angle of the emitted gluon in the partonic 
    * CMS frame). 
    */
-  real2to3Kinematics(born2to2Kinematics bornVariables,double xt, double y);
+  realVVKinematics(bornVVKinematics bornVariables,double xt, double y, double theta2);
 
   // A check to make sure that the momenta calculated from 
   // the energies and angles are equal to those of meMomenta().
@@ -209,8 +207,8 @@ public:
    * Read-only access to all of the above member variables.
    */
 
-  // The born2to2Kinematics underlying the 2->3 kinematics
-  inline born2to2Kinematics bornVariables() const { return bornVariables_; }
+  // The bornVVKinematics underlying the 2->3 kinematics
+  inline bornVVKinematics bornVariables() const { return bornVariables_; }
 
   // The lower bound on the x integration:
   inline double xbar() const { return xbar_; }
@@ -223,12 +221,12 @@ public:
   /**
    * The momentum fraction of the parton incident from the +z direction.
    */
-  inline double xpr() const { return xpr_; }
+  inline double x1r() const { return x1r_; }
 
   /**
    * The momentum fraction of the parton incident from the -z direction.
    */
-  inline double xmr() const { return xmr_; }
+  inline double x2r() const { return x2r_; }
 
   /**
    * Invariants required for the evaluation of next-to-leading order
@@ -243,6 +241,7 @@ public:
   inline double  theta2r() const { return theta2r_; }
 
   // Then the rest:
+  inline Energy2 pT2_in_lab() const { return tkr_*ukr_/sr_; }
   inline Energy2 sr() const { return sr_; }
   inline Energy2 tkr() const { return tkr_; }   
   inline Energy2 ukr() const { return ukr_; }
@@ -266,4 +265,4 @@ public:
 
 }
 
-#endif /* HERWIG_NLO2to2Kinematics_H */
+#endif /* HERWIG_VVKinematics_H */

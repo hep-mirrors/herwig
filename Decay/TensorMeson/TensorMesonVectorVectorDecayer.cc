@@ -292,26 +292,22 @@ bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & me
   ++pit;
   int id2((**pit).id());
   int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
-  unsigned int ix(0); bool order;
+  unsigned int ix(0);
   do {
     if(id   ==_incoming[ix]) {
       if(id1==_outgoing1[ix]&&id2==_outgoing2[ix]) {
 	imode=ix;
-	order=true;
       }
       if(id2==_outgoing1[ix]&&id1==_outgoing2[ix]) {
 	imode=ix;
-	order=false;
       }
     }
     if(idbar==_incoming[ix]&&imode<0) {
       if(id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix]) {
 	imode=ix;
-	order=true;
       }
       if(id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix]) {
 	imode=ix;
-	order=false;
       }
     }
     ++ix;

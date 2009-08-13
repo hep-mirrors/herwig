@@ -13,7 +13,7 @@ ShowerTree.h ShowerTree.fh ShowerTree.cc \
 ShowerProgenitor.fh ShowerProgenitor.h \
 ShowerVeto.h ShowerVeto.fh ShowerVeto.cc \
 DurhamJetVeto.h DurhamJetVeto.cc \
-PTVeto.h PTVeto.cc\
+CKKWVeto.h CKKWVeto.cc\
 HardTree.h HardTree.fh HardTree.cc\
 HardBranching.h HardBranching.fh HardBranching.cc\
 HardestEmissionGenerator.h HardestEmissionGenerator.fh \

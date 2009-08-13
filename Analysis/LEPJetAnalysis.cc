@@ -16,25 +16,46 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Utilities/HerwigStrategy.h"
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/ClusterSequence.hh"
 
 using namespace Herwig;
 
 void LEPJetAnalysis::analyze(tEventPtr event, long, int, int ) {
   ++_nevent;
-  _kint.clearMap();
   tPVector particles;
   event->selectFinalState(back_inserter(particles));
-  KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(particles), 1, 1, 1);
+
+  //  copy fastjet particles from event record.  Templated fastjet
+  //  method might leave units ambigouos.  Loop with integer index
+  //  allows backtracing ThePEG particles if needed.
+  vector<fastjet::PseudoJet> fastjet_particles;
+
+  for (unsigned int j=0; j<particles.size(); j++) {
+    fastjet::PseudoJet p(particles[j]->momentum().x()/GeV, 
+			 particles[j]->momentum().y()/GeV, 
+			 particles[j]->momentum().z()/GeV, 
+			 particles[j]->momentum().e()/GeV);
+    p.set_user_index(j);
+    fastjet_particles.push_back(p);
+  }
+  
+  fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
+  fastjet::Strategy strategy = fastjet::Best;
+  fastjet::JetDefinition jet_def(fastjet::ee_kt_algorithm, 
+				 recomb_scheme, strategy);
+  fastjet::ClusterSequence cs(fastjet_particles, jet_def);
+  
   // ynm distributions
-  *_y23 += ev.getYMerge(2); 
-  *_y34 += ev.getYMerge(3); 
-  *_y45 += ev.getYMerge(4); 
-  *_y56 += ev.getYMerge(5); 
+  *_y23 += cs.exclusive_ymerge(2); 
+  *_y34 += cs.exclusive_ymerge(3); 
+  *_y45 += cs.exclusive_ymerge(4); 
+  *_y56 += cs.exclusive_ymerge(5); 
+
   const int entr_fr = 37;
   const int ddentr = 16;
   for(int j = 0; j<entr_fr; j++) {
-    ev.findJetsY(_yc_frac[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_yc_frac[j]);
     _njet[j] += double(Nfound);
     switch (Nfound) {	 
     case 0: break; 
@@ -48,19 +69,16 @@ void LEPJetAnalysis::analyze(tEventPtr event, long, int, int ) {
   }
   // DnD-rates 
   for(int j = 0; j<ddentr; j++) {
-    ev.findJetsY(_d2dbins[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_d2dbins[j]);
     if (Nfound == 2) _d2dN2[j]++;
   }
   for(int j = 0; j<ddentr; j++) {
-    ev.findJetsY(_d3dbins[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_d3dbins[j]);
     if (Nfound == 2) _d3dN2[j]++;
-    else if (Nfound == 3) _d3dN2[j]++;
+    else if (Nfound == 3) _d3dN3[j]++;
   }
   for(int j = 0; j<ddentr; j++) {
-    ev.findJetsY(_d4dbins[j]);
-    int Nfound = ev.getNJets();
+    int Nfound = cs.n_exclusive_jets_ycut(_d4dbins[j]);
     if (Nfound == 2) _d4dN2[j]++;
     else if (Nfound == 3) _d4dN3[j]++;
     else if (Nfound == 4) _d4dN4[j]++;

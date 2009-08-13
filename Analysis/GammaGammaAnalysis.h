@@ -20,7 +20,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/**
+/** \ingroup Analysis
  * GammaGammaAnalysis is for the analysis of events with a pair of hard
  * photons produced.  These are selected as the two highest pt photons
  * in the final state of the event.  A topdrawer file with histograms

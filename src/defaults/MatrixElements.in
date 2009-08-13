@@ -133,6 +133,23 @@ create Herwig::MENeutralCurrentDIS MEDISNC
 create Herwig::MEChargedCurrentDIS MEDISCC
 
 ##########################################################
+# Gamma-Gamma matrix elements
+##########################################################
+
+# fermion-antiferimon
+create Herwig::MEGammaGamma2ff MEgg2ff HwMEGammaGamma.so
+
+# W+ W-
+create Herwig::MEGammaGamma2WW MEgg2WW HwMEGammaGamma.so
+
+##########################################################
+# Gamma-Hadron matrix elements
+##########################################################
+
+# gamma parton -> 2 jets
+create Herwig::MEGammaP2Jets MEGammaP2Jets HwMEGammaHadron.so
+
+##########################################################
 # Set up the Subprocesses
 #
 # For e+e-

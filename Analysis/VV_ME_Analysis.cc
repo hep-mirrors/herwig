@@ -36,7 +36,7 @@ Histogram eta56_h(-6.,6.,100)   , y56_h(-5.,5.,100)   , pt56_h(0.,150.,30);
 Histogram m56_h(75.0,100.0,100) ;
 Histogram HT3456_h(0.,500.,25)  ;
 Histogram y3456_h(-4.,4.,80)    , m3456_h(0.,1000.,100);
-Histogram th1_h(0.,3.2,32)      , th2_h(-3.2,3.2,32);
+Histogram th1_h(0.,Constants::pi,32), th2_h(-Constants::pi,Constants::pi,32);
 
 VV_ME_Analysis::~VV_ME_Analysis() {}
 

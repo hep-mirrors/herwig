@@ -62,14 +62,11 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
-  
-  Energy kt_merge = _CKKWh->getMergeScale();
 
-  Energy veto_pt = kt_merge;
+  Energy veto_pt = sqrt( s );
   
-  //fixed veto - this is a shower pt
   //evolver vetoes should be set to use shower pt in highest multiplicity case
-  if(  _CKKWh->highestMult() )
+  if( _CKKWh->highestMult() && hardtree )
     veto_pt = hardtree->lowestPt( 1, s );
 
   for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
