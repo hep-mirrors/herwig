@@ -116,7 +116,7 @@ set AlphaQCD:NPAlphaS 2
 set AlphaQCD:Qmin 0.935
 set AlphaQCD:NumberOfLoops 3
 set AlphaQCD:InputOption 1
-set AlphaQCD:AlphaMZ 0.127
+set AlphaQCD:AlphaMZ 0.120
 #
 #
 # Lets set up all the splittings
@@ -129,7 +129,7 @@ create Herwig::QtoGQSplitFn QtoGQSplitFn
 # Now the Sudakovs
 create Herwig::QTildeSudakov SudakovCommon
 set SudakovCommon:Alpha AlphaQCD
-set SudakovCommon:cutoffKinScale 2.80*GeV
+set SudakovCommon:cutoffKinScale 2.650*GeV
 set SudakovCommon:PDFmax 1.0
 
 cp SudakovCommon QtoQGSudakov
@@ -151,7 +151,7 @@ set GtoQQbarSudakov:PDFmax 120.0
 
 cp SudakovCommon GtobbbarSudakov
 set GtobbbarSudakov:SplittingFunction GtoQQbarSplitFn
-set GtobbbarSudakov:PDFmax 4000.0
+set GtobbbarSudakov:PDFmax 40000.0
 
 cp SudakovCommon GtoccbarSudakov
 set GtoccbarSudakov:SplittingFunction GtoQQbarSplitFn

@@ -27,9 +27,12 @@ using ThePEG::Constants::pi;
 /** \ingroup Decay
  *
  * The FFDipole class generates radiation from a final-final dipole for
- * the generation of photons in decay by the YODA algorithm.
+ * the generation of photons in decay by the SOPTHY algorithm.
  * 
- * @see YODA
+ * @see SOPTHY 
+ * @see \ref FFDipoleInterfaces "The interfaces"
+ * defined for FFDipole.
+
  */
 class FFDipole: public Interfaced {
 

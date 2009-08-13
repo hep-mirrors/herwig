@@ -26,8 +26,8 @@ QEDRadiationHandler::QEDRadiationHandler() {
   // only include electroweak gauge bosons
   _decayingParticles.push_back( 22);
   _decayingParticles.push_back( 23);
-  _decayingParticles.push_back(-23);
   _decayingParticles.push_back( 24);
+  _decayingParticles.push_back(-24);
   // only include the charged leptons
   _decayProducts.push_back( 11);
   _decayProducts.push_back( 13);

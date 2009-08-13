@@ -61,7 +61,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 4000.0,
+     &SudakovFormFactor::pdfmax_, 35.0, 1.0, 100000.0,
      false, false, Interface::limited);
 
   static Switch<SudakovFormFactor,unsigned int> interfacePDFFactor
@@ -160,7 +160,7 @@ bool SudakovFormFactor::
 PDFVeto(const Energy2 t, const double x,
 	const tcPDPtr parton0, const tcPDPtr parton1,
 	Ptr<BeamParticleData>::transient_const_pointer beam) const {
-  tcPDFPtr pdf = tcPDFPtr();
+  tcPDFPtr pdf;
   //using the pdf's associated with the ShowerHandler assures, that
   //modified pdf's are used for the secondary interactions via 
   //CascadeHandler::resetPDFs(...)
@@ -202,7 +202,7 @@ PDFVeto(const Energy2 t, const double x,
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > maxpdf) {
     generator()->log() << "PDFVeto warning: Ratio > " << name() 
-		       << ":PDFmax (by a factor of"
+		       << ":PDFmax (by a factor of "
 		       << ratio/maxpdf <<") for " 
 		       << parton0->PDGName() << " to " 
 		       << parton1->PDGName() << "\n";
