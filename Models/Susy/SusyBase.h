@@ -319,6 +319,17 @@ private:
    */
   bool _readFile;
 
+  /**
+   * Whether or not to replace the top decay modes with those from
+   * the SLHA files
+   */
+  bool _topModesFromFile;
+
+  /**
+   *  Tolerance for branching ratios
+   */
+  double _tolerance;
+
   /*
    * Storage of the parameters.
    */

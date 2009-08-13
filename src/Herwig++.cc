@@ -17,6 +17,8 @@ int main(int argc, char * argv[]) {
     return hw.good() ? EXIT_SUCCESS : EXIT_FAILURE;
   }
   catch ( ThePEG::Exception & e ) {
+    std::cerr << argv[0] << ": ThePEG::Exception caught. "
+	      << "See logfile for details.\n";
     return EXIT_FAILURE;
   }
   catch ( std::exception & e ) {

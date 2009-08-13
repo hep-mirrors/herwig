@@ -137,7 +137,6 @@ private:
    */
   void createWidthGenerator(tPDPtr p);
 			   
-
 private:
   
   /**

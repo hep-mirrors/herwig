@@ -15,6 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Repository/Repository.h"
@@ -27,7 +28,9 @@
 
 using namespace Herwig;
 
-SusyBase::SusyBase() : _readFile(false),_tanbeta(0), _mu(ZERO), 
+SusyBase::SusyBase() : _readFile(false), _topModesFromFile(false),
+		       _tolerance(1e-6),
+		       _tanbeta(0), _mu(ZERO), 
 		       theMone(ZERO), theMtwo(ZERO),
 		       theMthree(ZERO) {}
 
@@ -65,23 +68,27 @@ void SusyBase::doinit() {
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
-  os << _readFile << theNMix << theUMix << theVMix << theWSFSFVertex 
+  os << _readFile << _topModesFromFile 
+     << theNMix << theUMix << theVMix << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
      << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
      << theGOGOHVertex << theWHHVertex << theGNGVertex
      << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
-     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
+     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
+     << _tolerance;
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
-  is >> _readFile >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
+  is >> _readFile >> _topModesFromFile
+     >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
      >> theGOGOHVertex >> theWHHVertex >> theGNGVertex
      >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
-     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
+     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
+     >> _tolerance;
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -91,6 +98,21 @@ void SusyBase::Init() {
 
   static ClassDocumentation<SusyBase> documentation
     ("This is the base class for any SUSY model.");
+
+  static Switch<SusyBase,bool> interfaceTopModes
+    ("TopModes",
+     "Whether ro use the Herwig++ SM top decays or those from the SLHA file",
+     &SusyBase::_topModesFromFile, false, false, false);
+  static SwitchOption interfaceTopModesFile
+    (interfaceTopModes,
+     "File",
+     "Take the modes from the files",
+     true);
+  static SwitchOption interfaceTopModesHerwig
+    (interfaceTopModes,
+     "Herwig",
+     "Use the SM ones",
+     false);
 
   static Reference<SusyBase,Helicity::AbstractVSSVertex> interfaceVertexWSS
     ("Vertex/WSFSF",
@@ -172,6 +194,12 @@ void SusyBase::Init() {
      "Triple higgs coupling",
      &SusyBase::theHHHVertex, false, false, true, false);
 
+  static Parameter<SusyBase,double> interfaceBRTolerance
+    ("BRTolerance",
+     "Tolerance for the sum of branching ratios to be difference from one.",
+     &SusyBase::_tolerance, 1e-6, 1e-8, 0.01,
+     false, false, Interface::limited);
+
 }
 
 void SusyBase::readSetup(istream & is) {
@@ -203,7 +231,23 @@ void SusyBase::readSetup(istream & is) {
     ifb = BaseRepository::FindInterface(*dit, "OnOff");
     ifb->exec(**dit, "set", "Off");
   }
-  
+  // if taking the top modes from the file
+  // delete the SM stuff
+  if(_topModesFromFile) {
+    PDPtr top = getParticleData(ParticleID::t);
+    top->widthGenerator(WidthGeneratorPtr());
+    top->massGenerator(MassGenPtr());
+    DecaySet::const_iterator dit = top->decayModes().begin();
+    DecaySet::const_iterator dend = top->decayModes().end();
+    for( ; dit != dend; ++dit ) {
+      const InterfaceBase * ifb = 
+	BaseRepository::FindInterface(*dit, "BranchingRatio");
+      ifb->exec(**dit, "set", "0.0");
+      ifb = BaseRepository::FindInterface(*dit, "OnOff");
+      ifb->exec(**dit, "set", "Off");
+    }
+    
+  }
   string line;
   //function pointer for putting all characters to lower case.
   int (*pf)(int) = tolower;
@@ -305,6 +349,7 @@ void SusyBase::readDecay(ifstream & ifs,
   Energy width(ZERO);
   iss >> dummy >> parent >> iunit(width, GeV);
   PDPtr inpart = getParticleData(parent);
+  if(!_topModesFromFile&&abs(parent)==ParticleID::t) return;
   if(!inpart)  {
     throw SetupException() 
     << "SusyBase::readDecay() - A ParticleData object with the PDG code "
@@ -367,7 +412,7 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
-  if( abs(brsum - 1.) > 1e-8 ) {
+  if( abs(brsum - 1.) > _tolerance ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
 	 << " from the spectrum file does not sum to 1. The branching fractions"
 	 << " will be rescaled.\n";

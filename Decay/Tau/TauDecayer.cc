@@ -16,6 +16,7 @@
 #include "TauDecayer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -144,11 +145,13 @@ int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children)
 
 
 void TauDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_gf,1/GeV2) << _modemap << _current << _wgtloc << _wgtmax << _weights;
+  os << ounit(_gf,1/GeV2) << _modemap << _current << _wgtloc << _wgtmax << _weights
+     << _polOpt << _tauMpol << _tauPpol;
 }
 
 void TauDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_gf,1/GeV2) >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights;
+  is >> iunit(_gf,1/GeV2) >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights
+     >> _polOpt >> _tauMpol >> _tauPpol;
 }
 
 ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
@@ -188,6 +191,38 @@ void TauDecayer::Init() {
      "The weights for the integration.",
      &TauDecayer::_weights,
      0, 0, 0, 0., 1., false, false, true);
+
+  static Switch<TauDecayer,bool> interfacePolarizationOption
+    ("PolarizationOption",
+     "Option of forcing the polarization of the tau leptons, N.B. you"
+     " should only use this option for making distributions for"
+     " comparision if you really know what you are doing.",
+     &TauDecayer::_polOpt, false, false, false);
+  static SwitchOption interfacePolarizationOptionDefault
+    (interfacePolarizationOption,
+     "Default",
+     "Don't force the polarization use the full spin density matrices"
+     " to get the right answer",
+     false);
+  static SwitchOption interfacePolarizationOptionForce
+    (interfacePolarizationOption,
+     "Force",
+     "Force the polarizations",
+     true);
+
+  static Parameter<TauDecayer,double> interfaceTauMinusPolarization
+    ("TauMinusPolarization",
+     "The polarization of the tau-, left=-1, right=+1 if this is forced.",
+     &TauDecayer::_tauMpol, 0.0, -1.0, 1.0,
+     false, false, Interface::limited);
+
+
+  static Parameter<TauDecayer,double> interfaceTauPlusPolarization
+    ("TauPlusPolarization",
+     "The polarization of the tau+, left=-1, right=+1 if this is forced.",
+     &TauDecayer::_tauPpol, 0.0, -1.0, 1.0,
+     false, false, Interface::limited);
+
 }
 
 // combine the currents to give the matrix element
@@ -211,6 +246,17 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
       SpinorBarWaveFunction::calculateWaveFunctions(_inbar ,_rho,
 						    const_ptr_cast<tPPtr>(&inpart),
 						    incoming);
+    if(_polOpt) {
+      _rho(0,1) = _rho(1,0) = 0.;
+      if(inpart.id()==ParticleID::tauminus) {
+	_rho(0,0) = 0.5*(1.-_tauMpol);
+	_rho(1,1) = 0.5*(1.+_tauMpol);
+      }
+      else {
+	_rho(0,0) = 0.5*(1.+_tauPpol);
+	_rho(1,1) = 0.5*(1.-_tauPpol);
+      }
+    }
     // work out the mapping for the hadron vector
     _constants = vector<unsigned int>(decay.size()+1);
     _ispin     = vector<PDT::Spin   >(decay.size());

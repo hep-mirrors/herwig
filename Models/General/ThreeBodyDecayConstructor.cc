@@ -29,11 +29,13 @@ IBPtr ThreeBodyDecayConstructor::fullclone() const {
 }
 
 void ThreeBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction;
+  os << _removeOnShell << _interopt << _widthopt << _minReleaseFraction
+     << _includeTopOnShell;
 }
 
 void ThreeBodyDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction;
+  is >> _removeOnShell >> _interopt >> _widthopt >> _minReleaseFraction
+     >> _includeTopOnShell;
 }
 
 ClassDescription<ThreeBodyDecayConstructor> 
@@ -59,6 +61,21 @@ void ThreeBodyDecayConstructor::Init() {
      "No",
      "Don't remove the diagrams",
      false);
+
+  static Switch<ThreeBodyDecayConstructor,bool> interfaceIncludeOnShellTop
+    ("IncludeOnShellTop",
+     "Include the on-shell diagrams involving t -> bW",
+     &ThreeBodyDecayConstructor::_includeTopOnShell, false, false, false);
+  static SwitchOption interfaceIncludeOnShellTopYes
+    (interfaceIncludeOnShellTop,
+     "Yes",
+     "Inlude them",
+     true);
+  static SwitchOption interfaceIncludeOnShellTopNo
+    (interfaceIncludeOnShellTop,
+     "No",
+     "Don't include them",
+     true);
 
   static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceWidthOption
     ("WidthOption",
@@ -197,8 +214,16 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       Energy mint = dit->intermediate->mass();
       if( min> ( mout[0] + mint ) &&
 	  mint > ( mout[1] + mout[2] )) {
-	if(_removeOnShell) continue;
-	else if(dit->intermediate->width()==0.*GeV) {
+	// special for top
+	if(abs(dit->incoming)==ParticleID::t&&
+	   abs(dit->intermediate->id())==ParticleID::Wplus) {
+	  if(!_includeTopOnShell) continue;
+	}
+	// general
+	else if(_removeOnShell) {
+	  continue;
+	}
+	if(dit->intermediate->width()==0.*GeV) {
 	  Throw<InitException>() 
 	    << "Trying to include on-shell diagram for "
 	    << getParticleData(dit->incoming)->PDGName() << " -> "
