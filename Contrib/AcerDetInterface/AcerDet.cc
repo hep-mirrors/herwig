@@ -8,7 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Config/HepMCHelper.h"
+#include "ThePEG/Config/HepMCHelper.h"
 
 using namespace Herwig;
 
