@@ -5,16 +5,15 @@
 //
 
 #include "ZAnalysis.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 
 ZAnalysis::ZAnalysis() : ZmassHadron_(82.,102.,100), ZmassDetector_(82.,102.,100)
 {}
-
 
 void ZAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AcerDet::analyze(event, ieve, loop, state);
@@ -24,7 +23,6 @@ void ZAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   // require opposite sign
   if(leptonID()[0]!=-leptonID()[1]) return;
   Lorentz5Momentum pz = leptonMomentum()[0]+leptonMomentum()[1];
-  pz=(*iter)->momentum();
   double mz = pz.mass()/GeV;
   ZmassDetector_ += mz;
   // hadron level
@@ -51,18 +49,6 @@ void ZAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-LorentzRotation ZAnalysis::transform(tEventPtr event) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void ZAnalysis::analyze(const tPVector & particles) {
-  AcerDet::analyze(particles);
-  // Calls analyze() for each particle.
-}
-
-void ZAnalysis::analyze(tPPtr) {}
-
 IBPtr ZAnalysis::clone() const {
   return new_ptr(*this);
 }
@@ -87,12 +73,12 @@ void ZAnalysis::Init() {
 }
 
 void ZAnalysis::dofinish() {
-  AcerDet::dofinish();
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());
   string title;
   using namespace HistogramOptions;
-  ZHadron_.topdrawOutput(outfile,Frame,"BLACK","Z mass");
-  ZHadron_.topdrawOutput(outfile,None,"RED");
+  ZmassHadron_  .topdrawOutput(outfile,Frame,"BLACK","Z mass");
+  ZmassDetector_.topdrawOutput(outfile,None,"RED");
   outfile.close();
+  AcerDet::dofinish();
 }

@@ -6,6 +6,7 @@
 //
 
 #include "AcerDet.h"
+#include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 
@@ -112,7 +113,7 @@ private:
   /**
    *  Z mass at the detector level
    */
-  Histogram ZmassHadron_;
+  Histogram ZmassDetector_;
 
 };
 
@@ -146,7 +147,7 @@ struct ClassTraits<Herwig::ZAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "ZAnalysis.so"; }
+  static string library() { return "HwAcerDet.so ZAnalysis.so"; }
 };
 
 /** @endcond */
