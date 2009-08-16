@@ -31,7 +31,11 @@ public:
   /**
    * The default constructor.
    */
-  inline DISMECorrection();
+  DISMECorrection() : _meopt(true), _initial(6.), _final(3.),
+		      _procprob(0.35),
+		      _comptonint(0.), _bgfint(0.),
+		      _sinW(0.), _cosW(0.), _mz2(0.*GeV2) 
+  {}
 
   /**
    *  Members to override those in the base class and implemented 
@@ -101,12 +105,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
   //@}
 
 protected:
@@ -117,13 +115,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -133,19 +131,19 @@ private:
    * @param xp The value of xp, output
    * @param zp The value of zp, output
    */
-  inline double generateComptonPoint(double &xp, double & zp);
+  double generateComptonPoint(double &xp, double & zp);
 
   /**
    *  Generate the values of \f$x_p\f$ and \f$z_p\f$
    * @param xp The value of xp, output
    * @param zp The value of zp, output
    */
-  inline double generateBGFPoint(double &xp, double & zp);
+  double generateBGFPoint(double &xp, double & zp);
 
   /**
    *  Calculate the coefficient A for the correlations
    */
-  inline double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout);
+  double A(tcPDPtr qin, tcPDPtr qout, tcPDPtr lin, tcPDPtr lout);
 
   /**
    *  Return the coefficients for the matrix element piece for
@@ -159,9 +157,9 @@ private:
    * @param l \f$l=2/y_B-1\f$
    * @param norm Normalise to the large $l$ value of the ME
    */
-  inline vector<double> ComptonME(double xp, double x2, double xperp,
-				  double A, double l, bool norm);
-
+  vector<double> ComptonME(double xp, double x2, double xperp,
+			   double A, double l, bool norm);
+  
   /**
    *  Return the coefficients for the matrix element piece for
    *  the QCD compton case. The output is the \f$a_i\f$ coefficients to 
@@ -175,8 +173,8 @@ private:
    * @param l \f$l=2/y_B-1\f$
    * @param norm Normalise to the large $l$ value of the ME
    */
-  inline vector<double> BGFME(double xp, double x2, double x3, double xperp,
-			      double A, double l, bool norm);
+  vector<double> BGFME(double xp, double x2, double x3, double xperp,
+		       double A, double l, bool norm);
 
 
 private:
@@ -275,45 +273,6 @@ private:
   double _l;
   //@}
 
-  /**
-   *  Testing of weights etc
-   */
-  //@{
-    /**
-   *  Number of weights greater than 1
-   */
-  unsigned int _nover;
-
-  /**
-   *  Number of attempts
-   */
-  unsigned int _ntry;
-
-  /**
-   *  Number which suceed
-   */
-  unsigned int _ngen;
-
-  /**
-   *  Maximum weight
-   */
-  pair<double,double> _maxwgt;
-
-  /**
-   *   points for the compton process
-   */
-  vector<pair<double,double> > _compton,_comptonover;
-
-  /**
-   *   points for the BGF process
-   */
-  vector<pair<double,double> > _bgf,_bgfover;
-
-  /**
-   *  Analysis of the x_B dependence
-   */
-  vector<pair<double,double> > _comptonxb,_bgfxb;
-  //@}
 };
 
 }
@@ -352,7 +311,5 @@ struct ClassTraits<Herwig::DISMECorrection>
 /** @endcond */
 
 }
-
-#include "DISMECorrection.icc"
 
 #endif /* HERWIG_DISMECorrection_H */

@@ -73,215 +73,6 @@ void DISMECorrection::doinit() {
   _bgfint = 121./9.-56./5.*r5*ath;
 }
 
-void DISMECorrection::dofinish() {
-  MECorrectionBase::dofinish();
-  string fname = generator()->filename() + string("-") + name() + string(".top");
-  ofstream outfile(fname.c_str());
-  outfile << "SET FONT DUPLEX\n";
-  outfile << "SET ORDER X Y\n";
-  outfile << "SET WINDOW X 2 9 Y 2 9\n";
-  outfile << "TITLE BOTTOM \"x0p1\"\n";
-  outfile << "CASE         \" X X\"\n";
-  outfile << "TITLE LEFT \"z0p1\"\n";
-  outfile << "CASE       \" X X\"\n";
-  outfile << "SET LIMITS X 0 1 Y 0 1\n";
-  int nfortran(0);
-  for(unsigned int ix=0;ix<_compton.size();++ix) {
-    double xp = _compton[ix].first, zp = _compton[ix].second;
-    double xpmax = (1.+4.*zp*(1.-zp))/(1.+6.*zp*(1.-zp));
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    double zpmax = 1.-2./3.*xp*(1.+b.real());
-    outfile << xp << "\t" << zp << "\n";
-    if(xp<xpmax&&zp<zpmax) ++nfortran;
-    if(ix%50000==0&&ix>0) outfile << "PLOT\n";
-  }
-  if(!_compton.empty()) outfile << "PLOT\n";
-  cerr << nfortran << " would have been accepted by FORTRAN HERWIG for the "
-       << "compton process of " << _compton.size() << " accepted by the C++\n";
-  for(double xp=0;xp<=1.001;xp+=0.01) {
-    outfile << xp << "\t" << 1./(1.+xp-sqr(xp)) << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double z=0;z<=1.001;z+=0.01) {
-    outfile << 1./(1+z*(1.-z)) << "\t" << z << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double zp=0.;zp<=1.001;zp+=0.01) {
-    outfile << (1.+4.*zp*(1.-zp))/(1.+6.*zp*(1.-zp)) << "\t" << zp << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  for(double xp=0.;xp<=1.001;xp+=0.01) {
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    outfile << xp << "\t" << 1.-2./3.*xp*(1.+b.real()) << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  outfile << "NEW FRAME\n";
-  outfile << "SET FONT DUPLEX\n";
-  outfile << "SET ORDER X Y\n";
-  outfile << "SET WINDOW X 2 9 Y 2 9\n";
-  outfile << "TITLE BOTTOM \"x0p1\"\n";
-  outfile << "CASE         \" X X\"\n";
-  outfile << "TITLE LEFT \"z0p1\"\n";
-  outfile << "CASE       \" X X\"\n";
-  outfile << "SET LIMITS X 0 1 Y 0 1\n";
-  for(unsigned int ix=0;ix<_comptonover.size();++ix) {
-    outfile << _comptonover[ix].first << "\t" << _comptonover[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT RED\n";
-  }
-  if(!_comptonover.empty()) outfile << "PLOT RED\n";
-  for(double xp=0;xp<=1.001;xp+=0.01) {
-    outfile << xp << "\t" << 1./(1.+xp-sqr(xp)) << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double z=0;z<=1.001;z+=0.01) {
-    outfile << 1./(1+z*(1.-z)) << "\t" << z << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double zp=0.;zp<=1.001;zp+=0.01) {
-    outfile << (1.+4.*zp*(1.-zp))/(1.+6.*zp*(1.-zp)) << "\t" << zp << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  for(double xp=0.;xp<=1.001;xp+=0.01) {
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    outfile << xp << "\t" << 1.-2./3.*xp*(1.+b.real()) << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  outfile << "NEW FRAME\n";
-  outfile << "SET FONT DUPLEX\n";
-  outfile << "SET ORDER X Y\n";
-  outfile << "SET WINDOW X 2 9 Y 2 9\n";
-  outfile << "TITLE BOTTOM \"x0p1\"\n";
-  outfile << "CASE         \" X X\"\n";
-  outfile << "TITLE LEFT \"z0p1\"\n";
-  outfile << "CASE       \" X X\"\n";
-  outfile << "SET LIMITS X 0 1 Y 0 1\n";
-  nfortran=0; 
-  for(unsigned int ix=0;ix<_bgf.size();++ix) {
-    double xp = _bgf[ix].first, zp = _bgf[ix].second;
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    double zpmax = 1.-2./3.*xp*(1.+b.real()),zpmin=1.-zpmax;
-    if(zp>zpmin&&zp<zpmax) ++nfortran;
-    outfile << _bgf[ix].first << "\t" << _bgf[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT\n";
-  }
-  cerr << nfortran << " would have been accepted by FORTRAN HERWIG for the "
-       << "BGF process of " << _bgf.size() << " accepted by the C++\n";
-  if(!_bgf.empty()) outfile << "PLOT\n";
-  for(double z=0;z<=1.001;z+=0.01) {
-    double xp = 2.*z/(1.+(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    double zp = 0.5* (1.-(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    outfile << xp << "\t" << zp << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double z=0;z<=1.001;z+=0.01) {
-    double xp = 2.*z/(1.+(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    double zp = 0.5* (1.-(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    outfile << xp << "\t" << 1.-zp << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double xp=0.;xp<=1.001;xp+=0.01) {
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    outfile << xp << "\t" << 1.-2./3.*xp*(1.+b.real()) << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  for(double xp=0.;xp<=1.001;xp+=0.01) {
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    outfile << xp << "\t" << +2./3.*xp*(1.+b.real()) << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  outfile << "NEW FRAME\n";
-  outfile << "SET FONT DUPLEX\n";
-  outfile << "SET ORDER X Y\n";
-  outfile << "SET WINDOW X 2 9 Y 2 9\n";
-  outfile << "TITLE BOTTOM \"x0p1\"\n";
-  outfile << "CASE         \" X X\"\n";
-  outfile << "TITLE LEFT \"z0p1\"\n";
-  outfile << "CASE       \" X X\"\n";
-  outfile << "SET LIMITS X 0 1 Y 0 1\n";
-  for(unsigned int ix=0;ix<_bgfover.size();++ix) {
-    outfile << _bgfover[ix].first << "\t" << _bgfover[ix].second << "\n";
-    if(ix%50000==0&&ix>0) outfile << "PLOT RED\n";
-  }
-  if(!_bgfover.empty()) outfile << "PLOT RED\n";
-  for(double z=0;z<=1.001;z+=0.01) {
-    double xp = 2.*z/(1.+(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    double zp = 0.5* (1.-(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    outfile << xp << "\t" << zp << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double z=0;z<=1.001;z+=0.01) {
-    double xp = 2.*z/(1.+(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    double zp = 0.5* (1.-(1.-z)+sqrt(sqr(1.+(1.-z))-4.*z*(1.-z)));
-    outfile << xp << "\t" << 1.-zp << "\n";
-  }
-  outfile << "JOIN BLUE\n";
-  for(double xp=0.;xp<=1.001;xp+=0.01) {
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    outfile << xp << "\t" << 1.-2./3.*xp*(1.+b.real()) << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  for(double xp=0.;xp<=1.001;xp+=0.01) {
-    Complex a = 10.-45.*xp+18.*sqr(xp)+3.*Complex(0.,1.)*
-      sqrt(3.*(9.+66.*xp-93.*sqr(xp)+12.*pow(xp,3)-8.*pow(xp,4)
-	       +24.*pow(xp,5)-8.*pow(xp,6)));
-    Complex b = pow(a,1./3.)*(0.5+sqrt(3.)/2.*Complex(0.,1.));
-    outfile << xp << "\t" << +2./3.*xp*(1.+b.real()) << "\n";
-  }
-  outfile << "JOIN GREEN\n";
-  outfile << "NEW FRAME\n";
-  double xB=-0.005;
-  for(unsigned int ix=0;ix<101;++ix) {
-    xB+=0.01;
-    if(_comptonxb[ix].second!=0.) 
-      outfile << xB << "\t" << _comptonxb[ix].first/_comptonxb[ix].second << "\n";
-    else
-      outfile << xB << "\t" << 0. << "\n";
-  }
-  outfile << "HIST RED\n";
-  xB=-0.005;
-  for(unsigned int ix=0;ix<101;++ix) {
-    xB+=0.01;
-    if(_bgfxb[ix].second!=0.) 
-      outfile << xB << "\t" << _bgfxb[ix].first/_bgfxb[ix].second << "\n";
-    else
-      outfile << xB << "\t" << 0. << "\n";
-  }
-  outfile << "HIST BLUE\n";
-
-
-  outfile.close();
-  if(_ntry==0) return;
-  generator()->log() << "DISMECorrection when applying the hard correction "
-		     << "generated " << _ntry << " trial emissions of which "
-		     << _ngen << " were accepted\n";
-  if(_nover==0) return;
-  generator()->log() << "DISMECorrection when applying the hard correction " 
-		     << _nover << " weights larger than one were generated of which"
-		     << " the largest was " << _maxwgt.first << " for the QCD compton"
-		     << " processes and " << _maxwgt.second << " for the BGF process\n";
-}
-
 bool DISMECorrection::canHandle(ShowerTreePtr tree,double & initial,
 				double & final,EvolverPtr) {
   // two incoming particles
@@ -312,7 +103,6 @@ bool DISMECorrection::canHandle(ShowerTreePtr tree,double & initial,
 }
 
 void DISMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
-  ++_ntry;
   // find the incoming and outgoing quarks and leptons
   ShowerParticlePtr quark[2],lepton[2];
   PPtr hadron;
@@ -462,34 +252,6 @@ void DISMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     if(p1.e()<quark[1]->dataPtr()      ->constituentMass()) return;
     if(p2.e()<quark[0]->dataPtr()->CC()->constituentMass()) return;
   }
-  // stats for weights > 1
-  if(wgt>1.) {
-    ++_nover;
-    if(!BGF) {
-      _maxwgt.first  = max(_maxwgt.first ,wgt);
-      _comptonover.push_back(make_pair(xp,zp));
-    }
-    else {
-      _maxwgt.second = max(_maxwgt.second,wgt);
-      _bgfover.push_back(make_pair(xp,zp));
-    }
-  }
-  if(!BGF) {
-    if(_comptonxb.empty()) _comptonxb.resize(101,make_pair(0.,0.));
-    int iloc = int(xB/0.01);
-    _comptonxb[iloc].first  += wgt;
-    _comptonxb[iloc].second += 1. ;
-  }
-  else {
-    if(_bgfxb.empty()) _bgfxb    .resize(101,make_pair(0.,0.));
-    int iloc = int(xB/0.01);
-    _bgfxb[iloc].first  += wgt;
-    _bgfxb[iloc].second += 1. ;
-  }
-  // points into hist
-  ++_ngen;
-  if(!BGF) _compton.push_back(make_pair(xp,zp));
-  else     _bgf    .push_back(make_pair(xp,zp));
   // create the new particles and add to ShowerTree
   bool isquark = quark[0]->colourLine();
   if(!BGF) {
@@ -666,4 +428,142 @@ bool DISMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // otherwise
   parent->setEvolutionScale(br.kinematics->scale());
   return true;
+}
+
+double DISMECorrection::generateComptonPoint(double &xp, double & zp) {
+  static const double maxwgt = 50.;
+  double wgt;
+  do {
+    xp  = UseRandom::rnd();
+    double zpmin = xp, zpmax = 1./(1.+xp*(1.-xp));
+    zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
+    wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
+    if(UseRandom::rndbool()) swap(xp,zp);
+    double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp,x2=1.-(1.-zp)/xp;
+    wgt *= 2.*(1.+sqr(xp)*(sqr(x2)+1.5*xperp2))/(1.-xp)/(1.-zp);
+    if(wgt>maxwgt) cerr << "testing violates compton max " << wgt << "\n";
+  }
+  while(wgt<UseRandom::rnd()*maxwgt);
+  return _comptonint;
+}
+
+double DISMECorrection::generateBGFPoint(double &xp, double & zp) {
+  static const double maxwgt = 2.,npow=0.34,ac=1.0;
+  double wgt;
+  do {
+    double rho = UseRandom::rnd();
+    xp = 1.-pow(rho,1./(1.-npow));
+    wgt = (sqr(xp)+ac+sqr(1.-xp));
+    if(wgt>1.+ac) cerr << "testing violates BGF maxA " << wgt << "\n";
+  }
+  while(wgt<UseRandom::rnd()*(1.+ac));
+  double xpwgt = -((6.-5.*npow+sqr(npow))*ac-3.*npow+sqr(npow)+4) 
+    /(sqr(npow)*(npow-6.)+11.*npow-6.);
+  xpwgt *= pow(1.-xp,npow)/wgt;
+  double xp2(sqr(xp)),lxp(log(xp)),xp4(sqr(xp2)),lxp1(log(1.-xp));
+  double zpwgt = (2.*xp4*(lxp+lxp1-3.)+4.*xp*xp2*(3.-lxp-lxp1)
+		  +xp2*(-13.+lxp+lxp1)+xp*(+7.+lxp+lxp1)-lxp-lxp1-1.)/(1.+xp-xp2);
+  do {
+    double zpmax = 1./(1.+xp*(1.-xp)), zpmin = 1.-zpmax;
+    zp = 1.-pow((1.-zpmin)/(1.-zpmax),UseRandom::rnd())*(1.-zpmax);
+    wgt = log((1.-zpmin)/(1.-zpmax))*(1.-zp);
+    double x1 = -1./xp;
+    double x2 = 1.-(1.-zp)/xp;
+    double x3 = 2.+x1-x2;
+    double xperp2 = 4.*(1.-xp)*(1.-zp)*zp/xp;
+    wgt *= sqr(xp)/(1.-zp)*(sqr(x3)+sqr(x2)+3.*xperp2);
+    if(wgt>maxwgt*zpwgt) cerr << "testing violates BGF maxB " << wgt/xpwgt << "\n";
+  }
+  while(wgt<UseRandom::rnd()*maxwgt);
+  return zpwgt*xpwgt;
+}
+  
+double DISMECorrection::A(tcPDPtr qin, tcPDPtr,
+			  tcPDPtr lin, tcPDPtr lout) {
+  double output;
+  // charged current
+  if(lin->id()!=lout->id()) {
+    output = 2;
+  }
+  // neutral current
+  else {
+    double fact = 0.25*_q2/(_q2+_mz2)/_sinW/_cosW;
+    double cvl,cal,cvq,caq;
+    if(abs(lin->id())%2==0) {
+      cvl = generator()->standardModel()->vnu()*fact+generator()->standardModel()->enu();
+      cal = generator()->standardModel()->anu()*fact;
+    }
+    else {
+      cvl = generator()->standardModel()->ve()*fact+generator()->standardModel()->ee();
+      cal = generator()->standardModel()->ae()*fact;
+    }
+    if(abs(qin->id())%2==0) {
+      cvq = generator()->standardModel()->vu()*fact+generator()->standardModel()->eu();
+      caq = generator()->standardModel()->au()*fact;
+    }
+    else {
+      cvq = generator()->standardModel()->vd()*fact+generator()->standardModel()->ed();
+      caq = generator()->standardModel()->ad()*fact;
+    }
+    output = 8.*cvl*cal*cvq*caq/(sqr(cvl)+sqr(cal))/(sqr(cvq)+sqr(caq));
+  }
+  if(qin->id()<0) output *= -1.;
+  if(lin->id()<0) output *= -1;
+  return output;
+}
+
+vector<double> DISMECorrection::ComptonME(double xp, double x2, double xperp,
+					  double A, double l, bool norm) {
+  vector<double> output(3,0.);
+  double cos2 =   x2 /sqrt(sqr(x2)+sqr(xperp));
+  double sin2 = xperp/sqrt(sqr(x2)+sqr(xperp));
+  if(_meopt) {
+    double root = sqrt(sqr(l)-1.);
+    output[0] = sqr(cos2)-A*cos2*l+sqr(l);
+    output[1] = A*cos2*root*sin2-2.*l*root*sin2;
+    output[2] = sqr(root)*sqr(sin2);
+    double lo(1+A*l+sqr(l));
+    for(unsigned int ix=0;ix<output.size();++ix) output[ix] /= lo;
+  }
+  else {
+    output[0] = 1.;
+    output[1] = -2.*sin2;
+    output[2] = sqr(sin2);
+  }
+  double denom = norm ? 1.+sqr(xp)*(sqr(x2)+1.5*sqr(xperp)) : 1.;
+  double fact  = sqr(xp)*(sqr(x2)+sqr(xperp));
+  for(unsigned int ix=0;ix<output.size();++ix) 
+    output[ix] = ((ix==0 ? 1. : 0.) +fact*output[ix])/denom;
+  return output;
+}
+
+vector<double> DISMECorrection::BGFME(double xp, double x2, double x3, 
+				      double xperp, double A, double l,
+				      bool norm) {
+  vector<double> output(3,0.);
+  double cos2  =   x2 /sqrt(sqr(x2)+sqr(xperp));
+  double sin2  = xperp/sqrt(sqr(x2)+sqr(xperp));
+  double fact2 = sqr(xp)*(sqr(x2)+sqr(xperp));
+  double cos3  =   x3 /sqrt(sqr(x3)+sqr(xperp));
+  double sin3  = xperp/sqrt(sqr(x3)+sqr(xperp));
+  double fact3 = sqr(xp)*(sqr(x3)+sqr(xperp));
+  if(_meopt) {
+    double root = sqrt(sqr(l)-1.);
+    output[0] = fact3*(sqr(cos3)-A*cos3*l+sqr(l))+
+                fact2*(sqr(cos2)-A*cos2*l+sqr(l));
+    output[1] =-fact3*(A*cos3*root*sin3-2.*l*root*sin3)+
+                fact2*(A*cos2*root*sin2-2.*l*root*sin2);
+    output[2] = fact3*(sqr(root)*sqr(sin3))+
+                fact2*(sqr(root)*sqr(sin2));
+    double lo(1+A*l+sqr(l));
+    for(unsigned int ix=0;ix<output.size();++ix) output[ix] /=lo;
+  }
+  else {
+    output[0] = fact3+fact2;
+    output[1] = -2.*sin2*fact2+2.*sin3*fact3;
+    output[2] = sqr(sin2)*fact2+sqr(sin3)*fact3;
+  }
+  double denom = norm ? sqr(xp)*(sqr(x3)+sqr(x2)+3.*sqr(xperp)) : 1.;
+  for(unsigned int ix=0;ix<output.size();++ix) output[ix] /=denom;
+  return output;
 }
