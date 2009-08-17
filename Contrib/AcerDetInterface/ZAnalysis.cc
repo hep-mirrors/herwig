@@ -23,7 +23,7 @@ void ZAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   // require opposite sign
   if(leptonID()[0]!=-leptonID()[1]) return;
   Lorentz5Momentum pz = leptonMomentum()[0]+leptonMomentum()[1];
-  double mz = pz.mass()/GeV;
+  double mz = pz.m()/GeV;
   ZmassDetector_ += mz;
   // hadron level
   StepVector::const_iterator sit =event->primaryCollision()->steps().begin();

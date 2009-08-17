@@ -37,7 +37,7 @@ void ZAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   if(neminus+neplus+nmuminus+nmuplus!=2) return;
   // require opposite sign
   if(neminus!=neplus||nmuminus!=nmuplus) return;
-  double mz = pz.mass()/GeV;
+  double mz = pz.m()/GeV;
   ZmassDetector_ += mz;
   // hadron level
   StepVector::const_iterator sit =event->primaryCollision()->steps().begin();
