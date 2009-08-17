@@ -17,15 +17,15 @@ using namespace Herwig;
 
 extern "C" {
   // initialize PGS
-  void pgs_initialize__();
+  void pgs_initialize_();
   // call PGS trigger code
-  void pgs_trigger__();
+  void pgs_trigger_();
   // call PGS reconstruction code
-  void pgs_recon__();
+  void pgs_recon_();
   // common block for PGS input parameters
   extern struct {
     int  numarg;              // number of arguments supplied to program
-    char pgs_args[25][80];    // list of arguments (char*80)
+    char pgs_args[10][40];    // list of arguments (char*80)
     int  nevpgs;              // number of events to generate/read
     int  target_lum;          // target luminosity (in pb-1)
     int  nprpgs;              // number of events to print out 
@@ -104,11 +104,11 @@ void PGSInterface::doinitrun() {
   const char *temp;
   temp = _pgs_param_file.c_str();
   for(unsigned int ix=0;ix<80;++ix) {
-    if(temp[ix]=='\0') break; 
+    if(temp[ix]=='\0') break;
     pgsevt_.pgs_param_file[ix]=temp[ix];
   }
   // initialize PGS
-  pgs_initialize__(); 
+  pgs_initialize_(); 
 }
 
 void PGSInterface::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -123,9 +123,9 @@ void PGSInterface::analyze(tEventPtr event, long ieve, int loop, int state) {
   // convert to HEPEVT
   _converter->write_event(hepmc);
   // call PGS trigger code
-  pgs_trigger__();     
+  pgs_trigger_();     
   // call PGS reconstruction code
-  pgs_recon__();
+  pgs_recon_();
   // convert the unique reconstructed objects
   _objects.clear();
   for(int ix=0;ix<pgsrec_.numobj;++ix) {
