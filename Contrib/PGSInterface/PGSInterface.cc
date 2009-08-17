@@ -10,7 +10,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Config/HepMCHelper.h"
+#include "ThePEG/Config/HepMCHelper.h"
 #include "HepMC/HEPEVT_Wrapper.h"
 
 using namespace Herwig;
