@@ -86,6 +86,6 @@ create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
 # Schematic overview of an event
 # (requires --with-hepmc to be set in ThePEG
 # and the graphviz program 'dot' to produce a plot)
-#@CREATE_HEPMC@ Herwig::GraphvizPlot Plot HwHepMCAnalysis.so
+@CREATE_HEPMC@ ThePEG::GraphvizPlot Plot HepMCAnalysis.so
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-#@CREATE_HEPMC@ Herwig::HepMCFile HepMCFile HwHepMCAnalysis.so
+@CREATE_HEPMC@ ThePEG::HepMCFile HepMCFile HepMCAnalysis.so
