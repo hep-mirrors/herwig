@@ -7,6 +7,7 @@ MEQCD2to2.h MEQCD2to2.cc\
 MEPP2HiggsJet.h MEPP2HiggsJet.icc MEPP2HiggsJet.cc\
 MEPP2GammaGamma.h MEPP2GammaGamma.icc MEPP2GammaGamma.cc \
 MEPP2QQ.h    MEPP2QQ.cc   \
+MEPP2QQHiggs.h    MEPP2QQHiggs.cc   \
 MEPP2Higgs.h MEPP2Higgs.cc\
 MEPP2WH.h    MEPP2WH.cc   \
 MEPP2ZH.h    MEPP2ZH.cc   \
