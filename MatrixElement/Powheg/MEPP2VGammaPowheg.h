@@ -6,11 +6,15 @@
 //
 
 #include "Herwig++/MatrixElement/Hadron/MEPP2VGamma.h"
-#include "Herwig++/Utilities/GSLIntegrator.h"
+#include "ThePEG/PDF/BeamParticleData.h"
+
 
 namespace Herwig {
-
+  
 using namespace ThePEG;
+
+class MEPP2VGammaPowheg;
+ThePEG_DECLARE_POINTERS(MEPP2VGammaPowheg,VGamPowhegPtr);
 
 /**
  * The MEPP2VGammaPowheg class implements the next-to-leading
@@ -85,6 +89,11 @@ public:
    */
   static void Init();
 
+  //parton distribution function of beam partID
+  double PDFab(double z, int partID)  const;
+  // parton distribution function ratio
+  double PDFratio(double z, double x, int partID)  const;
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -98,16 +107,57 @@ protected:
   //@}
 
   
-  //functions for definition of Li_2
-  double Li2p(double z);
-  // inline double li2int(double x, double y);  
-  
+
+  // functionals of PDFs and energy fractions in the collinear remnants:
+  double KP1(double zz, Energy2 shat, Energy2 muF2, int partID) const;
+  double KP2(double zz, Energy2 shat, Energy2 muF2) const;
+  double KP3(double zz, int partID) const;
 
   // definitions of H, F^V:
   double Hfunc(Energy2 t, Energy2 s, Energy2 m2) const;
   double FWfunc(Energy2 t, Energy2 u, Energy2 s, Energy2 m2) const;
   double FZfunc(Energy2 t, Energy2 u, Energy2 s, Energy2 m2) const;
   double FVfunc(Energy2 t, Energy2 u, Energy2 s, Energy2 m2) const;
+
+// Transformation from Born+rad phase space configuration to m+1 phase space of final states
+  Lorentz5Momentum InvLortr(Lorentz5Momentum kbar_a, Lorentz5Momentum kbar_b, double xi,
+			    Lorentz5Momentum k_i, Lorentz5Momentum kbar_j, int fi) const;
+
+//Transformation from m+1 phase space to Born phase space configuration of final states
+  Lorentz5Momentum Lortr(Lorentz5Momentum k_a, Lorentz5Momentum k_b, double xi,
+			 Lorentz5Momentum k_i, Lorentz5Momentum k_j, int fi) const;
+
+// momentum of radiated parton transformed from Born phase space
+  Lorentz5Momentum radk(Lorentz5Momentum kbar_a, Lorentz5Momentum kbar_b, double xi,
+			double vi, double phi, int fi) const;
+
+// momentum of radiated quark transformed from gq->qV Born phase space
+  Lorentz5Momentum radkqr(Lorentz5Momentum kbar_ga, Lorentz5Momentum kbar_V, Energy2 MV2, 
+			  double zi, double ui, double phi) const;
+// Born matrix element
+  double MatrBorn(Lorentz5Momentum k_a, Lorentz5Momentum k_b, Lorentz5Momentum k_ga,
+		  Lorentz5Momentum k_V, double char0, double char1, Energy2 MV2) const;
+
+// Tree level matrix element for gq->qV
+  double MatrQV(Lorentz5Momentum p_a, Lorentz5Momentum p_b, Lorentz5Momentum k_q,
+		Lorentz5Momentum k_V, Energy2 MV2) const;
+  // Gluon Real radiation matrix element
+  InvEnergy2 MatrRealGluon(Lorentz5Momentum k_a, Lorentz5Momentum k_b,
+			   Lorentz5Momentum k_ga,
+			   Lorentz5Momentum k_V, Lorentz5Momentum k_glu) const;
+  
+// Quark Real radiation matrix element
+  double MatrRealQuark(Lorentz5Momentum k_a, Lorentz5Momentum k_b, Lorentz5Momentum k_ga,
+		       Lorentz5Momentum k_V, Lorentz5Momentum k_q) const;
+
+// dipole of gluon radiation
+  InvEnergy2 Dipole(Lorentz5Momentum k_a, Lorentz5Momentum k_b, Lorentz5Momentum k_ga,
+		    Lorentz5Momentum k_V, double char0,double char1,Energy2 MV2,Energy2 kig,double xi) const;
+
+  double test2to3(Lorentz5Momentum k_a, Lorentz5Momentum k_b, Lorentz5Momentum k_ga,
+		  Lorentz5Momentum k_1, Lorentz5Momentum k_2) const;
+  double test2to3am(Lorentz5Momentum k_a, Lorentz5Momentum k_b, Lorentz5Momentum k_ga,
+		  Lorentz5Momentum k_1, Lorentz5Momentum k_2, Energy2 MV2) const;
 
 protected:
 
@@ -154,29 +204,77 @@ private:
   /**
    * The \f$T_R\f$ colour factor
    */
-  mutable double _TR;
+  mutable double TR_;
 
   /**
    *  The \f$C_F\f$ colour factor
    */
-  mutable double _CF;
+  mutable double CF_;
     
+  //Factorization scale
+  mutable Energy2 _muF2;
 
-  //types of final states:
-  tcPDPtr _gluon;
-  tcPDPtr _photon;
-  tcPDPtr _boson;
-  
-  /**
-   *  Momentum fractions of the  first incoming parton
-   */
-  double _xa;
-  
-  /**
-   *  Momentum fractions of the second incoming parton
-   */
-  double _xb;
+    //kinematics: s~hat:_ss, t~hat:_tt, u~hat:_uu
+  mutable Energy2 _ss;
+  mutable Energy2 _tt;
+  mutable Energy2 _uu;
 
+  //types of initial states:
+  mutable tcPDPtr _partona;
+  mutable tcPDPtr _partonb;
+
+    //types of final states:
+    mutable tcPDPtr _gluon;
+    mutable tcPDPtr _photon;
+    mutable tcPDPtr _quark; 
+    mutable tcPDPtr _quarkpi;
+    mutable tcPDPtr _boson;
+    mutable int _iflagcq;
+    
+    //momenta of final states:
+    mutable Lorentz5Momentum _p_photon;
+    mutable Lorentz5Momentum _p_parton;
+    mutable Lorentz5Momentum _p_boson;
+    
+    //momenta of initial states:
+    mutable Lorentz5Momentum _p_partona;
+    mutable Lorentz5Momentum _p_partonb;
+   
+  //CKM matrix square
+  mutable double ckm_;
+
+  /**
+   *  The BeamParticleData object for the plus direction hadron
+   */
+  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_A;
+
+  /**
+   *  The BeamParticleData object for the  minus direction hadron
+   */
+  mutable Ptr<BeamParticleData>::transient_const_pointer _hadron_B;
+
+    //momenta fractions _xa, _xb
+    mutable double _xa;
+    mutable double _xb;
+
+  //
+    //alpha_S:
+    mutable double _alphas;
+  //sin(thete_W)^2
+    mutable double sin2w;
+  //electroweak alpha
+    mutable double alphae;
+
+    //integrated variable _xtil
+    mutable double _xtil;
+
+  //Real radiation integrated variables
+    mutable double _y1;
+    mutable double _y2;
+    mutable double _y3;
+ 
+  // For Real radiation part
+    mutable double _phi;
     
   /**
    *  Parameters for the NLO weight
@@ -209,24 +307,35 @@ private:
   //@}
 
   /**
-   *  Radiative variables
+   *  Vertices
    */
   //@{
   /**
-   *  x variable
+   *   FFPVertex
    */
-  double _x;
+  AbstractFFVVertexPtr FFPvertex_;
 
   /**
-   *  z variable
+   *   FFWVertex
    */
-  double _z;
+  AbstractFFVVertexPtr FFWvertex_;
 
   /**
-   *  azimuth
+   *   FFZVertex
    */
-  double _phi;
+  AbstractFFVVertexPtr FFZvertex_;
+
+  /**
+   *  WWW Vertex
+   */ 
+  AbstractVVVVertexPtr WWWvertex_;
+
+  /**
+   *  FFG Vertex
+   */ 
+  AbstractFFVVertexPtr FFGvertex_;
   //@}
+
 
 };
 
