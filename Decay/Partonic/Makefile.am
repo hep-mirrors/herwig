@@ -6,4 +6,4 @@ WeakPartonicDecayer.h WeakPartonicDecayer.cc\
 BtoSGammaDecayer.h    BtoSGammaDecayer.cc\
 PartonicDecayerBase.h PartonicDecayerBase.cc 
 
-HwPartonicDecay_la_LDFLAGS = -module -version-info 5:0:0
+HwPartonicDecay_la_LDFLAGS = -module -version-info 6:0:0

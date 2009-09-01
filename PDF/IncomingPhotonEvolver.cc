@@ -29,7 +29,6 @@ IncomingPhotonEvolver::IncomingPhotonEvolver()
 void IncomingPhotonEvolver::
 handle(EventHandler & eh, const tPVector & ,
        const Hint & ) {
-  cerr << "testing start event number " << generator()->currentEvent()->number() << "\n";
   // extract the incoming partons from the hard process
   PPair incomingPartons = 
     eh.currentEvent()->primarySubProcess()->incoming();
@@ -293,7 +292,6 @@ handle(EventHandler & eh, const tPVector & ,
     }
     eh.currentStep()->removeParticle(temp);
   }
-  cerr << "testing end   event number " << generator()->currentEvent()->number() << "\n";
 }
 
 IBPtr IncomingPhotonEvolver::clone() const {

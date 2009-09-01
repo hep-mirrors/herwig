@@ -1,7 +1,7 @@
 SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 7:1:0
+HwAnalysis_la_LDFLAGS = -module -version-info 8:0:0
 HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h  \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.h \
@@ -19,7 +19,7 @@ HiggsJetAnalysis.h HiggsJetAnalysis.cc \
 DrellYanPT.h DrellYanPT.cc
 
 pkglib_LTLIBRARIES +=  HwLEPAnalysis.la
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 5:0:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.h\
 SingleParticleAnalysis.cc SingleParticleAnalysis.h\
@@ -31,7 +31,7 @@ CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 # analysis code which depends on fastjet
 if WANT_LIBFASTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 5:0:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(FASTJETLIBS) 
