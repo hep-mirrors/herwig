@@ -141,7 +141,7 @@ CrossSection MEChargedCurrentDISPowheg::dSigHatDR() const {
 
 double MEChargedCurrentDISPowheg::NLOWeight() const {
   // If only leading order is required return 1:
-  if(contrib_==0) return 1.;
+  if(contrib_==0) return 1./jac_;
   // scale and prefactors
   Energy2 mu2(scale());
   double aS = SM().alphaS(mu2);
