@@ -173,7 +173,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard,
 		    const map<tShowerProgenitorPtr,
-		              pair<Energy,double> > & intrinsic) const {
+		    pair<Energy,double> > & intrinsic) const {
   _intrinsic=intrinsic;
   // extract the particles from the ShowerTree
   vector<ShowerProgenitorPtr> ShowerHardJets=hard->extractProgenitors();
@@ -309,10 +309,30 @@ reconstructHardJets(ShowerTreePtr hard,
     }
   }
   catch(KinematicsReconstructionVeto) {
+    _progenitor=tShowerParticlePtr();
+    _intrinsic.clear();
     return false;
   }
   _progenitor=tShowerParticlePtr();
   _intrinsic.clear();
+  // ensure x<1
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+	cit=hard->incomingLines().begin();cit!=hard->incomingLines().end();++cit) {
+    tPPtr parent = cit->first->progenitor();
+    while (!parent->parents().empty()) {
+      parent = parent->parents()[0];
+    }
+    tPPtr hadron;
+    if ( cit->first->original()->parents().empty() ) {
+      hadron = cit->first->original();
+    } 
+    else {
+      hadron = cit->first->original()->parents()[0];
+    }
+    if(parent->momentum().rho()>hadron->momentum().rho()) {
+      return false;
+    }
+  }
   return true;
 }
 
