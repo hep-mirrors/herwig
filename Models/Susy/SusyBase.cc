@@ -599,18 +599,26 @@ void SusyBase::createMixingMatrices() {
 
 void SusyBase::extractParameters(bool checkmodel) {
   map<string,ParamMap>::const_iterator pit;
-  // extract parameters from minpar
-  pit=_parameters.find("minpar");
-  if(pit==_parameters.end()) 
-    throw Exception() << "BLOCK MINPAR not found in " 
-		      << "SusyBase::extractParameters()"
-		      << Exception::runerror;
+  ParamMap::const_iterator it;
+  // try and get tan beta from extpar first
+  pit=_parameters.find("extpar");
   // extract tan beta
-  ParamMap::const_iterator it = pit->second.find(3);
-  if(it==pit->second.end()) 
+  _tanbeta = -1.;
+  if(pit!=_parameters.end()) {
+    it = pit->second.find(25);
+    if(it!=pit->second.end()) _tanbeta = it->second;
+  }
+  // otherwise from minpar
+  if(_tanbeta<0.) {
+    pit=_parameters.find("minpar");
+    if(pit!=_parameters.end()) { 
+      it = pit->second.find(3);
+      if(it!=pit->second.end()) _tanbeta = it->second;
+    }
+  }
+  if(_tanbeta<0.) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
-		      << Exception::runerror;
-  _tanbeta=it->second;
+		      << " or BLOCK EXTPAR " << Exception::runerror;
   // extract parameters from hmix
   pit=_parameters.find("hmix");
   if(pit==_parameters.end()) {
