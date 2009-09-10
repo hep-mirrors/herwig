@@ -148,6 +148,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/defaults/Analysis.in
 		Contrib/Makefile
 		Contrib/make_makefiles.sh
+		Tests/Makefile
 		Makefile])
 
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
