@@ -1,0 +1,20 @@
+cd /Herwig/MatrixElements
+insert SimpleEE:MatrixElements[0] MEee2VV
+
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:DebugLevel 1
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 200.0*GeV
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
+
+create Herwig::VVTest TestVV LeptonTest.so
+insert LEPGenerator:AnalysisHandlers 0 TestVV
+
+saverun LEP-VV LEPGenerator

@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_VVText_H
-#define HERWIG_VVText_H
+#ifndef HERWIG_VVTest_H
+#define HERWIG_VVTest_H
 //
-// This is the declaration of the VVText class.
+// This is the declaration of the VVTest class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
@@ -13,12 +13,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the VVText class.
+ * Here is the documentation of the VVTest class.
  *
- * @see \ref VVTextInterfaces "The interfaces"
- * defined for VVText.
+ * @see \ref VVTestInterfaces "The interfaces"
+ * defined for VVTest.
  */
-class VVText: public AnalysisHandler {
+class VVTest: public AnalysisHandler {
 
 public:
 
@@ -94,13 +94,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<VVText> initVVText;
+  static NoPIOClassDescription<VVTest> initVVTest;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VVText & operator=(const VVText &);
+  VVTest & operator=(const VVTest &);
 
 private:
 
@@ -121,32 +121,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of VVText. */
+ *  base classes of VVTest. */
 template <>
-struct BaseClassTrait<Herwig::VVText,1> {
-  /** Typedef of the first base class of VVText. */
+struct BaseClassTrait<Herwig::VVTest,1> {
+  /** Typedef of the first base class of VVTest. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the VVText class and the shared object where it is defined. */
+ *  the VVTest class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::VVText>
-  : public ClassTraitsBase<Herwig::VVText> {
+struct ClassTraits<Herwig::VVTest>
+  : public ClassTraitsBase<Herwig::VVTest> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::VVText"; }
+  static string className() { return "Herwig::VVTest"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * VVText is implemented. It may also include several, space-separated,
-   * libraries if the class VVText depends on other classes (base classes
+   * VVTest is implemented. It may also include several, space-separated,
+   * libraries if the class VVTest depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "VVText.so"; }
+  static string library() { return "LeptonTest.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_VVText_H */
+#endif /* HERWIG_VVTest_H */
