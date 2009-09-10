@@ -1,5 +1,6 @@
 cd /Herwig/MatrixElements
-insert SimpleEE:MatrixElements[0] MEee2ZH
+insert SimpleEE:MatrixElements[0] MEee2HiggsVBF
+set MEee2HiggsVBF:ShapeScheme OnShell
 
 cd /Herwig/Generators
 set LEPGenerator:NumberOfEvents 100000000
@@ -16,6 +17,8 @@ set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 create Herwig::VBFTest TestVBF LeptonTest.so
 insert LEPGenerator:AnalysisHandlers 0 TestVBF
+
+
 
 # parameters to make the same as fortran
 cd /Herwig
@@ -49,5 +52,6 @@ set LEPGenerator:EventHandler:StatLevel Full
 set LEPGenerator:EventHandler:CascadeHandler NULL
 set LEPGenerator:EventHandler:HadronizationHandler NULL
 set LEPGenerator:EventHandler:DecayHandler NULL
+set /Herwig/Analysis/Basics:CheckQuark 0
 
-saverun LEP-VH LEPGenerator
+saverun LEP-VBF LEPGenerator
