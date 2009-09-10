@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the QuickVBF class.
+// functions of the VBFTest class.
 //
 
-#include "QuickVBF.h"
+#include "VBFTest.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
@@ -13,7 +13,7 @@
 
 using namespace Herwig;
 
-void QuickVBF::analyze(tEventPtr event, long ieve, int loop, int state) {
+void VBFTest::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
   StepVector::const_iterator sit =event->primaryCollision()->steps().begin();
@@ -60,17 +60,17 @@ void QuickVBF::analyze(tEventPtr event, long ieve, int loop, int state) {
   }
 }
 
-NoPIOClassDescription<QuickVBF> QuickVBF::initQuickVBF;
+NoPIOClassDescription<VBFTest> VBFTest::initVBFTest;
 // Definition of the static class description member.
 
-void QuickVBF::Init() {
+void VBFTest::Init() {
 
-  static ClassDocumentation<QuickVBF> documentation
-    ("There is no documentation for the QuickVBF class");
+  static ClassDocumentation<VBFTest> documentation
+    ("There is no documentation for the VBFTest class");
 
 }
 
-void QuickVBF::doinitrun() {
+void VBFTest::doinitrun() {
   AnalysisHandler::doinitrun();
   if(getParticleData(ParticleID::h0)->mass()>200.*GeV) 
     _mH     = new_ptr(Histogram(200.,            400.,200));
@@ -93,7 +93,7 @@ void QuickVBF::doinitrun() {
   _eep      = new_ptr(Histogram(  0.0,1000.,1000));
 }
 
-void QuickVBF::dofinish() {
+void VBFTest::dofinish() {
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + string("-") + name() + string(".top");
   ofstream outfile(fname.c_str());

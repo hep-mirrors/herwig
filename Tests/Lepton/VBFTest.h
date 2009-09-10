@@ -1,8 +1,8 @@
 // -*- C++ -*-
-#ifndef HERWIG_QuickVBF_H
-#define HERWIG_QuickVBF_H
+#ifndef HERWIG_VBFTest_H
+#define HERWIG_VBFTest_H
 //
-// This is the declaration of the QuickVBF class.
+// This is the declaration of the VBFTest class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
@@ -13,12 +13,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the QuickVBF class.
+ * Here is the documentation of the VBFTest class.
  *
- * @see \ref QuickVBFInterfaces "The interfaces"
- * defined for QuickVBF.
+ * @see \ref VBFTestInterfaces "The interfaces"
+ * defined for VBFTest.
  */
-class QuickVBF: public AnalysisHandler {
+class VBFTest: public AnalysisHandler {
 
 public:
 
@@ -94,13 +94,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<QuickVBF> initQuickVBF;
+  static NoPIOClassDescription<VBFTest> initVBFTest;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QuickVBF & operator=(const QuickVBF &);
+  VBFTest & operator=(const VBFTest &);
 
 private:
 
@@ -121,32 +121,32 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of QuickVBF. */
+ *  base classes of VBFTest. */
 template <>
-struct BaseClassTrait<Herwig::QuickVBF,1> {
-  /** Typedef of the first base class of QuickVBF. */
+struct BaseClassTrait<Herwig::VBFTest,1> {
+  /** Typedef of the first base class of VBFTest. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the QuickVBF class and the shared object where it is defined. */
+ *  the VBFTest class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::QuickVBF>
-  : public ClassTraitsBase<Herwig::QuickVBF> {
+struct ClassTraits<Herwig::VBFTest>
+  : public ClassTraitsBase<Herwig::VBFTest> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::QuickVBF"; }
+  static string className() { return "Herwig::VBFTest"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * QuickVBF is implemented. It may also include several, space-separated,
-   * libraries if the class QuickVBF depends on other classes (base classes
+   * VBFTest is implemented. It may also include several, space-separated,
+   * libraries if the class VBFTest depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "QuickVBF.so"; }
+  static string library() { return "LeptonTest.so"; }
 };
 
 /** @endcond */
 
 }
 
-#endif /* HERWIG_QuickVBF_H */
+#endif /* HERWIG_VBFTest_H */

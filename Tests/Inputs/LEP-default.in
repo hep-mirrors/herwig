@@ -1,0 +1,23 @@
+cd /Herwig/MatrixElements
+insert SimpleEE:MatrixElements 0 MEee2gZ2qq
+
+cd /Herwig/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:DebugLevel 1
+set LEPGenerator:PrintEvent 10
+set LEPGenerator:MaxErrors 10000
+
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+cd /Herwig/Generators
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPMultiplicity
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BMultiplicity
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BFrag
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/Shapes
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPIdent
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPFourJet
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/LEPJet
+
+saverun LEP-default LEPGenerator
