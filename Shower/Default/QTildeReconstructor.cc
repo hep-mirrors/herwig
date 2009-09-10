@@ -329,7 +329,8 @@ reconstructHardJets(ShowerTreePtr hard,
     else {
       hadron = cit->first->original()->parents()[0];
     }
-    if(parent->momentum().rho() > hadron->momentum().rho() + 1.0e-9 * MeV) {
+    if( ! (hadron->id() == parent->id() && hadron->children().size() <= 1)
+       && parent->momentum().rho() > hadron->momentum().rho()) {
       return false;
     }
   }
