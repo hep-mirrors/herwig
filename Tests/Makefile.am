@@ -19,7 +19,7 @@ tests : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-BB
 
 test-% : Inputs/%.in
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N100000
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N 100000
 
 test-LEP-% : LeptonTest.la
 
