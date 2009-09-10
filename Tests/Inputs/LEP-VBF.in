@@ -14,8 +14,8 @@ set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
-create Herwig::VHTest TestVH LeptonTest.so
-insert LEPGenerator:AnalysisHandlers 0 TestVH
+create Herwig::VBFTest TestVBF LeptonTest.so
+insert LEPGenerator:AnalysisHandlers 0 TestVBF
 
 # parameters to make the same as fortran
 cd /Herwig
