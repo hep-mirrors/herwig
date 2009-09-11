@@ -1,14 +1,18 @@
 AUTOMAKE_OPTIONS = -Wno-portability
+AM_LDFLAGS += -module -avoid-version -rpath /dummy/path/not/used
 
-dummylibdir=/tmp
 
-dummylib_LTLIBRARIES = LeptonTest.la
 
-LeptonTest_la_LDFLAGS = -module -version-info 1:0:0
+EXTRA_LTLIBRARIES = LeptonTest.la
+
 LeptonTest_la_SOURCES = \
 Lepton/VVTest.h Lepton/VVTest.cc \
 Lepton/VBFTest.h Lepton/VBFTest.cc \
 Lepton/VHTest.h Lepton/VHTest.cc
+
+
+
+
 
 REPO = $(top_builddir)/src/HerwigDefaults.rpo
 HERWIG = $(top_builddir)/src/Herwig++
