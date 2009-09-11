@@ -1,6 +1,10 @@
 AUTOMAKE_OPTIONS = -Wno-portability
 AM_LDFLAGS += -module -avoid-version -rpath /dummy/path/not/used
 
+EXTRA_DIST = Inputs
+
+dist-hook:
+	rm -rf $(distdir)/Inputs/.svn
 
 
 EXTRA_LTLIBRARIES = LeptonTest.la

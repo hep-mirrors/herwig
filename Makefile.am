@@ -14,4 +14,7 @@ DISTCLEANFILES = config.herwig
 
 libclean:
 	find . -name '*.la' -print0 | xargs -0 rm -rf
-	(cd lib && $(MAKE) clean)
+	cd lib && $(MAKE) clean
+
+tests:
+	cd Tests && $(MAKE) tests
