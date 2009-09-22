@@ -53,9 +53,14 @@ public:
  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
    */
-  //virtual void doinit() throw(InitException);
+  virtual void doinit() ;
+  
+  /**
+   * Initialization before run
+   */
+
+  virtual void doinitrun() ;
 
   
 
@@ -84,6 +89,11 @@ public:
   double fpoint(double x) const;
   
   /**
+   * Function for linear interpolation between two points
+   */ 
+  double interp(double y, double f0, double f1, double y0, double y1) const;
+  
+  /**
    * The asymptotic form of the F_n(y) functions, used for y>20, according to hep-ph/0112161, eq. (25)
    */ 
   double fnyasympt(double y) const;
@@ -97,6 +107,13 @@ public:
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
+
+  /**
+   * Setup the interpolator 
+   */
+  
+  void setup_interpolator();
+  
 
   /**
    * Get diagram selector. With the information previously supplied with the
