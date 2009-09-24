@@ -13,17 +13,37 @@
 
 #include "LEPFourJetsAnalysis.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/EventRecord/StandardSelectors.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
 
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
 using namespace Herwig;
+
+void LEPFourJetsAnalysis::persistentOutput(PersistentOStream & os) const {
+  os << _charged;
+}
+
+void LEPFourJetsAnalysis::persistentInput(PersistentIStream & is, int) {
+  is >> _charged;
+}
 
 void LEPFourJetsAnalysis::analyze(tEventPtr event, long, int, int ) {
   tPVector particles;
-  event->selectFinalState(back_inserter(particles));
+
+  if (_charged) {
+    event->select(back_inserter(particles),SelectCharged());
+  } else {
+    event->select(back_inserter(particles),SelectFinalState());
+  }
+
+
   //  copy fastjet particles from event record.  Templated fastjet
   //  method might leave units ambigouos.  Loop with integer index
   //  allows backtracing ThePEG particles if needed.
@@ -66,7 +86,7 @@ void LEPFourJetsAnalysis::analyze(tEventPtr event, long, int, int ) {
   }
 }
 
-NoPIOClassDescription<LEPFourJetsAnalysis> 
+ClassDescription<LEPFourJetsAnalysis> 
 LEPFourJetsAnalysis::initLEPFourJetsAnalysis;
 // Definition of the static class description member.
 
@@ -74,6 +94,22 @@ void LEPFourJetsAnalysis::Init() {
 
   static ClassDocumentation<LEPFourJetsAnalysis> documentation
     ("There is no documentation for the LEPFourJetsAnalysis class");
+
+
+  static Switch<LEPFourJetsAnalysis,bool> interfaceChargedParticles
+    ("ChargedParticles",
+     "Wether or not to use charged particles only for this analysis",
+     &LEPFourJetsAnalysis::_charged, true, false, false);
+  static SwitchOption interfaceChargedParticlesYes
+    (interfaceChargedParticles,
+     "Yes",
+     "Use charged particles only",
+     true);
+  static SwitchOption interfaceChargedParticlesNo
+    (interfaceChargedParticles,
+     "No",
+     "Use all final state particles",
+     false);
 
 }
 
