@@ -157,7 +157,8 @@ cd /Herwig/Generators
 # (see the Doxygen documentation)
 # Currently it only provides the LaTeX reference to Herwig++
 create Herwig::HerwigStrategy DefaultStrategy
-set DefaultStrategy:LocalParticlesDir /Herwig/Particles
+# set DefaultStrategy:LocalParticlesDir /Herwig/Particles
+insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Particles
 
 # Now the LEPGenerator
 create ThePEG::EventGenerator LEPGenerator
