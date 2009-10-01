@@ -20,8 +20,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace ThePEG::Helicity;
-
 
 /**
  * The METRP2to2 class implements the matrix elements for
@@ -42,61 +40,13 @@ public:
    * Return the order in \f$\alpha_S\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaS() const;
+  virtual unsigned int orderInAlphaS() const { return 0; }
 
   /**
    * Return the order in \f$\alpha_{EW}\f$ in which this matrix
    * element is given.
    */
-  virtual unsigned int orderInAlphaEW() const;
-
- /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   */
-  virtual void doinit() ;
-  
-  /**
-   * Initialization before run
-   */
-
-  virtual void doinitrun() ;
-
-  
-
-  /**
-   * The matrix element for the kinematical configuration
-   * previously provided by the last call to setKinematics(), suitably
-   * scaled by sHat() to give a dimension-less number.
-   * @return the matrix element scaled with sHat() to give a
-   * dimensionless number.
-   */
-  virtual double me2() const;
-  
-  /**
-   * The function which calculates b_c according to hep-ph/0112161, eq.(18)
-   */
-  InvEnergy bccalc(Energy2 s) const;
-
-  /**
-   * A_ny calculates part of the matrix element squared (divided by 16 * pi^2) according to hep-ph/0112161. eq.(19)
-   */ 
-  double A_ny(Energy2 s, Energy2 t) const;
-
-  /**
-   * fpoint initializes the matrix of pre-calculated points for the functions F_n(y) (hep-ph/0112161, eq.(20)
-   */
-  double fpoint(double x) const;
-  
-  /**
-   * Function for linear interpolation between two points
-   */ 
-  double interp(double y, double f0, double f1, double y0, double y1) const;
-  
-  /**
-   * The asymptotic form of the F_n(y) functions, used for y>20, according to hep-ph/0112161, eq. (25)
-   */ 
-  double fnyasympt(double y) const;
+  virtual unsigned int orderInAlphaEW() const { return 0; }
 
   /**
    * Return the scale associated with the last set phase space point.
@@ -107,13 +57,6 @@ public:
    * Add all possible diagrams with the add() function.
    */
   virtual void getDiagrams() const;
-
-  /**
-   * Setup the interpolator 
-   */
-  
-  void setup_interpolator();
-  
 
   /**
    * Get diagram selector. With the information previously supplied with the
@@ -135,9 +78,47 @@ public:
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
 
+  /**
+   * The matrix element for the kinematical configuration
+   * previously provided by the last call to setKinematics(), suitably
+   * scaled by sHat() to give a dimension-less number.
+   * @return the matrix element scaled with sHat() to give a
+   * dimensionless number.
+   */
+  virtual double me2() const;
   //@}
 
 
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  virtual void rebind(const TranslationMap & trans);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  virtual IVector getReferences();
+  //@}
 
 public:
 
@@ -165,21 +146,6 @@ public:
    */
   static void Init();
 
-
- 
-
-protected:
-
-  /**
-   *  Members to calculate the matrix elements
-   */
-  //@{
-
-  
-
-
-
-
 protected:
 
   /** @name Clone Methods. */
@@ -197,8 +163,37 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-private:
+protected:
 
+  /** @name Helper functions for me2. */
+  //@{
+  /**
+   * The function which calculates b_c according to hep-ph/0112161, eq.(18)
+   */
+  InvEnergy bccalc(Energy2 s) const;
+
+  /**
+   * A_ny calculates part of the matrix element squared (divided by 16 * pi^2) according to hep-ph/0112161. eq.(19)
+   */ 
+  double A_ny(Energy2 s, Energy2 t) const;
+
+  /**
+   * fpoint initializes the matrix of pre-calculated points for the functions F_n(y) (hep-ph/0112161, eq.(20)
+   */
+  double fpoint(double x) const;
+
+  /**
+   * The asymptotic form of the F_n(y) functions, used for y>20, according to hep-ph/0112161, eq. (25)
+   */ 
+  double fnyasympt(double y) const;
+  //@}
+
+  /**
+   * Setup the interpolator 
+   */
+  void setup_interpolator();
+  
+private:
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
@@ -214,12 +209,10 @@ private:
 private:
 
   /**
-   * Interpolators
+   * Interpolator
    */ 
-  
   Interpolator<double, double>::Ptr _interpol;
   
-
   /**
    *  Maximum number of quark flavours to include
    */
@@ -233,23 +226,18 @@ private:
   /**
    *  The Extra-dimensional Planck mass
    */
-  
   Energy _planckmass;
 
 
   /**
    *  Processes to include
    */
-
   unsigned int _process;
 
   /**
    *  Colour flow
    */
   mutable unsigned int _flow;
-  
-
-
 };
 
 }

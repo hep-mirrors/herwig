@@ -16,8 +16,8 @@ INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
 #
 # C++ flags
 # 
-CXX = g++
-CXXFLAGS = -O2
+CXX = 
+CXXFLAGS = 
 
 ALLCCFILES=$(shell echo *.cc)
 all : $(ALLCCFILES:.cc=.so)
