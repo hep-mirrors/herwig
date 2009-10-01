@@ -78,21 +78,21 @@ THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
 install-data-hook:
 	@echo Creating repository
 	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo --exitonerror
-##	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
-##		then echo Registering with ThePEG; \
-##		"$(SETUPTHEPEG)" --init \
-##		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
-##		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
-##		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
-##	fi
+	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
+		then echo Registering with ThePEG; \
+		"$(SETUPTHEPEG)" --init \
+		$(DESTDIR)$(defaultsdir)/HerwigDefaults.in \
+		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
+	fi
 
 uninstall-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
-##	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
-##		then echo Unregistering with ThePEG; \
-##		"$(SETUPTHEPEG)" --init defaults/HerwigCleanup.in \
-##		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
-##		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
-##	fi
+	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
+		then echo Unregistering with ThePEG; \
+		"$(SETUPTHEPEG)" --init defaults/HerwigCleanup.in \
+		-r "$(THEPEGREPO)" -o "$(THEPEGREPO)" \
+		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
+	fi
 
 include $(top_srcdir)/Utilities/Makefile.am.versionstring

@@ -106,7 +106,7 @@ set LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
 # uncomment to get QED radiation off Z decay products in hard process
-# insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler
+insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler
 
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
@@ -122,7 +122,7 @@ set LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
 # uncomment to get QED radiation off W/Z decay products in hard process
-# insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
+insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
 
 # Create DISHandler
 create ThePEG::StandardEventHandler DISHandler 
@@ -157,7 +157,8 @@ cd /Herwig/Generators
 # (see the Doxygen documentation)
 # Currently it only provides the LaTeX reference to Herwig++
 create Herwig::HerwigStrategy DefaultStrategy
-set DefaultStrategy:LocalParticlesDir /Herwig/Particles
+# set DefaultStrategy:LocalParticlesDir /Herwig/Particles
+insert DefaultStrategy:DefaultParticlesDirs[0] /Herwig/Particles
 
 # Now the LEPGenerator
 create ThePEG::EventGenerator LEPGenerator

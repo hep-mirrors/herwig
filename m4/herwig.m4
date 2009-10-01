@@ -101,6 +101,19 @@ AC_CHECK_HEADER([ThePEG/Config/ThePEG.h],[],
 CPPFLAGS="$oldcppflags"
 
 AC_SUBST(THEPEGINCLUDE)
+
+AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
+
+
+if test -x "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
+     	CREATE_HEPMC="create"
+	AC_MSG_RESULT([found])
+else
+	CREATE_HEPMC="# create"
+	AC_MSG_RESULT([not found])
+fi
+
+AC_SUBST([CREATE_HEPMC])
 ])
 
 dnl ##### FastJet #####
@@ -169,7 +182,7 @@ AC_SUBST(CREATE_FASTJET)
 AC_SUBST(LOAD_FASTJET)
 AC_SUBST(FASTJETLIBS)
 
-AM_CONDITIONAL(WANT_LIBFASTJET,[test ! -z "$FASTJETPATH"])
+AM_CONDITIONAL(WANT_LIBFASTJET,[test "x$CREATE_FASTJET" = "xcreate"])
 ])
 
 dnl ##### LOOPTOOLS #####

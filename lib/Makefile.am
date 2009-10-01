@@ -1,10 +1,7 @@
-## ugly hack to get linking done by CXX
-LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
-        $(AM_LDFLAGS) $(LDFLAGS) -o $@
-
 pkglib_LTLIBRARIES = Herwig.la
 Herwig_la_SOURCES =
-Herwig_la_LDFLAGS = -module -version-info 4:0:1
+Herwig_la_LIBTOOLFLAGS = --tag=CXX
+Herwig_la_LDFLAGS = -module -version-info 5:0:0
 Herwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(FCLIBS)
 Herwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \

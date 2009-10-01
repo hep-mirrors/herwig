@@ -2,7 +2,7 @@ SUBDIRS = include \
 	Utilities PDT Decay PDF Models \
 	Shower Hadronization MatrixElement \
 	UnderlyingEvent Analysis Looptools \
-	lib src Doc Contrib
+	lib src Doc Contrib Tests
 
 EXTRA_DIST = GUIDELINES
 
@@ -14,4 +14,7 @@ DISTCLEANFILES = config.herwig
 
 libclean:
 	find . -name '*.la' -print0 | xargs -0 rm -rf
-	(cd lib && $(MAKE) clean)
+	cd lib && $(MAKE) clean
+
+tests:
+	cd Tests && $(MAKE) tests

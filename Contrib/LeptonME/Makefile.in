@@ -12,12 +12,14 @@
 THEPEGINCLUDE=
 HERWIGINCLUDE=
 GSLINCLUDE=
+LDFLAGS = 
+SHARED_FLAG = 
 INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE)
 #
 # C++ flags
 # 
-CXX = g++
-CXXFLAGS = -O2
+CXX = 
+CXXFLAGS = 
 
 ALLCCFILES=$(shell echo *.cc)
 
@@ -28,7 +30,7 @@ default : LeptonME.so
 
 LeptonME.so: MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
-	MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o -shared -o LeptonME.so
+	MEee2Higgs2SM.o  MEee2VectorMeson.o  MEee2Z.o $(SHARED_FLAG) $(LDFLAGS) -o LeptonME.so
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.o) LeptonME.so

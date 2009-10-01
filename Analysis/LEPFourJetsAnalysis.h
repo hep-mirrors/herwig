@@ -33,6 +33,15 @@ class LEPFourJetsAnalysis: public AnalysisHandler {
 
 public:
 
+  /**
+   * Default constructor
+   */
+  inline LEPFourJetsAnalysis ()
+    : _ca34(), _cchiBZ(), _cphiKSW(), _cthNR(),
+      _charged(true) {}
+
+public:
+
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
   /**
@@ -56,6 +65,22 @@ public:
   //@}
 
 public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -167,7 +192,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<LEPFourJetsAnalysis> initLEPFourJetsAnalysis;
+  static ClassDescription<LEPFourJetsAnalysis> initLEPFourJetsAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
@@ -196,6 +221,11 @@ private:
    * Histogram for the \f$\cos\Theta_{NR}\f$ distribution
    */
   HistogramPtr _cthNR;
+
+  /**
+   * Use charged particles only
+   */
+  bool _charged;
 
 };
 
