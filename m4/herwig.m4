@@ -347,7 +347,7 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 AC_MSG_CHECKING([for BSM models to include])
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs lh lhtp rpv) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm nmssm ued rs lh lhtp rpv trp) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -385,6 +385,7 @@ AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
 AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 AM_CONDITIONAL(WANT_LH,[test "$lh" -o "$all"])
 AM_CONDITIONAL(WANT_LHTP,[test "$lhtp" -o "$all"])
+AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],

@@ -29,7 +29,7 @@ tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-BB
 
 test-LEP-% : Inputs/LEP-%.in LeptonTest.la
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N 100000
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
 clean-local:
 	rm -f *.out *.log *.tex *.top *.run *.dump *.mult *.Bmult

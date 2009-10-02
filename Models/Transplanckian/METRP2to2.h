@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // METRP2to2.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2009 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -233,11 +233,6 @@ private:
    *  Processes to include
    */
   unsigned int _process;
-
-  /**
-   *  Colour flow
-   */
-  mutable unsigned int _flow;
 };
 
 }
@@ -271,7 +266,7 @@ struct ClassTraits<Herwig::METRP2to2>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "METRP2to2.so"; }
+  static string library() { return "HwTransplanck.so"; }
 };
 
 /** @endcond */
