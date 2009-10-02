@@ -1,7 +1,7 @@
 // -*- C++ -*-
 //
 // METRP2to2.cc is a part of Herwig++ - A multi-purpose Monte Carlo event generator
-// Copyright (C) 2002-2007 The Herwig Collaboration
+// Copyright (C) 2009 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
@@ -31,7 +31,7 @@ using namespace Herwig;
 
 
 METRP2to2::METRP2to2()
- : _maxflavour(2),_process(0), _ndim(6), _planckmass(1500.0*GeV) {
+  : _maxflavour(2), _ndim(6), _planckmass(1500.0*GeV), _process(0) {
   massOption(true ,0);
   massOption(false,0);
 }

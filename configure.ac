@@ -102,6 +102,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
 		Models/UED/Makefile
+		Models/Transplanckian/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile

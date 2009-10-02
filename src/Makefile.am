@@ -17,8 +17,8 @@ bin_SCRIPTS = herwig-config
 HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model RS.model
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-RS.in \
-             ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in TVT-Powheg.in \
-             GammaGamma.in
+             ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
+	     TVT-Powheg.in GammaGamma.in LHC-TRP.in
 
 ## provide -no3body for faster 'make check'
 dist_noinst_DATA = LHC-MUED-no3body.in 
@@ -43,6 +43,9 @@ check_BSM += check-LHC-MUED-no3body
 endif
 if WANT_RS
 check_BSM += check-LHC-RS
+endif
+if WANT_TRP
+check_BSM += check-LHC-TRP
 endif
 
 check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM)
