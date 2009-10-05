@@ -149,7 +149,7 @@ struct ClassTraits<Herwig::VJetGammaHardGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "VJetGammaHardGenerator.so"; }
+  static string library() { return "HwPowhegShower.so"; }
 };
 
 /** @endcond */
