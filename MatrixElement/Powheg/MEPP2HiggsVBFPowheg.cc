@@ -223,10 +223,11 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   // scale and prefactors
   Energy2 mu2 = scale();
   Energy Q = sqrt(_q2);
-  double aS = 2.*SM().alphaS(mu2);
+  //  double aS = 2.*SM().alphaS(mu2);
+  double aS = 2*0.113291076960184;
   double CFfact = 4./3.*aS/Constants::twopi;
   double TRfact = 1./2.*aS/Constants::twopi; 
-
+  double wgt = 0.;
   // Breit frame variables
   double x1 = -1./_xp;
   double x2 = 1.-(1.-_zp)/_xp;
@@ -250,11 +251,12 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
   double virt = 1.+CFfact*(-4.5-1./3.*sqr(Constants::pi)+
 			   1.5*log(_q2/mu2/(1.-_xB))+
 			   2.*log(1.-_xB)*log(_q2/mu2)+
-			   sqr(log(1.-_xB)));;
+			   sqr(log(1.-_xB)));
   // PDF from leading-order
   double loPDF = 
     _hadron->pdf()->xfx(_hadron,_partons[0],mu2,_xB)/_xB;
   // NLO gluon PDF
+
   tcPDPtr gluon = getParticleData(ParticleID::g);
   double gPDF   = 
     _hadron->pdf()->xfx(_hadron,gluon,mu2,_xB/_xp)*_xp/_xB;
@@ -355,17 +357,23 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
       loME  = loMatrixElement(p2     ,p2other,p1     ,p1other,G1,G2);
     }
   }
+  if(1-_xp > 1e-10){
   // q -> qg term
   double real1   = (term1+sqr(_xp)*sqr(x2)*term2)/loME;
   double dipole1 = (sqr(_xp)+sqr(_zp));
   double realq   = 
     CFfact*qPDF/loPDF/_xp/((1.-_xp)*(1.-_zp))*(real1-dipole1);
+  
   // g -> q qbar term
   double real2 = sqr(_xp)/loME*(sqr(x2)*term2+sqr(x3)*term3);
   double dipole2 = sqr(_xp)+sqr(1.-_xp);
   double realg = TRfact*gPDF/loPDF/_xp/(1.-_zp)*(real2-dipole2);
-  // return the full result
-  double wgt = virt+jac_*((collq+collg)/loPDF+realq+realg);
+     
+  // Return The Full Result
+  wgt = virt+jac_*((collq+collg)/loPDF+realq+realg);
+  }
+
+
   return contrib_ == 1 ? max(0.,wgt) : max(0.,-wgt);
 }
 
