@@ -355,6 +355,7 @@ void SusyBase::readDecay(ifstream & ifs,
   inpart->widthCut(5.*width);
   string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
   double brsum(0.);
+  unsigned int nmode = 0;
   while(getline(ifs, line)) {
     if(line[0] == '#') {
       if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -366,6 +367,7 @@ void SusyBase::readDecay(ifstream & ifs,
     unsigned int nda(0),npr(0);
     is >> brat >> nda;
     brsum += brat;
+    ++nmode;
     while( true ) {
       long t;
       is >> t;
@@ -407,7 +409,7 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
-  if( abs(brsum - 1.) > _tolerance ) {
+  if( abs(brsum - 1.) > _tolerance && nmode!=0 ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
 	 << " from the spectrum file does not sum to 1. The branching fractions"
 	 << " will be rescaled.\n";

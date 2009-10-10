@@ -374,6 +374,11 @@ private:
    */
   vector<DVector> the88to88;
   //@}
+
+  /**
+   *  Option for the scales
+   */
+  unsigned int scaleChoice_;
 };
 
   /** Exception class indicating setup problem. */

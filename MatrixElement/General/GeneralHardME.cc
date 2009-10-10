@@ -20,7 +20,7 @@ using namespace Herwig;
 GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
 				 theDiagrams(0), theNDiags(0), 
 				 theColour(0), theNcf(0) , 
-				 theDebug(false) {
+				 theDebug(false), scaleChoice_(0) {
   massOption(true ,1);
   massOption(false,1);
 }
@@ -28,7 +28,7 @@ GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
 void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
 				   const vector<vector<double> > & factors,
 				   const unsigned int ncf,
-				   bool debug) {
+				   bool debug, unsigned int scaleOption) {
   theIncoming = alldiagrams.at(0).incoming;
   theOutgoing = alldiagrams.at(0).outgoing;
   theDiagrams = alldiagrams;
@@ -36,6 +36,7 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
   theNDiags = alldiagrams.size();
   theNcf = ncf;
   theDebug = debug;
+  scaleChoice_ = scaleOption; 
 
   //OffShell options
   pair<bool, bool> offshell(make_pair(false, false));
@@ -53,7 +54,6 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
     rescalingOption(3);
 
 }
-
 
 void GeneralHardME::getDiagrams() const {
   //get ParticleData pointers for external particles
@@ -124,12 +124,12 @@ GeneralHardME::diagrams(const DiagramVector & diags) const {
 
 void GeneralHardME::persistentOutput(PersistentOStream & os) const {
   os << theIncoming << theOutgoing << theDiagrams << theColour 
-     << theNDiags << theNcf << theDebug;
+     << theNDiags << theNcf << theDebug << scaleChoice_;
 }
 
 void GeneralHardME::persistentInput(PersistentIStream & is, int) {
   is >> theIncoming >> theOutgoing >> theDiagrams >> theColour 
-     >> theNDiags >> theNcf >> theDebug;
+     >> theNDiags >> theNcf >> theDebug >> scaleChoice_;
 }
 
 AbstractClassDescription<GeneralHardME> GeneralHardME::initGeneralHardME;

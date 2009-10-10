@@ -309,16 +309,9 @@ set SplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
 set SplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
 set SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
 ###################################################
-#
-#  Setting to ensure spin correlations
-#  and generation of processes and decays
-#
-###################################################
-cd /Herwig/EventHandlers
-insert LEPHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
-insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
-cd /Herwig/NewPhysics
 # Set up the bsm framework
+###################################################
+cd /Herwig/NewPhysics
 set MSSM/Model:ModelGenerator NewModel
 ###################################################
 #

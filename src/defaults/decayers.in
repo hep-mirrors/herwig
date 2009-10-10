@@ -6508,6 +6508,7 @@ set WZ:Iteration 1
 set WZ:Ntry 500
 set WZ:Points 10000
 set WZ:GenerateIntermediates 0 
+set WZ:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::PVectorMesonVectorPScalarDecayer  PVectorVP
@@ -24086,6 +24087,7 @@ set Top:Iteration 1
 set Top:Ntry 500
 set Top:Points 10000
 set Top:GenerateIntermediates 1 
+set Top:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMHiggsFermionsDecayer  Hff
@@ -24102,6 +24104,7 @@ set Hff:Iteration 1
 set Hff:Ntry 500
 set Hff:Points 10000
 set Hff:GenerateIntermediates 0 
+set Hff:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMHiggsWWDecayer  HWW
@@ -24113,6 +24116,7 @@ set HWW:Iteration 1
 set HWW:Ntry 2000
 set HWW:Points 10000
 set HWW:GenerateIntermediates 0 
+set HWW:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SemiLeptonicScalarDecayer  HQET

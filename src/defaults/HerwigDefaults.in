@@ -67,6 +67,7 @@ set /Herwig/ACDCSampler:Margin  1.1
 ###################################################################
 
 read Particles.in
+read QEDRadiation.in
 read Model.in
 read Partons.in
 read MatrixElements.in
@@ -74,7 +75,6 @@ read UnderlyingEvent.in
 read Shower.in
 read Hadronization.in
 read Decays.in
-read QEDRadiation.in
 
 #######################################################################
 # The EventHandler is the most important object in a run. It 
@@ -105,7 +105,9 @@ set LEPHandler:Sampler /Herwig/ACDCSampler
 set LEPHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LEPHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LEPHandler:DecayHandler /Herwig/Decays/DecayHandler
-# uncomment to get QED radiation off Z decay products in hard process
+# spin correlations for perturbative decays (in same step so shower works)
+insert LEPHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
+# QED radiation off Z decay products in hard process
 insert LEPHandler:PostSubProcessHandlers 0 /Herwig/QEDRadiation/QEDRadiationHandler
 
 # Create LHCHandler
@@ -121,7 +123,9 @@ set LHCHandler:BinStrategy 2
 set LHCHandler:CascadeHandler /Herwig/Shower/ShowerHandler
 set LHCHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
 set LHCHandler:DecayHandler /Herwig/Decays/DecayHandler
-# uncomment to get QED radiation off W/Z decay products in hard process
+# spin correlations for perturbative decays (in same step so shower works)
+insert LHCHandler:PreCascadeHandlers 0 /Herwig/NewPhysics/DecayHandler
+# QED radiation off W/Z decay products in hard process
 insert LHCHandler:PostSubProcessHandlers[0] /Herwig/QEDRadiation/QEDRadiationHandler
 
 # Create DISHandler
