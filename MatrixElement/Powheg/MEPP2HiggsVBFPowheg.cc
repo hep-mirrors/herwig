@@ -34,8 +34,15 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   // set Q2 process momenta
   if(r3 > 0.5) {
     r3 = 2.*(r3-0.5);
-    _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
-    _xB = lastX1();
+    if(lastPartons().first ->dataPtr()==mePartonData()[0]&&
+       lastPartons().second->dataPtr()==mePartonData()[1]) {
+      _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
+      _xB = lastX1();
+    }
+    else {
+      _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
+      _xB = lastX2();
+    }
     _partons[0] = mePartonData()[0]; 
     _partons[1] = mePartonData()[1]; 
     _partons[4] = mePartonData()[4];
@@ -58,8 +65,15 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   }
   else {
     r3 = 2.*r3;
-    _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
-    _xB = lastX2();
+    if(lastPartons().first ->dataPtr()==mePartonData()[0]&&
+       lastPartons().second->dataPtr()==mePartonData()[1]) {
+      _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
+      _xB = lastX2();
+    }
+    else {
+      _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
+      _xB = lastX1();
+    }
     _partons[0] = mePartonData()[1];
     _partons[1] = mePartonData()[0];
     _partons[4] = mePartonData()[4];
