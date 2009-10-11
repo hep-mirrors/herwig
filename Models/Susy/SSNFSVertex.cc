@@ -13,6 +13,7 @@
 
 #include "SSNFSVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -22,7 +23,8 @@ using namespace Herwig;
 SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(), 
 			     _sb(0.), _cb(0.), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
-			     _id2last(0) {
+			     _id2last(0),
+			      yukawa_(true) {
   vector<long> first,second,third;
   long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
   for(unsigned int nl = 0; nl < 5; ++nl) {
@@ -67,12 +69,12 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 
 void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _stop << _sbot << _stau << _nmix << _theSS  << _sw << _cw 
-     << ounit(_mw,GeV) << _sb << _cb;
+     << ounit(_mw,GeV) << _sb << _cb << yukawa_;
 }
 
 void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _stop >> _sbot >> _stau >> _nmix >> _theSS >> _sw >> _cw 
-     >> iunit(_mw,GeV) >> _sb >> _cb;
+     >> iunit(_mw,GeV) >> _sb >> _cb >> yukawa_;
 }
 
 void SSNFSVertex::doinit() {
@@ -113,6 +115,20 @@ void SSNFSVertex::Init() {
     ("The SSNFSVertex implements the coupling of a neutralino to "
      "a fermion-sfermion");
 
+  static Switch<SSNFSVertex,bool> interfaceYukawa
+    ("Yukawa",
+     "Whether or not to include the Yukawa type couplings",
+     &SSNFSVertex::yukawa_, true, false, false);
+  static SwitchOption interfaceYukawaYes
+    (interfaceYukawa,
+     "Yes",
+     "Include the terms",
+     true);
+  static SwitchOption interfaceYukawaNo
+    (interfaceYukawa,
+     "No",
+     "Don't include them",
+     false);
 }
 
 void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
@@ -162,7 +178,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       tcPDPtr smf = getParticleData(ism);
       double qf = smf->charge()/eplus;
       Complex bracketl = qf*_sw*( conj(n1prime) - _sw*conj(n2prime)/_cw );
-      double y = _theSS->mass(q2, smf)/2./_mw;
+      double y = yukawa_ ? double(_theSS->mass(q2, smf)/2./_mw) : 0.;
       double lambda(0.);
       //neutralino mixing element
       Complex nlf(0.);
