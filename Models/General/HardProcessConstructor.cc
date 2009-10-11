@@ -136,15 +136,13 @@ bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
 void HardProcessConstructor::persistentOutput(PersistentOStream & os) const {
   os << theIncoming << theOutgoing << theModel << theAllDiagrams << theProcessOption
      << theSubProcess << the33bto33b << the33bpto33bp << the33bto88 << the88to88
-     << scaleChoice_;
+     << scaleChoice_ << excluded_;
 }
 
 void HardProcessConstructor::persistentInput(PersistentIStream & is, int) {
   is >> theIncoming >> theOutgoing  >> theModel >> theAllDiagrams >> theProcessOption
      >> theSubProcess >> the33bto33b >> the33bpto33bp >> the33bto88 >> the88to88
-     >> scaleChoice_;
-  theNout = 0;
-  theNv = 0;
+     >> scaleChoice_ >> excluded_;
 }
 
 ClassDescription<HardProcessConstructor> 
@@ -220,7 +218,6 @@ void HardProcessConstructor::Init() {
      " list of outgoing particles in every hard process",
      2);
 
-
   static Switch<HardProcessConstructor,unsigned int> interfaceScaleChoice
     ("ScaleChoice",
      "&HardProcessConstructor::scaleChoice_",
@@ -240,6 +237,11 @@ void HardProcessConstructor::Init() {
      "TransverseMass",
      "Always use the transverse mass",
      2);
+
+  static RefVector<HardProcessConstructor,ThePEG::ParticleData> interfaceExcluded
+    ("Excluded",
+     "Particles which are not allowed as intermediates",
+     &HardProcessConstructor::excluded_, -1, false, false, true, false, false);
 
 }
 
@@ -346,10 +348,12 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 			   inpp.second->id(), incoming, outgoing);
   tPDSet::const_iterator it;
   for(it = offshells.begin(); it != offshells.end(); ++it) {
+    if(find(excluded_.begin(),excluded_.end(),*it)!=excluded_.end()) continue;
     for(size_t iv = 0; iv < theNv; ++iv) {
       tVertexBasePtr vertexB = theModel->vertex(iv);
       if( vertexB->getNpoint() != 3) continue;
-      if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
+      if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
+	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) continue;
       
       tPDSet final;
       if( vertexB->outgoing(fs) &&
@@ -373,10 +377,12 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 			   outgoing, outgoing);
   tPDSet::const_iterator it;
   for(it = offshells.begin(); it != offshells.end(); ++it) {
+    if(find(excluded_.begin(),excluded_.end(),*it)!=excluded_.end()) continue;
      for(size_t iv = 0; iv < theNv; ++iv) {
        tVertexBasePtr vertexB = theModel->vertex(iv);
        if( vertexB->getNpoint() != 3 ) continue;
-       if( !theAllDiagrams && vertexB->orderInGs() == 0 ) continue;
+       if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
+	   (!theAllDiagrams && vertexB->orderInGs() == 0 ) ) continue;
        tPDSet final;
        if( vertexB->incoming(inc.second) )
 	 final = search(vertexB, inc.second, incoming, (*it)->id(),
@@ -390,10 +396,12 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
   offshells = search(vertex, inpp.second->id(), incoming, fs,
 			   outgoing, incoming);
   for(it = offshells.begin(); it != offshells.end(); ++it) {
+    if(find(excluded_.begin(),excluded_.end(),*it)!=excluded_.end()) continue;
     for(size_t iv = 0; iv < theNv; ++iv) {
        tVertexBasePtr vertexB = theModel->vertex(iv);
        if( vertexB->getNpoint() != 3 ) continue;
-       if(!theAllDiagrams && vertexB->orderInGs() == 0) continue;
+       if((vertexB->orderInGs() + vertexB->orderInGem() == 3) || 
+	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) continue;
 
        tPDSet final;
        if( vertexB->incoming(inc.first) )
@@ -796,7 +804,7 @@ getColourFactors(const tcPDVector & extpart, unsigned int & ncf) const {
 	   outa == PDT::Colour8 || outb == PDT::Colour8 ) {
     ncf = 2;
     if( ina == PDT::Colour8 && inb == PDT::Colour8 &&
-        outa == PDT::Colour8 && outb == PDT::Colour8 )
+        outa ==PDT::Colour8 && outb == PDT::Colour8 )
       return the88to88;
     else
       return the33bto88;

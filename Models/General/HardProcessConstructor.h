@@ -379,6 +379,11 @@ private:
    *  Option for the scales
    */
   unsigned int scaleChoice_;
+
+  /**
+   *  Option to exclude certain intermediates
+   */
+  vector<PDPtr> excluded_;
 };
 
   /** Exception class indicating setup problem. */
