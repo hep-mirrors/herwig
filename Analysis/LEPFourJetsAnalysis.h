@@ -102,8 +102,8 @@ protected:
    */
   inline double cosChiBZ(vector<Lorentz5Momentum> p) {
     if (p.size() == 4) {
-      Vector3<Energy2> v1 = p[0].vect().cross(p[1].vect());
-      Vector3<Energy2> v2 = p[2].vect().cross(p[3].vect());
+      ThreeVector<Energy2> v1 = p[0].vect().cross(p[1].vect());
+      ThreeVector<Energy2> v2 = p[2].vect().cross(p[3].vect());
       return cos(v1.angle(v2)); 
     } 
     else return 123;
@@ -114,8 +114,8 @@ protected:
    */ 
   inline double cosPhiKSW(vector<Lorentz5Momentum> p) {
     if (p.size() == 4) {
-      Vector3<Energy2> v1 = p[0].vect().cross(p[3].vect());
-      Vector3<Energy2> v2 = p[1].vect().cross(p[2].vect());
+      ThreeVector<Energy2> v1 = p[0].vect().cross(p[3].vect());
+      ThreeVector<Energy2> v2 = p[1].vect().cross(p[2].vect());
       double alpha1 = v1.angle(v2);
       v1 = p[0].vect().cross(p[2].vect());
       v2 = p[1].vect().cross(p[3].vect());
@@ -130,8 +130,8 @@ protected:
    */
   inline double cosThetaNR(vector<Lorentz5Momentum> p) {
     if (p.size() == 4) {
-      Vector3<Energy> v1 = p[0].vect() - p[1].vect();
-      Vector3<Energy> v2 = p[2].vect() - p[3].vect();
+      ThreeVector<Energy> v1 = p[0].vect() - p[1].vect();
+      ThreeVector<Energy> v2 = p[2].vect() - p[3].vect();
       return cos(v1.angle(v2));
     }
     else return 123; 

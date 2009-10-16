@@ -143,15 +143,15 @@ void Cluster::calculateX() {
     Lorentz5Momentum p1 = _component[0]->momentum();
     LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
       hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
-    if ( abs( displace1.mag() ) > dmax ) {
-      displace1 *= dmax / abs( displace1.mag() );
+    if ( abs( displace1.m() ) > dmax ) {
+      displace1 *= dmax / abs( displace1.m() );
     }
     LorentzPoint pos2 = _component[1]->vertex();
     Lorentz5Momentum p2 = _component[1]->momentum();
     LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
       hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
-    if ( abs( displace2.mag() ) > dmax ) {
-      displace2 *= dmax / abs( displace2.mag() );
+    if ( abs( displace2.m() ) > dmax ) {
+      displace2 *= dmax / abs( displace2.m() );
     }
     double s1 = 0.0, s2 = 0.0;
     Lorentz5Momentum pcl = p1 + p2;

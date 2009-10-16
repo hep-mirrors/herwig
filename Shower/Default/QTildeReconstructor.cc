@@ -976,7 +976,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   double betam = (q*newq.e() - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
   Boost beta = -betam*(k/kp)*oldp.vect();
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
-  Vector3<Energy2> ax = newq.vect().cross( oldp.vect() ); 
+  ThreeVector<Energy2> ax = newq.vect().cross( oldp.vect() ); 
   double delta = newq.vect().angle( oldp.vect() );
   LorentzRotation R;
   using Constants::pi;
@@ -1001,7 +1001,7 @@ LorentzRotation QTildeReconstructor::solveBoost(const Lorentz5Momentum & q,
   Energy modq = q.vect().mag();
   double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
   Boost beta = -betam*q.vect().unit();
-  Vector3<Energy2> ax = p.vect().cross( q.vect() ); 
+  ThreeVector<Energy2> ax = p.vect().cross( q.vect() ); 
   double delta = p.vect().angle( q.vect() );
   LorentzRotation R;
   using Constants::pi;
@@ -1080,7 +1080,7 @@ reconstructFinalStateSystem(bool applyBoost, Boost toRest, Boost fromRest,
   // find the rescaling factor
   double k = 0.0;
   if(radiated) {
-    k = solveKfactor(pcm.mag(), jetKinematics);
+    k = solveKfactor(pcm.m(), jetKinematics);
   }
   // perform the rescaling and boosts
   for(JetKinVect::iterator it = jetKinematics.begin();
@@ -1143,7 +1143,7 @@ reconstructInitialInitialSystem(bool & applyBoost, Boost & toRest, Boost & fromR
   Lorentz5Momentum p2p = p[1] - a[1]*pq[0] - b[1]*pq[1];
   // compute kappa
   Energy2 A = a[0]*b[1]*S;
-  Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).mag2();
+  Energy2 B = Energy2(sqr(MDY)) - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
   Energy2 C = a[1]*b[0]*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if(rad < 0.) throw KinematicsReconstructionVeto();
