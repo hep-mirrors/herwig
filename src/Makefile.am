@@ -59,7 +59,7 @@ link-helper-files:
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< --exitonerror
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N100 --exitonerror
+	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N100 -d1 --exitonerror
 
 ## valgrind targets ##
 
