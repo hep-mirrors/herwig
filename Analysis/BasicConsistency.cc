@@ -48,7 +48,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
     ptotal(-event->incoming().first->momentum()
 	   -event->incoming().second->momentum());
 
-  const Energy beamenergy = ptotal.mag();
+  const Energy beamenergy = ptotal.m();
 
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
@@ -122,7 +122,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 		       << *event;
   }
 
-  Energy mag = ptotal.mag();
+  Energy mag = ptotal.m();
   Energy ee  = ptotal.e();
 
   if (isnan(mag/MeV)) {
@@ -184,7 +184,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 	test = (*it)->lifeLength();
 	break;
       }
-      problem |= isnan(test.mag2()/mm/mm) || isinf(test.mag2()/mm/mm);
+      problem |= isnan(test.m2()/mm/mm) || isinf(test.m2()/mm/mm);
     }
     if(problem) {
       generator()->log() << "Problem with position of " << **it << "\n"

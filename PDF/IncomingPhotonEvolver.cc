@@ -29,7 +29,6 @@ IncomingPhotonEvolver::IncomingPhotonEvolver()
 void IncomingPhotonEvolver::
 handle(EventHandler & eh, const tPVector & ,
        const Hint & ) {
-  cerr << "testing start event number " << generator()->currentEvent()->number() << "\n";
   // extract the incoming partons from the hard process
   PPair incomingPartons = 
     eh.currentEvent()->primarySubProcess()->incoming();
@@ -169,7 +168,7 @@ handle(EventHandler & eh, const tPVector & ,
   Lorentz5Momentum p2p = pother - a[1]*p - b[1]*n;
   // compute kappa
   Energy2 A = a[0]*b[1]*S;
-  Energy2 B = shat - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).mag2();
+  Energy2 B = shat - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
   Energy2 C = a[1]*b[0]*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if(rad < 0.) throw Exception() << "Can't generate backward evolution of the photon"
@@ -293,7 +292,6 @@ handle(EventHandler & eh, const tPVector & ,
     }
     eh.currentStep()->removeParticle(temp);
   }
-  cerr << "testing end   event number " << generator()->currentEvent()->number() << "\n";
 }
 
 IBPtr IncomingPhotonEvolver::clone() const {

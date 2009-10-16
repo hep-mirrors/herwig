@@ -194,6 +194,7 @@ void GenericMassGenerator::dofinish() {
 }
 
 void GenericMassGenerator::setParticle(string p) {
+  if ( _particle = Repository::GetPtr<tPDPtr>(p) ) return;
   _particle = Repository::findParticle(StringUtils::basename(p));
   if ( ! _particle ) 
     Throw<InterfaceException>() 

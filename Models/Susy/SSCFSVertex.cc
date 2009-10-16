@@ -13,6 +13,7 @@
 
 #include "SSCFSVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -22,7 +23,8 @@ using namespace Herwig;
 SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
 			    _q2last(0.*GeV2), _couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
-			    _id1last(0), _id2last(0), _id3last(0) {
+			    _id1last(0), _id2last(0), _id3last(0),
+			    yukawa_(true) {
   vector<long> first,second,third;
   long chargino[2] = {1000024, 1000037};
   for(unsigned int ic = 0; ic < 2; ++ic) {
@@ -126,12 +128,12 @@ void SSCFSVertex::doinit() {
 
 void SSCFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSS << _sb << _cb << ounit(_mw,GeV) << _stop 
-     << _sbot << _stau << _umix << _vmix;
+     << _sbot << _stau << _umix << _vmix << yukawa_;
 }
 
 void SSCFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS  >> _sb >> _cb >> iunit(_mw,GeV) >> _stop
-     >> _sbot >> _stau >> _umix >> _vmix;
+     >> _sbot >> _stau >> _umix >> _vmix >> yukawa_;
 }
 
 
@@ -143,6 +145,22 @@ void SSCFSVertex::Init() {
   static ClassDocumentation<SSCFSVertex> documentation
     ("The implementation of the coupling of the charginos to fermion-"
      "sfermions.");
+
+  static Switch<SSCFSVertex,bool> interfaceYukawa
+    ("Yukawa",
+     "Whether or not to include the Yukawa type couplings",
+     &SSCFSVertex::yukawa_, true, false, false);
+  static SwitchOption interfaceYukawaYes
+    (interfaceYukawa,
+     "Yes",
+     "Include the terms",
+     true);
+  static SwitchOption interfaceYukawaNo
+    (interfaceYukawa,
+     "No",
+     "Don't include them",
+     false);
+
 }
 
 void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
@@ -177,7 +195,8 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 
     if( ism >= 11 && ism <= 16 ) {
       long lept = ( ism % 2 == 0 ) ? ism - 1 : ism;
-      double y = _theSS->mass(q2, getParticleData(lept))/_mw/sqrt(2)/_cb;
+      double y = yukawa_ ? 
+	double(_theSS->mass(q2, getParticleData(lept))/_mw/sqrt(2)/_cb) : 0.;
       if( ism == 12 || ism == 14 ) {
 	_leftlast = Complex(0., 0.);
 	if( alpha == 0 )
@@ -196,13 +215,15 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     }
     else {
       double yd(0.), yu(0.);
-      if( ism % 2 == 0) {
-	yu = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_sb;
-	yd = _theSS->mass(q2, getParticleData(ism - 1))/_mw/sqrt(2)/_cb;
-      }
-      else {
-	yu = _theSS->mass(q2, getParticleData(ism + 1))/_mw/sqrt(2)/_sb;
-	yd = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_cb;
+      if(yukawa_) {
+	if( ism % 2 == 0) {
+	  yu = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_sb;
+	  yd = _theSS->mass(q2, getParticleData(ism - 1))/_mw/sqrt(2)/_cb;
+	}
+	else {
+	  yu = _theSS->mass(q2, getParticleData(ism + 1))/_mw/sqrt(2)/_sb;
+	  yd = _theSS->mass(q2, getParticleData(ism))/_mw/sqrt(2)/_cb;
+	}
       }
       //heavy quarks
       if( ism == 5 ) {

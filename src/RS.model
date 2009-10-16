@@ -73,15 +73,8 @@ set TwoBodyDC:CreateDecayModes Yes
 
 insert NewModel:DecayParticles 0 /Herwig/Particles/Graviton
 ###################################################
-#
-#  Setting to ensure spin correlations
-#  and generation of processes and decays
-#
-###################################################
-cd /Herwig/NewPhysics
-insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
-insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
 # Set up the model framework
+###################################################
 set RS/Model:ModelGenerator NewModel
 ###################################################
 #

@@ -277,7 +277,7 @@ createMatrixElement(const HPDiagram & diag) const {
     return;
   }
   matrixElement->setProcessInfo(HPDVector(1, diag),
-				colourFactor(extpart), 1, theDebug);
+				colourFactor(extpart), 1, theDebug,1);
   generator()->preinitInterface(theSubProcess, "MatrixElements", 
 				theSubProcess->MEs().size(),
 				"insert", matrixElement->fullName()); 

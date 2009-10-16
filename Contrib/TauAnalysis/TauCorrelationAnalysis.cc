@@ -146,8 +146,8 @@ void TauCorrelationAnalysis::analyzePi(tPPtr part) {
   Lorentz5Momentum ppip( pip->momentum() );ppip.boost(bv);
   Lorentz5Momentum pnu(  nu->momentum()  );pnu.boost(bv);
   Lorentz5Momentum pnub( nub->momentum() );pnub.boost(bv);
-  Vector3<Energy2> norm1(ppip.vect().cross(pnub.vect()));
-  Vector3<Energy2> norm2(ppim.vect().cross(pnu.vect()));
+  ThreeVector<Energy2> norm1(ppip.vect().cross(pnub.vect()));
+  ThreeVector<Energy2> norm2(ppim.vect().cross(pnu.vect()));
   double phi=norm1.angle(norm2);
   *_phi   +=phi;
   *_delta +=ppip.vect().angle(ppim.vect());
@@ -207,8 +207,8 @@ void TauCorrelationAnalysis::analyzeRho(tPPtr part) {
   Lorentz5Momentum ppip( pip->momentum() );ppip.boost(bv);
   Lorentz5Momentum ppi0a( pi0a->momentum() );ppi0a.boost(bv);
   Lorentz5Momentum ppi0b( pi0b->momentum() );ppi0b.boost(bv);
-  Vector3<Energy2> norm1(ppip.vect().cross(ppi0b.vect()));
-  Vector3<Energy2> norm2(ppim.vect().cross(ppi0a.vect()));
+  ThreeVector<Energy2> norm1(ppip.vect().cross(ppi0b.vect()));
+  ThreeVector<Energy2> norm2(ppim.vect().cross(ppi0a.vect()));
   double phi=norm1.angle(norm2);
 
   Lorentz5Momentum ptaup(taup->momentum());

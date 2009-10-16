@@ -46,6 +46,7 @@ create Herwig::ModelGenerator NewModel
 create Herwig::HardProcessConstructor HPConstructor
 create Herwig::ResonantProcessConstructor ResConstructor
 create Herwig::DecayConstructor DecayConstructor
+set DecayConstructor:QEDGenerator /Herwig/QEDRadiation/SOPHTY
 create Herwig::TwoBodyDecayConstructor TwoBodyDC
 create Herwig::ThreeBodyDecayConstructor ThreeBodyDC
 

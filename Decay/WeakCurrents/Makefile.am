@@ -5,7 +5,7 @@ WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h\
 LeptonNeutrinoCurrent.cc LeptonNeutrinoCurrent.fh \
 LeptonNeutrinoCurrent.h
 
-HwWeakCurrents_la_LDFLAGS = -module -version-info 5:0:0
+HwWeakCurrents_la_LDFLAGS = -module -version-info 6:0:0
 HwWeakCurrents_la_SOURCES = \
 FourPionNovosibirskCurrent.cc FourPionNovosibirskCurrent.h \
 ScalarMesonCurrent.cc ScalarMesonCurrent.h\

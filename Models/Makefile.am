@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General Susy UED
+SUBDIRS = RSModel  StandardModel General Susy UED Transplanckian

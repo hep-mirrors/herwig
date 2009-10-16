@@ -150,6 +150,10 @@ void NBodyDecayConstructorBase::setDecayerInterfaces(string fullname) const {
     generator()->preinitInterface(fullname, "Points", "set",
 				  value.str());
   }
+  // QED stuff if needed
+  if(decayConstructor()->QEDGenerator())
+    generator()->preinitInterface(fullname, "PhotonGenerator", "set",
+				  decayConstructor()->QEDGenerator()->fullName());
   string outputmodes;
   if( info() ) outputmodes = string("Output");
   else outputmodes = string("NoOutput");

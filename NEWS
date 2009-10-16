@@ -1,5 +1,106 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.4.0 release: 2009-09-01 (tagged at SVN r4616)
+
+** New matrix elements
+   We have added a built-in implementation of several new matrix elements:
+   PP --> WW / WZ / ZZ
+   PP --> W gamma / Z gamma
+   PP --> VBF Higgs
+   PP --> Higgs tt / Higgs bb
+   e+e- --> WW / ZZ
+   gamma gamma --> ff / WW 
+
+
+
+** Base code improvements
+*** Ticket #257: Remnant handling
+    A problem with forced splittings in the Remnant was fixed.
+
+*** Ticket #264: Soft matrix element correction
+    A problem with emissions form antiquarks was fixed. 
+
+
+
+** PDF sets
+*** New default set
+    MRST LO** is the new default PDF set. LO* is also available built-in.
+
+*** Shower PDFs can be set separately from the hard process
+    Use the 'ShowerHandler:PDF' interface.
+
+
+
+** Parameter tunes
+    Shower, hadronization and underlying event parameters were retuned
+    against LEP and Tevatron data respectively.
+
+
+
+** BSM module improvements
+*** Ticket #259: read error for some UED models
+    Arbitrary ordering of outgoing lines in the process description is now
+    possible.
+
+*** Ticket #266: branching ratio sums
+    The warning threshold for branching ratios not summing to 1 has
+    been relaxed. It is now a user interface parameter.
+
+*** Ticket #267: Top decay modes
+    Top decay modes listed in SLHA files are now handled correctly.
+
+
+
+** QED radiation 
+*** Ticket #241: Soft QED radiation is now enabled by default
+
+*** Ticket #265: Radiation off W+ and W- is now handled correctly
+
+
+
+** Interfaces
+*** Ticket #243: Fastjet
+    Fastjet is now the only supported jet finder code. All example
+    analyses have been converted to use Fastjet.
+
+*** KtJet and CLHEP interfaces have been removed.
+
+*** New interfaces to AcerDet and PGS available in Contrib
+
+*** MCPWnlo distributed in Contrib
+
+*** HepMC and Rivet interfaces moved to ThePEG
+
+
+
+** Ticket #239: Inelastic cross-section for MinBias
+   This information is now available in the ...-UE.out files.
+
+
+
+** Technical changes
+*** Ticket #186
+    Configure now looks for ThePEG in the --prefix location first.
+
+*** Configure information
+    Important configuration information is listed at the end of the
+    'configure' run and in the file 'config.thepeg'. Please provide
+    this file in any bug reports.
+
+*** New ZERO object
+    The ZERO object can be used to set any dimensionful quantity to
+    zero. This avoids explicit constructs like 0.0*GeV.
+
+*** Exception specifiers removed
+    Client code changes are needed in doinit() etc., simply remove the
+    exception specifier after the function name.
+
+*** Ticket #263: Tau polarizations can be forced in TauDecayer
+
+
+
+
+
 * Herwig++-2.3.2 release: 2009-05-08 (tagged at SVN r4249)
 
 ** SUSY enhancements

@@ -13,6 +13,7 @@
 
 #include "DecayConstructor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -32,11 +33,11 @@ IBPtr DecayConstructor::fullclone() const {
 }
   
 void DecayConstructor::persistentOutput(PersistentOStream & os) const {
-   os << _theNBodyDecayConstructors;
+  os << _theNBodyDecayConstructors << QEDGenerator_;
 }
 
 void DecayConstructor::persistentInput(PersistentIStream & is, int) {
-   is >> _theNBodyDecayConstructors;
+  is >> _theNBodyDecayConstructors >> QEDGenerator_;
 }
 
 ClassDescription<DecayConstructor> DecayConstructor::initDecayConstructor;
@@ -54,12 +55,16 @@ void DecayConstructor::Init() {
      &DecayConstructor::_theNBodyDecayConstructors, -1, false, false, true,
      false, false);
 
-  
   static ParVector<DecayConstructor,string> interfaceDisableModes
     ("DisableModes",
      "A list of decay modes to disable",
      &DecayConstructor::_disableDMTags, -1, string(""), string(""), string(""),
      false, false, Interface::nolimits);
+
+  static Reference<DecayConstructor,DecayRadiationGenerator> interfaceQEDGenerator
+    ("QEDGenerator",
+     "Object to generate QED radiation in particle decays",
+     &DecayConstructor::QEDGenerator_, false, false, true, true, false);
 
 }
 

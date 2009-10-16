@@ -16,8 +16,10 @@ INCLUDE = $(THEPEGINCLUDE) $(GSLINCLUDE) $(HERWIGINCLUDE)
 #
 # C++ flags
 # 
-CXX = g++
-CXXFLAGS = -O2
+CXX = 
+CXXFLAGS = 
+LDFLAGS = 
+SHARED_FLAG = 
 
 ALLCCFILES=$(shell echo *.cc)
 
@@ -32,7 +34,7 @@ HwTauAnalysis.so: Tau5Pion.o TauTo2MesonAnalysis.o TauTo4MesonAnalysis.o \
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) \
 		  Tau5Pion.o TauTo2MesonAnalysis.o TauTo4MesonAnalysis.o \
                   TauCorrelationAnalysis.o TauTo3MesonAnalysis.o \
-                  TauToLeptonsAnalysis.o -shared -o HwTauAnalysis.so
+                  TauToLeptonsAnalysis.o $(SHARED_FLAG) $(LDFLAGS)  -o HwTauAnalysis.so
 
 clean:
 	rm -f $(ALLCCFILES:.cc=.o) HwTauAnalysis.so

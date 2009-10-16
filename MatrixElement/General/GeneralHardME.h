@@ -115,11 +115,12 @@ public:
    * @param debug Whether to compare the numerical answer to an analytical
    * formula (This is only stored for certain processes. It is intended
    * for quick checks of the matrix elements).
+   * @param scaleOption The option of what scale to use
    */
   void setProcessInfo(const vector<HPDiagram> & process,
 		      const vector<DVector> & factors,
 		      const unsigned int ncf,
-		      bool debug);
+		      bool debug, unsigned int scaleOption);
 
 public:
 
@@ -246,6 +247,12 @@ private:
    * Whether to test the value of me2 against the analytical function
    */
   bool theDebug;
+
+  /**
+   * The scale chocie
+   */
+  unsigned int scaleChoice_;
+
 };
 
   /** Exception class to indicate a problem has occurred with setting

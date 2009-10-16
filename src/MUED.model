@@ -315,15 +315,9 @@ set SplittingGenerator:AddFinalSplitting KK1_c_R->KK1_c_R,g; QtoQGSudakov
 set SplittingGenerator:AddFinalSplitting KK1_b_2->KK1_b_2,g; QtoQGSudakov
 set SplittingGenerator:AddFinalSplitting KK1_t_2->KK1_t_2,g; QtoQGSudakov
 ###################################################
-#
-#  Setting to ensure spin correlations
-#  and generation of processes and decays
-#
+# Set up the model framework
 ###################################################
 cd /Herwig/NewPhysics
-insert /Herwig/EventHandlers/LEPHandler:PreCascadeHandlers 0 DecayHandler
-insert /Herwig/EventHandlers/LHCHandler:PreCascadeHandlers 0 DecayHandler
-# Set up the model framework
 set MUED/Model:ModelGenerator NewModel
 ###################################################
 #

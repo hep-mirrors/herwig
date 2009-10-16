@@ -1,5 +1,15 @@
-EXTRA_DIST = Analysis2 AnomalousHVV DecayAnalysis LeptonME \
-  RadiativeZPrime RootInterface TauAnalysis
+EXTRA_DIST = \
+AcerDetInterface \
+Analysis2 \
+AnomalousHVV \
+DecayAnalysis \
+LeptonME \
+MCPWNLO \
+PGSInterface \
+RadiativeZPrime \
+RootInterface \
+TauAnalysis
+
 
 dist-hook:
 	rm -rf `find $(distdir) -name '.svn' -or -name 'Makefile'`
