@@ -196,6 +196,11 @@ private:
    * Id of the last chargino that the coupling was evaluated for 
    */
   long _id3last; 
+
+  /**
+   *  Include Yukawa's ?
+   */
+  bool yukawa_;
 };
 }
 

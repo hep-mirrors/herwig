@@ -55,6 +55,8 @@ using namespace ThePEG;
    *   
    * @see DecayPhaseSpaceMode
    * @see DecayPhaseSpaceChannel
+   * @see \ref DecayIntegratorInterfaces "The interfaces"
+   * defined for DecayIntegrator.
    */
 
 class DecayIntegrator: public HwDecayerBase {

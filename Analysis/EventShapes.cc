@@ -309,7 +309,7 @@ void EventShapes::calculateThrust() {
 void EventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
   Energy2 tval;
   t = ZERO;
-  Vector3<Energy2> tv;
+  ThreeVector<Energy2> tv;
   Momentum3 ptot;
   vector<Momentum3> cpm;
   for (unsigned int k=1; k < p.size(); k++) {

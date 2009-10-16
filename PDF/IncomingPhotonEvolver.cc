@@ -152,7 +152,7 @@ handle(EventHandler & eh, const tPVector & ,
   Lorentz5Momentum p2p = pother - a[1]*p - b[1]*n;
   // compute kappa
   Energy2 A = a[0]*b[1]*S;
-  Energy2 B = shat - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).mag2();
+  Energy2 B = shat - (a[0]*b[0]+a[1]*b[1])*S - (p1p+p2p).m2();
   Energy2 C = a[1]*b[0]*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if(rad < 0.) throw Exception() << "Can't generate backward evolution of the photon"

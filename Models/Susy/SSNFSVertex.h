@@ -200,6 +200,11 @@ private:
    * Store the id of the last scalar to be evaluate
    */
   long _id3last;
+
+  /**
+   *  Include Yukawa's ?
+   */
+  bool yukawa_;
 };
 }
 

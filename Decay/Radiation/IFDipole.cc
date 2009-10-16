@@ -674,7 +674,7 @@ LorentzRotation IFDipole::solveBoost(const Lorentz5Momentum & q,
   Energy modq = q.vect().mag();
   double betam = (p.e()*modp-q.e()*modq)/(sqr(modq)+sqr(modp)+p.mass2());
   Boost beta = -betam*q.vect().unit();
-  Vector3<Energy2> ax = p.vect().cross( q.vect() ); 
+  ThreeVector<Energy2> ax = p.vect().cross( q.vect() ); 
   double delta = p.vect().angle( q.vect() );
   LorentzRotation R;
   using Constants::pi;
