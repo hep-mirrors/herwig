@@ -36,7 +36,8 @@ void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
 
 template <typename ValT, typename ArgT>
 ClassDescription<Interpolator<ValT,ArgT> > 
-Interpolator<ValT,ArgT>::initInterpolator;
+Interpolator<ValT,ArgT>::initInterpolator
+= ClassDescription<Interpolator<ValT,ArgT> >();
 // Definition of the static class description member.
 
 template <typename ValT, typename ArgT>
@@ -76,7 +77,7 @@ void Interpolator<ValT,ArgT>::Init() {
   static Parameter<Interpolator<ValT,ArgT>,ArgT> interfaceArgType
     ("ArgType",
      "The unit of the function arguments",
-     &Interpolator<ValT,ArgT>::xfunit, 
+     &Interpolator<ValT,ArgT>::_xunit, 
      TypeTraits<ArgT>::baseunit, 
      1.0*TypeTraits<ArgT>::baseunit, 
      0*TypeTraits<ArgT>::baseunit, 

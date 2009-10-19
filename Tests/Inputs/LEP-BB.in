@@ -1,0 +1,19 @@
+cd /Herwig/MatrixElements
+set MEee2gZ2qq:MinimumFlavour 4
+set MEee2gZ2qq:MaximumFlavour 4
+insert SimpleEE:MatrixElements 0 MEee2gZ2qq
+
+read LEP.common
+
+cd /Herwig/Generators
+
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 10.53
+set LEPGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+cd /Herwig/Generators
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/BELLECharm
+insert LEPGenerator:AnalysisHandlers 0 /Herwig/Analysis/CLEOCharm
+
+set /Herwig/Cuts/EECuts:MHatMin 10.5299
+
+saverun LEP-BB LEPGenerator

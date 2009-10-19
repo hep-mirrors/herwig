@@ -155,6 +155,17 @@ public:
   void pT(Energy in) { _pt=in;}
 
   /**
+   *  Get the fraction of beam momentum x
+   */
+  double x_frac() const {return _x_frac;}
+
+  /**
+   *  Set the fraction of beam momentum x
+   */
+  void x_frac( double x ) { _x_frac = x; }
+
+
+  /**
    *  Get whether the branching is incoming, outgoing or decay
    */
   Status status() const {return _status;}
@@ -304,6 +315,11 @@ private:
    *  The transverse momentum
    */
   Energy _pt; 
+
+  /**
+   *  The beam momentum fraction carried by an incoming parton x
+   */
+  double _x_frac;
 
   /**
    *  Whether the branching is incoming, outgoing or a decay

@@ -334,10 +334,12 @@ void PowhegHandler::Init() {
      (ifaceDynamicSuds,"No","No dynamics Sudakovs", false);
    static SwitchOption DynamicSudsTrue
      (ifaceDynamicSuds,"Yes","Generate dynamics Sudakovs", true);
+
 }
 
 double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   _max_mult = maxMult;
+  _min_mult = minMult;
   _s = lastXCombPtr()->lastSHat();
   _global_alphaS_wgt = 10.;
  
@@ -345,6 +347,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     _theHardTree = doClusteringOrdered();
   else
     _theHardTree = doClustering();
+
   //if highest mult set veto def
   if( _highestMult == true ) _showerVeto->setHighest( true );
   else _showerVeto->setHighest( false );
@@ -362,6 +365,7 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   //update sub process based on _theHardTree
   updateSubProcess();
 
+  
   // compute the Sudakov and alphaS weight
   double SudWgt = 1.;
   if(  _reweightOpt != 1 ){
@@ -373,7 +377,6 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
     return SudWgt;
   }
   else return 1.;
-  
 }
 void PowhegHandler::dofinish() {
   ShowerHandler::dofinish();
@@ -995,6 +998,11 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     _highestMult = true;
   }
   else _highestMult = false;
+  if( theParts.size() == _min_mult ) {
+    _lowestMult = true;
+  }
+  else _lowestMult = false;
+
   //loops through the FS particles and create hardBranchings
   for( unsigned int i = 0; i < theParts.size(); i++){
     //only include coloured partons
@@ -1106,7 +1114,8 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     else if( !_lepton ) {
       powhegtree->fixFwdBranchings();
       powhegtree->findNodes();
-      if( powhegtree->checkHardOrdering() ) {
+      if( powhegtree->checkHardOrdering() && 
+	  powhegtree->checkXOrdering() ) {
 	//find the wgt and fill _hardTrees map
 	double treeWeight = sudakovWeight( powhegtree );
 	_hardTrees.push_back( make_pair( powhegtree, treeWeight ) );
@@ -1137,7 +1146,7 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     Energy min_pt = 9999999999.*GeV;
     if( !_hardTrees.empty() ){
       for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ ){
-	if( _hardTrees[ix].first->totalPt() < min_pt ){
+	if( _hardTrees[ix].first->totalPt() < min_pt ) {
 	  min_pt = _hardTrees[ix].first->totalPt();
 	  chosen_hardTree = _hardTrees[ix].first;
 	}
@@ -1980,6 +1989,7 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
   if( isnan(alphaWgt) ) cerr<<"nan in alphaS\n";
 
   double PDFweight = pdfWeight( theTree );
+
   if( isnan( PDFweight ) ) cerr<<"nan in  pdf\n";
   if( _reweightOpt == 0 )
     return SudWgt*alphaWgt*PDFweight;
@@ -2346,13 +2356,13 @@ void PowhegHandler::makeQtildeDist(){
   for( unsigned int ix = 0; ix < theHists.size(); ix ++ ){
     using namespace HistogramOptions;
     theHists[ix]->topdrawOutput(sudTestOut,Frame,
-			    "RED",
-			    "qtilde distribution",
-			    "",
-			    "",
-			    "",
-			    "qtilde / GeV",
-			    "");
+				"RED",
+				"qtilde distribution",
+				"",
+				"",
+				"",
+				"qtilde / GeV",
+				"");
   }
   sudTestOut.close();
 }
@@ -2575,9 +2585,6 @@ bool ProtoTree::fixFwdBranchings(){
 
 double PowhegHandler::pdfWeight( HardTreePtr theHardTree){
   if(_lepton ) return 1.;
-  // Energy2 pdf_freeze = 
-  //  sqr( ShowerHandler::currentHandler()->pdfFreezingScale() );
-  // cerr<<"freeze scale = "<< sqrt( pdf_freeze ) / GeV <<"\n";
   double current_pdf;
   double pdf_wgt = 1.;
   double x_frac;
@@ -2597,17 +2604,20 @@ double PowhegHandler::pdfWeight( HardTreePtr theHardTree){
 
     //should also implement pdf freeze scale
     Lorentz5Momentum beamMom = currentParticle->beam()->momentum();
+   
+    //this assumes we are in c.o.m frame of beams with beam dirn along z axis
     Lorentz5Momentum otherBeam = beamMom;
     otherBeam.setZ( -otherBeam.z() );
     tcPDPtr theBeam = currentParticle->beam()->dataPtr();
     tcPDPtr theParton = currentParticle->branchingParticle()->dataPtr();
     Energy2 scale = lastXCombPtr()->lastSHat();
-    x_frac =  currentParticle->branchingParticle()->momentum() 
-      * otherBeam / ( beamMom*otherBeam );
+
+    x_frac = currentParticle->x_frac();
+
     //include born pdf factor (that shower would have had)
- 
     current_pdf = pdf->xfx( theBeam, theParton, 
 			    scale, x_frac ) / x_frac;
+
     if( current_pdf <= 0. ) return 0.;
     else pdf_wgt *= current_pdf;
   
@@ -2620,17 +2630,20 @@ double PowhegHandler::pdfWeight( HardTreePtr theHardTree){
       if( current_pdf <= 0. ) return 1.;
       else pdf_wgt /= current_pdf;
 
-      x_frac /= currentParticle->z();
       currentParticle = currentParticle->parent();
+      x_frac = currentParticle->x_frac();
+
       theParton = currentParticle->branchingParticle()->dataPtr();
       current_pdf = pdf->xfx( theBeam, theParton, 
 			      scale, x_frac ) / x_frac;
       if( current_pdf <= 0. ) return 0.;
       else pdf_wgt *= current_pdf;
     }
-    //divide out the ME pdf fration
+
     current_pdf = pdf->xfx( theBeam, theParton, 
 			    sqr( _pdfScale ), x_frac ) / x_frac;
+
+    if( current_pdf <= 0. ) return 1.;
     pdf_wgt /= current_pdf;
   }
   return pdf_wgt;

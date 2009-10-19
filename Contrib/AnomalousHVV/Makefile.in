@@ -11,12 +11,14 @@
 THEPEGINCLUDE =
 HERWIGINCLUDE =
 GSLINCLUDE    = 
+LDFLAGS = 
+SHARED_FLAG = 
 INCLUDE = $(THEPEGINCLUDE) $(HERWIGINCLUDE) $(GSLINCLUDE)
 #
 # C++ flags
 # 
-CXX = g++
-CXXFLAGS = -O2
+CXX =
+CXXFLAGS =
 
 ALLCCFILES=$(shell echo *.cc)
 
@@ -26,7 +28,7 @@ default : AnomalousHVV.so
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -c -shared $< -o $@  
 
 AnomalousHVV.so : AnomalousWWHVertex.o  SimpleVBFAnalysis.o
-	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -shared \
+	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) $(SHARED_FLAG) $(LDFLAGS) \
 	AnomalousWWHVertex.o  SimpleVBFAnalysis.o -o AnomalousHVV.so
 
 clean:

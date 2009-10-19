@@ -175,7 +175,7 @@ bool LightClusterDecayer::decay(ClusterVector & clusters, tPVector & finalhadron
     for ( ClusterVector::iterator jt = clusters.begin();
 	  jt != clusters.end(); ++jt ) {
       if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
-	Length distance = abs (((*it)->vertex() - (*jt)->vertex()).mag());
+	Length distance = abs (((*it)->vertex() - (*jt)->vertex()).m());
 	candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
       }
     }

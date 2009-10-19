@@ -20,6 +20,7 @@
 #include "ThePEG/PDF/PartonExtractor.h"
 #include "Herwig++/Shower/Base/CKKWVeto.h"
 
+
 namespace Herwig {
   class PowhegHandler;
   class PrototypeBranching;
@@ -103,7 +104,7 @@ public:
    * The default constructor.
    */
   PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOpt(0), 
-		    _highestMult(false), _testSudakovs(false), _qtildeDist( false ),
+		    _highestMult(false), _lowestMult(false), _testSudakovs(false), _qtildeDist( false ),
 		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), 
 		    _clusterOption( 0 ),  _rejectNonAO( true ), _rejectNoHistories( true ),_dalitzOn( false ), _pdfScale( 91.18*GeV ),
 		    _dynamicSuds( false ) {}
@@ -137,6 +138,16 @@ public:
   inline bool highestMult(){
     return _highestMult;
   }
+  inline bool lowestMult(){
+    return _lowestMult;
+  }
+  inline Ptr<CKKWVeto>::pointer theVeto(){
+    return _showerVeto;
+  }
+  inline tEvolverPtr getEvolver(){
+    return evolver();
+  }
+  
   /**
    *  access to the jet measure definition being used
    */
@@ -425,6 +436,11 @@ private:
    *  Whether we are treating the highest multiplicity contribution
    */
   bool _highestMult;
+  
+  /**
+   *  Whether we are treating the lowest multiplicity contribution
+   */
+  bool _lowestMult;
 
   /**
    *  Whether we are treating an event with no shower interpretation
@@ -542,10 +558,11 @@ private:
    * the maximum multplcity
    */
   unsigned int _max_mult;
-
+  
   /**
-   *  Pointer to the parton extractor
+   * the minimum multplcity
    */
+  unsigned int _min_mult;
   
   /**
    * The PartonExtractor object used to construct remnants.
@@ -587,7 +604,6 @@ private:
    * Whether to generate the Sudakov reweighting via event vetoes
    */
   bool _dynamicSuds;
-
 };
 
 }

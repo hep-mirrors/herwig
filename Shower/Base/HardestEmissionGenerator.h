@@ -109,7 +109,7 @@ protected:
   virtual IVector getReferences();
   //@}
 
-protected:
+public:
 
   /**
    *  Method to set the Evolver

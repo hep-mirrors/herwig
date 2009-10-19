@@ -109,6 +109,11 @@ public:
   bool checkHardOrdering();
   
   /**
+   * Returns true if all spacelike lines are ordered in x
+   */
+  bool checkXOrdering();
+
+  /**
    * Calls recursive function to fill externals and nodes
    * then finds the internal lines from the nodes
    */

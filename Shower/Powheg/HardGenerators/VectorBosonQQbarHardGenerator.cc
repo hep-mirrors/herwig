@@ -22,15 +22,16 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 
 void VectorBosonQQbarHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _alphaEM << _gamma << _gluon << ounit( _Qg, GeV );
+  os << _alphaS << _alphaEM << _gamma << _gluon << ounit( _Ptmin, GeV );
 }
 
 void VectorBosonQQbarHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _alphaEM >> _gamma >> _gluon >> iunit( _Qg, GeV );
+  is >> _alphaS >> _alphaEM >> _gamma >> _gluon >> iunit( _Ptmin, GeV );
 }
 
 ClassDescription<VectorBosonQQbarHardGenerator> 
@@ -57,7 +58,7 @@ void VectorBosonQQbarHardGenerator::Init() {
   static Parameter<VectorBosonQQbarHardGenerator, Energy> interfacePtMin
     ("minPt",
      "The pt cut on hardest emision generation",
-     &VectorBosonQQbarHardGenerator::_Qg, GeV, 1.*GeV, 0*GeV, 100000.0*GeV,
+     &VectorBosonQQbarHardGenerator::_Ptmin, GeV, 1.*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
 }
 
@@ -95,7 +96,7 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   ShowerProgenitorPtr 
     QProgenitor    = tree->outgoingLines().begin()->first,
     QbarProgenitor = tree->outgoingLines().rbegin()->first;
-  if(QProgenitor->id()<0) swap(QProgenitor   ,QbarProgenitor);
+  if(QProgenitor->id()<0) swap( QProgenitor, QbarProgenitor );
   _partons.resize(2);
   _partons[0] = QProgenitor->progenitor()->dataPtr();
   _partons[1] = QbarProgenitor->progenitor()->dataPtr();
@@ -115,8 +116,8 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Generate emission and set _quark[0,1] and _gauge to be the 
   // momenta of q, qbar and g after the hardest emission:
   if(!getEvent()) {
-    QProgenitor->maximumpT(_Qg);
-    QbarProgenitor->maximumpT(_Qg);
+    QProgenitor->maximumpT(_Ptmin);
+    QbarProgenitor->maximumpT(_Ptmin);
     return HardTreePtr();
   }
   // Get the list of possible branchings.
@@ -161,14 +162,14 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   if (_inter==ShowerInteraction::QCD && 
       _gauge.e() < _gluon->constituentMass()) return HardTreePtr();
   // set masses
-  _quark[0].setMass(_partons[0]->mass());
-  _quark[1].setMass(_partons[1]->mass());
-  _gauge.setMass(ZERO);
+  _quark[0].setMass( _partons[0]->mass() );
+  _quark[1].setMass( _partons[1]->mass() );
+  _gauge.setMass( ZERO );
   // assign the emitter based on evolution scales
   _iemitter   = _quark[0]*_gauge>_quark[1]*_gauge ? 1 : 0;
   _ispectator = _iemitter==1              ? 0 : 1; 
   // Set the sudakov for the q/qbar->q/qbarg branching.
-  SudakovPtr sudakov = _iemitter==0 ? q_sudakov : qbar_sudakov;
+  SudakovPtr sudakov = _iemitter == 0 ? q_sudakov : qbar_sudakov;
   // Make the particles for the HardTree:
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(_partons[_iemitter],true)));
   ShowerParticlePtr spectator(new_ptr(ShowerParticle(_partons[_ispectator],true)));
@@ -207,12 +208,12 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
     allBranchings.push_back(spectatorBranch);
   } 
   else {
-    allBranchings.push_back(spectatorBranch);
-    allBranchings.push_back(emitterBranch);
+    allBranchings.push_back( spectatorBranch );
+    allBranchings.push_back( emitterBranch );
   }
   // Add incoming boson to allBranchings
-  allBranchings.push_back(spaceBranchings.back());
-//   // Make the HardTree from the HardBranching vectors.
+  allBranchings.push_back( spaceBranchings.back() );
+  // Make the HardTree from the HardBranching vectors.
   HardTreePtr nasontree = new_ptr(HardTree(allBranchings,spaceBranchings,
 					   _inter));
   // Set the maximum pt for all other emissions
@@ -220,8 +221,8 @@ HardTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
   QProgenitor   ->maximumpT(ptveto);
   QbarProgenitor->maximumpT(ptveto);
   // Connect the particles with the branchings in the HardTree
-  nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
-  nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
+  nasontree->connect( QProgenitor->progenitor(), allBranchings[0] );
+  nasontree->connect( QbarProgenitor->progenitor(), allBranchings[1] );
   // Create the two colour lines and connect the particles:
   ColinePtr blueLine  = new_ptr(ColourLine());
   ColinePtr greenLine = new_ptr(ColourLine());
@@ -249,8 +250,8 @@ bool VectorBosonQQbarHardGenerator::getEvent() {
   // max pT
   Energy ptmax = 0.5*sqrt(_s);
   // Define over valued y_max & y_min according to the associated pt_min cut.
-  double ymax  =  acosh(ptmax/_Qg);
-  double ymin  = -acosh(ptmax/_Qg);
+  double ymax  =  acosh(ptmax/_Ptmin);
+  double ymin  = -acosh(ptmax/_Ptmin);
   // loop over possible QED and QCD interactions
   Energy pT[2]={-GeV,-GeV};
   double  y[2];
@@ -277,7 +278,7 @@ bool VectorBosonQQbarHardGenerator::getEvent() {
       reject = true;
       // generator pt
       lastpt *= pow(UseRandom::rnd(),1./(prefactor*(ymax-ymin)));
-      if(lastpt<_Qg) {
+      if(lastpt<_Ptmin) {
 	lastpt=-GeV;
 	break;
       }
@@ -332,14 +333,13 @@ bool VectorBosonQQbarHardGenerator::constructVectors(){
   using Constants::pi;
   // Find the boost from the lab to the c.o.m with the spectator 
   // along the -z axis, and then invert it.
-  LorentzRotation eventFrame((_quark[0]+_quark[1]).findBoostToCM() );
+  LorentzRotation eventFrame( ( _quark[0] + _quark[1] ).findBoostToCM() );
   Lorentz5Momentum spectator = eventFrame*_quark[_ispectator];
-  eventFrame.rotateZ(-spectator.phi());
-  eventFrame.rotateY(-spectator.theta()-pi);
+  eventFrame.rotateZ( -spectator.phi() );
+  eventFrame.rotateY( -spectator.theta() - pi );
   eventFrame.invert();
 
-  // Get the COM energy:
-  Energy rts(sqrt(_s));
+  Energy rts = sqrt(_s);
 
   // Extract the reduced (constituent) masses:
   double mu_e(_quark[_iemitter].mass()/rts);
@@ -370,23 +370,24 @@ bool VectorBosonQQbarHardGenerator::constructVectors(){
 
   if(abs(c_se)>1.||abs(s_se)>1.) return false;
 
-  // Construct momenta in boson COM frame with spectator along +/-Z axis: 
-  _phi = UseRandom::rnd() * twopi;  
-
   // momentum of emitter
   _quark[_iemitter].setT( 0.5*rts * xe);
   _quark[_iemitter].setX( 0.5*rts * b_xe*s_se*cos(_phi));
   _quark[_iemitter].setY( 0.5*rts * b_xe*s_se*sin(_phi));
   _quark[_iemitter].setZ( 0.5*rts * b_xe*c_se);
-  // momentum of spectator
+
+  //spectator
   _quark[_ispectator].setT( 0.5*rts * xs);
   _quark[_ispectator].setX( 0.*MeV);
   _quark[_ispectator].setY( 0.*MeV);
   _quark[_ispectator].setZ(-0.5*rts * b_xs);
+
   // momentum of gluon
   _gauge=-_quark[0]-_quark[1];
   _gauge.setT(sqrt(_s)+_gauge.t());
   _gauge.setMass(init_g_mass);
+  _gauge.rescaleRho();
+
   // boost constructed vectors into the event frame
   _quark[0] = eventFrame * _quark[0];
   _quark[1] = eventFrame * _quark[1];
@@ -402,4 +403,3 @@ bool VectorBosonQQbarHardGenerator::constructVectors(){
   _quark[_ispectator].rescaleRho();
   return true;
 }
-

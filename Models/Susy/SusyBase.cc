@@ -355,6 +355,7 @@ void SusyBase::readDecay(ifstream & ifs,
   inpart->widthCut(5.*width);
   string prefix("decaymode " + inpart->name() + "->"), tag(""),line("");
   double brsum(0.);
+  unsigned int nmode = 0;
   while(getline(ifs, line)) {
     if(line[0] == '#') {
       if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -366,6 +367,7 @@ void SusyBase::readDecay(ifstream & ifs,
     unsigned int nda(0),npr(0);
     is >> brat >> nda;
     brsum += brat;
+    ++nmode;
     while( true ) {
       long t;
       is >> t;
@@ -407,7 +409,7 @@ void SusyBase::readDecay(ifstream & ifs,
     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
 	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
-  if( abs(brsum - 1.) > _tolerance ) {
+  if( abs(brsum - 1.) > _tolerance && nmode!=0 ) {
     cerr << "Warning: The total branching ratio for " << inpart->PDGName()
 	 << " from the spectrum file does not sum to 1. The branching fractions"
 	 << " will be rescaled.\n";
@@ -599,18 +601,26 @@ void SusyBase::createMixingMatrices() {
 
 void SusyBase::extractParameters(bool checkmodel) {
   map<string,ParamMap>::const_iterator pit;
-  // extract parameters from minpar
-  pit=_parameters.find("minpar");
-  if(pit==_parameters.end()) 
-    throw Exception() << "BLOCK MINPAR not found in " 
-		      << "SusyBase::extractParameters()"
-		      << Exception::runerror;
+  ParamMap::const_iterator it;
+  // try and get tan beta from extpar first
+  pit=_parameters.find("extpar");
   // extract tan beta
-  ParamMap::const_iterator it = pit->second.find(3);
-  if(it==pit->second.end()) 
+  _tanbeta = -1.;
+  if(pit!=_parameters.end()) {
+    it = pit->second.find(25);
+    if(it!=pit->second.end()) _tanbeta = it->second;
+  }
+  // otherwise from minpar
+  if(_tanbeta<0.) {
+    pit=_parameters.find("minpar");
+    if(pit!=_parameters.end()) { 
+      it = pit->second.find(3);
+      if(it!=pit->second.end()) _tanbeta = it->second;
+    }
+  }
+  if(_tanbeta<0.) 
     throw Exception() << "Can't find tan beta in BLOCK MINPAR"
-		      << Exception::runerror;
-  _tanbeta=it->second;
+		      << " or BLOCK EXTPAR " << Exception::runerror;
   // extract parameters from hmix
   pit=_parameters.find("hmix");
   if(pit==_parameters.end()) {

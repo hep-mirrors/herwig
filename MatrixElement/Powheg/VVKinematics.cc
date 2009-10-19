@@ -211,8 +211,39 @@ realVVKinematics::realVVKinematics(bornVVKinematics bornVariables,
     tkr_ = -0.5*sr_*(1.-xr_)*(1.-y_);
     ukr_ = -0.5*sr_*(1.-xr_)*(1.+y_);
     // Eq.2.12 of WZ paper NPB 383(1992) 3-44: 
-    cpsir_  =1.-2.*sr_ *s2r_/(sr_+tkr_)/(sr_ +ukr_);
-    cpsiprr_=1.-2.*tkr_*s2r_/(sr_+tkr_)/(tkr_+ukr_);
+    double omxy((1.-xr_)*y_);
+    double opx(1.+xr_);
+    cpsir_   = -8.*xr_/(opx+omxy)/(opx-omxy)+1.;
+    cpsiprr_ = (1.+y_-xr_*(1.-y_))/(1.+y_+xr_*(1.-y_));
+    // If an unphysical value of cos(psi) or cos(psi^prime) results,
+    // and if the kinematics are also extreme (x-> 1) try setting 
+    // cpsir_ or cpsiprr_ to +/-1. accordingly. 
+    double tiny(1.e-10);
+    double roundingError(0.);
+    if(!(fabs(cpsir_)<=1.&&fabs(cpsiprr_)<=1.)) {
+      if(cpsir_   >  1.&&cpsir_   <  1.+tiny) 
+	{ roundingError=cpsir_-1.; cpsir_ = 1.; }
+      if(cpsir_   < -1.&&cpsir_   > -1.-tiny) 
+	{ roundingError=cpsir_+1.; cpsir_ =-1.; }
+      if(cpsiprr_ >  1.&&cpsiprr_ <  1.+tiny) 
+	{ roundingError=cpsiprr_-1.; cpsiprr_=1.; }
+      if(cpsiprr_ < -1.&&cpsiprr_ > -1.-tiny) 
+	{ roundingError=cpsiprr_+1.; cpsiprr_=-1.; }
+      if(fabs(roundingError)>=tiny) 
+	throw Exception() 
+	  << "realVVKinematics::realVVKinematics:\n"
+	  << "cosine of psi or psi^prime not in range -1,1.\n"
+	  << "1.-xr_ = " << 1.-xr_           << "\n" 
+	  << "y_     = " << y_               << "\n"
+	  << "cpsir_      = " << cpsir_      << "\n"
+	  << "1.+cpsir_   = " << 1.+cpsir_   << "\n"
+	  << "1.-cpsir_   = " << 1.-cpsir_   << "\n" 
+	  << "cpsiprr_    = " << cpsiprr_    << "\n"
+	  << "1.+cpsiprr_ = " << 1.+cpsiprr_ << "\n"
+	  << "1.-cpsiprr_ = " << 1.-cpsiprr_ << "\n" 
+	  << "Consider increasing the local variable tiny" << "\n"
+	  << Exception::warning;
+    }
   }
 
   // Remainder of Eq.2.12 of WZ paper NPB 383(1992) 3-44: 
@@ -257,8 +288,8 @@ realVVKinematics::realVVKinematics(bornVVKinematics bornVariables,
   Energy p10r( (sr_ +tkr_)/2./sqrt(s2r_));
   Energy p20r( (sr_ +ukr_)/2./sqrt(s2r_));
   Energy k0r (-(ukr_+tkr_)/2./sqrt(s2r_));
-  double spsir   = sqrt(1-cpsir_  )*sqrt(1.+cpsir_  );
-  double spsiprr = sqrt(1-cpsiprr_)*sqrt(1.+cpsiprr_);
+  double spsir   = sqrt(1.-cpsir_  )*sqrt(1.+cpsir_  );
+  double spsiprr = sqrt(1.-cpsiprr_)*sqrt(1.+cpsiprr_);
   p1r_ = Lorentz5Momentum(0.*GeV,0.*GeV,p10r,p10r,0.*GeV);
   p2r_ = Lorentz5Momentum(0.*GeV, p20r*spsir  ,p20r*cpsir_  ,p20r,0.*GeV);
   kr_  = Lorentz5Momentum(0.*GeV, k0r *spsiprr,k0r *cpsiprr_,k0r ,0.*GeV);
@@ -342,22 +373,31 @@ void realVVKinematics::sanityCheck() const {
      cout << "\nrealVVKinematics momentum imbalance = " << total/GeV << endl;
 
   // Check that the final state momenta k1 and k2 are the same as
-  // they are in the 2->2 process:
+  // they are in the 2->2 process up to an azimuthal rotation; note
+  // that the azimuthal angle of k1 and k2 in their rest frame is
+  // defined by the radiative variable theta2 which is in turn defined
+  // w.r.t the transverse momentum of the emitted parton, while in
+  // the born process the azimuthal angle of k1 / k2 is basically 
+  // meaningless (random).
   Lorentz5Momentum k1diff(bornVariables_.k1b()-k1r);
   Lorentz5Momentum k2diff(bornVariables_.k2b()-k2r);
-  if(k1diff.x()/GeV>1.e-7||k1diff.y()/GeV>1.e-7||k1diff.z()/GeV>1.e-7||
+  Energy k1pTdiff(bornVariables_.k1b().perp()-k1r.perp());
+  Energy k2pTdiff(bornVariables_.k2b().perp()-k2r.perp());
+  if(k1pTdiff/GeV>1.e-7||k1diff.z()/GeV>1.e-7||
      k1diff.t()/GeV>1.e-7||k1diff.tau()/GeV>1.e-7) {
       cout << "\n\n\nrealVVKinematics:\n";
       cout << "k1b    = " << bornVariables_.k1b()/GeV << endl;
       cout << "k1r    = " << k1r   /GeV << endl;
       cout << "k1diff = " << k1diff/GeV << endl;
+      cout << "pTdiff = " << k1pTdiff/GeV << endl;
   }
-  if(k2diff.x()/GeV>1.e-7||k2diff.y()/GeV>1.e-7||k2diff.z()/GeV>1.e-7||
+  if(k2pTdiff/GeV>1.e-7||k2diff.z()/GeV>1.e-7||
      k2diff.t()/GeV>1.e-7||k2diff.tau()/GeV>1.e-7) {
       cout << "\n\n\nrealVVKinematics:\n";
       cout << "k2b    = " << bornVariables_.k2b()/GeV << endl;
       cout << "k2r    = " << k2r   /GeV << endl;
       cout << "k2diff = " << k2diff/GeV << endl;
+      cout << "pTdiff = " << k2pTdiff/GeV << endl;
   }
 
   // Check also that for y_=+/-1 you also get Born-like initial state momenta

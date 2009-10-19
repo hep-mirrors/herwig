@@ -205,7 +205,13 @@ bool HardTree::checkHardOrdering( ) {
       proto_lines.push_back( make_pair( (*it)->children()[0], new_hard_line1 ) ); 
       proto_lines.push_back( make_pair( (*it)->children()[1], new_hard_line2 ) ); 
       //pts of children are equal so just add once 
-      _total_pt += (*it)->children()[0]->pT();
+      Energy branchingPt = (*it)->children()[0]->pT();
+      //included factor to favour ISFS branchings between partons in same z direction
+      if( (*it)->status() == HardBranching::Incoming && 
+	  ( ( (*it)->branchingParticle()->momentum().z() > ZERO )
+	    == ( (*it)->children()[1]->branchingParticle()->momentum().z() > ZERO ) ) )
+	branchingPt *= 0.9;  
+      _total_pt += branchingPt;
     }
     else if( (*it)->parent() ) {
       //trace all spacelike branchings back following parents
@@ -246,6 +252,7 @@ bool HardTree::checkHardOrdering( ) {
   }
   return true;
 }
+
 Energy HardTree::lowestPt( int jetMeasureMode, Energy2 s ){
   
   //check to see we found the _lowest pt correctly
@@ -351,5 +358,42 @@ bool HardTree::fixParents( HardBranchingPtr branch ){
   fixParents(  branch->children()[0] );
   branch->children()[1]->parent( branch );
   fixParents(  branch->children()[1] );
+  return true;
+}
+
+//check that spacelike lines areordered with x_frac getting smaller towards hard subprocess
+bool HardTree::checkXOrdering( ) {
+  //  return true;
+
+  double x_frac;
+  for( set< HardBranchingPtr >::const_iterator cit = incoming().begin(); 
+       cit != incoming().end(); ++cit ) {
+    //find the pdf for this line
+    HardBranchingPtr currentParticle = *cit;
+    if( currentParticle->status() == HardBranching::Outgoing || 
+	!currentParticle->branchingParticle()->coloured() ) continue;
+    Lorentz5Momentum beamMom = currentParticle->beam()->momentum();
+    Lorentz5Momentum otherBeam = beamMom;
+    otherBeam.setZ( -otherBeam.z() );
+
+    // x_frac =  currentParticle->branchingParticle()->momentum() 
+    //  * otherBeam / ( beamMom*otherBeam );
+    x_frac = currentParticle->x_frac();
+
+    //trace from incoming to hard process checking x_{i+1} < x_{i}
+    while( !currentParticle->children().empty() ){
+      currentParticle = currentParticle->children()[0];
+      double last_xfrac = x_frac;
+      //is this the correct momentum
+      x_frac = currentParticle->x_frac();
+      //  x_frac =  currentParticle->branchingParticle()->momentum() 
+      //	* otherBeam / ( beamMom*otherBeam );
+      if( x_frac  > last_xfrac ) {
+	return false;
+      }
+      //  if( currentParticle->branchingParticle()->momentum().t() < ZERO )
+      //	return false;
+    }
+  } 
   return true;
 }

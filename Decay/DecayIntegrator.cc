@@ -69,7 +69,6 @@ void DecayIntegrator::Init() {
     ("The DecayIntegrator class is a base decayer class "
      "including a multi-channel integrator.");
   
-
   static Parameter<DecayIntegrator,int> interfaceIteration
     ("Iteration",
      "Number of iterations for the initialization of the phase space",

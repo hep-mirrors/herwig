@@ -18,7 +18,7 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-
+ 
 /**
  * The MEPP2HiggsPowheg class implements the matrix element for the process
  * pp->Higgs with different Higgs shape prescriptions (see details in hep-ph/9505211)

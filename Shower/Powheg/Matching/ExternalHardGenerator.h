@@ -123,6 +123,11 @@ private:
    */
   PowhegHandlerPtr _CKKWh;
 
+  /**
+   * Hardest emission generator with which to fill the dead zone in min mult event
+   */
+  HardestEmissionGeneratorPtr _hardGen;
+
 };
 
 }

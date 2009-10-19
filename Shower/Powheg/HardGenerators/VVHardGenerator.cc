@@ -30,13 +30,17 @@ using namespace Herwig;
 
 VVHardGenerator::VVHardGenerator() 
   : power_(2.0),
-    preqqbar_(30.0),preqg_(4.0),pregqbar_(4.0),
-    min_pT_(2.*GeV)
+    preqqbar_(2.0),preqg_(3.0),pregqbar_(3.0),
+    b0_((11.-2./3.*5.)/4./Constants::pi),
+    LambdaQCD_(91.118*GeV*exp(-1./2./((11.-2./3.*5.)/4./Constants::pi)/0.118)),
+    min_pT_(2.*GeV),
+    helicityConservation_(true)
 {}
 
 void VVHardGenerator::persistentOutput(PersistentOStream & os) const {
   os << alphaS_ << power_ 
      << preqqbar_ << preqg_ << pregqbar_ 
+     << b0_ << ounit(LambdaQCD_,GeV) << helicityConservation_
      << ounit( min_pT_,GeV )
      << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ << FFGvertex_;
 }
@@ -44,6 +48,7 @@ void VVHardGenerator::persistentOutput(PersistentOStream & os) const {
 void VVHardGenerator::persistentInput(PersistentIStream & is, int) {
   is >> alphaS_ >> power_ 
      >> preqqbar_ >> preqg_ >> pregqbar_ 
+     >> b0_ >> iunit(LambdaQCD_,GeV) >> helicityConservation_
      >> iunit( min_pT_, GeV )
      >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ >> FFGvertex_;
 }
@@ -218,7 +223,7 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   // Determine whether the quark or antiquark emitted:
   int fermionNumberOfMother(0);
-  if((channel==0&&theRealMomenta[0].z()/theRealMomenta[4].rapidity()>ZERO)||
+  if((channel==0&&theRealMomenta[0].z()/theRealMomenta[4].rapidity()>=ZERO)||
       channel==2) fermionNumberOfMother =  1;
   else if((channel==0&&theRealMomenta[0].z()/theRealMomenta[4].rapidity()<ZERO)||
 	   channel==1) fermionNumberOfMother = -1;
@@ -445,6 +450,10 @@ bool VVHardGenerator::canHandle(ShowerTreePtr tree) {
 
 double VVHardGenerator::getResult(int channel, realVVKinematics R, Energy pT) {
 
+  // This routine should return the integrand of the exact Sudakov form factor,
+  // defined precisely as
+  // \Delta(pT) = exp[ - \int_{pT}^{pTmax} dpT dYk d\phi/2pi * getResult(...) ]
+ 
   // Get pi for the prefactor:
   using Constants::pi;
 
@@ -463,8 +472,6 @@ double VVHardGenerator::getResult(int channel, realVVKinematics R, Energy pT) {
   double x2b = B_.x2b();
 
   // Get the mandelstam variables needed to calculate the n+1 body matrix element:
-  Energy2 tk = R.tkr();
-  Energy2 uk = R.ukr();
   Energy2 s  = R.sr() ;
   Energy2 t_u_MR_o_MB;
   double  lo_lumi, nlo_lumi;
@@ -525,15 +532,12 @@ bool VVHardGenerator::getEvent(vector<Lorentz5Momentum> & theRealMomenta,
   // Initialize the pT_ *integration limit* i.e. the pT of the generated emission:
   pT_ = ZERO;
 
-  // The pT *integration variable* and the corresponding eT of the diboson system:
-  Energy pT, eT;
-
-  // The x and y radiative variables:
-  double xr, y;
+  // The pT *integration variable*:
+  Energy pT;
 
   // The x_1 & x_2 momentum fractions corresponding to incoming momenta p1 & p2:
-  double x1_, x2_;
-  double x1 , x2 ;
+  double x1_(-999.), x2_(-999.);
+  double x1 (-999.), x2 (-999.);
 
   // The jet rapidity *integration variable* and its limits:
   double Yk, minYk(-8.0), maxYk(8.0);
@@ -553,25 +557,33 @@ bool VVHardGenerator::getEvent(vector<Lorentz5Momentum> & theRealMomenta,
   // Initialize the flag indicating the selected radiation channel:
   channel=-1;
 
-  for(int j=0;j<1;j++) {
+  // Some product of constants used for the crude distribution:
+  double a(0.);
+
+  for(int j=0;j<3;j++) {
     pT=starting_pT;
-    double a = alphaS_->overestimateValue() * prefactor_[j] * (maxYk-minYk) / (power_ - 1.);
+    a =(maxYk-minYk)*prefactor_[j]/2./b0_;
     do {
-      // Generate next pT:
-      pT = GeV/pow(pow(GeV/pT,power_-1) - log(UseRandom::rnd())/a,1./(power_-1.));
+      // Generate next pT according to exp[- \int^{pTold}_{pT} dpT a*(power-1)/(pT^power)]
+      // 	pT = GeV/pow(  pow(GeV/pT,power_-1.) - log(UseRandom::rnd())/a
+      // 		    ,  1./(power_-1.) );
+      // Generate next pT according to exp[- \int^{pTold}_{pT} dpT alpha1loop*prefactor/pT ]
+      pT = LambdaQCD_*exp( 0.5*exp( log(log(sqr(pT/LambdaQCD_)))+log(UseRandom::rnd())/a ) );
       // Generate rapidity of the jet:
       Yk = minYk + UseRandom::rnd()*(maxYk - minYk);
       // Generate the theta2 radiative variable:
       theta2 = UseRandom::rnd() * 2.*Constants::pi;
+      // eT of the diboson system:
+      Energy eT = sqrt(pT*pT+p2);
       // Calculate the eT and then solve for x_{\oplus} & x_{\ominus}:
-      eT = sqrt(pT*pT+p2);
       x1 = (pT*exp( Yk)+eT*exp( Yb))/sqrt(S);
       x2 = (pT*exp(-Yk)+eT*exp(-Yb))/sqrt(S);
       // Calculate the xr radiative variable:
-      xr = p2/(x1*x2*S);
+      double xr(p2/(x1*x2*S));
       // Then use this to calculate the y radiative variable:
-      y  = 1.-4.*xr*pT*pT/p2/sqr(1.-xr);
-      if(exp(2.*(Yk-Yb))<1.) y *= -1.; // y<0. branch
+      double y(-((xr+1.)/(xr-1.))*(xr*sqr(x1/x1b)-1.)/(xr*sqr(x1/x1b)+1.));
+      // The y value above should equal the one commented out below this line:
+      // double y( ((xr+1.)/(xr-1.))*(xr*sqr(x2/x2b)-1.)/(xr*sqr(x2/x2b)+1.));
       // Now we get the lower limit on the x integration, xbar:
       double omy(1.-y), opy(1.+y);
       double xbar1 = 2.*opy*x12b/(sqrt(sqr(1.+x12b)*sqr(omy)+16.*y*x12b)+omy*(1.-x1b)*(1.+x1b));
@@ -585,7 +597,10 @@ bool VVHardGenerator::getEvent(vector<Lorentz5Momentum> & theRealMomenta,
       setTheScales(pT);
       // ... and so calculate rejection weight:
       rejectionWeight = getResult(j,R,pT);
-      rejectionWeight/= prefactor_[j]*pow(GeV/pT,power_);
+      // If generating according to exp[- \int^{pTold}_{pT} dpT a*(power-1)/(pT^power)]
+      // rejectionWeight/= alphaS_->overestimateValue()*prefactor_[j]*pow(GeV/pT,power_);
+      // If generating according to exp[- \int^{pTold}_{pT} dpT alpha1loop*prefactor/pT ]
+      rejectionWeight/= 1./b0_/log(sqr(pT/LambdaQCD_))*prefactor_[j]*GeV/pT;
       rejectEmission  = UseRandom::rnd()>rejectionWeight;
       // The event is a no-emission event if pT goes past min_pT_ - basically set to 
       // outside the histogram bounds (hopefully histogram objects just ignore it then).
@@ -655,14 +670,17 @@ void VVHardGenerator::setTheScales(Energy pT) {
   // pT^2 - as advocated by Nason & Ridolfi for ZZ production & Alioli et al for gg->h: 
   PDFScale_ = max(pT*pT,sqr(min_pT_));
   // Scale of electroweak vertices: mVV^2 the invariant mass of the diboson system.
-  EWScale_  = B_.sb();
+  //  EWScale_  = B_.sb();
+  // ... And this choice is more like what can be seen in mcatnlo_vbmain.f (weird).
+  EWScale_ = 0.5*(B_.k12b()+B_.k22b());
 
   return;
 }
 
 /***************************************************************************/
-// The game here is to get this helicity amplitude squared to return all the
-// same values as t_u_M_R_qqb above, TIMES a further factor tk*uk!
+// This is identical to the code in the Powheg matrix element. It should
+// equal t_u_M_R_qqb in there, which is supposed to be the real emission ME
+// times tk*uk.
 Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
   using namespace ThePEG::Helicity;
 
@@ -729,6 +747,10 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
+	    if((p1hel==p2hel)&&helicityConservation_) {
+// 	    qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
+	      continue;
+	    }
 	    vector<Complex> diagrams;
 	    SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,p1data,q[p1hel],g[khel]);
 	    SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,p2data,qb[p2hel],g[khel]);
@@ -736,6 +758,10 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
 	    tcPDPtr intermediate_t;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
 	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	    // Note: choosing 5 as the second argument ffvX_->evaluate() sets
+	    // option 5 in thepeg/Helicity/Vertex/VertexBase.cc, which makes
+	    // the (fermion) propagator denominator massless: 1/p^2.
+	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
 	      SpinorWaveFunction    p1_v1 = ffv1->evaluate(EWScale_,5,intermediate_t,q[p1hel],v1[k1hel]);
 	      SpinorBarWaveFunction p2_v2 = ffv2->evaluate(EWScale_,5,intermediate_t,qb[p2hel],v2[k2hel]);
 	      // First calculate all the off-shell fermion currents
@@ -805,8 +831,9 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
 }
 
 /***************************************************************************/
-// The game here is to get this helicity amplitude squared to return all the
-// same values as t_u_M_R_qg above, TIMES a further factor tk*uk!
+// This is identical to the code in the Powheg matrix element. It should
+// equal t_u_M_R_qg in there, which is supposed to be the real emission ME
+// times tk*uk.
 Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
   using namespace ThePEG::Helicity;
 
@@ -873,6 +900,10 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
+	    if((p1hel!=khel)&&helicityConservation_) {
+// 	    qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
+	      continue;
+	    }
 	    vector<Complex> diagrams;
 	    SpinorWaveFunction    p1_p2 = ffg->evaluate(QCDScale_,5,p1data,qin[p1hel],g[p2hel]);
 	    SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qout[khel],g[p2hel]);
@@ -949,8 +980,9 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
 }
 
 /***************************************************************************/
-// The game here is to get this helicity amplitude squared to return all the
-// same values as t_u_M_R_gqb above, TIMES a further factor tk*uk!
+// This is identical to the code in the Powheg matrix element. It should
+// equal t_u_M_R_gqb in there, which is supposed to be the real emission ME
+// times tk*uk.
 Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
   using namespace ThePEG::Helicity;
 
@@ -1017,6 +1049,10 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
+	    if((p2hel!=khel)&&helicityConservation_) {
+// 	    gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
+	      continue;
+	    }
 	    vector<Complex> diagrams;
 	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(QCDScale_,5,p2data,qbin[p2hel],g[p1hel]);
 	    SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qbout[khel],g[p1hel]);

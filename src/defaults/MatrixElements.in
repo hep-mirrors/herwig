@@ -45,6 +45,10 @@ create Herwig::MEee2HiggsVBF MEee2HiggsVBF
 ############################################################
 #  hadron-hadron matrix elements
 ############################################################
+
+###################################
+#  Electroweak processes
+###################################
 # q qbar -> gamma/Z -> l+l-
 create Herwig::MEqq2gZ2ff MEqq2gZ2ff
 set MEqq2gZ2ff:Process 3
@@ -53,19 +57,29 @@ set MEqq2gZ2ff:Process 3
 create Herwig::MEqq2W2ff  MEqq2W2ff
 set MEqq2W2ff:Process 2
 
+# W+jet
+create Herwig::MEPP2WJet MEWJet
+set MEWJet:WDecay Leptons
+
+# Z+jet
+create Herwig::MEPP2ZJet MEZJet
+set MEZJet:ZDecay ChargedLeptons
+
+# PP->WW/WZ/ZZ
+create Herwig::MEPP2VV MEPP2VV
+
+# PP->WZ gamma
+create Herwig::MEPP2VGamma MEPP2VGamma
+
+###################################
+#  Photon and jet processes
+###################################
+
 # qqbar/gg -> gamma gamma
 create Herwig::MEPP2GammaGamma MEGammaGamma
 
 # hadron-hadron to gamma+jet
 create Herwig::MEPP2GammaJet   MEGammaJet
-
-# hadron-hadron to higgs
-create Herwig::MEPP2Higgs   MEHiggs
-set MEHiggs:ShapeScheme MassGenerator
-set MEHiggs:Process gg
-
-# hadron-hadron to higgs+jet
-create Herwig::MEPP2HiggsJet   MEHiggsJet
 
 # QCD 2-to-2
 create Herwig::MEQCD2to2       MEQCD2to2
@@ -76,13 +90,17 @@ create Herwig::MEMinBias MEMinBias
 # qqbar/gg -> t tbar
 create Herwig::MEPP2QQ         MEHeavyQuark     
 
-# W+jet
-create Herwig::MEPP2WJet MEWJet
-set MEWJet:WDecay Leptons
+###################################
+#  Higgs processes
+###################################
 
-# Z+jet
-create Herwig::MEPP2ZJet MEZJet
-set MEZJet:ZDecay ChargedLeptons
+# hadron-hadron to higgs
+create Herwig::MEPP2Higgs   MEHiggs
+set MEHiggs:ShapeScheme MassGenerator
+set MEHiggs:Process gg
+
+# hadron-hadron to higgs+jet
+create Herwig::MEPP2HiggsJet   MEHiggsJet
 
 # PP->ZH
 create Herwig::MEPP2ZH MEPP2ZH
@@ -90,14 +108,16 @@ create Herwig::MEPP2ZH MEPP2ZH
 # PP->WH
 create Herwig::MEPP2WH MEPP2WH
 
-# PP->WW/WZ/ZZ
-create Herwig::MEPP2VV MEPP2VV
-
-# PP->WZ gamma
-create Herwig::MEPP2VGamma MEPP2VGamma
-
 # PP -> Higgs via VBF
 create Herwig::MEPP2HiggsVBF MEPP2HiggsVBF
+
+# PP -> t tbar Higgs
+create Herwig::MEPP2QQHiggs MEPP2ttbarH
+set MEPP2ttbarH:QuarkType Top
+
+# PP -> b bbar Higgs
+create Herwig::MEPP2QQHiggs MEPP2bbbarH
+set MEPP2bbbarH:QuarkType Bottom
 
 ##########################################################
 # Hadron-Hadron NLO matrix elements in the Powheg scheme

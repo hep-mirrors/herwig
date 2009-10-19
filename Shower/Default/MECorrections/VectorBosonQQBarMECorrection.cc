@@ -266,7 +266,7 @@ applyHard(const ParticleVector &p) {
   double sphi = sin(phi); 
   double st2 = sqrt(1.-sqr(ct2));
   double st3 = sqrt(1.-sqr(ct3));
-  Vector3<Energy> pv1, pv2, pv3; 
+  ThreeVector<Energy> pv1, pv2, pv3; 
   pv1 = pp1*u1;
   pv2 = -ct2*pp2*u1 + st2*cphi*pp2*u2 + st2*sphi*pp2*u3;
   pv3 = -ct3*pp3*u1 - st3*cphi*pp3*u2 - st3*sphi*pp3*u3;

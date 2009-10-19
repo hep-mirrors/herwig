@@ -19,6 +19,7 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "Herwig++/Shower/Base/CKKWVeto.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -26,11 +27,11 @@
 using namespace Herwig;
 
 void ExternalHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _CKKWh;
+  os << _CKKWh << _hardGen;
 }
 
 void ExternalHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _CKKWh;
+  is >> _CKKWh >>  _hardGen;
 }
 
 ClassDescription<ExternalHardGenerator> ExternalHardGenerator::initExternalHardGenerator;
@@ -47,6 +48,11 @@ void ExternalHardGenerator::Init() {
      "The cascade handler for Powheg",
      &ExternalHardGenerator::_CKKWh, false, false,
      true, false);
+  
+  static Reference<ExternalHardGenerator,HardestEmissionGenerator> interfaceHardGenerator
+    ( "HardGenerator",
+      "The hardest emission generator used to fill the dead zone",
+      &ExternalHardGenerator::_hardGen, false, false, true, true );
 }
 
 HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
@@ -58,16 +64,12 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
 
   //get com energy from the progenitors
   Lorentz5Momentum tot_momentum = QProgenitor->progenitor()->momentum() + QbarProgenitor->progenitor()->momentum();
-  Energy2 s = tot_momentum.mag2();
-
+  Energy2 s = tot_momentum.m2();
   // Get the HardTree from the CKKW handler.
   HardTreePtr hardtree = _CKKWh->getHardTree();
-
   Energy veto_pt = sqrt( s );
-  
   //evolver vetoes should be set to use shower pt in highest multiplicity case
-  if( _CKKWh->highestMult() && hardtree )
-    veto_pt = hardtree->lowestPt( 1, s );
+  if( _CKKWh->highestMult() && hardtree ) veto_pt = hardtree->lowestPt( 1, s );
 
   for( map< ShowerProgenitorPtr, tShowerParticlePtr >::iterator it
 	 = tree->outgoingLines().begin(); 
@@ -81,11 +83,32 @@ HardTreePtr ExternalHardGenerator::generateHardest(ShowerTreePtr tree) {
     if( ! it->second->coloured() ) continue;
     it->first->maximumpT( veto_pt );
   }   
-  if( !hardtree ) return HardTreePtr();
+
+  if( ! hardtree ) return HardTreePtr();
   // check the trees match
-  if( !hardtree->connect(tree) ) return HardTreePtr();
+  if( ! hardtree->connect(tree) ) return HardTreePtr();
   // Return the HardTree
- 
+  //fill the dead zone by generating an emission with the hard generator
+  //updating the _theHardTree and vetoeing the event if the emission pt 
+  //(from lowest pt) is greater than the merge scale
+  if(  _CKKWh->lowestMult() && _hardGen ){ 
+    //need access to the evolver to generate the hard emission
+    tEvolverPtr theEvolver = _CKKWh->getEvolver();
+    _hardGen->setEvolver( theEvolver );
+    hardtree = _hardGen->generateHardest( tree );
+    if( hardtree ){
+      hardtree->findNodes();
+      //reject the event if newhardtree->lowestPt is greater than pt_cut
+      if( hardtree->lowestPt( 1, s ) > _CKKWh->theVeto()->getVeto() ) 
+	throw Veto();
+    }
+    //maximum pt of shower progenitors will also have been 
+    //updated to something below the veto scale
+    //set the CKKWVeto to use the maximum pt scale as veto scale 
+    //rather than the fixed veto scale
+    //this means doing it as if it is a highest multiplicity emission 
+    _CKKWh->theVeto()->setHighest( true );
+  }
   return hardtree;
 }
 

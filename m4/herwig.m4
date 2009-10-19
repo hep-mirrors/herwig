@@ -101,6 +101,19 @@ AC_CHECK_HEADER([ThePEG/Config/ThePEG.h],[],
 CPPFLAGS="$oldcppflags"
 
 AC_SUBST(THEPEGINCLUDE)
+
+AC_MSG_CHECKING([for HepMCAnalysis.so in ThePEG])
+
+
+if test -x "$THEPEGPATH/lib/ThePEG/HepMCAnalysis.so" ; then
+     	CREATE_HEPMC="create"
+	AC_MSG_RESULT([found])
+else
+	CREATE_HEPMC="# create"
+	AC_MSG_RESULT([not found])
+fi
+
+AC_SUBST([CREATE_HEPMC])
 ])
 
 dnl ##### FastJet #####
@@ -169,7 +182,7 @@ AC_SUBST(CREATE_FASTJET)
 AC_SUBST(LOAD_FASTJET)
 AC_SUBST(FASTJETLIBS)
 
-AM_CONDITIONAL(WANT_LIBFASTJET,[test ! -z "$FASTJETPATH"])
+AM_CONDITIONAL(WANT_LIBFASTJET,[test "x$CREATE_FASTJET" = "xcreate"])
 ])
 
 dnl ##### LOOPTOOLS #####
@@ -335,7 +348,7 @@ AC_DEFUN([HERWIG_ENABLE_MODELS],
 AC_MSG_CHECKING([for BSM models to include])
 
 AC_ARG_ENABLE(models,
-        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm ued rs) or --disable-models to turn them all off.]),
+        AC_HELP_STRING([--enable-models=LIST],[Comma-separated list of BSM models to enable. Options are (mssm ued rs trp) or --disable-models to turn them all off.]),
         [],
         [enable_models=all]
         )
@@ -361,6 +374,7 @@ fi
 AM_CONDITIONAL(WANT_MSSM,[test "$mssm" -o "$all"])
 AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
 AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
+AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 ])
 
 AC_DEFUN([HERWIG_OVERVIEW],

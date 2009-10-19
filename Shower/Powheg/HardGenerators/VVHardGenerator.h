@@ -255,6 +255,19 @@ private:
   double pregqbar_;
 
   /**
+   * The QCD beta function divided by 4pi, (11-2/3*nf)/4/pi, with nf = 5.
+   */
+  double b0_;
+
+  /**
+   * The fundamental QCD scale in the one-loop alpha_{S} used for the crude
+   * (not the very crude) overestimate of the Sudakov exponent. The default
+   * value is set so such that alphaS(MZ), neglecting all flavour threshold
+   * effects i.e. MZ*exp(-1/2/b0_/alphaS(MZ)).
+   */
+  Energy LambdaQCD_;
+
+  /**
    *  The prefactors as a vector for easy use
    */
   vector<double> prefactor_;
@@ -316,6 +329,11 @@ private:
    *  The transverse momentum of the jet
    */
   Energy min_pT_;
+
+  /**
+   *  Option to impose helicity conservation on the real NLO ME's (to improve evaluation time).
+   */
+  bool helicityConservation_;
 
   // Work out the scales we want to use in the matrix elements and the pdfs:
   /**

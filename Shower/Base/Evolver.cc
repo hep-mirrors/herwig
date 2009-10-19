@@ -1569,7 +1569,7 @@ truncatedSpaceLikeDecayShower(tShowerParticlePtr particle, Energy maxscale,
   return true;
 }
 
-bool Evolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower , bool ISR){
+bool Evolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower , bool ) {
   if( hardOnly() && hardTree()){
     // extract the particles from end point of the shower
     multimap<long,PPtr> outgoing;
@@ -1620,7 +1620,7 @@ bool Evolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower
 	   ++cjt ) {
 	Lorentz5Momentum mom_diff = outb[ix]->momentum() 
 	  - cjt->second->momentum();
-	Energy magComp = abs( mom_diff.mag() );
+	Energy magComp = abs( mom_diff.m() );
 	if( magComp < magDiff ){
 	  magDiff = magComp;
 	  ShowerMatched = cjt->second;

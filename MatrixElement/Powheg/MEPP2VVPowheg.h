@@ -268,9 +268,14 @@ public:
   Energy2 t_u_M_R_qqb_WW(realVVKinematics R) const;
 
   /**
-   * Return the renormalisation scale.
+   * Return the factorion scale squared.
    */
-  Energy mu_UV() const;
+  Energy2 mu_F2() const;
+
+  /**
+   * Return the renormalisation scale squared.
+   */
+  Energy2 mu_UV2() const;
 
 protected:
 
@@ -474,9 +479,24 @@ private:
   Energy mu_UV_;
 
   /**
+   * The pT of V1 in a radiative event in the lab frame (for scale setting only)
+   */
+  Energy2 k1r_perp2_lab_;
+
+  /**
+   * The pT of V2 in a radiative event in the lab frame (for scale setting only)
+   */
+  Energy2 k2r_perp2_lab_;
+
+  /**
    * The ckm matrix elements (unsquared, to allow interference)
    */
   vector< vector<Complex> > ckm_;
+
+  /**
+   * Option to impose helicity conservation on the real NLO ME's (greatly improves evaluation time).
+   */
+  bool helicityConservation_;
 
   /**
    *  The q + qb -> v1 + v2 + g  helicity amplitudes  

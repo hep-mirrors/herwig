@@ -14,6 +14,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "NBodyDecayConstructorBase.h"
+#include "Herwig++/Decay/Radiation/DecayRadiationGenerator.h"
 #include "DecayConstructor.fh"
 
 namespace Herwig {
@@ -80,6 +81,10 @@ public:
    */
   bool disableDecayMode(string tag) const;
 
+  /**
+   *  QED Generator
+   */
+  DecayRadiationGeneratorPtr QEDGenerator() {return QEDGenerator_;}
 
 protected:
 
@@ -136,6 +141,11 @@ private:
    * A list of DecayMode tags that are not to be created 
    */
   vector<string> _disableDMTags;
+
+  /**
+   *  The decay radiation generator to use for QED radiation
+   */
+  DecayRadiationGeneratorPtr QEDGenerator_;
 };
 
 }

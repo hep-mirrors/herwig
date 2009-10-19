@@ -57,7 +57,7 @@ const Energy2 MRST::mb2 = 18.5 * GeV2;
 
 ClassDescription<MRST> MRST::initMRST;
 
-MRST::MRST() : _inter(2), _xswitch(0.8),
+MRST::MRST() : _inter(2), _xswitch(0.9),
 	       data(np+1,vector<vector<double> >
 		    (nx+1,vector<double>
 		     (nq+1,0.0))),
@@ -384,7 +384,7 @@ void MRST::Init() {
   static Parameter<MRST,double> interfaceXSwitch
     ("XSwitch",
      "Value of x to switch from cubic to linear interpolation",
-     &MRST::_xswitch, 0.8, 0.0, 1.0,
+     &MRST::_xswitch, 0.9, 0.0, 1.0,
      false, false, Interface::limited);
 
 }

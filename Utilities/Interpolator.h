@@ -47,7 +47,9 @@ public:
   /**
    * Constructor with data as vectors.
    */
-  Interpolator(vector<ValT> f, vector<ArgT> x, unsigned int order) 
+  Interpolator(const vector<ValT> & f, 
+	       const vector<ArgT> & x, 
+	       unsigned int order) 
     : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
       _funit(TypeTraits<ValT>::baseunit), 
       _xunit(TypeTraits<ArgT>::baseunit),
@@ -65,8 +67,8 @@ public:
    * Constructor from bare arrays
    */
   Interpolator(size_t size, 
-	       double f[], ValT funit,
-	       double x[], ArgT xunit,
+	       const double f[], ValT funit,
+	       const double x[], ArgT xunit,
 	       unsigned int order) 
     : _fun(size,0.0),_xval(size,0.0),_order(order),
       _funit(funit),_xunit(xunit), _copyx(order+2),_copyfun(order+2) {
@@ -190,8 +192,8 @@ private:
 template <typename ValT, typename ArgT>
 inline typename Interpolator<ValT,ArgT>::Ptr
 make_InterpolatorPtr(size_t size, 
-		     double f[], ValT funit,
-		     double x[], ArgT xunit,
+		     const double f[], ValT funit,
+		     const double x[], ArgT xunit,
 		     unsigned int order)
 {
   return new_ptr(Interpolator<ValT,ArgT>(size,
@@ -206,8 +208,8 @@ make_InterpolatorPtr(size_t size,
  */
 template <typename ValT, typename ArgT>
 inline typename Interpolator<ValT,ArgT>::Ptr
-make_InterpolatorPtr(typename std::vector<ValT> f, 
-		     typename std::vector<ArgT> x, 
+make_InterpolatorPtr(const typename std::vector<ValT> & f, 
+		     const typename std::vector<ArgT> & x, 
 		     unsigned int order)
 {
   return new_ptr(Interpolator<ValT,ArgT>(f,x,order));
@@ -236,8 +238,8 @@ struct ClassTraits<Herwig::Interpolator<ValT,ArgT> >
   : public ClassTraitsBase<Herwig::Interpolator<ValT,ArgT> > {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::Interpolator<"
-				+ ClassTraits<ValT>::className() + ","
-				+ ClassTraits<ArgT>::className() + ">"; }
+                               + ClassTraits<ValT>::className() + ","
+                               + ClassTraits<ArgT>::className() + ">"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Interpolator is implemented. It may also include several, space-separated,

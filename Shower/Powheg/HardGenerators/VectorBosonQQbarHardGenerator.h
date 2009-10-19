@@ -32,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  VectorBosonQQbarHardGenerator() : _Qg(1.*GeV) {}
+  VectorBosonQQbarHardGenerator() : _Ptmin(1.*GeV) {}
 
   /**
    *  Members which must be overridden in the inheriting classes
@@ -84,6 +84,7 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr clone() const {return new_ptr(*this);}
+
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
@@ -150,7 +151,7 @@ private:
   /**
    *  The cut off on pt, assuming massless quarks.
    */
-  Energy _Qg;
+  Energy _Ptmin;
 
   /**
    *  The ParticleData objects for the fermions
@@ -186,6 +187,9 @@ private:
   double _y;
   Energy _pt;
 
+  //the (mass dependent) shower transverse momentum
+  Energy2 _showerPt;
+
   //com energy
   Energy2 _s;
  
@@ -200,7 +204,6 @@ private:
    *  The EW gauge boson
    */
   PPtr _boson;
-
 };
 
 }

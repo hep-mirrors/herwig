@@ -29,7 +29,8 @@ MEPP2VVPowheg::MEPP2VVPowheg() :
     tiny(1.e-10),  CF_(4./3.),   TR_(0.5),  NC_(3.),
     contrib_(1),   channels_(0), nlo_alphaS_opt_(0) , fixed_alphaS_(0.1180346226),
     removebr_(1), scaleopt_(1), mu_F_(100.*GeV), mu_UV_(100.*GeV),
-    ckm_(3,vector<Complex>(3,0.0)) 
+    ckm_(3,vector<Complex>(3,0.0)),
+    helicityConservation_(true)
 {  
   massOption(true ,1);
   massOption(false,1);
@@ -38,14 +39,14 @@ MEPP2VVPowheg::MEPP2VVPowheg() :
 void MEPP2VVPowheg::persistentOutput(PersistentOStream & os) const {
     os << contrib_  << channels_  << nlo_alphaS_opt_  << fixed_alphaS_
        << removebr_ << scaleopt_ << ounit(mu_F_,GeV) << ounit(mu_UV_,GeV)
-       << ckm_
+       << ckm_ << helicityConservation_
        << FFPvertex_ << FFWvertex_ << FFZvertex_ << WWWvertex_ << FFGvertex_;
 }
 
 void MEPP2VVPowheg::persistentInput(PersistentIStream & is, int) {
     is >> contrib_  >> channels_  >> nlo_alphaS_opt_  >> fixed_alphaS_
        >> removebr_ >> scaleopt_ >> iunit(mu_F_,GeV) >> iunit(mu_UV_,GeV)
-       >> ckm_
+       >> ckm_ >> helicityConservation_
        >> FFPvertex_ >> FFWvertex_ >> FFZvertex_ >> WWWvertex_ >> FFGvertex_;
 }
 
@@ -96,12 +97,13 @@ void MEPP2VVPowheg::Init() {
 
   static Switch<MEPP2VVPowheg,unsigned int> interfaceNLOalphaSopt
     ("NLOalphaSopt",
-     "Whether to use a fixed or a running QCD coupling for the NLO weight",
+     "An option allowing you to supply a fixed value of alpha_S "
+     "through the FixedNLOAlphaS interface.",
      &MEPP2VVPowheg::nlo_alphaS_opt_, 0, false, false);
   static SwitchOption interfaceNLOalphaSoptRunningAlphaS
     (interfaceNLOalphaSopt,
      "RunningAlphaS",
-     "Use the usual running QCD coupling evaluated at scale scale()",
+     "Use the usual running QCD coupling evaluated at scale mu_UV2()",
      0);
   static SwitchOption interfaceNLOalphaSoptFixedAlphaS
     (interfaceNLOalphaSopt,
@@ -132,45 +134,61 @@ void MEPP2VVPowheg::Init() {
 
   static Switch<MEPP2VVPowheg,unsigned int> interfaceScaleOption
     ("ScaleOption",
-     "Option for the choice of factorization (and renormalization) scale",
+     "Option for running / fixing EW and QCD factorization & renormalization scales",
      &MEPP2VVPowheg::scaleopt_, 1, false, false);
   static SwitchOption interfaceDynamic
     (interfaceScaleOption,
      "Dynamic",
-     "Dynamic factorization & renormalization "
-     "scale equal to the current sqrt(sHat())",
+     "QCD factorization & renormalization scales are (mT(V1)+mT(V2))/2. "
+     "EW scale is (mV1^2+mV2^2)/2 (similar to MCatNLO)",
      1);
   static SwitchOption interfaceFixed
     (interfaceScaleOption,
      "Fixed",
-     "Use a fixed factorization scale set with FactorizationScaleValue "
-     "and a fixed renormalization scale set with RenormalizationScaleValue",
+     "QCD factorization fixed to value by FactorizationScaleValue."
+     "EW and QCD renormalization scales fixed by RenormalizationScaleValue.",
      2);
 
   static Parameter<MEPP2VVPowheg,Energy> interfaceFactorizationScaleValue
     ("FactorizationScaleValue",
-     "Value to use in the event of a fixed factorization scale",
+     "Value to use for the QCD factorization scale if fixed scales"
+     "have been requested with the ScaleOption interface.",
      &MEPP2VVPowheg::mu_F_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
      true, false, Interface::limited);
 
   static Parameter<MEPP2VVPowheg,Energy> interfaceRenormalizationScaleValue
     ("RenormalizationScaleValue",
-     "Value to use for the (UV) renormalization scale",
+     "Value to use for the EW and QCD renormalization scales if fixed "
+     "scales have been requested with the ScaleOption interface.",
      &MEPP2VVPowheg::mu_UV_, GeV, 100.0*GeV, 50.0*GeV, 500.0*GeV,
      true, false, Interface::limited);
 
 }
 
 Energy2 MEPP2VVPowheg::scale() const {
-  return scaleopt_ == 1 ? sHat() : sqr(mu_F_);
+  // N.B. This scale is the electroweak scale!
+  // It is used in the evaluation of the LO code
+  // in the MEPP2VV base class. This means it 
+  // should appear in the denominator of the 
+  // NLOweight here and all other LO parts like
+  // the function for the lumi ratio (Lhat). It
+  // should also be used for evaluating any EW
+  // parameters / vertices in the numerator. 
+  // The scaleopt_ == 1 "running" option is
+  // chosen to be like the MC@NLO one (it ought
+  // to be more like sHat instead?).
+  return scaleopt_ == 1 ? 
+        0.5*(meMomenta()[2].m2()+meMomenta()[3].m2()) : sqr(mu_UV_);
 }
 
-Energy MEPP2VVPowheg::mu_UV() const {
-  if(scaleopt_==1) {
-    return sqrt(sHat());
-  } else {
-    return mu_UV_;
-  }
+Energy2 MEPP2VVPowheg::mu_F2() const {
+  return scaleopt_ == 1 ? 
+        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_F_);
+}
+
+Energy2 MEPP2VVPowheg::mu_UV2() const {
+  return scaleopt_ == 1 ? 
+        ((H_.k1r()).m2()+k1r_perp2_lab_+(H_.k2r()).m2()+k2r_perp2_lab_)/2.  : sqr(mu_UV_);
 }
 
 void MEPP2VVPowheg::doinit() {
@@ -202,19 +220,41 @@ void MEPP2VVPowheg::doinit() {
 
 int MEPP2VVPowheg::nDim() const {
   int output = MEPP2VV::nDim(); 
-  if(contrib_>0) output += 3;
+  // See related comment in MEPP2VVPowheg::generateKinematics!
+  if(contrib_>0) output += 2;
   return output;
 }
 
 bool MEPP2VVPowheg::generateKinematics(const double * r) {
+  // N.B. A fix was made to make theta2 a radiative
+  // variable in r4532. Originally theta2 was take to
+  // be the azimuthal angle coming from the generation
+  // of the Born kinematics inherited from MEPP2VV i.e.
+  // before the change theta2 was a random number between
+  // 0 and 2pi. On changing theta2 was set to be  
+  // theta2  = (*(r+3)) * 2.*Constants::pi; 
+  // and nDim returned if(contrib_>0) output += 3;
+  // In the months following it was noticed that agreement
+  // with MCFM was per mille at Tevatron energies but got
+  // close to 1 percent for LHC energies (for all VV 
+  // processes). After searching back up the svn branch
+  // running 2M events each time, the change was spotted
+  // to occur on r4532. Changing:
+  // if(contrib_>0) output += 3; 
+  // in ::nDim() and also,
+  // xt      = (*(r +nDim() -3));
+  // y       = (*(r +nDim() -2)) * 2. - 1.;
+  // theta2  = (*(r +nDim() -1)) * 2.*Constants::pi; 
+  // did not fix the problem. The following code gives the
+  // same good level of agreement at LHC and TVT: 
   double xt(     -999.);
   double y(      -999.);
   double theta2( -999.);
   if(contrib_>0) {
     // Generate the radiative integration variables:
-    xt      = (*(r+1));
-    y       = (*(r+2)) * 2. - 1.;
-    theta2  = (*(r+3)) * 2.*Constants::pi;
+    xt      = (*(r +nDim() -2));
+    y       = (*(r +nDim() -1)) * 2. - 1.;
+    theta2  = UseRandom::rnd() * 2.*Constants::pi;
   }
 
   // Continue with lo matrix element code:
@@ -385,6 +425,17 @@ void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
     // The resolved 2->3 real emission kinematics:
     H_   = realVVKinematics(B_, xt,  y, theta2);
 
+    // Borrowed from VVhardGenerator (lab momenta of k1,k2):
+    Energy pT(sqrt(H_.pT2_in_lab()));
+    LorentzRotation yzRotation;
+    yzRotation.setRotateX(-atan2(pT/GeV,sqrt(B_.sb())/GeV));
+    LorentzRotation boostFrompTisZero;
+    boostFrompTisZero.setBoostY(-pT/sqrt(B_.sb()+pT*pT));
+    LorentzRotation boostFromYisZero;
+    boostFromYisZero.setBoostZ(tanh(B_.Yb()));
+    k1r_perp2_lab_ = (boostFromYisZero*boostFrompTisZero*yzRotation*(H_.k1r())).perp2();
+    k2r_perp2_lab_ = (boostFromYisZero*boostFrompTisZero*yzRotation*(H_.k2r())).perp2();
+
     // Check all the real kinematics objects are internally consistent:
     S_.sanityCheck();
     SCp_.sanityCheck();
@@ -403,7 +454,7 @@ double MEPP2VVPowheg::NLOweight() const {
   if(contrib_==0) return 1.;
 
   // Calculate alpha_S and alpha_S/(2*pi).
-  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(sqr(mu_UV()));
+  alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(mu_UV2());
   double alsOn2pi(alphaS_/2./pi);
 
   // Particle data objects for the new plus and minus colliding partons.
@@ -411,7 +462,7 @@ double MEPP2VVPowheg::NLOweight() const {
   gluon = getParticleData(ParticleID::g);
 
   // Get the all couplings.
-  gW_ = sqrt(4.0*pi*SM().alphaEM(sqr(mu_UV()))/SM().sin2ThetaW());
+  gW_ = sqrt(4.0*pi*SM().alphaEM(scale())/SM().sin2ThetaW());
   sin2ThetaW_ = SM().sin2ThetaW();
   double cosThetaW(sqrt(1.-sin2ThetaW_));
   guL_ = gW_/2./cosThetaW*( 1.-4./3.*sin2ThetaW_);
@@ -594,7 +645,7 @@ double MEPP2VVPowheg::NLOweight() const {
     cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
     cout << ab_->PDGName() << ", " 
 	 << bb_->PDGName() << ", " 
-         << mePartonData()[2]->PDGName() << ", " 
+	 << mePartonData()[2]->PDGName() << ", " 
 	 << mePartonData()[3]->PDGName() << endl; 
     cout << "lo_me2_ - M_Born_ (%) = " 
 	 <<  lo_me2_-M_Born_                << "  (" 
@@ -623,12 +674,12 @@ double MEPP2VVPowheg::NLOweight() const {
   }
 
   if(isnan(wgt)||isinf(wgt)) {
-    cout << "MEPP2VVPowheg:: NLO weight "
-         << "is bad: wgt = " << wgt << endl;
+    cout << "MEPP2VVPowheg:: NLO weight " 
+	 << "is bad: wgt = " << wgt << endl;
     cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
     cout << ab_->PDGName() << ", " 
 	 << bb_->PDGName() << ", " 
-         << mePartonData()[2]->PDGName() << ", " 
+	 << mePartonData()[2]->PDGName() << ", " 
 	 << mePartonData()[3]->PDGName() << endl; 
     cout << "lo_me2_ - M_Born_ (rel) = " 
 	 <<  lo_me2_-M_Born_                << "  (" 
@@ -669,8 +720,8 @@ double MEPP2VVPowheg::Lhat_ab(tcPDPtr a, tcPDPtr b,
          << "particle b = " << b->PDGName() << endl;
   double nlo_lumi(-999.);
   double x1(Kinematics.x1r()),x2(Kinematics.x2r());
-  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,scale(),x1)/x1)
-           * (hadron_B_->pdf()->xfx(hadron_B_,b,scale(),x2)/x2);
+  nlo_lumi = (hadron_A_->pdf()->xfx(hadron_A_,a,mu_F2(),x1)/x1)
+           * (hadron_B_->pdf()->xfx(hadron_B_,b,mu_F2(),x2)/x2);
   return nlo_lumi / lo_lumi_;
 }
 
@@ -681,7 +732,7 @@ double MEPP2VVPowheg::Vtilde_universal(realVVKinematics S) const {
   double eta2b(S.bornVariables().eta2b());
   Energy2 sb(S.s2r());
   return  alphaS_/2./pi*CF_ 
-        * (   log(sb/scale())
+        * (   log(sb/mu_F2())
 	    * (3. + 4.*log(eta1b)+4.*log(eta2b))
 	    + 8.*sqr(log(eta1b)) +8.*sqr(log(eta2b))
 	    - 2.*sqr(pi)/3.
@@ -707,15 +758,16 @@ double MEPP2VVPowheg::Ctilde_Ltilde_qq_on_x(tcPDPtr a, tcPDPtr b,
   double etab = C.y() == 1. ? C.bornVariables().eta1b() 
                             : C.bornVariables().eta2b() ;
   Energy2 sb(C.s2r());
-  return ( ( (1./(1.-xt))*log(sb/scale()/x)+4.*log(etab)/(1.-xt)
+  if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
+  return ( ( (1./(1.-xt))*log(sb/mu_F2()/x)+4.*log(etab)/(1.-xt)
        	   + 2.*log(1.-xt)/(1.-xt)
            )*CF_*(1.+sqr(x)) 
 	 + sqr(etab)*CF_*(1.-x)
 	 )*Lhat_ab(a,b,C) / x
-       - ( ( (1./(1.-xt))*log(sb/scale()  )+4.*log(etab)/(1.-xt)
+       - ( ( (1./(1.-xt))*log(sb/mu_F2()  )+4.*log(etab)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
 	   )*CF_*2. 
-	 );
+	 )*Lhat_ab(a,b,S_);
 }
 
 double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b, 
@@ -733,7 +785,7 @@ double MEPP2VVPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   double etab = C.y() == 1. ? C.bornVariables().eta1b() 
                             : C.bornVariables().eta2b() ;
   Energy2 sb(C.s2r());
-  return ( ( (1./(1.-xt))*log(sb/scale()/x)+4.*log(etab)/(1.-xt)
+  return ( ( (1./(1.-xt))*log(sb/mu_F2()/x)+4.*log(etab)/(1.-xt)
 	   + 2.*log(1.-xt)/(1.-xt)
 	   )*(1.-x)*TR_*(sqr(x)+sqr(1.-x))
 	 + sqr(etab)*TR_*2.*x*(1.-x)
@@ -752,11 +804,9 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-//   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_));
-//   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-// 			*CF_*(1.+sqr(Cp_.xr()))*M_Born_);
-//   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-// 			*CF_*(1.+sqr(Cm_.xr()))*M_Born_);
+//   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_ ));
+//   Energy2 t_u_M_R_qqb_Cp(t_u_M_R_qqb(Cp_));
+//   Energy2 t_u_M_R_qqb_Cm(t_u_M_R_qqb(Cm_));
 
   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb_hel_amp(H_));
   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
@@ -808,9 +858,8 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-//   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_));
-//   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
-// 			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*M_Born_);
+//   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_ ));
+//   Energy2 t_u_M_R_gqb_Cp(t_u_M_R_gqb(Cp_));
 //   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
 
   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb_hel_amp(H_));
@@ -863,10 +912,9 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-//   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_));
+//   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_ ));
 //   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
-//   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
-// 		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*M_Born_);
+//   Energy2 t_u_M_R_qg_Cm(t_u_M_R_qg(Cm_));
 
   Energy2 t_u_M_R_qg_H (t_u_M_R_qg_hel_amp(H_));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
@@ -3179,9 +3227,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
+            if((p1hel==p2hel)&&helicityConservation_) {
+// 	      qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
+              continue;
+            }
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(scale(),5,p1data,q[p1hel],g[khel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(scale(),5,p2data,qb[p2hel],g[khel]);
+	    SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,p1data,q[p1hel],g[khel]);
+	    SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,p2data,qb[p2hel],g[khel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_t;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -3193,7 +3245,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
 	      // q+qb->g+v1+v2, q+qb->v1+g+v2, q+qb->v1+v2+g
 	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1))) {
 		diagrams.push_back(ffv1->evaluate(scale(),p1_k,p2_v2,v1[k1hel]));
-		diagrams.push_back(ffg->evaluate(scale(),p1_v1,p2_v2,g[khel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v1,p2_v2,g[khel]));
 		diagrams.push_back(ffv2->evaluate(scale(),p1_v1,p2_k,v2[k2hel]));
 	      }
 	      intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
@@ -3202,7 +3254,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
 	      // q+qb->g+v2+v1, q+qb->v2+g+v1, q+qb->v2+v1+g
 	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0))) {
 		diagrams.push_back(ffv2->evaluate(scale(),p1_k,p2_v1,v2[k2hel]));
-		diagrams.push_back(ffg->evaluate(scale(),p1_v2,p2_v1,g[khel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v2,p2_v1,g[khel]));
 		diagrams.push_back(ffv1->evaluate(scale(),p1_v2,p2_k,v1[k1hel]));
 	      }
 	    }
@@ -3323,9 +3375,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
+            if((p1hel!=khel)&&helicityConservation_) {
+//    	      qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
+              continue;
+            }
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_p2 = ffg->evaluate(scale(),5,p1data,qin[p1hel],g[p2hel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(scale(),5,kdata->CC(),qout[khel],g[p2hel]);
+	    SpinorWaveFunction    p1_p2 = ffg->evaluate(mu_UV2(),5,p1data,qin[p1hel],g[p2hel]);
+	    SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qout[khel],g[p2hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -3337,7 +3393,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
 	      // q+g->v1+v2+q with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
 	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1))) {
 		diagrams.push_back(ffv2->evaluate(scale(),p1_v1,p2_k,v2[k2hel]));
-		diagrams.push_back(ffg->evaluate(scale(),p1_v1,k_v2,g[p2hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v1,k_v2,g[p2hel]));
 		diagrams.push_back(ffv1->evaluate(scale(),p1_p2,k_v2,v1[k1hel]));
 	      }
 	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
@@ -3346,7 +3402,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
 	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
 	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0))) {
 		diagrams.push_back(ffv1->evaluate(scale(),p1_v2,p2_k,v1[k1hel]));
-		diagrams.push_back(ffg->evaluate(scale(),p1_v2,k_v1,g[p2hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),p1_v2,k_v1,g[p2hel]));
 		diagrams.push_back(ffv2->evaluate(scale(),p1_p2,k_v1,v2[k2hel]));
 	      }
 	    }
@@ -3467,9 +3523,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  for(unsigned int khel=0;khel<2;++khel) {
+            if((p2hel!=khel)&&helicityConservation_) {
+//    	      gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+              continue;
+            }
 	    vector<Complex> diagrams;
-	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(scale(),5,p2data,qbin[p2hel],g[p1hel]);
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(scale(),5,kdata->CC(),qbout[khel],g[p1hel]);
+	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(mu_UV2(),5,p2data,qbin[p2hel],g[p1hel]);
+	    SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qbout[khel],g[p1hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -3482,7 +3542,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
               // and 2 t-channel ones.
 	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p2data->id())%2==0))) {
 		diagrams.push_back(ffv2->evaluate(scale(),p1_k,p2_v1,v2[k2hel]));
-		diagrams.push_back(ffg->evaluate(scale(),k_v2,p2_v1,g[p1hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),k_v2,p2_v1,g[p1hel]));
 		diagrams.push_back(ffv1->evaluate(scale(),k_v2,p1_p2,v1[k1hel]));
 	      }
 	      intermediate_q = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
@@ -3491,7 +3551,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
 	      // q+g->v2+v1+q, with 2 t-channel propagators, 1 s- and 1 t-channel and 2 t-channel ones.
 	      if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p2data->id())%2==1))) {
 		diagrams.push_back(ffv1->evaluate(scale(),p1_k,p2_v2,v1[k1hel]));
-		diagrams.push_back(ffg->evaluate(scale(),k_v1,p2_v2,g[p1hel]));
+		diagrams.push_back(ffg->evaluate(mu_UV2(),k_v1,p2_v2,g[p1hel]));
 		diagrams.push_back(ffv2->evaluate(scale(),k_v1,p1_p2,v2[k2hel]));
 	      }
 	    }

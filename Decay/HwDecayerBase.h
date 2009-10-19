@@ -27,6 +27,9 @@ using namespace ThePEG;
  * It also provide the option of specifying a class based on the DecayRadiationGenerator
  * which should be used to generate QED radiation in the decay
  *
+ * @see \ref HwDecayerBaseInterfaces "The interfaces"
+ * defined for HwDecayerBase.
+
  */
 class HwDecayerBase: public Decayer {
 

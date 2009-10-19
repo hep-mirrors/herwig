@@ -18,6 +18,8 @@ void HardBranching::setMomenta(LorentzRotation R,double aparent,
   Energy2 dot = _n*_p;
   if(dot==ZERO) return;
   double alpha = (_original*_n)/dot;
+  //set x for incoming partons
+  if( status() == HardBranching::Incoming ) x_frac( alpha ); 
   _z=alpha/aparent;
   double beta = ((_original*_p)-alpha*sqr(_p.mass()))/dot;
   _qt = _original - alpha*_p - beta*_n - _z*ptparent;

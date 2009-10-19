@@ -72,6 +72,12 @@ create Herwig::BELLECharmAnalysis BELLECharm HwLEPAnalysis.so
 # CLEO  data on charm meson spectra
 create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
 
+
+# Schematic overview of an event
+# (requires the graphviz program 'dot' to produce a plot)
+create ThePEG::GraphvizPlot Plot GraphvizPlot.so
+
+
 #
 #  Handlers which depend on Fastjet for LEP data
 #  (switched off by default)
@@ -83,9 +89,5 @@ create Herwig::CLEOCharmAnalysis  CLEOCharm HwLEPAnalysis.so
 #
 #  Handlers which depend on HepMC
 #  (switched off by default)
-# Schematic overview of an event
-# (requires --with-hepmc to be set in ThePEG
-# and the graphviz program 'dot' to produce a plot)
-#@CREATE_HEPMC@ Herwig::GraphvizPlot Plot HwHepMCAnalysis.so
 # A HepMC dump file (requires --with-hepmc to be set at configure time)
-#@CREATE_HEPMC@ Herwig::HepMCFile HepMCFile HwHepMCAnalysis.so
+@CREATE_HEPMC@ ThePEG::HepMCFile HepMCFile HepMCAnalysis.so

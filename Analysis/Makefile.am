@@ -1,7 +1,7 @@
 SUBDIRS = BSM
 
 pkglib_LTLIBRARIES = HwAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 7:1:0
+HwAnalysis_la_LDFLAGS = -module -version-info 8:0:0
 HwAnalysis_la_SOURCES = \
 EventShapes.cc EventShapes.fh EventShapes.h  \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.h \
@@ -26,15 +26,8 @@ HwBbarAnalysis_la_SOURCES = \
 BbarAnalysis.cc BbarAnalysis.fh \
 BbarAnalysis.h BbarAnalysis.icc
 
-pkglib_LTLIBRARIES += HwVV_ME_Analysis.la
-HwVV_ME_Analysis_la_LDFLAGS = -module -version-info 4:0:0
-HwVV_ME_Analysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwVV_ME_Analysis_la_SOURCES = \
-VV_ME_Analysis.cc VV_ME_Analysis.fh \
-VV_ME_Analysis.h VV_ME_Analysis.icc
-
 pkglib_LTLIBRARIES +=  HwLEPAnalysis.la
-HwLEPAnalysis_la_LDFLAGS = -module -version-info 4:0:0
+HwLEPAnalysis_la_LDFLAGS = -module -version-info 5:0:0
 HwLEPAnalysis_la_SOURCES = \
 BFragmentationAnalysisHandler.cc BFragmentationAnalysisHandler.h\
 SingleParticleAnalysis.cc SingleParticleAnalysis.h\
@@ -46,7 +39,7 @@ CLEOCharmAnalysis.h CLEOCharmAnalysis.cc
 # analysis code which depends on fastjet
 if WANT_LIBFASTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
-HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 5:0:0
+HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 6:0:0
 HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(FASTJETLIBS) 
@@ -61,6 +54,14 @@ y23.cc y23.h
 #HwPP2HAnalysis_la_LIBADD = $(KTJETLIBS) $(CLHEPLIB)
 #HwPP2HAnalysis_la_SOURCES = \
 #PP2HAnalysis.cc PP2HAnalysis.h 
+
+pkglib_LTLIBRARIES += HwVV_ME_Analysis.la
+HwVV_ME_Analysis_la_LDFLAGS = -module -version-info 5:0:0
+HwVV_ME_Analysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
+-I$(FASTJETPATH)
+HwVV_ME_Analysis_la_LIBADD = $(FASTJETLIBS) 
+HwVV_ME_Analysis_la_SOURCES = \
+VV_ME_Analysis.cc VV_ME_Analysis.h
 endif
 
 pkglib_LTLIBRARIES += HwZpt.la

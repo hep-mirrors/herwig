@@ -90,6 +90,12 @@ insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
 #
 # VBF Higgs
 # insert SimpleQCD:MatrixElements[0] MEPP2HiggsVBF
+#
+# t tbar Higgs
+# insert SimpleQCD:MatrixElements[0] MEPP2ttbarH
+#
+# b bbar Higgs
+# insert SimpleQCD:MatrixElements[0] MEPP2bbbarH
 
 cd /Herwig/Generators
 ##################################################
