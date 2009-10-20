@@ -795,10 +795,14 @@ getColourFactors(const tcPDVector & extpart, unsigned int & ncf) const {
   if( ina == PDT::Colour0 || inb == PDT::Colour0 ||
       outa == PDT::Colour0 || outb == PDT::Colour0 ) {
     ncf = 1;
-    if(outa == PDT::Colour8 || outb == PDT::Colour8)
+    if(outa == PDT::Colour8 || outb == PDT::Colour8 ||
+       ina  == PDT::Colour8 || inb  == PDT::Colour8 )
       scf[0][0] = 4.;
-    else
+    else if(outa == PDT::Colour3 || outb == PDT::Colour3 ||
+	    ina  == PDT::Colour3 || inb  == PDT::Colour3 )
       scf[0][0] = 3.;
+    else 
+      scf[0][0] = 1.;
   }
   else if( ina == PDT::Colour8 || inb == PDT::Colour8 ||
 	   outa == PDT::Colour8 || outb == PDT::Colour8 ) {
