@@ -1,0 +1,30 @@
+read LHC.common
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+cd /Herwig
+create Herwig::O2AlphaS AlphaS2 
+set Model:QCD/RunningAlphaS AlphaS2
+set Model:EW/CKM:theta_12 0.22274457
+set Model:EW/CKM:theta_13 0.
+set Model:EW/CKM:theta_23 0.
+set Model:EW/CKM:delta 0.
+create Herwig::AlphaEM AlphaEM2 
+set Model:EW/RunningAlphaEM AlphaEM2
+cd /Herwig/MatrixElements/
+set MEZJet:ZDecay 5
+set MEZJet:GammaZ 2
+insert SimpleQCD:MatrixElements[0] MEZJet
+set /Herwig/Cuts/ZBosonKtCut:MinKT 20.0*GeV
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+#cd /Herwig/Partons
+#create Herwig::MRST MRST2 HwMRST.so
+#setup MRST2 /home/richardn/montecarlo/c++/Herwig++/trunk/Herwig++/PDF/mrst/1998/lo05a.dat
+#set MRST2:RemnantHandler HadronRemnants
+#set /Herwig/Particles/p+:PDF MRST2
+#set /Herwig/Particles/pbar-:PDF MRST2
+cd /Herwig/Generators
+create Herwig::ZJetTest ZJetTest HadronTest.so
+insert LHCGenerator:AnalysisHandlers 0 ZJetTest
+saverun LHC-ZJet LHCGenerator

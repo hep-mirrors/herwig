@@ -1,0 +1,15 @@
+read Gamma.common
+cd /Herwig/MatrixElements
+insert SimpleGammaGamma:MatrixElements 0 /Herwig/MatrixElements/MEgg2WW
+set MEgg2WW:MassOption OnMassShell
+cd /Herwig/Generators
+create Herwig::GammaMETest TestWW GammaTest.so
+insert GammaGammaGenerator:AnalysisHandlers 0 TestWW
+set GammaGammaGenerator:EventHandler:CascadeHandler NULL
+set GammaGammaGenerator:EventHandler:HadronizationHandler NULL
+
+set /Herwig/Particles/W-:Stable Stable
+set /Herwig/Particles/W+:Stable Stable
+
+set /Herwig/ACDCSampler:Ntry 100000
+saverun Gamma-WW GammaGammaGenerator

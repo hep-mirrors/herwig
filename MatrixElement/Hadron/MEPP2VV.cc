@@ -492,8 +492,8 @@ void MEPP2VV::constructVertex(tSubProPtr sub) {
   // q qbar -> W W
   else if(abs(hard[order[2]]->id())==ParticleID::Wplus&&
 	  abs(hard[order[3]]->id())==ParticleID::Wplus) {
-    if((hard[order[0]]->id()%2==0&&hard[order[2]]->id()==ParticleID::Wplus)||
-       (hard[order[0]]->id()%2==1&&hard[order[2]]->id()==ParticleID::Wminus))
+    if((hard[order[0]]->id()%2==1&&hard[order[2]]->id()==ParticleID::Wplus)||
+       (hard[order[0]]->id()%2==0&&hard[order[2]]->id()==ParticleID::Wminus))
       swap(order[2],order[3]);
     VectorWaveFunction   (w1,hard[order[2]],outgoing,true ,false);
     VectorWaveFunction   (w2,hard[order[3]],outgoing,true ,false);

@@ -1,0 +1,16 @@
+read LHC.common
+cd /Herwig/Generators
+set /Herwig/Particles/tau-:Stable Stable
+set /Herwig/Particles/tau+:Stable Stable
+set LHCGenerator:EventHandler:StatLevel Full
+set LHCGenerator:EventHandler:CascadeHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:Sampler:Ntry 100000
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+cd /Herwig/Generators
+set /Herwig/Analysis/Basics:CheckQuark 0
+create Herwig::SimpleLHCAnalysis ZTest HwAnalysis.so
+insert LHCGenerator:AnalysisHandlers 0 ZTest
+saverun LHC-Z LHCGenerator
