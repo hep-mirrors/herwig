@@ -32,6 +32,11 @@ class SOPHTY: public DecayRadiationGenerator {
 public:
 
   /**
+   *  Default constructor
+   */
+  SOPHTY() : _colouredOption(0) {}
+
+  /**
    *  Member to generate the photons in the decay. This must be implemented
    *  in classes inheriting from this one to produce the radiation.
    * @param p The decaying particle
@@ -108,6 +113,11 @@ private:
    *  The initial-final dipole
    */
   IFDipolePtr _ifdipole;
+
+  /**
+   *  Option for the treatment of radiation from coloured particles
+   */
+  unsigned int _colouredOption;
 };
 
 }
