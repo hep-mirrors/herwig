@@ -39,7 +39,7 @@ HWRUN = $(HERWIG) run
 
 tests : tests-LEP test-Gamma
 
-tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-BB
+tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-BB test-LEP-Quarks test-LEP-Leptons
 
 tests-DIS : test-DIS-Charged test-DIS-Neutral
 
@@ -48,7 +48,7 @@ tests-LHC : test-LHC-WW test-LHC-WZ test-LHC-ZZ test-LHC-ZGamma test-LHC-WGamma 
 	    test-LHC-WWVBF test-LHC-bbH test-LHC-ttH test-LHC-GammaGamma test-LHC-GammaJet test-LHC-Higgs \
 	    test-LHC-HiggsJet test-LHC-QCDFast test-LHC-QCD test-LHC-Top
 
-test-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
+tests-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
 
 test-LEP-% : Inputs/LEP-%.in LeptonTest.la
 	$(HWREAD) $<
