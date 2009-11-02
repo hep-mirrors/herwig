@@ -29,11 +29,6 @@ UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV),
 
 void UEDBase::doinit() {
   StandardModel::doinit();
-  //create fresh BSM info file so it can be appended to later
-  //when decaymodes have been created
-  string name = CurrentGenerator::current().filename() +
-    string("-BSMModelInfo.out");
-  ofstream dummy(name.c_str());
   //level-1 masses and mixing angle
   calculateKKMasses(1);
   writeSpectrum();

@@ -58,11 +58,6 @@ void SusyBase::doinit() {
   addVertex(vertexWHH());
   addVertex(vertexHHH());
   StandardModel::doinit();
-  //create fresh BSM info file so it can be appended to later
-  //when decaymodes have been created
-  string name = CurrentGenerator::current().filename() +
-    string("-BSMModelInfo.out");
-  ofstream dummy(name.c_str());
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
