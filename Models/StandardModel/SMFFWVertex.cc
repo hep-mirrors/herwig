@@ -104,7 +104,7 @@ void SMFFWVertex::Init() {
 }
   
 // coupling for FFW vertex
-void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
+void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr aa, tcPDPtr bb, tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -sqrt(0.5)*weakCoupling(q2);
@@ -112,8 +112,8 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
   }
   setNorm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
-  int ianti=abs(b->id());
+  int iferm=abs(aa->id());
+  int ianti=abs(bb->id());
   // quarks
   if(iferm>=1 && iferm <=6) {
     int iu,id;

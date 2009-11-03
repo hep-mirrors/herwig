@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Models/UED/UEDBase.h"
-#include "UEDW0W1W1Vertex.fh"
+#include "UEDBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -68,12 +67,9 @@ public:
    *@param part1 The first interacting particle 
    *@param part2 The second interacting particle 
    *@param part3 The third interacting particle 
-   *@param d1 The direction for the first  particle.
-   *@param d2 The direction for the second particle.
-   *@param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   Direction d1,Direction d2, Direction d3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,
+			   tcPDPtr part2,tcPDPtr part3);
   
 protected:
 
@@ -83,13 +79,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -202,7 +198,5 @@ struct ClassTraits<Herwig::UEDW0W1W1Vertex>
 /** @endcond */
 
 }
-
-#include "UEDW0W1W1Vertex.icc"
 
 #endif /* HERWIG_UEDW0W1W1Vertex_H */

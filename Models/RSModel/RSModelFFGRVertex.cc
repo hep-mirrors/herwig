@@ -16,7 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void RSModelFFGRVertex::persistentOutput(PersistentOStream & os) const {
@@ -36,8 +36,28 @@ void RSModelFFGRVertex::Init() {
      " of the fermion-antifermion-graviton vertex");
   
 }
-// couplings
-void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
-{setNorm(Complex(_theKappa * UnitRemoval::E));}
+  
+void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
+  setNorm(Complex(_theKappa * UnitRemoval::E));
 }
 
+RSModelFFGRVertex::RSModelFFGRVertex() {
+  // PDG codes for the particles
+  vector<long> first,second,third;
+  // the quarks
+  for(int ix=1;ix<7;++ix)
+    {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
+  // the leptons
+  for(int ix=11;ix<17;++ix)
+    {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
+  setList(first,second,third);
+  _theKappa=InvEnergy();
+}
+
+void RSModelFFGRVertex::doinit() {
+  FFTVertex::doinit();
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+  else{throw InitException();}
+}

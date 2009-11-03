@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSWHHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -79,13 +78,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -203,7 +202,5 @@ struct ClassTraits<Herwig::SSWHHVertex>
 /** @endcond */
 
 }
-
-#include "SSWHHVertex.icc"
 
 #endif /* HERWIG_SSWHHVertex_H */

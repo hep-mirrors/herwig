@@ -106,8 +106,8 @@ void SSWHHVertex::Init() {
 
 }
 
-void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			      tcPDPtr particle3) {
+void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
+			      tcPDPtr particle2, tcPDPtr particle3) {
   long id1(abs(particle1->id())), id2(abs(particle2->id())),
     id3(abs(particle3->id())), gboson(0), h1ID(0), h2ID(0);
   if( id1 == ParticleID::Z0 || id1 == ParticleID::gamma || 

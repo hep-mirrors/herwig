@@ -20,6 +20,19 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
+void UEDW0A1H1Vertex::doinit() {
+  VSSVertex::doinit();
+  tUEDBasePtr UEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!UEDBase) throw InitException() 
+    << "UEDW0A1H1Vertex::doinit() - The pointer to "
+    << "the UEDBase object is null!" << Exception::runerror;
+  theMw2 = sqr(getParticleData(24)->mass());
+  theMz2 = sqr(getParticleData(23)->mass());
+  theR2 = sqr(UEDBase->compactRadius());
+  orderInGs(0);
+  orderInGem(0);
+}
+
 UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
 				     theq2Last(), theCoupLast(0.) {
   vector<long> wboson(2), higgsA(2), higgsH(2);

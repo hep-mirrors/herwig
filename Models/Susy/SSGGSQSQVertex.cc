@@ -56,3 +56,11 @@ void SSGGSQSQVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr, tcPDPtr,
   }
   setNorm(_couplast);
 }
+
+void SSGGSQSQVertex::doinit() {
+  orderInGs(2);
+  orderInGem(0);
+  VVSSVertex::doinit();
+}
+
+

@@ -162,7 +162,7 @@ void UEDF1F0H1Vertex::Init() {
 }
 
 void UEDF1F0H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-				  tcPDPtr part3, int) {
+				  tcPDPtr part3) {
   long anti(abs(part1->id())), ferm(abs(part2->id())), higgs(part3->id());
   if( ferm > 17 ) swap( ferm, anti);
 

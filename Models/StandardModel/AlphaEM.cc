@@ -21,6 +21,14 @@
 
 using namespace Herwig;
 
+IBPtr AlphaEM::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr AlphaEM::fullclone() const {
+  return new_ptr(*this);
+}
+
 void AlphaEM::persistentOutput(PersistentOStream & os) const {
   os << ounit(_me,GeV2) << ounit(_mmu,GeV2) 
      << ounit(_mtau,GeV2) << ounit(_mtop,GeV2);

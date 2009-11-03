@@ -71,3 +71,8 @@ void UEDF1F1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << iferm
 				 << Exception::warning;
 }
+void UEDF1F1G0Vertex::doinit() {
+  FFVVertex::doinit();
+  orderInGs(1);
+  orderInGem(0);
+}

@@ -329,11 +329,11 @@ double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
+	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle()->CC(),
 					 fin[inhel1],gout[outhel1]);
 	  diag[0] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],pout[outhel2]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle()->CC(),
 					  fin[inhel1],pout[outhel2]);
 	  diag[1] = _gluonvertex->evaluate(mt,inter,ain[inhel2],gout[outhel1]);
 	  // compute the running totals
@@ -385,11 +385,11 @@ double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle()->CC(),
 					  fin[inhel1],pout[outhel1]);
 	  diag[0]=_gluonvertex->evaluate(mt,inter,fout[outhel2],gin[inhel2]);
 	  // second diagram
-	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
+	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle()->CC(),
 					 fin[inhel1],gin[inhel2]);
 	  diag[1]=_photonvertex->evaluate(ZERO,inter,fout[outhel2],pout[outhel1]);
 	  // compute the running totals
@@ -442,11 +442,11 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(ZERO,5,ain[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,ain[inhel1].getParticle()->CC(),
 					  ain[inhel1],pout[outhel1]);
 	  diag[0]=_gluonvertex->evaluate(mt,aout[outhel2],inter,gin[inhel2]);
 	  // second diagram
-	  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].getParticle(),
+	  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].getParticle()->CC(),
 					 ain[inhel1],gin[inhel2]);
 	  diag[1]=_photonvertex->evaluate(ZERO,aout[outhel2],inter,pout[outhel1]);
 	  // compute the running totals

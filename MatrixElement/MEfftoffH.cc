@@ -175,38 +175,47 @@ double MEfftoffH::me2() const {
   vector<SpinorBarWaveFunction> a1,a2;
   SpinorWaveFunction    fin1,fin2;
   SpinorBarWaveFunction ain1,ain2;
+  bool swap1(false),swap2(false);
   if(_swap) {
     if(mePartonData()[0]->id()>0) {
+      swap1 = false;
       fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
       ain1 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
     }
     else {
+      swap1 = true;
       fin1 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
       ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
     }
     if(mePartonData()[1]->id()>0) {
+      swap2 = false;
       fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
       ain2 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
     }
     else {
+      swap2 = true;
       fin2 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
       ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
     }
   }
   else {
     if(mePartonData()[0]->id()>0) {
+      swap1 = false;
       fin1 =    SpinorWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
       ain1 = SpinorBarWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
     }
     else {
+      swap1 = true;
       fin1 =     SpinorWaveFunction(meMomenta()[2],mePartonData()[2],outgoing);
       ain1 =  SpinorBarWaveFunction(meMomenta()[0],mePartonData()[0],incoming);
     }
     if(mePartonData()[1]->id()>0) {
+      swap2 = false;
       fin2 =    SpinorWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
       ain2 = SpinorBarWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
     }
     else {
+      swap2 = true;
       fin2 =     SpinorWaveFunction(meMomenta()[3],mePartonData()[3],outgoing);
       ain2 =  SpinorBarWaveFunction(meMomenta()[1],mePartonData()[1],incoming);
     }
@@ -217,13 +226,14 @@ double MEfftoffH::me2() const {
     ain1.reset(ix); a1.push_back(ain1);
     ain2.reset(ix); a2.push_back(ain2);
   }
-  return helicityME(f1,f2,a1,a2,false)*sHat()*UnitRemoval::InvE2;
+  return helicityME(f1,f2,a1,a2,swap1,swap2,false)*sHat()*UnitRemoval::InvE2;
 }
 
 double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
 			     vector<SpinorWaveFunction> & f2 ,
 			     vector<SpinorBarWaveFunction> & a1,
 			     vector<SpinorBarWaveFunction> & a2,
+			     bool swap1, bool swap2,
 			     bool calc) const {
   // scale
   Energy2 mb2(scale());
@@ -264,8 +274,8 @@ double MEfftoffH::helicityME(vector<SpinorWaveFunction> & f1 ,
 	  // store matrix element if needed
 	  if(calc) {
 	    unsigned int ihel[5]={i1,i3,i2,i4,0};
-	    if(f1[i1].id()<0) swap(ihel[0],ihel[2]);
-	    if(f2[i2].id()<0) swap(ihel[1],ihel[3]);
+	    if(swap1) swap(ihel[0],ihel[2]);
+	    if(swap2) swap(ihel[1],ihel[3]);
 	    menew(ihel[0],ihel[1],ihel[2],ihel[3],ihel[4]) = diag;
 	  }
 	}

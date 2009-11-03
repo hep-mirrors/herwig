@@ -258,7 +258,8 @@ double MEPP2QQ::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
 				vector<SpinorWaveFunction>    & q4,
 				unsigned int iflow) const {
   // type of process
-  bool diagon[2]={q1[0].id()== -q2[0].id(),q1[0].id()== q3[0].id()};
+  bool diagon[2]={q1[0].id()== -q2[0].id(),
+		  q1[0].id()== -q3[0].id()};
   // scale
   Energy2 mt(scale());
   // matrix element to be stored

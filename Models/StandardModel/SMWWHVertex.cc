@@ -60,8 +60,8 @@ void SMWWHVertex::Init() {
      " Model electroweak gauge bosons to the Higgs.");
 }
 
-void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
-  int ibos=abs(a->id());
+void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
+  int ibos=abs(aa->id());
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = weakCoupling(q2) * UnitRemoval::InvE * _mw;

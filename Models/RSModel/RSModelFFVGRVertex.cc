@@ -76,11 +76,11 @@ void RSModelFFVGRVertex::Init() {
   
 }
 // FFVGR coupling
-void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
-    				 tcPDPtr c, tcPDPtr) {
+void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,
+				     tcPDPtr cc, tcPDPtr) {
   // work out the particles
-  int iferm=abs(a->id());
-  int ibos =c->id();
+  int iferm=abs(aa->id());
+  int ibos =cc->id();
   Complex norm;
   // overall factor
   // photon
@@ -99,7 +99,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
 					  << Exception::runerror;
   }
   // gluon
-  else if (ibos==21||ibos==9) {
+  else if (ibos==21) {
     if(_q2last[1]!=q2||_couplast[1]==0.) {
       _couplast[1] = strongCoupling(q2);
       _q2last[1]=q2;

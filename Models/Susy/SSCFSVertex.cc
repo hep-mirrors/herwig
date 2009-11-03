@@ -164,7 +164,7 @@ void SSCFSVertex::Init() {
 }
 
 void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-			      tcPDPtr part2,tcPDPtr part3, int iinc) {
+			      tcPDPtr part2,tcPDPtr part3) {
   long isc(abs(part3->id())), ism(abs(part1->id())), 
     ichg(abs(part2->id()));
   tcPDPtr smfermion = part1;
@@ -248,42 +248,12 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   }//end of coupling calculation
 
   //determine the helicity order of the vertex
-  tcPDPtr incoming;
-  switch( iinc ) {
-  case 1 : incoming = part1;
-    break;
-  case 2 : incoming = part2;
-    break;
-  default : incoming = part3;
-  }
-  if( incoming->iSpin() == PDT::Spin0 ) {
-    if( incoming->id() > 0 ) {
-      setLeft(_leftlast);
-      setRight(_rightlast);
-    }
-    else {
-      setLeft(conj(_rightlast));
-      setRight(conj(_leftlast));
-    }
-  }
-  else if( incoming->id() == smfermion->id() ) {
-    if(incoming->id() > 0) {
-      setLeft(conj(_rightlast));
-      setRight(conj(_leftlast));
-    }
-    else {
-      setLeft(_leftlast);
-      setRight(_rightlast);
-    }
+  if( smfermion->id() < 0 ) {
+    setLeft(conj(_rightlast));
+    setRight(conj(_leftlast));
   }
   else {
-    if( smfermion->id() < 0 ) {
-      setLeft(conj(_rightlast));
-      setRight(conj(_leftlast));
-    }
-    else {
-      setLeft(_leftlast);
-      setRight(_rightlast);
-    }
+    setLeft(_leftlast);
+    setRight(_rightlast);
   }
 }

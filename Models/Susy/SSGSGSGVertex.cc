@@ -20,6 +20,11 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
+SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(ZERO) {
+  vector<long> first(1,1000021), third(1, 21);
+  setList(first, first, third);
+}
+
 NoPIOClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;
 // Definition of the static class description member.
 
@@ -54,4 +59,10 @@ void SSGSGSGVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     setNorm(0.);
     setLeft(0.); setRight(0);
   }
+}
+
+void SSGSGSGVertex::doinit() {
+  orderInGs(1);
+  orderInGem(0);
+  FFVVertex::doinit();
 }

@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/Susy/MSSM.h"
-#include "SSFFHVertex.fh"
+#include "MSSM.h"
 
 namespace Herwig {
 
@@ -64,11 +63,9 @@ public:
    * @param particle1 The first particle in the vertex.
    * @param particle2 The second particle in the vertex.
    * @param particle3 The third particle in the vertex.
-   * @param iint The incoming particle(only needed for vertices with
-   * Majorana particles)
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			   tcPDPtr particle3, int iint);
+			   tcPDPtr particle3);
   
 protected:
 
@@ -78,13 +75,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -222,7 +219,5 @@ struct ClassTraits<Herwig::SSFFHVertex>
 /** @endcond */
 
 }
-
-#include "SSFFHVertex.icc"
 
 #endif /* HERWIG_SSFFHVertex_H */

@@ -16,8 +16,23 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
+
+RSModelSSGRVertex::RSModelSSGRVertex() {
+  vector<long> first,second,third;
+  first.push_back(25);second.push_back(25);third.push_back(39);
+  setList(first,second,third);
+  _theKappa=InvEnergy();
+}
+
+void RSModelSSGRVertex::doinit() {
+  SSTVertex::doinit();
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+  else{throw InitException();}
+}
 
 void RSModelSSGRVertex::persistentOutput(PersistentOStream & os) const {
   os << _theModel << ounit(_theKappa,InvGeV);
@@ -36,7 +51,7 @@ void RSModelSSGRVertex::Init() {
      " the RSModel scalar-scalar-graviton vertex");
   
 }
-void RSModelSSGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
-{setNorm(Complex(_theKappa * UnitRemoval::E));}
-}
 
+void RSModelSSGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
+    setNorm(Complex(_theKappa * UnitRemoval::E));
+}

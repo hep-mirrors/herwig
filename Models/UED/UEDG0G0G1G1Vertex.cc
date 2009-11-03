@@ -19,6 +19,18 @@
 
 using namespace Herwig;
 
+UEDG0G0G1G1Vertex::UEDG0G0G1G1Vertex() : 
+  theq2Last(ZERO), theCoupLast(0.) {
+  vector<long> kk1g(1, 5100021), smgl(1, 21);
+  setList(smgl, smgl, kk1g, kk1g);
+}
+
+void UEDG0G0G1G1Vertex::doinit() {
+  VVVVVertex::doinit();
+  orderInGs(2);
+  orderInGem(0);
+}
+
 NoPIOClassDescription<UEDG0G0G1G1Vertex> UEDG0G0G1G1Vertex::initUEDG0G0G1G1Vertex;
 // Definition of the static class description member.
 

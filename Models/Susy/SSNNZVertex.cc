@@ -15,7 +15,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Models/Susy/MixingMatrix.h"
+#include "MixingMatrix.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 using namespace ThePEG::Helicity;
@@ -107,11 +107,14 @@ void SSNNZVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   else
     throw HelicityConsistencyError() << "There is no Z0 in the ZNNVertex!"
 				     << Exception::warning;
-  if(ic1 == ParticleID::SUSY_chi_10 || ic1 == ParticleID::SUSY_chi_20 ||
-     ic1 == ParticleID::SUSY_chi_30 || ic1 == ParticleID::SUSY_chi_40 || 
-     ic2 == ParticleID::SUSY_chi_10 || ic2 == ParticleID::SUSY_chi_20 ||
-     ic2 == ParticleID::SUSY_chi_30 || ic2 == ParticleID::SUSY_chi_40 ||
-     ic1 == 1000045                 || ic2 == 1000045                ) {
+  if( (ic1 == ParticleID::SUSY_chi_10 || ic1 == ParticleID::SUSY_chi_20 ||
+       ic1 == ParticleID::SUSY_chi_30 || ic1 == ParticleID::SUSY_chi_40 ||
+       ic1 == 1000045)
+      && 
+      (ic2 == ParticleID::SUSY_chi_10 || ic2 == ParticleID::SUSY_chi_20 ||
+       ic2 == ParticleID::SUSY_chi_30 || ic2 == ParticleID::SUSY_chi_40 || 
+       ic2 == 1000045) 
+      ) {
     if(q2 != _q2last || _couplast==0.) {
       _q2last = q2;
       _couplast = weakCoupling(q2)/_cw;

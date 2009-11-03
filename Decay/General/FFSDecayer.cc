@@ -139,13 +139,13 @@ Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
       mu1 = outa.second/inpart.second;
       mu2 = outb.second/inpart.second;
       _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				       outa.first, outb.first,1);
+				       outa.first, outb.first);
     }
     else {
       mu1 = outb.second/inpart.second;
       mu2 = outa.second/inpart.second;
       _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				       outb.first, outa.first,1);
+				       outb.first, outa.first);
       
     }
     double c2 = norm(_perturbativeVertex->getNorm());

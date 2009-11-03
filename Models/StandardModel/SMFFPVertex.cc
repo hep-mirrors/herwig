@@ -68,7 +68,7 @@ void SMFFPVertex::Init() {
 }
 
 // coupling for FFP vertex
-void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -electroMagneticCoupling(q2);
@@ -76,7 +76,7 @@ void SMFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   }
   setNorm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
+  int iferm=abs(aa->id());
   if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
     setLeft(_charge[iferm]);
     setRight(_charge[iferm]);

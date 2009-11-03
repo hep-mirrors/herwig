@@ -19,6 +19,15 @@
 
 using namespace Herwig;
 
+IBPtr SMFFHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr SMFFHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+
 SMFFHVertex::SMFFHVertex()  {
   // PDG codes for the particles
   vector<long> first,second,third;
@@ -74,8 +83,8 @@ void SMFFHVertex::Init() {
   
 }
 
-void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
-  int iferm=abs(a->id());
+void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
+  int iferm=abs(aa->id());
   // left and right couplings set to one
   setLeft(1.); setRight(1.);
   // first the overall normalisation
@@ -84,7 +93,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
     _q2last=q2;
     _idlast=iferm;
     if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-      _masslast=_theSM->mass(q2,a);
+      _masslast=_theSM->mass(q2,aa);
     }
     else {
       throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
@@ -96,7 +105,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
   else if(iferm!=_idlast) {
     _idlast=iferm;
     if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-      _masslast=_theSM->mass(q2,a);
+      _masslast=_theSM->mass(q2,aa);
     }
     else {
       throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 

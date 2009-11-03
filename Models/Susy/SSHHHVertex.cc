@@ -108,8 +108,8 @@ void SSHHHVertex::Init() {
 
 }
 
-void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			      tcPDPtr particle3) {
+void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
+			      tcPDPtr particle2,tcPDPtr particle3) {
   long ids[3] = { abs(particle1->id()), abs(particle2->id()),
 		  abs(particle3->id()) };
   long h1(0), h2(0), h3(0), hc(0);

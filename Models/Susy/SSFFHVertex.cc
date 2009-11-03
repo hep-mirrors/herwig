@@ -98,8 +98,8 @@ void SSFFHVertex::Init() {
 
 }
 
-void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			      tcPDPtr particle3, int) {
+void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
+			      tcPDPtr particle2,tcPDPtr particle3) {
   long id1(abs(particle1->id())), id2(abs(particle2->id())), 
     id3(abs(particle3->id())), higgsID(0), f1ID(0), f2ID(0);
   if( id1 == ParticleID::h0 || id1 == ParticleID::H0 || 

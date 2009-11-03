@@ -86,7 +86,7 @@ void SMHPPVertex::Init() {
 
 void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
                               tcPDPtr part3, tcPDPtr part1) {
-  if( part1->id() != ParticleID::h0 && part2->id() != ParticleID::gamma &&
+  if( part1->id() != ParticleID::h0 || part2->id() != ParticleID::gamma ||
       part3->id() != ParticleID::gamma )
     throw HelicityConsistencyError() 
       << "SMHPPVertex::setCoupling() - The particle content of this vertex "
@@ -195,4 +195,25 @@ Complex SMHPPVertex::W2(double lambda) const {
 */
   }
   return 4.*ac;
+}
+
+SMHPPVertex::SMHPPVertex() 
+  :_couplast(0.),_q2last(),_mw(),massopt(1),
+   _minloop(6),_maxloop(6),_CoefRepresentation(1)
+{
+  //PDG codes for particles at vertices
+  vector<long> first(1,22),second(1,22),third(1,25);
+  setList(first,second,third);
+}
+
+void SMHPPVertex::doinit() {
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if( !_theSM ) 
+    throw InitException() 
+      << "SMHGGVertex::doinit() - The pointer to the SM object is null."
+      << Exception::abortnow;
+  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  orderInGs(0);
+  orderInGem(3);
+  VVSLoopVertex::doinit();
 }

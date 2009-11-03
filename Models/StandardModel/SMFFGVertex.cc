@@ -33,7 +33,7 @@ void SMFFGVertex::Init() {
 }
 
 // coupling for FFG vertex
-void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -strongCoupling(q2);
@@ -41,7 +41,7 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   }
   setNorm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
+  int iferm=abs(aa->id());
   if(iferm>=1 && iferm<=6) {
     setLeft(1.);
     setRight(1.);

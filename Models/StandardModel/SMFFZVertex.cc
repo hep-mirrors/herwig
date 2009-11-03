@@ -37,7 +37,7 @@ void SMFFZVertex::Init() {
      "the coupling of the Z boson to the Standard Model fermions");
 }
 
-void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -electroMagneticCoupling(q2);
@@ -45,7 +45,7 @@ void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
   }
   setNorm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
+  int iferm=abs(aa->id());
   if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
     setLeft(_gl[iferm]);
     setRight(_gr[iferm]);

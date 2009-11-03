@@ -86,7 +86,7 @@ void SMWWWWVertex::Init() {
 
 // couplings for the WWWW vertex
 void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-    				      tcPDPtr c,tcPDPtr d) {
+			       tcPDPtr c,tcPDPtr d) {
   // id's of the particles
   int id[4]={a->id(),b->id(),c->id(),d->id()};
   // order the particles

@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "Herwig++/Models/UED/UEDBase.h"
-#include "UEDG0G0G1G1Vertex.fh"
+#include "UEDBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -33,7 +32,7 @@ public:
   /**
    * The default constructor.
    */
-  inline UEDG0G0G1G1Vertex();
+  UEDG0G0G1G1Vertex();
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -61,13 +60,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -79,7 +78,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
 
 private:
@@ -149,7 +148,5 @@ struct ClassTraits<Herwig::UEDG0G0G1G1Vertex>
 /** @endcond */
 
 }
-
-#include "UEDG0G0G1G1Vertex.icc"
 
 #endif /* HERWIG_UEDG0G0G1G1Vertex_H */

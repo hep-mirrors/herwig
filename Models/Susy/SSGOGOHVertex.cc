@@ -133,8 +133,9 @@ void SSGOGOHVertex::Init() {
 
 }
 
-void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			      tcPDPtr particle3, int) {
+/// \todo fixme
+void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, 
+				tcPDPtr particle2,tcPDPtr particle3) {
   long id1(particle1->id()), id2(particle2->id()), 
     id3(particle3->id()), higgsID(0), f1ID(0), f2ID(0);
   if( abs(id1) == ParticleID::h0 || abs(id1) == ParticleID::H0 || 

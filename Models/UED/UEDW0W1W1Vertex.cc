@@ -84,23 +84,24 @@ void UEDW0W1W1Vertex::Init() {
 
 }
 
+/// \todo look again
 void UEDW0W1W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
-				  tcPDPtr part3,Direction,Direction,Direction) {
+				  tcPDPtr part3) {
   long id1(abs(part1->id())), id2(abs(part2->id())), id3(abs(part3->id())), 
     smID(0), kkparticle(0);
   double perm(-1.);
   if( id1 == 22 || id1 == 23 || id1 == 24 ) {
-    if( part1->id() < 0 ) perm = 1.;
+    if( part1->id() == -24 ) perm = 1.;
     smID = id1;
     kkparticle = (id2 == 5100024) ? id3 : id2;
   }
   else if( id2 == 22 || id2 == 23 || id2 == 24 ) {
-    if( part2->id() < 0 ) perm = 1.;
+    if( part2->id() == -24 ) perm = 1.;
     smID = id2;
     kkparticle = (id1 == 5100024) ? id3 : id1;
   }
   else if( id3 == 22 || id3 == 23 || id3 == 24 ) {
-    if( part3->id() < 0 ) perm = 1.;
+    if( part3->id() == -24 ) perm = 1.;
     smID = id3;
     kkparticle = (id1 == 5100024) ? id2 : id1;
   }

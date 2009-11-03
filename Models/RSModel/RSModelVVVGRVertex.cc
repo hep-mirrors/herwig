@@ -71,7 +71,7 @@ void RSModelVVVGRVertex::Init() {
 
 // couplings for the VVVGR vertex
 void RSModelVVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-    				 tcPDPtr c, tcPDPtr) {
+				     tcPDPtr c, tcPDPtr) {
   int ida=a->id();
   int idb=b->id();
   int idc=c->id();

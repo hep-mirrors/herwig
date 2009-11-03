@@ -49,8 +49,8 @@ public:
    * @param part3 The ParticleData pointer for the third  particle.
    * @param part4 The ParticleData pointer for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   tcPDPtr part4);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
+			   tcPDPtr part3,tcPDPtr part4);
   
 protected:
   
@@ -60,13 +60,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -109,9 +109,6 @@ private:
   //@}
 };
 }
-
-
-#include "SMGGGGVertex.icc"
 
 namespace ThePEG {
 
