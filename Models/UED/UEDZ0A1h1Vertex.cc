@@ -22,8 +22,7 @@ using namespace Herwig;
 
 UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
 				     theq2Last(ZERO), theCoupLast(0.) {
-  setList(vector<long>(1, 23), vector<long>(1, 5100036), 
-	  vector<long>(1, 5100025));
+  addToList(23, 5100036, 5100025);
 }
 
 void UEDZ0A1h1Vertex::doinit() {
@@ -88,7 +87,7 @@ void UEDZ0A1h1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theq2Last = q2;
       theCoupLast = theKappa*electroMagneticCoupling(q2)/theSin2ThetaW;
     }
-    setNorm(theCoupLast); 
+    norm(theCoupLast); 
   }
   else
     throw HelicityLogicalError() << "UEDZ0A1h1Vertex::setCoupling - "

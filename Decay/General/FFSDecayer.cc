@@ -139,18 +139,18 @@ Energy FFSDecayer::partialWidth(PMPair inpart, PMPair outa,
       mu1 = outa.second/inpart.second;
       mu2 = outb.second/inpart.second;
       _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				       outa.first, outb.first,1);
+				       outa.first, outb.first);
     }
     else {
       mu1 = outb.second/inpart.second;
       mu2 = outa.second/inpart.second;
       _perturbativeVertex->setCoupling(sqr(inpart.second), inpart.first,
-				       outb.first, outa.first,1);
+				       outb.first, outa.first);
       
     }
-    double c2 = norm(_perturbativeVertex->getNorm());
-    Complex cl = _perturbativeVertex->getLeft();
-    Complex cr = _perturbativeVertex->getRight();
+    double c2 = norm(_perturbativeVertex->norm());
+    Complex cl = _perturbativeVertex->left();
+    Complex cr = _perturbativeVertex->right();
     double me2 = c2*( (norm(cl) + norm(cr))*(1. + sqr(mu1) - sqr(mu2))
 		      + 2.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,

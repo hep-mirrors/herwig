@@ -140,7 +140,7 @@ private:
    * pair storage
    * @param ppair The ppair to check.
    */
-  bool duplicate(tcPDPair ppair) const;
+  bool duplicate(tPDPair ppair) const;
 
 private:
 
@@ -191,7 +191,7 @@ private:
    * @param fs A possible final state.
    * @param vertex The first vertex
    */
-  void createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex);
+  void createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex);
 
   /**
    * Populate the diagram structure
@@ -302,7 +302,7 @@ private:
    * equal the particle goes first then the anti-particle. This is setup
    * in the doinit() member.
    */
-  vector<tcPDPair> theIncPairs;
+  vector<tPDPair> theIncPairs;
   
   /**
    * Required final state particles

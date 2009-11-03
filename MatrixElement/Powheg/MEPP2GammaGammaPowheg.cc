@@ -524,31 +524,31 @@ double MEPP2GammaGammaPowheg::MEqgq(const vector<Lorentz5Momentum> & p) const {
 	  for(unsigned int ohel=0;ohel<2;++ohel) {
  	    // first diagram
 	    SpinorWaveFunction inters1 = 
-	      QEDVertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      QEDVertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout1[phel1]);
 	    SpinorBarWaveFunction inters2 = 
-	      QEDVertex_->evaluate(ZERO,5,qout[ohel].getParticle(),
+	      QEDVertex_->evaluate(ZERO,5,qout[ohel].particle(),
 				   qout[ohel],pout2[phel2]);
 	    diag[0] = QCDVertex_->evaluate(scale(),inters1,inters2,gin[ihel2]);
 	    // second diagram
 	    SpinorWaveFunction inters3 = 
-	      QCDVertex_->evaluate(scale(),5,qin[ihel1].getParticle()->CC(),
+	      QCDVertex_->evaluate(scale(),5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],gin[ihel2]);
 	    SpinorBarWaveFunction inters4 = 
-	      QEDVertex_->evaluate(ZERO,5,qout[ohel].getParticle(),
+	      QEDVertex_->evaluate(ZERO,5,qout[ohel].particle(),
 				   qout[ohel],pout1[phel1]);
 	    diag[1] = QEDVertex_->evaluate(ZERO,inters3,inters4,pout2[phel2]);
 	    // fourth diagram
 	    diag[2] = QEDVertex_->evaluate(ZERO,inters3,inters2,pout1[phel1]);
 	    // fifth diagram
 	    SpinorBarWaveFunction inters5 = 
-	      QCDVertex_->evaluate(scale(),5,qout[ohel].getParticle(),
+	      QCDVertex_->evaluate(scale(),5,qout[ohel].particle(),
 				   qout[ohel],gin[ihel2]);
 	    diag[3] = 
 	      QEDVertex_->evaluate(ZERO,inters1,inters5,pout2[phel2]);
 	    // sixth diagram
 	    SpinorWaveFunction inters6 = 
-	      QEDVertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      QEDVertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout2[phel2]);
 	    diag[4] = QCDVertex_->evaluate(scale(),inters6,inters4,gin[ihel2]);
 	    // eighth diagram

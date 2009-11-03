@@ -23,26 +23,21 @@ using namespace Herwig;
 UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(ZERO),
 				     thefermLast(0), theLRLast(0.0), 
 				     theCharges(3) {
-  //lists
-  vector<long> ferm, anti, photon(18, 22);
+  long photon = 22;
   //quarks
   for(long i = 1; i < 7; ++i) {
     //left
-    ferm.push_back(5100000 + i);
-    anti.push_back(-5100000 - i);
+    addToList(-5100000 - i, 5100000 + i, photon);
     //right
-    ferm.push_back(6100000 + i);
-    anti.push_back(-6100000 - i);
+    addToList(-6100000 - i, 6100000 + i, photon);
   }
+  //leptons
   for(long i = 11; i < 17; i += 2) {
     //left
-    ferm.push_back(5100000 + i);
-    anti.push_back(-5100000 - i);
+    addToList(-5100000 - i, 5100000 + i, photon);
     //right
-    ferm.push_back(6100000 + i);
-    anti.push_back(-6100000 - i);
+    addToList(-6100000 - i, 6100000 + i, photon);
   }
-  setList(anti, ferm, photon);
 }
 
 void UEDF1F1P0Vertex::doinit() {
@@ -85,7 +80,7 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     throw HelicityLogicalError() << "UEDF1F1P0Vertex::setCoupling - There is no "
 				 << "photon in this vertex!"
 				 << Exception::warning;
-    setNorm(0.0);
+    norm(0.0);
     return;
   }
   if((iferm >= 5100001 && iferm <= 5100006) || 
@@ -96,7 +91,7 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theq2Last = q2;
       theCoupLast = electroMagneticCoupling(q2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
     if(iferm != thefermLast) {
       thefermLast = iferm;
       int smtype = (iferm > 6000000) ? iferm - 6100000 : iferm - 5100000;
@@ -105,13 +100,13 @@ void UEDF1F1P0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       else
 	theLRLast = (smtype % 2 == 0) ? theCharges[2] : theCharges[1];
     }
-    setLeft(theLRLast);
-    setRight(theLRLast);
+    left(theLRLast);
+    right(theLRLast);
   }
   else {
     throw HelicityLogicalError() << "UEDF1F1P0Vertex::setCoupling - There is an "
 				 << "unknown particle in this vertex " << iferm
 				 << Exception::warning;
-    setNorm(0.0);
+    norm(0.0);
   }
 }

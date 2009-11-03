@@ -45,7 +45,12 @@ VV_ME_Analysis::VV_ME_Analysis() :
   _yJet_yVV_10_h(-10.0,10.0,200),_yJet_yVV_40_h(-10.0,10.0,200),
   _yJet_yVV_80_h(-10.0,10.0,200),
   _nJets_10_h(-0.5,100.5,101),_nJets_40_h(-0.5,100.5,101),
-  _nJets_80_h(-0.5,100.5,101)
+  _nJets_80_h(-0.5,100.5,101),
+  _m34_mcatnlo_h(70.,100.,60),_m56_mcatnlo_h(70.,100.,60),
+  _yJet2_10_h(-10.0,10.0,200),_yJet2_40_h(-10.0,10.0,200),
+  _yJet2_80_h(-10.0,10.0,200),
+  _yJet2_yVV_10_h(-10.0,10.0,200),_yJet2_yVV_40_h(-10.0,10.0,200),
+  _yJet2_yVV_80_h(-10.0,10.0,200)
 {}
 
 void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -232,6 +237,21 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
       _yJet_yV2_80_h.addWeighted(hardestJet.rapidity()-p56.rapidity(),1.);
       _yJet_yVV_80_h.addWeighted(hardestJet.rapidity()-(p34+p56).rapidity(),1.);
     }
+    if(inclusiveJets.size()>1) {
+      fastjet::PseudoJet secondhardestJet(inclusiveJets[1]);
+      if(secondhardestJet.perp()>10.) {
+	_yJet2_10_h.addWeighted(secondhardestJet.rapidity(),1.);
+	_yJet2_yVV_10_h.addWeighted(secondhardestJet.rapidity()-(p34+p56).rapidity(),1.);
+      }
+      if(secondhardestJet.perp()>40.) {
+	_yJet2_40_h.addWeighted(secondhardestJet.rapidity(),1.);
+	_yJet2_yVV_40_h.addWeighted(secondhardestJet.rapidity()-(p34+p56).rapidity(),1.);
+      } 
+      if(secondhardestJet.perp()>80.) {
+	_yJet2_80_h.addWeighted(secondhardestJet.rapidity(),1.);
+	_yJet2_yVV_80_h.addWeighted(secondhardestJet.rapidity()-(p34+p56).rapidity(),1.);
+      }
+    }
   }
   unsigned int n10(0);
   unsigned int n40(0);
@@ -244,6 +264,9 @@ void VV_ME_Analysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   _nJets_10_h.addWeighted(n10+0.001,1.);
   _nJets_40_h.addWeighted(n40+0.001,1.);
   _nJets_80_h.addWeighted(n80+0.001,1.);
+  // Masses of the two vector bosons:
+  _m34_mcatnlo_h.addWeighted(p34.m()/GeV,1.);
+  _m56_mcatnlo_h.addWeighted(p56.m()/GeV,1.);
   // Scalar sum of all lepton pts:
   _HT3456_h.addWeighted((p[offset+3].perp()+p[offset+4].perp()
 		        +p[offset+5].perp()+p[offset+6].perp()
@@ -361,6 +384,7 @@ void VV_ME_Analysis::dofinish() {
   _HT34_h.normaliseToCrossSection();
   _HT34_h.prefactor(_HT34_h.prefactor()*1.e6);
   _HT34_h.topdrawOutput(mcfm_file,Frame,"RED","HT34 distribution: all wgts");
+
   // p3:
   _eta3_h.normaliseToCrossSection();
   _eta3_h.prefactor(_eta3_h.prefactor()*1.e6);
@@ -375,10 +399,22 @@ void VV_ME_Analysis::dofinish() {
   _pt4_h.normaliseToCrossSection();
   _pt4_h.prefactor(_pt4_h.prefactor()*1.e6);
   _pt4_h.topdrawOutput(mcfm_file,Frame,"RED","pt4 distribution: all wgts");
+
   // First vector boson:
+  _eta34_h.topdrawOutput(mcatnlo_file,Frame,"RED","eta34 Unit Area");
+  _eta34_h.normaliseToCrossSection();
+  _eta34_h.prefactor(_eta34_h.prefactor()*1.e6);
+  _eta34_h.topdrawOutput(mcatnlo_file,Frame,"RED","eta34 cross");
+
   _eta34_h.normaliseToCrossSection();
   _eta34_h.prefactor(_eta34_h.prefactor()*1.e6);
   _eta34_h.topdrawOutput(mcfm_file,Frame,"RED","eta34 distribution: all wgts");
+
+  _y34_h.topdrawOutput(mcatnlo_file,Frame,"RED","y34 Unit Area");
+  _y34_h.normaliseToCrossSection();
+  _y34_h.prefactor(_y34_h.prefactor()*1.e6);
+  _y34_h.topdrawOutput(mcatnlo_file,Frame,"RED","y34 cross");
+
   _y34_h.normaliseToCrossSection();
   _y34_h.prefactor(_y34_h.prefactor()*1.e6);
   _y34_h.topdrawOutput(mcfm_file,Frame,"RED","y34 distribution: all wgts");
@@ -395,6 +431,7 @@ void VV_ME_Analysis::dofinish() {
   _m34wz_h.normaliseToCrossSection();
   _m34wz_h.prefactor(_m34wz_h.prefactor()*1.e6);
   _m34wz_h.topdrawOutput(mcfm_file,Frame,"RED","m34 low  mass: all wgts");
+
   // p5:
   _eta5_h.normaliseToCrossSection();
   _eta5_h.prefactor(_eta5_h.prefactor()*1.e6);
@@ -409,21 +446,34 @@ void VV_ME_Analysis::dofinish() {
   _pt6_h.normaliseToCrossSection();
   _pt6_h.prefactor(_pt6_h.prefactor()*1.e6);
   _pt6_h.topdrawOutput(mcfm_file,Frame,"RED","pt6 distribution: all wgts");
+
   // Second vector boson:
-  _m56_h.normaliseToCrossSection();
-  _m56_h.prefactor(_m56_h.prefactor()*1.e6);
-  _m56_h.topdrawOutput(mcfm_file,Frame,"RED","m56 distribution: all wgts");
+  _eta56_h.topdrawOutput(mcatnlo_file,Frame,"RED","eta56 Unit Area");
   _eta56_h.normaliseToCrossSection();
   _eta56_h.prefactor(_eta56_h.prefactor()*1.e6);
-  _eta56_h.topdrawOutput(mcfm_file,Frame,"RED","eta56 distribution: all wgts");
+  _eta56_h.topdrawOutput(mcatnlo_file,Frame,"RED","eta56 cross");
+
+  _y56_h.topdrawOutput(mcatnlo_file,Frame,"RED","y56 Unit Area");
   _y56_h.normaliseToCrossSection();
   _y56_h.prefactor(_y56_h.prefactor()*1.e6);
-  _y56_h.topdrawOutput(mcfm_file,Frame,"RED","y56 distribution: all wgts");
+  _y56_h.topdrawOutput(mcatnlo_file,Frame,"RED","y56 cross");
 
   _pt56_h.topdrawOutput(mcatnlo_file,Frame,"RED","V2 Pt Unit Area");
   _pt56_h.normaliseToCrossSection();
   _pt56_h.prefactor(_pt56_h.prefactor()*1.e6);
   _pt56_h.topdrawOutput(mcatnlo_file,Frame,"RED","V2 Pt cross");
+
+  _m56_h.normaliseToCrossSection();
+  _m56_h.prefactor(_m56_h.prefactor()*1.e6);
+  _m56_h.topdrawOutput(mcfm_file,Frame,"RED","m56 distribution: all wgts");
+
+  _eta56_h.normaliseToCrossSection();
+  _eta56_h.prefactor(_eta56_h.prefactor()*1.e6);
+  _eta56_h.topdrawOutput(mcfm_file,Frame,"RED","eta56 distribution: all wgts");
+
+  _y56_h.normaliseToCrossSection();
+  _y56_h.prefactor(_y56_h.prefactor()*1.e6);
+  _y56_h.topdrawOutput(mcfm_file,Frame,"RED","y56 distribution: all wgts");
 
   _pt56_mcfm_h.normaliseToCrossSection();
   _pt56_mcfm_h.prefactor(_pt56_mcfm_h.prefactor()*1.e6);
@@ -438,6 +488,7 @@ void VV_ME_Analysis::dofinish() {
   _yVV_h.normaliseToCrossSection();
   _yVV_h.prefactor(_yVV_h.prefactor()*1.e6);
   _yVV_h.topdrawOutput(mcatnlo_file,Frame,"RED","VV rapidity cross");
+
   // The hardest jet stuff - pT followed by rapidity:
   _ptJet_h.topdrawOutput(mcatnlo_file,Frame,"RED","Hardest Jet pT Unit Area");
   _ptJet_h.normaliseToCrossSection();
@@ -455,6 +506,7 @@ void VV_ME_Analysis::dofinish() {
   _yJet_80_h.normaliseToCrossSection();
   _yJet_80_h.prefactor(_yJet_80_h.prefactor()*1.e6);
   _yJet_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet pT>80 cross");
+
   // The hardest jet rapidity gap w.r.t V1:
   _yJet_yV1_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet - yV1 pT>10 Unit Area");
   _yJet_yV1_10_h.normaliseToCrossSection();
@@ -468,6 +520,7 @@ void VV_ME_Analysis::dofinish() {
   _yJet_yV1_80_h.normaliseToCrossSection();
   _yJet_yV1_80_h.prefactor(_yJet_yV1_80_h.prefactor()*1.e6);
   _yJet_yV1_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet - yV1 pT>80 cross");
+
   // The hardest jet rapidity gap w.r.t V2:
   _yJet_yV2_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet - yV2 pT>10 Unit Area");
   _yJet_yV2_10_h.normaliseToCrossSection();
@@ -481,6 +534,7 @@ void VV_ME_Analysis::dofinish() {
   _yJet_yV2_80_h.normaliseToCrossSection();
   _yJet_yV2_80_h.prefactor(_yJet_yV2_80_h.prefactor()*1.e6);
   _yJet_yV2_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet - yV2 pT>80 cross");
+
   // The hardest jet rapidity gap w.r.t VV:
   _yJet_yVV_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet - yVV pT>10 Unit Area");
   _yJet_yVV_10_h.normaliseToCrossSection();
@@ -494,6 +548,7 @@ void VV_ME_Analysis::dofinish() {
   _yJet_yVV_80_h.normaliseToCrossSection();
   _yJet_yVV_80_h.prefactor(_yJet_yVV_80_h.prefactor()*1.e6);
   _yJet_yVV_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet - yVV pT>80 cross");
+
   // Jet multiplicities:
   _nJets_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","N Jets pT>10 Unit Area");
   _nJets_10_h.normaliseToCrossSection();
@@ -507,6 +562,45 @@ void VV_ME_Analysis::dofinish() {
   _nJets_80_h.normaliseToCrossSection();
   _nJets_80_h.prefactor(_nJets_80_h.prefactor()*1.e6);
   _nJets_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","N Jets pT>80 cross");
+
+  // Masses of the two vector bosons:
+  _m34_mcatnlo_h.topdrawOutput(mcatnlo_file,Frame,"RED","m34 Unit Area");
+  _m34_mcatnlo_h.normaliseToCrossSection();
+  _m34_mcatnlo_h.prefactor(_m34_mcatnlo_h.prefactor()*1.e6);
+  _m34_mcatnlo_h.topdrawOutput(mcatnlo_file,Frame,"RED","m34 cross");
+  _m56_mcatnlo_h.topdrawOutput(mcatnlo_file,Frame,"RED","m56 Unit Area");
+  _m56_mcatnlo_h.normaliseToCrossSection();
+  _m56_mcatnlo_h.prefactor(_m56_mcatnlo_h.prefactor()*1.e6);
+  _m56_mcatnlo_h.topdrawOutput(mcatnlo_file,Frame,"RED","m56 cross");
+
+  // The second hardest jet rapidity:
+  _yJet2_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet2 pT>10 Unit Area");
+  _yJet2_10_h.normaliseToCrossSection();
+  _yJet2_10_h.prefactor(_yJet2_10_h.prefactor()*1.e6);
+  _yJet2_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet2 pT>10 cross");
+  _yJet2_40_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet2 pT>40 Unit Area");
+  _yJet2_40_h.normaliseToCrossSection();
+  _yJet2_40_h.prefactor(_yJet2_40_h.prefactor()*1.e6);
+  _yJet2_40_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet2 pT>40 cross");
+  _yJet2_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet2 pT>80 Unit Area");
+  _yJet2_80_h.normaliseToCrossSection();
+  _yJet2_80_h.prefactor(_yJet2_80_h.prefactor()*1.e6);
+  _yJet2_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","y Jet2 pT>80 cross");
+
+  // The second hardest jet rapidity gap w.r.t VV:
+  _yJet2_yVV_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet2 - yVV pT>10 Unit Area");
+  _yJet2_yVV_10_h.normaliseToCrossSection();
+  _yJet2_yVV_10_h.prefactor(_yJet2_yVV_10_h.prefactor()*1.e6);
+  _yJet2_yVV_10_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet2 - yVV pT>10 cross");
+  _yJet2_yVV_40_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet2 - yVV pT>40 Unit Area");
+  _yJet2_yVV_40_h.normaliseToCrossSection();
+  _yJet2_yVV_40_h.prefactor(_yJet2_yVV_40_h.prefactor()*1.e6);
+  _yJet2_yVV_40_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet2 - yVV pT>40 cross");
+  _yJet2_yVV_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet2 - yVV pT>80 Unit Area");
+  _yJet2_yVV_80_h.normaliseToCrossSection();
+  _yJet2_yVV_80_h.prefactor(_yJet2_yVV_80_h.prefactor()*1.e6);
+  _yJet2_yVV_80_h.topdrawOutput(mcatnlo_file,Frame,"RED","yJet2 - yVV pT>80 cross");
+
   // Scalar sum of all lepton pts:
   _HT3456_h.normaliseToCrossSection();
   _HT3456_h.prefactor(_HT3456_h.prefactor()*1.e6);
@@ -517,6 +611,7 @@ void VV_ME_Analysis::dofinish() {
   _m3456_h.normaliseToCrossSection();
   _m3456_h.prefactor(_m3456_h.prefactor()*1.e6);
   _m3456_h.topdrawOutput(mcfm_file,Frame,"RED","m3456 distribution: all wgts");
+
   // The theta Born variables:
   _th1_h.normaliseToCrossSection();
   _th1_h.prefactor(_th1_h.prefactor()*1.e6);

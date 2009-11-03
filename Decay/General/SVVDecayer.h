@@ -16,7 +16,6 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
 #include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
-#include "ThePEG/Helicity/Vertex/Scalar/GeneralVVSVertex.fh"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
@@ -152,11 +151,6 @@ private:
    * Pointer to the perturbative form
    */
   VVSVertexPtr _perturbativeVertex; 
-  
-  /**
-   * Pointer to the general form
-   */
-  GeneralVVSVertexPtr _generalVertex;
 
   /**
    *  Spin density matrix

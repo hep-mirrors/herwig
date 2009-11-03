@@ -58,22 +58,16 @@ void SusyBase::doinit() {
   addVertex(vertexWHH());
   addVertex(vertexHHH());
   StandardModel::doinit();
-  //create fresh BSM info file so it can be appended to later
-  //when decaymodes have been created
-  string name = CurrentGenerator::current().filename() +
-    string("-BSMModelInfo.out");
-  ofstream dummy(name.c_str());
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << _readFile << _topModesFromFile 
      << theNMix << theUMix << theVMix << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
-     << theGSFSFVertex << theGGSQSQVertex 
-     << theGSGSGVertex << theNNZVertex 
-     << theCCZVertex << theCNWVertex << theSSFFHVertex << theGOGOHVertex
-     << theSSWWHVertex << theWHHVertex << theHHHVertex << theSSHGGVertex
-     << _tanbeta << ounit(_mu,GeV) 
+     << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
+     << theNNZVertex << theCCZVertex << theCNWVertex 
+     << theSSFFHVertex << theGOGOHVertex << theSSWWHVertex << theWHHVertex 
+     << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
      << _tolerance;
 
@@ -86,8 +80,7 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theCCZVertex >> theCNWVertex
      >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex
-     >> theHHHVertex >> theSSHGGVertex
-     >> _tanbeta >> iunit(_mu,GeV) 
+     >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
      >> _tolerance;
 }
@@ -194,11 +187,6 @@ void SusyBase::Init() {
     ("Vertex/HHH",
      "Triple higgs coupling",
      &SusyBase::theHHHVertex, false, false, true, false);
-   
-   static Reference<SusyBase,Helicity::AbstractVVSVertex> interfaceVertexSSHGG
-    ("Vertex/SSHGG",
-     "The coupling of a higgs to 2 gluons",
-     &SusyBase::theSSHGGVertex, false, false, true, false);
 
   static Parameter<SusyBase,double> interfaceBRTolerance
     ("BRTolerance",

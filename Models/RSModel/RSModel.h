@@ -45,7 +45,7 @@ public:
   /**
    * Return the gravition coupling
    */
-  inline Energy lambda_pi() const;
+  Energy lambda_pi() const {return _theLambda_pi;}
 
 
   /** @name Vertices */
@@ -53,27 +53,27 @@ public:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  inline tAbstractFFTVertexPtr   vertexFFGR() const;
+  tAbstractFFTVertexPtr   vertexFFGR() const {return _theFFGRVertex;}
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  inline tAbstractVVTVertexPtr   vertexVVGR() const;
+  tAbstractVVTVertexPtr   vertexVVGR() const {return _theVVGRVertex;}
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  inline tAbstractSSTVertexPtr   vertexSSGR() const;
+  tAbstractSSTVertexPtr   vertexSSGR() const {return _theSSGRVertex;}
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  inline tAbstractFFVTVertexPtr  vertexFFVGR() const;
+  tAbstractFFVTVertexPtr  vertexFFVGR() const {return _theFFVGRVertex;}
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  inline tAbstractVVVTVertexPtr  vertexVVVGR() const;
+  tAbstractVVVTVertexPtr  vertexVVVGR() const {return _theVVVGRVertex;}
   //@}
   
 public:
@@ -108,7 +108,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
   
 protected:
@@ -119,13 +119,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 private:
@@ -172,8 +172,6 @@ private:
   
 };
 }
-#include "RSModel.icc"
-
 
 namespace ThePEG {
 

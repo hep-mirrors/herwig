@@ -254,10 +254,10 @@ double MEPP2VGamma::ZGammaME(vector<SpinorWaveFunction>    & f1,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
  	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
- 	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].getParticle(),
+ 	  inter   = FFZvertex_->evaluate(scale(),5,f1[ihel1].particle(),
  					 f1[ihel1],v1[ohel1]);
  	  diag[0] = FFPvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
- 	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].getParticle(),
+ 	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].particle(),
  					 f1[ihel1] ,v2[ohel2]);
  	  diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
  	  // individual diagrams
@@ -293,15 +293,15 @@ double MEPP2VGamma::WGammaME(vector<SpinorWaveFunction>    & f1,
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       VectorWaveFunction interW =
- 	FFWvertex_->evaluate(scale(),3,v1[0].getParticle()->CC(),
+ 	FFWvertex_->evaluate(scale(),3,v1[0].particle(),
  			     f1[ihel1],a1[ihel2]);
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
  	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // t-channel diagrams
-	  inter   = FFWvertex_->evaluate(scale(),5,a1[ihel1].getParticle(),
+	  inter   = FFWvertex_->evaluate(scale(),5,a1[ihel1].particle(),
 					 f1[ihel1],v1[ohel1]);
 	  diag[0] = FFPvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].getParticle(),
+	  inter   = FFPvertex_->evaluate(scale(),5,f1[ihel1].particle(),
 					 f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // s-channel diagram

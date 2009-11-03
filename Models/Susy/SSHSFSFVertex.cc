@@ -29,7 +29,6 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
 				 theSw(0.0), theCw(0.0), theCoupLast(ZERO),
 				 theq2Last(ZERO), theHLast(0), theSF1Last(0),
 				 theSF2Last(0) {
-  vector<long> first,second,third;
   int higgs = 25;
   //h0,H0
   for(unsigned int i = 0; i < 2; ++i) {
@@ -39,40 +38,24 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
       long lj = 1000000 + j;
       long rj = 2000000 + j;
       //LLbar
-      first.push_back(higgs);
-      second.push_back(lj);
-      third.push_back(-lj);
+      addToList(higgs,lj,-lj);
       //RRbar
-      first.push_back(higgs);
-      second.push_back(rj);
-      third.push_back(-rj);
+      addToList(higgs,rj,-rj);
       //LRbar
-      first.push_back(higgs);
-      second.push_back(lj);
-      third.push_back(-rj);
+      addToList(higgs,lj,-rj);
       //RLbar
-      first.push_back(higgs);
-      second.push_back(rj);
-      third.push_back(-lj);
+      addToList(higgs,rj,-lj);
     }
     for(unsigned int j = 11; j < 17; ++j) {
       long lj = 1000000 + j;
       long rj = 2000000 + j;
-      first.push_back(higgs);
-      second.push_back(lj);
-      third.push_back(-lj);
+      addToList(higgs,lj,-lj);
       if( j % 2 != 0) {
-	first.push_back(higgs);
-	second.push_back(rj);
-	third.push_back(-rj);
+	addToList(higgs,rj,-rj);
 	//LRbar
-	first.push_back(higgs);
-	second.push_back(lj);
-	third.push_back(-rj);
+	addToList(higgs,lj,-rj);
 	//RLbar
-	first.push_back(higgs);
-	second.push_back(rj);
-	third.push_back(-lj);
+	addToList(higgs,rj,-lj);
       }
     }
   }
@@ -81,79 +64,46 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(ZERO)),
     long lj = 1000000 + j;
     long rj = 2000000 + j;
     //LRbar
-    first.push_back(36);
-    second.push_back(lj);
-    third.push_back(-rj);
+    addToList(36,lj,-rj);
     //RLbar
-    first.push_back(36);
-    second.push_back(rj);
-    third.push_back(-lj);
+    addToList(36,rj,-lj);
   }
   for(unsigned int j = 11; j < 17; j += 2) {
     long lj = 1000000 + j;
     long rj = 2000000 + j;
-    first.push_back(36);
-    second.push_back(lj);
-    third.push_back(-rj);
-    first.push_back(36);
-    second.push_back(rj);
-    third.push_back(-lj);
+    addToList(36,lj,-rj);
+    addToList(36,rj,-lj);
   }
   //outgoing H+
   for(long ii = 2; ii < 7; ii += 2) {
     //LL
-    first.push_back(37);
-    second.push_back( 999999 + ii);
-    third.push_back(-1000000 - ii);
+    addToList(37, 999999 + ii, -1000000 - ii);
     //RR
-    first.push_back(37);
-    second.push_back(1999999 + ii);
-    third.push_back(-2000000 - ii);
+    addToList(37, 1999999 + ii, -2000000 - ii);
     //RL
-    first.push_back(37);
-    second.push_back(1999999 + ii);
-    third.push_back(-1000000 - ii);
+    addToList(37, 1999999 + ii, -1000000 - ii);
     //LR
-    first.push_back(37);
-    second.push_back( 999999 + ii);
-    third.push_back(-2000000 - ii);
+    addToList(37, 999999 + ii, -2000000 - ii);
   }
   for(long ii = 11; ii < 17; ii += 2) {
-    first.push_back(37);
-    second.push_back(1000000 + ii);
-    third.push_back(-1000001 - ii);
-    first.push_back(37);
-    second.push_back(2000000 + ii);
-    third.push_back(-1000001 - ii);
+    addToList(37, 1000000 + ii, -1000001 - ii);
+    addToList(37, 2000000 + ii, -1000001 - ii);
   }
   //outgoing H-
   for(long ii = 2; ii < 7; ii += 2) {
     //LL
-    first.push_back(-37);
-    second.push_back(1000000 + ii);
-    third.push_back(- 999999 - ii);
+    addToList(-37, 1000000 + ii, -999999 - ii);
     //RR
-    first.push_back(-37);
-    second.push_back(2000000 + ii);
-    third.push_back(-1999999 - ii);
+    addToList(-37, 2000000 + ii, -1999999 - ii);
     //RL
-    first.push_back(-37);
-    second.push_back(1000000 + ii);
-    third.push_back(-1999999 - ii);
+    addToList(-37, 1000000 + ii, -1999999 - ii);
     //LR
-    first.push_back(-37);
-    second.push_back(2000000 + ii);
-    third.push_back(- 999999 - ii);
+    addToList(-37, 2000000 + ii, -999999 - ii);
   }
   for(long ii = 11; ii < 17; ii += 2) {
-    first.push_back(-37);
-    second.push_back(1000001 + ii);
-    third.push_back(-1000000 - ii);
-    first.push_back(-37);
-    second.push_back(1000001 + ii);
-    third.push_back(-2000000 - ii);
+    addToList(-37, 1000001 + ii, -1000000 - ii);
+    addToList(-37, 1000001 + ii, -2000000 - ii);
   }
-  setList(first, second, third);
 }
 
 void SSHSFSFVertex::doinit() {
@@ -185,7 +135,7 @@ void SSHSFSFVertex::doinit() {
   theMz = getParticleData(ParticleID::Z0)->mass();
   //parameters
   theSinA = sin(theMSSM->higgsMixingAngle());
-  theCosA = sqrt(1. - sqr(theSinA));
+  theCosA = cos(theMSSM->higgsMixingAngle());
   theTanB = theMSSM->tanBeta();
   theMu = theMSSM->muParameter();
   theSinB = theTanB/sqrt(1. + sqr(theTanB));
@@ -263,7 +213,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
     }
   
   if( higgsID == theHLast && sq1ID == theSF1Last && sq2ID == theSF2Last) {
-    setNorm(thegLast*theCoupLast*UnitRemoval::InvE);
+    norm(thegLast*theCoupLast*UnitRemoval::InvE);
     return;
   }
   theHLast = higgsID;
@@ -290,7 +240,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   
   }
  
-  setNorm(thegLast*theCoupLast*UnitRemoval::InvE);
+  norm(thegLast*theCoupLast*UnitRemoval::InvE);
 }
 
  void SSHSFSFVertex::downSF(long higgs, long smID, 
@@ -349,22 +299,22 @@ void SSHSFSFVertex::upSF(long higgs, long smID,
   }
   Energy mfactb = sqr(fmass)/theMw/theSinB;
   Energy facta = theMz/theCw;
-  double factb = generator()->standardModel()->eu()*theSw*theSw;
+  double factb = generator()->standardModel()->eu()*sqr(theSw);
   //mixing parameters
   Complex q1a(0.), q1b(0.), q2a(0.), q2b(0.);  
   if( smID == 2 || smID == 4) {
     q1a = (alpha == 0) ? 1.0 : 0.0;
-    q1b = (beta == 0) ? 1.0 : 0.0;
+    q1b = (beta  == 0) ? 1.0 : 0.0;
     q2a = (alpha == 0) ? 0.0 : 1.0;
-    q2b = (beta == 0) ? 0.0 : 1.0;
+    q2b = (beta  == 0) ? 0.0 : 1.0;
   }
   else {
-    q1a = (*theMix[2])(alpha, 0);
-    q1b = (*theMix[2])(beta, 0);
-    q2a = (*theMix[2])(alpha, 1);
-    q2b = (*theMix[2])(beta, 1);
+    q1a = (*theMix[0])(alpha, 0);
+    q1b = (*theMix[0])(beta , 0);
+    q2a = (*theMix[0])(alpha, 1);
+    q2b = (*theMix[0])(beta , 1);
   }
-  Complex fbrac = (q1a*q1b*(0.5 - factb) - factb*q2a*q2b);
+  Complex fbrac = (q1a*q1b*(0.5 - factb) + factb*q2a*q2b);
   Complex sbrac = (q1a*q1b + q2a*q2b);
   Complex tbrac = (q2a*q1b + q1a*q2b);
   if( higgs == ParticleID::h0) {
@@ -376,9 +326,7 @@ void SSHSFSFVertex::upSF(long higgs, long smID,
       - mfacta*(theTriC[smID - 1]*theSinA - theMu*theCosA )*tbrac/theSinB;
   }
   else
-    throw HelicityConsistencyError() 
-      << "SSHSFSFVertex::upSF - Unrecognised higgs particle " 
-      << higgs << Exception::warning;
+    assert(false);
 }
 
 void SSHSFSFVertex::leptonSF(long higgs, long smID, 

@@ -198,6 +198,21 @@ private:
    */
   Histogram _nJets_10_h    , _nJets_40_h    , _nJets_80_h   ;
 
+  /**
+   *   The masses of each vector boson
+   */
+  Histogram _m34_mcatnlo_h ,_m56_mcatnlo_h ;
+
+  /**
+   *   The rapidity of the second hardest jet
+   */
+  Histogram _yJet2_10_h     , _yJet2_40_h     , _yJet2_80_h ;
+
+  /**
+   *   Rapidity gap between the second hardest jet and the diboson system
+   */
+  Histogram _yJet2_yVV_10_h , _yJet2_yVV_40_h , _yJet2_yVV_80_h;
+
 public:
     
   /**

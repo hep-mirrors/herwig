@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
-#include "SSGGSQSQVertex.fh"
+#include "SusyBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -64,13 +63,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
   
 protected:
@@ -82,7 +81,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
 
 private:
@@ -152,7 +151,5 @@ struct ClassTraits<Herwig::SSGGSQSQVertex>
 /** @endcond */
 
 }
-
-#include "SSGGSQSQVertex.icc"
 
 #endif /* HERWIG_SSGGSQSQVertex_H */

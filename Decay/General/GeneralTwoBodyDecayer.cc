@@ -43,21 +43,19 @@ ParticleVector GeneralTwoBodyDecayer::decay(const Particle & parent,
 
 void GeneralTwoBodyDecayer::doinit() {
   DecayIntegrator::doinit();
-  if(!_theVertex) throw InitException() << "GeneralTwoBodyDecayer::doinit() - "
-					<< "Null vertex pointer!\n";  
+  assert( _theVertex );
   _theVertex->init();
-  vector<double> wgt(0);  
-  tPDVector parents = _theVertex->getIncoming();
-  tPDVector::size_type np = parents.size();
-  tPDVector extpart(3);
-  for( tPDVector::size_type i = 0; i < np; ++i ) {
-    tPDPtr inpart = parents[i];
-    long pid = inpart->id();
+  vector<double> wgt;  
+  set<tPDPtr> parents = _theVertex->incoming();
+  for( set<tPDPtr>::const_iterator it = parents.begin(); 
+       it != parents.end(); ++it ) {
+    long pid = (*it)->id();
     if( pid < 0 ) continue;
+    tcPDPtr inpart = *it;
     Energy m1 = inpart->mass();
     tPDVector decaylist;
     for(unsigned int il = 0; il< _thelist.size(); ++il) {
-       tPDVector temp = _theVertex->search(_thelist[il], pid);
+       tPDVector temp = _theVertex->search(_thelist[il], inpart);
        decaylist.insert(decaylist.end(),temp.begin(),temp.end());
     }
     tPDVector::size_type ndec = decaylist.size();
@@ -75,6 +73,7 @@ void GeneralTwoBodyDecayer::doinit() {
       _inpart.push_back(pid); _outparta.push_back(pb->id());
       _outpartb.push_back(pc->id());
       //create phase space mode
+      tPDVector extpart(3);
       extpart[0] = pa;
       extpart[1] = pb;
       extpart[2] = pc;

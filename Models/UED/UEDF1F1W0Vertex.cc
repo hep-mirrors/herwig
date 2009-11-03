@@ -23,45 +23,26 @@ using namespace Herwig;
 UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theRadius(ZERO), theQ2Last(ZERO), 
 				    theCoupLast(0.), 
 				    thefermALast(0), thefermBLast(0) {
-  vector<long> anti, ferm, wboson;
   //outgoing W+
   for( long i = 2; i < 17; i += 2 ) {
     if( i == 7 ) i += 5;
-    anti.push_back(-5000000 - i);
-    ferm.push_back(5000000 + i - 1);
-    wboson.push_back(24);
+    addToList(-5000000 - i, 5000000 + i - 1, 24);
     if( i < 7 ) {
-      anti.push_back(-6000000 - i);
-      ferm.push_back(6000000 + i - 1);
-      wboson.push_back(24);
+      addToList(-6000000 - i, 6000000 + i - 1, 24);
     }
   }
-  anti.push_back(-6000006);
-  ferm.push_back(5000005);
-  wboson.push_back(24);
-  anti.push_back(-5000005);
-  ferm.push_back(6000006);
-  wboson.push_back(24);
+  addToList(-6000006, 5000005, 24);
+  addToList(-5000005, 6000006, 24);
   //outgoing W-
   for( long i = 1; i < 16; i += 2 ) {
     if( i == 6 ) i += 5;
-    anti.push_back(-5000000 - i);
-    ferm.push_back(5000001 + i);
-    wboson.push_back(-24);
+    addToList(-5000000 - i, 5000001 + i, -24);
     if( i < 6 ) {
-      anti.push_back(-6000000 - i);
-      ferm.push_back(6000001 + i);
-      wboson.push_back(-24);
+      addToList(-6000000 - i, 6000001 + i, -24);
     }
   }
-  anti.push_back(-6000005);
-  ferm.push_back(5000006);
-  wboson.push_back(-24);
-  anti.push_back(-5000005);
-  ferm.push_back(6000006);
-  wboson.push_back(-24);
-  
-  setList(anti, ferm, wboson);
+  addToList(-6000005, 5000006, -24);
+  addToList(-5000005, 6000006, -24);
 }
 
 void UEDF1F1W0Vertex::doinit() {
@@ -130,38 +111,38 @@ void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       }
       if( stateA == stateB ) {
 	if( stateA == 5 ) {
-	  setLeft(cos(afu)*cos(afd));
-	  setRight(cos(afu)*cos(afd));
+	  left(cos(afu)*cos(afd));
+	  right(cos(afu)*cos(afd));
 	}
 	else {
-	  setLeft(sin(afu)*sin(afd));
-	  setRight(sin(afu)*sin(afd));
+	  left(sin(afu)*sin(afd));
+	  right(sin(afu)*sin(afd));
 	}
       }
       else {
 	if( sma % 2 == 0 ) {
 	  if( stateA == 5 ) {
-	    setLeft(cos(afu)*sin(afd));
-	    setRight(-cos(afu)*sin(afd));
+	    left(cos(afu)*sin(afd));
+	    right(-cos(afu)*sin(afd));
 	  }
 	  else {
-	    setLeft(sin(afu)*cos(afd));
-	    setRight(-sin(afu)*cos(afd));
+	    left(sin(afu)*cos(afd));
+	    right(-sin(afu)*cos(afd));
 	  }
 	}
 	else {
 	  if( stateA == 5 ) {
-	    setLeft(sin(afu)*cos(afd));
-	    setRight(-sin(afu)*cos(afd));
+	    left(sin(afu)*cos(afd));
+	    right(-sin(afu)*cos(afd));
 	  }
 	  else {
-	    setLeft(cos(afu)*sin(afd));
-	    setRight(-cos(afu)*sin(afd));
+	    left(cos(afu)*sin(afd));
+	    right(-cos(afu)*sin(afd));
 	  }
 	}
       }
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
   }
   else {
     throw HelicityLogicalError() << "UEDF1F1W0Vertex::setCoupling - "
@@ -169,8 +150,8 @@ void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << "UED F^(1) F^(1) W^(0) vertex. ID: " 
 				 << ianti << " " << iferm 
 				 << Exception::warning;      
-    setNorm(0.0);
-    setLeft(0.0);
-    setRight(0.0);  
+    norm(0.0);
+    left(0.0);
+    right(0.0);  
   }
 }

@@ -340,9 +340,9 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
       Energy4 kallen = ( m122 - (_m[1]+_m[2])*(_m[1]+_m[2]) )
 	             * ( m122 - (_m[1]-_m[2])*(_m[1]-_m[2]) );
       // discriminant of rho...
-      double disc = (_m[0]-L0)
-     	          *  sqrt(kallen-4.*sqr(_m[_map[0]+1]*LT))
-                  / (2.*modq*(m122+LT*LT));
+      Energy4 droot = kallen-4.*sqr(_m[1]*LT);
+      if(droot<ZERO) return 0.;
+      double disc = (_m[0]-L0) *  sqrt(droot) / (2.*modq*(m122+LT*LT));
       // calculate the energy rescaling factor
       double rho  = disc-_bigLprf.z()
 	          * (m122+sqr(_m[_map[0]+1])-sqr(_m[_map[1]+1]))

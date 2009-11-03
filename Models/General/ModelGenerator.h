@@ -39,7 +39,8 @@ public:
   inline ModelGenerator() : _theParticles(0), _theOffshell(0),
 			    _theOffsel(0), _theBRnorm(true),
 			    _theNpoints(50), _theIorder(1),
-			    _theBWshape(0), brMin_(1e-6) {}
+			    _theBWshape(0), brMin_(1e-6),
+			    decayOutput_(1) {}
 
 public:
 
@@ -199,6 +200,11 @@ private:
    */
   double brMin_;
   //@}
+
+  /**
+   *   Option for the outputs of the decays to a file
+   */
+  unsigned int decayOutput_;
 };
 
 }

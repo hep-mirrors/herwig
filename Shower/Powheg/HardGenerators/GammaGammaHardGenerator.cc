@@ -555,31 +555,31 @@ double GammaGammaHardGenerator::QQbarGRatio(unsigned int order) {
 	  for(unsigned int ghel=0;ghel<2;++ghel) {
  	    // first diagram
 	    SpinorWaveFunction inters1 = 
-	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout1[phel1]);
 	    SpinorBarWaveFunction inters2 = 
-	      FFPvertex_->evaluate(ZERO,5,qbarin[ihel2].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qbarin[ihel2].particle()->CC(),
 				   qbarin[ihel2],pout2[phel2]);
 	    diag[0] = FFGvertex_->evaluate(scale,inters1,inters2,gout[ghel]);
 	    // second diagram
 	    SpinorWaveFunction inters3 = 
-	      FFGvertex_->evaluate(scale,5,qin[ihel1].getParticle()->CC(),
+	      FFGvertex_->evaluate(scale,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],gout[ghel]);
 	    SpinorBarWaveFunction inters4 = 
-	      FFPvertex_->evaluate(ZERO,5,qbarin[ihel2].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qbarin[ihel2].particle()->CC(),
 				   qbarin[ihel2],pout1[phel1]);
 	    diag[1] = FFPvertex_->evaluate(ZERO,inters3,inters4,pout2[phel2]);
 	    // fourth diagram
 	    diag[2] = FFPvertex_->evaluate(ZERO,inters3,inters2,pout1[phel1]);
 	    // fifth diagram
 	    SpinorBarWaveFunction inters5 = 
-	      FFGvertex_->evaluate(scale,5,qbarin[ihel2].getParticle()->CC(),
+	      FFGvertex_->evaluate(scale,5,qbarin[ihel2].particle()->CC(),
 				   qbarin[ihel2],gout[ghel]);
 	    diag[3] = 
 	      FFPvertex_->evaluate(ZERO,inters1,inters5,pout2[phel2]);
 	    // sixth diagram
 	    SpinorWaveFunction inters6 = 
-	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout2[phel2]);
 	    diag[4] = FFGvertex_->evaluate(scale,inters6,inters4,gout[ghel]);
 	    // eighth diagram
@@ -819,31 +819,31 @@ double GammaGammaHardGenerator::QGQRatio() {
 	  for(unsigned int ohel=0;ohel<2;++ohel) {
  	    // first diagram
 	    SpinorWaveFunction inters1 = 
-	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout1[phel1]);
 	    SpinorBarWaveFunction inters2 = 
-	      FFPvertex_->evaluate(ZERO,5,qout[ohel].getParticle(),
+	      FFPvertex_->evaluate(ZERO,5,qout[ohel].particle(),
 				   qout[ohel],pout2[phel2]);
 	    diag[0] = FFGvertex_->evaluate(scale,inters1,inters2,gin[ihel2]);
 	    // second diagram
 	    SpinorWaveFunction inters3 = 
-	      FFGvertex_->evaluate(scale,5,qin[ihel1].getParticle()->CC(),
+	      FFGvertex_->evaluate(scale,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],gin[ihel2]);
 	    SpinorBarWaveFunction inters4 = 
-	      FFPvertex_->evaluate(ZERO,5,qout[ohel].getParticle(),
+	      FFPvertex_->evaluate(ZERO,5,qout[ohel].particle(),
 				   qout[ohel],pout1[phel1]);
 	    diag[1] = FFPvertex_->evaluate(ZERO,inters3,inters4,pout2[phel2]);
 	    // fourth diagram
 	    diag[2] = FFPvertex_->evaluate(ZERO,inters3,inters2,pout1[phel1]);
 	    // fifth diagram
 	    SpinorBarWaveFunction inters5 = 
-	      FFGvertex_->evaluate(scale,5,qout[ohel].getParticle(),
+	      FFGvertex_->evaluate(scale,5,qout[ohel].particle(),
 				   qout[ohel],gin[ihel2]);
 	    diag[3] = 
 	      FFPvertex_->evaluate(ZERO,inters1,inters5,pout2[phel2]);
 	    // sixth diagram
 	    SpinorWaveFunction inters6 = 
-	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout2[phel2]);
 	    diag[4] = FFGvertex_->evaluate(scale,inters6,inters4,gin[ihel2]);
 	    // eighth diagram
@@ -1073,31 +1073,31 @@ double GammaGammaHardGenerator::QbarGQbarRatio() {
 	  for(unsigned int ohel=0;ohel<2;++ohel) {
   	    // first diagram
 	    SpinorBarWaveFunction inters1 = 
-	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
  				   qin[ihel1],pout1[phel1]);
 	    SpinorWaveFunction inters2 = 
-	      FFPvertex_->evaluate(ZERO,5,qout[ohel].getParticle(),
+	      FFPvertex_->evaluate(ZERO,5,qout[ohel].particle(),
 				   qout[ohel],pout2[phel2]);
 	    diag[0] = FFGvertex_->evaluate(scale,inters2,inters1,gin[ihel2]);
 	    // second diagram
 	    SpinorBarWaveFunction inters3 = 
-	      FFGvertex_->evaluate(scale,5,qin[ihel1].getParticle()->CC(),
+	      FFGvertex_->evaluate(scale,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],gin[ihel2]);
 	    SpinorWaveFunction inters4 = 
-	      FFPvertex_->evaluate(ZERO,5,qout[ohel].getParticle(),
+	      FFPvertex_->evaluate(ZERO,5,qout[ohel].particle(),
 				   qout[ohel],pout1[phel1]);
 	    diag[1] = FFPvertex_->evaluate(ZERO,inters4,inters3,pout2[phel2]);
 	    // fourth diagram
 	    diag[2] = FFPvertex_->evaluate(ZERO,inters2,inters3,pout1[phel1]);
 	    // fifth diagram
 	    SpinorWaveFunction inters5 = 
-	      FFGvertex_->evaluate(scale,5,qout[ohel].getParticle(),
+	      FFGvertex_->evaluate(scale,5,qout[ohel].particle(),
 				   qout[ohel],gin[ihel2]);
 	    diag[3] = 
 	      FFPvertex_->evaluate(ZERO,inters5,inters1,pout2[phel2]);
 	    // sixth diagram
 	    SpinorBarWaveFunction inters6 = 
-	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].getParticle()->CC(),
+	      FFPvertex_->evaluate(ZERO,5,qin[ihel1].particle()->CC(),
 				   qin[ihel1],pout2[phel2]);
 	    diag[4] = FFGvertex_->evaluate(scale,inters4,inters6,gin[ihel2]);
 	    // eighth diagram

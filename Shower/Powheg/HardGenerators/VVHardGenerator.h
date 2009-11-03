@@ -11,6 +11,7 @@
 #include "Herwig++/MatrixElement/Powheg/VVKinematics.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 
@@ -134,14 +135,8 @@ protected:
    * @param emissiontype The type of emission, as for getResult
    * @return Whether not an emission was generated
    */
-  bool getEvent(vector<Lorentz5Momentum> & pnew,int & emissiontype);
+  bool getEvent(vector<Lorentz5Momentum> & pnew,unsigned int & emissiontype);
   
-//   // Pseudo - code for the inclusion of spin correlations.
-//   /**
-//    *  Construct the vertex of spin correlations.
-//    */
-//   virtual void constructVertex(tSubProPtr);
-
   /**
    *  sets the QCD, EW and PDF scales
    * @param pT The pT of the current step in the veto algorithm
@@ -151,18 +146,18 @@ protected:
   /**
    * The matrix element q + qb -> n + g times tk*uk 
    */
-  Energy2 t_u_M_R_qqb_hel_amp(realVVKinematics R) const;
+  Energy2 t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix) const;
 
 
   /**
    * The matrix element q + g  -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_qg_hel_amp(realVVKinematics R) const;
+  Energy2 t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) const;
 
   /**
    * The matrix element g + qb -> n + q times tk*uk 
    */
-  Energy2 t_u_M_R_gqb_hel_amp(realVVKinematics R) const;
+  Energy2 t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix) const;
 
   /**
    * The matrix element for the kinematical configuration
@@ -172,6 +167,11 @@ protected:
    * dimensionless number.
    */
   double lo_me() const;
+
+  /**
+   * Recalculate hard vertex to include spin correlations for radiative events.
+   */
+  void recalculateVertex();
 
 private:
 
@@ -190,6 +190,13 @@ private:
 private:
 
   /**
+   * If this boolean is true the n+1 body helicity amplitudes will be
+   * used to calculate a hard vertex based on those kinematics for spin
+   * correlations in the decays.
+   */
+  bool realMESpinCorrelations_;
+
+  /**
    * Born / virtual 2->2 kinematics.
    */
   bornVVKinematics B_;
@@ -203,6 +210,14 @@ private:
    * The resolved 2->3 real emission kinematics.
    */
   realVVKinematics R_;
+
+  /**
+   * This specifies the emitting configuration: 
+   * 1: q + qbar -> V1 + V2 + g
+   * 2: q + g    -> V1 + V2 + q
+   * 3: g + qbar -> V1 + V2 + qbar.
+   */
+  unsigned int channel_;
 
   /**
    * The radiative variable \tilde{x}.
@@ -359,6 +374,23 @@ private:
   AbstractFFVVertexPtr FFZvertex_;
   AbstractVVVVertexPtr WWWvertex_;
   AbstractFFVVertexPtr FFGvertex_;
+
+  // N.B. these will probably have to become just complex arrays instead if
+  // the plan is to average over the gluon's *2* polarizations.
+  /**
+   * A matrix element to hold information on the q + qbar -> V1 + V2 + g process
+   */
+  ProductionMatrixElement qqb_hel_amps_;
+
+  /**
+   * A matrix element to hold information on the q + g    -> V1 + V2 + q process
+   */
+  ProductionMatrixElement qg_hel_amps_;
+
+  /**
+   * A matrix element to hold information on the g + qbar -> V1 + V2 + qbar process
+   */
+  ProductionMatrixElement gqb_hel_amps_;
 
 };
 

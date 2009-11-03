@@ -22,8 +22,7 @@ using namespace Herwig;
 
 UEDZ0H1H1Vertex::UEDZ0H1H1Vertex() : theCosThetaW(0.), theCosTheta2W(0.), theMw2(), 
 				     theR2(), theq2Last(ZERO), theCoupLast(0.) {
-  setList(vector<long>(1, 23), vector<long>(1, 5100037), 
-	  vector<long>(1, -5100037));
+  addToList(23, 5100037, -5100037);
 }
 
 void UEDZ0H1H1Vertex::doinit() {
@@ -84,7 +83,7 @@ void UEDZ0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theCoupLast *= ( (theCosTheta2W/2./theCosThetaW) 
 		       - sqr(theCosThetaW)*theMw2*theR2 )/(1. + theMw2*theR2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
   }
   else
     throw HelicityLogicalError() << "UEDZ0H1H1Vertex::setCoupling - There is no "

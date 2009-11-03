@@ -18,10 +18,18 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+
+void RSModel::doinit() {
+  addVertex(_theFFGRVertex);
+  addVertex(_theVVGRVertex);
+  addVertex(_theSSGRVertex);
+  addVertex(_theFFVGRVertex);
+  addVertex(_theVVVGRVertex);
+  StandardModel::doinit();
+}
 
 RSModel::RSModel() : _theLambda_pi(10000*GeV) {}
 
@@ -77,6 +85,4 @@ static Parameter<RSModel,Energy> interfaceLambda_pi
     ("The RSModel class replaces the Standard Model class for the"
      " RS model");
   
-}
-
 }

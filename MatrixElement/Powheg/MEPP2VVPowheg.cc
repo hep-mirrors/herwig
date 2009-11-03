@@ -3495,7 +3495,7 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
     v2.push_back(v2Polarization);
   }
 
-  VectorWaveFunction gPolarization(R.p1r(),p2data,incoming);
+  VectorWaveFunction gPolarization(R.p1r(),p1data,incoming);
   vector<VectorWaveFunction> g;
   for(unsigned int ix=0;ix<3;ix+=2) {
     gPolarization.reset(ix);

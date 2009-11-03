@@ -103,7 +103,7 @@ Energy2 ThreeBodyAllOnCalculator<T>::operator ()(Energy2 y) const {
 	term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/tmp;
       }
       else {
-	term = sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
+	term = _channelweights[ix]*sqr(_channelmass[ix]/(sjac-sqr(_channelmass[ix])));
       }
     }
     else {

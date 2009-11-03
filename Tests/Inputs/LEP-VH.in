@@ -9,13 +9,14 @@ set LEPGenerator:EventHandler:CascadeHandler NULL
 set LEPGenerator:EventHandler:HadronizationHandler NULL
 set LEPGenerator:EventHandler:DecayHandler NULL
 
-set LEPGenerator:EventHandler:LuminosityFunction:Energy 200.0*GeV
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0*GeV
 
 set /Herwig/Particles/e+:PDF /Herwig/Partons/NoPDF
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
 
 create Herwig::VHTest VHTest LeptonTest.so
 insert LEPGenerator:AnalysisHandlers 0 VHTest
+set /Herwig/Analysis/Basics:CheckQuark 0
 
 # parameters to make the same as fortran
 cd /Herwig
@@ -30,6 +31,7 @@ create Herwig::AlphaEM AlphaEM2
 set Model:EW/RunningAlphaEM AlphaEM2
 
 set /Herwig/Masses/HiggsMass:HiggsShape 0
+set /Herwig/Particles/h0:Stable Stable
 
 set /Herwig/Particles/Z0/Z0->d,dbar;:OnOff Off
 set /Herwig/Particles/Z0/Z0->s,sbar;:OnOff Off
@@ -43,6 +45,8 @@ set /Herwig/Particles/Z0/Z0->mu-,mu+;:OnOff Off
 set /Herwig/Particles/Z0/Z0->e-,e+;:OnOff On
 set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
 set /Herwig/Particles/Z0:WidthCut 1000.
+
+set /Herwig/ACDCSampler:Ntry 100000
 
 cd /Herwig/Generators
 saverun LEP-VH LEPGenerator

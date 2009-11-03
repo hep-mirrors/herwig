@@ -510,7 +510,8 @@ constructIntegratorChannels(vector<int> & intype, vector<Energy> & inmass,
       itype = 1;
     }
     deltam -= getProcessInfo()[ix].intermediate->mass();
-    if(deltam<ZERO&&getProcessInfo()[ix].intermediate->width()>ZERO) {
+    //    if(deltam<ZERO&&getProcessInfo()[ix].intermediate->width()>ZERO) {
+    if(deltam<ZERO) {
       if      (imin[itype].first < 0    ) imin[itype] = make_pair(ix,deltam);
       else if (imin[itype].second<deltam) imin[itype] = make_pair(ix,deltam);
     }
