@@ -89,7 +89,7 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
   long iferm = abs(ferm->id());
   assert(iferm >=1 && iferm <=6);
 
-  if(q2 != _q2last) {
+  if(q2 != _q2last  || _couplast==0.) {
     _couplast = -strongCoupling(q2)*sqrt(2.);
     _q2last = q2;
   }

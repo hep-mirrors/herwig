@@ -75,87 +75,51 @@ void SSCNWVertex::Init() {
 
 void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			      tcPDPtr part3) {
+  assert(abs(part3->id()) == ParticleID::Wplus);
   long neu, cha;
-  if(abs(part1->id()) == ParticleID::Wplus) {
-    if(part2->charged()) {
-      cha = part2->id();
-      neu = part3->id();
-    }
-    else {
-      cha = part3->id();
-      neu = part2->id();
-    }
+  if(part1->charged()) {
+    cha = part1->id();
+    neu = part2->id();
   }
-  else if(abs(part2->id()) == ParticleID::Wplus) {
-    if(part1->charged()) {
-      cha = part1->id();
-      neu = part3->id();
-    }
-    else {
-      cha = part3->id();
-      neu = part1->id();
-    }
+  else {
+    cha = part2->id();
+    neu = part1->id();
   }
-  else if(abs(part3->id()) == ParticleID::Wplus) {
-    if(part1->charged()) {
-      cha = part1->id();
-      neu = part2->id();
-    }
-    else {
-      cha = part2->id();
-      neu = part1->id();
-    }
+  assert((abs(cha) == 1000024 || abs(cha) == 1000037) && 
+    (neu == 1000022 || neu == 1000023 || 
+     neu == 1000025 || neu == 1000035 || 
+     neu == 1000045) );
+  if(q2 != _q2last||_couplast==0.) {
+    _q2last = q2;
+    _couplast = weakCoupling(q2);;
   }
-  else
-    throw HelicityConsistencyError() 
-      << "SSCNWVertex::setCoupling() - There is no W-boson in this vertex! "
-      << part1->id() << " " << part2->id() << " " << part3->id()
-      << Exception::warning;
-  if((abs(cha) == 1000024 || abs(cha) == 1000037) && 
-     (neu == 1000022 || neu == 1000023 || 
-      neu == 1000025 || neu == 1000035 || 
-      neu == 1000045) ) {
-    if(q2 != _q2last||_couplast==0.) {
-      _q2last = q2;
-      _couplast = weakCoupling(q2);;
-    }
-    norm(_couplast);
-    if(cha != _id1last || neu != _id2last) {
-      _id1last = cha;
-      _id2last = neu;
-      unsigned int eigc(0);
-      if(abs(cha) == 1000037) eigc = 1;
-      unsigned int eign(0);
-      if(neu == 1000023) eign = 1;
-      if(neu == 1000025) eign = 2;
-      if(neu == 1000035) eign = 3;
-      if(neu == 1000045) eign = 4;
-      _leftlast = (*_theN)(eign, 1)*conj((*_theV)(eigc, 0)) - 
-	( (*_theN)(eign, 3)*conj((*_theV)(eigc, 1))/sqrt(2));
-
-      _rightlast = conj((*_theN)(eign, 1))*(*_theU)(eigc, 0) +
-	( conj((*_theN)(eign, 2))*(*_theU)(eigc, 1)/sqrt(2));
-
-      // conjugate if +ve chargino
-      if(cha>0) {
-	_leftlast = conj(_leftlast);
-	_rightlast = conj(_rightlast);
-      }
-      if((part1->id()==cha&&cha>0)||(part2->id()==cha&&cha<0)) {
-	Complex temp = _leftlast;
-	_leftlast  = -_rightlast;
-	_rightlast = -temp;
-      }
-    }
-    left(_leftlast);
-    right(_rightlast);
+  norm(_couplast);
+  if(cha != _id1last || neu != _id2last) {
+    _id1last = cha;
+    _id2last = neu;
+    unsigned int eigc = abs(cha) == 1000037 ? 1 : 0;
+    unsigned int eign(0);
+    if     (neu == 1000023) eign = 1;
+    else if(neu == 1000025) eign = 2;
+    else if(neu == 1000035) eign = 3;
+    else if(neu == 1000045) eign = 4;
+    _leftlast = (*_theN)(eign, 1)*conj((*_theV)(eigc, 0)) - 
+      ( (*_theN)(eign, 3)*conj((*_theV)(eigc, 1))/sqrt(2));
+    _rightlast = conj((*_theN)(eign, 1))*(*_theU)(eigc, 0) +
+      ( conj((*_theN)(eign, 2))*(*_theU)(eigc, 1)/sqrt(2));
   }
-  else
-    throw HelicityConsistencyError() << "SSCNWVertex::setCoupling() - "
-				     << "Something other than a neutralino or a "
-				     << "chargino has appeared in this vertex "
-				     << neu << "  " << cha
-				     << Exception::warning;
-
+  Complex ltemp = _leftlast;
+  Complex rtemp = _rightlast;
+  // conjugate if +ve chargino
+  if(cha>0) {
+    ltemp = conj(ltemp);
+    rtemp = conj(rtemp);
+  }
+  if((part1->id()==cha&&cha>0)||(part2->id()==cha&&cha<0)) {
+    Complex temp = ltemp;
+    ltemp  = -rtemp;
+    rtemp = -temp;
+  }
+  left (ltemp);
+  right(rtemp);
 }
-

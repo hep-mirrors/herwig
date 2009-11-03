@@ -61,7 +61,7 @@ public:
    * The default constructor.
    */
   inline ThreeBodyDecayConstructor() : 
-    _removeOnShell(true), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
+    _removeOnShell(1), _includeTopOnShell(false), _interopt(0), _widthopt(1), 
     _minReleaseFraction(1e-3) {}
 
   /**
@@ -209,7 +209,7 @@ private:
   /**
    *  Whether or not to remove on-shell diagrams
    */
-  bool _removeOnShell;
+  unsigned int _removeOnShell;
 
   /**
    *  Include on-shell for \f$t\to b W\f$

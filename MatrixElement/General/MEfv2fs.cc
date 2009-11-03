@@ -148,7 +148,7 @@ MEfv2fs::fv2fbsHeME(const SpinorVector & spIn, const VecWFVector & vecIn,
 	  else if( current.channelType == HPDiagram::sChannel ) {
 	    // check if take intermediate massless
 	    unsigned int propOpt = 
-	      abs(offshell->id()) != abs(spIn[ihel1].getParticle()->id()) ? 1 : 5;
+	      abs(offshell->id()) != abs(spIn[ihel1].particle()->id()) ? 1 : 5;
 	    interF = theFermV[ix].second->evaluate(q2, propOpt, offshell,
 						   spIn[ihel1], vecIn[ihel2]);
 	    diag[ix] = theFermV[ix].first->evaluate(q2, interF, spbOut[ohel1], 
@@ -227,7 +227,7 @@ MEfv2fs::fbv2fsHeME(const SpinorBarVector & spbIn, const VecWFVector & vecIn,
 	  else if( current.channelType == HPDiagram::sChannel ) {
 	    // check if take intermediate massless
 	    unsigned int propOpt = 
-	      abs(offshell->id()) != abs(spbIn[ihel1].getParticle()->id()) ? 1 : 5;
+	      abs(offshell->id()) != abs(spbIn[ihel1].particle()->id()) ? 1 : 5;
 	    interFB = theFermV[ix].second->evaluate(q2, propOpt, offshell, 
 						    spbIn[ihel1], 
 						    vecIn[ihel2]);

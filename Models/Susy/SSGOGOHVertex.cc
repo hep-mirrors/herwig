@@ -144,6 +144,7 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   theHLast = higgsID;
   theID1Last = f1ID;
   theID2Last = f2ID;
+  
   if( higgsID == ParticleID::h0 ) {
     //charginos
     if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||

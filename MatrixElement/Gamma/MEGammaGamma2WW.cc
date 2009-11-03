@@ -156,11 +156,11 @@ double MEGammaGamma2WW::helicityME(vector<VectorWaveFunction> & p1,
       for(unsigned int ohel1=0;ohel1<3;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<3;++ohel2) {
 	  // first t-channel diagram
-	  inter = WWWVertex_->evaluate(mt,1,w1[ohel1].getParticle(),
+	  inter = WWWVertex_->evaluate(mt,1,w1[ohel1].particle()->CC(),
 				       w1[ohel1],p1[ihel1]);
 	  diag[0]= WWWVertex_->evaluate(mt,inter,w2[ohel2],p2[ihel2]);
 	  //second t-channel diagram
-	  inter  = WWWVertex_->evaluate(mt,1,w1[ohel1].getParticle(),
+	  inter  = WWWVertex_->evaluate(mt,1,w1[ohel1].particle()->CC(),
 					w1[ohel1],p2[ihel2]);
 	  diag[1] = WWWVertex_->evaluate(mt,inter,w2[ohel2],p1[ihel1]);
 	  // four point diagrams

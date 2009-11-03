@@ -175,7 +175,7 @@ double MEfftoffH::me2() const {
   vector<SpinorBarWaveFunction> a1,a2;
   SpinorWaveFunction    fin1,fin2;
   SpinorBarWaveFunction ain1,ain2;
-  bool swap1(false),swap2(false);
+  bool swap1,swap2;
   if(_swap) {
     if(mePartonData()[0]->id()>0) {
       swap1 = false;
