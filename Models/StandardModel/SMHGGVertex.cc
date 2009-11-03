@@ -36,6 +36,28 @@ void SMHGGVertex::doinit() {
   orderInGs(2);
   orderInGem(1);
   VVSLoopVertex::doinit();
+  // code to test the partial width
+//   Energy mh = getParticleData(25)->mass();
+//   Complex I(0.);
+//   for(long ix=int(_minloop);ix<=int(_maxloop);++ix) {
+//     tcPDPtr qrk = getParticleData(ix);
+//     Energy mt = (2 == massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
+//     double lambda = sqr(mt/mh);
+//     Complex fl;
+//     if(lambda>=0.25) {
+//       fl = -2.*sqr(asin(0.5/sqrt(lambda)));
+//     }
+//     else {
+//       double etap = 0.5+sqrt(0.25-lambda);
+//       double etam = 0.5-sqrt(0.25-lambda);
+//       fl = 0.5*sqr(log(etap/etam))-0.5*sqr(Constants::pi)
+// 	-Complex(0.,1.)*Constants::pi*log(etap/etam);
+//     }
+//     I += 3.*(2.*lambda+lambda*(4.*lambda-1)*fl);
+//   }
+//   Energy width = sqr(weakCoupling(sqr(mh))*sqr(strongCoupling(sqr(mh))))/36./8.*sqr(mh/_mw)*mh
+//     /sqr(4.*sqr(Constants::pi))*std::norm(I)/Constants::pi;
+//   cerr << "testing anal " << width/GeV << "\n";
 }
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
@@ -46,7 +68,6 @@ void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
 void SMHGGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> iunit(_mw,GeV) >> massopt 
      >> _minloop >> _maxloop >> _CoefRepresentation;
-  setCoefScheme(_CoefRepresentation);
 }
 
 ClassDescription<SMHGGVertex> SMHGGVertex::initSMHGGVertex;
@@ -102,12 +123,8 @@ void SMHGGVertex::Init() {
 
 void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr part1) {
   assert(part1 && part2 && part3);
-  if (part1->id() != ParticleID::h0 || part2->id() != ParticleID::g ||
-      part3->id() != ParticleID::g ) 
-    throw HelicityConsistencyError() 
-      << "SMHGGVertex::setCoupling() - The particle content of this vertex "
-      << "is incorrect: " << part1->id() << " " << part2->id() << " " << part3->id() 
-      << Exception::runerror;
+  assert(part1->id() == ParticleID::h0 &&
+	 part2->id() == ParticleID::g  && part3->id() == ParticleID::g );
   unsigned int Qminloop = _minloop;
   unsigned int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
@@ -139,9 +156,8 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   }
   case 2: {
     if (q2 != _q2last) {
-      double g = weakCoupling(q2);
-      double gs2 = sqr(strongCoupling(q2));
-      _couplast = gs2*g/Constants::pi/sqrt(0.5*Constants::pi);
+      _couplast = 0.25*sqr(strongCoupling(q2))*weakCoupling(q2);
+      _q2last = q2;
     }
     norm(_couplast);
     unsigned int delta = Qmaxloop - Qminloop + 1;
@@ -166,25 +182,18 @@ Complex SMHGGVertex::Af(double tau) const {
 
 Complex SMHGGVertex::W2(double lambda) const {
   double pi = Constants::pi;
-
   if (0.0 == lambda)     return 0.0;
   else if (lambda < 0.0) return 4.*sqr(asinh(0.5*sqrt(-1./lambda)));
 
   double root(0.5*sqrt(1./lambda));
   Complex ac(0.);
+    // formulae from NPB297,221
   if(root < 1.) {
     ac = -sqr(asin(root));
-  } else {
-// formulae from NPB297,221
+  } 
+  else {
     double ex = acosh(root);
     ac = sqr(ex) - 0.25*sqr(pi) - pi*ex*Complex(0.,1.);
-/*
-// formulae from Higgs hunter's guide (gives the same result).
-    double pl = .5 + .5*sqrt(1. - 4.*lambda);
-    double ms = .5 - .5*sqrt(1. - 4.*lambda);
-    double lg = 0.5*log(pl/ms);
-    ac = sqr(lg) - 0.25*sqr(pi) - pi*lg*Complex(0.,1.);
-*/
   }
   return 4.*ac;
 }

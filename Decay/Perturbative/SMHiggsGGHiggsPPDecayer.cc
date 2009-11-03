@@ -25,16 +25,16 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 bool SMHiggsGGHiggsPPDecayer::accept(tcPDPtr parent, const tPDVector & children) const {
-  bool acc(false);
   int idp = parent->id();
   int id0 = children[0]->id();
   int id1 = children[1]->id();
-  if((idp == ParticleID::h0 && id0 == ParticleID::g && 
-      id1 == ParticleID::g)||
-     (idp == ParticleID::h0 && id0 == ParticleID::gamma 
-      && id1 == ParticleID::gamma)) 
-    {acc = true;}
-  return acc;
+  if((idp == ParticleID::h0 && 
+      id0 == ParticleID::g     && id1 == ParticleID::g) ||
+     (idp == ParticleID::h0 && 
+      id0 == ParticleID::gamma && id1 == ParticleID::gamma)) 
+    return true;
+  else
+    return false;
 }
 
 ParticleVector SMHiggsGGHiggsPPDecayer::decay(const Particle & parent,
@@ -128,10 +128,11 @@ double SMHiggsGGHiggsPPDecayer::me2(const int,
   //colour factor (N^2 - 1)/4
   if(decay[0]->id() == ParticleID::g &&
      decay[1]->id() == ParticleID::g) {
-    output *= 2.;
+    output *= 8.;
   }
   //symmetric final states
   output /= 2.;
+
   // normalize if width generator
   if(_hwidth) {
     if(decay[0]->id() == ParticleID::g) 

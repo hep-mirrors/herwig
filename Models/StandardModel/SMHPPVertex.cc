@@ -30,7 +30,6 @@ void SMHPPVertex::persistentOutput(PersistentOStream & os) const {
 void SMHPPVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> iunit(_mw, GeV) >> massopt >> _minloop >> _maxloop 
      >> _CoefRepresentation;
-  setCoefScheme(_CoefRepresentation);
 }
 
 ClassDescription<SMHPPVertex> SMHPPVertex::initSMHPPVertex;
@@ -86,12 +85,8 @@ void SMHPPVertex::Init() {
 
 void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
                               tcPDPtr part3, tcPDPtr part1) {
-  if( part1->id() != ParticleID::h0 || part2->id() != ParticleID::gamma ||
-      part3->id() != ParticleID::gamma )
-    throw HelicityConsistencyError() 
-      << "SMHPPVertex::setCoupling() - The particle content of this vertex "
-      << "is incorrect: " << part1->id() << " " << part2->id() << " "
-      << part3->id() << Exception::runerror;
+  assert( part1->id() == ParticleID::h0 &&
+	  part2->id() == ParticleID::gamma && part3->id() == ParticleID::gamma );
   unsigned int Qminloop = _minloop;
   unsigned int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
@@ -101,8 +96,9 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
   switch (_CoefRepresentation) {
   case 1: {
     if(q2 != _q2last||_couplast==0.) {
-      double g = weakCoupling(q2);
-      _couplast = UnitRemoval::E * pow(g,3)/_mw/sqr(Constants::pi)/sqrt(2.)/16.;
+      double g   = weakCoupling(q2);
+      double e2 = sqr(electroMagneticCoupling(q2));
+      _couplast = UnitRemoval::E * e2 * g / 8. / _mw/ sqr(Constants::pi);
       _q2last = q2;
     }
     norm(_couplast);
@@ -111,8 +107,8 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
       tcPDPtr qrk = getParticleData(i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
-	Charge charge = qrk->charge();
-	loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
+      Charge charge = qrk->charge();
+      loop += 3.*sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
     }
     // lepton loops
     unsigned int Lminloop = 3; // still fixed value
@@ -121,7 +117,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
       tcPDPtr lpt = getParticleData(9 + 2*i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,lpt) : lpt->mass();
       Charge charge = lpt->charge();
-      loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2)/3.;  // 3. -> no color!
+      loop += sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
     }
     // W loop
     loop += Aw(sqr(_mw)/q2);
@@ -137,24 +133,32 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
   case 2: {
     if(q2 != _q2last||_couplast==0.) {
       double e = electroMagneticCoupling(q2);
-      _couplast = pow(e,3)/sin2ThetaW();
+      _couplast = pow(e,3)/sqrt(sin2ThetaW());
       _q2last = q2;
     }
     norm(_couplast);
-    type.resize(3,PDT::SpinUnknown);
-    type[0] = PDT::Spin1Half;
-    type[1] = PDT::Spin1Half;
-    type[2] = PDT::Spin1;
-    masses.resize(3,ZERO);
-    masses[0] = _theSM->mass(q2,getParticleData(ParticleID::t));
-    masses[1] = _theSM->mass(q2,getParticleData(ParticleID::b));
-    masses[2] = _mw;
-    double copl = -_theSM->mass(q2,getParticleData(6))*(4./3.)/_mw/2.;
+    // quarks
+    unsigned int delta = Qmaxloop - Qminloop + 1;
+    type.resize(delta,PDT::SpinUnknown);
+    masses.resize(delta,ZERO);
+    for (unsigned int i = 0; i < delta; ++i) {
+      tcPDPtr q = getParticleData(_minloop+i);
+      type[i] = PDT::Spin1Half;
+      masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();
+      double copl = -masses[i]*3.*sqr(q->iCharge()/3.)/_mw/2.;
+      couplings.push_back(make_pair(copl, copl));
+    }
+    // tau
+    type.push_back(PDT::Spin1Half);
+    tcPDPtr tau = getParticleData(ParticleID::tauminus);
+    masses.push_back(_theSM->mass(q2,tau));
+    double copl = -masses.back()*sqr(tau->iCharge()/3.)/_mw/2.;
     couplings.push_back(make_pair(copl, copl));
-    copl = -_theSM->mass(q2,getParticleData(5))*(4./3.)/_mw/2.;
-    couplings.push_back(make_pair(copl, copl));
+    // W
+    type.push_back(PDT::Spin1);
+    masses.push_back(_mw);
     couplings.push_back(make_pair(UnitRemoval::InvE*_mw, UnitRemoval::InvE*_mw));
-    
+    setNParticles(delta+2);
     VVSLoopVertex::setCoupling(q2, part1, part2, part3);
     break;
   }
@@ -166,7 +170,7 @@ Complex SMHPPVertex::Af(const double tau) const {
 }
 
 Complex SMHPPVertex::Aw(const double tau) const {
-  return 12.*W2(tau)*tau*(4.*tau - 2.) - 12.*tau - 2.;
+  return 0.5*(-3.*W2(tau)*tau*(4.*tau - 2.) - 12.*tau - 2.);
 }
 
 Complex SMHPPVertex::W2(double lambda) const {
@@ -180,30 +184,65 @@ Complex SMHPPVertex::W2(double lambda) const {
 
   double root(0.5*sqrt(1./lambda));
   Complex ac(0.);
+  // formulae from NPB297,221
   if(root < 1.) {
     ac = -sqr(asin(root));
-  } else {
-// formulae from NPB297,221
+  } 
+  else {
     double ex = acosh(root);
     ac = sqr(ex) - 0.25*sqr(pi) - pi*ex*Complex(0.,1.);
-/*
-// formulae from Higgs hunter's guide (gives the same result).
-    double pl = .5 + .5*sqrt(1. - 4.*lambda);
-    double ms = .5 - .5*sqrt(1. - 4.*lambda);
-    double lg = 0.5*log(pl/ms);
-    ac = sqr(lg) - 0.25*sqr(pi) - pi*lg*Complex(0.,1.);
-*/
   }
   return 4.*ac;
 }
 
 SMHPPVertex::SMHPPVertex() 
   :_couplast(0.),_q2last(),_mw(),massopt(1),
-   _minloop(6),_maxloop(6),_CoefRepresentation(1)
-{
+   _minloop(6),_maxloop(6),_CoefRepresentation(1) {
   //PDG codes for particles at vertices
   addToList(22,22,25);
 }
+
+
+// functions for loops for testing
+// namespace {
+
+// Complex F0(double tau) {
+//   Complex ft;
+//   if(tau>=1.)
+//     ft = sqr(asin(1./sqrt(tau)));
+//   else {
+//     double etap = 1.+sqrt(1.-tau);
+//     double etam = 1.-sqrt(1.-tau);
+//     ft = -0.25*sqr(log(etap/etam)-Constants::pi*Complex(0.,1.));
+//   }
+//   return tau*(1.-tau*ft);
+// }
+
+// Complex FHalf(double tau,double eta) {
+//   Complex ft;
+//   if(tau>=1.)
+//     ft = sqr(asin(1./sqrt(tau)));
+//   else {
+//     double etap = 1.+sqrt(1.-tau);
+//     double etam = 1.-sqrt(1.-tau);
+//     ft = -0.25*sqr(log(etap/etam)-Constants::pi*Complex(0.,1.));
+//   }
+//   return -2.*tau*(eta+(1.-tau*eta)*ft);
+// }
+
+// Complex F1(double tau) {
+//   Complex ft;
+//   if(tau>=1.)
+//     ft = sqr(asin(1./sqrt(tau)));
+//   else {
+//     double etap = 1.+sqrt(1.-tau);
+//     double etam = 1.-sqrt(1.-tau);
+//     ft = -0.25*sqr(log(etap/etam)-Constants::pi*Complex(0.,1.));
+//   }
+//   return 2.+3.*tau+3.*tau*(2.-tau)*ft;
+// }
+// }
+
 
 void SMHPPVertex::doinit() {
   _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
@@ -215,4 +254,25 @@ void SMHPPVertex::doinit() {
   orderInGs(0);
   orderInGem(3);
   VVSLoopVertex::doinit();
+//   // code to test the partial width
+//   Energy mh = getParticleData(25)->mass();
+//   Complex I(0.);
+//   for(long ix=int(_minloop);ix<=int(_maxloop);++ix) {
+//     tcPDPtr qrk = getParticleData(ix);
+//     Energy mt = (2 == massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
+//     double tau = sqr(2.*mt/mh);
+//     I += 3.*sqr(double(qrk->iCharge())/3.)*FHalf(tau,1.);
+//     cerr << "testing half " << FHalf(tau,1) << " " << Af(0.25*tau) << "\n";
+//   }
+//   for(long ix=15;ix<=15;++ix) {
+//     tcPDPtr qrk = getParticleData(ix);
+//     Energy mt = (2 == massopt) ? _theSM->mass(sqr(mh),qrk) : qrk->mass();
+//     double tau = sqr(2.*mt/mh);
+//     I += sqr(double(qrk->iCharge())/3.)*FHalf(tau,1.);
+//   }
+//   I += F1(sqr(2.*_mw/mh));
+//   Energy width = sqr(weakCoupling(sqr(mh))*sqr(electroMagneticCoupling(sqr(mh))))
+//     /1024./pow(Constants::pi,5)/16.*sqr(mh/_mw)*mh*std::norm(I);
+//   cerr << "testing anal " << width/GeV << "\n";
 }
+

@@ -68,21 +68,23 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
     double mls = sqr(lmass);
     Complex lc = couplings[i].first;
     if(type[i] == PDT::Spin1Half) {
-      Complex C0 = C0i(cc0,pv1s,pv2s,ps2,mls,mls,mls); 
-      long theC = Cget(ps2,pv2s,pv1s,
-		      mls,mls,mls);
-      Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
-      Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
+      Complex C0 =  C0i(cc0,pv1s,pv2s,ps2,mls,mls,mls); 
+      long  theC = Cget(ps2,pv2s,pv1s,    mls,mls,mls);
+      Complex C1  = Cval(cc1,theC);
+      Complex C2  = Cval(cc2,theC);
+      Complex C00 = Cval(cc00,theC);
+      Complex C11 = Cval(cc11,theC);
       Complex C12 = Cval(cc12,theC);
       Complex C22 = Cval(cc22,theC);
       Complex lpr = lc + couplings[i].second;
 
-      a += 2.*lpr*lmass*(-2.*B0(ps2,mls,mls)+ C0*(pv1s + pv2s - ps2) + 8.*C00);
-      b += 8.*lpr*lmass*(C0 + 3.*C1 +3.*C2 + 2.*(C11 + 2.*C12 + C22));
-      c += 4.*lpr*lmass*(C0 +2.*(2.*C1+C2 + 2.*(C11 +C12)));
-      d += 4.*lpr*lmass*(C0 + 4.*(C1+C11+C12));
-      e += 8.*lpr*lmass*(C1 + 2.*C11);
-      f += 4.*(lc - couplings[i].second)*lmass*C0;
+      a +=  4.*lpr*lmass*(-2.*B0(ps2,mls,mls)+ C0*(pv1s + pv2s - ps2) + 8.*C00)/ps2;
+      b +=  8.*lpr*lmass*(C0 + 3.*C1 +3.*C2 + 2.*(C11 + 2.*C12 + C22)); 
+      c +=  4.*lpr*lmass*(C0 +2.*(2.*C1+C2 + 2.*(C11 +C12)));
+      d +=  4.*lpr*lmass*(C0 + 4.*(C1+C11+C12));
+      e +=  8.*lpr*lmass*(C1 + 2.*C11);
+      f +=  4.*(lc - couplings[i].second)*lmass*C0;
+
     }
     else if(type[i] == PDT::Spin1) {
       long theC = Cget(ps2,pv2s,pv1s,mls,mls,mls);
@@ -121,7 +123,7 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
 	      + 2.*mls2*C0A*pv1s*ps2 + 2.*mls2*C0A*pv2s*ps2 
 	      - mls*C0A*pv12*ps2 
 	      + (24.*mls3 + 2.*mls*pv12 - 4.*mls2*(pv1s + pv2s) 
-		 + (2.*mls - pv1s)*(2.*mls - pv2s)*ps2)*C00 ) )/mls3;
+		 + (2.*mls - pv1s)*(2.*mls - pv2s)*ps2)*C00 ) )/mls3*2./ps2;
 
       b += -0.25*lc*
 	( 8.*mls*B0C*pv2s - 4.*B11B*(2.*mls - pv1s)*pv2s 
@@ -220,11 +222,11 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
        * type rather than creating another
        * vector to hold them.
        */
-      a += lc*(B0(ps2,mls,mls) - 4.*C00);
-      b += -2.*lc*(Cz + 3.*C1 + 3.*C2 +2.*(C11 + 2.*C12 + C22 ));
-      c += -1.*lc*(Cz + 2.*(2.*C1+ C2 + 2.*(C11 +C12)));
-      d+=-4.*lc*(C1 +C11 + C12);
-      e+=-2.*lc*(C1 + 2.*C11);
+      a +=  4.*lc*(B0(ps2,mls,mls) - 4.*C00)/ps2;
+      b += -4.*lc*(Cz + 3.*C1 + 3.*C2 +2.*(C11 + 2.*C12 + C22 ));
+      c += -2.*lc*(Cz + 2.*(2.*C1+ C2 + 2.*(C11 +C12)));
+      d += -8.*lc*(C1 +C11 + C12);
+      e += -4.*lc*(C1 + 2.*C11);
     }
     else {
       throw Helicity::HelicityConsistencyError() 
@@ -234,7 +236,7 @@ void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
     }
   }
   //Looptools defines integrals differently
-  double fact = 1/16./Constants::pi/Constants::pi;
+  double fact = 1./16./sqr(Constants::pi);
   a00(fact*a);
   a11(fact*b);
   a12(fact*c);

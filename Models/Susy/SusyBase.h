@@ -141,13 +141,6 @@ public:
   virtual tAbstractVVSVertexPtr vertexWWH() const {
     return theSSWWHVertex;
   }
-  
-  /**
-   * Pointer to the MSSM effective higgs-gluon-gluon vertex
-   */
-  virtual tAbstractVVSVertexPtr vertexHGG() const {
-    return theSSHGGVertex;
-  }
 
   /**
    * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
@@ -496,11 +489,6 @@ private:
    * Pointer to triple higgs vertex
    */
   AbstractSSSVertexPtr theHHHVertex;
-  
-  /**
-   * The effective coupling of the higgs to a pai of gluons in the MSSM
-   */
-  AbstractVVSVertexPtr theSSHGGVertex;
   //@}
 };
 

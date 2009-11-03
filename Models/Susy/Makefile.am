@@ -20,5 +20,6 @@ SSGOGOHVertex.cc  SSGOGOHVertex.h  \
 SSWWHVertex.cc    SSWWHVertex.h    \
 SSWHHVertex.cc    SSWHHVertex.h    \
 SSHHHVertex.cc    SSHHHVertex.h    \
-SSHGGVertex.cc    SSHGGVertex.h 
+SSHGGVertex.cc    SSHGGVertex.h    \
+SSHPPVertex.cc    SSHPPVertex.h 
 HwSusy_la_LDFLAGS = -module -version-info 5:0:0
