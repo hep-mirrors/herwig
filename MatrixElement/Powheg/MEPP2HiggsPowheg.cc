@@ -350,10 +350,10 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(tcPDPtr a, tcPDPtr b,
 double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b, 
 					       double xt, double y ) const {
   if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
-  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
+  if(y== 1.&&!(abs(a->id())>0&&abs(a->id())<7)) 
     cout << "\nCtilde_qg::for Cqg^plus  a must be a quark! id = " 
 	 << a->id() << "\n";
-  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
+  if(y==-1.&&!(abs(b->id())>0&&abs(b->id())<7)) 
     cout << "\nCtilde_qg::for Cqg^minus b must be a quark! id = "
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
@@ -371,8 +371,8 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   if(y== 1.&&a->id()!=21)
     cout << "\nCtilde_gq::for Cgq^plus  a must be a gluon! id = " 
 	 << a->id() << "\n";
-  if(y== 1.&&!(abs(a->id()>0)&&abs(a->id())<7)) 
-    cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = " 
+  if(y== 1.&&!(abs(b->id())>0&&abs(b->id())<7)) 
+    cout << "\nCtilde_gq::for Cgq^minus b must be a quark! id = " 
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
