@@ -157,6 +157,7 @@ protected:
 		    vector<SpinorWaveFunction> & f2 ,
 		    vector<SpinorBarWaveFunction> & a1,
 		    vector<SpinorBarWaveFunction> & a2,
+		    bool swap1, bool swap2,
 		    bool me) const;
 
   /**

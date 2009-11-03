@@ -103,11 +103,11 @@ double MEGammaGamma2ff::helicityME(vector<VectorWaveFunction> &p1,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  //first t-channel diagram
-	  inters =vertex_->evaluate(mt,1,fbar[ohel2].getParticle(),
+	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle(),
 				    fbar[ohel2],p2[ihel2]);
 	  diag[0]=vertex_->evaluate(mt,inters,f[ohel1],p1[ihel1]);
 	  //second t-channel diagram
-	  inters =vertex_->evaluate(mt,1,fbar[ohel2].getParticle(),
+	  inters =vertex_->evaluate(mt,1,fbar[ohel2].particle(),
 				    fbar[ohel2],p1[ihel1]);
 	  diag[1]=vertex_->evaluate(mt,inters,f[ohel1],p2[ihel2]);
 	  sumdiag[0] += norm(diag[0]);
@@ -128,7 +128,7 @@ double MEGammaGamma2ff::helicityME(vector<VectorWaveFunction> &p1,
   // colour factors if needed
   if(mePartonData()[2]->coloured()) output *= 3.;
   // code to test vs the analytic result
-//   Energy2 m2 = sqr(f[0].getParticle()->mass());
+//   Energy2 m2 = sqr(f[0].particle()->mass());
 //   Energy2 tm = (p1[0].getMomentum()+f   [0].getMomentum()).m2()-m2;
 //   Energy2 um = (p1[0].getMomentum()+fbar[0].getMomentum()).m2()-m2;
 //   double test = 8.*um/tm+8.*tm/um- 32*m2/tm - 32*m2/um

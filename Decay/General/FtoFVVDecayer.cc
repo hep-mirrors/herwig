@@ -226,10 +226,9 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 	    continue;
 	  }
 	  tcPDPtr offshell = (*dit).intermediate;
-	  if( offshell->CC() ) offshell = offshell->CC();
 	  Complex diag;
 	  if( offshell->iSpin() == PDT::Spin1Half ) {
-	    //Need make sure we connect the correct particles 
+	    // Make sure we connect the correct particles 
 	    VectorWaveFunction vw1, vw2;
 	    if( (*dit).channelType == TBDiagram::channel23 ) {
 	      vw1 = _vwave.first[iv1];
@@ -275,7 +274,6 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
 	    VectorWaveFunction interv = 
 	      _vec[idiag].first->evaluate(scale, widthOption(), offshell, 
 					  _fwave[if1], _fbwave[if2]);
-	    interv.direction(Helicity::incoming);
 	    diag = _vec[idiag].second->evaluate(scale, _vwave.first[iv1],
 						_vwave.second[iv2], interv);
 	  } 
@@ -372,7 +370,6 @@ double  FtoFVVDecayer::me2(const int ichan, const Particle & inpart,
     me2 = nfactors[iflow][iflow]*(mel[iflow].contract(mel[iflow],_rho)).real();
   }
   // return the matrix element squared
-
   return me2;
 }
 

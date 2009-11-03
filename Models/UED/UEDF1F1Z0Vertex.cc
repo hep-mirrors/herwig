@@ -24,28 +24,24 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theCosThW(0.0), theRadius(
 				     theID1Last(0), theID2Last(0) ,
 				     theq2Last(ZERO), theCoupLast(0.), 
 				     theLeftLast(0.), theRightLast(0.) {
-  vector<long> anti, ferm, boson(25, 23);
+  long boson = 23;
   //QQ, uu, dd
   for(long i = 5100001; i < 6100007; ++i) {
     if(i == 5100007) i += 999994;
-    anti.push_back(-i);
-    ferm.push_back(i);
+    addToList(-i, i, boson);
   }
   //top/bottom quark l/r mixing
-  anti.push_back(-5100006); ferm.push_back(6100006); 
-  anti.push_back(-6100006); ferm.push_back(5100006); 
-  anti.push_back(-5100005); ferm.push_back(6100005); 
-  anti.push_back(-6100005); ferm.push_back(5100005); 
+  addToList(-5100006, 6100006, boson); 
+  addToList(-6100006, 5100006, boson); 
+  addToList(-5100005, 6100005, boson); 
+  addToList(-6100005, 5100005, boson); 
   //leptons
   for(long i = 5100011; i < 5100017; ++i) {
-    anti.push_back(-i);
-    ferm.push_back(i);
+    addToList(-i, i, boson);
   }
   for(long i = 6100011; i < 6100017; i +=2) {
-    anti.push_back(-i);
-    ferm.push_back(i);
+    addToList(-i, i, boson);
   }
-  setList(anti, ferm, boson);
 }
 
 void UEDF1F1Z0Vertex::doinit() {
@@ -85,9 +81,9 @@ void UEDF1F1Z0Vertex::Init() {
 void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				  tcPDPtr part3) {
   if( part3->id() != 23 ) {
-    setNorm(0.0);
-    setLeft(0.0);
-    setRight(0.0);  
+    norm(0.0);
+    left(0.0);
+    right(0.0);  
     throw HelicityLogicalError()
       << "UEDF1F1Z0Vertex::setCoupling - The vector boson in this vertex "
       << "is not a Z^0 boson. ID: " << part3->id() << "\n"
@@ -145,9 +141,9 @@ void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 	theRightLast = -theLeftLast;
       }
     }
-    setNorm(theCoupLast);
-    setLeft(theLeftLast);
-    setRight(theRightLast);
+    norm(theCoupLast);
+    left(theLeftLast);
+    right(theRightLast);
   }
   else {
     throw HelicityLogicalError() << "UEDF1F1Z0Vertex::setCoupling - "
@@ -155,8 +151,8 @@ void UEDF1F1Z0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << "UED F^(1) F^(1) Z^(0) vertex. ID: " 
 				 << ianti << " " << iferm 
 				 << Exception::warning;      
-    setNorm(0.0);
-    setLeft(0.0);
-    setRight(0.0);  
+    norm(0.0);
+    left(0.0);
+    right(0.0);  
   }
 }

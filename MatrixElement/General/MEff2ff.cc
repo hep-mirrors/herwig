@@ -742,12 +742,12 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
 	spB[ihel] = sp2r;
 
 	//extra spinors
-	spC.push_back(SpinorWaveFunction(-spbB[ihel].getMomentum(),
-					 spbB[ihel].getParticle(),
+	spC.push_back(SpinorWaveFunction(-spbB[ihel].momentum(),
+					 spbB[ihel].particle(),
 					 spbB[ihel].wave().bar().conjugate(),
 					 spbB[ihel].direction()));
-	spbC.push_back(SpinorBarWaveFunction(-spB[ihel].getMomentum(),
-					     spB[ihel].getParticle(),
+	spbC.push_back(SpinorBarWaveFunction(-spB[ihel].momentum(),
+					     spB[ihel].particle(),
 					     spB[ihel].wave().bar().conjugate(),
 					     spB[ihel].direction()));
       }

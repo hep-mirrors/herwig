@@ -171,7 +171,7 @@ double MEee2VV::me2() const {
   }
 
   // e+e- > Z Z 
-  if(v1[0].getParticle()->id()==ParticleID::Z0) {
+  if(v1[0].particle()->id()==ParticleID::Z0) {
     return ZZME(f1,a1,v1,v2,false);
   }
   // e+e- > W+W-

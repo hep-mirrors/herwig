@@ -20,6 +20,16 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
+  addToList(22, 5100037, -5100037);
+}
+
+void UEDP0H1H1Vertex::doinit() {
+  VSSVertex::doinit();
+  orderInGs(0);
+  orderInGem(1);
+}
+
 NoPIOClassDescription<UEDP0H1H1Vertex> UEDP0H1H1Vertex::initUEDP0H1H1Vertex;
 // Definition of the static class description member.
 
@@ -50,7 +60,7 @@ void UEDP0H1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theq2Last = q2;
       theCoupLast = Complex(0., 1.)*electroMagneticCoupling(q2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
   }
   else
     throw HelicityLogicalError() << "UEDP0H1H1Vertex::setCoupling - There is no "

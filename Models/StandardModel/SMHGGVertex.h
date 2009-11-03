@@ -15,7 +15,6 @@
 #include "Herwig++/Models/General/VVSLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "SMHGGVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -68,19 +67,20 @@ public:
   virtual void setCoupling (Energy2 q2, tcPDPtr part1, tcPDPtr part2, tcPDPtr part3);
 
 protected:
+
   /** @name Clone Methods. */
   //@{
   /**
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
   /**
@@ -192,7 +192,5 @@ struct ClassTraits<Herwig::SMHGGVertex>
 /** @endcond */
 
 }
-
-#include "SMHGGVertex.icc"
 
 #endif /* HERWIG_SMHGGVertex_H */

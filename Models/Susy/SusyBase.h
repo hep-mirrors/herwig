@@ -13,7 +13,7 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Models/Susy/MixingMatrix.h"
+#include "MixingMatrix.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractSSSVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVSSVertex.h"
@@ -56,46 +56,46 @@ public:
   /**
    * Value of \f$\tan\beta\f$.
    */
-  inline double tanBeta() const { return _tanbeta; }
+  double tanBeta() const { return _tanbeta; }
 
   /**
    * Value of \f$\mu\f$ parameter.
    */
-  inline Energy muParameter() const { return _mu; }
+  Energy muParameter() const { return _mu; }
 
   /**
    * Value of soft breaking mass for the bino
    */
-  inline Energy softMOne() const { return theMone; }
+  Energy softMOne() const { return theMone; }
 
   /**
    * Value of soft breaking mass for the wino
    */
-  inline Energy softMTwo() const { return theMtwo; }
+  Energy softMTwo() const { return theMtwo; }
 
   /**
    * Value of soft breaking mass for the gluino
    */
-  inline Energy softMThree() const { return theMthree; }
+  Energy softMThree() const { return theMthree; }
 
   /**
    * The neutralino mixing matrix
    */
-  inline const MixingMatrixPtr & neutralinoMix() const { 
+  const MixingMatrixPtr & neutralinoMix() const { 
     return theNMix;
   }
 
   /**
    * The U-type chargino mixing matrix
    */
-  inline const MixingMatrixPtr & charginoUMix() const {
+  const MixingMatrixPtr & charginoUMix() const {
     return theUMix;
   }
 
   /**
    * The V-type chargino mixing matrix
    */
-  inline const MixingMatrixPtr & charginoVMix() const {
+  const MixingMatrixPtr & charginoVMix() const {
     return theVMix;
   }
   //@}
@@ -131,49 +131,42 @@ public:
   /**
    * Pointer to the MSSM fermion-antifermion-higgs vertex 
    */
-  virtual inline tAbstractFFSVertexPtr vertexFFH() const {
+  virtual tAbstractFFSVertexPtr vertexFFH() const {
     return theSSFFHVertex;
   }
   
   /**
    * Pointer to the MSSM double gauge boson-higgs vertex 
    */
-  virtual inline tAbstractVVSVertexPtr vertexWWH() const {
+  virtual tAbstractVVSVertexPtr vertexWWH() const {
     return theSSWWHVertex;
-  }
-  
-  /**
-   * Pointer to the MSSM effective higgs-gluon-gluon vertex
-   */
-  virtual inline tAbstractVVSVertexPtr vertexHGG() const {
-    return theSSHGGVertex;
   }
 
   /**
    * Pointer to the electroweak gauge boson Higgs-Higgs vertex.
    */
-  virtual inline tAbstractVSSVertexPtr vertexWHH() const {
+  virtual tAbstractVSSVertexPtr vertexWHH() const {
     return theWHHVertex;
   }
 
   /**
    * Pointer to the higgs coupling to a pair of gauginos
    */
-  virtual inline tAbstractFFSVertexPtr vertexGOGOH() const {
+  virtual tAbstractFFSVertexPtr vertexGOGOH() const {
     return theGOGOHVertex;
   }
 
   /**
    * Pointer to the triple higgs vertex
    */
-  virtual inline tAbstractSSSVertexPtr vertexHHH() const {
+  virtual tAbstractSSSVertexPtr vertexHHH() const {
     return theHHHVertex;
   }
 
   /**
    * Pointer to higgs-sfermion-sfermion vertex 
    */
-  virtual inline tAbstractSSSVertexPtr vertexHSS() const {
+  virtual tAbstractSSSVertexPtr vertexHSS() const {
     return theHSFSFVertex;
   }
   //@}
@@ -263,14 +256,14 @@ protected:
   /**
    *  Parameter blocks
    */
-  inline const map<string,ParamMap> & parameters() const {
+  const map<string,ParamMap> & parameters() const {
     return _parameters;
   }
 
   /**
    *  Mixing blocks
    */
-  inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const {
+  const map<string,pair<MatrixSize,MixingVector> > & mixings() const {
     return _mixings;
   }
   //@}
@@ -278,17 +271,17 @@ protected:
   /**
    * Reset neutralino mixing matrix
    */
-  inline void neutralinoMix(MixingMatrixPtr nm) { theNMix = nm; }
+  void neutralinoMix(MixingMatrixPtr nm) { theNMix = nm; }
 
   /**
    * Reset the U-type chargino mixing matrix
    */
-  inline void charginoUMix(MixingMatrixPtr um) { theUMix = um; }
+  void charginoUMix(MixingMatrixPtr um) { theUMix = um; }
 
   /**
    *  Reset the V-type chargino mixing matrix
    */
-  inline void charginoVMix(MixingMatrixPtr vm) { theVMix = vm; }
+  void charginoVMix(MixingMatrixPtr vm) { theVMix = vm; }
   
 protected:
 
@@ -496,11 +489,6 @@ private:
    * Pointer to triple higgs vertex
    */
   AbstractSSSVertexPtr theHHHVertex;
-  
-  /**
-   * The effective coupling of the higgs to a pai of gluons in the MSSM
-   */
-  AbstractVVSVertexPtr theSSHGGVertex;
   //@}
 };
 

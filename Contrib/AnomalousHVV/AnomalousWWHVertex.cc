@@ -27,7 +27,7 @@ AnomalousWWHVertex::AnomalousWWHVertex()
   first.push_back(23);  
   second.push_back(23); 
   third.push_back(25);  
-  setList(first,second,third);
+  addToList(first,second,third);
   // calculate the kinematic invariants needed
   kinematics(true);
 }
@@ -111,8 +111,8 @@ void AnomalousWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
       couplast_ = weakCoupling(q2) * UnitRemoval::InvE * mw_;
       q2last_   = q2;
     }
-    if(ibos==24)      setNorm(couplast_          );
-    else if(ibos==23) setNorm(couplast_ * zfact_ );
+    if(ibos==24)      norm(couplast_          );
+    else if(ibos==23) norm(couplast_ * zfact_ );
     else
       throw HelicityConsistencyError() << "AnomalousWWHVertex::setCoupling "
 				       << "Invalid particles in WWH Vertex" 
@@ -120,11 +120,11 @@ void AnomalousWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr) {
     a00(double(UnitRemoval::E2/invariant(1,2)));
     break;
   case 1:
-    setNorm(double(UnitRemoval::E/Lambda_));
+    norm(double(UnitRemoval::E/Lambda_));
     aEp(1.);
     break;
   case 2:
-    setNorm(double(UnitRemoval::E/Lambda_));
+    norm(double(UnitRemoval::E/Lambda_));
     a00( 1.);
     a21(-1.);
     break;

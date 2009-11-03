@@ -22,14 +22,12 @@ using namespace Herwig;
 
 UEDF1F1G0Vertex::UEDF1F1G0Vertex() 
   : theq2Last(ZERO), theCoupLast(0.) {
-  vector<long> anti, ferm, boson(12, 21);
+  long boson = 21;
   //QQ
-    for(long i = 5100001; i < 6100007; ++i) {
+  for(long i = 5100001; i < 6100007; ++i) {
     if(i == 5100007) i += 999994;
-    anti.push_back(-i);
-    ferm.push_back(i);
+    addToList(-i, i, boson);
   }
-  setList(anti, ferm, boson);
 }
 
 NoPIOClassDescription<UEDF1F1G0Vertex> UEDF1F1G0Vertex::initUEDF1F1G0Vertex;
@@ -61,13 +59,18 @@ void UEDF1F1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theCoupLast = -strongCoupling(q2);
       theq2Last=q2;
     }
-    setNorm(theCoupLast);
-    setLeft(1.);
-    setRight(1.);
+    norm(theCoupLast);
+    left(1.);
+    right(1.);
   }
   else
     throw HelicityLogicalError() << "UEDF1F1G0Vertex::setCoupling - "
 				 << "There is an unknown particle in this vertex! "
 				 << iferm
 				 << Exception::warning;
+}
+void UEDF1F1G0Vertex::doinit() {
+  FFVVertex::doinit();
+  orderInGs(1);
+  orderInGem(0);
 }

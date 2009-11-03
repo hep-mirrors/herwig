@@ -13,8 +13,7 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Models/UED/UEDBase.h"
-#include "UEDG1G1G0Vertex.fh"
+#include "UEDBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -34,7 +33,7 @@ public:
   /**
    * The default constructor.
    */
-  inline UEDG1G1G0Vertex();
+  UEDG1G1G0Vertex();
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -49,12 +48,9 @@ public:
    *@param part1 The first interacting particle 
    *@param part2 The second interacting particle 
    *@param part3 The third interacting particle 
-   *@param d1 The direction for the first  particle.
-   *@param d2 The direction for the second particle.
-   *@param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   Direction d1,Direction d2, Direction d3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,
+			   tcPDPtr part2,tcPDPtr part3);
 
 protected:
 
@@ -64,13 +60,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
   
@@ -83,7 +79,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
   //@}
 
 private:
@@ -149,7 +145,5 @@ struct ClassTraits<Herwig::UEDG1G1G0Vertex>
 /** @endcond */
 
 }
-
-#include "UEDG1G1G0Vertex.icc"
 
 #endif /* HERWIG_UEDG1G1G0Vertex_H */

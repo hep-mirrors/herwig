@@ -1,0 +1,55 @@
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig++ read LHC.in
+##################################################
+read LHC.common
+erase /Herwig/EventHandlers/LHCHandler:PostSubProcessHandlers 0 
+set /Herwig/Particles/tau-:Stable Stable
+set /Herwig/Particles/tau+:Stable Stable
+set /Herwig/Particles/h0:Stable Stable
+#cd /Herwig/Partons
+#create Herwig::MRST MRST2 HwMRST.so
+#setup MRST2 /home/richardn/montecarlo/c++/Herwig++/trunk/Herwig++/PDF/mrst/1998/lo05a.dat
+#set MRST2:RemnantHandler HadronRemnants
+#set /Herwig/Particles/p+:PDF MRST2
+#set /Herwig/Particles/pbar-:PDF MRST2
+cd /Herwig
+create Herwig::O2AlphaS AlphaS2 
+set Model:QCD/RunningAlphaS AlphaS2
+set Model:EW/CKM:theta_12 0.
+set Model:EW/CKM:theta_13 0.
+set Model:EW/CKM:theta_23 0.
+set Model:EW/CKM:delta 0.
+set Model:EW/Sin2ThetaW 0.22254916
+create Herwig::AlphaEM AlphaEM2 
+set Model:EW/RunningAlphaEM AlphaEM2
+cd /Herwig/MatrixElements
+insert SimpleQCD:MatrixElements[0] MEPP2WH
+set /Herwig/Particles/h0:NominalMass 115.
+set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
+set /Herwig/Masses/HiggsMass:HiggsShape 0
+set /Herwig/Particles/W+/W+->u,dbar;:OnOff Off
+set /Herwig/Particles/W+/W+->c,sbar;:OnOff Off
+set /Herwig/Particles/W+/W+->nu_mu,mu+;:OnOff Off
+set /Herwig/Particles/W+/W+->nu_tau,tau+;:OnOff Off
+set /Herwig/Particles/W+/W+->sbar,u;:OnOff Off
+set /Herwig/Particles/W+/W+->c,dbar;:OnOff Off
+set /Herwig/Particles/W+/W+->bbar,c;:OnOff Off
+#
+set /Herwig/Particles/W-/W-->ubar,d;:OnOff Off
+set /Herwig/Particles/W-/W-->cbar,s;:OnOff Off
+set /Herwig/Particles/W-/W-->nu_mubar,mu-;:OnOff Off
+set /Herwig/Particles/W-/W-->nu_taubar,tau-;:OnOff Off
+set /Herwig/Particles/W-/W-->s,ubar;:OnOff Off
+set /Herwig/Particles/W-/W-->cbar,d;:OnOff Off
+set /Herwig/Particles/W-/W-->b,cbar;:OnOff Off
+set /Herwig/Decays/WZ:Initialize 1
+cd /Herwig/Generators
+set LHCGenerator:EventHandler:CascadeHandler       NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set LHCGenerator:EventHandler:DecayHandler         NULL
+set LHCGenerator:EventHandler:Sampler:Ntry 100000
+cd /Herwig/Generators
+create Herwig::WHTest WHTest HadronTest.so
+insert LHCGenerator:AnalysisHandlers 0 WHTest
+saverun LHC-WH LHCGenerator

@@ -31,7 +31,6 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
 				 theLLast(0.0), theRLast(0.0), theHLast(0),
 				 theID1Last(0), theID2Last(0), theq2last() {
-  vector<long> first, second, third;
   long neu[4] = {1000022, 1000023, 1000025, 1000035};
   long chg[2] = {1000024, 1000037};
   long higgs[3] =  {25, 35, 36};
@@ -40,29 +39,20 @@ SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
     for(unsigned int j = 0; j < 4; ++j) {
       for(unsigned int k = 0; k < 4; ++k) {
 	if( i < 3 ) {
-	  first.push_back(neu[j]);
-	  second.push_back(neu[k]);
-	  third.push_back(higgs[i]);
+	  addToList(neu[j], neu[k], higgs[i]);
 	  //charginos
 	  if( j < 2 && k < 2 ) {
-	    first.push_back(-chg[j]);
-	    second.push_back(chg[k]);
-	    third.push_back(higgs[i]);
+	    addToList(-chg[j], chg[k], higgs[i]);
 	  }
 	} 
 	else {
 	  if( k == 2 ) break;
-	  first.push_back(-chg[k]);
-	  second.push_back(neu[j]);
-	  third.push_back(37);
-	  first.push_back(chg[k]);
-	  second.push_back(neu[j]);
-	  third.push_back(-37);
+	  addToList(-chg[k], neu[j], 37);
+	  addToList( chg[k], neu[j],-37);
 	}
       }
     }
   }
-  setList(first, second, third);
 }
 
 SSGOGOHVertex::~SSGOGOHVertex() {}
@@ -133,35 +123,12 @@ void SSGOGOHVertex::Init() {
 
 }
 
-void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			      tcPDPtr particle3, int) {
-  long id1(particle1->id()), id2(particle2->id()), 
-    id3(particle3->id()), higgsID(0), f1ID(0), f2ID(0);
-  if( abs(id1) == ParticleID::h0 || abs(id1) == ParticleID::H0 || 
-      abs(id1) == ParticleID::A0 || abs(id1) == ParticleID::Hplus ) {
-    higgsID = abs(id1);
-    f1ID = id2;
-    f2ID = id3;
-  }
-  else if( abs(id2) == ParticleID::h0 || abs(id2) == ParticleID::H0 || 
-	   abs(id2) == ParticleID::A0 || abs(id2) == ParticleID::Hplus  ) {
-    higgsID = abs(id2);
-    f1ID = id1;
-    f2ID = id3;
-  }
-  else if( abs(id3) == ParticleID::h0 || abs(id3) == ParticleID::H0 || 
-	   abs(id3) == ParticleID::A0 || abs(id3) == ParticleID::Hplus ) {
-    higgsID = abs(id3);
-    f1ID = id1;
-    f2ID = id2;
-  }
-  else {
-    throw HelicityConsistencyError() 
-      << "SSGOGOHVertex::setCoupling - There is no higgs particle in "
-      << "this vertex. Particles: " << id1 << " " << id2 << " " << id3
-      << Exception::warning;
-    return;
-  }
+/// \todo fixme
+void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, 
+				tcPDPtr particle2,tcPDPtr particle3) {
+  long f1ID(particle1->id()), f2ID(particle2->id()), higgsID(particle3->id());
+  assert(higgsID == ParticleID::h0 ||     higgsID  == ParticleID::H0 ||
+	 higgsID == ParticleID::A0 || abs(higgsID) == ParticleID::Hplus);
   if( f1ID < 0 ) swap(f1ID, f2ID);
   
   if( q2 != theq2last || theCoupLast == 0. ) {
@@ -169,14 +136,15 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
     theq2last = q2;
   }
   if( higgsID == theHLast && f1ID == theID1Last && f2ID == theID2Last) {
-    setNorm(theCoupLast);
-    setLeft(theLLast);
-    setRight(theRLast);
+    norm(theCoupLast);
+    left(theLLast);
+    right(theRLast);
     return;
   }
   theHLast = higgsID;
   theID1Last = f1ID;
   theID2Last = f2ID;
+  
   if( higgsID == ParticleID::h0 ) {
     //charginos
     if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||
@@ -202,7 +170,7 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
   else if( higgsID == ParticleID::H0 ) {
     //charginos
     if( abs(f2ID) == ParticleID::SUSY_chi_1plus ||
-	abs(f2ID) == ParticleID::SUSY_chi_2plus ) {   
+	abs(f2ID) == ParticleID::SUSY_chi_2plus ) {
       unsigned int ei = (abs(f1ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       theLLast =  -conj(theQij[ej][ei])*theCa - conj(theSij[ej][ei])*theSa;
@@ -253,19 +221,17 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
 	abs(neu) == ParticleID::SUSY_chi_2plus ) swap(chg, neu);
     ej = ( abs(chg) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
     ei = neu - ParticleID::SUSY_chi_10;
-    if( ei > 1 )
-      ei = ( ei == 13 ) ? 3 : 2;
-        
+    if( ei > 1 ) ei = ( ei == 13 ) ? 3 : 2;
     theLLast = -theQijLp[ei][ej]*theCb;
     theRLast = -theQijRp[ei][ej]*theSb;
-    if( chg < 0 ) {
+    if( higgsID < 0 ) {
       Complex tmp = theLLast;
       theLLast = conj(theRLast);
       theRLast = conj(tmp);
     }
   }
-  setNorm(theCoupLast);
-  setLeft(theLLast);
-  setRight(theRLast);
+  norm(theCoupLast);
+  left(theLLast);
+  right(theRLast);
 }
 

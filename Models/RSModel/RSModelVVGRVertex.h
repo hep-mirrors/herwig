@@ -29,15 +29,10 @@ class RSModelVVGRVertex: public VVTVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline RSModelVVGRVertex();
-  //@}  
-
-public:
+  RSModelVVGRVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -77,13 +72,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -93,7 +88,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit();
+  virtual void doinit();
     
 private:
   
@@ -119,9 +114,6 @@ private:
   
 };
 }
-
-
-#include "RSModelVVGRVertex.icc"
 
 namespace ThePEG {
 

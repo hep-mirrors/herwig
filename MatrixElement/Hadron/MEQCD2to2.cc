@@ -200,11 +200,11 @@ double MEQCD2to2::gg2qqbarME(vector<VectorWaveFunction> &g1,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  //first t-channel diagram
-	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].particle(),
 				       qbar[ohel2],g2[ihel2]);
 	  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
 	  //second t-channel diagram
-	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+	  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].particle(),
 				       qbar[ohel2],g1[ihel1]);
 	  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
 	  // s-channel diagram
@@ -259,11 +259,11 @@ double MEQCD2to2::qqbar2ggME(vector<SpinorWaveFunction> & q,
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // first t-channel diagram
-	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
+	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].particle()->CC(),
 				      q[ihel1],g1[ohel1]);
 	  diag[0]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g2[ohel2]);
 	  // second t-channel diagram
-	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].getParticle(),
+	  inters=_qqgvertex->evaluate(mt,5,q[ihel1].particle()->CC(),
 				      q[ihel1],g2[ohel2]);
 	  diag[1]=_qqgvertex->evaluate(mt,inters,qbar[ihel2],g1[ohel1]);
 	  // s-channel diagram
@@ -314,14 +314,14 @@ double MEQCD2to2::qg2qgME(vector<SpinorWaveFunction> & qin,
   SpinorWaveFunction inters,inters2;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				  qin[ihel1],g2[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // s-channel diagram
 	  diag[0]=_qqgvertex->evaluate(mt,inters,qout[ohel1],g4[ohel2]);
 	  // first t-channel
-	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				       qin[ihel1],g4[ohel2]);
 	  diag[1]=_qqgvertex->evaluate(mt,inters2,qout[ohel1],g2[ihel2]);
 	  // second t-channel
@@ -437,14 +437,14 @@ double MEQCD2to2::qbarg2qbargME(vector<SpinorBarWaveFunction> & qin,
   SpinorBarWaveFunction inters,inters2;
   for(unsigned int ihel1=0;ihel1<2;++ihel1) { 
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+      inters=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				  qin[ihel1],g2[ihel2]);
       for(unsigned int ohel1=0;ohel1<2;++ohel1) { 
 	for(unsigned int ohel2=0;ohel2<2;++ohel2) {
 	  // s-channel diagram
 	  diag[0]=_qqgvertex->evaluate(mt,qout[ohel1],inters,g4[ohel2]);
 	  // first t-channel
-	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].getParticle(),
+	  inters2=_qqgvertex->evaluate(mt,5,qin[ihel1].particle()->CC(),
 				       qin[ihel1],g4[ohel2]);
 	  diag[1]=_qqgvertex->evaluate(mt,qout[ohel1],inters2,g2[ihel2]);
 	  // second t-channel
@@ -608,7 +608,8 @@ double MEQCD2to2::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
 				vector<SpinorWaveFunction>    & q4,
 				unsigned int iflow) const {
   // type of process
-  bool diagon[2]={q1[0].id()== -q2[0].id(),q1[0].id()== q3[0].id()};
+  bool diagon[2]={q1[0].id()== -q2[0].id(),
+		  q1[0].id()== -q3[0].id()};
   // scale
   Energy2 mt(scale());
   // matrix element to be stored

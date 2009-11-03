@@ -33,26 +33,12 @@ class StandardCKM: public CKMBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
-  inline StandardCKM();
+  StandardCKM() : theta12(0.2262), theta13(0.0037), theta23(0.0413), delta(1.05)
+  {}
 
-  /**
-   * Copy-constructor.
-   */
-  inline StandardCKM(const StandardCKM &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~StandardCKM();
-  //@}
-
-public:
-  
   /**
    * Return the matrix of squared CKM matrix elements. The returned
    * matrix should be for \a nf families.
@@ -104,47 +90,6 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-
-protected:
-  
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate();
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-   ;
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}    
   
 private:
   
@@ -183,8 +128,6 @@ private:
 };
 
 }
-
-#include "StandardCKM.icc"
 
 namespace ThePEG {
 

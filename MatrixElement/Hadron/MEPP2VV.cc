@@ -326,7 +326,7 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
 					     PDT::Spin1,PDT::Spin1));
   // particle data for the t-channel intermediate
   tcPDPtr tc[3];
-  if(f1[0].getParticle()->id()%2==0) {
+  if(f1[0].particle()->id()%2==0) {
     for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(1+2*ix);
   }
   else {
@@ -337,7 +337,7 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
   vector<Complex> diag(5,0.0);
   VectorWaveFunction interP,interZ;
   bool sChannel = 
-    f1[0].getParticle()->id() == -a1[0].getParticle()->id();
+    f1[0].particle()->id() == -a1[0].particle()->id();
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       if(sChannel) {
@@ -392,15 +392,15 @@ double MEPP2VV::WZME(vector<SpinorWaveFunction>    & f1,
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       VectorWaveFunction interW =
-	FFWvertex_->evaluate(scale(),1,v1[0].getParticle()->CC(),
+	FFWvertex_->evaluate(scale(),1,v1[0].particle(),
 			     f1[ihel1],a1[ihel2]);
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<3;++ohel2) {
 	  // t-channel diagrams
-	  inter   = FFWvertex_->evaluate(scale(),1,a1[ihel1].getParticle(),
+	  inter   = FFWvertex_->evaluate(scale(),1,a1[ihel1].particle(),
 					 f1[ihel1],v1[ohel1]);
 	  diag[0] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].getParticle(),
+	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].particle(),
 					 f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFWvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // s-channel diagram
@@ -439,10 +439,10 @@ double MEPP2VV::ZZME(vector<SpinorWaveFunction>    & f1,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<3;++ohel1) {
 	for(unsigned int ohel2=0;ohel2<3;++ohel2) {
-	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].getParticle(),
+	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].particle(),
 					 f1[ihel1],v1[ohel1]);
 	  diag[0] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v2[ohel2]);
-	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].getParticle(),
+	  inter   = FFZvertex_->evaluate(scale(),1,f1[ihel1].particle(),
 					 f1[ihel1] ,v2[ohel2]);
 	  diag[1] = FFZvertex_->evaluate(scale(),inter,a1[ihel2],v1[ohel1]);
 	  // individual diagrams
@@ -492,8 +492,8 @@ void MEPP2VV::constructVertex(tSubProPtr sub) {
   // q qbar -> W W
   else if(abs(hard[order[2]]->id())==ParticleID::Wplus&&
 	  abs(hard[order[3]]->id())==ParticleID::Wplus) {
-    if((hard[order[0]]->id()%2==0&&hard[order[2]]->id()==ParticleID::Wplus)||
-       (hard[order[0]]->id()%2==1&&hard[order[2]]->id()==ParticleID::Wminus))
+    if((hard[order[0]]->id()%2==1&&hard[order[2]]->id()==ParticleID::Wplus)||
+       (hard[order[0]]->id()%2==0&&hard[order[2]]->id()==ParticleID::Wminus))
       swap(order[2],order[3]);
     VectorWaveFunction   (w1,hard[order[2]],outgoing,true ,false);
     VectorWaveFunction   (w2,hard[order[3]],outgoing,true ,false);

@@ -17,10 +17,8 @@
 #include "ThePEG/Interface/Parameter.h"
 
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
-
-StandardCKM::~StandardCKM() {}
 
 IBPtr StandardCKM::clone() const {
   return new_ptr(*this);
@@ -126,6 +124,4 @@ void StandardCKM::Init() {
      "The phase angle in the standard "
      "parameterization of the CKM matrix",
      &StandardCKM::delta, 1.05, 0.0, Constants::twopi, false, false, true);
-}
-
 }

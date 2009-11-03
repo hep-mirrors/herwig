@@ -28,81 +28,48 @@ UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinW(0.), theCosW(0.), theSinOne(0.),
 				     theCouplast(0.), theLlast(0.),
 				     theRlast(0.), theGBlast(0), 
 				     theKKlast(0), theSMlast(0) {
-  vector<long> ferm, anti, wboson;
   //outgoing W+
   for(long i = 2; i < 7; i += 2) {
     for(long j = 1; j < 6; j += 2) {
-      anti.push_back(-i);
-      ferm.push_back(5100000 + j);
-      wboson.push_back(5100024);
-      anti.push_back(-(5100000 + i));
-      ferm.push_back(j);
-      wboson.push_back(5100024);
+      addToList( -i, 5100000 + j, 5100024 );
+      addToList( -(5100000 + i), j, 5100024 );
     }
   }
   for(long i = 11; i < 17; i += 2) {
-    anti.push_back(-i - 1);
-    ferm.push_back(5100000 + i);
-    wboson.push_back(5100024);
-    anti.push_back(-(5100001 + i));
-    ferm.push_back(i);
-    wboson.push_back(5100024);
+    addToList( -i-1, 5100000 + i, 5100024 );
+    addToList( -(5100001 + i), i, 5100024 );
   }
   //outgoing W-
   for(long i = 1; i < 6; i += 2) {
     for(long j = 2 ; j < 7; j += 2) {
-      anti.push_back(-i);
-      ferm.push_back(5100000 + j);
-      wboson.push_back(-5100024);
-      anti.push_back(-(5100000 + i));
-      ferm.push_back(j);
-      wboson.push_back(-5100024);
+      addToList( -i, 5100000 + j, -5100024 );
+      addToList( -(5100000 + i), j, -5100024 );
     }
   }
   for(long i = 11; i < 17; i += 2) {
-    anti.push_back(-i);
-    ferm.push_back(5100001 + i);
-    wboson.push_back(-5100024);
-    anti.push_back(-(5100000 + i));
-    ferm.push_back(i + 1);
-    wboson.push_back(-5100024);
+    addToList( -i, 5100001 + i, -5100024 );
+    addToList(-(5100000 + i), i + 1, -5100024);
   }
   long boson[2] = {5100022,5100023}; 
   for(long b = 0; b < 2; ++b) { 
     //QQ
     for(int i = 1; i < 7; ++i) {
-      anti.push_back(-i);
-      ferm.push_back(i + 5100000);
-      wboson.push_back(boson[b]);
-      anti.push_back(-(i + 5100000));
-      ferm.push_back(i);
-      wboson.push_back(boson[b]);
-      anti.push_back(-i);
-      ferm.push_back(i + 6100000);
-      wboson.push_back(boson[b]);
-      anti.push_back(-(i + 6100000));
-      ferm.push_back(i);
-      wboson.push_back(boson[b]);
+      addToList( -i, i + 5100000, boson[b]);
+      addToList(-(i + 5100000), i, boson[b]);
+
+      addToList(-i, i + 6100000, boson[b]);
+      addToList(-(i + 6100000), i, boson[b]);
     }
     //LL
     for(int i = 11; i < 17; ++i) {
-      anti.push_back(-i);
-      ferm.push_back(i + 5100000);
-      wboson.push_back(boson[b]);
-      anti.push_back(-(i + 5100000));
-      ferm.push_back(i);
-      wboson.push_back(boson[b]);
+      addToList( -i, i + 5100000, boson[b]);
+      addToList(-(i + 5100000), i, boson[b]);
       if( i % 2 != 0 ) {
-	anti.push_back(-i);
-	ferm.push_back(i + 6100000);
-	wboson.push_back(boson[b]);
-	anti.push_back(-(i + 6100000));
-	ferm.push_back(i);
-	wboson.push_back(boson[b]);
+	addToList(-i, i + 6100000, boson[b]);
+	addToList(-(i + 6100000), i, boson[b]);
       }
     }
   }
-  setList(anti, ferm, wboson);
 }
 
 void UEDF1F0W1Vertex::doinit() {
@@ -234,9 +201,9 @@ void UEDF1F0W1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 	}
       }
     }
-    setNorm(theCouplast);
-    setLeft(theLlast);
-    setRight(theRlast);
+    norm(theCouplast);
+    left(theLlast);
+    right(theRlast);
   }
   else
     throw HelicityLogicalError() << "UEDF1F0W1Vertex::setCoupling - "

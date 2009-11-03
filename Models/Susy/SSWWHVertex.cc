@@ -26,25 +26,10 @@ SSWWHVertex::SSWWHVertex() : theh0Wfact(ZERO), theH0Wfact(ZERO),
 			     theCoupLast(ZERO), theElast(0.0),
 			     theq2last(ZERO), theHlast(0), 
 			     theGBlast(0) {
-  vector<long> first, second, third;
-  //ZZh0
-  first.push_back(23);
-  second.push_back(23);
-  third.push_back(25);
-  //WWh0
-  first.push_back(-24);
-  second.push_back(24);
-  third.push_back(25);
-  //ZZH0
-  first.push_back(23);
-  second.push_back(23);
-  third.push_back(35);
-  //WWH0
-  first.push_back(-24);
-  second.push_back(24);
-  third.push_back(35);
-
-  setList(first, second, third);
+  addToList(23,23,25);
+  addToList(-24,24,25);
+  addToList(23,23,35);
+  addToList(-24,24,35);
 }
 			     
 SSWWHVertex::~SSWWHVertex() {}
@@ -120,14 +105,14 @@ void SSWWHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
       << "in this vertex. Particles: " << id1 << " " << id2 << " " << id3
       << Exception::warning;
     return;
-    setNorm(0.0);
+    norm(0.0);
   }
   if( bosonID != ParticleID::Wplus && bosonID != ParticleID::Z0 ) {
     throw HelicityConsistencyError() 
       << "SSWWHVertex::setCoupling - The gauge boson id is incorrect " 
       << bosonID << Exception::warning;
     return;
-    setNorm(0.0);
+    norm(0.0);
   }
   assert( higgsID == ParticleID::h0 || higgsID == ParticleID::H0 );
   assert( bosonID == ParticleID::Z0 || bosonID == ParticleID::Wplus );
@@ -142,5 +127,5 @@ void SSWWHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     theElast = electroMagneticCoupling(q2);
   }
 
-  setNorm(theElast*theCoupLast*UnitRemoval::InvE);
+  norm(theElast*theCoupLast*UnitRemoval::InvE);
 }

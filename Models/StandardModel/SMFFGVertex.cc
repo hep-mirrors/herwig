@@ -33,18 +33,18 @@ void SMFFGVertex::Init() {
 }
 
 // coupling for FFG vertex
-void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
     _couplast = -strongCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
-  int iferm=abs(a->id());
+  int iferm=abs(aa->id());
   if(iferm>=1 && iferm<=6) {
-    setLeft(1.);
-    setRight(1.);
+    left(1.);
+    right(1.);
   }
   else
     throw HelicityConsistencyError() << "SMFFGVertex::setCoupling" 
@@ -54,13 +54,10 @@ void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
 
 SMFFGVertex::SMFFGVertex() : _couplast(0.), _q2last(ZERO) {
   // PDG codes for the particles
-  vector<long> first,second,third;
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(21);
+    addToList(-ix,ix,21);
   }
-  setList(first,second,third);
+
 }
   
 void SMFFGVertex::doinit() {

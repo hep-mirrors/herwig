@@ -31,51 +31,44 @@ class MSSM: public SusyBase {
 public:
 
   /**
-   * The default constructor.
-   */
-  inline MSSM();
-
-public:
-
-  /**
    * Value of Higgs mixing angle \f$\alpha\f$.
    */
-  inline double higgsMixingAngle() const;
+  double higgsMixingAngle() const {return theAlpha;}
 
   /**
    * Value of up-type trilinear couplings
    */
-  inline const complex<Energy> & topTrilinear() const;
+  const complex<Energy> & topTrilinear() const {return theAtop;}
 
   /**
    * Value of down-type trilinear couplings
    */
-  inline const complex<Energy> & bottomTrilinear() const;
+  const complex<Energy> & bottomTrilinear() const {return theAbottom;}
 
   /**
    * Value of lepton trilinear couplings
    */
-  inline const complex<Energy> & tauTrilinear() const;
+  const complex<Energy> & tauTrilinear() const {return theAtau;}
 
   /**
    * The stop mixing matrix
    */
-  inline const MixingMatrixPtr & stopMix() const;
+  const MixingMatrixPtr & stopMix() const {return theStopMix;}
 
   /**
    * The sbottom chargino mixing matrix
    */
-  inline const MixingMatrixPtr & sbottomMix() const;
+  const MixingMatrixPtr & sbottomMix() const {return theSbotMix;}
 
   /**
    * The stau mixing matrix
    */
-  inline const MixingMatrixPtr & stauMix() const;
+  const MixingMatrixPtr & stauMix() const {return theStauMix;}
 
   /**
    * Mixing matrix for the neutral CP-even Higgs bosons
    */
-  inline const MixingMatrixPtr & CPevenHiggsMix() const;
+  const MixingMatrixPtr & CPevenHiggsMix() const {return theHiggsMix;}
 
 public:
 
@@ -111,13 +104,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -243,7 +236,5 @@ struct ClassTraits<Herwig::MSSM>
 /** @endcond */
 
 }
-
-#include "MSSM.icc"
 
 #endif /* HERWIG_MSSM_H */

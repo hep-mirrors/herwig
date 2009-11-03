@@ -23,6 +23,8 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
 
@@ -181,11 +183,11 @@ vector<tPDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
 						       unsigned int ilist,
 						       unsigned int iv) {
   int id = inpart->id();
-  if( id < 0 || !vert->incoming(id) || vert->getNpoint() != 3 )
+  if( id < 0 || !vert->isIncoming(inpart) || vert->getNpoint() != 3 )
     return tPDVector();
   Energy m1(inpart->mass());
   vector<tPDPtr> decaylist;
-  decaylist = vert->search(ilist,id);
+  decaylist = vert->search(ilist,inpart);
   tPDVector::size_type nd = decaylist.size();
   tPDVector decays;
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
@@ -219,6 +221,7 @@ void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
 						unsigned int ivert) {
   if(_theExistingDecayers[ivert][icol].empty()) {
     string name;
+    using namespace ThePEG::Helicity::VertexType;
     switch(vert->getName()) {
     case FFV : 
       name = "FFVCurrentDecayer";
@@ -227,29 +230,6 @@ void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
  						 << "vertex to create "
  						 << "decayer\n";
     }
-//     case VVS : {
-//       if( icol == 0 || icol == 1) 
-// 	name = "VVSDecayer";
-//       else 
-// 	name = "SVVDecayer";
-//     } 
-//       break;
-//     case GeneralSVV : {
-//       if(icol == 0) 
-// 	name = "SVVLoopDecayer";
-//     }
-//       break;
-//     case VSS : {
-//       if(icol == 0)
-// 	name = "VSSDecayer";
-//       else 
-// 	name = "SSVDecayer";
-//     }
-//       break;
-//     case VVT : {
-//       if(icol == 2)
-// 	name = "TVVDecayer";
-//     }
     ostringstream fullname;
     fullname << "/Herwig/Decays/" << name << "_" 
  	     << ivert << "_" << icol;

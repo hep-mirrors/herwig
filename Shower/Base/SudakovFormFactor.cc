@@ -289,13 +289,12 @@ SpinfoPtr SudakovFormFactor::getMapping(RhoDMatrix & rho, RhoDMatrix & mapping,
 	  sbasis.back().transform(rot);
 	}
 	// splitting basis
-	DiracRep dbasis(sbasis[0].Rep());
 	vector<LorentzSpinorBar<SqrtEnergy> > fbasis;
 	SpinorBarWaveFunction wave;
 	if(particle.id()>0)
-	  wave=SpinorBarWaveFunction(porig,particle.dataPtr(),outgoing,dbasis);
+	  wave=SpinorBarWaveFunction(porig,particle.dataPtr(),outgoing);
 	else
-	  wave=SpinorBarWaveFunction(porig,particle.dataPtr(),incoming,dbasis);
+	  wave=SpinorBarWaveFunction(porig,particle.dataPtr(),incoming);
 	for(unsigned int ix=0;ix<2;++ix) {
 	  wave.reset(ix);
 	  fbasis.push_back(wave.dimensionedWave());
