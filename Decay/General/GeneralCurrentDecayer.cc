@@ -92,18 +92,18 @@ void GeneralCurrentDecayer::doinit() {
   _modemap.clear();
   _modestart.clear();
   // extract the possible particles for the modes
-  vector<tPDPtr> all       = _theVertex->search(0,ParticleID::Wplus);
-  vector<tPDPtr> particles = _theVertex->search(1,ParticleID::Wplus);
-  for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
+  //  vector<tPDPtr> all       = _theVertex->search(0,ParticleID::Wplus);
+  vector<long> particles = _theVertex->search(1,ParticleID::Wplus);
+  //  for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
   particles =_theVertex->search(2,ParticleID::Wplus);
-  for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
+  //  for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
   _inpart.clear();
   _outpart.clear();
   while(!particles.empty()) {
     vector<tPDPtr> part;
     for(unsigned int ix=0;ix<3;++ix) {
-      if(abs(particles.back()->id())!=ParticleID::Wplus) 
-	part.push_back(particles.back());
+      if(abs(particles.back())!=ParticleID::Wplus) 
+	part.push_back(getParticleData(particles.back()));
       particles.pop_back();
     }
     if(part[0]->mass()<part[1]->mass()) swap(part[0],part[1]);

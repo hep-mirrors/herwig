@@ -22,8 +22,8 @@ using namespace Herwig;
 
 UEDG1G1G0Vertex::UEDG1G1G0Vertex() 
   : theq2Last(ZERO), theCoupLast(0.) {
-  vector<long> kkg1(1, 5100021);
-  setList(kkg1, kkg1, vector<long>(1, 21));
+  long kkg1 = 5100021;
+  addToList(kkg1, kkg1, 21);
 }
 
 void UEDG1G1G0Vertex::doinit() {
@@ -52,7 +52,7 @@ void UEDG1G1G0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theq2Last = q2;
       theCoupLast = strongCoupling(q2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
   }
   else throw HelicityLogicalError() 
     << "UEDG1G1G0Vertex::setCoupling - "

@@ -25,46 +25,27 @@ SSNFSVertex::SSNFSVertex() :  _sw(0.), _cw(0.), _mw(),
 			     _leftlast(0.), _rightlast(0.), _id1last(0), 
 			     _id2last(0),
 			      yukawa_(true) {
-  vector<long> first,second,third;
   long neut[5] = {1000022, 1000023, 1000025, 1000035, 1000045};
   for(unsigned int nl = 0; nl < 5; ++nl) {
     //quarks
     for(long ix=1;ix<7;++ix){
-      first.push_back(neut[nl]);
-      second.push_back(ix);
-      third.push_back(-(1000000+ix));
-      first.push_back(neut[nl]);
-      second.push_back(ix);
-      third.push_back(-(2000000+ix));
-
-      first.push_back(neut[nl]);
-      second.push_back(-ix);
-      third.push_back((1000000+ix));
-      first.push_back(neut[nl]);
-      second.push_back(-ix);
-      third.push_back((2000000+ix));
+      addToList( neut[nl],  ix, -(1000000+ix) );
+      addToList( neut[nl],  ix, -(2000000+ix) );
+      addToList( neut[nl], -ix,  (1000000+ix) );
+      addToList( neut[nl], -ix,  (2000000+ix) );
     }
     //leptons
-    for(long ix=11;ix<17;++ix){
-      first.push_back(neut[nl]);
-      second.push_back(ix);
-      third.push_back(-(1000000+ix));
-      first.push_back(neut[nl]);
-      second.push_back(-ix);
-      third.push_back((1000000+ix));
-      
+    for(long ix=11;ix<17;++ix) {
+      addToList( neut[nl],  ix, -(1000000+ix) );
+      addToList( neut[nl], -ix,  (1000000+ix) );
+     
       if( ix % 2 != 0 ) {
-	first.push_back(neut[nl]);
-	second.push_back(ix);
-	third.push_back(-(2000000+ix));
-	first.push_back(neut[nl]);
-	second.push_back(-ix);
-	third.push_back((2000000+ix));      
+	addToList( neut[nl],  ix, -(2000000+ix) );
+	addToList( neut[nl], -ix,  (2000000+ix) );
       }
     }
     
   }
-  setList(first,second,third);
 }
 
 void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
@@ -145,7 +126,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     _couplast = -sqrt(2)*weakCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
 
   if( ineut != _id1last || ism != _id2last || isc != _id3last ) {
     _id1last = ineut;
@@ -164,7 +145,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       break;
     case 1000045 : nl = 4;
       break;
-    default : {}
+    default : assert(false);
     }
     // common primed neutralino matrices
     Complex n2prime = (*_nmix)(nl,1)*_cw - (*_nmix)(nl,0)*_sw;
@@ -194,16 +175,18 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       }
       Complex bracketr = _sw*qf*n1prime - n2prime*lambda/_cw;
       
-      //heavy quarks
+      //heavy quarks/sleptons
       if( ism == 5 || ism == 6 || ism == 15 ) {
 	Complex ma1(0.), ma2(0.);
 	if( ism == 5 ) {
-	    ma1 = (*_sbot)(alpha,0);
-	    ma2 = (*_sbot)(alpha,1); 
-	} else if( ism == 6 ) {
+	  ma1 = (*_sbot)(alpha,0);
+	  ma2 = (*_sbot)(alpha,1); 
+	} 
+	else if( ism == 6 ) {
 	  ma1 = (*_stop)(alpha,0);
 	  ma2 = (*_stop)(alpha,1);
-	} else {
+	} 
+	else {
 	  ma1 = (*_stau)(alpha,0);
 	  ma2 = (*_stau)(alpha,1);
 	}
@@ -224,11 +207,11 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   }
   //determine the helicity order of the vertex
   if( smfermion->id() < 0 ) {
-    setLeft(conj(_rightlast));
-    setRight(conj(_leftlast));
+    left(conj(_rightlast));
+    right(conj(_leftlast));
   }
   else {
-    setLeft(_leftlast);
-    setRight(_rightlast);
+    left(_leftlast);
+    right(_rightlast);
   }
 }

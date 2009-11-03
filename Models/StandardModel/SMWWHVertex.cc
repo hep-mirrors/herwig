@@ -20,15 +20,9 @@ using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
   : _couplast(0.), _q2last(ZERO), _mw(ZERO), _zfact(0.) {
-  // particles
-  vector<long> first,second,third;
-  first.push_back(24);  
-  second.push_back(-24);
-  third.push_back(25);  
-  first.push_back(23);  
-  second.push_back(23); 
-  third.push_back(25);  
-  setList(first,second,third);
+
+  addToList(24,-24, 25);
+  addToList(23, 23, 25);
 }
 
 void SMWWHVertex::doinit() {
@@ -67,8 +61,8 @@ void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
     _couplast = weakCoupling(q2) * UnitRemoval::InvE * _mw;
     _q2last=q2;
   }
-  if(ibos==24)      setNorm(_couplast);
-  else if(ibos==23) setNorm(_couplast*_zfact);
+  if(ibos==24)      norm(_couplast);
+  else if(ibos==23) norm(_couplast*_zfact);
   else
     throw HelicityConsistencyError() << "SMWWHVertex::setCoupling "
 				     << "Invalid particles in WWH Vertex" 

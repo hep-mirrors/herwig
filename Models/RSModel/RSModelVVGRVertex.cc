@@ -38,17 +38,15 @@ void RSModelVVGRVertex::Init() {
 }
   
 void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
-  setNorm(Complex(UnitRemoval::E * _theKappa));
+  norm(Complex(UnitRemoval::E * _theKappa));
 }
 
 RSModelVVGRVertex::RSModelVVGRVertex() {
-  vector<long> first,second,third;
-  first.push_back(23);second.push_back( 23);third.push_back(39);
-  first.push_back(22);second.push_back( 22);third.push_back(39);
-  first.push_back(24);second.push_back(-24);third.push_back(39);
-  first.push_back(21);second.push_back( 21);third.push_back(39);
-  setList(first,second,third);
-  _theKappa=InvEnergy();
+  addToList(23,23,39);
+  addToList(22,22,39);
+  addToList(24,-24,39);
+  addToList(21,21,39);
+    _theKappa=InvEnergy();
 }
 
 void RSModelVVGRVertex::doinit() {

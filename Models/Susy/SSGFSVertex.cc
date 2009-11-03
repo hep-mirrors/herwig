@@ -21,28 +21,12 @@ using namespace Herwig;
 
 SSGFSVertex::SSGFSVertex() :_q2last(0.*GeV2),_couplast(0.), 
 			    _id1last(0), _id2last(0) {
-  vector<long> first,second,third;
   for(long ix=1;ix<7;++ix) {
-    first.push_back(1000021);
-    second.push_back(ix);
-    third.push_back(-(ix+1000000));
+    addToList(1000021, ix, -(ix+1000000));
+    addToList(1000021, ix, -(ix+2000000));
+    addToList(1000021, -ix, (ix+1000000));
+    addToList(1000021, -ix, (ix+2000000));
   }
-  for(long ix=1;ix<7;++ix) {
-    first.push_back(1000021);
-    second.push_back(ix);
-    third.push_back(-(ix+2000000));
-  }
-  for(long ix=1;ix<7;++ix) {
-    first.push_back(1000021);
-    second.push_back(-ix);
-    third.push_back(ix+1000000);
-  }
-  for(long ix=1;ix<7;++ix) {
-    first.push_back(1000021);
-    second.push_back(-ix);
-    third.push_back(ix+2000000);
-  }
-  setList(first,second,third);
 }
 
 void SSGFSVertex::persistentOutput(PersistentOStream & os) const {
@@ -132,15 +116,15 @@ void SSGFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
     }
   }
-  setNorm(_couplast);
+  norm(_couplast);
   //arrange l/r couplings
   if(ferm->id() < 0) {
-    setLeft(conj(_rightlast));
-    setRight(conj(_leftlast));
+    left(conj(_rightlast));
+    right(conj(_leftlast));
   }
   else {
-    setLeft(_leftlast);
-    setRight(_rightlast);
+    left(_leftlast);
+    right(_rightlast);
   }
 }
 

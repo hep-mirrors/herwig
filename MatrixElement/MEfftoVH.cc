@@ -183,7 +183,7 @@ double MEfftoVH::helicityME(vector<SpinorWaveFunction>    & fin ,
       // boson decay piece
       for(ohel1=0;ohel1<2;++ohel1) {
 	for(ohel2=0;ohel2<2;++ohel2) {
-	  diag = vertex->evaluate(sqr(inter[1].getParticle()->mass()),
+	  diag = vertex->evaluate(sqr(inter[1].particle()->mass()),
 				  aout[ohel2],fout[ohel1],inter[1]);
 	  me += norm(diag);
 	  if(calc) menew(ihel1,ihel2,0,ohel1,ohel2) = diag;

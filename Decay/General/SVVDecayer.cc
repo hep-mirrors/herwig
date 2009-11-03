@@ -126,7 +126,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second,outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->getNorm())*
+    Energy output = norm(_perturbativeVertex->norm())*
       me2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
@@ -159,7 +159,7 @@ Energy SVVDecayer::partialWidth(PMPair inpart, PMPair outa,
 						    - mu2sq*(a12+a21-2.*a22)
 						    + a21 + a12) + 8.*a00*a00;
     me2 /= 2;
-    Energy output = norm(_generalVertex->getNorm())*me2.real()*pcm
+    Energy output = norm(_generalVertex->norm())*me2.real()*pcm
       /(8.*Constants::pi)/scale*UnitRemoval::E2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);

@@ -20,22 +20,14 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
-  vector<long> first,second,third,fourth;
   //L-L squarks
   for(long ix=1000001;ix<1000007;++ix) {
-    first.push_back(21);
-    second.push_back(21);
-    third.push_back(ix);
-    fourth.push_back(-ix);
+    addToList(21,21,ix,-ix);
   }
   //R-R squarks
   for(long ix=2000001;ix<2000007;++ix) {
-    first.push_back(21);
-    second.push_back(21);
-    third.push_back(ix);
-    fourth.push_back(-ix);
+    addToList(21,21,ix,-ix);
   }
-  setList(first,second,third,fourth);
 }
 
 NoPIOClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;
@@ -54,7 +46,7 @@ void SSGGSQSQVertex::setCoupling(Energy2 q2, tcPDPtr, tcPDPtr, tcPDPtr,
     _couplast = sqr(strongCoupling(q2));
     _q2last = q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
 }
 
 void SSGGSQSQVertex::doinit() {

@@ -21,8 +21,8 @@ using namespace Herwig;
 
 UEDG0G0G1G1Vertex::UEDG0G0G1G1Vertex() : 
   theq2Last(ZERO), theCoupLast(0.) {
-  vector<long> kk1g(1, 5100021), smgl(1, 21);
-  setList(smgl, smgl, kk1g, kk1g);
+  long kk1g = 5100021, smgl = 21;
+  addToList(smgl, smgl, kk1g, kk1g);
 }
 
 void UEDG0G0G1G1Vertex::doinit() {
@@ -57,7 +57,7 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theq2Last = q2;
       theCoupLast = sqr(strongCoupling(q2));
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
     setType(1); setOrder(0,1,2,3);
   }
   else {
@@ -66,6 +66,6 @@ void UEDG0G0G1G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << part1->id() << " " << part2->id() << " " 
 				 << part3->id() << " " << part4->id()
 				 << Exception::warning;
-    setNorm(0.);
+    norm(0.);
   }
 }

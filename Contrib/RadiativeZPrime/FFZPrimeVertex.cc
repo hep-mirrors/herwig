@@ -31,12 +31,12 @@ void FFZPrimeVertex::Init() {
 }
 
 void FFZPrimeVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
-  setNorm(1.);
+  norm(1.);
   // the left and right couplings
   int iferm=abs(a->id());
   if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-    setLeft(_gl[iferm]);
-    setRight(_gr[iferm]);
+    left(_gl[iferm]);
+    right(_gr[iferm]);
   }
   else
     throw HelicityConsistencyError() << "FFZPrimeVertex::setCoupling "
@@ -59,7 +59,7 @@ FFZPrimeVertex::FFZPrimeVertex() : _gl(17,0.0), _gr(17,0.0) {
     second.push_back(ix);
     third.push_back(32);
   }
-  setList(first,second,third);
+  addToList(first,second,third);
 }
 
 void FFZPrimeVertex::doinit() {

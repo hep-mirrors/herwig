@@ -118,7 +118,7 @@ Energy TVVDecayer::partialWidth(PMPair inpart, PMPair outa,
     else 
       me2 = scale/10.;
     
-    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm
+    Energy output = norm(_perturbativeVertex->norm())*me2*pcm
       /(8.*Constants::pi)*UnitRemoval::InvE2;
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);

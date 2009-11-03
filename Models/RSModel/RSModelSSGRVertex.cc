@@ -20,9 +20,7 @@ using namespace Herwig;
 using namespace ThePEG;
 
 RSModelSSGRVertex::RSModelSSGRVertex() {
-  vector<long> first,second,third;
-  first.push_back(25);second.push_back(25);third.push_back(39);
-  setList(first,second,third);
+  addToList(25,25,39);
   _theKappa=InvEnergy();
 }
 
@@ -53,5 +51,5 @@ void RSModelSSGRVertex::Init() {
 }
 
 void RSModelSSGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
-    setNorm(Complex(_theKappa * UnitRemoval::E));
+    norm(Complex(_theKappa * UnitRemoval::E));
 }

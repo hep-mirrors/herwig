@@ -38,19 +38,15 @@ void RSModelFFGRVertex::Init() {
 }
   
 void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
-  setNorm(Complex(_theKappa * UnitRemoval::E));
+  norm(Complex(_theKappa * UnitRemoval::E));
 }
 
 RSModelFFGRVertex::RSModelFFGRVertex() {
   // PDG codes for the particles
-  vector<long> first,second,third;
   // the quarks
-  for(int ix=1;ix<7;++ix)
-    {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
+  for (int ix=1;ix<7;++ix) addToList(-ix,ix,39);
   // the leptons
-  for(int ix=11;ix<17;++ix)
-    {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
-  setList(first,second,third);
+  for (int ix=11;ix<17;++ix) addToList(-ix,ix,39);
   _theKappa=InvEnergy();
 }
 

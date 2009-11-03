@@ -114,8 +114,8 @@ Energy SFFDecayer::partialWidth(PMPair inpart, PMPair outa,
     _perturbativeVertex->setCoupling(sqr(inpart.second), outb.first, outa.first,
 				     inpart.first);
     double mu1(outa.second/inpart.second),mu2(outb.second/inpart.second);
-    double c2 = norm(_perturbativeVertex->getNorm());
-    Complex al(_perturbativeVertex->getLeft()), ar(_perturbativeVertex->getRight());
+    double c2 = norm(_perturbativeVertex->norm());
+    Complex al(_perturbativeVertex->left()), ar(_perturbativeVertex->right());
     double me2 = -c2*( (norm(al) + norm(ar))*( sqr(mu1) + sqr(mu2) - 1.)
 		       + 2.*(ar*conj(al) + al*conj(ar)).real()*mu1*mu2 );
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,

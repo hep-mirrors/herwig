@@ -35,16 +35,8 @@ void UEDW0A1H1Vertex::doinit() {
 
 UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theMw2(), theMz2(), theR2(), 
 				     theq2Last(), theCoupLast(0.) {
-  vector<long> wboson(2), higgsA(2), higgsH(2);
-  wboson[0] = 24;
-  higgsA[0] = 5100036;
-  higgsH[0] = -5100037;
-  
-  wboson[1] = -24;
-  higgsA[1] = 5100036;
-  higgsH[1] = 5100037;
-  
-  setList(wboson, higgsA, higgsH);
+  addToList( 24, 5100036, -5100037);
+  addToList(-24, 5100036,  5100037);
 }
 
 void UEDW0A1H1Vertex::persistentOutput(PersistentOStream & os) const {
@@ -90,7 +82,7 @@ void UEDW0A1H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theCoupLast *= ( 0.5 + mwRs )/denom;
     }
     if(chiggs > 0) theCoupLast *= -1.;
-    setNorm(theCoupLast);
+    norm(theCoupLast);
   }
   else
     throw HelicityLogicalError() << "UEDW0A1H1Vertex::setCoupling - "

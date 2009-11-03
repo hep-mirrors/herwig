@@ -43,12 +43,12 @@ void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
   int iferm=abs(aa->id());
   if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
-    setLeft(_gl[iferm]);
-    setRight(_gr[iferm]);
+    left(_gl[iferm]);
+    right(_gr[iferm]);
   }
   else
     throw HelicityConsistencyError() << "SMFFZVertex::setCoupling "
@@ -59,20 +59,14 @@ void SMFFZVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr,tcPDPtr) {
 SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
 			     _couplast(0.0), _q2last(ZERO) {
   // PDG codes for the particles
-  vector<long> first,second,third;
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(23);
+    addToList(-ix, ix, 23);
   }
   // the leptons
   for(int ix=11;ix<17;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(23);
+    addToList(-ix, ix, 23);
   }
-  setList(first,second,third);
 }
 
 void SMFFZVertex::doinit() {

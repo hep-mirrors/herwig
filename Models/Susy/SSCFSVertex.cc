@@ -25,78 +25,48 @@ SSCFSVertex::SSCFSVertex(): _sb(0.),_cb(0.),_mw(ZERO),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0),
 			    yukawa_(true) {
-  vector<long> first,second,third;
   long chargino[2] = {1000024, 1000037};
   for(unsigned int ic = 0; ic < 2; ++ic) {
     //quarks 
     for(long ix = 1; ix < 7; ++ix) {
       if( ix % 2 == 0 ) {
-	first.push_back(-chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(999999+ix));
+	addToList(-chargino[ic],ix,-(999999+ix));
 	
-	first.push_back(-chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(1999999+ix));
+	addToList(-chargino[ic],ix,-(1999999+ix));
 	
-	first.push_back(-ix);
-	second.push_back(chargino[ic]);
-	third.push_back((999999+ix));
+	addToList(-ix,chargino[ic],(999999+ix));
 	
-	first.push_back(-ix);
-	second.push_back(chargino[ic]);
-	third.push_back((1999999+ix));
+	addToList(-ix,chargino[ic],(1999999+ix));
       }
       else {
-	first.push_back(-chargino[ic]);
-	second.push_back(-ix);
-	third.push_back((1000001+ix));
+	addToList(-chargino[ic],-ix,(1000001+ix));
 
-	first.push_back(-chargino[ic]);
-	second.push_back(-ix);
-	third.push_back(2000001+ix);
+	addToList(-chargino[ic],-ix,2000001+ix);
 
-	first.push_back(chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(1000001+ix));
+	addToList(chargino[ic],ix,-(1000001+ix));
 
-	first.push_back(chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(2000001+ix));
+	addToList(chargino[ic],ix,-(2000001+ix));
       }
     }
     //leptons
     for(long ix = 11; ix < 17; ++ix) {
       if( ix % 2 == 0 ) {
-	first.push_back(-chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(999999+ix));
+	addToList(-chargino[ic],ix,-(999999+ix));
       
-	first.push_back(-chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(1999999+ix));
+	addToList(-chargino[ic],ix,-(1999999+ix));
 
-	first.push_back(-ix);
-	second.push_back(chargino[ic]);
-	third.push_back((999999+ix));
+	addToList(-ix,chargino[ic],(999999+ix));
 
-	first.push_back(-ix);
-	second.push_back(chargino[ic]);
-	third.push_back((1999999+ix));	
+	addToList(-ix,chargino[ic],(1999999+ix));	
       }
       else {
-	first.push_back(-chargino[ic]);
-	second.push_back(-ix);
-	third.push_back(1000001+ix);
+	addToList(-chargino[ic],-ix,1000001+ix);
 
-	first.push_back(chargino[ic]);
-	second.push_back(ix);
-	third.push_back(-(1000001+ix));
+	addToList(chargino[ic],ix,-(1000001+ix));
       }
     }
   } 
   //chargino loop
-  setList(first,second,third);
 }
 
 void SSCFSVertex::doinit() {
@@ -177,7 +147,7 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
     _q2last=q2;
     _couplast = -weakCoupling(q2);
   }
-  setNorm(_couplast);
+  norm(_couplast);
 
 
   if( ichg != _id1last || ism != _id2last || isc != _id3last ) {
@@ -249,11 +219,11 @@ void SSCFSVertex::setCoupling(Energy2 q2, tcPDPtr part1,
 
   //determine the helicity order of the vertex
   if( smfermion->id() < 0 ) {
-    setLeft(conj(_rightlast));
-    setRight(conj(_leftlast));
+    left(conj(_rightlast));
+    right(conj(_leftlast));
   }
   else {
-    setLeft(_leftlast);
-    setRight(_rightlast);
+    left(_leftlast);
+    right(_rightlast);
   }
 }

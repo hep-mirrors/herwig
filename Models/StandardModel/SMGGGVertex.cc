@@ -21,11 +21,7 @@ using namespace ThePEG;
 
 SMGGGVertex::SMGGGVertex() : _couplast(0.), _q2last(0.*GeV2) {
   // the particles
-  vector<long> first,second,third;
-  first.push_back(21);
-  second.push_back(21);
-  third.push_back(21);
-  setList(first,second,third);
+  addToList(21,21,21);
 }
 
 void SMGGGVertex::doinit() {
@@ -51,5 +47,5 @@ void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr) {
     _couplast = strongCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
 }

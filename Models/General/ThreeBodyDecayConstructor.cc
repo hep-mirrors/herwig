@@ -296,9 +296,9 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 vector<TwoBodyPrototype> ThreeBodyDecayConstructor::
 createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
   int id = inpart->id();
-  if( id < 0 || !vertex->incoming(id) || vertex->getNpoint() != 3 )
+  if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return vector<TwoBodyPrototype>();
-  tPDVector decaylist = vertex->search(list, id);
+  tPDVector decaylist = vertex->search(list, inpart);
   vector<TwoBodyPrototype> decays;
   tPDVector::size_type nd = decaylist.size();
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
@@ -323,8 +323,8 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
     tPDPtr other = proto.outgoing.second;
     if(ix==1) swap(dec,other);
     int id = dec->id();
-    if( !vertex->incoming(id) ) continue;
-    tPDVector decaylist = vertex->search(list, id);
+    if( !vertex->isIncoming(dec) ) continue;
+    tPDVector decaylist = vertex->search(list, dec);
     tPDVector::size_type nd = decaylist.size();
     for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
       tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);

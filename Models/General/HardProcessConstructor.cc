@@ -78,7 +78,7 @@ void HardProcessConstructor::doinit() {
   //create vector of initial-state pairs
   for(PDVector::size_type i = 0; i < ninc; ++i) {
     for(PDVector::size_type j = 0; j < ninc; ++j) {
-      tcPDPair inc = make_pair(theIncoming[i], theIncoming[j]);
+      tPDPair inc = make_pair(theIncoming[i], theIncoming[j]);
       
       if( (inc.first->iSpin() > inc.second->iSpin()) ||
 	  (inc.first->iSpin() == inc.second->iSpin() &&
@@ -117,8 +117,8 @@ namespace {
   // Helper functor for find_if in duplicate function.
   class SameIncomingAs {
   public:
-    SameIncomingAs(tcPDPair in) : a(in.first->id()), b(in.second->id())  {}
-    bool operator()(tcPDPair ppair) const {
+    SameIncomingAs(tPDPair in) : a(in.first->id()), b(in.second->id())  {}
+    bool operator()(tPDPair ppair) const {
       long id1(ppair.first->id()), id2(ppair.second->id());
       return ( id1 == a && id2 == b ) || ( id1 == b && id2 == a );
     }
@@ -127,8 +127,8 @@ namespace {
   };
 }
 
-bool HardProcessConstructor::duplicate(tcPDPair ppair) const {
-  vector<tcPDPair>::const_iterator it = 
+bool HardProcessConstructor::duplicate(tPDPair ppair) const {
+  vector<tPDPair>::const_iterator it = 
     find_if( theIncPairs.begin(), theIncPairs.end(), SameIncomingAs(ppair) );
   return it != theIncPairs.end(); 
 }
@@ -274,7 +274,7 @@ void HardProcessConstructor::constructDiagrams() {
   vector<tcPDPair>::size_type is;
   PDVector::size_type os;
   for(is = 0; is < theIncPairs.size(); ++is) {
-    tcPDPair ppi = theIncPairs[is]; 
+    tPDPair ppi = theIncPairs[is]; 
     for(os = 0; os < theNout; ++os) { 
       long fs = theOutgoing[os]->id();
       for(size_t iv = 0; iv < theNv; ++iv) {
@@ -291,8 +291,8 @@ void HardProcessConstructor::constructDiagrams() {
 	  createTChannels(ppi, fs, vertexA);
 	  
 	  //resonance diagrams
-	  if( vertexA->incoming(ppi.first->id()) &&  
-	      vertexA->incoming(ppi.second->id()) )
+	  if( vertexA->isIncoming(ppi.first) &&  
+	      vertexA->isIncoming(ppi.second) )
 	    createSChannels(ppi, fs, vertexA);
 	}
 	else 
@@ -356,8 +356,8 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) continue;
       
       tPDSet final;
-      if( vertexB->outgoing(fs) &&
-	  vertexB->incoming((*it)->id()) )
+      if( vertexB->isOutgoing(getParticleData(fs)) &&
+	  vertexB->isIncoming(*it) )
 	final = search(vertexB, (*it)->id(), incoming, fs,
 		       outgoing, outgoing);
       //Now make diagrams
@@ -370,7 +370,7 @@ createSChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 }
 
 void HardProcessConstructor::
-createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
+createTChannels(tPDPair inpp, long fs, tVertexBasePtr vertex) {
   pair<long,long> inc = make_pair(inpp.first->id(), inpp.second->id());
   //first try a with c
   tPDSet offshells = search(vertex, inpp.first->id(), incoming, fs,
@@ -384,7 +384,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
        if( (vertexB->orderInGs() + vertexB->orderInGem() == 3) ||
 	   (!theAllDiagrams && vertexB->orderInGs() == 0 ) ) continue;
        tPDSet final;
-       if( vertexB->incoming(inc.second) )
+       if( vertexB->isIncoming(inpp.second) )
 	 final = search(vertexB, inc.second, incoming, (*it)->id(),
 			incoming, outgoing);
        if( !final.empty() )
@@ -404,7 +404,7 @@ createTChannels(tcPDPair inpp, long fs, tVertexBasePtr vertex) {
 	  (!theAllDiagrams && vertexB->orderInGs() == 0) ) continue;
 
        tPDSet final;
-       if( vertexB->incoming(inc.first) )
+       if( vertexB->isIncoming(inpp.first) )
 	 final = search(vertexB, inc.first, incoming, (*it)->id(),
 			outgoing, outgoing);
        if( !final.empty() )
@@ -477,16 +477,16 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
   if(vertex->getNpoint() != 3) return tPDSet();
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
-  tPDVector ext;
+  vector<long> ext;
   tPDSet third;
   for(unsigned int ix = 0;ix < 3; ++ix) {
-    tPDVector pdlist = vertex->search(ix, part1);
+    vector<long> pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0; ix < ext.size(); ix += 3) {
-    long id0 = ext.at(ix)->id();
-    long id1 = ext.at(ix+1)->id();
-    long id2 = ext.at(ix+2)->id();
+    long id0 = ext.at(ix);
+    long id1 = ext.at(ix+1);
+    long id2 = ext.at(ix+2);
     int pos;
     if((id0 == part1 && id1 == part2) ||
        (id0 == part2 && id1 == part1))
@@ -500,8 +500,9 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
     else
       pos = -1;
     if(pos >= 0) {
-      if(d3 == incoming && ext[pos]->CC()) ext[pos] = ext[pos]->CC();
-      third.insert(ext[pos]);
+      tPDPtr p = getParticleData(ext[pos]);
+      if(d3 == incoming && p->CC()) p = p->CC();
+      third.insert(p);
     }
   }
   
@@ -516,15 +517,15 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
   if(d3 == incoming && getParticleData(part3)->CC()) part3 = -part3;
-  tPDVector ext;
+  vector<long> ext;
   tPDSet fourth;
   for(unsigned int ix = 0;ix < 4; ++ix) {
-    tPDVector pdlist = vertex->search(ix, part1);
+    vector<long> pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0;ix < ext.size(); ix += 4) {
-    long id0 = ext.at(ix)->id(); long id1 = ext.at(ix + 1)->id();
-    long id2 = ext.at(ix + 2)->id(); long id3 = ext.at(ix + 3)->id();
+    long id0 = ext.at(ix); long id1 = ext.at(ix + 1);
+    long id2 = ext.at(ix + 2); long id3 = ext.at(ix + 3);
     int pos;
     if((id0 == part1 && id1 == part2 && id2 == part3) ||
        (id0 == part1 && id1 == part3 && id2 == part2) ||
@@ -558,9 +559,10 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
       pos = -1;
     
     if(pos >= 0) {
-      if(d4 == incoming && ext[pos]->CC()) 
-	ext[pos] = ext[pos]->CC();
-      fourth.insert(ext[pos]);
+      tPDPtr p = getParticleData(ext[pos]);
+      if(d4 == incoming && p->CC()) 
+	p = p->CC();
+      fourth.insert(p);
     }
   } 
   return fourth;

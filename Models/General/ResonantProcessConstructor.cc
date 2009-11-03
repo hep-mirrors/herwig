@@ -202,16 +202,16 @@ ResonantProcessConstructor::search(VBPtr vertex, long part1, direction d1,
 				   long part2, direction d2, direction d3) {
   if(d1 == incoming && getParticleData(part1)->CC()) part1 = -part1;
   if(d2 == incoming && getParticleData(part2)->CC()) part2 = -part2;
-  tPDVector ext;
+  vector<long> ext;
   tPDSet third;
   for(unsigned int ix = 0;ix < 3; ++ix) {
-    tPDVector pdlist = vertex->search(ix, part1);
+    vector<long> pdlist = vertex->search(ix, part1);
     ext.insert(ext.end(), pdlist.begin(), pdlist.end());
   }
   for(unsigned int ix = 0; ix < ext.size(); ix += 3) {
-    long id0 = ext.at(ix)->id();
-    long id1 = ext.at(ix+1)->id();
-    long id2 = ext.at(ix+2)->id();
+    long id0 = ext.at(ix);
+    long id1 = ext.at(ix+1);
+    long id2 = ext.at(ix+2);
     int pos;
     if((id0 == part1 && id1 == part2) ||
        (id0 == part2 && id1 == part1))
@@ -225,8 +225,9 @@ ResonantProcessConstructor::search(VBPtr vertex, long part1, direction d1,
     else
       pos = -1;
     if(pos >= 0) {
-      if(d3 == incoming && ext.at(pos)->CC()) ext.at(pos) = ext.at(pos)->CC();
-      third.insert(ext.at(pos));
+      tPDPtr p = getParticleData(ext[pos]);
+      if(d3 == incoming && p->CC()) p = p->CC();
+      third.insert(p);
     }
   }
   

@@ -30,20 +30,14 @@ IBPtr SMFFHVertex::fullclone() const {
 
 SMFFHVertex::SMFFHVertex()  {
   // PDG codes for the particles
-  vector<long> first,second,third;
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(25);
+    addToList(-ix, ix, 25);
   }
   // the leptons
   for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(25);
+    addToList(-ix, ix, 25);
   }
-  setList(first,second,third);
   // set up for the couplings
   _couplast=InvEnergy();
   _idlast=0;
@@ -86,7 +80,7 @@ void SMFFHVertex::Init() {
 void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
   int iferm=abs(aa->id());
   // left and right couplings set to one
-  setLeft(1.); setRight(1.);
+  left(1.); right(1.);
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0./GeV) {
     _couplast = -0.5*weakCoupling(q2)/_mw;
@@ -114,5 +108,5 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr aa,tcPDPtr, tcPDPtr) {
       _masslast = ZERO;
     }
   }
-  setNorm(_couplast*_masslast);
+  norm(_couplast*_masslast);
 }

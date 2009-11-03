@@ -26,37 +26,21 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(ZERO),
 			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
 			     theLLast(0.0), theRLast(0.0), theHLast(0), 
 			     theFLast(0), theGlast(0.), theq2last() {
-  vector<long> first, second, third;
-  for(long h = 0; h < 3; ++h) {
+  int higgs[] = { 25, 35, 36 };
+  for ( long h = 0; h < 3; ++h ) {
     //neutral higgs
-    int higgs = h==0 ? 25 : 35;
-    if( h == 2 ) ++higgs;
     //3rd generation quarks
-    for(long i = 5; i < 7; ++i) {
-      first.push_back(-i);
-      second.push_back(i);
-      third.push_back(higgs);
-    }
+    addToList(-5,5,higgs[h]);
+    addToList(-6,6,higgs[h]);
     //tau lepton
-    first.push_back(-15);
-    second.push_back(15);
-    third.push_back(higgs);
+    addToList(-15,15,higgs[h]);
   }
   //outgoing H+
-  first.push_back(-6);
-  second.push_back(5);
-  third.push_back(37);
-  first.push_back(-16);
-  second.push_back(15);
-  third.push_back(37);
+  addToList(-6 , 5, 37);
+  addToList(-16,15, 37);
   //outgoing H-
-  first.push_back(-5);
-  second.push_back(6);
-  third.push_back(-37);
-  first.push_back(-15);
-  second.push_back(16);
-  third.push_back(-37);
-  setList(first, second, third);
+  addToList(-5 ,6 ,-37);
+  addToList(-15,16,-37);
 }
 
 void SSFFHVertex::doinit() {
@@ -100,54 +84,22 @@ void SSFFHVertex::Init() {
 
 void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
 			      tcPDPtr particle2,tcPDPtr particle3) {
-  long id1(abs(particle1->id())), id2(abs(particle2->id())), 
-    id3(abs(particle3->id())), higgsID(0), f1ID(0), f2ID(0);
-  if( id1 == ParticleID::h0 || id1 == ParticleID::H0 || 
-      id1 == ParticleID::A0 || id1 == ParticleID::Hplus ) {
-    higgsID = id1;
-    f1ID = id2;
-    f2ID = id3;
-  }
-  else if( id2 == ParticleID::h0 || id2 == ParticleID::H0 || 
-	   id2 == ParticleID::A0 || id2 == ParticleID::Hplus  ) {
-    higgsID = id2;
-    f1ID = id1;
-    f2ID = id3;
-  }
-  else if( id3 == ParticleID::h0 || id3 == ParticleID::H0 || 
-	   id3 == ParticleID::A0 || id3 == ParticleID::Hplus ) {
-    higgsID = id3;
-    f1ID = id1;
-    f2ID = id2;
-  }
-  else {
-    throw HelicityConsistencyError() 
-      << "SSFFHVertex::setCoupling - There is no higgs particle in "
-      << "this vertex. Particles: " << id1 << " " << id2 << " " << id3
-      << Exception::warning;
-    return;
-  }
-  
-  if( ((f1ID > 6 && f1ID < 11) || f1ID > 16 ) ||
-      ((f2ID > 6 && f1ID < 11) || f2ID > 16 ) ) {
-    throw HelicityConsistencyError() 
-      << "SSFFHVertex::setCoupling - The particles in this vertex " 
-      << " are not SM fermions " << f1ID << " " << f2ID 
-      << Exception::warning;
-    setNorm(0.);
-    setLeft(0.);
-    setRight(0.);
-    return;
-  }
+  long f1ID(abs(particle1->id())), f2ID(abs(particle2->id())), 
+    higgsID(particle3->id());
+  // check higgs
+  assert( higgsID == ParticleID::h0 ||     higgsID  == ParticleID::H0 || 
+	  higgsID == ParticleID::A0 || abs(higgsID) == ParticleID::Hplus );
+  // check fermions
+  assert(!( ((f1ID > 6 && f1ID < 11) || f1ID > 16 ) ||
+	    ((f2ID > 6 && f1ID < 11) || f2ID > 16 ) ));
   if( q2 != theq2last || theGlast==0.) {
     theGlast = weakCoupling(q2);
     theq2last = q2;
   }
-
   if(higgsID == theHLast && f1ID == theFLast) {
-    setNorm(theGlast*theCoupLast);
-    setLeft(theLLast);
-    setRight(theRLast);
+    norm(theGlast*theCoupLast);
+    left(theLLast);
+    right(theRLast);
     return;
   }
   theHLast = higgsID;
@@ -185,15 +137,20 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   }
   //H+
   else {
-    if( id1 % 2 != 0 ) swap(f1ID, f2ID);
+    if( f1ID % 2 != 0 ) swap(f1ID, f2ID);
     theFLast = f1ID;
     theCoupLast = 1./sqrt(2);
     theLLast = getParticleData(f1ID)->mass()/thetanb/theMw;
     theRLast = getParticleData(f2ID)->mass()*thetanb/theMw;
+    if( higgsID < 0 ) {
+      Complex tmp = theLLast;
+      theLLast = conj(theRLast);
+      theRLast = conj(tmp);
+    }
   }
-  setNorm(theGlast*theCoupLast);
-  setLeft(theLLast);
-  setRight(theRLast);
+  norm(theGlast*theCoupLast);
+  left(theLLast);
+  right(theRLast);
 
 }
 
