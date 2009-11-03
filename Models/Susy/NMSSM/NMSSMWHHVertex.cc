@@ -16,54 +16,35 @@ using namespace ThePEG::Helicity;
 
 NMSSMWHHVertex::NMSSMWHHVertex() : _sinb(0.), _cosb(0.), _sw(0.), _cw(0.),
 				   _q2last(0.*MeV2), _couplast(0.) {
-  // PDG codes for the particles in the vertex
-  vector<long> first,second,third;
   // codes for the neutral higgs
   //CP even
   int ieven[3]={25,35,45};
   //CP odd
   int iodd [2]={36,46};
   // Z CP even CP odd
-  for(unsigned int ix=0;ix<3;++ix) {
-    for(unsigned int iy=0;iy<2;++iy) {
-      first.push_back(23);
-      second.push_back(ieven[ix]);
-      third.push_back(iodd [iy]);
-    }
-  }
+  for(unsigned int ix=0;ix<3;++ix)
+    for(unsigned int iy=0;iy<2;++iy)
+      addToList( 23, ieven[ix], iodd[iy] );
+
   // W H+ CP even
-  for(unsigned int ix=0;ix<3;++ix) {
-    first.push_back(-24);
-    second.push_back(37);
-    third.push_back(ieven[ix]);
-  }
+  for(unsigned int ix=0;ix<3;++ix)
+    addToList( -24, 37, ieven[ix] );
+
    // W+ H- CP even
-  for(unsigned int ix=0;ix<3;++ix) {
-    first.push_back(24);
-    second.push_back(-37);
-    third.push_back(ieven[ix]);
-  }
+  for(unsigned int ix=0;ix<3;++ix)
+    addToList( 24, -37, ieven[ix] );
+
   // W H+ CP odd
-  for(unsigned int ix=0;ix<2;++ix) {
-    first.push_back(-24);
-    second.push_back(37);
-    third.push_back(iodd[ix]);
-  }
+  for(unsigned int ix=0;ix<2;++ix)
+    addToList( -24, 37, iodd[ix] );
+
   //W+ H- CP odd
-  for(unsigned int ix=0;ix<2;++ix) {
-    first.push_back(24);
-    second.push_back(-37);
-    third.push_back(iodd[ix]);
-  }
+  for(unsigned int ix=0;ix<2;++ix)
+    addToList( 24, -37, iodd[ix] );
+
   // Charged higgs Z/gamma
-  first.push_back(22);
-  second.push_back(37);
-  third.push_back(-37);
-  first.push_back(23);
-  second.push_back(37);
-  third.push_back(-37);
-  // add list
-  setList(first,second,third);
+  addToList( 22, 37, -37 );
+  addToList( 23, 37, -37 );
 }
 
 void NMSSMWHHVertex::doinit() {
@@ -170,5 +151,5 @@ void NMSSMWHHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     }
   }
   //output the coupling
-  setNorm(_couplast*fact);
+  norm(_couplast*fact);
 }

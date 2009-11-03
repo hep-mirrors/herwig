@@ -48,70 +48,44 @@ LHTPFFPVertex::LHTPFFPVertex() :
   _charge(37,0.0), _couplast(0.), _q2last(-1.*GeV2),
   _coupd(0.), _coupu(0.), _coupe(0.), _coupnu(0.),
   _tmtpL(0.), _tmtpR(0.), _tmtL(0.), _tmtR(0.) {
-  // PDG codes for the particles
-  vector<long> first, second;
   // interactions with the photon
   // the quarks
   for(unsigned int ix = 1; ix < 7; ++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
+    addToList(-ix,    ix, 22);
   }
   // the leptons
   for(unsigned int ix = 11; ix < 17; ix += 2) {
-    first.push_back(-ix);
-    second.push_back(ix);
+    addToList(-ix,    ix, 22);
   }
   // extra top quark
-  first.push_back(-8);
-  second.push_back(8);
+  addToList(-8,   8, 22);
   // the T-odd quarks
   for(long ix = 4000001;ix < 4000007; ++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
+    addToList(-ix,     ix, 22);
   }
   // the T-odd leptons
   for(long ix = 4000011; ix < 4000017; ix += 2) {
-    first.push_back(-ix);
-    second.push_back(ix);
+    addToList(-ix,    ix, 22);
   }
   // extra top quark
-  first.push_back(-4000008);
-  second.push_back(4000008);
-  vector<long> third(first.size(),22);
+  addToList(-4000008,  4000008, 22);
   // interactions with A_H
   // quark and T-odd quark
   for(int ix = 1; ix < 7; ++ix) {
-    first.push_back(-ix - 4000000);
-    second.push_back(ix);
-    third.push_back(32);
-    first.push_back(-ix);
-    second.push_back(ix + 4000000);
-    third.push_back(32);
+    addToList(-ix - 4000000,    ix,    32);
+    addToList(-ix,    ix + 4000000,    32);
   }
   // leptons and T-odd leptons
   for(int ix = 11; ix < 17; ix += 2) {
-    first.push_back(-ix - 4000000);
-    second.push_back(ix);
-    third.push_back(32);
-    first.push_back(-ix);
-    second.push_back(ix + 4000000);
-    third.push_back(32);
+    addToList(-ix - 4000000,    ix,    32);
+    addToList(-ix,    ix + 4000000,    32);
   }
   // T+T-A_H
-  first .push_back(-4000008);
-  second.push_back(       8);
-  third .push_back(      32);
-  first .push_back( 4000008);
-  second.push_back(      -8);
-  third .push_back(      32);
+  addToList(-4000008,         8,        32);
+  addToList( 4000008,        -8,        32);
   // T-tA_H
-  first .push_back(-4000008);
-  second.push_back(       6);
-  third .push_back(      32);
-  first .push_back( 4000008);
-  second.push_back(      -6);
-  third .push_back(      32);
-  setList(first,second,third);
+  addToList(-4000008,         6,        32);
+  addToList( 4000008,        -6,        32);
 }
 
 void LHTPFFPVertex::doinit() {
@@ -159,18 +133,18 @@ void LHTPFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
   long iferm=abs(a->id()),ibos(c->id());
   if(ibos == ParticleID::gamma) {
     if(iferm < 20) {
-      setLeft(_charge[iferm]);
-      setRight(_charge[iferm]);
+      left(_charge[iferm]);
+      right(_charge[iferm]);
     }
     else {
       iferm-=3999980;
-      setLeft(_charge[iferm]);
-      setRight(_charge[iferm]);
+      left(_charge[iferm]);
+      right(_charge[iferm]);
     }
   }
   else {
@@ -178,22 +152,22 @@ void LHTPFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
     iferm = iferm % 4000000;
     if(iferm == 8) {
       if(ianti == 8) {
-	setLeft (_tmtpL);
-	setRight(_tmtpR);
+	left (_tmtpL);
+	right(_tmtpR);
       }
       else {
-	setLeft (_tmtL);
-	setRight(_tmtR);
+	left (_tmtL);
+	right(_tmtR);
       }
     }
     if(iferm <= 6) {
-      if(iferm % 2 == 0) setLeft(_coupu );
-      else setLeft(_coupd );
+      if(iferm % 2 == 0) left(_coupu );
+      else left(_coupd );
     }
     else {
-      if(iferm %2 == 0) setLeft(_coupnu);
-      else setLeft(_coupe );
+      if(iferm %2 == 0) left(_coupnu);
+      else left(_coupe );
     }
-    setRight(0.);
+    right(0.);
   }
 }

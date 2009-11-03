@@ -70,8 +70,7 @@ public:
    * @param d2 The direction for the second particle.
    * @param d3 The direction for the third  particle.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c,
-			   Direction d1,Direction d2, Direction d3);
+  virtual void setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c);
 
 protected:
 

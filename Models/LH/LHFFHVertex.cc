@@ -34,45 +34,30 @@ LHFFHVertex::LHFFHVertex()
   : _idlast(0), _q2last(0.*GeV2) {
   _masslast[0] = 0.*GeV; 
   _masslast[1] = 0.*GeV; 
-  // PDG codes for the particles
-  vector<long> first,second,third;
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(25);
+    addToList(-ix,    ix,    25);
   }
   // the leptons
   for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(25);
+    addToList(-ix,    ix,    25);
   }
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(35);
+    addToList(-ix,    ix,    35);
   }
   // the leptons
   for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(35);
+    addToList(-ix,    ix,    35);
   }
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(36);
+    addToList(-ix,    ix,    36);
   }
   // the leptons
   for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(36);
+    addToList(-ix,    ix,    36);
   }
-  setList(first,second,third);
 }
 
 void LHFFHVertex::doinit() {
@@ -106,13 +91,12 @@ void LHFFHVertex::doinit() {
   FFSVertex::doinit();
 }
 
-void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
-				       int) {
+void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
   int iferm=abs(a->id());
   int ianti=abs(b->id());
-  int ihigg=abs(c->id());
+  //  int ihigg=abs(c->id());
   // left and right couplings set to one
-  setLeft(1.); setRight(1.);
+  left(1.); right(1.);
   // first the overall normalisation
   if(q2!=_q2last) {
     _q2last=q2;
@@ -146,5 +130,5 @@ void LHFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c,
 //       _masslast = 0*MeV;
 //     }
 //   }
-//   setNorm(_couplast*_masslast);
+//   norm(_couplast*_masslast);
 }

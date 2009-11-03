@@ -19,41 +19,21 @@ NMSSMHHHVertex::NMSSMHHHVertex() : _mw(0.*MeV), _mz(0.*MeV), _sw2(0.),
 				   _s2b(0.), _c2b(0.), _vu(0.*MeV),
 				   _vd(0.*MeV), _s(0.*MeV), _q2last(0.*MeV2),
 				   _glast(0.) {
-  vector<long> first, second, third;
   // PDG codes for the particles in vertex _vd
   //CP-even Higgs
-  first.push_back(25);
-  second.push_back(35);
-  third.push_back(45);
+  addToList(25, 35, 45);
   for( unsigned int i = 25; i <= 45; i += 10 ) {
-    first.push_back(i);
-    second.push_back(i);
-    third.push_back(25);
-    first.push_back(i);
-    second.push_back(i);
-    third.push_back(35);
-    first.push_back(i);
-    second.push_back(i);
-    third.push_back(45);
+    addToList(i, i, 25);
+    addToList(i, i, 35);
+    addToList(i, i, 45);
     //Charged Higgs
-    first.push_back(i);
-    second.push_back(37);
-    third.push_back(-37);
+    addToList(i, 37, -37);
     //CP-odd Higgs
-    first.push_back(i);
-    second.push_back(36);
-    third.push_back(36);
-    first.push_back(i);
-    second.push_back(36);
-    third.push_back(46);
-    first.push_back(i);
-    second.push_back(46);
-    third.push_back(36);
-    first.push_back(i);
-    second.push_back(46);
-    third.push_back(46);
+    addToList(i, 36, 36);
+    addToList(i, 36, 46);
+    addToList(i, 46, 36);
+    addToList(i, 46, 46);
   }
-  setList(first, second, third);
 }
 
 void NMSSMHHHVertex::doinit() {
@@ -220,5 +200,5 @@ void NMSSMHHHVertex::setCoupling(Energy2 q2,tcPDPtr p1,tcPDPtr p2,
 				   (*_mixS)(a,0)*sqr(_sb) 
 				   + 2.*(*_mixS)(a,1)*_sb*_cb)/_glast);
   }
-  setNorm(-coupling * UnitRemoval::InvE);
+  norm(-coupling * UnitRemoval::InvE);
 }

@@ -25,12 +25,10 @@ using namespace Herwig;
 SSGNGVertex::SSGNGVertex() : _sw(0.), _cw(0.), _idlast(0), 
 			     _q2last(ZERO), _couplast(0.),
 			     _leftlast(ZERO), _rightlast(ZERO) {
-  vector<long> first(5, 1000021), second, third(5, 21);
   int ineu[5] = {1000022,1000023,1000025,1000035,1000045};
   for(unsigned int i = 0; i < 5; ++i) {
-    second.push_back(ineu[i]);
+    addToList(1000021, ineu[i], 21);
   }
-  setList(first, second, third);
 }
 
 void SSGNGVertex::doinit() {
@@ -173,7 +171,7 @@ void SSGNGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       }
     }
   }
-  setNorm(_couplast);
+  norm(_couplast);
   setLeftSigma ( _leftlast);
   setRightSigma(_rightlast);  
 }

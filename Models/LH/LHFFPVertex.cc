@@ -14,39 +14,20 @@ using namespace Herwig;
 
 LHFFPVertex::LHFFPVertex() 
   : _couplast(0.), _q2last(-1.*GeV2) {
-  // PDG codes for the particles
-  vector<long> first,second,third;
   // the quarks
   for(int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(22);
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(32);
+    addToList(-ix,    ix,    22);
+    addToList(-ix,    ix,    32);
   }
-  first.push_back( -8);
-  second.push_back( 8);
-  third.push_back(22);
-  first.push_back( -8);
-  second.push_back( 8);
-  third.push_back(32);
-  first.push_back( -6);
-  second.push_back( 8);
-  third.push_back(32);
-  first.push_back( -8);
-  second.push_back( 6);
-  third.push_back(32);
+  addToList( -8,   8,  22);
+  addToList( -8,   8,  32);
+  addToList( -6,   8,  32);
+  addToList( -8,   6,  32);
   // the leptons
   for(int ix=11;ix<17;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(22);
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(32);
+    addToList(-ix,    ix,    22);
+    addToList(-ix,    ix,    32);
   }
-  setList(first,second,third);
 }
 
 void LHFFPVertex::persistentOutput(PersistentOStream & os) const {
@@ -147,25 +128,25 @@ void LHFFPVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c) {
     _couplast = -electroMagneticCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // the left and right couplings
   int iferm=abs(a->id());
   if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)||iferm==8) {
     // photon
     if(c->id()==ParticleID::gamma) {
-      setLeft (_charge[iferm]);
-      setRight(_charge[iferm]);
+      left (_charge[iferm]);
+      right(_charge[iferm]);
     }
     // heavy photon
     else {
       int ianti = abs(b->id());
       if(ianti==iferm) {
-	setRight(-_gr[iferm]);
-	setLeft (-_gl[iferm]);
+	right(-_gr[iferm]);
+	left (-_gl[iferm]);
       }
       else {
-	setRight(_gr[7]);
-	setLeft (_gl[7]);
+	right(_gr[7]);
+	left (_gl[7]);
       }
     }
   }

@@ -18,18 +18,12 @@ NMSSMWWHVertex::NMSSMWWHVertex()
   : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sinb(0.),_cosb(0.) {
   int id[3]={25,35,45};
   // PDG codes for the particles in the vertex
-  vector<long> first,second,third;
   for(unsigned int ix=0;ix<3;++ix) {
     // Higgs WW
-    first .push_back(  24  );
-    second.push_back( -24  );
-    third .push_back(id[ix]);
-	//Higgs ZZ
-    first .push_back(  23  );
-    second.push_back(  23  );
-    third .push_back(id[ix]);
+    addToList( 24, -24, id[ix] );
+    //Higgs ZZ
+    addToList( 23, 23, id[ix] );
   }
-  setList(first,second,third);
 }
 
 void NMSSMWWHVertex::doinit() {
@@ -91,12 +85,12 @@ void NMSSMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr c) {
   // higgs mixing factor
   Complex hmix = _cosb*(*_mixS)(ihiggs,0)+_sinb*(*_mixS)(ihiggs,1);
   // couplings
-  if(ibos==24)      setNorm(_couplast*hmix);
-  else if(ibos==23) setNorm(_couplast*hmix*_zfact);
+  if(ibos==24)      norm(_couplast*hmix);
+  else if(ibos==23) norm(_couplast*hmix*_zfact);
   else {
     throw HelicityConsistencyError() << "SMWWHVertex::setCoupling "
 				     << "Invalid particles in WWH Vertex" 
 				     << Exception::warning;
-    setNorm(0.);
+    norm(0.);
   }
 }

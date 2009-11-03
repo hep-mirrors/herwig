@@ -61,8 +61,7 @@ public:
    * @param part3 The ParticleData pointer for the third  particle.
    * @param ioff Which particle is off-shell
   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   int ioff);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
 protected:
 

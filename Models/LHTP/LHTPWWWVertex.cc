@@ -14,42 +14,22 @@ using namespace Herwig;
 
 LHTPWWWVertex::LHTPWWWVertex() : couplast_(0.), q2last_(0.*MeV2),
 				 couplings_(3 ,0.) {
-  
-  vector<long> first,second,third;
   //SM interactions
-  first.push_back(24);
-  second.push_back(-24);  
-  third.push_back(22);
-  first.push_back(24);
-  second.push_back(-24);
-  third.push_back(23);
+  addToList(24,  -24,    22);
+  addToList(24,  -24,  23);
 
   //LHTP
   //W_H W_H A_L
-  first.push_back(34);
-  second.push_back(-34);  
-  third.push_back(22);
+  addToList(34,  -34,    22);
   //W_H W_H Z_L
-  first.push_back(34);
-  second.push_back(-34);
-  third.push_back(23);
+  addToList(34,  -34,  23);
   //W_H W_L A_H
-  first.push_back(34);
-  second.push_back(-24);
-  third.push_back(32);
+  addToList(34,  -24,  32);
 
-  first.push_back(-34);
-  second.push_back(24);
-  third.push_back(32); 
+  addToList(-34,  24,  32); 
   //W_H W_L Z_H
-  first.push_back(34);
-  second.push_back(-24);
-  third.push_back(33);
-  first.push_back(-34);
-  second.push_back(24);
-  third.push_back(33);
-
-  setList(first,second,third);
+  addToList(34,  -24,  33);
+  addToList(-34,  24,  33);
 }
 
 void LHTPWWWVertex::persistentOutput(PersistentOStream & os) const {
@@ -94,8 +74,7 @@ void LHTPWWWVertex::doinit() {
 
 }
 
-void LHTPWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-				tcPDPtr c,Direction,Direction,Direction) {
+void LHTPWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c) {
   if(q2 != q2last_) {
     couplast_ = electroMagneticCoupling(q2);
     q2last_ = q2;
@@ -122,13 +101,13 @@ void LHTPWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
       << Exception::runerror;
 
   if( boson == 22 )
-    setNorm(perm*couplast_);
+    norm(perm*couplast_);
   else if( boson == 23 )
-    setNorm(perm*couplings_[0]*couplast_);
+    norm(perm*couplings_[0]*couplast_);
   else if( boson == 32 )
-    setNorm(perm*couplings_[1]*couplast_);
+    norm(perm*couplings_[1]*couplast_);
   else if( boson == 33 )
-    setNorm(perm*couplings_[2]*couplast_);
+    norm(perm*couplings_[2]*couplast_);
   else 
     throw Helicity::HelicityConsistencyError() 
       << "LHTPWWWVertex::setCoupling - Incorrect boson in LHTPWWWVertex. "

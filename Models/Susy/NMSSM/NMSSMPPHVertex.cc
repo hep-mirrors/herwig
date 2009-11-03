@@ -21,14 +21,11 @@ NMSSMPPHVertex::NMSSMPPHVertex()
     _kappa(0.),_vu(ZERO),_vd(ZERO),_s(ZERO),_theAl(ZERO),
     _masslast(make_pair(0.*MeV,0.*MeV)),_q2last(0.*MeV2),
     _couplast(0.), _coup(0.), _hlast(0), _recalc(true) {
-  //PDG codes for particles at vertices
-  vector<long> first(5,22),second(5,22), third(5);
-  third[0] = 25;
-  third[1] = 35;
-  third[2] = 36;
-  third[3] = 45;
-  third[4] = 46;
-  setList(first, second, third);
+  addToList(22,22,25);
+  addToList(22,22,35);
+  addToList(22,22,36);
+  addToList(22,22,45);
+  addToList(22,22,46);
 }
 
 void NMSSMPPHVertex::doinit()  {
@@ -146,7 +143,7 @@ void NMSSMPPHVertex::setCoupling(Energy2 q2, tcPDPtr p1, tcPDPtr p2,
     _q2last = q2;
     _recalc = true;
   }
-  setNorm(_couplast*_coup);
+  norm(_couplast*_coup);
   // scalar higgs bosons  
   if( hid != _hlast ) {
     _hlast = hid;

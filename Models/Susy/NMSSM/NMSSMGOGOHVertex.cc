@@ -20,14 +20,11 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
   int iodd [2]={36,46};
   long ichar[2]={1000024,1000037};
   long ineut[5]={1000022,1000023,1000025,1000035,1000045};
-  vector<long> first,second,third;
   // CP-even charginos
   for(unsigned int ix=0;ix<2;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {
       for(unsigned int iz=0;iz<3;++iz) {
-	first .push_back(-ichar[ix]);
-	second.push_back( ichar[iy]);
-	third .push_back( ieven[iz]);
+	addToList(-ichar[ix], ichar[iy], ieven[iz]);
       }
     }
   }
@@ -35,29 +32,23 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
   for(unsigned int ix=0;ix<2;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {
       for(unsigned int iz=0;iz<2;++iz) {
-	first .push_back(-ichar[ix]);
-	second.push_back( ichar[iy]);
-	third .push_back( iodd [iz]);
+	addToList(-ichar[ix], ichar[iy], iodd [iz]);
       }
     }
   }
   // CP-even neutralinos
   for(unsigned int ix=0;ix<5;++ix) {
     for(unsigned int iy=0;iy<5;++iy) {
-      for(unsigned int iz=0;iz<5;++iz) {
-	first .push_back( ineut[ix]);
-	second.push_back( ineut[iy]);
-	third .push_back( ieven[iz]);
+      for(unsigned int iz=0;iz<3;++iz) {
+	addToList( ineut[ix], ineut[iy], ieven[iz]);
         }
       }
     }
   // CP-odd  neutralinos
   for(unsigned int ix=0;ix<5;++ix) {
     for(unsigned int iy=0;iy<5;++iy) {
-      for(unsigned int iz=0;iz<5;++iz) {
-	first .push_back( ineut[ix]);
-	second.push_back( ineut[iy]);
-	third .push_back( iodd[iz]);
+      for(unsigned int iz=0;iz<2;++iz) {
+	addToList( ineut[ix], ineut[iy], iodd[iz]);
         }
       }
     }
@@ -65,17 +56,12 @@ NMSSMGOGOHVertex::NMSSMGOGOHVertex() : _lambda(0.), _kappa(0.), _sinb(0.),
   // charged higgs
   for(unsigned int ix=0;ix<5;++ix) {
     for(unsigned int iy=0;iy<2;++iy) {
-      first .push_back(ineut[ix]);
-      second.push_back(-ichar[iy]);
-      third .push_back(37);
+      addToList(ineut[ix], -ichar[iy], 37);
 
-      first .push_back(ineut[ix]);
-      second.push_back(ichar[iy]);
-      third .push_back(-37);
+      addToList(ineut[ix], ichar[iy], -37);
 
     }
   }
-  setList(first, second, third);
 }
 
 void NMSSMGOGOHVertex::persistentOutput(PersistentOStream & os) const {
@@ -152,7 +138,7 @@ void NMSSMGOGOHVertex::Init() {
 }
 
 void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
-				   tcPDPtr part3,int ) {
+				   tcPDPtr part3) {
   long id1(part1->id()), id2(part2->id()), 
     id3(part3->id()), ihigg(0), ig1(0), ig2(0);
   if( abs(id1) == 25 || abs(id1) == 35 || abs(id1) == 45 || 
@@ -207,9 +193,9 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 				  + (*_mixS)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1));		  
 				  
 				  
-	  setLeft(-coupL);
-      setRight(-coupR);
-      setNorm(1.0);
+	  left(-coupL);
+      right(-coupR);
+      norm(1.0);
     }
     // neutralino
     else  {
@@ -245,9 +231,9 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 				 
 				 	  			 
 				 
-      setLeft(conj(YL));
-      setRight(YL);
-      setNorm(-1.0);
+      left(conj(YL));
+      right(YL);
+      norm(-1.0);
 
     }
   }
@@ -273,9 +259,9 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 				+ (*_mixP)(iloc,1)*(*_mixU)(ic2,0)*(*_mixV)(ic1,1)));			
 				
 				
-      setLeft(QL);
-      setRight(-QR);
-      setNorm(1.);
+      left(QL);
+      right(-QR);
+      norm(1.);
     }
     // neutralino
     else {
@@ -309,9 +295,9 @@ void NMSSMGOGOHVertex::setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
 			          up2*(ni1*nj4 + ni4*nj1))/_cw;
 	  
       AL *= Complex(0.0, -1.0);
-      setLeft(conj(AL));
-      setRight(-AL);
-      setNorm(1.);
+      left(conj(AL));
+      right(-AL);
+      norm(1.);
 
     }
   }
@@ -340,14 +326,14 @@ Complex QpL = _lambda*_sinb*(*_mixV)(ic,1)*(*_mixN)(in,4)
 
 				
     if(ic > 0) {
-      setLeft (conj(QpL));
-      setRight(QpR);
-      setNorm(-1.);
+      left (conj(QpL));
+      right(QpR);
+      norm(-1.);
     }
     else {
-      setLeft (QpL);
-      setRight(conj(QpR));
-      setNorm(-1.);
+      left (QpL);
+      right(conj(QpR));
+      norm(-1.);
     }
   }
 }

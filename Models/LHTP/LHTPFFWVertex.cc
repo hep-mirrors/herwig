@@ -87,104 +87,67 @@ LHTPFFWVertex::LHTPFFWVertex()
   // quarks
   for(int ix = 1; ix < 6; ix += 2) {
     for(int iy = 2; iy < 7; iy += 2) {
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(-24);
+      addToList(-ix,      iy,      -24);
     }
   }
   // additional T quark
-  first .push_back(-5);
-  second.push_back( 8);
-  third.push_back(-24);
+  addToList(-5,   8,  -24);
   // leptons
   for(int ix = 11; ix < 17; ix += 2) {
-    first.push_back(-ix);
-    second.push_back(ix + 1);
-    third.push_back(-24);
+    addToList(-ix,    ix + 1,    -24);
   }
   // T-odd quarks
   for(long ix = 4000002; ix < 4000007; ix += 2) {
-    first.push_back(-ix + 1);
-    second.push_back(ix);
-    third.push_back(-24);
+    addToList(-ix + 1,    ix,    -24);
   }
   // T-odd leptons
   for(long ix = 4000011; ix < 4000017; ix += 2) {
-    first.push_back(-ix);
-    second.push_back(ix + 1);
-    third.push_back(-24);
+    addToList(-ix,    ix + 1,    -24);
   }
   // T-odd leptons
   // particles for outgoing W+
   // quarks
   for(int ix = 2; ix < 7; ix += 2) {
     for(int iy = 1; iy < 6; iy += 2) {
-      first .push_back(-ix);
-      second.push_back( iy);
-      third .push_back( 24);
+      addToList(-ix,       iy,       24);
     }
   }
   // additional T quark
-  first .push_back(-8);
-  second.push_back( 5);
-  third .push_back(24);
+  addToList(-8,   5,  24);
   // leptons
   for(int ix = 11; ix < 17; ix += 2) {
-    first.push_back(-ix - 1);
-    second.push_back(ix);
-    third.push_back(24);
+    addToList(-ix - 1,    ix,    24);
   }
   // T-odd quarks
   for(long ix = 4000002; ix < 4000009; ix += 2) {
-    first.push_back(-ix);
-    second.push_back(ix-1);
-    third.push_back(24);
+    addToList(-ix,    ix-1,    24);
   }
   // T-odd leptons
   for(long ix = 4000011; ix < 4000017; ix += 2) {
-    first.push_back(-ix-1);
-    second.push_back(ix);
-    third.push_back(24);
+    addToList(-ix-1,    ix,    24);
   }
   // particles for w_H-
   // quark and T-odd quark
   for(int ix = 1; ix < 6; ix += 2) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix+1);
-    third.push_back(-34);
-    first.push_back(-ix);
-    second.push_back(ix+1+4000000);
-    third.push_back(-34);
+    addToList(-ix-4000000,    ix+1,    -34);
+    addToList(-ix,    ix+1+4000000,    -34);
   }
   // lepton and T-odd lepton
   for(int ix = 11;ix < 17; ix += 2) {
-    first.push_back(-ix-4000000);
-    second.push_back(ix+1);
-    third.push_back(-34);
-    first.push_back(-ix);
-    second.push_back(ix+1+4000000);
-    third.push_back(-34);
+    addToList(-ix-4000000,    ix+1,    -34);
+    addToList(-ix,    ix+1+4000000,    -34);
   }
   // particles for w_h+
   // quark and T-odd quark
   for(int ix = 1;ix < 6;ix += 2) {
-    first.push_back(ix + 4000000);
-    second.push_back(-ix - 1);
-    third.push_back(34);
-    first.push_back(ix);
-    second.push_back(-ix - 4000001);
-    third.push_back( 34);
+    addToList(ix + 4000000,    -ix - 1,    34);
+    addToList(ix,    -ix - 4000001,     34);
   }
   // leptons and T-odd lepton
   for(int ix = 11; ix < 17; ix += 2) {
-    first.push_back(-ix - 4000001);
-    second.push_back(ix);
-    third.push_back(34);
-    first.push_back(-ix - 1);
-    second.push_back(ix + 4000000);
-    third.push_back(34);
+    addToList(-ix - 4000001,    ix,    34);
+    addToList(-ix - 1,    ix + 4000000,    34);
   }
-  setList(first,second,third);
 }
 
 // coupling for FFW vertex
@@ -195,7 +158,7 @@ void LHTPFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
     _couplast = -sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
+  norm(_couplast);
   // SM W boson
   if(abs(c->id())==ParticleID::Wplus) {
     long ia(abs(a->id())),ib(abs(b->id()));
@@ -216,26 +179,26 @@ void LHTPFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
 	throw HelicityConsistencyError() << "LHTPFFWVertex::setCoupling "
 					 << "Unknown particle in W vertex" 
 					 << Exception::runerror;
-      if(ia != 6 && ib != 6) setLeft(_ckm[iu-1][id-1]);
-      else setLeft(_ckm[iu-1][id-1]*_cbeta);
-      setRight(0.);
+      if(ia != 6 && ib != 6) left(_ckm[iu-1][id-1]);
+      else left(_ckm[iu-1][id-1]*_cbeta);
+      right(0.);
     }
     else if(ia == 8|| ib == 8) {
-      setLeft(-_sbeta);
-      setRight(0.);
+      left(-_sbeta);
+      right(0.);
     }
     // leptons
     else if( ia >= 11 && ia <= 16) {
-      setLeft(1.);
-      setRight(0.);
+      left(1.);
+      right(0.);
     }
     else {
-      setLeft(1.);
-      setRight(1.);
+      left(1.);
+      right(1.);
     }
   }
   else {
-    setLeft(1.);
-    setRight(0.);
+    left(1.);
+    right(0.);
   }
 }

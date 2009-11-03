@@ -16,64 +16,37 @@ using namespace Herwig;
 LHFFWVertex::LHFFWVertex() 
   : _ckm(3,vector<Complex>(3,0.0)), _couplast(0.), _q2last(0.*GeV2),
     _corrL(0.),_corrH(0.),_tcorrL(0.),_tcorrH(0.),_tHcorrL(0.), _tHcorrH(0.) {
-  // particles for the vertex
-  vector<long> first,second,third;
   // particles for outgoing W-
   // quarks
   for(int ix=1;ix<6;ix+=2) {
     for(int iy=2;iy<7;iy+=2) {
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(-24);
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(-34);
+      addToList(-ix,      iy,      -24);
+      addToList(-ix,      iy,      -34);
     }
   }
   // leptons
   for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix);
-    second.push_back(ix+1);
-    third.push_back(-24);
-    first.push_back(-ix);
-    second.push_back(ix+1);
-    third.push_back(-34);
+    addToList(-ix,    ix+1,    -24);
+    addToList(-ix,    ix+1,    -34);
   }
   // particles for outgoing W+
   // quarks
   for(int ix=2;ix<7;ix+=2) {
     for(int iy=1;iy<6;iy+=2) {
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(24);
-      first.push_back(-ix);
-      second.push_back(iy);
-      third.push_back(34);
+      addToList(-ix,      iy,      24);
+      addToList(-ix,      iy,      34);
     }
   }
   // leptons
   for(int ix=11;ix<17;ix+=2) {
-    first.push_back(-ix-1);
-    second.push_back(ix);
-    third.push_back(24);
-    first.push_back(-ix-1);
-    second.push_back(ix);
-    third.push_back(34);
+    addToList(-ix-1,    ix,    24);
+    addToList(-ix-1,    ix,    34);
   }
   // couplings to new heavy quark
-  first.push_back(-5);
-  second.push_back(8);
-  third.push_back(-24);
-  first.push_back(-5);
-  second.push_back(8);
-  third.push_back(-34);
-  first.push_back(-8);
-  second.push_back(5);
-  third.push_back(24);
-  first.push_back(-8);
-  second.push_back(5);
-  third.push_back(34);
-  setList(first,second,third);
+  addToList(-5,  8,  -24);
+  addToList(-5,  8,  -34);
+  addToList(-8,  5,  24);
+  addToList(-8,  5,  34);
 }
 
 void LHFFWVertex::persistentOutput(PersistentOStream & os) const {
@@ -135,8 +108,8 @@ void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
     _couplast    = -sqrt(0.5)*weakCoupling(q2);
     _q2last=q2;
   }
-  setNorm(_couplast);
-  setRight(0.);
+  norm(_couplast);
+  right(0.);
   // the left and right couplings
   int iferm=abs(a->id());
   int ianti=abs(b->id());
@@ -166,12 +139,12 @@ void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
       throw HelicityConsistencyError() << "LHFFWVertex::setCoupling "
 				       << "Unknown particle in W vertex" 
 				       << Exception::runerror;
-    setLeft(_ckm[iu-1][id-1]);
-    setRight(0.);
+    left(_ckm[iu-1][id-1]);
+    right(0.);
   }
   // leptons
   else if(iferm>=11 && iferm <=16) {
-    setLeft(1.);
+    left(1.);
   }
   else
     throw HelicityConsistencyError() << "LHFFWVertex::setCoupling "
@@ -182,30 +155,30 @@ void LHFFWVertex::setCoupling(Energy2 q2, tcPDPtr a,
   if(abs(c->id())==ParticleID::Wplus) {
     // light quarks or leptons
     if(iferm<6&&ianti<6) {
-      setLeft(_corrL*getLeft());
+      left(_corrL*left());
     }
     // light top quark
     else if(!heavy) {
-      setLeft(_tcorrL*getLeft());
+      left(_tcorrL*left());
     }
     // heavy top quark
     else {
-      setLeft(_tHcorrL*getLeft());
+      left(_tHcorrL*left());
     }
   }
   // heavy W
   else {
     // light quarks or leptons
     if(iferm<6&&ianti<6) {
-      setLeft(_corrH*getLeft());
+      left(_corrH*left());
     }
     // light top quark
     else if(!heavy) {
-      setLeft(_tcorrH*getLeft());
+      left(_tcorrH*left());
     }
     // heavy top quark
     else {
-      setLeft(_tHcorrH*getLeft());
+      left(_tHcorrH*left());
     }
   }
 }

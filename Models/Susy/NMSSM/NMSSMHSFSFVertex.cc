@@ -18,49 +18,32 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
   _lambdaVEV(0.*MeV), _v1(0.*MeV), _v2(0.*MeV), _sw(0.), _cw(0.), 
   _mw(0.*MeV), _mz(0.*MeV), _sb(0.), _cb(0.), _tb(0.), _q2last(0.*MeV2), 
   _couplast(0.), _masslast(make_pair(0.*MeV,0.*MeV)), _idlast(make_pair(0,0)) {
-  vector<long> first, second, third;
   //CP even
   int even[3] = {25, 35, 45};
   for(size_t h = 0; h < 3; ++h ) {
     //squarks
     for(long q = 1; q < 7; ++q) {
       //11
-      first.push_back(even[h]);
-      second.push_back(-1000000 - q);
-      third.push_back(1000000 + q);
+      addToList(even[h], -1000000 - q, 1000000 + q);
       //22
-      first.push_back(even[h]);
-      second.push_back(-2000000 - q);
-      third.push_back(2000000 + q);
+      addToList(even[h], -2000000 - q, 2000000 + q);
       //12
-      first.push_back(even[h]);
-      second.push_back(-1000000 - q);
-      third.push_back(2000000 + q);
+      addToList(even[h], -1000000 - q, 2000000 + q);
       //21
-      first.push_back(even[h]);
-      second.push_back(-2000000 - q);
-      third.push_back(1000000 + q);
+      addToList(even[h], -2000000 - q, 1000000 + q);
     }
     //sleptons
     for(long l = 11; l < 17; ++l) {
       //11
-      first.push_back(even[h]);
-      second.push_back(-1000000 - l);
-      third.push_back(1000000 + l);
+      addToList(even[h], -1000000 - l, 1000000 + l);
       //no right handed sneutrinos
       if( l % 2 != 0 ) {
 	//22
-	first.push_back(even[h]);
-	second.push_back(-2000000 - l);
-	third.push_back(2000000 + l);
+	addToList(even[h], -2000000 - l, 2000000 + l);
 	//12
-	first.push_back(even[h]);
-	second.push_back(-1000000 - l);
-	third.push_back(2000000 + l);
+	addToList(even[h], -1000000 - l, 2000000 + l);
 	//21
-	first.push_back(even[h]);
-	second.push_back(-2000000 - l);
-	third.push_back(1000000 + l);
+	addToList(even[h], -2000000 - l, 1000000 + l);
       }
     }
   }
@@ -70,109 +53,62 @@ NMSSMHSFSFVertex::NMSSMHSFSFVertex() :
     //squarks
     for(long q = 1; q < 7; ++q) {
       //12
-      first.push_back(odd[h]);
-      second.push_back(-1000000 - q);
-      third.push_back(2000000 + q);
+      addToList(odd[h], -1000000 - q, 2000000 + q);
       //21
-      first.push_back(odd[h]);
-      second.push_back(-2000000 - q);
-      third.push_back(1000000 + q);
+      addToList(odd[h], -2000000 - q, 1000000 + q);
     }
     //sleptons
     for(long l = 11; l < 15; l += 2) {
       //12
-      first.push_back(odd[h]);
-      second.push_back(-1000000 - l);
-      third.push_back(2000000 + l);
+      addToList(odd[h], -1000000 - l, 2000000 + l);
       //21
-      first.push_back(odd[h]);
-      second.push_back(-2000000 - l);
-      third.push_back(1000000 + l);
+      addToList(odd[h], -2000000 - l, 1000000 + l);
     }
     //~tau LL/RR
-    first.push_back(odd[h]);
-    second.push_back(-1000015);
-    third.push_back(1000015); 
-    first.push_back(odd[h]);
-    second.push_back(-2000015);
-    third.push_back(2000015); 
+    addToList(odd[h], -1000015, 1000015); 
+    addToList(odd[h], -2000015, 2000015); 
     //~bot LL/RR
-    first.push_back(odd[h]);
-    second.push_back(-1000005);
-    third.push_back(1000005); 
-    first.push_back(odd[h]);
-    second.push_back(-2000005);
-    third.push_back(2000005);
-    first.push_back(odd[h]);
-    //~top LL/RR
-    second.push_back(-1000006);
-    third.push_back(1000006); 
-    first.push_back(odd[h]);
-    second.push_back(-2000006);
-    third.push_back(2000006);
+    addToList(odd[h], -1000005, 1000005); 
+    addToList(odd[h], -2000005, 2000005);
+    addToList(odd[h], -1000006, 1000006); 
+    addToList(odd[h], -2000006, 2000006);
   }
   //charged higgs
   //squarks
   for(long q = 1; q < 3; ++q ) {
     //H-
     //LL
-    first.push_back(-37);
-    second.push_back(-2*q - 999999);
-    third.push_back(2*q + 1000000);
+    addToList(-37, -2*q - 999999, 2*q + 1000000);
     //RR
-    first.push_back(-37);
-    second.push_back(-2*q - 1999999);
-    third.push_back(2*q + 2000000);
+    addToList(-37, -2*q - 1999999, 2*q + 2000000);
     //LR
-    first.push_back(-37);
-    second.push_back(-2*q - 999999);
-    third.push_back(2*q + 2000000);
+    addToList(-37, -2*q - 999999, 2*q + 2000000);
     //RL
-    first.push_back(-37);
-    second.push_back(-2*q - 1999999);
-    third.push_back(2*q + 1000000);
+    addToList(-37, -2*q - 1999999, 2*q + 1000000);
     //H+
     //LL
-    first.push_back(37);
-    second.push_back(-2*q - 1000000);
-    third.push_back(2*q + 999999);
+    addToList(37, -2*q - 1000000, 2*q + 999999);
     //RR
-    first.push_back(37);
-    second.push_back(-2*q - 2000000);
-    third.push_back(2*q + 1999999);
+    addToList(37, -2*q - 2000000, 2*q + 1999999);
     //LR
-    first.push_back(37);
-    second.push_back(-2*q - 1000000);
-    third.push_back(2*q + 1999999);
+    addToList(37, -2*q - 1000000, 2*q + 1999999);
     //RL
-    first.push_back(37);
-    second.push_back(-2*q - 2000000);
-    third.push_back(2*q + 999999);
+    addToList(37, -2*q - 2000000, 2*q + 999999);
   }
   //sleptons
   //easier as there are no right handed sneutrinos
   for(long l = 11; l <= 15; l +=2 ) {
     //H-
     //LL
-    first.push_back(-37);
-    second.push_back(-l - 1000000);
-    third.push_back(l + 1000001);
+    addToList(-37, -l - 1000000, l + 1000001);
     //RL
-    first.push_back(-37);
-    second.push_back(-l - 2000000);
-    third.push_back(l + 1000001);
+    addToList(-37, -l - 2000000, l + 1000001);
     //H+
     //LL
-    first.push_back(+37);
-    second.push_back(-l - 1000001);
-    third.push_back(l + 1000000);
+    addToList(+37, -l - 1000001, l + 1000000);
     //RL
-    first.push_back(+37);
-    second.push_back(-l - 1000001);
-    third.push_back(l + 2000000);
+    addToList(+37, -l - 1000001, l + 2000000);
   }
-  // 
-  setList(first, second, third);
 }
 
 void NMSSMHSFSFVertex::persistentOutput(PersistentOStream & os) const {
@@ -284,7 +220,7 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
  
   //charged higgs
   if( higgs == 37 ) {
-    setNorm(_couplast*chargedHiggs(q2, isf1, isf2));
+    norm(_couplast*chargedHiggs(q2, isf1, isf2));
     return;
   }
   // neutral higgs
@@ -395,7 +331,7 @@ void NMSSMHSFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     }
    
   }
-  setNorm(_couplast*fact*UnitRemoval::InvE);
+  norm(_couplast*fact*UnitRemoval::InvE);
 }
 
 Complex NMSSMHSFSFVertex::chargedHiggs(Energy2 q2, long id1, long id2) {

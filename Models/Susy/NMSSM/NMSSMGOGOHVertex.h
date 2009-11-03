@@ -63,7 +63,7 @@ public:
    * offshell if applicable.
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
-			   tcPDPtr part3,int ioff);
+			   tcPDPtr part3);
 
 protected:
 
