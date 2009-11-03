@@ -83,7 +83,9 @@ public:
   /**
    * Return the compactification radius
    */
-  inline InvEnergy compactRadius() const;
+  InvEnergy compactRadius() const {
+    return 1./theInvRadius;
+  }
 
   /**
    * Return the Weinburg mixing angle for any level.
@@ -93,7 +95,9 @@ public:
   /**
    * Return the Weinburg mixing angle for \f$n = 1\f$
    */
-  inline double sinThetaOne() const;
+  double sinThetaOne() const {
+    return theSinThetaOne;
+  }
   //@}
 
 protected:
@@ -102,15 +106,19 @@ protected:
    * Add a new ID,mass pair to the mass storage
    * @param elem The element to add in to storage
    */
-  inline void addMassElement(IDMassPair elem);
+  void addMassElement(IDMassPair elem) {
+    theMasses.push_back(elem);
+  }
 
   /**
    * Add a new mixing angle to the storage
    * @param n The level
    * @param val The value
    */
-  inline void addMixingAngle(const unsigned int n, 
-			     const double val);
+  void addMixingAngle(const unsigned int n, 
+		      const double val) {
+    theMixingAngles.insert(make_pair(n, val));
+  }
   
 private:
 
@@ -158,8 +166,10 @@ private:
   /**
    * A predicate for sorting the list of masses.
    */
-  static inline bool lowerMass(const pair<long, Energy> & p1, 
-			       const pair<long, Energy> & p2);
+  static bool lowerMass(const pair<long, Energy> & p1, 
+			const pair<long, Energy> & p2) {
+    return p1.second < p2.second;
+  }
   
 protected:
 
@@ -169,13 +179,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 
@@ -353,7 +363,5 @@ struct ClassTraits<Herwig::UEDBase>
 /** @endcond */
 
 }
-
-#include "UEDBase.icc"
 
 #endif /* HERWIG_UEDBase_H */

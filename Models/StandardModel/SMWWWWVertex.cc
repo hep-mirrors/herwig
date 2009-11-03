@@ -23,24 +23,10 @@ SMWWWWVertex::SMWWWWVertex()
   : _couplast(0.0), _q2last(sqr(Constants::MaxEnergy)), 
     _vfact(4,0.0), _sw2(0.), _cw2(0.) {
   // particles
-  vector<long> first,second,third,fourth;
-  first.push_back(24);
-  first.push_back(23);
-  first.push_back(22);
-  first.push_back(22);
-  second.push_back(-24);
-  second.push_back(24);
-  second.push_back(24);
-  second.push_back(24);
-  third.push_back(24);
-  third.push_back(23);
-  third.push_back(22);
-  third.push_back(23);
-  fourth.push_back(-24);
-  fourth.push_back(-24);
-  fourth.push_back(-24);
-  fourth.push_back(-24);
-  setList(first,second,third,fourth);
+  addToList(24, -24, 24, -24);
+  addToList(23,  24, 23, -24);
+  addToList(22,  24, 22, -24);
+  addToList(22,  24, 23, -24);
 }
 
 void SMWWWWVertex::doinit() {
@@ -86,7 +72,7 @@ void SMWWWWVertex::Init() {
 
 // couplings for the WWWW vertex
 void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-    				      tcPDPtr c,tcPDPtr d) {
+			       tcPDPtr c,tcPDPtr d) {
   // id's of the particles
   int id[4]={a->id(),b->id(),c->id(),d->id()};
   // order the particles
@@ -177,13 +163,13 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
   else if(iorder[1]==2) idb = abs(c->id());
   else if(iorder[1]==3) idb = abs(d->id());
   // WWWW coupling
-  if(ida==24)               setNorm(_vfact[0]*_couplast);
+  if(ida==24)               norm(_vfact[0]*_couplast);
   // ZZWW coupling
-  else if(ida==23&&idb==23) setNorm(_vfact[1]*_couplast);
+  else if(ida==23&&idb==23) norm(_vfact[1]*_couplast);
   // gamma gamma WW coupling
-  else if(ida==22&&idb==22) setNorm(_couplast);
+  else if(ida==22&&idb==22) norm(_couplast);
   // gamma  Z WW coupling
-  else if(ida==22&&idb==23) setNorm(_vfact[3]*_couplast);
+  else if(ida==22&&idb==23) norm(_vfact[3]*_couplast);
   else throw HelicityConsistencyError() 
     << "SMWWWWVertex::setCoupling unknown particles" 
     << Exception::runerror;

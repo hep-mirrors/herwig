@@ -25,43 +25,18 @@ SSWHHVertex::SSWHHVertex() :
   theSw(0.), theS2w(0.), theC2w(0.), thesbma(0.), thecbma(0.), 
   theGBlast(0), theHlast(0), theCouplast(0.), theq2last(ZERO), 
   theElast(0.) {
-  vector<long> first, second, third;
-  //photon
-  first.push_back(22);
-  second.push_back(37);
-  third.push_back(-37);
-  //Z
-  first.push_back(23);
-  second.push_back(36);
-  third.push_back(25);
-  first.push_back(23);
-  second.push_back(36);
-  third.push_back(35);
-  first.push_back(23);
-  second.push_back(37);
-  third.push_back(-37);
+  addToList(22,37,-37);
+  addToList(23,36,25);
+  addToList(23,36,35);
+  addToList(23,37,-37);
   //outgoing W+
-  first.push_back(24);
-  second.push_back(-37);
-  third.push_back(25);
-  first.push_back(24);
-  second.push_back(-37);
-  third.push_back(35);
-  first.push_back(24);
-  second.push_back(-37);
-  third.push_back(36);
+  addToList(24,-37,25);
+  addToList(24,-37,35);
+  addToList(24,-37,36);
   //outgoing W-
-  first.push_back(-24);
-  second.push_back(37);
-  third.push_back(25);
-  first.push_back(-24);
-  second.push_back(37);
-  third.push_back(35);
-  first.push_back(-24);
-  second.push_back(37);
-  third.push_back(36);
-  
-  setList(first, second, third);
+  addToList(-24,37,25);
+  addToList(-24,37,35);
+  addToList(-24,37,36);
 }
 
 void SSWHHVertex::doinit() {
@@ -106,8 +81,8 @@ void SSWHHVertex::Init() {
 
 }
 
-void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
-			      tcPDPtr particle3) {
+void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
+			      tcPDPtr particle2, tcPDPtr particle3) {
   long id1(abs(particle1->id())), id2(abs(particle2->id())),
     id3(abs(particle3->id())), gboson(0), h1ID(0), h2ID(0);
   if( id1 == ParticleID::Z0 || id1 == ParticleID::gamma || 
@@ -146,7 +121,7 @@ void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     throw HelicityConsistencyError() 
       << "SSWHHVertex::setCoupling - There is no higgs in this "
       << "this vertex. " << higgs << Exception::warning;
-    setNorm(0.0);
+    norm(0.0);
     return;
   }
 
@@ -179,5 +154,5 @@ void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     theElast = electroMagneticCoupling(q2);
   }
 
-  setNorm(theElast*theCouplast);
+  norm(theElast*theCouplast);
 }

@@ -1,0 +1,60 @@
+##################################################
+# Example generator based for gamma hadron collisions
+##################################################
+cd /Herwig
+create Herwig::AlphaEM AlphaEM2 
+set Model:EW/RunningAlphaEM AlphaEM2
+create Herwig::O2AlphaS AlphaS2 
+set Model:QCD/RunningAlphaS AlphaS2
+
+# Create GammaHadronHandler
+cd /Herwig/EventHandlers
+create ThePEG::StandardEventHandler GammaHadronHandler 
+create ThePEG::FixedCMSLuminosity FixedGammaHadronLuminosity FixedCMSLuminosity.so
+set GammaHadronHandler:LuminosityFunction FixedGammaHadronLuminosity
+set FixedGammaHadronLuminosity:Energy 1000.
+set GammaHadronHandler:BeamA /Herwig/Particles/gamma
+set GammaHadronHandler:BeamB /Herwig/Particles/p+
+set GammaHadronHandler:Sampler /Herwig/ACDCSampler
+set GammaHadronHandler:CascadeHandler /Herwig/Shower/ShowerHandler
+set GammaHadronHandler:HadronizationHandler /Herwig/Hadronization/ClusterHadHandler
+set GammaHadronHandler:DecayHandler /Herwig/Decays/DecayHandler
+create ThePEG::SubProcessHandler /Herwig/MatrixElements/SimpleGammaHadron
+cp /Herwig/Partons/EEExtractor /Herwig/Partons/GammaHadronExtractor
+set /Herwig/Partons/GammaHadronExtractor:FlatSHatY 1
+set /Herwig/MatrixElements/SimpleGammaHadron:PartonExtractor /Herwig/Partons/GammaHadronExtractor
+insert GammaHadronHandler:SubProcessHandlers[0] /Herwig/MatrixElements/SimpleGammaHadron
+# create the GammaHadron generator
+cd /Herwig/Generators
+create ThePEG::EventGenerator GammaHadronGenerator
+set GammaHadronGenerator:RandomNumberGenerator /Herwig/Random
+set GammaHadronGenerator:StandardModelParameters /Herwig/Model
+set GammaHadronGenerator:EventHandler /Herwig/EventHandlers/GammaHadronHandler
+set GammaHadronGenerator:Strategy DefaultStrategy
+# the cuts
+cd /Herwig/Cuts
+create ThePEG::Cuts GammaHadronCuts
+set GammaHadronCuts:X1Min 1.0e-5
+set GammaHadronCuts:X2Min 1.0e-5
+set GammaHadronCuts:MHatMin 0.*GeV
+insert GammaHadronCuts:OneCuts[0] JetKtCut
+set JetKtCut:MinKT 20.
+cd /Herwig/Generators
+set GammaHadronGenerator:EventHandler:Cuts /Herwig/Cuts/GammaHadronCuts
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set GammaHadronGenerator:NumberOfEvents 100000000
+set GammaHadronGenerator:RandomNumberGenerator:Seed 31122001
+set GammaHadronGenerator:DebugLevel 1
+set GammaHadronGenerator:PrintEvent 0
+set GammaHadronGenerator:MaxErrors 10000
+set GammaHadronGenerator:EventHandler:StatLevel Full
+set GammaHadronGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+
+##################################################
+# LEP physics parameters (override defaults) 
+##################################################
+set GammaHadronGenerator:EventHandler:LuminosityFunction:Energy 1000.

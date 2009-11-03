@@ -207,11 +207,11 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].particle()->CC(),
 					  fin[inhel1],p1[outhel1]);
 	  diag[0] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],p2[outhel2]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(ZERO,5,fin[inhel1].particle()->CC(),
 					  fin[inhel1],p2[outhel2]);
 	  diag[1] = _photonvertex->evaluate(ZERO,inter,ain[inhel2],p1[outhel1]);
 	  // compute the running totals

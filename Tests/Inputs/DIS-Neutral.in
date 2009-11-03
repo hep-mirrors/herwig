@@ -1,0 +1,27 @@
+read DIS.common
+cd /Herwig/Generators
+set DISGenerator:EventHandler:CascadeHandler NULL
+set DISGenerator:EventHandler:HadronizationHandler NULL
+set DISGenerator:EventHandler:DecayHandler NULL
+cd /Herwig
+create Herwig::O2AlphaS AlphaS2 
+set Model:QCD/RunningAlphaS AlphaS2
+set Model:EW/CKM:theta_12 0.22274457
+set Model:EW/CKM:theta_13 0.
+set Model:EW/CKM:theta_23 0.
+set Model:EW/CKM:delta 0.
+create Herwig::AlphaEM AlphaEM2 
+set Model:EW/RunningAlphaEM AlphaEM
+set /Herwig/Analysis/Basics:CheckQuark 0
+cd /Herwig/Partons
+# create Herwig::MRST MRST2 HwMRST.so
+# setup MRST2 /home/richardn/montecarlo/c++/Herwig++/trunk/Herwig++/PDF/mrst/1998/lo05a.dat
+# set MRST2:RemnantHandler HadronRemnants
+# set /Herwig/Particles/p+:PDF MRST2
+# set /Herwig/Particles/pbar-:PDF MRST2
+cd /Herwig/MatrixElements/
+insert SimpleDIS:MatrixElements[0] MEDISNC
+cd /Herwig/Generators
+create Herwig::DISTest NeutralTest DISTest.so
+insert DISGenerator:AnalysisHandlers 0 NeutralTest
+saverun DIS-Neutral DISGenerator

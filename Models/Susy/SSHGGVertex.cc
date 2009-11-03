@@ -30,11 +30,9 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
 			     theSinApB(0.), theCosApB(0.), theCouplast(0.), 
 			     theq2last(), theHaveCoeff(false), theLastID(0) {
   //PDG codes for particles at vertices
-  vector<long> first(3,21), second(3,21), third(3);
-  third[0] = 25;
-  third[1] = 35;
-  third[2] = 36;
-  setList(first,second,third);
+  addToList(21,21,25);
+  addToList(21,21,35);
+  addToList(21,21,36);
 }
 
 void SSHGGVertex::doinit() {
@@ -213,7 +211,7 @@ void SSHGGVertex::setCoupling(Energy2 q2, tcPDPtr particle2,
     theLastID = higgs;
     theHaveCoeff = false;
   }
-  setNorm(theCouplast);
+  norm(theCouplast);
   //calculate tensor coefficients
   if( !theHaveCoeff ) {
     VVSLoopVertex::setCoupling(q2, particle2, particle3, particle1);

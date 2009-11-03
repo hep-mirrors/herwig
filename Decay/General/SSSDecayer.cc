@@ -96,7 +96,7 @@ Energy SSSDecayer::partialWidth(PMPair inpart, PMPair outa,
 				     outb.first);
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					outb.second);
-    double c2 = norm(_perturbativeVertex->getNorm());
+    double c2 = norm(_perturbativeVertex->norm());
     Energy pWidth = c2*pcm/8./Constants::pi/scale*UnitRemoval::E2;
     // colour factor
     pWidth *= colourFactor(inpart.first,outa.first,outb.first);

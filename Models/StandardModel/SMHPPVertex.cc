@@ -101,7 +101,7 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
       _couplast = UnitRemoval::E * e2 * g / 8. / _mw/ sqr(Constants::pi);
       _q2last = q2;
     }
-    setNorm(_couplast);
+    norm(_couplast);
     Complex loop(0.);
     // quark loops
     for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
@@ -195,13 +195,11 @@ Complex SMHPPVertex::W2(double lambda) const {
   return 4.*ac;
 }
 
-
 SMHPPVertex::SMHPPVertex() 
   :_couplast(0.),_q2last(),_mw(),massopt(1),
    _minloop(6),_maxloop(6),_CoefRepresentation(1) {
   //PDG codes for particles at vertices
-  vector<long> first(1,22),second(1,22),third(1,25);
-  setList(first,second,third);
+  addToList(22,22,25);
 }
 
 

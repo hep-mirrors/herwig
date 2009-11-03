@@ -57,8 +57,7 @@ void VVSLoopVertex::Init() {
 
 }
 
-void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
-				tcPDPtr) {
+void VVSLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,tcPDPtr) {
   //Kinematic invariants
   double ps2 = invariant(0,0) / MeV2;
   double pv1s = invariant(1,1) / MeV2;

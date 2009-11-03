@@ -246,6 +246,10 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   t = guesst(told,2,ids_,enhance,ids_[1]==ids_[2]);
   z(guessz(2,ids_)); 
   // actual values for z-limits
+  if(t<masssquared_[0])  {
+    t=-1.0*GeV2;
+    return false;
+  }
   limits=make_pair(sqr(minmass/masses_[0]),
 		   1.-masses_[2]/sqrt(t-masssquared_[0])
 		   +0.5*masssquared_[2]/(t-masssquared_[0]));

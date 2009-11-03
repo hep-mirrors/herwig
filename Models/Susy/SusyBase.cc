@@ -60,11 +60,6 @@ void SusyBase::doinit() {
   addVertex(vertexWHH());
   addVertex(vertexHHH());
   StandardModel::doinit();
-  //create fresh BSM info file so it can be appended to later
-  //when decaymodes have been created
-  string name = CurrentGenerator::current().filename() +
-    string("-BSMModelInfo.out");
-  ofstream dummy(name.c_str());
 }
 
 void SusyBase::persistentOutput(PersistentOStream & os) const {
@@ -73,8 +68,8 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
      << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
-     << theGOGOHVertex << theWHHVertex << theGNGVertex
-     << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
+     << theGOGOHVertex << theWHHVertex 
+     << theGNGVertex << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
      << _tolerance;
 }
@@ -85,8 +80,8 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
-     >> theGOGOHVertex >> theWHHVertex >> theGNGVertex
-     >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
+     >> theGOGOHVertex >> theWHHVertex
+     >> theGNGVertex >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
      >> _tolerance;
 }

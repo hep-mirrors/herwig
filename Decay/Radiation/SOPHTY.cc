@@ -15,6 +15,7 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -24,11 +25,11 @@
 using namespace Herwig;
 
 void SOPHTY::persistentOutput(PersistentOStream & os) const {
-  os << _ffdipole << _ifdipole;
+  os << _ffdipole << _ifdipole << _colouredOption;
 }
 
 void SOPHTY::persistentInput(PersistentIStream & is, int) {
-  is >> _ffdipole >> _ifdipole;
+  is >> _ffdipole >> _ifdipole >> _colouredOption;
 }
 
 ClassDescription<SOPHTY> SOPHTY::initSOPHTY;
@@ -52,10 +53,36 @@ void SOPHTY::Init() {
     ("IFDipole",
      "_ifdipole",
      &SOPHTY::_ifdipole, false, false, true, false, false);
+
+  static Switch<SOPHTY,unsigned int> interfaceColouredTreatment
+    ("ColouredTreatment",
+     "Option for the treatment of QED radiation in decays involving coloured particles.",
+     &SOPHTY::_colouredOption, 0, false, false);
+  static SwitchOption interfaceColouredTreatmentNone
+    (interfaceColouredTreatment,
+     "None",
+     "Generate no QED radiation to avoid problems with the interplay"
+     " of QCD and QED radiation",
+     0);
+  static SwitchOption interfaceColouredTreatmentRadiation
+    (interfaceColouredTreatment,
+     "Radiation",
+     "Generate radiation from the coloured particles.",
+     1);
+
 }
 
 ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector children) {
   if(children.size()!=2) return children;
+  // if not generating radiation from coloured particles
+  // return if there are any coloured particles
+  if(_colouredOption==0) {
+    bool coloured = p.dataPtr()->coloured();
+    for(unsigned int ix=0;ix<children.size();++ix) {
+      coloured |= children[ix]->dataPtr()->coloured();
+    }
+    if(coloured) return children;
+  }
   useMe();
   // final-final dipole
   if(p.dataPtr()->iCharge()==0) {

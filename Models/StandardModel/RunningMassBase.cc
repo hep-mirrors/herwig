@@ -16,7 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void RunningMassBase::persistentOutput(PersistentOStream & os) const {
@@ -37,4 +37,8 @@ void RunningMassBase::Init() {
      "calculations");
   
 }
+
+void RunningMassBase::doinit() {
+  _theMass = mass();
+  Interfaced::doinit();
 }

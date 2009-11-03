@@ -25,8 +25,7 @@ SMHGGVertex::SMHGGVertex()
   :_couplast(0.),_q2last(ZERO),_mw(),massopt(1),_minloop(6),
    _maxloop(6),_CoefRepresentation(1) {
   //PDG codes for particles at vertices
-  vector<long> first(1,21),second(1,21),third(1,25);
-  setList(first,second,third);
+  addToList(21,21,25);
 }
 
 void SMHGGVertex::doinit() {
@@ -140,7 +139,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
       _couplast = UnitRemoval::E * gs2 * g / 16. / _mw/ sqr(Constants::pi);
       _q2last = q2;
     }
-    setNorm(_couplast);
+    norm(_couplast);
     Complex loop(0.);
     for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
       tcPDPtr qrk = getParticleData(i);
@@ -160,7 +159,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
       _couplast = 0.25*sqr(strongCoupling(q2))*weakCoupling(q2);
       _q2last = q2;
     }
-    setNorm(_couplast);
+    norm(_couplast);
     unsigned int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
     masses.resize(delta,ZERO);

@@ -22,6 +22,16 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "DecayConstructor.h"
 
+#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVSSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVTVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractFFTVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractSSTVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractSSSVertex.fh"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
+
 using namespace Herwig;
 using ThePEG::Helicity::VertexBasePtr;
 
@@ -83,10 +93,10 @@ vector<TwoBodyDecay> TwoBodyDecayConstructor::
 createModes(tPDPtr inpart, VertexBasePtr vertex,
 	    unsigned int list, unsigned int iv) {
   int id = inpart->id();
-  if( id < 0 || !vertex->incoming(id) || vertex->getNpoint() != 3 )
+  if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return vector<TwoBodyDecay>();
   Energy m1(inpart->mass());
-  tPDVector decaylist = vertex->search(list, id);
+  tPDVector decaylist = vertex->search(list, inpart);
   vector<TwoBodyDecay> decays;
   tPDVector::size_type nd = decaylist.size();
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
@@ -111,6 +121,7 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vertex,
 					    unsigned int ivert) {
   if( _theExistingDecayers[ivert][icol] ) return;
   string name;
+  using namespace Helicity::VertexType;
   switch(vertex->getName()) {
   case FFV :
     name = ( icol == 0 || icol == 1) ? "FFVDecayer" : "VFFDecayer";

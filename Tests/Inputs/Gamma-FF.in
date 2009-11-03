@@ -1,0 +1,17 @@
+read Gamma.common
+cd /Herwig/MatrixElements
+insert SimpleGammaGamma:MatrixElements 0 /Herwig/MatrixElements/MEgg2ff
+cd /Herwig/Generators
+create Herwig::GammaMETest TestFF GammaTest.so
+insert GammaGammaGenerator:AnalysisHandlers 0 TestFF
+set GammaGammaGenerator:EventHandler:CascadeHandler NULL
+set GammaGammaGenerator:EventHandler:HadronizationHandler NULL
+
+set /Herwig/Particles/tau-:Stable Stable
+set /Herwig/Particles/tau+:Stable Stable
+set /Herwig/Particles/t:Stable Stable
+set /Herwig/Particles/tbar:Stable Stable
+
+set /Herwig/ACDCSampler:Ntry 100000
+saverun Gamma-FF GammaGammaGenerator
+

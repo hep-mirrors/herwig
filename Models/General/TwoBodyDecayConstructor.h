@@ -18,7 +18,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::VertexType;
+
 using Helicity::VertexBasePtr;
 
 //typedef pair<tPDPtr, tPDPair> TwoBodyDecay;

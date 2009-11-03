@@ -16,7 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void RSModelVVGRVertex::persistentOutput(PersistentOStream & os) const {
@@ -37,7 +37,22 @@ void RSModelVVGRVertex::Init() {
   
 }
   
-void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
-{setNorm(Complex(UnitRemoval::E * _theKappa));}
+void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr) {
+  norm(Complex(UnitRemoval::E * _theKappa));
 }
 
+RSModelVVGRVertex::RSModelVVGRVertex() {
+  addToList(23,23,39);
+  addToList(22,22,39);
+  addToList(24,-24,39);
+  addToList(21,21,39);
+    _theKappa=InvEnergy();
+}
+
+void RSModelVVGRVertex::doinit() {
+  VVTVertex::doinit();
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+  else{throw InitException();}
+}

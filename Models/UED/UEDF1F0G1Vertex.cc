@@ -20,22 +20,15 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 UEDF1F0G1Vertex::UEDF1F0G1Vertex() : theq2Last(ZERO), theCoupLast(0.) {
-  vector<long> anti, ferm, boson(24, 5100021);
+  long boson = 5100021;
   //QQ
   for(long i = 1; i < 7; ++i) {
-    anti.push_back(-i);
-    ferm.push_back(i + 5100000);
-    anti.push_back(-(i + 5100000));
-    ferm.push_back(i);
+    addToList(-i, i + 5100000, boson);
+    addToList(-(i + 5100000), i, boson);
+
+    addToList(-i, i + 6100000, boson);
+    addToList(-(i + 6100000), i, boson);
   }
-  for(long i = 1; i < 7; ++i) {
-    anti.push_back(-i);
-    ferm.push_back(i + 6100000);
-    anti.push_back(-(i + 6100000));
-    ferm.push_back(i);
-    
-  }
-  setList(anti, ferm, boson);
 }
 
 NoPIOClassDescription<UEDF1F0G1Vertex> UEDF1F0G1Vertex::initUEDF1F0G1Vertex;
@@ -79,15 +72,15 @@ void UEDF1F0G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       theq2Last = q2;
       theCoupLast = -strongCoupling(q2);
     }
-    setNorm(theCoupLast);
+    norm(theCoupLast);
     int state = abs(ifermN)/1000000;
     if(state == 5) {
-      setLeft(1.);
-      setRight(0.);
+      left(1.);
+      right(0.);
     }
     else {
-      setLeft(0.);
-      setRight(1.);
+      left(0.);
+      right(1.);
     }
   }
   else
@@ -95,4 +88,10 @@ void UEDF1F0G1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				 << "There is an unknown particle in this vertex! "
 				 << ifermN
 				 << Exception::warning;
+}
+
+void UEDF1F0G1Vertex::doinit() {
+  FFVVertex::doinit();
+  orderInGs(1);
+  orderInGem(0);
 }

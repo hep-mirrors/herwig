@@ -33,10 +33,9 @@ SSHPPVertex::SSHPPVertex() : theSw(0.), theMw(), theZfact(),
 			     theCouplast(0.), 
 			     theq2last(), theHaveCoeff(false), theLastID(0) {
   //PDG codes for particles at vertices
-  //PDG codes for particles at vertices
-  vector<long> first(3,22),second(3,22),third(1,25);
-  third.push_back(35);
-  third.push_back(36);
+  addToList(22,22,25);
+  addToList(22,22,35);
+  addToList(22,22,36);
 }
 
 void SSHPPVertex::persistentOutput(PersistentOStream & os) const {

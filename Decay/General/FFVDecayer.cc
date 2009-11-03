@@ -140,7 +140,7 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
       _perturbativeVertex->setCoupling(sqr(inpart.second),inpart.first,
 				       outb.first,outa.first);
     }
-    Complex cl(_perturbativeVertex->getLeft()),cr(_perturbativeVertex->getRight());
+    Complex cl(_perturbativeVertex->left()),cr(_perturbativeVertex->right());
     double me2(0.);
     if( mu2 > 0. ) {
       me2 = (norm(cl) + norm(cr))*(1. + sqr(mu1*mu2) + sqr(mu2) 
@@ -154,7 +154,7 @@ Energy FFVDecayer::partialWidth(PMPair inpart, PMPair outa,
 		 - 4.*mu1*(conj(cl)*cr + conj(cr)*cl).real() );
     Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.second, outa.second,
 					outb.second);
-    Energy output = norm(_perturbativeVertex->getNorm())*me2*pcm/16./Constants::pi; 
+    Energy output = norm(_perturbativeVertex->norm())*me2*pcm/16./Constants::pi; 
     // colour factor
     output *= colourFactor(inpart.first,outa.first,outb.first);
     // return the answer 

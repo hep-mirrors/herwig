@@ -20,11 +20,27 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/ClusterSequence.hh"
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
+
+namespace {
+
+  struct ChargedFinalState {
+    static bool AllCollisions() { return false; }
+    static bool AllSteps() { return false; }
+    // ===
+    // pick the last instance from the shower
+    static bool FinalState() { return true; }
+    static bool Intermediate() { return false; }
+    // ===
+    static bool Check(const Particle & p) { 
+      return ParticleTraits<Particle>::iCharge(p);
+    }
+  };
+  
+}
 
 void LEPFourJetsAnalysis::persistentOutput(PersistentOStream & os) const {
   os << _charged;
@@ -38,7 +54,8 @@ void LEPFourJetsAnalysis::analyze(tEventPtr event, long, int, int ) {
   tPVector particles;
 
   if (_charged) {
-    event->select(back_inserter(particles),SelectCharged());
+    event->select(back_inserter(particles),
+		  ThePEG::ParticleSelector<ChargedFinalState>());
   } else {
     event->select(back_inserter(particles),SelectFinalState());
   }
@@ -76,7 +93,7 @@ void LEPFourJetsAnalysis::analyze(tEventPtr event, long, int, int ) {
 			  << Exception::warning;
       }
       LorentzMomentum newjet(sorted[j].px()*GeV, sorted[j].py()*GeV, 
-			  sorted[j].pz()*GeV, sorted[j].e()*GeV);
+			     sorted[j].pz()*GeV, sorted[j].e()*GeV);
       jets.push_back(newjet);
     }
     *_cchiBZ += abs(cosChiBZ(jets));

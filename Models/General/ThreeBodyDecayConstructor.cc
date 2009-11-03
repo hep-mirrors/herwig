@@ -47,20 +47,26 @@ void ThreeBodyDecayConstructor::Init() {
   static ClassDocumentation<ThreeBodyDecayConstructor> documentation
     ("The ThreeBodyDecayConstructor class constructs the three body decay modes");
 
-  static Switch<ThreeBodyDecayConstructor,bool> interfaceRemoveOnShell
+  static Switch<ThreeBodyDecayConstructor,unsigned int> interfaceRemoveOnShell
     ("RemoveOnShell",
      "Remove on-shell diagrams as should be treated as a sequence of 1->2 decays",
-     &ThreeBodyDecayConstructor::_removeOnShell, true, false, false);
-  static SwitchOption interfaceRemoveOnShellRemove
+     &ThreeBodyDecayConstructor::_removeOnShell, 1, false, false);
+  static SwitchOption interfaceRemoveOnShellYes
     (interfaceRemoveOnShell,
      "Yes",
-     "Remove the diagrams",
-     true);
-  static SwitchOption interfaceRemoveOnShellKeep
+     "Remove the diagrams if neither the production of decay or the intermediate"
+     " can happen",
+     1);
+  static SwitchOption interfaceRemoveOnShellNo
     (interfaceRemoveOnShell,
      "No",
-     "Don't remove the diagrams",
-     false);
+     "Never remove the intermediate",
+     0);
+  static SwitchOption interfaceRemoveOnShellProduction
+    (interfaceRemoveOnShell,
+     "Production",
+     "Remove the diagram if the on-shell production of the intermediate is allowed",
+     2);
 
   static Switch<ThreeBodyDecayConstructor,bool> interfaceIncludeOnShellTop
     ("IncludeOnShellTop",
@@ -212,32 +218,34 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
       // if needed remove intermediate diagrams where intermediate can be
       // on shell
       Energy mint = dit->intermediate->mass();
-      if( min> ( mout[0] + mint ) &&
-	  mint > ( mout[1] + mout[2] )) {
-	// special for top
-	if(abs(dit->incoming)==ParticleID::t&&
-	   abs(dit->intermediate->id())==ParticleID::Wplus) {
-	  if(!_includeTopOnShell) continue;
+      if( min> mout[0] + mint ) {
+	if(_removeOnShell==2) continue;
+	if(mint > mout[1] + mout[2] ) {
+	  // special for top
+	  if(abs(dit->incoming)==ParticleID::t&&
+	     abs(dit->intermediate->id())==ParticleID::Wplus) {
+	    if(!_includeTopOnShell) continue;
+	  }
+	  // general
+	  else if(_removeOnShell==1) {
+	    continue;
+	  }
+	  if(dit->intermediate->width()==0.*GeV) {
+	    Throw<InitException>() 
+	      << "Trying to include on-shell diagram for "
+	      << getParticleData(dit->incoming)->PDGName() << " -> "
+	      << getParticleData(dit->outgoing)->PDGName() << " "
+	      << getParticleData(dit->outgoingPair.first )->PDGName() << " "
+	      << getParticleData(dit->outgoingPair.second)->PDGName()
+	      << " with intermediate " << dit->intermediate->PDGName()
+	      << " with zero width.\n"
+	      << "You should make sure that the width for the intermediate is either"
+	      << " read from an SLHA file or the intermediate is included in the "
+	      << "DecayParticles list of the ModelGenerator.\n"
+	      << Exception::runerror;
+	  }
+	  possibleOnShell = true;
 	}
-	// general
-	else if(_removeOnShell) {
-	  continue;
-	}
-	if(dit->intermediate->width()==0.*GeV) {
-	  Throw<InitException>() 
-	    << "Trying to include on-shell diagram for "
-	    << getParticleData(dit->incoming)->PDGName() << " -> "
-	    << getParticleData(dit->outgoing)->PDGName() << " "
-	    << getParticleData(dit->outgoingPair.first )->PDGName() << " "
-	    << getParticleData(dit->outgoingPair.second)->PDGName()
-	    << " with intermediate " << dit->intermediate->PDGName()
-	    << " with zero width.\n"
-	    << "You should make sure that the width for the intermediate is either"
-	    << " read from an SLHA file or the intermediate is included in the "
-	    << "DecayParticles list of the ModelGenerator.\n"
-	    << Exception::runerror;
-	}
-	possibleOnShell = true;
       }
 
       // check if should be added to an existing decaymode
@@ -296,9 +304,9 @@ void ThreeBodyDecayConstructor::DecayList(const vector<PDPtr> & particles) {
 vector<TwoBodyPrototype> ThreeBodyDecayConstructor::
 createPrototypes(tPDPtr inpart, VertexBasePtr vertex, unsigned int list) {
   int id = inpart->id();
-  if( id < 0 || !vertex->incoming(id) || vertex->getNpoint() != 3 )
+  if( id < 0 || !vertex->isIncoming(inpart) || vertex->getNpoint() != 3 )
     return vector<TwoBodyPrototype>();
-  tPDVector decaylist = vertex->search(list, id);
+  tPDVector decaylist = vertex->search(list, inpart);
   vector<TwoBodyPrototype> decays;
   tPDVector::size_type nd = decaylist.size();
   for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
@@ -323,8 +331,8 @@ expandPrototype(TwoBodyPrototype proto, VertexBasePtr vertex,unsigned int list) 
     tPDPtr other = proto.outgoing.second;
     if(ix==1) swap(dec,other);
     int id = dec->id();
-    if( !vertex->incoming(id) ) continue;
-    tPDVector decaylist = vertex->search(list, id);
+    if( !vertex->isIncoming(dec) ) continue;
+    tPDVector decaylist = vertex->search(list, dec);
     tPDVector::size_type nd = decaylist.size();
     for( tPDVector::size_type i = 0; i < nd; i += 3 ) {
       tPDPtr pa(decaylist[i]), pb(decaylist[i + 1]), pc(decaylist[i + 2]);
@@ -615,7 +623,7 @@ getColourFactors(tcPDPtr incoming, const OrderedParticles & outgoing,
 
 void ThreeBodyDecayConstructor::doinit() {
   NBodyDecayConstructorBase::doinit();
-  if(!_removeOnShell) 
+  if(_removeOnShell==0) 
     generator()->log() << "Warning: Including diagrams with on-shell "
 		       << "intermediates in three-body BSM decays, this"
 		       << " can lead to double counting and is not"
