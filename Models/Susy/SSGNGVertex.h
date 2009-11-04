@@ -1,41 +1,43 @@
 // -*- C++ -*-
 //
-// SSNFSVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SSGNGVertex.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_SSNFSVertex_H
-#define HERWIG_SSNFSVertex_H
+#ifndef HERWIG_SSGNGVertex_H
+#define HERWIG_SSGNGVertex_H
 //
-// This is the declaration of the SSNFSVertex class.
+// This is the declaration of the SSGNGVertex class.
 //
 
-#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "MSSM.h"
+#include "ThePEG/Helicity/Vertex/Vector/GeneralFFVVertex.h"
+#include "Herwig++/Models/Susy/MSSM.h"
+#include "Herwig++/Models/Susy/MixingMatrix.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /**
- * This is the implementation of the coupling of the neutralinos to 
- * fermion-sfermions. It inherits from FFSVertex and implements the 
- * virtual setCoupling() method.
- * 
- * @see FFSVertex
+ * This class implements the coupling of a photon to a pair of neutralinos
+ * via loop diagrams
+ * It inherits from GeneralFFVertex and implements the setCoupling method.
+ *
+ * @see \ref SSGNGVertexInterfaces "The interfaces"
+ * defined for SSGNGVertex.
+ * @see FFVertex
  */
-class SSNFSVertex: public FFSVertex {
+class SSGNGVertex: public GeneralFFVVertex {
 
 public:
 
-   /**
+  /**
    * The default constructor.
    */
-  SSNFSVertex();
+  SSGNGVertex();
 
- public:
+public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -90,10 +92,19 @@ protected:
 
 protected:
 
+  /**
+   *  Evaluate the loop integrals
+   */
+  void loopIntegrals(Energy Mi, Energy Mj, Energy M, Energy m,
+		     complex<InvEnergy2> & I, complex<InvEnergy2> & J,
+		     complex<InvEnergy2> & K, complex<InvEnergy2> & I2);
+
+protected:
+
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object after the setup phase before saving and
+   * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
@@ -106,13 +117,15 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<SSNFSVertex> initSSNFSVertex;
+  static ClassDescription<SSGNGVertex> initSSGNGVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  SSNFSVertex & operator=(const SSNFSVertex &);
+  SSGNGVertex & operator=(const SSGNGVertex &);
+
+private:
 
   /**
    * Pointer to the stop mixing matrix
@@ -125,27 +138,12 @@ private:
   tMixingMatrixPtr _sbot;
 
   /**
-   * Pointer to the stau mixing matrix
-   */
-  tMixingMatrixPtr _stau;
-  
-  /**
-   * Pointer to the neutralino mixing matrix
-   */
-  tMixingMatrixPtr _nmix;
- 
-  /**
-   * Pointer to the Susy Model object
-   */
-  tMSSMPtr _theSS;
-
-  /**
-   * \f$\sin(\theta_w)\f$
+   * The value of \f$sin(\theta_W)\f$
    */
   double _sw;
-
+  
   /**
-   * \f$\cos(\theta_w)\f$
+   * The value of \f$cos(\theta_W)\f$
    */
   double _cw;
   
@@ -165,46 +163,37 @@ private:
   double _cb;
 
   /**
-   * The scale at which the coupling was last evaluated. 
+   * Store the neutralino mixing matrix
+   */
+  tMixingMatrixPtr _theN;
+
+  /**
+   * Store the id of the neutralino when the coupling was last evaluated
+   */
+  long _idlast;
+
+  /**
+   * Store the value at which the coupling when it was last evalutated
    */
   Energy2 _q2last;
 
   /**
-   * The value of the normalisation when it was evaluated at _q2last 
+   * Store the value of the coupling when it was last evalutated
    */
   Complex _couplast;
-  
-  /**
-   * Store the value of the left coupling when it was last evaluated
-   */
-  Complex _leftlast;
 
   /**
-   * Store the value of the right coupling when it was last evaluated
+   * Store the value of the left-coupling when it was last evalutated
    */
-  Complex _rightlast;
+  complex<InvEnergy> _leftlast;
 
   /**
-   * Store the id of the last neutralino to be evaluate
+   * Store the value of the right-coupling when it was last evalutated
    */
-  long _id1last;
-  
-  /**
-   * Store the id of the last SM fermion to be evaluate
-   */
-  long _id2last;
-
-  /**
-   * Store the id of the last scalar to be evaluate
-   */
-  long _id3last;
-
-  /**
-   *  Include Yukawa's ?
-   */
-  bool yukawa_;
+  complex<InvEnergy> _rightlast;
 };
 }
+
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -213,23 +202,27 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of SSNFSVertex. */
+ *  base classes of SSGNGVertex. */
 template <>
-struct BaseClassTrait<Herwig::SSNFSVertex,1> {
-  /** Typedef of the first base class of SSNFSVertex. */
-  typedef ThePEG::Helicity::FFSVertex NthBase;
+struct BaseClassTrait<Herwig::SSGNGVertex,1> {
+  /** Typedef of the first base class of SSGNGVertex. */
+  typedef ThePEG::Helicity::GeneralFFVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the SSNFSVertex class and the shared object where it is defined. */
+ *  the SSGNGVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SSNFSVertex>
-  : public ClassTraitsBase<Herwig::SSNFSVertex> {
+struct ClassTraits<Herwig::SSGNGVertex>
+  : public ClassTraitsBase<Herwig::SSGNGVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::SSNFSVertex"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SSNFSVertex class and every other class it uses
-   *  (except the base class). */
+  static string className() { return "Herwig::SSGNGVertex"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * SSGNGVertex is implemented. It may also include several, space-separated,
+   * libraries if the class SSGNGVertex depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
   static string library() { return "HwSusy.so"; }
 };
 
@@ -237,4 +230,4 @@ struct ClassTraits<Herwig::SSNFSVertex>
 
 }
 
-#endif /* HERWIG_SSNFSVertex_H */
+#endif /* HERWIG_SSGNGVertex_H */
