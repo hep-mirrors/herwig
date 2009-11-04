@@ -371,8 +371,8 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   if(y== 1.&&a->id()!=21)
     cout << "\nCtilde_gq::for Cgq^plus  a must be a gluon! id = " 
 	 << a->id() << "\n";
-  if(y== 1.&&!(abs(b->id())>0&&abs(b->id())<7)) 
-    cout << "\nCtilde_gq::for Cgq^minus b must be a quark! id = " 
+  if(y==-1.&&b->id()!=21) 
+    cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = " 
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
   double etabar_pm = y == 1. ? etabarp_ : etabarm_ ;
