@@ -14,6 +14,8 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/PDT/StandardMatchers.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+//ACDC test
+//#include "ThePEG/Repository/UseRandom.h"
 
 using namespace Herwig;
 
@@ -22,27 +24,36 @@ MEPP2HiggsVBFPowheg::MEPP2HiggsVBFPowheg()
 {}
 
 int MEPP2HiggsVBFPowheg::nDim() const {
-  return MEPP2HiggsVBF::nDim()+3;
+  //ACDC test 
+  // return 0;
+    return MEPP2HiggsVBF::nDim()+3;
 }
-
+//ACDC test (delete r)
 bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
+  //bool MEPP2HiggsVBFPowheg::generateKinematics(const double * ) {
   int ndim = nDim();
-  double r3 = r[ndim-3];
+  //ACDC test
+   double r3 = r[ndim-3];
+   //double r3 = UseRandom::rnd();
+
   // Born kinematics
-  if(!MEPP2HiggsVBF::generateKinematics(r)) return false;
+  //ACDC test (comment next line out)
+   if(!MEPP2HiggsVBF::generateKinematics(r)) return false;
+
   // hadron and momentum fraction
   // set Q2 process momenta
-  if(r3 > 0.5) {
-    r3 = 2.*(r3-0.5);
+
+        if(r3 > 0.5) {
+        r3 = 2.*(r3-0.5);
     if(lastPartons().first ->dataPtr()==mePartonData()[0]&&
        lastPartons().second->dataPtr()==mePartonData()[1]) {
       _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().first->dataPtr());
       _xB = lastX1();
-    }
+          }
     else {
       _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
       _xB = lastX2();
-    }
+      }
     _partons[0] = mePartonData()[0]; 
     _partons[1] = mePartonData()[1]; 
     _partons[4] = mePartonData()[4];
@@ -62,9 +73,9 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
       _partons[2] = mePartonData()[3];
       _partons[3] = mePartonData()[2];
     }
-  }
-  else {
-    r3 = 2.*r3;
+      }
+else {
+      r3 = 2.*r3;
     if(lastPartons().first ->dataPtr()==mePartonData()[0]&&
        lastPartons().second->dataPtr()==mePartonData()[1]) {
       _hadron = dynamic_ptr_cast<tcBeamPtr>(lastParticles().second->dataPtr());
@@ -93,7 +104,7 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
       _partons[2] = mePartonData()[2];
       _partons[3] = mePartonData()[3];
     }
-  }
+    }
   // LO Momenta assignment
   _loMomenta[0] = _pb;
   _loMomenta[1] = _pbother;
@@ -101,11 +112,18 @@ bool MEPP2HiggsVBFPowheg::generateKinematics(const double * r) {
   _loMomenta[3] = _pcother;
   _pa =  _pc-_pb;
   // xp
-  double rhomin = pow(1.-_xB,1.-power_); 
+  double rhomin = pow(1.-_xB,1.-power_);
+
+  //ACDC test 
   double rho = r[ndim-1]*rhomin;
+  //double rho = UseRandom::rnd()*rhomin;
+
   _xp = 1.-pow(rho,1./(1.-power_));
-  // zp 
+  // zp
+  //ACDC test  
     _zp = r[ndim-2];
+    //_zp = UseRandom::rnd();
+
   // phi
   _phi = r3*Constants::twopi;
   jac_  = rhomin/(1.-power_)*pow(1.-_xp,power_);
@@ -371,7 +389,7 @@ double MEPP2HiggsVBFPowheg::NLOWeight() const {
       loME  = loMatrixElement(p2     ,p2other,p1     ,p1other,G1,G2);
     }
   }
-  if(1-_xp > 1e-10){
+  if(1-_xp > 1e-10 && 1.-_zp > 1e-10){
   // q -> qg term
   double real1   = (term1+sqr(_xp)*sqr(x2)*term2)/loME;
   double dipole1 = (sqr(_xp)+sqr(_zp));
