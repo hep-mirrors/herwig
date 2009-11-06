@@ -79,7 +79,7 @@ public:
    * Default constructor.
    */
   DecayIntegrator() : _niter(10), _npoint(10000), _ntry(500),
-		      _generateinter(false),_outputmodes(false) {}
+		      _generateinter(false) {}
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -416,11 +416,6 @@ private:
    * The helicity matrix element for the current decay
    */
   mutable DecayMatrixElement _matrixelement;
-
-  /**
-   *  Output the phase space channels for testing
-   */
-  bool _outputmodes;
   
 };
   /**

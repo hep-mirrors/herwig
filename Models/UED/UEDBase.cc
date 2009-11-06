@@ -376,14 +376,11 @@ void UEDBase::resetMass(long id, Energy mass) {
 
 void UEDBase::writeSpectrum() {
   sort(theMasses.begin(), theMasses.end(), lowerMass);
-  string filename = CurrentGenerator::current().filename() + 
-    string("-BSMModelInfo.out");
-  ofstream ofs(filename.c_str(), ios::out|ios::app);
+  ostream & ofs = CurrentGenerator::current().misc();
   ofs << "# MUED Model Particle Spectrum\n"
       << "# R^-1: " << theInvRadius/GeV << " GeV\n"
       << "# Lambda * R: " << theLambdaR << "\n"
-      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
-      << endl;
+      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV\n";
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
   while (!theMasses.empty()) {
     IDMassPair tmp = theMasses.back();
