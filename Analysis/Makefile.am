@@ -1,5 +1,3 @@
-SUBDIRS = BSM
-
 pkglib_LTLIBRARIES = HwAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 8:0:0
 HwAnalysis_la_SOURCES = \
