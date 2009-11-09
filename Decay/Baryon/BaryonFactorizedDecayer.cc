@@ -429,7 +429,6 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
 					 const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
-  useMe();
   Energy scale;
   // extract the spins of the particles
   vector<PDT::Spin> spin;
@@ -557,7 +556,6 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
 					      const Particle & inpart,
 					      const ParticleVector & decay,
 					      MEOption meopt) const {
-  useMe();
   // spins
   Energy scale;
   vector<PDT::Spin> spin(decay.size());

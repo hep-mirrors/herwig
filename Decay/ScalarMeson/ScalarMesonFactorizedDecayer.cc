@@ -493,7 +493,6 @@ double ScalarMesonFactorizedDecayer::me2(const int ichan,
 					 const Particle & part,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
-  useMe();
   // initialisation
   if(meopt==Initialize) {
     ScalarWaveFunction::

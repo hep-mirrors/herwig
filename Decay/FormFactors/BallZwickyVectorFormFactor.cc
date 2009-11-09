@@ -258,7 +258,7 @@ void BallZwickyVectorFormFactor::Init() {
      " light pseudoscalar meson",
      "The form factors of \\cite{Ball:2004rg} for $B_{d,s}\\to\\rho,\\omega,K^*,\\phi$"
      " were used.",
-     "\bibitem{Ball:2004rg} P.~Ball and R.~Zwicky, \n"
+     "\\bibitem{Ball:2004rg} P.~Ball and R.~Zwicky, \n"
      "Phys.\\ Rev.\\  D {\\bf 71} (2005) 014029 [arXiv:hep-ph/0412079].\n"
      "%%CITATION = PHRVA,D71,014029;%%\n");
 
@@ -445,6 +445,7 @@ void BallZwickyVectorFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int 
 							Energy,
 							Complex & A0,Complex & A1,
 							Complex & A2,Complex & V) const {
+  useMe();
   // the form-factors
   // A_0
   if(_A0mR2[mode]<ZERO) {
@@ -481,6 +482,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
 							     int,Energy m0,Energy m1,
 							     Complex & T1,Complex & T2,
 							     Complex & T3) const {
+  useMe();
   // T_1
   if(_T1mR2[mode]<ZERO) {
     T1 = (_T1r1[mode]+_T1r2[mode]/(1.-q2/_T1mfit2[mode]))/(1.-q2/_T1mfit2[mode]);

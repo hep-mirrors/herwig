@@ -50,7 +50,7 @@ void GGtoHHardGenerator::Init() {
   static ClassDocumentation<GGtoHHardGenerator> documentation
     ("The GGtoHHardGenerator class implements the generation of hard QCD radiation in "
      "gg to h0 processes in the POWHEG scheme",
-     "Hard QCD radiation for $gg\to h^0$ processes in the POWHEG scheme \\cite{Hamilton:2009za}.",
+     "Hard QCD radiation for $gg\\to h^0$ processes in the POWHEG scheme \\cite{Hamilton:2009za}.",
      "%\\cite{Hamilton:2009za}\n"
      "\\bibitem{Hamilton:2009za}\n"
      "  K.~Hamilton, P.~Richardson and J.~Tully,\n"

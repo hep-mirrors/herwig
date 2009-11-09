@@ -52,7 +52,7 @@ void MEPP2HiggsPowheg::Init() {
   static ClassDocumentation<MEPP2HiggsPowheg> documentation
     ("The MEPP2HiggsPowheg class implements the matrix elements for"
      " Higgs production (with decay H->W-W+) in hadron-hadron collisions.",
-     "The PP$\to$Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "The PP$\\to$Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
      "%\\cite{Hamilton:2009za}\n"
      "\\bibitem{Hamilton:2009za}\n"
      "  K.~Hamilton, P.~Richardson and J.~Tully,\n"

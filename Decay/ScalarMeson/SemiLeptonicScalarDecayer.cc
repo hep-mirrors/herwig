@@ -183,7 +183,6 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
 				      const Particle & inpart,
 				      const ParticleVector & decay,
 				      MEOption meopt) const {
-  useMe();
   // get the information on the form-factor
   int jspin(0),id0(inpart.id()),id1(decay[0]->id());
   bool cc(false);

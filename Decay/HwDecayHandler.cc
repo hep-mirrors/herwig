@@ -50,6 +50,7 @@ handle(EventHandler &, const tPVector & tagged,
   }
   // if nothing to be decayed return
   if(parents.empty()) return;
+  useMe();
   // Create a new step, decay all particles and add their children to the step
   StepPtr newstep = _newstep ? newStep() : currentStep();
   for(int i = 0, N = parents.size(); i<N; ++i) {
@@ -182,7 +183,16 @@ ClassDescription<HwDecayHandler> HwDecayHandler::initHwDecayHandler;
 void HwDecayHandler::Init() {
 
   static ClassDocumentation<HwDecayHandler> documentation
-    ("This is the handler for decays in Herwig++.");
+    ("This is the handler for decays in Herwig++.",
+     "Decays in Herwig++ include full spin correlations, based on \\cite{Richardson:2001df}.",
+     "%\\cite{Richardson:2001df}\n"
+     "\\bibitem{Richardson:2001df}\n"
+     "  P.~Richardson,\n"
+     "  ``Spin correlations in Monte Carlo simulations,''\n"
+     "  JHEP {\\bf 0111}, 029 (2001)\n"
+     "  [arXiv:hep-ph/0110108].\n"
+     "  %%CITATION = JHEPA,0111,029;%%\n"
+     );
 
   static Switch<HwDecayHandler,bool> interfaceNewStep
     ("NewStep",

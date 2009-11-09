@@ -220,7 +220,6 @@ void SU3BaryonSingletOctetScalarDecayer::Init() {
 void SU3BaryonSingletOctetScalarDecayer::
 halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
 		       Complex& A, Complex& B) const {
-  useMe();
   if(_parity) {
     A=0.;
     B=_prefactor[imode]*(m0+m1);
@@ -235,7 +234,6 @@ halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
 void SU3BaryonSingletOctetScalarDecayer::
 threeHalfHalfScalarCoupling(int imode,Energy m0, Energy m1,Energy,
 			    Complex& A, Complex& B) const {
-  useMe();
   if(_parity) {
     A=_prefactor[imode]*(m0+m1);
     B=0.;

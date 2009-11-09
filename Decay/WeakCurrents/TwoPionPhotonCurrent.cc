@@ -158,8 +158,17 @@ void TwoPionPhotonCurrent::Init() {
   
   static ClassDocumentation<TwoPionPhotonCurrent> documentation
     ("The TwoPionPhotonCurrent class implements the decay "
-     "tau+/- -> pi+/- pi0 gamma via an omega.");
-  
+     "tau+/- -> pi+/- pi0 gamma via an omega.",
+     "The decay $\\tau^\\pm \\to \\omega \\to \\pi^\\pm \\pi^0 \\gamma$ "
+     "is modelled after \\cite{Jadach:1993hs}.",
+     "  %\\cite{Jadach:1993hs}\n"
+     "\\bibitem{Jadach:1993hs}\n"
+     "  S.~Jadach, Z.~Was, R.~Decker and J.~H.~Kuhn,\n"
+     "  %``The Tau Decay Library Tauola: Version 2.4,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 76}, 361 (1993).\n"
+     "  %%CITATION = CPHCB,76,361;%%\n"
+     );
+
   static Parameter<TwoPionPhotonCurrent,Energy2> interfacegrho
     ("grho",
      "The rho meson decay constant.",
@@ -229,6 +238,7 @@ vector<LorentzPolarizationVectorE>
 TwoPionPhotonCurrent::current(const int, const int,Energy & scale,
 			      const ParticleVector & decay,
 			      DecayIntegrator::MEOption meopt) const {
+  useMe();
   vector<LorentzPolarizationVector> temp;
   VectorWaveFunction::
     calculateWaveFunctions(temp,decay[2],outgoing,true);

@@ -46,7 +46,7 @@ void MEPP2WHPowheg::Init() {
   static ClassDocumentation<MEPP2WHPowheg> documentation
     ("The MEPP2WHPowheg class implements the matrix element for the  Bjorken"
      " process q qbar -> WH",
-     "The PP$\to$W Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "The PP$\\to$W Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
      "%\\cite{Hamilton:2009za}\n"
      "\\bibitem{Hamilton:2009za}\n"
      "  K.~Hamilton, P.~Richardson and J.~Tully,\n"

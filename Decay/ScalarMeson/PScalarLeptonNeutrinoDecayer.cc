@@ -223,7 +223,6 @@ void PScalarLeptonNeutrinoDecayer::Init() {
 double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
-  useMe();
   // work out which decay constant to use
   int icoup(0),id(abs(inpart.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {

@@ -67,7 +67,7 @@ void MEqq2gZ2ffPowheg::Init() {
      "q qbar to Standard Model fermions via Z and photon exchange using"
      " helicity amplitude techniques including the NLO correction in"
      " the POWHEG formalism",
-     "The qq$\to\gamma/Z\to$ff POWHEG matrix element is described in \\cite{Hamilton:2008pd}.",
+     "The qq$\\to\\gamma/Z\\to$ff POWHEG matrix element is described in \\cite{Hamilton:2008pd}.",
      "%\\cite{Hamilton:2008pd}\n"
      "\\bibitem{Hamilton:2008pd}\n"
      "  K.~Hamilton, P.~Richardson and J.~Tully,\n"

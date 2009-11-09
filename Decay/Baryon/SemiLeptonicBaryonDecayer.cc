@@ -189,7 +189,6 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
 					   const Particle & inpart,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
-  useMe();
   // extract the leptons
   ParticleVector leptons;
   leptons.push_back(decay[decay.size()-2]);
