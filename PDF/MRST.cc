@@ -359,7 +359,17 @@ void MRST::persistentInput(PersistentIStream & in, int) {
 
 void MRST::Init() {
 
-  static ClassDocumentation<MRST> documentation("Implementation of the MRST PDFs");
+  static ClassDocumentation<MRST> documentation
+    ("Implementation of the MRST PDFs",
+     "Implementation of the MRST LO* / LO** PDFs \\cite{Sherstnev:2007nd}.",
+     "  %\\cite{Sherstnev:2007nd}\n"
+     "\\bibitem{Sherstnev:2007nd}\n"
+     "  A.~Sherstnev and R.~S.~Thorne,\n"
+     "  ``Parton Distributions for LO Generators,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 55} (2008) 553\n"
+     "  [arXiv:0711.2473 [hep-ph]].\n"
+     "  %%CITATION = EPHJA,C55,553;%%\n"
+     );
 
   static Switch<MRST,unsigned int> interfaceInterpolation
     ("Interpolation",
@@ -501,6 +511,7 @@ void MRST::readSetup(istream &is) {
 }
 
 void MRST::initialize(bool reread) {
+  useMe();
   //  int i,n,m,k,l,j; // counters
   double dx,dq,dtemp;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

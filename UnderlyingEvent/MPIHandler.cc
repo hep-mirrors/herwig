@@ -592,12 +592,20 @@ void MPIHandler::Init() {
   static ClassDocumentation<MPIHandler> documentation
     ("The MPIHandler class is the main administrator of the multiple interaction model", 
      "The underlying event was simulated with an eikonal model for multiple partonic interactions."
-     "Details can be found in Ref.~\\cite{Bahr:2008dy}.", 
-     "\\bibitem{Bahr:2008dy}"
-     "M.~Bahr, S.~Gieseke, and M.~H. Seymour, "
-     "{\\it {Simulation of multiple partonic interactions in Herwig++}}, "
-     "arXiv:0803.3633.");
-
+     "Details can be found in Ref.~\\cite{Bahr:2008dy,Bahr:2009ek}.", 
+     "%\\cite{Bahr:2008dy}\n"
+     "\\bibitem{Bahr:2008dy}\n"
+     "  M.~Bahr, S.~Gieseke and M.~H.~Seymour,\n"
+     "  ``Simulation of multiple partonic interactions in Herwig++,''\n"
+     "  JHEP {\\bf 0807}, 076 (2008)\n"
+     "  [arXiv:0803.3633 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0807,076;%%\n"
+    "\\bibitem{Bahr:2009ek}\n"
+     "  M.~Bahr, J.~M.~Butterworth, S.~Gieseke and M.~H.~Seymour,\n"
+     "  ``Soft interactions in Herwig++,''\n"
+     "  arXiv:0905.4671 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0905.4671;%%\n"
+     );
   
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",

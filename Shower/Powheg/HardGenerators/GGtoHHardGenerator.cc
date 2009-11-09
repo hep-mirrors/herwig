@@ -48,7 +48,18 @@ ClassDescription<GGtoHHardGenerator> GGtoHHardGenerator::initGGtoHHardGenerator;
 void GGtoHHardGenerator::Init() {
 
   static ClassDocumentation<GGtoHHardGenerator> documentation
-    ("There is no documentation for the GGtoHHardGenerator class");
+    ("The GGtoHHardGenerator class implements the generation of hard QCD radiation in "
+     "gg to h0 processes in the POWHEG scheme",
+     "Hard QCD radiation for $gg\to h^0$ processes in the POWHEG scheme \\cite{Hamilton:2009za}.",
+     "%\\cite{Hamilton:2009za}\n"
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  ``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  Boson Production,''\n"
+     "  JHEP {\\bf 0904}, 116 (2009)\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
 
   static Reference<GGtoHHardGenerator,ShowerAlpha> interfaceShowerAlpha
     ("ShowerAlpha",

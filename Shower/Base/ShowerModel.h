@@ -61,10 +61,7 @@ public:
   /**
    *  Access to the PartnerFinder object
    */
-  tPartnerFinderPtr partnerFinder() const {
-    useMe();
-    return _partnerfinder;
-  }
+  tPartnerFinderPtr partnerFinder() const { return _partnerfinder; }
 
   /**
    *  Access to the SudakovFormFactor objects

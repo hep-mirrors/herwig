@@ -77,7 +77,23 @@ void UEDBase::Init() {
 
   static ClassDocumentation<UEDBase> documentation
     ("This class implements/stores the necessary information for the simulation"
-     " of a Universal Extra Dimensions model.");
+     " of a Universal Extra Dimensions model.",
+     "Universal extra dimensions model based on \\cite{Cheng:2002iz,Appelquist:2000nn}.",
+     "%\\cite{Cheng:2002iz}\n"
+     "\\bibitem{Cheng:2002iz}\n"
+     "  H.~C.~Cheng, K.~T.~Matchev and M.~Schmaltz,\n"
+     "  ``Radiative corrections to Kaluza-Klein masses,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 66}, 036005 (2002)\n"
+     "  [arXiv:hep-ph/0204342].\n"
+     "  %%CITATION = PHRVA,D66,036005;%%\n"
+     "%\\cite{Appelquist:2000nn}\n"
+     "\\bibitem{Appelquist:2000nn}\n"
+     "  T.~Appelquist, H.~C.~Cheng and B.~A.~Dobrescu,\n"
+     "  ``Bounds on universal extra dimensions,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 64}, 035002 (2001)\n"
+     "  [arXiv:hep-ph/0012100].\n"
+     "  %%CITATION = PHRVA,D64,035002;%%\n"
+   );
 
   static Switch<UEDBase,bool> interfaceRadiativeCorrections
     ("RadiativeCorrections",
@@ -190,6 +206,7 @@ void UEDBase::Init() {
 }
 
 void UEDBase::calculateKKMasses(const unsigned int n) {
+  useMe();
   if(n == 0)
     throw InitException() << "UEDBase::resetKKMasses - "
 			  << "Trying to reset masses with KK number == 0!"

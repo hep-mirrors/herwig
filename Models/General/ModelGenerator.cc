@@ -59,11 +59,18 @@ void ModelGenerator::Init() {
   static ClassDocumentation<ModelGenerator> documentation
     ("This class controls the the use of BSM physics.",
      "BSM physics was produced using the algorithm of "
-     "\\cite{Gigg2007:cr}",
+     "\\cite{Gigg:2007cr,Gigg:2008yc}",
      "\\bibitem{Gigg:2007cr} M.~Gigg and P.~Richardson, \n"
      "Eur.\\ Phys.\\ J.\\  C {\\bf 51} (2007) 989.\n"
-     "%%CITATION = EPHJA,C51,989;%%");
-  
+     "%%CITATION = EPHJA,C51,989;%%\n"
+     " %\\cite{Gigg:2008yc}\n"
+     "\\bibitem{Gigg:2008yc}\n"
+     "  M.~A.~Gigg and P.~Richardson,\n"
+     "  %``Simulation of Finite Width Effects in Physics Beyond the Standard Model,''\n"
+     "  arXiv:0805.3037 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0805.3037;%%\n"
+     );
+ 
   static Reference<ModelGenerator,Herwig::HardProcessConstructor> 
     interfaceHardProcessConstructor
     ("HardProcessConstructor",
@@ -199,8 +206,8 @@ namespace {
 }
 
 void ModelGenerator::doinit() {
-  Interfaced::doinit();
   useMe();
+  Interfaced::doinit();
   // sort DecayParticles list by mass
   sort(_theParticles.begin(),_theParticles.end(),
        massIsLess);
