@@ -155,6 +155,13 @@ public:
   virtual tAbstractSSSVertexPtr vertexHSS() const {
     return theHSFSFVertex;
   }
+
+  /**
+   *  Pointer to the electroweak gauge boson sfermion-sfermion vertex
+   */
+  virtual tAbstractVSSVertexPtr vertexWSFSF() const {
+    return theWSFSFVertex;
+  }
   //@}
 
 protected:
