@@ -51,7 +51,17 @@ void MEPP2HiggsPowheg::Init() {
 
   static ClassDocumentation<MEPP2HiggsPowheg> documentation
     ("The MEPP2HiggsPowheg class implements the matrix elements for"
-     " Higgs production (with decay H->W-W+) in hadron-hadron collisions.");
+     " Higgs production (with decay H->W-W+) in hadron-hadron collisions.",
+     "The PP$\to$Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "%\\cite{Hamilton:2009za}\n"
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  %Boson Production,''\n"
+     "  JHEP {\\bf 0904} (2009) 116\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceContribution
     ("Contribution",

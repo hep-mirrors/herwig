@@ -65,8 +65,16 @@ void MEqq2W2ffPowheg::Init() {
     static ClassDocumentation<MEqq2W2ffPowheg> documentation
     ("The MEqq2W2ffPowheg class implements the matrix element for"
      "q qbar to Standard Model fermions via W exchange using helicity amplitude"
-     "techniques including the NLO correction in the POWHEG formalism");
-
+     "techniques including the NLO correction in the POWHEG formalism",
+     "The qq$\to$W$\to$ff POWHEG matrix element is described in \\cite{Hamilton:2008pd}.",
+     "%\\cite{Hamilton:2008pd}\n"
+     "\\bibitem{Hamilton:2008pd}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  ``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation of Drell-Yan\n"
+     "  Vector Boson Production,''\n"
+     "  JHEP {\\bf 0810} (2008) 015\n"
+     "  [arXiv:0806.0290 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0810,015;%%\n");
    static Switch<MEqq2W2ffPowheg,unsigned int> interfaceContribution
     ("Contribution",
      "Which contributions to the cross section to include",
@@ -168,6 +176,7 @@ CrossSection MEqq2W2ffPowheg::dSigHatDR() const {
 double MEqq2W2ffPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(_contrib==0) return 1.;
+  useMe();
   // Get particle data for QCD particles:
   _parton_a=mePartonData()[0];
   _parton_b=mePartonData()[1];

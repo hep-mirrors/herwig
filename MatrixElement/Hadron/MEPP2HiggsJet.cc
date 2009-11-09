@@ -57,7 +57,7 @@ void MEPP2HiggsJet::Init() {
     ("The MEPP2HiggsJet class implements the matrix elements for"
      " Higgs+Jet production in hadron-hadron collisions.",
      "The theoretical calculations of \\cite{Baur:1989cm} and \\cite{Ellis:1987xu}"
-     "were used for the Higgs+jet matrix element in hadron-hadron collisions.",
+     " were used for the Higgs+jet matrix element in hadron-hadron collisions.",
      "\\bibitem{Baur:1989cm} U.~Baur and E.~W.~N.~Glover,"
      "Nucl.\\ Phys.\\ B {\\bf 339} (1990) 38.\n"
      "\\bibitem{Ellis:1987xu} R.~K.~Ellis, I.~Hinchliffe, M.~Soldate and "

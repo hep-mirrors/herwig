@@ -44,7 +44,19 @@ ClassDescription<MEPP2ZHPowheg> MEPP2ZHPowheg::initMEPP2ZHPowheg;
 void MEPP2ZHPowheg::Init() {
 
   static ClassDocumentation<MEPP2ZHPowheg> documentation
-    ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H");
+    ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H",
+     "The PP$\to$Z Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "%\\cite{Hamilton:2009za}\n"
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  %Boson Production,''\n"
+     "  JHEP {\\bf 0904} (2009) 116\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
+
+
 
    static Switch<MEPP2ZHPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -161,6 +173,7 @@ CrossSection MEPP2ZHPowheg::dSigHatDR() const {
 double MEPP2ZHPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(_contrib==0) return 1.;
+  useMe();
   // Get particle data for QCD particles:
   _parton_a=mePartonData()[0];
   _parton_b=mePartonData()[1];
