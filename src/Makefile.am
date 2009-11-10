@@ -89,8 +89,10 @@ install-data-hook:
 		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
 	fi
 
-uninstall-hook:
+uninstall-hook : unregister-from-thepeg-repo
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+
+unregister-from-thepeg-repo:
 	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
 		then echo Unregistering with ThePEG; \
 		"$(SETUPTHEPEG)" --init defaults/HerwigCleanup.in \
