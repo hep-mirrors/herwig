@@ -477,8 +477,9 @@ void VBFHardGenerator::generateCompton() {
     wgt = 8.*(1.-xp)*zp/comptonWeight_;
     // PDF piece of the weight
     Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
-    wgt *= pdf_->xfx(beam_,partons_[0],scale,xB_/xp)/
-           pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
+   wgt *= pdf_->xfx(beam_,partons_[0],scale,xB_/xp)/
+	  pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
+
     // me piece of the weight
     wgt *= comptonME(xT,xp,zp,phi);
     if(wgt>1.||wgt<0.) generator()->log() << "Compton weight problem " << wgt << "\n";
@@ -532,6 +533,7 @@ void VBFHardGenerator::generateBGF() {
     Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
     wgt *= pdf_->xfx(beam_,gluon_,scale,xB_/xp)/
            pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
+
     // me piece of the weight
     wgt *= BGFME(xT,xp,zp,phi);
     if(wgt>1.||wgt<0.) generator()->log() << "BGF weight problem " << wgt << "\n";
@@ -587,10 +589,10 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
   // W
   if(partons_[0]->id()!=partons_[1]->id()) {
     mb2 = mw2;
-      c0L = 1;
-      c0R = 0;
-      c1L = 1;
-      c1R = 0;
+    c0L = sqrt(0.5);
+    c0R = 0;
+    c1L = sqrt(0.5);
+    c1R = 0;
   }
   // Z
   else {
@@ -628,7 +630,10 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
 	generator()->standardModel()->vd()-
 	generator()->standardModel()->ad();
     }
-
+    c0L *= 0.25;
+    c0R *= 0.25;
+    c1L *= 0.25;
+    c1R *= 0.25;
   }
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
@@ -658,12 +663,15 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
       loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
     }
   }
-
+  if(1-xp > 1e-10 && 1.-zp > 1e-10){
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
 
   return CFfact/((1.-xp)*(1.-zp))*
          (R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2); 
+  } else 
+
+    return 0;
 }
 
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
@@ -695,10 +703,10 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
   // W
   if(partons_[0]->id()!=partons_[1]->id()) {
     mb2 = mw2;
-      c0L = 1;
-      c0R = 0;
-      c1L = 1;
-      c1R = 0;
+    c0L = sqrt(0.5);
+    c0R = 0;
+    c1L = sqrt(0.5);
+    c1R = 0;
   }
   // Z
   else {
@@ -736,7 +744,10 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
 	generator()->standardModel()->vd()-
 	generator()->standardModel()->ad();
     }
-
+    c0L *= 0.25;
+    c0R *= 0.25;
+    c1L *= 0.25;
+    c1R *= 0.25;
   }
   // Matrix element variables
   double G1 = sqr(c0L*c1L)+sqr(c0R*c1R);
@@ -766,11 +777,16 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
       loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
     }
   }
+
+  if(1-xp > 1e-10 && 1.-zp > 1e-10){
   double R3 = sqr(x3)/(sqr(x3)+sqr(xT))*(term3/loME);
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
-  return TRfact*(1.-zp)*
+  return TRfact/(1.-zp)*
          (sqr(xp)*(sqr(x3)+sqr(xT))*R3+
           sqr(xp)*(sqr(x2)+sqr(xT))*R2);
+  } else
+
+    return 0;
 }
 
 Energy4 VBFHardGenerator::
