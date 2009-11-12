@@ -54,8 +54,7 @@ public:
   /**
    * Default constructor.
    */
-  TauDecayer() :_gf(1.16637E-5/GeV2), _polOpt(false), _tauMpol(0.),
-		_tauPpol(0.) {
+  TauDecayer() : _polOpt(false), _tauMpol(0.), _tauPpol(0.) {
     generateIntermediates(true);
   }
 
@@ -164,11 +163,6 @@ private:
   TauDecayer & operator=(const TauDecayer &);
 
 private:
-  
-  /**
-   * Fermi coupling constant, \f$G_F\f$.
-   */
-  InvEnergy2 _gf;
 
   /**
    * mapping of the modes to the currents

@@ -12,6 +12,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 
@@ -577,12 +578,11 @@ Energy BaryonThreeQuarkModelFormFactor::widthIntegrand(double omega,Energy m0,
 						       Energy m1, int type,
 						       int ,int id0,
 						       int id1) {
-  InvEnergy2 GF=1.16639E-5/GeV2;
   // prefactors
   double omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
   double pi=acos(-1.);
-  InvEnergy kw=sqr(GF)/8./pi/pi/pi*m1*m1*m1/6.*
-    (omegamax-omega)*sqrt(omega*omega-1.);
+  InvEnergy kw=sqr(generator()->standardModel()->fermiConstant())
+    /8./pi/pi/pi*m1*m1*m1/6.*(omegamax-omega)*sqrt(omega*omega-1.);
   Energy2 q2 = sqr(m0)+sqr(m1)-2.*m0*m1*omega;
   if(type<=2) {
     Complex f1v,f2v,f3v,f1a,f2a,f3a;

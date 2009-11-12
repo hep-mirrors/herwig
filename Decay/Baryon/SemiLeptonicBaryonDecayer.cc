@@ -25,8 +25,6 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 SemiLeptonicBaryonDecayer::SemiLeptonicBaryonDecayer() {
-  // default value of the fermi constant taken from PDG 2002
-  _gf = 1.16639E-5/GeV2;
   // intermediates
   generateIntermediates(true);
 }
@@ -126,11 +124,11 @@ int SemiLeptonicBaryonDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void SemiLeptonicBaryonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _maxwgt << _modemap << ounit(_gf,1./GeV2);
+  os << _current << _form << _maxwgt << _modemap;
 }
 
 void SemiLeptonicBaryonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _maxwgt >> _modemap >> iunit(_gf,1./GeV2);
+  is >> _current >> _form >> _maxwgt >> _modemap;
 }
 
 ClassDescription<SemiLeptonicBaryonDecayer> SemiLeptonicBaryonDecayer::initSemiLeptonicBaryonDecayer;
@@ -141,13 +139,6 @@ void SemiLeptonicBaryonDecayer::Init() {
   static ClassDocumentation<SemiLeptonicBaryonDecayer> documentation
     ("The SemiLeptonicBaryonDecayer class is designed for"
      " the semi-leptonic decay of the baryons.");
-
-  static Parameter<SemiLeptonicBaryonDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &SemiLeptonicBaryonDecayer::_gf, 1./GeV2, 1.16639E-5/GeV2,
-     -1.0e12*1./GeV2, 1.0e12*1./GeV2,
-     false, false, false);
 
   static Reference<SemiLeptonicBaryonDecayer,LeptonNeutrinoCurrent> interfaceCurrent
     ("Current",
@@ -298,7 +289,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(const int ichan,
       for(ix=decay.size();ix>0;--ix) {
 	if(ix-1!=_ibar) ihel[ix]=(lhel%_constants[ix-1])/_constants[ix];
       }
-      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*_gf;
+      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
     }
   }
   // ckm factor
@@ -461,7 +452,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
       for(unsigned int lhel=0;lhel<lepton.size();++lhel) {
 	ihel[2] = lhel/2;
 	ihel[3] = lhel%2;
-	ME()(ihel) = lepton[lhel].dot(hadron[iya][ixa])*_gf;
+	ME()(ihel) = lepton[lhel].dot(hadron[iya][ixa])*SM().fermiConstant();
       }
     }  
   }
@@ -479,7 +470,6 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(const int ichan,
 void SemiLeptonicBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const {
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi "   << _gf*GeV2 << " \n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     output << "insert " << name() << ":MaximumWeight " << ix << " " 
 	   << _maxwgt[ix] << " \n";

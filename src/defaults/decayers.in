@@ -21,7 +21,6 @@ set Tau1Meson:Iteration 1
 set Tau1Meson:Ntry 500
 set Tau1Meson:Points 10000
 set Tau1Meson:GenerateIntermediates 0 
-set Tau1Meson:GFermi 1.16637e-05
 insert Tau1Meson:WeightLocation 0 0
 insert Tau1Meson:WeightLocation 1 0
 insert Tau1Meson:MaximumWeight 0 0.50
@@ -96,7 +95,6 @@ set Tau2Meson:Iteration 10
 set Tau2Meson:Ntry 500
 set Tau2Meson:Points 10000
 set Tau2Meson:GenerateIntermediates 1 
-set Tau2Meson:GFermi 1.16637e-05
 insert Tau2Meson:WeightLocation 0 0
 insert Tau2Meson:WeightLocation 1 3
 insert Tau2Meson:WeightLocation 2 6
@@ -226,7 +224,6 @@ set Tau4Pion:Iteration 10
 set Tau4Pion:Ntry 2000
 set Tau4Pion:Points 10000
 set Tau4Pion:GenerateIntermediates 1 
-set Tau4Pion:GFermi 1.16637e-05
 insert Tau4Pion:WeightLocation 0 0
 insert Tau4Pion:WeightLocation 1 12
 insert Tau4Pion:MaximumWeight 0 0.24
@@ -688,8 +685,7 @@ create Herwig::TauDecayer  Tau2MesonPhoton
 set Tau2MesonPhoton:Iteration 10
 set Tau2MesonPhoton:Ntry 500
 set Tau2MesonPhoton:Points 10000
-set Tau2MesonPhoton:GenerateIntermediates 1 
-set Tau2MesonPhoton:GFermi 1.16637e-05
+set Tau2MesonPhoton:GenerateIntermediates 1
 insert Tau2MesonPhoton:WeightLocation 0 0
 insert Tau2MesonPhoton:MaximumWeight 0 0.0107705
 insert Tau2MesonPhoton:Weights 0 1
@@ -1092,7 +1088,6 @@ set Tau2Leptons:Iteration 1
 set Tau2Leptons:Ntry 500
 set Tau2Leptons:Points 10000
 set Tau2Leptons:GenerateIntermediates 0
-set Tau2Leptons:GFermi 1.16637e-05
 insert Tau2Leptons:WeightLocation 0 0
 insert Tau2Leptons:WeightLocation 1 1
 insert Tau2Leptons:MaximumWeight 0 1.4
@@ -1440,7 +1435,6 @@ set Tau3Pion:Iteration 10
 set Tau3Pion:Ntry 1000
 set Tau3Pion:Points 10000
 set Tau3Pion:GenerateIntermediates 1 
-set Tau3Pion:GFermi 1.16637e-05
 insert Tau3Pion:WeightLocation 0 0
 insert Tau3Pion:WeightLocation 1 12
 insert Tau3Pion:MaximumWeight 0 2.3
@@ -1935,7 +1929,6 @@ set Tau3Meson:Iteration 10
 set Tau3Meson:Ntry 1000
 set Tau3Meson:Points 10000
 set Tau3Meson:GenerateIntermediates 1 
-set Tau3Meson:GFermi 1.16637e-05
 insert Tau3Meson:WeightLocation 0 0
 insert Tau3Meson:WeightLocation 1 6
 insert Tau3Meson:WeightLocation 2 12
@@ -4100,7 +4093,6 @@ set ISGW:Iteration 1
 set ISGW:Ntry 500
 set ISGW:Points 10000
 set ISGW:GenerateIntermediates 1 
-set ISGW:GFermi 1.16639e-05
 insert ISGW:MaximumWeight 0 5.424e-05
 insert ISGW:MaximumWeight 1 5.41804e-05
 insert ISGW:MaximumWeight 2 3.893e-05
@@ -4959,7 +4951,6 @@ set ISGW2:Iteration 1
 set ISGW2:Ntry 500
 set ISGW2:Points 10000
 set ISGW2:GenerateIntermediates 1 
-set ISGW2:GFermi 1.16639e-05
 insert ISGW2:MaximumWeight 0 3.95005e-05
 insert ISGW2:MaximumWeight 1 3.94637e-05
 insert ISGW2:MaximumWeight 2 2.93349e-05
@@ -6858,7 +6849,6 @@ set PScalarlnu:Iteration 1
 set PScalarlnu:Ntry 500
 set PScalarlnu:Points 100
 set PScalarlnu:GenerateIntermediates 0 
-set PScalarlnu:GFermi 1.16637e-05
 set PScalarlnu:Incoming   0 211
 set PScalarlnu:Leptons    0 2
 set PScalarlnu:MaxWeightElectron 0 0.000138471
@@ -6929,7 +6919,6 @@ set ISGW2Hadronic:Iteration 1
 set ISGW2Hadronic:Ntry 500
 set ISGW2Hadronic:Points 10000
 set ISGW2Hadronic:GenerateIntermediates 1 
-set ISGW2Hadronic:GFermi 1.16639e-05
 set ISGW2Hadronic:a1Bottom 1.1
 set ISGW2Hadronic:a2Bottom -0.24
 set ISGW2Hadronic:a1Charm 1.3
@@ -12471,7 +12460,6 @@ set BaryonLight1:Iteration 1
 set BaryonLight1:Ntry 500
 set BaryonLight1:Points 10000
 set BaryonLight1:GenerateIntermediates 1 
-set BaryonLight1:GFermi 1.16639e-05 
 insert BaryonLight1:MaximumWeight 0 2.29031 
 insert BaryonLight1:MaximumWeight 1 3.98905e-05 
 insert BaryonLight1:MaximumWeight 2 0.000122986 
@@ -12698,7 +12686,6 @@ create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy1
 set BaryonHeavy1:Iteration 1
 set BaryonHeavy1:Ntry 500
 set BaryonHeavy1:Points 10000
-set BaryonHeavy1:GFermi 1.16639e-05 
 insert BaryonHeavy1:MaximumWeight 0 0.224655 
 insert BaryonHeavy1:MaximumWeight 1 0.223647 
 insert BaryonHeavy1:MaximumWeight 2 0.0680859 
@@ -13149,7 +13136,6 @@ create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy2
 set BaryonHeavy2:Iteration 1
 set BaryonHeavy2:Ntry 500
 set BaryonHeavy2:Points 10000
-set BaryonHeavy2:GFermi 1.16639e-05 
 insert BaryonHeavy2:MaximumWeight 0 0.224529 
 insert BaryonHeavy2:MaximumWeight 1 0.220339 
 insert BaryonHeavy2:MaximumWeight 2 0.0563864 
@@ -13323,7 +13309,6 @@ set CharmBaryon1:Iteration 1
 set CharmBaryon1:Ntry 500
 set CharmBaryon1:Points 10000
 set CharmBaryon1:GenerateIntermediates 0 
-set CharmBaryon1:GFermi 1.16639e-05
 set CharmBaryon1:OneOverNc 0
 set CharmBaryon1:Fpi 131.7
 set CharmBaryon1:FK 160.6
@@ -14069,7 +14054,6 @@ create Herwig::SemiLeptonicBaryonDecayer  BaryonHeavy3
 set BaryonHeavy3:Iteration 1
 set BaryonHeavy3:Ntry 500
 set BaryonHeavy3:Points 10000
-set BaryonHeavy3:GFermi 1.16639e-05 
 insert BaryonHeavy3:MaximumWeight 0 0.155059 
 insert BaryonHeavy3:MaximumWeight 1 0.154479 
 insert BaryonHeavy3:MaximumWeight 2 0.0478423 
@@ -14325,7 +14309,6 @@ set WSB:Iteration 1
 set WSB:Ntry 500
 set WSB:Points 10000
 set WSB:GenerateIntermediates 1 
-set WSB:GFermi 1.16639e-05
 insert WSB:MaximumWeight 0 0.21439
 insert WSB:MaximumWeight 1 0.0902162
 insert WSB:MaximumWeight 2 2.29241e-14
@@ -15177,7 +15160,6 @@ create Herwig::BaryonFactorizedDecayer  BottomBaryonScalar
 set BottomBaryonScalar:Iteration 1
 set BottomBaryonScalar:Ntry 500
 set BottomBaryonScalar:Points 10000
-set BottomBaryonScalar:GFermi 1.16639e-05 
 set BottomBaryonScalar:a1Bottom 1.23
 set BottomBaryonScalar:a2Bottom 0.33
 set BottomBaryonScalar:a1Charm 1.1
@@ -15645,7 +15627,6 @@ create Herwig::BaryonFactorizedDecayer  BottomBaryonVector
 set BottomBaryonVector:Iteration 1
 set BottomBaryonVector:Ntry 500
 set BottomBaryonVector:Points 10000
-set BottomBaryonVector:GFermi 1.16639e-05 
 set BottomBaryonVector:a1Bottom 1.23
 set BottomBaryonVector:a2Bottom 0.33
 set BottomBaryonVector:a1Charm 1.1
@@ -17432,7 +17413,6 @@ set Tau1Vector:Iteration 1
 set Tau1Vector:Ntry 500
 set Tau1Vector:Points 10000
 set Tau1Vector:GenerateIntermediates 0 
-set Tau1Vector:GFermi 1.16637e-05
 insert Tau1Vector:WeightLocation 0 0
 insert Tau1Vector:WeightLocation 1 0
 insert Tau1Vector:WeightLocation 2 0
@@ -17515,7 +17495,6 @@ set BZVector:Iteration 1
 set BZVector:Ntry 500
 set BZVector:Points 10000
 set BZVector:GenerateIntermediates 1 
-set BZVector:GFermi 1.16639e-05
 insert BZVector:MaximumWeight 0 0.000599733
 insert BZVector:MaximumWeight 1 0.000579422
 insert BZVector:MaximumWeight 2 0.000339457
@@ -17852,7 +17831,6 @@ set BZScalar:Iteration 1
 set BZScalar:Ntry 500
 set BZScalar:Points 10000
 set BZScalar:GenerateIntermediates 1 
-set BZScalar:GFermi 1.16639e-05
 insert BZScalar:MaximumWeight 0 0.000172345
 insert BZScalar:MaximumWeight 1 0.00017204
 insert BZScalar:MaximumWeight 2 0.00012728
@@ -18006,7 +17984,6 @@ set WSBHadronic:Iteration 1
 set WSBHadronic:Ntry 500
 set WSBHadronic:Points 10000
 set WSBHadronic:GenerateIntermediates 1 
-set WSBHadronic:GFermi 1.16639e-05
 set WSBHadronic:a1Bottom 1.1
 set WSBHadronic:a2Bottom -0.24
 set WSBHadronic:a1Charm 1.3
@@ -19641,7 +19618,6 @@ set Melikhov:Iteration 1
 set Melikhov:Ntry 500
 set Melikhov:Points 10000
 set Melikhov:GenerateIntermediates 1 
-set Melikhov:GFermi 1.16639e-05
 insert Melikhov:MaximumWeight 0 0.000574253
 insert Melikhov:MaximumWeight 1 0.000523847
 insert Melikhov:MaximumWeight 2 0.000240896
@@ -19720,7 +19696,6 @@ set MelikhovStech:Iteration 1
 set MelikhovStech:Ntry 500
 set MelikhovStech:Points 10000
 set MelikhovStech:GenerateIntermediates 1 
-set MelikhovStech:GFermi 1.16639e-05
 insert MelikhovStech:MaximumWeight 0 0.132629
 insert MelikhovStech:MaximumWeight 1 0.113122
 insert MelikhovStech:MaximumWeight 2 0.337711
@@ -21391,7 +21366,6 @@ set BaryonLight2:Iteration 1
 set BaryonLight2:Ntry 500
 set BaryonLight2:Points 10000
 set BaryonLight2:GenerateIntermediates 1 
-set BaryonLight2:GFermi 1.16639e-05 
 insert BaryonLight2:MaximumWeight 0 2.29013 
 insert BaryonLight2:MaximumWeight 1 4.14333e-05 
 insert BaryonLight2:MaximumWeight 2 0.00012764 
@@ -21529,7 +21503,6 @@ set KiselevBc:Iteration 1
 set KiselevBc:Ntry 500
 set KiselevBc:Points 10000
 set KiselevBc:GenerateIntermediates 1 
-set KiselevBc:GFermi 1.16639e-05
 insert KiselevBc:MaximumWeight 0 0.175615
 insert KiselevBc:MaximumWeight 1 0.136474
 insert KiselevBc:MaximumWeight 2 0.137341
@@ -21861,7 +21834,6 @@ set BcHadronic:Iteration 1
 set BcHadronic:Ntry 500
 set BcHadronic:Points 10000
 set BcHadronic:GenerateIntermediates 1 
-set BcHadronic:GFermi 1.16639e-05
 set BcHadronic:a1Bottom 1.14
 set BcHadronic:a2Bottom -0.2
 set BcHadronic:a1Charm 1.2
@@ -22577,7 +22549,6 @@ create Herwig::SemiLeptonicBaryonDecayer  ExcitedLambda
 set ExcitedLambda:Iteration 1
 set ExcitedLambda:Ntry 500
 set ExcitedLambda:Points 10000
-set ExcitedLambda:GFermi 1.16639e-05 
 insert ExcitedLambda:MaximumWeight 0 0.00284407 
 insert ExcitedLambda:MaximumWeight 1 0.00277839 
 insert ExcitedLambda:MaximumWeight 2 0.000412905 
@@ -22884,7 +22855,6 @@ set Tau5Pion:Iteration 10
 set Tau5Pion:Ntry 4000
 set Tau5Pion:Points 10000
 set Tau5Pion:GenerateIntermediates 1 
-set Tau5Pion:GFermi 1.16637e-05
 insert Tau5Pion:WeightLocation 0 0
 insert Tau5Pion:WeightLocation 1 12
 insert Tau5Pion:WeightLocation 2 30
@@ -23049,7 +23019,6 @@ set Tau3Kaon:Iteration 10
 set Tau3Kaon:Ntry 1000
 set Tau3Kaon:Points 10000
 set Tau3Kaon:GenerateIntermediates 1 
-set Tau3Kaon:GFermi 1.16637e-05
 insert Tau3Kaon:WeightLocation 0 0
 insert Tau3Kaon:WeightLocation 1 15
 insert Tau3Kaon:WeightLocation 2 30
@@ -23797,7 +23766,6 @@ set TauKPi:Iteration 5
 set TauKPi:Ntry 500
 set TauKPi:Points 10000
 set TauKPi:GenerateIntermediates 1 
-set TauKPi:GFermi 1.16637e-05
 insert TauKPi:WeightLocation 0 0
 insert TauKPi:WeightLocation 1 5
 insert TauKPi:MaximumWeight 0 0.07
@@ -24124,7 +24092,6 @@ set HQET:Iteration 1
 set HQET:Ntry 500
 set HQET:Points 10000
 set HQET:GenerateIntermediates 1 
-set HQET:GFermi 1.16639e-05
 insert HQET:MaximumWeight 0 0.0762401
 insert HQET:MaximumWeight 1 0.0723751
 insert HQET:MaximumWeight 2 0.0189018
