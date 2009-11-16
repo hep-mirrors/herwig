@@ -27,6 +27,7 @@ using namespace Herwig;
 using Herwig::Math::ReLi2;
 
 MEqq2W2ffPowheg::MEqq2W2ffPowheg() : 
+  _gluon(), _TR(0.5), _CF(4./3.),
   _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
   _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
   _fixedScale(100.*GeV), _scaleFact(1.) {
@@ -49,12 +50,14 @@ Energy2 MEqq2W2ffPowheg::scale() const {
 
 void MEqq2W2ffPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib << _nlo_alphaS_opt << _fixed_alphaS << _a << _p << _gluon
-     << _TR << _CF << _scaleopt << ounit(_fixedScale,GeV) << _scaleFact;
+    //<< _TR << _CF 
+     << _scaleopt << ounit(_fixedScale,GeV) << _scaleFact;
 }
 
 void MEqq2W2ffPowheg::persistentInput(PersistentIStream & is, int) { 
   is >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS >> _a >> _p >> _gluon
-     >> _TR >> _CF >> _scaleopt >> iunit(_fixedScale,GeV) >> _scaleFact;
+    //>> _TR >> _CF 
+     >> _scaleopt >> iunit(_fixedScale,GeV) >> _scaleFact;
 }
 
 ClassDescription<MEqq2W2ffPowheg> MEqq2W2ffPowheg::initMEqq2W2ffPowheg;
