@@ -19,8 +19,9 @@ libclean:
 tests:
 	cd Tests && $(MAKE) $(AM_MAKEFLAGS) tests
 
-## need to unregister the old modules before we install the new ones
-install-recursive: unregister-from-thepeg-repo
+## ThePEG registration
+unregister:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) unregister
 
-unregister-from-thepeg-repo:
-	cd src && $(MAKE) $(AM_MAKEFLAGS) unregister-from-thepeg-repo
+register:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) register
