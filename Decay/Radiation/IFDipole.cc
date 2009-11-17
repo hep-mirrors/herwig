@@ -26,12 +26,12 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 void IFDipole::persistentOutput(PersistentOStream & os) const {
-  os << _alpha << ounit(_emin,GeV) << _nphotonmax << _maxwgt
+  os << _alpha << ounit(_emin,GeV) << _maxwgt
      << _mode  << _maxtry << _energyopt  << _betaopt;
 }
 
 void IFDipole::persistentInput(PersistentIStream & is, int) {
-  is >> _alpha >> iunit(_emin,GeV) >> _nphotonmax >> _maxwgt
+  is >> _alpha >> iunit(_emin,GeV) >> _maxwgt
      >> _mode  >> _maxtry >> _energyopt  >> _betaopt;
 }
 
@@ -83,12 +83,6 @@ void IFDipole::Init() {
     ("MinimumEnergyRest",
      "The minimum energy of the photons in the rest frame of the decaying particle",
      &IFDipole::_emin, MeV, 1.*MeV, ZERO, 10000.0*MeV,
-     false, false, Interface::limited);
-
-  static Parameter<IFDipole,unsigned int> interfaceMaximumNumberOfPhotons
-    ("MaximumNumberOfPhotons",
-     "The maximum number of photons to produce",
-     &IFDipole::_nphotonmax, 20, 1, 1000,
      false, false, Interface::limited);
 
   static Parameter<IFDipole,double> interfaceMaximumWeight

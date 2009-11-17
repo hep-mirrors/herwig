@@ -44,7 +44,7 @@ public:
    */
   FFDipole() :
     _emin(1.e-6*MeV), _eminrest(100*MeV), _eminlab(100*MeV), _emax(),
-    _multiplicity(), _nphotonmax(20), _m(3), _charge(), _qdrf(2),
+    _multiplicity(), _m(3), _charge(), _qdrf(2),
     _qnewdrf(2), _qprf(2), _qnewprf(2), _qlab(2), _qnewlab(2), _dipolewgt(),
     _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(5.0), _mode(1), _maxtry(500),
     _energyopt(1), _betaopt(4), _dipoleopt(), _nweight(0), _wgtsum(0.), _wgtsq(0.),
@@ -252,11 +252,6 @@ private:
    *  Photon multiplicity being generated
    */
   unsigned int _multiplicity;
-
-  /**
-   * Maximum number of photons to generate
-   */
-  unsigned int _nphotonmax;
 
   /**
    *  Masses of the particles involved

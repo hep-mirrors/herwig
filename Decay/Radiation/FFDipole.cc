@@ -27,13 +27,13 @@ using namespace Herwig;
 
 void FFDipole::persistentOutput(PersistentOStream & os) const {
   os << ounit(_emin,GeV) << ounit(_eminrest,GeV) << ounit(_eminlab,GeV) 
-     << _nphotonmax << _maxwgt << _weightOutput
+     << _maxwgt << _weightOutput
      << _mode << _maxtry << _energyopt << _betaopt << _dipoleopt;
 }
 
 void FFDipole::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_emin,GeV) >> iunit(_eminrest,GeV) >> iunit(_eminlab,GeV) 
-     >> _nphotonmax >> _maxwgt >> _weightOutput
+     >> _maxwgt >> _weightOutput
      >> _mode >> _maxtry >> _energyopt >> _betaopt >> _dipoleopt;
 }
 
@@ -106,12 +106,6 @@ void FFDipole::Init() {
     ("MinimumEnergyLab",
      "The minimum energy of the photons in the lab frame",
      &FFDipole::_eminlab, MeV, 100.0*MeV, 1.0*MeV, 10000.0*MeV,
-     false, false, Interface::limited);
-
-  static Parameter<FFDipole,unsigned int> interfaceMaximumNumberOfPhotons
-    ("MaximumNumberOfPhotons",
-     "The maximum number of photons to produce",
-     &FFDipole::_nphotonmax, 20, 1, 1000,
      false, false, Interface::limited);
 
   static Parameter<FFDipole,double> interfaceMaximumWeight
