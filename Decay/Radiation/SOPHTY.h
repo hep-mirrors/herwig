@@ -34,7 +34,7 @@ public:
   /**
    *  Default constructor
    */
-  SOPHTY() : _colouredOption(0) {}
+  SOPHTY() : colouredOption_(0) {}
 
   /**
    *  Member to generate the photons in the decay. This must be implemented
@@ -43,7 +43,8 @@ public:
    * @param children The decay products
    * @return The decay products with additional radiation
    */
-  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children,
+					 tDecayIntegratorPtr decayer);
 
 public:
 
@@ -107,17 +108,17 @@ private:
   /**
    *  The final-final dipole
    */
-  FFDipolePtr _ffdipole;
+  FFDipolePtr FFDipole_;
 
   /**
    *  The initial-final dipole
    */
-  IFDipolePtr _ifdipole;
+  IFDipolePtr IFDipole_;
 
   /**
    *  Option for the treatment of radiation from coloured particles
    */
-  unsigned int _colouredOption;
+  unsigned int colouredOption_;
 };
 
 }
@@ -143,6 +144,10 @@ struct ClassTraits<Herwig::SOPHTY>
   : public ClassTraitsBase<Herwig::SOPHTY> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SOPHTY"; }
+  /** Return the name of the shared library be loaded to get
+   *  access to the DecayRadiationGenerator class and every other class it uses
+   *  (except the base class). */
+  static string library() { return "HwSOPHTY.so"; }
 };
 
 /** @endcond */

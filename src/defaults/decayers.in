@@ -6474,32 +6474,41 @@ set ISGW2FormFactor:OutQuark 197 3
 set ISGW2:FormFactor ISGW2FormFactor 
 
 #
-create Herwig::SMWZDecayer  WZ
-set WZ:ZquarkMax 0 0.43
-set WZ:ZquarkMax 1 0.30
-set WZ:ZquarkMax 2 0.43
-set WZ:ZquarkMax 3 0.30
-set WZ:ZquarkMax 4 0.43
-set WZ:ZleptonMax 0 0.1
-set WZ:ZleptonMax 1 0.2
-set WZ:ZleptonMax 2 0.1
-set WZ:ZleptonMax 3 0.2
-set WZ:ZleptonMax 4 0.1
-set WZ:ZleptonMax 5 0.2
-set WZ:WquarkMax 0 0.9
-set WZ:WquarkMax 1 0.05
-set WZ:WquarkMax 2 0.05
-set WZ:WquarkMax 3 0.9
-set WZ:WquarkMax 4 2.e-05
-set WZ:WquarkMax 5 0.0016
-set WZ:WleptonMax 0 0.33
-set WZ:WleptonMax 1 0.33
-set WZ:WleptonMax 2 0.33
-set WZ:Iteration 1
-set WZ:Ntry 500
-set WZ:Points 10000
-set WZ:GenerateIntermediates 0 
-set WZ:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
+create Herwig::SMZDecayer  ZDecayer HwPerturbativeDecay.so
+set ZDecayer:QuarkMax 0 0.43
+set ZDecayer:QuarkMax 1 0.30
+set ZDecayer:QuarkMax 2 0.43
+set ZDecayer:QuarkMax 3 0.30
+set ZDecayer:QuarkMax 4 0.43
+set ZDecayer:LeptonMax 0 0.1
+set ZDecayer:LeptonMax 1 0.2
+set ZDecayer:LeptonMax 2 0.1
+set ZDecayer:LeptonMax 3 0.2
+set ZDecayer:LeptonMax 4 0.1
+set ZDecayer:LeptonMax 5 0.2
+set ZDecayer:Iteration 1
+set ZDecayer:Ntry 500
+set ZDecayer:Points 10000
+set ZDecayer:GenerateIntermediates 0 
+set ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
+
+
+#
+create Herwig::SMWDecayer  WDecayer
+set WDecayer:QuarkMax 0 0.9
+set WDecayer:QuarkMax 1 0.05
+set WDecayer:QuarkMax 2 0.05
+set WDecayer:QuarkMax 3 0.9
+set WDecayer:QuarkMax 4 2.e-05
+set WDecayer:QuarkMax 5 0.0016
+set WDecayer:LeptonMax 0 0.33
+set WDecayer:LeptonMax 1 0.33
+set WDecayer:LeptonMax 2 0.33
+set WDecayer:Iteration 1
+set WDecayer:Ntry 500
+set WDecayer:Points 10000
+set WDecayer:GenerateIntermediates 0 
+set WDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::PVectorMesonVectorPScalarDecayer  PVectorVP

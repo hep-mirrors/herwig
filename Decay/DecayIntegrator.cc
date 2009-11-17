@@ -361,14 +361,24 @@ InvEnergy DecayIntegrator::threeBodydGammads(const int, const Energy2,
     << Exception::runerror;
 }
 
-bool DecayIntegrator::oneLoopVirtualME(double &, unsigned int ,
-				       const Particle &, 
-				       const ParticleVector &) {
-  return false;
+double DecayIntegrator::oneLoopVirtualME(unsigned int ,
+					 const Particle &, 
+					 const ParticleVector &) {
+  throw DecayIntegratorError()
+    << "DecayIntegrator::oneLoopVirtualME() called. This should"
+    << " have been overidden in an inheriting class if it is used"
+    << Exception::runerror;
 }
 
-bool DecayIntegrator::realEmmisionME(double &, unsigned int,
-				     const Particle &, 
-				     const ParticleVector &) {
-  return false;
+InvEnergy2 DecayIntegrator::realEmissionME(unsigned int,
+					   const Particle &, 
+					   ParticleVector &,
+					   unsigned int,
+					   double, double, 
+					   const LorentzRotation &,
+					   const LorentzRotation &) {
+  throw DecayIntegratorError()
+    << "DecayIntegrator::realEmmisionME() called. This should"
+    << " have been overidden in an inheriting class if it is used"
+    << Exception::runerror;
 }
