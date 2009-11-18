@@ -441,13 +441,11 @@ double FFDipole::makePhotons(Boost boostv,ParticleVector children) {
     // calculate the second part of the yfs form factor
     // this is different for the different photon removal options
     // option with no removal
-    generator()->log() << "before YFS B\n";
     if(_energyopt==0) {
       _yfswgt *= 
 	YFSFormFactors::exponentialYFSFF(beta1,ombeta1,beta2,ombeta2,
 					 _qnewdrf[0].e(),_qnewdrf[1].e(),
 					 _m[1],_m[2],s,_charge,_emin);
-      generator()->log() << "after YFS B\n";
     }
     // weight for option with cut in the rest frame
     else if(_energyopt==1) {
