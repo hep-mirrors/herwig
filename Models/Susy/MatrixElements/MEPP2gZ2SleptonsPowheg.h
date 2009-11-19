@@ -8,13 +8,16 @@
 #include "NLODrellYanBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVSSVertex.h"
+#include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the MEPP2gZ2SleptonsPowheg class.
+ * The MEPP2gZ2SleptonsPowheg class implements the matrix elements
+ * together with the next-to-leading order corrections for
+ * \f$q\bar q\to \gamma Z^0\to \tilde{\ell}\tilde{\ell}^*\f$.
  *
  * @see \ref MEPP2gZ2SleptonsPowhegInterfaces "The interfaces"
  * defined for MEPP2gZ2SleptonsPowheg.
@@ -71,6 +74,11 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 
@@ -100,10 +108,23 @@ public:
    */
   static void Init();
 
+  /**
+   * Matrix element for \f$q\bar{q}\to \gamma/Z \to f\bar{f}\f$.
+   * @param fin  Spinors for incoming quark
+   * @param ain  Spinors for incoming antiquark
+   * @param fout Spinors for incoming quark
+   * @param aout Spinors for incoming antiquark
+   * @param me  Whether or not to calculate the matrix element for spin correlations
+   */
+  double qqbarME(vector<SpinorWaveFunction>    & fin ,
+		 vector<SpinorBarWaveFunction> & ain ,
+		 ScalarWaveFunction & s1,ScalarWaveFunction &s2,
+		 bool me) const;
+
 protected:
 
   /**
-   *  implementation of the virtual functions for the NLO calculation
+   *  Implementation of the virtual functions for the NLO calculation
    */
   //@{
   /**
@@ -126,7 +147,8 @@ protected:
    * @param momenta The momenta of the particles
    */
   virtual double loME(const cPDVector & particles,
-		      const vector<Lorentz5Momentum> & momenta) const;
+		      const vector<Lorentz5Momentum> & momenta,
+		      bool first=false) const;
 
   /**
    * The real matrix element, to be implemented in the
@@ -201,6 +223,11 @@ private:
    *  Pointer to the \f$Z/\gamma\f$ sfermions vertex
    */
   AbstractVSSVertexPtr WSSVertex_;
+
+  /**
+   *  Pointer to the gluon fermions vertex
+   */
+  AbstractFFVVertexPtr FFGVertex_;
   //@}
 
   /**
@@ -217,6 +244,11 @@ private:
    */
   tcPDPtr gamma_;
   //@}
+
+  /**
+   * Matrix element for spin correlations
+   */
+  ProductionMatrixElement _me;
 };
 
 }

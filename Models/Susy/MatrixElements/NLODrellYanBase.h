@@ -150,9 +150,12 @@ protected:
    * inheriting classes. 
    * @param particles The ParticleData objects of the particles
    * @param momenta The momenta of the particles
+   * @param first Whether or not this is the first call and the spin
+   * and diagram information should be stored
    */
   virtual double loME(const cPDVector & particles,
-		      const vector<Lorentz5Momentum> & momenta) const = 0;
+		      const vector<Lorentz5Momentum> & momenta,
+		      bool first=false) const = 0;
 
   /**
    * The real matrix element, to be implemented in the

@@ -47,7 +47,7 @@ CrossSection NLODrellYanBase::dSigHatDR() const {
 }
 
 double NLODrellYanBase::me2() const {
-  return loME(mePartonData(),meMomenta());
+  return loME(mePartonData(),meMomenta(),true);
 }
 
 void NLODrellYanBase::persistentOutput(PersistentOStream & os) const {
@@ -300,7 +300,7 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   for(unsigned int ix=2;ix<4;++ix)
     pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
   // first LO matrix element
-  double lo1 = loME(mePartonData(),pa);
+  double lo1 = loME(mePartonData(),pa,false);
   // momenta for qbar -> qbar g emission
   pb[0] =   p[0];
   pb[1] = x*p[1];
@@ -311,7 +311,7 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   for(unsigned int ix=2;ix<4;++ix)
     pb[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
   // second LO matrix element
-  double lo2 = loME(mePartonData(),pb);
+  double lo2 = loME(mePartonData(),pb,false);
   // first dipole
   InvEnergy2 D1 = 0.5/(p[0]*p[4])/x*(2./(1.-x)-(1.+x));
   // second dipole
@@ -361,7 +361,7 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   for(unsigned int ix=2;ix<4;++ix)
     pa[ix] = p[ix]-2.*Ksum*(Ksum*p[ix])/Ksum2+2*K*(Kt*p[ix])/K2;
   // first LO matrix element
-  double lo1 = loME(mePartonData(),pa);
+  double lo1 = loME(mePartonData(),pa,false);
   // dipole
   InvEnergy2 D1 =  0.5/(p[1]*p[4])/x*(1.-2.*x*(1.-x));
   return sHat()*(UnitRemoval::InvE2*me/lo1-D1);

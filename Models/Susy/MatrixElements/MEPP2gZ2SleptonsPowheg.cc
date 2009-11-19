@@ -11,41 +11,41 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "Herwig++/MatrixElement/HardVertex.h"
+#include <numeric>
+
 
 using namespace Herwig;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
+
 
 MEPP2gZ2SleptonsPowheg::MEPP2gZ2SleptonsPowheg() {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(true ,1);
+  massOption(false,1);
 }
 
-void MEPP2gZ2SleptonsPowheg::getDiagrams() const {
-}
-
-unsigned int MEPP2gZ2SleptonsPowheg::orderInAlphaS() const {
-  return 0;
-}
-
-unsigned int MEPP2gZ2SleptonsPowheg::orderInAlphaEW() const {
-  return 2;
-}
-
-Selector<MEBase::DiagramIndex>
-MEPP2gZ2SleptonsPowheg::diagrams(const DiagramVector & diags) const {
-  // This example corresponds to the diagrams specified in the example
-  // in the getDiagrams() function.
-
-  Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) 
-    if ( diags[i]->id() == -1 ) sel.insert(1.0, i);
-    else if ( diags[i]->id() == -2 )  sel.insert(1.0, i);
-    else if ( diags[i]->id() == -3 )  sel.insert(1.0, i);
-  // You probably do not want equal weights here...
-  return sel;
-
-  // If there is only one possible diagram you can override the
-  // MEBase::diagram function instead.
-
+void MEPP2gZ2SleptonsPowheg::doinit() {
+  NLODrellYanBase::doinit();
+  // get the photon and Z ParticleData objects
+  Z0_    = getParticleData(ThePEG::ParticleID::Z0);
+  gamma_ = getParticleData(ThePEG::ParticleID::gamma);
+  // cast the SM pointer to the Herwig SM pointer
+  tcSusyBasePtr hwsm=ThePEG::dynamic_ptr_cast<tcSusyBasePtr>(standardModel());
+  // do the initialisation
+  if(hwsm) {
+    FFZVertex_ = hwsm->vertexFFZ();
+    FFPVertex_ = hwsm->vertexFFP();
+    FFGVertex_ = hwsm->vertexFFG();
+    WSSVertex_ = hwsm->vertexWSFSF();
+  }
+  else
+    throw InitException() << "Must be the Herwig++ SusyBase class in "
+			  << "MEPP2gZ2SleptonsPowheg::doinit" 
+			  << Exception::abortnow;
 }
 
 Selector<const ColourLines *>
@@ -56,6 +56,42 @@ MEPP2gZ2SleptonsPowheg::colourGeometries(tcDiagPtr) const {
   return sel;
 }
 
+void MEPP2gZ2SleptonsPowheg::getDiagrams() const {
+  // loop over the processes we need
+  for(unsigned int i = 1; i <= 5; ++i) {
+    tcPDPtr q  = getParticleData(i);
+    tcPDPtr qb = q->CC();
+    for(unsigned int ix=11;ix<16;++ix) {
+      // production of left-handed sleptons
+      tcPDPtr lm = getParticleData(1000000+ix);
+      tcPDPtr lp = lm->CC();
+      // always Z
+      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, lm, 3, lp, -1)));
+      // if sneutrinos that's all
+      if(ix%2==0) continue; 
+      // photon 
+      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, lm, 3, lp, -2)));
+      // production of right-handed sleptons
+      tcPDPtr rm = getParticleData(2000000+ix);
+      tcPDPtr rp = rm->CC();
+      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, rm, 3, rp, -1)));
+      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, rm, 3, rp, -2)));
+      // production of left-right for stau only
+      if(ix==16) {
+	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, rm, 3, lp, -1)));
+	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, lm, 3, rp, -1)));
+      }
+    }
+  }
+}
+
+unsigned int MEPP2gZ2SleptonsPowheg::orderInAlphaS() const {
+  return 0;
+}
+
+unsigned int MEPP2gZ2SleptonsPowheg::orderInAlphaEW() const {
+  return 2;
+}
 
 IBPtr MEPP2gZ2SleptonsPowheg::clone() const {
   return new_ptr(*this);
@@ -65,30 +101,12 @@ IBPtr MEPP2gZ2SleptonsPowheg::fullclone() const {
   return new_ptr(*this);
 }
 
-void MEPP2gZ2SleptonsPowheg::doinit() {
-  NLODrellYanBase::doinit();
-  Z0_    = getParticleData(ThePEG::ParticleID::Z0);
-  gamma_ = getParticleData(ThePEG::ParticleID::gamma);
-  // cast the SM pointer to the Herwig SM pointer
-  tcSusyBasePtr hwsm=ThePEG::dynamic_ptr_cast<tcSusyBasePtr>(standardModel());
-  // do the initialisation
-  if(hwsm) {
-    FFZVertex_ = hwsm->vertexFFZ();
-    FFPVertex_ = hwsm->vertexFFP();
-    WSSVertex_ = hwsm->vertexWSFSF();
-  }
-  else
-    throw InitException() << "Must be the Herwig++ SusyBase class in "
-			  << "MEPP2gZ2SleptonsPowheg::doinit" << Exception::abortnow;
-}
-
-
 void MEPP2gZ2SleptonsPowheg::persistentOutput(PersistentOStream & os) const {
-  os << FFZVertex_ << FFPVertex_ << WSSVertex_ << Z0_ << gamma_;
+  os << FFZVertex_ << FFPVertex_ << WSSVertex_ << FFGVertex_ << Z0_ << gamma_;
 }
 
 void MEPP2gZ2SleptonsPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> FFZVertex_ >> FFPVertex_ >> WSSVertex_ >> Z0_ >> gamma_;
+  is >> FFZVertex_ >> FFPVertex_ >> WSSVertex_ >> FFGVertex_ >> Z0_ >> gamma_;
 }
 
 ClassDescription<MEPP2gZ2SleptonsPowheg> MEPP2gZ2SleptonsPowheg::initMEPP2gZ2SleptonsPowheg;
@@ -97,20 +115,137 @@ ClassDescription<MEPP2gZ2SleptonsPowheg> MEPP2gZ2SleptonsPowheg::initMEPP2gZ2Sle
 void MEPP2gZ2SleptonsPowheg::Init() {
 
   static ClassDocumentation<MEPP2gZ2SleptonsPowheg> documentation
-    ("There is no documentation for the MEPP2gZ2SleptonsPowheg class");
+    ("MEPP2gZ2SleptonsPowheg implements the ME calculation of the fermion-antifermion "
+     "to sfermion-sfermion hard process.");
 
+}
+
+Selector<MEBase::DiagramIndex>
+MEPP2gZ2SleptonsPowheg::diagrams(const DiagramVector & diags) const {
+  Selector<DiagramIndex> sel;
+  for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
+    if ( diags[i]->id() == -1 ) sel.insert(meInfo()[0], i);
+    else if ( diags[i]->id() == -2 ) sel.insert(meInfo()[1], i);
+  }
+  return sel;
 }
 
 NLODrellYanBase::Singular MEPP2gZ2SleptonsPowheg::virtualME() const {
   return NLODrellYanBase::Singular();
 }
 
+double MEPP2gZ2SleptonsPowheg::
+qqbarME(vector<SpinorWaveFunction>    & sp ,
+	vector<SpinorBarWaveFunction> & sbar ,
+	ScalarWaveFunction & sca1,ScalarWaveFunction &sca2,
+	bool first) const {
+  // scale for the process
+  const Energy2 q2(scale());
+  // storage of the matrix elements for specific diagrams
+  vector<double> me(2, 0.);
+  double me2(0.);
+  // storgage of the individual diagrams
+  vector<Complex> diag(2, Complex(0.));
+  ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
+			      PDT::Spin0, PDT::Spin0);
+  // loop over the helicities and calculate the matrix elements
+  for(unsigned int if1 = 0; if1 < 2; ++if1) {
+    for(unsigned int if2 = 0; if2 < 2; ++if2) {
+      VectorWaveFunction interV = FFZVertex_->evaluate(q2, 1, Z0_, sp[if1], 
+						       sbar[if2]);
+      diag[0] = WSSVertex_->evaluate(q2, interV, sca2, sca1);
+      // if needed photon diagram
+      if(mePartonData()[2]->charged() && 
+	 mePartonData()[2]->id() == -mePartonData()[3]->id()) {
+	interV = FFPVertex_->evaluate(q2, 1, gamma_, sp[if1], 
+				      sbar[if2]);
+	diag[1] = WSSVertex_->evaluate(q2, interV, sca2, sca1);
+      }
+      // sum up the matrix elements
+      me2 += norm(diag[0]+diag[1]);
+      me[0] += norm(diag[0]);
+      me[1] += norm(diag[1]);
+      pme(if1, if2, 0, 0) = diag[0]+diag[1];
+    }
+  }
+  if(first) {
+    DVector save(2);
+    for(DVector::size_type ix = 0; ix < 2; ++ix)
+      save[ix] = me[ix]/12.;
+    meInfo(save);
+    _me.reset(pme);
+  }
+  return me2/12.;
+}
+
 double MEPP2gZ2SleptonsPowheg::loME(const cPDVector & particles,
-				    const vector<Lorentz5Momentum> & momenta) const {
-  return 0.;
+				    const vector<Lorentz5Momentum> & momenta,
+				    bool first) const {
+  // wavefunctions for the incoming fermions
+  vector<SpinorWaveFunction> sp(2);
+  vector<SpinorBarWaveFunction> sbar(2);
+  for( unsigned int i = 0; i < 2; ++i ) {
+    sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i,
+			       incoming);
+    sbar[i] = SpinorBarWaveFunction(rescaledMomenta()[1], mePartonData()[1], i,
+				    incoming);
+  }
+  // outgoing scalar wavefunctions
+  ScalarWaveFunction sca1(rescaledMomenta()[2], mePartonData()[2],
+			  Complex(1.), outgoing);
+  ScalarWaveFunction sca2(rescaledMomenta()[3], mePartonData()[3],
+			  Complex(1.), outgoing);
+  return qqbarME(sp,sbar,sca1,sca2,first);
 }
 
 double MEPP2gZ2SleptonsPowheg::realME(const cPDVector & particles,
 				      const vector<Lorentz5Momentum> & momenta) const {
   return 0.;
 }
+
+void MEPP2gZ2SleptonsPowheg::constructVertex(tSubProPtr sub) {
+  //get particles
+  ParticleVector ext(4);
+  ext[0] = sub->incoming().first;
+  ext[1] = sub->incoming().second;
+  ext[2] = sub->outgoing()[0];
+  ext[3] = sub->outgoing()[1];
+  if( ext[0]->id() != mePartonData()[0]->id() ) swap(ext[0], ext[1]);
+  if( ext[2]->id() != mePartonData()[2]->id() ) swap(ext[2], ext[3]);
+  //First calculate wave functions with off-shell momenta
+  //to calculate correct spin information
+  vector<SpinorWaveFunction> sp;
+  SpinorWaveFunction(sp, ext[0], incoming, false);
+  vector<SpinorBarWaveFunction> sbar;
+  SpinorBarWaveFunction(sbar, ext[1], incoming, false);
+  ScalarWaveFunction sca1(ext[2], outgoing, true);
+  ScalarWaveFunction sca2(ext[3], outgoing, true);
+  //Need to use rescale momenta to calculate matrix element
+  cPDVector data(4);
+  vector<Lorentz5Momentum> momenta(4);
+  for( size_t i = 0; i < 4; ++i ) {
+    data[i] = ext[i]->dataPtr();
+    momenta[i] = ext[i]->momentum();
+  }
+  rescaleMomenta(momenta, data);
+  SpinorWaveFunction spr(rescaledMomenta()[0], data[0], incoming);
+  SpinorBarWaveFunction sbr(rescaledMomenta()[1], data[1],incoming);
+  for( unsigned int ihel = 0; ihel < 2; ++ihel ) {  
+    spr.reset(ihel);
+    sp[ihel] = spr;
+    sbr.reset(ihel);
+    sbar[ihel] = sbr;
+  }
+  sca1 = ScalarWaveFunction(rescaledMomenta()[2], data[2], outgoing);
+  sca2 = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
+  qqbarME(sp, sbar, sca1, sca2,true);
+  HardVertexPtr hv = new_ptr(HardVertex());
+  hv->ME(_me);
+  for(unsigned int i = 0; i < 4; ++i )
+    dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);  
+}
+
+
+
+
+
