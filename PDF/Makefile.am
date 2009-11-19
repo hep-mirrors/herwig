@@ -3,7 +3,7 @@ HwMRST_la_SOURCES = \
 MRST.cc MRST.h MRST.icc 
 ## add this to produce tests of the PDFs
 ## HwMRST_la_CPPFLAGS=$(AM_CPPFLAGS) -DMRST_TESTING
-HwMRST_la_LDFLAGS = -module -version-info 6:0:0
+HwMRST_la_LDFLAGS = -module -version-info 6:1:0
 
 EXTRA_DIST = mrst
 
@@ -28,7 +28,7 @@ pkglib_LTLIBRARIES += HwIncomingPhotonEvolver.la
 HwIncomingPhotonEvolver_la_SOURCES = \
 IncomingPhotonEvolver.h IncomingPhotonEvolver.cc
 
-HwIncomingPhotonEvolver_la_LDFLAGS = -module -version-info 3:0:0
+HwIncomingPhotonEvolver_la_LDFLAGS = -module -version-info 3:1:0
 
 if WANT_LOCAL_PDF
 install-data-local:

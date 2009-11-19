@@ -27,11 +27,6 @@ using namespace ThePEG::Helicity;
 class AnomalousVVVVertex: public AbstractVVVVertex {
 
 public:
-  
-  /**
-   * Default constructor.
-   */
-  AnomalousVVVVertex();
 
   /**
    * Members to calculate the helicity amplitude expressions for vertices

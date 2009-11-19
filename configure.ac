@@ -28,7 +28,7 @@ fi
 if test "x$CFLAGS" = "x"; then
    CFLAGS=-O3
 fi
-dnl Looptools manual requires no optimization
+dnl Looptools manual requires optimization off
 if test "x$FCFLAGS" = "x"; then
    FCFLAGS=-O0
 fi

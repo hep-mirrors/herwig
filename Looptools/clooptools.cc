@@ -30,7 +30,8 @@ namespace {
 
 #ifdef HAVE_UNISTD_H
   int start_redirection(std::string logfilename) {
-    if ( ThePEG::CurrentGenerator::current().useStdOut() ) return -1;
+    if ( ! ThePEG::CurrentGenerator::isVoid() 
+	 && ThePEG::CurrentGenerator::current().useStdOut() ) return -1;
     // redirect C stdout --- unix specific solution,
     // see C FAQ: http://c-faq.com/stdio/undofreopen.html
     int    fd;
@@ -41,7 +42,8 @@ namespace {
   }
   
   void stop_redirection(int fd) {
-    if ( ThePEG::CurrentGenerator::current().useStdOut() ) return;
+    if ( ! ThePEG::CurrentGenerator::isVoid() 
+	 && ThePEG::CurrentGenerator::current().useStdOut() ) return;
     fflush(stdout);
     close(fileno(stdout));
     dup2(fd, fileno(stdout));

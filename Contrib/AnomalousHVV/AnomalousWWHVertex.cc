@@ -20,14 +20,8 @@ AnomalousWWHVertex::AnomalousWWHVertex()
   : interactionType_(0), Lambda_(1000.*GeV),
     couplast_(0.), q2last_(ZERO), mw_(ZERO), zfact_(0.) {
   // particles
-  vector<long> first,second,third;
-  first.push_back(24);  
-  second.push_back(-24);
-  third.push_back(25);  
-  first.push_back(23);  
-  second.push_back(23); 
-  third.push_back(25);  
-  addToList(first,second,third);
+  addToList(24,-24,25);
+  addToList(23,23,25);
   // calculate the kinematic invariants needed
   kinematics(true);
 }

@@ -32,6 +32,7 @@ cd /Herwig/MatrixElements/
 #
 # Drell-Yan Z/gamma
 insert SimpleQCD:MatrixElements[0] MEqq2gZ2ff
+set MEqq2gZ2ff:Process Muon
 #
 # Drell-Yan W
 # insert SimpleQCD:MatrixElements[0] MEqq2W2ff
