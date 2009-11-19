@@ -18,10 +18,9 @@
 using namespace Herwig;
 
 MEPP2ZHPowheg::MEPP2ZHPowheg() 
-  : _gluon(), _TR(0.5), _CF(4./3.), 
-    _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-    _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
-    _fixedScale(100.*GeV), _scaleFact(1.)
+ : _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+   _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
+   _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
 void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
@@ -117,7 +116,7 @@ void MEPP2ZHPowheg::Init() {
   static Switch<MEPP2ZHPowheg,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
      "Option for the scale to be used",
-     &MEPP2ZHPowheg::_scaleopt, 0, false, false);
+     &MEPP2ZHPowheg::_scaleopt, 1, false, false);
   static SwitchOption interfaceScaleOptionFixed
     (interfaceFactorizationScaleOption,
      "Fixed",
@@ -126,7 +125,7 @@ void MEPP2ZHPowheg::Init() {
   static SwitchOption interfaceScaleOptionsHat
     (interfaceFactorizationScaleOption,
      "Dynamic",
-     "Used sHat as the scale",
+     "Use the mass of the vector boson-Higgs boson system",
      1);
 
   static Parameter<MEPP2ZHPowheg,Energy> interfaceFactorizationScaleValue

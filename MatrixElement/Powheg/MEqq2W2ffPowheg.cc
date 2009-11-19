@@ -29,7 +29,7 @@ using Herwig::Math::ReLi2;
 MEqq2W2ffPowheg::MEqq2W2ffPowheg() : 
   _gluon(), _TR(0.5), _CF(4./3.),
   _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
+  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
   _fixedScale(100.*GeV), _scaleFact(1.) {
   massOption(true ,1);
   massOption(false,1);
@@ -134,7 +134,7 @@ void MEqq2W2ffPowheg::Init() {
   static Switch<MEqq2W2ffPowheg,unsigned int> interfaceScaleOption
     ("ScaleOption",
      "Option for the scale to be used",
-     &MEqq2W2ffPowheg::_scaleopt, 0, false, false);
+     &MEqq2W2ffPowheg::_scaleopt, 1, false, false);
   static SwitchOption interfaceScaleOptionFixed
     (interfaceScaleOption,
      "Fixed",
@@ -142,8 +142,8 @@ void MEqq2W2ffPowheg::Init() {
      0);
   static SwitchOption interfaceScaleOptionsHat
     (interfaceScaleOption,
-     "sHat",
-     "Used sHat as the scale",
+     "Dynamic",
+     "Use the off-shell vector boson mass as the scale",
      1);
 
   static Parameter<MEqq2W2ffPowheg,Energy> interfaceFixedScale
