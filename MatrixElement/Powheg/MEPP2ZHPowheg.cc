@@ -18,7 +18,8 @@
 using namespace Herwig;
 
 MEPP2ZHPowheg::MEPP2ZHPowheg() 
- : _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
+  : _gluon(), _TR(0.5), _CF(4./3.), 
+    _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
    _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
    _fixedScale(100.*GeV), _scaleFact(1.)
 {}
