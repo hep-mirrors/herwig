@@ -107,8 +107,8 @@ double NLODrellYanBase::subtractedVirtual() const {
   Ieps.eps1 = 3;
   Ieps.finite = 10.-sqr(Constants::pi);
   // check the singular pieces cancel
-  assert(Ieps.eps2==virt.eps2 && Ieps.eps1 == virt.eps1 );
-  return virt.finite-Ieps.finite;
+  assert(Ieps.eps2==-virt.eps2 && Ieps.eps1 == -virt.eps1 );
+  return virt.finite+Ieps.finite;
 }
 
 double NLODrellYanBase::NLOWeight() const {
@@ -195,6 +195,10 @@ double NLODrellYanBase::NLOWeight() const {
 double NLODrellYanBase::collinearQuark(double x, Energy2 mu2, 
 				       double jac, double z,
 				       double oldPDF, double newPDF) const {
+  // plus function but for numerical stability
+  double plus = z>1.-1.e-8 ? 0. : 
+    jac /z *(newPDF /oldPDF -z )*
+    2./(1.-z )*log(sHat()*sqr(1.-z )/mu2);
   return CFfact_*(
 		  // this bit is multiplied by LO PDF
 		  sqr(Constants::pi)/3.-5.+2.*sqr(log(1.-x ))
@@ -204,8 +208,7 @@ double NLODrellYanBase::collinearQuark(double x, Energy2 mu2,
 		  (1.-z -(1.+z )*log(sqr(1.-z )/z )
 		   -(1.+z )*log(sHat()/mu2)-2.*log(z )/(1.-z ))
 		  // + function bit
-		  +jac /z *(newPDF /oldPDF -z )*
-		  2./(1.-z )*(log(sHat()*sqr(1.-z )/mu2)));
+		  +plus);
 }
 
 double NLODrellYanBase::collinearGluon(Energy2 mu2,
@@ -269,11 +272,11 @@ double NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
   // phase-space prefactors
   double phase = zJac*vJac/sqr(z);
   // real emission q qbar
-  double realQQ = CFfact_*phase*subtractedMEqqbar(pnew,order)*
-    newqPDF/oldqPDF;
+  double realQQ = zTilde_<1e-8 ? 0. :
+    CFfact_*phase*subtractedMEqqbar(pnew,order)*newqPDF/oldqPDF;
   // real emission g qbar 
-  double realGQ = TRfact_*phase*subtractedMEgqbar(pnew,order)*
-    newgPDF/oldqPDF;
+  double realGQ = zTilde_<1e-8 ? 0. :
+    TRfact_*phase*subtractedMEgqbar(pnew,order)*newgPDF/oldqPDF;
   // return the answer
   return realQQ + realGQ;
 }
@@ -283,7 +286,7 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   // use the inheriting class to calculate the matrix element
   cPDVector particles(mePartonData());
   particles.push_back(gluon_);
-  double me = realME(particles,p);
+  double me = 0.75*realME(particles,p);
   // divide out prefactor
   me /= (8.*Constants::pi*alphaS_);
   // compute the two dipole terms
@@ -338,7 +341,7 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
     particles.push_back(particles[1]->CC());
     particles[1] = gluon_;
   }
-  double me = realME(particles,p);
+  double me = 2.*realME(particles,p);
   // divide out prefactor
   me /= (8.*Constants::pi*alphaS_);
   // compute the two dipole terms
