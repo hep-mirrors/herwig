@@ -200,7 +200,11 @@ MEPP2gZ2SleptonsPowheg::diagrams(const DiagramVector & diags) const {
 }
 
 NLODrellYanBase::Singular MEPP2gZ2SleptonsPowheg::virtualME() const {
-  return NLODrellYanBase::Singular();
+  Singular output;
+  output.eps2 = -2;
+  output.eps1 = -3;
+  output.finite =-8.+sqr(Constants::pi);
+  return output;
 }
 
 double MEPP2gZ2SleptonsPowheg::
@@ -254,22 +258,102 @@ double MEPP2gZ2SleptonsPowheg::loME(const cPDVector & particles,
   vector<SpinorWaveFunction> sp(2);
   vector<SpinorBarWaveFunction> sbar(2);
   for( unsigned int i = 0; i < 2; ++i ) {
-    sp[i] = SpinorWaveFunction(rescaledMomenta()[0], mePartonData()[0], i,
+    sp[i] = SpinorWaveFunction(momenta[0], particles[0], i,
 			       incoming);
-    sbar[i] = SpinorBarWaveFunction(rescaledMomenta()[1], mePartonData()[1], i,
+    sbar[i] = SpinorBarWaveFunction(momenta[1], particles[1], i,
 				    incoming);
   }
   // outgoing scalar wavefunctions
-  ScalarWaveFunction sca1(rescaledMomenta()[2], mePartonData()[2],
+  ScalarWaveFunction sca1(momenta[2], particles[2],
 			  Complex(1.), outgoing);
-  ScalarWaveFunction sca2(rescaledMomenta()[3], mePartonData()[3],
+  ScalarWaveFunction sca2(momenta[3], particles[3],
 			  Complex(1.), outgoing);
   return qqbarME(sp,sbar,sca1,sca2,first);
 }
 
 double MEPP2gZ2SleptonsPowheg::realME(const cPDVector & particles,
 				      const vector<Lorentz5Momentum> & momenta) const {
-  return 0.;
+  vector<SpinorWaveFunction> sp(2);
+  vector<SpinorBarWaveFunction> sbar(2);
+  vector<VectorWaveFunction> gluon(2);
+  // wavefunctions for the q qbar -> sf sf g process
+  if(particles[0]->id()==-particles[1]->id()) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
+      sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
+      gluon[i]= VectorWaveFunction   (momenta[4],particles[4],2*i,outgoing);
+    }
+  }
+  else if(particles[0]->id()==ParticleID::g &&
+	  particles[1]->id()<0) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[4],particles[4],  i,outgoing);
+      sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
+      gluon[i]= VectorWaveFunction   (momenta[0],particles[0],2*i,incoming);
+    }
+  }
+  else if(particles[0]->id()>0 &&
+	  particles[1]->id()==ParticleID::g) {
+    for( unsigned int i = 0; i < 2; ++i ) {
+      sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
+      sbar[i] = SpinorBarWaveFunction(momenta[4],particles[4],  i,outgoing);
+      gluon[i]= VectorWaveFunction   (momenta[1],particles[1],2*i,incoming);
+    }
+  }
+  else {
+    for(unsigned int ix=0;ix<particles.size();++ix) {
+      cerr << particles[ix]->PDGName() << " " << momenta[ix]/GeV << "\n";
+    }
+    assert(false);
+  }
+  // wavefunctions for the scalars 
+  ScalarWaveFunction sca1(momenta[2], particles[2],Complex(1.), outgoing);
+  ScalarWaveFunction sca2(momenta[3], particles[3],Complex(1.), outgoing);
+  double output(0.);
+  Complex diag[4]={0.,0.,0.,0.};
+  Energy2 shat = scale();
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      for(unsigned int ohel1=0;ohel1<2;++ohel1) {
+	// first Z diagram
+ 	SpinorWaveFunction inters = FFGVertex_->evaluate(shat,5,sp[ihel1].particle(),
+							 sp[ihel1],gluon[ohel1]);
+	VectorWaveFunction interV = FFZVertex_->evaluate(shat, 1, Z0_, inters, 
+							 sbar[ihel2]);
+	diag[0] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
+	// second Z diagram
+	SpinorBarWaveFunction interb = FFGVertex_->evaluate(shat,5,sbar[ihel1].particle(),
+							    sbar[ihel2],gluon[ohel1]);
+	interV = FFZVertex_->evaluate(shat, 1, Z0_, sp[ihel1], 
+				      interb);
+	diag[1] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
+	if(particles[2]->id()==-particles[3]->id()&&particles[2]->charged()) {
+	  // first photon diagram
+	  SpinorWaveFunction inters = FFGVertex_->evaluate(shat,5,sp[ihel1].particle(),
+							   sp[ihel1],gluon[ohel1]);
+	  VectorWaveFunction interV = FFGVertex_->evaluate(shat, 1, gamma_, inters, 
+							   sbar[ihel2]);
+	  diag[2] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
+	  // second photon diagram
+	  SpinorBarWaveFunction interb = FFGVertex_->evaluate(shat,5,sbar[ihel1].particle(),
+							      sbar[ihel2],gluon[ohel1]);
+	  interV = FFPVertex_->evaluate(shat, 1, gamma_, sp[ihel1], 
+					interb);
+	  diag[3] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
+	}
+	// add them up
+	output += norm(diag[0]+diag[1]+diag[2]+diag[3]);
+      }
+    }
+  }
+  // colour and spin factors
+  if(particles[0]->id()==-particles[1]->id()) {
+    output *= 1./9.;
+  }
+  else  {
+    output *= 1./24.;
+  }
+  return output;
 }
 
 void MEPP2gZ2SleptonsPowheg::constructVertex(tSubProPtr sub) {
