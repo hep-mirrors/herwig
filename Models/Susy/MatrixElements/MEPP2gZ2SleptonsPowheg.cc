@@ -6,6 +6,7 @@
 
 #include "MEPP2gZ2SleptonsPowheg.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -16,14 +17,13 @@
 #include "Herwig++/MatrixElement/HardVertex.h"
 #include <numeric>
 
-
 using namespace Herwig;
 using ThePEG::Helicity::VectorWaveFunction;
 using ThePEG::Helicity::incoming;
 using ThePEG::Helicity::outgoing;
 
 
-MEPP2gZ2SleptonsPowheg::MEPP2gZ2SleptonsPowheg() {
+MEPP2gZ2SleptonsPowheg::MEPP2gZ2SleptonsPowheg() : process_(0) {
   massOption(true ,1);
   massOption(false,1);
 }
@@ -61,23 +61,28 @@ void MEPP2gZ2SleptonsPowheg::getDiagrams() const {
   for(unsigned int i = 1; i <= 5; ++i) {
     tcPDPtr q  = getParticleData(i);
     tcPDPtr qb = q->CC();
-    for(unsigned int ix=11;ix<16;++ix) {
+    for(unsigned int ix=11;ix<17;++ix) {
       // production of left-handed sleptons
       tcPDPtr lm = getParticleData(1000000+ix);
       tcPDPtr lp = lm->CC();
       // always Z
-      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, lm, 3, lp, -1)));
+      if(process_ == 0 || (ix%2==1 && process_ == (ix-9)/2) ||
+	 (ix%2==0 && process_ == 6 +(ix-9)/2) ) 
+	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, lm, 3, lp, -1)));
       // if sneutrinos that's all
       if(ix%2==0) continue; 
       // photon 
-      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, lm, 3, lp, -2)));
+      if(process_ == 0 || process_ == (ix-9)/2 )
+	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, lm, 3, lp, -2)));
       // production of right-handed sleptons
       tcPDPtr rm = getParticleData(2000000+ix);
       tcPDPtr rp = rm->CC();
-      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, rm, 3, rp, -1)));
-      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, rm, 3, rp, -2)));
+      if(process_ == 0 || process_ == 3+(ix-9)/2 ) {
+	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, rm, 3, rp, -1)));
+	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, gamma_, 3, rm, 3, rp, -2)));
+      }
       // production of left-right for stau only
-      if(ix==16) {
+      if(ix==16 && (process_==0 || process_==10)) {
 	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, rm, 3, lp, -1)));
 	add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Z0_   , 3, lm, 3, rp, -1)));
       }
@@ -102,21 +107,85 @@ IBPtr MEPP2gZ2SleptonsPowheg::fullclone() const {
 }
 
 void MEPP2gZ2SleptonsPowheg::persistentOutput(PersistentOStream & os) const {
-  os << FFZVertex_ << FFPVertex_ << WSSVertex_ << FFGVertex_ << Z0_ << gamma_;
+  os << FFZVertex_ << FFPVertex_ << WSSVertex_ << FFGVertex_ 
+     << Z0_ << gamma_ << process_;
 }
 
 void MEPP2gZ2SleptonsPowheg::persistentInput(PersistentIStream & is, int) {
-  is >> FFZVertex_ >> FFPVertex_ >> WSSVertex_ >> FFGVertex_ >> Z0_ >> gamma_;
+  is >> FFZVertex_ >> FFPVertex_ >> WSSVertex_ >> FFGVertex_ 
+     >> Z0_ >> gamma_ >> process_;
 }
 
-ClassDescription<MEPP2gZ2SleptonsPowheg> MEPP2gZ2SleptonsPowheg::initMEPP2gZ2SleptonsPowheg;
+ClassDescription<MEPP2gZ2SleptonsPowheg> 
+MEPP2gZ2SleptonsPowheg::initMEPP2gZ2SleptonsPowheg;
 // Definition of the static class description member.
 
 void MEPP2gZ2SleptonsPowheg::Init() {
 
   static ClassDocumentation<MEPP2gZ2SleptonsPowheg> documentation
-    ("MEPP2gZ2SleptonsPowheg implements the ME calculation of the fermion-antifermion "
-     "to sfermion-sfermion hard process.");
+    ("MEPP2gZ2SleptonsPowheg implements the ME calculation"
+     " of the fermion-antifermion to sfermion-sfermion hard process.");
+
+
+  static Switch<MEPP2gZ2SleptonsPowheg,unsigned int> interfaceProcess
+    ("Process",
+     "Which processes to generate",
+     &MEPP2gZ2SleptonsPowheg::process_, 0, false, false);
+  static SwitchOption interfaceProcessAll
+    (interfaceProcess,
+     "All",
+     "Generate all the processes",
+     0);
+  static SwitchOption interfaceProcesse_L
+    (interfaceProcess,
+     "e_L",
+     "Only produce ~e_L",
+     1);
+  static SwitchOption interfaceProcessmu_L
+    (interfaceProcess,
+     "mu_L",
+     "Onle produce ~mu_L",
+     2);
+  static SwitchOption interfaceProcesstau_1
+    (interfaceProcess,
+     "tau_1",
+     "Only produce tau_1 pairs",
+     3);
+  static SwitchOption interfaceProcesse_R
+    (interfaceProcess,
+     "e_R",
+     "Only produce e_R",
+     4);
+  static SwitchOption interfaceProcessmu_R
+    (interfaceProcess,
+     "mu_R",
+     "Only produce ~mu_R",
+     5);
+  static SwitchOption interfaceProcesstau_2
+    (interfaceProcess,
+     "tau_2",
+     "Only produce tau_2 pairs",
+     6);
+  static SwitchOption interfaceProcessnu_e
+    (interfaceProcess,
+     "nu_e",
+     "Only product ~nu_e",
+     7);
+  static SwitchOption interfaceProcessnu_mu
+    (interfaceProcess,
+     "nu_mu",
+     "Only produce ~nu_mu",
+     8);
+  static SwitchOption interfaceProcessnu_tau
+    (interfaceProcess,
+     "nu_tau",
+     "Only produce ~nu_tau",
+     9);
+  static SwitchOption interfaceProcessMixedTau
+    (interfaceProcess,
+     "MixedTau",
+     "Only produce mixing tau_1 tau_2 pairs",
+     10);
 
 }
 
@@ -173,7 +242,7 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
     for(DVector::size_type ix = 0; ix < 2; ++ix)
       save[ix] = me[ix]/12.;
     meInfo(save);
-    _me.reset(pme);
+    me_.reset(pme);
   }
   return me2/12.;
 }
@@ -240,7 +309,7 @@ void MEPP2gZ2SleptonsPowheg::constructVertex(tSubProPtr sub) {
   sca2 = ScalarWaveFunction(rescaledMomenta()[3], data[3], outgoing);
   qqbarME(sp, sbar, sca1, sca2,true);
   HardVertexPtr hv = new_ptr(HardVertex());
-  hv->ME(_me);
+  hv->ME(me_);
   for(unsigned int i = 0; i < 4; ++i )
     dynamic_ptr_cast<SpinfoPtr>(ext[i]->spinInfo())->setProductionVertex(hv);  
 }

@@ -248,7 +248,12 @@ private:
   /**
    * Matrix element for spin correlations
    */
-  ProductionMatrixElement _me;
+  ProductionMatrixElement me_;
+
+  /**
+   *  Process
+   */
+  unsigned int process_;
 };
 
 }
