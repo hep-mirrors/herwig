@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 
-  CF_(4./3.)  ,  CA_(3.)            , TR_(1./2.)        , nlf_(5.)          ,
+  CF_(4./3.)  ,  CA_(3.)            , TR_(0.5)        , nlf_(5)          ,
   beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
   scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.) 

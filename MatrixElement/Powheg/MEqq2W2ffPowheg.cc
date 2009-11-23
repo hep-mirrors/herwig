@@ -38,9 +38,6 @@ MEqq2W2ffPowheg::MEqq2W2ffPowheg() :
 void MEqq2W2ffPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
-  // colour factors
-  _CF = 4./3.; 
-  _TR = 0.5;
   MEqq2W2ff::doinit();
 }
 
@@ -50,13 +47,11 @@ Energy2 MEqq2W2ffPowheg::scale() const {
 
 void MEqq2W2ffPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib << _nlo_alphaS_opt << _fixed_alphaS << _a << _p << _gluon
-    //<< _TR << _CF 
      << _scaleopt << ounit(_fixedScale,GeV) << _scaleFact;
 }
 
 void MEqq2W2ffPowheg::persistentInput(PersistentIStream & is, int) { 
   is >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS >> _a >> _p >> _gluon
-    //>> _TR >> _CF 
      >> _scaleopt >> iunit(_fixedScale,GeV) >> _scaleFact;
 }
 

@@ -27,7 +27,6 @@ MEPP2ZHPowheg::MEPP2ZHPowheg()
 void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
      << _a         << _p              << _gluon
-    //<< _TR        << _CF  
      << _scaleopt       
      << ounit(_fixedScale,GeV)        << _scaleFact;
 }
@@ -35,7 +34,6 @@ void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
 void MEPP2ZHPowheg::persistentInput(PersistentIStream & is, int) {
   is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
      >> _a         >> _p              >> _gluon
-    //>> _TR        >> _CF             
      >> _scaleopt 
      >> iunit(_fixedScale,GeV)        >> _scaleFact;
 
@@ -146,9 +144,6 @@ void MEPP2ZHPowheg::Init() {
 void MEPP2ZHPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
-  // colour factors
-  _CF = 4./3.; 
-  _TR = 0.5;
   MEPP2ZH::doinit();
 }
 

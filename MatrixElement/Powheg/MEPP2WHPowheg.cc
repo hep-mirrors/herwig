@@ -31,14 +31,14 @@ ClassDescription<MEPP2WHPowheg> MEPP2WHPowheg::initMEPP2WHPowheg;
 void MEPP2WHPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
      << _a         << _p              << _gluon
-     << _TR        << _CF             << _scaleopt       
+     << _scaleopt       
      << ounit(_fixedScale,GeV)        << _scaleFact;
 }
 
 void MEPP2WHPowheg::persistentInput(PersistentIStream & is, int) {
   is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
      >> _a         >> _p              >> _gluon
-     >> _TR        >> _CF             >> _scaleopt 
+     >> _scaleopt 
      >> iunit(_fixedScale,GeV)        >> _scaleFact;
 }
 
@@ -143,9 +143,6 @@ void MEPP2WHPowheg::Init() {
 void MEPP2WHPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
-  // colour factors
-  _CF = 4./3.; 
-  _TR = 0.5;
   MEPP2WH::doinit();
 }
 

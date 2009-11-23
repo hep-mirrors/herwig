@@ -292,17 +292,17 @@ private:
   /**
    *  The colour factors
    */
-  double CF_ , CA_ , TR_;
+  const double CF_ , CA_ , TR_;
 
   /**
    * Number of light flavours (in the beta function beta0_)
    */
-  double nlf_;
+  const unsigned int nlf_;
 
   /**
    * (Proportional to) The beta function
    */
-  double beta0_;
+  const double beta0_;
 
   /**
    *  Whether to generate the positive, negative or leading order contribution
