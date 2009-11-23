@@ -198,7 +198,7 @@ enable_looptools=yes
 
 if test "x$GCC" = "xyes"; then
    case "${host}" in
-      x86_64-*)
+      x86_64-*|*-darwin10.*)
 	AM_FCFLAGS="$AM_FCFLAGS -fdefault-integer-8"
       	;;
    esac
