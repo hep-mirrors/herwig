@@ -331,7 +331,7 @@ double MEPP2gZ2SleptonsPowheg::realME(const cPDVector & particles,
 	  // first photon diagram
 	  SpinorWaveFunction inters = FFGVertex_->evaluate(shat,5,sp[ihel1].particle(),
 							   sp[ihel1],gluon[ohel1]);
-	  VectorWaveFunction interV = FFGVertex_->evaluate(shat, 1, gamma_, inters, 
+	  VectorWaveFunction interV = FFPVertex_->evaluate(shat, 1, gamma_, inters, 
 							   sbar[ihel2]);
 	  diag[2] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
 	  // second photon diagram

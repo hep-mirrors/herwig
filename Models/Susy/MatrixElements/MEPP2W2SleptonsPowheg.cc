@@ -57,47 +57,61 @@ MEPP2W2SleptonsPowheg::colourGeometries(tcDiagPtr) const {
 
 void MEPP2W2SleptonsPowheg::getDiagrams() const {
   // loop over the Wplus processes we need
-  for(unsigned int i = 1; (i <= 5 && i%2 == 0); ++i) {
+  for(unsigned int i = 2; i <= 5; i+=2 ) {
     tcPDPtr qi  = getParticleData(i);
     tcPDPtr qib = qi->CC();
-    
-    for(unsigned int j = 1; (j <= 5 && j%2 == 1); ++j) {
+    for(unsigned int j = 1; j <= 5; j+=2 ) {
       tcPDPtr qj  = getParticleData(j);
-    tcPDPtr qjb = qj->CC();
-    
-    tcPDPtr q=qi;
-    tcPDPtr qb=qjb;
-    
-    for(unsigned int ix=11;(ix<17 && i%2 == 1);++ix) {
-      // production of left-handed sleptons
-      tcPDPtr lp = getParticleData(1000000+ix);
-      tcPDPtr lnu = getParticleData(1000000+ix+1);
-      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_, 3, lnu, 3, lp, -1)));  
-    }
+      tcPDPtr qjb = qj->CC();
+      
+      tcPDPtr q  = qi ;
+      tcPDPtr qb = qjb;
+      
+      for(int ix=11; ix<17; ix+=2 ) {
+	// production of left-handed sleptons
+	tcPDPtr lp = getParticleData(-(1000000+ix));
+	tcPDPtr lnu = getParticleData(1000000+ix+1);
+	if(process_==0|| int(process_)==4+(ix-9)/2 )
+	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
+		       3, lnu, 3, lp, -1)));
+	// production of stau_2
+	if(ix==15) {
+	  lp = getParticleData(-(2000000+ix));
+	  if(process_==0||process_== 8 )
+	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wplus_,
+			 3, lnu, 3, lp, -1)));
+	}
+      }
     }
   }
-  
   // loop over the Wminus processes we need
-  for(unsigned int i = 1; (i <= 5 && i%2 == 0); ++i) {
+  for(unsigned int i = 2; i <= 5; i+=2) {
     tcPDPtr qi  = getParticleData(i);
     tcPDPtr qib = qi->CC();
     
-    for(unsigned int j = 1; (j <= 5 && j%2 == 1); ++j) {
+    for(unsigned int j = 1; j <= 5; j+=2) {
       tcPDPtr qj  = getParticleData(j);
-    tcPDPtr qjb = qj->CC();
+      tcPDPtr qjb = qj->CC();
     
-    tcPDPtr q=qib;
-    tcPDPtr qb=qj;
+      tcPDPtr q=qj;
+      tcPDPtr qb=qib;
     
-    for(unsigned int ix=11;(ix<17 && i%2 == 1);++ix) {
-      // production of left-handed sleptons
-      tcPDPtr lp = getParticleData(1000000+ix);
-      tcPDPtr lnu = getParticleData(1000000+ix+1);
-      add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_, 3, lnu, 3, lp, -2)));  
+      for(unsigned int ix=11; ix<17; ix+=2) {
+	// production of left-handed sleptons
+	tcPDPtr lp = getParticleData(1000000+ix);
+	tcPDPtr lnu = getParticleData(-(1000000+ix+1));
+	if(process_==0|| process_==(ix-9)/2 )
+	  add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
+		       3, lnu, 3, lp, -2)));
+	if(ix==15) {
+	  lp = getParticleData(2000000+ix);
+	  if(process_==0||process_==4 )
+	    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, Wminus_,
+			 3, lnu, 3, lp, -2)));
+	}  
+      }
     }
-    }
-  }
-  
+  } 
 }
 
 unsigned int MEPP2W2SleptonsPowheg::orderInAlphaS() const {
@@ -137,38 +151,62 @@ void MEPP2W2SleptonsPowheg::Init() {
      " of the fermion-antifermion to sfermion-sfermion hard process.");
 
 
-//   static Switch<MEPP2W2SleptonsPowheg,unsigned int> interfaceProcess
-//     ("Process",
-//      "Which processes to generate",
-//      &MEPP2W2SleptonsPowheg::process_, 0, false, false);
-//   static SwitchOption interfaceProcessAll
-//     (interfaceProcess,
-//      "All",
-//      "Generate all the processes",
-//      0);
-//   static SwitchOption interfaceProcesse-type
-//     (interfaceProcess,
-//      "e-type",
-//      "Only produce electron-type final states",
-//      1);
-//   static SwitchOption interfaceProcessmu-type
-//     (interfaceProcess,
-//      "mu-type",
-//      "Onle produces mu-type final states",
-//      2);
-//   static SwitchOption interfaceProcesstau-type
-//     (interfaceProcess,
-//      "tau-type",
-//      "Only produce tau-type final states",
-//      3);
+  static Switch<MEPP2W2SleptonsPowheg,unsigned int> interfaceProcess
+    ("Process",
+     "Which processes to generate",
+     &MEPP2W2SleptonsPowheg::process_, 0, false, false);
+  static SwitchOption interfaceProcessAll
+    (interfaceProcess,
+     "All",
+     "Generate all processes",
+     0);
+  static SwitchOption interfaceProcesse_Lminus
+    (interfaceProcess,
+     "e_Lminus",
+     "Produce e_L-",
+     1);
+  static SwitchOption interfaceProcessmu_Lminus
+    (interfaceProcess,
+     "mu_Lminus",
+     "Produce mu_L-",
+     2);
+  static SwitchOption interfaceProcesstau_1minus
+    (interfaceProcess,
+     "tau_1minus",
+     "Produce tau_1-",
+     3);
+  static SwitchOption interfaceProcesstau_2minus
+    (interfaceProcess,
+     "tau_2minus",
+     "Produce tau_2-",
+     4);
+  static SwitchOption interfaceProcesse_Lplus
+    (interfaceProcess,
+     "e_Lplus",
+     "Produce e_L-",
+     5);
+  static SwitchOption interfaceProcessmu_Lplus
+    (interfaceProcess,
+     "mu_Lplus",
+     "Produce mu_L-",
+     6);
+  static SwitchOption interfaceProcesstau_1plus
+    (interfaceProcess,
+     "tau_1plus",
+     "Produce tau_1-",
+     7);
+  static SwitchOption interfaceProcesstau_2plus
+    (interfaceProcess,
+     "tau_2plus",
+     "Produce tau_2-",
+     8);
 }
 
 Selector<MEBase::DiagramIndex>
 MEPP2W2SleptonsPowheg::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-    if ( diags[i]->id() == -1 ) sel.insert(meInfo()[0], i);
-    else if ( diags[i]->id() == -2 ) sel.insert(meInfo()[1], i);
+    sel.insert(1., i);
   }
   return sel;
 }
@@ -188,40 +226,29 @@ qqbarME(vector<SpinorWaveFunction>    & sp ,
 	bool first) const {
   // scale for the process
   const Energy2 q2(scale());
-  // storage of the matrix elements for specific diagrams
-  vector<double> me(2, 0.);
+  // type of gauge boson
+  int icharge = sca1.particle()->iCharge()+sca2.particle()->iCharge();
+  tcPDPtr boson = icharge > 0 ? Wplus_ : Wminus_;
+  // storage of the answer
   double me2(0.);
   // storgage of the individual diagrams
-  vector<Complex> diag(2, Complex(0.));
+  Complex diag(0.);
   ProductionMatrixElement pme(PDT::Spin1Half, PDT::Spin1Half, 
 			      PDT::Spin0, PDT::Spin0);
   // loop over the helicities and calculate the matrix elements
   for(unsigned int if1 = 0; if1 < 2; ++if1) {
     for(unsigned int if2 = 0; if2 < 2; ++if2) {
-      VectorWaveFunction interV = FFWVertex_->evaluate(q2, 1, Wplus_, sp[if1], 
+      VectorWaveFunction interV = FFWVertex_->evaluate(q2, 1, boson, sp[if1], 
 						       sbar[if2]);
-      diag[0] = WSSVertex_->evaluate(q2, interV, sca2, sca1);
-      interV = FFWVertex_->evaluate(q2, 1, Wminus_, sp[if1], 
-				    sbar[if2]);
-      diag[1] = WSSVertex_->evaluate(q2, interV, sca2, sca1);
-      }
-
+      diag = WSSVertex_->evaluate(q2, interV, sca2, sca1);
       // sum up the matrix elements
-    me2 += norm(diag[0])+norm(diag[1]);
-      me[0] += norm(diag[0]);
-      me[1] += norm(diag[1]);
-      //      pme(if1, if2, 0, 0) = diag[0]+diag[1];
+      me2 += norm(diag);
+      pme(if1, if2, 0, 0) = diag;
+    }
   }
+  if(first) me_.reset(pme);
+  return me2/12.;
 }
-// if(first) {
-//   DVector save(2);
-//   for(DVector::size_type ix = 0; ix < 2; ++ix)
-//     save[ix] =me[ix]/6.;
-//   meInfo(save);
-//   me_.reset(pme);
-//  }
-// return me2/6.;
-// }
 
 double MEPP2W2SleptonsPowheg::loME(const cPDVector & particles,
 				   const vector<Lorentz5Momentum> & momenta,
@@ -243,13 +270,14 @@ double MEPP2W2SleptonsPowheg::loME(const cPDVector & particles,
   return qqbarME(sp,sbar,sca1,sca2,first);
 }
 
-double MEPP2W2SleptonsPowheg::realME(const cPDVector & particles,
-				      const vector<Lorentz5Momentum> & momenta) const {
+double MEPP2W2SleptonsPowheg::
+realME(const cPDVector & particles,
+       const vector<Lorentz5Momentum> & momenta) const {
   vector<SpinorWaveFunction> sp(2);
   vector<SpinorBarWaveFunction> sbar(2);
   vector<VectorWaveFunction> gluon(2);
   // wavefunctions for the q qbar -> sf sf g process
-  if(particles[0]->id()==-particles[1]->id()) {
+  if(particles[0]->id()<=6&&particles[1]->id()<0) {
     for( unsigned int i = 0; i < 2; ++i ) {
       sp[i]   = SpinorWaveFunction   (momenta[0],particles[0],  i,incoming);
       sbar[i] = SpinorBarWaveFunction(momenta[1],particles[1],  i,incoming);
@@ -281,53 +309,42 @@ double MEPP2W2SleptonsPowheg::realME(const cPDVector & particles,
   // wavefunctions for the scalars 
   ScalarWaveFunction sca1(momenta[2], particles[2],Complex(1.), outgoing);
   ScalarWaveFunction sca2(momenta[3], particles[3],Complex(1.), outgoing);
+  // type of gauge boson
+  int icharge = sca1.particle()->iCharge()+sca2.particle()->iCharge();
+  tcPDPtr boson = icharge > 0 ? Wplus_ : Wminus_;
+  // matrix element
   double output(0.);
-  Complex diag[4]={0.,0.,0.,0.};
+  Complex diag[4]={0.,0.};
   Energy2 shat = scale();
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       for(unsigned int ohel1=0;ohel1<2;++ohel1) {
-	if(particles[2]->charge()+particles[3]->charge()==1.) {
 	// First Wplus diagram
  	SpinorWaveFunction inters = FFGVertex_->evaluate(shat,5,sp[ihel1].particle(),
 							 sp[ihel1],gluon[ohel1]);
-	VectorWaveFunction interV = FFWVertex_->evaluate(shat, 1, Wplus_, inters, 
+	VectorWaveFunction interV = FFWVertex_->evaluate(shat, 1, boson, inters, 
 							 sbar[ihel2]);
 	diag[0] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
 	// Second Wplus diagram
 	SpinorBarWaveFunction interb = FFGVertex_->evaluate(shat,5,sbar[ihel1].particle(),
 							    sbar[ihel2],gluon[ohel1]);
-	interV = FFWVertex_->evaluate(shat, 1, Wplus_, sp[ihel1], 
+	interV = FFWVertex_->evaluate(shat, 1, boson, sp[ihel1], 
 				      interb);
 	diag[1] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
-	}
-
-
-	if(particles[2]->charge()+particles[3]->charge()==-1.) {
-	  // First Wminus diagram
-	  SpinorWaveFunction inters = FFGVertex_->evaluate(shat,5,sp[ihel1].particle(),
-							   sp[ihel1],gluon[ohel1]);
-	  VectorWaveFunction interV = FFWVertex_->evaluate(shat, 1, Wminus_, inters, 
-							   sbar[ihel2]);
-	  diag[2] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
-	  // Second Wminus diagram
-	  SpinorBarWaveFunction interb = FFGVertex_->evaluate(shat,5,sbar[ihel1].particle(),
-							      sbar[ihel2],gluon[ohel1]);
-	  interV = FFWVertex_->evaluate(shat, 1, Wminus_, sp[ihel1], 
-					interb);
-	  diag[3] = WSSVertex_->evaluate(shat, interV, sca2, sca1);
-	}
 	// add them up
-	output += norm(diag[0]+diag[1])+norm(diag[2]+diag[3]);
+	output += norm(diag[0]+diag[1]);
       }
     }
   }
   // colour and spin factors
-  if(particles[0]->id()==-particles[1]->id()) {
-    output *= 1./9.;
-  }
-  else  {
+  // q g or g qbar
+  if(particles[0]->id()==ParticleID::g||
+     particles[1]->id()==ParticleID::g) {
     output *= 1./24.;
+  }
+  // q qbar
+  else  {
+    output *= 1./9.;
   }
   return output;
 }
