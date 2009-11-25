@@ -121,6 +121,18 @@ protected:
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit();
+  //@}
+
+protected:
+
   /**
    *  Develop a stable particle
    */
@@ -149,6 +161,16 @@ private:
    *  Option for adding particles in a new Step
    */
   bool _newstep;
+
+  /**
+   *  Particles which should not be decayed
+   */
+  set<tcPDPtr> _excluded;
+
+  /**
+   *  Vector to fill the set as an interface
+   */
+  vector<PDPtr> _excludedVector;
 
 };
 }

@@ -19,6 +19,7 @@
 #include "ThePEG/PDT/Decayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/EventRecord/Step.h"
 #include "ThePEG/EventRecord/Collision.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
@@ -39,7 +40,8 @@ handle(EventHandler &, const tPVector & tagged,
     if(tagged[i]) {
       // add to parents if not stable
       if(!tagged[i]->data().stable() &&
-	 tagged[i]->data().id() != ExtraParticleID::Remnant ) {
+	 tagged[i]->data().id() != ExtraParticleID::Remnant &&
+	 _excluded.find( tagged[i]->dataPtr() ) == _excluded.end() ) {
 	parents.push_back(tagged[i]);
       }
       // if stable and has spinInfo set the developed flag
@@ -61,8 +63,7 @@ handle(EventHandler &, const tPVector & tagged,
 
 // perform decay method including modifications for spin correlations
 // and for the decayer to specify intermediate decay products
-void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
-  {
+void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
   long ntry = 0;
   tcSpinfoPtr hwspin;
   if ( maxLifeTime() >= 0.0*mm ) {
@@ -118,7 +119,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	// if the child has already been decayed add products to the record
 	if(children[i]->decayed()) addDecayedParticle(children[i],s);
 	// if not stable decay the child
-	else if (!children[i]->data().stable()) {
+	else if (!children[i]->data().stable() &&
+		 _excluded.find( children[i]->dataPtr() ) == _excluded.end() ) {
 	  performDecay(children[i], s);
 	}
 	// if stable and has spinInfo set up decay matrices etc.
@@ -147,9 +149,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 }
 
 // method to add an intermediate which has already been decayed to the event record
-void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
-  
-{
+void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const {
   for ( int i = 0, N = parent->children().size(); i < N; ++i ) {
     parent->children()[i]->setLabVertex(parent->labDecayVertex());
     s.addDecayProduct(parent->children()[i]);
@@ -160,10 +160,11 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
       for(unsigned int ix=0;ix<(parent->children()[i])->children().size();++ix)
 	addDecayedParticle(parent->children()[i],s);
     }
-    else if ( !(parent->children()[i])->data().stable() ) {
+    else if ( ! parent->children()[i]->data().stable() &&
+	      _excluded.find( parent->children()[i]->dataPtr() ) == _excluded.end() ) {
       performDecay(parent->children()[i], s);
     }
-    else if(parent->children()[i]->data().stable()) {
+    else {
       develop(parent->children()[i]);
     }
   }
@@ -171,11 +172,11 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
 }
 
 void HwDecayHandler::persistentOutput(PersistentOStream & os) const {
-  os << _newstep;
+  os << _newstep << _excluded << _excludedVector;
 }
 
 void HwDecayHandler::persistentInput(PersistentIStream & is, int)  {
-  is >> _newstep;
+  is >> _newstep >> _excluded >> _excludedVector;
 }
 
 ClassDescription<HwDecayHandler> HwDecayHandler::initHwDecayHandler;
@@ -209,4 +210,14 @@ void HwDecayHandler::Init() {
      "Add them in the current step",
      false);
 
+  static RefVector<HwDecayHandler,ParticleData> interfaceExcluded
+    ("Excluded",
+     "Particles which should not be decayed",
+     &HwDecayHandler::_excludedVector, -1, false, false, true, false, false);
+
+}
+
+void HwDecayHandler::doinit() {
+  DecayHandler::doinit();
+  _excluded = set<tcPDPtr>(_excludedVector.begin(),_excludedVector.end());
 }
