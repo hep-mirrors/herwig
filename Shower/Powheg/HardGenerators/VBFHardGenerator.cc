@@ -663,15 +663,13 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
       loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
     }
   }
-  if(1-xp > 1e-10 && 1.-zp > 1e-10){
+  
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
 
   return CFfact/((1.-xp)*(1.-zp))*
          (R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2); 
-  } else 
-
-    return 0;
+  
 }
 
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
@@ -778,15 +776,13 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
     }
   }
 
-  if(1-xp > 1e-10 && 1.-zp > 1e-10){
   double R3 = sqr(x3)/(sqr(x3)+sqr(xT))*(term3/loME);
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
+
   return TRfact/(1.-zp)*
          (sqr(xp)*(sqr(x3)+sqr(xT))*R3+
           sqr(xp)*(sqr(x2)+sqr(xT))*R2);
-  } else
-
-    return 0;
+   
 }
 
 Energy4 VBFHardGenerator::
