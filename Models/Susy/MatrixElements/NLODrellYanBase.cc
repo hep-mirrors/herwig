@@ -30,20 +30,37 @@ Energy2 NLODrellYanBase::scale() const {
 }
 
 int NLODrellYanBase::nDim() const {
-  return HwME2to2Base::nDim()+3;
+  return HwME2to2Base::nDim() + ( contrib_==1 || contrib_==2 ? 3 : 0 );
 }
 
 bool NLODrellYanBase::generateKinematics(const double * r) {
-  // radiative variables
-  zTilde_ = r[nDim()-1];
-  vTilde_ = r[nDim()-2];
-  phi_    = Constants::twopi*r[nDim()-3];
+  if(contrib_==1||contrib_==2) {
+    zTilde_ = r[nDim()-1];
+    vTilde_ = r[nDim()-2];
+    phi_    = Constants::twopi*r[nDim()-3];
+  }
   jacobian(1.0);
   return HwME2to2Base::generateKinematics(r);
 }
 
 CrossSection NLODrellYanBase::dSigHatDR() const {
-  return NLOWeight()*HwME2to2Base::dSigHatDR();
+  // old technique
+  CrossSection LO = HwME2to2Base::dSigHatDR();
+  if(contrib_<3) return NLOWeight()*LO;
+  // folding technique to ensure positive
+  double wgt(0.);
+  unsigned int ntry(0);
+  do {
+    // radiative variables
+    zTilde_ = UseRandom::rnd();
+    vTilde_ = UseRandom::rnd();
+    phi_    = Constants::twopi*UseRandom::rnd();
+    double wtemp = NLOWeight();
+    ++ntry;
+  }
+  while (wgt<0.&&ntry<100);
+  if(wgt<0.) return ZERO;
+  return wgt*LO/double(ntry);
 }
 
 double NLODrellYanBase::me2() const {
@@ -92,6 +109,11 @@ void NLODrellYanBase::Init() {
      "NegativeNLO",
      "Generate the negative contribution to the full NLO cross section",
      2);
+  static SwitchOption interfaceContributionTotalNLO
+    (interfaceContribution,
+     "TotalNLO",
+     "Generate the full NLO cross section using folding",
+     3);
 
   static Parameter<NLODrellYanBase,double> interfaceSamplingPower
     ("SamplingPower",
@@ -170,16 +192,16 @@ double NLODrellYanBase::NLOWeight() const {
   // coll terms
   // g -> q
   double collGQ    = collinearGluon(mu2,zJac.first,z.first,
-					   oldqPDF.first,newgPDF.first);
+				    oldqPDF.first,newgPDF.first);
   // g -> qbar
   double collGQbar = collinearGluon(mu2,zJac.second,z.second,
 				    oldqPDF.second,newgPDF.second);
   // q -> q
   double collQQ       = collinearQuark(x.first ,mu2,zJac.first ,z.first ,
-					      oldqPDF.first ,newqPDF.first );
+				       oldqPDF.first ,newqPDF.first );
   // qbar -> qbar
   double collQbarQbar = collinearQuark(x.second,mu2,zJac.second,z.second,
-					      oldqPDF.second,newqPDF.second);
+				       oldqPDF.second,newqPDF.second);
   // collinear remnants 
   double coll = collQQ+collQbarQbar+collGQ+collGQbar;
   double real = 
@@ -189,16 +211,25 @@ double NLODrellYanBase::NLOWeight() const {
 		   oldqPDF.second,newqPDF.second,newgPDF.second,false);
   // add up all the terms and return the answer
   double wgt = 1.+virt+coll+real;
-  return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
+  if(isnan(wgt)||isinf(wgt)) {
+    cerr << "testing bad weight "
+	 << collQQ << " " << collQbarQbar << " "
+	 << collGQ << " " << collGQbar << " "
+	 << virt << " " << coll << " " << real << "\n";
+    cerr << "testing z " << z.first << " " << z.second << "\n";
+    cerr << "testing z " << 1.-z.first << " " << 1.-z.second << "\n";
+    assert(false);
+  }
+  if(contrib_<3)
+    return contrib_==1 ? max(0.,wgt) : max(0.,-wgt);
+  else 
+    return wgt;
 }
 
 double NLODrellYanBase::collinearQuark(double x, Energy2 mu2, 
 				       double jac, double z,
 				       double oldPDF, double newPDF) const {
-  // plus function but for numerical stability
-  double plus = z>1.-1.e-8 ? 0. : 
-    jac /z *(newPDF /oldPDF -z )*
-    2./(1.-z )*log(sHat()*sqr(1.-z )/mu2);
+  if(1.-z < 1.e-8) return 0.;
   return CFfact_*(
 		  // this bit is multiplied by LO PDF
 		  sqr(Constants::pi)/3.-5.+2.*sqr(log(1.-x ))
@@ -208,12 +239,14 @@ double NLODrellYanBase::collinearQuark(double x, Energy2 mu2,
 		  (1.-z -(1.+z )*log(sqr(1.-z )/z )
 		   -(1.+z )*log(sHat()/mu2)-2.*log(z )/(1.-z ))
 		  // + function bit
-		  +plus);
+		  +jac /z *(newPDF /oldPDF -z )*
+		  2./(1.-z )*log(sHat()*sqr(1.-z )/mu2));
 }
 
 double NLODrellYanBase::collinearGluon(Energy2 mu2,
 				       double jac, double z,
 				       double oldPDF, double newPDF) const {
+  if(1.-z < 1.e-8) return 0.;
   return TRfact_*jac/z*newPDF/oldPDF*
     ((sqr(z)+sqr(1.-z))*log(sqr(1.-z)*sHat()/z/mu2)
      +2.*z*(1.-z));
@@ -233,7 +266,7 @@ double NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
   }
   else {
     rapidity =  log(x.first *sqrt(lastS())/pT*vt);
-  }       ;
+  }
   // CMS system
   Energy rs=sqrt(lastS());
   Lorentz5Momentum pcmf = Lorentz5Momentum(ZERO,ZERO,0.5*rs*(x.first-x.second),
@@ -272,10 +305,10 @@ double NLODrellYanBase::subtractedReal(pair<double,double> x, double z,
   // phase-space prefactors
   double phase = zJac*vJac/sqr(z);
   // real emission q qbar
-  double realQQ = zTilde_<1e-8 ? 0. :
+  double realQQ = zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 ? 0. :
     CFfact_*phase*subtractedMEqqbar(pnew,order)*newqPDF/oldqPDF;
   // real emission g qbar 
-  double realGQ = zTilde_<1e-8 ? 0. :
+  double realGQ = zTilde_<1e-7 || vt<1e-7 || 1.-z-vt < 1e-7 ? 0. :
     TRfact_*phase*subtractedMEgqbar(pnew,order)*newgPDF/oldqPDF;
   // return the answer
   return realQQ + realGQ;
@@ -319,7 +352,7 @@ double NLODrellYanBase::subtractedMEqqbar(const vector<Lorentz5Momentum> & p,
   InvEnergy2 D1 = 0.5/(p[0]*p[4])/x*(2./(1.-x)-(1.+x));
   // second dipole
   InvEnergy2 D2 = 0.5/(p[1]*p[4])/x*(2./(1.-x)-(1.+x));
-  // result
+  // results
   if(order) {
     me = sHat()*(abs(D1)/(abs(D1)*lo1+abs(D2)*lo2)*UnitRemoval::InvE2*me-D1);
   }
@@ -366,6 +399,12 @@ double NLODrellYanBase::subtractedMEgqbar(const vector<Lorentz5Momentum> & p,
   // first LO matrix element
   double lo1 = loME(mePartonData(),pa,false);
   // dipole
-  InvEnergy2 D1 =  0.5/(p[1]*p[4])/x*(1.-2.*x*(1.-x));
+  InvEnergy2 D1;
+  if(order) {
+    D1 =  0.5/(p[0]*p[4])/x*(1.-2.*x*(1.-x));
+  }
+  else {
+    D1 =  0.5/(p[1]*p[4])/x*(1.-2.*x*(1.-x));
+  }
   return sHat()*(UnitRemoval::InvE2*me/lo1-D1);
 }

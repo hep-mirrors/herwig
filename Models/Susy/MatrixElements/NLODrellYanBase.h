@@ -266,17 +266,17 @@ private:
   /**
    *  First  variable
    */
-  double zTilde_;
+  mutable double zTilde_;
 
   /**
    *  Second variable
    */
-  double vTilde_;
+  mutable double vTilde_;
 
   /**
    *  Azimuthal angle
    */
-  double phi_;
+  mutable double phi_;
   //@}
 
   /**
