@@ -182,18 +182,15 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
     ++ntry;
     // Record warnings about large and weird weights in the .log file.
     if(wgt>_maxwgt||wgt<0.0||isnan(wgt)) {
-      generator()->log() << "IFDipole.cc: " << endl;
+      generator()->log() << "IFDipole.cc:\n";
       if(wgt>_maxwgt) {
-	generator()->log() << "Weight exceeds maximum for decay!" 
-			   << endl; 
+	generator()->log() << "Weight exceeds maximum for decay!\n"; 
       } 
       if(wgt<0.0) {
-	generator()->log() << "Weight is negative! " 
-			   << endl; 
+	generator()->log() << "Weight is negative! \n"; 
       }
       if(isnan(wgt)) {
-	generator()->log() << "Weight is NAN! " 
-			   << endl;
+	generator()->log() << "Weight is NAN! \n";
 	wgt = 0.;
       }
       generator()->log() << p.PDGName() << " " 
@@ -321,21 +318,21 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
 
   // now do the momentum reshuffling
   Lorentz5Momentum pmom(ZERO,ZERO,ZERO,_m[0],_m[0]);
-  if(_multiplicity>0)
-    {
+  if(_multiplicity>0) {
       // total energy  and momentum of photons
       Energy L0(_bigLprf.e()),modL(_bigLprf.rho());
       // squared invariant mass of final state fermions...
       Energy2 m122 = sqr(_m[0]-L0)-sqr(modL);
+      if(m122<sqr(_m[1]+_m[2])) return 0.;
       // 3-momenta of charged particles
       Energy modq(_qprf[_map[0]].rho());
       // total photon momentum perpendicular to charged child...
-      Energy LT(sqrt((modL-_bigLprf.z())*(modL+_bigLprf.z())));
+      Energy LT(_bigLprf.perp());
       // kallen function...
-      Energy4 kallen = ( m122 - (_m[1]+_m[2])*(_m[1]+_m[2]) )
-	             * ( m122 - (_m[1]-_m[2])*(_m[1]-_m[2]) );
+      Energy4 kallen = ( m122 - sqr(_m[1]+_m[2]) )
+	             * ( m122 - sqr(_m[1]-_m[2]) );
       // discriminant of rho...
-      Energy4 droot = kallen-4.*sqr(_m[1]*LT);
+      Energy4 droot = kallen-4.*sqr(_m[_map[0]+1]*LT);
       if(droot<ZERO) return 0.;
       double disc = (_m[0]-L0) *  sqrt(droot) / (2.*modq*(m122+LT*LT));
       // calculate the energy rescaling factor
@@ -389,8 +386,7 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
       // Calculating beta^1  weight
       _mewgt = meWeight(children);
       // Apply phase space vetos...
-      if(kallen<(4.*sqr(_m[_map[0]+1]*LT))||m122<sqr(_m[1]+_m[2])||rho<0.0) 
-	{  
+      if(kallen<(4.*sqr(_m[_map[0]+1]*LT))||m122<sqr(_m[1]+_m[2])||rho<0.0) {  
 //           generator()->log() << "Outside Phase Space" << endl;
 //           generator()->log() << "Photon Multiplicity: " 
 //                              << _multiplicity                          << endl
@@ -403,38 +399,42 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children) {
 //                              << "neutral child: " << _qnewprf[_map[1]] << endl
 //                              << "photons      : " << _bigLprf          << endl
 //                              << endl;
-          _dipolewgt   = 0.0 ;
-          _yfswgt      = 0.0 ;
-          _jacobianwgt = 0.0 ;
-          _mewgt       = 0.0 ;
-	}
+	_dipolewgt   = 0.0 ;
+	_yfswgt      = 0.0 ;
+	_jacobianwgt = 0.0 ;
+	_mewgt       = 0.0 ;
+      }
       _qprf[_map[0]].rescaleEnergy();
       _qprf[_map[1]].rescaleEnergy();
       _qnewprf[_map[0]].rescaleEnergy();
       _qnewprf[_map[1]].rescaleEnergy();
-      if( (((_m[0]-_bigLprf.e()-_qnewprf[0].e()-_qnewprf[1].e())>0.00001*MeV)||
-           ((      _bigLprf.x()+_qnewprf[0].x()+_qnewprf[1].x())>0.00001*MeV)||
-           ((      _bigLprf.y()+_qnewprf[0].y()+_qnewprf[1].y())>0.00001*MeV)||
-           ((      _bigLprf.z()+_qnewprf[0].z()+_qnewprf[1].z())>0.00001*MeV))
-         &&(_dipolewgt*_jacobianwgt*_yfswgt*_mewgt>0.0)
-        ) 
-        {generator()->log() <<"Warning! Energy Not Conserved! tol = 0.00001 MeV" << endl; 
-	 generator()->log() <<"wgt               = " << _dipolewgt*_yfswgt*_jacobianwgt*_mewgt << endl;
-	 generator()->log() <<"rho               = " << rho << endl;
-	 generator()->log() <<"multiplicity      = " << _multiplicity << endl;
-	 generator()->log() <<"_qprf[_map[0]]    = " << ounit(_qprf[_map[0]],GeV)<< endl;
-	 generator()->log() <<"_qprf[_map[1]]    = " << ounit(_qprf[_map[1]],GeV)<< endl;
-	 generator()->log() <<"_qnewprf[_map[0]] = " << ounit(_qnewprf[_map[0]],GeV)<< endl;
-	 generator()->log() <<"_qnewprf[_map[1]] = " << ounit(_qnewprf[_map[1]],GeV)<< endl;
-	 generator()->log() <<"_bigLprf          = " << ounit(_bigLprf,GeV)         << endl;
-	 generator()->log() <<"_bigLprf.m2()     = " << _bigLprf.m2()/GeV2 << endl;
-	 generator()->log() <<"_total outgoing   = " << ounit(_bigLprf+_qnewprf[0]+_qnewprf[1],GeV) << endl;
-	 generator()->log() <<"Rejecting Event.    " << endl;
-         _dipolewgt   = 0.0 ;
-         _yfswgt      = 0.0 ;
-         _jacobianwgt = 0.0 ;
-         _mewgt       = 0.0 ;
-        }
+      if( ((abs(_m[0]-_bigLprf.e()-_qnewprf[0].e()-_qnewprf[1].e())>0.00001*MeV)||
+           (abs(      _bigLprf.x()+_qnewprf[0].x()+_qnewprf[1].x())>0.00001*MeV)||
+           (abs(      _bigLprf.y()+_qnewprf[0].y()+_qnewprf[1].y())>0.00001*MeV)||
+           (abs(      _bigLprf.z()+_qnewprf[0].z()+_qnewprf[1].z())>0.00001*MeV))
+         &&(_dipolewgt*_jacobianwgt*_yfswgt*_mewgt>0.0)) {
+	Lorentz5Momentum ptotal = _bigLprf+_qnewprf[0]+_qnewprf[1];
+	ptotal.setE(ptotal.e()-_m[0]);
+	generator()->log() 
+	  <<   "Warning! Energy Not Conserved! tol = 0.00001 MeV"
+	  << "\nwgt               = " << _dipolewgt*_yfswgt*_jacobianwgt*_mewgt
+	  << "\nrho               = " << rho
+	  << "\nmultiplicity      = " << _multiplicity
+	  << "\n_qprf[_map[0]]    = " << _qprf[_map[0]]/GeV
+	  << "\n_qprf[_map[1]]    = " << _qprf[_map[1]]/GeV
+	  << "\n_qnewprf[_map[0]] = " << _qnewprf[_map[0]]/GeV << " " 
+	  << _qnewprf[_map[0]].m()/GeV << " " << _m[_map[0]+1]/GeV
+	  << "\n_qnewprf[_map[1]] = " << _qnewprf[_map[1]]/GeV << " " 
+	  << _qnewprf[_map[1]].m()/GeV << " " << _m[_map[1]+1]/GeV
+	  << "\n_bigLprf          = " << _bigLprf/GeV
+	  << "\n_bigLprf.m2()     = " << _bigLprf.m2()/GeV2
+	  << "\n_total out -in    = " << ptotal/GeV
+	  << "\nRejecting Event.    " << "\n";
+	_dipolewgt   = 0.0 ;
+	_yfswgt      = 0.0 ;
+	_jacobianwgt = 0.0 ;
+	_mewgt       = 0.0 ;
+      }
     }
   // otherwise copy momenta
   else
