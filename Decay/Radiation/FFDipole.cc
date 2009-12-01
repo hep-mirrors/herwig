@@ -287,6 +287,7 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
 	generator()->log() << "dipoleopt   : " << _dipoleopt   << "\n";
       } 
       if(wgt >=0. && wgt <= 10.0) _maxwgt = wgt;
+      else if(wgt>10.)            _maxwgt = 10.;
     }
     else {
       _wgtsum += wgt;
