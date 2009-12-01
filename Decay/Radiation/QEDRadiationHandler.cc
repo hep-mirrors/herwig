@@ -90,7 +90,7 @@ handle(EventHandler & eh, const tPVector & tagged,
     // store number of children
     unsigned int initsize  = children.size();
     // boost the decay to the parent rest frame
-    Boost boost = (**sit).momentum().boostVector();
+    Boost boost = - (**sit).momentum().boostVector();
     (**sit).deepBoost(boost);
     // construct the tag for the decay mode to find the decayer
     OrderedParticles products;
