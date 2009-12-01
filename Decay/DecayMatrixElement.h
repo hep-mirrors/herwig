@@ -180,7 +180,7 @@ public:
    * Calculate the decay matrix for this decay.
    * @param rhoout The \f$D\f$ matrix for this decay.
    */
-  RhoDMatrix calculateDMatrix(const vector<RhoDMatrix> & rhoout);
+  RhoDMatrix calculateDMatrix(const vector<RhoDMatrix> & rhoout) const;
 
   /** 
    * Calculate the \f$\rho\f$ matrix for a given outgoing particle.
@@ -189,7 +189,7 @@ public:
    * @param rhoout he \f$D\f$ matrices for the other decay products.
    */
   RhoDMatrix calculateRhoMatrix(int ipart,const RhoDMatrix & rhoin,
-				const vector<RhoDMatrix> & rhoout);
+				const vector<RhoDMatrix> & rhoout) const;
 
   /** 
    * Contract the matrix element with the \f$\rho\f$ matrix of the 

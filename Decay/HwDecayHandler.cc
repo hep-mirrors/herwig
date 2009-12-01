@@ -131,15 +131,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
       // sort out the spinInfo for the parent after the decays
       if(parent->spinInfo()) {
 	hwspin=dynamic_ptr_cast<tcSpinfoPtr>(parent->spinInfo());
-	// if the parent has the right kind of spinInfo
-	if(hwspin) {
-	  // if the parent has been given a decay vertex
-	  // calculate the decay matrix for the decay
-	  if(hwspin->getDecayVertex()) hwspin->develop();
-	  // if the particle was scalar then it doesn't matter that it
-	  // doesn't have a decay vertex as there's no correlations
-	  else if(hwspin->iSpin()==PDT::Spin0) hwspin->setDeveloped(true);
-	}
+	if(hwspin) hwspin->develop();
       }
       return;
     }

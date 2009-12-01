@@ -140,7 +140,7 @@ protected:
     if(!particle->spinInfo()) return;
     Helicity::tcSpinfoPtr hwspin = 
       dynamic_ptr_cast<Helicity::tcSpinfoPtr>(particle->spinInfo());
-    if(hwspin) hwspin->setDeveloped(true);
+    if(hwspin) hwspin->develop();
   }
 
 private:
