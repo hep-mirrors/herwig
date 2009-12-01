@@ -248,10 +248,9 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       swap(g[1][0],g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
-	coup[ix] = 
-	  coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
-	    +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
-	    +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
+	coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
+	  +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
+	  +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
       }
       _leftlast  += 2.*coup[0];
       _rightlast += 2.*coup[1];
@@ -279,8 +278,7 @@ void SSNNPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
       swap(g[1][0],g[1][1]);
       complex<InvEnergy> coup[2];
       for(unsigned int ix=0;ix<2;++ix) {
-	coup[ix] = 
-	  coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
+	coup[ix] = Mj*(I2-K)*(g[0][ix]*g[1][o[ix]]-conj(g[0][o[ix]]*g[1][ix]))
 	  +Mi*K*(g[0][o[ix]]*g[1][ix]-conj(g[0][ix]*g[1][o[ix]]))
 	  +Mk*I*(g[0][ix]*g[1][ix]-conj(g[0][o[ix]]*g[1][o[ix]]));
       }
