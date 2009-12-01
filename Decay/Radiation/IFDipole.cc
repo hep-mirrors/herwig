@@ -181,7 +181,7 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
     wgt =makePhotons(boostv,children);
     ++ntry;
     // Record warnings about large and weird weights in the .log file.
-    if(wgt>_maxwgt||wgt<0.0||isnan(wgt)==1) {
+    if(wgt>_maxwgt||wgt<0.0||isnan(wgt)) {
       generator()->log() << "IFDipole.cc: " << endl;
       if(wgt>_maxwgt) {
 	generator()->log() << "Weight exceeds maximum for decay!" 
@@ -191,9 +191,10 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
 	generator()->log() << "Weight is negative! " 
 			   << endl; 
       }
-      if(isnan(wgt)==1) {
+      if(isnan(wgt)) {
 	generator()->log() << "Weight is NAN! " 
-			   << endl; 
+			   << endl;
+	wgt = 0.;
       }
       generator()->log() << p.PDGName() << " " 
 			 << children[0]->PDGName() << " " 

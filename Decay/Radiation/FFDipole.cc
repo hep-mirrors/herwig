@@ -239,6 +239,7 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
 			   << children[0]->PDGName() 
 			   << " " << children[1]->PDGName()
 			   << "\n";
+	wgt = 0.;
       }
       else if(wgt>=0.) {
 	generator()->log() << "Weight exceeds maximum for decay " 
