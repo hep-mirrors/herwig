@@ -55,7 +55,7 @@ CrossSection NLODrellYanBase::dSigHatDR() const {
     zTilde_ = UseRandom::rnd();
     vTilde_ = UseRandom::rnd();
     phi_    = Constants::twopi*UseRandom::rnd();
-    double wtemp = NLOWeight();
+    wgt += NLOWeight();
     ++ntry;
   }
   while (wgt<0.&&ntry<100);
