@@ -36,11 +36,7 @@ NoPIOClassDescription<QTildeModel> QTildeModel::initQTildeModel;
 void QTildeModel::Init() {
 
   static ClassDocumentation<QTildeModel> documentation
-    ("The QTildeModel class is the ShowerModel object for the Herwig++ shower.",
-     "The Shower evolution was perform using the algorithm suggested in "
-     "\\cite{Gieseke:2003rz}.",
-     "\\bibitem{Gieseke:2003rz} S.~Gieseke, P.~Stephens and B.~Webber,"
-     "JHEP {\\bf 0312} (2003) 045.");
+    ("The QTildeModel class is the ShowerModel object for the Herwig++ shower.");
 
 }
 

@@ -385,7 +385,17 @@ void FourPionNovosibirskCurrent::Init() {
   static ClassDocumentation<FourPionNovosibirskCurrent> documentation
     ("The FourPionNovosibirskCurrent class performs the decay"
      " of the tau to four pions using currents based on the the"
-     " Novosibirsk e+e- data");
+     " Novosibirsk e+e- data",
+     "The decay of the tau to four pions uses currents based on \\cite{Bondar:2002mw}.",
+     "%\\cite{Bondar:2002mw}\n"
+     "\\bibitem{Bondar:2002mw}\n"
+     "  A.~E.~Bondar, S.~I.~Eidelman, A.~I.~Milstein, T.~Pierzchala, N.~I.~Root, Z.~Was and M.~Worek,\n"
+     "   ``Novosibirsk hadronic currents for tau --> 4pi channels of tau decay\n"
+     "  %library TAUOLA,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 146}, 139 (2002)\n"
+     "  [arXiv:hep-ph/0201149].\n"
+     "  %%CITATION = CPHCB,146,139;%%\n"
+     );
 
   static Parameter<FourPionNovosibirskCurrent,Energy> interfacerhoMass
     ("rhoMass",
@@ -790,6 +800,7 @@ vector<LorentzPolarizationVectorE>
 FourPionNovosibirskCurrent::current(const int imode, const int ichan,
 				    Energy & scale,const ParticleVector & decay,
 				    DecayIntegrator::MEOption meopt) const {
+  useMe();
   if(meopt==DecayIntegrator::Terminate) {
     for(unsigned int ix=0;ix<4;++ix)
       ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);

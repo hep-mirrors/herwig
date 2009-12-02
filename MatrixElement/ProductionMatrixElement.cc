@@ -32,7 +32,7 @@ void ProductionMatrixElement::Init() {
 // calculate a decay matrix for one of the incoming particles
 RhoDMatrix ProductionMatrixElement::
 calculateDMatrix(int id, const RhoDMatrix & rhoin,
-		 const vector<RhoDMatrix> & rhoout) {
+		 const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<unsigned int> ihel1(_outspin.size()+2),ihel2(_outspin.size()+2);
   // rhomatrix to be returned
@@ -79,7 +79,7 @@ calculateDMatrix(int id, const RhoDMatrix & rhoin,
 RhoDMatrix ProductionMatrixElement::
 calculateRhoMatrix(int id,const RhoDMatrix & rhoin0,
 		   const RhoDMatrix & rhoin1,
-		   const vector<RhoDMatrix> & rhoout) {
+		   const vector<RhoDMatrix> & rhoout) const {
   unsigned int ix,iy;
   int ixa,iya;
   // vectors for the helicities

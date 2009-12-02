@@ -284,7 +284,39 @@ void TwoMesonRhoKStarCurrent::Init() {
      "Lett. 21, 244 (1968).  The mixing parameters are taken from "
      "Phys. Rev. D61:112002,2000 (CLEO), although the PDG values for the "
      "masses and widths are used, for the decay pi+/- pi0."
-     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.");
+     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.",
+     "The weak "
+     "decay current to two scalar mesons is implemented "
+     "using the models of either Kuhn and "
+     "Santamaria \\cite{Kuhn:1990ad} or Gounaris and Sakurai \\cite{Gounaris:1968mw}. "
+     "The mixing parameters are taken from "
+     "\\cite{Asner:1999kj}, although the PDG values for the "
+     "masses and widths are used, for the decay pi+/- pi0."
+     " The decay K pi is assumed to  be dominated by the lowest lying K* resonance.",
+     "%\\cite{Kuhn:1990ad}\n"
+     "\\bibitem{Kuhn:1990ad}\n"
+     "  J.~H.~Kuhn and A.~Santamaria,\n"
+     "  %``Tau decays to pions,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 48}, 445 (1990).\n"
+     "  %%CITATION = ZEPYA,C48,445;%%\n"
+     "%\\cite{Gounaris:1968mw}\n"
+     "\\bibitem{Gounaris:1968mw}\n"
+     "  G.~J.~Gounaris and J.~J.~Sakurai,\n"
+     "   ``Finite width corrections to the vector meson dominance prediction for rho\n"
+     "  %$\\to$ e+ e-,''\n"
+     "  Phys.\\ Rev.\\ Lett.\\  {\\bf 21}, 244 (1968).\n"
+     "  %%CITATION = PRLTA,21,244;%%\n"
+     "%\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
+
+
 
 }
 
@@ -409,6 +441,7 @@ vector<LorentzPolarizationVectorE>
 TwoMesonRhoKStarCurrent::current(const int imode, const int ichan,
 				 Energy & scale,const ParticleVector & outpart,
 				 DecayIntegrator::MEOption meopt) const {
+  useMe();
   if(meopt==DecayIntegrator::Terminate) {
     for(unsigned int ix=0;ix<2;++ix)
       ScalarWaveFunction::constructSpinInfo(outpart[ix],outgoing,true);

@@ -451,9 +451,19 @@ private:
   AbstractFFVVertexPtr theGSGSGVertex; 
 
   /**
+   * Pointer to the gluino-neutralino-gluon vertex
+   */
+  AbstractFFVVertexPtr theGNGVertex;
+
+  /**
    * Pointer to the neutralino-neutralino-Z vertex
    */
   AbstractFFVVertexPtr theNNZVertex;
+
+  /**
+   * Pointer to the neutralino-neutralino-photon vertex
+   */
+  AbstractFFVVertexPtr theNNPVertex;
 
   /**
    * Pointer to the  vertex chargino-chargino-Z vertex

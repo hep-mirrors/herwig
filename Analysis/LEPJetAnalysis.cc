@@ -91,11 +91,30 @@ NoPIOClassDescription<LEPJetAnalysis> LEPJetAnalysis::initLEPJetAnalysis;
 void LEPJetAnalysis::Init() {
 
   static ClassDocumentation<LEPJetAnalysis> documentation
-    ("There is no documentation for the LEPJetAnalysis class");
+    ("LEP Jet data analysis",
+     "The LEP Jet analysis uses data from \\cite{Pfeifenschneider:1999rz,Abreu:1996na}. ",
+     "%\\cite{Pfeifenschneider:1999rz}\n"
+     "\\bibitem{Pfeifenschneider:1999rz}\n"
+     "  P.~Pfeifenschneider {\\it et al.}  [JADE collaboration and OPAL\n"
+     "                  Collaboration],\n"
+     "   ``QCD analyses and determinations of alpha(s) in e+ e- annihilation at\n"
+     "  %energies between 35-GeV and 189-GeV,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 17}, 19 (2000)\n"
+     "  [arXiv:hep-ex/0001055].\n"
+     "  %%CITATION = EPHJA,C17,19;%%\n"
+     "%\\cite{Abreu:1996na}\n"
+     "\\bibitem{Abreu:1996na}\n"
+     "  P.~Abreu {\\it et al.}  [DELPHI Collaboration],\n"
+     "   ``Tuning and test of fragmentation models based on identified particles  and\n"
+     "  %precision event shape data,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 73}, 11 (1996).\n"
+     "  %%CITATION = ZEPYA,C73,11;%%\n"
+     );
 
 }
 
 void LEPJetAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + string("-") 
     + name() + string(".top");

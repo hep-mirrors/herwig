@@ -103,7 +103,30 @@ ClassDescription<ShowerHandler> ShowerHandler::initShowerHandler;
 void ShowerHandler::Init() {
 
   static ClassDocumentation<ShowerHandler> documentation
-    ("Main driver class for the showering.");
+    ("Main driver class for the showering.",
+     "The Shower evolution was performed using an algorithm described in "
+     "\\cite{Marchesini:1983bm,Marchesini:1987cf,Gieseke:2003rz,Bahr:2008pv}.",
+     "%\\cite{Marchesini:1983bm}\n"
+     "\\bibitem{Marchesini:1983bm}\n"
+     "  G.~Marchesini and B.~R.~Webber,\n"
+     "  ``Simulation Of QCD Jets Including Soft Gluon Interference,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 238}, 1 (1984).\n"
+     "  %%CITATION = NUPHA,B238,1;%%\n"
+     "%\\cite{Marchesini:1987cf}\n"
+     "\\bibitem{Marchesini:1987cf}\n"
+     "  G.~Marchesini and B.~R.~Webber,\n"
+     "   ``Monte Carlo Simulation of General Hard Processes with Coherent QCD\n"
+     "  Radiation,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 310}, 461 (1988).\n"
+     "  %%CITATION = NUPHA,B310,461;%%\n"
+     "%\\cite{Gieseke:2003rz}\n"
+     "\\bibitem{Gieseke:2003rz}\n"
+     "  S.~Gieseke, P.~Stephens and B.~Webber,\n"
+     "  ``New formalism for QCD parton showers,''\n"
+     "  JHEP {\\bf 0312}, 045 (2003)\n"
+     "  [arXiv:hep-ph/0310083].\n"
+     "  %%CITATION = JHEPA,0312,045;%%\n"
+     );
 
   static Reference<ShowerHandler,Evolver> 
     interfaceEvolver("Evolver", 
@@ -202,6 +225,7 @@ void ShowerHandler::cascade() {
   // set the current ShowerHandler
   currentHandler_ = this;
   // first shower the hard process
+  useMe();
   try {
     SubProPtr sub = eventHandler()->currentCollision()->primarySubProcess();
     incomingPartons = cascade(sub);

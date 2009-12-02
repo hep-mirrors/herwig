@@ -22,7 +22,7 @@ using namespace Herwig;
 
 void IS_QtildaShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
-		const ShowerParticleVector theChildren,
+		const ShowerParticleVector & theChildren,
 		bool ) const {
   theChildren[1]->showerVariables().resize(3);
   theChildren[1]->showerParameters().resize(2);
@@ -50,7 +50,7 @@ updateChildren( const tShowerParticlePtr theParent,
 
 void IS_QtildaShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
-	     const ShowerParticleVector theChildren,
+	     const ShowerParticleVector & theChildren,
 	     bool angularOrder) const {
   // no z for angular ordering in backward branchings
   theParent->setEvolutionScale(scale());
@@ -75,7 +75,7 @@ updateParent(const tShowerParticlePtr theParent,
 
 void IS_QtildaShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
-		  const ParticleVector theChildren ) const {
+		  const ParticleVector & theChildren ) const {
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
   // get shower variables from 1st child in order to keep notation

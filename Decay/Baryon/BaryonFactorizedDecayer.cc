@@ -26,8 +26,6 @@ using namespace Herwig;
 using namespace ThePEG::Helicity;
 
 BaryonFactorizedDecayer::BaryonFactorizedDecayer() {
-  // default value of the fermi constant taken from PDG 2002
-  _gf = 1.16639E-5/GeV2;
   // default values taken from PRD56, 2799
   _a1c= 1.1;
   _a2c=-0.5;
@@ -324,13 +322,13 @@ int BaryonFactorizedDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void BaryonFactorizedDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << ounit(_gf,1./GeV2) << _a1b << _a2b <<_a1c <<_a2c 
+  os << _current << _form << _a1b << _a2b <<_a1c <<_a2c 
      << _currentmap << _formmap << _factCKM << _wgtloc << _wgtmax << _weights 
      << _theCKM;
 }
 
 void BaryonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> iunit(_gf,1./GeV2) >> _a1b >> _a2b >>_a1c >>_a2c 
+  is >> _current >> _form >> _a1b >> _a2b >>_a1c >>_a2c 
      >> _currentmap >> _formmap >> _factCKM >> _wgtloc >> _wgtmax >> _weights 
      >> _theCKM;
 }
@@ -343,13 +341,6 @@ void BaryonFactorizedDecayer::Init() {
   static ClassDocumentation<BaryonFactorizedDecayer> documentation
     ("The BaryonFactorizedDecayer class combines the baryon form factor and a"
      " weak current to perform a decay in the naive factorization approximation.");
-
-  static Parameter<BaryonFactorizedDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &BaryonFactorizedDecayer::_gf, 1./GeV2, 1.16639E-5/GeV2, -1.0e12*1./GeV2,
-     1.0e12*1./GeV2,
-     false, false, false);
 
   static Reference<BaryonFactorizedDecayer,WeakDecayCurrent> interfaceWeakCurrent
     ("Current",
@@ -429,7 +420,6 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
 					 const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
-  useMe();
   Energy scale;
   // extract the spins of the particles
   vector<PDT::Spin> spin;
@@ -544,7 +534,8 @@ double BaryonFactorizedDecayer::halfHalf(const int ichan,
 	// map the index for the hadrons to a helicity state
 	for(ix=decay.size();ix>0;--ix) {
 	  if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	ME()(ihel) += hadron[lhel].dot(baryon[mhel])*_factCKM[imode()][mode]*_gf;
+	ME()(ihel) += hadron[lhel].dot(baryon[mhel])*
+	  _factCKM[imode()][mode]*SM().fermiConstant();
       }
     }
   }
@@ -557,7 +548,6 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
 					      const Particle & inpart,
 					      const ParticleVector & decay,
 					      MEOption meopt) const {
-  useMe();
   // spins
   Energy scale;
   vector<PDT::Spin> spin(decay.size());
@@ -714,7 +704,8 @@ double BaryonFactorizedDecayer::halfThreeHalf(const int ichan,
 	  // map the index for the hadrons to a helicity state
 	  for(unsigned int ix=decay.size();ix>0;--ix)
 	    {if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	  ME()(ihel) += hadron[lhel].dot(baryon[iya][ixa])*_factCKM[imode()][mode]*_gf;
+	  ME()(ihel) += hadron[lhel].dot(baryon[iya][ixa])*
+	    _factCKM[imode()][mode]*SM().fermiConstant();
 	}
       }
     }
@@ -785,7 +776,6 @@ void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) con
   unsigned int ix;
   if(header){output << "update decayers set parameters=\"";}
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi "   << _gf*GeV2 << " \n";
   output << "set " << name() << ":a1Bottom "  << _a1b << "\n";
   output << "set " << name() << ":a2Bottom "  << _a2b << "\n";
   output << "set " << name() << ":a1Charm "   << _a1c << "\n";

@@ -170,7 +170,6 @@ bool MEqq2ZPrime2ZGamma2ffGamma::generateKinematics(const double * r) {
 }
 
 double MEqq2ZPrime2ZGamma2ffGamma::me2() const {
-  useMe();
   InvEnergy2 output(ZERO);
   // construct spinors for the leptons
   vector<SpinorBarWaveFunction> lm;

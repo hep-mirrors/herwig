@@ -255,6 +255,7 @@ void LEPMultiplicityCount::analyze(tEventPtr event, long, int, int) {
 void LEPMultiplicityCount::analyze(const tPVector & ) {}
 
 void LEPMultiplicityCount::dofinish() {
+  useMe();
   string filename = generator()->filename() + ".mult";
   ofstream outfile(filename.c_str());
 
@@ -399,7 +400,16 @@ void LEPMultiplicityCount::Init() {
 
   static ClassDocumentation<LEPMultiplicityCount> documentation
     ("The LEPMultiplicityCount class count the multiplcities of final-state particles"
-     " and compares them with LEP data.");
+     " and compares them with LEP data.",
+     "The LEP multiplicity analysis uses data from PDG 2006 \\cite{Yao:2006px}.",
+     "%\\cite{Yao:2006px}\n"
+     "\\bibitem{Yao:2006px}\n"
+     "  W.~M.~Yao {\\it et al.}  [Particle Data Group],\n"
+     "  %``Review of particle physics,''\n"
+     "  J.\\ Phys.\\ G {\\bf 33} (2006) 1.\n"
+     "  %%CITATION = JPHGB,G33,1;%%\n"
+     );
+
 }
 
 void LEPMultiplicityCount::persistentOutput(PersistentOStream & os) const {

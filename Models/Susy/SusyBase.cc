@@ -52,6 +52,8 @@ void SusyBase::doinit() {
   addVertex(theGGSQSQVertex);
   addVertex(theGSGSGVertex);
   addVertex(theNNZVertex);
+  addVertex(theNNPVertex);
+  addVertex(theGNGVertex);
   addVertex(theCCZVertex);
   addVertex(theCNWVertex);
   addVertex(vertexGOGOH());
@@ -65,12 +67,11 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theNMix << theUMix << theVMix << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
-     << theNNZVertex << theCCZVertex << theCNWVertex 
-     << theSSFFHVertex << theGOGOHVertex << theSSWWHVertex << theWHHVertex 
+     << theNNZVertex << theNNPVertex << theCCZVertex << theCNWVertex 
+     << theSSFFHVertex << theGOGOHVertex << theSSWWHVertex << theWHHVertex << theGNGVertex
      << theHHHVertex << _tanbeta << ounit(_mu,GeV) 
      << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
      << _tolerance;
-
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -78,8 +79,8 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theNMix >> theUMix >> theVMix >> theWSFSFVertex 
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
-     >> theNNZVertex >> theCCZVertex >> theCNWVertex
-     >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex
+     >> theNNZVertex >> theNNPVertex >> theCCZVertex >> theCNWVertex
+     >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex >> theGNGVertex
      >> theHHHVertex >> _tanbeta >> iunit(_mu,GeV) 
      >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
      >> _tolerance;
@@ -91,7 +92,24 @@ ClassDescription<SusyBase> SusyBase::initSusyBase;
 void SusyBase::Init() {
 
   static ClassDocumentation<SusyBase> documentation
-    ("This is the base class for any SUSY model.");
+    ("This is the base class for any SUSY model.",
+     "SUSY spectrum files follow the Les Houches accord \\cite{Skands:2003cj,Allanach:2008qq}.",
+     " %\\cite{Skands:2003cj}\n"
+     "\\bibitem{Skands:2003cj}\n"
+     "  P.~Skands {\\it et al.},\n"
+     "   ``SUSY Les Houches accord: Interfacing SUSY spectrum calculators, decay\n"
+     "  %packages, and event generators,''\n"
+     "  JHEP {\\bf 0407}, 036 (2004)\n"
+     "  [arXiv:hep-ph/0311123].\n"
+     "  %%CITATION = JHEPA,0407,036;%%\n"
+     "%\\cite{Allanach:2008qq}\n"
+     "\\bibitem{Allanach:2008qq}\n"
+     "  B.~Allanach {\\it et al.},\n"
+     "  %``SUSY Les Houches Accord 2,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 180}, 8 (2009)\n"
+     "  [arXiv:0801.0045 [hep-ph]].\n"
+     "  %%CITATION = CPHCB,180,8;%%\n"
+     );
 
   static Switch<SusyBase,bool> interfaceTopModes
     ("TopModes",
@@ -153,6 +171,16 @@ void SusyBase::Init() {
      "Reference to Z-~chi_i0-~chi_i0 vertex",
      &SusyBase::theNNZVertex, false, false, true, false);
 
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexNNP
+    ("Vertex/NNP",
+     "Reference to photon-~chi_i0-~chi_i0 vertex",
+     &SusyBase::theNNPVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexGNG
+    ("Vertex/GNG",
+     "Reference to gluon-~chi_i0-gluino vertex",
+     &SusyBase::theGNGVertex, false, false, true, false);
+
    static Reference<SusyBase,Helicity::AbstractFFVVertex> interfaceVertexCCZ
     ("Vertex/CCZ",
      "Reference to ~chi_i+-~chi_i-Z vertex",
@@ -211,6 +239,7 @@ void SusyBase::readSetup(istream & is) {
     << "run without this."
     << Exception::runerror; 
 
+  useMe();
   //Before reading the spectrum/decay files the SM higgs 
   //decay modes, mass and width generators need to be turned off.
   PDPtr h0 = getParticleData(ParticleID::h0);

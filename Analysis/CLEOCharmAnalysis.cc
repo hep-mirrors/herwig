@@ -69,11 +69,21 @@ NoPIOClassDescription<CLEOCharmAnalysis> CLEOCharmAnalysis::initCLEOCharmAnalysi
 void CLEOCharmAnalysis::Init() {
 
   static ClassDocumentation<CLEOCharmAnalysis> documentation
-    ("There is no documentation for the CLEOCharmAnalysis class");
+    ("CLEO Charm meson analysis class",
+     "The CLEO Charm meson analysis uses data from \\cite{Artuso:2004pj}.",
+     "%\\cite{Artuso:2004pj}\n"
+     "\\bibitem{Artuso:2004pj}\n"
+     "  M.~Artuso {\\it et al.}  [CLEO Collaboration],\n"
+     "  %``Charm meson spectra in $e^{+} e^{-}$ annihilation at 10.5-GeV c.m.e,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 70}, 112001 (2004)\n"
+     "  [arXiv:hep-ex/0402040].\n"
+     "  %%CITATION = PHRVA,D70,112001;%%\n"
+     );
 
 }
 
 void CLEOCharmAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + 
     string("-") + name() + string(".top");

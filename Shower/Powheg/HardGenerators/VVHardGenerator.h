@@ -166,7 +166,7 @@ protected:
    * @return the matrix element scaled with sHat() to give a
    * dimensionless number.
    */
-  double lo_me() const;
+  double lo_me(bool getMatrix) const;
 
   /**
    * Recalculate hard vertex to include spin correlations for radiative events.
@@ -218,6 +218,12 @@ private:
    * 3: g + qbar -> V1 + V2 + qbar.
    */
   unsigned int channel_;
+
+  /**
+   * Identifies the space-like mother of the branching
+   * as quark (+1) or antiquark (-1):
+   */
+  int fermionNumberOfMother_;
 
   /**
    * The radiative variable \tilde{x}.
@@ -319,9 +325,11 @@ private:
   /**
    *  Pointers to the Shower particle objects for the partons
    */
-  tcPDPtr gluon_;
+  PPtr gluon_;
   PPtr V1_;
   PPtr V2_;
+  PPtr emitted_;
+  PPtr spacelikeSon_;
 
   /**
    *  Flag indicating if the q & qbar are flipped or not i.e. this
@@ -375,22 +383,25 @@ private:
   AbstractVVVVertexPtr WWWvertex_;
   AbstractFFVVertexPtr FFGvertex_;
 
-  // N.B. these will probably have to become just complex arrays instead if
-  // the plan is to average over the gluon's *2* polarizations.
   /**
    * A matrix element to hold information on the q + qbar -> V1 + V2 + g process
    */
-  ProductionMatrixElement qqb_hel_amps_;
+  mutable ProductionMatrixElement qqb_hel_amps_;
 
   /**
    * A matrix element to hold information on the q + g    -> V1 + V2 + q process
    */
-  ProductionMatrixElement qg_hel_amps_;
+  mutable ProductionMatrixElement qg_hel_amps_;
 
   /**
    * A matrix element to hold information on the g + qbar -> V1 + V2 + qbar process
    */
-  ProductionMatrixElement gqb_hel_amps_;
+  mutable ProductionMatrixElement gqb_hel_amps_;
+
+  /**
+   * A matrix element to hold information on the q + qbar -> V1 + V2 process
+   */
+  mutable ProductionMatrixElement lo_hel_amps_;
 
 };
 

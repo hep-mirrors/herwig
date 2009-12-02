@@ -179,7 +179,7 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
     if(!V1_&&!V2_)                    V1_ = currentBoson;
     if( V1_&&!V2_&&V1_!=currentBoson) V2_ = currentBoson;
   }
-  gluon_ = getParticleData(ParticleID::g);
+  gluon_ = getParticleData(ParticleID::g)->produceParticle();
 
   // Abort the run if V1_ and V2_ are not just pointers to different gauge bosons
   if(!V1_||!V2_) throw Exception() 
@@ -233,11 +233,11 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   B_ = bornVVKinematics(theBornMomenta,xa,xb);
 
   // lo_me_ is the colour & spin averaged n-body matrix element squared:
-  lo_me_ = lo_me();
+  lo_me_ = lo_me(true); 
 
   // Attempt to generate some radiative variables and their kinematics:
   vector<Lorentz5Momentum> theRealMomenta;
-  channel_ = -999;
+  channel_ = 999;
   if(!getEvent(theRealMomenta,channel_)) return HardTreePtr();
 
   // Set the maximum pT for subsequent emissions:
@@ -245,12 +245,12 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   pT_ < min_pT_ ? qbProgenitor_->maximumpT(min_pT_) : qbProgenitor_->maximumpT(pT_); 
 
   // Determine whether the quark or antiquark emitted:
-  int fermionNumberOfMother(0);
+  fermionNumberOfMother_=0;
   if((channel_==0&&theRealMomenta[0].z()/theRealMomenta[4].z()>=ZERO)||
-      channel_==2) fermionNumberOfMother =  1;
+      channel_==2) fermionNumberOfMother_ =  1;
   else if((channel_==0&&theRealMomenta[0].z()/theRealMomenta[4].z()<ZERO)||
-	   channel_==1) fermionNumberOfMother = -1;
-  assert(fermionNumberOfMother!=0);
+	   channel_==1) fermionNumberOfMother_ = -1;
+  assert(fermionNumberOfMother_!=0);
 
   // If the quark in the original tree was travelling in the -z direction
   // then we need to unflip the event (flips are automatically carried out 
@@ -274,17 +274,17 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   if(channel_==0) {
     p1 = new_ptr(ShowerParticle(quark_->dataPtr()           ,false));
     p2 = new_ptr(ShowerParticle(antiquark_->dataPtr()       ,false));
-    k  = new_ptr(ShowerParticle(gluon_                      ,true ));
+    k  = new_ptr(ShowerParticle(gluon_->dataPtr()           ,true ));
   }
   // q+g -> V1+V2+q
   else if(channel_==1) {
     p1 = new_ptr(ShowerParticle(quark_->dataPtr()           ,false));
-    p2 = new_ptr(ShowerParticle(gluon_                      ,false));
+    p2 = new_ptr(ShowerParticle(gluon_->dataPtr()           ,false));
     k  = new_ptr(ShowerParticle(antiquark_->dataPtr()->CC() ,true ));
   }
   // g+qbar -> V1+V2+qbar
   else {
-    p1 = new_ptr(ShowerParticle(gluon_                      ,false));
+    p1 = new_ptr(ShowerParticle(gluon_->dataPtr()           ,false));
     p2 = new_ptr(ShowerParticle(antiquark_->dataPtr()       ,false));
     k  = new_ptr(ShowerParticle(quark_->dataPtr()->CC()     ,true ));
   }
@@ -295,21 +295,18 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   k2->set5Momentum(theRealMomenta[3]);
   k ->set5Momentum(theRealMomenta[4]);
 
-  // Recalculate the hard vertex for this event:
-  if(realMESpinCorrelations_) recalculateVertex();
-
   // Then construct another set of ShowerPointers that will be
   // useful in creating the nasonTree, using this information:
   ShowerParticlePtr mother;
   ShowerParticlePtr spacelikeSon;
   ShowerParticlePtr timelikeSon;
   ShowerParticlePtr spectator;
-  if(fermionNumberOfMother==1) {
+  if(fermionNumberOfMother_==1) {
     mother       = new_ptr(ShowerParticle(quark_->dataPtr()    ,false));
     spacelikeSon = p1;
     timelikeSon  = k;
     spectator    = p2;
-  } else if(fermionNumberOfMother==-1) {
+  } else if(fermionNumberOfMother_==-1) {
     mother       = new_ptr(ShowerParticle(antiquark_->dataPtr(),false));
     spacelikeSon = p2;
     timelikeSon  = k;
@@ -376,9 +373,9 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   spectatorBranching->colourPartner(motherBranching);
 
   vector<HardBranchingPtr> spacelikeBranchings,hardBranchings;
-  spacelikeBranchings.push_back(fermionNumberOfMother ==  1 ? 
+  spacelikeBranchings.push_back(fermionNumberOfMother_ ==  1 ? 
 				spacelikeSonBranching : spectatorBranching);
-  spacelikeBranchings.push_back(fermionNumberOfMother == -1 ? 
+  spacelikeBranchings.push_back(fermionNumberOfMother_ == -1 ? 
 				spacelikeSonBranching : spectatorBranching);
   hardBranchings.push_back(motherBranching);
   hardBranchings.push_back(spectatorBranching);
@@ -404,13 +401,13 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
 	 << "spacelikeSonBranching->parent() = " << spacelikeSonBranching->parent() << "\n"
 	 <<  Exception::runerror;
 
-  if(fermionNumberOfMother== 1) {
+  if(fermionNumberOfMother_== 1) {
     nasonTree->connect(quark_    ,motherBranching   );
     nasonTree->connect(antiquark_,spectatorBranching);
     spacelikeSonBranching->beam(qProgenitor_ ->original()->parents()[0]);
     motherBranching      ->beam(qProgenitor_ ->original()->parents()[0]);
     spectatorBranching   ->beam(qbProgenitor_->original()->parents()[0]);
-  } else if(fermionNumberOfMother==-1) {
+  } else if(fermionNumberOfMother_==-1) {
     nasonTree->connect(antiquark_,motherBranching   );
     nasonTree->connect(quark_    ,spectatorBranching);
     spacelikeSonBranching->beam(qbProgenitor_->original()->parents()[0]);
@@ -424,10 +421,10 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   // it can't set the scale and it just forgets the emission / event. This seems
   // like an unintrusive work-around until reconstructFinalStateShower is sorted.
   ColinePtr bornColourLine=new_ptr(ColourLine());
-  if(fermionNumberOfMother== 1) {
+  if(fermionNumberOfMother_== 1) {
     bornColourLine->addColoured(mother);
     bornColourLine->addAntiColoured(spectator);
-  } else if(fermionNumberOfMother==-1) {
+  } else if(fermionNumberOfMother_==-1) {
     bornColourLine->addAntiColoured(mother);
     bornColourLine->addColoured(spectator);
   }
@@ -443,6 +440,36 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()
     ->deconstructHardJets(nasonTree,evolver(),ShowerInteraction::QCD);
+
+  // Recalculate the hard vertex for this event:
+  // For spin correlations, if an emission occurs go calculate the relevant 
+  // combination of amplitudes for the ProductionMatrixElement. 
+  if(realMESpinCorrelations_) {
+    // Here we reset the realVVKinematics n+1 momenta to be those
+    // of the lab frame in order to calculate the spin correlations.
+    // Note that these momenta are not used for anything else after
+    // this. We must use the lab momenta as otherwise you get in 
+    // trouble as is easy to check using the LO spin correlations
+    // and evaluating lo_hel_amps_ using the bornVVKinematics momenta
+    // instead of the quark_->momentum() etc...
+    R_.p1r(theRealMomenta[0]);
+    R_.p2r(theRealMomenta[1]);
+    R_.k1r(theRealMomenta[2]);
+    R_.k2r(theRealMomenta[3]);
+    R_.kr (theRealMomenta[4]);
+    if(channel_==0) {
+      t_u_M_R_qqb_hel_amp(R_,true);
+    }
+    else if(channel_==1) {
+      t_u_M_R_qg_hel_amp(R_,true);
+    }
+    else if(channel_==2) {
+      t_u_M_R_gqb_hel_amp(R_,true);
+    }
+    spacelikeSon_=spacelikeSon;
+    emitted_=k;
+    recalculateVertex();
+  }
 
   return nasonTree;
 }
@@ -589,7 +616,7 @@ bool VVHardGenerator::getEvent(vector<Lorentz5Momentum> & theRealMomenta,
   bool   rejectEmission ;
 
   // Initialize the flag indicating the selected radiation channel:
-  channel=-1;
+  channel=999;
 
   // Some product of constants used for the crude distribution:
   double a(0.);
@@ -666,20 +693,10 @@ bool VVHardGenerator::getEvent(vector<Lorentz5Momentum> & theRealMomenta,
     channel = 3;
   }
   if(channel==3) return false;
-
-  // For spin correlations, if an emission occurs go calculate the relevant 
-  // combination of amplitudes for the ProductionMatrixElement. 
-  if(realMESpinCorrelations_) {
-    if(channel==0) {
-      t_u_M_R_qqb_hel_amp(R,true);
-    }
-    else if(channel==1) {
-      t_u_M_R_qg_hel_amp(R,true);
-    }
-    else if(channel==2) {
-      t_u_M_R_gqb_hel_amp(R,true);
-    }
-  }
+  if(channel>3) throw Exception() 
+	       << "VVHardGenerator::getEvent() channel = " << channel
+	       << "   pT = " << pT/GeV << "   pT_ = " << pT_/GeV
+ 	       << Exception::abortnow;
 
   // Work out the momenta in the lab frame, reserving the mass and rapidity 
   // of the VV system:
@@ -792,16 +809,23 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
-	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	  for(unsigned int khel=0;khel<2;++khel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,p1data,q[p1hel],g[khel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,p2data,qb[p2hel],g[khel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel=p2hel
+	    // but if the production ME is required first fill it with (0.,0.).
 	    if((p1hel==p2hel)&&helicityConservation_) {
-	      if(getMatrix) qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	      if(getMatrix) {
+		if(khel==0)
+		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = Complex(0.,0.);
+		else
+		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = Complex(0.,0.);
+	      }
 	      continue;
 	    }
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,p1data,q[p1hel],g[khel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,p2data,qb[p2hel],g[khel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_t;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -861,8 +885,28 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
- 	    if(getMatrix) qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    // If we need to fill the production ME we do it here:
+ 	    if(getMatrix) {
+	      if(khel==0)
+		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = hel_amp;
+	      else
+		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = hel_amp;
+	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
+	  }
+	}
+      }
+    }
+  }
+
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+  if(getMatrix) {
+    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+      for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,1) = Complex(0.,0.);
 	  }
 	}
       }
@@ -945,16 +989,23 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
-	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	  for(unsigned int khel=0;khel<2;++khel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_p2 = ffg->evaluate(QCDScale_,5,p1data,qin[p1hel],g[p2hel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qout[khel],g[p2hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
 	    if((p1hel!=khel)&&helicityConservation_) {
-	      if(getMatrix) qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	      if(getMatrix) {
+		if(p2hel==0)
+		  qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = Complex(0.,0.);
+		else
+		  qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = Complex(0.,0.);
+	      }
 	      continue;
 	    }
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_p2 = ffg->evaluate(QCDScale_,5,p1data,qin[p1hel],g[p2hel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qout[khel],g[p2hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -1010,7 +1061,13 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
- 	    if(getMatrix) qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    // If we need to fill the production ME we do it here:
+ 	    if(getMatrix) {
+	      if(p2hel==0)
+		qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = hel_amp;
+	      else
+		qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = hel_amp;
+	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
@@ -1018,6 +1075,20 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
     }
   }
   
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+  if(getMatrix) {
+    for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int khel=0;khel<2;++khel) {
+	    qg_hel_amps_(p1hel,1,k1hel,k2hel,khel) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
   // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
   sum_hel_amps_sqr /= 24.;
 
@@ -1094,16 +1165,23 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
-	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	  for(unsigned int khel=0;khel<2;++khel) {
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorBarWaveFunction p1_p2 = ffg->evaluate(QCDScale_,5,p2data,qbin[p2hel],g[p1hel]);
+	SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qbout[khel],g[p1hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p2hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
 	    if((p2hel!=khel)&&helicityConservation_) {
-	      if(getMatrix) gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	      if(getMatrix) {
+		if(p1hel==0)
+		  gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+		else
+		  gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	      }
 	      continue;
 	    }
 	    vector<Complex> diagrams;
-	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(QCDScale_,5,p2data,qbin[p2hel],g[p1hel]);
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(QCDScale_,5,kdata->CC(),qbout[khel],g[p1hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -1160,7 +1238,13 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
- 	    if(getMatrix) gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    // If we need to fill the production ME we do it here:
+ 	    if(getMatrix) {
+	      if(p1hel==0)
+		gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = hel_amp;
+	      else
+		gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
@@ -1168,6 +1252,20 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
     }
   }
   
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+  if(getMatrix) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  for(unsigned int khel=0;khel<2;++khel) {
+	    gqb_hel_amps_(1,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+	  }
+	}
+      }
+    }
+  }
+
   // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
   sum_hel_amps_sqr /= 24.;
 
@@ -1180,8 +1278,11 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
 
 /***************************************************************************/
 // This returns exactly the same value as lo_me2_ when you put it in MEPP2VVPowheg.cc
-double VVHardGenerator::lo_me() const {
+double VVHardGenerator::lo_me(bool getMatrix) const {
   using namespace ThePEG::Helicity;
+
+  lo_hel_amps_.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+					     PDT::Spin1,PDT::Spin1));
 
   double sum_hel_amps_sqr(0.);
 
@@ -1191,8 +1292,18 @@ double VVHardGenerator::lo_me() const {
   tcPDPtr k2data(V2_->dataPtr());
   if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data); // Should never actually occur.
 
-  SpinorWaveFunction qSpinor(B_.p1b(),p1data,incoming);
-  SpinorBarWaveFunction qbSpinor(B_.p2b(),p2data,incoming);
+  // If you want to reproduce the spin correlations of MEPP2VV
+  // you should evaluate this ME using the lab frame momenta
+  // instead of the bornVVKinematics ones (partonic C.O.M. frame).
+  SpinorWaveFunction qSpinor;
+  SpinorBarWaveFunction qbSpinor;
+  if(!getMatrix) {
+    qSpinor=SpinorWaveFunction(B_.p1b(),p1data,incoming);
+    qbSpinor=SpinorBarWaveFunction(B_.p2b(),p2data,incoming);
+  } else {
+    qSpinor=SpinorWaveFunction(quark_->momentum(),p1data,incoming);
+    qbSpinor=SpinorBarWaveFunction(antiquark_->momentum(),p2data,incoming);
+  }
   vector<SpinorWaveFunction> q;
   vector<SpinorBarWaveFunction> qb;
   for(unsigned int ix=0;ix<2;ix++) {
@@ -1202,8 +1313,18 @@ double VVHardGenerator::lo_me() const {
     qb.push_back(qbSpinor);
   }
 
-  VectorWaveFunction v1Polarization(B_.k1b(),k1data,outgoing);
-  VectorWaveFunction v2Polarization(B_.k2b(),k2data,outgoing);
+  // If you want to reproduce the spin correlations of MEPP2VV
+  // you should evaluate this ME using the lab frame momenta
+  // instead of the bornVVKinematics ones (partonic C.O.M. frame).
+  VectorWaveFunction v1Polarization;
+  VectorWaveFunction v2Polarization;
+  if(!getMatrix) {
+    v1Polarization=VectorWaveFunction(B_.k1b(),k1data,outgoing);
+    v2Polarization=VectorWaveFunction(B_.k2b(),k2data,outgoing);
+  } else {
+    v1Polarization=VectorWaveFunction(V1_->momentum(),k1data,outgoing);
+    v2Polarization=VectorWaveFunction(V2_->momentum(),k2data,outgoing);
+  }
   vector<VectorWaveFunction> v1;
   vector<VectorWaveFunction> v2;
   for(unsigned int ix=0;ix<3;ix++) {
@@ -1230,6 +1351,7 @@ double VVHardGenerator::lo_me() const {
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      if((p1hel==p2hel)&&helicityConservation_) continue;
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
 	  vector<Complex> diagrams;
@@ -1277,6 +1399,8 @@ double VVHardGenerator::lo_me() const {
 	  // Add up all diagrams to get the total amplitude:
 	  Complex hel_amp(0.);
 	  for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	  // If we need to fill the production ME we do it here:
+	  if(getMatrix) lo_hel_amps_(p1hel,p2hel,k1hel,k2hel) = hel_amp;
 	  sum_hel_amps_sqr += norm(hel_amp);
 	}
       }
@@ -1292,57 +1416,310 @@ double VVHardGenerator::lo_me() const {
   return sum_hel_amps_sqr;
 }
 
-// // Pseudo-code for including spin correlations:
+// Override 2->2 production matrix here:
 void VVHardGenerator::recalculateVertex() {
-  SpinfoPtr spin[4];
+
   // Extract the particles in the hard process:
   ParticleVector hard;
   tSubProPtr sub = generator()->currentEvent()->primarySubProcess();
-  // TO DO: *check* the ordering in here! 
-  hard.push_back(sub->incoming().first);  // p1 
-  hard.push_back(sub->incoming().second); // p2
-  hard.push_back(sub->outgoing()[0]);     // k1
-  hard.push_back(sub->outgoing()[1]);     // k2
-  //  hard.push_back(sub->outgoing()[2]);     // k
-  // Order the particles:
+  hard.push_back(sub->incoming().first);
+  hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  hard.push_back(sub->outgoing()[1]);
+
   unsigned int order[4]={0,1,2,3};
-  if(hard[order[0]]->id()<0) swap(order[0],order[1]);
-  // Get the spin info objects
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());
-  cout << endl;
-  cout << endl;
-  cout << endl;
-  cout << "The production vertex was:\n";
-  cout << *(spin[0]->getProductionVertex()) << endl;
-  cout << "Rho matrix for particle 0 =\n" << spin[0]->rhoMatrix() << endl;
-  cout << "Rho matrix for particle 1 =\n" << spin[1]->rhoMatrix() << endl;
-  cout << "Rho matrix for particle 2 =\n" << spin[2]->rhoMatrix() << endl;
-  cout << "Rho matrix for particle 3 =\n" << spin[3]->rhoMatrix() << endl;
-  // Construct the vertex
+
+  // May need to swap the incoming pair around to order q qbar:
+  if(hard[0]->id()<0) swap(order[0],order[1]);
+
+  // May need to swap the outgoing pair to one of W+ W-, W+ Z, W-Z ,Z Z:
+  if(hard[2]->id()== 23&&abs(hard[3]->id())==24) swap(order[2],order[3]);
+  if(hard[2]->id()==-24&&    hard[3]->id() ==24) swap(order[2],order[3]);
+
+  // A temporary alarm system to make sure particles in hard[] are
+  // q qbar W+ W- or  q qbar W+ Z or q qbar W- Z or q qbar Z Z:
+  bool alarm(false);
+  if(hard[order[0]]->id()>=6||hard[order[0]]->id()<  0) alarm = true;
+  if(hard[order[1]]->id()> 0||hard[order[1]]->id()<=-6) alarm = true;
+  if(abs(hard[order[2]]->id())!=23&&abs(hard[order[2]]->id())!=24) alarm = true;
+  if(abs(hard[order[3]]->id())!=23&&abs(hard[order[3]]->id())!=24) alarm = true;
+  if(abs(hard[order[2]]->id())==24&&hard[order[3]]->id()==24) alarm = true;
+  if(hard[order[2]]->id()==23&&hard[order[3]]->id()!=23) alarm = true;
+  if(alarm) {
+    cout << "\n\n\n" << endl;
+    cout << "hard[order[0]] is " << hard[order[0]]->PDGName() << endl;
+    cout << "hard[order[1]] is " << hard[order[1]]->PDGName() << endl;
+    cout << "hard[order[2]] is " << hard[order[2]]->PDGName() << endl;
+    cout << "hard[order[3]] is " << hard[order[3]]->PDGName() << endl;
+  }
+
+  // Make a new hardvertex pointer:
   HardVertexPtr hardvertex=new_ptr(HardVertex());
-  // TO DO: Average over the polarizations of the radiated "+1" particle?
-  // Or set its D matrix to a unit matrix?
+
+  // Get the spin info objects for each of the hard[ix] particles:
+  tFermionSpinPtr qSpin =dynamic_ptr_cast<tFermionSpinPtr>(hard[order[0]]->spinInfo());
+  tFermionSpinPtr qbSpin=dynamic_ptr_cast<tFermionSpinPtr>(hard[order[1]]->spinInfo());
+  tVectorSpinPtr  V1Spin=dynamic_ptr_cast<tVectorSpinPtr>(hard[order[2]]->spinInfo());
+  tVectorSpinPtr  V2Spin=dynamic_ptr_cast<tVectorSpinPtr>(hard[order[3]]->spinInfo());
+
+  bool debug_basis_states(false);
+  if(debug_basis_states) {
+    // Debug basis states:
+    cout << "\n\nVVHardGenerator, initial states:" << endl;
+    cout << "q : p.vtx " << qSpin ->getProductionVertex() << "  ";
+    cout << " hel -: ";
+    for(unsigned int ix=0;ix<4;ix++) 
+      cout << qSpin ->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
+    cout << " hel +: ";
+    for(unsigned int ix=0;ix<4;ix++) 
+      cout << qSpin ->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
+    cout << endl;
+    cout << "qb: p.vtx " << qbSpin->getProductionVertex() << "  ";
+    cout << " hel -: ";
+    for(unsigned int ix=0;ix<4;ix++) 
+      cout << qbSpin->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
+    cout << " hel +: ";
+    for(unsigned int ix=0;ix<4;ix++) 
+      cout << qbSpin->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
+    cout << endl;
+    cout << "V1: p.vtx " << V1Spin->getProductionVertex() << "  ";
+    cout << " hel -: ";
+    cout << V1Spin->getProductionBasisState(0).t() << " "
+	 << V1Spin->getProductionBasisState(0).x() << " "	   
+	 << V1Spin->getProductionBasisState(0).y() << " "	   
+	 << V1Spin->getProductionBasisState(0).z() << " ";
+    cout << " hel +: ";
+    cout << V1Spin->getProductionBasisState(2).t() << ", "
+	 << V1Spin->getProductionBasisState(2).x() << ", "	   
+	 << V1Spin->getProductionBasisState(2).y() << ", "	   
+	 << V1Spin->getProductionBasisState(2).z() << endl;
+    cout << "V2: p.vtx " << V2Spin->getProductionVertex() << "  ";
+    cout << " hel -: ";
+    cout << V2Spin->getProductionBasisState(0).t() << " "
+	 << V2Spin->getProductionBasisState(0).x() << " "	   
+	 << V2Spin->getProductionBasisState(0).y() << " "	   
+	 << V2Spin->getProductionBasisState(0).z() << " ";
+    cout << " hel +: ";
+    cout << V2Spin->getProductionBasisState(2).t() << ", "
+	 << V2Spin->getProductionBasisState(2).x() << ", "	   
+	 << V2Spin->getProductionBasisState(2).y() << ", "	   
+	 << V2Spin->getProductionBasisState(2).z() << endl;
+  }
+
+  // If you just return here the spin correlations are still the 2->2 ones.
+
+  // Reproduces LO using this method and LO *lab* momenta:
+  //***************************************************************//
+  // Rule #1 : Always make sure all momenta are in the lab frame   //
+  //           when it comes to spin and the production stage,     //
+  //           in the spinInfo's and in evaluating the production  //
+  //           matrix element.                                     //
+  //***************************************************************//
+  // For instance if the boost from the partonic centre of mass 
+  // to the lab (boostFromYisZero) to the momenta in the following    
+  // spinInfo's is not done, the leading order spin correlations are
+  // not reproduced, even if the production matrix is evaluated with
+  // the partonic CMS momenta, and even if you also setProductionMomenta.
+  // Also, if you use the partonic CMS momenta in evaluating the 
+  // production ME but you use the lab momenta in the spinInfo's,
+  // as below, you get the wrong answer; this proves that whatever
+  // changes are made to the production matrix element, hard vertex
+  // and spinInfo's here, survive through to the DecayHandler.
+  // WARNING: If you don't use consistently the lab momenta here
+  // and in evaluating the production matrix element above, the 
+  // lepton angle distributions look slightly decorrelated, which
+  // is the same effect that genuine NLO corrections should have!
+  // Note: Using setProductionMomentum here as well as setCurrentMomentum
+  // does not seem to make any difference: the LO angular correlations
+  // still come out.
+
+  /*******************************************/
+  // TEMPORARY ----->
+  // Attempting q + qb -> V1 + V2 + g first.
+  if(channel_!=0) return;
+  // <----- TEMPORARY
+  /*******************************************/
+
   if(channel_==0) {
     hardvertex->ME(qqb_hel_amps_);
-    // TO DO
   } else if(channel_==1) {
     hardvertex->ME(qg_hel_amps_);
-    // TO DO
   } else if(channel_==2) {
     hardvertex->ME(gqb_hel_amps_);
-    // TO DO
+  } else {
+    throw Exception() << "VVHardGenerator::recalculateVertex()" 
+		      << "Invalid channel: channel_ = " << channel_
+		      <<  Exception::runerror;    
   }
-  cout << "hardvertex is\n" << *hardvertex << endl;
-  // TO DO: normalize matrix so trace is one? (Should happen anyway automatically).
-  // Set the pointers and to and from the vertex
-  for(unsigned int ix=0;ix<4;++ix)
-    spin[ix]->setProductionVertex(hardvertex);
-  cout << "and now the production vertex is:\n";
-  cout << *(spin[0]->getProductionVertex()) << endl;
-  cout << "Rho matrix for particle 0 =\n" << hardvertex->getRhoMatrix(0) << endl;
-  cout << "Rho matrix for particle 1 =\n" << hardvertex->getRhoMatrix(1) << endl;
-  cout << "Rho matrix for particle 2 =\n" << hardvertex->getRhoMatrix(2) << endl;
-  cout << "Rho matrix for particle 3 =\n" << hardvertex->getRhoMatrix(3) << endl;
-}
 
+  // Now if the channel selected was q + qb -> V1 + V2 + g
+  if(channel_==0) {
+    // Make quark and antiquark wave functions:
+    SpinorWaveFunction qSpinor;
+    SpinorBarWaveFunction qbSpinor;
+    qSpinor=SpinorWaveFunction(R_.p1r(),quark_->dataPtr(),incoming);
+    qbSpinor=SpinorBarWaveFunction(R_.p2r(),antiquark_->dataPtr(),incoming);
+    vector<SpinorWaveFunction> q;
+    vector<SpinorBarWaveFunction> qb;
+    for(unsigned int ix=0;ix<2;ix++) {
+      qSpinor.reset(ix);
+      qbSpinor.reset(ix);
+      q.push_back(qSpinor);
+      qb.push_back(qbSpinor);
+    }
+
+    // Make vector wavefunctions for v1 and v2:
+    VectorWaveFunction v1Polarization;
+    VectorWaveFunction v2Polarization;
+    v1Polarization=VectorWaveFunction(R_.k1r(),V1_->dataPtr(),outgoing);
+    v2Polarization=VectorWaveFunction(R_.k2r(),V2_->dataPtr(),outgoing);
+    vector<VectorWaveFunction> v1;
+    vector<VectorWaveFunction> v2;
+    for(unsigned int ix=0;ix<3;ix++) {
+      v1Polarization.reset(ix);
+      v2Polarization.reset(ix);
+      v1.push_back(v1Polarization);
+      v2.push_back(v2Polarization);
+    }
+
+    // Make gluon wave functions:
+    tcPDPtr kdata(getParticleData(ParticleID::g)); // N.B. kdata->stable()=1.
+    VectorWaveFunction gPolarization(R_.kr(),kdata,outgoing);
+    vector<VectorWaveFunction> g;
+    for(unsigned int ix=0;ix<3;ix+=2) {
+      gPolarization.reset(ix);
+      g.push_back(gPolarization);
+    }
+
+    // Try to reset all particles' spin information like this:
+    // SpinorWaveFunction::constructSpinInfo(q,hard[order[0]],incoming,false);
+    // or, what should be equivalent, like this: 
+    FermionSpinPtr spacelikeSonSpin = 
+      new_ptr(FermionSpinInfo(spacelikeSon_->momentum(),false));
+    spacelikeSon_->spinInfo(spacelikeSonSpin);
+    if(fermionNumberOfMother_<0) {
+      for(unsigned int ix=0;ix<2;++ix) {
+	qSpin ->setDecayState(ix,q[ix].dimensionedWave() );
+	spacelikeSonSpin->setDecayState(ix,qb[ix].dimensionedWave().bar() );
+      }
+    } else {
+      for(unsigned int ix=0;ix<2;++ix) {
+	spacelikeSonSpin ->setDecayState(ix,q[ix].dimensionedWave() );
+	qbSpin->setDecayState(ix,qb[ix].dimensionedWave().bar());
+      }
+    }
+    for(unsigned int ix=0;ix<3;++ix) V1Spin->setBasisState(ix,v1[ix].wave());
+    for(unsigned int ix=0;ix<3;++ix) V2Spin->setBasisState(ix,v2[ix].wave());
+    VectorSpinPtr gluonSpin = new_ptr(VectorSpinInfo(emitted_->momentum(),true));
+    emitted_->spinInfo(gluonSpin);
+    gluonSpin->setBasisState(0,g[0].wave());
+    gluonSpin->setBasisState(2,g[1].wave());
+
+//     Reassign spinInfo to the quark and antiquark? 
+//     Has been done by the above already, no?
+//     hardvertex->resetIncoming(qSpin,order[0]);
+//     hardvertex->resetIncoming(qbSpin,order[1]);
+
+//     RhoDMatrix gluonRhoDMatrix=RhoDMatrix(PDT::Spin1);
+//     for(unsigned int ix=0;ix<3;++ix) 
+//       for(unsigned int jx=0;jx<3;++jx)
+//     	gluonRhoDMatrix(ix,jx)=Complex(0.,0.);
+//     gluonRhoDMatrix(0,0)=Complex(0.5,0.);
+//     gluonRhoDMatrix(2,2)=Complex(0.5,0.);
+//     gluonSpin->DMatrix()=gluonRhoDMatrix;
+
+//     cout << "gluonSpin->DMatrix():  \n" << gluonSpin->DMatrix()   << endl;
+//     cout << "gluonSpin->rhoMatrix():\n" << gluonSpin->rhoMatrix() << endl;
+//     gluonSpin->setDeveloped(true);
+//     gluonSpin->decayed(true);
+
+    // Tie up the spinInfo's to the hardvertex
+    if(fermionNumberOfMother_<0) {
+      qSpin->setProductionVertex(hardvertex);
+      spacelikeSonSpin ->setProductionVertex(hardvertex);
+    } else {
+      spacelikeSonSpin->setProductionVertex(hardvertex);
+      qbSpin ->setProductionVertex(hardvertex);
+    }
+    V1Spin->setProductionVertex(hardvertex);
+    V2Spin->setProductionVertex(hardvertex);
+    gluonSpin->setProductionVertex(hardvertex);
+
+    if(debug_basis_states) {
+      cout << "VVHardGenerator, reset states:" << endl;
+      cout << "q  = " << R_.p1r()/GeV << "  qb = " << R_.p2r()/GeV 
+	   << "  V1 = " << R_.k1r()/GeV << "  V2 = " << R_.k2r()/GeV
+	   << "  g  = " << R_.kr() /GeV << endl;
+      // Debug these NEW basis states:
+      if(fermionNumberOfMother_>0) {
+	cout << "sp: p.vtx " << spacelikeSonSpin->getProductionVertex() << "  ";
+	cout << " hel -: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << spacelikeSonSpin ->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
+	cout << " hel +: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << spacelikeSonSpin ->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
+	cout << endl;
+	cout << "qb: p.vtx " << qbSpin->getProductionVertex() << "  ";
+	cout << " hel -: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << qbSpin->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
+	cout << " hel +: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << qbSpin->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
+	cout << endl;
+      } else {
+	cout << "q : p.vtx " << qSpin ->getProductionVertex() << "  ";
+	cout << " hel -: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << qSpin ->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
+	cout << " hel +: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << qSpin ->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
+	cout << endl;
+	cout << "sp: p.vtx " << spacelikeSonSpin->getProductionVertex() << "  ";
+	cout << " hel -: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << spacelikeSonSpin->getProductionBasisState(0)[ix]/UnitRemoval::SqrtE << " ";
+	cout << " hel +: ";
+	for(unsigned int ix=0;ix<4;ix++) 
+	  cout << spacelikeSonSpin->getProductionBasisState(1)[ix]/UnitRemoval::SqrtE << " ";
+	cout << endl;
+      }
+      cout << "V1: p.vtx " << V1Spin->getProductionVertex() << "  ";
+      cout << " hel -: ";
+      cout << V1Spin->getProductionBasisState(0).t() << " "
+	   << V1Spin->getProductionBasisState(0).x() << " "	   
+	   << V1Spin->getProductionBasisState(0).y() << " "	   
+	   << V1Spin->getProductionBasisState(0).z() << " ";
+      cout << " hel +: ";
+      cout << V1Spin->getProductionBasisState(2).t() << ", "
+	   << V1Spin->getProductionBasisState(2).x() << ", "	   
+	   << V1Spin->getProductionBasisState(2).y() << ", "	   
+	   << V1Spin->getProductionBasisState(2).z() << endl;
+      cout << "V2: p.vtx " << V2Spin->getProductionVertex() << "  ";
+      cout << " hel -: ";
+      cout << V2Spin->getProductionBasisState(0).t() << " "
+	   << V2Spin->getProductionBasisState(0).x() << " "	   
+	   << V2Spin->getProductionBasisState(0).y() << " "	   
+	   << V2Spin->getProductionBasisState(0).z() << " ";
+      cout << " hel +: ";
+      cout << V2Spin->getProductionBasisState(2).t() << ", "
+	   << V2Spin->getProductionBasisState(2).x() << ", "	   
+	   << V2Spin->getProductionBasisState(2).y() << ", "	   
+	   << V2Spin->getProductionBasisState(2).z() << endl;
+      cout << "gl: p.vtx " << gluonSpin->getProductionVertex() << "  ";
+      cout << " hel -: ";
+      cout << gluonSpin->getProductionBasisState(0).t() << " "
+	   << gluonSpin->getProductionBasisState(0).x() << " "	   
+	   << gluonSpin->getProductionBasisState(0).y() << " "	   
+	   << gluonSpin->getProductionBasisState(0).z() << " ";
+      cout << " hel +: ";
+      cout << gluonSpin->getProductionBasisState(2).t() << ", "
+	   << gluonSpin->getProductionBasisState(2).x() << ", "	   
+	   << gluonSpin->getProductionBasisState(2).y() << ", "	   
+	   << gluonSpin->getProductionBasisState(2).z() << endl;
+  }
+
+  }
+}

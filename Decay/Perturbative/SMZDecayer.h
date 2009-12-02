@@ -1,18 +1,18 @@
 // -*- C++ -*-
 //
-// SMWZDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SMZDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_SMWZDecayer_H
-#define HERWIG_SMWZDecayer_H
+#ifndef HERWIG_SMZDecayer_H
+#define HERWIG_SMZDecayer_H
 //
-// This is the declaration of the SMWZDecayer class.
+// This is the declaration of the SMZDecayer class.
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 
 namespace Herwig {
@@ -21,21 +21,21 @@ using namespace ThePEG::Helicity;
 
 /** \ingroup Decay
  *
- *  The <code>SMWZDecayer</code> is designed to perform the decay of the 
- *  W and Z bosons to the Standard Model fermions. In principle it can also
+ *  The <code>SMZDecayer</code> is designed to perform the decay of the 
+ *  Z boson to the Standard Model fermions. In principle it can also
  *  be used for these decays in any model.
  *
  * @see DecayIntegrator
  * 
  */
-class SMWZDecayer: public DecayIntegrator {
+class SMZDecayer: public DecayIntegrator {
 
 public:
 
   /**
    * Default constructor.
    */
-  SMWZDecayer();
+  SMZDecayer();
 
   /**
    * Which of the possible decays is required
@@ -63,6 +63,43 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+  /**
+   *  Members for the generation of QED radiation in the decays
+   */
+  //@{
+  /**
+   *  The one-loop virtual correction.
+   * @param imode The mode required.
+   * @param part  The decaying particle.
+   * @param products The decay products including the radiated photon.
+   * @return Whether the correction is implemented
+   */
+  virtual double oneLoopVirtualME(unsigned int imode,
+				  const Particle & part, 
+				  const ParticleVector & products);
+  
+  /**
+   *  The real emission matrix element
+   * @param imode The mode required
+   * @param part  The decaying particle
+   * @param products The decay products including the radiated photon
+   * @param iemitter The particle which emitted the photon
+   * @param ctheta   The cosine of the polar angle between the photon and the
+   *                 emitter
+   * @param stheta   The sine of the polar angle between the photon and the
+   *                 emitter 
+   * @param rot1 Rotation from rest frame to frame for real emission
+   * @param rot2 Rotation to place emitting particle along z
+   */
+  virtual InvEnergy2 realEmissionME(unsigned int imode,
+				    const Particle & part, 
+				    ParticleVector & products,
+				    unsigned int iemitter,
+				    double ctheta, double stheta,
+				    const LorentzRotation & rot1,
+				    const LorentzRotation & rot2);
+  //@}
 
 public:
 
@@ -127,24 +164,24 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<SMWZDecayer> initSMWZDecayer;
+  static ClassDescription<SMZDecayer> initSMZDecayer;
 
   /**
    * Private and non-existent assignment operator.
    */
-  SMWZDecayer & operator=(const SMWZDecayer &);
+  SMZDecayer & operator=(const SMZDecayer &);
 
  private:
 
   /**
    * Pointer to the Z vertex
    */
-  AbstractFFVVertexPtr _zvertex;
+  FFVVertexPtr FFZvertex_;
 
   /**
-   * Pointer to the W vertex
+   * Pointer to the photon vertex
    */
-  AbstractFFVVertexPtr _wvertex;
+  AbstractFFVVertexPtr FFPvertex_;
 
   /**
    * maximum weights for the different integrations
@@ -153,22 +190,12 @@ private:
   /**
    *  Weights for the Z to quarks decays.
    */
-  vector<double> _zquarkwgt;
+  vector<double> quarkWeight_;
 
   /**
    *  Weights for the Z to leptons decays.
    */
-  vector<double> _zleptonwgt;
-
-  /**
-   *  Weights for the W to quarks decays.
-   */
-  vector<double> _wquarkwgt;
-
-  /**
-   *  Weights for the W to leptons decays.
-   */
-  vector<double> _wleptonwgt;
+  vector<double> leptonWeight_;
   //@}
 
   /**
@@ -203,11 +230,11 @@ namespace ThePEG {
 
 /**
  * The following template specialization informs ThePEG about the
- * base class of SMWZDecayer.
+ * base class of SMZDecayer.
  */
 template <>
- struct BaseClassTrait<Herwig::SMWZDecayer,1> {
-    /** Typedef of the base class of SMWZDecayer. */
+ struct BaseClassTrait<Herwig::SMZDecayer,1> {
+    /** Typedef of the base class of SMZDecayer. */
    typedef Herwig::DecayIntegrator NthBase;
 };
 
@@ -216,10 +243,10 @@ template <>
  * name of this class and the shared object where it is defined.
  */
 template <>
- struct ClassTraits<Herwig::SMWZDecayer>
-  : public ClassTraitsBase<Herwig::SMWZDecayer> {
+ struct ClassTraits<Herwig::SMZDecayer>
+  : public ClassTraitsBase<Herwig::SMZDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig::SMWZDecayer"; }
+  static string className() { return "Herwig::SMZDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -233,4 +260,4 @@ template <>
 
 }
 
-#endif /* HERWIG_SMWZDecayer_H */
+#endif /* HERWIG_SMZDecayer_H */

@@ -21,7 +21,7 @@ using namespace Herwig;
 
 void FS_QtildaShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector theChildren,
+	       const ShowerParticleVector & theChildren,
 	       bool angularOrder) const {
   if(theChildren.size() != 2)
     throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
@@ -74,7 +74,7 @@ updateChildren(const tShowerParticlePtr theParent,
 
 void FS_QtildaShowerKinematics1to2::
 reconstructParent(const tShowerParticlePtr theParent, 
-	     const ParticleVector theChildren ) const {
+	     const ParticleVector & theChildren ) const {
   if(theChildren.size() != 2) 
     throw Exception() << "FS_QtildaShowerKinematics1to2::updateParent() " 
 		      << "Warning! too many children!" 

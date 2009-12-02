@@ -99,25 +99,11 @@ Energy2 METRP2to2::scale() const {
   return ( -tHat() > invbcsq ) ? invbcsq : -tHat();
 }
 
-
-
-
 // Definition of the static class description member.
 ClassDescription<METRP2to2> METRP2to2::initMETRP2to2;
 
-// workaround until this is in ThePEG
-namespace ThePEG {
-  template<>
-  string ThePEG::ClassTraitsBase<double>::className() 
-  { return "double"; }
-}
-
 // Need to init the interpolator instance here
-template<>
-ClassDescription<Herwig::Interpolator<double,double> > 
-Interpolator<double,double>::initInterpolator
-= ClassDescription<Herwig::Interpolator<double,double> >();
-
+HERWIG_INTERPOLATOR_CLASSDESC(double,double)
 
 void METRP2to2::Init() {
 

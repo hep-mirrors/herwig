@@ -120,7 +120,7 @@ protected:
    */
   Complex amplitude(int ispin, double costheta,Energy mAB,
 		    Energy wres, Energy mres) const {
-    double s;
+    double s = 0.;
     switch(ispin) {
     case 0: s = 1.;                    break;
     case 1: s = costheta;              break;

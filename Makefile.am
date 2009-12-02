@@ -14,7 +14,14 @@ DISTCLEANFILES = config.herwig
 
 libclean:
 	find . -name '*.la' -print0 | xargs -0 rm -rf
-	cd lib && $(MAKE) clean
+	cd lib && $(MAKE) $(AM_MAKEFLAGS) clean
 
 tests:
-	cd Tests && $(MAKE) tests
+	cd Tests && $(MAKE) $(AM_MAKEFLAGS) tests
+
+## ThePEG registration
+unregister:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) unregister
+
+register:
+	cd src && $(MAKE) $(AM_MAKEFLAGS) register

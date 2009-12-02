@@ -1,5 +1,74 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.4.1 release: 2009-11-19 (tagged at SVN r4932)
+
+** Uses ThePEG-1.6.0 
+   Herwig++ now requires ThePEG-1.6.0 to benefit from the improved
+   helicity code there. If you have self-written vertex classes, see
+   ThePEG's NEWS file for conversion instructions.
+
+** Vertex improvements
+   ThePEG's new helicity code allowed major simplification of the vertex
+   implementations for all Standard Model and BSM physics models.
+
+** New Transplanckian scattering model
+   An example configuration is in LHC-TRP.in
+
+** BSM ModelGenerator as branching ratio calculator
+   The BSM ModelGenerator has a new switch to output the branching
+   ratios for a given SLHA file in SLHA format, which can then be used
+   elsewhere.
+
+** BSM debugging: HardProcessConstructor
+   New interface 'Excluded' to exclude certain particles from
+   intermediate lines.  
+
+** Chargino-Neutralino-W vertex fixed
+
+** Spin correlations
+   are now switched on by default for all perturbative decays.
+
+** Ticket #276: Scale choice in BSM models' HardProcessConstructor
+   New interface 'ScaleChoice' to choose process scale between 
+   - sHat (default for colour neutral intermediates) and 
+   - transverse mass (default for all other processes).
+
+** Ticket #287: Powheg process scale choice
+   The default choice is now the mass of the colour-singlet system.
+   
+** Ticket #278: QED radiation for BSM
+   Soft QED radiation is now enabled in BSM decays and all
+   perturbative decays by default. 
+
+** Ticket #279: Full 1-loop QED radiation for Z decays
+   Soft QED radiation in Z decays is now fully 1-loop by default.
+
+** Ticket #280: Redirect all files to stdout
+   This is now implemented globally. The files previously ending in
+   -UE.out and -BSMinfo.out are now appended to the log file. They now
+   also obey the EventGenerator:UseStdout flag.
+
+** Ticket #270: LaTeX output updated
+   After each run, a LaTeX file is produced that contains the full
+   list of citations. Please include the relevant ones in publications.
+
+** Ticket #256: Mac OS X problems
+   An initialization problem that affected only some configurations has
+   been identified and fixed.
+
+** Tests directory added
+   This contains many .in files, to exercise most matrix
+   elements. 
+
+** Minor fixes
+*** Prevent rare x>1 partons in shower reconstruction.
+*** SUSY-LHA parameter EXTPAR can be used to set tan beta
+*** Improved Fastjet detection at configure time
+
+
+
+
+
 * Herwig++-2.4.0 release: 2009-09-01 (tagged at SVN r4616)
 
 ** New matrix elements

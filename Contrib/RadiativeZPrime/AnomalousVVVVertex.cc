@@ -11,12 +11,6 @@
 
 using namespace RadiativeZPrime;
 
-AnomalousVVVVertex::AnomalousVVVVertex() {
-  setNpoint(3);
-  setSpin(3,3,3);
-  setName(VVV);
-}
-
 AbstractNoPIOClassDescription<AnomalousVVVVertex> 
 AnomalousVVVVertex::initAnomalousVVVVertex;
 // Definition of the static class description member.

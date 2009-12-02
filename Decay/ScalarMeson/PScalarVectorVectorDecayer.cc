@@ -165,7 +165,6 @@ double PScalarVectorVectorDecayer::me2(const int,
 				       const Particle & inpart,
 				       const ParticleVector & decay,
 				       MEOption meopt) const {
-  useMe();
   bool photon[2]={false,false};
   for(unsigned int ix=0;ix<2;++ix)
     photon[ix] = decay[ix]->id()==ParticleID::gamma;

@@ -186,11 +186,6 @@ private:
   vector<int> _modemap; 
 
   /**
-   * the fermi constant
-   */
-  InvEnergy2 _gf;
-
-  /**
    *  Spin density matrix
    */
   mutable RhoDMatrix _rho;

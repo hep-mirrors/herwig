@@ -154,7 +154,7 @@ private:
    */
   Energy _mw;
 
-/**
+  /**
    * \f$\sin(\beta)\f$
    */
   double _sb;

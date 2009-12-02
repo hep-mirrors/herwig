@@ -72,13 +72,13 @@ public:
    * Method to calculate the \f$\rho\f$ matrix for one of the outgoing particles
    * @param iout The outgoing particle we are calculating the \f$\rho\f$ matrix for.
    */
-  virtual RhoDMatrix getRhoMatrix(int iout);
+  virtual RhoDMatrix getRhoMatrix(int iout,bool) const;
 
   /**
    * Method to calculate the \f$D\f$ matrix for an incoming particle.
    * @param in The incoming particle we are calculating the \f$D\f$ matrix for.
    */
-  virtual RhoDMatrix getDMatrix(int in);
+  virtual RhoDMatrix getDMatrix(int in) const;
   
 private:
   

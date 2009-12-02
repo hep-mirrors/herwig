@@ -15,7 +15,7 @@
 using namespace Herwig;
 
 void ShowerKinematics::updateChildren(const tShowerParticlePtr, 
-				      const ShowerParticleVector,
+				      const ShowerParticleVector &,
 				      bool ) const {
   throw Exception() << "Base class ShowerKinematics::updateChildren called,"
 		    << " should have been overriden in an inheriting class" 
@@ -23,7 +23,7 @@ void ShowerKinematics::updateChildren(const tShowerParticlePtr,
 }
 
 void ShowerKinematics::updateParent(const tShowerParticlePtr, 
-				    const ShowerParticleVector,
+				    const ShowerParticleVector &,
 				    bool) const {
   throw Exception() << "Base class ShowerKinematics::updateParent called,"
 		    << " should have been overriden in an inheriting class" 
@@ -31,14 +31,14 @@ void ShowerKinematics::updateParent(const tShowerParticlePtr,
 }
 
 void ShowerKinematics::reconstructChildren(const tShowerParticlePtr, 
-					   const ShowerParticleVector) const {
+					   const ShowerParticleVector &) const {
   throw Exception() << "Base class ShowerKinematics::reconstructChildren called,"
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;
 }
 
 void ShowerKinematics::reconstructParent(const tShowerParticlePtr, 
-					 const ParticleVector) const {
+					 const ParticleVector &) const {
   throw Exception() << "Base class ShowerKinematics::reconstructParent called,"
 		    << " should have been overriden in an inheriting class" 
 		    << Exception::runerror;

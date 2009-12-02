@@ -211,7 +211,6 @@ CrossSection MEPP2Higgs::dSigHatDR() const {
 
 double MEPP2Higgs::me2() const {
   double output(0.0);
-  useMe();
   ScalarWaveFunction hout(meMomenta()[2],mePartonData()[2],outgoing);
 
 // Safety code to garantee the reliable behaviour of Higgs shape limits 

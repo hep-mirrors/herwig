@@ -13,6 +13,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include "Herwig++/Decay/DecayIntegrator.fh"
 #include "DecayRadiationGenerator.fh"
 
 namespace Herwig {
@@ -39,7 +40,9 @@ public:
    * @param children The decay products
    * @return The decay products with additional radiation
    */
-  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children)=0;
+  virtual ParticleVector generatePhotons(const Particle & p,
+					 ParticleVector children,
+					 tDecayIntegratorPtr decayer)=0;
 
 public:
 
@@ -90,10 +93,6 @@ struct ClassTraits<Herwig::DecayRadiationGenerator>
   : public ClassTraitsBase<Herwig::DecayRadiationGenerator> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::DecayRadiationGenerator"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the DecayRadiationGenerator class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "DecayRadiationGenerator.so"; }
 };
 
 /** @endcond */

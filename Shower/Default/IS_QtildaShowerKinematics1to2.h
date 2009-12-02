@@ -60,7 +60,7 @@ public:
    * @param theChildren The particles produced in the branching
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ShowerParticleVector theChildren,
+			       const ShowerParticleVector & theChildren,
 			       bool angularOrder) const;
 
   /**
@@ -69,7 +69,7 @@ public:
    * KinematicsReconstructor.
    */
   virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ShowerParticleVector theChildren,
+			     const ShowerParticleVector & theChildren,
 			     bool angularOrder ) const;
 
   /**
@@ -78,7 +78,7 @@ public:
    * KinematicsReconstructor.
    */
   virtual void reconstructParent( const tShowerParticlePtr theParent, 
-				  const ParticleVector theChildren ) const;
+				  const ParticleVector & theChildren ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction

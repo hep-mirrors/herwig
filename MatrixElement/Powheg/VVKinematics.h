@@ -261,6 +261,11 @@ public:
   inline Lorentz5Momentum kr()  const { return kr_ ; }
   inline Lorentz5Momentum k1r() const { return k1r_; }
   inline Lorentz5Momentum k2r() const { return k2r_; }
+  inline void p1r(Lorentz5Momentum p1r) { p1r_ = p1r; return; }
+  inline void p2r(Lorentz5Momentum p2r) { p2r_ = p2r; return; }
+  inline void kr (Lorentz5Momentum kr ) { kr_  = kr ; return; }
+  inline void k1r(Lorentz5Momentum k1r) { k1r_ = k1r; return; }
+  inline void k2r(Lorentz5Momentum k2r) { k2r_ = k2r; return; }
 };
 
 }

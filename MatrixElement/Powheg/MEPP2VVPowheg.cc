@@ -451,7 +451,7 @@ void MEPP2VVPowheg::getKinematics(double xt, double y, double theta2) {
 
 double MEPP2VVPowheg::NLOweight() const {
   // If only leading order is required return 1:
-  if(contrib_==0) return 1.;
+  if(contrib_==0) return lo_me()/lo_me2_;
 
   // Calculate alpha_S and alpha_S/(2*pi).
   alphaS_ = nlo_alphaS_opt_==1 ? fixed_alphaS_ : SM().alphaS(mu_UV2());
@@ -640,38 +640,38 @@ double MEPP2VVPowheg::NLOweight() const {
   if(channels_==2) wgt -= 1.;
 
   // Debugging output:
-  if(sanityCheck()) {
-    //  sanityCheck();
-    cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
-    cout << ab_->PDGName() << ", " 
-	 << bb_->PDGName() << ", " 
-	 << mePartonData()[2]->PDGName() << ", " 
-	 << mePartonData()[3]->PDGName() << endl; 
-    cout << "lo_me2_ - M_Born_ (%) = " 
-	 <<  lo_me2_-M_Born_                << "  (" 
-	 << (lo_me2_-M_Born_)/M_Born_*100.  << ")\n";
-    cout << "lo_me2_, M_Born_, M_Born_WW    " << lo_me2_ << ", " << M_Born_   << ", " << M_Born_WW(B_) << endl;
-    cout << "xr = " << H_.xr() << "   1-xr = "<< 1.-H_.xr() << "   y = " << H_.y() << endl;
-    cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
-    cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
-    cout << "sb+tb+ub = " 
-	 << B_.sb()/GeV2 << " + " 
-	 << B_.tb()/GeV2 << " + " << B_.ub()/GeV2 << endl;
-    cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
-    cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
-    cout << "sqr(Kij)   " << Kij*Kij    << endl;
-    cout << "wqqbvirt   " << wqqbvirt   << endl;
-    cout << "wqqbcollin " << wqqbcollin << endl;
-    cout << "wqqbreal   " << wqqbreal   << endl;
-    cout << "wqqb       " << wqqb       << endl;
-    cout << "wqgcollin  " << wqgcollin  << endl;
-    cout << "wqgreal    " << wqgreal    << endl;
-    cout << "wqg        " << wqg        << endl;
-    cout << "wgqbcollin " << wgqbcollin << endl;
-    cout << "wgqbreal   " << wgqbreal   << endl;
-    cout << "wgqb       " << wgqb       << endl;
-    cout << "wgt        " << wgt        << endl;
-  }
+//   if(sanityCheck()) {
+//     //  sanityCheck();
+//     cout << "MEPP2VVPowheg sanityCheck invoked!" << endl;
+//     cout << ab_->PDGName() << ", " 
+// 	 << bb_->PDGName() << ", " 
+// 	 << mePartonData()[2]->PDGName() << ", " 
+// 	 << mePartonData()[3]->PDGName() << endl; 
+//     cout << "lo_me2_ - M_Born_ (%) = " 
+// 	 <<  lo_me2_-M_Born_                << "  (" 
+// 	 << (lo_me2_-M_Born_)/M_Born_*100.  << ")\n";
+//     cout << "lo_me2_, M_Born_, M_Born_WW    " << lo_me2_ << ", " << M_Born_   << ", " << M_Born_WW(B_) << endl;
+//     cout << "xr = " << H_.xr() << "   1-xr = "<< 1.-H_.xr() << "   y = " << H_.y() << endl;
+//     cout << "tkr = " << H_.tkr()/GeV2 << "   ukr  = " << H_.ukr()/GeV2   << endl;
+//     cout << "root(sb) = " << sqrt(B_.sb())/GeV << endl;
+//     cout << "sb+tb+ub = " 
+// 	 << B_.sb()/GeV2 << " + " 
+// 	 << B_.tb()/GeV2 << " + " << B_.ub()/GeV2 << endl;
+//     cout << "sqrt(k12)  " << sqrt(H_.k12r())/GeV << endl;
+//     cout << "sqrt(k22)  " << sqrt(H_.k22r())/GeV << endl;
+//     cout << "sqr(Kij)   " << Kij*Kij    << endl;
+//     cout << "wqqbvirt   " << wqqbvirt   << endl;
+//     cout << "wqqbcollin " << wqqbcollin << endl;
+//     cout << "wqqbreal   " << wqqbreal   << endl;
+//     cout << "wqqb       " << wqqb       << endl;
+//     cout << "wqgcollin  " << wqgcollin  << endl;
+//     cout << "wqgreal    " << wqgreal    << endl;
+//     cout << "wqg        " << wqg        << endl;
+//     cout << "wgqbcollin " << wgqbcollin << endl;
+//     cout << "wgqbreal   " << wgqbreal   << endl;
+//     cout << "wgqb       " << wgqb       << endl;
+//     cout << "wgt        " << wgt        << endl;
+//   }
 
   if(isnan(wgt)||isinf(wgt)) {
     cout << "MEPP2VVPowheg:: NLO weight " 
@@ -804,15 +804,15 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-//   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_ ));
-//   Energy2 t_u_M_R_qqb_Cp(t_u_M_R_qqb(Cp_));
-//   Energy2 t_u_M_R_qqb_Cm(t_u_M_R_qqb(Cm_));
+  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb(H_ ));
+  Energy2 t_u_M_R_qqb_Cp(t_u_M_R_qqb(Cp_));
+  Energy2 t_u_M_R_qqb_Cm(t_u_M_R_qqb(Cm_));
 
-  Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb_hel_amp(H_));
-  Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
-			*CF_*(1.+sqr(Cp_.xr()))*lo_me2_);
-  Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
-			*CF_*(1.+sqr(Cm_.xr()))*lo_me2_);
+//   Energy2 t_u_M_R_qqb_H (t_u_M_R_qqb_hel_amp(H_));
+//   Energy2 t_u_M_R_qqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()
+// 			*CF_*(1.+sqr(Cp_.xr()))*lo_me2_);
+//   Energy2 t_u_M_R_qqb_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()
+// 			*CF_*(1.+sqr(Cm_.xr()))*lo_me2_);
 
   int config(0);
   if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
@@ -858,15 +858,15 @@ double MEPP2VVPowheg::Rtilde_Ltilde_gqb_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-//   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_ ));
-//   Energy2 t_u_M_R_gqb_Cp(t_u_M_R_gqb(Cp_));
-//   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
-
-  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb_hel_amp(H_));
-  Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
-			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*lo_me2_);
+  Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb(H_ ));
+  Energy2 t_u_M_R_gqb_Cp(t_u_M_R_gqb(Cp_));
   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
-//   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb_hel_amp(Cm_));
+
+//   Energy2 t_u_M_R_gqb_H (t_u_M_R_gqb_hel_amp(H_));
+//   Energy2 t_u_M_R_gqb_Cp(8.*pi*alphaS_*Cp_.sr()/Cp_.xr()*(1.-Cp_.xr())
+// 			*TR_*(sqr(Cp_.xr())+sqr(1.-Cp_.xr()))*lo_me2_);
+//   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb(Cm_));
+// //   Energy2 t_u_M_R_gqb_Cm(t_u_M_R_gqb_hel_amp(Cm_));
 
   int config(0);
   if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
@@ -912,15 +912,15 @@ double MEPP2VVPowheg::Rtilde_Ltilde_qg_on_x(tcPDPtr a , tcPDPtr b) const {
   Energy2 sCm(Cm_.sr());
   Energy2 s2(H_.s2r());
 
-//   Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_ ));
-//   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
-//   Energy2 t_u_M_R_qg_Cm(t_u_M_R_qg(Cm_));
-
-  Energy2 t_u_M_R_qg_H (t_u_M_R_qg_hel_amp(H_));
+  Energy2 t_u_M_R_qg_H (t_u_M_R_qg(H_ ));
   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
-//   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg_hel_amp(Cp_));
-  Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
-		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*lo_me2_);
+  Energy2 t_u_M_R_qg_Cm(t_u_M_R_qg(Cm_));
+
+//   Energy2 t_u_M_R_qg_H (t_u_M_R_qg_hel_amp(H_));
+//   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg(Cp_));
+// //   Energy2 t_u_M_R_qg_Cp(t_u_M_R_qg_hel_amp(Cp_));
+//   Energy2 t_u_M_R_qg_Cm(8.*pi*alphaS_*Cm_.sr()/Cm_.xr()*(1.-Cm_.xr())
+// 		       *TR_*(sqr(Cm_.xr())+sqr(1.-Cm_.xr()))*lo_me2_);
 
   int config(0);
   if(fabs(1.-xt)<=tiny||fabs(1.-H_.xr())<=tiny) return 0.;
@@ -3224,16 +3224,23 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
-	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	  for(unsigned int khel=0;khel<2;++khel) {
-            if((p1hel==p2hel)&&helicityConservation_) {
-// 	      qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
-              continue;
-            }
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,p1data,q[p1hel],g[khel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,p2data,qb[p2hel],g[khel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel=p2hel
+	    // but if the production ME is required first fill it with (0.,0.).
+	    if((p1hel==p2hel)&&helicityConservation_) {
+// 	      if(getMatrix) {
+// 		if(khel==0)
+//		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = Complex(0.,0.);
+// 		else
+//		  qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = Complex(0.,0.);
+// 	      }
+	      continue;
+	    }
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,p1data,q[p1hel],g[khel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,p2data,qb[p2hel],g[khel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_t;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -3289,13 +3296,33 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
-// 	    qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    // If we need to fill the production ME we do it here:
+//  	    if(getMatrix) {
+// 	      if(khel==0)
+// 		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,0) = hel_amp;
+// 	      else
+// 		qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,2) = hel_amp;
+// 	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
       }
     }
   }
+
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+//   if(getMatrix) {
+//     for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+//       for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+// 	  for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+// 	    for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+// 	      qqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,1) = Complex(0.,0.);
+// 	    }
+// 	  }
+//       }
+//     }
+//   }
 
   // Spin and colour averaging factors = 1/4 * CF * 1/3 = 1/9
   sum_hel_amps_sqr /= 9.;
@@ -3372,16 +3399,23 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
-	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	  for(unsigned int khel=0;khel<2;++khel) {
-            if((p1hel!=khel)&&helicityConservation_) {
-//    	      qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = complex(0.,0.);
-              continue;
-            }
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorWaveFunction    p1_p2 = ffg->evaluate(mu_UV2(),5,p1data,qin[p1hel],g[p2hel]);
+	SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qout[khel],g[p2hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p1hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
+	    if((p1hel!=khel)&&helicityConservation_) {
+// 	      if(getMatrix) {
+// 		if(p2hel==0)
+// 		  qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = Complex(0.,0.);
+// 		else
+// 		  qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = Complex(0.,0.);
+// 	      }
+	      continue;
+	    }
 	    vector<Complex> diagrams;
-	    SpinorWaveFunction    p1_p2 = ffg->evaluate(mu_UV2(),5,p1data,qin[p1hel],g[p2hel]);
-	    SpinorBarWaveFunction p2_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qout[khel],g[p2hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -3406,10 +3440,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
 		diagrams.push_back(ffv2->evaluate(scale(),p1_p2,k_v1,v2[k2hel]));
 	      }
 	    }
-	    // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
-	    // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
-	    // means the propagator does not contain a width factor (which is 
-	    // good re. gauge invariance). 
 	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
 	    if(abs(k1data->id())==24&&k2data->id()==23) {
 	      // The off-shell s-channel boson current
@@ -3437,7 +3467,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
-// 	    qg_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    // If we need to fill the production ME we do it here:
+//   	    if(getMatrix) {
+//  	      if(p2hel==0)
+//  		qg_hel_amps_(p1hel,0,k1hel,k2hel,khel) = hel_amp;
+//  	      else
+//  		qg_hel_amps_(p1hel,2,k1hel,k2hel,khel) = hel_amp;
+//  	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
@@ -3445,6 +3481,20 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
     }
   }
   
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+//    if(getMatrix) {
+//      for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+//        for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+//  	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+//  	  for(unsigned int khel=0;khel<2;++khel) {
+//  	    qg_hel_amps_(p1hel,1,k1hel,k2hel,khel) = Complex(0.,0.);
+//  	  }
+//  	}
+//        }
+//      }
+//    }
+
   // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
   sum_hel_amps_sqr /= 24.;
 
@@ -3520,16 +3570,23 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
-	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
-	  for(unsigned int khel=0;khel<2;++khel) {
-            if((p2hel!=khel)&&helicityConservation_) {
-//    	      gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
-              continue;
-            }
+      for(unsigned int khel=0;khel<2;++khel) {
+	SpinorBarWaveFunction p1_p2 = ffg->evaluate(mu_UV2(),5,p2data,qbin[p2hel],g[p1hel]);
+	SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qbout[khel],g[p1hel]);
+	for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	  for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	    // If helicity is exactly conserved (massless quarks) skip if p2hel!=khel
+	    // but if the production ME is required first fill it with (0.,0.).
+ 	    if((p2hel!=khel)&&helicityConservation_) {
+//  	      if(getMatrix) {
+//  		if(p1hel==0)
+//  		  gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+//  		else
+//  		  gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+//  	      }
+ 	      continue;
+ 	    }
 	    vector<Complex> diagrams;
-	    SpinorBarWaveFunction p1_p2 = ffg->evaluate(mu_UV2(),5,p2data,qbin[p2hel],g[p1hel]);
-	    SpinorWaveFunction    p1_k  = ffg->evaluate(mu_UV2(),5,kdata->CC(),qbout[khel],g[p1hel]);
 	    // Get all t-channel diagram contributions
 	    tcPDPtr intermediate_q;
 	    for(unsigned int ix=0;ix<tc.size();ix++) {
@@ -3555,10 +3612,6 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
 		diagrams.push_back(ffv2->evaluate(scale(),k_v1,p1_p2,v2[k2hel]));
 	      }
 	    }
-	    // Note: choosing 3 as the second argument in WWWvertex_->evaluate() 
-	    // sets option 3 in thepeg/Helicity/Vertex/VertexBase.cc , which 
-	    // means the propagator does not contain a width factor (which is 
-	    // good re. gauge invariance). 
 	    // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
 	    if(abs(k1data->id())==24&&k2data->id()==23) {
 	      // The off-shell s-channel boson current
@@ -3586,7 +3639,13 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
 	    // Add up all diagrams to get the total amplitude:
 	    Complex hel_amp(0.);
 	    for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
-// 	    gqb_hel_amps_(p1hel,p2hel,k1hel,k2hel,khel) = hel_amp;
+	    // If we need to fill the production ME we do it here:
+//   	    if(getMatrix) {
+//  	      if(p1hel==0)
+//  		gqb_hel_amps_(0,p2hel,k1hel,k2hel,khel) = hel_amp;
+//  	      else
+//  		gqb_hel_amps_(2,p2hel,k1hel,k2hel,khel) = hel_amp;
+//  	    }
 	    sum_hel_amps_sqr += norm(hel_amp);
 	  }
 	}
@@ -3594,6 +3653,20 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
     }
   }
   
+  // Fill up the remaining bits of the production ME, corresponding 
+  // to longitudinal gluon polarization, with (0.,0.).
+//   if(getMatrix) {
+//     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+//       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+//  	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+//  	  for(unsigned int khel=0;khel<2;++khel) {
+//  	    gqb_hel_amps_(1,p2hel,k1hel,k2hel,khel) = Complex(0.,0.);
+//  	  }
+//  	}
+//       }
+//     }
+//   }
+
   // Spin and colour averaging factors = 1/4 * TR * 1/3 = 1/24
   sum_hel_amps_sqr /= 24.;
 
@@ -3603,3 +3676,113 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
   return sum_hel_amps_sqr*R.tkr()*R.ukr()*UnitRemoval::InvE2;
 }
 
+double MEPP2VVPowheg::lo_me() const {
+  using namespace ThePEG::Helicity;
+
+  double sum_hel_amps_sqr(0.);
+
+  tcPDPtr p1data(quark_);
+  tcPDPtr p2data(antiquark_);
+  tcPDPtr k1data(mePartonData()[2]);
+  tcPDPtr k2data(mePartonData()[3]);
+  if(k1data->id()==-24&&k2data->id()==24) swap(k1data,k2data); // Should never actually occur.
+
+  SpinorWaveFunction qSpinor(B_.p1b(),p1data,incoming);
+  SpinorBarWaveFunction qbSpinor(B_.p2b(),p2data,incoming);
+  vector<SpinorWaveFunction> q;
+  vector<SpinorBarWaveFunction> qb;
+  for(unsigned int ix=0;ix<2;ix++) {
+    qSpinor.reset(ix);
+    qbSpinor.reset(ix);
+    q.push_back(qSpinor);
+    qb.push_back(qbSpinor);
+  }
+
+  VectorWaveFunction v1Polarization(B_.k1b(),k1data,outgoing);
+  VectorWaveFunction v2Polarization(B_.k2b(),k2data,outgoing);
+  vector<VectorWaveFunction> v1;
+  vector<VectorWaveFunction> v2;
+  for(unsigned int ix=0;ix<3;ix++) {
+    v1Polarization.reset(ix);
+    v2Polarization.reset(ix);
+    v1.push_back(v1Polarization);
+    v2.push_back(v2Polarization);
+  }
+
+  AbstractFFVVertexPtr ffv1 = k1data->id()==23 ? FFZvertex_ : FFWvertex_;
+  AbstractFFVVertexPtr ffv2 = k2data->id()==23 ? FFZvertex_ : FFWvertex_;
+
+  // Collecting information for intermediate fermions
+  vector<tcPDPtr> tc;
+  if(abs(k1data->id())==24&&abs(k2data->id())==24) {
+    if(abs(p1data->id())%2==0)
+      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+    else
+      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+  }
+  else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
+  else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
+
+  // Loop over helicities summing the relevant diagrams
+  for(unsigned int p1hel=0;p1hel<2;++p1hel) {
+    for(unsigned int p2hel=0;p2hel<2;++p2hel) {
+      if((p1hel==p2hel)&&helicityConservation_) continue;
+      for(unsigned int k1hel=0;k1hel<3;++k1hel) {
+	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  vector<Complex> diagrams;
+	  // Get all t-channel diagram contributions
+	  tcPDPtr intermediate_t;
+	  for(unsigned int ix=0;ix<tc.size();ix++) {
+	    intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p2data : tc[ix];
+	    SpinorWaveFunction    p1_v1 = ffv1->evaluate(scale(),5,intermediate_t,q[p1hel],v1[k1hel]);
+	    // First calculate all the off-shell fermion currents
+	    // Now calculate the 6 t-channel diagrams
+	    // q+qb->v1+v2
+	    if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==1)))
+	      diagrams.push_back(ffv2->evaluate(scale(),p1_v1,qb[p2hel],v2[k2hel]));
+	    intermediate_t = (!(k1data->id()==24&&k2data->id()==-24)) ? p1data : tc[ix];
+	    SpinorWaveFunction    p1_v2 = ffv2->evaluate(scale(),5,intermediate_t,q[p1hel],v2[k2hel]);
+	    // q+qb->v2+v1
+	    if(!((k1data->id()==24&&k2data->id()==-24)&&(abs(p1data->id())%2==0)))
+	      diagrams.push_back(ffv1->evaluate(scale(),p1_v2,qb[p2hel],v1[k1hel]));
+	  }
+	  // If W+Z / W-Z calculate the two V+jet-like s-channel diagrams
+	  if(abs(k1data->id())==24&&k2data->id()==23) {
+	    // The off-shell s-channel boson current
+	    VectorWaveFunction k1_k2 = 
+	      WWWvertex_->evaluate(scale(),3,k1data->CC(),v2[k2hel],v1[k1hel]);
+	    // q+qb->v1*->v1+v2
+	    diagrams.push_back(ffv1->evaluate(scale(),q[p1hel],qb[p2hel],k1_k2));
+	  }
+	  // If W+W- calculate the four V+jet-like s-channel diagrams
+	  if((k1data->id()==24&&k2data->id()==-24)&&(p1data->id()==-p2data->id())) {
+	    // The off-shell s-channel boson current
+	    VectorWaveFunction k1_k2;
+	    // q+qb->Z0*->v1+v2
+	    tcPDPtr Z0    = getParticleData(ParticleID::Z0);
+	    k1_k2 = WWWvertex_->evaluate(scale(),3,Z0,v2[k2hel],v1[k1hel]);
+	    diagrams.push_back(FFZvertex_->evaluate(scale(),q[p1hel],qb[p2hel],k1_k2));
+	    // q+qb->gamma*->v1+v2
+	    tcPDPtr gamma = getParticleData(ParticleID::gamma);
+	    k1_k2 = WWWvertex_->evaluate(scale(),3,gamma,v2[k2hel],v1[k1hel]);
+	    diagrams.push_back(FFPvertex_->evaluate(scale(),q[p1hel],qb[p2hel],k1_k2));
+	  }
+	  // Add up all diagrams to get the total amplitude:
+	  Complex hel_amp(0.);
+	  for(unsigned int ix=0;ix<diagrams.size();ix++) hel_amp += diagrams[ix];
+	  // If we need to fill the production ME we do it here:
+// 	  if(getMatrix) lo_hel_amps_(p1hel,p2hel,k1hel,k2hel) = hel_amp;
+	  sum_hel_amps_sqr += norm(hel_amp);
+	}
+      }
+    }
+  }
+
+  // Spin and colour averaging factors = 1/4 * 1/3 = 1/12
+  sum_hel_amps_sqr /= 12.;
+
+  // Symmetry factor for identical Z bosons in the final state 
+  if(k1data->id()==23&&k2data->id()==23) sum_hel_amps_sqr /= 2.;
+
+  return sum_hel_amps_sqr;
+}

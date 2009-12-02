@@ -36,11 +36,27 @@ ClassDescription<MSSM> MSSM::initMSSM;
 void MSSM::Init() {
 
   static ClassDocumentation<MSSM> documentation
-    ("The MSSM class is the base class for the MSSM model.");
+    ("The MSSM class is the base class for the MSSM model.",
+     "MSSM Feynman rules were taken from \\cite{Haber:1984rc,Gunion:1984yn}.",
+     " %\\cite{Haber:1984rc}\n"
+     "\\bibitem{Haber:1984rc}\n"
+     "  H.~E.~Haber and G.~L.~Kane,\n"
+     "  %``The Search For Supersymmetry: Probing Physics Beyond The Standard Model,''\n"
+     "  Phys.\\ Rept.\\  {\\bf 117}, 75 (1985).\n"
+     "  %%CITATION = PRPLC,117,75;%%\n"
+     "%\\cite{Gunion:1984yn}\n"
+     "\\bibitem{Gunion:1984yn}\n"
+     "  J.~F.~Gunion and H.~E.~Haber,\n"
+     "  %``Higgs Bosons In Supersymmetric Models. 1,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 272}, 1 (1986)\n"
+     "  [Erratum-ibid.\\  B {\\bf 402}, 567 (1993)].\n"
+     "  %%CITATION = NUPHA,B272,1;%%\n"
+    );
 
 }
 
 void MSSM::createMixingMatrices() {
+  useMe();
   map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
   for(it=mixings().begin();it!=mixings().end();++it) {
     string name=it->first;

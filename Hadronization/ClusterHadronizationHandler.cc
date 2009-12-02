@@ -68,7 +68,16 @@ ClassDescription<ClusterHadronizationHandler> ClusterHadronizationHandler::initC
 void ClusterHadronizationHandler::Init() {
 
   static ClassDocumentation<ClusterHadronizationHandler> documentation
-    ("This is the main handler class for the Cluster Hadronization");
+    ("This is the main handler class for the Cluster Hadronization",
+     "The hadronization was performed using the cluster model of \\cite{Webber:1983if}.",
+     "%\\cite{Webber:1983if}\n"
+     "\\bibitem{Webber:1983if}\n"
+     "  B.~R.~Webber,\n"
+     "  ``A QCD Model For Jet Fragmentation Including Soft Gluon Interference,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 238}, 492 (1984).\n"
+     "  %%CITATION = NUPHA,B238,492;%%\n"
+     // main manual
+     );
 
   static Reference<ClusterHadronizationHandler,PartonSplitter> 
     interfacePartonSplitter("PartonSplitter", 
@@ -146,6 +155,7 @@ namespace {
 void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) {
+  useMe();
   PVector currentlist(tagged.begin(),tagged.end());
   // set the scale for coloured particles to just above the gluon mass squared
   // if less than this so they are classed as perturbative

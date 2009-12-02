@@ -22,7 +22,7 @@ using namespace Herwig;
 
 void Decay_QtildaShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector theChildren,
+	       const ShowerParticleVector & theChildren,
 	       bool angularOrder ) const {
   if(theChildren.size() != 2)
     throw Exception() <<  "Decay_QtildaShowerKinematics1to2::updateChildren() " 
@@ -72,7 +72,7 @@ updateChildren(const tShowerParticlePtr theParent,
 }
 
 void Decay_QtildaShowerKinematics1to2::
-reconstructParent( const tShowerParticlePtr, const ParticleVector ) const {
+reconstructParent( const tShowerParticlePtr, const ParticleVector &) const {
   throw Exception() << "Decay_QtildaShowerKinematics1to2::updateParent not implemented"
 		    << Exception::abortnow;
 }

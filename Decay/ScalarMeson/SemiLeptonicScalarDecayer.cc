@@ -30,7 +30,7 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
-SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() : _GF(1.16639E-5/GeV2) {
+SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() {
   // intermediates
   generateIntermediates(true);
 }
@@ -137,11 +137,11 @@ int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 
 void SemiLeptonicScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _maxwgt << _modemap << ounit(_GF,1/GeV2);
+  os << _current << _form << _maxwgt << _modemap;
 }
 
 void SemiLeptonicScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _maxwgt >> _modemap >> iunit(_GF,1/GeV2);
+  is >> _current >> _form >> _maxwgt >> _modemap;
 }
 
 ClassDescription<SemiLeptonicScalarDecayer> SemiLeptonicScalarDecayer::initSemiLeptonicScalarDecayer;
@@ -152,13 +152,6 @@ void SemiLeptonicScalarDecayer::Init() {
   static ClassDocumentation<SemiLeptonicScalarDecayer> documentation
     ("The SemiLeptonicScalarDecayer class is designed for the"
     "semi-leptonic decay of a (pseudo)-scalar meson.");
-
-  static Parameter<SemiLeptonicScalarDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &SemiLeptonicScalarDecayer::_GF, 1./GeV2, 1.16639E-5/GeV2,
-     ZERO, 1.e-4/GeV2,
-     false, false, false);
 
   static Reference<SemiLeptonicScalarDecayer,LeptonNeutrinoCurrent> interfaceCurrent
     ("Current",
@@ -183,7 +176,6 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
 				      const Particle & inpart,
 				      const ParticleVector & decay,
 				      MEOption meopt) const {
-  useMe();
   // get the information on the form-factor
   int jspin(0),id0(inpart.id()),id1(decay[0]->id());
   bool cc(false);
@@ -317,7 +309,7 @@ double SemiLeptonicScalarDecayer::me2(const int ichan,
       // helicities of mesons
       ihel[0]=0;
       ihel[_imes+1]=mhel;
-      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*_GF;
+      ME()(ihel)= lepton[lhel].dot(hadron[mhel])*SM().fermiConstant();
     }
   }
   // store the matrix element
@@ -335,7 +327,6 @@ void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output,
 					       bool header) const {
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi "   << _GF*GeV2 << "\n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
     output << "insert " << name() << ":MaximumWeight " << ix << " " 
 	   << _maxwgt[ix] << "\n";

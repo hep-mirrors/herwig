@@ -31,7 +31,7 @@ void RSModel::doinit() {
   StandardModel::doinit();
 }
 
-RSModel::RSModel() : _theLambda_pi(10000*GeV) {}
+RSModel::RSModel() : _theLambda_pi(10000*GeV) { useMe(); }
 
 void RSModel::persistentOutput(PersistentOStream & os) const {
   os << ounit(_theLambda_pi,GeV) 
@@ -83,6 +83,15 @@ static Parameter<RSModel,Energy> interfaceLambda_pi
 
   static ClassDocumentation<RSModel> documentation
     ("The RSModel class replaces the Standard Model class for the"
-     " RS model");
+     " RS model",
+     "The Randall-Sundrum model was constructed from \\cite{Randall:1999ee}.",
+     "%\\cite{Randall:1999ee}\n"
+     "\\bibitem{Randall:1999ee}\n"
+     "  L.~Randall and R.~Sundrum,\n"
+     "  ``A large mass hierarchy from a small extra dimension,''\n"
+     "  Phys.\\ Rev.\\ Lett.\\  {\\bf 83}, 3370 (1999)\n"
+     "  [arXiv:hep-ph/9905221].\n"
+     "  %%CITATION = PRLTA,83,3370;%%\n"
+     );
   
 }
