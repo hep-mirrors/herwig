@@ -259,6 +259,7 @@ void HardProcessConstructor::Init() {
     ("Excluded",
      "Particles which are not allowed as intermediates",
      &HardProcessConstructor::excluded_, -1, false, false, true, false, false);
+
 }
 
 namespace {

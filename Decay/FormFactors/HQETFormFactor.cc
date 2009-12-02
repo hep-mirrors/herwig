@@ -123,6 +123,7 @@ void HQETFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int,
 					    int, int, Energy m0, Energy m1,
 					    Complex & A0, Complex & A1,Complex & A2,
 					    Complex & V) const {
+  useMe();
   double omega = 0.5*(sqr(m0)+sqr(m1)-q2)/m0/m1;
   double root = sqrt(1.+omega),rt2=sqrt(2.);
   double z = (root-rt2)/(root+rt2);

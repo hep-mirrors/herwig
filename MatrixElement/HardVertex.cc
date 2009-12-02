@@ -33,7 +33,7 @@ void HardVertex::Init() {
 }
  
 // method to get the rho matrix for a given outgoing particle
-RhoDMatrix HardVertex::getRhoMatrix(int i) {
+RhoDMatrix HardVertex::getRhoMatrix(int i,bool) const {
   // get the rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout(outgoing().size()-1);
   for(int ix=0,N=outgoing().size();ix<N;++ix) {
@@ -49,7 +49,7 @@ RhoDMatrix HardVertex::getRhoMatrix(int i) {
 }
 
 // method to get the D matrix for an incoming particle
-RhoDMatrix HardVertex::getDMatrix(int i) {
+RhoDMatrix HardVertex::getDMatrix(int i) const {
   // get rho rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout(outgoing().size());
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)

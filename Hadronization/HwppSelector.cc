@@ -49,7 +49,16 @@ void HwppSelector::Init() {
 
   static ClassDocumentation<HwppSelector> documentation
     ("The HwppSelector class implements the Herwig++ algorithm for selecting"
-     " the hadrons");
+     " the hadrons",
+     "The hadronization used the selection algorithm described in \\cite{Kupco:1998fx}.",
+     "%\\cite{Kupco:1998fx}\n"
+     "\\bibitem{Kupco:1998fx}\n"
+     "  A.~Kupco,\n"
+     "  ``Cluster hadronization in HERWIG 5.9,''\n"
+     "  arXiv:hep-ph/9906412.\n"
+     "  %%CITATION = HEP-PH/9906412;%%\n"
+     );
+    // put useMe() only in correct place!
 
 
   static Switch<HwppSelector,unsigned int> interfaceMode
@@ -84,6 +93,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,tcPDPt
       quark = false;
     }
     else {
+      useMe();
       diquark = false;
       quark = true;
     }

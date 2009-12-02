@@ -28,7 +28,17 @@ using namespace Herwig;
 void Hw64Decayer::Init() {
 
    static ClassDocumentation<Hw64Decayer> documentation
-     ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4");
+     ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4",
+      "Some decays used the Fortran HERWIG decay algorithm \\cite{Corcella:2000bw}.",
+      "%\\cite{Corcella:2000bw}\n"
+      "\\bibitem{Corcella:2000bw}\n"
+      "  G.~Corcella {\\it et al.},\n"
+      "  %``HERWIG 6.5: an event generator for Hadron Emission Reactions With\n"
+      "  %Interfering Gluons (including supersymmetric processes),''\n"
+      "  JHEP {\\bf 0101} (2001) 010\n"
+      "  [arXiv:hep-ph/0011363].\n"
+      "  %%CITATION = JHEPA,0101,010;%%\n"
+      );
 
   static Switch<Hw64Decayer,int> interfaceMECode
     ("MECode",
@@ -67,6 +77,7 @@ bool Hw64Decayer::accept(tcPDPtr, const tPDVector & children) const  {
 
 ParticleVector Hw64Decayer::decay(const Particle & p, 
 				  const tPDVector & children) const {
+  useMe();
   // storage for the decay products and number of decay products
   ParticleVector rval;
   unsigned int numProds(children.size());

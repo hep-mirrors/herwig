@@ -185,7 +185,25 @@ void ChengHeavyBaryonFormFactor::Init() {
      " of the form-factors of PRD53, 1457 and PRD56, 2799 for the weak decay of"
      "baryons containing a heavy quark. This model can be used for either"
      "semi-leptonic decays, or with the factorization approximation for"
-     " non-leptonic weak decays");
+     " non-leptonic weak decays",
+     "The weak decay of baryons containing a heavy quark used form factors from "
+     "\\cite{Cheng:1995fe,Cheng:1996cs}.",
+     "%\\cite{Cheng:1995fe}\n"
+     "\\bibitem{Cheng:1995fe}\n"
+     "  H.~Y.~Cheng and B.~Tseng,\n"
+     "  %``1/M corrections to baryonic form-factors in the quark model,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 53} (1996) 1457\n"
+     "  [Erratum-ibid.\\  D {\\bf 55} (1997) 1697]\n"
+     "  [arXiv:hep-ph/9502391].\n"
+     "  %%CITATION = PHRVA,D53,1457;%%\n"
+     "%\\cite{Cheng:1996cs}\n"
+     "\\bibitem{Cheng:1996cs}\n"
+     "  H.~Y.~Cheng,\n"
+     "  %``Nonleptonic weak decays of bottom baryons,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 56} (1997) 2799\n"
+     "  [arXiv:hep-ph/9612223].\n"
+     "  %%CITATION = PHRVA,D56,2799;%%\n"
+     );
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceUpMass
     ("DownMass",
@@ -297,6 +315,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a)
 {
+  useMe();
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
@@ -336,6 +355,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 				Complex & g4v,Complex & g1a,Complex & g2a,
 				Complex & g3a,Complex & g4a)
 {
+  useMe();
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors

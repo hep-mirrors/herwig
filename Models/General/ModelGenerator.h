@@ -129,7 +129,7 @@ private:
   /**
    * Write out the spectrum of masses and decay modes
    */
-  void writeDecayModes(ofstream & ofs, tcPDPtr parent) const;
+  void writeDecayModes(ostream & ofs, tcPDPtr parent) const;
 
   /**
    * Create mass and width generators to simulate off-shell effects

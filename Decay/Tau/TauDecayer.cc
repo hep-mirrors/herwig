@@ -145,13 +145,13 @@ int TauDecayer::modeNumber(bool & cc,tcPDPtr parent, const tPDVector & children)
 
 
 void TauDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_gf,1/GeV2) << _modemap << _current << _wgtloc << _wgtmax << _weights
-     << _polOpt << _tauMpol << _tauPpol;
+  os << _modemap << _current << _wgtloc 
+     << _wgtmax << _weights << _polOpt << _tauMpol << _tauPpol;
 }
 
 void TauDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_gf,1/GeV2) >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights
-     >> _polOpt >> _tauMpol >> _tauPpol;
+  is >> _modemap >> _current >> _wgtloc 
+     >> _wgtmax >> _weights >> _polOpt >> _tauMpol >> _tauPpol;
 }
 
 ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
@@ -162,12 +162,6 @@ void TauDecayer::Init() {
   static ClassDocumentation<TauDecayer> documentation
     ("The TauDecayer class is designed to use a weak current"
      " to perform the decay of the tau.");
-
-  static Parameter<TauDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &TauDecayer::_gf, 1./GeV2, 1.16637E-5/GeV2, ZERO, 1.e-3/GeV2,
-     false, false, false);
 
   static Reference<TauDecayer,WeakDecayCurrent> interfaceWeakCurrent
     ("WeakCurrent",
@@ -321,7 +315,8 @@ double TauDecayer::me2(const int ichan,const Particle & inpart,
     // element
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
-	ME()(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*_gf;
+	ME()(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*
+	  SM().fermiConstant();
       }
     }
   }
@@ -341,7 +336,6 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   unsigned int ix;
   if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi "    << _gf*GeV2 << "\n";
   for(ix=0;ix<_wgtloc.size();++ix) {
     output << "insert " << name() << ":WeightLocation " << ix << " " 
 	   << _wgtloc[ix] << "\n";

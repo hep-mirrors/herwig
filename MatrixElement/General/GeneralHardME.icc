@@ -46,14 +46,13 @@ inline Energy2 GeneralHardME::scale() const {
   if(scaleChoice_==0) {
     return sHat();
   }
-  else if(scaleChoice_== 1) {
+  else {
+    assert( scaleChoice_== 1 );
     Energy2 t = 0.5*(tHat()-meMomenta()[2].mass2());
     Energy2 u = 0.5*(uHat()-meMomenta()[3].mass2());
     Energy2 s = 0.5*sHat();
     return 4.*s*t*u/(s*s+t*t+u*u);
   }
-  else
-    assert(false);
 }
 
 }

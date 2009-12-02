@@ -343,14 +343,14 @@ public:
    * Calculate the decay matrix for an incoming particle.
    */
   RhoDMatrix calculateDMatrix(int,const RhoDMatrix &,
-			      const vector<RhoDMatrix> &);
+			      const vector<RhoDMatrix> &) const;
 
   /**
    * Calculate the rho matrix for a given outgoing particle.
    */
   RhoDMatrix calculateRhoMatrix(int,const RhoDMatrix &,
                                 const RhoDMatrix &,
-				const vector<RhoDMatrix> &);
+				const vector<RhoDMatrix> &) const;
   
 public:
 

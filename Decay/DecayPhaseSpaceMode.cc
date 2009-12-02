@@ -24,6 +24,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/SpinInfo.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Utilities/Debug.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -146,21 +147,23 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
     if(fact==ZERO) fact=MeV;
     // factor for the weight with spin correlations
     _maxweight *= inpart->dataPtr()->iSpin()==1 ? 1.1 : 1.6;
-    // ouptut the information on the initialisation
-    CurrentGenerator::log() << "Initialized the phase space for the decay " 
-			    << _extpart[0]->PDGName() << " -> ";
-    for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
-      CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
-    CurrentGenerator::log() << "\n";
-    if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << wsum 
-					  << " +/- " << wsqsum << "\n";
-    CurrentGenerator::log() << "The partial width is " << wsum*fact/MeV 
-			    << " +/- " << wsqsum*fact/MeV << " MeV\n";
-    CurrentGenerator::log() << "The partial width is " 
-			    << wsum*fact/6.58212E-22/MeV 
-			    << " +/- " << wsqsum*fact/6.58212E-22/MeV<< " s-1\n";
-    CurrentGenerator::log() << "The maximum weight is " 
-			    << _maxweight << endl;
+    if ( Debug::level > 1 ) {
+      // ouptut the information on the initialisation
+      CurrentGenerator::log() << "Initialized the phase space for the decay " 
+			      << _extpart[0]->PDGName() << " -> ";
+      for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
+	CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
+      CurrentGenerator::log() << "\n";
+      if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << wsum 
+					    << " +/- " << wsqsum << "\n";
+      CurrentGenerator::log() << "The partial width is " << wsum*fact/MeV 
+			      << " +/- " << wsqsum*fact/MeV << " MeV\n";
+      CurrentGenerator::log() << "The partial width is " 
+			      << wsum*fact/6.58212E-22/MeV 
+			      << " +/- " << wsqsum*fact/6.58212E-22/MeV<< " s-1\n";
+      CurrentGenerator::log() << "The maximum weight is " 
+			      << _maxweight << endl;
+    }
     output=wsum*fact;
   }
   else {
@@ -204,9 +207,10 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       totsq=totsq/_npoint-sqr(totsum);
       if(totsq<0.) totsq=0.;
       totsq=sqrt(totsq/_npoint);
-      CurrentGenerator::log() << "The branching ratio is " << iy << " " 
-			      << totsum << " +/- " << totsq 
-			      << _maxweight << "\n";
+      if ( Debug::level > 1 )
+	CurrentGenerator::log() << "The branching ratio is " << iy << " " 
+				<< totsum << " +/- " << totsq 
+				<< _maxweight << "\n";
       // compute the individual terms
       double total(0.);
       for(unsigned int ix=0;ix<_channels.size();++ix) {
@@ -235,29 +239,31 @@ Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init) {
       _widthgen->partialWidth(_partial,inpart->nominalMass()) :
       inpart->dataPtr()->width();
     if(fact==ZERO) fact=MeV;
-    CurrentGenerator::log() << "Initialized the phase space for the decay " 
-			    << _extpart[0]->PDGName() << " -> ";
-    for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
-      CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
-    CurrentGenerator::log() << "\n";
-    if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << totsum 
-					  << " +/- " << totsq << "\n";
-    CurrentGenerator::log() << "The partial width is " << totsum*fact/MeV 
-			    << " +/- " << totsq*fact/MeV << " MeV\n";
-    CurrentGenerator::log() << "The partial width is " 
-			    << totsum*fact/6.58212E-22/MeV 
-			    << " +/- " << totsq*fact/6.58212E-22/MeV 
-			    << " s-1\n";
-    CurrentGenerator::log() << "The maximum weight is " 
-			    << _maxweight << "\n";
-    CurrentGenerator::log() << "The weights for the different phase" 
-			    << " space channels are \n";
-    for(unsigned int ix=0,N=_channels.size();ix<N;++ix) {
-      CurrentGenerator::log() << "Channel " << ix 
-			      << " had weight " << _channelwgts[ix] 
-			      << "\n";
+    if ( Debug::level > 1 ) {
+      CurrentGenerator::log() << "Initialized the phase space for the decay " 
+			      << _extpart[0]->PDGName() << " -> ";
+      for(unsigned int ix=1,N=_extpart.size();ix<N;++ix)
+	CurrentGenerator::log() << _extpart[ix]->PDGName() << " ";
+      CurrentGenerator::log() << "\n";
+      if(fact!=MeV) CurrentGenerator::log() << "The branching ratio is " << totsum 
+					    << " +/- " << totsq << "\n";
+      CurrentGenerator::log() << "The partial width is " << totsum*fact/MeV 
+			      << " +/- " << totsq*fact/MeV << " MeV\n";
+      CurrentGenerator::log() << "The partial width is " 
+			      << totsum*fact/6.58212E-22/MeV 
+			      << " +/- " << totsq*fact/6.58212E-22/MeV 
+			      << " s-1\n";
+      CurrentGenerator::log() << "The maximum weight is " 
+			      << _maxweight << "\n";
+      CurrentGenerator::log() << "The weights for the different phase" 
+			      << " space channels are \n";
+      for(unsigned int ix=0,N=_channels.size();ix<N;++ix) {
+	CurrentGenerator::log() << "Channel " << ix 
+				<< " had weight " << _channelwgts[ix] 
+				<< "\n";
+      }
+      CurrentGenerator::log() << flush;
     }
-    CurrentGenerator::log() << flush;
     output=totsum*fact;
   }
   return output;

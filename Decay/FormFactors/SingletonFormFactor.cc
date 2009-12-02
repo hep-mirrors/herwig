@@ -122,7 +122,16 @@ void SingletonFormFactor::Init() {
   static ClassDocumentation<SingletonFormFactor> documentation
     ("The SingletonFormFactor class implements the"
      " form-factors of PRD43, 2939 for the decay of spin-1/2 baryons"
-     " containing one heavy quark.");
+     " containing one heavy quark.",
+     "Spin-1/2 baryons with one heavy quark were decayed using "
+     "the form factors in \\cite{Singleton:1990ye}.",
+     "%\\cite{Singleton:1990ye}\n"
+     "\\bibitem{Singleton:1990ye}\n"
+     "  R.~L.~Singleton,\n"
+     "  %``Semileptonic baryon decays with a heavy quark,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 43} (1991) 2939.\n"
+     "  %%CITATION = PHRVA,D43,2939;%%\n"
+     );
 
   static Parameter<SingletonFormFactor,Energy> interfaceCharmMass
     ("CharmMass",

@@ -183,7 +183,8 @@ double FFVCurrentDecayer::me2(const int ichan, const Particle & inpart,
   pre /= 4.*Constants::pi
     *SM().alphaEM(sqr(getParticleData(ParticleID::tauminus)->mass()))
     /2./SM().sin2ThetaW();
-  double output(0.5*pre*ckm*(ME().contract(_rho)).real()*GF()*GF()*UnitRemoval::E4);
+  double output(0.5*pre*ckm*(ME().contract(_rho)).real()*
+		sqr(SM().fermiConstant()*UnitRemoval::E2));
   return output;
 }
  

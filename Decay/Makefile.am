@@ -4,7 +4,7 @@ SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
 noinst_LTLIBRARIES = libHwDecay.la 
 pkglib_LTLIBRARIES = Hw64Decay.la HwMamboDecay.la
 
-Hw64Decay_la_LDFLAGS = -module -version-info 5:0:0
+Hw64Decay_la_LDFLAGS = -module -version-info 5:1:0
 Hw64Decay_la_SOURCES = Hw64Decayer.h Hw64Decayer.cc 
 
 HwMamboDecay_la_LDFLAGS = -module -version-info 6:0:0

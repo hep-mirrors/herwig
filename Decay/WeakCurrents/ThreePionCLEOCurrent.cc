@@ -280,8 +280,19 @@ void ThreePionCLEOCurrent::Init() {
 
   static ClassDocumentation<ThreePionCLEOCurrent> documentation
     ("The ThreePionCLEOCurrent class performs the decay of the"
-     " tau to three pions using the currents from CLEO");
-  
+     " tau to three pions using the currents from CLEO",
+     "The decay of tau to three pions is modelled using the currents from "
+     "\\cite{Asner:1999kj}.",
+     "  %\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
+
   static ParVector<ThreePionCLEOCurrent,Energy> interfacerhomass
     ("RhoMasses",
      "The masses of the different rho resonnaces",
@@ -552,6 +563,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 					  Energy2 q2,Energy2 s1, Energy2 s2, Energy2 s3,
 					  Complex & F1, Complex & F2, 
 					  Complex & F3) const {
+  useMe();
   if(imode==0) {
     // compute the breit wigners we need
     Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;

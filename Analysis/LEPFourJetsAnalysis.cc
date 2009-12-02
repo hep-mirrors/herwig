@@ -110,8 +110,16 @@ LEPFourJetsAnalysis::initLEPFourJetsAnalysis;
 void LEPFourJetsAnalysis::Init() {
 
   static ClassDocumentation<LEPFourJetsAnalysis> documentation
-    ("There is no documentation for the LEPFourJetsAnalysis class");
-
+    ("The LEP FourJets Analysis class",
+     "The LEP FourJets analysis uses data from \\cite{Heister:2002tq}.",
+     "%\\cite{Heister:2002tq}\n"
+     "\\bibitem{Heister:2002tq}\n"
+     "  A.~Heister {\\it et al.}  [ALEPH Collaboration],\n"
+     "   ``Measurements of the strong coupling constant and the QCD colour factors\n"
+     "  %using four-jet observables from hadronic Z decays,''\n"
+     "  Eur.\\ Phys.\\ J.\\  C {\\bf 27}, 1 (2003).\n"
+     "  %%CITATION = EPHJA,C27,1;%%\n"
+     );
 
   static Switch<LEPFourJetsAnalysis,bool> interfaceChargedParticles
     ("ChargedParticles",
@@ -131,6 +139,7 @@ void LEPFourJetsAnalysis::Init() {
 }
 
 void LEPFourJetsAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + string("-") 
     + name() + string(".top");

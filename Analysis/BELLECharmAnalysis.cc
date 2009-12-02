@@ -116,6 +116,7 @@ void BELLECharmAnalysis::Init() {
 }
 
 void BELLECharmAnalysis::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   string fname = generator()->filename() + 
     string("-") + name() + string(".top");

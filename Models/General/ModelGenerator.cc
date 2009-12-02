@@ -59,11 +59,18 @@ void ModelGenerator::Init() {
   static ClassDocumentation<ModelGenerator> documentation
     ("This class controls the the use of BSM physics.",
      "BSM physics was produced using the algorithm of "
-     "\\cite{Gigg2007:cr}",
+     "\\cite{Gigg:2007cr,Gigg:2008yc}",
      "\\bibitem{Gigg:2007cr} M.~Gigg and P.~Richardson, \n"
      "Eur.\\ Phys.\\ J.\\  C {\\bf 51} (2007) 989.\n"
-     "%%CITATION = EPHJA,C51,989;%%");
-  
+     "%%CITATION = EPHJA,C51,989;%%\n"
+     " %\\cite{Gigg:2008yc}\n"
+     "\\bibitem{Gigg:2008yc}\n"
+     "  M.~A.~Gigg and P.~Richardson,\n"
+     "  %``Simulation of Finite Width Effects in Physics Beyond the Standard Model,''\n"
+     "  arXiv:0805.3037 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0805.3037;%%\n"
+     );
+ 
   static Reference<ModelGenerator,Herwig::HardProcessConstructor> 
     interfaceHardProcessConstructor
     ("HardProcessConstructor",
@@ -199,8 +206,8 @@ namespace {
 }
 
 void ModelGenerator::doinit() {
-  Interfaced::doinit();
   useMe();
+  Interfaced::doinit();
   // sort DecayParticles list by mass
   sort(_theParticles.begin(),_theParticles.end(),
        massIsLess);
@@ -225,20 +232,26 @@ void ModelGenerator::doinit() {
   }
 
   // write out decays with spin correlations
+  ostream & os = CurrentGenerator::current().misc();
   ofstream ofs;
-  if(decayOutput_!=0) {
-    string filename = CurrentGenerator::current().filename() + 
-      string("-BSMModelInfo.out");
+  if ( decayOutput_ == 2 ) {
+    string filename 
+      = CurrentGenerator::current().filename() + "-BR.spc";
     ofs.open(filename.c_str());
+  }
+
+
+  if(decayOutput_!=0) {
     if(decayOutput_==1) {
-      ofs << "# The decay modes listed below will have spin\n"
+      os << "# The decay modes listed below will have spin\n"
 	  << "# correlations included when they are generated.\n#\n#";
     }
     else {
       ofs << "#  Herwig++ decay tables in SUSY Les Houches accord format\n";
       ofs << "Block DCINFO                           # Program information\n";
       ofs << "1   Herwig++          # Decay Calculator\n";
-      ofs << "2   " << generator()->strategy()->versionstring() << "     # Version number\n";
+      ofs << "2   " << generator()->strategy()->versionstring() 
+	  << "     # Version number\n";
     }
   }
   pit = _theParticles.begin();
@@ -257,13 +270,18 @@ void ModelGenerator::doinit() {
       parent->massGenerator(tGenericMassGeneratorPtr());
       parent->widthGenerator(tGenericWidthGeneratorPtr());
     }
-    writeDecayModes(ofs, parent);
-    ofs << "#\n";
+    else {
+      if ( decayOutput_ == 2 )
+	writeDecayModes(ofs, parent);
+      else
+	writeDecayModes(os, parent);
+    }
+
     if( parent->massGenerator() ) {
       parent->widthCut(5.*parent->width());
       parent->massGenerator()->reset();
       if(decayOutput_==1)
-	ofs << "# " <<parent->PDGName() << " will be considered off-shell.\n#";
+	os << "# " <<parent->PDGName() << " will be considered off-shell.\n#\n";
     }
     if( parent->widthGenerator() ) parent->widthGenerator()->reset();
   }
@@ -331,45 +349,35 @@ void ModelGenerator::checkDecays(PDPtr parent) {
   
 }
 
-void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
+void ModelGenerator::writeDecayModes(ostream & os, tcPDPtr parent) const {
   if(decayOutput_==1) {
-    ofs << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
-	<< parent->mass()/GeV << "  Total Width (GeV): " 
-	<< parent->width()/GeV << endl;
-    ofs << std::left << std::setw(40) << '#' 
-	<< std::left << std::setw(20) << "Partial Width/GeV"
-	<< "BR\n"; 
-    if( parent->stable() ) {
-      ofs << "Either the 'Stable' switch has been set or no decay modes "
-	  << "could be created\n";
-      return;
-    }
+    os << " Parent: " << parent->PDGName() << "  Mass (GeV): " 
+       << parent->mass()/GeV << "  Total Width (GeV): " 
+       << parent->width()/GeV << endl;
+    os << std::left << std::setw(40) << '#' 
+       << std::left << std::setw(20) << "Partial Width/GeV"
+       << "BR\n"; 
     Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
     Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
     for(; dit != dend; ++dit)
-      ofs << std::left << std::setw(40) << (*dit).second->tag() 
-	  << std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
-	  << (*dit).second->brat() << '\n';
-    ofs << "#\n#";
+      os << std::left << std::setw(40) << (*dit).second->tag() 
+	 << std::left << std::setw(20) << (*dit).second->brat()*parent->width()/GeV 
+	 << (*dit).second->brat() << '\n';
+    os << "#\n#";
   }
   else if(decayOutput_==2) {
-    ofs << "#    \t PDG \t Width\n";
-    ofs << "DECAY\t" << parent->id() << "\t" << parent->width()/GeV << "\t # " << parent->PDGName() << "\n";
-    if( parent->stable() ) {
-      ofs << "Either the 'Stable' switch has been set or no decay modes "
-	  << "could be created\n";
-      return;
-    }
+    os << "#    \t PDG \t Width\n";
+    os << "DECAY\t" << parent->id() << "\t" << parent->width()/GeV << "\t # " << parent->PDGName() << "\n";
     Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
     Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
     for(; dit != dend; ++dit) {
-      ofs << "\t" << (*dit).second->brat() << "\t" << (*dit).second->orderedProducts().size() 
-	  << "\t";
+      os << "\t" << (*dit).second->brat() << "\t" << (*dit).second->orderedProducts().size() 
+	 << "\t";
       for(unsigned int ix=0;ix<(*dit).second->orderedProducts().size();++ix)
-	ofs << (*dit).second->orderedProducts()[ix]->id() << "\t";
+	os << (*dit).second->orderedProducts()[ix]->id() << "\t";
       for(unsigned int ix=(*dit).second->orderedProducts().size();ix<4;++ix)
-	ofs << "\t";
-	ofs << "# " << (*dit).second->tag() << "\n";
+	os << "\t";
+      os << "# " << (*dit).second->tag() << "\n";
     }
   }
 }

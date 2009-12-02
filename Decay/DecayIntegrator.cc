@@ -24,6 +24,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Utilities/Debug.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "DecayPhaseSpaceMode.h"
@@ -46,13 +47,11 @@ ParticleVector DecayIntegrator::decay(const Particle & parent,
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter 
-     << _outputmodes;
+  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter;
 }
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter
-     >> _outputmodes;
+  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter;
 }
   
 AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
@@ -106,21 +105,6 @@ void DecayIntegrator::Init() {
      "Yes",
      "include the intermediates",
      true);
-
-  static Switch<DecayIntegrator,bool> interfaceOutputModes
-    ("OutputModes",
-     "Output the phase space modes for debugging",
-     &DecayIntegrator::_outputmodes, false, false, false);
-  static SwitchOption interfaceOutputModesOutput
-    (interfaceOutputModes,
-     "Yes",
-     "Output the modes",
-     true);
-  static SwitchOption interfaceOutputModesNoOutput
-    (interfaceOutputModes,
-     "No",
-     "Don't output the modes",
-     false);
   
 }
 
@@ -145,15 +129,16 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc,
 // initialization for a run
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
-  if(initialize()) CurrentGenerator::current().log() 
-    << "Start of the initialisation for " << this->name() << "\n";
+  if ( initialize() && Debug::level > 1 ) 
+    CurrentGenerator::current().log() << "Start of the initialisation for " 
+				      << this->name() << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix) {
     if(!_modes[ix]) continue;
     _modes[ix]->initrun();
     _imode=ix;
     _modes[ix]->initializePhaseSpace(initialize());
   }
-  if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
+  // CurrentGenerator::current().log() << *this << "\n";
 }
 
 // add a new mode
@@ -376,14 +361,24 @@ InvEnergy DecayIntegrator::threeBodydGammads(const int, const Energy2,
     << Exception::runerror;
 }
 
-bool DecayIntegrator::oneLoopVirtualME(double &, unsigned int ,
-				       const Particle &, 
-				       const ParticleVector &) {
-  return false;
+double DecayIntegrator::oneLoopVirtualME(unsigned int ,
+					 const Particle &, 
+					 const ParticleVector &) {
+  throw DecayIntegratorError()
+    << "DecayIntegrator::oneLoopVirtualME() called. This should"
+    << " have been overidden in an inheriting class if it is used"
+    << Exception::runerror;
 }
 
-bool DecayIntegrator::realEmmisionME(double &, unsigned int,
-				     const Particle &, 
-				     const ParticleVector &) {
-  return false;
+InvEnergy2 DecayIntegrator::realEmissionME(unsigned int,
+					   const Particle &, 
+					   ParticleVector &,
+					   unsigned int,
+					   double, double, 
+					   const LorentzRotation &,
+					   const LorentzRotation &) {
+  throw DecayIntegratorError()
+    << "DecayIntegrator::realEmmisionME() called. This should"
+    << " have been overidden in an inheriting class if it is used"
+    << Exception::runerror;
 }

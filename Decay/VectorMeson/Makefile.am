@@ -14,4 +14,4 @@ VectorMesonVectorPScalarDecayer.cc   VectorMesonVectorPScalarDecayer.h  \
 VectorMesonVectorScalarDecayer.cc    VectorMesonVectorScalarDecayer.h  \
 VectorMesonVectorVectorDecayer.cc    VectorMesonVectorVectorDecayer.h  \
 OniumToOniumPiPiDecayer.cc           OniumToOniumPiPiDecayer.h
-HwVMDecay_la_LDFLAGS = -module -version-info 6:0:0
+HwVMDecay_la_LDFLAGS = -module -version-info 6:1:0

@@ -159,7 +159,30 @@ void EtaPiPiPiDecayer::Init() {
 
   static ClassDocumentation<EtaPiPiPiDecayer> documentation
     ("The EtaPiPiPiDecayer class performs the decay of a scalar meson to"
-     " two pions and another meson using a simple paramterisation of the dalitz plot.");
+     " two pions and another meson using a simple paramterisation of the dalitz plot.",
+     "The decay of eta to two pions follows \\cite{Beisert:2003zs,Gormley:1970qz,Tippens:2001fm}.",
+     "%\\cite{Beisert:2003zs}\n"
+     "\\bibitem{Beisert:2003zs}\n"
+     "  N.~Beisert and B.~Borasoy,\n"
+     "  %``Hadronic decays of eta and eta' with coupled channels,''\n"
+     "  Nucl.\\ Phys.\\  A {\\bf 716}, 186 (2003)\n"
+     "  [arXiv:hep-ph/0301058].\n"
+     "  %%CITATION = NUPHA,A716,186;%%\n"
+     "%\\cite{Gormley:1970qz}\n"
+     "\\bibitem{Gormley:1970qz}\n"
+     "  M.~Gormley, E.~Hyman, W.~Y.~Lee, T.~Nash, J.~Peoples, C.~Schultz and S.~Stein,\n"
+     "   ``Experimental determination of the dalitz-plot distribution of the decays\n"
+     "   eta $\\to$ pi+ pi- pi0 and eta $\\to$ pi+ pi- gamma, and the branching ratio\n"
+     "  %eta $\\to$ pi+ pi- gamma/eta $\\to$ pi+,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 2}, 501 (1970).\n"
+     "  %%CITATION = PHRVA,D2,501;%%\n"
+     "%\\cite{Tippens:2001fm}\n"
+     "\\bibitem{Tippens:2001fm}\n"
+     "  W.~B.~Tippens {\\it et al.}  [Crystal Ball Collaboration],\n"
+     "  %``Determination of the quadratic slope parameter in eta $\\to$ 3pi0 decay,''\n"
+     "  Phys.\\ Rev.\\ Lett.\\  {\\bf 87}, 192001 (2001).\n"
+     "  %%CITATION = PRLTA,87,192001;%%\n"
+     );
 
   static ParVector<EtaPiPiPiDecayer,int> interfaceIncoming
     ("Incoming",

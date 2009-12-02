@@ -1,50 +1,43 @@
 // -*- C++ -*-
 //
-// PScalarLeptonNeutrinoDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
+// SMWDecayer.h is a part of Herwig++ - A multi-purpose Monte Carlo event generator
 // Copyright (C) 2002-2007 The Herwig Collaboration
 //
 // Herwig++ is licenced under version 2 of the GPL, see COPYING for details.
 // Please respect the MCnet academic guidelines, see GUIDELINES for details.
 //
-#ifndef HERWIG_PScalarLeptonNeutrinoDecayer_H
-#define HERWIG_PScalarLeptonNeutrinoDecayer_H
-// This is the declaration of the PScalarLeptonNeutrinoDecayer class.
-
+#ifndef HERWIG_SMWDecayer_H
+#define HERWIG_SMWDecayer_H
+//
+// This is the declaration of the SMWDecayer class.
+//
 #include "Herwig++/Decay/DecayIntegrator.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "ThePEG/Helicity/LorentzSpinorBar.h"
 
 namespace Herwig {
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 
-/**  \ingroup Decay
+/** \ingroup Decay
  *
- * The PScalarLeptonNeutrinoDecayer class is designed for the decay of 
- * pseudoscalar mesons to a lepton and a neutrino. Although it can be used
- * for charged pion and kaon decays it is mainly intended for the leptonic
- * decays of bottom and charm mesons.
- *
- *  The matrix element is given by 
- * \f[\mathcal{M} = \frac1{\sqrt{2}}f_PG_FV_{CKM}m_l\bar{u}(p_{\ell})(1-\gamma_5)v(p_\nu),\f]
- * where
- * - \f$f_P\f$ is the pseudoscalar decay constant.
- * - \f$G_F\f$ is the Fermi constant
- * - \f$V_{CKM}\f$ is the relevant CKM matrix element
- * - \f$p_\ell\f$ is the momentum of the charged lepton
- * - \f$p_\nu\f$ is the momentum of the neutrino
+ *  The <code>SMWDecayer</code> is designed to perform the decay of the 
+ *  W boson to the Standard Model fermions, including the first order
+ *  electroweak corrections.
  *
  * @see DecayIntegrator
  * 
  */
-class PScalarLeptonNeutrinoDecayer: public DecayIntegrator {
+class SMWDecayer: public DecayIntegrator {
 
 public:
 
   /**
    * Default constructor.
    */
-  PScalarLeptonNeutrinoDecayer();
-  
+  SMWDecayer();
+
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
@@ -62,8 +55,8 @@ public:
    * @param meopt Option for the calculation of the matrix element
    * @return The matrix element squared for the phase-space configuration.
    */
-  double me2( const int ichan,const Particle & part,
-	     const ParticleVector & decay, MEOption meopt) const;
+  virtual double me2(const int ichan, const Particle & part,
+		     const ParticleVector & decay,MEOption meopt) const;
 
   /**
    * Output the setup information for the particle database
@@ -89,14 +82,14 @@ public:
    */
   void persistentInput(PersistentIStream & is, int version);
   //@}
-
+  
   /**
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
 
 protected:
-
+  
   /** @name Clone Methods. */
   //@{
   /**
@@ -116,7 +109,6 @@ protected:
   
   /** @name Standard Interfaced functions. */
   //@{
-
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
@@ -125,7 +117,8 @@ protected:
   virtual void doinit();
 
   /**
-   * Initialize this object to the begining of the run phase.
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
    */
   virtual void doinitrun();
   //@}
@@ -135,66 +128,54 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<PScalarLeptonNeutrinoDecayer> initPScalarLeptonNeutrinoDecayer;
+  static ClassDescription<SMWDecayer> initSMWDecayer;
 
   /**
    * Private and non-existent assignment operator.
    */
-  PScalarLeptonNeutrinoDecayer & operator=(const PScalarLeptonNeutrinoDecayer &);
+  SMWDecayer & operator=(const SMWDecayer &);
 
-private:
+ private:
 
   /**
-   * the PDG code for the incoming particle
+   * Pointer to the W fermions vertex
    */
-  vector<int> _incoming;
+  FFVVertexPtr FFWvertex_;
 
   /**
-   * the meson decay constant for a particular particle multiplied by the CKM matrix
-   * element, \e i.e. \f$f_pV_{CKM}\f$
+   * maximum weights for the different integrations
    */
-  vector<Energy> _decayconstant;
-
+  //@{
   /**
-   * which outgoing leptons are allowed for a particular decay
+   *  Weights for the W to quarks decays.
    */
-  vector<unsigned int> _leptons;
+  vector<double> quarkWeight_;
 
   /**
-   * the maximum weight for the integration of a given decay to \f$e\nu_e\f$.
+   *  Weights for the W to leptons decays.
    */
-  vector<double> _maxweighte;
+  vector<double> leptonWeight_;
+  //@}
 
   /**
-   * the maximum weight for the integration of a given decay to \f$\mu\nu_\mu\f$.
-   */
-  vector<double> _maxweightmu;
-
-  /**
-   * the maximum weight for the integration of a given decay to \f$\tau\nu_\tau\f$.
-   */
-  vector<double> _maxweighttau;
-
-  /**
-   *  initial number of modes
-   */
-  unsigned int _initsize;
-
-  /**
-   *  Spin density matrix
+   *  Spin density matrix for the decay
    */
   mutable RhoDMatrix _rho;
 
   /**
-   *  Spinors for the decay products
+   *  Polarization vectors for the decay
    */
-  mutable vector<Helicity::LorentzSpinor   <SqrtEnergy> > _wave;
+  mutable vector<VectorWaveFunction> _vectors;
 
   /**
-   *  barred spinors for the decay products
+   *  Spinors for the decay
    */
-  mutable vector<Helicity::LorentzSpinorBar<SqrtEnergy> > _wavebar;
+  mutable vector<SpinorWaveFunction> _wave;
 
+  /**
+   *  Barred spinors for the decay
+   */
+  mutable vector<SpinorBarWaveFunction> _wavebar;
 };
 
 }
@@ -206,14 +187,14 @@ namespace ThePEG {
 
 /** @cond TRAITSPECIALIZATIONS */
 
-template <>
 /**
  * The following template specialization informs ThePEG about the
- * base class of PScalarLeptonNeutrinoDecayer.
+ * base class of SMWDecayer.
  */
-struct BaseClassTrait<Herwig::PScalarLeptonNeutrinoDecayer,1> {
-    /** Typedef of the base class of PScalarLeptonNeutrinoDecayer. */
-  typedef Herwig::DecayIntegrator NthBase;
+template <>
+ struct BaseClassTrait<Herwig::SMWDecayer,1> {
+    /** Typedef of the base class of SMWDecayer. */
+   typedef Herwig::DecayIntegrator NthBase;
 };
 
 /**
@@ -221,16 +202,16 @@ struct BaseClassTrait<Herwig::PScalarLeptonNeutrinoDecayer,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::PScalarLeptonNeutrinoDecayer>
-  : public ClassTraitsBase<Herwig::PScalarLeptonNeutrinoDecayer> {
-  /** Return the class name.*/
-  static string className() { return "Herwig::PScalarLeptonNeutrinoDecayer"; }
+ struct ClassTraits<Herwig::SMWDecayer>
+  : public ClassTraitsBase<Herwig::SMWDecayer> {
+   /** Return the class name.*/
+  static string className() { return "Herwig::SMWDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwSMDecay.so"; }
+  static string library() { return "HwPerturbativeDecay.so"; }
 
 };
 
@@ -238,4 +219,4 @@ struct ClassTraits<Herwig::PScalarLeptonNeutrinoDecayer>
 
 }
 
-#endif /* HERWIG_PScalarLeptonNeutrinoDecayer_H */
+#endif /* HERWIG_SMWDecayer_H */

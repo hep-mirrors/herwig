@@ -138,8 +138,7 @@ colourConnections(const Particle & parent,
   PDT::Colour incColour(parent.data().iColour());
   PDT::Colour outaColour(out[0]->data().iColour());
   PDT::Colour outbColour(out[1]->data().iColour());
-  
-//incoming colour singlet
+  //incoming colour singlet
   if(incColour == PDT::Colour0) {
     // colour triplet-colourantitriplet
     if((outaColour == PDT::Colour3 && outbColour == PDT::Colour3bar) ||
@@ -228,6 +227,15 @@ colourConnections(const Particle & parent,
     else if(outbColour == PDT::Colour3&&outaColour == PDT::Colour3bar) {
       out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
       out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    // neutral octet
+    else if(outaColour == PDT::Colour0&&outbColour == PDT::Colour8) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    else if(outbColour == PDT::Colour0&&outaColour == PDT::Colour8) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
     }
     else
       throw Exception() << "Unknown outgoing colours for decaying "

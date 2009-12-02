@@ -170,10 +170,9 @@ public:
   virtual void finalize();
 
   /**
-   * Write out accumulated statistics about intergrated cross sections
-   * and stuff.
+   * Write out accumulated statistics about integrated cross sections.
    */
-  void statistics(string file) const;
+  void statistics() const;
 
   /**
    * The level of statistics. Controlls the amount of statistics

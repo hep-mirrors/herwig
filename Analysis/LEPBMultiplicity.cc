@@ -87,11 +87,20 @@ NoPIOClassDescription<LEPBMultiplicity> LEPBMultiplicity::initLEPBMultiplicity;
 void LEPBMultiplicity::Init() {
 
   static ClassDocumentation<LEPBMultiplicity> documentation
-    ("There is no documentation for the LEPBMultiplicity class");
+    ("The LEP B multiplicity analysis.",
+     "The LEP B multiplicity analysis uses data from PDG 2006 \\cite{Yao:2006px}.",
+     "%\\cite{Yao:2006px}\n"
+     "\\bibitem{Yao:2006px}\n"
+     "  W.~M.~Yao {\\it et al.}  [Particle Data Group],\n"
+     "  %``Review of particle physics,''\n"
+     "  J.\\ Phys.\\ G {\\bf 33} (2006) 1.\n"
+     "  %%CITATION = JPHGB,G33,1;%%\n"
+     );
 
 }
 
 void LEPBMultiplicity::dofinish() {
+  useMe();
   string filename = generator()->filename() + ".Bmult";
   ofstream outfile(filename.c_str());
   outfile << 

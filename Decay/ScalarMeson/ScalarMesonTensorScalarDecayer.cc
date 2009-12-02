@@ -157,7 +157,6 @@ double ScalarMesonTensorScalarDecayer::me2(const int,
 					   const Particle & inpart,
 					   const ParticleVector & decay,
 					   MEOption meopt) const {
-  useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);

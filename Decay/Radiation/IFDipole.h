@@ -40,7 +40,7 @@ public:
    * The default constructor.
    */
   IFDipole() :
-    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(), _nphotonmax(20),
+    _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(),
     _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
     _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
     _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
@@ -237,11 +237,6 @@ private:
    *  Photon multiplicity being generated
    */
   unsigned int _multiplicity;
-
-  /**
-   * Maximum number of photons to generate
-   */
-  unsigned int _nphotonmax;
 
   /**
    *  Map from arguments of lists such that

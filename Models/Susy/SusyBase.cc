@@ -92,7 +92,24 @@ ClassDescription<SusyBase> SusyBase::initSusyBase;
 void SusyBase::Init() {
 
   static ClassDocumentation<SusyBase> documentation
-    ("This is the base class for any SUSY model.");
+    ("This is the base class for any SUSY model.",
+     "SUSY spectrum files follow the Les Houches accord \\cite{Skands:2003cj,Allanach:2008qq}.",
+     " %\\cite{Skands:2003cj}\n"
+     "\\bibitem{Skands:2003cj}\n"
+     "  P.~Skands {\\it et al.},\n"
+     "   ``SUSY Les Houches accord: Interfacing SUSY spectrum calculators, decay\n"
+     "  %packages, and event generators,''\n"
+     "  JHEP {\\bf 0407}, 036 (2004)\n"
+     "  [arXiv:hep-ph/0311123].\n"
+     "  %%CITATION = JHEPA,0407,036;%%\n"
+     "%\\cite{Allanach:2008qq}\n"
+     "\\bibitem{Allanach:2008qq}\n"
+     "  B.~Allanach {\\it et al.},\n"
+     "  %``SUSY Les Houches Accord 2,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 180}, 8 (2009)\n"
+     "  [arXiv:0801.0045 [hep-ph]].\n"
+     "  %%CITATION = CPHCB,180,8;%%\n"
+     );
 
   static Switch<SusyBase,bool> interfaceTopModes
     ("TopModes",
@@ -212,6 +229,7 @@ void SusyBase::readSetup(istream & is) {
     << "run without this."
     << Exception::runerror; 
 
+  useMe();
   //Before reading the spectrum/decay files the SM higgs 
   //decay modes, mass and width generators need to be turned off.
   PDPtr h0 = getParticleData(ParticleID::h0);

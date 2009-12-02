@@ -340,7 +340,18 @@ void a1ThreePionDecayer::Init() {
   static ClassDocumentation<a1ThreePionDecayer> documentation
     ("The a1ThreePionDecayer class is designed to decay the a_1 "
      "resonance to three pions using a model based on that used in the modelling "
-     "of tau->4 pions.");
+     "of tau->4 pions.",
+     "The decay of the $a_1$ resonance to three pions uses a model based on"
+     "tau to four pions, \\cite{Bondar:2002mw}.",
+     "%\\cite{Bondar:2002mw}\n"
+     "\\bibitem{Bondar:2002mw}\n"
+     "  A.~E.~Bondar, S.~I.~Eidelman, A.~I.~Milstein, T.~Pierzchala, N.~I.~Root, Z.~Was and M.~Worek,\n"
+     "   ``Novosibirsk hadronic currents for tau --> 4pi channels of tau decay\n"
+     "  %library TAUOLA,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 146}, 139 (2002)\n"
+     "  [arXiv:hep-ph/0201149].\n"
+     "  %%CITATION = CPHCB,146,139;%%\n"
+     );
 
   static Switch<a1ThreePionDecayer,bool> interfaceLocalParameters
     ("LocalParameters",
@@ -480,6 +491,7 @@ double a1ThreePionDecayer::me2(const int ichan,
 			       const Particle & inpart,
 			       const ParticleVector & decay,
 			       MEOption meopt) const {
+  useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),

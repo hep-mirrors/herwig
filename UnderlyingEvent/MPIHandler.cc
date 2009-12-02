@@ -23,16 +23,14 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Deleted.h"
 
+#include "ThePEG/Repository/CurrentGenerator.h"
+
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/Cuts/SimpleKTCut.h"
 
 #include "gsl/gsl_sf_bessel.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MPIHandler.tcc"
-#endif
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -64,8 +62,7 @@ IBPtr MPIHandler::fullclone() const {
 
 void MPIHandler::finalize() {
   if( beamOK() ){
-    string fname = generator()->filename() + string("-UE.out");
-    statistics(fname);
+    statistics();
   }
 }
 
@@ -231,7 +228,7 @@ void MPIHandler::MultDistribution(string filename) const {
   while(it != theMultiplicities.end()){
     p = it->first;
     file << it->second.first << " " << it->second.second
-	 << " " << p-pold << endl;
+	 << " " << p-pold << '\n';
     it++;
     pold = p;
   }
@@ -242,9 +239,9 @@ void MPIHandler::MultDistribution(string filename) const {
   file.close();
 }
 
-void MPIHandler::statistics(string os) const {
-  ofstream file;
-  file.open(os.c_str());
+void MPIHandler::statistics() const {
+  ostream & file = CurrentGenerator::current().misc();
+  
   string line = "======================================="
     "=======================================\n";
 
@@ -268,23 +265,23 @@ void MPIHandler::statistics(string os) const {
 	 << "                                     "
 	 << "DL mode: " << DLmode_
 	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
-	 << " GeV" << endl
+	 << " GeV" << '\n'
 	 << "hard inclusive cross section (mb):   "
-	 << hardXSec_/millibarn << endl
+	 << hardXSec_/millibarn << '\n'
 	 << "soft inclusive cross section (mb):   "
-	 << softXSec_/millibarn << endl
+	 << softXSec_/millibarn << '\n'
 	 << "total cross section (mb):            "
-	 << totalXSecExp()/millibarn << endl
+	 << totalXSecExp()/millibarn << '\n'
 	 << "inelastic cross section (mb):        "
-	 << inelXSec_/millibarn << endl
+	 << inelXSec_/millibarn << '\n'
 	 << "soft inv radius (GeV2):              "
-	 << softMu2_/GeV2 << endl
+	 << softMu2_/GeV2 << '\n'
 	 << "slope of soft pt spectrum (1/GeV2):  "
-	 << beta_*sqr(1.*GeV) << endl
+	 << beta_*sqr(1.*GeV) << '\n'
 	 << "Average hard multiplicity:           "
-	 << avgNhard_ << endl
+	 << avgNhard_ << '\n'
 	 << "Average soft multiplicity:           "
-	 << avgNsoft_ << endl;
+	 << avgNsoft_ << '\n' << line << endl;
   }else{
     file << line
 	 << "Eikonalized and soft cross sections:\n\n"
@@ -293,14 +290,12 @@ void MPIHandler::statistics(string os) const {
       	 << ", mu2: " << invRadius_/sqr(1.*GeV) << " GeV2\n"
 	 << "                                     "
 	 << ", CMenergy: " << generator()->maximumCMEnergy()/GeV
-	 << " GeV" << endl
+	 << " GeV" << '\n'
 	 << "hard inclusive cross section (mb):   "
-	 << hardXSec_/millibarn << endl
+	 << hardXSec_/millibarn << '\n'
 	 << "Average hard multiplicity:           "
-	 << avgNhard_ << endl;
+	 << avgNhard_ << '\n' << line << endl;
   }
-
-  file.close();
 }
 
 unsigned int MPIHandler::multiplicity(unsigned int sel){
@@ -597,12 +592,20 @@ void MPIHandler::Init() {
   static ClassDocumentation<MPIHandler> documentation
     ("The MPIHandler class is the main administrator of the multiple interaction model", 
      "The underlying event was simulated with an eikonal model for multiple partonic interactions."
-     "Details can be found in Ref.~\\cite{Bahr:2008dy}.", 
-     "\\bibitem{Bahr:2008dy}"
-     "M.~Bahr, S.~Gieseke, and M.~H. Seymour, "
-     "{\\it {Simulation of multiple partonic interactions in Herwig++}}, "
-     "arXiv:0803.3633.");
-
+     "Details can be found in Ref.~\\cite{Bahr:2008dy,Bahr:2009ek}.", 
+     "%\\cite{Bahr:2008dy}\n"
+     "\\bibitem{Bahr:2008dy}\n"
+     "  M.~Bahr, S.~Gieseke and M.~H.~Seymour,\n"
+     "  ``Simulation of multiple partonic interactions in Herwig++,''\n"
+     "  JHEP {\\bf 0807}, 076 (2008)\n"
+     "  [arXiv:0803.3633 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0807,076;%%\n"
+    "\\bibitem{Bahr:2009ek}\n"
+     "  M.~Bahr, J.~M.~Butterworth, S.~Gieseke and M.~H.~Seymour,\n"
+     "  ``Soft interactions in Herwig++,''\n"
+     "  arXiv:0905.4671 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0905.4671;%%\n"
+     );
   
   static RefVector<MPIHandler,SubProcessHandler> interfaceSubhandlers
     ("SubProcessHandlers",

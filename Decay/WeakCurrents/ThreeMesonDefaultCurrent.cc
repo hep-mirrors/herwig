@@ -297,7 +297,31 @@ void ThreeMesonDefaultCurrent::Init() {
     ("The ThreeMesonDefaultCurrent class is designed to implement "
      "the three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, " 
      "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
-     "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.");
+     "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.",
+     "The three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, "
+     "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
+     "and pi- Kbar0 pi0, pi- pi0 eta "
+     "use the same currents as \\cite{Jadach:1993hs,Kuhn:1990ad,Decker:1992kj}.",
+     "%\\cite{Jadach:1993hs}\n"
+     "\\bibitem{Jadach:1993hs}\n"
+     "  S.~Jadach, Z.~Was, R.~Decker and J.~H.~Kuhn,\n"
+     "  %``The Tau Decay Library Tauola: Version 2.4,''\n"
+     "  Comput.\\ Phys.\\ Commun.\\  {\\bf 76}, 361 (1993).\n"
+     "  %%CITATION = CPHCB,76,361;%%\n"
+     "%\\cite{Kuhn:1990ad}\n"
+     "\\bibitem{Kuhn:1990ad}\n"
+     "  J.~H.~Kuhn and A.~Santamaria,\n"
+     "  %``Tau decays to pions,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 48}, 445 (1990).\n"
+     "  %%CITATION = ZEPYA,C48,445;%%\n"
+     "%\\cite{Decker:1992kj}\n"
+     "\\bibitem{Decker:1992kj}\n"
+     "  R.~Decker, E.~Mirkes, R.~Sauer and Z.~Was,\n"
+     "  %``Tau decays into three pseudoscalar mesons,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 58}, 445 (1993).\n"
+     "  %%CITATION = ZEPYA,C58,445;%%\n"
+     );
+
   
   static ParVector<ThreeMesonDefaultCurrent,double> interfaceF123RhoWgt
     ("F123RhoWeight",
@@ -522,6 +546,7 @@ ThreeMesonDefaultCurrent::FormFactors
 ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
 					       Energy2 q2, Energy2 s1, 
 					       Energy2 s2, Energy2 s3) const {
+  useMe();
   Complex F1, F2, F3, F4, F5;
   F1 = F2 = F3 = F4 = F5 = 0.0;
   // calculate the pi- pi- pi+ factor

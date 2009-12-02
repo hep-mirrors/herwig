@@ -12,6 +12,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 
@@ -274,7 +275,16 @@ void BaryonThreeQuarkModelFormFactor::Init() {
   static ClassDocumentation<BaryonThreeQuarkModelFormFactor> documentation
     ("The BaryonThreeQuarkModelFormFactor class implements"
      " the form-factors for semi-leptonic decay of baryon containing a"
-     " heavy quark from PRD56, 348.");
+     " heavy quark from PRD56, 348.",
+     "The form factors from \\cite{Ivanov:1996fj} were used.",
+     "%\\cite{Ivanov:1996fj}\n"
+     "\\bibitem{Ivanov:1996fj}\n"
+     "  M.~A.~Ivanov, V.~E.~Lyubovitskij, J.~G.~Korner and P.~Kroll,\n"
+     "  ``Heavy baryon transitions in a relativistic three-quark model,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 56} (1997) 348\n"
+     "  [arXiv:hep-ph/9612463].\n"
+     "  %%CITATION = PHRVA,D56,348;%%\n"
+     );
 
   static Parameter<BaryonThreeQuarkModelFormFactor,unsigned int> interfaceOrder
     ("Order",
@@ -357,6 +367,7 @@ void BaryonThreeQuarkModelFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a) {
+  useMe();
   // this model is based on heavy quark theory
   // therefore most of the factors are zero
   Complex g1v(0.),g1a(0.),g2v(0.),g2a(0.),g3a(0.),g3v(0.);
@@ -421,6 +432,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int id1,Energy m0,
 				Energy m1, Complex & f1v,Complex & f2v,
 				Complex & f3v,Complex & f4v,Complex & f1a,
 				Complex & f2a,Complex & f3a,Complex & f4a ) {
+  useMe();
   // work out which light quark constant to use
   double lambdabar;unsigned int ioff(0);
   if(abs(id1)==4334) {
@@ -566,12 +578,11 @@ Energy BaryonThreeQuarkModelFormFactor::widthIntegrand(double omega,Energy m0,
 						       Energy m1, int type,
 						       int ,int id0,
 						       int id1) {
-  InvEnergy2 GF=1.16639E-5/GeV2;
   // prefactors
   double omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
   double pi=acos(-1.);
-  InvEnergy kw=sqr(GF)/8./pi/pi/pi*m1*m1*m1/6.*
-    (omegamax-omega)*sqrt(omega*omega-1.);
+  InvEnergy kw=sqr(generator()->standardModel()->fermiConstant())
+    /8./pi/pi/pi*m1*m1*m1/6.*(omegamax-omega)*sqrt(omega*omega-1.);
   Energy2 q2 = sqr(m0)+sqr(m1)-2.*m0*m1*omega;
   if(type<=2) {
     Complex f1v,f2v,f3v,f1a,f2a,f3a;

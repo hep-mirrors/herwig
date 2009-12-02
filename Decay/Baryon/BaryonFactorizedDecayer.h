@@ -197,11 +197,6 @@ private:
   BaryonFormFactorPtr _form;
 
   /**
-   *  The Fermi constant, \f$G_F\f$
-   */
-  InvEnergy2 _gf;
-
-  /**
    *  The perturbative coefficients
    */
   //@{

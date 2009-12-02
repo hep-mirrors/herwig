@@ -862,6 +862,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 				 Energy mY,
 				 Energy mX, Complex & f1,Complex & f2,Complex & f3,
 				 Complex & f4) const {
+  useMe();
   // get the flavours of the quarks etc
   int jspin,spect,inquark,outquark;
   formFactorInfo(iloc,jspin,spect,inquark,outquark);

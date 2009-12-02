@@ -75,9 +75,23 @@ void GGtoHMECorrection::Init() {
     ("The GGtoHMECorrection class implements the matrix element correction"
      " for Higgs production via gluon fusion",
      "The theoretical calculations of \\cite{Baur:1989cm} "
-     "were used for the Higgs+jet matrix element in hadron-hadron collisions.",
-     "\\bibitem{Baur:1989cm} U.~Baur and E.~W.~N.~Glover,"
-     "Nucl.\\ Phys.\\ B {\\bf 339} (1990) 38.\n");
+     "were used for the Higgs+jet matrix element in hadron-hadron collisions."
+     "Implementation of the ME correction described in \\cite{Bahr:2008tx}.",
+     "%\\cite{Bahr:2008tx}\n"
+     "\\bibitem{Bahr:2008tx}\n"
+     "  M.~Bahr {\\it et al.},\n"
+     "  ``Herwig++ 2.2 Release Note,''\n"
+     "  arXiv:0804.3053 [hep-ph].\n"
+     "  %%CITATION = ARXIV:0804.3053;%%\n"
+     "%\\cite{Baur:1989cm}\n"
+     "\\bibitem{Baur:1989cm}\n"
+     "  U.~Baur and E.~W.~N.~Glover,\n"
+     "  ``Higgs Boson Production at Large Transverse Momentum in Hadronic\n"
+     "  Collisions,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 339}, 38 (1990).\n"
+     "  %%CITATION = NUPHA,B339,38;%%\n"
+     );
+
   static Parameter<GGtoHMECorrection,unsigned int> interfaceMinimumInLoop
     ("MinimumInLoop",
      "The minimum flavour of the quarks to include in the loops",

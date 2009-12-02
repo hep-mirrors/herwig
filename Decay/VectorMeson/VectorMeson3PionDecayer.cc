@@ -279,7 +279,18 @@ void VectorMeson3PionDecayer::Init() {
   static ClassDocumentation<VectorMeson3PionDecayer> documentation
     ("The VectorMeson3PionDecayer class is designed for the decay "
      "of I=0 vector mesons to three pions via a current taking into account the "
-     "rho and a possible direct term");
+     "rho and a possible direct term",
+     "The decay of I=0 vector mesons to three pions via a current taking into account the "
+     "rho and a possible direct term is taken from \\cite{Aloisio:2003ur}.",
+     "%\\cite{Aloisio:2003ur}\n"
+     "\\bibitem{Aloisio:2003ur}\n"
+     "  A.~Aloisio {\\it et al.}  [KLOE Collaboration],\n"
+     "  %``Study of the decay Phi --> pi+ pi- pi0 with the KLOE detector,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 561}, 55 (2003)\n"
+     "  [Erratum-ibid.\\  B {\\bf 609}, 449 (2005)]\n"
+     "  [arXiv:hep-ex/0303016].\n"
+     "  %%CITATION = PHLTA,B561,55;%%\n"
+     );
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceIncoming
     ("Incoming",
@@ -409,6 +420,7 @@ double VectorMeson3PionDecayer::me2(const int ichan,
 				    const Particle & inpart,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
+  useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),

@@ -516,7 +516,6 @@ double MEPP2WJet::getCosTheta(double ctmin, double ctmax, const double r) {
 } 
 
 double MEPP2WJet::me2() const {
-  useMe();
   InvEnergy2 output(ZERO);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;

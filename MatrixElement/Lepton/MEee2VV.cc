@@ -316,7 +316,7 @@ Selector<MEBase::DiagramIndex>
 MEee2VV::diagrams(const DiagramVector & diags) const {
   vector<double> last(3);
   if ( lastXCombPtr() ) {
-    for(unsigned int ix=0.;ix<3;++ix) last[ix] = meInfo()[ix];
+    for(unsigned int ix=0;ix<3;++ix) last[ix] = meInfo()[ix];
   }
   Selector<DiagramIndex> sel;
   for ( DiagramIndex i = 0; i < diags.size(); ++i ) {

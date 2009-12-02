@@ -437,7 +437,17 @@ void a1ThreePionCLEODecayer::Init() {
   
   static ClassDocumentation<a1ThreePionCLEODecayer> documentation
     ("The a1ThreePionCLEODecayer class performs the decay of the "
-     "a_1 to three pions using the model of CLEO");
+     "a_1 to three pions using the model of CLEO",
+     "The decay of a_1 to three pions was modelled after \\cite{Asner:1999kj}.",
+     "%\\cite{Asner:1999kj}\n"
+     "\\bibitem{Asner:1999kj}\n"
+     "  D.~M.~Asner {\\it et al.}  [CLEO Collaboration],\n"
+     "   ``Hadronic structure in the decay tau- --> nu/tau pi- pi0 pi0 and the  sign\n"
+     "  %of the tau neutrino helicity,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 61}, 012002 (2000)\n"
+     "  [arXiv:hep-ex/9902022].\n"
+     "  %%CITATION = PHRVA,D61,012002;%%\n"
+     );
 
   static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhomass
     ("RhoMasses",
@@ -625,6 +635,7 @@ double a1ThreePionCLEODecayer::me2(const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay,
 				   MEOption meopt) const {
+  useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),

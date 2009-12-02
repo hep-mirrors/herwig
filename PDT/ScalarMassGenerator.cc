@@ -37,7 +37,16 @@ void ScalarMassGenerator::Init() {
   static ClassDocumentation<ScalarMassGenerator> documentation
     ("The ScalarMassGenerator class inherits from the "
      "GenericMassGenerator class and includes finite width effects "
-     "for the scalar f_0 and a_0 mesons.");
+     "for the scalar f_0 and a_0 mesons.",
+     "Finite width effects for the scalar $f_0$ and $a_0$ mesons follow \\cite{Flatte:1976xu}.",
+     "%\\cite{Flatte:1976xu}\n"
+     "\\bibitem{Flatte:1976xu}\n"
+     "  S.~M.~Flatte,\n"
+     "   ``Coupled - Channel Analysis Of The Pi Eta And K Anti-K Systems Near K Anti-K\n"
+     "  Threshold,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 63}, 224 (1976).\n"
+     "  %%CITATION = PHLTA,B63,224;%%\n"
+     );
 
   static ParVector<ScalarMassGenerator,Energy> interfacecoupling
     ("Coupling",

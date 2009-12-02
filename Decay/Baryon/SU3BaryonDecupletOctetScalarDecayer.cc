@@ -289,7 +289,6 @@ void SU3BaryonDecupletOctetScalarDecayer::Init() {
 void SU3BaryonDecupletOctetScalarDecayer::
 threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
 			    Complex& A, Complex& B) const {
-  useMe();
   if(_parity) {
     A = _prefactor[imode]*(m0+m1);
     B = 0.;

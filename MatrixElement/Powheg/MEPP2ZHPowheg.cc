@@ -20,14 +20,13 @@ using namespace Herwig;
 MEPP2ZHPowheg::MEPP2ZHPowheg() 
   : _gluon(), _TR(0.5), _CF(4./3.), 
     _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-    _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
-    _fixedScale(100.*GeV), _scaleFact(1.)
+   _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
+   _fixedScale(100.*GeV), _scaleFact(1.)
 {}
 
 void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib   << _nlo_alphaS_opt << _fixed_alphaS         
      << _a         << _p              << _gluon
-    //<< _TR        << _CF  
      << _scaleopt       
      << ounit(_fixedScale,GeV)        << _scaleFact;
 }
@@ -35,7 +34,6 @@ void MEPP2ZHPowheg::persistentOutput(PersistentOStream & os) const {
 void MEPP2ZHPowheg::persistentInput(PersistentIStream & is, int) {
   is >> _contrib   >> _nlo_alphaS_opt >> _fixed_alphaS 
      >> _a         >> _p              >> _gluon
-    //>> _TR        >> _CF             
      >> _scaleopt 
      >> iunit(_fixedScale,GeV)        >> _scaleFact;
 
@@ -47,7 +45,19 @@ ClassDescription<MEPP2ZHPowheg> MEPP2ZHPowheg::initMEPP2ZHPowheg;
 void MEPP2ZHPowheg::Init() {
 
   static ClassDocumentation<MEPP2ZHPowheg> documentation
-    ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H");
+    ("The MEPP2ZHPowheg class implements the matrix element for q qbar -> Z H",
+     "The PP$\\to$Z Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "%\\cite{Hamilton:2009za}\n"
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  %Boson Production,''\n"
+     "  JHEP {\\bf 0904} (2009) 116\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
+
+
 
    static Switch<MEPP2ZHPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -105,7 +115,7 @@ void MEPP2ZHPowheg::Init() {
   static Switch<MEPP2ZHPowheg,unsigned int> interfaceFactorizationScaleOption
     ("FactorizationScaleOption",
      "Option for the scale to be used",
-     &MEPP2ZHPowheg::_scaleopt, 0, false, false);
+     &MEPP2ZHPowheg::_scaleopt, 1, false, false);
   static SwitchOption interfaceScaleOptionFixed
     (interfaceFactorizationScaleOption,
      "Fixed",
@@ -114,7 +124,7 @@ void MEPP2ZHPowheg::Init() {
   static SwitchOption interfaceScaleOptionsHat
     (interfaceFactorizationScaleOption,
      "Dynamic",
-     "Used sHat as the scale",
+     "Use the mass of the vector boson-Higgs boson system",
      1);
 
   static Parameter<MEPP2ZHPowheg,Energy> interfaceFactorizationScaleValue
@@ -134,9 +144,6 @@ void MEPP2ZHPowheg::Init() {
 void MEPP2ZHPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
-  // colour factors
-  _CF = 4./3.; 
-  _TR = 0.5;
   MEPP2ZH::doinit();
 }
 
@@ -164,6 +171,7 @@ CrossSection MEPP2ZHPowheg::dSigHatDR() const {
 double MEPP2ZHPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(_contrib==0) return 1.;
+  useMe();
   // Get particle data for QCD particles:
   _parton_a=mePartonData()[0];
   _parton_b=mePartonData()[1];

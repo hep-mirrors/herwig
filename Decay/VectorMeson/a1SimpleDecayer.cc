@@ -320,6 +320,7 @@ int a1SimpleDecayer::modeNumber(bool & cc,tcPDPtr parent,
 
 double a1SimpleDecayer::me2(const int ichan,const Particle & inpart,
 			    const ParticleVector & decay,MEOption meopt) const {
+  useMe();
   if(meopt==Initialize) {
     VectorWaveFunction::calculateWaveFunctions(_vectors,_rho,
 						const_ptr_cast<tPPtr>(&inpart),

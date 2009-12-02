@@ -27,8 +27,9 @@ using namespace Herwig;
 using Herwig::Math::ReLi2;
  
 MEqq2gZ2ffPowheg::MEqq2gZ2ffPowheg() : 
+  _gluon(), _TR(0.5), _CF(4./3.),
   _contrib(1)    ,_nlo_alphaS_opt(0), _fixed_alphaS(0.115895),
-  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(0),
+  _a(0.5)        ,_p(0.7)           , _eps(1.0e-8), _scaleopt(1),
   _fixedScale(100.*GeV), _scaleFact(1.) {
   massOption(true ,1);
   massOption(false,1);
@@ -37,9 +38,6 @@ MEqq2gZ2ffPowheg::MEqq2gZ2ffPowheg() :
 void MEqq2gZ2ffPowheg::doinit() {
   // gluon ParticleData object
   _gluon = getParticleData(ParticleID::g);
-  // colour factors
-  _CF = 4./3.; 
-  _TR = 0.5;
   MEqq2gZ2ff::doinit();
 }
 
@@ -49,12 +47,12 @@ Energy2 MEqq2gZ2ffPowheg::scale() const {
 
 void MEqq2gZ2ffPowheg::persistentOutput(PersistentOStream & os) const {
   os << _contrib << _nlo_alphaS_opt << _fixed_alphaS << _a << _p << _gluon
-     << _TR << _CF << _scaleopt << ounit(_fixedScale,GeV) << _scaleFact;
+     << _scaleopt << ounit(_fixedScale,GeV) << _scaleFact;
 }
 
 void MEqq2gZ2ffPowheg::persistentInput(PersistentIStream & is, int) { 
   is >> _contrib >> _nlo_alphaS_opt >> _fixed_alphaS >> _a >> _p >> _gluon
-     >> _TR >> _CF >> _scaleopt >> iunit(_fixedScale,GeV) >> _scaleFact;
+     >> _scaleopt >> iunit(_fixedScale,GeV) >> _scaleFact;
 }
 
 ClassDescription<MEqq2gZ2ffPowheg> MEqq2gZ2ffPowheg::initMEqq2gZ2ffPowheg;
@@ -66,7 +64,17 @@ void MEqq2gZ2ffPowheg::Init() {
     ("The MEqq2gZ2ffPowheg class implements the matrix element for"
      "q qbar to Standard Model fermions via Z and photon exchange using"
      " helicity amplitude techniques including the NLO correction in"
-     " the POWHEG formalism");
+     " the POWHEG formalism",
+     "The qq$\\to\\gamma/Z\\to$ff POWHEG matrix element is described in \\cite{Hamilton:2008pd}.",
+     "%\\cite{Hamilton:2008pd}\n"
+     "\\bibitem{Hamilton:2008pd}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation of Drell-Yan\n"
+     "  %Vector Boson Production,''\n"
+     "  JHEP {\\bf 0810} (2008) 015\n"
+     "  [arXiv:0806.0290 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0810,015;%%\n"
+     );
 
   static Switch<MEqq2gZ2ffPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -124,7 +132,7 @@ void MEqq2gZ2ffPowheg::Init() {
   static Switch<MEqq2gZ2ffPowheg,unsigned int> interfaceScaleOption
     ("ScaleOption",
      "Option for the scale to be used",
-     &MEqq2gZ2ffPowheg::_scaleopt, 0, false, false);
+     &MEqq2gZ2ffPowheg::_scaleopt, 1, false, false);
   static SwitchOption interfaceScaleOptionFixed
     (interfaceScaleOption,
      "Fixed",
@@ -132,8 +140,8 @@ void MEqq2gZ2ffPowheg::Init() {
      0);
   static SwitchOption interfaceScaleOptionsHat
     (interfaceScaleOption,
-     "sHat",
-     "Used sHat as the scale",
+     "Dynamic",
+     "Use the off-shell vector boson mass as the scale",
      1);
 
   static Parameter<MEqq2gZ2ffPowheg,Energy> interfaceFixedScale
@@ -169,6 +177,7 @@ CrossSection MEqq2gZ2ffPowheg::dSigHatDR() const {
 double MEqq2gZ2ffPowheg::NLOweight() const {
   // If only leading order is required return 1:
   if(_contrib==0) return 1.;
+  useMe();
   // Get particle data for QCD particles:
   _parton_a=mePartonData()[0];
   _parton_b=mePartonData()[1];
