@@ -35,8 +35,22 @@ void DecayVertex::Init() {
 }
 
 // method to get the rho matrix for a given outgoing particle
-RhoDMatrix DecayVertex::getRhoMatrix(int i) {
-  // get the rho matrices for the outgoing particles
+RhoDMatrix DecayVertex::getRhoMatrix(int i,bool recursive) const {
+  // get the rho matrix of the decaying particle
+  RhoDMatrix input;
+  tcSpinfoPtr inspin = dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0]);
+  assert(inspin);
+  if(recursive&&inspin->getProductionVertex()&&
+     inspin->iSpin()!=PDT::Spin0) {
+    input = inspin->getProductionVertex()->
+      getRhoMatrix(inspin->productionLocation(),true);
+    inspin->rhoMatrix() = input;
+    inspin->needsUpdate();
+  }
+  else {
+    input = inspin->rhoMatrix();
+  }
+  // get the D matrices for the outgoing particles
   vector<RhoDMatrix> rhoout(outgoing().size()-1);
   for(int ix=0,N=outgoing().size();ix<N;++ix) {
     if(ix<i)      rhoout[ix] = 
@@ -45,16 +59,21 @@ RhoDMatrix DecayVertex::getRhoMatrix(int i) {
       dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix();
   }
   // calculate the spin density matrix
-  RhoDMatrix input=dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->rhoMatrix();
   return _matrixelement.calculateRhoMatrix(i,input,rhoout);
 }
 
 // method to get the D matrix for an incoming particle
-RhoDMatrix DecayVertex::getDMatrix(int) {
+RhoDMatrix DecayVertex::getDMatrix(int) const {
+  tcSpinfoPtr inspin = dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0]);
+  if(inspin->developed()==SpinInfo::Developed) 
+    return inspin->DMatrix();
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout(outgoing().size());
-  for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
-    Dout[ix] = dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix();
+  for(unsigned int ix=0,N=outgoing().size();ix<N;++ix) {
+    tcSpinfoPtr hwspin = dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix]);
+    if(!hwspin->developed()) hwspin->develop();
+    Dout[ix] = hwspin->DMatrix();
+  }
   // calculate the spin density matrix and return the answer
   return _matrixelement.calculateDMatrix(Dout);
 }

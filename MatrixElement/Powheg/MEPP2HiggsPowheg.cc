@@ -26,7 +26,7 @@
 using namespace Herwig;
 
 MEPP2HiggsPowheg::MEPP2HiggsPowheg() : 
-  CF_(4./3.)  ,  CA_(3.)            , TR_(1./2.)        , nlf_(5.)          ,
+  CF_(4./3.)  ,  CA_(3.)            , TR_(0.5)        , nlf_(5)          ,
   beta0_((11.*CA_/3. - 4.*TR_*nlf_/3.)/(4.*Constants::pi))                 ,
   contrib_(1) ,  nlo_alphaS_opt_(0) , fixed_alphaS_(0.118109485),
   scaleopt_(1),  mu_F_(100.*GeV)    ,  mu_UV_(100.*GeV) , scaleFact_(1.) 
@@ -51,7 +51,17 @@ void MEPP2HiggsPowheg::Init() {
 
   static ClassDocumentation<MEPP2HiggsPowheg> documentation
     ("The MEPP2HiggsPowheg class implements the matrix elements for"
-     " Higgs production (with decay H->W-W+) in hadron-hadron collisions.");
+     " Higgs production (with decay H->W-W+) in hadron-hadron collisions.",
+     "The PP$\\to$Higgs POWHEG matrix element is described in \\cite{Hamilton:2009za}.",
+     "%\\cite{Hamilton:2009za}\n"
+     "\\bibitem{Hamilton:2009za}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  %``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation for Higgs\n"
+     "  %Boson Production,''\n"
+     "  JHEP {\\bf 0904} (2009) 116\n"
+     "  [arXiv:0903.4345 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0904,116;%%\n"
+     );
 
   static Switch<MEPP2HiggsPowheg,unsigned int> interfaceContribution
     ("Contribution",
@@ -350,10 +360,10 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gg_on_x(tcPDPtr a, tcPDPtr b,
 double MEPP2HiggsPowheg::Ctilde_Ltilde_qg_on_x(tcPDPtr a, tcPDPtr b, 
 					       double xt, double y ) const {
   if(y!= 1.&&y!=-1.) { cout << "\nCtilde_qg::y value not allowed."; }
-  if(y== 1.&&!(abs(a->id())>0&&abs(a->id()<7))) 
+  if(y== 1.&&!(abs(a->id())>0&&abs(a->id())<7)) 
     cout << "\nCtilde_qg::for Cqg^plus  a must be a quark! id = " 
 	 << a->id() << "\n";
-  if(y==-1.&&!(abs(b->id())>0&&abs(b->id()<7))) 
+  if(y==-1.&&!(abs(b->id())>0&&abs(b->id())<7)) 
     cout << "\nCtilde_qg::for Cqg^minus b must be a quark! id = "
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);
@@ -371,7 +381,7 @@ double MEPP2HiggsPowheg::Ctilde_Ltilde_gq_on_x(tcPDPtr a, tcPDPtr b,
   if(y== 1.&&a->id()!=21)
     cout << "\nCtilde_gq::for Cgq^plus  a must be a gluon! id = " 
 	 << a->id() << "\n";
-  if(y== 1.&&!(abs(a->id()>0)&&abs(a->id())<7)) 
+  if(y==-1.&&b->id()!=21) 
     cout << "\nCtilde_gq::for Cgq^minus b must be a gluon! id = " 
 	 << b->id() << "\n";
   double x_pm      = x(xt,y);

@@ -209,7 +209,7 @@ void KaonThreeMesonCurrent::Init() {
      "mesons, at least one of which is a kaon",
      "The KaonThreeMesonCurrent class implements the model of "
      "\\cite{Finkemeier:1995sr} for the weak current with three "
-     "mesons, at least one of which is a kaon",
+     "mesons, at least one of which is a kaon.",
      "\\bibitem{Finkemeier:1995sr}\n"
      "M.~Finkemeier and E.~Mirkes,\n"
      "Z.\\ Phys.\\  C {\\bf 69} (1996) 243 [arXiv:hep-ph/9503474].\n"
@@ -1124,6 +1124,7 @@ KaonThreeMesonCurrent::FormFactors
 KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 						 Energy2 q2,Energy2 s1,
 						 Energy2 s2,Energy2 s3) const {
+  useMe();
   Complex F1, F2, F5;
   // calculate the K- pi - K+ factor
   if(imode==2) {

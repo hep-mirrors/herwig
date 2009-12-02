@@ -292,6 +292,11 @@ private:
 private:
 
   /**
+   *  Option for effective vertices
+   */
+  bool theEffective;
+
+  /**
    * Required initial state particles
    */
   PDVector theIncoming;
@@ -323,6 +328,11 @@ private:
    * Number of vertices in the model
    */
   unsigned int theNv;
+
+  /**
+   *  The vertices
+   */
+  vector<VertexBasePtr> theVertices;
 
   /**
    * Store the configuration of the diagrams

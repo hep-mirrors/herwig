@@ -60,3 +60,5 @@ insert DecayConstructor:NBodyDecayConstructors[1] ThreeBodyDC
 # the spin correlations in the decay
 create Herwig::HwDecayHandler DecayHandler
 set DecayHandler:NewStep No
+insert DecayHandler:Excluded 0 /Herwig/Particles/tau-
+insert DecayHandler:Excluded 1 /Herwig/Particles/tau+

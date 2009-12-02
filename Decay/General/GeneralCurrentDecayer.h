@@ -36,7 +36,7 @@ public:
    * The default constructor.
    */
   inline GeneralCurrentDecayer() : 
-    _maxmass(5.*GeV), _theGF(1.16639E-5/GeV2) {}
+    _maxmass(5.*GeV) {}
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -128,11 +128,6 @@ protected:
   inline WeakDecayCurrentPtr weakCurrent() const { return _current; }
 
   /**
-   *  Access to the Fermi constant
-   */
-  inline InvEnergy2 GF() const { return _theGF; }
-
-  /**
    * Get vertex pointer
    * @return a pointer to the vertex
    */
@@ -178,11 +173,6 @@ private:
    *  Maximum mass difference
    */
   Energy _maxmass;
-  
-  /**
-   * Fermi coupling constant, \f$G_F\f$.
-   */
-  InvEnergy2 _theGF;
 
   /**
    * mapping of the modes to the currents

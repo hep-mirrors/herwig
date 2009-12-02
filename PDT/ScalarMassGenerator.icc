@@ -38,6 +38,7 @@ inline void ScalarMassGenerator::doinit() {
 }
 
 inline double ScalarMassGenerator::weight(Energy q,int shape) const {
+  useMe();
   Energy2 q2    = sqr(q);
   Energy2 mass2 = sqr(nominalMass());
   Energy2 mwidth= nominalMass()*nominalWidth();

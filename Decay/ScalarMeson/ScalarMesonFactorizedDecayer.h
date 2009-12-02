@@ -206,11 +206,6 @@ private:
   vector<ScalarFormFactorPtr> _form;
 
   /**
-   *  The Fermi constant, \f$G_F\f$
-   */
-  InvEnergy2 _GF;
-
-  /**
    *  The perturbative coefficients
    */
   //@{

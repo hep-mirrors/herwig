@@ -85,6 +85,7 @@ double AlphaEM::realPi(double r) const {
 }
 
 double AlphaEM::value(Energy2 scale, const StandardModelBase & sm) const {
+  useMe();
   static double eps=1e-6;
   static double a1=0.0    ,b1=0.00835,c1=1.000;
   static double a2=0.0    ,b2=0.00238,c2=3.927;

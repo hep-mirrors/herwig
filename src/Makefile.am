@@ -81,6 +81,13 @@ THEPEGREPO=$(THEPEGPATH)/lib/ThePEG/ThePEGDefaults.rpo
 install-data-hook:
 	@echo Creating repository
 	@./Herwig++ init -L$(DESTDIR)$(pkglibdir) -i $(DESTDIR)$(defaultsdir)/HerwigDefaults.in -r $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo --exitonerror
+
+uninstall-hook:
+	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+
+
+register: register-with-thepeg-repo
+register-with-thepeg-repo:
 	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
 		then echo Registering with ThePEG; \
 		"$(SETUPTHEPEG)" --init \
@@ -89,8 +96,9 @@ install-data-hook:
 		-l$(DESTDIR)$(pkglibdir) --exitonerror ; \
 	fi
 
-uninstall-hook:
-	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.rpo
+
+unregister : unregister-from-thepeg-repo
+unregister-from-thepeg-repo:
 	@if test -x "$(SETUPTHEPEG)" -a -w "$(THEPEGREPO)"; \
 		then echo Unregistering with ThePEG; \
 		"$(SETUPTHEPEG)" --init defaults/HerwigCleanup.in \

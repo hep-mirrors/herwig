@@ -7,4 +7,4 @@ RSModelFFVGRVertex.cc RSModelFFVGRVertex.h \
 RSModelSSGRVertex.cc  RSModelSSGRVertex.h  \
 RSModelVVGRVertex.cc  RSModelVVGRVertex.h \
 RSModelVVVGRVertex.cc RSModelVVVGRVertex.h 
-HwRSModel_la_LDFLAGS = -module -version-info 5:0:0
+HwRSModel_la_LDFLAGS = -module -version-info 6:0:0

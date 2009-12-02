@@ -79,7 +79,8 @@ public:
    * Default constructor.
    */
   DecayIntegrator() : _niter(10), _npoint(10000), _ntry(500),
-		      _generateinter(false),_outputmodes(false) {}
+		      _generateinter(false),
+		      _realME(false), _virtualME(false) {}
   
   /**
    * Check if this decayer can perfom the decay for a particular mode.
@@ -109,6 +110,11 @@ public:
    */
   virtual int modeNumber(bool & cc, tcPDPtr parent, 
 			 const tPDVector & children) const = 0;
+
+  /**
+   * The mode being used for this decay
+   */
+  int imode() const {return _imode;}
 
   /**
    * Add a phase-space mode to the list
@@ -226,7 +232,7 @@ public:
    * of photons.
    */
   ParticleVector generatePhotons(const Particle & p,ParticleVector children) {
-    return _photongen->generatePhotons(p,children);
+    return _photongen->generatePhotons(p,children,this);
   }
 
   /**
@@ -236,29 +242,46 @@ public:
 
   /**
    *  The one-loop virtual correction.
-   * @param output The answer for the matrix element.
    * @param imode The mode required.
    * @param part  The decaying particle.
    * @param products The decay products including the radiated photon.
    * @return Whether the correction is implemented
    */
-  virtual bool oneLoopVirtualME(double & output, unsigned int imode,
-				const Particle & part, 
-				const ParticleVector & products);
+  virtual double oneLoopVirtualME(unsigned int imode,
+				  const Particle & part, 
+				  const ParticleVector & products);
+
+  /**
+   *  Whether or not the one loop matrix element is implemented
+   */
+  bool hasOneLoopME() {return _virtualME;}
   
   /**
    *  The real emission matrix element
-   * @param output The answer for the matrix element
    * @param imode The mode required
    * @param part  The decaying particle
    * @param products The decay products including the radiated photon
-   * @return Whether the correction is implemented
+   * @param iemitter The particle which emitted the photon
+   * @param ctheta   The cosine of the polar angle between the photon and the
+   *                 emitter
+   * @param stheta   The sine of the polar angle between the photon and the
+   *                 emitter 
+   * @param rot1 Rotation from rest frame to frame for real emission
+   * @param rot2 Rotation to place emitting particle along z
    */
-  virtual bool realEmmisionME(double & output, unsigned int imode,
-			      const Particle & part, 
-			      const ParticleVector & products);
+  virtual InvEnergy2 realEmissionME(unsigned int imode,
+				    const Particle & part, 
+				    ParticleVector & products,
+				    unsigned int iemitter,
+				    double ctheta, double stheta,
+				    const LorentzRotation & rot1,
+				    const LorentzRotation & rot2);
+
+  /**
+   *  Whether or not the real emission matrix element is implemented
+   */
+  bool hasRealEmissionME() {return _realME;}
   //@}
-  
 public:
   
   /** @name Functions used by the persistent I/O system. */
@@ -295,11 +318,6 @@ protected:
    */
   ParticleVector generate(bool inter,bool cc, const unsigned int & imode,
 			  const Particle & inpart) const;  
-
-  /**
-   * The mode being used for this decay
-   */
-  int imode() const {return _imode;}
 
   /**
    * Set the mode being use for this decay.
@@ -350,6 +368,16 @@ protected:
    * @param init Whether or not to perform the initialization
    */
   Energy initializePhaseSpaceMode(unsigned int imode,bool init) const;
+
+  /**
+   *  Whether or not the one loop matrix element is implemented
+   */
+  void hasOneLoopME(bool in) {_virtualME=in;}
+
+  /**
+   *  Whether or not the real emission matrix element is implemented
+   */
+  void hasRealEmissionME(bool in) {_realME=in;}
 
 protected:
   
@@ -405,8 +433,6 @@ private:
    */
   DecayRadiationGeneratorPtr _photongen;
 
-private:
-
   /**
    * mode currently being generated  
    */
@@ -418,9 +444,14 @@ private:
   mutable DecayMatrixElement _matrixelement;
 
   /**
-   *  Output the phase space channels for testing
+   *  Whether or not the real photon emission matrix element exists
    */
-  bool _outputmodes;
+  bool _realME;
+
+  /**
+   *  Whether or not the one-loop matrix element exists
+   */
+  bool _virtualME;
   
 };
   /**

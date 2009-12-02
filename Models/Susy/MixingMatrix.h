@@ -96,7 +96,7 @@ public:
   /**
    * Contructor that initializes size of matrix
    */
-  MixingMatrix(unsigned int col, unsigned int row) :
+  MixingMatrix(unsigned int row, unsigned int col) :
     _theMixingMatrix(row,vector<Complex>(col,Complex(0.,0.))), _theSize(row,col)
   {}
 

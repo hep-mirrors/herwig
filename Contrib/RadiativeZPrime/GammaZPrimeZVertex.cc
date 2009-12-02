@@ -37,10 +37,7 @@ void GammaZPrimeZVertex::setCoupling(Energy2, tcPDPtr ,tcPDPtr,tcPDPtr) {
 
 GammaZPrimeZVertex::GammaZPrimeZVertex() {
   // PDG codes for the particles
-  vector<long int> first (1,22);
-  vector<long int> second(1,32);
-  vector<long int> third (1,23);
-  addToList(first,second,third);
+  addToList(22,32,23);
 }
 
 void GammaZPrimeZVertex::doinit() {

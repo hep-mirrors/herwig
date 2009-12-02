@@ -105,7 +105,7 @@ void FivePionCurrent::Init() {
   static ClassDocumentation<FivePionCurrent> documentation
     ("The FivePionCurrent class implements the model of hep-ph/0602162",
      "The model of \\cite{Kuhn:2006nw} was used for the hadronic five pion current.",
-     "\bibitem{Kuhn:2006nw} J.~H.~Kuhn and Z.~Was, hep-ph/0602162, (2006).");
+     "\\bibitem{Kuhn:2006nw} J.~H.~Kuhn and Z.~Was, hep-ph/0602162, (2006).");
 
   static Parameter<FivePionCurrent,Energy> interfaceRhoMass
     ("RhoMass",
@@ -658,6 +658,7 @@ vector<LorentzPolarizationVectorE>
 FivePionCurrent::current(const int imode,const int ichan,
 			 Energy & scale,const ParticleVector & decay,
 			 DecayIntegrator::MEOption meopt) const {
+  useMe();
   if(meopt==DecayIntegrator::Terminate) {
     for(unsigned int ix=0;ix<5;++ix)
       ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);

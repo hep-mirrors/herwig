@@ -31,7 +31,7 @@ void DecayMatrixElement::Init() {
 }
     
 // calculate the decay matrix for this decay
-RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoout) {
+RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoout) const {
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
@@ -67,7 +67,7 @@ RhoDMatrix DecayMatrixElement::calculateDMatrix(const vector<RhoDMatrix> & rhoou
 // calculate the rho matrix for a given outgoing particle
 RhoDMatrix DecayMatrixElement::
 calculateRhoMatrix(int id,const RhoDMatrix & rhoin,
-		   const vector<RhoDMatrix> & rhoout) {
+		   const vector<RhoDMatrix> & rhoout) const{
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned

@@ -48,9 +48,14 @@ void SMHiggsWidthGenerator::Init() {
     ("The SMHiggsWidthGenerator class calculates the running Higgs width as in"
      "hep-ph/9505211.",
      "The Higgs width was calculated as in \\cite{Seymour:1995qg}.",
-     "\\bibitem{Seymour:1995qg} M.~H.~Seymour,\n"
-     "Phys.\\ Lett.\\  B {\\bf 354} (1995) 409 [arXiv:hep-ph/9505211].\n"
-     "%%CITATION = PHLTA,B354,409;%%\n");
+     "%\\cite{Seymour:1995qg}\n"
+     "\\bibitem{Seymour:1995qg}\n"
+     "  M.~H.~Seymour,\n"
+     "  %``The Higgs boson line shape and perturbative unitarity,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 354}, 409 (1995)\n"
+     "  [arXiv:hep-ph/9505211].\n"
+     "  %%CITATION = PHLTA,B354,409;%%\n"
+     );
 
   static Switch<SMHiggsWidthGenerator,unsigned int> interfaceWidthOption
     ("WidthScheme",
@@ -169,6 +174,7 @@ Complex SMHiggsWidthGenerator::HwW2(double tau) const {
 }
 
 Energy SMHiggsWidthGenerator::partialWidth(Energy Mh,unsigned int imode) const {
+  useMe();
   using Constants::pi;
   if(Mh!=_qlast) {
     _qlast = Mh;

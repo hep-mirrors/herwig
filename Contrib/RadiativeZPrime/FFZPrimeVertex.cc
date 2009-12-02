@@ -46,20 +46,14 @@ void FFZPrimeVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr) {
 
 FFZPrimeVertex::FFZPrimeVertex() : _gl(17,0.0), _gr(17,0.0) {
   // PDG codes for the particles
-  vector<long int> first,second,third;
   // the quarks
   for(unsigned int ix=1;ix<7;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(32);
+    addToList(-ix,ix,32);
   }
   // the leptons
   for(unsigned int ix=11;ix<17;++ix) {
-    first.push_back(-ix);
-    second.push_back(ix);
-    third.push_back(32);
+    addToList(-ix,ix,32);
   }
-  addToList(first,second,third);
 }
 
 void FFZPrimeVertex::doinit() {

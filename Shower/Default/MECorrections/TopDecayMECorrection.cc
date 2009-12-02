@@ -52,7 +52,16 @@ void TopDecayMECorrection::Init() {
 
   static ClassDocumentation<TopDecayMECorrection> documentation
     ("The TopDecayMECorrection class implements the matrix element correction for"
-     " top decay");
+     " top decay",
+     "The matrix element correction for top decay \\cite{Hamilton:2006ms}.",
+     "%\\cite{Hamilton:2006ms}\n"
+     "\\bibitem{Hamilton:2006ms}\n"
+     "  K.~Hamilton and P.~Richardson,\n"
+     "  ``A simulation of QCD radiation in top quark decays,''\n"
+     "  JHEP {\\bf 0702}, 069 (2007)\n"
+     "  [arXiv:hep-ph/0612236].\n"
+     "  %%CITATION = JHEPA,0702,069;%%\n"
+     );
 
   static Parameter<TopDecayMECorrection,double> interfaceEnhancementFactor
     ("InitialEnhancementFactor",
@@ -132,6 +141,7 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   _a=sqr(_ma/_mt);
   _g=sqr(_mg/_mt);
   _c=sqr(_mc/_mt);
+  useMe();
   return true;
 }
 

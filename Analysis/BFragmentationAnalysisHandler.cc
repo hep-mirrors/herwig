@@ -121,11 +121,29 @@ void BFragmentationAnalysisHandler::Init() {
 
   static ClassDocumentation<BFragmentationAnalysisHandler> documentation
     ("The BFragmentationAnalysisHandler class performs analysis"
-     " of the B fragmentation function");
-  
+     " of the B fragmentation function",
+     "The B fragmentation function analysis uses data from \\cite{Heister:2001jg,Abe:2002iq}.",
+     "  %\\cite{Heister:2001jg}\n"
+     "\\bibitem{Heister:2001jg}\n"
+     "  A.~Heister {\\it et al.}  [ALEPH Collaboration],\n"
+     "  %``Study of the fragmentation of b quarks into B mesons at the Z peak,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 512}, 30 (2001)\n"
+     "  [arXiv:hep-ex/0106051].\n"
+     "  %%CITATION = PHLTA,B512,30;%%\n"
+     "%\\cite{Abe:2002iq}\n"
+     "\\bibitem{Abe:2002iq}\n"
+     "  K.~Abe {\\it et al.}  [SLD Collaboration],\n"
+     "  %``Measurement of the b-quark fragmentation function in Z0 decays,''\n"
+     "  Phys.\\ Rev.\\  D {\\bf 65}, 092006 (2002)\n"
+     "  [Erratum-ibid.\\  D {\\bf 66}, 079905 (2002)]\n"
+     "  [arXiv:hep-ex/0202031].\n"
+     "  %%CITATION = PHRVA,D65,092006;%%\n"
+     );
+
 }
 
 void BFragmentationAnalysisHandler::dofinish() {
+  useMe();
   AnalysisHandler::dofinish();
   // output the histograms
   string fname = generator()->filename() + string("-") + name() + string(".top");

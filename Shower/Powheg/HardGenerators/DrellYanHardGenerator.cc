@@ -46,7 +46,17 @@ ClassDescription<DrellYanHardGenerator> DrellYanHardGenerator::initDrellYanHardG
 void DrellYanHardGenerator::Init() {
 
   static ClassDocumentation<DrellYanHardGenerator> documentation
-    ("There is no documentation for the DrellYanHardGenerator class");
+    ("Hard QCD radiation for Drell-Yan processes in the POWHEG scheme.",
+     "Hard QCD radiation for Drell-Yan processes in the POWHEG scheme \\cite{Hamilton:2008pd}.",
+     "%\\cite{Hamilton:2008pd}\n"
+     "\\bibitem{Hamilton:2008pd}\n"
+     "  K.~Hamilton, P.~Richardson and J.~Tully,\n"
+     "  ``A Positive-Weight Next-to-Leading Order Monte Carlo Simulation of Drell-Yan\n"
+     "  Vector Boson Production,''\n"
+     "  JHEP {\\bf 0810}, 015 (2008)\n"
+     "  [arXiv:0806.0290 [hep-ph]].\n"
+     "  %%CITATION = JHEPA,0810,015;%%\n"
+     );
 
   static Reference<DrellYanHardGenerator,ShowerAlpha> interfaceShowerAlpha
     ("ShowerAlpha",
@@ -86,6 +96,7 @@ void DrellYanHardGenerator::Init() {
 }
 
 HardTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
+  useMe();
   // get the particles to be showered
   _beams.clear();
   _partons.clear();

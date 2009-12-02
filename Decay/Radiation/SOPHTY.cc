@@ -14,6 +14,7 @@
 #include "SOPHTY.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
@@ -25,11 +26,11 @@
 using namespace Herwig;
 
 void SOPHTY::persistentOutput(PersistentOStream & os) const {
-  os << _ffdipole << _ifdipole << _colouredOption;
+  os << FFDipole_ << IFDipole_ << colouredOption_;
 }
 
 void SOPHTY::persistentInput(PersistentIStream & is, int) {
-  is >> _ffdipole >> _ifdipole >> _colouredOption;
+  is >> FFDipole_ >> IFDipole_ >> colouredOption_;
 }
 
 ClassDescription<SOPHTY> SOPHTY::initSOPHTY;
@@ -47,17 +48,17 @@ void SOPHTY::Init() {
   static Reference<SOPHTY,FFDipole> interfaceFFDipole
     ("FFDipole",
      "The final-final dipole",
-     &SOPHTY::_ffdipole, false, false, true, false, false);
+     &SOPHTY::FFDipole_, false, false, true, false, false);
   
   static Reference<SOPHTY,IFDipole> interfaceIFDipole
     ("IFDipole",
      "_ifdipole",
-     &SOPHTY::_ifdipole, false, false, true, false, false);
+     &SOPHTY::IFDipole_, false, false, true, false, false);
 
   static Switch<SOPHTY,unsigned int> interfaceColouredTreatment
     ("ColouredTreatment",
      "Option for the treatment of QED radiation in decays involving coloured particles.",
-     &SOPHTY::_colouredOption, 0, false, false);
+     &SOPHTY::colouredOption_, 0, false, false);
   static SwitchOption interfaceColouredTreatmentNone
     (interfaceColouredTreatment,
      "None",
@@ -72,11 +73,11 @@ void SOPHTY::Init() {
 
 }
 
-ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector children) {
-  if(children.size()!=2) return children;
+ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector children,
+				       tDecayIntegratorPtr decayer) {
   // if not generating radiation from coloured particles
   // return if there are any coloured particles
-  if(_colouredOption==0) {
+  if(colouredOption_==0) {
     bool coloured = p.dataPtr()->coloured();
     for(unsigned int ix=0;ix<children.size();++ix) {
       coloured |= children[ix]->dataPtr()->coloured();
@@ -88,7 +89,7 @@ ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector childre
   if(p.dataPtr()->iCharge()==0) {
     if(children[0]->dataPtr()->iCharge()!=0&&
        children[1]->dataPtr()->iCharge()!=0)
-      return _ffdipole->generatePhotons(p,children);
+      return FFDipole_->generatePhotons(p,children,decayer);
     else
       return children;
   }
@@ -98,7 +99,7 @@ ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector childre
 	children[1]->dataPtr()->iCharge()!=0)||
        (children[0]->dataPtr()->iCharge()!=0&&
 	children[1]->dataPtr()->iCharge()==0))
-      return _ifdipole->generatePhotons(p,children);
+      return IFDipole_->generatePhotons(p,children);
     else
       return children;
   }

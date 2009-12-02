@@ -11,6 +11,10 @@
 #include <cassert>
 #include <string>
 
+#ifdef HAVE_UNISTD_H
+# include "ThePEG/Repository/CurrentGenerator.h"
+#endif
+
 extern "C" {
 
 #ifdef HAVE_UNISTD_H
@@ -23,36 +27,35 @@ extern "C" {
 
 
 namespace {
-  struct RedirectionInfo {
-    RedirectionInfo(int fdin) 
-      : fd(fdin) {}
-    int fd;
-  };
 
 #ifdef HAVE_UNISTD_H
-  RedirectionInfo start_redirection(std::string logfilename) {
+  int start_redirection(std::string logfilename) {
+    if ( ! ThePEG::CurrentGenerator::isVoid() 
+	 && ThePEG::CurrentGenerator::current().useStdOut() ) return -1;
     // redirect C stdout --- unix specific solution,
     // see C FAQ: http://c-faq.com/stdio/undofreopen.html
     int    fd;
     fflush(stdout);
     fd = dup(fileno(stdout));
     freopen(logfilename.c_str(), "a", stdout);
-    return RedirectionInfo(fd);
+    return fd;
   }
   
-  void stop_redirection(RedirectionInfo rdinfo) {
+  void stop_redirection(int fd) {
+    if ( ! ThePEG::CurrentGenerator::isVoid() 
+	 && ThePEG::CurrentGenerator::current().useStdOut() ) return;
     fflush(stdout);
     close(fileno(stdout));
-    dup2(rdinfo.fd, fileno(stdout));
-    close(rdinfo.fd);
+    dup2(fd, fileno(stdout));
+    close(fd);
     clearerr(stdout);
   }
 #else
-  RedirectionInfo start_redirection(std::string) {
-    return RedirectionInfo();
+  int start_redirection(std::string) {
+    return -1;
   }
   
-  void stop_redirection(RedirectionInfo) {}
+  void stop_redirection(int) {}
 #endif
 
 } // namespace
@@ -65,7 +68,7 @@ namespace Herwig {
     void ffini(std::string logfilename) {
       assert( initcount >= 0 );
       if ( initcount == 0 ) {
-	RedirectionInfo rd = start_redirection(logfilename);
+	int rd = start_redirection(logfilename);
 	ffini_();
 	stop_redirection(rd);
       }
@@ -76,7 +79,7 @@ namespace Herwig {
       assert( initcount > 0 );
       --initcount;
       if ( initcount == 0 ) {
-	RedirectionInfo rd = start_redirection(logfilename);
+	int rd = start_redirection(logfilename);
 	ffexi_();
 	stop_redirection(rd);
       }

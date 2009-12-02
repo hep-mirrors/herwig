@@ -68,7 +68,7 @@ public:
    * @param theChildren The children
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) const;
+			      const ShowerParticleVector & theChildren) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -77,7 +77,7 @@ public:
    * @param theChildren The children
    */
   virtual void updateParent(const tShowerParticlePtr theParent, 
-			    const ShowerParticleVector theChildren) const;
+			    const ShowerParticleVector & theChildren) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -107,7 +107,7 @@ public:
    * @param theChildren The children
    */
   virtual void reconstructChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) const;
+			      const ShowerParticleVector & theChildren) const;
 
   /**
    * Reconstruct the parent Kinematics from the knowledge of the kinematics
@@ -116,7 +116,7 @@ public:
    * @param theChildren The children
    */
   virtual void reconstructParent(const tShowerParticlePtr theParent, 
-				 const ParticleVector theChildren) const;
+				 const ParticleVector & theChildren) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction

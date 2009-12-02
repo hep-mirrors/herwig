@@ -37,9 +37,14 @@ void SMHiggsMassGenerator::Init() {
     ("The SMHiggsMassGenerator class implements the mass distribution for the"
      " Higgs boson as in hep-ph/9505211.",
      "The Higgs mass was distributed as in \\cite{Seymour:1995qg}.",
-     "\\bibitem{Seymour:1995qg} M.~H.~Seymour,\n"
-     "Phys.\\ Lett.\\  B {\\bf 354} (1995) 409 [arXiv:hep-ph/9505211].\n"
-     "%%CITATION = PHLTA,B354,409;%%\n");
+     "%\\cite{Seymour:1995qg}\n"
+     "\\bibitem{Seymour:1995qg}\n"
+     "  M.~H.~Seymour,\n"
+     "  %``The Higgs boson line shape and perturbative unitarity,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 354}, 409 (1995)\n"
+     "  [arXiv:hep-ph/9505211].\n"
+     "  %%CITATION = PHLTA,B354,409;%%\n"
+     );
 
   static Switch<SMHiggsMassGenerator,unsigned int> interfaceHiggsShape
     ("HiggsShape",

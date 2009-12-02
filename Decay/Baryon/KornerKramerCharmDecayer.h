@@ -181,11 +181,6 @@ private:
 private:
 
   /**
-   * The Fermi constant, \f$G_F\f$.
-   */
-  InvEnergy2 GF_;
-
-  /**
    * one over the number of colours 
    */
   double oneNC_;

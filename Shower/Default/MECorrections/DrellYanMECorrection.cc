@@ -69,7 +69,16 @@ void DrellYanMECorrection::Init() {
      " matrix element correction for the Drell-Yan process. This is"
      " a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction"
-     " of events with weight > 1.");
+     " of events with weight > 1.",
+     "The implementation of matrix element correction "
+     "for Drell-Yan processes is described in \\cite{Gieseke:2006rr}.",
+     "%\\cite{Gieseke:2006rr}\n"
+     "\\bibitem{Gieseke:2006rr}\n"
+     "  S.~Gieseke, D.~Grellscheid, A.~Ribon, P.~Richardson, M.~H.~Seymour, P.~Stephens and B.~R.~Webber,\n"
+     "  %``Herwig++ 2.0 beta release note,''\n"
+     "  arXiv:hep-ph/0602069.\n"
+     "  %%CITATION = HEP-PH/0602069;%%\n"
+     );
 
   static Parameter<DrellYanMECorrection,double> interfaceQQbarChannelWeight
     ("QQbarChannelWeight",
@@ -132,6 +141,7 @@ bool DrellYanMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   // can handle it
   initial = 1.;
   final   = 1.;
+  useMe();
   return true;
 }
 

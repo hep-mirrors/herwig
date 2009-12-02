@@ -42,7 +42,16 @@ ClassDescription<PowhegEvolver> PowhegEvolver::initPowhegEvolver;
 void PowhegEvolver::Init() {
 
   static ClassDocumentation<PowhegEvolver> documentation
-    ("The PowhegEvolver implements the POWHEG approach to MC\\@NLO");
+    ("The PowhegEvolver implements the POWHEG approach to MC\\@NLO",
+     "Hard radiation was generated in the POWHEG approach\\cite{Nason:2004rx}.",
+     "%\\cite{Nason:2004rx}\n"
+     "\\bibitem{Nason:2004rx}\n"
+     "  P.~Nason,\n"
+     "  ``A new method for combining NLO QCD with shower Monte Carlo algorithms,''\n"
+     "  JHEP {\\bf 0411} (2004) 040\n"
+     "  [arXiv:hep-ph/0409146].\n"
+     "  %%CITATION = JHEPA,0411,040;%%\n"
+     );
 
   static RefVector<PowhegEvolver,HardestEmissionGenerator> interfaceHardGenerator
     ("HardGenerator",
@@ -123,6 +132,7 @@ void PowhegEvolver::hardestEmission() {
   // if no suitable generator return
   _nasontree=HardTreePtr();
   if(!currenthard) return;
+  useMe();
   // generate the hardest emission
   _nasontree = currenthard->generateHardest( currentTree() );
 }

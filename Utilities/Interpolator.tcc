@@ -34,11 +34,15 @@ void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
      >> iunit(_xunit,TypeTraits<ArgT>::baseunit);
 }
 
-template <typename ValT, typename ArgT>
-ClassDescription<Interpolator<ValT,ArgT> > 
-Interpolator<ValT,ArgT>::initInterpolator
-= ClassDescription<Interpolator<ValT,ArgT> >();
-// Definition of the static class description member.
+#define HERWIG_INTERPOLATOR_CLASSDESC(ValT,ArgT)                          \
+/**                                                                       \
+ * This template specialization registers the Interpolator with ThePEG    \
+ */                                                                       \
+template <>                                                               \
+ClassDescription<Interpolator<ValT,ArgT> >                                \
+Interpolator<ValT,ArgT>::initInterpolator                                 \
+= ClassDescription<Interpolator<ValT,ArgT> >();                           \
+
 
 template <typename ValT, typename ArgT>
 void Interpolator<ValT,ArgT>::Init() {

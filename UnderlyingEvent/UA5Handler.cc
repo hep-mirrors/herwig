@@ -60,8 +60,13 @@ void UA5Handler::Init() {
     ("This is the simple UA5 model for the underlying event.",
      "The underlying event was simulated using the model of "
      "the UA5 collaboration, \\cite{Alner:1986is}.",
-     "\\bibitem{Alner:1986is} G.~J.~Alner {\\it et al.}  "
-     "UA5 Collaboration, Nucl.\\ Phys.\\ B{\\bf 291} (1987) 445.");
+     "%\\cite{Alner:1986is}\n"
+     "\\bibitem{Alner:1986is}\n"
+     "  G.~J.~Alner {\\it et al.}  [UA5 Collaboration],\n"
+     "  ``The UA5 High-Energy anti-p p Simulation Program,''\n"
+     "  Nucl.\\ Phys.\\  B {\\bf 291}, 445 (1987).\n"
+     "  %%CITATION = NUPHA,B291,445;%%\n"
+     );
 
   static Reference<UA5Handler,ClusterFissioner>
     interfaceClusterFissioner("ClusterFissioner",

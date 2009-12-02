@@ -38,7 +38,7 @@ void ShowerVertex::Init() {
 }
 
 // method to get the rho matrix for a given outgoing particle
-RhoDMatrix ShowerVertex::getRhoMatrix(int i)
+RhoDMatrix ShowerVertex::getRhoMatrix(int i, bool) const
 {
   // get the rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout;
@@ -54,7 +54,7 @@ RhoDMatrix ShowerVertex::getRhoMatrix(int i)
 }
 
 // method to get the D matrix for an incoming particle
-RhoDMatrix ShowerVertex::getDMatrix(int)
+RhoDMatrix ShowerVertex::getDMatrix(int) const
 {
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout;

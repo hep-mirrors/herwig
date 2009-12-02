@@ -176,11 +176,6 @@ private:
   vector<double> _maxweighttau;
 
   /**
-   * the fermi constant
-   */
-  InvEnergy2 _GF;
-
-  /**
    *  initial number of modes
    */
   unsigned int _initsize;

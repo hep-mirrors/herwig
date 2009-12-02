@@ -166,7 +166,16 @@ ClassDescription<KPiCurrent> KPiCurrent::initKPiCurrent;
 void KPiCurrent::Init() {
 
   static ClassDocumentation<KPiCurrent> documentation
-    ("There is no documentation for the KPiCurrent class");
+    ("The KPiCurrent class",
+     "The K pi weak current has the form of \\cite{Finkemeier:1996dh}.",
+     "%\\cite{Finkemeier:1996dh}\n"
+     "\\bibitem{Finkemeier:1996dh}\n"
+     "  M.~Finkemeier and E.~Mirkes,\n"
+     "  %``The scalar contribution to tau --> K pi nu/tau,''\n"
+     "  Z.\\ Phys.\\  C {\\bf 72}, 619 (1996)\n"
+     "  [arXiv:hep-ph/9601275].\n"
+     "  %%CITATION = ZEPYA,C72,619;%%\n"
+     );
 
   static Parameter<KPiCurrent,double> interfacecV
     ("cV",
@@ -404,6 +413,7 @@ vector<LorentzPolarizationVectorE>
 KPiCurrent::current(const int imode, const int ichan, Energy & scale,
 		    const ParticleVector & decay,
 		    DecayIntegrator::MEOption meopt) const {
+  useMe();
   if(meopt==DecayIntegrator::Terminate) {
     for(unsigned int ix=0;ix<2;++ix)
       ScalarWaveFunction::constructSpinInfo(decay[ix],outgoing,true);

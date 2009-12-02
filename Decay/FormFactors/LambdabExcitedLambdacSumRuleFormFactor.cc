@@ -41,7 +41,17 @@ void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 
   static ClassDocumentation<LambdabExcitedLambdacSumRuleFormFactor> documentation
     ("The LambdabExcitedLambdacSumRuleFormFactor class implements the"
-     " form-factors for Lambda_b to Lambda_c1(*) from hep-ph/0012114.");
+     " form-factors for Lambda_b to Lambda_c1(*) from hep-ph/0012114.",
+     "Lambda_b to Lambda_c1(*) used the formfactors from \\cite{Huang:2000xw}.",
+     "%\\cite{Huang:2000xw}\n"
+     "\\bibitem{Huang:2000xw}\n"
+     "  M.~Q.~Huang, J.~P.~Lee, C.~Liu and H.~S.~Song,\n"
+     "  %``Leading Isgur-Wise form factor of Lambda/b to Lambda/c1 transition  using\n"
+     "  %QCD sum rules,''\n"
+     "  Phys.\\ Lett.\\  B {\\bf 502}, 133 (2001)\n"
+     "  [arXiv:hep-ph/0012114].\n"
+     "  %%CITATION = PHLTA,B502,133;%%\n"
+     );
 
   static Parameter<LambdabExcitedLambdacSumRuleFormFactor,double> interfaceXi
     ("Xi",
@@ -61,6 +71,7 @@ void LambdabExcitedLambdacSumRuleFormFactor::
 SpinHalfSpinHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a) {
+  useMe();
   double omega(.5/m0/m1*(m0*m0+m1*m1-q2)),orr(1./sqrt(3.));
   // the universal form-factor
   double xi=_xi1*(1.-_rho2*(omega-1.));
@@ -88,6 +99,7 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
 				 Complex & f1a,Complex & f2a,
 				 Complex & f3a,Complex & f4a )
 {
+  useMe();
   // the omega value
   double omega(.5/m0/m1*(m0*m0+m1*m1-q2));
   // the universal form-factor

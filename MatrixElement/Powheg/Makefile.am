@@ -5,4 +5,4 @@ MEqq2W2ffPowheg.cc  MEqq2W2ffPowheg.h \
 MEPP2HiggsPowheg.cc  MEPP2HiggsPowheg.h \
 MEPP2WHPowheg.cc  MEPP2WHPowheg.h \
 MEPP2ZHPowheg.cc  MEPP2ZHPowheg.h
-HwPowhegME_la_LDFLAGS = -module -version-info 2:0:0
+HwPowhegME_la_LDFLAGS = -module -version-info 2:1:0

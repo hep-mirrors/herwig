@@ -21,7 +21,7 @@
 using namespace Herwig;
 
 MEPP2QQHiggs::MEPP2QQHiggs() : quarkFlavour_(6), process_(0), shapeOpt_(2),
-			       alpha_(1.1)
+			       mh_(), wh_(), alpha_(1.1)
 {}
 
 ClassDescription<MEPP2QQHiggs> MEPP2QQHiggs::initMEPP2QQHiggs;

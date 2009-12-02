@@ -21,6 +21,7 @@
 #include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -42,7 +43,7 @@ void PScalarLeptonNeutrinoDecayer::doinitrun() {
 
 PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() 
   : _incoming(6), _decayconstant(6), _leptons(6), _maxweighte(6), 
-    _maxweightmu(6), _maxweighttau(6), _GF(1.16637E-5/GeV2) {
+    _maxweightmu(6), _maxweighttau(6) {
   // pion decay
   _incoming[0] = 211; _decayconstant[0] = 127.27*MeV; _leptons[0] = 2; 
   _maxweighte[0] = 0.00014; _maxweightmu[0] = 1.09; 
@@ -157,13 +158,13 @@ int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,tcPDPtr parent,
 void PScalarLeptonNeutrinoDecayer::persistentOutput(PersistentOStream & os) const {
   os << _incoming << ounit(_decayconstant,GeV)
      << _leptons << _maxweighte << _maxweightmu 
-     << _maxweighttau << ounit(_GF,1/GeV2);
+     << _maxweighttau;
 }
 
 void PScalarLeptonNeutrinoDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _incoming >> iunit(_decayconstant,GeV) 
      >> _leptons >> _maxweighte >> _maxweightmu 
-     >> _maxweighttau >> iunit(_GF,1/GeV2);
+     >> _maxweighttau;
 }
 
 ClassDescription<PScalarLeptonNeutrinoDecayer> PScalarLeptonNeutrinoDecayer::initPScalarLeptonNeutrinoDecayer;
@@ -207,12 +208,6 @@ void PScalarLeptonNeutrinoDecayer::Init() {
      &PScalarLeptonNeutrinoDecayer::_maxweighttau,
      0, 0, 0, 0., 100., false, false, true);
 
-  static Parameter<PScalarLeptonNeutrinoDecayer,InvEnergy2> interfaceGFermi
-    ("GFermi",
-     "The Fermi coupling constant",
-     &PScalarLeptonNeutrinoDecayer::_GF, 1./GeV2, 1.16639E-5/GeV2,
-     ZERO, 1.0e-4*1./GeV2,false, false, false);
-
   static ParVector<PScalarLeptonNeutrinoDecayer,Energy> interfaceDecayConstant
     ("DecayConstant",
      "The decay constant for the incoming pseudoscaalr meson.",
@@ -223,7 +218,6 @@ void PScalarLeptonNeutrinoDecayer::Init() {
 double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 					 const ParticleVector & decay,
 					 MEOption meopt) const {
-  useMe();
   // work out which decay constant to use
   int icoup(0),id(abs(inpart.id()));
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
@@ -260,7 +254,7 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
     calculateWaveFunctions(_wave   ,decay[ianti],outgoing);
   // the prefactor
   Energy premass =  idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
-  InvEnergy pre = premass * 2.*_decayconstant[icoup]*_GF/inpart.mass();
+  InvEnergy pre = premass * 2.*_decayconstant[icoup]*SM().fermiConstant()/inpart.mass();
   // compute the matrix element
   vector<unsigned int> ispin(3,0);
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
@@ -273,7 +267,7 @@ double PScalarLeptonNeutrinoDecayer::me2(const int,const Particle & inpart,
 //   // test of the matrix element
 //   double me=newME.contract(rhoin).real();
 //   Energy mass = idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
-//   double test = sqr(_decayconstant[icoup]*_GF*2.*mass/inpart.mass())*
+//   double test = sqr(_decayconstant[icoup]*SM().fermiConstant()*2.*mass/inpart.mass())*
 //     (sqr(inpart.mass())-sqr(mass));
 //   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
 //        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
@@ -287,7 +281,6 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  output << "set " << name() << ":GFermi " << _GF*GeV2 << "\n";
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     if(ix<_initsize) {
       output << "set " << name() << ":Incoming   " << ix << " "

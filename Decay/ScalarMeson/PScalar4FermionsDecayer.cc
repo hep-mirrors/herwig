@@ -245,7 +245,6 @@ double PScalar4FermionsDecayer::me2(const int,
 				    const ParticleVector & decay,
 				    MEOption meopt) const {
   bool identical((_outgoing1[imode()]==_outgoing2[imode()]));
-  useMe();
   if(meopt==Initialize) {
     ScalarWaveFunction::
       calculateWaveFunctions(_rho,const_ptr_cast<tPPtr>(&inpart),incoming);

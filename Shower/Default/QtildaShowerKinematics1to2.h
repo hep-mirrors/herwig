@@ -46,17 +46,17 @@ public:
   /**
    * Access to the \f$p\f$ vector used to describe the kinematics.
    */
-  inline const Lorentz5Momentum & pVector() const {return _pVector;}
+  const Lorentz5Momentum & pVector() const {return _pVector;}
 
   /**
    * Access to the \f$n\f$ vector used to describe the kinematics.
    */
-  inline const Lorentz5Momentum & nVector() const {return _nVector;}
+  const Lorentz5Momentum & nVector() const {return _nVector;}
 
   /**
    *  Dot product of thew basis vectors
    */
-  inline const Energy2 p_dot_n() const {return _pVector*_nVector;}
+  Energy2 p_dot_n() const {return _pVector*_nVector;}
 
   /**
    * Converts a Sudakov parametrization of a momentum w.r.t. the given 

@@ -64,13 +64,13 @@ public:
    * Method to calculate the \f$\rho\f$ matrix for one of the decay products
    * @param iprod The product we are calculating the \f$\rho\f$ matrix for.
    */
-  virtual RhoDMatrix getRhoMatrix(int iprod);
+  virtual RhoDMatrix getRhoMatrix(int iprod, bool ) const;
 
   /**
    * Method to calculate the \f$D\f$ matrix for the decaying particle. It this
    * case the argument is a dummy.
    */
-  virtual RhoDMatrix getDMatrix(int);
+  virtual RhoDMatrix getDMatrix(int) const;
 
 public:
 
