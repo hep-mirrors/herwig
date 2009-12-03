@@ -570,7 +570,7 @@ double MEPP2GammaGammaPowheg::MEqgq(const vector<Lorentz5Momentum> & p) const {
   // momenta for ISR
   pa[0] = p[0];
   pa[1] = x*p[1];
-  Lorentz5Momentum K = pb[0]+pb[1];
+  Lorentz5Momentum K = pa[0]+pa[1];
   Lorentz5Momentum Ksum = K+Kt;
   Energy2 K2 = K.m2();
   Energy2 Ksum2 = Ksum.m2();
