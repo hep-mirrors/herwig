@@ -52,7 +52,8 @@ ClassDescription<VBFHardGenerator> VBFHardGenerator::initVBFHardGenerator;
 void VBFHardGenerator::Init() {
 
   static ClassDocumentation<VBFHardGenerator> documentation
-    ("There is no documentation for the VBFHardGenerator class");
+    ("The VBFHardGenerator class generates the hardest emission for"
+     " Higgs production via vector boson fusion");
 
   static Reference<VBFHardGenerator,ShowerAlpha> interfaceShowerAlphaQCD
     ("ShowerAlphaQCD",
@@ -82,7 +83,7 @@ void VBFHardGenerator::Init() {
 bool VBFHardGenerator::canHandle(ShowerTreePtr tree) {
   // two incoming particles
   if(tree->incomingLines().size()!=2) return false;
-  // two outgoing particles
+  // three outgoing particles
   if(tree->outgoingLines().size()!=3) return false;
   pair<tPPtr,tPPtr> first,second;
   // get the incoming particles
@@ -197,7 +198,6 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
   partons_[1] =  first.second->dataPtr();
   partons_[2] = second. first->dataPtr();
   partons_[3] = second.second->dataPtr();
-  higgs->dataPtr();
   // extract the born variables
   q_ = first.second->momentum()-first.first->momentum();
   q2_ = -q_.m2();
@@ -227,13 +227,26 @@ HardTreePtr VBFHardGenerator::generateHardest(ShowerTreePtr tree) {
   psystem_[0] = rot_* first. first->momentum();
   psystem_[1] = rot_* first.second->momentum();
   q_ *= rot_;
+  pTCompton_ = pTBGF_ = ZERO;
   // generate a compton point
   generateCompton();
   generateBGF();
   // no valid emission, return
-  if(pTCompton_<ZERO&&pTBGF_<ZERO) return HardTreePtr();
+  if(pTCompton_<ZERO&&pTBGF_<ZERO) {
+    for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator 
+	  cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+      if(QuarkMatcher::Check(cit->first->progenitor()->data()))
+	cit->first->maximumpT(pTmin_);
+    }
+    for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	  cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+      if(QuarkMatcher::Check(cit->first->progenitor()->data()))
+	cit->first->maximumpT(pTmin_);
+    }
+    return HardTreePtr();
+  }
   // type of emission, pick highest pT
-  bool isCompton=pTCompton_>pTBGF_;
+  bool isCompton = pTCompton_ > pTBGF_;
   // find the sudakov for the branching
   SudakovPtr sudakov;
   // ISR
@@ -465,7 +478,6 @@ void VBFHardGenerator::generateCompton() {
     wgt = 0.;
     // intergration variables dxT/xT^3
     xT *= 1./sqrt(1.-2.*log(UseRandom::rnd())/a*sqr(xT));
-
     // dzp
     zp = UseRandom::rnd();
     xp = 1./(1.+0.25*sqr(xT)/zp/(1.-zp));
@@ -477,9 +489,8 @@ void VBFHardGenerator::generateCompton() {
     wgt = 8.*(1.-xp)*zp/comptonWeight_;
     // PDF piece of the weight
     Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
-   wgt *= pdf_->xfx(beam_,partons_[0],scale,xB_/xp)/
-	  pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
-
+    wgt *= pdf_->xfx(beam_,partons_[0],scale,xB_/xp)/
+           pdf_->xfx(beam_,partons_[0],q2_  ,xB_);
     // me piece of the weight
     wgt *= comptonME(xT,xp,zp,phi);
     if(wgt>1.||wgt<0.) generator()->log() << "Compton weight problem " << wgt << "\n";
@@ -563,9 +574,9 @@ void VBFHardGenerator::generateBGF() {
 double VBFHardGenerator::comptonME(double xT, double xp, double zp,
 				   double phi) {
   // scale and prefactors
-  Energy2 mu2 = q2_;
-  double aS = 2.*alphaS_->value(mu2);
-  double CFfact = 4./3.*aS/Constants::twopi;
+  Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
+  double aS = 2.*alphaS_->ratio(scale);
+  double CFfact = 4./3.*aS;
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
   double x2 = 1.-(1.-zp)/xp;
@@ -597,32 +608,31 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
   // Z
   else {
     mb2 = mz2;
-  if(abs(partons_[0]->id())%2==0) {
+    if(abs(partons_[0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+
 	generator()->standardModel()->au();
       c0R =
 	generator()->standardModel()->vu()-
 	generator()->standardModel()->au();
-  }
-  else {
+    }
+    else {
       c0L = 
 	generator()->standardModel()->vd()+
 	generator()->standardModel()->ad();
       c0R =
 	generator()->standardModel()->vd()-
 	generator()->standardModel()->ad();
-  }
-
-  if(abs(partons_[2]->id())%2==0) {
+    }
+    if(abs(partons_[2]->id())%2==0) {
       c1L = 
 	generator()->standardModel()->vu()+
 	generator()->standardModel()->au();
       c1R =
 	generator()->standardModel()->vu()-
 	generator()->standardModel()->au();
-  }
-  else {
+    }
+    else {
       c1L = 
 	generator()->standardModel()->vd()+
 	generator()->standardModel()->ad();
@@ -663,21 +673,17 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
       loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
     }
   }
-  
   double R1 = term1/loME;
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
-
-  return CFfact/((1.-xp)*(1.-zp))*
-         (R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2); 
-  
+  return CFfact*(R1+sqr(xp)*(sqr(x2)+sqr(xT))*R2);   
 }
 
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
 			       double phi) {
   // scale and prefactors
-  Energy2 mu2 = q2_;
-  double aS = 2.*alphaS_->value(mu2);
-  double TRfact = 1./2.*aS/Constants::twopi;
+  Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
+  double aS = 2.*alphaS_->ratio(scale);
+  double TRfact = 1./2.*aS;
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
   double x2 = 1.-(1.-zp)/xp;
@@ -689,7 +695,6 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
 		      -0.5*Q*x3, 0.5*Q*sqrt(sqr(xT)+sqr(x3)));
   Lorentz5Momentum p0(ZERO,ZERO,-0.5*Q*x1,-0.5*Q*x1);
   Lorentz5Momentum qnlo = p2+p1-p0; 
-
   // Breit frame variables
   Lorentz5Momentum r2 =  p1/x2;
   Lorentz5Momentum r3 = -p2/x3;
@@ -709,32 +714,31 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
   // Z
   else {
     mb2 = mz2;
-  if(abs(partons_[0]->id())%2==0) {
+    if(abs(partons_[0]->id())%2==0) {
       c0L = 
 	generator()->standardModel()->vu()+
 	generator()->standardModel()->au();
       c0R =
 	generator()->standardModel()->vu()-
 	generator()->standardModel()->au();
-  }
-  else {
+    }
+    else {
       c0L = 
 	generator()->standardModel()->vd()+
 	generator()->standardModel()->ad();
       c0R =
 	generator()->standardModel()->vd()-
 	generator()->standardModel()->ad();
-  }
-
-  if(abs(partons_[2]->id())%2==0) {
+    }
+    if(abs(partons_[2]->id())%2==0) {
       c1L = 
 	generator()->standardModel()->vu()+
 	generator()->standardModel()->au();
       c1R =
 	generator()->standardModel()->vu()-
 	generator()->standardModel()->au();
-  }
-  else {
+    }
+    else {
       c1L = 
 	generator()->standardModel()->vd()+
 	generator()->standardModel()->ad();
@@ -775,11 +779,9 @@ double VBFHardGenerator::BGFME(double xT, double xp, double zp,
       loME  = loMatrixElement(p2     ,pother_[1],p1     ,pother_[0],G1,G2);
     }
   }
-
   double R3 = sqr(x3)/(sqr(x3)+sqr(xT))*(term3/loME);
   double R2 = sqr(x2)/(sqr(x2)+sqr(xT))*(term2/loME);
-
-  return TRfact/(1.-zp)*
+  return TRfact*
          (sqr(xp)*(sqr(x3)+sqr(xT))*R3+
           sqr(xp)*(sqr(x2)+sqr(xT))*R2);
    

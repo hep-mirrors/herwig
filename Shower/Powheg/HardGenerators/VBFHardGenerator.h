@@ -21,7 +21,8 @@ using namespace ThePEG;
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**
- * Here is the documentation of the VBFHardGenerator class.
+ * The VBFHardGenerator class generates the hardest emission for
+ * Higgs production via vector boson fusion
  *
  * @see \ref VBFHardGeneratorInterfaces "The interfaces"
  * defined for VBFHardGenerator.
@@ -91,6 +92,7 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
+
   /**
    *  Leading order matrix element
    */
