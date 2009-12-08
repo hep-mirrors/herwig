@@ -21,7 +21,8 @@ using namespace ThePEG;
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 /**
- * Here is the documentation of the DISHardGenerator class.
+ * The DISHardGenerator class implements the generation of the hardest emission 
+ * in the POWHEG approach for the DIS process.
  *
  * @see \ref DISHardGeneratorInterfaces "The interfaces"
  * defined for DISHardGenerator.
@@ -121,6 +122,7 @@ protected:
    *  Matrix element piece for the Compton process
    */
   double comptonME(double xT,double xp, double zp, double phi);
+
   /**
    *  Generate a BGF process
    */

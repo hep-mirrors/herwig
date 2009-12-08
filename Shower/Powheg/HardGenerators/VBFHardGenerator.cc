@@ -574,8 +574,7 @@ void VBFHardGenerator::generateBGF() {
 double VBFHardGenerator::comptonME(double xT, double xp, double zp,
 				   double phi) {
   // scale and prefactors
-  Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
-  double aS = 2.*alphaS_->ratio(scale);
+  double aS = 2.*alphaS_->ratio(0.25*q2_*sqr(xT));
   double CFfact = 4./3.*aS;
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;
@@ -681,8 +680,7 @@ double VBFHardGenerator::comptonME(double xT, double xp, double zp,
 double VBFHardGenerator::BGFME(double xT, double xp, double zp,
 			       double phi) {
   // scale and prefactors
-  Energy2 scale = q2_*((1.-xp)*(1-zp)*zp/xp+1.);
-  double aS = 2.*alphaS_->ratio(scale);
+  double aS = 2.*alphaS_->ratio(0.25*q2_*sqr(xT));
   double TRfact = 1./2.*aS;
   Energy Q(sqrt(q2_));
   double x1 = -1./xp;

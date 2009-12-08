@@ -59,7 +59,8 @@ ClassDescription<DISHardGenerator> DISHardGenerator::initDISHardGenerator;
 void DISHardGenerator::Init() {
 
   static ClassDocumentation<DISHardGenerator> documentation
-    ("There is no documentation for the DISHardGenerator class");
+    ("The DISHardGenerator class implements the hardest emission"
+     " in the POWHEG approach for the DIS process");
 
   static Reference<DISHardGenerator,ShowerAlpha> interfaceShowerAlphaQCD
     ("ShowerAlphaQCD",
