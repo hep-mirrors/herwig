@@ -40,7 +40,7 @@ set /Herwig/Particles/Z0/Z0->nu_e,nu_ebar;:OnOff Off
 set /Herwig/Particles/Z0/Z0->mu-,mu+;:OnOff Off
 set /Herwig/Particles/Z0/Z0->e-,e+;:OnOff On
 set /Herwig/Particles/Z0/Z0->tau-,tau+;:OnOff Off
-set /Herwig/Decays/WZ:Initialize 1
+set /Herwig/Decays/ZDecayer:Initialize 1
 cd /Herwig/Generators
 set LHCGenerator:EventHandler:CascadeHandler       NULL
 set LHCGenerator:EventHandler:HadronizationHandler NULL

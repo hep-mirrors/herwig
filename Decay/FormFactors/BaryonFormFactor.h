@@ -92,6 +92,9 @@ class BaryonFormFactor: public Interfaced {
 
 public:
 
+  /// Default constructor
+  BaryonFormFactor() : _numbermodes() {}
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
