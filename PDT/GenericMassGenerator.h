@@ -312,11 +312,6 @@ private:
   tPDPtr _particle;
 
   /**
-   * Pointer to the anti-particle
-   */
-  tPDPtr _antiparticle;
-
-  /**
    * Lower limit on the particle's mass
    */
   Energy _lowermass;

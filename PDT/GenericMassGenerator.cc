@@ -24,7 +24,7 @@ using namespace Herwig;
 using namespace ThePEG;
 
 void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _particle << _antiparticle 
+  os << _particle
      << ounit(_lowermass,GeV) << ounit(_uppermass,GeV) << _maxwgt 
      << _BWshape << _ngenerate 
      << ounit(_mass,GeV) << ounit(_width,GeV) 
@@ -33,7 +33,7 @@ void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
 }
 
 void GenericMassGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _particle >> _antiparticle 
+  is >> _particle
      >> iunit(_lowermass,GeV) >> iunit(_uppermass,GeV) >> _maxwgt 
      >> _BWshape >> _ngenerate 
      >> iunit(_mass,GeV) >> iunit(_width ,GeV)
@@ -142,8 +142,6 @@ bool GenericMassGenerator::accept(const ParticleData & in) const {
 
 void GenericMassGenerator::doinit() {
   MassGenerator::doinit();
-  // get the antiparticle
-  _antiparticle=_particle->CC();
   // the width generator
   _particle->init();
   _widthgen=_particle->widthGenerator();
@@ -211,13 +209,11 @@ string GenericMassGenerator::getParticle() const {
 void GenericMassGenerator::rebind(const TranslationMap & trans)
   {
   _particle = trans.translate(_particle);
-  _antiparticle = trans.translate(_antiparticle);
   MassGenerator::rebind(trans);
 }
 
 IVector GenericMassGenerator::getReferences() {
   IVector ret = MassGenerator::getReferences();
   ret.push_back(_particle);
-  ret.push_back(_antiparticle);
   return ret;
 }
