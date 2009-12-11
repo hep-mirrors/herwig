@@ -1,6 +1,6 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.4.2 release: 2009-12-04 (tagged at SVN r????)
+* Herwig++-2.4.2 release: 2009-12-11 (tagged at SVN r5022)
 
 ** Ticket #292: Tau decay numerical instability
    The momentum assignment in tau decays contained numerical
@@ -11,6 +11,18 @@ Herwig++ News				(emacs -*- outline -*- format)
 
 ** Ticket #290: Missing MSSM colour structure
    The missing colour structure for gluino -> gluon neutralino was added.
+
+** Ticket #294: Zero momentum in some decays
+   Some rare phase space points lead to zero momentum in two-body
+   decays. This has been fixed.
+
+** Ticket #295: Stability of QED radiation for lepton collider processes
+   The numerical stability of QED radiation momenta was improved
+   further.
+
+** Ticket #296: K0 oscillation vertex was wrong
+   The oscillation from K0 to K0_L/S now takes place at the production
+   vertex of K0.
 
 ** Ticket #289: Undefined variables in repository
    On some system configurations, undefined variables were written to
