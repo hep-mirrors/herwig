@@ -69,7 +69,7 @@ void MEPP2GammaJet::getDiagrams() const {
   tcPDPtr g = getParticleData(ParticleID::g);
   tcPDPtr p = getParticleData(ParticleID::gamma);
   // for each quark species there are three subprocesses
-  for(unsigned int iq=1;iq<=_maxflavour;++iq) {
+  for ( int iq=1; iq<=_maxflavour; ++iq ) {
     tcPDPtr q = getParticleData(iq);
     tcPDPtr qb = q->CC();
     // q qbar to gamma gluon (two diagrams)
@@ -135,7 +135,7 @@ void MEPP2GammaJet::Init() {
     ("The MEPP2GammaJet class implements the matrix element for"
      " hadron-hadron to photon+jet");
 
-  static Parameter<MEPP2GammaJet,unsigned int> interfaceMaximumFlavour
+  static Parameter<MEPP2GammaJet,int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The maximum flavour of the quarks in the process",
      &MEPP2GammaJet::_maxflavour, 5, 1, 5,

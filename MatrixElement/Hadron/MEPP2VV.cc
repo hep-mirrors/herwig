@@ -327,10 +327,10 @@ double MEPP2VV::WWME(vector<SpinorWaveFunction>    & f1,
   // particle data for the t-channel intermediate
   tcPDPtr tc[3];
   if(f1[0].particle()->id()%2==0) {
-    for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(1+2*ix);
+    for (int ix=0;ix<3;++ix) tc[ix] = getParticleData(1+2*ix);
   }
   else {
-    for(unsigned int ix=0;ix<3;++ix) tc[ix] = getParticleData(2+2*ix);
+    for (int ix=0;ix<3;++ix) tc[ix] = getParticleData(2+2*ix);
   }
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   tcPDPtr z0    = getParticleData(ParticleID::Z0);

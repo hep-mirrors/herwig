@@ -85,13 +85,13 @@ void MEPP2Higgs::Init() {
      "Only include the incoming gg subprocess",
      3);
 
-  static Parameter<MEPP2Higgs,unsigned int> interfaceMinimumFlavour
+  static Parameter<MEPP2Higgs,int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The minimum flavour of the incoming quarks in the hard process",
      &MEPP2Higgs::minflavouropt, 4, 3, 5,
      false, false, Interface::limited);
 
-  static Parameter<MEPP2Higgs,unsigned int> interfaceMaximumFlavour
+  static Parameter<MEPP2Higgs,int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The maximum flavour of the incoming quarks in the hard process",
      &MEPP2Higgs::maxflavouropt, 5, 3, 5,
@@ -160,7 +160,7 @@ void MEPP2Higgs::getDiagrams() const {
   }
   // q qbar -> H processes
   if(processopt==1||processopt==2) {
-    for (unsigned int i = minflavouropt; i <= maxflavouropt; ++i) {
+    for ( int i = minflavouropt; i <= maxflavouropt; ++i ) {
       tcPDPtr q = getParticleData(i);
       tcPDPtr qb = q->CC();
     add(new_ptr((Tree2toNDiagram(2), q, qb, 1, h0, -2)));

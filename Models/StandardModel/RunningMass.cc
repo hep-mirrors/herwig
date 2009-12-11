@@ -88,7 +88,7 @@ void RunningMass::Init() {
 vector<Energy> RunningMass::mass() const {
   using Constants::pi;
   vector<Energy> masses;
-  for ( unsigned long f = 1; f <= _theMaxFlav; ++f ) {
+  for ( long f = 1; f <= _theMaxFlav; ++f ) {
     PDPtr p = getParticleData(f);
     Energy massf = p ? p->mass() : ZERO;
     if((f<=3&&_lightOption==0) ||

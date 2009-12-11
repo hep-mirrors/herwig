@@ -19,7 +19,7 @@ MEPP2HiggsVBF::MEPP2HiggsVBF() : _maxflavour(5), _minflavour(1) {}
 void MEPP2HiggsVBF::getDiagrams() const {
   // get the quark particle data objects as we'll be using them
   tcPDPtr q[6],qbar[6];
-  for(unsigned int ix=0;ix<5;++ix) {
+  for ( int ix=0; ix<5; ++ix ) {
     q   [ix] = getParticleData(ix+1);
     qbar[ix] = q[ix]->CC();
   }

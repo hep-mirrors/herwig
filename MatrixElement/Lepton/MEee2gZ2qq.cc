@@ -56,7 +56,7 @@ void MEee2gZ2qq::getDiagrams() const {
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
   tcPDPtr Z0 = getParticleData(ParticleID::Z0);
   // setup the processes
-  for(unsigned int i =_minflav;i<=_maxflav;++i) {
+  for ( int i =_minflav; i<=_maxflav; ++i ) {
     tcPDPtr qk = getParticleData(i);
     tcPDPtr qb = qk->CC();
     add(new_ptr((Tree2toNDiagram(2), em, ep, 1, gamma, 3, qk, 3, qb, -1)));
@@ -116,13 +116,13 @@ void MEee2gZ2qq::Init() {
   static ClassDocumentation<MEee2gZ2qq> documentation
     ("The MEee2gZ2qq class implements the matrix element for e+e- -> q qbar");
 
-  static Parameter<MEee2gZ2qq,unsigned int> interfaceMinimumFlavour
+  static Parameter<MEee2gZ2qq,int> interfaceMinimumFlavour
     ("MinimumFlavour",
      "The PDG code of the quark with the lowest PDG code to produce.",
      &MEee2gZ2qq::_minflav, 1, 1, 6,
      false, false, Interface::limited);
 
-  static Parameter<MEee2gZ2qq,unsigned int> interfaceMaximumFlavour
+  static Parameter<MEee2gZ2qq,int> interfaceMaximumFlavour
     ("MaximumFlavour",
      "The PDG code of the quark with the highest PDG code to produce",
      &MEee2gZ2qq::_maxflav, 5, 1, 6,
