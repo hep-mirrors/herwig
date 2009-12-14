@@ -38,9 +38,10 @@ void PowhegHandler::persistentOutput(PersistentOStream & os) const {
       << _allowedFinal << _matrixElement << _lepton << _highestMult 
       << _reweightOpt << _testSudakovs << _alphaSMG << _npoint 
       <<  ounit( _max_qtilde, GeV ) <<  ounit( _max_pt_cut, GeV ) 
-      <<  ounit( _min_pt_cut, GeV ) << _clusterOption << _dalitzOn 
-      << _qtildeDist << _rejectNonAO << _rejectNoHistories << partonExtractor_ << cuts_
-      << ounit( _pdfScale, GeV ) << _beamA << _beamB << _showerVeto << _dynamicSuds;
+      <<  ounit( _min_pt_cut, GeV ) << _clusterOption  
+      << _qtildeDist << _rejectNonAO << _rejectNoHistories 
+      << partonExtractor_ << cuts_<< ounit( _pdfScale, GeV ) 
+      << _beamA << _beamB << _showerVeto << _dynamicSuds << _cutOption;
 }
 
 void PowhegHandler::persistentInput(PersistentIStream & is, int) {
@@ -48,9 +49,10 @@ void PowhegHandler::persistentInput(PersistentIStream & is, int) {
       >> _allowedFinal >> _matrixElement >> _lepton >> _highestMult 
       >> _reweightOpt >> _testSudakovs  >> _alphaSMG >> _npoint 
       >> iunit( _max_qtilde, GeV ) >> iunit( _max_pt_cut, GeV ) 
-      >> iunit( _min_pt_cut, GeV ) >> _clusterOption >> _dalitzOn 
-      >> _qtildeDist >> _rejectNonAO >> _rejectNoHistories >> partonExtractor_ >> cuts_
-      >> iunit( _pdfScale, GeV ) >> _beamA >> _beamB >> _showerVeto >> _dynamicSuds;
+      >> iunit( _min_pt_cut, GeV ) >> _clusterOption  
+      >> _qtildeDist >> _rejectNonAO >> _rejectNoHistories 
+      >> partonExtractor_ >> cuts_ >> iunit( _pdfScale, GeV ) 
+      >> _beamA >> _beamB >> _showerVeto >> _dynamicSuds >> _cutOption;
 }
 
 ClassDescription<PowhegHandler> PowhegHandler::initPowhegHandler;
@@ -92,7 +94,6 @@ void PowhegHandler::Init() {
      "The PartonExtractor object used to construct remnants. If no object is "
      "provided the LesHouchesEventHandler object must provide one instead.",
      &PowhegHandler::partonExtractor_, true, false, true, true, false);
-
 
   static Parameter<PowhegHandler,string> interfaceSudakovName
     ("SudakovName",
@@ -233,21 +234,6 @@ void PowhegHandler::Init() {
   static SwitchOption highProbChoice
     (ifaceClusterOption,"highProbChoice", "choose ordered history with highest probability", 3);
 
-  static Switch<PowhegHandler,bool> interfaceDalitz
-    ("Dalitz",
-     "Switch for dalitz analysis of hard tree clustering (3 jets only)",
-     &PowhegHandler::_dalitzOn, false, false, false);
-  static SwitchOption interfaceDalitzOff
-    (interfaceDalitz,
-     "Off",
-     "Dalitz analysis off",
-     false);
-  static SwitchOption interfaceDalitzOn
-    (interfaceDalitz,
-     "On",
-     "Dalitz analysis on",
-     true);
-
   static Switch<PowhegHandler,bool> interfaceQtildeDist
     ("QtildeDist",
      "Switch for qtilde distribution hists from sudakov tables",
@@ -301,12 +287,11 @@ void PowhegHandler::Init() {
      "If no object is provided the LesHouchesEventHandler object must "
      "provide one instead.",
      &PowhegHandler::cuts_, true, false, true, true, false);
-
-  
+ 
   static Parameter<PowhegHandler, Energy> interfacePDFScale
     ("PDFScale",
      "The fixed factorization scale that was used in the MEs",
-     &PowhegHandler::_pdfScale, GeV, 91.18*GeV, 1.*GeV, 1000000.*GeV,
+     &PowhegHandler::_pdfScale, GeV, 91.2*GeV, 1.*GeV, 1000000.*GeV,
      false, false, Interface::limited);
   
   static Reference<PowhegHandler,BeamParticleData> interfaceBeamA
@@ -319,12 +304,10 @@ void PowhegHandler::Init() {
      "The second beam",
      &PowhegHandler::_beamB, false, false, true, false);
  
-  
    static Reference<PowhegHandler,CKKWVeto > interfaceShowerVeto
     ("ShowerVeto",
      "The veto to be applied to the shower",
-     &PowhegHandler::_showerVeto, false, false, true, false );
- 
+     &PowhegHandler::_showerVeto, false, false, true, false ); 
    
    static Switch<PowhegHandler, bool> ifaceDynamicSuds
      ("DynamicSudakovs",
@@ -334,6 +317,20 @@ void PowhegHandler::Init() {
      (ifaceDynamicSuds,"No","No dynamics Sudakovs", false);
    static SwitchOption DynamicSudsTrue
      (ifaceDynamicSuds,"Yes","Generate dynamics Sudakovs", true);
+
+   static Switch<PowhegHandler, int> ifaceDynamicCutOption
+     ("DynamicCutOption",
+      "Options controlling whether dynamic cuts are applied to ensure that the matrix element configuration is resolved at the merging scale",
+     &PowhegHandler::_cutOption, 0, false, false);
+  
+  static SwitchOption noDynamicCut
+    (ifaceDynamicCutOption,"noCut","no dynamic cuts applied", 0);
+  
+  static SwitchOption allDynamicCut
+    (ifaceDynamicCutOption,"cutAll", "apply resolution cut to full configuration", 1);
+  
+  static SwitchOption externalDynamicCut
+    (ifaceDynamicCutOption,"cutExternal", "apply resolution cut to external partons only", 2);
 
 }
 
@@ -348,30 +345,34 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
   else
     _theHardTree = doClustering();
 
-  //if highest mult set veto def
+  if( ! _theHardTree ) return 0.;
+
+  //apply dynamic matrix element vetoes
+  if( _cutOption != 0 && 
+      _theHardTree->lowestPtMomentum( _jetMeasureMode, _cutOption )  < _showerVeto->getVeto() ) 
+    return 0.;
+
+  //set whether this is the highest multiplicity channel
   if( _highestMult == true ) _showerVeto->setHighest( true );
   else _showerVeto->setHighest( false );
-  
+
   //set the veto to veto events or emissions depending on whether Sudakovs are being generated dynamically
   _showerVeto->setDynamicSuds( _dynamicSuds && ! _noShowerHists );
 
-  // return if fails
+  //if no shower history is found either throw away or shower directly
   if( !_theHardTree ){
     if( !_noShowerHists ) return 0.;
     else return 1.; 
   }
-  //call dalitz analysis if asked for
-  if( _dalitzOn ) getDalitz();
+
   //update sub process based on _theHardTree
   updateSubProcess();
 
-  
   // compute the Sudakov and alphaS weight
   double SudWgt = 1.;
   if(  _reweightOpt != 1 ){
     _theHardTree->findNodes();
     SudWgt = sudakovWeight( _theHardTree );    
-    if ( SudWgt / _global_alphaS_wgt > 1 ) cerr << SudWgt / _global_alphaS_wgt <<"\n";
     if( isnan( SudWgt ) ) cerr<<"weight is nan\n";
     if( isinf( SudWgt ) ) cerr<<"weight is inf\n";
     return SudWgt;
@@ -380,108 +381,28 @@ double PowhegHandler::reweightCKKW(int minMult, int maxMult) {
 }
 void PowhegHandler::dofinish() {
   ShowerHandler::dofinish();
-  
   if( _clusterOption == 1 ){
     cout<<"\n---------\n"
 	<<"proportion of unordered trees created = "
 	<< ( 1. - double( _ordered_trees_created )
 	     / double( _trees_created ) ) * 100.
-	<<" %\n--------\n";
+	<<" %\n---------\n";
   }
-  
   if( _clusterOption == 2 ){
     cout<<"\n---------\n"
 	<<"proportion of events with no ordered trees created = "
 	<< double( _unorderedEvents / double( _trees_created ) ) * 100.
-	<<" %\n--------\n";
+	<<" %\n---------\n";
   }
-
-  string fname = generator()->filename() + string("-") 
-    + string("wgts.top");
-  ofstream output(fname.c_str());
-  //output ddalitz analysis if switched on
-  if( _dalitzOn ){
-    string dalitz_fname = generator()->filename() + string("-") + string("dalitz.top");
-    ofstream dalitz( dalitz_fname.c_str() );
-    dalitz<<"SET WINDOW X 2 9 Y 2 9\n";
-    dalitz<<"SET FONT DUPLEX\n";
-    dalitz<<"SET LIMITS X 0 1 Y 0 1\n";
-    dalitz<<"TITLE BOTTOM \"X011\" \n";
-    dalitz<<"CASE         \" X X\" \n";
-    dalitz<<"TITLE LEFT \"X021\" \n";
-    dalitz<<"CASE       \" X X\" \n";
-    for(unsigned int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
-      dalitz<< _dalitz_from_q1[ix].first <<"\t"<< _dalitz_from_q1[ix].second <<"\n";
-    dalitz << "PLOT RED\n";
-    for(unsigned int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
-      dalitz<< _dalitz_from_q2[ix].first <<"\t"<< _dalitz_from_q2[ix].second <<"\n";
-    dalitz << "PLOT BLUE\n";
-    
-    dalitz<<"NEW FRAME \n";
-    dalitz<<"SET WINDOW X 2 9 Y 2 9\n";
-    dalitz<<"SET FONT DUPLEX\n";
-    dalitz<<"SET LIMITS X 0 1 Y 0 1\n";
-    dalitz<<"TITLE BOTTOM \"X011\" \n";
-    dalitz<<"CASE         \" X X\" \n";
-    dalitz<<"TITLE LEFT \"X021\" \n";
-    dalitz<<"CASE       \" X X\" \n";
-    for(unsigned int ix = 0; ix < _dalitz_from_q1.size(); ix++ )
-      dalitz<< _dalitz_from_q1[ix].first <<"\t"<< _dalitz_from_q1[ix].second <<"\n";
-    dalitz << "PLOT RED\n";
-    
-    dalitz<<"NEW FRAME \n";
-    dalitz<<"SET WINDOW X 2 9 Y 2 9\n";
-    dalitz<<"SET FONT DUPLEX\n";
-    dalitz<<"SET LIMITS X 0 1 Y 0 1\n";
-    dalitz<<"TITLE BOTTOM \"X011\" \n";
-    dalitz<<"CASE         \" X X\" \n";
-    dalitz<<"TITLE LEFT \"X021\" \n";
-    dalitz<<"CASE       \" X X\" \n";
-    for(unsigned int ix = 0; ix < _dalitz_from_q2.size(); ix++ )
-      dalitz<< _dalitz_from_q2[ix].first <<"\t"<< _dalitz_from_q2[ix].second <<"\n";
-    dalitz << "PLOT BLUE\n";
- 
-    cerr<<"no q1 dalitz = "<<_dalitz_from_q1.size()<<"\n";
-    cerr<<"no q2 dalitz = "<<_dalitz_from_q2.size()<<"\n";
-
-    dalitz.close();
-  }
-  
-  using namespace HistogramOptions;
-
-  _hSud->topdrawOutput(output,Frame,
-		       "RED",
-		       "Sudakov wgts",
-		       "",
-		       "freq",
-		       "",
-		       "wgt",
-		       "");
- 
-     
-  _halphaS->topdrawOutput(output,Frame,
-		       "RED",
-		       "AlphaS wgts",
-		       "",
-		       "freq",
-		       "",
-		       "wgt",
-		       "");
 }
-
+ 
 void PowhegHandler::doinitrun() {
   _trees_created = 0;
   _ordered_trees_created = 0;
   _unorderedEvents = 0;
 
-  _dalitz_from_q1.clear();
-  _dalitz_from_q2.clear();
-
   ShowerHandler::doinitrun();  
   _s = sqr( generator()->maximumCMEnergy() );
-
-  _hSud = new_ptr(Histogram(0.,2.,100));
-  _halphaS = new_ptr(Histogram(0.,2.,100));
 
   ofstream sudFileOutput;
   if(_sudopt==1 && _reweightOpt == 0 ) sudFileOutput.open(_sudname.c_str());
@@ -489,8 +410,7 @@ void PowhegHandler::doinitrun() {
   // integrator for the outer integral
   GaussianIntegrator outer;
   // get the final-state branchings from the evolver
-  if( _sudopt != 2 && _reweightOpt == 0 ) {
-   
+  if( _sudopt != 2 && _reweightOpt == 0 ) {   
     for(BranchingList::const_iterator 
 	  it = evolver()->splittingGenerator()->finalStateBranchings().begin();
 	it != evolver()->splittingGenerator()->finalStateBranchings().end(); ++it) {
@@ -532,7 +452,6 @@ void PowhegHandler::doinitrun() {
 	  sud[ix][jx] = exp( - sud[ix][jx] );
 	}
       }
-
       Interpolator2d< double, Energy, Energy >::Ptr theInterpolator = 
 	new_ptr( Interpolator2d<double,Energy,Energy>( sud, ptCut, scale ) );
 
@@ -566,11 +485,9 @@ void PowhegHandler::doinitrun() {
 	}
 	sudFileOutput << "\n";
       }
-      
     }
     sudFileOutput.close();
   }
- 
   else if( _reweightOpt == 0 ) {
     CFileLineReader file(_sudname);
     while(file.readline()) {
@@ -594,9 +511,7 @@ void PowhegHandler::doinitrun() {
       vector< vector< double > > sud( isize, dummy );
       vector< Energy > pt( isize );
       vector< Energy > scale( jsize );
-      
-      //read in matrix of sud values sud( pt_i, scale_i )
-
+   
       //read a column- different line is different qtilde
       for( unsigned int jx = 0; jx < jsize; ++jx ) {
 	//read a horizontal line diferent entry ids different pt
@@ -636,7 +551,6 @@ void PowhegHandler::doinitrun() {
 	  _fbranchings.insert( make_pair( it->first, make_pair( theInterpolator, qtildemin ) ) );
 	  break;
 	}
-	
 	if( it == end ) {
 	  cerr << "sud read error: could not find correct branching list\n";
 	}
@@ -908,6 +822,7 @@ bool PowhegHandler::repeatProtoTree( ProtoTreePtr currentProtoTree ){
   return false;
 }
 
+//simple colour connection for DY and e+e- - should generalise
 bool PowhegHandler::simpleColConnections( HardTreePtr theHardTree ){
   set< HardBranchingPtr > particles = theHardTree->branchings();
   //colourline to join up q and qbar
@@ -935,7 +850,7 @@ bool PowhegHandler::simpleColConnections( HardTreePtr theHardTree ){
 }
 
 HardTreePtr PowhegHandler::doClusteringOrdered() { 
-  if(!_matrixElement) 
+  if( !_matrixElement ) 
     throw Exception() << "PowhegHandler::doClusteringOrdered()"
 		      << " must have a MatrixElement object for the core "
 		      << "2->2 process" << Exception::runerror;
@@ -947,14 +862,14 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
   _noShowerHists = false;
 
   //remove backChildRelations from all hardtrees - to avoid cyclic pointer relations causing memory leaks
-  for(unsigned int ix = 0; ix < _rejectedHardTrees.size(); ix++ )
+  for( unsigned int ix = 0; ix < _rejectedHardTrees.size(); ix++ )
     _rejectedHardTrees[ix].first->removeBackChildren();
-  for(unsigned int ix = 0; ix < _hardTrees.size(); ix++ )
+  for( unsigned int ix = 0; ix < _hardTrees.size(); ix++ )
     _hardTrees[ix].first->removeBackChildren();
   _hardTrees.clear();
   _rejectedHardTrees.clear();
   //make an intermediate and add to subprocess if not already there (if it a photon) 
-  if(lastXCombPtr()->subProcess()->intermediates().empty()) {
+  if( lastXCombPtr()->subProcess()->intermediates().empty() ) {
     //  return HardTreePtr();
     PPair theIncomings =  lastXCombPtr()->subProcess()->incoming();
     PVector theOutgoings = lastXCombPtr()->subProcess()->outgoing();
@@ -1198,7 +1113,6 @@ HardTreePtr PowhegHandler::doClusteringOrdered() {
     return HardTreePtr();
   }
   _trees_created++;
-  // treeOutput(chosen_hardTree);
   return chosen_hardTree;
 }
 
@@ -1272,370 +1186,6 @@ void PowhegHandler::fixColours(tPPtr parent, tPPtr child1, tPPtr child2) {
   }
 }
 
-
-HardTreePtr PowhegHandler::generalClustering() {
-  if(!_matrixElement) 
-    throw Exception() << "PowhegHandler::generalClustering()"
-		      << " must have a MatrixElement object for the core "
-		      << "2->2 process" << Exception::runerror;
-  PPair incoming = lastXCombPtr()->subProcess()->incoming();
-  ParticleVector outgoing = lastXCombPtr()->subProcess()->outgoing();
-  _s = lastXCombPtr()->lastS();
-  // queue with the prototype trees
-  std::queue<PrototypeTree> potentialTrees;
-  // the base tree we'll make the others from
-  PrototypeTree root;
-  //insert incoming and outgoing from subprocess
-  ShowerParticlePtr newParticle = 
-    new_ptr(ShowerParticle(incoming.first->dataPtr(),false));
-  newParticle->set5Momentum(incoming.first->momentum());
-  root.incoming.insert(new_ptr(PrototypeBranching(newParticle)));
-  newParticle = new_ptr(ShowerParticle(incoming.second->dataPtr(),false));
-  newParticle->set5Momentum(incoming.second->momentum());
-  root.incoming.insert(new_ptr(PrototypeBranching(newParticle)));
-  for(set<PrototypeBranchingPtr>::const_iterator it=root.incoming.begin();
-      it!=root.incoming.end();++it) {
-    root.currentSpaceLike.insert(*it);
-  }
-  for(unsigned int ix=0;ix<outgoing.size();++ix) {
-    newParticle = new_ptr(ShowerParticle(outgoing[ix]->dataPtr(),true));
-    newParticle->set5Momentum(outgoing[ix]->momentum());
-    root.outgoing.insert(new_ptr(PrototypeBranching(newParticle)));
-  }
-  potentialTrees.push(root);
-
-  // store the final potential trees
-  list<PrototypeTree> trees;
-  //keeps going until all potential trees have been turned into trees clustered down to 2
-  while (!potentialTrees.empty()) {
-    PrototypeTree current = potentialTrees.front();
-    bool found(false);
-    // potential final-final mergings
-    set<PrototypeBranchingPtr>::iterator it,jt;
-    for(it=current.outgoing.begin();it!=current.outgoing.end();++it) {
-      jt = it;
-      ++jt;
-      for( ; jt!=current.outgoing.end();++jt) {
-	pair<PrototypeBranchingPtr,PrototypeBranchingPtr> 
-	  branch = make_pair(*it,*jt);
-	BranchingElement allowed = allowedFinalStateBranching(branch);
-	if(!allowed.first) continue;
-	// copy the tree
-	PrototypeTree newTree = current;
-	map<PrototypeBranchingPtr,PrototypeBranchingPtr> pmap = newTree.reset();
-	branch.first  = pmap[branch.first ];
-	branch.second = pmap[branch.second];
-	// make the new branching	
-	// new particle first
-	tcPDPtr newData = getParticleData(allowed.second[0]);
-	Lorentz5Momentum newMomentum(branch.first ->particle->momentum()+
-				     branch.second->particle->momentum());
-	if(!newData->CC()||
-	   (branch.first ->particle->id()==allowed.second[1]&&
-	    branch.second->particle->id()==allowed.second[2])) {
-	  newParticle = new_ptr(ShowerParticle(newData,true));
-	}
-	else {
-	  newParticle = new_ptr(ShowerParticle(newData->CC(),true));
-	}
-	newParticle->set5Momentum(newMomentum);
-	// then the branching
-	PrototypeBranchingPtr newBranching(new_ptr(PrototypeBranching(newParticle)));
-	branch.first ->parent =newBranching;
-	branch.second->parent =newBranching;
-	newBranching->children.push_back(branch.first );
-	newBranching->children.push_back(branch.second);
-	newBranching->sudakov = allowed.first;
-	newTree.outgoing.erase(branch.first );
-	newTree.outgoing.erase(branch.second);
-	newTree.outgoing.insert(newBranching);
-	// jet measure
-	newTree.scales.push_back(hadronJetMeasure(branch.first ->particle->momentum(),
-						  branch.second->particle->momentum()));
-	// insert in the relevant list
-	//if clustered down to two then add to new trees otherwise push onto potential (removing
-	if(newTree.outgoing.size()==2) trees.push_back(newTree);
-	else                           potentialTrees.push(newTree);
-	found = true;
-      }
-    }
-    // initial-final mergings
-    for(it=current.outgoing.begin();it!=current.outgoing.end();++it) {
-      for(jt=current.currentSpaceLike.begin();
-	  jt!=current.currentSpaceLike.end();++jt) {
-	pair<PrototypeBranchingPtr,PrototypeBranchingPtr> 
-	  branch = make_pair(*jt,*it);
-	BranchingElement allowed = allowedInitialStateBranching(branch);
-	if(!allowed.first) continue;
-	// copy the tree
-	PrototypeTree newTree = current;
-	map<PrototypeBranchingPtr,PrototypeBranchingPtr> pmap = newTree.reset();
-	branch.first  = pmap[branch.first ];
-	branch.second = pmap[branch.second];
-	// make the new branching	
-	// new particle first
-	tcPDPtr newData = getParticleData(allowed.second[1]);
-	Lorentz5Momentum newMomentum(branch.first ->particle->momentum()-
-				     branch.second->particle->momentum());
-	if(!newData->CC()||
-	   (branch.first ->particle->id()==allowed.second[0]&&
-	    branch.second->particle->id()==allowed.second[2])) {
-	  newParticle = new_ptr(ShowerParticle(newData,false));
-	}
-	else {
-	  newParticle = new_ptr(ShowerParticle(newData->CC(),false));
-	}
-	newParticle->set5Momentum(newMomentum);
-	// then the branching
-	PrototypeBranchingPtr newBranching(new_ptr(PrototypeBranching(newParticle)));
-	newBranching->parent  = branch.first;
-	branch.second->parent = branch.first;
-	branch.first->children.push_back(newBranching);
-	branch.first->children.push_back(branch.second);
-	newBranching->parent->sudakov = allowed.first;
-	newTree.currentSpaceLike.erase(branch.first );
-	newTree.outgoing        .erase(branch.second);
-	newTree.currentSpaceLike.insert(newBranching);
-	// jet measure
-	newTree.scales.push_back(hadronJetMeasure(branch.second->particle->momentum(),
-						  branch.second->particle->momentum(),false));
-	if(branch.first ->particle->momentum().z()/
-	   branch.second->particle->momentum().z()>0.) newTree.scales.back()-=0.001*MeV2; 
-	// insert in the relevant list
-	if(newTree.outgoing.size()==2) trees.push_back(newTree);
-	else                           potentialTrees.push(newTree);
-	found = true;
-      }
-    }
-    // treated one branching so pop from the queue
-    if(!found) trees.push_back(current);
-    potentialTrees.pop();
-  }
-  // check the core process is allowed using the matrix element
-  // and remove ones which aren't allowed
-  list<PrototypeTree>::iterator it=trees.begin(),jt;
-  while(it!=trees.end()) {
-    DiagPtr diagram = getDiagram(*it);
-    if(!diagram) it = trees.erase(it);
-    else {
-      it->diagram = diagram;
-      ++it;
-    }
-  }
-  // finally for the moment select the one with the smallest pt for the first branching
-  // now find the one with the minimum pt
-  HardTreePtr newTree;
-  while(!trees.empty()) {
-    jt=trees.end();
-    Energy2 minkT =1e30*GeV2;
-    for(it=trees.begin();it!=trees.end();++it) {
-      if(it->scales.back()<minkT) {
-	minkT = it->scales.back();
-	jt=it;
-      }
-    }
-    // construct the hard tree
-    newTree = (*jt).convert();
-    // assign the beam particles
-    setBeams(newTree);
-    // construct the colour flow
-    createColourFlow(newTree,jt->diagram);
-    // Calculate the shower variables
-    evolver()->showerModel()->kinematicsReconstructor()->
-      deconstructDecayJets(newTree,evolver(),ShowerInteraction::QCD);
-    if(checkTree(newTree)) break; 
-    trees.erase(jt);
-  }
-  // if no tree return an empty one
-  if(trees.empty()) return HardTreePtr();
-  // return the tree
-  return newTree;
-}
-
-BranchingElement PowhegHandler::
-allowedFinalStateBranching(pair<PrototypeBranchingPtr,PrototypeBranchingPtr> & br) {
-  // check with normal ID's
-  pair<long,long> ptest = make_pair(br.first->particle->id(),br.second->particle->id());
-  map< pair< long, long >, pair< SudakovPtr, IdList > >::const_iterator 
-    split = _allowedFinal.find(ptest);
-  if(split!=_allowedFinal.end()) {
-    if(split->second.second[1]!=ptest.first) swap(br.first,br.second);
-    return split->second;
-  }
-  // check with CC ids
-  if(br.first ->particle->dataPtr()->CC()) ptest.first  *= -1;
-  if(br.second->particle->dataPtr()->CC()) ptest.second *= -1;
-  split = _allowedFinal.find( ptest );
-  if( split != _allowedFinal.end() ) {
-    if( split->second.second[1] != ptest.first ) swap( br.first, br.second );
-    return split->second;
-  }
-  // not found found null pointer
-  return make_pair(SudakovPtr(),IdList());
-}
-
-
-BranchingElement PowhegHandler::
-allowedFinalStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & clusterPair ) {
-  // check with normal ID's
-  pair< long, long > ptest = make_pair( clusterPair.first->id(), clusterPair.second->id() );
-  map< pair< long, long >, pair< SudakovPtr, IdList > >::const_iterator 
-    split = _allowedFinal.find(ptest);
-  if( split != _allowedFinal.end() ) {
-    if(  split->second.second[1] != ptest.first ) swap( clusterPair.first, clusterPair.second );
-    return split->second;
-  }
-  // check with CC
-  if( clusterPair.first->dataPtr()->CC() ) ptest.first  *= -1;
-  if( clusterPair.second->dataPtr()->CC() ) ptest.second *= -1;
-  split = _allowedFinal.find( ptest );
-  if( split != _allowedFinal.end() ) {
-    //cc the idlist
-    //this will only be for qbar g clusterings
-    BranchingElement ccBranch = split->second;
-    if( getParticleData( ccBranch.second[0] )->CC() ) ccBranch.second[0] *= -1;
-    if( getParticleData( ccBranch.second[1] )->CC() ) ccBranch.second[1] *= -1;
-    if( getParticleData( ccBranch.second[2] )->CC() ) ccBranch.second[2] *= -1;
-    if( split->second.second[1] !=  ptest.first ) swap( clusterPair.first, clusterPair.second );
-    return ccBranch;
-  }
-  // not found found null pointer
-  return make_pair( SudakovPtr(), IdList() );
-}
-
-
-BranchingElement PowhegHandler::
-allowedInitialStateBranching(pair<PrototypeBranchingPtr,PrototypeBranchingPtr> & br) {
-  // veto top
-  if(abs(br.first ->particle->id())==ParticleID::t||
-     abs(br.second->particle->id())==ParticleID::t)
-    return make_pair(SudakovPtr(),IdList());
-  bool cc = br.first->particle->id()<0;
-  //gives range of _allowedInitial with matching first abs( id )
-  pair<multimap<long, pair<SudakovPtr,IdList> >::const_iterator,
-    multimap<long, pair<SudakovPtr,IdList> >::const_iterator>
-    location = _allowedInitial.equal_range(abs(br.first->particle->id()));
-  //iterates over this range
-  for(multimap<long, pair<SudakovPtr,IdList> >::const_iterator it = location.first;
-      it!=location.second; ++it ) {
-    //test id for second particle in pair
-    long idtest = it->second.second[2];
-    //if it is antiparticle *= -1
-    if( cc && getParticleData(idtest)->CC() ) idtest *= -1;
-    //does second id match the test
-    if( idtest == br.second->particle->id() ) return it->second;
-    if( idtest == -br.second->particle->id() &&
-        !br.first->particle->dataPtr()->CC() ) return it->second;
-  }
-  // not found found null pointer
-  return make_pair(SudakovPtr(),IdList());
-}
-
-BranchingElement PowhegHandler::
-allowedInitialStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & br ) {
-  // veto top
-  if( abs( br.first->id() ) == ParticleID::t ||
-      abs( br.second->id() ) == ParticleID::t )
-    return make_pair( SudakovPtr(), IdList() );
-  //is initial parton an antiparticle
-  bool cc = br.first->id() < 0;
-  //gives range of _allowedInitial with matching first abs( id )
-  pair< multimap< long, pair< SudakovPtr, IdList > >::const_iterator,
-    multimap< long, pair< SudakovPtr, IdList > >::const_iterator >
-    location = _allowedInitial.equal_range( abs( br.first->id() ) );
-  //iterates over this range
-  for( multimap< long, pair< SudakovPtr, IdList> >::const_iterator it = location.first;
-       it != location.second; ++it ) {
-    //test id for second particle in pair
-    long idtest = it->second.second[2];
-    //if it is antiparticle *= -1
-    if( cc && getParticleData( idtest )->CC() ) idtest *= -1;
-    //does second id match the test
-    if( idtest == br.second->id() ) return it->second;
-    //if the the IS parton is a gluon and charge conjugate of second parton mathes accept
-    if( idtest == -br.second->id() &&
-        ! br.first->dataPtr()->CC() ) return it->second;
-  }
-  // not found found null pointer
-  return make_pair(SudakovPtr(),IdList());
-}
-
-DiagPtr PowhegHandler::getDiagram(const HardTreePtr tree) {
-  set<HardBranchingPtr>::const_iterator cit;
-  multiset<tcPDPtr> incoming;  
-  multiset<tcPDPtr> outgoing;  
-  //get the incoming and outgoing partons involved in hard process
-  for( cit = tree->branchings().begin(); cit != tree->branchings().end(); ++cit ){ 
-    if( !(*cit)->branchingParticle()->coloured() ) continue; 
-    if( (*cit)->status() == HardBranching::Incoming ) 
-      incoming.insert( (*cit)->branchingParticle()->dataPtr() );
-    else outgoing.insert( (*cit)->branchingParticle()->dataPtr() );
-  }
-  for(MEBase::DiagramVector::const_iterator dt = _matrixElement->diagrams().begin();
-      dt!=_matrixElement->diagrams().end();++dt) {
-    //extract parton contents from diagram
-    const cPDVector partons = (**dt).partons();
-    //create contents of coloured partons
-    cPDVector colouredPartons;
-    for( cPDVector::const_iterator itc = partons.begin();
-	 itc != partons.end(); ++itc ) {
-      if( !(*itc)->coloured() ) continue;
-      colouredPartons.push_back( *itc );
-    }
-    // check if incomings match 
-    multiset<tcPDPtr>::iterator it;
-    multiset<tcPDPtr> itemp(incoming);
-    for( unsigned int ix = 0; ix < incoming.size(); ++ix ) {
-      it = itemp.find( colouredPartons[ix] );
-      if( it != itemp.end() ) itemp.erase(it);
-    }
-    if( ! itemp.empty() ) continue;
-    // check if outgoings match 
-    multiset<tcPDPtr> otemp(outgoing);
-    for( unsigned int ix = incoming.size(); ix < colouredPartons.size(); ++ix ) {
-      it = otemp.find( colouredPartons[ix] );
-      if( it != otemp.end() ) otemp.erase(it);
-    }
-    if( ! otemp.empty() ) continue;
-    //return diagram if it is a match
-    return *dt;
-  }
-  return DiagPtr();
-}
-
-DiagPtr PowhegHandler::getDiagram(const PrototypeTree & tree) {
-  // extract the incoming particles
-  set<PrototypeBranchingPtr>::const_iterator it=tree.currentSpaceLike.begin();
-  tcPDPair incoming;
-  incoming.first  = (**it).particle->dataPtr();
-  ++it;
-  incoming.second = (**it).particle->dataPtr();
-  // and the outgoing particles
-  multiset<tcPDPtr> outgoing;
-  for(it=tree.outgoing.begin();it!=tree.outgoing.end();++it)
-    outgoing.insert((**it).particle->dataPtr());
-  // see if the process is allowed
-  for(MEBase::DiagramVector::const_iterator dt = _matrixElement->diagrams().begin();
-      dt!=_matrixElement->diagrams().end();++dt) {
-    const cPDVector partons=(**dt).partons();
-    // check incoming particles
-    if(!((incoming.first==partons[0]&&incoming.second==partons[1])||
-	 (incoming.first==partons[1]&&incoming.second==partons[0]))) continue;
-    // check the number of outgoing
-    if(partons.size()!=tree.outgoing.size()+2) return DiagPtr();
-    // check the outgoing
-    multiset<tcPDPtr> otemp(outgoing);
-    multiset<tcPDPtr>::iterator it;
-    for(unsigned int ix=2;ix<partons.size();++ix) {
-      it=otemp.find(partons[ix]);
-      if(it!=otemp.end()) otemp.erase(it);
-    }
-    if(!otemp.empty()) continue;
-    return *dt;
-  }
-  return DiagPtr();
-}
-
 Energy2 PowhegHandler::hadronJetMeasure(const Lorentz5Momentum & p1,
 					const Lorentz5Momentum & p2,
 					bool final) {
@@ -1650,93 +1200,6 @@ Energy2 PowhegHandler::hadronJetMeasure(const Lorentz5Momentum & p1,
   }
   else {
     output = p1.perp2();
-  }
-  return output;
-}
-
-HardBranchingPtr PrototypeBranching::convert() {
-  if(!particle) {
-    cerr << "testing don't have particle for the branching\n";
-    exit(0);
-  }
-  // create the new particle
-  HardBranchingPtr hard=new_ptr(HardBranching(particle,sudakov,
-					      tHardBranchingPtr(),
-					      particle->isFinalState() ?
-					      HardBranching::Outgoing : 
-					      HardBranching::Incoming));
-  // and the children
-  for(unsigned int ix=0;ix<children.size();++ix) {
-    hard->addChild(children[ix]->convert());
-    hard->children().back()->parent(hard);
-  }
-  return hard;
-}
-
-HardTreePtr PrototypeTree::convert() {
-  vector<HardBranchingPtr> branchings,spacelike;
-  set<PrototypeBranchingPtr>::const_iterator it,jt;
-  // incoming lines and spacelike into the hard process
-  for(it=incoming.begin();it!=incoming.end();++it) {
-    spacelike.push_back((**it).convert());
-    HardBranchingPtr br(spacelike.back());
-    while (!br->children().empty()) {
-      for(unsigned int ix=0;ix<br->children().size();++ix) {
-	if(br->children()[ix]->status()==HardBranching::Incoming) {
-	  br = br->children()[ix];
-	  break;
-	}
-      }
-    }
-    branchings.push_back(br);
-  }
-  // outgoing particles
-  for(it=outgoing.begin();it!=outgoing.end();++it) {
-    branchings.push_back((**it).convert());
-  }
-  HardTreePtr newTree = new_ptr(HardTree(branchings,spacelike,
-					 ShowerInteraction::QCD));
-  return newTree;
-}
-
-map<PrototypeBranchingPtr,PrototypeBranchingPtr> PrototypeTree::reset() {
-  map<PrototypeBranchingPtr,PrototypeBranchingPtr> output;
-  set<PrototypeBranchingPtr> newOutgoing;
-  set<PrototypeBranchingPtr> newIncoming;
-  set<PrototypeBranchingPtr> newSpaceLike;
-  set<PrototypeBranchingPtr>::iterator it,jt;
-  for(it=incoming.begin();it!=incoming.end();++it) {
-    PrototypeBranchingPtr newBr = (**it).reset(PrototypeBranchingPtr(),output); 
-    newIncoming.insert(newBr);
-    PrototypeBranchingPtr br=newBr;
-    while(!br->children.empty()) {
-      for(unsigned int ix=0;ix<br->children.size();++ix) {
-	if(!br->children[ix]->particle->isFinalState()) {
-	  br = br->children[ix];
-	  break;
-	}
-      }
-    }
-    newSpaceLike.insert(br);
-  }
-  for(it=outgoing.begin();it!=outgoing.end();++it) {
-    newOutgoing.insert((**it).reset(PrototypeBranchingPtr(),output));
-  }
-  outgoing  = newOutgoing;
-  incoming  = newIncoming;
-  currentSpaceLike = newSpaceLike;
-  return output;
-}
-
-PrototypeBranchingPtr PrototypeBranching::
-reset(PrototypeBranchingPtr newParent,
-	map<PrototypeBranchingPtr,PrototypeBranchingPtr> & pmap) {
-  PrototypeBranchingPtr output(new_ptr(PrototypeBranching(particle)));
-  pmap[this] = output;
-  output->sudakov  = sudakov;
-  output->parent   = newParent;
-  for(unsigned int ix=0;ix<children.size();++ix) {
-    output->children.push_back(children[ix]->reset(output,pmap));
   }
   return output;
 }
@@ -1981,14 +1444,11 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
       else cerr << "sudakovWeight(): node with no children \n"; 
     }
   }
-  if( SudWgt > 1.1 ) {
-    cerr<<"\n\nweight exceeded 1 in PowhegHandler::reweight() !!! \n";
-    cerr<<"  alpha wgt = "<< alphaWgt
-   	<<"\n  sudWgt = "<< SudWgt<<"\n\n";
-  }
+
   if( isnan(alphaWgt) ) cerr<<"nan in alphaS\n";
 
   double PDFweight = pdfWeight( theTree );
+  //  PDFweight = 1.;
 
   if( isnan( PDFweight ) ) cerr<<"nan in  pdf\n";
   if( _reweightOpt == 0 )
@@ -2000,15 +1460,12 @@ double PowhegHandler::sudakovWeight( HardTreePtr theTree ) {
 void PowhegHandler::setBeams( HardTreePtr tree ) {
   PPair beams = lastXCombPtr()->lastParticles();
   //remove children of beams
-
   PVector beam_children = beams.first->children();
   for( unsigned int ix = 0; ix != beam_children.size(); ix++ )
     beams.first->abandonChild( beam_children[ix] );
   beam_children = beams.second->children();
   for( unsigned int ix = 0; ix != beam_children.size(); ix++ )
     beams.second->abandonChild( beam_children[ix] );
-
-
   if( (**tree->incoming().begin()).branchingParticle()->momentum().z() /
       beams.first->momentum().z() < 0.)
     swap( beams.first, beams.second );
@@ -2036,30 +1493,6 @@ void PowhegHandler::setBeams( HardTreePtr tree ) {
     }
     br->beam( beams.second );
   }
-}
-
-bool PowhegHandler::checkTree(HardTreePtr tree) {
-  set<HardBranchingPtr>::const_iterator it;
-  bool reject = false;
-  for( it = tree->incoming().begin(); it != tree->incoming().end(); ++it ) {
-    reject |= checkBranching(*it);
-  }
-  for( it = tree->branchings().begin(); it != tree->branchings().end(); ++it ) {
-    if( (**it).status() == HardBranching::Incoming ) continue;
-    reject |= checkBranching(*it);
-  }
-  return !reject;
-}
-
-bool PowhegHandler::checkBranching( HardBranchingPtr br ) {
-  static const double eps(1e-5);
-  bool reject(false);
-  for( vector<HardBranchingPtr>::const_iterator it = br->children().begin();
-      it != br->children().end(); ++it) {
-    reject |= checkBranching(*it);
-  }
-  reject |= br->z() < -eps || br->z() > 1. + eps;
-  return reject;
 }
 
 void PowhegHandler::testSudakovs(){
@@ -2245,53 +1678,6 @@ HardTreePtr PowhegHandler::doClustering() {
 
   return powhegtree;
 }
-
-void PowhegHandler::getDalitz(){
-  if( _theHardTree->getExternals().size() == 3 ){
-    Energy total_energy = 0. * GeV;
-    double x1_dal=0.;
-    double x2_dal=0.;
-    long parent_id = 0;
-    for( map< ShowerParticlePtr, HardBranchingPtr >::const_iterator cit = 
-	   _theHardTree->getExternals().begin();
-	 cit != _theHardTree->getExternals().end(); ++cit ) {
-      total_energy += cit->first->momentum().t();
-      
-      if( abs( cit->first->id() ) < 7 ){
-	if( cit->first->id() > 0 ) 
-	  x1_dal = 2. * cit->first->momentum().t() / GeV;
-	else  x2_dal = 2. * cit->first->momentum().t() / GeV;
-      } 
-    }
-    x1_dal /= total_energy / GeV;
-    x2_dal /= total_energy / GeV;
-    
-    for( set< HardBranchingPtr >::const_iterator cit = 
-	   _theHardTree->branchings().begin();
-	 cit != _theHardTree->branchings().end(); ++cit ) {
-      if( (*cit)->status()==HardBranching::Incoming ) continue;
-      if( (*cit)->branchingParticle()->id() > 0 ){ 
-	if( (*cit)->children().size() == 2 && (*cit)->children()[0] 
-	    && (*cit)->children()[1] ) {
-	  parent_id = (*cit)->branchingParticle()->id();
-	}
-      }
-      else {
-	
-	if( (*cit)->children().size() == 2 && (*cit)->children()[0] 
-	    && (*cit)->children()[0] ) {
-	  parent_id = (*cit)->branchingParticle()->id();
-	}
-      }
-    }
-    if( parent_id > 0 ) 
-      _dalitz_from_q1.push_back( make_pair(x1_dal, x2_dal) );
-    else if( parent_id < 0 ) 
-      _dalitz_from_q2.push_back( make_pair(x1_dal, x2_dal) );
-  }
-}
-
-
 
 void PowhegHandler::makeQtildeDist(){
   //currently this only makes plots for up quarks
@@ -2621,12 +2007,19 @@ double PowhegHandler::pdfWeight( HardTreePtr theHardTree){
     if( current_pdf <= 0. ) return 0.;
     else pdf_wgt *= current_pdf;
   
-    //trace line back with a fraction of pdfs for each node     
+    //trace line back with a fraction of pdfs for each node
+
+    //changed this to also include 1/z factor though I think this should be in the matrix elements anyway
+    //no according to FK paper the z factor must be added!!!
+    //think about factorization formulae - no 1/z!
+    //but then FK gets rid of them - need to understand this
+
     while( currentParticle->parent() ){
       scale = sqr( currentParticle->parent()->scale() );
       theParton = currentParticle->branchingParticle()->dataPtr();
       current_pdf = pdf->xfx( theBeam, theParton, 
 			      scale, x_frac ) / x_frac;
+      // / x_frac;
       if( current_pdf <= 0. ) return 1.;
       else pdf_wgt /= current_pdf;
 
@@ -2636,6 +2029,7 @@ double PowhegHandler::pdfWeight( HardTreePtr theHardTree){
       theParton = currentParticle->branchingParticle()->dataPtr();
       current_pdf = pdf->xfx( theBeam, theParton, 
 			      scale, x_frac ) / x_frac;
+      // / x_frac;
       if( current_pdf <= 0. ) return 0.;
       else pdf_wgt *= current_pdf;
     }

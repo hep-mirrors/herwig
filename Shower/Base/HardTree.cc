@@ -187,7 +187,6 @@ void HardTree::fillHardScales( HardBranchingPtr branch, vector< pair< Energy, do
     _hard_line_scales.push_back( newHardLine );
   }
 }
-//this fn needs to be adapted for IS lines
 bool HardTree::checkHardOrdering( ) {
   //this function also caculates sum of pts of all branchings
   _total_pt = 0. * GeV;
@@ -207,6 +206,7 @@ bool HardTree::checkHardOrdering( ) {
       //pts of children are equal so just add once 
       Energy branchingPt = (*it)->children()[0]->pT();
       //included factor to favour ISFS branchings between partons in same z direction
+      //hard coded factor here should make a parameter
       if( (*it)->status() == HardBranching::Incoming && 
 	  ( ( (*it)->branchingParticle()->momentum().z() > ZERO )
 	    == ( (*it)->children()[1]->branchingParticle()->momentum().z() > ZERO ) ) )
@@ -268,9 +268,8 @@ Energy HardTree::lowestPt( int jetMeasureMode, Energy2 s ){
     cerr<< "HardTree: null child \n";
     return 0.*GeV;
   }
-
   Energy kt_softest = _lowestPt->children()[0]->pT();
-  if( jetMeasureMode != 1 ){
+  if( jetMeasureMode == 0 || jetMeasureMode == 2 ){
     Energy pt = kt_softest;
     double z = _lowestPt->children()[0]->z();
    
@@ -299,6 +298,26 @@ Energy HardTree::lowestPt( int jetMeasureMode, Energy2 s ){
       kt_measure = 2.*sqr(E1)*sqr(E2)/sqr(E1+E2)*( 1. - costheta );
     
     kt_softest = sqrt( kt_measure );
+  }
+  else if( jetMeasureMode == 3 && ! _lowestPt->status() == HardBranching::Incoming ){
+    Energy2 m1 = sqr( _lowestPt->children()[0]->branchingParticle()->nominalMass() );
+    Energy2 m2 = sqr( _lowestPt->children()[1]->branchingParticle()->nominalMass() );
+
+    Energy pt = kt_softest;
+    double z = _lowestPt->z();
+    
+    double beta1 = 2.*( m1 + sqr(pt) ) / z  / s;
+    double beta2 = 2.*( m2 + sqr(pt) ) / ( 1. - z ) / s;
+    
+    Energy E1 = sqrt(s)/2.*( z + beta1 );
+    Energy E2 = sqrt(s)/2.*( (1.-z) + beta2 );
+    Energy Z1 = sqrt(s)/2.*( z - beta1 );
+    Energy Z2 = sqrt(s)/2.*( (1.-z) - beta2 );
+      
+    //delta phi is always pi for first emission (qt_i = +-pt)
+    double deltaR = sqr(  log( z / beta1 ) - log( (1-z) / beta2 ) ) / 4. 
+      + sqr( Constants::pi );
+    kt_softest = pt*sqrt( deltaR );
   }
   return kt_softest;
 }
@@ -395,5 +414,123 @@ bool HardTree::checkXOrdering( ) {
       //	return false;
     }
   } 
+  return true;
+}
+
+//calculates the highest merging scale in the jet measure
+//does this based on the hardtree momenta rather than the shower variables
+//cutting events based on this is equivalent to the mad graph cuts
+Energy HardTree::lowestPtMomentum( int jetMeasureMode, int cutOption ){
+  Energy _lowestPtMomentum = 9999999. * GeV;
+  //vector of timelike initiators
+  vector< HardBranchingPtr > FS_shower_initiators;
+  //add FS shower initiators from FS progenitors
+  for( set<HardBranchingPtr>::const_iterator it = branchings().begin();
+       it != branchings().end(); ++it)  {
+    if( ! (*it)->branchingParticle()->coloured() || (*it)->status() == HardBranching::Incoming  ) continue;
+    FS_shower_initiators.push_back( *it );
+  }
+  //add FS shower initiators from IS branchings
+  //trace back all incoming lines
+  for( set< HardBranchingPtr >::const_iterator cit = incoming().begin(); 
+       cit != incoming().end(); ++cit ) {
+    if( ! (*cit)->branchingParticle()->coloured() ) continue;
+    HardBranchingPtr currentParticle = *cit;
+    while( !currentParticle->children().empty() ){
+      //get scale for hardbranching - order of partons here IS first??
+      //is this correct for ISFS branching should be between widtilde{ij} and j creating i
+      //I think it was wrong before so have changed it -depended only on the second FS parton though!!
+      Energy kt_measure = hadronJetMeasure( currentParticle->branchingParticle()->momentum(), 
+					    currentParticle->children()[1]->branchingParticle()->momentum(),
+					    false );
+      //if cutOption == 2 then only set this if the only partons 
+      //involved are endpoints (no parent for IS and no children for FS)
+      if( !( cutOption == 2 && !externalBranching( currentParticle, currentParticle->children()[1] ) )
+	  && kt_measure < _lowestPtMomentum ) 
+	_lowestPtMomentum = kt_measure;				  
+      FS_shower_initiators.push_back(  currentParticle->children()[1] );
+      currentParticle = currentParticle->children()[0];
+    }
+  }
+  //loop over the time like initiators
+  for( vector< HardBranchingPtr >::const_iterator cit = FS_shower_initiators.begin(); 
+       cit != FS_shower_initiators.end(); ++cit ){
+    getLowestJetMeasure( *cit, jetMeasureMode, cutOption );
+  }
+  return _lowestPtMomentum;
+}
+
+void HardTree::getLowestJetMeasure( HardBranchingPtr branch, int jetMeasureMode, int cutOption ){
+  //if branching has children then find the jet measure from them
+  if( ! branch->children().empty() ){
+    Energy kt_measure = ZERO;
+    if( jetMeasureMode == 0 || jetMeasureMode == 0 ){
+      kt_measure = getJetMeasure( branch->children()[0]->branchingParticle()->momentum(),
+				  branch->children()[1]->branchingParticle()->momentum(),
+				  jetMeasureMode );
+    }
+    else if( jetMeasureMode == 3 ){
+      kt_measure = hadronJetMeasure( branch->children()[0]->branchingParticle()->momentum(),
+				     branch->children()[1]->branchingParticle()->momentum(),
+				     true );
+    }
+    if( !( cutOption == 2 && !externalBranching( branch->children()[0], branch->children()[1] ) )
+	&& kt_measure < _lowestPtMomentum ) _lowestPtMomentum = kt_measure;
+    //do the same for children
+    getLowestJetMeasure( branch->children()[0], jetMeasureMode, cutOption );
+    getLowestJetMeasure( branch->children()[1], jetMeasureMode, cutOption );
+  }  
+}
+
+Energy HardTree::hadronJetMeasure( const Lorentz5Momentum & p1,
+				   const Lorentz5Momentum & p2,
+				   bool final ) {
+  Energy kt_measure;
+  if( final ) {
+    //FSFS case
+    double deltay   = p1.rapidity() - p2.rapidity();
+    double deltaphi = p1.phi() - p2.phi();
+    if( deltaphi < -Constants::pi ) deltaphi += Constants::twopi;
+    if( deltaphi > Constants::pi ) deltaphi -= Constants::twopi;
+    double deltaR = sqr( deltay ) + sqr( deltaphi );
+    kt_measure = sqrt( min( p1.perp2(), p2.perp2() ) * deltaR );
+  }
+  else {
+    //in the case of ISFS the merge scale is given by the pt 
+    //of the FS parton w.r.t incoming hadron (assumed second argument)
+    kt_measure = sqrt( p2.perp2() );
+  }
+  return kt_measure;
+}
+
+Energy HardTree::getJetMeasure( const Lorentz5Momentum & p1,
+				const Lorentz5Momentum & p2,
+				int jetMeasureMode ){
+  Energy kt_measure;
+  double costheta = p1.vect().dot( p2.vect() ) 
+    / p1.vect().mag() / p2.vect().mag();
+  switch( jetMeasureMode ){
+  case 0:
+    if( sqr( p1.e() ) > sqr( p2.e() ) )
+      kt_measure = sqrt( 2. * sqr( p2.e() ) * ( 1. - costheta ) );
+    else
+      kt_measure = sqrt( 2. * sqr( p1.e() ) * ( 1. - costheta ) );
+    break;
+  case 2:
+    kt_measure = sqrt( 2. * sqr( p1.e() * p2.e() / ( p1.e() + p2.e() ) )
+		       * ( 1. - costheta ) );
+    break;
+  default:
+    kt_measure = ZERO;
+    break;
+  }
+  return kt_measure;
+}
+
+bool HardTree::externalBranching( HardBranchingPtr a, HardBranchingPtr b ){
+  if( a->status() == HardBranching::Incoming && a->parent() ) return false; 
+  if( !a->status() == HardBranching::Incoming && !a->children().empty() ) return false; 
+  if( b->status() == HardBranching::Incoming && b->parent() ) return false; 
+  if( !b->status() == HardBranching::Incoming && !b->children().empty() ) return false; 
   return true;
 }

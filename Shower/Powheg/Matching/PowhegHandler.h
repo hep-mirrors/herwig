@@ -23,7 +23,6 @@
 
 namespace Herwig {
   class PowhegHandler;
-  class PrototypeBranching;
   class ProtoTree;
 }
 
@@ -31,7 +30,6 @@ namespace Herwig {
 namespace ThePEG {
 
   ThePEG_DECLARE_POINTERS(Herwig::PowhegHandler,PowhegHandlerPtr);
-  ThePEG_DECLARE_POINTERS(Herwig::PrototypeBranching,PrototypeBranchingPtr);
   ThePEG_DECLARE_POINTERS(Herwig::ProtoTree,ProtoTreePtr);
 
 }
@@ -39,28 +37,6 @@ namespace ThePEG {
 namespace Herwig {
 
 using namespace ThePEG;
-
-  class PrototypeBranching :  public Base {
-  public:
-    PrototypeBranching(ShowerParticlePtr in) : particle(in) {}
-    ShowerParticlePtr particle;
-    tSudakovPtr sudakov;
-    tPrototypeBranchingPtr parent;
-    vector<PrototypeBranchingPtr> children;
-    HardBranchingPtr convert();
-    PrototypeBranchingPtr reset(PrototypeBranchingPtr,
-				map<PrototypeBranchingPtr,PrototypeBranchingPtr> &);
-  };
-
-  struct PrototypeTree {
-    set<PrototypeBranchingPtr> outgoing;
-    set<PrototypeBranchingPtr> incoming;
-    set<PrototypeBranchingPtr> currentSpaceLike;
-    vector<Energy2> scales;
-    HardTreePtr convert();
-    map<PrototypeBranchingPtr,PrototypeBranchingPtr> reset();
-    DiagPtr diagram;
-  };
 
   class ProtoTree:public Base {
   public:
@@ -106,8 +82,8 @@ public:
   PowhegHandler() : _npoint(10), _sudopt(0), _sudname("sudakov.data"), _jetMeasureMode(1), _lepton(true), _reweightOpt(0), 
 		    _highestMult(false), _lowestMult(false), _testSudakovs(false), _qtildeDist( false ),
 		    _yini(0.001), _alphaSMG(0.118), _max_qtilde( 91.2*GeV ), _max_pt_cut( 45.6*GeV ), _min_pt_cut( 0.*GeV ), 
-		    _clusterOption( 0 ),  _rejectNonAO( true ), _rejectNoHistories( true ),_dalitzOn( false ), _pdfScale( 91.18*GeV ),
-		    _dynamicSuds( false ) {}
+		    _clusterOption( 0 ),  _rejectNonAO( true ), _rejectNoHistories( true ), _pdfScale( 91.2*GeV ),
+		    _dynamicSuds( false ), _cutOption( 0 ) {}
 
   /**
    * Perform CKKW reweighting
@@ -134,16 +110,27 @@ public:
   inline Energy getMergeScale() {
     return sqrt( _yini * _s );
   }
-
+  /**
+   *  whether the current event is a highest multiplicity event.
+   */
   inline bool highestMult(){
     return _highestMult;
   }
+  /**
+   *  whether the current event is a lowest multiplicity event
+   */
   inline bool lowestMult(){
     return _lowestMult;
   }
+  /**
+   *  access to the vetoes
+   */
   inline Ptr<CKKWVeto>::pointer theVeto(){
     return _showerVeto;
   }
+  /**
+   *  access to the evolver
+   */
   inline tEvolverPtr getEvolver(){
     return evolver();
   }
@@ -270,14 +257,12 @@ private:
   /**
    * Clusters the partons and creates a branching history
    * by combining the 2 particles with smallest
-   * jet measure out of all allowed pairings until we are left 
-   * with \f$q\bar{q}\f$.
+   * jet measure as in traditional CKKW.
    */
   HardTreePtr doClustering( );
 
   /**
-   * Creates all cluster histories and selects one
-   * according to its shower probability
+   * Creates all (ordered) cluster histories and selects one.
    */
   HardTreePtr doClusteringOrdered( );
 
@@ -286,37 +271,52 @@ private:
    */
   double Sud( Energy scale, long id, Energy pt_cut );
 
-  HardTreePtr generalClustering();
-  BranchingElement allowedFinalStateBranching( pair< PrototypeBranchingPtr, PrototypeBranchingPtr > & );
+  /**
+   * Returns the branching element for an FS-FS clustering
+   */
   BranchingElement allowedFinalStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & );
-  BranchingElement allowedInitialStateBranching( pair< PrototypeBranchingPtr, PrototypeBranchingPtr > & );
+  
+  /**
+   * Returns the branching element for an IS-FS clustering
+   */
   BranchingElement allowedInitialStateBranching( pair< ShowerParticlePtr, ShowerParticlePtr > & );
 
+  /**
+   * Returns the diagram corresponding to the (leading-order) hardTree
+   */
   DiagPtr getDiagram(HardTreePtr);
-  DiagPtr getDiagram(const PrototypeTree &);
+
+  /**
+   * Returns the hadronic jet measure for two clustered momenta
+   */
   Energy2 hadronJetMeasure(const Lorentz5Momentum & p1,
 			   const Lorentz5Momentum & p2,
 			   bool final=true);
+  
+  /**
+   * General function for assigning a colour flow to a HardTree (not yet implemented
+   */
   void createColourFlow(HardTreePtr,DiagPtr);
+  
+  /**
+   * Sets the beam relations in the hard subprocess
+   */
   void setBeams(HardTreePtr);
-  bool checkTree(HardTreePtr);
-  bool checkBranching(HardBranchingPtr);
-
+ 
   /**
    *  Calculate the Sudakov weight
    */
   double sudakovWeight( HardTreePtr );
+ 
   /**
    *  Calculate the PDF weight
    */
   double pdfWeight( HardTreePtr );
-
  
   /**
    *  Calculate the splitting function weight
    */
   double splittingFnWeight( HardTreePtr );
-
 
   /**
    * Checks to see that the splitting is allowed.
@@ -342,7 +342,6 @@ private:
    */
   double getJetMeasure(ShowerParticlePtr part_i, ShowerParticlePtr part_j);
   
-  
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
@@ -359,11 +358,6 @@ private:
    * Outputs some sudakov test histograms 
    */
   void testSudakovs();
-
-  /**                                                                                                  
-   * Fills vectors for dalitz scatter plots (3 jets only)                                                             
-   */
-  void getDalitz();
 
   /**
    * Outputs qtilde distributions from the tabulated sudakovs
@@ -457,11 +451,6 @@ private:
    */
   bool _qtildeDist;
 
-
-  vector< pair< double, double > > _dalitz_from_q1;
-
-  vector< pair< double, double > > _dalitz_from_q2;
-
   /**
    *  The allowed final-state branchings
    */
@@ -488,16 +477,6 @@ private:
   double _alphaSMG;
 
   /**
-   * Histogram of sudakov weights
-   */
-  HistogramPtr _hSud;
-
-  /**
-   * Histogram of alphaS weights
-   */
-  HistogramPtr _halphaS;
-
-  /**
    * maximum qtilde scale for sudakov interpolation tables
    */
   Energy _max_qtilde;
@@ -507,13 +486,13 @@ private:
    */
   Energy _min_qtilde;
 
-  /**                                                                                                                  
-   * maximum pt cut for sudakov interpolation tables                                                  
+  /**                                                    
+   * maximum pt cut for sudakov interpolation tables
    */
   Energy _max_pt_cut;
 
-  /**                                                                                                   
-   * minimum pt cut for sudakov interpolation tables                                                      
+  /** 
+   * minimum pt cut for sudakov interpolation tables
    */
   Energy _min_pt_cut;
   
@@ -533,11 +512,6 @@ private:
    * or just shower them with no reweighting
    */
   bool _rejectNoHistories;
-
-  /**
-   * switch for dalitz analysis of hard tree clustering (3 jets only)
-   */
-  bool _dalitzOn;
 
   /**
    * total number of hard trees created in this run
@@ -604,6 +578,13 @@ private:
    * Whether to generate the Sudakov reweighting via event vetoes
    */
   bool _dynamicSuds;
+
+  /**
+   * The option for applying dynamic resolution cuts to the hardTree configurations
+   * to ensure that all partons are resolved at the merging scale.
+   */
+  int _cutOption;
+
 };
 
 }

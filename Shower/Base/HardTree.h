@@ -31,8 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  HardTree(vector<HardBranchingPtr>,vector<HardBranchingPtr>,
-	   ShowerInteraction::Type);
+  HardTree(vector<HardBranchingPtr>, vector<HardBranchingPtr>, ShowerInteraction::Type);
 
   /**
    *  Match particles in the ShowerTree to branchings in the HardTree
@@ -75,9 +74,14 @@ public:
   ShowerInteraction::Type interaction() {return _interaction;}
 
   /**
-   *  Get LowestPt in which ever jet definition
+   *  Get LowestPt in which ever jet definition from the shower variables
    */
   Energy lowestPt( int jetMeasureMode, Energy2 s );
+
+  /**
+   *  Get lowest Pt in which ever jet definition from the hardtree momentum
+   */
+  Energy lowestPtMomentum( int jetMeasureMode, int cutOption );
   
   /**
    * Access the external branchings
@@ -162,6 +166,29 @@ private:
 
 
   /**
+   * Recursive function to find the lowest jet measure in a hardtree from clustered momenta
+   **/
+  void getLowestJetMeasure( HardBranchingPtr branch, int jetMeasureMode, int cutOption );
+
+  /**
+   * Function for finding the hadronic jet measure of two partons
+   **/
+  Energy hadronJetMeasure( const Lorentz5Momentum & p1, 
+			   const Lorentz5Momentum & p2,
+			   bool final );
+  /**
+   * Function for finding the Durham or LUCLUS jet measures of two partons
+   **/
+  Energy getJetMeasure( const Lorentz5Momentum & p1,
+			const Lorentz5Momentum & p2,
+			int jetMeasureMode );
+
+  /**
+   * Function to determine whether a branching consists of external partons
+   **/
+  bool externalBranching( HardBranchingPtr a, HardBranchingPtr b );
+
+  /**
    * Scales and z along each hard line to check ordering
    */
   vector< vector< pair< Energy, double > > > _hard_line_scales;
@@ -212,7 +239,13 @@ private:
    *  The hardBranching of softest branching
    *  This is found by looking at tree end points in fillNodes
    */
-   HardBranchingPtr  _lowestPt;
+  HardBranchingPtr  _lowestPt;
+
+  /**
+   * The lowest pt of the branchings in the hardtree in whatever
+   * jet measure according to the hardtree momenta (not the shower variables)
+   */
+  Energy  _lowestPtMomentum;
 
   /**
    *  The sum of the pts of all branchings
