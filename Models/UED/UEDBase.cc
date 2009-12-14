@@ -226,7 +226,7 @@ void UEDBase::calculateKKMasses(const unsigned int n) {
       long level1 = 5000000 + n*100000;
       long level2 = 6000000 + n*100000;
       Energy2 ndmass2 = sqr(n*theInvRadius);
-      for(unsigned int i = 1; i < 38; ++i) {
+      for ( int i = 1; i < 38; ++i ) {
 	if(i == 7 || i == 17) i += 4;
 	if(i == 26) i += 10;
 	Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );

@@ -246,7 +246,7 @@ private:
   /**
    *  Maximum PDG code of the quarks allowed
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 
   /**
    *  Option for which processes to include

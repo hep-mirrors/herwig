@@ -40,10 +40,11 @@ void LeptonNeutrinoCurrent::Init() {
 
 
 // complete the construction of the decay mode for integration
-bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
+bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode_in,
 				       DecayPhaseSpaceModePtr mode,
 				       unsigned int iloc,unsigned int,
 				       DecayPhaseSpaceChannelPtr phase,Energy upp) {
+  int imode = imode_in;
   // make sure the the decays are kinematically allowed
   Energy min = getParticleData(11+2*imode)->mass()+getParticleData(12+2*imode)->mass();
   if(min>=upp) return false;
@@ -62,9 +63,10 @@ bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
+tPDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode_in,
 					  int,int)
 {
+  int imode = imode_in;
   tPDVector output(2);
   if(icharge==3)
     {

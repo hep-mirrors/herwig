@@ -78,13 +78,13 @@ void SMHGGVertex::Init() {
   static ClassDocumentation<SMHGGVertex> documentation
     ("This class implements the h->g,g vertex");
 
-  static Parameter<SMHGGVertex,unsigned int> interfaceMinQuarkInLoop
+  static Parameter<SMHGGVertex,int> interfaceMinQuarkInLoop
     ("MinQuarkInLoop",
      "The minimum flavour of the quarks to include in the loops",
      &SMHGGVertex::_minloop, 6, 1, 6,
      false, false, Interface::limited);
 
-  static Parameter<SMHGGVertex,unsigned int> interfaceMaxQuarkInLoop
+  static Parameter<SMHGGVertex,int> interfaceMaxQuarkInLoop
     ("MaxQuarkInLoop",
      "The maximum flavour of the quarks to include in the loops",
      &SMHGGVertex::_maxloop, 6, 1, 6,
@@ -125,8 +125,8 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
   assert(part1 && part2 && part3);
   assert(part1->id() == ParticleID::h0 &&
 	 part2->id() == ParticleID::g  && part3->id() == ParticleID::g );
-  unsigned int Qminloop = _minloop;
-  unsigned int Qmaxloop = _maxloop;
+  int Qminloop = _minloop;
+  int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
     Qmaxloop=_minloop;
     Qminloop=_maxloop;
@@ -141,7 +141,7 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
     }
     norm(_couplast);
     Complex loop(0.);
-    for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
+    for ( int i = Qminloop; i <= Qmaxloop; ++i ) {
       tcPDPtr qrk = getParticleData(i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
       loop += Af(sqr(mass)/q2);
@@ -160,10 +160,10 @@ void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part2, tcPDPtr part3, tcPDPtr 
       _q2last = q2;
     }
     norm(_couplast);
-    unsigned int delta = Qmaxloop - Qminloop + 1;
+    int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
     masses.resize(delta,ZERO);
-    for (unsigned int i = 0; i < delta; ++i) {
+    for (int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;
       masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();

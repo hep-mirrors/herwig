@@ -92,13 +92,13 @@ void GGtoHMECorrection::Init() {
      "  %%CITATION = NUPHA,B339,38;%%\n"
      );
 
-  static Parameter<GGtoHMECorrection,unsigned int> interfaceMinimumInLoop
+  static Parameter<GGtoHMECorrection,int> interfaceMinimumInLoop
     ("MinimumInLoop",
      "The minimum flavour of the quarks to include in the loops",
      &GGtoHMECorrection::_minloop, 6, 5, 6,
      false, false, Interface::limited);
 
-  static Parameter<GGtoHMECorrection,unsigned int> interfaceMaximumInLoop
+  static Parameter<GGtoHMECorrection,int> interfaceMaximumInLoop
     ("MaximumInLoop",
      "The maximum flavour of the quarks to include in the loops",
      &GGtoHMECorrection::_maxloop, 6, 5, 6,
@@ -652,7 +652,7 @@ Energy2 GGtoHMECorrection::ggME(Energy2 s, Energy2 t, Energy2 u) {
     me[1][1][0] = ZERO;
     me[0][1][0] = ZERO;
     me[0][1][1] = ZERO;
-    for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+    for ( int ix=_minloop; ix<=_maxloop; ++ix ) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       _bi[1]=B(s,mf2);
       _bi[2]=B(u,mf2);
@@ -703,7 +703,7 @@ Energy2 GGtoHMECorrection::qgME(Energy2 s, Energy2 t, Energy2 u) {
   if(_massopt==0) {
     complex<Energy2> A(ZERO);
     Energy2 si(u-_mh2);
-    for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+    for(int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       A += mf2*(2.+2.*double(u/si)*(B(u,mf2)-B(_mh2,mf2))
  		+double((4.*mf2-s-t)/si)*Complex(u*C(u,mf2)-_mh2*C(_mh2,mf2)));
@@ -722,7 +722,7 @@ Energy2 GGtoHMECorrection::qbargME(Energy2 s, Energy2 t, Energy2 u) {
   if(_massopt==0) {
     complex<Energy2> A(ZERO);
     Energy2 si(u-_mh2);
-    for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+    for(int ix=_minloop;ix<=_maxloop;++ix) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       A+=mf2*(2.+2.*double(u/si)*(B(u,mf2)-B(_mh2,mf2))
 	      +double((4.*mf2-s-t)/si)*Complex(u*C(u,mf2)-_mh2*C(_mh2,mf2)));
@@ -739,7 +739,7 @@ Energy2 GGtoHMECorrection::qbargME(Energy2 s, Energy2 t, Energy2 u) {
 Energy4 GGtoHMECorrection::loME() {
   Complex I(0);
   if(_massopt==0) {
-    for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+    for(int ix=_minloop;ix<=_maxloop;++ix) {
       double x = sqr(getParticleData(ix)->mass())/_mh2;
       I += 3.*x*(2.+(4.*x-1.)*F(x));
     }
@@ -757,7 +757,7 @@ tPDPtr GGtoHMECorrection::quarkFlavour(tcPDFPtr pdf, Energy2 scale,
   vector<tPDPtr> partons;
   pdfweight = 0.;
   if(!anti) {
-    for(unsigned int ix=1;ix<=5;++ix) {
+    for(int ix=1;ix<=5;++ix) {
       partons.push_back(getParticleData(ix));
       weights.push_back(pdf->xfx(beam,partons.back(),scale,x));
       pdfweight += weights.back();

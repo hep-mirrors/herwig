@@ -75,6 +75,7 @@ void SOPHTY::Init() {
 
 ParticleVector SOPHTY::generatePhotons(const Particle & p,ParticleVector children,
 				       tDecayIntegratorPtr decayer) {
+  if ( children.size() != 2 ) return children;
   // if not generating radiation from coloured particles
   // return if there are any coloured particles
   if(colouredOption_==0) {

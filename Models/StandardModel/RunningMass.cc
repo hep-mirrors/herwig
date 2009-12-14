@@ -86,22 +86,16 @@ void RunningMass::Init() {
 }
 // Return the masses used.
 vector<Energy> RunningMass::mass() const {
+  using Constants::pi;
   vector<Energy> masses;
-  Energy massf;
-  double coeff, as, pi=acos(-1.0);
-  for ( unsigned long f = 1; f <= _theMaxFlav; ++f ) {
+  for ( long f = 1; f <= _theMaxFlav; ++f ) {
     PDPtr p = getParticleData(f);
-    if(_theQCDOrder==2)
-      {coeff=_theCoefficient[f-1]+4./3./pi;}
-    else
-      {coeff=0.;}
-    if ( p ){massf=p->mass();}
-    else{massf=ZERO;}
-    as = _theStandardModel->alphaS(massf*massf);
-    if(as>0)
-      {massf = massf/(1.+coeff*as)/pow(as,_thePower[f-1]);}
-    else {
-      massf = ZERO;
+    Energy massf = p ? p->mass() : ZERO;
+    if((f<=3&&_lightOption==0) ||
+       (f>3 &&_heavyOption==0)) {
+      double coeff = _theQCDOrder==2 ? _theCoefficient[f-1]+4./3./pi : 0.;
+      double as = _theStandardModel->alphaS(massf*massf);
+      massf = as>0 ? massf/(1.+coeff*as)/pow(as,_thePower[f-1]) : ZERO;
     }
     masses.push_back(massf);
   }
@@ -136,10 +130,10 @@ Energy RunningMass::value(Energy2 scale, tcPDPtr part) const {
 }
 
 void RunningMass::doinit() {
+  using Constants::pi;
   _theStandardModel = generator()->standardModel();
   _theStandardModel->alphaSPtr()->init();
   // coefficients for the calculation
-  double pi= acos(-1.0);
   double c = 1./pi,cprime,b,bprime,power,coeff;
   for(unsigned int f=1;f<=_theMaxFlav;++f) {
     // the basic parameters for the running mass

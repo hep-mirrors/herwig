@@ -66,7 +66,7 @@ handle(EventHandler &, const tPVector & tagged,
 void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
   long ntry = 0;
   tcSpinfoPtr hwspin;
-  if ( maxLifeTime() >= 0.0*mm ) {
+  if ( maxLifeTime() >= ZERO ) {
     if( ( lifeTimeOption() && parent->lifeLength().tau() > maxLifeTime())||
 	(!lifeTimeOption() && parent->data().cTau()      > maxLifeTime()) ) {
       parent->setLifeLength(Distance());

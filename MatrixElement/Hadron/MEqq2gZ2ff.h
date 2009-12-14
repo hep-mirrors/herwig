@@ -224,12 +224,12 @@ private:
   /**
    *  Minimum allowed flavour for the incoming quarks
    */
-  unsigned int _minflavour;
+  int _minflavour;
 
   /**
    *  Maximum allowed flavour for the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 
   /**
    *  Whether to include both \f$Z^0\f$ and \f$\gamma\f$ or only one
@@ -239,7 +239,7 @@ private:
   /**
    *  Which processes to include
    */
-  unsigned int _process;
+  int _process;
   //@}
 
   /**

@@ -29,8 +29,9 @@ public:
   /**
    * The default constructor.
    */
-  MEfftoffH() : _shapeopt(2), _process(0) {}
-
+  MEfftoffH() : _shapeopt(2), _process(0), 
+		_mh(), _wh(), _swap(false) {}
+  
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**

@@ -1,5 +1,51 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
+* Herwig++-2.4.2 release: 2009-12-11 (tagged at SVN r5022)
+
+** Ticket #292: Tau decay numerical instability
+   The momentum assignment in tau decays contained numerical
+   instabilities which have been fixed by postponing the tau decay
+   until after the parton shower. A new interface setting
+   DecayHandler:Excluded is available to prevent decays in the shower
+   step. This is enabled by default for tau only.
+
+** Ticket #290: Missing MSSM colour structure
+   The missing colour structure for gluino -> gluon neutralino was added.
+
+** Ticket #294: Zero momentum in some decays
+   Some rare phase space points lead to zero momentum in two-body
+   decays. This has been fixed.
+
+** Ticket #295: Stability of QED radiation for lepton collider processes
+   The numerical stability of QED radiation momenta was improved
+   further.
+
+** Ticket #296: K0 oscillation vertex was wrong
+   The oscillation from K0 to K0_L/S now takes place at the production
+   vertex of K0.
+
+** Ticket #289: Undefined variables in repository
+   On some system configurations, undefined variables were written to
+   the repository. These have been fixed.
+
+** Fixed QED radiation for hadron processes
+   The longitudinal boost of the centre-of-mass frame in hadronic
+   collisions is correctly accounted for now.
+
+** Numerical stability fixes 
+   Small fixes in RunningMass and QTildeReconstructor.
+
+** Powheg example input files
+   The example input files for Powheg processes now set the NLO
+   alpha_S correctly, and are run as part of 'make check'.
+
+** OS X builds for Snow Leopard
+   Snow Leopard machines will now be recognized as a 64bit
+   architecture.
+
+
+
+
 * Herwig++-2.4.1 release: 2009-11-19 (tagged at SVN r4932)
 
 ** Uses ThePEG-1.6.0 

@@ -97,7 +97,7 @@ private:
   /**
    *  The allowed flavours of the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 };
 
 }

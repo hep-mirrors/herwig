@@ -44,11 +44,8 @@ endif
 if WANT_RS
 check_BSM += check-LHC-RS
 endif
-if WANT_TRP
-check_BSM += check-LHC-TRP
-endif
 
-check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM)
+check-local: check-LHC check-LEP check-DIS check-ILC check-GammaGamma $(check_BSM) check-LHC-Powheg
 
 check-Powheg: check-LHC-Powheg check-TVT-Powheg
 
@@ -59,7 +56,7 @@ link-helper-files:
 
 check-%: $(srcdir)/%.in HerwigDefaults.rpo link-helper-files
 	./Herwig++ read $< --exitonerror
-	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N100 -d1 --exitonerror
+	./Herwig++ run  $(notdir $(subst .in,.run,$<)) -N500 -d1 --exitonerror
 
 ## valgrind targets ##
 

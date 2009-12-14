@@ -237,12 +237,12 @@ private:
   /**
    *  The minimum PDG of the quarks to be produced
    */
-   unsigned int _minflav;
+   int _minflav;
 
   /**
    *  The maximum PDG of the quarks to be produced
    */
-   unsigned int _maxflav;
+   int _maxflav;
 
   /**
    *  Option for the treatment of the top quark mass
