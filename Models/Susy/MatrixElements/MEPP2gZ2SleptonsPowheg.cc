@@ -58,10 +58,10 @@ MEPP2gZ2SleptonsPowheg::colourGeometries(tcDiagPtr) const {
 
 void MEPP2gZ2SleptonsPowheg::getDiagrams() const {
   // loop over the processes we need
-  for(unsigned int i = 1; i <= 5; ++i) {
+  for(int i = 1; i <= 5; ++i) {
     tcPDPtr q  = getParticleData(i);
     tcPDPtr qb = q->CC();
-    for(unsigned int ix=11;ix<17;++ix) {
+    for(int ix=11;ix<17;++ix) {
       // production of left-handed sleptons
       tcPDPtr lm = getParticleData(1000000+ix);
       tcPDPtr lp = lm->CC();

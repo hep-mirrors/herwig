@@ -273,12 +273,12 @@ private:
   /**
    *  Minimum flavour of quarks to include in the loops
    */
-  unsigned int _minloop;
+  int _minloop;
 
   /**
    *  Maximum flavour of quarks to include in the loops
    */
-  unsigned int _maxloop;
+  int _maxloop;
 
   /**
    *  Option for treatment of the fermion loops

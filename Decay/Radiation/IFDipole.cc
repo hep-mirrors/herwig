@@ -241,7 +241,7 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
   // produce products after radiation if needed
   if(_multiplicity>0) {
     // change the momenta of the children, they are currently
-    // in parent rest frame 
+    // in parent rest frame
     for(unsigned int ix=0;ix<2;++ix) {
       LorentzRotation boost(solveBoost(_qnewprf[ix],children[ix]->momentum()));
       children[ix]->deepTransform(boost);
@@ -677,7 +677,14 @@ LorentzRotation IFDipole::solveBoost(const Lorentz5Momentum & q,
     R.rotate( delta, unitVector(ax) ).boost( beta );
   } 
   else {
-    R.boost( beta );
+    if(p.mass()>ZERO) {
+      R.boost(p.findBoostToCM(),p.e()/p.mass());
+      R.boost(q.boostVector(),q.e()/q.mass());
+    }
+    else {
+      if(modp>modq) beta = -betam*p.vect().unit();
+      R.boost( beta );
+    }
   } 
   return R;
 }

@@ -43,7 +43,7 @@ public:
     _emin(1.e-6*MeV), _eminrest(100*MeV), _eminlab(100*MeV), _emax(),
     _multiplicity(), _m(3), _charge(), _qdrf(2),
     _qnewdrf(2), _qprf(2), _qnewprf(2), _qlab(2), _qnewlab(2), _dipolewgt(),
-    _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(5.0), _mode(1), _maxtry(500),
+    _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(7.0), _mode(1), _maxtry(500),
     _energyopt(1), _betaopt(4), _dipoleopt(), _nweight(0), _wgtsum(0.), _wgtsq(0.),
     _weightOutput(false) {}
 
@@ -172,7 +172,8 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Boost boost,ParticleVector children);
+  double makePhotons(const Boost & boost, 
+		     const ParticleVector & children);
 
   /**
    *  Boost all the momenta from the dipole rest frame via the parent rest frame
@@ -180,7 +181,7 @@ protected:
    * @param boost The boost vector from the rest frame to the lab
    * @return Whether or not it suceeded
    */
-  bool boostMomenta(Boost boost);
+  bool boostMomenta(const Boost & boost);
 
   /**
    *  Remove any photons which fail the energy cuts
@@ -222,6 +223,15 @@ private:
    * In fact, it should not even be implemented.
    */
   FFDipole & operator=(const FFDipole &);
+
+private:
+
+  /**
+   * Debug output
+   **/
+  void printDebugInfo(const Particle & p,
+		      const ParticleVector & children,
+		      double wgt) const;
 
 private:
 

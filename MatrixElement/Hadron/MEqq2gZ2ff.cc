@@ -56,7 +56,7 @@ void MEqq2gZ2ff::getDiagrams() const {
   bool gamma = _gammaZ==0 || _gammaZ==1;
   bool Z0    = _gammaZ==0 || _gammaZ==2;
   // loop over the processes we need
-  for(unsigned int ix=1;ix<17;++ix) {
+  for ( int ix=1; ix<17; ++ix ) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
     // is it a valid quark process
@@ -74,7 +74,7 @@ void MEqq2gZ2ff::getDiagrams() const {
     if(!(quark||lepton)) continue;
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();
-    for(unsigned int i = _minflavour; i <= _maxflavour; ++i) {
+    for(int i = _minflavour; i <= _maxflavour; ++i) {
       tcPDPtr q  = getParticleData(i);
       tcPDPtr qb = q->CC();
       if(Z0)    add(new_ptr((Tree2toNDiagram(2), q, qb, 1, _z0   , 3, lm, 3, lp, -1)));
@@ -153,13 +153,13 @@ void MEqq2gZ2ff::Init() {
      "q qbar to Standard Model fermions via Z and photon exchange using"
      " helicity amplitude techniques");
 
-  static Parameter<MEqq2gZ2ff,unsigned int> interfaceMaxFlavour
+  static Parameter<MEqq2gZ2ff,int> interfaceMaxFlavour
     ("MaxFlavour",
      "The maximum incoming quark flavour this matrix element is allowed to handle",
      &MEqq2gZ2ff::_maxflavour, 5, 1, 5,
      false, false, Interface::limited);
 
-  static Parameter<MEqq2gZ2ff,unsigned int> interfaceMinFlavour
+  static Parameter<MEqq2gZ2ff,int> interfaceMinFlavour
     ("MinFlavour",
      "The minimum incoming quark flavour this matrix element is allowed to handle",
      &MEqq2gZ2ff::_minflavour, 1, 1, 5,
@@ -185,7 +185,7 @@ void MEqq2gZ2ff::Init() {
      "Only include the Z",
      2);
 
-  static Switch<MEqq2gZ2ff,unsigned int> interfaceProcess
+  static Switch<MEqq2gZ2ff,int> interfaceProcess
     ("Process",
      "Which process to included",
      &MEqq2gZ2ff::_process, 0, false, false);

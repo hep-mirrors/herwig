@@ -330,12 +330,12 @@ void SMHiggsWidthGenerator::doinit() {
   _gamw = w->width();
   _gamz = z->width();
   // quark masses
-  for(unsigned int ix=1;ix<7;++ix) {
+  for(int ix=1;ix<7;++ix) {
     tcPDPtr q = getParticleData(ix);
     _qmass[ix] = q->mass();
   }
   // lepton masses
-  for(unsigned int ix=0;ix<3;++ix) {
+  for ( int ix=0; ix<3; ++ix ) {
     tcPDPtr lepton = getParticleData(11+2*ix);
     _lmass[ix] = lepton->mass();
   }

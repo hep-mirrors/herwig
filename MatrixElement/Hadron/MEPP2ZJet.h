@@ -290,12 +290,12 @@ private:
   /**
    *  Allowed flavours for the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 
   /**
    *  Control over which Z decay modes to include
    */
-  unsigned int _zdec;
+  int _zdec;
 
   /**
    *  Which terms to include

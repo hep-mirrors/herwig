@@ -34,7 +34,7 @@ void MEPP2ZH::getDiagrams() const {
 				  cit->second->orderedProducts()[0]));
   }
   // create the diagrams
-  for(unsigned int ix=1;ix<=_maxflavour;++ix) {
+  for ( int ix=1; ix<=_maxflavour; ++ix ) {
     tcPDPtr q    = getParticleData(ix);
     tcPDPtr qbar = q->CC();
     for(unsigned int iz=0;iz<Zdecays.size();++iz) {
@@ -61,7 +61,7 @@ void MEPP2ZH::Init() {
   static ClassDocumentation<MEPP2ZH> documentation
     ("The MEPP2ZH class implements the matrix element for q qbar -> Z H");
 
-  static Parameter<MEPP2ZH,unsigned int> interfaceMaxFlavour
+  static Parameter<MEPP2ZH,int> interfaceMaxFlavour
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",

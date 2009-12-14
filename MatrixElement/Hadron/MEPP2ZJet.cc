@@ -52,13 +52,13 @@ void MEPP2ZJet::Init() {
   static ClassDocumentation<MEPP2ZJet> documentation
     ("The MEPP2ZJet class implements the matrix element for Z/gamma+ jet production");
 
-  static Parameter<MEPP2ZJet,unsigned int> interfaceMaxFlavour
+  static Parameter<MEPP2ZJet,int> interfaceMaxFlavour
     ( "MaxFlavour",
       "The heaviest incoming quark flavour this matrix element is allowed to handle "
       "(if applicable).",
       &MEPP2ZJet::_maxflavour, 5, 0, 8, false, false, true);
 
-  static Switch<MEPP2ZJet,unsigned int> interfaceZDecay
+  static Switch<MEPP2ZJet,int> interfaceZDecay
     ("ZDecay",
      "Which process to included",
      &MEPP2ZJet::_zdec, 0, false, false);
@@ -226,7 +226,7 @@ void MEPP2ZJet::getDiagrams() const {
   // pointer for gluon
   tcPDPtr g = getParticleData(ParticleID::g);
   bool quark,lepton;
-  for(unsigned int ix=1;ix<17;++ix) {
+  for ( int ix=1; ix<17; ++ix ) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
     // is it a valid quark process
@@ -241,7 +241,7 @@ void MEPP2ZJet::getDiagrams() const {
     // pointer for Z decay products
     tcPDPtr lm = getParticleData(ix);
     tcPDPtr lp = lm->CC();
-    for (unsigned int i = 1; i <= _maxflavour; ++i ) {
+    for (int i = 1; i <= _maxflavour; ++i ) {
       tcPDPtr q = getParticleData(i);
       tcPDPtr qb = q->CC();
       // q qbar -> Z g -> l+l- g

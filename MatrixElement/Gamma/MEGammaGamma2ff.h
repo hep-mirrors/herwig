@@ -178,7 +178,7 @@ private:
   /**
    *  Which processes to include
    */
-  unsigned int process_;
+  int process_;
 
   /**
    *  Pointer to the photon vertex

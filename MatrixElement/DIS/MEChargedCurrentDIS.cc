@@ -66,7 +66,7 @@ void MEChargedCurrentDIS::getDiagrams() const {
     ;
   }
   // create the diagrams
-  for(unsigned int il1=11;il1<=14;++il1) {
+  for(int il1=11;il1<=14;++il1) {
     int il2 = il1%2==0 ? il1-1 : il1+1;
     for(unsigned int iz=0;iz<2;++iz) {
       tcPDPtr lepin  = iz==1 ? getParticleData(il1) : getParticleData(-il1);
