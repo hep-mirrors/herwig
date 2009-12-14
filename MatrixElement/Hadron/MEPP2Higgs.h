@@ -248,12 +248,12 @@ private:
   /**
    * Minimum flavour of incoming quarks
    */
-  unsigned int minflavouropt_;
+  int minflavouropt_;
 
   /**
    * Maximum flavour of incoming quarks
    */
-  unsigned int maxflavouropt_;
+  int maxflavouropt_;
 
   /**
    * Storage of the diagram weights for the \f$gg\to Hg\f$ subprocess

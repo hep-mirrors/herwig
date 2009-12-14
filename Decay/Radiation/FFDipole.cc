@@ -16,6 +16,7 @@
 #include "ThePEG/EventRecord/Particle.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Utilities/Debug.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -111,7 +112,7 @@ void FFDipole::Init() {
   static Parameter<FFDipole,double> interfaceMaximumWeight
     ("MaximumWeight",
      "The maximum weight for unweighting",
-     &FFDipole::_maxwgt, 2.0, 0.0, 100.0,
+     &FFDipole::_maxwgt, 7.0, 0.0, 100.0,
      false, false, Interface::limited);
 
   static Switch<FFDipole,unsigned int> interfaceEnergyCutOff
@@ -196,6 +197,32 @@ void FFDipole::Init() {
 
 }
 
+void FFDipole::printDebugInfo(const Particle & p,
+			      const ParticleVector & children,
+			      double wgt) const {
+  generator()->log() << "Input masses " 
+		     << p.mass()/GeV << " -> " 
+		     << children[0]->mass()/GeV << " " 
+		     << children[1]->mass()/GeV << '\n'; 
+  generator()->log() << "Momenta\n";
+  generator()->log() << "parent " << p.momentum()/GeV << '\n';
+  for(unsigned int ix=0;ix<2;++ix)
+    generator()->log() << "charged " << ix << " " 
+		       << _qnewlab[ix]/GeV << " " 
+		       << children[ix]->momentum()/GeV << '\n';
+  for(unsigned int ix=0;ix<_multiplicity;++ix) {
+    generator()->log() << "photons " << ix << " "
+		       << "phocut " << _photcut[ix] << ' '
+		       << _llab[ix]/GeV << '\n';
+  }
+  generator()->log() << "wgt         : " << wgt          << '\n';
+  generator()->log() << "_mewgt      : " << _mewgt       << '\n';
+  generator()->log() << "_jacobianwgt: " << _jacobianwgt << '\n';
+  generator()->log() << "_yfswgt     : " << _yfswgt      << '\n';
+  generator()->log() << "_dipolewgt  : " << _dipolewgt   << '\n';
+  generator()->log() << "dipoleopt   : " << _dipoleopt   << '\n';
+}
+
 ParticleVector FFDipole::generatePhotons(const Particle & p,
 					 ParticleVector children,
 					 tDecayIntegratorPtr decayer) {
@@ -230,78 +257,53 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
   double wgt;
   unsigned int ntry(0);
   do {
-    wgt = makePhotons(-boostv,children);
     ++ntry;
-    if(wgt>_maxwgt||wgt<0.0||isnan(wgt)) {
-      if(isnan(wgt)) {
-	generator()->log() << "Infinite weight for decay " 
-			   << p.PDGName() << " " 
-			   << children[0]->PDGName() 
-			   << " " << children[1]->PDGName()
-			   << "\n";
-	wgt = 0.;
-      }
-      else if(wgt>=0.) {
-	generator()->log() << "Weight exceeds maximum for decay " 
-			   << p.PDGName() << " " 
-			   << children[0]->PDGName() 
-			   << " " << children[1]->PDGName()
-			   << "in FFDipole: resetting maximum weight.\n"
-			   << " Old Maximum = " << _maxwgt;
-	if(wgt<=10.0)
-	  generator()->log() << " New Maximum = " << wgt << "\n";
-	else
-	  generator()->log() << " New Maximum = 10.\n";
-	_wgtsum += wgt;
-	_wgtsq  += sqr(wgt);
-	++_nweight;
-      }
-      else {
-	if(_mode!=5) 
-	  generator()->log() << "Negative weight for decay " 
-			     << p.PDGName() << " " 
-			     << children[0]->PDGName() 
-			     << " " << children[1]->PDGName()
-			     << "in FFDipole: Weight = " << wgt << "\n";
-	_wgtsum += wgt;
-	_wgtsq  += sqr(wgt);
-	++_nweight;
-      }
-      if(_mode!=5) {
-	generator()->log() << "Input masses " 
-			   << p.mass()/GeV << " -> " 
-			   << children[0]->mass()/GeV << " " 
-			   << children[1]->mass()/GeV << "\n"; 
-	generator()->log() << "Momenta " << "\n";
-	generator()->log() << ounit(p.momentum(),GeV) << "\n";
-	for(unsigned int ix=0;ix<2;++ix)
-	  generator()->log() << "charged " << ix << " " 
-			     << _qnewlab[ix]/GeV << "\n";
-	for(unsigned int ix=0;ix<_multiplicity;++ix)
-	  generator()->log() << "photons " << ix << " " 
-			     << _llab[ix]/GeV << "\n";
-	generator()->log() << "wgt         : " << wgt          << "\n";
-	generator()->log() << "_mewgt      : " << _mewgt       << "\n";
-	generator()->log() << "_jacobianwgt: " << _jacobianwgt << "\n";
-	generator()->log() << "_yfswgt     : " << _yfswgt      << "\n";
-	generator()->log() << "_dipolewgt  : " << _dipolewgt   << "\n";
-	generator()->log() << "dipoleopt   : " << _dipoleopt   << "\n";
-      } 
-      if(wgt >=0. && wgt <= 10.0) _maxwgt = wgt;
-      else if(wgt>10.)            _maxwgt = 10.;
+    wgt = makePhotons(-boostv,children);
+
+    // Error checks
+    if ( isnan(wgt) ) {
+      generator()->log() << "Infinite weight for decay " 
+			 << p.PDGName() << " " 
+			 << children[0]->PDGName() 
+			 << " " << children[1]->PDGName()
+			 << '\n';
+      wgt = 0.0;
     }
-    else {
-      _wgtsum += wgt;
-      _wgtsq  += sqr(wgt);
-      ++_nweight;
+    else if ( wgt < 0.0 && _mode != 5 ) {
+      generator()->log() << "Negative weight for decay " 
+			 << p.PDGName() << " " 
+			 << children[0]->PDGName() 
+			 << " " << children[1]->PDGName()
+			 << "in FFDipole: Weight = " << wgt << '\n';
+      if ( Debug::level ) 
+	printDebugInfo(p,children,wgt);
     }
+    else if ( wgt > _maxwgt ) {
+      generator()->log() << "Weight "<< wgt<<" exceeds maximum for decay " 
+			 << p.PDGName() << ' '
+			 << children[0]->PDGName() 
+			 << " " << children[1]->PDGName()
+			 << " in FFDipole:\nresetting maximum weight.\n"
+			 << "Old Maximum = " << _maxwgt;
+
+      _maxwgt = min(1.1 * wgt, 10.0);
+      generator()->log() << " New Maximum = " << wgt << '\n';
+      if ( Debug::level && _mode!=5 ) 
+	printDebugInfo(p,children,wgt);
+    }
+    // End of error checks
+
+    _wgtsum += wgt;
+    _wgtsq  += sqr(wgt);
+    ++_nweight;
+
   }
-  while(wgt<(_maxwgt*UseRandom::rnd())&&ntry<_maxtry);
+  while ( wgt<(_maxwgt*UseRandom::rnd()) && ntry<_maxtry );
   if(ntry>=_maxtry) {
     generator()->log() << "FFDipole failed to generate QED radiation for the decay " 
 		       << p.PDGName() << " -> " 
 		       << children[0]->PDGName() << " "
-		       << children[1]->PDGName() << "\n";
+		       << children[1]->PDGName() << '\n';
     _parent->boost(-boostv);
     for(unsigned int ix=0;ix<2;++ix)
       children[ix]->deepBoost(-boostv);
@@ -322,8 +324,8 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
 		   /_qnewdrf[ix].e());
       double ombetap(sqr(_m[ix+1]/_qnewdrf[ix].e())/(1.+betap));
       // boost to get correct momentum in dipole rest frame
-      double bv(-(ombetap-ombeta)/((1.+beta)*(1.-betap)+ombeta-ombetap));
-      br *=bv;
+      double bv = -(ombetap-ombeta)/(beta*ombetap + ombeta);
+      br *= bv;
       children[ix]->deepBoost(br);
       // boost to the parent rest frame
       Lorentz5Momentum pnew(_bigLdrf);
@@ -345,9 +347,12 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
       }
     }
     _parent->boost(-boostv);
+
+    //printDebugInfo(p, children, wgt);
+
     return children;
   }
-  // otherwise just return the orginial particles
+  // otherwise just return the original particles
   else {
     for(unsigned int ix=0;ix<2;++ix)
       children[ix]->deepBoost(-boostv);
@@ -357,7 +362,8 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
 }
 
 // member which generates the photons
-double FFDipole::makePhotons(Boost boostv,ParticleVector children) {
+double FFDipole::makePhotons(const Boost & boostv,
+			     const ParticleVector & children) {
   // set the initial parameters
   // number of photons (zero)
   _multiplicity=0;
@@ -648,6 +654,7 @@ double FFDipole::meWeight(const ParticleVector & children) {
 	ptemp.push_back(new_ptr(Particle(children[ix]->dataPtr())));
       ptemp.push_back(new_ptr(Particle(getParticleData(ParticleID::gamma))));
       for(unsigned int i=0;i<_multiplicity;++i) {
+	PPtr new_parent = new_ptr(Particle(*_parent));
 	if(_photcut[i]) continue;
 	// compute the angle terms
 	// if cos is greater than zero use result accurate as cos->1
@@ -688,12 +695,12 @@ double FFDipole::meWeight(const ParticleVector & children) {
 	// Find the momenta of the particles in the rest frame of the parent...
 	// First get the boost from the parent particle
 	Boost boost = pnew.findBoostToCM();
-	LorentzRotation rot1(-boost);
+	LorentzRotation rot1(-boost, pnew.e()/pnew.mass());
 	// check the photon energy
 	Lorentz5Momentum ptest = _ldrf[i];
 	ptest.boost(boost);
 	if(_energyopt==1&&ptest.e()<_eminrest) continue;
-	_parent->transform(rot1);
+	new_parent->transform(rot1);
 	// rotation to put the emitter along the z axis
 	// first particle emits
 	unsigned int iemit = _cosphot[i]>0. ? 0 : 1;
@@ -707,23 +714,23 @@ double FFDipole::meWeight(const ParticleVector & children) {
  	  porig[ix].transform(rot2);
 	  ptemp[ix]->set5Momentum(porig[ix]);
 	}
- 	_parent->transform(rot2);
+ 	new_parent->transform(rot2);
 	if(_cosphot[i]>0.) {
 	  outwgt -= _decayer->
-	    realEmissionME(_decayer->imode(),*_parent,ptemp,
+	    realEmissionME(_decayer->imode(),*new_parent,ptemp,
 			   0,_cosphot[i],_sinphot[i],rot1,rot2)/
 	    (_charge/sqr(_ldrf[i].e())*dipole);
 	}
 	else {
 	  outwgt -= _decayer->
-	    realEmissionME(_decayer->imode(),*_parent,ptemp,
+	    realEmissionME(_decayer->imode(),*new_parent,ptemp,
 			   1,-_cosphot[i],_sinphot[i],rot1,rot2)/
 	    (_charge/sqr(_ldrf[i].e())*dipole);
 	}
 	rot1.invert();
  	rot2.invert();
- 	_parent->transform(rot2);
- 	_parent->transform(rot1);
+ 	new_parent->transform(rot2);
+ 	new_parent->transform(rot1);
       }
       return outwgt;
     }
@@ -793,7 +800,7 @@ double FFDipole::collinearWeight(const ParticleVector & children) {
   return outwgt;
 }
 
-bool FFDipole::boostMomenta(Boost boostv) {
+bool FFDipole::boostMomenta(const Boost & boostv) {
   // total energy  and momentum of photons
   Energy L0(_bigLdrf.e()),modL(_bigLdrf.rho());
   // 3-momenta of charged particles
@@ -923,6 +930,6 @@ void FFDipole::dofinish() {
     _wgtsq /= double(_nweight);
     _wgtsq = sqrt(_wgtsq);
     generator()->log() << "The average weight for QED Radiation in " << fullName() 
-		       << " was " << _wgtsum << " +/- " << _wgtsq << "\n";
+		       << " was " << _wgtsum << " +/- " << _wgtsq << '\n';
   }
 }

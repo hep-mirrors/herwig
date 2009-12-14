@@ -46,11 +46,11 @@ void MENeutralCurrentDIS::getDiagrams() const {
   bool gamma = _gammaZ==0 || _gammaZ==1;
   bool Z0    = _gammaZ==0 || _gammaZ==2;
   // create the diagrams
-  for(unsigned int ix=11;ix<=14;++ix) {
+  for(int ix=11;ix<=14;++ix) {
     for(unsigned int iz=0;iz<2;++iz) {
       tPDPtr lep = getParticleData(ix);
       if(iz==1) lep = lep->CC();
-      for(unsigned int iy=_minflavour;iy<=_maxflavour;++iy) {
+      for(int iy=_minflavour;iy<=_maxflavour;++iy) {
 	tPDPtr quark = getParticleData(iy);
 	// lepton quark scattering via gamma and Z
 	if(gamma) add(new_ptr((Tree2toNDiagram(3), lep, _gamma, quark,
@@ -111,13 +111,13 @@ void MENeutralCurrentDIS::Init() {
     ("The MENeutralCurrentDIS class implements the matrix elements for leading-order "
      "neutral current deep inelastic scattering.");
 
-  static Parameter<MENeutralCurrentDIS,unsigned int> interfaceMaxFlavour
+  static Parameter<MENeutralCurrentDIS,int> interfaceMaxFlavour
     ("MaxFlavour",
      "The highest incoming quark flavour this matrix element is allowed to handle",
      &MENeutralCurrentDIS::_maxflavour, 5, 1, 5,
      false, false, Interface::limited);
 
-  static Parameter<MENeutralCurrentDIS,unsigned int> interfaceMinFlavour
+  static Parameter<MENeutralCurrentDIS,int> interfaceMinFlavour
     ("MinFlavour",
      "The lightest incoming quark flavour this matrix element is allowed to handle",
      &MENeutralCurrentDIS::_minflavour, 1, 1, 5,

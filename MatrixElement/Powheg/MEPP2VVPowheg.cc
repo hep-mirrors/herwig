@@ -3214,9 +3214,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qqb_hel_amp(realVVKinematics R) const {
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p1data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
@@ -3389,9 +3389,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_qg_hel_amp(realVVKinematics R) const {
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p1data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
@@ -3560,9 +3560,9 @@ Energy2 MEPP2VVPowheg::t_u_M_R_gqb_hel_amp(realVVKinematics R) const {
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p2data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p2data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
@@ -3716,9 +3716,9 @@ double MEPP2VVPowheg::lo_me() const {
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p1data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);

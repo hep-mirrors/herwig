@@ -114,13 +114,13 @@ void MEPP2HiggsJet::Init() {
      "Only include the incoming gg subprocess",
      4);
 
-  static Parameter<MEPP2HiggsJet,unsigned int> interfaceMinimumInLoop
+  static Parameter<MEPP2HiggsJet,int> interfaceMinimumInLoop
     ("MinimumInLoop",
      "The minimum flavour of the quarks to include in the loops",
      &MEPP2HiggsJet::_minloop, 6, 4, 6,
      false, false, Interface::limited);
 
-  static Parameter<MEPP2HiggsJet,unsigned int> interfaceMaximumInLoop
+  static Parameter<MEPP2HiggsJet,int> interfaceMaximumInLoop
     ("MaximumInLoop",
      "The maximum flavour of the quarks to include in the loops",
      &MEPP2HiggsJet::_maxloop, 6, 4, 6,
@@ -386,7 +386,7 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   complex<Energy2> A5 = Energy2();
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+  for ( int ix=_minloop; ix<=_maxloop; ++ix ) {
     // full mass dependance
     if(_massopt==0) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
@@ -455,7 +455,7 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   complex<Energy2> A5 = Energy2();
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+  for(int ix=_minloop;ix<=_maxloop;++ix) {
       if(_massopt==0) {
 	Energy2 mf2=sqr(getParticleData(ix)->mass());
 	A5+= mf2*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
@@ -520,7 +520,7 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   complex<Energy2> A5 = Energy2();
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+  for(int ix=_minloop;ix<=_maxloop;++ix) {
     if(_massopt==0) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
       A5+= mf2*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
@@ -625,7 +625,7 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    // calculate the loop functions
    Complex A4stu(0.),A2stu(0.),A2tsu(0.),A2ust(0.);
    Complex A5s(0.),A5t(0.),A5u(0.);
-   for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+   for(int ix=_minloop;ix<=_maxloop;++ix) {
      Energy2 mf2=sqr(getParticleData(ix)->mass());
      // loop functions
      if(_massopt==0) {

@@ -297,7 +297,7 @@ private:
   /**
    * Number of light flavours (in the beta function beta0_)
    */
-  const unsigned int nlf_;
+  const int nlf_;
 
   /**
    * (Proportional to) The beta function

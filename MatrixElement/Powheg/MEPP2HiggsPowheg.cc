@@ -213,15 +213,13 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // g q + g qbar contributions
   a_nlo=getParticleData(ParticleID::g);
   double wgqcollin(0.)   , wgqreal(0.)   , wgq(0.)   ;
-  for(unsigned int ix=1; ix<=nlf_; ++ix) {
+  for(int ix=1; ix<=nlf_; ++ix) {
     b_nlo=getParticleData( ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    b_nlo=getParticleData(minus_ix);
+
+    b_nlo=getParticleData(-ix);
     wgqcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,-1.);
     wgqreal           = alsOn2pi*Rtilde_Ltilde_gq_on_x(a_nlo,b_nlo,xt_,y_);
     wgq              += wgqreal+wgqcollin;
@@ -229,30 +227,25 @@ double MEPP2HiggsPowheg::NLOweight() const {
   // q g + qbar g contributions
   b_nlo=getParticleData(ParticleID::g);
   double wqgcollin(0.)   , wqgreal(0.)   , wqg(0.)   ;
-  for(unsigned int ix=1; ix<=nlf_; ++ix) {
+  for(int ix=1; ix<=nlf_; ++ix) {
     a_nlo=getParticleData( ix);
     wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
     wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wqg              += wqgreal+wqgcollin;
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
-    a_nlo=getParticleData(minus_ix);
+
+    a_nlo=getParticleData(-ix);
     wqgcollin         = alsOn2pi*Ctilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_, 1.);
     wqgreal           = alsOn2pi*Rtilde_Ltilde_qg_on_x(a_nlo,b_nlo,xt_,y_);
     wqg              += wqgreal+wqgcollin;
   }
   // q qbar + qbar q contributions
   double wqqbarreal(0.), wqqbar(0.);
-  for(unsigned int ix=1; ix<=nlf_; ++ix) {
-    // Bizarre fix to work on 64 bit (minus_ix)...
-    int minus_ix; 
-    minus_ix = -1*ix;
+  for(int ix=1; ix<=nlf_; ++ix) {
     a_nlo=getParticleData( ix);
-    b_nlo=getParticleData(minus_ix);
+    b_nlo=getParticleData(-ix);
     wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qqbar_on_x(a_nlo,b_nlo,xt_,y_);
     wqqbar       += wqqbarreal;
-    a_nlo=getParticleData(minus_ix);
+    a_nlo=getParticleData(-ix);
     b_nlo=getParticleData( ix);
     wqqbarreal    = alsOn2pi*Rtilde_Ltilde_qbarq_on_x(a_nlo,b_nlo,xt_,y_);
     wqqbar       += wqqbarreal;

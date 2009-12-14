@@ -29,7 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  MEfftoVH() : _shapeopt(2), _mh(), _wh() {}
+  MEfftoVH() : _shapeopt(2), _mh(), _wh(), h_br_() {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{

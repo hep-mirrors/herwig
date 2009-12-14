@@ -977,7 +977,8 @@ deconstructGeneralSystem(HardTreePtr tree,
   for(set<HardBranchingPtr>::const_iterator it=tree->branchings().begin();
       it!=tree->branchings().end();++it) {
     if((**it).status()==HardBranching::Incoming) continue;
-    (**it).setMomenta(LorentzRotation(),1.,Lorentz5Momentum(),false);
+    if((**it).branchingParticle()->coloured())
+      (**it).setMomenta(LorentzRotation(),1.,Lorentz5Momentum(),false);
   }
   for(set<HardBranchingPtr>::const_iterator it=tree->incoming().begin();
       it!=tree->incoming().end();++it) {
@@ -1516,7 +1517,7 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
     LorentzRotation R(toRest);
     R.boost(fromRest);
     tree->showerRot( R );
-    jets[0]->setMomenta(R,1.0,Lorentz5Momentum());
+    jets[0]->original(R*jets[0]->branchingParticle()->momentum());
     jets[0]->showerMomentum(R*jets[0]->branchingParticle()->momentum());
     // find the colour partners
     ShowerParticleVector particles;

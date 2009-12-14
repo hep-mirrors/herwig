@@ -387,7 +387,7 @@ void HadronSelector::doinit() {
   Interfaced::doinit();
   // the default partons allowed
   // the quarks
-  for(unsigned int ix=1;ix<=5;++ix) {
+  for ( int ix=1; ix<=5; ++ix ) {
     _partons.push_back(getParticleData(ix));
   }
   // the diquarks

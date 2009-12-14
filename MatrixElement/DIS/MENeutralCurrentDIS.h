@@ -225,12 +225,12 @@ private:
   /**
    *  Minimumflavour of the incoming quarks
    */
-  unsigned int _minflavour;
+  int _minflavour;
 
   /**
    *  Maximum flavour of the incoming quarks
    */
-  unsigned int _maxflavour;
+  int _maxflavour;
 
   /**
    *  Whether to include both \f$Z^0\f$ and \f$\gamma\f$ or only one

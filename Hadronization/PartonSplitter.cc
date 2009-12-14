@@ -110,7 +110,7 @@ void PartonSplitter::doinit() {
   // calculate the probabilties for the gluon to branch into each quark type
   // based on the available phase-space, as in fortran.
   Energy mg=getParticleData(ParticleID::g)->constituentMass();
-  for(unsigned int ix=1;ix<6;++ix) {
+  for( int ix=1; ix<6; ++ix ) {
     PDPtr quark = getParticleData(ix);
     Energy pcm = Kinematics::pstarTwoBodyDecay(mg,quark->constituentMass(),
 					       quark->constituentMass());

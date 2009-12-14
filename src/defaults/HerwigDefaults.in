@@ -170,6 +170,7 @@ set LEPGenerator:RandomNumberGenerator /Herwig/Random
 set LEPGenerator:StandardModelParameters /Herwig/Model
 set LEPGenerator:EventHandler /Herwig/EventHandlers/LEPHandler
 set LEPGenerator:Strategy DefaultStrategy
+set LEPGenerator:DumpPeriod -1
 
 # And the LHCGenerator
 create ThePEG::EventGenerator LHCGenerator
@@ -177,6 +178,7 @@ set LHCGenerator:RandomNumberGenerator /Herwig/Random
 set LHCGenerator:StandardModelParameters /Herwig/Model
 set LHCGenerator:EventHandler /Herwig/EventHandlers/LHCHandler
 set LHCGenerator:Strategy DefaultStrategy
+set LHCGenerator:DumpPeriod -1
 
 # And the DISGenerator
 create ThePEG::EventGenerator DISGenerator
@@ -184,6 +186,7 @@ set DISGenerator:RandomNumberGenerator /Herwig/Random
 set DISGenerator:StandardModelParameters /Herwig/Model
 set DISGenerator:EventHandler /Herwig/EventHandlers/DISHandler
 set DISGenerator:Strategy DefaultStrategy
+set DISGenerator:DumpPeriod -1
 
 ############################################
 # The default cuts

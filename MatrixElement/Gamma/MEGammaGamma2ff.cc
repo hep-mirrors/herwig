@@ -35,7 +35,7 @@ void MEGammaGamma2ff::doinit() {
 
 void MEGammaGamma2ff::getDiagrams() const {
   tcPDPtr gamma = getParticleData(ParticleID::gamma);
-  for(unsigned int ix=1;ix<17;++ix) {
+  for(int ix=1;ix<17;++ix) {
     // increment counter to switch between quarks and leptons
     if(ix==7) ix+=4;
     if(ix>11&&ix%2==0) ++ix;
@@ -176,7 +176,7 @@ void MEGammaGamma2ff::Init() {
     ("The MEGammaGamma2ff class implements the matrix elemments for"
      " direct fermion-antifermion production in gamma-gamma collisions.");
 
-  static Switch<MEGammaGamma2ff,unsigned int> interfaceProcess
+  static Switch<MEGammaGamma2ff,int> interfaceProcess
     ("Process",
      "Which process to included",
      &MEGammaGamma2ff::process_, 0, false, false);

@@ -47,6 +47,11 @@ public:
 		tHardBranchingPtr parent,Status status);
 
   /**
+   * Destructor
+   */
+  ~HardBranching();
+
+  /**
    * Add a child of the branching
    * @param child The child of the branching
    */
@@ -67,7 +72,10 @@ public:
   /**
    *  Clear the backward children
    */
-  void clearBackChildren() { _back_children.clear(); }
+  void clearBackChildren() { 
+    _back_children.clear(); 
+    _backSudakov = SudakovPtr();
+  }
 
   /**
    *  Set the momenta of the particles

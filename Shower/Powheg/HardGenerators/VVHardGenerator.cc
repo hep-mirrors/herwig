@@ -16,6 +16,11 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/EventRecord/Step.h"
+#include "ThePEG/EventRecord/Collision.h"
+#include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/Handlers/Hint.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
@@ -25,6 +30,8 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/MatrixElement/HardVertex.h"
+#include "Herwig++/Decay/DecayMatrixElement.h"
+#include "ThePEG/PDT/DecayMode.h"
 
 using namespace std;
 
@@ -142,8 +149,8 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   // Now we want to set these data vectors according to the particles we've
   // received from the current 2->2 hard collision:
   vector<ShowerProgenitorPtr> particlesToShower;
-  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-  for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit )
+  for(map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator
+	cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit )
     particlesToShower.push_back(cit->first);
 
   qProgenitor_  = particlesToShower[0];
@@ -166,20 +173,13 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   flipped_ = quark_->momentum().z()<ZERO ? true : false;
 
   assert(tree->outgoingLines().size()==2);
+  for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator
+	cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit )
+    particlesToShower.push_back(cit->first);
 
-  // Reset the gauge bosons to null pointers (do not remove!):
-  V1_ = PPtr();
-  V2_ = PPtr();
-
-  // Get the gauge bosons:
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-  for(cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt) {
-    PPtr currentBoson;
-    currentBoson = cjt->first->copy();
-    if(!V1_&&!V2_)                    V1_ = currentBoson;
-    if( V1_&&!V2_&&V1_!=currentBoson) V2_ = currentBoson;
-  }
-  gluon_ = getParticleData(ParticleID::g)->produceParticle();
+  V1_           = particlesToShower[2]->progenitor();
+  V2_           = particlesToShower[3]->progenitor();
+  gluon_        = getParticleData(ParticleID::g)->produceParticle();
 
   // Abort the run if V1_ and V2_ are not just pointers to different gauge bosons
   if(!V1_||!V2_) throw Exception() 
@@ -204,6 +204,44 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   // the Born variables using the WZ LO/NLO matrix element(s), because
   // those transformed matrix elements are, according to mathematica, 
   // symmetric in the momenta (and therefore also the masses) of the 2 Z's.
+
+  // If the vector bosons have decayed already then we may want to
+  // to get the children_ (and any associated photons) to correct
+  // spin correlations:
+  StepPtr theSubProcess = generator()->eventHandler()->currentStep();
+  tPVector outgoing = theSubProcess->getFinalState();
+  children_.clear();
+  photons_.clear();
+  if(outgoing.size()>=4) {
+    for(unsigned int ix=0;ix<outgoing.size();ix++) 
+      if(outgoing[ix]->parents()[0]&&
+	 (abs(outgoing[ix]->parents()[0]->id())==24||
+	  abs(outgoing[ix]->parents()[0]->id())==23)) {
+	if(abs(outgoing[ix]->id())<=16&&abs(outgoing[ix]->id())>=11) {
+	  children_.push_back(outgoing[ix]);
+	} else if(outgoing[ix]->id()==21) {
+	  photons_.push_back(outgoing[ix]);
+	}
+      };
+    assert(children_.size()==4);
+    if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
+      swap(children_[0],children_[2]);
+    if(children_[0]->parents()[0]!=children_[1]->parents()[0]) 
+      swap(children_[0],children_[3]);
+    if(children_[0]->parents()[0]->id()!=V1_->id()) {
+      swap(children_[0],children_[2]);
+      swap(children_[1],children_[3]);
+    }
+    if(children_[0]->id()<0) swap(children_[0],children_[1]);
+    if(children_[2]->id()<0) swap(children_[2],children_[3]);
+    assert(children_[0]->parents()[0]==children_[1]->parents()[0]);
+    assert(children_[2]->parents()[0]==children_[3]->parents()[0]);
+//     // Set parent child relations between VV and their children:
+//     V1_->original()->addChild(children_[0]);
+//     V1_->original()->addChild(children_[1]);
+//     V2_->original()->addChild(children_[2]);
+//     V2_->original()->addChild(children_[3]);
+  }
 
   // Now we want to construct a bornVVKinematics object. The
   // constructor for that needs all 4 momenta, q, qbar, V1_, V2_ 
@@ -261,8 +299,19 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
       theRealMomenta[ix].rotateY(-Constants::pi);
 
   // Randomly rotate the event about the beam axis:
+  double randomPhi(UseRandom::rnd()*2.*Constants::pi);
   for(unsigned int ix=0;ix<theRealMomenta.size();ix++) 
-    theRealMomenta[ix].rotateZ(UseRandom::rnd()*2.*Constants::pi);
+    theRealMomenta[ix].rotateZ(randomPhi);
+
+  // Warn if momentum conservation is not obeyed:
+  Lorentz5Momentum inMinusOut(theRealMomenta[0]+theRealMomenta[1]
+                             -theRealMomenta[2]-theRealMomenta[3]
+                             -theRealMomenta[4]);
+  if(inMinusOut.t()>0.1*GeV||inMinusOut.x()>0.1*GeV||
+     inMinusOut.y()>0.1*GeV||inMinusOut.z()>0.1*GeV)
+    cout << "VVHardGenerator::generateHardest\n"
+         << "Momentum imbalance in V1 V2 rest frame\n"
+         << "P_in minus P_out = " << inMinusOut/GeV << endl;
 
   // From the radiative kinematics we now have to form ShowerParticle objects:
   ShowerParticlePtr p1;
@@ -382,6 +431,31 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
   hardBranchings.push_back(V1_Branching);
   hardBranchings.push_back(V2_Branching);
 
+  // Recalculate the hard vertex for this event:
+  // For spin correlations, if an emission occurs go calculate the relevant 
+  // combination of amplitudes for the ProductionMatrixElement. 
+  if(realMESpinCorrelations_) {
+    // Here we reset the realVVKinematics n+1 momenta to be those
+    // of the lab frame in order to calculate the spin correlations.
+    // Note that these momenta are not used for anything else after
+    // this.
+    R_.p1r(theRealMomenta[0]);
+    R_.p2r(theRealMomenta[1]);
+    R_.k1r(theRealMomenta[2]);
+    R_.k2r(theRealMomenta[3]);
+    R_.kr (theRealMomenta[4]);
+    if(channel_==0) t_u_M_R_qqb_hel_amp(R_,true);
+    else if(channel_==1) t_u_M_R_qg_hel_amp(R_,true);
+    else if(channel_==2) t_u_M_R_gqb_hel_amp(R_,true);
+    spacelikeSon_=spacelikeSon;
+    emitted_=k;
+    recalculateVertex();
+  }
+
+// cout << "\n\nVVHardGenerator lab momenta are..." << endl;
+// for(unsigned int ix=0;ix<theRealMomenta.size();ix++)
+//   cout << "theRealMomenta[" << ix << "] = " << theRealMomenta[ix]/GeV << endl;
+
   // Construct the HardTree object needed to perform the showers
   HardTreePtr nasonTree=new_ptr(HardTree(hardBranchings,spacelikeBranchings,
 					 ShowerInteraction::QCD));
@@ -414,6 +488,8 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
     motherBranching      ->beam(qbProgenitor_->original()->parents()[0]);
     spectatorBranching   ->beam(qProgenitor_ ->original()->parents()[0]);
   }
+//   nasonTree->connect(V1_ ,V1_Branching );
+//   nasonTree->connect(V2_ ,V2_Branching );
 
   // This if {...} else if {...} puts the mother and spectator on the same colour
   // line. If we don't do this, then when reconstructFinalStateShower calls
@@ -437,39 +513,18 @@ HardTreePtr VVHardGenerator::generateHardest(ShowerTreePtr tree) {
 //  evolver()->showerModel()->partnerFinder()->
 //     setInitialEvolutionScales(particles,true,true);
 
+  // Do the initial-state reconstruction
+  Boost toRest,fromRest;
+  toRest   = -(mother->momentum()+spectator ->momentum()).boostVector();
+  fromRest =  (quark_->momentum()+antiquark_->momentum()).boostVector();
+  LorentzRotation R(toRest);
+  R.boost(fromRest);
+  V1_->setMomentum(R*theRealMomenta[2]);
+  V2_->setMomentum(R*theRealMomenta[3]);
+
   // Calculate the shower variables
   evolver()->showerModel()->kinematicsReconstructor()
     ->deconstructHardJets(nasonTree,evolver(),ShowerInteraction::QCD);
-
-  // Recalculate the hard vertex for this event:
-  // For spin correlations, if an emission occurs go calculate the relevant 
-  // combination of amplitudes for the ProductionMatrixElement. 
-  if(realMESpinCorrelations_) {
-    // Here we reset the realVVKinematics n+1 momenta to be those
-    // of the lab frame in order to calculate the spin correlations.
-    // Note that these momenta are not used for anything else after
-    // this. We must use the lab momenta as otherwise you get in 
-    // trouble as is easy to check using the LO spin correlations
-    // and evaluating lo_hel_amps_ using the bornVVKinematics momenta
-    // instead of the quark_->momentum() etc...
-    R_.p1r(theRealMomenta[0]);
-    R_.p2r(theRealMomenta[1]);
-    R_.k1r(theRealMomenta[2]);
-    R_.k2r(theRealMomenta[3]);
-    R_.kr (theRealMomenta[4]);
-    if(channel_==0) {
-      t_u_M_R_qqb_hel_amp(R_,true);
-    }
-    else if(channel_==1) {
-      t_u_M_R_qg_hel_amp(R_,true);
-    }
-    else if(channel_==2) {
-      t_u_M_R_gqb_hel_amp(R_,true);
-    }
-    spacelikeSon_=spacelikeSon;
-    emitted_=k;
-    recalculateVertex();
-  }
 
   return nasonTree;
 }
@@ -799,9 +854,9 @@ Energy2 VVHardGenerator::t_u_M_R_qqb_hel_amp(realVVKinematics R, bool getMatrix)
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p1data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
@@ -979,9 +1034,9 @@ Energy2 VVHardGenerator::t_u_M_R_qg_hel_amp(realVVKinematics R, bool getMatrix) 
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p1data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
@@ -1155,9 +1210,9 @@ Energy2 VVHardGenerator::t_u_M_R_gqb_hel_amp(realVVKinematics R, bool getMatrix)
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p2data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p2data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(kdata->CC());
@@ -1341,9 +1396,9 @@ double VVHardGenerator::lo_me(bool getMatrix) const {
   vector<tcPDPtr> tc;
   if(abs(k1data->id())==24&&abs(k2data->id())==24) {
     if(abs(p1data->id())%2==0)
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(1+2*ix));
     else
-      for(unsigned int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
+      for(int ix=0;ix<3;++ix) tc.push_back(getParticleData(2+2*ix));
   }
   else if(k1data->id()==23&&k2data->id()==23)      tc.push_back(p1data);
   else if(abs(k1data->id())==24&&k2data->id()==23) tc.push_back(p2data);
@@ -1351,9 +1406,12 @@ double VVHardGenerator::lo_me(bool getMatrix) const {
   // Loop over helicities summing the relevant diagrams
   for(unsigned int p1hel=0;p1hel<2;++p1hel) {
     for(unsigned int p2hel=0;p2hel<2;++p2hel) {
-      if((p1hel==p2hel)&&helicityConservation_) continue;
       for(unsigned int k1hel=0;k1hel<3;++k1hel) {
 	for(unsigned int k2hel=0;k2hel<3;++k2hel) {
+	  if((p1hel==p2hel)&&helicityConservation_) {
+	    lo_hel_amps_(p1hel,p2hel,k1hel,k2hel) = Complex(0.,0.);
+	    continue;
+	  }
 	  vector<Complex> diagrams;
 	  // Get all t-channel diagram contributions
 	  tcPDPtr intermediate_t;

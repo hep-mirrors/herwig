@@ -81,8 +81,11 @@ Energy DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
   assert(outpart.size()==2);
   double ctheta,phi;
   Kinematics::generateAngles(ctheta,phi);
-  Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
-			   ctheta, phi,part[0],part[1]);
+  if(! Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
+				ctheta, phi,part[0],part[1])) 
+    throw Exception() << "Incoming mass - Outgoing mass negative in "
+		      << "DecayPhaseSpaceMode::flatPhaseSpace()"
+		      << Exception::eventerror;
   wgt *= Kinematics::pstarTwoBodyDecay(inmass,mass[1],mass[2])/8./Constants::pi/inmass;
   outpart[0]->set5Momentum(part[0]);
   outpart[1]->set5Momentum(part[1]);

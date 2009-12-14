@@ -37,7 +37,8 @@ Energy2 Cluster::_mg2 = ZERO;
 ClassDescription<Cluster> Cluster::initCluster;
 
 Cluster::Cluster() 
-  : Particle(CurrentGenerator::current().getParticleData(ExtraParticleID::Cluster)), 
+  : Particle(CurrentGenerator::current().
+	     getParticleData(long(ExtraParticleID::Cluster))), 
     _isAvailable(true),
     _reshufflingPartner(),
     _component(),
@@ -48,7 +49,9 @@ Cluster::Cluster()
     _id(0) {}  
 
 Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
-  : Particle(CurrentGenerator::current().getParticleData(ExtraParticleID::Cluster)), _isAvailable(true) 
+  : Particle(CurrentGenerator::current().
+	     getParticleData(long(ExtraParticleID::Cluster))),
+    _isAvailable(true) 
 {
   if(!dataPtr()) {
     cerr << "Cluster Particle Data not defined. Cannot complete Hadronization "

@@ -107,7 +107,7 @@ void FortranSudakov::doinit() {
   double power=1./(_nqev-1);
   // get the constituent masses of the quarks
   vector<Energy> qmass;
-  for(unsigned int ix=1;ix<=6;++ix) {
+  for(int ix=1;ix<=6;++ix) {
     qmass.push_back(getParticleData(ix)->constituentMass());
   }
   _fortranQCD=dynamic_ptr_cast<FortranAlphaQCDPtr>(alpha());

@@ -49,7 +49,7 @@ namespace Herwig {
 			     const Energy m1, const Energy m2,
 			     const Axis & unitDir1,
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2) {
-      Energy min=p.m();
+      Energy min=p.mass();
       if ( min >= m1 + m2  &&  m1 >= ZERO  &&  m2 >= ZERO  ) {
 	Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
 	p1 = Lorentz5Momentum(m1, pstarVector);

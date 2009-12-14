@@ -139,12 +139,12 @@ private:
   /**
    * The minimum flavour number in quark loops
    */
-  unsigned int _minloop;
+  int _minloop;
 
   /**
    * The maximum flavour number in quark loops
    */
-  unsigned int _maxloop;
+  int _maxloop;
 
   /**
    * Loop calculations: A1 for spin-1/2 particles (see details in ``Higgs Hunter's Guide'')

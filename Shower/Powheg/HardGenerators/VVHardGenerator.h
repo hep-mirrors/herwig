@@ -330,6 +330,8 @@ private:
   PPtr V2_;
   PPtr emitted_;
   PPtr spacelikeSon_;
+  vector<PPtr> children_;
+  vector<PPtr> photons_;
 
   /**
    *  Flag indicating if the q & qbar are flipped or not i.e. this

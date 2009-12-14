@@ -39,13 +39,13 @@ void SMHPPVertex::Init() {
   static ClassDocumentation<SMHPPVertex> documentation
     ("This class implements the h0->gamma,gamma vertex.");
 
-  static Parameter<SMHPPVertex,unsigned int> interfaceMinQuarkInLoop
+  static Parameter<SMHPPVertex,int> interfaceMinQuarkInLoop
     ("MinQuarkInLoop",
      "The minimum flavour of the quarks to include in the loops",
      &SMHPPVertex::_minloop, 6, 1, 6,
      false, false, Interface::limited);
 
-  static Parameter<SMHPPVertex,unsigned int> interfaceMaxQuarkInLoop
+  static Parameter<SMHPPVertex,int> interfaceMaxQuarkInLoop
     ("MaxQuarkInLoop",
      "The maximum flavour of the quarks to include in the loops",
      &SMHPPVertex::_maxloop, 6, 1, 6,
@@ -87,8 +87,8 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
                               tcPDPtr part3, tcPDPtr part1) {
   assert( part1->id() == ParticleID::h0 &&
 	  part2->id() == ParticleID::gamma && part3->id() == ParticleID::gamma );
-  unsigned int Qminloop = _minloop;
-  unsigned int Qmaxloop = _maxloop;
+  int Qminloop = _minloop;
+  int Qmaxloop = _maxloop;
   if (_maxloop < _minloop) {
     Qmaxloop=_minloop;
     Qminloop=_maxloop;
@@ -104,16 +104,16 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     norm(_couplast);
     Complex loop(0.);
     // quark loops
-    for (unsigned int i = Qminloop; i <= Qmaxloop; ++i) {
+    for ( int i = Qminloop; i <= Qmaxloop; ++i ) {
       tcPDPtr qrk = getParticleData(i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,qrk) : qrk->mass();
       Charge charge = qrk->charge();
       loop += 3.*sqr(charge/ThePEG::Units::eplus) * Af(sqr(mass)/q2);
     }
     // lepton loops
-    unsigned int Lminloop = 3; // still fixed value
-    unsigned int Lmaxloop = 3; // still fixed value
-    for (unsigned int i = Lminloop; i <= Lmaxloop; ++i) {
+    int Lminloop = 3; // still fixed value
+    int Lmaxloop = 3; // still fixed value
+    for (int i = Lminloop; i <= Lmaxloop; ++i) {
       tcPDPtr lpt = getParticleData(9 + 2*i);
       Energy mass = (2 == massopt) ? _theSM->mass(q2,lpt) : lpt->mass();
       Charge charge = lpt->charge();
@@ -138,10 +138,10 @@ void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part2,
     }
     norm(_couplast);
     // quarks
-    unsigned int delta = Qmaxloop - Qminloop + 1;
+    int delta = Qmaxloop - Qminloop + 1;
     type.resize(delta,PDT::SpinUnknown);
     masses.resize(delta,ZERO);
-    for (unsigned int i = 0; i < delta; ++i) {
+    for (int i = 0; i < delta; ++i) {
       tcPDPtr q = getParticleData(_minloop+i);
       type[i] = PDT::Spin1Half;
       masses[i] = (2 == massopt) ? _theSM->mass(q2,q) : q->mass();
