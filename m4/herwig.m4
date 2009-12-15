@@ -385,6 +385,7 @@ AM_CONDITIONAL(WANT_UED,[test "$ued" -o "$all"])
 AM_CONDITIONAL(WANT_RS,[test "$rs" -o "$all"])
 AM_CONDITIONAL(WANT_LH,[test "$lh" -o "$all"])
 AM_CONDITIONAL(WANT_LHTP,[test "$lhtp" -o "$all"])
+AM_CONDITIONAL(WANT_Anomalous,[test "$anomalous" -o "$all"])
 AM_CONDITIONAL(WANT_TRP,[test "$trp" -o "$all"])
 ])
 

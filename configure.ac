@@ -108,6 +108,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/LH/Makefile
 		Models/LHTP/Makefile
 		Models/Transplanckian/Makefile
+		Models/AnomalousCouplings/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
 		Decay/Tau/Makefile

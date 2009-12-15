@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General Susy UED LH LHTP Transplanckian
+SUBDIRS = RSModel  StandardModel General Susy UED LH LHTP Transplanckian AnomalousCouplings
