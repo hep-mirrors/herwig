@@ -79,7 +79,7 @@ protected:
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,
 			   tcPDPtr part2,tcPDPtr part3,
 			   double & g, double & kappa,
-			   double & lambda, unsigned int & order);
+			   unsigned int & order);
   
 public:
 
@@ -177,14 +177,9 @@ private:
   double kappaGamma_;
 
   /**
-   *  \f$\lambda^Z\f$
-   */
-  double lambdaZ_;
-
-  /**
    *  \f$\lambda^\gamma\f$
    */
-  double lambdaGamma_;
+  double lambda_;
   //@}
 
   /**
@@ -239,7 +234,7 @@ struct ClassTraits<Herwig::AnomalousWWWVertex>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "AnomalousWWWVertex.so"; }
+  static string library() { return "HwAnomalousCouplings.so"; }
 };
 
 /** @endcond */

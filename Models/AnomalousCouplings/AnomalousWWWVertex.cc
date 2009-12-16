@@ -16,7 +16,7 @@ using namespace Herwig;
 
 AnomalousWWWVertex::AnomalousWWWVertex() :
   gZ_(1.),gGamma_(1.),kappaZ_(1.),kappaGamma_(1.),
-  lambdaZ_(0.),lambdaGamma_(0.),
+  lambda_(0.),
   _zfact(0.),_couplast(0.), 
   _q2last(sqr(Constants::MaxEnergy)) {
   addToList(24, -24, 22);
@@ -42,11 +42,11 @@ IBPtr AnomalousWWWVertex::fullclone() const {
 }
 
 void AnomalousWWWVertex::persistentOutput(PersistentOStream & os) const {
-  os << gZ_ << gGamma_ << kappaZ_ << kappaGamma_ << lambdaZ_ << lambdaGamma_;
+  os << gZ_ << gGamma_ << kappaZ_ << kappaGamma_ << lambda_;
 }
 
 void AnomalousWWWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> gZ_ >> gGamma_ >> kappaZ_ >> kappaGamma_ >> lambdaZ_ >> lambdaGamma_;
+  is >> gZ_ >> gGamma_ >> kappaZ_ >> kappaGamma_ >> lambda_;
 }
 
 ClassDescription<AnomalousWWWVertex> AnomalousWWWVertex::initAnomalousWWWVertex;
@@ -65,33 +65,21 @@ void AnomalousWWWVertex::Init() {
      false, false, Interface::limited);
 
   static Parameter<AnomalousWWWVertex,double> interfacekappaZ
-    ("kappaZ",
+    ("KappaZ",
      "The anomalous kappa coupling for the Z boson",
      &AnomalousWWWVertex::kappaZ_, 1.0, -10., 10.,
      false, false, Interface::limited);
 
-  static Parameter<AnomalousWWWVertex,double> interfacelambdaZ
-    ("lambdaZ",
-     "The anomalous lambda coupling for the Z boson",
-     &AnomalousWWWVertex::lambdaZ_, 0.0, -10., 10.,
-     false, false, Interface::limited);
-
-  static Parameter<AnomalousWWWVertex,double> interfacegGamma
-    ("gGamma",
-     "The anomalous g coupling for the gamma",
-     &AnomalousWWWVertex::gGamma_, 1.0, -10., 10.,
+  static Parameter<AnomalousWWWVertex,double> interfacelambda
+    ("Lambda",
+     "The anomalous lambda coupling",
+     &AnomalousWWWVertex::lambda_, 0.0, -10., 10.,
      false, false, Interface::limited);
 
   static Parameter<AnomalousWWWVertex,double> interfacekappaGamma
-    ("kappaGamma",
+    ("KappaGamma",
      "The anomalous kappa coupling for the gamma",
      &AnomalousWWWVertex::kappaGamma_, 1.0, -10., 10.,
-     false, false, Interface::limited);
-
-  static Parameter<AnomalousWWWVertex,double> interfacelambdaGamma
-    ("lambdaGamma",
-     "The anomalous lambda coupling for the gamma",
-     &AnomalousWWWVertex::lambdaGamma_, 0.0, -10., 10.,
      false, false, Interface::limited);
 }
 
@@ -110,11 +98,13 @@ Complex AnomalousWWWVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
   complex<Energy> dotp31 = vec1.wave().dot(vec3.momentum());
   complex<Energy> dotp32 = vec2.wave().dot(vec3.momentum());
   complex<Energy> dotp12 = vec2.wave().dot(vec1.momentum());
-  double g,kappa,lambda;
+  double g,kappa;
   unsigned int order;
   setCoupling(q2,vec1.particle(),vec2.particle(),vec3.particle(),
-	      g,kappa,lambda,order);
+	      g,kappa,order);
   Energy2 p2[3],mw2;
+  Complex test = Complex(0.,1.)*norm()*UnitRemoval::InvE*
+    (dot12*(dotp13-dotp23)+dot23*(dotp21-dotp31)+dot31*(dotp32-dotp12));
   if(order==0) {
     Complex temp = dot12;
     dot12=dot23;
@@ -158,11 +148,14 @@ Complex AnomalousWWWVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1
     p2[2] = vec3.momentum().m2();
   }
   // finally calculate the vertex
-  return Complex(0.,1.)*norm()*UnitRemoval::InvE*
-    ((g+kappa+lambda*p2[0]/mw2)*dotp21*dot23-
-     (g+kappa+lambda*p2[1]/mw2)*dotp12*dot31+
-     lambda/mw2*dotp31*dotp32*(dotp23-dotp13)-
-     dot12*(g+0.5*lambda*p2[2]/mw2)*(dotp23-dotp13));
+  Complex output = Complex(0.,1.)*norm()*UnitRemoval::InvE*
+    ((g+kappa+lambda_*p2[0]/mw2)*dotp21*dot23-
+     (g+kappa+lambda_*p2[1]/mw2)*dotp12*dot31+
+     lambda_/mw2*dotp31*dotp32*(dotp23-dotp13)-
+     dot12*(g+0.5*lambda_*p2[2]/mw2)*(dotp23-dotp13));
+  Complex diff=output-test;
+  if(abs(diff)>1e-10) cerr << "testing " << diff << "\n";
+  return output;
 }
   
 // off-shell vector
@@ -170,6 +163,7 @@ VectorWaveFunction AnomalousWWWVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out
 						const VectorWaveFunction & vec1,
 						const VectorWaveFunction & vec2,
 						Energy mass, Energy width) {
+  assert(false);
   //   // output momenta
 //   Lorentz5Momentum pout =vec1.momentum()+vec2.momentum();
 //   // calculate the coupling
@@ -197,7 +191,7 @@ VectorWaveFunction AnomalousWWWVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out
 void AnomalousWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,
 				     tcPDPtr b, tcPDPtr c,
 				     double & g, double & kappa,
-				     double & lambda, unsigned int & order) {
+				     unsigned int & order) {
   int ida=a->id(), idb=b->id(), idc=c->id();
   // first the overall normalisation
   if(q2!=_q2last||_couplast==0.) {
@@ -212,7 +206,6 @@ void AnomalousWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,
     norm(_couplast);
     g      = gGamma_;
     kappa  = kappaGamma_;
-    lambda = lambdaGamma_;
   }
   // W+ W- photon (anticylic perms of above)
   else if((ida== 24 && idb==-24 && idc== 22) || 
@@ -222,7 +215,6 @@ void AnomalousWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,
     norm(-_couplast);
     g      = gGamma_;
     kappa  = kappaGamma_;
-    lambda = lambdaGamma_;
   }
   // W- W+ Z and cylic perms
   else if((ida==-24 && idb== 24 && idc== 23) || 
@@ -232,7 +224,6 @@ void AnomalousWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,
     norm(_couplast*_zfact);
     g      = gZ_;
     kappa  = kappaZ_;
-    lambda = lambdaZ_;
   }
   // W+ W- Z (anticylic perms of above)
   else if((ida== 24 && idb==-24 && idc== 23) || 
@@ -242,7 +233,6 @@ void AnomalousWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,
     norm(-_couplast*_zfact);
     g      = gZ_;
     kappa  = kappaZ_;
-    lambda = lambdaZ_;
   }
   else
     throw Helicity::HelicityConsistencyError() 

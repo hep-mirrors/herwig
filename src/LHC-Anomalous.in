@@ -1,0 +1,71 @@
+##################################################
+# Example generator based on LHC parameters
+# usage: Herwig++ read LHC.in
+##################################################
+create Herwig::AnomalousWWWVertex /Herwig/Vertices/AnomalousWWWVertex HwAnomalousCouplings.so
+set /Herwig/Model:Vertex/WWW /Herwig/Vertices/AnomalousWWWVertex
+
+##################################################
+# Technical parameters for this run
+##################################################
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+
+##################################################
+# LHC physics parameters (override defaults here) 
+##################################################
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+
+# Intrinsic pT tune extrapolated to LHC energy
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+
+##################################################
+# Matrix Elements for hadron-hadron collisions 
+# (by default only gamma/Z switched on)
+##################################################
+cd /Herwig/MatrixElements/
+
+# WW/WZ/ZZ
+#insert SimpleQCD:MatrixElements[0] MEPP2VV
+#set MEPP2VV:Process WZ
+#
+# Wgamma/Zgamma
+insert SimpleQCD:MatrixElements[0] MEPP2VGamma
+set MEPP2VGamma:Process WGamma
+
+cd /Herwig/Generators
+
+##################################################
+#  Useful analysis handlers for hadron-hadron physics
+##################################################
+# analysis of W/Z events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/DrellYan
+# analysis of top-antitop events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/TTbar
+# analysis of gamma+jet events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/GammaJet
+# analysis of gamma-gamma events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/GammaGamma
+# analysis of higgs-jet events
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HiggsJet
+
+##################################################
+#  Useful analysis handlers for HepMC related output
+##################################################
+# Schematic overview of an event (requires --with-hepmc to be set at configure time
+# and the graphviz program 'dot' to produce a plot)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/Plot
+# A HepMC dump file (requires --with-hepmc to be set at configure time)
+# insert LHCGenerator:AnalysisHandlers 0 /Herwig/Analysis/HepMCFile
+# set /Herwig/Analysis/HepMCFile:PrintEvent 100
+# set /Herwig/Analysis/HepMCFile:Format GenEvent
+# set /Herwig/Analysis/HepMCFile:Units GeV_mm
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
+saverun LHC-Anomalous LHCGenerator

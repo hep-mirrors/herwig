@@ -18,7 +18,7 @@ HELPERFILES = SPhenoSPS1a.spc MUED.model MSSM.model NMSSM.model RS.model
 
 INPUTFILES = ILC.in LEP.in LHC.in TVT.in LHC-MSSM.in LHC-MUED.in LHC-NMSSM.in LHC-RS.in \
              ILC-MSSM.in ILC-MUED.in ILC-RS.in DIS.in LHC-Powheg.in \
-	     TVT-Powheg.in GammaGamma.in LHC-TRP.in
+	     TVT-Powheg.in GammaGamma.in LHC-TRP.in LHC-Anomalous.in 
 
 ## provide -no3body for faster 'make check'
 dist_noinst_DATA = LHC-MUED-no3body.in 
