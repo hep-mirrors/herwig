@@ -1266,7 +1266,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   // generate branching
   tcPDPtr part[2];
   while (true) {
-    if( isTruncatedShowerON() || hardOnly() ) break;
+    if( !isTruncatedShowerON() || hardOnly() ) break;
     bb = splittingGenerator()->chooseBackwardBranching( *particle, 
 							beam, 1., beamParticle(), 
 							type );
