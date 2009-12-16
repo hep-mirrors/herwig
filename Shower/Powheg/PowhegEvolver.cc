@@ -275,7 +275,7 @@ bool PowhegEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr b
   // generate branching
   tcPDPtr part[2];
   while (true) {
-    if( isTruncatedShowerON() || _hardonly ) break;
+    if( !isTruncatedShowerON() || _hardonly ) break;
     bb = splittingGenerator()->chooseBackwardBranching( *particle, 
 							beam, 1., beamParticle() );
     if( !bb.kinematics || bb.kinematics->scale() < branch->scale() ) {
