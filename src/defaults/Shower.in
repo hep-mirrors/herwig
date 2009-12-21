@@ -147,51 +147,51 @@ set dtoGdSudakov:PDFFactor OverOneMinusZ
 #
 # Now add the final splittings
 #
-set SplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting c->c,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting b->b,g; QtoQGSudakov
-set SplittingGenerator:AddFinalSplitting t->t,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting c->c,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting b->b,g; QtoQGSudakov
+do SplittingGenerator:AddFinalSplitting t->t,g; QtoQGSudakov
 #
-set SplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
+do SplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
 #
-set SplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
-set SplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
-set SplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
-set SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
-set SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
-set SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
+do SplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
+do SplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
+do SplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
 #
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that particle a is the particle given and we backward branch to
 # particle b which is initial state and particle c which is final state
 #
-set SplittingGenerator:AddInitialSplitting u->u,g; QtoQGSudakov
-set SplittingGenerator:AddInitialSplitting d->d,g; QtoQGSudakov
-set SplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
-set SplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
-set SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
-set SplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting u->u,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting d->d,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
+do SplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
 #
-set SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
+do SplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #
-set SplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
-set SplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
-set SplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
-set SplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
-set SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
-set SplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
+do SplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
+do SplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
+do SplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
 #
-set SplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
-set SplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
-set SplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting dbar->g,dbar; dtoGdSudakov
-set SplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
-set SplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
-set SplittingGenerator:AddInitialSplitting tbar->g,tbar; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
+do SplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
+do SplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting dbar->g,dbar; dtoGdSudakov
+do SplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
+do SplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
+do SplittingGenerator:AddInitialSplitting tbar->g,tbar; QtoGQSudakov
