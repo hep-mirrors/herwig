@@ -26,6 +26,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "DecayIntegrator.h"
 #include "DecayPhaseSpaceMode.h"
+#include "ThePEG/PDT/MixedParticleData.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 
 using namespace Herwig;
@@ -60,13 +61,35 @@ handle(EventHandler &, const tPVector & tagged,
   }
 }
 
-
 // perform decay method including modifications for spin correlations
 // and for the decayer to specify intermediate decay products
 void HwDecayHandler::performDecay(tPPtr parent, Step & s) const {
   long ntry = 0;
   tcSpinfoPtr hwspin;
-  if ( maxLifeTime() >= ZERO ) {
+  tcMixedParticleDataPtr 
+    mixdata=dynamic_ptr_cast<tcMixedParticleDataPtr>(parent->dataPtr());
+  if(mixdata) {
+    pair<bool,Length> mixing = mixdata->generateLifeTime();
+    develop(parent);
+    parent->setLifeLength(Distance());
+    PPtr newparent;
+    if(mixing.first) {
+      newparent = parent->dataPtr()->CC()->
+	produceParticle(parent->momentum());
+    }
+    else {
+      newparent = parent->dataPtr()      ->
+	produceParticle(parent->momentum());
+    }
+    newparent->setLabVertex(parent->labDecayVertex());
+    Lorentz5Distance lifeLength(mixing.second,
+				parent->momentum().vect()*
+				(mixing.second/parent->mass()));
+    newparent->setLifeLength(lifeLength);
+    s.addDecayProduct(parent, newparent);
+    parent = newparent;
+  }
+  else if ( maxLifeTime() >= ZERO ) {
     if( ( lifeTimeOption() && parent->lifeLength().tau() > maxLifeTime())||
 	(!lifeTimeOption() && parent->data().cTau()      > maxLifeTime()) ) {
       parent->setLifeLength(Distance());
