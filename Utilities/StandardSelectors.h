@@ -35,8 +35,6 @@ struct WeakBHadronSelector: public SelectorBase {
   inline virtual bool check(const Particle &  p) const;
 
 };
-
-#include "StandardSelectors.icc"
 }
 
 #endif /* HERWIG_StandardSelectors_H */
