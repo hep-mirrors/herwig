@@ -27,6 +27,14 @@
 
 using namespace Herwig;
 
+IBPtr MEQCD2to2Fast::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MEQCD2to2Fast::fullclone() const {
+  return new_ptr(*this);
+}
+
 Energy2 MEQCD2to2Fast::scale() const {
   Energy2 s(sHat()),u(uHat()),t(tHat());
   return 2.*s*t*u/(s*s+t*t+u*u);

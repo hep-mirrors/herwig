@@ -54,7 +54,7 @@ public:
   /**
    * Set the matrix element
    */
-  inline void ME(const ProductionMatrixElement & in) const {
+  void ME(const ProductionMatrixElement & in) const {
     _matrixelement.reset(in);
   }
   //@}
