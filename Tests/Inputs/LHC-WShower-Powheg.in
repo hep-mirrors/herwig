@@ -1,0 +1,40 @@
+cd /Herwig/Generators
+set LHCGenerator:NumberOfEvents 10000000
+set LHCGenerator:RandomNumberGenerator:Seed 31122001
+set LHCGenerator:DebugLevel 1
+set LHCGenerator:PrintEvent 10
+set LHCGenerator:MaxErrors 10000
+set LHCGenerator:EventHandler:CascadeHandler:MPIHandler NULL
+set LHCGenerator:EventHandler:DecayHandler NULL
+set LHCGenerator:EventHandler:HadronizationHandler NULL
+set /Herwig/Analysis/Basics:CheckQuark 0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
+set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
+cd /Herwig/MatrixElements/
+insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
+set MEqq2W2ff:Process Electron
+set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
+set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
+create Herwig::O2AlphaS O2AlphaS 
+set /Herwig/Generators/LHCGenerator:StandardModelParameters:QCD/RunningAlphaS O2AlphaS
+cd /Herwig/Shower
+# use the general recon for now
+set KinematicsReconstructor:ReconstructionOption General
+# create the Powheg evolver and use it instead of the default one
+create Herwig::PowhegEvolver PowhegEvolver HwPowhegShower.so
+set ShowerHandler:Evolver PowhegEvolver
+set PowhegEvolver:ShowerModel ShowerModel
+set PowhegEvolver:SplittingGenerator SplittingGenerator
+set PowhegEvolver:MECorrMode 0
+# create and use the Drell-yan hard emission generator
+create Herwig::DrellYanHardGenerator DrellYanHardGenerator
+set DrellYanHardGenerator:ShowerAlpha AlphaQCD
+insert PowhegEvolver:HardGenerator 0 DrellYanHardGenerator
+# create and use the gg->H hard emission generator
+create Herwig::GGtoHHardGenerator GGtoHHardGenerator
+set GGtoHHardGenerator:ShowerAlpha AlphaQCD
+insert PowhegEvolver:HardGenerator 0 GGtoHHardGenerator
+cd /Herwig/Generators
+create Herwig::VTest VTest HadronJetTest.so
+insert LHCGenerator:AnalysisHandlers 0 VTest
+saverun LHC-WShower-Powheg LHCGenerator
