@@ -73,24 +73,24 @@ tests-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
 
 test-LEP-% : Inputs/LEP-%.in LeptonTest.la
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-100000}
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-100000}
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
 test-DIS-% : Inputs/DIS-%.in DISTest.la
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-100000}
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 
 if WANT_LIBFASTJET 
 test-LHC-% : Inputs/LHC-%.in HadronTest.la HadronJetTest.la
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-100000}
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 else
 test-LHC-% : Inputs/LHC-%.in HadronTest.la
 	$(HWREAD) $<
-	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-100000}
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 endif
 
 clean-local:
