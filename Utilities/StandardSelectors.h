@@ -32,7 +32,7 @@ struct WeakBHadronSelector: public SelectorBase {
   /**
    * Return true if the particle should be extracted.
    */
-  inline virtual bool check(const Particle &  p) const;
+  virtual bool check(const Particle &  p) const;
 
 };
 }
