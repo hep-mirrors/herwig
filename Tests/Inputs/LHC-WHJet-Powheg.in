@@ -11,7 +11,6 @@ erase LHCGenerator:EventHandler:PostSubProcessHandlers 0
 set /Herwig/Analysis/Basics:CheckQuark 0
 set /Herwig/Particles/h0:Stable Stable
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
-set /Herwig/Shower/Evolver:IntrinsicPtGaussian 2.2*GeV
 cd /Herwig/MatrixElements/
 insert SimpleQCD:MatrixElements[0] PowhegMEPP2WH
 set /Herwig/Cuts/JetKtCut:MinKT 0.0*GeV
@@ -28,6 +27,7 @@ set ShowerHandler:Evolver PowhegEvolver
 set PowhegEvolver:ShowerModel ShowerModel
 set PowhegEvolver:SplittingGenerator SplittingGenerator
 set PowhegEvolver:MECorrMode 0
+set PowhegEvolver:IntrinsicPtGaussian 2.2*GeV
 # create and use the Drell-yan hard emission generator
 create Herwig::DrellYanHardGenerator DrellYanHardGenerator
 set DrellYanHardGenerator:ShowerAlpha AlphaQCD
