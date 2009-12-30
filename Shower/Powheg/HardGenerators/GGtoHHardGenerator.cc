@@ -188,7 +188,7 @@ HardTreePtr GGtoHHardGenerator::generateHardest(ShowerTreePtr tree) {
   // generate the hard emission and return if no emission
   if(!getEvent(pnew,emission_type)) {
     for(unsigned int ix=0;ix<particlesToShower.size();++ix)
-      particlesToShower[ix]->maximumpT(minpT_);
+      particlesToShower[ix]->maximumpT(_min_pt);
     return HardTreePtr();
   }
   // construct the HardTree object needed to perform the showers
