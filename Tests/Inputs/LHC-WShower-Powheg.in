@@ -11,7 +11,7 @@ set /Herwig/Analysis/Basics:CheckQuark 0
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 14000.0
 cd /Herwig/MatrixElements/
 insert SimpleQCD:MatrixElements[0] PowhegMEqq2W2ff
-set MEqq2W2ff:Process Electron
+set PowhegMEqq2W2ff:Process Electron
 set /Herwig/Particles/p+:PDF    /Herwig/Partons/MRST-NLO
 set /Herwig/Particles/pbar-:PDF /Herwig/Partons/MRST-NLO
 create Herwig::O2AlphaS O2AlphaS 
