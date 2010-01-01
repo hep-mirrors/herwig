@@ -20,6 +20,8 @@ compare.compareLEPVH(directory1,directory2,wiki,plotLocation)
 compare.compareLEPVV(directory1,directory2,wiki,plotLocation)
 # VBF
 compare.compareLEPVBF(directory1,directory2,wiki,plotLocation)
+# top decay
+compare.compareTopDecay(directory1,directory2,wiki,plotLocation)
 # charm event shapes
 compare.compareCharmShapes(directory1,directory2,wiki,plotLocation) 
 # LEP event shapes
