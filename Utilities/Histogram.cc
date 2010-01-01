@@ -20,6 +20,15 @@
 #include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
+
+IBPtr Histogram::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr Histogram::fullclone() const {
+  return new_ptr(*this);
+}
+
 NoPIOClassDescription<Histogram> Histogram::initHistogram;
 // Definition of the static class description member.
 void Histogram::Init() {

@@ -41,7 +41,7 @@ public:
   /**
    * The default constructor.
    */
-  inline MEee2gZ2qq() : _minflav(1), _maxflav(5), _massopt(1)  
+  MEee2gZ2qq() : _minflav(1), _maxflav(5), _massopt(1)  
   {}
 
   /** @name Virtual functions required by the MEBase class. */
@@ -138,13 +138,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:

@@ -127,7 +127,7 @@ void MEPP2Higgs::Init() {
 }
 
 void MEPP2Higgs::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   // get the vertex pointers from the SM object
   theSM = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

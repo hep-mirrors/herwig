@@ -236,7 +236,7 @@ void MEee2gZ2ll::constructVertex(tSubProPtr sub) {
 }
 
 void MEee2gZ2ll::doinit() {
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
   // set the particle data objects
   _Z0=getParticleData(ThePEG::ParticleID::Z0);
   _gamma=getParticleData(ThePEG::ParticleID::gamma);
@@ -260,11 +260,11 @@ void MEee2gZ2ll::rebind(const TranslationMap & trans)
   _theFFPVertex = trans.translate(_theFFPVertex);
   _Z0           = trans.translate(_Z0);
   _gamma        = trans.translate(_gamma);
-  ME2to2Base::rebind(trans);
+  HwME2to2Base::rebind(trans);
 }
 
 IVector MEee2gZ2ll::getReferences() {
-  IVector ret = ME2to2Base::getReferences();
+  IVector ret = HwME2to2Base::getReferences();
   ret.push_back(_theFFZVertex);
   ret.push_back(_theFFPVertex);
   ret.push_back(_Z0          );

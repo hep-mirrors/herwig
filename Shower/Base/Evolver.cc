@@ -30,7 +30,9 @@
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
 #include "MECorrectionBase.h"
-#include "ThePEG/Handlers/XComb.h"
+#include "ThePEG/Handlers/StandardXComb.h"
+#include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Shower/ShowerHandler.h" 
 
 using namespace Herwig;
 
@@ -58,11 +60,10 @@ IBPtr Evolver::fullclone() const {
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions 
-     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) 
-     << ounit(_iptmax,GeV) << _vetoes << _hardType
-     << _hardgenerator << _hardonly << _trunc_Mode
-     << interaction_ << debug_ << interactions_.size();
+     << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes
+     << _hardgenerator << _hardonly << _trunc_Mode << _hardEmissionMode
+     << _checkShowerMomenta << interaction_<< interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     os << oenum(interactions_[ix]); 
 }
@@ -71,10 +72,9 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
-     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV)
-     >> iunit(_iptmax,GeV) >> _vetoes >> _hardType 
-     >> _hardgenerator >> _hardonly >> _trunc_Mode 
-     >> interaction_ >> debug_ >> isize;
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes
+     >> _hardgenerator >> _hardonly >> _trunc_Mode >> _hardEmissionMode
+     >> _checkShowerMomenta >> interaction_ >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) is >> ienum(interactions_[ix]);
 }
@@ -104,6 +104,58 @@ void Evolver::doinitrun() {
   }
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix)
     _hardgenerator[ix]->setEvolver(this);
+  //init hists and other variables
+  _h_Xdiff = new_ptr( Histogram( -15., 3., 120 ) );
+  _h_Ydiff = new_ptr( Histogram( -15., 3., 120 ) );
+  _h_Zdiff = new_ptr( Histogram( -15., 3., 120 ) );
+  _h_Ediff = new_ptr( Histogram( -15., 3., 120 ) );
+
+  _no_events = 0;
+  _mom_fails = 0;
+}
+
+void Evolver::dofinish() {
+  Interfaced::dofinish();
+
+  ofstream hist_out1("momDiffHists.top");
+
+  using namespace HistogramOptions;
+
+  if( _hardonly && _checkShowerMomenta ){
+    _h_Xdiff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).x()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.x / GeV )", 
+			     " " );
+    _h_Ydiff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).y()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.y / GeV )", 
+			     " " );
+    _h_Zdiff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).z()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.z / GeV )", 
+			     " " );
+    _h_Ediff->topdrawOutput( hist_out1, Frame| Ylog,
+			     "BLACK",
+			     "sum of abs(pdiff).e()", 
+			     " ", 
+			     " ",
+			     " ", 
+			     "log10( pdiff.e / GeV )", 
+			     " " );
+    cerr<<"\n\n\npercentage of failures = "<< double(_mom_fails)/double(_no_events)*100.<<"\n\n\n";
+  }
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -113,7 +165,16 @@ void Evolver::Init() {
   
   static ClassDocumentation<Evolver> documentation
     ("This class is responsible for carrying out the showering,",
-     "including the kinematics reconstruction, in a given scale range.");
+     "including the kinematics reconstruction, in a given scale range,"
+     "including the option of the POWHEG approach to simulated next-to-leading order"
+     " radiation\\cite{Nason:2004rx}.",
+     "%\\cite{Nason:2004rx}\n"
+     "\\bibitem{Nason:2004rx}\n"
+     "  P.~Nason,\n"
+     "  ``A new method for combining NLO QCD with shower Monte Carlo algorithms,''\n"
+     "  JHEP {\\bf 0411} (2004) 040\n"
+     "  [arXiv:hep-ph/0409146].\n"
+     "  %%CITATION = JHEPA,0411,040;%%\n");
 
   static Reference<Evolver,SplittingGenerator> 
     interfaceSplitGen("SplittingGenerator", 
@@ -226,24 +287,9 @@ void Evolver::Init() {
      "Only allow radiation from the hard ME correction",
      3);
 
-  static Switch<Evolver,unsigned int> interfaceHardEmissionOption
-    ("HardEmissionOption",
-     "Option for the generation of the hardest emission",
-     &Evolver::_hardType, 0, false, false);
-  static SwitchOption interfaceHardEmissionOptionMECorrection
-    (interfaceHardEmissionOption,
-     "MECorrection",
-     "Apply the ME correction",
-     0);
-  static SwitchOption interfaceHardEmissionOptionPowheg
-    (interfaceHardEmissionOption,
-     "Powheg",
-     "Use a Powheg hardest emission",
-     1);
-
   static RefVector<Evolver,HardestEmissionGenerator> interfaceHardGenerator
     ("HardGenerator",
-     "The objects responsible for generating the hardest emission",
+     "The objects responsible for generating the hardestr emission",
      &Evolver::_hardgenerator, -1, false, false, true, false, false);
 
   static Switch<Evolver,bool> interfaceHardOnly
@@ -270,6 +316,21 @@ void Evolver::Init() {
   static SwitchOption interfaceTruncMode1
     (interfaceTruncMode,"Yes","Truncated Shower is ON", 1);
 
+  static Switch<Evolver,unsigned int> interfaceHardEmissionMode
+    ("HardEmissionMode",
+     "Whether to use ME corrections or POWHEG for the hardest emission",
+     &Evolver::_hardEmissionMode, 0, false, false);
+  static SwitchOption interfaceHardEmissionModeMECorrection
+    (interfaceHardEmissionMode,
+     "MECorrection",
+     "Old fashioned ME correction",
+     0);
+  static SwitchOption interfaceHardEmissionModePOWHEG
+    (interfaceHardEmissionMode,
+     "POWHEG",
+     "Powheg style hard emission",
+     1);
+
   static Switch<Evolver,unsigned int > interfaceInteractions
     ("Interactions",
      "The interactions to be used in the shower",
@@ -295,20 +356,20 @@ void Evolver::Init() {
      "Only QED",
      3);
 
-  static Switch<Evolver,bool> interfaceDebug
-    ("Debug",
-     "Debug on/off",
-     &Evolver::debug_, false, false, false);
-  static SwitchOption interfaceDebugOn
-    (interfaceDebug,
-     "On",
-     "On",
-     true);
-  static SwitchOption interfaceDebugOff
-    (interfaceDebug,
-     "Off",
-     "Off",
+  static Switch<Evolver,bool> interfaceReconCheck
+    ("CheckMomentumRecon",
+     "Whether to test the reconstructed shower momentum",
+     &Evolver::_checkShowerMomenta, false, false, false);
+  static SwitchOption interfaceReconCheckNo
+    (interfaceReconCheck,
+     "No",
+     "No checks",
      false);
+  static SwitchOption interfaceReconCheckYes
+    (interfaceReconCheck,
+     "Yes",
+     "Do the checks",
+     true);
 
 }
 
@@ -385,7 +446,13 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   for (; ckt != p.end(); ckt++) (*ckt)->maxHardPt(ptmax);
 }
 
-void Evolver::showerHardProcess(ShowerTreePtr hard) {
+void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
+  // extract the matrix element
+  tStdXCombPtr lastXC = dynamic_ptr_cast<tStdXCombPtr>(xcomb);
+  if(lastXC) {
+    _hardme = dynamic_ptr_cast<HwMEBasePtr>(lastXC->matrixElement());
+  }
+  _decayme = HwDecayerBasePtr();
   // set the current tree
   currentTree(hard);
   // number of attempts if more than one interaction switched on
@@ -459,68 +526,9 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
  	      reconstructHardJets(hard,intrinsicpT())&&
  	      maximumTries()>++ntry);
 	if(_maxtry==ntry) throw ShowerHandler::ShowerTriesVeto(ntry);
-	if(debug_) {
-	  for(unsigned int iy=0;iy<particlesToShower.size();++iy) {
-	    if(particlesToShower[iy]->progenitor()->isFinalState()) {
-	      findChildren(particlesToShower[iy]->progenitor(),finalStates[inter]);
-	    }
-	    else {
-	      tShowerParticlePtr parent=particlesToShower[iy]->progenitor();
-	      while(!parent->parents().empty()) {
-		tShowerParticlePtr newParent=
-		  dynamic_ptr_cast<tShowerParticlePtr>(parent->parents()[0]);
-		if(!newParent) break;
-		parent=newParent;
-	      }
-	      findChildren(parent,finalStates[inter]);
-	    }
-	  }
-	}
       }
       // the tree has now showered
       _currenttree->hasShowered(true);
-      // debugging tests
-      if(debug_&&interactions_.size()>1) {
-	if(finalStates[0].size()==finalStates[1].size()) {
-	  Energy2 measure(ZERO);
-	  set<ShowerParticlePtr> qed = finalStates[1];
-	  for(set<ShowerParticlePtr>::const_iterator cit=finalStates[0].begin();
-	      cit!=finalStates[0].end();++cit) {
-	    set<ShowerParticlePtr>::iterator imin=qed.end();
-	    Energy2 dmin(1e30*GeV2);
-	    for(set<ShowerParticlePtr>::iterator cjt=qed.begin();
-		cjt!=qed.end();++cjt) {
-	      if((**cit).id()!=(**cjt).id()) continue;
-	      Energy2 test = 
-		sqr((**cit).momentum().x()-(**cjt).momentum().x())+
-		sqr((**cit).momentum().y()-(**cjt).momentum().y())+
-		sqr((**cit).momentum().z()-(**cjt).momentum().z())+
-		sqr((**cit).momentum().t()-(**cjt).momentum().t());
-	      if(test<dmin) {
-		dmin=test;
-		imin=cjt;
-	      }
-	    }
-	    if(imin==qed.end()) generator()->log() << "No match for " << **(cit) << "\n";
-	    else      qed.erase(imin);
-	    measure = max(measure,dmin);
-	  }
-	  if(measure>1e-8*GeV2) {
-	    generator()->log() << "Max distance " << sqrt(measure/GeV2) << " in event "
-			       << generator()->currentEvent()->number() << "\n";
-	    generator()->log() << "after QCD\n";
-	    for(set<ShowerParticlePtr>::const_iterator cit=finalStates[0].begin();
-		cit!=finalStates[0].end();++cit) {
-	      generator()->log() << **cit << "\n";
-	    }
-	    generator()->log() << "after QED\n";
-	    for(set<ShowerParticlePtr>::const_iterator cit=finalStates[1].begin();
-		cit!=finalStates[1].end();++cit) {
-	      generator()->log() << **cit << "\n";
-	    }
-	  }
-	}
-      }
       return;
     }
     catch (InteractionVeto) {
@@ -537,14 +545,37 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 
 }
 
-void Evolver::hardMatrixElementCorrection() {
+void Evolver::hardMatrixElementCorrection(bool hard) {
   // set me correction to null pointer
   _currentme=MECorrectionPtr();
   // set the initial enhancement factors for the soft correction
-  _initialenhance=1.;
-  _finalenhance  =1.;
+  _initialenhance = 1.;
+  _finalenhance   = 1.;
   // if hard matrix element switched off return
   if(!MECOn()) return;
+  // see if we can get the correction from the matrix element
+  // or decayer
+  bool appliedHard = false;
+  if(hard) {
+    if(_hardme&&_hardme->hasMECorrection()) {
+      _hardme->initializeMECorrection(_currenttree,
+				      _initialenhance,_finalenhance);
+      if(hardMEC())
+	_hardme->applyHardMatrixElementCorrection(_currenttree);
+      appliedHard = true;
+    }
+  }
+  else {
+    if(_decayme&&_decayme->hasMECorrection()) {
+      _decayme->initializeMECorrection(_currenttree,
+				       _initialenhance,_finalenhance);
+      if(hardMEC())
+	_decayme->applyHardMatrixElementCorrection(_currenttree);
+      appliedHard = true;
+    }
+  }
+  // if we've taken the correction from ME or decayer return
+  if(appliedHard) return;
   // see if there is an appropriate matrix element correction
   for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
     double initial,final;
@@ -633,6 +664,15 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle,
 bool 
 Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 			 ShowerInteraction::Type type) {
+  //using the pdf's associated with the ShowerHandler assures, that
+  //modified pdf's are used for the secondary interactions via 
+  //CascadeHandler::resetPDFs(...)
+  tcPDFPtr pdf;
+  if(ShowerHandler::currentHandler()->firstPDF().particle() == _beam)
+    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
+  if(ShowerHandler::currentHandler()->secondPDF().particle() == _beam)
+    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
+  Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
   // don't do anything if not needed
   if(_limitEmissions == 2  || _limitEmissions == 3  ||
      ( _limitEmissions == 1 && _nis != 0 ) ) return false;
@@ -641,7 +681,8 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
   while (true) {
     bb=_splittingGenerator->chooseBackwardBranching(*particle,beam,
 						    _initialenhance,
-						    _beam,type);
+						    _beam,type,
+						    pdf,freeze);
     // return if no emission
     if(!bb.kinematics) return false;
     // if not vetoed break
@@ -698,6 +739,25 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 }
 
 void Evolver::showerDecay(ShowerTreePtr decay) {
+  _hardme = HwMEBasePtr();
+  // find the decayer
+  // try the normal way if possible
+  tDMPtr dm = decay->incomingLines().begin()->first->original()   ->decayMode();
+  if(!dm) dm = decay->incomingLines().begin()->first->copy()      ->decayMode();
+  if(!dm) dm = decay->incomingLines().begin()->first->progenitor()->decayMode();
+  // otherwise make a string and look it up
+  if(!dm) {
+    string tag = decay->incomingLines().begin()->first->original()->dataPtr()->name() 
+      + "->";
+    for(map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+	  it=decay->outgoingLines().begin();it!=decay->outgoingLines().end();++it) {
+      if(it!=decay->outgoingLines().begin()) tag += ",";
+      tag += it->first->original()->dataPtr()->name();
+    }
+    tag += ";";
+    dm = generator()->findDecayMode(tag);
+  }
+  if(dm) _decayme = dynamic_ptr_cast<HwDecayerBasePtr>(dm->decayer());
   // set the ShowerTree to be showered
   currentTree(decay);
   unsigned int interactionTry=0;
@@ -783,59 +843,9 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 	  throw Exception() << "Failed to generate the shower after "
 			    << ntry << " attempts in Evolver::showerDecay()"
 			    << Exception::eventerror;
-	if(debug_) {
-	  for(unsigned int iy=0;iy<particlesToShower.size();++iy) {
-	    findChildren(particlesToShower[iy]->progenitor(),finalStates[inter]);
-	  }
-	}
       }
-
-
       // tree has now showered
       _currenttree->hasShowered(true);
-      if(debug_) {
-	checkShowerMomentum( particlesToShower , false );
-	if(interactions_.size()>1&&
-	   finalStates[0].size()==finalStates[1].size()) {
-	  Energy2 measure(ZERO);
-	  set<ShowerParticlePtr> qed = finalStates[1];
-	  for(set<ShowerParticlePtr>::const_iterator cit=finalStates[0].begin();
-	      cit!=finalStates[0].end();++cit) {
-	    set<ShowerParticlePtr>::iterator imin=qed.end();
-	    Energy2 dmin(1e30*GeV2);
-	    for(set<ShowerParticlePtr>::iterator cjt=qed.begin();
-		cjt!=qed.end();++cjt) {
-	      if((**cit).id()!=(**cjt).id()) continue;
-	      Energy2 test = 
-		sqr((**cit).momentum().x()-(**cjt).momentum().x())+
-		sqr((**cit).momentum().y()-(**cjt).momentum().y())+
-		sqr((**cit).momentum().z()-(**cjt).momentum().z())+
-		sqr((**cit).momentum().t()-(**cjt).momentum().t());
-	      if(test<dmin) {
-		dmin=test;
-		imin=cjt;
-	      }
-	    }
-	    if(imin==qed.end()) generator()->log() << "No match for " << **(cit) << "\n";
-	    else      qed.erase(imin);
-	    measure = max(measure,dmin);
-	  }
-	  if(measure>1e-8*GeV2) {
-	    generator()->log() << "Max distance " << sqrt(measure/GeV2) << " in event "
-			       << generator()->currentEvent()->number() << "\n";
-	    generator()->log() << "after QCD\n";
-	    for(set<ShowerParticlePtr>::const_iterator cit=finalStates[0].begin();
-		cit!=finalStates[0].end();++cit) {
-	      generator()->log() << **cit << "\n";
-	    }
-	    generator()->log() << "after QED\n";
-	    for(set<ShowerParticlePtr>::const_iterator cit=finalStates[1].begin();
-		cit!=finalStates[1].end();++cit) {
-	      generator()->log() << **cit << "\n";
-	    }
-	  }
-	}
-      }
       if(!showerOrder) swap(interactions_[0],interactions_[1]);
       hardTree(HardTreePtr());
       return;
@@ -907,13 +917,15 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   // generate hard me if needed
-  if(_hardType==0) hardMatrixElementCorrection();
+  if(_hardType==0) hardMatrixElementCorrection(hard);
   // get the particles to be showered
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=currentTree()->incomingLines().begin();
       cit!=currentTree()->incomingLines().end();++cit)
     particlesToShower.push_back(((*cit).first));
+  assert((particlesToShower.size()==1&&!hard)||
+	 (particlesToShower.size()==2&&hard));
   // outgoing particles
   for(cjt=currentTree()->outgoingLines().begin();
       cjt!=currentTree()->outgoingLines().end();++cjt)
@@ -944,12 +956,7 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
   for(cjt=currentTree()->outgoingLines().begin();
       cjt!=currentTree()->outgoingLines().end();++cjt)
     particles.push_back(cjt->first->progenitor());
-  // no hard tree, Set the initial evolution scales
-  if(!hardTree()) {
-    showerModel()->partnerFinder()->setInitialEvolutionScales(particles,!hard,type);
-  }
-  // hard tree
-  else {
+  if(hardTree()) {
     // find the partner
     for(unsigned int ix=0;ix<particles.size();++ix) {
       tHardBranchingPtr partner = 
@@ -965,10 +972,10 @@ void Evolver::setEvolutionPartners(bool hard,ShowerInteraction::Type type) {
 			  << "Evolver::setEvolutionPartners()"
 			  << Exception::eventerror;
     }
-    // Set the initial evolution scales
-    showerModel()->partnerFinder()->
-      setInitialEvolutionScales(particles,!hard,type,false);
   }
+  // Set the initial evolution scales
+  showerModel()->partnerFinder()->
+    setInitialEvolutionScales(particles,!hard,ShowerInteraction::QCD,!_nasontree);
 }
 
 bool Evolver::startTimeLikeShower(ShowerInteraction::Type type) {
@@ -1020,10 +1027,21 @@ bool Evolver::timeLikeVetoed(const Branching & fb,
   // check whether emission was harder than largest pt of hard subprocess
   if ( hardVetoFS() && fb.kinematics->pT() > _progenitor->maxHardPt() ) 
     return true;
-  // soft matrix elementr correction veto
-  if( _currentme && softMEC() &&
-      _currentme->softMatrixElementVeto( _progenitor, particle, fb ) )
-    return true;
+  // soft matrix element correction veto
+  if( softMEC()) {
+    if(_hardme && _hardme->hasMECorrection()) {
+      if(_hardme->softMatrixElementVeto(_progenitor,particle,fb))
+	return true;
+    }
+    else if(_decayme && _decayme->hasMECorrection()) {
+      if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+	return true;
+    }
+    else if(_currentme) {
+      if(_currentme->softMatrixElementVeto(_progenitor,particle,fb))
+	return true;
+    }
+  }
   // veto on maximum pt
   if(fb.kinematics->pT()>_progenitor->maximumpT()) return true;
   // general vetos
@@ -1054,9 +1072,16 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
   if (hardVetoIS() && bb.kinematics->pT() > _progenitor->maxHardPt())
     return true;
   // apply the soft correction
-  if(_currentme && softMEC() &&
-     _currentme->softMatrixElementVeto(_progenitor,particle,bb))
-    return true;
+  if( softMEC()) {
+    if(_hardme && _hardme->hasMECorrection()) {
+      if(_hardme->softMatrixElementVeto(_progenitor,particle,bb))
+	return true;
+    }
+    else if(_currentme ) {
+      if(_currentme->softMatrixElementVeto(_progenitor,particle,bb))
+	return true;
+    }
+  }
   // the more general vetos
 
   // check vs max pt for the shower
@@ -1087,9 +1112,16 @@ bool Evolver::spaceLikeVetoed(const Branching & bb,ShowerParticlePtr particle) {
 bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 				    ShowerParticlePtr particle ) {
   // apply the soft correction
-  if(_currentme && softMEC() &&
-     _currentme->softMatrixElementVeto(_progenitor,particle,fb))
-    return true;
+  if( softMEC()) {
+    if(_decayme && _decayme->hasMECorrection()) {
+      if(_decayme->softMatrixElementVeto(_progenitor,particle,fb))
+	return true;
+    }
+    else if(_currentme) {
+      if(_currentme->softMatrixElementVeto(_progenitor,particle,fb))
+	return true;
+    }
+  }
   // veto on hardest pt in the shower
   if(fb.kinematics->pT()> _progenitor->maximumpT()) return true;
   // general vetos
@@ -1116,38 +1148,123 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 }
 
 void Evolver::hardestEmission() {
-  // see if there is an appropriate hard emission generator
-  HardestEmissionGeneratorPtr currenthard;
-  for( unsigned int ix = 0; ix < hardestEmissionGenerator().size(); ++ix ) {
-    if( !hardestEmissionGenerator()[ix]->canHandle( currentTree() ) ) continue;
-    if( currenthard ) {
-      ostringstream output;
-      output << "There is more than one possible hard emission generator"
-	     << " which could be used for ";
-      map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-      for(cit=currentTree()->incomingLines().begin();
-	  cit!=currentTree()->incomingLines().end();++cit)
-	{output << cit->first->progenitor()->PDGName() << " ";}
-      output << " -> ";
-      for(cjt=currentTree()->outgoingLines().begin();
-	  cjt!=currentTree()->outgoingLines().end();++cjt)
-	{output << cjt->first->progenitor()->PDGName() << " ";}
-      output << "in Evolver::hardestEmission()\n";
-      throw Exception() << output << Exception::runerror;
+  if( ( hardMatrixElement() &&  hardMatrixElement()->hasPOWHEGCorrection()) ||
+      (decayMatrixElement() && decayMatrixElement()->hasPOWHEGCorrection())) {
+    if(hardMatrixElement())
+      _nasontree =  hardMatrixElement()->generateHardest( currentTree() );
+    else
+      _nasontree = decayMatrixElement()->generateHardest( currentTree() );
+    ShowerParticleVector particles;
+    if(!_nasontree) return;
+    // Sudakovs for ISR
+    for(set<HardBranchingPtr>::iterator cit=_nasontree->branchings().begin();
+	cit!=_nasontree->branchings().end();++cit) {
+      if((**cit).parent()&&(**cit).status()==HardBranching::Incoming) {
+	IdList br(3);
+	br[0] = (**cit).parent()->branchingParticle()->id();
+	br[1] = (**cit).          branchingParticle()->id();
+	br[2] = (**cit).parent()->children()[0]==*cit ?
+	  (**cit).parent()->children()[1]->branchingParticle()->id() :
+	  (**cit).parent()->children()[0]->branchingParticle()->id();
+	BranchingList branchings = splittingGenerator()->initialStateBranchings();
+	if(br[1]<0&&br[0]==br[1]) {
+	  br[0] = abs(br[0]);
+	  br[1] = abs(br[1]);
+	}
+	else if(br[1]<0) {
+	  br[1] = -br[1];
+	  br[2] = -br[2];
+	}
+	long index = abs(br[1]);
+	SudakovPtr sudakov;
+	for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
+	    cjt != branchings.upper_bound(index); ++cjt ) {
+	  IdList ids = cjt->second.second;
+	  if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
+	    sudakov=cjt->second.first;
+	    break;
+	  }
+	}
+	if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
+				       << "Evolver::generateHardest()" 
+				       << Exception::runerror;
+	(**cit).parent()->sudakov(sudakov);
+      }
+      else if(!(**cit).children().empty()) {
+	IdList br(3);
+	br[0] = (**cit)               .branchingParticle()->id();
+	br[1] = (**cit).children()[0]->branchingParticle()->id();
+	br[2] = (**cit).children()[1]->branchingParticle()->id();
+	BranchingList branchings = splittingGenerator()->finalStateBranchings();
+	if(br[0]<0) {
+	  br[0] = abs(br[0]);
+	  br[1] = abs(br[1]);
+	  br[2] = abs(br[2]);
+	}
+	long index = br[0];
+	SudakovPtr sudakov;
+	for(BranchingList::const_iterator cjt = branchings.lower_bound(index); 
+	    cjt != branchings.upper_bound(index); ++cjt ) {
+	  IdList ids = cjt->second.second;
+	  if(ids[0]==br[0]&&ids[1]==br[1]&&ids[2]==br[2]) {
+	    sudakov=cjt->second.first;
+	    break;
+	  }
+	}
+	if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
+				       << "Evolver::generateHardest()" 
+				       << Exception::runerror;
+	(**cit).sudakov(sudakov);
+      }
     }
-    currenthard=hardestEmissionGenerator()[ix];
+    // calculate the evolution scale
+    for(set<HardBranchingPtr>::iterator cit=_nasontree->branchings().begin();
+	cit!=_nasontree->branchings().end();++cit) {
+      particles.push_back((*cit)->branchingParticle());
+    }
+    ShowerHandler::currentHandler()->evolver()->showerModel()->
+      partnerFinder()->setInitialEvolutionScales(particles,true,_nasontree->interaction(),true);
+    // inverse reconstruction
+    ShowerHandler::currentHandler()->evolver()->showerModel()->
+      kinematicsReconstructor()->
+      deconstructHardJets(_nasontree,ShowerHandler::currentHandler()->evolver(),
+			  _nasontree->interaction());
   }
-  // if no suitable generator return
-  hardTree(HardTreePtr());
-  if(!currenthard) return;
-  // generate the hardest emission
-  hardTree(currenthard->generateHardest( currentTree() ));
+  else {
+    // see if there is an appropriate hard emission generator
+    HardestEmissionGeneratorPtr currenthard;
+    for( unsigned int ix = 0; ix < _hardgenerator.size(); ++ix ) {
+      if( !_hardgenerator[ix]->canHandle( currentTree() ) ) continue;
+      if( currenthard ) {
+	ostringstream output;
+	output << "There is more than one possible hard emission generator"
+	       << " which could be used for ";
+	map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+	for(cit=currentTree()->incomingLines().begin();
+	    cit!=currentTree()->incomingLines().end();++cit)
+	  {output << cit->first->progenitor()->PDGName() << " ";}
+	output << " -> ";
+	for(cjt=currentTree()->outgoingLines().begin();
+	    cjt!=currentTree()->outgoingLines().end();++cjt)
+	  {output << cjt->first->progenitor()->PDGName() << " ";}
+	output << "in Evolver::hardestEmission()\n";
+	throw Exception() << output << Exception::runerror;
+      }
+      currenthard=_hardgenerator[ix];
+    }
+    // if no suitable generator return
+    _nasontree=HardTreePtr();
+    if(!currenthard) return;
+    useMe();
+    // generate the hardest emission
+    _nasontree = currenthard->generateHardest( currentTree() );
+  }
 }
 
 bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
-					    HardBranchingPtr branch,
-					    ShowerInteraction::Type type) {
+				      HardBranchingPtr branch,
+				      ShowerInteraction::Type type) {
   Branching fb;
   unsigned int iout=0;
   tcPDPtr pdata[2];
@@ -1290,8 +1407,14 @@ bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 }
 
 bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
-					     HardBranchingPtr branch,
-					     ShowerInteraction::Type type) {
+				       HardBranchingPtr branch,
+				       ShowerInteraction::Type type) {
+  tcPDFPtr pdf;
+  if(ShowerHandler::currentHandler()->firstPDF().particle()  == beamParticle())
+    pdf = ShowerHandler::currentHandler()->firstPDF().pdf();
+  if(ShowerHandler::currentHandler()->secondPDF().particle() == beamParticle())
+    pdf = ShowerHandler::currentHandler()->secondPDF().pdf();
+  Energy freeze = ShowerHandler::currentHandler()->pdfFreezingScale();
   Branching bb;
   // generate branching
   tcPDPtr part[2];
@@ -1299,7 +1422,7 @@ bool Evolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr beam,
     if( !isTruncatedShowerON() || hardOnly() ) break;
     bb = splittingGenerator()->chooseBackwardBranching( *particle, 
 							beam, 1., beamParticle(), 
-							type );
+							type , pdf,freeze);
     if( !bb.kinematics || bb.kinematics->scale() < branch->scale() ) {
       bb = Branching();
       break;
@@ -1950,3 +2073,24 @@ void Evolver::constructSpaceLikeLine(tShowerParticlePtr particle,
   last=newBranch;
 }
 
+bool Evolver::findShowerEnd( PPtr parton){
+  if( ! parton->children().empty() ){
+    findShowerEnd( parton->children()[0] );
+    findShowerEnd( parton->children()[1] );
+  }
+  else {
+    _showerEndPoints.insert( make_pair( parton->id(), parton ) );
+  }
+  return true;
+}
+
+bool Evolver::findHardTreeEnd( HardBranchingPtr parton  ){
+  if( ! parton->children().empty() ){
+    findHardTreeEnd( parton->children()[0] );
+    findHardTreeEnd( parton->children()[1] );
+  }
+  else{
+    _hardTreeEndPoints.push_back( parton->branchingParticle() );
+  }
+  return true;
+}

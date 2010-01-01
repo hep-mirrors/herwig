@@ -172,7 +172,6 @@ public:
    */
   void x_frac( double x ) { _x_frac = x; }
 
-
   /**
    *  Get whether the branching is incoming, outgoing or decay
    */

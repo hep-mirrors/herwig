@@ -13,6 +13,7 @@
 
 #include "SplittingFunction.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.h"
 
 using namespace Herwig;
 

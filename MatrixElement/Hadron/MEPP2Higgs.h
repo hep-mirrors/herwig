@@ -12,7 +12,7 @@
 // This is the declaration of the MEPP2Higgs class.
 //
 
-#include "ThePEG/MatrixElement/MEBase.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -35,7 +35,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEPP2HiggsInterfaces "The interfaces"
  * defined for MEPP2Higgs.
  */
-class MEPP2Higgs: public MEBase {
+class MEPP2Higgs: public HwMEBase {
 
 public:
 
@@ -160,13 +160,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const { return new_ptr(*this); }
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const { return new_ptr(*this); }
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 protected:
@@ -312,7 +312,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2Higgs,1> {
   /** Typedef of the first base class of MEPP2Higgs. */
-  typedef MEBase NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

@@ -23,7 +23,7 @@ MEGammaGamma2ff::MEGammaGamma2ff() : process_(0) {
 }
 
 void MEGammaGamma2ff::doinit() {
-  ME2to2Base::doinit();
+  HwME2to2Base::doinit();
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

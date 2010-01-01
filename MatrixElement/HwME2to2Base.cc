@@ -29,8 +29,15 @@ int HwME2to2Base::nDim() const {
 }
 
 void HwME2to2Base::setKinematics() {
-  ME2to2Base::setKinematics();
+  HwMEBase::setKinematics();
+  LastTHat_ = (meMomenta()[0] - meMomenta()[2]).m2();
+  LastUHat_ = (meMomenta()[1] - meMomenta()[2]).m2();
+  LastPhi_ = meMomenta()[2].phi();
   rescaleMomenta(meMomenta(),mePartonData());
+}
+
+CrossSection HwME2to2Base::dSigHatDR() const {
+  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
 }
 
 bool HwME2to2Base::generateKinematics(const double * r) {
@@ -257,7 +264,7 @@ AbstractClassDescription<HwME2to2Base> HwME2to2Base::initHwME2to2Base;
 void HwME2to2Base::Init() {
 
   static ClassDocumentation<HwME2to2Base> documentation
-    ("The ME2to2Base class may be used as a base class "
+    ("The HwME2to2Base class may be used as a base class "
      "for all \\f$2\\rightarrow 2\\f$ matrix elements.");
 
 }
@@ -300,4 +307,30 @@ bool HwME2to2Base::rescaleMomenta(const vector<Lorentz5Momentum> & momenta,
   _rescaledMomenta[3].rescaleRho();
   _rescaledMomenta[3].boost(-bv);
   return true;
+}
+
+double HwME2to2Base::getCosTheta(double ctmin, double ctmax, const double * r) {
+  double cth = 0.0;
+  static const double eps = 1.0e-6;
+  if ( 1.0 + ctmin <= eps && 1.0 - ctmax <= eps ) {
+    jacobian(ctmax - ctmin);
+    cth = ctmin + (*r)*jacobian();
+  } else if (  1.0 + ctmin <= eps ) {
+    cth = 1.0 - (1.0 - ctmax)*pow((1.0 - ctmin)/(1.0 - ctmax), *r);
+    jacobian(log((1.0 - ctmin)/(1.0 - ctmax))*(1.0 - cth));
+  } else if (  1.0 - ctmax <= eps ) {
+    cth = -1.0 + (1.0 + ctmin)*pow((1.0 + ctmax)/(1.0 + ctmin), *r);
+    jacobian(log((1.0 + ctmax)/(1.0 + ctmin))*(1.0 + cth));
+  } else {
+    double zmin = 0.5*(1.0 - ctmax);
+    double zmax = 0.5*(1.0 - ctmin);
+    double A1 = -ctmin/(zmax*(1.0-zmax));
+    double A0 = -ctmax/(zmin*(1.0-zmin));
+    double A = *r*(A1 - A0) + A0;
+    double z = A < 2.0? 2.0/(sqrt(sqr(A) + 4.0) + 2 - A):
+      0.5*(A - 2.0 + sqrt(sqr(A) + 4.0))/A;
+    cth = 1.0 - 2.0*z;
+    jacobian(2.0*(A1 - A0)*sqr(z)*sqr(1.0 - z)/(sqr(z) + sqr(1.0 - z)));
+  }
+  return cth;
 }

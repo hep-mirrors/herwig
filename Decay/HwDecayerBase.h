@@ -13,6 +13,9 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/HardTree.h"
 #include "HwDecayerBase.fh"
 
 namespace Herwig {
@@ -59,6 +62,55 @@ public:
   virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
   //@}
 
+public:
+  
+  /**
+   *  Virtual members to be overridden by inheriting classes
+   *  which implement hard corrections 
+   */
+  //@{
+  /**
+   *  Has a POWHEG style correction
+   */
+  virtual bool hasPOWHEGCorrection() {return false;}
+  
+  /**
+   *  Has an old fashioned ME correction
+   */
+  virtual bool hasMECorrection() {return false;}
+  
+  /**
+   *  Initialize the ME correction
+   */
+  virtual void initializeMECorrection(ShowerTreePtr , double & ,
+				      double & ) {}
+  
+  /**
+   *  Apply the hard matrix element correction to a given hard process or decay
+   */
+  virtual void applyHardMatrixElementCorrection(ShowerTreePtr) {}
+  
+  /**
+   * Apply the soft matrix element correction
+   * @param initial The particle from the hard process which started the 
+   * shower
+   * @param parent The initial particle in the current branching
+   * @param br The branching struct
+   * @return If true the emission should be vetoed
+   */
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr,
+				     ShowerParticlePtr,Branching) {
+    return false;
+  }
+  
+  /**
+   *  Apply the POWHEG style correction
+   */
+  virtual HardTreePtr generateHardest(ShowerTreePtr) {
+    return HardTreePtr();
+  }
+  //@}
+  
 protected:
 
   /** @name Virtual functions to replaced those from the Decayer class. 

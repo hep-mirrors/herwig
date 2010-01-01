@@ -38,8 +38,11 @@ public:
   /**
    * The default constructor.
    */
-  inline MEPP2GammaGamma();
-
+  MEPP2GammaGamma() : _maxflavour(5),_process(0) {
+    massOption(true,0);
+    massOption(true,0);
+  }
+  
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**
@@ -134,13 +137,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -192,7 +195,16 @@ private:
    * @param t The \f$t\f$ invariant
    * @param u The \f$u\f$ invariant
    */
-  inline Complex ggme(Energy2 s,Energy2 t,Energy2 u) const;
+  Complex ggme(Energy2 s,Energy2 t,Energy2 u) const {
+    double ltu(log(abs(t/u)));
+    double frac1((t-u)/s),frac2((sqr(t)+sqr(u))/sqr(s));
+    double thetatu = (t/u<0) ? 0 : 1;
+    double thetat  = (t<ZERO)   ? 0 : 1;
+    double thetau  = (u<ZERO)   ? 0 : 1;
+    using Constants::pi;
+    return Complex(1.+frac1*ltu+0.5*frac2*(sqr(ltu)+sqr(pi)*thetatu),
+		   -pi*(thetat-thetau)*(frac1+frac2*ltu));
+  }
 
 private:
 
@@ -273,7 +285,5 @@ struct ClassTraits<Herwig::MEPP2GammaGamma>
 /** @endcond */
 
 }
-
-#include "MEPP2GammaGamma.icc"
 
 #endif /* HERWIG_MEPP2GammaGamma_H */

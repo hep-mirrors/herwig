@@ -52,13 +52,29 @@ public:
    * @param upper The upper limit of the histogram
    * @param nbin  Number of bins
    */
-  inline Histogram(double lower=0., double upper=0., unsigned int nbin=0);
+  Histogram(double lower=0., double upper=0., unsigned int nbin=0)
+  : _globalStats(), _havedata(false), _bins(nbin+2),_prefactor(1.),_total(0.) {
+    if (upper<lower) swap(upper,lower);
+    _bins[0].limit=-1.e100;
+    double limit(lower);
+    double width((upper-lower)/nbin);
+    for(unsigned int ix=1; ix <= nbin; ++ix) {
+      _bins[ix].limit=limit;
+      limit += width;
+    }
+    _bins.back().limit=limit;
+  }
 
   /**
    * Constructor for variable width bins
    * @param limits The lower limits for the bins followed by the upper limit of the last bin
    */
-  inline Histogram(vector<double> limits);
+  Histogram(vector<double> limits) 
+    : _globalStats(), _havedata(false), _bins(limits.size()+1), _prefactor(1.),_total(0.) {
+    _bins[0].limit=-1.e100;
+    for (size_t i=1; i<=limits.size(); ++i)
+      _bins[i].limit=limits[i-1];
+  }
 
   /**
    * Constructor with data included
@@ -66,7 +82,20 @@ public:
    * @param data The data
    * @param dataerror The errors on the data
    */
-  inline Histogram(vector<double> limits, vector<double> data, vector<double> dataerror);
+  Histogram(vector<double> limits, vector<double> data, vector<double> dataerror)
+    : _globalStats(), _havedata(true), _bins(limits.size()+1), _prefactor(1.),_total(0.) {
+    _bins[0].limit=-1.e100;
+    for (size_t i=1; i<=limits.size(); ++i)
+      _bins[i].limit=limits[i-1];
+    
+    // no data goes into _bins[0] or _bins.back()!
+    for (size_t i=1; i<=min(limits.size()-1,data.size()); ++i)
+      _bins[i].data=data[i-1];
+    
+    for (size_t i=1; i<=min(limits.size()-1,dataerror.size()); ++i)
+      _bins[i].dataerror=dataerror[i-1];
+  }
+  
   //@}
 
 public:
@@ -74,32 +103,54 @@ public:
   /**
    *  Operator to add a point to the histogrma with unit weight
    */
-  inline void operator+=(double);
+  void operator += (double input) {
+    addWeighted(input,1.0);
+  }
 
   /**
    *  Function to add a weighted point to the histogram
    */
-  inline void addWeighted(double data, double weight);
+  void addWeighted(double input, double weight) {
+    if(isnan(input)) return;
+    unsigned int ibin;
+    for(ibin=1; ibin<_bins.size(); ++ibin) {
+      if(input<_bins[ibin].limit)
+	break;
+    }
+    _bins[ibin-1].contents   += weight;
+    _bins[ibin-1].contentsSq += sqr(weight);
+    _globalStats += weight * input;
+    _total += weight;
+  }
 
   /**
    *  Number of bins (not counting the overflow)
    */
-  inline unsigned int numberOfBins() const;
+  unsigned int numberOfBins() const { 
+    return _bins.size()-2;
+  }
+
 
   /**
    *  Get the prefactor
    */
-  inline double prefactor() const;
+  double prefactor() const {
+    return _prefactor;
+  }
 
   /**
    *  Set the prefactor
    */
-  inline void   prefactor(double );
+  void   prefactor(double in ) {
+    _prefactor=in;
+  }
 
   /**
    *  Access to the statistics on the total entry of the histogram
    */
-  inline const Statistic & globalStatistics() const; 
+  const Statistic & globalStatistics() const {
+    return _globalStats;
+  }
 
   /**
    *  Normalise the distributions to the data
@@ -217,13 +268,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -336,48 +387,5 @@ struct ClassTraits<Herwig::Histogram>
 /** @endcond */
 
 }
-
-#include "Histogram.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Histogram.tcc"
-#endif
-
-
-// void SampleHistogram::printMoments(char* name, double Nmax, double dN, 
-// 				   double x0, double x1) {
-//   ofstream out(name);
-//   if (!out) {
-//     cerr << "SampleHistoGram::printMoments: ERROR! Can't open file" << endl;
-//   }
-
-//   time_t now_t;
-//   now_t = time(0);
-//   out << "# created " << ctime(&now_t)
-//       << "# by SampleHistogram::printMoments(..., "
-//       << Nmax << ", " << dN << ")" << endl
-//       << "# " << this->samples() << " entries, mean +/- sigma = " 
-//       << this->mean() << " +/- " << this->stdDev() << endl;
-
-//   double x0N, x1N, delta, hi;
-//   for (double N=dN; N < Nmax; N += dN) {
-//     double fN = 0.0;
-//     for(int i = 0; i < howManyBuckets-1; i++) {
-//       x0N = pow(bucketLimit[i], N);
-//       x1N = pow(bucketLimit[i+1], N);
-//       delta = (bucketLimit[i+1] - bucketLimit[i]);
-//       if (delta > 0 && this->samples() > 0 
-// 	  && bucketLimit[i] >= x0 && bucketLimit[i] <= x1
-// 	  && bucketLimit[i+1] >= x0 && bucketLimit[i+1] <= x1) {
-// 	hi = double(bucketCount[i+1]/(delta*(this->samples())));
-// 	fN += hi*(x1N-x0N)/N;
-//       }
-//     }
-//     out << N 
-// 	<< "  " 
-// 	<< fN << endl;
-//   }
-//   out.close();
-// }
-
 
 #endif /* HERWIG_Histogram_H */

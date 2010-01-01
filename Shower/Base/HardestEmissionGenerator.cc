@@ -8,11 +8,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/HardTree.h"
-#include "Herwig++/Shower/Base/Evolver.h"
 
 using namespace Herwig;
 

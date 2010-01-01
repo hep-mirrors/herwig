@@ -10,7 +10,7 @@
 #define HERWIG_ME2to2Base_H
 // This is the declaration of the ME2to2Base class.
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "HwMEBase.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Interface/Switch.fh"
 
@@ -30,16 +30,18 @@ using namespace ThePEG;
  *
  * @see \ref HwME2to2BaseInterfaces "The interfaces"
  * defined for HwME2to2Base.
- * @see MEBase
+ * @see HwMEBase
  */
-class HwME2to2Base: public ME2to2Base {
+class HwME2to2Base: public HwMEBase {
 
 public:
 
   /**
    * Default constructor.
    */
-  inline HwME2to2Base();
+  HwME2to2Base() : _massopt1(1), _massopt2(1), _rescaleOption(1),
+		   LastTHat_(ZERO), LastUHat_(ZERO),
+		   LastPhi_(0.0) {}
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -59,12 +61,25 @@ public:
   virtual bool generateKinematics(const double * r);
 
   /**
+   * Return the matrix element for the kinematical configuation
+   * previously provided by the last call to setKinematics(). Uses
+   * me().
+   */
+  virtual CrossSection dSigHatDR() const;
+
+  /**
    * Set the typed and momenta of the incoming and outgoing partons to
    * be used in subsequent calls to me() and colourGeometries()
    * according to the associated XComb object.
    */
   virtual void setKinematics();
   //@}
+
+  /**
+   * Used internally by generateKinematics, after calculating the
+   * limits on cos(theta).
+   */
+  virtual double getCosTheta(double cthmin, double cthmax, const double * r);
 
 public:
 
@@ -91,19 +106,60 @@ public:
 
 protected:
 
+  /** @name Access cached values in of the last set phase space point. */
+  //@{
+  /**
+   * Return the \f$\hat{t}\f$ of the last set phase space point.
+   */
+  Energy2 tHat() const { return LastTHat_; }
+
+  /**
+   * Return the \f$\hat{u}\f$ of the last set phase space point.
+   */
+  Energy2 uHat() const { return LastUHat_; }
+
+  /**
+   * Return the azimuth angle of the last set phase space point.
+   */
+  double phi() const { return LastPhi_; }
+  //@}
+
+  /** @name Set the cached values in of the last set phase space point. */
+  //@{
+  /**
+   * Set the \f$\hat{t}\f$ of the last set phase space point.
+   */
+  void tHat(Energy2 e2) { LastTHat_ = e2; }
+
+  /**
+   * Set the \f$\hat{u}\f$ of the last set phase space point.
+   */
+  void uHat(Energy2 e2) { LastUHat_ = e2; }
+
+  /**
+   * Set the azimuth angle of the last set phase space point.
+   */
+  void phi(double phi) { LastPhi_ = phi; }
+  //@}
+
   /**
    *  Set the treatment of the outgoing masses
    * @param first is the first outgoing particle
    * @param iopt The option for the treatment of the mass
    */
-  inline void massOption(bool first, unsigned int iopt);
+  void massOption(bool first, unsigned int iopt) {
+    if(first) _massopt1 = iopt;
+    else      _massopt2 = iopt;
+  }
 
   /**
    * Set the treatment of the rescaling of the momenta for 
    * the matrix element calculation
    * @param iopt The rescaling option
    */
-  inline void rescalingOption(unsigned int iopt);
+  void rescalingOption(unsigned int iopt) {
+    _rescaleOption=iopt;
+  }
 
   /**
    *  rescale the momenta for the computation of the helicity matrix element
@@ -114,7 +170,9 @@ protected:
   /**
    *  Access to the rescaled momenta
    */
-  inline const vector<Lorentz5Momentum> & rescaledMomenta() const;
+  const vector<Lorentz5Momentum> & rescaledMomenta() const {
+    return _rescaledMomenta;
+  }
 
 private:
 
@@ -149,6 +207,21 @@ private:
    *  Rescaled momenta for use in ME calculations
    */
   vector<Lorentz5Momentum> _rescaledMomenta;
+  
+  /**
+   * The \f$\hat{t}\f$ of the last set phase space point.
+   */
+  Energy2 LastTHat_;
+  
+  /**
+   * The \f$\hat{u}\f$ of the last set phase space point.
+   */
+  Energy2 LastUHat_;
+
+  /**
+   * The azimuth angle of the last set phase space point.
+   */
+  double LastPhi_;
 };
 
 }
@@ -165,7 +238,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::HwME2to2Base,1>: public ClassTraitsType {
   /** Typedef of the base class of HwME2to2Base. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /**
@@ -182,7 +255,5 @@ struct ClassTraits<Herwig::HwME2to2Base>
 /** @endcond */
 
 }
-
-#include "HwME2to2Base.icc"
 
 #endif /* HERWIG_HwME2to2Base_H */

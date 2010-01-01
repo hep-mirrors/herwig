@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2ll class.
 //
 
-#include "ThePEG/MatrixElement/ME2to2Base.h"
+#include "Herwig++/MatrixElement/HwME2to2Base.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -31,14 +31,17 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2llInterfaces "The interfaces"
  * defined for MEee2gZ2ll.
  */
-class MEee2gZ2ll: public ME2to2Base {
+class MEee2gZ2ll: public HwME2to2Base {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline MEee2gZ2ll() : _allowed(0) {}
+  MEee2gZ2ll() : _allowed(0) {
+    massOption(true ,1);
+    massOption(false,1);
+  }
 
 public:
 
@@ -136,13 +139,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const {return new_ptr(*this);}
+  virtual IBPtr clone() const {return new_ptr(*this);}
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const {return new_ptr(*this);}
+  virtual IBPtr fullclone() const {return new_ptr(*this);}
   //@}
 
 protected:
@@ -251,7 +254,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2gZ2ll,1> {
   /** Typedef of the first base class of MEee2gZ2ll. */
-  typedef ME2to2Base NthBase;
+  typedef Herwig::HwME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

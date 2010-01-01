@@ -77,7 +77,18 @@ public:
   /**
    * Return the scale associated with the last set phase space point.
    */
-  virtual inline Energy2 scale() const;
+  virtual Energy2 scale() const {
+    if(scaleChoice_==0) {
+      return sHat();
+    }
+    else {
+      assert( scaleChoice_== 1 );
+      Energy2 t = 0.5*(tHat()-meMomenta()[2].mass2());
+      Energy2 u = 0.5*(uHat()-meMomenta()[3].mass2());
+      Energy2 s = 0.5*sHat();
+      return 4.*s*t*u/(s*s+t*t+u*u);
+    }
+  }
 
   /**
    * Add all possible diagrams with the add() function.
@@ -163,39 +174,53 @@ protected:
    * Access the HPDiagrams that store the required information
    * to create the diagrams
    */
-  inline const vector<HPDiagram> & getProcessInfo() const; 
+  const vector<HPDiagram> & getProcessInfo() const {
+    return theDiagrams;
+  }
 
   /**
    * Return the incoming pair
    * @return Pair of particle ids for the incoming particles
    */
-  inline pair<long, long> getIncoming() const;
-
+  pair<long, long> getIncoming() const {
+    return theIncoming;
+  }
+  
   /**
    * Return the outgoing pair
    * @return Pair of particle ids for the outgoing particles
    */
-  inline pair<long, long> getOutgoing() const;
+  pair<long, long> getOutgoing() const {
+    return theOutgoing;
+  }
   
   /**
    * Return the matrix of colour factors 
    */
-  inline const vector<DVector> & getColourFactors() const;
+  const vector<DVector> & getColourFactors() const {
+    return theColour;
+  }
 
   /**
    * Get the number of diagrams in this process
    */
-  inline HPCount numberOfDiags() const;
+  HPCount numberOfDiags() const {
+    return theNDiags;
+  } 
   
   /**
    * Access number of colour flows
    */
-  inline size_t numberOfFlows() const;
+  size_t numberOfFlows() const {
+    return theNcf;
+  }
 
   /**
    * Whether to print the debug information 
    */
-  inline bool debugME() const;
+  bool debugME() const {
+    return theDebug;
+  }
 
 private:
 
@@ -287,7 +312,5 @@ struct ClassTraits<Herwig::GeneralHardME>
 /** @endcond */
 
 }
-
-#include "GeneralHardME.icc"
 
 #endif /* HERWIG_GeneralHardME_H */

@@ -30,6 +30,14 @@ using namespace Herwig;
 
 const Complex MEPP2HiggsJet::_epsi = Complex(0.,-1.e-20);
 
+IBPtr MEPP2HiggsJet::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr MEPP2HiggsJet::fullclone() const {
+  return new_ptr(*this);
+}
+
 unsigned int MEPP2HiggsJet::orderInAlphaS() const {
   return 3;
 }

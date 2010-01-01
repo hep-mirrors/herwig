@@ -35,9 +35,7 @@ set Model:QCD/RunningAlphaS O2AlphaS
 #  Setup the POWHEG shower
 ##################################################
 cd /Herwig/Shower
-# switch the type of hard emission
-set Evolver:MECorrMode 0
-set Evolver:HardEmissionOption Powheg
+set Evolver:HardEmissionMode POWHEG
 
 ##################################################
 # Tevatron physics parameters (override defaults) 

@@ -15,22 +15,24 @@
 #include "ThePEG/Handlers/XComb.h"
 #include "KinematicsReconstructor.h"
 #include <cassert>
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 using namespace ThePEG;
 
+set<long> ShowerTree::_decayInShower = set<long>();
+
 // constructor from hard process
-ShowerTree::ShowerTree(const ParticleVector & out,
+ShowerTree::ShowerTree(const PPair incoming, const ParticleVector & out,
 		       ShowerDecayMap& decay) 
   : _hardMECorrection(false), _wasHard(true),
-    _parent(), _showerHandler(ShowerHandler::currentHandler()), 
-    _hasShowered(false) {
-  tPPair beam = _showerHandler->generator()->currentEvent()->incoming();
-  PPair in = _showerHandler->currentSubProcess()->incoming();
-  double x1(in.first ->momentum().rho()/beam.first ->momentum().rho());
-  double x2(in.second->momentum().rho()/beam.second->momentum().rho());
+    _parent(), _hasShowered(false) {
+  tPPair beam = CurrentGenerator::current().currentEvent()->incoming();
+  _incoming = incoming;
+  double x1(_incoming.first ->momentum().rho()/beam.first ->momentum().rho());
+  double x2(_incoming.second->momentum().rho()/beam.second->momentum().rho());
   // must have two incoming particles
-  assert(in.first && in.second);
+  assert(_incoming.first && _incoming.second);
   // set the parent tree
   _parent=ShowerTreePtr();
   // temporary vectors to contain all the particles before insertion into
@@ -38,10 +40,10 @@ ShowerTree::ShowerTree(const ParticleVector & out,
   vector<PPtr> original,copy;
   vector<ShowerParticlePtr> shower;
   // create copies of ThePEG particles for the incoming particles
-  original.push_back(in.first);
-  copy.push_back(new_ptr(Particle(*in.first)));
-  original.push_back(in.second);
-  copy.push_back(new_ptr(Particle(*in.second)));
+  original.push_back(_incoming.first);
+  copy.push_back(new_ptr(Particle(*_incoming.first)));
+  original.push_back(_incoming.second);
+  copy.push_back(new_ptr(Particle(*_incoming.second)));
   // and same for outgoing
   map<PPtr,ShowerTreePtr> trees;
   for (ParticleVector::const_iterator it = out.begin();
@@ -49,7 +51,7 @@ ShowerTree::ShowerTree(const ParticleVector & out,
     // if decayed or should be decayed in shower make the tree
     PPtr orig = *it;
     if(!orig->children().empty()||
-       (_showerHandler->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+       (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
       newtree->setParents();
       trees.insert(make_pair(orig,newtree));
@@ -95,8 +97,7 @@ ShowerTree::ShowerTree(const ParticleVector & out,
 
 ShowerTree::ShowerTree(PPtr in,
 		       ShowerDecayMap& decay)
-  : _hardMECorrection(false), _wasHard(false), 
-    _showerHandler(ShowerHandler::currentHandler()), _hasShowered(false) {
+  : _hardMECorrection(false), _wasHard(false), _hasShowered(false) {
   // there must be an incoming particle
   assert(in);
   // temporary vectors to contain all the particles before insertion into
@@ -114,7 +115,7 @@ ShowerTree::ShowerTree(PPtr in,
       PPtr orig=children[ix];
       in->abandonChild(orig);
       if(!orig->children().empty()||
-	 (_showerHandler->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+	 (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
 	ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
 	trees.insert(make_pair(orig,newtree));
 	Energy width=orig->dataPtr()->generateWidth(orig->mass());
@@ -337,7 +338,6 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     }
   }
   // final-state radiation
-  PPair incoming=_showerHandler->currentSubProcess()->incoming();
   for(cjt=outgoingLines().begin();cjt!=outgoingLines().end();++cjt) {
     ShowerParticlePtr init=(*cjt).first->progenitor();
     assert(init->getThePEGBase());
@@ -353,8 +353,8 @@ void ShowerTree::insertHard(StepPtr pstep, bool ISR, bool) {
     }
     // from a matrix element correction
     else {
-      if(cjt->first->original()==incoming.first||
-	 cjt->first->original()==incoming.second) {
+      if(cjt->first->original()==_incoming.first||
+	 cjt->first->original()==_incoming.second) {
 	updateColour((*cjt).first->copy());
 	(*cjt).first->original()->parents()[0]->
 	  addChild((*cjt).first->copy());
@@ -524,7 +524,7 @@ void ShowerTree::decay(ShowerDecayMap & decay) {
       parent->abandonChild(orig);
       // if particle has children or decays in shower
       if(!orig->children().empty()||
-	 (_showerHandler->decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
+	 (decaysInShower(orig->id())&&!orig->dataPtr()->stable())) {
 	ShowerTreePtr newtree=new_ptr(ShowerTree(orig,decay));
 	trees.insert(make_pair(orig,newtree));
 	Energy width=orig->dataPtr()->generateWidth(orig->mass());
@@ -770,7 +770,7 @@ void ShowerTree::updateAfterShower(ShowerDecayMap & decay) {
   // shower but didn't come from the hard process
   set<tShowerParticlePtr>::const_iterator cit;
   for(cit=_forward.begin();cit!=_forward.end();++cit) {
-    if(_showerHandler->decaysInShower((**cit).id())&&
+    if(decaysInShower((**cit).id())&&
        hard.find(*cit)==hard.end()) {
       ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,decay));
       newtree->setParents();

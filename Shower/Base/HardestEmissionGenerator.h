@@ -17,7 +17,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the HardestEmissionGenerator class.
+ * The HardestEmissionGenerator class is the base class for the implementation
+ * of classes generating hard radiation in the POWHEG scheme.
  *
  * @see \ref HardestEmissionGeneratorInterfaces "The interfaces"
  * defined for HardestEmissionGenerator.

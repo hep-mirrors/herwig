@@ -57,7 +57,5 @@ namespace Herwig {
 
 }
 
-#include "Smearing.icc"
-
 #endif /* HERWIG_Smearing_H */
 

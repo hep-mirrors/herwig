@@ -21,9 +21,13 @@
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "ShowerVeto.h"
-#include "Herwig++/Shower/Base/HardBranching.fh"
-#include "HardestEmissionGenerator.h"
+#include "HardTree.h"
+#include "ThePEG/Handlers/XComb.h"
 #include "Evolver.fh"
+#include "Herwig++/MatrixElement/HwMEBase.h"
+#include "Herwig++/Decay/HwDecayerBase.h"
+#include "Herwig++/Utilities/Histogram.h"
+#include "HardestEmissionGenerator.h"
 
 namespace Herwig {
 
@@ -56,19 +60,24 @@ friend class ShowerHandler;
 friend class MECorrectionBase;
 
 public:
+  
+  /**
+   *  Pointer to an XComb object
+   */
+  typedef Ptr<XComb>::pointer XCPtr;
+
+public:
 
   /**
    *  Default Constructor
    */
-  Evolver() : _maxtry(100), _hardType(0), 
+  Evolver() : _maxtry(100),
 	      _meCorrMode(1), _hardVetoMode(1), 
 	      _hardVetoRead(0),
 	      _iptrms(ZERO), _beta(0.), _gamma(ZERO), _iptmax(),
-	      _limitEmissions(0), 
-	      _initialenhance(1.), _finalenhance(1.), 
-	      _hardonly(false), _trunc_Mode(true),
-	      interaction_(1) {}
-
+	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
+	       interaction_(1), _hardonly(false), _trunc_Mode(true),
+	      _hardEmissionMode(0), _checkShowerMomenta(false) {}
   /**
    *  Members to perform the shower
    */
@@ -76,7 +85,7 @@ public:
   /**
    * Perform the shower of the hard process
    */
-  virtual void showerHardProcess(ShowerTreePtr);
+  virtual void showerHardProcess(ShowerTreePtr,XCPtr);
 
   /**
    * Perform the shower of a decay
@@ -145,7 +154,12 @@ protected:
   /**
    *  Generate the hard matrix element correction
    */
-  virtual void hardMatrixElementCorrection();
+  virtual void hardMatrixElementCorrection(bool);
+
+  /**
+   *  Generate the hardest emission
+   */
+  virtual void hardestEmission();
 
   /**
    * Extract the particles to be showered, set the evolution scales
@@ -155,12 +169,11 @@ protected:
    */
   virtual vector<ShowerProgenitorPtr> setupShower(bool hard);
 
-  
   /**
-   *  Dummy implementation of powheg check of shower momentum reconstruction 
+   *  Implementation of checks on momentum reconstruction
    */
-  virtual bool checkShowerMomentum(vector<ShowerProgenitorPtr> particlesToShower,
-				   bool IS  );
+  virtual bool checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower,
+				    bool IS );
 
   /**
    *  set the colour partners
@@ -206,12 +219,19 @@ protected:
 				    Energy maxscale,
 				    Energy minimumMass,
 				    ShowerInteraction::Type);
-  //@}
 
   /**
-   *  Generate the hardest emission in the POWHEG approach
+   * Truncated shower from a time-like particle
    */
-  virtual void hardestEmission();
+  virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
+				       HardBranchingPtr branch);
+ 
+  /**
+   * Truncated shower from a space-like particle
+   */
+  virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
+					HardBranchingPtr branch);
+  //@}
 
   /**
    *  Switches for matrix element corrections
@@ -232,6 +252,11 @@ protected:
    */
   bool softMEC() const { return _meCorrMode == 1 || _meCorrMode > 2; }
   //@}
+
+  /**
+   * Is the truncated shower on?
+   */
+  bool isTruncatedShowerON() const {return _trunc_Mode;}
 
   /**
    *  Switch for intrinsic pT
@@ -321,12 +346,12 @@ protected:
   /**
    *  The HardTree currently being showered
    */
-  inline tHardTreePtr hardTree() {return _hardTree;}
+  inline tHardTreePtr hardTree() {return _nasontree;}
 
   /**
    *  The HardTree currently being showered
    */
-  inline void hardTree(tHardTreePtr in) {_hardTree = in;}
+  inline void hardTree(tHardTreePtr in) {_nasontree = in;}
   //@}
 
   /**
@@ -396,6 +421,18 @@ protected:
   void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
 
 protected:
+  
+  /**
+   *  Matrix element
+   */
+  HwMEBasePtr hardMatrixElement() const {return _hardme;}
+ 
+  /**
+   *  Decayer
+   */
+  HwDecayerBasePtr decayMatrixElement() const {return _decayme;}
+
+protected:
 
   /**
    *  Start the shower of a timelike particle
@@ -450,11 +487,6 @@ protected:
 					HardBranchingPtr branch,
 					ShowerInteraction::Type type);
 
-  /**
-   *   Truncated shower mode
-   */
-  bool isTruncatedShowerON() const {return _trunc_Mode;}
-
   vector<HardestEmissionGeneratorPtr> & hardestEmissionGenerator() 
   {return _hardgenerator;}
 
@@ -504,10 +536,10 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
+  //@} 
 
 protected:
-
+  
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -519,11 +551,12 @@ protected:
 
   /**
    * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
+   * a run begins.   */
   virtual void doinitrun();
-  //@}
 
+  virtual void dofinish();
+  //@}
+  
 private:
 
   /**
@@ -537,6 +570,16 @@ private:
    * In fact, it should not even be implemented.
    */
   Evolver & operator=(const Evolver &);
+
+  /**
+   * Recursive function to find FS end point of shower line
+   */
+  bool findShowerEnd( PPtr parton );
+  
+  /**
+   * Recursive function to find FS end point of hardBranching line
+   */
+  bool findHardTreeEnd( HardBranchingPtr parton );
 
 private:
 
@@ -611,6 +654,16 @@ private:
   MECorrectionPtr _currentme;
 
   /**
+   *  Matrix element
+   */
+  HwMEBasePtr _hardme;
+ 
+  /**
+   *  Decayer
+   */
+  HwDecayerBasePtr _decayme;
+
+  /**
    * The ShowerTree currently being showered
    */
   ShowerTreePtr _currenttree;
@@ -618,7 +671,7 @@ private:
   /**
    *  The HardTree currently being showered
    */
-  HardTreePtr _hardTree;
+  HardTreePtr _nasontree;
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm
@@ -662,22 +715,6 @@ private:
   unsigned int _nfs;
 
   /**
-   *  Only generate the emission from the hardest emission
-   *  generate for testing only
-   */
-  bool _hardonly;
-
- /**
-   *  Truncated shower switch
-   */
-  bool _trunc_Mode;
-
-  /**
-   *  Vector of objects responisble for generating the hardest emission
-   */
-  vector<HardestEmissionGeneratorPtr> _hardgenerator;
-
-  /**
    *  The option for wqhich interactions to use
    */
   unsigned int interaction_;
@@ -688,9 +725,55 @@ private:
   vector<ShowerInteraction::Type> interactions_;
 
   /**
-   *  Debugging on or off
+   *  Vector of objects responisble for generating the hardest emission
    */
-  bool debug_;
+  vector<HardestEmissionGeneratorPtr> _hardgenerator;
+
+  /**
+   *  Only generate the emission from the hardest emission
+   *  generate for testing only
+   */
+  bool _hardonly;
+
+ /**
+   *  Truncated shower switch
+   */
+  bool _trunc_Mode;
+  
+  /**
+   *  Count of the number of truncated emissions
+   */
+  unsigned int _truncEmissions;
+
+  /**
+   *  Mode for the hard emissions
+   */
+  unsigned int _hardEmissionMode;
+
+  /**
+   * Switch for the momentum reconstruction checks
+   */
+  bool _checkShowerMomenta;
+  
+  /**
+   *  Histograms of momentum differences in reconstructed momenta
+   */
+  HistogramPtr _h_Xdiff;
+  HistogramPtr _h_Ydiff;
+  HistogramPtr _h_Zdiff;
+  HistogramPtr _h_Ediff;
+
+  /**
+   * Count of events passing momenta reconstruction acceptance
+   */
+  int _no_events;
+  int _mom_fails;
+  /**
+   * Storage of the end points from shower and hard tree for 
+   * momentum reconstruction checks
+   */
+  multimap< long, PPtr > _showerEndPoints;
+  vector< PPtr > _hardTreeEndPoints;
 };
 
 }

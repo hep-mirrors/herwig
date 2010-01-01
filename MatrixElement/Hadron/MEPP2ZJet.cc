@@ -27,7 +27,7 @@ MEPP2ZJet::MEPP2ZJet() : _process(0), _maxflavour(5), _zdec(0),
 {}
 
 void MEPP2ZJet::doinit() {
-  MEBase::doinit();
+  HwMEBase::doinit();
   _z0    = getParticleData(ThePEG::ParticleID::Z0   );
   _gamma = getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
