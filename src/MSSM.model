@@ -299,19 +299,19 @@ set PhitoPhiGSudakov:PDFmax 35.0
 cp SudakovCommon GluinotoGluinoGSudakov
 set GluinotoGluinoGSudakov:SplittingFunction GluinotoGluinoGSplitFn
 
-set SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~s_L->~s_L,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~c_L->~c_L,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~b_1->~b_1,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~t_1->~t_1,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~u_R->~u_R,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~d_R->~d_R,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~s_R->~s_R,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~c_R->~c_R,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
-set SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
+do SplittingGenerator:AddFinalSplitting ~u_L->~u_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~d_L->~d_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~s_L->~s_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~c_L->~c_L,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~b_1->~b_1,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~t_1->~t_1,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~u_R->~u_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~d_R->~d_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~s_R->~s_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~c_R->~c_R,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~b_2->~b_2,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~t_2->~t_2,g; PhitoPhiGSudakov
+do SplittingGenerator:AddFinalSplitting ~g->~g,g; GluinotoGluinoGSudakov
 ###################################################
 # Set up the bsm framework
 ###################################################

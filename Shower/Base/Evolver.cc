@@ -1115,6 +1115,36 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
   return false;
 }
 
+void Evolver::hardestEmission() {
+  // see if there is an appropriate hard emission generator
+  HardestEmissionGeneratorPtr currenthard;
+  for( unsigned int ix = 0; ix < hardestEmissionGenerator().size(); ++ix ) {
+    if( !hardestEmissionGenerator()[ix]->canHandle( currentTree() ) ) continue;
+    if( currenthard ) {
+      ostringstream output;
+      output << "There is more than one possible hard emission generator"
+	     << " which could be used for ";
+      map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+      for(cit=currentTree()->incomingLines().begin();
+	  cit!=currentTree()->incomingLines().end();++cit)
+	{output << cit->first->progenitor()->PDGName() << " ";}
+      output << " -> ";
+      for(cjt=currentTree()->outgoingLines().begin();
+	  cjt!=currentTree()->outgoingLines().end();++cjt)
+	{output << cjt->first->progenitor()->PDGName() << " ";}
+      output << "in Evolver::hardestEmission()\n";
+      throw Exception() << output << Exception::runerror;
+    }
+    currenthard=hardestEmissionGenerator()[ix];
+  }
+  // if no suitable generator return
+  hardTree(HardTreePtr());
+  if(!currenthard) return;
+  // generate the hardest emission
+  hardTree(currenthard->generateHardest( currentTree() ));
+}
+
 bool Evolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
 					    HardBranchingPtr branch,
 					    ShowerInteraction::Type type) {
@@ -1652,36 +1682,6 @@ bool Evolver::checkShowerMomentum( vector<ShowerProgenitorPtr> particlesToShower
   return true;
 }
 
-void Evolver::hardestEmission() {
-  // see if there is an appropriate hard emission generator
-  HardestEmissionGeneratorPtr currenthard;
-  for( unsigned int ix = 0; ix < hardestEmissionGenerator().size(); ++ix ) {
-    if( !hardestEmissionGenerator()[ix]->canHandle( currentTree() ) ) continue;
-    if( currenthard ) {
-      ostringstream output;
-      output << "There is more than one possible hard emission generator"
-	     << " which could be used for ";
-      map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-      for(cit=currentTree()->incomingLines().begin();
-	  cit!=currentTree()->incomingLines().end();++cit)
-	{output << cit->first->progenitor()->PDGName() << " ";}
-      output << " -> ";
-      for(cjt=currentTree()->outgoingLines().begin();
-	  cjt!=currentTree()->outgoingLines().end();++cjt)
-	{output << cjt->first->progenitor()->PDGName() << " ";}
-      output << "in Evolver::hardestEmission()\n";
-      throw Exception() << output << Exception::runerror;
-    }
-    currenthard=hardestEmissionGenerator()[ix];
-  }
-  // if no suitable generator return
-  hardTree(HardTreePtr());
-  if(!currenthard) return;
-  // generate the hardest emission
-  hardTree(currenthard->generateHardest( currentTree() ));
-}
-
 bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower,
 				    ShowerInteraction::Type inter) {
   Energy ptmax(-GeV);
@@ -1795,38 +1795,6 @@ bool Evolver::constructDecayTree(vector<ShowerProgenitorPtr> & particlesToShower
   }
   return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void Evolver::constructHardTree(vector<ShowerProgenitorPtr> & particlesToShower,
 				   ShowerInteraction::Type inter) {

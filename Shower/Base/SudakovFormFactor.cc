@@ -230,6 +230,27 @@ void SudakovFormFactor::addSplitting(const IdList & in) {
   if(add) particles_.push_back(in);
 }
 
+void SudakovFormFactor::removeSplitting(const IdList & in) {
+  for(vector<IdList>::iterator it=particles_.begin();
+      it!=particles_.end();++it) {
+    if(it->size()==in.size()) {
+      bool match=true;
+      for(unsigned int iy=0;iy<in.size();++iy) {
+	if((*it)[iy]!=in[iy]) {
+	  match=false;
+	  break;
+	}
+      }
+      if(match) {
+	vector<IdList>::iterator itemp=it;
+	--itemp;
+	particles_.erase(it);
+	it = itemp;
+      }
+    }
+  }
+}
+
 Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
 					 const IdList &ids,
 					 double enhance,bool ident) const {
