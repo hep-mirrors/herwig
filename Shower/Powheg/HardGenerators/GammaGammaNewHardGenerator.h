@@ -1,37 +1,34 @@
 // -*- C++ -*-
-#ifndef HERWIG_VJetGammaHardGenerator_H
-#define HERWIG_VJetGammaHardGenerator_H
+#ifndef HERWIG_GammaGammaNewHardGenerator_H
+#define HERWIG_GammaGammaNewHardGenerator_H
 //
-// This is the declaration of the VJetGammaHardGenerator class.
+// This is the declaration of the GammaGammaNewHardGenerator class.
 //
 
 #include "Herwig++/Shower/Base/HardestEmissionGenerator.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "Herwig++/Shower/Base/ShowerProgenitor.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The VJetGammaHardGenerator class generates a hard photon from
- * a vector boson plus jet event as parto f othe correction to
- * vector boson+gamma events.
+ * Here is the documentation of the GammaGammaNewHardGenerator class.
  *
- * @see \ref VJetGammaHardGeneratorInterfaces "The interfaces"
- * defined for VJetGammaHardGenerator.
+ * @see \ref GammaGammaNewHardGeneratorInterfaces "The interfaces"
+ * defined for GammaGammaNewHardGenerator.
  */
-class VJetGammaHardGenerator: public HardestEmissionGenerator {
+class GammaGammaNewHardGenerator: public HardestEmissionGenerator {
 
 public:
 
   /**
    * The default constructor.
    */
-  VJetGammaHardGenerator();
+  GammaGammaNewHardGenerator();
 
   /**
-   *  Members which must be overridden in the inheriting classes
+   *  Members overiding the base class and implementing the generation
+   * of the radiation
    */
   //@{
   /**
@@ -44,6 +41,8 @@ public:
    */
   virtual bool canHandle(ShowerTreePtr);
   //@}
+
+public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -97,25 +96,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<VJetGammaHardGenerator> initVJetGammaHardGenerator;
+  static ClassDescription<GammaGammaNewHardGenerator> initGammaGammaNewHardGenerator;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  VJetGammaHardGenerator & operator=(const VJetGammaHardGenerator &);
-
-private:
-
-  /**
-   *  Pointer to the object calculating the strong coupling
-   */
-  ShowerAlphaPtr alphaEM_;
-
-  /**
-   *  The transverse momentum of the jet
-   */
-  Energy pTmin_;
+  GammaGammaNewHardGenerator & operator=(const GammaGammaNewHardGenerator &);
 
 };
 
@@ -128,24 +115,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of VJetGammaHardGenerator. */
+ *  base classes of GammaGammaNewHardGenerator. */
 template <>
-struct BaseClassTrait<Herwig::VJetGammaHardGenerator,1> {
-  /** Typedef of the first base class of VJetGammaHardGenerator. */
+struct BaseClassTrait<Herwig::GammaGammaNewHardGenerator,1> {
+  /** Typedef of the first base class of GammaGammaNewHardGenerator. */
   typedef Herwig::HardestEmissionGenerator NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the VJetGammaHardGenerator class and the shared object where it is defined. */
+ *  the GammaGammaNewHardGenerator class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::VJetGammaHardGenerator>
-  : public ClassTraitsBase<Herwig::VJetGammaHardGenerator> {
+struct ClassTraits<Herwig::GammaGammaNewHardGenerator>
+  : public ClassTraitsBase<Herwig::GammaGammaNewHardGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::VJetGammaHardGenerator"; }
+  static string className() { return "Herwig::GammaGammaNewHardGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * VJetGammaHardGenerator is implemented. It may also include several, space-separated,
-   * libraries if the class VJetGammaHardGenerator depends on other classes (base classes
+   * GammaGammaNewHardGenerator is implemented. It may also include several, space-separated,
+   * libraries if the class GammaGammaNewHardGenerator depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -156,4 +143,4 @@ struct ClassTraits<Herwig::VJetGammaHardGenerator>
 
 }
 
-#endif /* HERWIG_VJetGammaHardGenerator_H */
+#endif /* HERWIG_GammaGammaNewHardGenerator_H */
