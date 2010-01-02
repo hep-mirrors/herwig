@@ -12,7 +12,7 @@
 // This is the declaration of the MEQCD2to2 class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.h"
@@ -32,7 +32,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEQCD2to2Interfaces "The interfaces"
  * defined for MEQCD2to2.
  */
-class MEQCD2to2: public HwME2to2Base {
+class MEQCD2to2: public HwMEBase {
 
 public:
 
@@ -378,7 +378,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEQCD2to2,1> {
   /** Typedef of the first base class of MEQCD2to2. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

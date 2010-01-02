@@ -19,7 +19,6 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/Shower/ShowerHandler.h"
 #include "ShowerKinematics.h"
 
 using namespace Herwig;

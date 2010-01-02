@@ -5,7 +5,7 @@
 // This is the declaration of the MEGammaGamma2WW class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVertex.fh"
 #include "ThePEG/Helicity/Vertex/AbstractVVVVVertex.fh"
@@ -22,7 +22,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEGammaGamma2WWInterfaces "The interfaces"
  * defined for MEGammaGamma2WW.
  */
-class MEGammaGamma2WW : public HwME2to2Base {
+class MEGammaGamma2WW : public HwMEBase {
 
 public:
 
@@ -211,7 +211,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEGammaGamma2WW,1> {
   /** Typedef of the first base class of MEGammaGamma2WW. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

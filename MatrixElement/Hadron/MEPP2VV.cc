@@ -138,10 +138,9 @@ IBPtr MEPP2VV::fullclone() const {
 }
 
 void MEPP2VV::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // mass option
-  massOption(true ,massOption_);
-  massOption(false,massOption_);
+  massOption(vector<unsigned int>(2,massOption_));
   rescalingOption(2);
   // get the vertices we need
   // get a pointer to the standard model object in the run
@@ -196,20 +195,16 @@ MEPP2VV::colourGeometries(tcDiagPtr diag) const {
   static ColourLines ct("1 2 -3");
   Selector<const ColourLines *> sel; 
   if(abs(diag->partons()[2]->id())==24&&abs(diag->partons()[3]->id())==24) {
-    if(diag->id()==-4||diag->id()==-5) {
-      sel.insert(1.0, &cs);
-      return sel;
-    }
+    if(diag->id()<=-4) sel.insert(1.0, &cs);
+    else               sel.insert(1.0, &ct);
   }
-  if((abs(diag->partons()[2]->id())==23&&abs(diag->partons()[3]->id())==24)||
-     (abs(diag->partons()[2]->id())==24&&abs(diag->partons()[3]->id())==23)) {
-    if(diag->id()==-3) {
-      sel.insert(1.0, &cs);
-      return sel;
-    }
+  else if(abs(diag->partons()[2]->id())==24&&diag->partons()[3]->id()==23) {
+    if(diag->id()==-3) sel.insert(1.0, &cs);
+    else               sel.insert(1.0, &ct);
   }
-
-  sel.insert(1.0, &ct);
+  else {
+    sel.insert(1.0, &ct);
+  }
   return sel;
 }
 

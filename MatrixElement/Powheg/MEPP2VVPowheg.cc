@@ -30,10 +30,8 @@ MEPP2VVPowheg::MEPP2VVPowheg() :
     contrib_(1),   channels_(0), nlo_alphaS_opt_(0) , fixed_alphaS_(0.1180346226),
     removebr_(1), scaleopt_(1), mu_F_(100.*GeV), mu_UV_(100.*GeV),
     ckm_(3,vector<Complex>(3,0.0)),
-    helicityConservation_(true)
-{  
-  massOption(true ,1);
-  massOption(false,1);
+    helicityConservation_(true) {  
+  massOption(vector<unsigned int>(2,1));
 }
 
 void MEPP2VVPowheg::persistentOutput(PersistentOStream & os) const {

@@ -12,7 +12,7 @@
 // This is the declaration of the MEee2gZ2ll class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
@@ -31,7 +31,7 @@ using namespace ThePEG;
  * @see \ref MEee2gZ2llInterfaces "The interfaces"
  * defined for MEee2gZ2ll.
  */
-class MEee2gZ2ll: public HwME2to2Base {
+class MEee2gZ2ll: public HwMEBase {
 
 public:
 
@@ -39,8 +39,7 @@ public:
    * The default constructor.
    */
   MEee2gZ2ll() : _allowed(0) {
-    massOption(true ,1);
-    massOption(false,1);
+    massOption(vector<unsigned int>(2,1));
   }
 
 public:
@@ -254,7 +253,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEee2gZ2ll,1> {
   /** Typedef of the first base class of MEee2gZ2ll. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

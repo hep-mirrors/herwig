@@ -911,9 +911,14 @@ inverseRescalingFactor(vector<Lorentz5Momentum> pout,
     lambda = 
       ((1.+mu_q1+mu_q2)*(1.-mu_q1-mu_q2)*(mu_q1-1.-mu_q2)*(mu_q2-1.-mu_q1))/
       ((1.+mu_p1+mu_p2)*(1.-mu_p1-mu_p2)*(mu_p1-1.-mu_p2)*(mu_p2-1.-mu_p1));
+    if(lambda<0.)
+      throw Exception() << "Rescaling factor is imaginary in  QTildeReconstructor::"
+			<< "inverseRescalingFactor lambda^2= " << lambda
+			<< Exception::eventerror;
     lambda = sqrt(lambda);
   }
   else {
+    generator()->log() << "testing did B\n";
     unsigned int ntry=0;
     // compute magnitudes once for speed
     vector<Energy2> pmag;
@@ -1563,8 +1568,17 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
   vector<Energy> mon;
   for(cit=jets.begin();cit!=jets.end();++cit) {
     pout.push_back((*cit)->branchingParticle()->momentum());
-    if((*cit)->branchingParticle()->getThePEGBase())
-      mon.push_back((*cit)->branchingParticle()->getThePEGBase()->mass());
+    // KH - 230909 - If the particle has no children then it will 
+    // not have showered and so it should be "on-shell" so we can
+    // get it's mass from it's momentum. This means that the
+    // inverseRescalingFactor doesn't give any nans or do things 
+    // it shouldn't if it gets e.g. two Z bosons generated with
+    // off-shell masses. This is for sure not the best solution.
+    // PR 1/1/10 modification to previous soln
+    if((*cit)->branchingParticle()->children().size()==0 ||
+       (!(*cit)->branchingParticle()->dataPtr()->coloured() &&
+	!(*cit)->branchingParticle()->dataPtr()->stable()) ) 
+	mon.push_back(pout.back().mass());
     else
       mon.push_back((*cit)->branchingParticle()->dataPtr()->mass());
   }
@@ -1687,7 +1701,8 @@ deconstructFinalStateSystem(Boost & toRest, Boost & fromRest,
     else {
       qnew = (*cjt)->pVector();
     }
-    // qnew is the unshuffled momentum in the rest frame of the p basis vectors
+    // qnew is the unshuffled momentum in the rest frame of the p basis vectors,
+    // for the simple case Z->q qbar g this was checked against analytic formulae.
     // compute the boost
     LorentzRotation A=LorentzRotation(toRest);
     LorentzRotation B=LorentzRotation(fromRest);

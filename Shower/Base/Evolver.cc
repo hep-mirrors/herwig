@@ -61,8 +61,8 @@ IBPtr Evolver::fullclone() const {
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _hardVetoRead << _limitEmissions
-     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) << _vetoes
-     << _hardgenerator << _hardonly << _trunc_Mode << _hardEmissionMode
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) << ounit(_iptmax,GeV) 
+     << _vetoes << _hardgenerator << _hardonly << _trunc_Mode << _hardEmissionMode
      << _checkShowerMomenta << interaction_<< interactions_.size();
   for(unsigned int ix=0;ix<interactions_.size();++ix) 
     os << oenum(interactions_[ix]); 
@@ -72,8 +72,8 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
   unsigned int isize;
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _hardVetoRead >> _limitEmissions
-     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) >> _vetoes
-     >> _hardgenerator >> _hardonly >> _trunc_Mode >> _hardEmissionMode
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV) >> iunit(_iptmax,GeV) 
+     >> _vetoes >> _hardgenerator >> _hardonly >> _trunc_Mode >> _hardEmissionMode
      >> _checkShowerMomenta >> interaction_ >> isize;
   interactions_.resize(isize);
   for(unsigned int ix=0;ix<interactions_.size();++ix) is >> ienum(interactions_[ix]);
@@ -447,6 +447,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
 }
 
 void Evolver::showerHardProcess(ShowerTreePtr hard, XCPtr xcomb) {
+  _hardme = HwMEBasePtr();
   // extract the matrix element
   tStdXCombPtr lastXC = dynamic_ptr_cast<tStdXCombPtr>(xcomb);
   if(lastXC) {
@@ -739,7 +740,7 @@ Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam,
 }
 
 void Evolver::showerDecay(ShowerTreePtr decay) {
-  _hardme = HwMEBasePtr();
+  _decayme = HwDecayerBasePtr();
   // find the decayer
   // try the normal way if possible
   tDMPtr dm = decay->incomingLines().begin()->first->original()   ->decayMode();
@@ -1148,12 +1149,12 @@ bool Evolver::spaceLikeDecayVetoed( const Branching & fb,
 }
 
 void Evolver::hardestEmission() {
-  if( ( hardMatrixElement() &&  hardMatrixElement()->hasPOWHEGCorrection()) ||
-      (decayMatrixElement() && decayMatrixElement()->hasPOWHEGCorrection())) {
-    if(hardMatrixElement())
-      _nasontree =  hardMatrixElement()->generateHardest( currentTree() );
+  if( ( _hardme &&  _hardme->hasPOWHEGCorrection()) ||
+      (_decayme && _decayme->hasPOWHEGCorrection())) {
+    if(_hardme)
+      _nasontree =  _hardme->generateHardest( currentTree() );
     else
-      _nasontree = decayMatrixElement()->generateHardest( currentTree() );
+      _nasontree = _decayme->generateHardest( currentTree() );
     ShowerParticleVector particles;
     if(!_nasontree) return;
     // Sudakovs for ISR

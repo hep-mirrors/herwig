@@ -21,8 +21,7 @@ GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
 				 theDiagrams(0), theNDiags(0), 
 				 theColour(0), theNcf(0) , 
 				 theDebug(false), scaleChoice_(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
   
 void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
@@ -40,19 +39,19 @@ void GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
 
   //OffShell options
   pair<bool, bool> offshell(make_pair(false, false));
+  vector<unsigned int> mopt(2,1);
   if( getParticleData(theOutgoing.first)->widthGenerator() ) {
     offshell.first = true;
-    massOption(true, 2);
+    mopt[0] = 2;
   }
   if( getParticleData(theOutgoing.second)->widthGenerator() ) {
     offshell.second = true;
-    massOption(false, 2);
+    mopt[1] = 2;
   }
-
+  massOption(mopt);
   if( offshell.first == true &&  offshell.second == true &&
       abs(theOutgoing.first) == abs(theOutgoing.second)  )
     rescalingOption(3);
-
 }
 
 void GeneralHardME::getDiagrams() const {

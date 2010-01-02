@@ -105,9 +105,11 @@ IBPtr MEPP2VGamma::fullclone() const {
 }
 
 void MEPP2VGamma::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // mass option
-  massOption(true ,massOption_);
+  vector<unsigned int> mopt(2,1);
+  mopt[0]=massOption_;
+  massOption(mopt);
   rescalingOption(2);
   // get the vertices we need
   // get a pointer to the standard model object in the run

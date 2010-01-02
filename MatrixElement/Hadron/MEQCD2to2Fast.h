@@ -12,7 +12,7 @@
 // This is the declaration of the MEQCD2to2Fast class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Repository/UseRandom.h"
 
 namespace Herwig {
@@ -28,7 +28,7 @@ using namespace ThePEG::Helicity;
  * @see \ref MEQCD2to2FastInterfaces "The interfaces"
  * defined for MEQCD2to2Fast.
  */
-class MEQCD2to2Fast: public HwME2to2Base {
+class MEQCD2to2Fast: public HwMEBase {
 
 public:
 
@@ -36,8 +36,7 @@ public:
    * The default constructor.
    */
   MEQCD2to2Fast() :_maxflavour(5),_process(0) {
-    massOption(true ,0);
-    massOption(false,0);
+    massOption(vector<unsigned int>(2,0));
   }
 
   /** @name Virtual functions required by the MEBase class. */
@@ -339,7 +338,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEQCD2to2Fast,1> {
   /** Typedef of the first base class of MEQCD2to2Fast. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

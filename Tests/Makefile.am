@@ -9,7 +9,7 @@ dist-hook:
 EXTRA_LTLIBRARIES = LeptonTest.la GammaTest.la HadronTest.la DISTest.la
 
 if WANT_LIBFASTJET
-EXTRA_LTLIBRARIES += HadronJetTest.la
+EXTRA_LTLIBRARIES += HadronJetTest.la LeptonJetTest.la
 HadronJetTest_la_SOURCES = \
 Hadron/VHTest.h Hadron/VHTest.cc\
 Hadron/VTest.h Hadron/VTest.cc\
@@ -17,6 +17,11 @@ Hadron/HTest.h Hadron/HTest.cc
 HadronJetTest_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
 -I$(FASTJETPATH)
 HadronJetTest_la_LIBADD = $(FASTJETLIBS) 
+LeptonJetTest_la_SOURCES = \
+Lepton/TopDecay.h Lepton/TopDecay.cc
+LeptonJetTest_la_CPPFLAGS = $(AM_CPPFLAGS) $(FASTJETINCLUDE) \
+-I$(FASTJETPATH)
+LeptonJetTest_la_LIBADD = $(FASTJETLIBS) 
 endif
 
 LeptonTest_la_SOURCES = \
@@ -50,7 +55,11 @@ HWRUN = $(HERWIG) run
 
 tests : tests-LEP tests-DIS tests-LHC tests-Gamma
 
+if WANT_LIBFASTJET
 tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-BB test-LEP-Quarks test-LEP-Leptons
+else
+tests-LEP : test-LEP-VV test-LEP-VH test-LEP-VBF test-LEP-default test-LEP-BB test-LEP-Quarks test-LEP-TopDecay
+endif
 
 tests-DIS : test-DIS-Charged test-DIS-Neutral
 
@@ -71,9 +80,15 @@ endif
 
 tests-Gamma : test-Gamma-FF test-Gamma-WW test-Gamma-P
 
+if WANT_LIBFASTJET 
+test-LEP-% : Inputs/LEP-%.in LeptonTest.la LeptonJetTest.la
+	$(HWREAD) $<
+	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+else
 test-LEP-% : Inputs/LEP-%.in LeptonTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
+endif
 
 test-Gamma-% : Inputs/Gamma-%.in GammaTest.la
 	$(HWREAD) $<
@@ -88,7 +103,7 @@ test-LHC-% : Inputs/LHC-%.in HadronTest.la GammaTest.la HadronJetTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 else
-test-LHC-% : Inputs/LHC-%.in HadronTest.la
+test-LHC-% : Inputs/LHC-%.in HadronTest.la GammaTest.la
 	$(HWREAD) $<
 	$(HWRUN) $(notdir $(subst .in,.run,$<)) -N $${NUMEVENTS:-10000}
 endif

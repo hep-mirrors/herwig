@@ -505,6 +505,7 @@ def compareHiggsJet(directory1,directory2,wiki,plotLocation) :
         out  = h1.writeDifference(h2,fo,True,"RED")
         totalDegree += out[0]
         totalChi += out[1]
+    print 'in higgs jet',totalDegree,totalChi
     fo.close()
     f1.close()
     f2.close()
@@ -1113,7 +1114,7 @@ def compareWShower(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| W || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1148,7 +1149,7 @@ def compareZShower(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| Z || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1183,7 +1184,7 @@ def compareWPowheg(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| W-Powheg || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1218,7 +1219,7 @@ def compareZPowheg(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| Z-Powheg || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1253,7 +1254,7 @@ def compareHJet(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| H || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1288,7 +1289,7 @@ def compareHPowheg(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| H-Powheg|| %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1323,7 +1324,7 @@ def compareWHJet(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| WH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1358,7 +1359,7 @@ def compareZHJet(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| ZH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1393,7 +1394,7 @@ def compareWHJetPowheg(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| WH-Powheg || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)
@@ -1428,7 +1429,7 @@ def compareZHJetPowheg(directory1,directory2,wiki,plotLocation) :
     op1 = plotLocation + "/" + fname
     op2 = op1.replace(".top",".ps")
     totalChi /= float(totalDegree)
-    ws = "|| ttH || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
+    ws = "|| ZH-Powheg || %s || %s || %s || %s || %s || %s || [%s top] || [%s ps] ||\n" % (output[0],output[1],output[2],output[3],output[4],totalChi,op1,op2)
     wiki.write(ws)
     tdstring = td_command + " " +fname 
     os.system(tdstring)

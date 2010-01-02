@@ -6475,6 +6475,7 @@ set ISGW2:FormFactor ISGW2FormFactor
 
 #
 create Herwig::SMZDecayer  ZDecayer HwPerturbativeDecay.so
+set ZDecayer:Coupling /Herwig/Shower/AlphaQCD
 set ZDecayer:QuarkMax 0 0.43
 set ZDecayer:QuarkMax 1 0.30
 set ZDecayer:QuarkMax 2 0.43
@@ -6495,6 +6496,7 @@ set ZDecayer:PhotonGenerator /Herwig/QEDRadiation/SOPHTY
 
 #
 create Herwig::SMWDecayer  WDecayer
+set WDecayer:Coupling /Herwig/Shower/AlphaQCD
 set WDecayer:QuarkMax 0 0.9
 set WDecayer:QuarkMax 1 0.05
 set WDecayer:QuarkMax 2 0.05
@@ -24051,6 +24053,7 @@ set BtosgammaKagan:HadronicMass BtosgammaMass
 
 #
 create Herwig::SMTopDecayer  Top
+set Top:Coupling /Herwig/Shower/AlphaQCD
 set Top:QuarkWeights 0 5.
 set Top:QuarkWeights 1 5.
 set Top:QuarkWeights 2 5.

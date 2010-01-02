@@ -5,7 +5,7 @@
 // This is the declaration of the MEPP2GammaGammaPowhegNEW class.
 //
 
-#include "Herwig++/MatrixElement/HwME2to2Base.h"
+#include "Herwig++/MatrixElement/HwMEBase.h"
 #include "ThePEG/Helicity/Vertex/AbstractFFVVertex.h"
 #include "Herwig++/MatrixElement/ProductionMatrixElement.h"
 #include "Herwig++/Shower/Base/HardTree.fh"
@@ -21,7 +21,7 @@ using namespace ThePEG;
  * @see \ref MEPP2GammaGammaPowhegNEWInterfaces "The interfaces"
  * defined for MEPP2GammaGammaPowhegNEW.
  */
-class MEPP2GammaGammaPowhegNEW: public HwME2to2Base {
+class MEPP2GammaGammaPowhegNEW: public HwMEBase {
 
 public:
 
@@ -391,7 +391,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::MEPP2GammaGammaPowhegNEW,1> {
   /** Typedef of the first base class of MEPP2GammaGammaPowhegNEW. */
-  typedef Herwig::HwME2to2Base NthBase;
+  typedef Herwig::HwMEBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

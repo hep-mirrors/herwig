@@ -18,12 +18,11 @@
 using namespace Herwig;
 
 MEGammaGamma2ff::MEGammaGamma2ff() : process_(0) {
-  massOption(true ,1);
-  massOption(false,1);
+  massOption(vector<unsigned int>(2,1));
 }
 
 void MEGammaGamma2ff::doinit() {
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
   // cast the SM pointer to the Herwig SM pointer
   tcHwSMPtr hwsm=ThePEG::dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

@@ -91,7 +91,7 @@ int MEfftoVH::nDim() const {
 }
 
 void MEfftoVH::setKinematics() {
-  HwMEBase::setKinematics();
+  DrellYanBase::setKinematics();
 }
 
 Selector<MEBase::DiagramIndex>
@@ -121,7 +121,7 @@ MEfftoVH::colourGeometries(tcDiagPtr ) const {
 }
 
 void MEfftoVH::doinit() {
-  HwMEBase::doinit();
+  DrellYanBase::doinit();
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation

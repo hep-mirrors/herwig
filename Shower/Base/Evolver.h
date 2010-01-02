@@ -78,6 +78,7 @@ public:
 	      _limitEmissions(0), _initialenhance(1.), _finalenhance(1.),
 	       interaction_(1), _hardonly(false), _trunc_Mode(true),
 	      _hardEmissionMode(0), _checkShowerMomenta(false) {}
+
   /**
    *  Members to perform the shower
    */
@@ -250,17 +251,23 @@ protected:
   /**
    * Any ME correction?   
    */
-  bool MECOn() const { return _meCorrMode > 0; }
+  bool MECOn() const {
+    return _meCorrMode > 0 && _hardEmissionMode==0;
+  }
 
   /**
    * Any hard ME correction? 
    */
-  bool hardMEC() const { return _meCorrMode == 1 || _meCorrMode == 2; }
+  bool hardMEC() const {
+    return (_meCorrMode == 1 || _meCorrMode == 2) && _hardEmissionMode==0;
+  }
 
   /**
    * Any soft ME correction? 
    */
-  bool softMEC() const { return _meCorrMode == 1 || _meCorrMode > 2; }
+  bool softMEC() const {
+    return (_meCorrMode == 1 || _meCorrMode > 2) && _hardEmissionMode==0;
+  }
   //@}
 
   /**
@@ -431,18 +438,6 @@ protected:
   void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
 
 protected:
-  
-  /**
-   *  Matrix element
-   */
-  HwMEBasePtr hardMatrixElement() const {return _hardme;}
- 
-  /**
-   *  Decayer
-   */
-  HwDecayerBasePtr decayMatrixElement() const {return _decayme;}
-
-protected:
 
   /**
    *  Start the shower of a timelike particle
@@ -544,7 +539,7 @@ protected:
 
   virtual void dofinish();
   //@}
-  
+
 private:
 
   /**
@@ -645,7 +640,7 @@ private:
    *  Matrix element
    */
   HwMEBasePtr _hardme;
- 
+
   /**
    *  Decayer
    */

@@ -22,8 +22,7 @@ using namespace Herwig;
 MEPP2GammaGammaPowhegNEW::MEPP2GammaGammaPowhegNEW() 
   : process_(0), maxFlavour_(5), QCDOption_(2),
     QCDScale_(100.*GeV2),QEDOption_(1), QEDScale_(100.*GeV2) {
-  massOption(true ,0);
-  massOption(false,0);
+  massOption(vector<unsigned int>(2,0));
 }
 
 ClassDescription<MEPP2GammaGammaPowhegNEW> 
@@ -149,7 +148,7 @@ void MEPP2GammaGammaPowhegNEW::doinit() {
   gluonVertex_  = hwsm->vertexFFG();
   photonVertex_ = hwsm->vertexFFP();
   // call the base class
-  HwME2to2Base::doinit();
+  HwMEBase::doinit();
 }
 
 IBPtr MEPP2GammaGammaPowhegNEW::clone() const {
@@ -171,7 +170,7 @@ void MEPP2GammaGammaPowhegNEW::persistentInput(PersistentIStream & is, int) {
 }
 
 int MEPP2GammaGammaPowhegNEW::nDim() const {
-  return HwME2to2Base::nDim() + 3;
+  return HwMEBase::nDim() + 3;
 }
 
 Energy2 MEPP2GammaGammaPowhegNEW::scale() const {
@@ -355,7 +354,7 @@ bool MEPP2GammaGammaPowhegNEW::generateKinematics(const double * r) {
     // generate the azimuth
     phi_ = r[ndim-3]*Constants::twopi;
     // call base class and return
-    return HwME2to2Base::generateKinematics(r);
+    return HwMEBase::generateKinematics(r);
   }
   else {
     assert(false);

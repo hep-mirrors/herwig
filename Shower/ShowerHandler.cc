@@ -631,48 +631,6 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
   if(particle->momentum().m2()<=ZERO||
      particle == currentSubProcess()->incoming().first||
      particle == currentSubProcess()->incoming().second) return false;
-  ////////////////////////////////////////////////////////////
-  // ***************** DO NOT MERGE TO TRUNK ************** //
-  // ***************** DO NOT MERGE TO TRUNK ************** //
-  // ***************** DO NOT MERGE TO TRUNK ************** //
-  // KMH 16/07/09: Horrible temporary bodge so s-channel VV /
-  // VGamma graphs don't give 2->1 Drell-Yan-like shower trees.
-  if(
-     // If the particle is a W / Z / Gamma,
-     (abs(particle->id())==23|| 
-      abs(particle->id())==24||
-      abs(particle->id())==22) &&
-     // with 2 children
-     particle->children().size()==2 &&
-     // and child 1 is a W / Z / Gamma,
-     (abs(particle->children()[0]->id())==23||
-      abs(particle->children()[0]->id())==24||
-      abs(particle->children()[0]->id())==22) &&
-     // and child 2 is a W / Z / Gamma,
-     (abs(particle->children()[1]->id())==23||
-      abs(particle->children()[1]->id())==24||
-      abs(particle->children()[1]->id())==22)
-     ) {
-    // and, finally, if the particle is the s-channel intermediate,
-    if(find(currentSubProcess()->incoming().first->children().begin(),
-	    currentSubProcess()->incoming().first->children().end(),particle)!=
-       currentSubProcess()->incoming().first->children().end()&&
-       find(currentSubProcess()->incoming().second->children().begin(),
-	    currentSubProcess()->incoming().second->children().end(),particle)!=
-       currentSubProcess()->incoming().second->children().end()&&
-       currentSubProcess()->incoming().first ->children().size()==1&&
-       currentSubProcess()->incoming().second->children().size()==1)
-      // then we say the thing whose mother is particle is not from a decay! Phew.
-      return false;
-  }
-  // ***************** END OF HORRIBLE BODGE ************** //
-  // ***************** END OF HORRIBLE BODGE ************** //
-  // ***************** END OF HORRIBLE BODGE ************** //
-  ////////////////////////////////////////////////////////////
-  // if non-coloured this is enough
-  if(!particle->dataPtr()->coloured()) return true;
-  // if coloured must be unstable
-  if(particle->dataPtr()->stable()) return false;
   // must not be the s-channel intermediate
   if(find(currentSubProcess()->incoming().first->children().begin(),
 	  currentSubProcess()->incoming().first->children().end(),particle)!=
@@ -683,6 +641,10 @@ bool ShowerHandler::decayProduct(tPPtr particle) const {
      currentSubProcess()->incoming().first ->children().size()==1&&
      currentSubProcess()->incoming().second->children().size()==1)
     return false;
+  // if non-coloured this is enough
+  if(!particle->dataPtr()->coloured()) return true;
+  // if coloured must be unstable
+  if(particle->dataPtr()->stable()) return false;
   // must not have same particle type as a child
   int id = particle->id();
   for(unsigned int ix=0;ix<particle->children().size();++ix)

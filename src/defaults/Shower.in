@@ -68,40 +68,6 @@ set SplittingGenerator:FSR Yes
 # Really.
 #############################################################
 #
-#  create the matrix element corrections
-# 
-# vector boson decay
-create Herwig::VectorBosonQQBarMECorrection qqbarg
-insert ShowerModel:MECorrections 0 qqbarg
-set qqbarg:Coupling AlphaQCD
-
-# top decay
-create Herwig::TopDecayMECorrection TopME
-insert ShowerModel:MECorrections 1  TopME
-set TopME:Coupling AlphaQCD
-
-# drell-yan
-create Herwig::DrellYanMECorrection DrellYan
-insert ShowerModel:MECorrections 2  DrellYan
-set DrellYan:Coupling AlphaQCD
-
-# higgs
-create Herwig::GGtoHMECorrection GGtoHME
-insert ShowerModel:MECorrections 3 GGtoHME
-set GGtoHME:Coupling AlphaQCD
-#
-#  create the powheg corrections
-#
-library HwPowhegShower.so
-# Drell-yan hard emission generator
-create Herwig::DrellYanHardGenerator DrellYanHardGenerator
-set DrellYanHardGenerator:ShowerAlpha AlphaQCD
-insert Evolver:HardGenerator 0 DrellYanHardGenerator
-# gg->H hard emission generator
-create Herwig::GGtoHHardGenerator GGtoHHardGenerator
-set GGtoHHardGenerator:ShowerAlpha AlphaQCD
-insert Evolver:HardGenerator 0 GGtoHHardGenerator
-#
 # a few default values
 set Evolver:MECorrMode 1
 set AlphaQCD:ScaleFactor 1.0

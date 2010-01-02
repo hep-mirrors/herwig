@@ -63,7 +63,7 @@ public:
   //@}
 
 public:
-  
+
   /**
    *  Virtual members to be overridden by inheriting classes
    *  which implement hard corrections 
@@ -73,23 +73,23 @@ public:
    *  Has a POWHEG style correction
    */
   virtual bool hasPOWHEGCorrection() {return false;}
-  
+
   /**
    *  Has an old fashioned ME correction
    */
   virtual bool hasMECorrection() {return false;}
-  
+
   /**
    *  Initialize the ME correction
    */
   virtual void initializeMECorrection(ShowerTreePtr , double & ,
 				      double & ) {}
-  
+
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
    */
   virtual void applyHardMatrixElementCorrection(ShowerTreePtr) {}
-  
+
   /**
    * Apply the soft matrix element correction
    * @param initial The particle from the hard process which started the 
@@ -102,7 +102,7 @@ public:
 				     ShowerParticlePtr,Branching) {
     return false;
   }
-  
+
   /**
    *  Apply the POWHEG style correction
    */
@@ -110,7 +110,7 @@ public:
     return HardTreePtr();
   }
   //@}
-  
+
 protected:
 
   /** @name Virtual functions to replaced those from the Decayer class. 

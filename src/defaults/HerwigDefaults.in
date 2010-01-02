@@ -71,8 +71,8 @@ read QEDRadiation.in
 read Model.in
 read Partons.in
 read UnderlyingEvent.in
-read MatrixElements.in
 read Shower.in
+read MatrixElements.in
 read Hadronization.in
 read Decays.in
 
