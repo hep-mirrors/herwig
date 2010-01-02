@@ -25,7 +25,8 @@ using namespace Herwig;
 
 const double VectorBosonQQBarMECorrection::EPS=0.00000001;
 
-NoPIOClassDescription<VectorBosonQQBarMECorrection> VectorBosonQQBarMECorrection::initVectorBosonQQBarMECorrection;
+NoPIOClassDescription<VectorBosonQQBarMECorrection> 
+VectorBosonQQBarMECorrection::initVectorBosonQQBarMECorrection;
 // Definition of the static class description member.
 
 
@@ -76,7 +77,8 @@ bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree,
   id[0]=cjt->first->progenitor()->id();
   ++cjt;
   id[1]=cjt->first->progenitor()->id();
-  if(id[0]!=-id[1]||abs(id[0])>6) return false;
+  if(float(id[0])/float(id[1])>0 || abs(id[0])>6 || abs(id[1])>6 )
+    return false;
   // get the quark and antiquark
   ParticleVector qq; 
   for(cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt)
@@ -126,7 +128,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
   PPtr newq,newa;
   if(firstEmits) {
-    newq = getParticleData(abs(qq[0]->id()))->produceParticle(newfs[0]);
+    newq = qq[0]->dataPtr()->produceParticle(newfs[0]);
     newa = new_ptr(Particle(*qq[1]));
     qq[1]->antiColourLine()->removeAntiColoured(newa);
     newa->set5Momentum(newfs[1]);
@@ -135,7 +137,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     newq = new_ptr(Particle(*qq[0]));
     qq[0]->colourLine()->removeColoured(newq);
     newq->set5Momentum(newfs[0]);
-    newa = getParticleData(-abs(qq[0]->id()))->produceParticle(newfs[1]);
+    newa = qq[1]->dataPtr()->produceParticle(newfs[1]);
   }
   // get the original colour line
   ColinePtr col;
@@ -351,7 +353,12 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   double d_z = br.kinematics->z();
   Energy d_qt = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
-  Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
+  Energy2 pPerp2 =  sqr(d_z*d_qt) - d_m2;
+  if(pPerp2<ZERO) {
+    parent->setEvolutionScale(br.kinematics->scale());
+    return true;
+  }
+  Energy pPerp = (1.-d_z)*sqrt(pPerp2);
   // if not hardest so far don't apply veto
   if(pPerp<initial->highestpT()) return false;
   // calculate the weight
