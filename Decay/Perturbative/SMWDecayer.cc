@@ -498,8 +498,7 @@ double SMWDecayer::getHard(double &x1, double &x2) {
 }
 
 bool SMWDecayer::
-softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br)
-{
+softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br) {
   // check we should be applying the veto
   if(parent->id()!=initial->progenitor()->id()||
      br.ids[0]!=br.ids[1]||
@@ -508,7 +507,12 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   double d_z = br.kinematics->z();
   Energy d_qt = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
-  Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
+  Energy2 pPerp2 = sqr(d_z*d_qt) - d_m2;
+  if(pPerp2<ZERO) {
+    parent->setEvolutionScale(br.kinematics->scale());
+    return true;
+  }
+  Energy pPerp = (1.-d_z)*sqrt(pPerp2);
   // if not hardest so far don't apply veto
   if(pPerp<initial->highestpT()) return false;
   // calculate the weight
