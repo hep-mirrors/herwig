@@ -224,13 +224,23 @@ protected:
    * Truncated shower from a time-like particle
    */
   virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
-				       HardBranchingPtr branch);
+				       HardBranchingPtr branch,
+				       ShowerInteraction::Type type);
  
   /**
    * Truncated shower from a space-like particle
    */
   virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-					HardBranchingPtr branch);
+					HardBranchingPtr branch,
+					ShowerInteraction::Type type);
+
+  /**
+   * Truncated shower from a time-like particle
+   */
+  virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
+					     Energy maxscale, Energy minimumMass,
+					     HardBranchingPtr branch,
+					     ShowerInteraction::Type type);
   //@}
 
   /**
@@ -464,28 +474,6 @@ protected:
    *  Vetos for the spacelike shower
    */
   virtual bool spaceLikeDecayVetoed(const Branching &,ShowerParticlePtr);
-
-  /**
-   * Truncated shower from a time-like particle
-   */
-  virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
-				       HardBranchingPtr branch,
-				       ShowerInteraction::Type type);
-
-  /**
-   * Truncated shower from a time-like particle
-   */
-  virtual bool truncatedSpaceLikeDecayShower(tShowerParticlePtr particle,
-					     Energy maxscale, Energy minimumMass,
-					     HardBranchingPtr branch,
-					     ShowerInteraction::Type type);
- 
-  /**
-   * Truncated shower from a space-like particle
-   */
-  virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
-					HardBranchingPtr branch,
-					ShowerInteraction::Type type);
 
   vector<HardestEmissionGeneratorPtr> & hardestEmissionGenerator() 
   {return _hardgenerator;}
